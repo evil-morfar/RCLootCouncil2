@@ -1,0 +1,950 @@
+﻿<Ui xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.blizzard.com/wow/ui/">
+	<Script file="Mainframe.lua" />
+	<Button name="RCLootCouncil_Header" virtual="true" text="">
+		<Backdrop bgFile="" />
+		<NormalFont style="GameFontHighlight" />
+		<HighlightFont style="GameFontNormal" />
+	</Button>
+	<Button name="RCLootCouncil_Entry" virtual="true" hidden="true" text="">
+		<Size>
+			<AbsDimension x="762" y="20" />
+		</Size>
+		<Layers>
+			<Layer>
+				<FontString name="$parentCharName" inherits="GameFontNormal" text="Potdisc" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="80" y="20" />
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="21" />
+						</Anchor>
+					</Anchors>
+					<FontHeight>
+						<AbsValue val="10" />
+					</FontHeight>
+				</FontString>
+				<FontString name="$parentRank" inherits="GameFontNormal" text="Officer">
+					<Size>
+						<AbsDimension x="63" y="20" />
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="104" />
+						</Anchor>
+					</Anchors>
+					<FontHeight>
+						<AbsValue val="10" />
+					</FontHeight>
+				</FontString>
+				<FontString name="$parentRole" inherits="GameFontNormal" text="Discipline">
+					<Size>
+						<AbsDimension x="100" y="20" />
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="173" />
+						</Anchor>
+					</Anchors>
+					<FontHeight>
+						<AbsValue val="10" />
+					</FontHeight>
+				</FontString>
+				<FontString name="$parentTotalilvl" inherits="GameFontNormal" text="394">
+					<Size>
+						<AbsDimension x="56" y="20" />
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="279" />
+						</Anchor>
+					</Anchors>
+					<FontHeight>
+						<AbsValue val="10" />
+					</FontHeight>
+				</FontString>
+				<FontString name="$parentResponse" inherits="GameFontNormal" text="Mainspec/Need">
+					<Size>
+						<AbsDimension x="178" y="20" />
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="341" />
+						</Anchor>
+					</Anchors>
+					<FontHeight>
+						<AbsValue val="10" />
+					</FontHeight>
+				</FontString>
+				<Texture name="$parentClassTexture">
+					<Size>
+						<AbsDimension x="20" y="20" />
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="0" y="0" />
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="$parentCurrentGear1Hover" frameStrata="HIGH">
+				<Size>
+					<AbsDimension x="20" y="20" />
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset x="532" />
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer>
+						<Texture name="$parentCurrentGear1">
+							<Size>
+								<AbsDimension x="20" y="20" />
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT" />
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter>
+						RCLootCouncil_Mainframe.ShowCurrentGearTooltip((self:GetParent()):GetID())
+						getglobal((self:GetParent()):GetName().."BG"):Show()
+					</OnEnter>
+					<OnLeave>
+						RCLootCouncil_Mainframe.toolMouseLeave()
+						if not RCLootCouncil_Mainframe.isSelected((self:GetParent()):GetID()) then
+							getglobal((self:GetParent()):GetName().."BG"):Hide()
+						end;
+					</OnLeave>
+				</Scripts>
+			</Frame>
+			<Frame name="$parentCurrentGear2Hover">
+				<Size>
+					<AbsDimension x="20" y="20" />
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset x="567" />
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer>
+						<Texture name="$parentCurrentGear2">
+							<Size>
+								<AbsDimension x="20" y="20" />
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT" />
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter>
+						RCLootCouncil_Mainframe.ShowCurrentGear2Tooltip((self:GetParent()):GetID())
+							getglobal((self:GetParent()):GetName().."BG"):Show()
+					</OnEnter>
+					<OnLeave>
+						RCLootCouncil_Mainframe.toolMouseLeave()
+						if not RCLootCouncil_Mainframe.isSelected((self:GetParent()):GetID()) then
+							getglobal((self:GetParent()):GetName().."BG"):Hide()
+						end;
+					</OnLeave>
+				</Scripts>
+			</Frame>
+			<Frame name="$parentVoteHover">
+				<Size>
+					<AbsDimension x="51" y="20" />
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset x="603" />
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer>
+						<FontString name="$parentVotes" inherits="GameFontNormal" text="2">
+							<Size>
+								<AbsDimension x="50" y="20" />
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT" />
+							</Anchors>
+							<FontHeight>
+								<AbsValue val="10" />
+							</FontHeight>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter>
+						getglobal((self:GetParent()):GetName().."BG"):Show();
+						RCLootCouncil_Mainframe:voteHover((self:GetParent()):GetID());
+					</OnEnter>
+					<OnLeave>
+						if not RCLootCouncil_Mainframe.isSelected((self:GetParent()):GetID()) then
+							getglobal((self:GetParent()):GetName().."BG"):Hide()
+						end;
+						RCLootCouncil_Mainframe.toolMouseLeave();
+					</OnLeave>
+				</Scripts>
+			</Frame>
+			<Frame name="$parentNameHover">
+				<Size>
+					<AbsDimension x="100" y="20" />
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" />
+				</Anchors>
+				<Scripts>
+					<OnLeave>
+						if not RCLootCouncil_Mainframe.isSelected((self:GetParent()):GetID()) then
+							getglobal((self:GetParent()):GetName().."BG"):Hide()
+						end;
+						RCLootCouncil_Mainframe.toolMouseLeave();
+					</OnLeave>
+					<OnEnter>
+						getglobal((self:GetParent()):GetName().."BG"):Show();
+						RCLootCouncil_Mainframe:NameHover((self:GetParent()):GetID());
+					</OnEnter>
+				</Scripts>
+			</Frame>
+			<Button name="$parentNoteButton" text="">
+				<Size>
+					<AbsDimension x="20" y="20" />
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset x="734" />
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						getglobal((self:GetParent()):GetName().."BG"):Show();
+						RCLootCouncil_Mainframe:DisplayNote((self:GetParent()):GetID());
+					</OnEnter>
+					<OnLeave>
+						RCLootCouncil_Mainframe.toolMouseLeave()
+						if not RCLootCouncil_Mainframe.isSelected((self:GetParent()):GetID()) then
+						getglobal((self:GetParent()):GetName().."BG"):Hide()
+						end;
+					</OnLeave>
+				</Scripts>
+				<NormalTexture file="Interface\BUTTONS\UI-GuildButton-PublicNote-Up">
+					<TexCoords left="0" right="1" top="0" bottom="1" />
+				</NormalTexture>
+			</Button>
+			<Button name="$parentBtVote" inherits="UIPanelButtonTemplate" text="Vote!">
+				<Size>
+					<AbsDimension x="66" y="16" />
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset x="655" y="-1" />
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						getglobal((self:GetParent()):GetName().."BG"):Show();
+					</OnEnter>
+					<OnLeave>
+						if not RCLootCouncil_Mainframe.isSelected((self:GetParent()):GetID()) then
+						getglobal((self:GetParent()):GetName().."BG"):Hide()
+						end;
+					</OnLeave>
+					<OnClick>
+						RCLootCouncil_Mainframe.vote((self:GetParent()):GetID());
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				getglobal(self:GetName().."BG"):Hide()
+				self:RegisterForClicks("AnyDown")
+			</OnLoad>
+			<OnEnter>
+				getglobal(self:GetName().."BG"):Show()
+			</OnEnter>
+			<OnLeave>
+				if not RCLootCouncil_Mainframe.isSelected(self:GetID()) then
+					getglobal(self:GetName().."BG"):Hide()
+				end
+			</OnLeave>
+			<OnClick>
+				RCLootCouncil_Mainframe:EntryOnclick(self, button)
+			</OnClick>
+		</Scripts>
+		<NormalTexture name="$parentBG">
+			<Color a="0.35" r="1" g="0.84" b="0" />
+		</NormalTexture>
+	</Button>
+	<Button name="RCLootCouncil_SessionToggleButton" inherits="UIPanelButtonTemplate" virtual="true" text="">
+		<Size>
+			<AbsDimension x="40" y="40" />
+		</Size>
+		<Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border">
+			<EdgeSize>
+				<AbsValue val="16" />
+			</EdgeSize>
+			<BorderColor r="1" g="1" b="0" />
+		</Backdrop>
+		<Scripts>
+			<OnClick>
+				RCLootCouncil_Mainframe:ChangeSession(self:GetID());
+			</OnClick>
+			<OnEnter>
+				RCLootCouncil_Mainframe:SessionButtonOnEnter(self:GetID());
+			</OnEnter>
+			<OnLeave>
+				RCLootCouncil_Mainframe.toolMouseLeave();
+			</OnLeave>
+		</Scripts>
+		<NormalTexture name="$parentNormalTexture" file="Interface\Buttons\UI-Quickslot2.png" alphaMode="ADD">
+			<Size>
+				<AbsDimension x="20" y="20" />
+			</Size>
+		</NormalTexture>
+		<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress.png" />
+		<DisabledTexture file="" />
+		<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" />
+	</Button>
+	<Frame name="MainFrame" parent="UIParent" toplevel="true" movable="true" enableMouse="true">
+		<Size>
+			<AbsDimension x="815" y="407" />
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT">
+				<Offset x="60" y="-117" />
+			</Anchor>
+		</Anchors>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Gold-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="4" right="4" top="4" bottom="4" />
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="64" />
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="16" />
+			</EdgeSize>
+			<Color r="0.5" g="0" b="0" />
+			<BorderColor r="1" g="0.5" b="0" />
+		</Backdrop>
+		<Layers>
+			<Layer>
+				<Texture name="EmptyTexture" file="Interface\BUTTONS\UI-Slot-Background">
+					<Size>
+						<AbsDimension x="80" y="80" />
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="18" y="-28" />
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="CurrentItemTexture">
+					<Size>
+						<AbsDimension x="50" y="50" />
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="18" y="-29" />
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="CurrentSelectionTexture" hidden="true">
+					<Size>
+						<AbsDimension x="50" y="50" />
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="748" y="-28" />
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="DualItemTexture1" hidden="true">
+					<Size>
+						<AbsDimension x="28" y="28" />
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="766" y="-15" />
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="DualItemTexture2" hidden="true">
+					<Size>
+						<AbsDimension x="28" y="28" />
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="766" y="-51" />
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString name="TitleLabel" inherits="GameFontNormal" text="RC Loot Council">
+					<Size>
+						<AbsDimension x="113" y="24" />
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="342" y="-3" />
+						</Anchor>
+					</Anchors>
+					<Color r="1" g="1" b="1" />
+				</FontString>
+				<FontString name="CurrentItemLvl" inherits="GameFontNormal" text="ilvl: 410" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="54" y="27" />
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="74" y="-52" />
+						</Anchor>
+					</Anchors>
+					<Color r="0.5" g="1" b="1" />
+				</FontString>
+				<FontString name="CurrentItemLabel" inherits="GameFontNormalLeft" text="Trinket of Power">
+					<Size>
+						<AbsDimension x="326" y="25" />
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="73" y="-28" />
+						</Anchor>
+					</Anchors>
+					<FontHeight>
+						<AbsValue val="18" />
+					</FontHeight>
+				</FontString>
+				<FontString name="CurrentItemType" inherits="GameFontNormal" text="Trinket" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="154" y="27" />
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="134" y="-52" />
+						</Anchor>
+					</Anchors>
+					<Color r="0.5" g="1" b="1" />
+				</FontString>
+				<FontString name="MasterlooterString" inherits="GameFontNormal" font="Fonts\ARIALN.TTF" text="Masterlooter:" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="65" y="17" />
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="18" y="-385" />
+						</Anchor>
+					</Anchors>
+					<FontHeight>
+						<AbsValue val="10" />
+					</FontHeight>
+					<Color r="1" g="1" b="1" />
+				</FontString>
+				<FontString name="MasterlooterLabel" inherits="GameFontNormal" font="Fonts\ARIALN.TTF" text="" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="87" y="17" />
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="82" y="-385" />
+						</Anchor>
+					</Anchors>
+					<FontHeight>
+						<AbsValue val="10" />
+					</FontHeight>
+					<Color r="1" g="1" b="1" />
+				</FontString>
+				<FontString name="CurrentSelectionLabel" inherits="GameFontNormalLeft" hidden="true" text="Trinket of Power" justifyH="RIGHT">
+					<Size>
+						<AbsDimension x="337" y="25" />
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="405" y="-28" />
+						</Anchor>
+					</Anchors>
+					<FontHeight>
+						<AbsValue val="18" />
+					</FontHeight>
+				</FontString>
+				<FontString name="CurrentSelectionIlvl" inherits="GameFontNormal" hidden="true" text="ilvl: 410" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="54" y="27" />
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="688" y="-51" />
+						</Anchor>
+					</Anchors>
+					<Color r="0.5" g="1" b="1" />
+				</FontString>
+				<FontString name="DualItemLabel1" inherits="GameFontNormalLeft" hidden="true" text="Trinket of Power" justifyH="RIGHT">
+					<Size>
+						<AbsDimension x="299" y="28" />
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="461" y="-15" />
+						</Anchor>
+					</Anchors>
+					<FontHeight>
+						<AbsValue val="14" />
+					</FontHeight>
+				</FontString>
+				<FontString name="DualItemLabel2" inherits="GameFontNormalLeft" hidden="true" text="Trinket of Power" justifyH="RIGHT">
+					<Size>
+						<AbsDimension x="299" y="28" />
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="461" y="-51" />
+						</Anchor>
+					</Anchors>
+					<FontHeight>
+						<AbsValue val="14" />
+					</FontHeight>
+				</FontString>
+				<FontString name="PeopleToRollString" inherits="GameFontNormal" hidden="true" font="Fonts\ARIALN.TTF" text="People still to roll:" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="90" y="17" />
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="18" y="-85" />
+						</Anchor>
+					</Anchors>
+					<FontHeight>
+						<AbsValue val="10" />
+					</FontHeight>
+					<Color r="1" g="1" b="1" />
+				</FontString>
+				<FontString name="PeopleToRollLabel" inherits="GameFontNormal" hidden="true" font="Fonts\ARIALN.TTF" text="Everyone has rolled!" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="195" y="17" />
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="104" y="-85" />
+						</Anchor>
+					</Anchors>
+					<FontHeight>
+						<AbsValue val="10" />
+					</FontHeight>
+					<Color r="1" g="1" b="1" />
+				</FontString>
+				<FontString name="$parentFilterPassesText" inherits="GameFontNormal" font="Fonts\ARIALN.TTF" text="Filter Passes" justifyH="RIGHT">
+					<Size>
+						<AbsDimension x="72" y="20" />
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="669" y="-384" />
+						</Anchor>
+					</Anchors>
+					<FontHeight>
+						<AbsValue val="10" />
+					</FontHeight>
+					<Color r="1" g="1" b="1" />
+				</FontString>
+				<FontString name="AwardString" inherits="GameFontNormal" hidden="true" font="Fonts\ARIALN.TTF" text="You can't award this item yet!" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="201" y="20" />
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="18" y="-114" />
+						</Anchor>
+					</Anchors>
+					<Color r="1" g="0" b="0" />
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<ScrollFrame name="ContentFrame" inherits="FauxScrollFrameTemplate">
+				<Size>
+					<AbsDimension x="770" y="233" />
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset x="15" y="-154" />
+					</Anchor>
+				</Anchors>
+				<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+					<BackgroundInsets>
+						<AbsInset left="4" right="4" top="4" bottom="4" />
+					</BackgroundInsets>
+					<TileSize>
+						<AbsValue val="32" />
+					</TileSize>
+					<EdgeSize>
+						<AbsValue val="16" />
+					</EdgeSize>
+					<Color r="1" g="1" b="1" />
+					<BorderColor r="1" g="1" b="1" />
+				</Backdrop>
+				<Frames>
+					<CheckButton name="MainFrameFilterPasses" inherits="UICheckButtonTemplate" enableMouse="true" text="Filter Passes">
+						<Size>
+							<AbsDimension x="21" y="21" />
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset x="729" y="-231" />
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnUpdate>
+								RCLootCouncil_Mainframe.FilterPasses(true);
+							</OnUpdate>
+							<OnClick>
+								RCLootCouncil_Mainframe.FilterPasses()
+							</OnClick>
+						</Scripts>
+					</CheckButton>
+				</Frames>
+				<Scripts>
+					<OnVerticalScroll>
+						FauxScrollFrame_OnVerticalScroll(self, offset, 20, RCLootCouncil_Mainframe.Update)
+					</OnVerticalScroll>
+				</Scripts>
+			</ScrollFrame>
+			<Frame name="CurrentItemHover" frameStrata="HIGH">
+				<Size>
+					<AbsDimension x="323" y="51" />
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset x="18" y="-28" />
+					</Anchor>
+				</Anchors>
+				<Backdrop bgFile="" edgeFile="">
+					<BackgroundInsets>
+						<AbsInset left="0" right="0" top="0" bottom="0" />
+					</BackgroundInsets>
+					<TileSize>
+						<AbsValue val="32" />
+					</TileSize>
+				</Backdrop>
+				<Scripts>
+					<OnEnter>
+						RCLootCouncil_Mainframe.ShowCurrentItemTooltip();
+					</OnEnter>
+					<OnLeave>
+						RCLootCouncil_Mainframe.toolMouseLeave();
+					</OnLeave>
+				</Scripts>
+			</Frame>
+			<Button name="HeaderName" inherits="RCLootCouncil_Header" text="Name">
+				<Size>
+					<AbsDimension x="81" y="17" />
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset x="18" y="-134" />
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						RCLootCouncil_Mainframe.sortTable(self:GetID());
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="HeaderRank" inherits="RCLootCouncil_Header" id="1" text="Rank">
+				<Size>
+					<AbsDimension x="57" y="17" />
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset x="124" y="-134" />
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						RCLootCouncil_Mainframe.sortTable(self:GetID());
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="HeaderSpec" inherits="RCLootCouncil_Header" id="2" text="Role">
+				<Size>
+					<AbsDimension x="102" y="17" />
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset x="187" y="-134" />
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						RCLootCouncil_Mainframe.sortTable(self:GetID());
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="HeaderTotalilvl" inherits="RCLootCouncil_Header" id="3" text="Total ilvl">
+				<Size>
+					<AbsDimension x="61" y="17" />
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset x="295" y="-134" />
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						RCLootCouncil_Mainframe.sortTable(self:GetID());
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="HeaderResponse" inherits="RCLootCouncil_Header" id="4" text="Response">
+				<Size>
+					<AbsDimension x="167" y="17" />
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset x="362" y="-134" />
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						RCLootCouncil_Mainframe.sortTable(self:GetID());
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="HeaderCurrentGear" inherits="RCLootCouncil_Header" id="5" text="Current Gear">
+				<Size>
+					<AbsDimension x="85" y="17" />
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset x="535" y="-134" />
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						RCLootCouncil_Mainframe.sortTable(self:GetID());
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="HeaderVotes" inherits="RCLootCouncil_Header" id="6" text="Votes">
+				<Size>
+					<AbsDimension x="44" y="17" />
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset x="626" y="-134" />
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						RCLootCouncil_Mainframe.sortTable(self:GetID());
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="HeaderVote" inherits="RCLootCouncil_Header" id="7" text="Vote">
+				<Size>
+					<AbsDimension x="57" y="17" />
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset x="676" y="-134" />
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Frame name="DualItemSelection2" hidden="true" frameStrata="HIGH">
+				<Size>
+					<AbsDimension x="277" y="28" />
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset x="517" y="-51" />
+					</Anchor>
+				</Anchors>
+				<Backdrop bgFile="" edgeFile="">
+					<BackgroundInsets>
+						<AbsInset left="0" right="0" top="0" bottom="0" />
+					</BackgroundInsets>
+					<TileSize>
+						<AbsValue val="32" />
+					</TileSize>
+				</Backdrop>
+				<Scripts>
+					<OnEnter>
+						RCLootCouncil_Mainframe.ShowCurrentGear2Tooltip();
+					</OnEnter>
+					<OnLeave>
+						RCLootCouncil_Mainframe.toolMouseLeave();
+					</OnLeave>
+				</Scripts>
+			</Frame>
+			<Frame name="DualItemSelection1" hidden="true" frameStrata="HIGH">
+				<Size>
+					<AbsDimension x="276" y="28" />
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset x="518" y="-15" />
+					</Anchor>
+				</Anchors>
+				<Backdrop bgFile="" edgeFile="">
+					<BackgroundInsets>
+						<AbsInset left="0" right="0" top="0" bottom="0" />
+					</BackgroundInsets>
+					<TileSize>
+						<AbsValue val="32" />
+					</TileSize>
+				</Backdrop>
+				<Scripts>
+					<OnEnter>
+						RCLootCouncil_Mainframe.ShowCurrentGearTooltip()
+					</OnEnter>
+					<OnLeave>
+						RCLootCouncil_Mainframe.toolMouseLeave()
+					</OnLeave>
+				</Scripts>
+			</Frame>
+			<Frame name="CurrentSelectionHover" hidden="true" frameStrata="HIGH">
+				<Size>
+					<AbsDimension x="297" y="50" />
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset x="501" y="-28" />
+					</Anchor>
+				</Anchors>
+				<Backdrop bgFile="" edgeFile="">
+					<BackgroundInsets>
+						<AbsInset left="0" right="0" top="0" bottom="0" />
+					</BackgroundInsets>
+					<TileSize>
+						<AbsValue val="32" />
+					</TileSize>
+				</Backdrop>
+				<Scripts>
+					<OnEnter>
+						RCLootCouncil_Mainframe.ShowCurrentGearTooltip()
+					</OnEnter>
+					<OnLeave>
+						RCLootCouncil_Mainframe.toolMouseLeave()
+					</OnLeave>
+				</Scripts>
+			</Frame>
+			<Button name="BtAward" inherits="UIPanelButtonTemplate" hidden="true" text="Award Item">
+				<Size>
+					<AbsDimension x="110" y="23" />
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset x="18" y="-105" />
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						RCLootCouncil_Mainframe.awardBtOnClick();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="BtClear" inherits="UIPanelButtonTemplate" hidden="true" text="Clear Selection">
+				<Size>
+					<AbsDimension x="130" y="23" />
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset x="533" y="-105" />
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						RCLootCouncil_Mainframe.updateSelection(0,true);
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="BtClose" inherits="UIPanelButtonTemplate" text="Close">
+				<Size>
+					<AbsDimension x="100" y="23" />
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset x="669" y="-105" />
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						CloseButton_OnClick();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="BtRemove" inherits="UIPanelButtonTemplate" hidden="true" text="Remove from consideration">
+				<Size>
+					<AbsDimension x="207" y="23" />
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset x="295" y="-105" />
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						RCLootCouncil_Mainframe.removeBtOnClick();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Frame name="$parentPeopleToRollHover">
+				<Size>
+					<AbsDimension x="104" y="22" />
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset x="98" y="-85" />
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						RCLootCouncil_Mainframe:PeopleToRollHover();
+					</OnEnter>
+					<OnLeave>
+						RCLootCouncil_Mainframe.toolMouseLeave();
+					</OnLeave>
+				</Scripts>
+			</Frame>
+			<Button name="HeaderNotes" inherits="RCLootCouncil_Header" id="8" text="Notes">
+				<Size>
+					<AbsDimension x="43" y="17" />
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset x="739" y="-134" />
+					</Anchor>
+				</Anchors>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				self.TimeSinceLastUpdate = 0;
+				self:RegisterForDrag("LeftButton")
+				RCLootCouncil:MainFrame_OnLoad();
+			</OnLoad>
+			<OnDragStart>
+				self:StartMoving()
+			</OnDragStart>
+			<OnDragStop>
+				self:StopMovingOrSizing()
+			</OnDragStop>
+		</Scripts>
+	</Frame>
+	<GameTooltip name="RCLootCouncil_tooltip" inherits="GameTooltipTemplate">
+		<Scripts>
+			<OnLoad>
+				self:SetOwner(WorldFrame, "ANCHOR_NONE");
+			</OnLoad>
+		</Scripts>
+	</GameTooltip>
+</Ui>

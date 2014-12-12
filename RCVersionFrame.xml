@@ -1,0 +1,252 @@
+﻿<Ui xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.blizzard.com/wow/ui/">
+	<Script file="RCVersionFrame.lua" />
+	<Button name="RCVersionFrameEntry" virtual="true" hidden="true" text="">
+		<Size>
+			<AbsDimension x="393" y="20" />
+		</Size>
+		<Layers>
+			<Layer>
+				<Texture name="$parentClassTexture">
+					<Size>
+						<AbsDimension x="20" y="20" />
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="3" />
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString name="$parentName" inherits="GameFontNormal" text="Potdisc" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="168" y="20" />
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="28" />
+						</Anchor>
+					</Anchors>
+					<Color r="1" g="1" b="1" />
+				</FontString>
+				<FontString name="$parentRank" inherits="GameFontNormal" text="Officer" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="90" y="20" />
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="202" />
+						</Anchor>
+					</Anchors>
+					<Color r="1" g="1" b="1" />
+				</FontString>
+				<FontString name="$parentVersion" inherits="GameFontNormal" text="v1.0.2" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="89" y="20" />
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="295" />
+						</Anchor>
+					</Anchors>
+					<Color r="0.75" g="0.75" b="0.75" />
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+					getglobal(self:GetName().."BG"):Hide()
+			</OnLoad>
+			<OnEnter>
+				getglobal(self:GetName().."BG"):Show()
+			</OnEnter>
+			<OnLeave>
+				getglobal(self:GetName().."BG"):Hide()
+			</OnLeave>
+		</Scripts>
+		<NormalTexture name="$parentBG">
+			<Color a="0.35" r="1" g="0.84" b="0" />
+		</NormalTexture>
+	</Button>
+	<Frame name="RCVersionFrame" hidden="true" parent="UIParent" toplevel="true" movable="true" enableMouse="true">
+		<Size>
+			<AbsDimension x="435" y="322" />
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT">
+				<Offset x="269" y="-113" />
+			</Anchor>
+		</Anchors>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Gold-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="4" right="4" top="4" bottom="4" />
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="64" />
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="16" />
+			</EdgeSize>
+			<Color r="0.5" g="0" b="0" />
+			<BorderColor r="1" g="0.5" b="0" />
+		</Backdrop>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString name="TitleString" inherits="GameFontNormal" text="RCLootCouncil Version Checker">
+					<Size>
+						<AbsDimension x="429" y="20" />
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="3" y="-3" />
+						</Anchor>
+					</Anchors>
+					<Color r="1" g="1" b="1" />
+				</FontString>
+				<FontString name="UsageString" inherits="GameFontNormal" font="Fonts\FRIENDS.TTF" text="Request version from:" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="166" y="20" />
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="9" y="-268" />
+						</Anchor>
+					</Anchors>
+					<FontHeight>
+						<AbsValue val="11" />
+					</FontHeight>
+					<Color r="1" g="1" b="1" />
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<ScrollFrame name="$parentContentFrame" inherits="FauxScrollFrameTemplate">
+				<Size>
+					<AbsDimension x="400" y="227" />
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset x="6" y="-42" />
+					</Anchor>
+				</Anchors>
+				<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+					<BackgroundInsets>
+						<AbsInset left="4" right="4" top="4" bottom="4" />
+					</BackgroundInsets>
+					<TileSize>
+						<AbsValue val="32" />
+					</TileSize>
+					<EdgeSize>
+						<AbsValue val="16" />
+					</EdgeSize>
+				</Backdrop>
+				<Scripts>
+					<OnVerticalScroll>
+						FauxScrollFrame_OnVerticalScroll(self, offset, 20, RCLootCouncil_VersionFrame:Update());
+					</OnVerticalScroll>
+				</Scripts>
+			</ScrollFrame>
+			<Button name="ButtonGuild" inherits="UIPanelButtonTemplate" text="Guild">
+				<Size>
+					<AbsDimension x="75" y="23" />
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset x="10" y="-288" />
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						RCLootCouncil_VersionFrame:SendVerTest("GUILD");
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="RaidButton" inherits="UIPanelButtonTemplate" text="Raid/Party">
+				<Size>
+					<AbsDimension x="84" y="23" />
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset x="91" y="-288" />
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						RCLootCouncil_VersionFrame:SendVerTest("PARTY");
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="CloseButton" inherits="UIPanelButtonTemplate" text="Close">
+				<Size>
+					<AbsDimension x="75" y="23" />
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset x="331" y="-288" />
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						RCLootCouncil_VersionFrame:CloseButtonClick();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="HeaderName" inherits="RCLootCouncil_Header" text="Name">
+				<Size>
+					<AbsDimension x="75" y="23" />
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset x="19" y="-24" />
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						RCLootCouncil_VersionFrame:Sort(self:GetID());
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="HeaderRank" inherits="RCLootCouncil_Header" id="1" text="Rank">
+				<Size>
+					<AbsDimension x="75" y="23" />
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset x="192" y="-24" />
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						RCLootCouncil_VersionFrame:Sort(self:GetID());
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="HeaderVersion" inherits="RCLootCouncil_Header" id="2" text="Version">
+				<Size>
+					<AbsDimension x="75" y="23" />
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset x="290" y="-24" />
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						RCLootCouncil_VersionFrame:Sort(self:GetID());
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnDragStart>
+				RCVersionFrame:StartMoving();
+			</OnDragStart>
+			<OnDragStop>
+				RCVersionFrame:StopMovingOrSizing();
+			</OnDragStop>
+			<OnLoad>
+				self:RegisterForDrag("LeftButton")
+			</OnLoad>
+		</Scripts>
+	</Frame>
+</Ui>

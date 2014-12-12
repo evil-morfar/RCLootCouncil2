@@ -1,0 +1,103 @@
+﻿<Ui xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.blizzard.com/wow/ui/">
+	<Script file="RCRankFrame.lua" />
+	<Frame name="RCRankFrame" parent="UIParent" toplevel="true">
+		<Size>
+			<AbsDimension x="443" y="110" />
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT">
+				<Offset x="285" y="-108" />
+			</Anchor>
+		</Anchors>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11" />
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32" />
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32" />
+			</EdgeSize>
+		</Backdrop>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString name="RankDropLabel" inherits="GameFontNormal" text="Minimum rank to participate in Loot Council: " justifyH="LEFT">
+					<Size>
+						<AbsDimension x="289" y="17" />
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="15" y="-23" />
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="FontString1" inherits="GameFontNormal" text="To add individual players, use /rc cadd &quot;name&quot;">
+					<Size>
+						<AbsDimension x="413" y="20" />
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="15" y="-46" />
+						</Anchor>
+					</Anchors>
+					<FontHeight>
+						<AbsValue val="10" />
+					</FontHeight>
+					<Color r="1" g="1" b="1" />
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="RankDropDown" inherits="UIDropDownMenuTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset x="276" y="-17" />
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						UIDropDownMenu_Initialize(self, RCLootCouncil_RankFrame.DropDown_OnLoad);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Button name="RankAcceptButton" inherits="UIPanelButtonTemplate" text="Accept">
+				<Size>
+					<AbsDimension x="180" y="22" />
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset x="15" y="-72" />
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						RCLootCouncil_RankFrame.acceptOnClick()
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="RankCancelButton" inherits="UIPanelButtonTemplate" text="Cancel">
+				<Size>
+					<AbsDimension x="180" y="22" />
+				</Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset x="-15" y="-72" />
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						RCLootCouncil_RankFrame.cancelOnClick()
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				self.TimeSinceLastUpdate = 0;
+				self:RegisterForDrag("LeftButton");
+				self:Hide()
+			</OnLoad>
+		</Scripts>
+	</Frame>
+</Ui>

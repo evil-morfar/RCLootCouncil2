@@ -1,0 +1,279 @@
+﻿-- Author      : Potdisc
+-- Create Date : 3/11/2013 10:25:13 PM
+-- RCArmorTokenData.lua
+-- Contains itemIDs and their equivalent equip location
+
+RCTokenTable = {
+	--[xxxxxx] = "ExampleSlot",
+
+	-- TIER 16	 Siege of Orgrimmar ---------------------------
+		-- Flexible
+	[99742] = "ChestSlot",
+	[99743] = "ChestSlot",
+	[99744] = "ChestSlot",
+
+	[99751] = "LegsSlot",
+	[99752] = "LegsSlot",
+	[99753] = "LegsSlot",
+	
+	[99748] = "HeadSlot",
+	[99749] = "HeadSlot",
+	[99750] = "HeadSlot",
+	
+	[99754] = "ShoulderSlot",
+	[99755] = "ShoulderSlot",
+	[99756] = "ShoulderSlot",
+	
+	[99745] = "HandsSlot",
+	[99746] = "HandsSlot",
+	[99747] = "HandsSlot",
+
+
+		-- Normal
+	[99696] = "ChestSlot",
+	[99691] = "ChestSlot",
+	[99686] = "ChestSlot",
+
+	[99693] = "LegsSlot",
+	[99684] = "LegsSlot",
+	[99688] = "LegsSlot",
+
+	[99683] = "HeadSlot",
+	[99689] = "HeadSlot",
+	[99694] = "HeadSlot",
+
+	[99690] = "ShoulderSlot",
+	[99685] = "ShoulderSlot",
+	[99695] = "ShoulderSlot",
+
+	[99682] = "HandsSlot",
+	[99687] = "HandsSlot",
+	[99692] = "HandsSlot",
+
+		-- Heroic
+	[99714] = "ChestSlot",
+	[99715] = "ChestSlot",
+	[99716] = "ChestSlot",
+
+	[99712] = "LegsSlot",
+	[99726] = "LegsSlot",
+	[99713] = "LegsSlot",
+
+	[99723] = "HeadSlot",
+	[99724] = "HeadSlot",
+	[99725] = "HeadSlot",
+
+	[99717] = "ShoulderSlot",
+	[99718] = "ShoulderSlot",
+	[99719] = "ShoulderSlot",
+
+	[99720] = "HandsSlot",
+	[99721] = "HandsSlot",
+	[99722] = "HandsSlot",
+
+
+	-- TIER 15	 Throne of Thunder ----------------------------
+		-- Normal
+	[95569] = "ChestSlot",
+	[95574] = "ChestSlot",
+	[95579] = "ChestSlot",
+
+	[95576] = "LegsSlot",
+	[95572] = "LegsSlot",
+	[95581] = "LegsSlot",
+
+	[95571] = "HeadSlot",
+	[95577] = "HeadSlot",
+	[95582] = "HeadSlot",
+
+	[95573] = "ShoulderSlot",
+	[95578] = "ShoulderSlot",
+	[95583] = "ShoulderSlot",
+
+	[95575] = "HandsSlot",
+	[95570] = "HandsSlot",
+	[95580] = "HandsSlot",
+
+		-- Heroic
+	[96566] = "ChestSlot",
+	[96567] = "ChestSlot",
+	[96568] = "ChestSlot",
+
+	[96631] = "LegsSlot",
+	[96632] = "LegsSlot",
+	[96633] = "LegsSlot",
+
+	[96623] = "HeadSlot",
+	[96624] = "HeadSlot",
+	[96625] = "HeadSlot",
+
+	[96699] = "ShoulderSlot",
+	[96700] = "ShoulderSlot",
+	[96701] = "ShoulderSlot",
+
+	[96599] = "HandsSlot",
+	[96600] = "HandsSlot",
+	[96601] = "HandsSlot",
+
+
+	-- TIER 14	- Heart of Fear, Terreace of Endless Springs---------------------
+		--Normal
+	[89238] = "ChestSlot",
+	[89237] = "ChestSlot",
+	[89239] = "ChestSlot",
+
+	[89243] = "LegsSlot",
+	[89244] = "LegsSlot",
+	[89245] = "LegsSlot",
+
+	[89234] = "HeadSlot",
+	[89235] = "HeadSlot",
+	[89236] = "HeadSlot",
+
+	[89246] = "ShoulderSlot",
+	[89247] = "ShoulderSlot",
+	[89247] = "ShoulderSlot",
+
+	[89240] = "HandsSlot",
+	[89241] = "HandsSlot",
+	[89242] = "HandsSlot",
+		--Heroic
+	[89250] = "ChestSlot",
+	[89249] = "ChestSlot",
+	[89251] = "ChestSlot",
+
+	[89252] = "LegsSlot",
+	[89253] = "LegsSlot",
+	[89254] = "LegsSlot",
+
+	[89258] = "HeadSlot",
+	[89260] = "HeadSlot",
+	[89259] = "HeadSlot",
+
+	[89261] = "ShoulderSlot",
+	[89262] = "ShoulderSlot",
+	[89263] = "ShoulderSlot",
+
+	[89255] = "HandsSlot",
+	[89256] = "HandsSlot",
+	[89257] = "HandsSlot",
+
+
+	-- TIER 13 - Dragon Soul ---------------------------------
+		-- Normal
+	[78174] = "ChestSlot",
+	[78179] = "ChestSlot",
+	[78184] = "ChestSlot",
+
+	[78176] = "LegsSlot",
+	[78171] = "LegsSlot",
+	[78181] = "LegsSlot",
+
+	[78172] = "HeadSlot",
+	[78177] = "HeadSlot",
+	[78182] = "HeadSlot",
+
+	[78170] = "ShoulderSlot",
+	[78175] = "ShoulderSlot",
+	[78180] = "ShoulderSlot",
+
+	[78178] = "HandsSlot",
+	[78173] = "HandsSlot",
+	[78183] = "HandsSlot",
+		-- Heroic
+	[78847] = "ChestSlot",
+	[78849] = "ChestSlot",
+	[78848] = "ChestSlot",
+
+	[78856] = "LegsSlot",
+	[78857] = "LegsSlot",
+	[78858] = "LegsSlot",
+
+	[78850] = "HeadSlot",
+	[78851] = "HeadSlot",
+	[78852] = "HeadSlot",
+
+	[78859] = "ShoulderSlot",
+	[78860] = "ShoulderSlot",
+	[78861] = "ShoulderSlot",
+
+	[78853] = "HandsSlot",
+	[78854] = "HandsSlot",
+	[78855] = "HandsSlot",
+
+	-- TIER 12 - Firelands -------------------------
+		--Normal  (Some tiers where bought for JP)
+	[71668] = "HeadSlot",
+	[71675] = "HeadSlot",
+	[71682] = "HeadSlot",
+
+	[71674] = "ShoulderSlot",
+	[71681] = "ShoulderSlot",
+	[71668] = "ShoulderSlot",
+
+		--Heroic
+	[71672] = "ChestSlot",
+	[71679] = "ChestSlot",
+	[71686] = "ChestSlot",
+
+	[71678] = "LegsSlot",
+	[71671] = "LegsSlot",
+	[71685] = "LegsSlot",
+
+	[71677] = "HeadSlot",
+	[71670] = "HeadSlot",
+	[71684] = "HeadSlot",
+
+	[71673] = "ShoulderSlot",
+	[71680] = "ShoulderSlot",
+	[71687] = "ShoulderSlot",
+
+	[71669] = "HandsSlot",
+	[71676] = "HandsSlot",
+	[71683] = "HandsSlot",
+
+
+	 -- TIER 8 - Ulduar -------------------------------
+		-- Normal
+	[45635] = "ChestSlot",
+	[45636] = "ChestSlot",
+	[45637] = "ChestSlot",
+
+	[45647] = "HeadSlot",
+	[45648] = "HeadSlot",
+	[45649] = "HeadSlot",
+
+	[45644] = "HandsSlot",
+	[45645] = "HandsSlot",
+	[45646] = "HandsSlot",
+
+	[45650] = "LegsSlot",
+	[45651] = "LegsSlot",
+	[45652] = "LegsSlot",
+
+	[45659] = "ShoulderSlot",
+	[45660] = "ShoulderSlot",
+	[45661] = "ShoulderSlot",
+
+		-- Heroic
+	[45632] = "ChestSlot",
+	[45633] = "ChestSlot",
+	[45634] = "ChestSlot",
+
+	[45638] = "HeadSlot",
+	[45639] = "HeadSlot",
+	[45640] = "HeadSlot",
+
+	[45641] = "HandsSlot",
+	[45642] = "HandsSlot",
+	[45643] = "HandsSlot",
+
+	[45653] = "LegsSlot",
+	[45654] = "LegsSlot",
+	[45655] = "LegsSlot",
+
+	[45656] = "ShoulderSlot",
+	[45657] = "ShoulderSlot",
+	[45658] = "ShoulderSlot",
+}
+

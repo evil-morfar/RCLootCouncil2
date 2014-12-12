@@ -1,0 +1,173 @@
+﻿<Ui xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.blizzard.com/wow/ui/">
+	<Script file="RCLootFrame.lua" />
+	<Button name="RCLootFrame_Button" inherits="UIPanelButtonTemplate" virtual="true" text="">
+		<Size>
+			<AbsDimension x="122" y="20" />
+		</Size>
+		<Scripts>
+			<OnClick>
+				RCLootCouncil_LootFrame:onClick(self:GetID(), self:GetParent(), self);
+			</OnClick>
+		</Scripts>
+	</Button>
+	<Frame name="RCLootFrameEntry" virtual="true" hidden="true" frameStrata="HIGH">
+		<Size>
+			<AbsDimension x="501" y="75" />
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER">
+				<Offset x="0" y="0" />
+			</Anchor>
+		</Anchors>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Gold-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="4" right="4" top="4" bottom="4" />
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32" />
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="16" />
+			</EdgeSize>
+			<Color r="0.5" g="0" b="0" />
+			<BorderColor r="1" g="0.5" b="0" />
+		</Backdrop>
+		<Layers>
+			<Layer>
+				<Texture name="$parentTexture" file="Interface\ICONS\INV_Jewelry_Necklace_01">
+					<Size>
+						<AbsDimension x="50" y="50" />
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="12" y="-13" />
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString name="$parentItemLabel" inherits="GameFontNormal" text="[Necklace of Awesome Power!]" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="375" y="23" />
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="68" y="-13" />
+						</Anchor>
+					</Anchors>
+					<FontHeight>
+						<AbsValue val="18" />
+					</FontHeight>
+					<Color r="0.75" g="0" b="0.75" />
+				</FontString>
+				<FontString name="$parentIlvl" inherits="GameFontNormal" font="Fonts\ARIALN.TTF" text="ilvl: 410">
+					<Size>
+						<AbsDimension x="50" y="14" />
+					</Size>
+					<FontHeight>
+						<AbsValue val="10" />
+					</FontHeight>
+					<Color r="1" g="1" b="1" />
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="$parentHover2" enableMouse="true">
+				<Size>
+					<AbsDimension x="277" y="23" />
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentItemLabel" relativePoint="TOPLEFT">
+						<Offset x="0" y="0" />
+					</Anchor>
+				</Anchors>
+				<Backdrop bgFile="" edgeFile="">
+					<BackgroundInsets>
+						<AbsInset left="0" right="0" top="0" bottom="0" />
+					</BackgroundInsets>
+					<TileSize>
+						<AbsValue val="32" />
+					</TileSize>
+				</Backdrop>
+				<Scripts>
+					<OnDragStart>
+						RCLootFrame:StartMoving();
+					</OnDragStart>
+					<OnDragStop>
+						RCLootFrame:StopMovingOrSizing();
+					</OnDragStop>
+					<OnEnter>
+						RCLootCouncil_LootFrame.ShowTooltip((self:GetParent()));
+					</OnEnter>
+					<OnLeave>
+						RCLootCouncil_LootFrame.toolMouseLeave();
+					</OnLeave>
+				</Scripts>
+			</Frame>
+			<Frame name="$parentHover1" enableMouse="true">
+				<Size>
+					<AbsDimension x="50" y="50" />
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentTexture" relativePoint="TOPLEFT" />
+				</Anchors>
+				<Backdrop bgFile="" edgeFile="">
+					<BackgroundInsets>
+						<AbsInset left="0" right="0" top="0" bottom="0" />
+					</BackgroundInsets>
+					<TileSize>
+						<AbsValue val="32" />
+					</TileSize>
+				</Backdrop>
+				<Scripts>
+					<OnDragStart>
+						RCLootFrame:StartMoving();
+					</OnDragStart>
+					<OnDragStop>
+						RCLootFrame:StopMovingOrSizing();
+					</OnDragStop>
+					<OnEnter>
+						RCLootCouncil_LootFrame.ShowTooltip((self:GetParent()));
+					</OnEnter>
+					<OnLeave>
+						RCLootCouncil_LootFrame.toolMouseLeave();
+					</OnLeave>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnDragStart>
+				RCLootFrame:StartMoving();
+			</OnDragStart>
+			<OnDragStop>
+				RCLootFrame:StopMovingOrSizing();
+			</OnDragStop>
+			<OnLoad>
+				self:RegisterForDrag("LeftButton");
+			</OnLoad>
+		</Scripts>
+	</Frame>
+	
+	<Frame name="RCLootFrame" parent="UIParent" movable="true" enableMouse="true">
+		<Size>
+			<AbsDimension x="437" y="315" />
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT">
+				<Offset x="238" y="-128" />
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnDragStart>
+				self:StartMoving();
+			</OnDragStart>
+			<OnDragStop>
+				self:StopMovingOrSizing();
+			</OnDragStop>
+			<OnLoad>
+				self:RegisterForDrag("LeftButton");
+				self:Hide();
+			</OnLoad>
+		</Scripts>
+	</Frame>
+</Ui>
