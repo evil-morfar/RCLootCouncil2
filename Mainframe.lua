@@ -1,27 +1,29 @@
 ﻿-- Author      : Potdisc
+-- Maintainer  : Eriner
 -- Create Date : 3/21/2012 3:46:51 PM
+-- Update Date : 12/12/2014 8:56:28 PM
 -- Mainframe.lua Handles all the masterloot interaction and host/client comms
 
 --_______________________________.
 -- TODO:  
 --		Test if PARTY_LOOT_METHOD_CHANGED can handle the GetML() and GetCouncil()
 --		Random award between equal votes.
---		Implement autopass.
+--		Implement autopass - will use same tech as stat priority sorting.
 
---		
---		Alt-Clicking skal tilføje items seperat i v2.0
---		Alle calls (council, mlDB osv) skal gøres af clienten.
+--		Alt-Clicking must add items separately in v2.0.
+--		All calls (council, mlDB etc. ) should be made by the client.
+
+--		Sort item rolls (optionally) by class stat priority based on item stats.
+
+--		LONG TERM: Clean UI, possibly skin to match UI choices (Blizzard, ElvUI, etc)
+
 --_______________________________.
 --[[ CHANGELOG
-	==== 1.6.3 Release
-		
-		*"/rc test #" now picks random items from a small list of T16 items.
+	==== 1.6.4 Release
 		
 		Bugfixes:
-		//*Council members are no longer spammed with loot roll windows.//
-		//*Fixed bugs with realm name stripping for realms with spaces.//
-		//*Fixed council voting problems caused by patch 5.4.7 API changes.//
-		//*Alt-click looting multiple items will now restart the looting session for any items not already awarded.//
+		//*No longer causes errors upon attempting to determine realm due to API change.//
+		//*No longer freezes UI on rolls.//
 ]]
 
 
@@ -46,7 +48,8 @@ local masterLooter = ""; -- name of master looter
 local currentCouncil = {} -- The current council of the session
 local itemRunning = nil; -- the item in the current session
 local guildRank = ""; -- Player's rank in guild
-local selection = {}; -- The current selection
+B
+lo - will use same tech as stat priority sortingcal selection = {}; -- The current selection
 local lootNum = 0; -- the number of GetNumLootItems we've reached e.g. which item we're at
 local itemsToLootIndex = {}; -- table containing the GetLootSlotLink() indexes that needs to be looted
 local lootTable = {} -- table containing the actual items
