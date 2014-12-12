@@ -48,8 +48,7 @@ local masterLooter = ""; -- name of master looter
 local currentCouncil = {} -- The current council of the session
 local itemRunning = nil; -- the item in the current session
 local guildRank = ""; -- Player's rank in guild
-B
-lo - will use same tech as stat priority sortingcal selection = {}; -- The current selection
+local selection = {}; -- The current selection
 local lootNum = 0; -- the number of GetNumLootItems we've reached e.g. which item we're at
 local itemsToLootIndex = {}; -- table containing the GetLootSlotLink() indexes that needs to be looted
 local lootTable = {} -- table containing the actual items
