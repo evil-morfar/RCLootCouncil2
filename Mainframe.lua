@@ -128,13 +128,13 @@ local defaults = {
 		autoAwardQualityUpper = 3,
 		autoAwardTo = "None",
 		autoAwardReason = 1,
-		autoPass = "NONE",
 		-- below is the part of the db that's send to others. Separate section to avoid sending unnecessary data.
 		dbToSend = {
 			selfVote = true,
 			multiVote = true,
 			anonymousVoting = false,
 			masterLooterOnly = false,
+			autoPass = "false",
 			allowNotes = true,
 			numButtons = 4,
 			maxButtons = 8,
@@ -1488,7 +1488,6 @@ end
 -----------------------------------------
 function RCLootCouncil_Mainframe.voteOther(session, name, devote, voter)
 	self:debugS("Mainframe.voteOther("..tostring(name)..", "..tostring(devote)..", "..tostring(voter)..")")
-	self:debugE("Mainframe.vote("..tostring(name)..", "..tostring(devote)..", "..tostring(voter)..")")
 	if name and session then
 		for i = 1, #entryTable[session] do -- find the id belonging to the name
 			if entryTable[session][i][1] == name then
