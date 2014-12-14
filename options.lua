@@ -130,8 +130,16 @@ function addon:OptionsTable()
 									end 
 								end,
 							},
+							--autoPassVoteToggle = {
+                            --    order = 5,
+                            --    name = "AutoPass unusable",
+                            --    desc = "Check to enable automatic passing of unusable gear.",
+                            --    type = "toggle",
+                            --    get = function() return self.db.profile.dbToSend.autoPass end,
+                            --    set = function() self.db.profile.dbToSend.autoPass = not self.db.profile.dbToSend.autoPass; end,
+                            --},
 							masterLooterOnly = {
-								order = 5,
+								order = 6,
 								name = "Show for the ML only",
 								desc = "Check to allow the Masterlooter only too see who's voting for whom.",
 								type = "toggle",
