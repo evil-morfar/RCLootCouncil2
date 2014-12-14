@@ -41,7 +41,7 @@ function RCLootCouncil_VersionFrame:SendVerTest(media)
 		for i = 1, GetNumGroupMembers() do
 			local name, _, _, _, _, class = GetRaidRosterInfo(i)
 			local _, rank = RCLootCouncil_Mainframe.getGuildRankNum(name)
-			if name ~= GetUnitName("player") then tinsert(contentTable, {class, name, rank, ""}); end
+			if name ~= GetUnitName("player",true) then tinsert(contentTable, {class, name, rank, ""}); end
 		end
 	else
 		RCLootCouncil:SendCommMessage("RCLootCouncil", "verTest "..version, media)
@@ -52,7 +52,7 @@ end
 
 function RCLootCouncil_VersionFrame:AddSelf()
 	local _, class = UnitClass("player")
-	contentTable[1] = {class, GetUnitName("player"), RCLootCouncil:GetGuildRank(), version}
+	contentTable[1] = {class, GetUnitName("player",true), RCLootCouncil:GetGuildRank(), version}
 end
 
 function RCLootCouncil_VersionFrame:AddPlayer(data) --class, name, rank, version

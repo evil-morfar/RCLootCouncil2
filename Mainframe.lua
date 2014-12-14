@@ -500,7 +500,7 @@ function RCLootCouncil:OnCommReceived(prefix, msg, distri, sender)
 		else 
 			self:debugS("Comm received, cmd: "..cmd..", sender: "..sender)
 		end
-		if sender == GetUnitName("player") and distri ~= "WHISPER" then return end; -- don't do anything if we send the message, unless it was a whisper
+		if sender == GetUnitName("player",true) and distri ~= "WHISPER" then return end; -- don't do anything if we send the message, unless it was a whisper
 		if cmd == 'start' and (isCouncil or isMasterLooter) then
 			if not isMasterLooter or nnp then
 				RCLootCouncil_Mainframe.abortLooting() -- start with aborting, just in case the masterlooter disconnects during looting
@@ -889,7 +889,7 @@ function RCLootCouncil:ChatCommand(msg)
 		local toAdd = {
 			["i"] = currentSession,
 				{
-					GetUnitName("player"),
+					GetUnitName("player",true),
 					guildRank,
 					RCLootCouncil.getPlayerRole(),
 					math.floor(totalIlvl),
@@ -1289,7 +1289,7 @@ function RCLootCouncil.handleResponse(response, frame)
 	local toAdd = {
 		["i"] = id,
 			{
-				GetUnitName("player"),
+				GetUnitName("player",true),
 				guildRank,
 				RCLootCouncil.getPlayerRole(),
 				math.floor(totalIlvl),
@@ -1445,7 +1445,7 @@ function RCLootCouncil_Mainframe.vote(id)
 			entryTable[currentSession][id][8] = entryTable[currentSession][id][8] - 1;
 			entryTable[currentSession][id][11] = false;
 			for k,v in pairs(entryTable[currentSession][id][12]) do -- remove the voter from voters table
-				if v == GetUnitName("player") then tremove(entryTable[currentSession][id][12], k); end
+				if v == GetUnitName("player",true) then tremove(entryTable[currentSession][id][12], k); end
 			end
 			
 			self:SendCommMessage("RCLootCouncil", "vote "..currentSession.." "..entryTable[currentSession][id][1].." devote", channel) -- tell everyone who you vote for
@@ -1458,7 +1458,7 @@ function RCLootCouncil_Mainframe.vote(id)
 			end
 			RCLootCouncil_Mainframe.Update(true); -- update the list
 		else -- if vote
-			if not mlDB.selfVote and GetUnitName("player") == entryTable[currentSession][id][1] then -- test that they may vote for themself
+			if not mlDB.selfVote and GetUnitName("player",true) == entryTable[currentSession][id][1] then -- test that they may vote for themself
 				self:Print("The master looter has turned Vote For Self OFF")
 				return;
 			end
@@ -1470,7 +1470,7 @@ function RCLootCouncil_Mainframe.vote(id)
 			end
 			entryTable[currentSession][id][8] = entryTable[currentSession][id][8] + 1;
 			entryTable[currentSession][id][11] = true
-			tinsert((entryTable[currentSession][id][12]), GetUnitName("player")) -- add the voter to the voters table
+			tinsert((entryTable[currentSession][id][12]), GetUnitName("player",true)) -- add the voter to the voters table
 			self:SendCommMessage("RCLootCouncil", "vote "..currentSession.." "..entryTable[currentSession][id][1].." vote", channel) -- tell everyone who you devote for
 			if isMasterLooter and not tContains(votersNames, masterLooter) then
 				tinsert(votersNames, masterLooter)
@@ -1820,22 +1820,22 @@ function RCLootCouncil_Mainframe.getML()
 	--self:debugS("Mainframe.getML()")
 	if not IsInRaid() and nnp then  -- out of raid and debug on
 		isMasterLooter = true;
-		return GetUnitName("player")
+		return GetUnitName("player",true)
 	end
 	local lootMethod, _, MLRaidID = GetLootMethod()
 	if lootMethod == 'master' then
 		local name = GetRaidRosterInfo(MLRaidID)
-		isMasterLooter = name == GetUnitName("player")
+		isMasterLooter = name == GetUnitName("player",true)
 		self:debug("Masterlooter is: "..tostring(name))
 		if isMasterLooter and masterLooter ~= name and not isRunning then -- we've been elected ML!
 			StaticPopup_Show("RCLOOTCOUNCIL_CONFIRM_USAGE")
 		end
 		return name;
 	elseif isRunning and UnitIsGroupLeader("player") then -- if masterlooting isn't on, turn it on, but only if we're running and are the raid leader	
-		SetLootMethod("master", GetUnitName("player"))
+		SetLootMethod("master", GetUnitName("player",true))
 		self:Print("Looting method changed to \"Master Looter\"")
 		isMasterLooter = true
-		return GetUnitName("player");
+		return GetUnitName("player",true);
 	end
 	isMasterLooter = false
 	return ""; 
@@ -1849,7 +1849,7 @@ function RCLootCouncil_Mainframe.isCouncil()
 	if isMasterLooter then return true; end;
 	if #currentCouncil > 0 then
 		for _, v in ipairs(currentCouncil) do
-			if v == GetUnitName("player") then
+			if v == GetUnitName("player",true) then
 				self:debug("I am in the council!")
 				return true
 			end
@@ -2659,11 +2659,11 @@ function RCLootCouncil_Mainframe_RightClickMenu(menu, level)
 				end,}, level);
 			end
 		else -- we're alone
-			UIDropDownMenu_AddButton({text = GetUnitName("player"), notCheckable = true,
+			UIDropDownMenu_AddButton({text = GetUnitName("player",true), notCheckable = true,
 				func = function()
-					self:SendCommMessage("RCLootCouncil", "lootTable "..self:Serialize(lootTable), "WHISPER", GetUnitName("player"))
+					self:SendCommMessage("RCLootCouncil", "lootTable "..self:Serialize(lootTable), "WHISPER", GetUnitName("player",true))
 					for i = 1, #entryTable do
-						RCLootCouncil_Mainframe.removeEntry(i, GetUnitName("player"))
+						RCLootCouncil_Mainframe.removeEntry(i, GetUnitName("player",true))
 					end
 				end,}, level);
 		end
