@@ -6,6 +6,71 @@
 RCTokenTable = {
 	--[xxxxxx] = "ExampleSlot",
 
+	-- TIER 17	 Blackrock Foundry ---------------------------
+	-- Normal
+	[119305] = "ChestSlot",
+	[119318] = "ChestSlot",
+	[119315] = "ChestSlot",
+
+	[119307] = "LegsSlot",
+	[119320] = "LegsSlot",
+	[119313] = "LegsSlot",
+
+	[119308] = "HeadSlot",
+	[119321] = "HeadSlot",
+	[119312] = "HeadSlot",
+
+	[119309] = "ShoulderSlot",
+	[119322] = "ShoulderSlot",
+	[119314] = "ShoulderSlot",
+
+	[119306] = "HandsSlot",
+	[119319] = "HandsSlot",
+	[119311] = "HandsSlot",
+
+
+	-- Heroic
+	[120227] = "ChestSlot",
+	[120237] = "ChestSlot",
+	[120236] = "ChestSlot",
+
+	[120229] = "LegsSlot",
+	[120239] = "LegsSlot",
+	[120234] = "LegsSlot",
+
+	[120230] = "HeadSlot",
+	[120240] = "HeadSlot",
+	[120233] = "HeadSlot",
+
+	[120231] = "ShoulderSlot",
+	[120241] = "ShoulderSlot",
+	[120235] = "ShoulderSlot",
+
+	[120228] = "HandsSlot",
+	[120238] = "HandsSlot",
+	[120232] = "HandsSlot",
+
+	-- Mythic
+	[120242] = "ChestSlot",
+	[120252] = "ChestSlot",
+	[120251] = "ChestSlot",
+
+	[120244] = "LegsSlot",
+	[120254] = "LegsSlot",
+	[120249] = "LegsSlot",
+
+	[120245] = "HeadSlot",
+	[120255] = "HeadSlot",
+	[120248] = "HeadSlot",
+
+	[120243] = "ShoulderSlot",
+	[120256] = "ShoulderSlot",
+	[120250] = "ShoulderSlot",
+
+	[120243] = "HandsSlot",
+	[120253] = "HandsSlot",
+	[120247] = "HandsSlot",
+
 	-- TIER 16	 Siege of Orgrimmar ---------------------------
 		-- Flexible
 	[99742] = "ChestSlot",
