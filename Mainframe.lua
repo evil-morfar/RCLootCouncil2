@@ -81,6 +81,7 @@ local self = RCLootCouncil;
 local guildEventUnregister = false; -- used to unregister the guild_roster_update event
 local _;
 local menuFrame; -- rightclick menu frame
+local isMinimized = false -- set minimize to false by default
 
 -- Create the defaults
 local defaults = {
@@ -739,6 +740,86 @@ function CloseButton_OnClick()
 	end
 end
 
+--------- minimizeBtOnClick ----------------
+-- minimize window to a single bar
+--------------------------------------------
+function RCLootCouncil_Mainframe.minimizeBtOnClick()
+	if not isMinimized then
+		RCLootCouncil_Mainframe.minimize("minimize");
+	elseif isMinimized then
+		RCLootCouncil_Mainframe.minimize("unminimize");
+	else --if this condition is reached, something went wrong. Print to chat, unminimize just in case
+		self:Print("could not read isMinimized variable. Please report on CurseForge.")
+	end
+end
+
+
+-------- minimizeRCLC ----------------------
+-- Minimze elements of RCLC without interrupting looting
+--------------------------------------------
+function RCLootCouncil_Mainframe.minimize(action)
+	if action == 'minimize' then
+		MainFrame:SetHeight(35)	
+		MainFrame:DisableDrawLayer("OVERLAY")
+		MainFrame:DisableDrawLayer("ARTWORK") -- disable (unlabled) layer
+		CurrentItemHover:Hide()
+		ContentFrame:Hide()
+		BtClose:Hide()
+		BtClear:Hide()
+		BtRemove:Hide()
+		BtAward:Hide()
+		HeaderName:Hide()
+		HeaderRank:Hide()
+		HeaderSpec:Hide()
+		HeaderTotalilvl:Hide()
+		HeaderResponse:Hide()
+		HeaderCurrentGear:Hide()
+		HeaderVotes:Hide()
+		HeaderVote:Hide()
+		HeaderNotes:Hide()
+		DualItemSelection2:Hide()
+		DualItemSelection1:Hide()
+		CurrentSelectionHover:Hide()
+		MainFramePeopleToRollHover:Hide()
+		ContentFrame:Hide()
+		ContentFrameEntry1:Hide()
+		RCLootCouncil_SessionButton1:Hide()
+		RCLootCouncil_Mainframe.updateSelection(0,true); -- clear selection, must be at end of hide(s), otherwise bugs ensue
+		isMinimized = true; -- variable set in minimize function and not on button press to ensure variable it set correctly
+	elseif action == 'unminimize' then
+		MainFrame:SetHeight(407)	
+		MainFrame:EnableDrawLayer("OVERLAY")
+		MainFrame:EnableDrawLayer("ARTWORK") -- disable (unlabled) layer
+		CurrentItemHover:Show()
+		ContentFrame:Show()
+		BtClose:Show()
+		BtClear:Show()
+		BtRemove:Show()
+		BtAward:Show()
+		HeaderName:Show()
+		HeaderRank:Show()
+		HeaderSpec:Show()
+		HeaderTotalilvl:Show()
+		HeaderResponse:Show()
+		HeaderCurrentGear:Show()
+		HeaderVotes:Show()
+		HeaderVote:Show()
+		HeaderNotes:Show()
+		DualItemSelection2:Show()
+		DualItemSelection1:Show()
+		CurrentSelectionHover:Show()
+		MainFramePeopleToRollHover:Show()
+		ContentFrame:Show()
+		ContentFrameEntry1:Show()
+		RCLootCouncil_SessionButton1:Show()
+		RCLootCouncil_Mainframe.updateSelection(0,true); -- also clear on unminimize, just in case
+		isMinimized = false; -- variable set in minimize function and not on button press to ensure variable it set correctly
+	else --unexpected string passed to minimize function; abort and report
+		self:Print("Unexpected string passed to RCLootCouncil_Mainframe.minimize")
+		self:Print("Passed variable was %s", action)
+		self:Print("Please visit RCLootCouncil's CurseForge and submit a ticket with the message above.")
+	end
+end
 --------- removeBtOnClick ------------------
 -- When the remove button is clicked
 --------------------------------------------
