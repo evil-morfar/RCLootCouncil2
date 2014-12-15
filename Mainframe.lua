@@ -1,7 +1,7 @@
 ﻿-- Author      : Potdisc
 -- Maintainer  : Eriner
--- Create Date : 3/21/2012 3:46:51 PM
--- Update Date : 12/12/2014 8:56:28 PM
+-- Create Date : 3/21/2012 15:46:51
+-- Update Date : 12/15/2014 16:08:28
 -- Mainframe.lua Handles all the masterloot interaction and host/client comms
 
 --_______________________________.
@@ -19,11 +19,10 @@
 
 --_______________________________.
 --[[ CHANGELOG
-	==== 1.6.4 Release
+	==== 1.6.5 Release
 		
 		Bugfixes:
-		//*No longer causes errors upon attempting to determine realm due to API change.//
-		//*No longer freezes UI on rolls.//
+		//*Minimize feature added, many headaches later.//
 ]]
 
 
