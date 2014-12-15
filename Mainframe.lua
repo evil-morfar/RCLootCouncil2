@@ -272,7 +272,7 @@ function RCLootCouncil:MainFrame_OnLoad()
 	----------PopUp setups --------------
 	-------------------------------------
 	StaticPopupDialogs["RCLOOTCOUNCIL_CONFIRM_ABORT"] = {
-		text = "Are you sure you want to abort?",
+		text = "Are you sure you want to abort?\nThis will abort for all council members.",
 		button1 = "Yes",
 		button2 = "No",
 		OnAccept = function()
@@ -332,6 +332,7 @@ function RCLootCouncil:MainFrame_OnLoad()
 		hideOnEscape = true,
 		preferredIndex = 3, 
 	} 
+
 end
 
 ---------- EventHandler -----------------
@@ -734,7 +735,7 @@ function CloseButton_OnClick()
 	elseif not itemRunning then -- if we are, only hide when nothings running
 		RCLootCouncil_Mainframe.hideMainFrame()
 	else -- else show confirmation box
-		StaticPopup_Show("RCLOOTCOUNCIL_CONFIRM_ABORT")
+		StaticPopup_Show("RCLOOTCOUNCIL_CONFIRM_ABORT") -- will abort for all council
 	end
 end
 
