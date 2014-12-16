@@ -1,7 +1,6 @@
 ﻿-- Author      : Potdisc
 -- Maintainer  : Eriner
--- Create Date : 3/21/2012 15:46:51
--- Update Date : 12/15/2014 16:08:28
+-- Create Date : 3/21/2012 3:46:51 PM
 -- Mainframe.lua Handles all the masterloot interaction and host/client comms
 
 --_______________________________.
@@ -19,7 +18,7 @@
 
 --_______________________________.
 --[[ CHANGELOG
-	==== 1.6.5 Release
+	==== 1.6.6 Release
 		
 		Bugfixes:
 		//*Minimize feature added, many headaches later.//
@@ -898,7 +897,7 @@ function RCLootCouncil:ChatCommand(msg)
 		self:debug("- log - display the debug log")
 		self:debug("- clearLog - clear the debug log")
 
-	elseif input == 'config' then
+	elseif input == 'config' or input == 'options' then
 		--InterfaceOptionsFrame_OpenToCategory(self.optionsFrame)
 		LibStub("AceConfigDialog-3.0"):Open("RCLootCouncil")
     elseif input == 'debug' or input == 'd' then
