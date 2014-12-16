@@ -1,4 +1,4 @@
-﻿-- Author      : Potdisc
+-- Author      : Potdisc
 -- Create Date : 5/24/2012 6:24:55 PM
 -- options.lua - option frame in BlizOptions for RCLootCouncil
 local addon = LibStub("AceAddon-3.0"):GetAddon("RCLootCouncil")
@@ -677,7 +677,7 @@ function addon:OptionsTable()
 					addCouncil = {
 						order = 2,
 						type = "group",
-						name = "Edit Council Members",
+						name = "Guild Council Members",
 						childGroups = "tree",
 						args = {
 							addRank = {
@@ -720,6 +720,60 @@ function addon:OptionsTable()
 								type = "group",
 								args = {}
 							},
+						},
+					},
+					addRaidCouncil = {
+						order = 3,
+						type = "group",
+						name = "Raid Council Members",
+						hidden = not IsInRaid(), -- don't show if we're not in a raid
+						args = {
+							header1 = {
+								order = 1,
+								name = "Add council members from your current raid.",
+								type = "header",
+								width = "full",
+							},
+							desc = {
+								order = 2,
+								name = "Use this to add council members from another realm.",
+								type = "description",
+							},
+							list = {
+								order = 3,
+								type = "multilist",
+								name = "",
+								width = "full",
+								values = function()
+									local t = {}
+									for i = 1, GetNumGroupMembers() do
+										-- Ambiguate to distinguish people from own realm, not sure if it's smart at the end of the day though
+										tinsert(Ambiguate(select(1,GetRaidRosterInfo(i)), "none"))	-- might need a tostring()		
+									end
+									table.sort(t, function(v1, v2)
+									 return v1 and v1 < v2
+									end)
+									return t 
+								end,
+								set = function(info,key,tag)
+									-- probably could've used info[#info-1].values() instead
+									local values = addon.options.args.council.args.addRaidCouncil.args.list.values()
+									if tag then -- add
+										tinsert(self.db.profile.council, values[key])
+									else -- remove
+										for k,v in ipairs(self.db.profile.council) do
+											if v == values[key] then
+												tremove(self.db.profile.council, k)
+											end
+										end
+									end
+								end,
+								get = function(info, key)
+									local values = addon.options.args.council.args.addRaidCouncil.args.list.values()
+									if tContains(self.db.profile.council, values[key]) then return true end
+									return false
+								end,
+							}
 						},
 					},
 				},
