@@ -1006,6 +1006,7 @@ function RCLootCouncil:ChatCommand(msg)
 		if MainFrame then
 			MainFrame:ClearAllPoints()
 			MainFrame:SetPoint("CENTER", 0, 200)
+			RCLootCouncil_Mainframe.minimize("unminimize");
 		end
 		if RCVersionFrame then
 			RCVersionFrame:ClearAllPoints()
@@ -1103,7 +1104,11 @@ function RCLootCouncil_Mainframe.prepareLootFrame(item)
 			CurrentItemTexture:SetTexture("Interface\InventoryItems\WoWUnknownItem01");
 		end
 	
-		CurrentItemTexture:Show(); -- Open up the icon box
+		if not isMinimized then
+			CurrentItemTexture:Show(); -- Open up the icon box
+		else
+			self:debug("Preventing show of CurrentItemTextures because isMinimized == true")
+		end
 		EmptyTexture:Hide(); -- Hide the empty texture
 
 		if iLevel then
@@ -1127,13 +1132,17 @@ function RCLootCouncil_Mainframe.prepareLootFrame(item)
 			CurrentItemType:SetText(getglobal(thisItemEquipLoc));
 		end
 
-		CurrentItemHover:Show(); -- Make sure we can hover the item
-		MasterlooterLabel:SetText(masterLooter);
+		if not isMinimized then
+			CurrentItemHover:Show(); -- Make sure we can hover the item
+			PeopleToRollString:Show()
+			PeopleToRollLabel:Show()
+		else
+			self:debugS("Preventing more windows from showing")
+		end
 
-		PeopleToRollString:Show()
 		PeopleToRollLabel:SetText(GetNumGroupMembers()) -- set the amount of people missing the rolling
-		PeopleToRollLabel:Show()
-
+		MasterlooterLabel:SetText(masterLooter);
+		
 		-- Award string
 		AwardString:Hide()
 		if isMasterLooter or isTesting then
@@ -1150,7 +1159,12 @@ function RCLootCouncil_Mainframe.prepareLootFrame(item)
 		end
 
 		RCLootCouncil_Mainframe:UpdateSessionButtons()
-		RCLootCouncil_Mainframe.showMainFrame()
+		
+		if not isMinimized then
+			RCLootCouncil_Mainframe.showMainFrame()
+		else
+			self:debugS("Preventing call of RCLootCouncil_Mainframe.showMainFrame()")
+		end
 	else
 		self:debug("PrepareLootFrame called without a valid initiator!")
 	end	
