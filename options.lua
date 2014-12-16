@@ -176,7 +176,7 @@ function addon:OptionsTable()
 							boeLoot = {
 								order = 3,
 								name = "Autoloot BoE",
-								desc = "Check to enable autolooting of BoE (Bind on Equip) items.",
+								desc = "Check to enable autolooting of BoE (Bind on Equip) items.\ni.e. the addon automatically starts looting BoE items.",
 								type = "toggle",
 								disabled = function() return not self.db.profile.autoLooting; end,
 								hidden = function() return not self.db.profile.advancedOptions; end,

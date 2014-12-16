@@ -21,7 +21,9 @@
 	==== 1.6.5 Release
 		
 		Bugfixes:
-		//*Cross-realm raids should be fixed.//
+		*//Cross-realm raids should be fixed.//
+		--for release 1.6.6
+		*//Autoloot BoE tooltip updated.//
 ]]
 
 
