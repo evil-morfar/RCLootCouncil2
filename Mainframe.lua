@@ -1,4 +1,4 @@
-﻿-- Author      : Potdisc
+-- Author      : Potdisc
 -- Maintainer  : Eriner
 -- Create Date : 3/21/2012 3:46:51 PM
 -- Mainframe.lua Handles all the masterloot interaction and host/client comms
@@ -18,12 +18,8 @@
 
 --_______________________________.
 --[[ CHANGELOG
-	==== 1.6.5 Release
-		
-		Bugfixes:
-		*//Cross-realm raids should be fixed.//
-		--for release 1.6.6
-		*//Autoloot BoE tooltip updated.//
+	Added "Raid Council Members" in options.lua
+		Used to add council members from your current raid, but it's primary function is to add players from other realms properly.
 ]]
 
 
