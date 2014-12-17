@@ -419,6 +419,8 @@ function RCLootCouncil.EventHandler(self2, event, ...)
 				-- just make the call to getML and it'll do the prompting
 				masterLooter = RCLootCouncil_Mainframe.getML()
 			elseif UnitIsGroupLeader("player") and not isRunning then -- otherwise ask the raid leader
+			-- high server-side latency causes the UnitIsGroupLeader("player") condition to fail if queried quickly (upon entering instance) regardless of state.
+			-- may add a delay for the above conditional if the issue persists to circumvent issue.
 				StaticPopup_Show("RCLOOTCOUNCIL_CONFIRM_USAGE")
 			end
 		end
