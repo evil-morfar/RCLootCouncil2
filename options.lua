@@ -741,7 +741,7 @@ function addon:OptionsTable()
 							},
 							list = {
 								order = 3,
-								type = "multilist",
+								type = "multiselect",
 								name = "",
 								width = "full",
 								values = function()
