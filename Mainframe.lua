@@ -124,6 +124,7 @@ local defaults = {
 		autoAwardQualityUpper = 3,
 		autoAwardTo = "None",
 		autoAwardReason = 1,
+		autoPass = "NONE",
 		-- below is the part of the db that's send to others. Separate section to avoid sending unnecessary data.
 		dbToSend = {
 			selfVote = true,
