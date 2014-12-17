@@ -748,7 +748,7 @@ function addon:OptionsTable()
 									local t = {}
 									for i = 1, GetNumGroupMembers() do
 										-- Ambiguate to distinguish people from own realm, not sure if it's smart at the end of the day though
-										tinsert(self.db.profile.council, Ambiguate(select(1,GetRaidRosterInfo(i)), "none"))	-- might need a tostring()		
+										tinsert(t,Ambiguate(select(1,GetRaidRosterInfo(i)), "none"))	-- might need a tostring()		
 									end
 									table.sort(t, function(v1, v2)
 									 return v1 and v1 < v2
