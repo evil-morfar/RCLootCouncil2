@@ -18,8 +18,10 @@
 
 --_______________________________.
 --[[ CHANGELOG
-	Added "Raid Council Members" in options.lua
-		Used to add council members from your current raid, but it's primary function is to add players from other realms properly.
+	*//Added "Raid Council Members" in options.lua//
+		*//Used to add council members from your current raid, but it's primary function is to add players from other realms properly.//
+	*//Autoloot BoE tooltip updated.//
+
 ]]
 
 
