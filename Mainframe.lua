@@ -18,8 +18,10 @@
 
 --_______________________________.
 --[[ CHANGELOG
-	Added "Raid Council Members" in options.lua
-		Used to add council members from your current raid, but it's primary function is to add players from other realms properly.
+	*//Added "Raid Council Members" in options.lua//
+		*//Used to add council members from your current raid, but it's primary function is to add players from other realms properly.//
+	*//Autoloot BoE tooltip updated.//
+
 ]]
 
 
@@ -124,6 +126,7 @@ local defaults = {
 		autoAwardQualityUpper = 3,
 		autoAwardTo = "None",
 		autoAwardReason = 1,
+		autoPass = "NONE",
 		-- below is the part of the db that's send to others. Separate section to avoid sending unnecessary data.
 		dbToSend = {
 			selfVote = true,
@@ -418,6 +421,8 @@ function RCLootCouncil.EventHandler(self2, event, ...)
 				-- just make the call to getML and it'll do the prompting
 				masterLooter = RCLootCouncil_Mainframe.getML()
 			elseif UnitIsGroupLeader("player") and not isRunning then -- otherwise ask the raid leader
+			-- high server-side latency causes the UnitIsGroupLeader("player") condition to fail if queried quickly (upon entering instance) regardless of state.
+			-- may add a delay for the above conditional if the issue persists to circumvent issue.
 				StaticPopup_Show("RCLOOTCOUNCIL_CONFIRM_USAGE")
 			end
 		end
