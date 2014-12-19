@@ -274,7 +274,7 @@ function addon:OptionsTable()
 											t[i] = name
 										end
 									else
-										t[1] = UnitName("player");
+										t[1] = self:GetPlayerFullName()
 									end
 									return t;
 								end,
@@ -657,7 +657,7 @@ function addon:OptionsTable()
 								name = "",
 								values = function()
 									local t = {}
-									for k,v in ipairs(self.db.profile.council) do t[k] = ""..v end
+									for k,v in ipairs(self.db.profile.council) do t[k] = ""..Ambiguate(v,"none") end
 									return t;
 								end,
 								width = "full",
@@ -879,27 +879,24 @@ function RCLootCouncil:GetGuildOptions()
 						wipe(names)
 						for ci = 1, GetNumGuildMembers() do
 							local name, rank1, rankIndex = GetGuildRosterInfo(ci);
-							name = Ambiguate(name, "none")
-							if (rankIndex + 1) == i then tinsert(names, name) end
+							if (rankIndex + 1) == i then names[name] = Ambiguate(name, "none") end -- show fullName for players from other realms
 						end
 						table.sort(names, function(v1, v2)
 							return v1 and v1 < v2
 						end)
 						return names
 					end,
-					get = function(info, number)
-						local values = addon.options.args.council.args.addCouncil.args[info[#info-1]].args.ranks.values()
+					get = function(info, name)
 						for j = 1, #self.db.profile.council do
-							if values[number] == self.db.profile.council[j] then return true end
+							if name == self.db.profile.council[j] then return true end
 						end
 						return false
 					end,
-					set = function(info, number, tag)
-						local values = addon.options.args.council.args.addCouncil.args[info[#info-1]].args.ranks.values()
-						if tag then tinsert(self.db.profile.council, values[number])
+					set = function(info, name, tag)
+						if tag then tinsert(self.db.profile.council, name)
 						else
 							for k,v in ipairs(self.db.profile.council) do
-								if v == values[number] then
+								if v == name then
 									tremove(self.db.profile.council, k)
 								end
 							end
