@@ -41,7 +41,7 @@ function RCLootCouncil_VersionFrame:SendVerTest(media)
 		for i = 1, GetNumGroupMembers() do
 			local name, _, _, _, _, class = GetRaidRosterInfo(i)
 			local _, rank = RCLootCouncil_Mainframe.getGuildRankNum(name)
-			if name ~= addon:GetPlayerFullName() then tinsert(contentTable, {class, name, rank, ""}); end
+			if not addon:UnitIsUnit("player",name) then tinsert(contentTable, {class, name, rank, ""}); end
 		end
 	else
 		RCLootCouncil:SendCommMessage("RCLootCouncil", "verTest "..version, media)
@@ -59,7 +59,7 @@ function RCLootCouncil_VersionFrame:AddPlayer(data) --class, name, rank, version
 	if RCLootCouncil_VersionFrame:IsEnabled() then -- don't do anything if the module isn't enabled
 		local test = true;
 		for k, v in pairs(contentTable) do
-			if v[2] == data[2] then
+			if addon:UnitIsUnit(v[2],data[2]) then
 				contentTable[k] = data
 				test = false;
 				break;

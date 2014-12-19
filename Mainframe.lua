@@ -28,19 +28,13 @@
 	*Note: This update requires everyone to reset their council (message included in-game).
 		
 		
-		I removed all calls to GetUnitName("player") and made the variables playerName and playerFullName instead.
-		I chose to Ambiguate() everywhere playerName gets displayed as the addon's frames just isn't big enough.
-		Loot History is only handed playerName to preserve old records, and as realmName isn't really needed.
-		This assumes Blizzard provides playerName-realmName on all calls listed below, but I doubt they do if a player is from the same server
-		as the caller - most places it can be fixed with Ambiguate(unit, "none") - however.
+		Found out a edited UnitIsUnit() can solve problems no matter what Blizz funcs handles us.
+		Everything should be perfectly cross realm functional now, but I still haven't tested real raid/cross realm.
 		
 		Untested functions:
 			GetMasterLootCandidate()
 			GetRaidRosterInfo()
 			GetGuildRosterInfo()
-
-		Also, if they return playerName-realmName we need to find out if realmName includes spaces. 
-		UnitFullName("player") in GetFullPlayerName() returns realmName without spaces - with spaces is returned from GetRealmName()
 		
 		
 
@@ -532,7 +526,7 @@ function RCLootCouncil:OnCommReceived(prefix, msg, distri, sender)
 			self:debugS("Comm received, cmd: "..cmd..", sender: "..sender)
 		end
 		-- Sender is Ambiguated(sender, "none") by AceComm
-		if sender == playerName and distri ~= "WHISPER" then return end; -- don't do anything if we send the message, unless it was a whisper
+		if self:UnitIsUnit("player", sender) and distri ~= "WHISPER" then return end; -- don't do anything if we send the message, unless it was a whisper
 		if cmd == 'start' and (isCouncil or isMasterLooter) then
 			if not isMasterLooter or nnp then
 				RCLootCouncil_Mainframe.abortLooting() -- start with aborting, just in case the masterlooter disconnects during looting
@@ -610,7 +604,7 @@ function RCLootCouncil:OnCommReceived(prefix, msg, distri, sender)
 			end
 		elseif cmd == 'vote' and (isCouncil or isMasterLooter) then
 			for i = 1, #currentCouncil +1 do -- make sure we only accept votes from council members (+1 to force it to at least try ML once)
-				if currentCouncil[i] == sender or masterLooter == sender then
+				if self:UnitIsUnit(currentCouncil[i], sender) or self:UnitIsUnit(masterLooter,sender) then
 					local session, name, devote = strsplit(" ", object, 3)
 					session = tonumber(session)
 					if type(session) ~= "number" or session > MAX_ITEMS then -- incompatible version check
@@ -888,11 +882,13 @@ function RCLootCouncil:ChatCommand(msg)
 		if arg then
 			if db.council then
 				for k,v in ipairs(db.council) do
-					if v == arg then
+					if self:UnitIsUnit(v,arg) then
 						tremove(db.council, k)
 						self:Print(""..arg.." was removed from the council")
+						return
 					end
 				end
+				self:Print("There's noone in the council called "..arg)
 			end
 		end
 			
@@ -910,7 +906,6 @@ function RCLootCouncil:ChatCommand(msg)
 				self:Print("Use \"/rc test\" for solo test.")
 			end
 			RCLootCouncil_Mainframe.testFrames()
-			return
 		end
 
 	elseif input == "add" and nnp then
@@ -1450,7 +1445,7 @@ function RCLootCouncil_Mainframe.removeEntry(session, name)
 	local id;
 	-- find the index of entryTable belonging to name
 	for i = 1, #entryTable[session] do
-		if entryTable[session][i][1] == name then
+		if self:UnitIsUnit(entryTable[session][i][1],name) then
 			id = i
 			break;
 		end
@@ -1458,7 +1453,7 @@ function RCLootCouncil_Mainframe.removeEntry(session, name)
 	if id then
 		tremove(entryTable[session], id) -- remove the entry
 		RCLootCouncil_Mainframe.Update(true); -- update
-		if selection and selection[1] == name then
+		if selection and self:UnitIsUnit(selection[1],name) then
 			RCLootCouncil_Mainframe.updateSelection(0, true); -- and clear the selection if we had selected the one to be removed
 		end
 	else 
@@ -1477,20 +1472,20 @@ function RCLootCouncil_Mainframe.vote(id)
 			entryTable[currentSession][id][8] = entryTable[currentSession][id][8] - 1;
 			entryTable[currentSession][id][11] = false;
 			for k,v in pairs(entryTable[currentSession][id][12]) do -- remove the voter from voters table
-				if v == playerFullName then tremove(entryTable[currentSession][id][12], k); end
+				if self:UnitIsUnit(v,"player") then tremove(entryTable[currentSession][id][12], k); end
 			end
 			
 			self:SendCommMessage("RCLootCouncil", "vote "..currentSession.." "..entryTable[currentSession][id][1].." devote", channel) -- tell everyone who you vote for
 			if isMasterLooter and tContains(votersNames, masterLooter) then
 				for k,v in pairs(votersNames) do
-					if v == masterLooter then
+					if self:UnitIsUnit(v,masterLooter) then
 						tremove(votersNames, k)
 					end
 				end
 			end
 			RCLootCouncil_Mainframe.Update(true); -- update the list
 		else -- if vote
-			if not mlDB.selfVote and playerFullName == entryTable[currentSession][id][1] then -- test that they may vote for themself
+			if not mlDB.selfVote and self:UnitIsUnit("player",entryTable[currentSession][id][1]) then -- test that they may vote for themself
 				self:Print("The master looter has turned Vote For Self OFF")
 				return;
 			end
@@ -1522,11 +1517,11 @@ function RCLootCouncil_Mainframe.voteOther(session, name, devote, voter)
 	self:debugS("Mainframe.voteOther("..tostring(name)..", "..tostring(devote)..", "..tostring(voter)..")")
 	if name and session then
 		for i = 1, #entryTable[session] do -- find the id belonging to the name
-			if entryTable[session][i][1] == name then
+			if self:UnitIsUnit(entryTable[session][i][1],name) then
 				if devote == "devote" then
 					entryTable[session][i][8] = entryTable[session][i][8] - 1; -- remove the vote
 					for k,v in pairs(entryTable[session][i][12]) do -- remove the voter from voters table
-						if v == voter then tremove(entryTable[session][i][12], k); end
+						if self:UnitIsUnit(v,voter) then tremove(entryTable[session][i][12], k); end
 					end
 				else
 					entryTable[session][i][8] = entryTable[session][i][8] + 1; -- add the vote
@@ -1573,7 +1568,7 @@ function RCLootCouncil_Mainframe.award(reason)
 		return;
 	else -- if there are
 		for i = 1, GetNumGroupMembers() do
-			if GetMasterLootCandidate(itemsToLootIndex[lootNum], i) == selection[1] then
+			if self:UnitIsUnit(GetMasterLootCandidate(itemsToLootIndex[lootNum], i),selection[1]) then
 				if #itemsToLootIndex > 0 and lootNum > 0 then -- if there really is something to loot
 					local _, _, lootQuantity = GetLootSlotInfo(itemsToLootIndex[lootNum])
 					if lootQuantity > 0 then -- be certain there's an item
@@ -1688,7 +1683,7 @@ function RCLootCouncil_Mainframe.getGuildRankNum(playerName)
 		for ci=1, GetNumGuildMembers() do
 			local name, rank, rankIndex = GetGuildRosterInfo(ci)
 			name = Ambiguate(name, "none")
-			if name == playerName then
+			if self:UnitIsUnit(name, playerName) then
 				return rankIndex, rank
 			end
 		end
@@ -1857,9 +1852,9 @@ function RCLootCouncil_Mainframe.getML()
 	local lootMethod, _, MLRaidID = GetLootMethod()
 	if lootMethod == 'master' then
 		local name = GetRaidRosterInfo(MLRaidID)
-		isMasterLooter = name == playerFullName
+		isMasterLooter = self:UnitIsUnit(name,"player")
 		self:debug("Masterlooter is: "..tostring(name))
-		if isMasterLooter and masterLooter ~= name and not isRunning then -- we've been elected ML!
+		if isMasterLooter and not self:UnitIsUnit(masterLooter, name) and not isRunning then -- we've been elected ML!
 			StaticPopup_Show("RCLOOTCOUNCIL_CONFIRM_USAGE")
 		end
 		return name;
@@ -1881,7 +1876,7 @@ function RCLootCouncil_Mainframe.isCouncil()
 	if isMasterLooter then return true; end;
 	if #currentCouncil > 0 then
 		for _, v in ipairs(currentCouncil) do
-			if v == playerFullName then
+			if self:UnitIsUnit(v,"player") then
 				self:debug("I am in the council!")
 				return true
 			end
@@ -2185,7 +2180,7 @@ function RCLootCouncil_Mainframe:PeopleToRollHover()
 		local name = GetRaidRosterInfo(i)
 		local test = true
 		for j = 1, #entryTable[currentSession] do
-			if entryTable[currentSession][j][1] == name then test = false; end			
+			if self:UnitIsUnit(entryTable[currentSession][j][1], name) then test = false; end			
 		end
 		if test then tinsert(peopleToRoll, name); end
 	end
@@ -2315,7 +2310,7 @@ function RCLootCouncil:GetItemsFromMessage(msg, sender)
 			local name, class, rank, role;
 			for i = 1, GetNumGroupMembers() do
 				name, _, _, _, _, class = GetRaidRosterInfo(i)
-				if name == sender then
+				if self:UnitIsUnit(name, sender) then
 					role = UnitGroupRolesAssigned("raid"..i)
 					role = RCLootCouncil.getPlayerRole(role)
 					_, rank = GetGuildInfo(sender)
@@ -2643,7 +2638,7 @@ function RCLootCouncil_Mainframe_RightClickMenu(menu, level)
 					notCheckable = true,
 					func = function()
 						for x,y in pairs(entryTable[currentSession]) do
-							if y[1] == selection[1] then 
+							if self:UnitIsUnit(y[1], selection[1]) then 
 								entryTable[currentSession][x][5] = k
 								RCLootCouncil_Mainframe.Update(true);
 								self:SendCommMessage("RCLootCouncil", "change "..self:Serialize({currentSession,x,k}), channel)
@@ -2704,7 +2699,7 @@ end
 -------------- AutoAward --------------------
 function RCLootCouncil:AutoAward(index, awardTo, itemLink)
 	self:debugS("AutoAward("..tostring(index)..", "..tostring(awardTo)..")")
-	if playerFullName == awardTo then -- just take it
+	if self:UnitIsUnit("player", awardTo) then -- just take it
 		local _, item, lootQuantity = GetLootSlotInfo(index)
 		LootSlot(index)
 		self:debug(""..awardTo.." was Auto Awarded with "..item);
@@ -2735,7 +2730,7 @@ function RCLootCouncil:AutoAward(index, awardTo, itemLink)
 		return;
 	end
 	for i = 1, GetNumGroupMembers() do
-		if GetMasterLootCandidate(index, i) == awardTo then
+		if self:UnitIsUnit(GetMasterLootCandidate(index, i), awardTo) then
 			local _, item, lootQuantity = GetLootSlotInfo(index)
 			if lootQuantity > 0 then -- be certain there's an item
 				GiveMasterLoot(index, i); -- give the item
@@ -2776,3 +2771,14 @@ function RCLootCouncil:GetPlayerFullName()
 	return name.."-"..realm
 end
 
+-- Blizz UnitIsUnit() doesn't know how to compare unit-realm with unit
+function RCLootCouncil:UnitIsUnit(unit1, unit2)
+	-- Remove realm names, if any
+	if strfind(unit1, "-", nil, true) ~= nil then
+		unit1 = Ambiguate(unit1, "short")
+	end
+	if strfind(unit2, "-", nil, true) ~= nil then
+		unit2 = Ambiguate(unit2, "short")
+	end
+	return UnitIsUnit(unit1, unit2)
+end
