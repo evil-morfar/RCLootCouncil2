@@ -41,7 +41,7 @@ function RCLootCouncil_VersionFrame:SendVerTest(media)
 		for i = 1, GetNumGroupMembers() do
 			local name, _, _, _, _, class = GetRaidRosterInfo(i)
 			local _, rank = RCLootCouncil_Mainframe.getGuildRankNum(name)
-			if name ~= GetUnitName("player",true) then tinsert(contentTable, {class, name, rank, ""}); end
+			if not addon:UnitIsUnit("player",name) then tinsert(contentTable, {class, name, rank, ""}); end
 		end
 	else
 		RCLootCouncil:SendCommMessage("RCLootCouncil", "verTest "..version, media)
@@ -52,14 +52,14 @@ end
 
 function RCLootCouncil_VersionFrame:AddSelf()
 	local _, class = UnitClass("player")
-	contentTable[1] = {class, GetUnitName("player",true), RCLootCouncil:GetGuildRank(), version}
+	contentTable[1] = {class, addon:GetPlayerFullName(), RCLootCouncil:GetGuildRank(), version}
 end
 
 function RCLootCouncil_VersionFrame:AddPlayer(data) --class, name, rank, version
 	if RCLootCouncil_VersionFrame:IsEnabled() then -- don't do anything if the module isn't enabled
 		local test = true;
 		for k, v in pairs(contentTable) do
-			if v[2] == data[2] then
+			if addon:UnitIsUnit(v[2],data[2]) then
 				contentTable[k] = data
 				test = false;
 				break;
@@ -86,7 +86,7 @@ function RCLootCouncil_VersionFrame:Update()
 		local line = offset + i;
 		if contentTable[line] then -- if there's something at a given entry
 			local entry = contentTable[line]
-			RCLootCouncil_Mainframe.setCharName(getglobal("RCVersionFrameContentFrameEntry"..i.."Name"), entry[1], entry[2])
+			RCLootCouncil_Mainframe.setCharName(getglobal("RCVersionFrameContentFrameEntry"..i.."Name"), entry[1], Ambiguate(entry[2], "short"))
 			RCLootCouncil_Mainframe.setClassIcon(getglobal("RCVersionFrameContentFrameEntry"..i.."ClassTexture"), entry[1]);
 			getglobal("RCVersionFrameContentFrameEntry"..i.."Rank"):SetText(entry[3])
 			getglobal("RCVersionFrameContentFrameEntry"..i.."Version"):SetText("v"..entry[4])
