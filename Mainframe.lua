@@ -26,7 +26,6 @@
 	*//Removed debug spam on whisper stuff (I wonder how long that's been there?)
 	*//Crossrealm >should< now be fully supported.//
 	*Note: This update requires everyone to reset their council (message included in-game).
-	*//The voting frame now properly sorts all sessions in accordance to responses.//
 		
 		
 		Found out a edited UnitIsUnit() can solve problems no matter what Blizz funcs handles us.
@@ -914,28 +913,25 @@ function RCLootCouncil:ChatCommand(msg)
 		local gear1, gear2 = RCLootCouncil.getCurrentGear(lootTable[currentSession]);
 		local _, class = UnitClass("player"); -- non-localized class name
 	
-		local names = { "AName", "Bname", "CName", "DName", "OName",}
-		for k = 1, 10 do
-			local toAdd = {
-				["i"] = math.random(#lootTable),
-					{
-						names[math.random(#names)],
-						guildRank,
-						RCLootCouncil.getPlayerRole(),
-						math.floor(totalIlvl),
-						tonumber(arg) or 1,
-						gear1,
-						gear2,
-						0,
-						class,
-						color,
-						false,
-						{""},
-						nil,
-				}
+		local toAdd = {
+			["i"] = currentSession,
+				{
+					playerFullName,
+					guildRank,
+					RCLootCouncil.getPlayerRole(),
+					math.floor(totalIlvl),
+					tonumber(arg) or 1,
+					gear1,
+					gear2,
+					0,
+					class,
+					color,
+					false,
+					{""},
+					nil,
 			}
-			RCLootCouncil:OnCommReceived("RCLootCouncil", "add "..self:Serialize(toAdd), "WHISPER", playerFullName)
-		end
+		}
+		RCLootCouncil:OnCommReceived("RCLootCouncil", "add "..self:Serialize(toAdd), "WHISPER", playerFullName)
 	 
 	elseif input == 'version' or input == "v" or input == "ver" then
 		self:EnableModule("RCLootCouncil_VersionFrame")
@@ -2545,7 +2541,6 @@ function RCLootCouncil_Mainframe:ChangeSession(id)
 	currentSession = id
 	RCLootCouncil_Mainframe.updateSelection(0, true);
 	RCLootCouncil_Mainframe.prepareLootFrame(lootTable[id])
-	RCLootCouncil_Mainframe.sortTable(4, true) -- Make sure we sort on responses 
 end
 
 -------------- SessionButtonOnEnter -----------
