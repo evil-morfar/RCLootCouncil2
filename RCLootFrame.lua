@@ -166,7 +166,6 @@ function RCLootCouncil_LootFrame:Update(lootTable, newRollRequest)
 			frame:SetWidth(lootFrameWidth)
 			getglobal("RCLootFrameEntry"..i.."Hover2"):SetWidth(hoverWidth)
 			getglobal("RCLootFrameEntry"..i.."ItemLabel"):SetText(link);
-			getglobal("RCLootFrameEntry"..i.."ItemLabel"):SetFont("Fonts\\FRIZQT__.TTF", 16);
 			getglobal("RCLootFrameEntry"..i.."Texture"):SetTexture(texture);
 			getglobal("RCLootFrameEntry"..i.."Ilvl"):SetText("ilvl: "..ilvl);
 			getglobal("RCLootFrameEntry"..i.."Ilvl"):SetPoint("TOPRIGHT", "$parent", "TOPRIGHT", -2, -5)

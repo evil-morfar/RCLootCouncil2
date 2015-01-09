@@ -412,7 +412,7 @@
 					</Anchors>
 					<Color r="0.5" g="1" b="1" />
 				</FontString>
-				<FontString name="CurrentItemLabel" inherits="GameFontNormalLeft" text="Trinket of Power">
+				<FontString name="CurrentItemLabel" inherits="GameFontNormalLarge" justifyH="LEFT" text="Trinket of Power">
 					<Size>
 						<AbsDimension x="326" y="25" />
 					</Size>
@@ -464,7 +464,7 @@
 					</FontHeight>
 					<Color r="1" g="1" b="1" />
 				</FontString>
-				<FontString name="CurrentSelectionLabel" inherits="GameFontNormalLeft" hidden="true" text="Trinket of Power" justifyH="RIGHT">
+				<FontString name="CurrentSelectionLabel" inherits="GameFontNormalLarge" hidden="true" text="Trinket of Power" justifyH="RIGHT">
 					<Size>
 						<AbsDimension x="337" y="25" />
 					</Size>
@@ -488,7 +488,7 @@
 					</Anchors>
 					<Color r="0.5" g="1" b="1" />
 				</FontString>
-				<FontString name="DualItemLabel1" inherits="GameFontNormalLeft" hidden="true" text="Trinket of Power" justifyH="RIGHT">
+				<FontString name="DualItemLabel1" inherits="GameFontHighlightMedium" hidden="true" text="Trinket of Power" justifyH="RIGHT">
 					<Size>
 						<AbsDimension x="299" y="28" />
 					</Size>
@@ -501,7 +501,7 @@
 						<AbsValue val="14" />
 					</FontHeight>
 				</FontString>
-				<FontString name="DualItemLabel2" inherits="GameFontNormalLeft" hidden="true" text="Trinket of Power" justifyH="RIGHT">
+				<FontString name="DualItemLabel2" inherits="GameFontHighlightMedium" hidden="true" text="Trinket of Power" justifyH="RIGHT">
 					<Size>
 						<AbsDimension x="299" y="28" />
 					</Size>
