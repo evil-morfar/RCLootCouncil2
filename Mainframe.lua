@@ -780,7 +780,6 @@ function RCLootCouncil_Mainframe.minimize(action)
 		CurrentSelectionHover:Hide()
 		MainFramePeopleToRollHover:Hide()
 		ContentFrame:Hide()
-		ContentFrameEntry1:Hide()
 		RCLootCouncil_SessionButton1:Hide()
 		RCLootCouncil_Mainframe.updateSelection(0,true); -- clear selection, must be at end of hide(s), otherwise bugs ensue
 		isMinimized = true; -- variable set in minimize function and not on button press to ensure variable it set correctly
@@ -808,7 +807,6 @@ function RCLootCouncil_Mainframe.minimize(action)
 		CurrentSelectionHover:Show()
 		MainFramePeopleToRollHover:Show()
 		ContentFrame:Show()
-		ContentFrameEntry1:Show()
 		RCLootCouncil_SessionButton1:Show()
 		RCLootCouncil_Mainframe.updateSelection(0,true); -- also clear on unminimize, just in case
 		isMinimized = false; -- variable set in minimize function and not on button press to ensure variable it set correctly
@@ -2070,6 +2068,7 @@ function RCLootCouncil_Mainframe.Update(update)
 			getglobal("ContentFrameEntry"..i):Hide();
 		end	
 	end
+	if isMinimized then RCLootCouncil_Mainframe.minimize("minimize"); end;
 end
 ---------- testFrames ---------------
 -- Shows all frames for testing
