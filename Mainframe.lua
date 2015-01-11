@@ -1,4 +1,4 @@
-﻿-- Author      : Potdisc
+-- Author      : Potdisc
 -- Maintainer  : Eriner
 -- Create Date : 3/21/2012 3:46:51 PM
 -- Mainframe.lua Handles all the masterloot interaction and host/client comms
@@ -18,14 +18,14 @@
 
 --_______________________________.
 --[[ CHANGELOG
-	==== 1.6.6 Release
-		
 		Bugfixes:
 		//*Minimize feature added, many headaches later.//
+		//*initialize now accounts for server delay, thanks guinea pig oblitlol.//*
+
 ]]
 
 
-RCLootCouncil = LibStub("AceAddon-3.0"):NewAddon("RCLootCouncil", "AceConsole-3.0", "AceEvent-3.0", "AceComm-3.0", "AceSerializer-3.0", "AceHook-3.0");
+RCLootCouncil = LibStub("AceAddon-3.0"):NewAddon("RCLootCouncil", "AceConsole-3.0", "AceEvent-3.0", "AceComm-3.0", "AceSerializer-3.0", "AceHook-3.0", "AceTimer-3.0");
 RCLootCouncil:SetDefaultModuleLibraries("AceEvent-3.0")
 RCLootCouncil:SetDefaultModuleState(false)
 
@@ -127,6 +127,7 @@ local defaults = {
 		autoAwardQualityUpper = 3,
 		autoAwardTo = "None",
 		autoAwardReason = 1,
+		autoPass = "NONE",
 		-- below is the part of the db that's send to others. Separate section to avoid sending unnecessary data.
 		dbToSend = {
 			selfVote = true,
@@ -415,16 +416,21 @@ function RCLootCouncil.EventHandler(self2, event, ...)
 		
 	elseif event == "RAID_INSTANCE_WELCOME" then
 		self:debugS("event = "..event)
-		if isRunning then return; end -- don't do shit
-		if IsInRaid() or nnp then -- if the player is in a raid
-			local lootMethod = GetLootMethod()
-			if lootMethod == 'master' then -- if master looter is turned on
-				-- just make the call to getML and it'll do the prompting
-				masterLooter = RCLootCouncil_Mainframe.getML()
-			elseif UnitIsGroupLeader("player") and not isRunning then -- otherwise ask the raid leader
-				StaticPopup_Show("RCLOOTCOUNCIL_CONFIRM_USAGE")
+		function RCLootCouncil:InstanceInitialize() -- functionize this bitch
+			if isRunning then return; end -- don't do shit
+			if IsInRaid() or nnp then -- if the player is in a raid
+				local lootMethod = GetLootMethod()
+				if lootMethod == 'master' then -- if master looter is turned on
+					-- just make the call to getML and it'll do the prompting
+					masterLooter = RCLootCouncil_Mainframe.getML()
+				elseif UnitIsGroupLeader("player") and not isRunning then -- otherwise ask the raid leader
+				-- high server-side latency causes the UnitIsGroupLeader("player") condition to fail if queried quickly (upon entering instance) regardless of state.
+				-- may add a delay for the above conditional if the issue persists to circumvent issue.
+					StaticPopup_Show("RCLOOTCOUNCIL_CONFIRM_USAGE")
+				end
 			end
 		end
+		self:ScheduleTimer("InstanceInitialize", 2)
 	elseif event == "GUILD_ROSTER_UPDATE" then -- delay the getting of guildRank till it's available
 		guildRank = RCLootCouncil:GetGuildRank();
 		if guildEventUnregister then
