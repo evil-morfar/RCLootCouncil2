@@ -18,14 +18,12 @@
 
 --_______________________________.
 --[[ CHANGELOG
-	*//Added "Raid Council Members" in options.lua//
-		*//Used to add council members from your current raid, but it's primary function is to add players from other realms properly.//
-	*//Autoloot BoE tooltip updated.//
+	*Bugfix: RCLC initialize now accounts for server delay, thanks guinea pig oblitlol*
 
 ]]
 
 
-RCLootCouncil = LibStub("AceAddon-3.0"):NewAddon("RCLootCouncil", "AceConsole-3.0", "AceEvent-3.0", "AceComm-3.0", "AceSerializer-3.0", "AceHook-3.0");
+RCLootCouncil = LibStub("AceAddon-3.0"):NewAddon("RCLootCouncil", "AceConsole-3.0", "AceEvent-3.0", "AceComm-3.0", "AceSerializer-3.0", "AceHook-3.0", "AceTimer-3.0");
 RCLootCouncil:SetDefaultModuleLibraries("AceEvent-3.0")
 RCLootCouncil:SetDefaultModuleState(false)
 
@@ -414,18 +412,21 @@ function RCLootCouncil.EventHandler(self2, event, ...)
 		
 	elseif event == "RAID_INSTANCE_WELCOME" then
 		self:debugS("event = "..event)
-		if isRunning then return; end -- don't do shit
-		if IsInRaid() or nnp then -- if the player is in a raid
-			local lootMethod = GetLootMethod()
-			if lootMethod == 'master' then -- if master looter is turned on
-				-- just make the call to getML and it'll do the prompting
-				masterLooter = RCLootCouncil_Mainframe.getML()
-			elseif UnitIsGroupLeader("player") and not isRunning then -- otherwise ask the raid leader
-			-- high server-side latency causes the UnitIsGroupLeader("player") condition to fail if queried quickly (upon entering instance) regardless of state.
-			-- may add a delay for the above conditional if the issue persists to circumvent issue.
-				StaticPopup_Show("RCLOOTCOUNCIL_CONFIRM_USAGE")
+		function RCLootCouncil:InstanceInitialize() -- functionize this bitch
+			if isRunning then return; end -- don't do shit
+			if IsInRaid() or nnp then -- if the player is in a raid
+				local lootMethod = GetLootMethod()
+				if lootMethod == 'master' then -- if master looter is turned on
+					-- just make the call to getML and it'll do the prompting
+					masterLooter = RCLootCouncil_Mainframe.getML()
+				elseif UnitIsGroupLeader("player") and not isRunning then -- otherwise ask the raid leader
+				-- high server-side latency causes the UnitIsGroupLeader("player") condition to fail if queried quickly (upon entering instance) regardless of state.
+				-- may add a delay for the above conditional if the issue persists to circumvent issue.
+					StaticPopup_Show("RCLOOTCOUNCIL_CONFIRM_USAGE")
+				end
 			end
 		end
+		self:ScheduleTimer("InstanceInitialize", 5)
 	elseif event == "GUILD_ROSTER_UPDATE" then -- delay the getting of guildRank till it's available
 		guildRank = RCLootCouncil:GetGuildRank();
 		if guildEventUnregister then
