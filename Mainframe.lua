@@ -426,7 +426,7 @@ function RCLootCouncil.EventHandler(self2, event, ...)
 				end
 			end
 		end
-		self:ScheduleTimer("InstanceInitialize", 5)
+		self:ScheduleTimer("InstanceInitialize", 2)
 	elseif event == "GUILD_ROSTER_UPDATE" then -- delay the getting of guildRank till it's available
 		guildRank = RCLootCouncil:GetGuildRank();
 		if guildEventUnregister then
