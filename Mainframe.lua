@@ -755,6 +755,7 @@ function RCLootCouncil_Mainframe.minimizeBtOnClick()
 	else --if this condition is reached, something went wrong. Print to chat, unminimize just in case
 		self:Print("could not read isMinimized variable. Please report on CurseForge.")
 	end
+	RCLootCouncil_Mainframe:UpdateSessionButtons() --unconditional update, as state is loaded/cleared based on bool isMinimized
 end
 
 
@@ -1107,10 +1108,10 @@ function RCLootCouncil_Mainframe.prepareLootFrame(item)
 	
 		if not isMinimized then
 			CurrentItemTexture:Show(); -- Open up the icon box
+			EmptyTexture:Hide(); -- Hide the empty texture box
 		else
 			self:debug("Preventing show of CurrentItemTextures because isMinimized == true")
 		end
-		EmptyTexture:Hide(); -- Hide the empty texture
 
 		if iLevel then
 			CurrentItemLvl:SetText("ilvl: "..iLevel); -- Show the Item Level
@@ -2639,7 +2640,7 @@ end
 function RCLootCouncil_Mainframe:UpdateSessionButtons()
 	for i = 1, MAX_ITEMS do
 		local button = getglobal("RCLootCouncil_SessionButton"..i)
-		if lootTable[i] then
+		if lootTable[i] and not isMinimized then
 			local _,_,_,_,_,_,_,_,_, texture = GetItemInfo(lootTable[i]);
 			if not texture then
 				texture = "Interface\InventoryItems\WoWUnknownItem01"

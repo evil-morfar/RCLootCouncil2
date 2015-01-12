@@ -648,11 +648,11 @@
 			</Frame>
             <Button name="BtMinimize" inherits="UIPanelButtonTemplate"  text="-">
                 <Size>
-                    <AbsDimension x="25" y="25" />
+                    <AbsDimension x="20" y="20" />
                 </Size>
                 <Anchors>
-                    <Anchor point="TOPLEFT">
-                        <Offset x="778" y="-5" />
+                    <Anchor point="TOPRIGHT">
+                        <Offset x="-5" y="-5" />
                     </Anchor>
                 </Anchors>
                 <Scripts>
