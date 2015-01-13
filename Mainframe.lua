@@ -20,12 +20,13 @@
 --[[ CHANGELOG
 	*++Added "Raid Council Members"++
 	*Used to add council members from your current raid, but it's primary function is to add players from other realms properly.
+	*Added minimize feature to the RCLootCouncil window
 	
 	Bugfixes:
 	*//Initialize now accounts for server delay, thanks guinea pig oblitlol.//
 	*//Removed debug spam on whisper stuff (I wonder how long that's been there?)//
 	*//Crossrealm >should< now be fully supported.//
-	*Note: This update requires everyone to reset their council (message included in-game).
+	*Note: This update requires everyone to reset their council (notice message included in-game).
 	*//The voting frame now properly sorts all sessions in accordance to responses.//
 	*//All localizable fonts are now inherited from GameFont to ensure different locale support.//
 		
@@ -39,7 +40,6 @@
 			GetGuildRosterInfo()
 		
 		
-
 ]]
 
 
@@ -98,6 +98,7 @@ local self = RCLootCouncil;
 local guildEventUnregister = false; -- used to unregister the guild_roster_update event
 local _;
 local menuFrame; -- rightclick menu frame
+local isMinimized = false -- set minimize to false by default
 
 -- Create the defaults
 local defaults = {
@@ -298,7 +299,7 @@ function RCLootCouncil:MainFrame_OnLoad()
 	----------PopUp setups --------------
 	-------------------------------------
 	StaticPopupDialogs["RCLOOTCOUNCIL_CONFIRM_ABORT"] = {
-		text = "Are you sure you want to abort?",
+		text = "Are you sure you want to abort?\nThis will abort for all council members.",
 		button1 = "Yes",
 		button2 = "No",
 		OnAccept = function()
@@ -358,6 +359,7 @@ function RCLootCouncil:MainFrame_OnLoad()
 		hideOnEscape = true,
 		preferredIndex = 3, 
 	} 
+
 end
 
 ---------- EventHandler -----------------
@@ -765,10 +767,87 @@ function CloseButton_OnClick()
 	elseif not itemRunning then -- if we are, only hide when nothings running
 		RCLootCouncil_Mainframe.hideMainFrame()
 	else -- else show confirmation box
-		StaticPopup_Show("RCLOOTCOUNCIL_CONFIRM_ABORT")
+		StaticPopup_Show("RCLOOTCOUNCIL_CONFIRM_ABORT") -- will abort for all council
 	end
 end
 
+--------- minimizeBtOnClick ----------------
+-- minimize window to a single bar
+--------------------------------------------
+function RCLootCouncil_Mainframe.minimizeBtOnClick()
+	if not isMinimized then
+		RCLootCouncil_Mainframe.minimize("minimize");
+	elseif isMinimized then
+		RCLootCouncil_Mainframe.minimize("unminimize");
+	else --if this condition is reached, something went wrong. Print to chat, unminimize just in case
+		self:Print("could not read isMinimized variable. Please report on CurseForge.")
+	end
+	RCLootCouncil_Mainframe:UpdateSessionButtons() --unconditional update, as state is loaded/cleared based on bool isMinimized
+end
+
+
+-------- minimizeRCLC ----------------------
+-- Minimze elements of RCLC without interrupting looting
+--------------------------------------------
+function RCLootCouncil_Mainframe.minimize(action)
+	if action == 'minimize' then
+		MainFrame:SetHeight(35)	
+		MainFrame:DisableDrawLayer("OVERLAY")
+		MainFrame:DisableDrawLayer("ARTWORK") -- disable (unlabled) layer
+		CurrentItemHover:Hide()
+		ContentFrame:Hide()
+		BtClose:Hide()
+		BtClear:Hide()
+		BtRemove:Hide()
+		BtAward:Hide()
+		HeaderName:Hide()
+		HeaderRank:Hide()
+		HeaderSpec:Hide()
+		HeaderTotalilvl:Hide()
+		HeaderResponse:Hide()
+		HeaderCurrentGear:Hide()
+		HeaderVotes:Hide()
+		HeaderVote:Hide()
+		HeaderNotes:Hide()
+		DualItemSelection2:Hide()
+		DualItemSelection1:Hide()
+		CurrentSelectionHover:Hide()
+		MainFramePeopleToRollHover:Hide()
+		ContentFrame:Hide()
+		RCLootCouncil_Mainframe.updateSelection(0,true); -- clear selection, must be at end of hide(s), otherwise bugs ensue
+		isMinimized = true; -- variable set in minimize function and not on button press to ensure variable it set correctly
+	elseif action == 'unminimize' then
+		MainFrame:SetHeight(407)	
+		MainFrame:EnableDrawLayer("OVERLAY")
+		MainFrame:EnableDrawLayer("ARTWORK") -- disable (unlabled) layer
+		CurrentItemHover:Show()
+		ContentFrame:Show()
+		BtClose:Show()
+		BtClear:Show()
+		BtRemove:Show()
+		BtAward:Show()
+		HeaderName:Show()
+		HeaderRank:Show()
+		HeaderSpec:Show()
+		HeaderTotalilvl:Show()
+		HeaderResponse:Show()
+		HeaderCurrentGear:Show()
+		HeaderVotes:Show()
+		HeaderVote:Show()
+		HeaderNotes:Show()
+		DualItemSelection2:Show()
+		DualItemSelection1:Show()
+		CurrentSelectionHover:Show()
+		MainFramePeopleToRollHover:Show()
+		ContentFrame:Show()
+		RCLootCouncil_Mainframe.updateSelection(0,true); -- also clear on unminimize, just in case
+		isMinimized = false; -- variable set in minimize function and not on button press to ensure variable it set correctly
+	else --unexpected string passed to minimize function; abort and report
+		self:Print("Unexpected string passed to RCLootCouncil_Mainframe.minimize")
+		self:Print("Passed variable was %s", action)
+		self:Print("Please visit RCLootCouncil's CurseForge and submit a ticket with the message above.")
+	end
+end
 --------- removeBtOnClick ------------------
 -- When the remove button is clicked
 --------------------------------------------
@@ -960,6 +1039,7 @@ function RCLootCouncil:ChatCommand(msg)
 		if MainFrame then
 			MainFrame:ClearAllPoints()
 			MainFrame:SetPoint("CENTER", 0, 200)
+			RCLootCouncil_Mainframe.minimize("unminimize");
 		end
 		if RCVersionFrame then
 			RCVersionFrame:ClearAllPoints()
@@ -1057,8 +1137,12 @@ function RCLootCouncil_Mainframe.prepareLootFrame(item)
 			CurrentItemTexture:SetTexture("Interface\InventoryItems\WoWUnknownItem01");
 		end
 	
-		CurrentItemTexture:Show(); -- Open up the icon box
-		EmptyTexture:Hide(); -- Hide the empty texture
+		if not isMinimized then
+			CurrentItemTexture:Show(); -- Open up the icon box
+			EmptyTexture:Hide(); -- Hide the empty texture box
+		else
+			self:debug("Preventing show of CurrentItemTextures because isMinimized == true")
+		end
 
 		if iLevel then
 			CurrentItemLvl:SetText("ilvl: "..iLevel); -- Show the Item Level
@@ -1080,13 +1164,18 @@ function RCLootCouncil_Mainframe.prepareLootFrame(item)
 			CurrentItemType:SetText(getglobal(thisItemEquipLoc));
 		end
 
-		CurrentItemHover:Show(); -- Make sure we can hover the item
-		MasterlooterLabel:SetText(Ambiguate(masterLooter, "short"));
+		if not isMinimized then
+			CurrentItemHover:Show(); -- Make sure we can hover the item
+			MasterlooterLabel:SetText(Ambiguate(masterLooter, "short"));
+			PeopleToRollString:Show()
+			PeopleToRollLabel:Show()
+		else
+			self:debugS("Preventing more windows from showing")
+		end
 
-		PeopleToRollString:Show()
 		PeopleToRollLabel:SetText(GetNumGroupMembers()) -- set the amount of people missing the rolling
-		PeopleToRollLabel:Show()
-
+		MasterlooterLabel:SetText(masterLooter);
+		
 		-- Award string
 		AwardString:Hide()
 		if isMasterLooter or isTesting then
@@ -1103,7 +1192,12 @@ function RCLootCouncil_Mainframe.prepareLootFrame(item)
 		end
 
 		RCLootCouncil_Mainframe:UpdateSessionButtons()
-		RCLootCouncil_Mainframe.showMainFrame()
+		
+		if not isMinimized then
+			RCLootCouncil_Mainframe.showMainFrame()
+		else
+			self:debugS("Preventing call of RCLootCouncil_Mainframe.showMainFrame()")
+		end
 	else
 		self:debug("PrepareLootFrame called without a valid initiator!")
 	end	
@@ -2006,6 +2100,7 @@ function RCLootCouncil_Mainframe.Update(update)
 			getglobal("ContentFrameEntry"..i):Hide();
 		end	
 	end
+	if isMinimized then RCLootCouncil_Mainframe.minimize("minimize"); end;
 end
 ---------- testFrames ---------------
 -- Shows all frames for testing
@@ -2573,7 +2668,7 @@ end
 function RCLootCouncil_Mainframe:UpdateSessionButtons()
 	for i = 1, MAX_ITEMS do
 		local button = getglobal("RCLootCouncil_SessionButton"..i)
-		if lootTable[i] then
+		if lootTable[i] and not isMinimized then
 			local _,_,_,_,_,_,_,_,_, texture = GetItemInfo(lootTable[i]);
 			if not texture then
 				texture = "Interface\InventoryItems\WoWUnknownItem01"

@@ -337,6 +337,19 @@
 			<BorderColor r="1" g="0.5" b="0" />
 		</Backdrop>
 		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString name="TitleLabel" inherits="GameFontNormal" text="RC Loot Council">
+					<Size>
+						<AbsDimension x="113" y="24" />
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="342" y="-3" />
+						</Anchor>
+					</Anchors>
+					<Color r="1" g="1" b="1" />
+				</FontString>
+			</Layer>
 			<Layer>
 				<Texture name="EmptyTexture" file="Interface\BUTTONS\UI-Slot-Background">
 					<Size>
@@ -390,17 +403,6 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<FontString name="TitleLabel" inherits="GameFontNormal" text="RC Loot Council">
-					<Size>
-						<AbsDimension x="113" y="24" />
-					</Size>
-					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset x="342" y="-3" />
-						</Anchor>
-					</Anchors>
-					<Color r="1" g="1" b="1" />
-				</FontString>
 				<FontString name="CurrentItemLvl" inherits="GameFontNormal" text="ilvl: 410" justifyH="LEFT">
 					<Size>
 						<AbsDimension x="54" y="27" />
@@ -644,6 +646,21 @@
 					</OnLeave>
 				</Scripts>
 			</Frame>
+            <Button name="BtMinimize" inherits="UIPanelButtonTemplate"  text="-">
+                <Size>
+                    <AbsDimension x="20" y="20" />
+                </Size>
+                <Anchors>
+                    <Anchor point="TOPRIGHT">
+                        <Offset x="-5" y="-5" />
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnClick>
+                        RCLootCouncil_Mainframe.minimizeBtOnClick();
+                    </OnClick>
+                </Scripts>
+            </Button>
 			<Button name="HeaderName" inherits="RCLootCouncil_Header" text="Name">
 				<Size>
 					<AbsDimension x="81" y="17" />
