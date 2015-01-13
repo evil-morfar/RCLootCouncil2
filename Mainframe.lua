@@ -27,6 +27,7 @@
 	*//Crossrealm >should< now be fully supported.//
 	*Note: This update requires everyone to reset their council (message included in-game).
 	*//The voting frame now properly sorts all sessions in accordance to responses.//
+	*//All localizable fonts are now inherited from GameFont to ensure different locale support.//
 		
 		
 		Found out a edited UnitIsUnit() can solve problems no matter what Blizz funcs handles us.
@@ -1067,7 +1068,6 @@ function RCLootCouncil_Mainframe.prepareLootFrame(item)
 	
 		if sLink then
 			CurrentItemLabel:SetText(sLink); -- Set the item link for color and such
-			CurrentItemLabel:SetFont("Fonts\\FRIZQT__.TTF", 16);
 		else
 			CurrentItemLabel:SetText("LOADING");
 		end
@@ -1393,9 +1393,7 @@ function RCLootCouncil_Mainframe.updateSelection(id, update)
 			DualItemTexture1:SetTexture(thisItemTexture)
 			DualItemTexture2:SetTexture(thisItemTexture2)
 			DualItemLabel1:SetText(sLink)
-			DualItemLabel1:SetFont("Fonts\\FRIZQT__.TTF", 14);
 			DualItemLabel2:SetText(sLink2)
-			DualItemLabel2:SetFont("Fonts\\FRIZQT__.TTF", 14);
 			DualItemLabel1:Show()
 			DualItemLabel2:Show()	
 			DualItemTexture1:Show()
@@ -1409,7 +1407,6 @@ function RCLootCouncil_Mainframe.updateSelection(id, update)
 			
 		elseif sLink then -- Only show 1 item
 			CurrentSelectionLabel:SetText(sLink)
-			CurrentSelectionLabel:SetFont("Fonts\\FRIZQT__.TTF", 16);
 			CurrentSelectionIlvl:SetText("ilvl: "..iLevel)
 			CurrentSelectionTexture:SetTexture(thisItemTexture)
 			CurrentSelectionHover:Show()

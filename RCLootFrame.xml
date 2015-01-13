@@ -46,7 +46,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<FontString name="$parentItemLabel" inherits="GameFontNormal" text="[Necklace of Awesome Power!]" justifyH="LEFT">
+				<FontString name="$parentItemLabel" inherits="GameFontNormalLarge" text="[Necklace of Awesome Power!]" justifyH="LEFT">
 					<Size>
 						<AbsDimension x="375" y="23" />
 					</Size>
