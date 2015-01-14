@@ -1174,7 +1174,7 @@ function RCLootCouncil_Mainframe.prepareLootFrame(item)
 		end
 
 		PeopleToRollLabel:SetText(GetNumGroupMembers()) -- set the amount of people missing the rolling
-		MasterlooterLabel:SetText(masterLooter);
+		--MasterlooterLabel:SetText(masterLooter);
 		
 		-- Award string
 		AwardString:Hide()
