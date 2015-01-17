@@ -18,26 +18,9 @@
 
 --_______________________________.
 --[[ CHANGELOG
-	*++Added "Raid Council Members"++
-	*Used to add council members from your current raid, but it's primary function is to add players from other realms properly.
-	*Added minimize feature to the RCLootCouncil window
-	
+		
 	Bugfixes:
-	*//Initialize now accounts for server delay, thanks guinea pig oblitlol.//
-	*//Removed debug spam on whisper stuff (I wonder how long that's been there?)//
-	*//Crossrealm >should< now be fully supported.//
-	*Note: This update requires everyone to reset their council (notice message included in-game).
-	*//The voting frame now properly sorts all sessions in accordance to responses.//
-	*//All localizable fonts are now inherited from GameFont to ensure different locale support.//
-		
-		
-		Found out a edited UnitIsUnit() can solve problems no matter what Blizz funcs handles us.
-		Everything should be perfectly cross realm functional now, but I still haven't tested real raid/cross realm.
-		
-		Untested functions:
-			GetMasterLootCandidate()
-			GetRaidRosterInfo()
-			GetGuildRosterInfo()
+	*//ML should now properly send out councilmember names.//
 		
 		
 ]]
@@ -1089,7 +1072,7 @@ function RCLootCouncil_initiateLoot(item)
 			itemRunning = item;			
 			-- create the table of in-raid-councilmembers to send to the councillors
 			for _, v in ipairs(db.council) do
-				if UnitInRaid(v) then
+				if UnitInRaid(Ambiguate(v, "short")) then
 					tinsert(currentCouncil, v)
 				end
 			end
@@ -1174,7 +1157,6 @@ function RCLootCouncil_Mainframe.prepareLootFrame(item)
 		end
 
 		PeopleToRollLabel:SetText(GetNumGroupMembers()) -- set the amount of people missing the rolling
-		--MasterlooterLabel:SetText(masterLooter);
 		
 		-- Award string
 		AwardString:Hide()
