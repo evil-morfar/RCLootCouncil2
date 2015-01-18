@@ -1686,11 +1686,27 @@ function RCLootCouncil_Mainframe.award(reason)
 					if db.awardMessageChat1 ~= "NONE" then -- if we want to tell who won
 						local message = gsub(db.awardMessageText1, "&p", Ambiguate(selection[1], "short"))
 						message = gsub(message, "&i", itemRunning)
+						
+						-- If it's looted for a reason specified in the Loot History Options
+						if reason then 
+							message = gsub(message, "&r", "(" .. reason.text .. ")")
+						elseif not reason then
+							message = gsub(message, "&r", "")
+						end
+						
 						SendChatMessage(message, db.awardMessageChat1); -- then do it
 					end
 					if db.awardMessageChat2 ~= "NONE" then -- if the user is posting to 2 channels
 						local message = gsub(db.awardMessageText2, "&p", Ambiguate(selection[1], "short"))
 						message = gsub(message, "&i", itemRunning)
+						
+						-- If it's looted for a reason specified in the Loot History Options
+						if reason then 
+							message = gsub(message, "&r", "(" .. reason.text .. ")")
+						elseif not reason then
+							message = gsub(message, "&r", "")
+						end
+						
 						SendChatMessage(message, db.awardMessageChat2);
 					end
 				end
