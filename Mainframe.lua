@@ -974,7 +974,6 @@ function RCLootCouncil:ChatCommand(msg)
 			if arg then 
 				self:Print("You can only raid test when in a raid and are the group leader/assistant.")
 				self:Print("Starting solo test.")
-				return
 			end
 			RCLootCouncil_Mainframe.testFrames()
 		end
