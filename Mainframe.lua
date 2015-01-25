@@ -17,14 +17,15 @@
 --		LONG TERM: Clean UI, possibly skin to match UI choices (Blizzard, ElvUI, etc)
 
 --_______________________________.
---[[ CHANGELOG
-	
+--[[ CHANGELOG	
 	
 	Bugfixes:
+	
 	*//Fixed error related to GetRaidRosterInfo() could return nil presumeably due to latency issues.//
 	*//The "Filter Passes" message when everyone have passed didn't show.//
 	*//Solo tests now better reflects the real thing.//
 	*//MasterLooter string in voting frame was also displaying realmname.//
+		
 		
 ]]
 
