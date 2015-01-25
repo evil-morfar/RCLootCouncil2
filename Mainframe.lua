@@ -17,6 +17,7 @@
 --		LONG TERM: Clean UI, possibly skin to match UI choices (Blizzard, ElvUI, etc)
 
 --_______________________________.
+<<<<<<< HEAD
 --[[ CHANGELOG	
 	
 	Bugfixes:
@@ -25,6 +26,12 @@
 	*//The "Filter Passes" message when everyone have passed didn't show.//
 	*//Solo tests now better reflects the real thing.//
 	*//MasterLooter string in voting frame was also displaying realmname.//
+=======
+--[[ CHANGELOG
+		
+	Bugfixes:
+	*//ML should now properly send out councilmember names.//
+>>>>>>> 0dd63ea448e2213fc1a782c1b23df6053812aa84
 		
 		
 ]]
@@ -1076,7 +1083,7 @@ function RCLootCouncil_initiateLoot(item)
 			itemRunning = item;			
 			-- create the table of in-raid-councilmembers to send to the councillors
 			for _, v in ipairs(db.council) do
-				if UnitInRaid(v) then
+				if UnitInRaid(Ambiguate(v, "short")) then
 					tinsert(currentCouncil, v)
 				end
 			end
