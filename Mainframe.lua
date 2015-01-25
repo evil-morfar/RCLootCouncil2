@@ -17,22 +17,28 @@
 --		LONG TERM: Clean UI, possibly skin to match UI choices (Blizzard, ElvUI, etc)
 
 --_______________________________.
-<<<<<<< HEAD
 --[[ CHANGELOG	
+
+====1.7.0 Release
+**This version is not backwards compatible.**
+
+	*++Added "Raid Council Members"++
+	*Used to add council members from your current raid, but it's primary function is to properly add players from other realms.
+	*++Added minimize++
+	*You're now able to minimize the RCLootCouncil voting frame - just click the "-" button.
+	*++Added Crossrealm support++
+	*Crossrealm groups is now fully supported.
+	*//Note: This requires everyone to reset their council (notice message included in-game)//.
 	
 	Bugfixes:
 	
 	*//Fixed error related to GetRaidRosterInfo() could return nil presumeably due to latency issues.//
-	*//The "Filter Passes" message when everyone have passed didn't show.//
+	*//The "Filter Passes" message when everyone have passed didn't work as intended.//
 	*//Solo tests now better reflects the real thing.//
-	*//MasterLooter string in voting frame was also displaying realmname.//
-=======
---[[ CHANGELOG
-		
-	Bugfixes:
-	*//ML should now properly send out councilmember names.//
->>>>>>> 0dd63ea448e2213fc1a782c1b23df6053812aa84
-		
+	*//Initialize now accounts for server delay, thanks guinea pig oblitlol.//
+	*//Removed debug spam on whisper stuff (I wonder how long that's been there?)//	
+	*//The voting frame now properly sorts all sessions in accordance to responses.//
+	*//All localizable fonts are now inherited from GameFont to ensure different locale support.//
 		
 ]]
 
@@ -230,10 +236,10 @@ function RCLootCouncil:OnEnable()
 	if IsInGuild() then
 		self:SendCommMessage("RCLootCouncil", "verTest "..version, "GUILD") -- send out a version check
 	end
-	if self.db.global.version <= "1.6.6" then -- Their council needs to be updated due to naming changes in 1.6.7
+	if self.db.global.version and self.db.global.version < "1.7.0" then -- Their council needs to be updated due to naming changes in 1.7.0
 		if db.council and #db.council >= 1 then
 			db.council = {}
-			self:Print("With v1.6.7 you need to redo your council due to naming changes. Your current council has been wiped.")
+			self:Print("With v1.7.0 you need to redo your council due to naming changes. Your current council has been wiped.")
 		end
 	end
 	self.db.global.version = version;
