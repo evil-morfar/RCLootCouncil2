@@ -21,7 +21,10 @@
 
 ====1.7.1 Release
 
-	*Text no longer have a fixed size, whereever possible.
+	*+Added announce award reason+.
+	*It's now possible to add "reason" when announcing awards, if awarding by a Loot History reason. Use "&r" in the announcement text. Props to Raylehnhoff.
+
+	*Text no longer have a fixed size, wherever possible.
 	*Minor optimizations.
 	
 	Bugfixes:
