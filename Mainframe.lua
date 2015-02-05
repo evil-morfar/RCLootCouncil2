@@ -19,26 +19,14 @@
 --_______________________________.
 --[[ CHANGELOG	
 
-====1.7.0 Release
-**This version is not backwards compatible.**
+====1.7.1 Release
 
-	*++Added "Raid Council Members"++
-	*Used to add council members from your current raid, but it's primary function is to properly add players from other realms.
-	*++Added minimize++
-	*You're now able to minimize the RCLootCouncil voting frame - just click the "-" button.
-	*++Added Crossrealm support++
-	*Crossrealm groups is now fully supported.
-	*//Note: This requires everyone to reset their council (notice message included in-game)//.
+	*Text no longer have a fixed size, whereever possible.
+	*Minor optimizations.
 	
 	Bugfixes:
 	
-	*//Fixed error related to GetRaidRosterInfo() could return nil presumeably due to latency issues.//
-	*//The "Filter Passes" message when everyone have passed didn't work as intended.//
-	*//Solo tests now better reflects the real thing.//
-	*//Initialize now accounts for server delay, thanks guinea pig oblitlol.//
-	*//Removed debug spam on whisper stuff (I wonder how long that's been there?)//	
-	*//The voting frame now properly sorts all sessions in accordance to responses.//
-	*//All localizable fonts are now inherited from GameFont to ensure different locale support.//
+	*//Mousing over "PeopleToRoll" could cause an error.//
 		
 ]]
 
@@ -2281,7 +2269,7 @@ function RCLootCouncil_Mainframe:voteHover(id)
 			end
 			GameTooltip:Show()
 		else
-		 self:debug("Bad id in voteHover")
+		 RCLootCouncil:debug("Bad id in voteHover")
 		end
 	end
 end
@@ -2296,12 +2284,13 @@ function RCLootCouncil_Mainframe:PeopleToRollHover()
 		local name = GetRaidRosterInfo(i)
 		local test = true
 		for j = 1, #entryTable[currentSession] do
-			if self:UnitIsUnit(entryTable[currentSession][j][1], name) then test = false; end			
+			if RCLootCouncil:UnitIsUnit(entryTable[currentSession][j][1], name) then test = false; end			
 		end
 		if test then tinsert(peopleToRoll, name); end
 	end
 	GameTooltip:SetOwner(MainFrame, "ANCHOR_CURSOR")
-	GameTooltip:AddLine("People still to roll\n")
+	GameTooltip:AddLine("People still to roll")
+	GameTooltip:AddLine(" ")
 	if #peopleToRoll >= 1 then
 		for k,v in pairs(peopleToRoll) do
 			GameTooltip:AddLine(Ambiguate(v, "short"),1,1,1)

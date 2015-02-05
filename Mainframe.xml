@@ -377,7 +377,7 @@
 					</Size>
 					<Anchors>
 						<Anchor point="TOPLEFT">
-							<Offset x="748" y="-28" />
+							<Offset x="748" y="-29" />
 						</Anchor>
 					</Anchors>
 				</Texture>
@@ -387,7 +387,7 @@
 					</Size>
 					<Anchors>
 						<Anchor point="TOPLEFT">
-							<Offset x="766" y="-15" />
+							<Offset x="766" y="-20" />
 						</Anchor>
 					</Anchors>
 				</Texture>
@@ -396,45 +396,25 @@
 						<AbsDimension x="28" y="28" />
 					</Size>
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset x="766" y="-51" />
-						</Anchor>
+						<Anchor point="TOP" relativeTo="DualItemTexture1" relativePoint="BOTTOM" x="0" y="-10" />
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<FontString name="CurrentItemLvl" inherits="GameFontNormal" text="ilvl: 410" justifyH="LEFT">
-					<Size>
-						<AbsDimension x="54" y="27" />
-					</Size>
+				<FontString name="CurrentItemLabel" inherits="GameFontNormalLarge" justifyH="LEFT" text="Trinket of Power">
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset x="74" y="-52" />
-						</Anchor>
+						<Anchor point="TOPLEFT" relativeTo="CurrentItemTexture" relativePoint="TOPRIGHT" x="5" y="-7" />
+					</Anchors>
+				</FontString>
+				<FontString name="CurrentItemLvl" inherits="GameFontNormal" text="ilvl: 410" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="CurrentItemLabel" relativePoint="BOTTOMLEFT" x="0" y="-10" />
 					</Anchors>
 					<Color r="0.5" g="1" b="1" />
 				</FontString>
-				<FontString name="CurrentItemLabel" inherits="GameFontNormalLarge" justifyH="LEFT" text="Trinket of Power">
-					<Size>
-						<AbsDimension x="326" y="25" />
-					</Size>
-					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset x="73" y="-28" />
-						</Anchor>
-					</Anchors>
-					<FontHeight>
-						<AbsValue val="18" />
-					</FontHeight>
-				</FontString>
 				<FontString name="CurrentItemType" inherits="GameFontNormal" text="Trinket" justifyH="LEFT">
-					<Size>
-						<AbsDimension x="154" y="27" />
-					</Size>
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset x="134" y="-52" />
-						</Anchor>
+						<Anchor point="LEFT" relativeTo="CurrentItemLvl" relativePoint="RIGHT" x="5" y="0" />
 					</Anchors>
 					<Color r="0.5" g="1" b="1" />
 				</FontString>
@@ -453,13 +433,8 @@
 					<Color r="1" g="1" b="1" />
 				</FontString>
 				<FontString name="MasterlooterLabel" inherits="GameFontNormal" font="Fonts\ARIALN.TTF" text="" justifyH="LEFT">
-					<Size>
-						<AbsDimension x="87" y="17" />
-					</Size>
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset x="82" y="-385" />
-						</Anchor>
+						<Anchor point="LEFT" relativeTo="MasterlooterString" relativePoint="RIGHT" />
 					</Anchors>
 					<FontHeight>
 						<AbsValue val="10" />
@@ -467,54 +442,25 @@
 					<Color r="1" g="1" b="1" />
 				</FontString>
 				<FontString name="CurrentSelectionLabel" inherits="GameFontNormalLarge" hidden="true" text="Trinket of Power" justifyH="RIGHT">
-					<Size>
-						<AbsDimension x="337" y="25" />
-					</Size>
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset x="405" y="-28" />
-						</Anchor>
+						<Anchor point="TOPRIGHT" relativeTo="CurrentSelectionTexture" relativePoint="TOPLEFT" x="-5" y="-7" />
 					</Anchors>
-					<FontHeight>
-						<AbsValue val="18" />
-					</FontHeight>
 				</FontString>
-				<FontString name="CurrentSelectionIlvl" inherits="GameFontNormal" hidden="true" text="ilvl: 410" justifyH="LEFT">
-					<Size>
-						<AbsDimension x="54" y="27" />
-					</Size>
+				<FontString name="CurrentSelectionIlvl" inherits="GameFontNormal" hidden="true" text="ilvl: 410" justifyH="RIGHT">
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset x="688" y="-51" />
-						</Anchor>
+						<Anchor point="TOPRIGHT" relativeTo="CurrentSelectionLabel" relativePoint="BOTTOMRIGHT" x="0" y="-10" />
 					</Anchors>
 					<Color r="0.5" g="1" b="1" />
 				</FontString>
 				<FontString name="DualItemLabel1" inherits="GameFontHighlightMedium" hidden="true" text="Trinket of Power" justifyH="RIGHT">
-					<Size>
-						<AbsDimension x="299" y="28" />
-					</Size>
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset x="461" y="-15" />
-						</Anchor>
+						<Anchor point="RIGHT" relativeTo="DualItemTexture1" relativePoint="LEFT" x="-5" y="0" />
 					</Anchors>
-					<FontHeight>
-						<AbsValue val="14" />
-					</FontHeight>
 				</FontString>
 				<FontString name="DualItemLabel2" inherits="GameFontHighlightMedium" hidden="true" text="Trinket of Power" justifyH="RIGHT">
-					<Size>
-						<AbsDimension x="299" y="28" />
-					</Size>
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset x="461" y="-51" />
-						</Anchor>
+						<Anchor point="RIGHT" relativeTo="DualItemTexture2" relativePoint="LEFT" x="-5" y="0" />
 					</Anchors>
-					<FontHeight>
-						<AbsValue val="14" />
-					</FontHeight>
 				</FontString>
 				<FontString name="PeopleToRollString" inherits="GameFontNormal" hidden="true" font="Fonts\ARIALN.TTF" text="People still to roll:" justifyH="LEFT">
 					<Size>
@@ -782,7 +728,7 @@
 				</Size>
 				<Anchors>
 					<Anchor point="TOPLEFT">
-						<Offset x="517" y="-51" />
+						<Offset x="517" y="-56" />
 					</Anchor>
 				</Anchors>
 				<Backdrop bgFile="" edgeFile="">
@@ -808,7 +754,7 @@
 				</Size>
 				<Anchors>
 					<Anchor point="TOPLEFT">
-						<Offset x="518" y="-15" />
+						<Offset x="518" y="-20" />
 					</Anchor>
 				</Anchors>
 				<Backdrop bgFile="" edgeFile="">
