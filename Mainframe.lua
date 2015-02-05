@@ -26,6 +26,7 @@
 
 	*Text no longer have a fixed size, wherever possible.
 	*Minor optimizations.
+	*The addon now loots BoE items by default.
 	
 	Bugfixes:
 	
@@ -124,7 +125,7 @@ local defaults = {
 		trackAwards = false,
 		sendHistory = true,
 		advancedOptions = false,
-		autolootBoE = false,
+		autolootBoE = true,
 		minRank = -1,
 		filterPasses = false,
 		otherAwardReasons = { -- Used in "Award for ..." @ the rightclick menu
