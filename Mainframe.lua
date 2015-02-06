@@ -31,6 +31,7 @@
 	Bugfixes:
 	
 	*//Mousing over "PeopleToRoll" could cause an error.//
+	*//A tooltip explaining why the "award" buttons is greyed out when rightclicking a candidate was missing.//
 		
 ]]
 
@@ -1763,6 +1764,37 @@ function RCLootCouncil_Mainframe.award(reason)
 				lootDB[Ambiguate(selection[1], "short")] = {table};
 			end
 		end
+
+		-- Chat output:
+		if db.awardAnnouncement then
+			if db.awardMessageChat1 ~= "NONE" then -- if we want to tell who won
+				local message = gsub(db.awardMessageText1, "&p", Ambiguate(selection[1], "short"))
+				message = gsub(message, "&i", itemRunning)
+						
+				-- If it's looted for a reason specified in the Loot History Options
+				if reason then 
+					message = gsub(message, "&r", "(" .. reason.text .. ")")
+				elseif not reason then
+					message = gsub(message, "&r", "")
+				end					
+				SendChatMessage(message, db.awardMessageChat1); -- then do it
+			end
+
+			if db.awardMessageChat2 ~= "NONE" then -- if the user is posting to 2 channels
+				local message = gsub(db.awardMessageText2, "&p", Ambiguate(selection[1], "short"))
+				message = gsub(message, "&i", itemRunning)
+						
+				-- If it's looted for a reason specified in the Loot History Options
+				if reason then 
+					message = gsub(message, "&r", "(" .. reason.text .. ")")
+				elseif not reason then
+					message = gsub(message, "&r", "")
+				end						
+				SendChatMessage(message, db.awardMessageChat2);
+			end
+		end	
+
+
 		if lootNum < #itemsToLootIndex then -- if there's more items to loot
 			RCLootCouncil_Mainframe.abortLooting()
 			lootNum = lootNum + 1; 
@@ -2723,8 +2755,8 @@ function RCLootCouncil_Mainframe_RightClickMenu(menu, level)
 			UIDropDownMenu_AddButton({text = "Award", notCheckable = true, func = function() if currentSession == lootNum then StaticPopup_Show("RCLOOTCOUNCIL_CONFIRM_AWARD", itemRunning, Ambiguate(selection[1], "short")); else self:Print("You cannot award this item yet.")end; end, }, level);
 			UIDropDownMenu_AddButton({text = "Award for ...", value = "AWARD_FOR", notCheckable = true, hasArrow = true, }, level);
 		else
-			UIDropDownMenu_AddButton({text = "Award", notCheckable = true, disabled = true, tooltipTitle = "Illegal Award!", tooltipText = "You have to award the item with the yellow border first.", }, level);
-			UIDropDownMenu_AddButton({text = "Award for ...", hasArrow = true, notCheckable = true, disabled = true, tooltipTitle = "Illegal Award!", tooltipText = "You have to award the item with the yellow border first.",  }, level);
+			UIDropDownMenu_AddButton({text = "Award", notCheckable = true, tooltipOnButton = true, tooltipTitle = "Can't Award!", tooltipText = "You have to award the item with the yellow border first.", colorCode = "|cff888888", }, level);
+			UIDropDownMenu_AddButton({text = "Award for ...", hasArrow = true, tooltipOnButton = true, notCheckable = true,tooltipTitle = "Can't Award!", tooltipText = "You have to award the item with the yellow border first.", colorCode = "|cff888888",  }, level);
 		end
 
 		UIDropDownMenu_AddButton({text = "", notCheckable = true, disabled = true}, level);
