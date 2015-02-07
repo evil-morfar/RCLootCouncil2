@@ -328,7 +328,7 @@ function addon:OptionsTable()
 							},
 							outputDesc = {
 								order = 2,
-								name = "\nChoose wether to announce whom an item is awarded to, which message you want to announce to which channel when awarding loot, or none to toggle announcement off. You can announce in 2 channels at once.\nUse &p for the name of the player getting the loot and &i for the item awarded.",
+								name = "\nChoose wether to announce whom an item is awarded to, which message you want to announce to which channel when awarding loot, or none to toggle announcement off. You can announce in 2 channels at once.\nUse &p for the name of the player getting the loot and &i for the item awarded.\nUse &r to announce the reason specified at 'Other History Reasons' in the 'Loot History' tab",
 								type = "description",
 							},
 							outputMessage = {
@@ -602,7 +602,7 @@ function addon:OptionsTable()
 						args = {
 							desc = {
 								order = 0,
-								name = "Other reasons for awarding items other than the usual rolls.\nUsed in the right click menu.\n",
+								name = "Reasons for awarding items other than the usual rolls.\nUsed in the right click menu.\n",
 								type = "description",
 							},
 							range = {

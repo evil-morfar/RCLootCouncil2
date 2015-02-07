@@ -150,7 +150,7 @@ function RCLootCouncil_LootFrame:Update(lootTable, newRollRequest)
 			if strlen(name) > count then
 				count = strlen(name)
 			end
-			local lootFrameWidth = 155
+			local lootFrameWidth = 145
 			local hoverWidth = count * 10 - 40
 
 			-- Get the width of each button
@@ -160,7 +160,7 @@ function RCLootCouncil_LootFrame:Update(lootTable, newRollRequest)
 			end
 
 			-- make sure the width doesn't get less than the length of the item
-			if lootFrameWidth - 50 < hoverWidth then lootFrameWidth = hoverWidth + 50; end 
+			if (lootFrameWidth - 50) < hoverWidth then lootFrameWidth = lootFrameWidth + 50; end 
 			RCLootFrame:SetWidth(lootFrameWidth)
 
 			frame:SetWidth(lootFrameWidth)
@@ -168,9 +168,7 @@ function RCLootCouncil_LootFrame:Update(lootTable, newRollRequest)
 			getglobal("RCLootFrameEntry"..i.."ItemLabel"):SetText(link);
 			getglobal("RCLootFrameEntry"..i.."Texture"):SetTexture(texture);
 			getglobal("RCLootFrameEntry"..i.."Ilvl"):SetText("ilvl: "..ilvl);
-			getglobal("RCLootFrameEntry"..i.."Ilvl"):SetPoint("TOPRIGHT", "$parent", "TOPRIGHT", -2, -5)
 			RCLootFrame:SetHeight(i * 75)
-			RCLootFrame:SetWidth(lootFrameWidth)
 			frame:Show();
 			lootFrames[i] = frame
 		end

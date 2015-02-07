@@ -19,26 +19,19 @@
 --_______________________________.
 --[[ CHANGELOG	
 
-====1.7.0 Release
-**This version is not backwards compatible.**
+====1.7.1 Release
 
-	*++Added "Raid Council Members"++
-	*Used to add council members from your current raid, but it's primary function is to properly add players from other realms.
-	*++Added minimize++
-	*You're now able to minimize the RCLootCouncil voting frame - just click the "-" button.
-	*++Added Crossrealm support++
-	*Crossrealm groups is now fully supported.
-	*//Note: This requires everyone to reset their council (notice message included in-game)//.
+	*+Added announce award reason+.
+	*It's now possible to add "reason" when announcing awards, if awarding by a Loot History reason. Use "&r" in the announcement text. Props to Raylehnhoff.
+
+	*Text no longer have a fixed size, wherever possible.
+	*Minor optimizations.
+	*The addon now loots BoE items by default.
 	
 	Bugfixes:
 	
-	*//Fixed error related to GetRaidRosterInfo() could return nil presumeably due to latency issues.//
-	*//The "Filter Passes" message when everyone have passed didn't work as intended.//
-	*//Solo tests now better reflects the real thing.//
-	*//Initialize now accounts for server delay, thanks guinea pig oblitlol.//
-	*//Removed debug spam on whisper stuff (I wonder how long that's been there?)//	
-	*//The voting frame now properly sorts all sessions in accordance to responses.//
-	*//All localizable fonts are now inherited from GameFont to ensure different locale support.//
+	*//Mousing over "PeopleToRoll" could cause an error.//
+	*//A tooltip explaining why the "award" buttons is greyed out when rightclicking a candidate was missing.//
 		
 ]]
 
@@ -133,7 +126,7 @@ local defaults = {
 		trackAwards = false,
 		sendHistory = true,
 		advancedOptions = false,
-		autolootBoE = false,
+		autolootBoE = true,
 		minRank = -1,
 		filterPasses = false,
 		otherAwardReasons = { -- Used in "Award for ..." @ the rightclick menu
@@ -1685,11 +1678,27 @@ function RCLootCouncil_Mainframe.award(reason)
 					if db.awardMessageChat1 ~= "NONE" then -- if we want to tell who won
 						local message = gsub(db.awardMessageText1, "&p", Ambiguate(selection[1], "short"))
 						message = gsub(message, "&i", itemRunning)
+						
+						-- If it's looted for a reason specified in the Loot History Options
+						if reason then 
+							message = gsub(message, "&r", "(" .. reason.text .. ")")
+						elseif not reason then
+							message = gsub(message, "&r", "")
+						end
+						
 						SendChatMessage(message, db.awardMessageChat1); -- then do it
 					end
 					if db.awardMessageChat2 ~= "NONE" then -- if the user is posting to 2 channels
 						local message = gsub(db.awardMessageText2, "&p", Ambiguate(selection[1], "short"))
 						message = gsub(message, "&i", itemRunning)
+						
+						-- If it's looted for a reason specified in the Loot History Options
+						if reason then 
+							message = gsub(message, "&r", "(" .. reason.text .. ")")
+						elseif not reason then
+							message = gsub(message, "&r", "")
+						end
+						
 						SendChatMessage(message, db.awardMessageChat2);
 					end
 				end
@@ -1755,6 +1764,37 @@ function RCLootCouncil_Mainframe.award(reason)
 				lootDB[Ambiguate(selection[1], "short")] = {table};
 			end
 		end
+
+		-- Chat output:
+		if db.awardAnnouncement then
+			if db.awardMessageChat1 ~= "NONE" then -- if we want to tell who won
+				local message = gsub(db.awardMessageText1, "&p", Ambiguate(selection[1], "short"))
+				message = gsub(message, "&i", itemRunning)
+						
+				-- If it's looted for a reason specified in the Loot History Options
+				if reason then 
+					message = gsub(message, "&r", "(" .. reason.text .. ")")
+				elseif not reason then
+					message = gsub(message, "&r", "")
+				end					
+				SendChatMessage(message, db.awardMessageChat1); -- then do it
+			end
+
+			if db.awardMessageChat2 ~= "NONE" then -- if the user is posting to 2 channels
+				local message = gsub(db.awardMessageText2, "&p", Ambiguate(selection[1], "short"))
+				message = gsub(message, "&i", itemRunning)
+						
+				-- If it's looted for a reason specified in the Loot History Options
+				if reason then 
+					message = gsub(message, "&r", "(" .. reason.text .. ")")
+				elseif not reason then
+					message = gsub(message, "&r", "")
+				end						
+				SendChatMessage(message, db.awardMessageChat2);
+			end
+		end	
+
+
 		if lootNum < #itemsToLootIndex then -- if there's more items to loot
 			RCLootCouncil_Mainframe.abortLooting()
 			lootNum = lootNum + 1; 
@@ -2265,7 +2305,7 @@ function RCLootCouncil_Mainframe:voteHover(id)
 			end
 			GameTooltip:Show()
 		else
-		 self:debug("Bad id in voteHover")
+		 RCLootCouncil:debug("Bad id in voteHover")
 		end
 	end
 end
@@ -2280,12 +2320,13 @@ function RCLootCouncil_Mainframe:PeopleToRollHover()
 		local name = GetRaidRosterInfo(i)
 		local test = true
 		for j = 1, #entryTable[currentSession] do
-			if self:UnitIsUnit(entryTable[currentSession][j][1], name) then test = false; end			
+			if RCLootCouncil:UnitIsUnit(entryTable[currentSession][j][1], name) then test = false; end			
 		end
 		if test then tinsert(peopleToRoll, name); end
 	end
 	GameTooltip:SetOwner(MainFrame, "ANCHOR_CURSOR")
-	GameTooltip:AddLine("People still to roll\n")
+	GameTooltip:AddLine("People still to roll")
+	GameTooltip:AddLine(" ")
 	if #peopleToRoll >= 1 then
 		for k,v in pairs(peopleToRoll) do
 			GameTooltip:AddLine(Ambiguate(v, "short"),1,1,1)
@@ -2714,8 +2755,8 @@ function RCLootCouncil_Mainframe_RightClickMenu(menu, level)
 			UIDropDownMenu_AddButton({text = "Award", notCheckable = true, func = function() if currentSession == lootNum then StaticPopup_Show("RCLOOTCOUNCIL_CONFIRM_AWARD", itemRunning, Ambiguate(selection[1], "short")); else self:Print("You cannot award this item yet.")end; end, }, level);
 			UIDropDownMenu_AddButton({text = "Award for ...", value = "AWARD_FOR", notCheckable = true, hasArrow = true, }, level);
 		else
-			UIDropDownMenu_AddButton({text = "Award", notCheckable = true, disabled = true, tooltipTitle = "Illegal Award!", tooltipText = "You have to award the item with the yellow border first.", }, level);
-			UIDropDownMenu_AddButton({text = "Award for ...", hasArrow = true, notCheckable = true, disabled = true, tooltipTitle = "Illegal Award!", tooltipText = "You have to award the item with the yellow border first.",  }, level);
+			UIDropDownMenu_AddButton({text = "Award", notCheckable = true, tooltipOnButton = true, tooltipTitle = "Can't Award!", tooltipText = "You have to award the item with the yellow border first.", colorCode = "|cff888888", }, level);
+			UIDropDownMenu_AddButton({text = "Award for ...", hasArrow = true, tooltipOnButton = true, notCheckable = true,tooltipTitle = "Can't Award!", tooltipText = "You have to award the item with the yellow border first.", colorCode = "|cff888888",  }, level);
 		end
 
 		UIDropDownMenu_AddButton({text = "", notCheckable = true, disabled = true}, level);

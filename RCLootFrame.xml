@@ -47,23 +47,17 @@
 			</Layer>
 			<Layer level="OVERLAY">
 				<FontString name="$parentItemLabel" inherits="GameFontNormalLarge" text="[Necklace of Awesome Power!]" justifyH="LEFT">
-					<Size>
-						<AbsDimension x="375" y="23" />
-					</Size>
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset x="68" y="-13" />
 						</Anchor>
 					</Anchors>
-					<FontHeight>
-						<AbsValue val="18" />
-					</FontHeight>
 					<Color r="0.75" g="0" b="0.75" />
 				</FontString>
 				<FontString name="$parentIlvl" inherits="GameFontNormal" font="Fonts\ARIALN.TTF" text="ilvl: 410">
-					<Size>
-						<AbsDimension x="50" y="14" />
-					</Size>
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT" x="-5" y="-5" />
+					</Anchors>
 					<FontHeight>
 						<AbsValue val="10" />
 					</FontHeight>
