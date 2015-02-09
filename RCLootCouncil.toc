@@ -1,10 +1,12 @@
 ## Author: Potdisc
-## Maintainer: Eriner
+## Maintainer: Potdisc and Eriner
 ## Interface: 60000
 ## Notes: Interface for running a Loot Council
 ## SavedVariables: RCLootCouncilDB
 ## Title: RCLootCouncil
 ## Version: 1.7.1
+## DefaultState: enabled
+
 embeds.xml
 Mainframe.xml
 RCLootFrame.xml
