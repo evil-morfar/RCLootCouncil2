@@ -1,0 +1,16 @@
+## Author: Potdisc
+## Interface: 60000
+## Notes: Interface for running a Loot Council
+## Title: RCLC
+## Version: 2.0.0
+## SavedVariables: RCLootCouncilDB, RCLootCouncilLootDB
+embeds.xml
+core.lua
+ml_core.lua
+Modules\lootFrame.lua
+Modules\rankChooser.lua
+Modules\versionCheck.lua
+Modules\votingFrame.lua
+Modules\sessionFrame.lua
+options.lua
+tokenData.lua
