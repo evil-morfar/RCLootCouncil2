@@ -9,29 +9,21 @@
 --		Random award between equal votes.
 --		Implement autopass - will use same tech as stat priority sorting.
 
---		Alt-Clicking must add items separately in v2.0.
---		All calls (council, mlDB etc. ) should be made by the client.
-
 --		Sort item rolls (optionally) by class stat priority based on item stats.
 
 --		LONG TERM: Clean UI, possibly skin to match UI choices (Blizzard, ElvUI, etc)
 
+--		Loot Everything doesn't do shit
+
 --_______________________________.
 --[[ CHANGELOG	
 
-====1.7.1 Release
+====1.7.2 Release
 
-	*+Added announce award reason+.
-	*It's now possible to add "reason" when announcing awards, if awarding by a Loot History reason. Use "&r" in the announcement text. Props to Raylehnhoff.
-
-	*Text no longer have a fixed size, wherever possible.
-	*Minor optimizations.
-	*The addon now loots BoE items by default.
 	
 	Bugfixes:
 	
-	*//Mousing over "PeopleToRoll" could cause an error.//
-	*//A tooltip explaining why the "award" buttons is greyed out when rightclicking a candidate was missing.//
+	*//Fixed some leaked globals.//
 		
 ]]
 
@@ -78,7 +70,7 @@ local entryTable = {}
 for i=1, MAX_ITEMS do
 	entryTable[i] = {}
 end
--- entryTable[i] order: (playerName, rank, role, totalIlvl, response, gear1, gear2, votes, class, color[], haveVoted, voters[], note)
+-- entryTable[i] order: (playerName, rank, role, totalIlvl, response, gear1, gear2, votes, class, color[](unused!), haveVoted, voters[], note)
 
 local offset = 0; -- scrollframe offset
 local db, buttonsDB, lootDB; -- shortening of self.db.profile(.buttons/.lootDB)
@@ -753,7 +745,7 @@ end
 --------- CloseButton_OnClick -------------
 -- When close button is clicked
 -------------------------------------------
-function CloseButton_OnClick()
+function RCLootCouncil.CloseButton_OnClick()
 	self:debugS("CloseButtion_OnClick()")
 	if not isMasterLooter and not isTesting then -- hide if we're not the masterlooter
 		RCLootCouncil_Mainframe.hideMainFrame()
@@ -1004,7 +996,7 @@ function RCLootCouncil:ChatCommand(msg)
 						gear2,
 						0,
 						class,
-						color,
+						nil,
 						false,
 						{""},
 						nil,
@@ -1105,6 +1097,7 @@ end
 -- Initiates the next item
 --------------------------------------
 function RCLootCouncil:initiateNext(item)
+	self:debugS(":initiateNext("..item..")")
 	itemRunning = item
 	RCLootCouncil:announceConsideration() -- announce it if it's on
 	self:SendCommMessage("RCLootCouncil", "start "..lootNum, channel) -- tell the council to start on the next item
@@ -1123,7 +1116,7 @@ function RCLootCouncil_Mainframe.prepareLootFrame(item)
 			return
 		end
 		GetItemInfo(item); -- query up the item
-		local sName, sLink, iRarity, iLevel, iMinLevel, sType, sSubType, iStackCount, thisItemEquipLoc, thisItemTexture = GetItemInfo(item); -- Get the item info
+		local _, sLink, _, iLevel, _, _, sSubType, _, thisItemEquipLoc, thisItemTexture = GetItemInfo(item); -- Get the item info
 		if thisItemTexture then
 			CurrentItemTexture:SetTexture(thisItemTexture); -- Set the texture of the icon box
 		else
@@ -1307,7 +1300,7 @@ function RCLootCouncil:GetGuildRank()
 	self:debugS("GetGuildRank()")
 	GuildRoster()
 	if IsInGuild() then
-		_, rank, _ = GetGuildInfo("player");
+		local _, rank, _ = GetGuildInfo("player");
 		if rank then
 			self:debug("Found guild rank: "..rank)
 			guildEventUnregister = true; -- make sure we unregister the event
@@ -1392,7 +1385,7 @@ end
 -- Handles the response given by LootFrame
 --------------------------------------------
 function RCLootCouncil.handleResponse(response, frame)
--- entryTable order: (playerName, rank, role, totalIlvl, response, gear1, gear2, votes, class, color[], haveVoted, voters[], note)
+-- entryTable order: (playerName, rank, role, totalIlvl, response, gear1, gear2, votes, class, color[](unused!), haveVoted, voters[], note)
 	local id, note
 	if type(frame) == "table" then
 		id = frame.id
@@ -1401,7 +1394,7 @@ function RCLootCouncil.handleResponse(response, frame)
 		id = frame
 		note = "autopass"
 	end
-	RCLootCouncil:debugS("responseID = "..id)
+	RCLootCouncil:debugS("lootTable index = "..id)
 	local _, totalIlvl = GetAverageItemLevel()
 	local gear1, gear2 = RCLootCouncil.getCurrentGear(lootTable[id]);
 	local _, class = UnitClass("player"); -- non-localized class name
@@ -1418,7 +1411,7 @@ function RCLootCouncil.handleResponse(response, frame)
 				gear2,
 				0,
 				class,
-				color,
+				nil,
 				false,
 				{""},
 				note,
@@ -1764,37 +1757,6 @@ function RCLootCouncil_Mainframe.award(reason)
 				lootDB[Ambiguate(selection[1], "short")] = {table};
 			end
 		end
-
-		-- Chat output:
-		if db.awardAnnouncement then
-			if db.awardMessageChat1 ~= "NONE" then -- if we want to tell who won
-				local message = gsub(db.awardMessageText1, "&p", Ambiguate(selection[1], "short"))
-				message = gsub(message, "&i", itemRunning)
-						
-				-- If it's looted for a reason specified in the Loot History Options
-				if reason then 
-					message = gsub(message, "&r", "(" .. reason.text .. ")")
-				elseif not reason then
-					message = gsub(message, "&r", "")
-				end					
-				SendChatMessage(message, db.awardMessageChat1); -- then do it
-			end
-
-			if db.awardMessageChat2 ~= "NONE" then -- if the user is posting to 2 channels
-				local message = gsub(db.awardMessageText2, "&p", Ambiguate(selection[1], "short"))
-				message = gsub(message, "&i", itemRunning)
-						
-				-- If it's looted for a reason specified in the Loot History Options
-				if reason then 
-					message = gsub(message, "&r", "(" .. reason.text .. ")")
-				elseif not reason then
-					message = gsub(message, "&r", "")
-				end						
-				SendChatMessage(message, db.awardMessageChat2);
-			end
-		end	
-
-
 		if lootNum < #itemsToLootIndex then -- if there's more items to loot
 			RCLootCouncil_Mainframe.abortLooting()
 			lootNum = lootNum + 1; 
@@ -2411,7 +2373,7 @@ function RCLootCouncil:GetItemsFromMessage(msg, sender)
 			self:debugS("item1 might be: "..theItem)
 			local actualItemString2; -- Initialize for possibility of 2 item links
 			local startLoc = string.find(msg, "Hitem:") -- Make sure they linked an item
-			if startLoc > 13 then return; end -- Hitem should start at 12, otherwise it's irrelevant
+			if startLoc > 13 then return; end -- Hitem should start before index 13, otherwise it's bad usage
 			local endLoc = string.find(msg, "|r", startLoc)
 			local actualItemString = string.match(msg, "|%x+|Hitem:.-|h.-|h|r");
 			self:debugS("actualItemString: "..actualItemString)		
@@ -2471,7 +2433,7 @@ function RCLootCouncil:GetItemsFromMessage(msg, sender)
 					iLink2,
 					0,
 					class,
-					color,
+					nil,
 					false,
 					{""},
 					nil,
@@ -2605,6 +2567,7 @@ end
 ----------------------------------------------------
 function RCLootCouncil:LootBoE(item)
 	if not item then return false; end
+	if db.autolootBoE then return true; end -- Don't bother checking if we know we're gonna loot it anyway
 	GameTooltip:SetOwner(UIParent, "ANCHOR_NONE")
 	GameTooltip:SetHyperlink(item)
 	if GameTooltip:NumLines() > 1 then -- check that there is something here
@@ -2613,7 +2576,7 @@ function RCLootCouncil:LootBoE(item)
 			if line and line.GetText then
 				if line:GetText() == ITEM_BIND_ON_EQUIP then
 					GameTooltip:Hide()
-					if db.autolootBoE then return true; else return false; end
+					return db.autolootBoE
 				end
 			end
 		end
@@ -2842,7 +2805,7 @@ end
 function RCLootCouncil:AutoAward(index, awardTo, itemLink)
 	self:debugS("AutoAward("..tostring(index)..", "..tostring(awardTo)..")")
 	if self:UnitIsUnit("player", awardTo) then -- just take it
-		local _, item, lootQuantity = GetLootSlotInfo(index)
+		local _, item, _ = GetLootSlotInfo(index)
 		LootSlot(index)
 		self:debug(""..awardTo.." was Auto Awarded with "..item);
 		self:Print(itemLink.." was Auto Awarded to "..awardTo..". Reason: "..db.otherAwardReasons[db.autoAwardReason].text)

@@ -7,7 +7,6 @@ local MAX_VISIBLE_FRAMES = 5;
 local db, buttonsDB;
 local itemsLooting = {}
 local lootFrames = {}
-local buttonsWidth = 0
 local _;
 
 function RCLootCouncil_LootFrame:CreateFrame(id)

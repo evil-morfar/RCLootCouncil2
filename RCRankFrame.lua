@@ -10,7 +10,7 @@ end
 
 function RCLootCouncil_RankFrame.DropDown_OnLoad()
 	for ci = 1, GuildControlGetNumRanks() do 
-		info = {};
+		local info = {};
 		info.text = " "..ci.." - "..GuildControlGetRankName(ci);
 		info.value = ci;
 		info.func = function() RCLootCouncil_RankFrame.setMinRank(ci) end;

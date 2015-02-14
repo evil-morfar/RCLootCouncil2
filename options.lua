@@ -5,7 +5,7 @@ local addon = LibStub("AceAddon-3.0"):GetAddon("RCLootCouncil")
 
 ------ Options ------
 function addon:OptionsTable()
-	local db = addon.db.profile
+	--local db = addon.db.profile
 	local options = { 
 		name = "RCLootCouncil",
 		type = "group",
@@ -219,7 +219,7 @@ function addon:OptionsTable()
 								values = function()
 									local t = {}
 									for i = 0, 5 do
-										local r,g,b,hex = GetItemQualityColor(i)
+										local hex = select(4, GetItemQualityColor(i))
 										t[i] = "|c"..hex.." "..getglobal("ITEM_QUALITY"..i.."_DESC") 
 									end
 									return t;
@@ -238,7 +238,7 @@ function addon:OptionsTable()
 								values = function()
 									local t = {}
 									for i = 0, 5 do
-										local r,g,b,hex = GetItemQualityColor(i)
+										local hex = select(4, GetItemQualityColor(i))
 										t[i] = "|c"..hex.." "..getglobal("ITEM_QUALITY"..i.."_DESC") 
 									end
 									return t;
@@ -328,7 +328,7 @@ function addon:OptionsTable()
 							},
 							outputDesc = {
 								order = 2,
-								name = "\nChoose wether to announce whom an item is awarded to, which message you want to announce to which channel when awarding loot, or none to toggle announcement off. You can announce in 2 channels at once.\nUse &p for the name of the player getting the loot and &i for the item awarded.\nUse &r to announce the reason specified at 'Other History Reasons' in the 'Loot History' tab",
+								name = "\nChoose wether to announce whom an item is awarded to, which message you want to announce to which channel when awarding loot, or none to toggle announcement off. You can announce in 2 channels at once.\nUse &p for the name of the player getting the loot and &i for the item awarded.\nUse &r to have (reason) tacked onto the announcement when a reason is specified in 'Other History Reasons'",
 								type = "description",
 							},
 							outputMessage = {
@@ -602,7 +602,7 @@ function addon:OptionsTable()
 						args = {
 							desc = {
 								order = 0,
-								name = "Reasons for awarding items other than the usual rolls.\nUsed in the right click menu.\n",
+								name = "Other reasons for awarding items other than the usual rolls.\nUsed in the right click menu.\n",
 								type = "description",
 							},
 							range = {
@@ -878,7 +878,7 @@ function RCLootCouncil:GetGuildOptions()
 					values = function()
 						wipe(names)
 						for ci = 1, GetNumGuildMembers() do
-							local name, rank1, rankIndex = GetGuildRosterInfo(ci);
+							local name, _, rankIndex = GetGuildRosterInfo(ci);
 							if (rankIndex + 1) == i then names[name] = Ambiguate(name, "none") end -- show fullName for players from other realms
 						end
 						table.sort(names, function(v1, v2)
