@@ -19,19 +19,9 @@
 --_______________________________.
 --[[ CHANGELOG	
 
-====1.7.1 Release
+====1.7.2 Release
 
-	*+Added announce award reason+.
-	*It's now possible to add "reason" when announcing awards, if awarding by a Loot History reason. Use "&r" in the announcement text. Props to Raylehnhoff.
-
-	*Text no longer have a fixed size, wherever possible.
-	*Minor optimizations.
-	*The addon now loots BoE items by default.
-	
-	Bugfixes:
-	
-	*//Mousing over "PeopleToRoll" could cause an error.//
-	*//A tooltip explaining why the "award" buttons is greyed out when rightclicking a candidate was missing.//
+	*Increment version for patch 6.1.
 		
 ]]
 
