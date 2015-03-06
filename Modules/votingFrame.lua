@@ -1,4 +1,4 @@
--- Author      : nnp
+-- Author      : Potdisc
 -- Create Date : 12/15/2014 8:54:35 PM
 -- DefaultModule	- (relies on ml_core perhaps?)
 -- Displays everything related to handling loot for all members. 
@@ -12,6 +12,7 @@ local NUM_ROWS = 15;
 local db
 local session = 1 -- The session we're viewing
 local lootTable = {} -- stTable compatible, extracted from addon's lootTable
+local sessionButtons = {}
 local moreInfo = false -- Show more info frame?
 
 function RCVotingFrame:OnInitialize()
@@ -22,7 +23,9 @@ function RCVotingFrame:OnInitialize()
 		{ name = "Role",						width = 60, },	-- Role
 		{ name = "Response",					width = 250,},	-- Response
 		{ name = "ilvl",						width = 40, },	-- Total ilvl
-		{ name = "Gear",						width = 60, },	-- Current gear (1 or 2)
+		{ name = "diff",						width = 40, },	-- ilvl difference
+		{ name = "g1",							width = 20, },	-- Current gear 1 
+		{ name = "g2",							width = 20, },	-- Current gear 2
 		{ name = "Votes",	align = "CENTER",	width = 40, },	-- Number of votes
 		{ name = "Vote",						width = 60, },	-- Vote button
 		{ name = "Notes",						width = 40, },	-- Note icon
@@ -39,7 +42,10 @@ function RCVotingFrame:OnDisable()
 	self.frame:Hide()
 	--self.frame.rows = {}
 	self.frame:SetParent(nil)
-	-- TODO EndSession
+	--self.frame = nil
+	lootTable = {}
+	sessionButtons = {}
+	addon:GetActiveModule("masterlooter"):EndSession()
 end
 
 function RCVotingFrame:Show()
@@ -48,45 +54,53 @@ function RCVotingFrame:Show()
 end
 
 function RCVotingFrame:Setup(table)
+	self:Show()
 	-- Init stLootTable
 	for session, t in ipairs(table) do
 		lootTable[session] = {rows = {}}
-		for k,y in pairs(t) do
-			--lootTable[session] = { bagged, lootSlot, announced, awarded, name, link, lvl, type, subType, equipLoc, texture, playerName[]}
-			if type(y) ~= "table" then
-				lootTable[session][k] = y
-			else
-				--[playerName] = {rank, role, totalIlvl, response, gear1, gear2, votes, class, haveVoted, voters[], note}
-				tinsert(lootTable[session].rows,
-				{	cols = {
-						{ value = "",					DoCellUpdate = addon.SetCellClassIcon, args = {y.class}, },
-						{ value = addon:Ambiguate(k),	color = addon:GetClassColor(y.class) },
-						{ value = y.rank,	},
-						{ value = y.role	},
-						{ value = y.response },
-						{ value = y.totalIlvl },
-						{ value = "Gear"	},
-						{ value = y.votes	},
-						{ value = "Vote"	},
-						{ value = "Note"	},
-					}
-				})
+		for k,v in pairs(t) do
+			--lootTable[session] = { bagged, lootSlot, announced, awarded, name, link, lvl, type, subType, equipLoc, texture, candidates[]}
+			if type(k) ~= "table" then
+				lootTable[session][k] = v				
 			end
-		end	
+		end
+		for name, y in pairs(t.candidates) do
+			--[playerName] = {rank, role, totalIlvl, diff, response, gear1, gear2, votes, class, haveVoted, voters[], note}
+			tinsert(lootTable[session].rows,
+			{	cols = {
+					{ value = "",							DoCellUpdate = addon.SetCellClassIcon, args = {y.class}, },
+					{ value = addon:Ambiguate(name),		color = addon:GetClassColor(y.class) },
+					{ value = y.rank,						color = self:GetResponseColor(y.response) },
+					{ value = addon:TranslateRole(y.role),	color = self:GetResponseColor(y.response) },
+					{ value = function() if addon.mldb.responses[y.response] then return addon.mldb.responses[y.response].text;	else return addon.responses[y.response].text; end; end,							color = self:GetResponseColor(y.response) },
+					{ value = y.totalIlvl,					color = self:GetResponseColor(y.response) },
+					{ value = y.diff,						color = self:GetIDiffColor(y.diff), },
+					{ value = "",							DoCellUpdate = self.SetCellGear, args = {y.gear1},	},
+					{ value = "",							DoCellUpdate = self.SetCellGear, args = {y.gear2},	},
+					{ value = y.votes	},
+					{ value = "Vote"	},
+					{ value = "Note"	},
+				}
+			})
+		end
+		
+		-- Init session toggle
+		sessionButtons[session] = self:UpdateSessionButton(session, t.texture, t.link, t.awarded)
 	end
 
 	session = 1
-	self:Show()
-	self:Update()
+	self:SwitchSession(session)
 end
 
 
 ------------------------------------------------------------------
 --	Visuals														--
 ------------------------------------------------------------------
-function RCVotingFrame:Update()
+function RCVotingFrame:SwitchSession(s)
 	-- Start with setting up some statics
-	local t = lootTable[session] -- Shortcut
+	local old = session
+	session = s
+	local t = lootTable[s] -- Shortcut
 	self.frame.itemIcon:SetNormalTexture(t.texture)
 	self.frame.itemText:SetText(t.link)
 	self.frame.itemLvl:SetText("ilvl: "..t.ilvl)
@@ -100,11 +114,13 @@ function RCVotingFrame:Update()
 		self.frame.itemType:SetText(getglobal(t.equipLoc));
 	end
 
+	-- Update the session buttons
+	sessionButtons[s] = self:UpdateSessionButton(s, t.texture, t.link, t.awarded)
+	sessionButtons[old] = self:UpdateSessionButton(old, lootTable[old].texture, lootTable[old].link, lootTable[old].awarded)
+
 	-- Finally setup the right scrolling table data
 	self.frame.st:SetData(t.rows)
 	self.frame.st:SortData()
-
-	printtable(t.rows)
 end
 
 
@@ -115,7 +131,7 @@ function RCVotingFrame:GetFrame()
 	local f = addon:CreateFrame("DefaultRCLootCouncilFrame", "votingFrame", 420)
 	f.title = addon:CreateTitleFrame(f, "RCLootCouncil Voting Frame", 250)
 	-- Scrolling table
-	local st = LibStub("ScrollingTable"):CreateST(self.scrollCols, NUM_ROWS, ROW_HEIGHT, nil, f)
+	local st = LibStub("ScrollingTable"):CreateST(self.scrollCols, NUM_ROWS, ROW_HEIGHT, {r=1,g=0.9,b=0,a=0.5}, f)
 	st.frame:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", 10, 10)
 	f.st = st
 	--[[------------------------------
@@ -218,9 +234,89 @@ function RCVotingFrame:GetFrame()
 	rf:SetWidth(rft:GetStringWidth()) -- TODO This isn't needed here
 	f.rollResult = rf
 
+	-- Session toggle
+	local stgl = CreateFrame("Frame", nil, f)
+	stgl:SetWidth(40)
+	stgl:SetHeight(f:GetHeight())
+	stgl:SetPoint("TOPRIGHT", f, "TOPLEFT", -2, 0)
+	f.sessionToggleFrame = stgl
 
-	-- Set a proper width and init rows
+	-- Set a proper width
 	f:SetWidth(st.frame:GetWidth() + 20)
-	--f.rows = {}
 	return f;
+end
+
+function RCVotingFrame:UpdateSessionButton(i, texture, link, awarded)
+	local btn = sessionButtons[i]
+	if not btn then -- create the button
+		btn = CreateFrame("Button", nil, self.frame.sessionToggleFrame, "UIPanelButtonTemplate")
+		btn:SetSize(40,40)
+		--btn:SetText(i)
+		if i == 1 then
+			btn:SetPoint("TOPRIGHT", self.frame.sessionToggleFrame)
+		elseif mod(i,10) == 1 then
+			btn:SetPoint("TOPRIGHT", sessionButtons[i-10], "TOPLEFT", -2, 0)
+		else
+			btn:SetPoint("TOP", sessionButtons[i-1], "BOTTOM", 0, -2)
+		end
+		btn:SetScript("Onclick", function() RCVotingFrame:SwitchSession(i); end)
+	end	
+	-- then update it
+	if not texture then
+		texture = "Interface\InventoryItems\WoWUnknownItem01"
+	end
+	btn:SetNormalTexture(texture)
+	btn:GetNormalTexture():SetBlendMode("ADD")
+
+	---- Set the colored border and tooltips
+	btn:SetBackdrop({
+			edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+			edgeSize = 16,
+		})
+	local lines = { "Click to switch to", link }
+	if i == session then
+		btn:SetBackdropBorderColor(1,1,0,1) -- yellow
+		btn:GetNormalTexture():SetVertexColor(1,1,1)
+	elseif awarded then
+		btn:SetBackdropBorderColor(0,1,0,1) -- green
+		btn:GetNormalTexture():SetVertexColor(0.3,0.3,0.3)
+		tinsert(lines, "This item has been awarded")
+	else
+		btn:SetBackdropBorderColor(1,1,1,1) -- white
+		btn:GetNormalTexture():SetVertexColor(0.3,0.3,0.3)
+	end
+	btn:SetScript("OnEnter", function() addon:CreateTooltip(lines) end)
+	btn:SetScript("OnLeave", function() addon:HideTooltip() end)
+	return btn
+end
+
+function RCVotingFrame:GetIDiffColor(num)
+	local green, red, grey = {r=0,g=1,b=0,a=1},{r=1,g=0,b=0,a=1},{r=0.75,g=0.75,b=0.75,a=1}
+	if num > 0 then return green end
+	if num < 0 then return red end
+	return grey		
+end
+
+function RCVotingFrame:GetResponseColor(response)
+	-- We have to convert indicies for lib-st -.-'
+	local r,g,b,a;
+	if addon.mldb.responses[response] then
+		r,g,b,a = unpack(addon.mldb.responses[response].color)		
+	else
+		r,g,b,a = unpack(addon.responses[response].color)
+	end
+	return {["r"]=r,["g"]=g,["b"]=b,["a"]=a}
+end
+
+function RCVotingFrame:SetCellGear(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
+	local celldata = data[realrow].cols[column]
+	local gear = unpack(celldata.args)
+	
+	if gear then
+		local texture = select(10, GetItemInfo(gear))
+		local link = select(2, GetItemInfo(gear))
+		frame:SetNormalTexture(texture)
+		frame:SetScript("OnEnter", function() addon:CreateTooltip(nil, link) end)
+		frame:SetScript("OnLeave", function() addon:HideTooltip() end)
+	end
 end

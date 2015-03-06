@@ -8,245 +8,264 @@ local addon = LibStub("AceAddon-3.0"):GetAddon("RCLootCouncil")
 ------ Options ------
 function addon:OptionsTable()
 	local db = addon:Getdb()
-	local function hidden() return not db.advancedOptions end -- avoid making unnessecary functions
-	local options = { 
-		name = "RCLootCouncil",
-		type = "group",
-		childGroups = "tab",
-		args = {
-			version = {
-				order = 1,
-				type = "description",
-				name = "v"..self.version,
-			},
-			generalSettingsTab = {
-				order = 1,
-				type = "group",
-				name = "General",
-				args = {							
-					generalOptions = {
-						order = 2,
-						name = "General options",
-						type = "group",
-						inline = true,
-						args = {
-							toggle = {
-								order = 1,
-								name = "Activate",
-								desc = "Uncheck to temporary disable RCLootCouncil. Useful if you're in a raid group, but not actually participating. Note: This resets on every logout.",
-								type = "toggle",
-								set = function() addon.disable = not addon.disable end,
-								get = function() return not addon.disable end,
-							},
-							autoEnable = {
-								order = 1.1,
-								name = "Auto Activation",
-								desc = "Check to auto activate the addon when entering a raid. Unchecking will make the addon ask if you want to use it.",
-								type = "toggle",
-								set = function() db.autoEnable = not db.autoEnable end,
-								get = function() return db.autoEnable end,
-								hidden = hidden,
-							},
-							autoOpen = {
-								order = 1.2,
-								name = "Auto Open",
-								desc = "Check to Auto Open the voting frame when available. The voting frame can otherwise be opened with /rc open.",
-								type = "toggle",
-								set = function() db.autoOpen = not db.autoOpen end,
-								get = function() return db.autoOpen end,
-							},
-							toggleAdvanced = {
-								order = 1.3,
-								name = "Toggle ML Options",
-								desc = "Shows options that's only available to MasterLooters, such as changing loot buttons/responses, looting styles, announcements, voting types, etc.",
-								type = "toggle",
-								get = function() return db.advancedOptions end,
-								set = function() db.advancedOptions = not db.advancedOptions; end,
-							},
-							header = {
-								order = 2,
-								type = "header",
-								name = "",
-							},
-							testButton = {
-								order = 3,
-								name = "Test",
-								desc = "Click to emulate master looting an item for yourself and anyone in your raid.",
-								type = "execute",
-								func = function()
-									InterfaceOptionsFrame:Hide(); -- close all option frames before testing
-									RCLootCouncil_Mainframe.testFrames()
-								end			
-							},
-							versionTest = {
-								name = "Version Check",
-								desc = "Opens the version checker module.",
-								type = "execute",
-								order = 3.1	,
-								func = function()
-									--InterfaceOptionsFrame:Hide()
-									LibStub("AceConfigDialog-3.0"):CloseAll()
-									addon:CallModule("version")
-								end
+	local options = {			
+		generalSettings = {
+			name = "RCLootCouncil",
+			order = 1,
+			type = "group",
+			childGroups = "tab",
+			args = {
+				version = {
+					order = 1,
+					type = "description",
+					name = "v"..self.version,
+				},
+				generalSettingsTab = {
+					order = 2,
+					type = "group",
+					name = "General",
+					args = {							
+						generalOptions = {
+							order = 1,
+							name = "General options",
+							type = "group",
+							inline = true,
+							args = {
+								toggle = {
+									order = 1,
+									name = "Activate",
+									desc = "Uncheck to temporary disable RCLootCouncil. Useful if you're in a raid group, but not actually participating. Note: This resets on every logout.",
+									type = "toggle",
+									set = function() addon.disable = not addon.disable end,
+									get = function() return not addon.disable end,
+								},
+								autoOpen = {
+									order = 1.2,
+									name = "Auto Open",
+									desc = "Check to Auto Open the voting frame when available. The voting frame can otherwise be opened with /rc open. Note: This requires permission from the Master Looter.",
+									type = "toggle",
+									set = function() db.autoOpen = not db.autoOpen end,
+									get = function() return db.autoOpen end,
+								},
+								--toggleAdvanced = {
+								--	order = 1.3,
+								--	name = "Toggle ML Options",
+								--	desc = "Shows options that's only available to MasterLooters, such as changing loot buttons/responses, looting styles, announcements, voting types, etc.",
+								--	type = "toggle",
+								--	get = function() return db.advancedOptions end,
+								--	set = function() db.advancedOptions = not db.advancedOptions; end,
+								--},
+								header = {
+									order = 2,
+									type = "header",
+									name = "",
+								},
+								testButton = {
+									order = 3,
+									name = "Test",
+									desc = "Click to emulate master looting items for yourself and anyone in your raid.",
+									type = "execute",
+									func = function()
+										InterfaceOptionsFrame:Hide(); -- close all option frames before testing
+										self:Test(3)
+									end			
+								},
+								versionTest = {
+									name = "Version Check",
+									desc = "Opens the version checker module.",
+									type = "execute",
+									order = 3.1	,
+									func = function()
+										InterfaceOptionsFrame:Hide()
+										LibStub("AceConfigDialog-3.0"):CloseAll()
+										addon:CallModule("version")
+									end
+								},
 							},
 						},
-					},
-					voteOptions = {
-						order = 3,
-						name = "Voting options",
-						type = "group",
-						inline = true,
-						hidden = hidden,
-						args = {
-							selfVoteToggle = {
-								order = 1,
-								name = "Self Vote",
-								desc = "Enables voters to vote for themselves.",
-								type = "toggle",
-								get = function() return db.selfVote end,
-								set = function() db.selfVote = not db.selfVote end,
-							},
-							multiVoteToggle = {
-								order = 2,
-								name = "Multi Vote",
-								desc = "Enables multi voting, i.e. multiple votes per voter.",
-								type = "toggle",
-								get = function() return db.multiVote end,
-								set = function() db.multiVote = not db.multiVote; end,
-							},
-							allowNotes = {
-								order = 3,
-								name = "Notes",
-								desc = "Enables raiders to send a note to the council along with their roll.",
-								type = "toggle",
-								get = function() return db.allowNotes end,
-								set = function() db.allowNotes = not db.allowNotes end, 
-							},
-							anonymousVotingToggle = {
-								order = 4,
-								name = "Anonymous Voting",
-								desc = "Activates Anonymous Voting, i.e. you cannot see whom voted for who.",
-								type = "toggle",
-								hidden = hidden,
-								get = function() return db.anonymousVoting end,
-								set = function() db.anonymousVoting = not db.anonymousVoting end,
-							},
-							masterLooterOnly = {
-								order = 5,
-								name = "ML sees voting",
-								desc = "Allow only the Masterlooter too see who's voting for whom.",
-								type = "toggle",
-								disabled = function() return not db.anonymousVoting end,
-								hidden = hidden,
-								get = function() return db.showForML end,
-								set = function() db.showForML = not db.showForML end,
-							},
-						},
-					},
-					lootDesc = {
-						order = 4,
-						name = "Looting options",
-						type = "group",
-						inline = true,
-						hidden = hidden,
-						args = {
-							autoStart = {
-								order = 1,
-								name = "Auto Start",
-								desc = "Activates Auto Start, i.e. the addon automatically starts looting whenever it can. If unchecked the addon only works by alt-clicking (see \"Alt click Looting\").",
-								type = "toggle";
-								get = function() return db.autoStart end,
-								set = function() db.autoStart = not db.autoStart
-									if not db.autoStart then db.altClickLooting = true end
-								end,
-							},
-							autoLootEverything = {
-								order = 2,
-								name = "Loot Everything",
-								desc = "Enables looting of non-items (e.g. mounts, tier-tokens)",
-								type = "toggle",
-								disabled = function() return not db.autoStart end,
-								get = function() return db.autolootEverything end,
-								set = function() db.autolootEverything = not db.autolootEverything end,
-							},
-							autoLootBoE = {
-								order = 3,
-								name = "Autoloot BoE",
-								desc = "Enables autolooting of BoE (Bind on Equip) items.",
-								type = "toggle",
-								disabled = function() return not db.autoStart end,
-								hidden = hidden,
-								get = function() return db.autolootBoE; end,
-								set = function() db.autolootBoE = not db.autolootBoE; end,
-							},
-							altClickLooting = {
-								order = 4,
-								name = "Alt click Looting",
-								desc = "Enables Alt click Looting, i.e. start a looting session by holding down alt and (left)clicking an item.",
-								type = "toggle",
-								hidden = hidden,
-								get = function() return db.altClickLooting end,
-								set = function() db.altClickLooting = not db.altClickLooting; end,
-							},
-						},
-					},
-					lootHistoryOptions = {
-						order = 5,
-						type = "group",
-						name = "Loot History",
-						inline = true,
-						args = {
-							desc1 = {
-								order = 1,
-								name = "RCLootCouncil automatically records relevant information from sessions.\nThe raw data is stored in \".../SavedVariables/RCLootCouncilLootDB.lua\".\n\nNote: Non-MasterLooters can only store data sent from the MasterLooter.\n",
-								type = "description",
-							},
-							trackLooting = {
-								order = 2,
-								name = "Enable Loot History",
-								desc = "Enables the history. RCLootCouncil won't log anything if disabled.",
-								type = "toggle",
-								get = function() return db.enableHistory end,
-								set = function() db.enableHistory = not db.enableHistory end,
-							},
-							sendHistory = {
-								order = 3,
-								name = "Send History",
-								desc = "Send data to everyone in the raid, regardless if you log it yourself. RCLootCouncil will only send data if you're the MasterLooter.",
-								type = "toggle",
-								get = function() return db.sendHistory; end,
-								set = function() db.sendHistory = not db.sendHistory; end,
-								hidden = hidden,
-							},
-							header = {
-								order = 4,
-								type = "header",
-								name = "",
-							},
-							openLootDB = {
-								order = 5,
-								name = "Open the Loot History",
-								desc = "Click to open the Loot History.",
-								type = "execute",
-								func = function() self:CallModule("loothistory");	InterfaceOptionsFrame:Hide();end,
-							},
-							clearLootDB = {
-								order = -1,
-								name = "Clear Loot History",
-								desc = "Delete the entire loot history.",
-								type = "execute",
-								func = function() self.db.factionrealm.lootDB = {} end,
-								confirm = true,
+						lootHistoryOptions = {
+							order = 2,
+							type = "group",
+							name = "Loot History",
+							inline = true,
+							args = {
+								desc1 = {
+									order = 1,
+									name = "RCLootCouncil automatically records relevant information from sessions.\nThe raw data is stored in \".../SavedVariables/RCLootCouncilLootDB.lua\".\n\nNote: Non-MasterLooters can only store data sent from the MasterLooter.\n",
+									type = "description",
+								},
+								trackLooting = {
+									order = 2,
+									name = "Enable Loot History",
+									desc = "Enables the history. RCLootCouncil won't log anything if disabled.",
+									type = "toggle",
+									get = function() return db.enableHistory end,
+									set = function() db.enableHistory = not db.enableHistory end,
+								},
+								sendHistory = {
+									order = 3,
+									name = "Send History",
+									desc = "Send data to everyone in the raid, regardless if you log it yourself. RCLootCouncil will only send data if you're the MasterLooter.",
+									type = "toggle",
+									get = function() return db.sendHistory; end,
+									set = function() db.sendHistory = not db.sendHistory; end,
+								},
+								header = {
+									order = 4,
+									type = "header",
+									name = "",
+								},
+								openLootDB = {
+									order = 5,
+									name = "Open the Loot History",
+									desc = "Click to open the Loot History.",
+									type = "execute",
+									func = function() self:CallModule("loothistory");	InterfaceOptionsFrame:Hide();end,
+								},
+								clearLootDB = {
+									order = -1,
+									name = "Clear Loot History",
+									desc = "Delete the entire loot history.",
+									type = "execute",
+									func = function() self.db.factionrealm.lootDB = {} end,
+									confirm = true,
+								},
 							},
 						},
 					},
 				},
 			},
-			awardTab = {
-				order = 2,
+		},
+		mlSettings = {
+			name = "Master Looter",
+			order = 2,
+			type = "group",
+			childGroups = "tab",
+			--hidden = function() return not db.advancedOptions end,
+			args = {
+				desc = {
+					order = 1,
+					type = "description",
+					name = "Note: These settings will only be used when you're the Master Looter.",
+				},
+				generalTab = {
+					order = 2,
+					type = "group",
+					name = "General",
+					args = {
+						lootDesc = {
+							order = 1,
+							name = "Looting options",
+							type = "group",
+							inline = true,
+							args = {			
+								autoEnable = {
+									order = 1,
+									name = "Auto Enable",
+									desc = "Check to always let RCLootCouncil handle loot. Unchecking will make the addon ask if you want to use it.",
+									type = "toggle",
+									set = function() db.autoEnable = not db.autoEnable end,
+									get = function() return db.autoEnable end,
+								},
+								altClickLooting = {
+									order = 2,
+									name = "Alt click Looting",
+									desc = "Enables Alt click Looting, i.e. start a looting session by holding down alt and (left)clicking an item.",
+									type = "toggle",
+									get = function() return db.altClickLooting end,
+									set = function() db.altClickLooting = not db.altClickLooting; end,
+								},
+								spacer = {
+									order = 3,
+									type = "header",
+									name = "",
+								},
+								autoStart = {
+									order = 4,
+									name = "Auto Start",
+									desc = "Enables Auto Start, i.e. start a session with all egliable items. Disabling will show a editable item list before starting a session.",
+									type = "toggle";
+									get = function() return db.autoStart end,
+									set = function() db.autoStart = not db.autoStart
+										if not db.autoStart then db.altClickLooting = true end
+									end,
+								},
+								autoLootEverything = {
+									order = 5,
+									name = "Loot Everything",
+									desc = "Enables looting of non-items (e.g. mounts, tier-tokens)",
+									type = "toggle",
+									disabled = function() return not db.autoStart end,
+									get = function() return db.autolootEverything end,
+									set = function() db.autolootEverything = not db.autolootEverything end,
+								},
+								autoLootBoE = {
+									order = 6,
+									name = "Autoloot BoE",
+									desc = "Enables autolooting of BoE (Bind on Equip) items.",
+									type = "toggle",
+									disabled = function() return not db.autoStart end,
+									get = function() return db.autolootBoE; end,
+									set = function() db.autolootBoE = not db.autolootBoE; end,
+								},
+								
+							},
+						},
+						voteOptions = {
+							order = 2,
+							name = "Voting options",
+							type = "group",
+							inline = true,
+							args = {
+								selfVoteToggle = {
+									order = 1,
+									name = "Self Vote",
+									desc = "Enables voters to vote for themselves.",
+									type = "toggle",
+									get = function() return db.selfVote end,
+									set = function() db.selfVote = not db.selfVote end,
+								},
+								multiVoteToggle = {
+									order = 2,
+									name = "Multi Vote",
+									desc = "Enables multi voting, i.e. voters can vote for several candidates.",
+									type = "toggle",
+									get = function() return db.multiVote end,
+									set = function() db.multiVote = not db.multiVote; end,
+								},
+								allowNotes = {
+									order = 3,
+									name = "Notes",
+									desc = "Enables candidates to send a note to the council along with their roll.",
+									type = "toggle",
+									get = function() return db.allowNotes end,
+									set = function() db.allowNotes = not db.allowNotes end, 
+								},
+								anonymousVotingToggle = {
+									order = 4,
+									name = "Anonymous Voting",
+									desc = "Enables Anonymous Voting, i.e. people can't see who's voting for who.",
+									type = "toggle",
+									get = function() return db.anonymousVoting end,
+									set = function() db.anonymousVoting = not db.anonymousVoting end,
+								},
+								masterLooterOnly = {
+									order = 5,
+									name = "ML sees voting",
+									desc = "Allow the Master Looter too see who's voting for whom.",
+									type = "toggle",
+									disabled = function() return not db.anonymousVoting end,
+									get = function() return db.showForML end,
+									set = function() db.showForML = not db.showForML end,
+								},
+							},
+						},
+					},
+				},
+				awardTab = {
+				order = 3,
 				type = "group",
 				name = "Awards",
-				hidden = hidden,
 				args = {
 					autoAward = {
 						order = 1,
@@ -378,14 +397,12 @@ function addon:OptionsTable()
 							},
 						},
 					},
-
 				},
 			},
 			announcementTab = {
-				order = 3,
+				order = 4,
 				type = "group",
 				name = "Announcements",
-				hidden = hidden,
 				args = {
 					awardAnnouncement = {
 						order = 1,
@@ -404,7 +421,7 @@ function addon:OptionsTable()
 							},
 							outputDesc = {
 								order = 2,
-								name = "\nChoose which channel(s) you want to announce to along with the text.\nUse &p for the name of the player getting the loot and &i for the item awarded.",
+								name = "\nChoose which channel(s) you want to announce to along with the text.\nUse &p for the name of the player getting the loot, &i for the item awarded and &r for the reason.",
 								type = "description",
 								hidden = function() return not db.announceAward end,
 							},
@@ -446,9 +463,20 @@ function addon:OptionsTable()
 									GUILD = "Guild",
 									OFFICER = "Officer",
 									RAID = "Raid",
-									RAID_WARNING = "Raid Warning"
+									RAID_WARNING = "Raid Warning",
+									group = "Group", -- must be converted
 								},
-								set = function(i,v) db.announceChannel = v end,
+								set = function(i,v)
+										-- Convert "group" if needed
+										if v == "group" then
+											if IsInRaid() then
+												v = "RAID"
+											else
+												v = "PARTY"
+											end
+										end
+										db.announceChannel = v
+									end,
 								get = function() return db.announceChannel end,
 								hidden = function() return not db.announceItems end,
 							},
@@ -475,10 +503,9 @@ function addon:OptionsTable()
 				},
 			},
 			buttonsOptionsTab = {
-				order = 4,
+				order = 5,
 				type = "group",
 				name = "Buttons and Responses",
-				hidden = hidden,
 				args = {
 					buttonOptions = {
 						order = 1,
@@ -564,8 +591,8 @@ function addon:OptionsTable()
 					},
 				},
 			},
-			council = {
-				order = 5,
+			councilTab = {
+				order = 6,
 				type = "group",
 				name = "Council",
 				childGroups = "tab",
@@ -651,21 +678,20 @@ function addon:OptionsTable()
 							},
 						},
 					},
-					addRaidCouncil = {
+					addGroupCouncil = {
 						order = 3,
 						type = "group",
-						name = "Raid Council Members",
-						--hidden = not IsInRaid(), -- don't show if we're not in a raid
+						name = "Group Council Members",
 						args = {
 							header1 = {
 								order = 1,
-								name = "Add council members from your current raid.",
+								name = "Add council members from your current group.",
 								type = "header",
 								width = "full",
 							},
 							desc = {
 								order = 2,
-								name = "Use this to add council members from another realm.",
+								name = "Use this to add council members from another realm or guild.",
 								type = "description",
 							},
 							list = {
@@ -677,16 +703,16 @@ function addon:OptionsTable()
 									local t = {}
 									for i = 1, GetNumGroupMembers() do
 										-- Ambiguate to distinguish people from own realm, not sure if it's smart at the end of the day though
-										tinsert(self.db.profile.council, Ambiguate(select(1,GetRaidRosterInfo(i)), "none"))	-- might need a tostring()		
+										tinsert(t, Ambiguate(select(1,GetRaidRosterInfo(i)), "none"))	-- might need a tostring()		
 									end
 									table.sort(t, function(v1, v2)
-									 return v1 and v1 < v2
+										return v1 and v1 < v2
 									end)
 									return t 
 								end,
 								set = function(info,key,tag)
 									-- probably could've used info[#info-1].values() instead
-									local values = addon.options.args.council.args.addRaidCouncil.args.list.values()
+									local values = addon.options.mlSettings.args.councilTab.args.addRaidCouncil.args.list.values()
 									if tag then -- add
 										tinsert(self.db.profile.council, values[key])
 									else -- remove
@@ -698,7 +724,7 @@ function addon:OptionsTable()
 									end
 								end,
 								get = function(info, key)
-									local values = addon.options.args.council.args.addRaidCouncil.args.list.values()
+									local values = info[#info-1].values()
 									if tContains(self.db.profile.council, values[key]) then return true end
 									return false
 								end,
@@ -708,7 +734,8 @@ function addon:OptionsTable()
 				},
 			},
 		},
-	}
+	},		
+}
 	
 	-- #region Create options thats made with loops
 	-- Buttons
@@ -723,27 +750,27 @@ function addon:OptionsTable()
 			set = function(info, value)	db.buttons[i].text = tostring(value) end,
 			hidden = function() return db.numButtons < i end,
 		}
-		options.args.buttonsOptionsTab.args.buttonOptions.args["button"..i] = button;
+		options.mlSettings.args.buttonsOptionsTab.args.buttonOptions.args["button"..i] = button;
 		picker = {
 			order = i * 3 + 2,
 			name = "Response color",
 			desc = "Set a color for the response.",
 			type = "color",
-			get = function() return unpack(self.responses[i].color)	end,
-			set = function(info,r,g,b,a) self.responses[i].color = {r,g,b,a} end,
+			get = function() return unpack(db.responses[i].color)	end,
+			set = function(info,r,g,b,a) db.responses[i].color = {r,g,b,a} end,
 			hidden = function() return db.numButtons < i end,
 		}
-		options.args.buttonsOptionsTab.args.buttonOptions.args["picker"..i] = picker;
+		options.mlSettings.args.buttonsOptionsTab.args.buttonOptions.args["picker"..i] = picker;
 		text = {	
 			order = i * 3 + 3,
 			name = "Response",
 			desc = "Set the text for button "..i.."'s response.",
 			type = "input",
-			get = function() return self.responses[i].text end,
-			set = function(info, value) self.responses[i].text = tostring(value) end,
+			get = function() return db.responses[i].text end,
+			set = function(info, value) db.responses[i].text = tostring(value) end,
 			hidden = function() return db.numButtons < i end,		
 		}
-		options.args.buttonsOptionsTab.args.buttonOptions.args["text"..i] = text;
+		options.mlSettings.args.buttonsOptionsTab.args.buttonOptions.args["text"..i] = text;
 		
 		local whisperKeys = {
 			order = i + 3,
@@ -755,12 +782,12 @@ function addon:OptionsTable()
 			set = function(k,v) db.buttons[i].whisperKey = tostring(v) end,
 			hidden = function() return not (db.acceptWhispers or db.acceptRaidChat) or db.numButtons < i end,
 		}
-		options.args.buttonsOptionsTab.args.responseFromChat.args["whisperKey"..i] = whisperKeys;
+		options.mlSettings.args.buttonsOptionsTab.args.responseFromChat.args["whisperKey"..i] = whisperKeys;
 	end
 
 	-- Award Reasons
 	for i = 1, db.maxAwardReasons do
-		options.args.awardTab.args.awardReasons.args["reason"..i] = {
+		options.mlSettings.args.awardTab.args.awardReasons.args["reason"..i] = {
 			order = i+1,
 			name = "Reason "..i,
 			desc = "Text for reason #"..i,
@@ -770,7 +797,7 @@ function addon:OptionsTable()
 			set = function(k,v) db.awardReasons[i].text = v; end,
 			hidden = function() return db.numAwardReasons < i end,
 		}
-		options.args.awardTab.args.awardReasons.args["color"..i] = {
+		options.mlSettings.args.awardTab.args.awardReasons.args["color"..i] = {
 			order = i +1.1,
 			name = "Text color",
 			desc = "Color of the text when displayed.",
@@ -780,7 +807,7 @@ function addon:OptionsTable()
 			set = function(info, r,g,b,a) db.awardReasons[i].color = {r,g,b,a} end, 
 			hidden = function() return db.numAwardReasons < i end,
 		}
-		options.args.awardTab.args.awardReasons.args["log"..i] = {
+		options.mlSettings.args.awardTab.args.awardReasons.args["log"..i] = {
 			order = i +1.2,
 			name = "Log",
 			desc = "Enables logging in Loot History.",
@@ -793,7 +820,7 @@ function addon:OptionsTable()
 	end
 	-- Announce Channels
 	for i = 1, #db.awardText do
-		options.args.announcementTab.args.awardAnnouncement.args["outputSelect"..i] = {
+		options.mlSettings.args.announcementTab.args.awardAnnouncement.args["outputSelect"..i] = {
 			order = i+3,
 			name = "Channel "..i..":",
 			desc = "Select a channel to announce awards to.",
@@ -813,7 +840,7 @@ function addon:OptionsTable()
 			get = function() return db.awardText[i].channel end,
 			hidden = function() return not db.announceAward end,
 		}
-		options.args.announcementTab.args.awardAnnouncement.args["outputMessage"..i] = {
+		options.mlSettings.args.announcementTab.args.awardAnnouncement.args["outputMessage"..i] = {
 			order = i+3.1,
 			name = "Message",
 			desc = "The message to send to the selected channel.",
@@ -857,14 +884,15 @@ function RCLootCouncil:GetGuildOptions()
 						return names
 					end,
 					get = function(info, number)
-						local values = addon.options.args.council.args.addCouncil.args[info[#info-1]].args.ranks.values()
+						local values = addon.options.mlSettings.args.councilTab.args.addCouncil.args[info[#info-1]].args.ranks.values()
 						for j = 1, #self.db.profile.council do
 							if values[number] == self.db.profile.council[j] then return true end
 						end
 						return false
 					end,
 					set = function(info, number, tag)
-						local values = addon.options.args.council.args.addCouncil.args[info[#info-1]].args.ranks.values()
+						--local values = addon.options.args.council.args.addCouncil.args[info[#info-1]].args.ranks.values()
+						local values = info[#info-1].args.ranks.values()
 						if tag then tinsert(self.db.profile.council, values[number])
 						else
 							for k,v in ipairs(self.db.profile.council) do
@@ -879,6 +907,6 @@ function RCLootCouncil:GetGuildOptions()
 		}
 
 		-- Add it to the guildMembersGroup arguments:
-		self.options.args.council.args.addCouncil.args[i..""..rank] = option
+		self.options.mlSettings.args.councilTab.args.addCouncil.args[i..""..rank] = option
 	end
 end

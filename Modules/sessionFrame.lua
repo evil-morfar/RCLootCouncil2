@@ -79,8 +79,7 @@ function RCSessionFrame:SetCellDeleteBtn(rowFrame, frame, data, cols, row, realr
 end
 
 function RCSessionFrame:SetCellItemIcon(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
-	local rowdata = table:GetRow(realrow);
-	local celldata = table:GetCell(rowdata, column);
+	local celldata = data[realrow].cols[column]
 	local texture = celldata.args[1]
 	local link = celldata.args[2]
 	frame:SetNormalTexture(texture)

@@ -12,7 +12,7 @@ local ST = LibStub("ScrollingTable")
 local db, stData
 
 function RCVersionCheck:OnInitialize()
-	addon:Print("RCVersionCheck:OnInitialize()")
+	--addon:Print("RCVersionCheck:OnInitialize()")
 	-- Initialize scrollCols on self so others can change it
 	self.scrollCols = {
 		{ name = "",		width = 20, sortnext = 2,},
@@ -26,7 +26,7 @@ function RCVersionCheck:OnEnable()
 	addon:Print("RCVersionCheck:OnEnable()")
 	db = addon:Getdb()
 	printtable(db.UI.versionCheck)
-	self:RegisterComm("RCLootCouncil")	
+	--RCVersionCheck:RegisterComm("RCLootCouncil")	
 	self:Show()
 end
 
@@ -75,16 +75,16 @@ function RCVersionCheck:Query(group)
 				self:AddEntry(name, class, rank, "Waiting for response")
 			end
 		end
-		addon:SendCommMessage("RCLootCouncil", "verTest", "GUILD")
+		addon:SendCommand("RCLootCouncil", "verTest", "guild")
 
-	elseif group == "raid" then
+	elseif group == "group" then
 		for i = 1, GetNumGroupMembers() do
 			local name, _, _, _, class, _, online = GetRaidRosterInfo(i)
 			if online then
 				self:AddEntry(name, class, "Unknown", "Waiting for response")
 			end
 		end
-		addon:SendCommMessage("RCLootCouncil", "verTest", "GUILD")
+		addon:SendCommand("RCLootCouncil", "verTest", "group")
 	end
 	self:ScheduleTimer("QueryTimer", 5)
 end
@@ -147,9 +147,9 @@ function RCVersionCheck:GetFrame()
 	b1:SetScript("OnClick", function() self:Query("guild") end)
 	f.guildBtn = b1
 
-	local b2 = addon:CreateButton("Raid", f)
+	local b2 = addon:CreateButton("Group", f)
 	b2:SetPoint("LEFT", b1, "RIGHT", 15, 0)
-	b2:SetScript("OnClick", function() self:Query("raid") end)
+	b2:SetScript("OnClick", function() self:Query("group") end)
 	f.raidBtn = b2
 
 	local b3 = addon:CreateButton("Close", f)
