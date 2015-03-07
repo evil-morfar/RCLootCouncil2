@@ -5,7 +5,6 @@
 local addon = LibStub("AceAddon-3.0"):GetAddon("RCLootCouncil")
 RCLootHistory = addon:NewModule("RCLootHistory", "AceTimer-3.0")
 
-local self = RCLootHistory
 local selection = {}; -- the current selection
 local lootDB;
 local offset = 0
@@ -31,7 +30,7 @@ function RCLootHistory:OnLoad()
 		entry:SetPoint("TOP", "$parentEntry"..(i-1), "BOTTOM")
 	end	
 	-- create dropdown frame
-	dropDownFrame = CreateFrame("FRAME", nil, RCLootHistoryFrame, "UIDropDownMenuTemplate")
+	CreateFrame("FRAME", nil, RCLootHistoryFrame, "UIDropDownMenuTemplate")
 end
 
 function RCLootHistory:OnEnable()

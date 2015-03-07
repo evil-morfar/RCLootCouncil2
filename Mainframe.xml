@@ -841,7 +841,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						CloseButton_OnClick();
+						RCLootCouncil.CloseButton_OnClick();
 					</OnClick>
 				</Scripts>
 			</Button>
