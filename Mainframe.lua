@@ -21,10 +21,8 @@
 ====1.7.2 Release
 
 	
-	Bugfixes:
-	
-	*//Fixed some leaked globals.//
-		
+	Bugfixes:	
+	*//Fixed some leaked globals.//		
 ]]
 
 
@@ -555,7 +553,7 @@ function RCLootCouncil:OnCommReceived(prefix, msg, distri, sender)
 					self:debug("Deserialization on lootTable failed!")
 				end
 			else
-				self:debug("A non ML send a lootTable!")
+				self:debug("A non ML sent a lootTable!")
 			end
 		elseif cmd == "stop" then
 			if not isMasterLooter then
