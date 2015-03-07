@@ -1647,7 +1647,7 @@ function RCLootCouncil_Mainframe.award(reason)
 		end
 		return;
 	else -- if there are
-		for i = 1, GetNumGroupMembers() do
+		for i = 1, MAX_RAID_MEMBERS do
 			if self:UnitIsUnit(GetMasterLootCandidate(itemsToLootIndex[lootNum], i),selection[1]) then
 				if #itemsToLootIndex > 0 and lootNum > 0 then -- if there really is something to loot
 					local _, _, lootQuantity = GetLootSlotInfo(itemsToLootIndex[lootNum])
@@ -1730,6 +1730,8 @@ function RCLootCouncil_Mainframe.award(reason)
 				return;
 			end	
 		end
+		self:Print("Something went wrong, please restart the session.")
+		self:debug("Target not found @Award()")
 	end
 	-- if the function haven't returned by now then it means noone was in the raid (i.e. debug) or an error
 	if nnp and GetNumGroupMembers() == 0 then -- not in group and debugging is on
