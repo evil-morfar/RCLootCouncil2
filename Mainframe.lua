@@ -20,9 +20,14 @@
 
 ====1.7.3 Release
 
+	++More response announcement++
+	*It was pretty stupid not to allow normal award reasons to be announced with the last update.
+	Use "&r" in the announcement text to substitue it for the award reason.
 	
 	Bugfixes:	
-	*//Fixed some leaked globals.//		
+	*//Fixed some leaked globals.//	
+	*//Optimized date calculations.//
+	*//Notes sometimes went all over the place. Making a note and responding on another item will still cause the note to disappear. 	
 ]]
 
 
@@ -104,7 +109,7 @@ local defaults = {
 		awardMessageChat1 = "RAID",
 		awardMessageText1 = "&p was awarded with &i!",
 		awardMessageChat2 = "NONE",
-		awardMessageText2 = "",
+		awardMessageText2 = "&p was awarded with &i for &r!",
 		announceConsideration = false,
 		announceText = "The council is currently considering &i!",
 		announceChannel = "RAID",		
@@ -289,7 +294,7 @@ function RCLootCouncil:MainFrame_OnLoad()
 			RCLootCouncil_Mainframe.abortLooting()
 			self:SendCommMessage("RCLootCouncil", "stop", channel) -- tell the council to abort as well
 			RCLootCouncil_Mainframe.stopLooting()
-			CloseButton_OnClick() -- close the frame
+			RCLootCouncil.CloseButton_OnClick() -- close the frame
 			CloseLoot() -- close the lootlist
 		end,
 		timeout = 0,
@@ -416,7 +421,7 @@ function RCLootCouncil.EventHandler(self2, event, ...)
 				DEFAULT_CHAT_FRAME:AddMessage("Please restart the looting session.", 1, 0.5, 0, 1, 10)
 				RCLootCouncil_Mainframe.abortLooting()
 				RCLootCouncil_Mainframe.stopLooting()
-				CloseButton_OnClick() -- close the frame
+				RCLootCouncil.CloseButton_OnClick() -- close the frame
 				self:SendCommMessage("RCLootCouncil", "stop", channel) -- tell the council to abort as well
 			end
 		end
@@ -1639,7 +1644,7 @@ function RCLootCouncil_Mainframe.award(reason)
 				self:SendCommMessage("RCLootCouncil", "stop", channel) -- tell the council to stop as well
 				RCLootCouncil_Mainframe.abortLooting()
 				RCLootCouncil_Mainframe.stopLooting()
-				CloseButton_OnClick(); 
+				RCLootCouncil.CloseButton_OnClick(); 
 			end
 		else
 			self:Print("The item would now be awarded to "..Ambiguate(selection[1], "short").." and the loot session concluded.")
@@ -1674,7 +1679,7 @@ function RCLootCouncil_Mainframe.award(reason)
 						if reason then 
 							message = gsub(message, "&r", "(" .. reason.text .. ")")
 						elseif not reason then
-							message = gsub(message, "&r", "")
+							message = gsub(message, "&r", buttonsDB[selection[5]]["response"])
 						end
 						
 						SendChatMessage(message, db.awardMessageChat1); -- then do it
@@ -1687,7 +1692,7 @@ function RCLootCouncil_Mainframe.award(reason)
 						if reason then 
 							message = gsub(message, "&r", "(" .. reason.text .. ")")
 						elseif not reason then
-							message = gsub(message, "&r", "")
+							message = gsub(message, "&r", buttonsDB[selection[5]]["response"] )
 						end
 						
 						SendChatMessage(message, db.awardMessageChat2);
@@ -1726,7 +1731,7 @@ function RCLootCouncil_Mainframe.award(reason)
 					self:SendCommMessage("RCLootCouncil", "stop", channel) -- tell the council to stop as well
 					RCLootCouncil_Mainframe.abortLooting()
 					RCLootCouncil_Mainframe.stopLooting()
-					CloseButton_OnClick(); 
+					RCLootCouncil.CloseButton_OnClick(); 
 				end
 				return;
 			end	
@@ -1762,7 +1767,7 @@ function RCLootCouncil_Mainframe.award(reason)
 		else
 			RCLootCouncil_Mainframe.abortLooting()
 			RCLootCouncil_Mainframe.stopLooting()
-			CloseButton_OnClick()
+			RCLootCouncil.CloseButton_OnClick()
 		end
 		return;
 	else
@@ -2511,37 +2516,26 @@ end
 
 ------------------ GetNumberOfDaysFromNow ---------------------
 -- Calculates the number of days and years from today to arg.
+-- @arg oldDate A date string formatted as dd/mm/yy
 -- Returns a formatted string for use in MoreInfoHover.
 ---------------------------------------------------------------
-function RCLootCouncil:GetNumberOfDaysFromNow(date)
-	local d, m, y = strsplit("/", date, 3)
-	local cDayNumber = time()
-	local dayNumber = time({year = "20"..y, month = m, day = d})
-	local secondsBetween = cDayNumber - dayNumber;
-	local days = (secondsBetween / 3600) /24; -- recalculate from seconds to days
+function RCLootCouncil:GetNumberOfDaysFromNow(oldDate)
+	local d, m, y = strsplit("/", oldDate, 3)
+	local sinceEpoch = time({year = "20"..y, month = m, day = d}) -- convert from string to seconds since epoch
+	local diff = date("*t", time() - sinceEpoch) -- get the difference as a table
+	-- Convert to number of d/m/y
+	local days, months, years = diff.day - 1, diff.month - 1, diff.year - 1970
+
 	if days <= 1 then
 		return "today";
-	elseif days > 30 then
-		local years = 0;
-		local months = 0;
-		for i = 1, 1000 do -- "infinity" loop
-			if days > 30 then 	  -- lets say a month = 30 days for good measures
-				days = days - 30
-				months = months + 1
-			end
-			if months > 12 then
-				years = years + 1
-			end
-			if days < 30 then
-				if years >= 1 then
-					return floor(days).." days, "..months.." months and "..years.." years.";
-				else
-					return floor(days).." days and "..months.." months.";				
-				end
-			end
+	elseif months >= 1 then	
+		if years >= 1 then
+			return days.." days, "..months.." months and "..years.." years.";
+		else
+			return days.." days and "..months.." months.";				
 		end
 	else
-		return floor(days).." days.";
+		return days.." days.";
 	end
 end
 

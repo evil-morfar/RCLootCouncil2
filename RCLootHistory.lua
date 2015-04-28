@@ -29,8 +29,6 @@ function RCLootHistory:OnLoad()
 		entry:SetID(i)
 		entry:SetPoint("TOP", "$parentEntry"..(i-1), "BOTTOM")
 	end	
-	-- create dropdown frame
-	CreateFrame("FRAME", nil, RCLootHistoryFrame, "UIDropDownMenuTemplate")
 end
 
 function RCLootHistory:OnEnable()

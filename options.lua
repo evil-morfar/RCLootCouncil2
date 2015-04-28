@@ -328,7 +328,7 @@ function addon:OptionsTable()
 							},
 							outputDesc = {
 								order = 2,
-								name = "\nChoose wether to announce whom an item is awarded to, which message you want to announce to which channel when awarding loot, or none to toggle announcement off. You can announce in 2 channels at once.\nUse &p for the name of the player getting the loot and &i for the item awarded.\nUse &r to have (reason) tacked onto the announcement when a reason is specified in 'Other History Reasons'",
+								name = "\nChoose wether to announce whom an item is awarded to, which message you want to announce to which channel when awarding loot, or none to toggle announcement off. You can announce in 2 channels at once.\nUse &p for the name of the player getting the loot, &i for the item awarded and &r for the reason.",
 								type = "description",
 							},
 							outputMessage = {

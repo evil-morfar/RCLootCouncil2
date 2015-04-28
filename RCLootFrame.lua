@@ -118,6 +118,7 @@ function RCLootCouncil_LootFrame:Update(lootTable, newRollRequest)
 		end
 		frame.item = itemsLooting[i].item
 		frame.id = itemsLooting[i].position
+		frame.note = nil
 		if not db.allowNotes then
 			frame.noteButton:Hide()
 		else
