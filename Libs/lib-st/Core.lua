@@ -1,4 +1,3 @@
--- Customized for RCLootCouncil
 local MAJOR, MINOR = "ScrollingTable", tonumber("145") or 40000;
 if MINOR < 40000 then
 	MINOR = MINOR + 10000;
@@ -15,12 +14,10 @@ do
 	local lrpadding = 2.5;
 	
 	local ScrollPaneBackdrop  = {
-		--bgFile = "Interface\\ChatFrame\\ChatFrameBackground",
-		bgFile = "Interface\\DialogFrame\\UI-DialogBox-Gold-Background",
+		bgFile = "Interface\\ChatFrame\\ChatFrameBackground",
 		edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
 		tile = true, tileSize = 16, edgeSize = 16,
-		--insets = { left = 3, right = 3, top = 5, bottom = 3 }
-		insets = { left = 3, right = 3, top = 3, bottom = 3 }
+		insets = { left = 3, right = 3, top = 5, bottom = 3 }
 	};
 	
 	local SetHeight = function(self)
@@ -137,8 +134,7 @@ do
 				local col = row.cols[j];
 				if not col then 
 					col = CreateFrame("Button", row:GetName().."col"..j, row);
-					--col.text = row:CreateFontString(col:GetName().."text", "OVERLAY", "GameFontHighlightSmall");	--Original
-					col.text = row:CreateFontString(col:GetName().."text", "OVERLAY", "GameFontNormal");			--RCLootCouncil wants bigger text!
+					col.text = row:CreateFontString(col:GetName().."text", "OVERLAY", "GameFontHighlightSmall");
 					row.cols[j] = col;
 					local align = self.cols[j].align or "LEFT";
 					col.text:SetJustifyH(align); 
@@ -198,8 +194,7 @@ do
 			row = CreateFrame("Frame", self.frame:GetName().."Head", self.frame);
 			row:SetPoint("BOTTOMLEFT", self.frame, "TOPLEFT", 4, 0);
 			row:SetPoint("BOTTOMRIGHT", self.frame, "TOPRIGHT", -4, 0);
-			--row:SetHeight(self.rowHeight); RCLootCouncil
-			row:SetHeight(15) -- Why would we want headers to be higher???
+			row:SetHeight(self.rowHeight);
 			row.cols = {};
 			self.head = row;
 		end
@@ -220,7 +215,7 @@ do
 			end
 			row.cols[i] = col;
 
-			local fs = col:GetFontString() or col:CreateFontString(col:GetName().."fs", "OVERLAY", "GameFontHighlightSmall");			
+			local fs = col:GetFontString() or col:CreateFontString(col:GetName().."fs", "OVERLAY", "GameFontHighlightSmall");
 			fs:SetAllPoints(col);
 			fs:SetPoint("LEFT", col, "LEFT", lrpadding, 0);
 			fs:SetPoint("RIGHT", col, "RIGHT", -lrpadding, 0);
@@ -576,7 +571,7 @@ do
 		return self.data[realrow];
 	end
 	
-	--- API for a ScrollingTable table 
+	--- API for a ScrollingTable table
 	-- @name GetCell
 	-- @description Returns the cell data of the given row from the given row and column index 
 	-- @usage used internally.
@@ -748,7 +743,7 @@ do
 							st.rows[i]:Show();
 							local cellData = st:GetCell(rowData, col);
 							if type(cellData) == "table" and cellData.DoCellUpdate then 
-								cellData.DoCellUpdate(nil,rowFrame, cellFrame, st.data, st.cols, row, st.filtered[row], col, fShow, st); -- RCLootCouncil
+								fnDoCellUpdate = cellData.DoCellUpdate;
 							elseif st.cols[col].DoCellUpdate then 
 								fnDoCellUpdate = st.cols[col].DoCellUpdate;
 							elseif rowData.DoCellUpdate then

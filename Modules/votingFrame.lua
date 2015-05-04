@@ -2,10 +2,11 @@
 -- Create Date : 12/15/2014 8:54:35 PM
 -- DefaultModule	- (relies on ml_core perhaps?)
 -- Displays everything related to handling loot for all members. 
---		Will only shows certain aspects depending on addon.isMasterLooter, addon.isCouncil and addon.mldb.observe
+--		Will only show certain aspects depending on addon.isMasterLooter, addon.isCouncil and addon.mldb.observe
 
 local addon = LibStub("AceAddon-3.0"):GetAddon("RCLootCouncil")
-RCVotingFrame = addon:NewModule("RCVotingFrame")
+RCVotingFrame = addon:NewModule("RCVotingFrame", "AceComm-3.0")
+local LibDialog = LibStub("LibDialog-1.0")
 
 local ROW_HEIGHT = 20;
 local NUM_ROWS = 15;
@@ -14,6 +15,7 @@ local session = 1 -- The session we're viewing
 local lootTable = {} -- stTable compatible, extracted from addon's lootTable
 local sessionButtons = {}
 local moreInfo = false -- Show more info frame?
+local active = false -- Are we currently in session?
 
 function RCVotingFrame:OnInitialize()
 	self.scrollCols = {
@@ -24,15 +26,16 @@ function RCVotingFrame:OnInitialize()
 		{ name = "Response",					width = 250,},	-- Response
 		{ name = "ilvl",						width = 40, },	-- Total ilvl
 		{ name = "diff",						width = 40, },	-- ilvl difference
-		{ name = "g1",							width = 20, },	-- Current gear 1 
-		{ name = "g2",							width = 20, },	-- Current gear 2
+		{ name = "g1",		align = "CENTER",	width = 20, },	-- Current gear 1 
+		{ name = "g2",		align = "CENTER",	width = 20, },	-- Current gear 2
 		{ name = "Votes",	align = "CENTER",	width = 40, },	-- Number of votes
-		{ name = "Vote",						width = 60, },	-- Vote button
-		{ name = "Notes",						width = 40, },	-- Note icon
+		{ name = "Vote",	align = "CENTER",	width = 60, },	-- Vote button
+		{ name = "Notes",	align = "CENTER",	width = 40, },	-- Note icon
 	}
 end
 
 function RCVotingFrame:OnEnable()
+	self:RegisterComm("RCLootCouncil")
 	--printtable(self)
 	db = addon:Getdb()
 	--self:Show()
@@ -40,17 +43,72 @@ end
 
 function RCVotingFrame:OnDisable()
 	self.frame:Hide()
-	--self.frame.rows = {}
-	self.frame:SetParent(nil)
+	--self.frame:SetParent(nil)
 	--self.frame = nil
+	--wipe(lootTable)
 	lootTable = {}
-	sessionButtons = {}
+	--sessionButtons = {}
+	active = false
+	session = 1
 	addon:GetActiveModule("masterlooter"):EndSession()
 end
+
+function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
+	if prefix == "RCLootCouncil" and active then -- ignore comms if we aren't active
+		-- data is always a table to be unpacked
+		local test, command, data = addon:Deserialize(serializedMsg)
+	
+		if test then
+			if command == "vote" then
+				if tContains(addon.council, sender) or addon:UnitIsUnit(sender, addon.masterLooter) then
+					local s, row, vote = unpack(data)
+					self:HandleVote(s, row, vote, sender)
+				else
+					addon:Debug("Non-council member (".. tostring(sender) .. ") sent a vote!")
+				end
+
+			elseif command == "change_response" and addon:UnitIsUnit(sender, addon.masterLooter) then 
+				self:ChangeResponse(unpack(data))
+			
+			elseif command == "lootAck" then
+				local name = unpack(data)
+				for i = 1, #lootTable do
+					local row = self:GetCandidateRowIndexFromName(i, name)
+					lootTable[i].rows[row].response = "WAIT"
+				end
+				self:Update()
+			
+			elseif command == "awarded" and self:UnitIsUnit(sender, self.masterLooter) then
+				lootTable[unpack(data)].awarded = true
+				self:Update()
+				
+			elseif command == "response" then
+				local t = unpack(data)
+				local row = self:GetCandidateRowIndexFromName(t.session, t.name)
+				lootTable[t.session].rows[row].cols[6].value = t.ilvl
+				lootTable[t.session].rows[row].cols[7].value = t.diff
+				lootTable[t.session].rows[row].cols[7].colorargs[1] = t.diff
+				lootTable[t.session].rows[row].cols[8].args = {t.gear1}
+				lootTable[t.session].rows[row].cols[9].args = {t.gear2}
+				lootTable[t.session].rows[row].cols[12].args = {t.note}
+				lootTable[t.session].rows[row].response = t.response
+				self:Update()			
+			end
+		end
+	end
+end
+
+function RCVotingFrame:ChangeResponse(s, name, response)
+	local row = self:GetCandidateRowIndexFromName(s, name)
+	lootTable[s].rows[row].response = response
+	self:Update()
+end
+
 
 function RCVotingFrame:Show()
 	self.frame = self:GetFrame()
 	self.frame:Show()
+	active = true
 end
 
 function RCVotingFrame:Setup(table)
@@ -67,29 +125,67 @@ function RCVotingFrame:Setup(table)
 		for name, y in pairs(t.candidates) do
 			--[playerName] = {rank, role, totalIlvl, diff, response, gear1, gear2, votes, class, haveVoted, voters[], note}
 			tinsert(lootTable[session].rows,
-			{	cols = {
-					{ value = "",							DoCellUpdate = addon.SetCellClassIcon, args = {y.class}, },
-					{ value = addon:Ambiguate(name),		color = addon:GetClassColor(y.class) },
-					{ value = y.rank,						color = self:GetResponseColor(y.response) },
-					{ value = addon:TranslateRole(y.role),	color = self:GetResponseColor(y.response) },
-					{ value = function() if addon.mldb.responses[y.response] then return addon.mldb.responses[y.response].text;	else return addon.responses[y.response].text; end; end,							color = self:GetResponseColor(y.response) },
-					{ value = y.totalIlvl,					color = self:GetResponseColor(y.response) },
-					{ value = y.diff,						color = self:GetIDiffColor(y.diff), },
-					{ value = "",							DoCellUpdate = self.SetCellGear, args = {y.gear1},	},
-					{ value = "",							DoCellUpdate = self.SetCellGear, args = {y.gear2},	},
-					{ value = y.votes	},
-					{ value = "Vote"	},
-					{ value = "Note"	},
+			{	response = y.response,
+				voters = y.voters,
+				haveVoted = false,
+				cols = {										
+					{ value = "",								DoCellUpdate = addon.SetCellClassIcon,	args = {y.class},  },
+					{ value = addon:Ambiguate(name),			color = addon:GetClassColor(y.class) },
+					{ value = y.rank,							color = self.GetResponseColor },
+					{ value = addon:TranslateRole(y.role),		color = self.GetResponseColor },
+					{ value = self.GetResponseText,				color = self.GetResponseColor },
+					{ value = y.totalIlvl,						},
+					{ value = y.diff or 0,						color = self.GetIDiffColor,		colorargs = {y.diff}, },
+					{ value = "",								DoCellUpdate = self.SetCellGear, args = {y.gear1},	},
+					{ value = "",								DoCellUpdate = self.SetCellGear, args = {y.gear2},	},
+					{ value = y.votes,							DoCellUpdate = self.OnVoteHover},
+					{ value = "",								DoCellUpdate = self.SetVoteBtn, 	},
+					{ value = "",								DoCellUpdate = self.SetNote, args = {y.note} },
 				}
 			})
 		end
 		
 		-- Init session toggle
 		sessionButtons[session] = self:UpdateSessionButton(session, t.texture, t.link, t.awarded)
+		sessionButtons[session]:Show()
 	end
 
 	session = 1
 	self:SwitchSession(session)
+end
+
+function RCVotingFrame:Update()
+	-- Hide unused session buttons
+	for i = #lootTable+1, #sessionButtons do
+		sessionButtons[i]:Hide()
+	end
+	self.frame.st:SetData(lootTable[session].rows)
+	self.frame.st:SortData()
+end
+
+function RCVotingFrame:HandleVote(session, row, vote, voter)
+	-- Do the vote
+	lootTable[session].rows[row].cols[10].value = lootTable[session].rows[row].cols[10].value + vote
+	-- And update voters names
+	if vote == 1 then
+		tinsert(lootTable[session].rows[row].voters, voter)
+	else
+		for i, name in ipairs(lootTable[session].rows[row].voters) do
+			if addon:UnitIsUnit(voter, name) then
+				tremove(lootTable[session].rows[row].voters, i)
+				break
+			end
+		end
+	end
+	self:Update()
+end
+
+function RCVotingFrame:GetCandidateRowIndexFromName(s, name)
+	for row, v in ipairs(lootTable[s].rows) do
+		if addon:UnitIsUnit(name, v.cols[2].value) then	return row end
+	end
+	addon:DebugLog("RCVotingFrame:GetCandidateRowIndexFromName("..tostring(name)..") - index not found!")
+	return nil	
 end
 
 
@@ -118,9 +214,7 @@ function RCVotingFrame:SwitchSession(s)
 	sessionButtons[s] = self:UpdateSessionButton(s, t.texture, t.link, t.awarded)
 	sessionButtons[old] = self:UpdateSessionButton(old, lootTable[old].texture, lootTable[old].link, lootTable[old].awarded)
 
-	-- Finally setup the right scrolling table data
-	self.frame.st:SetData(t.rows)
-	self.frame.st:SortData()
+	self:Update()	
 end
 
 
@@ -142,7 +236,7 @@ function RCVotingFrame:GetFrame()
     item:SetNormalTexture("Interface/ICONS/INV_Misc_QuestionMark")
     item:SetScript("OnEnter", function()
 		if not lootTable then return; end
-		addon:CreateTooltip(nil, lootTable[session].link)
+		addon:CreateHypertip(lootTable[session].link)
 	end)
 	item:SetScript("OnLeave", addon.HideTooltip)
 	item:SetScript("OnClick", function()
@@ -176,7 +270,12 @@ function RCVotingFrame:GetFrame()
 	-- Abort button
 	local b1 = addon:CreateButton("Abort", f)
 	b1:SetPoint("TOPRIGHT", f, "TOPRIGHT", -10, -50)
-	b1:SetScript("OnClick", function() self:Disable() end)
+	if addon.isMasterLooter then
+		b1:SetScript("OnClick", function() LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_ABORT") end)
+	else
+		b1:SetText("Close")
+		b1:SetScript("OnClick", function() f:Hide() end)
+	end
 	f.abortBtn = b1
 
 	-- More info button
@@ -195,7 +294,7 @@ function RCVotingFrame:GetFrame()
 			button:SetPushedTexture("Interface\\Buttons\\UI-SpellbookIcon-NextPage-Down")
 		end
 	end)
-	b2:SetScript("OnEnter", function() addon:CreateTooltip({"Click to expand/collapse more info"}) end)
+	b2:SetScript("OnEnter", function() addon:CreateTooltip("Click to expand/collapse more info") end)
 	b2:SetScript("OnLeave", addon.HideTooltip)
 	f.moreInfoBtn = b2
 
@@ -249,6 +348,7 @@ end
 function RCVotingFrame:UpdateSessionButton(i, texture, link, awarded)
 	local btn = sessionButtons[i]
 	if not btn then -- create the button
+		print("Create Session button")
 		btn = CreateFrame("Button", nil, self.frame.sessionToggleFrame, "UIPanelButtonTemplate")
 		btn:SetSize(40,40)
 		--btn:SetText(i)
@@ -262,9 +362,7 @@ function RCVotingFrame:UpdateSessionButton(i, texture, link, awarded)
 		btn:SetScript("Onclick", function() RCVotingFrame:SwitchSession(i); end)
 	end	
 	-- then update it
-	if not texture then
-		texture = "Interface\InventoryItems\WoWUnknownItem01"
-	end
+	texture = texture or "Interface\InventoryItems\WoWUnknownItem01"
 	btn:SetNormalTexture(texture)
 	btn:GetNormalTexture():SetBlendMode("ADD")
 
@@ -285,38 +383,133 @@ function RCVotingFrame:UpdateSessionButton(i, texture, link, awarded)
 		btn:SetBackdropBorderColor(1,1,1,1) -- white
 		btn:GetNormalTexture():SetVertexColor(0.3,0.3,0.3)
 	end
-	btn:SetScript("OnEnter", function() addon:CreateTooltip(lines) end)
+	btn:SetScript("OnEnter", function() addon:CreateTooltip(unpack(lines)) end)
 	btn:SetScript("OnLeave", function() addon:HideTooltip() end)
 	return btn
 end
 
-function RCVotingFrame:GetIDiffColor(num)
+function RCVotingFrame.GetIDiffColor(num)
+	num = num or 0 -- We don't want a nil here
 	local green, red, grey = {r=0,g=1,b=0,a=1},{r=1,g=0,b=0,a=1},{r=0.75,g=0.75,b=0.75,a=1}
 	if num > 0 then return green end
 	if num < 0 then return red end
 	return grey		
 end
 
-function RCVotingFrame:GetResponseColor(response)
-	-- We have to convert indicies for lib-st -.-'
-	local r,g,b,a;
-	if addon.mldb.responses[response] then
-		r,g,b,a = unpack(addon.mldb.responses[response].color)		
-	else
-		r,g,b,a = unpack(addon.responses[response].color)
-	end
-	return {["r"]=r,["g"]=g,["b"]=b,["a"]=a}
-end
-
-function RCVotingFrame:SetCellGear(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
+function RCVotingFrame.SetCellGear(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
 	local celldata = data[realrow].cols[column]
 	local gear = unpack(celldata.args)
-	
 	if gear then
 		local texture = select(10, GetItemInfo(gear))
-		local link = select(2, GetItemInfo(gear))
 		frame:SetNormalTexture(texture)
-		frame:SetScript("OnEnter", function() addon:CreateTooltip(nil, link) end)
+		local link = select(2, GetItemInfo(gear))
+		frame:SetScript("OnEnter", function() addon:CreateHypertip(link) end)	
 		frame:SetScript("OnLeave", function() addon:HideTooltip() end)
+		frame:Show()
+	else
+		frame:Hide()
 	end
 end
+
+function RCVotingFrame.SetVoteBtn(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
+	if addon.isCouncil or addon.isMasterLooter then -- Only let the right people vote
+		if not frame.voteBtn then -- create it
+			frame.voteBtn = addon:CreateButton("Vote", frame)
+			frame.voteBtn:SetPoint("TOPLEFT", frame, "TOPLEFT", 0, 0)
+			frame.voteBtn:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", 0, 0)
+		end
+		frame.voteBtn:SetScript("OnClick", function(btn)
+			-- Test if they may vote for themselves
+			if not addon.mldb.selfVote and addon:UnitIsUnit("player", data[realrow].cols[2].value) then
+				return addon:Print("The Master Looter doesn't allow votes for yourself.")
+			end
+			-- Test if they're allowed to cast multiple votes
+			if not addon.mldb.multiVote then
+				for i = 1, #data do
+					if data[i].haveVoted then
+						return addon:Print("The Master Looter doesn't allow multiple votes.")
+					end
+				end
+			end
+			if data[realrow].haveVoted then -- unvote					
+				addon:SendCommand("group", "vote", session, realrow, -1)
+			else -- vote					
+				addon:SendCommand("group", "vote", session, realrow, 1)
+			end
+			data[realrow].haveVoted = not data[realrow].haveVoted
+		end)
+		if data[realrow].haveVoted then
+			frame.voteBtn:SetText("Unvote")
+		else
+			frame.voteBtn:SetText("Vote")
+		end
+	end
+end
+
+function RCVotingFrame.SetNote(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
+	local note = unpack(data[realrow].cols[column].args)
+	local f = frame.noteBtn or CreateFrame("Button", nil, frame)
+	f:SetSize(ROW_HEIGHT, ROW_HEIGHT)
+	f:SetPoint("CENTER", frame, "CENTER")
+	if note then
+		f:SetNormalTexture("Interface/BUTTONS/UI-GuildButton-PublicNote-Up.png")
+		f:SetScript("OnEnter", function() addon:CreateTooltip("Note", note)	end)
+		f:SetScript("OnLeave", function() addon:HideTooltip() end)
+	else
+		f:SetScript("OnEnter", nil)
+		f:SetNormalTexture("Interface/BUTTONS/UI-GuildButton-PublicNote-Disabled.png")
+	end
+	frame.noteBtn = f
+end
+
+function RCVotingFrame.GetResponseText(data, cols, realrow)
+	-- Extract the response from the row
+	return addon:GetResponseText(data[realrow].response)
+end
+
+function RCVotingFrame.GetResponseColor(data, cols, realrow)
+	return addon:GetResponseColor(data[realrow].response)
+end
+
+function RCVotingFrame.OnVoteHover(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
+	if not addon.mldb.anonymousVoting or (db.showForML and addon.isMasterLooter) then
+		frame:SetScript("OnEnter", function()
+			addon:CreateTooltip("Voters", unpack(data[realrow].voters))
+		end)
+		frame:SetScript("OnLeave", function() addon:HideTooltip() end)
+	end
+	table.DoCellUpdate(rowFrame, frame, data, cols, row, realrow, column, fShow, table)
+end
+
+--------ML Popups ------------------
+LibDialog:Register("RCLOOTCOUNCIL_CONFIRM_ABORT", {
+	text = "Are you sure you want to abort?",
+	buttons = {
+		{	text = "Yes",
+			on_click = function(self)
+				addon:GetActiveModule("masterlooter"):EndSession()
+				RCVotingFrame:Disable()
+				CloseLoot() -- close the lootlist
+			end,	
+		},
+		{	text = "No",
+		},
+	},
+	hide_on_escape = true,
+	show_while_dead = true,	
+})
+LibDialog:Register("RCLOOTCOUNCIL_CONFIRM_AWARD", {
+	text = "Are you sure you want to give %s to %s?",
+	buttons = {
+		{	text = "Yes",
+			on_click = function(self)
+				RCLootCouncil_Mainframe.award() -- TODO
+			end,			
+		},
+		{	text = "No",
+			-- TODO check if requires function
+		},
+	},
+	hide_on_escape = true,
+	show_while_dead = true,	
+})

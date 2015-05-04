@@ -52,10 +52,12 @@ function RCSessionFrame:ExtractData(data)
 	-- And set the new
 	for k,v in ipairs(data) do
 		self.frame.rows[k] = {
+			texture = v.texture,
+			link = v.link,
 			cols = {
 				{ value = "",	DoCellUpdate = self.SetCellDeleteBtn, },
-				{ value = "",	DoCellUpdate = self.SetCellItemIcon, args = {v.texture, v.link} },
-				{ value = v.link },	
+				{ value = "",	DoCellUpdate = self.SetCellItemIcon},
+				{ value = v.link,	DoCellUpdate = self.SetCellText },	
 			},
 		}
 	end
@@ -72,18 +74,28 @@ function RCSessionFrame:DeleteItem(index)
 	self:Show(ml.lootTable)
 end
 
-function RCSessionFrame:SetCellDeleteBtn(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
+function RCSessionFrame.SetCellText(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
+	--print(tostring())
+	debugprofilestart()
+	if frame.text:GetFontObject() ~= GameFontNormal then
+		frame.text:SetFontObject("GameFontNormal") -- We want bigger font
+	end
+	--frame.text:SetText(data[realrow].link)
+	table.DoCellUpdate(rowFrame, frame, data, cols, row, realrow, column, fShow, table)
+	addon:Print(debugprofilestop())
+end
+
+function RCSessionFrame.SetCellDeleteBtn(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
 	frame:SetNormalTexture("Interface/BUTTONS/UI-GroupLoot-Pass-Up.png")
 	frame:SetScript("OnClick", function() RCSessionFrame:DeleteItem(realrow) end)
 	frame:SetSize(20,20)
 end
 
-function RCSessionFrame:SetCellItemIcon(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
-	local celldata = data[realrow].cols[column]
-	local texture = celldata.args[1]
-	local link = celldata.args[2]
+function RCSessionFrame.SetCellItemIcon(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
+	local texture = data[realrow].texture
+	local link = data[realrow].link
 	frame:SetNormalTexture(texture)
-	frame:SetScript("OnEnter", function() addon:CreateTooltip(nil, link) end)
+	frame:SetScript("OnEnter", function() addon:CreateHypertip(link) end)
 	frame:SetScript("OnLeave", function() addon:HideTooltip() end)
 end
 

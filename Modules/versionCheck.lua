@@ -26,7 +26,7 @@ function RCVersionCheck:OnEnable()
 	addon:Print("RCVersionCheck:OnEnable()")
 	db = addon:Getdb()
 	printtable(db.UI.versionCheck)
-	--RCVersionCheck:RegisterComm("RCLootCouncil")	
+	RCVersionCheck:RegisterComm("RCLootCouncil")	
 	self:Show()
 end
 

@@ -11,10 +11,17 @@
 
 local addon = LibStub("AceAddon-3.0"):GetAddon("RCLootCouncil")
 RCLootCouncilML = addon:NewModule("RCLootCouncilML", "AceEvent-3.0", "AceBucket-3.0", "AceComm-3.0", "AceTimer-3.0")
-local LibDialog = LibStub("LibDialog-1.0")
 
 local db;
 local session = 1 
+
+function RCLootCouncilML:OnInitialize()
+	addon:Print("ML initialized!")
+end
+
+function RCLootCouncilML:OnDisable()
+
+end
 
 function RCLootCouncilML:OnEnable()
 	db = addon:Getdb()
@@ -33,51 +40,13 @@ function RCLootCouncilML:OnEnable()
 	self.lootOpen = false -- is the ML lootWindow open or closed?
 	self.running = false -- true if we're handling a session
 
-	self:RegisterComm("RCLootCouncil")
+	self:RegisterComm("RCLootCouncil", "OnCommReceived")
 	self:RegisterEvent("LOOT_OPENED","OnEvent")
 	self:RegisterEvent("LOOT_CLOSED","OnEvent")
 	self:RegisterEvent("RAID_INSTANCE_WELCOME","OnEvent")
 	self:RegisterBucketEvent("GROUP_ROSTER_UPDATE", 20, "UpdateGroup") -- Bursts in group creation, and we should have plenty of time to handle it
 	self:RegisterEvent("CHAT_MSG_WHISPER","OnEvent")
 	self:RegisterEvent("CHAT_MSG_RAID","OnEvent")
-
-	--------ML Popups ------------------
-	LibDialog:Register("RCLOOTCOUNCIL_CONFIRM_ABORT", {
-		text = "Are you sure you want to abort?",
-		buttons = {
-			{	text = "yes",
-				on_click = function(self)
-				--TODO
-					RCLootCouncil_Mainframe.abortLooting()
-					RCLootCouncil:SendCommMessage("RCLootCouncil", "stop", "RAID") -- tell the council to abort aswell
-					RCLootCouncil_Mainframe.stopLooting()
-					CloseButton_OnClick() -- close the frame
-					CloseLoot() -- close the lootlist
-				end,	
-			},
-			{	text = "no",
-				-- TODO check if a on_click function is needed
-			},
-		},
-		hide_on_escape = true,
-		show_while_dead = true,	
-	})
-	LibDialog:Register("RCLOOTCOUNCIL_CONFIRM_AWARD", {
-		text = "Are you sure you want to give %s to %s?",
-		buttons = {
-			{	text = "Yes",
-				on_click = function(self)
-					RCLootCouncil_Mainframe.award() -- TODO
-				end,			
-			},
-			{	text = "No",
-				-- TODO check if requires function
-			},
-		},
-		hide_on_escape = true,
-		show_while_dead = true,	
-	})
-
 end
 
 -- Adds an item session in lootTable
@@ -185,7 +154,7 @@ function RCLootCouncilML:StartSession()
 		
 		if db.announceItems then self:AnnounceItems() end
 		-- Start a timer to set response as offline/not installed unless we receive an ack
-		self:ScheduleTimer("Timer", 5, "LootSend")
+		self:ScheduleTimer("Timer", 10, "LootSend")
 
 		-- Finally call the voting frame
 		addon:CallModule("votingFrame")
@@ -211,9 +180,6 @@ function RCLootCouncilML:BuildMLdb()
 	-- Extract changes to addon.responses
 	local changedResponses = {};
 	for i,v in ipairs(db.responses) do
-		print("i = ".. i)
-		print("v.color = ".. tostring(unpack(v.color)))
-		print("---------------" .. tostring(unpack(addon.responses[i].color)))
 		if v.text ~= addon.responses[i].text or unpack(v.color) ~= unpack(addon.responses[i].color) then
 			changedResponses[i] = v
 		end
@@ -222,7 +188,7 @@ function RCLootCouncilML:BuildMLdb()
 	local changedButtons = {};
 	for i,v in ipairs(db.buttons) do
 		if v.text ~= addon.defaults.profile.buttons[i].text then
-			changedButtons[i].text = v.text
+			changedButtons[i] = v
 		end
 	end
 	-- Extract changed award reasons
@@ -277,7 +243,7 @@ function RCLootCouncilML:Timer(type, ...)
 	if type == "AddItem" then 
 		self:AddItem(...)
 	elseif type == "LootSend" then
-		for session, v in ipairs(addon.lootTable) do
+		for session, v in ipairs(self.lootTable) do
 			for name, t in pairs(v.candidates) do
 				if t.response == "ANNOUNCED" then 
 					addon:SendCommand("group", "change_response", session, name, "NOTHING")
@@ -287,7 +253,7 @@ function RCLootCouncilML:Timer(type, ...)
 	end
 end
 
-function RCLootCouncilML:OnCommRecevied(prefix, serializedMsg, distri, sender)
+function RCLootCouncilML:OnCommReceived(prefix, serializedMsg, distri, sender)
 	if prefix == "RCLootCouncil" then
 		-- data is always a table
 		local test, command, data = addon:Deserialize(serializedMsg)
@@ -298,6 +264,12 @@ function RCLootCouncilML:OnCommRecevied(prefix, serializedMsg, distri, sender)
 
 			elseif command == "MLdb_request" and addon.isMasterLooter then
 				addon:SendCommand(sender, "MLdb", addon.mldb)
+
+			elseif command == "lootAck" then
+				local name = unpack(data)
+				for i = 1, #self.lootTable do
+					self.lootTable[i].candidates[name].response = "WAIT"
+				end
 			end
 		else
 			addon:Debug("Error in deserializing ML comm: "..tostring(command))
@@ -491,8 +463,10 @@ function RCLootCouncilML:TrackAndLogLoot(name, item, response, boss, votes, item
 	local table = {["lootWon"] = item, ["date"] = date("%d/%m/%y"), ["time"] = date("%H:%M:%S"), ["instance"] = instanceName.." "..difficultyName,
 		["boss"] = boss, ["votes"] = votes, ["itemReplaced1"] = itemReplaced1, ["itemReplaced2"] = itemReplaced2, ["response"] = response,
 		["reason"] = reason or db.responses[response].text, ["color"] = color or db.responses[response].color}
-	if db.sendHistory then
-		addon:SendCommand("group", "history", table)
+	if db.sendHistory then -- Send it, and let comms handle the logging
+		addon:SendCommand("group", "history", name, table)
+	else -- Just log it
+		addon:SendCommand("player", "history", name, table)
 	end
 	table = {}
 end
@@ -514,7 +488,7 @@ end
 function RCLootCouncilML:EndSession()
 	session = 1
 	self.lootTable = {}
-	--addon:SendCommand("group", "message", "The session has ended.")
+	addon:SendCommand("group", "message", "The session has ended.")
 	self.running = false
 	addon.testMode = false
 	self:CancelAllTimers()

@@ -75,7 +75,7 @@ function RCLootCouncil:OnInitialize()
 	self.tVersion = "Alpha.1" -- String or nil. Indicates test version, which alters stuff like version check. Is appended to 'version', i.e. "version-tVersion"
 	
 	self.playerClass = select(2, UnitClass("player"))
-	self.guildRank = ""
+	self.guildRank = "Unguilded"
 	self.target = nil
 	self.isMasterLooter = false -- Are we the ML?
 	self.masterLooter = ""  -- Name of the ML
@@ -103,6 +103,7 @@ function RCLootCouncil:OnInitialize()
 		NOTHING			= { color = {0.5,0.5,0.5,1},	sort = 503,		text = "Offline or RCLootCouncil not installed", },
 		WAIT			= { color = {1,1,0,1},			sort = 504,		text = "Candidate is selecting response, please wait", },
 		TIMEOUT			= { color = {1,0,0,1},			sort = 505,		text = "Candidate didn't respond on time", },
+		REMOVED			= { color = {1,0,0,1},			sort = 506,		test = "Candidate removed", },
 		AUTOPASS		= { color = {0.7,0.7,0.7,1},	sort = 1000,	text = "Autopass", },
 		--[[1]]			  { color = {0,1,0,1},			sort = 1,		text = "Mainspec/Need",},
 		--[[2]]			  { color = {1,0.5,0,1},		sort = 2,		text = "Offspec/Greed",	},
@@ -250,8 +251,6 @@ function RCLootCouncil:OnInitialize()
 	LibStub("AceConfigDialog-3.0"):AddToBlizOptions("RCLootCouncil:ML", "Master Looter", "RCLootCouncil")
 end
 
-
-
 function RCLootCouncil:OnEnable()
 	-- Register the playername
 	local name, realm = UnitFullName("player")
@@ -339,8 +338,8 @@ function RCLootCouncil:ChatCommand(msg)
 	local input, arg1, arg2 = self:GetArgs(msg,3)
 	-- Some commands (cadd, deletecouncil, hide, etc) should probably be removed
 	if not input or input:trim() == "" or input == "help" then
-		if self.tVersion then print("RCLootCouncil version "..self.version.."-"..self.tVersion)
-		else print("RCLootCouncil version "..self.version) end
+		if self.tVersion then print("|cFF87CEFARCLootCouncil |cFFFFFFFFversion |cFFFFA500"..self.version.."-"..self.tVersion)
+		else print("|cFF87CEFARCLootCouncil |cFFFFFFFFversion |cFFFFA500 "..self.version) end
 		self:Print("- config - Open the options frame")
 		self:Debug("- debug or d - Toggle debugging")
 		self:Print("- show - Shows the main loot frame")
@@ -461,7 +460,8 @@ function RCLootCouncil:ChatCommand(msg)
 		self:Print("Debug Log cleared.")
 
 	elseif input == 't' and self.nnp then -- Tester cmd
-		printtable(self.mldb)
+		local test = {false, false, false, true}
+		print(tostring(unpack(test)))
 
 	else
 		-- TODO unsure if this works
@@ -485,15 +485,15 @@ function RCLootCouncil:SendCommand(target, command, ...)
 		elseif num > 0 then -- Party
 			self:SendCommMessage("RCLootCouncil", toSend, "PARTY")
 		elseif self.testMode then -- Alone (testing)
-			RCLootCouncil:OnCommReceived("RCLootCouncil", toSend, "WHISPER", self.playerName)
+			self:SendCommMessage("RCLootCouncil", toSend, "WHISPER", self.playerName)
 		end
 
 	elseif target == "guild" then
 		self:SendCommMessage("RCLootCouncil", toSend, "GUILD")
 
 	else
-		if self:UnitIsUnit(target,"player") then -- Just call directly for ourselves 
-			RCLootCouncil:OnCommReceived("RCLootCouncil", toSend, "WHISPER", target)
+		if self:UnitIsUnit(target,"player") then -- If target == "player"
+			self:SendCommMessage("RCLootCouncil", toSend, "WHISPER", self.playerName)
 		else
 			self:SendCommMessage("RCLootCouncil", toSend, "WHISPER", target)
 		end
@@ -517,8 +517,8 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 					-- TODO Autopass on items
 
 					-- Show  the LootFrame
-					--self:CallModule("lootframe")
-					--self:GetActiveModule("lootframe"):Start(self.lootTable)
+					self:CallModule("lootframe")
+					self:GetActiveModule("lootframe"):Start(self.lootTable)
 
 					-- show the voting frame to the right people
 					if (self.isCouncil or self.mldb.observe) and not self.isMasterLooter then 
@@ -590,45 +590,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 		
 			elseif command == "message" then
 				self:Print(unpack(data))	
-		
-
-			-- FROM ML_CORE commands
-			elseif command == "vote" then -- we might not need to do unit checks
-				for k,v in pairs(self.council) do
-					if self:UnitIsUnit(v,sender) or self:UnitIsUnit(sender, self.masterLooter) then -- It was really a councilmember
-						self:HandleVote(unpack(data))
-						return
-					end
-				end
-				self:Print(sender.." tried to hack the voting!")
-				
-			elseif command == "change_response" and self:UnitIsUnit(sender, self.masterLooter) then 
-				self:ChangeResponse(unpack(data))
-			
-			elseif command == "remove" and self:UnitIsUnit(sender, self.masterLooter) then
-				self:RemoveCandidate(unpack(data))
-
-			elseif command == "lootAck" then
-				local name = unpack(data)
-				for session, _ in ipairs(self.lootTable) do
-					self.lootTable[session].candidates[name].response = "WAIT"
-				end
-			
-			elseif command == "awarded" and self:UnitIsUnit(sender, self.masterLooter) then
-				local session = unpack(data)
-				self.lootTable[session].awarded = true
-				--self:Update() TODO call voting frame
-				
-			elseif command == "response" then
-				local t = unpack(data)
-				self.lootTable[t.session].candidates[t.name].totalIlvl = t.ilvl
-				self.lootTable[t.session].candidates[t.name].diff = t.diff
-				self.lootTable[t.session].candidates[t.name].gear1 = t.gear1
-				self.lootTable[t.session].candidates[t.name].gear2 = t.gear2
-				self.lootTable[t.session].candidates[t.name].note = t.note
-				self.lootTable[t.session].candidates[t.name].response = t.response
-				self:Update() --TODO
-			end
+			end			
 		else
 			self:Debug("Error in deserializing comm: "..tostring(command));
 		end
@@ -678,29 +640,6 @@ function RCLootCouncil:Test(num)
 	self:GetActiveModule("masterlooter"):Test(items)
 end
 
-function RCLootCouncil:ChangeResponse(session, name, response)
-	self.lootTable[session].candidates[name].response = response
-end
-
-function RCLootCouncil:RemoveCandidate(session, name)
-	tremove(self.lootTable[session].candidates, name)
-end
-
-function RCLootCouncil:HandleVote(session, name, vote, voter)
-	self.lootTable[session].candidates[name].votes = self.lootTable[session].candidates[name].votes + vote	
-
-	--TODO This wont work..
-	if vote > 0 then -- +1
-		tinsert(addon.lootList[session][name].voters, voter)
-	else -- -1
-		for i,v in ipairs(addon.lootList[session][name].voters) do
-			if addon:UnitIsUnit(v, voter) then 
-				return tremove(addon.lootList[session][name].voters, i)
-			end
-		end
-	end	
-end
-
 --[[
 	Used by getCurrentGear to determine slot types
 	Inspired by EPGPLootMaster
@@ -730,9 +669,8 @@ local INVTYPE_Slots = {
 		INVTYPE_TRINKET		    = {"TRINKET0SLOT", "TRINKET1SLOT"}
 }
 
-function RCLootCouncil:GetPlayersGearFromItemName(itemName)
-	self:DebugLog("GetPlayersGearFromItemName("..tostring(itemName)..")")
-	local itemID = self:GetItemID(itemName)
+function RCLootCouncil:GetPlayersGearFromItemID(itemID)
+	self:DebugLog("GetPlayersGearFromItemID("..tostring(itemID)..")")
 	if not itemID then return nil, nil; end
 	-- Extract from RCTokenTable
 	if RCTokenTable[itemID] then
@@ -821,12 +759,12 @@ function RCLootCouncil:IsCouncil(name)
 	return tContains(self.council, name)
 end
 
-function RCLootCouncil:GetNumberOfDaysFromNow(date)
-	local d, m, y = strsplit("/", date, 3)
-	local newTime = time()
-	local oldTime = time({ year = "20"..y, month = m, day = d})
-	local days = math.floor((newTime - oldTime) / 3600 / 24) -- convert to days and round down
-	return days % 30, math.floor(days / 30) % 12, math.floor(days / 12)
+function RCLootCouncil:GetNumberOfDaysFromNow(oldDate)
+	local d, m, y = strsplit("/", oldDate, 3)
+	local sinceEpoch = time({year = "20"..y, month = m, day = d}) -- convert from string to seconds since epoch
+	local diff = date("*t", time() - sinceEpoch) -- get the difference as a table
+	-- Convert to number of d/m/y
+	return diff.day - 1, diff.month - 1, diff.year - 1970
 end
 
 function RCLootCouncil:ConvertDateToString(day, month, year)
@@ -904,6 +842,33 @@ function RCLootCouncil:Getdb()
 	return db
 end
 
+function RCLootCouncil:GetButtonText(i)
+	if self.mldb.buttons[i] then
+		return self.mldb.buttons[i].text
+	else
+		return db.buttons[i].text
+	end
+end
+
+function RCLootCouncil:GetResponseText(response)
+	if self.mldb.responses[response] then
+		return self.mldb.responses[response].text
+	else 
+		return self.responses[response].text
+	end
+end
+
+function RCLootCouncil:GetResponseColor(response)
+	-- We have to convert indicies for lib-st -.-'
+	local r,g,b,a;
+	if self.mldb.responses[response] then
+		r,g,b,a = unpack(self.mldb.responses[response].color)		
+	else
+		r,g,b,a = unpack(self.responses[response].color)
+	end
+	return {["r"]=r,["g"]=g,["b"]=b,["a"]=a}
+end
+
 -- Blizz UnitIsUnit() doesn't know how to compare unit-realm with unit
 -- Seems to be because of unit-realm isn't a valid unitid
 function RCLootCouncil:UnitIsUnit(unit1, unit2)
@@ -927,11 +892,12 @@ end
 function RCLootCouncil:CallModule(module)
 	if self.disabled then return end -- Don't call modules unless enabled
 
-	if userModules[module] then -- someone else have added a module
-		self:EnableModule(userModules[module])
-	else -- use default module
-		self:EnableModule(defaultModules[module])
-	end	
+	--if userModules[module] then -- someone else have added a module
+	--	self:EnableModule(userModules[module])
+	--else -- use default module
+	--	self:EnableModule(defaultModules[module])
+	--end	
+	self:EnableModule(userModules[module] or defaultModules[module])
 end
 
 -- Returns a active module
@@ -1003,7 +969,7 @@ function RCLootCouncil:CreateTitleFrame(f, title, width)
 end
 
 -- Used as a "DoCellUpdate" function for lib-st
-function RCLootCouncil:SetCellClassIcon(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
+function RCLootCouncil.SetCellClassIcon(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
 	local celldata = data[realrow].cols[column]
 	local class = celldata.args[1]
 	if class then
@@ -1070,18 +1036,20 @@ function RCLootCouncil:CreateButton(text, parent)
 end
 
 -- Displays a tooltip anchored to the mouse
--- @param lines A table containing the lines to add
--- @hyperlink Will set the tooltip as hyperlink if not nil
-function RCLootCouncil:CreateTooltip(lines, hyperlink)
+-- @param ... Lines to be added.
+function RCLootCouncil:CreateTooltip(...)
 	GameTooltip:SetOwner(UIParent, "ANCHOR_CURSOR")
-	if hyperlink then 
-		GameTooltip:SetHyperlink(hyperlink)
-	else
-		for k,v in ipairs(lines) do
-			GameTooltip:AddLine(v,1,1,1)
-		end
+	for i = 1, select("#", ...) do
+		GameTooltip:AddLine(select(i, ...),1,1,1)
 	end
 	GameTooltip:Show()
+end
+
+-- Displays a hyperlink tooltip
+-- @param link The link to display
+function RCLootCouncil:CreateHypertip(link)
+	GameTooltip:SetOwner(UIParent, "ANCHOR_CURSOR")
+	GameTooltip:SetHyperlink(link)
 end
 
 -- Hide the tooltip created with :CreateTooltip()
@@ -1099,13 +1067,18 @@ end
 --#end UI Functions -----------------------------------------------------
 
 -- debug func
-function printtable(table)
-	for k,v in pairs(table) do
-		RCLootCouncil:Print("["..k.."] = ")
-		if type(v) ~= "table" then 
-			RCLootCouncil:Print(v)
-		else
-			printtable(v)
+function printtable( data, level )
+	level = level or 0
+	local ident=strrep('    ', level)
+	if level>5 then return end
+	if type(data)~='table' then print(tostring(data)) end;
+	for index,value in pairs(data) do repeat
+		if type(value)~='table' then
+			print( ident .. '['..index..'] = ' .. tostring(value) .. ' (' .. type(value) .. ')' );
+			break;
 		end
-	end
- end
+		print( ident .. '['..index..'] = {')
+        printtable(value, level+1)
+        print( ident .. '}' );
+	until true end
+end
