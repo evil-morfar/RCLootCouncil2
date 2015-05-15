@@ -18,7 +18,9 @@
 --_______________________________.
 --[[ CHANGELOG	
 
-====1.7.3 Release
+====1.7.3 Alpha
+	
+	*Haven't been raid tested - should work with previous versions.
 
 	++More response announcement++
 	*It was pretty stupid not to allow normal award reasons to be announced with the last update.
@@ -27,7 +29,8 @@
 	Bugfixes:	
 	*//Fixed some leaked globals.//	
 	*//Optimized date calculations.//
-	*//Notes sometimes went all over the place. Making a note and responding on another item will still cause the note to disappear. 	
+	*//Notes sometimes went all over the place. Making a note and responding on another item will still cause the note to disappear.
+	*//Sometimes items couldn't be awarded if people left the group.// 	
 ]]
 
 
