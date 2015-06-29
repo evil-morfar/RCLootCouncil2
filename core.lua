@@ -6,17 +6,12 @@
 --------------------------------
 TODO
 	Things marked with "--TODO"
-		- ML shouldn't use self.council - it's meant to store the council sent from the ML! All additions to council goes straight to db.council.
-			Edit: ML has no need at all for self.council?
-		- Altclicking should produce a list of items that should be confirmed before session start. This allows to distribute loot from bags.
-			EDIT: Should always produce a list (unless autoStart is true). The player can then choose what he wants to do, or add more loot.
-			EDIT2: sessionFrame
 		- autoOpen in defaults - used to toggle if rc should autoopen the voting frame. /rc open if not.
-		- The whole "observe" thing is handled by votingframe.lua, and is allowed if mldb.observe
 		- Make sure all variables store interchangeable data to allow for fully cross realm/language support i.e UnitFullName, Unlocalized - only change stuff on display
 		- Check if modules can be implemented smarter by getting OnModuleCreated event from Ace or something else.
 		- Give the user option to control the ignore list
-	
+		- In votingFrame:Setup() - Might be able to shave off some data by having references to the candidate table instead of just pasting it all in lootTable[s].rows
+		- HideVotes thingie
 --------------------------------
 CHANGELOG (WIP)
 	==== 2.0 Beta
@@ -142,6 +137,7 @@ function RCLootCouncil:OnInitialize()
 			multiVote = true,
 			anonymousVoting = false,
 			showForML = false,
+			hideVotes = false, -- Hide the # votes until one have voted
 			allowNotes = true,
 			autoAward = false,
 			autoAwardLowerThreshold = 2,
@@ -336,23 +332,18 @@ end
 
 function RCLootCouncil:ChatCommand(msg)
 	local input, arg1, arg2 = self:GetArgs(msg,3)
-	-- Some commands (cadd, deletecouncil, hide, etc) should probably be removed
 	if not input or input:trim() == "" or input == "help" then
 		if self.tVersion then print("|cFF87CEFARCLootCouncil |cFFFFFFFFversion |cFFFFA500"..self.version.."-"..self.tVersion)
 		else print("|cFF87CEFARCLootCouncil |cFFFFFFFFversion |cFFFFA500 "..self.version) end
 		self:Print("- config - Open the options frame")
 		self:Debug("- debug or d - Toggle debugging")
-		self:Print("- show - Shows the main loot frame")
-		self:Print("- hide - Hides the main loot frame")
+		self:Print("- open - Opens the main loot frame")
 		self:Print("- council - displays the current council")
-		self:Print("- councilAdd (name) or cAdd - adds a new member to the loot council")
-		self:Print("- remove (name) - removes a player from the loot council")
-		self:Print("- deleteEntireCouncil - deletes the entire council")
 		self:Print("- test (#)  - emulate a loot session (add a number for raid test)")
 		self:Print("- version - open the Version Checker (alt. 'v' or 'ver')")
 		self:Print("- history - open the Loot History")
 		self:Print("- whisper - displays help to whisper commands")
-		self:Print("- reset - resets the addon's frames' positions")
+		--self:Print("- reset - resets the addon's frames' positions")
 		self:Debug("- log - display the debug log")
 		self:Debug("- clearLog - clear the debug log")
 
@@ -366,16 +357,13 @@ function RCLootCouncil:ChatCommand(msg)
 		self.debug = not self.debug
 		self:Print("Debug = "..tostring(self.debug))
 
-	elseif input == 'show' then
-		if not IsInRaid() or self.isCouncil or self.isMasterLooter or self.nnp then -- only the right people may see the window during a raid since they otherwise could watch the entire voting
-			RCLootCouncil:ShowVotingFrame()
+	elseif input == 'open' then
+		if self.isCouncil or self.mldb.observe or self.nnp then -- only the right people may see the window during a raid since they otherwise could watch the entire voting
+			self:GetActiveModule("votingFrame"):Show()
 		else
 			self:Print("You are not allowed to see the Voting Frame right now.")
 		end
 
-	elseif input == 'hide' then
-		RCLootCouncil:HideMainFrame()
-	
 	elseif input == 'council' then
 		if self.council then
 			self:Print("Current Council:")
@@ -387,36 +375,11 @@ function RCLootCouncil:ChatCommand(msg)
 			self:Print("No council exists")
 		end
 
-	elseif input == 'counciladd' or input == 'cadd' then
-		if arg1 then
-			tinsert(db.council, arg1)
-			self:Print(""..arg1.." was added to the council!")
-		else
-			self:Print("Please provide a playername.")
-		end
-
-	elseif input == 'remove' then
-		if arg1 and db.council then
-			for k,v in ipairs(db.council) do
-				if self:UnitIsUnit(v,arg1) then
-					tremove(db.council, k)
-					self:Print(""..arg1.." was removed from the council.")
-				end
-			end
-			self:Print(arg1.." isn't a council member.")
-		else
-			self:Print("Please provide a playername.")
-		end
-			
-	elseif input == 'deleteentirecouncil' then
-		db.council = {}
-		self:Print("Council wiped")
-
 	elseif input == 'test' then
 		--self:Print(db.ui.versionCheckScale)
 		self:Test(tonumber(arg1) or 1)
 
-	--elseif input == "add" and self.nnp then
+	elseif input == "add" and self.nnp then
 		
 	elseif input == 'version' or input == "v" or input == "ver" then
 		self:CallModule("version")
@@ -460,8 +423,7 @@ function RCLootCouncil:ChatCommand(msg)
 		self:Print("Debug Log cleared.")
 
 	elseif input == 't' and self.nnp then -- Tester cmd
-		local test = {false, false, false, true}
-		print(tostring(unpack(test)))
+		printtable(self.mldb)
 
 	else
 		-- TODO unsure if this works
@@ -510,33 +472,28 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 		if test then
 			if command == "lootTable" then
 				if self:UnitIsUnit(sender, self.masterLooter) then 
-					self.lootTable = {} -- clear it
-					self.lootTable = unpack(data)
 					self:SendCommand(sender, "lootAck", self.playerName) -- send ack
 					
 					-- TODO Autopass on items
 
 					-- Show  the LootFrame
 					self:CallModule("lootframe")
-					self:GetActiveModule("lootframe"):Start(self.lootTable)
+					self:GetActiveModule("lootframe"):Start(unpack(data))
 
-					-- show the voting frame to the right people
-					if (self.isCouncil or self.mldb.observe) and not self.isMasterLooter then 
-						if db.autoOpen then
-							self:CallModule("votingFrame")
-							self:GetActiveModule("votingFrame"):Setup(self.lootTable)
-						else
-							self:Print('A new session has begun, type "/rc open" to open the voting frame.')
-						end
-					end	
+					-- The voting frame handles lootTable itself
 
 				else -- a non-ML send a lootTable?!
 					self:Debug(tostring(sender).." is not ML, but sent lootTable!")
 				end
-			
-			elseif command == "council" and not self.isMasterLooter then -- only ML sends council
+
+			elseif command == "council" and self:UnitIsUnit(sender, self.masterLooter) then -- only ML sends council
 				self.council = unpack(data)
-				self.isCouncil = self:IsCouncil()
+				self.isCouncil = self:IsCouncil(self.playerName)
+
+				-- prepare the voting frame for the right people
+				if self.isCouncil or self.mldb.observe then 
+					self:CallModule("votingFrame")
+				end
 
 			elseif command == "MLdb" and not self.isMasterLooter then -- ML sets his own mldb
 				self.mldb = unpack(data)
@@ -711,8 +668,8 @@ function RCLootCouncil:GetCandidateRole(candidate)
 	return UnitGroupRolesAssigned(candidate)
 end
 
-function RCLootCouncil:TranslateRole(role)
-	return self.roleTable[role]
+function RCLootCouncil.TranslateRole(role) -- reasons
+	return RCLootCouncil.roleTable[role]
 end
 
 function RCLootCouncil:GetGuildRankNum(name)
@@ -737,27 +694,6 @@ function RCLootCouncil:GetLowestItemLevel(item1, item2)
 	else return ilvl1; end
 	if ilvl1 < ilvl2 then return ilvl1; else return ilvl2; end
 end	
-
--- Returns boolean, mlName. (true if the player is ML), (nil if there's no ML) 
-function RCLootCouncil:GetML()
-	self:DebugLog("GetML()")
-	if (self.testMode and GetNumGroupMembers() == 0) or self.nnp then -- always the player when testing alone
-		return true, self.playerName
-	end
-	local lootMethod, _, MLRaidID = GetLootMethod()
-	if lootMethod == "master" then
-		local name = GetRaidRosterInfo(MLRaidID)
-		self:Debug("MasterLooter = "..name)
-		return self:UnitIsUnit(name,"player"), name
-	end
-	return false, nil;
-end
-
-function RCLootCouncil:IsCouncil(name)
-	self:Debug("IsCouncil("..name..")")
-	if self.isMasterLooter or self.nnp then return true; end -- ML and nnp is always council
-	return tContains(self.council, name)
-end
 
 function RCLootCouncil:GetNumberOfDaysFromNow(oldDate)
 	local d, m, y = strsplit("/", oldDate, 3)
@@ -812,6 +748,7 @@ function RCLootCouncil:NewMLCheck()
 			
 	elseif self.isMasterLooter and not db.autoEnable then -- addon should not auto start, but ask if it should start since we're ML
 		LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_USAGE")
+		return
 			
 	elseif not self.isMasterLooter and UnitIsGroupLeader("player") then -- lootMethod ~= ML, but we are group leader
 		if db.autoEnable then -- the addon should auto start, so change loot method to master, and make the player ML
@@ -833,6 +770,27 @@ function RCLootCouncil:NewMLCheck()
 	self:GetActiveModule("masterlooter"):NewML(self.masterlooter)
 end		
 
+-- Returns boolean, mlName. (true if the player is ML), (nil if there's no ML) 
+function RCLootCouncil:GetML()
+	self:DebugLog("GetML()")
+	if (self.testMode and GetNumGroupMembers() == 0) or self.nnp then -- always the player when testing alone
+		return true, self.playerName
+	end
+	local lootMethod, _, MLRaidID = GetLootMethod()
+	if lootMethod == "master" then
+		local name = GetRaidRosterInfo(MLRaidID)
+		self:Debug("MasterLooter = "..name)
+		return self:UnitIsUnit(name,"player"), name
+	end
+	return false, nil;
+end
+
+function RCLootCouncil:IsCouncil(name)
+	self:Debug("IsCouncil("..tostring(name)..")")
+	if self.isMasterLooter or self.nnp then return true; end -- ML and nnp is always council
+	return tContains(self.council, name)
+end
+
 function RCLootCouncil:SessionError(...)
 	self:Print("Something went wrong - please restart the session")
 	self:Debug(...)
@@ -840,33 +798,6 @@ end
 
 function RCLootCouncil:Getdb()
 	return db
-end
-
-function RCLootCouncil:GetButtonText(i)
-	if self.mldb.buttons[i] then
-		return self.mldb.buttons[i].text
-	else
-		return db.buttons[i].text
-	end
-end
-
-function RCLootCouncil:GetResponseText(response)
-	if self.mldb.responses[response] then
-		return self.mldb.responses[response].text
-	else 
-		return self.responses[response].text
-	end
-end
-
-function RCLootCouncil:GetResponseColor(response)
-	-- We have to convert indicies for lib-st -.-'
-	local r,g,b,a;
-	if self.mldb.responses[response] then
-		r,g,b,a = unpack(self.mldb.responses[response].color)		
-	else
-		r,g,b,a = unpack(self.responses[response].color)
-	end
-	return {["r"]=r,["g"]=g,["b"]=b,["a"]=a}
 end
 
 -- Blizz UnitIsUnit() doesn't know how to compare unit-realm with unit
@@ -891,12 +822,6 @@ end
 -- @param module String, must correspond to a index in self.defaultModules
 function RCLootCouncil:CallModule(module)
 	if self.disabled then return end -- Don't call modules unless enabled
-
-	--if userModules[module] then -- someone else have added a module
-	--	self:EnableModule(userModules[module])
-	--else -- use default module
-	--	self:EnableModule(defaultModules[module])
-	--end	
 	self:EnableModule(userModules[module] or defaultModules[module])
 end
 
@@ -939,33 +864,6 @@ function RCLootCouncil:GetScaler(frame)
 		libwin.SetScale(frame,v)
 	end)
    return scaler
-end
-
--- Adds a standard titleframe to f
-function RCLootCouncil:CreateTitleFrame(f, title, width)
-	local tf = CreateFrame("Frame", nil, f)
-	tf:SetBackdrop({
-        bgFile = "Interface\\ChatFrame\\ChatFrameBackground",
-        edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
-        tile = true, tileSize = 64, edgeSize = 12,
-        insets = { left = 2, right = 2, top = 2, bottom = 2 }
-	})
-    tf:SetBackdropColor(0,0,0,0.7)
-	tf:SetBackdropBorderColor(0,0.595,0.87,1)
-    tf:SetHeight(22)
-    tf:EnableMouse()
-    tf:SetMovable(true)
-	tf:SetWidth(width)
-    tf:SetPoint("CENTER",f,"TOP",0,-1)
-    tf:SetScript("OnMouseDown", function() f:StartMoving() end)
-    tf:SetScript("OnMouseUp", function() f:StopMovingOrSizing() end)
-
-    local text = tf:CreateFontString(nil,"OVERLAY","GameFontNormal")
-    text:SetPoint("CENTER",tf,"CENTER")
-	text:SetTextColor(1,1,1,1)
-    text:SetText(title)
-	tf.text = text
-	return tf
 end
 
 -- Used as a "DoCellUpdate" function for lib-st
@@ -1024,6 +922,37 @@ function RCLootCouncil:CreateFrame(name, cName, height)
 	return f
 end
 
+-- Adds a standard titleframe to a frame
+-- @param f The parent for the titleframe
+-- @param title The text to display
+-- @param width The width of the titleframe
+-- @return The titleframe
+function RCLootCouncil:CreateTitleFrame(f, title, width)
+	local tf = CreateFrame("Frame", nil, f)
+	tf:SetBackdrop({
+        bgFile = "Interface\\ChatFrame\\ChatFrameBackground",
+        edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+        tile = true, tileSize = 64, edgeSize = 12,
+        insets = { left = 2, right = 2, top = 2, bottom = 2 }
+	})
+    tf:SetBackdropColor(0,0,0,0.7)
+	tf:SetBackdropBorderColor(0,0.595,0.87,1)
+    tf:SetHeight(22)
+    tf:EnableMouse()
+    tf:SetMovable(true)
+	tf:SetWidth(width)
+    tf:SetPoint("CENTER",f,"TOP",0,-1)
+    tf:SetScript("OnMouseDown", function() f:StartMoving() end)
+    tf:SetScript("OnMouseUp", function() f:StopMovingOrSizing() end)
+
+    local text = tf:CreateFontString(nil,"OVERLAY","GameFontNormal")
+    text:SetPoint("CENTER",tf,"CENTER")
+	text:SetTextColor(1,1,1,1)
+    text:SetText(title)
+	tf.text = text
+	return tf
+end
+
 -- Creates a standard button for RCLootCouncil
 -- @param text The button's text
 -- @param parent The frame that should hold the button
@@ -1060,8 +989,32 @@ end
 -- Removes any realm name from name
 -- @param name Name to remove realmname from
 -- @return The name without realmname
-function RCLootCouncil:Ambiguate(name)
+function RCLootCouncil.Ambiguate(name)
 	return Ambiguate(name, "short")
+end
+
+-- Returns the text of a button, returning settings from mldb, or default buttons
+-- @param i The button's index
+function RCLootCouncil:GetButtonText(i)
+	return self.mldb.buttons[i] and self.mldb.buttons[i].text or db.buttons[i].text
+end
+
+-- The following functions returns the text or color of a response, returning a result from mldb if possible, otherwise the default responses.
+-- @param response Index in self.responses
+function RCLootCouncil:GetResponseText(response)
+	return self.mldb.responses[response] and self.mldb.responses[response].text or self.responses[response].text
+end
+
+function RCLootCouncil:GetResponseColor(response)
+	-- We have to convert indicies for lib-st -.-'
+	-- Didn't quite work :( local r,g,b,a = self.mldb.responses[response] and unpack(self.mldb.responses[response].color) or unpack(self.responses[response].color)
+	local r,g,b,a
+	if self.mldb.responses[response] then
+		r,g,b,a = unpack(self.mldb.responses[response].color)
+	else
+		r,g,b,a = unpack(self.responses[response].color)
+	end
+	return {["r"]=r,["g"]=g,["b"]=b,["a"]=a}
 end
 
 --#end UI Functions -----------------------------------------------------

@@ -3,7 +3,6 @@
 -- DefaultModule
 -- lootFrame.lua	Adds the interface for selecting a response to a session
 
---TODO Made with AceGUI, not tested
 
 local addon = LibStub("AceAddon-3.0"):GetAddon("RCLootCouncil")
 local LootFrame = addon:NewModule("RCLootFrame", "AceTimer-3.0")
@@ -92,7 +91,7 @@ function LootFrame:Update()
 	end
 end
 
-local toSend = {} -- More efficient
+local toSend = {data = {}} -- More efficient
 function LootFrame:OnRoll(entry, button)
 	addon:Debug("LootFrame:OnRoll("..entry..", "..button)
 	local session = entries[entry].realID
@@ -103,12 +102,12 @@ function LootFrame:OnRoll(entry, button)
 	-- Send response along with "personal" info to the ML
 	toSend.session = session
 	toSend.name = addon.playerName
-	toSend.ilvl = math.floor(select(2,GetAverageItemLevel()))
-	toSend.gear1 = g1
-	toSend.gear2 = g2
-	toSend.diff = diff
-	toSend.note = items[session].note
-	toSend.response = button
+	toSend.data.ilvl = math.floor(select(2,GetAverageItemLevel()))
+	toSend.data.gear1 = g1
+	toSend.data.gear2 = g2
+	toSend.data.diff = diff
+	toSend.data.note = items[session].note
+	toSend.data.response = button
 
 	addon:SendCommand("group", "response", toSend)
 

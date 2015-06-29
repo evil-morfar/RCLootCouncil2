@@ -25,7 +25,7 @@ end
 
 function RCLootCouncilML:OnEnable()
 	db = addon:Getdb()
-	self.group = {} -- candidateName = { class, role, rank }
+	self.candidates = {} -- candidateName = { class, role, rank }
 	self.lootTable = {} -- The MLs operating lootTable - addon.lootTable is used for visuals
 	--[[ self.lootTable[session] = { 
 		bagged, lootSlot, announced, awarded, name, link, lvl, type, subType, equipLoc, texture
@@ -62,7 +62,7 @@ function RCLootCouncilML:AddItem(session, item, bagged, slotIndex)
 		addon:Debug("Started timer: \"AddItem\"")
 		return;
 	end
-	self.lootTable[session] = {} -- wipe it
+	--self.lootTable[session] = {} -- wipe it
 	self.lootTable[session] = {
 		["bagged"]		= bagged,
 		["lootSlot"]	= slotIndex,
@@ -75,12 +75,8 @@ function RCLootCouncilML:AddItem(session, item, bagged, slotIndex)
 		["subType"]		= subType,
 		["equipLoc"]	= equipLoc,
 		["texture"]		= texture,
-		["candidates"]	= {},
+		--["candidates"]	= {},
 	};
-	-- init candidates for the item
-	for name, _ in pairs(self.group) do
-		self:InitCandidate(session, name, "NOTANNOUNCED")
-	end	
 end
 
 -- Removes item (session) from self.lootTable
@@ -88,40 +84,23 @@ function RCLootCouncilML:RemoveItem(session)
 	tremove(self.lootTable, session)
 end
 
--- Setup initial data on a candidate in LootTable
-function RCLootCouncilML:InitCandidate(session, name, response)
-	self.lootTable[session].candidates[name] = {
-		["rank"]		= self.group[name].rank or "",
-		["role"]		= self.group[name].role or "NONE",
-		["totalIlvl"]	= nil,
-		["diff"]		= 0,
-		["response"]	= response,
-		["gear1"]		= nil,
-		["gear2"]		= nil,
-		["votes"]		= 0,
-		["class"]		= self.group[name].class or "",
-		["haveVoted"]	= false,
-		["voters"]		= {},
-		["note"]		= nil,
-	}
-end
-
-function RCLootCouncilML:AddToGroup(name, class, role, rank)
-	addon:DebugLog("ML:AddToGroup("..name..", ...)")
-	self.group[name] = {
+function RCLootCouncilML:AddCandidate(name, class, role, rank)
+	addon:DebugLog("ML:AddCandidate("..name..", ...)")
+	self.candidates[name] = {
 		["class"]	= class,
 		["role"]	= role,
 		["rank"]	= rank,
 	}
 end
 
-function RCLootCouncilML:RemoveFromGroup(name)
-	self.group[name] = nil
+function RCLootCouncilML:RemoveCandidate(name)
+	self.candidates[name] = nil
 end
 
+-- TODO This needs to work if one's not in a raid (if possible)
 function RCLootCouncilML:UpdateGroup()
 	local group_copy = {}
-	for name, _ in pairs(self.group) do	group_copy[name] = name end -- Use name as index for zzz
+	for name, _ in pairs(self.candidates) do	group_copy[name] = name end -- Use name as index for zzz
 	for i = 1, GetNumGroupMembers() do
 		local name = GetRaidRosterInfo(i)
 		if group_copy[name] then	-- If they're already registered
@@ -133,7 +112,7 @@ function RCLootCouncilML:UpdateGroup()
 	end
 	-- If anything's left in group_copy it means they left the raid, so lets remove them
 	for _, name in pairs(group_copy) do
-		if name then self:RemoveFromGroup(name) end
+		if name then self:RemoveCandidate(name) end
 	end
 end
 
@@ -141,15 +120,11 @@ function RCLootCouncilML:StartSession()
 	addon:Debug("ML:StartSession()")
 	if not self.running then
 		self.running = true
-		addon:SendCommand("group", "council", addon.council) -- TODO only send council if there's changes, since it's send once a ML is detected
-		-- update the session to be announced 
-		for _,v in ipairs(self.lootTable) do
-			v.announced = true
-			for _,j in pairs(v.candidates) do
-				j.response = "ANNOUNCED"
-			end				
-		end
 		self:MLdbCheck() -- check if we need to build mldb or anyone have an outdated version
+		addon:SendCommand("group", "council", addon.council) -- TODO only send council if there's changes, since it's send once a ML is detected
+		addon:SendCommand("group", "candidates", self.candidates) -- TODO Same as above
+
+		
 		addon:SendCommand("group", "lootTable", self.lootTable)
 		
 		if db.announceItems then self:AnnounceItems() end
@@ -157,8 +132,8 @@ function RCLootCouncilML:StartSession()
 		self:ScheduleTimer("Timer", 10, "LootSend")
 
 		-- Finally call the voting frame
-		addon:CallModule("votingFrame")
-		addon:GetActiveModule("votingFrame"):Setup(self.lootTable)
+		--addon:CallModule("votingFrame")
+		--addon:GetActiveModule("votingFrame"):Setup(self.lootTable)
 		
 	else
 		addon:Debug("called while running a session!")
@@ -243,13 +218,7 @@ function RCLootCouncilML:Timer(type, ...)
 	if type == "AddItem" then 
 		self:AddItem(...)
 	elseif type == "LootSend" then
-		for session, v in ipairs(self.lootTable) do
-			for name, t in pairs(v.candidates) do
-				if t.response == "ANNOUNCED" then 
-					addon:SendCommand("group", "change_response", session, name, "NOTHING")
-				end
-			end
-		end	
+		addon:SendCommand("group", "offline_timer")
 	end
 end
 
@@ -260,16 +229,16 @@ function RCLootCouncilML:OnCommReceived(prefix, serializedMsg, distri, sender)
 
 		if test then
 			if command == "playerInfo" and addon.isMasterLooter then -- only ML should receive playerInfo
-				self:AddToGroup(unpack(data))
+				self:AddCandidate(unpack(data))
 
 			elseif command == "MLdb_request" and addon.isMasterLooter then
 				addon:SendCommand(sender, "MLdb", addon.mldb)
 
-			elseif command == "lootAck" then
-				local name = unpack(data)
-				for i = 1, #self.lootTable do
-					self.lootTable[i].candidates[name].response = "WAIT"
-				end
+			--elseif command == "lootAck" then
+			--	local name = unpack(data)
+			--	for i = 1, #self.lootTable do
+			--		self.lootTable[i].candidates[name].response = "WAIT"
+			--	end
 			end
 		else
 			addon:Debug("Error in deserializing ML comm: "..tostring(command))
@@ -424,7 +393,7 @@ function RCLootCouncilML:Award(session, winner)
 			-- TODO insert announce text if awarded by addon.db.awardReason
 			for k,v in pairs(db.awardText) do
 				if v.channel ~= "NONE" then
-					local message = gsub(v.text, "&p", addon:Ambiguate(winner))
+					local message = gsub(v.text, "&p", addon.Ambiguate(winner))
 					message = gsub(message, "&i", addon.lootList[session].link)
 					SendChatMessage(message, v.channel)
 				end
@@ -451,7 +420,7 @@ function RCLootCouncilML:AutoAward(lootIndex, item, name, reason, boss)
 			end
 		end
 	end
-	self:Print(item.." was Auto Awarded to "..addon:Ambiguate(name).. " with the reason "..reason)
+	self:Print(item.." was Auto Awarded to "..addon.Ambiguate(name).. " with the reason "..reason)
 	if db.enableHistory and db.awardReasons[reason].log then -- only track and log if allowed
 		RCLootCouncilML:TrackAndLogLoot(name, item, reason, boss, 0, nil, nil, db.autoAwardReasons[reason].text, db.autoAwardReasons[reason].color)
 	end
@@ -503,9 +472,9 @@ end
 function RCLootCouncilML:Test(items)
 	-- check if we're added in self.group
 	-- (We might not be on solo test)
-	if not tContains(self.group, addon.playerName) then
+	if not tContains(self.candidates, addon.playerName) then
 		local role = addon:GetCandidateRole(addon.playerName)
-		self:AddToGroup(addon.playerName, addon.playerClass, role, addon.guildRank)	
+		self:AddCandidate(addon.playerName, addon.playerClass, role, addon.guildRank)	
 	end
 
 	-- Add the items
