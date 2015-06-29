@@ -18,9 +18,9 @@
 --_______________________________.
 --[[ CHANGELOG	
 
-====1.7.3 Alpha
-	
-	*Haven't been raid tested - should work with previous versions.
+====1.7.3 Release
+
+	*Updated .toc for 6.2
 
 	++More response announcement++
 	*It was pretty stupid not to allow normal award reasons to be announced with the last update.

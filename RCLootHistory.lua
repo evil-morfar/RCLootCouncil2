@@ -28,7 +28,7 @@ function RCLootHistory:OnLoad()
 		entry = CreateFrame("Button", "$parentEntry"..i, RCLootHistoryFrameScrollFrame, "RCLootHistoryEntry")
 		entry:SetID(i)
 		entry:SetPoint("TOP", "$parentEntry"..(i-1), "BOTTOM")
-	end	
+	end 
 end
 
 function RCLootHistory:OnEnable()
