@@ -18,7 +18,8 @@ CHANGELOG (WIP)
 
 	*Changed Test mode behavior
 	*Added status on roll sendouts (not announced, init, offline etc).
-	TODO *Added Autopass feature.
+	*Added Autopass feature.
+		Autopasses on things certain classes can't use (mail for priests) and things certain classes shouldn't use (leather for hunters)
 	*Added module support.
 		All non-core functions and visual elements is now modules.
 	*Added Obeserve mode.
@@ -26,6 +27,7 @@ CHANGELOG (WIP)
 	*Added ability to temporary disable the addon.
 	*Using LibDialog-1.0 to avoid UI taint.
 	*Updated Options menu (more options and better descriptions).
+	*Added localization
   	Bugfixes:
 
 ]]
@@ -122,9 +124,10 @@ function RCLootCouncil:OnInitialize()
 
 	-- Option table defaults
 	self.defaults = {
-		global = { -- debug log
+		global = {
 			logMaxEntries = 300,
-			log = {},
+			log = {}, -- debug log
+			localizedSubTypes = {},
 		},
 		profile = {
 			autoStart = false, -- the old autoLooting e.g. just start a session with all eligible items
@@ -148,6 +151,8 @@ function RCLootCouncil:OnInitialize()
 			observe = false, -- observe mode on/off
 			autoOpen = true, -- auto open the voting frame
 			autoEnable = false, -- Skip "Use for this raid?" message
+			autoPass = true,
+			silentAutoPass = false, -- Show autopass message
 
 			UI = { -- stores all ui information
 				['*'] = { -- Defaults for Lib-Window
@@ -268,7 +273,7 @@ function RCLootCouncil:OnEnable()
 
 	if self.tVersion then
 		self.db.global.logMaxEntries = 1000 -- bump it for test version
-	elseif self.db.global.tVersion then -- recently ran a test version, so reset debugLog
+	elseif self.db.global.tVersion and self.debug then -- recently ran a test version, so reset debugLog
 		debugLog = {}
 	end
 
@@ -280,6 +285,9 @@ function RCLootCouncil:OnEnable()
 	end
 
 	ChatFrame_AddMessageEventFilter("CHAT_MSG_WHISPER_INFORM", filterFunc)
+
+	-- Create localization for autopass
+	self:LocalizeSubTypes()
 
 	----------PopUp setups --------------
 	-------------------------------------
@@ -464,7 +472,6 @@ function RCLootCouncil:SendCommand(target, command, ...)
 	end
 end
 
-
 function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 	if prefix == "RCLootCouncil" then
 		self:Debug("Comm received: "..serializedMsg..", from: "..sender)
@@ -476,11 +483,21 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 				if self:UnitIsUnit(sender, self.masterLooter) then
 					self:SendCommand(sender, "lootAck", self.playerName) -- send ack
 
-					-- TODO Autopass on items
+					local lootTable = unpack(data)
+					if db.autoPass then
+						for ses, v in pairs(lootTable) do
+								local autopass = self:AutoPassCheck(v.subType)
+								if autopass then
+									if not db.silentAutoPass then self:Print("Autopassed on "..v.link) end
+									self:SendCommand("group", "response", self:CreateResponse(ses, tonumber(strmatch(v.link, "item:(%d+):")), v.ilvl, "AUTOPASS"))
+									tremove(lootTable, ses) -- TODO not sure this'll work!
+								end
+						end
+					end
 
 					-- Show  the LootFrame
 					self:CallModule("lootframe")
-					self:GetActiveModule("lootframe"):Start(unpack(data))
+					self:GetActiveModule("lootframe"):Start(lootTable)
 
 					-- The voting frame handles lootTable itself
 
@@ -647,6 +664,100 @@ function RCLootCouncil:GetPlayersGearFromItemID(itemID)
 		item2 = GetInventoryItemLink("player", GetInventorySlotInfo(slot[2]))
 	end
 	return item1, item2;
+end
+
+-- Classes that should auto pass a subtype
+local autopassTable = {
+	["Cloth"]							= {"WARRIOR", "DEATHKNIGHT", "PALADIN", "DRUID", "MONK", "ROGUE", "HUNTER", "SHAMAN"},
+	["Leather"] 					= {"WARRIOR", "DEATHKNIGHT", "PALADIN", "HUNTER", "SHAMAN", "PRIEST", "MAGE", "WARLOCK"},
+	["Mail"] 							= {"WARRIOR", "DEATHKNIGHT", "PALADIN", "DRUID", "MONK", "ROGUE", "PRIEST", "MAGE", "WARLOCK"},
+	["Plate"]							= {"DRUID", "MONK", "ROGUE", "HUNTER", "SHAMAN", "PRIEST", "MAGE", "WARLOCK"},
+	["Shields"] 					= {"DEATHKNIGHT", "DRUID", "MONK", "ROGUE", "HUNTER","PRIEST", "MAGE", "WARLOCK"},
+	["Bows"] 							= {"DEATHKNIGHT", "PALADIN", "DRUID", "MONK", "SHAMAN", "PRIEST", "MAGE", "WARLOCK"},
+	["Crossbows"] 				= {"DEATHKNIGHT", "PALADIN", "DRUID", "MONK", "SHAMAN", "PRIEST", "MAGE", "WARLOCK"},
+	["Daggers"]						= {"WARRIOR", "DEATHKNIGHT", "PALADIN", "DRUID", "MONK", "HUNTER", "SHAMAN", },
+	["Guns"]							= {"DEATHKNIGHT", "PALADIN", "DRUID", "MONK","SHAMAN", "PRIEST", "MAGE", "WARLOCK"},
+	["Fist Weapons"] 			= {"DEATHKNIGHT", "PALADIN",  "PRIEST", "MAGE", "WARLOCK"},
+	["One-Handed Axes"]		= {"DRUID", "MONK", "ROGUE", "PRIEST", "MAGE", "WARLOCK"},
+	["One-Handed Maces"]	= {"MONK", "HUNTER", "MAGE", "WARLOCK"},
+	["One-Handed Swords"] = {"DRUID", "SHAMAN", "PRIEST",},
+	["Polearms"] 					= {"ROGUE", "HUNTER", "SHAMAN", "PRIEST", "MAGE", "WARLOCK"},
+	["Staves"]						= {"WARRIOR", "DEATHKNIGHT", "PALADIN",  "ROGUE", "HUNTER"},
+	["Two-Handed Axes"]		= {"DRUID", "ROGUE", "MONK", "PRIEST", "MAGE", "WARLOCK"},
+	["Two-Handed Maces"]	= {"MONK", "ROGUE", "HUNTER", "PRIEST", "MAGE", "WARLOCK"},
+	["Two-Handed Swords"]	= {"DRUID", "MONK", "ROGUE", "SHAMAN", "PRIEST", "MAGE", "WARLOCK"},
+	["Wands"]							= {"WARRIOR", "DEATHKNIGHT", "PALADIN", "DRUID", "MONK", "ROGUE", "HUNTER", "SHAMAN"},
+}
+
+-- Used to find localized subType names
+local subTypeLookup = {
+	["Cloth"]							= 124168, -- Felgrease-Smudged Robes
+	["Leather"] 					= 124265, -- Leggings of Eternal Terror
+	["Mail"] 							= 124291, -- Eredar Fel-Chain Gloves
+	["Plate"]							= 124322, -- Treads of the Defiler
+	["Shields"] 					= 124354, -- Felforged Aegis
+	["Bows"] 							= 128194, -- Snarlwood Recurve Bow
+	["Crossbows"] 				= 124362, -- Felcrystal Impaler
+	["Daggers"]						= 124367, -- Fang of the Pit
+	["Guns"]							= 124370, -- Felfire Munitions Launcher
+	["Fist Weapons"] 			= 124368, -- Demonblade Eviscerator
+	["One-Handed Axes"]		= 128196, -- Limbcarver Hatchet
+	["One-Handed Maces"]	= 124372, -- Gavel of the Eredar
+	["One-Handed Swords"] = 124387, -- Shadowrend Talonblade
+	["Polearms"] 					= 124377, -- Rune Infused Spear
+	["Staves"]						= 124382, -- Edict of Argus
+	["Two-Handed Axes"]		= 124360, -- Hellrender
+	["Two-Handed Maces"]	= 124375, -- Maul of Tyranny
+	["Two-Handed Swords"]	= 124389, -- Calamity's Edge
+	["Wands"]							= 128096, -- Demonspine Wand
+}
+function RCLootCouncil:AutoPassCheck(type)
+	if type and autopassTable[self.db.global.localizedSubTypes[type]] then
+		for _, class in ipairs(autopassTable[self.db.global.localizedSubTypes[type]]) do
+			if class == self.playerClass then
+				return true
+			end
+		end
+	end
+	return false
+end
+
+function RCLootCouncil:LocalizeSubTypes()
+	if self.db.global.localizedSubTypes["Wands"] then return end -- We only need to create it once
+	for name, item in pairs(subTypeLookup) do
+		local sType = select(8, GetItemInfo(item))
+		if sType then
+			self.db.global.localizedSubTypes[sType] = name
+			self:DebugLog("Found "..name.." localized as: "..sType)
+		else -- Probably not cached, set a timer
+			self:ScheduleTimer("Timer", 2, "LocalizeSubTypes")
+		end
+	end
+end
+
+function RCLootCouncil:Timer(type, ...)
+	self:Debug("Timer "..type.." passed")
+	if type == "LocalizeSubTypes" then
+		self:LocalizeSubTypes()
+	end
+end
+
+function RCLootCouncil:CreateResponse(session, itemid, ilvl, response, note)
+	self:Debug(":CreateResponse("..session..", "..itemid..", "..ilvl..", "..response..", "..tostring(note))
+	local g1, g2 = self:GetPlayersGearFromItemID(itemid)
+	local diff = nil
+	if g1 then diff = (ilvl - select(4, GetItemInfo(g1))) end
+	return {
+		session = session,
+		name = self.playerName,
+		data = {
+				gear1 = g1,
+				gear2 = g2,
+				diff = diff,
+				note = note,
+				response = response
+		}
+	}
 end
 
 function RCLootCouncil:GetPlayersGuildRank()

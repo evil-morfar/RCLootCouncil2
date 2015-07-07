@@ -95,19 +95,7 @@ local toSend = {data = {}} -- More efficient
 function LootFrame:OnRoll(entry, button)
 	addon:Debug("LootFrame:OnRoll("..entry..", "..button)
 	local session = entries[entry].realID
-	local g1, g2 = addon:GetPlayersGearFromItemID(tonumber(strmatch(items[session].link, "item:(%d+):")))
-	local diff = nil
-	if g1 then diff = (items[session].ilvl - select(4, GetItemInfo(g1))) end
-
-	-- Send response along with "personal" info to the ML
-	toSend.session = session
-	toSend.name = addon.playerName
-	toSend.data.ilvl = math.floor(select(2,GetAverageItemLevel()))
-	toSend.data.gear1 = g1
-	toSend.data.gear2 = g2
-	toSend.data.diff = diff
-	toSend.data.note = items[session].note
-	toSend.data.response = button
+	toSend = addon:CreateResponse(session, tonumber(strmatch(items[session].link, "item:(%d+):")), items[session].ilvl, button, items[session].note)
 
 	addon:SendCommand("group", "response", toSend)
 

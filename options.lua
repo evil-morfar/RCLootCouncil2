@@ -81,6 +81,27 @@ function addon:OptionsTable()
 										addon:CallModule("version")
 									end
 								},
+								header2 = {
+									order = 4,
+									type = "header",
+									name = "",
+								},
+								autopass = {
+									order = 5,
+									name = L["Auto Pass"],
+									desc = L["auto_pass_desc"],
+									type = "toggle",
+									set = function() db.autoPass = not db.autoPass end,
+									get = function() return db.autoPass end,
+								},
+								silentAutoPass = {
+									order = 6,
+									name = L["Silent Auto Pass"],
+									desc = L["silent_auto_pass_desc"],
+									type = "toggle",
+									set = function() db.silentAutoPass = not db.silentAutoPass end,
+									get = function() return db.silentAutoPass end,
+								},
 							},
 						},
 						lootHistoryOptions = {
