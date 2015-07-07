@@ -32,7 +32,7 @@ end
 
 function LootFrame:OnEnable()
 	db = addon:Getdb()
-	buttons = db.buttons	
+	buttons = db.buttons
 end
 
 function LootFrame:OnDisable()
@@ -68,7 +68,7 @@ function LootFrame:Update()
 			entries[numEntries].link = v.link
 			entries[numEntries].icon:SetNormalTexture(v.texture)
 			entries[numEntries].itemText:SetText(v.link)
-			entries[numEntries].itemLvl:SetText("ilvl: "..v.ilvl)
+			entries[numEntries].itemLvl:SetText(L["ilvl: x"](v.ilvl))
 			-- Update the buttons and get frame width
 			-- TODO There might be a better way of doing this instead of SetText() on every update?
 			for i = 1, addon.mldb.numButtons do
@@ -97,7 +97,7 @@ function LootFrame:OnRoll(entry, button)
 	local session = entries[entry].realID
 	local g1, g2 = addon:GetPlayersGearFromItemID(tonumber(strmatch(items[session].link, "item:(%d+):")))
 	local diff = nil
-	if g1 then diff = (items[session].ilvl - select(4, GetItemInfo(g1))) end	
+	if g1 then diff = (items[session].ilvl - select(4, GetItemInfo(g1))) end
 
 	-- Send response along with "personal" info to the ML
 	toSend.session = session
@@ -114,13 +114,13 @@ function LootFrame:OnRoll(entry, button)
 	numRolled = numRolled + 1
 	items[session].rolled = true
 	self:Update()
-	
+
 end
 
 function LootFrame:GetFrame()
 	if self.frame then return self.frame end
 	local f = addon:CreateFrame("DefaultRCLootFrame", "lootframe", 375)
-	f.title = addon:CreateTitleFrame(f, "RCLootCouncil Loot Frame", 250)
+	f.title = addon:CreateTitleFrame(f, L["RCLootCouncil Loot Frame"], 250)
 	return f
 end
 
@@ -139,7 +139,7 @@ function LootFrame:GetEntry(entry)
 	local icon = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
 	icon:SetSize(ENTRY_HEIGHT*2/3, ENTRY_HEIGHT*2/3)
 	icon:SetPoint("TOPLEFT", f, "TOPLEFT", 12, -13)
-	icon:SetScript("OnEnter", function() 
+	icon:SetScript("OnEnter", function()
 		if not f.link then return; end
 		addon:CreateHypertip(f.link)
 	end)
@@ -151,7 +151,7 @@ function LootFrame:GetEntry(entry)
         end
     end);
 	f.icon = icon
-	
+
 	-------- Buttons -------------
 	f.buttons = {}
 	for i = 1, addon.mldb.numButtons do
@@ -174,9 +174,9 @@ function LootFrame:GetEntry(entry)
     noteButton:SetPoint("LEFT", f.buttons[addon.mldb.numButtons], "RIGHT", 5, 0)
 	noteButton:SetScript("OnEnter", function()
 		if items[entries[entry].realID].note then -- If they already entered a note:
-			addon:CreateTooltip("Your note:", items[entries[entry].realID].note, "\nClick to change your note.")
+			addon:CreateTooltip(L["Your note:"], items[entries[entry].realID].note, "\nClick to change your note.")
 		else
-			addon:CreateTooltip("Add Note", "Click to add note to send to the council.")
+			addon:CreateTooltip(L["Add Note"], L["Click to add note to send to the council."])
 		end
 	end)
 	noteButton:SetScript("OnLeave", function() addon:HideTooltip() end)
@@ -188,7 +188,7 @@ function LootFrame:GetEntry(entry)
 	iTxt:SetPoint("TOPLEFT", f.icon, "TOPRIGHT", 5, -5)
 	iTxt:SetText("Item name goes here!!!!") -- Set text for reasons
 	f.itemText = iTxt
-	
+
 	local ilvl = f:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 	ilvl:SetPoint("TOPRIGHT", f, "TOPRIGHT", -12, -13)
 	ilvl:SetTextColor(1, 1, 1) -- White
@@ -200,7 +200,7 @@ end
 
 -- Note button
 LibDialog:Register("LOOTFRAME_NOTE", {
-	text = "Enter your note:",
+	text = L["Enter your note:"],
 	editboxes = {
 		{
 			on_enter_pressed = function(self, entry)

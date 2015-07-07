@@ -32,6 +32,7 @@ CHANGELOG (WIP)
 
 RCLootCouncil = LibStub("AceAddon-3.0"):NewAddon("RCLootCouncil", "AceConsole-3.0", "AceEvent-3.0", "AceComm-3.0", "AceSerializer-3.0", "AceHook-3.0", "AceTimer-3.0");
 local LibDialog = LibStub("LibDialog-1.0")
+local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 
 RCLootCouncil:SetDefaultModuleState(false)
 
@@ -70,7 +71,7 @@ function RCLootCouncil:OnInitialize()
 	self.tVersion = "Alpha.1" -- String or nil. Indicates test version, which alters stuff like version check. Is appended to 'version', i.e. "version-tVersion"
 
 	self.playerClass = select(2, UnitClass("player"))
-	self.guildRank = "Unguilded"
+	self.guildRank = L["Unguilded"]
 	self.target = nil
 	self.isMasterLooter = false -- Are we the ML?
 	self.masterLooter = ""  -- Name of the ML
@@ -93,27 +94,27 @@ function RCLootCouncil:OnInitialize()
 		}	]]
 
 	self.responses = {
-		NOTANNOUNCED	= { color = {1,0,1,1},				sort = 501,		text = "Not announced",},
-		ANNOUNCED		= { color = {1,0,1,1},					sort = 502,		text = "Loot announced, waiting for answer", },
-		NOTHING			= { color = {0.5,0.5,0.5,1},		sort = 503,		text = "Offline or RCLootCouncil not installed", },
-		WAIT			= { color = {1,1,0,1},						sort = 504,		text = "Candidate is selecting response, please wait", },
-		TIMEOUT			= { color = {1,0,0,1},					sort = 505,		text = "Candidate didn't respond on time", },
-		REMOVED			= { color = {1,0,0,1},					sort = 506,		test = "Candidate removed", },
-		AUTOPASS		= { color = {0.7,0.7,0.7,1},		sort = 1000,	text = "Autopass", },
-		--[[1]]			  { color = {0,1,0,1},					sort = 1,			text = "Mainspec/Need",},
-		--[[2]]			  { color = {1,0.5,0,1},				sort = 2,			text = "Offspec/Greed",	},
-		--[[3]]			  { color = {0,0.7,0.7,1},			sort = 3,			text = "Minor Upgrade",},
-		--[[4]]			  { color = {0.7, 0.7,0.7,1},		sort = 999,		text = "Pass",},
-		--[[5]]			  { color = {0.75,0.75,0.75,1},	sort = 4,			text = "Button5",},
-		--[[6]]			  { color = {0.75,0.75,0.75,1},	sort = 5,			text = "Button6",},
-		--[[7]]			  { color = {0.75,0.75,0.75,1},	sort = 6,			text = "Button7",},
-		--[[8]]			  { color = {0.75,0.75,0.75,1},	sort = 7,			text = "Button8",},
+		NOTANNOUNCED	= { color = {1,0,1,1},				sort = 501,		text = L["Not announced"],},
+		ANNOUNCED		= { color = {1,0,1,1},					sort = 502,		text = L["Loot announced, waiting for answer"], },
+		NOTHING			= { color = {0.5,0.5,0.5,1},		sort = 503,		text = L["Offline or RCLootCouncil not installed"], },
+		WAIT			= { color = {1,1,0,1},						sort = 504,		text = L["Candidate is selecting response, please wait"], },
+		TIMEOUT			= { color = {1,0,0,1},					sort = 505,		text = L["Candidate didn't respond on time"], },
+		REMOVED			= { color = {1,0,0,1},					sort = 506,		test = L["Candidate removed"], },
+		AUTOPASS		= { color = {0.7,0.7,0.7,1},		sort = 1000,	text = L["Autopass"], },
+		--[[1]]			  { color = {0,1,0,1},					sort = 1,			text = L["Mainspec/Need"],},
+		--[[2]]			  { color = {1,0.5,0,1},				sort = 2,			text = L["Offspec/Greed"],	},
+		--[[3]]			  { color = {0,0.7,0.7,1},			sort = 3,			text = L["Minor Upgrade"],},
+		--[[4]]			  { color = {0.7, 0.7,0.7,1},		sort = 999,		text = L["Pass"],},
+		--[[5]]			  { color = {0.75,0.75,0.75,1},	sort = 4,			text = L["Button"]..5,},
+		--[[6]]			  { color = {0.75,0.75,0.75,1},	sort = 5,			text = L["Button"]..6,},
+		--[[7]]			  { color = {0.75,0.75,0.75,1},	sort = 6,			text = L["Button"]..7,},
+		--[[8]]			  { color = {0.75,0.75,0.75,1},	sort = 7,			text = L["Button"]..8,},
 	}
 	self.roleTable = {
-		TANK =		"Tank",
-		HEALER =	"Healer",
-		DAMAGER =	"DPS",
-		NONE =		"None",
+		TANK =		L["Tank"],
+		HEALER =	L["Healer"],
+		DAMAGER =	L["DPS"],
+		NONE =		L["None"],
 	}
 
 	self.testMode = false; -- tentative?
@@ -142,7 +143,7 @@ function RCLootCouncil:OnInitialize()
 			autoAward = false,
 			autoAwardLowerThreshold = 2,
 			autoAwardUpperThreshold = 3,
-			autoAwardTo = "None",
+			autoAwardTo = L["None"],
 			autoAwardReason = 1,
 			observe = false, -- observe mode on/off
 			autoOpen = true, -- auto open the voting frame
@@ -159,11 +160,11 @@ function RCLootCouncil:OnInitialize()
 
 			announceAward = true,
 			awardText = { -- Just max it at 2 channels
-				{ channel = "RAID",	text = "&p was awarded with &i!",},
+				{ channel = "RAID",	text = L["&p was awarded with &i!"],},
 				{ channel = "NONE",	text = "",},
 			},
 			announceItems = false,
-			announceText = "Items under consideration:",
+			announceText = L["Items under consideration:"],
 			announceChannel = "RAID",
 
 			responses = self.responses,
@@ -180,17 +181,17 @@ function RCLootCouncil:OnInitialize()
 			numButtons = 4,
 			passButton = 4,
 			buttons = {
-				{	text = "Need",			whisperKey = "need, mainspec, ms, 1", },	-- 1
-				{	text = "Greed",			whisperKey = "greed, offspec, os, 2",},		-- 2
-				{	text = "Minor Upgrade",	whisperKey = "minorupgrade, minor, 3",},	-- 3
-				{	text = "Pass",			whisperKey = "pass, 4",	},					-- 4
+				{	text = L["Need"],					whisperKey = L["need, mainspec, ms, 1"], },	-- 1
+				{	text = L["Greed"],				whisperKey = L["greed, offspec, os, 2"],},		-- 2
+				{	text = L["Minor Upgrade"],whisperKey = L["minorupgrade, minor, 3"],},	-- 3
+				{	text = L["Pass"],					whisperKey = L["pass, 4"],	},					-- 4
 			},
 			maxAwardReasons = 8,
 			numAwardReasons = 3,
 			awardReasons = {
-				{ color = {0, 0, 0, 1}, log = true,	sort = 401,	text = "Disenchant", },
-				{ color = {0, 0, 0, 1}, log = true,	sort = 402,	text = "Banking", },
-				{ color = {0, 0, 0, 1}, log = false,sort = 403,	text = "Free",},
+				{ color = {0, 0, 0, 1}, log = true,	sort = 401,	text = L["Disenchant"], },
+				{ color = {0, 0, 0, 1}, log = true,	sort = 402,	text = L["Banking"], },
+				{ color = {0, 0, 0, 1}, log = false,sort = 403,	text = L["Free"],},
 			},
 
 			-- List of items to ignore:
@@ -207,7 +208,7 @@ function RCLootCouncil:OnInitialize()
 	-- create the other buttons/responses
 	for i = 5, self.defaults.profile.maxButtons do
 		tinsert(self.defaults.profile.buttons, i, {
-			text = "Button "..i,
+			text = L["Button"].." "..i,
 			whisperKey = ""..i,
 		})
 	end
@@ -283,33 +284,33 @@ function RCLootCouncil:OnEnable()
 	----------PopUp setups --------------
 	-------------------------------------
 	LibDialog:Register("RCLOOTCOUNCIL_CONFIRM_USAGE", {
-		text = "Do you want to use RCLootCouncil for this raid?",
+		text = L["Do you want to use RCLootCouncil for this raid?"],
 		buttons = {
-			{	text = "Yes",
+			{	text = L["Yes"],
 				on_click = function(self) --TODO Lot of remaking here
 					local lootMethod, _, MLRaidID = GetLootMethod()
 					if lootMethod ~= "master" then
-						RCLootCouncil:Print("Changing LootMethod to Master Looting")
+						RCLootCouncil:Print(L["Changing LootMethod to Master Looting"])
 						SetLootMethod("master", RCLootCouncil.playerName) -- activate ML
 					end
 					if db.autoAward and GetLootThreshold() > db.autoAwardQualityLower then
-						RCLootCouncil:Print("Changing loot threshold to enable Auto Awarding.")
+						RCLootCouncil:Print(L["Changing loot threshold to enable Auto Awarding"])
 						SetLootThreshold(db.autoAwardQualityLower)
 					end
-					RCLootCouncil:Print(" now handles looting.")
+					RCLootCouncil:Print(L[" now handles looting"])
 					RCLootCouncil.use = true
 					RCLootCouncil.isMasterLooter = true
 					RCLootCouncil.masterLooter = RCLootCouncil.playerName
 					if #db.council < 1 then -- if there's no council
-						RCLootCouncil:Print("You haven't set a council! You can choose a minimum rank here and/or change it through the options menu.")
+						RCLootCouncil:Print(L["You haven't set a council! You can choose a minimum rank here and/or change it through the options menu."])
 						RCLootCouncil:CallModule("rank") -- show the rankframe
 					end
 				end,
 			},
-			{	text = "No",
+			{	text = L["No"],
 				on_click = function(self)
 					RCLootCouncil.use = false;
-					RCLootcouncil:Print(" is not active in this raid.")
+					RCLootcouncil:Print(L[" is not active in this raid."])
 				end,
 			},
 		},
@@ -332,67 +333,68 @@ end
 
 function RCLootCouncil:ChatCommand(msg)
 	local input, arg1, arg2 = self:GetArgs(msg,3)
-	if not input or input:trim() == "" or input == "help" then
-		if self.tVersion then print("|cFF87CEFARCLootCouncil |cFFFFFFFFversion |cFFFFA500"..self.version.."-"..self.tVersion)
-		else print("|cFF87CEFARCLootCouncil |cFFFFFFFFversion |cFFFFA500 "..self.version) end
-		self:Print("- config - Open the options frame")
-		self:Debug("- debug or d - Toggle debugging")
-		self:Print("- open - Opens the main loot frame")
-		self:Print("- council - displays the current council")
-		self:Print("- test (#)  - emulate a loot session (add a number for raid test)")
-		self:Print("- version - open the Version Checker (alt. 'v' or 'ver')")
-		self:Print("- history - open the Loot History")
-		self:Print("- whisper - displays help to whisper commands")
+	input = strlower(input)
+	if not input or input:trim() == "" or input == "help" or input == L["help"] then
+		if self.tVersion then print(format(L["chat tVersion string"],self.version, self.tVersion))
+		else print(format(L["chat version String"],self.version)) end
+		self:Print(L["- config - Open the options frame"])
+		self:Debug(L["- debug or d - Toggle debugging"])
+		self:Print(L["- open - Opens the main loot frame"])
+		self:Print(L["- council - displays the current council"])
+		self:Print(L["- test (#)  - emulate a loot session (add a number for raid test)"])
+		self:Print(L["- version - open the Version Checker (alt. 'v' or 'ver')"])
+		self:Print(L["- history - open the Loot History"])
+		self:Print(L["- whisper - displays help to whisper commands"])
 		--self:Print("- reset - resets the addon's frames' positions")
-		self:Debug("- log - display the debug log")
-		self:Debug("- clearLog - clear the debug log")
+		self:Debug(L["- log - display the debug log"])
+		self:Debug(L["- clearLog - clear the debug log"])
 
-	elseif input == 'config' then
+	elseif input == 'config' or L["config"] then
 		-- Call it twice, because reasons..
 		InterfaceOptionsFrame_OpenToCategory(self.optionsFrame)
 		InterfaceOptionsFrame_OpenToCategory(self.optionsFrame)
 		--LibStub("AceConfigDialog-3.0"):Open("RCLootCouncil")
 
-    elseif input == 'debug' or input == 'd' then
+	elseif input == 'debug' or input == 'd' then
 		self.debug = not self.debug
 		self:Print("Debug = "..tostring(self.debug))
 
-	elseif input == 'open' then
+	elseif input == 'open' or input == L["open"] then
 		if self.isCouncil or self.mldb.observe or self.nnp then -- only the right people may see the window during a raid since they otherwise could watch the entire voting
 			self:GetActiveModule("votingFrame"):Show()
 		else
-			self:Print("You are not allowed to see the Voting Frame right now.")
+			self:Print(L["You are not allowed to see the Voting Frame right now."])
 		end
 
-	elseif input == 'council' then
+	elseif input == 'council' or input == L["council"] then
 		if self.council then
-			self:Print("Current Council:")
+			self:Print(L["Current Council:"])
 			for k,v in ipairs(self.Council) do print(k,v) end
 		elseif db.council then
-			self:Print("Council: ")
+			self:Print(L["Council: "])
 			for _,t in ipairs(db.council) do print(t) end
 		else
-			self:Print("No council exists")
+			self:Print(L["No council exists"])
 		end
 
-	elseif input == 'test' then
+	elseif input == 'test' or input == L["test"] then
 		--self:Print(db.ui.versionCheckScale)
 		self:Test(tonumber(arg1) or 1)
 
-	elseif input == "add" and self.nnp then
+	elseif (input == "add" or input == L["add"]) and self.nnp then
 
-	elseif input == 'version' or input == "v" or input == "ver" then
+	elseif input == 'version' or input == L["version"] or input == "v" or input == "ver" then
 		self:CallModule("version")
 
-	elseif input == "history" or input == "h" or input == "his" then
+	elseif input == "history" or input == L["history"] or input == "h" or input == "his" then
 		self:CallModule("history")
 
 	elseif input == "nnp" then
 		self.nnp = not self.nnp
 		self:Print("nnp = "..tostring(self.nnp))
 
-	elseif input == "whisper" then
-		self:Print("Players can whisper (or through Raidchat if enabled) their current item(s) followed by a keyword to the Master Looter if they doesn't have the addon installed.\nThe keyword list is found under the 'Buttons and Responses' optiontab.\nPlayers can whisper 'rchelp' to the Master Looter to retrieve this list.\nNOTE: People should still get the addon installed, otherwise all player information won't be available.")
+	elseif input == "whisper" or input == L["whisper"] then
+		self:Print(L["whisper_help"])
 
 	elseif input == "reset" then
 		--TODO something with this
@@ -508,24 +510,24 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 				local otherVersion, tVersion = unpack(data)
 				self:SendCommand(sender, "verTestReply", self.playerName, self.playerClass, self.guildRank, self.version, self.tVersion)
 				if self.version < otherVersion and not self.verCheckDisplayed and (not (tVersion or self.tVersion)) then
-					self:Print("Your version "..self.version.." is outdated. Newer version is "..otherVersion..", please update RCLootCouncil.")
+					self:Print(format(L["version_outdated_msg"], self.version, otherVersion))
 					self.verCheckDisplayed = true
 
 				-- tVersion check	TODO not sure if the < will work
 				elseif tVersion and self.tVersion and self.tVersion < tVersion then
-					self:Print("Newest RCLootCouncil test version is: "..tVersion)
+					self:Print(format(L["tVersion_outdated_msg"], tVersion))
 					self.verCheckDisplayed = true
 				end
 
 			elseif command == "verTestReply" then
 				local _,_,_, otherVersion, tVersion = unpack(data)
 				if self.version < otherVersion and not self.verCheckDisplayed and (not (tVersion or self.tVersion)) then
-					self:Print("Your version "..self.version.." is outdated. Newer version is "..otherVersion..", please update RCLootCouncil.")
+					self:Print(format(L["version_outdated_msg"], self.version, otherVersion))
 					self.verCheckDisplayed = true
 
 				-- tVersion check	TODO not sure if the < will work
 				elseif tVersion and self.tVersion and self.tVersion < tVersion then
-					self:Print("Newest RCLootCouncil test version is: "..tVersion)
+					self:Print(format(L["tVersion_outdated_msg"], tVersion))
 					self.verCheckDisplayed = true
 				end
 
@@ -587,7 +589,7 @@ function RCLootCouncil:Test(num)
 
 	-- We must be in a group and not the ML
 	if not self.isMasterLooter then
-		self:Print("You cannot initiate a test while in a group without being the MasterLooter.")
+		self:Print(L["You cannot initiate a test while in a group without being the MasterLooter."])
 		self.testMode = false
 		return
 	end
@@ -657,10 +659,10 @@ function RCLootCouncil:GetPlayersGuildRank()
 			return rank;
 		else
 			GuildRoster() -- let the event trigger this func
-			return "Not Found";
+			return L["Not Found"];
 		end
 	else
-		return "Unguilded?";
+		return L["Unguilded"];
 	end
 end
 
@@ -704,11 +706,11 @@ function RCLootCouncil:GetNumberOfDaysFromNow(oldDate)
 end
 
 function RCLootCouncil:ConvertDateToString(day, month, year)
-	local text = day.." days"
+	local text = format(L["x days"], day)
 	if year > 0 then
-		text = text ..", ".. month .." months and ".. year .." years."
+		text = format(L["days, x months, y years"], text, month, year)
 	elseif month > 0 then
-		text = text .." and ".. month .." months."
+		text = format(L["days and x months"], text, month)
 	else
 		text = text.."."
 	end
@@ -740,9 +742,9 @@ function RCLootCouncil:NewMLCheck()
 	if self:UnitIsUnit(old_ml,self.masterLooter) then return; end -- no change
 
 	if self.isMasterLooter and db.autoEnable then -- addon should auto start
-		self:Print(" is now handling looting.")
+		self:Print(L[" now handles looting"])
 		if db.autoAward and GetLootThreshold() > db.autoAwardQualityLower then
-			RCLootCouncil:Print("Changing loot threshold to enable Auto Awarding.")
+			RCLootCouncil:Print(L["Changing loot threshold to enable Auto Awarding"])
 			SetLootThreshold(db.autoAwardQualityLower)
 		end
 
@@ -753,9 +755,9 @@ function RCLootCouncil:NewMLCheck()
 	elseif not self.isMasterLooter and UnitIsGroupLeader("player") then -- lootMethod ~= ML, but we are group leader
 		if db.autoEnable then -- the addon should auto start, so change loot method to master, and make the player ML
 			SetLootMethod("master", self.playerName)
-			self:Print(" you are now the Master Looter and RCLootCouncil is now handling looting.")
+			self:Print(L[" you are now the Master Looter and RCLootCouncil is now handling looting."])
 			if db.autoAward and GetLootThreshold() > db.autoAwardQualityLower then
-				RCLootCouncil:Print("Changing loot threshold to enable Auto Awarding.")
+				RCLootCouncil:Print(L["Changing loot threshold to enable Auto Awarding"])
 				SetLootThreshold(db.autoAwardQualityLower)
 			end
 			self.isMasterLooter = true
@@ -792,7 +794,7 @@ function RCLootCouncil:IsCouncil(name)
 end
 
 function RCLootCouncil:SessionError(...)
-	self:Print("Something went wrong - please restart the session")
+	self:Print(L["session_error"])
 	self:Debug(...)
 end
 

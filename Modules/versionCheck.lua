@@ -8,6 +8,7 @@
 local addon = LibStub("AceAddon-3.0"):GetAddon("RCLootCouncil")
 RCVersionCheck = addon:NewModule("RCVersionCheck", "AceTimer-3.0", "AceComm-3.0", "AceHook-3.0")
 local ST = LibStub("ScrollingTable")
+local L LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 
 local db, stData
 
@@ -16,9 +17,9 @@ function RCVersionCheck:OnInitialize()
 	-- Initialize scrollCols on self so others can change it
 	self.scrollCols = {
 		{ name = "",		width = 20, sortnext = 2,},
-		{ name = "Name",	width = 150, },
-		{ name = "Rank",	width = 90, },
-		{ name = "Version",	width = 140, align = "RIGHT" },
+		{ name = L["Name"],	width = 150, },
+		{ name = L["Rank"],	width = 90, },
+		{ name = L["Version"],	width = 140, align = "RIGHT" },
 	}
 end
 
@@ -26,12 +27,12 @@ function RCVersionCheck:OnEnable()
 	addon:Print("RCVersionCheck:OnEnable()")
 	db = addon:Getdb()
 	printtable(db.UI.versionCheck)
-	RCVersionCheck:RegisterComm("RCLootCouncil")	
+	RCVersionCheck:RegisterComm("RCLootCouncil")
 	self:Show()
 end
 
 function RCVersionCheck:OnDisable()
-	
+
 	self.frame:Hide()
 	self.frame:SavePosition()
 	addon:Print("RCVersionCheck:OnDisable()")
@@ -39,7 +40,7 @@ function RCVersionCheck:OnDisable()
 	self.frame:SetParent(nil)
 end
 
-function RCVersionCheck:Show()	
+function RCVersionCheck:Show()
 	self.frame = self:GetFrame()
 	self.frame:Show()
 	self:AddEntry(addon.playerName, addon.playerClass, addon.guildRank, addon.version, addon.tVersion) -- add ourself
@@ -57,9 +58,9 @@ end
 
 function RCVersionCheck:OnCommReceived(prefix, serializedMsg, distri, sender)
 	if prefix == "RCLootCouncil" then
-		local test, command, data = addon:Deserialize(serializedMsg)	
+		local test, command, data = addon:Deserialize(serializedMsg)
 		if test and command == "verTestReply" then
-			self:AddEntry(unpack(data)) 
+			self:AddEntry(unpack(data))
 		end
 	end
 end
@@ -72,7 +73,7 @@ function RCVersionCheck:Query(group)
 		for i = 1, GetNumGuildMembers() do
 			local name, rank, _,_,_,_,_,_, online,_, class = GetGuildRosterInfo(i)
 			if online then
-				self:AddEntry(name, class, rank, "Waiting for response")
+				self:AddEntry(name, class, rank, L["Waiting for response"])
 			end
 		end
 		addon:SendCommand("RCLootCouncil", "verTest", "guild")
@@ -81,7 +82,7 @@ function RCVersionCheck:Query(group)
 		for i = 1, GetNumGroupMembers() do
 			local name, _, _, _, class, _, online = GetRaidRosterInfo(i)
 			if online then
-				self:AddEntry(name, class, "Unknown", "Waiting for response")
+				self:AddEntry(name, class, L["Unknown"], L["Waiting for response"])
 			end
 		end
 		addon:SendCommand("RCLootCouncil", "verTest", "group")
@@ -92,7 +93,7 @@ end
 function RCVersionCheck:QueryTimer()
 	for k,v in pairs(self.frame.rows) do
 		local cell = self.frame.st:GetCell(k,4)
-		if cell.value == "Waiting for response" then cell.value = "Not installed" end
+		if cell.value == L["Waiting for response"] then cell.value = L["Not installed"] end
 	end
 	self:Update()
 end
@@ -110,7 +111,7 @@ function RCVersionCheck:AddEntry(name, class, guildRank, version, tVersion)
 			}
 			self:Update()
 			return
-		end			
+		end
 	end
 	-- They haven't been added yet, so do it
 	tinsert(self.frame.rows,
@@ -134,25 +135,25 @@ function RCVersionCheck:GetVersionColor(ver,tVer)
 	if tVer then return yellow end
 	if ver == addon.version then return green end
 	if ver < addon.version then return red end
-	return grey		
+	return grey
 end
 
 function RCVersionCheck:GetFrame()
-	if self.frame then return self.frame end	
+	if self.frame then return self.frame end
 	local f = addon:CreateFrame("DefaultRCVersionCheckFrame", "versionCheck")
-	f.title = addon:CreateTitleFrame(f, "RCLootCouncil Version Checker", 250)
+	f.title = addon:CreateTitleFrame(f, L["RCLootCouncil Version Checker"], 250)
 
-	local b1 = addon:CreateButton("Guild", f)
+	local b1 = addon:CreateButton(L["Guild"], f)
 	b1:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", 10, 10)
 	b1:SetScript("OnClick", function() self:Query("guild") end)
 	f.guildBtn = b1
 
-	local b2 = addon:CreateButton("Group", f)
+	local b2 = addon:CreateButton(L["Group"], f)
 	b2:SetPoint("LEFT", b1, "RIGHT", 15, 0)
 	b2:SetScript("OnClick", function() self:Query("group") end)
 	f.raidBtn = b2
 
-	local b3 = addon:CreateButton("Close", f)
+	local b3 = addon:CreateButton(L["Close"], f)
 	b3:SetPoint("BOTTOMRIGHT", f, "BOTTOMRIGHT", -10, 10)
 	b3:SetScript("OnClick", function() self:Disable() end)
 	f.closeBtn = b3
@@ -170,8 +171,8 @@ function RCVersionCheck:GetFrame()
 --	sizer:SetWidth(18)
 --	sizer:SetHeight(18)
 --	sizer:EnableMouse()
---	sizer:SetScript("OnMouseDown", function()		
-		
+--	sizer:SetScript("OnMouseDown", function()
+
 --	end)
 
 --	local line1 = sizer:CreateTexture(nil, "BACKGROUND")

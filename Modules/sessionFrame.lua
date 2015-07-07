@@ -6,6 +6,7 @@
 local addon = LibStub("AceAddon-3.0"):GetAddon("RCLootCouncil")
 RCSessionFrame = addon:NewModule("RCSessionFrame")
 local ST = LibStub("ScrollingTable")
+local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 
 local db;
 local ROW_HEIGHT = 40
@@ -16,7 +17,7 @@ function RCSessionFrame:OnInitialize()
 	self.scrollCols = {
 		{ name = "",		width = 30 }, -- remove item
 		{ name = "",		width = ROW_HEIGHT }, -- item icon
-		{ name = "Item",	width = 150}, -- item link
+		{ name = L["Item"],	width = 150}, -- item link
 	}
 end
 
@@ -57,7 +58,7 @@ function RCSessionFrame:ExtractData(data)
 			cols = {
 				{ value = "",	DoCellUpdate = self.SetCellDeleteBtn, },
 				{ value = "",	DoCellUpdate = self.SetCellItemIcon},
-				{ value = v.link,	DoCellUpdate = self.SetCellText },	
+				{ value = v.link,	DoCellUpdate = self.SetCellText },
 			},
 		}
 	end
@@ -104,19 +105,17 @@ function RCSessionFrame:GetFrame()
 	if self.frame then return self.frame end
 
 	local f = addon:CreateFrame("DefaultRCSessionSetupFrame", "sessionFrame")
-	f.title = addon:CreateTitleFrame(f, "RCLootCouncil Session Setup", 250)
+	f.title = addon:CreateTitleFrame(f, L["RCLootCouncil Session Setup"], 250)
 
 	local tgl = CreateFrame("CheckButton", f:GetName().."Toggle", f, "ChatConfigCheckButtonTemplate")
-	getglobal(tgl:GetName().."Text"):SetText("  Award later?")
+	getglobal(tgl:GetName().."Text"):SetText(L["  Award later?"])
 	tgl:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", 10, 40)
-	tgl.tooltip = "Check this to loot the items and distribute them later."
+	tgl.tooltip = L["Check this to loot the items and distribute them later."]
 	tgl:SetScript("OnClick", function() awardLater = not awardLater; end )
 	f.toggle = tgl
 
 	-- Start button
-	local b1 = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
-	b1:SetText("Start")
-	b1:SetSize(100,25)	
+	local b1 = addon:CreateButton(L["Start"], f)
 	b1:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", 10, 10)
 	b1:SetScript("OnClick", function()
 		addon:GetActiveModule("masterlooter"):StartSession()
@@ -125,9 +124,7 @@ function RCSessionFrame:GetFrame()
 	f.guildBtn = b1
 
 	-- Cancel button
-	local b2 = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
-	b2:SetText("Cancel")
-	b2:SetSize(100,25)
+	local b2 = addon:CreateButton(L["Cancel"], f)
 	b2:SetPoint("LEFT", b1, "RIGHT", 15, 0)
 	b2:SetScript("OnClick", function()
 		addon:GetActiveModule("masterlooter"):EndSession()

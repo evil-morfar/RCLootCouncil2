@@ -3,12 +3,12 @@
 -- options.lua - option frame in BlizOptions for RCLootCouncil
 
 -- TODO		Clarify "Responses from chat"
--- TODO		Add trees for "Everyone" and "ML" options
 local addon = LibStub("AceAddon-3.0"):GetAddon("RCLootCouncil")
+local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 ------ Options ------
 function addon:OptionsTable()
 	local db = addon:Getdb()
-	local options = {			
+	local options = {
 		generalSettings = {
 			name = "RCLootCouncil",
 			order = 1,
@@ -24,25 +24,25 @@ function addon:OptionsTable()
 					order = 2,
 					type = "group",
 					name = "General",
-					args = {							
+					args = {
 						generalOptions = {
 							order = 1,
-							name = "General options",
+							name = L["General options"],
 							type = "group",
 							inline = true,
 							args = {
 								toggle = {
 									order = 1,
-									name = "Activate",
-									desc = "Uncheck to temporary disable RCLootCouncil. Useful if you're in a raid group, but not actually participating. Note: This resets on every logout.",
+									name = L["Activate"],
+									desc = L["activate_desc"],
 									type = "toggle",
 									set = function() addon.disable = not addon.disable end,
 									get = function() return not addon.disable end,
 								},
 								autoOpen = {
 									order = 1.2,
-									name = "Auto Open",
-									desc = "Check to Auto Open the voting frame when available. The voting frame can otherwise be opened with /rc open. Note: This requires permission from the Master Looter.",
+									name = L["Auto Open"],
+									desc = L["auto_open_desc"],
 									type = "toggle",
 									set = function() db.autoOpen = not db.autoOpen end,
 									get = function() return db.autoOpen end,
@@ -62,17 +62,17 @@ function addon:OptionsTable()
 								},
 								testButton = {
 									order = 3,
-									name = "Test",
-									desc = "Click to emulate master looting items for yourself and anyone in your raid.",
+									name = L["Test"],
+									desc = L["test_desc"],
 									type = "execute",
 									func = function()
 										InterfaceOptionsFrame:Hide(); -- close all option frames before testing
 										self:Test(3)
-									end			
+									end
 								},
 								versionTest = {
-									name = "Version Check",
-									desc = "Opens the version checker module.",
+									name = L["Version Check"],
+									desc = L["version_check_desc"],
 									type = "execute",
 									order = 3.1	,
 									func = function()
@@ -86,26 +86,26 @@ function addon:OptionsTable()
 						lootHistoryOptions = {
 							order = 2,
 							type = "group",
-							name = "Loot History",
+							name = L["Loot History"],
 							inline = true,
 							args = {
 								desc1 = {
 									order = 1,
-									name = "RCLootCouncil automatically records relevant information from sessions.\nThe raw data is stored in \".../SavedVariables/RCLootCouncilLootDB.lua\".\n\nNote: Non-MasterLooters can only store data sent from the MasterLooter.\n",
+									name = L["loot_history_desc"],
 									type = "description",
 								},
 								trackLooting = {
 									order = 2,
-									name = "Enable Loot History",
-									desc = "Enables the history. RCLootCouncil won't log anything if disabled.",
+									name = L["Enable Loot History"],
+									desc = L["enable_loot_history_desc"],
 									type = "toggle",
 									get = function() return db.enableHistory end,
 									set = function() db.enableHistory = not db.enableHistory end,
 								},
 								sendHistory = {
 									order = 3,
-									name = "Send History",
-									desc = "Send data to everyone in the raid, regardless if you log it yourself. RCLootCouncil will only send data if you're the MasterLooter.",
+									name = L["Send History"],
+									desc = L["send_history_desc"],
 									type = "toggle",
 									get = function() return db.sendHistory; end,
 									set = function() db.sendHistory = not db.sendHistory; end,
@@ -117,15 +117,15 @@ function addon:OptionsTable()
 								},
 								openLootDB = {
 									order = 5,
-									name = "Open the Loot History",
-									desc = "Click to open the Loot History.",
+									name = L["Open the Loot History"],
+									desc = L["open_the_loot_history_desc"],
 									type = "execute",
 									func = function() self:CallModule("loothistory");	InterfaceOptionsFrame:Hide();end,
 								},
 								clearLootDB = {
 									order = -1,
-									name = "Clear Loot History",
-									desc = "Delete the entire loot history.",
+									name = L["Clear Loot History"],
+									desc = L["clear_loot_history_desc"],
 									type = "execute",
 									func = function() self.db.factionrealm.lootDB = {} end,
 									confirm = true,
@@ -137,7 +137,7 @@ function addon:OptionsTable()
 			},
 		},
 		mlSettings = {
-			name = "Master Looter",
+			name = L["Master Looter"],
 			order = 2,
 			type = "group",
 			childGroups = "tab",
@@ -146,31 +146,31 @@ function addon:OptionsTable()
 				desc = {
 					order = 1,
 					type = "description",
-					name = "Note: These settings will only be used when you're the Master Looter.",
+					name = L["master_looter_desc"],
 				},
 				generalTab = {
 					order = 2,
 					type = "group",
-					name = "General",
+					name = L["General"],
 					args = {
 						lootDesc = {
 							order = 1,
-							name = "Looting options",
+							name = L["Looting options"],
 							type = "group",
 							inline = true,
-							args = {			
+							args = {
 								autoEnable = {
 									order = 1,
-									name = "Auto Enable",
-									desc = "Check to always let RCLootCouncil handle loot. Unchecking will make the addon ask if you want to use it.",
+									name = L["Auto Enable"],
+									desc = L["auto_enable_desc"],
 									type = "toggle",
 									set = function() db.autoEnable = not db.autoEnable end,
 									get = function() return db.autoEnable end,
 								},
 								altClickLooting = {
 									order = 2,
-									name = "Alt click Looting",
-									desc = "Enables Alt click Looting, i.e. start a looting session by holding down alt and (left)clicking an item.",
+									name = L["Alt click Looting"],
+									desc = L["alt_click_looting_desc"],
 									type = "toggle",
 									get = function() return db.altClickLooting end,
 									set = function() db.altClickLooting = not db.altClickLooting; end,
@@ -182,8 +182,8 @@ function addon:OptionsTable()
 								},
 								autoStart = {
 									order = 4,
-									name = "Auto Start",
-									desc = "Enables Auto Start, i.e. start a session with all egliable items. Disabling will show a editable item list before starting a session.",
+									name = L["Auto Start"],
+									desc = L["auto_start_desc"],
 									type = "toggle";
 									get = function() return db.autoStart end,
 									set = function() db.autoStart = not db.autoStart
@@ -192,8 +192,8 @@ function addon:OptionsTable()
 								},
 								autoLootEverything = {
 									order = 5,
-									name = "Loot Everything",
-									desc = "Enables looting of non-items (e.g. mounts, tier-tokens)",
+									name = L["Loot Everything"],
+									desc = L["loot_everything_desc"],
 									type = "toggle",
 									disabled = function() return not db.autoStart end,
 									get = function() return db.autolootEverything end,
@@ -201,58 +201,58 @@ function addon:OptionsTable()
 								},
 								autoLootBoE = {
 									order = 6,
-									name = "Autoloot BoE",
-									desc = "Enables autolooting of BoE (Bind on Equip) items.",
+									name = L["Autoloot BoE"],
+									desc = L["autoloot_BoE_desc"],
 									type = "toggle",
 									disabled = function() return not db.autoStart end,
 									get = function() return db.autolootBoE; end,
 									set = function() db.autolootBoE = not db.autolootBoE; end,
 								},
-								
+
 							},
 						},
 						voteOptions = {
 							order = 2,
-							name = "Voting options",
+							name = L["Voting options"],
 							type = "group",
 							inline = true,
 							args = {
 								selfVoteToggle = {
 									order = 1,
-									name = "Self Vote",
-									desc = "Enables voters to vote for themselves.",
+									name = L["Self Vote"],
+									desc = L["self_vote_desc"],
 									type = "toggle",
 									get = function() return db.selfVote end,
 									set = function() db.selfVote = not db.selfVote end,
 								},
 								multiVoteToggle = {
 									order = 2,
-									name = "Multi Vote",
-									desc = "Enables multi voting, i.e. voters can vote for several candidates.",
+									name = L["Multi Vote"],
+									desc = L["multi_vote_desc"],
 									type = "toggle",
 									get = function() return db.multiVote end,
 									set = function() db.multiVote = not db.multiVote; end,
 								},
 								allowNotes = {
 									order = 3,
-									name = "Notes",
-									desc = "Enables candidates to send a note to the council along with their roll.",
+									name = L["Notes"],
+									desc = L["notes_desc"],
 									type = "toggle",
 									get = function() return db.allowNotes end,
-									set = function() db.allowNotes = not db.allowNotes end, 
+									set = function() db.allowNotes = not db.allowNotes end,
 								},
 								anonymousVotingToggle = {
 									order = 4,
-									name = "Anonymous Voting",
-									desc = "Enables Anonymous Voting, i.e. people can't see who's voting for who.",
+									name = L["Anonymous Voting"],
+									desc = L["anonymous_voting_desc"],
 									type = "toggle",
 									get = function() return db.anonymousVoting end,
 									set = function() db.anonymousVoting = not db.anonymousVoting end,
 								},
 								masterLooterOnly = {
 									order = 5,
-									name = "ML sees voting",
-									desc = "Allow the Master Looter too see who's voting for whom.",
+									name = L["ML sees voting"],
+									desc = L["ml_sees_voting_desc"],
 									type = "toggle",
 									disabled = function() return not db.anonymousVoting end,
 									get = function() return db.showForML end,
@@ -260,8 +260,8 @@ function addon:OptionsTable()
 								},
 								hideVotesToggle = {
 									order = 6,
-									name = "Hide Votes",
-									desc = "Hides the number of votes until one have voted.",
+									name = L["Hide Votes"],
+									desc = L["hide_votes_desc"],
 									type = "toggle",
 									get = function() return db.hideVotes end,
 									set = function() db.hideVotes = not db.hideVotes end,
@@ -273,19 +273,19 @@ function addon:OptionsTable()
 				awardTab = {
 				order = 3,
 				type = "group",
-				name = "Awards",
+				name = L["Awards"],
 				args = {
 					autoAward = {
 						order = 1,
-						name = "Auto Award",
+						name = L["Auto Award"],
 						type = "group",
 						inline = true,
 						disabled = function() return not db.autoAward end,
 						args = {
 							autoAward = {
 								order = 1,
-								name = "Auto Award",
-								desc = "Activates Auto Award.",
+								name = L["Auto Award"],
+								desc = L["auto_award_desc"],
 								type = "toggle",
 								get = function() return db.autoAward end,
 								set = function() db.autoAward = not db.autoAward; end,
@@ -293,15 +293,15 @@ function addon:OptionsTable()
 							},
 							autoAwardLowerThreshold = {
 								order = 1.1,
-								name = "Lower Quality Limit",
-								desc = "Select the lower quality limit of items to auto award (this quality included!).\nNote: This overrides the normal loot treshhold.",
+								name = L["Lower Quality Limit"],
+								desc = L["lower_quality_limit_desc"],
 								type = "select",
 								style = "dropdown",
 								values = function()
 									local t = {}
 									for i = 0, 5 do
 										local r,g,b,hex = GetItemQualityColor(i)
-										t[i] = "|c"..hex.." "..getglobal("ITEM_QUALITY"..i.."_DESC") 
+										t[i] = "|c"..hex.." "..getglobal("ITEM_QUALITY"..i.."_DESC")
 									end
 									return t;
 								end,
@@ -310,15 +310,15 @@ function addon:OptionsTable()
 							},
 							autoAwardQualityUpper = {
 								order = 1.2,
-								name = "Upper Quality Limit",
-								desc = "Select the upper quality limit of items to auto award (this quality included!).\nNote: This overrides the normal loot treshhold.",
+								name = L["Upper Quality Limit"],
+								desc = L["upper_quality_limit_desc"],
 								type = "select",
 								style = "dropdown",
 								values = function()
 									local t = {}
 									for i = 0, 5 do
 										local r,g,b,hex = GetItemQualityColor(i)
-										t[i] = "|c"..hex.." "..getglobal("ITEM_QUALITY"..i.."_DESC") 
+										t[i] = "|c"..hex.." "..getglobal("ITEM_QUALITY"..i.."_DESC")
 									end
 									return t;
 								end,
@@ -327,8 +327,8 @@ function addon:OptionsTable()
 							},
 							autoAwardTo = {
 								order = 2,
-								name = "Auto Award to",
-								desc = "The player to Auto Award items to. A selectable list of raid members appear if you're in a raid group.",
+								name = L["Auto Award to"],
+								desc = L["auto_award_to_desc"],
 								width = "double",
 								type = "input",
 								hidden = function() return not db.advancedOptions or IsInRaid() end,
@@ -337,8 +337,8 @@ function addon:OptionsTable()
 							},
 							autoAwardTo2 = {
 								order = 2,
-								name = "Auto Award to",
-								desc = "The player to Auto Award items to.",
+								name = L["Auto Award to"],
+								desc = L["auto_award_to_desc"],
 								width = "double",
 								type = "select",
 								style = "dropdown",
@@ -355,8 +355,8 @@ function addon:OptionsTable()
 							},
 							autoAwardReason = {
 								order = 2.1,
-								name = "Reason",
-								desc = "The award reason to add to the Loot History when auto awarding.",
+								name = L["Reason"],
+								desc = L["reason_desc"],
 								type = "select",
 								style = "dropdown",
 								values = function()
@@ -374,18 +374,18 @@ function addon:OptionsTable()
 					awardReasons = {
 						order = 2,
 						type = "group",
-						name = "Award Reasons",
+						name = L["Award Reasons"],
 						inline = true,
 						args = {
 							desc = {
 								order = 0,
-								name = "Award reasons that can't be chosen during a roll.\nUsed when changing a response with the right click menu and for Auto Awards.\n",
+								name = L["award_reasons_desc"],
 								type = "description",
 							},
 							range = {
 								order = 1,
-								name = "Number of reasons",
-								desc = "Slide to change the number of reasons.",
+								name = L["Number of reasons"],
+								desc = L["number_of_reasons_desc"],
 								type = "range",
 								width = "full",
 								min = 1,
@@ -397,11 +397,11 @@ function addon:OptionsTable()
 							-- Award reasons made further down
 							reset = {
 								order = -1,
-								name = "Reset to default",
-								desc = "Resets the award reasons to default.",
+								name = L["Reset to default"],
+								desc = L["reset_to_default_desc"],
 								type = "execute",
 								confirm = true,
-								func = function() addon:awardReasonsToDefault() end, 
+								func = function() addon:awardReasonsToDefault() end,
 							},
 						},
 					},
@@ -410,18 +410,18 @@ function addon:OptionsTable()
 			announcementTab = {
 				order = 4,
 				type = "group",
-				name = "Announcements",
+				name = L["Announcements"],
 				args = {
 					awardAnnouncement = {
 						order = 1,
-						name = "Award Announcement",
+						name = L["Award Announcement"],
 						type = "group",
 						inline = true,
 						args = {
 							toggle = {
 								order = 1,
-								name = "Announce Awards",
-								desc = "Enables the announcment of awards in chat.",
+								name = L["Announce Awards"],
+								desc = L["announce_awards_desc"],
 								type = "toggle",
 								width = "full",
 								get = function() return db.announceAward end,
@@ -429,24 +429,24 @@ function addon:OptionsTable()
 							},
 							outputDesc = {
 								order = 2,
-								name = "\nChoose which channel(s) you want to announce to along with the text.\nUse &p for the name of the player getting the loot, &i for the item awarded and &r for the reason.",
+								name = L["announce_awards_desc2"],
 								type = "description",
 								hidden = function() return not db.announceAward end,
 							},
 							-- Rest is made further below
 						},
-					},				
-					
+					},
+
 					announceConsiderations = {
 						order = 2,
-						name = "Announce Considerations",
+						name = L["Announce Considerations"],
 						type = "group",
 						inline = true,
 						args = {
 							announceConsideration = {
 								order = 1,
-								name = "Announce Considerations",
-								desc = "Activates announcement of items under consideration whenever a session starts.",
+								name = L["Announce Considerations"],
+								desc = L["announce_considerations_desc"],
 								type = "toggle",
 								width = "full",
 								get = function() return db.announceItems end,
@@ -455,24 +455,24 @@ function addon:OptionsTable()
 							desc = {
 								order = 2,
 								type = "description",
-								name = "\nChoose the channel you want to announce to and the message.\nYour message serves as a header for the list of items.",
+								name = L["announce_considerations_desc2"],
 								hidden = function() return not db.announceItems end,
-							},							
+							},
 							announceChannel = {
 								order = 3,
-								name = "Channel",
-								desc = "The channel to send the message to.",
+								name = L["Channel"],
+								desc = L["channel_desc"],
 								type = "select",
 								style = "dropdown",
 								values = {
-									SAY = "Say",
-									YELL = "Yell",
-									PARTY = "Party",
-									GUILD = "Guild",
-									OFFICER = "Officer",
-									RAID = "Raid",
-									RAID_WARNING = "Raid Warning",
-									group = "Group", -- must be converted
+									SAY = L["Say"],
+									YELL = L["Yell"],
+									PARTY = L["Party"],
+									GUILD = L["Guild"],
+									OFFICER = L["Officer"],
+									RAID = L["Raid"],
+									RAID_WARNING = L["Raid Warning"],
+									group = L["Group"], -- must be converted
 								},
 								set = function(i,v)
 										-- Convert "group" if needed
@@ -490,8 +490,8 @@ function addon:OptionsTable()
 							},
 							announceText = {
 								order = 3.1,
-								name = "Message",
-								desc = "The message to send to the selected channel.",
+								name = L["Message"],
+								desc = L["message_desc"],
 								type = "input",
 								width = "double",
 								get = function() return db.announceText end,
@@ -502,8 +502,8 @@ function addon:OptionsTable()
 					},
 					reset = {
 						order = -1,
-						name = "Reset to default",
-						desc = "Resets all the announcement options to default",
+						name = L["Reset to default"],
+						desc = L["reset_announce_to_default_desc"],
 						type = "execute",
 						confirm = true,
 						func = function() addon:announceToDefault() end
@@ -513,23 +513,23 @@ function addon:OptionsTable()
 			buttonsOptionsTab = {
 				order = 5,
 				type = "group",
-				name = "Buttons and Responses",
+				name = L["Buttons and Responses"],
 				args = {
 					buttonOptions = {
 						order = 1,
 						type = "group",
-						name = "Buttons and Responses",
+						name = L["Buttons and Responses"],
 						inline = true,
 						args = {
 							optionsDesc = {
 								order = 0,
-								name = "Configure the reply buttons to show on raiders' Loot Frame.\nThe first button is showed furthest to the left, and the last furthest to the right - use the slider to choose how many buttons you want (max "..db.maxButtons..").\n\nThe order of responses determines all sorting orders of said response.\nThe \"Pass\" button determines which response to filter when \"Filter Passes\" is selected.",
+								name = format(L["buttons_and_responses_desc"], db.maxButtons),
 								type = "description"
 							},
 							buttonsRange = {
 								order = 1,
-								name = "Number of buttons",
-								desc = "Slide to change the number of buttons.",
+								name = L["Number of buttons"],
+								desc = L["number_of_buttons_desc"],
 								type = "range",
 								width = "full",
 								min = 1,
@@ -538,51 +538,51 @@ function addon:OptionsTable()
 								get = function() return db.numButtons end,
 								set = function(i,v) db.numButtons = v end,
 							},
-							passButton = {
-								order = -1,
-								name = "Pass button",
-								desc = "Select which buttons' response you want to filter when selecting \"Filter Passes\".",
-								type = "select",
-								style = "dropdown",
-								width = "double",
-								values = function()
-									local t = {}
-									t[(db.maxButtons + 1)] = "None";
-									for i = 1, db.maxButtons do
-										if i <= db.numButtons then t[i] = "Button "..i; else break end
-									end	
-									return t;
-								end,
-								set = function(i,v) db.passButton = v end,
-								get = function() return db.passButton end,
-							},
+							-- passButton = {
+							-- 	order = -1,
+							-- 	name = "Pass button",
+							-- 	desc = "Select which buttons' response you want to filter when selecting \"Filter Passes\".",
+							-- 	type = "select",
+							-- 	style = "dropdown",
+							-- 	width = "double",
+							-- 	values = function()
+							-- 		local t = {}
+							-- 		t[(db.maxButtons + 1)] = "None";
+							-- 		for i = 1, db.maxButtons do
+							-- 			if i <= db.numButtons then t[i] = "Button "..i; else break end
+							-- 		end
+							-- 		return t;
+							-- 	end,
+							-- 	set = function(i,v) db.passButton = v end,
+							-- 	get = function() return db.passButton end,
+							-- },
 						},
 					},
 					responseFromChat = {
 						order = 2,
 						type = "group",
-						name = "Responses from Chat",
+						name = L["Responses from Chat"],
 						inline = true,
-						args = {							
+						args = {
 							acceptWhispers = {
 								order = 1,
-								name = "Accept whispers",
-								desc = "Enables players to whisper their current item(s) to you to get added to the voting frame.",
+								name = L["Accept Whispers"],
+								desc = L["accept_whispers_desc"],
 								type = "toggle",
 								get = function() return db.acceptWhispers end,
 								set = function() db.acceptWhispers = not db.acceptWhispers end,
 							},
-							acceptRaidChat = {
-								order = 1.1,
-								name = "Accept Raid Chat",
-								desc = "Enables players to post their current item(s) in raid chat and thus get added to the voting frame.",
-								type = "toggle",
-								get = function() return db.acceptRaidChat end,
-								set = function() db.acceptRaidChat = not db.acceptRaidChat; end,
-							},
+							-- acceptRaidChat = {
+							-- 	order = 1.1,
+							-- 	name = "Accept Raid Chat",
+							-- 	desc = "Enables players to post their current item(s) in raid chat and thus get added to the voting frame.",
+							-- 	type = "toggle",
+							-- 	get = function() return db.acceptRaidChat end,
+							-- 	set = function() db.acceptRaidChat = not db.acceptRaidChat; end,
+							-- },
 							desc = {
 								order = 2,
-								name = "To get added to the voting frame raiders can link their item(s) followed by a keyword to the Master Looter (Button 1 is used if no keyword is specified).\nExample: \"/w ML_NAME [ITEM] greed\" would by default show up as you greeding on an item.\nBelow you can choose keywords for the individual buttons, seperated by punctation or spaces. Only numbers and words are accepted.\nPlayers can recieve the keyword list by messaging 'rchelp' to the Master Looter once the addon is enabled (i.e. in a raid).",
+								name = L["responses_from_chat_desc"],
 								type = "description",
 								hidden = function() return not (db.acceptWhispers or db.acceptRaidChat) end,
 							},
@@ -591,8 +591,8 @@ function addon:OptionsTable()
 					},
 					reset = {
 						order = -1,
-						name = "Reset to default",
-						desc = "Resets all the buttons, colors and responses to default",
+						name = L["Reset to default"],
+						desc = L["reset_buttons_to_default_desc"],
 						type = "execute",
 						confirm = true,
 						func = function() addon:buttonsToDefault() end
@@ -602,17 +602,17 @@ function addon:OptionsTable()
 			councilTab = {
 				order = 6,
 				type = "group",
-				name = "Council",
+				name = L["Council"],
 				childGroups = "tab",
 				args = {
 					currentCouncil = {
 						order = 1,
 						type = "group",
-						name = "Current Council",
+						name = L["Current Council"],
 						args = {
 							currentCouncilDesc = {
 								order = 1,
-								name = "\nClick to remove certain people from the council\n",
+								name = L["current_council_desc"],
 								type = "description",
 							},
 							councilList = {
@@ -627,31 +627,31 @@ function addon:OptionsTable()
 								width = "full",
 								get = function() return true end,
 								set = function(m,key) tremove(db.council,key) end,
-							},							
+							},
 							removeAll = {
 								order = 3,
-								name = "Remove All",
-								desc = "Remove all council members",
+								name = L["Remove All"],
+								desc = L["remove_all_desc"],
 								type = "execute",
 								confirm = true,
-								func = function() db.council = {} end,							
+								func = function() db.council = {} end,
 							},
 						},
 					},
 					addCouncil = {
 						order = 2,
 						type = "group",
-						name = "Guild Council Members",
+						name = L["Guild Council Members"],
 						childGroups = "tree",
 						args = {
 							addRank = {
 								order = 1,
-								name = "Add ranks",
+								name = L["Add ranks"],
 								type = "group",
 								args = {
 									header1 = {
 										order = 1,
-										name = "Choose minimum rank to participate in lootcouncil:",
+										name = L["add_ranks_desc"],
 										type = "header",
 										width = "full",
 									},
@@ -663,7 +663,7 @@ function addon:OptionsTable()
 										values = function()
 											GuildRoster();
 											local info = {};
-											for ci = 1, GuildControlGetNumRanks() do 
+											for ci = 1, GuildControlGetNumRanks() do
 												info[ci] = " "..ci.." - "..GuildControlGetRankName(ci);
 											end
 											return info
@@ -673,7 +673,7 @@ function addon:OptionsTable()
 									},
 									desc = {
 										order = 3,
-										name = "\n\nSelect a rank above to add all members at and above that rank to the council.\n\nClick on the ranks to the left to add individual players to the council.\n\nClick the 'Current Council' tab to see your selection.",
+										name = L["add_ranks_desc2"],
 										type = "description",
 									},
 								},
@@ -689,17 +689,17 @@ function addon:OptionsTable()
 					addGroupCouncil = {
 						order = 3,
 						type = "group",
-						name = "Group Council Members",
+						name = L["Group Council Members"],
 						args = {
 							header1 = {
 								order = 1,
-								name = "Add council members from your current group.",
+								name = L["group_council_members_head"],
 								type = "header",
 								width = "full",
 							},
 							desc = {
 								order = 2,
-								name = "Use this to add council members from another realm or guild.",
+								name = L["group_council_members_desc"],
 								type = "description",
 							},
 							list = {
@@ -711,12 +711,12 @@ function addon:OptionsTable()
 									local t = {}
 									for i = 1, GetNumGroupMembers() do
 										-- Ambiguate to distinguish people from own realm, not sure if it's smart at the end of the day though
-										tinsert(t, Ambiguate(select(1,GetRaidRosterInfo(i)), "none"))	-- might need a tostring()		
+										tinsert(t, Ambiguate(select(1,GetRaidRosterInfo(i)), "none"))	-- might need a tostring()
 									end
 									table.sort(t, function(v1, v2)
 										return v1 and v1 < v2
 									end)
-									return t 
+									return t
 								end,
 								set = function(info,key,tag)
 									-- probably could've used info[#info-1].values() instead
@@ -742,17 +742,17 @@ function addon:OptionsTable()
 				},
 			},
 		},
-	},		
+	},
 }
-	
+
 	-- #region Create options thats made with loops
 	-- Buttons
 	local button, picker, text = {}, {}, {}
-	for i = 1, db.maxButtons do	
+	for i = 1, db.maxButtons do
 		button = {
 			order = i * 3 + 1,
-			name = "Button "..i,
-			desc = "Set the text on button "..i..".",
+			name = L["Button"].." "..i,
+			desc = L["Set the text on button "]..i,
 			type = "input",
 			get = function() return db.buttons[i].text end,
 			set = function(info, value)	db.buttons[i].text = tostring(value) end,
@@ -761,29 +761,29 @@ function addon:OptionsTable()
 		options.mlSettings.args.buttonsOptionsTab.args.buttonOptions.args["button"..i] = button;
 		picker = {
 			order = i * 3 + 2,
-			name = "Response color",
-			desc = "Set a color for the response.",
+			name = L["Response color"],
+			desc = L["response_color_desc"],
 			type = "color",
 			get = function() return unpack(db.responses[i].color)	end,
 			set = function(info,r,g,b,a) db.responses[i].color = {r,g,b,a} end,
 			hidden = function() return db.numButtons < i end,
 		}
 		options.mlSettings.args.buttonsOptionsTab.args.buttonOptions.args["picker"..i] = picker;
-		text = {	
+		text = {
 			order = i * 3 + 3,
-			name = "Response",
-			desc = "Set the text for button "..i.."'s response.",
+			name = L["Response"],
+			desc = format(L["Set the text for button i's response."], i),
 			type = "input",
 			get = function() return db.responses[i].text end,
 			set = function(info, value) db.responses[i].text = tostring(value) end,
-			hidden = function() return db.numButtons < i end,		
+			hidden = function() return db.numButtons < i end,
 		}
 		options.mlSettings.args.buttonsOptionsTab.args.buttonOptions.args["text"..i] = text;
-		
+
 		local whisperKeys = {
 			order = i + 3,
-			name = "Button"..i,
-			desc = "Set the whisper keys for button "..i..". Used in conjunction with Chat settings.",
+			name = L["Button"]..i,
+			desc = format(L["Set the whisper keys for button i. Used in conjunction with Chat settings."], i),
 			type = "input",
 			width = "double",
 			get = function() return db.buttons[i].whisperKey end,
@@ -797,8 +797,8 @@ function addon:OptionsTable()
 	for i = 1, db.maxAwardReasons do
 		options.mlSettings.args.awardTab.args.awardReasons.args["reason"..i] = {
 			order = i+1,
-			name = "Reason "..i,
-			desc = "Text for reason #"..i,
+			name = L["Reason"]..i,
+			desc = L["Text for reason #i"]..i,
 			type = "input",
 			width = "double",
 			get = function() return db.awardReasons[i].text end,
@@ -807,18 +807,18 @@ function addon:OptionsTable()
 		}
 		options.mlSettings.args.awardTab.args.awardReasons.args["color"..i] = {
 			order = i +1.1,
-			name = "Text color",
-			desc = "Color of the text when displayed.",
+			name = L["Text color"],
+			desc = L["text_color_desc"],
 			type = "color",
 			width = "half",
 			get = function() return unpack(db.awardReasons[i].color) end,
-			set = function(info, r,g,b,a) db.awardReasons[i].color = {r,g,b,a} end, 
+			set = function(info, r,g,b,a) db.awardReasons[i].color = {r,g,b,a} end,
 			hidden = function() return db.numAwardReasons < i end,
 		}
 		options.mlSettings.args.awardTab.args.awardReasons.args["log"..i] = {
 			order = i +1.2,
-			name = "Log",
-			desc = "Enables logging in Loot History.",
+			name = L["Log"],
+			desc = L["log_desc"],
 			type = "toggle",
 			width = "half",
 			get = function() return db.awardReasons[i].log end,
@@ -830,19 +830,19 @@ function addon:OptionsTable()
 	for i = 1, #db.awardText do
 		options.mlSettings.args.announcementTab.args.awardAnnouncement.args["outputSelect"..i] = {
 			order = i+3,
-			name = "Channel "..i..":",
-			desc = "Select a channel to announce awards to.",
+			name = L["Channel"]..i..":",
+			desc = L["channel_desc"],
 			type = "select",
 			style = "dropdown",
 			values = {
-				NONE = "None",
-				SAY = "Say",
-				YELL = "Yell",
-				PARTY = "Party",
-				GUILD = "Guild",
-				OFFICER = "Officer",
-				RAID = "Raid",
-				RAID_WARNING = "Raid Warning"
+				NONE = L["None"],
+				SAY = L["Say"],
+				YELL = L["Yell"],
+				PARTY = L["Party"],
+				GUILD = L["Guild"],
+				OFFICER = L["Officer"],
+				RAID = L["Raid"],
+				RAID_WARNING = L["Raid Warning"],
 			},
 			set = function(j,v) db.awardText[i].channel = v end,
 			get = function() return db.awardText[i].channel end,
@@ -850,8 +850,8 @@ function addon:OptionsTable()
 		}
 		options.mlSettings.args.announcementTab.args.awardAnnouncement.args["outputMessage"..i] = {
 			order = i+3.1,
-			name = "Message",
-			desc = "The message to send to the selected channel.",
+			name = L["Message"],
+			desc = L["message_desc"],
 			type = "input",
 			width = "double",
 			get = function() return db.awardText[i].text end,

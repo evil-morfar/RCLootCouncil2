@@ -8,6 +8,7 @@
 local addon = LibStub("AceAddon-3.0"):GetAddon("RCLootCouncil")
 RCVotingFrame = addon:NewModule("RCVotingFrame", "AceComm-3.0")
 local LibDialog = LibStub("LibDialog-1.0")
+local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 
 local ROW_HEIGHT = 20;
 local NUM_ROWS = 15;
@@ -23,18 +24,18 @@ local menuFrame -- Right click menu frame
 
 function RCVotingFrame:OnInitialize()
 	self.scrollCols = {
-		{ name = "",							width = 20, },	-- Class
-		{ name = "Name",						width = 130,},	-- Candidate Name
-		{ name = "Rank",						width = 100,},	-- Guild rank
-		{ name = "Role",						width = 60, },	-- Role
-		{ name = "Response",					width = 250,},	-- Response
-		{ name = "ilvl",						width = 40, },	-- Total ilvl
-		{ name = "diff",						width = 40, },	-- ilvl difference
-		{ name = "g1",		align = "CENTER",	width = 20, },	-- Current gear 1
-		{ name = "g2",		align = "CENTER",	width = 20, },	-- Current gear 2
-		{ name = "Votes",	align = "CENTER",	width = 40, },	-- Number of votes
-		{ name = "Vote",	align = "CENTER",	width = 60, },	-- Vote button
-		{ name = "Notes",	align = "CENTER",	width = 40, },	-- Note icon
+		{ name = "",								width = 20, },	-- Class
+		{ name = L["Name"],					width = 130,},	-- Candidate Name
+		{ name = L["Rank"],					width = 100,},	-- Guild rank
+		{ name = L["Role"],					width = 60, },	-- Role
+		{ name = L["Response"],			width = 250,},	-- Response
+		{ name = L["ilvl"],					width = 40, },	-- Total ilvl
+		{ name = L["Diff"],					width = 40, },	-- ilvl difference
+		{ name = L["g1"],			align = "CENTER",	width = 20, },	-- Current gear 1
+		{ name = L["g2"],			align = "CENTER",	width = 20, },	-- Current gear 2
+		{ name = L["Votes"], 	align = "CENTER",	width = 40, },	-- Number of votes
+		{ name = L["Vote"],		align = "CENTER",	width = 60, },	-- Vote button
+		{ name = L["Notes"],	align = "CENTER",	width = 40, },	-- Note icon
 	}
 	menuFrame = CreateFrame("Frame", "RCLootCouncil_VotingFrame_RightclickMenu", self, "UIDropDownMenuTemplate")
 	Lib_UIDropDownMenu_Initialize(menuFrame, self.RightClickMenu, "MENU")
@@ -65,7 +66,7 @@ function RCVotingFrame:Show()
 	if self.frame then
 		self.frame:Show()
 	else
-		addon:Print("No session running")
+		addon:Print(L["No session running"])
 	end
 end
 
@@ -114,7 +115,7 @@ function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
 				if db.autoOpen then
 					self:Show()
 				else
-					addon:Print('A new session has begun, type "/rc open" to open the voting frame.')
+					addon:Print(L['A new session has begun, type "/rc open" to open the voting frame.'])
 				end
 
 			elseif command == "response" then
@@ -190,18 +191,18 @@ function RCVotingFrame:Setup(table)
 				voters = {},
 				haveVoted = false,
 				cols = {
-					{ value = "",							DoCellUpdate = addon.SetCellClassIcon,	args = {y.class},		name = "class",},
-					{ value = addon.Ambiguate,				color = addon:GetClassColor(y.class), args = {name},			name = "name",},
-					{ value = y.rank,						color = self.GetResponseColor,									name = "rank",},
-					{ value = addon.TranslateRole,			color = self.GetResponseColor,	args = {y.role},				name = "role",},
-					{ value = self.GetResponseText,			color = self.GetResponseColor,									name = "response",},
-					{ value = nil,																							name = "ilvl",},
-					{ value = 0,							color = self.GetIDiffColor,										name = "diff",},
-					{ value = "",							DoCellUpdate = self.SetCellGear, args = {nil},					name = "gear1",},
-					{ value = "",							DoCellUpdate = self.SetCellGear, args = {nil},					name = "gear2",},
-					{ value = nil,							DoCellUpdate = self.SetCellVote, args = {0},					name = "votes",},
+					{ value = "",							DoCellUpdate = addon.SetCellClassIcon,			args = {y.class},	name = "class",},
+					{ value = addon.Ambiguate,			color = addon:GetClassColor(y.class), args = {name},		name = "name",},
+					{ value = y.rank,								color = self.GetResponseColor,													name = "rank",},
+					{ value = addon.TranslateRole,	color = self.GetResponseColor,				args = {y.role},	name = "role",},
+					{ value = self.GetResponseText,	color = self.GetResponseColor,						name = "response",},
+					{ value = nil,																														name = "ilvl",},
+					{ value = 0,							color = self.GetIDiffColor,											name = "diff",},
+					{ value = "",							DoCellUpdate = self.SetCellGear, args = {nil},	name = "gear1",},
+					{ value = "",							DoCellUpdate = self.SetCellGear, args = {nil},	name = "gear2",},
+					{ value = nil,						DoCellUpdate = self.SetCellVote, args = {0},		name = "votes",},
 					{ value = "",							DoCellUpdate = self.SetVoteBtn,									name = "vote",},
-					{ value = "",							DoCellUpdate = self.SetNote, args = {nil},						name = "note",},
+					{ value = "",							DoCellUpdate = self.SetNote, args = {nil},			name = "note",},
 				}
 			})
 			-- Insert the row id into lootTable[session].candidates[name] for ease of reference
@@ -254,7 +255,7 @@ function RCVotingFrame:SwitchSession(s)
 	local t = lootTable[s] -- Shortcut
 	self.frame.itemIcon:SetNormalTexture(t.texture)
 	self.frame.itemText:SetText(t.link)
-	self.frame.itemLvl:SetText("ilvl: "..t.ilvl)
+	self.frame.itemLvl:SetText(format(L["ilvl: x"], t.ilvl))
 
 	-- Set a proper item type text
 	if t.subType and t.subType ~= "Miscellaneous" and t.subType ~= "Junk" and t.equipLoc ~= "" then
@@ -278,7 +279,7 @@ function RCVotingFrame:GetFrame()
 
 	-- Container and title
 	local f = addon:CreateFrame("DefaultRCLootCouncilFrame", "votingFrame", 420)
-	f.title = addon:CreateTitleFrame(f, "RCLootCouncil Voting Frame", 250)
+	f.title = addon:CreateTitleFrame(f, L["RCLootCouncil Voting Frame"], 250)
 	-- Scrolling table
 	local st = LibStub("ScrollingTable"):CreateST(self.scrollCols, NUM_ROWS, ROW_HEIGHT, {r=1,g=0.9,b=0,a=0.5}, f)
 	st.frame:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", 10, 10)
@@ -317,13 +318,13 @@ function RCVotingFrame:GetFrame()
 
 	local iTxt = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
 	iTxt:SetPoint("TOPLEFT", item, "TOPRIGHT", 10, -5)
-	iTxt:SetText("Something went wrong :'(") -- Set text for reasons
+	iTxt:SetText(L["Something went wrong :'("]) -- Set text for reasons
 	f.itemText = iTxt
 
 	local ilvl = f:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 	ilvl:SetPoint("TOPLEFT", iTxt, "BOTTOMLEFT", 0, -10)
 	ilvl:SetTextColor(0.5, 1, 1) -- Turqouise
-	ilvl:SetText("ilvl:")
+	ilvl:SetText(L["ilvl: x"](""))
 	f.itemLvl = ilvl
 
 	local iType = f:CreateFontString(nil, "OVERLAY", "GameFontNormal")
@@ -334,12 +335,12 @@ function RCVotingFrame:GetFrame()
 	--#end----------------------------
 
 	-- Abort button
-	local b1 = addon:CreateButton("Abort", f)
+	local b1 = addon:CreateButton(L["Abort"], f)
 	b1:SetPoint("TOPRIGHT", f, "TOPRIGHT", -10, -50)
 	if addon.isMasterLooter then
 		b1:SetScript("OnClick", function() LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_ABORT") end)
 	else
-		b1:SetText("Close")
+		b1:SetText(L["Close"])
 		b1:SetScript("OnClick", function() f:Hide() end)
 	end
 	f.abortBtn = b1
@@ -360,12 +361,12 @@ function RCVotingFrame:GetFrame()
 			button:SetPushedTexture("Interface\\Buttons\\UI-SpellbookIcon-NextPage-Down")
 		end
 	end)
-	b2:SetScript("OnEnter", function() addon:CreateTooltip("Click to expand/collapse more info") end)
+	b2:SetScript("OnEnter", function() addon:CreateTooltip(L["Click to expand/collapse more info"]) end)
 	b2:SetScript("OnLeave", addon.HideTooltip)
 	f.moreInfoBtn = b2
 
 	-- Filter
-	local tgl = addon:CreateButton("Filter", f)
+	local tgl = addon:CreateButton(L["Filter"], f)
 	tgl:SetPoint("RIGHT", b1, "LEFT", -10, 0)
 	tgl:SetScript("OnClick", function() db.filterPasses = not db.filterPasses; end )
 	f.filter = tgl
@@ -385,7 +386,7 @@ function RCVotingFrame:GetFrame()
 	end)
 	local rft = rf:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 	rft:SetPoint("CENTER", rf, "CENTER")
-	rft:SetText("Everyone have rolled and voted")
+	rft:SetText(L["Everyone have rolled and voted"])
 	rft:SetTextColor(0,1,0,1)
 	rf.text = rft
 	rf:SetWidth(rft:GetStringWidth()) -- TODO This isn't needed here
@@ -419,7 +420,7 @@ function RCVotingFrame:UpdateSessionButton(i, texture, link, awarded)
 		btn:SetScript("Onclick", function() RCVotingFrame:SwitchSession(i); end)
 	end
 	-- then update it
-	texture = texture or "Interface\InventoryItems\WoWUnknownItem01"
+	texture = texture or "Interface\\InventoryItems\\WoWUnknownItem01"
 	btn:SetNormalTexture(texture)
 	btn:GetNormalTexture():SetBlendMode("ADD")
 
@@ -428,14 +429,14 @@ function RCVotingFrame:UpdateSessionButton(i, texture, link, awarded)
 			edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
 			edgeSize = 16,
 		})
-	local lines = { "Click to switch to", link }
+	local lines = { L["Click to switch to"], link }
 	if i == session then
 		btn:SetBackdropBorderColor(1,1,0,1) -- yellow
 		btn:GetNormalTexture():SetVertexColor(1,1,1)
 	elseif awarded then
 		btn:SetBackdropBorderColor(0,1,0,1) -- green
 		btn:GetNormalTexture():SetVertexColor(0.3,0.3,0.3)
-		tinsert(lines, "This item has been awarded")
+		tinsert(lines, L["This item has been awarded"])
 	else
 		btn:SetBackdropBorderColor(1,1,1,1) -- white
 		btn:GetNormalTexture():SetVertexColor(0.3,0.3,0.3)
@@ -471,20 +472,20 @@ end
 function RCVotingFrame.SetVoteBtn(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
 	if addon.isCouncil or addon.isMasterLooter then -- Only let the right people vote
 		if not frame.voteBtn then -- create it
-			frame.voteBtn = addon:CreateButton("Vote", frame)
+			frame.voteBtn = addon:CreateButton(L["Vote"], frame)
 			frame.voteBtn:SetPoint("TOPLEFT", frame, "TOPLEFT", 0, 0)
 			frame.voteBtn:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", 0, 0)
 		end
 		frame.voteBtn:SetScript("OnClick", function(btn)
 			-- Test if they may vote for themselves
 			if not addon.mldb.selfVote and addon:UnitIsUnit("player", self:GetCandidateData(session,nil,"name", realrow)) then
-				return addon:Print("The Master Looter doesn't allow votes for yourself.")
+				return addon:Print(L["The Master Looter doesn't allow votes for yourself."])
 			end
 			-- Test if they're allowed to cast multiple votes
 			if not addon.mldb.multiVote then
 				for i = 1, #data do
 					if data[i].haveVoted then
-						return addon:Print("The Master Looter doesn't allow multiple votes.")
+						return addon:Print(L["The Master Looter doesn't allow multiple votes."])
 					end
 				end
 			end
@@ -496,9 +497,9 @@ function RCVotingFrame.SetVoteBtn(rowFrame, frame, data, cols, row, realrow, col
 			data[realrow].haveVoted = not data[realrow].haveVoted
 		end)
 		if data[realrow].haveVoted then
-			frame.voteBtn:SetText("Unvote")
+			frame.voteBtn:SetText(L["Unvote"])
 		else
-			frame.voteBtn:SetText("Vote")
+			frame.voteBtn:SetText(L["Vote"])
 		end
 	end
 end
@@ -510,7 +511,7 @@ function RCVotingFrame.SetNote(rowFrame, frame, data, cols, row, realrow, column
 	f:SetPoint("CENTER", frame, "CENTER")
 	if note then
 		f:SetNormalTexture("Interface/BUTTONS/UI-GuildButton-PublicNote-Up.png")
-		f:SetScript("OnEnter", function() addon:CreateTooltip("Note", note)	end)
+		f:SetScript("OnEnter", function() addon:CreateTooltip(L["Note"], note)	end)
 		f:SetScript("OnLeave", function() addon:HideTooltip() end)
 	else
 		f:SetScript("OnEnter", nil)
@@ -531,7 +532,7 @@ end
 function RCVotingFrame.SetCellVote(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
 	if not addon.mldb.anonymousVoting or (db.showForML and addon.isMasterLooter) then
 		frame:SetScript("OnEnter", function()
-			addon:CreateTooltip("Voters", unpack(data[realrow].voters))
+			addon:CreateTooltip(L["Voters"], unpack(data[realrow].voters))
 		end)
 		frame:SetScript("OnLeave", function() addon:HideTooltip() end)
 	end
@@ -545,13 +546,13 @@ function RCVotingFrame.RightClickMenu(menu, level)
 		Lib_UIDropDownMenu_AddButton({text = rowName, isTitle = true, notCheckable = true, disabled = true}, level)
 		Lib_UIDropDownMenu_AddButton({text = "", notCheckable = true, disabled = true}, level)
 
-		Lib_UIDropDownMenu_AddButton({text = "Award", notCheckable = true, func = function() LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_AWARD") end }, level)
-		Lib_UIDropDownMenu_AddButton({text = "Award for ...", value = "AWARD_FOR", notCheckable = true, hasArrow = true}, level)
+		Lib_UIDropDownMenu_AddButton({text = L["Award"], notCheckable = true, func = function() LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_AWARD") end }, level)
+		Lib_UIDropDownMenu_AddButton({text = L["Award for ..."], value = "AWARD_FOR", notCheckable = true, hasArrow = true}, level)
 		Lib_UIDropDownMenu_AddButton({text = "", notCheckable = true, disabled = true}, level)
 
-		Lib_UIDropDownMenu_AddButton({text = "Change Response", value = "CHANGE_RESPONSE", notCheckable = true, hasArrow = true}, level)
-		Lib_UIDropDownMenu_AddButton({text = "Reannounce ...", value = "REANNOUNCE", notCheckable = true, hasArrow = true}, level)
-		Lib_UIDropDownMenu_AddButton({text = "Remove from consideration", notCheckable = true, func = function() --[[ TODO ]]end, }, level);
+		Lib_UIDropDownMenu_AddButton({text = L["Change Response"], value = "CHANGE_RESPONSE", notCheckable = true, hasArrow = true}, level)
+		Lib_UIDropDownMenu_AddButton({text = L["Reannounce ..."], value = "REANNOUNCE", notCheckable = true, hasArrow = true}, level)
+		Lib_UIDropDownMenu_AddButton({text = L["Remove from consideration"], notCheckable = true, func = function() --[[ TODO ]]end, }, level);
 
 	elseif level == 2 then
 		local value = LIB_UIDROPDOWNMENU_MENU_VALUE
@@ -576,7 +577,7 @@ function RCVotingFrame.RightClickMenu(menu, level)
 
 		elseif value == "REANNOUNCE" then
 			Lib_UIDropDownMenu_AddButton({text = rowName, isTitle = true, notCheckable = true, disabled = true}, level);
-			Lib_UIDropDownMenu_AddButton({text = "This item", notCheckable = true,
+			Lib_UIDropDownMenu_AddButton({text = L["This item"], notCheckable = true,
 				func = function()
 					-- TODO
 					self:SendCommMessage("RCLootCouncil", "reRoll "..self:Serialize({lootTable[currentSession], currentSession}), "WHISPER", selection[1])
@@ -585,7 +586,7 @@ function RCVotingFrame.RightClickMenu(menu, level)
 				end,
 			}, level);
 
-			Lib_UIDropDownMenu_AddButton({text = "All items", notCheckable = true,
+			Lib_UIDropDownMenu_AddButton({text = L["All items"], notCheckable = true,
 				func = function()
 					-- TODO
 					local name = selection[1] -- store it
@@ -601,31 +602,31 @@ end
 
 --------ML Popups ------------------
 LibDialog:Register("RCLOOTCOUNCIL_CONFIRM_ABORT", {
-	text = "Are you sure you want to abort?",
+	text = L["Are you sure you want to abort?"],
 	buttons = {
-		{	text = "Yes",
+		{	text = L["Yes"],
 			on_click = function(self)
 				addon:GetActiveModule("masterlooter"):EndSession()
 				RCVotingFrame:Disable()
 				CloseLoot() -- close the lootlist
 			end,
 		},
-		{	text = "No",
+		{	text = L["No"],
 		},
 	},
 	hide_on_escape = true,
 	show_while_dead = true,
 })
 LibDialog:Register("RCLOOTCOUNCIL_CONFIRM_AWARD", {
-	text = "Are you sure you want to give %s to %s?",
+	text = format(L["Are you sure you want to give #item to #player?"], item, player),
 	buttons = {
-		{	text = "Yes",
+		{	text = L["Yes"],
 			on_click = function(self)
 				local data = self.data -- not sure that'll work!
 				RCLootCouncil_Mainframe.award() -- TODO
 			end,
 		},
-		{	text = "No",
+		{	text = L["No"],
 			-- TODO check if requires function
 		},
 	},
