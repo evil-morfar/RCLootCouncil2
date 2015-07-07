@@ -20,4 +20,6 @@
   <Include file="Libs\LibDialog-1.0\LibDialog-1.0.xml" />
   <Script file="Libs\LibWindow-1.1\LibWindow-1.1.lua" />
   <Include file="Libs\lib-st\lib-st.xml" />
+  <Script file="Libs\DropDownMenu\UIDropDownMenu.lua"/> <!-- TODO Make sure these last two are right-->
+  <Include file="Libs\UIDropDownMenuTemplates.xml" />
 </Ui>
