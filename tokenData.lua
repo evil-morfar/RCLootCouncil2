@@ -63,7 +63,7 @@ RCTokenTable = {
 	[120255] = "HeadSlot",
 	[120248] = "HeadSlot",
 
-	[120243] = "ShoulderSlot",
+	[120246] = "ShoulderSlot",
 	[120256] = "ShoulderSlot",
 	[120250] = "ShoulderSlot",
 
@@ -80,15 +80,15 @@ RCTokenTable = {
 	[99751] = "LegsSlot",
 	[99752] = "LegsSlot",
 	[99753] = "LegsSlot",
-	
+
 	[99748] = "HeadSlot",
 	[99749] = "HeadSlot",
 	[99750] = "HeadSlot",
-	
+
 	[99754] = "ShoulderSlot",
 	[99755] = "ShoulderSlot",
 	[99756] = "ShoulderSlot",
-	
+
 	[99745] = "HandsSlot",
 	[99746] = "HandsSlot",
 	[99747] = "HandsSlot",
@@ -341,4 +341,3 @@ RCTokenTable = {
 	[45657] = "ShoulderSlot",
 	[45658] = "ShoulderSlot",
 }
-

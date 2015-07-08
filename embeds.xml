@@ -1,6 +1,6 @@
 <Ui xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.blizzard.com/wow/ui/">
   <Script file="Libs\LibStub\LibStub.lua"/>
-  <Include file="libs\AceLocale-3.0\AceLocale-3.0.xml" />
+  <Include file="Libs\AceLocale-3.0\AceLocale-3.0.xml" />
   <Include file="Libs\CallbackHandler-1.0\CallbackHandler-1.0.xml"/>
   <Include file="Libs\AceAddon-3.0\AceAddon-3.0.xml"/>
   <Include file="Libs\AceConsole-3.0\AceConsole-3.0.xml"/>
@@ -21,5 +21,5 @@
   <Script file="Libs\LibWindow-1.1\LibWindow-1.1.lua" />
   <Include file="Libs\lib-st\lib-st.xml" />
   <Script file="Libs\DropDownMenu\UIDropDownMenu.lua"/> <!-- TODO Make sure these last two are right-->
-  <Include file="Libs\UIDropDownMenuTemplates.xml" />
+  <Include file="Libs\DropDownMenu\UIDropDownMenuTemplates.xml" />
 </Ui>

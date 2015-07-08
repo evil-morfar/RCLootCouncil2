@@ -318,7 +318,7 @@ function RCLootCouncil:OnEnable()
 			{	text = L["No"],
 				on_click = function(self)
 					RCLootCouncil.use = false;
-					RCLootcouncil:Print(L[" is not active in this raid."])
+					RCLootCouncil:Print(L[" is not active in this raid."])
 				end,
 			},
 		},
