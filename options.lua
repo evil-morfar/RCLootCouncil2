@@ -689,7 +689,7 @@ function addon:OptionsTable()
 											end
 											return info
 										end,
-										set = function(j,i) db.council = {}; RCLootCouncil_Mainframe.setRank(i); end, --TODO CHANGE THIS
+										set = function(j,i) db.council = {}; RCLootCouncil_Mainframe.setRank(i); end, --FIXME CHANGE THIS
 										get = function() return db.minRank; end,
 									},
 									desc = {

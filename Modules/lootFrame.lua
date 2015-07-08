@@ -70,7 +70,7 @@ function LootFrame:Update()
 			entries[numEntries].itemText:SetText(v.link)
 			entries[numEntries].itemLvl:SetText(L["ilvl: x"](v.ilvl))
 			-- Update the buttons and get frame width
-			-- TODO There might be a better way of doing this instead of SetText() on every update?
+			-- IDEA There might be a better way of doing this instead of SetText() on every update?
 			for i = 1, addon.mldb.numButtons do
 				local but = entries[numEntries].buttons[i]
 				but:SetText(addon:GetButtonText(i))

@@ -10,8 +10,8 @@ TODO
 		- Make sure all variables store interchangeable data to allow for fully cross realm/language support i.e UnitFullName, Unlocalized - only change stuff on display
 		- Check if modules can be implemented smarter by getting OnModuleCreated event from Ace or something else.
 		- Give the user option to control the ignore list
-		- In votingFrame:Setup() - Might be able to shave off some data by having references to the candidate table instead of just pasting it all in lootTable[s].rows
 		- HideVotes thingie
+		- Try using SendCommand() without creating tables (Serialize() takes unlimited arguments)
 --------------------------------
 CHANGELOG (WIP)
 	==== 2.0 Beta
@@ -23,7 +23,7 @@ CHANGELOG (WIP)
 	*Added module support.
 		All non-core functions and visual elements is now modules.
 	*Added Obeserve mode.
-	TODO *Added "Session Setup".
+	*Added "Session Setup".
 	*Added ability to temporary disable the addon.
 	*Using LibDialog-1.0 to avoid UI taint.
 	*Updated Options menu (more options and better descriptions).
@@ -62,7 +62,7 @@ local userModules = {
 }
 
 function RCLootCouncil:OnInitialize()
-	--TODO Consider if we want everything on self, or just whatever modules could need.
+	--IDEA Consider if we want everything on self, or just whatever modules could need.
 	-- just init testItems now for zzzzz. Needs better implementation
 	for k,v in ipairs(testItems) do
 		GetItemInfo(v)
@@ -328,7 +328,7 @@ function RCLootCouncil:OnEnable()
 end
 
 function RCLootCouncil:OnDisable()
-	--TODO (not really needed as we probably never call .Disable() on the addon)
+	--NOTE (not really needed as we probably never call .Disable() on the addon)
 		-- delete all windows
 		-- disable modules(?)
 	self:UnregisterAllEvents()
@@ -797,7 +797,7 @@ function RCLootCouncil:GetGuildRankNum(name)
 	return 100; -- fallback
 end
 
--- TODO might not be needed, or not valid
+-- REVIEW might not be needed, or not valid
 function RCLootCouncil:GetLowestItemLevel(item1, item2)
 	self:DebugLog("GetLowestItemLevel(...)")
 	local ilvl1, ilvl2

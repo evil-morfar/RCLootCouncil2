@@ -290,9 +290,8 @@ function RCVotingFrame:GetFrame()
 	st:RegisterEvents({
 		["OnClick"] = function(rowFrame, cellFrame, data, cols, row, realrow, column, table, button, ...)
 			if button == "RightButton" then
-				-- TODO Not sure about "frame"
-				menuFrame.row = realrow -- Test
-				Lib_ToggleDropDownMenu(1, nil, menuFrame, frame, 0, 0);
+				menuFrame.row = realrow -- TODO Test
+				Lib_ToggleDropDownMenu(1, nil, menuFrame, f, 0, 0);
 			end
 			-- Return false to have the default OnClick handler take care of left clicks
 			return false
@@ -303,7 +302,7 @@ function RCVotingFrame:GetFrame()
 	--[[------------------------------
 		Session item icon and strings
 	    ------------------------------]]
-	local item = CreateFrame("Button", nil, f) --  TODO MIGHT NEED TO INHERIT SOMETHING
+	local item = CreateFrame("Button", nil, f) 
 	item:EnableMouse()
     item:SetNormalTexture("Interface/ICONS/INV_Misc_QuestionMark")
     item:SetScript("OnEnter", function()
