@@ -488,7 +488,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 						for ses, v in pairs(lootTable) do
 								local autopass = self:AutoPassCheck(v.subType)
 								if autopass then
-									if not db.silentAutoPass then self:Print("Autopassed on "..v.link) end
+									if not db.silentAutoPass then self:Print(format(L["Autopassed on %s"], v.link)) end
 									self:SendCommand("group", "response", self:CreateResponse(ses, tonumber(strmatch(v.link, "item:(%d+):")), v.ilvl, "AUTOPASS"))
 									tremove(lootTable, ses) -- TODO not sure this'll work!
 								end
@@ -805,7 +805,9 @@ function RCLootCouncil:GetLowestItemLevel(item1, item2)
 	if item2 then
 		ilvl2 = select(4, GetItemInfo(item2))
 	else return ilvl1; end
-	if ilvl1 < ilvl2 then return ilvl1; else return ilvl2; end
+	--if ilvl1 < ilvl2 then return ilvl1; else return ilvl2; end
+	-- This should work
+	return ilvl1 < ilvl2 and ilvl1 or ilvl2
 end
 
 function RCLootCouncil:GetNumberOfDaysFromNow(oldDate)

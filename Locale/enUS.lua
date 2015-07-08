@@ -74,6 +74,7 @@ L["history"] = true
 L["whisper"] = true
 L["whisper_help"] = "Players can whisper (or through Raidchat if enabled) their current item(s) followed by a keyword to the Master Looter if they doesn't have the addon installed.\nThe keyword list is found under the 'Buttons and Responses' optiontab.\nPlayers can whisper 'rchelp' to the Master Looter to retrieve this list.\nNOTE: People should still get the addon installed, otherwise all player information won't be available."
 
+L["Autopassed on %s"] = true
 L["version_outdated_msg"] = "Your version %s is outdated. Newer version is %s, please update RCLootCouncil."
 L["tVersion_outdated_msg"] = "Newest RCLootCouncil test version is: %s"
 L["You cannot initiate a test while in a group without being the MasterLooter."] = true
@@ -125,6 +126,7 @@ L["Abort"] = true
 L["Close"] = true
 L["Click to expand/collapse more info"] = true
 L["Filter"] = true
+L["Status texts"] = true
 L["Everyone have rolled and voted"] = true
 L["Click to switch to"] = true
 L["This item has been awarded"] = true

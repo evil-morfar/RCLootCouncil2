@@ -21,6 +21,7 @@ local active = false -- Are we currently in session?
 local candidates = {} -- Candidates for the loot, initial data from the ML
 local keys = {} -- Lookup table for cols
 local menuFrame -- Right click menu frame
+local dropDownMenu, filterData
 
 function RCVotingFrame:OnInitialize()
 	self.scrollCols = {
@@ -38,7 +39,9 @@ function RCVotingFrame:OnInitialize()
 		{ name = L["Notes"],	align = "CENTER",	width = 40, },	-- Note icon
 	}
 	menuFrame = CreateFrame("Frame", "RCLootCouncil_VotingFrame_RightclickMenu", self, "UIDropDownMenuTemplate")
+	dropDownMenu = CreateFrame("Frame", "RCLootCouncil_VotingFrame_DropDownMenu", self, "UIDropDownMenuTemplate")
 	Lib_UIDropDownMenu_Initialize(menuFrame, self.RightClickMenu, "MENU")
+	Lib_UIDropDownMenu_Initialize(dropDownMenu, self.DropDownMenu)
 end
 
 function RCVotingFrame:OnEnable()
@@ -48,6 +51,7 @@ function RCVotingFrame:OnEnable()
 	--self:Show()
 	active = true
 	self.frame = self:GetFrame()
+
 end
 
 function RCVotingFrame:OnDisable()
@@ -288,12 +292,13 @@ function RCVotingFrame:GetFrame()
 			if button == "RightButton" then
 				-- TODO Not sure about "frame"
 				menuFrame.row = realrow -- Test
-				Lib_ToggleDropDownMenu(1, nil, menuFrame, frame , 0, 0);
+				Lib_ToggleDropDownMenu(1, nil, menuFrame, frame, 0, 0);
 			end
 			-- Return false to have the default OnClick handler take care of left clicks
 			return false
 		end,
 	})
+	st:SetFilter(filterFunc)
 	f.st = st
 	--[[------------------------------
 		Session item icon and strings
@@ -368,7 +373,7 @@ function RCVotingFrame:GetFrame()
 	-- Filter
 	local tgl = addon:CreateButton(L["Filter"], f)
 	tgl:SetPoint("RIGHT", b1, "LEFT", -10, 0)
-	tgl:SetScript("OnClick", function() db.filterPasses = not db.filterPasses; end )
+	tgl:SetScript("OnClick", function() Lib_ToggleDropDownMenu(1, nil, dropDownMenu, frame, 0, 0) end )
 	f.filter = tgl
 
 	-- Number of rolls/votes
@@ -600,6 +605,28 @@ function RCVotingFrame.RightClickMenu(menu, level)
 		end
 end
 
+function RCVotingFrame.DropDownMenu(menu, level)
+	if level == 1 then -- Redundant
+		-- Build the data table:
+		local data = {"STATUS", "AUTOPASS"}
+		for i = 1, db.numButtons do
+			data[i+2] = i
+		end
+
+		Lib_UIDropDownMenu_AddButton({text = L["Filter"], isTitle = true, notCheckable = true, disabled = true}, level)
+		Lib_UIDropDownMenu_AddButton({text = L["Status texts"], func = function(_,_,_, checked) filterData[1] = checked end }, level)
+		for i = 2, #data do
+			Lib_UIDropDownMenu_AddButton({text = db.responses[data[i]].text, func = function(_,_,_, checked) filterData[i] = checked  end }, level)
+		end
+	end
+end
+
+local function filterFunc(self, row)
+	if not filterData[1] then -- Filter out the status texts
+		return type(row.response) ~= "string"
+	end
+	return row.response == filterData[row.response]
+end
 --------ML Popups ------------------
 LibDialog:Register("RCLOOTCOUNCIL_CONFIRM_ABORT", {
 	text = L["Are you sure you want to abort?"],
