@@ -114,6 +114,7 @@ L["g2"] = true
 L["Votes"] = true
 L["Vote"] = true
 L["Notes"] = true
+L["Roll"] = true
 
 L["No session running"] = true
 L['A new session has begun, type "/rc open" to open the voting frame.'] = true
@@ -141,6 +142,7 @@ L["Award for ..."] = true
 L["Change Response"] = true
 L["Reannounce ..."] = true
 L["Remove from consideration"] = true
+L["Add rolls"] = true
 L["This item"] = true
 L["All items"] = true
 

@@ -37,6 +37,7 @@ function RCVotingFrame:OnInitialize()
 		{ name = L["Votes"], 	align = "CENTER",	width = 40, },	-- Number of votes
 		{ name = L["Vote"],		align = "CENTER",	width = 60, },	-- Vote button
 		{ name = L["Notes"],	align = "CENTER",	width = 40, },	-- Note icon
+		{ name = L["Roll"],		align = "CENTER", width = 30, },	-- Roll
 	}
 	menuFrame = CreateFrame("Frame", "RCLootCouncil_VotingFrame_RightclickMenu", self, "UIDropDownMenuTemplate")
 	dropDownMenu = CreateFrame("Frame", "RCLootCouncil_VotingFrame_DropDownMenu", self, "UIDropDownMenuTemplate")
@@ -190,6 +191,8 @@ function RCVotingFrame:Setup(table)
 		for name, y in pairs(candidates) do
 			-- Insert candidates into each row, and set initial data for everything we don't already know
 			--[playerName] = {rank, role,  class}
+			--[[ IDEA Could save 21 x sessions x candidates - 21 tables by moving all data to candidates[]
+			 		and only use 1 table to store rows, and update it on each session switch. Worst case save is 147 (21x1x8-21), best case is 3.129?! (21x6x25-21)]]
 			tinsert(lootTable[session].rows,
 			{	response = "ANNOUNCED",
 				voters = {},
@@ -207,6 +210,7 @@ function RCVotingFrame:Setup(table)
 					{ value = nil,						DoCellUpdate = self.SetCellVote, args = {0},		name = "votes",},
 					{ value = "",							DoCellUpdate = self.SetVoteBtn,									name = "vote",},
 					{ value = "",							DoCellUpdate = self.SetNote, args = {nil},			name = "note",},
+					{	value = "",		name = "roll"}
 				}
 			})
 			-- Insert the row id into lootTable[session].candidates[name] for ease of reference
@@ -247,6 +251,12 @@ function RCVotingFrame:HandleVote(session, row, vote, voter)
 		end
 	end
 	self:Update()
+end
+
+function RCVotingFrame:DoRandomRolls(ses)
+	for i = 1, #lootTable[ses].rows do
+		self:SetCandidateData(ses, nil, "roll", math.random(100), i)
+	end
 end
 
 ------------------------------------------------------------------
@@ -543,83 +553,6 @@ function RCVotingFrame.SetCellVote(rowFrame, frame, data, cols, row, realrow, co
 	frame.text:SetText(data[realrow].cols[column].args[1])
 end
 
-function RCVotingFrame.RightClickMenu(menu, level)
-	-- TODO Needs to get the row passed from Lib-st
-	local rowName = RCVotingFrame:GetCandidateData(session, nil, "name", menu.row )
-	if level == 1 then
-		Lib_UIDropDownMenu_AddButton({text = rowName, isTitle = true, notCheckable = true, disabled = true}, level)
-		Lib_UIDropDownMenu_AddButton({text = "", notCheckable = true, disabled = true}, level)
-
-		Lib_UIDropDownMenu_AddButton({text = L["Award"], notCheckable = true, func = function() LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_AWARD") end }, level)
-		Lib_UIDropDownMenu_AddButton({text = L["Award for ..."], value = "AWARD_FOR", notCheckable = true, hasArrow = true}, level)
-		Lib_UIDropDownMenu_AddButton({text = "", notCheckable = true, disabled = true}, level)
-
-		Lib_UIDropDownMenu_AddButton({text = L["Change Response"], value = "CHANGE_RESPONSE", notCheckable = true, hasArrow = true}, level)
-		Lib_UIDropDownMenu_AddButton({text = L["Reannounce ..."], value = "REANNOUNCE", notCheckable = true, hasArrow = true}, level)
-		Lib_UIDropDownMenu_AddButton({text = L["Remove from consideration"], notCheckable = true, func = function() --[[ TODO ]]end, }, level);
-
-	elseif level == 2 then
-		local value = LIB_UIDROPDOWNMENU_MENU_VALUE
-		if value == "AWARD_FOR" then
-			for k,v in pairs(db.awardReasons) do
-				if k > db.numAwardReasons then break end
-				Lib_UIDropDownMenu_AddButton({text = v.text, notCheckable = true, func = function() --[[TODO award ]]end, }, level)
-			end
-
-		elseif value == "CHANGE_RESPONSE" then
-			for i = 1, db.numButtons do
-				local v = db.responses[i]
-				Lib_UIDropDownMenu_AddButton({text = v.text,
-					colorCode = "|cff"..string.format("%02x%02x%02x",255*v.color[1], 255*v.color[2], 255*v.color[3]),
-					notCheckable = true,
-					func = function()
-						-- TODO
-					end,
-					},
-				level)
-			end
-
-		elseif value == "REANNOUNCE" then
-			Lib_UIDropDownMenu_AddButton({text = rowName, isTitle = true, notCheckable = true, disabled = true}, level);
-			Lib_UIDropDownMenu_AddButton({text = L["This item"], notCheckable = true,
-				func = function()
-					-- TODO
-					self:SendCommMessage("RCLootCouncil", "reRoll "..self:Serialize({lootTable[currentSession], currentSession}), "WHISPER", selection[1])
-					self:SendCommMessage("RCLootCouncil", "remove "..currentSession.." "..selection[1], channel)
-					RCLootCouncil_Mainframe.removeEntry(currentSession, selection[1])
-				end,
-			}, level);
-
-			Lib_UIDropDownMenu_AddButton({text = L["All items"], notCheckable = true,
-				func = function()
-					-- TODO
-					local name = selection[1] -- store it
-					self:SendCommMessage("RCLootCouncil", "lootTable "..self:Serialize(lootTable), "WHISPER", name)
-					for i = 1, #entryTable do
-						self:SendCommMessage("RCLootCouncil", "remove "..i.." "..name, channel)
-						RCLootCouncil_Mainframe.removeEntry(i, name)
-					end
-				end,
-			}, level);
-		end
-end
-
-function RCVotingFrame.DropDownMenu(menu, level)
-	if level == 1 then -- Redundant
-		-- Build the data table:
-		local data = {"STATUS", "AUTOPASS"}
-		for i = 1, db.numButtons do
-			data[i+2] = i
-		end
-
-		Lib_UIDropDownMenu_AddButton({text = L["Filter"], isTitle = true, notCheckable = true, disabled = true}, level)
-		Lib_UIDropDownMenu_AddButton({text = L["Status texts"], func = function(_,_,_, checked) filterData[1] = checked end }, level)
-		for i = 2, #data do
-			Lib_UIDropDownMenu_AddButton({text = db.responses[data[i]].text, func = function(_,_,_, checked) filterData[i] = checked  end }, level)
-		end
-	end
-end
-
 local function filterFunc(self, row)
 	if not filterData[1] then -- Filter out the status texts
 		return type(row.response) ~= "string"
@@ -659,3 +592,123 @@ LibDialog:Register("RCLOOTCOUNCIL_CONFIRM_AWARD", {
 	hide_on_escape = true,
 	show_while_dead = true,
 })
+
+do
+	local info = UIDropDownMenu_CreateInfo() -- Efficiency :)
+	-- NOTE Take care of info[] values when inserting new button
+	function RCVotingFrame.RightClickMenu(menu, level)
+		if not addon.isMasterLooter then return end
+
+		local candidateName = RCVotingFrame:GetCandidateData(session, nil, "name", menu.row ) -- REVIEW Check if we can use menu or need to access menuFrame.row
+
+		if level == 1 then
+			info.text = candidateName
+			info.isTitle = true
+			info.notCheckable = true
+			info.disabled = true
+			Lib_UIDropDownMenu_AddButton(info, level)
+
+			info.text = ""
+			info.isTitle = false
+			Lib_UIDropDownMenu_AddButton(info, level)
+
+			info.text = L["Award"]
+			info.func = function() LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_AWARD") end
+			info.disabled = false
+			Lib_UIDropDownMenu_AddButton(info, level)
+			info = UIDropDownMenu_CreateInfo()
+
+			info.text = L["Award for ..."]
+			info.value = "AWARD_FOR"
+			info.notCheckable = true
+			info.hasArrow = true
+			Lib_UIDropDownMenu_AddButton(info, level)
+			info = UIDropDownMenu_CreateInfo()
+
+			info.text = ""
+			info.notCheckable = true
+			info.disabled = true
+			Lib_UIDropDownMenu_AddButton(info, level)
+
+			info.text = L["Change Response"]
+			info.value = "CHANGE_RESPONSE"
+			info.hasArrow = true
+			Lib_UIDropDownMenu_AddButton(info, level)
+
+			info.text = L["Reannounce ..."]
+			info.value = "REANNOUNCE",
+			Lib_UIDropDownMenu_AddButton(info, level)
+			info = UIDropDownMenu_CreateInfo()
+
+			info.text = L["Remove from consideration"]
+			info.notCheckable = true
+			info.func = function() --[[ TODO ]]end,
+			Lib_UIDropDownMenu_AddButton(info, level)
+
+			info.text = L["Add rolls"]
+			info.notCheckable = true
+			info.func = self:DoRandomRolls()
+			Lib_UIDropDownMenu_AddButton(info, level)
+
+		elseif level == 2 then
+			local value = LIB_UIDROPDOWNMENU_MENU_VALUE
+			if value == "AWARD_FOR" then
+				for k,v in pairs(db.awardReasons) do
+					if k > db.numAwardReasons then break end
+					Lib_UIDropDownMenu_AddButton({text = v.text, notCheckable = true, func = function() --[[TODO award ]]end, }, level)
+				end
+
+			elseif value == "CHANGE_RESPONSE" then
+				for i = 1, db.numButtons do
+					local v = db.responses[i]
+					Lib_UIDropDownMenu_AddButton({text = v.text,
+						colorCode = "|cff"..string.format("%02x%02x%02x",255*v.color[1], 255*v.color[2], 255*v.color[3]),
+						notCheckable = true,
+						func = function()
+							-- TODO
+						end,
+						},
+					level)
+				end
+
+			elseif value == "REANNOUNCE" then
+				Lib_UIDropDownMenu_AddButton({text = candidateName, isTitle = true, notCheckable = true, disabled = true}, level);
+				Lib_UIDropDownMenu_AddButton({text = L["This item"], notCheckable = true,
+					func = function()
+						-- TODO
+						self:SendCommMessage("RCLootCouncil", "reRoll "..self:Serialize({lootTable[currentSession], currentSession}), "WHISPER", selection[1])
+						self:SendCommMessage("RCLootCouncil", "remove "..currentSession.." "..selection[1], channel)
+						RCLootCouncil_Mainframe.removeEntry(currentSession, selection[1])
+					end,
+				}, level);
+
+				Lib_UIDropDownMenu_AddButton({text = L["All items"], notCheckable = true,
+					func = function()
+						-- TODO
+						local name = selection[1] -- store it
+						self:SendCommMessage("RCLootCouncil", "lootTable "..self:Serialize(lootTable), "WHISPER", name)
+						for i = 1, #entryTable do
+							self:SendCommMessage("RCLootCouncil", "remove "..i.." "..name, channel)
+							RCLootCouncil_Mainframe.removeEntry(i, name)
+						end
+					end,
+				}, level);
+			end
+	end
+
+	function RCVotingFrame.DropDownMenu(menu, level)
+		if level == 1 then -- Redundant
+			-- Build the data table:
+			local data = {"STATUS", "AUTOPASS"}
+			for i = 1, db.numButtons do
+				data[i+2] = i
+			end
+
+			Lib_UIDropDownMenu_AddButton({text = L["Filter"], isTitle = true, notCheckable = true, disabled = true}, level)
+			Lib_UIDropDownMenu_AddButton({text = L["Status texts"], func = function(_,_,_, checked) filterData[1] = checked end }, level)
+			for i = 2, #data do
+				Lib_UIDropDownMenu_AddButton({text = db.responses[data[i]].text, func = function(_,_,_, checked) filterData[i] = checked  end }, level)
+			end
+		end
+	end
+end
