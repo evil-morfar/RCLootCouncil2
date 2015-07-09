@@ -39,7 +39,7 @@ function RCLootCouncilML:OnEnable()
 	}
 	]]
 	self.lootInBags = {} -- Awarded items that are stored in MLs inventory
-		-- i = { itemName, winner }
+		-- i = { iLink, winner }
 	self.lootOpen = false -- is the ML lootWindow open or closed?
 	self.running = false -- true if we're handling a session
 
@@ -358,8 +358,9 @@ end
 
 
 --@param session	The session to award
+--@param reason
 --@param winner		Nil/false if items should be stored in inventory and awarded later
-function RCLootCouncilML:Award(session, winner)
+function RCLootCouncilML:Award(session, reason, winner)
 	-- Start by determining if we should award the item now or just store it in our bags
 	if winner then
 		--  give out the loot or store the result, i.e. bagged or not
@@ -407,9 +408,9 @@ function RCLootCouncilML:Award(session, winner)
 		end
 		self:HasAllItemsBeenAwarded() -- REVIEW might not be the best place for it
 	else -- Store in bags
-		if not addon.lootList[session].lootSlot then return addon:SessionError("Session "..session.. "didn't have lootSlot") end
-		LootSlot(addon.lootList[session].lootSlot) -- take the item
-		tinsert(self.lootInBags, {addon.lootList[session].itemid, winner}) -- and store data
+		if not self.lootTable[session].lootSlot then return addon:SessionError("Session "..session.. "didn't have lootSlot") end
+		LootSlot(self.lootTable[session].lootSlot) -- take the item
+		tinsert(self.lootInBags, {self.lootTable[session].link, winner}) -- and store data
 	end
 end
 

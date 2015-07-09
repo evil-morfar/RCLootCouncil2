@@ -220,16 +220,42 @@ function addon:OptionsTable()
 									get = function() return db.autolootEverything end,
 									set = function() db.autolootEverything = not db.autolootEverything end,
 								},
-								autoLootBoE = {
+								autolootBoE = {
 									order = 6,
 									name = L["Autoloot BoE"],
 									desc = L["autoloot_BoE_desc"],
 									type = "toggle",
 									disabled = function() return not db.autoStart end,
-									get = function() return db.autolootBoE; end,
-									set = function() db.autolootBoE = not db.autolootBoE; end,
+									get = "DBGet", -- HACK trying to use a universal setter/getter
+									set = "DBSet",
 								},
-
+								ignoreInput = {
+									order = 7,
+									name = L["Ignore:"],
+									desc = L["ignore_input_desc"],
+									type = "input",
+									pattern = "%d", -- REVIEW Not sure this is enough
+									usage = L["ignore_input_usage"],
+									get = function() return "\"itemID\"" end,
+									set = function(info, val) tinsert(db.ignore, val) end,
+								},
+								ignoreList = {
+									order = 8,
+									name = L["Ignore List"],
+									desc = L["ignore_list_desc"],
+									type = "select",
+									style = "dropdown",
+									values = function()
+										local t = {}
+										for i = 1, #db.ignore do
+											local link = select(2, GetItemInfo(db.ignore[i]))
+											t[i] = link or L["Not cached, please reopen."]
+										end
+										return t
+									end,
+									get = function() return L["Ignore List"] end,
+									set = function(info, val) tremove(db.ignore, val) end,
+								},
 							},
 						},
 						voteOptions = {
@@ -884,7 +910,15 @@ function addon:OptionsTable()
 	return options
 end
 
-function RCLootCouncil:GetGuildOptions()
+local function DBGet(info)
+	return db[info[#info]]
+end
+
+local function DBSet(info, val)
+	db[info[#info]] = val
+end
+
+function addon:GetGuildOptions()
 	for i = 1, GuildControlGetNumRanks() do
 		local rank = GuildControlGetRankName(i)
 		local names = {}

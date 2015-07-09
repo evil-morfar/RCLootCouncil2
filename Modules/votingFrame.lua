@@ -302,7 +302,7 @@ function RCVotingFrame:GetFrame()
 	--[[------------------------------
 		Session item icon and strings
 	    ------------------------------]]
-	local item = CreateFrame("Button", nil, f) 
+	local item = CreateFrame("Button", nil, f)
 	item:EnableMouse()
     item:SetNormalTexture("Interface/ICONS/INV_Misc_QuestionMark")
     item:SetScript("OnEnter", function()
@@ -649,7 +649,7 @@ LibDialog:Register("RCLOOTCOUNCIL_CONFIRM_AWARD", {
 		{	text = L["Yes"],
 			on_click = function(self)
 				local data = self.data -- not sure that'll work!
-				RCLootCouncil_Mainframe.award() -- TODO
+				addon:GetActiveModule("masterlooter"):Award(session)
 			end,
 		},
 		{	text = L["No"],

@@ -216,6 +216,12 @@ L["Loot Everything"] = true
 L["loot_everything_desc"] = "Enables looting of non-items (e.g. mounts, tier-tokens)"
 L["Autoloot BoE"] = true
 L["autoloot_BoE_desc"] = "Enables autolooting of BoE (Bind on Equip) items."
+L["Ignore:"] = true
+L["ignore_input_desc"] = "Enter an itemID to add to the ignore list causing RCLootCouncil to never add the item to a session"
+L["ignore_input_usage"] = "This function only accepts itemIDs (number)"
+L["Ignore List"] = true
+L["ignore_list_desc"] = "Items RCLootCouncil is ignoring. Click on a item to remove it."
+L["Not cached, please reopen."] = true
 
 L["Voting options"] = true
 L["Self Vote"] = true

@@ -5,17 +5,21 @@
 
 --------------------------------
 TODO
-	Things marked with "--TODO"
+	Things marked with "TODO"
 		- autoOpen in defaults - used to toggle if rc should autoopen the voting frame. /rc open if not.
 		- Make sure all variables store interchangeable data to allow for fully cross realm/language support i.e UnitFullName, Unlocalized - only change stuff on display
 		- Check if modules can be implemented smarter by getting OnModuleCreated event from Ace or something else.
-		- Give the user option to control the ignore list
 		- HideVotes thingie
-		- Try using SendCommand() without creating tables (Serialize() takes unlimited arguments)
+		- The whole "loot from bags" thing (Check if we can make some alt-clicking in bags, and maybe an "add item" command)
+		- "Roll" column
+		- "Disenchant option when everyone passes"
+		- "more info" thingie
+		- Revise DB variables
 --------------------------------
 CHANGELOG (WIP)
 	==== 2.0 Beta
 
+	*Complete rewrite
 	*Changed Test mode behavior
 	*Added status on roll sendouts (not announced, init, offline etc).
 	*Added Autopass feature.
@@ -23,12 +27,16 @@ CHANGELOG (WIP)
 	*Added module support.
 		All non-core functions and visual elements is now modules.
 	*Added Obeserve mode.
+		Non-council members are now able to see the voting screen if they/the ML desires.
 	*Added "Session Setup".
+		The ML is now able to review the session before starting it, as well as better manipulating it.
 	*Added ability to temporary disable the addon.
-	*Using LibDialog-1.0 to avoid UI taint.
-	*Updated Options menu (more options and better descriptions).
+	*Updated Options menu.
+		ML options is moved to a seperate tab to distinguish them. Sorted the options to make more sense.
 	*Added localization
+	*Added customizeable ignore list
   	Bugfixes:
+			Various taint fixes.
 
 ]]
 
@@ -335,6 +343,7 @@ function RCLootCouncil:OnDisable()
 end
 
 function RCLootCouncil:RefreshConfig()
+	self:Debug("RefreshConfig")
 	db = self.defaults.profile
 	if self.isMasterLooter then	RCLootCouncilML:NewML() end
 end
