@@ -8,7 +8,7 @@
 local addon = LibStub("AceAddon-3.0"):GetAddon("RCLootCouncil")
 RCVersionCheck = addon:NewModule("RCVersionCheck", "AceTimer-3.0", "AceComm-3.0", "AceHook-3.0")
 local ST = LibStub("ScrollingTable")
-local L LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
+local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 
 local db, stData
 

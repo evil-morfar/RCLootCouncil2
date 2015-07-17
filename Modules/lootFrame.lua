@@ -7,6 +7,7 @@
 local addon = LibStub("AceAddon-3.0"):GetAddon("RCLootCouncil")
 local LootFrame = addon:NewModule("RCLootFrame", "AceTimer-3.0")
 local LibDialog = LibStub("LibDialog-1.0")
+local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 
 local db, buttons
 local isMinimized = false
@@ -68,7 +69,7 @@ function LootFrame:Update()
 			entries[numEntries].link = v.link
 			entries[numEntries].icon:SetNormalTexture(v.texture)
 			entries[numEntries].itemText:SetText(v.link)
-			entries[numEntries].itemLvl:SetText(L["ilvl: x"](v.ilvl))
+			entries[numEntries].itemLvl:SetText(format(L["ilvl: x"], v.ilvl))
 			-- Update the buttons and get frame width
 			-- IDEA There might be a better way of doing this instead of SetText() on every update?
 			for i = 1, addon.mldb.numButtons do

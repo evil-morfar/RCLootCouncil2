@@ -11,7 +11,6 @@ TODO
 		- Check if modules can be implemented smarter by getting OnModuleCreated event from Ace or something else.
 		- HideVotes thingie
 		- The whole "loot from bags" thing (Check if we can make some alt-clicking in bags, and maybe an "add item" command)
-		- "Roll" column
 		- "Disenchant option when everyone passes"
 		- "more info" thingie
 		- Revise DB variables
@@ -75,7 +74,7 @@ function RCLootCouncil:OnInitialize()
 	for k,v in ipairs(testItems) do
 		GetItemInfo(v)
 	end
-  self.version = GetAddOnMetadata("RCLC", "Version")
+  self.version = GetAddOnMetadata("RCLootCouncil2", "Version")
 	self.nnp = true
 	self.debug = true
 	self.tVersion = "Alpha.1" -- String or nil. Indicates test version, which alters stuff like version check. Is appended to 'version', i.e. "version-tVersion"
@@ -161,6 +160,7 @@ function RCLootCouncil:OnInitialize()
 			autoEnable = false, -- Skip "Use for this raid?" message
 			autoPass = true,
 			silentAutoPass = false, -- Show autopass message
+			autoPassBoE = true,
 
 			UI = { -- stores all ui information
 				['*'] = { -- Defaults for Lib-Window
@@ -170,6 +170,10 @@ function RCLootCouncil:OnInitialize()
 					scale	= 1,
 				},
 			},
+
+			modules = { -- For storing module specific data
+				['*'] = {},
+			}, 
 
 			announceAward = true,
 			awardText = { -- Just max it at 2 channels
@@ -202,9 +206,9 @@ function RCLootCouncil:OnInitialize()
 			maxAwardReasons = 8,
 			numAwardReasons = 3,
 			awardReasons = {
-				{ color = {0, 0, 0, 1}, log = true,	sort = 401,	text = L["Disenchant"], },
-				{ color = {0, 0, 0, 1}, log = true,	sort = 402,	text = L["Banking"], },
-				{ color = {0, 0, 0, 1}, log = false,sort = 403,	text = L["Free"],},
+				{ color = {1, 1, 1, 1}, log = true,	sort = 401,	text = L["Disenchant"], },
+				{ color = {1, 1, 1, 1}, log = true,	sort = 402,	text = L["Banking"], },
+				{ color = {1, 1, 1, 1}, log = false,sort = 403,	text = L["Free"],},
 			},
 
 			-- List of items to ignore:
@@ -227,7 +231,7 @@ function RCLootCouncil:OnInitialize()
 	end
 	-- create the other AwardReasons
 	for i = 4, self.defaults.profile.maxAwardReasons do
-		tinsert(self.defaults.profile.awardReasons, i, {color = {0, 0, 0, 1}, log = true, sort = 400+i, text = "Reason "..i,})
+		tinsert(self.defaults.profile.awardReasons, i, {color = {1, 1, 1, 1}, log = true, sort = 400+i, text = "Reason "..i,})
 	end
 
 	-- register chat and comms
@@ -281,8 +285,9 @@ function RCLootCouncil:OnEnable()
 
 	if self.tVersion then
 		self.db.global.logMaxEntries = 1000 -- bump it for test version
-	elseif self.db.global.tVersion and self.debug then -- recently ran a test version, so reset debugLog
-		debugLog = {}
+	end
+	if self.db.global.tVersion and self.debug then -- recently ran a test version, so reset debugLog
+		self.db.global.log = {}
 	end
 
 	self.db.global.tVersion = self.tVersion;
@@ -293,10 +298,6 @@ function RCLootCouncil:OnEnable()
 	end
 
 	ChatFrame_AddMessageEventFilter("CHAT_MSG_WHISPER_INFORM", filterFunc)
-
-	-- Create localization for autopass
-	self:LocalizeSubTypes()
-
 	----------PopUp setups --------------
 	-------------------------------------
 	LibDialog:Register("RCLOOTCOUNCIL_CONFIRM_USAGE", {
@@ -350,7 +351,7 @@ end
 
 function RCLootCouncil:ChatCommand(msg)
 	local input, arg1, arg2 = self:GetArgs(msg,3)
-	input = strlower(input)
+	input = strlower(input or "")
 	if not input or input:trim() == "" or input == "help" or input == L["help"] then
 		if self.tVersion then print(format(L["chat tVersion string"],self.version, self.tVersion))
 		else print(format(L["chat version String"],self.version)) end
@@ -366,7 +367,7 @@ function RCLootCouncil:ChatCommand(msg)
 		self:Debug(L["- log - display the debug log"])
 		self:Debug(L["- clearLog - clear the debug log"])
 
-	elseif input == 'config' or L["config"] then
+	elseif input == 'config' or input == L["config"] then
 		-- Call it twice, because reasons..
 		InterfaceOptionsFrame_OpenToCategory(self.optionsFrame)
 		InterfaceOptionsFrame_OpenToCategory(self.optionsFrame)
@@ -493,14 +494,18 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 					self:SendCommand(sender, "lootAck", self.playerName) -- send ack
 
 					local lootTable = unpack(data)
-					if db.autoPass then
+					if autoPass then
 						for ses, v in pairs(lootTable) do
-								local autopass = self:AutoPassCheck(v.subType)
-								if autopass then
+							if (v.boe and db.autoPassBoE) or not v.boe then
+								if self:AutoPassCheck(v.subType) then
+									self:Debug("Autopassed on: "..vlink)
 									if not db.silentAutoPass then self:Print(format(L["Autopassed on %s"], v.link)) end
 									self:SendCommand("group", "response", self:CreateResponse(ses, tonumber(strmatch(v.link, "item:(%d+):")), v.ilvl, "AUTOPASS"))
 									tremove(lootTable, ses) -- TODO not sure this'll work!
 								end
+							else
+								self:Debug("Didn't autopass on: "..v.link.." because it's BoE!")
+							end
 						end
 					end
 
@@ -657,9 +662,12 @@ local INVTYPE_Slots = {
 function RCLootCouncil:GetPlayersGearFromItemID(itemID)
 	self:DebugLog("GetPlayersGearFromItemID("..tostring(itemID)..")")
 	if not itemID then return nil, nil; end
-	-- Extract from RCTokenTable
+	-- check if the item is a token, and if it is, return the matching current gear
 	if RCTokenTable[itemID] then
-		return GetInventoryItemLink("player", GetInventorySlotInfo(RCTokenTable[itemID])), nil
+		if RCTokenTable[itemID] == "Trinket" then -- We need to return both trinkets
+			return GetInventoryItemLink("player", GetInventorySlotInfo("TRINKET0SLOT")), GetInventoryItemLink("player", GetInventorySlotInfo("TRINKET1SLOT"))
+		end
+		return GetInventoryItemLink("player", GetInventorySlotInfo(RCTokenTable[itemID])), nil;
 	end
 	local thisItemEquipLoc = select(9, GetItemInfo(itemID))
 	local item1, item2;
@@ -673,6 +681,13 @@ function RCLootCouncil:GetPlayersGearFromItemID(itemID)
 		item2 = GetInventoryItemLink("player", GetInventorySlotInfo(slot[2]))
 	end
 	return item1, item2;
+end
+
+function RCLootCouncil:Timer(type, ...)
+	self:Debug("Timer "..type.." passed")
+	if type == "LocalizeSubTypes" then
+		self:LocalizeSubTypes()
+	end
 end
 
 -- Classes that should auto pass a subtype
@@ -720,35 +735,53 @@ local subTypeLookup = {
 	["Two-Handed Swords"]	= 124389, -- Calamity's Edge
 	["Wands"]							= 128096, -- Demonspine Wand
 }
+
+-- Create localization for autopass
+for _, item in pairs(subTypeLookup) do -- Just call GetItemInfo() and do it in 2 secs
+	GetItemInfo(item)
+end
+RCLootCouncil:ScheduleTimer("Timer", 5, "LocalizeSubTypes")
+	
 function RCLootCouncil:AutoPassCheck(type)
 	if type and autopassTable[self.db.global.localizedSubTypes[type]] then
-		for _, class in ipairs(autopassTable[self.db.global.localizedSubTypes[type]]) do
-			if class == self.playerClass then
-				return true
-			end
-		end
+		return tContains(autopassTable[self.db.global.localizedSubTypes[type]], self.playerClass)
 	end
 	return false
 end
 
 function RCLootCouncil:LocalizeSubTypes()
-	if self.db.global.localizedSubTypes["Wands"] then return end -- We only need to create it once
+	if self.db.global.localizedSubTypes.created then return end -- We only need to create it once
+	self.db.global.localizedSubTypes = {} -- reset
+	self.db.global.localizedSubTypes.created = true
 	for name, item in pairs(subTypeLookup) do
-		local sType = select(8, GetItemInfo(item))
+		local sType = select(7, GetItemInfo(item))
 		if sType then
 			self.db.global.localizedSubTypes[sType] = name
 			self:DebugLog("Found "..name.." localized as: "..sType)
 		else -- Probably not cached, set a timer
 			self:ScheduleTimer("Timer", 2, "LocalizeSubTypes")
+			self.db.global.localizedSubTypes.created = false
 		end
 	end
 end
 
-function RCLootCouncil:Timer(type, ...)
-	self:Debug("Timer "..type.." passed")
-	if type == "LocalizeSubTypes" then
-		self:LocalizeSubTypes()
+function RCLootCouncil:IsItemBoE(item)
+	self:DebugLog("IsItemBoe("..item..")")
+	GameTooltip:SetOwner(UIParent, "ANCHOR_NONE")
+	GameTooltip:SetHyperlink(item)
+	if GameTooltip:NumLines() > 1 then -- check that there is something here
+		for i = 1, 5 do -- BoE status won't be further away than line 5
+			local line = getglobal('GameTooltipTextLeft' .. i)
+			if line and line.GetText then
+				if line:GetText() == ITEM_BIND_ON_EQUIP then
+					GameTooltip:Hide()
+					return true
+				end
+			end
+		end
 	end
+	GameTooltip:Hide()
+	return false
 end
 
 function RCLootCouncil:CreateResponse(session, itemid, ilvl, response, note)

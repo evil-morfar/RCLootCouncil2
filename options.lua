@@ -14,11 +14,14 @@ function addon:OptionsTable()
 			order = 1,
 			type = "group",
 			childGroups = "tab",
+			handler = addon,
+			get = "DBGet",
+			set = "DBSet",
 			args = {
 				version = {
 					order = 1,
 					type = "description",
-					name = "v"..self.version,
+					name = function() return self.tVersion and "v"..self.version.."-"..self.tVersion or "v"..self.version end,
 				},
 				generalSettingsTab = {
 					order = 2,
@@ -31,21 +34,19 @@ function addon:OptionsTable()
 							type = "group",
 							inline = true,
 							args = {
-								toggle = {
+								disable = {
 									order = 1,
 									name = L["Activate"],
 									desc = L["activate_desc"],
 									type = "toggle",
-									set = function() addon.disable = not addon.disable end,
-									get = function() return not addon.disable end,
+									set = function() addon.disabled = not addon.disabled end,
+									get = function() return not addon.disabled end,
 								},
 								autoOpen = {
 									order = 1.2,
 									name = L["Auto Open"],
 									desc = L["auto_open_desc"],
 									type = "toggle",
-									set = function() db.autoOpen = not db.autoOpen end,
-									get = function() return db.autoOpen end,
 								},
 								--toggleAdvanced = {
 								--	order = 1.3,
@@ -58,10 +59,11 @@ function addon:OptionsTable()
 								header = {
 									order = 2,
 									type = "header",
-									name = "",
-								},
+									name = "Autopass",
+									width = "half",
+								},								
 								testButton = {
-									order = 3,
+									order = 7,
 									name = L["Test"],
 									desc = L["test_desc"],
 									type = "execute",
@@ -74,38 +76,43 @@ function addon:OptionsTable()
 									name = L["Version Check"],
 									desc = L["version_check_desc"],
 									type = "execute",
-									order = 3.1	,
+									order = 8	,
 									func = function()
 										InterfaceOptionsFrame:Hide()
 										LibStub("AceConfigDialog-3.0"):CloseAll()
 										addon:CallModule("version")
 									end
-								},
-								header2 = {
-									order = 4,
-									type = "header",
-									name = "",
-								},
-								autopass = {
-									order = 5,
+								},								
+							},
+						},
+						autoPassOptions = {
+							order = 2,
+							type = "group",
+							name = L["Auto Pass"],
+							inline = true,
+							args = {								
+								autoPass = {
+									order = 1,
 									name = L["Auto Pass"],
 									desc = L["auto_pass_desc"],
 									type = "toggle",
-									set = function() db.autoPass = not db.autoPass end,
-									get = function() return db.autoPass end,
 								},
 								silentAutoPass = {
-									order = 6,
+									order = 2,
 									name = L["Silent Auto Pass"],
 									desc = L["silent_auto_pass_desc"],
 									type = "toggle",
-									set = function() db.silentAutoPass = not db.silentAutoPass end,
-									get = function() return db.silentAutoPass end,
+								},
+								autoPassBoE = {
+									order = 3,
+									name = L["Auto pass BoE"],
+									desc = L["auto_pass_boe_desc"],
+									type = "toggle",
 								},
 							},
 						},
 						lootHistoryOptions = {
-							order = 2,
+							order = 3,
 							type = "group",
 							name = L["Loot History"],
 							inline = true,
@@ -115,21 +122,17 @@ function addon:OptionsTable()
 									name = L["loot_history_desc"],
 									type = "description",
 								},
-								trackLooting = {
+								enableHistory = {
 									order = 2,
 									name = L["Enable Loot History"],
 									desc = L["enable_loot_history_desc"],
 									type = "toggle",
-									get = function() return db.enableHistory end,
-									set = function() db.enableHistory = not db.enableHistory end,
 								},
 								sendHistory = {
 									order = 3,
 									name = L["Send History"],
 									desc = L["send_history_desc"],
 									type = "toggle",
-									get = function() return db.sendHistory; end,
-									set = function() db.sendHistory = not db.sendHistory; end,
 								},
 								header = {
 									order = 4,
@@ -162,6 +165,9 @@ function addon:OptionsTable()
 			order = 2,
 			type = "group",
 			childGroups = "tab",
+			handler = addon,
+			get = "DBGet",
+			set = "DBSet",
 			--hidden = function() return not db.advancedOptions end,
 			args = {
 				desc = {
@@ -185,16 +191,12 @@ function addon:OptionsTable()
 									name = L["Auto Enable"],
 									desc = L["auto_enable_desc"],
 									type = "toggle",
-									set = function() db.autoEnable = not db.autoEnable end,
-									get = function() return db.autoEnable end,
 								},
 								altClickLooting = {
 									order = 2,
 									name = L["Alt click Looting"],
 									desc = L["alt_click_looting_desc"],
 									type = "toggle",
-									get = function() return db.altClickLooting end,
-									set = function() db.altClickLooting = not db.altClickLooting; end,
 								},
 								spacer = {
 									order = 3,
@@ -205,20 +207,14 @@ function addon:OptionsTable()
 									order = 4,
 									name = L["Auto Start"],
 									desc = L["auto_start_desc"],
-									type = "toggle";
-									get = function() return db.autoStart end,
-									set = function() db.autoStart = not db.autoStart
-										if not db.autoStart then db.altClickLooting = true end
-									end,
+									type = "toggle",
 								},
-								autoLootEverything = {
+								autolootEverything = {
 									order = 5,
 									name = L["Loot Everything"],
 									desc = L["loot_everything_desc"],
 									type = "toggle",
 									disabled = function() return not db.autoStart end,
-									get = function() return db.autolootEverything end,
-									set = function() db.autolootEverything = not db.autolootEverything end,
 								},
 								autolootBoE = {
 									order = 6,
@@ -226,12 +222,68 @@ function addon:OptionsTable()
 									desc = L["autoloot_BoE_desc"],
 									type = "toggle",
 									disabled = function() return not db.autoStart end,
-									get = "DBGet", -- HACK trying to use a universal setter/getter
-									set = "DBSet",
+								},
+							},
+						},
+						voteOptions = {
+							order = 2,
+							name = L["Voting options"],
+							type = "group",
+							inline = true,
+							args = {
+								selfVote = {
+									order = 1,
+									name = L["Self Vote"],
+									desc = L["self_vote_desc"],
+									type = "toggle",
+								},
+								multiVote = {
+									order = 2,
+									name = L["Multi Vote"],
+									desc = L["multi_vote_desc"],
+									type = "toggle",
+								},
+								allowNotes = {
+									order = 3,
+									name = L["Notes"],
+									desc = L["notes_desc"],
+									type = "toggle",
+								},
+								anonymousVoting = {
+									order = 4,
+									name = L["Anonymous Voting"],
+									desc = L["anonymous_voting_desc"],
+									type = "toggle",
+								},
+								showForML = {
+									order = 5,
+									name = L["ML sees voting"],
+									desc = L["ml_sees_voting_desc"],
+									type = "toggle",
+									disabled = function() return not db.anonymousVoting end,
+								},
+								hideVotes = {
+									order = 6,
+									name = L["Hide Votes"],
+									desc = L["hide_votes_desc"],
+									type = "toggle",
+								},
+							},
+						},
+						ignoreOptions = {
+							order = 3,
+							name = L["Ignore Options"],
+							type = "group",
+							inline = true,
+							args = {
+								desc = {
+									order = 1,
+									name = L["ignore_options_desc"],
+									type = "description",
 								},
 								ignoreInput = {
-									order = 7,
-									name = L["Ignore:"],
+									order = 2,
+									name = L["Add Item"],
 									desc = L["ignore_input_desc"],
 									type = "input",
 									pattern = "%d", -- REVIEW Not sure this is enough
@@ -240,11 +292,12 @@ function addon:OptionsTable()
 									set = function(info, val) tinsert(db.ignore, val) end,
 								},
 								ignoreList = {
-									order = 8,
+									order = 3,
 									name = L["Ignore List"],
 									desc = L["ignore_list_desc"],
 									type = "select",
 									style = "dropdown",
+									width = "double",
 									values = function()
 										local t = {}
 										for i = 1, #db.ignore do
@@ -255,63 +308,6 @@ function addon:OptionsTable()
 									end,
 									get = function() return L["Ignore List"] end,
 									set = function(info, val) tremove(db.ignore, val) end,
-								},
-							},
-						},
-						voteOptions = {
-							order = 2,
-							name = L["Voting options"],
-							type = "group",
-							inline = true,
-							args = {
-								selfVoteToggle = {
-									order = 1,
-									name = L["Self Vote"],
-									desc = L["self_vote_desc"],
-									type = "toggle",
-									get = function() return db.selfVote end,
-									set = function() db.selfVote = not db.selfVote end,
-								},
-								multiVoteToggle = {
-									order = 2,
-									name = L["Multi Vote"],
-									desc = L["multi_vote_desc"],
-									type = "toggle",
-									get = function() return db.multiVote end,
-									set = function() db.multiVote = not db.multiVote; end,
-								},
-								allowNotes = {
-									order = 3,
-									name = L["Notes"],
-									desc = L["notes_desc"],
-									type = "toggle",
-									get = function() return db.allowNotes end,
-									set = function() db.allowNotes = not db.allowNotes end,
-								},
-								anonymousVotingToggle = {
-									order = 4,
-									name = L["Anonymous Voting"],
-									desc = L["anonymous_voting_desc"],
-									type = "toggle",
-									get = function() return db.anonymousVoting end,
-									set = function() db.anonymousVoting = not db.anonymousVoting end,
-								},
-								masterLooterOnly = {
-									order = 5,
-									name = L["ML sees voting"],
-									desc = L["ml_sees_voting_desc"],
-									type = "toggle",
-									disabled = function() return not db.anonymousVoting end,
-									get = function() return db.showForML end,
-									set = function() db.showForML = not db.showForML end,
-								},
-								hideVotesToggle = {
-									order = 6,
-									name = L["Hide Votes"],
-									desc = L["hide_votes_desc"],
-									type = "toggle",
-									get = function() return db.hideVotes end,
-									set = function() db.hideVotes = not db.hideVotes end,
 								},
 							},
 						},
@@ -334,8 +330,6 @@ function addon:OptionsTable()
 								name = L["Auto Award"],
 								desc = L["auto_award_desc"],
 								type = "toggle",
-								get = function() return db.autoAward end,
-								set = function() db.autoAward = not db.autoAward; end,
 								disabled = false,
 							},
 							autoAwardLowerThreshold = {
@@ -352,10 +346,8 @@ function addon:OptionsTable()
 									end
 									return t;
 								end,
-								get = function() return db.autoAwardLowerThreshold end,
-								set = function(i,v) db.autoAwardLowerThreshold = v; end,
 							},
-							autoAwardQualityUpper = {
+							autoAwardUpperThreshold = {
 								order = 1.2,
 								name = L["Upper Quality Limit"],
 								desc = L["upper_quality_limit_desc"],
@@ -369,8 +361,6 @@ function addon:OptionsTable()
 									end
 									return t;
 								end,
-								get = function() return db.autoAwardUpperThreshold end,
-								set = function(i,v) db.autoAwardUpperThreshold = v; end,
 							},
 							autoAwardTo = {
 								order = 2,
@@ -397,8 +387,6 @@ function addon:OptionsTable()
 									return t;
 								end,
 								hidden = function() return not db.advancedOptions or not IsInRaid() end,
-								get = function() return db.autoAwardTo; end,
-								set = function(i,v) db.autoAwardTo = v; end,
 							},
 							autoAwardReason = {
 								order = 2.1,
@@ -413,8 +401,6 @@ function addon:OptionsTable()
 									end
 									return t
 								end,
-								get = function() return db.autoAwardReason end,
-								set = function(i,v) db.autoAwardReason = v; end,
 							},
 						},
 					},
@@ -429,7 +415,7 @@ function addon:OptionsTable()
 								name = L["award_reasons_desc"],
 								type = "description",
 							},
-							range = {
+							numAwardReasons = {
 								order = 1,
 								name = L["Number of reasons"],
 								desc = L["number_of_reasons_desc"],
@@ -438,8 +424,6 @@ function addon:OptionsTable()
 								min = 1,
 								max = db.maxAwardReasons,
 								step = 1,
-								get = function() return db.numAwardReasons end,
-								set = function(i,v) db.numAwardReasons = v end,
 							},
 							-- Award reasons made further down
 							reset = {
@@ -465,14 +449,12 @@ function addon:OptionsTable()
 						type = "group",
 						inline = true,
 						args = {
-							toggle = {
+							announceAward = {
 								order = 1,
 								name = L["Announce Awards"],
 								desc = L["announce_awards_desc"],
 								type = "toggle",
 								width = "full",
-								get = function() return db.announceAward end,
-								set = function() db.announceAward = not db.announceAward end,
 							},
 							outputDesc = {
 								order = 2,
@@ -490,14 +472,12 @@ function addon:OptionsTable()
 						type = "group",
 						inline = true,
 						args = {
-							announceConsideration = {
+							announceItems = {
 								order = 1,
 								name = L["Announce Considerations"],
 								desc = L["announce_considerations_desc"],
 								type = "toggle",
 								width = "full",
-								get = function() return db.announceItems end,
-								set = function() db.announceItems = not db.announceItems end,
 							},
 							desc = {
 								order = 2,
@@ -532,7 +512,6 @@ function addon:OptionsTable()
 										end
 										db.announceChannel = v
 									end,
-								get = function() return db.announceChannel end,
 								hidden = function() return not db.announceItems end,
 							},
 							announceText = {
@@ -541,8 +520,6 @@ function addon:OptionsTable()
 								desc = L["message_desc"],
 								type = "input",
 								width = "double",
-								get = function() return db.announceText end,
-								set = function(i,v) db.announceText = v; end,
 								hidden = function() return not db.announceItems end,
 							},
 						},
@@ -573,7 +550,7 @@ function addon:OptionsTable()
 								name = format(L["buttons_and_responses_desc"], db.maxButtons),
 								type = "description"
 							},
-							buttonsRange = {
+							numButtons = {
 								order = 1,
 								name = L["Number of buttons"],
 								desc = L["number_of_buttons_desc"],
@@ -582,8 +559,6 @@ function addon:OptionsTable()
 								min = 1,
 								max = db.maxButtons,
 								step = 1,
-								get = function() return db.numButtons end,
-								set = function(i,v) db.numButtons = v end,
 							},
 							-- passButton = {
 							-- 	order = -1,
@@ -616,8 +591,6 @@ function addon:OptionsTable()
 								name = L["Accept Whispers"],
 								desc = L["accept_whispers_desc"],
 								type = "toggle",
-								get = function() return db.acceptWhispers end,
-								set = function() db.acceptWhispers = not db.acceptWhispers end,
 							},
 							-- acceptRaidChat = {
 							-- 	order = 1.1,
@@ -766,8 +739,7 @@ function addon:OptionsTable()
 									return t
 								end,
 								set = function(info,key,tag)
-									-- probably could've used info[#info-1].values() instead
-									local values = addon.options.mlSettings.args.councilTab.args.addRaidCouncil.args.list.values()
+									local values = info[#info-1].values()
 									if tag then -- add
 										tinsert(self.db.profile.council, values[key])
 									else -- remove
@@ -780,8 +752,7 @@ function addon:OptionsTable()
 								end,
 								get = function(info, key)
 									local values = info[#info-1].values()
-									if tContains(self.db.profile.council, values[key]) then return true end
-									return false
+									return tContains(self.db.profile.council, values[key])
 								end,
 							},
 						},
@@ -910,12 +881,12 @@ function addon:OptionsTable()
 	return options
 end
 
-local function DBGet(info)
-	return db[info[#info]]
+function RCLootCouncil:DBGet(info)
+	return self.db.profile[info[#info]]
 end
 
-local function DBSet(info, val)
-	db[info[#info]] = val
+function RCLootCouncil:DBSet(info, val)
+	self.db.profile[info[#info]] = val
 end
 
 function addon:GetGuildOptions()
@@ -946,20 +917,18 @@ function addon:GetGuildOptions()
 						end)
 						return names
 					end,
-					get = function(info, number)
-						local values = addon.options.mlSettings.args.councilTab.args.addCouncil.args[info[#info-1]].args.ranks.values()
-						for j = 1, #self.db.profile.council do
-							if values[number] == self.db.profile.council[j] then return true end
-						end
-						return false
+					get = function(info, key)
+						local values = info[#info-1].args.ranks.values()
+						return tContains(self.db.profile.council, values[key])
 					end,
-					set = function(info, number, tag)
+					set = function(info, key, tag)
 						--local values = addon.options.args.council.args.addCouncil.args[info[#info-1]].args.ranks.values()
 						local values = info[#info-1].args.ranks.values()
-						if tag then tinsert(self.db.profile.council, values[number])
+						if tag then
+							tinsert(self.db.profile.council, values[key])
 						else
 							for k,v in ipairs(self.db.profile.council) do
-								if v == values[number] then
+								if v == values[key] then
 									tremove(self.db.profile.council, k)
 								end
 							end

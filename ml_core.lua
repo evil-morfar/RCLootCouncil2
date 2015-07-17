@@ -78,6 +78,7 @@ function RCLootCouncilML:AddItem(session, item, bagged, slotIndex)
 		["subType"]		= subType,
 		["equipLoc"]	= equipLoc,
 		["texture"]		= texture,
+		["boe"]			= addon:IsItemBoE(link),
 		--["candidates"]	= {},
 	};
 end
@@ -294,23 +295,7 @@ function RCLootCouncilML:CanWeLootItem(item, index, quality)
 	if (LootSlotHasItem(index) or db.autoLootEverything) and quality >= GetLootThreshold() and not self:IsItemIgnored(item) then -- it's something we're allowed to loot
 		-- Let's check if it's BoE
 		-- Don't bother checking if we know we want to loot it
-		if db.autolootBoE then return true; end
-
-		GameTooltip:SetOwner(UIParent, "ANCHOR_NONE")
-		GameTooltip:SetHyperlink(item)
-		if GameTooltip:NumLines() > 1 then -- check that there is something here
-			for i = 1, 5 do -- BoE status won't be further away than line 5
-				local line = getglobal('GameTooltipTextLeft' .. i)
-				if line and line.GetText then
-					if line:GetText() == ITEM_BIND_ON_EQUIP then
-						GameTooltip:Hide()
-						return db.autolootBoE
-					end
-				end
-			end
-		end
-		GameTooltip:Hide()
-		return true;
+		return db.autolootBoE or addon:IsItemBoE(item)		
 	end
 	return false
 end

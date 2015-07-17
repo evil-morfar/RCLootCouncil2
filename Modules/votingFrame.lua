@@ -21,7 +21,7 @@ local active = false -- Are we currently in session?
 local candidates = {} -- Candidates for the loot, initial data from the ML
 local keys = {} -- Lookup table for cols
 local menuFrame -- Right click menu frame
-local dropDownMenu, filterData
+local dropDownMenu -- Filter drop down menu
 
 function RCVotingFrame:OnInitialize()
 	self.scrollCols = {
@@ -39,8 +39,8 @@ function RCVotingFrame:OnInitialize()
 		{ name = L["Notes"],	align = "CENTER",	width = 40, },	-- Note icon
 		{ name = L["Roll"],		align = "CENTER", width = 30, },	-- Roll
 	}
-	menuFrame = CreateFrame("Frame", "RCLootCouncil_VotingFrame_RightclickMenu", self, "UIDropDownMenuTemplate")
-	dropDownMenu = CreateFrame("Frame", "RCLootCouncil_VotingFrame_DropDownMenu", self, "UIDropDownMenuTemplate")
+	menuFrame = CreateFrame("Frame", "RCLootCouncil_VotingFrame_RightclickMenu", UIParent, "UIDropDownMenuTemplate")
+	dropDownMenu = CreateFrame("Frame", "RCLootCouncil_VotingFrame_DropDownMenu", UIParent, "UIDropDownMenuTemplate")
 	Lib_UIDropDownMenu_Initialize(menuFrame, self.RightClickMenu, "MENU")
 	Lib_UIDropDownMenu_Initialize(dropDownMenu, self.DropDownMenu)
 end
@@ -301,14 +301,14 @@ function RCVotingFrame:GetFrame()
 	st:RegisterEvents({
 		["OnClick"] = function(rowFrame, cellFrame, data, cols, row, realrow, column, table, button, ...)
 			if button == "RightButton" then
-				menuFrame.row = realrow -- TODO Test
-				Lib_ToggleDropDownMenu(1, nil, menuFrame, f, 0, 0);
+				menuFrame.row = realrow
+				Lib_ToggleDropDownMenu(1, nil, menuFrame, cellFrame, 0, 0);
 			end
 			-- Return false to have the default OnClick handler take care of left clicks
 			return false
 		end,
 	})
-	st:SetFilter(filterFunc)
+	st:SetFilter(RCVotingFrame.filterFunc)
 	f.st = st
 	--[[------------------------------
 		Session item icon and strings
@@ -339,7 +339,7 @@ function RCVotingFrame:GetFrame()
 	local ilvl = f:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 	ilvl:SetPoint("TOPLEFT", iTxt, "BOTTOMLEFT", 0, -10)
 	ilvl:SetTextColor(0.5, 1, 1) -- Turqouise
-	ilvl:SetText(L["ilvl: x"](""))
+	ilvl:SetText("")
 	f.itemLvl = ilvl
 
 	local iType = f:CreateFontString(nil, "OVERLAY", "GameFontNormal")
@@ -383,7 +383,9 @@ function RCVotingFrame:GetFrame()
 	-- Filter
 	local tgl = addon:CreateButton(L["Filter"], f)
 	tgl:SetPoint("RIGHT", b1, "LEFT", -10, 0)
-	tgl:SetScript("OnClick", function() Lib_ToggleDropDownMenu(1, nil, dropDownMenu, frame, 0, 0) end )
+	tgl:SetScript("OnClick", function(self) Lib_ToggleDropDownMenu(1, nil, dropDownMenu, self, 0, 0) end )
+	tgl:SetScript("OnEnter", function() addon:CreateTooltip(L["Deselect responses to filter them"]) end)
+	tgl:SetScript("OnLeave", addon.HideTooltip)
 	f.filter = tgl
 
 	-- Number of rolls/votes
@@ -554,11 +556,13 @@ function RCVotingFrame.SetCellVote(rowFrame, frame, data, cols, row, realrow, co
 	frame.text:SetText(data[realrow].cols[column].args[1])
 end
 
-local function filterFunc(self, row)
-	if not filterData[1] then -- Filter out the status texts
-		return type(row.response) ~= "string"
-	end
-	return row.response == filterData[row.response]
+function RCVotingFrame.filterFunc(table, row)
+	if not db.modules["RCVotingFrame"].filters then return true end -- db hasn't been initialized, so just show it
+	if row.response == "AUTOPASS" or type(row.response) == "number" then
+		return db.modules["RCVotingFrame"].filters[row.response]
+	else -- Filter out the status texts
+		return db.modules["RCVotingFrame"].filters["STATUS"]
+	end	
 end
 --------ML Popups ------------------
 LibDialog:Register("RCLOOTCOUNCIL_CONFIRM_ABORT", {
@@ -578,7 +582,7 @@ LibDialog:Register("RCLOOTCOUNCIL_CONFIRM_ABORT", {
 	show_while_dead = true,
 })
 LibDialog:Register("RCLOOTCOUNCIL_CONFIRM_AWARD", {
-	text = format(L["Are you sure you want to give #item to #player?"], item, player),
+	--text = format(L["Are you sure you want to give #item to #player?"], item, player),
 	buttons = {
 		{	text = L["Yes"],
 			on_click = function(self)
@@ -600,7 +604,7 @@ do
 	function RCVotingFrame.RightClickMenu(menu, level)
 		if not addon.isMasterLooter then return end
 
-		local candidateName = RCVotingFrame:GetCandidateData(session, nil, "name", menu.row ) -- REVIEW Check if we can use menu or need to access menuFrame.row
+		local candidateName = addon.Ambiguate(RCVotingFrame:GetCandidateData(session, nil, "name", menu.row ))
 
 		if level == 1 then
 			info.text = candidateName
@@ -634,10 +638,11 @@ do
 			info.text = L["Change Response"]
 			info.value = "CHANGE_RESPONSE"
 			info.hasArrow = true
+			info.disabled = false
 			Lib_UIDropDownMenu_AddButton(info, level)
 
 			info.text = L["Reannounce ..."]
-			info.value = "REANNOUNCE",
+			info.value = "REANNOUNCE"
 			Lib_UIDropDownMenu_AddButton(info, level)
 			info = Lib_UIDropDownMenu_CreateInfo()
 
@@ -648,11 +653,12 @@ do
 
 			info.text = L["Add rolls"]
 			info.notCheckable = true
-			info.func = self:DoRandomRolls()
+			info.func = function() RCVotingFrame:DoRandomRolls(session) end
 			Lib_UIDropDownMenu_AddButton(info, level)
 
 		elseif level == 2 then
 			local value = LIB_UIDROPDOWNMENU_MENU_VALUE
+			info = Lib_UIDropDownMenu_CreateInfo()
 			if value == "AWARD_FOR" then
 				for k,v in pairs(db.awardReasons) do
 					if k > db.numAwardReasons then break end
@@ -686,9 +692,9 @@ do
 				info.notCheckable = true
 				info.func = function()
 					-- TODO
-					self:SendCommMessage("RCLootCouncil", "reRoll "..self:Serialize({lootTable[currentSession], currentSession}), "WHISPER", selection[1])
-					self:SendCommMessage("RCLootCouncil", "remove "..currentSession.." "..selection[1], channel)
-					RCLootCouncil_Mainframe.removeEntry(currentSession, selection[1])
+					--addon:SendCommMessage("RCLootCouncil", "reRoll "..self:Serialize({lootTable[currentSession], currentSession}), "WHISPER", selection[1])
+					--addon:SendCommMessage("RCLootCouncil", "remove "..currentSession.." "..selection[1], channel)
+					--RCLootCouncil_Mainframe.removeEntry(currentSession, selection[1])
 				end
 				Lib_UIDropDownMenu_AddButton(info, level);
 				info = Lib_UIDropDownMenu_CreateInfo()
@@ -698,22 +704,33 @@ do
 				info.func = function()
 					-- TODO
 					local name = selection[1] -- store it
-					self:SendCommMessage("RCLootCouncil", "lootTable "..self:Serialize(lootTable), "WHISPER", name)
+					--self:SendCommMessage("RCLootCouncil", "lootTable "..self:Serialize(lootTable), "WHISPER", name)
 					for i = 1, #entryTable do
-						self:SendCommMessage("RCLootCouncil", "remove "..i.." "..name, channel)
-						RCLootCouncil_Mainframe.removeEntry(i, name)
+						--self:SendCommMessage("RCLootCouncil", "remove "..i.." "..name, channel)
+						--RCLootCouncil_Mainframe.removeEntry(i, name)
 					end
 				end
 				Lib_UIDropDownMenu_AddButton(info, level);
 			end
+		end
 	end
 
 	function RCVotingFrame.DropDownMenu(menu, level)
 		if level == 1 then -- Redundant
 			-- Build the data table:
-			local data = {"STATUS", "AUTOPASS"}
+			local data = {["STATUS"] = true, ["AUTOPASS"] = true}
 			for i = 1, db.numButtons do
-				data[i+2] = i
+				data[i] = i
+			end
+			if not db.modules["RCVotingFrame"].filters then -- Create the db entry
+				addon:DebugLog("Created VotingFrame filters")
+				db.modules["RCVotingFrame"].filters = {}
+			end
+			for k in pairs(data) do -- Update the db entry to make sure we have all buttons in it
+				if type(db.modules["RCVotingFrame"].filters[k]) ~= "boolean" then
+					print("Didn't contain "..k)
+					db.modules["RCVotingFrame"].filters[k] = true -- Default as true
+				end
 			end
 			info.text = L["Filter"]
 			info.isTitle = true
@@ -722,13 +739,14 @@ do
 			Lib_UIDropDownMenu_AddButton(info, level)
 			info = Lib_UIDropDownMenu_CreateInfo()
 
-			info.text = L["Status texts"]
-			info.func = function(_,_,_, checked) filterData[1] = checked end
-			Lib_UIDropDownMenu_AddButton(info, level)
-
-			for i = 2, #data do
-				info.text = db.responses[data[i]].text
-				info.func = function(_,_,_, checked) filterData[i] = checked  end
+			for k in pairs(data) do
+				if k == "STATUS" then
+					info.text = L["Status texts"]
+				else
+					info.text = db.responses[k].text
+				end
+				info.func = function() db.modules["RCVotingFrame"].filters[k] = not db.modules["RCVotingFrame"].filters[k]; RCVotingFrame.frame.st:SortData() end
+				info.checked = db.modules["RCVotingFrame"].filters[k]
 				Lib_UIDropDownMenu_AddButton(info, level)
 			end
 		end

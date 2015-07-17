@@ -6,6 +6,31 @@
 RCTokenTable = {
 	--[xxxxxx] = "ExampleSlot",
 
+	-- TIER 18	Hellfire Citadel
+	[127962] = "ChestSlot",
+	[127953] = "ChestSlot",
+	[127963] = "ChestSlot",
+
+	[127955] = "LegsSlot",
+	[127960] = "LegsSlot",
+	[127965] = "LegsSlot",
+
+	[127956] = "HeadSlot",
+	[127959] = "HeadSlot",
+	[127966] = "HeadSlot",
+
+	[127957] = "ShoulderSlot",
+	[127961] = "ShoulderSlot",
+	[127967] = "ShoulderSlot",
+
+	[127958] = "HandsSlot",
+	[127954] = "HandsSlot",
+	[127964] = "HandsSlot",
+
+	[127968] = "Trinket",
+	[127969] = "Trinket",
+	[127970] = "Trinket",
+
 	-- TIER 17	 Blackrock Foundry ---------------------------
 	-- Normal
 	[119305] = "ChestSlot",
@@ -63,7 +88,7 @@ RCTokenTable = {
 	[120255] = "HeadSlot",
 	[120248] = "HeadSlot",
 
-	[120246] = "ShoulderSlot",
+	[120243] = "ShoulderSlot",
 	[120256] = "ShoulderSlot",
 	[120250] = "ShoulderSlot",
 
@@ -80,15 +105,15 @@ RCTokenTable = {
 	[99751] = "LegsSlot",
 	[99752] = "LegsSlot",
 	[99753] = "LegsSlot",
-
+	
 	[99748] = "HeadSlot",
 	[99749] = "HeadSlot",
 	[99750] = "HeadSlot",
-
+	
 	[99754] = "ShoulderSlot",
 	[99755] = "ShoulderSlot",
 	[99756] = "ShoulderSlot",
-
+	
 	[99745] = "HandsSlot",
 	[99746] = "HandsSlot",
 	[99747] = "HandsSlot",
@@ -341,3 +366,4 @@ RCTokenTable = {
 	[45657] = "ShoulderSlot",
 	[45658] = "ShoulderSlot",
 }
+
