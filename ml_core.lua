@@ -7,13 +7,14 @@
 		- Announce text for addon.db.awardReason (might need a better name)
 		- Pool: Which reasons should be used with autoAward, and display announce message on autoAward?
 		- SendMessage() on AddItem() to let userModules know it's safe to add to lootTable. Might have to do it other places too.
-		- Alt-click looting should display the sessionFrame if not already shown
+		- Alt-click looting should display the sessionframe if not already shown
 		- Revision lootTable.announced
 ]]
 
 local addon = LibStub("AceAddon-3.0"):GetAddon("RCLootCouncil")
 RCLootCouncilML = addon:NewModule("RCLootCouncilML", "AceEvent-3.0", "AceBucket-3.0", "AceComm-3.0", "AceTimer-3.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
+local LibDialog = LibStub("LibDialog-1.0")
 
 local db;
 local session = 1
@@ -136,8 +137,8 @@ function RCLootCouncilML:StartSession()
 		self:ScheduleTimer("Timer", 10, "LootSend")
 
 		-- Finally call the voting frame
-		--addon:CallModule("votingFrame")
-		--addon:GetActiveModule("votingFrame"):Setup(self.lootTable)
+		--addon:CallModule("votingframe")
+		--addon:GetActiveModule("votingframe"):Setup(self.lootTable)
 
 	else
 		addon:Debug("called while running a session!")
@@ -276,8 +277,8 @@ function RCLootCouncilML:OnEvent(event, ...)
 					if db.autoStart then -- Settings say go
 						self:StartSession()
 					else
-						addon:CallModule("sessionFrame")
-						addon:GetActiveModule("sessionFrame"):Show(self.lootTable)
+						addon:CallModule("sessionframe")
+						addon:GetActiveModule("sessionframe"):Show(self.lootTable)
 					end
 				end
 			end
@@ -451,9 +452,10 @@ function RCLootCouncilML:HasAllItemsBeenAwarded()
 end
 
 function RCLootCouncilML:EndSession()
+	addon:DebugLog("ML:EndSession()")
 	session = 1
 	self.lootTable = {}
-	addon:SendCommand("group", "message", L["The session has ended."])
+	addon:SendCommand("group", "session_end")
 	self.running = false
 	addon.testMode = false
 	self:CancelAllTimers()
@@ -481,8 +483,8 @@ function RCLootCouncilML:Test(items)
 	if db.autoStart then -- Settings say go
 		self:StartSession()
 	else
-		addon:CallModule("sessionFrame")
-		addon:GetActiveModule("sessionFrame"):Show(self.lootTable)
+		addon:CallModule("sessionframe")
+		addon:GetActiveModule("sessionframe"):Show(self.lootTable)
 	end
 end
 
@@ -554,3 +556,43 @@ function RCLootCouncilML:SendWhisperHelp(target)
 	SendChatMessage(L["whisper_guide2"], "WHISPER", nil, target)
 	addon:Print(format(L["sent whisper help to %s"], addon.Ambiguate(target)))
 end
+
+--------ML Popups ------------------
+LibDialog:Register("RCLOOTCOUNCIL_CONFIRM_ABORT", {
+	text = L["Are you sure you want to abort?"],
+	buttons = {
+		{	text = L["Yes"],
+			on_click = function(self)
+				RCLootCouncilML:EndSession()
+				addon:GetActiveModule("votingframe"):Disable()
+				CloseLoot() -- close the lootlist
+			end,
+		},
+		{	text = L["No"],
+		},
+	},
+	hide_on_escape = true,
+	show_while_dead = true,
+})
+LibDialog:Register("RCLOOTCOUNCIL_CONFIRM_AWARD", {
+	text = "something_went_wrong",
+	icon = "",
+	on_show = function(self, data)
+		local item, player, texture = unpack(data)
+		self.text:SetText(format(L["Are you sure you want to give #item to #player?"], item, player))
+		self.icon:SetTexture(texture)
+	end,
+	buttons = {
+		{	text = L["Yes"],
+			on_click = function(self)
+				addon:Print("Item awarded!")
+				-- TODO make award
+				-- addon:GetActiveModule("masterlooter"):Award(session)
+			end,
+		},
+		{	text = L["No"],
+		},
+	},
+	hide_on_escape = true,
+	show_while_dead = true,
+})

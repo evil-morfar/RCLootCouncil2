@@ -26,6 +26,7 @@ end
 function RCVersionCheck:OnEnable()
 	addon:Print("RCVersionCheck:OnEnable()")
 	db = addon:Getdb()
+	self.frame = self:GetFrame()
 	printtable(db.UI.versionCheck)
 	RCVersionCheck:RegisterComm("RCLootCouncil")
 	self:Show()
@@ -41,7 +42,7 @@ function RCVersionCheck:OnDisable()
 end
 
 function RCVersionCheck:Show()
-	self.frame = self:GetFrame()
+
 	self.frame:Show()
 	self:AddEntry(addon.playerName, addon.playerClass, addon.guildRank, addon.version, addon.tVersion) -- add ourself
 	self:AddEntry("Gemenim", "MONK", "Raider", "1.7.1") -- add ourself
@@ -140,25 +141,24 @@ end
 
 function RCVersionCheck:GetFrame()
 	if self.frame then return self.frame end
-	local f = addon:CreateFrame("DefaultRCVersionCheckFrame", "versionCheck")
-	f.title = addon:CreateTitleFrame(f, L["RCLootCouncil Version Checker"], 250)
+	local f = addon:CreateFrame("DefaultRCVersionCheckFrame", "versionCheck", L["RCLootCouncil Version Checker"], 250)
 
-	local b1 = addon:CreateButton(L["Guild"], f)
+	local b1 = addon:CreateButton(L["Guild"], f.content)
 	b1:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", 10, 10)
 	b1:SetScript("OnClick", function() self:Query("guild") end)
 	f.guildBtn = b1
 
-	local b2 = addon:CreateButton(L["Group"], f)
+	local b2 = addon:CreateButton(L["Group"], f.content)
 	b2:SetPoint("LEFT", b1, "RIGHT", 15, 0)
 	b2:SetScript("OnClick", function() self:Query("group") end)
 	f.raidBtn = b2
 
-	local b3 = addon:CreateButton(L["Close"], f)
+	local b3 = addon:CreateButton(L["Close"], f.content)
 	b3:SetPoint("BOTTOMRIGHT", f, "BOTTOMRIGHT", -10, 10)
 	b3:SetScript("OnClick", function() self:Disable() end)
 	f.closeBtn = b3
 
-	local st = ST:CreateST(self.scrollCols, 12, 20, nil, f)
+	local st = ST:CreateST(self.scrollCols, 12, 20, nil, f.content)
 	st.frame:SetPoint("TOPLEFT",f,"TOPLEFT",10,-35)
 	--content.frame:SetBackdropColor(1,0,0,1)
 	f:SetWidth(st.frame:GetWidth()+20)

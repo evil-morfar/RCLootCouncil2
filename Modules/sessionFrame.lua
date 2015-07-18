@@ -101,10 +101,9 @@ end
 function RCSessionFrame:GetFrame()
 	if self.frame then return self.frame end
 
-	local f = addon:CreateFrame("DefaultRCSessionSetupFrame", "sessionFrame")
-	f.title = addon:CreateTitleFrame(f, L["RCLootCouncil Session Setup"], 250)
+	local f = addon:CreateFrame("DefaultRCSessionSetupFrame", "sessionframe", L["RCLootCouncil Session Setup"], 250)
 
-	local tgl = CreateFrame("CheckButton", f:GetName().."Toggle", f, "ChatConfigCheckButtonTemplate")
+	local tgl = CreateFrame("CheckButton", f:GetName().."Toggle", f.content, "ChatConfigCheckButtonTemplate")
 	getglobal(tgl:GetName().."Text"):SetText(L["  Award later?"])
 	tgl:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", 10, 40)
 	tgl.tooltip = L["Check this to loot the items and distribute them later."]
@@ -112,7 +111,7 @@ function RCSessionFrame:GetFrame()
 	f.toggle = tgl
 
 	-- Start button
-	local b1 = addon:CreateButton(L["Start"], f)
+	local b1 = addon:CreateButton(L["Start"], f.content)
 	b1:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", 10, 10)
 	b1:SetScript("OnClick", function()
 		addon:GetActiveModule("masterlooter"):StartSession()
@@ -121,15 +120,15 @@ function RCSessionFrame:GetFrame()
 	f.guildBtn = b1
 
 	-- Cancel button
-	local b2 = addon:CreateButton(L["Cancel"], f)
+	local b2 = addon:CreateButton(L["Cancel"], f.content)
 	b2:SetPoint("LEFT", b1, "RIGHT", 15, 0)
 	b2:SetScript("OnClick", function()
 		addon:GetActiveModule("masterlooter"):EndSession()
 		self:Disable()
 	end)
-	f.guildBtn = b2	
+	f.guildBtn = b2
 
-	local st = ST:CreateST(self.scrollCols, 5, ROW_HEIGHT, HIGHLIGHT, f)
+	local st = ST:CreateST(self.scrollCols, 5, ROW_HEIGHT, HIGHLIGHT, f.content)
 	st.frame:SetPoint("TOPLEFT",f,"TOPLEFT",10,-40)
 	--content.frame:SetBackdropColor(1,0,0,1)
 	f:SetWidth(st.frame:GetWidth()+20)

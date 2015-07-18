@@ -57,7 +57,6 @@ function LootFrame:OnEnable()
 end
 
 function LootFrame:OnDisable()
-	print("lootFrame Disabled")
 	self.frame:Hide() -- We don't disable the frame as we probably gonna need it later
 	items = {}
 	numRolled = 0
@@ -65,8 +64,8 @@ function LootFrame:OnDisable()
 end
 
 function LootFrame:Show()
-	self:Update()
 	self.frame:Show()
+	self:Update()
 end
 
 --function LootFrame:Hide()
@@ -126,15 +125,13 @@ end
 
 function LootFrame:GetFrame()
 	if self.frame then return self.frame end
-	local f = addon:CreateFrame("DefaultRCLootFrame", "lootframe", 375)
-	f.title = addon:CreateTitleFrame(f, L["RCLootCouncil Loot Frame"], 250)
-	return f
+	return addon:CreateFrame("DefaultRCLootFrame", "lootframe", L["RCLootCouncil Loot Frame"], 250, 375)
 end
 
 function LootFrame:GetEntry(entry)
 	addon:DebugLog("GetEntry("..entry..")")
 	if entry == 0 then entry = 1 end
-	local f = CreateFrame("Frame", nil, self.frame)
+	local f = CreateFrame("Frame", nil, self.frame.content)
 	f:SetWidth(self.frame:GetWidth())
 	f:SetHeight(ENTRY_HEIGHT)
 	if entry == 1 then

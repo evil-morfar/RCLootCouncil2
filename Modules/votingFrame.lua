@@ -31,13 +31,13 @@ function RCVotingFrame:OnInitialize() -- try sort = 5
 		{ name = L["Role"],													sortnext = 5,		width = 60, },	-- 4 Role
 		{ name = L["Response"],	comparesort = self.ResponseSort, sortnext = 13,		width = 250,},	-- 5 Response
 		{ name = L["ilvl"],													sortnext = 7,		width = 40, },	-- 6 Total ilvl
-		{ name = L["Diff"],													sortnext = 10,		width = 40, },	-- 7 ilvl difference
+		{ name = L["Diff"],																			width = 40, },	-- 7 ilvl difference
 		{ name = L["g1"],			align = "CENTER",						sortnext = 5,		width = 20, },	-- 8 Current gear 1
 		{ name = L["g2"],			align = "CENTER",						sortnext = 5,		width = 20, },	-- 9 Current gear 2
-		{ name = L["Votes"], 	align = "CENTER",												width = 40, },	-- 10 Number of votes
+		{ name = L["Votes"], 	align = "CENTER",						sortnext = 7,		width = 40, },	-- 10 Number of votes
 		{ name = L["Vote"],		align = "CENTER",						sortnext = 10,		width = 60, },	-- 11 Vote button
 		{ name = L["Notes"],		align = "CENTER",												width = 40, },	-- 12 Note icon
-		{ name = L["Roll"],		align = "CENTER", 					sortnext = 7,		width = 30, },	-- 13 Roll
+		{ name = L["Roll"],		align = "CENTER", 					sortnext = 11,		width = 30, },	-- 13 Roll
 	}
 	menuFrame = CreateFrame("Frame", "RCLootCouncil_VotingFrame_RightclickMenu", UIParent, "UIDropDownMenuTemplate")
 	dropDownMenu = CreateFrame("Frame", "RCLootCouncil_VotingFrame_DropDownMenu", UIParent, "UIDropDownMenuTemplate")
@@ -206,7 +206,7 @@ function RCVotingFrame:Setup(table)
 					{ value = "",							color = self.GetIDiffColor,							name = "diff",},
 					{ value = "",							DoCellUpdate = self.SetCellGear, args = {nil},	name = "gear1",},
 					{ value = "",							DoCellUpdate = self.SetCellGear, args = {nil},	name = "gear2",},
-					{ value = 0,							DoCellUpdate = self.SetCellVote, args = {0},		name = "votes",}, -- FIXME We want this to use value instead of args
+					{ value = 0,							DoCellUpdate = self.SetCellVote, args = {0},		name = "votes",},
 					{ value = 0,							DoCellUpdate = self.SetVoteBtn,						name = "vote",},
 					{ value = 0,							DoCellUpdate = self.SetNote, args = {nil},		name = "note",},
 					{ value = "",		name = "roll"}
@@ -299,10 +299,9 @@ function RCVotingFrame:GetFrame()
 	if self.frame then return self.frame end
 
 	-- Container and title
-	local f = addon:CreateFrame("DefaultRCLootCouncilFrame", "votingFrame", 420)
-	f.title = addon:CreateTitleFrame(f, L["RCLootCouncil Voting Frame"], 250)
+	local f = addon:CreateFrame("DefaultRCLootCouncilFrame", "votingframe", L["RCLootCouncil Voting Frame"], 250, 420)
 	-- Scrolling table
-	local st = LibStub("ScrollingTable"):CreateST(self.scrollCols, NUM_ROWS, ROW_HEIGHT, {r=1,g=0.9,b=0,a=0.5}, f)
+	local st = LibStub("ScrollingTable"):CreateST(self.scrollCols, NUM_ROWS, ROW_HEIGHT, {r=1,g=0.9,b=0,a=0.5}, f.content)
 	st.frame:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", 10, 10)
 	st:RegisterEvents({
 		["OnClick"] = function(rowFrame, cellFrame, data, cols, row, realrow, column, table, button, ...)
@@ -320,7 +319,7 @@ function RCVotingFrame:GetFrame()
 	--[[------------------------------
 		Session item icon and strings
 	    ------------------------------]]
-	local item = CreateFrame("Button", nil, f)
+	local item = CreateFrame("Button", nil, f.content)
 	item:EnableMouse()
     item:SetNormalTexture("Interface/ICONS/INV_Misc_QuestionMark")
     item:SetScript("OnEnter", function()
@@ -338,18 +337,18 @@ function RCVotingFrame:GetFrame()
 	item:SetSize(50,50)
 	f.itemIcon = item
 
-	local iTxt = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+	local iTxt = f.content:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
 	iTxt:SetPoint("TOPLEFT", item, "TOPRIGHT", 10, -5)
 	iTxt:SetText(L["Something went wrong :'("]) -- Set text for reasons
 	f.itemText = iTxt
 
-	local ilvl = f:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+	local ilvl = f.content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 	ilvl:SetPoint("TOPLEFT", iTxt, "BOTTOMLEFT", 0, -10)
 	ilvl:SetTextColor(0.5, 1, 1) -- Turqouise
 	ilvl:SetText("")
 	f.itemLvl = ilvl
 
-	local iType = f:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+	local iType = f.content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 	iType:SetPoint("LEFT", ilvl, "RIGHT", 5, 0)
 	iType:SetTextColor(0.5, 1, 1) -- Turqouise
 	iType:SetText(" ")
@@ -357,7 +356,7 @@ function RCVotingFrame:GetFrame()
 	--#end----------------------------
 
 	-- Abort button
-	local b1 = addon:CreateButton(L["Abort"], f)
+	local b1 = addon:CreateButton(L["Abort"], f.content)
 	b1:SetPoint("TOPRIGHT", f, "TOPRIGHT", -10, -50)
 	if addon.isMasterLooter then
 		b1:SetScript("OnClick", function() LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_ABORT") end)
@@ -368,7 +367,7 @@ function RCVotingFrame:GetFrame()
 	f.abortBtn = b1
 
 	-- More info button
-	local b2 = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
+	local b2 = CreateFrame("Button", nil, f.content, "UIPanelButtonTemplate")
 	b2:SetSize(25,25)
 	b2:SetPoint("TOPRIGHT", f, "TOPRIGHT", -10, -20)
 	b2:SetNormalTexture("Interface\\Buttons\\UI-SpellbookIcon-NextPage-Up")
@@ -388,7 +387,7 @@ function RCVotingFrame:GetFrame()
 	f.moreInfoBtn = b2
 
 	-- Filter
-	local tgl = addon:CreateButton(L["Filter"], f)
+	local tgl = addon:CreateButton(L["Filter"], f.content)
 	tgl:SetPoint("RIGHT", b1, "LEFT", -10, 0)
 	tgl:SetScript("OnClick", function(self) Lib_ToggleDropDownMenu(1, nil, dropDownMenu, self, 0, 0) end )
 	tgl:SetScript("OnEnter", function() addon:CreateTooltip(L["Deselect responses to filter them"]) end)
@@ -396,7 +395,7 @@ function RCVotingFrame:GetFrame()
 	f.filter = tgl
 
 	-- Number of rolls/votes
-	local rf = CreateFrame("Frame", nil, f)
+	local rf = CreateFrame("Frame", nil, f.content)
 	rf:SetWidth(100)
 	rf:SetHeight(20)
 	rf:SetPoint("RIGHT", b2, "LEFT", -10, 0)
@@ -417,7 +416,7 @@ function RCVotingFrame:GetFrame()
 	f.rollResult = rf
 
 	-- Session toggle
-	local stgl = CreateFrame("Frame", nil, f)
+	local stgl = CreateFrame("Frame", nil, f.content)
 	stgl:SetWidth(40)
 	stgl:SetHeight(f:GetHeight())
 	stgl:SetPoint("TOPRIGHT", f, "TOPLEFT", -2, 0)
@@ -563,12 +562,15 @@ function RCVotingFrame.SetCellVote(rowFrame, frame, data, cols, row, realrow, co
 		end)
 		frame:SetScript("OnLeave", function() addon:HideTooltip() end)
 	end
+	local val = data[realrow].cols[column].args[1]
+	data[realrow].cols[column].value = val -- Set the value for sorting reasons
+	frame.text:SetText(val)
+
 	if addon.mldb.hideVotes then
 		for _, v in pairs(data) do
 			if v.haveVoted then return frame.text:SetText(0) end -- REVIEW Check if works
 		end
 	end
-	frame.text:SetText(data[realrow].cols[column].args[1])
 end
 
 function RCVotingFrame.filterFunc(table, row)
@@ -579,39 +581,7 @@ function RCVotingFrame.filterFunc(table, row)
 		return db.modules["RCVotingFrame"].filters["STATUS"]
 	end
 end
---------ML Popups ------------------
-LibDialog:Register("RCLOOTCOUNCIL_CONFIRM_ABORT", {
-	text = L["Are you sure you want to abort?"],
-	buttons = {
-		{	text = L["Yes"],
-			on_click = function(self)
-				addon:GetActiveModule("masterlooter"):EndSession()
-				RCVotingFrame:Disable()
-				CloseLoot() -- close the lootlist
-			end,
-		},
-		{	text = L["No"],
-		},
-	},
-	hide_on_escape = true,
-	show_while_dead = true,
-})
-LibDialog:Register("RCLOOTCOUNCIL_CONFIRM_AWARD", {
-	--text = format(L["Are you sure you want to give #item to #player?"], item, player),
-	buttons = {
-		{	text = L["Yes"],
-			on_click = function(self)
-				local data = self.data -- not sure that'll work!
-				addon:GetActiveModule("masterlooter"):Award(session)
-			end,
-		},
-		{	text = L["No"],
-			-- TODO check if requires function
-		},
-	},
-	hide_on_escape = true,
-	show_while_dead = true,
-})
+
 
 do
 	local info = Lib_UIDropDownMenu_CreateInfo() -- Efficiency :)
@@ -633,7 +603,12 @@ do
 			Lib_UIDropDownMenu_AddButton(info, level)
 
 			info.text = L["Award"]
-			info.func = function() LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_AWARD") end
+			info.func = function()
+				LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_AWARD", {
+				 	lootTable[session].link,
+				  	addon.Ambiguate(candidateName),
+					lootTable[session].texture,
+			}) end
 			info.disabled = false
 			Lib_UIDropDownMenu_AddButton(info, level)
 			info = Lib_UIDropDownMenu_CreateInfo()

@@ -6,7 +6,7 @@
 --------------------------------
 TODO
 	Things marked with "TODO"
-		- If we truly want to be able to edit votingFrame scrolltable with modules, it needs to have GetRow, GetCol by name
+		- If we truly want to be able to edit votingframe scrolltable with modules, it needs to have GetRow, GetCol by name
 		- autoOpen in defaults - used to toggle if rc should autoopen the voting frame. /rc open if not.
 		- Make sure all variables store interchangeable data to allow for fully cross realm/language support i.e UnitFullName, Unlocalized - only change stuff on display
 		- Check if modules can be implemented smarter by getting OnModuleCreated event from Ace or something else.
@@ -46,6 +46,7 @@ CHANGELOG (WIP)
 RCLootCouncil = LibStub("AceAddon-3.0"):NewAddon("RCLootCouncil", "AceConsole-3.0", "AceEvent-3.0", "AceComm-3.0", "AceSerializer-3.0", "AceHook-3.0", "AceTimer-3.0");
 local LibDialog = LibStub("LibDialog-1.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
+local lwin = LibStub("LibWindow-1.1")
 
 RCLootCouncil:SetDefaultModuleState(false)
 
@@ -59,8 +60,8 @@ local defaultModules = {
 		history =		"RCLootHistory",
 		version =		"RCVersionCheck",
 		rank =			"RCRankChooser",
-		sessionFrame =	"RCSessionFrame",
-		votingFrame =	"RCVotingFrame",
+		sessionframe =	"RCSessionFrame",
+		votingframe =	"RCVotingFrame",
 }
 local userModules = {
 		masterlooter = nil,
@@ -68,8 +69,8 @@ local userModules = {
 		history = nil,
 		version = nil,
 		rank = nil,
-		sessionFrame = nil,
-		votingFrame = nil,
+		sessionframe = nil,
+		votingframe = nil,
 }
 
 function RCLootCouncil:OnInitialize()
@@ -173,7 +174,7 @@ function RCLootCouncil:OnInitialize()
 					y		= 0,
 					x		= 0,
 					point	= "CENTER",
-					scale	= 1,
+					scale	= 0.8,
 				},
 			},
 
@@ -386,7 +387,7 @@ function RCLootCouncil:ChatCommand(msg)
 
 	elseif input == 'open' or input == L["open"] then
 		if self.isCouncil or self.mldb.observe or self.nnp then -- only the right people may see the window during a raid since they otherwise could watch the entire voting
-			self:GetActiveModule("votingFrame"):Show()
+			self:GetActiveModule("votingframe"):Show()
 		else
 			self:Print(L["You are not allowed to see the Voting Frame right now."])
 		end
@@ -535,7 +536,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 
 				-- prepare the voting frame for the right people
 				if self.isCouncil or self.mldb.observe then
-					self:CallModule("votingFrame")
+					self:CallModule("votingframe")
 				end
 
 			elseif command == "MLdb" and not self.isMasterLooter then -- ML sets his own mldb
@@ -590,6 +591,10 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 
 			elseif command == "message" then
 				self:Print(unpack(data))
+
+			elseif command == "session_end" then
+				self:Print(L["The Master Looter has ended the session"])
+				self:GetActiveModule("lootframe"):Disable()
 			end
 		else
 			self:Debug("Error in deserializing comm: "..tostring(command));
@@ -999,7 +1004,7 @@ end
 -- @param module String, must correspond to a index in self.defaultModules
 -- @return The active module or nil
 function RCLootCouncil:GetActiveModule(module)
-	return self:GetModule(userModules[module] or defaultModules[module], true)
+	return self:GetModule(userModules[module] or defaultModules[module], false)
 end
 
 --#end Module support -----------------------------------------------------
@@ -1062,65 +1067,104 @@ function RCLootCouncil:GetClassColor(class)
 end
 
 -- Creates a standard frame for RCLootCouncil
+-- 	Put children into frame.content for minimize support
 -- @param name Global name of the frame
 -- @param cName Name of the module (used for lib-window-1.1 config as db.UI[cName])
+-- @param title The title text
+-- @param width The width of the titleframe, defaults to 250
 -- @param height Height of the frame, defaults to 325
 -- @return The frame object
-function RCLootCouncil:CreateFrame(name, cName, height)
-	local f = CreateFrame("Frame", name, UIParent)
+function RCLootCouncil:CreateFrame(name, cName, title, width, height)
+	local f = CreateFrame("Frame", name, nil) -- LibWindow seems to work better with nil parent
 	f:Hide()
-	f:SetFrameStrata("DIALOG")
-	f:EnableMouse(true)
+	f:SetFrameStrata("HIGH")
 	f:SetWidth(450)
 	f:SetHeight(height or 325)
-	f:SetToplevel(true)
-	f:SetBackdrop({
-        --bgFile = "Interface\\DialogFrame\\UI-DialogBox-Gold-Background",
-		bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
-        edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
-        tile = true, tileSize = 64, edgeSize = 12,
-        insets = { left = 2, right = 2, top = 2, bottom = 2 }
-	})
-    --f:SetBackdropColor(0.5,0,0,1)
-	f:SetBackdropColor(0,0.003,0.21,1)
-    f:SetBackdropBorderColor(0.3,0.3,0.5,1)
-	LibStub("LibWindow-1.1"):Embed(f)
+	lwin:Embed(f)
 	f:RegisterConfig(db.UI[cName])
 	f:RestorePosition() -- might need to move this to after whereever GetFrame() is called
 	f:MakeDraggable()
-	f:SetScript("OnMouseWheel", function(f,delta) if IsControlKeyDown() then LibStub("LibWindow-1.1").OnMouseWheel(f,delta) end end)
-	return f
-end
+	f:SetScript("OnMouseWheel", function(f,delta) if IsControlKeyDown() then lwin.OnMouseWheel(f,delta) end end)
 
--- Adds a standard titleframe to a frame
--- @param f The parent for the titleframe
--- @param title The text to display
--- @param width The width of the titleframe
--- @return The titleframe
-function RCLootCouncil:CreateTitleFrame(f, title, width)
 	local tf = CreateFrame("Frame", nil, f)
 	tf:SetBackdrop({
-        bgFile = "Interface\\ChatFrame\\ChatFrameBackground",
-        edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
-        tile = true, tileSize = 64, edgeSize = 12,
-        insets = { left = 2, right = 2, top = 2, bottom = 2 }
+	     bgFile = "Interface\\ChatFrame\\ChatFrameBackground",
+	     edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+	     tile = true, tileSize = 64, edgeSize = 12,
+	     insets = { left = 2, right = 2, top = 2, bottom = 2 }
 	})
-    tf:SetBackdropColor(0,0,0,0.7)
+	printtable(f)
+	tf:SetBackdropColor(0,0,0,0.7)
 	tf:SetBackdropBorderColor(0,0.595,0.87,1)
-    tf:SetHeight(22)
-    tf:EnableMouse()
-    tf:SetMovable(true)
-	tf:SetWidth(width)
-    tf:SetPoint("CENTER",f,"TOP",0,-1)
-    tf:SetScript("OnMouseDown", function() f:StartMoving() end)
-    tf:SetScript("OnMouseUp", function() f:StopMovingOrSizing() end)
+	tf:SetHeight(22)
+	tf:EnableMouse()
+	tf:SetMovable(true)
+	tf:SetWidth(width or 250)
+	tf:SetPoint("CENTER",f,"TOP",0,-1)
+	tf:SetScript("OnMouseDown", function(self) self:GetParent():StartMoving() end)
+	tf:SetScript("OnMouseUp", function(self) -- Get double click by trapping time betweem mouse up
+		local frame = self:GetParent()
+		frame:StopMovingOrSizing()
+		frame:SavePosition()
+		if self.lastClick and GetTime() - self.lastClick <= 0.5 then
+			frame:Minimize()
+			self.lastClick = nil
+		else
+			self.lastClick = GetTime()
+		end
+	end)
 
-    local text = tf:CreateFontString(nil,"OVERLAY","GameFontNormal")
-    text:SetPoint("CENTER",tf,"CENTER")
+	local text = tf:CreateFontString(nil,"OVERLAY","GameFontNormal")
+	text:SetPoint("CENTER",tf,"CENTER")
 	text:SetTextColor(1,1,1,1)
-    text:SetText(title)
+	text:SetText(title)
 	tf.text = text
-	return tf
+	f.title = tf
+
+	local c = CreateFrame("Frame", nil, f) -- frame that contains the actual content
+	c:SetBackdrop({
+	     --bgFile = "Interface\\DialogFrame\\UI-DialogBox-Gold-Background",
+		bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
+	     edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+	     tile = true, tileSize = 64, edgeSize = 12,
+	     insets = { left = 2, right = 2, top = 2, bottom = 2 }
+	})
+	c:EnableMouse(true)
+	c:SetWidth(450)
+	c:SetHeight(height or 325)
+	c:SetBackdropColor(0,0.003,0.21,1)
+	c:SetBackdropBorderColor(0.3,0.3,0.5,1)
+	c:SetPoint("TOPLEFT")
+	c:SetScript("OnMouseDown", function(self) self:GetParent():StartMoving() end)
+	c:SetScript("OnMouseUp", function(self) self:GetParent():StopMovingOrSizing(); self:GetParent():SavePosition() end)
+	f.content = c
+	f.minimized = false
+	f.IsMinimized = function(frame) return frame.minimized end
+	f.Minimize = function(frame)
+		if frame:IsMinimized() then
+		  frame.content:Hide()
+
+		else
+		  frame.content:Show()
+		end
+		frame.minimized = not frame.minimized
+	end
+	local old_setwidth = f.SetWidth
+	f.SetWidth = function(self, width) -- Hack so we only have to set width once
+		old_setwidth(self, width)
+		self.content:SetWidth(width)
+	end
+	local old_setheight = f.SetHeight
+	f.SetHeight = function(self, height)
+		old_setheight(self, width)
+		self.content:SetHeight(height)
+	end
+	local old_show = f.Show
+	f.Show = function(self)
+		old_show(self)
+		self:RestorePosition()
+	end
+	return f
 end
 
 -- Creates a standard button for RCLootCouncil

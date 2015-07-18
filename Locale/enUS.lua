@@ -75,6 +75,7 @@ L["history"] = true
 L["whisper"] = true
 L["whisper_help"] = "Raiders can use the whisper system in case someone haven't installed the addon.\nWhispering 'rchelp' to the Master Looter will get them a guide along with the list of keywords, which can be edited at the 'Buttons and Responses' optiontab.\nIt's recommended for the ML to turn on 'Announce Considerations' as each item's number is required to use the whisper system.\nNOTE: People should still get the addon installed, otherwise all player information won't be available."
 L["neverml"] = true
+L["The Master Looter has ended the session"] = true
 
 L["Autopassed on %s"] = true
 L["version_outdated_msg"] = "Your version %s is outdated. Newer version is %s, please update RCLootCouncil."
@@ -111,7 +112,7 @@ L["sent whisper help to %s"] = true
 
 -- @region end
 
--- @region votingFrame.lua
+-- @region votingframe.lua
 L["Name"] = true
 L["Rank"] = true
 L["Role"] = true
@@ -180,7 +181,7 @@ L["Guild"] = true
 L["Group"] = true
 -- @region end
 
--- @region sessionFrame.lua
+-- @region sessionframe.lua
 L["Item"] = true
 L["RCLootCouncil Session Setup"] = true
 L["  Award later?"] = true
