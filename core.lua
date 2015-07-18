@@ -6,14 +6,16 @@
 --------------------------------
 TODO
 	Things marked with "TODO"
+		- If we truly want to be able to edit votingFrame scrolltable with modules, it needs to have GetRow, GetCol by name
 		- autoOpen in defaults - used to toggle if rc should autoopen the voting frame. /rc open if not.
 		- Make sure all variables store interchangeable data to allow for fully cross realm/language support i.e UnitFullName, Unlocalized - only change stuff on display
 		- Check if modules can be implemented smarter by getting OnModuleCreated event from Ace or something else.
-		- HideVotes thingie
 		- The whole "loot from bags" thing (Check if we can make some alt-clicking in bags, and maybe an "add item" command)
 		- "Disenchant option when everyone passes"
 		- "more info" thingie
 		- Revise DB variables
+		- lootHistory
+		- minimize
 --------------------------------
 CHANGELOG (WIP)
 	==== 2.0 Beta
@@ -34,6 +36,8 @@ CHANGELOG (WIP)
 		ML options is moved to a seperate tab to distinguish them. Sorted the options to make more sense.
 	*Added localization
 	*Added customizeable ignore list
+	*Added usage options
+		db.enabled, db.neverML, db.autoEnable
   	Bugfixes:
 			Various taint fixes.
 
@@ -86,7 +90,7 @@ function RCLootCouncil:OnInitialize()
 	self.masterLooter = ""  -- Name of the ML
 	self.isCouncil = false -- Are we in the Council?
 	--self.active = false	-- Session in process (set by ML) EDIT: Aren't we using ml.running for this?
-	self.disabled = false -- turn addon on/off
+	self.enabled = true -- turn addon on/off
 	self.handleLooting = false -- Should we handle the looting? (e.g. Activated)
 
 	self.unregisterGuildEvent = false
@@ -104,24 +108,25 @@ function RCLootCouncil:OnInitialize()
 
 	self.responses = {
 		NOTANNOUNCED	= { color = {1,0,1,1},				sort = 501,		text = L["Not announced"],},
-		ANNOUNCED		= { color = {1,0,1,1},					sort = 502,		text = L["Loot announced, waiting for answer"], },
-		NOTHING			= { color = {0.5,0.5,0.5,1},		sort = 503,		text = L["Offline or RCLootCouncil not installed"], },
-		WAIT			= { color = {1,1,0,1},						sort = 504,		text = L["Candidate is selecting response, please wait"], },
-		TIMEOUT			= { color = {1,0,0,1},					sort = 505,		text = L["Candidate didn't respond on time"], },
-		REMOVED			= { color = {1,0,0,1},					sort = 506,		test = L["Candidate removed"], },
-		AUTOPASS		= { color = {0.7,0.7,0.7,1},		sort = 1000,	text = L["Autopass"], },
-		--[[1]]			  { color = {0,1,0,1},					sort = 1,			text = L["Mainspec/Need"],},
-		--[[2]]			  { color = {1,0.5,0,1},				sort = 2,			text = L["Offspec/Greed"],	},
-		--[[3]]			  { color = {0,0.7,0.7,1},			sort = 3,			text = L["Minor Upgrade"],},
-		--[[4]]			  { color = {0.7, 0.7,0.7,1},		sort = 999,		text = L["Pass"],},
-		--[[5]]			  { color = {0.75,0.75,0.75,1},	sort = 4,			text = L["Button"]..5,},
-		--[[6]]			  { color = {0.75,0.75,0.75,1},	sort = 5,			text = L["Button"]..6,},
-		--[[7]]			  { color = {0.75,0.75,0.75,1},	sort = 6,			text = L["Button"]..7,},
-		--[[8]]			  { color = {0.75,0.75,0.75,1},	sort = 7,			text = L["Button"]..8,},
+		ANNOUNCED		= { color = {1,0,1,1},				sort = 502,		text = L["Loot announced, waiting for answer"], },
+		WAIT				= { color = {1,1,0,1},				sort = 503,		text = L["Candidate is selecting response, please wait"], },
+		NOTHING			= { color = {0.5,0.5,0.5,1},		sort = 504,		text = L["Offline or RCLootCouncil not installed"], },
+		TIMEOUT			= { color = {1,0,0,1},				sort = 505,		text = L["Candidate didn't respond on time"], },
+		REMOVED			= { color = {0.8,0.5,0,1},			sort = 506,		text = L["Candidate removed"], },
+		Pass				= { color = {0.7, 0.7,0.7,1},		sort = 999,		text = L["Pass"],},
+		AUTOPASS			= { color = {0.7,0.7,0.7,1},		sort = 1000,	text = L["Autopass"], },
+		--[[1]]			  { color = {0,1,0,1},				sort = 1,		text = L["Mainspec/Need"],},
+		--[[2]]			  { color = {1,0.5,0,1},			sort = 2,		text = L["Offspec/Greed"],	},
+		--[[3]]			  { color = {0,0.7,0.7,1},			sort = 3,		text = L["Minor Upgrade"],},
+		--[[4]]			  { color = {0.7, 0.7,0.7,1},		sort = 5,		text = L["Pass"],},
+		--[[5]]			  { color = {0.75,0.75,0.75,1},	sort = 4,		text = L["Button"]..5,},
+		--[[6]]			  { color = {0.75,0.75,0.75,1},	sort = 5,		text = L["Button"]..6,},
+		--[[7]]			  { color = {0.75,0.75,0.75,1},	sort = 6,		text = L["Button"]..7,},
+		--[[8]]			  { color = {0.75,0.75,0.75,1},	sort = 7,		text = L["Button"]..8,},
 	}
 	self.roleTable = {
 		TANK =		L["Tank"],
-		HEALER =	L["Healer"],
+		HEALER =		L["Healer"],
 		DAMAGER =	L["DPS"],
 		NONE =		L["None"],
 	}
@@ -142,8 +147,8 @@ function RCLootCouncil:OnInitialize()
 			autolootBoE = true,
 			altClickLooting = true,
 			acceptWhispers = true,
-			acceptRaidChat = true,
-			advancedOptions = true, -- Redundant?
+			--acceptRaidChat = true,
+			--advancedOptions = true, -- Redundant?
 			selfVote = true,
 			multiVote = true,
 			anonymousVoting = false,
@@ -161,6 +166,7 @@ function RCLootCouncil:OnInitialize()
 			autoPass = true,
 			silentAutoPass = false, -- Show autopass message
 			autoPassBoE = true,
+			neverML = false, -- Never use the addon as ML
 
 			UI = { -- stores all ui information
 				['*'] = { -- Defaults for Lib-Window
@@ -173,7 +179,7 @@ function RCLootCouncil:OnInitialize()
 
 			modules = { -- For storing module specific data
 				['*'] = {},
-			}, 
+			},
 
 			announceAward = true,
 			awardText = { -- Just max it at 2 channels
@@ -363,6 +369,7 @@ function RCLootCouncil:ChatCommand(msg)
 		self:Print(L["- version - open the Version Checker (alt. 'v' or 'ver')"])
 		self:Print(L["- history - open the Loot History"])
 		self:Print(L["- whisper - displays help to whisper commands"])
+		self:Print(L["- neverML - never use the addon as Master Looter"])
 		--self:Print("- reset - resets the addon's frames' positions")
 		self:Debug(L["- log - display the debug log"])
 		self:Debug(L["- clearLog - clear the debug log"])
@@ -414,6 +421,10 @@ function RCLootCouncil:ChatCommand(msg)
 	elseif input == "whisper" or input == L["whisper"] then
 		self:Print(L["whisper_help"])
 
+	elseif input == "neverml" or input == L["neverml"] then
+		db.neverML = not db.neverML
+		self:Print(L["neverml"].." = "..tostring(db.neverML))
+
 	elseif input == "reset" then
 		--TODO something with this
 		--[[
@@ -443,10 +454,9 @@ function RCLootCouncil:ChatCommand(msg)
 		self:Print("Debug Log cleared.")
 
 	elseif input == 't' and self.nnp then -- Tester cmd
-		printtable(self.mldb)
+		self:Print(arg1, arg2)
 
 	else
-		-- TODO unsure if this works
 		self:ChatCommand("help")
 	end
 end
@@ -494,14 +504,14 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 					self:SendCommand(sender, "lootAck", self.playerName) -- send ack
 
 					local lootTable = unpack(data)
-					if autoPass then
-						for ses, v in pairs(lootTable) do
+					if db.autoPass then
+						for ses, v in ipairs(lootTable) do
 							if (v.boe and db.autoPassBoE) or not v.boe then
 								if self:AutoPassCheck(v.subType) then
-									self:Debug("Autopassed on: "..vlink)
+									self:Debug("Autopassed on: "..tostring(v.link))
 									if not db.silentAutoPass then self:Print(format(L["Autopassed on %s"], v.link)) end
 									self:SendCommand("group", "response", self:CreateResponse(ses, tonumber(strmatch(v.link, "item:(%d+):")), v.ilvl, "AUTOPASS"))
-									tremove(lootTable, ses) -- TODO not sure this'll work!
+									lootTable[ses].autopass = true
 								end
 							else
 								self:Debug("Didn't autopass on: "..v.link.." because it's BoE!")
@@ -570,9 +580,9 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 					lootDB[name] = {history}
 				end
 
-			elseif command == "reRoll" and self:UnitIsUnit(sender, self.masterLooter) then
-				RCLootCouncil_LootFrame:Update(nil, {unpack(data)})
-
+			elseif command == "reroll" and self:UnitIsUnit(sender, self.masterLooter) then
+				self:CallModule("lootframe")
+				self:GetActiveModule("lootframe"):ReRoll(unpack(data))
 
 			elseif command == "playerInfoRequest" then
 				local role = self:GetCandidateRole(self.playerName)
@@ -692,25 +702,25 @@ end
 
 -- Classes that should auto pass a subtype
 local autopassTable = {
-	["Cloth"]							= {"WARRIOR", "DEATHKNIGHT", "PALADIN", "DRUID", "MONK", "ROGUE", "HUNTER", "SHAMAN"},
-	["Leather"] 					= {"WARRIOR", "DEATHKNIGHT", "PALADIN", "HUNTER", "SHAMAN", "PRIEST", "MAGE", "WARLOCK"},
-	["Mail"] 							= {"WARRIOR", "DEATHKNIGHT", "PALADIN", "DRUID", "MONK", "ROGUE", "PRIEST", "MAGE", "WARLOCK"},
-	["Plate"]							= {"DRUID", "MONK", "ROGUE", "HUNTER", "SHAMAN", "PRIEST", "MAGE", "WARLOCK"},
-	["Shields"] 					= {"DEATHKNIGHT", "DRUID", "MONK", "ROGUE", "HUNTER","PRIEST", "MAGE", "WARLOCK"},
-	["Bows"] 							= {"DEATHKNIGHT", "PALADIN", "DRUID", "MONK", "SHAMAN", "PRIEST", "MAGE", "WARLOCK"},
+	["Cloth"]					= {"WARRIOR", "DEATHKNIGHT", "PALADIN", "DRUID", "MONK", "ROGUE", "HUNTER", "SHAMAN"},
+	["Leather"] 				= {"WARRIOR", "DEATHKNIGHT", "PALADIN", "HUNTER", "SHAMAN", "PRIEST", "MAGE", "WARLOCK"},
+	["Mail"] 					= {"WARRIOR", "DEATHKNIGHT", "PALADIN", "DRUID", "MONK", "ROGUE", "PRIEST", "MAGE", "WARLOCK"},
+	["Plate"]					= {"DRUID", "MONK", "ROGUE", "HUNTER", "SHAMAN", "PRIEST", "MAGE", "WARLOCK"},
+	["Shields"] 				= {"DEATHKNIGHT", "DRUID", "MONK", "ROGUE", "HUNTER","PRIEST", "MAGE", "WARLOCK"},
+	["Bows"] 					= {"DEATHKNIGHT", "PALADIN", "DRUID", "MONK", "SHAMAN", "PRIEST", "MAGE", "WARLOCK"},
 	["Crossbows"] 				= {"DEATHKNIGHT", "PALADIN", "DRUID", "MONK", "SHAMAN", "PRIEST", "MAGE", "WARLOCK"},
-	["Daggers"]						= {"WARRIOR", "DEATHKNIGHT", "PALADIN", "DRUID", "MONK", "HUNTER", "SHAMAN", },
-	["Guns"]							= {"DEATHKNIGHT", "PALADIN", "DRUID", "MONK","SHAMAN", "PRIEST", "MAGE", "WARLOCK"},
+	["Daggers"]					= {"WARRIOR", "DEATHKNIGHT", "PALADIN", "DRUID", "MONK", "HUNTER", "SHAMAN", },
+	["Guns"]						= {"DEATHKNIGHT", "PALADIN", "DRUID", "MONK","SHAMAN", "PRIEST", "MAGE", "WARLOCK"},
 	["Fist Weapons"] 			= {"DEATHKNIGHT", "PALADIN",  "PRIEST", "MAGE", "WARLOCK"},
 	["One-Handed Axes"]		= {"DRUID", "MONK", "ROGUE", "PRIEST", "MAGE", "WARLOCK"},
-	["One-Handed Maces"]	= {"MONK", "HUNTER", "MAGE", "WARLOCK"},
-	["One-Handed Swords"] = {"DRUID", "SHAMAN", "PRIEST",},
-	["Polearms"] 					= {"ROGUE", "HUNTER", "SHAMAN", "PRIEST", "MAGE", "WARLOCK"},
-	["Staves"]						= {"WARRIOR", "DEATHKNIGHT", "PALADIN",  "ROGUE", "HUNTER"},
+	["One-Handed Maces"]		= {"MONK", "HUNTER", "MAGE", "WARLOCK"},
+	["One-Handed Swords"] 	= {"DRUID", "SHAMAN", "PRIEST",},
+	["Polearms"] 				= {"ROGUE", "HUNTER", "SHAMAN", "PRIEST", "MAGE", "WARLOCK"},
+	["Staves"]					= {"WARRIOR", "DEATHKNIGHT", "PALADIN",  "ROGUE", "HUNTER"},
 	["Two-Handed Axes"]		= {"DRUID", "ROGUE", "MONK", "PRIEST", "MAGE", "WARLOCK"},
-	["Two-Handed Maces"]	= {"MONK", "ROGUE", "HUNTER", "PRIEST", "MAGE", "WARLOCK"},
+	["Two-Handed Maces"]		= {"MONK", "ROGUE", "HUNTER", "PRIEST", "MAGE", "WARLOCK"},
 	["Two-Handed Swords"]	= {"DRUID", "MONK", "ROGUE", "SHAMAN", "PRIEST", "MAGE", "WARLOCK"},
-	["Wands"]							= {"WARRIOR", "DEATHKNIGHT", "PALADIN", "DRUID", "MONK", "ROGUE", "HUNTER", "SHAMAN"},
+	["Wands"]					= {"WARRIOR", "DEATHKNIGHT", "PALADIN", "DRUID", "MONK", "ROGUE", "HUNTER", "SHAMAN"},
 }
 
 -- Used to find localized subType names
@@ -741,7 +751,7 @@ for _, item in pairs(subTypeLookup) do -- Just call GetItemInfo() and do it in 2
 	GetItemInfo(item)
 end
 RCLootCouncil:ScheduleTimer("Timer", 5, "LocalizeSubTypes")
-	
+
 function RCLootCouncil:AutoPassCheck(type)
 	if type and autopassTable[self.db.global.localizedSubTypes[type]] then
 		return tContains(autopassTable[self.db.global.localizedSubTypes[type]], self.playerClass)
@@ -795,6 +805,7 @@ function RCLootCouncil:CreateResponse(session, itemid, ilvl, response, note)
 		data = {
 				gear1 = g1,
 				gear2 = g2,
+				ilvl = math.floor(select(2,GetAverageItemLevel())),
 				diff = diff,
 				note = note,
 				response = response
@@ -880,10 +891,10 @@ function RCLootCouncil:OnEvent(this, event, ...)
 		self:NewMLCheck()
 
 	elseif event == "GUILD_ROSTER_UPDATE" then
-		self.guildRank = RCLootCouncil:GetPlayersGuildRank();
+		self.guildRank = self:GetPlayersGuildRank();
 		if self.unregisterGuildEvent then
 			self:UnregisterEvent("GUILD_ROSTER_UPDATE"); -- we don't need it any more
-			RCLootCouncil:GetGuildOptions() -- get the guild data to the options table now that it's ready
+			self:GetGuildOptions() -- get the guild data to the options table now that it's ready
 		end
 	elseif event == "GET_ITEM_INFO_RECEIVED" then
 
@@ -894,8 +905,10 @@ function RCLootCouncil:NewMLCheck()
 	local old_ml = self.masterLooter
 	self.isMasterLooter, self.masterLooter = self:GetML()
 
-	if self:UnitIsUnit(old_ml,self.masterLooter) then return; end -- no change
+	if self.isMasterLooter and db.neverML then self:Print(L["neverml_warning"]) end -- neverML logic
+	if self:UnitIsUnit(old_ml,self.masterLooter) or db.neverML then return end -- no change
 
+	-- We have a new ML - we need to do stuff if it's us
 	if self.isMasterLooter and db.autoEnable then -- addon should auto start
 		self:Print(L[" now handles looting"])
 		if db.autoAward and GetLootThreshold() > db.autoAwardQualityLower then
@@ -907,7 +920,7 @@ function RCLootCouncil:NewMLCheck()
 		LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_USAGE")
 		return
 
-	elseif not self.isMasterLooter and UnitIsGroupLeader("player") then -- lootMethod ~= ML, but we are group leader
+	elseif not self.isMasterLooter and not self.masterLooter and UnitIsGroupLeader("player") then -- There's no ML, and lootmethod ~= ML, but we are the group leader
 		if db.autoEnable then -- the addon should auto start, so change loot method to master, and make the player ML
 			SetLootMethod("master", self.playerName)
 			self:Print(L[" you are now the Master Looter and RCLootCouncil is now handling looting."])
@@ -917,7 +930,7 @@ function RCLootCouncil:NewMLCheck()
 			end
 			self.isMasterLooter = true
 			self.masterLooter = self.playerName
-		else
+		elseif self.enabled then
 			LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_USAGE") -- ask if we want to use the addon since we're group leader
 		end
 
@@ -978,7 +991,7 @@ end
 -- Enables a userModule if set, defaultModule otherwise
 -- @param module String, must correspond to a index in self.defaultModules
 function RCLootCouncil:CallModule(module)
-	if self.disabled then return end -- Don't call modules unless enabled
+	if not self.enabled then return end -- Don't call modules unless enabled
 	self:EnableModule(userModules[module] or defaultModules[module])
 end
 
@@ -1156,7 +1169,7 @@ function RCLootCouncil:GetButtonText(i)
 	return self.mldb.buttons[i] and self.mldb.buttons[i].text or db.buttons[i].text
 end
 
--- The following functions returns the text or color of a response, returning a result from mldb if possible, otherwise the default responses.
+-- The following functions returns the text, sort or color of a response, returning a result from mldb if possible, otherwise the default responses.
 -- @param response Index in self.responses
 function RCLootCouncil:GetResponseText(response)
 	return self.mldb.responses[response] and self.mldb.responses[response].text or self.responses[response].text
@@ -1164,7 +1177,6 @@ end
 
 function RCLootCouncil:GetResponseColor(response)
 	-- We have to convert indicies for lib-st -.-'
-	-- Didn't quite work :( local r,g,b,a = self.mldb.responses[response] and unpack(self.mldb.responses[response].color) or unpack(self.responses[response].color)
 	local r,g,b,a
 	if self.mldb.responses[response] then
 		r,g,b,a = unpack(self.mldb.responses[response].color)
@@ -1172,6 +1184,10 @@ function RCLootCouncil:GetResponseColor(response)
 		r,g,b,a = unpack(self.responses[response].color)
 	end
 	return {["r"]=r,["g"]=g,["b"]=b,["a"]=a}
+end
+
+function RCLootCouncil:GetResponseSort(response)
+	return self.mldb.responses[response] and self.mldb.responses[response].sort or self.responses[response].sort
 end
 
 --#end UI Functions -----------------------------------------------------

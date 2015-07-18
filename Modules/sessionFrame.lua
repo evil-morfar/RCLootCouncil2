@@ -76,14 +76,11 @@ function RCSessionFrame:DeleteItem(index)
 end
 
 function RCSessionFrame.SetCellText(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
-	--print(tostring())
-	debugprofilestart()
 	if frame.text:GetFontObject() ~= GameFontNormal then
 		frame.text:SetFontObject("GameFontNormal") -- We want bigger font
 	end
 	--frame.text:SetText(data[realrow].link)
 	table.DoCellUpdate(rowFrame, frame, data, cols, row, realrow, column, fShow, table)
-	addon:Print(debugprofilestop())
 end
 
 function RCSessionFrame.SetCellDeleteBtn(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)

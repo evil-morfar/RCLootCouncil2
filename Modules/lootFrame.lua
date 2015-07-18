@@ -9,7 +9,6 @@ local LootFrame = addon:NewModule("RCLootFrame", "AceTimer-3.0")
 local LibDialog = LibStub("LibDialog-1.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 
-local db, buttons
 local isMinimized = false
 local items = {} -- item.i = {name, link, lvl, texture} (i == session)
 local entries = {}
@@ -18,7 +17,27 @@ local MAX_ENTRIES = 5
 local numRolled = 0
 
 function LootFrame:Start(table)
-	for k,v in pairs(table) do
+	for k = 1, #table do
+		if table[k].autopass then
+			items[k] = { rolled = true} -- it's autopassed, so pretend we rolled it
+			numRolled = numRolled + 1
+		else
+			items[k] = {
+				name = table[k].name,
+				link = table[k].link,
+				ilvl = table[k].ilvl,
+				texture = table[k].texture,
+				rolled = false,
+				note = nil,
+				session = k,
+			}
+		end
+	end
+	self:Show()
+end
+
+function LootFrame:ReRoll(table)
+	for k,v in ipairs(table) do
 		items[k] = {
 			name = v.name,
 			link = v.link,
@@ -26,34 +45,33 @@ function LootFrame:Start(table)
 			texture = v.texture,
 			rolled = false,
 			note = nil,
+			session = v.session,
 		}
+		print(v.texture)
 	end
 	self:Show()
 end
 
 function LootFrame:OnEnable()
-	db = addon:Getdb()
-	buttons = db.buttons
+	self.frame = self:GetFrame()
 end
 
 function LootFrame:OnDisable()
-	self:Hide()
+	print("lootFrame Disabled")
+	self.frame:Hide() -- We don't disable the frame as we probably gonna need it later
 	items = {}
 	numRolled = 0
+	printtable(items)
 end
 
 function LootFrame:Show()
-	--printtable(items)
-	print("spacer")
-	self.frame = self:GetFrame()
 	self:Update()
-	--printtable(entries)
 	self.frame:Show()
 end
 
-function LootFrame:Hide()
-	self.frame:Hide()
-end
+--function LootFrame:Hide()
+--	self.frame:Hide()
+--end
 
 function LootFrame:Update()
 	local width = 150
@@ -87,6 +105,7 @@ function LootFrame:Update()
 	for i = MAX_ENTRIES, numEntries + 1, -1 do -- Hide unused
 		if entries[i] then entries[i]:Hide() end
 	end
+	print(tostring(numRolled).." == "..tostring(#items))
 	if numRolled == #items then -- We're through them all, so hide the frame
 		self:Disable()
 	end
@@ -94,16 +113,15 @@ end
 
 local toSend = {data = {}} -- More efficient
 function LootFrame:OnRoll(entry, button)
-	addon:Debug("LootFrame:OnRoll("..entry..", "..button)
-	local session = entries[entry].realID
-	toSend = addon:CreateResponse(session, tonumber(strmatch(items[session].link, "item:(%d+):")), items[session].ilvl, button, items[session].note)
+	addon:Debug("LootFrame:OnRoll("..entry..", "..button..")")
+	local index = entries[entry].realID
+	toSend = addon:CreateResponse(items[entries[entry].realID].session, tonumber(strmatch(items[index].link, "item:(%d+):")), items[index].ilvl, button, items[index].note)
 
 	addon:SendCommand("group", "response", toSend)
 
 	numRolled = numRolled + 1
-	items[session].rolled = true
+	items[index].rolled = true
 	self:Update()
-
 end
 
 function LootFrame:GetFrame()
@@ -193,8 +211,7 @@ LibDialog:Register("LOOTFRAME_NOTE", {
 	editboxes = {
 		{
 			on_enter_pressed = function(self, entry)
-				local session = entries[entry].realID
-				items[session].note = self:GetText()
+				items[entries[entry].realID].note = self:GetText()
 				LibDialog:Dismiss("LOOTFRAME_NOTE")
 			end,
 			on_escape_pressed = function(self)

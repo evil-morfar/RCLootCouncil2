@@ -102,7 +102,7 @@ function RCLootCouncilML:RemoveCandidate(name)
 end
 
 -- IDEA This needs to work if one's not in a raid (if possible)
-function RCLootCouncilML:UpdateGroup()
+function RCLootCouncilML:UpdateGroup() -- FIXME Needs to add people that haven't installed the addon
 	local group_copy = {}
 	for name, _ in pairs(self.candidates) do	group_copy[name] = name end -- Use name as index for zzz
 	for i = 1, GetNumGroupMembers() do
@@ -287,6 +287,13 @@ function RCLootCouncilML:OnEvent(event, ...)
 	elseif event == "LOOT_CLOSED" then
 		self.lootOpen = false
 
+	elseif event == "CHAT_MSG_WHISPER" and addon.isMasterLooter and db.acceptWhispers then
+		local msg, sender = ...
+		if msg == "rchelp" then
+			self:SendWhisperHelp(sender)
+		elseif self.running then
+			self:GetItemsFromMessage(msg, sender)
+		end
 	end
 end
 
@@ -295,7 +302,7 @@ function RCLootCouncilML:CanWeLootItem(item, index, quality)
 	if (LootSlotHasItem(index) or db.autoLootEverything) and quality >= GetLootThreshold() and not self:IsItemIgnored(item) then -- it's something we're allowed to loot
 		-- Let's check if it's BoE
 		-- Don't bother checking if we know we want to loot it
-		return db.autolootBoE or addon:IsItemBoE(item)		
+		return db.autolootBoE or addon:IsItemBoE(item)
 	end
 	return false
 end
@@ -483,4 +490,67 @@ end
 function RCLootCouncilML:IsItemIgnored(link)
 	local itemID = tonumber(strmatch(link, "item:(%d+):")) -- extract itemID
 	return tContains(db.ignore, itemID)
+end
+
+function RCLootCouncilML:GetItemsFromMessage(msg, sender)
+	addon:DebugLog("GetItemsFromMessage("..tostring(msg)..", "..tostring(sender)..")")
+	if not addon.isMasterLooter then return end
+
+	local ses, arg1, arg2, arg3 = addon:GetArgs(msg, 4) -- We only require session to be correct, we can do some error checking on the rest
+	ses = tonumber(ses)
+	-- Let's test the input
+	if not ses or type(ses) ~= "number" or ses > #self.lootTable then return end -- We need a valid session
+	-- Set some locals
+	local item1, item2, diff
+	local response = 1
+	if arg1:find("|Hitem:") then -- they didn't give a response
+		item1, item2 = arg1, arg2
+	else
+		-- No reason to continue if they didn't provide an item
+		if not arg2 or not arg2:find("|Hitem:") then return end
+		item1, item2 = arg2, arg3
+
+		-- check if the response is valid
+		local whisperKeys = {}
+		for i = 1, db.numButtons do --go through all the button
+			gsub(db.buttons[i]["whisperKey"], '[%w]+', function(x) tinsert(whisperKeys, {key = x, num = i}) end) -- extract the whisperKeys to a table
+		end
+		for _,v in ipairs(whisperKeys) do
+			if strmatch(arg1, v.key) then -- if we found a match
+				response = v.num
+				break;
+			end
+		end
+	end
+	-- calculate diff
+	diff = (self.lootTable[ses].ilvl - select(4, GetItemInfo(item1))) or nil
+	-- add the entry to the player's own entryTable
+	local toAdd =  {
+	session = ses,
+	name = sender,
+	data = {
+			gear1 = item1,
+			gear2 = item2,
+			diff = diff,
+			note = "",
+			response = response
+		}
+	}
+	addon:SendCommand("group", "response", toAdd)
+	-- Let people know we've done stuff
+	addon:Print(format(L["Item received and added from %s."], addon.Ambiguate(sender)))
+	SendChatMessage("[RCLootCouncil]: "..format(L["Acknowledged as \" %s \""], db.responses[response].text ), "WHISPER", nil, sender)
+end
+
+function RCLootCouncilML:SendWhisperHelp(target)
+	addon:DebugLog("SendWhisperHelp("..tostring(target)..")")
+	local msg
+	SendChatMessage(L["whisper_guide"], "WHISPER", nil, target)
+	for i = 1, db.numButtons do
+		msg = "[RCLootCouncil]: "..db.buttons[i]["text"]..":  " -- i.e. MainSpec/Need:
+		msg = msg..""..db.buttons[i]["whisperKey"].."." -- need, mainspec, etc
+		SendChatMessage(msg, "WHISPER", nil, target)
+	end
+	SendChatMessage(L["whisper_guide2"], "WHISPER", nil, target)
+	addon:Print(format(L["sent whisper help to %s"], addon.Ambiguate(target)))
 end

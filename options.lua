@@ -39,8 +39,8 @@ function addon:OptionsTable()
 									name = L["Activate"],
 									desc = L["activate_desc"],
 									type = "toggle",
-									set = function() addon.disabled = not addon.disabled end,
-									get = function() return not addon.disabled end,
+									set = function() addon.enabled = not addon.enabled end,
+									get = function() return not addon.enabled end,
 								},
 								autoOpen = {
 									order = 1.2,
@@ -61,7 +61,7 @@ function addon:OptionsTable()
 									type = "header",
 									name = "Autopass",
 									width = "half",
-								},								
+								},
 								testButton = {
 									order = 7,
 									name = L["Test"],
@@ -82,7 +82,7 @@ function addon:OptionsTable()
 										LibStub("AceConfigDialog-3.0"):CloseAll()
 										addon:CallModule("version")
 									end
-								},								
+								},
 							},
 						},
 						autoPassOptions = {
@@ -90,7 +90,7 @@ function addon:OptionsTable()
 							type = "group",
 							name = L["Auto Pass"],
 							inline = true,
-							args = {								
+							args = {
 								autoPass = {
 									order = 1,
 									name = L["Auto Pass"],
@@ -286,7 +286,7 @@ function addon:OptionsTable()
 									name = L["Add Item"],
 									desc = L["ignore_input_desc"],
 									type = "input",
-									pattern = "%d", -- REVIEW Not sure this is enough
+									pattern = "%d",
 									usage = L["ignore_input_usage"],
 									get = function() return "\"itemID\"" end,
 									set = function(info, val) tinsert(db.ignore, val) end,
@@ -688,7 +688,7 @@ function addon:OptionsTable()
 											end
 											return info
 										end,
-										set = function(j,i) db.council = {}; RCLootCouncil_Mainframe.setRank(i); end, --FIXME CHANGE THIS
+										set = function(j,i) db.council = {}; db.minRank = i; end,
 										get = function() return db.minRank; end,
 									},
 									desc = {

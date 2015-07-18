@@ -57,6 +57,7 @@ L["- test (#)  - emulate a loot session (add a number for raid test)"] = true
 L["- version - open the Version Checker (alt. 'v' or 'ver')"] = true
 L["- history - open the Loot History"] = true
 L["- whisper - displays help to whisper commands"] = true
+L["- neverML - never use the addon as Master Looter"] = true
 L["- log - display the debug log"] = true
 L["- clearLog - clear the debug log"] = true
 L["help"] = true
@@ -72,7 +73,8 @@ L["add"] = true
 L["version"] = true
 L["history"] = true
 L["whisper"] = true
-L["whisper_help"] = "Players can whisper (or through Raidchat if enabled) their current item(s) followed by a keyword to the Master Looter if they doesn't have the addon installed.\nThe keyword list is found under the 'Buttons and Responses' optiontab.\nPlayers can whisper 'rchelp' to the Master Looter to retrieve this list.\nNOTE: People should still get the addon installed, otherwise all player information won't be available."
+L["whisper_help"] = "Raiders can use the whisper system in case someone haven't installed the addon.\nWhispering 'rchelp' to the Master Looter will get them a guide along with the list of keywords, which can be edited at the 'Buttons and Responses' optiontab.\nIt's recommended for the ML to turn on 'Announce Considerations' as each item's number is required to use the whisper system.\nNOTE: People should still get the addon installed, otherwise all player information won't be available."
+L["neverml"] = true
 
 L["Autopassed on %s"] = true
 L["version_outdated_msg"] = "Your version %s is outdated. Newer version is %s, please update RCLootCouncil."
@@ -84,6 +86,8 @@ L["Not Found"] = true
 L["x days"] = "%d days"
 L["days, x months, y years"] = "%s, %d months and %d years."
 L["days and x months"] = "%s and %d months."
+
+L["neverml_warning"] = "You are the Master Looter but have opted never to use RCLootCouncil as ML. Enter '/rc neverML' to use the addon."
 
 L["session_error"] = "Something went wrong - please restart the session"
 
@@ -99,6 +103,11 @@ L["Unable to give out loot without the loot window open."] = true
 L["Alternatively, flag the loot as award later."] = true
 L["i was Auto Awarded to p with the reason r"] = "%s was Auto Awarded to %s with the reason: %s"
 L["The session has ended."] = true
+L["Item received and added from %s."] = true
+L["Acknowledged as \" %s \""] = true
+L["whisper_guide"] = "[RCLootCouncil]: session response [item1] [item2]. Link your item(s) that item #(session) would replace, (response) being of the keywords below:"
+L["whisper_guide2"] = "[RCLootCouncil]: You'll get a confirmation message if you were successfully added."
+L["sent whisper help to %s"] = true
 
 -- @region end
 
