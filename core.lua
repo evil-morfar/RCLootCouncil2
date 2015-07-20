@@ -255,6 +255,7 @@ function RCLootCouncil:OnInitialize()
 	self.db.RegisterCallback(self, "OnProfileChanged", "RefreshConfig")
 	self.db.RegisterCallback(self, "OnProfileCopied", "RefreshConfig")
 	self.db.RegisterCallback(self, "OnProfileReset", "RefreshConfig")
+	LibStub("AceConfigRegistry-3.0").RegisterCallback(self, "ConfigTableChanged", "RefreshConfig")
 
 	-- add shortcuts
 	db = self.db.profile
@@ -263,13 +264,13 @@ function RCLootCouncil:OnInitialize()
 
 	-- register the optionstable
 	self.options = self:OptionsTable()
-	--self.options.args.settings.plugins.profile = {profiles = LibStub("AceDBOptions-3.0"):GetOptionsTable(self.db)}
+	self.options.args.settings.args.profiles = LibStub("AceDBOptions-3.0"):GetOptionsTable(self.db)
 	LibStub("AceConfigRegistry-3.0"):RegisterOptionsTable("RCLootCouncil", self.options)
 	--LibStub("AceConfigRegistry-3.0"):RegisterOptionsTable("RCLootCouncil:ML", self.options.mlSettings, true)
 
 	-- add it to blizz options
-	self.optionsFrame = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("RCLootCouncil", nil, nil, "settings")
-	LibStub("AceConfigDialog-3.0"):AddToBlizOptions("RCLootCouncil", "Master Looter", "RCLootCouncil", "mlSettings")
+	self.optionsFrame = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("RCLootCouncil", "RCLootCouncil", nil, "settings")
+	self.optionsFrame.ml = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("RCLootCouncil", "Master Looter", "RCLootCouncil", "mlSettings")
 end
 
 function RCLootCouncil:OnEnable()
@@ -353,8 +354,8 @@ end
 
 function RCLootCouncil:RefreshConfig()
 	self:Debug("RefreshConfig")
-	db = self.defaults.profile
-	if self.isMasterLooter then	RCLootCouncilML:NewML() end
+	--db = self.defaults.profile
+	--if self.isMasterLooter then	RCLootCouncilML:NewML() end
 end
 
 function RCLootCouncil:ChatCommand(msg)
@@ -396,6 +397,8 @@ function RCLootCouncil:ChatCommand(msg)
 	elseif input == 'council' or input == L["council"] then
 		InterfaceOptionsFrame_OpenToCategory(self.optionsFrame.ml)
 		InterfaceOptionsFrame_OpenToCategory(self.optionsFrame.ml)
+		LibStub("AceConfigDialog-3.0"):SelectGroup("RCLootCouncil", "mlSettings", "council")
+
 
 	elseif input == 'test' or input == L["test"] then
 		--self:Print(db.ui.versionCheckScale)
