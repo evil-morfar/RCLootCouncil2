@@ -63,7 +63,6 @@ function RCVotingFrame:OnDisable()
 	--sessionButtons = {}
 	active = false
 	session = 1
-	addon:GetActiveModule("masterlooter"):EndSession()
 end
 
 function RCVotingFrame:Show()

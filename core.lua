@@ -344,6 +344,7 @@ function RCLootCouncil:OnEnable()
 end
 
 function RCLootCouncil:OnDisable()
+	self:Debug("OnDisable()")
 	--NOTE (not really needed as we probably never call .Disable() on the addon)
 		-- delete all windows
 		-- disable modules(?)
@@ -393,15 +394,7 @@ function RCLootCouncil:ChatCommand(msg)
 		end
 
 	elseif input == 'council' or input == L["council"] then
-		if self.council then
-			self:Print(L["Current Council:"])
-			for k,v in ipairs(self.Council) do print(k,v) end
-		elseif db.council then
-			self:Print(L["Council: "])
-			for _,t in ipairs(db.council) do print(t) end
-		else
-			self:Print(L["No council exists"])
-		end
+		InterfaceOptionsFrame_OpenToCategory(self.optionsFrame)
 
 	elseif input == 'test' or input == L["test"] then
 		--self:Print(db.ui.versionCheckScale)
@@ -477,7 +470,7 @@ function RCLootCouncil:SendCommand(target, command, ...)
 			self:SendCommMessage("RCLootCouncil", toSend, "RAID")
 		elseif num > 0 then -- Party
 			self:SendCommMessage("RCLootCouncil", toSend, "PARTY")
-		elseif self.testMode then -- Alone (testing)
+		else--if self.testMode then -- Alone (testing)
 			self:SendCommMessage("RCLootCouncil", toSend, "WHISPER", self.playerName)
 		end
 
@@ -610,9 +603,11 @@ function RCLootCouncil:Debug(msg)
 	RCLootCouncil:DebugLog(msg)
 end
 
+local date_to_debug_log = true
 function RCLootCouncil:DebugLog(msg)
+	if date_to_debug_log then tinsert(debugLog, date("%x")); date_to_debug_log = false; end
 	local time = date("%X", time())
-	msg = time.." - ".. msg
+	msg = time.." - ".. tostring(msg)
 	if #debugLog > self.db.global.logMaxEntries then
 		tremove(debugLog, 1)
 	end
@@ -627,8 +622,6 @@ function RCLootCouncil:Test(num)
 		local j = math.random(1, #testItems)
 		tinsert(items, testItems[j])
 	end
-
-	self:Print(tostring(items[1]))
 
 	self.testMode = true;
 	self.isMasterLooter, self.masterLooter = self:GetML()
@@ -840,7 +833,7 @@ function RCLootCouncil:GetCandidateRole(candidate)
 end
 
 function RCLootCouncil.TranslateRole(role) -- reasons
-	return RCLootCouncil.roleTable[role]
+	return (role and role ~= "") and RCLootCouncil.roleTable[role] or ""
 end
 
 function RCLootCouncil:GetGuildRankNum(name)
@@ -889,11 +882,16 @@ function RCLootCouncil:ConvertDateToString(day, month, year)
 end
 
 function RCLootCouncil:OnEvent(this, event, ...)
-	if event == "PARTY_LOOT_METHOD_CHANGED" then
+	if event == "PARTY_LOOT_METHOD_CHANGED" then --REVIEW Still not sure this works
 		self:NewMLCheck()
 
 	elseif event == "RAID_INSTANCE_WELCOME" then
-		self:NewMLCheck()
+		-- high server-side latency causes the UnitIsGroupLeader("player") condition to fail if queried quickly (upon entering instance) regardless of state.
+		-- may add a delay for the above conditional if the issue persists to circumvent issue.
+		-- NOTE v2.0: Not sure if this is still an issue, but just add a 2 sec timer to the MLCheck call
+		self:ScheduleTimer(function() -- REVIEW Check if it can take a function like this
+			self:NewMLCheck()
+		end, 2)
 
 	elseif event == "GUILD_ROSTER_UPDATE" then
 		self.guildRank = self:GetPlayersGuildRank();
@@ -961,9 +959,11 @@ function RCLootCouncil:GetML()
 end
 
 function RCLootCouncil:IsCouncil(name)
-	self:Debug("IsCouncil("..tostring(name)..")")
-	if self.isMasterLooter or self.nnp then return true; end -- ML and nnp is always council
-	return tContains(self.council, name)
+	self:DebugLog("IsCouncil("..tostring(name)..")")
+	local ret = tContains(self.council, name)
+	if self.isMasterLooter or self.nnp then ret = true end -- ML and nnp is always council
+	self:DebugLog(ret) -- We want to see it in logs
+	return ret
 end
 
 function RCLootCouncil:SessionError(...)

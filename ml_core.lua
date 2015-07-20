@@ -20,7 +20,7 @@ local db;
 local session = 1
 
 function RCLootCouncilML:OnInitialize()
-	addon:Print("ML initialized!")
+	addon:Debug("ML initialized!")
 end
 
 function RCLootCouncilML:OnDisable()
@@ -47,10 +47,9 @@ function RCLootCouncilML:OnEnable()
 	self:RegisterComm("RCLootCouncil", "OnCommReceived")
 	self:RegisterEvent("LOOT_OPENED","OnEvent")
 	self:RegisterEvent("LOOT_CLOSED","OnEvent")
-	self:RegisterEvent("RAID_INSTANCE_WELCOME","OnEvent")
+	--self:RegisterEvent("RAID_INSTANCE_WELCOME","OnEvent")
 	self:RegisterBucketEvent("GROUP_ROSTER_UPDATE", 20, "UpdateGroup") -- Bursts in group creation, and we should have plenty of time to handle it
 	self:RegisterEvent("CHAT_MSG_WHISPER","OnEvent")
-	self:RegisterEvent("CHAT_MSG_RAID","OnEvent")
 end
 
 -- Adds an item session in lootTable
@@ -72,10 +71,10 @@ function RCLootCouncilML:AddItem(session, item, bagged, slotIndex)
 		["lootSlot"]	= slotIndex,
 		["announced"]	= false,
 		["awarded"]		= false,
-		["name"]		= name,
-		["link"]		= link,
-		["ilvl"]		= ilvl,
-		["type"]		= type,
+		["name"]			= name,
+		["link"]			= link,
+		["ilvl"]			= ilvl,
+		["type"]			= type,
 		["subType"]		= subType,
 		["equipLoc"]	= equipLoc,
 		["texture"]		= texture,
@@ -90,11 +89,11 @@ function RCLootCouncilML:RemoveItem(session)
 end
 
 function RCLootCouncilML:AddCandidate(name, class, role, rank)
-	addon:DebugLog("ML:AddCandidate("..name..", ...)")
+	addon:DebugLog("ML:AddCandidate("..name..", "..tostring(class)..", ...)")
 	self.candidates[name] = {
 		["class"]	= class,
-		["role"]	= role,
-		["rank"]	= rank,
+		["role"]		= role,
+		["rank"]		= rank or "", -- Rank cannot be nil for votingFrame
 	}
 end
 
@@ -103,7 +102,7 @@ function RCLootCouncilML:RemoveCandidate(name)
 end
 
 -- IDEA This needs to work if one's not in a raid (if possible)
-function RCLootCouncilML:UpdateGroup() -- FIXME Needs to add people that haven't installed the addon
+function RCLootCouncilML:UpdateGroup()
 	local group_copy = {}
 	for name, _ in pairs(self.candidates) do	group_copy[name] = name end -- Use name as index for zzz
 	for i = 1, GetNumGroupMembers() do
@@ -113,6 +112,7 @@ function RCLootCouncilML:UpdateGroup() -- FIXME Needs to add people that haven't
 		else -- add them
 			addon:SendCommand(name, "playerInfoRequest")
 			addon:SendCommand(name, "MLdb", addon.mldb) -- and send mlDB
+			self:AddCandidate(name) -- Add them in case they haven't installed the adoon
 		end
 	end
 	-- If anything's left in group_copy it means they left the raid, so lets remove them
@@ -139,7 +139,6 @@ function RCLootCouncilML:StartSession()
 		-- Finally call the voting frame
 		--addon:CallModule("votingframe")
 		--addon:GetActiveModule("votingframe"):Setup(self.lootTable)
-
 	else
 		addon:Debug("called while running a session!")
 	end
@@ -179,8 +178,8 @@ function RCLootCouncilML:BuildMLdb()
 		end
 	end
 	return {
-		v				= math.random(100), -- generate new mldb version
-		selfVote		= db.selfVote,
+		v					= math.random(100), -- generate new mldb version
+		selfVote			= db.selfVote,
 		multiVote		= db.multiVote,
 		anonymousVoting = db.anonymousVoting,
 		allowNotes		= db.allowNotes,
@@ -479,7 +478,6 @@ function RCLootCouncilML:Test(items)
 	for session, iName in ipairs(items) do
 		self:AddItem(session, iName, false, false)
 	end
-	--printtable(self.lootTable)
 	if db.autoStart then -- Settings say go
 		self:StartSession()
 	else
