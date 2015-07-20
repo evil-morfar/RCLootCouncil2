@@ -1,5 +1,13 @@
+-- Translate RCLootCouncil to your language at:
+-- http://wow.curseforge.com/addons/rclootcouncil/localization/
+
+local debug = false
+--@debug@
+debug = true
+--@end-debug@
+
 -- Default english translation
-local L = LibStub("AceLocale-3.0"):NewLocale("RCLootCouncil", "enUS", true, false)
+local L = LibStub("AceLocale-3.0"):NewLocale("RCLootCouncil", "enUS", true, debug)
 if not L then return end
 
 -- @Region core.lua
