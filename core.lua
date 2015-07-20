@@ -263,13 +263,13 @@ function RCLootCouncil:OnInitialize()
 
 	-- register the optionstable
 	self.options = self:OptionsTable()
-	self.options.generalSettings.args.profiles = LibStub("AceDBOptions-3.0"):GetOptionsTable(self.db)
-	LibStub("AceConfig-3.0"):RegisterOptionsTable("RCLootCouncil", self.options.generalSettings)
-	LibStub("AceConfigRegistry-3.0"):RegisterOptionsTable("RCLootCouncil:ML", self.options.mlSettings)
+	--self.options.args.settings.plugins.profile = {profiles = LibStub("AceDBOptions-3.0"):GetOptionsTable(self.db)}
+	LibStub("AceConfigRegistry-3.0"):RegisterOptionsTable("RCLootCouncil", self.options)
+	--LibStub("AceConfigRegistry-3.0"):RegisterOptionsTable("RCLootCouncil:ML", self.options.mlSettings, true)
 
 	-- add it to blizz options
-	self.optionsFrame = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("RCLootCouncil", "RCLootCouncil")
-	LibStub("AceConfigDialog-3.0"):AddToBlizOptions("RCLootCouncil:ML", "Master Looter", "RCLootCouncil")
+	self.optionsFrame = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("RCLootCouncil", nil, nil, "settings")
+	LibStub("AceConfigDialog-3.0"):AddToBlizOptions("RCLootCouncil", "Master Looter", "RCLootCouncil", "mlSettings")
 end
 
 function RCLootCouncil:OnEnable()
@@ -394,7 +394,8 @@ function RCLootCouncil:ChatCommand(msg)
 		end
 
 	elseif input == 'council' or input == L["council"] then
-		InterfaceOptionsFrame_OpenToCategory(self.optionsFrame)
+		InterfaceOptionsFrame_OpenToCategory(self.optionsFrame.ml)
+		InterfaceOptionsFrame_OpenToCategory(self.optionsFrame.ml)
 
 	elseif input == 'test' or input == L["test"] then
 		--self:Print(db.ui.versionCheckScale)
