@@ -11,9 +11,7 @@ function addon:OptionsTable()
 	local db = addon:Getdb()
 	local options = {
 		name = "RCLootCouncil",
-		--order = 1,
 		type = "group",
-		--childGroups = "tab",
 		handler = addon,
 		get = "DBGet",
 		set = "DBSet",
@@ -380,7 +378,7 @@ function addon:OptionsTable()
 										desc = L["auto_award_to_desc"],
 										width = "double",
 										type = "input",
-										hidden = function() return not db.advancedOptions or IsInRaid() end,
+										hidden = function() return IsInRaid() end,
 										get = function() return db.autoAwardTo; end,
 										set = function(i,v) db.autoAwardTo = v; end,
 									},
@@ -398,7 +396,7 @@ function addon:OptionsTable()
 											end
 											return t;
 										end,
-										hidden = function() return not db.advancedOptions or not IsInRaid() end,
+										hidden = function() return not IsInRaid() end,
 									},
 									autoAwardReason = {
 										order = 2.1,

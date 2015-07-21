@@ -97,9 +97,9 @@ function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
 					self:SetCandidateData(i, name, "response", "WAIT")
 				end
 
-			elseif command == "awarded" and self:UnitIsUnit(sender, addon.masterLooter) then
+			elseif command == "awarded" and addon:UnitIsUnit(sender, addon.masterLooter) then
 				lootTable[unpack(data)].awarded = true
-				self:Update()
+				self:SwitchSession(session) -- Use switch session to update awardstring
 
 			elseif command == "candidates" and addon:UnitIsUnit(sender, addon.masterLooter) then
 				candidates = unpack(data)
@@ -190,7 +190,9 @@ function RCVotingFrame:Setup(table)
 			-- Insert candidates into each row, and set initial data for everything we don't already know
 			--[playerName] = {rank, role,  class}
 			--[[ IDEA Could save 21 x sessions x candidates - 21 tables by moving all data to candidates[]
-			 		and only use 1 table to store rows, and update it on each session switch. Worst case save is 147 (21x1x8-21), best case is 3.129?! (21x6x25-21)]]
+			 		and only use 1 table to store rows, and update it on each session switch. Worst case save is 147 (21x1x8-21), best case is 3.129?! (21x6x25-21)
+					All values is evaluated on SortData(), meaning that should be the Update(). SwitchSession() should build table for SetData(), and this function
+					should build lootTable data into something SwitchSession() can then extract]]
 			tinsert(lootTable[session].rows,
 			{	response = "ANNOUNCED",
 				voters = {},
@@ -278,6 +280,11 @@ function RCVotingFrame:SwitchSession(s)
 	else
 		self.frame.itemType:SetText(getglobal(t.equipLoc));
 	end
+	if t.awarded then
+		self.frame.awardString:Show()
+	else
+		self.frame.awardString:Hide()
+	end
 
 	-- Update the session buttons
 	sessionButtons[s] = self:UpdateSessionButton(s, t.texture, t.link, t.awarded)
@@ -289,8 +296,6 @@ function RCVotingFrame:SwitchSession(s)
 	end
 	self.frame.st.cols[5].sort = "asc"
 	self:Update()
-
-	--self.frame.st:SortData()
 end
 
 
@@ -409,10 +414,18 @@ function RCVotingFrame:GetFrame()
 	local rft = rf:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 	rft:SetPoint("CENTER", rf, "CENTER")
 	rft:SetText(L["Everyone have rolled and voted"])
-	rft:SetTextColor(0,1,0,1)
+	rft:SetTextColor(0,1,0,1) -- Green
 	rf.text = rft
-	rf:SetWidth(rft:GetStringWidth()) -- TODO This isn't needed here
+	rf:SetWidth(rft:GetStringWidth())
 	f.rollResult = rf
+
+	-- Award string
+	local awdstr = f.content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+	awdstr:SetPoint("CENTER", f.content, "TOP", 0, -60)
+	awdstr:SetText(L["Item has been awarded"])
+	awdstr:SetTextColor(1, 1, 0, 1) -- Yellow
+	awdstr:Hide()
+	f.awardString = awdstr
 
 	-- Session toggle
 	local stgl = CreateFrame("Frame", nil, f.content)
@@ -429,7 +442,7 @@ end
 function RCVotingFrame:UpdateSessionButton(i, texture, link, awarded)
 	local btn = sessionButtons[i]
 	if not btn then -- create the button
-		btn = CreateFrame("Button", nil, self.frame.sessionToggleFrame, "UIPanelButtonTemplate")
+		btn = CreateFrame("Button", "RCButton"..i, self.frame.sessionToggleFrame)
 		btn:SetSize(40,40)
 		--btn:SetText(i)
 		if i == 1 then
@@ -440,28 +453,32 @@ function RCVotingFrame:UpdateSessionButton(i, texture, link, awarded)
 			btn:SetPoint("TOP", sessionButtons[i-1], "BOTTOM", 0, -2)
 		end
 		btn:SetScript("Onclick", function() RCVotingFrame:SwitchSession(i); end)
+		btn:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square")
+		btn:GetHighlightTexture():SetBlendMode("ADD")
 	end
 	-- then update it
 	texture = texture or "Interface\\InventoryItems\\WoWUnknownItem01"
-	btn:SetNormalTexture(texture)
-	btn:GetNormalTexture():SetBlendMode("ADD")
-
 	---- Set the colored border and tooltips
 	btn:SetBackdrop({
+			bgFile = texture,
 			edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
-			edgeSize = 16,
+			edgeSize = 18,
+			insets = { left = 4, right = 4, top = 4, bottom = 4 }
 		})
 	local lines = { L["Click to switch to"], link }
 	if i == session then
 		btn:SetBackdropBorderColor(1,1,0,1) -- yellow
-		btn:GetNormalTexture():SetVertexColor(1,1,1)
+		--btn:GetNormalTexture():SetVertexColor(1,1,1)
+		btn:SetBackdropColor(1,1,1,1)
 	elseif awarded then
 		btn:SetBackdropBorderColor(0,1,0,1) -- green
-		btn:GetNormalTexture():SetVertexColor(0.3,0.3,0.3)
+		--btn:GetNormalTexture():SetVertexColor(0.8,0.8,0.8)
 		tinsert(lines, L["This item has been awarded"])
+		btn:SetBackdropColor(1,1,1,0.8)
 	else
 		btn:SetBackdropBorderColor(1,1,1,1) -- white
-		btn:GetNormalTexture():SetVertexColor(0.3,0.3,0.3)
+		--btn:GetNormalTexture():SetVertexColor(0.4,0.4,0.4)
+		btn:SetBackdropColor(0.5,0.5,0.5,0.8)
 	end
 	btn:SetScript("OnEnter", function() addon:CreateTooltip(unpack(lines)) end)
 	btn:SetScript("OnLeave", function() addon:HideTooltip() end)
@@ -500,21 +517,23 @@ function RCVotingFrame.SetVoteBtn(rowFrame, frame, data, cols, row, realrow, col
 			frame.voteBtn:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", 0, 0)
 		end
 		frame.voteBtn:SetScript("OnClick", function(btn)
-			-- Test if they may vote for themselves
-			if not addon.mldb.selfVote and addon:UnitIsUnit("player", RCVotingFrame:GetCandidateData(session,nil,"name", realrow)) then
-				return addon:Print(L["The Master Looter doesn't allow votes for yourself."])
-			end
-			-- Test if they're allowed to cast multiple votes
-			if not addon.mldb.multiVote then
-				for i = 1, #data do
-					if data[i].haveVoted then
-						return addon:Print(L["The Master Looter doesn't allow multiple votes."]) -- FIXME Fucks up Unvote
-					end
-				end
-			end
 			if data[realrow].haveVoted then -- unvote
 				addon:SendCommand("group", "vote", session, realrow, -1)
+
 			else -- vote
+				-- Test if they may vote for themselves
+				if not addon.mldb.selfVote and addon:UnitIsUnit("player", RCVotingFrame:GetCandidateData(session,nil,"name", realrow)) then
+					return addon:Print(L["The Master Looter doesn't allow votes for yourself."])
+				end
+				-- Test if they're allowed to cast multiple votes
+				if not addon.mldb.multiVote then
+					for i = 1, #data do
+						if data[i].haveVoted then
+							return addon:Print(L["The Master Looter doesn't allow multiple votes."])
+						end
+					end
+				end
+				-- Do the vote
 				addon:SendCommand("group", "vote", session, realrow, 1)
 			end
 			data[realrow].haveVoted = not data[realrow].haveVoted
@@ -604,9 +623,13 @@ do
 			info.text = L["Award"]
 			info.func = function()
 				LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_AWARD", {
-				 	lootTable[session].link,
-				  	addon.Ambiguate(candidateName),
-					lootTable[session].texture,
+					session,
+				  	candidateName,
+					RCVotingFrame:GetCandidateData(session, nil, "response", menu.row ),
+					nil,
+					RCVotingFrame:GetCandidateData(session, nil, "votes", menu.row ),
+					RCVotingFrame:GetCandidateData(session, nil, "gear1", menu.row ),
+					RCVotingFrame:GetCandidateData(session, nil, "gear2", menu.row ),
 			}) end
 			info.disabled = false
 			Lib_UIDropDownMenu_AddButton(info, level)
@@ -656,8 +679,15 @@ do
 					info.text = v.text
 					info.notCheckable = true
 					info.func = function()
-						--TODO award
-					end
+						LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_AWARD", {
+							session,
+						  	candidateName,
+							nil,
+							v,
+							RCVotingFrame:GetCandidateData(session, nil, "votes", menu.row ),
+							RCVotingFrame:GetCandidateData(session, nil, "gear1", menu.row ),
+							RCVotingFrame:GetCandidateData(session, nil, "gear2", menu.row ),
+				}) end
 					Lib_UIDropDownMenu_AddButton(info, level)
 				end
 

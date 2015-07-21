@@ -44,7 +44,7 @@ end
 function RCVersionCheck:Show()
 
 	self.frame:Show()
-	self:AddEntry(addon.playerName, addon.playerClass, addon.guildRank, addon.version, addon.tVersion) -- add ourself
+	--self:AddEntry(addon.playerName, addon.playerClass, addon.guildRank, addon.version, addon.tVersion) -- add ourself
 	self:AddEntry("Gemenim", "MONK", "Raider", "1.7.1") -- add ourself
 	self:AddEntry("Agirl", "WARRIOR", "Master", "Waiting for response") -- add ourself
 	self:AddEntry("Aguy", "PRIEST", "Officer", "1.7.0") -- add ourself

@@ -52,20 +52,22 @@ L["Changing LootMethod to Master Looting"] = true
 L["Changing loot threshold to enable Auto Awarding"] = true
 L[" you are now the Master Looter and RCLootCouncil is now handling looting."] = true
 L[" now handles looting"] = true
-L["You haven't set a council! You can choose a minimum rank here and/or change it through the options menu."] = true
 L[" is not active in this raid."] = true
 
 L["chat tVersion string"] = "|cFF87CEFARCLootCouncil |cFFFFFFFFversion |cFFFFA500 %s - %s"
 L["chat version String"] = "|cFF87CEFARCLootCouncil |cFFFFFFFFversion |cFFFFA500 %s"
-L["- config - Open the options frame"] = true
+L["chat_commands"] = [=[]
+- config    - Open the options interface
+- open      - Opens the voting frame
+- council   - opens the council interface
+- test (#)  - emulate a loot session (add a number for raid test)
+- version   - open the Version Checker (alt. 'v' or 'ver')
+- history   - open the Loot History (alt. 'h' or 'his')
+- whisper   - displays help to whisper commands
+- neverML   - never use the addon as Master Looter
+- reset     - resets the addon's frames' positions
+]=]
 L["- debug or d - Toggle debugging"] = true
-L["- open - Opens the main loot frame"] = true
-L["- council - displays the current council"] = true
-L["- test (#)  - emulate a loot session (add a number for raid test)"] = true
-L["- version - open the Version Checker (alt. 'v' or 'ver')"] = true
-L["- history - open the Loot History"] = true
-L["- whisper - displays help to whisper commands"] = true
-L["- neverML - never use the addon as Master Looter"] = true
 L["- log - display the debug log"] = true
 L["- clearLog - clear the debug log"] = true
 L["help"] = true
@@ -73,9 +75,6 @@ L["config"] = true
 L["open"] = true
 L["You are not allowed to see the Voting Frame right now."] = true
 L["council"] = true
-L["Current Council:"] = true
-L["Council: "] = true
-L["No council exists"] = true
 L["test"] = true
 L["add"] = true
 L["version"] = true
@@ -83,6 +82,8 @@ L["history"] = true
 L["whisper"] = true
 L["whisper_help"] = "Raiders can use the whisper system in case someone haven't installed the addon.\nWhispering 'rchelp' to the Master Looter will get them a guide along with the list of keywords, which can be edited at the 'Buttons and Responses' optiontab.\nIt's recommended for the ML to turn on 'Announce Considerations' as each item's number is required to use the whisper system.\nNOTE: People should still get the addon installed, otherwise all player information won't be available."
 L["neverml"] = true
+L["reset"] = true
+L["Windows reset"] = true
 L["The Master Looter has ended the session"] = true
 
 L["Autopassed on %s"] = true
@@ -104,13 +105,15 @@ L["session_error"] = "Something went wrong - please restart the session"
 
 -- @region ml_core.lua
 L["Cannot autoaward:"] = true
-L["Could not find p in the raid."] = "Could not find %s in the raid."
+L["Could not find 'player' in the raid."] = "Could not find %s in the raid."
 
 L["Could not Auto Award i because the Loot Threshold is too high!"] = "Could not Auto Award %s because the Loot Threshold is too high!"
 L["You can't start a loot session while in combat."] = true
+L["The item would now be awarded to 'player'"] = "The item would now be awarded to %s"
+L["All items has been awarded and  the loot session concluded"] = true
 L["Unable to give out loot without the loot window open."] = true
 L["Alternatively, flag the loot as award later."] = true
-L["i was Auto Awarded to p with the reason r"] = "%s was Auto Awarded to %s with the reason: %s"
+L["Auto awarded 'item'"] = "Auto awarded %s"
 L["The session has ended."] = true
 L["Item received and added from %s."] = true
 L["Acknowledged as \" %s \""] = true
@@ -148,6 +151,7 @@ L["Deselect responses to filter them"] = true
 L["Filter"] = true
 L["Status texts"] = true
 L["Everyone have rolled and voted"] = true
+L["Item has been awarded"] = true
 L["Click to switch to"] = true
 L["This item has been awarded"] = true
 L["Vote"] = true
@@ -192,9 +196,10 @@ L["Group"] = true
 -- @region sessionframe.lua
 L["Item"] = true
 L["RCLootCouncil Session Setup"] = true
-L["  Award later?"] = true
+L["Award later?"] = true
 L["Check this to loot the items and distribute them later."] = true
 L["Start"] = true
+L["Looted items to award later"] = true
 L["Cancel"] = true
 -- @region end
 
@@ -304,7 +309,7 @@ L["buttons_and_responses_desc"] = "Configure the reply buttons to show on raider
 L["Number of buttons"] = true
 L["number_of_buttons_desc"] = "Slide to change the number of buttons."
 L["Responses from Chat"] = true
-L["responses_from_chat_desc"] = "To get added to the voting frame raiders can link their item(s) followed by a keyword to the Master Looter (Button 1 is used if no keyword is specified).\nExample: \"/w ML_NAME [ITEM] greed\" would by default show up as you greeding on an item.\nBelow you can choose keywords for the individual buttons, seperated by punctation or spaces. Only numbers and words are accepted.\nPlayers can recieve the keyword list by messaging 'rchelp' to the Master Looter once the addon is enabled (i.e. in a raid)."
+L["responses_from_chat_desc"] = "In case someone hasn't installed the added (Button 1 is used if no keyword is specified).\nExample: \"/w ML_NAME [ITEM] greed\" would by default show up as you greeding on an item.\nBelow you can choose keywords for the individual buttons, seperated by punctation or spaces. Only numbers and words are accepted.\nPlayers can recieve the keyword list by messaging 'rchelp' to the Master Looter once the addon is enabled (i.e. in a raid)."
 L["Accept Whispers"] = true
 L["accept_whispers_desc"] = "Enables players to whisper their current item(s) to you to get added to the voting frame."
 L["reset_buttons_to_default_desc"] = "Resets all the buttons, colors and responses to default"

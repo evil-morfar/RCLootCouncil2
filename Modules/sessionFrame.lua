@@ -30,6 +30,7 @@ function RCSessionFrame:OnDisable()
 	self.frame:Hide()
 	self.frame.rows = {}
 	self.frame:SetParent(nil)
+	awardLater = false
 end
 
 function RCSessionFrame:Show(data)
@@ -104,7 +105,7 @@ function RCSessionFrame:GetFrame()
 	local f = addon:CreateFrame("DefaultRCSessionSetupFrame", "sessionframe", L["RCLootCouncil Session Setup"], 250)
 
 	local tgl = CreateFrame("CheckButton", f:GetName().."Toggle", f.content, "ChatConfigCheckButtonTemplate")
-	getglobal(tgl:GetName().."Text"):SetText(L["  Award later?"])
+	getglobal(tgl:GetName().."Text"):SetText(L["Award later?"])
 	tgl:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", 10, 40)
 	tgl.tooltip = L["Check this to loot the items and distribute them later."]
 	tgl:SetScript("OnClick", function() awardLater = not awardLater; end )
@@ -114,7 +115,13 @@ function RCSessionFrame:GetFrame()
 	local b1 = addon:CreateButton(L["Start"], f.content)
 	b1:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", 10, 10)
 	b1:SetScript("OnClick", function()
-		addon:GetActiveModule("masterlooter"):StartSession()
+		local ml = addon:GetActiveModule("masterlooter")
+		if awardLater then
+			for session in ipairs(ml.lootTable) do ml:Award(session) end
+			addon:Print(L["Looted items to award later"])
+		else
+			ml:StartSession()
+		end
 		self:Disable()
 	end)
 	f.guildBtn = b1

@@ -15,7 +15,6 @@ TODO
 		- "more info" thingie
 		- Revise DB variables
 		- lootHistory
-		- minimize
 --------------------------------
 CHANGELOG (WIP)
 	==== 2.0 Beta
@@ -72,6 +71,8 @@ local userModules = {
 		sessionframe = nil,
 		votingframe = nil,
 }
+
+local usage = false -- We want to use the addon for this raid
 
 function RCLootCouncil:OnInitialize()
 	--IDEA Consider if we want everything on self, or just whatever modules could need.
@@ -266,7 +267,6 @@ function RCLootCouncil:OnInitialize()
 	self.options = self:OptionsTable()
 	self.options.args.settings.args.profiles = LibStub("AceDBOptions-3.0"):GetOptionsTable(self.db)
 	LibStub("AceConfigRegistry-3.0"):RegisterOptionsTable("RCLootCouncil", self.options)
-	--LibStub("AceConfigRegistry-3.0"):RegisterOptionsTable("RCLootCouncil:ML", self.options.mlSettings, true)
 
 	-- add it to blizz options
 	self.optionsFrame = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("RCLootCouncil", "RCLootCouncil", nil, "settings")
@@ -313,6 +313,7 @@ function RCLootCouncil:OnEnable()
 		buttons = {
 			{	text = L["Yes"],
 				on_click = function(self) --TODO Lot of remaking here
+					usage = true
 					local lootMethod, _, MLRaidID = GetLootMethod()
 					if lootMethod ~= "master" then
 						RCLootCouncil:Print(L["Changing LootMethod to Master Looting"])
@@ -323,7 +324,6 @@ function RCLootCouncil:OnEnable()
 						SetLootThreshold(db.autoAwardQualityLower)
 					end
 					RCLootCouncil:Print(L[" now handles looting"])
-					RCLootCouncil.use = true
 					RCLootCouncil.isMasterLooter = true
 					RCLootCouncil.masterLooter = RCLootCouncil.playerName
 					if #db.council < 1 then -- if there's no council
@@ -334,7 +334,7 @@ function RCLootCouncil:OnEnable()
 			},
 			{	text = L["No"],
 				on_click = function(self)
-					RCLootCouncil.use = false;
+					usage = false;
 					RCLootCouncil:Print(L[" is not active in this raid."])
 				end,
 			},
@@ -364,16 +364,8 @@ function RCLootCouncil:ChatCommand(msg)
 	if not input or input:trim() == "" or input == "help" or input == L["help"] then
 		if self.tVersion then print(format(L["chat tVersion string"],self.version, self.tVersion))
 		else print(format(L["chat version String"],self.version)) end
-		self:Print(L["- config - Open the options frame"])
+		self:Print(L["chat_commands"])
 		self:Debug(L["- debug or d - Toggle debugging"])
-		self:Print(L["- open - Opens the main loot frame"])
-		self:Print(L["- council - displays the current council"])
-		self:Print(L["- test (#)  - emulate a loot session (add a number for raid test)"])
-		self:Print(L["- version - open the Version Checker (alt. 'v' or 'ver')"])
-		self:Print(L["- history - open the Loot History"])
-		self:Print(L["- whisper - displays help to whisper commands"])
-		self:Print(L["- neverML - never use the addon as Master Looter"])
-		--self:Print("- reset - resets the addon's frames' positions")
 		self:Debug(L["- log - display the debug log"])
 		self:Debug(L["- clearLog - clear the debug log"])
 
@@ -404,7 +396,8 @@ function RCLootCouncil:ChatCommand(msg)
 		--self:Print(db.ui.versionCheckScale)
 		self:Test(tonumber(arg1) or 1)
 
-	elseif (input == "add" or input == L["add"]) and self.nnp then
+	elseif (input == "add" or input == L["add"]) then
+		-- TODO Create the "add" command (don't forget chat_commands)
 
 	elseif input == 'version' or input == L["version"] or input == "v" or input == "ver" then
 		self:CallModule("version")
@@ -423,26 +416,15 @@ function RCLootCouncil:ChatCommand(msg)
 		db.neverML = not db.neverML
 		self:Print(L["neverml"].." = "..tostring(db.neverML))
 
-	elseif input == "reset" then
-		--TODO something with this
-		--[[
-		if RCLootFrame then
-			RCLootFrame:ClearAllPoints()
-			RCLootFrame:SetPoint("CENTER", 0, -200)
+	elseif input == "reset" or input == L["reset"] then
+		--REVIEW Check if works
+		for _, v in pairs(self.db.UI) do
+			v.y		= 0
+			v.x 		= 0
+			v.point	= "CENTER"
+			v.scale	= 0.8
 		end
-		if MainFrame then
-			MainFrame:ClearAllPoints()
-			MainFrame:SetPoint("CENTER", 0, 200)
-		end
-		if RCVersionFrame then
-			RCVersionFrame:ClearAllPoints()
-			RCVersionFrame:SetPoint("CENTER", -400, 0)
-		end
-		if RCLootHistoryFrame then
-			RCLootHistoryFrame:ClearAllPoints()
-			RCLootHistoryFrame:SetPoint("CENTER", -400, 0)
-		end
-	  --]]
+		self:Print(L["Windows reset"])
 
 	elseif input == "debuglog" or input == "log" then
 		for k,v in ipairs(debugLog) do print(k,v); end
@@ -521,7 +503,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 					self:CallModule("lootframe")
 					self:GetActiveModule("lootframe"):Start(lootTable)
 
-					-- The voting frame handles lootTable itself
+					-- The votingFrame handles lootTable itself
 
 				else -- a non-ML send a lootTable?!
 					self:Debug(tostring(sender).." is not ML, but sent lootTable!")
@@ -552,7 +534,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 					self:Print(format(L["version_outdated_msg"], self.version, otherVersion))
 					self.verCheckDisplayed = true
 
-				-- tVersion check	TODO not sure if the < will work
+				-- tVersion check	REVIEW not sure if the < will work
 				elseif tVersion and self.tVersion and self.tVersion < tVersion then
 					self:Print(format(L["tVersion_outdated_msg"], tVersion))
 					self.verCheckDisplayed = true
@@ -564,7 +546,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 					self:Print(format(L["version_outdated_msg"], self.version, otherVersion))
 					self.verCheckDisplayed = true
 
-				-- tVersion check	TODO not sure if the < will work
+				-- tVersion check	REVIEW not sure if the < will work
 				elseif tVersion and self.tVersion and self.tVersion < tVersion then
 					self:Print(format(L["tVersion_outdated_msg"], tVersion))
 					self.verCheckDisplayed = true
@@ -904,7 +886,7 @@ function RCLootCouncil:OnEvent(this, event, ...)
 			self:GetGuildOptions() -- get the guild data to the options table now that it's ready
 		end
 	elseif event == "GET_ITEM_INFO_RECEIVED" then
-
+			-- REVIEW Not sure we need this
 	end
 end
 
@@ -914,8 +896,9 @@ function RCLootCouncil:NewMLCheck()
 
 	if self.isMasterLooter and db.neverML then self:Print(L["neverml_warning"]) end -- neverML logic
 	if self:UnitIsUnit(old_ml,self.masterLooter) or db.neverML then return end -- no change
+	if not self.isMasterLooter and self.masterLooter then return end -- Someone else is ML
 
-	-- We have a new ML - we need to do stuff if it's us
+	-- We are ML or could be, lets do stuff
 	if self.isMasterLooter and db.autoEnable then -- addon should auto start
 		self:Print(L[" now handles looting"])
 		if db.autoAward and GetLootThreshold() > db.autoAwardQualityLower then
@@ -924,8 +907,7 @@ function RCLootCouncil:NewMLCheck()
 		end
 
 	elseif self.isMasterLooter and not db.autoEnable then -- addon should not auto start, but ask if it should start since we're ML
-		LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_USAGE")
-		return
+		return LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_USAGE")
 
 	elseif not self.isMasterLooter and not self.masterLooter and UnitIsGroupLeader("player") then -- There's no ML, and lootmethod ~= ML, but we are the group leader
 		if db.autoEnable then -- the addon should auto start, so change loot method to master, and make the player ML
@@ -938,11 +920,10 @@ function RCLootCouncil:NewMLCheck()
 			self.isMasterLooter = true
 			self.masterLooter = self.playerName
 		elseif self.enabled then
-			LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_USAGE") -- ask if we want to use the addon since we're group leader
+			return LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_USAGE") -- ask if we want to use the addon since we're group leader
 		end
-
 	end
-
+	-- FIXME Need to handle var usage
 	self:CallModule("masterlooter")
 	self:GetActiveModule("masterlooter"):NewML(self.masterlooter)
 end
