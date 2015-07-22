@@ -24,7 +24,10 @@ function RCLootCouncilML:OnInitialize()
 end
 
 function RCLootCouncilML:OnDisable()
-
+	self:UnregisterAllEvents()
+	self:UnregisterAllBuckets()
+	self:UnregisterAllComm()
+	self:UnregisterAllMessages()
 end
 
 function RCLootCouncilML:OnEnable()
@@ -44,6 +47,8 @@ function RCLootCouncilML:OnEnable()
 	--self:RegisterEvent("RAID_INSTANCE_WELCOME","OnEvent")
 	self:RegisterBucketEvent("GROUP_ROSTER_UPDATE", 20, "UpdateGroup") -- Bursts in group creation, and we should have plenty of time to handle it
 	self:RegisterEvent("CHAT_MSG_WHISPER","OnEvent")
+	self:RegisterMessage("RCConfigTableChanged", "ConfigTableChanged")
+	self:RegisterMessage("RCCouncilChanged", "CouncilChanged")
 end
 
 -- Adds an item session in lootTable
@@ -118,10 +123,7 @@ function RCLootCouncilML:StartSession()
 	addon:Debug("ML:StartSession()")
 	if not self.running then
 		self.running = true
-		self:MLdbCheck() -- check if we need to build mldb or anyone have an outdated version
-		addon:SendCommand("group", "council", addon.council) -- IDEA only send council if there's changes, since it's send once a ML is detected
-		addon:SendCommand("group", "candidates", self.candidates) -- IDEA Same as above
-
+		addon:SendCommand("group", "candidates", self.candidates) -- TODO Only send candidates if there's changes
 
 		addon:SendCommand("group", "lootTable", self.lootTable)
 
@@ -133,15 +135,26 @@ function RCLootCouncilML:StartSession()
 	end
 end
 
-
-function RCLootCouncilML:MLdbCheck()
-	-- IDEA we shouldn't have to send a check, just send it when it's created, and then send it again if we update it
-	if addon.mldb.v then
-		addon:SendCommand("group", "MLdb_check", addon.mldb.v)
-	else
-		addon.mldb = self:BuildMLdb()
-		addon:SendCommand("group", "MLdb", addon.mldb)
+function RCLootCouncilML:ConfigTableChanged(val) -- CHANGED Check if this works
+	-- The db was changed, so check if we should make a new mldb
+	-- We can do this by checking if the changed value is a key in mldb
+	if not addon.mldb then return self:UpdateMLdb() end -- mldb isn't made, so just make it
+	addon:Debug("ML:ConfigTableChanged - "..tostring(val))
+	for key in pairs(addon.mldb) do
+		if key == val then return self:UpdateMLdb() end
 	end
+end
+
+function RCLootCouncilML:CouncilChanged() -- CHANGED Check if works
+	-- The council was changed, so send out the council
+	addon:SendCommand("group", "council", addon.council)
+end
+
+function RCLootCouncilML:UpdateMLdb()
+	-- The db has changed, so update the mldb and send the changes
+	addon:Debug("UpdateMLdb")
+	addon.mldb = self:BuildMLdb()
+	addon:SendCommand("group", "MLdb", addon.mldb)
 end
 
 function RCLootCouncilML:BuildMLdb()
@@ -167,13 +180,12 @@ function RCLootCouncilML:BuildMLdb()
 		end
 	end
 	return {
-		v					= math.random(100), -- generate new mldb version
 		selfVote			= db.selfVote,
 		multiVote		= db.multiVote,
 		anonymousVoting = db.anonymousVoting,
 		allowNotes		= db.allowNotes,
 		numButtons		= db.numButtons,
-		passButton		= db.passButton,
+		--passButton		= db.passButton,
 		observe			= db.observe,
 		awardReasons	= changedAwardReasons,
 		buttons			= changedButtons,
@@ -185,8 +197,10 @@ function RCLootCouncilML:NewML(newML)
 	if addon:UnitIsUnit(newML, "player") then -- we are the the ML
 		addon:DebugLog("ML:NewML()")
 		addon:SendCommand("group", "playerInfoRequest")
-		addon.mldb = self:BuildMLdb()
+		self:UpdateMLdb() -- Will build and send mldb
 		addon:SendCommand("group", "council", db.council)
+	else
+		self:Disable() -- We don't want to use this if we're not the ML
 	end
 end
 
@@ -353,7 +367,7 @@ function RCLootCouncilML:Award(session, winner, response, reason)
 				 addon:Print(L["All items has been awarded and  the loot session concluded"])
 				 self:EndSession()
 			end
-		end			
+		end
 		return true
 	end
 	-- Determine if we should award the item now or just store it in our bags
@@ -570,7 +584,7 @@ LibDialog:Register("RCLOOTCOUNCIL_CONFIRM_ABORT", {
 			on_click = function(self)
 				CloseLoot() -- close the lootlist
 				RCLootCouncilML:EndSession()
-				addon:GetActiveModule("votingframe"):Disable()
+				addon:GetActiveModule("votingframe"):EndSession(true)
 			end,
 		},
 		{	text = L["No"],

@@ -80,8 +80,8 @@ function RCSessionFrame.SetCellText(rowFrame, frame, data, cols, row, realrow, c
 	if frame.text:GetFontObject() ~= GameFontNormal then
 		frame.text:SetFontObject("GameFontNormal") -- We want bigger font
 	end
-	--frame.text:SetText(data[realrow].link)
-	table.DoCellUpdate(rowFrame, frame, data, cols, row, realrow, column, fShow, table)
+	frame.text:SetText(data[realrow].link)
+	--table.DoCellUpdate(rowFrame, frame, data, cols, row, realrow, column, fShow, table)
 end
 
 function RCSessionFrame.SetCellDeleteBtn(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
@@ -97,7 +97,6 @@ function RCSessionFrame.SetCellItemIcon(rowFrame, frame, data, cols, row, realro
 	frame:SetScript("OnEnter", function() addon:CreateHypertip(link) end)
 	frame:SetScript("OnLeave", function() addon:HideTooltip() end)
 end
-
 
 function RCSessionFrame:GetFrame()
 	if self.frame then return self.frame end

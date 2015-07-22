@@ -53,14 +53,12 @@ function addon:OptionsTable()
 									desc = L["auto_open_desc"],
 									type = "toggle",
 								},
-								--toggleAdvanced = {
-								--	order = 1.3,
-								--	name = "Toggle ML Options",
-								--	desc = "Shows options that's only available to MasterLooters, such as changing loot buttons/responses, looting styles, announcements, voting types, etc.",
-								--	type = "toggle",
-								--	get = function() return db.advancedOptions end,
-								--	set = function() db.advancedOptions = not db.advancedOptions; end,
-								--},
+								minimizeInCombat = {
+									order = 1.3,
+									name = L["Minimize in combat"],
+									desc = L["Check to have all frames minimize when entering combat"],
+									type = "toggle",
+								},
 								header = {
 									order = 2,
 									type = "header",
@@ -185,7 +183,7 @@ function addon:OptionsTable()
 						type = "description",
 						name = L["master_looter_desc"],
 					},
-					general = {
+					generalTab = {
 						order = 2,
 						type = "group",
 						name = L["General"],
@@ -278,6 +276,12 @@ function addon:OptionsTable()
 										desc = L["hide_votes_desc"],
 										type = "toggle",
 									},
+									observe = {
+										order = 7,
+										name = L["Obeserve"],
+										desc = L["observe_desc"],
+										type = "toggle",
+									},
 								},
 							},
 							ignoreOptions = {
@@ -323,7 +327,7 @@ function addon:OptionsTable()
 							},
 						},
 					},
-					awards = {
+					awardsTab = {
 						order = 3,
 						type = "group",
 						name = L["Awards"],
@@ -448,7 +452,7 @@ function addon:OptionsTable()
 							},
 						},
 					},
-					announcements = {
+					announcementsTab = {
 						order = 4,
 						type = "group",
 						name = L["Announcements"],
@@ -544,7 +548,7 @@ function addon:OptionsTable()
 							},
 						},
 					},
-					buttons = {
+					buttonsTab = {
 						order = 5,
 						type = "group",
 						name = L["Buttons and Responses"],
@@ -629,7 +633,7 @@ function addon:OptionsTable()
 							},
 						},
 					},
-					council = {
+					councilTab = {
 						order = 6,
 						type = "group",
 						name = L["Council"],
@@ -656,7 +660,7 @@ function addon:OptionsTable()
 										end,
 										width = "full",
 										get = function() return true end,
-										set = function(m,key) tremove(db.council,key) end,
+										set = function(m,key) tremove(db.council,key); addon:CouncilChanged() end,
 									},
 									removeAll = {
 										order = 3,
@@ -664,7 +668,7 @@ function addon:OptionsTable()
 										desc = L["remove_all_desc"],
 										type = "execute",
 										confirm = true,
-										func = function() db.council = {} end,
+										func = function() db.council = {}; addon:CouncilChanged() end,
 									},
 								},
 							},
@@ -698,7 +702,7 @@ function addon:OptionsTable()
 													end
 													return info
 												end,
-												set = function(j,i) db.council = {}; db.minRank = i; end,
+												set = function(j,i) db.council = {}; db.minRank = i; addon:CouncilChanged(); end,
 												get = function() return db.minRank; end,
 											},
 											desc = {
@@ -714,6 +718,7 @@ function addon:OptionsTable()
 										type = "group",
 										args = {}
 									},
+									-- Rest of guild council is made further down when ready
 								},
 							},
 							addGroupCouncil = {
@@ -759,6 +764,7 @@ function addon:OptionsTable()
 													end
 												end
 											end
+											addon:CouncilChanged()
 										end,
 										get = function(info, key)
 											local values = info[#info-1].values()
@@ -776,7 +782,7 @@ function addon:OptionsTable()
 
 	-- #region Create options thats made with loops
 	-- Buttons
-	--[[local button, picker, text = {}, {}, {}
+	local button, picker, text = {}, {}, {}
 	for i = 1, db.maxButtons do
 		button = {
 			order = i * 3 + 1,
@@ -784,30 +790,30 @@ function addon:OptionsTable()
 			desc = L["Set the text on button "]..i,
 			type = "input",
 			get = function() return db.buttons[i].text end,
-			set = function(info, value)	db.buttons[i].text = tostring(value) end,
+			set = function(info, value) addon:ConfigTableChanged("buttons"); b.buttons[i].text = tostring(value) end,
 			hidden = function() return db.numButtons < i end,
 		}
-		options.args.mlSettings.args.buttonsOptionsTab.args.buttonOptions.args["button"..i] = button;
+		options.args.mlSettings.args.buttonsTab.args.buttonOptions.args["button"..i] = button;
 		picker = {
 			order = i * 3 + 2,
 			name = L["Response color"],
 			desc = L["response_color_desc"],
 			type = "color",
 			get = function() return unpack(db.responses[i].color)	end,
-			set = function(info,r,g,b,a) db.responses[i].color = {r,g,b,a} end,
+			set = function(info,r,g,b,a) addon:ConfigTableChanged("response"); b.responses[i].color = {r,g,b,a} end,
 			hidden = function() return db.numButtons < i end,
 		}
-		options.args.mlSettings.args.buttonsOptionsTab.args.buttonOptions.args["picker"..i] = picker;
+		options.args.mlSettings.args.buttonsTab.args.buttonOptions.args["picker"..i] = picker;
 		text = {
 			order = i * 3 + 3,
 			name = L["Response"],
 			desc = format(L["Set the text for button i's response."], i),
 			type = "input",
 			get = function() return db.responses[i].text end,
-			set = function(info, value) db.responses[i].text = tostring(value) end,
+			set = function(info, value) addon:ConfigTableChanged("response"); db.responses[i].text = tostring(value) end,
 			hidden = function() return db.numButtons < i end,
 		}
-		options.args.mlSettings.args.buttonsOptionsTab.args.buttonOptions.args["text"..i] = text;
+		options.args.mlSettings.args.buttonsTab.args.buttonOptions.args["text"..i] = text;
 
 		local whisperKeys = {
 			order = i + 3,
@@ -819,22 +825,22 @@ function addon:OptionsTable()
 			set = function(k,v) db.buttons[i].whisperKey = tostring(v) end,
 			hidden = function() return not (db.acceptWhispers or db.acceptRaidChat) or db.numButtons < i end,
 		}
-		options.args.mlSettings.args.buttonsOptionsTab.args.responseFromChat.args["whisperKey"..i] = whisperKeys;
+		options.args.mlSettings.args.buttonsTab.args.responseFromChat.args["whisperKey"..i] = whisperKeys;
 	end
 
 	-- Award Reasons
 	for i = 1, db.maxAwardReasons do
-		options.args.mlSettings.args.awardTab.args.awardReasons.args["reason"..i] = {
+		options.args.mlSettings.args.awardsTab.args.awardReasons.args["reason"..i] = {
 			order = i+1,
 			name = L["Reason"]..i,
 			desc = L["Text for reason #i"]..i,
 			type = "input",
 			width = "double",
 			get = function() return db.awardReasons[i].text end,
-			set = function(k,v) db.awardReasons[i].text = v; end,
+			set = function(k,v) addon:ConfigTableChanged("awardReasons"); db.awardReasons[i].text = v; end,
 			hidden = function() return db.numAwardReasons < i end,
 		}
-		options.args.mlSettings.args.awardTab.args.awardReasons.args["color"..i] = {
+		options.args.mlSettings.args.awardsTab.args.awardReasons.args["color"..i] = {
 			order = i +1.1,
 			name = L["Text color"],
 			desc = L["text_color_desc"],
@@ -844,7 +850,7 @@ function addon:OptionsTable()
 			set = function(info, r,g,b,a) db.awardReasons[i].color = {r,g,b,a} end,
 			hidden = function() return db.numAwardReasons < i end,
 		}
-		options.args.mlSettings.args.awardTab.args.awardReasons.args["log"..i] = {
+		options.args.mlSettings.args.awardsTab.args.awardReasons.args["log"..i] = {
 			order = i +1.2,
 			name = L["Log"],
 			desc = L["log_desc"],
@@ -857,7 +863,7 @@ function addon:OptionsTable()
 	end
 	-- Announce Channels
 	for i = 1, #db.awardText do
-		options.args.mlSettings.args.announcementTab.args.awardAnnouncement.args["outputSelect"..i] = {
+		options.args.mlSettings.args.announcementsTab.args.awardAnnouncement.args["outputSelect"..i] = {
 			order = i+3,
 			name = L["Channel"]..i..":",
 			desc = L["channel_desc"],
@@ -877,7 +883,7 @@ function addon:OptionsTable()
 			get = function() return db.awardText[i].channel end,
 			hidden = function() return not db.announceAward end,
 		}
-		options.args.mlSettings.args.announcementTab.args.awardAnnouncement.args["outputMessage"..i] = {
+		options.args.mlSettings.args.announcementsTab.args.awardAnnouncement.args["outputMessage"..i] = {
 			order = i+3.1,
 			name = L["Message"],
 			desc = L["message_desc"],
@@ -887,7 +893,7 @@ function addon:OptionsTable()
 			set = function(j,v) db.awardText[i].text = v; end,
 			hidden = function() return not db.announceAward end,
 		}
-	end]]
+	end
 	-- #endregion
 	return options
 end
@@ -898,6 +904,7 @@ end
 
 function RCLootCouncil:DBSet(info, val)
 	self.db.profile[info[#info]] = val
+	self:ConfigTableChanged(info[#info])
 end
 
 function addon:GetGuildOptions()

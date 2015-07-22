@@ -15,28 +15,15 @@ TODO
 		- "more info" thingie
 		- Revise DB variables
 		- lootHistory
+		- Save class on award later
+		- Need to make a SetCouncilByGuildRank()
 --------------------------------
 CHANGELOG (WIP)
-	==== 2.0 Beta
+	-- MOVED TO CHANGELOG.TXT
 
-	*Complete rewrite
-	*Changed Test mode behavior
-	*Added status on roll sendouts (not announced, init, offline etc).
-	*Added Autopass feature.
-		Autopasses on things certain classes can't use (mail for priests) and things certain classes shouldn't use (leather for hunters)
-	*Added module support.
-		All non-core functions and visual elements is now modules.
-	*Added Obeserve mode.
-		Non-council members are now able to see the voting screen if they/the ML desires.
-	*Added "Session Setup".
-		The ML is now able to review the session before starting it, as well as better manipulating it.
-	*Added ability to temporary disable the addon.
-	*Updated Options menu.
-		ML options is moved to a seperate tab to distinguish them. Sorted the options to make more sense.
-	*Added localization
-	*Added customizeable ignore list
-	*Added usage options
-		db.enabled, db.neverML, db.autoEnable
+	*Changed Test mode behavior -- really?
+	*Added Obeserve mode. -- FIXME Missing in options!
+
   	Bugfixes:
 			Various taint fixes.
 
@@ -73,6 +60,7 @@ local userModules = {
 }
 
 local usage = false -- We want to use the addon for this raid
+local frames = {} -- Contains Minimize() and IsMinimized() for all frames
 
 function RCLootCouncil:OnInitialize()
 	--IDEA Consider if we want everything on self, or just whatever modules could need.
@@ -94,6 +82,7 @@ function RCLootCouncil:OnInitialize()
 	--self.active = false	-- Session in process (set by ML) EDIT: Aren't we using ml.running for this?
 	self.enabled = true -- turn addon on/off
 	self.handleLooting = false -- Should we handle the looting? (e.g. Activated)
+	self.inCombat = false -- Are we in combat?
 
 	self.unregisterGuildEvent = false
 	self.verCheckDisplayed = false -- Have we shown a "out-of-date"?
@@ -115,7 +104,7 @@ function RCLootCouncil:OnInitialize()
 		NOTHING			= { color = {0.5,0.5,0.5,1},		sort = 504,		text = L["Offline or RCLootCouncil not installed"], },
 		TIMEOUT			= { color = {1,0,0,1},				sort = 505,		text = L["Candidate didn't respond on time"], },
 		REMOVED			= { color = {0.8,0.5,0,1},			sort = 506,		text = L["Candidate removed"], },
-		Pass				= { color = {0.7, 0.7,0.7,1},		sort = 999,		text = L["Pass"],},
+		PASS				= { color = {0.7, 0.7,0.7,1},		sort = 999,		text = L["Pass"],},
 		AUTOPASS			= { color = {0.7,0.7,0.7,1},		sort = 1000,	text = L["Autopass"], },
 		--[[1]]			  { color = {0,1,0,1},				sort = 1,		text = L["Mainspec/Need"],},
 		--[[2]]			  { color = {1,0.5,0,1},			sort = 2,		text = L["Offspec/Greed"],	},
@@ -169,6 +158,7 @@ function RCLootCouncil:OnInitialize()
 			silentAutoPass = false, -- Show autopass message
 			autoPassBoE = true,
 			neverML = false, -- Never use the addon as ML
+			minimizeInCombat = false,
 
 			UI = { -- stores all ui information
 				['*'] = { -- Defaults for Lib-Window
@@ -244,7 +234,7 @@ function RCLootCouncil:OnInitialize()
 
 	-- register chat and comms
 	self:RegisterChatCommand("rc", "ChatCommand")
-  self:RegisterChatCommand("rclc", "ChatCommand")
+  	self:RegisterChatCommand("rclc", "ChatCommand")
 	self:RegisterComm("RCLootCouncil")
 	self.db = LibStub("AceDB-3.0"):New("RCLootCouncilDB", self.defaults, true)
 	self.lootDB = LibStub("AceDB-3.0"):New("RCLootCouncilLootDB")
@@ -256,7 +246,6 @@ function RCLootCouncil:OnInitialize()
 	self.db.RegisterCallback(self, "OnProfileChanged", "RefreshConfig")
 	self.db.RegisterCallback(self, "OnProfileCopied", "RefreshConfig")
 	self.db.RegisterCallback(self, "OnProfileReset", "RefreshConfig")
-	LibStub("AceConfigRegistry-3.0").RegisterCallback(self, "ConfigTableChanged", "RefreshConfig")
 
 	-- add shortcuts
 	db = self.db.profile
@@ -283,6 +272,8 @@ function RCLootCouncil:OnEnable()
 	self:RegisterEvent("GUILD_ROSTER_UPDATE","OnEvent")
 	self:RegisterEvent("GET_ITEM_INFO_RECEIVED","OnEvent")
 	self:RegisterEvent("RAID_INSTANCE_WELCOME","OnEvent")
+	self:RegisterEvent("PLAYER_REGEN_DISABLED", "EnterCombat")
+	self:RegisterEvent("PLAYER_REGEN_ENABLED", "LeaveCombat")
 
 	if IsInGuild() then
 		-- TODO
@@ -354,8 +345,19 @@ end
 
 function RCLootCouncil:RefreshConfig()
 	self:Debug("RefreshConfig")
-	--db = self.defaults.profile
-	--if self.isMasterLooter then	RCLootCouncilML:NewML() end
+	db = self.defaults.profile
+end
+
+function RCLootCouncil:ConfigTableChanged(val)
+	--[[ NOTE By default only ml_core needs to know about changes to the config table,
+		  but we'll use AceEvent incase future modules also wants to know ]]
+	self:Debug("ConfigTableChanged = "..tostring(val))
+	self:SendMessage("RCConfigTableChanged", val)
+end
+
+function RCLootCouncil:CouncilChanged()
+	self:Debug("CouncilChanged")
+	self:SendMessage("RCCouncilChanged")
 end
 
 function RCLootCouncil:ChatCommand(msg)
@@ -521,12 +523,6 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 			elseif command == "MLdb" and not self.isMasterLooter then -- ML sets his own mldb
 				self.mldb = unpack(data)
 
-			elseif command == "MLdb_check" and not self.isMasterLooter then -- ML wants to know if you need a new mlDB
-				local current_version = unpack(data)
-				if not self.mldb.v or self.mldb.v ~= current_version then
-					self:SendCommand(sender, "MLdb_request")
-				end
-
 			elseif command == "verTest" then
 				local otherVersion, tVersion = unpack(data)
 				self:SendCommand(sender, "verTestReply", self.playerName, self.playerClass, self.guildRank, self.version, self.tVersion)
@@ -574,6 +570,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 			elseif command == "session_end" then
 				self:Print(L["The Master Looter has ended the session"])
 				self:GetActiveModule("lootframe"):Disable()
+				self:GetActiveModule("lootframe"):EndSession()
 			end
 		else
 			self:Debug("Error in deserializing comm: "..tostring(command));
@@ -622,6 +619,29 @@ function RCLootCouncil:Test(num)
 	-- Call ML module and let it handle the rest
 	self:CallModule("masterlooter")
 	self:GetActiveModule("masterlooter"):Test(items)
+end
+
+function RCLootCouncil:EnterCombat()
+	if not db.minimizeInCombat then return end
+	self.inCombat = true
+	for frame in ipairs(frames) do
+		if not frame.IsMinimized() then -- only minimize for combat if it isn't already minimized
+			frame.combatMinimized = true -- flag it as being minimized for combat
+			frame.Minimize()
+		end
+	end
+end
+
+function RCLootCouncil:LeaveCombat()
+	if not db.minimizeInCombat then return end
+	self:Debug("LeaveCombat, inCombat = "..tostring(self.inCombat))
+	self.inCombat = false
+	for frame in ipairs(frames) do -- REVIEW Test this
+		if frame.combatMinimized then -- Reshow it
+			frame.combatMinimized = false
+			frame.Minimize()
+		end
+	end
 end
 
 --[[
@@ -709,25 +729,25 @@ local autopassTable = {
 
 -- Used to find localized subType names
 local subTypeLookup = {
-	["Cloth"]							= 124168, -- Felgrease-Smudged Robes
-	["Leather"] 					= 124265, -- Leggings of Eternal Terror
-	["Mail"] 							= 124291, -- Eredar Fel-Chain Gloves
-	["Plate"]							= 124322, -- Treads of the Defiler
-	["Shields"] 					= 124354, -- Felforged Aegis
-	["Bows"] 							= 128194, -- Snarlwood Recurve Bow
+	["Cloth"]					= 124168, -- Felgrease-Smudged Robes
+	["Leather"] 				= 124265, -- Leggings of Eternal Terror
+	["Mail"] 					= 124291, -- Eredar Fel-Chain Gloves
+	["Plate"]					= 124322, -- Treads of the Defiler
+	["Shields"] 				= 124354, -- Felforged Aegis
+	["Bows"] 					= 128194, -- Snarlwood Recurve Bow
 	["Crossbows"] 				= 124362, -- Felcrystal Impaler
-	["Daggers"]						= 124367, -- Fang of the Pit
-	["Guns"]							= 124370, -- Felfire Munitions Launcher
+	["Daggers"]					= 124367, -- Fang of the Pit
+	["Guns"]						= 124370, -- Felfire Munitions Launcher
 	["Fist Weapons"] 			= 124368, -- Demonblade Eviscerator
 	["One-Handed Axes"]		= 128196, -- Limbcarver Hatchet
-	["One-Handed Maces"]	= 124372, -- Gavel of the Eredar
-	["One-Handed Swords"] = 124387, -- Shadowrend Talonblade
-	["Polearms"] 					= 124377, -- Rune Infused Spear
-	["Staves"]						= 124382, -- Edict of Argus
+	["One-Handed Maces"]		= 124372, -- Gavel of the Eredar
+	["One-Handed Swords"] 	= 124387, -- Shadowrend Talonblade
+	["Polearms"] 				= 124377, -- Rune Infused Spear
+	["Staves"]					= 124382, -- Edict of Argus
 	["Two-Handed Axes"]		= 124360, -- Hellrender
-	["Two-Handed Maces"]	= 124375, -- Maul of Tyranny
+	["Two-Handed Maces"]		= 124375, -- Maul of Tyranny
 	["Two-Handed Swords"]	= 124389, -- Calamity's Edge
-	["Wands"]							= 128096, -- Demonspine Wand
+	["Wands"]					= 128096, -- Demonspine Wand
 }
 
 -- Create localization for autopass
@@ -978,18 +998,27 @@ end
 -- Custom module support funcs
 ---------------------------------------------------------------------------
 
--- Enables a userModule if set, defaultModule otherwise
+--- Enables a userModule if set, defaultModule otherwise
 -- @param module String, must correspond to a index in self.defaultModules
 function RCLootCouncil:CallModule(module)
 	if not self.enabled then return end -- Don't call modules unless enabled
 	self:EnableModule(userModules[module] or defaultModules[module])
 end
 
--- Returns a active module
+--- Returns the active module
 -- @param module String, must correspond to a index in self.defaultModules
--- @return The active module or nil
+-- @return The module object of the active module or nil if not found. Prioritises userModules if set
 function RCLootCouncil:GetActiveModule(module)
 	return self:GetModule(userModules[module] or defaultModules[module], false)
+end
+
+--- Registers a module that should override a default module
+-- The custom module must have all functions that a default module can be called with
+-- @param type Index (string) in userModules
+-- @param The name passed to AceAddon:NewModule()
+function RCLootCouncil:RegisterUserModule(type, name) -- REVIEW Test this
+	assert(userModules[type], format("Module %s is not a default module.", tostring(type)))
+	userModules[type] = name
 end
 
 --#end Module support -----------------------------------------------------
@@ -999,34 +1028,7 @@ end
 -- UI Functions used throughout the addon
 ---------------------------------------------------------------------------
 
--- Returns a scaler above the window's title
--- Assumes @param frame is registered to LibWindow-1.1
-function RCLootCouncil:GetScaler(frame)
-	self:Print("GetScaler")
-	local AG = LibStub("AceGUI-3.0")
-	local libwin = LibStub("LibWindow-1.1")
-	local scaler = AG:Create("Slider")
-	scaler:SetValue(frame:GetScale())
-	scaler:SetWidth(frame.title:GetWidth()*frame:GetScale())
-	scaler:SetPoint("BOTTOM", frame.title, "TOP")
-	scaler:SetSliderValues(0.5, 1.5, 0.01)
-	scaler:SetIsPercent(true)
-	scaler:SetLabel("Drag to scale")
-	local mouseUp = false
-	scaler:SetCallback("OnMouseUp", function()
-		mouseUp = true
-		scaler:ClearAllPoints()
-		scaler:SetPoint("BOTTOM", frame.title, "TOP")
-		self:Print("mouseUp")
-	end)
-	scaler:SetCallback("OnValueChanged", function(i,j,v)
-		scaler:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", scaler.frame:GetLeft(), scaler.frame:GetBottom()) -- make sure it doesn't move
-		libwin.SetScale(frame,v)
-	end)
-   return scaler
-end
-
--- Used as a "DoCellUpdate" function for lib-st
+--- Used as a "DoCellUpdate" function for lib-st
 function RCLootCouncil.SetCellClassIcon(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
 	local celldata = data[realrow].cols[column]
 	local class = celldata.args[1]
@@ -1039,7 +1041,7 @@ function RCLootCouncil.SetCellClassIcon(rowFrame, frame, data, cols, row, realro
 	end
 end
 
--- Returns a color table for use with lib-st
+--- Returns a color table for use with lib-st
 function RCLootCouncil:GetClassColor(class)
 	local color = RAID_CLASS_COLORS[class]
 	if not color then
@@ -1051,7 +1053,7 @@ function RCLootCouncil:GetClassColor(class)
 	end
 end
 
--- Creates a standard frame for RCLootCouncil
+--- Creates a standard frame for RCLootCouncil
 -- 	Put children into frame.content for minimize support
 -- @param name Global name of the frame
 -- @param cName Name of the module (used for lib-window-1.1 config as db.UI[cName])
@@ -1134,6 +1136,8 @@ function RCLootCouncil:CreateFrame(name, cName, title, width, height)
 		end
 		frame.minimized = not frame.minimized
 	end
+	-- Support for auto hide in combat:
+	tinsert(frames, {Minimize = f.Minimize, IsMinimized = f.IsMinimized})
 	local old_setwidth = f.SetWidth
 	f.SetWidth = function(self, width) -- Hack so we only have to set width once
 		old_setwidth(self, width)
@@ -1152,7 +1156,7 @@ function RCLootCouncil:CreateFrame(name, cName, title, width, height)
 	return f
 end
 
--- Creates a standard button for RCLootCouncil
+--- Creates a standard button for RCLootCouncil
 -- @param text The button's text
 -- @param parent The frame that should hold the button
 -- @return The button object
@@ -1163,7 +1167,7 @@ function RCLootCouncil:CreateButton(text, parent)
 	return b
 end
 
--- Displays a tooltip anchored to the mouse
+--- Displays a tooltip anchored to the mouse
 -- @param ... Lines to be added.
 function RCLootCouncil:CreateTooltip(...)
 	GameTooltip:SetOwner(UIParent, "ANCHOR_CURSOR")
@@ -1173,7 +1177,7 @@ function RCLootCouncil:CreateTooltip(...)
 	GameTooltip:Show()
 end
 
--- Displays a hyperlink tooltip
+--- Displays a hyperlink tooltip
 -- @param link The link to display
 function RCLootCouncil:CreateHypertip(link)
 	GameTooltip:SetOwner(UIParent, "ANCHOR_CURSOR")
@@ -1185,20 +1189,20 @@ function RCLootCouncil:HideTooltip()
 	GameTooltip:Hide()
 end
 
--- Removes any realm name from name
+--- Removes any realm name from name
 -- @param name Name to remove realmname from
 -- @return The name without realmname
 function RCLootCouncil.Ambiguate(name)
 	return Ambiguate(name, "short")
 end
 
--- Returns the text of a button, returning settings from mldb, or default buttons
+--- Returns the text of a button, returning settings from mldb, or default buttons
 -- @param i The button's index
 function RCLootCouncil:GetButtonText(i)
 	return self.mldb.buttons[i] and self.mldb.buttons[i].text or db.buttons[i].text
 end
 
--- The following functions returns the text, sort or color of a response, returning a result from mldb if possible, otherwise the default responses.
+--- The following functions returns the text, sort or color of a response, returning a result from mldb if possible, otherwise the default responses.
 -- @param response Index in self.responses
 function RCLootCouncil:GetResponseText(response)
 	return self.mldb.responses[response] and self.mldb.responses[response].text or self.responses[response].text
@@ -1220,7 +1224,7 @@ function RCLootCouncil:GetResponseSort(response)
 end
 
 --#end UI Functions -----------------------------------------------------
-
+--@debug@
 -- debug func
 function printtable( data, level )
 	level = level or 0
@@ -1237,3 +1241,4 @@ function printtable( data, level )
         print( ident .. '}' );
 	until true end
 end
+--@end-debug@

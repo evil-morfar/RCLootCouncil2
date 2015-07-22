@@ -3,7 +3,7 @@
 -- DefaultModule	- (relies on ml_core perhaps?)
 -- Displays everything related to handling loot for all members.
 --		Will only show certain aspects depending on addon.isMasterLooter, addon.isCouncil and addon.mldb.observe
-
+-- IDEA We're not sorting by guild rank, would require a change to how guild rank is sent
 
 local addon = LibStub("AceAddon-3.0"):GetAddon("RCLootCouncil")
 RCVotingFrame = addon:NewModule("RCVotingFrame", "AceComm-3.0")
@@ -55,14 +55,16 @@ function RCVotingFrame:OnEnable()
 end
 
 function RCVotingFrame:OnDisable()
-	self.frame:Hide()
-	--self.frame:SetParent(nil)
-	--self.frame = nil
-	--wipe(lootTable)
-	lootTable = {}
-	--sessionButtons = {}
+	self:Hide()
+	self.frame:SetParent(nil)
+	self.frame = nil
+	wipe(lootTable)
 	active = false
 	session = 1
+end
+
+function RCVotingFrame:Hide()
+	self.frame:Hide()
 end
 
 function RCVotingFrame:Show()
@@ -71,6 +73,11 @@ function RCVotingFrame:Show()
 	else
 		addon:Print(L["No session running"])
 	end
+end
+
+function RCVotingFrame:EndSession(hide)
+	active = false -- The session has ended, so deactivate
+	if hide then self:Hide() end -- Hide if need be
 end
 
 function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
@@ -202,15 +209,15 @@ function RCVotingFrame:Setup(table)
 					{ value = addon.Ambiguate,			color = addon:GetClassColor(y.class), 	args = {name},		name = "name",},
 					{ value = y.rank,						color = self.GetResponseColor,									name = "rank",},
 					{ value = addon.TranslateRole,	color = self.GetResponseColor,			args = {y.role},	name = "role",},
-					{ value = self.GetResponseText,	color = self.GetResponseColor,						name = "response",},
-					{ value = "",																							name = "ilvl",},
-					{ value = "",							color = self.GetIDiffColor,							name = "diff",},
-					{ value = "",							DoCellUpdate = self.SetCellGear, args = {nil},	name = "gear1",},
-					{ value = "",							DoCellUpdate = self.SetCellGear, args = {nil},	name = "gear2",},
-					{ value = 0,							DoCellUpdate = self.SetCellVote, args = {0},		name = "votes",},
-					{ value = 0,							DoCellUpdate = self.SetVoteBtn,						name = "vote",},
-					{ value = 0,							DoCellUpdate = self.SetNote, args = {nil},		name = "note",},
-					{ value = "",		name = "roll"}
+					{ value = self.GetResponseText,	color = self.GetResponseColor,									name = "response",},
+					{ value = "",																										name = "ilvl",},
+					{ value = "",							color = self.GetIDiffColor,										name = "diff",},
+					{ value = "",							DoCellUpdate = self.SetCellGear, 		args = {nil},		name = "gear1",},
+					{ value = "",							DoCellUpdate = self.SetCellGear, 		args = {nil},		name = "gear2",},
+					{ value = 0,							DoCellUpdate = self.SetCellVote, 		args = {0},			name = "votes",},
+					{ value = 0,							DoCellUpdate = self.SetVoteBtn,									name = "vote",},
+					{ value = 0,							DoCellUpdate = self.SetNote, 				args = {nil},		name = "note",},
+					{ value = "",																										name = "roll"}
 				}
 			})
 			-- Insert the row id into lootTable[session].candidates[name] for ease of reference
@@ -285,7 +292,9 @@ function RCVotingFrame:SwitchSession(s)
 	else
 		self.frame.awardString:Hide()
 	end
-
+	if addon.isMasterLooter and active then
+		self.frame.abortBtn:SetText(L["Abort"])
+	end
 	-- Update the session buttons
 	sessionButtons[s] = self:UpdateSessionButton(s, t.texture, t.link, t.awarded)
 	sessionButtons[old] = self:UpdateSessionButton(old, lootTable[old].texture, lootTable[old].link, lootTable[old].awarded)
@@ -309,7 +318,7 @@ function RCVotingFrame:GetFrame()
 	st.frame:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", 10, 10)
 	st:RegisterEvents({
 		["OnClick"] = function(rowFrame, cellFrame, data, cols, row, realrow, column, table, button, ...)
-			if button == "RightButton" and row then
+			if button == "RightButton" and row and active then
 				menuFrame.row = realrow
 				Lib_ToggleDropDownMenu(1, nil, menuFrame, cellFrame, 0, 0);
 			end
@@ -360,12 +369,11 @@ function RCVotingFrame:GetFrame()
 	--#end----------------------------
 
 	-- Abort button
-	local b1 = addon:CreateButton(L["Abort"], f.content)
+	local b1 = addon:CreateButton(L["Close"], f.content)
 	b1:SetPoint("TOPRIGHT", f, "TOPRIGHT", -10, -50)
 	if addon.isMasterLooter then
 		b1:SetScript("OnClick", function() LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_ABORT") end)
 	else
-		b1:SetText(L["Close"])
 		b1:SetScript("OnClick", function() f:Hide() end)
 	end
 	f.abortBtn = b1
