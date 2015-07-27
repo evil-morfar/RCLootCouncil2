@@ -1,0 +1,62 @@
+==== v2.0 (WIP)
+
+* **Complete rewrite**
+
+*  UI overhaul
+**    Every frame now follows a standardized layout with support for minimizing.
+      It's also made with future customization in mind.
+
+*  Options menu overhaul
+**    Master Looter options have been moved to a separate tree and the entire interface have been streamlined.
+
+*  Updated chat commands
+**    Most chat commands results in a more appropriate interface than before, while some have been removed.
+
+*  ++Auto pass++
+**    By default, RCLootCouncil now auto passes on items certain classes can't use (e.g. plate for priests)
+      and items certain classes shouldn't use (e.g. leather for hunters).
+
+*  ++Observe mode++
+**    The Master Looter can enable observe mode to let non-council members see the voting frame.
+
+*  ++Autohide in combat++
+**    If enabled all RCLootCouncil frames will minimize when entering combat.
+
+*  ++Session setup++
+**    The Master Looter is now able to review the list of items before starting a session as well as
+      manipulating the list by adding or removing items.
+
+*  ++Award later++
+**    Using the session setup, the Master Looter can choose to award items later thus looting the items,
+      and have RCLootCouncil start a session later by typing '/rc start'. It's not possible to automatically
+      give out items that's already looted, so instead you'll see a list with whom to give the item to.
+
+*  ++Loot from bags++
+**    RCLootConcil can now add custom items to a session by typing '/rc add [item(s)]'.
+
+*  ++Localization++
+**    All text strings in the addon is now localizable. Head to http://wow.curseforge.com/addons/rclootcouncil/localization/
+      to contribuate.
+
+*  ++Ignore list++
+**    RCLootCouncil now have a customizable ignore list, for, well, ignoring stuff.
+
+* ++Usage options++
+**    More usability to e.g. disable the popup when entering a raid by always accepting it, or
+      always rejecting it. Option to turn off the addon temporarily.
+
+*  ++Module support++
+**    All frames are implememted as modules, which can be replaced. This also gives the opportunity
+      for anyone to add custom features to the core addon.
+
+*  ++Filtering++
+**    All responses on the voting frame are now filterable.
+
+*  ++Status text++
+**    Everyone in the group is now added to the voting frame with a status text as their response,
+      e.g. "Not installed", "Selecting response" and "Candidate removed"
+
+*  ++Diff and roll++
+**    Two new columns in the voting frame:
+**    "Diff" - which shows the item lvl difference between a candidates' equipped item and the one in session.
+**    "Roll" which allows the Master Looter to add a random 1 - 100 roll to all candidates should he so desire.

@@ -66,10 +66,13 @@ end
 function RCVotingFrame:Hide()
 	self.frame:Hide()
 end
-
+function LOOTTABLE()
+	printtable(lootTable)
+end
 function RCVotingFrame:Show()
 	if self.frame then
 		self.frame:Show()
+		self:SwitchSession(session)
 	else
 		addon:Print(L["No session running"])
 	end
@@ -77,11 +80,12 @@ end
 
 function RCVotingFrame:EndSession(hide)
 	active = false -- The session has ended, so deactivate
+	self:SwitchSession(session) -- Hack for updating UI
 	if hide then self:Hide() end -- Hide if need be
 end
 
 function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
-	if prefix == "RCLootCouncil" and active then -- ignore comms if we aren't active
+	if prefix == "RCLootCouncil" then
 		-- data is always a table to be unpacked
 		local test, command, data = addon:Deserialize(serializedMsg)
 
@@ -97,12 +101,14 @@ function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
 			elseif command == "change_response" and addon:UnitIsUnit(sender, addon.masterLooter) then
 				local ses, name, response = unpack(data)
 				self:SetCandidateData(ses, name, "response", response)
+				self:Update()
 
 			elseif command == "lootAck" then
 				local name = unpack(data)
 				for i = 1, #lootTable do
 					self:SetCandidateData(i, name, "response", "WAIT")
 				end
+				self:Update()
 
 			elseif command == "awarded" and addon:UnitIsUnit(sender, addon.masterLooter) then
 				lootTable[unpack(data)].awarded = true
@@ -121,6 +127,7 @@ function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
 				end
 
 			elseif command == "lootTable" and addon:UnitIsUnit(sender, addon.masterLooter) then
+				active = true
 				self:Setup(unpack(data))
 				if db.autoOpen then
 					self:Show()
@@ -133,6 +140,7 @@ function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
 				for k,v in pairs(t.data) do
 					self:SetCandidateData(t.session, t.name, k, v)
 				end
+				self:Update()
 			end
 		end
 	end
@@ -155,7 +163,6 @@ function RCVotingFrame:SetCandidateData(ses, candidate, name, data, realrow)
 			val.value = data
 		end
 	end
-	self:Update()
 end
 
 function RCVotingFrame:GetCandidateData(ses, candidate, name, realrow)
@@ -230,7 +237,6 @@ function RCVotingFrame:Setup(table)
 	end
 	self:CreateLookupTable()
 	session = 1
-	self:SwitchSession(session)
 end
 
 function RCVotingFrame:Update()
@@ -238,6 +244,7 @@ function RCVotingFrame:Update()
 	for i = #lootTable+1, #sessionButtons do
 		sessionButtons[i]:Hide()
 	end
+	addon:Debug("session = ", session)
 	self.frame.st:SetData(lootTable[session].rows)
 	--self.frame.st:SortData()
 end
@@ -271,6 +278,7 @@ end
 --	Visuals														--
 ------------------------------------------------------------------
 function RCVotingFrame:SwitchSession(s)
+	addon:DebugLog("SwitchSession", s)
 	-- Start with setting up some statics
 	local old = session
 	session = s
@@ -294,6 +302,8 @@ function RCVotingFrame:SwitchSession(s)
 	end
 	if addon.isMasterLooter and active then
 		self.frame.abortBtn:SetText(L["Abort"])
+	else
+		self.frame.abortBtn:SetText(L["Close"])
 	end
 	-- Update the session buttons
 	sessionButtons[s] = self:UpdateSessionButton(s, t.texture, t.link, t.awarded)
@@ -318,9 +328,13 @@ function RCVotingFrame:GetFrame()
 	st.frame:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", 10, 10)
 	st:RegisterEvents({
 		["OnClick"] = function(rowFrame, cellFrame, data, cols, row, realrow, column, table, button, ...)
-			if button == "RightButton" and row and active then
-				menuFrame.row = realrow
-				Lib_ToggleDropDownMenu(1, nil, menuFrame, cellFrame, 0, 0);
+			if button == "RightButton" and row then
+				if active then
+					menuFrame.row = realrow
+					Lib_ToggleDropDownMenu(1, nil, menuFrame, cellFrame, 0, 0);
+				else
+					addon:Print(L["You cannot use the menu when the session has ended."])
+				end
 			end
 			-- Return false to have the default OnClick handler take care of left clicks
 			return false
@@ -372,7 +386,7 @@ function RCVotingFrame:GetFrame()
 	local b1 = addon:CreateButton(L["Close"], f.content)
 	b1:SetPoint("TOPRIGHT", f, "TOPRIGHT", -10, -50)
 	if addon.isMasterLooter then
-		b1:SetScript("OnClick", function() LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_ABORT") end)
+		b1:SetScript("OnClick", function() if active then LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_ABORT") else f:Hide() end end)
 	else
 		b1:SetScript("OnClick", function() f:Hide() end)
 	end
@@ -518,6 +532,12 @@ function RCVotingFrame.SetCellGear(rowFrame, frame, data, cols, row, realrow, co
 end
 
 function RCVotingFrame.SetVoteBtn(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
+	if not active or lootTable[session].awarded then -- Don't show the vote button if awarded or not active
+		if frame.voteBtn then
+			frame.voteBtn:Hide()
+		end
+		return
+	end
 	if addon.isCouncil or addon.isMasterLooter then -- Only let the right people vote
 		if not frame.voteBtn then -- create it
 			frame.voteBtn = addon:CreateButton(L["Vote"], frame)
@@ -546,10 +566,31 @@ function RCVotingFrame.SetVoteBtn(rowFrame, frame, data, cols, row, realrow, col
 			end
 			data[realrow].haveVoted = not data[realrow].haveVoted
 		end)
+		frame.voteBtn:Show()
 		if data[realrow].haveVoted then
 			frame.voteBtn:SetText(L["Unvote"])
 		else
 			frame.voteBtn:SetText(L["Vote"])
+		end
+	end
+end
+
+function RCVotingFrame.SetCellVote(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
+	frame:SetScript("OnEnter", function()
+		local voters = ""
+		if not addon.mldb.anonymousVoting or (db.showForML and addon.isMasterLooter) then
+			voters = unpack(data[realrow].voters)
+		end
+		addon:CreateTooltip(L["Voters"], voters)
+	end)
+	frame:SetScript("OnLeave", function() addon:HideTooltip() end)
+	local val = data[realrow].cols[column].args[1]
+	data[realrow].cols[column].value = val -- Set the value for sorting reasons
+	frame.text:SetText(val)
+
+	if addon.mldb.hideVotes then
+		for _, v in pairs(data) do
+			if v.haveVoted then return frame.text:SetText(0) end -- REVIEW Check if works
 		end
 	end
 end
@@ -579,24 +620,6 @@ end
 
 function RCVotingFrame.GetResponseColor(data, cols, realrow)
 	return addon:GetResponseColor(data[realrow].response)
-end
-
-function RCVotingFrame.SetCellVote(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
-	if not addon.mldb.anonymousVoting or (db.showForML and addon.isMasterLooter) then
-		frame:SetScript("OnEnter", function()
-			addon:CreateTooltip(L["Voters"], unpack(data[realrow].voters))
-		end)
-		frame:SetScript("OnLeave", function() addon:HideTooltip() end)
-	end
-	local val = data[realrow].cols[column].args[1]
-	data[realrow].cols[column].value = val -- Set the value for sorting reasons
-	frame.text:SetText(val)
-
-	if addon.mldb.hideVotes then
-		for _, v in pairs(data) do
-			if v.haveVoted then return frame.text:SetText(0) end -- REVIEW Check if works
-		end
-	end
 end
 
 function RCVotingFrame.filterFunc(table, row)

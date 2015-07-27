@@ -112,7 +112,7 @@ end
 
 local toSend = {data = {}} -- More efficient
 function LootFrame:OnRoll(entry, button)
-	addon:Debug("LootFrame:OnRoll("..entry..", "..button..")")
+	addon:DebugLog("LootFrame:OnRoll", entry, button)
 	local index = entries[entry].realID
 	toSend = addon:CreateResponse(items[entries[entry].realID].session, tonumber(strmatch(items[index].link, "item:(%d+):")), items[index].ilvl, button, items[index].note)
 
@@ -129,7 +129,7 @@ function LootFrame:GetFrame()
 end
 
 function LootFrame:GetEntry(entry)
-	addon:DebugLog("GetEntry("..entry..")")
+	--addon:DebugLog("GetEntry("..entry..")")
 	if entry == 0 then entry = 1 end
 	local f = CreateFrame("Frame", nil, self.frame.content)
 	f:SetWidth(self.frame:GetWidth())

@@ -143,6 +143,7 @@ L['A new session has begun, type "/rc open" to open the voting frame.'] = true
 L["ilvl: x"] = "ilvl: %d"
 L["RCLootCouncil Voting Frame"] = true
 L["Something went wrong :'("] = true
+L["You cannot use the menu when the session has ended."] = true
 
 L["Abort"] = true
 L["Close"] = true
@@ -259,7 +260,7 @@ L["ML sees voting"] = true
 L["ml_sees_voting_desc"] = "Allow the Master Looter too see who's voting for whom."
 L["Hide Votes"] = true
 L["hide_votes_desc"] = "Hides the number of votes until one have voted."
-L["Obeserve"] = true
+L["Observe"] = true
 L["observe_desc"] = "If enabled, non-council members will be able to see the voting frame like a normal council member. They are not allowed to vote however."
 L["Ignore Options"] = true
 L["ignore_options_desc"] = "Control which items RCLootCouncil should ignore. If you add an item that isn't cached, you need switch to another tab and back before you'll see it in the list."

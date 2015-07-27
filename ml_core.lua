@@ -47,7 +47,7 @@ function RCLootCouncilML:OnEnable()
 	--self:RegisterEvent("RAID_INSTANCE_WELCOME","OnEvent")
 	self:RegisterBucketEvent("GROUP_ROSTER_UPDATE", 20, "UpdateGroup") -- Bursts in group creation, and we should have plenty of time to handle it
 	self:RegisterEvent("CHAT_MSG_WHISPER","OnEvent")
-	self:RegisterMessage("RCConfigTableChanged", "ConfigTableChanged")
+	self:RegisterBucketMessage("RCConfigTableChanged", 2, "ConfigTableChanged") -- The messages can burst
 	self:RegisterMessage("RCCouncilChanged", "CouncilChanged")
 end
 
@@ -73,7 +73,7 @@ function RCLootCouncilML:AddItem(session, item, bagged, slotIndex)
 		["name"]			= name,
 		["link"]			= link,
 		["ilvl"]			= ilvl,
-		["type"]			= type,
+		--["type"]			= type, -- Prolly not needed
 		["subType"]		= subType,
 		["equipLoc"]	= equipLoc,
 		["texture"]		= texture,
@@ -87,7 +87,7 @@ function RCLootCouncilML:RemoveItem(session)
 end
 
 function RCLootCouncilML:AddCandidate(name, class, role, rank)
-	addon:DebugLog("ML:AddCandidate("..name..", "..tostring(class)..", ...)")
+	addon:DebugLog("ML:AddCandidate",name, class, role, rank)
 	self.candidates[name] = {
 		["class"]	= class,
 		["role"]		= role,
@@ -135,19 +135,20 @@ function RCLootCouncilML:StartSession()
 	end
 end
 
-function RCLootCouncilML:ConfigTableChanged(val) -- CHANGED Check if this works
+function RCLootCouncilML:ConfigTableChanged(val)
 	-- The db was changed, so check if we should make a new mldb
 	-- We can do this by checking if the changed value is a key in mldb
 	if not addon.mldb then return self:UpdateMLdb() end -- mldb isn't made, so just make it
-	addon:Debug("ML:ConfigTableChanged - "..tostring(val))
-	for key in pairs(addon.mldb) do
-		if key == val then return self:UpdateMLdb() end
+	for val in pairs(val) do
+		for key in pairs(addon.mldb) do
+			if key == val then return self:UpdateMLdb() end
+		end
 	end
 end
 
-function RCLootCouncilML:CouncilChanged() -- CHANGED Check if works
+function RCLootCouncilML:CouncilChanged()
 	-- The council was changed, so send out the council
-	addon:SendCommand("group", "council", addon.council)
+	addon:SendCommand("group", "council", db.council)
 end
 
 function RCLootCouncilML:UpdateMLdb()
@@ -160,23 +161,23 @@ end
 function RCLootCouncilML:BuildMLdb()
 	-- Extract changes to addon.responses
 	local changedResponses = {};
-	for i,v in ipairs(db.responses) do
-		if v.text ~= addon.responses[i].text or unpack(v.color) ~= unpack(addon.responses[i].color) then
-			changedResponses[i] = v
+	for i = 1, db.numButtons do
+		if db.responses[i].text ~= addon.responses[i].text or unpack(db.responses[i].color) ~= unpack(addon.responses[i].color) then
+			changedResponses[i] = db.responses[i]
 		end
 	end
 	-- Extract changed buttons
 	local changedButtons = {};
-	for i,v in ipairs(db.buttons) do
-		if v.text ~= addon.defaults.profile.buttons[i].text then
-			changedButtons[i] = v
+	for i = 1, db.numButtons do
+		if db.buttons[i].text ~= addon.defaults.profile.buttons[i].text then
+			changedButtons[i] = db.buttons[i]
 		end
 	end
 	-- Extract changed award reasons
 	local changedAwardReasons = {}
-	for i,v in ipairs(db.awardReasons) do
-		if v.text ~= addon.defaults.profile.awardReasons[i].text then
-			changedAwardReasons[i] = v
+	for i = 1, db.numAwardReasons do
+		if db.awardReasons[i].text ~= addon.defaults.profile.awardReasons[i].text then
+			changedAwardReasons[i] = db.awardReasons[i]
 		end
 	end
 	return {
@@ -185,6 +186,7 @@ function RCLootCouncilML:BuildMLdb()
 		anonymousVoting = db.anonymousVoting,
 		allowNotes		= db.allowNotes,
 		numButtons		= db.numButtons,
+		hideVotes		= db.hideVotes,
 		--passButton		= db.passButton,
 		observe			= db.observe,
 		awardReasons	= changedAwardReasons,
@@ -248,13 +250,13 @@ function RCLootCouncilML:OnCommReceived(prefix, serializedMsg, distri, sender)
 			--	end
 			end
 		else
-			addon:Debug("Error in deserializing ML comm: "..tostring(command))
+			addon:Debug("Error in deserializing ML comm: ", command)
 		end
 	end
 end
 
 function RCLootCouncilML:OnEvent(event, ...)
-	addon:DebugLog("ML event: "..event)
+	addon:DebugLog("ML event", event)
 	if event == "LOOT_OPENED" then -- IDEA Check if event LOOT_READY is useful here (also check GetLootInfo() for this)
 		self.lootOpen = true
 		if not InCombatLockdown() then -- TODO do something with looting in combat
@@ -338,7 +340,7 @@ end
 
 function RCLootCouncilML:LootOnClick(button)
 	if not IsAltKeyDown() or not db.altClickLooting or IsShiftKeyDown() or IsControlKeyDown() then return; end
-	self:DebugLog("LootAltClick(...)")
+	self:DebugLog("LootAltClick()", button)
 
 		--TODO
 end
@@ -379,7 +381,7 @@ function RCLootCouncilML:Award(session, winner, response, reason)
 
 		else -- Direct (we can award from a WoW loot list)
 			if not self.lootTable[session].lootSlot then
-				addon:SessionError("Session "..session.. "didn't have lootSlot")
+				addon:SessionError("Session "..session.." didn't have lootSlot")
 				return false
 			end
 			if not self.lootOpen then -- we can't give out loot without the loot window open
@@ -514,7 +516,7 @@ function RCLootCouncilML:IsItemIgnored(link)
 end
 
 function RCLootCouncilML:GetItemsFromMessage(msg, sender)
-	addon:DebugLog("GetItemsFromMessage("..tostring(msg)..", "..tostring(sender)..")")
+	addon:Debug("GetItemsFromMessage()", msg, sender)
 	if not addon.isMasterLooter then return end
 
 	local ses, arg1, arg2, arg3 = addon:GetArgs(msg, 4) -- We only require session to be correct, we can do some error checking on the rest
@@ -564,7 +566,7 @@ function RCLootCouncilML:GetItemsFromMessage(msg, sender)
 end
 
 function RCLootCouncilML:SendWhisperHelp(target)
-	addon:DebugLog("SendWhisperHelp("..tostring(target)..")")
+	addon:DebugLog("SendWhisperHelp", target)
 	local msg
 	SendChatMessage(L["whisper_guide"], "WHISPER", nil, target)
 	for i = 1, db.numButtons do

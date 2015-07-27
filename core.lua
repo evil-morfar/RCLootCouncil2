@@ -351,12 +351,10 @@ end
 function RCLootCouncil:ConfigTableChanged(val)
 	--[[ NOTE By default only ml_core needs to know about changes to the config table,
 		  but we'll use AceEvent incase future modules also wants to know ]]
-	self:Debug("ConfigTableChanged = "..tostring(val))
 	self:SendMessage("RCConfigTableChanged", val)
 end
 
 function RCLootCouncil:CouncilChanged()
-	self:Debug("CouncilChanged")
 	self:SendMessage("RCCouncilChanged")
 end
 
@@ -391,7 +389,7 @@ function RCLootCouncil:ChatCommand(msg)
 	elseif input == 'council' or input == L["council"] then
 		InterfaceOptionsFrame_OpenToCategory(self.optionsFrame.ml)
 		InterfaceOptionsFrame_OpenToCategory(self.optionsFrame.ml)
-		LibStub("AceConfigDialog-3.0"):SelectGroup("RCLootCouncil", "mlSettings", "council")
+		LibStub("AceConfigDialog-3.0"):SelectGroup("RCLootCouncil", "mlSettings", "councilTab")
 
 
 	elseif input == 'test' or input == L["test"] then
@@ -476,7 +474,7 @@ end
 
 function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 	if prefix == "RCLootCouncil" then
-		self:Debug("Comm received: "..serializedMsg..", from: "..sender)
+		self:DebugLog("Comm received:", serializedMsg, "from:", sender)
 		-- data is always a table to be unpacked
 		local test, command, data = self:Deserialize(serializedMsg)
 
@@ -570,27 +568,32 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 			elseif command == "session_end" then
 				self:Print(L["The Master Looter has ended the session"])
 				self:GetActiveModule("lootframe"):Disable()
-				self:GetActiveModule("lootframe"):EndSession()
+				self:GetActiveModule("votingframe"):EndSession()
 			end
 		else
-			self:Debug("Error in deserializing comm: "..tostring(command));
+			self:Debug("Error in deserializing comm:", tostring(command));
 		end
 	end
 end
 
 
-function RCLootCouncil:Debug(msg)
+function RCLootCouncil:Debug(msg, ...)
 	if self.debug then
-		self:Print("debug: "..tostring(msg))
+		if select("#", ...) > 0 then
+			self:Print("|cffcb6700debug:|r "..tostring(msg).."|cffff6767", ...)
+		else
+			self:Print("|cffcb6700debug:|r "..tostring(msg).."|r")
+		end
 	end
-	RCLootCouncil:DebugLog(msg)
+	RCLootCouncil:DebugLog(msg, ...)
 end
 
 local date_to_debug_log = true
-function RCLootCouncil:DebugLog(msg)
+function RCLootCouncil:DebugLog(msg, ...)
 	if date_to_debug_log then tinsert(debugLog, date("%x")); date_to_debug_log = false; end
 	local time = date("%X", time())
 	msg = time.." - ".. tostring(msg)
+	for i = 1, select("#", ...) do msg = msg.." ("..tostring(select(i,...))..")" end
 	if #debugLog > self.db.global.logMaxEntries then
 		tremove(debugLog, 1)
 	end
@@ -618,28 +621,31 @@ function RCLootCouncil:Test(num)
 
 	-- Call ML module and let it handle the rest
 	self:CallModule("masterlooter")
+	self:GetActiveModule("masterlooter"):NewML(self.masterLooter)
 	self:GetActiveModule("masterlooter"):Test(items)
 end
 
 function RCLootCouncil:EnterCombat()
 	if not db.minimizeInCombat then return end
 	self.inCombat = true
-	for frame in ipairs(frames) do
-		if not frame.IsMinimized() then -- only minimize for combat if it isn't already minimized
+	for _,frame in ipairs(frames) do
+		if not frame:IsMinimized() then -- only minimize for combat if it isn't already minimized
+			self:Debug("Minimizing for combat")
 			frame.combatMinimized = true -- flag it as being minimized for combat
-			frame.Minimize()
+			frame:Minimize()
 		end
 	end
 end
 
 function RCLootCouncil:LeaveCombat()
 	if not db.minimizeInCombat then return end
-	self:Debug("LeaveCombat, inCombat = "..tostring(self.inCombat))
 	self.inCombat = false
-	for frame in ipairs(frames) do -- REVIEW Test this
+	for _,frame in ipairs(frames) do -- REVIEW Test this
+		self:Debug("Frame minimized = ", frame:IsMinimized())
 		if frame.combatMinimized then -- Reshow it
+			self:Debug("Reshowing frame")
 			frame.combatMinimized = false
-			frame.Minimize()
+			frame:Minimize()
 		end
 	end
 end
@@ -799,7 +805,7 @@ function RCLootCouncil:IsItemBoE(item)
 end
 
 function RCLootCouncil:CreateResponse(session, itemid, ilvl, response, note)
-	self:Debug(":CreateResponse("..session..", "..itemid..", "..ilvl..", "..response..", "..tostring(note))
+	self:DebugLog("CreateResponse", session, itemid, ilvl, response,tostring(note))
 	local g1, g2 = self:GetPlayersGearFromItemID(itemid)
 	local diff = nil
 	if g1 then diff = (ilvl - select(4, GetItemInfo(g1))) end
@@ -1009,6 +1015,7 @@ end
 -- @param module String, must correspond to a index in self.defaultModules
 -- @return The module object of the active module or nil if not found. Prioritises userModules if set
 function RCLootCouncil:GetActiveModule(module)
+	self:Debug("|cff387bac"..module)
 	return self:GetModule(userModules[module] or defaultModules[module], false)
 end
 
@@ -1080,7 +1087,6 @@ function RCLootCouncil:CreateFrame(name, cName, title, width, height)
 	     tile = true, tileSize = 64, edgeSize = 12,
 	     insets = { left = 2, right = 2, top = 2, bottom = 2 }
 	})
-	printtable(f)
 	tf:SetBackdropColor(0,0,0,0.7)
 	tf:SetBackdropBorderColor(0,0.595,0.87,1)
 	tf:SetHeight(22)
@@ -1129,15 +1135,14 @@ function RCLootCouncil:CreateFrame(name, cName, title, width, height)
 	f.IsMinimized = function(frame) return frame.minimized end
 	f.Minimize = function(frame)
 		if frame:IsMinimized() then
-		  frame.content:Hide()
-
-		else
 		  frame.content:Show()
+		else
+		  frame.content:Hide()
 		end
 		frame.minimized = not frame.minimized
 	end
 	-- Support for auto hide in combat:
-	tinsert(frames, {Minimize = f.Minimize, IsMinimized = f.IsMinimized})
+	tinsert(frames, f)
 	local old_setwidth = f.SetWidth
 	f.SetWidth = function(self, width) -- Hack so we only have to set width once
 		old_setwidth(self, width)
@@ -1228,8 +1233,8 @@ end
 -- debug func
 function printtable( data, level )
 	level = level or 0
-	local ident=strrep('    ', level)
-	if level>5 then return end
+	local ident=strrep('     ', level)
+	if level>6 then return end
 	if type(data)~='table' then print(tostring(data)) end;
 	for index,value in pairs(data) do repeat
 		if type(value)~='table' then

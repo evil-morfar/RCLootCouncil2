@@ -278,7 +278,7 @@ function addon:OptionsTable()
 									},
 									observe = {
 										order = 7,
-										name = L["Obeserve"],
+										name = L["Observe"],
 										desc = L["observe_desc"],
 										type = "toggle",
 									},
@@ -746,15 +746,16 @@ function addon:OptionsTable()
 											local t = {}
 											for i = 1, GetNumGroupMembers() do
 												-- Ambiguate to distinguish people from own realm, not sure if it's smart at the end of the day though
-												tinsert(t, Ambiguate(select(1,GetRaidRosterInfo(i)), "none"))	-- might need a tostring()
+												tinsert(t, self.Ambiguate(select(1,GetRaidRosterInfo(i))))
 											end
+											if #t == 0 then tinsert(t, self.Ambiguate(self.playerName)) end -- Insert ourself
 											table.sort(t, function(v1, v2)
 												return v1 and v1 < v2
 											end)
 											return t
 										end,
 										set = function(info,key,tag)
-											local values = info[#info-1].values()
+											local values = self.options.args.mlSettings.args.councilTab.args.addGroupCouncil.args.list.values()
 											if tag then -- add
 												tinsert(self.db.profile.council, values[key])
 											else -- remove
@@ -767,7 +768,7 @@ function addon:OptionsTable()
 											addon:CouncilChanged()
 										end,
 										get = function(info, key)
-											local values = info[#info-1].values()
+											local values = self.options.args.mlSettings.args.councilTab.args.addGroupCouncil.args.list.values()
 											return tContains(self.db.profile.council, values[key])
 										end,
 									},
@@ -790,7 +791,7 @@ function addon:OptionsTable()
 			desc = L["Set the text on button "]..i,
 			type = "input",
 			get = function() return db.buttons[i].text end,
-			set = function(info, value) addon:ConfigTableChanged("buttons"); b.buttons[i].text = tostring(value) end,
+			set = function(info, value) addon:ConfigTableChanged("buttons"); db.buttons[i].text = tostring(value) end,
 			hidden = function() return db.numButtons < i end,
 		}
 		options.args.mlSettings.args.buttonsTab.args.buttonOptions.args["button"..i] = button;
@@ -800,7 +801,7 @@ function addon:OptionsTable()
 			desc = L["response_color_desc"],
 			type = "color",
 			get = function() return unpack(db.responses[i].color)	end,
-			set = function(info,r,g,b,a) addon:ConfigTableChanged("response"); b.responses[i].color = {r,g,b,a} end,
+			set = function(info,r,g,b,a) addon:ConfigTableChanged("responses"); db.responses[i].color = {r,g,b,a} end,
 			hidden = function() return db.numButtons < i end,
 		}
 		options.args.mlSettings.args.buttonsTab.args.buttonOptions.args["picker"..i] = picker;
@@ -810,7 +811,7 @@ function addon:OptionsTable()
 			desc = format(L["Set the text for button i's response."], i),
 			type = "input",
 			get = function() return db.responses[i].text end,
-			set = function(info, value) addon:ConfigTableChanged("response"); db.responses[i].text = tostring(value) end,
+			set = function(info, value) addon:ConfigTableChanged("responses"); db.responses[i].text = tostring(value) end,
 			hidden = function() return db.numButtons < i end,
 		}
 		options.args.mlSettings.args.buttonsTab.args.buttonOptions.args["text"..i] = text;
@@ -941,12 +942,12 @@ function addon:GetGuildOptions()
 					end,
 					set = function(info, key, tag)
 						--local values = addon.options.args.council.args.addCouncil.args[info[#info-1]].args.ranks.values()
-						local values = info[#info-1].args.ranks.values()
+						--local values = info[#info-1].args.ranks.values()
 						if tag then
 							tinsert(self.db.profile.council, values[key])
 						else
 							for k,v in ipairs(self.db.profile.council) do
-								if v == values[key] then
+								if v == key then
 									tremove(self.db.profile.council, k)
 								end
 							end
