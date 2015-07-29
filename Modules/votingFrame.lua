@@ -108,7 +108,8 @@ function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
 				for i = 1, #lootTable do
 					self:SetCandidateData(i, name, "response", "WAIT")
 				end
-				self:Update()
+				--self:Update()
+				self.frame.st:SortData()
 
 			elseif command == "awarded" and addon:UnitIsUnit(sender, addon.masterLooter) then
 				lootTable[unpack(data)].awarded = true
@@ -140,7 +141,8 @@ function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
 				for k,v in pairs(t.data) do
 					self:SetCandidateData(t.session, t.name, k, v)
 				end
-				self:Update()
+				--self:Update()
+				self.frame.st:SortData()
 			end
 		end
 	end
@@ -186,6 +188,10 @@ function RCVotingFrame:GetCandidateData(ses, candidate, name, realrow)
 end
 
 function RCVotingFrame:CreateLookupTable()
+	-- Logic test, which tests if :Setup() has failed
+	if not lootTable[1].rows[1] then
+		return addon:SessionError("Rows in loottable wasn't made.")
+	end
 	-- We only need to do it once since all the cols are in the same position
 	for k,v in ipairs(lootTable[1].rows[1].cols) do
 		keys[v.name] = k
@@ -726,7 +732,7 @@ do
 				for i = 1, db.numButtons do
 					local v = db.responses[i]
 					info.text = v.text
-					info.colorCode = "|cff"..string.format("%02x%02x%02x",255*v.color[1], 255*v.color[2], 255*v.color[3])
+					info.colorCode = "|cff"..addon:RGBToHex(unpack(v.color))
 					info.notCheckable = true
 					info.func = function()
 							addon:SendCommand("group", "change_response", session, candidateName, i)
@@ -808,7 +814,7 @@ do
 					info.colorCode = "|cffde34e2" -- purpleish
 				else
 					info.text = db.responses[k].text
-					info.colorCode = "|cff"..string.format("%02x%02x%02x",255*db.responses[k].color[1], 255*db.responses[k].color[2], 255*db.responses[k].color[3])
+					info.colorCode = "|cff"..addon:RGBToHex(unpack(db.responses[k].color))
 				end
 				info.func = function() db.modules["RCVotingFrame"].filters[k] = not db.modules["RCVotingFrame"].filters[k]; RCVotingFrame.frame.st:SortData() end
 				info.checked = db.modules["RCVotingFrame"].filters[k]

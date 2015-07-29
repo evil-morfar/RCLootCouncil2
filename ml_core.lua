@@ -4,20 +4,17 @@
 		Although possible, this module shouldn't be replaced unless closely replicated as other default modules depend on it.
 
 	TODO/NOTES:
-		- Announce text for addon.db.awardReason (might need a better name)
-		- Pool: Which reasons should be used with autoAward, and display announce message on autoAward?
 		- SendMessage() on AddItem() to let userModules know it's safe to add to lootTable. Might have to do it other places too.
-		- Alt-click looting should display the sessionframe if not already shown
 		- Revision lootTable.announced
 ]]
 
 local addon = LibStub("AceAddon-3.0"):GetAddon("RCLootCouncil")
-RCLootCouncilML = addon:NewModule("RCLootCouncilML", "AceEvent-3.0", "AceBucket-3.0", "AceComm-3.0", "AceTimer-3.0")
+RCLootCouncilML = addon:NewModule("RCLootCouncilML", "AceEvent-3.0", "AceBucket-3.0", "AceComm-3.0", "AceTimer-3.0", "AceHook-3.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 local LibDialog = LibStub("LibDialog-1.0")
 
 local db;
-local session = 1
+--local session = 1
 
 function RCLootCouncilML:OnInitialize()
 	addon:Debug("ML initialized!")
@@ -28,13 +25,14 @@ function RCLootCouncilML:OnDisable()
 	self:UnregisterAllBuckets()
 	self:UnregisterAllComm()
 	self:UnregisterAllMessages()
+	self:UnHookAll()
 end
 
 function RCLootCouncilML:OnEnable()
 	db = addon:Getdb()
 	self.candidates = {} -- candidateName = { class, role, rank }
 	self.lootTable = {} -- The MLs operating lootTable
-	-- self.lootTable[session] = {	bagged, lootSlot, announced, awarded, name, link, lvl, type, subType, equipLoc, texture	}
+	-- self.lootTable[session] = {	bagged, lootSlot, announced, awarded, name, link, ilvl, type, subType, equipLoc, texture, boe	}
 	self.awardedInBags = {} -- Awarded items that are stored in MLs inventory
 									-- i = { link, winner }
 	self.lootInBags = {} 	-- Items not yet awarded but stored in bags
@@ -56,16 +54,16 @@ end
 -- @param item Any: ItemID|itemString|itemLink
 -- @param bagged True if the item is in the ML's inventory
 -- @param slotIndex Index of the lootSlot, or nil if none
-function RCLootCouncilML:AddItem(session, item, bagged, slotIndex)
-	addon:DebugLog("ML:AddItem("..tostring(session)..", "..tostring(item)..", "..tostring(bagged)..", "..tostring(slotIndex)..")")
+function RCLootCouncilML:AddItem(item, bagged, slotIndex)
+	addon:DebugLog("ML:AddItem", item, bagged, slotIndex)
 	local name, link, rarity, ilvl, iMinLevel, type, subType, iStackCount, equipLoc, texture = GetItemInfo(item)
 	if not name then -- start a timer so we can add when item info is recieved -- NOTE should be redundant, as we'll never get an uncached item as ML (unless we're testing?)
-		self:ScheduleTimer("Timer", 1, "AddItem", session, item, bagged, slotIndex)
-		addon:Debug("Started timer: \"AddItem\"")
-		return;
+		self:ScheduleTimer("Timer", 1, "AddItem", item, bagged, slotIndex)
+		addon:Debug("Started timer:", "AddItem")
+		return
 	end
 	--self.lootTable[session] = {} -- wipe it
-	self.lootTable[session] = {
+	tinsert(self.lootTable, {
 		["bagged"]		= bagged,
 		["lootSlot"]	= slotIndex,
 		["announced"]	= false,
@@ -78,7 +76,7 @@ function RCLootCouncilML:AddItem(session, item, bagged, slotIndex)
 		["equipLoc"]	= equipLoc,
 		["texture"]		= texture,
 		["boe"]			= addon:IsItemBoE(link),
-	};
+	})
 end
 
 -- Removes item (session) from self.lootTable
@@ -99,9 +97,10 @@ function RCLootCouncilML:RemoveCandidate(name)
 	self.candidates[name] = nil
 end
 
--- IDEA This needs to work if one's not in a raid (if possible)
+-- IDEA This needs to work if one's not in a raid (if possible) -- edit: OR do it?
 function RCLootCouncilML:UpdateGroup()
 	local group_copy = {}
+	local updates = false
 	for name, _ in pairs(self.candidates) do	group_copy[name] = name end -- Use name as index for zzz
 	for i = 1, GetNumGroupMembers() do
 		local name = GetRaidRosterInfo(i)
@@ -111,28 +110,57 @@ function RCLootCouncilML:UpdateGroup()
 			addon:SendCommand(name, "playerInfoRequest")
 			addon:SendCommand(name, "MLdb", addon.mldb) -- and send mlDB
 			self:AddCandidate(name) -- Add them in case they haven't installed the adoon
+			updates = true
 		end
 	end
 	-- If anything's left in group_copy it means they left the raid, so lets remove them
 	for _, name in pairs(group_copy) do
-		if name then self:RemoveCandidate(name) end
+		if name then self:RemoveCandidate(name); updates = true end
 	end
+	if updates then addon:SendCommand("group", "candidates", self.candidates) end
 end
 
 function RCLootCouncilML:StartSession()
 	addon:Debug("ML:StartSession()")
-	if not self.running then
+	--if not self.running then
 		self.running = true
-		addon:SendCommand("group", "candidates", self.candidates) -- TODO Only send candidates if there's changes
 
 		addon:SendCommand("group", "lootTable", self.lootTable)
 
 		if db.announceItems then self:AnnounceItems() end
 		-- Start a timer to set response as offline/not installed unless we receive an ack
 		self:ScheduleTimer("Timer", 10, "LootSend")
+	--else
+		--addon:Debug("called while running a session!")
+	--end
+end
+
+function RCLootCouncilML:SessionFromBags()
+	if self.running then return addon:Print(L["You're already running a session."]) end
+	if #self.lootInBags == 0 then return addon:Print(L["No items to award later registered"]) end
+	for i, link in ipairs(self.lootInBags) do self:AddItem(link, true) end
+	if db.autoStart then
+		self:StartSession()
 	else
-		addon:Debug("called while running a session!")
+		addon:CallModule("sessionframe")
+		addon:GetActiveModule("sessionframe"):Show(self.lootTable)
 	end
+end
+
+-- TODO awardedInBags should be kept in db incase the player logs out
+function RCLootCouncilML:PrintAwardedInBags()
+	if #self.awardedInBags == 0 then return addon:Print(L["No winners registered"]) end
+	addon:Print(L["Following winners was registered:"])
+	for _, v in ipairs(self.awardedInBags) do
+		if self.candidates[v.winner] then
+			local c = addon:GetClassColor(self.candidates[v.winner].class)
+			local text = "|cff"..addon:RGBToHex(c.r,c.g,c.b)..addon.Ambiguate(v.winner).."|r"
+			addon:Print(v.link, "-->", text)
+		else
+			addon:Print(v.link, "-->", addon.Ambiguate(v.winner)) -- fallback
+		end
+	end
+	-- IDEA Do we delete awardedInBags here or keep it?
 end
 
 function RCLootCouncilML:ConfigTableChanged(val)
@@ -201,6 +229,8 @@ function RCLootCouncilML:NewML(newML)
 		addon:SendCommand("group", "playerInfoRequest")
 		self:UpdateMLdb() -- Will build and send mldb
 		addon:SendCommand("group", "council", db.council)
+		-- Send out self.candidates in 10 secs, should be plenty of time for people to respond on "playerInfoRequest"
+		self:ScheduleTimer("Timer", 10, "GroupUpdate")
 	else
 		self:Disable() -- We don't want to use this if we're not the ML
 	end
@@ -226,8 +256,12 @@ function RCLootCouncilML:Timer(type, ...)
 	addon:Debug("Timer: "..type.." passed.")
 	if type == "AddItem" then
 		self:AddItem(...)
+
 	elseif type == "LootSend" then
 		addon:SendCommand("group", "offline_timer")
+
+	elseif type == "GroupUpdate" then
+		addon:SendCommand("group", "candidates", self.candidates)
 	end
 end
 
@@ -242,12 +276,6 @@ function RCLootCouncilML:OnCommReceived(prefix, serializedMsg, distri, sender)
 
 			elseif command == "MLdb_request" and addon.isMasterLooter then
 				addon:SendCommand(sender, "MLdb", addon.mldb)
-
-			--elseif command == "lootAck" then
-			--	local name = unpack(data)
-			--	for i = 1, #self.lootTable do
-			--		self.lootTable[i].candidates[name].response = "WAIT"
-			--	end
 			end
 		else
 			addon:Debug("Error in deserializing ML comm: ", command)
@@ -261,17 +289,18 @@ function RCLootCouncilML:OnEvent(event, ...)
 		self.lootOpen = true
 		if not InCombatLockdown() then -- TODO do something with looting in combat
 			if addon.isMasterLooter and GetNumLootItems() > 0 then
+				-- We have reopened the loot frame if we're running at this point
+				if self.running then return end -- REVIEW Perhaps we should check for new items?
 				addon.target = GetUnitName("target") or "Unknown/Chest" -- capture the boss name
 				for i = 1, GetNumLootItems() do
-					if db.altClickLooting then self:HookLootButton(i) end -- hook the buttons
+					if db.altClickLooting then self:ScheduleTimer("HookLootButton", 0.5, i) end -- Delay lootbutton hooking to ensure other addons have had time to build their frames
 					local _, _, quantity, quality = GetLootSlotInfo(i)
 					local item = GetLootSlotLink(i)
 					if self:ShouldAutoAward(item, quality) and quantity > 0 then
 						self:AutoAward(i, item, db.autoAwardTo, db.autoAwardReason, addon.target)
 
 					elseif self:CanWeLootItem(item, i, quality) and quantity > 0 then -- check if our options allows us to loot it
-							self:AddItem(session, item, false, i)
-							session = session + 1
+							self:AddItem(item, false, i)
 
 					elseif quantity == 0 then -- it's coin, just loot it
 						LootSlot(i)
@@ -287,7 +316,7 @@ function RCLootCouncilML:OnEvent(event, ...)
 				end
 			end
 		else
-			self:Print(L["You can't start a loot session while in combat."])
+			addon:Print(L["You can't start a loot session while in combat."])
 		end
 	elseif event == "LOOT_CLOSED" then
 		self.lootOpen = false
@@ -307,7 +336,7 @@ function RCLootCouncilML:CanWeLootItem(item, index, quality)
 	if (LootSlotHasItem(index) or db.autoLootEverything) and quality >= GetLootThreshold() and not self:IsItemIgnored(item) then -- it's something we're allowed to loot
 		-- Let's check if it's BoE
 		-- Don't bother checking if we know we want to loot it
-		return db.autolootBoE or addon:IsItemBoE(item)
+		return db.autolootBoE or (db.autolootBoE and addon:IsItemBoE(item))
 	end
 	return false
 end
@@ -315,34 +344,40 @@ end
 function RCLootCouncilML:HookLootButton(i)
 	addon:DebugLog("ML:HookLootButton("..tostring(i)..")")
 	local lootButton = getglobal("LootButton"..i)
-	if lootButton then
-		self:HookScript(lootButton, "OnClick", "LootOnClick")
-	end
 	if XLoot then -- hook XLoot
 		lootButton = getglobal("XLootButton"..i)
-		if lootButton then
-			self:HookScript(lootButton, "OnClick", "LootOnClick")
-		end
 	end
 	if XLootFrame then -- if XLoot 1.0
 		lootButton = getglobal("XLootFrameButton"..i)
-		if lootButton then
-			self:HookScript(lootButton, "OnClick", "LootOnClick")
-		end
 	end
 	if getglobal("ElvLootSlot"..i) then -- if ElvUI
 		lootButton = getglobal("ElvLootSlot"..i)
-		if lootButton then
-			self:HookScript(lootButton, "OnClick", "LootOnClick")
-		end
+	end
+	local hooked = self:IsHooked(lootButton, "OnClick")
+	if lootButton and not hooked then
+		self:HookScript(lootButton, "OnClick", "LootOnClick")
 	end
 end
 
 function RCLootCouncilML:LootOnClick(button)
 	if not IsAltKeyDown() or not db.altClickLooting or IsShiftKeyDown() or IsControlKeyDown() then return; end
-	self:DebugLog("LootAltClick()", button)
+	addon:DebugLog("LootAltClick()", button)
 
-		--TODO
+	if getglobal("ElvLootFrame") then
+		button.slot = button:GetID() -- ElvUI hack
+	end
+
+	-- Check we're not already looting that item
+	for ses, v in ipairs(self.lootTable) do
+		if button.slot == v.lootSlot then
+			addon:Print(L["The loot is already on the list"])
+			return
+		end
+	end
+
+	self:AddItem(GetLootSlotLink(button.slot), false, button.slot)
+	addon:CallModule("sessionframe")
+	addon:GetActiveModule("sessionframe"):Show(self.lootTable)
 end
 
 function RCLootCouncilML:AnnounceItems()
@@ -376,12 +411,13 @@ function RCLootCouncilML:Award(session, winner, response, reason)
 	if winner then
 		--  give out the loot or store the result, i.e. bagged or not
 		if self.lootTable[session].bagged then   -- indirect mode (the item is in a bag)
-			-- Add to the list of awarded items in MLs bags
+			-- Add to the list of awarded items in MLs bags, and remove it from lootInBags
 			tinsert(self.awardedInBags, {link = self.lootTable[session].link, winner = winner})
+			tremove(self.lootInBags, session)
 
 		else -- Direct (we can award from a WoW loot list)
 			if not self.lootTable[session].lootSlot then
-				addon:SessionError("Session "..session.." didn't have lootSlot")
+				addon:SessionError("Session "..session.." didn't have lootSlot (award)")
 				return false
 			end
 			if not self.lootOpen then -- we can't give out loot without the loot window open
@@ -390,11 +426,11 @@ function RCLootCouncilML:Award(session, winner, response, reason)
 				return false
 			end
 			if addon:UnitIsUnit(winner, "player") then -- give it to the player
-				LootSlot(lootSlot)
+				LootSlot(self.lootTable[session].lootSlot)
 			else
 				for i = 1, GetNumGroupMembers() do
 					if addon:UnitIsUnit(GetMasterLootCandidate(i), winner) then
-						GiveMasterLoot(lootSlot, i)
+						GiveMasterLoot(self.lootTable[session].lootSlot, i)
 						break
 					end
 				end
@@ -406,12 +442,11 @@ function RCLootCouncilML:Award(session, winner, response, reason)
 		self.lootTable[session].awarded = true -- No need to let Comms handle this
 		-- IDEA Switch session ?
 
-		-- REVIEW The text part in this call
 		self:AnnounceAward(addon.Ambiguate(winner), self.lootTable[session].link, reason and reason.text or db.responses[response].text)
 
 		if self:HasAllItemsBeenAwarded() then self:EndSession() end -- REVIEW might not be the best place for it
 	else -- Store in bags and award later
-		if not self.lootTable[session].lootSlot then return addon:SessionError("Session "..session.. "didn't have lootSlot") end
+		if not self.lootTable[session].lootSlot then return addon:SessionError("Session "..session.. " didn't have lootSlot (store in bags)") end
 		if not self.lootOpen then return addon:Print(L["Unable to give out loot without the loot window open."]) end
 		LootSlot(self.lootTable[session].lootSlot) -- take the item
 		tinsert(self.lootInBags, self.lootTable[session].link) -- and store data
@@ -475,12 +510,12 @@ end
 
 function RCLootCouncilML:EndSession()
 	addon:DebugLog("ML:EndSession()")
-	session = 1
+	--session = 1
 	self.lootTable = {}
 	addon:SendCommand("group", "session_end")
 	self.running = false
-	addon.testMode = false
 	self:CancelAllTimers()
+	addon.testMode = false
 	-- TODO add more to restart the whole thing
 end
 
@@ -496,10 +531,11 @@ function RCLootCouncilML:Test(items)
 		local role = addon:GetCandidateRole(addon.playerName)
 		self:AddCandidate(addon.playerName, addon.playerClass, role, addon.guildRank)
 	end
-
+	-- We must send candidates now, since we can't wait the normal 10 secs
+	addon:SendCommand("group", "candidates", self.candidates)
 	-- Add the items
 	for session, iName in ipairs(items) do
-		self:AddItem(session, iName, false, false)
+		self:AddItem(iName, false, false)
 	end
 	if db.autoStart then -- Settings say go
 		self:StartSession()
@@ -606,7 +642,7 @@ LibDialog:Register("RCLOOTCOUNCIL_CONFIRM_AWARD", {
 	buttons = {
 		{	text = L["Yes"],
 			on_click = function(self, data)
-				addon:Print("Item awarded!")
+				--addon:Print("Item awarded!")
 				-- IDEA Perhaps come up with a better way of handling this
 				-- REVIEW Test this
 				local session, player, response, reason, votes, item1, item2 = unpack(data)

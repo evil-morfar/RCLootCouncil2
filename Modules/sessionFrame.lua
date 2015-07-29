@@ -8,7 +8,7 @@ RCSessionFrame = addon:NewModule("RCSessionFrame")
 local ST = LibStub("ScrollingTable")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 
-local db;
+local db, ml;
 local ROW_HEIGHT = 40
 local HIGHLIGHT = {r = 0, g = 0, b = 0, a = 0} -- 0's for no highlight
 local awardLater = false
@@ -23,13 +23,15 @@ end
 
 function RCSessionFrame:OnEnable()
 	db = addon:Getdb()
+	ml = addon:GetActiveModule("masterlooter")
 	--self:Show()
 end
 
 function RCSessionFrame:OnDisable()
 	self.frame:Hide()
 	self.frame.rows = {}
-	self.frame:SetParent(nil)
+	--self.frame:SetParent(nil)
+	--self.frame = nil
 	awardLater = false
 end
 
@@ -66,12 +68,11 @@ function RCSessionFrame:ExtractData(data)
 end
 
 function RCSessionFrame:Update()
-	self.frame.st:SortData()
+	self.frame.toggle:SetChecked(awardLater)
 end
 
 function RCSessionFrame:DeleteItem(index)
-	addon:Print("row: "..index)
-	local ml = addon:GetActiveModule("masterlooter")
+	addon:Debug("Delete row:", index)
 	ml:RemoveItem(index) -- remove the item from MLs lootTable
 	self:Show(ml.lootTable)
 end
@@ -107,6 +108,7 @@ function RCSessionFrame:GetFrame()
 	getglobal(tgl:GetName().."Text"):SetText(L["Award later?"])
 	tgl:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", 10, 40)
 	tgl.tooltip = L["Check this to loot the items and distribute them later."]
+	tgl:SetChecked(awardLater)
 	tgl:SetScript("OnClick", function() awardLater = not awardLater; end )
 	f.toggle = tgl
 
@@ -114,10 +116,10 @@ function RCSessionFrame:GetFrame()
 	local b1 = addon:CreateButton(L["Start"], f.content)
 	b1:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", 10, 10)
 	b1:SetScript("OnClick", function()
-		local ml = addon:GetActiveModule("masterlooter")
 		if awardLater then
 			for session in ipairs(ml.lootTable) do ml:Award(session) end
 			addon:Print(L["Looted items to award later"])
+			ml.lootTable = {}
 		else
 			ml:StartSession()
 		end
@@ -129,7 +131,8 @@ function RCSessionFrame:GetFrame()
 	local b2 = addon:CreateButton(L["Cancel"], f.content)
 	b2:SetPoint("LEFT", b1, "RIGHT", 15, 0)
 	b2:SetScript("OnClick", function()
-		addon:GetActiveModule("masterlooter"):EndSession()
+		--addon:GetActiveModule("masterlooter"):EndSession()
+		ml.lootTable = {}
 		self:Disable()
 	end)
 	f.guildBtn = b2

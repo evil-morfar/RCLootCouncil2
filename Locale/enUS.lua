@@ -56,7 +56,7 @@ L[" is not active in this raid."] = true
 
 L["chat tVersion string"] = "|cFF87CEFARCLootCouncil |cFFFFFFFFversion |cFFFFA500 %s - %s"
 L["chat version String"] = "|cFF87CEFARCLootCouncil |cFFFFFFFFversion |cFFFFA500 %s"
-L["chat_commands"] = [=[]
+L["chat_commands"] = [=[
 - config    - Open the options interface
 - open      - Opens the voting frame
 - council   - opens the council interface
@@ -82,6 +82,7 @@ L["history"] = true
 L["whisper"] = true
 L["whisper_help"] = "Raiders can use the whisper system in case someone haven't installed the addon.\nWhispering 'rchelp' to the Master Looter will get them a guide along with the list of keywords, which can be edited at the 'Buttons and Responses' optiontab.\nIt's recommended for the ML to turn on 'Announce Considerations' as each item's number is required to use the whisper system.\nNOTE: People should still get the addon installed, otherwise all player information won't be available."
 L["neverml"] = true
+L["You cannot use this command without being the Master Looter"] = true
 L["reset"] = true
 L["Windows reset"] = true
 L["The Master Looter has ended the session"] = true
@@ -105,9 +106,14 @@ L["session_error"] = "Something went wrong - please restart the session"
 
 -- @region ml_core.lua
 L["Cannot autoaward:"] = true
+L["No items to award later registered"] = true
+L["You're already running a session."] = true
+L["No winners registered"] = true
+L["Following winners was registered:"] = true
 L["Could not find 'player' in the raid."] = "Could not find %s in the raid."
 
 L["Could not Auto Award i because the Loot Threshold is too high!"] = "Could not Auto Award %s because the Loot Threshold is too high!"
+L["The loot is already on the list"] = true
 L["You can't start a loot session while in combat."] = true
 L["The item would now be awarded to 'player'"] = "The item would now be awarded to %s"
 L["All items has been awarded and  the loot session concluded"] = true

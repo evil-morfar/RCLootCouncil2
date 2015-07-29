@@ -416,6 +416,20 @@ function RCLootCouncil:ChatCommand(msg)
 		db.neverML = not db.neverML
 		self:Print(L["neverml"].." = "..tostring(db.neverML))
 
+	elseif input == "award" then -- TODO/REVIEW Complete this and test it
+		if self.isMasterLooter then
+			self:GetActiveModule("masterlooter"):SessionFromBags()
+		else
+			self:Print(L["You cannot use this command without being the Master Looter"])
+		end
+
+	elseif input == "winners" then -- REVIEW
+		if self.isMasterLooter then
+			self:GetActiveModule("masterlooter"):PrintAwardedInBags()
+		else
+			self:Print(L["You cannot use this command without being the Master Looter"])
+		end
+
 	elseif input == "reset" or input == L["reset"] then
 		--REVIEW Check if works
 		for _, v in pairs(self.db.UI) do
@@ -629,7 +643,7 @@ function RCLootCouncil:EnterCombat()
 	if not db.minimizeInCombat then return end
 	self.inCombat = true
 	for _,frame in ipairs(frames) do
-		if not frame:IsMinimized() then -- only minimize for combat if it isn't already minimized
+		if frame:IsVisible() and not frame:IsMinimized() then -- only minimize for combat if it isn't already minimized
 			self:Debug("Minimizing for combat")
 			frame.combatMinimized = true -- flag it as being minimized for combat
 			frame:Minimize()
@@ -895,9 +909,11 @@ end
 
 function RCLootCouncil:OnEvent(this, event, ...)
 	if event == "PARTY_LOOT_METHOD_CHANGED" then --REVIEW Still not sure this works
+		self:Debug("Event:", "PARTY_LOOT_METHOD_CHANGED")
 		self:NewMLCheck()
 
 	elseif event == "RAID_INSTANCE_WELCOME" then
+		self:Debug("Event:", "RAID_INSTANCE_WELCOME")
 		-- high server-side latency causes the UnitIsGroupLeader("player") condition to fail if queried quickly (upon entering instance) regardless of state.
 		-- may add a delay for the above conditional if the issue persists to circumvent issue.
 		-- NOTE v2.0: Not sure if this is still an issue, but just add a 2 sec timer to the MLCheck call
@@ -906,6 +922,7 @@ function RCLootCouncil:OnEvent(this, event, ...)
 		end, 2)
 
 	elseif event == "GUILD_ROSTER_UPDATE" then
+		self:Debug("Event:", "GUILD_ROSTER_UPDATE")
 		self.guildRank = self:GetPlayersGuildRank();
 		if self.unregisterGuildEvent then
 			self:UnregisterEvent("GUILD_ROSTER_UPDATE"); -- we don't need it any more
@@ -913,6 +930,7 @@ function RCLootCouncil:OnEvent(this, event, ...)
 		end
 	elseif event == "GET_ITEM_INFO_RECEIVED" then
 			-- REVIEW Not sure we need this
+			self:Debug("Event:", "GET_ITEM_INFO_RECEIVED")
 	end
 end
 
@@ -1058,6 +1076,10 @@ function RCLootCouncil:GetClassColor(class)
 		color.a = 1.0
 		return color
 	end
+end
+
+function RCLootCouncil:RGBToHex(r,g,b)
+	return string.format("%02x%02x%02x",255*r, 255*g, 255*b)
 end
 
 --- Creates a standard frame for RCLootCouncil
