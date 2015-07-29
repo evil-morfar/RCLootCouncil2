@@ -446,7 +446,17 @@ function addon:OptionsTable()
 										desc = L["reset_to_default_desc"],
 										type = "execute",
 										confirm = true,
-										func = function() addon:awardReasonsToDefault() end,
+										func = function()
+											for i = 1, #db.awardReasons do
+												db.awardReasons[i].log = self.defaults.profile.awardReasons[i].log
+												db.awardReasons[i].text = self.defaults.profile.awardReasons[i].text
+												for j = 1, 4 do
+													db.awardReasons[i].color[j] = self.defaults.profile.awardReasons[i].color[j]
+												end
+											end
+											db.numAwardReasons = self.defaults.profile.numAwardReasons
+											self:ConfigTableChanged()
+										end,
 									},
 								},
 							},
@@ -544,7 +554,17 @@ function addon:OptionsTable()
 								desc = L["reset_announce_to_default_desc"],
 								type = "execute",
 								confirm = true,
-								func = function() addon:announceToDefault() end
+								func = function()
+									for i = 1, #db.awardText do
+										db.awardText[i].channel = self.defaults.profile.awardText[i].channel
+										db.awardText[i].text = self.defaults.profile.awardText[i].text
+									end
+									db.announceAward = self.defaults.profile.announceAward
+									db.announceItems = self.defaults.profile.announceItems
+									db.announceChannel = self.defaults.profile.announceChannel
+									db.announceText = self.defaults.profile.announceText
+									self:ConfigTableChanged()
+								end
 							},
 						},
 					},
@@ -574,24 +594,7 @@ function addon:OptionsTable()
 										max = db.maxButtons,
 										step = 1,
 									},
-									-- passButton = {
-									-- 	order = -1,
-									-- 	name = "Pass button",
-									-- 	desc = "Select which buttons' response you want to filter when selecting \"Filter Passes\".",
-									-- 	type = "select",
-									-- 	style = "dropdown",
-									-- 	width = "double",
-									-- 	values = function()
-									-- 		local t = {}
-									-- 		t[(db.maxButtons + 1)] = "None";
-									-- 		for i = 1, db.maxButtons do
-									-- 			if i <= db.numButtons then t[i] = "Button "..i; else break end
-									-- 		end
-									-- 		return t;
-									-- 	end,
-									-- 	set = function(i,v) db.passButton = v end,
-									-- 	get = function() return db.passButton end,
-									-- },
+									-- Made further down
 								},
 							},
 							responseFromChat = {
@@ -606,19 +609,11 @@ function addon:OptionsTable()
 										desc = L["accept_whispers_desc"],
 										type = "toggle",
 									},
-									-- acceptRaidChat = {
-									-- 	order = 1.1,
-									-- 	name = "Accept Raid Chat",
-									-- 	desc = "Enables players to post their current item(s) in raid chat and thus get added to the voting frame.",
-									-- 	type = "toggle",
-									-- 	get = function() return db.acceptRaidChat end,
-									-- 	set = function() db.acceptRaidChat = not db.acceptRaidChat; end,
-									-- },
 									desc = {
 										order = 2,
 										name = L["responses_from_chat_desc"],
 										type = "description",
-										hidden = function() return not (db.acceptWhispers or db.acceptRaidChat) end,
+										hidden = function() return not db.acceptWhispers end,
 									},
 									-- Made further down
 								},
@@ -629,7 +624,17 @@ function addon:OptionsTable()
 								desc = L["reset_buttons_to_default_desc"],
 								type = "execute",
 								confirm = true,
-								func = function() addon:buttonsToDefault() end
+								func = function()
+									for k, v in ipairs(db.buttons) do
+										v.text = self.defaults.profile.buttons[k].text
+										v.whisperKey = self.defaults.profile.buttons[k].whisperKey
+										db.responses[k].text = self.defaults.profile.responses[k].text
+										for i = 1, 4 do db.responses[k].color[i] = self.defaults.profile.responses[k].color[i] end
+									end
+									db.numButtons = self.defaults.profile.numButtons
+									db.acceptWhispers = self.defaults.profile.acceptWhispers
+									self:ConfigTableChanged()
+								end,
 							},
 						},
 					},

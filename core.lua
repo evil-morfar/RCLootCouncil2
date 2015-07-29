@@ -7,10 +7,8 @@
 TODO
 	Things marked with "TODO"
 		- If we truly want to be able to edit votingframe scrolltable with modules, it needs to have GetRow, GetCol by name
-		- autoOpen in defaults - used to toggle if rc should autoopen the voting frame. /rc open if not.
 		- Make sure all variables store interchangeable data to allow for fully cross realm/language support i.e UnitFullName, Unlocalized - only change stuff on display
 		- Check if modules can be implemented smarter by getting OnModuleCreated event from Ace or something else.
-		- The whole "loot from bags" thing (Check if we can make some alt-clicking in bags, and maybe an "add item" command)
 		- "Disenchant option when everyone passes"
 		- "more info" thingie
 		- Revise DB variables
@@ -22,11 +20,10 @@ CHANGELOG (WIP)
 	-- MOVED TO CHANGELOG.TXT
 
 	*Changed Test mode behavior -- really?
-	*Added Obeserve mode. -- FIXME Missing in options!
 
-  	Bugfixes:
-			Various taint fixes.
-
+  Bugfixes:
+		Various taint fixes.
+		Hooks didn't work properly when the player used different loot frame addons.
 ]]
 
 RCLootCouncil = LibStub("AceAddon-3.0"):NewAddon("RCLootCouncil", "AceConsole-3.0", "AceEvent-3.0", "AceComm-3.0", "AceSerializer-3.0", "AceHook-3.0", "AceTimer-3.0");
@@ -41,26 +38,27 @@ local db, historyDB, debugLog;-- = self.db.profile, self.lootDB.factionrealm, se
 local testItems = {105473,105407,105513,105465,105482,104631,105450,105537,104554,105509,104412,105499,104476,104544,104495,105568,105594,105514,105479,104532,105639,104508,105621,}
 -- init modules
 local defaultModules = {
-		masterlooter =	"RCLootCouncilML",
-		lootframe =		"RCLootFrame",
-		history =		"RCLootHistory",
-		version =		"RCVersionCheck",
-		rank =			"RCRankChooser",
-		sessionframe =	"RCSessionFrame",
-		votingframe =	"RCVotingFrame",
+	masterlooter =	"RCLootCouncilML",
+	lootframe =		"RCLootFrame",
+	history =		"RCLootHistory",
+	version =		"RCVersionCheck",
+	rank =			"RCRankChooser",
+	sessionframe =	"RCSessionFrame",
+	votingframe =	"RCVotingFrame",
 }
 local userModules = {
-		masterlooter = nil,
-		lootframe = nil,
-		history = nil,
-		version = nil,
-		rank = nil,
-		sessionframe = nil,
-		votingframe = nil,
+	masterlooter = nil,
+	lootframe = nil,
+	history = nil,
+	version = nil,
+	rank = nil,
+	sessionframe = nil,
+	votingframe = nil,
 }
 
 local usage = false -- We want to use the addon for this raid
 local frames = {} -- Contains Minimize() and IsMinimized() for all frames
+local unregisterGuildEvent = false
 
 function RCLootCouncil:OnInitialize()
 	--IDEA Consider if we want everything on self, or just whatever modules could need.
@@ -68,7 +66,7 @@ function RCLootCouncil:OnInitialize()
 	for k,v in ipairs(testItems) do
 		GetItemInfo(v)
 	end
-  self.version = GetAddOnMetadata("RCLootCouncil2", "Version")
+  	self.version = GetAddOnMetadata("RCLootCouncil2", "Version")
 	self.nnp = true
 	self.debug = true
 	self.tVersion = "Alpha.1" -- String or nil. Indicates test version, which alters stuff like version check. Is appended to 'version', i.e. "version-tVersion"
@@ -84,7 +82,6 @@ function RCLootCouncil:OnInitialize()
 	self.handleLooting = false -- Should we handle the looting? (e.g. Activated)
 	self.inCombat = false -- Are we in combat?
 
-	self.unregisterGuildEvent = false
 	self.verCheckDisplayed = false -- Have we shown a "out-of-date"?
 
 	self.council = {} -- council from ML
@@ -122,8 +119,8 @@ function RCLootCouncil:OnInitialize()
 		NONE =		L["None"],
 	}
 
-	self.testMode = false; -- tentative?
-	self.soloMode = false;
+	self.testMode = false;
+	self.soloMode = false;  -- tentative?
 
 	-- Option table defaults
 	self.defaults = {
@@ -186,8 +183,6 @@ function RCLootCouncil:OnInitialize()
 
 			enableHistory = false,
 			sendHistory = true,
-
-			filterPasses = false,
 
 			minRank = -1,
 			council = {},
@@ -839,14 +834,14 @@ end
 
 function RCLootCouncil:GetPlayersGuildRank()
 	self:DebugLog("GetPlayersGuildRank()")
+	GuildRoster() -- let the event trigger this func
 	if IsInGuild() then
 		local rank = select(2, GetGuildInfo("player"))
 		if rank then
 			self:Debug("Found Guild Rank: "..rank)
-			self.UnregisterGuildEvent = true;
+			unregisterGuildEvent = true;
 			return rank;
 		else
-			GuildRoster() -- let the event trigger this func
 			return L["Not Found"];
 		end
 	else
@@ -924,7 +919,7 @@ function RCLootCouncil:OnEvent(this, event, ...)
 	elseif event == "GUILD_ROSTER_UPDATE" then
 		self:Debug("Event:", "GUILD_ROSTER_UPDATE")
 		self.guildRank = self:GetPlayersGuildRank();
-		if self.unregisterGuildEvent then
+		if unregisterGuildEvent then
 			self:UnregisterEvent("GUILD_ROSTER_UPDATE"); -- we don't need it any more
 			self:GetGuildOptions() -- get the guild data to the options table now that it's ready
 		end

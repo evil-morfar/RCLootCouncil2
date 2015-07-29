@@ -79,7 +79,7 @@ function LootFrame:Update()
 		if numEntries >= MAX_ENTRIES then break end -- Only show a certain amount of items at a time
 		if not v.rolled then -- Only show unrolled items
 			numEntries = numEntries + 1
-			width = 150 -- reset it for reasons
+			width = 150 -- reset it
 			if not entries[numEntries] then entries[numEntries] = self:GetEntry(numEntries) end
 			-- Actually update entries
 			entries[numEntries].realID = k
@@ -104,7 +104,6 @@ function LootFrame:Update()
 	for i = MAX_ENTRIES, numEntries + 1, -1 do -- Hide unused
 		if entries[i] then entries[i]:Hide() end
 	end
-	print(tostring(numRolled).." == "..tostring(#items))
 	if numRolled == #items then -- We're through them all, so hide the frame
 		self:Disable()
 	end
@@ -114,7 +113,7 @@ local toSend = {data = {}} -- More efficient
 function LootFrame:OnRoll(entry, button)
 	addon:DebugLog("LootFrame:OnRoll", entry, button)
 	local index = entries[entry].realID
-	toSend = addon:CreateResponse(items[entries[entry].realID].session, tonumber(strmatch(items[index].link, "item:(%d+):")), items[index].ilvl, button, items[index].note)
+	toSend = addon:CreateResponse(items[index].session, tonumber(strmatch(items[index].link, "item:(%d+):")), items[index].ilvl, button, items[index].note)
 
 	addon:SendCommand("group", "response", toSend)
 
@@ -167,6 +166,10 @@ function LootFrame:GetEntry(entry)
 		end
 		f.buttons[i]:SetScript("OnClick", function() LootFrame:OnRoll(entry, i) end)
 	end
+	-- Pass button
+	f.buttons[addon.mldb.numButtons + 1] = addon:CreateButton(L["Pass"], f)
+	f.buttons[addon.mldb.numButtons + 1]:SetPoint("LEFT", f.buttons[addon.mldb.numButtons], "RIGHT", 5, 0)
+	f.buttons[addon.mldb.numButtons + 1]:SetScript("OnClick", function() LootFrame:OnRoll(entry, "PASS") end)
 
 	-------- Note button ---------
 	local noteButton = CreateFrame("Button", nil, f)

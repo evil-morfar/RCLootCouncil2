@@ -316,7 +316,7 @@ L["message_desc"] = "The message to send to the selected channel."
 L["reset_announce_to_default_desc"] = "Resets all the announcement options to default"
 
 L["Buttons and Responses"] = true
-L["buttons_and_responses_desc"] = "Configure the reply buttons to show on raiders' Loot Frame.\nThe first button is showed furthest to the left, and the last furthest to the right - use the slider to choose how many buttons you want (max %d).\n\nThe order of responses determines all sorting orders of said response.\nThe \"Pass\" button determines which response to filter when \"Filter Passes\" is selected."
+L["buttons_and_responses_desc"] = "Configure the reply buttons to show on raiders' Loot Frame.\nThe order showed here determines the order when sorting the voting frame, and is displayed left to right on the loot frame - use the slider to choose how many buttons you want (max %d).\n\nA \"Pass\" button is added furthest to the right automatically"
 L["Number of buttons"] = true
 L["number_of_buttons_desc"] = "Slide to change the number of buttons."
 L["Responses from Chat"] = true
