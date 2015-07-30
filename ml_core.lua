@@ -97,6 +97,7 @@ function RCLootCouncilML:RemoveCandidate(name)
 end
 
 -- IDEA This needs to work if one's not in a raid (if possible) -- edit: OR do it?
+--			I think GetRaidRosterInfo() works in a party when used with GetNumGroupMembers()
 function RCLootCouncilML:UpdateGroup()
 	local group_copy = {}
 	local updates = false
@@ -222,8 +223,8 @@ function RCLootCouncilML:BuildMLdb()
 end
 
 function RCLootCouncilML:NewML(newML)
+	addon:DebugLog("ML:NewML", newML)
 	if addon:UnitIsUnit(newML, "player") then -- we are the the ML
-		addon:DebugLog("ML:NewML()")
 		addon:SendCommand("group", "playerInfoRequest")
 		self:UpdateMLdb() -- Will build and send mldb
 		addon:SendCommand("group", "council", db.council)

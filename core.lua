@@ -77,9 +77,8 @@ function RCLootCouncil:OnInitialize()
 	self.isMasterLooter = false -- Are we the ML?
 	self.masterLooter = ""  -- Name of the ML
 	self.isCouncil = false -- Are we in the Council?
-	--self.active = false	-- Session in process (set by ML) EDIT: Aren't we using ml.running for this?
 	self.enabled = true -- turn addon on/off
-	self.handleLooting = false -- Should we handle the looting? (e.g. Activated)
+	--self.handleLooting = false -- Should we handle the looting? (e.g. Activated)
 	self.inCombat = false -- Are we in combat?
 
 	self.verCheckDisplayed = false -- Have we shown a "out-of-date"?
@@ -130,6 +129,13 @@ function RCLootCouncil:OnInitialize()
 			localizedSubTypes = {},
 		},
 		profile = {
+			usage = { -- State of enabledness
+				ml = false,
+				leader = false,
+				ask_ml = true,
+				ask_leader = true,
+				never = false,
+			},
 			autoStart = false, -- start a session with all eligible items
 			autoLoot = true, -- Auto loot equippable items
 			autolootEverything = true,
@@ -149,11 +155,11 @@ function RCLootCouncil:OnInitialize()
 			autoAwardReason = 1,
 			observe = false, -- observe mode on/off
 			autoOpen = true, -- auto open the voting frame
-			autoEnable = false, -- Skip "Use for this raid?" message
+			--autoEnable = false, -- Skip "Use for this raid?" message
 			autoPass = true,
 			silentAutoPass = false, -- Show autopass message
 			autoPassBoE = true,
-			neverML = false, -- Never use the addon as ML
+			--neverML = false, -- Never use the addon as ML
 			minimizeInCombat = false,
 
 			UI = { -- stores all ui information
@@ -312,6 +318,8 @@ function RCLootCouncil:OnEnable()
 					if #db.council == 0 then -- if there's no council
 						self:Print(L["You haven't set a council! You can edit your council by typing '/rc council'"])
 					end
+					self:CallModule("masterlooter")
+					self:GetActiveModule("masterlooter"):NewML(self.masterlooter)
 				end,
 			},
 			{	text = L["No"],
@@ -913,22 +921,7 @@ function RCLootCouncil:OnEvent(event, ...)
 		-- high server-side latency causes the UnitIsGroupLeader("player") condition to fail if queried quickly (upon entering instance) regardless of state.
 		-- may add a delay for the above conditional if the issue persists to circumvent issue.
 		-- NOTE v2.0: Not sure if this is still an issue, but just add a 2 sec timer to the MLCheck call
-		self:ScheduleTimer(function() -- REVIEW Check if it can take a function like this
-			if not self.isMasterLooter and not self.masterLooter and UnitIsGroupLeader("player") then -- There's no ML, and lootmethod ~= ML, but we are the group leader
-				if db.autoEnable then -- the addon should auto start, so change loot method to master, and make the player ML
-					SetLootMethod("master", self.playerName)
-					self:Print(L[" you are now the Master Looter and RCLootCouncil is now handling looting."])
-					if db.autoAward and GetLootThreshold() > db.autoAwardLowerThreshold then
-						RCLootCouncil:Print(L["Changing loot threshold to enable Auto Awarding"])
-						SetLootThreshold(db.autoAwardLowerThreshold)
-					end
-					self.isMasterLooter = true
-					self.masterLooter = self.playerName
-				elseif self.enabled then
-					return LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_USAGE") -- ask if we want to use the addon since we're group leader
-				end
-			end
-		end, 2)
+		self:ScheduleTimer("NewMLCheck", 2)
 
 	elseif event == "GUILD_ROSTER_UPDATE" then
 		self:Debug("Event:", "GUILD_ROSTER_UPDATE")
@@ -947,25 +940,47 @@ function RCLootCouncil:NewMLCheck()
 	local old_ml = self.masterLooter
 	self.isMasterLooter, self.masterLooter = self:GetML()
 
-	if self.isMasterLooter and db.neverML then self:Print(L["neverml_warning"]) end -- neverML logic
-	if self:UnitIsUnit(old_ml,self.masterLooter) or db.neverML then return end -- no change
+	if self:UnitIsUnit(old_ml, self.masterLooter) or db.usage.never then return end -- no change
+	if self:UnitIsUnit(old_ml, "player") and not self:UnitIsUnit(self.masterLooter, "player") then
+		-- We were ML, but no longer, so disable masterlooter module
+		self:GetActiveModule("masterlooter"):Disable()
+	end
 	if not self.isMasterLooter and self.masterLooter then return end -- Someone else is ML
 
-	-- We are ML or could be, lets do stuff
-	if self.isMasterLooter and db.autoEnable then -- addon should auto start
+	-- We are ML and shouldn't ask the player for usage
+	if self.isMasterLooter and db.usage.ml then -- addon should auto start
 		self:Print(L[" now handles looting"])
 		if db.autoAward and GetLootThreshold() > db.autoAwardLowerThreshold then
 			RCLootCouncil:Print(L["Changing loot threshold to enable Auto Awarding"])
 			SetLootThreshold(db.autoAwardLowerThreshold)
 		end
 
-	elseif self.isMasterLooter and not db.autoEnable then -- addon should not auto start, but ask if it should start since we're ML
+	-- We're ML and must ask the player for usage
+	elseif self.isMasterLooter and db.usage.ask_ml then
 		return LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_USAGE")
 
+	-- There's no ML, and lootmethod ~= ML, but we are the group leader
+	elseif not self.masterLooter and UnitIsGroupLeader("player") then
+		-- We don't need to ask the player for usage, so change loot method to master, and make the player ML
+		if db.usage.leader then
+			SetLootMethod("master", self.playerName)
+			self:Print(L[" you are now the Master Looter and RCLootCouncil is now handling looting."])
+			if db.autoAward and GetLootThreshold() > db.autoAwardLowerThreshold then
+				RCLootCouncil:Print(L["Changing loot threshold to enable Auto Awarding"])
+				SetLootThreshold(db.autoAwardLowerThreshold)
+			end
+			self.isMasterLooter = true
+			self.masterLooter = self.playerName
+
+		-- We must ask the player for usage
+		elseif db.usage.ask_leader then
+			return LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_USAGE")
+		else
+			return
+		end
 	else
 		return
 	end
-	-- FIXME Need to handle var usage
 	self:CallModule("masterlooter")
 	self:GetActiveModule("masterlooter"):NewML(self.masterlooter)
 end
