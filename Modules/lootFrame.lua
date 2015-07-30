@@ -47,7 +47,6 @@ function LootFrame:ReRoll(table)
 			note = nil,
 			session = v.session,
 		}
-		print(v.texture)
 	end
 	self:Show()
 end

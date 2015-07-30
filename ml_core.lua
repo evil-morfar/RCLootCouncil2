@@ -1,8 +1,9 @@
-﻿--[[	RCLootCouncil ml_core.lua	by Potdisc
-	Contains core elements for the MasterLooter
+﻿--[[	RCLootCouncil by Potdisc
+ml_core.lua	Contains core elements for the MasterLooter
 	-	Although possible, this module shouldn't be replaced unless closely replicated as other default modules depend on it.
+	-	Assumes several functions in SessionFrame and VotingFrame
 
-	TODO/NOTES:
+	TODOs/NOTES:
 		- SendMessage() on AddItem() to let userModules know it's safe to add to lootTable. Might have to do it other places too.
 		- Revision lootTable.announced
 ]]
@@ -485,12 +486,13 @@ function RCLootCouncilML:AutoAward(lootIndex, item, name, reason, boss)
 end
 
 function RCLootCouncilML:TrackAndLogLoot(name, item, response, boss, votes, itemReplaced1, itemReplaced2, reason)
+	addon:Debug("Response = ", response, "Reason = ", reason)
 	if reason and not reason.log then return end -- Reason says don't log
 	if not (db.sendHistory and db.enableHistory) then return end -- No reason to do stuff when we won't use it
 	local instanceName, _, _, difficultyName = GetInstanceInfo()
-	local table = {["lootWon"] = item, ["date"] = date("%d/%m/%y"), ["time"] = date("%H:%M:%S"), ["instance"] = instanceName.." "..difficultyName,
-		["boss"] = boss, ["votes"] = votes, ["itemReplaced1"] = itemReplaced1, ["itemReplaced2"] = itemReplaced2, ["response"] = response,
-		["reason"] = reason and reason.text or db.responses[response].text, ["color"] = reason and reason.color or db.responses[response].color}
+	local table = {["lootWon"] = item, ["date"] = date("%d/%m/%y"), ["time"] = date("%H:%M:%S"), ["instance"] = instanceName.."-"..difficultyName,
+		["boss"] = boss, ["votes"] = votes, ["itemReplaced1"] = itemReplaced1, ["itemReplaced2"] = itemReplaced2, ["responseID"] = response,
+		["response"] = reason and reason.text or db.responses[response].text, ["color"] = reason and reason.color or db.responses[response].color}
 	if db.sendHistory then -- Send it, and let comms handle the logging
 		addon:SendCommand("group", "history", name, table)
 	elseif db.enableHistory then -- Just log it
@@ -643,10 +645,12 @@ LibDialog:Register("RCLOOTCOUNCIL_CONFIRM_AWARD", {
 		{	text = L["Yes"],
 			on_click = function(self, data)
 				-- IDEA Perhaps come up with a better way of handling this
-				local session, player, response, reason, votes, item1, item2 = unpack(data)
+				local session, player, response, reason, votes, item1, item2 = unpack(data,1,7)
+				local item = RCLootCouncilML.lootTable[session].link -- Store it now as we wipe lootTable after Award()
+				addon:Debug("Data:", unpack(data,1,7))
 				local awarded = RCLootCouncilML:Award(session, player, response, reason)
 				if awarded then -- log it
-					RCLootCouncilML:TrackAndLogLoot(name, item, response, addon.target, votes, item1, item2, reason)
+					RCLootCouncilML:TrackAndLogLoot(player, item, response, addon.target, votes, item1, item2, reason)
 				end
 			end,
 		},

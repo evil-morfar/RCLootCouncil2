@@ -233,12 +233,6 @@ function addon:OptionsTable()
 								type = "group",
 								inline = true,
 								args = {
-									autoEnable = {
-										order = 1,
-										name = L["Auto Enable"],
-										desc = L["auto_enable_desc"],
-										type = "toggle",
-									},
 									autoStart = {
 										order = 2,
 										name = L["Auto Start"],

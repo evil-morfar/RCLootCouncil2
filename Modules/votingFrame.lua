@@ -1,8 +1,9 @@
 -- Author      : Potdisc
 -- Create Date : 12/15/2014 8:54:35 PM
--- DefaultModule	- (relies on ml_core perhaps?)
--- Displays everything related to handling loot for all members.
+-- DefaultModule
+--	votingFrame.lua	Displays everything related to handling loot for all members.
 --		Will only show certain aspects depending on addon.isMasterLooter, addon.isCouncil and addon.mldb.observe
+
 -- IDEA We're not sorting by guild rank, would require a change to how guild rank is sent
 
 local addon = LibStub("AceAddon-3.0"):GetAddon("RCLootCouncil")
@@ -253,7 +254,6 @@ function RCVotingFrame:Update()
 	for i = #lootTable+1, #sessionButtons do
 		sessionButtons[i]:Hide()
 	end
-	addon:Debug("session = ", session)
 	self.frame.st:SetData(lootTable[session].rows)
 	--self.frame.st:SortData()
 end
@@ -401,8 +401,8 @@ function RCVotingFrame:GetFrame()
 	end
 	f.abortBtn = b1
 
-	-- More info button
-	local b2 = CreateFrame("Button", nil, f.content, "UIPanelButtonTemplate")
+	-- TODO More info button
+	--[[local b2 = CreateFrame("Button", nil, f.content, "UIPanelButtonTemplate")
 	b2:SetSize(25,25)
 	b2:SetPoint("TOPRIGHT", f, "TOPRIGHT", -10, -20)
 	b2:SetNormalTexture("Interface\\Buttons\\UI-SpellbookIcon-NextPage-Up")
@@ -419,7 +419,7 @@ function RCVotingFrame:GetFrame()
 	end)
 	b2:SetScript("OnEnter", function() addon:CreateTooltip(L["Click to expand/collapse more info"]) end)
 	b2:SetScript("OnLeave", addon.HideTooltip)
-	f.moreInfoBtn = b2
+	f.moreInfoBtn = b2]]
 
 	-- Filter
 	local tgl = addon:CreateButton(L["Filter"], f.content)
@@ -429,18 +429,16 @@ function RCVotingFrame:GetFrame()
 	tgl:SetScript("OnLeave", addon.HideTooltip)
 	f.filter = tgl
 
-	-- Number of rolls/votes
-	local rf = CreateFrame("Frame", nil, f.content)
+	-- TODO Number of rolls/votes
+--[[	local rf = CreateFrame("Frame", nil, f.content)
 	rf:SetWidth(100)
 	rf:SetHeight(20)
 	rf:SetPoint("RIGHT", b2, "LEFT", -10, 0)
 	rf:SetScript("OnEnter", function()
-		addon:Print("rf OnEnter")
-		-- TODO Make call to a "PeopleStillToRoll" func
+
 	end)
 	rf:SetScript("OnLeave", function()
-		addon:Print("rf OnLeave")
-		-- TODO Make call to a "PeopleStillToRoll" func
+
 	end)
 	local rft = rf:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 	rft:SetPoint("CENTER", rf, "CENTER")
@@ -448,7 +446,7 @@ function RCVotingFrame:GetFrame()
 	rft:SetTextColor(0,1,0,1) -- Green
 	rf.text = rft
 	rf:SetWidth(rft:GetStringWidth())
-	f.rollResult = rf
+	f.rollResult = rf]]
 
 	-- Award string
 	local awdstr = f.content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
@@ -714,7 +712,7 @@ do
 			local value = LIB_UIDROPDOWNMENU_MENU_VALUE
 			info = Lib_UIDropDownMenu_CreateInfo()
 			if value == "AWARD_FOR" then
-				for k,v in pairs(db.awardReasons) do
+				for k,v in ipairs(db.awardReasons) do
 					if k > db.numAwardReasons then break end
 					info.text = v.text
 					info.notCheckable = true
@@ -772,13 +770,15 @@ do
 				info.func = function()
 					local t = {}
 					for k,v in ipairs(lootTable) do
-						tinsert(t, {
-							name = v.name,
-							link = v.link,
-							ilvl = v.ilvl,
-							texture = v.texture,
-							session = k,
-						})
+						if not v.awarded then
+							tinsert(t, {
+								name = v.name,
+								link = v.link,
+								ilvl = v.ilvl,
+								texture = v.texture,
+								session = k,
+							})
+						end
 					end
 					addon:SendCommand(candidateName, "reroll", t)
 				end

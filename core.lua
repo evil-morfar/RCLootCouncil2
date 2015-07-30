@@ -1,10 +1,8 @@
---[[	RCLootCouncil core.lua		by Potdisc
-
-	Contains core elements of the addon
-
+--[[	RCLootCouncil by Potdisc
+core.lua	Contains core elements of the addon
 
 --------------------------------
-TODO
+TODOs/Notes
 	Things marked with "TODO"
 		- If we truly want to be able to edit votingframe scrolltable with modules, it needs to have GetRow, GetCol by name
 		- Make sure all variables store interchangeable data to allow for fully cross realm/language support i.e UnitFullName, Unlocalized - only change stuff on display
@@ -19,7 +17,6 @@ CHANGELOG (WIP)
 	-- MOVED TO CHANGELOG.TXT
 
 	*Changed Test mode behavior -- really?
-	*Auto pass button
 
   Bugfixes:
 		Various taint fixes.
@@ -67,8 +64,8 @@ function RCLootCouncil:OnInitialize()
 		GetItemInfo(v)
 	end
   	self.version = GetAddOnMetadata("RCLootCouncil2", "Version")
-	self.nnp = true
-	self.debug = true
+	self.nnp = false
+	self.debug = false
 	self.tVersion = "Alpha.1" -- String or nil. Indicates test version, which alters stuff like version check. Is appended to 'version', i.e. "version-tVersion"
 
 	self.playerClass = select(2, UnitClass("player"))
@@ -155,7 +152,7 @@ function RCLootCouncil:OnInitialize()
 			autoAwardReason = 1,
 			observe = false, -- observe mode on/off
 			autoOpen = true, -- auto open the voting frame
-			--autoEnable = false, -- Skip "Use for this raid?" message
+			--autoEnable = false, -- Skip "Use for this raid?" message TODO Delete the remnants of this
 			autoPass = true,
 			silentAutoPass = false, -- Show autopass message
 			autoPassBoE = true,
@@ -564,10 +561,10 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 
 			elseif command == "history" and db.enableHistory then
 				local name, history = unpack(data)
-				if lootDB[name] then
-					tinsert(lootDB[name], history)
+				if historyDB[name] then
+					tinsert(historyDB[name], history)
 				else
-					lootDB[name] = {history}
+					historyDB[name] = {history}
 				end
 
 			elseif command == "reroll" and self:UnitIsUnit(sender, self.masterLooter) then
@@ -664,7 +661,7 @@ function RCLootCouncil:LeaveCombat()
 		if frame.combatMinimized then -- Reshow it
 			self:Debug("Reshowing frame")
 			frame.combatMinimized = false
-			frame:UnMinimize()
+			frame:Maximize()
 		end
 	end
 end
@@ -1052,6 +1049,7 @@ end
 ---------------------------------------------------------------------------
 
 --- Enables a userModule if set, defaultModule otherwise
+-- @paramsig module
 -- @param module String, must correspond to a index in self.defaultModules
 function RCLootCouncil:CallModule(module)
 	if not self.enabled then return end -- Don't call modules unless enabled
@@ -1059,10 +1057,11 @@ function RCLootCouncil:CallModule(module)
 end
 
 --- Returns the active module
+--	Always use this when calling functions in another module
+-- @paramsig module
 -- @param module String, must correspond to a index in self.defaultModules
 -- @return The module object of the active module or nil if not found. Prioritises userModules if set
 function RCLootCouncil:GetActiveModule(module)
-	self:Debug("|cff387bac"..module)
 	return self:GetModule(userModules[module] or defaultModules[module], false)
 end
 
@@ -1111,10 +1110,14 @@ function RCLootCouncil:RGBToHex(r,g,b)
 	return string.format("%02x%02x%02x",255*r, 255*g, 255*b)
 end
 
---- Creates a standard frame for RCLootCouncil
--- 	Put children into frame.content for minimize support
+--- Creates a standard frame for RCLootCouncil title and content table.
+--		Adds Minimize(), Maximize() and IsMinimized() functions on the frame, and registers it for hide on combat.
+--		SetWidth/SetHeight called on frame will also be called on frame.content
+--		Minimizing is done by double clicking the title. The returned frame and frame.title is NOT minimized.
+-- 	Only frame.content is minimized, so put children there for minimize support.
+-- @paramsig name, cName, title[, width, height]
 -- @param name Global name of the frame
--- @param cName Name of the module (used for lib-window-1.1 config as db.UI[cName])
+-- @param cName Name of the module (used for lib-window-1.1 config in db.UI[cName])
 -- @param title The title text
 -- @param width The width of the titleframe, defaults to 250
 -- @param height Height of the frame, defaults to 325
@@ -1151,8 +1154,8 @@ function RCLootCouncil:CreateFrame(name, cName, title, width, height)
 		frame:StopMovingOrSizing()
 		frame:SavePosition()
 		if self.lastClick and GetTime() - self.lastClick <= 0.5 then
-			frame:Minimize()
 			self.lastClick = nil
+			if frame.minimized then frame:Maximize() else frame:Minimize() end
 		else
 			self.lastClick = GetTime()
 		end
@@ -1185,12 +1188,14 @@ function RCLootCouncil:CreateFrame(name, cName, title, width, height)
 	f.minimized = false
 	f.IsMinimized = function(frame) return frame.minimized end
 	f.Minimize = function(frame)
+		self:Debug("Minimize()")
 		if not frame.minimized then
 		  	frame.content:Hide()
 			frame.minimized = true
 		end
 	end
-	f.UnMinimize = function(frame)
+	f.Maximize = function(frame)
+		self:Debug("Maximize()")
 		if frame.minimized then
 		  	frame.content:Show()
 			frame.minimized = false
@@ -1208,11 +1213,6 @@ function RCLootCouncil:CreateFrame(name, cName, title, width, height)
 		old_setheight(self, width)
 		self.content:SetHeight(height)
 	end
-	--[[local old_show = f.Show -- TODO Test if this makes a difference
-	f.Show = function(self)
-		old_show(self)
-		self:RestorePosition()
-	end]]
 	return f
 end
 
@@ -1228,6 +1228,7 @@ function RCLootCouncil:CreateButton(text, parent)
 end
 
 --- Displays a tooltip anchored to the mouse
+-- @paramsig ...
 -- @param ... Lines to be added.
 function RCLootCouncil:CreateTooltip(...)
 	GameTooltip:SetOwner(UIParent, "ANCHOR_CURSOR")
@@ -1238,18 +1239,20 @@ function RCLootCouncil:CreateTooltip(...)
 end
 
 --- Displays a hyperlink tooltip
+-- @paramsig link
 -- @param link The link to display
 function RCLootCouncil:CreateHypertip(link)
 	GameTooltip:SetOwner(UIParent, "ANCHOR_CURSOR")
 	GameTooltip:SetHyperlink(link)
 end
 
--- Hide the tooltip created with :CreateTooltip()
+--- Hide the tooltip created with :CreateTooltip()
 function RCLootCouncil:HideTooltip()
 	GameTooltip:Hide()
 end
 
 --- Removes any realm name from name
+-- @paramsig name
 -- @param name Name to remove realmname from
 -- @return The name without realmname
 function RCLootCouncil.Ambiguate(name)
@@ -1257,12 +1260,14 @@ function RCLootCouncil.Ambiguate(name)
 end
 
 --- Returns the text of a button, returning settings from mldb, or default buttons
--- @param i The button's index
+-- @paramsig index
+-- @param index The button's index
 function RCLootCouncil:GetButtonText(i)
 	return self.mldb.buttons[i] and self.mldb.buttons[i].text or db.buttons[i].text
 end
 
 --- The following functions returns the text, sort or color of a response, returning a result from mldb if possible, otherwise the default responses.
+-- @paramsig response
 -- @param response Index in self.responses
 function RCLootCouncil:GetResponseText(response)
 	return self.mldb.responses[response] and self.mldb.responses[response].text or self.responses[response].text

@@ -1,7 +1,7 @@
 -- Author      : Potdisc
 -- Create Date : 12/15/2014 8:55:10 PM
 -- DefaultModule
--- versionCheck.lua		Adds a Version Checker to check versions of either people in current raidgroup or guild
+-- versionCheck.lua	Adds a Version Checker to check versions of either people in current raidgroup or guild
 
 local addon = LibStub("AceAddon-3.0"):GetAddon("RCLootCouncil")
 RCVersionCheck = addon:NewModule("RCVersionCheck", "AceTimer-3.0", "AceComm-3.0", "AceHook-3.0")
@@ -11,44 +11,34 @@ local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 local db, stData
 
 function RCVersionCheck:OnInitialize()
-	--addon:Print("RCVersionCheck:OnInitialize()")
 	-- Initialize scrollCols on self so others can change it
 	self.scrollCols = {
-		{ name = "",		width = 20, sortnext = 2,},
-		{ name = L["Name"],	width = 150, },
-		{ name = L["Rank"],	width = 90, },
+		{ name = "",				width = 20, sortnext = 2,},
+		{ name = L["Name"],		width = 150, },
+		{ name = L["Rank"],		width = 90, },
 		{ name = L["Version"],	width = 140, align = "RIGHT" },
 	}
 end
 
 function RCVersionCheck:OnEnable()
-	addon:Print("RCVersionCheck:OnEnable()")
 	db = addon:Getdb()
 	self.frame = self:GetFrame()
-	printtable(db.UI.versionCheck)
-	RCVersionCheck:RegisterComm("RCLootCouncil")
+	self:RegisterComm("RCLootCouncil")
 	self:Show()
 end
 
 function RCVersionCheck:OnDisable()
-
-	self.frame:Hide()
-	self.frame:SavePosition()
-	addon:Print("RCVersionCheck:OnDisable()")
-	printtable(db.UI.versionCheck)
-	self.frame:SetParent(nil)
+	self:Hide()
+--	self.frame:SavePosition()
+--	self.frame:SetParent(nil)
+	self:UnregisterAllComm()
+	self.frame.rows = {}
 end
 
 function RCVersionCheck:Show()
-
+	self:AddEntry(addon.playerName, addon.playerClass, addon.guildRank, addon.version, addon.tVersion) -- add ourself
 	self.frame:Show()
-	--self:AddEntry(addon.playerName, addon.playerClass, addon.guildRank, addon.version, addon.tVersion) -- add ourself
---[[	self:AddEntry("Gemenim", "MONK", "Raider", "1.7.1") -- add ourself
-	self:AddEntry("Agirl", "WARRIOR", "Master", "Waiting for response") -- add ourself
-	self:AddEntry("Aguy", "PRIEST", "Officer", "1.7.0") -- add ourself
-	self:AddEntry("Somebloke", addon.playerClass, "Raider", addon.version) -- add ourself]]
 	self.frame.st:SetData(self.frame.rows)
-	self:Update()
 end
 
 function RCVersionCheck:Hide()
@@ -65,7 +55,6 @@ function RCVersionCheck:OnCommReceived(prefix, serializedMsg, distri, sender)
 end
 
 function RCVersionCheck:Query(group)
-	self:AddEntry(addon.playerName, addon.playerClass, addon.guildRank, addon.version, addon.tVersion) -- add ourself
 	if group == "guild" then
 		GuildRoster()
 		for i = 1, GetNumGuildMembers() do
@@ -98,28 +87,27 @@ end
 function RCVersionCheck:AddEntry(name, class, guildRank, version, tVersion)
 	local vVal = version
 	if tVersion then vVal = version.."-"..tVersion end
-	for k,v in ipairs(self.frame.members) do
-		if addon:UnitIsUnit(v, name) then -- they're already added, so update them
-			self.frame.rows[k].cols =	{
+	for row, v in ipairs(self.frame.rows) do
+		if addon:UnitIsUnit(v.name, name) then -- they're already added, so update them
+			v.cols =	{
 				{ value = "",					DoCellUpdate = addon.SetCellClassIcon, args = {class}, },
 				{ value = addon.Ambiguate(name),color = addon:GetClassColor(class), },
 				{ value = guildRank,			color = self:GetVersionColor(version,tVersion)},
 				{ value = vVal ,				color = self:GetVersionColor(version,tVersion)},
 			}
-			self:Update()
-			return
+			return self:Update()
 		end
 	end
 	-- They haven't been added yet, so do it
 	tinsert(self.frame.rows,
-	{	cols = {
+	{	name = name,
+		cols = {
 			{ value = "",					DoCellUpdate = addon.SetCellClassIcon, args = {class}, },
 			{ value = addon.Ambiguate(name),color = addon:GetClassColor(class), },
 			{ value = guildRank,			color = self:GetVersionColor(version,tVersion)},
 			{ value = vVal ,				color = self:GetVersionColor(version,tVersion)},
 		},
 	})
-	tinsert(self.frame.members, name)
 	self:Update()
 end
 
@@ -159,22 +147,6 @@ function RCVersionCheck:GetFrame()
 	--content.frame:SetBackdropColor(1,0,0,1)
 	f:SetWidth(st.frame:GetWidth()+20)
 	f.rows = {} -- the row data
-	f.members = {} -- i = playerName @ row i
 	f.st = st
-
---	local sizer = CreateFrame("Frame", nil, tf)
---	sizer:SetPoint("RIGHT",-5,0)
---	sizer:SetWidth(18)
---	sizer:SetHeight(18)
---	sizer:EnableMouse()
---	sizer:SetScript("OnMouseDown", function()
-
---	end)
-
---	local line1 = sizer:CreateTexture(nil, "BACKGROUND")
---	line1:SetSize(18,18)
---	line1:SetPoint("CENTER")
---	line1:SetTexture("Interface\\WorldMap\\Gear_64Grey")
---	line1:SetVertexColor(0.8,0.8,0.8)
 	return f
 end

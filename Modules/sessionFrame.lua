@@ -1,7 +1,7 @@
 -- Author      : Potdisc
 -- Create Date : 1/20/2015 3:48:38 AM
 -- DefaultModule - Requires ml_core.lua or similary functionality.
--- Adds a frame listing the items to start a session with.
+-- sessionFrame.lua	Adds a frame listing the items to start a session with.
 
 local addon = LibStub("AceAddon-3.0"):GetAddon("RCLootCouncil")
 RCSessionFrame = addon:NewModule("RCSessionFrame")
@@ -15,9 +15,9 @@ local awardLater = false
 
 function RCSessionFrame:OnInitialize()
 	self.scrollCols = {
-		{ name = "",		width = 30 }, -- remove item
-		{ name = "",		width = ROW_HEIGHT }, -- item icon
-		{ name = L["Item"],	width = 150}, -- item link
+		{ name = "", sortnext = 3,	width = 30 }, 			-- remove item
+		{ name = "", sortnext = 3,	width = ROW_HEIGHT },-- item icon
+		{ name = L["Item"],			width = 150}, 			-- item link
 	}
 end
 
@@ -82,7 +82,6 @@ function RCSessionFrame.SetCellText(rowFrame, frame, data, cols, row, realrow, c
 		frame.text:SetFontObject("GameFontNormal") -- We want bigger font
 	end
 	frame.text:SetText(data[realrow].link)
-	--table.DoCellUpdate(rowFrame, frame, data, cols, row, realrow, column, fShow, table)
 end
 
 function RCSessionFrame.SetCellDeleteBtn(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
@@ -131,7 +130,6 @@ function RCSessionFrame:GetFrame()
 	local b2 = addon:CreateButton(L["Cancel"], f.content)
 	b2:SetPoint("LEFT", b1, "RIGHT", 15, 0)
 	b2:SetScript("OnClick", function()
-		--addon:GetActiveModule("masterlooter"):EndSession()
 		ml.lootTable = {}
 		self:Disable()
 	end)
@@ -139,10 +137,8 @@ function RCSessionFrame:GetFrame()
 
 	local st = ST:CreateST(self.scrollCols, 5, ROW_HEIGHT, HIGHLIGHT, f.content)
 	st.frame:SetPoint("TOPLEFT",f,"TOPLEFT",10,-40)
-	--content.frame:SetBackdropColor(1,0,0,1)
 	f:SetWidth(st.frame:GetWidth()+20)
 	f.rows = {} -- the row data
 	f.st = st
-
 	return f
 end
