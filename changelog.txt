@@ -3,8 +3,8 @@
 * **Complete rewrite**
 
 *  UI overhaul
-**    Every frame now follows a standardized layout with support for minimizing.
-      It's also made with future customization in mind.
+**    Every frame now follows a standardized layout with support for minimizing and scaling (ctrl+scroll).
+      It's also made with future customization in mind. Note: Use rightclick for awarding items.
 
 *  Options menu overhaul
 **    Master Looter options have been moved to a separate tree and the entire interface have been streamlined.
@@ -28,8 +28,8 @@
 
 *  ++Award later++
 **    Using the session setup, the Master Looter can choose to award items later thus looting the items,
-      and have RCLootCouncil start a session later by typing '/rc start'. It's not possible to automatically
-      give out items that's already looted, so instead you'll see a list with whom to give the item to.
+      and have RCLootCouncil start a session later by typing '/rc award'. It's not possible to automatically
+      give out items that's already looted, so instead '/rc winners' gives you a list with whom to give the item to.
 
 *  ++Loot from bags++
 **    RCLootConcil can now add custom items to a session by typing '/rc add [item(s)]'.
@@ -41,13 +41,9 @@
 *  ++Ignore list++
 **    RCLootCouncil now have a customizable ignore list, for, well, ignoring stuff.
 
-* ++Usage options++
+*  ++Usage options++
 **    More usability to e.g. disable the popup when entering a raid by always accepting it, or
       always rejecting it. Option to turn off the addon temporarily.
-
-*  ++Module support++
-**    All frames are implememted as modules, which can be replaced. This also gives the opportunity
-      for anyone to add custom features to the core addon.
 
 *  ++Filtering++
 **    All responses on the voting frame are now filterable.
@@ -60,3 +56,20 @@
 **    Two new columns in the voting frame:
 **    "Diff" - which shows the item lvl difference between a candidates' equipped item and the one in session.
 **    "Roll" which allows the Master Looter to add a random 1 - 100 roll to all candidates should he so desire.
+
+*  ++Hide Votes++
+**    New option to hide votes until one self have voted.
+
+*  ++Module support++
+**    All frames are implememted as modules, which can be replaced. This also gives the opportunity
+      for anyone to add custom features to the core addon.
+
+*  --Limits--
+**    No more 20 item limit per session (not that you're gonna need that), no more "award in this particular order" limit,
+      no more "close session when you close the WoW loot frame", etc.
+
+*  --Rank Frame--
+**    Old and not really useful. Better alternative in the options menu.
+
+*  --Raid Chat--
+**    Noone wants to see people linking items in the raid chat just because someone didn't install an addon. Use whisper for that!

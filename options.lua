@@ -2,7 +2,6 @@
 -- Create Date : 5/24/2012 6:24:55 PM
 -- options.lua - option frame in BlizOptions for RCLootCouncil
 
--- TODO		Clarify "Responses from chat"
 local addon = LibStub("AceAddon-3.0"):GetAddon("RCLootCouncil")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 ------ Options ------
@@ -200,36 +199,42 @@ function addon:OptionsTable()
 										desc = L["auto_enable_desc"],
 										type = "toggle",
 									},
-									altClickLooting = {
+									autoStart = {
 										order = 2,
+										name = L["Auto Start"],
+										desc = L["auto_start_desc"],
+										type = "toggle",
+									},
+									altClickLooting = {
+										order = 3,
 										name = L["Alt click Looting"],
 										desc = L["alt_click_looting_desc"],
 										type = "toggle",
 									},
 									spacer = {
-										order = 3,
+										order = 4,
 										type = "header",
 										name = "",
 									},
-									autoStart = {
-										order = 4,
-										name = L["Auto Start"],
-										desc = L["auto_start_desc"],
+									autoLoot = {
+										order = 5,
+										name = L["Auto Loot"],
+										desc = L["auto_loot_desc"],
 										type = "toggle",
 									},
 									autolootEverything = {
-										order = 5,
+										order = 6,
 										name = L["Loot Everything"],
 										desc = L["loot_everything_desc"],
 										type = "toggle",
-										disabled = function() return not db.autoStart end,
+										disabled = function() return not db.autoLoot end,
 									},
 									autolootBoE = {
-										order = 6,
+										order = 7,
 										name = L["Autoloot BoE"],
 										desc = L["autoloot_BoE_desc"],
 										type = "toggle",
-										disabled = function() return not db.autoStart end,
+										disabled = function() return not db.autoLoot end,
 									},
 								},
 							},
@@ -628,6 +633,7 @@ function addon:OptionsTable()
 									for k, v in ipairs(db.buttons) do
 										v.text = self.defaults.profile.buttons[k].text
 										v.whisperKey = self.defaults.profile.buttons[k].whisperKey
+										self:Debug("Reset k = ",k)
 										db.responses[k].text = self.defaults.profile.responses[k].text
 										for i = 1, 4 do db.responses[k].color[i] = self.defaults.profile.responses[k].color[i] end
 									end
@@ -660,7 +666,7 @@ function addon:OptionsTable()
 										name = "",
 										values = function()
 											local t = {}
-											for k,v in ipairs(db.council) do t[k] = ""..v end
+											for k,v in ipairs(db.council) do t[k] = self.Ambiguate(v) end
 											return t;
 										end,
 										width = "full",
@@ -750,22 +756,22 @@ function addon:OptionsTable()
 										values = function()
 											local t = {}
 											for i = 1, GetNumGroupMembers() do
-												-- Ambiguate to distinguish people from own realm, not sure if it's smart at the end of the day though
-												tinsert(t, self.Ambiguate(select(1,GetRaidRosterInfo(i))))
+												local name = select(1,GetRaidRosterInfo(i))
+												t[self:UnitName(name)] = self.Ambiguate(name)
 											end
-											if #t == 0 then tinsert(t, self.Ambiguate(self.playerName)) end -- Insert ourself
+											if #t == 0 then t[self.playerName] = self.Ambiguate(self.playerName) end -- Insert ourself
 											table.sort(t, function(v1, v2)
 												return v1 and v1 < v2
 											end)
 											return t
 										end,
 										set = function(info,key,tag)
-											local values = self.options.args.mlSettings.args.councilTab.args.addGroupCouncil.args.list.values()
+											--local values = self.options.args.mlSettings.args.councilTab.args.addGroupCouncil.args.list.values()
 											if tag then -- add
-												tinsert(self.db.profile.council, values[key])
+												tinsert(self.db.profile.council, key)
 											else -- remove
 												for k,v in ipairs(self.db.profile.council) do
-													if v == values[key] then
+													if v == key then
 														tremove(self.db.profile.council, k)
 													end
 												end
@@ -773,8 +779,8 @@ function addon:OptionsTable()
 											addon:CouncilChanged()
 										end,
 										get = function(info, key)
-											local values = self.options.args.mlSettings.args.councilTab.args.addGroupCouncil.args.list.values()
-											return tContains(self.db.profile.council, values[key])
+											--local values = self.options.args.mlSettings.args.councilTab.args.addGroupCouncil.args.list.values()
+											return tContains(self.db.profile.council, key)
 										end,
 									},
 								},

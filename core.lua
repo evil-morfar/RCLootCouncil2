@@ -13,13 +13,13 @@ TODO
 		- "more info" thingie
 		- Revise DB variables
 		- lootHistory
-		- Save class on award later
 		- Need to make a SetCouncilByGuildRank()
 --------------------------------
 CHANGELOG (WIP)
 	-- MOVED TO CHANGELOG.TXT
 
 	*Changed Test mode behavior -- really?
+	*Auto pass button
 
   Bugfixes:
 		Various taint fixes.
@@ -106,11 +106,11 @@ function RCLootCouncil:OnInitialize()
 		--[[1]]			  { color = {0,1,0,1},				sort = 1,		text = L["Mainspec/Need"],},
 		--[[2]]			  { color = {1,0.5,0,1},			sort = 2,		text = L["Offspec/Greed"],	},
 		--[[3]]			  { color = {0,0.7,0.7,1},			sort = 3,		text = L["Minor Upgrade"],},
-		--[[4]]			  { color = {0.7, 0.7,0.7,1},		sort = 5,		text = L["Pass"],},
-		--[[5]]			  { color = {0.75,0.75,0.75,1},	sort = 4,		text = L["Button"]..5,},
-		--[[6]]			  { color = {0.75,0.75,0.75,1},	sort = 5,		text = L["Button"]..6,},
-		--[[7]]			  { color = {0.75,0.75,0.75,1},	sort = 6,		text = L["Button"]..7,},
-		--[[8]]			  { color = {0.75,0.75,0.75,1},	sort = 7,		text = L["Button"]..8,},
+		--[[4]]			  { color = {0.7, 0.7,0.7,1},		sort = 4,		text = L["Button"]..4,},
+		--[[5]]			  { color = {0.75,0.75,0.75,1},	sort = 5,		text = L["Button"]..5,},
+		--[[6]]			  { color = {0.75,0.75,0.75,1},	sort = 6,		text = L["Button"]..6,},
+		--[[7]]			  { color = {0.75,0.75,0.75,1},	sort = 7,		text = L["Button"]..7,},
+		--[[8]]			  { color = {0.75,0.75,0.75,1},	sort = 8,		text = L["Button"]..8,},
 	}
 	self.roleTable = {
 		TANK =		L["Tank"],
@@ -130,13 +130,12 @@ function RCLootCouncil:OnInitialize()
 			localizedSubTypes = {},
 		},
 		profile = {
-			autoStart = false, -- the old autoLooting e.g. just start a session with all eligible items
+			autoStart = false, -- start a session with all eligible items
+			autoLoot = true, -- Auto loot equippable items
 			autolootEverything = true,
 			autolootBoE = true,
 			altClickLooting = true,
 			acceptWhispers = true,
-			--acceptRaidChat = true,
-			--advancedOptions = true, -- Redundant?
 			selfVote = true,
 			multiVote = true,
 			anonymousVoting = false,
@@ -172,7 +171,7 @@ function RCLootCouncil:OnInitialize()
 
 			announceAward = true,
 			awardText = { -- Just max it at 2 channels
-				{ channel = "RAID",	text = L["&p was awarded with &i!"],},
+				{ channel = "RAID",	text = L["&p was awarded with &i for &r!"],},
 				{ channel = "NONE",	text = "",},
 			},
 			announceItems = false,
@@ -188,13 +187,11 @@ function RCLootCouncil:OnInitialize()
 			council = {},
 
 			maxButtons = 8,
-			numButtons = 4,
-			passButton = 4,
+			numButtons = 3,
 			buttons = {
-				{	text = L["Need"],					whisperKey = L["need, mainspec, ms, 1"], },	-- 1
-				{	text = L["Greed"],				whisperKey = L["greed, offspec, os, 2"],},		-- 2
-				{	text = L["Minor Upgrade"],whisperKey = L["minorupgrade, minor, 3"],},	-- 3
-				{	text = L["Pass"],					whisperKey = L["pass, 4"],	},					-- 4
+				{	text = L["Need"],					whisperKey = L["whisperKey_need"], },	-- 1
+				{	text = L["Greed"],				whisperKey = L["whisperKey_greed"],},	-- 2
+				{	text = L["Minor Upgrade"],		whisperKey = L["whisperKey_minor"],},	-- 3
 			},
 			maxAwardReasons = 8,
 			numAwardReasons = 3,
@@ -216,15 +213,15 @@ function RCLootCouncil:OnInitialize()
 	} -- defaults end
 
 	-- create the other buttons/responses
-	for i = 5, self.defaults.profile.maxButtons do
-		tinsert(self.defaults.profile.buttons, i, {
+	for i = #self.defaults.profile.buttons+1, self.defaults.profile.maxButtons do
+		tinsert(self.defaults.profile.buttons, {
 			text = L["Button"].." "..i,
 			whisperKey = ""..i,
 		})
 	end
 	-- create the other AwardReasons
-	for i = 4, self.defaults.profile.maxAwardReasons do
-		tinsert(self.defaults.profile.awardReasons, i, {color = {1, 1, 1, 1}, log = true, sort = 400+i, text = "Reason "..i,})
+	for i = #self.defaults.profile.awardReasons+1, self.defaults.profile.maxAwardReasons do
+		tinsert(self.defaults.profile.awardReasons, {color = {1, 1, 1, 1}, log = true, sort = 400+i, text = "Reason "..i,})
 	end
 
 	-- register chat and comms
@@ -271,8 +268,8 @@ function RCLootCouncil:OnEnable()
 	self:RegisterEvent("PLAYER_REGEN_ENABLED", "LeaveCombat")
 
 	if IsInGuild() then
-		-- TODO
-		--self:SendCommMessage("RCLootCouncil", "verTest "..version, "GUILD") -- send out a version check
+		self.guildRank = select(2, GetGuildInfo("player"))
+		self:SendCommand("guild", "verTest", self.version, self.tVersion) -- send out a version check
 	end
 	self.db.global.version = self.version;
 	self.db.global.logMaxEntries = self.defaults.global.logMaxEntries -- reset it now for zzz
@@ -285,7 +282,7 @@ function RCLootCouncil:OnEnable()
 	end
 
 	self.db.global.tVersion = self.tVersion;
-	GuildRoster();
+	GuildRoster()
 
 	local filterFunc = function(_, event, msg, player, ...)
 		return strfind(msg, "[[RCLootCouncil]]:")
@@ -295,26 +292,25 @@ function RCLootCouncil:OnEnable()
 	----------PopUp setups --------------
 	-------------------------------------
 	LibDialog:Register("RCLOOTCOUNCIL_CONFIRM_USAGE", {
-		text = L["Do you want to use RCLootCouncil for this raid?"],
+		text = L["confirm_usage_text"],
 		buttons = {
 			{	text = L["Yes"],
-				on_click = function(self) --TODO Lot of remaking here
+				on_click = function() --TODO Lot of remaking here
 					usage = true
 					local lootMethod, _, MLRaidID = GetLootMethod()
 					if lootMethod ~= "master" then
-						RCLootCouncil:Print(L["Changing LootMethod to Master Looting"])
-						SetLootMethod("master", RCLootCouncil.playerName) -- activate ML
+						self:Print(L["Changing LootMethod to Master Looting"])
+						SetLootMethod("master", self.Ambiguate(self.playerName)) -- activate ML
 					end
-					if db.autoAward and GetLootThreshold() > db.autoAwardQualityLower then
-						RCLootCouncil:Print(L["Changing loot threshold to enable Auto Awarding"])
-						SetLootThreshold(db.autoAwardQualityLower)
+					if db.autoAward and GetLootThreshold() > db.autoAwardLowerThreshold then
+						self:Print(L["Changing loot threshold to enable Auto Awarding"])
+						SetLootThreshold(db.autoAwardLowerThreshold)
 					end
-					RCLootCouncil:Print(L[" now handles looting"])
-					RCLootCouncil.isMasterLooter = true
-					RCLootCouncil.masterLooter = RCLootCouncil.playerName
-					if #db.council < 1 then -- if there's no council
-						RCLootCouncil:Print(L["You haven't set a council! You can choose a minimum rank here and/or change it through the options menu."])
-						RCLootCouncil:CallModule("rank") -- show the rankframe
+					self:Print(L[" now handles looting"])
+					self.isMasterLooter = true
+					self.masterLooter = self.playerName
+					if #db.council == 0 then -- if there's no council
+						self:Print(L["You haven't set a council! You can edit your council by typing '/rc council'"])
 					end
 				end,
 			},
@@ -391,9 +387,6 @@ function RCLootCouncil:ChatCommand(msg)
 		--self:Print(db.ui.versionCheckScale)
 		self:Test(tonumber(arg1) or 1)
 
-	elseif (input == "add" or input == L["add"]) then
-		-- TODO Create the "add" command (don't forget chat_commands)
-
 	elseif input == 'version' or input == L["version"] or input == "v" or input == "ver" then
 		self:CallModule("version")
 
@@ -410,6 +403,9 @@ function RCLootCouncil:ChatCommand(msg)
 	elseif input == "neverml" or input == L["neverml"] then
 		db.neverML = not db.neverML
 		self:Print(L["neverml"].." = "..tostring(db.neverML))
+
+	elseif (input == "add" or input == L["add"]) then
+		-- TODO Create the "add" command (don't forget chat_commands)
 
 	elseif input == "award" then -- TODO/REVIEW Complete this and test it
 		if self.isMasterLooter then
@@ -483,7 +479,7 @@ end
 
 function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 	if prefix == "RCLootCouncil" then
-		self:DebugLog("Comm received:", serializedMsg, "from:", sender)
+		self:DebugLog("Comm received:", serializedMsg, "from:", sender, "distri:", distri)
 		-- data is always a table to be unpacked
 		local test, command, data = self:Deserialize(serializedMsg)
 
@@ -498,7 +494,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 							if (v.boe and db.autoPassBoE) or not v.boe then
 								if self:AutoPassCheck(v.subType) then
 									self:Debug("Autopassed on: "..tostring(v.link))
-									if not db.silentAutoPass then self:Print(format(L["Autopassed on %s"], v.link)) end
+									if not db.silentAutoPass then self:Print(format(L["Autopassed on 'item'"], v.link)) end
 									self:SendCommand("group", "response", self:CreateResponse(ses, tonumber(strmatch(v.link, "item:(%d+):")), v.ilvl, "AUTOPASS"))
 									lootTable[ses].autopass = true
 								end
@@ -528,7 +524,11 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 				end
 
 			elseif command == "MLdb" and not self.isMasterLooter then -- ML sets his own mldb
-				self.mldb = unpack(data)
+				if self:UnitIsUnit(sender, self.masterLooter) then
+					self.mldb = unpack(data)
+				else
+					self:Debug("Non-ML:", sender, "sent Mldb!")
+				end
 
 			elseif command == "verTest" then
 				local otherVersion, tVersion = unpack(data)
@@ -537,7 +537,6 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 					self:Print(format(L["version_outdated_msg"], self.version, otherVersion))
 					self.verCheckDisplayed = true
 
-				-- tVersion check	REVIEW not sure if the < will work
 				elseif tVersion and self.tVersion and self.tVersion < tVersion then
 					self:Print(format(L["tVersion_outdated_msg"], tVersion))
 					self.verCheckDisplayed = true
@@ -549,7 +548,6 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 					self:Print(format(L["version_outdated_msg"], self.version, otherVersion))
 					self.verCheckDisplayed = true
 
-				-- tVersion check	REVIEW not sure if the < will work
 				elseif tVersion and self.tVersion and self.tVersion < tVersion then
 					self:Print(format(L["tVersion_outdated_msg"], tVersion))
 					self.verCheckDisplayed = true
@@ -564,20 +562,24 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 				end
 
 			elseif command == "reroll" and self:UnitIsUnit(sender, self.masterLooter) then
+				self:Print(self.Ambiguate(sender), "has asked you to reroll") -- TODO
 				self:CallModule("lootframe")
 				self:GetActiveModule("lootframe"):ReRoll(unpack(data))
 
 			elseif command == "playerInfoRequest" then
-				local role = self:GetCandidateRole(self.playerName)
-				self:SendCommand(sender, "playerInfo", self.playerName, self.playerClass, role, self.guildRank)
+				self:SendCommand(sender, "playerInfo", self.playerName, self.playerClass, self:GetPlayerRole(), self.guildRank)
 
 			elseif command == "message" then
 				self:Print(unpack(data))
 
 			elseif command == "session_end" then
-				self:Print(L["The Master Looter has ended the session"])
-				self:GetActiveModule("lootframe"):Disable()
-				self:GetActiveModule("votingframe"):EndSession()
+				if self:UnitIsUnit(sender, self.masterLooter) then
+					self:Print(L["The Master Looter has ended the session"])
+					self:GetActiveModule("lootframe"):Disable()
+					self:GetActiveModule("votingframe"):EndSession()
+				else
+					self:Debug("Non ML:", sender, "sent end session command!")
+				end
 			end
 		else
 			self:Debug("Error in deserializing comm:", tostring(command));
@@ -638,7 +640,7 @@ function RCLootCouncil:EnterCombat()
 	if not db.minimizeInCombat then return end
 	self.inCombat = true
 	for _,frame in ipairs(frames) do
-		if frame:IsVisible() and not frame:IsMinimized() then -- only minimize for combat if it isn't already minimized
+		if frame:IsVisible() and not frame.combatMinimized then -- only minimize for combat if it isn't already minimized
 			self:Debug("Minimizing for combat")
 			frame.combatMinimized = true -- flag it as being minimized for combat
 			frame:Minimize()
@@ -649,12 +651,11 @@ end
 function RCLootCouncil:LeaveCombat()
 	if not db.minimizeInCombat then return end
 	self.inCombat = false
-	for _,frame in ipairs(frames) do -- REVIEW Test this
-		self:Debug("Frame minimized = ", frame:IsMinimized())
+	for _,frame in ipairs(frames) do
 		if frame.combatMinimized then -- Reshow it
 			self:Debug("Reshowing frame")
 			frame.combatMinimized = false
-			frame:Minimize()
+			frame:UnMinimize()
 		end
 	end
 end
@@ -849,8 +850,8 @@ function RCLootCouncil:GetPlayersGuildRank()
 	end
 end
 
-function RCLootCouncil:GetCandidateRole(candidate)
-	return UnitGroupRolesAssigned(candidate)
+function RCLootCouncil:GetPlayerRole()
+	return UnitGroupRolesAssigned("player")
 end
 
 function RCLootCouncil.TranslateRole(role) -- reasons
@@ -902,18 +903,31 @@ function RCLootCouncil:ConvertDateToString(day, month, year)
 	return text;
 end
 
-function RCLootCouncil:OnEvent(this, event, ...)
-	if event == "PARTY_LOOT_METHOD_CHANGED" then --REVIEW Still not sure this works
+function RCLootCouncil:OnEvent(event, ...)
+	if event == "PARTY_LOOT_METHOD_CHANGED" then
 		self:Debug("Event:", "PARTY_LOOT_METHOD_CHANGED")
 		self:NewMLCheck()
 
-	elseif event == "RAID_INSTANCE_WELCOME" then
+	elseif event == "RAID_INSTANCE_WELCOME" then -- REVIEW Consider if we want this here
 		self:Debug("Event:", "RAID_INSTANCE_WELCOME")
 		-- high server-side latency causes the UnitIsGroupLeader("player") condition to fail if queried quickly (upon entering instance) regardless of state.
 		-- may add a delay for the above conditional if the issue persists to circumvent issue.
 		-- NOTE v2.0: Not sure if this is still an issue, but just add a 2 sec timer to the MLCheck call
 		self:ScheduleTimer(function() -- REVIEW Check if it can take a function like this
-			self:NewMLCheck()
+			if not self.isMasterLooter and not self.masterLooter and UnitIsGroupLeader("player") then -- There's no ML, and lootmethod ~= ML, but we are the group leader
+				if db.autoEnable then -- the addon should auto start, so change loot method to master, and make the player ML
+					SetLootMethod("master", self.playerName)
+					self:Print(L[" you are now the Master Looter and RCLootCouncil is now handling looting."])
+					if db.autoAward and GetLootThreshold() > db.autoAwardLowerThreshold then
+						RCLootCouncil:Print(L["Changing loot threshold to enable Auto Awarding"])
+						SetLootThreshold(db.autoAwardLowerThreshold)
+					end
+					self.isMasterLooter = true
+					self.masterLooter = self.playerName
+				elseif self.enabled then
+					return LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_USAGE") -- ask if we want to use the addon since we're group leader
+				end
+			end
 		end, 2)
 
 	elseif event == "GUILD_ROSTER_UPDATE" then
@@ -940,27 +954,16 @@ function RCLootCouncil:NewMLCheck()
 	-- We are ML or could be, lets do stuff
 	if self.isMasterLooter and db.autoEnable then -- addon should auto start
 		self:Print(L[" now handles looting"])
-		if db.autoAward and GetLootThreshold() > db.autoAwardQualityLower then
+		if db.autoAward and GetLootThreshold() > db.autoAwardLowerThreshold then
 			RCLootCouncil:Print(L["Changing loot threshold to enable Auto Awarding"])
-			SetLootThreshold(db.autoAwardQualityLower)
+			SetLootThreshold(db.autoAwardLowerThreshold)
 		end
 
 	elseif self.isMasterLooter and not db.autoEnable then -- addon should not auto start, but ask if it should start since we're ML
 		return LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_USAGE")
 
-	elseif not self.isMasterLooter and not self.masterLooter and UnitIsGroupLeader("player") then -- There's no ML, and lootmethod ~= ML, but we are the group leader
-		if db.autoEnable then -- the addon should auto start, so change loot method to master, and make the player ML
-			SetLootMethod("master", self.playerName)
-			self:Print(L[" you are now the Master Looter and RCLootCouncil is now handling looting."])
-			if db.autoAward and GetLootThreshold() > db.autoAwardQualityLower then
-				RCLootCouncil:Print(L["Changing loot threshold to enable Auto Awarding"])
-				SetLootThreshold(db.autoAwardQualityLower)
-			end
-			self.isMasterLooter = true
-			self.masterLooter = self.playerName
-		elseif self.enabled then
-			return LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_USAGE") -- ask if we want to use the addon since we're group leader
-		end
+	else
+		return
 	end
 	-- FIXME Need to handle var usage
 	self:CallModule("masterlooter")
@@ -970,12 +973,19 @@ end
 -- Returns boolean, mlName. (true if the player is ML), (nil if there's no ML)
 function RCLootCouncil:GetML()
 	self:DebugLog("GetML()")
-	if (self.testMode and GetNumGroupMembers() == 0) or self.nnp then -- always the player when testing alone
+	if GetNumGroupMembers() == 0 and (self.testMode or self.nnp) then -- always the player when testing alone
 		return true, self.playerName
 	end
-	local lootMethod, _, MLRaidID = GetLootMethod()
+	local lootMethod, mlPartyID, mlRaidID = GetLootMethod()
 	if lootMethod == "master" then
-		local name = GetRaidRosterInfo(MLRaidID)
+		local name;
+		if mlRaidID then 				-- Someone in raid
+			name = GetRaidRosterInfo(mlRaidID)
+		elseif mlPartyID == 0 then -- Player in party
+			name = self.playerName
+		elseif mlPartyID then		-- Someone in party
+			name = self:UnitName("party"..mlPartyID)
+		end
 		self:Debug("MasterLooter = "..name)
 		return self:UnitIsUnit(name,"player"), name
 	end
@@ -983,10 +993,9 @@ function RCLootCouncil:GetML()
 end
 
 function RCLootCouncil:IsCouncil(name)
-	self:DebugLog("IsCouncil("..tostring(name)..")")
 	local ret = tContains(self.council, name)
 	if self.isMasterLooter or self.nnp then ret = true end -- ML and nnp is always council
-	self:DebugLog(ret) -- We want to see it in logs
+	self:DebugLog("IsCouncil", name, ret)
 	return ret
 end
 
@@ -1011,6 +1020,15 @@ function RCLootCouncil:UnitIsUnit(unit1, unit2)
 		unit2 = Ambiguate(unit2, "short")
 	end
 	return UnitIsUnit(unit1, unit2)
+end
+
+-- We always want realm name when we use
+function RCLootCouncil:UnitName(unit)
+	local name, realm = UnitName(unit)
+	if not name then
+		return nil, nil
+	end
+	return (realm and realm ~= "") and name.."-"..realm or name.."-"..GetRealmName()
 end
 
 ---------------------------------------------------------------------------
@@ -1151,12 +1169,16 @@ function RCLootCouncil:CreateFrame(name, cName, title, width, height)
 	f.minimized = false
 	f.IsMinimized = function(frame) return frame.minimized end
 	f.Minimize = function(frame)
-		if frame:IsMinimized() then
-		  frame.content:Show()
-		else
-		  frame.content:Hide()
+		if not frame.minimized then
+		  	frame.content:Hide()
+			frame.minimized = true
 		end
-		frame.minimized = not frame.minimized
+	end
+	f.UnMinimize = function(frame)
+		if frame.minimized then
+		  	frame.content:Show()
+			frame.minimized = false
+		end
 	end
 	-- Support for auto hide in combat:
 	tinsert(frames, f)
@@ -1170,11 +1192,11 @@ function RCLootCouncil:CreateFrame(name, cName, title, width, height)
 		old_setheight(self, width)
 		self.content:SetHeight(height)
 	end
-	local old_show = f.Show
+	--[[local old_show = f.Show -- TODO Test if this makes a difference
 	f.Show = function(self)
 		old_show(self)
 		self:RestorePosition()
-	end
+	end]]
 	return f
 end
 

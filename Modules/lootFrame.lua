@@ -89,8 +89,11 @@ function LootFrame:Update()
 			entries[numEntries].itemLvl:SetText(format(L["ilvl: x"], v.ilvl))
 			-- Update the buttons and get frame width
 			-- IDEA There might be a better way of doing this instead of SetText() on every update?
+			local but = entries[numEntries].buttons[addon.mldb.numButtons+1]
+			but:SetWidth(but:GetTextWidth() + 10)
+			width = width + but:GetWidth()
 			for i = 1, addon.mldb.numButtons do
-				local but = entries[numEntries].buttons[i]
+				but = entries[numEntries].buttons[i]
 				but:SetText(addon:GetButtonText(i))
 				but:SetWidth(but:GetTextWidth() + 10)
 				width = width + but:GetWidth()
@@ -173,12 +176,10 @@ function LootFrame:GetEntry(entry)
 
 	-------- Note button ---------
 	local noteButton = CreateFrame("Button", nil, f)
-	--noteButton:SetWidth(25)
-   -- noteButton:SetHeight(25)
 	noteButton:SetSize(20,20)
-    noteButton:SetHighlightTexture("Interface\\Minimap\\UI-Minimap-ZoomButton-Highlight")
+   noteButton:SetHighlightTexture("Interface\\Minimap\\UI-Minimap-ZoomButton-Highlight")
 	noteButton:SetNormalTexture("Interface\\Buttons\\UI-GuildButton-PublicNote-Up")
-    noteButton:SetPoint("LEFT", f.buttons[addon.mldb.numButtons], "RIGHT", 5, 0)
+   noteButton:SetPoint("BOTTOMRIGHT", -12, 12)
 	noteButton:SetScript("OnEnter", function()
 		if items[entries[entry].realID].note then -- If they already entered a note:
 			addon:CreateTooltip(L["Your note:"], items[entries[entry].realID].note, "\nClick to change your note.")

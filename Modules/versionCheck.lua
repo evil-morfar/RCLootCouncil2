@@ -3,8 +3,6 @@
 -- DefaultModule
 -- versionCheck.lua		Adds a Version Checker to check versions of either people in current raidgroup or guild
 
--- TODO Check if AddEntry() called after Show() actually gets added
-
 local addon = LibStub("AceAddon-3.0"):GetAddon("RCLootCouncil")
 RCVersionCheck = addon:NewModule("RCVersionCheck", "AceTimer-3.0", "AceComm-3.0", "AceHook-3.0")
 local ST = LibStub("ScrollingTable")
@@ -45,10 +43,10 @@ function RCVersionCheck:Show()
 
 	self.frame:Show()
 	--self:AddEntry(addon.playerName, addon.playerClass, addon.guildRank, addon.version, addon.tVersion) -- add ourself
-	self:AddEntry("Gemenim", "MONK", "Raider", "1.7.1") -- add ourself
+--[[	self:AddEntry("Gemenim", "MONK", "Raider", "1.7.1") -- add ourself
 	self:AddEntry("Agirl", "WARRIOR", "Master", "Waiting for response") -- add ourself
 	self:AddEntry("Aguy", "PRIEST", "Officer", "1.7.0") -- add ourself
-	self:AddEntry("Somebloke", addon.playerClass, "Raider", addon.version) -- add ourself
+	self:AddEntry("Somebloke", addon.playerClass, "Raider", addon.version) -- add ourself]]
 	self.frame.st:SetData(self.frame.rows)
 	self:Update()
 end
@@ -67,7 +65,6 @@ function RCVersionCheck:OnCommReceived(prefix, serializedMsg, distri, sender)
 end
 
 function RCVersionCheck:Query(group)
-	addon:Print("Query: "..group)
 	self:AddEntry(addon.playerName, addon.playerClass, addon.guildRank, addon.version, addon.tVersion) -- add ourself
 	if group == "guild" then
 		GuildRoster()
@@ -77,17 +74,16 @@ function RCVersionCheck:Query(group)
 				self:AddEntry(name, class, rank, L["Waiting for response"])
 			end
 		end
-		addon:SendCommand("RCLootCouncil", "verTest", "guild")
 
 	elseif group == "group" then
 		for i = 1, GetNumGroupMembers() do
-			local name, _, _, _, class, _, online = GetRaidRosterInfo(i)
+			local name, _, _, _, _, class, _, online = GetRaidRosterInfo(i)
 			if online then
 				self:AddEntry(name, class, L["Unknown"], L["Waiting for response"])
 			end
 		end
-		addon:SendCommand("RCLootCouncil", "verTest", "group")
 	end
+	addon:SendCommand(group, "verTest", addon.version, addon.tVersion)
 	self:ScheduleTimer("QueryTimer", 5)
 end
 

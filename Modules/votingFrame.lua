@@ -66,9 +66,11 @@ end
 function RCVotingFrame:Hide()
 	self.frame:Hide()
 end
+
 function LOOTTABLE()
 	printtable(lootTable)
 end
+
 function RCVotingFrame:Show()
 	if self.frame then
 		self.frame:Show()
@@ -91,7 +93,7 @@ function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
 
 		if test then
 			if command == "vote" then
-				if tContains(addon.council, sender) or addon:UnitIsUnit(sender, addon.masterLooter) then
+				if tContains(addon.council, addon:UnitName(sender)) or addon:UnitIsUnit(sender, addon.masterLooter) then
 					local s, row, vote = unpack(data)
 					self:HandleVote(s, row, vote, sender)
 				else
@@ -126,6 +128,7 @@ function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
 						end
 					end
 				end
+				self.frame.st:SortData()
 
 			elseif command == "lootTable" and addon:UnitIsUnit(sender, addon.masterLooter) then
 				active = true
@@ -583,21 +586,21 @@ end
 
 function RCVotingFrame.SetCellVote(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
 	frame:SetScript("OnEnter", function()
-		local voters = ""
 		if not addon.mldb.anonymousVoting or (db.showForML and addon.isMasterLooter) then
-			voters = unpack(data[realrow].voters)
+			addon:CreateTooltip(L["Voters"], unpack(data[realrow].voters)) -- REVIEW 
 		end
-		addon:CreateTooltip(L["Voters"], voters)
 	end)
 	frame:SetScript("OnLeave", function() addon:HideTooltip() end)
 	local val = data[realrow].cols[column].args[1]
 	data[realrow].cols[column].value = val -- Set the value for sorting reasons
 	frame.text:SetText(val)
 
+	local voted = false
 	if addon.mldb.hideVotes then
 		for _, v in pairs(data) do
-			if v.haveVoted then return frame.text:SetText(0) end -- REVIEW Check if works
+			if v.haveVoted then voted = true; break end
 		end
+		if not voted then frame.text:SetText(0); addon:Debug("Set to 0") end
 	end
 end
 
@@ -630,7 +633,7 @@ end
 
 function RCVotingFrame.filterFunc(table, row)
 	if not db.modules["RCVotingFrame"].filters then return true end -- db hasn't been initialized, so just show it
-	if row.response == "AUTOPASS" or type(row.response) == "number" then
+	if row.response == "AUTOPASS" or row.response == "PASS" or type(row.response) == "number" then
 		return db.modules["RCVotingFrame"].filters[row.response]
 	else -- Filter out the status texts
 		return db.modules["RCVotingFrame"].filters["STATUS"]
@@ -777,7 +780,7 @@ do
 							session = k,
 						})
 					end
-					addon:SendCommand(addon.masterLooter, "reroll", t)
+					addon:SendCommand(candidateName, "reroll", t)
 				end
 				Lib_UIDropDownMenu_AddButton(info, level);
 			end
@@ -787,7 +790,7 @@ do
 	function RCVotingFrame.DropDownMenu(menu, level)
 		if level == 1 then -- Redundant
 			-- Build the data table:
-			local data = {["STATUS"] = true, ["AUTOPASS"] = true}
+			local data = {["STATUS"] = true, ["PASS"] = true, ["AUTOPASS"] = true}
 			for i = 1, db.numButtons do
 				data[i] = i
 			end
@@ -797,7 +800,7 @@ do
 			end
 			for k in pairs(data) do -- Update the db entry to make sure we have all buttons in it
 				if type(db.modules["RCVotingFrame"].filters[k]) ~= "boolean" then
-					print("Didn't contain "..k)
+					addon:Debug("Didn't contain "..k)
 					db.modules["RCVotingFrame"].filters[k] = true -- Default as true
 				end
 			end

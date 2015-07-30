@@ -1,7 +1,6 @@
 ﻿--[[	RCLootCouncil ml_core.lua	by Potdisc
 	Contains core elements for the MasterLooter
-	NOTE: Is implemented as a module for reasons...
-		Although possible, this module shouldn't be replaced unless closely replicated as other default modules depend on it.
+	-	Although possible, this module shouldn't be replaced unless closely replicated as other default modules depend on it.
 
 	TODO/NOTES:
 		- SendMessage() on AddItem() to let userModules know it's safe to add to lootTable. Might have to do it other places too.
@@ -215,7 +214,6 @@ function RCLootCouncilML:BuildMLdb()
 		allowNotes		= db.allowNotes,
 		numButtons		= db.numButtons,
 		hideVotes		= db.hideVotes,
-		--passButton		= db.passButton,
 		observe			= db.observe,
 		awardReasons	= changedAwardReasons,
 		buttons			= changedButtons,
@@ -287,10 +285,10 @@ function RCLootCouncilML:OnEvent(event, ...)
 	addon:DebugLog("ML event", event)
 	if event == "LOOT_OPENED" then -- IDEA Check if event LOOT_READY is useful here (also check GetLootInfo() for this)
 		self.lootOpen = true
-		if not InCombatLockdown() then -- TODO do something with looting in combat
+		if not InCombatLockdown() then
 			if addon.isMasterLooter and GetNumLootItems() > 0 then
 				-- We have reopened the loot frame if we're running at this point
-				if self.running then return end -- REVIEW Perhaps we should check for new items?
+				if self.running then return end
 				addon.target = GetUnitName("target") or "Unknown/Chest" -- capture the boss name
 				for i = 1, GetNumLootItems() do
 					if db.altClickLooting then self:ScheduleTimer("HookLootButton", 0.5, i) end -- Delay lootbutton hooking to ensure other addons have had time to build their frames
@@ -299,8 +297,8 @@ function RCLootCouncilML:OnEvent(event, ...)
 					if self:ShouldAutoAward(item, quality) and quantity > 0 then
 						self:AutoAward(i, item, db.autoAwardTo, db.autoAwardReason, addon.target)
 
-					elseif self:CanWeLootItem(item, i, quality) and quantity > 0 then -- check if our options allows us to loot it
-							self:AddItem(item, false, i)
+					elseif self:CanWeLootItem(item, quality) and quantity > 0 then -- check if our options allows us to loot it
+						self:AddItem(item, false, i)
 
 					elseif quantity == 0 then -- it's coin, just loot it
 						LootSlot(i)
@@ -331,12 +329,11 @@ function RCLootCouncilML:OnEvent(event, ...)
 	end
 end
 
-function RCLootCouncilML:CanWeLootItem(item, index, quality)
-	--TODO LootSlotHasItem doesn't work for this purpose
-	if (LootSlotHasItem(index) or db.autoLootEverything) and quality >= GetLootThreshold() and not self:IsItemIgnored(item) then -- it's something we're allowed to loot
+function RCLootCouncilML:CanWeLootItem(item, quality)
+	if db.autoLoot and (IsEquippableItem(item) or db.autoLootEverything) and quality >= GetLootThreshold() and not self:IsItemIgnored(item) then -- it's something we're allowed to loot
 		-- Let's check if it's BoE
 		-- Don't bother checking if we know we want to loot it
-		return db.autolootBoE or (db.autolootBoE and addon:IsItemBoE(item))
+		return db.autolootBoE or not addon:IsItemBoE(item)
 	end
 	return false
 end
@@ -597,8 +594,8 @@ function RCLootCouncilML:GetItemsFromMessage(msg, sender)
 	}
 	addon:SendCommand("group", "response", toAdd)
 	-- Let people know we've done stuff
-		addon:Print(format(L["Item received and added from %s."], addon.Ambiguate(sender)))
-	SendChatMessage("[RCLootCouncil]: "..format(L["Acknowledged as \" %s \""], db.responses[response].text ), "WHISPER", nil, sender)
+		addon:Print(format(L["Item received and added from 'player'"], addon.Ambiguate(sender)))
+	SendChatMessage("[RCLootCouncil]: "..format(L["Acknowledged as 'response'"], db.responses[response].text ), "WHISPER", nil, sender)
 end
 
 function RCLootCouncilML:SendWhisperHelp(target)
@@ -611,7 +608,7 @@ function RCLootCouncilML:SendWhisperHelp(target)
 		SendChatMessage(msg, "WHISPER", nil, target)
 	end
 	SendChatMessage(L["whisper_guide2"], "WHISPER", nil, target)
-	addon:Print(format(L["sent whisper help to %s"], addon.Ambiguate(target)))
+	addon:Print(format(L["Sent whisper help to 'player'"], addon.Ambiguate(target)))
 end
 
 --------ML Popups ------------------
@@ -642,9 +639,7 @@ LibDialog:Register("RCLOOTCOUNCIL_CONFIRM_AWARD", {
 	buttons = {
 		{	text = L["Yes"],
 			on_click = function(self, data)
-				--addon:Print("Item awarded!")
 				-- IDEA Perhaps come up with a better way of handling this
-				-- REVIEW Test this
 				local session, player, response, reason, votes, item1, item2 = unpack(data)
 				local awarded = RCLootCouncilML:Award(session, player, response, reason)
 				if awarded then -- log it
