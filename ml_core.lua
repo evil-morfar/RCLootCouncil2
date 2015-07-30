@@ -98,24 +98,26 @@ end
 
 -- IDEA This needs to work if one's not in a raid (if possible) -- edit: OR do it?
 --			I think GetRaidRosterInfo() works in a party when used with GetNumGroupMembers()
-function RCLootCouncilML:UpdateGroup()
+function RCLootCouncilML:UpdateGroup(ask)
 	local group_copy = {}
 	local updates = false
-	for name, _ in pairs(self.candidates) do	group_copy[name] = name end -- Use name as index for zzz
+	for name in pairs(self.candidates) do	group_copy[name] = true end
 	for i = 1, GetNumGroupMembers() do
 		local name = GetRaidRosterInfo(i)
 		if group_copy[name] then	-- If they're already registered
 			group_copy[name] = nil	-- remove them from the check  -- REVIEW not 100% this will work as intended
 		else -- add them
-			addon:SendCommand(name, "playerInfoRequest")
-			addon:SendCommand(name, "MLdb", addon.mldb) -- and send mlDB
+			if not ask then -- ask for playerInfo?
+				addon:SendCommand(name, "playerInfoRequest")
+				addon:SendCommand(name, "MLdb", addon.mldb) -- and send mlDB
+			end
 			self:AddCandidate(name) -- Add them in case they haven't installed the adoon
 			updates = true
 		end
 	end
 	-- If anything's left in group_copy it means they left the raid, so lets remove them
-	for _, name in pairs(group_copy) do
-		if name then self:RemoveCandidate(name); updates = true end
+	for name, v in pairs(group_copy) do
+		if v then self:RemoveCandidate(name); updates = true end
 	end
 	if updates then addon:SendCommand("group", "candidates", self.candidates) end
 end
@@ -229,7 +231,8 @@ function RCLootCouncilML:NewML(newML)
 		self:UpdateMLdb() -- Will build and send mldb
 		addon:SendCommand("group", "council", db.council)
 		-- Send out self.candidates in 10 secs, should be plenty of time for people to respond on "playerInfoRequest"
-		self:ScheduleTimer("Timer", 10, "GroupUpdate")
+		--self:ScheduleTimer("Timer", 10, "GroupUpdate") REVIEW OR just call group update directly
+		self:UpdateGroup(true)
 	else
 		self:Disable() -- We don't want to use this if we're not the ML
 	end
@@ -526,8 +529,7 @@ function RCLootCouncilML:Test(items)
 	-- check if we're added in self.group
 	-- (We might not be on solo test)
 	if not tContains(self.candidates, addon.playerName) then
-		local role = addon:GetCandidateRole(addon.playerName)
-		self:AddCandidate(addon.playerName, addon.playerClass, role, addon.guildRank)
+		self:AddCandidate(addon.playerName, addon.playerClass, addon:GetPlayerRole(), addon.guildRank)
 	end
 	-- We must send candidates now, since we can't wait the normal 10 secs
 	addon:SendCommand("group", "candidates", self.candidates)

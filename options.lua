@@ -24,7 +24,7 @@ function addon:OptionsTable()
 					version = {
 						order = 1,
 						type = "description",
-						name = function() return self.tVersion and "v"..self.version.."-"..self.tVersion or "v"..self.version end,
+						name = function() return self.tVersion and "|cFF87CEFAv"..self.version.."|r-"..self.tVersion or "|cFF87CEFAv"..self.version.."|r" end,
 					},
 					generalSettingsTab = {
 						order = 2,
@@ -32,148 +32,172 @@ function addon:OptionsTable()
 						name = "General",
 						childGroups = "tab",
 						args = {
-						generalOptions = {
-							order = 1.1,
-							name = L["General options"],
-							type = "group",
-							inline = true,
-							args = {
-								enable = {
-									order = 1,
-									name = L["Active"],
-									desc = L["active_desc"],
-									type = "toggle",
-									set = function() addon.enabled = not addon.enabled end,
-									get = function() return addon.enabled end,
+							usage = {
+								order = 1,
+								name = L["Usage"],
+								desc = L["Choose when to use RCLootCouncil"],
+								type = "select",
+								width = "double",
+								values = {
+									ml 			= L["Always use RCLootCouncil when I'm Master Looter"],
+								--	leader 		= "Always use RCLootCouncil when I'm the group leader and enter a raid",
+									ask_ml		= L["Ask me every time I become Master Looter"],
+								--	ask_leader	= "Ask me every time I'm the group leader and enter a raid",
+									never			= L["Never use RCLootCouncil"],
 								},
-								autoOpen = {
-									order = 2,
-									name = L["Auto Open"],
-									desc = L["auto_open_desc"],
-									type = "toggle",
-								},
-								minimizeInCombat = {
-									order = 3,
-									name = L["Minimize in combat"],
-									desc = L["Check to have all frames minimize when entering combat"],
-									type = "toggle",
-								},
-								usage = {
-									order = 4,
-									name = L["Usage"],
-									desc = L["Choose when to use RCLootCouncil"],
-									type = "multiselect",
-									width = "double",
-									values = {
-										ml 			= "Always use RCLootCouncil when I'm Master Looter",
-										leader 		= "Always use RCLootCouncil when I'm the group leader and enter a raid",
-										ask_ml		= "Ask me every time I become Master Looter",
-										ask_leader	= "Ask me every time I'm the group leader and enter a raid",
-										never			= "Never use RCLootCouncil",
+								set = function(_, key)
+									for k in pairs(db.usage) do
+										if k == key then
+											db.usage[k] = true
+										else
+											db.usage[k] = false
+										end
+									end
+									db.usage.state = key
+								end,
+								get = function() return db.usage.state end,
+							},
+							leaderUsage = { -- Add leader options here since we can only make a single select dropdown
+								order = 2,
+								name = function() return db.usage.ml and L["Always use when leader"] or L["Ask me when leader"] end,
+								desc = L["Use the same setting when entering a raid as the group leader?"],
+								type = "toggle",
+								get = function() return db.usage.leader or db.usage.ask_leader end,
+								set = function(_, val)
+									db.usage.leader, db.usage.ask_leader = false, false -- Reset for zzzzz
+									if db.usage.ml then db.usage.leader = val end
+									if db.usage.ask_ml then db.usage.ask_leader = val end
+								end,
+								disabled = function() return db.usage.never end,
+							},
+							generalOptions = {
+								order = 3,
+								name = L["General options"],
+								type = "group",
+								childGroups = "select",
+								inline = true,
+								args = {
+									enable = {
+										order = 1,
+										name = L["Active"],
+										desc = L["active_desc"],
+										type = "toggle",
+										set = function() addon.enabled = not addon.enabled end,
+										get = function() return addon.enabled end,
 									},
-									set = function(_, key, state)	db.usage[key] = state end,
-									get = function(_, key) return db.usage[key] end,
-								},
-								header = {
-									order = 5,
-									type = "header",
-									name = "Autopass",
-									width = "half",
-								},
-								testButton = {
-									order = 7,
-									name = L["Test"],
-									desc = L["test_desc"],
-									type = "execute",
-									func = function()
-										InterfaceOptionsFrame:Hide(); -- close all option frames before testing
-										self:Test(3)
-									end,
-								},
-								versionTest = {
-									name = L["Version Check"],
-									desc = L["version_check_desc"],
-									type = "execute",
-									order = 8	,
-									func = function()
-										InterfaceOptionsFrame:Hide()
-										LibStub("AceConfigDialog-3.0"):CloseAll()
-										addon:CallModule("version")
-									end,
-								},
-							},
-						},
-						autoPassOptions = {
-							order = 2,
-							type = "group",
-							name = L["Auto Pass"],
-							inline = true,
-							args = {
-								autoPass = {
-									order = 1,
-									name = L["Auto Pass"],
-									desc = L["auto_pass_desc"],
-									type = "toggle",
-								},
-								silentAutoPass = {
-									order = 2,
-									name = L["Silent Auto Pass"],
-									desc = L["silent_auto_pass_desc"],
-									type = "toggle",
-								},
-								autoPassBoE = {
-									order = 3,
-									name = L["Auto pass BoE"],
-									desc = L["auto_pass_boe_desc"],
-									type = "toggle",
+									autoOpen = {
+										order = 2,
+										name = L["Auto Open"],
+										desc = L["auto_open_desc"],
+										type = "toggle",
+									},
+									minimizeInCombat = {
+										order = 3,
+										name = L["Minimize in combat"],
+										desc = L["Check to have all frames minimize when entering combat"],
+										type = "toggle",
+									},
+									header = {
+										order = 4,
+										type = "header",
+										name = "",
+										width = "half",
+									},
+									testButton = {
+										order = 8,
+										name = L["Test"],
+										desc = L["test_desc"],
+										type = "execute",
+										func = function()
+											InterfaceOptionsFrame:Hide(); -- close all option frames before testing
+											self:Test(3)
+										end,
+									},
+									versionTest = {
+										name = L["Version Check"],
+										desc = L["version_check_desc"],
+										type = "execute",
+										order = 9,
+										func = function()
+											InterfaceOptionsFrame:Hide()
+											LibStub("AceConfigDialog-3.0"):CloseAll()
+											addon:CallModule("version")
+										end,
+									},
 								},
 							},
-						},
-						lootHistoryOptions = {
-							order = 3,
-							type = "group",
-							name = L["Loot History"],
-							inline = true,
-							args = {
-								desc1 = {
-									order = 1,
-									name = L["loot_history_desc"],
-									type = "description",
-								},
-								enableHistory = {
-									order = 2,
-									name = L["Enable Loot History"],
-									desc = L["enable_loot_history_desc"],
-									type = "toggle",
-								},
-								sendHistory = {
-									order = 3,
-									name = L["Send History"],
-									desc = L["send_history_desc"],
-									type = "toggle",
-								},
-								header = {
-									order = 4,
-									type = "header",
-									name = "",
-								},
-								openLootDB = {
-									order = 5,
-									name = L["Open the Loot History"],
-									desc = L["open_the_loot_history_desc"],
-									type = "execute",
-									func = function() self:CallModule("loothistory");	InterfaceOptionsFrame:Hide();end,
-								},
-								clearLootDB = {
-									order = -1,
-									name = L["Clear Loot History"],
-									desc = L["clear_loot_history_desc"],
-									type = "execute",
-									func = function() self.db.factionrealm.lootDB = {} end,
-									confirm = true,
+							autoPassOptions = {
+								order = 4,
+								type = "group",
+								name = L["Auto Pass"],
+								inline = true,
+								args = {
+									autoPass = {
+										order = 1,
+										name = L["Auto Pass"],
+										desc = L["auto_pass_desc"],
+										type = "toggle",
+									},
+									silentAutoPass = {
+										order = 2,
+										name = L["Silent Auto Pass"],
+										desc = L["silent_auto_pass_desc"],
+										type = "toggle",
+									},
+									autoPassBoE = {
+										order = 3,
+										name = L["Auto pass BoE"],
+										desc = L["auto_pass_boe_desc"],
+										type = "toggle",
+									},
 								},
 							},
-						},
+							lootHistoryOptions = {
+								order = 5,
+								type = "group",
+								name = L["Loot History"],
+								inline = true,
+								args = {
+									desc1 = {
+										order = 1,
+										name = L["loot_history_desc"],
+										type = "description",
+									},
+									enableHistory = {
+										order = 2,
+										name = L["Enable Loot History"],
+										desc = L["enable_loot_history_desc"],
+										type = "toggle",
+									},
+									sendHistory = {
+										order = 3,
+										name = L["Send History"],
+										desc = L["send_history_desc"],
+										type = "toggle",
+									},
+									header = {
+										order = 4,
+										type = "header",
+										name = "",
+									},
+									openLootDB = {
+										order = 5,
+										name = L["Open the Loot History"],
+										desc = L["open_the_loot_history_desc"],
+										type = "execute",
+										func = function() self:CallModule("loothistory");	InterfaceOptionsFrame:Hide();end,
+										disabled = true,
+									},
+									clearLootDB = {
+										order = -1,
+										name = L["Clear Loot History"],
+										desc = L["clear_loot_history_desc"],
+										type = "execute",
+										func = function() self.db.factionrealm.lootDB = {} end,
+										confirm = true,
+									},
+								},
+							},
 						},
 					},
 				},

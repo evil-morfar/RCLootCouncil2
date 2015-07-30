@@ -131,8 +131,8 @@ function RCLootCouncil:OnInitialize()
 		profile = {
 			usage = { -- State of enabledness
 				ml = false,
-				leader = false,
 				ask_ml = true,
+				leader = false,
 				ask_leader = true,
 				never = false,
 			},
@@ -268,10 +268,11 @@ function RCLootCouncil:OnEnable()
 	-- register events
 	self:RegisterEvent("PARTY_LOOT_METHOD_CHANGED", "OnEvent")
 	self:RegisterEvent("GUILD_ROSTER_UPDATE","OnEvent")
-	self:RegisterEvent("GET_ITEM_INFO_RECEIVED","OnEvent")
+	--self:RegisterEvent("GET_ITEM_INFO_RECEIVED","OnEvent")
 	self:RegisterEvent("RAID_INSTANCE_WELCOME","OnEvent")
 	self:RegisterEvent("PLAYER_REGEN_DISABLED", "EnterCombat")
 	self:RegisterEvent("PLAYER_REGEN_ENABLED", "LeaveCombat")
+	self:RegisterEvent("LOOT_READY", "Print") -- TODO See what this does
 
 	if IsInGuild() then
 		self.guildRank = select(2, GetGuildInfo("player"))

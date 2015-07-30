@@ -587,7 +587,7 @@ end
 function RCVotingFrame.SetCellVote(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
 	frame:SetScript("OnEnter", function()
 		if not addon.mldb.anonymousVoting or (db.showForML and addon.isMasterLooter) then
-			addon:CreateTooltip(L["Voters"], unpack(data[realrow].voters)) -- REVIEW 
+			addon:CreateTooltip(L["Voters"], unpack(data[realrow].voters)) -- REVIEW
 		end
 	end)
 	frame:SetScript("OnLeave", function() addon:HideTooltip() end)
@@ -811,17 +811,26 @@ do
 			Lib_UIDropDownMenu_AddButton(info, level)
 			info = Lib_UIDropDownMenu_CreateInfo()
 
-			for k in pairs(data) do
-				if k == "STATUS" then
-					info.text = L["Status texts"]
-					info.colorCode = "|cffde34e2" -- purpleish
-				else
-					info.text = db.responses[k].text
-					info.colorCode = "|cff"..addon:RGBToHex(unpack(db.responses[k].color))
-				end
+			for k in ipairs(data) do -- Make sure normal responses are on top
+				info.text = db.responses[k].text
+				info.colorCode = "|cff"..addon:RGBToHex(unpack(db.responses[k].color))
 				info.func = function() db.modules["RCVotingFrame"].filters[k] = not db.modules["RCVotingFrame"].filters[k]; RCVotingFrame.frame.st:SortData() end
 				info.checked = db.modules["RCVotingFrame"].filters[k]
 				Lib_UIDropDownMenu_AddButton(info, level)
+			end
+			for k in pairs(data) do -- A bit redundency, but it makes sure these "specials" comes last
+				if type(k) == "string" then
+					if k == "STATUS" then
+						info.text = L["Status texts"]
+						info.colorCode = "|cffde34e2" -- purpleish
+					else
+						info.text = db.responses[k].text
+						info.colorCode = "|cff"..addon:RGBToHex(unpack(db.responses[k].color))
+					end
+					info.func = function() db.modules["RCVotingFrame"].filters[k] = not db.modules["RCVotingFrame"].filters[k]; RCVotingFrame.frame.st:SortData() end
+					info.checked = db.modules["RCVotingFrame"].filters[k]
+					Lib_UIDropDownMenu_AddButton(info, level)
+				end
 			end
 		end
 	end
