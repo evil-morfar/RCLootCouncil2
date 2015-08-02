@@ -24,7 +24,7 @@ local keys = {} -- Lookup table for cols
 local menuFrame -- Right click menu frame
 local dropDownMenu -- Filter drop down menu
 
-function RCVotingFrame:OnInitialize() -- try sort = 5
+function RCVotingFrame:OnInitialize() 
 	self.scrollCols = {
 		{ name = "",															sortnext = 2,		width = 20, },	-- 1 Class
 		{ name = L["Name"],																			width = 130,},	-- 2 Candidate Name

@@ -664,7 +664,6 @@ function addon:OptionsTable()
 									for k, v in ipairs(db.buttons) do
 										v.text = self.defaults.profile.buttons[k].text
 										v.whisperKey = self.defaults.profile.buttons[k].whisperKey
-										self:Debug("Reset k = ",k)
 										db.responses[k].text = self.defaults.profile.responses[k].text
 										for i = 1, 4 do db.responses[k].color[i] = self.defaults.profile.responses[k].color[i] end
 									end

@@ -4,16 +4,13 @@ core.lua	Contains core elements of the addon
 --------------------------------
 TODOs/Notes
 	Things marked with "TODO"
+!!!	-- Blizzard has made IsMasterLooter() - can replace self.isMasterLooter
 !!!	- "Disenchant option when everyone passes"
 !!		- Need to make a SetCouncilByGuildRank()
 !		- "more info" thingie
 !		- lootHistory
 		- Revise DB variables
-		- Group in announce options - could be more pesistant
-		- If we truly want to be able to edit votingframe scrolltable with modules, it needs to have GetRow, GetCol by name
-		- Make sure all variables store interchangeable data to allow for fully cross realm/language support i.e UnitFullName, Unlocalized - only change stuff on display
-		- Check if modules can be implemented smarter by getting OnModuleCreated event from Ace or something else.
-		-- Blizzard has made IsMasterLooter() - can replace self.IsMasterLooter
+		- If we truly want to be able to edit votingframe scrolltable with modules, it needs to have GetCol by name
 --------------------------------
 CHANGELOG (WIP)
 	-- MOVED TO CHANGELOG.TXT
@@ -23,7 +20,7 @@ CHANGELOG (WIP)
   Bugfixes:
 		Various taint fixes.
 		Hooks didn't work properly when the player used different loot frame addons.
-		Blizzard doesn't allow to give out loot with a quality less than uncommen
+		Blizzard doesn't allow to give out loot with a quality less than loot treshhold
 ]]
 
 RCLootCouncil = LibStub("AceAddon-3.0"):NewAddon("RCLootCouncil", "AceConsole-3.0", "AceEvent-3.0", "AceComm-3.0", "AceSerializer-3.0", "AceHook-3.0", "AceTimer-3.0");
@@ -42,7 +39,6 @@ local defaultModules = {
 	lootframe =		"RCLootFrame",
 	history =		"RCLootHistory",
 	version =		"RCVersionCheck",
-	rank =			"RCRankChooser",
 	sessionframe =	"RCSessionFrame",
 	votingframe =	"RCVotingFrame",
 }
@@ -51,7 +47,6 @@ local userModules = {
 	lootframe = nil,
 	history = nil,
 	version = nil,
-	rank = nil,
 	sessionframe = nil,
 	votingframe = nil,
 }
@@ -63,9 +58,9 @@ local unregisterGuildEvent = false
 function RCLootCouncil:OnInitialize()
 	--IDEA Consider if we want everything on self, or just whatever modules could need.
 	-- just init testItems now for zzzzz. Needs better implementation
-	for k,v in ipairs(testItems) do
+	--[[for k,v in ipairs(testItems) do
 		GetItemInfo(v)
-	end
+	end]]
   	self.version = GetAddOnMetadata("RCLootCouncil2", "Version")
 	self.nnp = false
 	self.debug = false
@@ -625,7 +620,6 @@ function RCLootCouncil:Test(num)
 	local items = {};
 	-- pick "num" random items
 	for i = 1, num do
-		if i > #testItems then break; end
 		local j = math.random(1, #testItems)
 		tinsert(items, testItems[j])
 	end
