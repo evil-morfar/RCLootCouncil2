@@ -4,7 +4,7 @@
 -- sessionFrame.lua	Adds a frame listing the items to start a session with.
 
 local addon = LibStub("AceAddon-3.0"):GetAddon("RCLootCouncil")
-RCSessionFrame = addon:NewModule("RCSessionFrame")
+RCSessionFrame = addon:NewModule("RCSessionFrame", "AceTimer-3.0")
 local ST = LibStub("ScrollingTable")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 
@@ -47,12 +47,14 @@ end
 
 -- Data should be unmodified lootTable from ml_core
 function RCSessionFrame:ExtractData(data)
+	-- We could get an empty table if we haven't got GetItemInfo() from ml_core, so make sure we can handle it
+	--if not data or #data == 0 then data = {{link = false}} end
 	-- Clear any rowdata
 	self.frame.rows = {}
 	-- And set the new
 	for k,v in ipairs(data) do
 		self.frame.rows[k] = {
-			texture = v.texture,
+			texture = v.texture or nil,
 			link = v.link,
 			cols = {
 				{ value = "",	DoCellUpdate = self.SetCellDeleteBtn, },
@@ -77,7 +79,12 @@ function RCSessionFrame.SetCellText(rowFrame, frame, data, cols, row, realrow, c
 	if frame.text:GetFontObject() ~= GameFontNormal then
 		frame.text:SetFontObject("GameFontNormal") -- We want bigger font
 	end
-	frame.text:SetText(data[realrow].link)
+	if not data[realrow].link then
+		frame.text:SetText("--"..L["Waiting for item info"].."--")
+		RCSessionFrame:ScheduleTimer("Show", 1, ml.lootTable) -- Expect data to be available in 1 sec and then recreate the frame
+	else
+		frame.text:SetText(data[realrow].link)
+	end
 end
 
 function RCSessionFrame.SetCellDeleteBtn(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
@@ -87,7 +94,7 @@ function RCSessionFrame.SetCellDeleteBtn(rowFrame, frame, data, cols, row, realr
 end
 
 function RCSessionFrame.SetCellItemIcon(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
-	local texture = data[realrow].texture
+	local texture = data[realrow].texture or "Interface/ICONS/INV_Sigil_Thorim.png"
 	local link = data[realrow].link
 	frame:SetNormalTexture(texture)
 	frame:SetScript("OnEnter", function() addon:CreateHypertip(link) end)

@@ -14,7 +14,6 @@ local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 local LibDialog = LibStub("LibDialog-1.0")
 
 local db;
---local session = 1
 
 function RCLootCouncilML:OnInitialize()
 	addon:Debug("ML initialized!")
@@ -32,7 +31,7 @@ function RCLootCouncilML:OnEnable()
 	db = addon:Getdb()
 	self.candidates = {} -- candidateName = { class, role, rank }
 	self.lootTable = {} -- The MLs operating lootTable
-	-- self.lootTable[session] = {	bagged, lootSlot, announced, awarded, name, link, ilvl, type, subType, equipLoc, texture, boe	}
+	-- self.lootTable[session] = {	bagged, lootSlot, awarded, name, link, quality, ilvl, type, subType, equipLoc, texture, boe	}
 	self.awardedInBags = {} -- Awarded items that are stored in MLs inventory
 									-- i = { link, winner }
 	self.lootInBags = {} 	-- Items not yet awarded but stored in bags
@@ -42,7 +41,6 @@ function RCLootCouncilML:OnEnable()
 	self:RegisterComm("RCLootCouncil", "OnCommReceived")
 	self:RegisterEvent("LOOT_OPENED","OnEvent")
 	self:RegisterEvent("LOOT_CLOSED","OnEvent")
-	--self:RegisterEvent("RAID_INSTANCE_WELCOME","OnEvent")
 	self:RegisterBucketEvent("GROUP_ROSTER_UPDATE", 20, "UpdateGroup") -- Bursts in group creation, and we should have plenty of time to handle it
 	self:RegisterEvent("CHAT_MSG_WHISPER","OnEvent")
 	self:RegisterBucketMessage("RCConfigTableChanged", 2, "ConfigTableChanged") -- The messages can burst
@@ -54,19 +52,13 @@ end
 -- @param item Any: ItemID|itemString|itemLink
 -- @param bagged True if the item is in the ML's inventory
 -- @param slotIndex Index of the lootSlot, or nil if none
-function RCLootCouncilML:AddItem(item, bagged, slotIndex)
-	addon:DebugLog("ML:AddItem", item, bagged, slotIndex)
+-- @param index Index in self.lootTable, used to set data in a specific session
+function RCLootCouncilML:AddItem(item, bagged, slotIndex, index)
+	addon:DebugLog("ML:AddItem", item, bagged, slotIndex, index)
 	local name, link, rarity, ilvl, iMinLevel, type, subType, iStackCount, equipLoc, texture = GetItemInfo(item)
-	if not name then -- start a timer so we can add when item info is recieved -- NOTE should be redundant, as we'll never get an uncached item as ML (unless we're testing?)
-		self:ScheduleTimer("Timer", 1, "AddItem", item, bagged, slotIndex)
-		addon:Debug("Started timer:", "AddItem")
-		return
-	end
-	--self.lootTable[session] = {} -- wipe it
-	tinsert(self.lootTable, {
+	self.lootTable[index or (#self.lootTable == 0 and 1 or #self.lootTable+1)] = {
 		["bagged"]		= bagged,
 		["lootSlot"]	= slotIndex,
-		["announced"]	= false,
 		["awarded"]		= false,
 		["name"]			= name,
 		["link"]			= link,
@@ -77,7 +69,13 @@ function RCLootCouncilML:AddItem(item, bagged, slotIndex)
 		["equipLoc"]	= equipLoc,
 		["texture"]		= texture,
 		["boe"]			= addon:IsItemBoE(link),
-	})
+	}
+	-- Item isn't properly loaded, so update the data in 1 sec (Should only happen with /rc test)
+	if not name then
+		self:ScheduleTimer("Timer", 1, "AddItem", item, bagged, slotIndex, #self.lootTable)
+		addon:Debug("Started timer:", "AddItem", "for", item)
+		--return
+	end
 end
 
 -- Removes item (session) from self.lootTable
@@ -128,17 +126,13 @@ end
 
 function RCLootCouncilML:StartSession()
 	addon:Debug("ML:StartSession()")
-	--if not self.running then
-		self.running = true
+	self.running = true
 
-		addon:SendCommand("group", "lootTable", self.lootTable)
+	addon:SendCommand("group", "lootTable", self.lootTable)
 
-		if db.announceItems then self:AnnounceItems() end
-		-- Start a timer to set response as offline/not installed unless we receive an ack
-		self:ScheduleTimer("Timer", 10, "LootSend")
-	--else
-		--addon:Debug("called while running a session!")
-	--end
+	self:AnnounceItems()
+	-- Start a timer to set response as offline/not installed unless we receive an ack
+	self:ScheduleTimer("Timer", 10, "LootSend")
 end
 
 function RCLootCouncilML:AddUserItem(item) -- TODO
@@ -190,6 +184,8 @@ end
 function RCLootCouncilML:CouncilChanged()
 	-- The council was changed, so send out the council
 	addon:SendCommand("group", "council", db.council)
+	-- Send candidates so new council members can register it
+	addon:SendCommand("group", "candidates", self.candidates)
 end
 
 function RCLootCouncilML:UpdateMLdb()
@@ -304,7 +300,7 @@ end
 
 function RCLootCouncilML:LootOpened()
 	if addon.isMasterLooter and GetNumLootItems() > 0 then
-				addon.target = GetUnitName("target") or "Unknown/Chest" -- capture the boss name
+		addon.target = GetUnitName("target") or L["Unknown/Chest"] -- capture the boss name
 		for i = 1, GetNumLootItems() do
 			-- We have reopened the loot frame, so check if we should update .lootSlot
 			if self.running then
@@ -479,9 +475,8 @@ function RCLootCouncilML:Award(session, winner, response, reason)
 	return false
 end
 
-
-
 function RCLootCouncilML:AnnounceItems()
+	if not db.announceItems then return end
 	addon:DebugLog("ML:AnnounceItems()")
 	SendChatMessage(db.announceText, addon:GetAnnounceChannel(db.announceChannel))
 	for k,v in ipairs(self.lootTable) do
@@ -549,19 +544,29 @@ function RCLootCouncilML:AutoAward(lootIndex, item, quality, name, reason, boss)
 	return awarded
 end
 
+local history_table = {}
 function RCLootCouncilML:TrackAndLogLoot(name, item, response, boss, votes, itemReplaced1, itemReplaced2, reason)
 	if reason and not reason.log then return end -- Reason says don't log
 	if not (db.sendHistory and db.enableHistory) then return end -- No reason to do stuff when we won't use it
 	local instanceName, _, _, difficultyName = GetInstanceInfo()
-	local table = {["lootWon"] = item, ["date"] = date("%d/%m/%y"), ["time"] = date("%H:%M:%S"), ["instance"] = instanceName.."-"..difficultyName,
-		["boss"] = boss, ["votes"] = votes, ["itemReplaced1"] = itemReplaced1, ["itemReplaced2"] = itemReplaced2, ["responseID"] = response,
-		["response"] = reason and reason.text or db.responses[response].text, ["color"] = reason and reason.color or db.responses[response].color}
+
+	history_table["lootWon"] 		= item
+	history_table["date"] 			= date("%d/%m/%y")
+	history_table["time"] 			= date("%H:%M:%S")
+	history_table["instance"] 		= instanceName.."-"..difficultyName
+	history_table["boss"] 			= boss
+	history_table["votes"] 			= votes
+	history_table["itemReplaced1"]= itemReplaced1
+	history_table["itemReplaced2"]= itemReplaced2
+	history_table["responseID"] 	= response
+	history_table["response"] 		= reason and reason.text or db.responses[response].text
+	history_table["color"]			= reason and reason.color or db.responses[response].color
+
 	if db.sendHistory then -- Send it, and let comms handle the logging
-		addon:SendCommand("group", "history", name, table)
+		addon:SendCommand("group", "history", name, history_table)
 	elseif db.enableHistory then -- Just log it
-		addon:SendCommand("player", "history", name, table)
+		addon:SendCommand("player", "history", name, history_table)
 	end
-	table = {}
 end
 
 function RCLootCouncilML:HasAllItemsBeenAwarded()
@@ -576,16 +581,11 @@ end
 
 function RCLootCouncilML:EndSession()
 	addon:DebugLog("ML:EndSession()")
-	--session = 1
 	self.lootTable = {}
 	addon:SendCommand("group", "session_end")
 	self.running = false
 	self:CancelAllTimers()
 	addon.testMode = false
-end
-
-function RCLootCouncilML:ChangeResponse(session, name, response)
-	self.lootTable[session].candidates[name].response = response
 end
 
 -- Initiates a session with the items handed
@@ -601,12 +601,11 @@ function RCLootCouncilML:Test(items)
 	for session, iName in ipairs(items) do
 		self:AddItem(iName, false, false)
 	end
-	if db.autoStart then -- Settings say go
-		self:StartSession()
-	else
-		addon:CallModule("sessionframe")
-		addon:GetActiveModule("sessionframe"):Show(self.lootTable)
+	if db.autoStart then
+		addon:Print(L["Autostart isn't supported when testing"])
 	end
+	addon:CallModule("sessionframe")
+	addon:GetActiveModule("sessionframe"):Show(self.lootTable)
 end
 
 -- Returns true if we are ignoring the item

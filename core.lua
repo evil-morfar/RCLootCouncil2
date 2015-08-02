@@ -4,7 +4,6 @@ core.lua	Contains core elements of the addon
 --------------------------------
 TODOs/Notes
 	Things marked with "TODO"
-!!!	-- Blizzard has made IsMasterLooter() - can replace self.isMasterLooter
 !!!	- "Disenchant option when everyone passes"
 !!		- Need to make a SetCouncilByGuildRank()
 !		- "more info" thingie
@@ -57,10 +56,6 @@ local unregisterGuildEvent = false
 
 function RCLootCouncil:OnInitialize()
 	--IDEA Consider if we want everything on self, or just whatever modules could need.
-	-- just init testItems now for zzzzz. Needs better implementation
-	--[[for k,v in ipairs(testItems) do
-		GetItemInfo(v)
-	end]]
   	self.version = GetAddOnMetadata("RCLootCouncil2", "Version")
 	self.nnp = false
 	self.debug = false
@@ -73,7 +68,6 @@ function RCLootCouncil:OnInitialize()
 	self.masterLooter = ""  -- Name of the ML
 	self.isCouncil = false -- Are we in the Council?
 	self.enabled = true -- turn addon on/off
-	--self.handleLooting = false -- Should we handle the looting? (e.g. Activated)
 	self.inCombat = false -- Are we in combat?
 
 	self.verCheckDisplayed = false -- Have we shown a "out-of-date"?
@@ -89,14 +83,15 @@ function RCLootCouncil:OnInitialize()
 		}	]]
 
 	self.responses = {
-		NOTANNOUNCED	= { color = {1,0,1,1},				sort = 501,		text = L["Not announced"],},
+		--NOTANNOUNCED	= { color = {1,0,1,1},				sort = 501,		text = L["Not announced"],},
 		ANNOUNCED		= { color = {1,0,1,1},				sort = 502,		text = L["Loot announced, waiting for answer"], },
 		WAIT				= { color = {1,1,0,1},				sort = 503,		text = L["Candidate is selecting response, please wait"], },
-		NOTHING			= { color = {0.5,0.5,0.5,1},		sort = 504,		text = L["Offline or RCLootCouncil not installed"], },
-		TIMEOUT			= { color = {1,0,0,1},				sort = 505,		text = L["Candidate didn't respond on time"], },
-		REMOVED			= { color = {0.8,0.5,0,1},			sort = 506,		text = L["Candidate removed"], },
-		PASS				= { color = {0.7, 0.7,0.7,1},		sort = 999,		text = L["Pass"],},
-		AUTOPASS			= { color = {0.7,0.7,0.7,1},		sort = 1000,	text = L["Autopass"], },
+		TIMEOUT			= { color = {1,0,0,1},				sort = 504,		text = L["Candidate didn't respond on time"], },
+		REMOVED			= { color = {0.8,0.5,0,1},			sort = 505,		text = L["Candidate removed"], },
+		NOTHING			= { color = {0.5,0.5,0.5,1},		sort = 505,		text = L["Offline or RCLootCouncil not installed"], },
+		PASS				= { color = {0.7, 0.7,0.7,1},		sort = 800,		text = L["Pass"],},
+		AUTOPASS			= { color = {0.7,0.7,0.7,1},		sort = 801,		text = L["Autopass"], },
+		DISABLED			= { color = {0.3, 0.35, 0.5},		sort = 802,		text = L["Candidate has disabled RCLootCouncil"], },
 		--[[1]]			  { color = {0,1,0,1},				sort = 1,		text = L["Mainspec/Need"],},
 		--[[2]]			  { color = {1,0.5,0,1},			sort = 2,		text = L["Offspec/Greed"],	},
 		--[[3]]			  { color = {0,0.7,0.7,1},			sort = 3,		text = L["Minor Upgrade"],},
@@ -394,7 +389,7 @@ function RCLootCouncil:ChatCommand(msg)
 		self:CallModule("version")
 
 	elseif input == "history" or input == L["history"] or input == "h" or input == "his" then
-		self:CallModule("history")
+		--self:CallModule("history")
 
 	elseif input == "nnp" then
 		self.nnp = not self.nnp
@@ -489,10 +484,18 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 		if test then
 			if command == "lootTable" then
 				if self:UnitIsUnit(sender, self.masterLooter) then
-					self:SendCommand(sender, "lootAck", self.playerName) -- send ack
-
 					local lootTable = unpack(data)
-					if db.autoPass then
+					-- Send "DISABLED" response when not enabled
+					if not self.enabled then
+						for i = 1, #lootTable do
+							self:SendCommand("group", "response", i, self.playerName, {response = "DISABLED"})
+						end
+						return self:Debug("Sent 'DISABLED' response to", sender)
+					end
+
+					self:SendCommand("group", "lootAck", self.playerName) -- send ack
+
+					if db.autoPass then -- Do autopassing
 						for ses, v in ipairs(lootTable) do
 							if (v.boe and db.autoPassBoE) or not v.boe then
 								if self:AutoPassCheck(v.subType) then
@@ -800,7 +803,8 @@ function RCLootCouncil:LocalizeSubTypes()
 end
 
 function RCLootCouncil:IsItemBoE(item)
-	self:DebugLog("IsItemBoe("..item..")")
+	self:DebugLog("IsItemBoe", item)
+	if not item then return false end
 	GameTooltip:SetOwner(UIParent, "ANCHOR_NONE")
 	GameTooltip:SetHyperlink(item)
 	if GameTooltip:NumLines() > 1 then -- check that there is something here
@@ -823,18 +827,16 @@ function RCLootCouncil:CreateResponse(session, itemid, ilvl, response, note)
 	local g1, g2 = self:GetPlayersGearFromItemID(itemid)
 	local diff = nil
 	if g1 then diff = (ilvl - select(4, GetItemInfo(g1))) end
-	return {
-		session = session,
-		name = self.playerName,
-		data = {
-				gear1 = g1,
-				gear2 = g2,
-				ilvl = math.floor(select(2,GetAverageItemLevel())),
-				diff = diff,
-				note = note,
-				response = response
+	return
+		session,
+		self.playerName,
+		{	gear1 = g1,
+			gear2 = g2,
+			ilvl = math.floor(select(2,GetAverageItemLevel())),
+			diff = diff,
+			note = note,
+			response = response
 		}
-	}
 end
 
 function RCLootCouncil:GetPlayersGuildRank()
@@ -999,7 +1001,7 @@ function RCLootCouncil:GetML()
 			name = self:UnitName("party"..mlPartyID)
 		end
 		self:Debug("MasterLooter = "..name)
-		return self:UnitIsUnit(name,"player"), name
+		return IsMasterLooter(), name
 	end
 	return false, nil;
 end

@@ -24,7 +24,7 @@ local keys = {} -- Lookup table for cols
 local menuFrame -- Right click menu frame
 local dropDownMenu -- Filter drop down menu
 
-function RCVotingFrame:OnInitialize() 
+function RCVotingFrame:OnInitialize()
 	self.scrollCols = {
 		{ name = "",															sortnext = 2,		width = 20, },	-- 1 Class
 		{ name = L["Name"],																			width = 130,},	-- 2 Candidate Name
@@ -141,9 +141,9 @@ function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
 				end
 
 			elseif command == "response" then
-				local t = unpack(data)
-				for k,v in pairs(t.data) do
-					self:SetCandidateData(t.session, t.name, k, v)
+				local session, name, t = unpack(data)
+				for k,v in pairs(t) do
+					self:SetCandidateData(session, name, k, v)
 				end
 				--self:Update()
 				self.frame.st:SortData()
@@ -209,7 +209,7 @@ function RCVotingFrame:Setup(table)
 	for session, t in ipairs(table) do
 		lootTable[session] = {rows = {}, candidates = {}}
 		for k,v in pairs(t) do
-			--lootTable[session] = {bagged, lootSlot, announced, awarded, name, link, lvl, type, subType, equipLoc, texture, boe}
+			--lootTable[session] = {bagged, lootSlot, awarded, name, link, quality, ilvl, type, subType, equipLoc, texture, boe}
 			lootTable[session][k] = v
 		end
 		for name, y in pairs(candidates) do
@@ -531,8 +531,7 @@ function RCVotingFrame.SetCellGear(rowFrame, frame, data, cols, row, realrow, co
 	if gear then
 		local texture = select(10, GetItemInfo(gear))
 		frame:SetNormalTexture(texture)
-		local link = select(2, GetItemInfo(gear))
-		frame:SetScript("OnEnter", function() addon:CreateHypertip(link) end)
+		frame:SetScript("OnEnter", function() addon:CreateHypertip(gear) end)
 		frame:SetScript("OnLeave", function() addon:HideTooltip() end)
 		frame:Show()
 	else

@@ -111,13 +111,11 @@ function LootFrame:Update()
 	end
 end
 
-local toSend = {data = {}} -- More efficient
 function LootFrame:OnRoll(entry, button)
 	addon:DebugLog("LootFrame:OnRoll", entry, button)
 	local index = entries[entry].realID
-	toSend = addon:CreateResponse(items[index].session, tonumber(strmatch(items[index].link, "item:(%d+):")), items[index].ilvl, button, items[index].note)
 
-	addon:SendCommand("group", "response", toSend)
+	addon:SendCommand("group", "response", addon:CreateResponse(items[index].session, tonumber(strmatch(items[index].link, "item:(%d+):")), items[index].ilvl, button, items[index].note))
 
 	numRolled = numRolled + 1
 	items[index].rolled = true

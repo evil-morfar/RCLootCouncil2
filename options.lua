@@ -81,7 +81,13 @@ function addon:OptionsTable()
 										name = L["Active"],
 										desc = L["active_desc"],
 										type = "toggle",
-										set = function() addon.enabled = not addon.enabled end,
+										set = function()
+											self.enabled = not self.enabled
+											if not self.enabled and self.isMasterLooter then -- If we disable while being ML
+												self.isMasterLooter = false
+												self:GetActiveModule("masterlooter"):Disable()
+											end
+										end,
 										get = function() return addon.enabled end,
 									},
 									autoOpen = {
