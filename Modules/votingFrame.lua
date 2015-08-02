@@ -154,6 +154,7 @@ end
 
 function RCVotingFrame:SetCandidateData(ses, candidate, name, data, realrow)
 	local row = realrow or lootTable[ses].candidates[candidate]
+	if not row then return addon:Debug("No row in SetCandidateData()!", ses, candidate, name, data, realrow) end
 	if name == "response" then
 		lootTable[ses].rows[row].response = data
 
@@ -173,6 +174,7 @@ end
 
 function RCVotingFrame:GetCandidateData(ses, candidate, name, realrow)
 	local row = realrow or lootTable[ses].candidates[candidate]
+	if not row then return addon:Debug("No row in GetCandidateData()!", ses, candidate, name, data, realrow) end
 	if name == "response" then
 		return lootTable[ses].rows[row].response
 
@@ -333,7 +335,7 @@ function RCVotingFrame:GetFrame()
 	-- Container and title
 	local f = addon:CreateFrame("DefaultRCLootCouncilFrame", "votingframe", L["RCLootCouncil Voting Frame"], 250, 420)
 	-- Scrolling table
-	local st = LibStub("ScrollingTable"):CreateST(self.scrollCols, NUM_ROWS, ROW_HEIGHT, {r=1,g=0.9,b=0,a=0.5}, f.content)
+	local st = LibStub("ScrollingTable"):CreateST(self.scrollCols, NUM_ROWS, ROW_HEIGHT, { ["r"] = 1.0, ["g"] = 0.9, ["b"] = 0.0, ["a"] = 0.5 }, f.content)
 	st.frame:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", 10, 10)
 	st:RegisterEvents({
 		["OnClick"] = function(rowFrame, cellFrame, data, cols, row, realrow, column, table, button, ...)

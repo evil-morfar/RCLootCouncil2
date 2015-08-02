@@ -4,14 +4,16 @@ core.lua	Contains core elements of the addon
 --------------------------------
 TODOs/Notes
 	Things marked with "TODO"
+!!!	- "Disenchant option when everyone passes"
+!!		- Need to make a SetCouncilByGuildRank()
+!		- "more info" thingie
+!		- lootHistory
+		- Revise DB variables
+		- Group in announce options - could be more pesistant
 		- If we truly want to be able to edit votingframe scrolltable with modules, it needs to have GetRow, GetCol by name
 		- Make sure all variables store interchangeable data to allow for fully cross realm/language support i.e UnitFullName, Unlocalized - only change stuff on display
 		- Check if modules can be implemented smarter by getting OnModuleCreated event from Ace or something else.
-		- "Disenchant option when everyone passes"
-		- "more info" thingie
-		- Revise DB variables
-		- lootHistory
-		- Need to make a SetCouncilByGuildRank()
+		-- Blizzard has made IsMasterLooter() - can replace self.IsMasterLooter
 --------------------------------
 CHANGELOG (WIP)
 	-- MOVED TO CHANGELOG.TXT
@@ -21,6 +23,7 @@ CHANGELOG (WIP)
   Bugfixes:
 		Various taint fixes.
 		Hooks didn't work properly when the player used different loot frame addons.
+		Blizzard doesn't allow to give out loot with a quality less than uncommen
 ]]
 
 RCLootCouncil = LibStub("AceAddon-3.0"):NewAddon("RCLootCouncil", "AceConsole-3.0", "AceEvent-3.0", "AceComm-3.0", "AceSerializer-3.0", "AceHook-3.0", "AceTimer-3.0");
@@ -152,7 +155,6 @@ function RCLootCouncil:OnInitialize()
 			autoAwardReason = 1,
 			observe = false, -- observe mode on/off
 			autoOpen = true, -- auto open the voting frame
-			--autoEnable = false, -- Skip "Use for this raid?" message TODO Delete the remnants of this
 			autoPass = true,
 			silentAutoPass = false, -- Show autopass message
 			autoPassBoE = true,
@@ -174,12 +176,12 @@ function RCLootCouncil:OnInitialize()
 
 			announceAward = true,
 			awardText = { -- Just max it at 2 channels
-				{ channel = "RAID",	text = L["&p was awarded with &i for &r!"],},
+				{ channel = "group",	text = L["&p was awarded with &i for &r!"],},
 				{ channel = "NONE",	text = "",},
 			},
 			announceItems = false,
 			announceText = L["Items under consideration:"],
-			announceChannel = "RAID",
+			announceChannel = "group",
 
 			responses = self.responses,
 
@@ -265,11 +267,11 @@ function RCLootCouncil:OnEnable()
 	-- register events
 	self:RegisterEvent("PARTY_LOOT_METHOD_CHANGED", "OnEvent")
 	self:RegisterEvent("GUILD_ROSTER_UPDATE","OnEvent")
-	--self:RegisterEvent("GET_ITEM_INFO_RECEIVED","OnEvent")
 	self:RegisterEvent("RAID_INSTANCE_WELCOME","OnEvent")
+	self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
 	self:RegisterEvent("PLAYER_REGEN_DISABLED", "EnterCombat")
 	self:RegisterEvent("PLAYER_REGEN_ENABLED", "LeaveCombat")
-	self:RegisterEvent("LOOT_READY", "Print") -- TODO See what this does
+	self:RegisterEvent("LOOT_BIND_CONFIRM", "Print") -- TODO Test this
 
 	if IsInGuild() then
 		self.guildRank = select(2, GetGuildInfo("player"))
@@ -306,9 +308,9 @@ function RCLootCouncil:OnEnable()
 						self:Print(L["Changing LootMethod to Master Looting"])
 						SetLootMethod("master", self.Ambiguate(self.playerName)) -- activate ML
 					end
-					if db.autoAward and GetLootThreshold() > db.autoAwardLowerThreshold then
+					if db.autoAward and GetLootThreshold() ~= 2 and GetLootThreshold() > db.autoAwardLowerThreshold  then
 						self:Print(L["Changing loot threshold to enable Auto Awarding"])
-						SetLootThreshold(db.autoAwardLowerThreshold)
+						SetLootThreshold(db.autoAwardLowerThreshold >= 2 and db.autoAwardLowerThreshold or 2)
 					end
 					self:Print(L[" now handles looting"])
 					self.isMasterLooter = true
@@ -317,7 +319,7 @@ function RCLootCouncil:OnEnable()
 						self:Print(L["You haven't set a council! You can edit your council by typing '/rc council'"])
 					end
 					self:CallModule("masterlooter")
-					self:GetActiveModule("masterlooter"):NewML(self.masterlooter)
+					self:GetActiveModule("masterlooter"):NewML(self.masterLooter)
 				end,
 			},
 			{	text = L["No"],
@@ -366,7 +368,7 @@ function RCLootCouncil:ChatCommand(msg)
 		self:Debug(L["- log - display the debug log"])
 		self:Debug(L["- clearLog - clear the debug log"])
 
-	elseif input == 'config' or input == L["config"] then
+	elseif input == 'config' or input == L["config"] or input == "c" then
 		-- Call it twice, because reasons..
 		InterfaceOptionsFrame_OpenToCategory(self.optionsFrame)
 		InterfaceOptionsFrame_OpenToCategory(self.optionsFrame)
@@ -406,12 +408,12 @@ function RCLootCouncil:ChatCommand(msg)
 	elseif input == "whisper" or input == L["whisper"] then
 		self:Print(L["whisper_help"])
 
-	elseif input == "neverml" or input == L["neverml"] then
-		db.neverML = not db.neverML
-		self:Print(L["neverml"].." = "..tostring(db.neverML))
-
-	elseif (input == "add" or input == L["add"]) then
-		-- TODO Create the "add" command (don't forget chat_commands)
+	elseif (input == "add" or input == L["add"]) then -- REVIEW
+		if self.isMasterLooter then
+			self:GetActiveModule("masterlooter"):AddUserItem(arg1)
+		else
+			self:Print(L["You cannot use this command without being the Master Looter"])
+		end
 
 	elseif input == "award" then -- TODO/REVIEW Complete this and test it
 		if self.isMasterLooter then
@@ -580,9 +582,11 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 
 			elseif command == "session_end" then
 				if self:UnitIsUnit(sender, self.masterLooter) then
-					self:Print(L["The Master Looter has ended the session"])
+					self:Print(format(L["'player' has ended the session"], self.Ambiguate(self.masterLooter)))
 					self:GetActiveModule("lootframe"):Disable()
-					self:GetActiveModule("votingframe"):EndSession()
+					if self.isCouncil or self.mldb.observe then -- Don't call the voting frame if it wasn't used
+						self:GetActiveModule("votingframe"):EndSession()
+					end
 				else
 					self:Debug("Non ML:", sender, "sent end session command!")
 				end
@@ -910,27 +914,24 @@ function RCLootCouncil:ConvertDateToString(day, month, year)
 end
 
 function RCLootCouncil:OnEvent(event, ...)
+	self:Debug("Event:", event, ...)
 	if event == "PARTY_LOOT_METHOD_CHANGED" then
-		self:Debug("Event:", "PARTY_LOOT_METHOD_CHANGED")
 		self:NewMLCheck()
 
-	elseif event == "RAID_INSTANCE_WELCOME" then -- REVIEW Consider if we want this here
-		self:Debug("Event:", "RAID_INSTANCE_WELCOME")
+	elseif event == "RAID_INSTANCE_WELCOME" then
 		-- high server-side latency causes the UnitIsGroupLeader("player") condition to fail if queried quickly (upon entering instance) regardless of state.
-		-- may add a delay for the above conditional if the issue persists to circumvent issue.
 		-- NOTE v2.0: Not sure if this is still an issue, but just add a 2 sec timer to the MLCheck call
-		self:ScheduleTimer("NewMLCheck", 2)
+		self:ScheduleTimer("OnRaidEnter", 2)
+
+	elseif event == "PLAYER_ENTERING_WORLD" then
+		self:NewMLCheck()
 
 	elseif event == "GUILD_ROSTER_UPDATE" then
-		self:Debug("Event:", "GUILD_ROSTER_UPDATE")
 		self.guildRank = self:GetPlayersGuildRank();
 		if unregisterGuildEvent then
 			self:UnregisterEvent("GUILD_ROSTER_UPDATE"); -- we don't need it any more
 			self:GetGuildOptions() -- get the guild data to the options table now that it's ready
 		end
-	elseif event == "GET_ITEM_INFO_RECEIVED" then
-			-- REVIEW Not sure we need this
-			self:Debug("Event:", "GET_ITEM_INFO_RECEIVED")
 	end
 end
 
@@ -939,7 +940,7 @@ function RCLootCouncil:NewMLCheck()
 	self.isMasterLooter, self.masterLooter = self:GetML()
 
 	if self:UnitIsUnit(old_ml, self.masterLooter) or db.usage.never then return end -- no change
-	if self:UnitIsUnit(old_ml, "player") and not self:UnitIsUnit(self.masterLooter, "player") then
+	if self:UnitIsUnit(old_ml, "player") and not self.isMasterLooter then
 		-- We were ML, but no longer, so disable masterlooter module
 		self:GetActiveModule("masterlooter"):Disable()
 	end
@@ -948,39 +949,43 @@ function RCLootCouncil:NewMLCheck()
 	-- We are ML and shouldn't ask the player for usage
 	if self.isMasterLooter and db.usage.ml then -- addon should auto start
 		self:Print(L[" now handles looting"])
-		if db.autoAward and GetLootThreshold() > db.autoAwardLowerThreshold then
-			RCLootCouncil:Print(L["Changing loot threshold to enable Auto Awarding"])
-			SetLootThreshold(db.autoAwardLowerThreshold)
+		if db.autoAward and GetLootThreshold() ~= 2 and GetLootThreshold() > db.autoAwardLowerThreshold  then
+			self:Print(L["Changing loot threshold to enable Auto Awarding"])
+			SetLootThreshold(db.autoAwardLowerThreshold >= 2 and db.autoAwardLowerThreshold or 2)
 		end
 
 	-- We're ML and must ask the player for usage
 	elseif self.isMasterLooter and db.usage.ask_ml then
 		return LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_USAGE")
 
-	-- There's no ML, and lootmethod ~= ML, but we are the group leader
-	elseif not self.masterLooter and UnitIsGroupLeader("player") then
-		-- We don't need to ask the player for usage, so change loot method to master, and make the player ML
-		if db.usage.leader then
-			SetLootMethod("master", self.playerName)
-			self:Print(L[" you are now the Master Looter and RCLootCouncil is now handling looting."])
-			if db.autoAward and GetLootThreshold() > db.autoAwardLowerThreshold then
-				RCLootCouncil:Print(L["Changing loot threshold to enable Auto Awarding"])
-				SetLootThreshold(db.autoAwardLowerThreshold)
-			end
-			self.isMasterLooter = true
-			self.masterLooter = self.playerName
-
-		-- We must ask the player for usage
-		elseif db.usage.ask_leader then
-			return LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_USAGE")
-		else
-			return
-		end
 	else
 		return
 	end
 	self:CallModule("masterlooter")
-	self:GetActiveModule("masterlooter"):NewML(self.masterlooter)
+	self:GetActiveModule("masterlooter"):NewML(self.masterLooter)
+end
+
+function RCLootCouncil:OnRaidEnter()
+	-- NOTE: We shouldn't need to call GetML() as it's most likely called on "LOOT_METHOD_CHANGED"
+	-- There's no ML, and lootmethod ~= ML, but we are the group leader
+	if not self.masterLooter and UnitIsGroupLeader("player") then
+		-- We don't need to ask the player for usage, so change loot method to master, and make the player ML
+		if db.usage.leader then
+			SetLootMethod("master", self.playerName)
+			self:Print(L[" you are now the Master Looter and RCLootCouncil is now handling looting."])
+			if db.autoAward and GetLootThreshold() ~= 2 and GetLootThreshold() > db.autoAwardLowerThreshold  then
+				self:Print(L["Changing loot threshold to enable Auto Awarding"])
+				SetLootThreshold(db.autoAwardLowerThreshold >= 2 and db.autoAwardLowerThreshold or 2)
+			end
+			self.isMasterLooter, self.masterLooter = true, self.playerName
+			self:CallModule("masterlooter")
+			self:GetActiveModule("masterlooter"):NewML(self.masterLooter)
+
+		-- We must ask the player for usage
+		elseif db.usage.ask_leader then
+			return LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_USAGE")
+		end
+	end
 end
 
 -- Returns boolean, mlName. (true if the player is ML), (nil if there's no ML)
@@ -1019,6 +1024,10 @@ end
 
 function RCLootCouncil:Getdb()
 	return db
+end
+
+function RCLootCouncil:GetAnnounceChannel(channel)
+	return channel == "group" and (IsInRaid() and "RAID" or "PARTY") or channel
 end
 
 -- Blizz UnitIsUnit() doesn't know how to compare unit-realm with unit

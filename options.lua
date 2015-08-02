@@ -74,7 +74,6 @@ function addon:OptionsTable()
 								order = 3,
 								name = L["General options"],
 								type = "group",
-								childGroups = "select",
 								inline = true,
 								args = {
 									enable = {
@@ -378,6 +377,12 @@ function addon:OptionsTable()
 								inline = true,
 								disabled = function() return not db.autoAward end,
 								args = {
+									desc = {
+										order = 0,
+										name = format(L["You can only auto award items with a quality lower than 'quality' to yourself due to Blizaard restrictions"],"|cff1eff00"..getglobal("ITEM_QUALITY2_DESC").."|r"),
+										type = "description",
+										hidden = function() return db.autoAwardLowerThreshold >= 2 end,
+									},
 									autoAward = {
 										order = 1,
 										name = L["Auto Award"],
@@ -409,23 +414,24 @@ function addon:OptionsTable()
 										values = function()
 											local t = {}
 											for i = 0, 5 do
-												local r,g,b,hex = GetItemQualityColor(i)
-												t[i] = "|c"..hex.." "..getglobal("ITEM_QUALITY"..i.."_DESC")
+												--local r,g,b,hex = GetItemQualityColor(i)
+												--t[i] = "|c"..hex.." "..getglobal("ITEM_QUALITY"..i.."_DESC")
+												t[i] = ITEM_QUALITY_COLORS[i].hex..getglobal("ITEM_QUALITY"..i.."_DESC")
 											end
 											return t;
 										end,
 									},
-									autoAwardTo = {
+									autoAwardTo2 = {
 										order = 2,
 										name = L["Auto Award to"],
 										desc = L["auto_award_to_desc"],
 										width = "double",
 										type = "input",
-										hidden = function() return IsInRaid() end,
+										hidden = function() return GetNumGroupMembers() > 0 end,
 										get = function() return db.autoAwardTo; end,
 										set = function(i,v) db.autoAwardTo = v; end,
 									},
-									autoAwardTo2 = {
+									autoAwardTo = {
 										order = 2,
 										name = L["Auto Award to"],
 										desc = L["auto_award_to_desc"],
@@ -435,11 +441,12 @@ function addon:OptionsTable()
 										values = function()
 											local t = {}
 											for i = 1, GetNumGroupMembers() do
-												t[i] = GetRaidRosterInfo(i)
+												local name = GetRaidRosterInfo(i)
+												t[name] = name
 											end
 											return t;
 										end,
-										hidden = function() return not IsInRaid() end,
+										hidden = function() return GetNumGroupMembers() == 0 end,
 									},
 									autoAwardReason = {
 										order = 2.1,
@@ -564,17 +571,7 @@ function addon:OptionsTable()
 											RAID_WARNING = L["Raid Warning"],
 											group = L["Group"], -- must be converted
 										},
-										set = function(i,v)
-												-- Convert "group" if needed
-												if v == "group" then
-													if IsInRaid() then
-														v = "RAID"
-													else
-														v = "PARTY"
-													end
-												end
-												db.announceChannel = v
-											end,
+										set = function(i,v) db.announceChannel = v end,
 										hidden = function() return not db.announceItems end,
 									},
 									announceText = {
@@ -924,8 +921,9 @@ function addon:OptionsTable()
 				OFFICER = L["Officer"],
 				RAID = L["Raid"],
 				RAID_WARNING = L["Raid Warning"],
+				group = L["Group"],
 			},
-			set = function(j,v) db.awardText[i].channel = v end,
+			set = function(j,v) db.awardText[i].channel = v	end,
 			get = function() return db.awardText[i].channel end,
 			hidden = function() return not db.announceAward end,
 		}

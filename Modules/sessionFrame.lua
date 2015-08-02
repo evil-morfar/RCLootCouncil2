@@ -10,7 +10,6 @@ local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 
 local db, ml;
 local ROW_HEIGHT = 40
-local HIGHLIGHT = {r = 0, g = 0, b = 0, a = 0} -- 0's for no highlight
 local awardLater = false
 
 function RCSessionFrame:OnInitialize()
@@ -24,14 +23,11 @@ end
 function RCSessionFrame:OnEnable()
 	db = addon:Getdb()
 	ml = addon:GetActiveModule("masterlooter")
-	--self:Show()
 end
 
 function RCSessionFrame:OnDisable()
 	self.frame:Hide()
 	self.frame.rows = {}
-	--self.frame:SetParent(nil)
-	--self.frame = nil
 	awardLater = false
 end
 
@@ -96,6 +92,11 @@ function RCSessionFrame.SetCellItemIcon(rowFrame, frame, data, cols, row, realro
 	frame:SetNormalTexture(texture)
 	frame:SetScript("OnEnter", function() addon:CreateHypertip(link) end)
 	frame:SetScript("OnLeave", function() addon:HideTooltip() end)
+	frame:SetScript("OnClick", function()
+		if IsModifiedClick() then
+		   HandleModifiedItemClick(link);
+      end
+	end)
 end
 
 function RCSessionFrame:GetFrame()
@@ -135,7 +136,7 @@ function RCSessionFrame:GetFrame()
 	end)
 	f.guildBtn = b2
 
-	local st = ST:CreateST(self.scrollCols, 5, ROW_HEIGHT, HIGHLIGHT, f.content)
+	local st = ST:CreateST(self.scrollCols, 5, ROW_HEIGHT, nil, f.content)
 	st.frame:SetPoint("TOPLEFT",f,"TOPLEFT",10,-40)
 	f:SetWidth(st.frame:GetWidth()+20)
 	f.rows = {} -- the row data

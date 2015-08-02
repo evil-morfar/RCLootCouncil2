@@ -29,8 +29,6 @@ end
 
 function RCVersionCheck:OnDisable()
 	self:Hide()
---	self.frame:SavePosition()
---	self.frame:SetParent(nil)
 	self:UnregisterAllComm()
 	self.frame.rows = {}
 end

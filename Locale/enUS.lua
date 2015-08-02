@@ -88,6 +88,7 @@ L["Candidate didn't respond on time"] = true
 L["Candidate is selecting response, please wait"] = true
 L["Candidate removed"] = true
 L["Cannot autoaward:"] = true
+L["Cannot give 'item' to 'player' due to Blizzard limitations. Gave it to you for distributation."] = "Cannot give %s to %s due to Blizzard limitations. Gave it to you for distributation."
 L["Change Response"] = true
 L["Changing loot threshold to enable Auto Awarding"] = true
 L["Changing LootMethod to Master Looting"] = true
@@ -100,7 +101,6 @@ L["chat_commands"] = [=[
 - config    - Open the options interface
 - council   - opens the council interface
 - history   - open the Loot History (alt. 'h' or 'his')
-- neverML   - never use the addon as Master Looter
 - open      - Opens the voting frame
 - reset     - resets the addon's frames' positions
 - test (#)  - emulate a loot session (add a number for raid test)
@@ -119,7 +119,7 @@ L["Close"] = true
 L["config"] = true
 L["confirm_usage_text"] = "|cFF87CEFA RCLootCouncil |r\n\nWould you like to use RCLootCouncil with this group?"
 L["Could not Auto Award i because the Loot Threshold is too high!"] = "Could not Auto Award %s because the Loot Threshold is too high!"
-L["Could not find 'player' in the raid."] = "Could not find %s in the raid."
+L["Could not find 'player' in the group."] = "Could not find %s in the group."
 L["council"] = true
 L["Council"] = true
 L["Current Council"] = true
@@ -171,7 +171,7 @@ L["Loot announced, waiting for answer"] = true
 L["Loot Everything"] = true
 L["Loot History"] = true
 L["loot_everything_desc"] = "Enables autolooting of non-items (e.g. mounts, tier-tokens)"
-L["loot_history_desc"] = "RCLootCouncil automatically records relevant information from sessions.\nThe raw data is stored in \".../SavedVariables/RCLootCouncilLootDB.lua\".\n\nNote: Non-MasterLooters can only store data sent from the MasterLooter.\n"
+L["loot_history_desc"] = "RCLootCouncil automatically records relevant information from sessions.\nThe raw data is stored in \".../SavedVariables/RCLootCouncil.lua\".\n\nNote: Non-MasterLooters can only store data sent from the MasterLooter.\n"
 L["Looted items to award later"] = true
 L["Looting options"] = true
 L["Lower Quality Limit"] = true
@@ -192,8 +192,6 @@ L["Multi Vote"] = true
 L["multi_vote_desc"] = "Enables multi voting, i.e. voters can vote for several candidates."
 L["Name"] = true
 L["Need"] = true
-L["neverml"] = true
-L["neverml_warning"] = "You are the Master Looter but have opted never to use RCLootCouncil as ML. Enter '/rc neverML' to use the addon."
 L["Never use RCLootCouncil"] = true
 L["No items to award later registered"] = true
 L["No session running"] = true
@@ -221,6 +219,7 @@ L["open"] = true
 L["open_the_loot_history_desc"] = "Click to open the Loot History."
 L["Party"] = true
 L["Pass"] = true
+L["'player' has ended the session"] = "%s has ended the session"
 L["Raid Warning"] = true
 L["Raid"] = true
 L["Rank"] = true
@@ -272,11 +271,11 @@ L["The item would now be awarded to 'player'"] = "The item would now be awarded 
 L["The loot is already on the list"] = true
 L["The Master Looter doesn't allow multiple votes."] = true
 L["The Master Looter doesn't allow votes for yourself."] = true
-L["The Master Looter has ended the session"] = true
 L["The session has ended."] = true
 L["This item has been awarded"] = true
 L["This item"] = true
 L["tVersion_outdated_msg"] = "Newest RCLootCouncil test version is: %s"
+L["Unable to give 'item' to 'player' - (player offline, left group or instance?)"] = "Unable to give %s to %s - (player offline, left group or instance?)"
 L["Unable to give out loot without the loot window open."] = true
 L["Unguilded"] = true
 L["Unknown"] = true
@@ -308,6 +307,7 @@ L["x days"] = "%d days"
 L["Yell"] = true
 L["Yes"] = true
 L["You are not allowed to see the Voting Frame right now."] = true
+L["You can only auto award items with a quality lower than 'quality' to yourself due to Blizaard restrictions"] = "You can only auto award items with a quality lower than %s to yourself due to Blizaard restrictions"
 L["You can't start a loot session while in combat."] = true
 L["You cannot initiate a test while in a group without being the MasterLooter."] = true
 L["You cannot use the menu when the session has ended."] = true
