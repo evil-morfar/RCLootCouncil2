@@ -14,12 +14,6 @@ TODOs/Notes
 CHANGELOG (WIP)
 	-- MOVED TO CHANGELOG.TXT
 
-	*Changed Test mode behavior -- really?
-
-  Bugfixes:
-		Various taint fixes.
-		Hooks didn't work properly when the player used different loot frame addons.
-		Blizzard doesn't allow to give out loot with a quality less than loot treshhold
 ]]
 
 RCLootCouncil = LibStub("AceAddon-3.0"):NewAddon("RCLootCouncil", "AceConsole-3.0", "AceEvent-3.0", "AceComm-3.0", "AceSerializer-3.0", "AceHook-3.0", "AceTimer-3.0");
