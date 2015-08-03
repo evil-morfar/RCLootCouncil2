@@ -153,7 +153,7 @@ end
 -- Getter/Setter for candidate data
 -- Handles errors
 function RCVotingFrame:SetCandidateData(session, candidate, data, val)
-	local function Set(ses, candidate, data, val)
+	local function Set(session, candidate, data, val)
 		lootTable[session].candidates[candidate][data] = val
 	end
 	local ok, arg = pcall(Set, session, candidate, data, val)
@@ -178,7 +178,6 @@ function RCVotingFrame:Setup(table)
 		for name, v in pairs(candidates) do
 			t.candidates[name] = {
 				class = v.class,
-				name = name,
 				rank = v.rank,
 				role = v.role,
 				response = "ANNOUNCED",
@@ -187,7 +186,7 @@ function RCVotingFrame:Setup(table)
 				gear1 = "",
 				gear2 = "",
 				votes = 0,
-				note = 0,
+				note = nil,
 				roll = "",
 				voters = {},
 				haveVoted = false, -- Have we voted for this particular candidate in this session?
@@ -207,15 +206,14 @@ function RCVotingFrame:Setup(table)
 end
 
 function RCVotingFrame:HandleVote(session, name, vote, voter)
-	--addon:Print("HandleVote("..session..", "..row..", "..vote..", "..voter..")")
 	-- Do the vote
 	lootTable[session].candidates[name].votes = lootTable[session].candidates[name].votes + vote
 	-- And update voters names
 	if vote == 1 then
-		tinsert(lootTable[session].candidates[name].voters, voter)
+		tinsert(lootTable[session].candidates[name].voters, addon.Ambiguate(voter))
 	else
-		for i, name in ipairs(lootTable[session].candidates[name].voters) do
-			if addon:UnitIsUnit(voter, name) then
+		for i, n in ipairs(lootTable[session].candidates[name].voters) do
+			if addon:UnitIsUnit(voter, n) then
 				tremove(lootTable[session].candidates[name].voters, i)
 				break
 			end
@@ -500,7 +498,7 @@ end
 ----------------------------------------------------------
 function RCVotingFrame:GetDiffColor(num)
 	if num == "" then num = 0 end -- Can't compare empty string
-	local green, red, grey = {r=0,g=1,b=0,a=1},{r=1,g=0,b=0,a=1},{r=0.75,g=0.75,b=0.75,a=1}
+	local green, red, grey = {0,1,0,1},{1,0,0,1},{0.75,0.75,0.75,1}
 	if num > 0 then return green end
 	if num < 0 then return red end
 	return grey
@@ -514,15 +512,16 @@ end
 function RCVotingFrame.SetCellName(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
 	local name = data[realrow].name
 	frame.text:SetText(addon.Ambiguate(name))
-	frame.text:SetTextColor(unpack(addon:GetClassColor(lootTable[session].candidates[name].class)))
-	data[realrow].cols[col].value = name
+	local c = addon:GetClassColor(lootTable[session].candidates[name].class)
+	frame.text:SetTextColor(c.r, c.g, c.b, c.a)
+	data[realrow].cols[column].value = name
 end
 
 function RCVotingFrame.SetCellRank(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
 	local name = data[realrow].name
 	frame.text:SetText(lootTable[session].candidates[name].rank)
 	frame.text:SetTextColor(addon:GetResponseColor(lootTable[session].candidates[name].response))
-	data[realrow].cols[col].value = lootTable[session].candidates[name].rank
+	data[realrow].cols[column].value = lootTable[session].candidates[name].rank
 end
 
 function RCVotingFrame.SetCellRole(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
@@ -530,7 +529,7 @@ function RCVotingFrame.SetCellRole(rowFrame, frame, data, cols, row, realrow, co
 	local role = addon.TranslateRole(lootTable[session].candidates[name].role)
 	frame.text:SetText(role)
 	frame.text:SetTextColor(addon:GetResponseColor(lootTable[session].candidates[name].response))
-	data[realrow].cols[col].value = role
+	data[realrow].cols[column].value = role
 end
 
 function RCVotingFrame.SetCellResponse(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
@@ -542,14 +541,14 @@ end
 function RCVotingFrame.SetCellIlvl(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
 	local name = data[realrow].name
 	frame.text:SetText(lootTable[session].candidates[name].ilvl)
-	data[realrow].cols[col].value = lootTable[session].candidates[name].ilvl
+	data[realrow].cols[column].value = lootTable[session].candidates[name].ilvl
 end
 
 function RCVotingFrame.SetCellDiff(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
 	local name = data[realrow].name
 	frame.text:SetText(lootTable[session].candidates[name].diff)
-	frame.text:SetTextColor(self:GetDiffColor(lootTable[session].candidates[name].diff))
-	data[realrow].cols[col].value = lootTable[session].candidates[name].diff
+	frame.text:SetTextColor(unpack(RCVotingFrame:GetDiffColor(lootTable[session].candidates[name].diff)))
+	data[realrow].cols[column].value = lootTable[session].candidates[name].diff
 end
 
 function RCVotingFrame.SetCellGear(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
@@ -653,6 +652,12 @@ function RCVotingFrame.SetCellNote(rowFrame, frame, data, cols, row, realrow, co
 		data[realrow].cols[column].value = 0
 	end
 	frame.noteBtn = f
+end
+
+function RCVotingFrame.SetCellRoll(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
+	local name = data[realrow].name
+	frame.text:SetText(lootTable[session].candidates[name].roll)
+	data[realrow].cols[column].value = lootTable[session].candidates[name].roll
 end
 
 function RCVotingFrame.filterFunc(table, row)

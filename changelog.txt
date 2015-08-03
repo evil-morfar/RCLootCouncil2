@@ -61,7 +61,7 @@
 **    New option to hide votes until one self have voted.
 
 *  ++Module support++
-**    All frames are implememted as modules, which can be replaced. This also gives the opportunity
+**    All frames are implemented as modules, which can be replaced. This also gives the opportunity
       for anyone to add custom features to the core addon.
 
 *  --Limits--
@@ -73,3 +73,8 @@
 
 *  --Raid Chat--
 **    Noone wants to see people linking items in the raid chat just because someone didn't install an addon. Use whisper for that!
+
+Bugfixes:
+	*	Various taint fixes.
+	*	Alt-clicking items didn't work properly when the player used different loot frame addons.
+	*	Blizzard doesn't allow to give out loot with a quality less than loot treshhold, work-around by allowing items to get looted to the Master Looter.

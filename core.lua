@@ -7,9 +7,9 @@ TODOs/Notes
 !!!	- "Disenchant option when everyone passes"
 !		- "more info" thingie
 !		- lootHistory
+			Store class in loot history
 		- Revise DB variables
 		- If we truly want to be able to edit votingframe scrolltable with modules, it needs to have GetCol by name
-		test
 --------------------------------
 CHANGELOG (WIP)
 	-- MOVED TO CHANGELOG.TXT
@@ -1276,14 +1276,13 @@ function RCLootCouncil:GetResponseText(response)
 end
 
 function RCLootCouncil:GetResponseColor(response)
-	-- We have to convert indicies for lib-st -.-'
-	local r,g,b,a
+	local color
 	if self.mldb.responses[response] then
-		r,g,b,a = unpack(self.mldb.responses[response].color)
+		color = self.mldb.responses[response].color
 	else
-		r,g,b,a = unpack(self.responses[response].color)
+		color = self.responses[response].color
 	end
-	return {["r"]=r,["g"]=g,["b"]=b,["a"]=a}
+	return unpack(color)
 end
 
 function RCLootCouncil:GetResponseSort(response)
