@@ -19,6 +19,7 @@ function RCLootCouncilML:OnInitialize()
 end
 
 function RCLootCouncilML:OnDisable()
+	addon:Debug("ML Disabled")
 	self:UnregisterAllEvents()
 	self:UnregisterAllBuckets()
 	self:UnregisterAllComm()
@@ -95,9 +96,8 @@ function RCLootCouncilML:RemoveCandidate(name)
 	self.candidates[name] = nil
 end
 
--- IDEA This needs to work if one's not in a raid (if possible) -- edit: OR do it?
---			I think GetRaidRosterInfo() works in a party when used with GetNumGroupMembers()
 function RCLootCouncilML:UpdateGroup(ask)
+	addon:DebugLog("UpdateGroup", ask)
 	if type(ask) ~= "boolean" then ask = false end
 	local group_copy = {}
 	local updates = false
@@ -106,8 +106,10 @@ function RCLootCouncilML:UpdateGroup(ask)
 		local name, _, _, _, _, class, _, _, _, _, _, role  = GetRaidRosterInfo(i)
 		name = addon:UnitName(name) -- Get their unambiguated name
 		if group_copy[name] then	-- If they're already registered
-			group_copy[name] = nil	-- remove them from the check  -- REVIEW not 100% this will work as intended
+			addon:Debug("Registered", name)
+			group_copy[name] = nil	-- remove them from the check
 		else -- add them
+			addon:Debug("Not registered", name)
 			if not ask then -- ask for playerInfo?
 				addon:SendCommand(name, "playerInfoRequest")
 				addon:SendCommand(name, "MLdb", addon.mldb) -- and send mlDB
@@ -268,6 +270,13 @@ function RCLootCouncilML:OnCommReceived(prefix, serializedMsg, distri, sender)
 
 			elseif command == "MLdb_request" and addon.isMasterLooter then
 				addon:SendCommand(sender, "MLdb", addon.mldb)
+
+			elseif command == "reconnect" and addon.isMasterLooter then
+				-- Someone asks for mldb, council and candidates
+				addon:SendCommand(sender, "MLdb", addon.mldb)
+				addon:SendCommand(sender, "council", db.council)
+				addon:SendCommand(sender, "candidates", self.candidates)
+				addon:Debug("Responded to reconnect from", sender)
 			end
 		else
 			addon:Debug("Error in deserializing ML comm: ", command)

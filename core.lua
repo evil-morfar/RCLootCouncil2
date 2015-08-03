@@ -5,7 +5,6 @@ core.lua	Contains core elements of the addon
 TODOs/Notes
 	Things marked with "TODO"
 !!!	- "Disenchant option when everyone passes"
-!!		- Need to make a SetCouncilByGuildRank()
 !		- "more info" thingie
 !		- lootHistory
 		- Revise DB variables
@@ -261,6 +260,7 @@ function RCLootCouncil:OnEnable()
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
 	self:RegisterEvent("PLAYER_REGEN_DISABLED", "EnterCombat")
 	self:RegisterEvent("PLAYER_REGEN_ENABLED", "LeaveCombat")
+	self:RegisterEvent("GROUP_ROSTER_UPDATE", "Debug", "event")
 
 	if IsInGuild() then
 		self.guildRank = select(2, GetGuildInfo("player"))
@@ -566,7 +566,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 					historyDB[name] = {history}
 				end
 
-			elseif command == "reroll" and self:UnitIsUnit(sender, self.masterLooter) then
+			elseif command == "reroll" and self:UnitIsUnit(sender, self.masterLooter) and self.enabled then
 				self:Print(self.Ambiguate(sender), "has asked you to reroll") -- TODO
 				self:CallModule("lootframe")
 				self:GetActiveModule("lootframe"):ReRoll(unpack(data))
@@ -577,7 +577,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 			elseif command == "message" then
 				self:Print(unpack(data))
 
-			elseif command == "session_end" then
+			elseif command == "session_end" and self.enabled then
 				if self:UnitIsUnit(sender, self.masterLooter) then
 					self:Print(format(L["'player' has ended the session"], self.Ambiguate(self.masterLooter)))
 					self:GetActiveModule("lootframe"):Disable()
@@ -902,7 +902,7 @@ function RCLootCouncil:ConvertDateToString(day, month, year)
 end
 
 function RCLootCouncil:OnEvent(event, ...)
-	self:Debug("Event:", event, ...)
+	--self:Debug("Event:", event, ...)
 	if event == "PARTY_LOOT_METHOD_CHANGED" then
 		self:NewMLCheck()
 
@@ -913,6 +913,10 @@ function RCLootCouncil:OnEvent(event, ...)
 
 	elseif event == "PLAYER_ENTERING_WORLD" then
 		self:NewMLCheck()
+		-- Ask for data when we have done a /rl and have a ML
+		if self.masterLooter and self.masterLooter ~= "" then
+			self:SendCommand(self.masterLooter, "reconnect")
+		end
 
 	elseif event == "GUILD_ROSTER_UPDATE" then
 		self.guildRank = self:GetPlayersGuildRank();
@@ -927,11 +931,11 @@ function RCLootCouncil:NewMLCheck()
 	local old_ml = self.masterLooter
 	self.isMasterLooter, self.masterLooter = self:GetML()
 
-	if self:UnitIsUnit(old_ml, self.masterLooter) or db.usage.never then return end -- no change
 	if self:UnitIsUnit(old_ml, "player") and not self.isMasterLooter then
 		-- We were ML, but no longer, so disable masterlooter module
 		self:GetActiveModule("masterlooter"):Disable()
 	end
+	if self:UnitIsUnit(old_ml, self.masterLooter) or db.usage.never then return end -- no change
 	if not self.isMasterLooter and self.masterLooter then return end -- Someone else is ML
 
 	-- We are ML and shouldn't ask the player for usage
@@ -953,13 +957,13 @@ function RCLootCouncil:NewMLCheck()
 	self:GetActiveModule("masterlooter"):NewML(self.masterLooter)
 end
 
-function RCLootCouncil:OnRaidEnter()
+function RCLootCouncil:OnRaidEnter(arg)
 	-- NOTE: We shouldn't need to call GetML() as it's most likely called on "LOOT_METHOD_CHANGED"
 	-- There's no ML, and lootmethod ~= ML, but we are the group leader
 	if not self.masterLooter and UnitIsGroupLeader("player") then
 		-- We don't need to ask the player for usage, so change loot method to master, and make the player ML
 		if db.usage.leader then
-			SetLootMethod("master", self.playerName)
+			SetLootMethod("master", self.Ambiguate(self.playerName))
 			self:Print(L[" you are now the Master Looter and RCLootCouncil is now handling looting."])
 			if db.autoAward and GetLootThreshold() ~= 2 and GetLootThreshold() > db.autoAwardLowerThreshold  then
 				self:Print(L["Changing loot threshold to enable Auto Awarding"])

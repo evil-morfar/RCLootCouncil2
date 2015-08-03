@@ -85,7 +85,10 @@ function addon:OptionsTable()
 											self.enabled = not self.enabled
 											if not self.enabled and self.isMasterLooter then -- If we disable while being ML
 												self.isMasterLooter = false
+												self.masterLooter = nil
 												self:GetActiveModule("masterlooter"):Disable()
+											else
+												self:NewMLCheck()
 											end
 										end,
 										get = function() return addon.enabled end,
@@ -749,7 +752,15 @@ function addon:OptionsTable()
 													end
 													return info
 												end,
-												set = function(j,i) db.council = {}; db.minRank = i; addon:CouncilChanged(); end,
+												set = function(_, val)
+													db.minRank = val
+													for i = 1, GetNumGuildMembers() do
+														local name, _, rankIndex = GetGuildRosterInfo(i) -- get info from all guild members
+														if rankIndex + 1 <= val then -- if the member is the required rank, or above
+															tinsert(db.council, name) -- then insert them to the council
+														end
+													end
+													addon:CouncilChanged(); end,
 												get = function() return db.minRank; end,
 											},
 											desc = {
@@ -985,12 +996,11 @@ function addon:GetGuildOptions()
 						return names
 					end,
 					get = function(info, key)
-						local values = info[#info-1].args.ranks.values()
+						local values = addon.options.args.mlSettings.args.councilTab.args.addCouncil.args[info[#info-1]].args.ranks.values()
 						return tContains(self.db.profile.council, values[key])
 					end,
 					set = function(info, key, tag)
-						--local values = addon.options.args.council.args.addCouncil.args[info[#info-1]].args.ranks.values()
-						--local values = info[#info-1].args.ranks.values()
+						local values = addon.options.args.mlSettings.args.councilTab.args.addCouncil.args[info[#info-1]].args.ranks.values()
 						if tag then
 							tinsert(self.db.profile.council, values[key])
 						else

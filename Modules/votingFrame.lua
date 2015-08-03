@@ -73,7 +73,7 @@ function LOOTTABLE()
 end
 
 function RCVotingFrame:Show()
-	if self.frame then
+	if self.frame  then
 		self.frame:Show()
 		self:SwitchSession(session)
 	else
@@ -82,6 +82,7 @@ function RCVotingFrame:Show()
 end
 
 function RCVotingFrame:EndSession(hide)
+	if not self.frame:IsShown() then return end -- NOTE: Error prevention, requires change of Setup() to be good
 	active = false -- The session has ended, so deactivate
 	self:SwitchSession(session) -- Hack for updating UI
 	if hide then self:Hide() end -- Hide if need be
@@ -134,6 +135,7 @@ function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
 			elseif command == "lootTable" and addon:UnitIsUnit(sender, addon.masterLooter) then
 				active = true
 				self:Setup(unpack(data))
+				if not addon.enabled then return end -- We just want things ready
 				if db.autoOpen then
 					self:Show()
 				else
@@ -599,7 +601,7 @@ function RCVotingFrame.SetCellVote(rowFrame, frame, data, cols, row, realrow, co
 		for _, v in pairs(data) do
 			if v.haveVoted then voted = true; break end
 		end
-		if not voted then frame.text:SetText(0); addon:Debug("Set to 0") end
+		if not voted then frame.text:SetText(0) end
 	end
 end
 
@@ -761,7 +763,7 @@ do
 							session = session,
 						}
 					}
-					addon:SendCommand(addon.masterLooter, "reroll", t)
+					addon:SendCommand(candidateName, "reroll", t)
 				end
 				Lib_UIDropDownMenu_AddButton(info, level);
 				info = Lib_UIDropDownMenu_CreateInfo()
