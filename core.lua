@@ -9,6 +9,7 @@ TODOs/Notes
 !		- lootHistory
 		- Revise DB variables
 		- If we truly want to be able to edit votingframe scrolltable with modules, it needs to have GetCol by name
+		test
 --------------------------------
 CHANGELOG (WIP)
 	-- MOVED TO CHANGELOG.TXT
@@ -1083,9 +1084,9 @@ end
 ---------------------------------------------------------------------------
 
 --- Used as a "DoCellUpdate" function for lib-st
-function RCLootCouncil.SetCellClassIcon(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
+function RCLootCouncil.SetCellClassIcon(rowFrame, frame, data, cols, row, realrow, column, fShow, table, class)
 	local celldata = data[realrow].cols[column]
-	local class = celldata.args[1]
+	local class = celldata.args and celldata.args[1] or class
 	if class then
 		frame:SetNormalTexture("Interface\\GLUES\\CHARACTERCREATE\\UI-CHARACTERCREATE-CLASSES"); -- this is the image containing all class icons
 		local coords = CLASS_ICON_TCOORDS[class]; -- get the coordinates of the class icon we want
