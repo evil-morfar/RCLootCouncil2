@@ -1,6 +1,6 @@
 ## Author: Potdisc
 ## Interface: 60200
-## Notes: Interface for running a Loot Council
+## Notes: Interface for running a Loot Council v2.0.0-Alpha.1
 ## Title: RCLootCouncil2
 ## Version: 2.0.0
 ## SavedVariables: RCLootCouncilDB, RCLootCouncilLootDB
