@@ -71,6 +71,7 @@ function RCVersionCheck:Query(group)
 		end
 	end
 	addon:SendCommand(group, "verTest", addon.version, addon.tVersion)
+	self:AddEntry(addon.playerName, addon.playerClass, addon.guildRank, addon.version, addon.tVersion) -- add ourself
 	self:ScheduleTimer("QueryTimer", 5)
 end
 

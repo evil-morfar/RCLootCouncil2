@@ -261,7 +261,6 @@ function RCLootCouncil:OnEnable()
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
 	self:RegisterEvent("PLAYER_REGEN_DISABLED", "EnterCombat")
 	self:RegisterEvent("PLAYER_REGEN_ENABLED", "LeaveCombat")
-	self:RegisterEvent("LOOT_BIND_CONFIRM", "Print") -- TODO Test this
 
 	if IsInGuild() then
 		self.guildRank = select(2, GetGuildInfo("player"))
@@ -291,9 +290,9 @@ function RCLootCouncil:OnEnable()
 		text = L["confirm_usage_text"],
 		buttons = {
 			{	text = L["Yes"],
-				on_click = function() --TODO Lot of remaking here
+				on_click = function()
 					usage = true
-					local lootMethod, _, MLRaidID = GetLootMethod()
+					local lootMethod = GetLootMethod()
 					if lootMethod ~= "master" then
 						self:Print(L["Changing LootMethod to Master Looting"])
 						SetLootMethod("master", self.Ambiguate(self.playerName)) -- activate ML
@@ -398,21 +397,21 @@ function RCLootCouncil:ChatCommand(msg)
 	elseif input == "whisper" or input == L["whisper"] then
 		self:Print(L["whisper_help"])
 
-	elseif (input == "add" or input == L["add"]) then -- REVIEW
+	elseif (input == "add" or input == L["add"]) then
 		if self.isMasterLooter then
 			self:GetActiveModule("masterlooter"):AddUserItem(arg1)
 		else
 			self:Print(L["You cannot use this command without being the Master Looter"])
 		end
 
-	elseif input == "award" then -- TODO/REVIEW Complete this and test it
+	elseif input == "award" or input == L["award"] then
 		if self.isMasterLooter then
 			self:GetActiveModule("masterlooter"):SessionFromBags()
 		else
 			self:Print(L["You cannot use this command without being the Master Looter"])
 		end
 
-	elseif input == "winners" then -- REVIEW
+	elseif input == "winners" or input == L["winners"] then
 		if self.isMasterLooter then
 			self:GetActiveModule("masterlooter"):PrintAwardedInBags()
 		else
@@ -536,7 +535,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 					self:Debug("Non-ML:", sender, "sent Mldb!")
 				end
 
-			elseif command == "verTest" then
+			elseif command == "verTest" and not self:UnitIsUnit(sender, "player") then -- Don't reply to our own verTests
 				local otherVersion, tVersion = unpack(data)
 				self:SendCommand(sender, "verTestReply", self.playerName, self.playerClass, self.guildRank, self.version, self.tVersion)
 				if self.version < otherVersion and not self.verCheckDisplayed and (not (tVersion or self.tVersion)) then
@@ -590,7 +589,13 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 				end
 			end
 		else
-			self:Debug("Error in deserializing comm:", tostring(command));
+			-- Most likely pre 2.0 command
+			local cmd = strsplit(" ", serializedMsg, 2)
+			if cmd and cmd == "verTest" then
+				self:SendCommand(sender, "verTestReply", self.playerName, self.playerClass, self.guildRank, self.version, self.tVersion)
+				return
+			end
+			self:Debug("Error in deserializing comm:", command, data);
 		end
 	end
 end
@@ -874,19 +879,6 @@ function RCLootCouncil:GetGuildRankNum(name)
 		end
 	end
 	return 100; -- fallback
-end
-
--- REVIEW might not be needed, or not valid
-function RCLootCouncil:GetLowestItemLevel(item1, item2)
-	self:DebugLog("GetLowestItemLevel(...)")
-	local ilvl1, ilvl2
-	ilvl1 = select(4, GetItemInfo(item1))
-	if item2 then
-		ilvl2 = select(4, GetItemInfo(item2))
-	else return ilvl1; end
-	--if ilvl1 < ilvl2 then return ilvl1; else return ilvl2; end
-	-- This should work
-	return ilvl1 < ilvl2 and ilvl1 or ilvl2
 end
 
 function RCLootCouncil:GetNumberOfDaysFromNow(oldDate)

@@ -5,7 +5,6 @@ ml_core.lua	Contains core elements for the MasterLooter
 
 	TODOs/NOTES:
 		- SendMessage() on AddItem() to let userModules know it's safe to add to lootTable. Might have to do it other places too.
-		- Revision lootTable.announced
 ]]
 
 local addon = LibStub("AceAddon-3.0"):GetAddon("RCLootCouncil")
@@ -29,8 +28,8 @@ end
 
 function RCLootCouncilML:OnEnable()
 	db = addon:Getdb()
-	self.candidates = {} -- candidateName = { class, role, rank }
-	self.lootTable = {} -- The MLs operating lootTable
+	self.candidates = {} 	-- candidateName = { class, role, rank }
+	self.lootTable = {} 		-- The MLs operating lootTable
 	-- self.lootTable[session] = {	bagged, lootSlot, awarded, name, link, quality, ilvl, type, subType, equipLoc, texture, boe	}
 	self.awardedInBags = {} -- Awarded items that are stored in MLs inventory
 									-- i = { link, winner }

@@ -73,6 +73,7 @@ L["Autoloot BoE"] = true
 L["autoloot_BoE_desc"] = "Enables autolooting of BoE (Bind on Equip) items."
 L["Autopass"] = true
 L["Autopassed on 'item'"] = "Autopassed on %s"
+L["award"] = true
 L["Award Announcement"] = true
 L["Award for ..."] = true
 L["Award later?"] = true
@@ -101,13 +102,16 @@ L["chat tVersion string"] = "|cFF87CEFARCLootCouncil |cFFFFFFFFversion |cFFFFA50
 L["chat version String"] = "|cFF87CEFARCLootCouncil |cFFFFFFFFversion |cFFFFA500 %s"
 L["chat_commands"] = [=[
 - config    - Open the options interface
-- council   - opens the council interface
-- history   - open the Loot History (alt. 'h' or 'his')
-- open      - Opens the voting frame
-- reset     - resets the addon's frames' positions
-- test (#)  - emulate a loot session (add a number for raid test)
-- version   - open the Version Checker (alt. 'v' or 'ver')
-- whisper   - displays help to whisper commands
+- council   - Open the council interface
+- history   - Open the Loot History (alt. 'h' or 'his')
+- version   - Open the Version Checker (alt. 'v' or 'ver')
+- open      - Open the voting frame
+- reset     - Resets the addon's frames' positions
+- test (#)  - Emulate a loot session with # items, 1 if omitted
+- whisper   - Displays help to whisper commands
+- add [item]- Add an item to the session frame
+- award     - Start a session with items looted to your inventory
+- winners   - Display the winners of awarded looted to your inventory
 ]=]
 L["Check this to loot the items and distribute them later."] = true
 L["Check to have all frames minimize when entering combat"] = true
@@ -306,6 +310,7 @@ L["whisperKey_need"] = "need, mainspec, ms, 1"
 L["whisperKey_greed"] = "greed, offspec, os, 2"
 L["whisperKey_minor"] = "minorupgrade, minor, 3"
 L["Windows reset"] = true
+L["winners"] = true
 L["x days"] = "%d days"
 L["Yell"] = true
 L["Yes"] = true
