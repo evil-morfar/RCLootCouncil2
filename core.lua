@@ -261,6 +261,11 @@ function RCLootCouncil:OnEnable()
 		self.guildRank = select(2, GetGuildInfo("player"))
 		self:SendCommand("guild", "verTest", self.version, self.tVersion) -- send out a version check
 	end
+
+	if not self.db.global.version then -- First time install
+		-- Show a 5 sec delayed message on how to revert to latest Release version.
+		self:ScheduleTimer("Print", 5, format("You're running |cFF87CEFARCLootCouncil |cFFFFFFFFv|cFFFFA5002.0.0-%s|r. If you didn't download this intentionally please set 'Preferred Release Type' to 'Release' in your Curse Client, and update.", self.tVersion))
+	end
 	self.db.global.version = self.version;
 	self.db.global.logMaxEntries = self.defaults.global.logMaxEntries -- reset it now for zzz
 
