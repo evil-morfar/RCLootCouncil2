@@ -1,4 +1,4 @@
-==== v2.0 (WIP)
+==== v2.0 (Work in Progress)
 
 * **Complete rewrite**
 
