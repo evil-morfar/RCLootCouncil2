@@ -111,7 +111,7 @@ L["chat_commands"] = [=[
 - whisper   - Displays help to whisper commands
 - add [item]- Add an item to the session frame
 - award     - Start a session with items looted to your inventory
-- winners   - Display the winners of awarded looted to your inventory
+- winners   - Display the winners of awarded items looted to your inventory
 ]=]
 L["Check this to loot the items and distribute them later."] = true
 L["Check to have all frames minimize when entering combat"] = true

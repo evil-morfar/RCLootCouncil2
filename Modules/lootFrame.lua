@@ -59,7 +59,6 @@ function LootFrame:OnDisable()
 	self.frame:Hide() -- We don't disable the frame as we probably gonna need it later
 	items = {}
 	numRolled = 0
-	printtable(items)
 end
 
 function LootFrame:Show()

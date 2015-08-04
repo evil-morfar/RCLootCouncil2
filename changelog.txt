@@ -1,4 +1,10 @@
-===== Alpha2 changes
+====== Alpha3 changes ======
+* Fixed error when responding to the last item.
+* More locale changes.
+* Properly display version string in .toc #Notes field.
+* Added a potential fix to previous versions taint.
+
+====== Alpha2 changes ======
 * Wrong load order for Libs/DropDownMenu (#105)
 * Was double importing libs (#104)
 * Updated Libs/Lib-st due to leaked globals (#103)
