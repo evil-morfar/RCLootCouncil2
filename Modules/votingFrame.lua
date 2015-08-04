@@ -24,6 +24,12 @@ local keys = {} -- Lookup table for cols
 local menuFrame -- Right click menu frame
 local dropDownMenu -- Filter drop down menu
 
+--@debug@
+function LOOTTABLE()
+	printtable(lootTable)
+end
+--@end-debug@
+
 function RCVotingFrame:OnInitialize()
 	self.scrollCols = {
 		{ name = "",															sortnext = 2,		width = 20, },	-- 1 Class
@@ -65,10 +71,6 @@ end
 
 function RCVotingFrame:Hide()
 	self.frame:Hide()
-end
-
-function LOOTTABLE()
-	printtable(lootTable)
 end
 
 function RCVotingFrame:Show()
@@ -122,8 +124,8 @@ function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
 			elseif command == "offline_timer" and addon:UnitIsUnit(sender, addon.masterLooter) then
 				for i = 1, #lootTable do
 					for name in pairs(lootTable[i].candidates) do
-						if self:GetCandidateData(i, name, response) == "ANNOUNCED" then
-							self:SetCandidateData(i, name, response, "NOTHING")
+						if self:GetCandidateData(i, name, "response") == "ANNOUNCED" then
+							self:SetCandidateData(i, name, "response", "NOTHING")
 						end
 					end
 				end
@@ -164,7 +166,7 @@ function RCVotingFrame:GetCandidateData(session, candidate, data)
 	local function Get(session, candidate, data)
 		return lootTable[session].candidates[candidate][data]
 	end
-	local ok, arg = pcall(Get, session, candidate, data, val)
+	local ok, arg = pcall(Get, session, candidate, data)
 	if not ok then addon:Debug("Error in 'GetCandidateData':", arg)
 	else return arg end
 end
@@ -183,8 +185,8 @@ function RCVotingFrame:Setup(table)
 				response = "ANNOUNCED",
 				ilvl = "",
 				diff = "",
-				gear1 = "",
-				gear2 = "",
+				gear1 = nil,
+				gear2 = nil,
 				votes = 0,
 				note = nil,
 				roll = "",
@@ -472,7 +474,7 @@ function RCVotingFrame:UpdateSessionButton(i, texture, link, awarded)
 			edgeSize = 18,
 			insets = { left = 4, right = 4, top = 4, bottom = 4 }
 		})
-	local lines = { L["Click to switch to"], link }
+	local lines = { format(L["Click to switch to 'item'"], link) }
 	if i == session then
 		btn:SetBackdropBorderColor(1,1,0,1) -- yellow
 		--btn:GetNormalTexture():SetVertexColor(1,1,1)

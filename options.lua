@@ -846,7 +846,7 @@ function addon:OptionsTable()
 		button = {
 			order = i * 3 + 1,
 			name = L["Button"].." "..i,
-			desc = L["Set the text on button "]..i,
+			desc = format(L["Set the text on button 'number'"], i),
 			type = "input",
 			get = function() return db.buttons[i].text end,
 			set = function(info, value) addon:ConfigTableChanged("buttons"); db.buttons[i].text = tostring(value) end,

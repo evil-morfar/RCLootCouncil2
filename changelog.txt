@@ -1,3 +1,9 @@
+===== Alpha2 changes
+* Wrong load order for Libs/DropDownMenu (#105)
+* Was double importing libs (#104)
+* Updated Libs/Lib-st due to leaked globals (#103)
+* Edited some locale to a more descriptive name
+
 ==== v2.0 (Work in Progress)
 
 * **Complete rewrite**
