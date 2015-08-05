@@ -1,3 +1,9 @@
+====== Alpha4 changes ======
+* Added default state for usage option
+* Added Disenchant button to voting frame (only shows when all entries are filtered)
+* (Note: I haven't tested it with actual enchanters in the group)
+* Autopasses got filtered with as status texts.
+
 ====== Alpha3 changes ======
 * Fixed error when responding to the last item.
 * More locale changes.

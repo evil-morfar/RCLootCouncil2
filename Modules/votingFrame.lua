@@ -22,7 +22,8 @@ local active = false -- Are we currently in session?
 local candidates = {} -- Candidates for the loot, initial data from the ML
 local keys = {} -- Lookup table for cols
 local menuFrame -- Right click menu frame
-local dropDownMenu -- Filter drop down menu
+local filterMenu -- Filter drop down menu
+local enchanters -- Enchanters drop down menu frame
 
 --@debug@
 function LOOTTABLE()
@@ -46,10 +47,12 @@ function RCVotingFrame:OnInitialize()
 		{ name = L["Notes"],		align = "CENTER",												width = 40, },	-- 12 Note icon
 		{ name = L["Roll"],		align = "CENTER", 					sortnext = 11,		width = 30, },	-- 13 Roll
 	}
-	menuFrame = CreateFrame("Frame", "RCLootCouncil_VotingFrame_RightclickMenu", UIParent, "UIDropDownMenuTemplate")
-	dropDownMenu = CreateFrame("Frame", "RCLootCouncil_VotingFrame_DropDownMenu", UIParent, "UIDropDownMenuTemplate")
+	menuFrame = CreateFrame("Frame", "RCLootCouncil_VotingFrame_RightclickMenu", UIParent, "Lib_UIDropDownMenuTemplate")
+	filterMenu = CreateFrame("Frame", "RCLootCouncil_VotingFrame_FilterMenu", UIParent, "Lib_UIDropDownMenuTemplate")
+	enchanters = CreateFrame("Frame", "RCLootCouncil_VotingFrame_EnchantersMenu", UIParent, "Lib_UIDropDownMenuTemplate")
 	Lib_UIDropDownMenu_Initialize(menuFrame, self.RightClickMenu, "MENU")
-	Lib_UIDropDownMenu_Initialize(dropDownMenu, self.DropDownMenu)
+	Lib_UIDropDownMenu_Initialize(filterMenu, self.FilterMenu)
+	Lib_UIDropDownMenu_Initialize(enchanters, self.EnchantersMenu)
 end
 
 function RCVotingFrame:OnEnable()
@@ -236,15 +239,30 @@ end
 ------------------------------------------------------------------
 function RCVotingFrame:Update()
 	self.frame.st:SortData()
+	-- update awardString
 	if lootTable[session] and lootTable[session].awarded then
 		self.frame.awardString:Show()
 	else
 		self.frame.awardString:Hide()
 	end
+	-- Update close button text
 	if addon.isMasterLooter and active then
 		self.frame.abortBtn:SetText(L["Abort"])
 	else
 		self.frame.abortBtn:SetText(L["Close"])
+	end
+	-- update disenchant button
+	if db.disenchant then -- Don't bother if we don't use it
+		-- Check if all rows are hidden
+		local allHidden = true
+		for row in ipairs(self.frame.st.filtered) do
+			if row then allHidden = false end
+		end
+		if allHidden then
+			self.frame.disenchant:Show()
+		else
+			self.frame.disenchant:Hide()
+		end
 	end
 end
 
@@ -402,12 +420,19 @@ function RCVotingFrame:GetFrame()
 	f.moreInfoBtn = b2]]
 
 	-- Filter
-	local tgl = addon:CreateButton(L["Filter"], f.content)
-	tgl:SetPoint("RIGHT", b1, "LEFT", -10, 0)
-	tgl:SetScript("OnClick", function(self) Lib_ToggleDropDownMenu(1, nil, dropDownMenu, self, 0, 0) end )
-	tgl:SetScript("OnEnter", function() addon:CreateTooltip(L["Deselect responses to filter them"]) end)
-	tgl:SetScript("OnLeave", addon.HideTooltip)
-	f.filter = tgl
+	local b3 = addon:CreateButton(L["Filter"], f.content)
+	b3:SetPoint("RIGHT", b1, "LEFT", -10, 0)
+	b3:SetScript("OnClick", function(self) Lib_ToggleDropDownMenu(1, nil, filterMenu, self, 0, 0) end )
+	b3:SetScript("OnEnter", function() addon:CreateTooltip(L["Deselect responses to filter them"]) end)
+	b3:SetScript("OnLeave", addon.HideTooltip)
+	f.filter = b3
+
+	-- Disenchant button
+	b4 = addon:CreateButton(L["Disenchant"], f.content)
+	b4:SetPoint("RIGHT", b3, "LEFT", -10, 0)
+	b4:SetScript("OnClick", function(self) Lib_ToggleDropDownMenu(1, nil, enchanters, self, 0, 0) end )
+	b4:Hide() -- hidden by default
+	f.disenchant = b4
 
 	-- TODO Number of rolls/votes
 	--[[	local rf = CreateFrame("Frame", nil, f.content)
@@ -665,7 +690,7 @@ end
 function RCVotingFrame.filterFunc(table, row)
 	if not db.modules["RCVotingFrame"].filters then return true end -- db hasn't been initialized, so just show it
 	local response = lootTable[session].candidates[row.name].response
-	if row.response == "AUTOPASS" or response == "PASS" or type(response) == "number" then
+	if response == "AUTOPASS" or response == "PASS" or type(response) == "number" then
 		return db.modules["RCVotingFrame"].filters[response]
 	else -- Filter out the status texts
 		return db.modules["RCVotingFrame"].filters["STATUS"]
@@ -850,7 +875,7 @@ do
 		end
 	end
 
-	function RCVotingFrame.DropDownMenu(menu, level)
+	function RCVotingFrame.FilterMenu(menu, level)
 		if level == 1 then -- Redundant
 			-- Build the data table:
 			local data = {["STATUS"] = true, ["PASS"] = true, ["AUTOPASS"] = true}
@@ -894,6 +919,41 @@ do
 					info.checked = db.modules["RCVotingFrame"].filters[k]
 					Lib_UIDropDownMenu_AddButton(info, level)
 				end
+			end
+		end
+	end
+
+	function RCVotingFrame.EnchantersMenu(menu, level)
+		if level == 1 then
+			local added = false
+			info = Lib_UIDropDownMenu_CreateInfo()
+			for name, v in pairs(candidates) do
+				if v.enchanter then
+					local c = addon:GetClassColor(v.class)
+					info.text = "|cff"..addon:RGBToHex(c.r, c.g, c.b)..addon.Ambiguate(name).."|r "..tostring(v.enchant_lvl)
+					info.notCheckable = true
+					info.func = function()
+						for k,v in ipairs(db.awardReasons) do
+							if v.disenchant then
+								LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_AWARD", {
+									session,
+								  	name,
+									nil,
+									v,
+								})
+								return
+							end
+						end
+					end
+					added = true
+					Lib_UIDropDownMenu_AddButton(info, level)
+				end
+			end
+			if not added then -- No enchanters available
+				info.text = L["No (dis)enchanters found"]
+				info.notCheckable = true
+				info.isTitle = true
+				Lib_UIDropDownMenu_AddButton(info, level)
 			end
 		end
 	end

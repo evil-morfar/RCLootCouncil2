@@ -4,7 +4,6 @@ core.lua	Contains core elements of the addon
 --------------------------------
 TODOs/Notes
 	Things marked with "TODO"
-!!!	- "Disenchant option when everyone passes"
 !		- "more info" thingie
 !		- lootHistory
 			Store class in loot history
@@ -53,7 +52,7 @@ function RCLootCouncil:OnInitialize()
   	self.version = GetAddOnMetadata("RCLootCouncil2", "Version")
 	self.nnp = false
 	self.debug = false
-	self.tVersion = "Alpha.3" -- String or nil. Indicates test version, which alters stuff like version check. Is appended to 'version', i.e. "version-tVersion"
+	self.tVersion = "Alpha.4" -- String or nil. Indicates test version, which alters stuff like version check. Is appended to 'version', i.e. "version-tVersion"
 
 	self.playerClass = select(2, UnitClass("player"))
 	self.guildRank = L["Unguilded"]
@@ -119,6 +118,7 @@ function RCLootCouncil:OnInitialize()
 				leader = false,
 				ask_leader = true,
 				never = false,
+				state = "ask_ml", -- Default state
 			},
 			autoStart = false, -- start a session with all eligible items
 			autoLoot = true, -- Auto loot equippable items
@@ -185,10 +185,11 @@ function RCLootCouncil:OnInitialize()
 			maxAwardReasons = 8,
 			numAwardReasons = 3,
 			awardReasons = {
-				{ color = {1, 1, 1, 1}, log = true,	sort = 401,	text = L["Disenchant"], },
-				{ color = {1, 1, 1, 1}, log = true,	sort = 402,	text = L["Banking"], },
-				{ color = {1, 1, 1, 1}, log = false,sort = 403,	text = L["Free"],},
+				{ color = {1, 1, 1, 1}, disenchant = true, log = true,	sort = 401,	text = L["Disenchant"], },
+				{ color = {1, 1, 1, 1}, disenchant = false, log = true,	sort = 402,	text = L["Banking"], },
+				{ color = {1, 1, 1, 1}, disenchant = false, log = false, sort = 403,	text = L["Free"],},
 			},
+			disenchant = true, -- Disenchant enabled, i.e. there's a true in awardReasons.disenchant
 
 			-- List of items to ignore:
 			ignore = {
@@ -210,7 +211,7 @@ function RCLootCouncil:OnInitialize()
 	end
 	-- create the other AwardReasons
 	for i = #self.defaults.profile.awardReasons+1, self.defaults.profile.maxAwardReasons do
-		tinsert(self.defaults.profile.awardReasons, {color = {1, 1, 1, 1}, log = true, sort = 400+i, text = "Reason "..i,})
+		tinsert(self.defaults.profile.awardReasons, {color = {1, 1, 1, 1}, disenchant = false, log = true, sort = 400+i, text = "Reason "..i,})
 	end
 
 	-- register chat and comms
@@ -578,7 +579,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 				self:GetActiveModule("lootframe"):ReRoll(unpack(data))
 
 			elseif command == "playerInfoRequest" then
-				self:SendCommand(sender, "playerInfo", self.playerName, self.playerClass, self:GetPlayerRole(), self.guildRank)
+				self:SendCommand(sender, "playerInfo", self:GetPlayerInfo())
 
 			elseif command == "message" then
 				self:Print(unpack(data))
@@ -865,6 +866,22 @@ function RCLootCouncil:GetPlayersGuildRank()
 	else
 		return L["Unguilded"];
 	end
+end
+
+function RCLootCouncil:GetPlayerInfo()
+	-- Check if the player has enchanting
+	local enchant, lvl = nil, 0
+	local prof1, prof2 = GetProfessions()
+	if prof1 or prof2 then
+		for i = 1, 2 do
+			local _, _, rank, _, _, _, id = GetProfessionInfo(select(i, prof1, prof2))
+			if id and id == 333 then -- NOTE: 333 should be enchanting, let's hope that holds...
+				self:Debug("I'm an enchanter")
+				enchant, lvl = true, rank
+			end
+		end
+	end
+	return self.playerName, self.playerClass, self:GetPlayerRole(), self.guildRank, enchant, lvl
 end
 
 function RCLootCouncil:GetPlayerRole()
@@ -1249,6 +1266,7 @@ end
 -- @paramsig link
 -- @param link The link to display
 function RCLootCouncil:CreateHypertip(link)
+	if not link or link == "" then return end
 	GameTooltip:SetOwner(UIParent, "ANCHOR_CURSOR")
 	GameTooltip:SetHyperlink(link)
 end

@@ -199,6 +199,7 @@ L["multi_vote_desc"] = "Enables multi voting, i.e. voters can vote for several c
 L["Name"] = true
 L["Need"] = true
 L["Never use RCLootCouncil"] = true
+L["No (dis)enchanters found"] = true
 L["No items to award later registered"] = true
 L["No session running"] = true
 L["No winners registered"] = true

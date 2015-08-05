@@ -235,7 +235,7 @@ function addon:OptionsTable()
 						type = "group",
 						name = L["General"],
 						args = {
-							lootDesc = {
+							lootingOptions = {
 								order = 1,
 								name = L["Looting options"],
 								type = "group",
@@ -502,13 +502,7 @@ function addon:OptionsTable()
 										type = "execute",
 										confirm = true,
 										func = function()
-											for i = 1, #db.awardReasons do
-												db.awardReasons[i].log = self.defaults.profile.awardReasons[i].log
-												db.awardReasons[i].text = self.defaults.profile.awardReasons[i].text
-												for j = 1, 4 do
-													db.awardReasons[i].color[j] = self.defaults.profile.awardReasons[i].color[j]
-												end
-											end
+											db.awardReasons = self.defaults.profile.awardReasons
 											db.numAwardReasons = self.defaults.profile.numAwardReasons
 											self:ConfigTableChanged()
 										end,
@@ -670,12 +664,8 @@ function addon:OptionsTable()
 								type = "execute",
 								confirm = true,
 								func = function()
-									for k, v in ipairs(db.buttons) do
-										v.text = self.defaults.profile.buttons[k].text
-										v.whisperKey = self.defaults.profile.buttons[k].whisperKey
-										db.responses[k].text = self.defaults.profile.responses[k].text
-										for i = 1, 4 do db.responses[k].color[i] = self.defaults.profile.responses[k].color[i] end
-									end
+									db.buttons = self.defaults.profile.buttons
+									db.responses = self.responses
 									db.numButtons = self.defaults.profile.numButtons
 									db.acceptWhispers = self.defaults.profile.acceptWhispers
 									self:ConfigTableChanged()
@@ -894,7 +884,7 @@ function addon:OptionsTable()
 			name = L["Reason"]..i,
 			desc = L["Text for reason #i"]..i,
 			type = "input",
-			width = "double",
+			--width = "double",
 			get = function() return db.awardReasons[i].text end,
 			set = function(k,v) addon:ConfigTableChanged("awardReasons"); db.awardReasons[i].text = v; end,
 			hidden = function() return db.numAwardReasons < i end,
@@ -902,6 +892,7 @@ function addon:OptionsTable()
 		options.args.mlSettings.args.awardsTab.args.awardReasons.args["color"..i] = {
 			order = i +1.1,
 			name = L["Text color"],
+		--	name = "",
 			desc = L["text_color_desc"],
 			type = "color",
 			width = "half",
@@ -917,6 +908,21 @@ function addon:OptionsTable()
 			width = "half",
 			get = function() return db.awardReasons[i].log end,
 			set = function() db.awardReasons[i].log = not db.awardReasons[i].log end,
+			hidden = function() return db.numAwardReasons < i end,
+		}
+		options.args.mlSettings.args.awardsTab.args.awardReasons.args["DE"..i] = {
+			order = i +1.3,
+			name = L["Disenchant"],
+			desc = L["disenchant_desc"],
+			type = "toggle",
+			get = function() return db.awardReasons[i].disenchant end,
+			set = function(info, val)
+				for k,v in ipairs(db.awardReasons) do
+					v.disenchant = false
+				end
+				db.awardReasons[i].disenchant = val
+				db.disenchant = val
+			end,
 			hidden = function() return db.numAwardReasons < i end,
 		}
 	end
