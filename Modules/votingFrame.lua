@@ -73,6 +73,7 @@ function RCVotingFrame:OnDisable() -- We never really call this
 end
 
 function RCVotingFrame:Hide()
+	addon:Debug("Hide VotingFrame")
 	self.frame:Hide()
 end
 
@@ -267,7 +268,7 @@ function RCVotingFrame:Update()
 end
 
 function RCVotingFrame:SwitchSession(s)
-	addon:DebugLog("SwitchSession", s)
+	addon:Debug("SwitchSession", s)
 	-- Start with setting up some statics
 	local old = session
 	session = s
@@ -625,6 +626,7 @@ function RCVotingFrame.SetCellVote(rowFrame, frame, data, cols, row, realrow, co
 			frame.voteBtn:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", 0, 0)
 		end
 		frame.voteBtn:SetScript("OnClick", function(btn)
+			addon:Debug("Vote button pressed")
 			if lootTable[session].candidates[name].haveVoted then -- unvote
 				addon:SendCommand("group", "vote", session, name, -1)
 				lootTable[session].candidates[name].haveVoted = false
@@ -902,7 +904,11 @@ do
 			for k in ipairs(data) do -- Make sure normal responses are on top
 				info.text = db.responses[k].text
 				info.colorCode = "|cff"..addon:RGBToHex(unpack(db.responses[k].color))
-				info.func = function() db.modules["RCVotingFrame"].filters[k] = not db.modules["RCVotingFrame"].filters[k]; RCVotingFrame.frame.st:SortData() end
+				info.func = function()
+					addon:Debug("Update Filter")
+					db.modules["RCVotingFrame"].filters[k] = not db.modules["RCVotingFrame"].filters[k]
+					RCVotingFrame.frame.st:SortData()
+				end
 				info.checked = db.modules["RCVotingFrame"].filters[k]
 				Lib_UIDropDownMenu_AddButton(info, level)
 			end
@@ -915,7 +921,11 @@ do
 						info.text = db.responses[k].text
 						info.colorCode = "|cff"..addon:RGBToHex(unpack(db.responses[k].color))
 					end
-					info.func = function() db.modules["RCVotingFrame"].filters[k] = not db.modules["RCVotingFrame"].filters[k]; RCVotingFrame.frame.st:SortData() end
+					info.func = function()
+						addon:Debug("Update Filter")
+						db.modules["RCVotingFrame"].filters[k] = not db.modules["RCVotingFrame"].filters[k]
+						RCVotingFrame.frame.st:SortData()
+					end
 					info.checked = db.modules["RCVotingFrame"].filters[k]
 					Lib_UIDropDownMenu_AddButton(info, level)
 				end

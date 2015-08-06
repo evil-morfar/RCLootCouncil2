@@ -111,7 +111,7 @@ function LootFrame:Update()
 end
 
 function LootFrame:OnRoll(entry, button)
-	addon:DebugLog("LootFrame:OnRoll", entry, button)
+	addon:Debug("LootFrame:OnRoll", entry, button, "Response:", addon:GetResponseText(button))
 	local index = entries[entry].realID
 
 	addon:SendCommand("group", "response", addon:CreateResponse(items[index].session, tonumber(strmatch(items[index].link, "item:(%d+):")), items[index].ilvl, button, items[index].note))
