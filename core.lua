@@ -243,11 +243,7 @@ function RCLootCouncil:OnInitialize()
 	self.optionsFrame = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("RCLootCouncil", "RCLootCouncil", nil, "settings")
 	self.optionsFrame.ml = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("RCLootCouncil", "Master Looter", "RCLootCouncil", "mlSettings")
 
-	-- Hack to remove CompactRaidGroup taint
-	-- Make clicking cancel the same as clicking okay
-	InterfaceOptionsFrameCancel:SetScript("OnClick", function()
-	 InterfaceOptionsFrameOkay:Click()
-	end)
+
 end
 
 function RCLootCouncil:OnEnable()
@@ -655,7 +651,13 @@ function RCLootCouncil:Test(num)
 	self:GetActiveModule("masterlooter"):Test(items)
 end
 
+local interface_options_old_cancel = InterfaceOptionsFrameCancel:GetScript("OnClick")
 function RCLootCouncil:EnterCombat()
+	-- Hack to remove CompactRaidGroup taint
+	-- Make clicking cancel the same as clicking okay
+	InterfaceOptionsFrameCancel:SetScript("OnClick", function()
+	 InterfaceOptionsFrameOkay:Click()
+	end)
 	if not db.minimizeInCombat then return end
 	self.inCombat = true
 	for _,frame in ipairs(frames) do
@@ -668,6 +670,8 @@ function RCLootCouncil:EnterCombat()
 end
 
 function RCLootCouncil:LeaveCombat()
+	-- Revert
+	InterfaceOptionsFrameCancel:SetScript("OnClick", interface_options_old_cancel)
 	if not db.minimizeInCombat then return end
 	self.inCombat = false
 	for _,frame in ipairs(frames) do

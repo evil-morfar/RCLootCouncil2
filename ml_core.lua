@@ -439,7 +439,7 @@ function RCLootCouncilML:Award(session, winner, response, reason)
 			if self.lootTable[session].quality < GetLootThreshold() then
 				LootSlot(self.lootTable[session].lootSlot)
 				if not addon:UnitIsUnit(winner, "player") then
-					addon:Print(format(L["Cannot give 'item' to 'player' due to Blizzard limitations. Gave it to you for distributation."], self.lootTable[session].link, addon.Ambiguate(winner)))
+					addon:Print(format(L["Cannot give 'item' to 'player' due to Blizzard limitations. Gave it to you for distribution."], self.lootTable[session].link, addon.Ambiguate(winner)))
 					tinsert(self.awardedInBags, {link = self.lootTable[session].link, winner = winner})
 				end
 				awarded = true
