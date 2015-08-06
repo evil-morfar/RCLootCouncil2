@@ -4,7 +4,7 @@
 -- lootHistory.lua	Adds the interface for displaying the collected loot history
 
 local addon = LibStub("AceAddon-3.0"):GetAddon("RCLootCouncil")
-local LootHistory = addon:NewModule("RCLootHistory")
+LootHistory = addon:NewModule("RCLootHistory")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 local lootDB, scrollCols, filterMenu, data, db;
 --[[ data structure:
@@ -22,24 +22,24 @@ function LootHistory:OnInitialize()
 	scrollCols = {
 		-- The following should have a row of their own with a expand button
 		{name = "", 			width = ROW_HEIGHT, },	-- Expand button
-		{name = "Date",		width = 40, 				},	-- Date-time
+		{name = "Date",		width = 70, 				},	-- Date-time
 		{name = "Raid",		width = 100,				},	-- Name of the raid
 		{name = "",				width = ROW_HEIGHT, },	-- Class icon, should be same row as player
-		{name = "Name",		width = 130, 				},	-- Name of the player
+		--{name = "Name",		width = 100, 				},	-- Name of the player
 		-- The following should all be on 1 row
-		{name = "#",			width = 30, 				},	-- Index of items won by player
+		{name = "#",			width = 20, 				},	-- Index of items won by player
 		{name = "",				width = ROW_HEIGHT, },	-- Item at index icon
 		{name = "Item",		width = 200, 				}, 	-- Item string
 		{name = "Reason",	width = 240, 				},	-- Response aka the text supplied to lootDB...response
 	}
 
 	filterMenu = CreateFrame("Frame", "RCLootCouncil_LootHistory_FilterMenu", UIParent, "Lib_UIDropDownMenuTemplate")
-	Lib_UIDropDownMenu_Initialize(menuFrame, self.FilterMenu, "MENU")
+	Lib_UIDropDownMenu_Initialize(filterMenu, self.FilterMenu, "MENU")
 end
 
 function LootHistory:OnEnable()
 	db = addon:Getdb()
-	lootDB = addon:GetLootDB()
+	lootDB = addon:GetHistoryDB()
 	self.frame = self:GetFrame()
 	self:BuildData()
 	self:Show()
@@ -60,57 +60,65 @@ function LootHistory:Hide()
 end
 
 function LootHistory:BuildData()
+	data = {}
 	local date, instance;
 	-- We want to rebuild lootDB to the "data" format:
-	local i = 1
-	for name, v in ipairs(lootDB) do
-		date = v.date
-		if not date then -- Unknown date
-			date = "Unknown date"
-		end
-		if not data[date] then -- We haven't added the date to data, do it
-			data[date] = {}
-		end
-		instance = v.instance
-		if not instance then
-			instance = "Unknown instance"
-		end
-		if not data[date][instance] then -- We haven't added the instance to data[date] yet!
-				data[date][instance] = {}
-		end
-		if not data[date][instance][name] then
-			data[date][instance][name] = {}
-		end
-		data[date][instance][name][i] = {}
+	--local i = 1
+	for name, v in pairs(lootDB) do
 		-- Now we actually add the data
-		for k,v in pairs(v) do
-			if k == "class" then -- we need the class at a different level
-				data[date][instance][name].class = v
-			elseif k ~= "date" or k ~= "instance" then -- We don't need date or instance
-				data[date][instance][name][i][k] = v
+		for i,v in ipairs(v) do
+			date = v.date
+			if not date then -- Unknown date
+				date = "Unknown date"
+			end
+			if not data[date] then -- We haven't added the date to data, do it
+				data[date] = {}
+			end
+			instance = v.instance
+			if not instance then
+				instance = "Unknown instance"
+			end
+			if not data[date][instance] then -- We haven't added the instance to data[date] yet!
+					data[date][instance] = {}
+			end
+			if not data[date][instance][name] then
+				data[date][instance][name] = {}
+			end
+			if not data[date][instance][name][i] then
+				data[date][instance][name][i] = {}
+			end
+			for k, v in pairs(v) do
+				if k == "class" then -- we need the class at a different level
+					data[date][instance][name].class = v
+				elseif k ~= "date" or k ~= "instance" then -- We don't need date or instance
+					data[date][instance][name][i][k] = v
+				end
 			end
 		end
 		-- We want an expanded field on each expandable option:
 		data[date][instance][name].expanded = false
 		data[date][instance].expanded = false
 		data[date].expanded = false
-		i = i + 1
+		--i = i + 1
 	end
 	-- Now create a blank data table for lib-st to init with
-	-- We need the number of rows to match the number of entries in lootDB
 	self.frame.rows = {}
-	i = 1
-	for name in pairs(lootDB) do
-		self.frame.rows[i] = function()
-			local t = {}
-			for j = 1, #scrollCols do
-				t[j] = "" -- Set cells as blank, we'll update with our own functions
-			end
-			return t
+	local function t()
+		local t = {} -- Get a table to use as cells
+		for j = 1, #scrollCols do
+			t[j] = "" -- Set cells as blank, we'll update with our own functions
 		end
-		self.frame.rows[i].date = lootDB[name].date or "Unknown date"
-		self.frame.rows[i].DoCellUpdate = self.RowUpdate
-		i = i + 1
+		return t
+	end
+	local i = 1
+	-- We need the number of rows to match the number of entries in lootDB
+	for name, j in pairs(lootDB) do
+		for _, v in ipairs(j) do
+			self.frame.rows[i] = t()
+			self.frame.rows[i].date = v.date or "Unknown date"
+			self.frame.rows[i].DoCellUpdate = self.RowUpdate
+			i = i + 1
+		end
 	end
 	self.frame.st:SetData(self.frame.rows, true) -- True for minimal data	format
 end
@@ -171,7 +179,7 @@ function LootHistory:GetFrame()
 end
 
 function LootHistory.FilterFunc(table, row)
- -- TODO
+	return true
 end
 
 function LootHistory.FilterMenu(menu, level)
@@ -184,25 +192,37 @@ end
 -- DoCellUpdates for lib-st
 -----------------------------------------------
 function LootHistory.RowUpdate(rowFrame, cellFrame, stData, cols, row, realrow, column, fShow, table, ...)
+	--addon:Debug("RowUpdate", row, realrow, column, fShow,"...")
 	local date = stData[realrow].date
-	if data[date].drawn then return rowFrame:Hide() end -- We've already made this row
+	-- Check if we've already made this row
+	if column ~= 1 then return end -- Only draw row once per column
+	if data[date] and data[date].drawn then
+		addon:Debug("Hide rowFrame @row:", row, fShow)
+		rowFrame:Hide()
+		return
+	end
+	addon:Debug("Displaying row", row, "realrow", realrow)
 	-- Set the date text
 	for i = 1, #cols do
 		if cols[i].name == "Date" then
-			rowFrame.cols[i].text = date
+			rowFrame.cols[i].text:SetText(date)
 		else -- everything should be blank
-			rowFrame.cols[i].text = ""
+			rowFrame.cols[i].text:SetText("")
 		end
 	end
 	local expanded = data[date].expanded
 	if expanded then -- Date expanded, show raids
 		local i = 1 -- We need to pass the next rowframe
 		for raid in pairs(data[date]) do -- Show the raid row
-			LootHistory:SetRowRaid(table, table.rows[row + i], row + i, date, raid)
-			i = i + 1
+			if raid ~= "expanded" and raid ~= "drawn" and raid ~= "rows" then -- Counter that
+				addon:Debug("Raid = ", raid)
+				data[date].rows = i + row
+				LootHistory:SetRowRaid(table, table.rows[row + i], row + i, date, raid)
+				i = i + 1
+			end
 		end
 	end
-	self:SetExpandButton(frame, expanded)
+	LootHistory:SetExpandButton(rowFrame, date)
 	data[date].drawn = true -- Make sure we only make each row once
 end
 
@@ -211,27 +231,32 @@ function LootHistory:SetRowRaid(table, rowFrame, row, date, raid)
 	-- Set the raid text
 	for i = 1, #scrollCols do
 		if scrollCols[i].name == "Raid" then
-			rowFrame.cols[i].text = raid
+			rowFrame.cols[i].text:SetText(raid)
 		else -- everything should be blank
-			rowFrame.cols[i].text = ""
+			rowFrame.cols[i].text:SetText("")
 		end
 	end
 	local expanded = data[date][raid].expanded
 	if expanded then -- Raid expanded, show names
 		local i = 1
 		for name in pairs(data[date][raid]) do
-			self:SetRowName(table, table.rows[row + i], row + 1, date, raid, name)
-			i = i + 1
+			if name ~= "expanded" then
+				data[date].rows = i + row
+				self:SetRowName(table, table.rows[row + i], row + 1, date, raid, name)
+				i = i + 1
+			end
 		end
+
 	end
-	self:SetExpandButton(frame, expanded)
+	self:SetExpandButton(rowFrame, date, raid)
 end
 
 function LootHistory:SetRowName(table, rowFrame, row, date, raid, name)
 	-- Set the name text
 	for i = 1, #scrollCols do
-		if scrollCols[i].name == "Name" then
-			rowFrame.cols[i].text = addon.Ambiguate(name)
+		--if scrollCols[i].name == "Name" then
+		if scrollCols[i].name == "Raid" then
+			rowFrame.cols[i].text:SetText(addon.Ambiguate(name))
 			if data[date][raid][name].class then -- We have a class, so set appropiate color
 				local c = addon:GetClassColor(data[date][raid][name].class)
 				rowFrame.cols[i].text:SetTextColor(c.r,c.g,c.b,c.a)
@@ -239,51 +264,60 @@ function LootHistory:SetRowName(table, rowFrame, row, date, raid, name)
 				rowFrame.cols[i].text:SetTextColor(1,1,1,1)
 			end
 		else -- everything should be blank
-			rowFrame.cols[i].text = ""
+			rowFrame.cols[i].text:SetText("")
 		end
 	end
 	local expanded = data[date][raid][name].expanded
 	if expanded then -- Name expanded, show items
 		local i = 1
 		for num in pairs(data[date][raid][name]) do
-			self:SetRowItem(table.rows[row + i], date, raid, name, num) -- Last one, doesn't need table or row
-			i = i + 1
+			if num ~= "expanded" and num ~= "class" then
+				data[date].rows = i + row
+				self:SetRowItem(table.rows[row + i], date, raid, name, num) -- Last one, doesn't need table or row
+				i = i + 1
+			end
 		end
 	end
-	self:SetExpandButton(frame, expanded)
+	self:SetExpandButton(rowFrame, date, raid, name)
 end
 
 function LootHistory:SetRowItem(rowFrame, date, raid, name, num)
+	addon:Debug("Num = ", num)
 	local t = data[date][raid][name][num] -- Shortcut
 	-- t has all the info from lootDB not assigned elsewhere
 	for i = 1, #scrollCols do
 		if scrollCols[i].name == "#" then
-			rowFrame.cols[i] = tostring(num)
+			rowFrame.cols[i].text:SetText(tostring(num))
 		elseif scrollCols[i].name == "Item" then
-			rowFrame.cols[i].text = t.lootWon
-		elseif scrollCols[i].name == "Response" then
-			rowFrame.cols[i].text = t.response or "Error in response"
+			rowFrame.cols[i].text:SetText(t.lootWon)
+		elseif scrollCols[i].name == "Reason" then
+			rowFrame.cols[i].text:SetText(t.response or "Error in response")
 
 			if t.color then -- Post v2.0, color will be the color it was when awarded
-				rowFrame.cols[i].text:SetTextColor(t.color)
+				rowFrame.cols[i].text:SetTextColor(unpack(t.color))
 			elseif t.responseID > 0 then -- responseID = 0 if pre v2.0 awardReason
 				-- We have an id to fallback on, so use the current color
-				rowFrame.cols[i].text:SetTextColor(addon:GetResponseColor(t.responseID))
+				rowFrame.cols[i].text:SetTextColor(unpack(addon:GetResponseColor(t.responseID)))
 			else	-- We don't have color info, so default to white
 				rowFrame.cols[i].text:SetTextColor(1,1,1,1)
 			end
 		else -- All other cells should be blank
-			rowFrame.cols[i].text = ""
+			rowFrame.cols[i].text:SetText("")
 		end
 	end
 end
 
-function LootHistory:SetExpandButton(frame, expanded)
-	frame:SetScript("OnClick", function() expanded = not expanded end) -- REVIEW See if expanded actually points to the right object in data
-	if expanded then -- Show minus
+function LootHistory:SetExpandButton(rowFrame, date, raid, name)
+	local t
+	if name then t = data[date][raid][name]
+	elseif raid then t = data[date][raid]
+	else t = data[date] end
+	frame = rowFrame.cols[1]
+	frame:SetScript("OnClick", function() t.expanded = not t.expanded; data[date].drawn = false; self:Update(); end) -- REVIEW See if expanded actually points to the right object in data
+	if t.expanded then -- Show minus
 		frame:SetNormalTexture("Interface\\BUTTONS\\UI-MinusButton-Up")
 		frame:SetPushedTexture("Interface\\BUTTONS\\UI-MinusButton-Down")
-		frame:SetHighlightTexture("Interface\\BUTTONS\\UI-MinusButton-Hilight")
+		frame:SetHighlightTexture("Interface\\BUTTONS\\UI-PlusButton-Hilight")
 	else -- Show plus
 		frame:SetNormalTexture("Interface\\BUTTONS\\UI-PlusButton-Up")
 		frame:SetPushedTexture("Interface\\BUTTONS\\UI-PlusButton-Down")

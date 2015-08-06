@@ -52,7 +52,7 @@ function RCLootCouncil:OnInitialize()
 	--IDEA Consider if we want everything on self, or just whatever modules could need.
   	self.version = GetAddOnMetadata("RCLootCouncil2", "Version")
 	self.nnp = false
-	self.debug = false
+	self.debug = true
 	self.tVersion = "Alpha.3" -- String or nil. Indicates test version, which alters stuff like version check. Is appended to 'version', i.e. "version-tVersion"
 
 	self.playerClass = select(2, UnitClass("player"))
@@ -395,11 +395,11 @@ function RCLootCouncil:ChatCommand(msg)
 
 	elseif input == "history" or input == L["history"] or input == "h" or input == "his" then
 		self:CallModule("history")
-
+--@debug@
 	elseif input == "nnp" then
 		self.nnp = not self.nnp
 		self:Print("nnp = "..tostring(self.nnp))
-
+--@end-debug@
 	elseif input == "whisper" or input == L["whisper"] then
 		self:Print(L["whisper_help"])
 
@@ -440,10 +440,10 @@ function RCLootCouncil:ChatCommand(msg)
 	elseif input == "clearlog" then
 		wipe(debugLog)
 		self:Print("Debug Log cleared.")
-
-	elseif input == 't' and self.nnp then -- Tester cmd
-		self:Print(arg1, arg2)
-
+--@debug@
+	elseif input == 't' then -- Tester cmd
+		printtable(historyDB)
+--@end-debug@
 	else
 		self:ChatCommand("help")
 	end
@@ -1024,7 +1024,7 @@ function RCLootCouncil:Getdb()
 	return db
 end
 
-function RCLootCouncil:GetLootDB()
+function RCLootCouncil:GetHistoryDB()
 	return historyDB
 end
 

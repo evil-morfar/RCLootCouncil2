@@ -3,4 +3,5 @@
   <Script file = "versionCheck.lua" />
   <Script file = "votingFrame.lua" />
   <Script file = "sessionFrame.lua" />
+  <Script file = "lootHistory.lua" />
 </Ui>
