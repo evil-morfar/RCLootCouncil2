@@ -194,7 +194,6 @@ function addon:OptionsTable()
 										desc = L["open_the_loot_history_desc"],
 										type = "execute",
 										func = function() self:CallModule("loothistory");	InterfaceOptionsFrame:Hide();end,
-										disabled = true,
 									},
 									clearLootDB = {
 										order = -1,

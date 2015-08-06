@@ -6,7 +6,7 @@
 local addon = LibStub("AceAddon-3.0"):GetAddon("RCLootCouncil")
 local LootHistory = addon:NewModule("RCLootHistory")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
-local lootDB, scrollCols, filterMenu, data;
+local lootDB, scrollCols, filterMenu, data, db;
 --[[ data structure:
 	data[date][instance] = {
 		[playerName] = {
@@ -38,6 +38,7 @@ function LootHistory:OnInitialize()
 end
 
 function LootHistory:OnEnable()
+	db = addon:Getdb()
 	lootDB = addon:GetLootDB()
 	self.frame = self:GetFrame()
 	self:BuildData()
@@ -83,7 +84,9 @@ function LootHistory:BuildData()
 		data[date][instance][name][i] = {}
 		-- Now we actually add the data
 		for k,v in pairs(v) do
-			if k ~= "date" or k ~= "instance" then -- We don't need date or instance
+			if k == "class" then -- we need the class at a different level
+				data[date][instance][name].class = v
+			elseif k ~= "date" or k ~= "instance" then -- We don't need date or instance
 				data[date][instance][name][i][k] = v
 			end
 		end
@@ -181,42 +184,109 @@ end
 -- DoCellUpdates for lib-st
 -----------------------------------------------
 function LootHistory.RowUpdate(rowFrame, cellFrame, stData, cols, row, realrow, column, fShow, table, ...)
-	local cellFrame = rowFrame.cols[col];
 	local date = stData[realrow].date
-	if data[date].expanded then -- The date is expanded, show the rest
-		-- TODO Set expand positive, set text
-		for name in pairs(data[date]) do -- Show the raid row
-			LootHistory:SetRowRaid(rowFrame, date, raid)
+	if data[date].drawn then return rowFrame:Hide() end -- We've already made this row
+	-- Set the date text
+	for i = 1, #cols do
+		if cols[i].name == "Date" then
+			rowFrame.cols[i].text = date
+		else -- everything should be blank
+			rowFrame.cols[i].text = ""
 		end
-	else
-		-- TODO Set expand negative
 	end
+	local expanded = data[date].expanded
+	if expanded then -- Date expanded, show raids
+		local i = 1 -- We need to pass the next rowframe
+		for raid in pairs(data[date]) do -- Show the raid row
+			LootHistory:SetRowRaid(table, table.rows[row + i], row + i, date, raid)
+			i = i + 1
+		end
+	end
+	self:SetExpandButton(frame, expanded)
+	data[date].drawn = true -- Make sure we only make each row once
 end
 
-function LootHistory:SetRowRaid(rowFrame, date, raid)
-	if data[date][raid].expanded then
-		-- TODO Set expand positive, set text
+function LootHistory:SetRowRaid(table, rowFrame, row, date, raid)
+-- we might need some row > NUM_ROWS then rowFrame:Hide()
+	-- Set the raid text
+	for i = 1, #scrollCols do
+		if scrollCols[i].name == "Raid" then
+			rowFrame.cols[i].text = raid
+		else -- everything should be blank
+			rowFrame.cols[i].text = ""
+		end
+	end
+	local expanded = data[date][raid].expanded
+	if expanded then -- Raid expanded, show names
+		local i = 1
 		for name in pairs(data[date][raid]) do
-			self:SetRowName(rowFrame, date, raid, name)
+			self:SetRowName(table, table.rows[row + i], row + 1, date, raid, name)
+			i = i + 1
 		end
-	else
-		-- TODO Set expand negative
+	end
+	self:SetExpandButton(frame, expanded)
+end
+
+function LootHistory:SetRowName(table, rowFrame, row, date, raid, name)
+	-- Set the name text
+	for i = 1, #scrollCols do
+		if scrollCols[i].name == "Name" then
+			rowFrame.cols[i].text = addon.Ambiguate(name)
+			if data[date][raid][name].class then -- We have a class, so set appropiate color
+				local c = addon:GetClassColor(data[date][raid][name].class)
+				rowFrame.cols[i].text:SetTextColor(c.r,c.g,c.b,c.a)
+			else -- Default to white
+				rowFrame.cols[i].text:SetTextColor(1,1,1,1)
+			end
+		else -- everything should be blank
+			rowFrame.cols[i].text = ""
+		end
+	end
+	local expanded = data[date][raid][name].expanded
+	if expanded then -- Name expanded, show items
+		local i = 1
+		for num in pairs(data[date][raid][name]) do
+			self:SetRowItem(table.rows[row + i], date, raid, name, num) -- Last one, doesn't need table or row
+			i = i + 1
+		end
+	end
+	self:SetExpandButton(frame, expanded)
+end
+
+function LootHistory:SetRowItem(rowFrame, date, raid, name, num)
+	local t = data[date][raid][name][num] -- Shortcut
+	-- t has all the info from lootDB not assigned elsewhere
+	for i = 1, #scrollCols do
+		if scrollCols[i].name == "#" then
+			rowFrame.cols[i] = tostring(num)
+		elseif scrollCols[i].name == "Item" then
+			rowFrame.cols[i].text = t.lootWon
+		elseif scrollCols[i].name == "Response" then
+			rowFrame.cols[i].text = t.response or "Error in response"
+
+			if t.color then -- Post v2.0, color will be the color it was when awarded
+				rowFrame.cols[i].text:SetTextColor(t.color)
+			elseif t.responseID > 0 then -- responseID = 0 if pre v2.0 awardReason
+				-- We have an id to fallback on, so use the current color
+				rowFrame.cols[i].text:SetTextColor(addon:GetResponseColor(t.responseID))
+			else	-- We don't have color info, so default to white
+				rowFrame.cols[i].text:SetTextColor(1,1,1,1)
+			end
+		else -- All other cells should be blank
+			rowFrame.cols[i].text = ""
+		end
 	end
 end
 
-function LootHistory:SetRowName(rowFrame, date, raid, name)
-	if data[date][raid][name].expanded then
-		-- TODO Set expand positive, set text
-		for i in pairs(data[date][raid][name]) do
-			self:SetRowItem(rowFrame, date, raid, name, i)
-		end
-	else
-		-- TODO Set expand negative
+function LootHistory:SetExpandButton(frame, expanded)
+	frame:SetScript("OnClick", function() expanded = not expanded end) -- REVIEW See if expanded actually points to the right object in data
+	if expanded then -- Show minus
+		frame:SetNormalTexture("Interface\\BUTTONS\\UI-MinusButton-Up")
+		frame:SetPushedTexture("Interface\\BUTTONS\\UI-MinusButton-Down")
+		frame:SetHighlightTexture("Interface\\BUTTONS\\UI-MinusButton-Hilight")
+	else -- Show plus
+		frame:SetNormalTexture("Interface\\BUTTONS\\UI-PlusButton-Up")
+		frame:SetPushedTexture("Interface\\BUTTONS\\UI-PlusButton-Down")
+		frame:SetHighlightTexture("Interface\\BUTTONS\\UI-PlusButton-Hilight")
 	end
-end
-
-function LootHistory:SetRowItem(rowFrame, date, raid, name, i)
-	local t = data[date][raid][name][i] -- Shortcut
-	-- t has all the info from lootDB
-	-- Set all the cols for item
 end
