@@ -3,7 +3,7 @@ core.lua	Contains core elements of the addon
 
 --------------------------------
 TODOs/Notes
-	Things marked with "TODO"
+	Things marked with "TODO" 
 !		- "more info" thingie
 !		- lootHistory
 			Store class in loot history
