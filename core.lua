@@ -262,6 +262,11 @@ function RCLootCouncil:OnEnable()
 	if not self.db.global.tVersion or self.db.global.tVersion ~= self.tVersion then -- First time install
 		-- Show a 5 sec delayed message on how to revert to latest Release version.
 		self:ScheduleTimer("Print", 5, format("You're running |cFF87CEFARCLootCouncil |cFFFFFFFFv|cFFFFA5002.0.0-%s|r. If you didn't download this intentionally please set 'Preferred Release Type' to 'Release' in your Curse Client, and update.", self.tVersion))
+		if self.db.global.tVersion and self.db.global.tVersion < "Alpha.4" then -- TODO Just in case I forget to remove it
+			-- Once again due to rapid update, and lets check for all previous alphas
+			db.council = {} -- reset council due to Alpha4 changes
+			self:ScheduleTimer("Print", 6, "Your council have been reset due to recent changes in|cFFFFA500Alpha.4")
+		end
 	end
 	self.db.global.version = self.version;
 	self.db.global.logMaxEntries = self.defaults.global.logMaxEntries -- reset it now for zzz
@@ -501,9 +506,9 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 						for ses, v in ipairs(lootTable) do
 							if (v.boe and db.autoPassBoE) or not v.boe then
 								if self:AutoPassCheck(v.subType) then
-									self:Debug("Autopassed on: "..tostring(v.link))
+									self:Debug("Autopassed on: ", v.link)
 									if not db.silentAutoPass then self:Print(format(L["Autopassed on 'item'"], v.link)) end
-									self:SendCommand("group", "response", self:CreateResponse(ses, tonumber(strmatch(v.link, "item:(%d+):")), v.ilvl, "AUTOPASS"))
+									self:SendCommand("group", "response", self:CreateResponse(ses, v.link, v.ilvl, "AUTOPASS", v.equipLoc))
 									lootTable[ses].autopass = true
 								end
 							else
@@ -712,19 +717,22 @@ local INVTYPE_Slots = {
 		INVTYPE_TRINKET		    = {"TRINKET0SLOT", "TRINKET1SLOT"}
 }
 
-function RCLootCouncil:GetPlayersGearFromItemID(itemID)
-	self:DebugLog("GetPlayersGearFromItemID("..tostring(itemID)..")")
+function RCLootCouncil:GetPlayersGear(link, equipLoc)
+	local itemID = tonumber(strmatch(link, "item:(%d+):")) -- Convert to itemID
+	self:DebugLog("GetPlayersGear", itemID, equipLoc)
 	if not itemID then return nil, nil; end
+	local item1, item2;
 	-- check if the item is a token, and if it is, return the matching current gear
 	if RCTokenTable[itemID] then
 		if RCTokenTable[itemID] == "Trinket" then -- We need to return both trinkets
-			return GetInventoryItemLink("player", GetInventorySlotInfo("TRINKET0SLOT")), GetInventoryItemLink("player", GetInventorySlotInfo("TRINKET1SLOT"))
+			item1 = GetInventoryItemLink("player", GetInventorySlotInfo("TRINKET0SLOT"))
+			item2 = GetInventoryItemLink("player", GetInventorySlotInfo("TRINKET1SLOT"))
+		else	-- Just return the slot from the tokentable
+			item1 = GetInventoryItemLink("player", GetInventorySlotInfo(RCTokenTable[itemID]))
 		end
-		return GetInventoryItemLink("player", GetInventorySlotInfo(RCTokenTable[itemID])), nil;
+		return item1, item2
 	end
-	local thisItemEquipLoc = select(9, GetItemInfo(itemID))
-	local item1, item2;
-	local slot = INVTYPE_Slots[thisItemEquipLoc]
+	local slot = INVTYPE_Slots[equipLoc]
 	if not slot then return nil, nil; end;
 	item1 = GetInventoryItemLink("player", GetInventorySlotInfo(slot[1] or slot))
 	if not item1 and slot['or'] then
@@ -836,9 +844,9 @@ function RCLootCouncil:IsItemBoE(item)
 	return false
 end
 
-function RCLootCouncil:CreateResponse(session, itemid, ilvl, response, note)
-	self:DebugLog("CreateResponse", session, itemid, ilvl, response,tostring(note))
-	local g1, g2 = self:GetPlayersGearFromItemID(itemid)
+function RCLootCouncil:CreateResponse(session, link, ilvl, response, equipLoc, note)
+	self:DebugLog("CreateResponse", session, link, ilvl, response, equipLoc, note)
+	local g1, g2 = self:GetPlayersGear(link, equipLoc)
 	local diff = nil
 	if g1 then diff = (ilvl - select(4, GetItemInfo(g1))) end
 	return

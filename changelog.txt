@@ -1,4 +1,7 @@
 ====== Alpha5 changes ======
+*Bugfixes
+** Forgot to add a locale entry.
+** Sometimes players could report not having gear.
 
 ====== Alpha4 changes ======
 * Now displays the "alpha message" on each update (or first time upgrading to alpha) to ensure people doesn't get it by mistake.

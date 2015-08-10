@@ -3,7 +3,7 @@
 
 local debug = false
 --@debug@
-debug = true
+debug = false
 --@end-debug@
 
 -- Default english translation
@@ -135,6 +135,7 @@ L["days, x months, y years"] = "%s, %d months and %d years."
 L["Deselect responses to filter them"] = true
 L["Diff"] = true
 L["Disenchant"] = true
+L["disenchant_desc"] = "Select to use this reason when awarding an item via the 'Disenchant' button"
 L["DPS"] = true
 L["Enable Loot History"] = true
 L["enable_loot_history_desc"] = "Enables the history. RCLootCouncil won't log anything if disabled."

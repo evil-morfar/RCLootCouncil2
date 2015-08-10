@@ -30,6 +30,7 @@ function LootFrame:Start(table)
 				rolled = false,
 				note = nil,
 				session = k,
+				equipLoc = table[k].equipLoc,
 			}
 		end
 	end
@@ -46,6 +47,7 @@ function LootFrame:ReRoll(table)
 			rolled = false,
 			note = nil,
 			session = v.session,
+			equipLoc = v.equipLoc,
 		}
 	end
 	self:Show()
@@ -114,7 +116,7 @@ function LootFrame:OnRoll(entry, button)
 	addon:Debug("LootFrame:OnRoll", entry, button, "Response:", addon:GetResponseText(button))
 	local index = entries[entry].realID
 
-	addon:SendCommand("group", "response", addon:CreateResponse(items[index].session, tonumber(strmatch(items[index].link, "item:(%d+):")), items[index].ilvl, button, items[index].note))
+	addon:SendCommand("group", "response", addon:CreateResponse(items[index].session, items[index].link, items[index].ilvl, button, items[index].equipLoc, items[index].note))
 
 	numRolled = numRolled + 1
 	items[index].rolled = true
