@@ -52,7 +52,7 @@ function RCLootCouncil:OnInitialize()
   	self.version = GetAddOnMetadata("RCLootCouncil2", "Version")
 	self.nnp = false
 	self.debug = false
-	self.tVersion = "Alpha.6" -- String or nil. Indicates test version, which alters stuff like version check. Is appended to 'version', i.e. "version-tVersion"
+	self.tVersion = "Alpha.5" -- String or nil. Indicates test version, which alters stuff like version check. Is appended to 'version', i.e. "version-tVersion"
 
 	self.playerClass = select(2, UnitClass("player"))
 	self.guildRank = L["Unguilded"]
@@ -1075,7 +1075,8 @@ end
 -- We always want realm name when we use
 -- Note: If 'unit' is a playername, that player must be in our raid or party!
 function RCLootCouncil:UnitName(unit)
-	local name, realm = UnitFullName(unit)
+	local name, realm = UnitName(unit)
+	if not realm then realm = select(2, UnitFullName("player")) end -- Extract our own realm
 	return name and name.."-"..realm or nil
 end
 
