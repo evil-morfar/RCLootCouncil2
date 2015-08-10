@@ -908,7 +908,7 @@ do
 				info.func = function()
 					addon:Debug("Update Filter")
 					db.modules["RCVotingFrame"].filters[k] = not db.modules["RCVotingFrame"].filters[k]
-					RCVotingFrame.frame.st:SortData()
+					RCVotingFrame:Update()
 				end
 				info.checked = db.modules["RCVotingFrame"].filters[k]
 				Lib_UIDropDownMenu_AddButton(info, level)
@@ -925,7 +925,7 @@ do
 					info.func = function()
 						addon:Debug("Update Filter")
 						db.modules["RCVotingFrame"].filters[k] = not db.modules["RCVotingFrame"].filters[k]
-						RCVotingFrame.frame.st:SortData()
+						RCVotingFrame:Update()
 					end
 					info.checked = db.modules["RCVotingFrame"].filters[k]
 					Lib_UIDropDownMenu_AddButton(info, level)
