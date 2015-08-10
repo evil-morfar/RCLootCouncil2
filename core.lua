@@ -46,6 +46,7 @@ local userModules = {
 local usage = false -- We want to use the addon for this raid
 local frames = {} -- Contains Minimize() and IsMinimized() for all frames
 local unregisterGuildEvent = false
+local player_relogged = true -- Determines if we potentially need data from the ML due to /rl
 
 function RCLootCouncil:OnInitialize()
 	--IDEA Consider if we want everything on self, or just whatever modules could need.
@@ -146,11 +147,14 @@ function RCLootCouncil:OnInitialize()
 			minimizeInCombat = false,
 
 			UI = { -- stores all ui information
-				['*'] = { -- Defaults for Lib-Window
+				['**'] = { -- Defaults for Lib-Window
 					y		= 0,
 					x		= 0,
 					point	= "CENTER",
 					scale	= 0.8,
+				},
+				lootframe = { -- We want the Loot Frame to get a little lower
+					y = -200,
 				},
 			},
 
@@ -242,14 +246,14 @@ function RCLootCouncil:OnInitialize()
 	-- add it to blizz options
 	self.optionsFrame = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("RCLootCouncil", "RCLootCouncil", nil, "settings")
 	self.optionsFrame.ml = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("RCLootCouncil", "Master Looter", "RCLootCouncil", "mlSettings")
-
-
+	-- Add some spacing and logged in message in the log
+	self:DebugLog("")
+	self:DebugLog("Logged In")
 end
 
 function RCLootCouncil:OnEnable()
-	-- Register the playername
-	local name, realm = UnitFullName("player")
-	self.playerName = name.."-"..realm
+	-- Register the player's name
+	self.playerName = self:UnitName("player")
 
 	-- register events
 	self:RegisterEvent("PARTY_LOOT_METHOD_CHANGED", "OnEvent")
@@ -268,6 +272,10 @@ function RCLootCouncil:OnEnable()
 	if not self.db.global.tVersion or self.db.global.tVersion ~= self.tVersion then -- First time install
 		-- Show a 5 sec delayed message on how to revert to latest Release version.
 		self:ScheduleTimer("Print", 5, format("You're running |cFF87CEFARCLootCouncil |cFFFFFFFFv|cFFFFA5002.0.0-%s|r. If you didn't download this intentionally please set 'Preferred Release Type' to 'Release' in your Curse Client, and update.", self.tVersion))
+		if self.tVersion == "Alpha.4" then -- TODO Just in case I forget to remove it
+			db.council = {} -- reset council due to Alpha4 changes
+			self:ScheduleTimer("Print", 6, "Your council have been reset due to recent changes in|cFFFFA500", self.tVersion)
+		end
 	end
 	self.db.global.version = self.version;
 	self.db.global.logMaxEntries = self.defaults.global.logMaxEntries -- reset it now for zzz
@@ -285,6 +293,9 @@ function RCLootCouncil:OnEnable()
 	local filterFunc = function(_, event, msg, player, ...)
 		return strfind(msg, "[[RCLootCouncil]]:")
 	end
+
+	self:LocalizeSubTypes()
+
 
 	ChatFrame_AddMessageEventFilter("CHAT_MSG_WHISPER_INFORM", filterFunc)
 	----------PopUp setups --------------
@@ -422,12 +433,18 @@ function RCLootCouncil:ChatCommand(msg)
 		end
 
 	elseif input == "reset" or input == L["reset"] then
-		--REVIEW Check if works
-		for _, v in pairs(self.db.UI) do
-			v.y		= 0
-			v.x 		= 0
+		for k, v in pairs(db.UI) do -- We can't easily reset due to the wildcard in defaults
+			if k == "lootframe" then -- Loot Frame is special
+				v.y		= -200
+			else
+				v.y		= 0
+			end
 			v.point	= "CENTER"
-			v.scale	= 0.8
+			v.x 			= 0
+			v.scale		= 0.8
+		end
+		for _, frame in ipairs(frames) do
+			frame:RestorePosition()
 		end
 		self:Print(L["Windows reset"])
 
@@ -439,7 +456,7 @@ function RCLootCouncil:ChatCommand(msg)
 		self:Print("Debug Log cleared.")
 
 	elseif input == 't' and self.nnp then -- Tester cmd
-		self:Print(arg1, arg2)
+		printtable(db.council)
 
 	else
 		self:ChatCommand("help")
@@ -789,12 +806,6 @@ local subTypeLookup = {
 	["Wands"]					= 128096, -- Demonspine Wand
 }
 
--- Create localization for autopass
-for _, item in pairs(subTypeLookup) do -- Just call GetItemInfo() and do it in 2 secs
-	GetItemInfo(item)
-end
-RCLootCouncil:ScheduleTimer("Timer", 5, "LocalizeSubTypes")
-
 function RCLootCouncil:AutoPassCheck(type)
 	if type and autopassTable[self.db.global.localizedSubTypes[type]] then
 		return tContains(autopassTable[self.db.global.localizedSubTypes[type]], self.playerClass)
@@ -804,6 +815,10 @@ end
 
 function RCLootCouncil:LocalizeSubTypes()
 	if self.db.global.localizedSubTypes.created then return end -- We only need to create it once
+	-- Get the item info
+	for _, item in pairs(subTypeLookup) do
+		GetItemInfo(item)
+	end
 	self.db.global.localizedSubTypes = {} -- reset
 	self.db.global.localizedSubTypes.created = true
 	for name, item in pairs(subTypeLookup) do
@@ -929,19 +944,22 @@ function RCLootCouncil:ConvertDateToString(day, month, year)
 end
 
 function RCLootCouncil:OnEvent(event, ...)
-	--self:Debug("Event:", event, ...)
 	if event == "PARTY_LOOT_METHOD_CHANGED" then
+		self:Debug("Event:", event, ...)
 		self:NewMLCheck()
 
 	elseif event == "RAID_INSTANCE_WELCOME" then
+		self:Debug("Event:", event, ...)
 		-- high server-side latency causes the UnitIsGroupLeader("player") condition to fail if queried quickly (upon entering instance) regardless of state.
 		-- NOTE v2.0: Not sure if this is still an issue, but just add a 2 sec timer to the MLCheck call
 		self:ScheduleTimer("OnRaidEnter", 2)
 
 	elseif event == "PLAYER_ENTERING_WORLD" then
+		self:Debug("Event:", event, ...)
 		self:NewMLCheck()
 		-- Ask for data when we have done a /rl and have a ML
-		if self.masterLooter and self.masterLooter ~= "" then
+		if self.masterLooter and self.masterLooter ~= "" and player_relogged then
+			player_relogged = false
 			self:SendCommand(self.masterLooter, "reconnect")
 		end
 
@@ -1017,13 +1035,13 @@ function RCLootCouncil:GetML()
 	if lootMethod == "master" then
 		local name;
 		if mlRaidID then 				-- Someone in raid
-			name = GetRaidRosterInfo(mlRaidID)
+			name = addon:UnitName("raid"..mlRaidID)
 		elseif mlPartyID == 0 then -- Player in party
 			name = self.playerName
 		elseif mlPartyID then		-- Someone in party
-			name = self:UnitName("party"..mlPartyID)
+			name = addon:UnitName("party"..mlPartyID)
 		end
-		self:Debug("MasterLooter = "..name)
+		self:Debug("MasterLooter = ", name)
 		return IsMasterLooter(), name
 	end
 	return false, nil;
@@ -1064,12 +1082,10 @@ function RCLootCouncil:UnitIsUnit(unit1, unit2)
 end
 
 -- We always want realm name when we use
+-- Note: If 'unit' is a playername, that player must be in our raid or party!
 function RCLootCouncil:UnitName(unit)
-	local name, realm = UnitName(unit)
-	if not name then
-		return nil, nil
-	end
-	return (realm and realm ~= "") and name.."-"..realm or name.."-"..GetRealmName()
+	local name, realm = UnitFullName(unit)
+	return name and name.."-"..realm or nil
 end
 
 ---------------------------------------------------------------------------

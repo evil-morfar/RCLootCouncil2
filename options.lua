@@ -750,7 +750,8 @@ function addon:OptionsTable()
 															tinsert(db.council, name) -- then insert them to the council
 														end
 													end
-													addon:CouncilChanged(); end,
+													addon:CouncilChanged()
+												end,
 												get = function() return db.minRank; end,
 											},
 											desc = {
@@ -992,9 +993,8 @@ function addon:GetGuildOptions()
 					values = function()
 						wipe(names)
 						for ci = 1, GetNumGuildMembers() do
-							local name, rank1, rankIndex = GetGuildRosterInfo(ci);
-							name = Ambiguate(name, "none")
-							if (rankIndex + 1) == i then tinsert(names, name) end
+							local name, rank1, rankIndex = GetGuildRosterInfo(ci); -- NOTE I assume the realm part of name is without spaces.
+							if (rankIndex + 1) == i then names[name] = Ambiguate(name, "short") end -- Ambiguate to show realmname for players from another realm
 						end
 						table.sort(names, function(v1, v2)
 							return v1 and v1 < v2
@@ -1002,13 +1002,11 @@ function addon:GetGuildOptions()
 						return names
 					end,
 					get = function(info, key)
-						local values = addon.options.args.mlSettings.args.councilTab.args.addCouncil.args[info[#info-1]].args.ranks.values()
-						return tContains(self.db.profile.council, values[key])
+						return tContains(self.db.profile.council, key)
 					end,
 					set = function(info, key, tag)
-						local values = addon.options.args.mlSettings.args.councilTab.args.addCouncil.args[info[#info-1]].args.ranks.values()
 						if tag then
-							tinsert(self.db.profile.council, values[key])
+							tinsert(self.db.profile.council, key)
 						else
 							for k,v in ipairs(self.db.profile.council) do
 								if v == key then

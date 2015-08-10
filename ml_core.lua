@@ -108,10 +108,8 @@ function RCLootCouncilML:UpdateGroup(ask)
 		local name, _, _, _, _, class, _, _, _, _, _, role  = GetRaidRosterInfo(i)
 		name = addon:UnitName(name) -- Get their unambiguated name
 		if group_copy[name] then	-- If they're already registered
-			addon:Debug("Registered", name)
 			group_copy[name] = nil	-- remove them from the check
 		else -- add them
-			addon:Debug("Not registered", name)
 			if not ask then -- ask for playerInfo?
 				addon:SendCommand(name, "playerInfoRequest")
 				addon:SendCommand(name, "MLdb", addon.mldb) -- and send mlDB
@@ -360,7 +358,6 @@ function RCLootCouncilML:CanWeLootItem(item, quality)
 end
 
 function RCLootCouncilML:HookLootButton(i)
-	addon:DebugLog("ML:HookLootButton("..tostring(i)..")")
 	local lootButton = getglobal("LootButton"..i)
 	if XLoot then -- hook XLoot
 		lootButton = getglobal("XLootButton"..i)
@@ -373,6 +370,7 @@ function RCLootCouncilML:HookLootButton(i)
 	end
 	local hooked = self:IsHooked(lootButton, "OnClick")
 	if lootButton and not hooked then
+		addon:DebugLog("ML:HookLootButton", i)
 		self:HookScript(lootButton, "OnClick", "LootOnClick")
 	end
 end
@@ -694,8 +692,9 @@ LibDialog:Register("RCLOOTCOUNCIL_CONFIRM_ABORT", {
 	buttons = {
 		{	text = L["Yes"],
 			on_click = function(self)
-				CloseLoot() -- close the lootlist
+				addon:DebugLog("ML aborted session")
 				RCLootCouncilML:EndSession()
+				CloseLoot() -- close the lootlist
 				addon:GetActiveModule("votingframe"):EndSession(true)
 			end,
 		},

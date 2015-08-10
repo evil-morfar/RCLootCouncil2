@@ -129,6 +129,7 @@ function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
 				for i = 1, #lootTable do
 					for name in pairs(lootTable[i].candidates) do
 						if self:GetCandidateData(i, name, "response") == "ANNOUNCED" then
+							addon:DebugLog("No response from:", name)
 							self:SetCandidateData(i, name, "response", "NOTHING")
 						end
 					end

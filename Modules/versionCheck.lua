@@ -53,6 +53,7 @@ function RCVersionCheck:OnCommReceived(prefix, serializedMsg, distri, sender)
 end
 
 function RCVersionCheck:Query(group)
+	addon:DebugLog("Player asked for verTest", group)
 	if group == "guild" then
 		GuildRoster()
 		for i = 1, GetNumGuildMembers() do

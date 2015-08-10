@@ -1,10 +1,14 @@
 ====== Alpha4 changes ======
 * Now displays the "alpha message" on each update (or first time upgrading to alpha) to ensure people doesn't get it by mistake.
-* Added default state for usage option
-* Added Disenchant button to voting frame (only shows when all entries are filtered)
+* ++Added++ Disenchant button to voting frame (only shows when all entries are filtered)
 ** (Note: I haven't tested it with actual enchanters in the group)
-* Autopasses didn't get filtered properly.
-* Added more debug messages - use "/rc debug" to see them.
+* --Removed-- some unnecessary comms spam.
+
+* Bugfixes
+** Usage option now has a default state
+** Council members from the ML's realm added from a specific guild rank wouldn't see the voting frame. (Council is reset because of this)
+** Autopasses didn't get filtered properly.
+
 
 ====== Alpha3 changes ======
 * Fixed error when responding to the last item.
