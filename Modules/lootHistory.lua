@@ -22,8 +22,8 @@ function LootHistory:OnInitialize()
 	scrollCols = {
 		-- The following should have a row of their own with a expand button
 		{name = "", 			width = ROW_HEIGHT, },	-- Expand button
-		{name = "Date",		width = 70, 				},	-- Date-time
-		{name = "Raid",		width = 100,				},	-- Name of the raid
+		{name = "Date",		width = 70, DoCellUpdate = self.SetCellDate,		},	-- Date-time
+		{name = "Raid",		width = 100,		},	-- Name of the raid
 		{name = "",				width = ROW_HEIGHT, },	-- Class icon, should be same row as player
 		--{name = "Name",		width = 100, 				},	-- Name of the player
 		-- The following should all be on 1 row
@@ -111,12 +111,15 @@ function LootHistory:BuildData()
 		return t
 	end
 	local i = 1
+	local reg_dates = {} -- Used to init correct filtered status
 	-- We need the number of rows to match the number of entries in lootDB
 	for name, j in pairs(lootDB) do
 		for _, v in ipairs(j) do
 			self.frame.rows[i] = t()
+			self.frame.rows[i].filtered = tContains(reg_dates, v.date)
 			self.frame.rows[i].date = v.date or "Unknown date"
-			self.frame.rows[i].DoCellUpdate = self.RowUpdate
+			tinsert(reg_dates, self.frame.rows[i].date)
+			self.frame.rows[i].DoCellUpdate = function() return end -- Override
 			i = i + 1
 		end
 	end
@@ -179,7 +182,8 @@ function LootHistory:GetFrame()
 end
 
 function LootHistory.FilterFunc(table, row)
-	return true
+	addon:Debug("FilterFunc", row, not row.filtered)
+	return not row.filtered
 end
 
 function LootHistory.FilterMenu(menu, level)
@@ -191,136 +195,66 @@ end
 -----------------------------------------------
 -- DoCellUpdates for lib-st
 -----------------------------------------------
-function LootHistory.RowUpdate(rowFrame, cellFrame, stData, cols, row, realrow, column, fShow, table, ...)
-	--addon:Debug("RowUpdate", row, realrow, column, fShow,"...")
+function LootHistory.SetCellDate(rowFrame, cellFrame, stData, cols, row, realrow, column, fShow, table, ...)
 	local date = stData[realrow].date
-	-- Check if we've already made this row
-	if column ~= 1 then return end -- Only draw row once per column
-	if data[date] and data[date].drawn then
-		addon:Debug("Hide rowFrame @row:", row, fShow)
-		rowFrame:Hide()
-		return
+	if not data[date].drawn then -- We didn't draw this, so unfilter
+		stData[realrow].filtered = false
 	end
-	addon:Debug("Displaying row", row, "realrow", realrow)
-	-- Set the date text
-	for i = 1, #cols do
-		if cols[i].name == "Date" then
-			rowFrame.cols[i].text:SetText(date)
-		else -- everything should be blank
-			rowFrame.cols[i].text:SetText("")
-		end
-	end
-	local expanded = data[date].expanded
-	if expanded then -- Date expanded, show raids
-		local i = 1 -- We need to pass the next rowframe
-		for raid in pairs(data[date]) do -- Show the raid row
-			if raid ~= "expanded" and raid ~= "drawn" and raid ~= "rows" then -- Counter that
-				addon:Debug("Raid = ", raid)
-				data[date].rows = i + row
-				LootHistory:SetRowRaid(table, table.rows[row + i], row + i, date, raid)
-				i = i + 1
+	if stData[realrow].filtered then
+		-- If the date is filtered it mean the filter func wasn't called with the updated filters
+		LootHistory:Update()
+
+	else -- Not filtered, we need to set filtered status on ALL child rows
+		addon:Debug("Showing row", row, realrow, fShow)
+		for k = realrow+1, #stData do
+			if stData[k].date == date then
+				addon:Debug("Filtering", k, not data[date].expanded)
+				stData[k].filtered = not data[date].expanded
 			end
 		end
+		cellFrame.text:SetText(date)
+		LootHistory:SetExpandButton(true, rowFrame.cols[1], date)
 	end
-	LootHistory:SetExpandButton(rowFrame, date)
-	data[date].drawn = true -- Make sure we only make each row once
+	data[date].drawn = true
+
+	if data[date].expanded then
+		local i = 1
+		for k,v in pairs(data[date]) do
+			LootHistory:SetRowRaid(stData, realrow + i, table.rows[row + i], date, k)
+		end
+	end
 end
 
-function LootHistory:SetRowRaid(table, rowFrame, row, date, raid)
--- we might need some row > NUM_ROWS then rowFrame:Hide()
-	-- Set the raid text
+function LootHistory:SetRowRaid(stData, realrow, rowFrame, date, raid)
+	stData[realrow].filtered = false -- unfilter
 	for i = 1, #scrollCols do
 		if scrollCols[i].name == "Raid" then
 			rowFrame.cols[i].text:SetText(raid)
-		else -- everything should be blank
+		else
 			rowFrame.cols[i].text:SetText("")
 		end
 	end
-	local expanded = data[date][raid].expanded
-	if expanded then -- Raid expanded, show names
-		local i = 1
-		for name in pairs(data[date][raid]) do
-			if name ~= "expanded" then
-				data[date].rows = i + row
-				self:SetRowName(table, table.rows[row + i], row + 1, date, raid, name)
-				i = i + 1
-			end
-		end
-
-	end
-	self:SetExpandButton(rowFrame, date, raid)
+	LootHistory:SetExpandButton(true, rowFrame.cols[1], date)
 end
 
-function LootHistory:SetRowName(table, rowFrame, row, date, raid, name)
-	-- Set the name text
-	for i = 1, #scrollCols do
-		--if scrollCols[i].name == "Name" then
-		if scrollCols[i].name == "Raid" then
-			rowFrame.cols[i].text:SetText(addon.Ambiguate(name))
-			if data[date][raid][name].class then -- We have a class, so set appropiate color
-				local c = addon:GetClassColor(data[date][raid][name].class)
-				rowFrame.cols[i].text:SetTextColor(c.r,c.g,c.b,c.a)
-			else -- Default to white
-				rowFrame.cols[i].text:SetTextColor(1,1,1,1)
-			end
-		else -- everything should be blank
-			rowFrame.cols[i].text:SetText("")
+function LootHistory:SetExpandButton(show, frame, date, raid, name)
+	if show then
+		local t
+		if name then t = data[date][raid][name]
+		elseif raid then t = data[date][raid]
+		else t = data[date] end
+		frame:SetScript("OnClick", function() t.expanded = not t.expanded; t.drawn = false; self:Update(); end) -- REVIEW See if expanded actually points to the right object in data
+		if t.expanded then -- Show minus
+			frame:SetNormalTexture("Interface\\BUTTONS\\UI-MinusButton-Up")
+			frame:SetPushedTexture("Interface\\BUTTONS\\UI-MinusButton-Down")
+			frame:SetHighlightTexture("Interface\\BUTTONS\\UI-PlusButton-Hilight")
+		else -- Show plus
+			frame:SetNormalTexture("Interface\\BUTTONS\\UI-PlusButton-Up")
+			frame:SetPushedTexture("Interface\\BUTTONS\\UI-PlusButton-Down")
+			frame:SetHighlightTexture("Interface\\BUTTONS\\UI-PlusButton-Hilight")
 		end
-	end
-	local expanded = data[date][raid][name].expanded
-	if expanded then -- Name expanded, show items
-		local i = 1
-		for num in pairs(data[date][raid][name]) do
-			if num ~= "expanded" and num ~= "class" then
-				data[date].rows = i + row
-				self:SetRowItem(table.rows[row + i], date, raid, name, num) -- Last one, doesn't need table or row
-				i = i + 1
-			end
-		end
-	end
-	self:SetExpandButton(rowFrame, date, raid, name)
-end
-
-function LootHistory:SetRowItem(rowFrame, date, raid, name, num)
-	addon:Debug("Num = ", num)
-	local t = data[date][raid][name][num] -- Shortcut
-	-- t has all the info from lootDB not assigned elsewhere
-	for i = 1, #scrollCols do
-		if scrollCols[i].name == "#" then
-			rowFrame.cols[i].text:SetText(tostring(num))
-		elseif scrollCols[i].name == "Item" then
-			rowFrame.cols[i].text:SetText(t.lootWon)
-		elseif scrollCols[i].name == "Reason" then
-			rowFrame.cols[i].text:SetText(t.response or "Error in response")
-
-			if t.color then -- Post v2.0, color will be the color it was when awarded
-				rowFrame.cols[i].text:SetTextColor(unpack(t.color))
-			elseif t.responseID > 0 then -- responseID = 0 if pre v2.0 awardReason
-				-- We have an id to fallback on, so use the current color
-				rowFrame.cols[i].text:SetTextColor(unpack(addon:GetResponseColor(t.responseID)))
-			else	-- We don't have color info, so default to white
-				rowFrame.cols[i].text:SetTextColor(1,1,1,1)
-			end
-		else -- All other cells should be blank
-			rowFrame.cols[i].text:SetText("")
-		end
-	end
-end
-
-function LootHistory:SetExpandButton(rowFrame, date, raid, name)
-	local t
-	if name then t = data[date][raid][name]
-	elseif raid then t = data[date][raid]
-	else t = data[date] end
-	frame = rowFrame.cols[1]
-	frame:SetScript("OnClick", function() t.expanded = not t.expanded; data[date].drawn = false; self:Update(); end) -- REVIEW See if expanded actually points to the right object in data
-	if t.expanded then -- Show minus
-		frame:SetNormalTexture("Interface\\BUTTONS\\UI-MinusButton-Up")
-		frame:SetPushedTexture("Interface\\BUTTONS\\UI-MinusButton-Down")
-		frame:SetHighlightTexture("Interface\\BUTTONS\\UI-PlusButton-Hilight")
-	else -- Show plus
-		frame:SetNormalTexture("Interface\\BUTTONS\\UI-PlusButton-Up")
-		frame:SetPushedTexture("Interface\\BUTTONS\\UI-PlusButton-Down")
-		frame:SetHighlightTexture("Interface\\BUTTONS\\UI-PlusButton-Hilight")
+		frame:Show()
+	else
+		frame:Hide()
 	end
 end
