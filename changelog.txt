@@ -1,3 +1,5 @@
+====== Alpha6 changes ======
+
 ====== Alpha5 changes ======
 *Bugfixes
 ** Forgot to add a locale entry.
