@@ -10,8 +10,8 @@ TODOs/Notes
 		- Revise DB variables
 		- If we truly want to be able to edit votingframe scrolltable with modules, it needs to have GetCol by name
 --------------------------------
-CHANGELOG (WIP)
-	-- MOVED TO CHANGELOG.TXT
+CHANGELOG
+	-- SEE CHANGELOG.TXT
 
 ]]
 
@@ -43,8 +43,7 @@ local userModules = {
 	votingframe = nil,
 }
 
-local usage = false -- We want to use the addon for this raid
-local frames = {} -- Contains Minimize() and IsMinimized() for all frames
+local frames = {} -- Contains all frames created by RCLootCouncil:CreateFrame()
 local unregisterGuildEvent = false
 local player_relogged = true -- Determines if we potentially need data from the ML due to /rl
 
@@ -53,7 +52,7 @@ function RCLootCouncil:OnInitialize()
   	self.version = GetAddOnMetadata("RCLootCouncil2", "Version")
 	self.nnp = false
 	self.debug = false
-	self.tVersion = "Alpha.4" -- String or nil. Indicates test version, which alters stuff like version check. Is appended to 'version', i.e. "version-tVersion"
+	self.tVersion = "Alpha.5" -- String or nil. Indicates test version, which alters stuff like version check. Is appended to 'version', i.e. "version-tVersion"
 
 	self.playerClass = select(2, UnitClass("player"))
 	self.guildRank = L["Unguilded"]
@@ -67,15 +66,7 @@ function RCLootCouncil:OnInitialize()
 	self.verCheckDisplayed = false -- Have we shown a "out-of-date"?
 
 	self.council = {} -- council from ML
-	self.mldb = { v = nil,} -- db recived from ML (v = version of the db)
-	self.lootTable = {} -- table of sessions sent from ML containing items and candidate data - used for visuals
-	--[[self.lootTable[session] = {
-			bagged, lootSlot, announced, awarded, name, link, lvl, type, subType, equipLoc, texture
-
-			candidates[name] = {
-				rank, role, totalIlvl, diff, response(=i), gear1, gear2, votes, class, haveVoted, voters[], note
-		}	]]
-
+	self.mldb = {} -- db recived from ML
 	self.responses = {
 		--NOTANNOUNCED	= { color = {1,0,1,1},				sort = 501,		text = L["Not announced"],},
 		ANNOUNCED		= { color = {1,0,1,1},				sort = 502,		text = L["Loot announced, waiting for answer"], },
@@ -103,7 +94,6 @@ function RCLootCouncil:OnInitialize()
 	}
 
 	self.testMode = false;
-	self.soloMode = false;  -- tentative?
 
 	-- Option table defaults
 	self.defaults = {
@@ -272,10 +262,6 @@ function RCLootCouncil:OnEnable()
 	if not self.db.global.tVersion or self.db.global.tVersion ~= self.tVersion then -- First time install
 		-- Show a 5 sec delayed message on how to revert to latest Release version.
 		self:ScheduleTimer("Print", 5, format("You're running |cFF87CEFARCLootCouncil |cFFFFFFFFv|cFFFFA5002.0.0-%s|r. If you didn't download this intentionally please set 'Preferred Release Type' to 'Release' in your Curse Client, and update.", self.tVersion))
-		if self.tVersion == "Alpha.4" then -- TODO Just in case I forget to remove it
-			db.council = {} -- reset council due to Alpha4 changes
-			self:ScheduleTimer("Print", 6, "Your council have been reset due to recent changes in|cFFFFA500", self.tVersion)
-		end
 	end
 	self.db.global.version = self.version;
 	self.db.global.logMaxEntries = self.defaults.global.logMaxEntries -- reset it now for zzz
@@ -305,7 +291,6 @@ function RCLootCouncil:OnEnable()
 		buttons = {
 			{	text = L["Yes"],
 				on_click = function()
-					usage = true
 					local lootMethod = GetLootMethod()
 					if lootMethod ~= "master" then
 						self:Print(L["Changing LootMethod to Master Looting"])
@@ -327,7 +312,6 @@ function RCLootCouncil:OnEnable()
 			},
 			{	text = L["No"],
 				on_click = function(self)
-					usage = false;
 					RCLootCouncil:Print(L[" is not active in this raid."])
 				end,
 			},
@@ -468,7 +452,6 @@ end
 -- @param command The command to send.
 -- @param vararg Any number of arguments to send along. Will be packaged as a table.
 function RCLootCouncil:SendCommand(target, command, ...)
-	if self.soloMode then return; end -- don't send commands in solo mode
 	-- send all data as a table, and let receiver unpack it
 	local toSend = self:Serialize(command, {...})
 

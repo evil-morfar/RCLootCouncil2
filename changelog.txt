@@ -1,3 +1,5 @@
+====== Alpha5 changes ======
+
 ====== Alpha4 changes ======
 * Now displays the "alpha message" on each update (or first time upgrading to alpha) to ensure people doesn't get it by mistake.
 * ++Added++ Disenchant button to voting frame (only shows when all entries are filtered)
