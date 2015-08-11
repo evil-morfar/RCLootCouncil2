@@ -1,3 +1,7 @@
+====== Alpha7 changes ======
+*Bugfixes
+** Fixed error on raid join or becoming Master Looter.
+
 ====== Alpha6 changes ======
 //Never change Git tags, #IFuckedUp//
 

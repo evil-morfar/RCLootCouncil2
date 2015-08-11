@@ -669,7 +669,7 @@ function RCLootCouncilML:GetItemsFromMessage(msg, sender)
 	}
 	addon:SendCommand("group", "response", toAdd)
 	-- Let people know we've done stuff
-		addon:Print(format(L["Item received and added from 'player'"], addon.Ambiguate(sender)))
+	addon:Print(format(L["Item received and added from 'player'"], addon.Ambiguate(sender)))
 	SendChatMessage("[RCLootCouncil]: "..format(L["Acknowledged as 'response'"], db.responses[response].text ), "WHISPER", nil, sender)
 end
 

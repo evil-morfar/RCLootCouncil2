@@ -52,7 +52,7 @@ function RCLootCouncil:OnInitialize()
   	self.version = GetAddOnMetadata("RCLootCouncil2", "Version")
 	self.nnp = false
 	self.debug = false
-	self.tVersion = "Alpha.6" -- String or nil. Indicates test version, which alters stuff like version check. Is appended to 'version', i.e. "version-tVersion"
+	self.tVersion = "Alpha.7" -- String or nil. Indicates test version, which alters stuff like version check. Is appended to 'version', i.e. "version-tVersion"
 
 	self.playerClass = select(2, UnitClass("player"))
 	self.guildRank = L["Unguilded"]
@@ -1026,11 +1026,11 @@ function RCLootCouncil:GetML()
 	if lootMethod == "master" then
 		local name;
 		if mlRaidID then 				-- Someone in raid
-			name = addon:UnitName("raid"..mlRaidID)
+			name = self:UnitName("raid"..mlRaidID)
 		elseif mlPartyID == 0 then -- Player in party
 			name = self.playerName
 		elseif mlPartyID then		-- Someone in party
-			name = addon:UnitName("party"..mlPartyID)
+			name = self:UnitName("party"..mlPartyID)
 		end
 		self:Debug("MasterLooter = ", name)
 		return IsMasterLooter(), name
@@ -1061,7 +1061,7 @@ end
 -- Blizz UnitIsUnit() doesn't know how to compare unit-realm with unit
 -- Seems to be because of unit-realm isn't a valid unitid
 function RCLootCouncil:UnitIsUnit(unit1, unit2)
-	if not unit1 or not unit2 then return; end
+	if not unit1 or not unit2 then return false end
 	-- Remove realm names, if any
 	if strfind(unit1, "-", nil, true) ~= nil then
 		unit1 = Ambiguate(unit1, "short")
