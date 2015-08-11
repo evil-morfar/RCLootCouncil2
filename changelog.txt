@@ -70,7 +70,7 @@
       give out items that's already looted, so instead '/rc winners' gives you a list with whom to give the item to.
 
 *  ++Loot from bags++
-**    RCLootConcil can now add custom items to a session by typing '/rc add [item(s)]'.
+**    RCLootCouncil can now add custom items to a session by typing '/rc add [item]'.
 
 *  ++Localization++
 **    All text strings in the addon is now localizable. Head to http://wow.curseforge.com/addons/rclootcouncil/localization/
@@ -102,6 +102,11 @@
 **    All frames are implemented as modules, which can be replaced. This also gives the opportunity
       for anyone to add custom features to the core addon.
 
+*  ++Disenchant button++
+**    You'll get a "Disenchant" button if all responses are filtered in the voting frame. Clicking it will show a list
+      of enchanters in your group (if any), and clicking a name will award the item to that player with the reason selected
+      for disenchant in "Award Reasons".
+
 *  --Limits--
 **    No more 20 item limit per session (not that you're gonna need that), no more "award in this particular order" limit,
       no more "close session when you close the WoW loot frame", etc.
@@ -112,7 +117,10 @@
 *  --Raid Chat--
 **    Noone wants to see people linking items in the raid chat just because someone didn't install an addon. Use whisper for that!
 
+*  --Pass button--
+**    Not really removed, but automatically added so you won't have to think about that. Also removed "filter passes" due to the new filtering system.
+
 Bugfixes:
 	*	Various taint fixes.
 	*	Alt-clicking items didn't work properly when the player used different loot frame addons.
-	*	Blizzard doesn't allow to give out loot with a quality less than loot treshhold, work-around by allowing items to get looted to the Master Looter.
+	*	Blizzard doesn't allow to give out loot with a quality less than loot treshhold, work-around by allowing items to get auto looted to the Master Looter.
