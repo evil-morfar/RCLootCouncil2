@@ -104,12 +104,12 @@ function RCLootCouncil:OnInitialize()
 		},
 		profile = {
 			usage = { -- State of enabledness
-				ml = false,
-				ask_ml = true,
-				leader = false,
-				ask_leader = true,
-				never = false,
-				state = "ask_ml", -- Default state
+				ml = false,				-- Enable when ML
+				ask_ml = true,			-- Ask before enabling when ML
+				leader = false,		-- Enable when leader
+				ask_leader = true,	-- Ask before enabling when leader
+				never = false,			-- Never enable
+				state = "ask_ml", 	-- Current state
 			},
 			autoStart = false, -- start a session with all eligible items
 			autoLoot = true, -- Auto loot equippable items
@@ -981,16 +981,13 @@ function RCLootCouncil:NewMLCheck()
 			self:Print(L["Changing loot threshold to enable Auto Awarding"])
 			SetLootThreshold(db.autoAwardLowerThreshold >= 2 and db.autoAwardLowerThreshold or 2)
 		end
+		self:CallModule("masterlooter")
+		self:GetActiveModule("masterlooter"):NewML(self.masterLooter)
 
 	-- We're ML and must ask the player for usage
 	elseif self.isMasterLooter and db.usage.ask_ml then
 		return LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_USAGE")
-
-	else
-		return
 	end
-	self:CallModule("masterlooter")
-	self:GetActiveModule("masterlooter"):NewML(self.masterLooter)
 end
 
 function RCLootCouncil:OnRaidEnter(arg)
