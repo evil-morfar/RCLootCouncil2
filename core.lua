@@ -949,10 +949,10 @@ function RCLootCouncil:OnEvent(event, ...)
 		self:Debug("Event:", event, ...)
 		self:NewMLCheck()
 		-- Ask for data when we have done a /rl and have a ML
-		if self.masterLooter and self.masterLooter ~= "" and player_relogged then
-			player_relogged = false
+		if not self.isMasterLooter and self.masterLooter and self.masterLooter ~= "" and player_relogged then
 			self:SendCommand(self.masterLooter, "reconnect")
 		end
+		player_relogged = false
 
 	elseif event == "GUILD_ROSTER_UPDATE" then
 		self.guildRank = self:GetPlayersGuildRank();
@@ -1056,7 +1056,7 @@ function RCLootCouncil:GetAnnounceChannel(channel)
 end
 
 -- Blizz UnitIsUnit() doesn't know how to compare unit-realm with unit
--- Seems to be because of unit-realm isn't a valid unitid
+-- Seems to be because unit-realm isn't a valid unitid
 function RCLootCouncil:UnitIsUnit(unit1, unit2)
 	if not unit1 or not unit2 then return false end
 	-- Remove realm names, if any
@@ -1069,8 +1069,9 @@ function RCLootCouncil:UnitIsUnit(unit1, unit2)
 	return UnitIsUnit(unit1, unit2)
 end
 
--- We always want realm name when we use
+-- We always want realm name when we call UnitName
 -- Note: If 'unit' is a playername, that player must be in our raid or party!
+-- The returned string doesn't contain any spaces.
 function RCLootCouncil:UnitName(unit)
 	local name, realm = UnitName(unit)
 	if not realm then realm = select(2, UnitFullName("player")) end -- Extract our own realm

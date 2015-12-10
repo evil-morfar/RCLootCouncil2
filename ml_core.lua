@@ -594,6 +594,10 @@ function RCLootCouncilML:EndSession()
 	addon:SendCommand("group", "session_end")
 	self.running = false
 	self:CancelAllTimers()
+	if addon.testMode then -- We need to undo our ML status
+		addon.testMode = false
+		addon.NewMLCheck()
+	end
 	addon.testMode = false
 end
 
