@@ -12,7 +12,7 @@ if not L then return end
 
 L["A new session has begun, type '/rc open' to open the voting frame."] = true
 L[" is not active in this raid."] = true
-L[" now handles looting"] = true
+L["Now handles looting"] = true
 L[" you are now the Master Looter and RCLootCouncil is now handling looting."] = true
 L["&p was awarded with &i for &r!"] = true
 L["- clearLog - clear the debug log"] = true

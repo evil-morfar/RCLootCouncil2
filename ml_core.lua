@@ -276,6 +276,9 @@ function RCLootCouncilML:OnCommReceived(prefix, serializedMsg, distri, sender)
 				addon:SendCommand(sender, "MLdb", addon.mldb)
 				addon:SendCommand(sender, "council", db.council)
 				addon:SendCommand(sender, "candidates", self.candidates)
+				if self.running then -- Resend lootTable
+					addon:SendCommand(sender, "lootTable", self.lootTable)
+				end
 				addon:Debug("Responded to reconnect from", sender)
 			end
 		else
@@ -596,7 +599,7 @@ function RCLootCouncilML:EndSession()
 	self:CancelAllTimers()
 	if addon.testMode then -- We need to undo our ML status
 		addon.testMode = false
-		addon.NewMLCheck()
+		addon:NewMLCheck()
 	end
 	addon.testMode = false
 end

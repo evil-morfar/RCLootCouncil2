@@ -5,10 +5,14 @@ core.lua	Contains core elements of the addon
 TODOs/Notes
 	Things marked with "TODO"
 !		- "more info" thingie
-!		- lootHistory
+!!		- lootHistory
 			Store class in loot history
 		- Revise DB variables
 		- If we truly want to be able to edit votingframe scrolltable with modules, it needs to have GetCol by name
+		- "Hide Votes" doesn't prevent the "Hover List" from being displayed
+		- We want an indicator showing item status (mythic, warforged, etc.)
+		- Perhaps add an observer/council string to show players their role?
+		- Pressing shift while hovering an item should do the same as vanilla
 --------------------------------
 CHANGELOG
 	-- SEE CHANGELOG.TXT
@@ -305,7 +309,7 @@ function RCLootCouncil:OnEnable()
 						self:Print(L["Changing loot threshold to enable Auto Awarding"])
 						SetLootThreshold(db.autoAwardLowerThreshold >= 2 and db.autoAwardLowerThreshold or 2)
 					end
-					self:Print(L[" now handles looting"])
+					self:Print(L["Now handles looting"])
 					self.isMasterLooter = true
 					self.masterLooter = self.playerName
 					if #db.council == 0 then -- if there's no council
@@ -976,7 +980,7 @@ function RCLootCouncil:NewMLCheck()
 
 	-- We are ML and shouldn't ask the player for usage
 	if self.isMasterLooter and db.usage.ml then -- addon should auto start
-		self:Print(L[" now handles looting"])
+		self:Print(L["Now handles looting"])
 		if db.autoAward and GetLootThreshold() ~= 2 and GetLootThreshold() > db.autoAwardLowerThreshold  then
 			self:Print(L["Changing loot threshold to enable Auto Awarding"])
 			SetLootThreshold(db.autoAwardLowerThreshold >= 2 and db.autoAwardLowerThreshold or 2)
@@ -1038,7 +1042,7 @@ end
 function RCLootCouncil:IsCouncil(name)
 	local ret = tContains(self.council, name)
 	if self.isMasterLooter or self.nnp then ret = true end -- ML and nnp is always council
-	self:DebugLog("IsCouncil", name, ret)
+	self:DebugLog(tostring(ret).." =", "IsCouncil", name)
 	return ret
 end
 
@@ -1074,7 +1078,7 @@ end
 -- The returned string doesn't contain any spaces.
 function RCLootCouncil:UnitName(unit)
 	local name, realm = UnitName(unit)
-	if not realm then realm = select(2, UnitFullName("player")) end -- Extract our own realm
+	if not realm or realm == "" then realm = select(2, UnitFullName("player")) end -- Extract our own realm
 	return name and name.."-"..realm or nil
 end
 
