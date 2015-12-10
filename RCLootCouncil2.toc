@@ -14,5 +14,4 @@ ml_core.lua
 
 Modules\Modules.xml
 
-options.lua
-tokenData.lua
+Utils\tokenData.lua
