@@ -2,6 +2,7 @@
 *Now properly resets ML status after a test session.
 *Players doing a /reloadui during a session will now be prompted to reroll their item. (Other players' rolls are not carried over though).
 *Localization updates.
+*Outdated version string now only shows once.
 
 ====== Alpha7 changes ======
 *Bugfixes

@@ -56,7 +56,7 @@ function RCLootCouncil:OnInitialize()
   	self.version = GetAddOnMetadata("RCLootCouncil2", "Version")
 	self.nnp = false
 	self.debug = false
-	self.tVersion = "Alpha.7" -- String or nil. Indicates test version, which alters stuff like version check. Is appended to 'version', i.e. "version-tVersion"
+	self.tVersion = "Alpha.8" -- String or nil. Indicates test version, which alters stuff like version check. Is appended to 'version', i.e. "version-tVersion"
 
 	self.playerClass = select(2, UnitClass("player"))
 	self.guildRank = L["Unguilded"]
@@ -554,7 +554,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 					self:Print(format(L["version_outdated_msg"], self.version, otherVersion))
 					self.verCheckDisplayed = true
 
-				elseif tVersion and self.tVersion and self.tVersion < tVersion then
+				elseif tVersion and self.tVersion and not self.verCheckDisplayed and self.tVersion < tVersion then
 					self:Print(format(L["tVersion_outdated_msg"], tVersion))
 					self.verCheckDisplayed = true
 				end
@@ -565,7 +565,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 					self:Print(format(L["version_outdated_msg"], self.version, otherVersion))
 					self.verCheckDisplayed = true
 
-				elseif tVersion and self.tVersion and self.tVersion < tVersion then
+				elseif tVersion and self.tVersion and not self.verCheckDisplayed and self.tVersion < tVersion then
 					self:Print(format(L["tVersion_outdated_msg"], tVersion))
 					self.verCheckDisplayed = true
 				end
