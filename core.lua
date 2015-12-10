@@ -3,20 +3,19 @@ core.lua	Contains core elements of the addon
 
 --------------------------------
 TODOs/Notes
-	Things marked with "TODO"
-!		- "more info" thingie
-!!		- lootHistory
+	Things marked with "todo"
+!!		- "more info" thingie
+!!!	- lootHistory
 			Store class in loot history
+!		- FIXME "Hide Votes" doesn't prevent the "Hover List" from being displayed
+!		- IDEA We want an indicator showing item status (mythic, warforged, etc.)
 		- Revise DB variables
+		- IDEA add an observer/council string to show players their role?
 		- If we truly want to be able to edit votingframe scrolltable with modules, it needs to have GetCol by name
-		- "Hide Votes" doesn't prevent the "Hover List" from being displayed
-		- We want an indicator showing item status (mythic, warforged, etc.)
-		- Perhaps add an observer/council string to show players their role?
 		- Pressing shift while hovering an item should do the same as vanilla
 --------------------------------
 CHANGELOG
 	-- SEE CHANGELOG.TXT
-
 ]]
 
 RCLootCouncil = LibStub("AceAddon-3.0"):NewAddon("RCLootCouncil", "AceConsole-3.0", "AceEvent-3.0", "AceComm-3.0", "AceSerializer-3.0", "AceHook-3.0", "AceTimer-3.0");
