@@ -95,6 +95,7 @@ function RCLootCouncilML:AddCandidate(name, class, role, rank, enchant, lvl)
 end
 
 function RCLootCouncilML:RemoveCandidate(name)
+	addon:DebugLog("ML:RemoveCandidate", name)
 	self.candidates[name] = nil
 end
 

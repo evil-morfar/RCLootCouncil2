@@ -164,7 +164,7 @@ function RCVotingFrame:SetCandidateData(session, candidate, data, val)
 		lootTable[session].candidates[candidate][data] = val
 	end
 	local ok, arg = pcall(Set, session, candidate, data, val)
-	if not ok then addon:Debug("Error in 'SetCandidateData':", arg) end
+	if not ok then addon:Debug("Error in 'SetCandidateData':", arg, session, candidate, data, val) end
 end
 
 function RCVotingFrame:GetCandidateData(session, candidate, data)
@@ -172,7 +172,7 @@ function RCVotingFrame:GetCandidateData(session, candidate, data)
 		return lootTable[session].candidates[candidate][data]
 	end
 	local ok, arg = pcall(Get, session, candidate, data)
-	if not ok then addon:Debug("Error in 'GetCandidateData':", arg)
+	if not ok then addon:Debug("Error in 'GetCandidateData':", arg, session, candidate, data)
 	else return arg end
 end
 

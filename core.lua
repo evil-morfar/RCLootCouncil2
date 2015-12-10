@@ -246,6 +246,7 @@ end
 
 function RCLootCouncil:OnEnable()
 	-- Register the player's name
+	self.realmName = select(2, UnitFullName("player"))
 	self.playerName = self:UnitName("player")
 	self:DebugLog(self.playerName, self.version, self.tVersion)
 
@@ -1075,10 +1076,21 @@ end
 
 -- We always want realm name when we call UnitName
 -- Note: If 'unit' is a playername, that player must be in our raid or party!
--- The returned string doesn't contain any spaces.
+--[[ NOTE I'm concerned about the UnitIsVisible() range thing with UnitName(),
+ 	although testing in party doesn't seem to affect it. To counter this, it'll
+	return any "unit" with something after a "-" (i.e a name from GetRaidRosterInfo())
+	which means it isn't useable with all the "name-target" unitIDs]]
 function RCLootCouncil:UnitName(unit)
+	-- First strip any spaces
+	unit = gsub(unit, " ", "")
+	-- Then see if we already have a realm name appended
+	local find = strfind(unit, "-", nil, true)
+	if find and find < #unit then -- "-" isn't the last character
+		return unit
+	end
+	-- Proceed with UnitName()
 	local name, realm = UnitName(unit)
-	if not realm or realm == "" then realm = select(2, UnitFullName("player")) end -- Extract our own realm
+	if not realm or realm == "" then realm = self.realmName end -- Extract our own realm
 	return name and name.."-"..realm or nil
 end
 
