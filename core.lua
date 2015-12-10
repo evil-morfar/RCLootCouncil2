@@ -241,13 +241,13 @@ function RCLootCouncil:OnInitialize()
 	self.optionsFrame = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("RCLootCouncil", "RCLootCouncil", nil, "settings")
 	self.optionsFrame.ml = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("RCLootCouncil", "Master Looter", "RCLootCouncil", "mlSettings")
 	-- Add some spacing and logged in message in the log
-	self:DebugLog("")
 	self:DebugLog("Logged In")
 end
 
 function RCLootCouncil:OnEnable()
 	-- Register the player's name
 	self.playerName = self:UnitName("player")
+	self:DebugLog(self.playerName, self.version, self.tVersion)
 
 	-- register events
 	self:RegisterEvent("PARTY_LOOT_METHOD_CHANGED", "OnEvent")
@@ -256,7 +256,7 @@ function RCLootCouncil:OnEnable()
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
 	self:RegisterEvent("PLAYER_REGEN_DISABLED", "EnterCombat")
 	self:RegisterEvent("PLAYER_REGEN_ENABLED", "LeaveCombat")
-	self:RegisterEvent("GROUP_ROSTER_UPDATE", "Debug", "event")
+	--self:RegisterEvent("GROUP_ROSTER_UPDATE", "Debug", "event")
 
 	if IsInGuild() then
 		self.guildRank = select(2, GetGuildInfo("player"))
