@@ -1,3 +1,6 @@
+====== Alpha9 changes ======
+*Some optimizations.
+
 ====== Alpha8 changes ======
 *Now properly resets ML status after a test session.
 *Players doing a /reloadui during a session will now be prompted to reroll their item. (Other players' rolls are not carried over though).
