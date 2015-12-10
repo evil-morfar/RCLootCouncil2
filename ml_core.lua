@@ -264,14 +264,14 @@ function RCLootCouncilML:OnCommReceived(prefix, serializedMsg, distri, sender)
 		-- data is always a table
 		local test, command, data = addon:Deserialize(serializedMsg)
 
-		if test then
-			if command == "playerInfo" and addon.isMasterLooter then -- only ML should receive playerInfo
+		if test and addon.isMasterLooter then -- only ML receives these commands
+			if command == "playerInfo" then
 				self:AddCandidate(unpack(data))
 
-			elseif command == "MLdb_request" and addon.isMasterLooter then
+			elseif command == "MLdb_request" then
 				addon:SendCommand(sender, "MLdb", addon.mldb)
 
-			elseif command == "reconnect" and addon.isMasterLooter then
+			elseif command == "reconnect" and not addon:UnitIsUnit(sender, addon.playerName) then -- Don't receive our own reconnect
 				-- Someone asks for mldb, council and candidates
 				addon:SendCommand(sender, "MLdb", addon.mldb)
 				addon:SendCommand(sender, "council", db.council)
