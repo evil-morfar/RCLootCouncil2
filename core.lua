@@ -1324,12 +1324,7 @@ function RCLootCouncil:GetResponseText(response)
 end
 
 function RCLootCouncil:GetResponseColor(response)
-	local color
-	if self.mldb.responses[response] then
-		color = self.mldb.responses[response].color
-	else
-		color = self.responses[response].color
-	end
+	local color = self.mldb.responses[response] and self.mldb.responses[response].color or self.responses[response].color
 	return unpack(color)
 end
 

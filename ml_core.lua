@@ -47,16 +47,17 @@ function RCLootCouncilML:OnEnable()
 	self:RegisterMessage("RCCouncilChanged", "CouncilChanged")
 end
 
--- Adds an item session in lootTable
--- @param session The Session to add to
+--- Add an item to the lootTable
+-- @paramsig item[, bagged, slotIndex, index]
 -- @param item Any: ItemID|itemString|itemLink
 -- @param bagged True if the item is in the ML's inventory
--- @param slotIndex Index of the lootSlot, or nil if none
+-- @param slotIndex Index of the lootSlot, or nil if none - either this or 'bagged' needs to be supplied
 -- @param index Index in self.lootTable, used to set data in a specific session
 function RCLootCouncilML:AddItem(item, bagged, slotIndex, index)
 	addon:DebugLog("ML:AddItem", item, bagged, slotIndex, index)
 	local name, link, rarity, ilvl, iMinLevel, type, subType, iStackCount, equipLoc, texture = GetItemInfo(item)
-	self.lootTable[index or (#self.lootTable == 0 and 1 or #self.lootTable+1)] = {
+	--TODO see if we need the == 0 check
+	self.lootTable[index or (#self.lootTable == 0 and 1 or #self.lootTable + 1)] = {
 		["bagged"]		= bagged,
 		["lootSlot"]	= slotIndex,
 		["awarded"]		= false,
@@ -78,7 +79,8 @@ function RCLootCouncilML:AddItem(item, bagged, slotIndex, index)
 	end
 end
 
--- Removes item (session) from self.lootTable
+--- Removes a session from the lootTable
+-- @param session The session (index) in lootTable to remove
 function RCLootCouncilML:RemoveItem(session)
 	tremove(self.lootTable, session)
 end
