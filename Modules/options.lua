@@ -18,7 +18,7 @@ function addon:OptionsTable()
 			settings = {
 				order = 1,
 				type = "group",
-				name = "General",
+				name = L["General"],
 				childGroups = "tab",
 				args = {
 					version = {
@@ -29,7 +29,7 @@ function addon:OptionsTable()
 					generalSettingsTab = {
 						order = 2,
 						type = "group",
-						name = "General",
+						name = L["General"],
 						childGroups = "tab",
 						args = {
 							usage = {
