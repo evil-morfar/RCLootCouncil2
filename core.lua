@@ -8,6 +8,7 @@ TODOs/Notes
 !!!	- lootHistory
 			Store class in loot history
 !		- FIXME "Hide Votes" doesn't prevent the "Hover List" from being displayed
+			^^ Fixed, but needs testing
 !		- IDEA We want an indicator showing item status (mythic, warforged, etc.)
 		- Revise DB variables
 		- IDEA add an observer/council string to show players their role?

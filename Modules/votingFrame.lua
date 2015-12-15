@@ -599,7 +599,9 @@ function RCVotingFrame.SetCellVotes(rowFrame, frame, data, cols, row, realrow, c
 	local name = data[realrow].name
 	frame:SetScript("OnEnter", function()
 		if not addon.mldb.anonymousVoting or (db.showForML and addon.isMasterLooter) then
-			addon:CreateTooltip(L["Voters"], unpack(lootTable[session].candidates[name].voters))
+			if not addon.mldb.hideVotes or (addon.mldb.hideVotes and lootTable[session].haveVoted) then
+				addon:CreateTooltip(L["Voters"], unpack(lootTable[session].candidates[name].voters))
+			end
 		end
 	end)
 	frame:SetScript("OnLeave", function() addon:HideTooltip() end)

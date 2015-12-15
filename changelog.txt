@@ -1,5 +1,7 @@
 ====== Alpha9 changes ======
 *Some optimizations.
+*Bugfixes
+**//The tooltip showing voters names showed up when it wasn't supposed to.//
 
 ====== Alpha8 changes ======
 *Now properly resets ML status after a test session.
