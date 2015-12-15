@@ -140,14 +140,20 @@ function RCLootCouncil:OnInitialize()
 			minimizeInCombat = false,
 
 			UI = { -- stores all ui information
-				['**'] = { -- Defaults for Lib-Window
+				['**'] = { -- Defaults --REVIEW for Lib-Window
 					y		= 0,
 					x		= 0,
 					point	= "CENTER",
 					scale	= 0.8,
+					bgColor = {0, 0.003, 0.21, 1}, -- Blue-ish
+					borderColor = {0.3, 0.3, 0.5, 1}, -- More Blue-ish
+					border = "Interface\\Tooltips\\UI-Tooltip-Border",
+					background = "Interface\\Tooltips\\UI-Tooltip-Background",
 				},
 				lootframe = { -- We want the Loot Frame to get a little lower
 					y = -200,
+				},
+				defaults = { -- Gets values inherited for default control
 				},
 			},
 
@@ -1174,7 +1180,7 @@ end
 function RCLootCouncil:CreateFrame(name, cName, title, width, height)
 	local f = CreateFrame("Frame", name, nil) -- LibWindow seems to work better with nil parent
 	f:Hide()
-	f:SetFrameStrata("HIGH")
+	f:SetFrameStrata("DIALOG")
 	f:SetWidth(450)
 	f:SetHeight(height or 325)
 	lwin:Embed(f)
@@ -1184,14 +1190,16 @@ function RCLootCouncil:CreateFrame(name, cName, title, width, height)
 	f:SetScript("OnMouseWheel", function(f,delta) if IsControlKeyDown() then lwin.OnMouseWheel(f,delta) end end)
 
 	local tf = CreateFrame("Frame", nil, f)
+	--tf:SetFrameStrata("DIALOG")
+	tf:SetToplevel(true)
 	tf:SetBackdrop({
-	     bgFile = "Interface\\ChatFrame\\ChatFrameBackground",
-	     edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+	     bgFile = AceGUIWidgetLSMlists.background[db.UI.lootFrame.background],
+	     edgeFile = AceGUIWidgetLSMlists.border[db.UI.lootFrame.border],
 	     tile = true, tileSize = 64, edgeSize = 12,
 	     insets = { left = 2, right = 2, top = 2, bottom = 2 }
 	})
-	tf:SetBackdropColor(0,0,0,0.7)
-	tf:SetBackdropBorderColor(0,0.595,0.87,1)
+	tf:SetBackdropColor(unpack(db.UI.lootFrame.bgColor))
+	tf:SetBackdropBorderColor(unpack(db.UI.lootFrame.borderColor))
 	tf:SetHeight(22)
 	tf:EnableMouse()
 	tf:SetMovable(true)
@@ -1220,16 +1228,16 @@ function RCLootCouncil:CreateFrame(name, cName, title, width, height)
 	local c = CreateFrame("Frame", nil, f) -- frame that contains the actual content
 	c:SetBackdrop({
 	     --bgFile = "Interface\\DialogFrame\\UI-DialogBox-Gold-Background",
-		bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
-	     edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
-	     tile = true, tileSize = 64, edgeSize = 12,
-	     insets = { left = 2, right = 2, top = 2, bottom = 2 }
+		bgFile = AceGUIWidgetLSMlists.background[db.UI.lootFrame.background],
+	   edgeFile = AceGUIWidgetLSMlists.border[db.UI.lootFrame.border],
+	   tile = true, tileSize = 64, edgeSize = 12,
+	   insets = { left = 2, right = 2, top = 2, bottom = 2 }
 	})
 	c:EnableMouse(true)
 	c:SetWidth(450)
 	c:SetHeight(height or 325)
-	c:SetBackdropColor(0,0.003,0.21,1)
-	c:SetBackdropBorderColor(0.3,0.3,0.5,1)
+	c:SetBackdropColor(unpack(db.UI.lootFrame.bgColor))
+	c:SetBackdropBorderColor(unpack(db.UI.lootFrame.borderColor))
 	c:SetPoint("TOPLEFT")
 	c:SetScript("OnMouseDown", function(self) self:GetParent():StartMoving() end)
 	c:SetScript("OnMouseUp", function(self) self:GetParent():StopMovingOrSizing(); self:GetParent():SavePosition() end)
@@ -1262,7 +1270,27 @@ function RCLootCouncil:CreateFrame(name, cName, title, width, height)
 		old_setheight(self, width)
 		self.content:SetHeight(height)
 	end
+	f.Update = function(self)
+		self.content:SetBackdrop({
+			bgFile = AceGUIWidgetLSMlists.background[db.UI.lootFrame.background],
+			edgeFile = AceGUIWidgetLSMlists.border[db.UI.lootFrame.border],
+			tile = false, tileSize = 64, edgeSize = 12,
+			insets = { left = 2, right = 2, top = 2, bottom = 2 }
+		})
+		self.content:SetBackdropColor(unpack(db.UI.lootFrame.bgColor))
+		self.content:SetBackdropBorderColor(unpack(db.UI.lootFrame.borderColor))
+		self.title:SetBackdropColor(unpack(db.UI.lootFrame.bgColor))
+		self.title:SetBackdropBorderColor(unpack(db.UI.lootFrame.borderColor))
+	end
 	return f
+end
+
+--- Update all frames registered with RCLootCouncil:CreateFrame()
+-- @usage Updates all the frame's colors as set in the db
+function RCLootCouncil:UpdateFrames()
+	for _, frame in pairs(frames) do
+		frame:Update()
+	end
 end
 
 --- Creates a standard button for RCLootCouncil
