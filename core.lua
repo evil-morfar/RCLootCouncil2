@@ -149,8 +149,8 @@ function RCLootCouncil:OnInitialize()
 					scale	= 0.8,
 					bgColor = {0, 0.003, 0.21, 1}, -- Blue-ish
 					borderColor = {0.3, 0.3, 0.5, 1}, -- More Blue-ish
-					border = "Interface\\Tooltips\\UI-Tooltip-Border",
-					background = "Interface\\Tooltips\\UI-Tooltip-Background",
+					border = "Blizzard Tooltip",
+					background = "Blizzard Tooltip",
 				},
 				lootframe = { -- We want the Loot Frame to get a little lower
 					y = -200,
@@ -1274,6 +1274,12 @@ function RCLootCouncil:CreateFrame(name, cName, title, width, height)
 	end
 	f.Update = function(self)
 		self.content:SetBackdrop({
+			bgFile = AceGUIWidgetLSMlists.background[db.UI.lootFrame.background],
+			edgeFile = AceGUIWidgetLSMlists.border[db.UI.lootFrame.border],
+			tile = false, tileSize = 64, edgeSize = 12,
+			insets = { left = 2, right = 2, top = 2, bottom = 2 }
+		})
+		self.title:SetBackdrop({
 			bgFile = AceGUIWidgetLSMlists.background[db.UI.lootFrame.background],
 			edgeFile = AceGUIWidgetLSMlists.border[db.UI.lootFrame.border],
 			tile = false, tileSize = 64, edgeSize = 12,
