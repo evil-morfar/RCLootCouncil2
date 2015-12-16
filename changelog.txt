@@ -1,5 +1,6 @@
-====== Alpha9 changes ======
-*Some optimizations.
+====== AlphaXXXX changes ======
+*++Skins++
+*You can now customize the look of all RCLootCouncil frames.
 
 ====== Alpha8 changes ======
 *Now properly resets ML status after a test session.
@@ -52,6 +53,7 @@
 *  UI overhaul
 **    Every frame now follows a standardized layout with support for minimizing and scaling (ctrl+scroll).
       It's also made with future customization in mind. Note: Use rightclick for awarding items.
+**    ++Skins++ You can also change how every frame looks!
 
 *  Options menu overhaul
 **    Master Looter options have been moved to a separate tree and the entire interface have been streamlined.
