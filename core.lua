@@ -7,7 +7,6 @@ TODOs/Notes
 !!		- "more info" thingie
 !!!	- lootHistory
 			Store class in loot history
-!		- IDEA We want an indicator showing item status (mythic, warforged, etc.)
 		- Revise DB variables
 		- IDEA add an observer/council string to show players their role?
 		- If we truly want to be able to edit votingframe scrolltable with modules, it needs to have GetCol by name
@@ -1043,6 +1042,28 @@ function RCLootCouncil:IsCouncil(name)
 	if self.isMasterLooter or self.nnp then ret = true end -- ML and nnp is always council
 	self:DebugLog(tostring(ret).." =", "IsCouncil", name)
 	return ret
+end
+
+--- Returns a table containing the the council members in the group
+function RCLootCouncil:GetCouncilInGroup()
+	local council = {}
+	if IsInRaid() then
+		for k,v in ipairs(self.council) do
+			if UnitInRaid(self.Ambiguate(v)) then
+				tinsert(council, v)
+			end
+		end
+	elseif IsInGroup() then -- Party
+		for k,v in ipairs(self.council) do
+			if UnitInParty(self.Ambiguate(v)) then
+				tinsert(council, v)
+			end
+		end
+	elseif self.isCouncil then -- When we're alone
+		tinsert(council, self.playerName)
+	end
+	self:Debug("GetCouncilInGroup", unpack(council))
+	return council
 end
 
 function RCLootCouncil:SessionError(...)

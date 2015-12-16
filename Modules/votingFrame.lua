@@ -20,6 +20,7 @@ local sessionButtons = {}
 local moreInfo = false -- Show more info frame?
 local active = false -- Are we currently in session?
 local candidates = {} -- Candidates for the loot, initial data from the ML
+local councilInGroup = {}
 local keys = {} -- Lookup table for cols
 local menuFrame -- Right click menu frame
 local filterMenu -- Filter drop down menu
@@ -78,7 +79,8 @@ function RCVotingFrame:Hide()
 end
 
 function RCVotingFrame:Show()
-	if self.frame  then
+	if self.frame then
+		councilInGroup = addon:GetCouncilInGroup()
 		self.frame:Show()
 		self:SwitchSession(session)
 	else
@@ -227,6 +229,7 @@ function RCVotingFrame:HandleVote(session, name, vote, voter)
 		end
 	end
 	self:Update()
+	self:UpdatePeopleToVote()
 end
 
 function RCVotingFrame:DoRandomRolls(ses)
@@ -266,6 +269,7 @@ function RCVotingFrame:Update()
 			self.frame.disenchant:Hide()
 		end
 	end
+
 end
 
 function RCVotingFrame:SwitchSession(s)
@@ -297,6 +301,7 @@ function RCVotingFrame:SwitchSession(s)
 	end
 	self.frame.st.cols[5].sort = "asc"
 	self:Update()
+	self:UpdatePeopleToVote()
 end
 
 function RCVotingFrame:BuildST()
@@ -442,24 +447,21 @@ function RCVotingFrame:GetFrame()
 	b4:Hide() -- hidden by default
 	f.disenchant = b4
 
-	-- TODO Number of rolls/votes
-	--[[	local rf = CreateFrame("Frame", nil, f.content)
+	-- Number of votes
+	local rf = CreateFrame("Frame", nil, f.content)
 	rf:SetWidth(100)
 	rf:SetHeight(20)
-	rf:SetPoint("RIGHT", b2, "LEFT", -10, 0)
-	rf:SetScript("OnEnter", function()
-
-	end)
+	if b2 then rf:SetPoint("RIGHT", b2, "LEFT", -10, 0) else rf:SetPoint("TOPRIGHT", f, "TOPRIGHT", -10, -20) end
 	rf:SetScript("OnLeave", function()
-
+		addon:HideTooltip()
 	end)
 	local rft = rf:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 	rft:SetPoint("CENTER", rf, "CENTER")
-	rft:SetText(L["Everyone have rolled and voted"])
+	rft:SetText(" ")
 	rft:SetTextColor(0,1,0,1) -- Green
 	rf.text = rft
 	rf:SetWidth(rft:GetStringWidth())
-	f.rollResult = rf]]
+	f.rollResult = rf
 
 	-- Award string
 	local awdstr = f.content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
@@ -479,6 +481,35 @@ function RCVotingFrame:GetFrame()
 	-- Set a proper width
 	f:SetWidth(st.frame:GetWidth() + 20)
 	return f;
+end
+
+function RCVotingFrame:UpdatePeopleToVote()
+	addon:Debug("UpdatePeopleToVote")
+	local voters = {}
+	-- Find out who have voted
+	for name in pairs(lootTable[session].candidates) do
+		for _, voter in pairs(lootTable[session].candidates[name].voters) do
+			if not tContains(voters, voter) then
+				tinsert(voters, voter)
+			end
+		end
+	end
+	if #voters == #councilInGroup then
+		self.frame.rollResult.text:SetText(L["Everyone have rolled and voted"])
+		self.frame.rollResult.text:SetTextColor(0,1,0,1) -- Green
+	elseif #voters < #councilInGroup then
+		self.frame.rollResult.text:SetText(format("%d out of %d have voted", #voters, #councilInGroup))
+		self.frame.rollResult.text:SetTextColor(1,1,0,1) -- Yellow
+	elseif #councilInGroup == 0 then
+		self.frame.rollResult.text:SetText("Couldn't find any councilmembers in the group")
+		self.frame.rollResult.text:SetTextColor(1,0,0,1) -- Red
+	else
+		addon:Debug("#voters > #councilInGroup ?")
+	end
+	self.frame.rollResult:SetScript("OnEnter", function()
+		addon:CreateTooltip("The following council members have voted:", unpack(voters))
+	end)
+	self.frame.rollResult:SetWidth(self.frame.rollResult.text:GetStringWidth())
 end
 
 function RCVotingFrame:UpdateSessionButton(i, texture, link, awarded)
