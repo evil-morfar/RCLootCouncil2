@@ -276,8 +276,8 @@ function RCVotingFrame:SwitchSession(s)
 	local t = lootTable[s] -- Shortcut
 	self.frame.itemIcon:SetNormalTexture(t.texture)
 	self.frame.itemText:SetText(t.link)
+	self.frame.iState:SetText(self:GetItemStatus(t.link))
 	self.frame.itemLvl:SetText(format(L["ilvl: x"], t.ilvl))
-
 	-- Set a proper item type text
 	if t.subType and t.subType ~= "Miscellaneous" and t.subType ~= "Junk" and t.equipLoc ~= "" then
 		self.frame.itemType:SetText(getglobal(t.equipLoc)..", "..t.subType); -- getGlobal to translate from global constant to localized name
@@ -374,20 +374,26 @@ function RCVotingFrame:GetFrame()
 	f.itemIcon = item
 
 	local iTxt = f.content:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
-	iTxt:SetPoint("TOPLEFT", item, "TOPRIGHT", 10, -5)
+	iTxt:SetPoint("TOPLEFT", item, "TOPRIGHT", 10, 0)
 	iTxt:SetText(L["Something went wrong :'("]) -- Set text for reasons
 	f.itemText = iTxt
 
 	local ilvl = f.content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-	ilvl:SetPoint("TOPLEFT", iTxt, "BOTTOMLEFT", 0, -10)
-	ilvl:SetTextColor(0.5, 1, 1) -- Turqouise
+	ilvl:SetPoint("TOPLEFT", iTxt, "BOTTOMLEFT", 0, -4)
+	ilvl:SetTextColor(1, 1, 1) -- White
 	ilvl:SetText("")
 	f.itemLvl = ilvl
 
+	local iState = f.content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+	iState:SetPoint("LEFT", ilvl, "RIGHT", 5, 0)
+	iState:SetTextColor(0,1,0,1) -- Green
+	iState:SetText("")
+	f.iState = iState
+
 	local iType = f.content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-	iType:SetPoint("LEFT", ilvl, "RIGHT", 5, 0)
+	iType:SetPoint("TOPLEFT", ilvl, "BOTTOMLEFT", 0, -4)
 	iType:SetTextColor(0.5, 1, 1) -- Turqouise
-	iType:SetText(" ")
+	iType:SetText("")
 	f.itemType = iType
 	--#end----------------------------
 
@@ -970,4 +976,21 @@ do
 			end
 		end
 	end
+end
+
+function RCVotingFrame:GetItemStatus(item)
+	addon:DebugLog("GetitemStatus", item)
+	if not item then return "" end
+	GameTooltip:SetOwner(UIParent, "ANCHOR_NONE")
+	GameTooltip:SetHyperlink(item)
+	local text = ""
+	if GameTooltip:NumLines() > 1 then -- check that there is something here
+		local line = getglobal('GameTooltipTextLeft2') -- Should always be line 2
+		-- The following color string should be there if we have a green status text
+		if strfind(line:GetText(), "cFF 0FF 0") then
+			text = line:GetText()
+		end
+	end
+	GameTooltip:Hide()
+	return text
 end
