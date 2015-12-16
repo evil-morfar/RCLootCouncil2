@@ -1062,7 +1062,7 @@ function RCLootCouncil:GetCouncilInGroup()
 	elseif self.isCouncil then -- When we're alone
 		tinsert(council, self.playerName)
 	end
-	self:Debug("GetCouncilInGroup", unpack(council))
+	self:DebugLog("GetCouncilInGroup", unpack(council))
 	return council
 end
 

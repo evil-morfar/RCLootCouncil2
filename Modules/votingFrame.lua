@@ -484,7 +484,6 @@ function RCVotingFrame:GetFrame()
 end
 
 function RCVotingFrame:UpdatePeopleToVote()
-	addon:Debug("UpdatePeopleToVote")
 	local voters = {}
 	-- Find out who have voted
 	for name in pairs(lootTable[session].candidates) do
@@ -494,20 +493,20 @@ function RCVotingFrame:UpdatePeopleToVote()
 			end
 		end
 	end
-	if #voters == #councilInGroup then
-		self.frame.rollResult.text:SetText(L["Everyone have rolled and voted"])
+	if #councilInGroup == 0 then
+		self.frame.rollResult.text:SetText(L["Couldn't find any councilmembers in the group"])
+		self.frame.rollResult.text:SetTextColor(1,0,0,1) -- Red
+	elseif #voters == #councilInGroup then
+		self.frame.rollResult.text:SetText(L["Everyone have voted"])
 		self.frame.rollResult.text:SetTextColor(0,1,0,1) -- Green
 	elseif #voters < #councilInGroup then
-		self.frame.rollResult.text:SetText(format("%d out of %d have voted", #voters, #councilInGroup))
+		self.frame.rollResult.text:SetText(format(L["x out of x have voted"], #voters, #councilInGroup))
 		self.frame.rollResult.text:SetTextColor(1,1,0,1) -- Yellow
-	elseif #councilInGroup == 0 then
-		self.frame.rollResult.text:SetText("Couldn't find any councilmembers in the group")
-		self.frame.rollResult.text:SetTextColor(1,0,0,1) -- Red
 	else
 		addon:Debug("#voters > #councilInGroup ?")
 	end
 	self.frame.rollResult:SetScript("OnEnter", function()
-		addon:CreateTooltip("The following council members have voted:", unpack(voters))
+		addon:CreateTooltip(L["The following council members have voted"], unpack(voters))
 	end)
 	self.frame.rollResult:SetWidth(self.frame.rollResult.text:GetStringWidth())
 end
@@ -1010,7 +1009,7 @@ do
 end
 
 function RCVotingFrame:GetItemStatus(item)
-	addon:DebugLog("GetitemStatus", item)
+	--addon:DebugLog("GetitemStatus", item)
 	if not item then return "" end
 	GameTooltip:SetOwner(UIParent, "ANCHOR_NONE")
 	GameTooltip:SetHyperlink(item)
