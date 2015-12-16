@@ -22,7 +22,7 @@ function LootHistory:OnInitialize()
 	scrollCols = {
 		-- The following should have a row of their own with a expand button
 		{name = "", 			width = ROW_HEIGHT, },	-- Expand button
-		{name = "Date",		width = 70, DoCellUpdate = self.SetCellDate,		},	-- Date-time
+		{name = "Date",		width = 70, 		},	-- Date-time
 		{name = "Raid",		width = 100,		},	-- Name of the raid
 		{name = "",				width = ROW_HEIGHT, },	-- Class icon, should be same row as player
 		--{name = "Name",		width = 100, 				},	-- Name of the player
@@ -96,31 +96,43 @@ function LootHistory:BuildData()
 			end
 		end
 		-- We want an expanded field on each expandable option:
-		data[date][instance][name].expanded = false
+		--[[data[date][instance][name].expanded = false
 		data[date][instance].expanded = false
-		data[date].expanded = false
+		data[date].expanded = false]]
 		--i = i + 1
 	end
 	-- Now create a blank data table for lib-st to init with
 	self.frame.rows = {}
-	local function t()
+	local function ta(...)
 		local t = {} -- Get a table to use as cells
 		for j = 1, #scrollCols do
-			t[j] = "" -- Set cells as blank, we'll update with our own functions
+			t[j] = select(j, ...) or ""
 		end
 		return t
 	end
 	local i = 1
-	local reg_dates = {} -- Used to init correct filtered status
-	-- We need the number of rows to match the number of entries in lootDB
-	for name, j in pairs(lootDB) do
-		for _, v in ipairs(j) do
-			self.frame.rows[i] = t()
-			self.frame.rows[i].filtered = tContains(reg_dates, v.date)
-			self.frame.rows[i].date = v.date or "Unknown date"
-			tinsert(reg_dates, self.frame.rows[i].date)
-			self.frame.rows[i].DoCellUpdate = function() return end -- Override
+	for date, t in pairs(data) do
+		tinsert(self.frame.rows, ta(nil, date))
+		self.frame.rows[i].filtered = false
+		i = i + 1
+		for instance, v in pairs(t) do
+			tinsert(self.frame.rows, ta(nil, nil, instance))
+			--self.frame.rows[i].filtered = true
 			i = i + 1
+			for name, m in pairs(v) do
+				--if name ~= "class" then -- Avoid data[date][instance][name].class
+					tinsert(self.frame.rows, ta(nil, nil, addon.Ambiguate(name)))
+					--self.frame.rows[i].filtered = true
+					i = i + 1
+					for num, items in pairs(m) do
+						if num ~= "class" then
+							tinsert(self.frame.rows, ta(nil, nil, nil, nil,num, nil, data[date][instance][name][num].lootWon,data[date][instance][name][num].response))
+							--self.frame.rows[i].filtered = true
+							i = i + 1
+						end
+					end
+				--end
+			end
 		end
 	end
 	self.frame.st:SetData(self.frame.rows, true) -- True for minimal data	format
@@ -140,6 +152,7 @@ function LootHistory:GetFrame()
 	st.frame:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", 10, 10)
 	st:SetFilter(self.FilterFunc)
 	st:EnableSelection(true)
+	--st.DoCellUpdate = self.SetRow
 	f.st = st
 
 	-- Abort button
@@ -195,66 +208,22 @@ end
 -----------------------------------------------
 -- DoCellUpdates for lib-st
 -----------------------------------------------
-function LootHistory.SetCellDate(rowFrame, cellFrame, stData, cols, row, realrow, column, fShow, table, ...)
-	local date = stData[realrow].date
-	if not data[date].drawn then -- We didn't draw this, so unfilter
-		stData[realrow].filtered = false
-	end
-	if stData[realrow].filtered then
-		-- If the date is filtered it mean the filter func wasn't called with the updated filters
-		LootHistory:Update()
+function LootHistory.SetRow(rowFrame, cellFrame, stData, cols, row, realrow, column, fShow, table, ...)
+	--local date = stData[realrow].date
+	-- Create expand button
+--	if stData[realrow].cols[2] ~= "" and
+--	LootHistory:SetExpandButton(rowFrame.cols[1], date)
 
-	else -- Not filtered, we need to set filtered status on ALL child rows
-		addon:Debug("Showing row", row, realrow, fShow)
-		for k = realrow+1, #stData do
-			if stData[k].date == date then
-				addon:Debug("Filtering", k, not data[date].expanded)
-				stData[k].filtered = not data[date].expanded
-			end
-		end
-		cellFrame.text:SetText(date)
-		LootHistory:SetExpandButton(true, rowFrame.cols[1], date)
-	end
-	data[date].drawn = true
-
-	if data[date].expanded then
-		local i = 1
-		for k,v in pairs(data[date]) do
-			LootHistory:SetRowRaid(stData, realrow + i, table.rows[row + i], date, k)
-		end
-	end
 end
 
 function LootHistory:SetRowRaid(stData, realrow, rowFrame, date, raid)
-	stData[realrow].filtered = false -- unfilter
-	for i = 1, #scrollCols do
-		if scrollCols[i].name == "Raid" then
-			rowFrame.cols[i].text:SetText(raid)
-		else
-			rowFrame.cols[i].text:SetText("")
-		end
-	end
-	LootHistory:SetExpandButton(true, rowFrame.cols[1], date)
+
 end
 
-function LootHistory:SetExpandButton(show, frame, date, raid, name)
-	if show then
-		local t
-		if name then t = data[date][raid][name]
-		elseif raid then t = data[date][raid]
-		else t = data[date] end
-		frame:SetScript("OnClick", function() t.expanded = not t.expanded; t.drawn = false; self:Update(); end) -- REVIEW See if expanded actually points to the right object in data
-		if t.expanded then -- Show minus
-			frame:SetNormalTexture("Interface\\BUTTONS\\UI-MinusButton-Up")
-			frame:SetPushedTexture("Interface\\BUTTONS\\UI-MinusButton-Down")
-			frame:SetHighlightTexture("Interface\\BUTTONS\\UI-PlusButton-Hilight")
-		else -- Show plus
-			frame:SetNormalTexture("Interface\\BUTTONS\\UI-PlusButton-Up")
-			frame:SetPushedTexture("Interface\\BUTTONS\\UI-PlusButton-Down")
-			frame:SetHighlightTexture("Interface\\BUTTONS\\UI-PlusButton-Hilight")
-		end
-		frame:Show()
-	else
-		frame:Hide()
-	end
+function LootHistory:SetExpandButton(frame, date)
+
+end
+
+function LootHistory:GetData()
+	return data
 end

@@ -555,9 +555,9 @@ end
 local history_table = {}
 function RCLootCouncilML:TrackAndLogLoot(name, item, response, boss, votes, itemReplaced1, itemReplaced2, reason)
 	if reason and not reason.log then return end -- Reason says don't log
-	if not (db.sendHistory and db.enableHistory) then return end -- No reason to do stuff when we won't use it
+	if not (db.sendHistory or db.enableHistory) then return end -- No reason to do stuff when we won't use it
 	local instanceName, _, _, difficultyName = GetInstanceInfo()
-
+	addon:Debug("ML:TrackAndLogLoot()")
 	history_table["lootWon"] 		= item
 	history_table["date"] 			= date("%d/%m/%y")
 	history_table["time"] 			= date("%H:%M:%S")
