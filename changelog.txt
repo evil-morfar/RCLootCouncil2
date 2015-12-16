@@ -1,6 +1,7 @@
 ====== Alpha9 changes ======
 *Some optimizations.
 *++Item status++ Now shows whether an item is mythic, warforged, etc. in the voting frame.
+*++People to vote string++ is now back.
 
 *Bugfixes
 **//The tooltip showing voters names showed up when it wasn't supposed to.//
