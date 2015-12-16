@@ -211,22 +211,22 @@ function addon:OptionsTable()
 					appearanceTab = {
 						order = 3,
 						type = "group",
-						name = "Appearance",
+						name = L["Appearance"],
 						args = {
 							skins = {
 								order = 1,
-								name = "Skins",
+								name = L["Skins"],
 								inline = true,
 								type = "group",
 								args = {
 									desc = {
 										order = 0,
 										type = "description",
-										name = "Select one of the default skins or create your own. Note this is purely aesthetic. Open the version checker to see the results right away ('/rc version').",
+										name = L["skins_description"],
 									},
 									skinSelect = {
 										order = 1,
-										name = "Skins",
+										name = L["Skins"],
 										type = "select",
 										width = "double",
 										values = function()
@@ -252,12 +252,12 @@ function addon:OptionsTable()
 									},
 									saveSkin = {
 										order = 2,
-										name = "Save Skin",
-										desc = "Enter a name for your skin and hit 'okay' to save it. Note you can overwrite any non default skin.",
+										name = L["Save Skin"],
+										desc = L["save_skin_desc"],
 										type = "input",
 										set = function(info, text)
 											if text == "new_blue" or text == "old_red" or text == "minimalGrey" then
-												self:Print("You cannot overwrite a default skin")
+												self:Print(L["You cannot overwrite a default skin"])
 												return
 											end
 											-- NOTE Needs to pick specific frame when implemented
@@ -273,13 +273,13 @@ function addon:OptionsTable()
 									},
 									deleteSkin = {
 										order = 3,
-										name = "Delete Skin",
-										desc = "Delete the currently selected non-default skin from the list.",
+										name = L["Delete Skin"],
+										desc = L["delete_skin_desc"],
 										type = "execute",
 										confirm = true,
 										func = function()
 											if db.currentSkin == "new_blue" or db.currentSkin == "old_red" or db.currentSkin == "minimalGrey" then
-												self:Print("You cannot delete a default skin")
+												self:Print(L["You cannot delete a default skin"])
 												return
 											end
 											db.skins[db.currentSkin] = nil
@@ -289,18 +289,18 @@ function addon:OptionsTable()
 							},
 							custom = {
 								order = 2,
-								name = "Customize appearance",
+								name = L["Customize appearance"],
 								inline = true,
 								type = "group",
 								args = {
 									desc = {
 										order = 1,
 										type = "description",
-										name = "Here you can fully customize the look of RCLootCouncil. Use the save function above to quickly switch skins."
+										name = L["customize_appearance_desc"],
 									},
 									background = {
 										order = 3,
-										name = "Background",
+										name = L["Background"],
 										width = "double",
 										type = "select",
 										dialogControl = "LSM30_Background",
@@ -317,7 +317,7 @@ function addon:OptionsTable()
 									},
 									backgroundColor = {
 										order = 4,
-										name = "Background Color",
+										name = L["Background Color"],
 										type = "color",
 										hasAlpha = true,
 										get = function() return unpack(db.UI.lootframe.bgColor) end,
@@ -332,7 +332,7 @@ function addon:OptionsTable()
 									},
 									border = {
 										order = 5,
-										name = "Border",
+										name = L["Border"],
 										type = "select",
 										width = "double",
 										dialogControl = "LSM30_Border",
@@ -349,7 +349,7 @@ function addon:OptionsTable()
 									},
 									borderColor = {
 										order = 6,
-										name = "Border Color",
+										name = L["Border Color"],
 										type = "color",
 										hasAlpha = true,
 										get = function() return unpack(db.UI.lootframe.borderColor) end,
@@ -365,7 +365,7 @@ function addon:OptionsTable()
 									reset = {
 										order = -1,
 										name = L["Reset to default"],
-										desc = "Resets all colors and background to default.",
+										desc = L["reset_appearance_desc"],
 										type = "execute",
 										confirm = true,
 										func = function()
