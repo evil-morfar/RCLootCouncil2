@@ -14,7 +14,7 @@ TODOs/Notes
 		- If we truly want to be able to edit votingframe scrolltable with modules, it needs to have GetCol by name
 		- Pressing shift while hovering an item should do the same as vanilla
 
-		-- Apperence: Not at all final! Needs better handling than just looking at db.UI.lootFrame
+		-- Appearance: Not at all final! Needs better handling than just looking at db.UI.lootFrame
 --------------------------------
 CHANGELOG
 	-- SEE CHANGELOG.TXT
@@ -154,8 +154,6 @@ function RCLootCouncil:OnInitialize()
 				},
 				lootframe = { -- We want the Loot Frame to get a little lower
 					y = -200,
-				},
-				defaults = { -- Gets values inherited for default control
 				},
 			},
 

@@ -208,10 +208,10 @@ function addon:OptionsTable()
 							},
 						},
 					},
-					apperenceTab = {
+					appearanceTab = {
 						order = 3,
 						type = "group",
-						name = "Appearence",
+						name = "Appearance",
 						args = {
 							background = {
 								order = 1,
@@ -222,7 +222,11 @@ function addon:OptionsTable()
 								values = AceGUIWidgetLSMlists.background,
 								get = function() return db.UI.lootFrame.background end,
 								set = function(info, key)
-									db.UI.lootFrame.background = key
+									for k,v in pairs(db.UI) do
+										if k ~= "**" then
+											v.background = key
+										end
+									end
 									self:UpdateFrames()
 								end
 							},
@@ -233,7 +237,11 @@ function addon:OptionsTable()
 								hasAlpha = true,
 								get = function() return unpack(db.UI.lootFrame.bgColor) end,
 								set = function(info, r,g,b,a)
-									db.UI.lootFrame.bgColor = {r,g,b,a}
+									for k,v in pairs(db.UI) do
+										if k ~= "**" then
+											v.bgColor = {r,g,b,a}
+										end
+									end
 									self:UpdateFrames()
 								end
 							},
@@ -246,7 +254,11 @@ function addon:OptionsTable()
 								values = AceGUIWidgetLSMlists.border,
 								get = function() return db.UI.lootFrame.border end,
 								set = function(info, key)
-									db.UI.lootFrame.border = key
+									for k,v in pairs(db.UI) do
+										if k ~= "**" then
+											v.border = key
+										end
+									end
 									self:UpdateFrames()
 								end,
 							},
@@ -257,7 +269,11 @@ function addon:OptionsTable()
 								hasAlpha = true,
 								get = function() return unpack(db.UI.lootFrame.borderColor) end,
 								set = function(info, r,g,b,a)
-									db.UI.lootFrame.borderColor = {r,g,b,a}
+									for k,v in pairs(db.UI) do
+										if k ~= "**" then
+											v.borderColor = {r,g,b,a}
+										end
+									end
 									self:UpdateFrames()
 								end
 							},
@@ -269,7 +285,14 @@ function addon:OptionsTable()
 								func = function()
 									--db.UI.lootFrame.bgColor = db.UI.default.bgColor
 									--db.UI.lootFrame.borderColor = db.UI.somethingsomething.bgColor
-									db.UI.lootFrame = db.UI.default
+									for k,v in pairs(db.UI) do
+										if k ~= "**" then
+											v.bgColor = db.UI["**"].bgColor
+											v.borderColor = db.UI["**"].borderColor
+											v.background = db.UI["**"].background
+											v.border = db.UI["**"].border
+										end
+									end
 									self:UpdateFrames()
 								end,
 							}
