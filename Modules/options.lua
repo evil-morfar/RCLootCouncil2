@@ -213,97 +213,184 @@ function addon:OptionsTable()
 						type = "group",
 						name = "Appearance",
 						args = {
-							background = {
+							skins = {
 								order = 1,
-								name = "Background",
-								width = "double",
-								type = "select",
-								dialogControl = "LSM30_Background",
-								values = AceGUIWidgetLSMlists.background,
-								get = function() return db.UI.lootFrame.background end,
-								set = function(info, key)
-									for k,v in pairs(db.UI) do
-										if k ~= "**" then
-											v.background = key
-										end
-									end
-									self:UpdateFrames()
-								end
+								name = "Skins",
+								inline = true,
+								type = "group",
+								args = {
+									desc = {
+										order = 0,
+										type = "description",
+										name = "Select one of the default skins or create your own. Note this is purely aesthetic. Open the version checker to see the results right away ('/rc version').",
+									},
+									skinSelect = {
+										order = 1,
+										name = "Skins",
+										type = "select",
+										width = "double",
+										values = function()
+											local t = {}
+											for k,v in pairs(db.skins) do
+												t[k] = v.name
+											end
+											return t
+										end,
+										get = function() return db.currentSkin	end,
+										set = function(info, key)
+											for k,v in pairs(db.UI) do
+												if k ~= "**" then
+													v.bgColor = db.skins[key].bgColor
+													v.borderColor = db.skins[key].borderColor
+													v.background = db.skins[key].background
+													v.border = db.skins[key].border
+												end
+											end
+											db.currentSkin = key
+											self:UpdateFrames()
+										end,
+									},
+									saveSkin = {
+										order = 2,
+										name = "Save Skin",
+										desc = "Enter a name for your skin and hit 'okay' to save it. Note you can overwrite any non default skin.",
+										type = "input",
+										set = function(info, text)
+											if text == "new_blue" or text == "old_red" or text == "minimalGrey" then
+												self:Print("You cannot overwrite a default skin")
+												return
+											end
+											-- NOTE Needs to pick specific frame when implemented
+											db.skins[text] = {
+												name = text,
+												bgColor = db.UI.lootframe.bgColor,
+												borderColor = db.UI.lootframe.borderColor,
+												border = db.UI.lootframe.border,
+												background = db.UI.lootframe.background,
+											}
+											db.currentSkin = text
+										end,
+									},
+									deleteSkin = {
+										order = 3,
+										name = "Delete Skin",
+										desc = "Delete the currently selected non-default skin from the list.",
+										type = "execute",
+										confirm = true,
+										func = function()
+											if db.currentSkin == "new_blue" or db.currentSkin == "old_red" or db.currentSkin == "minimalGrey" then
+												self:Print("You cannot delete a default skin")
+												return
+											end
+											db.skins[db.currentSkin] = nil
+										end,
+									},
+								},
 							},
-							backgroundColor = {
+							custom = {
 								order = 2,
-								name = "Background Color",
-								type = "color",
-								hasAlpha = true,
-								get = function() return unpack(db.UI.lootFrame.bgColor) end,
-								set = function(info, r,g,b,a)
-									for k,v in pairs(db.UI) do
-										if k ~= "**" then
-											v.bgColor = {r,g,b,a}
+								name = "Customize appearance",
+								inline = true,
+								type = "group",
+								args = {
+									desc = {
+										order = 1,
+										type = "description",
+										name = "Here you can fully customize the look of RCLootCouncil. Use the save function above to quickly switch skins."
+									},
+									background = {
+										order = 3,
+										name = "Background",
+										width = "double",
+										type = "select",
+										dialogControl = "LSM30_Background",
+										values = AceGUIWidgetLSMlists.background,
+										get = function() return db.UI.lootframe.background end,
+										set = function(info, key)
+											for k,v in pairs(db.UI) do
+												if k ~= "**" then
+													v.background = key
+												end
+											end
+											self:UpdateFrames()
 										end
-									end
-									self:UpdateFrames()
-								end
+									},
+									backgroundColor = {
+										order = 4,
+										name = "Background Color",
+										type = "color",
+										hasAlpha = true,
+										get = function() return unpack(db.UI.lootframe.bgColor) end,
+										set = function(info, r,g,b,a)
+											for k,v in pairs(db.UI) do
+												if k ~= "**" then
+													v.bgColor = {r,g,b,a}
+												end
+											end
+											self:UpdateFrames()
+										end
+									},
+									border = {
+										order = 5,
+										name = "Border",
+										type = "select",
+										width = "double",
+										dialogControl = "LSM30_Border",
+										values = AceGUIWidgetLSMlists.border,
+										get = function() return db.UI.lootframe.border end,
+										set = function(info, key)
+											for k,v in pairs(db.UI) do
+												if k ~= "**" then
+													v.border = key
+												end
+											end
+											self:UpdateFrames()
+										end,
+									},
+									borderColor = {
+										order = 6,
+										name = "Border Color",
+										type = "color",
+										hasAlpha = true,
+										get = function() return unpack(db.UI.lootframe.borderColor) end,
+										set = function(info, r,g,b,a)
+											for k,v in pairs(db.UI) do
+												if k ~= "**" then
+													v.borderColor = {r,g,b,a}
+												end
+											end
+											self:UpdateFrames()
+										end
+									},
+									reset = {
+										order = -1,
+										name = L["Reset to default"],
+										desc = "Resets all colors and background to default.",
+										type = "execute",
+										confirm = true,
+										func = function()
+											for k,v in pairs(db.UI) do
+												if k ~= "**" then
+													v.bgColor = db.UI["**"].bgColor
+													v.borderColor = db.UI["**"].borderColor
+													v.background = db.UI["**"].background
+													v.border = db.UI["**"].border
+												end
+											end
+											db.currentSkin = "new_blue"
+											self:UpdateFrames()
+										end,
+									},
+								},
 							},
-							border = {
-								order = 5,
-								name = "Border",
-								type = "select",
-								width = "double",
-								dialogControl = "LSM30_Border",
-								values = AceGUIWidgetLSMlists.border,
-								get = function() return db.UI.lootFrame.border end,
-								set = function(info, key)
-									for k,v in pairs(db.UI) do
-										if k ~= "**" then
-											v.border = key
-										end
-									end
-									self:UpdateFrames()
-								end,
-							},
-							borderColor = {
-								order = 6,
-								name = "Border Color",
-								type = "color",
-								hasAlpha = true,
-								get = function() return unpack(db.UI.lootFrame.borderColor) end,
-								set = function(info, r,g,b,a)
-									for k,v in pairs(db.UI) do
-										if k ~= "**" then
-											v.borderColor = {r,g,b,a}
-										end
-									end
-									self:UpdateFrames()
-								end
-							},
-							reset = {
-								order = -1,
-								name = "Default",
-								type = "execute",
-								confirm = true,
-								func = function()
-									--db.UI.lootFrame.bgColor = db.UI.default.bgColor
-									--db.UI.lootFrame.borderColor = db.UI.somethingsomething.bgColor
-									for k,v in pairs(db.UI) do
-										if k ~= "**" then
-											v.bgColor = db.UI["**"].bgColor
-											v.borderColor = db.UI["**"].borderColor
-											v.background = db.UI["**"].background
-											v.border = db.UI["**"].border
-										end
-									end
-									self:UpdateFrames()
-								end,
-							}
 						},
 					},
 				},
 				plugins = {
 					default = {
 
-					}
-				}
+					},
+				},
 			},
 			mlSettings = {
 				name = L["Master Looter"],

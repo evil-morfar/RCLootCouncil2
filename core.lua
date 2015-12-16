@@ -157,6 +157,31 @@ function RCLootCouncil:OnInitialize()
 				},
 			},
 
+			skins = {
+				new_blue = {
+					name = "Midnight blue",
+					bgColor = {0, 0.003, 0.21, 1}, -- Blue-ish
+					borderColor = {0.3, 0.3, 0.5, 1}, -- More Blue-ish
+					border = "Blizzard Tooltip",
+					background = "Blizzard Tooltip",
+				},
+				old_red = {
+					name = "Old golden red",
+					bgColor = {0.5, 0, 0 ,1},
+					borderColor = {1, 0.5, 0, 1},
+					border = "Blizzard Tooltip",
+					background = "Blizzard Dialog Background Gold",
+				},
+				minimalGrey = {
+					name = "Minimal Grey",
+					bgColor = {0.25, 0.25, 0.25, 1},
+					borderColor = {0, 0, 0, 0},
+					border = "None",
+					background = "Blizzard Tooltip",
+				},
+			},
+			currentSkin = "new_blue",
+
 			modules = { -- For storing module specific data
 				['*'] = {},
 			},
@@ -1272,21 +1297,21 @@ function RCLootCouncil:CreateFrame(name, cName, title, width, height)
 	end
 	f.Update = function(self)
 		self.content:SetBackdrop({
-			bgFile = AceGUIWidgetLSMlists.background[db.UI.lootFrame.background],
-			edgeFile = AceGUIWidgetLSMlists.border[db.UI.lootFrame.border],
+			bgFile = AceGUIWidgetLSMlists.background[db.UI.lootframe.background],
+			edgeFile = AceGUIWidgetLSMlists.border[db.UI.lootframe.border],
 			tile = false, tileSize = 64, edgeSize = 12,
 			insets = { left = 2, right = 2, top = 2, bottom = 2 }
 		})
 		self.title:SetBackdrop({
-			bgFile = AceGUIWidgetLSMlists.background[db.UI.lootFrame.background],
-			edgeFile = AceGUIWidgetLSMlists.border[db.UI.lootFrame.border],
+			bgFile = AceGUIWidgetLSMlists.background[db.UI.lootframe.background],
+			edgeFile = AceGUIWidgetLSMlists.border[db.UI.lootframe.border],
 			tile = false, tileSize = 64, edgeSize = 12,
 			insets = { left = 2, right = 2, top = 2, bottom = 2 }
 		})
-		self.content:SetBackdropColor(unpack(db.UI.lootFrame.bgColor))
-		self.content:SetBackdropBorderColor(unpack(db.UI.lootFrame.borderColor))
-		self.title:SetBackdropColor(unpack(db.UI.lootFrame.bgColor))
-		self.title:SetBackdropBorderColor(unpack(db.UI.lootFrame.borderColor))
+		self.content:SetBackdropColor(unpack(db.UI.lootframe.bgColor))
+		self.content:SetBackdropBorderColor(unpack(db.UI.lootframe.borderColor))
+		self.title:SetBackdropColor(unpack(db.UI.lootframe.bgColor))
+		self.title:SetBackdropBorderColor(unpack(db.UI.lootframe.borderColor))
 	end
 	return f
 end
