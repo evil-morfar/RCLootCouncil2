@@ -5,6 +5,8 @@
 
 *Bugfixes
 **//The tooltip showing voters names showed up when it wasn't supposed to.//
+**//Councilmens "Filter" didn't update correctly if the ML changed the buttons (ticket#113).//
+**//Now never autopasses cloaks as they're considered cloth by Blizzard (ticket#115).//
 
 ====== Alpha8 changes ======
 *Now properly resets ML status after a test session.

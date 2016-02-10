@@ -507,7 +507,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 					if db.autoPass then -- Do autopassing
 						for ses, v in ipairs(lootTable) do
 							if (v.boe and db.autoPassBoE) or not v.boe then
-								if self:AutoPassCheck(v.subType) then
+								if self:AutoPassCheck(v.subType, v.equipLoc) then
 									self:Debug("Autopassed on: ", v.link)
 									if not db.silentAutoPass then self:Print(format(L["Autopassed on 'item'"], v.link)) end
 									self:SendCommand("group", "response", self:CreateResponse(ses, v.link, v.ilvl, "AUTOPASS", v.equipLoc))
@@ -799,9 +799,16 @@ local subTypeLookup = {
 	["Wands"]					= 128096, -- Demonspine Wand
 }
 
-function RCLootCouncil:AutoPassCheck(type)
-	if type and autopassTable[self.db.global.localizedSubTypes[type]] then
-		return tContains(autopassTable[self.db.global.localizedSubTypes[type]], self.playerClass)
+-- Never autopass these armor types
+local autopassOverride = {
+	"INVTYPE_CLOAK",
+}
+
+function RCLootCouncil:AutoPassCheck(type, equipLoc)
+	if not tContains(autopassOverride, equipLoc) then
+		if type and autopassTable[self.db.global.localizedSubTypes[type]] then
+			return tContains(autopassTable[self.db.global.localizedSubTypes[type]], self.playerClass)
+		end
 	end
 	return false
 end
