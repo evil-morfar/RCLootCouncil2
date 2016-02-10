@@ -920,7 +920,7 @@ do
 		if level == 1 then -- Redundant
 			-- Build the data table:
 			local data = {["STATUS"] = true, ["PASS"] = true, ["AUTOPASS"] = true}
-			for i = 1, db.numButtons do
+			for i = 1, addon.mldb.numButtons or db.numButtons do
 				data[i] = i
 			end
 			if not db.modules["RCVotingFrame"].filters then -- Create the db entry
@@ -941,8 +941,8 @@ do
 			info = Lib_UIDropDownMenu_CreateInfo()
 
 			for k in ipairs(data) do -- Make sure normal responses are on top
-				info.text = db.responses[k].text
-				info.colorCode = "|cff"..addon:RGBToHex(unpack(db.responses[k].color))
+				info.text = addon:GetResponseText(k)
+				info.colorCode = "|cff"..addon:RGBToHex(addon:GetResponseColor(k))
 				info.func = function()
 					addon:Debug("Update Filter")
 					db.modules["RCVotingFrame"].filters[k] = not db.modules["RCVotingFrame"].filters[k]
@@ -957,8 +957,8 @@ do
 						info.text = L["Status texts"]
 						info.colorCode = "|cffde34e2" -- purpleish
 					else
-						info.text = db.responses[k].text
-						info.colorCode = "|cff"..addon:RGBToHex(unpack(db.responses[k].color))
+						info.text = addon:GetResponseText(k)
+						info.colorCode = "|cff"..addon:RGBToHex(addon:GetResponseColor(k))
 					end
 					info.func = function()
 						addon:Debug("Update Filter")
