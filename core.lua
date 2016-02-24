@@ -11,6 +11,7 @@ TODOs/Notes
 		- IDEA add an observer/council string to show players their role?
 		- If we truly want to be able to edit votingframe scrolltable with modules, it needs to have GetCol by name
 		- Pressing shift while hovering an item should do the same as vanilla
+		- The 4'th cell in @line81 in versionCheck should not be static
 --------------------------------
 CHANGELOG
 	-- SEE CHANGELOG.TXT
@@ -834,7 +835,6 @@ function RCLootCouncil:LocalizeSubTypes()
 end
 
 function RCLootCouncil:IsItemBoE(item)
-	self:DebugLog("IsItemBoe", item)
 	if not item then return false end
 	GameTooltip:SetOwner(UIParent, "ANCHOR_NONE")
 	GameTooltip:SetHyperlink(item)
