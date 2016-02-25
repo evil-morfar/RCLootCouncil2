@@ -15,7 +15,7 @@ local selectedDate, selectedName, filterDrop;
 		}
 	}
 ]]
-local moreInfo = false
+local moreInfo = true
 local ROW_HEIGHT = 20;
 local NUM_ROWS = 15;
 
@@ -59,6 +59,7 @@ end
 
 function LootHistory:Hide()
 	self.frame:Hide()
+	self.moreInfo:Hide()
 end
 
 function LootHistory:BuildData()
@@ -103,6 +104,7 @@ function LootHistory:BuildData()
 	for date, v in pairs(data) do
 		for name, x in pairs(v) do
 			for num, i in pairs(x) do
+				if num == "class" then break end
 				self.frame.rows[row] = {
 					date = date,
 					class = x.class,
@@ -202,13 +204,15 @@ function LootHistory.ResponseSort(table, rowa, rowb, sortbycol)
 			addon:Debug(data[rowa.date][rowa.name][rowa.num].response, "was awardReasons with sort ",a)
 		else
 			a = addon:GetResponseSort(aID)
+			addon:Debug(data[rowa.date][rowa.name][rowa.num].response, "was normal with sort ",a)
 		end
 		if data[rowb.date][rowb.name][rowb.num].isAwardReason then
 			b = db.awardReasons[bID].sort
 		else
 			b = addon:GetResponseSort(bID)
 		end
-	else
+	else -- NOTE: I'm pretty sure it can only be an awardReason when responseID is nil or 0
+
 		return false
 	end
 
@@ -229,16 +233,22 @@ end
 
 function LootHistory:GetFrame()
 	if self.frame then return self.frame end
-	local f = addon:CreateFrame("DefaultRCLootHistoryFrame", "history", L["RCLootCouncil Loot History"], 250, 470)
+	local f = addon:CreateFrame("DefaultRCLootHistoryFrame", "history", L["RCLootCouncil Loot History"], 250, 480)
 	local st = LibStub("ScrollingTable"):CreateST(scrollCols, NUM_ROWS, ROW_HEIGHT, { ["r"] = 1.0, ["g"] = 0.9, ["b"] = 0.0, ["a"] = 0.5 }, f.content)
 	st.frame:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", 10, 10)
 	st:SetFilter(self.FilterFunc)
 	st:EnableSelection(true)
+	st:RegisterEvents({
+		["OnClick"] = function(rowFrame, cellFrame, data, cols, row, realrow, column, table, button, ...)
+			self:UpdateMoreInfo(rowFrame, cellFrame, data, cols, row, realrow, column, table, button, ...)
+			return false
+		end
+	})
 	f.st = st
 
 	--Date selection
 	f.date = LibStub("ScrollingTable"):CreateST({{name = "Date", width = 70, comparesort = self.DateSort, sort = "desc"}}, 5, ROW_HEIGHT, { ["r"] = 1.0, ["g"] = 0.9, ["b"] = 0.0, ["a"] = 0.5 }, f.content)
-	f.date.frame:SetPoint("TOPLEFT", f, "TOPLEFT", 10, -15)
+	f.date.frame:SetPoint("TOPLEFT", f, "TOPLEFT", 10, -20)
 	f.date:EnableSelection(true)
 	f.date:RegisterEvents({
 		["OnClick"] = function(rowFrame, cellFrame, data, cols, row, realrow, column, table, button, ...)
@@ -266,25 +276,29 @@ function LootHistory:GetFrame()
 
 	-- Abort button
 	local b1 = addon:CreateButton(L["Close"], f.content)
-	b1:SetPoint("TOPRIGHT", f, "TOPRIGHT", -10, -45)
+	b1:SetPoint("TOPRIGHT", f, "TOPRIGHT", -10, -100)
 	b1:SetScript("OnClick", function() self:Disable() end)
 	f.closeBtn = b1
 
 	-- More info button
 	local b2 = CreateFrame("Button", nil, f.content, "UIPanelButtonTemplate")
 	b2:SetSize(25,25)
-	b2:SetPoint("TOPRIGHT", f, "TOPRIGHT", -10, -10)
-	b2:SetNormalTexture("Interface\\Buttons\\UI-SpellbookIcon-NextPage-Up")
-	b2:SetPushedTexture("Interface\\Buttons\\UI-SpellbookIcon-NextPage-Down")
+	b2:SetPoint("BOTTOMRIGHT", b1, "TOPRIGHT", 0, 10)
+	b2:SetNormalTexture("Interface\\Buttons\\UI-SpellbookIcon-PrevPage-Up")
+	b2:SetPushedTexture("Interface\\Buttons\\UI-SpellbookIcon-PrevPage-Down")
 	b2:SetScript("OnClick", function(button)
 		moreInfo = not moreInfo
 		if moreInfo then -- show the more info frame
 			button:SetNormalTexture("Interface\\Buttons\\UI-SpellbookIcon-PrevPage-Up");
 			button:SetPushedTexture("Interface\\Buttons\\UI-SpellbookIcon-PrevPage-Down");
+			self.moreInfo:Show()
+			self:UpdateMoreInfo()
 		else -- hide it
 			button:SetNormalTexture("Interface\\Buttons\\UI-SpellbookIcon-NextPage-Up")
 			button:SetPushedTexture("Interface\\Buttons\\UI-SpellbookIcon-NextPage-Down")
+			self.moreInfo:Hide()
 		end
+		addon:Debug("moreInfo =",moreInfo)
 	end)
 	b2:SetScript("OnEnter", function() addon:CreateTooltip(L["Click to expand/collapse more info"]) end)
 	b2:SetScript("OnLeave", addon.HideTooltip)
@@ -299,9 +313,39 @@ function LootHistory:GetFrame()
 	f.filter = b3
 	Lib_UIDropDownMenu_Initialize(b3, self.DateDrop)
 
+	--MoreInfo
+	self.moreInfo = CreateFrame( "GameTooltip", "RCLootHistoryMoreInfo", nil, "GameTooltipTemplate" )
+
 	-- Set a proper width
 	f:SetWidth(st.frame:GetWidth() + 20)
 	return f;
+end
+
+function LootHistory:UpdateMoreInfo(rowFrame, cellFrame, dat, cols, row, realrow, column, table, button, ...)
+	if not dat then return end
+	if not moreInfo then return self.moreInfo:Hide() end
+	addon:Debug("MoreInfo called")
+	local tip = self.moreInfo -- shortening
+	tip:SetOwner(self.frame, "ANCHOR_RIGHT")
+	local row = dat[realrow]
+	local color = addon:GetClassColor(row.class)
+	local data = data[row.date][row.name][row.num]
+	tip:AddLine(addon.Ambiguate(row.name), color.r, color.g, color.b)
+	tip:AddLine("")
+	tip:AddDoubleLine("Time:", (data.time or "Unknown") .." ".. row.date or "Unknown", 1,1,1, 1,1,1)
+	if data.itemReplaced1 then
+		tip:AddDoubleLine("Item(s) replaced:", data.itemReplaced1, 1,1,1)
+		if data.itemReplaced2 then
+			tip:AddDoubleLine(" ", data.itemReplaced2)
+		end
+	end
+	tip:AddDoubleLine("Dropped by:", data.boss or "Unknown", 1,1,1, 0.862745, 0.0784314, 0.235294)
+	tip:AddDoubleLine("From:", data.instance or "Unknown", 1,1,1, 0.823529, 0.411765, 0.117647)
+	tip:AddDoubleLine("Votes:", data.votes or "Unknown", 1,1,1, 1,1,1)
+
+	tip:SetScale(db.UI.history.scale)
+	tip:Show()
+	tip:SetAnchorType("ANCHOR_RIGHT", 0, -tip:GetHeight())
 end
 
 ---------------------------------------------------
