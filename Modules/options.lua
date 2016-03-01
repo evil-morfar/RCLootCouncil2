@@ -665,7 +665,7 @@ function addon:OptionsTable()
 								confirm = true,
 								func = function()
 									db.buttons = self.defaults.profile.buttons
-									db.responses = self.responses
+									db.responses = self.defaults.profile.responses
 									db.numButtons = self.defaults.profile.numButtons
 									db.acceptWhispers = self.defaults.profile.acceptWhispers
 									self:ConfigTableChanged()

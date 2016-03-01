@@ -200,10 +200,10 @@ function RCLootCouncilML:UpdateMLdb()
 end
 
 function RCLootCouncilML:BuildMLdb()
-	-- Extract changes to addon.responses
+	-- Extract changes to responses
 	local changedResponses = {};
 	for i = 1, db.numButtons do
-		if db.responses[i].text ~= addon.responses[i].text or unpack(db.responses[i].color) ~= unpack(addon.responses[i].color) then
+		if db.responses[i].text ~= addon.defaults.profile.responses[i].text or unpack(db.responses[i].color) ~= unpack(addon.defaults.profile.responses[i].color) then
 			changedResponses[i] = db.responses[i]
 		end
 	end

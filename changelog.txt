@@ -1,4 +1,6 @@
 ====== Alpha10 changes ======
+*Bumped max buttons and awardReasons to 10.
+
 *Bugfixes
 **//Some actions involving players from another realm wasn't handled properly (#117, #119)
 

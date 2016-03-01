@@ -82,11 +82,6 @@ function RCLootCouncil:OnInitialize()
 		--[[1]]			  { color = {0,1,0,1},				sort = 1,		text = L["Mainspec/Need"],},
 		--[[2]]			  { color = {1,0.5,0,1},			sort = 2,		text = L["Offspec/Greed"],	},
 		--[[3]]			  { color = {0,0.7,0.7,1},			sort = 3,		text = L["Minor Upgrade"],},
-		--[[4]]			  { color = {0.7, 0.7,0.7,1},		sort = 4,		text = L["Button"]..4,},
-		--[[5]]			  { color = {0.75,0.75,0.75,1},	sort = 5,		text = L["Button"]..5,},
-		--[[6]]			  { color = {0.75,0.75,0.75,1},	sort = 6,		text = L["Button"]..6,},
-		--[[7]]			  { color = {0.75,0.75,0.75,1},	sort = 7,		text = L["Button"]..7,},
-		--[[8]]			  { color = {0.75,0.75,0.75,1},	sort = 8,		text = L["Button"]..8,},
 	}
 	self.roleTable = {
 		TANK =		L["Tank"],
@@ -171,14 +166,14 @@ function RCLootCouncil:OnInitialize()
 			minRank = -1,
 			council = {},
 
-			maxButtons = 8,
+			maxButtons = 10,
 			numButtons = 3,
 			buttons = {
 				{	text = L["Need"],					whisperKey = L["whisperKey_need"], },	-- 1
 				{	text = L["Greed"],				whisperKey = L["whisperKey_greed"],},	-- 2
 				{	text = L["Minor Upgrade"],		whisperKey = L["whisperKey_minor"],},	-- 3
 			},
-			maxAwardReasons = 8,
+			maxAwardReasons = 10,
 			numAwardReasons = 3,
 			awardReasons = {
 				{ color = {1, 1, 1, 1}, disenchant = true, log = true,	sort = 401,	text = L["Disenchant"], },
@@ -203,6 +198,13 @@ function RCLootCouncil:OnInitialize()
 		tinsert(self.defaults.profile.buttons, {
 			text = L["Button"].." "..i,
 			whisperKey = ""..i,
+		})
+	end
+	for i = self.defaults.profile.numButtons+1, self.defaults.profile.maxButtons do
+		tinsert(self.defaults.profile.responses, {
+			color = {0.7, 0.7,0.7,1},
+			sort = i,
+			text = L["Button"]..i,
 		})
 	end
 	-- create the other AwardReasons
@@ -1369,18 +1371,18 @@ end
 
 --- The following functions returns the text, sort or color of a response, returning a result from mldb if possible, otherwise the default responses.
 -- @paramsig response
--- @param response Index in self.responses
+-- @param response Index in db.responses
 function RCLootCouncil:GetResponseText(response)
-	return self.mldb.responses[response] and self.mldb.responses[response].text or self.responses[response].text
+	return self.mldb.responses[response] and self.mldb.responses[response].text or db.responses[response].text
 end
 
 function RCLootCouncil:GetResponseColor(response)
-	local color = self.mldb.responses[response] and self.mldb.responses[response].color or self.responses[response].color
+	local color = self.mldb.responses[response] and self.mldb.responses[response].color or db.responses[response].color
 	return unpack(color)
 end
 
 function RCLootCouncil:GetResponseSort(response)
-	return self.mldb.responses[response] and self.mldb.responses[response].sort or self.responses[response].sort
+	return self.mldb.responses[response] and self.mldb.responses[response].sort or db.responses[response].sort
 end
 
 --#end UI Functions -----------------------------------------------------
