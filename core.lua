@@ -464,11 +464,10 @@ function RCLootCouncil:SendCommand(target, command, ...)
 	local toSend = self:Serialize(command, {...})
 
 	if target == "group" then
-		local num = GetNumGroupMembers()
-		if num > 5 then -- Raid
+		if GetNumGroupMembers() > 0 then -- SendAddonMessage auto converts it to party is needed
 			self:SendCommMessage("RCLootCouncil", toSend, "RAID")
-		elseif num > 0 then -- Party
-			self:SendCommMessage("RCLootCouncil", toSend, "PARTY")
+		--[[elseif num > 0 then -- Party
+			self:SendCommMessage("RCLootCouncil", toSend, "PARTY")]]
 		else--if self.testMode then -- Alone (testing)
 			self:SendCommMessage("RCLootCouncil", toSend, "WHISPER", self.playerName)
 		end
@@ -478,9 +477,22 @@ function RCLootCouncil:SendCommand(target, command, ...)
 
 	else
 		if self:UnitIsUnit(target,"player") then -- If target == "player"
-			self:SendCommMessage("RCLootCouncil", toSend, "WHISPER", self.playerName)
+			self:OnCommReceived("RCLootCouncil", toSend, "WHISPER", self.playerName)
 		else
-			self:SendCommMessage("RCLootCouncil", toSend, "WHISPER", target)
+			-- We cannot send "WHISPER" to a crossrealm player
+			if target:find("-") then
+				if target:find(self.realmName) then -- Our own realm, just send it
+					self:SendCommMessage("RCLootCouncil", toSend, "WHISPER", target)
+				else -- Get creative
+					-- Remake command to be "xrealm" and put target and command in the table
+					toSend = self:Serialize("xrealm", {target, command, ...})
+					self:SendCommMessage("RCLootCouncil", toSend, "RAID")
+				end
+
+			else -- Should never happen?
+				self:Debug("WARNING!", "SendCommand target invalid", "target == "..target)
+				self:SendCommMessage("RCLootCouncil", toSend, "WHISPER", target)
+			end
 		end
 	end
 end
@@ -597,6 +609,14 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 					end
 				else
 					self:Debug("Non ML:", sender, "sent end session command!")
+				end
+
+			elseif command == "xrealm" then -- Special, used to deal with whispers to another realm
+				-- data = target, command, ...
+				local target = tremove(data, 1)
+				if self:UnitIsUnit(target, "player") then
+					local command = tremove(data, 1)
+					self:SendCommMessage("RCLootCouncil", self:Serialize(command, data), "WHISPER", target)
 				end
 			end
 		else
@@ -957,6 +977,7 @@ function RCLootCouncil:OnEvent(event, ...)
 	elseif event == "PLAYER_ENTERING_WORLD" then
 		self:Debug("Event:", event, ...)
 		self:NewMLCheck()
+		self:Debug("relogged: ", player_relogged, not self.isMasterLooter, self.masterLooter,self.masterLooter ~= ""  )
 		-- Ask for data when we have done a /rl and have a ML
 		if not self.isMasterLooter and self.masterLooter and self.masterLooter ~= "" and player_relogged then
 			self:SendCommand(self.masterLooter, "reconnect")

@@ -17,6 +17,7 @@ local MAX_ENTRIES = 5
 local numRolled = 0
 
 function LootFrame:Start(table)
+	addon:DebugLog("LootFrame:Start()")
 	for k = 1, #table do
 		if table[k].autopass then
 			items[k] = { rolled = true} -- it's autopassed, so pretend we rolled it
@@ -38,6 +39,7 @@ function LootFrame:Start(table)
 end
 
 function LootFrame:ReRoll(table)
+	addon:DebugLog("LootFrame:ReRoll(#table)", #table)
 	for k,v in ipairs(table) do
 		items[k] = {
 			name = v.name,
@@ -125,11 +127,12 @@ end
 
 function LootFrame:GetFrame()
 	if self.frame then return self.frame end
+	addon:DebugLog("LootFrame","GetFrame()")
 	return addon:CreateFrame("DefaultRCLootFrame", "lootframe", L["RCLootCouncil Loot Frame"], 250, 375)
 end
 
 function LootFrame:GetEntry(entry)
-	--addon:DebugLog("GetEntry("..entry..")")
+	addon:DebugLog("GetEntry("..entry..")")
 	if entry == 0 then entry = 1 end
 	local f = CreateFrame("Frame", nil, self.frame.content)
 	f:SetWidth(self.frame:GetWidth())
