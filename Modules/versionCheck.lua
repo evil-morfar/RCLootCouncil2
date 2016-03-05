@@ -46,6 +46,7 @@ end
 function RCVersionCheck:OnCommReceived(prefix, serializedMsg, distri, sender)
 	if prefix == "RCLootCouncil" then
 		local test, command, data = addon:Deserialize(serializedMsg)
+		if addon:HandleXRealmComms(self, command, data, sender) then return end
 		if test and command == "verTestReply" then
 			self:AddEntry(unpack(data))
 		end

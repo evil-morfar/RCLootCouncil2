@@ -98,6 +98,7 @@ function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
 	if prefix == "RCLootCouncil" then
 		-- data is always a table to be unpacked
 		local test, command, data = addon:Deserialize(serializedMsg)
+		if addon:HandleXRealmComms(self, command, data, sender) then return end
 
 		if test then
 			if command == "vote" then

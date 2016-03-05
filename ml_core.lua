@@ -266,6 +266,7 @@ function RCLootCouncilML:OnCommReceived(prefix, serializedMsg, distri, sender)
 	if prefix == "RCLootCouncil" then
 		-- data is always a table
 		local test, command, data = addon:Deserialize(serializedMsg)
+		if addon:HandleXRealmComms(self, command, data, sender) then return end
 
 		if test and addon.isMasterLooter then -- only ML receives these commands
 			if command == "playerInfo" then

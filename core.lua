@@ -488,6 +488,7 @@ function RCLootCouncil:SendCommand(target, command, ...)
 					self:SendCommMessage("RCLootCouncil", toSend, "WHISPER", target)
 				else -- Get creative
 					-- Remake command to be "xrealm" and put target and command in the table
+					-- See "RCLootCouncil:HandleXRealmComms()" for more info
 					toSend = self:Serialize("xrealm", {target, command, ...})
 					self:SendCommMessage("RCLootCouncil", toSend, "RAID")
 				end
@@ -505,6 +506,9 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 		self:DebugLog("Comm received:", serializedMsg, "from:", sender, "distri:", distri)
 		-- data is always a table to be unpacked
 		local test, command, data = self:Deserialize(serializedMsg)
+		-- NOTE: Since I can't find a better way to do this, all xrealms comms is routed through here
+		--			to make sure they get delivered properly. Must be included in every OnCommReceived() function.
+		if self:HandleXRealmComms(self, command, data, sender) then return end
 
 		if test then
 			if command == "lootTable" then
@@ -613,14 +617,6 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 				else
 					self:Debug("Non ML:", sender, "sent end session command!")
 				end
-
-			elseif command == "xrealm" then -- Special, used to deal with whispers to another realm
-				-- data = target, command, ...
-				local target = tremove(data, 1)
-				if self:UnitIsUnit(target, "player") then
-					local command = tremove(data, 1)
-					self:SendCommMessage("RCLootCouncil", self:Serialize(command, data), "WHISPER", target)
-				end
 			end
 		else
 			-- Most likely pre 2.0 command
@@ -634,6 +630,20 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 	end
 end
 
+-- Used to make sure "WHISPER" type xrealm comms is handled properly.
+-- Include this right after unpacking messages. Assumes you use "OnCommReceived" as comm handler:
+-- if RCLootCouncil:HandleXRealmComms(self, command, data, sender) then return end
+function RCLootCouncil:HandleXRealmComms(mod, command, data, sender)
+	if command == "xrealm" then
+		local target = tremove(data, 1)
+		if self:UnitIsUnit(target, "player") then
+			local command = tremove(data, 1)
+			mod:OnCommReceived("RCLootCouncil", self:Serialize(command, data), "WHISPER", self:UnitName(sender))
+		end
+		return true
+	end
+	return false
+end
 
 function RCLootCouncil:Debug(msg, ...)
 	if self.debug then
