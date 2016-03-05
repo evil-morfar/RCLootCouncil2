@@ -26,7 +26,7 @@ function LootHistory:OnInitialize()
 		{name = "Name",		width = 100, 				},		-- Name of the player
 		{name = "",				width = ROW_HEIGHT, },			-- Item at index icon
 		{name = "Item",		width = 250, 				}, 	-- Item string
-		{name = "Reason",		width = 230, comparesort = self.ResponseSort, sort = "asc"},	-- Response aka the text supplied to lootDB...response
+		{name = "Reason",		width = 230, comparesort = self.ResponseSort, sort = "asc", sortnext = 2},	-- Response aka the text supplied to lootDB...response
 	}
 	--filterMenu = CreateFrame("Frame", "RCLootCouncil_LootHistory_FilterMenu", UIParent, "Lib_UIDropDownMenuTemplate")
 	--Lib_UIDropDownMenu_Initialize(filterMenu, self.FilterMenu, "MENU")
@@ -202,22 +202,30 @@ function LootHistory.ResponseSort(table, rowa, rowb, sortbycol)
 	rowa, rowb = table:GetRow(rowa), table:GetRow(rowb);
 	local a,b
 	local aID, bID = data[rowa.date][rowa.name][rowa.num].responseID, data[rowb.date][rowb.name][rowb.num].responseID
-	if aID and aID ~= 0 and bID and bID ~= 0 then
+	local awardReason = true
+
+	-- NOTE: I'm pretty sure it can only be an awardReason when responseID is nil or 0
+
+	if aID and aID ~= 0 then
 		if data[rowa.date][rowa.name][rowa.num].isAwardReason then
 			a = db.awardReasons[aID].sort
-			addon:Debug(data[rowa.date][rowa.name][rowa.num].response, "was awardReasons with sort ",a)
 		else
 			a = addon:GetResponseSort(aID)
-			addon:Debug(data[rowa.date][rowa.name][rowa.num].response, "was normal with sort ",a)
 		end
+	else
+		-- 500 will be below award reasons and just above status texts
+		a = 500
+	end
+
+	if bID and bID ~= 0 then
 		if data[rowb.date][rowb.name][rowb.num].isAwardReason then
 			b = db.awardReasons[bID].sort
 		else
 			b = addon:GetResponseSort(bID)
 		end
-	else -- NOTE: I'm pretty sure it can only be an awardReason when responseID is nil or 0
 
-		return false
+	else
+		b = 500
 	end
 
 	local direction = column.sort or column.defaultsort or "asc";
