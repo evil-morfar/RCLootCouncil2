@@ -6,35 +6,28 @@
 local addon = LibStub("AceAddon-3.0"):GetAddon("RCLootCouncil")
 LootHistory = addon:NewModule("RCLootHistory")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
-local lootDB, scrollCols, data, db;
-local selectedDate, selectedName, filterDrop;
+local lootDB, scrollCols, data, db, numLootWon;
 --[[ data structure:
-	data[date][instance] = {
-		[playerName] = {
-			-- Remaining content in lootDB[playerName]
-		}
+data[date][playerName] = {
+	["class"] = CLASS,
+	[i] = { -- Num item given to player, lowest first
+		-- Remaining content in lootDB[playerName]
 	}
+}
 ]]
+local selectedDate, selectedName, filterDrop;
 local moreInfo = true
 local ROW_HEIGHT = 20;
 local NUM_ROWS = 15;
 
 function LootHistory:OnInitialize()
 	scrollCols = {
-		-- The following should have a row of their own with a expand button
-		--[[{name = "", 			width = ROW_HEIGHT, },	-- Expand button
-		{name = "Date",		width = 70, 		},	-- Date-time
-		{name = "Raid",		width = 100,		},	-- Name of the raid]]
-		{name = "",				width = ROW_HEIGHT, },	-- Class icon, should be same row as player
-		{name = "Name",		width = 100, 				},	-- Name of the player
-		-- The following should all be on 1 row
-		--{name = "#",			width = 20, 				},	-- Index of items won by player
-		{name = "",				width = ROW_HEIGHT, },	-- Item at index icon
+		{name = "",				width = ROW_HEIGHT, },			-- Class icon, should be same row as player
+		{name = "Name",		width = 100, 				},		-- Name of the player
+		{name = "",				width = ROW_HEIGHT, },			-- Item at index icon
 		{name = "Item",		width = 250, 				}, 	-- Item string
 		{name = "Reason",		width = 230, comparesort = self.ResponseSort, sort = "asc"},	-- Response aka the text supplied to lootDB...response
 	}
-
-
 	--filterMenu = CreateFrame("Frame", "RCLootCouncil_LootHistory_FilterMenu", UIParent, "Lib_UIDropDownMenuTemplate")
 	--Lib_UIDropDownMenu_Initialize(filterMenu, self.FilterMenu, "MENU")
 end
@@ -65,12 +58,15 @@ end
 function LootHistory:BuildData()
 	addon:Debug("LootHistory:BuildData()")
 	data = {}
+	numLootWon = {} -- playerName = #
 	local date, instance;
 	-- We want to rebuild lootDB to the "data" format:
 	--local i = 1
 	for name, v in pairs(lootDB) do
+		numLootWon[name] = 0
 		-- Now we actually add the data
 		for i,v in ipairs(v) do
+			numLootWon[name] = numLootWon[name] + 1
 			date = v.date
 			if not date then -- Unknown date
 				date = "Unknown date"
@@ -122,10 +118,18 @@ function LootHistory:BuildData()
 			end
 			if not tContains(insertedNames, name) then -- we only want each name added once
 				tinsert(nameData,
-					{{DoCellUpdate = addon.SetCellClassIcon, args = {x.class}},
-					{value = addon.Ambiguate(name), color = addon:GetClassColor(x.class), name = name}}
+					{
+						{DoCellUpdate = addon.SetCellClassIcon, args = {x.class}},
+						{value = addon.Ambiguate(name), color = addon:GetClassColor(x.class), name = name}
+					}
 				)
 				tinsert(insertedNames, name)
+			elseif x.class then -- it already exists, but we might need to add the class which we now have
+				for i in pairs(nameData) do
+					if nameData[i][2].name == name then
+						nameData[i][1].args = {x.class}
+					end
+				end
 			end
 		end
 		tinsert(dateData, {date})
@@ -240,7 +244,9 @@ function LootHistory:GetFrame()
 	st:EnableSelection(true)
 	st:RegisterEvents({
 		["OnClick"] = function(rowFrame, cellFrame, data, cols, row, realrow, column, table, button, ...)
-			self:UpdateMoreInfo(rowFrame, cellFrame, data, cols, row, realrow, column, table, button, ...)
+			if row or realrow then
+				self:UpdateMoreInfo(rowFrame, cellFrame, data, cols, row, realrow, column, table, button, ...)
+			end
 			return false
 		end
 	})
@@ -342,6 +348,16 @@ function LootHistory:UpdateMoreInfo(rowFrame, cellFrame, dat, cols, row, realrow
 	tip:AddDoubleLine("Dropped by:", data.boss or "Unknown", 1,1,1, 0.862745, 0.0784314, 0.235294)
 	tip:AddDoubleLine("From:", data.instance or "Unknown", 1,1,1, 0.823529, 0.411765, 0.117647)
 	tip:AddDoubleLine("Votes:", data.votes or "Unknown", 1,1,1, 1,1,1)
+	tip:AddDoubleLine("Items won:", numLootWon[row.name], 1,1,1, 0,1,0)
+
+	-- Debug stuff
+	if addon.debug then
+		tip:AddLine("\nDebug:")
+		tip:AddDoubleLine("ResponseID", tostring(data.responseID), 1,1,1, 1,1,1)
+		tip:AddDoubleLine("Response:", data.response, 1,1,1, 1,1,1)
+		tip:AddDoubleLine("isAwardReason:", tostring(data.isAwardReason), 1,1,1, 1,1,1)
+		tip:AddDoubleLine("color:", data.color and data.color[1]..", "..data.color[2]..", "..data.color[3] or "none", 1,1,1, 1,1,1)
+	end
 
 	tip:SetScale(db.UI.history.scale)
 	tip:Show()
