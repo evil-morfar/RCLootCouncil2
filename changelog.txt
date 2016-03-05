@@ -1,5 +1,6 @@
 ====== Alpha10 changes ======
 *Bumped max buttons and awardReasons to 10.
+*Asking someone to reroll while they're already rolling now adds the new rolls to the list instead of replacing it.
 
 *Bugfixes
 **//Some actions involving players from another realm wasn't handled properly (#117, #119).//

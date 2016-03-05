@@ -6,7 +6,6 @@ TODOs/Notes
 	Things marked with "todo"
 !!		- "more info" thingie
 !!!	- lootHistory
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! "xrealm" thing!
 				Store class in loot history
 		- Revise DB variables
 		- IDEA add an observer/council string to show players their role?

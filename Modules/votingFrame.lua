@@ -888,6 +888,7 @@ do
 							ilvl = lootTable[session].ilvl,
 							texture = lootTable[session].texture,
 							session = session,
+							equipLoc = lootTable[session].equipLoc,
 						}
 					}
 					addon:SendCommand(candidateName, "reroll", t)
@@ -907,6 +908,7 @@ do
 								ilvl = v.ilvl,
 								texture = v.texture,
 								session = k,
+								equipLoc = v.equipLoc,
 							})
 						end
 					end

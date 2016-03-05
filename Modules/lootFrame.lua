@@ -41,7 +41,7 @@ end
 function LootFrame:ReRoll(table)
 	addon:DebugLog("LootFrame:ReRoll(#table)", #table)
 	for k,v in ipairs(table) do
-		items[k] = {
+		tinsert(items,  {
 			name = v.name,
 			link = v.link,
 			ilvl = v.ilvl,
@@ -50,7 +50,7 @@ function LootFrame:ReRoll(table)
 			note = nil,
 			session = v.session,
 			equipLoc = v.equipLoc,
-		}
+		})
 	end
 	self:Show()
 end
