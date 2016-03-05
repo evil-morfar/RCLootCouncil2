@@ -4,6 +4,7 @@
 
 *Bugfixes
 **//Some actions involving players from another realm wasn't handled properly (#117, #119).//
+**//Fixed error when changing profiles (#120).//
 **//Whispering responses didn't work due to recent updates.//
 
 ====== Alpha9 changes ======

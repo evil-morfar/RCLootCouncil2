@@ -339,9 +339,10 @@ function RCLootCouncil:OnDisable()
 	self:UnregisterAllEvents()
 end
 
-function RCLootCouncil:RefreshConfig()
-	self:Debug("RefreshConfig")
-	db = self.defaults.profile
+function RCLootCouncil:RefreshConfig(event, database, profile)
+	self:Debug("RefreshConfig",event, database, profile)
+	self.db.profile = database.profile
+	db = database.profile
 end
 
 function RCLootCouncil:ConfigTableChanged(val)
