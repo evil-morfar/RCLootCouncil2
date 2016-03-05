@@ -662,21 +662,17 @@ function RCLootCouncilML:GetItemsFromMessage(msg, sender)
 			end
 		end
 	end
-	-- calculate diff
-	diff = (self.lootTable[ses].ilvl - select(4, GetItemInfo(item1))) or nil
-	-- add the entry to the player's own entryTable
-	local toAdd =  {
-	session = ses,
-	name = sender,
-	data = {
-			gear1 = item1,
-			gear2 = item2,
-			diff = diff,
-			note = "",
-			response = response
-		}
+	local diff = 0
+	if item1 then diff = (self.lootTable[ses].ilvl - select(4, GetItemInfo(item1))) end
+	local toSend = {
+		gear1 = item1,
+		gear2 = item2,
+		ilvl = nil,
+		diff = diff,
+		note = nil,
+		response = response
 	}
-	addon:SendCommand("group", "response", toAdd)
+	addon:SendCommand("group", "response", ses, sender, toSend)
 	-- Let people know we've done stuff
 	addon:Print(format(L["Item received and added from 'player'"], addon.Ambiguate(sender)))
 	SendChatMessage("[RCLootCouncil]: "..format(L["Acknowledged as 'response'"], db.responses[response].text ), "WHISPER", nil, sender)

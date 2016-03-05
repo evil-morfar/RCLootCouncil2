@@ -6,6 +6,7 @@ TODOs/Notes
 	Things marked with "todo"
 !!		- "more info" thingie
 !!!	- lootHistory
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! "xrealm" thing!
 				Store class in loot history
 		- Revise DB variables
 		- IDEA add an observer/council string to show players their role?
@@ -875,6 +876,14 @@ function RCLootCouncil:IsItemBoE(item)
 	return false
 end
 
+--- Formats a response for the player to be send to the group
+-- @param session		The session to respond to
+-- @param link 		The itemLink of the item in the session
+-- @param ilvl			The ilvl of the item in the session
+-- @param response	The selected response, must be index of db.responses
+-- @param equipLoc	The item in the session's equipLoc
+-- @param note			The player's note
+-- @returns A formatted table that can be passed directly to :SendCommand("group", "response", -return-)
 function RCLootCouncil:CreateResponse(session, link, ilvl, response, equipLoc, note)
 	self:DebugLog("CreateResponse", session, link, ilvl, response, equipLoc, note)
 	local g1, g2 = self:GetPlayersGear(link, equipLoc)
