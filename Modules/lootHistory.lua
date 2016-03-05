@@ -23,10 +23,10 @@ local NUM_ROWS = 15;
 function LootHistory:OnInitialize()
 	scrollCols = {
 		{name = "",				width = ROW_HEIGHT, },			-- Class icon, should be same row as player
-		{name = "Name",		width = 100, 				},		-- Name of the player
+		{name = L["Name"],		width = 100, 				},		-- Name of the player
 		{name = "",				width = ROW_HEIGHT, },			-- Item at index icon
-		{name = "Item",		width = 250, 				}, 	-- Item string
-		{name = "Reason",		width = 230, comparesort = self.ResponseSort, sort = "asc", sortnext = 2},	-- Response aka the text supplied to lootDB...response
+		{name = L["Item"],		width = 250, 				}, 	-- Item string
+		{name = L["Reason"],		width = 230, comparesort = self.ResponseSort, sort = "asc", sortnext = 2},	-- Response aka the text supplied to lootDB...response
 	}
 	--filterMenu = CreateFrame("Frame", "RCLootCouncil_LootHistory_FilterMenu", UIParent, "Lib_UIDropDownMenuTemplate")
 	--Lib_UIDropDownMenu_Initialize(filterMenu, self.FilterMenu, "MENU")
@@ -69,7 +69,7 @@ function LootHistory:BuildData()
 			numLootWon[name] = numLootWon[name] + 1
 			date = v.date
 			if not date then -- Unknown date
-				date = "Unknown date"
+				date = L["Unknown date"]
 			end
 			if not data[date] then -- We haven't added the date to data, do it
 				data[date] = {}
@@ -88,7 +88,7 @@ function LootHistory:BuildData()
 				end
 			end
 			if not data[date][name][i].instance then
-				data[date][name][i].instance = "Unknown"
+				data[date][name][i].instance = L["Unknown"]
 			end
 		end
 	end
@@ -261,7 +261,7 @@ function LootHistory:GetFrame()
 	f.st = st
 
 	--Date selection
-	f.date = LibStub("ScrollingTable"):CreateST({{name = "Date", width = 70, comparesort = self.DateSort, sort = "desc"}}, 5, ROW_HEIGHT, { ["r"] = 1.0, ["g"] = 0.9, ["b"] = 0.0, ["a"] = 0.5 }, f.content)
+	f.date = LibStub("ScrollingTable"):CreateST({{name = L["Date"], width = 70, comparesort = self.DateSort, sort = "desc"}}, 5, ROW_HEIGHT, { ["r"] = 1.0, ["g"] = 0.9, ["b"] = 0.0, ["a"] = 0.5 }, f.content)
 	f.date.frame:SetPoint("TOPLEFT", f, "TOPLEFT", 10, -20)
 	f.date:EnableSelection(true)
 	f.date:RegisterEvents({
@@ -275,7 +275,7 @@ function LootHistory:GetFrame()
 	})
 
 	--Name selection
-	f.name = LibStub("ScrollingTable"):CreateST({{name = "", width = ROW_HEIGHT},{name = "Name", width = 100, sort = "desc"}}, 5, ROW_HEIGHT, { ["r"] = 1.0, ["g"] = 0.9, ["b"] = 0.0, ["a"] = 0.5 }, f.content)
+	f.name = LibStub("ScrollingTable"):CreateST({{name = "", width = ROW_HEIGHT},{name = L["Name"], width = 100, sort = "desc"}}, 5, ROW_HEIGHT, { ["r"] = 1.0, ["g"] = 0.9, ["b"] = 0.0, ["a"] = 0.5 }, f.content)
 	f.name.frame:SetPoint("TOPLEFT", f.date.frame, "TOPRIGHT", 20, 0)
 	f.name:EnableSelection(true)
 	f.name:RegisterEvents({
@@ -346,17 +346,17 @@ function LootHistory:UpdateMoreInfo(rowFrame, cellFrame, dat, cols, row, realrow
 	local data = data[row.date][row.name][row.num]
 	tip:AddLine(addon.Ambiguate(row.name), color.r, color.g, color.b)
 	tip:AddLine("")
-	tip:AddDoubleLine("Time:", (data.time or "Unknown") .." ".. row.date or "Unknown", 1,1,1, 1,1,1)
+	tip:AddDoubleLine(L["Time:"], (data.time or L["Unknown"]) .." ".. row.date or L["Unknown"], 1,1,1, 1,1,1)
 	if data.itemReplaced1 then
-		tip:AddDoubleLine("Item(s) replaced:", data.itemReplaced1, 1,1,1)
+		tip:AddDoubleLine(L["Item(s) replaced:"], data.itemReplaced1, 1,1,1)
 		if data.itemReplaced2 then
 			tip:AddDoubleLine(" ", data.itemReplaced2)
 		end
 	end
-	tip:AddDoubleLine("Dropped by:", data.boss or "Unknown", 1,1,1, 0.862745, 0.0784314, 0.235294)
-	tip:AddDoubleLine("From:", data.instance or "Unknown", 1,1,1, 0.823529, 0.411765, 0.117647)
-	tip:AddDoubleLine("Votes:", data.votes or "Unknown", 1,1,1, 1,1,1)
-	tip:AddDoubleLine("Items won:", numLootWon[row.name], 1,1,1, 0,1,0)
+	tip:AddDoubleLine(L["Dropped by:"], data.boss or L["Unknown"], 1,1,1, 0.862745, 0.0784314, 0.235294)
+	tip:AddDoubleLine(L["From:"], data.instance or L["Unknown"], 1,1,1, 0.823529, 0.411765, 0.117647)
+	tip:AddDoubleLine("Votes:", data.votes or L["Unknown"], 1,1,1, 1,1,1)
+	tip:AddDoubleLine(L["Items won:"], numLootWon[row.name], 1,1,1, 0,1,0)
 
 	-- Debug stuff
 	if addon.debug then
