@@ -15,8 +15,7 @@ data[date][playerName] = {
 	}
 }
 ]]
-local selectedDate, selectedName, filterDrop;
-local moreInfo = true
+local selectedDate, selectedName, filterDrop, moreInfo
 local ROW_HEIGHT = 20;
 local NUM_ROWS = 15;
 
@@ -30,9 +29,13 @@ function LootHistory:OnInitialize()
 	}
 	--filterMenu = CreateFrame("Frame", "RCLootCouncil_LootHistory_FilterMenu", UIParent, "Lib_UIDropDownMenuTemplate")
 	--Lib_UIDropDownMenu_Initialize(filterMenu, self.FilterMenu, "MENU")
+	--MoreInfo
+	self.moreInfo = CreateFrame( "GameTooltip", "RCLootHistoryMoreInfo", nil, "GameTooltipTemplate" )
 end
 
 function LootHistory:OnEnable()
+	addon:Debug("OnEnable()")
+	moreInfo = true
 	db = addon:Getdb()
 	lootDB = addon:GetHistoryDB()
 	self.frame = self:GetFrame()
@@ -53,6 +56,7 @@ end
 function LootHistory:Hide()
 	self.frame:Hide()
 	self.moreInfo:Hide()
+	moreInfo = false
 end
 
 function LootHistory:BuildData()
@@ -302,11 +306,12 @@ function LootHistory:GetFrame()
 	b2:SetPushedTexture("Interface\\Buttons\\UI-SpellbookIcon-PrevPage-Down")
 	b2:SetScript("OnClick", function(button)
 		moreInfo = not moreInfo
+		self.frame.st:ClearSelection()
+		self:UpdateMoreInfo()
 		if moreInfo then -- show the more info frame
 			button:SetNormalTexture("Interface\\Buttons\\UI-SpellbookIcon-PrevPage-Up");
 			button:SetPushedTexture("Interface\\Buttons\\UI-SpellbookIcon-PrevPage-Down");
 			self.moreInfo:Show()
-			self:UpdateMoreInfo()
 		else -- hide it
 			button:SetNormalTexture("Interface\\Buttons\\UI-SpellbookIcon-NextPage-Up")
 			button:SetPushedTexture("Interface\\Buttons\\UI-SpellbookIcon-NextPage-Down")
@@ -327,9 +332,6 @@ function LootHistory:GetFrame()
 	f.filter = b3
 	Lib_UIDropDownMenu_Initialize(b3, self.DateDrop)
 
-	--MoreInfo
-	self.moreInfo = CreateFrame( "GameTooltip", "RCLootHistoryMoreInfo", nil, "GameTooltipTemplate" )
-
 	-- Set a proper width
 	f:SetWidth(st.frame:GetWidth() + 20)
 	return f;
@@ -337,8 +339,6 @@ end
 
 function LootHistory:UpdateMoreInfo(rowFrame, cellFrame, dat, cols, row, realrow, column, table, button, ...)
 	if not dat then return end
-	if not moreInfo then return self.moreInfo:Hide() end
-	addon:Debug("MoreInfo called")
 	local tip = self.moreInfo -- shortening
 	tip:SetOwner(self.frame, "ANCHOR_RIGHT")
 	local row = dat[realrow]
@@ -347,6 +347,7 @@ function LootHistory:UpdateMoreInfo(rowFrame, cellFrame, dat, cols, row, realrow
 	tip:AddLine(addon.Ambiguate(row.name), color.r, color.g, color.b)
 	tip:AddLine("")
 	tip:AddDoubleLine(L["Time:"], (data.time or L["Unknown"]) .." ".. row.date or L["Unknown"], 1,1,1, 1,1,1)
+	tip:AddDoubleLine(L["Loot won:"], data.lootWon or L["Unknown"], 1,1,1, 1,1,1)
 	if data.itemReplaced1 then
 		tip:AddDoubleLine(L["Item(s) replaced:"], data.itemReplaced1, 1,1,1)
 		if data.itemReplaced2 then
@@ -355,8 +356,8 @@ function LootHistory:UpdateMoreInfo(rowFrame, cellFrame, dat, cols, row, realrow
 	end
 	tip:AddDoubleLine(L["Dropped by:"], data.boss or L["Unknown"], 1,1,1, 0.862745, 0.0784314, 0.235294)
 	tip:AddDoubleLine(L["From:"], data.instance or L["Unknown"], 1,1,1, 0.823529, 0.411765, 0.117647)
-	tip:AddDoubleLine("Votes:", data.votes or L["Unknown"], 1,1,1, 1,1,1)
-	tip:AddDoubleLine(L["Items won:"], numLootWon[row.name], 1,1,1, 0,1,0)
+	tip:AddDoubleLine(L["Votes"]..":", data.votes or L["Unknown"], 1,1,1, 1,1,1)
+	tip:AddDoubleLine(L["Total items won:"], numLootWon[row.name], 1,1,1, 0,1,0)
 
 	-- Debug stuff
 	if addon.debug then
@@ -366,7 +367,6 @@ function LootHistory:UpdateMoreInfo(rowFrame, cellFrame, dat, cols, row, realrow
 		tip:AddDoubleLine("isAwardReason:", tostring(data.isAwardReason), 1,1,1, 1,1,1)
 		tip:AddDoubleLine("color:", data.color and data.color[1]..", "..data.color[2]..", "..data.color[3] or "none", 1,1,1, 1,1,1)
 	end
-
 	tip:SetScale(db.UI.history.scale)
 	tip:Show()
 	tip:SetAnchorType("ANCHOR_RIGHT", 0, -tip:GetHeight())
