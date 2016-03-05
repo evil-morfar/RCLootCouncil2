@@ -279,9 +279,10 @@ function RCLootCouncilML:OnCommReceived(prefix, serializedMsg, distri, sender)
 				-- Someone asks for mldb, council and candidates
 				addon:SendCommand(sender, "MLdb", addon.mldb)
 				addon:SendCommand(sender, "council", db.council)
-				addon:SendCommand(sender, "candidates", self.candidates)
+				--NOTE: For some reason this can silently fail, but adding a 1 sec timer on the rest of the calls seems to fix it
+				addon:ScheduleTimer("SendCommand", 1, sender, "candidates", self.candidates)
 				if self.running then -- Resend lootTable
-					addon:SendCommand(sender, "lootTable", self.lootTable)
+					addon:ScheduleTimer("SendCommand", 1, sender, "lootTable", self.lootTable)
 				end
 				addon:Debug("Responded to reconnect from", sender)
 			end
