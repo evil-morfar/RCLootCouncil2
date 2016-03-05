@@ -54,7 +54,7 @@ function RCLootCouncil:OnInitialize()
   	self.version = GetAddOnMetadata("RCLootCouncil2", "Version")
 	self.nnp = false
 	self.debug = false
-	self.tVersion = "Alpha.9" -- String or nil. Indicates test version, which alters stuff like version check. Is appended to 'version', i.e. "version-tVersion"
+	self.tVersion = "Alpha.10" -- String or nil. Indicates test version, which alters stuff like version check. Is appended to 'version', i.e. "version-tVersion"
 
 	self.playerClass = select(2, UnitClass("player"))
 	self.guildRank = L["Unguilded"]
@@ -264,7 +264,7 @@ function RCLootCouncil:OnEnable()
 		self:SendCommand("guild", "verTest", self.version, self.tVersion) -- send out a version check
 	end
 
-	if not self.db.global.tVersion or self.db.global.tVersion ~= self.tVersion then -- First time install
+	if self.tVersion and (not self.db.global.tVersion or self.db.global.tVersion ~= self.tVersion) then -- First time install
 		-- Show a 5 sec delayed message on how to revert to latest Release version.
 		self:ScheduleTimer("Print", 5, format("You're running |cFF87CEFARCLootCouncil |cFFFFFFFFv|cFFFFA5002.0.0-%s|r. If you didn't download this intentionally please set 'Preferred Release Type' to 'Release' in your Curse Client, and update.", self.tVersion))
 		if self.db.global.tVersion and self.db.global.tVersion < "Alpha.4" then -- TODO Just in case I forget to remove it
