@@ -6,7 +6,6 @@ TODOs/Notes
 	Things marked with "todo"
 !!		- "more info" thingie
 !!!	- lootHistory
-				Store class in loot history
 		- Revise DB variables
 		- IDEA add an observer/council string to show players their role?
 		- If we truly want to be able to edit votingframe scrolltable with modules, it needs to have GetCol by name
