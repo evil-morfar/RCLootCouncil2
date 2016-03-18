@@ -951,16 +951,19 @@ function RCLootCouncil.TranslateRole(role) -- reasons
 	return (role and role ~= "") and RCLootCouncil.roleTable[role] or ""
 end
 
-function RCLootCouncil:GetGuildRankNum(name)
-	self:DebugLog("GetGuildRankNum("..tostring(name)..")")
+--- GetGuildRanks
+-- Returns a lookup table containing GuildRankNames and their index
+-- @return table "GuildRankName" = rankIndex
+function RCLootCouncil:GetGuildRanks()
+	if not IsInGuild() then return {} end
+	self:DebugLog("GetGuildRankNum()")
 	GuildRoster()
-	for i = 1, GetNumGuildMembers(true) do
-		local n, rank, rankIndex = GetGuildRosterInfo(i)
-		if n == name then
-			return rankIndex, rank;
-		end
+	local t = {}
+	for i = 1, GuildControlGetNumRanks() do
+		local name = GuildControlGetRankName(i)
+		t[name] = i
 	end
-	return 100; -- fallback
+	return t;
 end
 
 function RCLootCouncil:GetNumberOfDaysFromNow(oldDate)

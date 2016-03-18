@@ -25,6 +25,7 @@ local keys = {} -- Lookup table for cols
 local menuFrame -- Right click menu frame
 local filterMenu -- Filter drop down menu
 local enchanters -- Enchanters drop down menu frame
+local guildRanks = {} -- returned from addon:GetGuildRanks()
 
 --@debug@
 function LOOTTABLE()
@@ -36,11 +37,11 @@ function RCVotingFrame:OnInitialize()
 	self.scrollCols = {
 		{ name = "",															sortnext = 2,		width = 20, },	-- 1 Class
 		{ name = L["Name"],																			width = 130,},	-- 2 Candidate Name
-		{ name = L["Rank"],													sortnext = 5,		width = 100,},	-- 3 Guild rank
+		{ name = L["Rank"],		comparesort = GuildRankSort,		sortnext = 5,		width = 100,},	-- 3 Guild rank
 		{ name = L["Role"],													sortnext = 5,		width = 60, },	-- 4 Role
-		{ name = L["Response"],	comparesort = self.ResponseSort, sortnext = 13,		width = 250,},	-- 5 Response
+		{ name = L["Response"],	comparesort = ResponseSort,		sortnext = 13,		width = 250,},	-- 5 Response
 		{ name = L["ilvl"],													sortnext = 7,		width = 40, },	-- 6 Total ilvl
-		{ name = L["Diff"],																			width = 40, },	-- 7 ilvl difference
+		{ name = L["Diff"],													sortnext = 3,		width = 40, },	-- 7 ilvl difference
 		{ name = L["g1"],			align = "CENTER",						sortnext = 5,		width = 20, },	-- 8 Current gear 1
 		{ name = L["g2"],			align = "CENTER",						sortnext = 5,		width = 20, },	-- 9 Current gear 2
 		{ name = L["Votes"], 	align = "CENTER",						sortnext = 7,		width = 40, },	-- 10 Number of votes
@@ -148,6 +149,7 @@ function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
 				else
 					addon:Print(L['A new session has begun, type "/rc open" to open the voting frame.'])
 				end
+				guildRanks = addon:GetGuildRanks() -- Just update it on every session
 
 			elseif command == "response" then
 				local session, name, t = unpack(data)
@@ -739,10 +741,12 @@ function RCVotingFrame.filterFunc(table, row)
 	end
 end
 
-function RCVotingFrame.ResponseSort(table, rowa, rowb, sortbycol)
+local function ResponseSort(table, rowa, rowb, sortbycol)
+	addon:Debug("Sorting a,b:",rowa,rowb)
+	if type(rowa) == "table" then printtable(rowa) end
 	local column = table.cols[sortbycol]
-	rowa, rowb = table:GetRow(rowa), table:GetRow(rowb);
-	local a, b = addon:GetResponseSort(lootTable[session].candidates[rowa.name].response), addon:GetResponseSort(lootTable[session].candidates[rowb.name].response)
+	local a, b = table:GetRow(rowa), table:GetRow(rowb);
+	a, b = addon:GetResponseSort(lootTable[session].candidates[a.name].response), addon:GetResponseSort(lootTable[session].candidates[b.name].response)
 	if a == b then
 		if column.sortnext then
 			local nextcol = table.cols[column.sortnext];
@@ -761,6 +765,34 @@ function RCVotingFrame.ResponseSort(table, rowa, rowb, sortbycol)
 			return a < b;
 		else
 			return a > b;
+		end
+	end
+end
+
+local function GuildRankSort(table, rowa, rowb, sortbycol)
+	local column = table.cols[sortbycol]
+	local a, b = table:GetRow(rowa), table:GetRow(rowb);
+	-- Extract the rank index from the name, fallback to 100 if not found
+	a = guildRanks[lootTable[session].candidates[a.name].rank] or 100
+	b = guildRanks[lootTable[session].candidates[b.name].rank] or 100
+	if a == b then
+		if column.sortnext then
+			local nextcol = table.cols[column.sortnext];
+			if not(nextcol.sort) then
+				if nextcol.comparesort then
+					return nextcol.comparesort(table, rowa, rowb, column.sortnext);
+				else
+					return table:CompareSort(rowa, rowb, column.sortnext);
+				end
+			end
+		end
+		return false
+	else
+		local direction = column.sort or column.defaultsort or "asc";
+		if direction:lower() == "asc" then
+			return a > b;
+		else
+			return a < b;
 		end
 	end
 end
