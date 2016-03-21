@@ -1128,6 +1128,10 @@ function RCLootCouncil:Getdb()
 	return db
 end
 
+function RCLootCouncil:GetLootDB()
+	return historyDB
+end
+
 function RCLootCouncil:GetAnnounceChannel(channel)
 	return channel == "group" and (IsInRaid() and "RAID" or "PARTY") or channel
 end
