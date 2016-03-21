@@ -396,12 +396,12 @@ function RCLootCouncil:ChatCommand(msg)
 		self:CallModule("version")
 
 	elseif input == "history" or input == L["history"] or input == "h" or input == "his" then
-		--self:CallModule("history")
-
+		self:CallModule("history")
+--@debug@
 	elseif input == "nnp" then
 		self.nnp = not self.nnp
 		self:Print("nnp = "..tostring(self.nnp))
-
+--@end-debug@
 	elseif input == "whisper" or input == L["whisper"] then
 		self:Print(L["whisper_help"])
 
@@ -448,10 +448,10 @@ function RCLootCouncil:ChatCommand(msg)
 	elseif input == "clearlog" then
 		wipe(debugLog)
 		self:Print("Debug Log cleared.")
-
-	elseif input == 't' and self.nnp then -- Tester cmd
-		printtable(db.council)
-
+--@debug@
+	elseif input == 't' then -- Tester cmd
+		printtable(historyDB)
+--@end-debug@
 	else
 		self:ChatCommand("help")
 	end
@@ -1128,6 +1128,10 @@ function RCLootCouncil:Getdb()
 	return db
 end
 
+function RCLootCouncil:GetHistoryDB()
+	return historyDB
+end
+
 function RCLootCouncil:GetAnnounceChannel(channel)
 	return channel == "group" and (IsInRaid() and "RAID" or "PARTY") or channel
 end
@@ -1205,7 +1209,7 @@ end
 
 --- Used as a "DoCellUpdate" function for lib-st
 function RCLootCouncil.SetCellClassIcon(rowFrame, frame, data, cols, row, realrow, column, fShow, table, class)
-	local celldata = data[realrow].cols[column]
+	local celldata = data[realrow].cols and data[realrow].cols[column] or data[realrow][column]
 	local class = celldata.args and celldata.args[1] or class
 	if class then
 		frame:SetNormalTexture("Interface\\GLUES\\CHARACTERCREATE\\UI-CHARACTERCREATE-CLASSES"); -- this is the image containing all class icons
@@ -1221,7 +1225,7 @@ function RCLootCouncil:GetClassColor(class)
 	local color = RAID_CLASS_COLORS[class]
 	if not color then
 		-- if class not found, return epic color.
-		return {["r"] = 0.63921568627451, ["g"] = 0.2078431372549, ["b"] = 0.93333333333333, ["a"] = 1.0 };
+		return {r=1,g=1,b=1,a=1}--{["r"] = 0.63921568627451, ["g"] = 0.2078431372549, ["b"] = 0.93333333333333, ["a"] = 1.0 };
 	else
 		color.a = 1.0
 		return color
