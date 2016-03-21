@@ -4,8 +4,6 @@
 --	votingFrame.lua	Displays everything related to handling loot for all members.
 --		Will only show certain aspects depending on addon.isMasterLooter, addon.isCouncil and addon.mldb.observe
 
--- IDEA We're not sorting by guild rank, would require a change to how guild rank is sent
-
 local addon = LibStub("AceAddon-3.0"):GetAddon("RCLootCouncil")
 RCVotingFrame = addon:NewModule("RCVotingFrame", "AceComm-3.0")
 local LibDialog = LibStub("LibDialog-1.0")
@@ -26,6 +24,7 @@ local menuFrame -- Right click menu frame
 local filterMenu -- Filter drop down menu
 local enchanters -- Enchanters drop down menu frame
 local guildRanks = {} -- returned from addon:GetGuildRanks()
+local hasEnchanter = false -- Do we have an enchanter in the group?
 
 --@debug@
 function LOOTTABLE()
@@ -93,6 +92,7 @@ function RCVotingFrame:EndSession(hide)
 	active = false -- The session has ended, so deactivate
 	self:Update()
 	if hide then self:Hide() end -- Hide if need be
+	hasEnchanter = false -- Reset incase group changes
 end
 
 function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
@@ -203,6 +203,9 @@ function RCVotingFrame:Setup(table)
 				voters = {},
 				haveVoted = false, -- Have we voted for this particular candidate in this session?
 			}
+			if v.enchanter then -- Check if anyone is an enchanter
+				hasEnchanter = true
+			end
 		end
 		-- Init session toggle
 		sessionButtons[session] = self:UpdateSessionButton(session, t.texture, t.link, t.awarded)
@@ -213,6 +216,10 @@ function RCVotingFrame:Setup(table)
 		sessionButtons[i]:Hide()
 	end
 	session = 1
+	-- Check if we have enchanters
+	for name, v in pairs(candidates) do
+
+	end
 	self:BuildST()
 	self:SwitchSession(session)
 end
@@ -253,26 +260,23 @@ function RCVotingFrame:Update()
 	else
 		self.frame.awardString:Hide()
 	end
-	-- Update close button text
-	if addon.isMasterLooter and active then
-		self.frame.abortBtn:SetText(L["Abort"])
-	else
-		self.frame.abortBtn:SetText(L["Close"])
-	end
-	-- update disenchant button
-	if db.disenchant then -- Don't bother if we don't use it
-		-- Check if all rows are hidden
-		local allHidden = true
-		for row in ipairs(self.frame.st.filtered) do
-			if row then allHidden = false end
-		end
-		if allHidden then
-			self.frame.disenchant:Show()
+	-- This only applies to the ML
+	if addon.isMasterLooter then
+		-- Update close button text
+		if active then
+			self.frame.abortBtn:SetText(L["Abort"])
 		else
-			self.frame.disenchant:Hide()
+			self.frame.abortBtn:SetText(L["Close"])
+		end
+		-- update disenchant button
+		if db.disenchant then -- Don't bother if we don't use it
+			if hasEnchanter then
+				self.frame.disenchant:Show()
+			else
+				self.frame.disenchant:Hide()
+			end
 		end
 	end
-
 end
 
 function RCVotingFrame:SwitchSession(s)

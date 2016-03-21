@@ -1,3 +1,10 @@
+====== Alpha11 changes ======
+*The Disenchant button is now always shown if there's an enchanter in the group, and an award reason is selected for disenchanting.
+
+*Bugfixes
+*//The disenchant button could be visible for everyone.//
+
+
 ====== Alpha10 changes ======
 *Bumped max buttons and awardReasons to 10.
 *Asking someone to reroll while they're already rolling now adds the new rolls to the list instead of replacing it.
