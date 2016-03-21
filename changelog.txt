@@ -1,4 +1,9 @@
 ====== Alpha11 changes ======
+*++Enabled LootHistory++
+*The Loot History is now back in a refreshed form. There's been some changes since the launch of the v2.0 alpha, hence class specific
+things won't show for your old history, and you're encouraged to delete your history to get the optimal experience. Note: Exporting
+the Loot History will come in a later update, go find the ticket on Curse to specify which export formats you want.
+
 *The Disenchant button is now always shown if there's an enchanter in the group, and an award reason is selected for disenchanting.
 
 *Bugfixes
