@@ -232,7 +232,6 @@ L["Raid Warning"] = true
 L["Raid"] = true
 L["Rank"] = true
 L["RCLootCouncil Loot Frame"] = true
-L["RCLootCouncil Loot History"] = true
 L["RCLootCouncil Session Setup"] = true
 L["RCLootCouncil Version Checker"] = true
 L["RCLootCouncil Voting Frame"] = true
