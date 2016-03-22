@@ -5,6 +5,7 @@ things won't show for your old history, and you're encouraged to delete your his
 the Loot History will come in a later update, go find the ticket on Curse to specify which export formats you want.
 
 *The Disenchant button is now always shown if there's an enchanter in the group, and an award reason is selected for disenchanting.
+*Guildrank sorting is now done according to the actual rank instead of alphabetically.
 
 *Bugfixes
 *//The disenchant button could be visible for everyone.//
