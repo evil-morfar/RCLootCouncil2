@@ -13,7 +13,7 @@ the Loot History will come in a later update, go find the ticket on Curse to spe
 *It's now possible to see the realm name of a player from a different realm throughout the addon.
 
 *Bugfixes
-*//The disenchant button could be visible for everyone.//
+*//The disenchant button is now only visable to the Master Looter.//
 
 
 ====== Alpha10 changes ======
@@ -148,9 +148,8 @@ the Loot History will come in a later update, go find the ticket on Curse to spe
       for anyone to add custom features to the core addon.
 
 *  ++Disenchant button++
-**    You'll get a "Disenchant" button if all responses are filtered in the voting frame. Clicking it will show a list
-      of enchanters in your group (if any), and clicking a name will award the item to that player with the reason selected
-      for disenchant in "Award Reasons".
+**    You'll get a "Disenchant" button in the voting frame. Clicking it will show a list of enchanters in your group (if any),
+      and clicking a name will award the item to that player with the reason selected for disenchant in "Award Reasons".
 
 *  --Limits--
 **    No more 20 item limit per session (not that you're gonna need that), no more "award in this particular order" limit,
