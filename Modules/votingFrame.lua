@@ -24,7 +24,6 @@ local menuFrame -- Right click menu frame
 local filterMenu -- Filter drop down menu
 local enchanters -- Enchanters drop down menu frame
 local guildRanks = {} -- returned from addon:GetGuildRanks()
-local hasEnchanter = false -- Do we have an enchanter in the group?
 
 --@debug@
 function LOOTTABLE()
@@ -92,7 +91,6 @@ function RCVotingFrame:EndSession(hide)
 	active = false -- The session has ended, so deactivate
 	self:Update()
 	if hide then self:Hide() end -- Hide if need be
-	hasEnchanter = false -- Reset incase group changes
 end
 
 function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
@@ -203,9 +201,6 @@ function RCVotingFrame:Setup(table)
 				voters = {},
 				haveVoted = false, -- Have we voted for this particular candidate in this session?
 			}
-			if v.enchanter then -- Check if anyone is an enchanter
-				hasEnchanter = true
-			end
 		end
 		-- Init session toggle
 		sessionButtons[session] = self:UpdateSessionButton(session, t.texture, t.link, t.awarded)
@@ -268,14 +263,10 @@ function RCVotingFrame:Update()
 		else
 			self.frame.abortBtn:SetText(L["Close"])
 		end
-		-- update disenchant button
-		if db.disenchant then -- Don't bother if we don't use it
-			if hasEnchanter then
-				self.frame.disenchant:Show()
-			else
-				self.frame.disenchant:Hide()
-			end
-		end
+		self.frame.disenchant:Show()
+	else -- Non-MLs:
+		self.frame.abortBtn:SetText(L["Close"])
+		self.frame.disenchant:Hide()
 	end
 end
 
@@ -452,7 +443,8 @@ function RCVotingFrame:GetFrame()
 	b4 = addon:CreateButton(L["Disenchant"], f.content)
 	b4:SetPoint("RIGHT", b3, "LEFT", -10, 0)
 	b4:SetScript("OnClick", function(self) Lib_ToggleDropDownMenu(1, nil, enchanters, self, 0, 0) end )
-	b4:Hide() -- hidden by default
+	--b4:SetNormalTexture("Interface\\Icons\\INV_Enchant_Disenchant")
+--	b4:Hide() -- hidden by default
 	f.disenchant = b4
 
 	-- Number of votes
@@ -1016,6 +1008,9 @@ do
 		if level == 1 then
 			local added = false
 			info = Lib_UIDropDownMenu_CreateInfo()
+			if not db.disenchant then
+				return addon:Print("You haven't selected an award reason to use for disenchanting!")
+			end
 			for name, v in pairs(candidates) do
 				if v.enchanter then
 					local c = addon:GetClassColor(v.class)
