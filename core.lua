@@ -1389,23 +1389,23 @@ end
 -- @paramsig index
 -- @param index The button's index
 function RCLootCouncil:GetButtonText(i)
-	return self.mldb.buttons[i] and self.mldb.buttons[i].text or db.buttons[i].text
+	return (self.mldb.buttons and self.mldb.buttons[i]) and self.mldb.buttons[i].text or db.buttons[i].text
 end
 
 --- The following functions returns the text, sort or color of a response, returning a result from mldb if possible, otherwise the default responses.
 -- @paramsig response
 -- @param response Index in db.responses
 function RCLootCouncil:GetResponseText(response)
-	return self.mldb.responses[response] and self.mldb.responses[response].text or db.responses[response].text
+	return (self.mldb.responses and self.mldb.responses[response]) and self.mldb.responses[response].text or db.responses[response].text
 end
 
 function RCLootCouncil:GetResponseColor(response)
-	local color = self.mldb.responses[response] and self.mldb.responses[response].color or db.responses[response].color
+	local color = (self.mldb.responses and self.mldb.responses[response]) and self.mldb.responses[response].color or db.responses[response].color
 	return unpack(color)
 end
 
 function RCLootCouncil:GetResponseSort(response)
-	return self.mldb.responses[response] and self.mldb.responses[response].sort or db.responses[response].sort
+	return (self.mldb.responses and self.mldb.responses[response]) and self.mldb.responses[response].sort or db.responses[response].sort
 end
 
 --#end UI Functions -----------------------------------------------------
