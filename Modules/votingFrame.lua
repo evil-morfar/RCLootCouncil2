@@ -307,6 +307,7 @@ function RCVotingFrame:SwitchSession(s)
 		self.frame.st.cols[i].sort = nil
 	end
 	self.frame.st.cols[5].sort = "asc"
+	FauxScrollFrame_OnVerticalScroll(self.frame.st.scrollframe, 0, self.frame.st.rowHeight, function() self.frame.st:Refresh() end) -- Reset scrolling to 0
 	self:Update()
 	self:UpdatePeopleToVote()
 end
