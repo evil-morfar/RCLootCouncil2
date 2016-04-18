@@ -40,7 +40,7 @@ function RCVotingFrame:OnInitialize()
 		{ name = L["Role"],													sortnext = 5,		width = 60, },	-- 4 Role
 		{ name = L["Response"],	comparesort = ResponseSort,		sortnext = 13,		width = 250,},	-- 5 Response
 		{ name = L["ilvl"],													sortnext = 7,		width = 40, },	-- 6 Total ilvl
-		{ name = L["Diff"],													sortnext = 3,		width = 40, },	-- 7 ilvl difference
+		{ name = L["Diff"],																			width = 40, },	-- 7 ilvl difference
 		{ name = L["g1"],			align = "CENTER",						sortnext = 5,		width = 20, },	-- 8 Current gear 1
 		{ name = L["g2"],			align = "CENTER",						sortnext = 5,		width = 20, },	-- 9 Current gear 2
 		{ name = L["Votes"], 	align = "CENTER",						sortnext = 7,		width = 40, },	-- 10 Number of votes
