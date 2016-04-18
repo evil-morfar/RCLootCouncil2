@@ -15,7 +15,7 @@ data[date][playerName] = {
 	}
 }
 ]]
-local selectedDate, selectedName, filterDrop, moreInfo
+local selectedDate, selectedName, filterMenu, moreInfo
 local ROW_HEIGHT = 20;
 local NUM_ROWS = 15;
 
@@ -27,8 +27,8 @@ function LootHistory:OnInitialize()
 		{name = L["Item"],		width = 250, 				}, 	-- Item string
 		{name = L["Reason"],		width = 230, comparesort = self.ResponseSort, sort = "asc", sortnext = 2},	-- Response aka the text supplied to lootDB...response
 	}
-	--filterMenu = CreateFrame("Frame", "RCLootCouncil_LootHistory_FilterMenu", UIParent, "Lib_UIDropDownMenuTemplate")
-	--Lib_UIDropDownMenu_Initialize(filterMenu, self.FilterMenu, "MENU")
+	filterMenu = CreateFrame("Frame", "RCLootCouncil_LootHistory_FilterMenu", UIParent, "Lib_UIDropDownMenuTemplate")
+	Lib_UIDropDownMenu_Initialize(filterMenu, self.FilterMenu, "MENU")
 	--MoreInfo
 	self.moreInfo = CreateFrame( "GameTooltip", "RCLootHistoryMoreInfo", nil, "GameTooltipTemplate" )
 end
@@ -47,6 +47,7 @@ function LootHistory:OnDisable()
 	self:Hide()
 	self.frame:SetParent(nil)
 	self.frame = nil
+	data = {}
 end
 
 function LootHistory:Show()
@@ -110,6 +111,7 @@ function LootHistory:BuildData()
 					class = x.class,
 					name = name,
 					num = num,
+					response = i.responseID,
 					cols = {
 						{DoCellUpdate = addon.SetCellClassIcon, args = {x.class}},
 						{value = addon.Ambiguate(name), color = addon:GetClassColor(x.class)},
@@ -144,15 +146,25 @@ function LootHistory:BuildData()
 end
 
 function LootHistory.FilterFunc(table, row)
+	local nameAndDate = true -- default to show everything
 	if selectedName and selectedDate then
-		return row.name == selectedName and row.date == selectedDate
+		nameAndDate = row.name == selectedName and row.date == selectedDate
 	elseif selectedName then
-		return row.name == selectedName
+		nameAndDate = row.name == selectedName
 	elseif selectedDate then
-		return row.date == selectedDate
-	else
-		return true -- show all rows when nothing's selected
+		nameAndDate = row.date == selectedDate
 	end
+
+	local responseFilter = true -- default to show
+	if not db.modules["RCLootHistory"].filters then return nameAndDate end -- db hasn't been initialized
+	local response = row.response
+	if response == "AUTOPASS" or response == "PASS" or type(response) == "number" then
+		responseFilter = db.modules["RCLootHistory"].filters[response]
+	else -- Filter out the status texts
+		responseFilter = db.modules["RCLootHistory"].filters["STATUS"]
+	end
+
+	return nameAndDate and responseFilter -- Either one can filter the entry
 end
 
 function LootHistory.SetCellGear(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
@@ -330,7 +342,7 @@ function LootHistory:GetFrame()
 	b3:SetScript("OnEnter", function() addon:CreateTooltip(L["Deselect responses to filter them"]) end)
 	b3:SetScript("OnLeave", addon.HideTooltip)
 	f.filter = b3
-	Lib_UIDropDownMenu_Initialize(b3, self.DateDrop)
+	Lib_UIDropDownMenu_Initialize(b3, self.FilterMenu)
 
 	-- Set a proper width
 	f:SetWidth(st.frame:GetWidth() + 20)
@@ -372,23 +384,64 @@ function LootHistory:UpdateMoreInfo(rowFrame, cellFrame, dat, cols, row, realrow
 	tip:SetAnchorType("ANCHOR_RIGHT", 0, -tip:GetHeight())
 end
 
+
+
 ---------------------------------------------------
 -- Dropdowns
 ---------------------------------------------------
-function LootHistory.DateDrop(menu, level)
-	local info = Lib_UIDropDownMenu_CreateInfo() -- Efficiency :)
-	if data then
-		for date in pairs(data) do
-			info = Lib_UIDropDownMenu_CreateInfo()
-			info.text = date
-			info.value = date
-			info.func = function()
-				selectedDate = date
-				addon:Debug("Selected date = ", date)
-				Lib_UIDropDownMenu_SetSelectedID(RCLootCouncil_LootHistory_DateDrop, RCLootCouncil_LootHistory_DateDrop:GetID())
-				LootHistory.frame.st:SortData()
+function LootHistory.FilterMenu(menu, level)
+	local info = Lib_UIDropDownMenu_CreateInfo()
+		if level == 1 then -- Redundant
+			-- Build the data table:
+			local data = {["STATUS"] = true, ["PASS"] = true, ["AUTOPASS"] = true}
+			for i = 1, addon.mldb.numButtons or db.numButtons do
+				data[i] = i
 			end
+			if not db.modules["RCLootHistory"].filters then -- Create the db entry
+				addon:DebugLog("Created LootHistory filters")
+				db.modules["RCLootHistory"].filters = {}
+			end
+			for k in pairs(data) do -- Update the db entry to make sure we have all buttons in it
+				if type(db.modules["RCLootHistory"].filters[k]) ~= "boolean" then
+					addon:Debug("Didn't contain "..k)
+					db.modules["RCLootHistory"].filters[k] = true -- Default as true
+				end
+			end
+			info.text = L["Filter"]
+			info.isTitle = true
+			info.notCheckable = true
+			info.disabled = true
 			Lib_UIDropDownMenu_AddButton(info, level)
+			info = Lib_UIDropDownMenu_CreateInfo()
+
+			for k in ipairs(data) do -- Make sure normal responses are on top
+				info.text = addon:GetResponseText(k)
+				info.colorCode = "|cff"..addon:RGBToHex(addon:GetResponseColor(k))
+				info.func = function()
+					addon:Debug("Update Filter")
+					db.modules["RCLootHistory"].filters[k] = not db.modules["RCLootHistory"].filters[k]
+					LootHistory:Update()
+				end
+				info.checked = db.modules["RCLootHistory"].filters[k]
+				Lib_UIDropDownMenu_AddButton(info, level)
+			end
+			for k in pairs(data) do -- A bit redundency, but it makes sure these "specials" comes last
+				if type(k) == "string" then
+					if k == "STATUS" then
+						info.text = L["Status texts"]
+						info.colorCode = "|cffde34e2" -- purpleish
+					else
+						info.text = addon:GetResponseText(k)
+						info.colorCode = "|cff"..addon:RGBToHex(addon:GetResponseColor(k))
+					end
+					info.func = function()
+						addon:Debug("Update Filter")
+						db.modules["RCLootHistory"].filters[k] = not db.modules["RCLootHistory"].filters[k]
+						LootHistory:Update()
+					end
+					info.checked = db.modules["RCLootHistory"].filters[k]
+					Lib_UIDropDownMenu_AddButton(info, level)
+				end
+			end
 		end
 	end
-end
