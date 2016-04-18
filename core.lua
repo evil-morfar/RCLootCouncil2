@@ -106,6 +106,7 @@ function RCLootCouncil:OnInitialize()
 				never = false,			-- Never enable
 				state = "ask_ml", 	-- Current state
 			},
+			ambiguate = false, -- Append realm names to players
 			autoStart = false, -- start a session with all eligible items
 			autoLoot = true, -- Auto loot equippable items
 			autolootEverything = true,
@@ -1379,10 +1380,10 @@ end
 
 --- Removes any realm name from name
 -- @paramsig name
--- @param name Name to remove realmname from
--- @return The name without realmname
+-- @param name Name with(out) realmname
+-- @return The name, with(out) realmname according to selected options
 function RCLootCouncil.Ambiguate(name)
-	return Ambiguate(name, "short")
+	return db.ambiguate and Ambiguate(name, "none") or Ambiguate(name, "short")
 end
 
 --- Returns the text of a button, returning settings from mldb, or default buttons

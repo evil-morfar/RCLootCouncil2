@@ -11,6 +11,7 @@ local L = LibStub("AceLocale-3.0"):NewLocale("RCLootCouncil", "enUS", true, debu
 if not L then return end
 
 L["A new session has begun, type '/rc open' to open the voting frame."] = true
+L["Append realm names"] = true
 L[" is not active in this raid."] = true
 L["Now handles looting"] = true
 L[" you are now the Master Looter and RCLootCouncil is now handling looting."] = true
@@ -114,6 +115,7 @@ L["chat_commands"] = [=[
 - winners   - Display the winners of awarded items looted to your inventory
 ]=]
 L["Check this to loot the items and distribute them later."] = true
+L["Check to append the realmname of a player from another realm"] = true
 L["Check to have all frames minimize when entering combat"] = true
 L["Choose when to use RCLootCouncil"] = true
 L["Clear Loot History"] = true

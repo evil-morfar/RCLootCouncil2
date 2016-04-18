@@ -103,8 +103,14 @@ function addon:OptionsTable()
 										desc = L["Check to have all frames minimize when entering combat"],
 										type = "toggle",
 									},
-									header = {
+									ambiguate = {
 										order = 4,
+										name = L["Append realm names"],
+										desc = L["Check to append the realmname of a player from another realm"],
+										type = "toggle",
+									},
+									header = {
+										order = 7,
 										type = "header",
 										name = "",
 										width = "half",
