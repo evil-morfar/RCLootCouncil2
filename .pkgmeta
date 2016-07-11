@@ -1,4 +1,4 @@
-package-as: RCLootCouncil2
+package-as: RCLootCouncil
 
 manual-changelog:
     filename: changelog.txt
