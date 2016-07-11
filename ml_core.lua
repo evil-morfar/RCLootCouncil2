@@ -56,8 +56,7 @@ end
 function RCLootCouncilML:AddItem(item, bagged, slotIndex, index)
 	addon:DebugLog("ML:AddItem", item, bagged, slotIndex, index)
 	local name, link, rarity, ilvl, iMinLevel, type, subType, iStackCount, equipLoc, texture = GetItemInfo(item)
-	--TODO see if we need the == 0 check
-	self.lootTable[index or (#self.lootTable == 0 and 1 or #self.lootTable + 1)] = {
+	self.lootTable[index or #self.lootTable + 1] = {
 		["bagged"]		= bagged,
 		["lootSlot"]	= slotIndex,
 		["awarded"]		= false,
@@ -65,7 +64,6 @@ function RCLootCouncilML:AddItem(item, bagged, slotIndex, index)
 		["link"]			= link,
 		["quality"]		= rarity,
 		["ilvl"]			= ilvl,
-		--["type"]			= type, -- Prolly not needed
 		["subType"]		= subType,
 		["equipLoc"]	= equipLoc,
 		["texture"]		= texture,
@@ -75,7 +73,6 @@ function RCLootCouncilML:AddItem(item, bagged, slotIndex, index)
 	if not name then
 		self:ScheduleTimer("Timer", 1, "AddItem", item, bagged, slotIndex, #self.lootTable)
 		addon:Debug("Started timer:", "AddItem", "for", item)
-		--return
 	end
 end
 
@@ -250,7 +247,6 @@ function RCLootCouncilML:NewML(newML)
 end
 
 function RCLootCouncilML:Timer(type, ...)
-	addon:Debug("Timer: "..type.." passed.")
 	if type == "AddItem" then
 		self:AddItem(...)
 
