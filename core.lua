@@ -615,7 +615,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 				end
 
 			elseif command == "reroll" and self:UnitIsUnit(sender, self.masterLooter) and self.enabled then
-				self:Print(self.Ambiguate(sender), "has asked you to reroll") -- TODO
+				self:Print(format(L["'player' has asked you to reroll"], self.Ambiguate(sender)))
 				self:CallModule("lootframe")
 				self:GetActiveModule("lootframe"):ReRoll(unpack(data))
 
