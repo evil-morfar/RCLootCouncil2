@@ -1,3 +1,12 @@
+====== Alpha12 changes ======
+*Repacked. No longer named as "RCLootCouncil2". This is done in preparation for release. Note this change will overwrite any v.1.7.x settings.
+
+*Bugfixes
+*//The MasterLooters enchanting profession was never registered (#126).//
+*//Some times the MasterLooters settings was rejected resulting in empty Loot Frames (#124).//
+*//Cleaned up some globals.//
+
+
 ====== Alpha11 changes ======
 *++Enabled LootHistory++
 *The Loot History is now back in a refreshed form. There's been some changes since the launch of the v2.0 alpha, hence class specific

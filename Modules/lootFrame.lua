@@ -9,7 +9,6 @@ local LootFrame = addon:NewModule("RCLootFrame", "AceTimer-3.0")
 local LibDialog = LibStub("LibDialog-1.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 
-local isMinimized = false
 local items = {} -- item.i = {name, link, lvl, texture} (i == session)
 local entries = {}
 local ENTRY_HEIGHT = 75

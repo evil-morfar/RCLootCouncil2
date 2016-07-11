@@ -222,7 +222,7 @@ RCTokenTable = {
 
 	[89246] = "ShoulderSlot",
 	[89247] = "ShoulderSlot",
-	[89247] = "ShoulderSlot",
+	[89248] = "ShoulderSlot",
 
 	[89240] = "HandsSlot",
 	[89241] = "HandsSlot",
@@ -299,7 +299,7 @@ RCTokenTable = {
 
 	[71674] = "ShoulderSlot",
 	[71681] = "ShoulderSlot",
-	[71668] = "ShoulderSlot",
+	[71688] = "ShoulderSlot",
 
 		--Heroic
 	[71672] = "ChestSlot",

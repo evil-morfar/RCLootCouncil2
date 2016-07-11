@@ -24,7 +24,6 @@ RCLootCouncil:SetDefaultModuleState(false)
 
 -- Init shorthands
 local db, historyDB, debugLog;-- = self.db.profile, self.lootDB.factionrealm, self.db.global.log
-local testItems = {105473,105407,105513,105465,105482,104631,105450,105537,104554,105509,104412,105499,104476,104544,104495,105568,105594,105514,105479,104532,105639,104508,105621,}
 -- init modules
 local defaultModules = {
 	masterlooter =	"RCLootCouncilML",
@@ -49,10 +48,10 @@ local player_relogged = true -- Determines if we potentially need data from the 
 
 function RCLootCouncil:OnInitialize()
 	--IDEA Consider if we want everything on self, or just whatever modules could need.
-  	self.version = GetAddOnMetadata("RCLootCouncil2", "Version")
+  	self.version = GetAddOnMetadata("RCLootCouncil", "Version")
 	self.nnp = false
 	self.debug = false
-	self.tVersion = "Alpha.11" -- String or nil. Indicates test version, which alters stuff like version check. Is appended to 'version', i.e. "version-tVersion"
+	self.tVersion = "Alpha.12" -- String or nil. Indicates test version, which alters stuff like version check. Is appended to 'version', i.e. "version-tVersion"
 
 	self.playerClass = select(2, UnitClass("player"))
 	self.guildRank = L["Unguilded"]
@@ -263,7 +262,28 @@ function RCLootCouncil:OnEnable()
 		self:SendCommand("guild", "verTest", self.version, self.tVersion) -- send out a version check
 	end
 
-	if self.tVersion and (not self.db.global.tVersion or self.db.global.tVersion ~= self.tVersion) then -- First time install
+	-- Any upgrade to v2.0.0 or Alpha.12 needs a db reset and possibly lootDB import
+	if (self.db.global.version and self.db.global.version < "2.0.0") or (self.db.global.tVersion and self.db.global.tVersion < "Alpha.12") then -- Upgraded to v.2.0.0
+		self:Debug("First time v2.0.0 upgrade!")
+		local lootdb = {}
+		if self.db.factionrealm.lootDB then
+			self:Debug("Extracting old LootDB")
+			for k,v in pairs(self.db.factionrealm.lootDB) do
+				lootdb[k] = v
+			end
+			self:Debug("Done")
+		end
+		self:Debug("Resetting DB")
+		self.db:ResetDB("Default")
+		self:Debug("Done\nImporting LootDB")
+		for k,v in pairs(lootdb) do
+			self.lootDB.factionrealm[k] = v
+		end
+		self:Debug("Done")
+		self:Print("Your settings have been reset due to upgrading to v2.0.0")
+	end
+
+	if self.tVersion and (not self.db.global.tVersion or self.db.global.tVersion ~= self.tVersion) then -- First time install TODO Remove this on release
 		-- Show a 5 sec delayed message on how to revert to latest Release version.
 		self:ScheduleTimer("Print", 5, format("You're running |cFF87CEFARCLootCouncil |cFFFFFFFFv|cFFFFA5002.0.0-%s|r. If you didn't download this intentionally please set 'Preferred Release Type' to 'Release' in your Curse Client, and update.", self.tVersion))
 		if self.db.global.tVersion and self.db.global.tVersion < "Alpha.4" then -- TODO Just in case I forget to remove it
@@ -320,7 +340,7 @@ function RCLootCouncil:OnEnable()
 				end,
 			},
 			{	text = L["No"],
-				on_click = function(self)
+				on_click = function()
 					RCLootCouncil:Print(L[" is not active in this raid."])
 				end,
 			},
@@ -479,7 +499,7 @@ function RCLootCouncil:SendCommand(target, command, ...)
 
 	else
 		if self:UnitIsUnit(target,"player") then -- If target == "player"
-			self:OnCommReceived("RCLootCouncil", toSend, "WHISPER", self.playerName)
+			self:SendCommMessage("RCLootCouncil", toSend, "WHISPER", self.playerName)
 		else
 			-- We cannot send "WHISPER" to a crossrealm player
 			if target:find("-") then
@@ -492,7 +512,7 @@ function RCLootCouncil:SendCommand(target, command, ...)
 					self:SendCommMessage("RCLootCouncil", toSend, "RAID")
 				end
 
-			else -- Should never happen?
+			else -- Should never happen? TODO This happens every time we try to send a command to the ML from our own realm :(
 				self:Debug("WARNING!", "SendCommand target invalid", "target == "..target)
 				self:SendCommMessage("RCLootCouncil", toSend, "WHISPER", target)
 			end
@@ -668,6 +688,7 @@ function RCLootCouncil:DebugLog(msg, ...)
 end
 
 function RCLootCouncil:Test(num)
+	local testItems = {105473,105407,105513,105465,105482,104631,105450,105537,104554,105509,104412,105499,104476,104544,104495,105568,105594,105514,105479,104532,105639,104508,105621,}
 	local items = {};
 	-- pick "num" random items
 	for i = 1, num do
@@ -783,6 +804,18 @@ function RCLootCouncil:Timer(type, ...)
 	self:Debug("Timer "..type.." passed")
 	if type == "LocalizeSubTypes" then
 		self:LocalizeSubTypes()
+	elseif type == "MLdb_check" then
+		-- If we have a ML
+		if self.masterLooter then
+			-- But haven't received the mldb, then request it
+			if not self.mldb then
+				self:SendCommand(self.masterLooter, "MLdb_request")
+			end
+			-- and if we haven't received a council, request it
+			if not self.council then
+				self:SendCommand(self.masterLooter, "council_request")
+			end
+		end
 	end
 end
 
@@ -1072,6 +1105,7 @@ function RCLootCouncil:GetML()
 		return true, self.playerName
 	end
 	local lootMethod, mlPartyID, mlRaidID = GetLootMethod()
+	self:Debug("LootMethod = ", lootMethod)
 	if lootMethod == "master" then
 		local name;
 		if mlRaidID then 				-- Someone in raid
@@ -1082,6 +1116,8 @@ function RCLootCouncil:GetML()
 			name = self:UnitName("party"..mlPartyID)
 		end
 		self:Debug("MasterLooter = ", name)
+		-- Check to see if we have recieved mldb within 10 secs, otherwise request it
+		self:ScheduleTimer("Timer", 10, "MLdb_check")
 		return IsMasterLooter(), name
 	end
 	return false, nil;
@@ -1129,7 +1165,7 @@ function RCLootCouncil:Getdb()
 end
 
 function RCLootCouncil:GetHistoryDB()
-	return historyDB
+	return self.lootDB.factionrealm
 end
 
 function RCLootCouncil:GetAnnounceChannel(channel)

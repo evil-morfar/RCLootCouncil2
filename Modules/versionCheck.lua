@@ -4,11 +4,9 @@
 -- versionCheck.lua	Adds a Version Checker to check versions of either people in current raidgroup or guild
 
 local addon = LibStub("AceAddon-3.0"):GetAddon("RCLootCouncil")
-RCVersionCheck = addon:NewModule("RCVersionCheck", "AceTimer-3.0", "AceComm-3.0", "AceHook-3.0")
+local RCVersionCheck = addon:NewModule("RCVersionCheck", "AceTimer-3.0", "AceComm-3.0", "AceHook-3.0")
 local ST = LibStub("ScrollingTable")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
-
-local db, stData
 
 function RCVersionCheck:OnInitialize()
 	-- Initialize scrollCols on self so others can change it
@@ -21,7 +19,6 @@ function RCVersionCheck:OnInitialize()
 end
 
 function RCVersionCheck:OnEnable()
-	db = addon:Getdb()
 	self.frame = self:GetFrame()
 	self:RegisterComm("RCLootCouncil")
 	self:Show()

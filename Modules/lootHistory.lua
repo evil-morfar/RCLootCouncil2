@@ -4,7 +4,7 @@
 -- lootHistory.lua	Adds the interface for displaying the collected loot history
 
 local addon = LibStub("AceAddon-3.0"):GetAddon("RCLootCouncil")
-LootHistory = addon:NewModule("RCLootHistory")
+local LootHistory = addon:NewModule("RCLootHistory")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 local lootDB, scrollCols, data, db, numLootWon;
 --[[ data structure:
@@ -21,9 +21,9 @@ local NUM_ROWS = 15;
 
 function LootHistory:OnInitialize()
 	scrollCols = {
-		{name = "",				width = ROW_HEIGHT, },			-- Class icon, should be same row as player
+		{name = "",					width = ROW_HEIGHT, },			-- Class icon, should be same row as player
 		{name = L["Name"],		width = 100, 				},		-- Name of the player
-		{name = "",				width = ROW_HEIGHT, },			-- Item at index icon
+		{name = "",					width = ROW_HEIGHT, },			-- Item at index icon
 		{name = L["Item"],		width = 250, 				}, 	-- Item string
 		{name = L["Reason"],		width = 230, comparesort = self.ResponseSort, sort = "asc", sortnext = 2},	-- Response aka the text supplied to lootDB...response
 	}
@@ -64,7 +64,7 @@ function LootHistory:BuildData()
 	addon:Debug("LootHistory:BuildData()")
 	data = {}
 	numLootWon = {} -- playerName = #
-	local date, instance;
+	local date
 	-- We want to rebuild lootDB to the "data" format:
 	--local i = 1
 	for name, v in pairs(lootDB) do

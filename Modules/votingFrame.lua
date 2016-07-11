@@ -5,7 +5,7 @@
 --		Will only show certain aspects depending on addon.isMasterLooter, addon.isCouncil and addon.mldb.observe
 
 local addon = LibStub("AceAddon-3.0"):GetAddon("RCLootCouncil")
-RCVotingFrame = addon:NewModule("RCVotingFrame", "AceComm-3.0")
+local RCVotingFrame = addon:NewModule("RCVotingFrame", "AceComm-3.0")
 local LibDialog = LibStub("LibDialog-1.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 
@@ -19,17 +19,11 @@ local moreInfo = false -- Show more info frame?
 local active = false -- Are we currently in session?
 local candidates = {} -- Candidates for the loot, initial data from the ML
 local councilInGroup = {}
-local keys = {} -- Lookup table for cols
+local keys = {} -- Lookup table for cols TODO implement this
 local menuFrame -- Right click menu frame
 local filterMenu -- Filter drop down menu
 local enchanters -- Enchanters drop down menu frame
 local guildRanks = {} -- returned from addon:GetGuildRanks()
-
---@debug@
-function LOOTTABLE()
-	printtable(lootTable)
-end
---@end-debug@
 
 function RCVotingFrame:OnInitialize()
 	self.scrollCols = {
@@ -440,7 +434,7 @@ function RCVotingFrame:GetFrame()
 	f.filter = b3
 
 	-- Disenchant button
-	b4 = addon:CreateButton(L["Disenchant"], f.content)
+	local b4 = addon:CreateButton(L["Disenchant"], f.content)
 	b4:SetPoint("RIGHT", b3, "LEFT", -10, 0)
 	b4:SetScript("OnClick", function(self) Lib_ToggleDropDownMenu(1, nil, enchanters, self, 0, 0) end )
 	--b4:SetNormalTexture("Interface\\Icons\\INV_Enchant_Disenchant")

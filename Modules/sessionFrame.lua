@@ -4,11 +4,11 @@
 -- sessionFrame.lua	Adds a frame listing the items to start a session with.
 
 local addon = LibStub("AceAddon-3.0"):GetAddon("RCLootCouncil")
-RCSessionFrame = addon:NewModule("RCSessionFrame", "AceTimer-3.0")
+local RCSessionFrame = addon:NewModule("RCSessionFrame", "AceTimer-3.0")
 local ST = LibStub("ScrollingTable")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 
-local db, ml;
+local ml;
 local ROW_HEIGHT = 40
 local awardLater = false
 
@@ -21,7 +21,6 @@ function RCSessionFrame:OnInitialize()
 end
 
 function RCSessionFrame:OnEnable()
-	db = addon:Getdb()
 	ml = addon:GetActiveModule("masterlooter")
 end
 

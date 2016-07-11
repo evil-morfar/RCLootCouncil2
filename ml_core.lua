@@ -275,6 +275,9 @@ function RCLootCouncilML:OnCommReceived(prefix, serializedMsg, distri, sender)
 			elseif command == "MLdb_request" then
 				addon:SendCommand(sender, "MLdb", addon.mldb)
 
+			elseif command == "council_request" then
+				addon:SendCommand(sender, "council", db.council)
+
 			elseif command == "reconnect" and not addon:UnitIsUnit(sender, addon.playerName) then -- Don't receive our own reconnect
 				-- Someone asks for mldb, council and candidates
 				addon:SendCommand(sender, "MLdb", addon.mldb)
@@ -645,7 +648,7 @@ function RCLootCouncilML:GetItemsFromMessage(msg, sender)
 	-- Let's test the input
 	if not ses or type(ses) ~= "number" or ses > #self.lootTable then return end -- We need a valid session
 	-- Set some locals
-	local item1, item2, diff
+	local item1, item2
 	local response = 1
 	if arg1:find("|Hitem:") then -- they didn't give a response
 		item1, item2 = arg1, arg2
