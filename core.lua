@@ -1230,8 +1230,8 @@ end
 -- The custom module must have all functions that a default module can be called with
 -- @param type Index (string) in userModules
 -- @param The name passed to AceAddon:NewModule()
-function RCLootCouncil:RegisterUserModule(type, name) -- REVIEW Test this
-	assert(userModules[type], format("Module %s is not a default module.", tostring(type)))
+function RCLootCouncil:RegisterUserModule(type, name)
+	assert(defaultModules[type], format("Module \"%s\" is not a default module.", tostring(type)))
 	userModules[type] = name
 end
 
