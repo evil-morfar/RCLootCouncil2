@@ -512,8 +512,7 @@ function RCLootCouncil:SendCommand(target, command, ...)
 					self:SendCommMessage("RCLootCouncil", toSend, "RAID")
 				end
 
-			else -- Should never happen? TODO This happens every time we try to send a command to the ML from our own realm :(
-				self:Debug("WARNING!", "SendCommand target invalid", "target == "..target)
+			else
 				self:SendCommMessage("RCLootCouncil", toSend, "WHISPER", target)
 			end
 		end

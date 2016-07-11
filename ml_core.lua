@@ -139,7 +139,7 @@ function RCLootCouncilML:StartSession()
 	self:ScheduleTimer("Timer", 10, "LootSend")
 end
 
-function RCLootCouncilML:AddUserItem(item) -- TODO
+function RCLootCouncilML:AddUserItem(item) -- TODO 11/7 Not sure what's to be improved here
 	if self.running then return addon:Print(L["You're already running a session."]) end
 	self:AddItem(item, true)
 	addon:CallModule("sessionframe")
