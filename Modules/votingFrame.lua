@@ -53,6 +53,7 @@ function RCVotingFrame:OnEnable()
 	self:RegisterComm("RCLootCouncil")
 	db = addon:Getdb()
 	active = true
+	moreInfo = db.modules["RCVotingFrame"].moreInfo
 	self.frame = self:GetFrame()
 end
 
@@ -68,6 +69,7 @@ end
 
 function RCVotingFrame:Hide()
 	addon:Debug("Hide VotingFrame")
+	self.frame.moreInfo:Hide()
 	self.frame:Hide()
 end
 
@@ -324,6 +326,63 @@ function RCVotingFrame:BuildST()
 	self.frame.st:SetData(rows)
 end
 
+function RCVotingFrame:UpdateMoreInfo(row, data)
+	addon:Debug("MoreInfo:", moreInfo)
+	local name
+	if data then
+		name  = data[row].name
+	else -- Try to extract the name from the selected row
+		name = self.frame.st:GetSelection() and self.frame.st:GetRow(self.frame.st:GetSelection()).name or nil
+	end
+
+	if not moreInfo or not name then -- Hide the frame
+		return self.frame.moreInfo:Hide()
+	end
+
+	local color = addon:GetClassColor(self:GetCandidateData(session, name, "class"))
+	local tip = self.frame.moreInfo -- shortening
+	local count = {} -- Number of loot received
+	tip:SetOwner(self.frame, "ANCHOR_RIGHT")
+
+	--Extract loot history for that name
+	local lootDB = addon:GetHistoryDB()
+	local latestMsFound, entry = false, nil
+
+	-- Their name might be saved without realmname :/
+	local nameCheck
+	if lootDB[name] then
+		nameCheck = true
+	elseif  lootDB[addon.Ambiguate(name)] then
+		name = addon.Ambiguate(name)
+		nameCheck = true
+	end
+	tip:AddLine(addon.Ambiguate(name), color.r, color.g, color.b)
+	if nameCheck then -- they're in the DB!
+		tip:AddLine("")
+		for i = #lootDB[name], 1, -1 do -- Start from the end
+			entry = lootDB[name][i]
+			if entry.responseID == 1 and not latestMsFound and not entry.isAwardReason then -- Latest MS roll
+				tip:AddDoubleLine("Latest "..addon:GetResponseText(entry.responseID).." won:", entry.lootWon, 1,1,1, 1,1,1)
+				tip:AddDoubleLine(entry.time .. " " ..entry.date, addon:ConvertDateToString(addon:GetNumberOfDaysFromNow(entry.date)) .. " ago", 1,1,1, 1,1,1)
+				latestMsFound = true
+			end
+			count[entry.response] = count[entry.response] and count[entry.response] + 1 or 1
+
+		end -- end counting
+		local totalNum = 0
+		for response, num in pairs(count) do
+			tip:AddDoubleLine(response, num, 1,1,1, 1,1,1)
+			totalNum = totalNum + num
+		end
+		tip:AddDoubleLine("Total items received:", totalNum, 1,0.5,0.1, 0,1,1)
+	else
+		tip:AddLine("No entries in the Loot History")
+	end
+	tip:SetScale(db.UI.votingframe.scale-0.1) -- Make it a bit smaller, as it's too wide otherwise
+	tip:Show()
+	tip:SetAnchorType("ANCHOR_RIGHT", 0, -tip:GetHeight())
+end
+
 
 function RCVotingFrame:GetFrame()
 	if self.frame then return self.frame end
@@ -342,6 +401,8 @@ function RCVotingFrame:GetFrame()
 				else
 					addon:Print(L["You cannot use the menu when the session has ended."])
 				end
+			elseif button == "LeftButton" and row then -- Update more info
+				self:UpdateMoreInfo(realrow, data)
 			end
 			-- Return false to have the default OnClick handler take care of left clicks
 			return false
@@ -405,14 +466,20 @@ function RCVotingFrame:GetFrame()
 	end
 	f.abortBtn = b1
 
-	-- TODO More info button
-	--[[local b2 = CreateFrame("Button", nil, f.content, "UIPanelButtonTemplate")
+	-- More info button
+	local b2 = CreateFrame("Button", nil, f.content, "UIPanelButtonTemplate")
 	b2:SetSize(25,25)
 	b2:SetPoint("TOPRIGHT", f, "TOPRIGHT", -10, -20)
-	b2:SetNormalTexture("Interface\\Buttons\\UI-SpellbookIcon-NextPage-Up")
-	b2:SetPushedTexture("Interface\\Buttons\\UI-SpellbookIcon-NextPage-Down")
+	if moreInfo then
+		b2:SetNormalTexture("Interface\\Buttons\\UI-SpellbookIcon-PrevPage-Up");
+		b2:SetPushedTexture("Interface\\Buttons\\UI-SpellbookIcon-PrevPage-Down");
+	else
+		b2:SetNormalTexture("Interface\\Buttons\\UI-SpellbookIcon-NextPage-Up")
+		b2:SetPushedTexture("Interface\\Buttons\\UI-SpellbookIcon-NextPage-Down")
+	end
 	b2:SetScript("OnClick", function(button)
 		moreInfo = not moreInfo
+		db.modules["RCVotingFrame"].moreInfo = moreInfo
 		if moreInfo then -- show the more info frame
 			button:SetNormalTexture("Interface\\Buttons\\UI-SpellbookIcon-PrevPage-Up");
 			button:SetPushedTexture("Interface\\Buttons\\UI-SpellbookIcon-PrevPage-Down");
@@ -420,10 +487,13 @@ function RCVotingFrame:GetFrame()
 			button:SetNormalTexture("Interface\\Buttons\\UI-SpellbookIcon-NextPage-Up")
 			button:SetPushedTexture("Interface\\Buttons\\UI-SpellbookIcon-NextPage-Down")
 		end
+		self:UpdateMoreInfo()
 	end)
 	b2:SetScript("OnEnter", function() addon:CreateTooltip(L["Click to expand/collapse more info"]) end)
 	b2:SetScript("OnLeave", addon.HideTooltip)
-	f.moreInfoBtn = b2]]
+	f.moreInfoBtn = b2
+
+	f.moreInfo = CreateFrame( "GameTooltip", "RCVotingFrameMoreInfo", nil, "GameTooltipTemplate" )
 
 	-- Filter
 	local b3 = addon:CreateButton(L["Filter"], f.content)

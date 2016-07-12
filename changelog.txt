@@ -1,10 +1,15 @@
 ====== Alpha12 changes ======
 *Repacked. No longer named as "RCLootCouncil2". This is done in preparation for release. Note this change will overwrite any v.1.7.x settings.
-*It's no longer possible to start a session with items that isn't fully loaded.
+*It's no longer possible to start a session with items that aren't fully loaded.
+
+*++More Info in Voting Frame++
+*The Voting Frame now has a little button that enables you to see how many items with a given response a given player has received,
+along with the last item and how long since they received it.
 
 *Bugfixes
 *//The MasterLooters enchanting profession was never registered (#126).//
 *//Some times the MasterLooters settings was rejected resulting in empty Loot Frames (#124).//
+*//No longer tracks test awards in the Loot History.//
 *//Cleaned up some globals.//
 
 

@@ -110,6 +110,9 @@ function RCLootCouncil:OnInitialize()
 			autoLoot = true, -- Auto loot equippable items
 			autolootEverything = true,
 			autolootBoE = true,
+			autoOpen = true, -- auto open the voting frame
+			autoPassBoE = true,
+			autoPass = true,
 			altClickLooting = true,
 			acceptWhispers = true,
 			selfVote = true,
@@ -124,10 +127,7 @@ function RCLootCouncil:OnInitialize()
 			autoAwardTo = L["None"],
 			autoAwardReason = 1,
 			observe = false, -- observe mode on/off
-			autoOpen = true, -- auto open the voting frame
-			autoPass = true,
 			silentAutoPass = false, -- Show autopass message
-			autoPassBoE = true,
 			--neverML = false, -- Never use the addon as ML
 			minimizeInCombat = false,
 
@@ -1012,8 +1012,6 @@ function RCLootCouncil:ConvertDateToString(day, month, year)
 		text = format(L["days, x months, y years"], text, month, year)
 	elseif month > 0 then
 		text = format(L["days and x months"], text, month)
-	else
-		text = text.."."
 	end
 	return text;
 end
