@@ -333,6 +333,7 @@ L["Yes"] = true
 L["You are not allowed to see the Voting Frame right now."] = true
 L["You can only auto award items with a quality lower than 'quality' to yourself due to Blizaard restrictions"] = "You can only auto award items with a quality lower than %s to yourself due to Blizaard restrictions"
 L["You can't start a loot session while in combat."] = true
+L["You can't start a session before all items are loaded!"] = true
 L["You cannot initiate a test while in a group without being the MasterLooter."] = true
 L["You cannot use the menu when the session has ended."] = true
 L["You cannot use this command without being the Master Looter"] = true

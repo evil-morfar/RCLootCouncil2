@@ -1,5 +1,6 @@
 ====== Alpha12 changes ======
 *Repacked. No longer named as "RCLootCouncil2". This is done in preparation for release. Note this change will overwrite any v.1.7.x settings.
+*It's no longer possible to start a session with items that isn't fully loaded.
 
 *Bugfixes
 *//The MasterLooters enchanting profession was never registered (#126).//
