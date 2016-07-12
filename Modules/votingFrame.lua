@@ -362,8 +362,8 @@ function RCVotingFrame:UpdateMoreInfo(row, data)
 		for i = #lootDB[name], 1, -1 do -- Start from the end
 			entry = lootDB[name][i]
 			if entry.responseID == 1 and not latestMsFound and not entry.isAwardReason then -- Latest MS roll
-				tip:AddDoubleLine("Latest "..addon:GetResponseText(entry.responseID).." won:", entry.lootWon, 1,1,1, 1,1,1)
-				tip:AddDoubleLine(entry.time .. " " ..entry.date, addon:ConvertDateToString(addon:GetNumberOfDaysFromNow(entry.date)) .. " ago", 1,1,1, 1,1,1)
+				tip:AddDoubleLine(format(L["Latest 'item' won:"], addon:GetResponseText(entry.responseID)), entry.lootWon, 1,1,1, 1,1,1)
+				tip:AddDoubleLine(entry.time .. " " ..entry.date, format(L["'n days' ago"], addon:ConvertDateToString(addon:GetNumberOfDaysFromNow(entry.date))), 1,1,1, 1,1,1)
 				latestMsFound = true
 			end
 			count[entry.response] = count[entry.response] and count[entry.response] + 1 or 1
@@ -374,9 +374,9 @@ function RCVotingFrame:UpdateMoreInfo(row, data)
 			tip:AddDoubleLine(response, num, 1,1,1, 1,1,1)
 			totalNum = totalNum + num
 		end
-		tip:AddDoubleLine("Total items received:", totalNum, 1,0.5,0.1, 0,1,1)
+		tip:AddDoubleLine(L["Total items received:"], totalNum, 1,0.5,0.1, 0,1,1)
 	else
-		tip:AddLine("No entries in the Loot History")
+		tip:AddLine(L["No entries in the Loot History"])
 	end
 	tip:SetScale(db.UI.votingframe.scale-0.1) -- Make it a bit smaller, as it's too wide otherwise
 	tip:Show()
