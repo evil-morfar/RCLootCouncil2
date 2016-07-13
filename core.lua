@@ -4,12 +4,11 @@ core.lua	Contains core elements of the addon
 --------------------------------
 TODOs/Notes
 	Things marked with "todo"
-!!		- "more info" thingie
-		- Revise DB variables
 		- IDEA add an observer/council string to show players their role?
 		- If we truly want to be able to edit votingframe scrolltable with modules, it needs to have GetCol by name
 		- Pressing shift while hovering an item should do the same as vanilla
 		- The 4'th cell in @line81 in versionCheck should not be static
+		- Demon Hunter autopass
 --------------------------------
 CHANGELOG
 	-- SEE CHANGELOG.TXT
@@ -218,7 +217,7 @@ function RCLootCouncil:OnInitialize()
 	self.lootDB = LibStub("AceDB-3.0"):New("RCLootCouncilLootDB")
 	--[[ Format:
 	"playerName" = {
-		[#] = {"lootWon", "date (d/m/y)", "time (h:m:s)", "instance", "boss", "votes", "itemReplaced1", "itemReplaced2", "response", "responseID"}
+		[#] = {"lootWon", "date (d/m/y)", "time (h:m:s)", "instance", "boss", "votes", "itemReplaced1", "itemReplaced2", "response", "responseID", "color", "class", "isAwardReason"}
 	},
 	]]
 	self.db.RegisterCallback(self, "OnProfileChanged", "RefreshConfig")
@@ -238,7 +237,7 @@ function RCLootCouncil:OnInitialize()
 	-- add it to blizz options
 	self.optionsFrame = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("RCLootCouncil", "RCLootCouncil", nil, "settings")
 	self.optionsFrame.ml = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("RCLootCouncil", "Master Looter", "RCLootCouncil", "mlSettings")
-	-- Add some spacing and logged in message in the log
+	-- Add logged in message in the log
 	self:DebugLog("Logged In")
 end
 
@@ -308,11 +307,10 @@ function RCLootCouncil:OnEnable()
 	local filterFunc = function(_, event, msg, player, ...)
 		return strfind(msg, "[[RCLootCouncil]]:")
 	end
+	ChatFrame_AddMessageEventFilter("CHAT_MSG_WHISPER_INFORM", filterFunc)
 
 	self:LocalizeSubTypes()
 
-
-	ChatFrame_AddMessageEventFilter("CHAT_MSG_WHISPER_INFORM", filterFunc)
 	----------PopUp setups --------------
 	-------------------------------------
 	LibDialog:Register("RCLOOTCOUNCIL_CONFIRM_USAGE", {
@@ -381,9 +379,9 @@ function RCLootCouncil:ChatCommand(msg)
 		if self.tVersion then print(format(L["chat tVersion string"],self.version, self.tVersion))
 		else print(format(L["chat version String"],self.version)) end
 		self:Print(L["chat_commands"])
-		self:Debug(L["- debug or d - Toggle debugging"])
-		self:Debug(L["- log - display the debug log"])
-		self:Debug(L["- clearLog - clear the debug log"])
+		self:Debug("- debug or d - Toggle debugging")
+		self:Debug("- log - display the debug log")
+		self:Debug("- clearLog - clear the debug log")
 
 	elseif input == 'config' or input == L["config"] or input == "c" then
 		-- Call it twice, because reasons..
@@ -477,7 +475,8 @@ function RCLootCouncil:ChatCommand(msg)
 	end
 end
 
--- Send a Comm Message to a RCLootCouncil client using AceComm-3.0
+--- Send a RCLootCouncil Comm Message using AceComm-3.0
+-- See RCLootCouncil:OnCommReceived() on how to receive these messages.
 -- @param target The receiver of the message. Can be "group", "guild" or "playerName".
 -- @param command The command to send.
 -- @param vararg Any number of arguments to send along. Will be packaged as a table.
@@ -512,13 +511,22 @@ function RCLootCouncil:SendCommand(target, command, ...)
 					self:SendCommMessage("RCLootCouncil", toSend, "RAID")
 				end
 
-			else
+			else -- Should also be our own realm
 				self:SendCommMessage("RCLootCouncil", toSend, "WHISPER", target)
 			end
 		end
 	end
 end
 
+--- Receives RCLootCouncil commands
+-- Params are delivered by AceComm-3.0, but we need to extract our data created with the
+-- RCLootCouncil:SendCommand function.
+-- @usage
+-- To extract the original data using AceSerializer-3.0:
+-- -- local success, command, data = self:Deserialize(serializedMsg)
+-- 'data' is a table containing the varargs delivered to RCLootCouncil:SendCommand().
+-- To ensure correct handling of x-realm commands, include this line aswell:
+-- -- if RCLootCouncil:HandleXRealmComms(self, command, data, sender) then return end
 function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 	if prefix == "RCLootCouncil" then
 		self:DebugLog("Comm received:", serializedMsg, "from:", sender, "distri:", distri)
@@ -718,8 +726,8 @@ function RCLootCouncil:EnterCombat()
 	InterfaceOptionsFrameCancel:SetScript("OnClick", function()
 	 InterfaceOptionsFrameOkay:Click()
 	end)
-	if not db.minimizeInCombat then return end
 	self.inCombat = true
+	if not db.minimizeInCombat then return end
 	for _,frame in ipairs(frames) do
 		if frame:IsVisible() and not frame.combatMinimized then -- only minimize for combat if it isn't already minimized
 			self:Debug("Minimizing for combat")
@@ -732,8 +740,8 @@ end
 function RCLootCouncil:LeaveCombat()
 	-- Revert
 	InterfaceOptionsFrameCancel:SetScript("OnClick", interface_options_old_cancel)
-	if not db.minimizeInCombat then return end
 	self.inCombat = false
+	if not db.minimizeInCombat then return end
 	for _,frame in ipairs(frames) do
 		if frame.combatMinimized then -- Reshow it
 			self:Debug("Reshowing frame")
@@ -1132,13 +1140,13 @@ function RCLootCouncil:GetCouncilInGroup()
 	local council = {}
 	if IsInRaid() then
 		for k,v in ipairs(self.council) do
-			if UnitInRaid(self.Ambiguate(v)) then
+			if UnitInRaid(Ambiguate(v, "short")) then
 				tinsert(council, v)
 			end
 		end
 	elseif IsInGroup() then -- Party
 		for k,v in ipairs(self.council) do
-			if UnitInParty(self.Ambiguate(v)) then
+			if UnitInParty(Ambiguate(v, "short")) then
 				tinsert(council, v)
 			end
 		end
@@ -1169,6 +1177,7 @@ function RCLootCouncil:GetAnnounceChannel(channel)
 	return channel == "group" and (IsInRaid() and "RAID" or "PARTY") or channel
 end
 
+--- Custom, better UnitIsUnit() function
 -- Blizz UnitIsUnit() doesn't know how to compare unit-realm with unit
 -- Seems to be because unit-realm isn't a valid unitid
 function RCLootCouncil:UnitIsUnit(unit1, unit2)
@@ -1269,7 +1278,7 @@ function RCLootCouncil:RGBToHex(r,g,b)
 	return string.format("%02x%02x%02x",255*r, 255*g, 255*b)
 end
 
---- Creates a standard frame for RCLootCouncil title and content table.
+--- Creates a standard frame for RCLootCouncil with title, minimizuing, positioning and zoom support.
 --		Adds Minimize(), Maximize() and IsMinimized() functions on the frame, and registers it for hide on combat.
 --		SetWidth/SetHeight called on frame will also be called on frame.content
 --		Minimizing is done by double clicking the title. The returned frame and frame.title is NOT minimized.
@@ -1329,11 +1338,11 @@ function RCLootCouncil:CreateFrame(name, cName, title, width, height)
 
 	local c = CreateFrame("Frame", nil, f) -- frame that contains the actual content
 	c:SetBackdrop({
-	     --bgFile = "Interface\\DialogFrame\\UI-DialogBox-Gold-Background",
+	   --bgFile = "Interface\\DialogFrame\\UI-DialogBox-Gold-Background",
 		bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
-	     edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
-	     tile = true, tileSize = 64, edgeSize = 12,
-	     insets = { left = 2, right = 2, top = 2, bottom = 2 }
+	   edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+	   tile = true, tileSize = 64, edgeSize = 12,
+	   insets = { left = 2, right = 2, top = 2, bottom = 2 }
 	})
 	c:EnableMouse(true)
 	c:SetWidth(450)
