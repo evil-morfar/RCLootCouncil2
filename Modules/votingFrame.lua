@@ -340,7 +340,7 @@ function RCVotingFrame:UpdateMoreInfo(row, data)
 	end
 
 	local color = addon:GetClassColor(self:GetCandidateData(session, name, "class"))
-	local tip = self.frame.moreInfo -- shortening
+	addon:Debug("Class", self:GetCandidateData(session, name, "class")) tip = self.frame.moreInfo -- shortening
 	local count = {} -- Number of loot received
 	tip:SetOwner(self.frame, "ANCHOR_RIGHT")
 
@@ -357,24 +357,33 @@ function RCVotingFrame:UpdateMoreInfo(row, data)
 		nameCheck = true
 	end
 	tip:AddLine(addon.Ambiguate(name), color.r, color.g, color.b)
+	color = {} -- Color of the response
 	if nameCheck then -- they're in the DB!
 		tip:AddLine("")
 		for i = #lootDB[name], 1, -1 do -- Start from the end
 			entry = lootDB[name][i]
 			if entry.responseID == 1 and not latestMsFound and not entry.isAwardReason then -- Latest MS roll
-				tip:AddDoubleLine(format(L["Latest 'item' won:"], addon:GetResponseText(entry.responseID)), entry.lootWon, 1,1,1, 1,1,1)
+				tip:AddDoubleLine(format(L["Latest 'item' won:"], addon:GetResponseText(entry.responseID)), "", 1,1,1, 1,1,1)
+				tip:AddLine(entry.lootWon)
 				tip:AddDoubleLine(entry.time .. " " ..entry.date, format(L["'n days' ago"], addon:ConvertDateToString(addon:GetNumberOfDaysFromNow(entry.date))), 1,1,1, 1,1,1)
+				tip:AddLine(" ") -- Spacer
 				latestMsFound = true
 			end
 			count[entry.response] = count[entry.response] and count[entry.response] + 1 or 1
+			if not color[entry.response] or unpack(color[entry.response],1,3) == unpack({1,1,1}) and #entry.color ~= 0  then -- If it's not already added
+				addon:Debug(entry.response, entry.color, unpack(entry.color), #entry.color == 0)
+				color[entry.response] = #entry.color ~= 0 and #entry.color == 4 and entry.color or {1,1,1}
+			end
 
 		end -- end counting
 		local totalNum = 0
 		for response, num in pairs(count) do
-			tip:AddDoubleLine(response, num, 1,1,1, 1,1,1)
+			local r,g,b = unpack(color[response],1,3)
+			tip:AddDoubleLine(response, num, r,g,b, r,g,b) -- Make sure we don't add the alpha value
+			addon:Debug("Unpack:", response,num, "First:", r,g,b,"Second:", r,g,b)
 			totalNum = totalNum + num
 		end
-		tip:AddDoubleLine(L["Total items received:"], totalNum, 1,0.5,0.1, 0,1,1)
+		tip:AddDoubleLine(L["Total items received:"], totalNum, 0,1,1, 0,1,1)
 	else
 		tip:AddLine(L["No entries in the Loot History"])
 	end
