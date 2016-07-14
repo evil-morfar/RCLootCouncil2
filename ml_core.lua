@@ -416,7 +416,6 @@ function RCLootCouncilML:Award(session, winner, response, reason)
 			self.lootTable[session].awarded = true
 			if self:HasAllItemsBeenAwarded() then
 				 addon:Print(L["All items has been awarded and  the loot session concluded"])
-				 self:EndSession()
 			end
 		end
 		return true
@@ -605,7 +604,7 @@ function RCLootCouncilML:EndSession()
 	self:CancelAllTimers()
 	if addon.testMode then -- We need to undo our ML status
 		addon.testMode = false
-		addon:NewMLCheck()
+		addon:ScheduleTimer("NewMLCheck", 1) -- Delay it a bit
 	end
 	addon.testMode = false
 end
@@ -731,6 +730,8 @@ LibDialog:Register("RCLOOTCOUNCIL_CONFIRM_AWARD", {
 				if awarded then -- log it
 					RCLootCouncilML:TrackAndLogLoot(player, item, response, addon.target, votes, item1, item2, reason)
 				end
+				-- We need to delay the test mode disabling so comms have a chance to be send first!
+				if addon.testMode and RCLootCouncilML:HasAllItemsBeenAwarded() then RCLootCouncilML:EndSession() end
 			end,
 		},
 		{	text = L["No"],

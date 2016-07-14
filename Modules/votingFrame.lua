@@ -460,9 +460,9 @@ function RCVotingFrame:GetFrame()
 	local b1 = addon:CreateButton(L["Close"], f.content)
 	b1:SetPoint("TOPRIGHT", f, "TOPRIGHT", -10, -50)
 	if addon.isMasterLooter then
-		b1:SetScript("OnClick", function() if active then LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_ABORT") else f:Hide() end end)
+		b1:SetScript("OnClick", function() if active then LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_ABORT") else self:Hide() end end)
 	else
-		b1:SetScript("OnClick", function() f:Hide() end)
+		b1:SetScript("OnClick", function() self:Hide() end)
 	end
 	f.abortBtn = b1
 
