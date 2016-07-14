@@ -50,7 +50,7 @@ function RCLootCouncil:OnInitialize()
   	self.version = GetAddOnMetadata("RCLootCouncil", "Version")
 	self.nnp = false
 	self.debug = false
-	self.tVersion = "Alpha.12" -- String or nil. Indicates test version, which alters stuff like version check. Is appended to 'version', i.e. "version-tVersion"
+	self.tVersion = nil -- String or nil. Indicates test version, which alters stuff like version check. Is appended to 'version', i.e. "version-tVersion"
 
 	self.playerClass = select(2, UnitClass("player"))
 	self.guildRank = L["Unguilded"]
@@ -91,7 +91,7 @@ function RCLootCouncil:OnInitialize()
 	-- Option table defaults
 	self.defaults = {
 		global = {
-			logMaxEntries = 300,
+			logMaxEntries = 500,
 			log = {}, -- debug log
 			localizedSubTypes = {},
 		},
@@ -282,16 +282,7 @@ function RCLootCouncil:OnEnable()
 		self:Print("Your settings have been reset due to upgrading to v2.0.0")
 	end
 
-	if self.tVersion and (not self.db.global.tVersion or self.db.global.tVersion ~= self.tVersion) then -- First time install TODO Remove this on release
-		-- Show a 5 sec delayed message on how to revert to latest Release version.
-		self:ScheduleTimer("Print", 5, format("You're running |cFF87CEFARCLootCouncil |cFFFFFFFFv|cFFFFA5002.0.0-%s|r. If you didn't download this intentionally please set 'Preferred Release Type' to 'Release' in your Curse Client, and update.", self.tVersion))
-		if self.db.global.tVersion and self.db.global.tVersion < "Alpha.4" then -- TODO Just in case I forget to remove it
-			-- Once again due to rapid update, and lets check for all previous alphas
-			db.council = {} -- reset council due to Alpha4 changes
-			self:ScheduleTimer("Print", 6, "Your council have been reset due to recent changes in|cFFFFA500Alpha.4")
-		end
-	end
-	self.db.global.version = self.version;
+		self.db.global.version = self.version;
 	self.db.global.logMaxEntries = self.defaults.global.logMaxEntries -- reset it now for zzz
 
 	if self.tVersion then
