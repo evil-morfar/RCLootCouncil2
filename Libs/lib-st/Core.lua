@@ -44,7 +44,7 @@ do
 			frame.highlight = frame:CreateTexture(nil, "OVERLAY");
 			frame.highlight:SetAllPoints(frame);
 		end
-		frame.highlight:SetTexture(color.r, color.g, color.b, color.a);
+		frame.highlight:SetColorTexture(color.r, color.g, color.b, color.a);
 	end
 
 	local FireUserEvent = function (self, frame, event, handler, ...)
@@ -246,7 +246,7 @@ do
 				bg:SetPoint("BOTTOM", self.frame, "BOTTOM", 0, 4);
 				bg:SetPoint("TOPLEFT", col, "BOTTOMLEFT", 0, -4);
 				bg:SetPoint("TOPRIGHT", col, "BOTTOMRIGHT", 0, -4);
-				bg:SetTexture(color.r, color.g, color.b, color.a);
+				bg:SetColorTexture(color.r, color.g, color.b, color.a);
 			end
 		end
 
@@ -715,14 +715,14 @@ do
 		scrolltrough:SetPoint("BOTTOMRIGHT", f, "BOTTOMRIGHT", -4, 4);
 		scrolltrough.background = scrolltrough:CreateTexture(nil, "BACKGROUND");
 		scrolltrough.background:SetAllPoints(scrolltrough);
-		scrolltrough.background:SetTexture(0.05, 0.05, 0.05, 1.0);
+		scrolltrough.background:SetColorTexture(0.05, 0.05, 0.05, 1.0);
 		local scrolltroughborder = CreateFrame("Frame", f:GetName().."ScrollTroughBorder", scrollframe);
 		scrolltroughborder:SetWidth(1);
 		scrolltroughborder:SetPoint("TOPRIGHT", scrolltrough, "TOPLEFT");
 		scrolltroughborder:SetPoint("BOTTOMRIGHT", scrolltrough, "BOTTOMLEFT");
 		scrolltroughborder.background = scrolltrough:CreateTexture(nil, "BACKGROUND");
 		scrolltroughborder.background:SetAllPoints(scrolltroughborder);
-		scrolltroughborder.background:SetTexture(0.5, 0.5, 0.5, 1.0);
+		scrolltroughborder.background:SetColorTexture(0.5, 0.5, 0.5, 1.0);
 
 		st.Refresh = function(self)
 			FauxScrollFrame_Update(scrollframe, #st.filtered, st.displayRows, st.rowHeight);
