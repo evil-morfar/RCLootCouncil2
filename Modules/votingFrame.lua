@@ -341,7 +341,7 @@ function RCVotingFrame:UpdateMoreInfo(row, data)
 	end
 
 	local color = addon:GetClassColor(self:GetCandidateData(session, name, "class"))
-	addon:Debug("Class", self:GetCandidateData(session, name, "class")) tip = self.frame.moreInfo -- shortening
+	tip = self.frame.moreInfo -- shortening
 	local count = {} -- Number of loot received
 	tip:SetOwner(self.frame, "ANCHOR_RIGHT")
 
@@ -372,7 +372,6 @@ function RCVotingFrame:UpdateMoreInfo(row, data)
 			end
 			count[entry.response] = count[entry.response] and count[entry.response] + 1 or 1
 			if not color[entry.response] or unpack(color[entry.response],1,3) == unpack({1,1,1}) and #entry.color ~= 0  then -- If it's not already added
-				addon:Debug(entry.response, entry.color, unpack(entry.color), #entry.color == 0)
 				color[entry.response] = #entry.color ~= 0 and #entry.color == 4 and entry.color or {1,1,1}
 			end
 
@@ -381,7 +380,6 @@ function RCVotingFrame:UpdateMoreInfo(row, data)
 		for response, num in pairs(count) do
 			local r,g,b = unpack(color[response],1,3)
 			tip:AddDoubleLine(response, num, r,g,b, r,g,b) -- Make sure we don't add the alpha value
-			addon:Debug("Unpack:", response,num, "First:", r,g,b,"Second:", r,g,b)
 			totalNum = totalNum + num
 		end
 		tip:AddDoubleLine(L["Total items received:"], totalNum, 0,1,1, 0,1,1)
