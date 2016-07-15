@@ -4,13 +4,14 @@
 -- sessionFrame.lua	Adds a frame listing the items to start a session with.
 
 local addon = LibStub("AceAddon-3.0"):GetAddon("RCLootCouncil")
-RCSessionFrame = addon:NewModule("RCSessionFrame", "AceTimer-3.0")
+local RCSessionFrame = addon:NewModule("RCSessionFrame", "AceTimer-3.0")
 local ST = LibStub("ScrollingTable")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 
-local db, ml;
+local ml;
 local ROW_HEIGHT = 40
 local awardLater = false
+local loadingItems = false
 
 function RCSessionFrame:OnInitialize()
 	self.scrollCols = {
@@ -21,7 +22,6 @@ function RCSessionFrame:OnInitialize()
 end
 
 function RCSessionFrame:OnEnable()
-	db = addon:Getdb()
 	ml = addon:GetActiveModule("masterlooter")
 end
 
@@ -35,6 +35,7 @@ function RCSessionFrame:Show(data)
 	self.frame = self:GetFrame()
 	self.frame:Show()
 	if data then
+		loadingItems = false
 		self:ExtractData(data)
 		self.frame.st:SetData(self.frame.rows)
 		self:Update()
@@ -81,6 +82,7 @@ function RCSessionFrame.SetCellText(rowFrame, frame, data, cols, row, realrow, c
 	end
 	if not data[realrow].link then
 		frame.text:SetText("--"..L["Waiting for item info"].."--")
+		loadingItems = true
 		RCSessionFrame:ScheduleTimer("Show", 1, ml.lootTable) -- Expect data to be available in 1 sec and then recreate the frame
 	else
 		frame.text:SetText(data[realrow].link)
@@ -123,10 +125,13 @@ function RCSessionFrame:GetFrame()
 	local b1 = addon:CreateButton(L["Start"], f.content)
 	b1:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", 10, 10)
 	b1:SetScript("OnClick", function()
+		if loadingItems then
+			return addon:Print(L["You can't start a session before all items are loaded!"])
+		end
 		if awardLater then
 			for session in ipairs(ml.lootTable) do ml:Award(session) end
 			addon:Print(L["Looted items to award later"])
-			ml.lootTable = {}
+			ml:EndSession()
 		else
 			ml:StartSession()
 		end

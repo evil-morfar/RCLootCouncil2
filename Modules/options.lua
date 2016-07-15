@@ -6,8 +6,6 @@ local addon = LibStub("AceAddon-3.0"):GetAddon("RCLootCouncil")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 ------ Options ------
 function addon:OptionsTable()
-	--local plugins = {}
-	local db = addon:Getdb()
 	local options = {
 		name = "RCLootCouncil",
 		type = "group",
@@ -18,7 +16,7 @@ function addon:OptionsTable()
 			settings = {
 				order = 1,
 				type = "group",
-				name = "General",
+				name = L["General"],
 				childGroups = "tab",
 				args = {
 					version = {
@@ -29,7 +27,7 @@ function addon:OptionsTable()
 					generalSettingsTab = {
 						order = 2,
 						type = "group",
-						name = "General",
+						name = L["General"],
 						childGroups = "tab",
 						args = {
 							usage = {
@@ -46,29 +44,29 @@ function addon:OptionsTable()
 									never			= L["Never use RCLootCouncil"],
 								},
 								set = function(_, key)
-									for k in pairs(db.usage) do
+									for k in pairs(self.db.profile.usage) do
 										if k == key then
-											db.usage[k] = true
+											self.db.profile.usage[k] = true
 										else
-											db.usage[k] = false
+											self.db.profile.usage[k] = false
 										end
 									end
-									db.usage.state = key
+									self.db.profile.usage.state = key
 								end,
-								get = function() return db.usage.state end,
+								get = function() return self.db.profile.usage.state end,
 							},
 							leaderUsage = { -- Add leader options here since we can only make a single select dropdown
 								order = 2,
-								name = function() return db.usage.ml and L["Always use when leader"] or L["Ask me when leader"] end,
+								name = function() return self.db.profile.usage.ml and L["Always use when leader"] or L["Ask me when leader"] end,
 								desc = L["Use the same setting when entering a raid as the group leader?"],
 								type = "toggle",
-								get = function() return db.usage.leader or db.usage.ask_leader end,
+								get = function() return self.db.profile.usage.leader or self.db.profile.usage.ask_leader end,
 								set = function(_, val)
-									db.usage.leader, db.usage.ask_leader = false, false -- Reset for zzzzz
-									if db.usage.ml then db.usage.leader = val end
-									if db.usage.ask_ml then db.usage.ask_leader = val end
+									self.db.profile.usage.leader, self.db.profile.usage.ask_leader = false, false -- Reset for zzzzz
+									if self.db.profile.usage.ml then self.db.profile.usage.leader = val end
+									if self.db.profile.usage.ask_ml then self.db.profile.usage.ask_leader = val end
 								end,
-								disabled = function() return db.usage.never end,
+								disabled = function() return self.db.profile.usage.never end,
 							},
 							generalOptions = {
 								order = 3,
@@ -105,8 +103,14 @@ function addon:OptionsTable()
 										desc = L["Check to have all frames minimize when entering combat"],
 										type = "toggle",
 									},
-									header = {
+									ambiguate = {
 										order = 4,
+										name = L["Append realm names"],
+										desc = L["Check to append the realmname of a player from another realm"],
+										type = "toggle",
+									},
+									header = {
+										order = 7,
 										type = "header",
 										name = "",
 										width = "half",
@@ -193,15 +197,14 @@ function addon:OptionsTable()
 										name = L["Open the Loot History"],
 										desc = L["open_the_loot_history_desc"],
 										type = "execute",
-										func = function() self:CallModule("loothistory");	InterfaceOptionsFrame:Hide();end,
-										disabled = true,
+										func = function() self:CallModule("history");	InterfaceOptionsFrame:Hide();end,
 									},
 									clearLootDB = {
 										order = -1,
 										name = L["Clear Loot History"],
 										desc = L["clear_loot_history_desc"],
 										type = "execute",
-										func = function() self.db.factionrealm.lootDB = {} end,
+										func = function() self.lootDB:ResetDB("") end,
 										confirm = true,
 									},
 								},
@@ -446,14 +449,14 @@ function addon:OptionsTable()
 										name = L["Loot Everything"],
 										desc = L["loot_everything_desc"],
 										type = "toggle",
-										disabled = function() return not db.autoLoot end,
+										disabled = function() return not self.db.profile.autoLoot end,
 									},
 									autolootBoE = {
 										order = 7,
 										name = L["Autoloot BoE"],
 										desc = L["autoloot_BoE_desc"],
 										type = "toggle",
-										disabled = function() return not db.autoLoot end,
+										disabled = function() return not self.db.profile.autoLoot end,
 									},
 								},
 							},
@@ -492,7 +495,7 @@ function addon:OptionsTable()
 										name = L["ML sees voting"],
 										desc = L["ml_sees_voting_desc"],
 										type = "toggle",
-										disabled = function() return not db.anonymousVoting end,
+										disabled = function() return not self.db.profile.anonymousVoting end,
 									},
 									hideVotes = {
 										order = 6,
@@ -527,7 +530,7 @@ function addon:OptionsTable()
 										pattern = "%d",
 										usage = L["ignore_input_usage"],
 										get = function() return "\"itemID\"" end,
-										set = function(info, val) tinsert(db.ignore, val); LibStub("AceConfigRegistry-3.0"):NotifyChange("RCLootCouncil") end,
+										set = function(info, val) tinsert(self.db.profile.ignore, val); LibStub("AceConfigRegistry-3.0"):NotifyChange("RCLootCouncil") end,
 									},
 									ignoreList = {
 										order = 3,
@@ -538,14 +541,14 @@ function addon:OptionsTable()
 										width = "double",
 										values = function()
 											local t = {}
-											for i = 1, #db.ignore do
-												local link = select(2, GetItemInfo(db.ignore[i]))
+											for i = 1, #self.db.profile.ignore do
+												local link = select(2, GetItemInfo(self.db.profile.ignore[i]))
 												t[i] = link or L["Not cached, please reopen."]
 											end
 											return t
 										end,
 										get = function() return L["Ignore List"] end,
-										set = function(info, val) tremove(db.ignore, val) end,
+										set = function(info, val) tremove(self.db.profile.ignore, val) end,
 									},
 								},
 							},
@@ -561,13 +564,13 @@ function addon:OptionsTable()
 								name = L["Auto Award"],
 								type = "group",
 								inline = true,
-								disabled = function() return not db.autoAward end,
+								disabled = function() return not self.db.profile.autoAward end,
 								args = {
 									desc = {
 										order = 0,
 										name = format(L["You can only auto award items with a quality lower than 'quality' to yourself due to Blizaard restrictions"],"|cff1eff00"..getglobal("ITEM_QUALITY2_DESC").."|r"),
 										type = "description",
-										hidden = function() return db.autoAwardLowerThreshold >= 2 end,
+										hidden = function() return self.db.profile.autoAwardLowerThreshold >= 2 end,
 									},
 									autoAward = {
 										order = 1,
@@ -614,8 +617,8 @@ function addon:OptionsTable()
 										width = "double",
 										type = "input",
 										hidden = function() return GetNumGroupMembers() > 0 end,
-										get = function() return db.autoAwardTo; end,
-										set = function(i,v) db.autoAwardTo = v; end,
+										get = function() return self.db.profile.autoAwardTo; end,
+										set = function(i,v) self.db.profile.autoAwardTo = v; end,
 									},
 									autoAwardTo = {
 										order = 2,
@@ -642,8 +645,8 @@ function addon:OptionsTable()
 										style = "dropdown",
 										values = function()
 											local t = {}
-											for i = 1, db.numAwardReasons do
-												t[i] = db.awardReasons[i].text
+											for i = 1, self.db.profile.numAwardReasons do
+												t[i] = self.db.profile.awardReasons[i].text
 											end
 											return t
 										end,
@@ -668,7 +671,7 @@ function addon:OptionsTable()
 										type = "range",
 										width = "full",
 										min = 1,
-										max = db.maxAwardReasons,
+										max = self.db.profile.maxAwardReasons,
 										step = 1,
 									},
 									-- Award reasons made further down
@@ -679,8 +682,8 @@ function addon:OptionsTable()
 										type = "execute",
 										confirm = true,
 										func = function()
-											db.awardReasons = self.defaults.profile.awardReasons
-											db.numAwardReasons = self.defaults.profile.numAwardReasons
+											self.db.profile.awardReasons = self.defaults.profile.awardReasons
+											self.db.profile.numAwardReasons = self.defaults.profile.numAwardReasons
 											self:ConfigTableChanged()
 										end,
 									},
@@ -710,7 +713,7 @@ function addon:OptionsTable()
 										order = 2,
 										name = L["announce_awards_desc2"],
 										type = "description",
-										hidden = function() return not db.announceAward end,
+										hidden = function() return not self.db.profile.announceAward end,
 									},
 									-- Rest is made further below
 								},
@@ -733,7 +736,7 @@ function addon:OptionsTable()
 										order = 2,
 										type = "description",
 										name = L["announce_considerations_desc2"],
-										hidden = function() return not db.announceItems end,
+										hidden = function() return not self.db.profile.announceItems end,
 									},
 									announceChannel = {
 										order = 3,
@@ -751,8 +754,8 @@ function addon:OptionsTable()
 											RAID_WARNING = L["Raid Warning"],
 											group = L["Group"], -- must be converted
 										},
-										set = function(i,v) db.announceChannel = v end,
-										hidden = function() return not db.announceItems end,
+										set = function(i,v) self.db.profile.announceChannel = v end,
+										hidden = function() return not self.db.profile.announceItems end,
 									},
 									announceText = {
 										order = 3.1,
@@ -760,7 +763,7 @@ function addon:OptionsTable()
 										desc = L["message_desc"],
 										type = "input",
 										width = "double",
-										hidden = function() return not db.announceItems end,
+										hidden = function() return not self.db.profile.announceItems end,
 									},
 								},
 							},
@@ -771,14 +774,14 @@ function addon:OptionsTable()
 								type = "execute",
 								confirm = true,
 								func = function()
-									for i = 1, #db.awardText do
-										db.awardText[i].channel = self.defaults.profile.awardText[i].channel
-										db.awardText[i].text = self.defaults.profile.awardText[i].text
+									for i = 1, #self.db.profile.awardText do
+										self.db.profile.awardText[i].channel = self.defaults.profile.awardText[i].channel
+										self.db.profile.awardText[i].text = self.defaults.profile.awardText[i].text
 									end
-									db.announceAward = self.defaults.profile.announceAward
-									db.announceItems = self.defaults.profile.announceItems
-									db.announceChannel = self.defaults.profile.announceChannel
-									db.announceText = self.defaults.profile.announceText
+									self.db.profile.announceAward = self.defaults.profile.announceAward
+									self.db.profile.announceItems = self.defaults.profile.announceItems
+									self.db.profile.announceChannel = self.defaults.profile.announceChannel
+									self.db.profile.announceText = self.defaults.profile.announceText
 									self:ConfigTableChanged()
 								end
 							},
@@ -797,7 +800,7 @@ function addon:OptionsTable()
 								args = {
 									optionsDesc = {
 										order = 0,
-										name = format(L["buttons_and_responses_desc"], db.maxButtons),
+										name = format(L["buttons_and_responses_desc"], self.db.profile.maxButtons),
 										type = "description"
 									},
 									numButtons = {
@@ -807,7 +810,7 @@ function addon:OptionsTable()
 										type = "range",
 										width = "full",
 										min = 1,
-										max = db.maxButtons,
+										max = self.db.profile.maxButtons,
 										step = 1,
 									},
 									-- Made further down
@@ -829,7 +832,7 @@ function addon:OptionsTable()
 										order = 2,
 										name = L["responses_from_chat_desc"],
 										type = "description",
-										hidden = function() return not db.acceptWhispers end,
+										hidden = function() return not self.db.profile.acceptWhispers end,
 									},
 									-- Made further down
 								},
@@ -841,10 +844,10 @@ function addon:OptionsTable()
 								type = "execute",
 								confirm = true,
 								func = function()
-									db.buttons = self.defaults.profile.buttons
-									db.responses = self.responses
-									db.numButtons = self.defaults.profile.numButtons
-									db.acceptWhispers = self.defaults.profile.acceptWhispers
+									self.db.profile.buttons = self.defaults.profile.buttons
+									self.db.profile.responses = self.defaults.profile.responses
+									self.db.profile.numButtons = self.defaults.profile.numButtons
+									self.db.profile.acceptWhispers = self.defaults.profile.acceptWhispers
 									self:ConfigTableChanged()
 								end,
 							},
@@ -872,12 +875,12 @@ function addon:OptionsTable()
 										name = "",
 										values = function()
 											local t = {}
-											for k,v in ipairs(db.council) do t[k] = self.Ambiguate(v) end
+											for k,v in ipairs(self.db.profile.council) do t[k] = self.Ambiguate(v) end
 											return t;
 										end,
 										width = "full",
 										get = function() return true end,
-										set = function(m,key) tremove(db.council,key); addon:CouncilChanged() end,
+										set = function(m,key) tremove(self.db.profile.council,key); addon:CouncilChanged() end,
 									},
 									removeAll = {
 										order = 3,
@@ -885,7 +888,7 @@ function addon:OptionsTable()
 										desc = L["remove_all_desc"],
 										type = "execute",
 										confirm = true,
-										func = function() db.council = {}; addon:CouncilChanged() end,
+										func = function() self.db.profile.council = {}; addon:CouncilChanged() end,
 									},
 								},
 							},
@@ -920,16 +923,16 @@ function addon:OptionsTable()
 													return info
 												end,
 												set = function(_, val)
-													db.minRank = val
+													self.db.profile.minRank = val
 													for i = 1, GetNumGuildMembers() do
 														local name, _, rankIndex = GetGuildRosterInfo(i) -- get info from all guild members
 														if rankIndex + 1 <= val then -- if the member is the required rank, or above
-															tinsert(db.council, name) -- then insert them to the council
+															tinsert(self.db.profile.council, name) -- then insert them to the council
 														end
 													end
 													addon:CouncilChanged()
 												end,
-												get = function() return db.minRank; end,
+												get = function() return self.db.profile.minRank; end,
 											},
 											desc = {
 												order = 3,
@@ -1010,15 +1013,15 @@ function addon:OptionsTable()
 	-- #region Create options thats made with loops
 	-- Buttons
 	local button, picker, text = {}, {}, {}
-	for i = 1, db.maxButtons do
+	for i = 1, self.db.profile.maxButtons do
 		button = {
 			order = i * 3 + 1,
 			name = L["Button"].." "..i,
 			desc = format(L["Set the text on button 'number'"], i),
 			type = "input",
-			get = function() return db.buttons[i].text end,
-			set = function(info, value) addon:ConfigTableChanged("buttons"); db.buttons[i].text = tostring(value) end,
-			hidden = function() return db.numButtons < i end,
+			get = function() return self.db.profile.buttons[i].text end,
+			set = function(info, value) addon:ConfigTableChanged("buttons"); self.db.profile.buttons[i].text = tostring(value) end,
+			hidden = function() return self.db.profile.numButtons < i end,
 		}
 		options.args.mlSettings.args.buttonsTab.args.buttonOptions.args["button"..i] = button;
 		picker = {
@@ -1026,9 +1029,9 @@ function addon:OptionsTable()
 			name = L["Response color"],
 			desc = L["response_color_desc"],
 			type = "color",
-			get = function() return unpack(db.responses[i].color)	end,
-			set = function(info,r,g,b,a) addon:ConfigTableChanged("responses"); db.responses[i].color = {r,g,b,a} end,
-			hidden = function() return db.numButtons < i end,
+			get = function() return unpack(self.db.profile.responses[i].color)	end,
+			set = function(info,r,g,b,a) addon:ConfigTableChanged("responses"); self.db.profile.responses[i].color = {r,g,b,a} end,
+			hidden = function() return self.db.profile.numButtons < i end,
 		}
 		options.args.mlSettings.args.buttonsTab.args.buttonOptions.args["picker"..i] = picker;
 		text = {
@@ -1036,9 +1039,9 @@ function addon:OptionsTable()
 			name = L["Response"],
 			desc = format(L["Set the text for button i's response."], i),
 			type = "input",
-			get = function() return db.responses[i].text end,
-			set = function(info, value) addon:ConfigTableChanged("responses"); db.responses[i].text = tostring(value) end,
-			hidden = function() return db.numButtons < i end,
+			get = function() return self.db.profile.responses[i].text end,
+			set = function(info, value) addon:ConfigTableChanged("responses"); self.db.profile.responses[i].text = tostring(value) end,
+			hidden = function() return self.db.profile.numButtons < i end,
 		}
 		options.args.mlSettings.args.buttonsTab.args.buttonOptions.args["text"..i] = text;
 
@@ -1048,24 +1051,24 @@ function addon:OptionsTable()
 			desc = format(L["Set the whisper keys for button i. Used in conjunction with Chat settings."], i),
 			type = "input",
 			width = "double",
-			get = function() return db.buttons[i].whisperKey end,
-			set = function(k,v) db.buttons[i].whisperKey = tostring(v) end,
-			hidden = function() return not (db.acceptWhispers or db.acceptRaidChat) or db.numButtons < i end,
+			get = function() return self.db.profile.buttons[i].whisperKey end,
+			set = function(k,v) self.db.profile.buttons[i].whisperKey = tostring(v) end,
+			hidden = function() return not (self.db.profile.acceptWhispers or self.db.profile.acceptRaidChat) or self.db.profile.numButtons < i end,
 		}
 		options.args.mlSettings.args.buttonsTab.args.responseFromChat.args["whisperKey"..i] = whisperKeys;
 	end
 
 	-- Award Reasons
-	for i = 1, db.maxAwardReasons do
+	for i = 1, self.db.profile.maxAwardReasons do
 		options.args.mlSettings.args.awardsTab.args.awardReasons.args["reason"..i] = {
 			order = i+1,
 			name = L["Reason"]..i,
 			desc = L["Text for reason #i"]..i,
 			type = "input",
 			--width = "double",
-			get = function() return db.awardReasons[i].text end,
-			set = function(k,v) addon:ConfigTableChanged("awardReasons"); db.awardReasons[i].text = v; end,
-			hidden = function() return db.numAwardReasons < i end,
+			get = function() return self.db.profile.awardReasons[i].text end,
+			set = function(k,v) addon:ConfigTableChanged("awardReasons"); self.db.profile.awardReasons[i].text = v; end,
+			hidden = function() return self.db.profile.numAwardReasons < i end,
 		}
 		options.args.mlSettings.args.awardsTab.args.awardReasons.args["color"..i] = {
 			order = i +1.1,
@@ -1074,9 +1077,9 @@ function addon:OptionsTable()
 			desc = L["text_color_desc"],
 			type = "color",
 			width = "half",
-			get = function() return unpack(db.awardReasons[i].color) end,
-			set = function(info, r,g,b,a) db.awardReasons[i].color = {r,g,b,a} end,
-			hidden = function() return db.numAwardReasons < i end,
+			get = function() return unpack(self.db.profile.awardReasons[i].color) end,
+			set = function(info, r,g,b,a) self.db.profile.awardReasons[i].color = {r,g,b,a} end,
+			hidden = function() return self.db.profile.numAwardReasons < i end,
 		}
 		options.args.mlSettings.args.awardsTab.args.awardReasons.args["log"..i] = {
 			order = i +1.2,
@@ -1084,28 +1087,28 @@ function addon:OptionsTable()
 			desc = L["log_desc"],
 			type = "toggle",
 			width = "half",
-			get = function() return db.awardReasons[i].log end,
-			set = function() db.awardReasons[i].log = not db.awardReasons[i].log end,
-			hidden = function() return db.numAwardReasons < i end,
+			get = function() return self.db.profile.awardReasons[i].log end,
+			set = function() self.db.profile.awardReasons[i].log = not self.db.profile.awardReasons[i].log end,
+			hidden = function() return self.db.profile.numAwardReasons < i end,
 		}
 		options.args.mlSettings.args.awardsTab.args.awardReasons.args["DE"..i] = {
 			order = i +1.3,
 			name = L["Disenchant"],
 			desc = L["disenchant_desc"],
 			type = "toggle",
-			get = function() return db.awardReasons[i].disenchant end,
+			get = function() return self.db.profile.awardReasons[i].disenchant end,
 			set = function(info, val)
-				for k,v in ipairs(db.awardReasons) do
+				for k,v in ipairs(self.db.profile.awardReasons) do
 					v.disenchant = false
 				end
-				db.awardReasons[i].disenchant = val
-				db.disenchant = val
+				self.db.profile.awardReasons[i].disenchant = val
+				self.db.profile.disenchant = val
 			end,
-			hidden = function() return db.numAwardReasons < i end,
+			hidden = function() return self.db.profile.numAwardReasons < i end,
 		}
 	end
 	-- Announce Channels
-	for i = 1, #db.awardText do
+	for i = 1, #self.db.profile.awardText do
 		options.args.mlSettings.args.announcementsTab.args.awardAnnouncement.args["outputSelect"..i] = {
 			order = i+3,
 			name = L["Channel"]..i..":",
@@ -1123,9 +1126,9 @@ function addon:OptionsTable()
 				RAID_WARNING = L["Raid Warning"],
 				group = L["Group"],
 			},
-			set = function(j,v) db.awardText[i].channel = v	end,
-			get = function() return db.awardText[i].channel end,
-			hidden = function() return not db.announceAward end,
+			set = function(j,v) self.db.profile.awardText[i].channel = v	end,
+			get = function() return self.db.profile.awardText[i].channel end,
+			hidden = function() return not self.db.profile.announceAward end,
 		}
 		options.args.mlSettings.args.announcementsTab.args.awardAnnouncement.args["outputMessage"..i] = {
 			order = i+3.1,
@@ -1133,9 +1136,9 @@ function addon:OptionsTable()
 			desc = L["message_desc"],
 			type = "input",
 			width = "double",
-			get = function() return db.awardText[i].text end,
-			set = function(j,v) db.awardText[i].text = v; end,
-			hidden = function() return not db.announceAward end,
+			get = function() return self.db.profile.awardText[i].text end,
+			set = function(j,v) self.db.profile.awardText[i].text = v; end,
+			hidden = function() return not self.db.profile.announceAward end,
 		}
 	end
 	-- #endregion

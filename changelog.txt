@@ -2,6 +2,60 @@
 *++Skins++
 *You can now customize the look of all RCLootCouncil frames.
 
+====== Alpha12 changes ======
+*Repacked. No longer named as "RCLootCouncil2". This is done in preparation for release. Note this change will overwrite any v.1.7.x settings.
+*It's no longer possible to start a session with items that aren't fully loaded.
+
+*++More Info in Voting Frame++
+*The Voting Frame now has a little button that enables you to see how many items with a given response a given player has received,
+along with the last item and how long since they received it.
+
+*Bugfixes
+*//The MasterLooters enchanting profession was never registered (#126).//
+*//Some times the MasterLooters settings was rejected resulting in empty Loot Frames (#124).//
+*//No longer tracks test awards in the Loot History.//
+*//Cleaned up some globals.//
+
+
+====== Alpha11 changes ======
+*++Enabled LootHistory++
+*The Loot History is now back in a refreshed form. There's been some changes since the launch of the v2.0 alpha, hence class specific
+things won't show for your old history, and you're encouraged to delete your history to get the optimal experience. Note: Exporting
+the Loot History will come in a later update, go find the ticket on Curse to specify which export formats you want.
+
+*The Disenchant button is now always shown. It'll only produce a list of enchanters if an award reason has been marked as disenchant.
+*Guildrank sorting is now done according to the actual rank instead of alphabetically.
+
+*The voting frame scroll position now always resets when switching between items in a session.
+
+*++Show realmnames++
+*It's now possible to see the realm name of a player from a different realm throughout the addon.
+
+*Bugfixes
+*//The disenchant button is now only visable to the Master Looter.//
+
+
+====== Alpha10 changes ======
+*Bumped max buttons and awardReasons to 10.
+*Asking someone to reroll while they're already rolling now adds the new rolls to the list instead of replacing it.
+
+*Bugfixes
+**//Some actions involving players from another realm wasn't handled properly (#117, #119).//
+**//Fixed error when changing profiles (#120).//
+**//Some times the "reconnect" function wouldn't always work, potentially resulting in an empty loot frame (#119).//
+**//Whispering responses didn't work due to recent updates.//
+
+====== Alpha9 changes ======
+*Some optimizations.
+*++Item status++ Now shows whether an item is mythic, warforged, etc. in the voting frame.
+*++People to vote string++ is now back.
+
+*Bugfixes
+**//The tooltip showing voters names showed up when it wasn't supposed to.//
+**//Councilmens "Filter" didn't update correctly if the ML changed the buttons (Ticket#113).//
+**//Now never auto passes cloaks as they're considered cloth by Blizzard (Ticket#115).//
+**//Loot Slot changes wasn't handled properly (Ticket#116).//
+
 ====== Alpha8 changes ======
 *Now properly resets ML status after a test session.
 *Players doing a /reloadui during a session will now be prompted to reroll their item. (Other players' rolls are not carried over though).
@@ -114,9 +168,8 @@
       for anyone to add custom features to the core addon.
 
 *  ++Disenchant button++
-**    You'll get a "Disenchant" button if all responses are filtered in the voting frame. Clicking it will show a list
-      of enchanters in your group (if any), and clicking a name will award the item to that player with the reason selected
-      for disenchant in "Award Reasons".
+**    You'll get a "Disenchant" button in the voting frame. Clicking it will show a list of enchanters in your group (if any),
+      and clicking a name will award the item to that player with the reason selected for disenchant in "Award Reasons".
 
 *  --Limits--
 **    No more 20 item limit per session (not that you're gonna need that), no more "award in this particular order" limit,

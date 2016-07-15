@@ -4,17 +4,12 @@ core.lua	Contains core elements of the addon
 --------------------------------
 TODOs/Notes
 	Things marked with "todo"
-!!		- "more info" thingie
-!!!	- lootHistory
-			Store class in loot history
-!		- FIXME "Hide Votes" doesn't prevent the "Hover List" from being displayed
-!		- IDEA We want an indicator showing item status (mythic, warforged, etc.)
-		- Revise DB variables
 		- IDEA add an observer/council string to show players their role?
 		- If we truly want to be able to edit votingframe scrolltable with modules, it needs to have GetCol by name
 		- Pressing shift while hovering an item should do the same as vanilla
-
 		-- Appearance: Not at all final! Needs better handling than just looking at db.UI.lootFrame
+		- The 4'th cell in @line81 in versionCheck should not be static
+		- Demon Hunter autopass
 --------------------------------
 CHANGELOG
 	-- SEE CHANGELOG.TXT
@@ -29,7 +24,6 @@ RCLootCouncil:SetDefaultModuleState(false)
 
 -- Init shorthands
 local db, historyDB, debugLog;-- = self.db.profile, self.lootDB.factionrealm, self.db.global.log
-local testItems = {105473,105407,105513,105465,105482,104631,105450,105537,104554,105509,104412,105499,104476,104544,104495,105568,105594,105514,105479,104532,105639,104508,105621,}
 -- init modules
 local defaultModules = {
 	masterlooter =	"RCLootCouncilML",
@@ -54,10 +48,10 @@ local player_relogged = true -- Determines if we potentially need data from the 
 
 function RCLootCouncil:OnInitialize()
 	--IDEA Consider if we want everything on self, or just whatever modules could need.
-  	self.version = GetAddOnMetadata("RCLootCouncil2", "Version")
+  	self.version = GetAddOnMetadata("RCLootCouncil", "Version")
 	self.nnp = false
 	self.debug = false
-	self.tVersion = "Alpha.8" -- String or nil. Indicates test version, which alters stuff like version check. Is appended to 'version', i.e. "version-tVersion"
+	self.tVersion = "Alpha.12" -- String or nil. Indicates test version, which alters stuff like version check. Is appended to 'version', i.e. "version-tVersion"
 
 	self.playerClass = select(2, UnitClass("player"))
 	self.guildRank = L["Unguilded"]
@@ -85,11 +79,6 @@ function RCLootCouncil:OnInitialize()
 		--[[1]]			  { color = {0,1,0,1},				sort = 1,		text = L["Mainspec/Need"],},
 		--[[2]]			  { color = {1,0.5,0,1},			sort = 2,		text = L["Offspec/Greed"],	},
 		--[[3]]			  { color = {0,0.7,0.7,1},			sort = 3,		text = L["Minor Upgrade"],},
-		--[[4]]			  { color = {0.7, 0.7,0.7,1},		sort = 4,		text = L["Button"]..4,},
-		--[[5]]			  { color = {0.75,0.75,0.75,1},	sort = 5,		text = L["Button"]..5,},
-		--[[6]]			  { color = {0.75,0.75,0.75,1},	sort = 6,		text = L["Button"]..6,},
-		--[[7]]			  { color = {0.75,0.75,0.75,1},	sort = 7,		text = L["Button"]..7,},
-		--[[8]]			  { color = {0.75,0.75,0.75,1},	sort = 8,		text = L["Button"]..8,},
 	}
 	self.roleTable = {
 		TANK =		L["Tank"],
@@ -116,10 +105,14 @@ function RCLootCouncil:OnInitialize()
 				never = false,			-- Never enable
 				state = "ask_ml", 	-- Current state
 			},
+			ambiguate = false, -- Append realm names to players
 			autoStart = false, -- start a session with all eligible items
 			autoLoot = true, -- Auto loot equippable items
 			autolootEverything = true,
 			autolootBoE = true,
+			autoOpen = true, -- auto open the voting frame
+			autoPassBoE = true,
+			autoPass = true,
 			altClickLooting = true,
 			acceptWhispers = true,
 			selfVote = true,
@@ -134,10 +127,7 @@ function RCLootCouncil:OnInitialize()
 			autoAwardTo = L["None"],
 			autoAwardReason = 1,
 			observe = false, -- observe mode on/off
-			autoOpen = true, -- auto open the voting frame
-			autoPass = true,
 			silentAutoPass = false, -- Show autopass message
-			autoPassBoE = true,
 			--neverML = false, -- Never use the addon as ML
 			minimizeInCombat = false,
 
@@ -203,14 +193,14 @@ function RCLootCouncil:OnInitialize()
 			minRank = -1,
 			council = {},
 
-			maxButtons = 8,
+			maxButtons = 10,
 			numButtons = 3,
 			buttons = {
 				{	text = L["Need"],					whisperKey = L["whisperKey_need"], },	-- 1
 				{	text = L["Greed"],				whisperKey = L["whisperKey_greed"],},	-- 2
 				{	text = L["Minor Upgrade"],		whisperKey = L["whisperKey_minor"],},	-- 3
 			},
-			maxAwardReasons = 8,
+			maxAwardReasons = 10,
 			numAwardReasons = 3,
 			awardReasons = {
 				{ color = {1, 1, 1, 1}, disenchant = true, log = true,	sort = 401,	text = L["Disenchant"], },
@@ -237,6 +227,13 @@ function RCLootCouncil:OnInitialize()
 			whisperKey = ""..i,
 		})
 	end
+	for i = self.defaults.profile.numButtons+1, self.defaults.profile.maxButtons do
+		tinsert(self.defaults.profile.responses, {
+			color = {0.7, 0.7,0.7,1},
+			sort = i,
+			text = L["Button"]..i,
+		})
+	end
 	-- create the other AwardReasons
 	for i = #self.defaults.profile.awardReasons+1, self.defaults.profile.maxAwardReasons do
 		tinsert(self.defaults.profile.awardReasons, {color = {1, 1, 1, 1}, disenchant = false, log = true, sort = 400+i, text = "Reason "..i,})
@@ -250,7 +247,7 @@ function RCLootCouncil:OnInitialize()
 	self.lootDB = LibStub("AceDB-3.0"):New("RCLootCouncilLootDB")
 	--[[ Format:
 	"playerName" = {
-		[#] = {"lootWon", "date (d/m/y)", "time (h:m:s)", "instance", "boss", "votes", "itemReplaced1", "itemReplaced2", "response", "responseID"}
+		[#] = {"lootWon", "date (d/m/y)", "time (h:m:s)", "instance", "boss", "votes", "itemReplaced1", "itemReplaced2", "response", "responseID", "color", "class", "isAwardReason"}
 	},
 	]]
 	self.db.RegisterCallback(self, "OnProfileChanged", "RefreshConfig")
@@ -270,7 +267,7 @@ function RCLootCouncil:OnInitialize()
 	-- add it to blizz options
 	self.optionsFrame = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("RCLootCouncil", "RCLootCouncil", nil, "settings")
 	self.optionsFrame.ml = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("RCLootCouncil", "Master Looter", "RCLootCouncil", "mlSettings")
-	-- Add some spacing and logged in message in the log
+	-- Add logged in message in the log
 	self:DebugLog("Logged In")
 end
 
@@ -294,7 +291,28 @@ function RCLootCouncil:OnEnable()
 		self:SendCommand("guild", "verTest", self.version, self.tVersion) -- send out a version check
 	end
 
-	if not self.db.global.tVersion or self.db.global.tVersion ~= self.tVersion then -- First time install
+	-- Any upgrade to v2.0.0 or Alpha.12 needs a db reset and possibly lootDB import
+	if (self.db.global.version and self.db.global.version < "2.0.0") or (self.db.global.tVersion and self.db.global.tVersion < "Alpha.12") then -- Upgraded to v.2.0.0
+		self:Debug("First time v2.0.0 upgrade!")
+		local lootdb = {}
+		if self.db.factionrealm.lootDB then
+			self:Debug("Extracting old LootDB")
+			for k,v in pairs(self.db.factionrealm.lootDB) do
+				lootdb[k] = v
+			end
+			self:Debug("Done")
+		end
+		self:Debug("Resetting DB")
+		self.db:ResetDB("Default")
+		self:Debug("Done\nImporting LootDB")
+		for k,v in pairs(lootdb) do
+			self.lootDB.factionrealm[k] = v
+		end
+		self:Debug("Done")
+		self:Print("Your settings have been reset due to upgrading to v2.0.0")
+	end
+
+	if self.tVersion and (not self.db.global.tVersion or self.db.global.tVersion ~= self.tVersion) then -- First time install TODO Remove this on release
 		-- Show a 5 sec delayed message on how to revert to latest Release version.
 		self:ScheduleTimer("Print", 5, format("You're running |cFF87CEFARCLootCouncil |cFFFFFFFFv|cFFFFA5002.0.0-%s|r. If you didn't download this intentionally please set 'Preferred Release Type' to 'Release' in your Curse Client, and update.", self.tVersion))
 		if self.db.global.tVersion and self.db.global.tVersion < "Alpha.4" then -- TODO Just in case I forget to remove it
@@ -319,11 +337,10 @@ function RCLootCouncil:OnEnable()
 	local filterFunc = function(_, event, msg, player, ...)
 		return strfind(msg, "[[RCLootCouncil]]:")
 	end
+	ChatFrame_AddMessageEventFilter("CHAT_MSG_WHISPER_INFORM", filterFunc)
 
 	self:LocalizeSubTypes()
 
-
-	ChatFrame_AddMessageEventFilter("CHAT_MSG_WHISPER_INFORM", filterFunc)
 	----------PopUp setups --------------
 	-------------------------------------
 	LibDialog:Register("RCLOOTCOUNCIL_CONFIRM_USAGE", {
@@ -351,7 +368,7 @@ function RCLootCouncil:OnEnable()
 				end,
 			},
 			{	text = L["No"],
-				on_click = function(self)
+				on_click = function()
 					RCLootCouncil:Print(L[" is not active in this raid."])
 				end,
 			},
@@ -369,9 +386,10 @@ function RCLootCouncil:OnDisable()
 	self:UnregisterAllEvents()
 end
 
-function RCLootCouncil:RefreshConfig()
-	self:Debug("RefreshConfig")
-	db = self.defaults.profile
+function RCLootCouncil:RefreshConfig(event, database, profile)
+	self:Debug("RefreshConfig",event, database, profile)
+	self.db.profile = database.profile
+	db = database.profile
 end
 
 function RCLootCouncil:ConfigTableChanged(val)
@@ -391,9 +409,9 @@ function RCLootCouncil:ChatCommand(msg)
 		if self.tVersion then print(format(L["chat tVersion string"],self.version, self.tVersion))
 		else print(format(L["chat version String"],self.version)) end
 		self:Print(L["chat_commands"])
-		self:Debug(L["- debug or d - Toggle debugging"])
-		self:Debug(L["- log - display the debug log"])
-		self:Debug(L["- clearLog - clear the debug log"])
+		self:Debug("- debug or d - Toggle debugging")
+		self:Debug("- log - display the debug log")
+		self:Debug("- clearLog - clear the debug log")
 
 	elseif input == 'config' or input == L["config"] or input == "c" then
 		-- Call it twice, because reasons..
@@ -426,12 +444,12 @@ function RCLootCouncil:ChatCommand(msg)
 		self:CallModule("version")
 
 	elseif input == "history" or input == L["history"] or input == "h" or input == "his" then
-		--self:CallModule("history")
-
+		self:CallModule("history")
+--@debug@
 	elseif input == "nnp" then
 		self.nnp = not self.nnp
 		self:Print("nnp = "..tostring(self.nnp))
-
+--@end-debug@
 	elseif input == "whisper" or input == L["whisper"] then
 		self:Print(L["whisper_help"])
 
@@ -478,16 +496,17 @@ function RCLootCouncil:ChatCommand(msg)
 	elseif input == "clearlog" then
 		wipe(debugLog)
 		self:Print("Debug Log cleared.")
-
-	elseif input == 't' and self.nnp then -- Tester cmd
-		printtable(db.council)
-
+--@debug@
+	elseif input == 't' then -- Tester cmd
+		printtable(historyDB)
+--@end-debug@
 	else
 		self:ChatCommand("help")
 	end
 end
 
--- Send a Comm Message to a RCLootCouncil client using AceComm-3.0
+--- Send a RCLootCouncil Comm Message using AceComm-3.0
+-- See RCLootCouncil:OnCommReceived() on how to receive these messages.
 -- @param target The receiver of the message. Can be "group", "guild" or "playerName".
 -- @param command The command to send.
 -- @param vararg Any number of arguments to send along. Will be packaged as a table.
@@ -496,11 +515,10 @@ function RCLootCouncil:SendCommand(target, command, ...)
 	local toSend = self:Serialize(command, {...})
 
 	if target == "group" then
-		local num = GetNumGroupMembers()
-		if num > 5 then -- Raid
+		if GetNumGroupMembers() > 0 then -- SendAddonMessage auto converts it to party is needed
 			self:SendCommMessage("RCLootCouncil", toSend, "RAID")
-		elseif num > 0 then -- Party
-			self:SendCommMessage("RCLootCouncil", toSend, "PARTY")
+		--[[elseif num > 0 then -- Party
+			self:SendCommMessage("RCLootCouncil", toSend, "PARTY")]]
 		else--if self.testMode then -- Alone (testing)
 			self:SendCommMessage("RCLootCouncil", toSend, "WHISPER", self.playerName)
 		end
@@ -512,16 +530,41 @@ function RCLootCouncil:SendCommand(target, command, ...)
 		if self:UnitIsUnit(target,"player") then -- If target == "player"
 			self:SendCommMessage("RCLootCouncil", toSend, "WHISPER", self.playerName)
 		else
-			self:SendCommMessage("RCLootCouncil", toSend, "WHISPER", target)
+			-- We cannot send "WHISPER" to a crossrealm player
+			if target:find("-") then
+				if target:find(self.realmName) then -- Our own realm, just send it
+					self:SendCommMessage("RCLootCouncil", toSend, "WHISPER", target)
+				else -- Get creative
+					-- Remake command to be "xrealm" and put target and command in the table
+					-- See "RCLootCouncil:HandleXRealmComms()" for more info
+					toSend = self:Serialize("xrealm", {target, command, ...})
+					self:SendCommMessage("RCLootCouncil", toSend, "RAID")
+				end
+
+			else -- Should also be our own realm
+				self:SendCommMessage("RCLootCouncil", toSend, "WHISPER", target)
+			end
 		end
 	end
 end
 
+--- Receives RCLootCouncil commands
+-- Params are delivered by AceComm-3.0, but we need to extract our data created with the
+-- RCLootCouncil:SendCommand function.
+-- @usage
+-- To extract the original data using AceSerializer-3.0:
+-- -- local success, command, data = self:Deserialize(serializedMsg)
+-- 'data' is a table containing the varargs delivered to RCLootCouncil:SendCommand().
+-- To ensure correct handling of x-realm commands, include this line aswell:
+-- -- if RCLootCouncil:HandleXRealmComms(self, command, data, sender) then return end
 function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 	if prefix == "RCLootCouncil" then
 		self:DebugLog("Comm received:", serializedMsg, "from:", sender, "distri:", distri)
 		-- data is always a table to be unpacked
 		local test, command, data = self:Deserialize(serializedMsg)
+		-- NOTE: Since I can't find a better way to do this, all xrealms comms is routed through here
+		--			to make sure they get delivered properly. Must be included in every OnCommReceived() function.
+		if self:HandleXRealmComms(self, command, data, sender) then return end
 
 		if test then
 			if command == "lootTable" then
@@ -540,7 +583,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 					if db.autoPass then -- Do autopassing
 						for ses, v in ipairs(lootTable) do
 							if (v.boe and db.autoPassBoE) or not v.boe then
-								if self:AutoPassCheck(v.subType) then
+								if self:AutoPassCheck(v.subType, v.equipLoc) then
 									self:Debug("Autopassed on: ", v.link)
 									if not db.silentAutoPass then self:Print(format(L["Autopassed on 'item'"], v.link)) end
 									self:SendCommand("group", "response", self:CreateResponse(ses, v.link, v.ilvl, "AUTOPASS", v.equipLoc))
@@ -610,7 +653,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 				end
 
 			elseif command == "reroll" and self:UnitIsUnit(sender, self.masterLooter) and self.enabled then
-				self:Print(self.Ambiguate(sender), "has asked you to reroll") -- TODO
+				self:Print(format(L["'player' has asked you to reroll"], self.Ambiguate(sender)))
 				self:CallModule("lootframe")
 				self:GetActiveModule("lootframe"):ReRoll(unpack(data))
 
@@ -643,6 +686,20 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 	end
 end
 
+-- Used to make sure "WHISPER" type xrealm comms is handled properly.
+-- Include this right after unpacking messages. Assumes you use "OnCommReceived" as comm handler:
+-- if RCLootCouncil:HandleXRealmComms(self, command, data, sender) then return end
+function RCLootCouncil:HandleXRealmComms(mod, command, data, sender)
+	if command == "xrealm" then
+		local target = tremove(data, 1)
+		if self:UnitIsUnit(target, "player") then
+			local command = tremove(data, 1)
+			mod:OnCommReceived("RCLootCouncil", self:Serialize(command, data), "WHISPER", self:UnitName(sender))
+		end
+		return true
+	end
+	return false
+end
 
 function RCLootCouncil:Debug(msg, ...)
 	if self.debug then
@@ -668,6 +725,7 @@ function RCLootCouncil:DebugLog(msg, ...)
 end
 
 function RCLootCouncil:Test(num)
+	local testItems = {105473,105407,105513,105465,105482,104631,105450,105537,104554,105509,104412,105499,104476,104544,104495,105568,105594,105514,105479,104532,105639,104508,105621,}
 	local items = {};
 	-- pick "num" random items
 	for i = 1, num do
@@ -698,8 +756,8 @@ function RCLootCouncil:EnterCombat()
 	InterfaceOptionsFrameCancel:SetScript("OnClick", function()
 	 InterfaceOptionsFrameOkay:Click()
 	end)
-	if not db.minimizeInCombat then return end
 	self.inCombat = true
+	if not db.minimizeInCombat then return end
 	for _,frame in ipairs(frames) do
 		if frame:IsVisible() and not frame.combatMinimized then -- only minimize for combat if it isn't already minimized
 			self:Debug("Minimizing for combat")
@@ -712,8 +770,8 @@ end
 function RCLootCouncil:LeaveCombat()
 	-- Revert
 	InterfaceOptionsFrameCancel:SetScript("OnClick", interface_options_old_cancel)
-	if not db.minimizeInCombat then return end
 	self.inCombat = false
+	if not db.minimizeInCombat then return end
 	for _,frame in ipairs(frames) do
 		if frame.combatMinimized then -- Reshow it
 			self:Debug("Reshowing frame")
@@ -783,6 +841,18 @@ function RCLootCouncil:Timer(type, ...)
 	self:Debug("Timer "..type.." passed")
 	if type == "LocalizeSubTypes" then
 		self:LocalizeSubTypes()
+	elseif type == "MLdb_check" then
+		-- If we have a ML
+		if self.masterLooter then
+			-- But haven't received the mldb, then request it
+			if not self.mldb then
+				self:SendCommand(self.masterLooter, "MLdb_request")
+			end
+			-- and if we haven't received a council, request it
+			if not self.council then
+				self:SendCommand(self.masterLooter, "council_request")
+			end
+		end
 	end
 end
 
@@ -832,9 +902,16 @@ local subTypeLookup = {
 	["Wands"]					= 128096, -- Demonspine Wand
 }
 
-function RCLootCouncil:AutoPassCheck(type)
-	if type and autopassTable[self.db.global.localizedSubTypes[type]] then
-		return tContains(autopassTable[self.db.global.localizedSubTypes[type]], self.playerClass)
+-- Never autopass these armor types
+local autopassOverride = {
+	"INVTYPE_CLOAK",
+}
+
+function RCLootCouncil:AutoPassCheck(type, equipLoc)
+	if not tContains(autopassOverride, equipLoc) then
+		if type and autopassTable[self.db.global.localizedSubTypes[type]] then
+			return tContains(autopassTable[self.db.global.localizedSubTypes[type]], self.playerClass)
+		end
 	end
 	return false
 end
@@ -860,7 +937,6 @@ function RCLootCouncil:LocalizeSubTypes()
 end
 
 function RCLootCouncil:IsItemBoE(item)
-	self:DebugLog("IsItemBoe", item)
 	if not item then return false end
 	GameTooltip:SetOwner(UIParent, "ANCHOR_NONE")
 	GameTooltip:SetHyperlink(item)
@@ -879,6 +955,14 @@ function RCLootCouncil:IsItemBoE(item)
 	return false
 end
 
+--- Formats a response for the player to be send to the group
+-- @param session		The session to respond to
+-- @param link 		The itemLink of the item in the session
+-- @param ilvl			The ilvl of the item in the session
+-- @param response	The selected response, must be index of db.responses
+-- @param equipLoc	The item in the session's equipLoc
+-- @param note			The player's note
+-- @returns A formatted table that can be passed directly to :SendCommand("group", "response", -return-)
 function RCLootCouncil:CreateResponse(session, link, ilvl, response, equipLoc, note)
 	self:DebugLog("CreateResponse", session, link, ilvl, response, equipLoc, note)
 	local g1, g2 = self:GetPlayersGear(link, equipLoc)
@@ -937,16 +1021,19 @@ function RCLootCouncil.TranslateRole(role) -- reasons
 	return (role and role ~= "") and RCLootCouncil.roleTable[role] or ""
 end
 
-function RCLootCouncil:GetGuildRankNum(name)
-	self:DebugLog("GetGuildRankNum("..tostring(name)..")")
+--- GetGuildRanks
+-- Returns a lookup table containing GuildRankNames and their index
+-- @return table "GuildRankName" = rankIndex
+function RCLootCouncil:GetGuildRanks()
+	if not IsInGuild() then return {} end
+	self:DebugLog("GetGuildRankNum()")
 	GuildRoster()
-	for i = 1, GetNumGuildMembers(true) do
-		local n, rank, rankIndex = GetGuildRosterInfo(i)
-		if n == name then
-			return rankIndex, rank;
-		end
+	local t = {}
+	for i = 1, GuildControlGetNumRanks() do
+		local name = GuildControlGetRankName(i)
+		t[name] = i
 	end
-	return 100; -- fallback
+	return t;
 end
 
 function RCLootCouncil:GetNumberOfDaysFromNow(oldDate)
@@ -963,8 +1050,6 @@ function RCLootCouncil:ConvertDateToString(day, month, year)
 		text = format(L["days, x months, y years"], text, month, year)
 	elseif month > 0 then
 		text = format(L["days and x months"], text, month)
-	else
-		text = text.."."
 	end
 	return text;
 end
@@ -985,7 +1070,7 @@ function RCLootCouncil:OnEvent(event, ...)
 		self:NewMLCheck()
 		-- Ask for data when we have done a /rl and have a ML
 		if not self.isMasterLooter and self.masterLooter and self.masterLooter ~= "" and player_relogged then
-			self:SendCommand(self.masterLooter, "reconnect")
+			self:ScheduleTimer("SendCommand", 2, self.masterLooter, "reconnect")
 		end
 		player_relogged = false
 
@@ -1055,6 +1140,7 @@ function RCLootCouncil:GetML()
 		return true, self.playerName
 	end
 	local lootMethod, mlPartyID, mlRaidID = GetLootMethod()
+	self:Debug("LootMethod = ", lootMethod)
 	if lootMethod == "master" then
 		local name;
 		if mlRaidID then 				-- Someone in raid
@@ -1065,6 +1151,8 @@ function RCLootCouncil:GetML()
 			name = self:UnitName("party"..mlPartyID)
 		end
 		self:Debug("MasterLooter = ", name)
+		-- Check to see if we have recieved mldb within 10 secs, otherwise request it
+		self:ScheduleTimer("Timer", 10, "MLdb_check")
 		return IsMasterLooter(), name
 	end
 	return false, nil;
@@ -1077,6 +1165,31 @@ function RCLootCouncil:IsCouncil(name)
 	return ret
 end
 
+--- Returns a table containing the the council members in the group
+function RCLootCouncil:GetCouncilInGroup()
+	local council = {}
+	if IsInRaid() then
+		for k,v in ipairs(self.council) do
+			if UnitInRaid(Ambiguate(v, "short")) then
+				tinsert(council, v)
+			end
+		end
+	elseif IsInGroup() then -- Party
+		for k,v in ipairs(self.council) do
+			if UnitInParty(Ambiguate(v, "short")) then
+				tinsert(council, v)
+			end
+		end
+	elseif self.isCouncil then -- When we're alone
+		tinsert(council, self.playerName)
+	end
+	if #council == 0 and self.masterLooter then -- We can't have empty council
+		tinsert(council, self.masterLooter)
+	end
+	self:DebugLog("GetCouncilInGroup", unpack(council))
+	return council
+end
+
 function RCLootCouncil:SessionError(...)
 	self:Print(L["session_error"])
 	self:Debug(...)
@@ -1086,10 +1199,15 @@ function RCLootCouncil:Getdb()
 	return db
 end
 
+function RCLootCouncil:GetHistoryDB()
+	return self.lootDB.factionrealm
+end
+
 function RCLootCouncil:GetAnnounceChannel(channel)
 	return channel == "group" and (IsInRaid() and "RAID" or "PARTY") or channel
 end
 
+--- Custom, better UnitIsUnit() function
 -- Blizz UnitIsUnit() doesn't know how to compare unit-realm with unit
 -- Seems to be because unit-realm isn't a valid unitid
 function RCLootCouncil:UnitIsUnit(unit1, unit2)
@@ -1149,8 +1267,8 @@ end
 -- The custom module must have all functions that a default module can be called with
 -- @param type Index (string) in userModules
 -- @param The name passed to AceAddon:NewModule()
-function RCLootCouncil:RegisterUserModule(type, name) -- REVIEW Test this
-	assert(userModules[type], format("Module %s is not a default module.", tostring(type)))
+function RCLootCouncil:RegisterUserModule(type, name)
+	assert(defaultModules[type], format("Module \"%s\" is not a default module.", tostring(type)))
 	userModules[type] = name
 end
 
@@ -1163,7 +1281,7 @@ end
 
 --- Used as a "DoCellUpdate" function for lib-st
 function RCLootCouncil.SetCellClassIcon(rowFrame, frame, data, cols, row, realrow, column, fShow, table, class)
-	local celldata = data[realrow].cols[column]
+	local celldata = data[realrow].cols and data[realrow].cols[column] or data[realrow][column]
 	local class = celldata.args and celldata.args[1] or class
 	if class then
 		frame:SetNormalTexture("Interface\\GLUES\\CHARACTERCREATE\\UI-CHARACTERCREATE-CLASSES"); -- this is the image containing all class icons
@@ -1179,7 +1297,7 @@ function RCLootCouncil:GetClassColor(class)
 	local color = RAID_CLASS_COLORS[class]
 	if not color then
 		-- if class not found, return epic color.
-		return {["r"] = 0.63921568627451, ["g"] = 0.2078431372549, ["b"] = 0.93333333333333, ["a"] = 1.0 };
+		return {r=1,g=1,b=1,a=1}--{["r"] = 0.63921568627451, ["g"] = 0.2078431372549, ["b"] = 0.93333333333333, ["a"] = 1.0 };
 	else
 		color.a = 1.0
 		return color
@@ -1190,7 +1308,7 @@ function RCLootCouncil:RGBToHex(r,g,b)
 	return string.format("%02x%02x%02x",255*r, 255*g, 255*b)
 end
 
---- Creates a standard frame for RCLootCouncil title and content table.
+--- Creates a standard frame for RCLootCouncil with title, minimizuing, positioning and zoom support.
 --		Adds Minimize(), Maximize() and IsMinimized() functions on the frame, and registers it for hide on combat.
 --		SetWidth/SetHeight called on frame will also be called on frame.content
 --		Minimizing is done by double clicking the title. The returned frame and frame.title is NOT minimized.
@@ -1362,33 +1480,33 @@ end
 
 --- Removes any realm name from name
 -- @paramsig name
--- @param name Name to remove realmname from
--- @return The name without realmname
+-- @param name Name with(out) realmname
+-- @return The name, with(out) realmname according to selected options
 function RCLootCouncil.Ambiguate(name)
-	return Ambiguate(name, "short")
+	return db.ambiguate and Ambiguate(name, "none") or Ambiguate(name, "short")
 end
 
 --- Returns the text of a button, returning settings from mldb, or default buttons
 -- @paramsig index
 -- @param index The button's index
 function RCLootCouncil:GetButtonText(i)
-	return self.mldb.buttons[i] and self.mldb.buttons[i].text or db.buttons[i].text
+	return (self.mldb.buttons and self.mldb.buttons[i]) and self.mldb.buttons[i].text or db.buttons[i].text
 end
 
 --- The following functions returns the text, sort or color of a response, returning a result from mldb if possible, otherwise the default responses.
 -- @paramsig response
--- @param response Index in self.responses
+-- @param response Index in db.responses
 function RCLootCouncil:GetResponseText(response)
-	return self.mldb.responses[response] and self.mldb.responses[response].text or self.responses[response].text
+	return (self.mldb.responses and self.mldb.responses[response]) and self.mldb.responses[response].text or db.responses[response].text
 end
 
 function RCLootCouncil:GetResponseColor(response)
-	local color = self.mldb.responses[response] and self.mldb.responses[response].color or self.responses[response].color
+	local color = (self.mldb.responses and self.mldb.responses[response]) and self.mldb.responses[response].color or db.responses[response].color
 	return unpack(color)
 end
 
 function RCLootCouncil:GetResponseSort(response)
-	return self.mldb.responses[response] and self.mldb.responses[response].sort or self.responses[response].sort
+	return (self.mldb.responses and self.mldb.responses[response]) and self.mldb.responses[response].sort or db.responses[response].sort
 end
 
 --#end UI Functions -----------------------------------------------------

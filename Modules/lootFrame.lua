@@ -9,7 +9,6 @@ local LootFrame = addon:NewModule("RCLootFrame", "AceTimer-3.0")
 local LibDialog = LibStub("LibDialog-1.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 
-local isMinimized = false
 local items = {} -- item.i = {name, link, lvl, texture} (i == session)
 local entries = {}
 local ENTRY_HEIGHT = 75
@@ -17,6 +16,7 @@ local MAX_ENTRIES = 5
 local numRolled = 0
 
 function LootFrame:Start(table)
+	addon:DebugLog("LootFrame:Start()")
 	for k = 1, #table do
 		if table[k].autopass then
 			items[k] = { rolled = true} -- it's autopassed, so pretend we rolled it
@@ -38,8 +38,9 @@ function LootFrame:Start(table)
 end
 
 function LootFrame:ReRoll(table)
+	addon:DebugLog("LootFrame:ReRoll(#table)", #table)
 	for k,v in ipairs(table) do
-		items[k] = {
+		tinsert(items,  {
 			name = v.name,
 			link = v.link,
 			ilvl = v.ilvl,
@@ -48,7 +49,7 @@ function LootFrame:ReRoll(table)
 			note = nil,
 			session = v.session,
 			equipLoc = v.equipLoc,
-		}
+		})
 	end
 	self:Show()
 end
@@ -125,11 +126,12 @@ end
 
 function LootFrame:GetFrame()
 	if self.frame then return self.frame end
+	addon:DebugLog("LootFrame","GetFrame()")
 	return addon:CreateFrame("DefaultRCLootFrame", "lootframe", L["RCLootCouncil Loot Frame"], 250, 375)
 end
 
 function LootFrame:GetEntry(entry)
-	--addon:DebugLog("GetEntry("..entry..")")
+	addon:DebugLog("GetEntry("..entry..")")
 	if entry == 0 then entry = 1 end
 	local f = CreateFrame("Frame", nil, self.frame.content)
 	f:SetWidth(self.frame:GetWidth())
