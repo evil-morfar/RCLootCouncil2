@@ -230,7 +230,7 @@ function RCVotingFrame:HandleVote(session, name, vote, voter)
 			end
 		end
 	end
-	self:Update()
+	self.frame.st:Refresh()
 	self:UpdatePeopleToVote()
 end
 
