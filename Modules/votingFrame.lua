@@ -24,6 +24,7 @@ local menuFrame -- Right click menu frame
 local filterMenu -- Filter drop down menu
 local enchanters -- Enchanters drop down menu frame
 local guildRanks = {} -- returned from addon:GetGuildRanks()
+local GuildRankSort, ResponseSort -- Initialize now to avoid errors
 
 function RCVotingFrame:OnInitialize()
 	self.scrollCols = {
@@ -811,8 +812,7 @@ function RCVotingFrame.filterFunc(table, row)
 	end
 end
 
-local function ResponseSort(table, rowa, rowb, sortbycol)
-	addon:Debug("Sorting a,b:",rowa,rowb)
+function ResponseSort(table, rowa, rowb, sortbycol)
 	if type(rowa) == "table" then printtable(rowa) end
 	local column = table.cols[sortbycol]
 	local a, b = table:GetRow(rowa), table:GetRow(rowb);
@@ -839,7 +839,7 @@ local function ResponseSort(table, rowa, rowb, sortbycol)
 	end
 end
 
-local function GuildRankSort(table, rowa, rowb, sortbycol)
+function GuildRankSort(table, rowa, rowb, sortbycol)
 	local column = table.cols[sortbycol]
 	local a, b = table:GetRow(rowa), table:GetRow(rowb);
 	-- Extract the rank index from the name, fallback to 100 if not found
