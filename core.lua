@@ -863,6 +863,7 @@ local subTypeLookup = {
 	["Two-Handed Maces"]		= 124375, -- Maul of Tyranny
 	["Two-Handed Swords"]	= 124389, -- Calamity's Edge
 	["Wands"]					= 128096, -- Demonspine Wand
+	["Warglaives"]				= 141604, -- Glaive of the Fallen
 }
 
 -- Never autopass these armor types
