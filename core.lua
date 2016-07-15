@@ -187,6 +187,8 @@ function RCLootCouncil:OnInitialize()
 				111245, -- Luminous Shard
 				115504, -- Fractured Temporal Crystal
 				113588, -- Temporal Crystal
+				124442, -- Chaos Crystal (Legion)
+				124441, -- Leylight Shard (Legion)
 			},
 		},
 	} -- defaults end
