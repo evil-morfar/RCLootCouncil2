@@ -24,6 +24,7 @@ local menuFrame -- Right click menu frame
 local filterMenu -- Filter drop down menu
 local enchanters -- Enchanters drop down menu frame
 local guildRanks = {} -- returned from addon:GetGuildRanks()
+local GuildRankSort, ResponseSort -- Initialize now to avoid errors
 
 function RCVotingFrame:OnInitialize()
 	self.scrollCols = {
@@ -39,7 +40,7 @@ function RCVotingFrame:OnInitialize()
 		{ name = L["Votes"], 	align = "CENTER",						sortnext = 7,		width = 40, },	-- 10 Number of votes
 		{ name = L["Vote"],		align = "CENTER",						sortnext = 10,		width = 60, },	-- 11 Vote button
 		{ name = L["Notes"],		align = "CENTER",												width = 40, },	-- 12 Note icon
-		{ name = L["Roll"],		align = "CENTER", 					sortnext = 11,		width = 30, },	-- 13 Roll
+		{ name = L["Roll"],		align = "CENTER", 					sortnext = 10,		width = 30, },	-- 13 Roll
 	}
 	menuFrame = CreateFrame("Frame", "RCLootCouncil_VotingFrame_RightclickMenu", UIParent, "Lib_UIDropDownMenuTemplate")
 	filterMenu = CreateFrame("Frame", "RCLootCouncil_VotingFrame_FilterMenu", UIParent, "Lib_UIDropDownMenuTemplate")
@@ -229,7 +230,7 @@ function RCVotingFrame:HandleVote(session, name, vote, voter)
 			end
 		end
 	end
-	self:Update()
+	self.frame.st:Refresh()
 	self:UpdatePeopleToVote()
 end
 
@@ -340,7 +341,7 @@ function RCVotingFrame:UpdateMoreInfo(row, data)
 	end
 
 	local color = addon:GetClassColor(self:GetCandidateData(session, name, "class"))
-	addon:Debug("Class", self:GetCandidateData(session, name, "class")) tip = self.frame.moreInfo -- shortening
+	tip = self.frame.moreInfo -- shortening
 	local count = {} -- Number of loot received
 	tip:SetOwner(self.frame, "ANCHOR_RIGHT")
 
@@ -371,7 +372,6 @@ function RCVotingFrame:UpdateMoreInfo(row, data)
 			end
 			count[entry.response] = count[entry.response] and count[entry.response] + 1 or 1
 			if not color[entry.response] or unpack(color[entry.response],1,3) == unpack({1,1,1}) and #entry.color ~= 0  then -- If it's not already added
-				addon:Debug(entry.response, entry.color, unpack(entry.color), #entry.color == 0)
 				color[entry.response] = #entry.color ~= 0 and #entry.color == 4 and entry.color or {1,1,1}
 			end
 
@@ -380,7 +380,6 @@ function RCVotingFrame:UpdateMoreInfo(row, data)
 		for response, num in pairs(count) do
 			local r,g,b = unpack(color[response],1,3)
 			tip:AddDoubleLine(response, num, r,g,b, r,g,b) -- Make sure we don't add the alpha value
-			addon:Debug("Unpack:", response,num, "First:", r,g,b,"Second:", r,g,b)
 			totalNum = totalNum + num
 		end
 		tip:AddDoubleLine(L["Total items received:"], totalNum, 0,1,1, 0,1,1)
@@ -811,8 +810,7 @@ function RCVotingFrame.filterFunc(table, row)
 	end
 end
 
-local function ResponseSort(table, rowa, rowb, sortbycol)
-	addon:Debug("Sorting a,b:",rowa,rowb)
+function ResponseSort(table, rowa, rowb, sortbycol)
 	if type(rowa) == "table" then printtable(rowa) end
 	local column = table.cols[sortbycol]
 	local a, b = table:GetRow(rowa), table:GetRow(rowb);
@@ -839,7 +837,7 @@ local function ResponseSort(table, rowa, rowb, sortbycol)
 	end
 end
 
-local function GuildRankSort(table, rowa, rowb, sortbycol)
+function GuildRankSort(table, rowa, rowb, sortbycol)
 	local column = table.cols[sortbycol]
 	local a, b = table:GetRow(rowa), table:GetRow(rowb);
 	-- Extract the rank index from the name, fallback to 100 if not found
