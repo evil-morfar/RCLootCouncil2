@@ -264,8 +264,8 @@ function RCLootCouncil:OnEnable()
 		self:SendCommand("guild", "verTest", self.version, self.tVersion) -- send out a version check
 	end
 
-	-- Any upgrade to v2.0.0 or Alpha.12 needs a db reset and possibly lootDB import
-	if (self.db.global.version and self.db.global.version < "2.0.0") or (self.db.global.tVersion and self.db.global.tVersion < "Alpha.12") then -- Upgraded to v.2.0.0
+	-- Any upgrade to v2.0.0 or from Alpha.12 needs a db reset and possibly lootDB import
+	if (self.db.global.version and self.db.global.version < "2.0.0") or (self.db.global.tVersion and self.db.global.tVersion <= "Alpha.12") then -- Upgraded to v.2.0.0
 		self:Debug("First time v2.0.0 upgrade!")
 		local lootdb = {}
 		if self.db.factionrealm.lootDB then
@@ -285,7 +285,7 @@ function RCLootCouncil:OnEnable()
 		self:Print("Your settings have been reset due to upgrading to v2.0.0")
 	end
 
-		self.db.global.version = self.version;
+	self.db.global.version = self.version;
 	self.db.global.logMaxEntries = self.defaults.global.logMaxEntries -- reset it now for zzz
 
 	if self.tVersion then
