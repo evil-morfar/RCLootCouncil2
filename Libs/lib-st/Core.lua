@@ -1,4 +1,4 @@
-local MAJOR, MINOR = "ScrollingTable", tonumber("145") or 40000; -- Edited to eliminate leaked globals
+local MAJOR, MINOR = "ScrollingTable", tonumber("146") or 40000; -- Edited to eliminate leaked globals (Bumped version to 146 with Legion API changes)
 if MINOR < 40000 then
 	MINOR = MINOR + 10000;
 end
