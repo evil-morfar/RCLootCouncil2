@@ -1,3 +1,104 @@
+==== v2.0
+
+* **Complete rewrite**
+
+*  UI overhaul
+**    Every frame now follows a standardized layout with support for minimizing and scaling (ctrl+scroll).
+      It's also made with future customization in mind. Note: Use rightclick for awarding items.
+
+*  Options menu overhaul
+**    Master Looter options have been moved to a separate tree and the entire interface have been streamlined.
+
+*  Updated chat commands
+**    Most chat commands results in a more appropriate interface than before, while some have been removed.
+
+*  ++Auto pass++
+**    By default, RCLootCouncil now auto passes on items certain classes can't use (e.g. plate for priests)
+      and items certain classes shouldn't use (e.g. leather for hunters).
+
+*  ++Observe mode++
+**    The Master Looter can enable observe mode to let non-council members see the voting frame.
+
+*  ++Autohide in combat++
+**    If enabled all RCLootCouncil frames will minimize when entering combat.
+
+*  ++Session setup++
+**    The Master Looter is now able to review the list of items before starting a session as well as
+      manipulating the list by adding or removing items.
+
+*  ++Award later++
+**    Using the session setup, the Master Looter can choose to award items later thus looting the items,
+      and have RCLootCouncil start a session later by typing '/rc award'. It's not possible to automatically
+      give out items that's already looted, so instead '/rc winners' gives you a list with whom to give the item to.
+
+*  ++Loot from bags++
+**    RCLootCouncil can now add custom items to a session by typing '/rc add [item]'.
+
+*  ++Localization++
+**    All text strings in the addon is now localizable. Head to http://wow.curseforge.com/addons/rclootcouncil/localization/
+      to contribuate.
+
+*  ++Ignore list++
+**    RCLootCouncil now have a customizable ignore list, for, well, ignoring stuff.
+
+*  ++Usage options++
+**    More usability to e.g. disable the popup when entering a raid by always accepting it, or
+      always rejecting it. Option to turn off the addon temporarily.
+
+*  ++Filtering++
+**    All responses on the voting frame are now filterable.
+
+*  ++Status text++
+**    Everyone in the group is now added to the voting frame with a status text as their response,
+      e.g. "Not installed", "Selecting response" and "Candidate removed"
+
+*  ++Diff and roll++
+**    Two new columns in the voting frame:
+**    "Diff" - which shows the item lvl difference between a candidates' equipped item and the one in session.
+**    "Roll" which allows the Master Looter to add a random 1 - 100 roll to all candidates should he so desire.
+
+*  ++Hide Votes++
+**    New option to hide votes until one self have voted.
+
+*  ++Module support++
+**    All frames are implemented as modules, which can be replaced. This also gives the opportunity
+      for anyone to add custom features to the core addon.
+
+*  ++Disenchant button++
+**    You'll get a "Disenchant" button in the voting frame. Clicking it will show a list of enchanters in your group (if any),
+      and clicking a name will award the item to that player with the reason selected for disenchant in "Award Reasons".
+
+*  --Limits--
+**    No more 20 item limit per session (not that you're gonna need that), no more "award in this particular order" limit,
+      no more "close session when you close the WoW loot frame", etc.
+
+*  --Rank Frame--
+**    Old and not really useful. Better alternative in the options menu.
+
+*  --Raid Chat--
+**    Noone wants to see people linking items in the raid chat just because someone didn't install an addon. Use whisper for that!
+
+*  --Pass button--
+**    Not really removed, but automatically added so you won't have to think about that. Also removed "filter passes" due to the new filtering system.
+
+1.7.8 Bugfixes:
+	*	Various taint fixes.
+	*	Alt-clicking items didn't work properly when the player used different loot frame addons.
+	*	Blizzard doesn't allow to give out loot with a quality less than loot treshhold, work-around by allowing items to get auto looted to the Master Looter.
+
+
+====== v2.0.0 Release changes ======
+*++Legion Updates++
+*Demon Hunters has been added to the autopass check.
+*Legion enchanting materials added to ignore table.
+*API updates to patch 7.0.3 changes
+
+*Every setting from both alpha versions and v1.7.8 has been reset. Loot History from v1.7.8 is imported to v2.0.
+
+*Bugfixes
+*//Sorting by Response or Guildrank didn't work as intended (#127).//
+*//The Voting Frame no longer sorts itself every time a vote is received.//
+
 ====== Alpha12 changes ======
 *Repacked. No longer named as "RCLootCouncil2". This is done in preparation for release. Note this change will overwrite any v.1.7.x settings.
 *It's no longer possible to start a session with items that aren't fully loaded.
@@ -95,91 +196,3 @@ the Loot History will come in a later update, go find the ticket on Curse to spe
 * Was double importing libs (#104)
 * Updated Libs/Lib-st due to leaked globals (#103)
 * Edited some locale to a more descriptive name
-
-==== v2.0 (Work in Progress)
-
-* **Complete rewrite**
-
-*  UI overhaul
-**    Every frame now follows a standardized layout with support for minimizing and scaling (ctrl+scroll).
-      It's also made with future customization in mind. Note: Use rightclick for awarding items.
-
-*  Options menu overhaul
-**    Master Looter options have been moved to a separate tree and the entire interface have been streamlined.
-
-*  Updated chat commands
-**    Most chat commands results in a more appropriate interface than before, while some have been removed.
-
-*  ++Auto pass++
-**    By default, RCLootCouncil now auto passes on items certain classes can't use (e.g. plate for priests)
-      and items certain classes shouldn't use (e.g. leather for hunters).
-
-*  ++Observe mode++
-**    The Master Looter can enable observe mode to let non-council members see the voting frame.
-
-*  ++Autohide in combat++
-**    If enabled all RCLootCouncil frames will minimize when entering combat.
-
-*  ++Session setup++
-**    The Master Looter is now able to review the list of items before starting a session as well as
-      manipulating the list by adding or removing items.
-
-*  ++Award later++
-**    Using the session setup, the Master Looter can choose to award items later thus looting the items,
-      and have RCLootCouncil start a session later by typing '/rc award'. It's not possible to automatically
-      give out items that's already looted, so instead '/rc winners' gives you a list with whom to give the item to.
-
-*  ++Loot from bags++
-**    RCLootCouncil can now add custom items to a session by typing '/rc add [item]'.
-
-*  ++Localization++
-**    All text strings in the addon is now localizable. Head to http://wow.curseforge.com/addons/rclootcouncil/localization/
-      to contribuate.
-
-*  ++Ignore list++
-**    RCLootCouncil now have a customizable ignore list, for, well, ignoring stuff.
-
-*  ++Usage options++
-**    More usability to e.g. disable the popup when entering a raid by always accepting it, or
-      always rejecting it. Option to turn off the addon temporarily.
-
-*  ++Filtering++
-**    All responses on the voting frame are now filterable.
-
-*  ++Status text++
-**    Everyone in the group is now added to the voting frame with a status text as their response,
-      e.g. "Not installed", "Selecting response" and "Candidate removed"
-
-*  ++Diff and roll++
-**    Two new columns in the voting frame:
-**    "Diff" - which shows the item lvl difference between a candidates' equipped item and the one in session.
-**    "Roll" which allows the Master Looter to add a random 1 - 100 roll to all candidates should he so desire.
-
-*  ++Hide Votes++
-**    New option to hide votes until one self have voted.
-
-*  ++Module support++
-**    All frames are implemented as modules, which can be replaced. This also gives the opportunity
-      for anyone to add custom features to the core addon.
-
-*  ++Disenchant button++
-**    You'll get a "Disenchant" button in the voting frame. Clicking it will show a list of enchanters in your group (if any),
-      and clicking a name will award the item to that player with the reason selected for disenchant in "Award Reasons".
-
-*  --Limits--
-**    No more 20 item limit per session (not that you're gonna need that), no more "award in this particular order" limit,
-      no more "close session when you close the WoW loot frame", etc.
-
-*  --Rank Frame--
-**    Old and not really useful. Better alternative in the options menu.
-
-*  --Raid Chat--
-**    Noone wants to see people linking items in the raid chat just because someone didn't install an addon. Use whisper for that!
-
-*  --Pass button--
-**    Not really removed, but automatically added so you won't have to think about that. Also removed "filter passes" due to the new filtering system.
-
-Bugfixes:
-	*	Various taint fixes.
-	*	Alt-clicking items didn't work properly when the player used different loot frame addons.
-	*	Blizzard doesn't allow to give out loot with a quality less than loot treshhold, work-around by allowing items to get auto looted to the Master Looter.
