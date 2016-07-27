@@ -325,7 +325,15 @@ function RCLootCouncilML:LootOpened()
 						if i ~= self.lootTable[session].lootSlot then -- It has changed!
 							self.lootTable[session].lootSlot = i -- and update it
 						end
-						break -- TODO This is problematic if we have two copies of the same item
+						-- Lets see if we have more of the same item in the rest of the lootTable
+						for ses = session, #self.lootTable do
+							if item == self.lootTable[ses].link then
+								-- We have! Lets give this one the current slot, as the first will be updated once we reach it in the main loops
+								self.lootTable[ses].lootSlot = i
+								break
+							end
+						end
+						break
 					end
 				end
 			else
