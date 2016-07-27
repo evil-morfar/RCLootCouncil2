@@ -8,8 +8,6 @@ TODOs/Notes
 		- If we truly want to be able to edit votingframe scrolltable with modules, it needs to have GetCol by name
 		- Pressing shift while hovering an item should do the same as vanilla
 		- The 4'th cell in @line81 in versionCheck should not be static
-
-		- Test whether warglaives are a new subtype
 --------------------------------
 CHANGELOG
 	-- SEE CHANGELOG.TXT
@@ -264,8 +262,8 @@ function RCLootCouncil:OnEnable()
 		self:SendCommand("guild", "verTest", self.version, self.tVersion) -- send out a version check
 	end
 
-	-- Any upgrade to v2.0.0 or Alpha.12 needs a db reset and possibly lootDB import
-	if (self.db.global.version and self.db.global.version < "2.0.0") or (self.db.global.tVersion and self.db.global.tVersion < "Alpha.12") then -- Upgraded to v.2.0.0
+	-- Any upgrade to v2.0.0 or from Alpha.12 needs a db reset and possibly lootDB import
+	if (self.db.global.version and self.db.global.version < "2.0.0") or (self.db.global.tVersion and self.db.global.tVersion <= "Alpha.12") then -- Upgraded to v.2.0.0
 		self:Debug("First time v2.0.0 upgrade!")
 		local lootdb = {}
 		if self.db.factionrealm.lootDB then
@@ -285,7 +283,7 @@ function RCLootCouncil:OnEnable()
 		self:Print("Your settings have been reset due to upgrading to v2.0.0")
 	end
 
-		self.db.global.version = self.version;
+	self.db.global.version = self.version;
 	self.db.global.logMaxEntries = self.defaults.global.logMaxEntries -- reset it now for zzz
 
 	if self.tVersion then
@@ -1037,6 +1035,7 @@ function RCLootCouncil:OnEvent(event, ...)
 		-- Ask for data when we have done a /rl and have a ML
 		if not self.isMasterLooter and self.masterLooter and self.masterLooter ~= "" and player_relogged then
 			self:ScheduleTimer("SendCommand", 2, self.masterLooter, "reconnect")
+			self:SendCommand(self.masterLooter, "playerInfo", self:GetPlayerInfo()) -- Also send out info, just in case
 		end
 		player_relogged = false
 
