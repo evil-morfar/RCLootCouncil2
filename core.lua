@@ -8,7 +8,8 @@ TODOs/Notes
 		- If we truly want to be able to edit votingframe scrolltable with modules, it needs to have GetCol by name
 		- Pressing shift while hovering an item should do the same as vanilla
 		- The 4'th cell in @line81 in versionCheck should not be static
-		- Demon Hunter autopass
+
+		- Test whether warglaives are a new subtype
 --------------------------------
 CHANGELOG
 	-- SEE CHANGELOG.TXT
@@ -50,7 +51,7 @@ function RCLootCouncil:OnInitialize()
   	self.version = GetAddOnMetadata("RCLootCouncil", "Version")
 	self.nnp = false
 	self.debug = false
-	self.tVersion = "Alpha.12" -- String or nil. Indicates test version, which alters stuff like version check. Is appended to 'version', i.e. "version-tVersion"
+	self.tVersion = nil -- String or nil. Indicates test version, which alters stuff like version check. Is appended to 'version', i.e. "version-tVersion"
 
 	self.playerClass = select(2, UnitClass("player"))
 	self.guildRank = L["Unguilded"]
@@ -91,7 +92,7 @@ function RCLootCouncil:OnInitialize()
 	-- Option table defaults
 	self.defaults = {
 		global = {
-			logMaxEntries = 300,
+			logMaxEntries = 500,
 			log = {}, -- debug log
 			localizedSubTypes = {},
 		},
@@ -186,6 +187,8 @@ function RCLootCouncil:OnInitialize()
 				111245, -- Luminous Shard
 				115504, -- Fractured Temporal Crystal
 				113588, -- Temporal Crystal
+				124442, -- Chaos Crystal (Legion)
+				124441, -- Leylight Shard (Legion)
 			},
 		},
 	} -- defaults end
@@ -282,16 +285,7 @@ function RCLootCouncil:OnEnable()
 		self:Print("Your settings have been reset due to upgrading to v2.0.0")
 	end
 
-	if self.tVersion and (not self.db.global.tVersion or self.db.global.tVersion ~= self.tVersion) then -- First time install TODO Remove this on release
-		-- Show a 5 sec delayed message on how to revert to latest Release version.
-		self:ScheduleTimer("Print", 5, format("You're running |cFF87CEFARCLootCouncil |cFFFFFFFFv|cFFFFA5002.0.0-%s|r. If you didn't download this intentionally please set 'Preferred Release Type' to 'Release' in your Curse Client, and update.", self.tVersion))
-		if self.db.global.tVersion and self.db.global.tVersion < "Alpha.4" then -- TODO Just in case I forget to remove it
-			-- Once again due to rapid update, and lets check for all previous alphas
-			db.council = {} -- reset council due to Alpha4 changes
-			self:ScheduleTimer("Print", 6, "Your council have been reset due to recent changes in|cFFFFA500Alpha.4")
-		end
-	end
-	self.db.global.version = self.version;
+		self.db.global.version = self.version;
 	self.db.global.logMaxEntries = self.defaults.global.logMaxEntries -- reset it now for zzz
 
 	if self.tVersion then
@@ -828,25 +822,26 @@ end
 
 -- Classes that should auto pass a subtype
 local autopassTable = {
-	["Cloth"]					= {"WARRIOR", "DEATHKNIGHT", "PALADIN", "DRUID", "MONK", "ROGUE", "HUNTER", "SHAMAN"},
+	["Cloth"]					= {"WARRIOR", "DEATHKNIGHT", "PALADIN", "DRUID", "MONK", "ROGUE", "HUNTER", "SHAMAN", "DEMONHUNTER"},
 	["Leather"] 				= {"WARRIOR", "DEATHKNIGHT", "PALADIN", "HUNTER", "SHAMAN", "PRIEST", "MAGE", "WARLOCK"},
-	["Mail"] 					= {"WARRIOR", "DEATHKNIGHT", "PALADIN", "DRUID", "MONK", "ROGUE", "PRIEST", "MAGE", "WARLOCK"},
-	["Plate"]					= {"DRUID", "MONK", "ROGUE", "HUNTER", "SHAMAN", "PRIEST", "MAGE", "WARLOCK"},
-	["Shields"] 				= {"DEATHKNIGHT", "DRUID", "MONK", "ROGUE", "HUNTER","PRIEST", "MAGE", "WARLOCK"},
-	["Bows"] 					= {"DEATHKNIGHT", "PALADIN", "DRUID", "MONK", "SHAMAN", "PRIEST", "MAGE", "WARLOCK"},
-	["Crossbows"] 				= {"DEATHKNIGHT", "PALADIN", "DRUID", "MONK", "SHAMAN", "PRIEST", "MAGE", "WARLOCK"},
+	["Mail"] 					= {"WARRIOR", "DEATHKNIGHT", "PALADIN", "DRUID", "MONK", "ROGUE", "PRIEST", "MAGE", "WARLOCK", "DEMONHUNTER"},
+	["Plate"]					= {"DRUID", "MONK", "ROGUE", "HUNTER", "SHAMAN", "PRIEST", "MAGE", "WARLOCK", "DEMONHUNTER"},
+	["Shields"] 				= {"DEATHKNIGHT", "DRUID", "MONK", "ROGUE", "HUNTER","PRIEST", "MAGE", "WARLOCK", "DEMONHUNTER"},
+	["Bows"] 					= {"DEATHKNIGHT", "PALADIN", "DRUID", "MONK", "SHAMAN", "PRIEST", "MAGE", "WARLOCK", "DEMONHUNTER"},
+	["Crossbows"] 				= {"DEATHKNIGHT", "PALADIN", "DRUID", "MONK", "SHAMAN", "PRIEST", "MAGE", "WARLOCK", "DEMONHUNTER"},
 	["Daggers"]					= {"WARRIOR", "DEATHKNIGHT", "PALADIN", "DRUID", "MONK", "HUNTER", "SHAMAN", },
-	["Guns"]						= {"DEATHKNIGHT", "PALADIN", "DRUID", "MONK","SHAMAN", "PRIEST", "MAGE", "WARLOCK"},
+	["Guns"]						= {"DEATHKNIGHT", "PALADIN", "DRUID", "MONK","SHAMAN", "PRIEST", "MAGE", "WARLOCK", "DEMONHUNTER"},
 	["Fist Weapons"] 			= {"DEATHKNIGHT", "PALADIN",  "PRIEST", "MAGE", "WARLOCK"},
 	["One-Handed Axes"]		= {"DRUID", "MONK", "ROGUE", "PRIEST", "MAGE", "WARLOCK"},
 	["One-Handed Maces"]		= {"MONK", "HUNTER", "MAGE", "WARLOCK"},
 	["One-Handed Swords"] 	= {"DRUID", "SHAMAN", "PRIEST",},
-	["Polearms"] 				= {"ROGUE", "HUNTER", "SHAMAN", "PRIEST", "MAGE", "WARLOCK"},
-	["Staves"]					= {"WARRIOR", "DEATHKNIGHT", "PALADIN",  "ROGUE", "HUNTER"},
-	["Two-Handed Axes"]		= {"DRUID", "ROGUE", "MONK", "PRIEST", "MAGE", "WARLOCK"},
-	["Two-Handed Maces"]		= {"MONK", "ROGUE", "HUNTER", "PRIEST", "MAGE", "WARLOCK"},
-	["Two-Handed Swords"]	= {"DRUID", "MONK", "ROGUE", "SHAMAN", "PRIEST", "MAGE", "WARLOCK"},
-	["Wands"]					= {"WARRIOR", "DEATHKNIGHT", "PALADIN", "DRUID", "MONK", "ROGUE", "HUNTER", "SHAMAN"},
+	["Polearms"] 				= {"ROGUE", "HUNTER", "SHAMAN", "PRIEST", "MAGE", "WARLOCK", "DEMONHUNTER"},
+	["Staves"]					= {"WARRIOR", "DEATHKNIGHT", "PALADIN",  "ROGUE", "HUNTER", "DEMONHUNTER"},
+	["Two-Handed Axes"]		= {"DRUID", "ROGUE", "MONK", "PRIEST", "MAGE", "WARLOCK", "DEMONHUNTER"},
+	["Two-Handed Maces"]		= {"MONK", "ROGUE", "HUNTER", "PRIEST", "MAGE", "WARLOCK", "DEMONHUNTER"},
+	["Two-Handed Swords"]	= {"DRUID", "MONK", "ROGUE", "SHAMAN", "PRIEST", "MAGE", "WARLOCK", "DEMONHUNTER"},
+	["Wands"]					= {"WARRIOR", "DEATHKNIGHT", "PALADIN", "DRUID", "MONK", "ROGUE", "HUNTER", "SHAMAN", "DEMONHUNTER"},
+	["Warglaives"]				= {"WARRIOR", "DEATHKNIGHT", "PALADIN", "DRUID", "MONK", "ROGUE", "PRIEST", "MAGE", "WARLOCK", "HUNTER", "SHAMAN",}
 }
 
 -- Used to find localized subType names
@@ -870,6 +865,7 @@ local subTypeLookup = {
 	["Two-Handed Maces"]		= 124375, -- Maul of Tyranny
 	["Two-Handed Swords"]	= 124389, -- Calamity's Edge
 	["Wands"]					= 128096, -- Demonspine Wand
+	["Warglaives"]				= 141604, -- Glaive of the Fallen
 }
 
 -- Never autopass these armor types
