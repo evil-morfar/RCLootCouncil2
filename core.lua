@@ -8,8 +8,6 @@ TODOs/Notes
 		- If we truly want to be able to edit votingframe scrolltable with modules, it needs to have GetCol by name
 		- Pressing shift while hovering an item should do the same as vanilla
 		- The 4'th cell in @line81 in versionCheck should not be static
-
-		- Test whether warglaives are a new subtype
 --------------------------------
 CHANGELOG
 	-- SEE CHANGELOG.TXT
@@ -1037,6 +1035,7 @@ function RCLootCouncil:OnEvent(event, ...)
 		-- Ask for data when we have done a /rl and have a ML
 		if not self.isMasterLooter and self.masterLooter and self.masterLooter ~= "" and player_relogged then
 			self:ScheduleTimer("SendCommand", 2, self.masterLooter, "reconnect")
+			self:SendCommand(self.masterLooter, "playerInfo", self:GetPlayerInfo()) -- Also send out info, just in case
 		end
 		player_relogged = false
 
