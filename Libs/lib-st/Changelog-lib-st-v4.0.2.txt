@@ -1,0 +1,19 @@
+------------------------------------------------------------------------
+r150 | ddumont | 2016-07-26 02:07:58 +0000 (Tue, 26 Jul 2016) | 1 line
+Changed paths:
+   A /tags/v4.0.2 (from /trunk:149)
+
+Tagging as v4.0.2
+------------------------------------------------------------------------
+r149 | ddumont | 2016-07-26 02:05:42 +0000 (Tue, 26 Jul 2016) | 1 line
+Changed paths:
+   M /trunk/lib-st.toc
+
+Update interface in TOC due to reports of it working in new WoW version.
+------------------------------------------------------------------------
+r147 | ddumont | 2016-07-24 21:55:29 +0000 (Sun, 24 Jul 2016) | 1 line
+Changed paths:
+   M /trunk/Core.lua
+
+Accept patch for changes in WoW api
+------------------------------------------------------------------------
