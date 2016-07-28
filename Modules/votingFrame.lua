@@ -599,30 +599,32 @@ function RCVotingFrame:UpdateSessionButton(i, texture, link, awarded)
 		btn:SetScript("Onclick", function() RCVotingFrame:SwitchSession(i); end)
 		btn:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square")
 		btn:GetHighlightTexture():SetBlendMode("ADD")
+		btn:SetNormalTexture(texture or "Interface\\InventoryItems\\WoWUnknownItem01")
+		btn:GetNormalTexture():SetDrawLayer("BACKGROUND")
 	end
 	-- then update it
-	texture = texture or "Interface\\InventoryItems\\WoWUnknownItem01"
-	---- Set the colored border and tooltips
+	btn:SetNormalTexture(texture or "Interface\\InventoryItems\\WoWUnknownItem01")
+	-- Set the colored border and tooltips
 	btn:SetBackdrop({
-			bgFile = texture,
-			edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
-			edgeSize = 18,
-			insets = { left = 4, right = 4, top = 4, bottom = 4 }
-		})
+		bgFile = "",
+		edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+		edgeSize = 18,
+		--insets = { left = -4, right = -4, top = -4, bottom = -4 }
+	})
 	local lines = { format(L["Click to switch to 'item'"], link) }
 	if i == session then
 		btn:SetBackdropBorderColor(1,1,0,1) -- yellow
-		--btn:GetNormalTexture():SetVertexColor(1,1,1)
-		btn:SetBackdropColor(1,1,1,1)
+		--btn:SetBackdropColor(1,1,1,1)
+		btn:GetNormalTexture():SetVertexColor(1,1,1)
 	elseif awarded then
 		btn:SetBackdropBorderColor(0,1,0,1) -- green
-		--btn:GetNormalTexture():SetVertexColor(0.8,0.8,0.8)
+		--btn:SetBackdropColor(1,1,1,0.8)
+		btn:GetNormalTexture():SetVertexColor(0.8,0.8,0.8)
 		tinsert(lines, L["This item has been awarded"])
-		btn:SetBackdropColor(1,1,1,0.8)
 	else
 		btn:SetBackdropBorderColor(1,1,1,1) -- white
-		--btn:GetNormalTexture():SetVertexColor(0.4,0.4,0.4)
-		btn:SetBackdropColor(0.5,0.5,0.5,0.8)
+		--btn:SetBackdropColor(0.5,0.5,0.5,0.8)
+		btn:GetNormalTexture():SetVertexColor(0.5,0.5,0.5)
 	end
 	btn:SetScript("OnEnter", function() addon:CreateTooltip(unpack(lines)) end)
 	btn:SetScript("OnLeave", function() addon:HideTooltip() end)
