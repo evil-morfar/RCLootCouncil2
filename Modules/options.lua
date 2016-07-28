@@ -871,7 +871,7 @@ function addon:OptionsTable()
 		local whisperKeys = {
 			order = i + 3,
 			name = L["Button"]..i,
-			desc = format(L["Set the whisper keys for button i. Used in conjunction with Chat settings."], i),
+			desc = format(L["Set the whisper keys for button i."], i),
 			type = "input",
 			width = "double",
 			get = function() return self.db.profile.buttons[i].whisperKey end,
