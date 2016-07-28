@@ -900,8 +900,10 @@ function RCLootCouncil:LocalizeSubTypes()
 			self.db.global.localizedSubTypes[sType] = name
 			self:DebugLog("Found "..name.." localized as: "..sType)
 		else -- Probably not cached, set a timer
+			self:Debug("We didn't find:", name, item)
 			self:ScheduleTimer("Timer", 2, "LocalizeSubTypes")
 			self.db.global.localizedSubTypes.created = false
+			return
 		end
 	end
 end
