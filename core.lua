@@ -540,6 +540,12 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 						return self:Debug("Sent 'DISABLED' response to", sender)
 					end
 
+					if not self.mldb then -- Really shouldn't happen, but I'm tired of people somehow not receiving it...
+						self:Debug("Received loot table without having mldb :(", sender)
+						self:SendCommand(self.masterLooter, "MLdb_request")
+						return self:ScheduleTimer("OnCommReceived", 1, prefix, serializedMsg, distri, sender)
+					end
+
 					self:SendCommand("group", "lootAck", self.playerName) -- send ack
 
 					if db.autoPass then -- Do autopassing
