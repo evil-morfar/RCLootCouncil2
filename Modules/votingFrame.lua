@@ -758,7 +758,7 @@ function RCVotingFrame.SetCellVote(rowFrame, frame, data, cols, row, realrow, co
 				end
 				-- Test if they're allowed to cast multiple votes
 				if not addon.mldb.multiVote then
-					if lootTable[session].candidates[name].haveVoted then
+					if lootTable[session].haveVoted then
 						return addon:Print(L["The Master Looter doesn't allow multiple votes."])
 					end
 				end

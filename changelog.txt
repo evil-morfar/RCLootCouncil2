@@ -97,8 +97,9 @@
 
 *Bugfixes
 *//Sorting by Response or Guildrank didn't work as intended (#127).//
+*//Multi Vote option didn't work properly (#128).//
 *//The Voting Frame no longer sorts itself every time a vote is received.//
-*//Wasn't handling sessions correctly when two exact items dropped.//
+*//Wasn't handling sessions correctly when two of the same items dropped.//
 
 ====== Alpha12 changes ======
 *Repacked. No longer named as "RCLootCouncil2". This is done in preparation for release. Note this change will overwrite any v.1.7.x settings.
