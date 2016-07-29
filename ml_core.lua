@@ -639,7 +639,7 @@ end
 
 -- Returns true if we are ignoring the item
 function RCLootCouncilML:IsItemIgnored(link)
-	local itemID = tonumber(strmatch(link, "item:(%d+):")) -- extract itemID
+	local itemID = addon:GetItemIDFromLink(link) -- extract itemID
 	return tContains(db.ignore, itemID)
 end
 

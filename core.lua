@@ -779,7 +779,7 @@ local INVTYPE_Slots = {
 }
 
 function RCLootCouncil:GetPlayersGear(link, equipLoc)
-	local itemID = tonumber(strmatch(link, "item:(%d+):")) -- Convert to itemID
+	local itemID = self:GetItemIDFromLink(link) -- Convert to itemID
 	self:DebugLog("GetPlayersGear", itemID, equipLoc)
 	if not itemID then return nil, nil; end
 	local item1, item2;
@@ -1178,6 +1178,10 @@ end
 
 function RCLootCouncil:GetAnnounceChannel(channel)
 	return channel == "group" and (IsInRaid() and "RAID" or "PARTY") or channel
+end
+
+function RCLootCouncil:GetItemIDFromLink(link)
+	return tonumber(strmatch(link, "item:(%d+):"))
 end
 
 --- Custom, better UnitIsUnit() function
