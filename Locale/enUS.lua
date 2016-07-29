@@ -215,6 +215,7 @@ L["No session running"] = true
 L["No winners registered"] = true
 L["No"] = true
 L["None"] = true
+L["Not announced"] = true
 L["Not cached, please reopen."] = true
 L["Not Found"] = true
 L["Not installed"] = true
