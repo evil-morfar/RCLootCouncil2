@@ -551,7 +551,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 					if db.autoPass then -- Do autopassing
 						for ses, v in ipairs(lootTable) do
 							if (v.boe and db.autoPassBoE) or not v.boe then
-								if self:AutoPassCheck(v.subType, v.equipLoc) then
+								if self:AutoPassCheck(v.subType, v.equipLoc, v.link) then
 									self:Debug("Autopassed on: ", v.link)
 									if not db.silentAutoPass then self:Print(format(L["Autopassed on 'item'"], v.link)) end
 									self:SendCommand("group", "response", self:CreateResponse(ses, v.link, v.ilvl, "AUTOPASS", v.equipLoc))
@@ -877,10 +877,15 @@ local autopassOverride = {
 	"INVTYPE_CLOAK",
 }
 
-function RCLootCouncil:AutoPassCheck(type, equipLoc)
+function RCLootCouncil:AutoPassCheck(subType, equipLoc, link)
 	if not tContains(autopassOverride, equipLoc) then
-		if type and autopassTable[self.db.global.localizedSubTypes[type]] then
-			return tContains(autopassTable[self.db.global.localizedSubTypes[type]], self.playerClass)
+		if subType and autopassTable[self.db.global.localizedSubTypes[subType]] then
+			return tContains(autopassTable[self.db.global.localizedSubTypes[subType]], self.playerClass)
+		end
+		-- The item wasn't a type we check for, but it might be a token
+		local id = type(link) == "number" and link or self:GetItemIDFromLink(link) -- Convert to id if needed
+		if RCTokenClasses[id] then -- It's a token
+			return not tContains(RCTokenClasses[id], self.playerClass)
 		end
 	end
 	return false

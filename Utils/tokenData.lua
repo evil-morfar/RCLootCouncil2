@@ -1,8 +1,9 @@
 ﻿-- Author      : Potdisc
 -- Create Date : 3/11/2013 10:25:13 PM
 -- tokenData.lua
--- Contains tier token itemIDs and their equivalent equip location
+-- Contains equip location and useable classes from tier tokens
 
+-- Equip locations
 RCTokenTable = {
 	--[xxxxxx] = "ExampleSlot",
 
@@ -365,4 +366,34 @@ RCTokenTable = {
 	[45656] = "ShoulderSlot",
 	[45657] = "ShoulderSlot",
 	[45658] = "ShoulderSlot",
+}
+
+-- Classes that can use the token
+RCTokenClasses = {
+	--[xxxxxx] = {classes that can use the token},
+
+	-- TIER 18	Hellfire Citadel
+	[127953] = {"PALADIN", "PRIEST", "WARLOCK", "DEMONHUNTER"},
+	[127962] = {"ROGUE", "DEATHKNIGHT", "MAGE", "DRUID"},
+	[127963] = {"WARRIOR", "HUNTER", "SHAMAN", "MONK"},
+
+	[127955] = {"PALADIN", "PRIEST", "WARLOCK", "DEMONHUNTER"},
+	[127960] = {"ROGUE", "DEATHKNIGHT", "MAGE", "DRUID"},
+	[127965] = {"WARRIOR", "HUNTER", "SHAMAN", "MONK"},
+
+	[127956] = {"PALADIN", "PRIEST", "WARLOCK", "DEMONHUNTER"},
+	[127959] = {"ROGUE", "DEATHKNIGHT", "MAGE", "DRUID"},
+	[127966] = {"WARRIOR", "HUNTER", "SHAMAN", "MONK"},
+
+	[127957] = {"PALADIN", "PRIEST", "WARLOCK", "DEMONHUNTER"},
+	[127961] = {"ROGUE", "DEATHKNIGHT", "MAGE", "DRUID"},
+	[127967] = {"WARRIOR", "HUNTER", "SHAMAN", "MONK"},
+
+	[127954] = {"PALADIN", "PRIEST", "WARLOCK", "DEMONHUNTER"},
+	[127958] = {"ROGUE", "DEATHKNIGHT", "MAGE", "DRUID"},
+	[127964] = {"WARRIOR", "HUNTER", "SHAMAN", "MONK"},
+
+	[127968] = {"ROGUE", "DEATHKNIGHT", "MAGE", "DRUID"},
+	[127969] = {"PALADIN", "PRIEST", "WARLOCK", "DEMONHUNTER"},
+	[127970] = {"WARRIOR", "HUNTER", "SHAMAN", "MONK"},
 }
