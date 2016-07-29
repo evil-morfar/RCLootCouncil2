@@ -95,6 +95,9 @@
 
 *Every setting from both alpha versions and v1.7.8 has been reset. Loot History from v1.7.8 is imported to v2.0.
 
+*++Tier token autopass++
+*Now autopasses on tier tokens not useable by your class.
+
 *Bugfixes
 *//Sorting by Response or Guildrank didn't work as intended (#127).//
 *//Multi Vote option didn't work properly (#128).//
