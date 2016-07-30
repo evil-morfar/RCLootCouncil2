@@ -111,7 +111,7 @@ function LootFrame:Update()
 			end
 		end
 	end
-	self.frame:SetHeight(numEntries * ENTRY_HEIGHT)
+	self.frame:SetHeight(numEntries * ENTRY_HEIGHT + 2)
 	self.frame:SetWidth(width)
 	for i = MAX_ENTRIES, numEntries + 1, -1 do -- Hide unused
 		if entries[i] then entries[i]:Hide() end
@@ -219,10 +219,11 @@ function LootFrame:GetEntry(entry)
 
 	------------ Timeout -------------
 	local bar = CreateFrame("StatusBar", nil, f, "TextStatusBar")
-	bar:SetSize(f:GetWidth(), 10)
-	bar:SetPoint("BOTTOMLEFT", 12,0)
-	bar:SetStatusBarTexture("Interface\\TargetingFrame\\UI-StatusBar");
-	bar:SetStatusBarColor(0.4, 0.8, 0.4, 0.8);
+	bar:SetSize(f:GetWidth(), 6)
+	bar:SetPoint("BOTTOMLEFT", 12,4)
+	bar:SetStatusBarTexture("Interface\\TargetingFrame\\UI-StatusBar")
+	--bar:SetStatusBarColor(0.1, 0, 0.6, 0.8) -- blue
+	bar:SetStatusBarColor(0.5, 0.5, 0.5, 1) -- grey
 	bar:SetMinMaxValues(0, addon.mldb.timeout or 30)
 	bar:SetScript("OnUpdate", function(this, elapsed)
 		if items[f.realID].timeLeft <= 0 then --Timeout!
@@ -244,7 +245,7 @@ function LootFrame:GetEntry(entry)
 		main_width(self, width)
 	end
 
-	local tof = bar:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+	local tof = bar:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
 	tof:SetPoint("CENTER", bar)
 	tof:SetTextColor(1,1,1)
 	tof:SetText("Timeout")
