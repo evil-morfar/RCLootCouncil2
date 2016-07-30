@@ -165,12 +165,19 @@ function RCLootCouncil:OnInitialize()
 				minimalGrey = {
 					name = "Minimal Grey",
 					bgColor = {0.25, 0.25, 0.25, 1},
-					borderColor = {0, 0, 0, 0},
-					border = "None",
+					borderColor = {1, 1, 1, 0.1},
+					border = "Stripped_medium",
 					background = "Blizzard Tooltip",
 				},
+				legion = {
+					name = "Legion Green",
+					bgColor = {0.1, 1, 0, 1},
+					borderColor = {0, 0.8, 0, 0.75},
+					background = "Blizzard Garrison Background 2",
+					border = "Blizzard Dialog Gold",
+				},
 			},
-			currentSkin = "new_blue",
+			currentSkin = "legion",
 
 			modules = { -- For storing module specific data
 				['*'] = {},

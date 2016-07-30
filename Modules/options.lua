@@ -6,6 +6,7 @@ local addon = LibStub("AceAddon-3.0"):GetAddon("RCLootCouncil")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 ------ Options ------
 function addon:OptionsTable()
+	local db = self:Getdb()
 	local options = {
 		name = "RCLootCouncil",
 		type = "group",
