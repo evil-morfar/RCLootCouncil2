@@ -31,6 +31,7 @@ function LootFrame:Start(table)
 				note = nil,
 				session = k,
 				equipLoc = table[k].equipLoc,
+				timeLeft = 30,
 			}
 		end
 	end
@@ -49,6 +50,7 @@ function LootFrame:ReRoll(table)
 			note = nil,
 			session = v.session,
 			equipLoc = v.equipLoc,
+			timeLeft = 30,
 		})
 	end
 	self:Show()
@@ -122,6 +124,12 @@ function LootFrame:OnRoll(entry, button)
 	numRolled = numRolled + 1
 	items[index].rolled = true
 	self:Update()
+end
+
+function LootFrame:ResetTimers()
+	for _, entry in ipairs(entries) do
+		entry.timeoutBar:Reset()
+	end
 end
 
 function LootFrame:GetFrame()
@@ -202,6 +210,41 @@ function LootFrame:GetEntry(entry)
 	ilvl:SetTextColor(1, 1, 1) -- White
 	ilvl:SetText("ilvl: 670")
 	f.itemLvl = ilvl
+
+	------------ Timeout -------------
+	local bar = CreateFrame("StatusBar", nil, f, "TextStatusBar")
+	bar:SetSize(f:GetWidth(), 10)
+	bar:SetPoint("BOTTOMLEFT", 12,0)
+	bar:SetStatusBarTexture("Interface\\TargetingFrame\\UI-StatusBar");
+	bar:SetStatusBarColor(0.4, 0.8, 0.4, 0.8);
+	bar:SetMinMaxValues(0,30)
+	bar:SetScript("OnUpdate", function(this, elapsed)
+		if items[f.realID].timeLeft <= 0 then --Timeout!
+			this.text:SetText("Timeout!!!!")
+			addon:Print(items[f.realID].timeLeft)
+			this:SetValue(0)
+			--this:Hide()
+			return self:OnRoll(entry, "TIMEOUT")
+		end
+		items[f.realID].timeLeft = items[f.realID].timeLeft - elapsed
+		this:Show()
+		this.text:SetText("Time left: ".. ceil(items[f.realID].timeLeft))
+		this:SetValue(items[f.realID].timeLeft)
+	end)
+	f.timeoutBar = bar
+
+	-- We want to update the width of the timeout bar everytime the width of the whole frame changes:
+	local main_width = f.SetWidth
+	function f:SetWidth(width)
+		self.timeoutBar:SetWidth(width - 24) -- 12 indent on each side
+		main_width(self, width)
+	end
+
+	local tof = f:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+	tof:SetPoint("CENTER", bar)
+	tof:SetTextColor(1,1,1)
+	tof:SetText("Timeout")
+	f.timeoutBar.text = tof
 	return f
 end
 
