@@ -639,8 +639,43 @@ function addon:OptionsTable()
 									-- Made further down
 								},
 							},
-							responseFromChat = {
+							timeoutOptions = {
 								order = 2,
+								type = "group",
+								name = "Timeout",
+								inline = true,
+								args = {
+									enable = {
+										order = 1,
+										name = "Enable Timeout",
+										desc = "Check to enable timeout on the Loot Frame",
+										type = "toggle",
+										set = function()
+											if self.db.profile.timeout then
+												self.db.profile.timeout = false
+											else
+												self.db.profile.timeout = 30
+											end
+										end,
+										get = function()
+											return self.db.profile.timeout
+										end,
+									},
+									timeout = {
+										order = 2,
+										name = "Lenght",
+										desc = "Choose length",
+										type = "range",
+										width = "full",
+										min = 0,
+										max = 200,
+										step = 5,
+										disabled = function() return not self.db.profile.timeout end,
+									},
+								},
+							},
+							responseFromChat = {
+								order = 3,
 								type = "group",
 								name = L["Responses from Chat"],
 								inline = true,
