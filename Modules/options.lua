@@ -282,7 +282,7 @@ function addon:OptionsTable()
 										type = "execute",
 										confirm = true,
 										func = function()
-											if db.currentSkin == "new_blue" or db.currentSkin == "old_red" or db.currentSkin == "minimalGrey" then
+											if db.currentSkin == "new_blue" or db.currentSkin == "old_red" or db.currentSkin == "minimalGrey" or db.currentSkin == "legion" then
 												self:Print(L["You cannot delete a default skin"])
 												return
 											end
