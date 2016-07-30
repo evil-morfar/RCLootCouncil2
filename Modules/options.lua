@@ -243,12 +243,10 @@ function addon:OptionsTable()
 										get = function() return db.currentSkin	end,
 										set = function(info, key)
 											for k,v in pairs(db.UI) do
-												if k ~= "**" then
-													v.bgColor = db.skins[key].bgColor
-													v.borderColor = db.skins[key].borderColor
-													v.background = db.skins[key].background
-													v.border = db.skins[key].border
-												end
+												v.bgColor = db.skins[key].bgColor
+												v.borderColor = db.skins[key].borderColor
+												v.background = db.skins[key].background
+												v.border = db.skins[key].border
 											end
 											db.currentSkin = key
 											self:UpdateFrames()
@@ -264,13 +262,12 @@ function addon:OptionsTable()
 												self:Print(L["You cannot overwrite a default skin"])
 												return
 											end
-											-- NOTE Needs to pick specific frame when implemented
 											db.skins[text] = {
 												name = text,
-												bgColor = db.UI.lootframe.bgColor,
-												borderColor = db.UI.lootframe.borderColor,
-												border = db.UI.lootframe.border,
-												background = db.UI.lootframe.background,
+												bgColor = db.UI.default.bgColor,
+												borderColor = db.UI.default.borderColor,
+												border = db.UI.default.border,
+												background = db.UI.default.background,
 											}
 											db.currentSkin = text
 										end,
@@ -309,12 +306,10 @@ function addon:OptionsTable()
 										type = "select",
 										dialogControl = "LSM30_Background",
 										values = AceGUIWidgetLSMlists.background,
-										get = function() return db.UI.lootframe.background end,
+										get = function() return db.UI.default.background end,
 										set = function(info, key)
 											for k,v in pairs(db.UI) do
-												if k ~= "**" then
-													v.background = key
-												end
+												v.background = key
 											end
 											self:UpdateFrames()
 										end
@@ -324,12 +319,10 @@ function addon:OptionsTable()
 										name = L["Background Color"],
 										type = "color",
 										hasAlpha = true,
-										get = function() return unpack(db.UI.lootframe.bgColor) end,
+										get = function() return unpack(db.UI.default.bgColor) end,
 										set = function(info, r,g,b,a)
 											for k,v in pairs(db.UI) do
-												if k ~= "**" then
-													v.bgColor = {r,g,b,a}
-												end
+												v.bgColor = {r,g,b,a}
 											end
 											self:UpdateFrames()
 										end
@@ -341,12 +334,10 @@ function addon:OptionsTable()
 										width = "double",
 										dialogControl = "LSM30_Border",
 										values = AceGUIWidgetLSMlists.border,
-										get = function() return db.UI.lootframe.border end,
+										get = function() return db.UI.default.border end,
 										set = function(info, key)
 											for k,v in pairs(db.UI) do
-												if k ~= "**" then
-													v.border = key
-												end
+												v.border = key
 											end
 											self:UpdateFrames()
 										end,
@@ -356,12 +347,10 @@ function addon:OptionsTable()
 										name = L["Border Color"],
 										type = "color",
 										hasAlpha = true,
-										get = function() return unpack(db.UI.lootframe.borderColor) end,
+										get = function() return unpack(db.UI.default.borderColor) end,
 										set = function(info, r,g,b,a)
 											for k,v in pairs(db.UI) do
-												if k ~= "**" then
-													v.borderColor = {r,g,b,a}
-												end
+												v.borderColor = {r,g,b,a}
 											end
 											self:UpdateFrames()
 										end
@@ -374,12 +363,10 @@ function addon:OptionsTable()
 										confirm = true,
 										func = function()
 											for k,v in pairs(db.UI) do
-												if k ~= "**" then
-													v.bgColor = db.UI["**"].bgColor
-													v.borderColor = db.UI["**"].borderColor
-													v.background = db.UI["**"].background
-													v.border = db.UI["**"].border
-												end
+												v.bgColor = self.defaults.profile.UI["**"].bgColor
+												v.borderColor = self.defaults.profile.UI["**"].borderColor
+												v.background = self.defaults.profile.UI["**"].background
+												v.border = self.defaults.profile.UI["**"].border
 											end
 											db.currentSkin = "new_blue"
 											self:UpdateFrames()
