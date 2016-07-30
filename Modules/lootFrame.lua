@@ -244,7 +244,7 @@ function LootFrame:GetEntry(entry)
 		main_width(self, width)
 	end
 
-	local tof = f:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+	local tof = bar:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 	tof:SetPoint("CENTER", bar)
 	tof:SetTextColor(1,1,1)
 	tof:SetText("Timeout")
