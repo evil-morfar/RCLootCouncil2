@@ -31,7 +31,7 @@ function LootFrame:Start(table)
 				note = nil,
 				session = k,
 				equipLoc = table[k].equipLoc,
-				timeLeft = 30,
+				timeLeft = addon.mldb.timeout,
 			}
 		end
 	end
@@ -50,7 +50,7 @@ function LootFrame:ReRoll(table)
 			note = nil,
 			session = v.session,
 			equipLoc = v.equipLoc,
-			timeLeft = 30,
+			timeLeft = addon.mldb.timeout,
 		})
 	end
 	self:Show()
@@ -103,6 +103,12 @@ function LootFrame:Update()
 			end
 			entries[numEntries]:SetWidth(width)
 			entries[numEntries]:Show()
+			if addon.mldb.timeout then
+				entries[numEntries].timeoutBar:SetMinMaxValues(0, addon.mldb.timeout or 30)
+				entries[numEntries].timeoutBar:Show()
+			else
+				entries[numEntries].timeoutBar:Hide()
+			end
 		end
 	end
 	self.frame:SetHeight(numEntries * ENTRY_HEIGHT)
@@ -217,17 +223,15 @@ function LootFrame:GetEntry(entry)
 	bar:SetPoint("BOTTOMLEFT", 12,0)
 	bar:SetStatusBarTexture("Interface\\TargetingFrame\\UI-StatusBar");
 	bar:SetStatusBarColor(0.4, 0.8, 0.4, 0.8);
-	bar:SetMinMaxValues(0,30)
+	bar:SetMinMaxValues(0, addon.mldb.timeout or 30)
 	bar:SetScript("OnUpdate", function(this, elapsed)
 		if items[f.realID].timeLeft <= 0 then --Timeout!
 			this.text:SetText("Timeout!!!!")
 			addon:Print(items[f.realID].timeLeft)
 			this:SetValue(0)
-			--this:Hide()
 			return self:OnRoll(entry, "TIMEOUT")
 		end
 		items[f.realID].timeLeft = items[f.realID].timeLeft - elapsed
-		this:Show()
 		this.text:SetText("Time left: ".. ceil(items[f.realID].timeLeft))
 		this:SetValue(items[f.realID].timeLeft)
 	end)
