@@ -693,6 +693,7 @@ function RCLootCouncil:DebugLog(msg, ...)
 end
 
 function RCLootCouncil:Test(num)
+	self:Debug("Test", num)
 	local testItems = {105473,105407,105513,105465,105482,104631,105450,105537,104554,105509,104412,105499,104476,104544,104495,105568,105594,105514,105479,104532,105639,104508,105621,}
 	local items = {};
 	-- pick "num" random items
