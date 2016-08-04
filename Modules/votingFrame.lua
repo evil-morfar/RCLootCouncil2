@@ -98,7 +98,7 @@ function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
 
 		if test then
 			if command == "vote" then
-				if tContains(addon.council, addon:UnitName(sender)) or addon:UnitIsUnit(sender, addon.masterLooter) then
+				if addon:IsCouncil(sender) or addon:UnitIsUnit(sender, addon.masterLooter) then
 					local s, name, vote = unpack(data)
 					self:HandleVote(s, name, vote, sender)
 				else

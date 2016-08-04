@@ -1140,7 +1140,7 @@ end
 
 function RCLootCouncil:IsCouncil(name)
 	local ret = tContains(self.council, name)
-	if self.isMasterLooter or self.nnp then ret = true end -- ML and nnp is always council
+	if self:UnitIsUnit(name, self.playerName) and self.isMasterLooter or self.nnp then ret = true end -- ML and nnp is always council
 	self:DebugLog(tostring(ret).." =", "IsCouncil", name)
 	return ret
 end
