@@ -1,3 +1,8 @@
+====== v2.0.1 ======
+*Autopass
+** Shamans no longer autopasses daggers, and hunters staves and polearms.
+
+
 ==== v2.0
 
 * **Complete rewrite**
