@@ -2,6 +2,8 @@
 *Autopass
 ** Shamans no longer autopasses daggers, and hunters staves and polearms.
 
+*Awarding an item now automatically changes the voting frame to the next.
+
 
 ==== v2.0
 

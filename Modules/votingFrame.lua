@@ -119,6 +119,9 @@ function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
 
 			elseif command == "awarded" and addon:UnitIsUnit(sender, addon.masterLooter) then
 				lootTable[unpack(data)].awarded = true
+				if addon.isMasterLooter and session ~= #lootTable then -- ML should move to the next item on award
+					session = session + 1
+				end
 				self:SwitchSession(session) -- Use switch session to update awardstring
 
 			elseif command == "candidates" and addon:UnitIsUnit(sender, addon.masterLooter) then
