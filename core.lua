@@ -637,7 +637,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 					self:Print(format(L["'player' has ended the session"], self.Ambiguate(self.masterLooter)))
 					self:GetActiveModule("lootframe"):Disable()
 					if self.isCouncil or self.mldb.observe then -- Don't call the voting frame if it wasn't used
-						self:GetActiveModule("votingframe"):EndSession()
+						self:GetActiveModule("votingframe"):EndSession(self.isMasterLooter)
 					end
 				else
 					self:Debug("Non ML:", sender, "sent end session command!")

@@ -1,5 +1,6 @@
 ====== v2.0.2 ======
 *Monks no longer autopasses on maces and axes.
+*The voting frame now closes when a session ends.
 
 ====== v2.0.1 ======
 *Autopass
