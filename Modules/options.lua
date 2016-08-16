@@ -276,9 +276,22 @@ function addon:OptionsTable()
 										confirm = true,
 										func = function()
 											db.skins[db.currentSkin] = nil
+											for k in pairs(db.skins) do db.currentSkin = k break end
 										end,
 									},
-									
+									resetSkins = {
+										order = 4,
+										name = L["Reset skins"],
+										desc = L["reset_skins_desc"],
+										type = "execute",
+										confirm = true,
+										func = function()
+											for k,v in pairs(self.defaults.profile.skins) do
+												db.skins[k] = v
+											end
+											db.currentSkin = self.defaults.profile.currentSkin
+										end,
+									},
 								},
 							},
 							custom = {
@@ -350,17 +363,16 @@ function addon:OptionsTable()
 									},
 									reset = {
 										order = -1,
-										name = L["Reset to default"],
-										desc = L["reset_appearance_desc"],
+										name = L["Reset Skin"],
+										desc = L["reset_skin_desc"],
 										type = "execute",
 										confirm = true,
 										func = function()
-											db.currentSkin = self.defaults.profile.currentSkin
 											for k,v in pairs(db.UI) do
-												v.bgColor = self.defaults.profile.skins[db.currentSkin].bgColor
-												v.borderColor = self.defaults.profile.skins[db.currentSkin].borderColor
-												v.background = self.defaults.profile.skins[db.currentSkin].background
-												v.border = self.defaults.profile.skins[db.currentSkin].border
+												v.bgColor = db.skins[db.currentSkin].bgColor
+												v.borderColor = db.skins[db.currentSkin].borderColor
+												v.background = db.skins[db.currentSkin].background
+												v.border = db.skins[db.currentSkin].border
 											end
 											self:UpdateFrames()
 										end,
