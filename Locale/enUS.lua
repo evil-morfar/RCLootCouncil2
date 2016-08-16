@@ -158,6 +158,7 @@ L["Enable Timeout"] = true
 L["enable_timeout_desc"] = "Check to enable timeout on the Loot Frame"
 L["Enter your note:"] = true
 L["Everyone have voted"] = true
+L["Export"] = true
 L["Filter"] = true
 L["Following winners was registered:"] = true
 L["Free"] = true

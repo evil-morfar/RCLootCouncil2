@@ -4,7 +4,7 @@
 -- lootHistory.lua	Adds the interface for displaying the collected loot history
 
 local addon = LibStub("AceAddon-3.0"):GetAddon("RCLootCouncil")
-local LootHistory = addon:NewModule("RCLootHistory")
+LootHistory = addon:NewModule("RCLootHistory")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 local lootDB, scrollCols, data, db, numLootWon;
 --[[ data structure:
@@ -20,6 +20,14 @@ local ROW_HEIGHT = 20;
 local NUM_ROWS = 15;
 
 function LootHistory:OnInitialize()
+	self.exportSelection = "csv"
+	-- Pointer to export functions. Expected to return a string containing the export
+	self.exports = {
+		csv = self.ExportCSV,
+		bbcode = self.ExportBBCode,
+		xml = self.ExportXML,
+		html = self.ExportHTML
+	}
 	scrollCols = {
 		{name = "",					width = ROW_HEIGHT, },			-- Class icon, should be same row as player
 		{name = L["Name"],		width = 100, 				},		-- Name of the player
@@ -252,6 +260,16 @@ function LootHistory.ResponseSort(table, rowa, rowb, sortbycol)
 	end
 end
 
+function LootHistory:ExportHistory()
+	local start = time()
+	local export = self.exports[self.exportSelection]()
+
+	if export and export ~= "" then -- do something
+		addon:DebugLog(export)
+	end
+	addon:Print("Time taken:", time()-start)
+end
+
 ---------------------------------------------------
 -- Visauls
 ---------------------------------------------------
@@ -339,10 +357,17 @@ function LootHistory:GetFrame()
 	local b3 = addon:CreateButton(L["Filter"], f.content)
 	b3:SetPoint("RIGHT", b1, "LEFT", -10, 0)
 	b3:SetScript("OnClick", function(self) Lib_ToggleDropDownMenu(1, nil, filterMenu, self, 0, 0) end )
-	b3:SetScript("OnEnter", function() addon:CreateTooltip(L["Deselect responses to filter them"]) end)
-	b3:SetScript("OnLeave", addon.HideTooltip)
+	--[[b3:SetScript("OnEnter", function() addon:CreateTooltip(L["Deselect responses to filter them"]) end)
+	b3:SetScript("OnLeave", addon.HideTooltip)]]
 	f.filter = b3
 	Lib_UIDropDownMenu_Initialize(b3, self.FilterMenu)
+
+	-- Export
+	local b4 = addon:CreateButton(L["Export"], f.content)
+	b4:SetPoint("RIGHT", b3, "LEFT", -10, 0)
+	b4:SetScript("OnClick", function() self:ExportHistory() end)
+	f.exportBtn = b4
+
 
 	-- Set a proper width
 	f:SetWidth(st.frame:GetWidth() + 20)
@@ -391,32 +416,49 @@ end
 ---------------------------------------------------
 function LootHistory.FilterMenu(menu, level)
 	local info = Lib_UIDropDownMenu_CreateInfo()
-		if level == 1 then -- Redundant
-			-- Build the data table:
-			local data = {["STATUS"] = true, ["PASS"] = true, ["AUTOPASS"] = true}
-			for i = 1, addon.mldb.numButtons or db.numButtons do
-				data[i] = i
+	if level == 1 then -- Redundant
+		-- Build the data table:
+		local data = {["STATUS"] = true, ["PASS"] = true, ["AUTOPASS"] = true}
+		for i = 1, addon.mldb.numButtons or db.numButtons do
+			data[i] = i
+		end
+		if not db.modules["RCLootHistory"].filters then -- Create the db entry
+			addon:DebugLog("Created LootHistory filters")
+			db.modules["RCLootHistory"].filters = {}
+		end
+		for k in pairs(data) do -- Update the db entry to make sure we have all buttons in it
+			if type(db.modules["RCLootHistory"].filters[k]) ~= "boolean" then
+				addon:Debug("Didn't contain "..k)
+				db.modules["RCLootHistory"].filters[k] = true -- Default as true
 			end
-			if not db.modules["RCLootHistory"].filters then -- Create the db entry
-				addon:DebugLog("Created LootHistory filters")
-				db.modules["RCLootHistory"].filters = {}
-			end
-			for k in pairs(data) do -- Update the db entry to make sure we have all buttons in it
-				if type(db.modules["RCLootHistory"].filters[k]) ~= "boolean" then
-					addon:Debug("Didn't contain "..k)
-					db.modules["RCLootHistory"].filters[k] = true -- Default as true
-				end
-			end
-			info.text = L["Filter"]
-			info.isTitle = true
-			info.notCheckable = true
-			info.disabled = true
-			Lib_UIDropDownMenu_AddButton(info, level)
-			info = Lib_UIDropDownMenu_CreateInfo()
+		end
+		info.text = L["Filter"]
+		info.isTitle = true
+		info.notCheckable = true
+		info.disabled = true
+		Lib_UIDropDownMenu_AddButton(info, level)
+		info = Lib_UIDropDownMenu_CreateInfo()
 
-			for k in ipairs(data) do -- Make sure normal responses are on top
-				info.text = addon:GetResponseText(k)
-				info.colorCode = "|cff"..addon:RGBToHex(addon:GetResponseColor(k))
+		for k in ipairs(data) do -- Make sure normal responses are on top
+			info.text = addon:GetResponseText(k)
+			info.colorCode = "|cff"..addon:RGBToHex(addon:GetResponseColor(k))
+			info.func = function()
+				addon:Debug("Update Filter")
+				db.modules["RCLootHistory"].filters[k] = not db.modules["RCLootHistory"].filters[k]
+				LootHistory:Update()
+			end
+			info.checked = db.modules["RCLootHistory"].filters[k]
+			Lib_UIDropDownMenu_AddButton(info, level)
+		end
+		for k in pairs(data) do -- A bit redundency, but it makes sure these "specials" comes last
+			if type(k) == "string" then
+				if k == "STATUS" then
+					info.text = L["Status texts"]
+					info.colorCode = "|cffde34e2" -- purpleish
+				else
+					info.text = addon:GetResponseText(k)
+					info.colorCode = "|cff"..addon:RGBToHex(addon:GetResponseColor(k))
+				end
 				info.func = function()
 					addon:Debug("Update Filter")
 					db.modules["RCLootHistory"].filters[k] = not db.modules["RCLootHistory"].filters[k]
@@ -425,23 +467,50 @@ function LootHistory.FilterMenu(menu, level)
 				info.checked = db.modules["RCLootHistory"].filters[k]
 				Lib_UIDropDownMenu_AddButton(info, level)
 			end
-			for k in pairs(data) do -- A bit redundency, but it makes sure these "specials" comes last
-				if type(k) == "string" then
-					if k == "STATUS" then
-						info.text = L["Status texts"]
-						info.colorCode = "|cffde34e2" -- purpleish
-					else
-						info.text = addon:GetResponseText(k)
-						info.colorCode = "|cff"..addon:RGBToHex(addon:GetResponseColor(k))
-					end
-					info.func = function()
-						addon:Debug("Update Filter")
-						db.modules["RCLootHistory"].filters[k] = not db.modules["RCLootHistory"].filters[k]
-						LootHistory:Update()
-					end
-					info.checked = db.modules["RCLootHistory"].filters[k]
-					Lib_UIDropDownMenu_AddButton(info, level)
-				end
-			end
 		end
 	end
+end
+
+
+---------------------------------------------------------------
+-- Exports
+---------------------------------------------------------------
+function LootHistory:ExportCSV()
+	-- Add headers
+	local export = "player, date, time, item, itemID, response, votes, class, instance, boss, gear1, gear2, responseID, isAwardReason\r\n"
+	for player, v in pairs(lootDB) do
+		for i, d in pairs(v) do
+			-- We might have commas in various things here :/
+			export = export
+				..tostring(player)..","
+				..tostring(d.date)..","
+				..tostring(d.time)..","
+				..gsub(tostring(d.lootWon),",","")..","
+				..addon:GetItemIDFromLink(d.lootWon)..","
+				..gsub(tostring(d.response),",","")..","
+				..tostring(d.votes)..","
+				..tostring(d.class)..","
+				..gsub(tostring(d.instance),",","")..","
+				..gsub(tostring(d.boss),",","")..","
+				..gsub(tostring(d.itemReplaced1),",","")..","
+				..gsub(tostring(d.itemReplaced2),",","")..","
+				..tostring(d.responseID)..","
+				..tostring(d.isAwardReason).."\r\n"
+		end
+	end
+	return export
+end
+
+function LootHistory:ExportBBCode()
+	local export = "bbTest"
+	return export
+end
+
+function LootHistory:ExportXML()
+	local export = "xml test"
+	return export
+end
+
+function LootHistory:ExportHTML()
+	local export = "html test"
+end
