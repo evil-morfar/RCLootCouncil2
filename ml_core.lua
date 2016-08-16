@@ -229,6 +229,7 @@ function RCLootCouncilML:BuildMLdb()
 		awardReasons	= changedAwardReasons,
 		buttons			= changedButtons,
 		responses		= changedResponses,
+		timeout			= db.timeout,
 	}
 end
 

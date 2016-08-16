@@ -217,6 +217,8 @@ function RCLootCouncil:OnInitialize()
 			},
 			disenchant = true, -- Disenchant enabled, i.e. there's a true in awardReasons.disenchant
 
+			timeout = 30,
+
 			-- List of items to ignore:
 			ignore = {
 				109693, -- Draenic Dust

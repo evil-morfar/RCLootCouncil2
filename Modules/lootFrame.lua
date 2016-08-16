@@ -31,6 +31,7 @@ function LootFrame:Start(table)
 				note = nil,
 				session = k,
 				equipLoc = table[k].equipLoc,
+				timeLeft = addon.mldb.timeout,
 			}
 		end
 	end
@@ -49,6 +50,7 @@ function LootFrame:ReRoll(table)
 			note = nil,
 			session = v.session,
 			equipLoc = v.equipLoc,
+			timeLeft = addon.mldb.timeout,
 		})
 	end
 	self:Show()
@@ -101,9 +103,15 @@ function LootFrame:Update()
 			end
 			entries[numEntries]:SetWidth(width)
 			entries[numEntries]:Show()
+			if addon.mldb.timeout then
+				entries[numEntries].timeoutBar:SetMinMaxValues(0, addon.mldb.timeout or 30)
+				entries[numEntries].timeoutBar:Show()
+			else
+				entries[numEntries].timeoutBar:Hide()
+			end
 		end
 	end
-	self.frame:SetHeight(numEntries * ENTRY_HEIGHT)
+	self.frame:SetHeight(numEntries * ENTRY_HEIGHT + 2)
 	self.frame:SetWidth(width)
 	for i = MAX_ENTRIES, numEntries + 1, -1 do -- Hide unused
 		if entries[i] then entries[i]:Hide() end
@@ -122,6 +130,12 @@ function LootFrame:OnRoll(entry, button)
 	numRolled = numRolled + 1
 	items[index].rolled = true
 	self:Update()
+end
+
+function LootFrame:ResetTimers()
+	for _, entry in ipairs(entries) do
+		entry.timeoutBar:Reset()
+	end
 end
 
 function LootFrame:GetFrame()
@@ -202,6 +216,39 @@ function LootFrame:GetEntry(entry)
 	ilvl:SetTextColor(1, 1, 1) -- White
 	ilvl:SetText("ilvl: 670")
 	f.itemLvl = ilvl
+
+	------------ Timeout -------------
+	local bar = CreateFrame("StatusBar", nil, f, "TextStatusBar")
+	bar:SetSize(f:GetWidth(), 6)
+	bar:SetPoint("BOTTOMLEFT", 12,4)
+	bar:SetStatusBarTexture("Interface\\TargetingFrame\\UI-StatusBar")
+	--bar:SetStatusBarColor(0.1, 0, 0.6, 0.8) -- blue
+	bar:SetStatusBarColor(0.5, 0.5, 0.5, 1) -- grey
+	bar:SetMinMaxValues(0, addon.mldb.timeout or 30)
+	bar:SetScript("OnUpdate", function(this, elapsed)
+		if items[f.realID].timeLeft <= 0 then --Timeout!
+			this.text:SetText(L["Timeout"])
+			this:SetValue(0)
+			return self:OnRoll(entry, "TIMEOUT")
+		end
+		items[f.realID].timeLeft = items[f.realID].timeLeft - elapsed
+		this.text:SetText(format(L["Time left (num seconds)"], ceil(items[f.realID].timeLeft)))
+		this:SetValue(items[f.realID].timeLeft)
+	end)
+	f.timeoutBar = bar
+
+	-- We want to update the width of the timeout bar everytime the width of the whole frame changes:
+	local main_width = f.SetWidth
+	function f:SetWidth(width)
+		self.timeoutBar:SetWidth(width - 24) -- 12 indent on each side
+		main_width(self, width)
+	end
+
+	local tof = bar:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+	tof:SetPoint("CENTER", bar)
+	tof:SetTextColor(1,1,1)
+	tof:SetText("Timeout")
+	f.timeoutBar.text = tof
 	return f
 end
 
