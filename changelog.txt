@@ -2,6 +2,7 @@
 *++Auto Close++
 **The voting frame can now be toggled to automatically close when the ML ends a session.
 *Monks no longer autopasses on maces and axes.
+*Rolls are now synced with the raid
 
 ====== v2.0.1 ======
 *Autopass

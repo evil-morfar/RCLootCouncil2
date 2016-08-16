@@ -156,6 +156,17 @@ function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
 					self:SetCandidateData(session, name, k, v)
 				end
 				self:Update()
+
+			elseif command == "rolls" then
+				if addon:UnitIsUnit(sender, addon.masterLooter) then
+					local session, table = unpack(data)
+					for name, roll in pairs(table) do
+						self:SetCandidateData(session, name, "roll", roll)
+					end
+					self:Update()
+				else
+					addon:Debug("Non-ML", sender, "sent rolls!")
+				end
 			end
 		end
 	end
@@ -239,10 +250,11 @@ function RCVotingFrame:HandleVote(session, name, vote, voter)
 end
 
 function RCVotingFrame:DoRandomRolls(ses)
-	for _, v in pairs (lootTable[ses].candidates) do
-		v.roll = math.random(100)
+	local table = {}
+	for name, v in pairs (lootTable[ses].candidates) do
+		table[name] = math.random(100)
 	end
-	self:Update()
+	addon:SendCommand("group", "rolls", ses, table)
 end
 
 ------------------------------------------------------------------
