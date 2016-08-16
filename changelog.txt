@@ -1,5 +1,6 @@
 ==== v2.1 ====
-
+*++Skins++
+**You can now customize the look and feel of RCLootCouncil.
 
 ====== v2.0.2 ======
 *++Auto Close++
@@ -119,6 +120,7 @@
 *//Multi Vote option didn't work properly (#128).//
 *//The Voting Frame no longer sorts itself every time a vote is received.//
 *//Wasn't handling sessions correctly when two of the same items dropped.//
+
 
 ====== Alpha12 changes ======
 *Repacked. No longer named as "RCLootCouncil2". This is done in preparation for release. Note this change will overwrite any v.1.7.x settings.
