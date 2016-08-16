@@ -258,10 +258,6 @@ function addon:OptionsTable()
 										desc = L["save_skin_desc"],
 										type = "input",
 										set = function(info, text)
-											if text == "new_blue" or text == "old_red" or text == "minimalGrey" then
-												self:Print(L["You cannot overwrite a default skin"])
-												return
-											end
 											db.skins[text] = {
 												name = text,
 												bgColor = db.UI.default.bgColor,
@@ -279,10 +275,6 @@ function addon:OptionsTable()
 										type = "execute",
 										confirm = true,
 										func = function()
-											if db.currentSkin == "new_blue" or db.currentSkin == "old_red" or db.currentSkin == "minimalGrey" or db.currentSkin == "legion" then
-												self:Print(L["You cannot delete a default skin"])
-												return
-											end
 											db.skins[db.currentSkin] = nil
 										end,
 									},
