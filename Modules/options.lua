@@ -97,14 +97,20 @@ function addon:OptionsTable()
 										desc = L["auto_open_desc"],
 										type = "toggle",
 									},
-									minimizeInCombat = {
+									autoClose = {
 										order = 3,
+										name = L["Auto Close"],
+										desc = L["auto_close_desc"],
+										type = "toggle",
+									},
+									minimizeInCombat = {
+										order = 4,
 										name = L["Minimize in combat"],
 										desc = L["Check to have all frames minimize when entering combat"],
 										type = "toggle",
 									},
 									ambiguate = {
-										order = 4,
+										order = 5,
 										name = L["Append realm names"],
 										desc = L["Check to append the realmname of a player from another realm"],
 										type = "toggle",

@@ -109,6 +109,7 @@ function RCLootCouncil:OnInitialize()
 			autolootEverything = true,
 			autolootBoE = true,
 			autoOpen = true, -- auto open the voting frame
+			autoClose = false, -- Auto close voting frame on session end
 			autoPassBoE = true,
 			autoPass = true,
 			altClickLooting = true,
@@ -637,7 +638,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 					self:Print(format(L["'player' has ended the session"], self.Ambiguate(self.masterLooter)))
 					self:GetActiveModule("lootframe"):Disable()
 					if self.isCouncil or self.mldb.observe then -- Don't call the voting frame if it wasn't used
-						self:GetActiveModule("votingframe"):EndSession(self.isMasterLooter)
+						self:GetActiveModule("votingframe"):EndSession(db.autoClose)
 					end
 				else
 					self:Debug("Non ML:", sender, "sent end session command!")
