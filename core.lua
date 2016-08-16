@@ -7,7 +7,6 @@ TODOs/Notes
 		- IDEA add an observer/council string to show players their role?
 		- If we truly want to be able to edit votingframe scrolltable with modules, it needs to have GetCol by name
 		- Pressing shift while hovering an item should do the same as vanilla
-		-- Appearance: Not at all final! Needs better handling than just looking at db.UI.lootFrame
 		- The 4'th cell in @line81 in versionCheck should not be static
 --------------------------------
 CHANGELOG
