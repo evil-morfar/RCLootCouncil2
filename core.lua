@@ -132,7 +132,7 @@ function RCLootCouncil:OnInitialize()
 			minimizeInCombat = false,
 
 			UI = { -- stores all ui information
-				['**'] = { -- Defaults --REVIEW for Lib-Window
+				['**'] = { -- Defaults
 					y		= 0,
 					x		= 0,
 					point	= "CENTER",
