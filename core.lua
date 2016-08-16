@@ -166,8 +166,8 @@ function RCLootCouncil:OnInitialize()
 				minimalGrey = {
 					name = "Minimal Grey",
 					bgColor = {0.25, 0.25, 0.25, 1},
-					borderColor = {1, 1, 1, 0.1},
-					border = "Stripped_medium",
+					borderColor = {1, 1, 1, 0.2},
+					border = "Blizzard Tooltip",
 					background = "Blizzard Tooltip",
 				},
 				legion = {
