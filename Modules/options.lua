@@ -360,7 +360,7 @@ function addon:OptionsTable()
 												v.background = self.defaults.profile.UI["**"].background
 												v.border = self.defaults.profile.UI["**"].border
 											end
-											db.currentSkin = "new_blue"
+											db.currentSkin = self.defaults.profile.currentSkin
 											self:UpdateFrames()
 										end,
 									},
