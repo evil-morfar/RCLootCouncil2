@@ -243,8 +243,8 @@ function addon:OptionsTable()
 										get = function() return db.currentSkin	end,
 										set = function(info, key)
 											for k,v in pairs(db.UI) do
-												v.bgColor = db.skins[key].bgColor
-												v.borderColor = db.skins[key].borderColor
+												v.bgColor = {unpack(db.skins[key].bgColor)}
+												v.borderColor = {unpack(db.skins[key].borderColor)}
 												v.background = db.skins[key].background
 												v.border = db.skins[key].border
 											end
@@ -260,10 +260,10 @@ function addon:OptionsTable()
 										set = function(info, text)
 											db.skins[text] = {
 												name = text,
-												bgColor = db.UI.default.bgColor,
-												borderColor = db.UI.default.borderColor,
-												border = db.UI.default.border,
+												bgColor = {unpack(db.UI.default.bgColor)},
+												borderColor = {unpack(db.UI.default.borderColor)},
 												background = db.UI.default.background,
+												border = db.UI.default.border,
 											}
 											db.currentSkin = text
 										end,
