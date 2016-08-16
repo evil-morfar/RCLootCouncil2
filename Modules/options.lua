@@ -278,6 +278,7 @@ function addon:OptionsTable()
 											db.skins[db.currentSkin] = nil
 										end,
 									},
+									
 								},
 							},
 							custom = {
@@ -354,13 +355,13 @@ function addon:OptionsTable()
 										type = "execute",
 										confirm = true,
 										func = function()
-											for k,v in pairs(db.UI) do
-												v.bgColor = self.defaults.profile.UI["**"].bgColor
-												v.borderColor = self.defaults.profile.UI["**"].borderColor
-												v.background = self.defaults.profile.UI["**"].background
-												v.border = self.defaults.profile.UI["**"].border
-											end
 											db.currentSkin = self.defaults.profile.currentSkin
+											for k,v in pairs(db.UI) do
+												v.bgColor = self.defaults.profile.skins[db.currentSkin].bgColor
+												v.borderColor = self.defaults.profile.skins[db.currentSkin].borderColor
+												v.background = self.defaults.profile.skins[db.currentSkin].background
+												v.border = self.defaults.profile.skins[db.currentSkin].border
+											end
 											self:UpdateFrames()
 										end,
 									},
