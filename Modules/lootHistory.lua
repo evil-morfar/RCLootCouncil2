@@ -262,6 +262,8 @@ end
 
 function LootHistory:ExportHistory()
 	local start = time()
+	addon:Print("SelectedName", selectedName)
+	addon:Print("SelectedDate", selectedDate)
 	local export = self.exports[self.exportSelection]()
 
 	if export and export ~= "" then -- do something
@@ -479,23 +481,27 @@ function LootHistory:ExportCSV()
 	-- Add headers
 	local export = "player, date, time, item, itemID, response, votes, class, instance, boss, gear1, gear2, responseID, isAwardReason\r\n"
 	for player, v in pairs(lootDB) do
-		for i, d in pairs(v) do
-			-- We might have commas in various things here :/
-			export = export
-				..tostring(player)..","
-				..tostring(d.date)..","
-				..tostring(d.time)..","
-				..gsub(tostring(d.lootWon),",","")..","
-				..addon:GetItemIDFromLink(d.lootWon)..","
-				..gsub(tostring(d.response),",","")..","
-				..tostring(d.votes)..","
-				..tostring(d.class)..","
-				..gsub(tostring(d.instance),",","")..","
-				..gsub(tostring(d.boss),",","")..","
-				..gsub(tostring(d.itemReplaced1),",","")..","
-				..gsub(tostring(d.itemReplaced2),",","")..","
-				..tostring(d.responseID)..","
-				..tostring(d.isAwardReason).."\r\n"
+		if selectedName and selectedName == player or not selectedName then
+			for i, d in pairs(v) do
+				if selectedDate and selectedDate == d.date or not selectedDate then
+					-- We might have commas in various things here :/
+					export = export
+						..tostring(player)..","
+						..tostring(d.date)..","
+						..tostring(d.time)..","
+						..gsub(tostring(d.lootWon),",","")..","
+						..addon:GetItemIDFromLink(d.lootWon)..","
+						..gsub(tostring(d.response),",","")..","
+						..tostring(d.votes)..","
+						..tostring(d.class)..","
+						..gsub(tostring(d.instance),",","")..","
+						..gsub(tostring(d.boss),",","")..","
+						..gsub(tostring(d.itemReplaced1),",","")..","
+						..gsub(tostring(d.itemReplaced2),",","")..","
+						..tostring(d.responseID)..","
+						..tostring(d.isAwardReason).."\r\n"
+				end
+			end
 		end
 	end
 	return export
