@@ -227,13 +227,12 @@ function LootFrame:GetEntry(entry)
 	bar:SetMinMaxValues(0, addon.mldb.timeout or 30)
 	bar:SetScript("OnUpdate", function(this, elapsed)
 		if items[f.realID].timeLeft <= 0 then --Timeout!
-			this.text:SetText("Timeout!!!!")
-			addon:Print(items[f.realID].timeLeft)
+			this.text:SetText(L["Timeout"])
 			this:SetValue(0)
 			return self:OnRoll(entry, "TIMEOUT")
 		end
 		items[f.realID].timeLeft = items[f.realID].timeLeft - elapsed
-		this.text:SetText("Time left: ".. ceil(items[f.realID].timeLeft))
+		this.text:SetText(format(L["Time left (num seconds)"], ceil(items[f.realID].timeLeft)))
 		this:SetValue(items[f.realID].timeLeft)
 	end)
 	f.timeoutBar = bar

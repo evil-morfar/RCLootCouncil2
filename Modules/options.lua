@@ -642,13 +642,13 @@ function addon:OptionsTable()
 							timeoutOptions = {
 								order = 2,
 								type = "group",
-								name = "Timeout",
+								name = L["Timeout"],
 								inline = true,
 								args = {
 									enable = {
 										order = 1,
-										name = "Enable Timeout",
-										desc = "Check to enable timeout on the Loot Frame",
+										name = L["Enable Timeout"],
+										desc = L["enable_timeout_desc"],
 										type = "toggle",
 										set = function()
 											if self.db.profile.timeout then
@@ -663,8 +663,8 @@ function addon:OptionsTable()
 									},
 									timeout = {
 										order = 2,
-										name = "Lenght",
-										desc = "Choose length",
+										name = L["Lenght"],
+										desc = L["Choose timeout length in seconds"],
 										type = "range",
 										width = "full",
 										min = 0,
