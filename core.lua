@@ -1231,6 +1231,14 @@ function RCLootCouncil:GetItemIDFromLink(link)
 	return tonumber(strmatch(link, "item:(%d+):"))
 end
 
+function RCLootCouncil:GetItemStringFromLink(link)
+	return strmatch(link, "item[%-?%d:]+")
+end
+
+function RCLootCouncil:GetItemNameFromLink(link)
+	return strmatch(link, "%[(.+)%]")
+end
+
 --- Custom, better UnitIsUnit() function
 -- Blizz UnitIsUnit() doesn't know how to compare unit-realm with unit
 -- Seems to be because unit-realm isn't a valid unitid
