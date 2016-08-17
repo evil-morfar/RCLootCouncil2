@@ -20,7 +20,7 @@ local ROW_HEIGHT = 20;
 local NUM_ROWS = 15;
 
 function LootHistory:OnInitialize()
-	self.exportSelection = "csv"
+	self.exportSelection = "bbcode"
 	-- Pointer to export functions. Expected to return a string containing the export
 	self.exports = {
 		csv = self.ExportCSV,
@@ -477,6 +477,7 @@ end
 ---------------------------------------------------------------
 -- Exports
 ---------------------------------------------------------------
+-- CSV with all stored data
 function LootHistory:ExportCSV()
 	-- Add headers
 	local export = "player, date, time, item, itemID, response, votes, class, instance, boss, gear1, gear2, responseID, isAwardReason\r\n"
@@ -507,8 +508,28 @@ function LootHistory:ExportCSV()
 	return export
 end
 
+-- Simplified BBCode, as supported by CurseForge
 function LootHistory:ExportBBCode()
-	local export = "bbTest"
+	local export = ""
+	for player, v in pairs(lootDB) do
+		if selectedName and selectedName == player or not selectedName then
+			export = export.."[b]"..addon.Ambiguate(player)..":[/b]\r\n"
+			export = export.."[list=1]"
+			local first = true
+			for i, d in pairs(v) do
+				if selectedDate and selectedDate == d.date or not selectedDate then
+					if first then						
+						first = false
+					else
+						export = export.."[*]"
+					end
+					export=export.."[url=http://www.wowhead.com/item="..addon:GetItemIDFromLink(d.lootWon).."]"..d.lootWon.."[/url]"
+					.." Response: "..tostring(d.response)..".\r\n"
+				end
+			end
+			export=export.."[/list]\r\n\r\n"
+		end
+	end
 	return export
 end
 
