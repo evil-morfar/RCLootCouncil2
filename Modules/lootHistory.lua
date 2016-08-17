@@ -20,7 +20,7 @@ local ROW_HEIGHT = 20;
 local NUM_ROWS = 15;
 
 function LootHistory:OnInitialize()
-	self.exportSelection = "bbcode"
+	self.exportSelection = "xml"
 	-- Pointer to export functions. Expected to return a string containing the export
 	self.exports = {
 		csv = self.ExportCSV,
@@ -518,7 +518,7 @@ function LootHistory:ExportBBCode()
 			local first = true
 			for i, d in pairs(v) do
 				if selectedDate and selectedDate == d.date or not selectedDate then
-					if first then						
+					if first then
 						first = false
 					else
 						export = export.."[*]"
@@ -534,7 +534,39 @@ function LootHistory:ExportBBCode()
 end
 
 function LootHistory:ExportXML()
-	local export = "xml test"
+	local export = "<raidlog><head><export><name>EQdkp Plus XML</name><version>1.0</version></export>"
+ 		.."<tracker><name>RCLootCouncil</name><version>"..addon.version.."</version></tracker>"
+ 		.."<gameinfo><game>World of Warcraft</game><language>"..GetLocale().."</language><charactername>"..UnitName("Player").."</charactername></gameinfo></head>"
+ 		.."<raiddata>"	 
+	export=export.."\t<items>\r\n"
+	for player, v in pairs(lootDB) do
+		if selectedName and selectedName == player or not selectedName then
+			for i, d in pairs(v) do
+				if selectedDate and selectedDate == d.date or not selectedDate then
+					export = export.."\t\t<item>\r\n"
+					.."\t\t\t<itemid>" .. addon:GetItemIDFromLink(d.lootWon) .. "</itemid>\r\n"
+					.."\t\t\t<name>" .. addon:GetItemNameFromLink(d.lootWon) .. "</name>\r\n"
+					.."\t\t\t<member>" .. addon.Ambiguate(player) .. "</member>\r\n"
+					.."\t\t\t<time>" .. tostring(d.time) .. "</time>\r\n"
+					.."\t\t\t<count>1</count>\r\n"
+					.."\t\t\t<cost>" .. tostring(d.votes) .. "</cost>\r\n"
+					if d.boss then
+						export = export .. "\t\t\t<boss>" .. gsub(tostring(d.boss),",","").. "</boss>\r\n"
+					else
+						export = export .. "\t\t\t<boss />\r\n"
+					end
+					if d.instance then
+						export = export .. "\t\t\t<zone>" .. gsub(tostring(d.instance),",","") .. "</zone>\r\n"
+					else
+						export = export .. "\t\t\t<zone />\r\n"
+					end
+					export = export.."\t\t</item>\r\n"
+				end
+			end
+		end
+	end
+	export = export.. "\t</items>\r\n"
+	export=export.. "</raiddata></raidlog>\r\n"
 	return export
 end
 
