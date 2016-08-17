@@ -93,6 +93,7 @@ L["buttons_and_responses_desc"] = "Configure the reply buttons to show on raider
 L["Cancel"] = true
 L["Candidate didn't respond on time"] = true
 L["Candidate has disabled RCLootCouncil"] = true
+L["Candidate is not in the instance"] = true
 L["Candidate is selecting response, please wait"] = true
 L["Candidate removed"] = true
 L["Cannot autoaward:"] = true
