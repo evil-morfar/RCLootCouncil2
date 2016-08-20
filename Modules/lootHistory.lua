@@ -536,37 +536,66 @@ end
 function LootHistory:ExportXML()
 	local export = "<raidlog><head><export><name>EQdkp Plus XML</name><version>1.0</version></export>"
  		.."<tracker><name>RCLootCouncil</name><version>"..addon.version.."</version></tracker>"
- 		.."<gameinfo><game>World of Warcraft</game><language>"..GetLocale().."</language><charactername>"..UnitName("Player").."</charactername></gameinfo></head>"
- 		.."<raiddata>"	 
-	export=export.."\t<items>\r\n"
+ 		.."<gameinfo><game>World of Warcraft</game><language>"..GetLocale().."</language><charactername>"..UnitName("Player").."</charactername></gameinfo></head>\r\n"
+ 		.."<raiddata>\r\n"
+	local bossData = "\t<bosskills>\r\n"
+	local zoneData = "\t<zones>\r\n"
+	local itemsData ="\t<items>\r\n"
+	local membersData = {}
+	local raidData = {}
 	for player, v in pairs(lootDB) do
 		if selectedName and selectedName == player or not selectedName then
 			for i, d in pairs(v) do
 				if selectedDate and selectedDate == d.date or not selectedDate then
-					export = export.."\t\t<item>\r\n"
-					.."\t\t\t<itemid>" .. addon:GetItemIDFromLink(d.lootWon) .. "</itemid>\r\n"
+					local day, month, year = strsplit("/", d.date, 3)
+					local hour,minute,second = strsplit(":",d.time,3)
+					local sinceEpoch = time({year = "20"..year, month = month, day = day,hour = hour,min = minute,sec=second})
+					itemsData = itemsData.."\t\t<item>\r\n"
+					.."\t\t\t<itemid>" .. addon:GetItemStringFromLink(d.lootWon) .. "</itemid>\r\n"
 					.."\t\t\t<name>" .. addon:GetItemNameFromLink(d.lootWon) .. "</name>\r\n"
 					.."\t\t\t<member>" .. addon.Ambiguate(player) .. "</member>\r\n"
-					.."\t\t\t<time>" .. tostring(d.time) .. "</time>\r\n"
+					.."\t\t\t<time>" .. sinceEpoch .. "</time>\r\n"
 					.."\t\t\t<count>1</count>\r\n"
 					.."\t\t\t<cost>" .. tostring(d.votes) .. "</cost>\r\n"
+					membersData[addon.Ambiguate(player)] = true
+					bossData = bossData .. "\t\t<bosskill>\r\n"
 					if d.boss then
-						export = export .. "\t\t\t<boss>" .. gsub(tostring(d.boss),",","").. "</boss>\r\n"
+						itemsData = itemsData .. "\t\t\t<boss>" .. gsub(tostring(d.boss),",","").. "</boss>\r\n"
+						bossData = bossData.. "\t\t\t<name>"..gsub(tostring(d.boss),",","").."</name>\r\n"
 					else
-						export = export .. "\t\t\t<boss />\r\n"
+						itemsData = itemsData .. "\t\t\t<boss />\r\n"
+						bossData = bossData.. "\t\t\t<name>Unknown</name>\r\n"
 					end
 					if d.instance then
-						export = export .. "\t\t\t<zone>" .. gsub(tostring(d.instance),",","") .. "</zone>\r\n"
+						itemsData = itemsData .. "\t\t\t<zone>" .. gsub(tostring(d.instance),",","") .. "</zone>\r\n"
+						raidData[time({year="20"..year,month=month,day=day})] = gsub(tostring(d.instance),",","")
+						bossData = bossData.."\t\t\t<time>"..sinceEpoch.."</time>\r\n"
 					else
-						export = export .. "\t\t\t<zone />\r\n"
+						itemsData = itemsData .. "\t\t\t<zone />\r\n"
 					end
-					export = export.."\t\t</item>\r\n"
+					itemsData = itemsData.."\t\t</item>\r\n"
+					bossData = bossData .. "\t\t</bosskill>\r\n"
 				end
 			end
 		end
 	end
-	export = export.. "\t</items>\r\n"
-	export=export.. "</raiddata></raidlog>\r\n"
+	bossData = bossData .."\t</bosskills>\r\n"
+	for id, name in pairs(raidData) do
+		zoneData = zoneData .. "\t\t<zone>\r\n"
+		.. "\t\t\t<enter>"..id.."</enter>\r\n"
+		.. "\t\t\t<name>"..name.."</name>\r\n"
+		.. "\t\t</zone>\r\n"
+	end
+	zoneData = zoneData .."\t</zones>\r\n"
+	itemsData = itemsData.. "\t</items>\r\n"
+	export = export..zoneData..bossData..itemsData
+	.."\t<members>\r\n"
+	for name in pairs(membersData) do
+		export = export.. "\t\t<member>\r\n"
+		.."\t\t\t<name>"..name.."</name>\r\n"
+		.."\t\t</member>\r\n"
+	end
+	export=export.. "\t</members>\r\n</raiddata></raidlog>\r\n"
 	return export
 end
 
