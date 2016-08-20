@@ -137,10 +137,10 @@ function RCLootCouncil:OnInitialize()
 					x		= 0,
 					point	= "CENTER",
 					scale	= 0.8,
-					bgColor = {0, 0, 0.2, 1}, -- Blue-ish
-					borderColor = {0.3, 0.3, 0.5, 1}, -- More Blue-ish
-					border = "Blizzard Tooltip",
-					background = "Blizzard Tooltip",
+					bgColor = {0.1, 1, 0, 1},
+					borderColor = {0, 0.8, 0, 0.75},
+					border = "Blizzard Garrison Background 2",
+					background = "Blizzard Dialog Gold",
 				},
 				lootframe = { -- We want the Loot Frame to get a little lower
 					y = -200,
