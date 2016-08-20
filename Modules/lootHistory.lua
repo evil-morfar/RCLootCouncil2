@@ -24,10 +24,10 @@ function LootHistory:OnInitialize()
 	self.exportSelection = "bbcode"
 	-- Pointer to export functions. Expected to return a string containing the export
 	self.exports = {
-		lua = { func = self.ExportLua, 		name = "Lua",		tip = "Raw lua output. Doesn't work well with date selection."},
-		csv = { func = self.ExportCSV,		name = "CSV",		tip = "Standard .csv output."},
-		bbcode = { func = self.ExportBBCode,name = "BBCode", 	tip = "Simple BBCode output."},
-		xml = { func = self.ExportXML,		name = "XML",		tip = "XML output, tailored for Enjin import."},
+		lua = { func = self.ExportLua, 		name = "Lua",		tip = L["Raw lua output. Doesn't work well with date selection."]},
+		csv = { func = self.ExportCSV,		name = "CSV",		tip = L["Standard .csv output."]},
+		bbcode = { func = self.ExportBBCode,name = "BBCode", 	tip = L["Simple BBCode output."]},
+		xml = { func = self.ExportXML,		name = "XML",		tip = L["XML output, tailored for Enjin import."]},
 		--html = self.ExportHTML
 	}
 	scrollCols = {
@@ -402,14 +402,14 @@ function LootHistory:GetFrame()
 	-- Export frame
 	local exp = AG:Create("Window")
 	exp:SetLayout("Flow")
-	exp:SetTitle("RCLootCouncil Export")
+	exp:SetTitle("RCLootCouncil "..L["Export"])
 	exp:SetWidth(400)
    exp:SetHeight(550)
 
 	local edit = AG:Create("MultiLineEditBox")
 	edit:SetNumLines(20)
 	edit:SetFullWidth(true)
-	edit:SetLabel("Export")
+	edit:SetLabel(L["Export"])
 	edit:SetFullHeight(true)
 	exp:AddChild(edit)
 	exp:Hide()
