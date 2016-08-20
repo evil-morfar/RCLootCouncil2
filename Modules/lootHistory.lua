@@ -23,11 +23,11 @@ function LootHistory:OnInitialize()
 	self.exportSelection = "lua"
 	-- Pointer to export functions. Expected to return a string containing the export
 	self.exports = {
-		lua = self.ExportLua,
-		csv = self.ExportCSV,
-		bbcode = self.ExportBBCode,
-		xml = self.ExportXML,
-		html = self.ExportHTML
+		lua = { func = self.ExportLua, 		tip = "Raw lua output. Doesn't work well with date selection."},
+		csv = { func = self.ExportCSV,		tip = "Standard .csv output."},
+		bbcode = { func = self.ExportBBCode,tip = "Simple BBCode output."},
+		xml = { func = self.ExportXML,		tip = "XML output, tailored for Enjin import."},
+		--html = self.ExportHTML
 	}
 	scrollCols = {
 		{name = "",					width = ROW_HEIGHT, },			-- Class icon, should be same row as player
@@ -265,7 +265,7 @@ function LootHistory:ExportHistory()
 	local start = time()
 	addon:Print("SelectedName", selectedName)
 	addon:Print("SelectedDate", selectedDate)
-	local export = self.exports[self.exportSelection]()
+	local export = self.exports[self.exportSelection].func()
 
 	if export and export ~= "" then -- do something
 		addon:DebugLog(export)
