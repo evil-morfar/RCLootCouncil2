@@ -20,7 +20,7 @@ local ROW_HEIGHT = 20;
 local NUM_ROWS = 15;
 
 function LootHistory:OnInitialize()
-	self.exportSelection = "lua"
+	self.exportSelection = "bbcode"
 	-- Pointer to export functions. Expected to return a string containing the export
 	self.exports = {
 		lua = { func = self.ExportLua, 		tip = "Raw lua output. Doesn't work well with date selection."},
@@ -408,7 +408,11 @@ function LootHistory:UpdateMoreInfo(rowFrame, cellFrame, dat, cols, row, realrow
 		tip:AddDoubleLine("color:", data.color and data.color[1]..", "..data.color[2]..", "..data.color[3] or "none", 1,1,1, 1,1,1)
 	end
 	tip:SetScale(db.UI.history.scale)
-	tip:Show()
+	if moreInfo then
+		tip:Show()
+	else
+		tip:Hide()
+	end
 	tip:SetAnchorType("ANCHOR_RIGHT", 0, -tip:GetHeight())
 end
 
