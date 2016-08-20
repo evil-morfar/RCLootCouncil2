@@ -6,6 +6,7 @@
 local addon = LibStub("AceAddon-3.0"):GetAddon("RCLootCouncil")
 LootHistory = addon:NewModule("RCLootHistory")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
+local AG = LibStub("AceGUI-3.0")
 local lootDB, scrollCols, data, db, numLootWon;
 --[[ data structure:
 data[date][playerName] = {
@@ -23,10 +24,10 @@ function LootHistory:OnInitialize()
 	self.exportSelection = "bbcode"
 	-- Pointer to export functions. Expected to return a string containing the export
 	self.exports = {
-		lua = { func = self.ExportLua, 		tip = "Raw lua output. Doesn't work well with date selection."},
-		csv = { func = self.ExportCSV,		tip = "Standard .csv output."},
-		bbcode = { func = self.ExportBBCode,tip = "Simple BBCode output."},
-		xml = { func = self.ExportXML,		tip = "XML output, tailored for Enjin import."},
+		lua = { func = self.ExportLua, 		name = "Lua",		tip = "Raw lua output. Doesn't work well with date selection."},
+		csv = { func = self.ExportCSV,		name = "CSV",		tip = "Standard .csv output."},
+		bbcode = { func = self.ExportBBCode,name = "BBCode", 	tip = "Simple BBCode output."},
+		xml = { func = self.ExportXML,		name = "XML",		tip = "XML output, tailored for Enjin import."},
 		--html = self.ExportHTML
 	}
 	scrollCols = {
@@ -356,21 +357,42 @@ function LootHistory:GetFrame()
 	b2:SetScript("OnLeave", addon.HideTooltip)
 	f.moreInfoBtn = b2
 
-	-- Filter
-	local b3 = addon:CreateButton(L["Filter"], f.content)
-	b3:SetPoint("RIGHT", b1, "LEFT", -10, 0)
-	b3:SetScript("OnClick", function(self) Lib_ToggleDropDownMenu(1, nil, filterMenu, self, 0, 0) end )
-	--[[b3:SetScript("OnEnter", function() addon:CreateTooltip(L["Deselect responses to filter them"]) end)
-	b3:SetScript("OnLeave", addon.HideTooltip)]]
-	f.filter = b3
-	Lib_UIDropDownMenu_Initialize(b3, self.FilterMenu)
-
 	-- Export
-	local b4 = addon:CreateButton(L["Export"], f.content)
-	b4:SetPoint("RIGHT", b3, "LEFT", -10, 0)
-	b4:SetScript("OnClick", function() self:ExportHistory() end)
-	f.exportBtn = b4
+	local b3 = addon:CreateButton(L["Export"], f.content)
+	b3:SetPoint("RIGHT", b1, "LEFT", -10, 0)
+	b3:SetScript("OnClick", function() self:ExportHistory() end)
+	f.exportBtn = b3
 
+	-- Filter
+	local b4 = addon:CreateButton(L["Filter"], f.content)
+	b4:SetPoint("RIGHT", b3, "LEFT", -10, 0)
+	b4:SetScript("OnClick", function(self) Lib_ToggleDropDownMenu(1, nil, filterMenu, self, 0, 0) end )
+	f.filter = b4
+	Lib_UIDropDownMenu_Initialize(b4, self.FilterMenu)
+
+	-- Export selection (AceGUI-3.0)
+	local sel = AG:Create("Dropdown")
+	sel:SetPoint("BOTTOMLEFT", b4, "TOPLEFT", 0, 10)
+	sel:SetPoint("TOPRIGHT", b2, "TOPLEFT", -10, 0)
+	local values = {}
+	for k, v in pairs(self.exports) do
+		values[k] = v.name
+	end
+	sel:SetList(values)
+	sel:SetValue(self.exportSelection)
+	sel:SetText(self.exports[self.exportSelection].name)
+	sel:SetCallback("OnValueChanged", function(_,_, key)
+		self.exportSelection = key
+	end)
+	sel:SetCallback("OnEnter", function()
+		addon:CreateTooltip(self.exports[self.exportSelection].tip)
+	end)
+	sel:SetCallback("OnLeave", function()
+		addon:HideTooltip()
+	end)
+	sel:SetParent(f)
+	sel.frame:Show()
+	f.moreInfoDropdown = sel
 
 	-- Set a proper width
 	f:SetWidth(st.frame:GetWidth() + 20)
