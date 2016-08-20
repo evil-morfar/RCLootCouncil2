@@ -23,7 +23,6 @@ function LootHistory:OnInitialize()
 	self.exportSelection = "lua"
 	-- Pointer to export functions. Expected to return a string containing the export
 	self.exports = {
-		text = self.ExportText,
 		lua = self.ExportLua,
 		csv = self.ExportCSV,
 		bbcode = self.ExportBBCode,
@@ -479,11 +478,6 @@ end
 ---------------------------------------------------------------
 -- Exports
 ---------------------------------------------------------------
--- Raw text
-function LootHistory:ExportText()
-
-end
-
 -- Lua
 function LootHistory:ExportLua()
 	local export = ""
