@@ -4,6 +4,9 @@
 *++Timeout++
 **You can now specify a timeout on the loot frame. If players doesn't respond in time, the voting frame will them as timed out.
 
+*Bugfixes:
+**//The more info frame in the Loot History sometimes needed some convincing to show/hide.//
+
 ====== v2.0.2 ======
 *++Auto Close++
 **The voting frame can now be toggled to automatically close when the ML ends a session.
