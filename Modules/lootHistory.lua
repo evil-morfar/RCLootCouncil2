@@ -262,11 +262,15 @@ function LootHistory.ResponseSort(table, rowa, rowb, sortbycol)
 	end
 end
 
+function LootHistory:EscapeItemLink(link)
+	return gsub(link, "\124", "\124\124")
+end
+
 function LootHistory:ExportHistory()
 	local start = time()
 	addon:Print("SelectedName", selectedName)
 	addon:Print("SelectedDate", selectedDate)
-	local export = self.exports[self.exportSelection].func()
+	local export = self.exports[self.exportSelection].func(self)
 
 	if export and export ~= "" then -- do something
 		self.frame.exportFrame:Show()
@@ -541,6 +545,8 @@ function LootHistory:ExportLua()
 								 export = export .. "\t\t\t"..d..", --"..i.."\r\n"
 							end
 							 export = export .."\t\t}\r\n"
+						elseif label == "lootWon" or label == "itemReplaced1" or label == "itemReplaced2" then
+							export = export .. "\t\t[\""..label.."\"] = "..self:EscapeItemLink(d).."\r\n"
 						else
 							export = export .. "\t\t[\""..label.."\"] = "..tostring(d).."\r\n"
 						end
@@ -567,15 +573,15 @@ function LootHistory:ExportCSV()
 						..tostring(player)..","
 						..tostring(d.date)..","
 						..tostring(d.time)..","
-						..gsub(tostring(d.lootWon),",","")..","
-						..addon:GetItemIDFromLink(d.lootWon)..","
+						..self:EscapeItemLink(gsub(tostring(d.lootWon),",",""))..","
+						..self:EscapeItemLink(addon:GetItemIDFromLink(d.lootWon))..","
 						..gsub(tostring(d.response),",","")..","
 						..tostring(d.votes)..","
 						..tostring(d.class)..","
 						..gsub(tostring(d.instance),",","")..","
 						..gsub(tostring(d.boss),",","")..","
-						..gsub(tostring(d.itemReplaced1),",","")..","
-						..gsub(tostring(d.itemReplaced2),",","")..","
+						..self:EscapeItemLink(gsub(tostring(d.itemReplaced1),",",""))..","
+						..self:EscapeItemLink(gsub(tostring(d.itemReplaced2),",",""))..","
 						..tostring(d.responseID)..","
 						..tostring(d.isAwardReason).."\r\n"
 				end
