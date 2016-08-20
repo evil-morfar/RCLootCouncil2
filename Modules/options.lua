@@ -248,14 +248,7 @@ function addon:OptionsTable()
 										end,
 										get = function() return db.currentSkin	end,
 										set = function(info, key)
-											for k,v in pairs(db.UI) do
-												v.bgColor = {unpack(db.skins[key].bgColor)}
-												v.borderColor = {unpack(db.skins[key].borderColor)}
-												v.background = db.skins[key].background
-												v.border = db.skins[key].border
-											end
-											db.currentSkin = key
-											self:UpdateFrames()
+											self:ActivateSkin(key)
 										end,
 									},
 									saveSkin = {

@@ -1475,6 +1475,21 @@ function RCLootCouncil:UpdateFrames()
 	end
 end
 
+--- Applies a skin to all frames
+-- @param key Index in db.skins
+-- @usage Apply a certain skin once added to the db.skins table
+function RCLootCouncil:ActivateSkin(key)
+	if not db.skins[key] then return end
+	for k,v in pairs(db.UI) do
+		v.bgColor = {unpack(db.skins[key].bgColor)}
+		v.borderColor = {unpack(db.skins[key].borderColor)}
+		v.background = db.skins[key].background
+		v.border = db.skins[key].border
+	end
+	db.currentSkin = key
+	self:UpdateFrames()
+end
+
 --- Creates a standard button for RCLootCouncil
 -- @param text The button's text
 -- @param parent The frame that should hold the button
