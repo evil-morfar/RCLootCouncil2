@@ -269,7 +269,8 @@ function LootHistory:ExportHistory()
 	local export = self.exports[self.exportSelection].func()
 
 	if export and export ~= "" then -- do something
-		addon:DebugLog(export)
+		self.frame.exportFrame:Show()
+		self:SetExportText(export)
 	end
 	addon:Print("Time taken:", time()-start)
 end
@@ -394,6 +395,26 @@ function LootHistory:GetFrame()
 	sel.frame:Show()
 	f.moreInfoDropdown = sel
 
+	-- Export frame
+	local exp = AG:Create("Window")
+	exp:SetLayout("Flow")
+	exp:SetTitle("RCLootCouncil Export")
+	exp:SetWidth(400)
+   exp:SetHeight(550)
+
+	local edit = AG:Create("MultiLineEditBox")
+	edit:SetNumLines(20)
+	edit:SetFullWidth(true)
+	edit:SetLabel("Export")
+	edit:SetFullHeight(true)
+	exp:AddChild(edit)
+	exp:Hide()
+	f.exportFrame = exp
+	self.SetExportText = function(self, text)
+		edit:SetText(text)
+		edit:HighlightText()
+		edit:SetFocus()
+	end
 	-- Set a proper width
 	f:SetWidth(st.frame:GetWidth() + 20)
 	return f;
