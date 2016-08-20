@@ -20,9 +20,11 @@ local ROW_HEIGHT = 20;
 local NUM_ROWS = 15;
 
 function LootHistory:OnInitialize()
-	self.exportSelection = "xml"
+	self.exportSelection = "lua"
 	-- Pointer to export functions. Expected to return a string containing the export
 	self.exports = {
+		text = self.ExportText,
+		lua = self.ExportLua,
 		csv = self.ExportCSV,
 		bbcode = self.ExportBBCode,
 		xml = self.ExportXML,
@@ -477,6 +479,40 @@ end
 ---------------------------------------------------------------
 -- Exports
 ---------------------------------------------------------------
+-- Raw text
+function LootHistory:ExportText()
+
+end
+
+-- Lua
+function LootHistory:ExportLua()
+	local export = ""
+	for player, v in pairs(lootDB) do
+		if selectedName and selectedName == player or not selectedName then
+			export = export .. "[\""..player.."\"] = {\r\n"
+			for i, d in pairs(v) do
+				if selectedDate and selectedDate == d.date or not selectedDate then
+					export = export .."\t{\r\n"
+					for label, d in pairs(d) do
+						if label == "color" then -- thats a table
+							export = export .. "\t\t[\""..label.."\"] = {\r\n"
+							for i,d in pairs(d) do
+								 export = export .. "\t\t\t"..d..", --"..i.."\r\n"
+							end
+							 export = export .."\t\t}\r\n"
+						else
+							export = export .. "\t\t[\""..label.."\"] = "..tostring(d).."\r\n"
+						end
+					end
+					export = export .."\t} --"..i.."\r\n"
+				end
+			end
+			export = export .."}\r\n"
+		end
+	end
+return export
+end
+
 -- CSV with all stored data
 function LootHistory:ExportCSV()
 	-- Add headers
@@ -533,6 +569,7 @@ function LootHistory:ExportBBCode()
 	return export
 end
 
+-- XML, primarily for Enjin import
 function LootHistory:ExportXML()
 	local export = "<raidlog><head><export><name>EQdkp Plus XML</name><version>1.0</version></export>"
  		.."<tracker><name>RCLootCouncil</name><version>"..addon.version.."</version></tracker>"
