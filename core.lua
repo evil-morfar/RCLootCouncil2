@@ -130,7 +130,7 @@ function RCLootCouncil:OnInitialize()
 			silentAutoPass = false, -- Show autopass message
 			--neverML = false, -- Never use the addon as ML
 			minimizeInCombat = false,
-			iLvlDecimal = true,
+			iLvlDecimal = false,
 
 			UI = { -- stores all ui information
 				['**'] = { -- Defaults
@@ -1239,6 +1239,11 @@ end
 
 function RCLootCouncil:GetItemNameFromLink(link)
 	return strmatch(link, "%[(.+)%]")
+end
+
+function RCLootCouncil.round(num, decimals)
+	if type(num) ~= "number" then return "" end
+	return tonumber(string.format("%." .. (decimals or 0) .. "f", num))
 end
 
 --- Custom, better UnitIsUnit() function

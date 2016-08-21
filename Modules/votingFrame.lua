@@ -33,7 +33,7 @@ function RCVotingFrame:OnInitialize()
 		{ name = L["Rank"],		comparesort = GuildRankSort,		sortnext = 5,		width = 95,},	-- 3 Guild rank
 		{ name = L["Role"],													sortnext = 5,		width = 55, },	-- 4 Role
 		{ name = L["Response"],	comparesort = ResponseSort,		sortnext = 13,		width = 240,},	-- 5 Response
-		{ name = L["ilvl"],													sortnext = 7,		width = 40, },	-- 6 Total ilvl
+		{ name = L["ilvl"],													sortnext = 7,		width = 45, },	-- 6 Total ilvl
 		{ name = L["Diff"],																			width = 40, },	-- 7 ilvl difference
 		{ name = L["g1"],			align = "CENTER",						sortnext = 5,		width = 20, },	-- 8 Current gear 1
 		{ name = L["g2"],			align = "CENTER",						sortnext = 5,		width = 20, },	-- 9 Current gear 2
@@ -695,7 +695,7 @@ end
 
 function RCVotingFrame.SetCellIlvl(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
 	local name = data[realrow].name
-	frame.text:SetText(db.iLvlDecimal and lootTable[session].candidates[name].ilvl or math.floor(lootTable[session].candidates[name].ilvl))
+	frame.text:SetText(db.iLvlDecimal and addon.round(lootTable[session].candidates[name].ilvl,2) or addon.round(lootTable[session].candidates[name].ilvl))
 	data[realrow].cols[column].value = lootTable[session].candidates[name].ilvl
 end
 
