@@ -130,6 +130,7 @@ function RCLootCouncil:OnInitialize()
 			silentAutoPass = false, -- Show autopass message
 			--neverML = false, -- Never use the addon as ML
 			minimizeInCombat = false,
+			iLvlDecimal = true,
 
 			UI = { -- stores all ui information
 				['**'] = { -- Defaults
@@ -993,7 +994,7 @@ function RCLootCouncil:CreateResponse(session, link, ilvl, response, equipLoc, n
 		self.playerName,
 		{	gear1 = g1,
 			gear2 = g2,
-			ilvl = math.floor(select(2,GetAverageItemLevel())),
+			ilvl = select(2,GetAverageItemLevel()),
 			diff = diff,
 			note = note,
 			response = response

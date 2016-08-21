@@ -695,7 +695,7 @@ end
 
 function RCVotingFrame.SetCellIlvl(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
 	local name = data[realrow].name
-	frame.text:SetText(lootTable[session].candidates[name].ilvl)
+	frame.text:SetText(db.iLvlDecimal and lootTable[session].candidates[name].ilvl or math.floor(lootTable[session].candidates[name].ilvl))
 	data[realrow].cols[column].value = lootTable[session].candidates[name].ilvl
 end
 
