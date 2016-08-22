@@ -2,9 +2,11 @@
 *++Skins++
 **You can now customize the look and feel of RCLootCouncil.
 *++Timeout++
-**You can now specify a timeout on the loot frame. If players doesn't respond in time, the voting frame will them as timed out.
+**You can now specify a timeout on the loot frame. If players doesn't respond in time, the voting frame will list them as timed out.
 *++Export Loot History++
 **It's now possible to export your loot history! For now csv, bbcode, xml and lua exports are available. Feel free to make a request if you'd like to see others added.
+*++Not in Raid++
+**RCLootCouncil now detects if you're actually in the instance. If not, you won't be able to receive loot and the council will now know it.
 
 *Bugfixes:
 **//The more info frame in the Loot History sometimes needed some convincing to show/hide.//

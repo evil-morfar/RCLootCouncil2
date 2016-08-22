@@ -582,7 +582,16 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 						return self:Debug("Sent 'DISABLED' response to", sender)
 					end
 
-					-- v2.0.1: It seems people somehow receives mldb with numButtons, so check for it aswell.
+					-- Out of instance support
+					-- assume 8 people means we're actually raiding
+					if GetNumGroupMembers() >= 8 and not IsInInstance() then
+						self:DebugLog("NotInRaid respond to lootTable")
+						for ses, v in ipairs(lootTable) do
+						 	self:SencCommand("group", "response", self:CreateResponse(ses, v.link, v.ilvl, "NOTINRAID", v.equipLoc))
+						end
+						return 
+					end
+					-- v2.0.1: It seems people somehow receives mldb without numButtons, so check for it aswell.
 					if not self.mldb or (self.mldb and not self.mldb.numButtons) then -- Really shouldn't happen, but I'm tired of people somehow not receiving it...
 						self:Debug("Received loot table without having mldb :(", sender)
 						self:SendCommand(self.masterLooter, "MLdb_request")
