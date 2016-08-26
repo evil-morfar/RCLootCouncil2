@@ -4,7 +4,7 @@
 -- lootHistory.lua	Adds the interface for displaying the collected loot history
 
 local addon = LibStub("AceAddon-3.0"):GetAddon("RCLootCouncil")
-LootHistory = addon:NewModule("RCLootHistory")
+local LootHistory = addon:NewModule("RCLootHistory")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 local AG = LibStub("AceGUI-3.0")
 local lootDB, scrollCols, data, db, numLootWon;
