@@ -184,6 +184,7 @@ end
 local function _ReleaseCheckBox(checkbox)
     checkbox.container:Hide()
     _RecycleWidget(checkbox, active_checkboxes, checkbox_heap)
+    checkbox.container:ClearAllPoints()
     checkbox.container:SetParent(nil)
 end
 
@@ -232,6 +233,10 @@ end
 local function _Dialog_OnShow(dialog)
     local delegate = dialog.delegate
 
+    if not delegate then
+        return
+    end
+
     _G.PlaySound("igMainMenuOpen")
 
     if delegate.on_show then
@@ -269,7 +274,7 @@ local function _Dialog_OnUpdate(dialog, elapsed)
         if remaining <= 0 then
             dialog.time_remaining = nil
 
-            if delegate.on_cancel then
+            if delegate and delegate.on_cancel then
                 delegate.on_cancel(dialog, dialog.data, "timeout")
             end
             dialog:Hide()
@@ -278,7 +283,7 @@ local function _Dialog_OnUpdate(dialog, elapsed)
         dialog.time_remaining = remaining
     end
 
-    if delegate.on_update then
+    if delegate and delegate.on_update then
         delegate.on_update(dialog, elapsed)
     end
 end
