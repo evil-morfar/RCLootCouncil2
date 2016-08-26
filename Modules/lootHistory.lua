@@ -4,8 +4,9 @@
 -- lootHistory.lua	Adds the interface for displaying the collected loot history
 
 local addon = LibStub("AceAddon-3.0"):GetAddon("RCLootCouncil")
-local LootHistory = addon:NewModule("RCLootHistory")
+LootHistory = addon:NewModule("RCLootHistory")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
+local AG = LibStub("AceGUI-3.0")
 local lootDB, scrollCols, data, db, numLootWon;
 --[[ data structure:
 data[date][playerName] = {
@@ -20,6 +21,15 @@ local ROW_HEIGHT = 20;
 local NUM_ROWS = 15;
 
 function LootHistory:OnInitialize()
+	self.exportSelection = "lua"
+	-- Pointer to export functions. Expected to return a string containing the export
+	self.exports = {
+		lua = { func = self.ExportLua, 			name = "Lua",					tip = L["Raw lua output. Doesn't work well with date selection."]},
+		csv = { func = self.ExportCSV,			name = "CSV",					tip = L["Standard .csv output."]},
+		bbcode = { func = self.ExportBBCode,	name = "BBCode", 				tip = L["Simple BBCode output."]},
+		eqxml = { func = self.ExportEQXML,		name = "EQdkp-Plus XML",	tip = L["EQdkp-Plus XML output, tailored for Enjin import."]},
+		--html = self.ExportHTML
+	}
 	scrollCols = {
 		{name = "",					width = ROW_HEIGHT, },			-- Class icon, should be same row as player
 		{name = L["Name"],		width = 100, 				},		-- Name of the player
@@ -252,6 +262,23 @@ function LootHistory.ResponseSort(table, rowa, rowb, sortbycol)
 	end
 end
 
+function LootHistory:EscapeItemLink(link)
+	return gsub(link, "\124", "\124\124")
+end
+
+function LootHistory:ExportHistory()
+	local start = time()
+	addon:Print("SelectedName", selectedName)
+	addon:Print("SelectedDate", selectedDate)
+	local export = self.exports[self.exportSelection].func(self)
+
+	if export and export ~= "" then -- do something
+		self.frame.exportFrame:Show()
+		self:SetExportText(export)
+	end
+	addon:Print("Time taken:", time()-start)
+end
+
 ---------------------------------------------------
 -- Visauls
 ---------------------------------------------------
@@ -335,15 +362,73 @@ function LootHistory:GetFrame()
 	b2:SetScript("OnLeave", addon.HideTooltip)
 	f.moreInfoBtn = b2
 
-	-- Filter
-	local b3 = addon:CreateButton(L["Filter"], f.content)
+	-- Export
+	local b3 = addon:CreateButton(L["Export"], f.content)
 	b3:SetPoint("RIGHT", b1, "LEFT", -10, 0)
-	b3:SetScript("OnClick", function(self) Lib_ToggleDropDownMenu(1, nil, filterMenu, self, 0, 0) end )
-	b3:SetScript("OnEnter", function() addon:CreateTooltip(L["Deselect responses to filter them"]) end)
-	b3:SetScript("OnLeave", addon.HideTooltip)
-	f.filter = b3
-	Lib_UIDropDownMenu_Initialize(b3, self.FilterMenu)
+	b3:SetScript("OnClick", function() self:ExportHistory() end)
+	f.exportBtn = b3
 
+	-- Filter
+	local b4 = addon:CreateButton(L["Filter"], f.content)
+	b4:SetPoint("RIGHT", b3, "LEFT", -10, 0)
+	b4:SetScript("OnClick", function(self) Lib_ToggleDropDownMenu(1, nil, filterMenu, self, 0, 0) end )
+	f.filter = b4
+	Lib_UIDropDownMenu_Initialize(b4, self.FilterMenu)
+
+	-- Export selection (AceGUI-3.0)
+	local sel = AG:Create("Dropdown")
+	sel:SetPoint("BOTTOMLEFT", b4, "TOPLEFT", 0, 10)
+	sel:SetPoint("TOPRIGHT", b2, "TOPLEFT", -10, 0)
+	local values = {}
+	for k, v in pairs(self.exports) do
+		values[k] = v.name
+	end
+	sel:SetList(values)
+	sel:SetValue(self.exportSelection)
+	sel:SetText(self.exports[self.exportSelection].name)
+	sel:SetCallback("OnValueChanged", function(_,_, key)
+		self.exportSelection = key
+	end)
+	sel:SetCallback("OnEnter", function()
+		addon:CreateTooltip(self.exports[self.exportSelection].tip)
+	end)
+	sel:SetCallback("OnLeave", function()
+		addon:HideTooltip()
+	end)
+	sel:SetParent(f)
+	sel.frame:Show()
+	f.moreInfoDropdown = sel
+
+	-- Export string
+	local s = f.content:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+	s:SetPoint("BOTTOMRIGHT", sel.frame, "TOPRIGHT", 0, 5)
+	s:SetPoint("BOTTOMLEFT", sel.frame, "TOPLEFT", 0, 5)
+	s:SetHeight(10)
+	s:SetTextColor(1,1,1)
+	s:SetJustifyH("LEFT")
+	s:SetText(L["Note: Huge exports will cause lag."])
+	f.exportString = s
+
+	-- Export frame
+	local exp = AG:Create("Window")
+	exp:SetLayout("Flow")
+	exp:SetTitle("RCLootCouncil "..L["Export"])
+	exp:SetWidth(400)
+   exp:SetHeight(550)
+
+	local edit = AG:Create("MultiLineEditBox")
+	edit:SetNumLines(20)
+	edit:SetFullWidth(true)
+	edit:SetLabel(L["Export"])
+	edit:SetFullHeight(true)
+	exp:AddChild(edit)
+	exp:Hide()
+	f.exportFrame = exp
+	self.SetExportText = function(self, text)
+		edit:SetText(text)
+		edit:HighlightText()
+		edit:SetFocus()
+	end
 	-- Set a proper width
 	f:SetWidth(st.frame:GetWidth() + 20)
 	return f;
@@ -380,7 +465,11 @@ function LootHistory:UpdateMoreInfo(rowFrame, cellFrame, dat, cols, row, realrow
 		tip:AddDoubleLine("color:", data.color and data.color[1]..", "..data.color[2]..", "..data.color[3] or "none", 1,1,1, 1,1,1)
 	end
 	tip:SetScale(db.UI.history.scale)
-	tip:Show()
+	if moreInfo then
+		tip:Show()
+	else
+		tip:Hide()
+	end
 	tip:SetAnchorType("ANCHOR_RIGHT", 0, -tip:GetHeight())
 end
 
@@ -391,32 +480,49 @@ end
 ---------------------------------------------------
 function LootHistory.FilterMenu(menu, level)
 	local info = Lib_UIDropDownMenu_CreateInfo()
-		if level == 1 then -- Redundant
-			-- Build the data table:
-			local data = {["STATUS"] = true, ["PASS"] = true, ["AUTOPASS"] = true}
-			for i = 1, addon.mldb.numButtons or db.numButtons do
-				data[i] = i
+	if level == 1 then -- Redundant
+		-- Build the data table:
+		local data = {["STATUS"] = true, ["PASS"] = true, ["AUTOPASS"] = true}
+		for i = 1, addon.mldb.numButtons or db.numButtons do
+			data[i] = i
+		end
+		if not db.modules["RCLootHistory"].filters then -- Create the db entry
+			addon:DebugLog("Created LootHistory filters")
+			db.modules["RCLootHistory"].filters = {}
+		end
+		for k in pairs(data) do -- Update the db entry to make sure we have all buttons in it
+			if type(db.modules["RCLootHistory"].filters[k]) ~= "boolean" then
+				addon:Debug("Didn't contain "..k)
+				db.modules["RCLootHistory"].filters[k] = true -- Default as true
 			end
-			if not db.modules["RCLootHistory"].filters then -- Create the db entry
-				addon:DebugLog("Created LootHistory filters")
-				db.modules["RCLootHistory"].filters = {}
-			end
-			for k in pairs(data) do -- Update the db entry to make sure we have all buttons in it
-				if type(db.modules["RCLootHistory"].filters[k]) ~= "boolean" then
-					addon:Debug("Didn't contain "..k)
-					db.modules["RCLootHistory"].filters[k] = true -- Default as true
-				end
-			end
-			info.text = L["Filter"]
-			info.isTitle = true
-			info.notCheckable = true
-			info.disabled = true
-			Lib_UIDropDownMenu_AddButton(info, level)
-			info = Lib_UIDropDownMenu_CreateInfo()
+		end
+		info.text = L["Filter"]
+		info.isTitle = true
+		info.notCheckable = true
+		info.disabled = true
+		Lib_UIDropDownMenu_AddButton(info, level)
+		info = Lib_UIDropDownMenu_CreateInfo()
 
-			for k in ipairs(data) do -- Make sure normal responses are on top
-				info.text = addon:GetResponseText(k)
-				info.colorCode = "|cff"..addon:RGBToHex(addon:GetResponseColor(k))
+		for k in ipairs(data) do -- Make sure normal responses are on top
+			info.text = addon:GetResponseText(k)
+			info.colorCode = "|cff"..addon:RGBToHex(addon:GetResponseColor(k))
+			info.func = function()
+				addon:Debug("Update Filter")
+				db.modules["RCLootHistory"].filters[k] = not db.modules["RCLootHistory"].filters[k]
+				LootHistory:Update()
+			end
+			info.checked = db.modules["RCLootHistory"].filters[k]
+			Lib_UIDropDownMenu_AddButton(info, level)
+		end
+		for k in pairs(data) do -- A bit redundency, but it makes sure these "specials" comes last
+			if type(k) == "string" then
+				if k == "STATUS" then
+					info.text = L["Status texts"]
+					info.colorCode = "|cffde34e2" -- purpleish
+				else
+					info.text = addon:GetResponseText(k)
+					info.colorCode = "|cff"..addon:RGBToHex(addon:GetResponseColor(k))
+				end
 				info.func = function()
 					addon:Debug("Update Filter")
 					db.modules["RCLootHistory"].filters[k] = not db.modules["RCLootHistory"].filters[k]
@@ -425,23 +531,168 @@ function LootHistory.FilterMenu(menu, level)
 				info.checked = db.modules["RCLootHistory"].filters[k]
 				Lib_UIDropDownMenu_AddButton(info, level)
 			end
-			for k in pairs(data) do -- A bit redundency, but it makes sure these "specials" comes last
-				if type(k) == "string" then
-					if k == "STATUS" then
-						info.text = L["Status texts"]
-						info.colorCode = "|cffde34e2" -- purpleish
-					else
-						info.text = addon:GetResponseText(k)
-						info.colorCode = "|cff"..addon:RGBToHex(addon:GetResponseColor(k))
+		end
+	end
+end
+
+
+---------------------------------------------------------------
+-- Exports
+---------------------------------------------------------------
+-- Lua
+function LootHistory:ExportLua()
+	local export = ""
+	for player, v in pairs(lootDB) do
+		if selectedName and selectedName == player or not selectedName then
+			export = export .. "[\""..player.."\"] = {\r\n"
+			for i, d in pairs(v) do
+				if selectedDate and selectedDate == d.date or not selectedDate then
+					export = export .."\t{\r\n"
+					for label, d in pairs(d) do
+						if label == "color" then -- thats a table
+							export = export .. "\t\t[\""..label.."\"] = {\r\n"
+							for i,d in pairs(d) do
+								 export = export .. "\t\t\t"..d..", --"..i.."\r\n"
+							end
+							 export = export .."\t\t}\r\n"
+						elseif label == "lootWon" or label == "itemReplaced1" or label == "itemReplaced2" then
+							export = export .. "\t\t[\""..label.."\"] = "..self:EscapeItemLink(d).."\r\n"
+						else
+							export = export .. "\t\t[\""..label.."\"] = "..tostring(d).."\r\n"
+						end
 					end
-					info.func = function()
-						addon:Debug("Update Filter")
-						db.modules["RCLootHistory"].filters[k] = not db.modules["RCLootHistory"].filters[k]
-						LootHistory:Update()
-					end
-					info.checked = db.modules["RCLootHistory"].filters[k]
-					Lib_UIDropDownMenu_AddButton(info, level)
+					export = export .."\t} --"..i.."\r\n"
+				end
+			end
+			export = export .."}\r\n"
+		end
+	end
+return export
+end
+
+-- CSV with all stored data
+function LootHistory:ExportCSV()
+	-- Add headers
+	local export = "player, date, time, item, itemID, response, votes, class, instance, boss, gear1, gear2, responseID, isAwardReason\r\n"
+	for player, v in pairs(lootDB) do
+		if selectedName and selectedName == player or not selectedName then
+			for i, d in pairs(v) do
+				if selectedDate and selectedDate == d.date or not selectedDate then
+					-- We might have commas in various things here :/
+					export = export
+						..tostring(player)..","
+						..tostring(d.date)..","
+						..tostring(d.time)..","
+						..self:EscapeItemLink(gsub(tostring(d.lootWon),",",""))..","
+						..self:EscapeItemLink(addon:GetItemIDFromLink(d.lootWon))..","
+						..gsub(tostring(d.response),",","")..","
+						..tostring(d.votes)..","
+						..tostring(d.class)..","
+						..gsub(tostring(d.instance),",","")..","
+						..gsub(tostring(d.boss),",","")..","
+						..self:EscapeItemLink(gsub(tostring(d.itemReplaced1),",",""))..","
+						..self:EscapeItemLink(gsub(tostring(d.itemReplaced2),",",""))..","
+						..tostring(d.responseID)..","
+						..tostring(d.isAwardReason).."\r\n"
 				end
 			end
 		end
 	end
+	return export
+end
+
+-- Simplified BBCode, as supported by CurseForge
+function LootHistory:ExportBBCode()
+	local export = ""
+	for player, v in pairs(lootDB) do
+		if selectedName and selectedName == player or not selectedName then
+			export = export.."[b]"..addon.Ambiguate(player)..":[/b]\r\n"
+			export = export.."[list=1]"
+			local first = true
+			for i, d in pairs(v) do
+				if selectedDate and selectedDate == d.date or not selectedDate then
+					if first then
+						first = false
+					else
+						export = export.."[*]"
+					end
+					export=export.."[url=http://www.wowhead.com/item="..addon:GetItemIDFromLink(d.lootWon).."]"..d.lootWon.."[/url]"
+					.." Response: "..tostring(d.response)..".\r\n"
+				end
+			end
+			export=export.."[/list]\r\n\r\n"
+		end
+	end
+	return export
+end
+
+-- EQdkp Plus XML, primarily for Enjin import
+function LootHistory:ExportEQXML()
+	local export = "<raidlog><head><export><name>EQdkp Plus XML</name><version>1.0</version></export>"
+ 		.."<tracker><name>RCLootCouncil</name><version>"..addon.version.."</version></tracker>"
+ 		.."<gameinfo><game>World of Warcraft</game><language>"..GetLocale().."</language><charactername>"..UnitName("Player").."</charactername></gameinfo></head>\r\n"
+ 		.."<raiddata>\r\n"
+	local bossData = "\t<bosskills>\r\n"
+	local zoneData = "\t<zones>\r\n"
+	local itemsData ="\t<items>\r\n"
+	local membersData = {}
+	local raidData = {}
+	for player, v in pairs(lootDB) do
+		if selectedName and selectedName == player or not selectedName then
+			for i, d in pairs(v) do
+				if selectedDate and selectedDate == d.date or not selectedDate then
+					local day, month, year = strsplit("/", d.date, 3)
+					local hour,minute,second = strsplit(":",d.time,3)
+					local sinceEpoch = time({year = "20"..year, month = month, day = day,hour = hour,min = minute,sec=second})
+					itemsData = itemsData.."\t\t<item>\r\n"
+					.."\t\t\t<itemid>" .. addon:GetItemStringFromLink(d.lootWon) .. "</itemid>\r\n"
+					.."\t\t\t<name>" .. addon:GetItemNameFromLink(d.lootWon) .. "</name>\r\n"
+					.."\t\t\t<member>" .. addon.Ambiguate(player) .. "</member>\r\n"
+					.."\t\t\t<time>" .. sinceEpoch .. "</time>\r\n"
+					.."\t\t\t<count>1</count>\r\n"
+					.."\t\t\t<cost>" .. tostring(d.votes) .. "</cost>\r\n"
+					membersData[addon.Ambiguate(player)] = true
+					bossData = bossData .. "\t\t<bosskill>\r\n"
+					if d.boss then
+						itemsData = itemsData .. "\t\t\t<boss>" .. gsub(tostring(d.boss),",","").. "</boss>\r\n"
+						bossData = bossData.. "\t\t\t<name>"..gsub(tostring(d.boss),",","").."</name>\r\n"
+					else
+						itemsData = itemsData .. "\t\t\t<boss />\r\n"
+						bossData = bossData.. "\t\t\t<name>Unknown</name>\r\n"
+					end
+					if d.instance then
+						itemsData = itemsData .. "\t\t\t<zone>" .. gsub(tostring(d.instance),",","") .. "</zone>\r\n"
+						raidData[time({year="20"..year,month=month,day=day})] = gsub(tostring(d.instance),",","")
+						bossData = bossData.."\t\t\t<time>"..sinceEpoch.."</time>\r\n"
+					else
+						itemsData = itemsData .. "\t\t\t<zone />\r\n"
+					end
+					itemsData = itemsData.."\t\t</item>\r\n"
+					bossData = bossData .. "\t\t</bosskill>\r\n"
+				end
+			end
+		end
+	end
+	bossData = bossData .."\t</bosskills>\r\n"
+	for id, name in pairs(raidData) do
+		zoneData = zoneData .. "\t\t<zone>\r\n"
+		.. "\t\t\t<enter>"..id.."</enter>\r\n"
+		.. "\t\t\t<name>"..name.."</name>\r\n"
+		.. "\t\t</zone>\r\n"
+	end
+	zoneData = zoneData .."\t</zones>\r\n"
+	itemsData = itemsData.. "\t</items>\r\n"
+	export = export..zoneData..bossData..itemsData
+	.."\t<members>\r\n"
+	for name in pairs(membersData) do
+		export = export.. "\t\t<member>\r\n"
+		.."\t\t\t<name>"..name.."</name>\r\n"
+		.."\t\t</member>\r\n"
+	end
+	export=export.. "\t</members>\r\n</raiddata></raidlog>\r\n"
+	return export
+end
+
+function LootHistory:ExportHTML()
+	local export = "html test"
+end

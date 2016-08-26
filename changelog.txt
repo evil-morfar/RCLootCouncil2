@@ -1,3 +1,16 @@
+==== v2.1 ====
+*++Skins++
+**You can now customize the look and feel of RCLootCouncil.
+*++Timeout++
+**You can now specify a timeout on the loot frame. If players doesn't respond in time, the voting frame will list them as timed out.
+*++Export Loot History++
+**It's now possible to export your loot history! For now csv, bbcode, xml and lua exports are available. Feel free to make a request if you'd like to see others added.
+*++Not in Raid++
+**RCLootCouncil now detects if you're actually in the instance. If not, you won't be able to receive loot and the council will now know it.
+
+*Bugfixes:
+**//The more info frame in the Loot History sometimes needed some convincing to show/hide.//
+
 ====== v2.0.2 ======
 *++Auto Close++
 **The voting frame can now be toggled to automatically close when the ML ends a session.
@@ -116,6 +129,7 @@
 *//Multi Vote option didn't work properly (#128).//
 *//The Voting Frame no longer sorts itself every time a vote is received.//
 *//Wasn't handling sessions correctly when two of the same items dropped.//
+
 
 ====== Alpha12 changes ======
 *Repacked. No longer named as "RCLootCouncil2". This is done in preparation for release. Note this change will overwrite any v.1.7.x settings.
