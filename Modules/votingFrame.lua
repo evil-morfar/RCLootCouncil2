@@ -357,7 +357,7 @@ function RCVotingFrame:UpdateMoreInfo(row, data)
 	end
 
 	local color = addon:GetClassColor(self:GetCandidateData(session, name, "class"))
-	tip = self.frame.moreInfo -- shortening
+	local tip = self.frame.moreInfo -- shortening
 	local count = {} -- Number of loot received
 	tip:SetOwner(self.frame, "ANCHOR_RIGHT")
 
