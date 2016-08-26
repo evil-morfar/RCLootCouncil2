@@ -587,9 +587,9 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 					if GetNumGroupMembers() >= 8 and not IsInInstance() then
 						self:DebugLog("NotInRaid respond to lootTable")
 						for ses, v in ipairs(lootTable) do
-						 	self:SencCommand("group", "response", self:CreateResponse(ses, v.link, v.ilvl, "NOTINRAID", v.equipLoc))
+						 	self:SendCommand("group", "response", self:CreateResponse(ses, v.link, v.ilvl, "NOTINRAID", v.equipLoc))
 						end
-						return 
+						return
 					end
 					-- v2.0.1: It seems people somehow receives mldb without numButtons, so check for it aswell.
 					if not self.mldb or (self.mldb and not self.mldb.numButtons) then -- Really shouldn't happen, but I'm tired of people somehow not receiving it...
