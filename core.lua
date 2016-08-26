@@ -304,26 +304,9 @@ function RCLootCouncil:OnEnable()
 		self:SendCommand("guild", "verTest", self.version, self.tVersion) -- send out a version check
 	end
 
-	-- Any upgrade to v2.0.0 or from Alpha.12 needs a db reset and possibly lootDB import
-	if (self.db.global.version and self.db.global.version < "2.0.0") or (self.db.global.tVersion and self.db.global.tVersion <= "Alpha.12") then -- Upgraded to v.2.0.0
-		self:Debug("First time v2.0.0 upgrade!")
-		local lootdb = {}
-		if self.db.factionrealm.lootDB then
-			self:Debug("Extracting old LootDB")
-			for k,v in pairs(self.db.factionrealm.lootDB) do
-				lootdb[k] = v
-			end
-			self:Debug("Done")
-		end
-		self:Debug("Resetting DB")
-		self.db:ResetDB("Default")
-		self:Debug("Done\nImporting LootDB")
-		for k,v in pairs(lootdb) do
-			self.lootDB.factionrealm[k] = v
-		end
-		self:Debug("Done")
-		self:Print("Your settings have been reset due to upgrading to v2.0.0")
-	end
+	-- For some reasons all frames are blank until ActivateSkin() is called, even though the values used
+	-- in the :CreateFrame() all :Prints as expected :o
+	self:ActivateSkin(db.currentSkin)
 
 	self.db.global.version = self.version;
 	self.db.global.logMaxEntries = self.defaults.global.logMaxEntries -- reset it now for zzz
