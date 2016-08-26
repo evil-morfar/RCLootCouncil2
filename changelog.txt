@@ -10,6 +10,7 @@
 
 *Bugfixes:
 **//The more info frame in the Loot History sometimes needed some convincing to show/hide.//
+**//Raiders permissions are now reset/updated every session (#144).//
 
 ====== v2.0.2 ======
 *++Auto Close++

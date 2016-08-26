@@ -615,6 +615,8 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 				-- prepare the voting frame for the right people
 				if self.isCouncil or self.mldb.observe then
 					self:CallModule("votingframe")
+				else
+					self:GetActiveModule("votingframe"):Disable()
 				end
 
 			elseif command == "MLdb" and not self.isMasterLooter then -- ML sets his own mldb
