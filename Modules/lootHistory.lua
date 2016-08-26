@@ -267,16 +267,11 @@ function LootHistory:EscapeItemLink(link)
 end
 
 function LootHistory:ExportHistory()
-	local start = time()
-	addon:Print("SelectedName", selectedName)
-	addon:Print("SelectedDate", selectedDate)
 	local export = self.exports[self.exportSelection].func(self)
-
 	if export and export ~= "" then -- do something
 		self.frame.exportFrame:Show()
 		self:SetExportText(export)
 	end
-	addon:Print("Time taken:", time()-start)
 end
 
 ---------------------------------------------------
