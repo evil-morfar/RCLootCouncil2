@@ -21,13 +21,13 @@ local ROW_HEIGHT = 20;
 local NUM_ROWS = 15;
 
 function LootHistory:OnInitialize()
-	self.exportSelection = "bbcode"
+	self.exportSelection = "lua"
 	-- Pointer to export functions. Expected to return a string containing the export
 	self.exports = {
-		lua = { func = self.ExportLua, 		name = "Lua",		tip = L["Raw lua output. Doesn't work well with date selection."]},
-		csv = { func = self.ExportCSV,		name = "CSV",		tip = L["Standard .csv output."]},
-		bbcode = { func = self.ExportBBCode,name = "BBCode", 	tip = L["Simple BBCode output."]},
-		xml = { func = self.ExportXML,		name = "XML",		tip = L["XML output, tailored for Enjin import."]},
+		lua = { func = self.ExportLua, 			name = "Lua",					tip = L["Raw lua output. Doesn't work well with date selection."]},
+		csv = { func = self.ExportCSV,			name = "CSV",					tip = L["Standard .csv output."]},
+		bbcode = { func = self.ExportBBCode,	name = "BBCode", 				tip = L["Simple BBCode output."]},
+		eqxml = { func = self.ExportEQXML,		name = "EQdkp-Plus XML",	tip = L["EQdkp-Plus XML output, tailored for Enjin import."]},
 		--html = self.ExportHTML
 	}
 	scrollCols = {
@@ -627,7 +627,7 @@ function LootHistory:ExportBBCode()
 end
 
 -- XML, primarily for Enjin import
-function LootHistory:ExportXML()
+function LootHistory:ExportEQXML()
 	local export = "<raidlog><head><export><name>EQdkp Plus XML</name><version>1.0</version></export>"
  		.."<tracker><name>RCLootCouncil</name><version>"..addon.version.."</version></tracker>"
  		.."<gameinfo><game>World of Warcraft</game><language>"..GetLocale().."</language><charactername>"..UnitName("Player").."</charactername></gameinfo></head>\r\n"
