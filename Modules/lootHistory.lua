@@ -626,7 +626,7 @@ function LootHistory:ExportBBCode()
 	return export
 end
 
--- XML, primarily for Enjin import
+-- EQdkp Plus XML, primarily for Enjin import
 function LootHistory:ExportEQXML()
 	local export = "<raidlog><head><export><name>EQdkp Plus XML</name><version>1.0</version></export>"
  		.."<tracker><name>RCLootCouncil</name><version>"..addon.version.."</version></tracker>"
