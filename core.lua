@@ -935,7 +935,16 @@ local autopassOverride = {
 
 function RCLootCouncil:AutoPassCheck(subType, equipLoc, link)
 	if not tContains(autopassOverride, equipLoc) then
-		if subType and autopassTable[self.db.global.localizedSubTypes[subType]] then
+		if equipLoc == "" and subType == self.db.global.localizedSubTypes["Artifact Relic"] then
+			local id = self:GetItemIDFromLink(link)
+			for i = 1, C_ArtifactUI.GetEquippedArtifactNumRelicSlots() do
+				if C_ArtifactUI.CanApplyRelicItemIDToEquippedArtifactSlot(id,i) then -- We can equip it
+					return false -- We can equip it, so don't autopassTable
+				end
+			end
+			return true -- We checked all the slots, and it didn't fit anywhere
+
+		elseif subType and autopassTable[self.db.global.localizedSubTypes[subType]] then
 			return tContains(autopassTable[self.db.global.localizedSubTypes[subType]], self.playerClass)
 		end
 		-- The item wasn't a type we check for, but it might be a token
