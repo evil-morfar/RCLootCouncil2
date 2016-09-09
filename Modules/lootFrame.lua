@@ -32,6 +32,7 @@ function LootFrame:Start(table)
 				session = k,
 				equipLoc = table[k].equipLoc,
 				timeLeft = addon.mldb.timeout,
+				subType = table[k].subType,
 			}
 		end
 	end
@@ -51,6 +52,7 @@ function LootFrame:ReRoll(table)
 			session = v.session,
 			equipLoc = v.equipLoc,
 			timeLeft = addon.mldb.timeout,
+			subType = table[k].subType,
 		})
 	end
 	self:Show()
@@ -125,7 +127,7 @@ function LootFrame:OnRoll(entry, button)
 	addon:Debug("LootFrame:OnRoll", entry, button, "Response:", addon:GetResponseText(button))
 	local index = entries[entry].realID
 
-	addon:SendCommand("group", "response", addon:CreateResponse(items[index].session, items[index].link, items[index].ilvl, button, items[index].equipLoc, items[index].note))
+	addon:SendCommand("group", "response", addon:CreateResponse(items[index].session, items[index].link, items[index].ilvl, button, items[index].equipLoc, items[index].note, items[index].subType))
 
 	numRolled = numRolled + 1
 	items[index].rolled = true

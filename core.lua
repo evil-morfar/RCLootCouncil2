@@ -8,6 +8,8 @@ TODOs/Notes
 		- If we truly want to be able to edit votingframe scrolltable with modules, it needs to have GetCol by name
 		- Pressing shift while hovering an item should do the same as vanilla
 		- The 4'th cell in @line81 in versionCheck should not be static
+
+		- NEXT VERSION NEEDS A LOCALE RESET DUE TO ADDED ARTIFACT RELICS!
 --------------------------------
 CHANGELOG
 	-- SEE CHANGELOG.TXT
@@ -843,6 +845,21 @@ function RCLootCouncil:GetPlayersGear(link, equipLoc)
 	return item1, item2;
 end
 
+function RCLootCouncil:GetArtifactRelics(link)
+	local id = self:GetItemIDFromLink(link)
+	local g1,g2;
+	for i = 1, C_ArtifactUI.GetEquippedArtifactNumRelicSlots() do
+		if C_ArtifactUI.CanApplyRelicItemIDToEquippedArtifactSlot(id,i) then -- We can equip it
+			if g1 then
+				g2 = select(4,C_ArtifactUI.GetEquippedArtifactRelicInfo(i))
+			else
+				g1 = select(4,C_ArtifactUI.GetEquippedArtifactRelicInfo(i))
+			end
+		end
+	end
+	return g1, g2
+end
+
 function RCLootCouncil:Timer(type, ...)
 	self:Debug("Timer "..type.." passed")
 	if type == "LocalizeSubTypes" then
@@ -908,6 +925,7 @@ local subTypeLookup = {
 	["Two-Handed Swords"]	= 124389, -- Calamity's Edge
 	["Wands"]					= 128096, -- Demonspine Wand
 	["Warglaives"]				= 141604, -- Glaive of the Fallen
+	["Artifact Relic"]		= 141271, -- Hope of the Forest
 }
 
 -- Never autopass these armor types
@@ -977,10 +995,16 @@ end
 -- @param response	The selected response, must be index of db.responses
 -- @param equipLoc	The item in the session's equipLoc
 -- @param note			The player's note
+-- @param subType		The item's subType, needed for Artifact Relics
 -- @returns A formatted table that can be passed directly to :SendCommand("group", "response", -return-)
-function RCLootCouncil:CreateResponse(session, link, ilvl, response, equipLoc, note)
+function RCLootCouncil:CreateResponse(session, link, ilvl, response, equipLoc, note, subType)
 	self:DebugLog("CreateResponse", session, link, ilvl, response, equipLoc, note)
-	local g1, g2 = self:GetPlayersGear(link, equipLoc)
+	local g1, g2;
+	if equipLoc == "" and subType == self.db.global.localizedSubTypes["Artifact Relic"] then
+		g1, g2 = self:GetArtifactRelics(link)
+	else
+	 	g1, g2 = self:GetPlayersGear(link, equipLoc)
+	end
 	local diff = nil
 	if g1 then diff = (ilvl - select(4, GetItemInfo(g1))) end
 	return
