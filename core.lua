@@ -8,8 +8,6 @@ TODOs/Notes
 		- If we truly want to be able to edit votingframe scrolltable with modules, it needs to have GetCol by name
 		- Pressing shift while hovering an item should do the same as vanilla
 		- The 4'th cell in @line81 in versionCheck should not be static
-
-		- NEXT VERSION NEEDS A LOCALE RESET DUE TO ADDED ARTIFACT RELICS!
 --------------------------------
 CHANGELOG
 	-- SEE CHANGELOG.TXT
@@ -304,6 +302,11 @@ function RCLootCouncil:OnEnable()
 	if IsInGuild() then
 		self.guildRank = select(2, GetGuildInfo("player"))
 		self:SendCommand("guild", "verTest", self.version, self.tVersion) -- send out a version check
+	end
+
+	if self.db.global.version and self.db.global.version < "2.1.1"
+		and self.db.global.localizedSubTypes.created then -- We need to reset subtype locales due to changes in v2.1.1
+		self.db.global.localizedSubTypes.created = false
 	end
 
 	-- For some reasons all frames are blank until ActivateSkin() is called, even though the values used
