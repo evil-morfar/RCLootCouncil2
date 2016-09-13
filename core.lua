@@ -91,7 +91,7 @@ function RCLootCouncil:OnInitialize()
 	-- Option table defaults
 	self.defaults = {
 		global = {
-			logMaxEntries = 500,
+			logMaxEntries = 1000,
 			log = {}, -- debug log
 			localizedSubTypes = {},
 		},
@@ -317,7 +317,7 @@ function RCLootCouncil:OnEnable()
 	self.db.global.logMaxEntries = self.defaults.global.logMaxEntries -- reset it now for zzz
 
 	if self.tVersion then
-		self.db.global.logMaxEntries = 1000 -- bump it for test version
+		self.db.global.logMaxEntries = 2000 -- bump it for test version
 	end
 	if self.db.global.tVersion and self.debug then -- recently ran a test version, so reset debugLog
 		self.db.global.log = {}
