@@ -646,6 +646,7 @@ function LootHistory:ExportEQXML()
 					.."\t\t\t<time>" .. sinceEpoch .. "</time>\r\n"
 					.."\t\t\t<count>1</count>\r\n"
 					.."\t\t\t<cost>" .. tostring(d.votes) .. "</cost>\r\n"
+					.."\t\t\t<note>" .. tostring(d.response) .. "</note>\r\n"
 					membersData[addon.Ambiguate(player)] = true
 					bossData = bossData .. "\t\t<bosskill>\r\n"
 					if d.boss then
