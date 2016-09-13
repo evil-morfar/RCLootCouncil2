@@ -1061,7 +1061,8 @@ function RCLootCouncil:GetPlayerInfo()
 			end
 		end
 	end
-	return self.playerName, self.playerClass, self:GetPlayerRole(), self.guildRank, enchant, lvl
+	local ilvl = select(2,GetAverageItemLevel())
+	return self.playerName, self.playerClass, self:GetPlayerRole(), self.guildRank, enchant, lvl, ilvl
 end
 
 function RCLootCouncil:GetPlayerRole()
