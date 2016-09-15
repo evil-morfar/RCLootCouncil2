@@ -48,7 +48,7 @@ function RCLootCouncil:OnInitialize()
 	--IDEA Consider if we want everything on self, or just whatever modules could need.
   	self.version = GetAddOnMetadata("RCLootCouncil", "Version")
 	self.nnp = false
-	self.debug = false
+	self.debug = true
 	self.tVersion = nil -- String or nil. Indicates test version, which alters stuff like version check. Is appended to 'version', i.e. "version-tVersion"
 
 	self.playerClass = select(2, UnitClass("player"))
@@ -638,7 +638,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 
 			elseif command == "verTest" and not self:UnitIsUnit(sender, "player") then -- Don't reply to our own verTests
 				local otherVersion, tVersion = unpack(data)
-				self:SendCommand(sender, "verTestReply", self.playerName, self.playerClass, self.guildRank, self.version, self.tVersion)
+				self:SendCommand(sender, "verTestReply", self.playerName, self.playerClass, self.guildRank, self.version, self.tVersion, self:GetInstalledModulesFormattedData())
 				if self.version < otherVersion and not self.verCheckDisplayed and (not (tVersion or self.tVersion)) then
 					self:Print(format(L["version_outdated_msg"], self.version, otherVersion))
 					self.verCheckDisplayed = true
@@ -1246,6 +1246,28 @@ function RCLootCouncil:GetCouncilInGroup()
 	end
 	self:DebugLog("GetCouncilInGroup", unpack(council))
 	return council
+end
+
+function RCLootCouncil:GetInstalledModulesFormattedData()
+	local modules = {}
+	-- We're interested in everything that isn't a default module
+	local test = function(name)
+		for _, k in pairs(defaultModules) do
+			if k == name then return true end
+		end
+	end
+	for k in pairs(self.modules) do
+		if not test(k) then tinsert(modules, k) end
+	end
+	-- Now for the formatting
+	for num, name in pairs(modules) do
+		if self:GetModule(name).version then -- People might not have added version
+			modules[num] = self:GetModule(name).baseName.. " - "..self:GetModule(name).version
+		else
+			modules[num] = self:GetModule(name).baseName.. " - "..L["Unknown"]
+		end
+	end
+	return modules
 end
 
 function RCLootCouncil:SessionError(...)

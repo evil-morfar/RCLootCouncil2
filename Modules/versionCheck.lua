@@ -31,7 +31,7 @@ function RCVersionCheck:OnDisable()
 end
 
 function RCVersionCheck:Show()
-	self:AddEntry(addon.playerName, addon.playerClass, addon.guildRank, addon.version, addon.tVersion) -- add ourself
+	self:AddEntry(addon.playerName, addon.playerClass, addon.guildRank, addon.version, addon.tVersion,addon:GetInstalledModulesFormattedData()) -- add ourself
 	self.frame:Show()
 	self.frame.st:SetData(self.frame.rows)
 end
@@ -70,7 +70,7 @@ function RCVersionCheck:Query(group)
 		end
 	end
 	addon:SendCommand(group, "verTest", addon.version, addon.tVersion)
-	self:AddEntry(addon.playerName, addon.playerClass, addon.guildRank, addon.version, addon.tVersion) -- add ourself
+	self:AddEntry(addon.playerName, addon.playerClass, addon.guildRank, addon.version, addon.tVersion, addon:GetInstalledModulesFormattedData()) -- add ourself
 	self:ScheduleTimer("QueryTimer", 5)
 end
 
@@ -82,7 +82,7 @@ function RCVersionCheck:QueryTimer()
 	self:Update()
 end
 
-function RCVersionCheck:AddEntry(name, class, guildRank, version, tVersion)
+function RCVersionCheck:AddEntry(name, class, guildRank, version, tVersion, modules)
 	local vVal = version
 	if tVersion then vVal = version.."-"..tVersion end
 	for row, v in ipairs(self.frame.rows) do
@@ -91,7 +91,7 @@ function RCVersionCheck:AddEntry(name, class, guildRank, version, tVersion)
 				{ value = "",					DoCellUpdate = addon.SetCellClassIcon, args = {class}, },
 				{ value = addon.Ambiguate(name),color = addon:GetClassColor(class), },
 				{ value = guildRank,			color = self:GetVersionColor(version,tVersion)},
-				{ value = vVal ,				color = self:GetVersionColor(version,tVersion)},
+				{ value = vVal ,				color = self:GetVersionColor(version,tVersion), DoCellUpdate = self.SetCellModules, args = modules},
 			}
 			return self:Update()
 		end
@@ -103,7 +103,7 @@ function RCVersionCheck:AddEntry(name, class, guildRank, version, tVersion)
 			{ value = "",					DoCellUpdate = addon.SetCellClassIcon, args = {class}, },
 			{ value = addon.Ambiguate(name),color = addon:GetClassColor(class), },
 			{ value = guildRank,			color = self:GetVersionColor(version,tVersion)},
-			{ value = vVal ,				color = self:GetVersionColor(version,tVersion)},
+			{ value = vVal ,				color = self:GetVersionColor(version,tVersion), DoCellUpdate = self.SetCellModules, args = modules},
 		},
 	})
 	self:Update()
@@ -147,4 +147,19 @@ function RCVersionCheck:GetFrame()
 	f.rows = {} -- the row data
 	f.st = st
 	return f
+end
+
+function RCVersionCheck.SetCellModules(rowFrame, f, data, cols, row, realrow, column, fShow, table, ...)
+	local modules = data[realrow].cols[column].args
+	if modules and #modules>0 then
+		f:SetScript("OnEnter", function()
+			 addon:CreateTooltip(L["Modules"], unpack(modules))
+			 table.DefaultEvents.OnEnter(rowFrame, f, data, cols, row, realrow, column, table)
+		end)
+		f:SetScript("OnLeave", function()
+			addon.HideTooltip()
+			table.DefaultEvents.OnLeave(rowFrame, f, data, cols, row, realrow, column, table)
+		end)
+	end
+	table.DoCellUpdate(rowFrame, f, data, cols, row, realrow, column, fShow, table)
 end

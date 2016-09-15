@@ -221,6 +221,7 @@ L["Minor Upgrade"] = true
 L["Minor Upgrade"] = true
 L["ML sees voting"] = true
 L["ml_sees_voting_desc"] = "Allows the Master Looter to see who's voting for whom."
+L["Modules"] = true
 L["Multi Vote"] = true
 L["multi_vote_desc"] = "Enables multi voting, i.e. voters can vote for several candidates."
 L["Name"] = true

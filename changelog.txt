@@ -4,6 +4,8 @@
 **And they're autopassed if you can't use that type.
 *++Module chat commands++
 **Implemented a function to let user modules add chat commands to "/rc" prefix.
+*++Module Versions++
+**The version checker now displays information about installed modules, if any.
 
 ==== v2.1 ====
 *++Skins++
