@@ -223,10 +223,6 @@ function RCVotingFrame:Setup(table)
 		sessionButtons[i]:Hide()
 	end
 	session = 1
-	-- Check if we have enchanters
-	for name, v in pairs(candidates) do
-
-	end
 	self:BuildST()
 	self:SwitchSession(session)
 end
