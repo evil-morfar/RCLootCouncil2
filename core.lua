@@ -255,6 +255,7 @@ function RCLootCouncil:OnInitialize()
 	-- register chat and comms
 	self:RegisterChatCommand("rc", "ChatCommand")
   	self:RegisterChatCommand("rclc", "ChatCommand")
+	self.customChatCmd = {} -- Modules that wants their cmds used with "/rc"
 	self:RegisterComm("RCLootCouncil")
 	self.db = LibStub("AceDB-3.0"):New("RCLootCouncilDB", self.defaults, true)
 	self.lootDB = LibStub("AceDB-3.0"):New("RCLootCouncilLootDB")
@@ -493,6 +494,10 @@ function RCLootCouncil:ChatCommand(msg)
 		printtable(historyDB)
 --@end-debug@
 	else
+		-- Check if the input matches anything
+		for k, v in pairs(self.customChatCmd) do
+			if k == input then return v.module[v.func](v.module, arg1, arg2) end
+		end
 		self:ChatCommand("help")
 	end
 end
@@ -1313,7 +1318,7 @@ function RCLootCouncil:UnitName(unit)
 	-- Proceed with UnitName()
 	local name, realm = UnitName(unit)
 	if not realm or realm == "" then realm = self.realmName end -- Extract our own realm
-	return name and name.."-"..realm or nil
+	return name and name.."-"..realm or nil -- XXX #145 pretty sure the issue is we don't Title case players from our own realm
 end
 
 ---------------------------------------------------------------------------
@@ -1344,6 +1349,18 @@ end
 function RCLootCouncil:RegisterUserModule(type, name)
 	assert(defaultModules[type], format("Module \"%s\" is not a default module.", tostring(type)))
 	userModules[type] = name
+end
+
+--- Enables a module to add chat commands to the "/rc" prefix
+-- @param module The object to call func on.
+-- @param funcRef The function reference to call on module. Passed with module as first arg, and up to two user args.
+-- @param ... The command(s) the user can input
+-- @usage For example in GroupGear: addon:CustomChatCmd(GroupGear, "Enable", "gg")
+-- will result in GroupGear:Enable() being called if the user types "/rc gg"
+function RCLootCouncil:CustomChatCmd(module, funcRef, ...)
+	for i = 1, select("#", ...) do
+		self.customChatCmd[select(i, ...)] = {module = module, func = funcRef}
+	end
 end
 
 --#end Module support -----------------------------------------------------

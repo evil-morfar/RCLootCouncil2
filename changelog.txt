@@ -2,6 +2,8 @@
 *++Artifact Relics++
 **Your currently equipped Artifact Relics are now showed in the voting frame.
 **And they're autopassed if you can't use that type.
+*++Module chat commands++
+**Implemented a function to let user modules add chat commands to "/rc" prefix.
 
 ==== v2.1 ====
 *++Skins++
