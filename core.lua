@@ -48,7 +48,7 @@ function RCLootCouncil:OnInitialize()
 	--IDEA Consider if we want everything on self, or just whatever modules could need.
   	self.version = GetAddOnMetadata("RCLootCouncil", "Version")
 	self.nnp = false
-	self.debug = true
+	self.debug = false
 	self.tVersion = nil -- String or nil. Indicates test version, which alters stuff like version check. Is appended to 'version', i.e. "version-tVersion"
 
 	self.playerClass = select(2, UnitClass("player"))
@@ -1331,16 +1331,16 @@ function RCLootCouncil:UnitName(unit)
 	-- Then see if we already have a realm name appended
 	local find = strfind(unit, "-", nil, true)
 	if find and find < #unit then -- "-" isn't the last character
-		-- Apparently functions like GetRaidRosterInfo() will return "real" name, while UnitName()
-		-- returns Title Case. We need this to be consistant, so just titlecase the name part now:
-		local name, realm = unit:sub(1, find), unit:sub(find+1)
-		name = name:lower():gsub("^%l", string.upper) -- All but first must be lower
-		return name..realm
+		-- Should be save to return unit
+		return unit
 	end
+	-- Apparently functions like GetRaidRosterInfo() will return "real" name, while UnitName()
+	-- needs title case (see ticket #145). We need this to be consistant, so just titlecase the unit:
+	unit = unit:lower():gsub("^%l", string.upper)
 	-- Proceed with UnitName()
 	local name, realm = UnitName(unit)
 	if not realm or realm == "" then realm = self.realmName end -- Extract our own realm
-	return name and name.."-"..realm or nil -- XXX #145 pretty sure the issue is we don't Title case players from our own realm
+	return name and name.."-"..realm or nil
 end
 
 ---------------------------------------------------------------------------

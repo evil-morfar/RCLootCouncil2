@@ -7,6 +7,9 @@
 *++Module Versions++
 **The version checker now displays information about installed modules, if any.
 
+*Bugfixes:
+**//Fixed an inconsistency in handling players with capital letters in the middle of their name (#145)
+
 ==== v2.1 ====
 *++Skins++
 **You can now customize the look and feel of RCLootCouncil.
