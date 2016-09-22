@@ -27,6 +27,7 @@ function LootHistory:OnInitialize()
 		lua = { func = self.ExportLua, 			name = "Lua",					tip = L["Raw lua output. Doesn't work well with date selection."]},
 		csv = { func = self.ExportCSV,			name = "CSV",					tip = L["Standard .csv output."]},
 		bbcode = { func = self.ExportBBCode,	name = "BBCode", 				tip = L["Simple BBCode output."]},
+		bbcodeSmf = {func = self.ExportBBCodeSMF, name = "BBCode SMF",		tip = L["BBCode export, tailored for SMF."],},
 		eqxml = { func = self.ExportEQXML,		name = "EQdkp-Plus XML",	tip = L["EQdkp-Plus XML output, tailored for Enjin import."]},
 		--html = self.ExportHTML
 	}
@@ -611,6 +612,26 @@ function LootHistory:ExportBBCode()
 					else
 						export = export.."[*]"
 					end
+					export=export.."[url=http://www.wowhead.com/item="..addon:GetItemIDFromLink(d.lootWon).."]"..d.lootWon.."[/url]"
+					.." Response: "..tostring(d.response)..".\r\n"
+				end
+			end
+			export=export.."[/list]\r\n\r\n"
+		end
+	end
+	return export
+end
+
+-- BBCode, as supported by SMF
+function LootHistory:ExportBBCodeSMF()
+	local export = ""
+	for player, v in pairs(lootDB) do
+		if selectedName and selectedName == player or not selectedName then
+			export = export.."[b]"..addon.Ambiguate(player)..":[/b]\r\n"
+			export = export.."[list]"
+			for i, d in pairs(v) do
+				if selectedDate and selectedDate == d.date or not selectedDate then
+					export = export.."[*]"
 					export=export.."[url=http://www.wowhead.com/item="..addon:GetItemIDFromLink(d.lootWon).."]"..d.lootWon.."[/url]"
 					.." Response: "..tostring(d.response)..".\r\n"
 				end

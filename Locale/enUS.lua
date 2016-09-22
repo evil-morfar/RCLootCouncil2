@@ -84,6 +84,7 @@ L["award_reasons_desc"] = "Award reasons that can't be chosen during a roll.\nUs
 L["Awards"] = true
 L["Background"] = true
 L["Background Color"] = true
+L["BBCode export, tailored for SMF."] = true
 L["Border"] = true
 L["Border Color"] = true
 L["Banking"] = true
