@@ -1,5 +1,7 @@
 *Bugfixes:
 **//Fixed ticket #145 for real this time.//
+**//Potential fix to some issues with people not seeing loot frame/voting frame.(#149,#150,#152,#153)//
+**//Potential fix to some issues with double added items/skipped items.(#149)//
 
 ==== v2.1.2 ====
 *Bugfixes:
