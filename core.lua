@@ -1334,12 +1334,14 @@ function RCLootCouncil:UnitName(unit)
 		-- Should be save to return unit
 		return unit
 	end
-	-- Apparently functions like GetRaidRosterInfo() will return "real" name, while UnitName()
-	-- needs title case (see ticket #145). We need this to be consistant, so just titlecase the unit:
-	unit = unit:lower():gsub("^%l", string.upper)
+	-- Apparently functions like GetRaidRosterInfo() will return "real" name, while UnitName() won't
+	-- always work with that (see ticket #145). We need this to be consistant, so just lowercase the unit:
+	unit = unit:lower()
 	-- Proceed with UnitName()
 	local name, realm = UnitName(unit)
 	if not realm or realm == "" then realm = self.realmName end -- Extract our own realm
+	-- We also want to make sure the returned name is always title cased (it might not always be! ty Blizzard)
+	name = name:lower():gsub("^%l", string.upper)
 	return name and name.."-"..realm or nil
 end
 

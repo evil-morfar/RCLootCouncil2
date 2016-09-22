@@ -1,3 +1,6 @@
+*Bugfixes:
+**//Fixed ticket #145 for real this time.//
+
 ==== v2.1.2 ====
 *Bugfixes:
 **//Wrong library load order would cause errors when RCLootCouncil was the only installed addon (#146)
