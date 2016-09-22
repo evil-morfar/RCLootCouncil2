@@ -48,7 +48,7 @@ function RCLootCouncil:OnInitialize()
 	--IDEA Consider if we want everything on self, or just whatever modules could need.
   	self.version = GetAddOnMetadata("RCLootCouncil", "Version")
 	self.nnp = false
-	self.debug = false
+	self.debug = true
 	self.tVersion = nil -- String or nil. Indicates test version, which alters stuff like version check. Is appended to 'version', i.e. "version-tVersion"
 
 	self.playerClass = select(2, UnitClass("player"))
