@@ -1,3 +1,6 @@
+*++Offspec artifact relics++
+**Added support for offspec artifact, so you longer autopass those items.
+
 ==== v2.1.3 ====
 *++Added BBCode SMF export++
 
