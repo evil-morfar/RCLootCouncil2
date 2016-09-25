@@ -713,7 +713,7 @@ function RCLootCouncil:HandleXRealmComms(mod, command, data, sender)
 		local target = tremove(data, 1)
 		if self:UnitIsUnit(target, "player") then
 			local command = tremove(data, 1)
-			mod:OnCommReceived("RCLootCouncil", self:Serialize(command, data), "WHISPER", self:UnitName(sender))
+			mod:OnCommReceived("RCLootCouncil", self:Serialize(command, data), "WHISPER", sender)
 		end
 		return true
 	end
