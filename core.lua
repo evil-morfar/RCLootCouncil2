@@ -535,7 +535,11 @@ function RCLootCouncil:SendCommand(target, command, ...)
 					-- Remake command to be "xrealm" and put target and command in the table
 					-- See "RCLootCouncil:HandleXRealmComms()" for more info
 					toSend = self:Serialize("xrealm", {target, command, ...})
-					self:SendCommMessage("RCLootCouncil", toSend, "RAID")
+					if GetNumGroupMembers() > 0 then -- We're in a group
+						self:SendCommMessage("RCLootCouncil", toSend, "RAID")
+					else -- We're not, probably a guild verTest
+						self:SendCommMessage("RCLootCouncil", toSend, "GUILD")
+					end
 				end
 
 			else -- Should also be our own realm
