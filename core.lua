@@ -59,6 +59,7 @@ function RCLootCouncil:OnInitialize()
 	self.isCouncil = false -- Are we in the Council?
 	self.enabled = true -- turn addon on/off
 	self.inCombat = false -- Are we in combat?
+	self.recentReconnectRequest = false
 
 	self.verCheckDisplayed = false -- Have we shown a "out-of-date"?
 
@@ -691,6 +692,24 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 					end
 				else
 					self:Debug("Non ML:", sender, "sent end session command!")
+				end
+
+			elseif command == "lootAck" and not self:UnitIsUnit(sender, "player") and self.enabled then
+				-- It seems we have message dropping. If we receive a lootAck, but we don't have lootTable, then something's wrong!
+				if not self.lootTable or #self.lootTable == 0 then
+					self:Debug("!!!! We got an lootAck without having lootTable!!!!")
+					if not self.masterLooter then -- Extra sanity check
+						return self:DebugLog("We don't have a ML?!")
+					end
+					if not self.recentReconnectRequest then -- we don't want to do it too often!
+						self:SendCommand(self.masterLooter, "reconnect")
+						self.recentReconnectRequest = true
+						self:ScheduleTimer("ResetReconnectRequest", 5) -- 5 sec break between each try
+					end
+					function self:ResetReconnectRequest() -- Just drop the func here
+						self.recentReconnectRequest = false
+						self:DebugLog("ResetReconnectRequest")
+					end
 				end
 			end
 		else
