@@ -49,7 +49,7 @@ function RCLootCouncil:OnInitialize()
   	self.version = GetAddOnMetadata("RCLootCouncil", "Version")
 	self.nnp = false
 	self.debug = false
-	self.tVersion = "Beta1" -- String or nil. Indicates test version, which alters stuff like version check. Is appended to 'version', i.e. "version-tVersion"
+	self.tVersion = "Beta2" -- String or nil. Indicates test version, which alters stuff like version check. Is appended to 'version', i.e. "version-tVersion"
 
 	self.playerClass = select(2, UnitClass("player"))
 	self.guildRank = L["Unguilded"]
@@ -706,10 +706,6 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 						self.recentReconnectRequest = true
 						self:ScheduleTimer("ResetReconnectRequest", 5) -- 5 sec break between each try
 					end
-					function self:ResetReconnectRequest() -- Just drop the func here
-						self.recentReconnectRequest = false
-						self:DebugLog("ResetReconnectRequest")
-					end
 				end
 			end
 		else
@@ -737,6 +733,11 @@ function RCLootCouncil:HandleXRealmComms(mod, command, data, sender)
 		return true
 	end
 	return false
+end
+
+function RCLootCouncil:ResetReconnectRequest()
+	self.recentReconnectRequest = false
+	self:DebugLog("ResetReconnectRequest")
 end
 
 function RCLootCouncil:Debug(msg, ...)
