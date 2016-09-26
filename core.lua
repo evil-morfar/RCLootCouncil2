@@ -49,7 +49,7 @@ function RCLootCouncil:OnInitialize()
   	self.version = GetAddOnMetadata("RCLootCouncil", "Version")
 	self.nnp = false
 	self.debug = false
-	self.tVersion = "Beta2" -- String or nil. Indicates test version, which alters stuff like version check. Is appended to 'version', i.e. "version-tVersion"
+	self.tVersion = "Beta3" -- String or nil. Indicates test version, which alters stuff like version check. Is appended to 'version', i.e. "version-tVersion"
 
 	self.playerClass = select(2, UnitClass("player"))
 	self.guildRank = L["Unguilded"]
@@ -60,6 +60,7 @@ function RCLootCouncil:OnInitialize()
 	self.enabled = true -- turn addon on/off
 	self.inCombat = false -- Are we in combat?
 	self.recentReconnectRequest = false
+	local lootTable = {}
 
 	self.verCheckDisplayed = false -- Have we shown a "out-of-date"?
 
@@ -571,7 +572,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 		if test then
 			if command == "lootTable" then
 				if self:UnitIsUnit(sender, self.masterLooter) then
-					local lootTable = unpack(data)
+					lootTable = unpack(data)
 					-- Send "DISABLED" response when not enabled
 					if not self.enabled then
 						for i = 1, #lootTable do
@@ -696,7 +697,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 
 			elseif command == "lootAck" and not self:UnitIsUnit(sender, "player") and self.enabled then
 				-- It seems we have message dropping. If we receive a lootAck, but we don't have lootTable, then something's wrong!
-				if not self.lootTable or #self.lootTable == 0 then
+				if not lootTable or #lootTable == 0 then
 					self:Debug("!!!! We got an lootAck without having lootTable!!!!")
 					if not self.masterLooter then -- Extra sanity check
 						return self:DebugLog("We don't have a ML?!")
