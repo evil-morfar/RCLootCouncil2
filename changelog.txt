@@ -2,6 +2,8 @@
 *++Offspec artifact relics++
 **Added support for offspec artifact, so you longer autopass those items.
 
+*You can no longer start an empty session.
+
 *Bugfixes:
 **//Fixed potential error when handling X-Realm comms (#156).//
 **//Added extra checks against comm messages droppings (#149,#151,#152,#153,#155,#156,#157).//
