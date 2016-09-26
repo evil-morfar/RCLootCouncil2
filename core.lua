@@ -343,6 +343,7 @@ function RCLootCouncil:OnEnable()
 		buttons = {
 			{	text = L["Yes"],
 				on_click = function()
+					self:DebugLog("Player confirmed usage")
 					local lootMethod = GetLootMethod()
 					if lootMethod ~= "master" then
 						self:Print(L["Changing LootMethod to Master Looting"])
@@ -364,6 +365,7 @@ function RCLootCouncil:OnEnable()
 			},
 			{	text = L["No"],
 				on_click = function()
+					self:DebugLog("Player declined usage")
 					RCLootCouncil:Print(L[" is not active in this raid."])
 				end,
 			},
