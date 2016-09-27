@@ -359,7 +359,7 @@ function RCVotingFrame:UpdateMoreInfo(row, data)
 
 	--Extract loot history for that name
 	local lootDB = addon:GetHistoryDB()
-	local latestMsFound, entry = false, nil
+	local entry
 
 	-- Their name might be saved without realmname :/
 	local nameCheck
@@ -371,27 +371,32 @@ function RCVotingFrame:UpdateMoreInfo(row, data)
 	end
 	tip:AddLine(addon.Ambiguate(name), color.r, color.g, color.b)
 	color = {} -- Color of the response
+	local lastestAwardFound, reponseText = {}, {}
 	if nameCheck then -- they're in the DB!
 		tip:AddLine("")
 		for i = #lootDB[name], 1, -1 do -- Start from the end
 			entry = lootDB[name][i]
-			if entry.responseID == 1 and not latestMsFound and not entry.isAwardReason then -- Latest MS roll
+			if entry.responseID == 1 and not lastestAwardFound[1] and not entry.isAwardReason then -- Latest MS roll
 				tip:AddDoubleLine(format(L["Latest 'item' won:"], addon:GetResponseText(entry.responseID)), "", 1,1,1, 1,1,1)
 				tip:AddLine(entry.lootWon)
 				tip:AddDoubleLine(entry.time .. " " ..entry.date, format(L["'n days' ago"], addon:ConvertDateToString(addon:GetNumberOfDaysFromNow(entry.date))), 1,1,1, 1,1,1)
 				tip:AddLine(" ") -- Spacer
-				latestMsFound = true
+			elseif entry.responseID <= addon.db.numMoreInfoButtons and not entry.isAwardReason and not lastestAwardFound[entry.responseID] and entry.responseID ~= 1 then
+				lastestAwardFound[entry.responseID] = {text = entry.time .. "-" ..entry.date, days = addon:ConvertDateToString(addon:GetNumberOfDaysFromNow(entry.date))}
 			end
-			count[entry.response] = count[entry.response] and count[entry.response] + 1 or 1
-			if not color[entry.response] or unpack(color[entry.response],1,3) == unpack({1,1,1}) and #entry.color ~= 0  then -- If it's not already added
-				color[entry.response] = #entry.color ~= 0 and #entry.color == 4 and entry.color or {1,1,1}
+			count[entry.responseID] = count[entry.responseID] and count[entry.responseID] + 1 or 1
+			responseText[entry.responseID] = responseText[entry.responseID] and responseText[entry.responseID] or entry.response
+			if not color[entry.responseID] or unpack(color[entry.responseID],1,3) == unpack({1,1,1}) and #entry.color ~= 0  then -- If it's not already added
+				color[entry.responseID] = #entry.color ~= 0 and #entry.color == 4 and entry.color or {1,1,1}
 			end
 
 		end -- end counting
 		local totalNum = 0
-		for response, num in pairs(count) do
-			local r,g,b = unpack(color[response],1,3)
-			tip:AddDoubleLine(response, num, r,g,b, r,g,b) -- Make sure we don't add the alpha value
+		for id, num in pairs(count) do
+			local r,g,b = unpack(color[id],1,3)
+			tip:AddDoubleLine(responseText[id], num, r,g,b, r,g,b) -- Make sure we don't add the alpha value
+			tip:AddDoubleLine(lastestAwardFound[id].text, format(L["'n days' ago"], lastestAwardFound[id].days))
+			tip:AddLine(" ")
 			totalNum = totalNum + num
 		end
 		tip:AddDoubleLine(L["Total items received:"], totalNum, 0,1,1, 0,1,1)
