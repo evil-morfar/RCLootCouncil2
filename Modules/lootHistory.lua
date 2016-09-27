@@ -34,10 +34,10 @@ function LootHistory:OnInitialize()
 	scrollCols = {
 		{name = "",					width = ROW_HEIGHT, },			-- Class icon, should be same row as player
 		{name = L["Name"],		width = 100, 				},		-- Name of the player
-		{name = L["Time:"],		width = 100,			},			-- Time of awarding
+		{name = L["Time:"],		width = 125, comparesort = self.DateTimeSort	},			-- Time of awarding
 		{name = "",					width = ROW_HEIGHT, },			-- Item at index icon
 		{name = L["Item"],		width = 250, 				}, 	-- Item string
-		{name = L["Reason"],		width = 230, comparesort = self.ResponseSort, sort = "asc", sortnext = 2},	-- Response aka the text supplied to lootDB...response
+		{name = L["Reason"],		width = 220, comparesort = self.ResponseSort, sort = "asc", sortnext = 2},	-- Response aka the text supplied to lootDB...response
 	}
 	filterMenu = CreateFrame("Frame", "RCLootCouncil_LootHistory_FilterMenu", UIParent, "Lib_UIDropDownMenuTemplate")
 	Lib_UIDropDownMenu_Initialize(filterMenu, self.FilterMenu, "MENU")
@@ -127,7 +127,7 @@ function LootHistory:BuildData()
 					cols = {
 						{DoCellUpdate = addon.SetCellClassIcon, args = {x.class}},
 						{value = addon.Ambiguate(name), color = addon:GetClassColor(x.class)},
-						{value = date.. "-".. x.time or "", args = {time = x.time, date = date}, compareSort = self.DateTimeSort},
+						{value = date.. "-".. i.time or "", args = {time = i.time, date = date},},
 						{DoCellUpdate = self.SetCellGear, args={i.lootWon}},
 						{value = i.lootWon},
 						{DoCellUpdate = self.SetCellResponse, args = {color = i.color, response = i.response, responseID = i.responseID or 0, isAwardReason = i.isAwardReason}}
