@@ -4,6 +4,7 @@
 
 *++Mouseover more info++
 **The voting frame now updates the more info tooltip every time you mouseover a candidate.
+**New option to display info about latest loot from more responses. Checkout MasterLooter -> Buttons and Responses -> More Info options.
 
 *++Date-Time column in Loot History++
 **You can now see, and sort by, date and time the item was awarded in the loot history.
