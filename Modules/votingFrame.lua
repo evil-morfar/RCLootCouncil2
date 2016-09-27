@@ -380,7 +380,9 @@ function RCVotingFrame:UpdateMoreInfo(row, data)
 				tip:AddLine(entry.lootWon)
 				--tip:AddDoubleLine(entry.time .. " " ..entry.date, format(L["'n days' ago"], addon:ConvertDateToString(addon:GetNumberOfDaysFromNow(entry.date))), 1,1,1, 1,1,1)
 				tip:AddLine(" ") -- Spacer
-				lastestAwardFound[entry.responseID] = {text = entry.time .. "-" ..entry.date, days = addon:ConvertDateToString(addon:GetNumberOfDaysFromNow(entry.date))}
+				if entry.responseID <= db.numMoreInfoButtons then -- Only add it if the user wants to
+					lastestAwardFound[entry.responseID] = {text = entry.time .. "-" ..entry.date, days = addon:ConvertDateToString(addon:GetNumberOfDaysFromNow(entry.date))}
+				end
 			elseif entry.responseID <= db.numMoreInfoButtons and not entry.isAwardReason and not lastestAwardFound[entry.responseID] and entry.responseID ~= 1 then
 				lastestAwardFound[entry.responseID] = {text = entry.time .. "-" ..entry.date, days = addon:ConvertDateToString(addon:GetNumberOfDaysFromNow(entry.date))}
 			end
