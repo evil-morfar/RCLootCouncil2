@@ -873,7 +873,7 @@ function addon:OptionsTable()
 									desc = {
 										order = 1,
 										type = "description",
-										name = "Select how many of your responses you want to see extended loot history info from in the more info frame in the voting frame. The selected number is included. E.g. selecting 2 would by default show extended info for Mainspec/need and offspec/Greed."
+										name = "Select how many of your responses you want to see extended loot history info for in the voting frame. The selected number is included. E.g. selecting 2 would by default show extended info for Mainspec/Need and Offspec/Greed."
 									},
 									numMoreInfoButtons = {
 										order = 2,
@@ -881,7 +881,7 @@ function addon:OptionsTable()
 										type = "range",
 										width = "full",
 										min = 0,
-										max = self.db.profile.numButtons,
+										max = self.db.profile.maxButtons,
 										step = 1,
 									}
 								},
