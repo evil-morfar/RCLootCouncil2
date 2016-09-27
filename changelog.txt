@@ -5,6 +5,9 @@
 *++Mouseover more info++
 **The voting frame now updates the more info tooltip every time you mouseover a candidate.
 
+*++Date-Time column in Loot History++
+**You can now see, and sort by, date and time the item was awarded in the loot history.
+
 *You can no longer start an empty session.
 
 *Bugfixes:

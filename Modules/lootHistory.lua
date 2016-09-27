@@ -34,6 +34,7 @@ function LootHistory:OnInitialize()
 	scrollCols = {
 		{name = "",					width = ROW_HEIGHT, },			-- Class icon, should be same row as player
 		{name = L["Name"],		width = 100, 				},		-- Name of the player
+		{name = L["Time:"],		width = 100,			},			-- Time of awarding
 		{name = "",					width = ROW_HEIGHT, },			-- Item at index icon
 		{name = L["Item"],		width = 250, 				}, 	-- Item string
 		{name = L["Reason"],		width = 230, comparesort = self.ResponseSort, sort = "asc", sortnext = 2},	-- Response aka the text supplied to lootDB...response
@@ -126,6 +127,7 @@ function LootHistory:BuildData()
 					cols = {
 						{DoCellUpdate = addon.SetCellClassIcon, args = {x.class}},
 						{value = addon.Ambiguate(name), color = addon:GetClassColor(x.class)},
+						{value = date.. "-".. x.time or "", args = {time = x.time, date = date}, compareSort = self.DateTimeSort},
 						{DoCellUpdate = self.SetCellGear, args={i.lootWon}},
 						{value = i.lootWon},
 						{DoCellUpdate = self.SetCellResponse, args = {color = i.color, response = i.response, responseID = i.responseID or 0, isAwardReason = i.isAwardReason}}
@@ -204,6 +206,24 @@ function LootHistory.SetCellResponse(rowFrame, frame, data, cols, row, realrow, 
 		frame.text:SetTextColor(addon:GetResponseColor(args.responseID))
 	else -- default to white
 		frame.text:SetTextColor(1,1,1,1)
+	end
+end
+
+local sinceEpoch = {} -- Stores epoch seconds for both, we should reuse it
+function LootHistory.DateTimeSort(table, rowa, rowb, sortbycol)
+	local cella, cellb = table:GetCell(rowa, sortbycol), table:GetCell(rowb, sortbycol);
+	local timea, datea, timeb, dateb = cella.args.time, cella.args.date, cellb.args.time, cellb.args.date
+	local d, m, y = strsplit("/", datea, 3)
+	local h, min, s = strsplit(":", timea, 3)
+	sinceEpoch.a = time({year = "20"..y, month = m, day = d, hour = h, min = min, sec = s})
+	d, m, y = strsplit("/", dateb, 3)
+	h, min, s = strsplit(":", timeb, 3)
+	sinceEpoch.b = time({year = "20"..y, month = m, day = d, hour = h, min = min, sec = s})
+	local direction = table.cols[sortbycol].sort or table.cols[sortbycol].defaultsort or "asc";
+	if direction:lower() == "asc" then
+		return sinceEpoch.a < sinceEpoch.b;
+	else
+		return sinceEpoch.a > sinceEpoch.b;
 	end
 end
 
