@@ -340,7 +340,6 @@ function RCVotingFrame:BuildST()
 end
 
 function RCVotingFrame:UpdateMoreInfo(row, data)
-	addon:Debug("MoreInfo:", moreInfo)
 	local name
 	if data then
 		name  = data[row].name
@@ -379,8 +378,9 @@ function RCVotingFrame:UpdateMoreInfo(row, data)
 			if entry.responseID == 1 and not lastestAwardFound[1] and not entry.isAwardReason then -- Latest MS roll
 				tip:AddDoubleLine(format(L["Latest 'item' won:"], addon:GetResponseText(entry.responseID)), "", 1,1,1, 1,1,1)
 				tip:AddLine(entry.lootWon)
-				tip:AddDoubleLine(entry.time .. " " ..entry.date, format(L["'n days' ago"], addon:ConvertDateToString(addon:GetNumberOfDaysFromNow(entry.date))), 1,1,1, 1,1,1)
+				--tip:AddDoubleLine(entry.time .. " " ..entry.date, format(L["'n days' ago"], addon:ConvertDateToString(addon:GetNumberOfDaysFromNow(entry.date))), 1,1,1, 1,1,1)
 				tip:AddLine(" ") -- Spacer
+				lastestAwardFound[entry.responseID] = {text = entry.time .. "-" ..entry.date, days = addon:ConvertDateToString(addon:GetNumberOfDaysFromNow(entry.date))}
 			elseif entry.responseID <= db.numMoreInfoButtons and not entry.isAwardReason and not lastestAwardFound[entry.responseID] and entry.responseID ~= 1 then
 				lastestAwardFound[entry.responseID] = {text = entry.time .. "-" ..entry.date, days = addon:ConvertDateToString(addon:GetNumberOfDaysFromNow(entry.date))}
 			end
