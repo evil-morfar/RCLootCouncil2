@@ -371,7 +371,7 @@ function RCVotingFrame:UpdateMoreInfo(row, data)
 	end
 	tip:AddLine(addon.Ambiguate(name), color.r, color.g, color.b)
 	color = {} -- Color of the response
-	local lastestAwardFound, reponseText = {}, {}
+	local lastestAwardFound, responseText = {}, {}
 	if nameCheck then -- they're in the DB!
 		tip:AddLine("")
 		for i = #lootDB[name], 1, -1 do -- Start from the end
@@ -381,7 +381,7 @@ function RCVotingFrame:UpdateMoreInfo(row, data)
 				tip:AddLine(entry.lootWon)
 				tip:AddDoubleLine(entry.time .. " " ..entry.date, format(L["'n days' ago"], addon:ConvertDateToString(addon:GetNumberOfDaysFromNow(entry.date))), 1,1,1, 1,1,1)
 				tip:AddLine(" ") -- Spacer
-			elseif entry.responseID <= addon.db.numMoreInfoButtons and not entry.isAwardReason and not lastestAwardFound[entry.responseID] and entry.responseID ~= 1 then
+			elseif entry.responseID <= db.numMoreInfoButtons and not entry.isAwardReason and not lastestAwardFound[entry.responseID] and entry.responseID ~= 1 then
 				lastestAwardFound[entry.responseID] = {text = entry.time .. "-" ..entry.date, days = addon:ConvertDateToString(addon:GetNumberOfDaysFromNow(entry.date))}
 			end
 			count[entry.responseID] = count[entry.responseID] and count[entry.responseID] + 1 or 1
@@ -395,7 +395,9 @@ function RCVotingFrame:UpdateMoreInfo(row, data)
 		for id, num in pairs(count) do
 			local r,g,b = unpack(color[id],1,3)
 			tip:AddDoubleLine(responseText[id], num, r,g,b, r,g,b) -- Make sure we don't add the alpha value
-			tip:AddDoubleLine(lastestAwardFound[id].text, format(L["'n days' ago"], lastestAwardFound[id].days))
+			if lastestAwardFound[id] then
+				tip:AddDoubleLine(lastestAwardFound[id].text, format(L["'n days' ago"], lastestAwardFound[id].days))
+			end
 			tip:AddLine(" ")
 			totalNum = totalNum + num
 		end
