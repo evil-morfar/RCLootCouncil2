@@ -872,6 +872,7 @@ function addon:OptionsTable()
 								args = {
 									desc = {
 										order = 1,
+										type = "description",
 										name = "Select how many of your responses you want to see extended loot history info from in the more info frame in the voting frame. The selected number is included. E.g. selecting 2 would by default show extended info for Mainspec/need and offspec/Greed."
 									},
 									numMoreInfoButtons = {
