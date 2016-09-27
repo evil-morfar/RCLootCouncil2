@@ -341,7 +341,7 @@ end
 
 function RCVotingFrame:UpdateMoreInfo(row, data)
 	local name
-	if data then
+	if data and row then
 		name  = data[row].name
 	else -- Try to extract the name from the selected row
 		name = self.frame.st:GetSelection() and self.frame.st:GetRow(self.frame.st:GetSelection()).name or nil
@@ -440,6 +440,13 @@ function RCVotingFrame:GetFrame()
 		["OnEnter"] = function(rowFrame, cellFrame, data, cols, row, realrow, column, table, button, ...)
 			if row then self:UpdateMoreInfo(realrow, data) end
 			-- Return false to have the default OnEnter handler take care mouseover
+			return false
+		end
+	})
+	-- We also like to return to the actual selected player when we remove the mouse
+	st:RegisterEvents({
+		["OnLeave"] = function(rowFrame, cellFrame, data, cols, row, realrow, column, table, button, ...)
+			self:UpdateMoreInfo()
 			return false
 		end
 	})
