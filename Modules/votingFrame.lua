@@ -428,6 +428,14 @@ function RCVotingFrame:GetFrame()
 			return false
 		end,
 	})
+	-- We also want to show moreInfo on mouseover
+	st:RegisterEvents({
+		["OnEnter"] = function(rowFrame, cellFrame, data, cols, row, realrow, column, table, button, ...)
+			if row then self:UpdateMoreInfo(realrow, data) end
+			-- Return false to have the default OnEnter handler take care mouseover
+			return false
+		end
+	})
 	st:SetFilter(RCVotingFrame.filterFunc)
 	st:EnableSelection(true)
 	f.st = st
