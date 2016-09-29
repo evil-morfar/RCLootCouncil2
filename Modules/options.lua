@@ -867,17 +867,17 @@ function addon:OptionsTable()
 							moreInfoOptions = {
 								order = 4,
 								type = "group",
-								name = "More Info",
+								name = L["More Info"],
 								inline = true,
 								args = {
 									desc = {
 										order = 1,
 										type = "description",
-										name = "Select how many of your responses you want to see extended loot history info for in the voting frame. The selected number is included. E.g. selecting 2 would by default show extended info for Mainspec/Need and Offspec/Greed."
+										name = L["more_info_desc"],
 									},
 									numMoreInfoButtons = {
 										order = 2,
-										name = "Number of responses",
+										name = L["Number of responses"],
 										type = "range",
 										width = "full",
 										min = 0,
