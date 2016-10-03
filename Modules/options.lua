@@ -832,7 +832,7 @@ function addon:OptionsTable()
 									},
 									timeout = {
 										order = 2,
-										name = L["Lenght"],
+										name = L["Length"],
 										desc = L["Choose timeout length in seconds"],
 										type = "range",
 										width = "full",
