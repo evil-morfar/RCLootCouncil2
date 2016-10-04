@@ -840,7 +840,6 @@ function RCVotingFrame.filterFunc(table, row)
 end
 
 function ResponseSort(table, rowa, rowb, sortbycol)
-	if type(rowa) == "table" then printtable(rowa) end
 	local column = table.cols[sortbycol]
 	local a, b = table:GetRow(rowa), table:GetRow(rowb);
 	a, b = addon:GetResponseSort(lootTable[session].candidates[a.name].response), addon:GetResponseSort(lootTable[session].candidates[b.name].response)

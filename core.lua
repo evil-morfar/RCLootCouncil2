@@ -43,6 +43,7 @@ local userModules = {
 local frames = {} -- Contains all frames created by RCLootCouncil:CreateFrame()
 local unregisterGuildEvent = false
 local player_relogged = true -- Determines if we potentially need data from the ML due to /rl
+local lootTable = {}
 
 function RCLootCouncil:OnInitialize()
 	--IDEA Consider if we want everything on self, or just whatever modules could need.
@@ -60,7 +61,6 @@ function RCLootCouncil:OnInitialize()
 	self.enabled = true -- turn addon on/off
 	self.inCombat = false -- Are we in combat?
 	self.recentReconnectRequest = false
-	local lootTable = {}
 
 	self.verCheckDisplayed = false -- Have we shown a "out-of-date"?
 
