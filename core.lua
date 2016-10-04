@@ -691,6 +691,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 				if self:UnitIsUnit(sender, self.masterLooter) then
 					self:Print(format(L["'player' has ended the session"], self.Ambiguate(self.masterLooter)))
 					self:GetActiveModule("lootframe"):Disable()
+					lootTable = {}
 					if self.isCouncil or self.mldb.observe then -- Don't call the voting frame if it wasn't used
 						self:GetActiveModule("votingframe"):EndSession(db.autoClose)
 					end
