@@ -369,10 +369,10 @@ function RCVotingFrame:UpdateMoreInfo(row, data)
 		nameCheck = true
 	end
 	tip:AddLine(addon.Ambiguate(name), color.r, color.g, color.b)
-	tip:AddLine(L["Latest item(s) won"])
 	color = {} -- Color of the response
 	local lastestAwardFound, responseText = 0, {}
 	if nameCheck then -- they're in the DB!
+		tip:AddLine(L["Latest item(s) won"])
 		for i = #lootDB[name], 1, -1 do -- Start from the end
 			entry = lootDB[name][i]
 			count[entry.responseID] = count[entry.responseID] and count[entry.responseID] + 1 or 1
