@@ -380,7 +380,7 @@ function RCVotingFrame:UpdateMoreInfo(row, data)
 			if not color[entry.responseID] or unpack(color[entry.responseID],1,3) == unpack({1,1,1}) and #entry.color ~= 0  then -- If it's not already added
 				color[entry.responseID] = #entry.color ~= 0 and #entry.color == 4 and entry.color or {1,1,1}
 			end
-			if entry.responseID <= db.numMoreInfoButtons and not entry.isAwardReason and lastestAwardFound < 5 then
+			if type(entry.responseID) == "number" and entry.responseID <= db.numMoreInfoButtons and not entry.isAwardReason and lastestAwardFound < 5 then
 				tip:AddDoubleLine(entry.lootWon, entry.response .. ", ".. format(L["'n days' ago"], addon:ConvertDateToString(addon:GetNumberOfDaysFromNow(entry.date))), nil,nil,nil,unpack(color[entry.responseID],1,3))
 				lastestAwardFound = lastestAwardFound + 1
 			end
