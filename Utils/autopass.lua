@@ -68,6 +68,7 @@ function RCLootCouncil:AutoPassCheck(subType, equipLoc, link)
 		if equipLoc == "" and subType == self.db.global.localizedSubTypes["Artifact Relic"] then
 			local id = self:GetItemIDFromLink(link)
          local type = select(3, C_ArtifactUI.GetRelicInfoByItemID(id))
+			self:DebugLog("RelicAutopassCheck", type, id)
          -- If the type exists in the table, then the player can use it, so we need to negate it
          return not tContains(relics[self.playerClass], type)
 
