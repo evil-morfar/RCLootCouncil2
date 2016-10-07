@@ -1125,7 +1125,7 @@ end
 function RCLootCouncil:NewMLCheck()
 	local old_ml = self.masterLooter
 	self.isMasterLooter, self.masterLooter = self:GetML()
-	if self.masterLooter == "Unknown" then
+	if strfind(self.masterLooter, "Unknown") then
 		-- ML might be unknown for some reason
 		self:Debug("Unknown ML")
 		return self:ScheduleTimer("NewMLCheck", 2)
