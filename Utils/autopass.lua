@@ -42,7 +42,7 @@ local relicTypes = {
   FEL       = 'Fel',
   ARCANE    = 'Arcane',
   LIFE      = 'Life',
-  STORM     = 'Storm',
+  STORM     = 'Wind', -- Great job Blizzard -.-
   HOLY      = 'Holy'
 }
 
