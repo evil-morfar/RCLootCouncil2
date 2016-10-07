@@ -1,5 +1,6 @@
 *Bugfixes:
 **//Another attempt at fixing issues with double items (#180).//
+**//Loot History will now correctly show the response as it was when given (#181).//
 
 ==== v2.1.4 ====
 *++Offspec artifact relics++

@@ -195,14 +195,11 @@ end
 
 function LootHistory.SetCellResponse(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
 	local args = data[realrow].cols[column].args
-	if args.responseID and args.responseID ~= 0 and not args.isAwardReason then
-		frame.text:SetText(addon.responses[args.responseID].text)
-	else
-		frame.text:SetText(args.response)
-	end
+	frame.text:SetText(args.response)
+	
 	if args.color then -- Never version saves the color with the entry
 		frame.text:SetTextColor(unpack(args.color))
-	elseif args.responseID > 0 then -- try to recreate color from ID
+	elseif args.responseID and args.responseID > 0 then -- try to recreate color from ID
 		frame.text:SetTextColor(addon:GetResponseColor(args.responseID))
 	else -- default to white
 		frame.text:SetTextColor(1,1,1,1)
@@ -249,10 +246,8 @@ function LootHistory.ResponseSort(table, rowa, rowb, sortbycol)
 	rowa, rowb = table:GetRow(rowa), table:GetRow(rowb);
 	local a,b
 	local aID, bID = data[rowa.date][rowa.name][rowa.num].responseID, data[rowb.date][rowb.name][rowb.num].responseID
-	local awardReason = true
 
 	-- NOTE: I'm pretty sure it can only be an awardReason when responseID is nil or 0
-
 	if aID and aID ~= 0 then
 		if data[rowa.date][rowa.name][rowa.num].isAwardReason then
 			a = db.awardReasons[aID].sort
