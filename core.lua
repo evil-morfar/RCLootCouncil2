@@ -403,6 +403,7 @@ end
 function RCLootCouncil:ChatCommand(msg)
 	local input, arg1, arg2 = self:GetArgs(msg,3)
 	input = strlower(input or "")
+	self:Debug("/", input, arg1, arg2)
 	if not input or input:trim() == "" or input == "help" or input == L["help"] then
 		if self.tVersion then print(format(L["chat tVersion string"],self.version, self.tVersion))
 		else print(format(L["chat version String"],self.version)) end
@@ -435,7 +436,6 @@ function RCLootCouncil:ChatCommand(msg)
 
 
 	elseif input == 'test' or input == L["test"] then
-		--self:Print(db.ui.versionCheckScale)
 		self:Test(tonumber(arg1) or 1)
 
 	elseif input == 'version' or input == L["version"] or input == "v" or input == "ver" then
