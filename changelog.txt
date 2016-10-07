@@ -1,3 +1,4 @@
+==== v2.1.5 ====
 *++Item differences++
 **Now always calculated on the lowest ilvl if two items of the same type is equipped.
 
