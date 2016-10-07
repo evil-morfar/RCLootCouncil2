@@ -1320,8 +1320,10 @@ function RCLootCouncil:UnitName(unit)
 	-- Then see if we already have a realm name appended
 	local find = strfind(unit, "-", nil, true)
 	if find and find < #unit then -- "-" isn't the last character
-		-- Should be save to return unit
-		return unit
+		-- Let's give it same treatment as below so we're sure it's the same
+		local name, realm = strsplit("-", unit, 2)
+		name = name:lower():gsub("^%l", string.upper)
+		return name.."-"..realm
 	end
 	-- Apparently functions like GetRaidRosterInfo() will return "real" name, while UnitName() won't
 	-- always work with that (see ticket #145). We need this to be consistant, so just lowercase the unit:
