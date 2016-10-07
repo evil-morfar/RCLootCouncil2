@@ -321,30 +321,27 @@ end
 function RCLootCouncilML:LootOpened()
 	if addon.isMasterLooter and GetNumLootItems() > 0 then
 		addon.target = GetUnitName("target") or L["Unknown/Chest"] -- capture the boss name
+		local updatedLootSlot = {}
 		for i = 1, GetNumLootItems() do
+			local item = GetLootSlotLink(i)
 			-- We have reopened the loot frame, so check if we should update .lootSlot
 			if self.running then
-				local item = GetLootSlotLink(i)
 				for session = 1, #self.lootTable do
-					if item == self.lootTable[session].link then
-						if i ~= self.lootTable[session].lootSlot then -- It has changed!
-							self.lootTable[session].lootSlot = i -- and update it
-						end
-						-- Lets see if we have more of the same item in the rest of the lootTable
-						for ses = session, #self.lootTable do
-							if item == self.lootTable[ses].link then
-								-- We have! Lets give this one the current slot, as the first will be updated once we reach it in the main loops
-								self.lootTable[ses].lootSlot = i
-								break
+					-- Just skip if we've already awarded the item or found a fitting lootSlot
+					if not self.lootTable[session].awarded and not updatedLootSlot[session] then
+						if item == self.lootTable[session].link then
+							if i ~= self.lootTable[session].lootSlot then -- It has changed!
+								self.lootTable[session].lootSlot = i -- and update it
+								updatedLootSlot[session] = true
+								addon:DebugLog("Changed lootSlot", session, i)
 							end
+							break
 						end
-						break
 					end
 				end
 			else
 				if db.altClickLooting then self:ScheduleTimer("HookLootButton", 0.5, i) end -- Delay lootbutton hooking to ensure other addons have had time to build their frames
 				local _, _, quantity, quality = GetLootSlotInfo(i)
-				local item = GetLootSlotLink(i)
 				if self:ShouldAutoAward(item, quality) and quantity > 0 then
 					self:AutoAward(i, item, quality, db.autoAwardTo, db.autoAwardReason, addon.target)
 
