@@ -1,3 +1,6 @@
+*++Item differences++
+**Now always calculated on the lowest ilvl if two items of the same type is equipped.
+
 *Bugfixes:
 **//Another attempt at fixing issues with double items (#180).//
 **//Loot History will now correctly show the response as it was when given (#181).//
