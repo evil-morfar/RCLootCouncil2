@@ -1131,10 +1131,11 @@ function RCLootCouncil:NewMLCheck()
 		self:GetActiveModule("masterlooter"):Disable()
 	end
 	if self:UnitIsUnit(old_ml, self.masterLooter) or db.usage.never then return end -- no change
+	if self.masterLooter == nil then return end -- We're not using ML
 	-- At this point we know the ML has changed, so we can wipe the council
 	self:Debug("Resetting council as we have a new ML!")
 	self.council = {}
-	if not self.isMasterLooter and self.masterLooter then return end -- Someone else is ML
+	if not self.isMasterLooter and self.masterLooter then return end -- Someone else has become ML
 
 	-- We are ML and shouldn't ask the player for usage
 	if self.isMasterLooter and db.usage.ml then -- addon should auto start
