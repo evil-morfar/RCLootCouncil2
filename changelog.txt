@@ -6,6 +6,7 @@
 **//Remade the check that would fail to award double items (#180).//
 **//Loot History will now correctly show the response as it was when awarded (#181).//
 **//Fixed a weird error probably related to Russian lua locale (#179)
+**//Added a fix to time calculations that could sometimes cause an error.//
 
 ==== v2.1.4 ====
 *++Offspec artifact relics++
