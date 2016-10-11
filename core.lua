@@ -453,8 +453,12 @@ function RCLootCouncil:ChatCommand(msg)
 		self:Print(L["whisper_help"])
 
 	elseif (input == "add" or input == L["add"]) then
+		if not arg1 or arg1 == "" then return self:ChatCommand() end
 		if self.isMasterLooter then
 			self:GetActiveModule("masterlooter"):AddUserItem(arg1)
+			if arg2 then
+				self:GetActiveModule("masterlooter"):AddUserItem(arg2)
+			end
 		else
 			self:Print(L["You cannot use this command without being the Master Looter"])
 		end
