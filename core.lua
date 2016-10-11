@@ -594,7 +594,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 					if GetNumGroupMembers() >= 8 and not IsInInstance() then
 						self:DebugLog("NotInRaid respond to lootTable")
 						for ses, v in ipairs(lootTable) do
-						 	self:SendCommand("group", "response", self:CreateResponse(ses, v.link, v.ilvl, "NOTINRAID", v.equipLoc))
+						 	self:SendCommand("group", "response", self:CreateResponse(ses, v.link, v.ilvl, "NOTINRAID", v.equipLoc, nil, v.subType))
 						end
 						return
 					end
@@ -613,7 +613,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 								if self:AutoPassCheck(v.subType, v.equipLoc, v.link) then
 									self:Debug("Autopassed on: ", v.link)
 									if not db.silentAutoPass then self:Print(format(L["Autopassed on 'item'"], v.link)) end
-									self:SendCommand("group", "response", self:CreateResponse(ses, v.link, v.ilvl, "AUTOPASS", v.equipLoc))
+									self:SendCommand("group", "response", self:CreateResponse(ses, v.link, v.ilvl, "AUTOPASS", v.equipLoc, nil, v.subType))
 									lootTable[ses].autopass = true
 								end
 							else
@@ -1003,7 +1003,7 @@ end
 -- @param subType		The item's subType, needed for Artifact Relics
 -- @returns A formatted table that can be passed directly to :SendCommand("group", "response", -return-)
 function RCLootCouncil:CreateResponse(session, link, ilvl, response, equipLoc, note, subType)
-	self:DebugLog("CreateResponse", session, link, ilvl, response, equipLoc, note)
+	self:DebugLog("CreateResponse", session, link, ilvl, response, equipLoc, note, subType)
 	local g1, g2;
 	if equipLoc == "" and subType == self.db.global.localizedSubTypes["Artifact Relic"] then
 		g1, g2 = self:GetArtifactRelics(link)
@@ -1014,7 +1014,7 @@ function RCLootCouncil:CreateResponse(session, link, ilvl, response, equipLoc, n
 	if g2 then
 		local g1diff, g2diff = select(4, GetItemInfo(g1)), select(4, GetItemInfo(g2))
 		diff = g1diff >= g2diff and ilvl - g2diff or ilvl - g1diff
-	else
+	elseif g1 then -- Artifact Relic might be nil
 		diff = (ilvl - select(4, GetItemInfo(g1))) end
 	return
 		session,
