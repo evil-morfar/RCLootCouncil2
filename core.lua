@@ -232,6 +232,7 @@ function RCLootCouncil:OnInitialize()
 				113588, -- Temporal Crystal
 				124442, -- Chaos Crystal (Legion)
 				124441, -- Leylight Shard (Legion)
+				141303,141304,141305, -- Essence of Clarity (Emerald Nightmare quest item)
 			},
 		},
 	} -- defaults end

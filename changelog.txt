@@ -2,6 +2,8 @@
 *++Item differences++
 **Now always calculated on the lowest ilvl if two items of the same type is equipped.
 
+**Added Essence of Clarity to the ignore list.
+
 *Bugfixes:
 **//Remade the check that would fail to award double items (#180).//
 **//Loot History will now correctly show the response as it was when awarded (#181).//
