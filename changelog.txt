@@ -9,6 +9,7 @@
 **//Loot History will now correctly show the response as it was when awarded (#181).//
 **//Fixed a weird error probably related to Russian lua locale (#179)
 **//Added a fix to time calculations that could sometimes cause an error.//
+**//Using the Version Checker on the guild will now properly have people respond to it.//
 
 ==== v2.1.4 ====
 *++Offspec artifact relics++
