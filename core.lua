@@ -453,7 +453,7 @@ function RCLootCouncil:ChatCommand(msg)
 		self:Print(L["whisper_help"])
 
 	elseif (input == "add" or input == L["add"]) then
-		if not arg1 or arg1 == "" then return self:ChatCommand() end
+		if not arg1 or arg1 == "" then return self:ChatCommand("help") end
 		if self.isMasterLooter then
 			self:GetActiveModule("masterlooter"):AddUserItem(arg1)
 			if arg2 then
@@ -1134,7 +1134,7 @@ end
 function RCLootCouncil:NewMLCheck()
 	local old_ml = self.masterLooter
 	self.isMasterLooter, self.masterLooter = self:GetML()
-	if strfind(self.masterLooter, "Unknown") then
+	if self.masterLooter and self.masterLooter ~= "" and strfind(self.masterLooter, "Unknown") then
 		-- ML might be unknown for some reason
 		self:Debug("Unknown ML")
 		return self:ScheduleTimer("NewMLCheck", 2)
