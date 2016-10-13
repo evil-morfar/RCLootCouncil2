@@ -721,9 +721,9 @@ function LootHistory:ExportEQXML()
 	itemsData = itemsData.. "\t</items>\r\n"
 	export = export..zoneData..bossData..itemsData
 	.."\t<members>\r\n"
-	for player in pairs(membersData) do
+	for name in pairs(membersData) do
 		export = export.. "\t\t<member>\r\n"
-		.."\t\t\t<name>"..player.."</name>\r\n"
+		.."\t\t\t<name>"..name.."</name>\r\n"
 		.."\t\t\t<times>\r\n"
 		.."\t\t\t\t<time type='join'>"..earliest.."</time>\r\n"
 		.."\t\t\t\t<time type='leave'>"..latest.."</time>\r\n"
