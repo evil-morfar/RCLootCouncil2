@@ -1,6 +1,6 @@
 *Bugfixes:
 **//Accepting the usage popup will no longer do anything if you're not the ML.//
-
+**//Fixed a potential voting frame related bug depending on installed addons (#190) - thanks to Stoobert_Broon.//
 
 ==== v2.1.5 ====
 *++Item differences++

@@ -1143,16 +1143,19 @@ do
 end
 
 function RCVotingFrame:GetItemStatus(item)
-	--addon:DebugLog("GetitemStatus", item)
+	-- addon:Debug("GetitemStatus", item)
 	if not item then return "" end
 	GameTooltip:SetOwner(UIParent, "ANCHOR_NONE")
 	GameTooltip:SetHyperlink(item)
 	local text = ""
 	if GameTooltip:NumLines() > 1 then -- check that there is something here
 		local line = getglobal('GameTooltipTextLeft2') -- Should always be line 2
+		local t =  line:GetText()
 		-- The following color string should be there if we have a green status text
-		if strfind(line:GetText(), "cFF 0FF 0") then
-			text = line:GetText()
+		if t then
+			if strfind(t, "cFF 0FF 0") then
+				text = t
+			end
 		end
 	end
 	GameTooltip:Hide()
