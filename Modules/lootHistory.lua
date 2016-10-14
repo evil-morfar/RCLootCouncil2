@@ -665,9 +665,11 @@ function LootHistory:ExportEQXML()
  		.."<raiddata>\r\n"
 	local bossData = "\t<bosskills>\r\n"
 	local zoneData = "\t<zones>\r\n"
-	local itemsData ="\t<items>\r\n"
+	local itemsData = "\t<items>\r\n"
 	local membersData = {}
 	local raidData = {}
+	local earliest = 9999999999
+	local latest = 0
 	for player, v in pairs(lootDB) do
 		if selectedName and selectedName == player or not selectedName then
 			for i, d in pairs(v) do
@@ -710,7 +712,10 @@ function LootHistory:ExportEQXML()
 		zoneData = zoneData .. "\t\t<zone>\r\n"
 		.. "\t\t\t<enter>"..id.."</enter>\r\n"
 		.. "\t\t\t<name>"..name.."</name>\r\n"
+		.. "\t\t\t<leave>"..(id + 26000).."</leave>\r\n"
 		.. "\t\t</zone>\r\n"
+		earliest = min(earliest, id)
+		latest = max(latest, id + 26000)
 	end
 	zoneData = zoneData .."\t</zones>\r\n"
 	itemsData = itemsData.. "\t</items>\r\n"
@@ -719,6 +724,10 @@ function LootHistory:ExportEQXML()
 	for name in pairs(membersData) do
 		export = export.. "\t\t<member>\r\n"
 		.."\t\t\t<name>"..name.."</name>\r\n"
+		.."\t\t\t<times>\r\n"
+		.."\t\t\t\t<time type='join'>"..earliest.."</time>\r\n"
+		.."\t\t\t\t<time type='leave'>"..latest.."</time>\r\n"
+		.."\t\t\t</times>\r\n"
 		.."\t\t</member>\r\n"
 	end
 	export=export.. "\t</members>\r\n</raiddata></raidlog>\r\n"
