@@ -1,3 +1,8 @@
+*++Shared Loot History++
+**It's now possible to share and syncronize your loot history. For now it's a manual copy/paste job using
+**the new "Player Export" format and the import button. Hopes are to make it automatic some day.
+**Note: Importing someone's history will only add to your own, not delete anything.
+
 *Bugfixes:
 **//Accepting the usage popup will no longer do anything if you're not the ML.//
 **//Fixed a potential voting frame related bug depending on installed addons (#190) - thanks to Stoobert_Broon.//

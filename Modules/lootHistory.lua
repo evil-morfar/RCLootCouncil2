@@ -29,6 +29,7 @@ function LootHistory:OnInitialize()
 		bbcode = { func = self.ExportBBCode,	name = "BBCode", 				tip = L["Simple BBCode output."]},
 		bbcodeSmf = {func = self.ExportBBCodeSMF, name = "BBCode SMF",		tip = L["BBCode export, tailored for SMF."],},
 		eqxml = { func = self.ExportEQXML,		name = "EQdkp-Plus XML",	tip = L["EQdkp-Plus XML output, tailored for Enjin import."]},
+		player = { func = self.PlayerExport,	name = "Player Export",		tip = "A format to copy/paste to another player."},
 		--html = self.ExportHTML
 	}
 	scrollCols = {
@@ -196,7 +197,7 @@ end
 function LootHistory.SetCellResponse(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
 	local args = data[realrow].cols[column].args
 	frame.text:SetText(args.response)
-	
+
 	if args.color then -- Never version saves the color with the entry
 		frame.text:SetTextColor(unpack(args.color))
 	elseif args.responseID and args.responseID > 0 then -- try to recreate color from ID
@@ -290,6 +291,43 @@ function LootHistory:ExportHistory()
 	end
 end
 
+function LootHistory:ImportHistory(import)
+	addon:Debug("Initiating import")
+	lootDB = addon:GetHistoryDB()
+	-- Start with validating the import:
+	if type(import) ~= "string" then return addon:Print("The imported text wasn't a string") end
+	import = gsub(import, "\124\124", "\124") -- De escape itemslinks
+	local test, import = addon:Deserialize(import)
+	if not test then return addon:Print("Deserialization failed - maybe wrong import type?") end
+	addon:Debug("Validation completed", #lootDB == 0, #lootDB)
+	-- Now import should be a copy of the orignal exporter's lootDB, so insert any changes
+	-- Start by seeing if we even have a lootDB
+	--if #lootDB == 0 then lootDB = import; return end
+	local number = 0
+	for name, data in pairs(import) do
+		if lootDB[name] then -- We've registered the name, so check all the awards
+			for _, v in pairs(data) do
+				local found = false
+				for _, d in pairs(lootDB[name]) do
+					-- Check if the time matches. If it does, we already have the data and can skip to the next
+					if d.time == v.time then found = true; break end
+				end
+				if not found then -- add it
+					tinsert(lootDB[name], v)
+					number = number + 1
+				end
+			end
+		else -- It's a new name, so add everything and move on to the next
+			lootDB[name] = data
+			number = number + #data
+		end
+	end
+	addon.lootDB = lootDB -- save it
+	addon:Print("Successfully imported "..number.." entries.")
+	addon:Debug("Import successful")
+	self:BuildData()
+end
+
 ---------------------------------------------------
 -- Visauls
 ---------------------------------------------------
@@ -381,7 +419,7 @@ function LootHistory:GetFrame()
 
 	-- Filter
 	local b4 = addon:CreateButton(L["Filter"], f.content)
-	b4:SetPoint("RIGHT", b3, "LEFT", -10, 0)
+	b4:SetPoint("RIGHT", f.importBtn, "LEFT", -10, 0)
 	b4:SetScript("OnClick", function(self) Lib_ToggleDropDownMenu(1, nil, filterMenu, self, 0, 0) end )
 	f.filter = b4
 	Lib_UIDropDownMenu_Initialize(b4, self.FilterMenu)
@@ -440,6 +478,33 @@ function LootHistory:GetFrame()
 		edit:HighlightText()
 		edit:SetFocus()
 	end
+
+	-- Import
+	local b5 = addon:CreateButton("Import", f.content)
+	b5:SetPoint("RIGHT", b3, "LEFT", -10, 0)
+	b5:SetScript("OnClick", function() self.frame.importFrame:Show() end)
+	f.importBtn = b5
+
+	-- Import frame
+	local imp = AG:Create("Window")
+	imp:SetLayout("Flow")
+	imp:SetTitle("RCLootCouncil Import")
+	imp:SetWidth(400)
+   imp:SetHeight(550)
+
+	local edit = AG:Create("MultiLineEditBox")
+	edit:SetNumLines(20)
+	edit:SetFullWidth(true)
+	edit:SetLabel("Import")
+	edit:SetFullHeight(true)
+	edit:SetCallback("OnEnterPressed", function()
+		self:ImportHistory(edit:GetText())
+		imp:Hide()
+	end)
+	imp:AddChild(edit)
+	imp:Hide()
+	f.importFrame = imp
+
 	-- Set a proper width
 	f:SetWidth(st.frame:GetWidth() + 20)
 	return f;
@@ -736,4 +801,10 @@ end
 
 function LootHistory:ExportHTML()
 	local export = "html test"
+end
+
+-- Generates a serialized string containing the entire DB.
+-- For now it needs to be copied and pasted in another player's import field.
+function LootHistory:PlayerExport()
+	return self:EscapeItemLink(addon:Serialize(lootDB))
 end
