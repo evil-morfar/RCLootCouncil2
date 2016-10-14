@@ -1,3 +1,7 @@
+*Bugfixes:
+**//Accepting the usage popup will no longer do anything if you're not the ML.//
+
+
 ==== v2.1.5 ====
 *++Item differences++
 **Now always calculated on the lowest ilvl if two items of the same type is equipped.

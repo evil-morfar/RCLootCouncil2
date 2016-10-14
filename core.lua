@@ -346,6 +346,8 @@ function RCLootCouncil:OnEnable()
 			{	text = L["Yes"],
 				on_click = function()
 					self:DebugLog("Player confirmed usage")
+					-- The player might have passed on ML before accepting :O
+					if not self.isMasterLooter then return end
 					local lootMethod = GetLootMethod()
 					if lootMethod ~= "master" then
 						self:Print(L["Changing LootMethod to Master Looting"])
