@@ -1,3 +1,4 @@
+==== v2.1.6 ====
 *++Shared Loot History++
 **It's now possible to share and syncronize your loot history. For now it's a manual copy/paste job using
 **the new "Player Export" format and the import button. Hopes are to make it automatic some day.
