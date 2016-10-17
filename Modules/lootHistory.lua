@@ -417,6 +417,12 @@ function LootHistory:GetFrame()
 	b3:SetScript("OnClick", function() self:ExportHistory() end)
 	f.exportBtn = b3
 
+	-- Import
+	local b5 = addon:CreateButton("Import", f.content)
+	b5:SetPoint("RIGHT", b3, "LEFT", -10, 0)
+	b5:SetScript("OnClick", function() self.frame.importFrame:Show() end)
+	f.importBtn = b5
+
 	-- Filter
 	local b4 = addon:CreateButton(L["Filter"], f.content)
 	b4:SetPoint("RIGHT", f.importBtn, "LEFT", -10, 0)
@@ -426,7 +432,7 @@ function LootHistory:GetFrame()
 
 	-- Export selection (AceGUI-3.0)
 	local sel = AG:Create("Dropdown")
-	sel:SetPoint("BOTTOMLEFT", b4, "TOPLEFT", 0, 10)
+	sel:SetPoint("BOTTOMLEFT", f.importBtn, "TOPLEFT", 0, 10)
 	sel:SetPoint("TOPRIGHT", b2, "TOPLEFT", -10, 0)
 	local values = {}
 	for k, v in pairs(self.exports) do
@@ -478,12 +484,6 @@ function LootHistory:GetFrame()
 		edit:HighlightText()
 		edit:SetFocus()
 	end
-
-	-- Import
-	local b5 = addon:CreateButton("Import", f.content)
-	b5:SetPoint("RIGHT", b3, "LEFT", -10, 0)
-	b5:SetScript("OnClick", function() self.frame.importFrame:Show() end)
-	f.importBtn = b5
 
 	-- Import frame
 	local imp = AG:Create("Window")
