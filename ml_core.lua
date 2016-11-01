@@ -256,6 +256,7 @@ function RCLootCouncilML:Timer(type, ...)
 
 	elseif type == "GroupUpdate" then
 		addon:SendCommand("group", "candidates", self.candidates)
+		addon:SendCommand("group", "council", db.council)
 	end
 end
 
