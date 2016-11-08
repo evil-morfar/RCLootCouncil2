@@ -2,7 +2,7 @@
 *++Updated toc for 7.1++
 
 *++Only use in raids++
-**Added an option to automatically disable in parties.
+**Added an option to automatically disable in parties. Also moved usage options to Master Looter page.
 
 *No longer asks for usage in LFG instances (#196).
 

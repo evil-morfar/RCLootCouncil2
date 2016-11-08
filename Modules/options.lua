@@ -31,50 +31,6 @@ function addon:OptionsTable()
 						name = L["General"],
 						childGroups = "tab",
 						args = {
-							usage = {
-								order = 1,
-								name = L["Usage"],
-								desc = L["Choose when to use RCLootCouncil"],
-								type = "select",
-								width = "double",
-								values = {
-									ml 			= L["Always use RCLootCouncil when I'm Master Looter"],
-								--	leader 		= "Always use RCLootCouncil when I'm the group leader and enter a raid",
-									ask_ml		= L["Ask me every time I become Master Looter"],
-								--	ask_leader	= "Ask me every time I'm the group leader and enter a raid",
-									never			= L["Never use RCLootCouncil"],
-								},
-								set = function(_, key)
-									for k in pairs(self.db.profile.usage) do
-										if k == key then
-											self.db.profile.usage[k] = true
-										else
-											self.db.profile.usage[k] = false
-										end
-									end
-									self.db.profile.usage.state = key
-								end,
-								get = function() return self.db.profile.usage.state end,
-							},
-							leaderUsage = { -- Add leader options here since we can only make a single select dropdown
-								order = 2,
-								name = function() return self.db.profile.usage.ml and L["Always use when leader"] or L["Ask me when leader"] end,
-								desc = L["leaderUsage_desc"],
-								type = "toggle",
-								get = function() return self.db.profile.usage.leader or self.db.profile.usage.ask_leader end,
-								set = function(_, val)
-									self.db.profile.usage.leader, self.db.profile.usage.ask_leader = false, false -- Reset for zzzzz
-									if self.db.profile.usage.ml then self.db.profile.usage.leader = val end
-									if self.db.profile.usage.ask_ml then self.db.profile.usage.ask_leader = val end
-								end,
-								disabled = function() return self.db.profile.usage.never end,
-							},
-							onlyUseInRaids = {
-								order = 3,
-								name = L["Only use in raids"],
-								desc = L["onlyUseInRaids_desc"],
-								type = "toggle",
-							},
 							generalOptions = {
 								order = 3,
 								name = L["General options"],
@@ -413,8 +369,65 @@ function addon:OptionsTable()
 						type = "group",
 						name = L["General"],
 						args = {
-							lootingOptions = {
+							usageOptions = {
 								order = 1,
+								type = "group",
+								name = "Usage Options",
+								inline = true,
+								args = {
+									usage = {
+										order = 1,
+										name = L["Usage"],
+										desc = L["Choose when to use RCLootCouncil"],
+										type = "select",
+										width = "double",
+										values = {
+											ml 			= L["Always use RCLootCouncil when I'm Master Looter"],
+										--	leader 		= "Always use RCLootCouncil when I'm the group leader and enter a raid",
+											ask_ml		= L["Ask me every time I become Master Looter"],
+										--	ask_leader	= "Ask me every time I'm the group leader and enter a raid",
+											never			= L["Never use RCLootCouncil"],
+										},
+										set = function(_, key)
+											for k in pairs(self.db.profile.usage) do
+												if k == key then
+													self.db.profile.usage[k] = true
+												else
+													self.db.profile.usage[k] = false
+												end
+											end
+											self.db.profile.usage.state = key
+										end,
+										get = function() return self.db.profile.usage.state end,
+									},
+									spacer = {
+												order = 2,
+												type = "header",
+												name = "",
+									},
+									leaderUsage = { -- Add leader options here since we can only make a single select dropdown
+										order = 3,
+										name = function() return self.db.profile.usage.ml and L["Always use when leader"] or L["Ask me when leader"] end,
+										desc = L["leaderUsage_desc"],
+										type = "toggle",
+										get = function() return self.db.profile.usage.leader or self.db.profile.usage.ask_leader end,
+										set = function(_, val)
+											self.db.profile.usage.leader, self.db.profile.usage.ask_leader = false, false -- Reset for zzzzz
+											if self.db.profile.usage.ml then self.db.profile.usage.leader = val end
+											if self.db.profile.usage.ask_ml then self.db.profile.usage.ask_leader = val end
+										end,
+										disabled = function() return self.db.profile.usage.never end,
+									},
+									onlyUseInRaids = {
+										order = 4,
+										name = L["Only use in raids"],
+										desc = L["onlyUseInRaids_desc"],
+										type = "toggle",
+									},
+								},
+							},
+							lootingOptions = {
+								order = 2,
 								name = L["Looting options"],
 								type = "group",
 								inline = true,
@@ -459,7 +472,7 @@ function addon:OptionsTable()
 								},
 							},
 							voteOptions = {
-								order = 2,
+								order = 3,
 								name = L["Voting options"],
 								type = "group",
 								inline = true,
@@ -510,7 +523,7 @@ function addon:OptionsTable()
 								},
 							},
 							ignoreOptions = {
-								order = 3,
+								order = 4,
 								name = L["Ignore Options"],
 								type = "group",
 								inline = true,
