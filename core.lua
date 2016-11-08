@@ -906,6 +906,7 @@ end
 function RCLootCouncil:GetArtifactRelics(link)
 	local id = self:GetItemIDFromLink(link)
 	local g1,g2;
+	if not C_ArtifactUI.GetEquippedArtifactNumRelicSlots() then return end -- Check if we even have an artifact
 	for i = 1, C_ArtifactUI.GetEquippedArtifactNumRelicSlots() do
 		if C_ArtifactUI.CanApplyRelicItemIDToEquippedArtifactSlot(id,i) then -- We can equip it
 			if g1 then
