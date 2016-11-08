@@ -12,7 +12,7 @@
 **//The filter button needed to be clicked before newly added buttons/responses would show (#203).//
 **//Various council/voting issues (#199, #194, #189, #174).//
 **//Version Checker could show double entries in some locales (#198).//
-
+**//Changing buttons after a session started could cause errors.//
 
 ==== v2.1.6 ====
 *++Shared Loot History++

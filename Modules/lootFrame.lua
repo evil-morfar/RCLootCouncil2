@@ -95,6 +95,10 @@ function LootFrame:Update()
 			-- Update the buttons and get frame width
 			-- IDEA There might be a better way of doing this instead of SetText() on every update?
 			local but = entries[numEntries].buttons[addon.mldb.numButtons+1]
+			if not but then -- mldb have probably updated since we created the buttons
+				entries[numEntries]:UpdateButtons()
+				but = entries[numEntries].buttons[addon.mldb.numButtons+1]
+			end
 			but:SetWidth(but:GetTextWidth() + 10)
 			width = width + but:GetWidth()
 			for i = 1, addon.mldb.numButtons do
@@ -162,33 +166,36 @@ function LootFrame:GetEntry(entry)
 	icon:SetSize(ENTRY_HEIGHT*2/3, ENTRY_HEIGHT*2/3)
 	icon:SetPoint("TOPLEFT", f, "TOPLEFT", 12, -13)
 	icon:SetScript("OnEnter", function()
-		if not f.link then return; end
+		if not f.link then return end
 		addon:CreateHypertip(f.link)
 	end)
 	icon:SetScript("OnLeave", function() addon:HideTooltip() end)
 	icon:SetScript("OnClick", function()
-		if not f.link then return; end
-	    if ( IsModifiedClick() ) then
-		    HandleModifiedItemClick(f.link);
-        end
-    end);
+		if not f.link then return end
+	   if ( IsModifiedClick() ) then
+		 	HandleModifiedItemClick(f.link);
+      end
+   end)
 	f.icon = icon
 
 	-------- Buttons -------------
-	f.buttons = {}
-	for i = 1, addon.mldb.numButtons do
-		f.buttons[i] = addon:CreateButton(addon:GetButtonText(i), f)
-		if i == 1 then
-			f.buttons[i]:SetPoint("BOTTOMLEFT", icon, "BOTTOMRIGHT", 5, 0)
-		else
-			f.buttons[i]:SetPoint("LEFT", f.buttons[i-1], "RIGHT", 5, 0)
+	function f:UpdateButtons()
+		f.buttons = {}
+		for i = 1, addon.mldb.numButtons do
+			f.buttons[i] = addon:CreateButton(addon:GetButtonText(i), f)
+			if i == 1 then
+				f.buttons[i]:SetPoint("BOTTOMLEFT", icon, "BOTTOMRIGHT", 5, 0)
+			else
+				f.buttons[i]:SetPoint("LEFT", f.buttons[i-1], "RIGHT", 5, 0)
+			end
+			f.buttons[i]:SetScript("OnClick", function() LootFrame:OnRoll(entry, i) end)
 		end
-		f.buttons[i]:SetScript("OnClick", function() LootFrame:OnRoll(entry, i) end)
+		-- Pass button
+		f.buttons[addon.mldb.numButtons + 1] = addon:CreateButton(L["Pass"], f)
+		f.buttons[addon.mldb.numButtons + 1]:SetPoint("LEFT", f.buttons[addon.mldb.numButtons], "RIGHT", 5, 0)
+		f.buttons[addon.mldb.numButtons + 1]:SetScript("OnClick", function() LootFrame:OnRoll(entry, "PASS") end)
 	end
-	-- Pass button
-	f.buttons[addon.mldb.numButtons + 1] = addon:CreateButton(L["Pass"], f)
-	f.buttons[addon.mldb.numButtons + 1]:SetPoint("LEFT", f.buttons[addon.mldb.numButtons], "RIGHT", 5, 0)
-	f.buttons[addon.mldb.numButtons + 1]:SetScript("OnClick", function() LootFrame:OnRoll(entry, "PASS") end)
+	f:UpdateButtons()
 
 	-------- Note button ---------
 	local noteButton = CreateFrame("Button", nil, f)
