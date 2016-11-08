@@ -702,9 +702,6 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 			elseif command == "playerInfoRequest" then
 				self:SendCommand(sender, "playerInfo", self:GetPlayerInfo())
 
-			elseif command == "message" then
-				self:Print(unpack(data))
-
 			elseif command == "session_end" and self.enabled then
 				if self:UnitIsUnit(sender, self.masterLooter) then
 					self:Print(format(L["'player' has ended the session"], self.Ambiguate(self.masterLooter)))
