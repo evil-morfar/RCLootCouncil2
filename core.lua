@@ -1138,6 +1138,7 @@ end
 function RCLootCouncil:NewMLCheck()
 	local old_ml = self.masterLooter
 	self.isMasterLooter, self.masterLooter = self:GetML()
+	if IsPartyLFG() then return end	-- We can't use in lfg/lfd so don't bother
 	if self.masterLooter and self.masterLooter ~= "" and strfind(self.masterLooter, "Unknown") then
 		-- ML might be unknown for some reason
 		self:Debug("Unknown ML")
@@ -1173,6 +1174,7 @@ end
 function RCLootCouncil:OnRaidEnter(arg)
 	-- NOTE: We shouldn't need to call GetML() as it's most likely called on "LOOT_METHOD_CHANGED"
 	-- There's no ML, and lootmethod ~= ML, but we are the group leader
+	if IsPartyLFG() then return end	-- We can't use in lfg/lfd so don't bother
 	if not self.masterLooter and UnitIsGroupLeader("player") then
 		-- We don't need to ask the player for usage, so change loot method to master, and make the player ML
 		if db.usage.leader then
