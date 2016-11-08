@@ -59,7 +59,7 @@ function addon:OptionsTable()
 							leaderUsage = { -- Add leader options here since we can only make a single select dropdown
 								order = 2,
 								name = function() return self.db.profile.usage.ml and L["Always use when leader"] or L["Ask me when leader"] end,
-								desc = L["Use the same setting when entering a raid as the group leader?"],
+								desc = L["leaderUsage_desc"],
 								type = "toggle",
 								get = function() return self.db.profile.usage.leader or self.db.profile.usage.ask_leader end,
 								set = function(_, val)
