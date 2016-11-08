@@ -1,4 +1,6 @@
 ==== v2.1.7 ====
+*++Updated toc for 7.1++
+
 *++Only use in raids++
 **Added an option to automatically disable in parties.
 
