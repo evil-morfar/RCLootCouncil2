@@ -16,6 +16,7 @@
 **//Version Checker could show double entries in some locales (#198).//
 **//Changing buttons after a session started could cause errors.//
 **//It was possible to get an error when rolling on a relic without having an artifact equipped.//
+**//Other Award Reasons could get merged with normal awards in the voting frame more info tooltip.//
 
 ==== v2.1.6 ====
 *++Shared Loot History++

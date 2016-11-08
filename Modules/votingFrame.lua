@@ -375,6 +375,7 @@ function RCVotingFrame:UpdateMoreInfo(row, data)
 		tip:AddLine(L["Latest item(s) won"])
 		for i = #lootDB[name], 1, -1 do -- Start from the end
 			entry = lootDB[name][i]
+			if entry.isAwardReason then entry.responseID = entry.responseID + 100 end -- Bump to distingush from normal awards
 			count[entry.responseID] = count[entry.responseID] and count[entry.responseID] + 1 or 1
 			responseText[entry.responseID] = responseText[entry.responseID] and responseText[entry.responseID] or entry.response
 			if not color[entry.responseID] or unpack(color[entry.responseID],1,3) == unpack({1,1,1}) and #entry.color ~= 0  then -- If it's not already added
