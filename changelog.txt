@@ -1,4 +1,7 @@
 ==== v2.1.7 ====
+*++Only use in raids++
+**Added an option to automatically disable in parties.
+
 *No longer asks for usage in LFG instances.
 
 ==== v2.1.6 ====

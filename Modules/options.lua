@@ -69,6 +69,12 @@ function addon:OptionsTable()
 								end,
 								disabled = function() return self.db.profile.usage.never end,
 							},
+							onlyUseInRaids = {
+								order = 3,
+								name = L["Only use in raids"],
+								desc = L["onlyUseInRaids_desc"],
+								type = "toggle",
+							},
 							generalOptions = {
 								order = 3,
 								name = L["General options"],

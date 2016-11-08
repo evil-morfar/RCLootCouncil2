@@ -106,6 +106,7 @@ function RCLootCouncil:OnInitialize()
 				never = false,			-- Never enable
 				state = "ask_ml", 	-- Current state
 			},
+			onlyUseInRaids = false,
 			ambiguate = false, -- Append realm names to players
 			autoStart = false, -- start a session with all eligible items
 			autoLoot = true, -- Auto loot equippable items
@@ -1155,6 +1156,9 @@ function RCLootCouncil:NewMLCheck()
 	self.council = {}
 	if not self.isMasterLooter and self.masterLooter then return end -- Someone else has become ML
 
+	-- Check if we can use in party
+	if not IsInRaid() and db.onlyUseInRaids then return end
+
 	-- We are ML and shouldn't ask the player for usage
 	if self.isMasterLooter and db.usage.ml then -- addon should auto start
 		self:Print(L["Now handles looting"])
@@ -1175,6 +1179,8 @@ function RCLootCouncil:OnRaidEnter(arg)
 	-- NOTE: We shouldn't need to call GetML() as it's most likely called on "LOOT_METHOD_CHANGED"
 	-- There's no ML, and lootmethod ~= ML, but we are the group leader
 	if IsPartyLFG() then return end	-- We can't use in lfg/lfd so don't bother
+	-- Check if we can use in party
+	if not IsInRaid() and db.onlyUseInRaids then return end
 	if not self.masterLooter and UnitIsGroupLeader("player") then
 		-- We don't need to ask the player for usage, so change loot method to master, and make the player ML
 		if db.usage.leader then
