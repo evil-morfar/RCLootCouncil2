@@ -92,13 +92,13 @@ function LootFrame:Update()
 			entries[numEntries].icon:SetNormalTexture(v.texture)
 			entries[numEntries].itemText:SetText(v.link)
 			entries[numEntries].itemLvl:SetText(format(L["ilvl: x"], v.ilvl))
+			if not entries[numEntries].buttons[addon.mldb.numButtons+1] then
+				 -- mldb have probably updated since we created the buttons
+				 entries[numEntries]:UpdateButtons()
+			end
 			-- Update the buttons and get frame width
 			-- IDEA There might be a better way of doing this instead of SetText() on every update?
 			local but = entries[numEntries].buttons[addon.mldb.numButtons+1]
-			if not but then -- mldb have probably updated since we created the buttons
-				entries[numEntries]:UpdateButtons()
-				but = entries[numEntries].buttons[addon.mldb.numButtons+1]
-			end
 			but:SetWidth(but:GetTextWidth() + 10)
 			width = width + but:GetWidth()
 			for i = 1, addon.mldb.numButtons do
@@ -180,9 +180,9 @@ function LootFrame:GetEntry(entry)
 
 	-------- Buttons -------------
 	function f:UpdateButtons()
-		f.buttons = {}
+		if not f.buttons then f.buttons = {} end -- Reuse if already created
 		for i = 1, addon.mldb.numButtons do
-			f.buttons[i] = addon:CreateButton(addon:GetButtonText(i), f)
+			f.buttons[i] = f.buttons[i] or addon:CreateButton(addon:GetButtonText(i), f)
 			if i == 1 then
 				f.buttons[i]:SetPoint("BOTTOMLEFT", icon, "BOTTOMRIGHT", 5, 0)
 			else
