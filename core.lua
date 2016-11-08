@@ -106,7 +106,7 @@ function RCLootCouncil:OnInitialize()
 				never = false,			-- Never enable
 				state = "ask_ml", 	-- Current state
 			},
-			onlyUseInRaids = false,
+			onlyUseInRaids = true,
 			ambiguate = false, -- Append realm names to players
 			autoStart = false, -- start a session with all eligible items
 			autoLoot = true, -- Auto loot equippable items
