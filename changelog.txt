@@ -6,6 +6,10 @@
 
 *No longer asks for usage in LFG instances.
 
+*Various stability fixes.
+
+*Bugfixes:
+
 ==== v2.1.6 ====
 *++Shared Loot History++
 **It's now possible to share and syncronize your loot history. For now it's a manual copy/paste job using
