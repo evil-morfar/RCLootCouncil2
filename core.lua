@@ -185,7 +185,11 @@ function RCLootCouncil:OnInitialize()
 			currentSkin = "legion",
 
 			modules = { -- For storing module specific data
-				['*'] = {},
+				['*'] = {
+					filters = { -- Default filtering is showed
+						['*'] = true,
+					}
+				},
 			},
 
 			announceAward = true,
