@@ -372,7 +372,7 @@ function addon:OptionsTable()
 							usageOptions = {
 								order = 1,
 								type = "group",
-								name = "Usage Options",
+								name = L["Usage Options"],
 								inline = true,
 								args = {
 									usage = {

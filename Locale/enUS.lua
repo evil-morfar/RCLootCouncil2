@@ -345,6 +345,7 @@ L["Unvote"] = true
 L["Upper Quality Limit"] = true
 L["upper_quality_limit_desc"] = "Select the upper quality limit of items to auto award (this quality included!).\nNote: This overrides the normal loot treshhold."
 L["Usage"] = true
+L["Usage Options"] = true
 L["Version Check"] = true
 L["version"] = true
 L["Version"] = true
