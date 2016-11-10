@@ -1361,9 +1361,10 @@ function RCLootCouncil:UnitName(unit)
 	-- Proceed with UnitName()
 	local name, realm = UnitName(unit)
 	if not realm or realm == "" then realm = self.realmName end -- Extract our own realm
+	if not name then return nil end -- Below won't work without name
 	-- We also want to make sure the returned name is always title cased (it might not always be! ty Blizzard)
 	name = name:lower():gsub("^%l", string.upper)
-	return name and name.."-"..realm or nil
+	return name and name.."-"..realm
 end
 
 ---------------------------------------------------------------------------
