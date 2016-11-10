@@ -347,6 +347,9 @@ function RCLootCouncil:OnEnable()
 	-------------------------------------
 	LibDialog:Register("RCLOOTCOUNCIL_CONFIRM_USAGE", {
 		text = L["confirm_usage_text"],
+		on_show = function(self)
+			self:SetFrameStrata("FULLSCREEN")
+		end,
 		buttons = {
 			{	text = L["Yes"],
 				on_click = function()

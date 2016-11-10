@@ -265,6 +265,9 @@ end
 -- Note button
 LibDialog:Register("LOOTFRAME_NOTE", {
 	text = L["Enter your note:"],
+	on_show = function(self)
+		self:SetFrameStrata("FULLSCREEN")
+	end,
 	editboxes = {
 		{
 			on_enter_pressed = function(self, entry)

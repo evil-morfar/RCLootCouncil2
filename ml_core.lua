@@ -710,6 +710,9 @@ end
 --------ML Popups ------------------
 LibDialog:Register("RCLOOTCOUNCIL_CONFIRM_ABORT", {
 	text = L["Are you sure you want to abort?"],
+	on_show = function(self)
+		self:SetFrameStrata("FULLSCREEN")
+	end,
 	buttons = {
 		{	text = L["Yes"],
 			on_click = function(self)
@@ -729,6 +732,7 @@ LibDialog:Register("RCLOOTCOUNCIL_CONFIRM_AWARD", {
 	text = "something_went_wrong",
 	icon = "",
 	on_show = function(self, data)
+		self:SetFrameStrata("FULLSCREEN")
 		local session, player = unpack(data)
 		self.text:SetText(format(L["Are you sure you want to give #item to #player?"], RCLootCouncilML.lootTable[session].link, addon.Ambiguate(player)))
 		self.icon:SetTexture(RCLootCouncilML.lootTable[session].texture)
