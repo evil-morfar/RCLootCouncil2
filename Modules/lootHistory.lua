@@ -455,6 +455,18 @@ function LootHistory:GetFrame()
 	sel.frame:Show()
 	f.moreInfoDropdown = sel
 
+	-- Clear selection
+	local b6 = addon:CreateButton(L["Clear Selection"], f.content)
+	b6:SetPoint("RIGHT", sel.frame, "LEFT", -10, 0)
+	b6:SetScript("OnClick", function()
+		selectedDate, selectedName = nil, nil
+		self.frame.date:ClearSelection()
+		self.frame.name:ClearSelection()
+		self:Update()
+	end)
+	b6:SetWidth(125)
+	f.clearSelectionBtn = b6
+
 	-- Export string
 	local s = f.content:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
 	s:SetPoint("BOTTOMRIGHT", sel.frame, "TOPRIGHT", 0, 5)

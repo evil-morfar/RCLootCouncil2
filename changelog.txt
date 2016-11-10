@@ -1,3 +1,6 @@
+*++Clear Selection++
+**Added a clear selection button in the loot history.
+
 *Bugfixes:
 **//Not all awards would display properly in the loot history (#197, #201).//
 
