@@ -467,6 +467,7 @@ function RCLootCouncilML:Award(session, winner, response, reason)
 						addon:Debug("GiveMasterLoot", i)
 						GiveMasterLoot(self.lootTable[session].lootSlot, i)
 						awarded = true
+						break
 					end
 				end
 			end
@@ -475,7 +476,6 @@ function RCLootCouncilML:Award(session, winner, response, reason)
 			-- flag the item as awarded and update
 			addon:SendCommand("group", "awarded", session)
 			self.lootTable[session].awarded = true -- No need to let Comms handle this
-			-- IDEA Switch session ?
 
 			self:AnnounceAward(addon.Ambiguate(winner), self.lootTable[session].link, reason and reason.text or db.responses[response].text)
 			if self:HasAllItemsBeenAwarded() then self:EndSession() end
@@ -493,13 +493,13 @@ function RCLootCouncilML:Award(session, winner, response, reason)
 			for i = 1, MAX_RAID_MEMBERS do
 				if addon:UnitIsUnit(GetMasterLootCandidate(self.lootTable[session].lootSlot, i), "player") then
 					GiveMasterLoot(self.lootTable[session].lootSlot, i)
+					break
 				end
 			end
 		end
 		tinsert(self.lootInBags, self.lootTable[session].link) -- and store data
 		return false -- Item hasn't been awarded
 	end
-	return false
 end
 
 function RCLootCouncilML:AnnounceItems()
