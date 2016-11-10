@@ -3,6 +3,7 @@
 
 *Bugfixes:
 **//Not all awards would display properly in the loot history (#197, #201).//
+**//Finally convinced the loot history filter button to be the same height as other buttons.//
 
 ==== v2.1.7 ====
 *++Updated toc for 7.1++

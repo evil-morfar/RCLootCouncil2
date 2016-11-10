@@ -430,6 +430,7 @@ function LootHistory:GetFrame()
 	b4:SetScript("OnClick", function(self) Lib_ToggleDropDownMenu(1, nil, filterMenu, self, 0, 0) end )
 	f.filter = b4
 	Lib_UIDropDownMenu_Initialize(b4, self.FilterMenu)
+	f.filter:SetSize(125,25) -- Needs extra convincing to stay at 25px height
 
 	-- Export selection (AceGUI-3.0)
 	local sel = AG:Create("Dropdown")
