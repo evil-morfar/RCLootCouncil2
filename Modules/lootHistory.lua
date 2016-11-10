@@ -118,23 +118,24 @@ function LootHistory:BuildData()
 	for date, v in pairs(data) do
 		for name, x in pairs(v) do
 			for num, i in pairs(x) do
-				if num == "class" then break end
-				self.frame.rows[row] = {
-					date = date,
-					class = x.class,
-					name = name,
-					num = num,
-					response = i.responseID,
-					cols = {
-						{DoCellUpdate = addon.SetCellClassIcon, args = {x.class}},
-						{value = addon.Ambiguate(name), color = addon:GetClassColor(x.class)},
-						{value = date.. "-".. i.time or "", args = {time = i.time, date = date},},
-						{DoCellUpdate = self.SetCellGear, args={i.lootWon}},
-						{value = i.lootWon},
-						{DoCellUpdate = self.SetCellResponse, args = {color = i.color, response = i.response, responseID = i.responseID or 0, isAwardReason = i.isAwardReason}}
+				if num ~= "class" then
+					self.frame.rows[row] = {
+						date = date,
+						class = x.class,
+						name = name,
+						num = num,
+						response = i.responseID,
+						cols = {
+							{DoCellUpdate = addon.SetCellClassIcon, args = {x.class}},
+							{value = addon.Ambiguate(name), color = addon:GetClassColor(x.class)},
+							{value = date.. "-".. i.time or "", args = {time = i.time, date = date},},
+							{DoCellUpdate = self.SetCellGear, args={i.lootWon}},
+							{value = i.lootWon},
+							{DoCellUpdate = self.SetCellResponse, args = {color = i.color, response = i.response, responseID = i.responseID or 0, isAwardReason = i.isAwardReason}}
+						}
 					}
-				}
-				row = row + 1
+					row = row + 1
+				end
 			end
 			if not tContains(insertedNames, name) then -- we only want each name added once
 				tinsert(nameData,
@@ -539,6 +540,7 @@ function LootHistory:UpdateMoreInfo(rowFrame, cellFrame, dat, cols, row, realrow
 		tip:AddDoubleLine("Response:", data.response, 1,1,1, 1,1,1)
 		tip:AddDoubleLine("isAwardReason:", tostring(data.isAwardReason), 1,1,1, 1,1,1)
 		tip:AddDoubleLine("color:", data.color and data.color[1]..", "..data.color[2]..", "..data.color[3] or "none", 1,1,1, 1,1,1)
+		tip:AddDoubleLine("DataIndex:", row.num, 1,1,1, 1,1,1)
 	end
 	tip:SetScale(db.UI.history.scale)
 	if moreInfo then

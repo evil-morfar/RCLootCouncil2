@@ -1,3 +1,6 @@
+*Bugfixes:
+**//Not all awards would display properly in the loot history (#197, #201).//
+
 ==== v2.1.7 ====
 *++Updated toc for 7.1++
 
