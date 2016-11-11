@@ -12,7 +12,6 @@ TODOs/Notes
 CHANGELOG
 	-- SEE CHANGELOG.TXT
 ]]
-
 RCLootCouncil = LibStub("AceAddon-3.0"):NewAddon("RCLootCouncil", "AceConsole-3.0", "AceEvent-3.0", "AceComm-3.0", "AceSerializer-3.0", "AceHook-3.0", "AceTimer-3.0");
 local LibDialog = LibStub("LibDialog-1.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
@@ -511,7 +510,8 @@ function RCLootCouncil:ChatCommand(msg)
 		self:Print("Debug Log cleared.")
 --@debug@
 	elseif input == 't' then -- Tester cmd
-		printtable(historyDB)
+		self:Print("Not mldb.buttons:", not self.mldb.buttons)
+		self:Print("#council", #self.council)
 --@end-debug@
 	else
 		-- Check if the input matches anything
@@ -781,6 +781,8 @@ end
 local date_to_debug_log = true
 function RCLootCouncil:DebugLog(msg, ...)
 	if date_to_debug_log then tinsert(debugLog, date("%x")); date_to_debug_log = false; end
+	-- filter out verTestReply spam when we're running
+	if msg:find("verTestReply") and self.masterLooter then return end
 	local time = date("%X", time())
 	msg = time.." - ".. tostring(msg)
 	for i = 1, select("#", ...) do msg = msg.." ("..tostring(select(i,...))..")" end
@@ -930,11 +932,11 @@ function RCLootCouncil:Timer(type, ...)
 		-- If we have a ML
 		if self.masterLooter then
 			-- But haven't received the mldb, then request it
-			if not self.mldb or #self.mldb == 0 then
+			if not self.mldb.buttons then
 				self:SendCommand(self.masterLooter, "MLdb_request")
 			end
 			-- and if we haven't received a council, request it
-			if not self.council or #self.council == 0 then
+			if #self.council == 0 then
 				self:SendCommand(self.masterLooter, "council_request")
 			end
 		end
@@ -1216,6 +1218,7 @@ end
 function RCLootCouncil:GetML()
 	self:DebugLog("GetML()")
 	if GetNumGroupMembers() == 0 and (self.testMode or self.nnp) then -- always the player when testing alone
+		self:ScheduleTimer("Timer", 5, "MLdb_check")
 		return true, self.playerName
 	end
 	local lootMethod, mlPartyID, mlRaidID = GetLootMethod()
