@@ -1000,6 +1000,19 @@ do
 					end
 					Lib_UIDropDownMenu_AddButton(info, level)
 				end
+				if addon.debug then -- Add all possible responses when debugging
+					for k,v in pairs(db.responses) do
+						if type(k) ~= "number" then
+							info.text = v.text
+							info.colorCode = "|cff"..addon:RGBToHex(unpack(v.color))
+							info.notCheckable = true
+							info.func = function()
+									addon:SendCommand("group", "change_response", session, candidateName, k)
+							end
+							Lib_UIDropDownMenu_AddButton(info, level)
+						end
+					end
+				end
 
 			elseif value == "REANNOUNCE" then
 				info.text = addon.Ambiguate(candidateName)
