@@ -1038,6 +1038,7 @@ do
 						}
 					}
 					addon:SendCommand(candidateName, "reroll", t)
+					addon:SendCommand("group", "change_response", session, candidateName, "WAIT")
 				end
 				Lib_UIDropDownMenu_AddButton(info, level);
 				info = Lib_UIDropDownMenu_CreateInfo()
@@ -1056,6 +1057,7 @@ do
 								session = k,
 								equipLoc = v.equipLoc,
 							})
+							addon:SendCommand("group", "change_response", k, candidateName, "WAIT")
 						end
 					end
 					addon:SendCommand(candidateName, "reroll", t)
