@@ -271,10 +271,11 @@ function RCLootCouncilML:OnCommReceived(prefix, serializedMsg, distri, sender)
 				self:AddCandidate(unpack(data))
 
 			elseif command == "MLdb_request" then
-				addon:SendCommand(sender, "MLdb", addon.mldb)
+				-- Just resend to the entire group instead of the sender
+				addon:SendCommand("group", "MLdb", addon.mldb)
 
 			elseif command == "council_request" then
-				addon:SendCommand(sender, "council", db.council)
+				addon:SendCommand("group", "council", db.council)
 
 			elseif command == "reconnect" and not addon:UnitIsUnit(sender, addon.playerName) then -- Don't receive our own reconnect
 				-- Someone asks for mldb, council and candidates
