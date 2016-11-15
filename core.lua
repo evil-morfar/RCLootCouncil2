@@ -95,6 +95,7 @@ function RCLootCouncil:OnInitialize()
 			logMaxEntries = 1000,
 			log = {}, -- debug log
 			localizedSubTypes = {},
+			verTestCandidates = {}, -- Stores received verTests
 		},
 		profile = {
 			usage = { -- State of enabledness
@@ -580,7 +581,7 @@ end
 -- -- if RCLootCouncil:HandleXRealmComms(self, command, data, sender) then return end
 function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 	if prefix == "RCLootCouncil" then
-		self:DebugLog("Comm received:", serializedMsg, "from:", sender, "distri:", distri)
+		self:DebugLog("Comm received:" .. serializedMsg, "from:", sender, "distri:", distri)
 		-- data is always a table to be unpacked
 		local test, command, data = self:Deserialize(serializedMsg)
 		-- NOTE: Since I can't find a better way to do this, all xrealms comms is routed through here
@@ -681,7 +682,8 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 				end
 
 			elseif command == "verTestReply" then
-				local _,_,_, otherVersion, tVersion = unpack(data)
+				local name,_,_, otherVersion, tVersion = unpack(data)
+				self.db.global.verTestCandidates[name] = otherVersion.. "-" .. tostring(tVersion) .. ": - " .. self.playerName
 				if strfind(otherVersion, "%a+") then return self:Debug("Someone's tampering with version?", otherVersion) end
 				if self.version < otherVersion and not self.verCheckDisplayed and (not (tVersion or self.tVersion)) then
 					self:Print(format(L["version_outdated_msg"], self.version, otherVersion))
@@ -781,8 +783,8 @@ end
 local date_to_debug_log = true
 function RCLootCouncil:DebugLog(msg, ...)
 	if date_to_debug_log then tinsert(debugLog, date("%x")); date_to_debug_log = false; end
-	-- filter out verTestReply spam when we're running
-	if msg:find("verTestReply") and self.masterLooter then return end
+	-- filter out verTestReply spam
+	if msg:find("verTestReply") then return end
 	local time = date("%X", time())
 	msg = time.." - ".. tostring(msg)
 	for i = 1, select("#", ...) do msg = msg.." ("..tostring(select(i,...))..")" end
