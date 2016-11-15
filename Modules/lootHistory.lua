@@ -329,6 +329,27 @@ function LootHistory:ImportHistory(import)
 	self:BuildData()
 end
 
+function LootHistory:GetWowheadLinkFromItemLink(link)
+    local color, itemType, itemID, enchantID, gemID1, gemID2, gemID3, gemID4, suffixID, uniqueID, linkLevel, specializationID,
+	 upgradeTypeID, upgradeID, instanceDifficultyID, numBonuses, bonusIDs = addon:DecodeItemLink(link)
+
+    local itemurl = "https://www.wowhead.com/item="..itemID
+
+	 -- It seems bonus id 1487 (and basically any other id that's -5 below Wowheads first ilvl upgrade doesn't work)
+	 -- Neither does Warforged items it seems
+    if numBonuses > 0 then
+        itemurl = itemurl.."&bonus="
+        for i, b in pairs(bonusIDs) do
+            itemurl = itemurl..b
+            if i < numBonuses then
+                itemurl = itemurl..":"
+            end
+        end
+    end
+
+    return itemurl
+end
+
 ---------------------------------------------------
 -- Visauls
 ---------------------------------------------------
@@ -707,7 +728,7 @@ function LootHistory:ExportBBCode()
 					else
 						export = export.."[*]"
 					end
-					export=export.."[url=http://www.wowhead.com/item="..addon:GetItemIDFromLink(d.lootWon).."]"..d.lootWon.."[/url]"
+					export=export.."[url="..self:GetWowheadLinkFromItemLink(d.lootWon).."]"..d.lootWon.."[/url]"
 					.." Response: "..tostring(d.response)..".\r\n"
 				end
 			end
@@ -727,7 +748,7 @@ function LootHistory:ExportBBCodeSMF()
 			for i, d in pairs(v) do
 				if selectedDate and selectedDate == d.date or not selectedDate then
 					export = export.."[*]"
-					export=export.."[url=http://www.wowhead.com/item="..addon:GetItemIDFromLink(d.lootWon).."]"..d.lootWon.."[/url]"
+					export=export.."[url="..self:GetWowheadLinkFromItemLink(d.lootWon).."]"..d.lootWon.."[/url]"
 					.." Response: "..tostring(d.response)..".\r\n"
 				end
 			end

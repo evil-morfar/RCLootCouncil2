@@ -1,6 +1,9 @@
 *++Clear Selection++
 **Added a clear selection button in the loot history.
 
+*++Bonuses on Wowhead links++
+**All exports containing Wowhead links will now include item bonusses. Thanks to Iacha.
+
 *All popups are now forced to be on top of other RCLootCouncil frames.
 
 *Reannouncing items now changes the candidate's response to waiting.

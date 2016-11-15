@@ -533,10 +533,11 @@ function RCLootCouncil:SendCommand(target, command, ...)
 	local toSend = self:Serialize(command, {...})
 
 	if target == "group" then
-		if GetNumGroupMembers() > 0 then -- SendAddonMessage auto converts it to party is needed
+		local num = GetNumGroupMembers()
+		if num > 5 then -- Raid
 			self:SendCommMessage("RCLootCouncil", toSend, "RAID")
-		--[[elseif num > 0 then -- Party
-			self:SendCommMessage("RCLootCouncil", toSend, "PARTY")]]
+		elseif num > 0 then -- Party
+			self:SendCommMessage("RCLootCouncil", toSend, "PARTY")
 		else--if self.testMode then -- Alone (testing)
 			self:SendCommMessage("RCLootCouncil", toSend, "WHISPER", self.playerName)
 		end
@@ -1329,6 +1330,49 @@ end
 function RCLootCouncil.round(num, decimals)
 	if type(num) ~= "number" then return "" end
 	return tonumber(string.format("%." .. (decimals or 0) .. "f", num))
+end
+
+-- from LibUtilities-1.0, which adds bonus index after bonus ID
+-- therefore a patched version is reproduced here
+-- replace with LibUtilities when bug is fixed
+function RCLootCouncil:DecodeItemLink(itemLink)
+    local bonusIDs = bonusIDs or {}
+    wipe(bonusIDs)
+
+    local linkType, itemID, enchantID, gemID1, gemID2, gemID3, gemID4, suffixID, uniqueID, linkLevel, specializationID,
+	 upgradeTypeID, instanceDifficultyID, numBonuses, affixes = string.split(":", itemLink, 15)
+
+	 -- clean it up
+    local color = string.match(linkType, "^c?f?f?(%x*)")
+    linkType = string.gsub(linkType, "|?c?f?f?(%x*)|?H?", "")
+    itemID = tonumber(itemID) or 0
+    enchantID = tonumber(enchantID) or 0
+    gemID1 = tonumber(gemID1) or 0
+    gemID2 = tonumber(gemID2) or 0
+    gemID3 = tonumber(gemID3) or 0
+    gemID4 = tonumber(gemID4) or 0
+    suffixID = tonumber(suffixID) or 0
+    uniqueID = tonumber(uniqueID) or 0
+    linkLevel = tonumber(linkLevel) or 0
+    specializationID = tonumber(specializationID) or 0
+    upgradeTypeID = tonumber(upgradeTypeID) or 0
+    instanceDifficultyID = tonumber(instanceDifficultyID) or 0
+    numBonuses = tonumber(numBonuses) or 0
+
+    if numBonuses >= 1 then
+        for i = 1, numBonuses do
+            local bonusID = select(i, string.split(":", affixes))
+            table.insert(bonusIDs, tonumber(bonusID))
+        end
+    end
+
+    -- more clean up
+    local upgradeID = select(numBonuses + 1, string.split(":", affixes)) or 0
+    upgradeID = string.match(upgradeID, "%d*")
+    upgradeID = tonumber(upgradeID) or 0
+
+    return color, itemType, itemID, enchantID, gemID1, gemID2, gemID3, gemID4, suffixID, uniqueID, linkLevel,
+	 		specializationID, upgradeTypeID, upgradeID, instanceDifficultyID, numBonuses, bonusIDs
 end
 
 --- Custom, better UnitIsUnit() function
