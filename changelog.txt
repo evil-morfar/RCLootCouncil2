@@ -1,3 +1,4 @@
+==== v2.1.8 ====
 *++Clear Selection++
 **Added a clear selection button in the loot history.
 
