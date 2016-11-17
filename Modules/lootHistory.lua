@@ -290,10 +290,14 @@ function LootHistory:EscapeItemLink(link)
 end
 
 function LootHistory:ExportHistory()
+	debugprofilestart()
 	local export = self.exports[self.exportSelection].func(self)
+	addon:Debug("Export time:", debugprofilestop(), "ms")
 	if export and export ~= "" then -- do something
+		debugprofilestart()
 		self.frame.exportFrame:Show()
 		self:SetExportText(export)
+		addon:Debug("Display time:", debugprofilestop(), "ms")
 	end
 end
 
@@ -688,59 +692,62 @@ return export
 end
 
 -- CSV with all stored data
+-- ~14 ms (74%) improvement by switching to table and concat
 function LootHistory:ExportCSV()
 	-- Add headers
-	local export = "player, date, time, item, itemID, response, votes, class, instance, boss, gear1, gear2, responseID, isAwardReason\r\n"
+	local export = {}
+	tinsert(export, "player, date, time, item, itemID, response, votes, class, instance, boss, gear1, gear2, responseID, isAwardReason\r\n")
 	for player, v in pairs(lootDB) do
 		if selectedName and selectedName == player or not selectedName then
 			for i, d in pairs(v) do
 				if selectedDate and selectedDate == d.date or not selectedDate then
 					-- We might have commas in various things here :/
-					export = export
-						..tostring(player)..","
-						..tostring(d.date)..","
-						..tostring(d.time)..","
-						..self:EscapeItemLink(gsub(tostring(d.lootWon),",",""))..","
-						..self:EscapeItemLink(addon:GetItemIDFromLink(d.lootWon))..","
-						..gsub(tostring(d.response),",","")..","
-						..tostring(d.votes)..","
-						..tostring(d.class)..","
-						..gsub(tostring(d.instance),",","")..","
-						..gsub(tostring(d.boss),",","")..","
-						..self:EscapeItemLink(gsub(tostring(d.itemReplaced1),",",""))..","
-						..self:EscapeItemLink(gsub(tostring(d.itemReplaced2),",",""))..","
-						..tostring(d.responseID)..","
-						..tostring(d.isAwardReason).."\r\n"
+					tinsert(export, tostring(player))
+					tinsert(export, tostring(d.date))
+					tinsert(export, tostring(d.time))
+					tinsert(export, (self:EscapeItemLink(gsub(tostring(d.lootWon),",",""))))
+					tinsert(export, (self:EscapeItemLink(addon:GetItemIDFromLink(d.lootWon))))
+					tinsert(export, (gsub(tostring(d.response),",","")))
+					tinsert(export, tostring(d.votes))
+					tinsert(export, tostring(d.class))
+					tinsert(export, (gsub(tostring(d.instance),",","")))
+					tinsert(export, (gsub(tostring(d.boss),",","")))
+					tinsert(export, (self:EscapeItemLink(gsub(tostring(d.itemReplaced1),",",""))))
+					tinsert(export, (self:EscapeItemLink(gsub(tostring(d.itemReplaced2),",",""))))
+					tinsert(export, tostring(d.responseID))
+					tinsert(export, tostring(d.isAwardReason))
+					tinsert(export, "\r\n")
 				end
 			end
 		end
 	end
-	return export
+	return table.concat(export, ",")
 end
 
 -- Simplified BBCode, as supported by CurseForge
+-- ~24 ms (84%) improvement by switching to table and concat
 function LootHistory:ExportBBCode()
-	local export = ""
+	local export = {}
 	for player, v in pairs(lootDB) do
 		if selectedName and selectedName == player or not selectedName then
-			export = export.."[b]"..addon.Ambiguate(player)..":[/b]\r\n"
-			export = export.."[list=1]"
+			tinsert(export, "[b]"..addon.Ambiguate(player)..":[/b]\r\n")
+			tinsert(export, "[list=1]")
 			local first = true
 			for i, d in pairs(v) do
 				if selectedDate and selectedDate == d.date or not selectedDate then
 					if first then
 						first = false
 					else
-						export = export.."[*]"
+						tinsert(export, "[*]")
 					end
-					export=export.."[url="..self:GetWowheadLinkFromItemLink(d.lootWon).."]"..d.lootWon.."[/url]"
-					.." Response: "..tostring(d.response)..".\r\n"
+					tinsert(export, "[url="..self:GetWowheadLinkFromItemLink(d.lootWon).."]"..d.lootWon.."[/url]"
+					.." Response: "..tostring(d.response)..".\r\n")
 				end
 			end
-			export=export.."[/list]\r\n\r\n"
+			tinsert(export, "[/list]\r\n\r\n")
 		end
 	end
-	return export
+	return table.concat(export)
 end
 
 -- BBCode, as supported by SMF

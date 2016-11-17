@@ -1367,9 +1367,11 @@ function RCLootCouncil:DecodeItemLink(itemLink)
     end
 
     -- more clean up
-    local upgradeID = select(numBonuses + 1, string.split(":", affixes)) or 0
-    upgradeID = string.match(upgradeID, "%d*")
-    upgradeID = tonumber(upgradeID) or 0
+	 if affixes then
+	    local upgradeID = select(numBonuses + 1, string.split(":", affixes)) or 0
+	    upgradeID = string.match(upgradeID, "%d*")
+	    upgradeID = tonumber(upgradeID) or 0
+	 end
 
     return color, itemType, itemID, enchantID, gemID1, gemID2, gemID3, gemID4, suffixID, uniqueID, linkLevel,
 	 		specializationID, upgradeTypeID, upgradeID, instanceDifficultyID, numBonuses, bonusIDs
