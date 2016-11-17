@@ -731,6 +731,11 @@ function RCVotingFrame.SetCellGear(rowFrame, frame, data, cols, row, realrow, co
 		frame:SetNormalTexture(texture)
 		frame:SetScript("OnEnter", function() addon:CreateHypertip(gear) end)
 		frame:SetScript("OnLeave", function() addon:HideTooltip() end)
+		frame:SetScript("OnClick", function()
+		if IsModifiedClick() then
+		   HandleModifiedItemClick(gear);
+      end
+	end)
 		frame:Show()
 	else
 		frame:Hide()

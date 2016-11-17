@@ -1673,12 +1673,28 @@ end
 -- @param link The link to display
 function RCLootCouncil:CreateHypertip(link)
 	if not link or link == "" then return end
+	local function tip() -- Implement shift click compare on all tooltips
+		local tip = CreateFrame("GameTooltip", "RCLootCouncil_TooltipEventHandler", UIParent, "GameTooltipTemplate")
+		tip:RegisterEvent("MODIFIER_STATE_CHANGED")
+		tip:SetScript("OnEvent", function(this, event, arg)
+			if self.tooltip.showing and event == "MODIFIER_STATE_CHANGED" and (arg == "LSHIFT" or arg == "RSHIFT") and self.tooltip.link then
+				self:CreateHypertip(self.tooltip.link) -- Recall to recreate
+			end
+		end)
+		return tip
+	end
+	if not self.tooltip then self.tooltip = tip() end
+	self.tooltip.showing = true
+	self.tooltip.link = link
 	GameTooltip:SetOwner(UIParent, "ANCHOR_CURSOR")
 	GameTooltip:SetHyperlink(link)
 end
 
 --- Hide the tooltip created with :CreateTooltip()
 function RCLootCouncil:HideTooltip()
+	if self.tooltip then
+		self.tooltip.showing = false
+	end
 	GameTooltip:Hide()
 end
 

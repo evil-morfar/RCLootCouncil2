@@ -1,3 +1,7 @@
+*++Item Icons++
+**All item icons are now ctrl/shift clickable (like the default UI buttons).
+**It's now possible to compare by shift-clicking while hovering over an icon instead of holding down shift before the mouseover.
+
 ==== v2.1.8 ====
 *++Clear Selection++
 **Added a clear selection button in the loot history.
