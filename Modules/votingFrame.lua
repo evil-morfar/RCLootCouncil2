@@ -134,9 +134,6 @@ function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
 						if self:GetCandidateData(i, name, "response") == "ANNOUNCED" then
 							addon:DebugLog("No response from:", name)
 							self:SetCandidateData(i, name, "response", "NOTHING")
-							if addon.isMasterLooter then -- Give them one last try
-								addon:SendCommand(name, "lootTable", addon:GetActiveModule("masterlooter").lootTable)
-							end
 						end
 					end
 				end
