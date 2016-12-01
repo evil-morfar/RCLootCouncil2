@@ -1024,7 +1024,7 @@ end
 function RCLootCouncil:CreateResponse(session, link, ilvl, response, equipLoc, note, subType)
 	self:DebugLog("CreateResponse", session, link, ilvl, response, equipLoc, note, subType)
 	local g1, g2;
-	if equipLoc == "" and subType == self.db.global.localizedSubTypes["Artifact Relic"] then
+	if equipLoc == "" and self.db.global.localizedSubTypes[subType] == "Artifact Relic" then
 		g1, g2 = self:GetArtifactRelics(link)
 	else
 	 	g1, g2 = self:GetPlayersGear(link, equipLoc)
