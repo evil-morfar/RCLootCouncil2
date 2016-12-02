@@ -1,6 +1,11 @@
+### v2.1.9
+---
 * **Item Icons**
   * All item icons are now ctrl/shift clickable (like the default UI buttons).
   * It's now possible to compare by shift-clicking while hovering over an icon instead of holding down shift before the mouseover.
+
+
+* **Export optimizations**
 
 ##### Bugfixes
   + *Artifact relics wasn't being sent on non-english locales (#212).*
