@@ -159,7 +159,7 @@ function RCVersionCheck.SetCellModules(rowFrame, f, data, cols, row, realrow, co
 			 table.DefaultEvents.OnEnter(rowFrame, f, data, cols, row, realrow, column, table)
 		end)
 		f:SetScript("OnLeave", function()
-			addon.HideTooltip()
+			addon:HideTooltip()
 			table.DefaultEvents.OnLeave(rowFrame, f, data, cols, row, realrow, column, table)
 		end)
 	end

@@ -458,7 +458,7 @@ function RCVotingFrame:GetFrame()
 		if not lootTable then return; end
 		addon:CreateHypertip(lootTable[session].link)
 	end)
-	item:SetScript("OnLeave", addon.HideTooltip)
+	item:SetScript("OnLeave", function() addon:HideTooltip() end)
 	item:SetScript("OnClick", function()
 		if not lootTable then return; end
 	    if ( IsModifiedClick() ) then
@@ -527,7 +527,7 @@ function RCVotingFrame:GetFrame()
 		self:UpdateMoreInfo()
 	end)
 	b2:SetScript("OnEnter", function() addon:CreateTooltip(L["Click to expand/collapse more info"]) end)
-	b2:SetScript("OnLeave", addon.HideTooltip)
+	b2:SetScript("OnLeave", function() addon:HideTooltip() end)
 	f.moreInfoBtn = b2
 
 	f.moreInfo = CreateFrame( "GameTooltip", "RCVotingFrameMoreInfo", nil, "GameTooltipTemplate" )
@@ -537,7 +537,7 @@ function RCVotingFrame:GetFrame()
 	b3:SetPoint("RIGHT", b1, "LEFT", -10, 0)
 	b3:SetScript("OnClick", function(self) Lib_ToggleDropDownMenu(1, nil, filterMenu, self, 0, 0) end )
 	b3:SetScript("OnEnter", function() addon:CreateTooltip(L["Deselect responses to filter them"]) end)
-	b3:SetScript("OnLeave", addon.HideTooltip)
+	b3:SetScript("OnLeave", function() addon:HideTooltip() end)
 	f.filter = b3
 
 	-- Disenchant button

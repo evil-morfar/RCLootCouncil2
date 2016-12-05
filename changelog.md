@@ -1,7 +1,8 @@
 ### v2.1.10
 ---
 ##### Bugfixes
- + Fixed error on localization based on Curse changing their format.
+ + *Fixed error on localization based on Curse changing their format.*
+ + *Fixed an error on tooltips (#213).*
 
 ### v2.1.9
 ---

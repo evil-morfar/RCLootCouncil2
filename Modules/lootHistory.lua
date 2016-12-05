@@ -439,7 +439,7 @@ function LootHistory:GetFrame()
 		addon:Debug("moreInfo =",moreInfo)
 	end)
 	b2:SetScript("OnEnter", function() addon:CreateTooltip(L["Click to expand/collapse more info"]) end)
-	b2:SetScript("OnLeave", addon.HideTooltip)
+	b2:SetScript("OnLeave", function() addon:HideTooltip() end)
 	f.moreInfoBtn = b2
 
 	-- Export
