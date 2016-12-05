@@ -1,3 +1,8 @@
+### v2.1.10
+---
+##### Bugfixes
+ + Fixed error on localization based on Curse changing their format.
+
 ### v2.1.9
 ---
 * **Item Icons**
