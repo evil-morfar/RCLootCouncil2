@@ -290,14 +290,14 @@ function LootHistory:EscapeItemLink(link)
 end
 
 function LootHistory:ExportHistory()
-	debugprofilestart()
+	--debugprofilestart()
 	local export = self.exports[self.exportSelection].func(self)
-	addon:Debug("Export time:", debugprofilestop(), "ms")
+	--addon:Debug("Export time:", debugprofilestop(), "ms")
 	if export and export ~= "" then -- do something
-		debugprofilestart()
+		--debugprofilestart()
 		self.frame.exportFrame:Show()
 		self:SetExportText(export)
-		addon:Debug("Display time:", debugprofilestop(), "ms")
+		--addon:Debug("Display time:", debugprofilestop(), "ms")
 	end
 end
 
