@@ -119,7 +119,7 @@ function RCVersionCheck:GetVersionColor(ver,tVer)
 	local green, yellow, red, grey = {r=0,g=1,b=0,a=1},{r=1,g=1,b=0,a=1},{r=1,g=0,b=0,a=1},{r=0.75,g=0.75,b=0.75,a=1}
 	if tVer then return yellow end
 	if ver == addon.version then return green end
-	if ver < addon.version then return red end
+	if addon:VersionCompare(ver, addon.version) then return red end
 	return grey
 end
 

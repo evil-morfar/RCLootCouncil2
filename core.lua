@@ -672,7 +672,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 				end
 				self:SendCommand(sender, "verTestReply", self.playerName, self.playerClass, self.guildRank, self.version, self.tVersion, self:GetInstalledModulesFormattedData())
 				if strfind(otherVersion, "%a+") then return self:Debug("Someone's tampering with version?", otherVersion) end
-				if self.version < otherVersion and not self.verCheckDisplayed and (not (tVersion or self.tVersion)) then
+				if self:VersionCompare(self.version,otherVersion) and not self.verCheckDisplayed and (not (tVersion or self.tVersion)) then
 					self:Print(format(L["version_outdated_msg"], self.version, otherVersion))
 					self.verCheckDisplayed = true
 
@@ -686,7 +686,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 				local name,_,_, otherVersion, tVersion = unpack(data)
 				self.db.global.verTestCandidates[name] = otherVersion.. "-" .. tostring(tVersion) .. ": - " .. self.playerName
 				if strfind(otherVersion, "%a+") then return self:Debug("Someone's tampering with version?", otherVersion) end
-				if self.version < otherVersion and not self.verCheckDisplayed and (not (tVersion or self.tVersion)) then
+				if self:VersionCompare(self.version,otherVersion) and not self.verCheckDisplayed and (not (tVersion or self.tVersion)) then
 					self:Print(format(L["version_outdated_msg"], self.version, otherVersion))
 					self.verCheckDisplayed = true
 
@@ -1330,6 +1330,16 @@ end
 function RCLootCouncil.round(num, decimals)
 	if type(num) ~= "number" then return "" end
 	return tonumber(string.format("%." .. (decimals or 0) .. "f", num))
+end
+
+--- Compares two versions
+-- returns true if ver1 is smaller than ver2
+-- Assumes strings of format "x.y.z"
+function RCLootCouncil:VersionCompare(ver1, ver2)
+	local a1,b1,c1 = string.split(".", ver1)
+	local a2,b2,c2 = string.split(".", ver2)
+	if not (c1 and c2) then return end -- Check if it exists
+	return tonumber(a1) < tonumber(a2) or tonumber(b1) < tonumber(b2) or tonumber(c1) < tonumber(c2)
 end
 
 -- from LibUtilities-1.0, which adds bonus index after bonus ID
