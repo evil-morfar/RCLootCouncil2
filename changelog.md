@@ -1,5 +1,6 @@
 ##### Bugfixes
  + *Fixed bug on version comparisons (#216).*
+ + *Removed some debug stuff (#217).*
 
 ### v2.1.10
 ---
