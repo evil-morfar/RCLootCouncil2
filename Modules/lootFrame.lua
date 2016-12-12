@@ -14,6 +14,7 @@ local entries = {}
 local ENTRY_HEIGHT = 75
 local MAX_ENTRIES = 5
 local numRolled = 0
+local MIN_BUTTON_WIDTH = 40
 
 function LootFrame:Start(table)
 	addon:DebugLog("LootFrame:Start()")
@@ -100,11 +101,13 @@ function LootFrame:Update()
 			-- IDEA There might be a better way of doing this instead of SetText() on every update?
 			local but = entries[numEntries].buttons[addon.mldb.numButtons+1]
 			but:SetWidth(but:GetTextWidth() + 10)
+			if but:GetWidth() < MIN_BUTTON_WIDTH then but:SetWidth(MIN_BUTTON_WIDTH) end -- ensure minimum width
 			width = width + but:GetWidth()
 			for i = 1, addon.mldb.numButtons do
 				but = entries[numEntries].buttons[i]
 				but:SetText(addon:GetButtonText(i))
 				but:SetWidth(but:GetTextWidth() + 10)
+				if but:GetWidth() < MIN_BUTTON_WIDTH then but:SetWidth(MIN_BUTTON_WIDTH) end
 				width = width + but:GetWidth()
 			end
 			entries[numEntries]:SetWidth(width)
