@@ -107,15 +107,17 @@ function RCLootCouncilML:UpdateGroup(ask)
 	for i = 1, GetNumGroupMembers() do
 		local name, _, _, _, _, class, _, _, _, _, _, role  = GetRaidRosterInfo(i)
 		name = addon:UnitName(name) -- Get their unambiguated name
-		if group_copy[name] then	-- If they're already registered
-			group_copy[name] = nil	-- remove them from the check
-		else -- add them
-			if not ask then -- ask for playerInfo?
-				addon:SendCommand(name, "playerInfoRequest")
-				addon:SendCommand(name, "MLdb", addon.mldb) -- and send mlDB
+		if name then -- Apparantly name can be nil (ticket #223)
+			if group_copy[name] then	-- If they're already registered
+				group_copy[name] = nil	-- remove them from the check
+			else -- add them
+				if not ask then -- ask for playerInfo?
+					addon:SendCommand(name, "playerInfoRequest")
+					addon:SendCommand(name, "MLdb", addon.mldb) -- and send mlDB
+				end
+				self:AddCandidate(name, class, role) -- Add them in case they haven't installed the adoon
+				updates = true
 			end
-			self:AddCandidate(name, class, role) -- Add them in case they haven't installed the adoon
-			updates = true
 		end
 	end
 	-- If anything's left in group_copy it means they left the raid, so lets remove them
