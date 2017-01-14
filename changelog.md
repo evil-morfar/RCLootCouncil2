@@ -1,3 +1,8 @@
+* Buttons on the Loot Frame now always have a minimum witdh of 40 px.
+
+##### Bugfixes
++ *Added extra checks so a name related error won't happen (#223).*
+
 ### v2.1.11
 ---
 ##### Bugfixes
