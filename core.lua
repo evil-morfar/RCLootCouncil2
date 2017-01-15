@@ -511,8 +511,8 @@ function RCLootCouncil:ChatCommand(msg)
 		self:Print("Debug Log cleared.")
 --@debug@
 	elseif input == 't' then -- Tester cmd
-		self:Print("Not mldb.buttons:", not self.mldb.buttons)
-		self:Print("#council", #self.council)
+		local meh = self:Serialize(db)
+		self:Print("Db size:", #meh)
 --@end-debug@
 	else
 		-- Check if the input matches anything
@@ -599,6 +599,19 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 							self:SendCommand("group", "response", i, self.playerName, {response = "DISABLED"})
 						end
 						return self:Debug("Sent 'DISABLED' response to", sender)
+					end
+
+					-- TODO: v2.2.0 While we don't rely on the cache for normal items, we do for artifact relics.
+					-- I can't get around it until I find out if C_ArtifactUI.GetRelicInfoByItemID() returns a localized result.
+					-- So meanwhile, we'll just delay everything until we've got it cached:
+					local cached = true
+					for ses, v in ipairs(lootTable) do
+						local iName = GetItemInfo(v.link)
+						if not iName then cached = false end
+					end
+					if not cached then
+						self:Debug("Some items wasn't cached, delaying loot by 1 sec")
+						return self:ScheduleTimer("OnCommReceived", 1, prefix, serializedMsg, distri, sender)
 					end
 
 					-- Out of instance support

@@ -2,6 +2,7 @@
 
 ##### Bugfixes
 + *Added extra checks so a name related error won't happen (#223).*
++ *Fixed some false autopasses on artifact relics related to uncached items.*
 
 ### v2.1.11
 ---
