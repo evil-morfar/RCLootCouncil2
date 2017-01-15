@@ -3,7 +3,11 @@
 * **Tier 19**
  * Added support for Nighthold Tier 19 tokens.
 
-  
+
+* **Skin**
+  * Legion's been out for a while, so the default skin is now back to Midnight Blue.
+
+
 * Buttons on the Loot Frame now always have a minimum witdh of 40 px.
 
 ##### Bugfixes

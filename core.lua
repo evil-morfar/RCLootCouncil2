@@ -141,10 +141,10 @@ function RCLootCouncil:OnInitialize()
 					x		= 0,
 					point	= "CENTER",
 					scale	= 0.8,
-					bgColor = {0.1, 1, 0, 1},
-					borderColor = {0, 0.8, 0, 0.75},
-					border = "Blizzard Garrison Background 2",
-					background = "Blizzard Dialog Gold",
+					bgColor = {0, 0, 0.2, 1},
+					borderColor = {0.3, 0.3, 0.5, 1},
+					border = "Blizzard Tooltip",
+					background = "Blizzard Tooltip",
 				},
 				lootframe = { -- We want the Loot Frame to get a little lower
 					y = -200,
@@ -182,7 +182,7 @@ function RCLootCouncil:OnInitialize()
 					border = "Blizzard Dialog Gold",
 				},
 			},
-			currentSkin = "legion",
+			currentSkin = "new_blue",
 
 			modules = { -- For storing module specific data
 				['*'] = {
