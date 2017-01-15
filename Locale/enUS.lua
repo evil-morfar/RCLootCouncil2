@@ -48,6 +48,7 @@ L["anonymous_voting_desc"] = "Enables Anonymous Voting, i.e. people can't see wh
 L["Appearance"] = true
 L["Are you sure you want to abort?"] = true
 L["Are you sure you want to give #item to #player?"] = "Are you sure you want to give %s to %s?"
+L["Armor Token"] = true
 L["Ask me every time I become Master Looter"] = true
 L["Ask me when leader"] = true
 L["Auto Award to"] = true

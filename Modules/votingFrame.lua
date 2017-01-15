@@ -295,7 +295,11 @@ function RCVotingFrame:SwitchSession(s)
 	elseif t.subType ~= "Miscellaneous" and t.subType ~= "Junk" then
 		self.frame.itemType:SetText(t.subType)
 	else
-		self.frame.itemType:SetText(getglobal(t.equipLoc));
+		if RCTokenTable[addon:GetItemIDFromLink(t.link)] then -- It's a token
+			self.frame.itemType:SetText(L["Armor Token"])
+		else
+			self.frame.itemType:SetText(getglobal(t.equipLoc));
+		end
 	end
 
 	-- Update the session buttons
