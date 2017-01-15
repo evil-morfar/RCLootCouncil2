@@ -7,6 +7,32 @@
 RCTokenTable = {
 	--[xxxxxx] = "ExampleSlot",
 
+	-- TIER 19 The Nighthold
+	[143562] = "ChestSlot",
+	[143572] = "ChestSlot",
+	[143571] = "ChestSlot",
+
+	[143577] = "BackSlot",
+	[143579] = "BackSlot",
+	[143578] = "BackSlot",
+
+	[143563] = "HandsSlot",
+	[143573] = "HandsSlot",
+	[143567] = "HandsSlot",
+
+	[143565] = "HeadSlot",
+	[143575] = "HeadSlot",
+	[143568] = "HeadSlot",
+
+	[143564] = "LegsSlot",
+	[143574] = "LegsSlot",
+	[143569] = "LegsSlot",
+
+	[143566] = "ShoulderSlot",
+	[143576] = "ShoulderSlot",
+	[143570] = "ShoulderSlot",
+
+
 	-- TIER 18	Hellfire Citadel
 	[127962] = "ChestSlot",
 	[127953] = "ChestSlot",
@@ -371,6 +397,31 @@ RCTokenTable = {
 -- Classes that can use the token
 RCTokenClasses = {
 	--[xxxxxx] = {classes that can use the token},
+
+	-- TIER 19 The Nighthold
+	[143562] = {"PALADIN", "PRIEST", "WARLOCK", "DEMONHUNTER"},
+	[143572] = {"WARRIOR", "HUNTER", "SHAMAN", "MONK"},
+	[143571] = {"ROGUE", "DEATHKNIGHT", "MAGE", "DRUID"},
+
+	[143577] = {"PALADIN", "PRIEST", "WARLOCK", "DEMONHUNTER"},
+	[143579] = {"WARRIOR", "HUNTER", "SHAMAN", "MONK"},
+	[143578] = {"ROGUE", "DEATHKNIGHT", "MAGE", "DRUID"},
+
+	[143563] = {"PALADIN", "PRIEST", "WARLOCK", "DEMONHUNTER"},
+	[143573] = {"WARRIOR", "HUNTER", "SHAMAN", "MONK"},
+	[143567] = {"ROGUE", "DEATHKNIGHT", "MAGE", "DRUID"},
+
+	[143565] = {"PALADIN", "PRIEST", "WARLOCK", "DEMONHUNTER"},
+	[143575] = {"WARRIOR", "HUNTER", "SHAMAN", "MONK"},
+	[143568] = {"ROGUE", "DEATHKNIGHT", "MAGE", "DRUID"},
+
+	[143564] = {"PALADIN", "PRIEST", "WARLOCK", "DEMONHUNTER"},
+	[143574] = {"WARRIOR", "HUNTER", "SHAMAN", "MONK"},
+	[143569] = {"ROGUE", "DEATHKNIGHT", "MAGE", "DRUID"},
+
+	[143566] = {"PALADIN", "PRIEST", "WARLOCK", "DEMONHUNTER"},
+	[143576] = {"WARRIOR", "HUNTER", "SHAMAN", "MONK"},
+	[143570] = {"ROGUE", "DEATHKNIGHT", "MAGE", "DRUID"},
 
 	-- TIER 18	Hellfire Citadel
 	[127953] = {"PALADIN", "PRIEST", "WARLOCK", "DEMONHUNTER"},

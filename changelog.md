@@ -1,3 +1,9 @@
+
+---
+* **Tier 19**
+ * Added support for Nighthold Tier 19 tokens.
+
+  
 * Buttons on the Loot Frame now always have a minimum witdh of 40 px.
 
 ##### Bugfixes
