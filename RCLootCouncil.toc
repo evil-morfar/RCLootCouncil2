@@ -1,8 +1,8 @@
 ## Author: Potdisc
 ## Interface: 70100
-## Notes: Interface for running a Loot Council v2.1.11
+## Notes: Interface for running a Loot Council v2.2.0
 ## Title: RCLootCouncil
-## Version: 2.1.11
+## Version: 2.2.0
 ## SavedVariables: RCLootCouncilDB, RCLootCouncilLootDB
 ## OptionalDeps: LibStub, CallbackHandler-1.0, Ace3, lib-st, LibWindow-1.1, LibDialog-1.0
 
