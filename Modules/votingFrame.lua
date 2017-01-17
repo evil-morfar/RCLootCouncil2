@@ -690,7 +690,6 @@ function RCVotingFrame:GetDiffColor(num)
 end
 
 function RCVotingFrame.SetCellClass(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
-	addon:Debug("SetCellClass")
 	local name = data[realrow].name
 	addon.SetCellClassIcon(rowFrame, frame, data, cols, row, realrow, column, fShow, table, lootTable[session].candidates[name].class)
 end
