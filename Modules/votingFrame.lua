@@ -596,6 +596,7 @@ function RCVotingFrame:GetFrame()
 	stgl:SetHeight(f:GetHeight())
 	stgl:SetPoint("TOPRIGHT", f, "TOPLEFT", -2, 0)
 	f.sessionToggleFrame = stgl
+	sessionButtons = {}
 
 	-- Set a proper width
 	f:SetWidth(st.frame:GetWidth() + 20)
