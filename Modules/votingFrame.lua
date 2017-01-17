@@ -119,7 +119,7 @@ function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
 
 		if test then
 			if command == "vote" then
-				if addon:IsCouncil(sender) or addon:UnitIsUnit(sender, addon.masterLooter) then
+				if addon:IsCouncil(sender) then
 					local s, name, vote = unpack(data)
 					self:HandleVote(s, name, vote, sender)
 				else
@@ -316,7 +316,11 @@ function RCVotingFrame:SwitchSession(s)
 	elseif t.subType ~= "Miscellaneous" and t.subType ~= "Junk" then
 		self.frame.itemType:SetText(t.subType)
 	else
-		self.frame.itemType:SetText(getglobal(t.equipLoc));
+		if RCTokenTable[addon:GetItemIDFromLink(t.link)] then -- It's a token
+			self.frame.itemType:SetText(L["Armor Token"])
+		else
+			self.frame.itemType:SetText(getglobal(t.equipLoc));
+		end
 	end
 
 	-- Update the session buttons
@@ -353,9 +357,8 @@ function RCVotingFrame:BuildST()
 end
 
 function RCVotingFrame:UpdateMoreInfo(row, data)
-	addon:Debug("MoreInfo:", moreInfo)
 	local name
-	if data then
+	if data and row then
 		name  = data[row].name
 	else -- Try to extract the name from the selected row
 		name = self.frame.st:GetSelection() and self.frame.st:GetRow(self.frame.st:GetSelection()).name or nil
@@ -372,7 +375,7 @@ function RCVotingFrame:UpdateMoreInfo(row, data)
 
 	--Extract loot history for that name
 	local lootDB = addon:GetHistoryDB()
-	local latestMsFound, entry = false, nil
+	local entry
 
 	-- Their name might be saved without realmname :/
 	local nameCheck
@@ -384,29 +387,32 @@ function RCVotingFrame:UpdateMoreInfo(row, data)
 	end
 	tip:AddLine(addon.Ambiguate(name), color.r, color.g, color.b)
 	color = {} -- Color of the response
+	local lastestAwardFound, responseText = 0, {}
 	if nameCheck then -- they're in the DB!
-		tip:AddLine("")
+		tip:AddLine(L["Latest item(s) won"])
 		for i = #lootDB[name], 1, -1 do -- Start from the end
 			entry = lootDB[name][i]
-			if entry.responseID == 1 and not latestMsFound and not entry.isAwardReason then -- Latest MS roll
-				tip:AddDoubleLine(format(L["Latest 'item' won:"], addon:GetResponseText(entry.responseID)), "", 1,1,1, 1,1,1)
-				tip:AddLine(entry.lootWon)
-				tip:AddDoubleLine(entry.time .. " " ..entry.date, format(L["'n days' ago"], addon:ConvertDateToString(addon:GetNumberOfDaysFromNow(entry.date))), 1,1,1, 1,1,1)
-				tip:AddLine(" ") -- Spacer
-				latestMsFound = true
+			local id = entry.responseID
+			if entry.isAwardReason then id = id + 100 end -- Bump to distingush from normal awards
+			count[id] = count[id] and count[id] + 1 or 1
+			responseText[id] = responseText[id] and responseText[id] or entry.response
+			if not color[id] or unpack(color[id],1,3) == unpack({1,1,1}) and #entry.color ~= 0  then -- If it's not already added
+				color[id] = #entry.color ~= 0 and #entry.color == 4 and entry.color or {1,1,1}
 			end
-			count[entry.response] = count[entry.response] and count[entry.response] + 1 or 1
-			if not color[entry.response] or unpack(color[entry.response],1,3) == unpack({1,1,1}) and #entry.color ~= 0  then -- If it's not already added
-				color[entry.response] = #entry.color ~= 0 and #entry.color == 4 and entry.color or {1,1,1}
+			if type(id) == "number" and id <= db.numMoreInfoButtons and not entry.isAwardReason and lastestAwardFound < 5 then
+				tip:AddDoubleLine(entry.lootWon, entry.response .. ", ".. format(L["'n days' ago"], addon:ConvertDateToString(addon:GetNumberOfDaysFromNow(entry.date))), nil,nil,nil,unpack(color[id],1,3))
+				lastestAwardFound = lastestAwardFound + 1
 			end
-
 		end -- end counting
+		tip:AddLine(" ") -- spacer
+		tip:AddLine(L["Totals"])
 		local totalNum = 0
-		for response, num in pairs(count) do
-			local r,g,b = unpack(color[response],1,3)
-			tip:AddDoubleLine(response, num, r,g,b, r,g,b) -- Make sure we don't add the alpha value
+		for id, num in pairs(count) do
+			local r,g,b = unpack(color[id],1,3)
+			tip:AddDoubleLine(responseText[id], num, r,g,b, r,g,b) -- Make sure we don't add the alpha value
 			totalNum = totalNum + num
 		end
+		tip:AddLine(" ")
 		tip:AddDoubleLine(L["Total items received:"], totalNum, 0,1,1, 0,1,1)
 	else
 		tip:AddLine(L["No entries in the Loot History"])
@@ -441,6 +447,21 @@ function RCVotingFrame:GetFrame()
 			return false
 		end,
 	})
+	-- We also want to show moreInfo on mouseover
+	st:RegisterEvents({
+		["OnEnter"] = function(rowFrame, cellFrame, data, cols, row, realrow, column, table, button, ...)
+			if row then self:UpdateMoreInfo(realrow, data) end
+			-- Return false to have the default OnEnter handler take care mouseover
+			return false
+		end
+	})
+	-- We also like to return to the actual selected player when we remove the mouse
+	st:RegisterEvents({
+		["OnLeave"] = function(rowFrame, cellFrame, data, cols, row, realrow, column, table, button, ...)
+			self:UpdateMoreInfo()
+			return false
+		end
+	})
 	st:SetFilter(RCVotingFrame.filterFunc)
 	st:EnableSelection(true)
 	f.st = st
@@ -454,7 +475,7 @@ function RCVotingFrame:GetFrame()
 		if not lootTable then return; end
 		addon:CreateHypertip(lootTable[session].link)
 	end)
-	item:SetScript("OnLeave", addon.HideTooltip)
+	item:SetScript("OnLeave", function() addon:HideTooltip() end)
 	item:SetScript("OnClick", function()
 		if not lootTable then return; end
 	    if ( IsModifiedClick() ) then
@@ -492,11 +513,11 @@ function RCVotingFrame:GetFrame()
 	-- Abort button
 	local b1 = addon:CreateButton(L["Close"], f.content)
 	b1:SetPoint("TOPRIGHT", f, "TOPRIGHT", -10, -50)
-	if addon.isMasterLooter then
-		b1:SetScript("OnClick", function() if active then LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_ABORT") else self:Hide() end end)
-	else
-		b1:SetScript("OnClick", function() self:Hide() end)
-	end
+	b1:SetScript("OnClick", function()
+		-- This needs to be dynamic if the ML has changed since this was first created
+		if addon.isMasterLooter and active then LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_ABORT")
+		else self:Hide() end
+	end)
 	f.abortBtn = b1
 
 	-- More info button
@@ -523,7 +544,7 @@ function RCVotingFrame:GetFrame()
 		self:UpdateMoreInfo()
 	end)
 	b2:SetScript("OnEnter", function() addon:CreateTooltip(L["Click to expand/collapse more info"]) end)
-	b2:SetScript("OnLeave", addon.HideTooltip)
+	b2:SetScript("OnLeave", function() addon:HideTooltip() end)
 	f.moreInfoBtn = b2
 
 	f.moreInfo = CreateFrame( "GameTooltip", "RCVotingFrameMoreInfo", nil, "GameTooltipTemplate" )
@@ -533,7 +554,7 @@ function RCVotingFrame:GetFrame()
 	b3:SetPoint("RIGHT", b1, "LEFT", -10, 0)
 	b3:SetScript("OnClick", function(self) Lib_ToggleDropDownMenu(1, nil, filterMenu, self, 0, 0) end )
 	b3:SetScript("OnEnter", function() addon:CreateTooltip(L["Deselect responses to filter them"]) end)
-	b3:SetScript("OnLeave", addon.HideTooltip)
+	b3:SetScript("OnLeave", function() addon:HideTooltip() end)
 	f.filter = b3
 
 	-- Disenchant button
@@ -725,6 +746,11 @@ function RCVotingFrame.SetCellGear(rowFrame, frame, data, cols, row, realrow, co
 		frame:SetNormalTexture(texture)
 		frame:SetScript("OnEnter", function() addon:CreateHypertip(gear) end)
 		frame:SetScript("OnLeave", function() addon:HideTooltip() end)
+		frame:SetScript("OnClick", function()
+			if IsModifiedClick() then
+			   HandleModifiedItemClick(gear);
+	      end
+		end)
 		frame:Show()
 	else
 		frame:Hide()
@@ -839,7 +865,6 @@ function RCVotingFrame.filterFunc(table, row)
 end
 
 function ResponseSort(table, rowa, rowb, sortbycol)
-	if type(rowa) == "table" then printtable(rowa) end
 	local column = table.cols[sortbycol]
 	local a, b = table:GetRow(rowa), table:GetRow(rowb);
 	a, b = addon:GetResponseSort(lootTable[session].candidates[a.name].response), addon:GetResponseSort(lootTable[session].candidates[b.name].response)
@@ -998,6 +1023,19 @@ do
 					end
 					Lib_UIDropDownMenu_AddButton(info, level)
 				end
+				if addon.debug then -- Add all possible responses when debugging
+					for k,v in pairs(db.responses) do
+						if type(k) ~= "number" then
+							info.text = v.text
+							info.colorCode = "|cff"..addon:RGBToHex(unpack(v.color))
+							info.notCheckable = true
+							info.func = function()
+									addon:SendCommand("group", "change_response", session, candidateName, k)
+							end
+							Lib_UIDropDownMenu_AddButton(info, level)
+						end
+					end
+				end
 
 			elseif value == "REANNOUNCE" then
 				info.text = addon.Ambiguate(candidateName)
@@ -1020,6 +1058,7 @@ do
 						}
 					}
 					addon:SendCommand(candidateName, "reroll", t)
+					addon:SendCommand("group", "change_response", session, candidateName, "WAIT")
 				end
 				Lib_UIDropDownMenu_AddButton(info, level);
 				info = Lib_UIDropDownMenu_CreateInfo()
@@ -1038,6 +1077,7 @@ do
 								session = k,
 								equipLoc = v.equipLoc,
 							})
+							addon:SendCommand("group", "change_response", k, candidateName, "WAIT")
 						end
 					end
 					addon:SendCommand(candidateName, "reroll", t)
@@ -1143,16 +1183,19 @@ do
 end
 
 function RCVotingFrame:GetItemStatus(item)
-	--addon:DebugLog("GetitemStatus", item)
+	-- addon:Debug("GetitemStatus", item)
 	if not item then return "" end
 	GameTooltip:SetOwner(UIParent, "ANCHOR_NONE")
 	GameTooltip:SetHyperlink(item)
 	local text = ""
 	if GameTooltip:NumLines() > 1 then -- check that there is something here
 		local line = getglobal('GameTooltipTextLeft2') -- Should always be line 2
+		local t =  line:GetText()
 		-- The following color string should be there if we have a green status text
-		if strfind(line:GetText(), "cFF 0FF 0") then
-			text = line:GetText()
+		if t then
+			if strfind(t, "cFF 0FF 0") then
+				text = t
+			end
 		end
 	end
 	GameTooltip:Hide()

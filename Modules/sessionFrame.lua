@@ -128,6 +128,11 @@ function RCSessionFrame:GetFrame()
 		if loadingItems then
 			return addon:Print(L["You can't start a session before all items are loaded!"])
 		end
+		if not ml.lootTable or #ml.lootTable == 0 then
+			addon:Print(L["You cannot start an empty session."])
+			addon:DebugLog("Player tried to start empty session.")
+			return
+		end
 		if awardLater then
 			for session in ipairs(ml.lootTable) do ml:Award(session) end
 			addon:Print(L["Looted items to award later"])

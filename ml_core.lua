@@ -71,7 +71,7 @@ function RCLootCouncilML:AddItem(item, bagged, slotIndex, index)
 	}
 	-- Item isn't properly loaded, so update the data in 1 sec (Should only happen with /rc test)
 	if not name then
-		self:ScheduleTimer("Timer", 1, "AddItem", item, bagged, slotIndex, #self.lootTable)
+		self:ScheduleTimer("Timer", 1, "AddItem", item, bagged, slotIndex, index or #self.lootTable)
 		addon:Debug("Started timer:", "AddItem", "for", item)
 	end
 end
@@ -107,15 +107,17 @@ function RCLootCouncilML:UpdateGroup(ask)
 	for i = 1, GetNumGroupMembers() do
 		local name, _, _, _, _, class, _, _, _, _, _, role  = GetRaidRosterInfo(i)
 		name = addon:UnitName(name) -- Get their unambiguated name
-		if group_copy[name] then	-- If they're already registered
-			group_copy[name] = nil	-- remove them from the check
-		else -- add them
-			if not ask then -- ask for playerInfo?
-				addon:SendCommand(name, "playerInfoRequest")
-				addon:SendCommand(name, "MLdb", addon.mldb) -- and send mlDB
+		if name then -- Apparantly name can be nil (ticket #223)
+			if group_copy[name] then	-- If they're already registered
+				group_copy[name] = nil	-- remove them from the check
+			else -- add them
+				if not ask then -- ask for playerInfo?
+					addon:SendCommand(name, "playerInfoRequest")
+					addon:SendCommand(name, "MLdb", addon.mldb) -- and send mlDB
+				end
+				self:AddCandidate(name, class, role) -- Add them in case they haven't installed the adoon
+				updates = true
 			end
-			self:AddCandidate(name, class, role) -- Add them in case they haven't installed the adoon
-			updates = true
 		end
 	end
 	-- If anything's left in group_copy it means they left the raid, so lets remove them
@@ -256,6 +258,7 @@ function RCLootCouncilML:Timer(type, ...)
 
 	elseif type == "GroupUpdate" then
 		addon:SendCommand("group", "candidates", self.candidates)
+		addon:SendCommand("group", "council", db.council)
 	end
 end
 
@@ -270,10 +273,11 @@ function RCLootCouncilML:OnCommReceived(prefix, serializedMsg, distri, sender)
 				self:AddCandidate(unpack(data))
 
 			elseif command == "MLdb_request" then
-				addon:SendCommand(sender, "MLdb", addon.mldb)
+				-- Just resend to the entire group instead of the sender
+				addon:SendCommand("group", "MLdb", addon.mldb)
 
 			elseif command == "council_request" then
-				addon:SendCommand(sender, "council", db.council)
+				addon:SendCommand("group", "council", db.council)
 
 			elseif command == "reconnect" and not addon:UnitIsUnit(sender, addon.playerName) then -- Don't receive our own reconnect
 				-- Someone asks for mldb, council and candidates
@@ -321,30 +325,27 @@ end
 function RCLootCouncilML:LootOpened()
 	if addon.isMasterLooter and GetNumLootItems() > 0 then
 		addon.target = GetUnitName("target") or L["Unknown/Chest"] -- capture the boss name
+		local updatedLootSlot = {}
 		for i = 1, GetNumLootItems() do
+			local item = GetLootSlotLink(i)
 			-- We have reopened the loot frame, so check if we should update .lootSlot
 			if self.running then
-				local item = GetLootSlotLink(i)
 				for session = 1, #self.lootTable do
-					if item == self.lootTable[session].link then
-						if i ~= self.lootTable[session].lootSlot then -- It has changed!
-							self.lootTable[session].lootSlot = i -- and update it
-						end
-						-- Lets see if we have more of the same item in the rest of the lootTable
-						for ses = session, #self.lootTable do
-							if item == self.lootTable[ses].link then
-								-- We have! Lets give this one the current slot, as the first will be updated once we reach it in the main loops
-								self.lootTable[ses].lootSlot = i
-								break
+					-- Just skip if we've already awarded the item or found a fitting lootSlot
+					if not self.lootTable[session].awarded and not updatedLootSlot[session] then
+						if item == self.lootTable[session].link then
+							if i ~= self.lootTable[session].lootSlot then -- It has changed!
+								self.lootTable[session].lootSlot = i -- and update it
+								updatedLootSlot[session] = true
+								addon:DebugLog("Changed lootSlot", session, i)
 							end
+							break
 						end
-						break
 					end
 				end
 			else
 				if db.altClickLooting then self:ScheduleTimer("HookLootButton", 0.5, i) end -- Delay lootbutton hooking to ensure other addons have had time to build their frames
 				local _, _, quantity, quality = GetLootSlotInfo(i)
-				local item = GetLootSlotLink(i)
 				if self:ShouldAutoAward(item, quality) and quantity > 0 then
 					self:AutoAward(i, item, quality, db.autoAwardTo, db.autoAwardReason, addon.target)
 
@@ -469,6 +470,7 @@ function RCLootCouncilML:Award(session, winner, response, reason)
 						addon:Debug("GiveMasterLoot", i)
 						GiveMasterLoot(self.lootTable[session].lootSlot, i)
 						awarded = true
+						break
 					end
 				end
 			end
@@ -477,7 +479,6 @@ function RCLootCouncilML:Award(session, winner, response, reason)
 			-- flag the item as awarded and update
 			addon:SendCommand("group", "awarded", session)
 			self.lootTable[session].awarded = true -- No need to let Comms handle this
-			-- IDEA Switch session ?
 
 			self:AnnounceAward(addon.Ambiguate(winner), self.lootTable[session].link, reason and reason.text or db.responses[response].text)
 			if self:HasAllItemsBeenAwarded() then self:EndSession() end
@@ -495,13 +496,13 @@ function RCLootCouncilML:Award(session, winner, response, reason)
 			for i = 1, MAX_RAID_MEMBERS do
 				if addon:UnitIsUnit(GetMasterLootCandidate(self.lootTable[session].lootSlot, i), "player") then
 					GiveMasterLoot(self.lootTable[session].lootSlot, i)
+					break
 				end
 			end
 		end
 		tinsert(self.lootInBags, self.lootTable[session].link) -- and store data
 		return false -- Item hasn't been awarded
 	end
-	return false
 end
 
 function RCLootCouncilML:AnnounceItems()
@@ -712,6 +713,9 @@ end
 --------ML Popups ------------------
 LibDialog:Register("RCLOOTCOUNCIL_CONFIRM_ABORT", {
 	text = L["Are you sure you want to abort?"],
+	on_show = function(self)
+		self:SetFrameStrata("FULLSCREEN")
+	end,
 	buttons = {
 		{	text = L["Yes"],
 			on_click = function(self)
@@ -731,6 +735,7 @@ LibDialog:Register("RCLOOTCOUNCIL_CONFIRM_AWARD", {
 	text = "something_went_wrong",
 	icon = "",
 	on_show = function(self, data)
+		self:SetFrameStrata("FULLSCREEN")
 		local session, player = unpack(data)
 		self.text:SetText(format(L["Are you sure you want to give #item to #player?"], RCLootCouncilML.lootTable[session].link, addon.Ambiguate(player)))
 		self.icon:SetTexture(RCLootCouncilML.lootTable[session].texture)

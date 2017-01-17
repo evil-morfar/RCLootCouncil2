@@ -1,8 +1,8 @@
 package-as: RCLootCouncil
 
 manual-changelog:
-    filename: changelog.txt
-    markup-type: creole
+    filename: changelog.md
+    markup-type: markdown
 
 ignore:
     - README.md
