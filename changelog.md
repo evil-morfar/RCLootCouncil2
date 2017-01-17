@@ -1,3 +1,5 @@
+* Artifact Relic type is now displayed in the voting frame.
+
 ### v2.2.0
 ---
 * **Tier 19**
