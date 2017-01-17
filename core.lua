@@ -5,8 +5,6 @@ core.lua	Contains core elements of the addon
 TODOs/Notes
 	Things marked with "todo"
 		- IDEA add an observer/council string to show players their role?
-		- If we truly want to be able to edit votingframe scrolltable with modules, it needs to have GetCol by name
-		- Pressing shift while hovering an item should do the same as vanilla
 		- The 4'th cell in @line81 in versionCheck should not be static
 --------------------------------
 CHANGELOG
@@ -511,8 +509,9 @@ function RCLootCouncil:ChatCommand(msg)
 		self:Print("Debug Log cleared.")
 --@debug@
 	elseif input == 't' then -- Tester cmd
-		local meh = self:Serialize(db)
-		self:Print("Db size:", #meh)
+		local ItemUpgradeInfo = LibStub("LibItemUpgradeInfo-1.0")
+		self:Print(self:GetItemStringFromLink(arg1),self:GetItemStringFromLink(arg2))
+		self:Print("ItemUpgradeInfo",ItemUpgradeInfo:GetItemUpgradeInfo(arg1))
 --@end-debug@
 	else
 		-- Check if the input matches anything

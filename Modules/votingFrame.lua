@@ -100,6 +100,7 @@ end
 -- Takes either index or colName as the identifier, and returns the removed rows
 -- if succesful, or nil if not. Should be called before any session begins.
 function RCVotingFrame:RemoveColumn(id)
+	addon:Debug("Removing Column", id)
 	if type(id) == "number" then
 		return tremove(self.scrollCols, id)
 	else
