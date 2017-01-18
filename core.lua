@@ -1353,7 +1353,7 @@ function RCLootCouncil:VersionCompare(ver1, ver2)
 	local a1,b1,c1 = string.split(".", ver1)
 	local a2,b2,c2 = string.split(".", ver2)
 	if not (c1 and c2) then return end -- Check if it exists
-	return tonumber(a1) < tonumber(a2) or tonumber(b1) < tonumber(b2) or tonumber(c1) < tonumber(c2)
+	return a1 ~= a2 and tonumber(a1) < tonumber(a2) or b1 ~= b2 and tonumber(b1) < tonumber(b2) or tonumber(c1) < tonumber(c2)
 end
 
 -- from LibUtilities-1.0, which adds bonus index after bonus ID
