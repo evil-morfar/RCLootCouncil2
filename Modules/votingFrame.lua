@@ -334,10 +334,12 @@ function RCVotingFrame:SwitchSession(s)
 	sessionButtons[old] = self:UpdateSessionButton(old, lootTable[old].texture, lootTable[old].link, lootTable[old].awarded)
 
 	-- Since we switched sessions, we want to sort by response
+	local j = 1
 	for i in ipairs(self.frame.st.cols) do
 		self.frame.st.cols[i].sort = nil
+		if self.frame.st.cols[i].colName == "response" then j = i end
 	end
-	self.frame.st.cols[5].sort = "asc"
+	self.frame.st.cols[j].sort = "asc"
 	FauxScrollFrame_OnVerticalScroll(self.frame.st.scrollframe, 0, self.frame.st.rowHeight, function() self.frame.st:Refresh() end) -- Reset scrolling to 0
 	self:Update()
 	self:UpdatePeopleToVote()
@@ -435,42 +437,51 @@ function RCVotingFrame:GetFrame()
 	-- Container and title
 	local f = addon:CreateFrame("DefaultRCLootCouncilFrame", "votingframe", L["RCLootCouncil Voting Frame"], 250, 420)
 	-- Scrolling table
-	local st = LibStub("ScrollingTable"):CreateST(self.scrollCols, NUM_ROWS, ROW_HEIGHT, { ["r"] = 1.0, ["g"] = 0.9, ["b"] = 0.0, ["a"] = 0.5 }, f.content)
-	st.frame:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", 10, 10)
-	st:RegisterEvents({
-		["OnClick"] = function(rowFrame, cellFrame, data, cols, row, realrow, column, table, button, ...)
-			if button == "RightButton" and row then
-				if active then
-					menuFrame.name = data[realrow].name
-					Lib_ToggleDropDownMenu(1, nil, menuFrame, cellFrame, 0, 0);
-				else
-					addon:Print(L["You cannot use the menu when the session has ended."])
+	function f.UpdateSt()
+		if f.st then -- It might already be created, so just update the cols
+			f.st:Hide()
+			f.st = nil
+		end
+		local st = LibStub("ScrollingTable"):CreateST(self.scrollCols, NUM_ROWS, ROW_HEIGHT, { ["r"] = 1.0, ["g"] = 0.9, ["b"] = 0.0, ["a"] = 0.5 }, f.content)
+		st.frame:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", 10, 10)
+		st:RegisterEvents({
+			["OnClick"] = function(rowFrame, cellFrame, data, cols, row, realrow, column, table, button, ...)
+				if button == "RightButton" and row then
+					if active then
+						menuFrame.name = data[realrow].name
+						Lib_ToggleDropDownMenu(1, nil, menuFrame, cellFrame, 0, 0);
+					else
+						addon:Print(L["You cannot use the menu when the session has ended."])
+					end
+				elseif button == "LeftButton" and row then -- Update more info
+					self:UpdateMoreInfo(realrow, data)
 				end
-			elseif button == "LeftButton" and row then -- Update more info
-				self:UpdateMoreInfo(realrow, data)
+				-- Return false to have the default OnClick handler take care of left clicks
+				return false
+			end,
+		})
+		-- We also want to show moreInfo on mouseover
+		st:RegisterEvents({
+			["OnEnter"] = function(rowFrame, cellFrame, data, cols, row, realrow, column, table, button, ...)
+				if row then self:UpdateMoreInfo(realrow, data) end
+				-- Return false to have the default OnEnter handler take care mouseover
+				return false
 			end
-			-- Return false to have the default OnClick handler take care of left clicks
-			return false
-		end,
-	})
-	-- We also want to show moreInfo on mouseover
-	st:RegisterEvents({
-		["OnEnter"] = function(rowFrame, cellFrame, data, cols, row, realrow, column, table, button, ...)
-			if row then self:UpdateMoreInfo(realrow, data) end
-			-- Return false to have the default OnEnter handler take care mouseover
-			return false
-		end
-	})
-	-- We also like to return to the actual selected player when we remove the mouse
-	st:RegisterEvents({
-		["OnLeave"] = function(rowFrame, cellFrame, data, cols, row, realrow, column, table, button, ...)
-			self:UpdateMoreInfo()
-			return false
-		end
-	})
-	st:SetFilter(RCVotingFrame.filterFunc)
-	st:EnableSelection(true)
-	f.st = st
+		})
+		-- We also like to return to the actual selected player when we remove the mouse
+		st:RegisterEvents({
+			["OnLeave"] = function(rowFrame, cellFrame, data, cols, row, realrow, column, table, button, ...)
+				self:UpdateMoreInfo()
+				return false
+			end
+		})
+		st:SetFilter(RCVotingFrame.filterFunc)
+		st:EnableSelection(true)
+		f.st = st
+		f:SetWidth(f.st.frame:GetWidth() + 20)
+	end
+	f.UpdateSt()
+
 	--[[------------------------------
 		Session item icon and strings
 	    ------------------------------]]
@@ -604,7 +615,7 @@ function RCVotingFrame:GetFrame()
 	sessionButtons = {}
 
 	-- Set a proper width
-	f:SetWidth(st.frame:GetWidth() + 20)
+	f:SetWidth(f.st.frame:GetWidth() + 20)
 	return f;
 end
 
