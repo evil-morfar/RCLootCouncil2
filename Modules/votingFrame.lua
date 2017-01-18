@@ -5,7 +5,7 @@
 --		Will only show certain aspects depending on addon.isMasterLooter, addon.isCouncil and addon.mldb.observe
 
 local addon = LibStub("AceAddon-3.0"):GetAddon("RCLootCouncil")
-local RCVotingFrame = addon:NewModule("RCVotingFrame", "AceComm-3.0")
+RCVotingFrame = addon:NewModule("RCVotingFrame", "AceComm-3.0")
 local LibDialog = LibStub("LibDialog-1.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 
@@ -13,35 +13,41 @@ local ROW_HEIGHT = 20;
 local NUM_ROWS = 15;
 local db
 local session = 1 -- The session we're viewing
-local lootTable = {} -- lib-st compatible, extracted from addon's lootTable
+local lootTable = {} -- Table containing all data, lib-st cells pulls data from this
 local sessionButtons = {}
 local moreInfo = false -- Show more info frame?
 local active = false -- Are we currently in session?
 local candidates = {} -- Candidates for the loot, initial data from the ML
 local councilInGroup = {}
-local keys = {} -- Lookup table for cols TODO implement this
 local menuFrame -- Right click menu frame
 local filterMenu -- Filter drop down menu
 local enchanters -- Enchanters drop down menu frame
 local guildRanks = {} -- returned from addon:GetGuildRanks()
 local GuildRankSort, ResponseSort -- Initialize now to avoid errors
+local defaultScrollTableData = {} -- See below
 
 function RCVotingFrame:OnInitialize()
-	self.scrollCols = {
-		{ name = "",															sortnext = 2,		width = 20, },	-- 1 Class
-		{ name = L["Name"],																			width = 120,},	-- 2 Candidate Name
-		{ name = L["Rank"],		comparesort = GuildRankSort,		sortnext = 5,		width = 95,},	-- 3 Guild rank
-		{ name = L["Role"],													sortnext = 5,		width = 55, },	-- 4 Role
-		{ name = L["Response"],	comparesort = ResponseSort,		sortnext = 13,		width = 240,},	-- 5 Response
-		{ name = L["ilvl"],													sortnext = 7,		width = 45, },	-- 6 Total ilvl
-		{ name = L["Diff"],																			width = 40, },	-- 7 ilvl difference
-		{ name = L["g1"],			align = "CENTER",						sortnext = 5,		width = 20, },	-- 8 Current gear 1
-		{ name = L["g2"],			align = "CENTER",						sortnext = 5,		width = 20, },	-- 9 Current gear 2
-		{ name = L["Votes"], 	align = "CENTER",						sortnext = 7,		width = 40, },	-- 10 Number of votes
-		{ name = L["Vote"],		align = "CENTER",						sortnext = 10,		width = 60, },	-- 11 Vote button
-		{ name = L["Notes"],		align = "CENTER",												width = 40, },	-- 12 Note icon
-		{ name = L["Roll"],		align = "CENTER", 					sortnext = 10,		width = 30, },	-- 13 Roll
+	-- Contains all the default data needed for the scroll table
+	-- The default values are in sorted order
+	defaultScrollTableData = {
+		{ name = "",				DoCellUpdate = RCVotingFrame.SetCellClass,		colName = "class",	sortnext = 2,		width = 20, },										-- 1 Class
+		{ name = L["Name"],		DoCellUpdate = RCVotingFrame.SetCellName,			colName = "name",								width = 120,},										-- 2 Candidate Name
+		{ name = L["Rank"],		DoCellUpdate = RCVotingFrame.SetCellRank,			colName = "rank",		sortnext = 5,		width = 95, comparesort = GuildRankSort,},-- 3 Guild rank
+		{ name = L["Role"],		DoCellUpdate = RCVotingFrame.SetCellRole,			colName = "role",		sortnext = 5,		width = 55, },										-- 4 Role
+		{ name = L["Response"],	DoCellUpdate = RCVotingFrame.SetCellResponse,	colName = "response",sortnext = 13,		width = 240, comparesort = ResponseSort,},-- 5 Response
+		{ name = L["ilvl"],		DoCellUpdate = RCVotingFrame.SetCellIlvl,			colName = "ilvl",		sortnext = 7,		width = 45, },										-- 6 Total ilvl
+		{ name = L["Diff"],		DoCellUpdate = RCVotingFrame.SetCellDiff,			colName = "diff",								width = 40, },										-- 7 ilvl difference
+		{ name = L["g1"],			DoCellUpdate = RCVotingFrame.SetCellGear,			colName = "gear1",	sortnext = 5,		width = 20, align = "CENTER", },				-- 8 Current gear 1
+		{ name = L["g2"],			DoCellUpdate = RCVotingFrame.SetCellGear,			colName = "gear2",	sortnext = 5,		width = 20, align = "CENTER", },				-- 9 Current gear 2
+		{ name = L["Votes"], 	DoCellUpdate = RCVotingFrame.SetCellVotes,		colName = "votes",	sortnext = 7,		width = 40, align = "CENTER", },				-- 10 Number of votes
+		{ name = L["Vote"],		DoCellUpdate = RCVotingFrame.SetCellVote,			colName = "vote",		sortnext = 10,		width = 60, align = "CENTER", },				-- 11 Vote button
+		{ name = L["Notes"],		DoCellUpdate = RCVotingFrame.SetCellNote,			colName = "note",								width = 40, align = "CENTER", },				-- 12 Note icon
+		{ name = L["Roll"],		DoCellUpdate = RCVotingFrame.SetCellRoll, 		colName = "roll",		sortnext = 10,		width = 30, align = "CENTER", },				-- 13 Roll
 	}
+	-- The actual table being worked on, new entries should be added to this table "tinsert(RCVotingFrame.scrollCols, data)"
+	-- If you want to add or remove columns, you should do so on your OnInitialize. See RCVotingFrame:RemoveColumn() for removal.
+	self.scrollCols = defaultScrollTableData
+
 	menuFrame = CreateFrame("Frame", "RCLootCouncil_VotingFrame_RightclickMenu", UIParent, "Lib_UIDropDownMenuTemplate")
 	filterMenu = CreateFrame("Frame", "RCLootCouncil_VotingFrame_FilterMenu", UIParent, "Lib_UIDropDownMenuTemplate")
 	enchanters = CreateFrame("Frame", "RCLootCouncil_VotingFrame_EnchantersMenu", UIParent, "Lib_UIDropDownMenuTemplate")
@@ -88,6 +94,22 @@ function RCVotingFrame:EndSession(hide)
 	active = false -- The session has ended, so deactivate
 	self:Update()
 	if hide then self:Hide() end -- Hide if need be
+end
+
+-- Removes a specific entry from the voting frame's columns
+-- Takes either index or colName as the identifier, and returns the removed rows
+-- if succesful, or nil if not. Should be called before any session begins.
+function RCVotingFrame:RemoveColumn(id)
+	addon:Debug("Removing Column", id)
+	if type(id) == "number" then
+		return tremove(self.scrollCols, id)
+	else
+		for i, col in ipairs(self.scrollCols) do
+			if col.colName == id then
+				return tremove(self.scrollCols, i)
+			end
+		end
+	end
 end
 
 function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
@@ -324,24 +346,16 @@ end
 function RCVotingFrame:BuildST()
 	local rows = {}
 	local i = 1
+	-- We need to build the columns from the data in self.scrollCols
+	-- We only really need the colName and value to get added
+	local data = {}
+	for num, col in pairs(self.scrollCols) do
+		data[num] = {value = "", colName = col.colName}
+	end
 	for name in pairs(candidates) do
 		rows[i] = {
 			name = name,
-			cols = {
-				{ value = "",	DoCellUpdate = self.SetCellClass,		name = "class",},
-				{ value = "",	DoCellUpdate = self.SetCellName,			name = "name",},
-				{ value = "",	DoCellUpdate = self.SetCellRank,			name = "rank",},
-				{ value = "",	DoCellUpdate = self.SetCellRole,			name = "role",},
-				{ value = "",	DoCellUpdate = self.SetCellResponse,	name = "response",},
-				{ value = "",	DoCellUpdate = self.SetCellIlvl,			name = "ilvl",},
-				{ value = "",	DoCellUpdate = self.SetCellDiff,			name = "diff",},
-				{ value = "",	DoCellUpdate = self.SetCellGear, 		name = "gear1",},
-				{ value = "",	DoCellUpdate = self.SetCellGear, 		name = "gear2",},
-				{ value = 0,	DoCellUpdate = self.SetCellVotes, 		name = "votes",},
-				{ value = 0,	DoCellUpdate = self.SetCellVote,			name = "vote",},
-				{ value = 0,	DoCellUpdate = self.SetCellNote, 		name = "note",},
-				{ value = "",	DoCellUpdate = self.SetCellRoll,			name = "roll"},
-			},
+			cols = data,
 		}
 		i = i + 1
 	end
@@ -587,6 +601,7 @@ function RCVotingFrame:GetFrame()
 	stgl:SetHeight(f:GetHeight())
 	stgl:SetPoint("TOPRIGHT", f, "TOPLEFT", -2, 0)
 	f.sessionToggleFrame = stgl
+	sessionButtons = {}
 
 	-- Set a proper width
 	f:SetWidth(st.frame:GetWidth() + 20)
@@ -729,7 +744,7 @@ function RCVotingFrame.SetCellDiff(rowFrame, frame, data, cols, row, realrow, co
 end
 
 function RCVotingFrame.SetCellGear(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
-	local gear = data[realrow].cols[column].name -- gear1 or gear2
+	local gear = data[realrow].cols[column].colName -- gear1 or gear2
 	local name = data[realrow].name
 	gear = lootTable[session].candidates[name][gear] -- Get the actual gear
 	if gear then
