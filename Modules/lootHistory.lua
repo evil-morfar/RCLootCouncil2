@@ -305,10 +305,10 @@ function LootHistory:ImportHistory(import)
 	addon:Debug("Initiating import")
 	lootDB = addon:GetHistoryDB()
 	-- Start with validating the import:
-	if type(import) ~= "string" then return addon:Print("The imported text wasn't a string") end
+	if type(import) ~= "string" then addon:Print("The imported text wasn't a string"); return addon:DebugLog("No string") end
 	import = gsub(import, "\124\124", "\124") -- De escape itemslinks
 	local test, import = addon:Deserialize(import)
-	if not test then return addon:Print("Deserialization failed - maybe wrong import type?") end
+	if not test then addon:Print("Deserialization failed - maybe wrong import type?"); return addon:DebugLog("Deserialization failed") end
 	addon:Debug("Validation completed", #lootDB == 0, #lootDB)
 	-- Now import should be a copy of the orignal exporter's lootDB, so insert any changes
 	-- Start by seeing if we even have a lootDB
@@ -332,7 +332,7 @@ function LootHistory:ImportHistory(import)
 			number = number + #data
 		end
 	end
-	addon.lootDB = lootDB -- save it
+	addon.lootDB.factionrealm = lootDB -- save it
 	addon:Print("Successfully imported "..number.." entries.")
 	addon:Debug("Import successful")
 	self:BuildData()

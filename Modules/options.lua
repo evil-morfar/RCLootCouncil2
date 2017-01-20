@@ -173,7 +173,7 @@ function addon:OptionsTable()
 										name = L["Clear Loot History"],
 										desc = L["clear_loot_history_desc"],
 										type = "execute",
-										func = function() self.lootDB:ResetDB("") end,
+										func = function() self.lootDB:ResetDB(); self:UpdateHistoryDB() end,
 										confirm = true,
 									},
 								},

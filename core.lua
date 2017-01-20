@@ -1324,6 +1324,10 @@ function RCLootCouncil:GetHistoryDB()
 	return self.lootDB.factionrealm
 end
 
+function RCLootCouncil:UpdateHistoryDB()
+	historyDB = self:GetHistoryDB()
+end
+
 function RCLootCouncil:GetAnnounceChannel(channel)
 	return channel == "group" and (IsInRaid() and "RAID" or "PARTY") or channel
 end
