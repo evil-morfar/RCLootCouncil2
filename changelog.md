@@ -1,3 +1,7 @@
+##### Bugfixes
++ *Loot History now works directly after clearing it (#228)*
+
+
 ### v2.2.1
 ---
 * Artifact Relic type is now displayed in the voting frame.
