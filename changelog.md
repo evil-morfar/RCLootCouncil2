@@ -1,3 +1,5 @@
+* Comms optimizations.
+
 ##### Bugfixes
 + *Loot History now works directly after clearing it (#228)*
 

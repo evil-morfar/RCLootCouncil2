@@ -210,16 +210,16 @@ function RCLootCouncilML:BuildMLdb()
 	local changedButtons = {};
 	for i = 1, db.numButtons do
 		if db.buttons[i].text ~= addon.defaults.profile.buttons[i].text then
-			changedButtons[i] = db.buttons[i]
+			changedButtons[i] = {text = db.buttons[i].text}
 		end
 	end
 	-- Extract changed award reasons
-	local changedAwardReasons = {}
+	--[[local changedAwardReasons = {}
 	for i = 1, db.numAwardReasons do
 		if db.awardReasons[i].text ~= addon.defaults.profile.awardReasons[i].text then
 			changedAwardReasons[i] = db.awardReasons[i]
 		end
-	end
+	end]]
 	return {
 		selfVote			= db.selfVote,
 		multiVote		= db.multiVote,
@@ -228,7 +228,7 @@ function RCLootCouncilML:BuildMLdb()
 		numButtons		= db.numButtons,
 		hideVotes		= db.hideVotes,
 		observe			= db.observe,
-		awardReasons	= changedAwardReasons,
+	--	awardReasons	= changedAwardReasons,
 		buttons			= changedButtons,
 		responses		= changedResponses,
 		timeout			= db.timeout,
