@@ -2,6 +2,7 @@
 
 ##### Bugfixes
 + *Loot History now works directly after clearing it (#228)*
++ *The previous version broke most sorting - reverted that.*
 
 
 ### v2.2.1

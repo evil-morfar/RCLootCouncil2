@@ -350,11 +350,11 @@ function RCVotingFrame:BuildST()
 	local i = 1
 	-- We need to build the columns from the data in self.scrollCols
 	-- We only really need the colName and value to get added
-	local data = {}
-	for num, col in pairs(self.scrollCols) do
-		data[num] = {value = "", colName = col.colName}
-	end
 	for name in pairs(candidates) do
+		local data = {}
+		for num, col in ipairs(self.scrollCols) do
+			data[num] = {value = "", colName = col.colName}
+		end
 		rows[i] = {
 			name = name,
 			cols = data,
