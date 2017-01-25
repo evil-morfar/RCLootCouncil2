@@ -1,3 +1,7 @@
+* **Delete History entry**
+ * You can now delete individual entries in the loot history.
+ 
+
 * Comms optimizations.
 
 ##### Bugfixes
