@@ -154,6 +154,7 @@ L["Deselect responses to filter them"] = true
 L["Diff"] = true
 L["Disenchant"] = true
 L["disenchant_desc"] = "Select to use this reason when awarding an item via the 'Disenchant' button"
+L["Double click to delete this entry."] = true
 L["DPS"] = true
 L["Dropped by:"] = true
 L["Enable Loot History"] = true

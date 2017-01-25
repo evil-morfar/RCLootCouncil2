@@ -39,6 +39,7 @@ function LootHistory:OnInitialize()
 		{name = "",					width = ROW_HEIGHT, },			-- Item at index icon
 		{name = L["Item"],		width = 250, 				}, 	-- Item string
 		{name = L["Reason"],		width = 220, comparesort = self.ResponseSort, sort = "asc", sortnext = 2},	-- Response aka the text supplied to lootDB...response
+		{name = "",					width = ROW_HEIGHT},				-- Delete button
 	}
 	filterMenu = CreateFrame("Frame", "RCLootCouncil_LootHistory_FilterMenu", UIParent, "Lib_UIDropDownMenuTemplate")
 	Lib_UIDropDownMenu_Initialize(filterMenu, self.FilterMenu, "MENU")
@@ -131,7 +132,8 @@ function LootHistory:BuildData()
 							{value = date.. "-".. i.time or "", args = {time = i.time, date = date},},
 							{DoCellUpdate = self.SetCellGear, args={i.lootWon}},
 							{value = i.lootWon},
-							{DoCellUpdate = self.SetCellResponse, args = {color = i.color, response = i.response, responseID = i.responseID or 0, isAwardReason = i.isAwardReason}}
+							{DoCellUpdate = self.SetCellResponse, args = {color = i.color, response = i.response, responseID = i.responseID or 0, isAwardReason = i.isAwardReason}},
+							{DoCellUpdate = self.SetCellDelete},
 						}
 					}
 					row = row + 1
@@ -211,6 +213,30 @@ function LootHistory.SetCellResponse(rowFrame, frame, data, cols, row, realrow, 
 	else -- default to white
 		frame.text:SetTextColor(1,1,1,1)
 	end
+end
+
+function LootHistory.SetCellDelete(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
+	if not frame.created then
+		frame:SetNormalTexture("Interface\\Buttons\\UI-GroupLoot-Pass-Up")
+		frame:SetScript("OnEnter", function()
+			addon:CreateTooltip(L["Double click to delete this entry."])
+		end)
+		frame:SetScript("OnLeave", function() addon:HideTooltip() end)
+		frame.created = true
+	end
+	frame:SetScript("OnClick", function()
+		local name, num = data[realrow].name, data[realrow].num
+		if frame.lastClick and GetTime() - frame.lastClick <= 0.5 then
+			frame.lastClick = nil
+			-- Do deleting
+			addon:Debug("Deleting:", name, lootDB[name][num].lootWon)
+			tremove(lootDB[name], num)
+			tremove(data, realrow)
+			table:SortData()
+		else
+			frame.lastClick = GetTime()
+		end
+	end)
 end
 
 local sinceEpoch = {} -- Stores epoch seconds for both, we should reuse it
