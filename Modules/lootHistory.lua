@@ -722,6 +722,7 @@ end
 function LootHistory:ExportCSV()
 	-- Add headers
 	local export = {}
+	local ret = ""
 	tinsert(export, "player, date, time, item, itemID, response, votes, class, instance, boss, gear1, gear2, responseID, isAwardReason\r\n")
 	for player, v in pairs(lootDB) do
 		if selectedName and selectedName == player or not selectedName then
@@ -742,12 +743,13 @@ function LootHistory:ExportCSV()
 					tinsert(export, (self:EscapeItemLink(gsub(tostring(d.itemReplaced2),",",""))))
 					tinsert(export, tostring(d.responseID))
 					tinsert(export, tostring(d.isAwardReason))
-					tinsert(export, "\r\n")
+					ret = ret..table.concat(export, ",").."\r\n"
+					export = {}
 				end
 			end
 		end
 	end
-	return table.concat(export, ",")
+	return ret
 end
 
 -- Simplified BBCode, as supported by CurseForge

@@ -1,3 +1,6 @@
+##### Bugfixes
++ *CSV export now works as intended (#233)*
+
 ### v2.2.2
 ---
 * **Delete History entry**
