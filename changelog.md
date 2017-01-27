@@ -1,3 +1,7 @@
+* **History Export**
+ * ItemStrings are now in a seperate column.
+ * Added a tab delimited export with hyperlinks on items (#232).
+
 ##### Bugfixes
 + *CSV export now works as intended (#233)*
 

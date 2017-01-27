@@ -26,6 +26,7 @@ function LootHistory:OnInitialize()
 	self.exports = {
 		lua = { func = self.ExportLua, 			name = "Lua",					tip = L["Raw lua output. Doesn't work well with date selection."]},
 		csv = { func = self.ExportCSV,			name = "CSV",					tip = L["Standard .csv output."]},
+		tsv = {func = self.ExportTSV,				name = "TSV (Excel)",		tip = "A tab delimited output for Excel. Might work with outher spreadsheets."},
 		bbcode = { func = self.ExportBBCode,	name = "BBCode", 				tip = L["Simple BBCode output."]},
 		bbcodeSmf = {func = self.ExportBBCodeSMF, name = "BBCode SMF",		tip = L["BBCode export, tailored for SMF."],},
 		eqxml = { func = self.ExportEQXML,		name = "EQdkp-Plus XML",	tip = L["EQdkp-Plus XML output, tailored for Enjin import."]},
@@ -722,8 +723,7 @@ end
 function LootHistory:ExportCSV()
 	-- Add headers
 	local export = {}
-	local ret = ""
-	tinsert(export, "player, date, time, item, itemID, response, votes, class, instance, boss, gear1, gear2, responseID, isAwardReason\r\n")
+	local ret = "player, date, time, item, itemID, itemString, response, votes, class, instance, boss, gear1, gear2, responseID, isAwardReason\r\n"
 	for player, v in pairs(lootDB) do
 		if selectedName and selectedName == player or not selectedName then
 			for i, d in pairs(v) do
@@ -732,18 +732,53 @@ function LootHistory:ExportCSV()
 					tinsert(export, tostring(player))
 					tinsert(export, tostring(d.date))
 					tinsert(export, tostring(d.time))
-					tinsert(export, (self:EscapeItemLink(gsub(tostring(d.lootWon),",",""))))
-					tinsert(export, (self:EscapeItemLink(addon:GetItemIDFromLink(d.lootWon))))
+					tinsert(export, (gsub(tostring(d.lootWon),",","")))
+					tinsert(export, addon:GetItemIDFromLink(d.lootWon))
+					tinsert(export, addon:GetItemStringFromLink(d.lootWon))
 					tinsert(export, (gsub(tostring(d.response),",","")))
 					tinsert(export, tostring(d.votes))
 					tinsert(export, tostring(d.class))
 					tinsert(export, (gsub(tostring(d.instance),",","")))
 					tinsert(export, (gsub(tostring(d.boss),",","")))
-					tinsert(export, (self:EscapeItemLink(gsub(tostring(d.itemReplaced1),",",""))))
-					tinsert(export, (self:EscapeItemLink(gsub(tostring(d.itemReplaced2),",",""))))
+					tinsert(export, (gsub(tostring(d.itemReplaced1), ",","")))
+					tinsert(export, (gsub(tostring(d.itemReplaced2), ",","")))
 					tinsert(export, tostring(d.responseID))
 					tinsert(export, tostring(d.isAwardReason))
 					ret = ret..table.concat(export, ",").."\r\n"
+					export = {}
+				end
+			end
+		end
+	end
+	return ret
+end
+
+-- TSV (Tab Seperated Values) for Excel
+-- Made specificly with excel in mind, but might work with other spreadsheets
+function LootHistory:ExportTSV()
+	-- Add headers
+	local export = {}
+	local ret = "player\tdate\ttime\titem\titemID\titemString\tresponse\tvotes\tclass\tinstance\tboss\tgear1\tgear2\tresponseID\tisAwardReason\r\n"
+	for player, v in pairs(lootDB) do
+		if selectedName and selectedName == player or not selectedName then
+			for i, d in pairs(v) do
+				if selectedDate and selectedDate == d.date or not selectedDate then
+					tinsert(export, tostring(player))
+					tinsert(export, tostring(d.date))
+					tinsert(export, tostring(d.time))
+					tinsert(export, "=HYPERLINK(\""..self:GetWowheadLinkFromItemLink(d.lootWon).."\",\""..tostring(d.lootWon).."\")")
+					tinsert(export, addon:GetItemIDFromLink(d.lootWon))
+					tinsert(export, addon:GetItemStringFromLink(d.lootWon))
+					tinsert(export, tostring(d.response))
+					tinsert(export, tostring(d.votes))
+					tinsert(export, tostring(d.class))
+					tinsert(export, tostring(d.instance))
+					tinsert(export, tostring(d.boss))
+					tinsert(export, "=HYPERLINK(\""..self:GetWowheadLinkFromItemLink(tostring(d.itemReplaced1)).."\",\""..tostring(d.itemReplaced1).."\")")
+					tinsert(export, "=HYPERLINK(\""..self:GetWowheadLinkFromItemLink(tostring(d.itemReplaced1)).."\",\""..tostring(d.itemReplaced2).."\")")
+					tinsert(export, tostring(d.responseID))
+					tinsert(export, tostring(d.isAwardReason))
+					ret = ret..table.concat(export, "\t").."\r\n"
 					export = {}
 				end
 			end
