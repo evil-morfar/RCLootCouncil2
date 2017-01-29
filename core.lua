@@ -605,7 +605,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 					local cached = true
 					for ses, v in ipairs(lootTable) do
 						local iName = GetItemInfo(v.link)
-						if not iName then self:Debug(v.lootSlot); cached = false end
+						if not iName then self:Debug(v.link); cached = false end
 					end
 					if not cached then
 						self:Debug("Some items wasn't cached, delaying loot by 1 sec")
