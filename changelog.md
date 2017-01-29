@@ -1,3 +1,5 @@
+### v2.2.3
+---
 * **History Export**
  * ItemStrings are now in a seperate column.
  * Added a tab delimited export with hyperlinks on items (#232).
