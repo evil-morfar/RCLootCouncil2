@@ -606,7 +606,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 					local cached = true
 					for ses, v in ipairs(lootTable) do
 						local iName = GetItemInfo(v.link)
-						if not iName then cached = false end
+						if not iName then self:Debug(v.lootSlot); cached = false end
 					end
 					if not cached then
 						self:Debug("Some items wasn't cached, delaying loot by 1 sec")
@@ -1151,6 +1151,7 @@ function RCLootCouncil:OnEvent(event, ...)
 		self:NewMLCheck()
 		-- Ask for data when we have done a /rl and have a ML
 		if not self.isMasterLooter and self.masterLooter and self.masterLooter ~= "" and player_relogged then
+			self:Debug("Player relog...")
 			self:ScheduleTimer("SendCommand", 2, self.masterLooter, "reconnect")
 			self:SendCommand(self.masterLooter, "playerInfo", self:GetPlayerInfo()) -- Also send out info, just in case
 		end

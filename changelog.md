@@ -4,6 +4,7 @@
 
 ##### Bugfixes
 + *CSV export now works as intended (#233)*
++ *Made ML/candidate communication more reliable (#235)*
 
 ### v2.2.2
 ---

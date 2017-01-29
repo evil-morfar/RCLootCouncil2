@@ -257,8 +257,8 @@ function RCLootCouncilML:Timer(type, ...)
 		addon:SendCommand("group", "offline_timer")
 
 	elseif type == "GroupUpdate" then
-		addon:SendCommand("group", "candidates", self.candidates)
 		addon:SendCommand("group", "council", db.council)
+		addon:SendCommand("group", "candidates", self.candidates)
 	end
 end
 
@@ -279,16 +279,20 @@ function RCLootCouncilML:OnCommReceived(prefix, serializedMsg, distri, sender)
 			elseif command == "council_request" then
 				addon:SendCommand("group", "council", db.council)
 
+			elseif command == "candidates_request" then
+				addon:SendCommand("group", "candidates", self.candidates)
+
 			elseif command == "reconnect" and not addon:UnitIsUnit(sender, addon.playerName) then -- Don't receive our own reconnect
 				-- Someone asks for mldb, council and candidates
 				addon:SendCommand(sender, "MLdb", addon.mldb)
 				addon:SendCommand(sender, "council", db.council)
 
 			--[[NOTE: For some reason this can silently fail, but adding a 1 sec timer on the rest of the calls seems to fix it
-				v2.0.1: With huge candidates/lootTable we get AceComm lostdatawarning "First", presumeably due to the 4kb ChatThrottleLib limit.
-				Bumping loottable to 4 secs is tested to work with 27 candidates + 10 items.]]
+				v2.0.1: 	With huge candidates/lootTable we get AceComm lostdatawarning "First", presumeably due to the 4kb ChatThrottleLib limit.
+							Bumping loottable to 4 secs is tested to work with 27 candidates + 10 items.
+				v2.2.3: 	Got a ticket where canidates wasn't received. Bumped to 2 sec and added extra checks for candidates.]]
 
-				addon:ScheduleTimer("SendCommand", 1, sender, "candidates", self.candidates)
+				addon:ScheduleTimer("SendCommand", 2, sender, "candidates", self.candidates)
 				if self.running then -- Resend lootTable
 					addon:ScheduleTimer("SendCommand", 4, sender, "lootTable", self.lootTable)
 				end

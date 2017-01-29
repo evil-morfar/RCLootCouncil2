@@ -5,7 +5,7 @@
 --		Will only show certain aspects depending on addon.isMasterLooter, addon.isCouncil and addon.mldb.observe
 
 local addon = LibStub("AceAddon-3.0"):GetAddon("RCLootCouncil")
-RCVotingFrame = addon:NewModule("RCVotingFrame", "AceComm-3.0")
+RCVotingFrame = addon:NewModule("RCVotingFrame", "AceComm-3.0", "AceTimer-3.0")
 local LibDialog = LibStub("LibDialog-1.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 
@@ -62,6 +62,8 @@ function RCVotingFrame:OnEnable()
 	active = true
 	moreInfo = db.modules["RCVotingFrame"].moreInfo
 	self.frame = self:GetFrame()
+	self:ScheduleTimer("CandidateCheck", 20)
+	addon:Debug("RCVotingFrame", "enabled")
 end
 
 function RCVotingFrame:OnDisable() -- We never really call this
@@ -94,6 +96,14 @@ function RCVotingFrame:EndSession(hide)
 	active = false -- The session has ended, so deactivate
 	self:Update()
 	if hide then self:Hide() end -- Hide if need be
+end
+
+function RCVotingFrame:CandidateCheck()
+	if #candidates == 0 and addon.masterLooter then -- Not received
+		addon:DebugLog("CandidateCheck", "failed")
+		addon:SendCommand(addon.masterLooter, "candidates_request")
+		self:ScheduleTimer("CandidateCheck", 20) -- check again in 20
+	end
 end
 
 -- Removes a specific entry from the voting frame's columns
