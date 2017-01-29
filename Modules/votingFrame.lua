@@ -99,7 +99,7 @@ function RCVotingFrame:EndSession(hide)
 end
 
 function RCVotingFrame:CandidateCheck()
-	if #candidates == 0 and addon.masterLooter then -- Not received
+	if not candidates[addon.playerName] and addon.masterLooter then -- If our own name isn't there, we assume it's not received
 		addon:DebugLog("CandidateCheck", "failed")
 		addon:SendCommand(addon.masterLooter, "candidates_request")
 		self:ScheduleTimer("CandidateCheck", 20) -- check again in 20
