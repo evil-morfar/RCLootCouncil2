@@ -2,6 +2,9 @@
  * ItemStrings are now in a seperate column.
  * Added a tab delimited export with hyperlinks on items (#232).
 
+
+* Allowed raid groups less than 5 people (#236).
+
 ##### Bugfixes
 + *CSV export now works as intended (#233)*
 + *Made ML/candidate communication more reliable (#235)*

@@ -532,10 +532,9 @@ function RCLootCouncil:SendCommand(target, command, ...)
 	local toSend = self:Serialize(command, {...})
 
 	if target == "group" then
-		local num = GetNumGroupMembers()
-		if num > 5 then -- Raid
+		if IsInRaid() then -- Raid
 			self:SendCommMessage("RCLootCouncil", toSend, "RAID")
-		elseif num > 0 then -- Party
+		elseif IsInGroup() then -- Party
 			self:SendCommMessage("RCLootCouncil", toSend, "PARTY")
 		else--if self.testMode then -- Alone (testing)
 			self:SendCommMessage("RCLootCouncil", toSend, "WHISPER", self.playerName)
