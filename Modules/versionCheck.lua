@@ -84,7 +84,8 @@ end
 
 function RCVersionCheck:AddEntry(name, class, guildRank, version, tVersion, modules)
 	-- We need to be careful with naming conventions just as in RCLootCouncil:UnitName()
-	name = name:lower():gsub("^%l", string.upper)
+	--name = name:lower():gsub("^%l", string.upper)
+	name = addon:UnitName(name)
 	local vVal = version
 	if tVersion then vVal = version.."-"..tVersion end
 	for row, v in ipairs(self.frame.rows) do

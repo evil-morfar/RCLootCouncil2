@@ -8,6 +8,7 @@
 ##### Bugfixes
 + *CSV export now works as intended (#233)*
 + *Made ML/candidate communication more reliable (#235)*
++ *The Version Checker will now display the realm part of a crossrealm players' name correctly.*
 
 ### v2.2.2
 ---
