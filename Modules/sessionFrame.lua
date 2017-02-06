@@ -22,6 +22,7 @@ function RCSessionFrame:OnInitialize()
 end
 
 function RCSessionFrame:OnEnable()
+	addon:Debug("RCSessionFrame", "enabled")
 	ml = addon:GetActiveModule("masterlooter")
 end
 
