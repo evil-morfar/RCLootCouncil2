@@ -775,7 +775,7 @@ function LootHistory:ExportTSV()
 					tinsert(export, tostring(d.instance))
 					tinsert(export, tostring(d.boss))
 					tinsert(export, "=HYPERLINK(\""..self:GetWowheadLinkFromItemLink(tostring(d.itemReplaced1)).."\",\""..tostring(d.itemReplaced1).."\")")
-					tinsert(export, "=HYPERLINK(\""..self:GetWowheadLinkFromItemLink(tostring(d.itemReplaced1)).."\",\""..tostring(d.itemReplaced2).."\")")
+					tinsert(export, "=HYPERLINK(\""..self:GetWowheadLinkFromItemLink(tostring(d.itemReplaced2)).."\",\""..tostring(d.itemReplaced2).."\")")
 					tinsert(export, tostring(d.responseID))
 					tinsert(export, tostring(d.isAwardReason))
 					ret = ret..table.concat(export, "\t").."\r\n"

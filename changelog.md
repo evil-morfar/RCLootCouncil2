@@ -1,3 +1,7 @@
+##### Bugfixes
++ *Links for gear2 is now properly generated when using TSV export.* 
+
+
 ### v2.2.3
 ---
 * **History Export**
