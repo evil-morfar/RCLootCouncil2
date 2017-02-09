@@ -9,6 +9,7 @@ local ST = LibStub("ScrollingTable")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 
 local GuildRankSort
+local guildRanks = {}
 
 function RCVersionCheck:OnInitialize()
 	-- Initialize scrollCols on self so others can change it
@@ -24,6 +25,7 @@ function RCVersionCheck:OnEnable()
 	self.frame = self:GetFrame()
 	self:RegisterComm("RCLootCouncil")
 	self:Show()
+	guildRanks = addon:GetGuildRanks()
 end
 
 function RCVersionCheck:OnDisable()
