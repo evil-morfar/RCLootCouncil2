@@ -24,13 +24,13 @@ function LootHistory:OnInitialize()
 	self.exportSelection = "lua"
 	-- Pointer to export functions. Expected to return a string containing the export
 	self.exports = {
-		lua = { func = self.ExportLua, 			name = "Lua",					tip = L["Raw lua output. Doesn't work well with date selection."]},
-		csv = { func = self.ExportCSV,			name = "CSV",					tip = L["Standard .csv output."]},
-		tsv = {func = self.ExportTSV,				name = "TSV (Excel)",		tip = "A tab delimited output for Excel. Might work with outher spreadsheets."},
-		bbcode = { func = self.ExportBBCode,	name = "BBCode", 				tip = L["Simple BBCode output."]},
-		bbcodeSmf = {func = self.ExportBBCodeSMF, name = "BBCode SMF",		tip = L["BBCode export, tailored for SMF."],},
-		eqxml = { func = self.ExportEQXML,		name = "EQdkp-Plus XML",	tip = L["EQdkp-Plus XML output, tailored for Enjin import."]},
-		player = { func = self.PlayerExport,	name = "Player Export",		tip = "A format to copy/paste to another player."},
+		lua = 		{func = self.ExportLua, 		name = "Lua",					tip = L["Raw lua output. Doesn't work well with date selection."]},
+		csv = 		{func = self.ExportCSV,			name = "CSV",					tip = L["Standard .csv output."]},
+		tsv = 		{func = self.ExportTSV,			name = "TSV (Excel)",		tip = L["A tab delimited output for Excel. Might work with outher spreadsheets."]},
+		bbcode = 	{func = self.ExportBBCode,		name = "BBCode", 				tip = L["Simple BBCode output."]},
+		bbcodeSmf = {func = self.ExportBBCodeSMF, name = "BBCode SMF",			tip = L["BBCode export, tailored for SMF."],},
+		eqxml = 		{func = self.ExportEQXML,		name = "EQdkp-Plus XML",	tip = L["EQdkp-Plus XML output, tailored for Enjin import."]},
+		player = 	{func = self.PlayerExport,		name = "Player Export",		tip = L["A format to copy/paste to another player."]},
 		--html = self.ExportHTML
 	}
 	scrollCols = {

@@ -11,6 +11,8 @@ local L = LibStub("AceLocale-3.0"):NewLocale("RCLootCouncil", "enUS", true, debu
 if not L then return end
 
 L["A new session has begun, type '/rc open' to open the voting frame."] = true
+L["A format to copy/paste to another player."] = true
+L["A tab delimited output for Excel. Might work with outher spreadsheets."] = true
 L["Append realm names"] = true
 L[" is not active in this raid."] = true
 L["Now handles looting"] = true
