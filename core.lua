@@ -1371,7 +1371,7 @@ function RCLootCouncil:DecodeItemLink(itemLink)
 	 upgradeTypeID, instanceDifficultyID, numBonuses, affixes = string.split(":", itemLink, 15)
 
 	 -- clean it up
-    local color = string.match(linkType, "^c?f?f?(%x*)")
+    local color = string.match(linkType, "|?c?f?f?(%x*)")
     linkType = string.gsub(linkType, "|?c?f?f?(%x*)|?H?", "")
     itemID = tonumber(itemID) or 0
     enchantID = tonumber(enchantID) or 0
