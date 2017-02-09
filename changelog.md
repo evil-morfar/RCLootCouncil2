@@ -1,5 +1,6 @@
 ##### Bugfixes
-+ *Links for gear2 is now properly generated when using TSV export.* 
++ *Links for gear2 is now properly generated when using TSV export.*
++ *Items will no longer be added twice to the session setup if you open the ML loot twice before starting the session (#237).*
 
 
 ### v2.2.3

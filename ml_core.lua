@@ -348,6 +348,7 @@ function RCLootCouncilML:LootOpened()
 					end
 				end
 			else
+				self.lootTable = {} -- Clear it just in case it was populated.
 				if db.altClickLooting then self:ScheduleTimer("HookLootButton", 0.5, i) end -- Delay lootbutton hooking to ensure other addons have had time to build their frames
 				local _, _, quantity, quality = GetLootSlotInfo(i)
 				if self:ShouldAutoAward(item, quality) and quantity > 0 then
