@@ -63,6 +63,7 @@ function RCVotingFrame:OnEnable()
 	moreInfo = db.modules["RCVotingFrame"].moreInfo
 	self.frame = self:GetFrame()
 	self:ScheduleTimer("CandidateCheck", 20)
+	guildRanks = addon:GetGuildRanks()
 	addon:Debug("RCVotingFrame", "enabled")
 end
 
@@ -180,7 +181,6 @@ function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
 				else
 					addon:Print(L["A new session has begun, type '/rc open' to open the voting frame."])
 				end
-				guildRanks = addon:GetGuildRanks() -- Just update it on every session
 
 			elseif command == "response" then
 				local session, name, t = unpack(data)

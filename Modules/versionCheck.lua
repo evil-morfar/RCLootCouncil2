@@ -8,12 +8,14 @@ local RCVersionCheck = addon:NewModule("RCVersionCheck", "AceTimer-3.0", "AceCom
 local ST = LibStub("ScrollingTable")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 
+local GuildRankSort
+
 function RCVersionCheck:OnInitialize()
 	-- Initialize scrollCols on self so others can change it
 	self.scrollCols = {
 		{ name = "",				width = 20, sortnext = 2,},
 		{ name = L["Name"],		width = 150, },
-		{ name = L["Rank"],		width = 90, },
+		{ name = L["Rank"],		width = 90, comparesort = GuildRankSort},
 		{ name = L["Version"],	width = 140, align = "RIGHT" },
 	}
 end
@@ -96,12 +98,14 @@ function RCVersionCheck:AddEntry(name, class, guildRank, version, tVersion, modu
 				{ value = guildRank,			color = self:GetVersionColor(version,tVersion)},
 				{ value = vVal ,				color = self:GetVersionColor(version,tVersion), DoCellUpdate = self.SetCellModules, args = modules},
 			}
+			v.rank = guildRank
 			return self:Update()
 		end
 	end
 	-- They haven't been added yet, so do it
 	tinsert(self.frame.rows,
 	{	name = name,
+		rank = guildRank,
 		cols = {
 			{ value = "",					DoCellUpdate = addon.SetCellClassIcon, args = {class}, },
 			{ value = addon.Ambiguate(name),color = addon:GetClassColor(class), },
@@ -165,4 +169,32 @@ function RCVersionCheck.SetCellModules(rowFrame, f, data, cols, row, realrow, co
 		end)
 	end
 	table.DoCellUpdate(rowFrame, f, data, cols, row, realrow, column, fShow, table)
+end
+
+function GuildRankSort(table, rowa, rowb, sortbycol)
+	local column = table.cols[sortbycol]
+	local a, b = table:GetRow(rowa), table:GetRow(rowb);
+	-- Extract the rank index from the name, fallback to 100 if not found
+	a = guildRanks[a.rank] or 100
+	b = guildRanks[b.rank] or 100
+	if a == b then
+		if column.sortnext then
+			local nextcol = table.cols[column.sortnext];
+			if not(nextcol.sort) then
+				if nextcol.comparesort then
+					return nextcol.comparesort(table, rowa, rowb, column.sortnext);
+				else
+					return table:CompareSort(rowa, rowb, column.sortnext);
+				end
+			end
+		end
+		return false
+	else
+		local direction = column.sort or column.defaultsort or "asc";
+		if direction:lower() == "asc" then
+			return a > b;
+		else
+			return a < b;
+		end
+	end
 end
