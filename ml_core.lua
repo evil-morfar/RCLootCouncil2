@@ -350,6 +350,9 @@ function RCLootCouncilML:LootOpened()
 				end
 			else
 				if db.altClickLooting then self:ScheduleTimer("HookLootButton", 0.5, i) end -- Delay lootbutton hooking to ensure other addons have had time to build their frames
+				-- We might already have the session frame running, in which case we shouldn't add the items again
+				if addon:GetActiveModule("sessionframe"):IsRunning() then return end
+
 				local _, _, quantity, quality = GetLootSlotInfo(i)
 				if self:ShouldAutoAward(item, quality) and quantity > 0 then
 					self:AutoAward(i, item, quality, db.autoAwardTo, db.autoAwardReason, addon.target)
