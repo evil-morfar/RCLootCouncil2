@@ -330,6 +330,7 @@ function RCLootCouncilML:LootOpened()
 	if addon.isMasterLooter and GetNumLootItems() > 0 then
 		addon.target = GetUnitName("target") or L["Unknown/Chest"] -- capture the boss name
 		local updatedLootSlot = {}
+		self.lootTable = {} -- Clear it just in case it was populated.
 		for i = 1, GetNumLootItems() do
 			local item = GetLootSlotLink(i)
 			-- We have reopened the loot frame, so check if we should update .lootSlot
@@ -348,7 +349,6 @@ function RCLootCouncilML:LootOpened()
 					end
 				end
 			else
-				self.lootTable = {} -- Clear it just in case it was populated.
 				if db.altClickLooting then self:ScheduleTimer("HookLootButton", 0.5, i) end -- Delay lootbutton hooking to ensure other addons have had time to build their frames
 				local _, _, quantity, quality = GetLootSlotInfo(i)
 				if self:ShouldAutoAward(item, quality) and quantity > 0 then
