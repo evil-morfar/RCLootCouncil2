@@ -1,7 +1,7 @@
 ### v2.2.4
 ---
 * Added Echo of Time (Nighthold quest item) to the ignore list.
-* Added proper guild rank sorting the Version Checker.
+* Added proper guild rank sorting in the Version Checker.
 
 ##### Bugfixes
 + *Links for gear2 is now properly generated when using TSV export.*
