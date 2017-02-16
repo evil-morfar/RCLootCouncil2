@@ -1,3 +1,9 @@
+### v2.2.5
+---
+##### Bugfixes
++ *Reverted a change from the last update that caused some issues.*
+
+
 ### v2.2.4
 ---
 * Added Echo of Time (Nighthold quest item) to the ignore list.
@@ -5,7 +11,7 @@
 
 ##### Bugfixes
 + *Links for gear2 is now properly generated when using TSV export.*
-+ *Items will no longer be added multiple times to the session setup if you reopen the ML loot before starting the session (#237).*
++ *~~Items will no longer be added multiple times to the session setup if you reopen the ML loot before starting the session (#237).~~*
 + *The Version Checker will no longer fail to show correct modules after manipulating the list.*
 
 

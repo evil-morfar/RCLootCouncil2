@@ -330,7 +330,6 @@ function RCLootCouncilML:LootOpened()
 	if addon.isMasterLooter and GetNumLootItems() > 0 then
 		addon.target = GetUnitName("target") or L["Unknown/Chest"] -- capture the boss name
 		local updatedLootSlot = {}
-		self.lootTable = {} -- Clear it just in case it was populated.
 		for i = 1, GetNumLootItems() do
 			local item = GetLootSlotLink(i)
 			-- We have reopened the loot frame, so check if we should update .lootSlot
