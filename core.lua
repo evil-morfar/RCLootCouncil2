@@ -5,7 +5,7 @@ core.lua	Contains core elements of the addon
 TODOs/Notes
 	Things marked with "todo"
 		- IDEA add an observer/council string to show players their role?
-		- The 4'th cell in @line81 in versionCheck should not be static
+		- Item subtype in history exports
 --------------------------------
 CHANGELOG
 	-- SEE CHANGELOG.TXT
@@ -1401,7 +1401,7 @@ function RCLootCouncil:DecodeItemLink(itemLink)
 	    upgradeID = tonumber(upgradeID) or 0
 	 end
 
-    return color, itemType, itemID, enchantID, gemID1, gemID2, gemID3, gemID4, suffixID, uniqueID, linkLevel,
+    return color, linktype, itemID, enchantID, gemID1, gemID2, gemID3, gemID4, suffixID, uniqueID, linkLevel,
 	 		specializationID, upgradeTypeID, upgradeID, instanceDifficultyID, numBonuses, bonusIDs
 end
 
