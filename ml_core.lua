@@ -327,6 +327,7 @@ function RCLootCouncilML:OnEvent(event, ...)
 end
 
 function RCLootCouncilML:LootOpened()
+	local sessionframe = addon:GetActiveModule("sessionframe")
 	if addon.isMasterLooter and GetNumLootItems() > 0 then
 		addon.target = GetUnitName("target") or L["Unknown/Chest"] -- capture the boss name
 		local updatedLootSlot = {}
@@ -350,7 +351,7 @@ function RCLootCouncilML:LootOpened()
 			else
 				if db.altClickLooting then self:ScheduleTimer("HookLootButton", 0.5, i) end -- Delay lootbutton hooking to ensure other addons have had time to build their frames
 				-- We might already have the session frame running, in which case we shouldn't add the items again
-				if addon:GetActiveModule("sessionframe"):IsRunning() then return end
+				if sessionframe:IsRunning() then return end
 
 				local _, _, quantity, quality = GetLootSlotInfo(i)
 				if self:ShouldAutoAward(item, quality) and quantity > 0 then

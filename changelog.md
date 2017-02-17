@@ -1,7 +1,7 @@
 ### v2.2.5
 ---
 ##### Bugfixes
-+ *Reverted a change from the last update that caused some issues.*
++ *The fix to ticket #237 caused another issue under certain circumstances - refixed the fix.*
 
 
 ### v2.2.4
