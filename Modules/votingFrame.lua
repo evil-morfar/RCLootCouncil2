@@ -46,7 +46,7 @@ function RCVotingFrame:OnInitialize()
 	}
 	-- The actual table being worked on, new entries should be added to this table "tinsert(RCVotingFrame.scrollCols, data)"
 	-- If you want to add or remove columns, you should do so on your OnInitialize. See RCVotingFrame:RemoveColumn() for removal.
-	self.scrollCols = defaultScrollTableData
+	self.scrollCols = {unpack(defaultScrollTableData)}
 
 	menuFrame = CreateFrame("Frame", "RCLootCouncil_VotingFrame_RightclickMenu", UIParent, "Lib_UIDropDownMenuTemplate")
 	filterMenu = CreateFrame("Frame", "RCLootCouncil_VotingFrame_FilterMenu", UIParent, "Lib_UIDropDownMenuTemplate")
@@ -898,7 +898,7 @@ function ResponseSort(table, rowa, rowb, sortbycol)
 	if a == b then
 		if column.sortnext then
 			local nextcol = table.cols[column.sortnext];
-			if not(nextcol.sort) then
+			if nextcol and not(nextcol.sort) then
 				if nextcol.comparesort then
 					return nextcol.comparesort(table, rowa, rowb, column.sortnext);
 				else
@@ -926,7 +926,7 @@ function GuildRankSort(table, rowa, rowb, sortbycol)
 	if a == b then
 		if column.sortnext then
 			local nextcol = table.cols[column.sortnext];
-			if not(nextcol.sort) then
+			if nextcol and not(nextcol.sort) then
 				if nextcol.comparesort then
 					return nextcol.comparesort(table, rowa, rowb, column.sortnext);
 				else
