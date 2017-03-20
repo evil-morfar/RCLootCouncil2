@@ -56,6 +56,7 @@ end
 function RCLootCouncilML:AddItem(item, bagged, slotIndex, index)
 	addon:DebugLog("ML:AddItem", item, bagged, slotIndex, index)
 	local name, link, rarity, ilvl, iMinLevel, type, subType, iStackCount, equipLoc, texture = GetItemInfo(item)
+	local isTier = type(RCTokenClasses[addon:GetItemIDFromLink(link)]) == "table"
 	self.lootTable[index or #self.lootTable + 1] = {
 		["bagged"]		= bagged,
 		["lootSlot"]	= slotIndex,
@@ -68,6 +69,7 @@ function RCLootCouncilML:AddItem(item, bagged, slotIndex, index)
 		["equipLoc"]	= equipLoc,
 		["texture"]		= texture,
 		["boe"]			= addon:IsItemBoE(link),
+		["isTier"]		= isTier,
 	}
 	-- Item isn't properly loaded, so update the data in 1 sec (Should only happen with /rc test)
 	if not name then
@@ -206,11 +208,23 @@ function RCLootCouncilML:BuildMLdb()
 			changedResponses[i] = db.responses[i]
 		end
 	end
+	changedResponses.tier = {}
+	for k,v in pairs(db.responses.tier) do
+		if v.text ~= addon.defaults.profile.responses.tier[k].text or unpack(v.color) ~= unpack(addon.defaults.profile.responses.tier[k].color) then
+			changedResponses.tier[k] = v
+		end
+	end
 	-- Extract changed buttons
 	local changedButtons = {};
 	for i = 1, db.numButtons do
 		if db.buttons[i].text ~= addon.defaults.profile.buttons[i].text then
 			changedButtons[i] = {text = db.buttons[i].text}
+		end
+	end
+	changedTierButtons = {}
+	for i = 1, db.tierNumButtons do
+		if db.tierButtons[i].text ~= addon.defaults.profile.tierButtons[i].text then
+			changedTierButtons[i] = {text = db.buttons[i].text}
 		end
 	end
 	-- Extract changed award reasons
@@ -230,6 +244,7 @@ function RCLootCouncilML:BuildMLdb()
 		observe			= db.observe,
 	--	awardReasons	= changedAwardReasons,
 		buttons			= changedButtons,
+		tierButtons 	= changedTierButtons,
 		responses		= changedResponses,
 		timeout			= db.timeout,
 	}

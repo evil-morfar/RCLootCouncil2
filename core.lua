@@ -6,6 +6,11 @@ TODOs/Notes
 	Things marked with "todo"
 		- IDEA add an observer/council string to show players their role?
 		- The 4'th cell in @line81 in versionCheck should not be static
+
+		- TIER Buttons:
+			Everything but the lootFrame is implemented and untested.
+			We must likely need to revise lootFrame a lot and create new button text getters for it to work.
+			Not to mention responses for votingFrame.
 --------------------------------
 CHANGELOG
 	-- SEE CHANGELOG.TXT
@@ -45,7 +50,7 @@ local lootTable = {}
 function RCLootCouncil:OnInitialize()
 	--IDEA Consider if we want everything on self, or just whatever modules could need.
   	self.version = GetAddOnMetadata("RCLootCouncil", "Version")
-	self.nnp = false 
+	self.nnp = false
 	self.debug = false
 	self.tVersion = nil -- String or nil. Indicates test version, which alters stuff like version check. Is appended to 'version', i.e. "version-tVersion" (max 10 letters for stupid security)
 
@@ -77,6 +82,12 @@ function RCLootCouncil:OnInitialize()
 		--[[1]]			  { color = {0,1,0,1},				sort = 1,		text = L["Mainspec/Need"],},
 		--[[2]]			  { color = {1,0.5,0,1},			sort = 2,		text = L["Offspec/Greed"],	},
 		--[[3]]			  { color = {0,0.7,0.7,1},			sort = 3,		text = L["Minor Upgrade"],},
+		tier = {
+			["4PIECE"]		= { color = {0,1,0,1},				sort = 1,		text = "4th Tier Piece",},
+			["2PIECE"]		= { color = {0.1,1,0.1,1},			sort = 2,		text = "2nd Tier Piece",},
+			OTHERPIECE		= { color = {1,0.5,0,1},			sort = 3,		text = "Tier Piece that doesn't complete a set",},
+			TIERUPGRADE 	= { color = {0.2,0.2,1,1},			sort = 4,		text = "Upgrade to existing tier/random upgrade",},
+		},
 	}
 	self.roleTable = {
 		TANK =		L["Tank"],
@@ -214,6 +225,13 @@ function RCLootCouncil:OnInitialize()
 				{	text = L["Greed"],				whisperKey = L["whisperKey_greed"],},	-- 2
 				{	text = L["Minor Upgrade"],		whisperKey = L["whisperKey_minor"],},	-- 3
 			},
+			tierNumButtons = 4,
+			tierButtons = {
+				{	text = "4 Piece",					whisperKey = "4, 4tier, 4piece"},
+				{	text = "2 Piece",					whisperKey = "2, 2tier, 2piece"},
+				{	text = "Other piece",			whisperKey = "other, tier, piece"},
+				{	text = "Upgrade",					whisperKey = "upgrade, up"},
+			},
 			numMoreInfoButtons = 1,
 			maxAwardReasons = 10,
 			numAwardReasons = 3,
@@ -247,6 +265,12 @@ function RCLootCouncil:OnInitialize()
 			text = L["Button"].." "..i,
 			whisperKey = ""..i,
 		})
+		if i > #self.defaults.profile.tierButtons then
+			tinsert(self.defaults.profile.tierButtons, {
+				text = "tierBut "..i,
+				whisperKey = "tier"..i,
+			})
+		end
 	end
 	for i = self.defaults.profile.numButtons+1, self.defaults.profile.maxButtons do
 		tinsert(self.defaults.profile.responses, {
@@ -254,6 +278,13 @@ function RCLootCouncil:OnInitialize()
 			sort = i,
 			text = L["Button"]..i,
 		})
+		if i > #self.defaults.profile.tierButtons then
+			tinsert(self.defaults.profile.responses.tier, {
+				color = {0.7, 0.7,0.7,1},
+				sort = i,
+				text = "tier "..i,
+			})
+		end
 	end
 	-- create the other AwardReasons
 	for i = #self.defaults.profile.awardReasons+1, self.defaults.profile.maxAwardReasons do

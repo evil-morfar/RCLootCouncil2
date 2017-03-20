@@ -34,6 +34,7 @@ function LootFrame:Start(table)
 				equipLoc = table[k].equipLoc,
 				timeLeft = addon.mldb.timeout,
 				subType = table[k].subType,
+				isTier = table[k].isTier,
 			}
 		end
 	end
@@ -54,6 +55,7 @@ function LootFrame:ReRoll(table)
 			equipLoc = v.equipLoc,
 			timeLeft = addon.mldb.timeout,
 			subType = table[k].subType,
+			isTier = v.isTier,
 		})
 	end
 	self:Show()
