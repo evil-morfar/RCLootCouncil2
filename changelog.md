@@ -1,4 +1,4 @@
-### v2.2.5
+### v2.2.6
 ---
 * Councilmen reconnecting will now receive the full session data instead of just the initial state.
 
