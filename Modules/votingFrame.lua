@@ -200,7 +200,7 @@ function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
 					addon:Debug("Non-ML", sender, "sent rolls!")
 				end
 
-			elseif command == "reconnectData" then
+			elseif command == "reconnectData" and addon:UnitIsUnit(sender, addon.masterLooter) then
 				-- We assume we always receive a regular lootTable command first
 				-- All we need to do is updating the loot table and figure out if we've voted previously
 				lootTable = unpack(data)
