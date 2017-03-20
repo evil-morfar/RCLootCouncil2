@@ -47,6 +47,10 @@ function RCSessionFrame:Hide()
 	self.frame:Hide()
 end
 
+function RCSessionFrame:IsRunning()
+	return self.frame and self.frame:IsVisible()
+end
+
 -- Data should be unmodified lootTable from ml_core
 function RCSessionFrame:ExtractData(data)
 	-- We could get an empty table if we haven't got GetItemInfo() from ml_core, so make sure we can handle it

@@ -338,10 +338,10 @@ function RCLootCouncilML:OnEvent(event, ...)
 end
 
 function RCLootCouncilML:LootOpened()
+	local sessionframe = addon:GetActiveModule("sessionframe")
 	if addon.isMasterLooter and GetNumLootItems() > 0 then
 		addon.target = GetUnitName("target") or L["Unknown/Chest"] -- capture the boss name
 		local updatedLootSlot = {}
-		self.lootTable = {} -- Clear it just in case it was populated.
 		for i = 1, GetNumLootItems() do
 			local item = GetLootSlotLink(i)
 			-- We have reopened the loot frame, so check if we should update .lootSlot
@@ -361,15 +361,19 @@ function RCLootCouncilML:LootOpened()
 				end
 			else
 				if db.altClickLooting then self:ScheduleTimer("HookLootButton", 0.5, i) end -- Delay lootbutton hooking to ensure other addons have had time to build their frames
-				local _, _, quantity, quality = GetLootSlotInfo(i)
-				if self:ShouldAutoAward(item, quality) and quantity > 0 then
-					self:AutoAward(i, item, quality, db.autoAwardTo, db.autoAwardReason, addon.target)
+				-- We might already have the session frame running, in which case we shouldn't add the items again
+				if not sessionframe:IsRunning() then
 
-				elseif self:CanWeLootItem(item, quality) and quantity > 0 then -- check if our options allows us to loot it
-					self:AddItem(item, false, i)
+					local _, _, quantity, quality = GetLootSlotInfo(i)
+					if self:ShouldAutoAward(item, quality) and quantity > 0 then
+						self:AutoAward(i, item, quality, db.autoAwardTo, db.autoAwardReason, addon.target)
 
-				elseif quantity == 0 then -- it's coin, just loot it
-					LootSlot(i)
+					elseif self:CanWeLootItem(item, quality) and quantity > 0 then -- check if our options allows us to loot it
+						self:AddItem(item, false, i)
+
+					elseif quantity == 0 then -- it's coin, just loot it
+						LootSlot(i)
+					end
 				end
 			end
 		end
