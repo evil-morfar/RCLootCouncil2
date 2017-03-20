@@ -199,6 +199,22 @@ function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
 				else
 					addon:Debug("Non-ML", sender, "sent rolls!")
 				end
+
+			elseif command == "reconnectData" then
+				-- We assume we always receive a regular lootTable command first
+				-- All we need to do is updating the loot table and figure out if we've voted previously
+				lootTable = unpack(data)
+				for _, data in ipairs(lootTable) do
+					for _, cand in pairs(data.candidates) do
+						for _, voter in ipairs(cand.voters) do
+							if addon:UnitIsUnit(voter, "player") then -- WE've voted
+								data.haveVoted = true
+								cand.haveVoted = true
+							end
+						end
+					end
+				end
+				self:Update()
 			end
 		end
 	end
@@ -221,6 +237,10 @@ function RCVotingFrame:GetCandidateData(session, candidate, data)
 	local ok, arg = pcall(Get, session, candidate, data)
 	if not ok then addon:Debug("Error in 'GetCandidateData':", arg, session, candidate, data)
 	else return arg end
+end
+
+function RCVotingFrame:GetLootTable()
+	return lootTable
 end
 
 function RCVotingFrame:Setup(table)

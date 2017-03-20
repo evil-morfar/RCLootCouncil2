@@ -1,3 +1,5 @@
+* Councilmen reconnecting will now receive the full session data instead of just the initial state.
+
 ### v2.2.4
 ---
 * Added Echo of Time (Nighthold quest item) to the ignore list.

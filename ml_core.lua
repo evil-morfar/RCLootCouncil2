@@ -295,6 +295,17 @@ function RCLootCouncilML:OnCommReceived(prefix, serializedMsg, distri, sender)
 				addon:ScheduleTimer("SendCommand", 2, sender, "candidates", self.candidates)
 				if self.running then -- Resend lootTable
 					addon:ScheduleTimer("SendCommand", 4, sender, "lootTable", self.lootTable)
+					-- v2.2.6 REVIEW For backwards compability we're just sending votingFrame's lootTable
+					-- This is quite redundant and should be removed in the future
+					local table = addon:GetActiveModule("votingframe"):GetLootTable()
+					-- Remove our own voting data if any
+					for ses, v in ipairs(table) do
+						v.haveVoted = false
+						for _, d in pairs(v.candidates) do
+							d.haveVoted = false
+						end
+					end
+					addon:ScheduleTimer("SendCommand", 5, sender, "reconnectData", table)
 				end
 				addon:Debug("Responded to reconnect from", sender)
 			end
