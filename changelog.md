@@ -2,6 +2,9 @@
 ---
 * Councilmen reconnecting will now receive the full session data instead of just the initial state.
 
+##### Bugfixes
+ + *Fixed a bug that allowed modules to cause errors when changing columns (#249).*
+
 ### v2.2.5
 ---
 ##### Bugfixes
