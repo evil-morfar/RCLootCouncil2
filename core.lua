@@ -1766,6 +1766,7 @@ end
 --@debug@
 -- debug func
 function printtable( data, level )
+	if not data then return end
 	level = level or 0
 	local ident=strrep('     ', level)
 	if level>6 then return end

@@ -215,6 +215,7 @@ function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
 					end
 				end
 				self:Update()
+				self:UpdatePeopleToVote()
 			end
 		end
 	end
