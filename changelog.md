@@ -1,6 +1,7 @@
 ### v2.2.6
 ---
 * Councilmen reconnecting will now receive the full session data instead of just the initial state.
+* Added better boss name grabbing for the loot history.
 
 ##### Bugfixes
  + *Fixed a bug that allowed modules to cause errors when changing columns (#249).*

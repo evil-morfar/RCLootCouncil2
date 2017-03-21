@@ -844,6 +844,9 @@ function RCLootCouncil:EnterCombat()
 	 InterfaceOptionsFrameOkay:Click()
 	end)
 	self.inCombat = true
+	if self.isMasterLooter then -- Grab the target after 10 seconds and hope it's the boss. We might grab the correct one when looting if not.
+		self:ScheduleTimer(function() self.target = GetUnitName("target") end, 10)
+	end
 	if not db.minimizeInCombat then return end
 	for _,frame in ipairs(frames) do
 		if frame:IsVisible() and not frame.combatMinimized then -- only minimize for combat if it isn't already minimized

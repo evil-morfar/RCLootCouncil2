@@ -340,7 +340,12 @@ end
 function RCLootCouncilML:LootOpened()
 	local sessionframe = addon:GetActiveModule("sessionframe")
 	if addon.isMasterLooter and GetNumLootItems() > 0 then
-		addon.target = GetUnitName("target") or L["Unknown/Chest"] -- capture the boss name
+		if addon.target and addon.target ~= "" then -- Capture boss name
+			local target = GetUnitName("target") or L["Unknown/Chest"]
+			if not (UnitInRaid(target) or UnitInParty(target)) then
+				addon.target = target -- Make sure we can't target one of our raid members for this
+			end
+		end
 		local updatedLootSlot = {}
 		for i = 1, GetNumLootItems() do
 			local item = GetLootSlotLink(i)
