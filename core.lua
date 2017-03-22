@@ -313,11 +313,6 @@ function RCLootCouncil:OnEnable()
 		self:SendCommand("guild", "verTest", self.version, self.tVersion) -- send out a version check
 	end
 
-	if self.db.global.version and self.db.global.version < "2.1.1"
-		and self.db.global.localizedSubTypes.created then -- We need to reset subtype locales due to changes in v2.1.1
-		self.db.global.localizedSubTypes.created = false
-	end
-
 	-- For some reasons all frames are blank until ActivateSkin() is called, even though the values used
 	-- in the :CreateFrame() all :Prints as expected :o
 	self:ActivateSkin(db.currentSkin)
