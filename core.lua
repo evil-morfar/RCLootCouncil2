@@ -317,7 +317,12 @@ function RCLootCouncil:OnEnable()
 	-- in the :CreateFrame() all :Prints as expected :o
 	self:ActivateSkin(db.currentSkin)
 
-	self.db.global.version = self.version;
+	if self.db.global.version and self:VersionCompare(self.db.global.version, self.version) then -- We've upgraded
+		self.db.global.oldVersion = self.db.global.version
+		self.db.global.version = self.version
+	else -- Mostly for first time load
+		self.db.global.version = self.version;		
+	end
 	self.db.global.logMaxEntries = self.defaults.global.logMaxEntries -- reset it now for zzz
 
 	if self.tVersion then
