@@ -1,4 +1,4 @@
-### v2.2.6
+### v2.3.0
 ---
 * **Patch 7.2**
   * Added Tier 20 tokens
