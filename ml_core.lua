@@ -56,7 +56,8 @@ end
 function RCLootCouncilML:AddItem(item, bagged, slotIndex, index)
 	addon:DebugLog("ML:AddItem", item, bagged, slotIndex, index)
 	local name, link, rarity, ilvl, iMinLevel, type, subType, iStackCount, equipLoc, texture = GetItemInfo(item)
-	self.lootTable[index or #self.lootTable + 1] = {
+	local itemID = link and addon:GetItemIDFromLink(link)
+	self.lootTable[index or #self.lootTable + 1] = { -- We want to reserve the index even if we haven't fully loaded the item
 		["bagged"]		= bagged,
 		["lootSlot"]	= slotIndex,
 		["awarded"]		= false,
@@ -68,8 +69,10 @@ function RCLootCouncilML:AddItem(item, bagged, slotIndex, index)
 		["equipLoc"]	= equipLoc,
 		["texture"]		= texture,
 		["boe"]			= addon:IsItemBoE(link),
+		["relic"]		= itemID and IsArtifactRelicItem(itemID),
+		["token"]		= itemID and RCTokenTable[itemID], -- TODO: might need a type() == "string"
 	}
-	-- Item isn't properly loaded, so update the data in 1 sec (Should only happen with /rc test)
+		-- Item isn't properly loaded, so update the data in 1 sec (Should only happen with /rc test)
 	if not name then
 		self:ScheduleTimer("Timer", 1, "AddItem", item, bagged, slotIndex, index or #self.lootTable)
 		addon:Debug("Started timer:", "AddItem", "for", item)
@@ -604,7 +607,7 @@ function RCLootCouncilML:TrackAndLogLoot(name, item, response, boss, votes, item
 	if reason and not reason.log then return end -- Reason says don't log
 	if not (db.sendHistory or db.enableHistory) then return end -- No reason to do stuff when we won't use it
 	if addon.testMode and not addon.nnp then return end -- We shouldn't track testing awards.
-	local instanceName, _, _, difficultyName = GetInstanceInfo()
+	local instanceName, _, difficultyID, difficultyName, _,_,_,mapID, groupSize = GetInstanceInfo()
 	addon:Debug("ML:TrackAndLogLoot()")
 	history_table["lootWon"] 		= item
 	history_table["date"] 			= date("%d/%m/%y")
@@ -618,7 +621,10 @@ function RCLootCouncilML:TrackAndLogLoot(name, item, response, boss, votes, item
 	history_table["responseID"] 	= response or reason.sort - 400 										-- Changed in v2.0 (reason responseID was 0 pre v2.0)
 	history_table["color"]			= reason and reason.color or db.responses[response].color	-- New in v2.0
 	history_table["class"]			= self.candidates[name].class											-- New in v2.0
-	history_table["isAwardReason"] = reason and true or false											-- New in v2.0
+	history_table["isAwardReason"]= reason and true or false												-- New in v2.0
+	history_table["difficultyID"]	= difficultyID																-- New in v2.3+
+	history_table["mapID"]			= mapID																		-- New in v2.3+
+	history_table["groupSize"]		= groupSize																	-- New in v2.3+
 
 	if db.sendHistory then -- Send it, and let comms handle the logging
 		addon:SendCommand("group", "history", name, history_table)
@@ -773,7 +779,7 @@ LibDialog:Register("RCLOOTCOUNCIL_CONFIRM_AWARD", {
 				local item = RCLootCouncilML.lootTable[session].link -- Store it now as we wipe lootTable after Award()
 				local awarded = RCLootCouncilML:Award(session, player, response, reason)
 				if awarded then -- log it
-					RCLootCouncilML:TrackAndLogLoot(player, item, response, addon.target, votes, item1, item2, reason)
+					RCLootCouncilML:TrackAndLogLoot(player, item, response, addon.target, votes, item1, item2, reason, RCLootCouncilML.lootTable[session].token)
 				end
 				-- We need to delay the test mode disabling so comms have a chance to be send first!
 				if addon.testMode and RCLootCouncilML:HasAllItemsBeenAwarded() then RCLootCouncilML:EndSession() end

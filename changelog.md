@@ -1,3 +1,8 @@
+### v2.3.1
+---
+* **History**
+ * Now tracks group size and instanceMapIDs.
+
 ### v2.3.0
 ---
 * **Patch 7.2**

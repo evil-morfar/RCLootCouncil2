@@ -6,6 +6,12 @@ TODOs/Notes
 	Things marked with "todo"
 		- IDEA add an observer/council string to show players their role?
 		- Item subtype in history exports
+		- IDEA Have player's current gear sent with lootAck
+		- Use the new flags "relic" and "token" from the ML lootTable
+		- Use the new lootHistory flags in the lootHistory. http://wow.gamepedia.com/API_GetDifficultyInfo should be useful.
+			instanceMapIDs:
+				1520	The Emerald Nightmare Legion
+				1530	The Nighthold Legion
 --------------------------------
 CHANGELOG
 	-- SEE CHANGELOG.TXT
