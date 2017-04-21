@@ -63,21 +63,26 @@ local relics = {
 }
 
 -- Returns true if the player should autopass the given item
-function RCLootCouncil:AutoPassCheck(subType, equipLoc, link)
+function RCLootCouncil:AutoPassCheck(subType, equipLoc, link, isToken, isRelic)
 	if not tContains(autopassOverride, equipLoc) then
-		if equipLoc == "" and subType == self.db.global.localizedSubTypes["Artifact Relic"] then
-			local id = self:GetItemIDFromLink(link)
-         local type = select(3, C_ArtifactUI.GetRelicInfoByItemID(id))
-			self:DebugLog("RelicAutopassCheck", type, id)
-         -- If the type exists in the table, then the player can use it, so we need to negate it
-         return not tContains(relics[self.playerClass], type)
+		if isRelic or (equipLoc == "" and subType == self.db.global.localizedSubTypes["Artifact Relic"]) then
+			if isRelic then -- New in v2.3+
+				self:DebugLog("NewRelicAutopassCheck", link, isRelic)
+				return not tContains(relics[self.playerClass], isRelic)
+			else
+				local id = self:GetItemIDFromLink(link)
+	         local type = select(3, C_ArtifactUI.GetRelicInfoByItemID(id))
+				self:DebugLog("RelicAutopassCheck", type, id)
+	         -- If the type exists in the table, then the player can use it, so we need to negate it
+	         return not tContains(relics[self.playerClass], type)
+			end
 
 		elseif subType and autopassTable[self.db.global.localizedSubTypes[subType]] then
 			return tContains(autopassTable[self.db.global.localizedSubTypes[subType]], self.playerClass)
 		end
 		-- The item wasn't a type we check for, but it might be a token
 		local id = type(link) == "number" and link or self:GetItemIDFromLink(link) -- Convert to id if needed
-		if RCTokenClasses[id] then -- It's a token
+		if isToken or RCTokenClasses[id] then -- It's a token
 			return not tContains(RCTokenClasses[id], self.playerClass)
 		end
 	end

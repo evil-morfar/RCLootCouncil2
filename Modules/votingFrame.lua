@@ -349,7 +349,7 @@ function RCVotingFrame:SwitchSession(s)
 	elseif t.subType ~= "Miscellaneous" and t.subType ~= "Junk" then
 		if t.subType == addon.db.global.localizedSubTypes["Artifact Relic"] then
 			local id = addon:GetItemIDFromLink(t.link)
-         self.frame.itemType:SetText(select(3, C_ArtifactUI.GetRelicInfoByItemID(id)) or "".." "..t.subType or "")
+         self.frame.itemType:SetText((t.relic or select(3, C_ArtifactUI.GetRelicInfoByItemID(id))) or "".." "..t.subType or "")
 		else
 			self.frame.itemType:SetText(tostring(t.subType))
 		end

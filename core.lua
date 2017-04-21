@@ -640,7 +640,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 					if db.autoPass then -- Do autopassing
 						for ses, v in ipairs(lootTable) do
 							if (v.boe and db.autoPassBoE) or not v.boe then
-								if self:AutoPassCheck(v.subType, v.equipLoc, v.link) then
+								if self:AutoPassCheck(v.subType, v.equipLoc, v.link, v.token, v.relic) then
 									self:Debug("Autopassed on: ", v.link)
 									if not db.silentAutoPass then self:Print(format(L["Autopassed on 'item'"], v.link)) end
 									self:SendCommand("group", "response", self:CreateResponse(ses, v.link, v.ilvl, "AUTOPASS", v.equipLoc, nil, v.subType))
