@@ -1481,19 +1481,21 @@ end
 
 --- Registers a module that should override a default module
 -- The custom module must have all functions that a default module can be called with
+-- @paramsig type, name
 -- @param type Index (string) in userModules
--- @param The name passed to AceAddon:NewModule()
+-- @param name The name passed to AceAddon:NewModule()
 function RCLootCouncil:RegisterUserModule(type, name)
 	assert(defaultModules[type], format("Module \"%s\" is not a default module.", tostring(type)))
 	userModules[type] = name
 end
 
 --- Enables a module to add chat commands to the "/rc" prefix
+-- @paramsig module, funcRef, ...
 -- @param module The object to call func on.
 -- @param funcRef The function reference to call on module. Passed with module as first arg, and up to two user args.
 -- @param ... The command(s) the user can input
--- @usage For example in GroupGear: addon:CustomChatCmd(GroupGear, "Enable", "gg")
--- will result in GroupGear:Enable() being called if the user types "/rc gg"
+-- @usage For example in GroupGear: addon:CustomChatCmd(GroupGear, "Show", "gg", "groupgear", "gear")
+-- will result in GroupGear:Show() being called if the user types "/rc gg" (or "/rc groupgear" or "/rc gear")
 function RCLootCouncil:CustomChatCmd(module, funcRef, ...)
 	for i = 1, select("#", ...) do
 		self.customChatCmd[select(i, ...)] = {module = module, func = funcRef}
@@ -1536,10 +1538,10 @@ function RCLootCouncil:RGBToHex(r,g,b)
 	return string.format("%02x%02x%02x",255*r, 255*g, 255*b)
 end
 
---- Creates a standard frame for RCLootCouncil with title, minimizuing, positioning and zoom support.
+--- Creates a standard frame for RCLootCouncil with title, minimizing, positioning and scaling supported.
 --		Adds Minimize(), Maximize() and IsMinimized() functions on the frame, and registers it for hide on combat.
 --		SetWidth/SetHeight called on frame will also be called on frame.content
---		Minimizing is done by double clicking the title. The returned frame and frame.title is NOT minimized.
+--		Minimizing is done by double clicking the title. The returned frame and frame.title is NOT hidden.
 -- 	Only frame.content is minimized, so put children there for minimize support.
 -- @paramsig name, cName, title[, width, height]
 -- @param name Global name of the frame
