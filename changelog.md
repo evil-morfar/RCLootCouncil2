@@ -1,7 +1,11 @@
 ### v2.3.1
 ---
 * **History**
- * Now tracks group size and instanceMapIDs.
+ * Now tracks tier tokens received, group size and instanceMapIDs.
+ * Tier tokens received is displayed in the more info details in the voting frame.
+
+
+* Minor optimizations.
 
 ### v2.3.0
 ---

@@ -25,6 +25,7 @@ local enchanters -- Enchanters drop down menu frame
 local guildRanks = {} -- returned from addon:GetGuildRanks()
 local GuildRankSort, ResponseSort -- Initialize now to avoid errors
 local defaultScrollTableData = {} -- See below
+local moreInfoData = {}
 
 function RCVotingFrame:OnInitialize()
 	-- Contains all the default data needed for the scroll table
@@ -61,6 +62,7 @@ function RCVotingFrame:OnEnable()
 	db = addon:Getdb()
 	active = true
 	moreInfo = db.modules["RCVotingFrame"].moreInfo
+	moreInfoData = addon:GetLootDBStatistics()
 	self.frame = self:GetFrame()
 	self:ScheduleTimer("CandidateCheck", 20)
 	guildRanks = addon:GetGuildRanks()
@@ -151,6 +153,7 @@ function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
 				self:Update()
 
 			elseif command == "awarded" and addon:UnitIsUnit(sender, addon.masterLooter) then
+				moreInfoData = addon:GetLootDBStatistics() -- Just update it on every award
 				lootTable[unpack(data)].awarded = true
 				if addon.isMasterLooter and session ~= #lootTable then -- ML should move to the next item on award
 					self:SwitchSession(session + 1)
@@ -410,50 +413,25 @@ function RCVotingFrame:UpdateMoreInfo(row, data)
 
 	local color = addon:GetClassColor(self:GetCandidateData(session, name, "class"))
 	local tip = self.frame.moreInfo -- shortening
-	local count = {} -- Number of loot received
 	tip:SetOwner(self.frame, "ANCHOR_RIGHT")
 
-	--Extract loot history for that name
-	local lootDB = addon:GetHistoryDB()
-	local entry
-
-	-- Their name might be saved without realmname :/
-	local nameCheck
-	if lootDB[name] then
-		nameCheck = true
-	elseif  lootDB[addon.Ambiguate(name)] then
-		name = addon.Ambiguate(name)
-		nameCheck = true
-	end
 	tip:AddLine(addon.Ambiguate(name), color.r, color.g, color.b)
-	color = {} -- Color of the response
-	local lastestAwardFound, responseText = 0, {}
-	if nameCheck then -- they're in the DB!
+	if moreInfoData[name] then
 		tip:AddLine(L["Latest item(s) won"])
-		for i = #lootDB[name], 1, -1 do -- Start from the end
-			entry = lootDB[name][i]
-			local id = entry.responseID
-			if entry.isAwardReason then id = id + 100 end -- Bump to distingush from normal awards
-			count[id] = count[id] and count[id] + 1 or 1
-			responseText[id] = responseText[id] and responseText[id] or entry.response
-			if not color[id] or unpack(color[id],1,3) == unpack({1,1,1}) and #entry.color ~= 0  then -- If it's not already added
-				color[id] = #entry.color ~= 0 and #entry.color == 4 and entry.color or {1,1,1}
-			end
-			if type(id) == "number" and id <= db.numMoreInfoButtons and not entry.isAwardReason and lastestAwardFound < 5 then
-				tip:AddDoubleLine(entry.lootWon, entry.response .. ", ".. format(L["'n days' ago"], addon:ConvertDateToString(addon:GetNumberOfDaysFromNow(entry.date))), nil,nil,nil,unpack(color[id],1,3))
-				lastestAwardFound = lastestAwardFound + 1
-			end
-		end -- end counting
+		for i, v in ipairs(moreInfoData[name]) do -- extract latest awarded items
+			tip:AddDoubleLine(v[1], v[2], nil,nil,nil,unpack(v[3],1,3))
+		end
 		tip:AddLine(" ") -- spacer
 		tip:AddLine(L["Totals"])
-		local totalNum = 0
-		for id, num in pairs(count) do
-			local r,g,b = unpack(color[id],1,3)
-			tip:AddDoubleLine(responseText[id], num, r,g,b, r,g,b) -- Make sure we don't add the alpha value
-			totalNum = totalNum + num
+		if moreInfoData[name].totals.tokens[addon.currentInstanceName] then
+			tip:AddDoubleLine("Tier tokens received from this instance:", moreInfoData[name].totals.tokens[addon.currentInstanceName], 1,1,1, 1,1,1)
+		end
+		for _, v in pairs(moreInfoData[name].totals.responses) do
+			local r,g,b = unpack(v[3],1,3)
+			tip:AddDoubleLine(v[1], v[2], r,g,b, r,g,b)
 		end
 		tip:AddLine(" ")
-		tip:AddDoubleLine(L["Total items received:"], totalNum, 0,1,1, 0,1,1)
+		tip:AddDoubleLine(L["Total items received:"], moreInfoData[name].totals.total, 0,1,1, 0,1,1)
 	else
 		tip:AddLine(L["No entries in the Loot History"])
 	end
@@ -461,7 +439,6 @@ function RCVotingFrame:UpdateMoreInfo(row, data)
 	tip:Show()
 	tip:SetAnchorType("ANCHOR_RIGHT", 0, -tip:GetHeight())
 end
-
 
 function RCVotingFrame:GetFrame()
 	if self.frame then return self.frame end

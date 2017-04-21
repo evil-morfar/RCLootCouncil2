@@ -64,6 +64,7 @@ function RCLootCouncil:OnInitialize()
 	self.enabled = true -- turn addon on/off
 	self.inCombat = false -- Are we in combat?
 	self.recentReconnectRequest = false
+	self.currentInstanceName = ""
 
 	self.verCheckDisplayed = false -- Have we shown a "out-of-date"?
 
@@ -1154,6 +1155,8 @@ function RCLootCouncil:OnEvent(event, ...)
 		-- high server-side latency causes the UnitIsGroupLeader("player") condition to fail if queried quickly (upon entering instance) regardless of state.
 		-- NOTE v2.0: Not sure if this is still an issue, but just add a 2 sec timer to the MLCheck call
 		self:ScheduleTimer("OnRaidEnter", 2)
+		local instanceName, _, _, difficultyName = GetInstanceInfo()
+		self.currentInstanceName = instanceName.."-"..difficultyName
 
 	elseif event == "PLAYER_ENTERING_WORLD" then
 		self:Debug("Event:", event, ...)
@@ -1319,6 +1322,68 @@ function RCLootCouncil:GetInstalledModulesFormattedData()
 		end
 	end
 	return modules
+end
+
+
+--- Returns statistics for use in various detailed views
+-- @return A table formatted as:
+--[[	lootDBStatistics[candidate_name] = {
+			[item#] = { -- This should be 5 at most
+				[1] = lootWon,
+				[2] = formatted response string,
+				[3] = {color}, --@see color format in self.responses
+				[4] = #index, 	-- Real entry index in historyDB[name][index]
+			},
+			totals = {
+				total = total loot won number,
+				tokens = {
+					instanceName = num, -- E.g Nighthold-Heroic
+				},
+				responses = {
+					[responseID] = { @see index in self.responses. Award reasons gets 100 addded
+						[1] = responseText,
+						[2] = number of items won,
+						[3] = {color},
+					}
+				}
+			}
+		}
+]]
+local lootDBStatistics
+function RCLootCouncil:GetLootDBStatistics()
+	self:DebugLog("GetLootDBStatistics()")
+	lootDBStatistics = {}
+	local entry, id
+	for name, data in pairs(self:GetHistoryDB()) do
+		local count, responseText, color, numTokens = {},{},{},{}
+		local lastestAwardFound = 0
+		lootDBStatistics[name] = {}
+		for i = #data, 1, -1 do -- Start from the end
+			entry = data[i]
+			id = entry.responseID
+			if entry.isAwardReason then id = id + 100 end -- Bump to distingush from normal awards
+			numTokens[entry.instance] = numTokens[entry.instance] and (entry.token and numTokens[entry.instance] + 1 or numTokens[entry.instance]) or 1
+			count[id] = count[id] and count[id] + 1 or 1
+			responseText[id] = responseText[id] and responseText[id] or entry.response
+			if not color[id] or unpack(color[id],1,3) == unpack({1,1,1}) and #entry.color ~= 0  then -- If it's not already added
+				color[id] = #entry.color ~= 0 and #entry.color == 4 and entry.color or {1,1,1}
+			end
+			if type(id) == "number" and id <= db.numMoreInfoButtons and not entry.isAwardReason and lastestAwardFound < 5 then
+				tinsert(lootDBStatistics[name], {entry.lootWon, entry.response .. ", ".. format(L["'n days' ago"], addon:ConvertDateToString(addon:GetNumberOfDaysFromNow(entry.date))), color[id], i})
+				lastestAwardFound = lastestAwardFound + 1
+			end
+		end
+		-- Totals:
+		local totalNum = 0
+		lootDBStatistics[name].totals = {}
+		lootDBStatistics[name].totals.tokens = numTokens
+		lootDBStatistics[name].totals.responses = {}
+		for id, num in pairs(count) do
+			tinsert(lootDBStatistics[name].totals.responses, {responseText[id], num, color[id]})
+			totalNum = totalNum + num
+		end
+		lootDBStatistics[name].totals.total = totalNum
+	end
 end
 
 function RCLootCouncil:SessionError(...)
