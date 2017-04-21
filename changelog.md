@@ -8,6 +8,8 @@
 
 * Minor optimizations.
 
+* Fixed some spelling mistakes.
+
 ### v2.3.0
 ---
 * **Patch 7.2**
