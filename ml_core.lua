@@ -61,7 +61,7 @@ function RCLootCouncilML:AddItem(item, bagged, slotIndex, index)
 		["bagged"]		= bagged,
 		["lootSlot"]	= slotIndex,
 		["awarded"]		= false,
-		["name"]			= name,
+		["name"]			= name, -- REVIEW Not needed as it's contained in itemLink. Remove next time we break backwards compability
 		["link"]			= link,
 		["quality"]		= rarity,
 		["ilvl"]			= ilvl,
@@ -70,7 +70,7 @@ function RCLootCouncilML:AddItem(item, bagged, slotIndex, index)
 		["texture"]		= texture,
 		["boe"]			= addon:IsItemBoE(link),
 		["relic"]		= itemID and IsArtifactRelicItem(itemID) and select(3, C_ArtifactUI.GetRelicInfoByItemID(itemID)),
-		["token"]		= itemID and RCTokenTable[itemID], -- TODO: might need a type() == "string"
+		["token"]		= itemID and RCTokenTable[itemID], 
 	}
 		-- Item isn't properly loaded, so update the data in 1 sec (Should only happen with /rc test)
 	if not name then

@@ -609,12 +609,13 @@ function LootHistory:UpdateMoreInfo(rowFrame, cellFrame, dat, cols, row, realrow
 		tip:AddDoubleLine("ResponseID", tostring(data.responseID), 1,1,1, 1,1,1)
 		tip:AddDoubleLine("Response:", data.response, 1,1,1, 1,1,1)
 		tip:AddDoubleLine("isAwardReason:", tostring(data.isAwardReason), 1,1,1, 1,1,1)
-		tip:AddDoubleLine("color:", data.color and data.color[1]..", "..data.color[2]..", "..data.color[3] or "none", 1,1,1, 1,1,1)
+		local r,g,b = unpack(data.color)
+		tip:AddDoubleLine("color:", data.color and r..", "..g..", "..b or "none", 1,1,1, r,g,b)
 		tip:AddDoubleLine("DataIndex:", row.num, 1,1,1, 1,1,1)
 		tip:AddDoubleLine("difficultyID:", data.difficultyID, 1,1,1, 1,1,1)
 		tip:AddDoubleLine("mapID", data.mapID, 1,1,1, 1,1,1)
 		tip:AddDoubleLine("groupSize", data.groupSize, 1,1,1, 1,1,1)
-		tip:AddDoubleLine("tierToken", data.mapID, 1,1,1, 1,1,1)
+		tip:AddDoubleLine("tierToken", data.tierToken, 1,1,1, 1,1,1)
 	end
 	tip:SetScale(db.UI.history.scale)
 	if moreInfo then

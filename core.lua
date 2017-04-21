@@ -1369,7 +1369,7 @@ function RCLootCouncil:GetLootDBStatistics()
 				color[id] = #entry.color ~= 0 and #entry.color == 4 and entry.color or {1,1,1}
 			end
 			if type(id) == "number" and id <= db.numMoreInfoButtons and not entry.isAwardReason and lastestAwardFound < 5 then
-				tinsert(lootDBStatistics[name], {entry.lootWon, entry.response .. ", ".. format(L["'n days' ago"], addon:ConvertDateToString(addon:GetNumberOfDaysFromNow(entry.date))), color[id], i})
+				tinsert(lootDBStatistics[name], {entry.lootWon, --[[entry.response .. ", "..]] format(L["'n days' ago"], self:ConvertDateToString(self:GetNumberOfDaysFromNow(entry.date))), color[id], i})
 				lastestAwardFound = lastestAwardFound + 1
 			end
 		end
@@ -1384,6 +1384,7 @@ function RCLootCouncil:GetLootDBStatistics()
 		end
 		lootDBStatistics[name].totals.total = totalNum
 	end
+	return lootDBStatistics
 end
 
 function RCLootCouncil:SessionError(...)

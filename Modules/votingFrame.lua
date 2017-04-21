@@ -153,7 +153,9 @@ function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
 				self:Update()
 
 			elseif command == "awarded" and addon:UnitIsUnit(sender, addon.masterLooter) then
-				moreInfoData = addon:GetLootDBStatistics() -- Just update it on every award
+				self:ScheduleTimer(function()
+					moreInfoData = addon:GetLootDBStatistics() -- Just update it on every award
+				end, 1) -- Make sure we've received the history data before updating
 				lootTable[unpack(data)].awarded = true
 				if addon.isMasterLooter and session ~= #lootTable then -- ML should move to the next item on award
 					self:SwitchSession(session + 1)
@@ -423,19 +425,19 @@ function RCVotingFrame:UpdateMoreInfo(row, data)
 		end
 		tip:AddLine(" ") -- spacer
 		tip:AddLine(L["Totals"])
-		if moreInfoData[name].totals.tokens[addon.currentInstanceName] then
-			tip:AddDoubleLine("Tier tokens received from this instance:", moreInfoData[name].totals.tokens[addon.currentInstanceName], 1,1,1, 1,1,1)
-		end
 		for _, v in pairs(moreInfoData[name].totals.responses) do
 			local r,g,b = unpack(v[3],1,3)
 			tip:AddDoubleLine(v[1], v[2], r,g,b, r,g,b)
 		end
 		tip:AddLine(" ")
+		if moreInfoData[name].totals.tokens[addon.currentInstanceName] then
+			tip:AddDoubleLine("Tier tokens received from this instance:", moreInfoData[name].totals.tokens[addon.currentInstanceName], 1,1,1, 1,1,1)
+		end
 		tip:AddDoubleLine(L["Total items received:"], moreInfoData[name].totals.total, 0,1,1, 0,1,1)
 	else
 		tip:AddLine(L["No entries in the Loot History"])
 	end
-	tip:SetScale(db.UI.votingframe.scale-0.1) -- Make it a bit smaller, as it's too wide otherwise
+	tip:SetScale(db.UI.votingframe.scale-0.15) -- Make it a bit smaller, as it's too wide otherwise
 	tip:Show()
 	tip:SetAnchorType("ANCHOR_RIGHT", 0, -tip:GetHeight())
 end
