@@ -208,7 +208,7 @@ function RCLootCouncil:OnInitialize()
 
 			responses = self.responses,
 
-			enableHistory = false,
+			enableHistory = true,
 			sendHistory = true,
 
 			minRank = -1,

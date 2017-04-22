@@ -4,6 +4,7 @@
  * Now tracks tier tokens received, group size and instanceMapIDs.
  * Tier tokens received is displayed in the more info details in the voting frame.
  * Removed response text from voting frame more info to make it smaller.
+ * The loot history is now enabled by default.
 
 
 * Minor optimizations.
