@@ -53,7 +53,7 @@ function RCLootCouncil:OnInitialize()
   	self.version = GetAddOnMetadata("RCLootCouncil", "Version")
 	self.nnp = false
 	self.debug = false
-	self.tVersion = nil -- String or nil. Indicates test version, which alters stuff like version check. Is appended to 'version', i.e. "version-tVersion" (max 10 letters for stupid security)
+	self.tVersion = "alpha-1" -- String or nil. Indicates test version, which alters stuff like version check. Is appended to 'version', i.e. "version-tVersion" (max 10 letters for stupid security)
 
 	self.playerClass = select(2, UnitClass("player"))
 	self.guildRank = L["Unguilded"]
@@ -276,7 +276,8 @@ function RCLootCouncil:OnInitialize()
 	self.lootDB = LibStub("AceDB-3.0"):New("RCLootCouncilLootDB")
 	--[[ Format:
 	"playerName" = {
-		[#] = {"lootWon", "date (d/m/y)", "time (h:m:s)", "instance", "boss", "votes", "itemReplaced1", "itemReplaced2", "response", "responseID", "color", "class", "isAwardReason"}
+		[#] = {"lootWon", "date (d/m/y)", "time (h:m:s)", "instance", "boss", "votes", "itemReplaced1", "itemReplaced2", "response", "responseID",
+		 		 "color", "class", "isAwardReason", "difficultyID", "mapID", "groupSize", "tierToken"}
 	},
 	]]
 	self.db.RegisterCallback(self, "OnProfileChanged", "RefreshConfig")
@@ -325,6 +326,29 @@ function RCLootCouncil:OnEnable()
 	self:ActivateSkin(db.currentSkin)
 
 	if self.db.global.version and self:VersionCompare(self.db.global.version, self.version) then -- We've upgraded
+		if self:VersionCompare(self.db.global.version, "2.3.1") then -- Update lootDB with newest changes
+			self:Print("Updating Loot History")
+			for name, data in pairs(historyDB) do
+				for i, v in pairs(data) do
+					local id = self:GetItemIDFromLink(v.lootWon)
+					v.tierToken = id and RCTokenTable[id]
+					-- Can't really do much for non-english clients here
+					if v.instance == "The Nighthold-Normal" or v.instance == "The Nighthold-Heroic"  or v.instance == "The Nighthold-Mythic"  then
+						v.mapID = 1530
+					elseif v.instance == "The Emerald Nightmare-Normal" or v.instance == "The Emerald Nightmare-Heroic" or v.instance == "The Emerald Nightmare-Mythic" then
+						v.mapID = 1520
+					end
+					if strmatch(v.instance, "Normal") then
+						v.difficultyID = 14
+					elseif strmatch(v.instance, "Heroic") then
+						v.difficultyID = 15
+					elseif strmatch(v.instance, "Mythic") then
+						v.difficultyID = 16
+					end
+				end
+			end
+			self:Print("Done")
+		end
 		self.db.global.oldVersion = self.db.global.version
 		self.db.global.version = self.version
 	else -- Mostly for first time load
