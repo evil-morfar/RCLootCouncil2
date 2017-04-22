@@ -11,6 +11,7 @@ TODOs/Notes
 		- Use the new lootHistory flags in the lootHistory. http://wow.gamepedia.com/API_GetDifficultyInfo should be useful.
 			instanceMapIDs:
 				1520	The Emerald Nightmare Legion
+				1648 	Trial of Valor
 				1530	The Nighthold Legion
 --------------------------------
 CHANGELOG
@@ -335,6 +336,8 @@ function RCLootCouncil:OnEnable()
 					-- Can't really do much for non-english clients here
 					if v.instance == "The Nighthold-Normal" or v.instance == "The Nighthold-Heroic"  or v.instance == "The Nighthold-Mythic"  then
 						v.mapID = 1530
+					elseif v.instance == "Trial of Valor-Normal" or v.instance == "Trial of Valor-Heroic" or v.instance == "Trial of Valor-Mythic" then
+						v.mapID = 1648
 					elseif v.instance == "The Emerald Nightmare-Normal" or v.instance == "The Emerald Nightmare-Heroic" or v.instance == "The Emerald Nightmare-Mythic" then
 						v.mapID = 1520
 					end
