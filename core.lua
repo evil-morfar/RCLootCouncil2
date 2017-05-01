@@ -1182,8 +1182,10 @@ function RCLootCouncil:OnEvent(event, ...)
 		-- high server-side latency causes the UnitIsGroupLeader("player") condition to fail if queried quickly (upon entering instance) regardless of state.
 		-- NOTE v2.0: Not sure if this is still an issue, but just add a 2 sec timer to the MLCheck call
 		self:ScheduleTimer("OnRaidEnter", 2)
-		local instanceName, _, _, difficultyName = GetInstanceInfo()
-		self.currentInstanceName = instanceName.."-"..difficultyName
+		self:ScheduleTimer(function() -- This needs some time to be ready
+			local instanceName, _, _, difficultyName = GetInstanceInfo()
+			self.currentInstanceName = instanceName.."-"..difficultyName
+		end, 5)
 
 	elseif event == "PLAYER_ENTERING_WORLD" then
 		self:Debug("Event:", event, ...)
