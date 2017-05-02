@@ -1,7 +1,7 @@
--- Author      : Potdisc
--- Create Date : 1/20/2015 3:48:38 AM
+--- sessionFrame.lua	Adds a frame listing the items to start a session with.
 -- DefaultModule - Requires ml_core.lua or similary functionality.
--- sessionFrame.lua	Adds a frame listing the items to start a session with.
+-- @author Potdisc
+-- Create Date : 1/20/2015 3:48:38 AM
 
 local addon = LibStub("AceAddon-3.0"):GetAddon("RCLootCouncil")
 local RCSessionFrame = addon:NewModule("RCSessionFrame", "AceTimer-3.0")

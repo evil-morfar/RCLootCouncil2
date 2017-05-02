@@ -1,13 +1,15 @@
--- Author      : Potdisc
+--- autopass.lua	Contains everything related to autopassing
+-- @author	Potdisc
 -- Create Date : 23/9/2016
--- autopass.lua	Contains everything related to autopassing
 
--- Never autopass these armor types
+--- Never autopass these armor types.
+-- @table autopassOverride
 local autopassOverride = {
 	"INVTYPE_CLOAK",
 }
 
--- Classes that should autopass a subtype
+--- Classes that should autopass a subtype.
+-- @table autopassTable
 local autopassTable = {
 	["Cloth"]					= {"WARRIOR", "DEATHKNIGHT", "PALADIN", "DRUID", "MONK", "ROGUE", "HUNTER", "SHAMAN", "DEMONHUNTER"},
 	["Leather"] 				= {"WARRIOR", "DEATHKNIGHT", "PALADIN", "HUNTER", "SHAMAN", "PRIEST", "MAGE", "WARLOCK"},
@@ -31,8 +33,9 @@ local autopassTable = {
 	["Warglaives"]				= {"WARRIOR", "DEATHKNIGHT", "PALADIN", "DRUID", "MONK", "ROGUE", "PRIEST", "MAGE", "WARLOCK", "HUNTER", "SHAMAN",}
 }
 
--- Types of relics. Thanks to xmyno for the list.
+--- Types of relics. Thanks to xmyno for the list.
 -- NOTE I'm not sure if the return from C_ArtifactUI.GetRelicInfoByItemID() is localized
+-- @table relicTypes
 local relicTypes = {
   BLOOD     = 'Blood',
   SHADOW    = 'Shadow',
@@ -46,7 +49,8 @@ local relicTypes = {
   HOLY      = 'Holy'
 }
 
--- The type of relic each class can use
+--- The type of relic each class can use
+-- @table relics
 local relics = {
    DEATHKNIGHT = {relicTypes.BLOOD, relicTypes.SHADOW,relicTypes.IRON,  relicTypes.FROST, relicTypes.FIRE },
    DEMONHUNTER = {relicTypes.FEL,   relicTypes.SHADOW,relicTypes.IRON,  relicTypes.ARCANE},
@@ -62,7 +66,13 @@ local relics = {
    WARRIOR     = {relicTypes.IRON,  relicTypes.BLOOD, relicTypes.SHADOW,relicTypes.FIRE,  relicTypes.STORM},
 }
 
--- Returns true if the player should autopass the given item
+--- Checks if the player should autopass on a given item.
+-- All params are supplied by the lootTable from the ML.
+-- @usage
+-- -- Check if the item in session 1 should be auto passed:
+-- local dat = lootTable[1] -- Shortening
+-- local boolean = RCLootCouncil:AutoPassCheck(dat.subType, dat.equipLoc, dat.link, dat.token, dat.relic)
+--@return true if the player should autopass the given item.
 function RCLootCouncil:AutoPassCheck(subType, equipLoc, link, isToken, isRelic)
 	if not tContains(autopassOverride, equipLoc) then
 		if isRelic or (equipLoc == "" and subType == self.db.global.localizedSubTypes["Artifact Relic"]) then

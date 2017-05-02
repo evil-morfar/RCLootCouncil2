@@ -1,7 +1,7 @@
-﻿-- Author      : Potdisc
--- Create Date : 3/11/2013 10:25:13 PM
--- tokenData.lua
+--- tokenData.lua
 -- Contains equip location and useable classes from tier tokens
+-- @author Potdisc
+-- Create Date : 3/11/2013 10:25:13 PM
 
 -- Equip locations
 RCTokenTable = {

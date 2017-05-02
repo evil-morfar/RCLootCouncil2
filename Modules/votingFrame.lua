@@ -1,8 +1,8 @@
--- Author      : Potdisc
--- Create Date : 12/15/2014 8:54:35 PM
+---	votingFrame.lua	Displays everything related to handling loot for all members.
+--	Will only show certain aspects depending on addon.isMasterLooter, addon.isCouncil and addon.mldb.observe.
 -- DefaultModule
---	votingFrame.lua	Displays everything related to handling loot for all members.
---		Will only show certain aspects depending on addon.isMasterLooter, addon.isCouncil and addon.mldb.observe
+-- @author	Potdisc
+-- Create Date : 12/15/2014 8:54:35 PM
 
 local addon = LibStub("AceAddon-3.0"):GetAddon("RCLootCouncil")
 RCVotingFrame = addon:NewModule("RCVotingFrame", "AceComm-3.0", "AceTimer-3.0")
@@ -109,7 +109,7 @@ function RCVotingFrame:CandidateCheck()
 	end
 end
 
--- Removes a specific entry from the voting frame's columns
+--- Removes a specific entry from the voting frame's columns
 -- Takes either index or colName as the identifier, and returns the removed rows
 -- if succesful, or nil if not. Should be called before any session begins.
 function RCVotingFrame:RemoveColumn(id)
@@ -311,8 +311,9 @@ function RCVotingFrame:DoRandomRolls(ses)
 	addon:SendCommand("group", "rolls", ses, table)
 end
 
-------------------------------------------------------------------
---	Visuals														--
+----------------------------------------------------------------- -
+--	Visuals
+-- @section Visuals
 ------------------------------------------------------------------
 function RCVotingFrame:Update()
 	if not self.frame then return end -- No updates when it doesn't exist
@@ -709,6 +710,7 @@ end
 
 ----------------------------------------------------------
 --	Lib-st data functions (not particular pretty, I know)
+-- @section Lib-st data funcs.
 ----------------------------------------------------------
 function RCVotingFrame:GetDiffColor(num)
 	if num == "" then num = 0 end -- Can't compare empty string
@@ -947,7 +949,8 @@ function GuildRankSort(table, rowa, rowb, sortbycol)
 end
 
 ----------------------------------------------------
---	Dropdowns
+--	Dropdowns.
+-- @section Dropdowns.
 ----------------------------------------------------
 do
 	local info = Lib_UIDropDownMenu_CreateInfo() -- Efficiency :)

@@ -1,6 +1,6 @@
-﻿-- Author      : Potdisc
+--- options.lua - option frame in BlizzardOptions for RCLootCouncil
+-- @author Potdisc
 -- Create Date : 5/24/2012 6:24:55 PM
--- options.lua - option frame in BlizOptions for RCLootCouncil
 
 local addon = LibStub("AceAddon-3.0"):GetAddon("RCLootCouncil")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")

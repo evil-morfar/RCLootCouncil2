@@ -1,9 +1,10 @@
-﻿--[[	RCLootCouncil by Potdisc
-ml_core.lua	Contains core elements for the MasterLooter
-	-	Although possible, this module shouldn't be replaced unless closely replicated as other default modules depend on it.
-	-	Assumes several functions in SessionFrame and VotingFrame
+--[[--- ml_core.lua	Contains core elements for the MasterLooter.
+	Although possible, this module shouldn't be replaced unless closely replicated as other default modules depend on it.
+	Assumes several functions in SessionFrame and VotingFrame.
+	@author Potdisc
+]]
 
-	TODOs/NOTES:
+--[[TODOs/NOTES:
 		- SendMessage() on AddItem() to let userModules know it's safe to add to lootTable. Might have to do it other places too.
 ]]
 
@@ -70,6 +71,7 @@ function RCLootCouncilML:AddItem(item, bagged, slotIndex, index)
 		["texture"]		= texture,
 		["boe"]			= addon:IsItemBoE(link),
 		["relic"]		= itemID and IsArtifactRelicItem(itemID) and select(3, C_ArtifactUI.GetRelicInfoByItemID(itemID)),
+		["token"]		= itemID and RCTokenTable[itemID],
 	}
 		-- Item isn't properly loaded, so update the data in 1 sec (Should only happen with /rc test)
 	if not name then

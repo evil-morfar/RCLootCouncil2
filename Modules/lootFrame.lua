@@ -1,8 +1,7 @@
--- Author      : Potdisc
+--- lootFrame.lua	Adds the interface for selecting a response to a session.
+-- DefaultModule.
+-- @author	Potdisc
 -- Create Date : 12/16/2014 8:24:04 PM
--- DefaultModule
--- lootFrame.lua	Adds the interface for selecting a response to a session
-
 
 local addon = LibStub("AceAddon-3.0"):GetAddon("RCLootCouncil")
 local LootFrame = addon:NewModule("RCLootFrame", "AceTimer-3.0")
