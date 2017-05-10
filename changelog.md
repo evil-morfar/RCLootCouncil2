@@ -1,3 +1,12 @@
+### v2.4.0
+---
+* **Tier tokens**
+ * By default, tier tokens now receive special roll options.
+ * A brand new set of buttons and responses have been added for tier tokens only.
+ * Check them out in the options menu, where it can also be disabled if need be.
+
+
+
 ### v2.3.1
 ---
 * **History**
@@ -9,12 +18,6 @@
  * Total awards are now displayed in the loot history.
  * Loot History is now sorted by award time by default.
  * Removed response text from voting frame more info to make it smaller.
-
-
-* **Tier tokens**
- * By default, tier tokens now receive special roll options.
- * A brand new set of buttons and responses have been added for tier tokens only.
- * Check them out in the options menu, where it can also be disabled if need be.
 
 
 * Minor optimizations.
