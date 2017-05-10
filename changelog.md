@@ -7,6 +7,7 @@
  * All tier tokens are displayed in the loot history more info.
  * *Note neither of these are backwards compatible with non-english clients, but will show up for all items awarded after this update.*
  * Total awards are now displayed in the loot history.
+ * Loot History is now sorted by award time by default.
  * Removed response text from voting frame more info to make it smaller.
 
 
