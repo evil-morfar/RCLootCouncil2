@@ -827,8 +827,38 @@ function addon:OptionsTable()
 									-- Made further down
 								},
 							},
-							timeoutOptions = {
+							tierButtonsOptions = {
 								order = 2,
+									type = "group",
+									name = "Tier Buttons and Responses",
+									inline = true,
+									args = {
+										tierButtonsEnabled = {
+											order = 0,
+											name = "Enable Tier Buttons.",
+											desc = "Check to enable a seperate set of buttons when rolling for tier pieces.",
+											type = "toggle",
+										},
+										optionsDesc = {
+											order = 0.1,
+											name = "Select which buttons/responses to use when handling tier pieces.",
+											type = "description"
+										},
+										tierNumButtons = {
+											order = 1,
+											name = L["Number of buttons"],
+											desc = L["number_of_buttons_desc"],
+											type = "range",
+											width = "full",
+											min = 1,
+											max = self.db.profile.maxButtons,
+											step = 1,
+										},
+										-- Made further down
+									},
+								},
+							timeoutOptions = {
+								order = 3,
 								type = "group",
 								name = L["Timeout"],
 								inline = true,
@@ -862,29 +892,8 @@ function addon:OptionsTable()
 									},
 								},
 							},
-							responseFromChat = {
-								order = 3,
-								type = "group",
-								name = L["Responses from Chat"],
-								inline = true,
-								args = {
-									acceptWhispers = {
-										order = 1,
-										name = L["Accept Whispers"],
-										desc = L["accept_whispers_desc"],
-										type = "toggle",
-									},
-									desc = {
-										order = 2,
-										name = L["responses_from_chat_desc"],
-										type = "description",
-										hidden = function() return not self.db.profile.acceptWhispers end,
-									},
-									-- Made further down
-								},
-							},
 							moreInfoOptions = {
-								order = 4,
+								order = 5,
 								type = "group",
 								name = L["More Info"],
 								inline = true,
@@ -905,36 +914,27 @@ function addon:OptionsTable()
 									}
 								},
 							},
-							tierButtonsOptions = {
-								order = 5,
-									type = "group",
-									name = "Tier Buttons and Responses",
-									inline = true,
-									args = {
-										tierButtonsEnabled = {
-											order = 0,
-											name = "Enable Tier Buttons.",
-											desc = "Check to enable a seperate set of buttons when rolling for tier pieces.",
-											type = "toggle",
-										},
-										optionsDesc = {
-											order = 0.1,
-											name = "Select which buttons/responses to use when handling tier pieces.",
-											type = "description"
-										},
-										tierNumButtons = {
-											order = 1,
-											name = L["Number of buttons"],
-											desc = L["number_of_buttons_desc"],
-											type = "range",
-											width = "full",
-											min = 1,
-											max = self.db.profile.maxButtons,
-											step = 1,
-										},
-										-- Made further down
+							responseFromChat = {
+								order = 4,
+								type = "group",
+								name = L["Responses from Chat"],
+								inline = true,
+								args = {
+									acceptWhispers = {
+										order = 1,
+										name = L["Accept Whispers"],
+										desc = L["accept_whispers_desc"],
+										type = "toggle",
 									},
+									desc = {
+										order = 2,
+										name = L["responses_from_chat_desc"],
+										type = "description",
+										hidden = function() return not self.db.profile.acceptWhispers end,
+									},
+									-- Made further down
 								},
+							},
 							reset = {
 								order = -1,
 								name = L["Reset to default"],
@@ -1268,7 +1268,7 @@ function addon:OptionsTable()
 			type = "input",
 			get = function() return v.text end,
 			set = function(info, value) addon:ConfigTableChanged("responses"); v.text = tostring(value) end,
-			hidden = function() return self.db.profile.tierNumButtons < i end,
+			hidden = function() return self.db.profile.tierNumButtons < v.sort end,
 		}
 	end
 	-- #endregion
