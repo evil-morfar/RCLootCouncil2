@@ -1,7 +1,7 @@
--- Author      : Potdisc
+--- versionCheck.lua	Adds a Version Checker to check versions of either people in current raidgroup or guild.
+-- DefaultModule.
+-- @author Potdisc
 -- Create Date : 12/15/2014 8:55:10 PM
--- DefaultModule
--- versionCheck.lua	Adds a Version Checker to check versions of either people in current raidgroup or guild
 
 local addon = LibStub("AceAddon-3.0"):GetAddon("RCLootCouncil")
 local RCVersionCheck = addon:NewModule("RCVersionCheck", "AceTimer-3.0", "AceComm-3.0", "AceHook-3.0")

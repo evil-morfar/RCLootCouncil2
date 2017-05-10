@@ -1,7 +1,7 @@
--- Author      : Potdisc
--- Create Date : 8/6/2015
+--- lootHistory.lua	Adds the interface for displaying the collected loot history.
 -- DefaultModule
--- lootHistory.lua	Adds the interface for displaying the collected loot history
+-- @author Potdisc
+-- Create Date : 8/6/2015
 
 local addon = LibStub("AceAddon-3.0"):GetAddon("RCLootCouncil")
 local LootHistory = addon:NewModule("RCLootHistory")
@@ -26,7 +26,7 @@ function LootHistory:OnInitialize()
 	self.exports = {
 		lua = 		{func = self.ExportLua, 		name = "Lua",					tip = L["Raw lua output. Doesn't work well with date selection."]},
 		csv = 		{func = self.ExportCSV,			name = "CSV",					tip = L["Standard .csv output."]},
-		tsv = 		{func = self.ExportTSV,			name = "TSV (Excel)",		tip = L["A tab delimited output for Excel. Might work with outher spreadsheets."]},
+		tsv = 		{func = self.ExportTSV,			name = "TSV (Excel)",		tip = L["A tab delimited output for Excel. Might work with other spreadsheets."]},
 		bbcode = 	{func = self.ExportBBCode,		name = "BBCode", 				tip = L["Simple BBCode output."]},
 		bbcodeSmf = {func = self.ExportBBCodeSMF, name = "BBCode SMF",			tip = L["BBCode export, tailored for SMF."],},
 		eqxml = 		{func = self.ExportEQXML,		name = "EQdkp-Plus XML",	tip = L["EQdkp-Plus XML output, tailored for Enjin import."]},
@@ -65,10 +65,12 @@ function LootHistory:OnDisable()
 	data = {}
 end
 
+--- Show the LootHistory frame.
 function LootHistory:Show()
 	self.frame:Show()
 end
 
+--- Hide the LootHistory frame.
 function LootHistory:Hide()
 	self.frame:Hide()
 	self.moreInfo:Hide()
@@ -345,7 +347,7 @@ function LootHistory:ImportHistory(import)
 		if lootDB[name] then -- We've registered the name, so check all the awards
 			for _, v in pairs(data) do
 				local found = false
-				for _, d in pairs(lootDB[name]) do
+				for _, d in pairs(lootDB[name]) do -- REVIEW This is currently ~O(#lootDB[name]^2). Could probably be improved.
 					-- Check if the time matches. If it does, we already have the data and can skip to the next
 					if d.time == v.time then found = true; break end
 				end
@@ -387,7 +389,8 @@ function LootHistory:GetWowheadLinkFromItemLink(link)
 end
 
 ---------------------------------------------------
--- Visauls
+-- Visuals.
+-- @section Visuals.
 ---------------------------------------------------
 function LootHistory:Update()
 	self.frame.st:SortData()
@@ -609,8 +612,13 @@ function LootHistory:UpdateMoreInfo(rowFrame, cellFrame, dat, cols, row, realrow
 		tip:AddDoubleLine("ResponseID", tostring(data.responseID), 1,1,1, 1,1,1)
 		tip:AddDoubleLine("Response:", data.response, 1,1,1, 1,1,1)
 		tip:AddDoubleLine("isAwardReason:", tostring(data.isAwardReason), 1,1,1, 1,1,1)
-		tip:AddDoubleLine("color:", data.color and data.color[1]..", "..data.color[2]..", "..data.color[3] or "none", 1,1,1, 1,1,1)
+		local r,g,b = unpack(data.color)
+		tip:AddDoubleLine("color:", data.color and r..", "..g..", "..b or "none", 1,1,1, r,g,b)
 		tip:AddDoubleLine("DataIndex:", row.num, 1,1,1, 1,1,1)
+		tip:AddDoubleLine("difficultyID:", data.difficultyID, 1,1,1, 1,1,1)
+		tip:AddDoubleLine("mapID", data.mapID, 1,1,1, 1,1,1)
+		tip:AddDoubleLine("groupSize", data.groupSize, 1,1,1, 1,1,1)
+		tip:AddDoubleLine("tierToken", data.tierToken, 1,1,1, 1,1,1)
 	end
 	tip:SetScale(db.UI.history.scale)
 	if moreInfo then
@@ -624,7 +632,8 @@ end
 
 
 ---------------------------------------------------
--- Dropdowns
+-- Dropdowns.
+-- @section Dropdowns.
 ---------------------------------------------------
 function LootHistory.FilterMenu(menu, level)
 	local info = Lib_UIDropDownMenu_CreateInfo()
@@ -685,9 +694,12 @@ end
 
 
 ---------------------------------------------------------------
--- Exports
+-- Exports.
+-- REVIEW A lot of optimizations can be done here.
+-- @section Exports.
 ---------------------------------------------------------------
--- Lua
+
+--- Lua
 function LootHistory:ExportLua()
 	local export = ""
 	for player, v in pairs(lootDB) do
@@ -718,7 +730,7 @@ function LootHistory:ExportLua()
 return export
 end
 
--- CSV with all stored data
+--- CSV with all stored data
 -- ~14 ms (74%) improvement by switching to table and concat
 function LootHistory:ExportCSV()
 	-- Add headers
@@ -753,7 +765,7 @@ function LootHistory:ExportCSV()
 	return ret
 end
 
--- TSV (Tab Seperated Values) for Excel
+--- TSV (Tab Seperated Values) for Excel
 -- Made specificly with excel in mind, but might work with other spreadsheets
 function LootHistory:ExportTSV()
 	-- Add headers
@@ -787,7 +799,7 @@ function LootHistory:ExportTSV()
 	return ret
 end
 
--- Simplified BBCode, as supported by CurseForge
+--- Simplified BBCode, as supported by CurseForge
 -- ~24 ms (84%) improvement by switching to table and concat
 function LootHistory:ExportBBCode()
 	local export = {}
@@ -813,7 +825,7 @@ function LootHistory:ExportBBCode()
 	return table.concat(export)
 end
 
--- BBCode, as supported by SMF
+--- BBCode, as supported by SMF
 function LootHistory:ExportBBCodeSMF()
 	local export = ""
 	for player, v in pairs(lootDB) do
@@ -833,7 +845,7 @@ function LootHistory:ExportBBCodeSMF()
 	return export
 end
 
--- EQdkp Plus XML, primarily for Enjin import
+--- EQdkp Plus XML, primarily for Enjin import
 function LootHistory:ExportEQXML()
 	local export = "<raidlog><head><export><name>EQdkp Plus XML</name><version>1.0</version></export>"
  		.."<tracker><name>RCLootCouncil</name><version>"..addon.version.."</version></tracker>"
@@ -914,7 +926,7 @@ function LootHistory:ExportHTML()
 	local export = "html test"
 end
 
--- Generates a serialized string containing the entire DB.
+--- Generates a serialized string containing the entire DB.
 -- For now it needs to be copied and pasted in another player's import field.
 function LootHistory:PlayerExport()
 	return self:EscapeItemLink(addon:Serialize(lootDB))

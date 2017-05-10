@@ -1,8 +1,7 @@
--- Author      : Potdisc
+--- lootFrame.lua	Adds the interface for selecting a response to a session.
+-- DefaultModule.
+-- @author	Potdisc
 -- Create Date : 12/16/2014 8:24:04 PM
--- DefaultModule
--- lootFrame.lua	Adds the interface for selecting a response to a session
-
 
 local addon = LibStub("AceAddon-3.0"):GetAddon("RCLootCouncil")
 local LootFrame = addon:NewModule("RCLootFrame", "AceTimer-3.0")
@@ -34,7 +33,7 @@ function LootFrame:Start(table)
 				equipLoc = table[k].equipLoc,
 				timeLeft = addon.mldb.timeout,
 				subType = table[k].subType,
-				isTier = table[k].isTier,
+				token = table[k].token,
 			}
 		end
 	end
@@ -55,7 +54,7 @@ function LootFrame:ReRoll(table)
 			equipLoc = v.equipLoc,
 			timeLeft = addon.mldb.timeout,
 			subType = table[k].subType,
-			isTier = v.isTier,
+			token = v.token,
 		})
 	end
 	self:Show()

@@ -12,7 +12,7 @@ if not L then return end
 
 L["A new session has begun, type '/rc open' to open the voting frame."] = true
 L["A format to copy/paste to another player."] = true
-L["A tab delimited output for Excel. Might work with outher spreadsheets."] = true
+L["A tab delimited output for Excel. Might work with other spreadsheets."] = true
 L["Append realm names"] = true
 L[" is not active in this raid."] = true
 L["Now handles looting"] = true
@@ -334,6 +334,7 @@ L["The Master Looter doesn't allow votes for yourself."] = true
 L["The session has ended."] = true
 L["This item has been awarded"] = true
 L["This item"] = true
+L["Tier tokens received from here:"] = true
 L["Time"] = true
 L["Timeout"] = true
 L["Time left (num seconds)"] = "Time left: %d"
@@ -376,7 +377,7 @@ L["x out of x have voted"] = "%d out of %d have voted"
 L["Yell"] = true
 L["Yes"] = true
 L["You are not allowed to see the Voting Frame right now."] = true
-L["You can only auto award items with a quality lower than 'quality' to yourself due to Blizaard restrictions"] = "You can only auto award items with a quality lower than %s to yourself due to Blizaard restrictions"
+L["You can only auto award items with a quality lower than 'quality' to yourself due to Blizaard restrictions"] = "You can only auto award items with a quality lower than %s to yourself due to Blizzard restrictions"
 L["You cannot start an empty session."] = true
 L["You can't start a loot session while in combat."] = true
 L["You can't start a session before all items are loaded!"] = true

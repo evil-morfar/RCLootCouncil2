@@ -1,7 +1,7 @@
--- Author      : Potdisc
--- Create Date : 1/20/2015 3:48:38 AM
+--- sessionFrame.lua	Adds a frame listing the items to start a session with.
 -- DefaultModule - Requires ml_core.lua or similary functionality.
--- sessionFrame.lua	Adds a frame listing the items to start a session with.
+-- @author Potdisc
+-- Create Date : 1/20/2015 3:48:38 AM
 
 local addon = LibStub("AceAddon-3.0"):GetAddon("RCLootCouncil")
 local RCSessionFrame = addon:NewModule("RCSessionFrame", "AceTimer-3.0")
@@ -45,6 +45,10 @@ end
 
 function RCSessionFrame:Hide()
 	self.frame:Hide()
+end
+
+function RCSessionFrame:IsRunning()
+	return self.frame and self.frame:IsVisible()
 end
 
 -- Data should be unmodified lootTable from ml_core

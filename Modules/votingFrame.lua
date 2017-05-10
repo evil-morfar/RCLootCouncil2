@@ -1,8 +1,8 @@
--- Author      : Potdisc
--- Create Date : 12/15/2014 8:54:35 PM
+---	votingFrame.lua	Displays everything related to handling loot for all members.
+--	Will only show certain aspects depending on addon.isMasterLooter, addon.isCouncil and addon.mldb.observe.
 -- DefaultModule
---	votingFrame.lua	Displays everything related to handling loot for all members.
---		Will only show certain aspects depending on addon.isMasterLooter, addon.isCouncil and addon.mldb.observe
+-- @author	Potdisc
+-- Create Date : 12/15/2014 8:54:35 PM
 
 local addon = LibStub("AceAddon-3.0"):GetAddon("RCLootCouncil")
 RCVotingFrame = addon:NewModule("RCVotingFrame", "AceComm-3.0", "AceTimer-3.0")
@@ -25,6 +25,7 @@ local enchanters -- Enchanters drop down menu frame
 local guildRanks = {} -- returned from addon:GetGuildRanks()
 local GuildRankSort, ResponseSort -- Initialize now to avoid errors
 local defaultScrollTableData = {} -- See below
+local moreInfoData = {}
 
 function RCVotingFrame:OnInitialize()
 	-- Contains all the default data needed for the scroll table
@@ -46,7 +47,7 @@ function RCVotingFrame:OnInitialize()
 	}
 	-- The actual table being worked on, new entries should be added to this table "tinsert(RCVotingFrame.scrollCols, data)"
 	-- If you want to add or remove columns, you should do so on your OnInitialize. See RCVotingFrame:RemoveColumn() for removal.
-	self.scrollCols = defaultScrollTableData
+	self.scrollCols = {unpack(defaultScrollTableData)}
 
 	menuFrame = CreateFrame("Frame", "RCLootCouncil_VotingFrame_RightclickMenu", UIParent, "Lib_UIDropDownMenuTemplate")
 	filterMenu = CreateFrame("Frame", "RCLootCouncil_VotingFrame_FilterMenu", UIParent, "Lib_UIDropDownMenuTemplate")
@@ -61,6 +62,7 @@ function RCVotingFrame:OnEnable()
 	db = addon:Getdb()
 	active = true
 	moreInfo = db.modules["RCVotingFrame"].moreInfo
+	moreInfoData = addon:GetLootDBStatistics()
 	self.frame = self:GetFrame()
 	self:ScheduleTimer("CandidateCheck", 20)
 	guildRanks = addon:GetGuildRanks()
@@ -107,7 +109,7 @@ function RCVotingFrame:CandidateCheck()
 	end
 end
 
--- Removes a specific entry from the voting frame's columns
+--- Removes a specific entry from the voting frame's columns
 -- Takes either index or colName as the identifier, and returns the removed rows
 -- if succesful, or nil if not. Should be called before any session begins.
 function RCVotingFrame:RemoveColumn(id)
@@ -151,6 +153,9 @@ function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
 				self:Update()
 
 			elseif command == "awarded" and addon:UnitIsUnit(sender, addon.masterLooter) then
+				self:ScheduleTimer(function()
+					moreInfoData = addon:GetLootDBStatistics() -- Just update it on every award
+				end, 1) -- Make sure we've received the history data before updating
 				lootTable[unpack(data)].awarded = true
 				if addon.isMasterLooter and session ~= #lootTable then -- ML should move to the next item on award
 					self:SwitchSession(session + 1)
@@ -215,6 +220,7 @@ function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
 					end
 				end
 				self:Update()
+				self:UpdatePeopleToVote()
 			end
 		end
 	end
@@ -305,10 +311,12 @@ function RCVotingFrame:DoRandomRolls(ses)
 	addon:SendCommand("group", "rolls", ses, table)
 end
 
-------------------------------------------------------------------
---	Visuals														--
+----------------------------------------------------------------- -
+--	Visuals
+-- @section Visuals
 ------------------------------------------------------------------
 function RCVotingFrame:Update()
+	if not self.frame then return end -- No updates when it doesn't exist
 	self.frame.st:SortData()
 	-- update awardString
 	if lootTable[session] and lootTable[session].awarded then
@@ -347,7 +355,7 @@ function RCVotingFrame:SwitchSession(s)
 	elseif t.subType ~= "Miscellaneous" and t.subType ~= "Junk" then
 		if t.subType == addon.db.global.localizedSubTypes["Artifact Relic"] then
 			local id = addon:GetItemIDFromLink(t.link)
-         self.frame.itemType:SetText(select(3, C_ArtifactUI.GetRelicInfoByItemID(id)) or "".." "..t.subType or "")
+         self.frame.itemType:SetText((t.relic or select(3, C_ArtifactUI.GetRelicInfoByItemID(id))) or "".." "..t.subType or "")
 		else
 			self.frame.itemType:SetText(tostring(t.subType))
 		end
@@ -408,58 +416,32 @@ function RCVotingFrame:UpdateMoreInfo(row, data)
 
 	local color = addon:GetClassColor(self:GetCandidateData(session, name, "class"))
 	local tip = self.frame.moreInfo -- shortening
-	local count = {} -- Number of loot received
 	tip:SetOwner(self.frame, "ANCHOR_RIGHT")
 
-	--Extract loot history for that name
-	local lootDB = addon:GetHistoryDB()
-	local entry
-
-	-- Their name might be saved without realmname :/
-	local nameCheck
-	if lootDB[name] then
-		nameCheck = true
-	elseif  lootDB[addon.Ambiguate(name)] then
-		name = addon.Ambiguate(name)
-		nameCheck = true
-	end
 	tip:AddLine(addon.Ambiguate(name), color.r, color.g, color.b)
-	color = {} -- Color of the response
-	local lastestAwardFound, responseText = 0, {}
-	if nameCheck then -- they're in the DB!
+	if moreInfoData[name] then
 		tip:AddLine(L["Latest item(s) won"])
-		for i = #lootDB[name], 1, -1 do -- Start from the end
-			entry = lootDB[name][i]
-			local id = entry.responseID
-			if entry.isAwardReason then id = id + 100 end -- Bump to distingush from normal awards
-			count[id] = count[id] and count[id] + 1 or 1
-			responseText[id] = responseText[id] and responseText[id] or entry.response
-			if not color[id] or unpack(color[id],1,3) == unpack({1,1,1}) and #entry.color ~= 0  then -- If it's not already added
-				color[id] = #entry.color ~= 0 and #entry.color == 4 and entry.color or {1,1,1}
-			end
-			if type(id) == "number" and id <= db.numMoreInfoButtons and not entry.isAwardReason and lastestAwardFound < 5 then
-				tip:AddDoubleLine(entry.lootWon, entry.response .. ", ".. format(L["'n days' ago"], addon:ConvertDateToString(addon:GetNumberOfDaysFromNow(entry.date))), nil,nil,nil,unpack(color[id],1,3))
-				lastestAwardFound = lastestAwardFound + 1
-			end
-		end -- end counting
+		for i, v in ipairs(moreInfoData[name]) do -- extract latest awarded items
+			tip:AddDoubleLine(v[1], v[2], nil,nil,nil,unpack(v[3],1,3))
+		end
 		tip:AddLine(" ") -- spacer
 		tip:AddLine(L["Totals"])
-		local totalNum = 0
-		for id, num in pairs(count) do
-			local r,g,b = unpack(color[id],1,3)
-			tip:AddDoubleLine(responseText[id], num, r,g,b, r,g,b) -- Make sure we don't add the alpha value
-			totalNum = totalNum + num
+		for _, v in pairs(moreInfoData[name].totals.responses) do
+			local r,g,b = unpack(v[3],1,3)
+			tip:AddDoubleLine(v[1], v[2], r,g,b, r,g,b)
 		end
 		tip:AddLine(" ")
-		tip:AddDoubleLine(L["Total items received:"], totalNum, 0,1,1, 0,1,1)
+		if moreInfoData[name].totals.tokens[addon.currentInstanceName] then
+			tip:AddDoubleLine(L["Tier tokens received from here:"], moreInfoData[name].totals.tokens[addon.currentInstanceName], 1,1,1, 1,1,1)
+		end
+		tip:AddDoubleLine(L["Total items received:"], moreInfoData[name].totals.total, 0,1,1, 0,1,1)
 	else
 		tip:AddLine(L["No entries in the Loot History"])
 	end
-	tip:SetScale(db.UI.votingframe.scale-0.1) -- Make it a bit smaller, as it's too wide otherwise
+	tip:SetScale(db.UI.votingframe.scale-0.15) -- Make it a bit smaller, as it's too wide otherwise
 	tip:Show()
 	tip:SetAnchorType("ANCHOR_RIGHT", 0, -tip:GetHeight())
 end
-
 
 function RCVotingFrame:GetFrame()
 	if self.frame then return self.frame end
@@ -728,6 +710,7 @@ end
 
 ----------------------------------------------------------
 --	Lib-st data functions (not particular pretty, I know)
+-- @section Lib-st data funcs.
 ----------------------------------------------------------
 function RCVotingFrame:GetDiffColor(num)
 	if num == "" then num = 0 end -- Can't compare empty string
@@ -918,7 +901,7 @@ function ResponseSort(table, rowa, rowb, sortbycol)
 	if a == b then
 		if column.sortnext then
 			local nextcol = table.cols[column.sortnext];
-			if not(nextcol.sort) then
+			if nextcol and not(nextcol.sort) then
 				if nextcol.comparesort then
 					return nextcol.comparesort(table, rowa, rowb, column.sortnext);
 				else
@@ -946,7 +929,7 @@ function GuildRankSort(table, rowa, rowb, sortbycol)
 	if a == b then
 		if column.sortnext then
 			local nextcol = table.cols[column.sortnext];
-			if not(nextcol.sort) then
+			if nextcol and not(nextcol.sort) then
 				if nextcol.comparesort then
 					return nextcol.comparesort(table, rowa, rowb, column.sortnext);
 				else
@@ -966,7 +949,8 @@ function GuildRankSort(table, rowa, rowb, sortbycol)
 end
 
 ----------------------------------------------------
---	Dropdowns
+--	Dropdowns.
+-- @section Dropdowns.
 ----------------------------------------------------
 do
 	local info = Lib_UIDropDownMenu_CreateInfo() -- Efficiency :)

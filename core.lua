@@ -1,16 +1,21 @@
---[[	RCLootCouncil by Potdisc
-core.lua	Contains core elements of the addon
+--- 	core.lua	Contains core elements of the addon
+-- @author Potdisc
 
+--[[
 --------------------------------
 TODOs/Notes
 	Things marked with "todo"
-		- IDEA add an observer/council string to show players their role?
-		- The 4'th cell in @line81 in versionCheck should not be static
-
 		- TIER Buttons:
 			Everything but the lootFrame is implemented and untested.
 			We must likely need to revise lootFrame a lot and create new button text getters for it to work.
 			Not to mention responses for votingFrame.
+		- Item subtype in history exports
+		- IDEA Have player's current gear sent with lootAck
+		- Use the new lootHistory flags in the lootHistory. http://wow.gamepedia.com/API_GetDifficultyInfo should be useful.
+			instanceMapIDs:
+				1520	The Emerald Nightmare Legion
+				1648 	Trial of Valor
+				1530	The Nighthold Legion
 --------------------------------
 CHANGELOG
 	-- SEE CHANGELOG.TXT
@@ -52,7 +57,7 @@ function RCLootCouncil:OnInitialize()
   	self.version = GetAddOnMetadata("RCLootCouncil", "Version")
 	self.nnp = false
 	self.debug = false
-	self.tVersion = nil -- String or nil. Indicates test version, which alters stuff like version check. Is appended to 'version', i.e. "version-tVersion" (max 10 letters for stupid security)
+	self.tVersion = "alpha-1" -- String or nil. Indicates test version, which alters stuff like version check. Is appended to 'version', i.e. "version-tVersion" (max 10 letters for stupid security)
 
 	self.playerClass = select(2, UnitClass("player"))
 	self.guildRank = L["Unguilded"]
@@ -63,6 +68,7 @@ function RCLootCouncil:OnInitialize()
 	self.enabled = true -- turn addon on/off
 	self.inCombat = false -- Are we in combat?
 	self.recentReconnectRequest = false
+	self.currentInstanceName = ""
 
 	self.verCheckDisplayed = false -- Have we shown a "out-of-date"?
 
@@ -212,7 +218,7 @@ function RCLootCouncil:OnInitialize()
 
 			responses = self.responses,
 
-			enableHistory = false,
+			enableHistory = true,
 			sendHistory = true,
 
 			minRank = -1,
@@ -300,7 +306,8 @@ function RCLootCouncil:OnInitialize()
 	self.lootDB = LibStub("AceDB-3.0"):New("RCLootCouncilLootDB")
 	--[[ Format:
 	"playerName" = {
-		[#] = {"lootWon", "date (d/m/y)", "time (h:m:s)", "instance", "boss", "votes", "itemReplaced1", "itemReplaced2", "response", "responseID", "color", "class", "isAwardReason"}
+		[#] = {"lootWon", "date (d/m/y)", "time (h:m:s)", "instance", "boss", "votes", "itemReplaced1", "itemReplaced2", "response", "responseID",
+		 		 "color", "class", "isAwardReason", "difficultyID", "mapID", "groupSize", "tierToken"}
 	},
 	]]
 	self.db.RegisterCallback(self, "OnProfileChanged", "RefreshConfig")
@@ -344,16 +351,41 @@ function RCLootCouncil:OnEnable()
 		self:SendCommand("guild", "verTest", self.version, self.tVersion) -- send out a version check
 	end
 
-	if self.db.global.version and self.db.global.version < "2.1.1"
-		and self.db.global.localizedSubTypes.created then -- We need to reset subtype locales due to changes in v2.1.1
-		self.db.global.localizedSubTypes.created = false
-	end
-
 	-- For some reasons all frames are blank until ActivateSkin() is called, even though the values used
 	-- in the :CreateFrame() all :Prints as expected :o
 	self:ActivateSkin(db.currentSkin)
 
-	self.db.global.version = self.version;
+	if self.db.global.version and self:VersionCompare(self.db.global.version, self.version) then -- We've upgraded
+		if self:VersionCompare(self.db.global.version, "2.3.1") then -- Update lootDB with newest changes
+			self:Print("Updating Loot History")
+			for name, data in pairs(historyDB) do
+				for i, v in pairs(data) do
+					local id = self:GetItemIDFromLink(v.lootWon)
+					v.tierToken = id and RCTokenTable[id]
+					-- Can't really do much for non-english clients here
+					if v.instance == "The Nighthold-Normal" or v.instance == "The Nighthold-Heroic"  or v.instance == "The Nighthold-Mythic"  then
+						v.mapID = 1530
+					elseif v.instance == "Trial of Valor-Normal" or v.instance == "Trial of Valor-Heroic" or v.instance == "Trial of Valor-Mythic" then
+						v.mapID = 1648
+					elseif v.instance == "The Emerald Nightmare-Normal" or v.instance == "The Emerald Nightmare-Heroic" or v.instance == "The Emerald Nightmare-Mythic" then
+						v.mapID = 1520
+					end
+					if strmatch(v.instance, "Normal") then
+						v.difficultyID = 14
+					elseif strmatch(v.instance, "Heroic") then
+						v.difficultyID = 15
+					elseif strmatch(v.instance, "Mythic") then
+						v.difficultyID = 16
+					end
+				end
+			end
+			self:Print("Done")
+		end
+		self.db.global.oldVersion = self.db.global.version
+		self.db.global.version = self.version
+	else -- Mostly for first time load
+		self.db.global.version = self.version;
+	end
 	self.db.global.logMaxEntries = self.defaults.global.logMaxEntries -- reset it now for zzz
 
 	if self.tVersion then
@@ -558,7 +590,7 @@ end
 -- See RCLootCouncil:OnCommReceived() on how to receive these messages.
 -- @param target The receiver of the message. Can be "group", "guild" or "playerName".
 -- @param command The command to send.
--- @param vararg Any number of arguments to send along. Will be packaged as a table.
+-- @param ... Any number of arguments to send along. Will be packaged as a table.
 function RCLootCouncil:SendCommand(target, command, ...)
 	-- send all data as a table, and let receiver unpack it
 	local toSend = self:Serialize(command, {...})
@@ -601,15 +633,16 @@ function RCLootCouncil:SendCommand(target, command, ...)
 	end
 end
 
---- Receives RCLootCouncil commands
+--- Receives RCLootCouncil commands.
 -- Params are delivered by AceComm-3.0, but we need to extract our data created with the
 -- RCLootCouncil:SendCommand function.
 -- @usage
--- To extract the original data using AceSerializer-3.0:
--- -- local success, command, data = self:Deserialize(serializedMsg)
--- 'data' is a table containing the varargs delivered to RCLootCouncil:SendCommand().
--- To ensure correct handling of x-realm commands, include this line aswell:
--- -- if RCLootCouncil:HandleXRealmComms(self, command, data, sender) then return end
+-- --To extract the original data using AceSerializer-3.0:
+-- local success, command, data = self:Deserialize(serializedMsg)
+-- --'data' is a table containing the varargs delivered to RCLootCouncil:SendCommand().
+--
+-- -- To ensure correct handling of x-realm commands, include this line aswell:
+-- if RCLootCouncil:HandleXRealmComms(self, command, data, sender) then return end
 function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 	if prefix == "RCLootCouncil" then
 		self:DebugLog("Comm received:" .. serializedMsg, "from:", sender, "distri:", distri)
@@ -665,7 +698,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 					if db.autoPass then -- Do autopassing
 						for ses, v in ipairs(lootTable) do
 							if (v.boe and db.autoPassBoE) or not v.boe then
-								if self:AutoPassCheck(v.subType, v.equipLoc, v.link) then
+								if self:AutoPassCheck(v.subType, v.equipLoc, v.link, v.token, v.relic) then
 									self:Debug("Autopassed on: ", v.link)
 									if not db.silentAutoPass then self:Print(format(L["Autopassed on 'item'"], v.link)) end
 									self:SendCommand("group", "response", self:CreateResponse(ses, v.link, v.ilvl, "AUTOPASS", v.equipLoc, nil, v.subType))
@@ -793,9 +826,11 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 	end
 end
 
--- Used to make sure "WHISPER" type xrealm comms is handled properly.
--- Include this right after unpacking messages. Assumes you use "OnCommReceived" as comm handler:
+--- Used to make sure "WHISPER" type xrealm comms is handled properly.
+-- @usage
+-- -- Include this right after unpacking messages. Assumes you use "OnCommReceived" as comm handler:
 -- if RCLootCouncil:HandleXRealmComms(self, command, data, sender) then return end
+-- @see OnCommReceived
 function RCLootCouncil:HandleXRealmComms(mod, command, data, sender)
 	if command == "xrealm" then
 		local target = tremove(data, 1)
@@ -875,6 +910,9 @@ function RCLootCouncil:EnterCombat()
 	 InterfaceOptionsFrameOkay:Click()
 	end)
 	self.inCombat = true
+	if self.isMasterLooter then -- Grab the target after 10 seconds and hope it's the boss. We might grab the correct one when looting if not.
+		self:ScheduleTimer(function() self.target = GetUnitName("target") end, 10)
+	end
 	if not db.minimizeInCombat then return end
 	for _,frame in ipairs(frames) do
 		if frame:IsVisible() and not frame.combatMinimized then -- only minimize for combat if it isn't already minimized
@@ -1056,15 +1094,15 @@ function RCLootCouncil:IsItemBoE(item)
 	return false
 end
 
---- Formats a response for the player to be send to the group
--- @param session		The session to respond to
--- @param link 		The itemLink of the item in the session
--- @param ilvl			The ilvl of the item in the session
--- @param response	The selected response, must be index of db.responses
--- @param equipLoc	The item in the session's equipLoc
--- @param note			The player's note
--- @param subType		The item's subType, needed for Artifact Relics
--- @returns A formatted table that can be passed directly to :SendCommand("group", "response", -return-)
+--- Formats a response for the player to be send to the group.
+-- @param session		The session to respond to.
+-- @param link 		The itemLink of the item in the session.
+-- @param ilvl			The ilvl of the item in the session.
+-- @param response	The selected response, must be index of db.responses.
+-- @param equipLoc	The item in the session's equipLoc.
+-- @param note			The player's note.
+-- @param subType		The item's subType, needed for Artifact Relics.
+-- @return A formatted table that can be passed directly to :SendCommand("group", "response", -return-).
 function RCLootCouncil:CreateResponse(session, link, ilvl, response, equipLoc, note, subType)
 	self:DebugLog("CreateResponse", session, link, ilvl, response, equipLoc, note, subType)
 	local g1, g2;
@@ -1108,6 +1146,8 @@ function RCLootCouncil:GetPlayersGuildRank()
 	end
 end
 
+--- Returns specific info about the player
+-- @return "Name", "Class", "Role", "guildRank", bool isEnchanter, num enchanting_lvl, num ilvl
 function RCLootCouncil:GetPlayerInfo()
 	-- Check if the player has enchanting
 	local enchant, lvl = nil, 0
@@ -1133,9 +1173,8 @@ function RCLootCouncil.TranslateRole(role) -- reasons
 	return (role and role ~= "") and RCLootCouncil.roleTable[role] or ""
 end
 
---- GetGuildRanks
--- Returns a lookup table containing GuildRankNames and their index
--- @return table "GuildRankName" = rankIndex
+--- Returns a lookup table containing GuildRankNames and their index.
+-- @return table ["GuildRankName"] = rankIndex
 function RCLootCouncil:GetGuildRanks()
 	if not IsInGuild() then return {} end
 	self:DebugLog("GetGuildRankNum()")
@@ -1148,6 +1187,10 @@ function RCLootCouncil:GetGuildRanks()
 	return t;
 end
 
+--- Calculates how long ago a given date was.
+-- Assumes the date is of year 2000+.
+-- @param oldDate A string specifying the date, formatted as "dd/mm/yy".
+-- @return day, month, year.
 function RCLootCouncil:GetNumberOfDaysFromNow(oldDate)
 	local d, m, y = strsplit("/", oldDate, 3)
 	local sinceEpoch = time({year = "20"..y, month = m, day = d, hour = 0}) -- convert from string to seconds since epoch
@@ -1156,6 +1199,9 @@ function RCLootCouncil:GetNumberOfDaysFromNow(oldDate)
 	return diff.day - 1, diff.month - 1, diff.year - 1970
 end
 
+--- Takes the return value from :GetNumberOfDaysFromNow() and converts it to text.
+-- @see RCLootCouncil:GetNumberOfDaysFromNow
+-- @return A formatted string.
 function RCLootCouncil:ConvertDateToString(day, month, year)
 	local text = format(L["x days"], day)
 	if year > 0 then
@@ -1176,6 +1222,10 @@ function RCLootCouncil:OnEvent(event, ...)
 		-- high server-side latency causes the UnitIsGroupLeader("player") condition to fail if queried quickly (upon entering instance) regardless of state.
 		-- NOTE v2.0: Not sure if this is still an issue, but just add a 2 sec timer to the MLCheck call
 		self:ScheduleTimer("OnRaidEnter", 2)
+		self:ScheduleTimer(function() -- This needs some time to be ready
+			local instanceName, _, _, difficultyName = GetInstanceInfo()
+			self.currentInstanceName = instanceName.."-"..difficultyName
+		end, 5)
 
 	elseif event == "PLAYER_ENTERING_WORLD" then
 		self:Debug("Event:", event, ...)
@@ -1262,7 +1312,8 @@ function RCLootCouncil:OnRaidEnter(arg)
 	end
 end
 
--- Returns boolean, mlName. (true if the player is ML), (nil if there's no ML)
+--- Gets information about the current Master Looter, if any.
+-- @return boolean, "ML_Name". (true if the player is ML), (nil if there's no ML).
 function RCLootCouncil:GetML()
 	self:DebugLog("GetML()")
 	if GetNumGroupMembers() == 0 and (self.testMode or self.nnp) then -- always the player when testing alone
@@ -1296,7 +1347,8 @@ function RCLootCouncil:IsCouncil(name)
 	return ret
 end
 
---- Returns a table containing the the council members in the group
+--- Fetches the council members in the current group.
+-- @return table [i] = "council_man_name".
 function RCLootCouncil:GetCouncilInGroup()
 	local council = {}
 	if IsInRaid() then
@@ -1343,6 +1395,70 @@ function RCLootCouncil:GetInstalledModulesFormattedData()
 	return modules
 end
 
+
+--- Returns statistics for use in various detailed views.
+-- @return A table formatted as:
+--[[ @usage lootDBStatistics[candidate_name] = {
+	[item#] = { -- This should be 5 at most
+		[1] = lootWon,
+		[2] = formatted response string,
+		[3] = {color}, --see color format in self.responses
+		[4] = #index, 	-- Real entry index in historyDB[name][index]
+	},
+	totals = {
+		total = total loot won number,
+		tokens = {
+			instanceName = num, -- E.g Nighthold-Heroic
+		},
+		responses = {
+			[responseID] = { -- see index in self.responses. Award reasons gets 100 addded
+				[1] = responseText,
+				[2] = number of items won,
+				[3] = {color},
+			}
+		}
+	}
+}
+]]
+local lootDBStatistics
+function RCLootCouncil:GetLootDBStatistics()
+	self:DebugLog("GetLootDBStatistics()")
+	lootDBStatistics = {}
+	local entry, id
+	for name, data in pairs(self:GetHistoryDB()) do
+		local count, responseText, color, numTokens = {},{},{},{}
+		local lastestAwardFound = 0
+		lootDBStatistics[name] = {}
+		for i = #data, 1, -1 do -- Start from the end
+			entry = data[i]
+			id = entry.responseID
+			if entry.isAwardReason then id = id + 100 end -- Bump to distingush from normal awards
+			if not numTokens[entry.instance] then numTokens[entry.instance] = 0 end
+			numTokens[entry.instance] = entry.tierToken and numTokens[entry.instance] + 1 or numTokens[entry.instance]
+			count[id] = count[id] and count[id] + 1 or 1
+			responseText[id] = responseText[id] and responseText[id] or entry.response
+			if not color[id] or unpack(color[id],1,3) == unpack({1,1,1}) and #entry.color ~= 0  then -- If it's not already added
+				color[id] = #entry.color ~= 0 and #entry.color == 4 and entry.color or {1,1,1}
+			end
+			if type(id) == "number" and id <= db.numMoreInfoButtons and not entry.isAwardReason and lastestAwardFound < 5 then
+				tinsert(lootDBStatistics[name], {entry.lootWon, --[[entry.response .. ", "..]] format(L["'n days' ago"], self:ConvertDateToString(self:GetNumberOfDaysFromNow(entry.date))), color[id], i})
+				lastestAwardFound = lastestAwardFound + 1
+			end
+		end
+		-- Totals:
+		local totalNum = 0
+		lootDBStatistics[name].totals = {}
+		lootDBStatistics[name].totals.tokens = numTokens
+		lootDBStatistics[name].totals.responses = {}
+		for id, num in pairs(count) do
+			tinsert(lootDBStatistics[name].totals.responses, {responseText[id], num, color[id]})
+			totalNum = totalNum + num
+		end
+		lootDBStatistics[name].totals.total = totalNum
+	end
+	return lootDBStatistics
+end
+
 function RCLootCouncil:SessionError(...)
 	self:Print(L["session_error"])
 	self:Debug(...)
@@ -1381,9 +1497,9 @@ function RCLootCouncil.round(num, decimals)
 	return tonumber(string.format("%." .. (decimals or 0) .. "f", num))
 end
 
---- Compares two versions
--- returns true if ver1 is smaller than ver2
--- Assumes strings of format "x.y.z"
+--- Compares two versions.
+-- Assumes strings of format "x.y.z".
+-- @return True if ver1 is older than ver2, otherwise false.
 function RCLootCouncil:VersionCompare(ver1, ver2)
 	local a1,b1,c1 = string.split(".", ver1)
 	local a2,b2,c2 = string.split(".", ver2)
@@ -1432,13 +1548,13 @@ function RCLootCouncil:DecodeItemLink(itemLink)
 	    upgradeID = tonumber(upgradeID) or 0
 	 end
 
-    return color, itemType, itemID, enchantID, gemID1, gemID2, gemID3, gemID4, suffixID, uniqueID, linkLevel,
+    return color, linktype, itemID, enchantID, gemID1, gemID2, gemID3, gemID4, suffixID, uniqueID, linkLevel,
 	 		specializationID, upgradeTypeID, upgradeID, instanceDifficultyID, numBonuses, bonusIDs
 end
 
---- Custom, better UnitIsUnit() function
--- Blizz UnitIsUnit() doesn't know how to compare unit-realm with unit
--- Seems to be because unit-realm isn't a valid unitid
+--- Custom, better UnitIsUnit() function.
+-- Blizz UnitIsUnit() doesn't know how to compare unit-realm with unit.
+-- Seems to be because unit-realm isn't a valid unitid.
 function RCLootCouncil:UnitIsUnit(unit1, unit2)
 	if not unit1 or not unit2 then return false end
 	-- Remove realm names, if any
@@ -1451,12 +1567,15 @@ function RCLootCouncil:UnitIsUnit(unit1, unit2)
 	return UnitIsUnit(unit1, unit2)
 end
 
--- We always want realm name when we call UnitName
--- Note: If 'unit' is a playername, that player must be in our raid or party!
 --[[ NOTE I'm concerned about the UnitIsVisible() range thing with UnitName(),
- 	although testing in party doesn't seem to affect it. To counter this, it'll
-	return any "unit" with something after a "-" (i.e a name from GetRaidRosterInfo())
-	which means it isn't useable with all the "name-target" unitIDs]]
+although testing in party doesn't seem to affect it. To counter this, it'll
+return any "unit" with something after a "-" (i.e a name from GetRaidRosterInfo())
+which means it isn't useable with all the "name-target" unitIDs]]
+--- Gets a unit's name formatted with realmName.
+-- If the unit contains a '-' it's assumed it belongs to the realmName part.
+-- Note: If 'unit' is a playername, that player must be in our raid or party!
+-- @param unit Any unit, except those that include '-' like "name-target".
+-- @return Titlecased "unitName-realmName"
 function RCLootCouncil:UnitName(unit)
 	-- First strip any spaces
 	unit = gsub(unit, " ", "")
@@ -1481,41 +1600,46 @@ function RCLootCouncil:UnitName(unit)
 end
 
 ---------------------------------------------------------------------------
--- Custom module support funcs
+-- Custom module support funcs.
+-- @section Modules.
 ---------------------------------------------------------------------------
 
---- Enables a userModule if set, defaultModule otherwise
+--- Enables a userModule if set, defaultModule otherwise.
 -- @paramsig module
--- @param module String, must correspond to a index in self.defaultModules
+-- @param module String, must correspond to a index in self.defaultModules.
 function RCLootCouncil:CallModule(module)
 	if not self.enabled then return end -- Don't call modules unless enabled
 	self:EnableModule(userModules[module] or defaultModules[module])
 end
 
---- Returns the active module
---	Always use this when calling functions in another module
+--- Returns the active module.
+--	Always use this when calling functions in another module.
 -- @paramsig module
--- @param module String, must correspond to a index in self.defaultModules
--- @return The module object of the active module or nil if not found. Prioritises userModules if set
+-- @param module String, must correspond to a index in self.defaultModules.
+-- @return The module object of the active module or nil if not found. Prioritises userModules if set.
 function RCLootCouncil:GetActiveModule(module)
 	return self:GetModule(userModules[module] or defaultModules[module], false)
 end
 
---- Registers a module that should override a default module
--- The custom module must have all functions that a default module can be called with
--- @param type Index (string) in userModules
--- @param The name passed to AceAddon:NewModule()
+--- Registers a module that should override a default module.
+-- The custom module must have all functions that a default module can be called with.
+-- @paramsig type, name
+-- @param type Index (string) in userModules.
+-- @param name The name passed to AceAddon:NewModule().
 function RCLootCouncil:RegisterUserModule(type, name)
 	assert(defaultModules[type], format("Module \"%s\" is not a default module.", tostring(type)))
 	userModules[type] = name
 end
 
---- Enables a module to add chat commands to the "/rc" prefix
+--- Enables a module to add chat commands to the "/rc" prefix.
+-- @paramsig module, funcRef, ...
 -- @param module The object to call func on.
 -- @param funcRef The function reference to call on module. Passed with module as first arg, and up to two user args.
--- @param ... The command(s) the user can input
--- @usage For example in GroupGear: addon:CustomChatCmd(GroupGear, "Enable", "gg")
--- will result in GroupGear:Enable() being called if the user types "/rc gg"
+-- @param ... The command(s) the user can input.
+-- @usage
+-- -- For example in GroupGear:
+--	addon:CustomChatCmd(GroupGear, "Show", "gg", "groupgear", "gear")
+-- -- will result in GroupGear:Show() being called if the user types "/rc gg" (or "/rc groupgear" or "/rc gear")
 function RCLootCouncil:CustomChatCmd(module, funcRef, ...)
 	for i = 1, select("#", ...) do
 		self.customChatCmd[select(i, ...)] = {module = module, func = funcRef}
@@ -1526,7 +1650,8 @@ end
 
 
 ---------------------------------------------------------------------------
--- UI Functions used throughout the addon
+-- UI Functions used throughout the addon.
+-- @section UI.
 ---------------------------------------------------------------------------
 
 --- Used as a "DoCellUpdate" function for lib-st
@@ -1543,6 +1668,7 @@ function RCLootCouncil.SetCellClassIcon(rowFrame, frame, data, cols, row, realro
 end
 
 --- Returns a color table for use with lib-st
+-- @param class Global class name, i.e. "PRIEST"
 function RCLootCouncil:GetClassColor(class)
 	local color = RAID_CLASS_COLORS[class]
 	if not color then
@@ -1558,18 +1684,18 @@ function RCLootCouncil:RGBToHex(r,g,b)
 	return string.format("%02x%02x%02x",255*r, 255*g, 255*b)
 end
 
---- Creates a standard frame for RCLootCouncil with title, minimizuing, positioning and zoom support.
+--- Creates a standard frame for RCLootCouncil with title, minimizing, positioning and scaling supported.
 --		Adds Minimize(), Maximize() and IsMinimized() functions on the frame, and registers it for hide on combat.
---		SetWidth/SetHeight called on frame will also be called on frame.content
---		Minimizing is done by double clicking the title. The returned frame and frame.title is NOT minimized.
+--		SetWidth/SetHeight called on frame will also be called on frame.content.
+--		Minimizing is done by double clicking the title. The returned frame and frame.title is NOT hidden.
 -- 	Only frame.content is minimized, so put children there for minimize support.
 -- @paramsig name, cName, title[, width, height]
--- @param name Global name of the frame
--- @param cName Name of the module (used for lib-window-1.1 config in db.UI[cName])
--- @param title The title text
--- @param width The width of the titleframe, defaults to 250
--- @param height Height of the frame, defaults to 325
--- @return The frame object
+-- @param name Global name of the frame.
+-- @param cName Name of the module (used for lib-window-1.1 config in db.UI[cName]).
+-- @param title The title text.
+-- @param width The width of the titleframe, defaults to 250.
+-- @param height Height of the frame, defaults to 325.
+-- @return The frame object.
 function RCLootCouncil:CreateFrame(name, cName, title, width, height)
 	local f = CreateFrame("Frame", name, nil) -- LibWindow seems to work better with nil parent
 	f:Hide()
@@ -1684,8 +1810,8 @@ function RCLootCouncil:CreateFrame(name, cName, title, width, height)
 	return f
 end
 
---- Update all frames registered with RCLootCouncil:CreateFrame()
--- @usage Updates all the frame's colors as set in the db
+--- Update all frames registered with RCLootCouncil:CreateFrame().
+-- Updates all the frame's colors as set in the db.
 function RCLootCouncil:UpdateFrames()
 	for _, frame in pairs(frames) do
 		frame:Update()
@@ -1693,8 +1819,8 @@ function RCLootCouncil:UpdateFrames()
 end
 
 --- Applies a skin to all frames
--- @param key Index in db.skins
--- @usage Apply a certain skin once added to the db.skins table
+-- Skins must be added to the db.skins table first.
+-- @param key Index in db.skins.
 function RCLootCouncil:ActivateSkin(key)
 	if not db.skins[key] then return end
 	for k,v in pairs(db.UI) do
@@ -1707,10 +1833,10 @@ function RCLootCouncil:ActivateSkin(key)
 	self:UpdateFrames()
 end
 
---- Creates a standard button for RCLootCouncil
--- @param text The button's text
--- @param parent The frame that should hold the button
--- @return The button object
+--- Creates a standard button for RCLootCouncil.
+-- @param text The button's text.
+-- @param parent The frame that should hold the button.
+-- @return The button object.
 function RCLootCouncil:CreateButton(text, parent)
 	local b = CreateFrame("Button", nil, parent, "UIPanelButtonTemplate")
 	b:SetText(text)
@@ -1718,9 +1844,9 @@ function RCLootCouncil:CreateButton(text, parent)
 	return b
 end
 
---- Displays a tooltip anchored to the mouse
+--- Displays a tooltip anchored to the mouse.
 -- @paramsig ...
--- @param ... Lines to be added.
+-- @param ... string(s) Lines to be added.
 function RCLootCouncil:CreateTooltip(...)
 	GameTooltip:SetOwner(UIParent, "ANCHOR_CURSOR")
 	for i = 1, select("#", ...) do
@@ -1729,9 +1855,9 @@ function RCLootCouncil:CreateTooltip(...)
 	GameTooltip:Show()
 end
 
---- Displays a hyperlink tooltip
+--- Displays a hyperlink tooltip.
 -- @paramsig link
--- @param link The link to display
+-- @param link The link to display.
 function RCLootCouncil:CreateHypertip(link)
 	if not link or link == "" then return end
 	local function tip() -- Implement shift click compare on all tooltips
@@ -1759,33 +1885,35 @@ function RCLootCouncil:HideTooltip()
 	GameTooltip:Hide()
 end
 
---- Removes any realm name from name
+--- Formats a name with or without realmName.
 -- @paramsig name
--- @param name Name with(out) realmname
--- @return The name, with(out) realmname according to selected options
+-- @param name Name with(out) realmname.
+-- @return The name, with(out) realmname according to user options.
 function RCLootCouncil.Ambiguate(name)
 	return db.ambiguate and Ambiguate(name, "none") or Ambiguate(name, "short")
 end
 
---- Returns the text of a button, returning settings from mldb, or default buttons
+--- Returns the text of a button, returning settings from mldb if possible, otherwise default buttons.
 -- @paramsig index
--- @param index The button's index
+-- @param index The button's index.
 function RCLootCouncil:GetButtonText(i)
 	return (self.mldb.buttons and self.mldb.buttons[i]) and self.mldb.buttons[i].text or db.buttons[i].text
 end
 
 --- The following functions returns the text, sort or color of a response, returning a result from mldb if possible, otherwise the default responses.
 -- @paramsig response
--- @param response Index in db.responses
+-- @param response Index in db.responses.
 function RCLootCouncil:GetResponseText(response)
 	return (self.mldb.responses and self.mldb.responses[response]) and self.mldb.responses[response].text or db.responses[response].text
 end
 
+---
 function RCLootCouncil:GetResponseColor(response)
 	local color = (self.mldb.responses and self.mldb.responses[response]) and self.mldb.responses[response].color or db.responses[response].color
 	return unpack(color)
 end
 
+---
 function RCLootCouncil:GetResponseSort(response)
 	return (self.mldb.responses and self.mldb.responses[response]) and self.mldb.responses[response].sort or db.responses[response].sort
 end
@@ -1794,6 +1922,7 @@ end
 --@debug@
 -- debug func
 function printtable( data, level )
+	if not data then return end
 	level = level or 0
 	local ident=strrep('     ', level)
 	if level>6 then return end

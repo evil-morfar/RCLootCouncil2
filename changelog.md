@@ -1,4 +1,36 @@
+### v2.3.1
+---
+* **History**
+ * Now tracks tier tokens received, group size and instanceMapIDs.
+ * Tier tokens received is displayed in the more info details in the voting frame.
+ * Removed response text from voting frame more info to make it smaller.
+ * The loot history is now enabled by default.
+
+
+* Minor optimizations.
+
+* Fixed some spelling mistakes.
+
+### v2.3.0
+---
+* **Patch 7.2**
+  * Added Tier 20 tokens
+  * Updated .toc to 7.2.
+  * Updated libraries.
+
+
 * Councilmen reconnecting will now receive the full session data instead of just the initial state.
+* Added better boss name grabbing for the loot history.
+
+
+##### Bugfixes
+ + *Fixed a bug that allowed modules to cause errors when changing columns (#249).*
+
+### v2.2.5
+---
+##### Bugfixes
++ *The fix to ticket #237 caused another issue under certain circumstances - refixed the fix.*
+
 
 ### v2.2.4
 ---
@@ -7,7 +39,7 @@
 
 ##### Bugfixes
 + *Links for gear2 is now properly generated when using TSV export.*
-+ *Items will no longer be added twice to the session setup if you open the ML loot twice before starting the session (#237).*
++ *~~Items will no longer be added multiple times to the session setup if you reopen the ML loot before starting the session (#237).~~*
 + *The Version Checker will no longer fail to show correct modules after manipulating the list.*
 
 
