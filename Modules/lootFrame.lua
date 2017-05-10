@@ -23,7 +23,7 @@ function LootFrame:Start(table)
 			numRolled = numRolled + 1
 		else
 			items[k] = {
-				name = table[k].name,
+			--	name = table[k].name,
 				link = table[k].link,
 				ilvl = table[k].ilvl,
 				texture = table[k].texture,
@@ -44,7 +44,7 @@ function LootFrame:ReRoll(table)
 	addon:DebugLog("LootFrame:ReRoll(#table)", #table)
 	for k,v in ipairs(table) do
 		tinsert(items,  {
-			name = v.name,
+		--	name = v.name,
 			link = v.link,
 			ilvl = v.ilvl,
 			texture = v.texture,

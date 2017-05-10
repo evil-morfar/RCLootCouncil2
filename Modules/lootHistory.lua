@@ -7,7 +7,7 @@ local addon = LibStub("AceAddon-3.0"):GetAddon("RCLootCouncil")
 local LootHistory = addon:NewModule("RCLootHistory")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 local AG = LibStub("AceGUI-3.0")
-local lootDB, scrollCols, data, db, numLootWon;
+local lootDB, scrollCols, data, db, numLootWon
 --[[ data structure:
 data[date][playerName] = {
 	["class"] = CLASS,
@@ -16,7 +16,7 @@ data[date][playerName] = {
 	}
 }
 ]]
-local selectedDate, selectedName, filterMenu, moreInfo
+local selectedDate, selectedName, filterMenu, moreInfo, moreInfoData
 local ROW_HEIGHT = 20;
 local NUM_ROWS = 15;
 
@@ -67,6 +67,7 @@ end
 
 --- Show the LootHistory frame.
 function LootHistory:Show()
+	moreInfoData = addon:GetLootDBStatistics()
 	self.frame:Show()
 end
 
@@ -619,6 +620,15 @@ function LootHistory:UpdateMoreInfo(rowFrame, cellFrame, dat, cols, row, realrow
 		tip:AddDoubleLine("mapID", data.mapID, 1,1,1, 1,1,1)
 		tip:AddDoubleLine("groupSize", data.groupSize, 1,1,1, 1,1,1)
 		tip:AddDoubleLine("tierToken", data.tierToken, 1,1,1, 1,1,1)
+		tip:AddLine("Total tokens won:")
+		for name, num in pairs(moreInfoData[row.name].totals.tokens) do
+			tip:AddDoubleLine(name, num, 1,1,1, 1,1,1)
+		end
+		tip:AddLine("Total responses:")
+		for i, v in pairs(moreInfoData[row.name].totals.responses) do
+			local r,g,b = unpack(v[3])
+			tip:AddDoubleLine(i ..": " .. v[1], v[2], r,g,b, 1,1,1)
+		end
 	end
 	tip:SetScale(db.UI.history.scale)
 	if moreInfo then

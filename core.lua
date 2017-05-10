@@ -6,9 +6,8 @@
 TODOs/Notes
 	Things marked with "todo"
 		- TIER Buttons:
-			Everything but the lootFrame is implemented and untested.
-			We must likely need to revise lootFrame a lot and create new button text getters for it to work.
-			Not to mention responses for votingFrame.
+			Everything  is implemented and untested.
+			NOTE responses for votingFrame?
 		- Item subtype in history exports
 		- IDEA Have player's current gear sent with lootAck
 		- Use the new lootHistory flags in the lootHistory. http://wow.gamepedia.com/API_GetDifficultyInfo should be useful.
