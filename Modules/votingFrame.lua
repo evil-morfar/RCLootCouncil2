@@ -736,7 +736,7 @@ end
 function RCVotingFrame.SetCellRank(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
 	local name = data[realrow].name
 	frame.text:SetText(lootTable[session].candidates[name].rank)
-	frame.text:SetTextColor(addon:GetResponseColor(lootTable[session].candidates[name].response))
+	frame.text:SetTextColor(addon:GetResponseColor(lootTable[session].candidates[name].response,lootTable[session].candidates[name].isTier))
 	data[realrow].cols[column].value = lootTable[session].candidates[name].rank
 end
 
@@ -744,7 +744,7 @@ function RCVotingFrame.SetCellRole(rowFrame, frame, data, cols, row, realrow, co
 	local name = data[realrow].name
 	local role = addon.TranslateRole(lootTable[session].candidates[name].role)
 	frame.text:SetText(role)
-	frame.text:SetTextColor(addon:GetResponseColor(lootTable[session].candidates[name].response))
+	frame.text:SetTextColor(addon:GetResponseColor(lootTable[session].candidates[name].response,lootTable[session].candidates[name].isTier))
 	data[realrow].cols[column].value = role
 end
 
