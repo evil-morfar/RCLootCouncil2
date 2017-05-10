@@ -54,7 +54,7 @@ function RCLootCouncil:OnInitialize()
   	self.version = GetAddOnMetadata("RCLootCouncil", "Version")
 	self.nnp = false
 	self.debug = false
-	self.tVersion = "alpha-1" -- String or nil. Indicates test version, which alters stuff like version check. Is appended to 'version', i.e. "version-tVersion" (max 10 letters for stupid security)
+	self.tVersion = nil -- String or nil. Indicates test version, which alters stuff like version check. Is appended to 'version', i.e. "version-tVersion" (max 10 letters for stupid security)
 
 	self.playerClass = select(2, UnitClass("player"))
 	self.guildRank = L["Unguilded"]
@@ -1487,8 +1487,7 @@ end
 -- therefore a patched version is reproduced here
 -- replace with LibUtilities when bug is fixed
 function RCLootCouncil:DecodeItemLink(itemLink)
-    local bonusIDs = bonusIDs or {}
-    wipe(bonusIDs)
+    local bonusIDs = {}
 
     local linkType, itemID, enchantID, gemID1, gemID2, gemID3, gemID4, suffixID, uniqueID, linkLevel, specializationID,
 	 upgradeTypeID, instanceDifficultyID, numBonuses, affixes = string.split(":", itemLink, 15)
@@ -1518,13 +1517,14 @@ function RCLootCouncil:DecodeItemLink(itemLink)
     end
 
     -- more clean up
+	 local upgradeID
 	 if affixes then
-	    local upgradeID = select(numBonuses + 1, string.split(":", affixes)) or 0
+	    upgradeID = select(numBonuses + 1, string.split(":", affixes)) or 0
 	    upgradeID = string.match(upgradeID, "%d*")
 	    upgradeID = tonumber(upgradeID) or 0
 	 end
 
-    return color, linktype, itemID, enchantID, gemID1, gemID2, gemID3, gemID4, suffixID, uniqueID, linkLevel,
+    return color, linkType, itemID, enchantID, gemID1, gemID2, gemID3, gemID4, suffixID, uniqueID, linkLevel,
 	 		specializationID, upgradeTypeID, upgradeID, instanceDifficultyID, numBonuses, bonusIDs
 end
 
