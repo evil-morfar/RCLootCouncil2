@@ -141,7 +141,8 @@ function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
 				end
 
 			elseif command == "change_response" and addon:UnitIsUnit(sender, addon.masterLooter) then
-				local ses, name, response = unpack(data)
+				local ses, name, response, isTier = unpack(data)
+				self:SetCandidateData(ses, name, "isTier", isTier)
 				self:SetCandidateData(ses, name, "response", response)
 				self:Update()
 
@@ -963,6 +964,8 @@ do
 		local data = lootTable[session].candidates[candidateName] -- Shorthand
 
 		if level == 1 then
+			info = Lib_UIDropDownMenu_CreateInfo()
+			
 			info.text = addon.Ambiguate(candidateName)
 			info.isTitle = true
 			info.notCheckable = true
@@ -1045,8 +1048,9 @@ do
 				end
 
 			elseif value == "CHANGE_RESPONSE" then
+				local v;
 				for i = 1, db.numButtons do
-					local v = db.responses[i]
+					v = db.responses[i]
 					info.text = v.text
 					info.colorCode = "|cff"..addon:RGBToHex(unpack(v.color))
 					info.notCheckable = true
@@ -1055,9 +1059,11 @@ do
 					end
 					Lib_UIDropDownMenu_AddButton(info, level)
 				end
+
+				info = Lib_UIDropDownMenu_CreateInfo()
 				if addon.debug then -- Add all possible responses when debugging
 					for k,v in pairs(db.responses) do
-						if type(k) ~= "number" then
+						if type(k) ~= "number" and k ~= "tier" then
 							info.text = v.text
 							info.colorCode = "|cff"..addon:RGBToHex(unpack(v.color))
 							info.notCheckable = true
@@ -1068,6 +1074,14 @@ do
 						end
 					end
 				end
+
+				info = Lib_UIDropDownMenu_CreateInfo()
+				-- Add the tier menu
+				info.text = "Tier Tokens ..."
+				info.value = "TIER_TOKENS"
+				info.hasArrow = true
+				info.notCheckable = true
+				Lib_UIDropDownMenu_AddButton(info, level)
 
 			elseif value == "REANNOUNCE" then
 				info.text = addon.Ambiguate(candidateName)
@@ -1115,6 +1129,21 @@ do
 					addon:SendCommand(candidateName, "reroll", t)
 				end
 				Lib_UIDropDownMenu_AddButton(info, level);
+			end
+
+		elseif level == 3 then
+			local value = LIB_UIDROPDOWNMENU_MENU_VALUE
+			info = Lib_UIDropDownMenu_CreateInfo()
+			if value == "TIER_TOKENS" then
+				for k,v in ipairs(db.responses.tier) do
+					info.text = v.text
+					info.colorCode = "|cff"..addon:RGBToHex(unpack(v.color))
+					info.notCheckable = true
+					info.func = function()
+							addon:SendCommand("group", "change_response", session, candidateName, k, true)
+					end
+					Lib_UIDropDownMenu_AddButton(info, level)
+				end
 			end
 		end
 	end
