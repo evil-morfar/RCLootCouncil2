@@ -49,13 +49,13 @@ function LootHistory:OnInitialize()
 end
 
 local tierLookUpTable = { -- MapID to Tier text
-	[1530] = "Tier 19"
+	[1530] = L["Tier 19"],
 }
 
 local difficultyLookupTable = {
-	[14] = "Normal",
-	[15] = "Heroic",
-	[16] = "Mythic",
+	[14] = L["tier_token_normal"],
+	[15] = L["tier_token_heroic"],
+	[16] = L["tier_token_mythic"],
 }
 
 function LootHistory:OnEnable()
@@ -616,7 +616,7 @@ function LootHistory:UpdateMoreInfo(rowFrame, cellFrame, dat, cols, row, realrow
 	tip:AddDoubleLine(L["From:"], data.instance or L["Unknown"], 1,1,1, 0.823529, 0.411765, 0.117647)
 	tip:AddDoubleLine(L["Votes"]..":", data.votes or L["Unknown"], 1,1,1, 1,1,1)
 	tip:AddLine(" ")
-	tip:AddLine("Tokens received")
+	tip:AddLine(L["Tokens received"])
 	-- Add tier tokens
 	for name, v in pairs(moreInfoData[row.name].totals.tokens) do
 		if v.mapID and v.difficultyID and tierLookUpTable[v.mapID] then
@@ -624,7 +624,7 @@ function LootHistory:UpdateMoreInfo(rowFrame, cellFrame, dat, cols, row, realrow
 		end
 	end
 	tip:AddLine(" ")
-	tip:AddLine("Total awards")
+	tip:AddLine(L["Total awards"])
 	table.sort(moreInfoData[row.name].totals.responses, function(a,b) return type(a[4]) == "number" and type(b[4]) == "number" and a[4] < b[4] or false end)
 	for i, v in pairs(moreInfoData[row.name].totals.responses) do
 		local r,g,b = unpack(v[3])
