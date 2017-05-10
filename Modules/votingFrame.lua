@@ -750,8 +750,9 @@ end
 
 function RCVotingFrame.SetCellResponse(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
 	local name = data[realrow].name
-	frame.text:SetText(addon:GetResponseText(lootTable[session].candidates[name].response))
-	frame.text:SetTextColor(addon:GetResponseColor(lootTable[session].candidates[name].response))
+	local isTier = lootTable[session].candidates[name].isTier
+	frame.text:SetText(addon:GetResponseText(lootTable[session].candidates[name].response, isTier))
+	frame.text:SetTextColor(addon:GetResponseColor(lootTable[session].candidates[name].response, isTier))
 end
 
 function RCVotingFrame.SetCellIlvl(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)

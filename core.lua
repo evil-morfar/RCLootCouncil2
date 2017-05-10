@@ -1901,7 +1901,7 @@ end
 -- @param isTier True if the response belongs to a tier item.
 function RCLootCouncil:GetButtonText(i, isTier)
 	if isTier and self.mldb.tierButtonsEnabled then
-		return (self.mldb.buttons.tier and self.mldb.buttons.tier[i]) and self.mldb.buttons.tier[i].text or db.buttons.tier[i].text
+		return (self.mldb.tierButtons and self.mldb.tierButtons[i]) and self.mldb.tierButtons[i].text or db.tierButtons[i].text
 	else
 		return (self.mldb.buttons and self.mldb.buttons[i]) and self.mldb.buttons[i].text or db.buttons[i].text
 	end
@@ -1912,8 +1912,11 @@ end
 -- @param response Index in db.responses.
 -- @param isTier True if the response belongs to a tier item.
 function RCLootCouncil:GetResponseText(response, isTier)
-	return (isTier and self.mldb.tierButtonsEnabled and (self.mldb.responses.tier and self.mldb.responses.tier[response]) and self.mldb.responses.tier[response].text or db.responses.tier[response].text)
-		or	((self.mldb.responses and self.mldb.responses[response]) and self.mldb.responses[response].text or db.responses[response].text)
+	if isTier and self.mldb.tierButtonsEnabled then
+		return (self.mldb.responses.tier and self.mldb.responses.tier[response]) and self.mldb.responses.tier[response].text or db.responses.tier[response].text
+	else
+		return (self.mldb.responses and self.mldb.responses[response]) and self.mldb.responses[response].text or db.responses[response].text
+	end
 end
 
 ---

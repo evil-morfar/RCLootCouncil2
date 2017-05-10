@@ -835,14 +835,15 @@ function addon:OptionsTable()
 									args = {
 										tierButtonsEnabled = {
 											order = 0,
-											name = "Enable Tier Buttons.",
+											name = "Enable Tier Buttons",
 											desc = "Check to enable a seperate set of buttons when rolling for tier pieces.",
 											type = "toggle",
 										},
 										optionsDesc = {
 											order = 0.1,
-											name = "Select which buttons/responses to use when handling tier pieces.",
-											type = "description"
+											name = "Select which buttons/responses to use when handling tier pieces. It's basically the same concept as above, except these are shown when tier pieces drop.\nA pass button is still added to the right.",
+											type = "description",
+											hidden = function() return not self.db.profile.tierButtonsEnabled end,
 										},
 										tierNumButtons = {
 											order = 1,
@@ -853,6 +854,7 @@ function addon:OptionsTable()
 											min = 1,
 											max = self.db.profile.maxButtons,
 											step = 1,
+											hidden = function() return not self.db.profile.tierButtonsEnabled end,
 										},
 										-- Made further down
 									},
@@ -893,7 +895,7 @@ function addon:OptionsTable()
 								},
 							},
 							moreInfoOptions = {
-								order = 5,
+								order = 4,
 								type = "group",
 								name = L["More Info"],
 								inline = true,
@@ -915,7 +917,7 @@ function addon:OptionsTable()
 								},
 							},
 							responseFromChat = {
-								order = 4,
+								order = 5,
 								type = "group",
 								name = L["Responses from Chat"],
 								inline = true,
@@ -1250,7 +1252,7 @@ function addon:OptionsTable()
 			type = "input",
 			get = function() return self.db.profile.tierButtons[v.sort].text end,
 			set = function(info, value) addon:ConfigTableChanged("tierButtons"); self.db.profile.tierButtons[v.sort].text = tostring(value) end,
-			hidden = function() return self.db.profile.tierNumButtons < v.sort end,
+			hidden = function() return not self.db.profile.tierButtonsEnabled or self.db.profile.tierNumButtons < v.sort end,
 		}
 		options.args.mlSettings.args.buttonsTab.args.tierButtonsOptions.args["color"..k] = {
 			order = v.sort * 3 + 2,
@@ -1259,7 +1261,7 @@ function addon:OptionsTable()
 			type = "color",
 			get = function() return unpack(v.color)	end,
 			set = function(info,r,g,b,a) addon:ConfigTableChanged("responses"); v.color = {r,g,b,a} end,
-			hidden = function() return self.db.profile.tierNumButtons < v.sort end,
+			hidden = function() return not self.db.profile.tierButtonsEnabled or self.db.profile.tierNumButtons < v.sort end,
 		}
 		options.args.mlSettings.args.buttonsTab.args.tierButtonsOptions.args["text"..k] = {
 			order = v.sort * 3 + 3,
@@ -1268,7 +1270,7 @@ function addon:OptionsTable()
 			type = "input",
 			get = function() return v.text end,
 			set = function(info, value) addon:ConfigTableChanged("responses"); v.text = tostring(value) end,
-			hidden = function() return self.db.profile.tierNumButtons < v.sort end,
+			hidden = function() return not self.db.profile.tierButtonsEnabled or self.db.profile.tierNumButtons < v.sort end,
 		}
 	end
 	-- #endregion
