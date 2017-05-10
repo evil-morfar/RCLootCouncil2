@@ -5,7 +5,9 @@
 --------------------------------
 TODOs/Notes
 	Things marked with "todo"
-		- Change history tag to awardType.
+		- TIER TOKENS
+			- Change history tag to awardType.
+			- Need better width updating in lootFrame!
 		- Item subtype in history exports
 		- IDEA Have player's current gear sent with lootAck
 		- Use the new lootHistory flags in the lootHistory. http://wow.gamepedia.com/API_GetDifficultyInfo should be useful.
@@ -358,7 +360,7 @@ function RCLootCouncil:OnEnable()
 
 	if self.db.global.version and self:VersionCompare(self.db.global.version, self.version) then -- We've upgraded
 		if self:VersionCompare(self.db.global.version, "2.4.0") then -- Update lootDB with newest changes
-			
+
 		end
 		self.db.global.oldVersion = self.db.global.version
 		self.db.global.version = self.version
