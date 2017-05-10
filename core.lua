@@ -5,9 +5,7 @@
 --------------------------------
 TODOs/Notes
 	Things marked with "todo"
-		- TIER Buttons:
-			Everything  is implemented and untested.
-			NOTE responses for votingFrame?
+		- Change history tag to awardType.
 		- Item subtype in history exports
 		- IDEA Have player's current gear sent with lootAck
 		- Use the new lootHistory flags in the lootHistory. http://wow.gamepedia.com/API_GetDifficultyInfo should be useful.
@@ -359,30 +357,8 @@ function RCLootCouncil:OnEnable()
 	self:ActivateSkin(db.currentSkin)
 
 	if self.db.global.version and self:VersionCompare(self.db.global.version, self.version) then -- We've upgraded
-		if self:VersionCompare(self.db.global.version, "2.3.1") then -- Update lootDB with newest changes
-			self:Print("Updating Loot History")
-			for name, data in pairs(historyDB) do
-				for i, v in pairs(data) do
-					local id = self:GetItemIDFromLink(v.lootWon)
-					v.tierToken = id and RCTokenTable[id]
-					-- Can't really do much for non-english clients here
-					if v.instance == "The Nighthold-Normal" or v.instance == "The Nighthold-Heroic"  or v.instance == "The Nighthold-Mythic"  then
-						v.mapID = 1530
-					elseif v.instance == "Trial of Valor-Normal" or v.instance == "Trial of Valor-Heroic" or v.instance == "Trial of Valor-Mythic" then
-						v.mapID = 1648
-					elseif v.instance == "The Emerald Nightmare-Normal" or v.instance == "The Emerald Nightmare-Heroic" or v.instance == "The Emerald Nightmare-Mythic" then
-						v.mapID = 1520
-					end
-					if strmatch(v.instance, "Normal") then
-						v.difficultyID = 14
-					elseif strmatch(v.instance, "Heroic") then
-						v.difficultyID = 15
-					elseif strmatch(v.instance, "Mythic") then
-						v.difficultyID = 16
-					end
-				end
-			end
-			self:Print("Done")
+		if self:VersionCompare(self.db.global.version, "2.4.0") then -- Update lootDB with newest changes
+			
 		end
 		self.db.global.oldVersion = self.db.global.version
 		self.db.global.version = self.version
