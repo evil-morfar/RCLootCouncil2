@@ -33,7 +33,7 @@ function LootFrame:Start(table)
 				equipLoc = table[k].equipLoc,
 				timeLeft = addon.mldb.timeout,
 				subType = table[k].subType,
-				token = table[k].token,
+				isTier = table[k].token,
 			}
 		end
 	end
@@ -54,7 +54,7 @@ function LootFrame:ReRoll(table)
 			equipLoc = v.equipLoc,
 			timeLeft = addon.mldb.timeout,
 			subType = table[k].subType,
-			token = v.token,
+			isTier = v.token,
 		})
 	end
 	self:Show()
@@ -94,19 +94,21 @@ function LootFrame:Update()
 			entries[numEntries].icon:SetNormalTexture(v.texture)
 			entries[numEntries].itemText:SetText(v.link)
 			entries[numEntries].itemLvl:SetText(format(L["ilvl: x"], v.ilvl))
-			if not entries[numEntries].buttons[addon.mldb.numButtons+1] then
+			local numButtons = v.isTier and addon.mldb.tierButtonsEnabled and addon.mldb.tierNumButtons or addon.mldb.numButtons
+			if not entries[numEntries].buttons[numButtons + 1] then
 				 -- mldb have probably updated since we created the buttons
-				 entries[numEntries]:UpdateButtons()
+				 entries[numEntries]:UpdateButtons(v.isTier)
 			end
 			-- Update the buttons and get frame width
 			-- IDEA There might be a better way of doing this instead of SetText() on every update?
-			local but = entries[numEntries].buttons[addon.mldb.numButtons+1]
+			local but = entries[numEntries].buttons[numButtons+1]
 			but:SetWidth(but:GetTextWidth() + 10)
 			if but:GetWidth() < MIN_BUTTON_WIDTH then but:SetWidth(MIN_BUTTON_WIDTH) end -- ensure minimum width
 			width = width + but:GetWidth()
-			for i = 1, addon.mldb.numButtons do
+
+			for i = 1, numButtons do
 				but = entries[numEntries].buttons[i]
-				but:SetText(addon:GetButtonText(i))
+				but:SetText(addon:GetButtonText(i, v.isTier))
 				but:SetWidth(but:GetTextWidth() + 10)
 				if but:GetWidth() < MIN_BUTTON_WIDTH then but:SetWidth(MIN_BUTTON_WIDTH) end
 				width = width + but:GetWidth()
@@ -134,8 +136,8 @@ end
 function LootFrame:OnRoll(entry, button)
 	addon:Debug("LootFrame:OnRoll", entry, button, "Response:", addon:GetResponseText(button))
 	local index = entries[entry].realID
-
-	addon:SendCommand("group", "response", addon:CreateResponse(items[index].session, items[index].link, items[index].ilvl, button, items[index].equipLoc, items[index].note, items[index].subType))
+	local isTier = items[index].isTier and addon.mldb.tierButtonsEnabled -- Both needs to be true before we've actually rolled on it
+	addon:SendCommand("group", "response", addon:CreateResponse(items[index].session, items[index].link, items[index].ilvl, button, items[index].equipLoc, items[index].note, items[index].subType, isTier))
 
 	numRolled = numRolled + 1
 	items[index].rolled = true
@@ -183,21 +185,22 @@ function LootFrame:GetEntry(entry)
 	f.icon = icon
 
 	-------- Buttons -------------
-	function f:UpdateButtons()
+	function f:UpdateButtons(isTier)
 		if not f.buttons then f.buttons = {} end -- Reuse if already created
-		for i = 1, addon.mldb.numButtons do
-			f.buttons[i] = f.buttons[i] or addon:CreateButton(addon:GetButtonText(i), f)
+		local numButtons = isTier and addon.mldb.tierButtonsEnabled and addon.mldb.tierNumButtons or addon.mldb.numButtons
+		for i = 1, numButtons do
+			f.buttons[i] = f.buttons[i] or addon:CreateButton(addon:GetButtonText(i, isTier), f)
 			if i == 1 then
-				f.buttons[i]:SetPoint("BOTTOMLEFT", icon, "BOTTOMRIGHT", 5, 0)
+				f.buttons[i]:SetPoint("BOTTOMLEFT", f.icon, "BOTTOMRIGHT", 5, 0)
 			else
 				f.buttons[i]:SetPoint("LEFT", f.buttons[i-1], "RIGHT", 5, 0)
 			end
 			f.buttons[i]:SetScript("OnClick", function() LootFrame:OnRoll(entry, i) end)
 		end
 		-- Pass button
-		f.buttons[addon.mldb.numButtons + 1] = addon:CreateButton(L["Pass"], f)
-		f.buttons[addon.mldb.numButtons + 1]:SetPoint("LEFT", f.buttons[addon.mldb.numButtons], "RIGHT", 5, 0)
-		f.buttons[addon.mldb.numButtons + 1]:SetScript("OnClick", function() LootFrame:OnRoll(entry, "PASS") end)
+		f.buttons[numButtons + 1] = addon:CreateButton(L["Pass"], f)
+		f.buttons[numButtons + 1]:SetPoint("LEFT", f.buttons[numButtons], "RIGHT", 5, 0)
+		f.buttons[numButtons + 1]:SetScript("OnClick", function() LootFrame:OnRoll(entry, "PASS") end)
 	end
 	f:UpdateButtons()
 

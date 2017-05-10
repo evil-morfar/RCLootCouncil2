@@ -7,6 +7,12 @@
  * The loot history is now enabled by default.
 
 
+* **Tier tokens**
+ * By default, tier tokens now receive special roll options.
+ * A brand new set of buttons and responses have been added for tier tokens only.
+ * Check them out in the options menu, where it can also be disabled if need be.
+
+
 * Minor optimizations.
 
 * Fixed some spelling mistakes.

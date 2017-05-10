@@ -89,10 +89,10 @@ function RCLootCouncil:OnInitialize()
 		--[[2]]			  { color = {1,0.5,0,1},			sort = 2,		text = L["Offspec/Greed"],	},
 		--[[3]]			  { color = {0,0.7,0.7,1},			sort = 3,		text = L["Minor Upgrade"],},
 		tier = {
-			["4PIECE"]		= { color = {0,1,0,1},				sort = 1,		text = "4th Tier Piece",},
-			["2PIECE"]		= { color = {0.1,1,0.1,1},			sort = 2,		text = "2nd Tier Piece",},
-			OTHERPIECE		= { color = {1,0.5,0,1},			sort = 3,		text = "Tier Piece that doesn't complete a set",},
-			TIERUPGRADE 	= { color = {0.2,0.2,1,1},			sort = 4,		text = "Upgrade to existing tier/random upgrade",},
+			--[[1]]		  { color = {0,1,0,1},				sort = 1,		text = "4th Tier Piece",},
+			--[[2]]		  { color = {0.1,1,0.1,1},			sort = 2,		text = "2nd Tier Piece",},
+			--[[3]]		  { color = {1,0.5,0,1},			sort = 3,		text = "Tier Piece that doesn't complete a set",},
+			--[[4]]		  { color = {0.2,0.2,1,1},			sort = 4,		text = "Upgrade to existing tier/random upgrade",},
 		},
 	}
 	self.roleTable = {
@@ -231,12 +231,13 @@ function RCLootCouncil:OnInitialize()
 				{	text = L["Greed"],				whisperKey = L["whisperKey_greed"],},	-- 2
 				{	text = L["Minor Upgrade"],		whisperKey = L["whisperKey_minor"],},	-- 3
 			},
+			tierButtonsEnabled = true,
 			tierNumButtons = 4,
 			tierButtons = {
-				{	text = "4 Piece",					whisperKey = "4, 4tier, 4piece"},
-				{	text = "2 Piece",					whisperKey = "2, 2tier, 2piece"},
-				{	text = "Other piece",			whisperKey = "other, tier, piece"},
-				{	text = "Upgrade",					whisperKey = "upgrade, up"},
+				{	text = "4 Piece",					whisperKey = "4, 4tier, 4piece"},	-- 1
+				{	text = "2 Piece",					whisperKey = "2, 2tier, 2piece"},	-- 2
+				{	text = "Other piece",			whisperKey = "other, tier, piece"}, -- 3
+				{	text = "Upgrade",					whisperKey = "upgrade, up"},			-- 4
 			},
 			numMoreInfoButtons = 1,
 			maxAwardReasons = 10,
@@ -1102,8 +1103,9 @@ end
 -- @param equipLoc	The item in the session's equipLoc.
 -- @param note			The player's note.
 -- @param subType		The item's subType, needed for Artifact Relics.
+-- @param isTier		Indicates if the response is a tier response. (v2.4.0)
 -- @return A formatted table that can be passed directly to :SendCommand("group", "response", -return-).
-function RCLootCouncil:CreateResponse(session, link, ilvl, response, equipLoc, note, subType)
+function RCLootCouncil:CreateResponse(session, link, ilvl, response, equipLoc, note, subType, isTier)
 	self:DebugLog("CreateResponse", session, link, ilvl, response, equipLoc, note, subType)
 	local g1, g2;
 	if equipLoc == "" and self.db.global.localizedSubTypes[subType] == "Artifact Relic" then
@@ -1125,7 +1127,8 @@ function RCLootCouncil:CreateResponse(session, link, ilvl, response, equipLoc, n
 			ilvl = select(2,GetAverageItemLevel()),
 			diff = diff,
 			note = note,
-			response = response
+			response = response,
+			isTier = isTier,
 		}
 end
 
@@ -1893,29 +1896,45 @@ function RCLootCouncil.Ambiguate(name)
 	return db.ambiguate and Ambiguate(name, "none") or Ambiguate(name, "short")
 end
 
---- Returns the text of a button, returning settings from mldb if possible, otherwise default buttons.
--- @paramsig index
+--- Returns the text of a button, returning settings from mldb if possible, otherwise from default buttons.
+-- @paramsig index [, isTier]
 -- @param index The button's index.
-function RCLootCouncil:GetButtonText(i)
-	return (self.mldb.buttons and self.mldb.buttons[i]) and self.mldb.buttons[i].text or db.buttons[i].text
+-- @param isTier True if the response belongs to a tier item.
+function RCLootCouncil:GetButtonText(i, isTier)
+	if isTier and self.mldb.tierButtonsEnabled then
+		return (self.mldb.buttons.tier and self.mldb.buttons.tier[i]) and self.mldb.buttons.tier[i].text or db.buttons.tier[i].text
+	else
+		return (self.mldb.buttons and self.mldb.buttons[i]) and self.mldb.buttons[i].text or db.buttons[i].text
+	end
 end
 
---- The following functions returns the text, sort or color of a response, returning a result from mldb if possible, otherwise the default responses.
--- @paramsig response
+--- The following functions returns the text, sort or color of a response, returning a result from mldb if possible, otherwise from the default responses.
+-- @paramsig response [, isTier]
 -- @param response Index in db.responses.
-function RCLootCouncil:GetResponseText(response)
-	return (self.mldb.responses and self.mldb.responses[response]) and self.mldb.responses[response].text or db.responses[response].text
+-- @param isTier True if the response belongs to a tier item.
+function RCLootCouncil:GetResponseText(response, isTier)
+	return (isTier and self.mldb.tierButtonsEnabled and (self.mldb.responses.tier and self.mldb.responses.tier[response]) and self.mldb.responses.tier[response].text or db.responses.tier[response].text)
+		or	((self.mldb.responses and self.mldb.responses[response]) and self.mldb.responses[response].text or db.responses[response].text)
 end
 
 ---
-function RCLootCouncil:GetResponseColor(response)
-	local color = (self.mldb.responses and self.mldb.responses[response]) and self.mldb.responses[response].color or db.responses[response].color
+function RCLootCouncil:GetResponseColor(response, isTier)
+	local color
+	if isTier and self.mldb.tierButtonsEnabled then
+		 color = (self.mldb.responses.tier and self.mldb.responses.tier[response]) and self.mldb.responses.tier[response].color or db.responses.tier[response].color
+ 	else
+		color = (self.mldb.responses and self.mldb.responses[response]) and self.mldb.responses[response].color or db.responses[response].color
+	end
 	return unpack(color)
 end
 
 ---
-function RCLootCouncil:GetResponseSort(response)
-	return (self.mldb.responses and self.mldb.responses[response]) and self.mldb.responses[response].sort or db.responses[response].sort
+function RCLootCouncil:GetResponseSort(response, isTier)
+	if isTier and self.mldb.tierButtonsEnabled then
+		return (self.mldb.responses.tier and self.mldb.responses.tier[response]) and self.mldb.responses.tier[response].sort or db.responses.tier[response].sort
+	else
+		return (self.mldb.responses and self.mldb.responses[response]) and self.mldb.responses[response].sort or db.responses[response].sort
+	end
 end
 
 --#end UI Functions -----------------------------------------------------

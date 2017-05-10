@@ -223,7 +223,7 @@ function RCLootCouncilML:BuildMLdb()
 			changedButtons[i] = {text = db.buttons[i].text}
 		end
 	end
-	changedTierButtons = {}
+	local changedTierButtons = {}
 	for i = 1, db.tierNumButtons do
 		if db.tierButtons[i].text ~= addon.defaults.profile.tierButtons[i].text then
 			changedTierButtons[i] = {text = db.buttons[i].text}
@@ -242,6 +242,7 @@ function RCLootCouncilML:BuildMLdb()
 		anonymousVoting = db.anonymousVoting,
 		allowNotes		= db.allowNotes,
 		numButtons		= db.numButtons,
+		tierNumButtons = db.tierNumButtons,
 		hideVotes		= db.hideVotes,
 		observe			= db.observe,
 	--	awardReasons	= changedAwardReasons,
@@ -249,6 +250,7 @@ function RCLootCouncilML:BuildMLdb()
 		tierButtons 	= changedTierButtons,
 		responses		= changedResponses,
 		timeout			= db.timeout,
+		tierButtonsEnabled = db.tierButtonsEnabled,
 	}
 end
 

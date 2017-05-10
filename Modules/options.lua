@@ -911,8 +911,14 @@ function addon:OptionsTable()
 									name = "Tier Buttons and Responses",
 									inline = true,
 									args = {
-										optionsDesc = {
+										tierButtonsEnabled = {
 											order = 0,
+											name = "Enable Tier Buttons.",
+											desc = "Check to enable a seperate set of buttons when rolling for tier pieces.",
+											type = "toggle",
+										},
+										optionsDesc = {
+											order = 0.1,
 											name = "Select which buttons/responses to use when handling tier pieces.",
 											type = "description"
 										},
