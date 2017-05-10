@@ -36,10 +36,10 @@ function LootHistory:OnInitialize()
 	scrollCols = {
 		{name = "",					width = ROW_HEIGHT, },			-- Class icon, should be same row as player
 		{name = L["Name"],		width = 100, 				},		-- Name of the player
-		{name = L["Time"],		width = 125, comparesort = self.DateTimeSort	},			-- Time of awarding
+		{name = L["Time"],		width = 125, comparesort = self.DateTimeSort, sort = "dsc",},			-- Time of awarding
 		{name = "",					width = ROW_HEIGHT, },			-- Item at index icon
 		{name = L["Item"],		width = 250, 				}, 	-- Item string
-		{name = L["Reason"],		width = 220, comparesort = self.ResponseSort, sort = "asc", sortnext = 2},	-- Response aka the text supplied to lootDB...response
+		{name = L["Reason"],		width = 220, comparesort = self.ResponseSort,  sortnext = 2},	-- Response aka the text supplied to lootDB...response
 		{name = "",					width = ROW_HEIGHT},				-- Delete button
 	}
 	filterMenu = CreateFrame("Frame", "RCLootCouncil_LootHistory_FilterMenu", UIParent, "Lib_UIDropDownMenuTemplate")
@@ -47,6 +47,16 @@ function LootHistory:OnInitialize()
 	--MoreInfo
 	self.moreInfo = CreateFrame( "GameTooltip", "RCLootHistoryMoreInfo", nil, "GameTooltipTemplate" )
 end
+
+local tierLookUpTable = { -- MapID to Tier text
+	[1530] = L["Tier 19"],
+}
+
+local difficultyLookupTable = {
+	[14] = L["tier_token_normal"],
+	[15] = L["tier_token_heroic"],
+	[16] = L["tier_token_mythic"],
+}
 
 function LootHistory:OnEnable()
 	addon:Debug("OnEnable()")
@@ -585,7 +595,7 @@ function LootHistory:GetFrame()
 	return f;
 end
 
-function LootHistory:UpdateMoreInfo(rowFrame, cellFrame, dat, cols, row, realrow, column, table, button, ...)
+function LootHistory:UpdateMoreInfo(rowFrame, cellFrame, dat, cols, row, realrow, column, tabel, button, ...)
 	if not dat then return end
 	local tip = self.moreInfo -- shortening
 	tip:SetOwner(self.frame, "ANCHOR_RIGHT")
@@ -605,7 +615,24 @@ function LootHistory:UpdateMoreInfo(rowFrame, cellFrame, dat, cols, row, realrow
 	tip:AddDoubleLine(L["Dropped by:"], data.boss or L["Unknown"], 1,1,1, 0.862745, 0.0784314, 0.235294)
 	tip:AddDoubleLine(L["From:"], data.instance or L["Unknown"], 1,1,1, 0.823529, 0.411765, 0.117647)
 	tip:AddDoubleLine(L["Votes"]..":", data.votes or L["Unknown"], 1,1,1, 1,1,1)
+	tip:AddLine(" ")
+	tip:AddLine(L["Tokens received"])
+	-- Add tier tokens
+	for name, v in pairs(moreInfoData[row.name].totals.tokens) do
+		if v.mapID and v.difficultyID and tierLookUpTable[v.mapID] then
+			tip:AddDoubleLine(tierLookUpTable[v.mapID].." "..difficultyLookupTable[v.difficultyID]..":", v.num, 1,1,1, 1,1,1)
+		end
+	end
+	tip:AddLine(" ")
+	tip:AddLine(L["Total awards"])
+	table.sort(moreInfoData[row.name].totals.responses, function(a,b) return type(a[4]) == "number" and type(b[4]) == "number" and a[4] < b[4] or false end)
+	for i, v in pairs(moreInfoData[row.name].totals.responses) do
+		local r,g,b = unpack(v[3])
+		tip:AddDoubleLine(v[1], v[2], r,g,b, 1,1,1)
+	end
 	tip:AddDoubleLine(L["Total items won:"], numLootWon[row.name], 1,1,1, 0,1,0)
+
+
 
 	-- Debug stuff
 	if addon.debug then
@@ -620,15 +647,13 @@ function LootHistory:UpdateMoreInfo(rowFrame, cellFrame, dat, cols, row, realrow
 		tip:AddDoubleLine("mapID", data.mapID, 1,1,1, 1,1,1)
 		tip:AddDoubleLine("groupSize", data.groupSize, 1,1,1, 1,1,1)
 		tip:AddDoubleLine("tierToken", data.tierToken, 1,1,1, 1,1,1)
+		tip:AddLine(" ")
 		tip:AddLine("Total tokens won:")
-		for name, num in pairs(moreInfoData[row.name].totals.tokens) do
-			tip:AddDoubleLine(name, num, 1,1,1, 1,1,1)
-		end
-		tip:AddLine("Total responses:")
-		for i, v in pairs(moreInfoData[row.name].totals.responses) do
-			local r,g,b = unpack(v[3])
-			tip:AddDoubleLine(i ..": " .. v[1], v[2], r,g,b, 1,1,1)
-		end
+ 		for name, v in pairs(moreInfoData[row.name].totals.tokens) do
+ 			tip:AddDoubleLine(name, v.num, 1,1,1, 1,1,1)
+ 		end
+		tip:AddLine(" ")
+
 	end
 	tip:SetScale(db.UI.history.scale)
 	if moreInfo then

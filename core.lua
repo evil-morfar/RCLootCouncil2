@@ -10,11 +10,6 @@ TODOs/Notes
 			- Need better width updating in lootFrame!
 		- Item subtype in history exports
 		- IDEA Have player's current gear sent with lootAck
-		- Use the new lootHistory flags in the lootHistory. http://wow.gamepedia.com/API_GetDifficultyInfo should be useful.
-			instanceMapIDs:
-				1520	The Emerald Nightmare Legion
-				1648 	Trial of Valor
-				1530	The Nighthold Legion
 --------------------------------
 CHANGELOG
 	-- SEE CHANGELOG.TXT
@@ -56,7 +51,7 @@ function RCLootCouncil:OnInitialize()
   	self.version = GetAddOnMetadata("RCLootCouncil", "Version")
 	self.nnp = false
 	self.debug = false
-	self.tVersion = "alpha-1" -- String or nil. Indicates test version, which alters stuff like version check. Is appended to 'version', i.e. "version-tVersion" (max 10 letters for stupid security)
+	self.tVersion = nil -- String or nil. Indicates test version, which alters stuff like version check. Is appended to 'version', i.e. "version-tVersion" (max 10 letters for stupid security)
 
 	self.playerClass = select(2, UnitClass("player"))
 	self.guildRank = L["Unguilded"]
@@ -1391,13 +1386,17 @@ end
 	totals = {
 		total = total loot won number,
 		tokens = {
-			instanceName = num, -- E.g Nighthold-Heroic
+			instanceName = { -- E.g Nighthold-Heroic
+				num = numTokensReceived,
+				mapID = mapID,
+				difficultyID = difficultyID,
 		},
 		responses = {
-			[responseID] = { -- see index in self.responses. Award reasons gets 100 addded
+			[i] = {
 				[1] = responseText,
 				[2] = number of items won,
 				[3] = {color},
+				[4] = responseID, -- see index in self.responses. Award reasons gets 100 addded
 			}
 		}
 	}
@@ -1416,8 +1415,9 @@ function RCLootCouncil:GetLootDBStatistics()
 			entry = data[i]
 			id = entry.responseID
 			if entry.isAwardReason then id = id + 100 end -- Bump to distingush from normal awards
-			if not numTokens[entry.instance] then numTokens[entry.instance] = 0 end
-			numTokens[entry.instance] = entry.tierToken and numTokens[entry.instance] + 1 or numTokens[entry.instance]
+			-- We assume the mapID and difficultyID is available on any item if at all.
+			if not numTokens[entry.instance] then numTokens[entry.instance] = {num = 0, mapID = entry.mapID, difficultyID = entry.difficultyID} end
+			numTokens[entry.instance].num = entry.tierToken and numTokens[entry.instance].num + 1 or numTokens[entry.instance].num
 			count[id] = count[id] and count[id] + 1 or 1
 			responseText[id] = responseText[id] and responseText[id] or entry.response
 			if not color[id] or unpack(color[id],1,3) == unpack({1,1,1}) and #entry.color ~= 0  then -- If it's not already added
@@ -1434,7 +1434,7 @@ function RCLootCouncil:GetLootDBStatistics()
 		lootDBStatistics[name].totals.tokens = numTokens
 		lootDBStatistics[name].totals.responses = {}
 		for id, num in pairs(count) do
-			tinsert(lootDBStatistics[name].totals.responses, {responseText[id], num, color[id]})
+			tinsert(lootDBStatistics[name].totals.responses, {responseText[id], num, color[id], id})
 			totalNum = totalNum + num
 		end
 		lootDBStatistics[name].totals.total = totalNum
@@ -1494,8 +1494,7 @@ end
 -- therefore a patched version is reproduced here
 -- replace with LibUtilities when bug is fixed
 function RCLootCouncil:DecodeItemLink(itemLink)
-    local bonusIDs = bonusIDs or {}
-    wipe(bonusIDs)
+    local bonusIDs = {}
 
     local linkType, itemID, enchantID, gemID1, gemID2, gemID3, gemID4, suffixID, uniqueID, linkLevel, specializationID,
 	 upgradeTypeID, instanceDifficultyID, numBonuses, affixes = string.split(":", itemLink, 15)
@@ -1525,13 +1524,14 @@ function RCLootCouncil:DecodeItemLink(itemLink)
     end
 
     -- more clean up
+	 local upgradeID
 	 if affixes then
-	    local upgradeID = select(numBonuses + 1, string.split(":", affixes)) or 0
+	    upgradeID = select(numBonuses + 1, string.split(":", affixes)) or 0
 	    upgradeID = string.match(upgradeID, "%d*")
 	    upgradeID = tonumber(upgradeID) or 0
 	 end
 
-    return color, linktype, itemID, enchantID, gemID1, gemID2, gemID3, gemID4, suffixID, uniqueID, linkLevel,
+    return color, linkType, itemID, enchantID, gemID1, gemID2, gemID3, gemID4, suffixID, uniqueID, linkLevel,
 	 		specializationID, upgradeTypeID, upgradeID, instanceDifficultyID, numBonuses, bonusIDs
 end
 
