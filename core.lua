@@ -1379,13 +1379,17 @@ end
 	totals = {
 		total = total loot won number,
 		tokens = {
-			instanceName = num, -- E.g Nighthold-Heroic
+			instanceName = { -- E.g Nighthold-Heroic
+				num = numTokensReceived,
+				mapID = mapID,
+				difficultyID = difficultyID,
 		},
 		responses = {
-			[responseID] = { -- see index in self.responses. Award reasons gets 100 addded
+			[i] = {
 				[1] = responseText,
 				[2] = number of items won,
 				[3] = {color},
+				[4] = responseID, -- see index in self.responses. Award reasons gets 100 addded
 			}
 		}
 	}
@@ -1404,8 +1408,9 @@ function RCLootCouncil:GetLootDBStatistics()
 			entry = data[i]
 			id = entry.responseID
 			if entry.isAwardReason then id = id + 100 end -- Bump to distingush from normal awards
-			if not numTokens[entry.instance] then numTokens[entry.instance] = 0 end
-			numTokens[entry.instance] = entry.tierToken and numTokens[entry.instance] + 1 or numTokens[entry.instance]
+			-- We assume the mapID and difficultyID is available on any item if at all.
+			if not numTokens[entry.instance] then numTokens[entry.instance] = {num = 0, mapID = entry.mapID, difficultyID = entry.difficultyID} end
+			numTokens[entry.instance].num = entry.tierToken and numTokens[entry.instance].num + 1 or numTokens[entry.instance].num
 			count[id] = count[id] and count[id] + 1 or 1
 			responseText[id] = responseText[id] and responseText[id] or entry.response
 			if not color[id] or unpack(color[id],1,3) == unpack({1,1,1}) and #entry.color ~= 0  then -- If it's not already added
@@ -1422,7 +1427,7 @@ function RCLootCouncil:GetLootDBStatistics()
 		lootDBStatistics[name].totals.tokens = numTokens
 		lootDBStatistics[name].totals.responses = {}
 		for id, num in pairs(count) do
-			tinsert(lootDBStatistics[name].totals.responses, {responseText[id], num, color[id]})
+			tinsert(lootDBStatistics[name].totals.responses, {responseText[id], num, color[id], id})
 			totalNum = totalNum + num
 		end
 		lootDBStatistics[name].totals.total = totalNum

@@ -16,7 +16,7 @@ data[date][playerName] = {
 	}
 }
 ]]
-local selectedDate, selectedName, filterMenu, moreInfo
+local selectedDate, selectedName, filterMenu, moreInfo, moreInfoData
 local ROW_HEIGHT = 20;
 local NUM_ROWS = 15;
 
@@ -48,6 +48,16 @@ function LootHistory:OnInitialize()
 	self.moreInfo = CreateFrame( "GameTooltip", "RCLootHistoryMoreInfo", nil, "GameTooltipTemplate" )
 end
 
+local tierLookUpTable = { -- MapID to Tier text
+	[1530] = "Tier 19"
+}
+
+local difficultyLookupTable = {
+	[14] = "Normal",
+	[15] = "Heroic",
+	[16] = "Mythic",
+}
+
 function LootHistory:OnEnable()
 	addon:Debug("OnEnable()")
 	moreInfo = true
@@ -67,6 +77,7 @@ end
 
 --- Show the LootHistory frame.
 function LootHistory:Show()
+	moreInfoData = addon:GetLootDBStatistics()
 	self.frame:Show()
 end
 
@@ -584,7 +595,7 @@ function LootHistory:GetFrame()
 	return f;
 end
 
-function LootHistory:UpdateMoreInfo(rowFrame, cellFrame, dat, cols, row, realrow, column, table, button, ...)
+function LootHistory:UpdateMoreInfo(rowFrame, cellFrame, dat, cols, row, realrow, column, tabel, button, ...)
 	if not dat then return end
 	local tip = self.moreInfo -- shortening
 	tip:SetOwner(self.frame, "ANCHOR_RIGHT")
@@ -604,7 +615,24 @@ function LootHistory:UpdateMoreInfo(rowFrame, cellFrame, dat, cols, row, realrow
 	tip:AddDoubleLine(L["Dropped by:"], data.boss or L["Unknown"], 1,1,1, 0.862745, 0.0784314, 0.235294)
 	tip:AddDoubleLine(L["From:"], data.instance or L["Unknown"], 1,1,1, 0.823529, 0.411765, 0.117647)
 	tip:AddDoubleLine(L["Votes"]..":", data.votes or L["Unknown"], 1,1,1, 1,1,1)
+	tip:AddLine(" ")
+	tip:AddLine("Tokens received")
+	-- Add tier tokens
+	for name, v in pairs(moreInfoData[row.name].totals.tokens) do
+		if v.mapID and v.difficultyID and tierLookUpTable[v.mapID] then
+			tip:AddDoubleLine(tierLookUpTable[v.mapID].." "..difficultyLookupTable[v.difficultyID]..":", v.num, 1,1,1, 1,1,1)
+		end
+	end
+	tip:AddLine(" ")
+	tip:AddLine("Total awards")
+	table.sort(moreInfoData[row.name].totals.responses, function(a,b) return type(a[4]) == "number" and type(b[4]) == "number" and a[4] < b[4] or false end)
+	for i, v in pairs(moreInfoData[row.name].totals.responses) do
+		local r,g,b = unpack(v[3])
+		tip:AddDoubleLine(v[1], v[2], r,g,b, 1,1,1)
+	end
 	tip:AddDoubleLine(L["Total items won:"], numLootWon[row.name], 1,1,1, 0,1,0)
+
+
 
 	-- Debug stuff
 	if addon.debug then
@@ -619,6 +647,13 @@ function LootHistory:UpdateMoreInfo(rowFrame, cellFrame, dat, cols, row, realrow
 		tip:AddDoubleLine("mapID", data.mapID, 1,1,1, 1,1,1)
 		tip:AddDoubleLine("groupSize", data.groupSize, 1,1,1, 1,1,1)
 		tip:AddDoubleLine("tierToken", data.tierToken, 1,1,1, 1,1,1)
+		tip:AddLine(" ")
+		tip:AddLine("Total tokens won:")
+ 		for name, v in pairs(moreInfoData[row.name].totals.tokens) do
+ 			tip:AddDoubleLine(name, v.num, 1,1,1, 1,1,1)
+ 		end
+		tip:AddLine(" ")
+
 	end
 	tip:SetScale(db.UI.history.scale)
 	if moreInfo then
