@@ -310,11 +310,11 @@ local function updateLootHistory()
 			for _, v in pairs(data) do
 				if v.mapID then
 					if v.mapID == 1530 then
-						nighthold = strsplit("-", v.instance,1)
+						nighthold = strsplit("-", v.instance,2)
 					elseif v.mapID == 1648 then
-						trialofvalor = strsplit("-", v.instance,1)
+						trialofvalor = strsplit("-", v.instance,2)
 					elseif v.mapID == 1520 then
-						emeraldnightmare = strsplit("-", v.instance,1)
+						emeraldnightmare = strsplit("-", v.instance,2)
 					end
 				end
 				-- double up just in case mapID or difficultyID are missing
