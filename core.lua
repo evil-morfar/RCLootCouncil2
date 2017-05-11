@@ -297,6 +297,34 @@ function RCLootCouncil:OnInitialize()
 	self:DebugLog("Logged In")
 end
 
+-- v2.3.1 added some new stuff. This will update old history entries with most of that for english clients.
+-- Should be kept for a while so people can update in case their ML is slow to get it done.
+local function updateLootHistory()
+	RCLootCouncil:Print("Updating Loot History")
+	for name, data in pairs(historyDB) do
+		for i, v in pairs(data) do
+			local id = RCLootCouncil:GetItemIDFromLink(v.lootWon)
+			v.tierToken = id and RCTokenTable[id]
+			-- Can't really do much for non-english clients here
+			if v.instance == "The Nighthold-Normal" or v.instance == "The Nighthold-Heroic"  or v.instance == "The Nighthold-Mythic"  then
+				v.mapID = 1530
+			elseif v.instance == "Trial of Valor-Normal" or v.instance == "Trial of Valor-Heroic" or v.instance == "Trial of Valor-Mythic" then
+				v.mapID = 1648
+			elseif v.instance == "The Emerald Nightmare-Normal" or v.instance == "The Emerald Nightmare-Heroic" or v.instance == "The Emerald Nightmare-Mythic" then
+				v.mapID = 1520
+			end
+			if strmatch(v.instance, "Normal") then
+				v.difficultyID = 14
+			elseif strmatch(v.instance, "Heroic") then
+				v.difficultyID = 15
+			elseif strmatch(v.instance, "Mythic") then
+				v.difficultyID = 16
+			end
+		end
+	end
+	RCLootCouncil:Print("Done")
+end
+
 function RCLootCouncil:OnEnable()
 	-- Register the player's name
 	self.realmName = select(2, UnitFullName("player"))
@@ -322,30 +350,9 @@ function RCLootCouncil:OnEnable()
 	self:ActivateSkin(db.currentSkin)
 
 	if self.db.global.version and self:VersionCompare(self.db.global.version, self.version) then -- We've upgraded
-		if self:VersionCompare(self.db.global.version, "2.3.1") then -- Update lootDB with newest changes
-			self:Print("Updating Loot History")
-			for name, data in pairs(historyDB) do
-				for i, v in pairs(data) do
-					local id = self:GetItemIDFromLink(v.lootWon)
-					v.tierToken = id and RCTokenTable[id]
-					-- Can't really do much for non-english clients here
-					if v.instance == "The Nighthold-Normal" or v.instance == "The Nighthold-Heroic"  or v.instance == "The Nighthold-Mythic"  then
-						v.mapID = 1530
-					elseif v.instance == "Trial of Valor-Normal" or v.instance == "Trial of Valor-Heroic" or v.instance == "Trial of Valor-Mythic" then
-						v.mapID = 1648
-					elseif v.instance == "The Emerald Nightmare-Normal" or v.instance == "The Emerald Nightmare-Heroic" or v.instance == "The Emerald Nightmare-Mythic" then
-						v.mapID = 1520
-					end
-					if strmatch(v.instance, "Normal") then
-						v.difficultyID = 14
-					elseif strmatch(v.instance, "Heroic") then
-						v.difficultyID = 15
-					elseif strmatch(v.instance, "Mythic") then
-						v.difficultyID = 16
-					end
-				end
-			end
-			self:Print("Done")
+		if self:VersionCompare(self.db.global.version, "2.3.2") then -- Update lootDB with newest changes
+			-- delay it abit
+			self:ScheduleTimer(updateLootHistory(), 5)
 		end
 		self.db.global.oldVersion = self.db.global.version
 		self.db.global.version = self.version
@@ -438,6 +445,8 @@ end
 function RCLootCouncil:CouncilChanged()
 	self:SendMessage("RCCouncilChanged")
 end
+
+
 
 function RCLootCouncil:ChatCommand(msg)
 	local input, arg1, arg2 = self:GetArgs(msg,3)
@@ -537,6 +546,9 @@ function RCLootCouncil:ChatCommand(msg)
 	elseif input == "clearlog" then
 		wipe(debugLog)
 		self:Print("Debug Log cleared.")
+
+	elseif input == "updatehistory" or (input == "update" and arg1 == "history") then
+		updateLootHistory()
 --@debug@
 	elseif input == 't' then -- Tester cmd
 		local ItemUpgradeInfo = LibStub("LibItemUpgradeInfo-1.0")
