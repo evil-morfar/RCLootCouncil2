@@ -423,13 +423,13 @@ function RCVotingFrame:UpdateMoreInfo(row, data)
 		local r,g,b
 		tip:AddLine(L["Latest item(s) won"])
 		for i, v in ipairs(moreInfoData[name]) do -- extract latest awarded items
-			r,g,b = v[3] and unpack(v[3],1,3)
+			if v[3] then r,g,b = unpack(v[3],1,3) end
 			tip:AddDoubleLine(v[1], v[2], nil,nil,nil, r or 1, g or 1, b or 1)
 		end
 		tip:AddLine(" ") -- spacer
 		tip:AddLine(L["Totals"])
 		for _, v in pairs(moreInfoData[name].totals.responses) do
-			r,g,b = v[3] and unpack(v[3],1,3)
+			if v[3] then r,g,b = unpack(v[3],1,3) end
 			tip:AddDoubleLine(v[1], v[2], r or 1,g or 1,b or 1, r or 1,g or 1,b or 1)
 		end
 		tip:AddLine(" ")
