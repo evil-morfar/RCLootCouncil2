@@ -297,63 +297,6 @@ function RCLootCouncil:OnInitialize()
 	self:DebugLog("Logged In")
 end
 
--- v2.3.1 added some new stuff. This will update old history entries with most of that for english clients.
--- Should be kept for a while so people can update in case their ML is slow to get it done.
-local function updateLootHistory()
-	RCLootCouncil:Print("Updating Loot History")
-	local nighthold, trialofvalor, emeraldnightmare = "The Nighthold", "Trial of Valor", "The Emerald Nightmare"
-	local normal, heroic, mythic = "Normal", "Heroic", "Mythic"
-	if GetLocale() ~= "enUS" then -- Let's see if we can get creative
-		RCLootCouncil:Debug("Trying to extract non-english history update data")
-		-- If we find a 2.3.1+ entry, we can use that info to update older entries
-		for _, data in pairs(historyDB) do
-			for _, v in pairs(data) do
-				if v.mapID then
-					if v.mapID == 1530 then
-						nighthold = strsplit("-", v.instance,2)
-					elseif v.mapID == 1648 then
-						trialofvalor = strsplit("-", v.instance,2)
-					elseif v.mapID == 1520 then
-						emeraldnightmare = strsplit("-", v.instance,2)
-					end
-				end
-				-- double up just in case mapID or difficultyID are missing
-				if v.difficultyID then
-					if v.difficultyID == 14 then
-						_, normal = strsplit("-", v.instance,2)
-					elseif v.difficultyID == 15 then
-						_, heroic = strsplit("-", v.instance,2)
-					elseif v.difficultyID == 16 then
-						_, mythic = strsplit("-", v.instance,2)
-					end
-				end
-			end
-		end
-		RCLootCouncil:Debug("Result:",nighthold, trialofvalor, emeraldnightmare, normal, heroic, mythic)
-	end
-	for _, data in pairs(historyDB) do
-		for _, v in pairs(data) do
-			local id = RCLootCouncil:GetItemIDFromLink(v.lootWon)
-			v.tierToken = id and RCTokenTable[id]
-			if strmatch(v.instance, nighthold) then
-				v.mapID = 1530
-			elseif strmatch(v.instance, trialofvalor) then
-				v.mapID = 1648
-			elseif strmatch(v.instance, emeraldnightmare) then
-				v.mapID = 1520
-			end
-			if strmatch(v.instance, normal) then
-				v.difficultyID = 14
-			elseif strmatch(v.instance, heroic) then
-				v.difficultyID = 15
-			elseif strmatch(v.instance, mythic) then
-				v.difficultyID = 16
-			end
-		end
-	end
-	RCLootCouncil:Print("Done")
-end
-
 function RCLootCouncil:OnEnable()
 	-- Register the player's name
 	self.realmName = select(2, UnitFullName("player"))
@@ -381,7 +324,7 @@ function RCLootCouncil:OnEnable()
 	if self.db.global.version and self:VersionCompare(self.db.global.version, self.version) then -- We've upgraded
 		if self:VersionCompare(self.db.global.version, "2.3.2") then -- Update lootDB with newest changes
 			-- delay it abit
-			self:ScheduleTimer(updateLootHistory(), 5)
+			self:ScheduleTimer("UpdateLootHistory", 5)
 		end
 		self.db.global.oldVersion = self.db.global.version
 		self.db.global.version = self.version
@@ -577,7 +520,7 @@ function RCLootCouncil:ChatCommand(msg)
 		self:Print("Debug Log cleared.")
 
 	elseif input == "updatehistory" or (input == "update" and arg1 == "history") then
-		updateLootHistory()
+		self:UpdateLootHistory()
 --@debug@
 	elseif input == 't' then -- Tester cmd
 		local ItemUpgradeInfo = LibStub("LibItemUpgradeInfo-1.0")
@@ -1950,3 +1893,60 @@ function printtable( data, level )
 	until true end
 end
 --@end-debug@
+
+-- v2.3.1 added some new stuff. This will update old history entries with most of that for english clients.
+-- Should be kept for a while so people can update in case their ML is slow to get it done.
+function RCLootCouncil:UpdateLootHistory()
+	self:Print("Updating Loot History")
+	local nighthold, trialofvalor, emeraldnightmare = "The Nighthold", "Trial of Valor", "The Emerald Nightmare"
+	local normal, heroic, mythic = "Normal", "Heroic", "Mythic"
+	if GetLocale() ~= "enUS" then -- Let's see if we can get creative
+		self:Debug("Trying to extract non-english history update data")
+		-- If we find a 2.3.1+ entry, we can use that info to update older entries
+		for _, data in pairs(historyDB) do
+			for _, v in pairs(data) do
+				if v.mapID then
+					if v.mapID == 1530 then
+						nighthold = strsplit("-", v.instance,2)
+					elseif v.mapID == 1648 then
+						trialofvalor = strsplit("-", v.instance,2)
+					elseif v.mapID == 1520 then
+						emeraldnightmare = strsplit("-", v.instance,2)
+					end
+				end
+				-- double up just in case mapID or difficultyID are missing
+				if v.difficultyID then
+					if v.difficultyID == 14 then
+						_, normal = strsplit("-", v.instance,2)
+					elseif v.difficultyID == 15 then
+						_, heroic = strsplit("-", v.instance,2)
+					elseif v.difficultyID == 16 then
+						_, mythic = strsplit("-", v.instance,2)
+					end
+				end
+			end
+		end
+		self:Debug("Result:",nighthold, trialofvalor, emeraldnightmare, normal, heroic, mythic)
+	end
+	for _, data in pairs(historyDB) do
+		for _, v in pairs(data) do
+			local id = self:GetItemIDFromLink(v.lootWon)
+			v.tierToken = id and RCTokenTable[id]
+			if strmatch(v.instance, nighthold) then
+				v.mapID = 1530
+			elseif strmatch(v.instance, trialofvalor) then
+				v.mapID = 1648
+			elseif strmatch(v.instance, emeraldnightmare) then
+				v.mapID = 1520
+			end
+			if strmatch(v.instance, normal) then
+				v.difficultyID = 14
+			elseif strmatch(v.instance, heroic) then
+				v.difficultyID = 15
+			elseif strmatch(v.instance, mythic) then
+				v.difficultyID = 16
+			end
+		end
+	end
+	self:Print("Done")
+end
