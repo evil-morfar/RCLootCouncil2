@@ -1,3 +1,9 @@
+### v2.3.2
+---
+###### Bugfixes
+ + *Newest history additions didn't work well with very old history data.*
+
+
 ### v2.3.1
 ---
 * **History**

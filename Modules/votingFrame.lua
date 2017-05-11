@@ -420,15 +420,17 @@ function RCVotingFrame:UpdateMoreInfo(row, data)
 
 	tip:AddLine(addon.Ambiguate(name), color.r, color.g, color.b)
 	if moreInfoData[name] then
+		local r,g,b
 		tip:AddLine(L["Latest item(s) won"])
 		for i, v in ipairs(moreInfoData[name]) do -- extract latest awarded items
-			tip:AddDoubleLine(v[1], v[2], nil,nil,nil,unpack(v[3],1,3))
+			r,g,b = v[3] and unpack(v[3],1,3)
+			tip:AddDoubleLine(v[1], v[2], nil,nil,nil, r or 1, g or 1, b or 1)
 		end
 		tip:AddLine(" ") -- spacer
 		tip:AddLine(L["Totals"])
 		for _, v in pairs(moreInfoData[name].totals.responses) do
-			local r,g,b = unpack(v[3],1,3)
-			tip:AddDoubleLine(v[1], v[2], r,g,b, r,g,b)
+			r,g,b = v[3] and unpack(v[3],1,3)
+			tip:AddDoubleLine(v[1], v[2], r or 1,g or 1,b or 1, r or 1,g or 1,b or 1)
 		end
 		tip:AddLine(" ")
 		if moreInfoData[name].totals.tokens[addon.currentInstanceName] then
