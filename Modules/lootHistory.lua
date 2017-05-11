@@ -627,8 +627,8 @@ function LootHistory:UpdateMoreInfo(rowFrame, cellFrame, dat, cols, row, realrow
 	tip:AddLine(L["Total awards"])
 	table.sort(moreInfoData[row.name].totals.responses, function(a,b) return type(a[4]) == "number" and type(b[4]) == "number" and a[4] < b[4] or false end)
 	for i, v in pairs(moreInfoData[row.name].totals.responses) do
-		local r,g,b = unpack(v[3])
-		tip:AddDoubleLine(v[1], v[2], r,g,b, 1,1,1)
+		local r,g,b = v[3] and unpack(v[3])
+		tip:AddDoubleLine(v[1], v[2], r or 1, g or 1, b or 1, 1,1,1)
 	end
 	tip:AddDoubleLine(L["Total items won:"], numLootWon[row.name], 1,1,1, 0,1,0)
 
@@ -640,7 +640,7 @@ function LootHistory:UpdateMoreInfo(rowFrame, cellFrame, dat, cols, row, realrow
 		tip:AddDoubleLine("ResponseID", tostring(data.responseID), 1,1,1, 1,1,1)
 		tip:AddDoubleLine("Response:", data.response, 1,1,1, 1,1,1)
 		tip:AddDoubleLine("isAwardReason:", tostring(data.isAwardReason), 1,1,1, 1,1,1)
-		local r,g,b = unpack(data.color)
+		local r,g,b = data.color and unpack(data.color)
 		tip:AddDoubleLine("color:", data.color and r..", "..g..", "..b or "none", 1,1,1, r,g,b)
 		tip:AddDoubleLine("DataIndex:", row.num, 1,1,1, 1,1,1)
 		tip:AddDoubleLine("difficultyID:", data.difficultyID, 1,1,1, 1,1,1)
