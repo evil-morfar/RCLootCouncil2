@@ -269,7 +269,7 @@ function RCLootCouncil:OnInitialize()
 			text = L["Button"].." "..i,
 			whisperKey = ""..i,
 		})
-		if i > #self.defaults.profile.tierNumButtons then
+		if i > self.defaults.profile.tierNumButtons then
 			tinsert(self.defaults.profile.tierButtons, {
 				text = L["Button"].." "..i,
 				whisperKey = ""..i,
@@ -282,7 +282,7 @@ function RCLootCouncil:OnInitialize()
 			sort = i,
 			text = L["Button"]..i,
 		})
-		if i > #self.defaults.profile.tierNumButtons then
+		if i > self.defaults.profile.tierNumButtons then
 			tinsert(self.defaults.profile.responses.tier, {
 				color = {0.7, 0.7,0.7,1},
 				sort = i,

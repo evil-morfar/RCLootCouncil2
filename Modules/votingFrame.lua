@@ -1144,6 +1144,7 @@ do
 			info = Lib_UIDropDownMenu_CreateInfo()
 			if value == "TIER_TOKENS" then
 				for k,v in ipairs(db.responses.tier) do
+					if k > db.tierNumButtons then break end
 					info.text = v.text
 					info.colorCode = "|cff"..addon:RGBToHex(unpack(v.color))
 					info.notCheckable = true
