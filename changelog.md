@@ -1,5 +1,6 @@
 ###### Bugfixes
  + *Added a bandaid for playernames with non-english characters (#255).*
+ + *Changing from more to less buttons will now properly remove old buttons on the loot frame (#254).*
 
 
 ### v2.3.2
