@@ -827,8 +827,40 @@ function addon:OptionsTable()
 									-- Made further down
 								},
 							},
-							timeoutOptions = {
+							tierButtonsOptions = {
 								order = 2,
+									type = "group",
+									name = "Tier Buttons and Responses",
+									inline = true,
+									args = {
+										tierButtonsEnabled = {
+											order = 0,
+											name = "Enable Tier Buttons",
+											desc = "Check to enable a seperate set of buttons when rolling for tier pieces.",
+											type = "toggle",
+										},
+										optionsDesc = {
+											order = 0.1,
+											name = "Select which buttons/responses to use when handling tier pieces. It's basically the same concept as above, except these are shown when tier pieces drop.\nA pass button is still added to the right.",
+											type = "description",
+											hidden = function() return not self.db.profile.tierButtonsEnabled end,
+										},
+										tierNumButtons = {
+											order = 1,
+											name = L["Number of buttons"],
+											desc = L["number_of_buttons_desc"],
+											type = "range",
+											width = "full",
+											min = 1,
+											max = self.db.profile.maxButtons,
+											step = 1,
+											hidden = function() return not self.db.profile.tierButtonsEnabled end,
+										},
+										-- Made further down
+									},
+								},
+							timeoutOptions = {
+								order = 3,
 								type = "group",
 								name = L["Timeout"],
 								inline = true,
@@ -862,27 +894,6 @@ function addon:OptionsTable()
 									},
 								},
 							},
-							responseFromChat = {
-								order = 3,
-								type = "group",
-								name = L["Responses from Chat"],
-								inline = true,
-								args = {
-									acceptWhispers = {
-										order = 1,
-										name = L["Accept Whispers"],
-										desc = L["accept_whispers_desc"],
-										type = "toggle",
-									},
-									desc = {
-										order = 2,
-										name = L["responses_from_chat_desc"],
-										type = "description",
-										hidden = function() return not self.db.profile.acceptWhispers end,
-									},
-									-- Made further down
-								},
-							},
 							moreInfoOptions = {
 								order = 4,
 								type = "group",
@@ -905,6 +916,27 @@ function addon:OptionsTable()
 									}
 								},
 							},
+							responseFromChat = {
+								order = 5,
+								type = "group",
+								name = L["Responses from Chat"],
+								inline = true,
+								args = {
+									acceptWhispers = {
+										order = 1,
+										name = L["Accept Whispers"],
+										desc = L["accept_whispers_desc"],
+										type = "toggle",
+									},
+									desc = {
+										order = 2,
+										name = L["responses_from_chat_desc"],
+										type = "description",
+										hidden = function() return not self.db.profile.acceptWhispers end,
+									},
+									-- Made further down
+								},
+							},
 							reset = {
 								order = -1,
 								name = L["Reset to default"],
@@ -913,8 +945,10 @@ function addon:OptionsTable()
 								confirm = true,
 								func = function()
 									self.db.profile.buttons = self.defaults.profile.buttons
+									self.db.profile.tierButtons = self.defaults.profile.tierButtons
 									self.db.profile.responses = self.defaults.profile.responses
 									self.db.profile.numButtons = self.defaults.profile.numButtons
+									self.db.profile.tierNumButtons = self.defalts.profile.tierNumButtons
 									self.db.profile.acceptWhispers = self.defaults.profile.acceptWhispers
 									self:ConfigTableChanged()
 								end,
@@ -1207,6 +1241,36 @@ function addon:OptionsTable()
 			get = function() return self.db.profile.awardText[i].text end,
 			set = function(j,v) self.db.profile.awardText[i].text = v; end,
 			hidden = function() return not self.db.profile.announceAward end,
+		}
+	end
+	-- Tier Buttons/responses
+	for k, v in pairs(self.db.profile.responses.tier) do
+		options.args.mlSettings.args.buttonsTab.args.tierButtonsOptions.args["button"..k] = {
+			order = v.sort * 3 + 1,
+			name = L["Button"].." "..v.sort,
+			desc = format(L["Set the text on button 'number'"], v.sort),
+			type = "input",
+			get = function() return self.db.profile.tierButtons[v.sort].text end,
+			set = function(info, value) addon:ConfigTableChanged("tierButtons"); self.db.profile.tierButtons[v.sort].text = tostring(value) end,
+			hidden = function() return not self.db.profile.tierButtonsEnabled or self.db.profile.tierNumButtons < v.sort end,
+		}
+		options.args.mlSettings.args.buttonsTab.args.tierButtonsOptions.args["color"..k] = {
+			order = v.sort * 3 + 2,
+			name = L["Response color"],
+			desc = L["response_color_desc"],
+			type = "color",
+			get = function() return unpack(v.color)	end,
+			set = function(info,r,g,b,a) addon:ConfigTableChanged("responses"); v.color = {r,g,b,a} end,
+			hidden = function() return not self.db.profile.tierButtonsEnabled or self.db.profile.tierNumButtons < v.sort end,
+		}
+		options.args.mlSettings.args.buttonsTab.args.tierButtonsOptions.args["text"..k] = {
+			order = v.sort * 3 + 3,
+			name = L["Response"],
+			desc = format(L["Set the text for button i's response."], v.sort),
+			type = "input",
+			get = function() return v.text end,
+			set = function(info, value) addon:ConfigTableChanged("responses"); v.text = tostring(value) end,
+			hidden = function() return not self.db.profile.tierButtonsEnabled or self.db.profile.tierNumButtons < v.sort end,
 		}
 	end
 	-- #endregion

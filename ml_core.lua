@@ -210,11 +210,23 @@ function RCLootCouncilML:BuildMLdb()
 			changedResponses[i] = db.responses[i]
 		end
 	end
+	changedResponses.tier = {}
+	for k,v in pairs(db.responses.tier) do
+		if v.text ~= addon.defaults.profile.responses.tier[k].text or unpack(v.color) ~= unpack(addon.defaults.profile.responses.tier[k].color) then
+			changedResponses.tier[k] = v
+		end
+	end
 	-- Extract changed buttons
 	local changedButtons = {};
 	for i = 1, db.numButtons do
 		if db.buttons[i].text ~= addon.defaults.profile.buttons[i].text then
 			changedButtons[i] = {text = db.buttons[i].text}
+		end
+	end
+	local changedTierButtons = {}
+	for i = 1, db.tierNumButtons do
+		if db.tierButtons[i].text ~= addon.defaults.profile.tierButtons[i].text then
+			changedTierButtons[i] = {text = db.buttons[i].text}
 		end
 	end
 	-- Extract changed award reasons
@@ -230,12 +242,15 @@ function RCLootCouncilML:BuildMLdb()
 		anonymousVoting = db.anonymousVoting,
 		allowNotes		= db.allowNotes,
 		numButtons		= db.numButtons,
+		tierNumButtons = db.tierNumButtons,
 		hideVotes		= db.hideVotes,
 		observe			= db.observe,
 	--	awardReasons	= changedAwardReasons,
 		buttons			= changedButtons,
+		tierButtons 	= changedTierButtons,
 		responses		= changedResponses,
 		timeout			= db.timeout,
+		tierButtonsEnabled = db.tierButtonsEnabled,
 	}
 end
 

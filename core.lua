@@ -5,7 +5,9 @@
 --------------------------------
 TODOs/Notes
 	Things marked with "todo"
-		- IDEA add an observer/council string to show players their role?
+		- TIER TOKENS
+			- Change history tag to awardType.
+			- Need better width updating in lootFrame!
 		- Item subtype in history exports
 		- IDEA Have player's current gear sent with lootAck
 --------------------------------
@@ -49,7 +51,7 @@ function RCLootCouncil:OnInitialize()
   	self.version = GetAddOnMetadata("RCLootCouncil", "Version")
 	self.nnp = false
 	self.debug = false
-	self.tVersion = nil -- String or nil. Indicates test version, which alters stuff like version check. Is appended to 'version', i.e. "version-tVersion" (max 10 letters for stupid security)
+	self.tVersion = "pre-alpha" -- String or nil. Indicates test version, which alters stuff like version check. Is appended to 'version', i.e. "version-tVersion" (max 10 letters for stupid security)
 
 	self.playerClass = select(2, UnitClass("player"))
 	self.guildRank = L["Unguilded"]
@@ -80,6 +82,12 @@ function RCLootCouncil:OnInitialize()
 		--[[1]]			  { color = {0,1,0,1},				sort = 1,		text = L["Mainspec/Need"],},
 		--[[2]]			  { color = {1,0.5,0,1},			sort = 2,		text = L["Offspec/Greed"],	},
 		--[[3]]			  { color = {0,0.7,0.7,1},			sort = 3,		text = L["Minor Upgrade"],},
+		tier = {
+			--[[1]]		  { color = {0.1,1,0.5,1},			sort = 1,		text = "4th Tier Piece",},
+			--[[2]]		  { color = {1,1,0.5,1},			sort = 2,		text = "2nd Tier Piece",},
+			--[[3]]		  { color = {1,0.5,1,1},			sort = 3,		text = "Tier Piece that doesn't complete a set",},
+			--[[4]]		  { color = {0.5,1,1,1},			sort = 4,		text = "Upgrade to existing tier/random upgrade",},
+		},
 	}
 	self.roleTable = {
 		TANK =		L["Tank"],
@@ -189,7 +197,10 @@ function RCLootCouncil:OnInitialize()
 				['*'] = {
 					filters = { -- Default filtering is showed
 						['*'] = true,
-					}
+						tier = { -- New section in v2.4.0
+							['*'] = true,
+						},
+					},
 				},
 			},
 
@@ -216,6 +227,14 @@ function RCLootCouncil:OnInitialize()
 				{	text = L["Need"],					whisperKey = L["whisperKey_need"], },	-- 1
 				{	text = L["Greed"],				whisperKey = L["whisperKey_greed"],},	-- 2
 				{	text = L["Minor Upgrade"],		whisperKey = L["whisperKey_minor"],},	-- 3
+			},
+			tierButtonsEnabled = true,
+			tierNumButtons = 4,
+			tierButtons = {
+				{	text = "4 Piece",					whisperKey = "4, 4tier, 4piece"},	-- 1
+				{	text = "2 Piece",					whisperKey = "2, 2tier, 2piece"},	-- 2
+				{	text = "Other piece",			whisperKey = "other, tier, piece"}, -- 3
+				{	text = "Upgrade",					whisperKey = "upgrade, up"},			-- 4
 			},
 			numMoreInfoButtons = 1,
 			maxAwardReasons = 10,
@@ -250,6 +269,12 @@ function RCLootCouncil:OnInitialize()
 			text = L["Button"].." "..i,
 			whisperKey = ""..i,
 		})
+		if i > #self.defaults.profile.tierNumButtons then
+			tinsert(self.defaults.profile.tierButtons, {
+				text = L["Button"].." "..i,
+				whisperKey = ""..i,
+			})
+		end
 	end
 	for i = self.defaults.profile.numButtons+1, self.defaults.profile.maxButtons do
 		tinsert(self.defaults.profile.responses, {
@@ -257,6 +282,13 @@ function RCLootCouncil:OnInitialize()
 			sort = i,
 			text = L["Button"]..i,
 		})
+		if i > #self.defaults.profile.tierNumButtons then
+			tinsert(self.defaults.profile.responses.tier, {
+				color = {0.7, 0.7,0.7,1},
+				sort = i,
+				text = L["Button"]..i,
+			})
+		end
 	end
 	-- create the other AwardReasons
 	for i = #self.defaults.profile.awardReasons+1, self.defaults.profile.maxAwardReasons do
@@ -322,7 +354,7 @@ function RCLootCouncil:OnEnable()
 	self:ActivateSkin(db.currentSkin)
 
 	if self.db.global.version and self:VersionCompare(self.db.global.version, self.version) then -- We've upgraded
-		if self:VersionCompare(self.db.global.version, "2.3.2") then -- Update lootDB with newest changes
+		if self:VersionCompare(self.db.global.version, "2.4.0") then -- Update lootDB with newest changes
 			-- delay it abit
 			self:ScheduleTimer("UpdateLootHistory", 5)
 		end
@@ -523,9 +555,9 @@ function RCLootCouncil:ChatCommand(msg)
 		self:UpdateLootHistory()
 --@debug@
 	elseif input == 't' then -- Tester cmd
-		local ItemUpgradeInfo = LibStub("LibItemUpgradeInfo-1.0")
-		self:Print(self:GetItemStringFromLink(arg1),self:GetItemStringFromLink(arg2))
-		self:Print("ItemUpgradeInfo",ItemUpgradeInfo:GetItemUpgradeInfo(arg1))
+		local lf = self:GetActiveModule("lootframe")
+		self:Debug("LootFrame.EntryManager.entries:")
+		printtable(lf.EntryManager)
 --@end-debug@
 	else
 		-- Check if the input matches anything
@@ -1052,9 +1084,10 @@ end
 -- @param equipLoc	The item in the session's equipLoc.
 -- @param note			The player's note.
 -- @param subType		The item's subType, needed for Artifact Relics.
+-- @param isTier		Indicates if the response is a tier response. (v2.4.0)
 -- @return A formatted table that can be passed directly to :SendCommand("group", "response", -return-).
-function RCLootCouncil:CreateResponse(session, link, ilvl, response, equipLoc, note, subType)
-	self:DebugLog("CreateResponse", session, link, ilvl, response, equipLoc, note, subType)
+function RCLootCouncil:CreateResponse(session, link, ilvl, response, equipLoc, note, subType, isTier)
+	self:DebugLog("CreateResponse", session, link, ilvl, response, equipLoc, note, subType, isTier)
 	local g1, g2;
 	if equipLoc == "" and self.db.global.localizedSubTypes[subType] == "Artifact Relic" then
 		g1, g2 = self:GetArtifactRelics(link)
@@ -1075,7 +1108,8 @@ function RCLootCouncil:CreateResponse(session, link, ilvl, response, equipLoc, n
 			ilvl = select(2,GetAverageItemLevel()),
 			diff = diff,
 			note = note,
-			response = response
+			response = response,
+			isTier = isTier,
 		}
 end
 
@@ -1851,29 +1885,48 @@ function RCLootCouncil.Ambiguate(name)
 	return db.ambiguate and Ambiguate(name, "none") or Ambiguate(name, "short")
 end
 
---- Returns the text of a button, returning settings from mldb if possible, otherwise default buttons.
--- @paramsig index
+--- Returns the text of a button, returning settings from mldb if possible, otherwise from default buttons.
+-- @paramsig index [, isTier]
 -- @param index The button's index.
-function RCLootCouncil:GetButtonText(i)
-	return (self.mldb.buttons and self.mldb.buttons[i]) and self.mldb.buttons[i].text or db.buttons[i].text
+-- @param isTier True if the response belongs to a tier item.
+function RCLootCouncil:GetButtonText(i, isTier)
+	if isTier and self.mldb.tierButtonsEnabled and type(i) == "number" then -- Non numbers is status texts, handled as normal response
+		return (self.mldb.tierButtons and self.mldb.tierButtons[i]) and self.mldb.tierButtons[i].text or db.tierButtons[i].text
+	else
+		return (self.mldb.buttons and self.mldb.buttons[i]) and self.mldb.buttons[i].text or db.buttons[i].text
+	end
 end
 
---- The following functions returns the text, sort or color of a response, returning a result from mldb if possible, otherwise the default responses.
--- @paramsig response
+--- The following functions returns the text, sort or color of a response, returning a result from mldb if possible, otherwise from the default responses.
+-- @paramsig response [, isTier]
 -- @param response Index in db.responses.
-function RCLootCouncil:GetResponseText(response)
-	return (self.mldb.responses and self.mldb.responses[response]) and self.mldb.responses[response].text or db.responses[response].text
+-- @param isTier True if the response belongs to a tier item.
+function RCLootCouncil:GetResponseText(response, isTier)
+	if isTier and self.mldb.tierButtonsEnabled and type(response) == "number" then
+		return (self.mldb.responses.tier and self.mldb.responses.tier[response]) and self.mldb.responses.tier[response].text or db.responses.tier[response].text
+	else
+		return (self.mldb.responses and self.mldb.responses[response]) and self.mldb.responses[response].text or db.responses[response].text
+	end
 end
 
 ---
-function RCLootCouncil:GetResponseColor(response)
-	local color = (self.mldb.responses and self.mldb.responses[response]) and self.mldb.responses[response].color or db.responses[response].color
+function RCLootCouncil:GetResponseColor(response, isTier)
+	local color
+	if isTier and self.mldb.tierButtonsEnabled and type(response) == "number" then
+		 color = (self.mldb.responses.tier and self.mldb.responses.tier[response]) and self.mldb.responses.tier[response].color or db.responses.tier[response].color
+ 	else
+		color = (self.mldb.responses and self.mldb.responses[response]) and self.mldb.responses[response].color or db.responses[response].color
+	end
 	return unpack(color)
 end
 
 ---
-function RCLootCouncil:GetResponseSort(response)
-	return (self.mldb.responses and self.mldb.responses[response]) and self.mldb.responses[response].sort or db.responses[response].sort
+function RCLootCouncil:GetResponseSort(response, isTier)
+	if isTier and self.mldb.tierButtonsEnabled and type(response) == "number" then
+		return (self.mldb.responses.tier and self.mldb.responses.tier[response]) and self.mldb.responses.tier[response].sort or db.responses.tier[response].sort
+	else
+		return (self.mldb.responses and self.mldb.responses[response]) and self.mldb.responses[response].sort or db.responses[response].sort
+	end
 end
 
 --#end UI Functions -----------------------------------------------------
@@ -1887,10 +1940,10 @@ function printtable( data, level )
 	if type(data)~='table' then print(tostring(data)) end;
 	for index,value in pairs(data) do repeat
 		if type(value)~='table' then
-			print( ident .. '['..index..'] = ' .. tostring(value) .. ' (' .. type(value) .. ')' );
+			print( ident .. '['..tostring(index)..'] = ' .. tostring(value) .. ' (' .. type(value) .. ')' );
 			break;
 		end
-		print( ident .. '['..index..'] = {')
+		print( ident .. '['..tostring(index)..'] = {')
         printtable(value, level+1)
         print( ident .. '}' );
 	until true end

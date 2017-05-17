@@ -7,7 +7,7 @@ local addon = LibStub("AceAddon-3.0"):GetAddon("RCLootCouncil")
 local LootHistory = addon:NewModule("RCLootHistory")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 local AG = LibStub("AceGUI-3.0")
-local lootDB, scrollCols, data, db, numLootWon;
+local lootDB, scrollCols, data, db, numLootWon
 --[[ data structure:
 data[date][playerName] = {
 	["class"] = CLASS,

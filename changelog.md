@@ -1,6 +1,9 @@
-###### Bugfixes
- + *Added a bandaid for playernames with non-english characters (#255).*
- + *Changing from more to less buttons will now properly remove old buttons on the loot frame (#254).*
+### v2.4.0
+---
+* **Tier tokens**
+ * By default, tier tokens now receive special roll options.
+ * A brand new set of buttons and responses have been added for tier tokens only.
+ * Check them out in the options menu, where it can also be disabled if need be.
 
 
 ### v2.3.2
