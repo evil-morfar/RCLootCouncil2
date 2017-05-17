@@ -1105,6 +1105,7 @@ do
 							texture = lootTable[session].texture,
 							session = session,
 							equipLoc = lootTable[session].equipLoc,
+							token = lootTable[session].token
 						}
 					}
 					addon:SendCommand(candidateName, "reroll", t)
@@ -1126,6 +1127,7 @@ do
 								texture = v.texture,
 								session = k,
 								equipLoc = v.equipLoc,
+								token = v.token,
 							})
 							addon:SendCommand("group", "change_response", k, candidateName, "WAIT")
 						end
@@ -1176,7 +1178,7 @@ do
 					data[i] = i
 				end
 			end
-			
+
 			info.text = L["Filter"]
 			info.isTitle = true
 			info.notCheckable = true

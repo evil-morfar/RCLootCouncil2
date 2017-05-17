@@ -269,10 +269,10 @@ function RCLootCouncil:OnInitialize()
 			text = L["Button"].." "..i,
 			whisperKey = ""..i,
 		})
-		if i > #self.defaults.profile.tierButtons then
+		if i > #self.defaults.profile.tierNumButtons then
 			tinsert(self.defaults.profile.tierButtons, {
-				text = "tierBut "..i,
-				whisperKey = "tier"..i,
+				text = L["Button"].." "..i,
+				whisperKey = ""..i,
 			})
 		end
 	end
@@ -282,11 +282,11 @@ function RCLootCouncil:OnInitialize()
 			sort = i,
 			text = L["Button"]..i,
 		})
-		if i > #self.defaults.profile.tierButtons then
+		if i > #self.defaults.profile.tierNumButtons then
 			tinsert(self.defaults.profile.responses.tier, {
 				color = {0.7, 0.7,0.7,1},
 				sort = i,
-				text = "tier "..i,
+				text = L["Button"]..i,
 			})
 		end
 	end
@@ -549,9 +549,9 @@ function RCLootCouncil:ChatCommand(msg)
 		self:Print("Debug Log cleared.")
 --@debug@
 	elseif input == 't' then -- Tester cmd
-		local ItemUpgradeInfo = LibStub("LibItemUpgradeInfo-1.0")
-		self:Print(self:GetItemStringFromLink(arg1),self:GetItemStringFromLink(arg2))
-		self:Print("ItemUpgradeInfo",ItemUpgradeInfo:GetItemUpgradeInfo(arg1))
+		local lf = self:GetActiveModule("lootframe")
+		self:Debug("LootFrame.EntryManager.entries:")
+		printtable(lf.EntryManager)
 --@end-debug@
 	else
 		-- Check if the input matches anything
@@ -1081,7 +1081,7 @@ end
 -- @param isTier		Indicates if the response is a tier response. (v2.4.0)
 -- @return A formatted table that can be passed directly to :SendCommand("group", "response", -return-).
 function RCLootCouncil:CreateResponse(session, link, ilvl, response, equipLoc, note, subType, isTier)
-	self:DebugLog("CreateResponse", session, link, ilvl, response, equipLoc, note, subType)
+	self:DebugLog("CreateResponse", session, link, ilvl, response, equipLoc, note, subType, isTier)
 	local g1, g2;
 	if equipLoc == "" and self.db.global.localizedSubTypes[subType] == "Artifact Relic" then
 		g1, g2 = self:GetArtifactRelics(link)
@@ -1881,7 +1881,7 @@ end
 -- @param index The button's index.
 -- @param isTier True if the response belongs to a tier item.
 function RCLootCouncil:GetButtonText(i, isTier)
-	if isTier and self.mldb.tierButtonsEnabled then
+	if isTier and self.mldb.tierButtonsEnabled and type(i) == "number" then -- Non numbers is status texts, handled as normal response
 		return (self.mldb.tierButtons and self.mldb.tierButtons[i]) and self.mldb.tierButtons[i].text or db.tierButtons[i].text
 	else
 		return (self.mldb.buttons and self.mldb.buttons[i]) and self.mldb.buttons[i].text or db.buttons[i].text
@@ -1893,7 +1893,7 @@ end
 -- @param response Index in db.responses.
 -- @param isTier True if the response belongs to a tier item.
 function RCLootCouncil:GetResponseText(response, isTier)
-	if isTier and self.mldb.tierButtonsEnabled then
+	if isTier and self.mldb.tierButtonsEnabled and type(response) == "number" then
 		return (self.mldb.responses.tier and self.mldb.responses.tier[response]) and self.mldb.responses.tier[response].text or db.responses.tier[response].text
 	else
 		return (self.mldb.responses and self.mldb.responses[response]) and self.mldb.responses[response].text or db.responses[response].text
@@ -1903,7 +1903,7 @@ end
 ---
 function RCLootCouncil:GetResponseColor(response, isTier)
 	local color
-	if isTier and self.mldb.tierButtonsEnabled then
+	if isTier and self.mldb.tierButtonsEnabled and type(response) == "number" then
 		 color = (self.mldb.responses.tier and self.mldb.responses.tier[response]) and self.mldb.responses.tier[response].color or db.responses.tier[response].color
  	else
 		color = (self.mldb.responses and self.mldb.responses[response]) and self.mldb.responses[response].color or db.responses[response].color
@@ -1913,7 +1913,7 @@ end
 
 ---
 function RCLootCouncil:GetResponseSort(response, isTier)
-	if isTier and self.mldb.tierButtonsEnabled then
+	if isTier and self.mldb.tierButtonsEnabled and type(response) == "number" then
 		return (self.mldb.responses.tier and self.mldb.responses.tier[response]) and self.mldb.responses.tier[response].sort or db.responses.tier[response].sort
 	else
 		return (self.mldb.responses and self.mldb.responses[response]) and self.mldb.responses[response].sort or db.responses[response].sort
@@ -1931,10 +1931,10 @@ function printtable( data, level )
 	if type(data)~='table' then print(tostring(data)) end;
 	for index,value in pairs(data) do repeat
 		if type(value)~='table' then
-			print( ident .. '['..index..'] = ' .. tostring(value) .. ' (' .. type(value) .. ')' );
+			print( ident .. '['..tostring(index)..'] = ' .. tostring(value) .. ' (' .. type(value) .. ')' );
 			break;
 		end
-		print( ident .. '['..index..'] = {')
+		print( ident .. '['..tostring(index)..'] = {')
         printtable(value, level+1)
         print( ident .. '}' );
 	until true end
