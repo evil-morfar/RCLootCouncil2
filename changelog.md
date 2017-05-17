@@ -1,8 +1,12 @@
+###### Bugfixes
+ + *Added a bandaid for playernames with non-english characters (#255).*
+
+
 ### v2.3.2
 ---
 * Added backwards compatibility for the latest updates for non-english clients.
 
- *Note: This requires at least one v2.3.1+ award entry for each instance/difficulty.
+  *Note: This requires at least one v2.3.1+ award entry for each instance/difficulty.
    The update happens upon logging in after upgrading to v2.3.2, and can be forced afterwards with "/rc updatehistory".*
 
 ###### Bugfixes
@@ -17,15 +21,15 @@
  * Tier tokens received from the current instance is displayed under more info in the voting frame.
  * All tier tokens are displayed in the loot history more info.
 
-   *Note: neither of these are backwards compatible with non-english clients, but will show up for all items awarded after this update.*
+    *Note: neither of these are backwards compatible with non-english clients, but will show up for all items awarded after this update.*
  * Total awards are now displayed in the loot history.
  * Loot History is now sorted by award time by default.
  * Removed response text from voting frame more info to make it smaller.
 
 
 * Minor optimizations.
-
 * Fixed some spelling mistakes.
+
 
 ### v2.3.0
 ---
@@ -55,7 +59,7 @@
 
 ##### Bugfixes
 + *Links for gear2 is now properly generated when using TSV export.*
-+ *~~Items will no longer be added multiple times to the session setup if you reopen the ML loot before starting the session (#237).~~*
++ ~~*Items will no longer be added multiple times to the session setup if you reopen the ML loot before starting the session (#237).*~~
 + *The Version Checker will no longer fail to show correct modules after manipulating the list.*
 
 
