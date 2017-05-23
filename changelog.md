@@ -1,3 +1,5 @@
+### v2.3.3
+---
 ###### Bugfixes
  + *Added a bandaid for playernames with non-english characters (#255).*
  + *Changing from more to less buttons will now properly remove old buttons on the loot frame (#254).*
@@ -22,7 +24,7 @@
  * Tier tokens received from the current instance is displayed under more info in the voting frame.
  * All tier tokens are displayed in the loot history more info.
 
-    *Note: neither of these are backwards compatible with non-english clients, but will show up for all items awarded after this update.*
+ * *Note: neither of these are backwards compatible with non-english clients, but will show up for all items awarded after this update.*     
  * Total awards are now displayed in the loot history.
  * Loot History is now sorted by award time by default.
  * Removed response text from voting frame more info to make it smaller.
