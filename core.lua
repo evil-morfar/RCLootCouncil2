@@ -322,7 +322,7 @@ function RCLootCouncil:OnEnable()
 	self:ActivateSkin(db.currentSkin)
 
 	if self.db.global.version and self:VersionCompare(self.db.global.version, self.version) then -- We've upgraded
-		if self:VersionCompare(self.db.global.version, "2.3.2") then -- Update lootDB with newest changes
+		if self:VersionCompare(self.db.global.version, "2.3.3") then -- Update lootDB with newest changes
 			-- delay it abit
 			self:ScheduleTimer("UpdateLootHistory", 5)
 		end
