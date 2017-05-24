@@ -8,6 +8,7 @@
 * **Loot History**
  * You can now edit recipients and reasons in the loot history.
  * Simply right click any entry and change it to what you want.
+ * Exports have been optimized.
 
 
 ### v2.3.2
