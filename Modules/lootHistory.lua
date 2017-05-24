@@ -17,6 +17,7 @@ data[date][playerName] = {
 }
 ]]
 local selectedDate, selectedName, filterMenu, moreInfo, moreInfoData
+local rightClickMenu;
 local ROW_HEIGHT = 20;
 local NUM_ROWS = 15;
 
@@ -43,7 +44,9 @@ function LootHistory:OnInitialize()
 		{name = "",					width = ROW_HEIGHT},				-- Delete button
 	}
 	filterMenu = CreateFrame("Frame", "RCLootCouncil_LootHistory_FilterMenu", UIParent, "Lib_UIDropDownMenuTemplate")
+	rightClickMenu = CreateFrame("Frame", "RCLootCouncil_LootHistory_RightclickMenu", UIParent, "Lib_UIDropDownMenuTemplate")
 	Lib_UIDropDownMenu_Initialize(filterMenu, self.FilterMenu, "MENU")
+	Lib_UIDropDownMenu_Initialize(rightClickMenu, self.RightClickMenu, "MENU")
 	--MoreInfo
 	self.moreInfo = CreateFrame( "GameTooltip", "RCLootHistoryMoreInfo", nil, "GameTooltipTemplate" )
 end
@@ -140,7 +143,7 @@ function LootHistory:BuildData()
 						name = name,
 						num = num,
 						response = i.responseID,
-						cols = {
+						cols = { -- NOTE Don't forget the rightClickMenu dropdown, if the order of these changes
 							{DoCellUpdate = addon.SetCellClassIcon, args = {x.class}},
 							{value = addon.Ambiguate(name), color = addon:GetClassColor(x.class)},
 							{value = date.. "-".. i.time or "", args = {time = i.time, date = date},},
@@ -417,7 +420,12 @@ function LootHistory:GetFrame()
 	st:RegisterEvents({
 		["OnClick"] = function(rowFrame, cellFrame, data, cols, row, realrow, column, table, button, ...)
 			if row or realrow then
-				self:UpdateMoreInfo(rowFrame, cellFrame, data, cols, row, realrow, column, table, button, ...)
+				if button == "LeftButton" then
+					self:UpdateMoreInfo(rowFrame, cellFrame, data, cols, row, realrow, column, table, button, ...)
+				elseif button == "RightButton" then
+					rightClickMenu.data = data
+					Lib_ToggleDropDownMenu(1,nil,rightClickMenu,cellFrame,0,0)
+				end
 			end
 			return false
 		end
@@ -627,7 +635,7 @@ function LootHistory:UpdateMoreInfo(rowFrame, cellFrame, dat, cols, row, realrow
 	tip:AddLine(L["Total awards"])
 	table.sort(moreInfoData[row.name].totals.responses, function(a,b) return type(a[4]) == "number" and type(b[4]) == "number" and a[4] < b[4] or false end)
 	for i, v in pairs(moreInfoData[row.name].totals.responses) do
-		local r,g,b 
+		local r,g,b
 		if v[3] then r,g,b = unpack(v[3],1,3) end
 		tip:AddDoubleLine(v[1], v[2], r or 1, g or 1, b or 1, 1,1,1)
 	end
@@ -723,6 +731,132 @@ function LootHistory.FilterMenu(menu, level)
 					LootHistory:Update()
 				end
 				info.checked = db.modules["RCLootHistory"].filters[k]
+				Lib_UIDropDownMenu_AddButton(info, level)
+			end
+		end
+	end
+end
+
+-- NOTE Changing e.g. a tier token item's response to a non-tier token response is possible display wise,
+-- but it will retain it's tier token tag, and vice versa. Can't decide whether it's a feature or bug.
+function LootHistory.RightClickMenu(menu, level)
+	local info = Lib_UIDropDownMenu_CreateInfo()
+	local data = menu.data
+
+	if level == 1 then -- Redundant
+		info.text = "Edit Entry"
+		info.isTitle = true
+		info.notCheckable = true
+		info.disabled = true
+		Lib_UIDropDownMenu_AddButton(info, level)
+
+		info = Lib_UIDropDownMenu_CreateInfo()
+		info.text = L["Name"]
+		info.value = "EDIT_NAME"
+		info.notCheckable = true
+		info.hasArrow = true
+		Lib_UIDropDownMenu_AddButton(info, level)
+
+		info.text = L["Response"]
+		info.value = "EDIT_RESPONSE"
+		Lib_UIDropDownMenu_AddButton(info, level)
+
+	elseif value == 2 then
+		local value = LIB_UIDROPDOWNMENU_MENU_VALUE
+		if value == "EDIT_NAME" then
+			for _,v in pairs(LootHistory.frame.name.data) do
+				info.text = v[2].value
+				info.colorCode = "|cff"..addon:RGBToHex(addon:GetClassColor(v[1].args[1]))
+				info.notCheckable = true
+				info.func = function()
+					addon:Debug("Moving award from", data.name, "to", v[2].name)
+					-- Since we store data as lootDB[name] = ..., we need to move the entire table to the new recipient
+					tinsert(lootDB[v[2].name], tremove(lootDB[name], data.num))
+					-- Now update the data in our display st, which coincidentally is data
+					data.num = #lootDB[v[2].name]
+					data.name = v[2].name
+					data.class = v[1].args[1]
+					data.cols[1].args[1] = v[1].args[1]
+					data.cols[2] = {value = v[2].value, color = addon:GetClassColor(data.class)}
+					LootHistory.frame.st:SortData()
+				end
+				Lib_UIDropDownMenu_AddButton(info, level)
+			end
+
+		elseif value == "EDIT_RESPONSE" then
+			local v;
+			for i = 1, db.numButtons do
+				v = db.responses[i]
+				info.text = v.text
+				info.colorCode = "|cff"..addon:RGBToHex(unpack(v.color))
+				info.notCheckable = true
+				info.func = function()
+					addon:Debug("Changing response id @", data.name, "from", data.response, "to", i)
+					local entry = lootDB[data.name][data.num]
+					entry.responseID = i
+					entry.response = addon:GetResponseText(i)
+					entry.color = addon:GetResponseColor(i)
+					entry.isAwardReason = nil
+					data.response = i
+					data.cols[6].args = {color = entry.color, response = entry.response, responseID = i}
+					LootHistory.frame.st:SortData()
+				end
+				Lib_UIDropDownMenu_AddButton(info, level)
+			end
+
+			info = Lib_UIDropDownMenu_CreateInfo()
+			-- Add the tier menu
+			info.text = "Tier Tokens ..."
+			info.value = "TIER_TOKENS"
+			info.hasArrow = true
+			info.notCheckable = true
+			Lib_UIDropDownMenu_AddButton(info, level)
+
+			-- Add the award reasons
+			info.text = "Award Reason ..."
+			info.value = "AWARD_REASON"
+			info.hasArrow = true
+			info.notCheckable = true
+			Lib_UIDropDownMenu_AddButton(info, level)
+		end
+	elseif level == 3 then
+		local value = LIB_UIDROPDOWNMENU_MENU_VALUE
+		if value == "TIER_TOKENS" then
+			for k,v in ipairs(db.responses.tier) do
+				if k > db.tierNumButtons then break end
+				info.text = v.text
+				info.colorCode = "|cff"..addon:RGBToHex(unpack(v.color))
+				info.notCheckable = true
+				info.func = function()
+					addon:Debug("Changing tier response id @", data.name, "from", data.response, "to", k)
+					local entry = lootDB[data.name][data.num]
+					entry.responseID = k
+					entry.response = addon:GetResponseText(k, true)
+					entry.color = addon:GetResponseColor(k, true)
+					entry.isAwardReason = nil
+					data.response = k
+					data.cols[6].args = {color = entry.color, response = entry.response, responseID = k}
+					LootHistory.frame.st:SortData()
+				end
+				Lib_UIDropDownMenu_AddButton(info, level)
+			end
+		elseif value == "AWARD_REASON" then
+			for k,v in ipairs(db.awardReasons) do
+				if k > db.numAwardReasons then break end
+				info.text = v.text
+				info.colorCode = "|cff"..addon:RGBToHex(unpack(v.color))
+				info.notCheckable = true
+				info.func = function()
+					addon:Debug("Changing award reason id @", data.name, "from", data.responseID, "to", k)
+					local entry = lootDB[data.name][data.num]
+					entry.responseID = k
+					entry.response = v.text
+					entry.color = v.color
+					entry.isAwardReason = true
+					data.response = i
+					data.cols[6].args = {color = entry.color, response = entry.response, responseID = k}
+					LootHistory.frame.st:SortData()
+				end
 				Lib_UIDropDownMenu_AddButton(info, level)
 			end
 		end
