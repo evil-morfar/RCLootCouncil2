@@ -4,7 +4,7 @@
 -- Create Date : 8/6/2015
 
 local addon = LibStub("AceAddon-3.0"):GetAddon("RCLootCouncil")
-local LootHistory = addon:NewModule("RCLootHistory")
+LootHistory = addon:NewModule("RCLootHistory")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 local AG = LibStub("AceGUI-3.0")
 local lootDB, scrollCols, data, db, numLootWon
@@ -141,7 +141,7 @@ function LootHistory:BuildData()
 						date = date,
 						class = x.class,
 						name = name,
-						num = num,
+						num = num, -- That's really the index in lootDB[name]
 						response = i.responseID,
 						cols = { -- NOTE Don't forget the rightClickMenu dropdown, if the order of these changes
 							{DoCellUpdate = addon.SetCellClassIcon, args = {x.class}},
@@ -295,11 +295,11 @@ function LootHistory.ResponseSort(table, rowa, rowb, sortbycol)
 	local column = table.cols[sortbycol]
 	rowa, rowb = table:GetRow(rowa), table:GetRow(rowb);
 	local a,b
-	local aID, bID = data[rowa.date][rowa.name][rowa.num].responseID, data[rowb.date][rowb.name][rowb.num].responseID
+	local aID, bID = lootDB[rowa.name][rowa.num].responseID, lootDB[rowb.name][rowb.num].responseID
 
 	-- NOTE: I'm pretty sure it can only be an awardReason when responseID is nil or 0
 	if aID and aID ~= 0 then
-		if data[rowa.date][rowa.name][rowa.num].isAwardReason then
+		if lootDB[rowa.name][rowa.num].isAwardReason then
 			a = db.awardReasons[aID].sort
 		else
 			a = addon:GetResponseSort(aID)
@@ -310,7 +310,7 @@ function LootHistory.ResponseSort(table, rowa, rowb, sortbycol)
 	end
 
 	if bID and bID ~= 0 then
-		if data[rowb.date][rowb.name][rowb.num].isAwardReason then
+		if lootDB[rowb.name][rowb.num].isAwardReason then
 			b = db.awardReasons[bID].sort
 		else
 			b = addon:GetResponseSort(bID)
@@ -423,7 +423,7 @@ function LootHistory:GetFrame()
 				if button == "LeftButton" then
 					self:UpdateMoreInfo(rowFrame, cellFrame, data, cols, row, realrow, column, table, button, ...)
 				elseif button == "RightButton" then
-					rightClickMenu.data = data
+					rightClickMenu.datatable = data[realrow]
 					Lib_ToggleDropDownMenu(1,nil,rightClickMenu,cellFrame,0,0)
 				end
 			end
@@ -609,7 +609,7 @@ function LootHistory:UpdateMoreInfo(rowFrame, cellFrame, dat, cols, row, realrow
 	tip:SetOwner(self.frame, "ANCHOR_RIGHT")
 	local row = dat[realrow]
 	local color = addon:GetClassColor(row.class)
-	local data = data[row.date][row.name][row.num]
+	local data = lootDB[row.name][row.num]
 	tip:AddLine(addon.Ambiguate(row.name), color.r, color.g, color.b)
 	tip:AddLine("")
 	tip:AddDoubleLine(L["Time"]..":", (data.time or L["Unknown"]) .." ".. row.date or L["Unknown"], 1,1,1, 1,1,1)
@@ -741,7 +741,7 @@ end
 -- but it will retain it's tier token tag, and vice versa. Can't decide whether it's a feature or bug.
 function LootHistory.RightClickMenu(menu, level)
 	local info = Lib_UIDropDownMenu_CreateInfo()
-	local data = menu.data
+	local data = menu.datatable
 
 	if level == 1 then -- Redundant
 		info.text = "Edit Entry"
@@ -761,21 +761,25 @@ function LootHistory.RightClickMenu(menu, level)
 		info.value = "EDIT_RESPONSE"
 		Lib_UIDropDownMenu_AddButton(info, level)
 
-	elseif value == 2 then
+	elseif level == 2 then
 		local value = LIB_UIDROPDOWNMENU_MENU_VALUE
 		if value == "EDIT_NAME" then
 			for _,v in pairs(LootHistory.frame.name.data) do
 				info.text = v[2].value
-				info.colorCode = "|cff"..addon:RGBToHex(addon:GetClassColor(v[1].args[1]))
+				local c = addon:GetClassColor(v[1].args[1])
+				info.colorCode = "|cff"..addon:RGBToHex(c.r,c.g,c.b)
 				info.notCheckable = true
+				info.hasArrow = false
 				info.func = function()
 					addon:Debug("Moving award from", data.name, "to", v[2].name)
 					-- Since we store data as lootDB[name] = ..., we need to move the entire table to the new recipient
-					tinsert(lootDB[v[2].name], tremove(lootDB[name], data.num))
+					tinsert(lootDB[v[2].name], tremove(lootDB[data.name], data.num))
 					-- Now update the data in our display st, which coincidentally is data
 					data.num = #lootDB[v[2].name]
 					data.name = v[2].name
 					data.class = v[1].args[1]
+					-- We also need to update the class saved with the loot:
+					lootDB[data.name][data.num].class = data.class
 					data.cols[1].args[1] = v[1].args[1]
 					data.cols[2] = {value = v[2].value, color = addon:GetClassColor(data.class)}
 					LootHistory.frame.st:SortData()
@@ -795,7 +799,7 @@ function LootHistory.RightClickMenu(menu, level)
 					local entry = lootDB[data.name][data.num]
 					entry.responseID = i
 					entry.response = addon:GetResponseText(i)
-					entry.color = addon:GetResponseColor(i)
+					entry.color = {addon:GetResponseColor(i)}
 					entry.isAwardReason = nil
 					data.response = i
 					data.cols[6].args = {color = entry.color, response = entry.response, responseID = i}
@@ -832,7 +836,7 @@ function LootHistory.RightClickMenu(menu, level)
 					local entry = lootDB[data.name][data.num]
 					entry.responseID = k
 					entry.response = addon:GetResponseText(k, true)
-					entry.color = addon:GetResponseColor(k, true)
+					entry.color = {addon:GetResponseColor(k, true)}
 					entry.isAwardReason = nil
 					data.response = k
 					data.cols[6].args = {color = entry.color, response = entry.response, responseID = k}
@@ -847,11 +851,11 @@ function LootHistory.RightClickMenu(menu, level)
 				info.colorCode = "|cff"..addon:RGBToHex(unpack(v.color))
 				info.notCheckable = true
 				info.func = function()
-					addon:Debug("Changing award reason id @", data.name, "from", data.responseID, "to", k)
+					addon:Debug("Changing award reason id @", data.name, "from", data.response, "to", k)
 					local entry = lootDB[data.name][data.num]
 					entry.responseID = k
 					entry.response = v.text
-					entry.color = v.color
+					entry.color = {unpack(v.color)} -- For some reason it won't just accept v.color (!)
 					entry.isAwardReason = true
 					data.response = i
 					data.cols[6].args = {color = entry.color, response = entry.response, responseID = k}
@@ -871,25 +875,37 @@ end
 ---------------------------------------------------------------
 do
 	local export, ret = {},{}
-	
+
 	--- Lua
 	function LootHistory:ExportLua()
 		wipe(export)
 		for player, v in pairs(lootDB) do
 			if selectedName and selectedName == player or not selectedName then
-				tinsert(export, "[\""..player.."\"] = {\r\n")
+				tinsert(export, "[\"")
+				tinsert(export, player)
+				tinsert(export, "\"] = {\r\n")
 				for i, d in pairs(v) do
 					if selectedDate and selectedDate == d.date or not selectedDate then
 						tinsert(export, "\t{\r\n")
 						for label, d in pairs(d) do
 							if label == "color" then -- thats a table
-								tinsert(export, "\t\t[\""..label.."\"] = {\r\n")
+								tinsert(export, "\t\t[\"")
+								tinsert(export, label)
+								tinsert(export,"\"] = {\r\n")
 								for i,d in pairs(d) do
-									 tinsert(export, "\t\t\t"..d..", --"..i.."\r\n")
+									 tinsert(export, "\t\t\t")
+									 tinsert(export, d)
+									 tinsert(export,", --")
+									 tinsert(export,i)
+									 tinsert(export,"\r\n")
 								end
 								 tinsert(export, "\t\t}\r\n")
 							elseif label == "lootWon" or label == "itemReplaced1" or label == "itemReplaced2" then
-								tinsert(export, "\t\t[\""..label.."\"] = "..self:EscapeItemLink(d).."\r\n")
+								tinsert(export, "\t\t[\"")
+								tinsert(export, label)
+								tinsert(export, (self:EscapeItemLink(d)))
+								tinsert(export, "\"] = ")
+								tinsert(export, "\r\n")
 							else
 								tinsert(export, "\t\t[\""..label.."\"] = "..tostring(d).."\r\n")
 							end
