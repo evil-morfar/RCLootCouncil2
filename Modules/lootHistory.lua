@@ -4,7 +4,7 @@
 -- Create Date : 8/6/2015
 
 local addon = LibStub("AceAddon-3.0"):GetAddon("RCLootCouncil")
-LootHistory = addon:NewModule("RCLootHistory")
+local LootHistory = addon:NewModule("RCLootHistory")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 local AG = LibStub("AceGUI-3.0")
 local lootDB, scrollCols, data, db, numLootWon
@@ -663,6 +663,7 @@ function LootHistory:UpdateMoreInfo(rowFrame, cellFrame, dat, cols, row, realrow
  			tip:AddDoubleLine(name, v.num, 1,1,1, 1,1,1)
  		end
 		tip:AddLine(" ")
+		tip:AddDoubleLine("Total LootDB entries:", #self.frame.rows, 1,1,1, 0,0,1)
 
 	end
 	tip:SetScale(db.UI.history.scale)
