@@ -373,7 +373,7 @@ function LootHistory:ImportHistory(import)
 		end
 	end
 	addon.lootDB.factionrealm = lootDB -- save it
-	addon:Print("Successfully imported "..number.." entries.")
+	addon:Print(format(L["Successfully imported 'number' entries."], number))
 	addon:Debug("Import successful")
 	self:BuildData()
 end
@@ -627,7 +627,7 @@ function LootHistory:UpdateMoreInfo(rowFrame, cellFrame, dat, cols, row, realrow
 	tip:AddLine(L["Total awards"])
 	table.sort(moreInfoData[row.name].totals.responses, function(a,b) return type(a[4]) == "number" and type(b[4]) == "number" and a[4] < b[4] or false end)
 	for i, v in pairs(moreInfoData[row.name].totals.responses) do
-		local r,g,b 
+		local r,g,b
 		if v[3] then r,g,b = unpack(v[3],1,3) end
 		tip:AddDoubleLine(v[1], v[2], r or 1, g or 1, b or 1, 1,1,1)
 	end

@@ -83,10 +83,10 @@ function RCLootCouncil:OnInitialize()
 		--[[2]]			  { color = {1,0.5,0,1},			sort = 2,		text = L["Offspec/Greed"],	},
 		--[[3]]			  { color = {0,0.7,0.7,1},			sort = 3,		text = L["Minor Upgrade"],},
 		tier = {
-			--[[1]]		  { color = {0.1,1,0.5,1},			sort = 1,		text = "4th Tier Piece",},
-			--[[2]]		  { color = {1,1,0.5,1},			sort = 2,		text = "2nd Tier Piece",},
-			--[[3]]		  { color = {1,0.5,1,1},			sort = 3,		text = "Tier Piece that doesn't complete a set",},
-			--[[4]]		  { color = {0.5,1,1,1},			sort = 4,		text = "Upgrade to existing tier/random upgrade",},
+			--[[1]]		  { color = {0.1,1,0.5,1},			sort = 1,		text = L["4th Tier Piece"],},
+			--[[2]]		  { color = {1,1,0.5,1},			sort = 2,		text = L["2nd Tier Piece"],},
+			--[[3]]		  { color = {1,0.5,1,1},			sort = 3,		text = L["Tier Piece that doesn't complete a set"],},
+			--[[4]]		  { color = {0.5,1,1,1},			sort = 4,		text = L["Upgrade to existing tier/random upgrade"],},
 		},
 	}
 	self.roleTable = {
@@ -231,10 +231,10 @@ function RCLootCouncil:OnInitialize()
 			tierButtonsEnabled = true,
 			tierNumButtons = 4,
 			tierButtons = {
-				{	text = "4 Piece",					whisperKey = "1, 4tier, 4piece"},		-- 1
-				{	text = "2 Piece",					whisperKey = "2, 2tier, 2piece"},		-- 2
-				{	text = "Other piece",			whisperKey = "3, other, tier, piece"}, -- 3
-				{	text = "Upgrade",					whisperKey = "4, upgrade, up"},			-- 4
+				{	text = L["4 Piece"],					whisperKey = "1, 4tier, 4piece"},		-- 1
+				{	text = L["2 Piece"],					whisperKey = "2, 2tier, 2piece"},		-- 2
+				{	text = L["Other piece"],			whisperKey = "3, other, tier, piece"}, -- 3
+				{	text = L["Upgrade"],					whisperKey = "4, upgrade, up"},			-- 4
 			},
 			numMoreInfoButtons = 1,
 			maxAwardReasons = 10,

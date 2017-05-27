@@ -309,7 +309,7 @@ function RCLootCouncilML:OnCommReceived(prefix, serializedMsg, distri, sender)
 			--[[NOTE: For some reason this can silently fail, but adding a 1 sec timer on the rest of the calls seems to fix it
 				v2.0.1: 	With huge candidates/lootTable we get AceComm lostdatawarning "First", presumeably due to the 4kb ChatThrottleLib limit.
 							Bumping loottable to 4 secs is tested to work with 27 candidates + 10 items.
-				v2.2.3: 	Got a ticket where canidates wasn't received. Bumped to 2 sec and added extra checks for candidates.]]
+				v2.2.3: 	Got a ticket where candidates wasn't received. Bumped to 2 sec and added extra checks for candidates.]]
 
 				addon:ScheduleTimer("SendCommand", 2, sender, "candidates", self.candidates)
 				if self.running then -- Resend lootTable
@@ -743,7 +743,7 @@ function RCLootCouncilML:GetItemsFromMessage(msg, sender)
 		gear2 = item2,
 		ilvl = nil,
 		diff = diff,
-		note = "Auto extracted from whisper",
+		note = L["Auto extracted from whisper"],
 		response = response,
 		isTier = isTier,
 	}

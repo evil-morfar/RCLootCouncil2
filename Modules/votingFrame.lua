@@ -1083,7 +1083,7 @@ do
 
 				info = Lib_UIDropDownMenu_CreateInfo()
 				-- Add the tier menu
-				info.text = "Tier Tokens ..."
+				info.text = L["Tier Tokens ..."]
 				info.value = "TIER_TOKENS"
 				info.hasArrow = true
 				info.notCheckable = true
@@ -1239,7 +1239,7 @@ do
 			local added = false
 			info = Lib_UIDropDownMenu_CreateInfo()
 			if not db.disenchant then
-				return addon:Print("You haven't selected an award reason to use for disenchanting!")
+				return addon:Print(L["You haven't selected an award reason to use for disenchanting!"])
 			end
 			for name, v in pairs(candidates) do
 				if v.enchanter then
