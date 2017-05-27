@@ -231,10 +231,10 @@ function RCLootCouncil:OnInitialize()
 			tierButtonsEnabled = true,
 			tierNumButtons = 4,
 			tierButtons = {
-				{	text = "4 Piece",					whisperKey = "4, 4tier, 4piece"},	-- 1
-				{	text = "2 Piece",					whisperKey = "2, 2tier, 2piece"},	-- 2
-				{	text = "Other piece",			whisperKey = "other, tier, piece"}, -- 3
-				{	text = "Upgrade",					whisperKey = "upgrade, up"},			-- 4
+				{	text = "4 Piece",					whisperKey = "1, 4tier, 4piece"},		-- 1
+				{	text = "2 Piece",					whisperKey = "2, 2tier, 2piece"},		-- 2
+				{	text = "Other piece",			whisperKey = "3, other, tier, piece"}, -- 3
+				{	text = "Upgrade",					whisperKey = "4, upgrade, up"},			-- 4
 			},
 			numMoreInfoButtons = 1,
 			maxAwardReasons = 10,

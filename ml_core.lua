@@ -708,7 +708,7 @@ function RCLootCouncilML:GetItemsFromMessage(msg, sender)
 	-- Let's test the input
 	if not ses or type(ses) ~= "number" or ses > #self.lootTable then return end -- We need a valid session
 	-- Set some locals
-	local item1, item2
+	local item1, item2, isTier
 	local response = 1
 	if arg1:find("|Hitem:") then -- they didn't give a response
 		item1, item2 = arg1, arg2
@@ -719,8 +719,15 @@ function RCLootCouncilML:GetItemsFromMessage(msg, sender)
 
 		-- check if the response is valid
 		local whisperKeys = {}
-		for i = 1, db.numButtons do --go through all the button
-			gsub(db.buttons[i]["whisperKey"], '[%w]+', function(x) tinsert(whisperKeys, {key = x, num = i}) end) -- extract the whisperKeys to a table
+		if self.lootTable[ses].token and addon.mldb.tierButtonsEnabled then
+			isTier = true
+			for i=1, db.tierNumButtons do
+				gsub(db.tierButtons[i]["whisperKey"], '[%w]+', function(x) tinsert(whisperKeys, {key = x, num = i}) end)
+			end
+		else
+			for i = 1, db.numButtons do --go through all the button
+				gsub(db.buttons[i]["whisperKey"], '[%w]+', function(x) tinsert(whisperKeys, {key = x, num = i}) end) -- extract the whisperKeys to a table
+			end
 		end
 		for _,v in ipairs(whisperKeys) do
 			if strmatch(arg1, v.key) then -- if we found a match
@@ -736,13 +743,14 @@ function RCLootCouncilML:GetItemsFromMessage(msg, sender)
 		gear2 = item2,
 		ilvl = nil,
 		diff = diff,
-		note = nil,
-		response = response
+		note = "Auto extracted from whisper",
+		response = response,
+		isTier = isTier,
 	}
 	addon:SendCommand("group", "response", ses, sender, toSend)
 	-- Let people know we've done stuff
 	addon:Print(format(L["Item received and added from 'player'"], addon.Ambiguate(sender)))
-	SendChatMessage("[RCLootCouncil]: "..format(L["Acknowledged as 'response'"], db.responses[response].text ), "WHISPER", nil, sender)
+	SendChatMessage("[RCLootCouncil]: "..format(L["Acknowledged as 'response'"], addon:GetResponseText(response, isTier)), "WHISPER", nil, sender)
 end
 
 function RCLootCouncilML:SendWhisperHelp(target)
