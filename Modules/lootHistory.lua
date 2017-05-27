@@ -836,8 +836,8 @@ function LootHistory.RightClickMenu(menu, level)
 					addon:Debug("Changing tier response id @", data.name, "from", data.response, "to", k)
 					local entry = lootDB[data.name][data.num]
 					entry.responseID = k
-					entry.response = addon:GetResponseText(k, true)
-					entry.color = {addon:GetResponseColor(k, true)}
+					entry.response = v.text
+					entry.color = v.color
 					entry.isAwardReason = nil
 					data.response = k
 					data.cols[6].args = {color = entry.color, response = entry.response, responseID = k}
