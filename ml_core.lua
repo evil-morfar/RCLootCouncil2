@@ -354,7 +354,7 @@ function RCLootCouncilML:LootOpened()
 		for i = 1, GetNumLootItems() do
 			local item = GetLootSlotLink(i)
 			-- We have reopened the loot frame, so check if we should update .lootSlot
-			if self.running then
+			if self.running or sessionframe:IsRunning() then
 				for session = 1, #self.lootTable do
 					-- Just skip if we've already awarded the item or found a fitting lootSlot
 					if not self.lootTable[session].awarded and not updatedLootSlot[session] then
@@ -485,7 +485,7 @@ function RCLootCouncilML:Award(session, winner, response, reason)
 				--addon:Print(L["Alternatively, flag the loot as award later."])
 				return false
 			end
-			if self.lootTable[session].quality < GetLootThreshold() then
+			if self.lootTable[session].quality < GetLootThreshold() or GetNumGroupMembers() == 0 then
 				LootSlot(self.lootTable[session].lootSlot)
 				if not addon:UnitIsUnit(winner, "player") then
 					addon:Print(format(L["Cannot give 'item' to 'player' due to Blizzard limitations. Gave it to you for distribution."], self.lootTable[session].link, addon.Ambiguate(winner)))

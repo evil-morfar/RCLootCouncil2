@@ -1,3 +1,9 @@
+### v2.3.4
+---
+###### Bugfixes
+ + *Items could be wrongly awarded by opening/closing the default loot frame in a specific sequence (#257).*
+
+ 
 ### v2.3.3
 ---
 ###### Bugfixes
