@@ -1,2 +1,4 @@
 .build-tools.cson
 notes.txt
+deserializer.lua
+test.lua
