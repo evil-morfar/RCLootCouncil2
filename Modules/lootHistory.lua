@@ -256,21 +256,22 @@ function LootHistory.SetCellDelete(rowFrame, frame, data, cols, row, realrow, co
 	end)
 end
 
-local sinceEpoch = {} -- Stores epoch seconds for both, we should reuse it
 function LootHistory.DateTimeSort(table, rowa, rowb, sortbycol)
 	local cella, cellb = table:GetCell(rowa, sortbycol), table:GetCell(rowb, sortbycol);
-	local timea, datea, timeb, dateb = cella.args.time, cella.args.date, cellb.args.time, cellb.args.date
-	local d, m, y = strsplit("/", datea, 3)
-	local h, min, s = strsplit(":", timea, 3)
-	sinceEpoch.a = time({year = "20"..y, month = m, day = d, hour = h, min = min, sec = s})
-	d, m, y = strsplit("/", dateb, 3)
-	h, min, s = strsplit(":", timeb, 3)
-	sinceEpoch.b = time({year = "20"..y, month = m, day = d, hour = h, min = min, sec = s})
+	if not (cella.args.epoch and cellb.args.epoch) then
+		local timea, datea, timeb, dateb = cella.args.time, cella.args.date, cellb.args.time, cellb.args.date
+		local d, m, y = strsplit("/", datea, 3)
+		local h, min, s = strsplit(":", timea, 3)
+		cella.args.epoch = time({year = "20"..y, month = m, day = d, hour = h, min = min, sec = s})
+		d, m, y = strsplit("/", dateb, 3)
+		h, min, s = strsplit(":", timeb, 3)
+		cellb.args.epoch = time({year = "20"..y, month = m, day = d, hour = h, min = min, sec = s})
+	end
 	local direction = table.cols[sortbycol].sort or table.cols[sortbycol].defaultsort or "asc";
 	if direction:lower() == "asc" then
-		return sinceEpoch.a < sinceEpoch.b;
+		return cella.args.epoch < cellb.args.epoch
 	else
-		return sinceEpoch.a > sinceEpoch.b;
+		return cella.args.epoch > cellb.args.epoch
 	end
 end
 

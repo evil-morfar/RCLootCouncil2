@@ -9,6 +9,7 @@
  * You can now edit recipients and reasons in the loot history.
  * Simply right click any entry and change it to what you want.
  * Exports have been optimized.
+ * Time-Sort no longer memory leaks.
 
 
 ### v2.3.2
