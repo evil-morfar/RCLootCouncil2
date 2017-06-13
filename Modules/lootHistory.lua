@@ -51,8 +51,9 @@ function LootHistory:OnInitialize()
 	self.moreInfo = CreateFrame( "GameTooltip", "RCLootHistoryMoreInfo", nil, "GameTooltipTemplate" )
 end
 
-local tierLookUpTable = { -- MapID to Tier text
+local tierLookUpTable = { -- instanceMapID to Tier text
 	[1530] = L["Tier 19"],
+	[1676] = L["Tier 20"],
 }
 
 local difficultyLookupTable = {
