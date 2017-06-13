@@ -992,6 +992,7 @@ do
 					data.votes,
 					data.gear1,
 					data.gear2,
+					data.isTier,
 			}) end
 			info.disabled = false
 			Lib_UIDropDownMenu_AddButton(info, level)
@@ -1049,6 +1050,7 @@ do
 							data.votes,
 							data.gear1,
 							data.gear2,
+							data.isTier,
 				}) end
 					Lib_UIDropDownMenu_AddButton(info, level)
 				end

@@ -80,6 +80,9 @@ end
 --end
 
 function LootFrame:Update()
+	if numRolled == #items then -- We're through them all, so hide the frame
+		return self:Disable()
+	end
 	local width = 150
 	local numEntries = 0
 	for _,item in ipairs(items) do
@@ -94,9 +97,6 @@ function LootFrame:Update()
 	-- for i = MAX_ENTRIES, numEntries + 1, -1 do -- Hide unused
 	-- 	if entries[i] then entries[i]:Hide() end
 	-- end
-	if numRolled == #items then -- We're through them all, so hide the frame
-		self:Disable()
-	end
 end
 
 function LootFrame:OnRoll(entry, button)
@@ -104,8 +104,8 @@ function LootFrame:OnRoll(entry, button)
 	--local index = entries[entry].realID
 	--local isTier = items[index].isTier and addon.mldb.tierButtonsEnabled -- Both needs to be true before we've actually rolled on it
 	--addon:SendCommand("group", "response", addon:CreateResponse(items[index].session, items[index].link, items[index].ilvl, button, items[index].equipLoc, items[index].note, items[index].subType, isTier))
-	addon:Debug("LootFrame:OnRoll", entry.realID, button, "Response:", addon:GetResponseText(button))
-	local isTier = addon.mldb.tierButtonsEnabled and entry.item.isTier
+	local isTier = entry.item.isTier and addon.mldb.tierButtonsEnabled
+	addon:Debug("LootFrame:OnRoll", entry.realID, button, "Response:", addon:GetResponseText(button, isTier))
 	local item = entry.item
 	addon:SendCommand("group", "response", addon:CreateResponse(item.session, item.link, item.ilvl, button, item.equipLoc, item.note, item.subType, isTier))
 
@@ -353,9 +353,9 @@ do
 		else
 			entry = self:Get("normal")
 		end
-		if entry then
+		if entry then -- We restored a previously trashed entry, so just update it to the new item
 			entry:Update(item)
-		else
+		else -- Or just create a new entry
 			if addon.mldb.tierButtonsEnabled and item.isTier then
 				entry = self:GetTierEntry(item)
 			else
