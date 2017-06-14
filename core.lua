@@ -5,9 +5,6 @@
 --------------------------------
 TODOs/Notes
 	Things marked with "todo"
-		- TIER TOKENS
-			- Change history tag to awardType.
-			- Need better width updating in lootFrame!
 		- Item subtype in history exports
 		- IDEA Have player's current gear sent with lootAck
 --------------------------------
@@ -1403,7 +1400,7 @@ end
 				[1] = responseText,
 				[2] = number of items won,
 				[3] = {color},
-				[4] = responseID, -- see index in self.responses. Award reasons gets 100 addded
+				[4] = responseID, -- see index in self.responses. Award reasons gets 100 addded. TierResponses gets 200 added.
 			}
 		}
 	}
@@ -1422,15 +1419,19 @@ function RCLootCouncil:GetLootDBStatistics()
 			entry = data[i]
 			id = entry.responseID
 			if entry.isAwardReason then id = id + 100 end -- Bump to distingush from normal awards
+			if entry.tokenRoll then id = id + 200 end
 			-- We assume the mapID and difficultyID is available on any item if at all.
 			if not numTokens[entry.instance] then numTokens[entry.instance] = {num = 0, mapID = entry.mapID, difficultyID = entry.difficultyID} end
-			numTokens[entry.instance].num = entry.tierToken and numTokens[entry.instance].num + 1 or numTokens[entry.instance].num
+			if entry.tierToken then -- If it's a tierToken, increase the count
+				numTokens[entry.instance].num = numTokens[entry.instance].num + 1
+			end
 			count[id] = count[id] and count[id] + 1 or 1
 			responseText[id] = responseText[id] and responseText[id] or entry.response
 			if (not color[id] or unpack(color[id],1,3) == unpack{1,1,1}) and (entry.color and #entry.color ~= 0)  then -- If it's not already added
 				color[id] = #entry.color ~= 0 and #entry.color == 4 and entry.color or {1,1,1}
 			end
-			if type(id) == "number" and id <= db.numMoreInfoButtons and not entry.isAwardReason and lastestAwardFound < 5 then
+			if lastestAwardFound < 5 and type(id) == "number" and not entry.isAwardReason
+			 	and (id <= db.numMoreInfoButtons or (entry.tokenRoll and id - 200 <= db.numMoreInfoButtons)) then
 				tinsert(lootDBStatistics[name], {entry.lootWon, --[[entry.response .. ", "..]] format(L["'n days' ago"], self:ConvertDateToString(self:GetNumberOfDaysFromNow(entry.date))), color[id], i})
 				lastestAwardFound = lastestAwardFound + 1
 			end
