@@ -9,6 +9,7 @@ While this version is backwards compatible, the tier tokens buttons will not be 
  * By default, tier tokens now receive special roll options.
  * A brand new set of buttons and responses have been added for tier tokens only.
  * Check them out in the options menu, where it can also be disabled if need be.
+ * Prepared to handle tier 20 tokens.
 
 
 * **Loot History**
