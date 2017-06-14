@@ -1,9 +1,15 @@
-### v2.4.0
+### v2.4.0-Beta.1
 ---
+**Note:**
+While this version is backwards compatible, the tier tokens buttons will not be showed on older clients,
+ and any tier rolls will show up as normal rolls for all intents and purposes.
+
+
 * **Tier tokens**
  * By default, tier tokens now receive special roll options.
  * A brand new set of buttons and responses have been added for tier tokens only.
  * Check them out in the options menu, where it can also be disabled if need be.
+
 
 * **Loot History**
  * You can now edit recipients and reasons in the loot history.
