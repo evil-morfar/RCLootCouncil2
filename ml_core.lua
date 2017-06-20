@@ -635,7 +635,7 @@ function RCLootCouncilML:TrackAndLogLoot(name, item, response, boss, votes, item
 	history_table["itemReplaced2"]= itemReplaced2
 	history_table["response"] 		= reason and reason.text or addon:GetResponseText(response, tokenRoll)
 	history_table["responseID"] 	= response or reason.sort - 400 															-- Changed in v2.0 (reason responseID was 0 pre v2.0)
-	history_table["color"]			= reason and reason.color or addon:GetResponseColor(response, tokenRoll)	-- New in v2.0
+	history_table["color"]			= reason and reason.color or {addon:GetResponseColor(response, tokenRoll)}	-- New in v2.0
 	history_table["class"]			= self.candidates[name].class																-- New in v2.0
 	history_table["isAwardReason"]= reason and true or false																	-- New in v2.0
 	history_table["difficultyID"]	= difficultyID																					-- New in v2.3+

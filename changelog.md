@@ -17,6 +17,7 @@ While this version is backwards compatible, the tier tokens buttons will not be 
  * Simply right click any entry and change it to what you want.
  * Exports have been optimized.
  * Time-Sort no longer memory leaks.
+ * A small error in the history will no longer break the entire addon.
 
 
 ### v2.3.4
