@@ -1,7 +1,7 @@
-### v2.4.0-Beta.1
+### v2.4.0
 ---
 **Note:**
-While this version is backwards compatible, the tier tokens buttons will not be showed on older clients,
+While this version is backwards compatible, the tier token buttons will not be showed on older clients,
  and any tier rolls will show up as normal rolls for all intents and purposes.
 
 
