@@ -226,7 +226,7 @@ function RCLootCouncilML:BuildMLdb()
 	local changedTierButtons = {}
 	for i = 1, db.tierNumButtons do
 		if db.tierButtons[i].text ~= addon.defaults.profile.tierButtons[i].text then
-			changedTierButtons[i] = {text = db.buttons[i].text}
+			changedTierButtons[i] = {text = db.tierButtons[i].text}
 		end
 	end
 	-- Extract changed award reasons

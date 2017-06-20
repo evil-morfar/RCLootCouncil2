@@ -19,6 +19,9 @@ While this version is backwards compatible, the tier token buttons will not be s
  * Time-Sort no longer memory leaks.
  * A small error in the history will no longer break the entire addon.
 
+##### Fix
++ *The Master Looter wouldn't send all the correct buttons (#262).*
+
 
 ### v2.3.4
 ---
