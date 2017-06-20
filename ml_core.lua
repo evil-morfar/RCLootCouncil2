@@ -210,11 +210,23 @@ function RCLootCouncilML:BuildMLdb()
 			changedResponses[i] = db.responses[i]
 		end
 	end
+	changedResponses.tier = {}
+	for k,v in pairs(db.responses.tier) do
+		if v.text ~= addon.defaults.profile.responses.tier[k].text or unpack(v.color) ~= unpack(addon.defaults.profile.responses.tier[k].color) then
+			changedResponses.tier[k] = v
+		end
+	end
 	-- Extract changed buttons
 	local changedButtons = {};
 	for i = 1, db.numButtons do
 		if db.buttons[i].text ~= addon.defaults.profile.buttons[i].text then
 			changedButtons[i] = {text = db.buttons[i].text}
+		end
+	end
+	local changedTierButtons = {}
+	for i = 1, db.tierNumButtons do
+		if db.tierButtons[i].text ~= addon.defaults.profile.tierButtons[i].text then
+			changedTierButtons[i] = {text = db.buttons[i].text}
 		end
 	end
 	-- Extract changed award reasons
@@ -230,12 +242,15 @@ function RCLootCouncilML:BuildMLdb()
 		anonymousVoting = db.anonymousVoting,
 		allowNotes		= db.allowNotes,
 		numButtons		= db.numButtons,
+		tierNumButtons = db.tierNumButtons,
 		hideVotes		= db.hideVotes,
 		observe			= db.observe,
 	--	awardReasons	= changedAwardReasons,
 		buttons			= changedButtons,
+		tierButtons 	= changedTierButtons,
 		responses		= changedResponses,
 		timeout			= db.timeout,
+		tierButtonsEnabled = db.tierButtonsEnabled,
 	}
 end
 
@@ -294,7 +309,7 @@ function RCLootCouncilML:OnCommReceived(prefix, serializedMsg, distri, sender)
 			--[[NOTE: For some reason this can silently fail, but adding a 1 sec timer on the rest of the calls seems to fix it
 				v2.0.1: 	With huge candidates/lootTable we get AceComm lostdatawarning "First", presumeably due to the 4kb ChatThrottleLib limit.
 							Bumping loottable to 4 secs is tested to work with 27 candidates + 10 items.
-				v2.2.3: 	Got a ticket where canidates wasn't received. Bumped to 2 sec and added extra checks for candidates.]]
+				v2.2.3: 	Got a ticket where candidates wasn't received. Bumped to 2 sec and added extra checks for candidates.]]
 
 				addon:ScheduleTimer("SendCommand", 2, sender, "candidates", self.candidates)
 				if self.running then -- Resend lootTable
@@ -604,7 +619,7 @@ function RCLootCouncilML:AutoAward(lootIndex, item, quality, name, reason, boss)
 end
 
 local history_table = {}
-function RCLootCouncilML:TrackAndLogLoot(name, item, response, boss, votes, itemReplaced1, itemReplaced2, reason, isToken)
+function RCLootCouncilML:TrackAndLogLoot(name, item, response, boss, votes, itemReplaced1, itemReplaced2, reason, isToken, tokenRoll)
 	if reason and not reason.log then return end -- Reason says don't log
 	if not (db.sendHistory or db.enableHistory) then return end -- No reason to do stuff when we won't use it
 	if addon.testMode and not addon.nnp then return end -- We shouldn't track testing awards.
@@ -618,15 +633,16 @@ function RCLootCouncilML:TrackAndLogLoot(name, item, response, boss, votes, item
 	history_table["votes"] 			= votes
 	history_table["itemReplaced1"]= itemReplaced1
 	history_table["itemReplaced2"]= itemReplaced2
-	history_table["response"] 		= reason and reason.text or db.responses[response].text
-	history_table["responseID"] 	= response or reason.sort - 400 										-- Changed in v2.0 (reason responseID was 0 pre v2.0)
-	history_table["color"]			= reason and reason.color or db.responses[response].color	-- New in v2.0
-	history_table["class"]			= self.candidates[name].class											-- New in v2.0
-	history_table["isAwardReason"]= reason and true or false												-- New in v2.0
-	history_table["difficultyID"]	= difficultyID																-- New in v2.3+
-	history_table["mapID"]			= mapID																		-- New in v2.3+
-	history_table["groupSize"]		= groupSize																	-- New in v2.3+
-	history_table["tierToken"]		= isToken																	-- New in v2.3+
+	history_table["response"] 		= reason and reason.text or addon:GetResponseText(response, tokenRoll)
+	history_table["responseID"] 	= response or reason.sort - 400 															-- Changed in v2.0 (reason responseID was 0 pre v2.0)
+	history_table["color"]			= reason and reason.color or {addon:GetResponseColor(response, tokenRoll)}	-- New in v2.0
+	history_table["class"]			= self.candidates[name].class																-- New in v2.0
+	history_table["isAwardReason"]= reason and true or false																	-- New in v2.0
+	history_table["difficultyID"]	= difficultyID																					-- New in v2.3+
+	history_table["mapID"]			= mapID																							-- New in v2.3+
+	history_table["groupSize"]		= groupSize																						-- New in v2.3+
+	history_table["tierToken"]		= isToken																						-- New in v2.3+
+	history_table["tokenRoll"]		= tokenRoll																						-- New in v2.4+
 
 	if db.sendHistory then -- Send it, and let comms handle the logging
 		addon:SendCommand("group", "history", name, history_table)
@@ -693,7 +709,7 @@ function RCLootCouncilML:GetItemsFromMessage(msg, sender)
 	-- Let's test the input
 	if not ses or type(ses) ~= "number" or ses > #self.lootTable then return end -- We need a valid session
 	-- Set some locals
-	local item1, item2
+	local item1, item2, isTier
 	local response = 1
 	if arg1:find("|Hitem:") then -- they didn't give a response
 		item1, item2 = arg1, arg2
@@ -704,8 +720,15 @@ function RCLootCouncilML:GetItemsFromMessage(msg, sender)
 
 		-- check if the response is valid
 		local whisperKeys = {}
-		for i = 1, db.numButtons do --go through all the button
-			gsub(db.buttons[i]["whisperKey"], '[%w]+', function(x) tinsert(whisperKeys, {key = x, num = i}) end) -- extract the whisperKeys to a table
+		if self.lootTable[ses].token and addon.mldb.tierButtonsEnabled then
+			isTier = true
+			for i=1, db.tierNumButtons do
+				gsub(db.tierButtons[i]["whisperKey"], '[%w]+', function(x) tinsert(whisperKeys, {key = x, num = i}) end)
+			end
+		else
+			for i = 1, db.numButtons do --go through all the button
+				gsub(db.buttons[i]["whisperKey"], '[%w]+', function(x) tinsert(whisperKeys, {key = x, num = i}) end) -- extract the whisperKeys to a table
+			end
 		end
 		for _,v in ipairs(whisperKeys) do
 			if strmatch(arg1, v.key) then -- if we found a match
@@ -721,13 +744,14 @@ function RCLootCouncilML:GetItemsFromMessage(msg, sender)
 		gear2 = item2,
 		ilvl = nil,
 		diff = diff,
-		note = nil,
-		response = response
+		note = L["Auto extracted from whisper"],
+		response = response,
+		isTier = isTier,
 	}
 	addon:SendCommand("group", "response", ses, sender, toSend)
 	-- Let people know we've done stuff
 	addon:Print(format(L["Item received and added from 'player'"], addon.Ambiguate(sender)))
-	SendChatMessage("[RCLootCouncil]: "..format(L["Acknowledged as 'response'"], db.responses[response].text ), "WHISPER", nil, sender)
+	SendChatMessage("[RCLootCouncil]: "..format(L["Acknowledged as 'response'"], addon:GetResponseText(response, isTier)), "WHISPER", nil, sender)
 end
 
 function RCLootCouncilML:SendWhisperHelp(target)
@@ -777,12 +801,12 @@ LibDialog:Register("RCLOOTCOUNCIL_CONFIRM_AWARD", {
 		{	text = L["Yes"],
 			on_click = function(self, data)
 				-- IDEA Perhaps come up with a better way of handling this
-				local session, player, response, reason, votes, item1, item2 = unpack(data,1,7)
+				local session, player, response, reason, votes, item1, item2, isTierRoll = unpack(data,1,8)
 				local item = RCLootCouncilML.lootTable[session].link -- Store it now as we wipe lootTable after Award()
 				local isToken = RCLootCouncilML.lootTable[session].token
 				local awarded = RCLootCouncilML:Award(session, player, response, reason)
 				if awarded then -- log it
-					RCLootCouncilML:TrackAndLogLoot(player, item, response, addon.target, votes, item1, item2, reason, isToken)
+					RCLootCouncilML:TrackAndLogLoot(player, item, response, addon.target, votes, item1, item2, reason, isToken, isTierRoll)
 				end
 				-- We need to delay the test mode disabling so comms have a chance to be send first!
 				if addon.testMode and RCLootCouncilML:HasAllItemsBeenAwarded() then RCLootCouncilML:EndSession() end

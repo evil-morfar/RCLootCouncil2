@@ -7,7 +7,7 @@ local addon = LibStub("AceAddon-3.0"):GetAddon("RCLootCouncil")
 local LootHistory = addon:NewModule("RCLootHistory")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 local AG = LibStub("AceGUI-3.0")
-local lootDB, scrollCols, data, db, numLootWon;
+local lootDB, scrollCols, data, db, numLootWon
 --[[ data structure:
 data[date][playerName] = {
 	["class"] = CLASS,
@@ -17,6 +17,7 @@ data[date][playerName] = {
 }
 ]]
 local selectedDate, selectedName, filterMenu, moreInfo, moreInfoData
+local rightClickMenu;
 local ROW_HEIGHT = 20;
 local NUM_ROWS = 15;
 
@@ -43,13 +44,16 @@ function LootHistory:OnInitialize()
 		{name = "",					width = ROW_HEIGHT},				-- Delete button
 	}
 	filterMenu = CreateFrame("Frame", "RCLootCouncil_LootHistory_FilterMenu", UIParent, "Lib_UIDropDownMenuTemplate")
+	rightClickMenu = CreateFrame("Frame", "RCLootCouncil_LootHistory_RightclickMenu", UIParent, "Lib_UIDropDownMenuTemplate")
 	Lib_UIDropDownMenu_Initialize(filterMenu, self.FilterMenu, "MENU")
+	Lib_UIDropDownMenu_Initialize(rightClickMenu, self.RightClickMenu, "MENU")
 	--MoreInfo
 	self.moreInfo = CreateFrame( "GameTooltip", "RCLootHistoryMoreInfo", nil, "GameTooltipTemplate" )
 end
 
-local tierLookUpTable = { -- MapID to Tier text
+local tierLookUpTable = { -- instanceMapID to Tier text
 	[1530] = L["Tier 19"],
+	[1676] = L["Tier 20"],
 }
 
 local difficultyLookupTable = {
@@ -138,15 +142,15 @@ function LootHistory:BuildData()
 						date = date,
 						class = x.class,
 						name = name,
-						num = num,
+						num = num, -- That's really the index in lootDB[name]
 						response = i.responseID,
-						cols = {
+						cols = { -- NOTE Don't forget the rightClickMenu dropdown, if the order of these changes
 							{DoCellUpdate = addon.SetCellClassIcon, args = {x.class}},
 							{value = addon.Ambiguate(name), color = addon:GetClassColor(x.class)},
 							{value = date.. "-".. i.time or "", args = {time = i.time, date = date},},
 							{DoCellUpdate = self.SetCellGear, args={i.lootWon}},
 							{value = i.lootWon},
-							{DoCellUpdate = self.SetCellResponse, args = {color = i.color, response = i.response, responseID = i.responseID or 0, isAwardReason = i.isAwardReason}},
+							{DoCellUpdate = self.SetCellResponse, args = {color = i.color, response = i.response, responseID = i.responseID or 0, isAwardReason = i.isAwardReason, tokenRoll = i.tokenRoll}},
 							{DoCellUpdate = self.SetCellDelete},
 						}
 					}
@@ -206,10 +210,10 @@ function LootHistory.SetCellGear(rowFrame, frame, data, cols, row, realrow, colu
 		frame:SetScript("OnEnter", function() addon:CreateHypertip(gear) end)
 		frame:SetScript("OnLeave", function() addon:HideTooltip() end)
 		frame:SetScript("OnClick", function()
-		if IsModifiedClick() then
-		   HandleModifiedItemClick(gear);
-      end
-	end)
+			if IsModifiedClick() then
+			   HandleModifiedItemClick(gear);
+	      end
+		end)
 		frame:Show()
 	else
 		frame:Hide()
@@ -220,10 +224,10 @@ function LootHistory.SetCellResponse(rowFrame, frame, data, cols, row, realrow, 
 	local args = data[realrow].cols[column].args
 	frame.text:SetText(args.response)
 
-	if args.color then -- Never version saves the color with the entry
+	if args.color and type(args.color) == "table" then -- Never version saves the color with the entry
 		frame.text:SetTextColor(unpack(args.color))
 	elseif args.responseID and args.responseID > 0 then -- try to recreate color from ID
-		frame.text:SetTextColor(addon:GetResponseColor(args.responseID))
+		frame.text:SetTextColor(addon:GetResponseColor(args.responseID, args.tokenRoll))
 	else -- default to white
 		frame.text:SetTextColor(1,1,1,1)
 	end
@@ -253,21 +257,22 @@ function LootHistory.SetCellDelete(rowFrame, frame, data, cols, row, realrow, co
 	end)
 end
 
-local sinceEpoch = {} -- Stores epoch seconds for both, we should reuse it
 function LootHistory.DateTimeSort(table, rowa, rowb, sortbycol)
 	local cella, cellb = table:GetCell(rowa, sortbycol), table:GetCell(rowb, sortbycol);
-	local timea, datea, timeb, dateb = cella.args.time, cella.args.date, cellb.args.time, cellb.args.date
-	local d, m, y = strsplit("/", datea, 3)
-	local h, min, s = strsplit(":", timea, 3)
-	sinceEpoch.a = time({year = "20"..y, month = m, day = d, hour = h, min = min, sec = s})
-	d, m, y = strsplit("/", dateb, 3)
-	h, min, s = strsplit(":", timeb, 3)
-	sinceEpoch.b = time({year = "20"..y, month = m, day = d, hour = h, min = min, sec = s})
+	if not (cella.args.epoch and cellb.args.epoch) then
+		local timea, datea, timeb, dateb = cella.args.time, cella.args.date, cellb.args.time, cellb.args.date
+		local d, m, y = strsplit("/", datea, 3)
+		local h, min, s = strsplit(":", timea, 3)
+		cella.args.epoch = time({year = "20"..y, month = m, day = d, hour = h, min = min, sec = s})
+		d, m, y = strsplit("/", dateb, 3)
+		h, min, s = strsplit(":", timeb, 3)
+		cellb.args.epoch = time({year = "20"..y, month = m, day = d, hour = h, min = min, sec = s})
+	end
 	local direction = table.cols[sortbycol].sort or table.cols[sortbycol].defaultsort or "asc";
 	if direction:lower() == "asc" then
-		return sinceEpoch.a < sinceEpoch.b;
+		return cella.args.epoch < cellb.args.epoch
 	else
-		return sinceEpoch.a > sinceEpoch.b;
+		return cella.args.epoch > cellb.args.epoch
 	end
 end
 
@@ -292,11 +297,11 @@ function LootHistory.ResponseSort(table, rowa, rowb, sortbycol)
 	local column = table.cols[sortbycol]
 	rowa, rowb = table:GetRow(rowa), table:GetRow(rowb);
 	local a,b
-	local aID, bID = data[rowa.date][rowa.name][rowa.num].responseID, data[rowb.date][rowb.name][rowb.num].responseID
+	local aID, bID = lootDB[rowa.name][rowa.num].responseID, lootDB[rowb.name][rowb.num].responseID
 
 	-- NOTE: I'm pretty sure it can only be an awardReason when responseID is nil or 0
 	if aID and aID ~= 0 then
-		if data[rowa.date][rowa.name][rowa.num].isAwardReason then
+		if lootDB[rowa.name][rowa.num].isAwardReason then
 			a = db.awardReasons[aID].sort
 		else
 			a = addon:GetResponseSort(aID)
@@ -307,7 +312,7 @@ function LootHistory.ResponseSort(table, rowa, rowb, sortbycol)
 	end
 
 	if bID and bID ~= 0 then
-		if data[rowb.date][rowb.name][rowb.num].isAwardReason then
+		if lootDB[rowb.name][rowb.num].isAwardReason then
 			b = db.awardReasons[bID].sort
 		else
 			b = addon:GetResponseSort(bID)
@@ -373,7 +378,7 @@ function LootHistory:ImportHistory(import)
 		end
 	end
 	addon.lootDB.factionrealm = lootDB -- save it
-	addon:Print("Successfully imported "..number.." entries.")
+	addon:Print(format(L["Successfully imported 'number' entries."], number))
 	addon:Debug("Import successful")
 	self:BuildData()
 end
@@ -417,7 +422,12 @@ function LootHistory:GetFrame()
 	st:RegisterEvents({
 		["OnClick"] = function(rowFrame, cellFrame, data, cols, row, realrow, column, table, button, ...)
 			if row or realrow then
-				self:UpdateMoreInfo(rowFrame, cellFrame, data, cols, row, realrow, column, table, button, ...)
+				if button == "LeftButton" then
+					self:UpdateMoreInfo(rowFrame, cellFrame, data, cols, row, realrow, column, table, button, ...)
+				elseif button == "RightButton" then
+					rightClickMenu.datatable = data[realrow]
+					Lib_ToggleDropDownMenu(1,nil,rightClickMenu,cellFrame,0,0)
+				end
 			end
 			return false
 		end
@@ -601,7 +611,7 @@ function LootHistory:UpdateMoreInfo(rowFrame, cellFrame, dat, cols, row, realrow
 	tip:SetOwner(self.frame, "ANCHOR_RIGHT")
 	local row = dat[realrow]
 	local color = addon:GetClassColor(row.class)
-	local data = data[row.date][row.name][row.num]
+	local data = lootDB[row.name][row.num]
 	tip:AddLine(addon.Ambiguate(row.name), color.r, color.g, color.b)
 	tip:AddLine("")
 	tip:AddDoubleLine(L["Time"]..":", (data.time or L["Unknown"]) .." ".. row.date or L["Unknown"], 1,1,1, 1,1,1)
@@ -627,7 +637,7 @@ function LootHistory:UpdateMoreInfo(rowFrame, cellFrame, dat, cols, row, realrow
 	tip:AddLine(L["Total awards"])
 	table.sort(moreInfoData[row.name].totals.responses, function(a,b) return type(a[4]) == "number" and type(b[4]) == "number" and a[4] < b[4] or false end)
 	for i, v in pairs(moreInfoData[row.name].totals.responses) do
-		local r,g,b 
+		local r,g,b
 		if v[3] then r,g,b = unpack(v[3],1,3) end
 		tip:AddDoubleLine(v[1], v[2], r or 1, g or 1, b or 1, 1,1,1)
 	end
@@ -655,6 +665,7 @@ function LootHistory:UpdateMoreInfo(rowFrame, cellFrame, dat, cols, row, realrow
  			tip:AddDoubleLine(name, v.num, 1,1,1, 1,1,1)
  		end
 		tip:AddLine(" ")
+		tip:AddDoubleLine("Total LootDB entries:", #self.frame.rows, 1,1,1, 0,0,1)
 
 	end
 	tip:SetScale(db.UI.history.scale)
@@ -729,242 +740,391 @@ function LootHistory.FilterMenu(menu, level)
 	end
 end
 
+-- NOTE Changing e.g. a tier token item's response to a non-tier token response is possible display wise,
+-- but it will retain it's tier token tag, and vice versa. Can't decide whether it's a feature or bug.
+function LootHistory.RightClickMenu(menu, level)
+	local info = Lib_UIDropDownMenu_CreateInfo()
+	local data = menu.datatable
+
+	if level == 1 then -- Redundant
+		info.text = "Edit Entry"
+		info.isTitle = true
+		info.notCheckable = true
+		info.disabled = true
+		Lib_UIDropDownMenu_AddButton(info, level)
+
+		info = Lib_UIDropDownMenu_CreateInfo()
+		info.text = L["Name"]
+		info.value = "EDIT_NAME"
+		info.notCheckable = true
+		info.hasArrow = true
+		Lib_UIDropDownMenu_AddButton(info, level)
+
+		info.text = L["Response"]
+		info.value = "EDIT_RESPONSE"
+		Lib_UIDropDownMenu_AddButton(info, level)
+
+	elseif level == 2 then
+		local value = LIB_UIDROPDOWNMENU_MENU_VALUE
+		if value == "EDIT_NAME" then
+			for _,v in pairs(LootHistory.frame.name.data) do
+				info.text = v[2].value
+				local c = addon:GetClassColor(v[1].args[1])
+				info.colorCode = "|cff"..addon:RGBToHex(c.r,c.g,c.b)
+				info.notCheckable = true
+				info.hasArrow = false
+				info.func = function()
+					addon:Debug("Moving award from", data.name, "to", v[2].name)
+					-- Since we store data as lootDB[name] = ..., we need to move the entire table to the new recipient
+					tinsert(lootDB[v[2].name], tremove(lootDB[data.name], data.num))
+					-- Now update the data in our display st, which coincidentally is data
+					data.num = #lootDB[v[2].name]
+					data.name = v[2].name
+					data.class = v[1].args[1]
+					-- We also need to update the class saved with the loot:
+					lootDB[data.name][data.num].class = data.class
+					data.cols[1].args[1] = v[1].args[1]
+					data.cols[2] = {value = v[2].value, color = addon:GetClassColor(data.class)}
+					LootHistory.frame.st:SortData()
+				end
+				Lib_UIDropDownMenu_AddButton(info, level)
+			end
+
+		elseif value == "EDIT_RESPONSE" then
+			local v;
+			for i = 1, db.numButtons do
+				v = db.responses[i]
+				info.text = v.text
+				info.colorCode = "|cff"..addon:RGBToHex(unpack(v.color))
+				info.notCheckable = true
+				info.func = function()
+					addon:Debug("Changing response id @", data.name, "from", data.response, "to", i)
+					local entry = lootDB[data.name][data.num]
+					entry.responseID = i
+					entry.response = addon:GetResponseText(i)
+					entry.color = {addon:GetResponseColor(i)}
+					entry.isAwardReason = nil
+					data.response = i
+					data.cols[6].args = {color = entry.color, response = entry.response, responseID = i}
+					LootHistory.frame.st:SortData()
+				end
+				Lib_UIDropDownMenu_AddButton(info, level)
+			end
+
+			info = Lib_UIDropDownMenu_CreateInfo()
+			-- Add the tier menu
+			info.text = "Tier Tokens ..."
+			info.value = "TIER_TOKENS"
+			info.hasArrow = true
+			info.notCheckable = true
+			Lib_UIDropDownMenu_AddButton(info, level)
+
+			-- Add the award reasons
+			info.text = "Award Reason ..."
+			info.value = "AWARD_REASON"
+			info.hasArrow = true
+			info.notCheckable = true
+			Lib_UIDropDownMenu_AddButton(info, level)
+		end
+	elseif level == 3 then
+		local value = LIB_UIDROPDOWNMENU_MENU_VALUE
+		if value == "TIER_TOKENS" then
+			for k,v in ipairs(db.responses.tier) do
+				if k > db.tierNumButtons then break end
+				info.text = v.text
+				info.colorCode = "|cff"..addon:RGBToHex(unpack(v.color))
+				info.notCheckable = true
+				info.func = function()
+					addon:Debug("Changing tier response id @", data.name, "from", data.response, "to", k)
+					local entry = lootDB[data.name][data.num]
+					entry.responseID = k
+					entry.response = v.text
+					entry.color = v.color
+					entry.isAwardReason = nil
+					data.response = k
+					data.cols[6].args = {color = entry.color, response = entry.response, responseID = k}
+					LootHistory.frame.st:SortData()
+				end
+				Lib_UIDropDownMenu_AddButton(info, level)
+			end
+		elseif value == "AWARD_REASON" then
+			for k,v in ipairs(db.awardReasons) do
+				if k > db.numAwardReasons then break end
+				info.text = v.text
+				info.colorCode = "|cff"..addon:RGBToHex(unpack(v.color))
+				info.notCheckable = true
+				info.func = function()
+					addon:Debug("Changing award reason id @", data.name, "from", data.response, "to", k)
+					local entry = lootDB[data.name][data.num]
+					entry.responseID = k
+					entry.response = v.text
+					entry.color = {unpack(v.color)} -- For some reason it won't just accept v.color (!)
+					entry.isAwardReason = true
+					data.response = i
+					data.cols[6].args = {color = entry.color, response = entry.response, responseID = k}
+					LootHistory.frame.st:SortData()
+				end
+				Lib_UIDropDownMenu_AddButton(info, level)
+			end
+		end
+	end
+end
+
 
 ---------------------------------------------------------------
 -- Exports.
 -- REVIEW A lot of optimizations can be done here.
 -- @section Exports.
 ---------------------------------------------------------------
+do
+	local export, ret = {},{}
 
---- Lua
-function LootHistory:ExportLua()
-	local export = ""
-	for player, v in pairs(lootDB) do
-		if selectedName and selectedName == player or not selectedName then
-			export = export .. "[\""..player.."\"] = {\r\n"
-			for i, d in pairs(v) do
-				if selectedDate and selectedDate == d.date or not selectedDate then
-					export = export .."\t{\r\n"
-					for label, d in pairs(d) do
-						if label == "color" then -- thats a table
-							export = export .. "\t\t[\""..label.."\"] = {\r\n"
-							for i,d in pairs(d) do
-								 export = export .. "\t\t\t"..d..", --"..i.."\r\n"
+	--- Lua
+	function LootHistory:ExportLua()
+		wipe(export)
+		for player, v in pairs(lootDB) do
+			if selectedName and selectedName == player or not selectedName then
+				tinsert(export, "[\"")
+				tinsert(export, player)
+				tinsert(export, "\"] = {\r\n")
+				for i, d in pairs(v) do
+					if selectedDate and selectedDate == d.date or not selectedDate then
+						tinsert(export, "\t{\r\n")
+						for label, d in pairs(d) do
+							if label == "color" then -- thats a table
+								tinsert(export, "\t\t[\"")
+								tinsert(export, label)
+								tinsert(export,"\"] = {\r\n")
+								for i,d in pairs(d) do
+									 tinsert(export, "\t\t\t")
+									 tinsert(export, d)
+									 tinsert(export,", --")
+									 tinsert(export,i)
+									 tinsert(export,"\r\n")
+								end
+								 tinsert(export, "\t\t}\r\n")
+							elseif label == "lootWon" or label == "itemReplaced1" or label == "itemReplaced2" then
+								tinsert(export, "\t\t[\"")
+								tinsert(export, label)
+								tinsert(export, (self:EscapeItemLink(d)))
+								tinsert(export, "\"] = ")
+								tinsert(export, "\r\n")
+							else
+								tinsert(export, "\t\t[\""..label.."\"] = "..tostring(d).."\r\n")
 							end
-							 export = export .."\t\t}\r\n"
-						elseif label == "lootWon" or label == "itemReplaced1" or label == "itemReplaced2" then
-							export = export .. "\t\t[\""..label.."\"] = "..self:EscapeItemLink(d).."\r\n"
-						else
-							export = export .. "\t\t[\""..label.."\"] = "..tostring(d).."\r\n"
 						end
+						tinsert(export, "\t} --"..i.."\r\n")
 					end
-					export = export .."\t} --"..i.."\r\n"
 				end
-			end
-			export = export .."}\r\n"
-		end
-	end
-return export
-end
-
---- CSV with all stored data
--- ~14 ms (74%) improvement by switching to table and concat
-function LootHistory:ExportCSV()
-	-- Add headers
-	local export = {}
-	local ret = "player, date, time, item, itemID, itemString, response, votes, class, instance, boss, gear1, gear2, responseID, isAwardReason\r\n"
-	for player, v in pairs(lootDB) do
-		if selectedName and selectedName == player or not selectedName then
-			for i, d in pairs(v) do
-				if selectedDate and selectedDate == d.date or not selectedDate then
-					-- We might have commas in various things here :/
-					tinsert(export, tostring(player))
-					tinsert(export, tostring(d.date))
-					tinsert(export, tostring(d.time))
-					tinsert(export, (gsub(tostring(d.lootWon),",","")))
-					tinsert(export, addon:GetItemIDFromLink(d.lootWon))
-					tinsert(export, addon:GetItemStringFromLink(d.lootWon))
-					tinsert(export, (gsub(tostring(d.response),",","")))
-					tinsert(export, tostring(d.votes))
-					tinsert(export, tostring(d.class))
-					tinsert(export, (gsub(tostring(d.instance),",","")))
-					tinsert(export, (gsub(tostring(d.boss),",","")))
-					tinsert(export, (gsub(tostring(d.itemReplaced1), ",","")))
-					tinsert(export, (gsub(tostring(d.itemReplaced2), ",","")))
-					tinsert(export, tostring(d.responseID))
-					tinsert(export, tostring(d.isAwardReason))
-					ret = ret..table.concat(export, ",").."\r\n"
-					export = {}
-				end
+				tinsert(export, "}\r\n")
 			end
 		end
-	end
-	return ret
-end
-
---- TSV (Tab Seperated Values) for Excel
--- Made specificly with excel in mind, but might work with other spreadsheets
-function LootHistory:ExportTSV()
-	-- Add headers
-	local export = {}
-	local ret = "player\tdate\ttime\titem\titemID\titemString\tresponse\tvotes\tclass\tinstance\tboss\tgear1\tgear2\tresponseID\tisAwardReason\r\n"
-	for player, v in pairs(lootDB) do
-		if selectedName and selectedName == player or not selectedName then
-			for i, d in pairs(v) do
-				if selectedDate and selectedDate == d.date or not selectedDate then
-					tinsert(export, tostring(player))
-					tinsert(export, tostring(d.date))
-					tinsert(export, tostring(d.time))
-					tinsert(export, "=HYPERLINK(\""..self:GetWowheadLinkFromItemLink(d.lootWon).."\",\""..tostring(d.lootWon).."\")")
-					tinsert(export, addon:GetItemIDFromLink(d.lootWon))
-					tinsert(export, addon:GetItemStringFromLink(d.lootWon))
-					tinsert(export, tostring(d.response))
-					tinsert(export, tostring(d.votes))
-					tinsert(export, tostring(d.class))
-					tinsert(export, tostring(d.instance))
-					tinsert(export, tostring(d.boss))
-					tinsert(export, "=HYPERLINK(\""..self:GetWowheadLinkFromItemLink(tostring(d.itemReplaced1)).."\",\""..tostring(d.itemReplaced1).."\")")
-					tinsert(export, "=HYPERLINK(\""..self:GetWowheadLinkFromItemLink(tostring(d.itemReplaced2)).."\",\""..tostring(d.itemReplaced2).."\")")
-					tinsert(export, tostring(d.responseID))
-					tinsert(export, tostring(d.isAwardReason))
-					ret = ret..table.concat(export, "\t").."\r\n"
-					export = {}
-				end
-			end
-		end
-	end
-	return ret
-end
-
---- Simplified BBCode, as supported by CurseForge
--- ~24 ms (84%) improvement by switching to table and concat
-function LootHistory:ExportBBCode()
-	local export = {}
-	for player, v in pairs(lootDB) do
-		if selectedName and selectedName == player or not selectedName then
-			tinsert(export, "[b]"..addon.Ambiguate(player)..":[/b]\r\n")
-			tinsert(export, "[list=1]")
-			local first = true
-			for i, d in pairs(v) do
-				if selectedDate and selectedDate == d.date or not selectedDate then
-					if first then
-						first = false
-					else
-						tinsert(export, "[*]")
-					end
-					tinsert(export, "[url="..self:GetWowheadLinkFromItemLink(d.lootWon).."]"..d.lootWon.."[/url]"
-					.." Response: "..tostring(d.response)..".\r\n")
-				end
-			end
-			tinsert(export, "[/list]\r\n\r\n")
-		end
-	end
 	return table.concat(export)
-end
-
---- BBCode, as supported by SMF
-function LootHistory:ExportBBCodeSMF()
-	local export = ""
-	for player, v in pairs(lootDB) do
-		if selectedName and selectedName == player or not selectedName then
-			export = export.."[b]"..addon.Ambiguate(player)..":[/b]\r\n"
-			export = export.."[list]"
-			for i, d in pairs(v) do
-				if selectedDate and selectedDate == d.date or not selectedDate then
-					export = export.."[*]"
-					export=export.."[url="..self:GetWowheadLinkFromItemLink(d.lootWon).."]"..d.lootWon.."[/url]"
-					.." Response: "..tostring(d.response)..".\r\n"
-				end
-			end
-			export=export.."[/list]\r\n\r\n"
-		end
 	end
-	return export
-end
 
---- EQdkp Plus XML, primarily for Enjin import
-function LootHistory:ExportEQXML()
-	local export = "<raidlog><head><export><name>EQdkp Plus XML</name><version>1.0</version></export>"
- 		.."<tracker><name>RCLootCouncil</name><version>"..addon.version.."</version></tracker>"
- 		.."<gameinfo><game>World of Warcraft</game><language>"..GetLocale().."</language><charactername>"..UnitName("Player").."</charactername></gameinfo></head>\r\n"
- 		.."<raiddata>\r\n"
-	local bossData = "\t<bosskills>\r\n"
-	local zoneData = "\t<zones>\r\n"
-	local itemsData = "\t<items>\r\n"
-	local membersData = {}
-	local raidData = {}
-	local earliest = 9999999999
-	local latest = 0
-	for player, v in pairs(lootDB) do
-		if selectedName and selectedName == player or not selectedName then
-			for i, d in pairs(v) do
-				if selectedDate and selectedDate == d.date or not selectedDate then
-					local day, month, year = strsplit("/", d.date, 3)
-					local hour,minute,second = strsplit(":",d.time,3)
-					local sinceEpoch = time({year = "20"..year, month = month, day = day,hour = hour,min = minute,sec=second})
-					itemsData = itemsData.."\t\t<item>\r\n"
-					.."\t\t\t<itemid>" .. addon:GetItemStringFromLink(d.lootWon) .. "</itemid>\r\n"
-					.."\t\t\t<name>" .. addon:GetItemNameFromLink(d.lootWon) .. "</name>\r\n"
-					.."\t\t\t<member>" .. addon.Ambiguate(player) .. "</member>\r\n"
-					.."\t\t\t<time>" .. sinceEpoch .. "</time>\r\n"
-					.."\t\t\t<count>1</count>\r\n"
-					.."\t\t\t<cost>" .. tostring(d.votes) .. "</cost>\r\n"
-					.."\t\t\t<note>" .. tostring(d.response) .. "</note>\r\n"
-					membersData[addon.Ambiguate(player)] = true
-					bossData = bossData .. "\t\t<bosskill>\r\n"
-					if d.boss then
-						itemsData = itemsData .. "\t\t\t<boss>" .. gsub(tostring(d.boss),",","").. "</boss>\r\n"
-						bossData = bossData.. "\t\t\t<name>"..gsub(tostring(d.boss),",","").."</name>\r\n"
-					else
-						itemsData = itemsData .. "\t\t\t<boss />\r\n"
-						bossData = bossData.. "\t\t\t<name>Unknown</name>\r\n"
+	--- CSV with all stored data
+	-- ~14 ms (74%) improvement by switching to table and concat
+	function LootHistory:ExportCSV()
+		-- Add headers
+		wipe(export)
+		wipe(ret)
+		tinsert(ret, "player, date, time, item, itemID, itemString, response, votes, class, instance, boss, gear1, gear2, responseID, isAwardReason\r\n")
+		for player, v in pairs(lootDB) do
+			if selectedName and selectedName == player or not selectedName then
+				for i, d in pairs(v) do
+					if selectedDate and selectedDate == d.date or not selectedDate then
+						-- We might have commas in various things here :/
+						tinsert(export, tostring(player))
+						tinsert(export, tostring(d.date))
+						tinsert(export, tostring(d.time))
+						tinsert(export, (gsub(tostring(d.lootWon),",","")))
+						tinsert(export, addon:GetItemIDFromLink(d.lootWon))
+						tinsert(export, addon:GetItemStringFromLink(d.lootWon))
+						tinsert(export, (gsub(tostring(d.response),",","")))
+						tinsert(export, tostring(d.votes))
+						tinsert(export, tostring(d.class))
+						tinsert(export, (gsub(tostring(d.instance),",","")))
+						tinsert(export, (gsub(tostring(d.boss),",","")))
+						tinsert(export, (gsub(tostring(d.itemReplaced1), ",","")))
+						tinsert(export, (gsub(tostring(d.itemReplaced2), ",","")))
+						tinsert(export, tostring(d.responseID))
+						tinsert(export, tostring(d.isAwardReason))
+						tinsert(ret, table.concat(export, ","))
+						tinsert(ret, "\r\n")
+						wipe(export)
 					end
-					if d.instance then
-						itemsData = itemsData .. "\t\t\t<zone>" .. gsub(tostring(d.instance),",","") .. "</zone>\r\n"
-						raidData[time({year="20"..year,month=month,day=day})] = gsub(tostring(d.instance),",","")
-						bossData = bossData.."\t\t\t<time>"..sinceEpoch.."</time>\r\n"
-					else
-						itemsData = itemsData .. "\t\t\t<zone />\r\n"
-					end
-					itemsData = itemsData.."\t\t</item>\r\n"
-					bossData = bossData .. "\t\t</bosskill>\r\n"
 				end
 			end
 		end
+		return table.concat(ret)
 	end
-	bossData = bossData .."\t</bosskills>\r\n"
-	for id, name in pairs(raidData) do
-		zoneData = zoneData .. "\t\t<zone>\r\n"
-		.. "\t\t\t<enter>"..id.."</enter>\r\n"
-		.. "\t\t\t<name>"..name.."</name>\r\n"
-		.. "\t\t\t<leave>"..(id + 26000).."</leave>\r\n"
-		.. "\t\t</zone>\r\n"
-		earliest = min(earliest, id)
-		latest = max(latest, id + 26000)
-	end
-	zoneData = zoneData .."\t</zones>\r\n"
-	itemsData = itemsData.. "\t</items>\r\n"
-	export = export..zoneData..bossData..itemsData
-	.."\t<members>\r\n"
-	for name in pairs(membersData) do
-		export = export.. "\t\t<member>\r\n"
-		.."\t\t\t<name>"..name.."</name>\r\n"
-		.."\t\t\t<times>\r\n"
-		.."\t\t\t\t<time type='join'>"..earliest.."</time>\r\n"
-		.."\t\t\t\t<time type='leave'>"..latest.."</time>\r\n"
-		.."\t\t\t</times>\r\n"
-		.."\t\t</member>\r\n"
-	end
-	export=export.. "\t</members>\r\n</raiddata></raidlog>\r\n"
-	return export
-end
 
-function LootHistory:ExportHTML()
-	local export = "html test"
-end
+	--- TSV (Tab Seperated Values) for Excel
+	-- Made specificly with excel in mind, but might work with other spreadsheets
+	function LootHistory:ExportTSV()
+		-- Add headers
+		wipe(export)
+		wipe(ret)
+		tinsert(ret, "player\tdate\ttime\titem\titemID\titemString\tresponse\tvotes\tclass\tinstance\tboss\tgear1\tgear2\tresponseID\tisAwardReason\r\n")
+		for player, v in pairs(lootDB) do
+			if selectedName and selectedName == player or not selectedName then
+				for i, d in pairs(v) do
+					if selectedDate and selectedDate == d.date or not selectedDate then
+						tinsert(export, tostring(player))
+						tinsert(export, tostring(d.date))
+						tinsert(export, tostring(d.time))
+						tinsert(export, "=HYPERLINK(\""..self:GetWowheadLinkFromItemLink(d.lootWon).."\",\""..tostring(d.lootWon).."\")")
+						tinsert(export, addon:GetItemIDFromLink(d.lootWon))
+						tinsert(export, addon:GetItemStringFromLink(d.lootWon))
+						tinsert(export, tostring(d.response))
+						tinsert(export, tostring(d.votes))
+						tinsert(export, tostring(d.class))
+						tinsert(export, tostring(d.instance))
+						tinsert(export, tostring(d.boss))
+						tinsert(export, "=HYPERLINK(\""..self:GetWowheadLinkFromItemLink(tostring(d.itemReplaced1)).."\",\""..tostring(d.itemReplaced1).."\")")
+						tinsert(export, "=HYPERLINK(\""..self:GetWowheadLinkFromItemLink(tostring(d.itemReplaced2)).."\",\""..tostring(d.itemReplaced2).."\")")
+						tinsert(export, tostring(d.responseID))
+						tinsert(export, tostring(d.isAwardReason))
+						tinsert(ret, table.concat(export, "\t"))
+						tinsert(ret, "\r\n")
+						wipe(export)
+					end
+				end
+			end
+		end
+		return table.concat(ret)
+	end
 
---- Generates a serialized string containing the entire DB.
--- For now it needs to be copied and pasted in another player's import field.
-function LootHistory:PlayerExport()
-	return self:EscapeItemLink(addon:Serialize(lootDB))
+	--- Simplified BBCode, as supported by CurseForge
+	-- ~24 ms (84%) improvement by switching to table and concat
+	function LootHistory:ExportBBCode()
+		wipe(export)
+		for player, v in pairs(lootDB) do
+			if selectedName and selectedName == player or not selectedName then
+				tinsert(export, "[b]"..addon.Ambiguate(player)..":[/b]\r\n")
+				tinsert(export, "[list=1]")
+				local first = true
+				for i, d in pairs(v) do
+					if selectedDate and selectedDate == d.date or not selectedDate then
+						if first then
+							first = false
+						else
+							tinsert(export, "[*]")
+						end
+						tinsert(export, "[url="..self:GetWowheadLinkFromItemLink(d.lootWon).."]"..d.lootWon.."[/url]"
+						.." Response: "..tostring(d.response)..".\r\n")
+					end
+				end
+				tinsert(export, "[/list]\r\n\r\n")
+			end
+		end
+		return table.concat(export)
+	end
+
+	--- BBCode, as supported by SMF
+	function LootHistory:ExportBBCodeSMF()
+		wipe(export)
+		for player, v in pairs(lootDB) do
+			if selectedName and selectedName == player or not selectedName then
+				tinsert(export, "[b]"..addon.Ambiguate(player)..":[/b]\r\n")
+				tinsert(export, "[list]")
+				for i, d in pairs(v) do
+					if selectedDate and selectedDate == d.date or not selectedDate then
+						tinsert(export, "[*]")
+						tinsert(export, "[url="..self:GetWowheadLinkFromItemLink(d.lootWon).."]"..d.lootWon.."[/url]")
+						tinsert(export, " Response: "..tostring(d.response)..".\r\n")
+					end
+				end
+				tinsert(export, "[/list]\r\n\r\n")
+			end
+		end
+		return table.concat(export)
+	end
+
+	--- EQdkp Plus XML, primarily for Enjin import
+	function LootHistory:ExportEQXML()
+		local export = "<raidlog><head><export><name>EQdkp Plus XML</name><version>1.0</version></export>"
+	 		.."<tracker><name>RCLootCouncil</name><version>"..addon.version.."</version></tracker>"
+	 		.."<gameinfo><game>World of Warcraft</game><language>"..GetLocale().."</language><charactername>"..UnitName("Player").."</charactername></gameinfo></head>\r\n"
+	 		.."<raiddata>\r\n"
+		local bossData = "\t<bosskills>\r\n"
+		local zoneData = "\t<zones>\r\n"
+		local itemsData = "\t<items>\r\n"
+		local membersData = {}
+		local raidData = {}
+		local earliest = 9999999999
+		local latest = 0
+		for player, v in pairs(lootDB) do
+			if selectedName and selectedName == player or not selectedName then
+				for i, d in pairs(v) do
+					if selectedDate and selectedDate == d.date or not selectedDate then
+						local day, month, year = strsplit("/", d.date, 3)
+						local hour,minute,second = strsplit(":",d.time,3)
+						local sinceEpoch = time({year = "20"..year, month = month, day = day,hour = hour,min = minute,sec=second})
+						itemsData = itemsData.."\t\t<item>\r\n"
+						.."\t\t\t<itemid>" .. addon:GetItemStringFromLink(d.lootWon) .. "</itemid>\r\n"
+						.."\t\t\t<name>" .. addon:GetItemNameFromLink(d.lootWon) .. "</name>\r\n"
+						.."\t\t\t<member>" .. addon.Ambiguate(player) .. "</member>\r\n"
+						.."\t\t\t<time>" .. sinceEpoch .. "</time>\r\n"
+						.."\t\t\t<count>1</count>\r\n"
+						.."\t\t\t<cost>" .. tostring(d.votes) .. "</cost>\r\n"
+						.."\t\t\t<note>" .. tostring(d.response) .. "</note>\r\n"
+						membersData[addon.Ambiguate(player)] = true
+						bossData = bossData .. "\t\t<bosskill>\r\n"
+						if d.boss then
+							itemsData = itemsData .. "\t\t\t<boss>" .. gsub(tostring(d.boss),",","").. "</boss>\r\n"
+							bossData = bossData.. "\t\t\t<name>"..gsub(tostring(d.boss),",","").."</name>\r\n"
+						else
+							itemsData = itemsData .. "\t\t\t<boss />\r\n"
+							bossData = bossData.. "\t\t\t<name>Unknown</name>\r\n"
+						end
+						if d.instance then
+							itemsData = itemsData .. "\t\t\t<zone>" .. gsub(tostring(d.instance),",","") .. "</zone>\r\n"
+							raidData[time({year="20"..year,month=month,day=day})] = gsub(tostring(d.instance),",","")
+							bossData = bossData.."\t\t\t<time>"..sinceEpoch.."</time>\r\n"
+						else
+							itemsData = itemsData .. "\t\t\t<zone />\r\n"
+						end
+						itemsData = itemsData.."\t\t</item>\r\n"
+						bossData = bossData .. "\t\t</bosskill>\r\n"
+					end
+				end
+			end
+		end
+		bossData = bossData .."\t</bosskills>\r\n"
+		for id, name in pairs(raidData) do
+			zoneData = zoneData .. "\t\t<zone>\r\n"
+			.. "\t\t\t<enter>"..id.."</enter>\r\n"
+			.. "\t\t\t<name>"..name.."</name>\r\n"
+			.. "\t\t\t<leave>"..(id + 26000).."</leave>\r\n"
+			.. "\t\t</zone>\r\n"
+			earliest = min(earliest, id)
+			latest = max(latest, id + 26000)
+		end
+		zoneData = zoneData .."\t</zones>\r\n"
+		itemsData = itemsData.. "\t</items>\r\n"
+		export = export..zoneData..bossData..itemsData
+		.."\t<members>\r\n"
+		for name in pairs(membersData) do
+			export = export.. "\t\t<member>\r\n"
+			.."\t\t\t<name>"..name.."</name>\r\n"
+			.."\t\t\t<times>\r\n"
+			.."\t\t\t\t<time type='join'>"..earliest.."</time>\r\n"
+			.."\t\t\t\t<time type='leave'>"..latest.."</time>\r\n"
+			.."\t\t\t</times>\r\n"
+			.."\t\t</member>\r\n"
+		end
+		export=export.. "\t</members>\r\n</raiddata></raidlog>\r\n"
+		return export
+	end
+
+	function LootHistory:ExportHTML()
+		local export = "html test"
+	end
+
+	--- Generates a serialized string containing the entire DB.
+	-- For now it needs to be copied and pasted in another player's import field.
+	function LootHistory:PlayerExport()
+		return self:EscapeItemLink(addon:Serialize(lootDB))
+	end
 end

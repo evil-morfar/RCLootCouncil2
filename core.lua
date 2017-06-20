@@ -5,7 +5,6 @@
 --------------------------------
 TODOs/Notes
 	Things marked with "todo"
-		- IDEA add an observer/council string to show players their role?
 		- Item subtype in history exports
 		- IDEA Have player's current gear sent with lootAck
 --------------------------------
@@ -80,6 +79,12 @@ function RCLootCouncil:OnInitialize()
 		--[[1]]			  { color = {0,1,0,1},				sort = 1,		text = L["Mainspec/Need"],},
 		--[[2]]			  { color = {1,0.5,0,1},			sort = 2,		text = L["Offspec/Greed"],	},
 		--[[3]]			  { color = {0,0.7,0.7,1},			sort = 3,		text = L["Minor Upgrade"],},
+		tier = {
+			--[[1]]		  { color = {0.1,1,0.5,1},			sort = 1,		text = L["4th Tier Piece"],},
+			--[[2]]		  { color = {1,1,0.5,1},			sort = 2,		text = L["2nd Tier Piece"],},
+			--[[3]]		  { color = {1,0.5,1,1},			sort = 3,		text = L["Tier Piece that doesn't complete a set"],},
+			--[[4]]		  { color = {0.5,1,1,1},			sort = 4,		text = L["Upgrade to existing tier/random upgrade"],},
+		},
 	}
 	self.roleTable = {
 		TANK =		L["Tank"],
@@ -189,7 +194,10 @@ function RCLootCouncil:OnInitialize()
 				['*'] = {
 					filters = { -- Default filtering is showed
 						['*'] = true,
-					}
+						tier = { -- New section in v2.4.0
+							['*'] = true,
+						},
+					},
 				},
 			},
 
@@ -216,6 +224,14 @@ function RCLootCouncil:OnInitialize()
 				{	text = L["Need"],					whisperKey = L["whisperKey_need"], },	-- 1
 				{	text = L["Greed"],				whisperKey = L["whisperKey_greed"],},	-- 2
 				{	text = L["Minor Upgrade"],		whisperKey = L["whisperKey_minor"],},	-- 3
+			},
+			tierButtonsEnabled = true,
+			tierNumButtons = 4,
+			tierButtons = {
+				{	text = L["4 Piece"],					whisperKey = "1, 4tier, 4piece"},		-- 1
+				{	text = L["2 Piece"],					whisperKey = "2, 2tier, 2piece"},		-- 2
+				{	text = L["Other piece"],			whisperKey = "3, other, tier, piece"}, -- 3
+				{	text = L["Upgrade"],					whisperKey = "4, upgrade, up"},			-- 4
 			},
 			numMoreInfoButtons = 1,
 			maxAwardReasons = 10,
@@ -250,6 +266,12 @@ function RCLootCouncil:OnInitialize()
 			text = L["Button"].." "..i,
 			whisperKey = ""..i,
 		})
+		if i > self.defaults.profile.tierNumButtons then
+			tinsert(self.defaults.profile.tierButtons, {
+				text = L["Button"].." "..i,
+				whisperKey = ""..i,
+			})
+		end
 	end
 	for i = self.defaults.profile.numButtons+1, self.defaults.profile.maxButtons do
 		tinsert(self.defaults.profile.responses, {
@@ -257,6 +279,13 @@ function RCLootCouncil:OnInitialize()
 			sort = i,
 			text = L["Button"]..i,
 		})
+		if i > self.defaults.profile.tierNumButtons then
+			tinsert(self.defaults.profile.responses.tier, {
+				color = {0.7, 0.7,0.7,1},
+				sort = i,
+				text = L["Button"]..i,
+			})
+		end
 	end
 	-- create the other AwardReasons
 	for i = #self.defaults.profile.awardReasons+1, self.defaults.profile.maxAwardReasons do
@@ -322,7 +351,8 @@ function RCLootCouncil:OnEnable()
 	self:ActivateSkin(db.currentSkin)
 
 	if self.db.global.version and self:VersionCompare(self.db.global.version, self.version) then -- We've upgraded
-		if self:VersionCompare(self.db.global.version, "2.3.3") then -- Update lootDB with newest changes
+		if self:VersionCompare(self.db.global.version, "2.4.0") then -- Update lootDB with newest changes
+			self:Print("v2.4 adds seperate buttons for tier tokens. You might want to change your buttons setup - have a look in the options menu! (/rc config)")
 			-- delay it abit
 			self:ScheduleTimer("UpdateLootHistory", 5)
 		end
@@ -523,9 +553,9 @@ function RCLootCouncil:ChatCommand(msg)
 		self:UpdateLootHistory()
 --@debug@
 	elseif input == 't' then -- Tester cmd
-		local ItemUpgradeInfo = LibStub("LibItemUpgradeInfo-1.0")
-		self:Print(self:GetItemStringFromLink(arg1),self:GetItemStringFromLink(arg2))
-		self:Print("ItemUpgradeInfo",ItemUpgradeInfo:GetItemUpgradeInfo(arg1))
+		local lf = self:GetActiveModule("lootframe")
+		self:Debug("LootFrame.EntryManager.entries:")
+		printtable(lf.EntryManager)
 --@end-debug@
 	else
 		-- Check if the input matches anything
@@ -1052,9 +1082,10 @@ end
 -- @param equipLoc	The item in the session's equipLoc.
 -- @param note			The player's note.
 -- @param subType		The item's subType, needed for Artifact Relics.
+-- @param isTier		Indicates if the response is a tier response. (v2.4.0)
 -- @return A formatted table that can be passed directly to :SendCommand("group", "response", -return-).
-function RCLootCouncil:CreateResponse(session, link, ilvl, response, equipLoc, note, subType)
-	self:DebugLog("CreateResponse", session, link, ilvl, response, equipLoc, note, subType)
+function RCLootCouncil:CreateResponse(session, link, ilvl, response, equipLoc, note, subType, isTier)
+	self:DebugLog("CreateResponse", session, link, ilvl, response, equipLoc, note, subType, isTier)
 	local g1, g2;
 	if equipLoc == "" and self.db.global.localizedSubTypes[subType] == "Artifact Relic" then
 		g1, g2 = self:GetArtifactRelics(link)
@@ -1075,7 +1106,8 @@ function RCLootCouncil:CreateResponse(session, link, ilvl, response, equipLoc, n
 			ilvl = select(2,GetAverageItemLevel()),
 			diff = diff,
 			note = note,
-			response = response
+			response = response,
+			isTier = isTier,
 		}
 end
 
@@ -1368,7 +1400,7 @@ end
 				[1] = responseText,
 				[2] = number of items won,
 				[3] = {color},
-				[4] = responseID, -- see index in self.responses. Award reasons gets 100 addded
+				[4] = responseID, -- see index in self.responses. Award reasons gets 100 addded. TierResponses gets 200 added.
 			}
 		}
 	}
@@ -1377,41 +1409,55 @@ end
 local lootDBStatistics
 function RCLootCouncil:GetLootDBStatistics()
 	self:DebugLog("GetLootDBStatistics()")
-	lootDBStatistics = {}
-	local entry, id
-	for name, data in pairs(self:GetHistoryDB()) do
-		local count, responseText, color, numTokens = {},{},{},{}
-		local lastestAwardFound = 0
-		lootDBStatistics[name] = {}
-		for i = #data, 1, -1 do -- Start from the end
-			entry = data[i]
-			id = entry.responseID
-			if entry.isAwardReason then id = id + 100 end -- Bump to distingush from normal awards
-			-- We assume the mapID and difficultyID is available on any item if at all.
-			if not numTokens[entry.instance] then numTokens[entry.instance] = {num = 0, mapID = entry.mapID, difficultyID = entry.difficultyID} end
-			numTokens[entry.instance].num = entry.tierToken and numTokens[entry.instance].num + 1 or numTokens[entry.instance].num
-			count[id] = count[id] and count[id] + 1 or 1
-			responseText[id] = responseText[id] and responseText[id] or entry.response
-			if (not color[id] or unpack(color[id],1,3) == unpack{1,1,1}) and (entry.color and #entry.color ~= 0)  then -- If it's not already added
-				color[id] = #entry.color ~= 0 and #entry.color == 4 and entry.color or {1,1,1}
+	-- v2.4: This is very sensitive to errors in the loot history, which will most likely crash calling modules,
+	-- as in ticket #261. For the sole reason of crash proofing, let's catch any errors:
+	local check, ret = pcall(function()
+		lootDBStatistics = {}
+		local entry, id
+		for name, data in pairs(self:GetHistoryDB()) do
+			local count, responseText, color, numTokens = {},{},{},{}
+			local lastestAwardFound = 0
+			lootDBStatistics[name] = {}
+			for i = #data, 1, -1 do -- Start from the end
+				entry = data[i]
+				id = entry.responseID
+				if entry.isAwardReason then id = id + 100 end -- Bump to distingush from normal awards
+				if entry.tokenRoll then id = id + 200 end
+				-- We assume the mapID and difficultyID is available on any item if at all.
+				if not numTokens[entry.instance] then numTokens[entry.instance] = {num = 0, mapID = entry.mapID, difficultyID = entry.difficultyID} end
+				if entry.tierToken then -- If it's a tierToken, increase the count
+					numTokens[entry.instance].num = numTokens[entry.instance].num + 1
+				end
+				count[id] = count[id] and count[id] + 1 or 1
+				responseText[id] = responseText[id] and responseText[id] or entry.response
+				if (not color[id] or unpack(color[id],1,3) == unpack{1,1,1}) and (entry.color and #entry.color ~= 0)  then -- If it's not already added
+					color[id] = #entry.color ~= 0 and #entry.color == 4 and entry.color or {1,1,1}
+				end
+				if lastestAwardFound < 5 and type(id) == "number" and not entry.isAwardReason
+				 	and (id <= db.numMoreInfoButtons or (entry.tokenRoll and id - 200 <= db.numMoreInfoButtons)) then
+					tinsert(lootDBStatistics[name], {entry.lootWon, --[[entry.response .. ", "..]] format(L["'n days' ago"], self:ConvertDateToString(self:GetNumberOfDaysFromNow(entry.date))), color[id], i})
+					lastestAwardFound = lastestAwardFound + 1
+				end
 			end
-			if type(id) == "number" and id <= db.numMoreInfoButtons and not entry.isAwardReason and lastestAwardFound < 5 then
-				tinsert(lootDBStatistics[name], {entry.lootWon, --[[entry.response .. ", "..]] format(L["'n days' ago"], self:ConvertDateToString(self:GetNumberOfDaysFromNow(entry.date))), color[id], i})
-				lastestAwardFound = lastestAwardFound + 1
+			-- Totals:
+			local totalNum = 0
+			lootDBStatistics[name].totals = {}
+			lootDBStatistics[name].totals.tokens = numTokens
+			lootDBStatistics[name].totals.responses = {}
+			for id, num in pairs(count) do
+				tinsert(lootDBStatistics[name].totals.responses, {responseText[id], num, color[id], id})
+				totalNum = totalNum + num
 			end
+			lootDBStatistics[name].totals.total = totalNum
 		end
-		-- Totals:
-		local totalNum = 0
-		lootDBStatistics[name].totals = {}
-		lootDBStatistics[name].totals.tokens = numTokens
-		lootDBStatistics[name].totals.responses = {}
-		for id, num in pairs(count) do
-			tinsert(lootDBStatistics[name].totals.responses, {responseText[id], num, color[id], id})
-			totalNum = totalNum + num
-		end
-		lootDBStatistics[name].totals.total = totalNum
+		return lootDBStatistics
+	end)
+	if not check then
+		self:DebugLog(ret)
+		self:Print("Something's wrong in your loot history. Please contact the author.")
+	else
+		return ret
 	end
-	return lootDBStatistics
 end
 
 function RCLootCouncil:SessionError(...)
@@ -1851,29 +1897,48 @@ function RCLootCouncil.Ambiguate(name)
 	return db.ambiguate and Ambiguate(name, "none") or Ambiguate(name, "short")
 end
 
---- Returns the text of a button, returning settings from mldb if possible, otherwise default buttons.
--- @paramsig index
+--- Returns the text of a button, returning settings from mldb if possible, otherwise from default buttons.
+-- @paramsig index [, isTier]
 -- @param index The button's index.
-function RCLootCouncil:GetButtonText(i)
-	return (self.mldb.buttons and self.mldb.buttons[i]) and self.mldb.buttons[i].text or db.buttons[i].text
+-- @param isTier True if the response belongs to a tier item.
+function RCLootCouncil:GetButtonText(i, isTier)
+	if isTier and self.mldb.tierButtonsEnabled and type(i) == "number" then -- Non numbers is status texts, handled as normal response
+		return (self.mldb.tierButtons and self.mldb.tierButtons[i]) and self.mldb.tierButtons[i].text or db.tierButtons[i].text
+	else
+		return (self.mldb.buttons and self.mldb.buttons[i]) and self.mldb.buttons[i].text or db.buttons[i].text
+	end
 end
 
---- The following functions returns the text, sort or color of a response, returning a result from mldb if possible, otherwise the default responses.
--- @paramsig response
+--- The following functions returns the text, sort or color of a response, returning a result from mldb if possible, otherwise from the default responses.
+-- @paramsig response [, isTier]
 -- @param response Index in db.responses.
-function RCLootCouncil:GetResponseText(response)
-	return (self.mldb.responses and self.mldb.responses[response]) and self.mldb.responses[response].text or db.responses[response].text
+-- @param isTier True if the response belongs to a tier item.
+function RCLootCouncil:GetResponseText(response, isTier)
+	if isTier and self.mldb.tierButtonsEnabled and type(response) == "number" then
+		return (self.mldb.responses.tier and self.mldb.responses.tier[response]) and self.mldb.responses.tier[response].text or db.responses.tier[response].text
+	else
+		return (self.mldb.responses and self.mldb.responses[response]) and self.mldb.responses[response].text or db.responses[response].text
+	end
 end
 
 ---
-function RCLootCouncil:GetResponseColor(response)
-	local color = (self.mldb.responses and self.mldb.responses[response]) and self.mldb.responses[response].color or db.responses[response].color
+function RCLootCouncil:GetResponseColor(response, isTier)
+	local color
+	if isTier and self.mldb.tierButtonsEnabled and type(response) == "number" then
+		 color = (self.mldb.responses.tier and self.mldb.responses.tier[response]) and self.mldb.responses.tier[response].color or db.responses.tier[response].color
+ 	else
+		color = (self.mldb.responses and self.mldb.responses[response]) and self.mldb.responses[response].color or db.responses[response].color
+	end
 	return unpack(color)
 end
 
 ---
-function RCLootCouncil:GetResponseSort(response)
-	return (self.mldb.responses and self.mldb.responses[response]) and self.mldb.responses[response].sort or db.responses[response].sort
+function RCLootCouncil:GetResponseSort(response, isTier)
+	if isTier and self.mldb.tierButtonsEnabled and type(response) == "number" then
+		return (self.mldb.responses.tier and self.mldb.responses.tier[response]) and self.mldb.responses.tier[response].sort or db.responses.tier[response].sort
+	else
+		return (self.mldb.responses and self.mldb.responses[response]) and self.mldb.responses[response].sort or db.responses[response].sort
+	end
 end
 
 --#end UI Functions -----------------------------------------------------
@@ -1887,10 +1952,10 @@ function printtable( data, level )
 	if type(data)~='table' then print(tostring(data)) end;
 	for index,value in pairs(data) do repeat
 		if type(value)~='table' then
-			print( ident .. '['..index..'] = ' .. tostring(value) .. ' (' .. type(value) .. ')' );
+			print( ident .. '['..tostring(index)..'] = ' .. tostring(value) .. ' (' .. type(value) .. ')' );
 			break;
 		end
-		print( ident .. '['..index..'] = {')
+		print( ident .. '['..tostring(index)..'] = {')
         printtable(value, level+1)
         print( ident .. '}' );
 	until true end
@@ -1931,8 +1996,8 @@ function RCLootCouncil:UpdateLootHistory()
 		end
 		self:Debug("Result:",nighthold, trialofvalor, emeraldnightmare, normal, heroic, mythic)
 	end
-	for _, data in pairs(historyDB) do
-		for _, v in pairs(data) do
+	for name, data in pairs(historyDB) do
+		for i, v in pairs(data) do
 			local id = self:GetItemIDFromLink(v.lootWon)
 			v.tierToken = id and RCTokenTable[id]
 			if strmatch(v.instance, nighthold) then
@@ -1948,6 +2013,15 @@ function RCLootCouncil:UpdateLootHistory()
 				v.difficultyID = 15
 			elseif strmatch(v.instance, mythic) then
 				v.difficultyID = 16
+			end
+			-- Fix corruption caused by v2.4-beta:
+			if v.color and type(v.color) ~= "table" then
+				if v.tokenRoll then
+					v.color = {unpack(db.responses.tier[v.responseID].color)}
+				else
+					v.color = {unpack(db.responses[v.responseID].color)}
+				end
+				self:DebugLog("Fixed 2.4beta corruption @", name, i)
 			end
 		end
 	end

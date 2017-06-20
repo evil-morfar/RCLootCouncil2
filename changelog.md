@@ -1,9 +1,31 @@
+### v2.4.0-Beta.1
+---
+**Note:**
+While this version is backwards compatible, the tier tokens buttons will not be showed on older clients,
+ and any tier rolls will show up as normal rolls for all intents and purposes.
+
+
+* **Tier tokens**
+ * By default, tier tokens now receive special roll options.
+ * A brand new set of buttons and responses have been added for tier tokens only.
+ * Check them out in the options menu, where it can also be disabled if need be.
+ * Prepared to handle tier 20 tokens.
+
+
+* **Loot History**
+ * You can now edit recipients and reasons in the loot history.
+ * Simply right click any entry and change it to what you want.
+ * Exports have been optimized.
+ * Time-Sort no longer memory leaks.
+ * A small error in the history will no longer break the entire addon.
+
+
 ### v2.3.4
 ---
 ###### Bugfixes
  + *Items could be wrongly awarded by opening/closing the default loot frame in a specific sequence (#257).*
 
- 
+
 ### v2.3.3
 ---
 ###### Bugfixes

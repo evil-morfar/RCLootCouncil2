@@ -141,7 +141,8 @@ function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
 				end
 
 			elseif command == "change_response" and addon:UnitIsUnit(sender, addon.masterLooter) then
-				local ses, name, response = unpack(data)
+				local ses, name, response, isTier = unpack(data)
+				self:SetCandidateData(ses, name, "isTier", isTier)
 				self:SetCandidateData(ses, name, "response", response)
 				self:Update()
 
@@ -419,7 +420,7 @@ function RCVotingFrame:UpdateMoreInfo(row, data)
 	tip:SetOwner(self.frame, "ANCHOR_RIGHT")
 
 	tip:AddLine(addon.Ambiguate(name), color.r, color.g, color.b)
-	if moreInfoData[name] then
+	if moreInfoData and moreInfoData[name] then
 		local r,g,b
 		tip:AddLine(L["Latest item(s) won"])
 		for i, v in ipairs(moreInfoData[name]) do -- extract latest awarded items
@@ -738,7 +739,7 @@ end
 function RCVotingFrame.SetCellRank(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
 	local name = data[realrow].name
 	frame.text:SetText(lootTable[session].candidates[name].rank)
-	frame.text:SetTextColor(addon:GetResponseColor(lootTable[session].candidates[name].response))
+	frame.text:SetTextColor(addon:GetResponseColor(lootTable[session].candidates[name].response,lootTable[session].candidates[name].isTier))
 	data[realrow].cols[column].value = lootTable[session].candidates[name].rank
 end
 
@@ -746,14 +747,15 @@ function RCVotingFrame.SetCellRole(rowFrame, frame, data, cols, row, realrow, co
 	local name = data[realrow].name
 	local role = addon.TranslateRole(lootTable[session].candidates[name].role)
 	frame.text:SetText(role)
-	frame.text:SetTextColor(addon:GetResponseColor(lootTable[session].candidates[name].response))
+	frame.text:SetTextColor(addon:GetResponseColor(lootTable[session].candidates[name].response,lootTable[session].candidates[name].isTier))
 	data[realrow].cols[column].value = role
 end
 
 function RCVotingFrame.SetCellResponse(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
 	local name = data[realrow].name
-	frame.text:SetText(addon:GetResponseText(lootTable[session].candidates[name].response))
-	frame.text:SetTextColor(addon:GetResponseColor(lootTable[session].candidates[name].response))
+	local isTier = lootTable[session].candidates[name].isTier
+	frame.text:SetText(addon:GetResponseText(lootTable[session].candidates[name].response, isTier))
+	frame.text:SetTextColor(addon:GetResponseColor(lootTable[session].candidates[name].response, isTier))
 end
 
 function RCVotingFrame.SetCellIlvl(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
@@ -890,7 +892,11 @@ function RCVotingFrame.filterFunc(table, row)
 	if not db.modules["RCVotingFrame"].filters then return true end -- db hasn't been initialized, so just show it
 	local response = lootTable[session].candidates[row.name].response
 	if response == "AUTOPASS" or response == "PASS" or type(response) == "number" then
-		return db.modules["RCVotingFrame"].filters[response]
+		if lootTable[session].token and addon.mldb.tierButtonsEnabled and type(response) == "number" then
+			return db.modules["RCVotingFrame"].filters.tier[response]
+		else
+			return db.modules["RCVotingFrame"].filters[response]
+		end
 	else -- Filter out the status texts
 		return db.modules["RCVotingFrame"].filters["STATUS"]
 	end
@@ -964,6 +970,8 @@ do
 		local data = lootTable[session].candidates[candidateName] -- Shorthand
 
 		if level == 1 then
+			info = Lib_UIDropDownMenu_CreateInfo()
+
 			info.text = addon.Ambiguate(candidateName)
 			info.isTitle = true
 			info.notCheckable = true
@@ -984,6 +992,7 @@ do
 					data.votes,
 					data.gear1,
 					data.gear2,
+					data.isTier,
 			}) end
 			info.disabled = false
 			Lib_UIDropDownMenu_AddButton(info, level)
@@ -1041,13 +1050,15 @@ do
 							data.votes,
 							data.gear1,
 							data.gear2,
+							data.isTier,
 				}) end
 					Lib_UIDropDownMenu_AddButton(info, level)
 				end
 
 			elseif value == "CHANGE_RESPONSE" then
+				local v;
 				for i = 1, db.numButtons do
-					local v = db.responses[i]
+					v = db.responses[i]
 					info.text = v.text
 					info.colorCode = "|cff"..addon:RGBToHex(unpack(v.color))
 					info.notCheckable = true
@@ -1056,9 +1067,11 @@ do
 					end
 					Lib_UIDropDownMenu_AddButton(info, level)
 				end
+
+				info = Lib_UIDropDownMenu_CreateInfo()
 				if addon.debug then -- Add all possible responses when debugging
 					for k,v in pairs(db.responses) do
-						if type(k) ~= "number" then
+						if type(k) ~= "number" and k ~= "tier" then
 							info.text = v.text
 							info.colorCode = "|cff"..addon:RGBToHex(unpack(v.color))
 							info.notCheckable = true
@@ -1069,6 +1082,14 @@ do
 						end
 					end
 				end
+
+				info = Lib_UIDropDownMenu_CreateInfo()
+				-- Add the tier menu
+				info.text = L["Tier Tokens ..."]
+				info.value = "TIER_TOKENS"
+				info.hasArrow = true
+				info.notCheckable = true
+				Lib_UIDropDownMenu_AddButton(info, level)
 
 			elseif value == "REANNOUNCE" then
 				info.text = addon.Ambiguate(candidateName)
@@ -1088,6 +1109,7 @@ do
 							texture = lootTable[session].texture,
 							session = session,
 							equipLoc = lootTable[session].equipLoc,
+							token = lootTable[session].token
 						}
 					}
 					addon:SendCommand(candidateName, "reroll", t)
@@ -1109,6 +1131,7 @@ do
 								texture = v.texture,
 								session = k,
 								equipLoc = v.equipLoc,
+								token = v.token,
 							})
 							addon:SendCommand("group", "change_response", k, candidateName, "WAIT")
 						end
@@ -1117,46 +1140,83 @@ do
 				end
 				Lib_UIDropDownMenu_AddButton(info, level);
 			end
+
+		elseif level == 3 then
+			local value = LIB_UIDROPDOWNMENU_MENU_VALUE
+			info = Lib_UIDropDownMenu_CreateInfo()
+			if value == "TIER_TOKENS" then
+				for k,v in ipairs(db.responses.tier) do
+					if k > db.tierNumButtons then break end
+					info.text = v.text
+					info.colorCode = "|cff"..addon:RGBToHex(unpack(v.color))
+					info.notCheckable = true
+					info.func = function()
+							addon:SendCommand("group", "change_response", session, candidateName, k, true)
+					end
+					Lib_UIDropDownMenu_AddButton(info, level)
+				end
+			end
 		end
 	end
 
 	function RCVotingFrame.FilterMenu(menu, level)
 		if level == 1 then -- Redundant
-			-- Build the data table:
-			local data = {["STATUS"] = true, ["PASS"] = true, ["AUTOPASS"] = true}
-			for i = 1, addon.mldb.numButtons or db.numButtons do
-				data[i] = i
-			end
+
 			if not db.modules["RCVotingFrame"].filters then -- Create the db entry
 				addon:DebugLog("Created VotingFrame filters")
 				db.modules["RCVotingFrame"].filters = {}
 			end
-			for k in pairs(data) do -- Update the db entry to make sure we have all buttons in it
-				if type(db.modules["RCVotingFrame"].filters[k]) ~= "boolean" then
-					addon:Debug("Didn't contain "..k)
-					db.modules["RCVotingFrame"].filters[k] = true -- Default as true
+
+			-- Build the data table:
+			local data = {["STATUS"] = true, ["PASS"] = true, ["AUTOPASS"] = true, tier = {}}
+
+			local isTier = false
+			-- If we're viewing a tier token and the ML have it enabled, we want to see it
+			if lootTable[session].token and addon.mldb.tierButtonsEnabled then
+				isTier = true
+				for i = 1, addon.mldb.tierNumButtons or db.tierNumButtons do
+					data.tier[i] = i
+				end
+
+			else -- otherwise just do the normal buttons
+				for i = 1, addon.mldb.numButtons or db.numButtons do
+					data[i] = i
 				end
 			end
+
 			info.text = L["Filter"]
 			info.isTitle = true
 			info.notCheckable = true
 			info.disabled = true
 			Lib_UIDropDownMenu_AddButton(info, level)
 			info = Lib_UIDropDownMenu_CreateInfo()
-
-			for k in ipairs(data) do -- Make sure normal responses are on top
-				info.text = addon:GetResponseText(k)
-				info.colorCode = "|cff"..addon:RGBToHex(addon:GetResponseColor(k))
-				info.func = function()
-					addon:Debug("Update Filter")
-					db.modules["RCVotingFrame"].filters[k] = not db.modules["RCVotingFrame"].filters[k]
-					RCVotingFrame:Update()
+			if isTier then -- add tier buttons
+				for k in ipairs(data.tier) do
+					info.text = addon:GetResponseText(k, isTier)
+					info.colorCode = "|cff"..addon:RGBToHex(addon:GetResponseColor(k, isTier))
+					info.func = function()
+						addon:Debug("Update Filter")
+						db.modules["RCVotingFrame"].filters.tier[k] = not db.modules["RCVotingFrame"].filters.tier[k]
+						RCVotingFrame:Update()
+					end
+					info.checked = db.modules["RCVotingFrame"].filters.tier[k]
+					Lib_UIDropDownMenu_AddButton(info, level)
 				end
-				info.checked = db.modules["RCVotingFrame"].filters[k]
-				Lib_UIDropDownMenu_AddButton(info, level)
+			else -- add normal buttons
+				for k in ipairs(data) do -- Make sure normal responses are on top
+					info.text = addon:GetResponseText(k)
+					info.colorCode = "|cff"..addon:RGBToHex(addon:GetResponseColor(k))
+					info.func = function()
+						addon:Debug("Update Filter")
+						db.modules["RCVotingFrame"].filters[k] = not db.modules["RCVotingFrame"].filters[k]
+						RCVotingFrame:Update()
+					end
+					info.checked = db.modules["RCVotingFrame"].filters[k]
+					Lib_UIDropDownMenu_AddButton(info, level)
+				end
 			end
 			for k in pairs(data) do -- A bit redundency, but it makes sure these "specials" comes last
-				if type(k) == "string" then
+				if type(k) == "string" and k ~= "tier" then
 					if k == "STATUS" then
 						info.text = L["Status texts"]
 						info.colorCode = "|cffde34e2" -- purpleish
@@ -1181,7 +1241,7 @@ do
 			local added = false
 			info = Lib_UIDropDownMenu_CreateInfo()
 			if not db.disenchant then
-				return addon:Print("You haven't selected an award reason to use for disenchanting!")
+				return addon:Print(L["You haven't selected an award reason to use for disenchanting!"])
 			end
 			for name, v in pairs(candidates) do
 				if v.enchanter then
