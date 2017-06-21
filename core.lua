@@ -247,15 +247,11 @@ function RCLootCouncil:OnInitialize()
 
 			-- List of items to ignore:
 			ignore = {
-				109693, -- Draenic Dust
-				115502, -- Small Luminous Shard
-				111245, -- Luminous Shard
-				115504, -- Fractured Temporal Crystal
-				113588, -- Temporal Crystal
-				124442, -- Chaos Crystal (Legion)
-				124441, -- Leylight Shard (Legion)
-				141303,141304,141305, -- Essence of Clarity (Emerald Nightmare quest item)
-				143656,143657,143658, -- Echo of Time (Nighthold quest item)
+				109693,115502,111245,115504,113588, -- WoD enchant mats
+				124442,124441, 							-- Chaos Crystal (Legion), Leylight Shard (Legion)
+				141303,141304,141305, 					-- Essence of Clarity (Emerald Nightmare quest item)
+				143656,143657,143658, 					-- Echo of Time (Nighthold quest item)
+				132204,151248,151249, 151250,			-- Sticky Volatile Essence, Fragment of the Guardian's Seal (Tomb of Sargeras)
 			},
 		},
 	} -- defaults end
