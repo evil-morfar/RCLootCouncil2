@@ -3,7 +3,8 @@
 * Added Fragment of the Guardian's Seal and Sticky Volatile Essence to the ignore list.
 
 ###### Bugfixes
- + *Tier Awards will now be announced properly (#264).
+ + *Tier Awards will now be announced properly (#264).*
+ + *The loot frame will now properly reset after a session.*
 
 ### v2.4.0
 ---
