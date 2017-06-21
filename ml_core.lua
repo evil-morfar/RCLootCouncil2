@@ -462,12 +462,13 @@ function RCLootCouncilML:LootOnClick(button)
 	addon:GetActiveModule("sessionframe"):Show(self.lootTable)
 end
 
---@param session	The session to award
---@param winner	Nil/false if items should be stored in inventory and awarded later
---@param response	The candidates response, index in db.responses
---@param reason	Entry in db.awardReasons
+--@param session	The session to award.
+--@param winner	Nil/false if items should be stored in inventory and awarded later.
+--@param response	The candidates response, index in db.responses.
+--@param reason	Entry in db.awardReasons.
+--@param isToken	True if it's awarded as a tier token. Only used for announceAward().
 --@returns True if awarded successfully
-function RCLootCouncilML:Award(session, winner, response, reason)
+function RCLootCouncilML:Award(session, winner, response, reason, isToken)
 	addon:DebugLog("ML:Award", session, winner, response, reason)
 	if addon.testMode then
 		if winner then
@@ -524,7 +525,7 @@ function RCLootCouncilML:Award(session, winner, response, reason)
 			addon:SendCommand("group", "awarded", session)
 			self.lootTable[session].awarded = true -- No need to let Comms handle this
 
-			self:AnnounceAward(addon.Ambiguate(winner), self.lootTable[session].link, reason and reason.text or db.responses[response].text)
+			self:AnnounceAward(addon.Ambiguate(winner), self.lootTable[session].link, reason and reason.text or addon:GetResponseText(response, isToken))
 			if self:HasAllItemsBeenAwarded() then self:EndSession() end
 
 		else -- If we reach here it means we couldn't find a valid MasterLootCandidate, propably due to the winner is unable to receive the loot
@@ -804,7 +805,7 @@ LibDialog:Register("RCLOOTCOUNCIL_CONFIRM_AWARD", {
 				local session, player, response, reason, votes, item1, item2, isTierRoll = unpack(data,1,8)
 				local item = RCLootCouncilML.lootTable[session].link -- Store it now as we wipe lootTable after Award()
 				local isToken = RCLootCouncilML.lootTable[session].token
-				local awarded = RCLootCouncilML:Award(session, player, response, reason)
+				local awarded = RCLootCouncilML:Award(session, player, response, reason, isTierRoll)
 				if awarded then -- log it
 					RCLootCouncilML:TrackAndLogLoot(player, item, response, addon.target, votes, item1, item2, reason, isToken, isTierRoll)
 				end
