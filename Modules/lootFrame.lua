@@ -66,6 +66,12 @@ end
 
 function LootFrame:OnDisable()
 	self.frame:Hide() -- We don't disable the frame as we probably gonna need it later
+	-- Trash all entries just in case:
+	for _,entry in pairs(self.EntryManager.entries) do
+		if type(entry) == "table" then
+			self.EntryManager:Trash(entry)
+		end
+	end
 	items = {}
 	numRolled = 0
 end
