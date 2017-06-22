@@ -38,6 +38,7 @@ function RCLootCouncilML:OnEnable()
 	self.lootInBags = {} 	-- Items not yet awarded but stored in bags
 	self.lootOpen = false 	-- is the ML lootWindow open or closed?
 	self.running = false		-- true if we're handling a session
+	self.council = addon:GetCouncilInGroup()
 
 	self:RegisterComm("RCLootCouncil", "OnCommReceived")
 	self:RegisterEvent("LOOT_OPENED","OnEvent")
@@ -190,7 +191,8 @@ end
 
 function RCLootCouncilML:CouncilChanged()
 	-- The council was changed, so send out the council
-	addon:SendCommand("group", "council", db.council)
+	self.council = addon:GetCouncilInGroup()
+	addon:SendCommand("group", "council", self.council)
 	-- Send candidates so new council members can register it
 	addon:SendCommand("group", "candidates", self.candidates)
 end
@@ -259,7 +261,8 @@ function RCLootCouncilML:NewML(newML)
 	if addon:UnitIsUnit(newML, "player") then -- we are the the ML
 		addon:SendCommand("group", "playerInfoRequest")
 		self:UpdateMLdb() -- Will build and send mldb
-		addon:SendCommand("group", "council", db.council)
+		self.council = addon:GetCouncilInGroup()
+		addon:SendCommand("group", "council", self.council)
 		self:UpdateGroup(true)
 		-- Set a timer to send out the incoming playerInfo changes
 		self:ScheduleTimer("Timer", 10, "GroupUpdate")
@@ -276,7 +279,7 @@ function RCLootCouncilML:Timer(type, ...)
 		addon:SendCommand("group", "offline_timer")
 
 	elseif type == "GroupUpdate" then
-		addon:SendCommand("group", "council", db.council)
+		addon:SendCommand("group", "council", self.council)
 		addon:SendCommand("group", "candidates", self.candidates)
 	end
 end
@@ -296,7 +299,7 @@ function RCLootCouncilML:OnCommReceived(prefix, serializedMsg, distri, sender)
 				addon:SendCommand("group", "MLdb", addon.mldb)
 
 			elseif command == "council_request" then
-				addon:SendCommand("group", "council", db.council)
+				addon:SendCommand("group", "council", self.council)
 
 			elseif command == "candidates_request" then
 				addon:SendCommand("group", "candidates", self.candidates)
@@ -304,7 +307,7 @@ function RCLootCouncilML:OnCommReceived(prefix, serializedMsg, distri, sender)
 			elseif command == "reconnect" and not addon:UnitIsUnit(sender, addon.playerName) then -- Don't receive our own reconnect
 				-- Someone asks for mldb, council and candidates
 				addon:SendCommand(sender, "MLdb", addon.mldb)
-				addon:SendCommand(sender, "council", db.council)
+				addon:SendCommand(sender, "council", self.council)
 
 			--[[NOTE: For some reason this can silently fail, but adding a 1 sec timer on the rest of the calls seems to fix it
 				v2.0.1: 	With huge candidates/lootTable we get AceComm lostdatawarning "First", presumeably due to the 4kb ChatThrottleLib limit.

@@ -1326,6 +1326,7 @@ function addon:GetGuildOptions()
 								end
 							end
 						end
+						addon:CouncilChanged()
 					end,
 				},
 			},
