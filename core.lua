@@ -1327,32 +1327,6 @@ function RCLootCouncil:IsCouncil(name)
 	return ret
 end
 
---- Fetches the council members in the current group.
--- @return table [i] = "council_man_name".
-function RCLootCouncil:GetCouncilInGroup()
-	local council = {}
-	if IsInRaid() then
-		for k,v in ipairs(self.council) do
-			if UnitInRaid(Ambiguate(v, "short")) then
-				tinsert(council, v)
-			end
-		end
-	elseif IsInGroup() then -- Party
-		for k,v in ipairs(self.council) do
-			if UnitInParty(Ambiguate(v, "short")) then
-				tinsert(council, v)
-			end
-		end
-	elseif self.isCouncil then -- When we're alone
-		tinsert(council, self.playerName)
-	end
-	if self.masterLooter and not tContains(council, self.masterLooter) then -- We always need to count the ML
-		tinsert(council, self.masterLooter)
-	end
-	self:DebugLog("GetCouncilInGroup", unpack(council))
-	return council
-end
-
 function RCLootCouncil:GetInstalledModulesFormattedData()
 	local modules = {}
 	-- We're interested in everything that isn't a default module

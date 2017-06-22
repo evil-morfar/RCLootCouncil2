@@ -87,7 +87,7 @@ end
 
 function RCVotingFrame:Show()
 	if self.frame then
-		councilInGroup = addon:GetCouncilInGroup()
+		councilInGroup = addon.council
 		self.frame:Show()
 		self:SwitchSession(session)
 	else

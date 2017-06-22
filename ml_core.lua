@@ -38,7 +38,7 @@ function RCLootCouncilML:OnEnable()
 	self.lootInBags = {} 	-- Items not yet awarded but stored in bags
 	self.lootOpen = false 	-- is the ML lootWindow open or closed?
 	self.running = false		-- true if we're handling a session
-	self.council = addon:GetCouncilInGroup()
+	self.council = self:GetCouncilInGroup()
 
 	self:RegisterComm("RCLootCouncil", "OnCommReceived")
 	self:RegisterEvent("LOOT_OPENED","OnEvent")
@@ -191,7 +191,7 @@ end
 
 function RCLootCouncilML:CouncilChanged()
 	-- The council was changed, so send out the council
-	self.council = addon:GetCouncilInGroup()
+	self.council = self:GetCouncilInGroup()
 	addon:SendCommand("group", "council", self.council)
 	-- Send candidates so new council members can register it
 	addon:SendCommand("group", "candidates", self.candidates)
@@ -261,7 +261,7 @@ function RCLootCouncilML:NewML(newML)
 	if addon:UnitIsUnit(newML, "player") then -- we are the the ML
 		addon:SendCommand("group", "playerInfoRequest")
 		self:UpdateMLdb() -- Will build and send mldb
-		self.council = addon:GetCouncilInGroup()
+		self.council = self:GetCouncilInGroup()
 		addon:SendCommand("group", "council", self.council)
 		self:UpdateGroup(true)
 		-- Set a timer to send out the incoming playerInfo changes
@@ -702,6 +702,24 @@ end
 function RCLootCouncilML:IsItemIgnored(link)
 	local itemID = addon:GetItemIDFromLink(link) -- extract itemID
 	return tContains(db.ignore, itemID)
+end
+
+--- Fetches the council members from the current group.
+-- Used by the ML to only send out a council consisting of actual group members.
+-- That council is stored in RCLootCouncil.council
+-- @return table [i] = "council_man_name".
+function RCLootCouncilML:GetCouncilInGroup()
+	local council = {}
+	for _, name in ipairs(addon.db.profile.council) do
+		if self.candidates[name] then
+			tinsert(council, name)
+		end
+	end
+	if not tContains(council, addon.playerName) then -- Check if the ML (us) is included
+		tinsert(council, addon.playerName)
+	end
+	addon:DebugLog("GetCouncilInGroup", unpack(council))
+	return council
 end
 
 function RCLootCouncilML:GetItemsFromMessage(msg, sender)
