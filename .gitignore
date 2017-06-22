@@ -1,4 +1,4 @@
-.build-tools.cson
+.atom-build.yml
 notes.txt
 deserializer.lua
 test.lua
