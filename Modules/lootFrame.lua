@@ -233,7 +233,7 @@ do
 				end
 				-- Check if we've more buttons than we should
 				if #b > numButtons + 1 then
-					for i = numButtons + 1, #b[i] do b[i]:Hide() end
+					for i = numButtons + 1, #b do b[i]:Hide() end
 				end
 				-- Store the width of this entry. Our handler will set it
 				entry.width = width
