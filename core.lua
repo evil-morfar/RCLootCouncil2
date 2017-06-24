@@ -349,7 +349,7 @@ function RCLootCouncil:OnEnable()
 	if self.db.global.version and self:VersionCompare(self.db.global.version, self.version)
 	 		or (self.db.global.tVersion and self.db.global.tVersion == "Beta.1") -- TODO Remove this extra check for beta testers
 		then -- We've upgraded
-		if self:VersionCompare(self.db.global.version, "2.4.1") or self.db.global.tVersion == "Beta.1" then -- Update lootDB with newest changes
+		if self:VersionCompare(self.db.global.version, "2.4.2") or self.db.global.tVersion == "Beta.1" then -- Update lootDB with newest changes
 			self:Print("v2.4 adds seperate buttons for tier tokens. You might want to change your buttons setup - have a look in the options menu! (/rc config)")
 			-- delay it abit
 			self:ScheduleTimer("UpdateLootHistory", 5)
