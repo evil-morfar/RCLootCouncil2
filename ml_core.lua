@@ -129,7 +129,10 @@ function RCLootCouncilML:UpdateGroup(ask)
 	for name, v in pairs(group_copy) do
 		if v then self:RemoveCandidate(name); updates = true end
 	end
-	if updates then addon:SendCommand("group", "candidates", self.candidates) end
+	if updates then
+		self.council = self:GetCouncilInGroup()
+		addon:SendCommand("group", "candidates", self.candidates)
+	end
 end
 
 function RCLootCouncilML:StartSession()
@@ -261,9 +264,8 @@ function RCLootCouncilML:NewML(newML)
 	if addon:UnitIsUnit(newML, "player") then -- we are the the ML
 		addon:SendCommand("group", "playerInfoRequest")
 		self:UpdateMLdb() -- Will build and send mldb
-		self.council = self:GetCouncilInGroup()
-		addon:SendCommand("group", "council", self.council)
 		self:UpdateGroup(true)
+		addon:SendCommand("group", "council", self.council)
 		-- Set a timer to send out the incoming playerInfo changes
 		self:ScheduleTimer("Timer", 10, "GroupUpdate")
 	else
