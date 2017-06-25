@@ -1,3 +1,8 @@
+### v2.4.3
+---
+###### Bugfixes
++ *Awarding a tier token for any non-editable response would trigger an error in the loot history (#269).*
+
 ### v2.4.2
 ---
 ###### Bugfixes

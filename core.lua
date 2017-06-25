@@ -1393,8 +1393,10 @@ function RCLootCouncil:GetLootDBStatistics()
 			for i = #data, 1, -1 do -- Start from the end
 				entry = data[i]
 				id = entry.responseID
-				if entry.isAwardReason then id = id + 100 end -- Bump to distingush from normal awards
-				if entry.tokenRoll then id = id + 200 end
+				if type(id) == "number" then -- ID may be string, e.g. "PASS"
+					if entry.isAwardReason then id = id + 100 end -- Bump to distingush from normal awards
+					if entry.tokenRoll then id = id + 200 end
+				end
 				-- We assume the mapID and difficultyID is available on any item if at all.
 				if not numTokens[entry.instance] then numTokens[entry.instance] = {num = 0, mapID = entry.mapID, difficultyID = entry.difficultyID} end
 				if entry.tierToken then -- If it's a tierToken, increase the count

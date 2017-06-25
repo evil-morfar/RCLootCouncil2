@@ -63,7 +63,7 @@ local difficultyLookupTable = {
 }
 
 function LootHistory:OnEnable()
-	addon:Debug("OnEnable()")
+	addon:Debug("LootHistory:OnEnable()")
 	moreInfo = true
 	db = addon:Getdb()
 	lootDB = addon:GetHistoryDB()
@@ -81,6 +81,7 @@ end
 
 --- Show the LootHistory frame.
 function LootHistory:Show()
+	addon:Debug("LootHistory:Show()")
 	moreInfoData = addon:GetLootDBStatistics()
 	self.frame:Show()
 end
@@ -607,6 +608,7 @@ end
 
 function LootHistory:UpdateMoreInfo(rowFrame, cellFrame, dat, cols, row, realrow, column, tabel, button, ...)
 	if not dat then return end
+	if not moreInfoData then return addon:Debug("No moreInfoData in UpdateMoreInfo()") end
 	local tip = self.moreInfo -- shortening
 	tip:SetOwner(self.frame, "ANCHOR_RIGHT")
 	local row = dat[realrow]
@@ -659,6 +661,7 @@ function LootHistory:UpdateMoreInfo(rowFrame, cellFrame, dat, cols, row, realrow
 		tip:AddDoubleLine("mapID", data.mapID, 1,1,1, 1,1,1)
 		tip:AddDoubleLine("groupSize", data.groupSize, 1,1,1, 1,1,1)
 		tip:AddDoubleLine("tierToken", data.tierToken, 1,1,1, 1,1,1)
+		tip:AddDoubleLine("tokenRoll", tostring(data.tokenRoll), 1,1,1, 1,1,1)
 		tip:AddLine(" ")
 		tip:AddLine("Total tokens won:")
  		for name, v in pairs(moreInfoData[row.name].totals.tokens) do
@@ -809,6 +812,28 @@ function LootHistory.RightClickMenu(menu, level)
 					LootHistory.frame.st:SortData()
 				end
 				Lib_UIDropDownMenu_AddButton(info, level)
+			end
+
+			if addon.debug then
+				for k,v in pairs(db.responses) do
+					if type(k) ~= "number" and k ~= "tier" then
+						info.text = v.text
+						info.colorCode = "|cff"..addon:RGBToHex(unpack(v.color))
+						info.notCheckable = true
+						info.func = function()
+							addon:Debug("Changing response id @", data.name, "from", data.response, "to", i)
+							local entry = lootDB[data.name][data.num]
+							entry.responseID = k
+							entry.response = addon:GetResponseText(k)
+							entry.color = {addon:GetResponseColor(k)}
+							entry.isAwardReason = nil
+							data.response = k
+							data.cols[6].args = {color = entry.color, response = entry.response, responseID = k}
+							LootHistory.frame.st:SortData()
+						end
+						Lib_UIDropDownMenu_AddButton(info, level)
+					end
+				end
 			end
 
 			info = Lib_UIDropDownMenu_CreateInfo()
