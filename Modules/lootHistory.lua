@@ -865,11 +865,11 @@ function LootHistory.RightClickMenu(menu, level)
 					local entry = lootDB[data.name][data.num]
 					entry.responseID = k
 					entry.response = v.text
-					entry.color = v.color
+					entry.color = {unpack(v.color)}
 					entry.isAwardReason = nil
 					entry.tokenRoll = true
 					data.response = k
-					data.cols[6].args = {color = entry.color, response = entry.response, responseID = k}
+					data.cols[6].args = {color = entry.color, response = entry.response, responseID = k, tokenRoll = true}
 					LootHistory.frame.st:SortData()
 				end
 				Lib_UIDropDownMenu_AddButton(info, level)
