@@ -807,6 +807,7 @@ function LootHistory.RightClickMenu(menu, level)
 					entry.response = addon:GetResponseText(i)
 					entry.color = {addon:GetResponseColor(i)}
 					entry.isAwardReason = nil
+					entry.tokenRoll = nil
 					data.response = i
 					data.cols[6].args = {color = entry.color, response = entry.response, responseID = i}
 					LootHistory.frame.st:SortData()
@@ -866,6 +867,7 @@ function LootHistory.RightClickMenu(menu, level)
 					entry.response = v.text
 					entry.color = v.color
 					entry.isAwardReason = nil
+					entry.tokenRoll = true
 					data.response = k
 					data.cols[6].args = {color = entry.color, response = entry.response, responseID = k}
 					LootHistory.frame.st:SortData()
@@ -885,6 +887,7 @@ function LootHistory.RightClickMenu(menu, level)
 					entry.response = v.text
 					entry.color = {unpack(v.color)} -- For some reason it won't just accept v.color (!)
 					entry.isAwardReason = true
+					entry.tokenRoll = nil
 					data.response = i
 					data.cols[6].args = {color = entry.color, response = entry.response, responseID = k}
 					LootHistory.frame.st:SortData()

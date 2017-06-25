@@ -2,6 +2,7 @@
 ---
 ###### Bugfixes
 + *Awarding a tier token for any non-editable response would trigger an error in the loot history (#269).*
++ *Editing a response in the loot history to a tier response wouldn't retain it's colors after a /reload.*
 
 ### v2.4.2
 ---
