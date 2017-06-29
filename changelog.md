@@ -1,3 +1,9 @@
+### v2.4.4
+---
+###### Bugfixes
++ *Refixed buttons once again - should be the last time, sorry (#270).*
++ *Deleting the last entry from a candidate will now properly make the votingframe more info show "no entries in loot history".*
+
 ### v2.4.3
 ---
 ###### Bugfixes

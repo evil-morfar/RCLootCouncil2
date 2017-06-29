@@ -252,6 +252,10 @@ function LootHistory.SetCellDelete(rowFrame, frame, data, cols, row, realrow, co
 			tremove(lootDB[name], num)
 			tremove(data, realrow)
 			table:SortData()
+			if #lootDB[name] == 0 then -- last entry deleted
+				addon:DebugLog("Last Entry deleted, deleting name: ", name)
+				lootDB[name] = nil
+			end
 		else
 			frame.lastClick = GetTime()
 		end
