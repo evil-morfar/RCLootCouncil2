@@ -961,166 +961,110 @@ end
 -- @section Dropdowns.
 ----------------------------------------------------
 do
-	local info = Lib_UIDropDownMenu_CreateInfo() -- Efficiency :)
-	-- NOTE Take care of info[] values when inserting new buttons
-	function RCVotingFrame.RightClickMenu(menu, level)
-		if not addon.isMasterLooter then return end
-
-		local candidateName = menu.name
-		local data = lootTable[session].candidates[candidateName] -- Shorthand
-
-		if level == 1 then
-			info = Lib_UIDropDownMenu_CreateInfo()
-
-			info.text = addon.Ambiguate(candidateName)
-			info.isTitle = true
-			info.notCheckable = true
-			info.disabled = true
-			Lib_UIDropDownMenu_AddButton(info, level)
-
-			info.text = ""
-			info.isTitle = false
-			Lib_UIDropDownMenu_AddButton(info, level)
-
-			info.text = L["Award"]
-			info.func = function()
-				LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_AWARD", {
+	--- The entries placed in the rightclick menu.
+	-- Each level in the menu has it's own indexed entries, and each entry requires a text field as minimum,
+	-- but can otherwise have the same values as normal DropDownMenus.
+	-- To inject a new button, just call tinsert(RCVotingFrame.rightClickEntries[level], position, {--values})
+	-- It shouldn't be nessecary to do more than once, just do it before the first session starts.
+	--[[ Notes:
+		Text fields can be either a string or a function. Functions gets candidateName and data (the data belonging to the candidate) as parameters and must return a string.
+		The func field also gets candidateName and data as params.
+		There's two special fields to enable this kind of structure:
+			onValue :String - This entry will only be shown if LIB_UIDROPDOWNMENU_MENU_VALUE matches onValue. This enables nesting.
+			special :String - Handles a couple of special cases that wasn't too suitable for the orignal creating (#lazy)
+								 - Cases: AWARD_FOR, CHANGE_RESPONSE, TIER_TOKENS
+	]]
+	RCVotingFrame.rightClickEntries = {
+		{ -- Level 1
+			{ -- 1 Title, player name
+				text = function(name) return addon.Ambiguate(name) end,
+				isTitle = true,
+				notCheckable = true,
+				disabled = true,
+			},{ -- 2 Spacer
+				text = "",
+				notCheckable = true,
+				disabled = true,
+			},{ -- 3 Award
+				text = L["Award"],
+				notCheckable = true,
+				func = function(name, data)
+					LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_AWARD", {
 					session,
-				  	candidateName,
+				  	name,
 					data.response,
 					nil,
 					data.votes,
 					data.gear1,
 					data.gear2,
 					data.isTier,
-			}) end
-			info.disabled = false
-			Lib_UIDropDownMenu_AddButton(info, level)
-			info = Lib_UIDropDownMenu_CreateInfo()
-
-			info.text = L["Award for ..."]
-			info.value = "AWARD_FOR"
-			info.notCheckable = true
-			info.hasArrow = true
-			Lib_UIDropDownMenu_AddButton(info, level)
-			info = Lib_UIDropDownMenu_CreateInfo()
-
-			info.text = ""
-			info.notCheckable = true
-			info.disabled = true
-			Lib_UIDropDownMenu_AddButton(info, level)
-
-			info.text = L["Change Response"]
-			info.value = "CHANGE_RESPONSE"
-			info.hasArrow = true
-			info.disabled = false
-			Lib_UIDropDownMenu_AddButton(info, level)
-
-			info.text = L["Reannounce ..."]
-			info.value = "REANNOUNCE"
-			Lib_UIDropDownMenu_AddButton(info, level)
-			info = Lib_UIDropDownMenu_CreateInfo()
-
-			info.text = L["Remove from consideration"]
-			info.notCheckable = true
-			info.func = function()
-				addon:SendCommand("group", "change_response", session, candidateName, "REMOVED")
-			end
-			Lib_UIDropDownMenu_AddButton(info, level)
-
-			info.text = L["Add rolls"]
-			info.notCheckable = true
-			info.func = function() RCVotingFrame:DoRandomRolls(session) end
-			Lib_UIDropDownMenu_AddButton(info, level)
-
-		elseif level == 2 then
-			local value = LIB_UIDROPDOWNMENU_MENU_VALUE
-			info = Lib_UIDropDownMenu_CreateInfo()
-			if value == "AWARD_FOR" then
-				for k,v in ipairs(db.awardReasons) do
-					if k > db.numAwardReasons then break end
-					info.text = v.text
-					info.notCheckable = true
-					info.func = function()
-						LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_AWARD", {
-							session,
-						  	candidateName,
-							nil,
-							v,
-							data.votes,
-							data.gear1,
-							data.gear2,
-							data.isTier,
-				}) end
-					Lib_UIDropDownMenu_AddButton(info, level)
-				end
-
-			elseif value == "CHANGE_RESPONSE" then
-				local v;
-				for i = 1, db.numButtons do
-					v = db.responses[i]
-					info.text = v.text
-					info.colorCode = "|cff"..addon:RGBToHex(unpack(v.color))
-					info.notCheckable = true
-					info.func = function()
-							addon:SendCommand("group", "change_response", session, candidateName, i)
-					end
-					Lib_UIDropDownMenu_AddButton(info, level)
-				end
-
-				info = Lib_UIDropDownMenu_CreateInfo()
-				if addon.debug then -- Add all possible responses when debugging
-					for k,v in pairs(db.responses) do
-						if type(k) ~= "number" and k ~= "tier" then
-							info.text = v.text
-							info.colorCode = "|cff"..addon:RGBToHex(unpack(v.color))
-							info.notCheckable = true
-							info.func = function()
-									addon:SendCommand("group", "change_response", session, candidateName, k)
-							end
-							Lib_UIDropDownMenu_AddButton(info, level)
-						end
-					end
-				end
-
-				info = Lib_UIDropDownMenu_CreateInfo()
-				-- Add the tier menu
-				info.text = L["Tier Tokens ..."]
-				info.value = "TIER_TOKENS"
-				info.hasArrow = true
-				info.notCheckable = true
-				Lib_UIDropDownMenu_AddButton(info, level)
-
-			elseif value == "REANNOUNCE" then
-				info.text = addon.Ambiguate(candidateName)
-				info.isTitle = true
-				info.notCheckable = true
-				info.disabled = true
-				Lib_UIDropDownMenu_AddButton(info, level)
-				info = Lib_UIDropDownMenu_CreateInfo()
-
-				info.text = L["This item"]
-				info.notCheckable = true
-				info.func = function()
+					})
+				end,
+			},{ -- 4 Award for
+				text = L["Award for ..."],
+				value = "AWARD_FOR",
+				notCheckable = true,
+				hasArrow = true,
+			},{ -- 5 Spacer
+				text = "",
+				notCheckable = true,
+				disabled = true,
+			},	{ -- 6 Change response
+				text = L["Change Response"],
+				value = "CHANGE_RESPONSE",
+				hasArrow = true,
+				notCheckable = true,
+			},{ -- 7 Reannounce
+				text = L["Reannounce ..."],
+				value = "REANNOUNCE",
+				hasArrow = true,
+				notCheckable = true,
+			},{ -- 8 Remove from consideration
+				text = L["Remove from consideration"],
+				notCheckable = true,
+				func = function(name)
+					addon:SendCommand("group", "change_response", session, name, "REMOVED")
+				end,
+			},{ -- 9 Add rolls
+				text = L["Add rolls"],
+				notCheckable = true,
+				func = function() RCVotingFrame:DoRandomRolls(session) end,
+			},
+		},
+		{ -- Level 2
+			{ -- 1 AWARD_FOR
+				special = "AWARD_FOR",
+			},{ -- 2 CHANGE_RESPONSE
+				special = "CHANGE_RESPONSE",
+			},{ -- 3 REANNOUNCE, 1 title
+				onValue = "REANNOUNCE",
+				text = function(candidateName) return addon.Ambiguate(candidateName) end,
+				isTitle = true,
+				notCheckable = true,
+				disabled = true,
+			},{ -- 3 REANNOUNCE, 2 This item
+				onValue = "REANNOUNCE",
+				text = L["This item"],
+				notCheckable = true,
+				func = function(candidateName)
 					local t = {
 						{	name = lootTable[session].name,
-							link = lootTable[session].link,
-							ilvl = lootTable[session].ilvl,
-							texture = lootTable[session].texture,
-							session = session,
-							equipLoc = lootTable[session].equipLoc,
-							token = lootTable[session].token
+						link = lootTable[session].link,
+						ilvl = lootTable[session].ilvl,
+						texture = lootTable[session].texture,
+						session = session,
+						equipLoc = lootTable[session].equipLoc,
+						token = lootTable[session].token
 						}
 					}
 					addon:SendCommand(candidateName, "reroll", t)
 					addon:SendCommand("group", "change_response", session, candidateName, "WAIT")
-				end
-				Lib_UIDropDownMenu_AddButton(info, level);
-				info = Lib_UIDropDownMenu_CreateInfo()
-
-				info.text = L["All items"]
-				info.notCheckable = true
-				info.func = function()
+				end,
+			},{ -- 3 REANNOUNCE, 3 All items
+				onValue = "REANNOUNCE",
+				text = L["All items"],
+				notCheckable = true,
+				func = function(candidateName)
 					local t = {}
 					for k,v in ipairs(lootTable) do
 						if not v.awarded then
@@ -1137,14 +1081,105 @@ do
 						end
 					end
 					addon:SendCommand(candidateName, "reroll", t)
-				end
-				Lib_UIDropDownMenu_AddButton(info, level);
-			end
+				end,
+			},
+		},
+		{ -- Level 3
+			{ -- 1 Tier Tokens
+				special = "TIER_TOKENS",
+			},
+		},
+		-- More levels can be added with tinsert(RCVotingFrame.rightClickEntries, {-- new level})
+	}
+	-- NOTE Take care of info[] values when inserting new buttons
+	local info = Lib_UIDropDownMenu_CreateInfo() -- Efficiency :)
+	function RCVotingFrame.RightClickMenu(menu, level)
+		if not addon.isMasterLooter then return end
 
-		elseif level == 3 then
-			local value = LIB_UIDROPDOWNMENU_MENU_VALUE
+		local candidateName = menu.name
+		local data = lootTable[session].candidates[candidateName] -- Shorthand
+
+		local value = LIB_UIDROPDOWNMENU_MENU_VALUE
+		for i, entry in ipairs(RCVotingFrame.rightClickEntries[level]) do
 			info = Lib_UIDropDownMenu_CreateInfo()
-			if value == "TIER_TOKENS" then
+			if not entry.special then
+				if not entry.onValue then
+					for name, val in pairs(entry) do
+						if name == "text" and type(val) == "function" then
+							info[name] = val(candidateName, data) -- This needs to be evaluated
+						elseif name == "func" then
+							info[name] = function() return val(candidateName, data) end -- This needs to be set as a func, but fed with our params
+						else
+							info[name] = val
+						end
+					end
+					Lib_UIDropDownMenu_AddButton(info, level)
+
+				elseif entry.onValue == value then
+					for name, val in pairs(entry) do
+						if name == "text" and type(val) == "function" then
+							info.text = val(candidateName, data)
+						elseif name == "func" then
+							info[name] = function() return val(candidateName, data) end
+						elseif name ~= "onValue" then
+							info[name] = val
+						end
+					end
+					Lib_UIDropDownMenu_AddButton(info, level)
+				end
+			elseif value == "AWARD_FOR" and entry.special == value then
+				for k,v in ipairs(db.awardReasons) do
+					if k > db.numAwardReasons then break end
+					info.text = v.text
+					info.notCheckable = true
+					info.func = function()
+						LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_AWARD", {
+							session,
+							candidateName,
+							nil,
+							v,
+							data.votes,
+							data.gear1,
+							data.gear2,
+							data.isTier,
+				}) end
+					Lib_UIDropDownMenu_AddButton(info, level)
+				end
+			elseif value == "CHANGE_RESPONSE" and entry.special == value then
+				local v;
+				for i = 1, db.numButtons do
+					v = db.responses[i]
+					info.text = v.text
+					info.colorCode = "|cff"..addon:RGBToHex(unpack(v.color))
+					info.notCheckable = true
+					info.func = function()
+							addon:SendCommand("group", "change_response", session, candidateName, i)
+					end
+					Lib_UIDropDownMenu_AddButton(info, level)
+				end
+				info = Lib_UIDropDownMenu_CreateInfo()
+				if addon.debug then -- Add all possible responses when debugging
+					for k,v in pairs(db.responses) do
+						if type(k) ~= "number" and k ~= "tier" then
+							info.text = v.text
+							info.colorCode = "|cff"..addon:RGBToHex(unpack(v.color))
+							info.notCheckable = true
+							info.func = function()
+									addon:SendCommand("group", "change_response", session, candidateName, k)
+							end
+							Lib_UIDropDownMenu_AddButton(info, level)
+						end
+					end
+				end
+				info = Lib_UIDropDownMenu_CreateInfo()
+				-- Add the tier menu
+				info.text = L["Tier Tokens ..."]
+				info.value = "TIER_TOKENS"
+				info.hasArrow = true
+				info.notCheckable = true
+				Lib_UIDropDownMenu_AddButton(info, level)
+
+			elseif value == "TIER_TOKENS" and entry.special == value then
 				for k,v in ipairs(db.responses.tier) do
 					if k > db.tierNumButtons then break end
 					info.text = v.text
