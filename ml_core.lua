@@ -31,8 +31,7 @@ end
 function RCLootCouncilML:OnEnable()
 	db = addon:Getdb()
 	self.candidates = {} 	-- candidateName = { class, role, rank }
-	self.lootTable = {} 		-- The MLs operating lootTable
-	-- self.lootTable[session] = {	bagged, lootSlot, awarded, name, link, quality, ilvl, type, subType, equipLoc, texture, boe	}
+	self.lootTable = {} 		-- The MLs operating lootTable, see ML:AddItem()
 	self.awardedInBags = {} -- Awarded items that are stored in MLs inventory
 									-- i = { link, winner }
 	self.lootInBags = {} 	-- Items not yet awarded but stored in bags
@@ -40,11 +39,12 @@ function RCLootCouncilML:OnEnable()
 	self.running = false		-- true if we're handling a session
 	self.council = self:GetCouncilInGroup()
 
-	self:RegisterComm("RCLootCouncil", "OnCommReceived")
-	self:RegisterEvent("LOOT_OPENED","OnEvent")
-	self:RegisterEvent("LOOT_CLOSED","OnEvent")
+	self:RegisterComm("RCLootCouncil", 		"OnCommReceived")
+	self:RegisterEvent("LOOT_OPENED",		"OnEvent")
+	self:RegisterEvent("LOOT_CLOSED",		"OnEvent")
+	self:RegisterEvent("ENCOUNTER_END", 	"OnEvent")
+	self:RegisterEvent("CHAT_MSG_WHISPER",	"OnEvent")
 	self:RegisterBucketEvent("GROUP_ROSTER_UPDATE", 20, "UpdateGroup") -- Bursts in group creation, and we should have plenty of time to handle it
-	self:RegisterEvent("CHAT_MSG_WHISPER","OnEvent")
 	self:RegisterBucketMessage("RCConfigTableChanged", 2, "ConfigTableChanged") -- The messages can burst
 	self:RegisterMessage("RCCouncilChanged", "CouncilChanged")
 end
@@ -364,13 +364,6 @@ end
 function RCLootCouncilML:LootOpened()
 	local sessionframe = addon:GetActiveModule("sessionframe")
 	if addon.isMasterLooter and GetNumLootItems() > 0 then
-		if addon.target and addon.target ~= "" then -- Capture boss name
-			local target = GetUnitName("target") or L["Unknown/Chest"]
-			if not (UnitInRaid(target) or UnitInParty(target)) then
-				addon.target = target -- Make sure we can't target one of our raid members for this
-			end
-		end
-
 		if self.running or sessionframe:IsRunning() then -- Check if an update is needed
 			self:UpdateLootSlots()
 		else -- Otherwise add the loot
@@ -378,7 +371,7 @@ function RCLootCouncilML:LootOpened()
 				if db.altClickLooting then self:ScheduleTimer("HookLootButton", 0.5, i) end -- Delay lootbutton hooking to ensure other addons have had time to build their frames
 				local _, _, quantity, quality = GetLootSlotInfo(i)
 				if self:ShouldAutoAward(item, quality) and quantity > 0 then
-					self:AutoAward(i, item, quality, db.autoAwardTo, db.autoAwardReason, addon.target)
+					self:AutoAward(i, item, quality, db.autoAwardTo, db.autoAwardReason, addon.bossName)
 
 				elseif self:CanWeLootItem(item, quality) and quantity > 0 then -- check if our options allows us to loot it
 					self:AddItem(item, false, i)
@@ -838,7 +831,7 @@ LibDialog:Register("RCLOOTCOUNCIL_CONFIRM_AWARD", {
 				local isToken = RCLootCouncilML.lootTable[session].token
 				local awarded = RCLootCouncilML:Award(session, player, response, reason, isTierRoll)
 				if awarded then -- log it
-					RCLootCouncilML:TrackAndLogLoot(player, item, response, addon.target, votes, item1, item2, reason, isToken, isTierRoll)
+					RCLootCouncilML:TrackAndLogLoot(player, item, response, addon.bossName, votes, item1, item2, reason, isToken, isTierRoll)
 				end
 				-- We need to delay the test mode disabling so comms have a chance to be send first!
 				if addon.testMode and RCLootCouncilML:HasAllItemsBeenAwarded() then RCLootCouncilML:EndSession() end

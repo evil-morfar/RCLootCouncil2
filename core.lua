@@ -9,6 +9,7 @@ TODOs/Notes
 		- IDEA Have player's current gear sent with lootAck
 
 		- Test ML:UpdateLootSlots(). Both in :LootOpened and :Award
+		- Test bossName grapping
 --------------------------------
 CHANGELOG
 	-- SEE CHANGELOG.TXT
@@ -54,7 +55,6 @@ function RCLootCouncil:OnInitialize()
 
 	self.playerClass = select(2, UnitClass("player"))
 	self.guildRank = L["Unguilded"]
-	self.target = nil
 	self.isMasterLooter = false -- Are we the ML?
 	self.masterLooter = ""  -- Name of the ML
 	self.isCouncil = false -- Are we in the Council?
@@ -62,6 +62,7 @@ function RCLootCouncil:OnInitialize()
 	self.inCombat = false -- Are we in combat?
 	self.recentReconnectRequest = false
 	self.currentInstanceName = ""
+	self.bossName = "" -- Updates after each encounter
 
 	self.verCheckDisplayed = false -- Have we shown a "out-of-date"?
 
@@ -888,9 +889,6 @@ function RCLootCouncil:EnterCombat()
 	 InterfaceOptionsFrameOkay:Click()
 	end)
 	self.inCombat = true
-	if self.isMasterLooter then -- Grab the target after 10 seconds and hope it's the boss. We might grab the correct one when looting if not.
-		self:ScheduleTimer(function() self.target = GetUnitName("target") end, 10)
-	end
 	if not db.minimizeInCombat then return end
 	for _,frame in ipairs(frames) do
 		if frame:IsVisible() and not frame.combatMinimized then -- only minimize for combat if it isn't already minimized
@@ -1224,6 +1222,9 @@ function RCLootCouncil:OnEvent(event, ...)
 			self:UnregisterEvent("GUILD_ROSTER_UPDATE"); -- we don't need it any more
 			self:GetGuildOptions() -- get the guild data to the options table now that it's ready
 		end
+
+	elseif event == "ENCOUNTER_END" then
+		self.bossName = select(2, ...) -- Extract encounter name
 	end
 end
 
