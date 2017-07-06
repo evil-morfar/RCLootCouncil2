@@ -7,6 +7,8 @@ TODOs/Notes
 	Things marked with "todo"
 		- Item subtype in history exports
 		- IDEA Have player's current gear sent with lootAck
+
+		- Test ML:UpdateLootSlots(). Both in :LootOpened and :Award
 --------------------------------
 CHANGELOG
 	-- SEE CHANGELOG.TXT

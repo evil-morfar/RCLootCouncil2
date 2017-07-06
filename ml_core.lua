@@ -370,39 +370,21 @@ function RCLootCouncilML:LootOpened()
 				addon.target = target -- Make sure we can't target one of our raid members for this
 			end
 		end
-		local updatedLootSlot = {}
-		for i = 1, GetNumLootItems() do
-			local item = GetLootSlotLink(i)
-			-- We have reopened the loot frame, so check if we should update .lootSlot
-			if self.running or sessionframe:IsRunning() then
-				for session = 1, #self.lootTable do
-					-- Just skip if we've already awarded the item or found a fitting lootSlot
-					if not self.lootTable[session].awarded and not updatedLootSlot[session] then
-						if item == self.lootTable[session].link then
-							if i ~= self.lootTable[session].lootSlot then -- It has changed!
-								self.lootTable[session].lootSlot = i -- and update it
-								updatedLootSlot[session] = true
-								addon:DebugLog("Changed lootSlot", session, i)
-							end
-							break
-						end
-					end
-				end
-			else
+
+		if self.running or sessionframe:IsRunning() then -- Check if an update is needed
+			self:UpdateLootSlots()
+		else -- Otherwise add the loot
+			for i = 1, GetNumLootItems() do
 				if db.altClickLooting then self:ScheduleTimer("HookLootButton", 0.5, i) end -- Delay lootbutton hooking to ensure other addons have had time to build their frames
-				-- We might already have the session frame running, in which case we shouldn't add the items again
-				if not sessionframe:IsRunning() then
+				local _, _, quantity, quality = GetLootSlotInfo(i)
+				if self:ShouldAutoAward(item, quality) and quantity > 0 then
+					self:AutoAward(i, item, quality, db.autoAwardTo, db.autoAwardReason, addon.target)
 
-					local _, _, quantity, quality = GetLootSlotInfo(i)
-					if self:ShouldAutoAward(item, quality) and quantity > 0 then
-						self:AutoAward(i, item, quality, db.autoAwardTo, db.autoAwardReason, addon.target)
+				elseif self:CanWeLootItem(item, quality) and quantity > 0 then -- check if our options allows us to loot it
+					self:AddItem(item, false, i)
 
-					elseif self:CanWeLootItem(item, quality) and quantity > 0 then -- check if our options allows us to loot it
-						self:AddItem(item, false, i)
-
-					elseif quantity == 0 then -- it's coin, just loot it
-						LootSlot(i)
-					end
+				elseif quantity == 0 then -- it's coin, just loot it
+					LootSlot(i)
 				end
 			end
 		end
@@ -411,7 +393,7 @@ function RCLootCouncilML:LootOpened()
 				self:StartSession()
 			else
 				addon:CallModule("sessionframe")
-				addon:GetActiveModule("sessionframe"):Show(self.lootTable)
+				sessionframe:Show(self.lootTable)
 			end
 		end
 	end
@@ -426,6 +408,27 @@ function RCLootCouncilML:CanWeLootItem(item, quality)
 	end
 	addon:Debug("CanWeLootItem", item, ret)
 	return ret
+end
+
+function RCLootCouncilML:UpdateLootSlots()
+	if not self.lootOpened then return addon:Debug("ML:UpdateLootSlots() without loot window open!!") end
+	local updatedLootSlot = {}
+	for i = 1, GetNumLootItems() do
+		local item = GetLootSlotLink(i)
+		for session = 1, #self.lootTable do
+			-- Just skip if we've already awarded the item or found a fitting lootSlot
+			if not self.lootTable[session].awarded and not updatedLootSlot[session] then
+				if item == self.lootTable[session].link then
+					if i ~= self.lootTable[session].lootSlot then -- It has changed!
+						self.lootTable[session].lootSlot = i -- and update it
+						updatedLootSlot[session] = true
+						addon:DebugLog("Changed lootSlot;", session, "is now at:", i)
+					end
+					break
+				end
+			end
+		end
+	end
 end
 
 function RCLootCouncilML:HookLootButton(i)
@@ -505,6 +508,11 @@ function RCLootCouncilML:Award(session, winner, response, reason, isToken)
 				addon:Print(L["Unable to give out loot without the loot window open."])
 				--addon:Print(L["Alternatively, flag the loot as award later."])
 				return false
+			end
+			-- v2.4.4+: Check if the item is still in the expected slot
+			if self.lootTable[session].link ~= GetLootSlotLink(self.lootTable[session].lootSlot) then
+				-- And update them if not
+				self:UpdateLootSlots()
 			end
 			if self.lootTable[session].quality < GetLootThreshold() or GetNumGroupMembers() == 0 then
 				LootSlot(self.lootTable[session].lootSlot)
