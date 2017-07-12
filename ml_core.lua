@@ -477,9 +477,9 @@ function RCLootCouncilML:Award(session, winner, response, reason, isToken)
 	addon:DebugLog("ML:Award", session, winner, response, reason)
 	if addon.testMode then
 		if winner then
-			addon:SendCommand("group", "awarded", session)
+			addon:SendCommand("group", "awarded", session, winner)
 			addon:Print(format(L["The item would now be awarded to 'player'"], addon.Ambiguate(winner)))
-			self.lootTable[session].awarded = true
+			self.lootTable[session].awarded = winner
 			if self:HasAllItemsBeenAwarded() then
 				 addon:Print(L["All items has been awarded and  the loot session concluded"])
 			end
@@ -527,8 +527,8 @@ function RCLootCouncilML:Award(session, winner, response, reason, isToken)
 		end
 		if awarded then
 			-- flag the item as awarded and update
-			addon:SendCommand("group", "awarded", session)
-			self.lootTable[session].awarded = true -- No need to let Comms handle this
+			addon:SendCommand("group", "awarded", session, winner)
+			self.lootTable[session].awarded = winner -- No need to let Comms handle this
 
 			self:AnnounceAward(addon.Ambiguate(winner), self.lootTable[session].link,
 			 reason and reason.text or addon:GetResponseText(response, isToken), addon:GetActiveModule("votingframe"):GetLootTable()[session].candidates[winner].roll)

@@ -157,7 +157,8 @@ function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
 				self:ScheduleTimer(function()
 					moreInfoData = addon:GetLootDBStatistics() -- Just update it on every award
 				end, 1) -- Make sure we've received the history data before updating
-				lootTable[unpack(data)].awarded = true
+				local s, winner = unpack(data)
+				lootTable[s].awarded = winner
 				if addon.isMasterLooter and session ~= #lootTable then -- ML should move to the next item on award
 					self:SwitchSession(session + 1)
 				else
@@ -323,8 +324,18 @@ function RCVotingFrame:Update()
 	-- update awardString
 	if lootTable[session] and lootTable[session].awarded then
 		self.frame.awardString:Show()
+		local name = lootTable[session].awarded
+		self.frame.awardStringPlayer:SetText(addon.Ambiguate(name))
+		local c = addon:GetClassColor(candidates[name].class)
+		self.frame.awardStringPlayer:SetTextColor(c.r,c.g,c.b,c.a)
+		self.frame.awardStringPlayer:Show()
+		-- Hack-reuse the SetCellClassIcon function
+		addon.SetCellClassIcon(nil,self.frame.awardStringPlayer.classIcon,nil,nil,nil,nil,nil,nil,nil, candidates[name].class)
+		self.frame.awardStringPlayer.classIcon:Show()
 	else
 		self.frame.awardString:Hide()
+		self.frame.awardStringPlayer:Hide()
+		self.frame.awardStringPlayer.classIcon:Hide()
 	end
 	-- This only applies to the ML
 	if addon.isMasterLooter then
@@ -616,11 +627,25 @@ function RCVotingFrame:GetFrame()
 
 	-- Award string
 	local awdstr = f.content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-	awdstr:SetPoint("CENTER", f.content, "TOP", 0, -60)
+	awdstr:SetPoint("CENTER", f.content, "TOP", 0, -53)
 	awdstr:SetText(L["Item has been awarded"])
 	awdstr:SetTextColor(1, 1, 0, 1) -- Yellow
 	awdstr:Hide()
 	f.awardString = awdstr
+	awdstr = f.content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+	awdstr:SetPoint("TOP", f.awardString, "BOTTOM", 7.5, -3)
+	awdstr:SetText("PlayerName")
+	awdstr:SetTextColor(1, 1, 1, 1) -- White
+	awdstr:Hide()
+	f.awardStringPlayer = awdstr
+	local awdtx = f.content:CreateTexture()
+	awdtx:SetTexture("Interface/ICONS/INV_Sigil_Thorim.png")
+	function awdtx:SetNormalTexture(tex) self:SetTexture(tex) end
+	function awdtx:GetNormalTexture() return self end
+	awdtx:SetPoint("RIGHT", awdstr, "LEFT")
+	awdtx:SetSize(15,15)
+	awdtx:Hide()
+	f.awardStringPlayer.classIcon = awdtx
 
 	-- Session toggle
 	local stgl = CreateFrame("Frame", nil, f.content)

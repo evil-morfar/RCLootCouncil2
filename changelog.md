@@ -4,6 +4,9 @@
 * Added an option to automatically add a random 1-100 roll to all candidates.
 * A candidate's roll can now be added to award announcements by using "&n" in the announcement text.
 
+* **Award**
+* The winner of an item is now shown in the voting frame.
+
 ### v2.4.3
 ---
 ###### Bugfixes
