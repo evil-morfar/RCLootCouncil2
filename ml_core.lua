@@ -530,7 +530,8 @@ function RCLootCouncilML:Award(session, winner, response, reason, isToken)
 			addon:SendCommand("group", "awarded", session)
 			self.lootTable[session].awarded = true -- No need to let Comms handle this
 
-			self:AnnounceAward(addon.Ambiguate(winner), self.lootTable[session].link, reason and reason.text or addon:GetResponseText(response, isToken))
+			self:AnnounceAward(addon.Ambiguate(winner), self.lootTable[session].link,
+			 reason and reason.text or addon:GetResponseText(response, isToken), addon:GetActiveModule("votingframe"):GetLootTable()[session].candidates[winner].roll)
 			if self:HasAllItemsBeenAwarded() then self:EndSession() end
 
 		else -- If we reach here it means we couldn't find a valid MasterLootCandidate, propably due to the winner is unable to receive the loot
@@ -564,13 +565,14 @@ function RCLootCouncilML:AnnounceItems()
 	end
 end
 
-function RCLootCouncilML:AnnounceAward(name, link, text)
+function RCLootCouncilML:AnnounceAward(name, link, text, roll)
 	if db.announceAward then
 		for k,v in pairs(db.awardText) do
 			if v.channel ~= "NONE" then
 				local message = gsub(v.text, "&p", name)
-				message = gsub(message, "&i", link)
-				message = gsub(message, "&r", text)
+				message = gsub(message, "&i", tostring(link))
+				message = gsub(message, "&r", tostring(text))
+				message = gsub(message, "&n", tostring(roll))
 				SendChatMessage(message, addon:GetAnnounceChannel(v.channel))
 			end
 		end

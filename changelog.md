@@ -1,7 +1,8 @@
 ### v2.5.0
 ---
-* **Add Rolls**
+* **Rolls**
 * Added an option to automatically add a random 1-100 roll to all candidates.
+* A candidate's roll can now be added to award announcements by using "&n" in the announcement text.
 
 ### v2.4.3
 ---

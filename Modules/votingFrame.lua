@@ -268,7 +268,7 @@ function RCVotingFrame:Setup(table)
 				gear2 = nil,
 				votes = 0,
 				note = nil,
-				roll = "",
+				roll = nil,
 				voters = {},
 				haveVoted = false, -- Have we voted for this particular candidate in this session?
 			}
@@ -885,7 +885,7 @@ end
 
 function RCVotingFrame.SetCellRoll(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
 	local name = data[realrow].name
-	frame.text:SetText(lootTable[session].candidates[name].roll)
+	frame.text:SetText(lootTable[session].candidates[name].roll or "")
 	data[realrow].cols[column].value = lootTable[session].candidates[name].roll
 end
 
