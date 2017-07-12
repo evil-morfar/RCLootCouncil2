@@ -284,6 +284,7 @@ function RCVotingFrame:Setup(table)
 	session = 1
 	self:BuildST()
 	self:SwitchSession(session)
+	if db.autoAddRolls then for i = 1, #lootTable do self:DoRandomRolls(i) end end
 end
 
 function RCVotingFrame:HandleVote(session, name, vote, voter)

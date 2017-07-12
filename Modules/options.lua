@@ -520,6 +520,12 @@ function addon:OptionsTable()
 										desc = L["observe_desc"],
 										type = "toggle",
 									},
+									autoAddRolls = {
+										order = 8,
+										name = L["Add Rolls"],
+										desc = L["add_rolls_desc"],
+										type = "toggle",
+									}
 								},
 							},
 							ignoreOptions = {

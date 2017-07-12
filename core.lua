@@ -114,6 +114,7 @@ function RCLootCouncil:OnInitialize()
 			},
 			onlyUseInRaids = true,
 			ambiguate = false, -- Append realm names to players
+			autoAddRolls = false,
 			autoStart = false, -- start a session with all eligible items
 			autoLoot = true, -- Auto loot equippable items
 			autolootEverything = true,
