@@ -1,3 +1,10 @@
+### v2.x.x
+---
+* Optimized boss name recording.
+
+###### Bugfixes
++ *Fixed a rare occurence of wrong item awarding (#271).*
+
 ### v2.4.4
 ---
 ###### Bugfixes
