@@ -62,7 +62,7 @@ function RCLootCouncil:OnInitialize()
 	self.inCombat = false -- Are we in combat?
 	self.recentReconnectRequest = false
 	self.currentInstanceName = ""
-	self.bossName = "" -- Updates after each encounter
+	self.bossName = nil -- Updates after each encounter
 
 	self.verCheckDisplayed = false -- Have we shown a "out-of-date"?
 
@@ -338,6 +338,7 @@ function RCLootCouncil:OnEnable()
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
 	self:RegisterEvent("PLAYER_REGEN_DISABLED", "EnterCombat")
 	self:RegisterEvent("PLAYER_REGEN_ENABLED", "LeaveCombat")
+	self:RegisterEvent("ENCOUNTER_END", 	"OnEvent")
 	--self:RegisterEvent("GROUP_ROSTER_UPDATE", "Debug", "event")
 
 	if IsInGuild() then
@@ -1222,8 +1223,8 @@ function RCLootCouncil:OnEvent(event, ...)
 			self:UnregisterEvent("GUILD_ROSTER_UPDATE"); -- we don't need it any more
 			self:GetGuildOptions() -- get the guild data to the options table now that it's ready
 		end
-
 	elseif event == "ENCOUNTER_END" then
+		self:DebugLog("Event:", event, ...)
 		self.bossName = select(2, ...) -- Extract encounter name
 	end
 end
@@ -1457,15 +1458,15 @@ function RCLootCouncil:GetAnnounceChannel(channel)
 end
 
 function RCLootCouncil:GetItemIDFromLink(link)
-	return tonumber(strmatch(link, "item:(%d+):"))
+	return tonumber(strmatch(link or "", "item:(%d+):"))
 end
 
 function RCLootCouncil:GetItemStringFromLink(link)
-	return strmatch(link, "item:([%d:]+)")
+	return strmatch(link or "", "item:([%d:]+)")
 end
 
 function RCLootCouncil:GetItemNameFromLink(link)
-	return strmatch(link, "%[(.+)%]")
+	return strmatch(link or "", "%[(.+)%]")
 end
 
 function RCLootCouncil.round(num, decimals)
