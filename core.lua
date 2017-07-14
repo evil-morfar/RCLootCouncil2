@@ -756,6 +756,8 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 				self.Sync:SyncRequestReceived(unpack(data))
 			elseif command == "syncAck" then
 				self.Sync:SyncAckReceived(unpack(data))
+			elseif command == "syncNack" then
+				self.Sync:SyncNackReceived(unpack(data))
 			end
 		else
 			-- Most likely pre 2.0 command
