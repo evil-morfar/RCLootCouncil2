@@ -16,3 +16,4 @@ Modules\Modules.xml
 
 Utils\tokenData.lua
 Utils\autopass.lua
+Utils\popups.lua

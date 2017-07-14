@@ -380,49 +380,6 @@ function RCLootCouncil:OnEnable()
 	ChatFrame_AddMessageEventFilter("CHAT_MSG_WHISPER_INFORM", filterFunc)
 
 	self:LocalizeSubTypes()
-
-	----------PopUp setups --------------
-	-------------------------------------
-	LibDialog:Register("RCLOOTCOUNCIL_CONFIRM_USAGE", {
-		text = L["confirm_usage_text"],
-		on_show = function(self)
-			self:SetFrameStrata("FULLSCREEN")
-		end,
-		buttons = {
-			{	text = L["Yes"],
-				on_click = function()
-					self:DebugLog("Player confirmed usage")
-					-- The player might have passed on ML before accepting :O
-					if not self.isMasterLooter then return end
-					local lootMethod = GetLootMethod()
-					if lootMethod ~= "master" then
-						self:Print(L["Changing LootMethod to Master Looting"])
-						SetLootMethod("master", self.Ambiguate(self.playerName)) -- activate ML
-					end
-					if db.autoAward and GetLootThreshold() ~= 2 and GetLootThreshold() > db.autoAwardLowerThreshold  then
-						self:Print(L["Changing loot threshold to enable Auto Awarding"])
-						SetLootThreshold(db.autoAwardLowerThreshold >= 2 and db.autoAwardLowerThreshold or 2)
-					end
-					self:Print(L["Now handles looting"])
-					self.isMasterLooter = true
-					self.masterLooter = self.playerName
-					if #db.council == 0 then -- if there's no council
-						self:Print(L["You haven't set a council! You can edit your council by typing '/rc council'"])
-					end
-					self:CallModule("masterlooter")
-					self:GetActiveModule("masterlooter"):NewML(self.masterLooter)
-				end,
-			},
-			{	text = L["No"],
-				on_click = function()
-					self:DebugLog("Player declined usage")
-					RCLootCouncil:Print(L[" is not active in this raid."])
-				end,
-			},
-		},
-		hide_on_escape = true,
-		show_while_dead = true,
-	})
 end
 
 function RCLootCouncil:OnDisable()
@@ -448,8 +405,6 @@ end
 function RCLootCouncil:CouncilChanged()
 	self:SendMessage("RCCouncilChanged")
 end
-
-
 
 function RCLootCouncil:ChatCommand(msg)
 	local input, arg1, arg2 = self:GetArgs(msg,3)
@@ -794,6 +749,13 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 						self:ScheduleTimer("ResetReconnectRequest", 5) -- 5 sec break between each try
 					end
 				end
+
+			elseif command == "sync" then
+				self.Sync:SyncDataReceived(unpack(data))
+			elseif command == "syncRequest" then
+				self.Sync:SyncRequestReceived(unpack(data))
+			elseif command == "syncAck" then
+				self.Sync:SyncAckReceived(unpack(data))
 			end
 		else
 			-- Most likely pre 2.0 command
