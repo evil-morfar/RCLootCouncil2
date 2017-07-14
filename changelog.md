@@ -7,6 +7,19 @@
 * **Award**
 * The winner of an item is now shown in the voting frame.
 
+### v2.4.5
+---
+* Optimized boss name recording.
+
+###### Bugfixes
++ *Fixed a rare occurence of wrong item awarding (#271).*
+
+### v2.4.4
+---
+###### Bugfixes
++ *Refixed buttons once again - should be the last time, sorry (#270).*
++ *Deleting the last entry from a candidate will now properly make the votingframe more info show "no entries in loot history".*
+
 ### v2.4.3
 ---
 ###### Bugfixes
