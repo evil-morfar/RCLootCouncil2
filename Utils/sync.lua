@@ -15,7 +15,7 @@ local last_sync_time = 0
 sync.syncHandlers = {
    settings = {
       text = L["Settings"],
-      receive = function(data) addon.db.profile = data end,
+      receive = function(data) for k,v in pairs(data) do addon.db.profile[k] = v end; addon:UpdateDB(); addon:ActivateSkin(addon.db.profile.currentSkin) end,
       send = function() return addon.db.profile end,
    },
    history  = {
@@ -112,8 +112,10 @@ function sync.OnSyncAccept(_, data)
    local sender, type = unpack(data)
    addon:Debug("OnSyncAccept", sender, type)
    addon:SendCommand(sender, "syncAck", addon.playerName, type)
-   sync.frame.statusBar.text:SetText(L["Receiving data..."])
+   --sync.frame.statusBar:Show()
    sync.frame.statusBar.text:Show()
+   sync.frame.statusBar.text:SetText(L["Receiving data..."])
+   --sync.frame.statusBar:Hide()
 end
 -- LibDialog OnDecline
 function sync.OnSyncDeclined(_, data)
@@ -148,17 +150,24 @@ end
 -- Builds a list of targets we can sync to.
 -- Used in the options menu for an AceGUI dropdown.
 function sync:GetSyncTargetOptions()
+   local name, isOnline, class
    local ret = {}
    -- target
    if UnitIsFriend("player", "target") and UnitIsPlayer("target") then
       addNameToList(ret, addon:UnitName("target"), select(2, UnitClass("target")))
    end
    -- group
-   for name,v in pairs(addon.candidates) do
-      addNameToList(ret, name, v.class)
+   if addon.candidates and addon.candidates[addon.playerName] then
+      for name,v in pairs(addon.candidates) do
+         addNameToList(ret, name, v.class)
+      end
+   else
+      for i = 1, GetNumGroupMembers() do
+		   name, _, _, _, _, class, _, isOnline = GetRaidRosterInfo(i)
+         if isOnline then addNameToList(ret, addon:UnitName(name), class) end
+      end
    end
    -- friends
-   local name, isOnline, class
    for i = 1, GetNumFriends() do
       name, _, class, _, isOnline = GetFriendInfo(i)
       if isOnline then addNameToList(ret, name, class) end
@@ -220,9 +229,10 @@ function sync:Spawn()
    sel:SetCallback("OnValueChanged", function(_,_, key)
       self.syncTarget = key
    end)
-   sel:SetCallback("OnEnter", function() sel:SetList(self:GetSyncTargetOptions()) end)
    sel:SetParent(f)
    sel.frame:Show()
+   local old_click = sel.button:GetScript("OnClick")
+   sel.button:SetScript("OnClick", function(this) sel:SetList(self:GetSyncTargetOptions()); old_click(this) end)
    f.syncTargetSelector = sel
 
    txt = f.content:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
@@ -251,10 +261,10 @@ function sync:Spawn()
 	f.statusBar:SetMinMaxValues(0, 100)
    f.statusBar:Hide()
 
-   f.statusBar.text = f.statusBar:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+   f.statusBar.text = f.content:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
 	f.statusBar.text:SetPoint("CENTER", f.statusBar)
 	f.statusBar.text:SetTextColor(1,1,1)
-	f.statusBar.text:SetText("0%")
+	f.statusBar.text:SetText("")
 
    f.helpButton = CreateFrame("Button", nil, f.content)
    f.helpButton:SetNormalTexture("Interface/GossipFrame/ActiveQuestIcon")

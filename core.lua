@@ -1419,6 +1419,9 @@ function RCLootCouncil:GetHistoryDB()
 	return self.lootDB.factionrealm
 end
 
+function RCLootCouncil:UpdateDB()
+	db = self.db.profile
+end
 function RCLootCouncil:UpdateHistoryDB()
 	historyDB = self:GetHistoryDB()
 end

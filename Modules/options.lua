@@ -110,7 +110,11 @@ function addon:OptionsTable()
 										name = L["Sync"],
 										desc = L["Opens the synchronizer"],
 										type = "execute",
-										func = function() self.Sync:Spawn() end,
+										func = function()
+											InterfaceOptionsFrame:Hide()
+											LibStub("AceConfigDialog-3.0"):CloseAll()
+											self.Sync:Spawn()
+										end,
 									},
 								},
 							},
