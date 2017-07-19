@@ -1,8 +1,8 @@
 ## Author: Potdisc
 ## Interface: 70200
-## Notes: Interface for running a Loot Council v2.4.4
+## Notes: Interface for running a Loot Council v2.5.0
 ## Title: RCLootCouncil
-## Version: 2.4.4
+## Version: 2.5.0
 ## SavedVariables: RCLootCouncilDB, RCLootCouncilLootDB
 ## OptionalDeps: LibStub, CallbackHandler-1.0, Ace3, lib-st, LibWindow-1.1, LibDialog-1.0
 
@@ -16,4 +16,5 @@ Modules\Modules.xml
 
 Utils\tokenData.lua
 Utils\autopass.lua
+Utils\sync.lua
 Utils\popups.lua

@@ -50,8 +50,8 @@ function RCLootCouncil:OnInitialize()
 	--IDEA Consider if we want everything on self, or just whatever modules could need.
   	self.version = GetAddOnMetadata("RCLootCouncil", "Version")
 	self.nnp = false
-	self.debug = false
-	self.tVersion = nil -- String or nil. Indicates test version, which alters stuff like version check. Is appended to 'version', i.e. "version-tVersion" (max 10 letters for stupid security)
+	self.debug = true
+	self.tVersion = "alpha.1" -- String or nil. Indicates test version, which alters stuff like version check. Is appended to 'version', i.e. "version-tVersion" (max 10 letters for stupid security)
 
 	self.playerClass = select(2, UnitClass("player"))
 	self.guildRank = L["Unguilded"]
@@ -66,6 +66,7 @@ function RCLootCouncil:OnInitialize()
 
 	self.verCheckDisplayed = false -- Have we shown a "out-of-date"?
 
+	self.candidates = {}
 	self.council = {} -- council from ML
 	self.mldb = {} -- db recived from ML
 	self.responses = {
@@ -507,6 +508,8 @@ function RCLootCouncil:ChatCommand(msg)
 
 	elseif input == "updatehistory" or (input == "update" and arg1 == "history") then
 		self:UpdateLootHistory()
+	elseif input == "sync" then
+		self.Sync:Spawn()
 --@debug@
 	elseif input == 't' then -- Tester cmd
 		local lf = self:GetActiveModule("lootframe")
@@ -545,7 +548,7 @@ function RCLootCouncil:SendCommand(target, command, ...)
 
 	else
 		if self:UnitIsUnit(target,"player") then -- If target == "player"
-			self:SendCommMessage("RCLootCouncil", toSend, "WHISPER", self.playerName)
+			self:SendCommMessage("RCLootCouncil", toSend, "WHISPER", self.playerName, "BULK", self.Print, "test")
 		else
 			-- We cannot send "WHISPER" to a crossrealm player
 			if target:find("-") then
@@ -656,6 +659,8 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 					self:Debug(tostring(sender).." is not ML, but sent lootTable!")
 				end
 
+			elseif command == "candidates" and self:UnitIsUnit(sender, self.masterLooter) then
+				self.candidates = unpack(data)
 			elseif command == "council" and self:UnitIsUnit(sender, self.masterLooter) then -- only ML sends council
 				self.council = unpack(data)
 				self.isCouncil = self:IsCouncil(self.playerName)

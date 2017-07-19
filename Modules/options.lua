@@ -105,6 +105,13 @@ function addon:OptionsTable()
 											addon:CallModule("version")
 										end,
 									},
+									sync = {
+										order = 10,
+										name = L["Sync"],
+										desc = L["Opens the synchronizer"],
+										type = "execute",
+										func = function() self.Sync:Spawn() end,
+									},
 								},
 							},
 							autoPassOptions = {
@@ -169,7 +176,7 @@ function addon:OptionsTable()
 										func = function() self:CallModule("history");	InterfaceOptionsFrame:Hide();end,
 									},
 									clearLootDB = {
-										order = -1,
+										order = 6,
 										name = L["Clear Loot History"],
 										desc = L["clear_loot_history_desc"],
 										type = "execute",

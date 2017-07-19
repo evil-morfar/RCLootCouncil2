@@ -3,6 +3,7 @@
 -- 14/07/2017
 local addon = LibStub("AceAddon-3.0"):GetAddon("RCLootCouncil")
 local LibDialog = LibStub("LibDialog-1.0")
+local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 local db = addon:Getdb()
 
 -- Confirm usage (core)
@@ -51,8 +52,8 @@ LibDialog:Register("RCLOOTCOUNCIL_CONFIRM_USAGE", {
 LibDialog:Register("RCLOOTCOUNCIL_SYNC_REQUEST", {
    text = "Incoming sync request",
    on_show = function(self, data)
-      local sender, type = unpack(data)
-      self:SetText(format("Receive %s data from %s", type, sender))
+      local sender,_, text = unpack(data)
+      self.text:SetText(format("Receive %s data from %s", text, sender))
    end,
    buttons = {
       {  text = L["Yes"],

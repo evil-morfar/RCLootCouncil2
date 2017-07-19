@@ -385,7 +385,7 @@ function LootHistory:ImportHistory(import)
 	addon.lootDB.factionrealm = lootDB -- save it
 	addon:Print(format(L["Successfully imported 'number' entries."], number))
 	addon:Debug("Import successful")
-	self:BuildData()
+	if self.frame and self.frame:IsVisible() then self:BuildData() end -- Only rebuild data if we're showing
 end
 
 function LootHistory:GetWowheadLinkFromItemLink(link)

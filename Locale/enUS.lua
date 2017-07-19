@@ -129,6 +129,7 @@ L["chat_commands"] = [=[
 - add [item]- Add an item to the session frame
 - award     - Start a session with items looted to your inventory
 - winners   - Display the winners of awarded items looted to your inventory
+- sync      - Open the synchronizer view
 ]=]
 L["Check this to loot the items and distribute them later."] = true
 L["Check to append the realmname of a player from another realm"] = true
@@ -153,6 +154,7 @@ L["Current Council"] = true
 L["current_council_desc"] = "\nClick to remove certain people from the council\n"
 L["Customize appearance"] = true
 L["customize_appearance_desc"] = "Here you can fully customize the look of RCLootCouncil. Use the save function above to quickly switch skins."
+L["Data Received"] = true
 L["Delete Skin"] = true
 L["delete_skin_desc"] = "Delete the currently selected non-default skin from the list."
 L["Date"] = true
@@ -164,6 +166,7 @@ L["Diff"] = true
 L["Disenchant"] = true
 L["disenchant_desc"] = "Select to use this reason when awarding an item via the 'Disenchant' button"
 L["Double click to delete this entry."] = true
+L["Done syncing"] = true
 L["DPS"] = true
 L["Dropped by:"] = true
 L["Enable Loot History"] = true
@@ -194,6 +197,7 @@ L["help"] = true
 L["Hide Votes"] = true
 L["hide_votes_desc"] = "Only players that have already voted will be able to see votes."
 L["history"] = true
+L["How to sync"] = true
 L["Ignore List"] = true
 L["Ignore Options"] = true
 L["ignore_input_desc"] = "Enter an itemID to add to the ignore list causing RCLootCouncil to never add the item to a session"
@@ -270,11 +274,16 @@ L["onlyUseInRaids_desc"] = "Check to automatically disable RCLootCouncil in part
 L["Open the Loot History"] = true
 L["open"] = true
 L["open_the_loot_history_desc"] = "Click to open the Loot History."
+L["Opens the synchronizer"] = true
 L["Other piece"] = true
 L["Party"] = true
 L["Pass"] = true
+L["'player' can't receive 'type'"] = "%s can't receive %s - version mismatch?"
+L["'player' declined your sync request"] = "%s declined your sync request"
 L["'player' has asked you to reroll"] = "%s has asked you to reroll"
 L["'player' has ended the session"] = "%s has ended the session"
+L["'player' hasn't opened the sync window"] = "%s hasn't opened the sync window (/rc sync)"
+L["Please wait before trying to sync again."] = true
 L["Raid Warning"] = true
 L["Raid"] = true
 L["Rank"] = true
@@ -282,11 +291,13 @@ L["Raw lua output. Doesn't work well with date selection."] = true
 L["RCLootCouncil Loot Frame"] = true
 L["RCLootCouncil Loot History"] = true
 L["RCLootCouncil Session Setup"] = true
+L["RCLootCouncil - Synchronizer"] = true
 L["RCLootCouncil Version Checker"] = true
 L["RCLootCouncil Voting Frame"] = true
 L["Reannounce ..."] = true
 L["Reason"] = true
 L["reason_desc"] = "The award reason to add to the Loot History when auto awarding."
+L["Receiving data..."] = true
 L["Remove All"] = true
 L["Remove from consideration"] = true
 L["remove_all_desc"] = "Remove all council members"
@@ -313,21 +324,34 @@ L["Self Vote"] = true
 L["self_vote_desc"] = "Enables voters to vote for themselves."
 L["Send History"] = true
 L["send_history_desc"] = "Send data to everyone in the raid, regardless if you log it yourself. RCLootCouncil will only send data if you're the MasterLooter."
+L["Sending 'type' to 'player'..."] = "Sending %s to %s..."
 L["Sent whisper help to 'player'"] = "Sent whisper help to %s"
 L["session_error"] = "Something went wrong - please restart the session"
 L["Set the text for button i's response."] = "Set the text for button %d's response'"
 L["Set the text on button 'number'"] = "Set the text on button %i"
 L["Set the whisper keys for button i."] = "Set the whisper keys for button %d."
+L["Settings"] = true
 L["Silent Auto Pass"] = true
 L["silent_auto_pass_desc"] = "Check to hide autopass messages"
 L["Simple BBCode output."] = true
 L["Skins"] = true
 L["skins_description"] = "Select one of the default skins or create your own. Note this is purely aesthetic. Open the version checker to see the results right away ('/rc version')."
 L["Something went wrong :'("] = true
+L["Something went wrong during syncing, please try again."] = true
 L["Standard .csv output."] = true
 L["Start"] = true
 L["Status texts"] = true
 L["Successfully imported 'number' entries."] = "Successfully imported %d entries."
+L["Successfully received 'type' from 'player'"] = "Successfully received %s from %s."
+L["Sync"] = true
+L["sync_detailed_description"] = [[
+1. Both of you should have the sync frame open (/rc sync).
+2. Select the type of data you want to send.
+3. Select the player you want to receive the data.
+4. Hit 'Sync' - you'll now see a statusbar with the data being sent.
+
+This window needs to be open to initiate a sync,
+but closing it won't stop a sync in progress.]]
 L["Tank"] = true
 L["test"] = true
 L["Test"] = true
@@ -355,6 +379,7 @@ L["Time"] = true
 L["Timeout"] = true
 L["Time left (num seconds)"] = "Time left: %d"
 L["Tokens received"] = true
+L["To target"] = true
 L["Total awards"] = true
 L["Total items received:"] = true
 L["Totals"] = true
@@ -406,5 +431,6 @@ L["You cannot use the menu when the session has ended."] = true
 L["You cannot use this command without being the Master Looter"] = true
 L["You haven't selected an award reason to use for disenchanting!"] = true
 L["You haven't set a council! You can edit your council by typing '/rc council'"] = true
+L["You must select a target"] = true
 L["You're already running a session."] = true
 L["Your note:"] = true
