@@ -4,8 +4,15 @@
 * Added an option to automatically add a random 1-100 roll to all candidates.
 * A candidate's roll can now be added to award announcements by using "&n" in the announcement text.
 
+
 * **Award**
 * The winner of an item is now shown in the voting frame.
+
+
+* **Dev**
+ * **Breaking:**
+ * Added a new parameter to CustomChatCmd() to add a help string to the added command.
+* Restructured votingFrame rightclick menu so new entries can be added and defaults changed.
 
 ### v2.4.5
 ---

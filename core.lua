@@ -1588,15 +1588,17 @@ end
 -- @paramsig module, funcRef, ...
 -- @param module The object to call func on.
 -- @param funcRef The function reference to call on module. Passed with module as first arg, and up to two user args.
+-- @param helpString A string appended to the list of commands if the user types /rc help
 -- @param ... The command(s) the user can input.
 -- @usage
 -- -- For example in GroupGear:
 --	addon:CustomChatCmd(GroupGear, "Show", "gg", "groupgear", "gear")
 -- -- will result in GroupGear:Show() being called if the user types "/rc gg" (or "/rc groupgear" or "/rc gear")
-function RCLootCouncil:CustomChatCmd(module, funcRef, ...)
+function RCLootCouncil:CustomChatCmd(module, funcRef, helpString, ...)
 	for i = 1, select("#", ...) do
 		self.customChatCmd[select(i, ...)] = {module = module, func = funcRef}
 	end
+	L["chat_commands"] = L["chat_commands"] .."\n"..helpString
 end
 
 --#end Module support -----------------------------------------------------
