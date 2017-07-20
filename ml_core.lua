@@ -394,12 +394,13 @@ end
 
 function RCLootCouncilML:CanWeLootItem(item, quality)
 	local ret = false
-	if db.autoLoot and (IsEquippableItem(item) or db.autolootEverything) and quality >= GetLootThreshold() and not self:IsItemIgnored(item) then -- it's something we're allowed to loot
+	if db.autoLoot and (IsEquippableItem(item) or db.autolootEverything) and
+		(quality and quality >= GetLootThreshold())
+		and not self:IsItemIgnored(item) then -- it's something we're allowed to loot
 		-- Let's check if it's BoE
-		-- Don't bother checking if we know we want to loot it
-		ret = db.autolootBoE or not addon:IsItemBoE(item)
+		ret = db.autolootBoE or not addon:IsItemBoE(item) -- Don't bother checking if we know we want to loot it
 	end
-	addon:Debug("CanWeLootItem", item, ret)
+	addon:Debug("CanWeLootItem", item, quality, ret)
 	return ret
 end
 
