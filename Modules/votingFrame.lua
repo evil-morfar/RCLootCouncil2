@@ -628,7 +628,7 @@ function RCVotingFrame:GetFrame()
 	-- Award string
 	local awdstr = f.content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 	awdstr:SetPoint("CENTER", f.content, "TOP", 0, -53)
-	awdstr:SetText(L["Item has been awarded"])
+	awdstr:SetText(L["Item was awarded to"])
 	awdstr:SetTextColor(1, 1, 0, 1) -- Yellow
 	awdstr:Hide()
 	f.awardString = awdstr
