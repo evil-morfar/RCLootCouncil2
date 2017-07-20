@@ -394,7 +394,7 @@ end
 
 function RCLootCouncilML:CanWeLootItem(item, quality)
 	local ret = false
-	if db.autoLoot and (IsEquippableItem(item) or db.autolootEverything) and
+	if item and db.autoLoot and (IsEquippableItem(item) or db.autolootEverything) and
 		(quality and quality >= GetLootThreshold())
 		and not self:IsItemIgnored(item) then -- it's something we're allowed to loot
 		-- Let's check if it's BoE
