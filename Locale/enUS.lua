@@ -351,7 +351,9 @@ L["sync_detailed_description"] = [[
 4. Hit 'Sync' - you'll now see a statusbar with the data being sent.
 
 This window needs to be open to initiate a sync,
-but closing it won't stop a sync in progress.]]
+but closing it won't stop a sync in progress.
+
+Targets include online guild- and groupmembers, friends and your current friendly target.]]
 L["Tank"] = true
 L["test"] = true
 L["Test"] = true

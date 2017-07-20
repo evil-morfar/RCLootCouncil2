@@ -157,15 +157,9 @@ function sync:GetSyncTargetOptions()
       addNameToList(ret, addon:UnitName("target"), select(2, UnitClass("target")))
    end
    -- group
-   if addon.candidates and addon.candidates[addon.playerName] then
-      for name,v in pairs(addon.candidates) do
-         addNameToList(ret, name, v.class)
-      end
-   else
-      for i = 1, GetNumGroupMembers() do
-		   name, _, _, _, _, class, _, isOnline = GetRaidRosterInfo(i)
-         if isOnline then addNameToList(ret, addon:UnitName(name), class) end
-      end
+   for i = 1, GetNumGroupMembers() do
+	   name, _, _, _, _, class, _, isOnline = GetRaidRosterInfo(i)
+      if isOnline then addNameToList(ret, addon:UnitName(name), class) end
    end
    -- friends
    for i = 1, GetNumFriends() do
@@ -177,6 +171,12 @@ function sync:GetSyncTargetOptions()
       name, _, _, _, _, _, _, _, isOnline,_,class = GetGuildRosterInfo(i)
       if isOnline then addNameToList(ret, name, class) end
    end
+   -- Remove ourselves
+   if not addon.debug then ret[addon.playerName] = nil end
+   -- Check if it's empty
+   local isEmpty = true
+   for k in pairs(ret) do isEmpty = false; break end
+   ret[1] = isEmpty and "--No receivers available--" or nil
    table.sort(ret, function(a,b) return a > b end)
    return ret
 end
