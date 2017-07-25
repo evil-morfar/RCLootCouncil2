@@ -260,6 +260,7 @@ L["Notes"] = true
 L["notes_desc"] = "Enables candidates to send a note to the council along with their roll."
 L["Note: Huge exports will cause lag."] = true
 L["Number of buttons"] = true
+L["Number of raids received loot from:"] = true
 L["Number of reasons"] = true
 L["number_of_buttons_desc"] = "Slide to change the number of buttons."
 L["number_of_reasons_desc"] = "Slide to change the number of reasons."

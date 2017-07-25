@@ -9,9 +9,15 @@
 * The winner of an item is now shown in the voting frame.
 
 
+* **Number of raids**
+* Added number of raids registered to all more info displays.
+* Note: These are somewhat estimates, as RCLootCouncil only has a loot tracker, and not a fully fletched raid tracker.
+
+
 * **Dev**
  * **Breaking:**
  * Added a new parameter to CustomChatCmd() to add a help string to the added command.
+ * Changed returns from GetLootDBStatistics().
 * Restructured votingFrame rightclick menu so new entries can be added and defaults changed.
 
 ### v2.4.5

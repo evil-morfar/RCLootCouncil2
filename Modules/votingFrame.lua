@@ -445,10 +445,11 @@ function RCVotingFrame:UpdateMoreInfo(row, data)
 			if v[3] then r,g,b = unpack(v[3],1,3) end
 			tip:AddDoubleLine(v[1], v[2], r or 1,g or 1,b or 1, r or 1,g or 1,b or 1)
 		end
-		tip:AddLine(" ")
 		if moreInfoData[name].totals.tokens[addon.currentInstanceName] then
+			tip:AddLine(" ")
 			tip:AddDoubleLine(L["Tier tokens received from here:"], moreInfoData[name].totals.tokens[addon.currentInstanceName].num, 1,1,1, 1,1,1)
 		end
+		tip:AddDoubleLine(L["Number of raids received loot from:"], moreInfoData[name].totals.raids.num, 1,1,1, 1,1,1)
 		tip:AddDoubleLine(L["Total items received:"], moreInfoData[name].totals.total, 0,1,1, 0,1,1)
 	else
 		tip:AddLine(L["No entries in the Loot History"])

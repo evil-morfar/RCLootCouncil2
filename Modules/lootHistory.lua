@@ -7,7 +7,7 @@ local addon = LibStub("AceAddon-3.0"):GetAddon("RCLootCouncil")
 local LootHistory = addon:NewModule("RCLootHistory")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 local AG = LibStub("AceGUI-3.0")
-local lootDB, scrollCols, data, db, numLootWon
+local lootDB, scrollCols, data, db
 --[[ data structure:
 data[date][playerName] = {
 	["class"] = CLASS,
@@ -96,15 +96,12 @@ end
 function LootHistory:BuildData()
 	addon:Debug("LootHistory:BuildData()")
 	data = {}
-	numLootWon = {} -- playerName = #
 	local date
 	-- We want to rebuild lootDB to the "data" format:
 	--local i = 1
 	for name, v in pairs(lootDB) do
-		numLootWon[name] = 0
 		-- Now we actually add the data
 		for i,v in ipairs(v) do
-			numLootWon[name] = numLootWon[name] + 1
 			date = v.date
 			if not date then -- Unknown date
 				date = L["Unknown date"]
@@ -647,8 +644,8 @@ function LootHistory:UpdateMoreInfo(rowFrame, cellFrame, dat, cols, row, realrow
 		if v[3] then r,g,b = unpack(v[3],1,3) end
 		tip:AddDoubleLine(v[1], v[2], r or 1, g or 1, b or 1, 1,1,1)
 	end
-	tip:AddDoubleLine(L["Total items won:"], numLootWon[row.name], 1,1,1, 0,1,0)
-
+	tip:AddDoubleLine(L["Number of raids received loot from:"], moreInfoData[row.name].totals.raids.num, 1,1,1, 1,1,1)
+	tip:AddDoubleLine(L["Total items won:"], moreInfoData[row.name].totals.total, 1,1,1, 0,1,0)
 
 
 	-- Debug stuff
@@ -667,13 +664,7 @@ function LootHistory:UpdateMoreInfo(rowFrame, cellFrame, dat, cols, row, realrow
 		tip:AddDoubleLine("tierToken", data.tierToken, 1,1,1, 1,1,1)
 		tip:AddDoubleLine("tokenRoll", tostring(data.tokenRoll), 1,1,1, 1,1,1)
 		tip:AddLine(" ")
-		tip:AddLine("Total tokens won:")
- 		for name, v in pairs(moreInfoData[row.name].totals.tokens) do
- 			tip:AddDoubleLine(name, v.num, 1,1,1, 1,1,1)
- 		end
-		tip:AddLine(" ")
 		tip:AddDoubleLine("Total LootDB entries:", #self.frame.rows, 1,1,1, 0,0,1)
-
 	end
 	tip:SetScale(db.UI.history.scale)
 	if moreInfo then

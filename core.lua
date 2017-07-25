@@ -1346,6 +1346,11 @@ end
 				[3] = {color},
 				[4] = responseID, -- see index in self.responses. Award reasons gets 100 addded. TierResponses gets 200 added.
 			}
+		},
+		raids = {
+			-- Each index is a unique raid ID made by combining the date and instance
+			[xxx] = number of loot won in this raid,
+			num = the number of raids
 		}
 	}
 }
@@ -1359,7 +1364,7 @@ function RCLootCouncil:GetLootDBStatistics()
 		lootDBStatistics = {}
 		local entry, id
 		for name, data in pairs(self:GetHistoryDB()) do
-			local count, responseText, color, numTokens = {},{},{},{}
+			local count, responseText, color, numTokens, raids = {},{},{},{},{}
 			local lastestAwardFound = 0
 			lootDBStatistics[name] = {}
 			for i = #data, 1, -1 do -- Start from the end
@@ -1384,6 +1389,8 @@ function RCLootCouncil:GetLootDBStatistics()
 					tinsert(lootDBStatistics[name], {entry.lootWon, --[[entry.response .. ", "..]] format(L["'n days' ago"], self:ConvertDateToString(self:GetNumberOfDaysFromNow(entry.date))), color[id], i})
 					lastestAwardFound = lastestAwardFound + 1
 				end
+				-- Raids:
+				raids[entry.date..entry.instance] = raids[entry.date..entry.instance] and raids[entry.date..entry.instance] + 1 or 0
 			end
 			-- Totals:
 			local totalNum = 0
@@ -1395,6 +1402,10 @@ function RCLootCouncil:GetLootDBStatistics()
 				totalNum = totalNum + num
 			end
 			lootDBStatistics[name].totals.total = totalNum
+			lootDBStatistics[name].totals.raids = raids
+			totalNum = 0
+			for _ in pairs(raids) do totalNum = totalNum + 1 end
+			lootDBStatistics[name].totals.raids.num = totalNum
 		end
 		return lootDBStatistics
 	end)
