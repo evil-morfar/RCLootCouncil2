@@ -17,7 +17,6 @@ local lootTable = {} -- Table containing all data, lib-st cells pulls data from 
 local sessionButtons = {}
 local moreInfo = false -- Show more info frame?
 local active = false -- Are we currently in session?
-local candidates = {} -- Candidates for the loot, initial data from the ML
 local councilInGroup = {}
 local menuFrame -- Right click menu frame
 local filterMenu -- Filter drop down menu
@@ -102,7 +101,7 @@ function RCVotingFrame:EndSession(hide)
 end
 
 function RCVotingFrame:CandidateCheck()
-	if not candidates[addon.playerName] and addon.masterLooter then -- If our own name isn't there, we assume it's not received
+	if not addon.candidates[addon.playerName] and addon.masterLooter then -- If our own name isn't there, we assume it's not received
 		addon:DebugLog("CandidateCheck", "failed")
 		addon:SendCommand(addon.masterLooter, "candidates_request")
 		self:ScheduleTimer("CandidateCheck", 20) -- check again in 20
@@ -164,9 +163,6 @@ function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
 				else
 					self:SwitchSession(session) -- Use switch session to update awardstring
 				end
-
-			elseif command == "candidates" and addon:UnitIsUnit(sender, addon.masterLooter) then
-				candidates = unpack(data)
 
 			elseif command == "offline_timer" and addon:UnitIsUnit(sender, addon.masterLooter) then
 				for i = 1, #lootTable do
@@ -257,7 +253,7 @@ function RCVotingFrame:Setup(table)
 	for session, t in ipairs(lootTable) do -- and build the rest (candidates)
 		lootTable[session].haveVoted = false -- Have we voted for ANY candidate in this session?
 		t.candidates = {}
-		for name, v in pairs(candidates) do
+		for name, v in pairs(addon.candidates) do
 			t.candidates[name] = {
 				class = v.class,
 				rank = v.rank,
@@ -326,11 +322,11 @@ function RCVotingFrame:Update()
 		self.frame.awardString:Show()
 		local name = lootTable[session].awarded
 		self.frame.awardStringPlayer:SetText(addon.Ambiguate(name))
-		local c = addon:GetClassColor(candidates[name].class)
+		local c = addon:GetClassColor(lootTable[session].candidates[name].class)
 		self.frame.awardStringPlayer:SetTextColor(c.r,c.g,c.b,c.a)
 		self.frame.awardStringPlayer:Show()
 		-- Hack-reuse the SetCellClassIcon function
-		addon.SetCellClassIcon(nil,self.frame.awardStringPlayer.classIcon,nil,nil,nil,nil,nil,nil,nil, candidates[name].class)
+		addon.SetCellClassIcon(nil,self.frame.awardStringPlayer.classIcon,nil,nil,nil,nil,nil,nil,nil, lootTable[session].candidates[name].class)
 		self.frame.awardStringPlayer.classIcon:Show()
 	else
 		self.frame.awardString:Hide()
@@ -401,7 +397,7 @@ function RCVotingFrame:BuildST()
 	local i = 1
 	-- We need to build the columns from the data in self.scrollCols
 	-- We only really need the colName and value to get added
-	for name in pairs(candidates) do
+	for name in pairs(addon.candidates) do
 		local data = {}
 		for num, col in ipairs(self.scrollCols) do
 			data[num] = {value = "", colName = col.colName}
@@ -1305,7 +1301,7 @@ do
 			if not db.disenchant then
 				return addon:Print(L["You haven't selected an award reason to use for disenchanting!"])
 			end
-			for name, v in pairs(candidates) do
+			for name, v in pairs(addon.candidates) do
 				if v.enchanter then
 					local c = addon:GetClassColor(v.class)
 					info.text = "|cff"..addon:RGBToHex(c.r, c.g, c.b)..addon.Ambiguate(name).."|r "..tostring(v.enchant_lvl)
