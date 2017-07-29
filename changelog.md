@@ -13,6 +13,8 @@
 * Added number of raids registered to all more info displays.
 * Note: These are somewhat estimates, as RCLootCouncil only has a loot tracker, and not a fully fletched raid tracker.
 
+* Comms optimizations.
+
 
 * **Dev**
  * **Breaking:**
