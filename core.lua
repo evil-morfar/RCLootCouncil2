@@ -667,7 +667,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 					if not self.mldb or (self.mldb and not self.mldb.numButtons) then -- Really shouldn't happen, but I'm tired of people somehow not receiving it...
 						self:Debug("Received loot table without having mldb :(", sender)
 						self:SendCommand(self.masterLooter, "MLdb_request")
-						return self:ScheduleTimer("OnCommReceived", 1, prefix, serializedMsg, distri, sender)
+						return self:ScheduleTimer("OnCommReceived", 5, prefix, serializedMsg, distri, sender)
 					end
 
 					self:SendCommand("group", "lootAck", self.playerName) -- send ack
@@ -1311,8 +1311,8 @@ function RCLootCouncil:GetML()
 			name = self:UnitName("party"..mlPartyID)
 		end
 		self:Debug("MasterLooter = ", name)
-		-- Check to see if we have recieved mldb within 5 secs, otherwise request it
-		self:ScheduleTimer("Timer", 5, "MLdb_check")
+		-- Check to see if we have recieved mldb within 15 secs, otherwise request it
+		self:ScheduleTimer("Timer", 15, "MLdb_check")
 		return IsMasterLooter(), name
 	end
 	return false, nil;
