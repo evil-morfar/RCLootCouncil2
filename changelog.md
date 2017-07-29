@@ -20,12 +20,14 @@
  * Changed returns from GetLootDBStatistics().
 * Restructured votingFrame rightclick menu so new entries can be added and defaults changed.
 
+
 ### v2.4.5
 ---
 * Optimized boss name recording.
 
 ###### Bugfixes
 + *Fixed a rare occurence of wrong item awarding (#271).*
++ *Fixed a failure when evaluating if items can be looted.*
 
 ### v2.4.4
 ---
