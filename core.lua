@@ -7,6 +7,10 @@ TODOs/Notes
 	Things marked with "todo"
 		- Item subtype in history exports
 		- IDEA Have player's current gear sent with lootAck
+		- Tier token awards should be included in more info
+		- Emulate award stuff - i.e. log awards without awarding
+		- verTestCandidates should be reset sometimes (on login?)
+		- Check if players are eligible for loot, otherwise mark them as not
 --------------------------------
 CHANGELOG
 	-- SEE CHANGELOG.TXT
