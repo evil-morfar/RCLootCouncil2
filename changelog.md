@@ -1,3 +1,8 @@
+### v2.4.6
+---
+* Optimized ML comm timers.
+
+
 ### v2.4.5
 ---
 * Optimized boss name recording.
