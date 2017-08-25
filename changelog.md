@@ -1,4 +1,4 @@
-### v2.5.0
+### v2.5.0-Beta1
 ---
 * **Rolls**
 * Added an option to automatically add a random 1-100 roll to all candidates.
