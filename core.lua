@@ -9,7 +9,6 @@ TODOs/Notes
 		- IDEA Have player's current gear sent with lootAck
 		- Tier token awards should be included in more info
 		- Emulate award stuff - i.e. log awards without awarding
-		- verTestCandidates should be reset sometimes (on login?)
 		- Check if players are eligible for loot, otherwise mark them as not
 --------------------------------
 CHANGELOG
@@ -324,6 +323,8 @@ function RCLootCouncil:OnInitialize()
 	-- add it to blizz options
 	self.optionsFrame = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("RCLootCouncil", "RCLootCouncil", nil, "settings")
 	self.optionsFrame.ml = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("RCLootCouncil", "Master Looter", "RCLootCouncil", "mlSettings")
+	-- reset verTestCandidates
+	self.db.global.verTestCandidates = {}
 	-- Add logged in message in the log
 	self:DebugLog("Logged In")
 end
