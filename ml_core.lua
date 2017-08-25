@@ -136,6 +136,11 @@ end
 
 function RCLootCouncilML:StartSession()
 	addon:Debug("ML:StartSession()")
+	-- Make sure we haven't started the session too fast
+	if not addon.candidates[addon.playerName] or #addon.council == 0 then
+		addon:Print(L["Please wait a few seconds until all data has been synchronized."])
+		return addon:Debug("Data wasn't ready", addon.candidates[addon.playerName], #addon.council)
+	end
 	self.running = true
 
 	addon:SendCommand("group", "lootTable", self.lootTable)

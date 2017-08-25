@@ -284,6 +284,7 @@ L["'player' declined your sync request"] = "%s declined your sync request"
 L["'player' has asked you to reroll"] = "%s has asked you to reroll"
 L["'player' has ended the session"] = "%s has ended the session"
 L["'player' hasn't opened the sync window"] = "%s hasn't opened the sync window (/rc sync)"
+L["Please wait a few seconds until all data has been synchronized."] = true
 L["Please wait before trying to sync again."] = true
 L["Raid Warning"] = true
 L["Raid"] = true
