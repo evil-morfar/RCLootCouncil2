@@ -27,6 +27,11 @@
 + *It's no longer possible to start a session before crucial data has been sent out.*
 
 
+### v2.4.6
+---
+* Optimized ML comm timers.
+
+
 ### v2.4.5
 ---
 * Optimized boss name recording.
