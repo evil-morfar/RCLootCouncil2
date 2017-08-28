@@ -25,7 +25,9 @@
  * **Breaking:**
  * Added a new parameter to CustomChatCmd() to add a help string to the added command.
  * Changed returns from GetLootDBStatistics().
+ * RCLootCouncilML:AnnounceAward() has been recreated so keywords can be added and/or changed.
 * Restructured votingFrame rightclick menu so new entries can be added and defaults changed.
+* scrollCols in LootHistory module is now changeable.
 
 
 ###### Bugfixes

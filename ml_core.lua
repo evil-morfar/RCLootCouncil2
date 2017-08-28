@@ -538,8 +538,8 @@ function RCLootCouncilML:Award(session, winner, response, reason, isToken)
 			addon:SendCommand("group", "awarded", session, winner)
 			self.lootTable[session].awarded = winner -- No need to let Comms handle this
 
-			self:AnnounceAward(addon.Ambiguate(winner), self.lootTable[session].link,
-			 reason and reason.text or addon:GetResponseText(response, isToken), addon:GetActiveModule("votingframe"):GetLootTable()[session].candidates[winner].roll)
+			self:AnnounceAward(winner, self.lootTable[session].link,
+			 reason and reason.text or addon:GetResponseText(response, isToken), addon:GetActiveModule("votingframe"):GetLootTable()[session].candidates[winner].roll, session)
 			if self:HasAllItemsBeenAwarded() then self:EndSession() end
 
 		else -- If we reach here it means we couldn't find a valid MasterLootCandidate, propably due to the winner is unable to receive the loot
@@ -573,14 +573,31 @@ function RCLootCouncilML:AnnounceItems()
 	end
 end
 
-function RCLootCouncilML:AnnounceAward(name, link, text, roll)
+--- Substitution strings for the awardString
+-- Each index corrosponds to a keyword in the award string.
+-- If it exists, the function will be called with all the parameters from :AnnounceAward
+RCLootCouncilML.awardStrings = {
+	["&p"] = function(name) return addon.Ambiguate(name) end,
+	["&i"] = function(...) return select(2, ...) end,
+	["&r"] = function(...) return select(3, ...) end,
+	["&n"] = function(...) return select(4, ...) or "" end,
+}
+
+-- See above for text substitutions
+-- @paramsig 		name, link, text [,roll, session]
+-- @param name 	The unambiguated name of the winner
+-- @param link 	The itemlink of the awarded item
+-- @param text 	The text matching the candidate's response
+-- @param roll 	The candidate's roll
+-- @param session The session of the awarded item
+function RCLootCouncilML:AnnounceAward(name, link, text, roll, session)
 	if db.announceAward then
 		for k,v in pairs(db.awardText) do
+			local message = v.text
 			if v.channel ~= "NONE" then
-				local message = gsub(v.text, "&p", name)
-				message = gsub(message, "&i", tostring(link))
-				message = gsub(message, "&r", tostring(text))
-				message = gsub(message, "&n", tostring(roll))
+				for text, func in pairs(self.awardStrings) do
+					message = gsub(message, text, tostring(func(name, link, text, roll, session)))
+				end
 				SendChatMessage(message, addon:GetAnnounceChannel(v.channel))
 			end
 		end
@@ -625,7 +642,7 @@ function RCLootCouncilML:AutoAward(lootIndex, item, quality, name, reason, boss)
 	end
 	if awarded then
 		addon:Print(format(L["Auto awarded 'item'"], item))
-		self:AnnounceAward(addon.Ambiguate(name), item, db.awardReasons[reason].text)
+		self:AnnounceAward(name, item, db.awardReasons[reason].text)
 		self:TrackAndLogLoot(name, item, reason, boss, 0, nil, nil, db.awardReasons[reason])
 	else
 		addon:Print(L["Cannot autoaward:"])
