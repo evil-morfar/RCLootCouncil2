@@ -261,7 +261,7 @@ function sync:Spawn()
 	f.statusBar:SetMinMaxValues(0, 100)
    f.statusBar:Hide()
 
-   f.statusBar.text = f.content:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+   f.statusBar.text = f.statusBar:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
 	f.statusBar.text:SetPoint("CENTER", f.statusBar)
 	f.statusBar.text:SetTextColor(1,1,1)
 	f.statusBar.text:SetText("")

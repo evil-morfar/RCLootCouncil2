@@ -805,7 +805,7 @@ function LootHistory.RightClickMenu(menu, level)
 	local data = menu.datatable
 
 	local value = LIB_UIDROPDOWNMENU_MENU_VALUE
-	if not LootHistory.rightClickEntries then return end
+	if not LootHistory.rightClickEntries[level] then return end
 	for i, entry in ipairs(LootHistory.rightClickEntries[level]) do
 		info = Lib_UIDropDownMenu_CreateInfo()
 		if not entry.special then
