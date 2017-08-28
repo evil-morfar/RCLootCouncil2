@@ -476,7 +476,7 @@ end
 --@param isToken	True if it's awarded as a tier token. Only used for announceAward().
 --@returns True if awarded successfully
 function RCLootCouncilML:Award(session, winner, response, reason, isToken)
-	addon:DebugLog("ML:Award", session, winner, response, reason)
+	addon:DebugLog("ML:Award", session, winner, response, reason, isToken)
 	if addon.testMode then
 		if winner then
 			addon:SendCommand("group", "awarded", session, winner)
@@ -584,19 +584,19 @@ RCLootCouncilML.awardStrings = {
 }
 
 -- See above for text substitutions
--- @paramsig 		name, link, text [,roll, session]
--- @param name 	The unambiguated name of the winner
--- @param link 	The itemlink of the awarded item
--- @param text 	The text matching the candidate's response
--- @param roll 	The candidate's roll
--- @param session The session of the awarded item
-function RCLootCouncilML:AnnounceAward(name, link, text, roll, session)
+-- @paramsig 			name, link, text [,roll, session]
+-- @param name 		The unambiguated name of the winner
+-- @param link 		The itemlink of the awarded item
+-- @param response	The text matching the candidate's response
+-- @param roll 		The candidate's roll
+-- @param session		The session of the awarded item
+function RCLootCouncilML:AnnounceAward(name, link, response, roll, session)
 	if db.announceAward then
 		for k,v in pairs(db.awardText) do
 			local message = v.text
 			if v.channel ~= "NONE" then
 				for text, func in pairs(self.awardStrings) do
-					message = gsub(message, text, tostring(func(name, link, text, roll, session)))
+					message = gsub(message, text, tostring(func(name, link, response, roll, session)))
 				end
 				SendChatMessage(message, addon:GetAnnounceChannel(v.channel))
 			end

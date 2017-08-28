@@ -47,8 +47,6 @@ function LootHistory:OnInitialize()
 	rightClickMenu = CreateFrame("Frame", "RCLootCouncil_LootHistory_RightclickMenu", UIParent, "Lib_UIDropDownMenuTemplate")
 	Lib_UIDropDownMenu_Initialize(filterMenu, self.FilterMenu, "MENU")
 	Lib_UIDropDownMenu_Initialize(rightClickMenu, self.RightClickMenu, "MENU")
-	--MoreInfo
-	self.moreInfo = CreateFrame( "GameTooltip", "RCLootHistoryMoreInfo", nil, "GameTooltipTemplate" )
 end
 
 local tierLookUpTable = { -- instanceMapID to Tier text
@@ -604,6 +602,8 @@ function LootHistory:GetFrame()
 
 	-- Set a proper width
 	f:SetWidth(st.frame:GetWidth() + 20)
+	--MoreInfo
+	self.moreInfo = CreateFrame( "GameTooltip", "RCLootHistoryMoreInfo", nil, "GameTooltipTemplate" )
 	return f;
 end
 
@@ -805,6 +805,7 @@ function LootHistory.RightClickMenu(menu, level)
 	local data = menu.datatable
 
 	local value = LIB_UIDROPDOWNMENU_MENU_VALUE
+	if not LootHistory.rightClickEntries then return end
 	for i, entry in ipairs(LootHistory.rightClickEntries[level]) do
 		info = Lib_UIDropDownMenu_CreateInfo()
 		if not entry.special then
