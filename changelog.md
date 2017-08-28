@@ -1,5 +1,10 @@
 ### v2.5.0-Beta1
 ---
+* **Synchronize**
+* It's now possible to synchronize the settings and loot history between players.
+* The sync frame is accessible through the options menu, or the newly added "/rc sync" command.
+
+
 * **Rolls**
 * Added an option to automatically add a random 1-100 roll to all candidates.
 * A candidate's roll can now be added to award announcements by using "&n" in the announcement text.
