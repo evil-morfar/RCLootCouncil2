@@ -743,6 +743,7 @@ end
 -- See the example in votingFrame.lua for a detailed explaination.
 -- Text and Func fields gets the row data as a parameter if defined as a function.
 -- See LootHistory:BuildData() for the contents of a row (self.frame.rows[row])
+do
 LootHistory.rightClickEntries = {
 	{ -- Level 1
 		{ -- 1 Title
@@ -760,6 +761,8 @@ LootHistory.rightClickEntries = {
 		{ -- 3 Response
 			text = L["Response"],
 			value = "EDIT_RESPONSE",
+			notCheckable = true,
+			hasArrow = true,
 		},
 	},
 	{ -- Level 2
@@ -793,6 +796,7 @@ LootHistory.rightClickEntries = {
 		}
 	},
 }
+
 
 -- NOTE Changing e.g. a tier token item's response to a non-tier token response is possible display wise,
 -- but it will retain it's tier token tag, and vice versa. Can't decide whether it's a feature or bug.
@@ -939,7 +943,7 @@ function LootHistory.RightClickMenu(menu, level)
 		end
 	end
 end
-
+end
 
 ---------------------------------------------------------------
 -- Exports.
