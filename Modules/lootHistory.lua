@@ -738,33 +738,97 @@ function LootHistory.FilterMenu(menu, level)
 	end
 end
 
+
+--- Entries placed in the rightclick menu.
+-- See the example in votingFrame.lua for a detailed explaination.
+-- Text and Func fields gets the row data as a parameter if defined as a function.
+-- See LootHistory:BuildData() for the contents of a row (self.frame.rows[row])
+LootHistory.rightClickEntries = {
+	{ -- Level 1
+		{ -- 1 Title
+			text = L["Edit Entry"],
+			isTitle = true,
+			notCheckable = true,
+			disabled = true,
+		},
+		{ -- 2 Name
+			text = L["Name"],
+			value = "EDIT_NAME",
+			notCheckable = true,
+			hasArrow = true,
+		},
+		{ -- 3 Response
+			text = L["Response"],
+			value = "EDIT_RESPONSE",
+		},
+	},
+	{ -- Level 2
+		{ -- 1 EDIT_NAME
+			special = "EDIT_NAME",
+		},
+		{ -- 2 EDIT_RESPONSE
+			special = "EDIT_RESPONSE",
+		},
+		{ -- 3 Tier tokens ...
+			text = L["Tier Tokens ..."],
+			onValue = "EDIT_RESPONSE",
+			value = "TIER_TOKENS",
+			hasArrow = true,
+			notCheckable = true,
+		},
+		{ -- 4 Award Reasons ...
+			text = L["Award Reasons"] .. " ...",
+			onValue = "EDIT_RESPONSE",
+			value = "AWARD_REASON",
+			hasArrow = true,
+			notCheckable = true,
+		},
+	},
+	{ -- Level 3
+		{ -- 1 TIER_TOKENS
+			special = "TIER_TOKENS",
+		},
+		{ -- 2 AWARD_REASON
+			special = "AWARD_REASON",
+		}
+	},
+}
+
 -- NOTE Changing e.g. a tier token item's response to a non-tier token response is possible display wise,
 -- but it will retain it's tier token tag, and vice versa. Can't decide whether it's a feature or bug.
 function LootHistory.RightClickMenu(menu, level)
 	local info = Lib_UIDropDownMenu_CreateInfo()
 	local data = menu.datatable
 
-	if level == 1 then -- Redundant
-		info.text = "Edit Entry"
-		info.isTitle = true
-		info.notCheckable = true
-		info.disabled = true
-		Lib_UIDropDownMenu_AddButton(info, level)
-
+	local value = LIB_UIDROPDOWNMENU_MENU_VALUE
+	for i, entry in ipairs(LootHistory.rightClickEntries[level]) do
 		info = Lib_UIDropDownMenu_CreateInfo()
-		info.text = L["Name"]
-		info.value = "EDIT_NAME"
-		info.notCheckable = true
-		info.hasArrow = true
-		Lib_UIDropDownMenu_AddButton(info, level)
+		if not entry.special then
+			if not entry.onValue then
+				for name, val in pairs(entry) do
+					if name == "text" and type(val) == "function" then
+						info[name] = val(data) -- This needs to be evaluated
+					elseif name == "func" then
+						info[name] = function() return val(data) end -- This needs to be set as a func, but fed with our params
+					else
+						info[name] = val
+					end
+				end
+				Lib_UIDropDownMenu_AddButton(info, level)
 
-		info.text = L["Response"]
-		info.value = "EDIT_RESPONSE"
-		Lib_UIDropDownMenu_AddButton(info, level)
-
-	elseif level == 2 then
-		local value = LIB_UIDROPDOWNMENU_MENU_VALUE
-		if value == "EDIT_NAME" then
+			elseif entry.onValue == value then
+				for name, val in pairs(entry) do
+					if name == "text" and type(val) == "function" then
+						info.text = val(data)
+					elseif name == "func" then
+						info[name] = function() return val(data) end
+					elseif name ~= "onValue" then
+						info[name] = val
+					end
+				end
+				Lib_UIDropDownMenu_AddButton(info, level)
+			end
+		elseif value == "EDIT_NAME" and entry.special == value then
 			for _,v in pairs(LootHistory.frame.name.data) do
 				info.text = v[2].value
 				local c = addon:GetClassColor(v[1].args[1])
@@ -787,8 +851,7 @@ function LootHistory.RightClickMenu(menu, level)
 				end
 				Lib_UIDropDownMenu_AddButton(info, level)
 			end
-
-		elseif value == "EDIT_RESPONSE" then
+		elseif value == "EDIT_RESPONSE" and entry.special == value then
 			local v;
 			for i = 1, db.numButtons do
 				v = db.responses[i]
@@ -832,24 +895,7 @@ function LootHistory.RightClickMenu(menu, level)
 				end
 			end
 
-			info = Lib_UIDropDownMenu_CreateInfo()
-			-- Add the tier menu
-			info.text = "Tier Tokens ..."
-			info.value = "TIER_TOKENS"
-			info.hasArrow = true
-			info.notCheckable = true
-			Lib_UIDropDownMenu_AddButton(info, level)
-
-			-- Add the award reasons
-			info.text = "Award Reason ..."
-			info.value = "AWARD_REASON"
-			info.hasArrow = true
-			info.notCheckable = true
-			Lib_UIDropDownMenu_AddButton(info, level)
-		end
-	elseif level == 3 then
-		local value = LIB_UIDROPDOWNMENU_MENU_VALUE
-		if value == "TIER_TOKENS" then
+		elseif value == "TIER_TOKENS" and entry.special == value then
 			for k,v in ipairs(db.responses.tier) do
 				if k > db.tierNumButtons then break end
 				info.text = v.text
@@ -869,7 +915,8 @@ function LootHistory.RightClickMenu(menu, level)
 				end
 				Lib_UIDropDownMenu_AddButton(info, level)
 			end
-		elseif value == "AWARD_REASON" then
+
+		elseif value == "AWARD_REASON" and entry.special == value then
 			for k,v in ipairs(db.awardReasons) do
 				if k > db.numAwardReasons then break end
 				info.text = v.text
