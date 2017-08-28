@@ -7,9 +7,9 @@ TODOs/Notes
 	Things marked with "todo"
 		- Item subtype in history exports
 		- IDEA Have player's current gear sent with lootAck
-		- Tier token awards should be included in more info
 		- Emulate award stuff - i.e. log awards without awarding
 		- Check if players are eligible for loot, otherwise mark them as not
+		- Remember to add mapID for Antorus.
 --------------------------------
 CHANGELOG
 	-- SEE CHANGELOG.TXT

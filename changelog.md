@@ -19,6 +19,7 @@
 * Note: These are somewhat estimates, as RCLootCouncil only has a loot tracker, and not a fully fletched raid tracker.
 
 * Comms optimizations.
+* Prepared to handle Tier 21.
 
 
 * **Dev**
