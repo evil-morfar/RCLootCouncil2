@@ -176,7 +176,7 @@ function sync:GetSyncTargetOptions()
    -- Check if it's empty
    local isEmpty = true
    for k in pairs(ret) do isEmpty = false; break end
-   ret[1] = isEmpty and "--No receivers available--" or nil
+   ret[1] = isEmpty and "--"..L["No recipients available"].."--" or nil
    table.sort(ret, function(a,b) return a > b end)
    return ret
 end
