@@ -26,7 +26,7 @@ local MAJOR = "LibDialog-1.0"
 
 _G.assert(LibStub, MAJOR .. " requires LibStub")
 
-local MINOR = 7 -- Should be manually increased
+local MINOR = 8 -- Should be manually increased
 local lib, oldminor = LibStub:NewLibrary(MAJOR, MINOR)
 
 if not lib then
@@ -237,7 +237,7 @@ local function _Dialog_OnShow(dialog)
         return
     end
 
-    _G.PlaySound("igMainMenuOpen")
+    _G.PlaySound(850) -- "igMainMenuOpen"
 
     if delegate.on_show then
         delegate.on_show(dialog, dialog.data)
@@ -247,7 +247,7 @@ end
 local function _Dialog_OnHide(dialog)
     local delegate = dialog.delegate
 
-    _G.PlaySound("igMainMenuClose")
+    _G.PlaySound(851) -- "igMainMenuClose"
 
     -- Required so lib:ActiveDialog() will return false if called from code which is called from the delegate's on_hide
     _RecycleWidget(dialog, active_dialogs, dialog_heap)
