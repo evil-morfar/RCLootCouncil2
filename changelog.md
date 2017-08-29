@@ -1,4 +1,4 @@
-### v2.5.0-Beta2
+### v2.5.0-Beta3
 ---
 * **Synchronize**
 * It's now possible to synchronize the settings and loot history between players.
@@ -19,6 +19,7 @@
 * Note: These are somewhat estimates, as RCLootCouncil only has a loot tracker, and not a fully fletched raid tracker.
 
 
+* Updated for 7.3.
 * Comms optimizations.
 * Prepared to handle Tier 21.
 * Added some missing text to the localization table.
