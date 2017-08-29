@@ -18,12 +18,14 @@
 * Added number of raids registered to all more info displays.
 * Note: These are somewhat estimates, as RCLootCouncil only has a loot tracker, and not a fully fletched raid tracker.
 
+
 * Comms optimizations.
 * Prepared to handle Tier 21.
+* Added some missing text to the localization table.
 
 
 * **Dev**
- * **Breaking:**
+ * **Breaking**
  * Added a new parameter to CustomChatCmd() to add a help string to the added command.
  * Changed returns from GetLootDBStatistics().
  * RCLootCouncilML:AnnounceAward() has been recreated so keywords can be added and/or changed.
