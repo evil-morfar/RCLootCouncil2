@@ -257,6 +257,7 @@ function RCLootCouncil:OnInitialize()
 				141303,141304,141305, 					-- Essence of Clarity (Emerald Nightmare quest item)
 				143656,143657,143658, 					-- Echo of Time (Nighthold quest item)
 				132204,151248,151249, 151250,			-- Sticky Volatile Essence, Fragment of the Guardian's Seal (Tomb of Sargeras)
+				152902,152906,152907,					-- Rune of Passage (Antorus shortcut item)
 			},
 		},
 	} -- defaults end

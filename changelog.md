@@ -22,6 +22,7 @@
 * Comms optimizations.
 * Prepared to handle Tier 21.
 * Added some missing text to the localization table.
+* Added Rune of Passage to the ignore list.
 
 
 * **Dev**
