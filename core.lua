@@ -89,6 +89,7 @@ function RCLootCouncil:OnInitialize()
 			--[[3]]		  { color = {1,0.5,1,1},			sort = 3,		text = L["Tier Piece that doesn't complete a set"],},
 			--[[4]]		  { color = {0.5,1,1,1},			sort = 4,		text = L["Upgrade to existing tier/random upgrade"],},
 		},
+		relic = {}, -- Created further down
 	}
 	self.roleTable = {
 		TANK =		L["Tank"],
@@ -238,6 +239,9 @@ function RCLootCouncil:OnInitialize()
 				{	text = L["Other piece"],			whisperKey = "3, other, tier, piece"}, -- 3
 				{	text = L["Upgrade"],					whisperKey = "4, upgrade, up"},			-- 4
 			},
+			relicButtonsEnabled = false,
+			relicNumButtons = 2,
+			relicButtons = {}, -- Created below
 			numMoreInfoButtons = 1,
 			maxAwardReasons = 10,
 			numAwardReasons = 3,
@@ -262,31 +266,38 @@ function RCLootCouncil:OnInitialize()
 	} -- defaults end
 
 	-- create the other buttons/responses
-	for i = #self.defaults.profile.buttons+1, self.defaults.profile.maxButtons do
-		tinsert(self.defaults.profile.buttons, {
-			text = L["Button"].." "..i,
-			whisperKey = ""..i,
-		})
+	for i = 1, self.defaults.profile.maxButtons do
+		if i > self.defaults.profile.numButtons then
+			tinsert(self.defaults.profile.buttons, {
+				text = L["Button"].." "..i,
+				whisperKey = ""..i,
+			})
+			tinsert(self.defaults.profile.responses, {
+				color = {0.7, 0.7,0.7,1},
+				sort = i,
+				text = L["Button"]..i,
+			})
+		end
 		if i > self.defaults.profile.tierNumButtons then
 			tinsert(self.defaults.profile.tierButtons, {
 				text = L["Button"].." "..i,
 				whisperKey = ""..i,
 			})
-		end
-	end
-	for i = self.defaults.profile.numButtons+1, self.defaults.profile.maxButtons do
-		tinsert(self.defaults.profile.responses, {
-			color = {0.7, 0.7,0.7,1},
-			sort = i,
-			text = L["Button"]..i,
-		})
-		if i > self.defaults.profile.tierNumButtons then
 			tinsert(self.defaults.profile.responses.tier, {
 				color = {0.7, 0.7,0.7,1},
 				sort = i,
 				text = L["Button"]..i,
 			})
 		end
+		tinsert(self.defaults.profile.relicButtons, {
+			text = L["Button"].." "..i,
+			whisperKey = ""..i,
+		})
+		tinsert(self.defaults.profile.responses.relic, {
+			color = {0.7, 0.7,0.7,1},
+			sort = i,
+			text = L["Button"]..i,
+		})
 	end
 	-- create the other AwardReasons
 	for i = #self.defaults.profile.awardReasons+1, self.defaults.profile.maxAwardReasons do
@@ -1052,9 +1063,10 @@ end
 -- @param note			The player's note.
 -- @param subType		The item's subType, needed for Artifact Relics.
 -- @param isTier		Indicates if the response is a tier response. (v2.4.0)
+-- @param isRelic		Indicates if the response is a relic response. (v2.5.0)
 -- @return A formatted table that can be passed directly to :SendCommand("group", "response", -return-).
-function RCLootCouncil:CreateResponse(session, link, ilvl, response, equipLoc, note, subType, isTier)
-	self:DebugLog("CreateResponse", session, link, ilvl, response, equipLoc, note, subType, isTier)
+function RCLootCouncil:CreateResponse(session, link, ilvl, response, equipLoc, note, subType, isTier, isRelic)
+	self:DebugLog("CreateResponse", session, link, ilvl, response, equipLoc, note, subType, isTier, isRelic)
 	local g1, g2;
 	if equipLoc == "" and self.db.global.localizedSubTypes[subType] == "Artifact Relic" then
 		g1, g2 = self:GetArtifactRelics(link)
@@ -1077,6 +1089,7 @@ function RCLootCouncil:CreateResponse(session, link, ilvl, response, equipLoc, n
 			note = note,
 			response = response,
 			isTier = isTier,
+			isRelic = isRelic,
 		}
 end
 
@@ -1346,7 +1359,7 @@ end
 				[1] = responseText,
 				[2] = number of items won,
 				[3] = {color},
-				[4] = responseID, -- see index in self.responses. Award reasons gets 100 addded. TierResponses gets 200 added.
+				[4] = responseID, -- see index in self.responses. Award reasons gets 100 addded. TierResponses gets 200 added. Relic 300.
 			}
 		},
 		raids = {
@@ -1375,6 +1388,7 @@ function RCLootCouncil:GetLootDBStatistics()
 				if type(id) == "number" then -- ID may be string, e.g. "PASS"
 					if entry.isAwardReason then id = id + 100 end -- Bump to distingush from normal awards
 					if entry.tokenRoll then id = id + 200 end
+					if entry.relicRoll then id = id + 300 end
 				end
 				-- We assume the mapID and difficultyID is available on any item if at all.
 				if not numTokens[entry.instance] then numTokens[entry.instance] = {num = 0, mapID = entry.mapID, difficultyID = entry.difficultyID} end
@@ -1862,34 +1876,42 @@ function RCLootCouncil.Ambiguate(name)
 end
 
 --- Returns the text of a button, returning settings from mldb if possible, otherwise from default buttons.
--- @paramsig index [, isTier]
+-- @paramsig index [, isTier, isRelic]
 -- @param index The button's index.
 -- @param isTier True if the response belongs to a tier item.
-function RCLootCouncil:GetButtonText(i, isTier)
+-- @param isRelic True if the response belongs to a relic item.
+function RCLootCouncil:GetButtonText(i, isTier, isRelic)
 	if isTier and self.mldb.tierButtonsEnabled and type(i) == "number" then -- Non numbers is status texts, handled as normal response
 		return (self.mldb.tierButtons and self.mldb.tierButtons[i]) and self.mldb.tierButtons[i].text or db.tierButtons[i].text
+	elseif isRelic and self.mldb.relicButtonsEnabled and type(i) == "number" then
+		return (self.mldb.relicButtons and self.mldb.relicButtons[i]) and self.mldb.relicButtons[i].text or db.relicButtons[i].text
 	else
 		return (self.mldb.buttons and self.mldb.buttons[i]) and self.mldb.buttons[i].text or db.buttons[i].text
 	end
 end
 
 --- The following functions returns the text, sort or color of a response, returning a result from mldb if possible, otherwise from the default responses.
--- @paramsig response [, isTier]
+-- @paramsig response [, isTier, isRelic]
 -- @param response Index in db.responses.
 -- @param isTier True if the response belongs to a tier item.
-function RCLootCouncil:GetResponseText(response, isTier)
+-- @param isRelic True if the response belongs to a relic item.
+function RCLootCouncil:GetResponseText(response, isTier, isRelic)
 	if isTier and self.mldb.tierButtonsEnabled and type(response) == "number" then
 		return (self.mldb.responses.tier and self.mldb.responses.tier[response]) and self.mldb.responses.tier[response].text or db.responses.tier[response].text
+	elseif isRelic and self.mldb.relicButtonsEnabled and type(response) == "number" then
+		return (self.mldb.responses.relic and self.mldb.responses.relic[response]) and self.mldb.responses.relic[response].text or db.responses.relic[response].text
 	else
 		return (self.mldb.responses and self.mldb.responses[response]) and self.mldb.responses[response].text or db.responses[response].text
 	end
 end
 
 ---
-function RCLootCouncil:GetResponseColor(response, isTier)
+function RCLootCouncil:GetResponseColor(response, isTier, isRelic)
 	local color
 	if isTier and self.mldb.tierButtonsEnabled and type(response) == "number" then
-		 color = (self.mldb.responses.tier and self.mldb.responses.tier[response]) and self.mldb.responses.tier[response].color or db.responses.tier[response].color
+		color = (self.mldb.responses.tier and self.mldb.responses.tier[response]) and self.mldb.responses.tier[response].color or db.responses.tier[response].color
+ 	elseif isRelic and self.mldb.relicButtonsEnabled and type(response) == "number" then
+		color = (self.mldb.responses.relic and self.mldb.responses.relic[response]) and self.mldb.responses.relic[response].color or db.responses.relic[response].color
  	else
 		color = (self.mldb.responses and self.mldb.responses[response]) and self.mldb.responses[response].color or db.responses[response].color
 	end
@@ -1897,9 +1919,11 @@ function RCLootCouncil:GetResponseColor(response, isTier)
 end
 
 ---
-function RCLootCouncil:GetResponseSort(response, isTier)
+function RCLootCouncil:GetResponseSort(response, isTier, isRelic)
 	if isTier and self.mldb.tierButtonsEnabled and type(response) == "number" then
 		return (self.mldb.responses.tier and self.mldb.responses.tier[response]) and self.mldb.responses.tier[response].sort or db.responses.tier[response].sort
+	elseif isRelic and self.mldb.relicButtonsEnabled and type(response) == "number" then
+		return (self.mldb.responses.relic and self.mldb.responses.relic[response]) and self.mldb.responses.relic[response].sort or db.responses.relic[response].sort
 	else
 		return (self.mldb.responses and self.mldb.responses[response]) and self.mldb.responses[response].sort or db.responses[response].sort
 	end

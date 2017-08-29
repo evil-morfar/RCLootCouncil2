@@ -761,24 +761,29 @@ end
 
 function RCVotingFrame.SetCellRank(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
 	local name = data[realrow].name
+	local isTier = lootTable[session].candidates[name].isTier
+	local isRelic = lootTable[session].candidates[name].isRelic
 	frame.text:SetText(lootTable[session].candidates[name].rank)
-	frame.text:SetTextColor(addon:GetResponseColor(lootTable[session].candidates[name].response,lootTable[session].candidates[name].isTier))
+	frame.text:SetTextColor(addon:GetResponseColor(lootTable[session].candidates[name].response,isTier, isRelic))
 	data[realrow].cols[column].value = lootTable[session].candidates[name].rank
 end
 
 function RCVotingFrame.SetCellRole(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
 	local name = data[realrow].name
+	local isTier = lootTable[session].candidates[name].isTier
+	local isRelic = lootTable[session].candidates[name].isRelic
 	local role = addon.TranslateRole(lootTable[session].candidates[name].role)
 	frame.text:SetText(role)
-	frame.text:SetTextColor(addon:GetResponseColor(lootTable[session].candidates[name].response,lootTable[session].candidates[name].isTier))
+	frame.text:SetTextColor(addon:GetResponseColor(lootTable[session].candidates[name].response,isTier,isRelic))
 	data[realrow].cols[column].value = role
 end
 
 function RCVotingFrame.SetCellResponse(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
 	local name = data[realrow].name
 	local isTier = lootTable[session].candidates[name].isTier
-	frame.text:SetText(addon:GetResponseText(lootTable[session].candidates[name].response, isTier))
-	frame.text:SetTextColor(addon:GetResponseColor(lootTable[session].candidates[name].response, isTier))
+	local isRelic = lootTable[session].candidates[name].isRelic
+	frame.text:SetText(addon:GetResponseText(lootTable[session].candidates[name].response, isTier, isRelic))
+	frame.text:SetTextColor(addon:GetResponseColor(lootTable[session].candidates[name].response, isTier, isRelic))
 end
 
 function RCVotingFrame.SetCellIlvl(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
@@ -1021,6 +1026,7 @@ do
 					data.gear1,
 					data.gear2,
 					data.isTier,
+					data.isRelic,
 					})
 				end,
 			},{ -- 4 Award for
@@ -1077,7 +1083,8 @@ do
 						texture = lootTable[session].texture,
 						session = session,
 						equipLoc = lootTable[session].equipLoc,
-						token = lootTable[session].token
+						token = lootTable[session].token,
+						relic = lootTable[session].relic,
 						}
 					}
 					addon:SendCommand(candidateName, "reroll", t)
@@ -1099,6 +1106,7 @@ do
 								session = k,
 								equipLoc = v.equipLoc,
 								token = v.token,
+								relic = v.relic,
 							})
 							addon:SendCommand("group", "change_response", k, candidateName, "WAIT")
 						end
@@ -1165,6 +1173,7 @@ do
 							data.gear1,
 							data.gear2,
 							data.isTier,
+							data.isRelic,
 				}) end
 					Lib_UIDropDownMenu_AddButton(info, level)
 				end

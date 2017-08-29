@@ -225,6 +225,12 @@ function RCLootCouncilML:BuildMLdb()
 			changedResponses.tier[k] = v
 		end
 	end
+	changedResponses.relic = {}
+	for k,v in pairs(db.responses.relic) do
+		if v.text ~= addon.defaults.profile.responses.relic[k].text or unpack(v.color) ~= unpack(addon.defaults.profile.responses.relic[k].color) then
+			changedResponses.relic[k] = v
+		end
+	end
 	-- Extract changed buttons
 	local changedButtons = {};
 	for i = 1, db.numButtons do
@@ -238,13 +244,12 @@ function RCLootCouncilML:BuildMLdb()
 			changedTierButtons[i] = {text = db.tierButtons[i].text}
 		end
 	end
-	-- Extract changed award reasons
-	--[[local changedAwardReasons = {}
-	for i = 1, db.numAwardReasons do
-		if db.awardReasons[i].text ~= addon.defaults.profile.awardReasons[i].text then
-			changedAwardReasons[i] = db.awardReasons[i]
+	local changedRelicButtons = {}
+	for i = 1, db.relicNumButtons do
+		if db.relicButtons[i].text ~= addon.defaults.profile.relicButtons[i].text then
+			changedRelicButtons[i] = {text = db.relicButtons[i].text}
 		end
-	end]]
+	end
 	return {
 		selfVote			= db.selfVote,
 		multiVote		= db.multiVote,
@@ -252,14 +257,16 @@ function RCLootCouncilML:BuildMLdb()
 		allowNotes		= db.allowNotes,
 		numButtons		= db.numButtons,
 		tierNumButtons = db.tierNumButtons,
+		relicNumButtons = db.relicNumButtons,
 		hideVotes		= db.hideVotes,
 		observe			= db.observe,
-	--	awardReasons	= changedAwardReasons,
 		buttons			= changedButtons,
 		tierButtons 	= changedTierButtons,
+		relicButtons 	= changedRelicButtons,
 		responses		= changedResponses,
 		timeout			= db.timeout,
 		tierButtonsEnabled = db.tierButtonsEnabled,
+		relicButtonsEnabled = db.relicButtonsEnabled,
 	}
 end
 
@@ -471,11 +478,10 @@ end
 
 --@param session	The session to award.
 --@param winner	Nil/false if items should be stored in inventory and awarded later.
---@param response	The candidates response, index in db.responses.
+--@param response	The candidates response, used for announcement.
 --@param reason	Entry in db.awardReasons.
---@param isToken	True if it's awarded as a tier token. Only used for announceAward().
 --@returns True if awarded successfully
-function RCLootCouncilML:Award(session, winner, response, reason, isToken)
+function RCLootCouncilML:Award(session, winner, response, reason)
 	addon:DebugLog("ML:Award", session, winner, response, reason, isToken)
 	if addon.testMode then
 		if winner then
@@ -539,7 +545,7 @@ function RCLootCouncilML:Award(session, winner, response, reason, isToken)
 			self.lootTable[session].awarded = winner -- No need to let Comms handle this
 
 			self:AnnounceAward(winner, self.lootTable[session].link,
-			 reason and reason.text or addon:GetResponseText(response, isToken), addon:GetActiveModule("votingframe"):GetLootTable()[session].candidates[winner].roll, session)
+			 reason and reason.text or response, addon:GetActiveModule("votingframe"):GetLootTable()[session].candidates[winner].roll, session)
 			if self:HasAllItemsBeenAwarded() then self:EndSession() end
 
 		else -- If we reach here it means we couldn't find a valid MasterLootCandidate, propably due to the winner is unable to receive the loot
@@ -652,7 +658,7 @@ function RCLootCouncilML:AutoAward(lootIndex, item, quality, name, reason, boss)
 end
 
 local history_table = {}
- function RCLootCouncilML:TrackAndLogLoot(name, item, response, boss, votes, itemReplaced1, itemReplaced2, reason, isToken, tokenRoll)
+ function RCLootCouncilML:TrackAndLogLoot(name, item, response, boss, votes, itemReplaced1, itemReplaced2, reason, isToken, tokenRoll, relicRoll)
 	if reason and not reason.log then return end -- Reason says don't log
 	if not (db.sendHistory or db.enableHistory) then return end -- No reason to do stuff when we won't use it
 	if addon.testMode and not addon.nnp then return end -- We shouldn't track testing awards.
@@ -676,6 +682,7 @@ local history_table = {}
 	history_table["groupSize"]		= groupSize																						-- New in v2.3+
 	history_table["tierToken"]		= isToken																						-- New in v2.3+
 	history_table["tokenRoll"]		= tokenRoll																						-- New in v2.4+
+	history_table["relicRoll"]		= relicRoll																						-- New in v2.5+
 
 	if db.sendHistory then -- Send it, and let comms handle the logging
 		addon:SendCommand("group", "history", name, history_table)
@@ -760,7 +767,7 @@ function RCLootCouncilML:GetItemsFromMessage(msg, sender)
 	-- Let's test the input
 	if not ses or type(ses) ~= "number" or ses > #self.lootTable then return end -- We need a valid session
 	-- Set some locals
-	local item1, item2, isTier
+	local item1, item2, isTier, isRelic
 	local response = 1
 	if arg1:find("|Hitem:") then -- they didn't give a response
 		item1, item2 = arg1, arg2
@@ -775,6 +782,11 @@ function RCLootCouncilML:GetItemsFromMessage(msg, sender)
 			isTier = true
 			for i=1, db.tierNumButtons do
 				gsub(db.tierButtons[i]["whisperKey"], '[%w]+', function(x) tinsert(whisperKeys, {key = x, num = i}) end)
+			end
+		elseif self.lootTable[ses].relic and addon.mldb.relicButtonsEnabled then
+			isRelic = true
+			for i=1, db.relicNumButtons do
+				gsub(db.relicButtons[i]["whisperKey"], '[%w]+', function(x) tinsert(whisperKeys, {key = x, num = i}) end)
 			end
 		else
 			for i = 1, db.numButtons do --go through all the button
@@ -798,6 +810,7 @@ function RCLootCouncilML:GetItemsFromMessage(msg, sender)
 		note = L["Auto extracted from whisper"],
 		response = response,
 		isTier = isTier,
+		isRelic = isRelic,
 	}
 	addon:SendCommand("group", "response", ses, sender, toSend)
 	-- Let people know we've done stuff
