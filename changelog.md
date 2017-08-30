@@ -1,4 +1,4 @@
-### v2.5.0-Beta3
+### v2.5.0
 ---
 * **Synchronize**
 * It's now possible to synchronize the settings and loot history between players.
