@@ -1,3 +1,9 @@
+### v2.5.1
+---
+###### Bugfixes
++ *The usage popup wouldn't work properly if master looter was already enabled.*
+
+
 ### v2.5.0
 ---
 * **Synchronize**
