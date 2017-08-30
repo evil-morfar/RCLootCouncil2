@@ -7,7 +7,7 @@ local addon = LibStub("AceAddon-3.0"):GetAddon("RCLootCouncil")
 local LootHistory = addon:NewModule("RCLootHistory")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 local AG = LibStub("AceGUI-3.0")
-local lootDB, scrollCols, data, db, numLootWon
+local lootDB, data, db
 --[[ data structure:
 data[date][playerName] = {
 	["class"] = CLASS,
@@ -34,7 +34,7 @@ function LootHistory:OnInitialize()
 		player = 	{func = self.PlayerExport,		name = "Player Export",		tip = L["A format to copy/paste to another player."]},
 		--html = self.ExportHTML
 	}
-	scrollCols = {
+	self.scrollCols = {
 		{name = "",					width = ROW_HEIGHT, },			-- Class icon, should be same row as player
 		{name = L["Name"],		width = 100, 				},		-- Name of the player
 		{name = L["Time"],		width = 125, comparesort = self.DateTimeSort, sort = "dsc",},			-- Time of awarding
@@ -96,15 +96,12 @@ end
 function LootHistory:BuildData()
 	addon:Debug("LootHistory:BuildData()")
 	data = {}
-	numLootWon = {} -- playerName = #
 	local date
 	-- We want to rebuild lootDB to the "data" format:
 	--local i = 1
 	for name, v in pairs(lootDB) do
-		numLootWon[name] = 0
 		-- Now we actually add the data
 		for i,v in ipairs(v) do
-			numLootWon[name] = numLootWon[name] + 1
 			date = v.date
 			if not date then -- Unknown date
 				date = L["Unknown date"]
@@ -385,7 +382,7 @@ function LootHistory:ImportHistory(import)
 	addon.lootDB.factionrealm = lootDB -- save it
 	addon:Print(format(L["Successfully imported 'number' entries."], number))
 	addon:Debug("Import successful")
-	self:BuildData()
+	if self.frame and self.frame:IsVisible() then self:BuildData() end -- Only rebuild data if we're showing
 end
 
 function LootHistory:GetWowheadLinkFromItemLink(link)
@@ -420,7 +417,7 @@ end
 function LootHistory:GetFrame()
 	if self.frame then return self.frame end
 	local f = addon:CreateFrame("DefaultRCLootHistoryFrame", "history", L["RCLootCouncil Loot History"], 250, 480)
-	local st = LibStub("ScrollingTable"):CreateST(scrollCols, NUM_ROWS, ROW_HEIGHT, { ["r"] = 1.0, ["g"] = 0.9, ["b"] = 0.0, ["a"] = 0.5 }, f.content)
+	local st = LibStub("ScrollingTable"):CreateST(self.scrollCols, NUM_ROWS, ROW_HEIGHT, { ["r"] = 1.0, ["g"] = 0.9, ["b"] = 0.0, ["a"] = 0.5 }, f.content)
 	st.frame:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", 10, 10)
 	st:SetFilter(self.FilterFunc)
 	st:EnableSelection(true)
@@ -647,8 +644,8 @@ function LootHistory:UpdateMoreInfo(rowFrame, cellFrame, dat, cols, row, realrow
 		if v[3] then r,g,b = unpack(v[3],1,3) end
 		tip:AddDoubleLine(v[1], v[2], r or 1, g or 1, b or 1, 1,1,1)
 	end
-	tip:AddDoubleLine(L["Total items won:"], numLootWon[row.name], 1,1,1, 0,1,0)
-
+	tip:AddDoubleLine(L["Number of raids received loot from:"], moreInfoData[row.name].totals.raids.num, 1,1,1, 1,1,1)
+	tip:AddDoubleLine(L["Total items won:"], moreInfoData[row.name].totals.total, 1,1,1, 0,1,0)
 
 
 	-- Debug stuff
@@ -667,13 +664,7 @@ function LootHistory:UpdateMoreInfo(rowFrame, cellFrame, dat, cols, row, realrow
 		tip:AddDoubleLine("tierToken", data.tierToken, 1,1,1, 1,1,1)
 		tip:AddDoubleLine("tokenRoll", tostring(data.tokenRoll), 1,1,1, 1,1,1)
 		tip:AddLine(" ")
-		tip:AddLine("Total tokens won:")
- 		for name, v in pairs(moreInfoData[row.name].totals.tokens) do
- 			tip:AddDoubleLine(name, v.num, 1,1,1, 1,1,1)
- 		end
-		tip:AddLine(" ")
 		tip:AddDoubleLine("Total LootDB entries:", #self.frame.rows, 1,1,1, 0,0,1)
-
 	end
 	tip:SetScale(db.UI.history.scale)
 	if moreInfo then
@@ -747,33 +738,102 @@ function LootHistory.FilterMenu(menu, level)
 	end
 end
 
+
+--- Entries placed in the rightclick menu.
+-- See the example in votingFrame.lua for a detailed explaination.
+-- Text and Func fields gets the row data as a parameter if defined as a function.
+-- See LootHistory:BuildData() for the contents of a row (self.frame.rows[row])
+do
+LootHistory.rightClickEntries = {
+	{ -- Level 1
+		{ -- 1 Title
+			text = L["Edit Entry"],
+			isTitle = true,
+			notCheckable = true,
+			disabled = true,
+		},
+		{ -- 2 Name
+			text = L["Name"],
+			value = "EDIT_NAME",
+			notCheckable = true,
+			hasArrow = true,
+		},
+		{ -- 3 Response
+			text = L["Response"],
+			value = "EDIT_RESPONSE",
+			notCheckable = true,
+			hasArrow = true,
+		},
+	},
+	{ -- Level 2
+		{ -- 1 EDIT_NAME
+			special = "EDIT_NAME",
+		},
+		{ -- 2 EDIT_RESPONSE
+			special = "EDIT_RESPONSE",
+		},
+		{ -- 3 Tier tokens ...
+			text = L["Tier Tokens ..."],
+			onValue = "EDIT_RESPONSE",
+			value = "TIER_TOKENS",
+			hasArrow = true,
+			notCheckable = true,
+		},
+		{ -- 4 Award Reasons ...
+			text = L["Award Reasons"] .. " ...",
+			onValue = "EDIT_RESPONSE",
+			value = "AWARD_REASON",
+			hasArrow = true,
+			notCheckable = true,
+		},
+	},
+	{ -- Level 3
+		{ -- 1 TIER_TOKENS
+			special = "TIER_TOKENS",
+		},
+		{ -- 2 AWARD_REASON
+			special = "AWARD_REASON",
+		}
+	},
+}
+
+
 -- NOTE Changing e.g. a tier token item's response to a non-tier token response is possible display wise,
 -- but it will retain it's tier token tag, and vice versa. Can't decide whether it's a feature or bug.
 function LootHistory.RightClickMenu(menu, level)
 	local info = Lib_UIDropDownMenu_CreateInfo()
 	local data = menu.datatable
 
-	if level == 1 then -- Redundant
-		info.text = "Edit Entry"
-		info.isTitle = true
-		info.notCheckable = true
-		info.disabled = true
-		Lib_UIDropDownMenu_AddButton(info, level)
-
+	local value = LIB_UIDROPDOWNMENU_MENU_VALUE
+	if not LootHistory.rightClickEntries[level] then return end
+	for i, entry in ipairs(LootHistory.rightClickEntries[level]) do
 		info = Lib_UIDropDownMenu_CreateInfo()
-		info.text = L["Name"]
-		info.value = "EDIT_NAME"
-		info.notCheckable = true
-		info.hasArrow = true
-		Lib_UIDropDownMenu_AddButton(info, level)
+		if not entry.special then
+			if not entry.onValue then
+				for name, val in pairs(entry) do
+					if name == "text" and type(val) == "function" then
+						info[name] = val(data) -- This needs to be evaluated
+					elseif name == "func" then
+						info[name] = function() return val(data) end -- This needs to be set as a func, but fed with our params
+					else
+						info[name] = val
+					end
+				end
+				Lib_UIDropDownMenu_AddButton(info, level)
 
-		info.text = L["Response"]
-		info.value = "EDIT_RESPONSE"
-		Lib_UIDropDownMenu_AddButton(info, level)
-
-	elseif level == 2 then
-		local value = LIB_UIDROPDOWNMENU_MENU_VALUE
-		if value == "EDIT_NAME" then
+			elseif entry.onValue == value then
+				for name, val in pairs(entry) do
+					if name == "text" and type(val) == "function" then
+						info.text = val(data)
+					elseif name == "func" then
+						info[name] = function() return val(data) end
+					elseif name ~= "onValue" then
+						info[name] = val
+					end
+				end
+				Lib_UIDropDownMenu_AddButton(info, level)
+			end
+		elseif value == "EDIT_NAME" and entry.special == value then
 			for _,v in pairs(LootHistory.frame.name.data) do
 				info.text = v[2].value
 				local c = addon:GetClassColor(v[1].args[1])
@@ -796,8 +856,7 @@ function LootHistory.RightClickMenu(menu, level)
 				end
 				Lib_UIDropDownMenu_AddButton(info, level)
 			end
-
-		elseif value == "EDIT_RESPONSE" then
+		elseif value == "EDIT_RESPONSE" and entry.special == value then
 			local v;
 			for i = 1, db.numButtons do
 				v = db.responses[i]
@@ -841,24 +900,7 @@ function LootHistory.RightClickMenu(menu, level)
 				end
 			end
 
-			info = Lib_UIDropDownMenu_CreateInfo()
-			-- Add the tier menu
-			info.text = "Tier Tokens ..."
-			info.value = "TIER_TOKENS"
-			info.hasArrow = true
-			info.notCheckable = true
-			Lib_UIDropDownMenu_AddButton(info, level)
-
-			-- Add the award reasons
-			info.text = "Award Reason ..."
-			info.value = "AWARD_REASON"
-			info.hasArrow = true
-			info.notCheckable = true
-			Lib_UIDropDownMenu_AddButton(info, level)
-		end
-	elseif level == 3 then
-		local value = LIB_UIDROPDOWNMENU_MENU_VALUE
-		if value == "TIER_TOKENS" then
+		elseif value == "TIER_TOKENS" and entry.special == value then
 			for k,v in ipairs(db.responses.tier) do
 				if k > db.tierNumButtons then break end
 				info.text = v.text
@@ -878,7 +920,8 @@ function LootHistory.RightClickMenu(menu, level)
 				end
 				Lib_UIDropDownMenu_AddButton(info, level)
 			end
-		elseif value == "AWARD_REASON" then
+
+		elseif value == "AWARD_REASON" and entry.special == value then
 			for k,v in ipairs(db.awardReasons) do
 				if k > db.numAwardReasons then break end
 				info.text = v.text
@@ -901,7 +944,7 @@ function LootHistory.RightClickMenu(menu, level)
 		end
 	end
 end
-
+end
 
 ---------------------------------------------------------------
 -- Exports.

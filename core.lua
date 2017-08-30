@@ -7,6 +7,9 @@ TODOs/Notes
 	Things marked with "todo"
 		- Item subtype in history exports
 		- IDEA Have player's current gear sent with lootAck
+		- Emulate award stuff - i.e. log awards without awarding
+		- Check if players are eligible for loot, otherwise mark them as not
+		- Remember to add mapID for Antorus.
 --------------------------------
 CHANGELOG
 	-- SEE CHANGELOG.TXT
@@ -63,6 +66,7 @@ function RCLootCouncil:OnInitialize()
 
 	self.verCheckDisplayed = false -- Have we shown a "out-of-date"?
 
+	self.candidates = {}
 	self.council = {} -- council from ML
 	self.mldb = {} -- db recived from ML
 	self.responses = {
@@ -114,6 +118,7 @@ function RCLootCouncil:OnInitialize()
 			},
 			onlyUseInRaids = true,
 			ambiguate = false, -- Append realm names to players
+			autoAddRolls = false,
 			autoStart = false, -- start a session with all eligible items
 			autoLoot = true, -- Auto loot equippable items
 			autolootEverything = true,
@@ -252,6 +257,7 @@ function RCLootCouncil:OnInitialize()
 				141303,141304,141305, 					-- Essence of Clarity (Emerald Nightmare quest item)
 				143656,143657,143658, 					-- Echo of Time (Nighthold quest item)
 				132204,151248,151249, 151250,			-- Sticky Volatile Essence, Fragment of the Guardian's Seal (Tomb of Sargeras)
+				152902,152906,152907,					-- Rune of Passage (Antorus shortcut item)
 			},
 		},
 	} -- defaults end
@@ -318,6 +324,8 @@ function RCLootCouncil:OnInitialize()
 	-- add it to blizz options
 	self.optionsFrame = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("RCLootCouncil", "RCLootCouncil", nil, "settings")
 	self.optionsFrame.ml = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("RCLootCouncil", "Master Looter", "RCLootCouncil", "mlSettings")
+	-- reset verTestCandidates
+	self.db.global.verTestCandidates = {}
 	-- Add logged in message in the log
 	self:DebugLog("Logged In")
 end
@@ -376,49 +384,6 @@ function RCLootCouncil:OnEnable()
 	ChatFrame_AddMessageEventFilter("CHAT_MSG_WHISPER_INFORM", filterFunc)
 
 	self:LocalizeSubTypes()
-
-	----------PopUp setups --------------
-	-------------------------------------
-	LibDialog:Register("RCLOOTCOUNCIL_CONFIRM_USAGE", {
-		text = L["confirm_usage_text"],
-		on_show = function(self)
-			self:SetFrameStrata("FULLSCREEN")
-		end,
-		buttons = {
-			{	text = L["Yes"],
-				on_click = function()
-					self:DebugLog("Player confirmed usage")
-					-- The player might have passed on ML before accepting :O
-					if not self.isMasterLooter then return end
-					local lootMethod = GetLootMethod()
-					if lootMethod ~= "master" then
-						self:Print(L["Changing LootMethod to Master Looting"])
-						SetLootMethod("master", self.Ambiguate(self.playerName)) -- activate ML
-					end
-					if db.autoAward and GetLootThreshold() ~= 2 and GetLootThreshold() > db.autoAwardLowerThreshold  then
-						self:Print(L["Changing loot threshold to enable Auto Awarding"])
-						SetLootThreshold(db.autoAwardLowerThreshold >= 2 and db.autoAwardLowerThreshold or 2)
-					end
-					self:Print(L["Now handles looting"])
-					self.isMasterLooter = true
-					self.masterLooter = self.playerName
-					if #db.council == 0 then -- if there's no council
-						self:Print(L["You haven't set a council! You can edit your council by typing '/rc council'"])
-					end
-					self:CallModule("masterlooter")
-					self:GetActiveModule("masterlooter"):NewML(self.masterLooter)
-				end,
-			},
-			{	text = L["No"],
-				on_click = function()
-					self:DebugLog("Player declined usage")
-					RCLootCouncil:Print(L[" is not active in this raid."])
-				end,
-			},
-		},
-		hide_on_escape = true,
-		show_while_dead = true,
-	})
 end
 
 function RCLootCouncil:OnDisable()
@@ -444,8 +409,6 @@ end
 function RCLootCouncil:CouncilChanged()
 	self:SendMessage("RCCouncilChanged")
 end
-
-
 
 function RCLootCouncil:ChatCommand(msg)
 	local input, arg1, arg2 = self:GetArgs(msg,3)
@@ -548,6 +511,8 @@ function RCLootCouncil:ChatCommand(msg)
 
 	elseif input == "updatehistory" or (input == "update" and arg1 == "history") then
 		self:UpdateLootHistory()
+	elseif input == "sync" then
+		self.Sync:Spawn()
 --@debug@
 	elseif input == 't' then -- Tester cmd
 		local lf = self:GetActiveModule("lootframe")
@@ -586,7 +551,7 @@ function RCLootCouncil:SendCommand(target, command, ...)
 
 	else
 		if self:UnitIsUnit(target,"player") then -- If target == "player"
-			self:SendCommMessage("RCLootCouncil", toSend, "WHISPER", self.playerName)
+			self:SendCommMessage("RCLootCouncil", toSend, "WHISPER", self.playerName, "BULK", self.Print, "test")
 		else
 			-- We cannot send "WHISPER" to a crossrealm player
 			if target:find("-") then
@@ -697,6 +662,8 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 					self:Debug(tostring(sender).." is not ML, but sent lootTable!")
 				end
 
+			elseif command == "candidates" and self:UnitIsUnit(sender, self.masterLooter) then
+				self.candidates = unpack(data)
 			elseif command == "council" and self:UnitIsUnit(sender, self.masterLooter) then -- only ML sends council
 				self.council = unpack(data)
 				self.isCouncil = self:IsCouncil(self.playerName)
@@ -790,6 +757,15 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 						self:ScheduleTimer("ResetReconnectRequest", 5) -- 5 sec break between each try
 					end
 				end
+
+			elseif command == "sync" then
+				self.Sync:SyncDataReceived(unpack(data))
+			elseif command == "syncRequest" then
+				self.Sync:SyncRequestReceived(unpack(data))
+			elseif command == "syncAck" then
+				self.Sync:SyncAckReceived(unpack(data))
+			elseif command == "syncNack" then
+				self.Sync:SyncNackReceived(unpack(data))
 			end
 		else
 			-- Most likely pre 2.0 command
@@ -1373,6 +1349,11 @@ end
 				[3] = {color},
 				[4] = responseID, -- see index in self.responses. Award reasons gets 100 addded. TierResponses gets 200 added.
 			}
+		},
+		raids = {
+			-- Each index is a unique raid ID made by combining the date and instance
+			[xxx] = number of loot won in this raid,
+			num = the number of raids
 		}
 	}
 }
@@ -1386,7 +1367,7 @@ function RCLootCouncil:GetLootDBStatistics()
 		lootDBStatistics = {}
 		local entry, id
 		for name, data in pairs(self:GetHistoryDB()) do
-			local count, responseText, color, numTokens = {},{},{},{}
+			local count, responseText, color, numTokens, raids = {},{},{},{},{}
 			local lastestAwardFound = 0
 			lootDBStatistics[name] = {}
 			for i = #data, 1, -1 do -- Start from the end
@@ -1411,6 +1392,8 @@ function RCLootCouncil:GetLootDBStatistics()
 					tinsert(lootDBStatistics[name], {entry.lootWon, --[[entry.response .. ", "..]] format(L["'n days' ago"], self:ConvertDateToString(self:GetNumberOfDaysFromNow(entry.date))), color[id], i})
 					lastestAwardFound = lastestAwardFound + 1
 				end
+				-- Raids:
+				raids[entry.date..entry.instance] = raids[entry.date..entry.instance] and raids[entry.date..entry.instance] + 1 or 0
 			end
 			-- Totals:
 			local totalNum = 0
@@ -1422,6 +1405,10 @@ function RCLootCouncil:GetLootDBStatistics()
 				totalNum = totalNum + num
 			end
 			lootDBStatistics[name].totals.total = totalNum
+			lootDBStatistics[name].totals.raids = raids
+			totalNum = 0
+			for _ in pairs(raids) do totalNum = totalNum + 1 end
+			lootDBStatistics[name].totals.raids.num = totalNum
 		end
 		return lootDBStatistics
 	end)
@@ -1446,6 +1433,9 @@ function RCLootCouncil:GetHistoryDB()
 	return self.lootDB.factionrealm
 end
 
+function RCLootCouncil:UpdateDB()
+	db = self.db.profile
+end
 function RCLootCouncil:UpdateHistoryDB()
 	historyDB = self:GetHistoryDB()
 end
@@ -1612,15 +1602,17 @@ end
 -- @paramsig module, funcRef, ...
 -- @param module The object to call func on.
 -- @param funcRef The function reference to call on module. Passed with module as first arg, and up to two user args.
+-- @param helpString A string appended to the list of commands if the user types /rc help
 -- @param ... The command(s) the user can input.
 -- @usage
 -- -- For example in GroupGear:
 --	addon:CustomChatCmd(GroupGear, "Show", "gg", "groupgear", "gear")
 -- -- will result in GroupGear:Show() being called if the user types "/rc gg" (or "/rc groupgear" or "/rc gear")
-function RCLootCouncil:CustomChatCmd(module, funcRef, ...)
+function RCLootCouncil:CustomChatCmd(module, funcRef, helpString, ...)
 	for i = 1, select("#", ...) do
 		self.customChatCmd[select(i, ...)] = {module = module, func = funcRef}
 	end
+	L["chat_commands"] = L["chat_commands"] .."\n"..helpString
 end
 
 --#end Module support -----------------------------------------------------
@@ -1633,8 +1625,8 @@ end
 
 --- Used as a "DoCellUpdate" function for lib-st
 function RCLootCouncil.SetCellClassIcon(rowFrame, frame, data, cols, row, realrow, column, fShow, table, class)
-	local celldata = data[realrow].cols and data[realrow].cols[column] or data[realrow][column]
-	local class = celldata.args and celldata.args[1] or class
+	local celldata = data and (data[realrow].cols and data[realrow].cols[column] or data[realrow][column])
+	local class = celldata and celldata.args and celldata.args[1] or class
 	if class then
 		frame:SetNormalTexture("Interface\\GLUES\\CHARACTERCREATE\\UI-CHARACTERCREATE-CLASSES"); -- this is the image containing all class icons
 		local coords = CLASS_ICON_TCOORDS[class]; -- get the coordinates of the class icon we want

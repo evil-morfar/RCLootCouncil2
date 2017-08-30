@@ -1,3 +1,44 @@
+### v2.5.0
+---
+* **Synchronize**
+* It's now possible to synchronize the settings and loot history between players.
+* The sync frame is accessible through the options menu, or the newly added "/rc sync" command.
+
+
+* **Rolls**
+* Added an option to automatically add a random 1-100 roll to all candidates.
+* A candidate's roll can now be added to award announcements by using "&n" in the announcement text.
+
+
+* **Award**
+* The winner of an item is now shown in the voting frame.
+
+
+* **Number of raids**
+* Added number of raids registered to all more info displays.
+* Note: These are somewhat estimates, as RCLootCouncil only has a loot tracker, and not a fully fletched raid tracker.
+
+
+* Updated for 7.3.
+* Comms optimizations.
+* Prepared to handle Tier 21.
+* Added some missing text to the localization table.
+* Added Rune of Passage to the ignore list.
+
+
+* **Dev**
+ * **Breaking**
+ * Added a new parameter to CustomChatCmd() to add a help string to the added command.
+ * Changed returns from GetLootDBStatistics().
+ * RCLootCouncilML:AnnounceAward() has been recreated so keywords can be added and/or changed.
+* Restructured votingFrame and lootHistory rightclick menu so new entries can be added and defaults changed.
+* scrollCols in LootHistory module is now changeable.
+
+
+###### Bugfixes
++ *It's no longer possible to start a session before crucial data has been sent out.*
+
+
 ### v2.4.6
 ---
 * Optimized ML comm timers.

@@ -143,7 +143,12 @@ function RCSessionFrame:GetFrame()
 			addon:Print(L["Looted items to award later"])
 			ml:EndSession()
 		else
-			ml:StartSession()
+			if not addon.candidates[addon.playerName] or #addon.council == 0 then
+				addon:Print(L["Please wait a few seconds until all data has been synchronized."])
+				return addon:Debug("Data wasn't ready", addon.candidates[addon.playerName], #addon.council)
+			else
+				ml:StartSession()
+			end
 		end
 		self:Disable()
 	end)

@@ -135,27 +135,6 @@ function LootFrame:GetFrame()
 	return self.frame
 end
 
--- Note button
-LibDialog:Register("LOOTFRAME_NOTE", {
-	text = L["Enter your note:"],
-	on_show = function(self)
-		self:SetFrameStrata("FULLSCREEN")
-	end,
-	editboxes = {
-		{
-			on_enter_pressed = function(self, entry)
-				--items[entries[entry].realID].note = self:GetText() -- old
-				entry.item.note = self:GetText() -- new
-				LibDialog:Dismiss("LOOTFRAME_NOTE")
-			end,
-			on_escape_pressed = function(self)
-				LibDialog:Dismiss("LOOTFRAME_NOTE")
-			end,
-			auto_focus = true,
-		}
-	},
-})
-
 do
 	local entryPrototype = {
 		type = "normal",
@@ -253,7 +232,7 @@ do
 				end
 			end)
 			entry.noteButton:SetScript("OnLeave", function() addon:HideTooltip() end)
-			entry.noteButton:SetScript("OnClick", function() LibDialog:Spawn("LOOTFRAME_NOTE", entry) end)
+			entry.noteButton:SetScript("OnClick", function() LibDialog:Spawn("RCLOOTCOUNCIL_LOOTFRAME_NOTE", entry) end)
 
 			----- item text/lvl ---------------
 			entry.itemText = entry.frame:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")

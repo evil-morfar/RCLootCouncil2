@@ -136,6 +136,11 @@ end
 
 function RCLootCouncilML:StartSession()
 	addon:Debug("ML:StartSession()")
+	-- Make sure we haven't started the session too fast
+	if not addon.candidates[addon.playerName] or #addon.council == 0 then
+		addon:Print(L["Please wait a few seconds until all data has been synchronized."])
+		return addon:Debug("Data wasn't ready", addon.candidates[addon.playerName], #addon.council)
+	end
 	self.running = true
 
 	addon:SendCommand("group", "lootTable", self.lootTable)
@@ -471,12 +476,12 @@ end
 --@param isToken	True if it's awarded as a tier token. Only used for announceAward().
 --@returns True if awarded successfully
 function RCLootCouncilML:Award(session, winner, response, reason, isToken)
-	addon:DebugLog("ML:Award", session, winner, response, reason)
+	addon:DebugLog("ML:Award", session, winner, response, reason, isToken)
 	if addon.testMode then
 		if winner then
-			addon:SendCommand("group", "awarded", session)
+			addon:SendCommand("group", "awarded", session, winner)
 			addon:Print(format(L["The item would now be awarded to 'player'"], addon.Ambiguate(winner)))
-			self.lootTable[session].awarded = true
+			self.lootTable[session].awarded = winner
 			if self:HasAllItemsBeenAwarded() then
 				 addon:Print(L["All items has been awarded and  the loot session concluded"])
 			end
@@ -530,10 +535,11 @@ function RCLootCouncilML:Award(session, winner, response, reason, isToken)
 		end
 		if awarded then
 			-- flag the item as awarded and update
-			addon:SendCommand("group", "awarded", session)
-			self.lootTable[session].awarded = true -- No need to let Comms handle this
+			addon:SendCommand("group", "awarded", session, winner)
+			self.lootTable[session].awarded = winner -- No need to let Comms handle this
 
-			self:AnnounceAward(addon.Ambiguate(winner), self.lootTable[session].link, reason and reason.text or addon:GetResponseText(response, isToken))
+			self:AnnounceAward(winner, self.lootTable[session].link,
+			 reason and reason.text or addon:GetResponseText(response, isToken), addon:GetActiveModule("votingframe"):GetLootTable()[session].candidates[winner].roll, session)
 			if self:HasAllItemsBeenAwarded() then self:EndSession() end
 
 		else -- If we reach here it means we couldn't find a valid MasterLootCandidate, propably due to the winner is unable to receive the loot
@@ -567,13 +573,31 @@ function RCLootCouncilML:AnnounceItems()
 	end
 end
 
-function RCLootCouncilML:AnnounceAward(name, link, text)
+--- Substitution strings for the awardString
+-- Each index corrosponds to a keyword in the award string.
+-- If it exists, the function will be called with all the parameters from :AnnounceAward
+RCLootCouncilML.awardStrings = {
+	["&p"] = function(name) return addon.Ambiguate(name) end,
+	["&i"] = function(...) return select(2, ...) end,
+	["&r"] = function(...) return select(3, ...) end,
+	["&n"] = function(...) return select(4, ...) or "" end,
+}
+
+-- See above for text substitutions
+-- @paramsig 			name, link, text [,roll, session]
+-- @param name 		The unambiguated name of the winner
+-- @param link 		The itemlink of the awarded item
+-- @param response	The text matching the candidate's response
+-- @param roll 		The candidate's roll
+-- @param session		The session of the awarded item
+function RCLootCouncilML:AnnounceAward(name, link, response, roll, session)
 	if db.announceAward then
 		for k,v in pairs(db.awardText) do
+			local message = v.text
 			if v.channel ~= "NONE" then
-				local message = gsub(v.text, "&p", name)
-				message = gsub(message, "&i", link)
-				message = gsub(message, "&r", text)
+				for text, func in pairs(self.awardStrings) do
+					message = gsub(message, text, tostring(func(name, link, response, roll, session)))
+				end
 				SendChatMessage(message, addon:GetAnnounceChannel(v.channel))
 			end
 		end
@@ -618,7 +642,7 @@ function RCLootCouncilML:AutoAward(lootIndex, item, quality, name, reason, boss)
 	end
 	if awarded then
 		addon:Print(format(L["Auto awarded 'item'"], item))
-		self:AnnounceAward(addon.Ambiguate(name), item, db.awardReasons[reason].text)
+		self:AnnounceAward(name, item, db.awardReasons[reason].text)
 		self:TrackAndLogLoot(name, item, reason, boss, 0, nil, nil, db.awardReasons[reason])
 	else
 		addon:Print(L["Cannot autoaward:"])
@@ -793,55 +817,3 @@ function RCLootCouncilML:SendWhisperHelp(target)
 	SendChatMessage(L["whisper_guide2"], "WHISPER", nil, target)
 	addon:Print(format(L["Sent whisper help to 'player'"], addon.Ambiguate(target)))
 end
-
---------ML Popups ------------------
-LibDialog:Register("RCLOOTCOUNCIL_CONFIRM_ABORT", {
-	text = L["Are you sure you want to abort?"],
-	on_show = function(self)
-		self:SetFrameStrata("FULLSCREEN")
-	end,
-	buttons = {
-		{	text = L["Yes"],
-			on_click = function(self)
-				addon:DebugLog("ML aborted session")
-				RCLootCouncilML:EndSession()
-				CloseLoot() -- close the lootlist
-				addon:GetActiveModule("votingframe"):EndSession(true)
-			end,
-		},
-		{	text = L["No"],
-		},
-	},
-	hide_on_escape = true,
-	show_while_dead = true,
-})
-LibDialog:Register("RCLOOTCOUNCIL_CONFIRM_AWARD", {
-	text = "something_went_wrong",
-	icon = "",
-	on_show = function(self, data)
-		self:SetFrameStrata("FULLSCREEN")
-		local session, player = unpack(data)
-		self.text:SetText(format(L["Are you sure you want to give #item to #player?"], RCLootCouncilML.lootTable[session].link, addon.Ambiguate(player)))
-		self.icon:SetTexture(RCLootCouncilML.lootTable[session].texture)
-	end,
-	buttons = {
-		{	text = L["Yes"],
-			on_click = function(self, data)
-				-- IDEA Perhaps come up with a better way of handling this
-				local session, player, response, reason, votes, item1, item2, isTierRoll = unpack(data,1,8)
-				local item = RCLootCouncilML.lootTable[session].link -- Store it now as we wipe lootTable after Award()
-				local isToken = RCLootCouncilML.lootTable[session].token
-				local awarded = RCLootCouncilML:Award(session, player, response, reason, isTierRoll)
-				if awarded then -- log it
-					RCLootCouncilML:TrackAndLogLoot(player, item, response, addon.bossName, votes, item1, item2, reason, isToken, isTierRoll)
-				end
-				-- We need to delay the test mode disabling so comms have a chance to be send first!
-				if addon.testMode and RCLootCouncilML:HasAllItemsBeenAwarded() then RCLootCouncilML:EndSession() end
-			end,
-		},
-		{	text = L["No"],
-		},
-	},
-	hide_on_escape = true,
-	show_while_dead = true,
-})
