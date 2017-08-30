@@ -4,7 +4,6 @@
 local addon = LibStub("AceAddon-3.0"):GetAddon("RCLootCouncil")
 local LibDialog = LibStub("LibDialog-1.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
-local db = addon:Getdb()
 
 -- Confirm usage (core)
 LibDialog:Register("RCLOOTCOUNCIL_CONFIRM_USAGE", {
@@ -17,12 +16,13 @@ LibDialog:Register("RCLOOTCOUNCIL_CONFIRM_USAGE", {
          on_click = function()
             addon:DebugLog("Player confirmed usage")
             -- The player might have passed on ML before accepting :O
-            if not addon.isMasterLooter then return end
+            if addon.masterLooter and addon.masterLooter ~= "" then return end
             local lootMethod = GetLootMethod()
             if lootMethod ~= "master" then
                addon:Print(L["Changing LootMethod to Master Looting"])
                SetLootMethod("master", addon.Ambiguate(addon.playerName)) -- activate ML
             end
+            local db = addon:Getdb()
             if db.autoAward and GetLootThreshold() ~= 2 and GetLootThreshold() > db.autoAwardLowerThreshold  then
                addon:Print(L["Changing loot threshold to enable Auto Awarding"])
                SetLootThreshold(db.autoAwardLowerThreshold >= 2 and db.autoAwardLowerThreshold or 2)
