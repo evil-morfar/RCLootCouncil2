@@ -1,8 +1,9 @@
 ### v2.5.2
 ---
 ###### Bugfixes
++ *Fixed error after syncing in certain situations. (#288)*
++ *Fixed a nil comparison error when more than 14 was in the group (#289).*
 + *Fixed an error in the loot frame note (#290).*
-+ *Fixed error after syncing in certain situations.*
 
 ### v2.5.1
 ---

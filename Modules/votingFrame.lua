@@ -756,14 +756,14 @@ function RCVotingFrame.SetCellName(rowFrame, frame, data, cols, row, realrow, co
 	frame.text:SetText(addon.Ambiguate(name))
 	local c = addon:GetClassColor(lootTable[session].candidates[name].class)
 	frame.text:SetTextColor(c.r, c.g, c.b, c.a)
-	data[realrow].cols[column].value = name
+	data[realrow].cols[column].value = name or ""
 end
 
 function RCVotingFrame.SetCellRank(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
 	local name = data[realrow].name
 	frame.text:SetText(lootTable[session].candidates[name].rank)
 	frame.text:SetTextColor(addon:GetResponseColor(lootTable[session].candidates[name].response,lootTable[session].candidates[name].isTier))
-	data[realrow].cols[column].value = lootTable[session].candidates[name].rank
+	data[realrow].cols[column].value = lootTable[session].candidates[name].rank or ""
 end
 
 function RCVotingFrame.SetCellRole(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
@@ -771,7 +771,7 @@ function RCVotingFrame.SetCellRole(rowFrame, frame, data, cols, row, realrow, co
 	local role = addon.TranslateRole(lootTable[session].candidates[name].role)
 	frame.text:SetText(role)
 	frame.text:SetTextColor(addon:GetResponseColor(lootTable[session].candidates[name].response,lootTable[session].candidates[name].isTier))
-	data[realrow].cols[column].value = role
+	data[realrow].cols[column].value = role or ""
 end
 
 function RCVotingFrame.SetCellResponse(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
@@ -784,14 +784,14 @@ end
 function RCVotingFrame.SetCellIlvl(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
 	local name = data[realrow].name
 	frame.text:SetText(db.iLvlDecimal and addon.round(lootTable[session].candidates[name].ilvl,2) or addon.round(lootTable[session].candidates[name].ilvl))
-	data[realrow].cols[column].value = lootTable[session].candidates[name].ilvl
+	data[realrow].cols[column].value = lootTable[session].candidates[name].ilvl or ""
 end
 
 function RCVotingFrame.SetCellDiff(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
 	local name = data[realrow].name
 	frame.text:SetText(lootTable[session].candidates[name].diff)
 	frame.text:SetTextColor(unpack(RCVotingFrame:GetDiffColor(lootTable[session].candidates[name].diff)))
-	data[realrow].cols[column].value = lootTable[session].candidates[name].diff
+	data[realrow].cols[column].value = lootTable[session].candidates[name].diff or ""
 end
 
 function RCVotingFrame.SetCellGear(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
@@ -908,7 +908,7 @@ end
 function RCVotingFrame.SetCellRoll(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
 	local name = data[realrow].name
 	frame.text:SetText(lootTable[session].candidates[name].roll or "")
-	data[realrow].cols[column].value = lootTable[session].candidates[name].roll
+	data[realrow].cols[column].value = lootTable[session].candidates[name].roll or ""
 end
 
 function RCVotingFrame.filterFunc(table, row)
