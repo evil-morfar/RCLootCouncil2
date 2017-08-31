@@ -1435,6 +1435,7 @@ end
 
 function RCLootCouncil:UpdateDB()
 	db = self.db.profile
+	self.db:RegisterDefaults(self.defaults)
 end
 function RCLootCouncil:UpdateHistoryDB()
 	historyDB = self:GetHistoryDB()

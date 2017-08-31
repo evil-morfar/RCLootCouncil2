@@ -2,6 +2,7 @@
 ---
 ###### Bugfixes
 + *Fixed an error in the loot frame note (#290).*
++ *Fixed error after syncing in certain situations.*
 
 ### v2.5.1
 ---
