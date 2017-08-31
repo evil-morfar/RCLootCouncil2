@@ -1682,13 +1682,15 @@ function RCLootCouncil:CreateFrame(name, cName, title, width, height)
 	--tf:SetFrameStrata("DIALOG")
 	tf:SetToplevel(true)
 	tf:SetBackdrop({
-	     bgFile = AceGUIWidgetLSMlists.background[db.UI.default.background],
-	     edgeFile = AceGUIWidgetLSMlists.border[db.UI.default.border],
+	   --   bgFile = AceGUIWidgetLSMlists.background[db.UI.default.background],
+	   --   edgeFile = AceGUIWidgetLSMlists.border[db.UI.default.border],
+		bgFile = AceGUIWidgetLSMlists.background[db.skins[db.currentSkin].background],
+		edgeFile = AceGUIWidgetLSMlists.border[db.skins[db.currentSkin].border],
 	     tile = true, tileSize = 64, edgeSize = 12,
 	     insets = { left = 2, right = 2, top = 2, bottom = 2 }
 	})
-	tf:SetBackdropColor(unpack(db.UI.default.bgColor))
-	tf:SetBackdropBorderColor(unpack(db.UI.default.borderColor))
+	tf:SetBackdropColor(unpack(db.skins[db.currentSkin].bgColor))
+	tf:SetBackdropBorderColor(unpack(db.skins[db.currentSkin].borderColor))
 	tf:SetHeight(22)
 	tf:EnableMouse()
 	tf:SetMovable(true)
@@ -1717,16 +1719,18 @@ function RCLootCouncil:CreateFrame(name, cName, title, width, height)
 	local c = CreateFrame("Frame", nil, f) -- frame that contains the actual content
 	c:SetBackdrop({
 	     --bgFile = "Interface\\DialogFrame\\UI-DialogBox-Gold-Background",
-		bgFile = AceGUIWidgetLSMlists.background[db.UI.default.background],
-	   edgeFile = AceGUIWidgetLSMlists.border[db.UI.default.border],
+		  --   bgFile = AceGUIWidgetLSMlists.background[db.UI.default.background],
+  	   --   edgeFile = AceGUIWidgetLSMlists.border[db.UI.default.border],
+		bgFile = AceGUIWidgetLSMlists.background[db.skins[db.currentSkin].background],
+		edgeFile = AceGUIWidgetLSMlists.border[db.skins[db.currentSkin].border],
 	   tile = true, tileSize = 64, edgeSize = 12,
 	   insets = { left = 2, right = 2, top = 2, bottom = 2 }
 	})
 	c:EnableMouse(true)
 	c:SetWidth(450)
 	c:SetHeight(height or 325)
-	c:SetBackdropColor(unpack(db.UI.default.bgColor))
-	c:SetBackdropBorderColor(unpack(db.UI.default.borderColor))
+	c:SetBackdropColor(unpack(db.skins[db.currentSkin].bgColor))
+	c:SetBackdropBorderColor(unpack(db.skins[db.currentSkin].borderColor))
 	c:SetPoint("TOPLEFT")
 	c:SetScript("OnMouseDown", function(self) self:GetParent():StartMoving() end)
 	c:SetScript("OnMouseUp", function(self) self:GetParent():StopMovingOrSizing(); self:GetParent():SavePosition() end)
@@ -1760,6 +1764,7 @@ function RCLootCouncil:CreateFrame(name, cName, title, width, height)
 		self.content:SetHeight(height)
 	end
 	f.Update = function(self)
+		RCLootCouncil:Debug("UpdateFrame", self:GetName())
 		self.content:SetBackdrop({
 			bgFile = AceGUIWidgetLSMlists.background[db.UI[cName].background],
 			edgeFile = AceGUIWidgetLSMlists.border[db.UI[cName].border],
@@ -1792,6 +1797,7 @@ end
 -- Skins must be added to the db.skins table first.
 -- @param key Index in db.skins.
 function RCLootCouncil:ActivateSkin(key)
+	self:Debug("ActivateSkin", key)
 	if not db.skins[key] then return end
 	for k,v in pairs(db.UI) do
 		v.bgColor = {unpack(db.skins[key].bgColor)}
