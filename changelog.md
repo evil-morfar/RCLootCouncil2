@@ -1,3 +1,8 @@
+### v2.5.2
+---
+###### Bugfixes
++ *Fixed an error in the loot frame note (#290).*
+
 ### v2.5.1
 ---
 ###### Bugfixes

@@ -129,10 +129,10 @@ LibDialog:Register("RCLOOTCOUNCIL_LOOTFRAME_NOTE", {
 		{
 			on_enter_pressed = function(self, entry)
 				entry.item.note = self:GetText() -- new
-				LibDialog:Dismiss("LOOTFRAME_NOTE")
+				LibDialog:Dismiss("RCLOOTCOUNCIL_LOOTFRAME_NOTE")
 			end,
 			on_escape_pressed = function(self)
-				LibDialog:Dismiss("LOOTFRAME_NOTE")
+				LibDialog:Dismiss("RCLOOTCOUNCIL_LOOTFRAME_NOTE")
 			end,
 			auto_focus = true,
 		}
