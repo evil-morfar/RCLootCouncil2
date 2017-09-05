@@ -12,7 +12,7 @@ local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 local ROW_HEIGHT = 20;
 local NUM_ROWS = 15;
 local db
-local session = 1 -- The session we're viewing
+local session = 1 -- The session we're viewing - see :GetCurrentSession()
 local lootTable = {} -- Table containing all data, lib-st cells pulls data from this
 local sessionButtons = {}
 local moreInfo = false -- Show more info frame?
@@ -247,6 +247,15 @@ function RCVotingFrame:GetLootTable()
 	return lootTable
 end
 
+--- Returns the session the user is currently viewing
+-- If you want to get the session when it changes, these AceEvent messages are available:
+-- "RCSessionChangedPre"	- Delivered before :SwitchSession() is executed, i.e before :GetCurrentSession() is updated.
+-- "RCSessionChangedPost"	- Dilvered after :SwitchSession() is executed.
+-- @usage RCLootCouncil:RegisterMessage("RCSessionChangedPost", --your_function--) (see AceEvent-3.0 for more.)
+function RCVotingFrame:GetCurrentSession()
+	return session
+end
+
 function RCVotingFrame:Setup(table)
 	--lootTable[session] = {bagged, lootSlot, awarded, name, link, quality, ilvl, type, subType, equipLoc, texture, boe}
 	lootTable = table -- Extract all the data we get
@@ -350,6 +359,7 @@ end
 
 function RCVotingFrame:SwitchSession(s)
 	addon:Debug("SwitchSession", s)
+	addon:SendMessage("RCSessionChangedPre", s)
 	-- Start with setting up some statics
 	local old = session
 	session = s
@@ -390,6 +400,7 @@ function RCVotingFrame:SwitchSession(s)
 	FauxScrollFrame_OnVerticalScroll(self.frame.st.scrollframe, 0, self.frame.st.rowHeight, function() self.frame.st:Refresh() end) -- Reset scrolling to 0
 	self:Update()
 	self:UpdatePeopleToVote()
+	addon:SendMessage("RCSessionChangedPost", s)
 end
 
 function RCVotingFrame:BuildST()
