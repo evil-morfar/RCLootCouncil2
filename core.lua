@@ -1005,13 +1005,12 @@ local subTypeLookup = {
 }
 
 function RCLootCouncil:LocalizeSubTypes()
-	if self.db.global.localizedSubTypes.created then return end -- We only need to create it once
+	if self.db.global.localizedSubTypes.created == GetLocale() then return end -- We only need to create it once, if game locale is the same as stored locale.
 	-- Get the item info
 	for _, item in pairs(subTypeLookup) do
 		GetItemInfo(item)
 	end
 	self.db.global.localizedSubTypes = {} -- reset
-	self.db.global.localizedSubTypes.created = true
 	for name, item in pairs(subTypeLookup) do
 		local sType = select(7, GetItemInfo(item))
 		if sType then
@@ -1024,6 +1023,7 @@ function RCLootCouncil:LocalizeSubTypes()
 			return
 		end
 	end
+	self.db.global.localizedSubTypes.created = GetLocale() -- Only mark this as created after everything is done.
 end
 
 function RCLootCouncil:IsItemBoE(item)
