@@ -613,6 +613,8 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 					for ses, v in ipairs(lootTable) do
 						local iName = GetItemInfo(v.link)
 						if not iName then self:Debug(v.link); cached = false end
+						local subType = select(7, GetItemInfo(v.link))
+						if subType then v.subType = subtype end -- subType should use user localization instead of master looter localization.
 					end
 					if not cached then
 						self:Debug("Some items wasn't cached, delaying loot by 1 sec")
