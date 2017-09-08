@@ -834,7 +834,8 @@ function LootHistory.RightClickMenu(menu, level)
 				Lib_UIDropDownMenu_AddButton(info, level)
 			end
 		elseif value == "EDIT_NAME" and entry.special == value then
-			for _,v in pairs(LootHistory.frame.name.data) do
+			for _,i in ipairs(LootHistory.frame.name.sorttable) do
+				local v = LootHistory.frame.name.data[i]
 				info.text = v[2].value
 				local c = addon:GetClassColor(v[1].args[1])
 				info.colorCode = "|cff"..addon:RGBToHex(c.r,c.g,c.b)

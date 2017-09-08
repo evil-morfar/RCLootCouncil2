@@ -1,7 +1,15 @@
 ### v2.5.3
 ---
+* Names in the Loot History rightclick menu is now sorted alphabetically (#292).
+
 * **Dev**
 * Added :GetCurrentSession() and AceEvent messages "RCSessionChangedPre" and "RCSessionChangedPost" to the voting frame.
+
+###### Bugfixes
++ *Fixed occasional error related to awards (#296).*
++ *Long standing autopass issue when the ML is using a different locale - thanks to safetee (#285).*
+
+
 
 ### v2.5.2
 ---

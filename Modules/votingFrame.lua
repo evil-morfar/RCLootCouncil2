@@ -156,6 +156,7 @@ function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
 				self:ScheduleTimer(function()
 					moreInfoData = addon:GetLootDBStatistics() -- Just update it on every award
 				end, 1) -- Make sure we've received the history data before updating
+				if not lootTable[s] then return end -- We might not have lootTable - e.g. if we just reloaded
 				local s, winner = unpack(data)
 				lootTable[s].awarded = winner
 				if addon.isMasterLooter and session ~= #lootTable then -- ML should move to the next item on award
