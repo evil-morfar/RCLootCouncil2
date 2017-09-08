@@ -1330,7 +1330,7 @@ end
 --- Returns statistics for use in various detailed views.
 -- @return A table formatted as:
 --[[ @usage lootDBStatistics[candidate_name] = {
-	[item#] = { -- This should be 5 at most
+	[item#] = { -- 5 latest items won
 		[1] = lootWon,
 		[2] = formatted response string,
 		[3] = {color}, --see color format in self.responses
