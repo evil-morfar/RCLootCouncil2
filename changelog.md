@@ -3,6 +3,11 @@
 * **Dev**
 * Added :GetCurrentSession() and AceEvent messages "RCSessionChangedPre" and "RCSessionChangedPost" to the voting frame.
 
+###### Bugfixes
++ *Fixed occasional error related to awards (#296).
+
+
+
 ### v2.5.2
 ---
 ###### Bugfixes
