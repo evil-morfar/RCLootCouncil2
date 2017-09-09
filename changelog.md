@@ -1,4 +1,4 @@
-### v2.5.3
+### v2.5.3 
 ---
 * Names in the Loot History rightclick menu is now sorted alphabetically (#292).
 
