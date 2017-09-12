@@ -46,6 +46,8 @@ local unregisterGuildEvent = false
 local player_relogged = true -- Determines if we potentially need data from the ML due to /rl
 local lootTable = {}
 
+local IsPartyLFG = IsPartyLFG()
+
 function RCLootCouncil:OnInitialize()
 	--IDEA Consider if we want everything on self, or just whatever modules could need.
   	self.version = GetAddOnMetadata("RCLootCouncil", "Version")
@@ -539,9 +541,9 @@ function RCLootCouncil:SendCommand(target, command, ...)
 
 	if target == "group" then
 		if IsInRaid() then -- Raid
-			self:SendCommMessage("RCLootCouncil", toSend, "RAID")
+			self:SendCommMessage("RCLootCouncil", toSend, IsPartyLFG() and "INSTANCE_CHAT" or "RAID")
 		elseif IsInGroup() then -- Party
-			self:SendCommMessage("RCLootCouncil", toSend, "PARTY")
+			self:SendCommMessage("RCLootCouncil", toSend, IsPartyLFG() and "INSTANCE_CHAT" or "PARTY")
 		else--if self.testMode then -- Alone (testing)
 			self:SendCommMessage("RCLootCouncil", toSend, "WHISPER", self.playerName)
 		end
@@ -551,7 +553,7 @@ function RCLootCouncil:SendCommand(target, command, ...)
 
 	else
 		if self:UnitIsUnit(target,"player") then -- If target == "player"
-			self:SendCommMessage("RCLootCouncil", toSend, "WHISPER", self.playerName, "BULK", self.Print, "test")
+			self:SendCommMessage("RCLootCouncil", toSend, "WHISPER", self.playerName)
 		else
 			-- We cannot send "WHISPER" to a crossrealm player
 			if target:find("-") then
@@ -562,7 +564,7 @@ function RCLootCouncil:SendCommand(target, command, ...)
 					-- See "RCLootCouncil:HandleXRealmComms()" for more info
 					toSend = self:Serialize("xrealm", {target, command, ...})
 					if GetNumGroupMembers() > 0 then -- We're in a group
-						self:SendCommMessage("RCLootCouncil", toSend, "RAID")
+						self:SendCommMessage("RCLootCouncil", toSend, IsPartyLFG() and "INSTANCE_CHAT" or "RAID")
 					else -- We're not, probably a guild verTest
 						self:SendCommMessage("RCLootCouncil", toSend, "GUILD")
 					end
