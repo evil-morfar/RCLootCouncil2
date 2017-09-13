@@ -46,7 +46,7 @@ local unregisterGuildEvent = false
 local player_relogged = true -- Determines if we potentially need data from the ML due to /rl
 local lootTable = {}
 
-local IsPartyLFG = IsPartyLFG()
+local IsPartyLFG = IsPartyLFG
 
 function RCLootCouncil:OnInitialize()
 	--IDEA Consider if we want everything on self, or just whatever modules could need.
