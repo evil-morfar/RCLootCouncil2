@@ -12,7 +12,7 @@ local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 local ROW_HEIGHT = 20;
 local NUM_ROWS = 15;
 local db
-local session = 1 -- The session we're viewing
+local session = 1 -- The session we're viewing - see :GetCurrentSession()
 local lootTable = {} -- Table containing all data, lib-st cells pulls data from this
 local sessionButtons = {}
 local moreInfo = false -- Show more info frame?
@@ -156,6 +156,7 @@ function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
 				self:ScheduleTimer(function()
 					moreInfoData = addon:GetLootDBStatistics() -- Just update it on every award
 				end, 1) -- Make sure we've received the history data before updating
+				if not lootTable[s] then return end -- We might not have lootTable - e.g. if we just reloaded
 				local s, winner = unpack(data)
 				lootTable[s].awarded = winner
 				if addon.isMasterLooter and session ~= #lootTable then -- ML should move to the next item on award
@@ -245,6 +246,15 @@ end
 
 function RCVotingFrame:GetLootTable()
 	return lootTable
+end
+
+--- Returns the session the user is currently viewing
+-- If you want to get the session when it changes, these AceEvent messages are available:
+-- "RCSessionChangedPre"	- Delivered before :SwitchSession() is executed, i.e before :GetCurrentSession() is updated.
+-- "RCSessionChangedPost"	- Dilvered after :SwitchSession() is executed.
+-- @usage RCLootCouncil:RegisterMessage("RCSessionChangedPost", --your_function--) (see AceEvent-3.0 for more.)
+function RCVotingFrame:GetCurrentSession()
+	return session
 end
 
 function RCVotingFrame:Setup(table)
@@ -350,6 +360,7 @@ end
 
 function RCVotingFrame:SwitchSession(s)
 	addon:Debug("SwitchSession", s)
+	addon:SendMessage("RCSessionChangedPre", s)
 	-- Start with setting up some statics
 	local old = session
 	session = s
@@ -390,6 +401,7 @@ function RCVotingFrame:SwitchSession(s)
 	FauxScrollFrame_OnVerticalScroll(self.frame.st.scrollframe, 0, self.frame.st.rowHeight, function() self.frame.st:Refresh() end) -- Reset scrolling to 0
 	self:Update()
 	self:UpdatePeopleToVote()
+	addon:SendMessage("RCSessionChangedPost", s)
 end
 
 function RCVotingFrame:BuildST()
@@ -756,7 +768,7 @@ function RCVotingFrame.SetCellName(rowFrame, frame, data, cols, row, realrow, co
 	frame.text:SetText(addon.Ambiguate(name))
 	local c = addon:GetClassColor(lootTable[session].candidates[name].class)
 	frame.text:SetTextColor(c.r, c.g, c.b, c.a)
-	data[realrow].cols[column].value = name
+	data[realrow].cols[column].value = name or ""
 end
 
 function RCVotingFrame.SetCellRank(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
@@ -765,7 +777,7 @@ function RCVotingFrame.SetCellRank(rowFrame, frame, data, cols, row, realrow, co
 	local isRelic = lootTable[session].candidates[name].isRelic
 	frame.text:SetText(lootTable[session].candidates[name].rank)
 	frame.text:SetTextColor(addon:GetResponseColor(lootTable[session].candidates[name].response,isTier, isRelic))
-	data[realrow].cols[column].value = lootTable[session].candidates[name].rank
+	data[realrow].cols[column].value = lootTable[session].candidates[name].rank or ""
 end
 
 function RCVotingFrame.SetCellRole(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
@@ -775,7 +787,7 @@ function RCVotingFrame.SetCellRole(rowFrame, frame, data, cols, row, realrow, co
 	local role = addon.TranslateRole(lootTable[session].candidates[name].role)
 	frame.text:SetText(role)
 	frame.text:SetTextColor(addon:GetResponseColor(lootTable[session].candidates[name].response,isTier,isRelic))
-	data[realrow].cols[column].value = role
+	data[realrow].cols[column].value = role or ""
 end
 
 function RCVotingFrame.SetCellResponse(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
@@ -789,14 +801,14 @@ end
 function RCVotingFrame.SetCellIlvl(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
 	local name = data[realrow].name
 	frame.text:SetText(db.iLvlDecimal and addon.round(lootTable[session].candidates[name].ilvl,2) or addon.round(lootTable[session].candidates[name].ilvl))
-	data[realrow].cols[column].value = lootTable[session].candidates[name].ilvl
+	data[realrow].cols[column].value = lootTable[session].candidates[name].ilvl or ""
 end
 
 function RCVotingFrame.SetCellDiff(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
 	local name = data[realrow].name
 	frame.text:SetText(lootTable[session].candidates[name].diff)
 	frame.text:SetTextColor(unpack(RCVotingFrame:GetDiffColor(lootTable[session].candidates[name].diff)))
-	data[realrow].cols[column].value = lootTable[session].candidates[name].diff
+	data[realrow].cols[column].value = lootTable[session].candidates[name].diff or ""
 end
 
 function RCVotingFrame.SetCellGear(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
@@ -913,7 +925,7 @@ end
 function RCVotingFrame.SetCellRoll(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
 	local name = data[realrow].name
 	frame.text:SetText(lootTable[session].candidates[name].roll or "")
-	data[realrow].cols[column].value = lootTable[session].candidates[name].roll
+	data[realrow].cols[column].value = lootTable[session].candidates[name].roll or ""
 end
 
 function RCVotingFrame.filterFunc(table, row)

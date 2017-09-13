@@ -847,18 +847,18 @@ function addon:OptionsTable()
 							tierButtonsOptions = {
 								order = 2,
 								type = "group",
-								name = "Tier Buttons and Responses",
+								name = L["Tier Buttons and Responses"],
 								inline = true,
 								args = {
 									tierButtonsEnabled = {
 										order = 0,
-										name = "Enable Tier Buttons",
-										desc = "Check to enable a seperate set of buttons when rolling for tier pieces.",
+										name = L["Enable Tier Buttons"],
+										desc = L["enable_tierbuttons_desc"],
 										type = "toggle",
 									},
 									optionsDesc = {
 										order = 0.1,
-										name = "Select which buttons/responses to use when handling tier pieces. It's basically the same concept as above, except these are shown when tier pieces drop.\nA pass button is still added to the right.",
+										name = L["tier_buttons_desc"],
 										type = "description",
 										hidden = function() return not self.db.profile.tierButtonsEnabled end,
 									},

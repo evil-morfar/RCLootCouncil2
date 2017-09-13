@@ -1,4 +1,38 @@
-### v2.5.0-Beta2
+### v2.5.4
+---
+###### Bugfixes
++ *Removed occasional "test num num" prints (#297).*
++ *Should no longer cause "You're not in a raid" spam from addon messages.*
+
+
+### v2.5.3
+---
+* Names in the Loot History rightclick menu is now sorted alphabetically (#292).
+
+
+* **Dev**
+* Added :GetCurrentSession() and AceEvent messages "RCSessionChangedPre" and "RCSessionChangedPost" to the voting frame.
+
+###### Bugfixes
++ *Fixed occasional error related to awards (#296).*
++ *Long standing autopass issue when the ML is using a different locale - thanks to safetee (#285).*
+
+
+
+### v2.5.2
+---
+###### Bugfixes
++ *Fixed error after syncing in certain situations. (#288)*
++ *Fixed a nil comparison error when more than 14 was in the group (#289).*
++ *Fixed an error in the loot frame note (#290).*
+
+### v2.5.1
+---
+###### Bugfixes
++ *The usage popup wouldn't work properly if master looter was already enabled.*
+
+
+### v2.5.0
 ---
 * **Synchronize**
 * It's now possible to synchronize the settings and loot history between players.
@@ -18,12 +52,16 @@
 * Added number of raids registered to all more info displays.
 * Note: These are somewhat estimates, as RCLootCouncil only has a loot tracker, and not a fully fletched raid tracker.
 
+
+* Updated for 7.3.
 * Comms optimizations.
 * Prepared to handle Tier 21.
+* Added some missing text to the localization table.
+* Added Rune of Passage to the ignore list.
 
 
 * **Dev**
- * **Breaking:**
+ * **Breaking**
  * Added a new parameter to CustomChatCmd() to add a help string to the added command.
  * Changed returns from GetLootDBStatistics().
  * RCLootCouncilML:AnnounceAward() has been recreated so keywords can be added and/or changed.
