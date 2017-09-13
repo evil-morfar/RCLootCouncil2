@@ -1,13 +1,14 @@
 ### v2.5.4
 ---
 ###### Bugfixes
-+ *Fixed occasional "test num num" prints (#297).*
++ *Removed occasional "test num num" prints (#297).*
 + *Should no longer cause "You're not in a raid" spam from addon messages.*
 
 
 ### v2.5.3
 ---
 * Names in the Loot History rightclick menu is now sorted alphabetically (#292).
+
 
 * **Dev**
 * Added :GetCurrentSession() and AceEvent messages "RCSessionChangedPre" and "RCSessionChangedPost" to the voting frame.
