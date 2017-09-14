@@ -1,3 +1,9 @@
+### v2.5.5
+---
+###### Bugfixes
++ *Fixed an issue with registering awards on the voting frame.*
+
+
 ### v2.5.4
 ---
 ###### Bugfixes
