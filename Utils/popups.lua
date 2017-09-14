@@ -104,7 +104,7 @@ LibDialog:Register("RCLOOTCOUNCIL_CONFIRM_AWARD", {
 				local session, player, responseID, reason, votes, item1, item2, isTierRoll, isRelicRoll = unpack(data,1,9)
 				local item = RCLootCouncilML.lootTable[session].link -- Store it now as we wipe lootTable after Award()
 				local isToken = RCLootCouncilML.lootTable[session].token
-				local awarded = RCLootCouncilML:Award(session, player, addon:GetResponseText(response, isTierRoll, isRelicRoll), reason)
+				local awarded = RCLootCouncilML:Award(session, player, addon:GetResponseText(responseID, isTierRoll, isRelicRoll), reason)
 				if awarded then -- log it
 					RCLootCouncilML:TrackAndLogLoot(player, item, response, addon.bossName, votes, item1, item2, reason, isToken, isTierRoll, isRelicRoll)
 				end
