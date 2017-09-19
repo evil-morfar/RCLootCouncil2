@@ -104,9 +104,9 @@ LibDialog:Register("RCLOOTCOUNCIL_CONFIRM_AWARD", {
 				local session, player, responseID, reason, votes, item1, item2, isTierRoll, isRelicRoll = unpack(data,1,9)
 				local item = RCLootCouncilML.lootTable[session].link -- Store it now as we wipe lootTable after Award()
 				local isToken = RCLootCouncilML.lootTable[session].token
-				local awarded = RCLootCouncilML:Award(session, player, addon:GetResponseText(responseID, isTierRoll, isRelicRoll), reason)
+				local awarded = RCLootCouncilML:Award(session, player, responseID and addon:GetResponseText(responseID, isTierRoll, isRelicRoll), reason)
 				if awarded then -- log it
-					RCLootCouncilML:TrackAndLogLoot(player, item, response, addon.bossName, votes, item1, item2, reason, isToken, isTierRoll, isRelicRoll)
+					RCLootCouncilML:TrackAndLogLoot(player, item, responseID, addon.bossName, votes, item1, item2, reason, isToken, isTierRoll, isRelicRoll)
 				end
 				-- We need to delay the test mode disabling so comms have a chance to be send first!
 				if addon.testMode and RCLootCouncilML:HasAllItemsBeenAwarded() then RCLootCouncilML:EndSession() end
