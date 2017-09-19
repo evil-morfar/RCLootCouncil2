@@ -879,18 +879,18 @@ function addon:OptionsTable()
 							relicButtonsOptions = {
 								order = 2.1,
 								type = "group",
-								name = "Relic Buttons and Responses",
+								name = L["Relic Buttons and Responses"],
 								inline = true,
 								args = {
 									relicButtonsEnabled = {
 										order = 0,
-										name = "Enable Relic Buttons",
-										desc = "Check to enable a seperate set of buttons when rolling for relics.",
+										name = L["Enable Relic Buttons"],
+										desc = L["enable_relicbuttons_desc"],
 										type = "toggle",
 									},
 									optionsDesc = {
 										order = 0.1,
-										name = "Select which buttons/responses to use when handling relics. It's basically the same concept as above, except these are shown when relics drop.\nA pass button is still added to the right.",
+										name = L["relic_buttons_desc"],
 										type = "description",
 										hidden = function() return not self.db.profile.relicButtonsEnabled end,
 									},
