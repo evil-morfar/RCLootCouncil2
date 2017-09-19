@@ -393,13 +393,16 @@ function LootHistory:GetWowheadLinkFromItemLink(link)
 
 	 -- It seems bonus id 1487 (and basically any other id that's -5 below Wowheads first ilvl upgrade doesn't work)
 	 -- Neither does Warforged items it seems
+	 -- 19/9-17: It seems bonusIDs 3528 and 3336 fucks up Wowhead - however there's no difference with or without those ids ingame (?!).
     if numBonuses > 0 then
         itemurl = itemurl.."&bonus="
         for i, b in pairs(bonusIDs) do
-            itemurl = itemurl..b
-            if i < numBonuses then
-                itemurl = itemurl..":"
-            end
+			  if b ~= 3528 and b ~= 3336 then
+	            itemurl = itemurl..b
+	            if i < numBonuses then
+	                itemurl = itemurl..":"
+	            end
+				end
         end
     end
 

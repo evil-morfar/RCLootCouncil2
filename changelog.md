@@ -6,6 +6,9 @@
 * Do note that anyone with an older version of RCLootCouncil (<2.6) will NOT see the relic buttons.
 
 
+* Testing optimization for wowhead urls in exports (#278).
+
+
 
 * ***Dev***
 * Restructured "CONFIRM_AWARD" popup, along with data supplied from votingFrame.
