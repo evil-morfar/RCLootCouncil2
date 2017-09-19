@@ -1,3 +1,16 @@
+### v2.6.0
+---
+* **Relic Buttons**
+* A new seperate set of buttons is now available for relics.
+* As Master Looter, have a look at the "Button and Responses" settings to enable them.
+* Do note that anyone with an older version of RCLootCouncil (<2.6) will NOT see the relic buttons.
+
+
+
+* ***Dev***
+* Restructured "CONFIRM_AWARD" popup, along with data supplied from votingFrame.
+
+
 ### v2.5.5
 ---
 ###### Bugfixes
