@@ -773,24 +773,29 @@ end
 
 function RCVotingFrame.SetCellRank(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
 	local name = data[realrow].name
+	local isTier = lootTable[session].candidates[name].isTier
+	local isRelic = lootTable[session].candidates[name].isRelic
 	frame.text:SetText(lootTable[session].candidates[name].rank)
-	frame.text:SetTextColor(addon:GetResponseColor(lootTable[session].candidates[name].response,lootTable[session].candidates[name].isTier))
+	frame.text:SetTextColor(addon:GetResponseColor(lootTable[session].candidates[name].response,isTier, isRelic))
 	data[realrow].cols[column].value = lootTable[session].candidates[name].rank or ""
 end
 
 function RCVotingFrame.SetCellRole(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
 	local name = data[realrow].name
+	local isTier = lootTable[session].candidates[name].isTier
+	local isRelic = lootTable[session].candidates[name].isRelic
 	local role = addon.TranslateRole(lootTable[session].candidates[name].role)
 	frame.text:SetText(role)
-	frame.text:SetTextColor(addon:GetResponseColor(lootTable[session].candidates[name].response,lootTable[session].candidates[name].isTier))
+	frame.text:SetTextColor(addon:GetResponseColor(lootTable[session].candidates[name].response,isTier,isRelic))
 	data[realrow].cols[column].value = role or ""
 end
 
 function RCVotingFrame.SetCellResponse(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
 	local name = data[realrow].name
 	local isTier = lootTable[session].candidates[name].isTier
-	frame.text:SetText(addon:GetResponseText(lootTable[session].candidates[name].response, isTier))
-	frame.text:SetTextColor(addon:GetResponseColor(lootTable[session].candidates[name].response, isTier))
+	local isRelic = lootTable[session].candidates[name].isRelic
+	frame.text:SetText(addon:GetResponseText(lootTable[session].candidates[name].response, isTier, isRelic))
+	frame.text:SetTextColor(addon:GetResponseColor(lootTable[session].candidates[name].response, isTier, isRelic))
 end
 
 function RCVotingFrame.SetCellIlvl(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
@@ -1025,14 +1030,17 @@ do
 				notCheckable = true,
 				func = function(name, data)
 					LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_AWARD", {
-					session,
-				  	name,
-					data.response,
-					nil,
-					data.votes,
-					data.gear1,
-					data.gear2,
-					data.isTier,
+						session 		= session,
+					  	winner		= name,
+						responseID	= data.response,
+						reason		= nil,
+						votes			= data.votes,
+						gear1 		= data.gear1,
+						gear2			= data.gear2,
+						isTierRoll	= data.isTier,
+						isRelicRoll	= data.isRelic,
+						link 			= lootTable[session].link,
+						isToken		= lootTable[session].token,
 					})
 				end,
 			},{ -- 4 Award for
@@ -1089,7 +1097,8 @@ do
 						texture = lootTable[session].texture,
 						session = session,
 						equipLoc = lootTable[session].equipLoc,
-						token = lootTable[session].token
+						token = lootTable[session].token,
+						relic = lootTable[session].relic,
 						}
 					}
 					addon:SendCommand(candidateName, "reroll", t)
@@ -1111,6 +1120,7 @@ do
 								session = k,
 								equipLoc = v.equipLoc,
 								token = v.token,
+								relic = v.relic,
 							})
 							addon:SendCommand("group", "change_response", k, candidateName, "WAIT")
 						end
@@ -1169,15 +1179,19 @@ do
 					info.notCheckable = true
 					info.func = function()
 						LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_AWARD", {
-							session,
-							candidateName,
-							nil,
-							v,
-							data.votes,
-							data.gear1,
-							data.gear2,
-							data.isTier,
-				}) end
+							session 		= 	session,
+							winner 		=	candidateName,
+							responseID	= nil,
+							reason		= v,
+							votes			= data.votes,
+							gear1			= data.gear1,
+							gear2			= data.gear2,
+							isTierRoll	= data.isTier,
+							isRelicRoll	= data.isRelic,
+							link 			= lootTable[session].link,
+							isToken		= lootTable[session].token,
+						})
+					end
 					Lib_UIDropDownMenu_AddButton(info, level)
 				end
 			elseif value == "CHANGE_RESPONSE" and entry.special == value then
@@ -1321,11 +1335,19 @@ do
 					info.func = function()
 						for k,v in ipairs(db.awardReasons) do
 							if v.disenchant then
+								local data = lootTable[session].candidates[name] -- Shorthand
 								LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_AWARD", {
-									session,
-								  	name,
-									nil,
-									v,
+									session 		= session,
+								  	winner 		= name,
+									responseID	= nil,
+									reason		= v,
+									votes			= data.votes,
+									gear1			= data.gear1,
+									gear2			= data.gear2,
+									isTierRoll	= data.isTier,
+									isRelicRoll	= data.isRelic,
+									link 			= lootTable[session].link,
+									isToken		= lootTable[session].token,
 								})
 								return
 							end

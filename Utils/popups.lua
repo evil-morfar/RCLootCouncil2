@@ -91,28 +91,13 @@ LibDialog:Register("RCLOOTCOUNCIL_CONFIRM_ABORT", {
 LibDialog:Register("RCLOOTCOUNCIL_CONFIRM_AWARD", {
 	text = "something_went_wrong",
 	icon = "",
-	on_show = function(self, data)
-		self:SetFrameStrata("FULLSCREEN")
-		local session, player = unpack(data)
-		self.text:SetText(format(L["Are you sure you want to give #item to #player?"], RCLootCouncilML.lootTable[session].link, addon.Ambiguate(player)))
-		self.icon:SetTexture(RCLootCouncilML.lootTable[session].texture)
-	end,
+	on_show = RCLootCouncilML.AwardPopupOnShow,
 	buttons = {
 		{	text = L["Yes"],
-			on_click = function(self, data)
-				-- IDEA Perhaps come up with a better way of handling this
-				local session, player, response, reason, votes, item1, item2, isTierRoll = unpack(data,1,8)
-				local item = RCLootCouncilML.lootTable[session].link -- Store it now as we wipe lootTable after Award()
-				local isToken = RCLootCouncilML.lootTable[session].token
-				local awarded = RCLootCouncilML:Award(session, player, response, reason, isTierRoll)
-				if awarded then -- log it
-					RCLootCouncilML:TrackAndLogLoot(player, item, response, addon.bossName, votes, item1, item2, reason, isToken, isTierRoll)
-				end
-				-- We need to delay the test mode disabling so comms have a chance to be send first!
-				if addon.testMode and RCLootCouncilML:HasAllItemsBeenAwarded() then RCLootCouncilML:EndSession() end
-			end,
+			on_click = RCLootCouncilML.AwardPopupOnClickYes
 		},
 		{	text = L["No"],
+         on_click = RCLootCouncilML.AwardPopupOnClickNo
 		},
 	},
 	hide_on_escape = true,
