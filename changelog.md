@@ -12,6 +12,8 @@
 
 * ***Dev***
 * Restructured "CONFIRM_AWARD" popup, along with data supplied from votingFrame.
+* All functions in that popup is now easily hookable.
+* Edited arguments in ML:Award().
 
 
 ### v2.5.5
