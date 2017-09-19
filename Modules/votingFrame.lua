@@ -1030,15 +1030,17 @@ do
 				notCheckable = true,
 				func = function(name, data)
 					LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_AWARD", {
-					session,
-				  	name,
-					data.response,
-					nil,
-					data.votes,
-					data.gear1,
-					data.gear2,
-					data.isTier,
-					data.isRelic,
+						session 		= session,
+					  	winner		= name,
+						responseID	= data.response,
+						reason		= nil,
+						votes			= data.votes,
+						gear1 		= data.gear1,
+						gear2			= data.gear2,
+						isTierRoll	= data.isTier,
+						isRelicRoll	= data.isRelic,
+						link 			= lootTable[session].link,
+						isToken		= lootTable[session].token,
 					})
 				end,
 			},{ -- 4 Award for
@@ -1177,16 +1179,19 @@ do
 					info.notCheckable = true
 					info.func = function()
 						LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_AWARD", {
-							session,
-							candidateName,
-							nil,
-							v,
-							data.votes,
-							data.gear1,
-							data.gear2,
-							data.isTier,
-							data.isRelic,
-				}) end
+							session 		= 	session,
+							winner 		=	candidateName,
+							responseID	= nil,
+							reason		= v,
+							votes			= data.votes,
+							gear1			= data.gear1,
+							gear2			= data.gear2,
+							isTierRoll	= data.isTier,
+							isRelicRoll	= data.isRelic,
+							link 			= lootTable[session].link,
+							isToken		= lootTable[session].token,
+						})
+					end
 					Lib_UIDropDownMenu_AddButton(info, level)
 				end
 			elseif value == "CHANGE_RESPONSE" and entry.special == value then
@@ -1330,11 +1335,19 @@ do
 					info.func = function()
 						for k,v in ipairs(db.awardReasons) do
 							if v.disenchant then
+								local data = lootTable[session].candidates[name] -- Shorthand
 								LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_AWARD", {
-									session,
-								  	name,
-									nil,
-									v,
+									session 		= session,
+								  	winner 		= name,
+									responseID	= nil,
+									reason		= v,
+									votes			= data.votes,
+									gear1			= data.gear1,
+									gear2			= data.gear2,
+									isTierRoll	= data.isTier,
+									isRelicRoll	= data.isRelic,
+									link 			= lootTable[session].link,
+									isToken		= lootTable[session].token,
 								})
 								return
 							end

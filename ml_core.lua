@@ -830,3 +830,27 @@ function RCLootCouncilML:SendWhisperHelp(target)
 	SendChatMessage(L["whisper_guide2"], "WHISPER", nil, target)
 	addon:Print(format(L["Sent whisper help to 'player'"], addon.Ambiguate(target)))
 end
+
+
+--- Award popup control functions
+-- Provided for easy hook access
+--	data contains: session, winner, responseID, reason, votes, gear1, gear2, isTierRoll, isRelicRoll, link, isToken
+function RCLootCouncilML.AwardPopupOnShow(frame, data)
+	frame:SetFrameStrata("FULLSCREEN")
+	frame.text:SetText(format(L["Are you sure you want to give #item to #player?"], data.link, addon.Ambiguate(data.winner)))
+	frame.icon:SetTexture(RCLootCouncilML.lootTable[data.session].texture)
+end
+
+function RCLootCouncilML.AwardPopupOnClickYes(frame, data)
+	local awarded = RCLootCouncilML:Award(data.session, data.winner, data.responseID and addon:GetResponseText(data.responseID, data.isTierRoll, data.isRelicRoll), data.reason)
+	if awarded then -- log it
+		RCLootCouncilML:TrackAndLogLoot(data.winner, data.link, data.responseID, addon.bossName, data.votes, data.gear1, data.gear2,
+		 										  data.reason, data.isToken, data.isTierRoll, data.isRelicRoll)
+	end
+	-- We need to delay the test mode disabling so comms have a chance to be send first!
+	if addon.testMode and RCLootCouncilML:HasAllItemsBeenAwarded() then RCLootCouncilML:EndSession() end
+end
+
+function RCLootCouncilML.AwardPopupOnClickNo(frame, data)
+	-- Intentionally left empty
+end
