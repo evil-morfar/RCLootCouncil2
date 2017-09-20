@@ -8,6 +8,8 @@
 
 * Testing optimization for wowhead urls in exports (#278).
 
+###### Bugfixes
++ *The Version Checker is now more realistic with its coloring.*
 
 
 * ***Dev***

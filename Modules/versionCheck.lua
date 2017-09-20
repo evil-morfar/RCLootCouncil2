@@ -10,6 +10,7 @@ local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 
 local GuildRankSort
 local guildRanks = {}
+local highestVersion = "0.0.0"
 
 function RCVersionCheck:OnInitialize()
 	-- Initialize scrollCols on self so others can change it
@@ -90,6 +91,9 @@ function RCVersionCheck:AddEntry(name, class, guildRank, version, tVersion, modu
 	-- We need to be careful with naming conventions just as in RCLootCouncil:UnitName()
 	--name = name:lower():gsub("^%l", string.upper)
 	name = addon:UnitName(name)
+	if not tVersion and addon:VersionCompare(highestVersion, version) then
+		highestVersion = version
+	end
 	local vVal = version
 	if tVersion then vVal = version.."-"..tVersion end
 	for row, v in ipairs(self.frame.rows) do
@@ -125,8 +129,8 @@ end
 function RCVersionCheck:GetVersionColor(ver,tVer)
 	local green, yellow, red, grey = {r=0,g=1,b=0,a=1},{r=1,g=1,b=0,a=1},{r=1,g=0,b=0,a=1},{r=0.75,g=0.75,b=0.75,a=1}
 	if tVer then return yellow end
-	if ver == addon.version then return green end
-	if addon:VersionCompare(ver, addon.version) then return red end
+	if ver == highestVersion then return green end
+	if addon:VersionCompare(ver, highestVersion) then return red end
 	return grey
 end
 
