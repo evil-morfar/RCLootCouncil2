@@ -101,8 +101,8 @@ function RCVersionCheck:AddEntry(name, class, guildRank, version, tVersion, modu
 			v.cols =	{
 				{ value = "",					DoCellUpdate = addon.SetCellClassIcon, args = {class}, },
 				{ value = addon.Ambiguate(name),color = addon:GetClassColor(class), },
-				{ value = guildRank,			color = self:GetVersionColor(version,tVersion)},
-				{ value = vVal ,				color = self:GetVersionColor(version,tVersion), DoCellUpdate = self.SetCellModules, args = modules},
+				{ value = guildRank,			color = self.GetVersionColor, colorargs = {self,version,tVersion}},
+				{ value = vVal ,				color = self.GetVersionColor, colorargs = {self,version,tVersion}, DoCellUpdate = self.SetCellModules, args = modules},
 			}
 			v.rank = guildRank
 			return self:Update()
@@ -115,8 +115,8 @@ function RCVersionCheck:AddEntry(name, class, guildRank, version, tVersion, modu
 		cols = {
 			{ value = "",					DoCellUpdate = addon.SetCellClassIcon, args = {class}, },
 			{ value = addon.Ambiguate(name),color = addon:GetClassColor(class), },
-			{ value = guildRank,			color = self:GetVersionColor(version,tVersion)},
-			{ value = vVal ,				color = self:GetVersionColor(version,tVersion), DoCellUpdate = self.SetCellModules, args = modules},
+			{ value = guildRank,			color = self.GetVersionColor, colorargs = {self,version,tVersion}},
+			{ value = vVal ,				color = self.GetVersionColor, colorargs = {self,version,tVersion}, DoCellUpdate = self.SetCellModules, args = modules},
 		},
 	})
 	self:Update()
