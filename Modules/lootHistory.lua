@@ -148,7 +148,7 @@ function LootHistory:BuildData()
 							{value = date.. "-".. i.time or "", args = {time = i.time, date = date},},
 							{DoCellUpdate = self.SetCellGear, args={i.lootWon}},
 							{value = i.lootWon},
-							{DoCellUpdate = self.SetCellResponse, args = {color = i.color, response = i.response, responseID = i.responseID or 0, isAwardReason = i.isAwardReason, tokenRoll = i.tokenRoll}},
+							{DoCellUpdate = self.SetCellResponse, args = {color = i.color, response = i.response, responseID = i.responseID or 0, isAwardReason = i.isAwardReason, tokenRoll = i.tokenRoll, relicRoll = i.relicRoll}},
 							{DoCellUpdate = self.SetCellDelete},
 						}
 					}
@@ -225,7 +225,7 @@ function LootHistory.SetCellResponse(rowFrame, frame, data, cols, row, realrow, 
 	if args.color and type(args.color) == "table" then -- Never version saves the color with the entry
 		frame.text:SetTextColor(unpack(args.color))
 	elseif args.responseID and args.responseID > 0 then -- try to recreate color from ID
-		frame.text:SetTextColor(addon:GetResponseColor(args.responseID, args.tokenRoll))
+		frame.text:SetTextColor(addon:GetResponseColor(args.responseID, args.tokenRoll, args.relicRoll))
 	else -- default to white
 		frame.text:SetTextColor(1,1,1,1)
 	end
@@ -666,7 +666,7 @@ function LootHistory:UpdateMoreInfo(rowFrame, cellFrame, dat, cols, row, realrow
 		tip:AddDoubleLine("groupSize", data.groupSize, 1,1,1, 1,1,1)
 		tip:AddDoubleLine("tierToken", data.tierToken, 1,1,1, 1,1,1)
 		tip:AddDoubleLine("tokenRoll", tostring(data.tokenRoll), 1,1,1, 1,1,1)
-		tip:AddDoubleLine("relicRoll", tostring(data.relicROll), 1,1,1, 1,1,1)
+		tip:AddDoubleLine("relicRoll", tostring(data.relicRoll), 1,1,1, 1,1,1)
 		tip:AddLine(" ")
 		tip:AddDoubleLine("Total LootDB entries:", #self.frame.rows, 1,1,1, 0,0,1)
 	end
@@ -783,7 +783,14 @@ LootHistory.rightClickEntries = {
 			hasArrow = true,
 			notCheckable = true,
 		},
-		{ -- 4 Award Reasons ...
+		{ -- 4 Relics
+			text = L["Relics"].." ...",
+			onValue = "EDIT_RESPONSE",
+			value = "RELICS",
+			hasArrow = true,
+			notCheckable = true,
+		},
+		{ -- 5 Award Reasons ...
 			text = L["Award Reasons"] .. " ...",
 			onValue = "EDIT_RESPONSE",
 			value = "AWARD_REASON",
@@ -795,7 +802,10 @@ LootHistory.rightClickEntries = {
 		{ -- 1 TIER_TOKENS
 			special = "TIER_TOKENS",
 		},
-		{ -- 2 AWARD_REASON
+		{
+			special = "RELICS",
+		},
+		{ -- 3 AWARD_REASON
 			special = "AWARD_REASON",
 		}
 	},
@@ -876,6 +886,7 @@ function LootHistory.RightClickMenu(menu, level)
 					entry.color = {addon:GetResponseColor(i)}
 					entry.isAwardReason = nil
 					entry.tokenRoll = nil
+					entry.relicRoll = nil
 					data.response = i
 					data.cols[6].args = {color = entry.color, response = entry.response, responseID = i}
 					LootHistory.frame.st:SortData()
@@ -919,8 +930,31 @@ function LootHistory.RightClickMenu(menu, level)
 					entry.color = {unpack(v.color)}
 					entry.isAwardReason = nil
 					entry.tokenRoll = true
+					entry.relicRoll = false
 					data.response = k
 					data.cols[6].args = {color = entry.color, response = entry.response, responseID = k, tokenRoll = true}
+					LootHistory.frame.st:SortData()
+				end
+				Lib_UIDropDownMenu_AddButton(info, level)
+			end
+
+		elseif valie == "RELICS" and entry.special == value then
+			for k,v in ipairs(db.responses.relic) do
+				if k > db.relicNumButtons then break end
+				info.text = v.text
+				info.colorCode = "|cff"..addon:RGBToHex(unpack(v.color))
+				info.notCheckable = true
+				info.func = function()
+					addon:Debug("Changing relic response id @", data.name, "from", data.response, "to", k)
+					local entry = lootDB[data.name][data.num]
+					entry.responseID = k
+					entry.response = v.text
+					entry.color = {unpack(v.color)}
+					entry.isAwardReason = nil
+					entry.tokenRoll = false
+					entry.relicRoll = true
+					data.response = k
+					data.cols[6].args = {color = entry.color, response = entry.response, responseID = k, relicRoll = true}
 					LootHistory.frame.st:SortData()
 				end
 				Lib_UIDropDownMenu_AddButton(info, level)
@@ -940,6 +974,7 @@ function LootHistory.RightClickMenu(menu, level)
 					entry.color = {unpack(v.color)} -- For some reason it won't just accept v.color (!)
 					entry.isAwardReason = true
 					entry.tokenRoll = nil
+					entry.relicRoll = nil
 					data.response = i
 					data.cols[6].args = {color = entry.color, response = entry.response, responseID = k}
 					LootHistory.frame.st:SortData()

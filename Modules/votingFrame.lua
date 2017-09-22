@@ -140,8 +140,9 @@ function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
 				end
 
 			elseif command == "change_response" and addon:UnitIsUnit(sender, addon.masterLooter) then
-				local ses, name, response, isTier = unpack(data)
+				local ses, name, response, isTier, isRelic = unpack(data)
 				self:SetCandidateData(ses, name, "isTier", isTier)
+				self:SetCandidateData(ses, name, "isRelic", isRelic)
 				self:SetCandidateData(ses, name, "response", response)
 				self:Update()
 
@@ -1133,6 +1134,9 @@ do
 			{ -- 1 Tier Tokens
 				special = "TIER_TOKENS",
 			},
+			{ -- 2 Relics
+				special = "RELICS",
+			},
 		},
 		-- More levels can be added with tinsert(RCVotingFrame.rightClickEntries, {-- new level})
 	}
@@ -1209,7 +1213,7 @@ do
 				info = Lib_UIDropDownMenu_CreateInfo()
 				if addon.debug then -- Add all possible responses when debugging
 					for k,v in pairs(db.responses) do
-						if type(k) ~= "number" and k ~= "tier" then
+						if type(k) ~= "number" and k ~= "tier" and k~= "relic" then
 							info.text = v.text
 							info.colorCode = "|cff"..addon:RGBToHex(unpack(v.color))
 							info.notCheckable = true
@@ -1227,6 +1231,12 @@ do
 				info.hasArrow = true
 				info.notCheckable = true
 				Lib_UIDropDownMenu_AddButton(info, level)
+				-- And relics
+				info.text = L["Relics"].." ..."
+				info.value = "RELICS"
+				info.hasArrow = true
+				info.notCheckable = true
+				Lib_UIDropDownMenu_AddButton(info, level)
 
 			elseif value == "TIER_TOKENS" and entry.special == value then
 				for k,v in ipairs(db.responses.tier) do
@@ -1236,6 +1246,18 @@ do
 					info.notCheckable = true
 					info.func = function()
 							addon:SendCommand("group", "change_response", session, candidateName, k, true)
+					end
+					Lib_UIDropDownMenu_AddButton(info, level)
+				end
+
+			elseif value == "RELICS" and entry.special == value then
+				for k,v in ipairs(db.responses.relic) do
+					if k > db.relicNumButtons then break end
+					info.text = v.text
+					info.colorCode = "|cff"..addon:RGBToHex(unpack(v.color))
+					info.notCheckable = true
+					info.func = function()
+							addon:SendCommand("group", "change_response", session, candidateName, k, false, true)
 					end
 					Lib_UIDropDownMenu_AddButton(info, level)
 				end
