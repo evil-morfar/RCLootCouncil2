@@ -7,6 +7,8 @@
 
 
 * Testing optimization for wowhead urls in exports (#278).
+* Tier and Relic responses now only shows up in rightclick menus if enabled.
+
 
 ###### Bugfixes
 + *The Version Checker is now more realistic with its coloring.*
@@ -16,6 +18,7 @@
 * Restructured "CONFIRM_AWARD" popup, along with data supplied from votingFrame.
 * All functions in that popup is now easily hookable.
 * Edited arguments in ML:Award().
+* Minor restructuring in rightclick menus.
 
 
 ### v2.5.5

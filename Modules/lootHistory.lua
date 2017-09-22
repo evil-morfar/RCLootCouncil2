@@ -745,7 +745,7 @@ end
 
 --- Entries placed in the rightclick menu.
 -- See the example in votingFrame.lua for a detailed explaination.
--- Text and Func fields gets the row data as a parameter if defined as a function.
+-- Functions gets the row data as a parameter.
 -- See LootHistory:BuildData() for the contents of a row (self.frame.rows[row])
 do
 LootHistory.rightClickEntries = {
@@ -782,6 +782,7 @@ LootHistory.rightClickEntries = {
 			value = "TIER_TOKENS",
 			hasArrow = true,
 			notCheckable = true,
+			disabled = function() return not db.tierButtonsEnabled end,
 		},
 		{ -- 4 Relics
 			text = L["Relics"].." ...",
@@ -789,6 +790,7 @@ LootHistory.rightClickEntries = {
 			value = "RELICS",
 			hasArrow = true,
 			notCheckable = true,
+			disabled = function() return not db.relicButtonsEnabled end,
 		},
 		{ -- 5 Award Reasons ...
 			text = L["Award Reasons"] .. " ...",
@@ -802,7 +804,7 @@ LootHistory.rightClickEntries = {
 		{ -- 1 TIER_TOKENS
 			special = "TIER_TOKENS",
 		},
-		{
+		{ -- 2 RELICS
 			special = "RELICS",
 		},
 		{ -- 3 AWARD_REASON
@@ -823,30 +825,19 @@ function LootHistory.RightClickMenu(menu, level)
 	for i, entry in ipairs(LootHistory.rightClickEntries[level]) do
 		info = Lib_UIDropDownMenu_CreateInfo()
 		if not entry.special then
-			if not entry.onValue then
+			if not entry.onValue or entry.onValue == value then
 				for name, val in pairs(entry) do
-					if name == "text" and type(val) == "function" then
-						info[name] = val(data) -- This needs to be evaluated
-					elseif name == "func" then
-						info[name] = function() return val(data) end -- This needs to be set as a func, but fed with our params
+					if name == "func" then
+						info[name] = function() return val(candidateName, data) end -- This needs to be set as a func, but fed with our params
+					elseif type(val) == "function" then
+						info[name] = val(candidateName, data) -- This needs to be evaluated
 					else
 						info[name] = val
 					end
 				end
 				Lib_UIDropDownMenu_AddButton(info, level)
-
-			elseif entry.onValue == value then
-				for name, val in pairs(entry) do
-					if name == "text" and type(val) == "function" then
-						info.text = val(data)
-					elseif name == "func" then
-						info[name] = function() return val(data) end
-					elseif name ~= "onValue" then
-						info[name] = val
-					end
-				end
-				Lib_UIDropDownMenu_AddButton(info, level)
 			end
+
 		elseif value == "EDIT_NAME" and entry.special == value then
 			for _,i in ipairs(LootHistory.frame.name.sorttable) do
 				local v = LootHistory.frame.name.data[i]
@@ -896,7 +887,7 @@ function LootHistory.RightClickMenu(menu, level)
 
 			if addon.debug then
 				for k,v in pairs(db.responses) do
-					if type(k) ~= "number" and k ~= "tier" then
+					if type(k) ~= "number" and k ~= "tier" and k ~= "relic" then
 						info.text = v.text
 						info.colorCode = "|cff"..addon:RGBToHex(unpack(v.color))
 						info.notCheckable = true
@@ -916,7 +907,7 @@ function LootHistory.RightClickMenu(menu, level)
 				end
 			end
 
-		elseif value == "TIER_TOKENS" and entry.special == value then
+		elseif value == "TIER_TOKENS" and entry.special == value and db.tierButtonsEnabled then
 			for k,v in ipairs(db.responses.tier) do
 				if k > db.tierNumButtons then break end
 				info.text = v.text
@@ -938,7 +929,7 @@ function LootHistory.RightClickMenu(menu, level)
 				Lib_UIDropDownMenu_AddButton(info, level)
 			end
 
-		elseif valie == "RELICS" and entry.special == value then
+		elseif value == "RELICS" and entry.special == value and db.relicButtonsEnabled then
 			for k,v in ipairs(db.responses.relic) do
 				if k > db.relicNumButtons then break end
 				info.text = v.text

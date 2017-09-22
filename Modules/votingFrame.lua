@@ -1008,8 +1008,8 @@ do
 	-- To inject a new button, just call tinsert(RCVotingFrame.rightClickEntries[level], position, {--values})
 	-- It shouldn't be nessecary to do more than once, just do it before the first session starts.
 	--[[ Notes:
-		Text fields can be either a string or a function. Functions gets candidateName and data (the data belonging to the candidate) as parameters and must return a string.
-		The func field also gets candidateName and data as params.
+		Any value can be a function, which will be evaluated on creation. Functions gets candidateName and data (the data belonging to the candidate) as parameters.
+		The func field also gets candidateName and data as params, but gets delivered as a function to the dropdown.
 		There's two special fields to enable this kind of structure:
 			onValue :String - This entry will only be shown if LIB_UIDROPDOWNMENU_MENU_VALUE matches onValue. This enables nesting.
 			special :String - Handles a couple of special cases that wasn't too suitable for the orignal creating (#lazy)
@@ -1152,25 +1152,13 @@ do
 		for i, entry in ipairs(RCVotingFrame.rightClickEntries[level]) do
 			info = Lib_UIDropDownMenu_CreateInfo()
 			if not entry.special then
-				if not entry.onValue then
+				if not entry.onValue or entry.onValue == value then
 					for name, val in pairs(entry) do
-						if name == "text" and type(val) == "function" then
-							info[name] = val(candidateName, data) -- This needs to be evaluated
-						elseif name == "func" then
+						if name == "func" then
 							info[name] = function() return val(candidateName, data) end -- This needs to be set as a func, but fed with our params
+						elseif type(val) == "function" then
+							info[name] = val(candidateName, data) -- This needs to be evaluated
 						else
-							info[name] = val
-						end
-					end
-					Lib_UIDropDownMenu_AddButton(info, level)
-
-				elseif entry.onValue == value then
-					for name, val in pairs(entry) do
-						if name == "text" and type(val) == "function" then
-							info.text = val(candidateName, data)
-						elseif name == "func" then
-							info[name] = function() return val(candidateName, data) end
-						elseif name ~= "onValue" then
 							info[name] = val
 						end
 					end
@@ -1226,17 +1214,21 @@ do
 				end
 				info = Lib_UIDropDownMenu_CreateInfo()
 				-- Add the tier menu
-				info.text = L["Tier Tokens ..."]
-				info.value = "TIER_TOKENS"
-				info.hasArrow = true
-				info.notCheckable = true
-				Lib_UIDropDownMenu_AddButton(info, level)
+				if db.tierButtonsEnabled then
+					info.text = L["Tier Tokens ..."]
+					info.value = "TIER_TOKENS"
+					info.hasArrow = true
+					info.notCheckable = true
+					Lib_UIDropDownMenu_AddButton(info, level)
+				end
 				-- And relics
-				info.text = L["Relics"].." ..."
-				info.value = "RELICS"
-				info.hasArrow = true
-				info.notCheckable = true
-				Lib_UIDropDownMenu_AddButton(info, level)
+				if db.relicButtonsEnabled then
+					info.text = L["Relics"].." ..."
+					info.value = "RELICS"
+					info.hasArrow = true
+					info.notCheckable = true
+					Lib_UIDropDownMenu_AddButton(info, level)
+				end
 
 			elseif value == "TIER_TOKENS" and entry.special == value then
 				for k,v in ipairs(db.responses.tier) do
