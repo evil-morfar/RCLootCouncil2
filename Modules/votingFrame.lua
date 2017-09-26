@@ -85,7 +85,7 @@ function RCVotingFrame:Hide()
 end
 
 function RCVotingFrame:Show()
-	if self.frame then
+	if self.frame and lootTable[session] then
 		councilInGroup = addon.council
 		self.frame:Show()
 		self:SwitchSession(session)

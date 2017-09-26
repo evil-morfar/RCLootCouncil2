@@ -12,6 +12,7 @@
 
 ###### Bugfixes
 + *The Version Checker is now more realistic with its coloring.*
++ *Councilmen could upon the voting frame with no data and produce an error (#300).*
 
 
 * ***Dev***
