@@ -1120,13 +1120,14 @@ end
 function RCLootCouncil:GetPlayerInfo()
 	-- Check if the player has enchanting
 	local enchant, lvl = nil, 0
-	local prof1, prof2 = GetProfessions()
-	if prof1 or prof2 then
-		for i = 1, 2 do
-			local _, _, rank, _, _, _, id = GetProfessionInfo(select(i, prof1, prof2))
+	local profs = {GetProfessions()}
+	for i = 1, 2 do
+		if profs[i] then
+			local _, _, rank, _, _, _, id = GetProfessionInfo(profs[i])
 			if id and id == 333 then -- NOTE: 333 should be enchanting, let's hope that holds...
 				self:Debug("I'm an enchanter")
 				enchant, lvl = true, rank
+				break
 			end
 		end
 	end
