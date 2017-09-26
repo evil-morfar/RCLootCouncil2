@@ -997,6 +997,24 @@ function GuildRankSort(table, rowa, rowb, sortbycol)
 	end
 end
 
+--- Function for getting the data passed to RCLOOTCOUNCIL_CONFIRM_AWARD
+-- Note reason must be nil for ML:Award() to use responseID (Finicky, I know...)
+function RCVotingFrame:GetAwardPopupData(session, name, data, reason)
+	return {
+		session 		= session,
+	  	winner		= name,
+		responseID	= data.response,
+		reason		= reason,
+		votes			= data.votes,
+		gear1 		= data.gear1,
+		gear2			= data.gear2,
+		isTierRoll	= data.isTier,
+		isRelicRoll	= data.isRelic,
+		link 			= lootTable[session].link,
+		isToken		= lootTable[session].token,
+	}
+end
+
 ----------------------------------------------------
 --	Dropdowns.
 -- @section Dropdowns.
@@ -1030,19 +1048,7 @@ do
 				text = L["Award"],
 				notCheckable = true,
 				func = function(name, data)
-					LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_AWARD", {
-						session 		= session,
-					  	winner		= name,
-						responseID	= data.response,
-						reason		= nil,
-						votes			= data.votes,
-						gear1 		= data.gear1,
-						gear2			= data.gear2,
-						isTierRoll	= data.isTier,
-						isRelicRoll	= data.isRelic,
-						link 			= lootTable[session].link,
-						isToken		= lootTable[session].token,
-					})
+					LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_AWARD", RCVotingFrame:GetAwardPopupData(session, name, data))
 				end,
 			},{ -- 4 Award for
 				text = L["Award for ..."],
@@ -1170,19 +1176,7 @@ do
 					info.text = v.text
 					info.notCheckable = true
 					info.func = function()
-						LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_AWARD", {
-							session 		= 	session,
-							winner 		=	candidateName,
-							responseID	= nil,
-							reason		= v,
-							votes			= data.votes,
-							gear1			= data.gear1,
-							gear2			= data.gear2,
-							isTierRoll	= data.isTier,
-							isRelicRoll	= data.isRelic,
-							link 			= lootTable[session].link,
-							isToken		= lootTable[session].token,
-						})
+						LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_AWARD", RCVotingFrame:GetAwardPopupData(session, name, data, v))
 					end
 					Lib_UIDropDownMenu_AddButton(info, level)
 				end
@@ -1350,19 +1344,7 @@ do
 						for k,v in ipairs(db.awardReasons) do
 							if v.disenchant then
 								local data = lootTable[session].candidates[name] -- Shorthand
-								LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_AWARD", {
-									session 		= session,
-								  	winner 		= name,
-									responseID	= nil,
-									reason		= v,
-									votes			= data.votes,
-									gear1			= data.gear1,
-									gear2			= data.gear2,
-									isTierRoll	= data.isTier,
-									isRelicRoll	= data.isRelic,
-									link 			= lootTable[session].link,
-									isToken		= lootTable[session].token,
-								})
+								LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_AWARD", RCVotingFrame:GetAwardPopupData(session, name, data, v))
 								return
 							end
 						end
