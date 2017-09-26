@@ -19,6 +19,7 @@
 * All functions in that popup is now easily hookable.
 * Edited arguments in ML:Award().
 * Minor restructuring in rightclick menus.
+* ChatCommands can now receive more arguments.
 
 
 ### v2.5.5

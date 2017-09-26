@@ -424,9 +424,17 @@ function RCLootCouncil:CouncilChanged()
 end
 
 function RCLootCouncil:ChatCommand(msg)
-	local input, arg1, arg2 = self:GetArgs(msg,3)
+	local input = self:GetArgs(msg,1)
+	local args = {}
+	local arg, startpos = nil, 2
+	repeat
+	    arg, startpos = self:GetArgs(msg, 1, startpos)
+	    if arg then
+	         table.insert(args, arg)
+	    end
+	until arg == nil
 	input = strlower(input or "")
-	self:Debug("/", input, arg1, arg2)
+	self:Debug("/", input, unpack(args))
 	if not input or input:trim() == "" or input == "help" or input == L["help"] then
 		if self.tVersion then print(format(L["chat tVersion string"],self.version, self.tVersion))
 		else print(format(L["chat version String"],self.version)) end
@@ -459,7 +467,7 @@ function RCLootCouncil:ChatCommand(msg)
 
 
 	elseif input == 'test' or input == L["test"] then
-		self:Test(tonumber(arg1) or 1)
+		self:Test(tonumber(args[1]) or 1)
 
 	elseif input == 'version' or input == L["version"] or input == "v" or input == "ver" then
 		self:CallModule("version")
@@ -475,11 +483,10 @@ function RCLootCouncil:ChatCommand(msg)
 		self:Print(L["whisper_help"])
 
 	elseif (input == "add" or input == L["add"]) then
-		if not arg1 or arg1 == "" then return self:ChatCommand("help") end
+		if not args[1] or args[1] == "" then return self:ChatCommand("help") end
 		if self.isMasterLooter then
-			self:GetActiveModule("masterlooter"):AddUserItem(arg1)
-			if arg2 then
-				self:GetActiveModule("masterlooter"):AddUserItem(arg2)
+			for _,v in ipairs(args) do
+			self:GetActiveModule("masterlooter"):AddUserItem(v)
 			end
 		else
 			self:Print(L["You cannot use this command without being the Master Looter"])
@@ -522,7 +529,7 @@ function RCLootCouncil:ChatCommand(msg)
 		wipe(debugLog)
 		self:Print("Debug Log cleared.")
 
-	elseif input == "updatehistory" or (input == "update" and arg1 == "history") then
+	elseif input == "updatehistory" or (input == "update" and args[1] == "history") then
 		self:UpdateLootHistory()
 	elseif input == "sync" then
 		self.Sync:Spawn()
@@ -535,7 +542,7 @@ function RCLootCouncil:ChatCommand(msg)
 	else
 		-- Check if the input matches anything
 		for k, v in pairs(self.customChatCmd) do
-			if k == input then return v.module[v.func](v.module, arg1, arg2) end
+			if k == input then return v.module[v.func](v.module, unpack(args)) end
 		end
 		self:ChatCommand("help")
 	end
