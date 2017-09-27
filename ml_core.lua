@@ -849,6 +849,7 @@ function RCLootCouncilML.AwardPopupOnClickYes(frame, data)
 	end
 	-- We need to delay the test mode disabling so comms have a chance to be send first!
 	if addon.testMode and RCLootCouncilML:HasAllItemsBeenAwarded() then RCLootCouncilML:EndSession() end
+	return awarded
 end
 
 function RCLootCouncilML.AwardPopupOnClickNo(frame, data)
