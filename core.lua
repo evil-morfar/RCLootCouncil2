@@ -52,7 +52,7 @@ function RCLootCouncil:OnInitialize()
   	self.version = GetAddOnMetadata("RCLootCouncil", "Version")
 	self.nnp = false
 	self.debug = false
-	self.tVersion = "Beta.1" -- String or nil. Indicates test version, which alters stuff like version check. Is appended to 'version', i.e. "version-tVersion" (max 10 letters for stupid security)
+	self.tVersion = "Beta.2" -- String or nil. Indicates test version, which alters stuff like version check. Is appended to 'version', i.e. "version-tVersion" (max 10 letters for stupid security)
 
 	self.playerClass = select(2, UnitClass("player"))
 	self.guildRank = L["Unguilded"]
@@ -425,7 +425,7 @@ end
 function RCLootCouncil:ChatCommand(msg)
 	local input = self:GetArgs(msg,1)
 	local args = {}
-	local arg, startpos = nil, 2
+	local arg, startpos = nil, #input + 1
 	repeat
 	    arg, startpos = self:GetArgs(msg, 1, startpos)
 	    if arg then
