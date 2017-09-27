@@ -6,13 +6,17 @@
 * Do note that anyone with an older version of RCLootCouncil (<2.6) will NOT see the relic buttons.
 
 
+* **History Exports**
+* The subType and equipLoc of the awarded item has been included in TSV and CSV exports (#301).
+
+
 * Testing optimization for wowhead urls in exports (#278).
 * Tier and Relic responses now only shows up in rightclick menus if enabled.
 
 
 ###### Bugfixes
 + *The Version Checker is now more realistic with its coloring.*
-+ *Councilmen could upon the voting frame with no data and produce an error (#300).*
++ *Councilmen could open the voting frame with no data and produce an error (#300).*
 
 
 * ***Dev***
