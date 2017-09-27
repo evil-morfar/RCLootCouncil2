@@ -849,7 +849,7 @@ function RCLootCouncilML.AwardPopupOnClickYes(frame, data)
 	end
 	-- We need to delay the test mode disabling so comms have a chance to be send first!
 	if addon.testMode and RCLootCouncilML:HasAllItemsBeenAwarded() then RCLootCouncilML:EndSession() end
-	return awarded
+	--return awarded -- Doesn't work, as LibDialog only hides the dialog if we return false/nil
 end
 
 function RCLootCouncilML.AwardPopupOnClickNo(frame, data)
