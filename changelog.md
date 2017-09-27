@@ -15,13 +15,13 @@
 
 
 ###### Bugfixes
-+ *The Version Checker is now more realistic with its coloring.*
++ *The Version Checker is now more realistic with its coloring and sorting.*
 + *Councilmen could open the voting frame with no data and produce an error (#300).*
 
 
 * ***Dev***
 * Restructured "CONFIRM_AWARD" popup, along with data supplied from votingFrame.
-* All functions in that popup is now easily hookable.
+* All functions in that popup are now easily hookable.
 * Edited arguments in ML:Award().
 * Minor restructuring in rightclick menus.
 * ChatCommands can now receive more arguments.

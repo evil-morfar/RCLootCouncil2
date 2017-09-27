@@ -105,6 +105,7 @@ function RCVersionCheck:AddEntry(name, class, guildRank, version, tVersion, modu
 				{ value = vVal ,				color = self.GetVersionColor, colorargs = {self,version,tVersion}, DoCellUpdate = self.SetCellModules, args = modules},
 			}
 			v.rank = guildRank
+			v.version = version
 			return self:Update()
 		end
 	end
@@ -112,6 +113,7 @@ function RCVersionCheck:AddEntry(name, class, guildRank, version, tVersion, modu
 	tinsert(self.frame.rows,
 	{	name = name,
 		rank = guildRank,
+		version = version,
 		cols = {
 			{ value = "",					DoCellUpdate = addon.SetCellClassIcon, args = {class}, },
 			{ value = addon.Ambiguate(name),color = addon:GetClassColor(class), },
@@ -203,6 +205,22 @@ function GuildRankSort(table, rowa, rowb, sortbycol)
 			return a > b;
 		else
 			return a < b;
+		end
+	end
+end
+
+-- There's no need to make this more complicated.
+function RCVersionCheck.VersionSort(table, rowa, rowb, sortbycol)
+	local column = table.cols[sortbycol]
+	local a,b = table:GetRow(rowa), table:GetRow(rowb)
+	if a.version == L["Not installed"] then return false
+	elseif b.version == L["Not installed"] then return true
+	else
+		local direction = column.sort or column.defaultsort or "asc";
+		if direction:lower() == "asc" then
+			return addon:VersionCompare(b.version, a.version)
+		else
+			return addon:VersionCompare(a.version, b.version)
 		end
 	end
 end
