@@ -7,7 +7,10 @@
 
 
 * **History Exports**
-* The subType and equipLoc of the awarded item has been included in TSV and CSV exports (#301).
+* The subType and equipLoc of the awarded item have been included in TSV and CSV exports (#301).
+* RollType ("token", "relic" and "normal") have also been added to indicate which set of buttons was used.
+* TSV exports no longer includes links when there's no item.
+* isAwardReason columns will no longer return nil (only true/false).
 
 
 * Testing optimization for wowhead urls in exports (#278).

@@ -21,6 +21,9 @@ local rightClickMenu;
 local ROW_HEIGHT = 20;
 local NUM_ROWS = 15;
 
+--globals
+local tinsert, tostring, getglobal,pairs = tinsert, tostring, getglobal, pairs
+
 function LootHistory:OnInitialize()
 	self.exportSelection = "lua"
 	-- Pointer to export functions. Expected to return a string containing the export
@@ -1034,13 +1037,15 @@ do
 		-- Add headers
 		wipe(export)
 		wipe(ret)
-		local subType, equipLoc
-		tinsert(ret, "player, date, time, item, itemID, itemString, response, votes, class, instance, boss, gear1, gear2, responseID, isAwardReason, subType, equipLoc\r\n")
+		local subType, equipLoc, rollType
+		tinsert(ret, "player, date, time, item, itemID, itemString, response, votes, class, instance, boss, gear1, gear2, responseID, isAwardReason, rollType, subType, equipLoc\r\n")
 		for player, v in pairs(lootDB) do
 			if selectedName and selectedName == player or not selectedName then
 				for i, d in pairs(v) do
 					if selectedDate and selectedDate == d.date or not selectedDate then
 						_,_,subType, equipLoc = GetItemInfoInstant(d.lootWon)
+						if d.tierToken then subType = L["Armor Token"] end
+						rollType = (d.tokenRoll and "token") or (d.relicRoll and "relic") or "normal"
 						-- We might have commas in various things here :/
 						tinsert(export, tostring(player))
 						tinsert(export, tostring(d.date))
@@ -1056,9 +1061,10 @@ do
 						tinsert(export, (gsub(tostring(d.itemReplaced1), ",","")))
 						tinsert(export, (gsub(tostring(d.itemReplaced2), ",","")))
 						tinsert(export, tostring(d.responseID))
-						tinsert(export, tostring(d.isAwardReason))
+						tinsert(export, tostring(d.isAwardReason or false))
+						tinsert(export, rollType)
 						tinsert(export, tostring(subType))
-						tinsert(export, tostring(equipLoc))
+						tinsert(export, tostring(getglobal(equipLoc) or ""))
 						tinsert(ret, table.concat(export, ","))
 						tinsert(ret, "\r\n")
 						wipe(export)
@@ -1075,13 +1081,15 @@ do
 		-- Add headers
 		wipe(export)
 		wipe(ret)
-		local subType, equipLoc
-		tinsert(ret, "player\tdate\ttime\titem\titemID\titemString\tresponse\tvotes\tclass\tinstance\tboss\tgear1\tgear2\tresponseID\tisAwardReason\tsubType\tequipLoc\r\n")
+		local subType, equipLoc, rollType
+		tinsert(ret, "player\tdate\ttime\titem\titemID\titemString\tresponse\tvotes\tclass\tinstance\tboss\tgear1\tgear2\tresponseID\tisAwardReason\trollType\tsubType\tequipLoc\r\n")
 		for player, v in pairs(lootDB) do
 			if selectedName and selectedName == player or not selectedName then
 				for i, d in pairs(v) do
 					if selectedDate and selectedDate == d.date or not selectedDate then
 						_,_,subType, equipLoc = GetItemInfoInstant(d.lootWon)
+						if d.tierToken then subType = L["Armor Token"] end
+						rollType = (d.tokenRoll and "token") or (d.relicRoll and "relic") or "normal"
 						tinsert(export, tostring(player))
 						tinsert(export, tostring(d.date))
 						tinsert(export, tostring(d.time))
@@ -1093,12 +1101,13 @@ do
 						tinsert(export, tostring(d.class))
 						tinsert(export, tostring(d.instance))
 						tinsert(export, tostring(d.boss))
-						tinsert(export, "=HYPERLINK(\""..self:GetWowheadLinkFromItemLink(tostring(d.itemReplaced1)).."\",\""..tostring(d.itemReplaced1).."\")")
-						tinsert(export, "=HYPERLINK(\""..self:GetWowheadLinkFromItemLink(tostring(d.itemReplaced2)).."\",\""..tostring(d.itemReplaced2).."\")")
+						tinsert(export, d.itemReplaced1 and "=HYPERLINK(\""..self:GetWowheadLinkFromItemLink(tostring(d.itemReplaced1)).."\",\""..tostring(d.itemReplaced1).."\")" or "")
+						tinsert(export, d.itemReplaced2 and "=HYPERLINK(\""..self:GetWowheadLinkFromItemLink(tostring(d.itemReplaced2)).."\",\""..tostring(d.itemReplaced2).."\")" or "")
 						tinsert(export, tostring(d.responseID))
-						tinsert(export, tostring(d.isAwardReason))
+						tinsert(export, tostring(d.isAwardReason or false))
+						tinsert(export, rollType)
 						tinsert(export, tostring(subType))
-						tinsert(export, tostring(equipLoc))
+						tinsert(export, tostring(getglobal(equipLoc) or ""))
 						tinsert(ret, table.concat(export, "\t"))
 						tinsert(ret, "\r\n")
 						wipe(export)
