@@ -1030,7 +1030,7 @@ do
 		The func field also gets candidateName and data as params, but gets delivered as a function to the dropdown.
 		There's three special fields to enable this kind of structure:
 			onValue :String 				- This entry will only be shown if LIB_UIDROPDOWNMENU_MENU_VALUE matches onValue. This enables nesting.
-			hidden  :boolean/function 	- The entry is only shown if this is false. 
+			hidden  :boolean/function 	- The entry is only shown if this is false.
 			special :String 				- Handles a couple of special cases that wasn't too suitable for the orignal creating (#lazy)
 								 				- Cases: AWARD_FOR, CHANGE_RESPONSE, TIER_TOKENS
 	]]
@@ -1041,10 +1041,12 @@ do
 				isTitle = true,
 				notCheckable = true,
 				disabled = true,
+				hidden = true,
 			},{ -- 2 Spacer
 				text = "",
 				notCheckable = true,
 				disabled = true,
+				hidden = function() return true end,
 			},{ -- 3 Award
 				text = L["Award"],
 				notCheckable = true,
@@ -1160,7 +1162,7 @@ do
 			info = Lib_UIDropDownMenu_CreateInfo()
 			if not entry.special then
 				if not entry.onValue or entry.onValue == value then
-					if not (entry.hidden and type(entry.hidden) == "function" and entry.hidden(candidateName, data)) or not entry.hidden then
+					if (entry.hidden and type(entry.hidden) == "function" and not entry.hidden(candidateName, data)) or not entry.hidden then
 						for name, val in pairs(entry) do
 							if name == "func" then
 								info[name] = function() return val(candidateName, data) end -- This needs to be set as a func, but fed with our params

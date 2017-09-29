@@ -77,7 +77,7 @@ function RCLootCouncilML:AddItem(item, bagged, slotIndex, index)
 		self:ScheduleTimer("Timer", 1, "AddItem", item, bagged, slotIndex, index or #self.lootTable)
 		addon:Debug("Started timer:", "AddItem", "for", item)
 	else
-		addon:SendMessage("RCMLAddItem", item, #self.lootTable)
+		addon:SendMessage("RCMLAddItem", item, index or #self.lootTable)
 	end
 end
 
