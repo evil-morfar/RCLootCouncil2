@@ -1,17 +1,28 @@
 --- 	core.lua	Contains core elements of the addon
 -- @author Potdisc
 
---[[
---------------------------------
-TODOs/Notes
+--[[ TODOs/Notes
 	Things marked with "todo"
 		- IDEA Have player's current gear sent with lootAck
 		- Emulate award stuff - i.e. log awards without awarding
 		- Check if players are eligible for loot, otherwise mark them as not
 		- Remember to add mapID for Antorus.
---------------------------------
-CHANGELOG
-	-- SEE CHANGELOG.TXT
+-------------------------------- ]]
+
+--[[CHANGELOG
+	-- SEE CHANGELOG.TXT]]
+
+--[[AceEvent-3.0 Messages:
+	core:
+		RCCouncilChanged		-	fires when the council changes.
+		RCConfigTableChanged	-	fires when the user changes a settings. args: [val]; a few settings supplies their name.
+	ml_core:
+		RCMLAddItem				- 	fires when an item is added to the loot table. args: item, session
+		RCMLAwardSuccess		- 	fires when an item is successfully awarded. args: session, winner, status.
+		RCMLAwardFailed		-	fires when an item is unsuccessfully awarded. args: session, winner, status.
+	votingFrame:
+		RCSessionChangedPre	-	fires when the user changes the session, just before SwitchSession() is executed. args: sesion.
+		RCSessionChangedPost	-	fires when the user changes the session, after SwitchSession() is executed. args: session.
 ]]
 RCLootCouncil = LibStub("AceAddon-3.0"):NewAddon("RCLootCouncil", "AceConsole-3.0", "AceEvent-3.0", "AceComm-3.0", "AceSerializer-3.0", "AceHook-3.0", "AceTimer-3.0");
 local LibDialog = LibStub("LibDialog-1.0")

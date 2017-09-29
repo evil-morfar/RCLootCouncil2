@@ -5,7 +5,6 @@
 ]]
 
 --[[TODOs/NOTES:
-		- SendMessage() on AddItem() to let userModules know it's safe to add to lootTable. Might have to do it other places too.
 ]]
 
 local addon = LibStub("AceAddon-3.0"):GetAddon("RCLootCouncil")
@@ -77,6 +76,8 @@ function RCLootCouncilML:AddItem(item, bagged, slotIndex, index)
 	if not name then
 		self:ScheduleTimer("Timer", 1, "AddItem", item, bagged, slotIndex, index or #self.lootTable)
 		addon:Debug("Started timer:", "AddItem", "for", item)
+	else
+		addon:SendMessage("RCMLAddItem", item, #self.lootTable)
 	end
 end
 
@@ -476,6 +477,18 @@ function RCLootCouncilML:LootOnClick(button)
 	addon:GetActiveModule("sessionframe"):Show(self.lootTable)
 end
 
+-- Status can be one of the following:
+-- test_mode, no_loot_slot, loot_not_open, normal, bagged
+-- See :Award() for the different scenarios
+local function awardSuccess(session, winner, status)
+	addon:SendMessage("RCMLAwardSuccess", session, winner, status)
+	return true
+end
+local function awardFailed(session, winner, status)
+	addon:SendMessage("RCMLAwardFailed", session, winner, status)
+	return false
+end
+
 --@param session	The session to award.
 --@param winner	Nil/false if items should be stored in inventory and awarded later.
 --@param response	The candidates response, used for announcement.
@@ -492,11 +505,11 @@ function RCLootCouncilML:Award(session, winner, response, reason)
 				 addon:Print(L["All items has been awarded and  the loot session concluded"])
 			end
 		end
-		return true
+		return awardSuccess(session, winner, "test_mode")
 	end
 	if not self.lootTable[session].lootSlot and not self.lootTable[session].bagged then
 		addon:SessionError("Session "..session.." didn't have lootSlot")
-		return false
+		return awardFailed(session, winner, "no_loot_slot")
 	end
 	-- Determine if we should award the item now or just store it in our bags
 	if winner then
@@ -512,7 +525,7 @@ function RCLootCouncilML:Award(session, winner, response, reason)
 			if not self.lootOpen then -- we can't give out loot without the loot window open
 				addon:Print(L["Unable to give out loot without the loot window open."])
 				--addon:Print(L["Alternatively, flag the loot as award later."])
-				return false
+				return awardFailed(session, winner, "loot_not_open")
 			end
 			-- v2.4.4+: Check if the item is still in the expected slot
 			if self.lootTable[session].link ~= GetLootSlotLink(self.lootTable[session].lootSlot) then
@@ -541,8 +554,9 @@ function RCLootCouncilML:Award(session, winner, response, reason)
 		end
 		if awarded then
 			-- flag the item as awarded and update
-			addon:SendCommand("group", "awarded", session, winner)
 			self.lootTable[session].awarded = winner -- No need to let Comms handle this
+			awardSuccess(session, winner, "normal")
+			addon:SendCommand("group", "awarded", session, winner)
 
 			self:AnnounceAward(winner, self.lootTable[session].link,
 			 reason and reason.text or response, addon:GetActiveModule("votingframe"):GetCandidateData(session, winner, "roll"))
@@ -550,6 +564,7 @@ function RCLootCouncilML:Award(session, winner, response, reason)
 
 		else -- If we reach here it means we couldn't find a valid MasterLootCandidate, propably due to the winner is unable to receive the loot
 			addon:Print(format(L["Unable to give 'item' to 'player' - (player offline, left group or instance?)"], self.lootTable[session].link, winner))
+			awardFailed(session, winner, "normal")
 		end
 		return awarded
 
@@ -566,7 +581,7 @@ function RCLootCouncilML:Award(session, winner, response, reason)
 			end
 		end
 		tinsert(self.lootInBags, self.lootTable[session].link) -- and store data
-		return false -- Item hasn't been awarded
+		return awardFailed(session, winner, "bagged") -- Item hasn't been awarded
 	end
 end
 
