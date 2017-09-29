@@ -1041,12 +1041,10 @@ do
 				isTitle = true,
 				notCheckable = true,
 				disabled = true,
-				hidden = true,
 			},{ -- 2 Spacer
 				text = "",
 				notCheckable = true,
 				disabled = true,
-				hidden = function() return true end,
 			},{ -- 3 Award
 				text = L["Award"],
 				notCheckable = true,
