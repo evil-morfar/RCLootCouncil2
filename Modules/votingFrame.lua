@@ -1028,10 +1028,11 @@ do
 	--[[ Notes:
 		Any value can be a function, which will be evaluated on creation. Functions gets candidateName and data (the data belonging to the candidate) as parameters.
 		The func field also gets candidateName and data as params, but gets delivered as a function to the dropdown.
-		There's two special fields to enable this kind of structure:
-			onValue :String - This entry will only be shown if LIB_UIDROPDOWNMENU_MENU_VALUE matches onValue. This enables nesting.
-			special :String - Handles a couple of special cases that wasn't too suitable for the orignal creating (#lazy)
-								 - Cases: AWARD_FOR, CHANGE_RESPONSE, TIER_TOKENS
+		There's three special fields to enable this kind of structure:
+			onValue :String 				- This entry will only be shown if LIB_UIDROPDOWNMENU_MENU_VALUE matches onValue. This enables nesting.
+			hidden  :boolean/function 	- The entry is only shown if this is false. 
+			special :String 				- Handles a couple of special cases that wasn't too suitable for the orignal creating (#lazy)
+								 				- Cases: AWARD_FOR, CHANGE_RESPONSE, TIER_TOKENS
 	]]
 	RCVotingFrame.rightClickEntries = {
 		{ -- Level 1
@@ -1159,16 +1160,18 @@ do
 			info = Lib_UIDropDownMenu_CreateInfo()
 			if not entry.special then
 				if not entry.onValue or entry.onValue == value then
-					for name, val in pairs(entry) do
-						if name == "func" then
-							info[name] = function() return val(candidateName, data) end -- This needs to be set as a func, but fed with our params
-						elseif type(val) == "function" then
-							info[name] = val(candidateName, data) -- This needs to be evaluated
-						else
-							info[name] = val
+					if not (entry.hidden and type(entry.hidden) == "function" and entry.hidden(candidateName, data)) or not entry.hidden then
+						for name, val in pairs(entry) do
+							if name == "func" then
+								info[name] = function() return val(candidateName, data) end -- This needs to be set as a func, but fed with our params
+							elseif type(val) == "function" then
+								info[name] = val(candidateName, data) -- This needs to be evaluated
+							else
+								info[name] = val
+							end
 						end
+						Lib_UIDropDownMenu_AddButton(info, level)
 					end
-					Lib_UIDropDownMenu_AddButton(info, level)
 				end
 			elseif value == "AWARD_FOR" and entry.special == value then
 				for k,v in ipairs(db.awardReasons) do

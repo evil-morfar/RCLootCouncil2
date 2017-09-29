@@ -26,7 +26,7 @@
 * Restructured "CONFIRM_AWARD" popup, along with data supplied from votingFrame.
 * All functions in that popup are now easily hookable.
 * Edited arguments in ML:Award().
-* Minor restructuring in rightclick menus.
+* Minor restructuring in rightclick menus, added 'hidden' field.
 * ChatCommands can now receive more arguments.
 
 

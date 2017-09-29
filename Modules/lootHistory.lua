@@ -746,11 +746,11 @@ function LootHistory.FilterMenu(menu, level)
 end
 
 
+do
 --- Entries placed in the rightclick menu.
 -- See the example in votingFrame.lua for a detailed explaination.
 -- Functions gets the row data as a parameter.
 -- See LootHistory:BuildData() for the contents of a row (self.frame.rows[row])
-do
 LootHistory.rightClickEntries = {
 	{ -- Level 1
 		{ -- 1 Title
@@ -829,16 +829,18 @@ function LootHistory.RightClickMenu(menu, level)
 		info = Lib_UIDropDownMenu_CreateInfo()
 		if not entry.special then
 			if not entry.onValue or entry.onValue == value then
-				for name, val in pairs(entry) do
-					if name == "func" then
-						info[name] = function() return val(candidateName, data) end -- This needs to be set as a func, but fed with our params
-					elseif type(val) == "function" then
-						info[name] = val(candidateName, data) -- This needs to be evaluated
-					else
-						info[name] = val
+				if not (entry.hidden and type(entry.hidden) == "function" and entry.hidden(candidateName, data)) or not entry.hidden then
+					for name, val in pairs(entry) do
+						if name == "func" then
+							info[name] = function() return val(candidateName, data) end -- This needs to be set as a func, but fed with our params
+						elseif type(val) == "function" then
+							info[name] = val(candidateName, data) -- This needs to be evaluated
+						else
+							info[name] = val
+						end
 					end
+					Lib_UIDropDownMenu_AddButton(info, level)
 				end
-				Lib_UIDropDownMenu_AddButton(info, level)
 			end
 
 		elseif value == "EDIT_NAME" and entry.special == value then
