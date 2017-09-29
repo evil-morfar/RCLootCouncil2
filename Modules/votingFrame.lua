@@ -463,7 +463,7 @@ function RCVotingFrame:UpdateMoreInfo(row, data)
 	else
 		tip:AddLine(L["No entries in the Loot History"])
 	end
-	tip:SetScale(db.UI.votingframe.scale-0.15) -- Make it a bit smaller, as it's too wide otherwise
+	tip:SetScale(self.frame:GetScale() * 0.6) -- Make it a bit smaller, as it's too wide otherwise
 	tip:Show()
 	tip:SetAnchorType("ANCHOR_RIGHT", 0, -tip:GetHeight())
 end

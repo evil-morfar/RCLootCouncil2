@@ -167,7 +167,7 @@ function RCLootCouncil:OnInitialize()
 					y		= 0,
 					x		= 0,
 					point	= "CENTER",
-					scale	= 0.8,
+					scale	= 1.1,--0.8,
 					bgColor = {0, 0, 0.2, 1},
 					borderColor = {0.3, 0.3, 0.5, 1},
 					border = "Blizzard Tooltip",
@@ -381,11 +381,15 @@ function RCLootCouncil:OnEnable()
 	-- in the :CreateFrame() all :Prints as expected :o
 	self:ActivateSkin(db.currentSkin)
 
-	if self.db.global.version and self:VersionCompare(self.db.global.version, self.version) then -- We've upgraded
-		if self:VersionCompare(self.db.global.version, "2.4.3") then -- Update lootDB with newest changes
-			self:Print("v2.4 adds seperate buttons for tier tokens. You might want to change your buttons setup - have a look in the options menu! (/rc config)")
-			-- delay it abit
-			self:ScheduleTimer("UpdateLootHistory", 5)
+	if self.db.global.version and self:VersionCompare(self.db.global.version, self.version)
+	 	or self.db.global.tVersion
+		then -- We've upgraded
+		if self:VersionCompare(self.db.global.version, "2.6.0") or self.db.global.tVersion then -- Update lootDB with newest changes
+			self:ScheduleTimer("Print", 2, "v2.6 adds seperate buttons for relics. You might want to change your buttons setup - have a look in the options menu! (/rc config)")
+			self:ScheduleTimer("Print", 2.1, "Scaling have also changed been a bit and reset - remember you can always use CTRL-ScrollWhell on any frame to rescale it.")
+			for _, k in pairs(db.UI) do
+				if k.scale then k.scale = 1.1 end
+			end
 		end
 		self.db.global.oldVersion = self.db.global.version
 		self.db.global.version = self.version
@@ -1707,7 +1711,7 @@ end
 -- @param height Height of the frame, defaults to 325.
 -- @return The frame object.
 function RCLootCouncil:CreateFrame(name, cName, title, width, height)
-	local f = CreateFrame("Frame", name, nil) -- LibWindow seems to work better with nil parent
+	local f = CreateFrame("Frame", name, UIParent) -- LibWindow seems to work better with nil parent
 	f:Hide()
 	f:SetFrameStrata("DIALOG")
 	f:SetWidth(450)

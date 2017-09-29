@@ -13,6 +13,12 @@
 * isAwardReason columns will no longer return nil (only true/false).
 
 
+* **Scaling**
+* All RCLootCouncil frames now hides with the UI (alt-z by default) (#303).
+* This change affected all frame scaling, and all scaling have been reset to the new default.
+* I've tried to remain as close as possible to the original, but if something seems off remember you can scale all frames with ctrl-mousewheel.
+
+
 * Testing optimization for wowhead urls in exports (#278).
 * Tier and Relic responses now only shows up in rightclick menus if enabled.
 
