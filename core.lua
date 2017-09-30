@@ -443,7 +443,7 @@ end
 function RCLootCouncil:ChatCommand(msg)
 	local input = self:GetArgs(msg,1)
 	local args = {}
-	local arg, startpos = nil, #input + 1
+	local arg, startpos = nil, #input or 0 + 1
 	repeat
 	    arg, startpos = self:GetArgs(msg, 1, startpos)
 	    if arg then

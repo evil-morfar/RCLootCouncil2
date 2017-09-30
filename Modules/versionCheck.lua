@@ -215,6 +215,7 @@ function RCVersionCheck.VersionSort(table, rowa, rowb, sortbycol)
 	local a,b = table:GetRow(rowa), table:GetRow(rowb)
 	if a.version == L["Not installed"] then return false
 	elseif b.version == L["Not installed"] then return true
+	elseif a.version == b.version then return false
 	else
 		local direction = column.sort or column.defaultsort or "asc";
 		if direction:lower() == "asc" then
