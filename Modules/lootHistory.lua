@@ -865,6 +865,7 @@ function LootHistory.RightClickMenu(menu, level)
 					data.cols[1].args[1] = v[1].args[1]
 					data.cols[2] = {value = v[2].value, color = addon:GetClassColor(data.class)}
 					LootHistory.frame.st:SortData()
+					addon:SendMessage("RCHistory_NameEdit", data)
 				end
 				Lib_UIDropDownMenu_AddButton(info, level)
 			end
@@ -887,6 +888,7 @@ function LootHistory.RightClickMenu(menu, level)
 					data.response = i
 					data.cols[6].args = {color = entry.color, response = entry.response, responseID = i}
 					LootHistory.frame.st:SortData()
+					addon:SendMessage("RCHistory_ResponseEdit", data)
 				end
 				Lib_UIDropDownMenu_AddButton(info, level)
 			end
@@ -931,6 +933,7 @@ function LootHistory.RightClickMenu(menu, level)
 					data.response = k
 					data.cols[6].args = {color = entry.color, response = entry.response, responseID = k, tokenRoll = true}
 					LootHistory.frame.st:SortData()
+					addon:SendMessage("RCHistory_ResponseEdit", data)
 				end
 				Lib_UIDropDownMenu_AddButton(info, level)
 			end
@@ -953,6 +956,7 @@ function LootHistory.RightClickMenu(menu, level)
 					data.response = k
 					data.cols[6].args = {color = entry.color, response = entry.response, responseID = k, relicRoll = true}
 					LootHistory.frame.st:SortData()
+					addon:SendMessage("RCHistory_ResponseEdit", data)
 				end
 				Lib_UIDropDownMenu_AddButton(info, level)
 			end
@@ -975,6 +979,7 @@ function LootHistory.RightClickMenu(menu, level)
 					data.response = i
 					data.cols[6].args = {color = entry.color, response = entry.response, responseID = k}
 					LootHistory.frame.st:SortData()
+					addon:SendMessage("RCHistory_ResponseEdit", data)
 				end
 				Lib_UIDropDownMenu_AddButton(info, level)
 			end

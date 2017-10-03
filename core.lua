@@ -26,6 +26,9 @@
 	votingFrame:
 		RCSessionChangedPre	-	fires when the user changes the session, just before SwitchSession() is executed. args: sesion.
 		RCSessionChangedPost	-	fires when the user changes the session, after SwitchSession() is executed. args: session.
+	lootHistory:
+		RCHistory_ResponseEdit - fires when the user edits the response of a history entry. args: data (see LootHistory:BuildData())
+		RCHistory_NameEdit	-	fires when the user edits the receiver of a history entry. args: data.
 ]]
 RCLootCouncil = LibStub("AceAddon-3.0"):NewAddon("RCLootCouncil", "AceConsole-3.0", "AceEvent-3.0", "AceComm-3.0", "AceSerializer-3.0", "AceHook-3.0", "AceTimer-3.0");
 local LibDialog = LibStub("LibDialog-1.0")

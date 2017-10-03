@@ -34,6 +34,7 @@
 * Edited arguments in ML:Award().
 * Minor restructuring in rightclick menus, added 'hidden' field.
 * ChatCommands can now receive more arguments.
+* Several new internal messages.
 
 
 ### v2.5.5
