@@ -559,7 +559,7 @@ function RCLootCouncilML:Award(session, winner, response, reason)
 			addon:SendCommand("group", "awarded", session, winner)
 
 			self:AnnounceAward(winner, self.lootTable[session].link,
-			 reason and reason.text or response, addon:GetActiveModule("votingframe"):GetCandidateData(session, winner, "roll"))
+			 reason and reason.text or response, addon:GetActiveModule("votingframe"):GetCandidateData(session, winner, "roll"), session)
 			if self:HasAllItemsBeenAwarded() then self:EndSession() end
 
 		else -- If we reach here it means we couldn't find a valid MasterLootCandidate, propably due to the winner is unable to receive the loot
