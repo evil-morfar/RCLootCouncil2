@@ -17,7 +17,7 @@ function RCSessionFrame:OnInitialize()
 	self.scrollCols = {
 		{ name = "", sortnext = 3,	width = 30 }, 			-- remove item
 		{ name = "", sortnext = 3,	width = ROW_HEIGHT },-- item icon
-		{ name = L["Item"],			width = 150}, 			-- item link
+		{ name = L["Item"],			width = 160}, 			-- item link
 	}
 end
 

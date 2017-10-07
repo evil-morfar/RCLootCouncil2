@@ -10,6 +10,7 @@ local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 
 local GuildRankSort
 local guildRanks = {}
+local highestVersion = "0.0.0"
 
 function RCVersionCheck:OnInitialize()
 	-- Initialize scrollCols on self so others can change it
@@ -17,7 +18,7 @@ function RCVersionCheck:OnInitialize()
 		{ name = "",				width = 20, sortnext = 2,},
 		{ name = L["Name"],		width = 150, },
 		{ name = L["Rank"],		width = 90, comparesort = GuildRankSort},
-		{ name = L["Version"],	width = 140, align = "RIGHT" },
+		{ name = L["Version"],	width = 140, align = "RIGHT", comparesort = self.VersionSort },
 	}
 end
 
@@ -90,6 +91,9 @@ function RCVersionCheck:AddEntry(name, class, guildRank, version, tVersion, modu
 	-- We need to be careful with naming conventions just as in RCLootCouncil:UnitName()
 	--name = name:lower():gsub("^%l", string.upper)
 	name = addon:UnitName(name)
+	if not tVersion and addon:VersionCompare(highestVersion, version) then
+		highestVersion = version
+	end
 	local vVal = version
 	if tVersion then vVal = version.."-"..tVersion end
 	for row, v in ipairs(self.frame.rows) do
@@ -97,10 +101,11 @@ function RCVersionCheck:AddEntry(name, class, guildRank, version, tVersion, modu
 			v.cols =	{
 				{ value = "",					DoCellUpdate = addon.SetCellClassIcon, args = {class}, },
 				{ value = addon.Ambiguate(name),color = addon:GetClassColor(class), },
-				{ value = guildRank,			color = self:GetVersionColor(version,tVersion)},
-				{ value = vVal ,				color = self:GetVersionColor(version,tVersion), DoCellUpdate = self.SetCellModules, args = modules},
+				{ value = guildRank,			color = self.GetVersionColor, colorargs = {self,version,tVersion}},
+				{ value = vVal ,				color = self.GetVersionColor, colorargs = {self,version,tVersion}, DoCellUpdate = self.SetCellModules, args = modules},
 			}
 			v.rank = guildRank
+			v.version = version
 			return self:Update()
 		end
 	end
@@ -108,11 +113,12 @@ function RCVersionCheck:AddEntry(name, class, guildRank, version, tVersion, modu
 	tinsert(self.frame.rows,
 	{	name = name,
 		rank = guildRank,
+		version = version,
 		cols = {
 			{ value = "",					DoCellUpdate = addon.SetCellClassIcon, args = {class}, },
 			{ value = addon.Ambiguate(name),color = addon:GetClassColor(class), },
-			{ value = guildRank,			color = self:GetVersionColor(version,tVersion)},
-			{ value = vVal ,				color = self:GetVersionColor(version,tVersion), DoCellUpdate = self.SetCellModules, args = modules},
+			{ value = guildRank,			color = self.GetVersionColor, colorargs = {self,version,tVersion}},
+			{ value = vVal ,				color = self.GetVersionColor, colorargs = {self,version,tVersion}, DoCellUpdate = self.SetCellModules, args = modules},
 		},
 	})
 	self:Update()
@@ -125,8 +131,8 @@ end
 function RCVersionCheck:GetVersionColor(ver,tVer)
 	local green, yellow, red, grey = {r=0,g=1,b=0,a=1},{r=1,g=1,b=0,a=1},{r=1,g=0,b=0,a=1},{r=0.75,g=0.75,b=0.75,a=1}
 	if tVer then return yellow end
-	if ver == addon.version then return green end
-	if addon:VersionCompare(ver, addon.version) then return red end
+	if ver == highestVersion then return green end
+	if addon:VersionCompare(ver, highestVersion) then return red end
 	return grey
 end
 
@@ -199,6 +205,23 @@ function GuildRankSort(table, rowa, rowb, sortbycol)
 			return a > b;
 		else
 			return a < b;
+		end
+	end
+end
+
+-- There's no need to make this more complicated.
+function RCVersionCheck.VersionSort(table, rowa, rowb, sortbycol)
+	local column = table.cols[sortbycol]
+	local a,b = table:GetRow(rowa), table:GetRow(rowb)
+	if a.version == L["Not installed"] then return false
+	elseif b.version == L["Not installed"] then return true
+	elseif a.version == b.version then return false
+	else
+		local direction = column.sort or column.defaultsort or "asc";
+		if direction:lower() == "asc" then
+			return addon:VersionCompare(b.version, a.version)
+		else
+			return addon:VersionCompare(a.version, b.version)
 		end
 	end
 end

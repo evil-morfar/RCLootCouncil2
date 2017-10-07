@@ -21,6 +21,9 @@ local rightClickMenu;
 local ROW_HEIGHT = 20;
 local NUM_ROWS = 15;
 
+--globals
+local tinsert, tostring, getglobal,pairs = tinsert, tostring, getglobal, pairs
+
 function LootHistory:OnInitialize()
 	self.exportSelection = "lua"
 	-- Pointer to export functions. Expected to return a string containing the export
@@ -148,7 +151,7 @@ function LootHistory:BuildData()
 							{value = date.. "-".. i.time or "", args = {time = i.time, date = date},},
 							{DoCellUpdate = self.SetCellGear, args={i.lootWon}},
 							{value = i.lootWon},
-							{DoCellUpdate = self.SetCellResponse, args = {color = i.color, response = i.response, responseID = i.responseID or 0, isAwardReason = i.isAwardReason, tokenRoll = i.tokenRoll}},
+							{DoCellUpdate = self.SetCellResponse, args = {color = i.color, response = i.response, responseID = i.responseID or 0, isAwardReason = i.isAwardReason, tokenRoll = i.tokenRoll, relicRoll = i.relicRoll}},
 							{DoCellUpdate = self.SetCellDelete},
 						}
 					}
@@ -203,7 +206,8 @@ end
 function LootHistory.SetCellGear(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
 	local gear = data[realrow].cols[column].args[1] -- gear1 or gear2
 	if gear then
-		local texture = select(10, GetItemInfo(gear))
+		--local texture = select(10, GetItemInfo(gear))
+		local texture = select(5, GetItemInfoInstant(gear))
 		frame:SetNormalTexture(texture)
 		frame:SetScript("OnEnter", function() addon:CreateHypertip(gear) end)
 		frame:SetScript("OnLeave", function() addon:HideTooltip() end)
@@ -225,7 +229,7 @@ function LootHistory.SetCellResponse(rowFrame, frame, data, cols, row, realrow, 
 	if args.color and type(args.color) == "table" then -- Never version saves the color with the entry
 		frame.text:SetTextColor(unpack(args.color))
 	elseif args.responseID and args.responseID > 0 then -- try to recreate color from ID
-		frame.text:SetTextColor(addon:GetResponseColor(args.responseID, args.tokenRoll))
+		frame.text:SetTextColor(addon:GetResponseColor(args.responseID, args.tokenRoll, args.relicRoll))
 	else -- default to white
 		frame.text:SetTextColor(1,1,1,1)
 	end
@@ -393,13 +397,16 @@ function LootHistory:GetWowheadLinkFromItemLink(link)
 
 	 -- It seems bonus id 1487 (and basically any other id that's -5 below Wowheads first ilvl upgrade doesn't work)
 	 -- Neither does Warforged items it seems
+	 -- 19/9-17: It seems bonusIDs 3528 and 3336 fucks up Wowhead - however there's no difference with or without those ids ingame (?!).
     if numBonuses > 0 then
         itemurl = itemurl.."&bonus="
         for i, b in pairs(bonusIDs) do
-            itemurl = itemurl..b
-            if i < numBonuses then
-                itemurl = itemurl..":"
-            end
+			  if b ~= 3528 and b ~= 3336 then
+	            itemurl = itemurl..b
+	            if i < numBonuses then
+	                itemurl = itemurl..":"
+	            end
+				end
         end
     end
 
@@ -663,10 +670,11 @@ function LootHistory:UpdateMoreInfo(rowFrame, cellFrame, dat, cols, row, realrow
 		tip:AddDoubleLine("groupSize", data.groupSize, 1,1,1, 1,1,1)
 		tip:AddDoubleLine("tierToken", data.tierToken, 1,1,1, 1,1,1)
 		tip:AddDoubleLine("tokenRoll", tostring(data.tokenRoll), 1,1,1, 1,1,1)
+		tip:AddDoubleLine("relicRoll", tostring(data.relicRoll), 1,1,1, 1,1,1)
 		tip:AddLine(" ")
 		tip:AddDoubleLine("Total LootDB entries:", #self.frame.rows, 1,1,1, 0,0,1)
 	end
-	tip:SetScale(db.UI.history.scale)
+	tip:SetScale(self.frame:GetScale() * 0.65)
 	if moreInfo then
 		tip:Show()
 	else
@@ -739,11 +747,11 @@ function LootHistory.FilterMenu(menu, level)
 end
 
 
+do
 --- Entries placed in the rightclick menu.
 -- See the example in votingFrame.lua for a detailed explaination.
--- Text and Func fields gets the row data as a parameter if defined as a function.
+-- Functions gets the row data as a parameter.
 -- See LootHistory:BuildData() for the contents of a row (self.frame.rows[row])
-do
 LootHistory.rightClickEntries = {
 	{ -- Level 1
 		{ -- 1 Title
@@ -778,8 +786,17 @@ LootHistory.rightClickEntries = {
 			value = "TIER_TOKENS",
 			hasArrow = true,
 			notCheckable = true,
+			disabled = function() return not db.tierButtonsEnabled end,
 		},
-		{ -- 4 Award Reasons ...
+		{ -- 4 Relics
+			text = L["Relics"].." ...",
+			onValue = "EDIT_RESPONSE",
+			value = "RELICS",
+			hasArrow = true,
+			notCheckable = true,
+			disabled = function() return not db.relicButtonsEnabled end,
+		},
+		{ -- 5 Award Reasons ...
 			text = L["Award Reasons"] .. " ...",
 			onValue = "EDIT_RESPONSE",
 			value = "AWARD_REASON",
@@ -791,7 +808,10 @@ LootHistory.rightClickEntries = {
 		{ -- 1 TIER_TOKENS
 			special = "TIER_TOKENS",
 		},
-		{ -- 2 AWARD_REASON
+		{ -- 2 RELICS
+			special = "RELICS",
+		},
+		{ -- 3 AWARD_REASON
 			special = "AWARD_REASON",
 		}
 	},
@@ -809,30 +829,21 @@ function LootHistory.RightClickMenu(menu, level)
 	for i, entry in ipairs(LootHistory.rightClickEntries[level]) do
 		info = Lib_UIDropDownMenu_CreateInfo()
 		if not entry.special then
-			if not entry.onValue then
-				for name, val in pairs(entry) do
-					if name == "text" and type(val) == "function" then
-						info[name] = val(data) -- This needs to be evaluated
-					elseif name == "func" then
-						info[name] = function() return val(data) end -- This needs to be set as a func, but fed with our params
-					else
-						info[name] = val
+			if not entry.onValue or entry.onValue == value then
+				if not (entry.hidden and type(entry.hidden) == "function" and entry.hidden(candidateName, data)) or not entry.hidden then
+					for name, val in pairs(entry) do
+						if name == "func" then
+							info[name] = function() return val(candidateName, data) end -- This needs to be set as a func, but fed with our params
+						elseif type(val) == "function" then
+							info[name] = val(candidateName, data) -- This needs to be evaluated
+						else
+							info[name] = val
+						end
 					end
+					Lib_UIDropDownMenu_AddButton(info, level)
 				end
-				Lib_UIDropDownMenu_AddButton(info, level)
-
-			elseif entry.onValue == value then
-				for name, val in pairs(entry) do
-					if name == "text" and type(val) == "function" then
-						info.text = val(data)
-					elseif name == "func" then
-						info[name] = function() return val(data) end
-					elseif name ~= "onValue" then
-						info[name] = val
-					end
-				end
-				Lib_UIDropDownMenu_AddButton(info, level)
 			end
+
 		elseif value == "EDIT_NAME" and entry.special == value then
 			for _,i in ipairs(LootHistory.frame.name.sorttable) do
 				local v = LootHistory.frame.name.data[i]
@@ -854,6 +865,7 @@ function LootHistory.RightClickMenu(menu, level)
 					data.cols[1].args[1] = v[1].args[1]
 					data.cols[2] = {value = v[2].value, color = addon:GetClassColor(data.class)}
 					LootHistory.frame.st:SortData()
+					addon:SendMessage("RCHistory_NameEdit", data)
 				end
 				Lib_UIDropDownMenu_AddButton(info, level)
 			end
@@ -872,16 +884,18 @@ function LootHistory.RightClickMenu(menu, level)
 					entry.color = {addon:GetResponseColor(i)}
 					entry.isAwardReason = nil
 					entry.tokenRoll = nil
+					entry.relicRoll = nil
 					data.response = i
 					data.cols[6].args = {color = entry.color, response = entry.response, responseID = i}
 					LootHistory.frame.st:SortData()
+					addon:SendMessage("RCHistory_ResponseEdit", data)
 				end
 				Lib_UIDropDownMenu_AddButton(info, level)
 			end
 
 			if addon.debug then
 				for k,v in pairs(db.responses) do
-					if type(k) ~= "number" and k ~= "tier" then
+					if type(k) ~= "number" and k ~= "tier" and k ~= "relic" then
 						info.text = v.text
 						info.colorCode = "|cff"..addon:RGBToHex(unpack(v.color))
 						info.notCheckable = true
@@ -901,7 +915,7 @@ function LootHistory.RightClickMenu(menu, level)
 				end
 			end
 
-		elseif value == "TIER_TOKENS" and entry.special == value then
+		elseif value == "TIER_TOKENS" and entry.special == value and db.tierButtonsEnabled then
 			for k,v in ipairs(db.responses.tier) do
 				if k > db.tierNumButtons then break end
 				info.text = v.text
@@ -915,9 +929,34 @@ function LootHistory.RightClickMenu(menu, level)
 					entry.color = {unpack(v.color)}
 					entry.isAwardReason = nil
 					entry.tokenRoll = true
+					entry.relicRoll = false
 					data.response = k
 					data.cols[6].args = {color = entry.color, response = entry.response, responseID = k, tokenRoll = true}
 					LootHistory.frame.st:SortData()
+					addon:SendMessage("RCHistory_ResponseEdit", data)
+				end
+				Lib_UIDropDownMenu_AddButton(info, level)
+			end
+
+		elseif value == "RELICS" and entry.special == value and db.relicButtonsEnabled then
+			for k,v in ipairs(db.responses.relic) do
+				if k > db.relicNumButtons then break end
+				info.text = v.text
+				info.colorCode = "|cff"..addon:RGBToHex(unpack(v.color))
+				info.notCheckable = true
+				info.func = function()
+					addon:Debug("Changing relic response id @", data.name, "from", data.response, "to", k)
+					local entry = lootDB[data.name][data.num]
+					entry.responseID = k
+					entry.response = v.text
+					entry.color = {unpack(v.color)}
+					entry.isAwardReason = nil
+					entry.tokenRoll = false
+					entry.relicRoll = true
+					data.response = k
+					data.cols[6].args = {color = entry.color, response = entry.response, responseID = k, relicRoll = true}
+					LootHistory.frame.st:SortData()
+					addon:SendMessage("RCHistory_ResponseEdit", data)
 				end
 				Lib_UIDropDownMenu_AddButton(info, level)
 			end
@@ -936,9 +975,11 @@ function LootHistory.RightClickMenu(menu, level)
 					entry.color = {unpack(v.color)} -- For some reason it won't just accept v.color (!)
 					entry.isAwardReason = true
 					entry.tokenRoll = nil
+					entry.relicRoll = nil
 					data.response = i
 					data.cols[6].args = {color = entry.color, response = entry.response, responseID = k}
 					LootHistory.frame.st:SortData()
+					addon:SendMessage("RCHistory_ResponseEdit", data)
 				end
 				Lib_UIDropDownMenu_AddButton(info, level)
 			end
@@ -1004,11 +1045,15 @@ do
 		-- Add headers
 		wipe(export)
 		wipe(ret)
-		tinsert(ret, "player, date, time, item, itemID, itemString, response, votes, class, instance, boss, gear1, gear2, responseID, isAwardReason\r\n")
+		local subType, equipLoc, rollType
+		tinsert(ret, "player, date, time, item, itemID, itemString, response, votes, class, instance, boss, gear1, gear2, responseID, isAwardReason, rollType, subType, equipLoc\r\n")
 		for player, v in pairs(lootDB) do
 			if selectedName and selectedName == player or not selectedName then
 				for i, d in pairs(v) do
 					if selectedDate and selectedDate == d.date or not selectedDate then
+						_,_,subType, equipLoc = GetItemInfoInstant(d.lootWon)
+						if d.tierToken then subType = L["Armor Token"] end
+						rollType = (d.tokenRoll and "token") or (d.relicRoll and "relic") or "normal"
 						-- We might have commas in various things here :/
 						tinsert(export, tostring(player))
 						tinsert(export, tostring(d.date))
@@ -1024,7 +1069,10 @@ do
 						tinsert(export, (gsub(tostring(d.itemReplaced1), ",","")))
 						tinsert(export, (gsub(tostring(d.itemReplaced2), ",","")))
 						tinsert(export, tostring(d.responseID))
-						tinsert(export, tostring(d.isAwardReason))
+						tinsert(export, tostring(d.isAwardReason or false))
+						tinsert(export, rollType)
+						tinsert(export, tostring(subType))
+						tinsert(export, tostring(getglobal(equipLoc) or ""))
 						tinsert(ret, table.concat(export, ","))
 						tinsert(ret, "\r\n")
 						wipe(export)
@@ -1041,11 +1089,15 @@ do
 		-- Add headers
 		wipe(export)
 		wipe(ret)
-		tinsert(ret, "player\tdate\ttime\titem\titemID\titemString\tresponse\tvotes\tclass\tinstance\tboss\tgear1\tgear2\tresponseID\tisAwardReason\r\n")
+		local subType, equipLoc, rollType
+		tinsert(ret, "player\tdate\ttime\titem\titemID\titemString\tresponse\tvotes\tclass\tinstance\tboss\tgear1\tgear2\tresponseID\tisAwardReason\trollType\tsubType\tequipLoc\r\n")
 		for player, v in pairs(lootDB) do
 			if selectedName and selectedName == player or not selectedName then
 				for i, d in pairs(v) do
 					if selectedDate and selectedDate == d.date or not selectedDate then
+						_,_,subType, equipLoc = GetItemInfoInstant(d.lootWon)
+						if d.tierToken then subType = L["Armor Token"] end
+						rollType = (d.tokenRoll and "token") or (d.relicRoll and "relic") or "normal"
 						tinsert(export, tostring(player))
 						tinsert(export, tostring(d.date))
 						tinsert(export, tostring(d.time))
@@ -1057,10 +1109,13 @@ do
 						tinsert(export, tostring(d.class))
 						tinsert(export, tostring(d.instance))
 						tinsert(export, tostring(d.boss))
-						tinsert(export, "=HYPERLINK(\""..self:GetWowheadLinkFromItemLink(tostring(d.itemReplaced1)).."\",\""..tostring(d.itemReplaced1).."\")")
-						tinsert(export, "=HYPERLINK(\""..self:GetWowheadLinkFromItemLink(tostring(d.itemReplaced2)).."\",\""..tostring(d.itemReplaced2).."\")")
+						tinsert(export, d.itemReplaced1 and "=HYPERLINK(\""..self:GetWowheadLinkFromItemLink(tostring(d.itemReplaced1)).."\",\""..tostring(d.itemReplaced1).."\")" or "")
+						tinsert(export, d.itemReplaced2 and "=HYPERLINK(\""..self:GetWowheadLinkFromItemLink(tostring(d.itemReplaced2)).."\",\""..tostring(d.itemReplaced2).."\")" or "")
 						tinsert(export, tostring(d.responseID))
-						tinsert(export, tostring(d.isAwardReason))
+						tinsert(export, tostring(d.isAwardReason or false))
+						tinsert(export, rollType)
+						tinsert(export, tostring(subType))
+						tinsert(export, tostring(getglobal(equipLoc) or ""))
 						tinsert(ret, table.concat(export, "\t"))
 						tinsert(ret, "\r\n")
 						wipe(export)

@@ -1,6 +1,59 @@
+### v2.6.0
+---
+* **Relic Buttons**
+* A new seperate set of buttons is now available for relics.
+* As Master Looter, have a look at the "Button and Responses" settings to enable them.
+* Do note that anyone with an older version of RCLootCouncil (<2.6) will NOT see the relic buttons.
+
+
+* **History Exports**
+* The subType and equipLoc of the awarded item have been included in TSV and CSV exports (#301).
+* RollType ("token", "relic" and "normal") have also been added to indicate which set of buttons was used.
+* TSV exports no longer includes links when there's no item.
+* isAwardReason columns will no longer return nil (only true/false).
+
+
+* **Scaling**
+* All RCLootCouncil frames now hides with the UI (alt-z by default) (#303).
+* This change affected all frame scaling, and all scaling have been reset to the new default.
+* I've tried to remain as close as possible to the original, but if something seems off remember you can scale all frames with ctrl-mousewheel.
+
+
+* Testing optimization for wowhead urls in exports (#278).
+* Tier and Relic responses now only shows up in rightclick menus if enabled.
+
+
+###### Bugfixes
++ *The Version Checker is now more realistic with its coloring and sorting.*
++ *Councilmen could open the voting frame with no data and produce an error (#300).*
+
+
+* ***Dev***
+* Restructured "CONFIRM_AWARD" popup, along with data supplied from votingFrame.
+* All functions in that popup are now easily hookable.
+* Edited arguments in ML:Award().
+* Minor restructuring in rightclick menus, added 'hidden' field.
+* ChatCommands can now receive more arguments.
+* Several new internal messages.
+
+
+### v2.5.5
+---
+###### Bugfixes
++ *Fixed an issue with registering awards on the voting frame.*
+
+
+### v2.5.4
+---
+###### Bugfixes
++ *Removed occasional "test num num" prints (#297).*
++ *Should no longer cause "You're not in a raid" spam from addon messages.*
+
+
 ### v2.5.3
 ---
 * Names in the Loot History rightclick menu is now sorted alphabetically (#292).
+
 
 * **Dev**
 * Added :GetCurrentSession() and AceEvent messages "RCSessionChangedPre" and "RCSessionChangedPost" to the voting frame.

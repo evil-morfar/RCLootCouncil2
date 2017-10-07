@@ -34,6 +34,7 @@ function LootFrame:Start(table)
 				timeLeft = addon.mldb.timeout,
 				subType = table[k].subType,
 				isTier = table[k].token,
+				isRelic = table[k].relic,
 			}
 		end
 	end
@@ -53,8 +54,9 @@ function LootFrame:ReRoll(table)
 			session = v.session,
 			equipLoc = v.equipLoc,
 			timeLeft = addon.mldb.timeout,
-			subType = table[k].subType,
+			subType = v.subType,
 			isTier = v.token,
+			isRelic = v.relic,
 		})
 	end
 	self:Show()
@@ -100,23 +102,16 @@ function LootFrame:Update()
 	end
 	self.EntryManager:Update()
 	self.frame:SetHeight(numEntries * ENTRY_HEIGHT + 2)
-	-- for i = MAX_ENTRIES, numEntries + 1, -1 do -- Hide unused
-	-- 	if entries[i] then entries[i]:Hide() end
-	-- end
 end
 
 function LootFrame:OnRoll(entry, button)
-	--addon:Debug("LootFrame:OnRoll", entry, button, "Response:", addon:GetResponseText(button))
-	--local index = entries[entry].realID
-	--local isTier = items[index].isTier and addon.mldb.tierButtonsEnabled -- Both needs to be true before we've actually rolled on it
-	--addon:SendCommand("group", "response", addon:CreateResponse(items[index].session, items[index].link, items[index].ilvl, button, items[index].equipLoc, items[index].note, items[index].subType, isTier))
 	local isTier = entry.item.isTier and addon.mldb.tierButtonsEnabled
-	addon:Debug("LootFrame:OnRoll", entry.realID, button, "Response:", addon:GetResponseText(button, isTier))
+	local isRelic = entry.item.isRelic and addon.mldb.relicButtonsEnabled
+	addon:Debug("LootFrame:OnRoll", entry.realID, button, "Response:", addon:GetResponseText(button, isTier, isRelic))
 	local item = entry.item
-	addon:SendCommand("group", "response", addon:CreateResponse(item.session, item.link, item.ilvl, button, item.equipLoc, item.note, item.subType, isTier))
+	addon:SendCommand("group", "response", addon:CreateResponse(item.session, item.link, item.ilvl, button, item.equipLoc, item.note, item.subType, isTier, isRelic))
 
 	numRolled = numRolled + 1
-	--items[index].rolled = true
 	item.rolled = true
 	self.EntryManager:Trash(entry)
 	self:Update()
@@ -336,6 +331,8 @@ do
 		local entry
 		if addon.mldb.tierButtonsEnabled and item.isTier then
 			entry = self:Get("tier")
+		elseif addon.mldb.relicButtonsEnabled and item.isRelic then
+			entry = self:Get("relic")
 		else
 			entry = self:Get("normal")
 		end
@@ -344,6 +341,8 @@ do
 		else -- Or just create a new entry
 			if addon.mldb.tierButtonsEnabled and item.isTier then
 				entry = self:GetTierEntry(item)
+			elseif addon.mldb.relicButtonsEnabled and item.isRelic then
+				entry = self:GetRelicEntry(item)
 			else
 				entry = self:GetNormalEntry(item)
 			end
@@ -384,6 +383,48 @@ do
 				else
 					b[i] = b[i] or addon:CreateButton(addon:GetButtonText(i, true), entry.frame)
 					b[i]:SetText(addon:GetButtonText(i, true)) -- In case it was already created
+					b[i]:SetScript("OnClick", function() LootFrame:OnRoll(entry, i) end)
+				end
+				b[i]:SetWidth(b[i]:GetTextWidth() + 10)
+				if b[i]:GetWidth() < MIN_BUTTON_WIDTH then b[i]:SetWidth(MIN_BUTTON_WIDTH) end -- ensure minimum width
+				width = width + b[i]:GetWidth()
+				if i == 1 then
+					b[i]:SetPoint("BOTTOMLEFT", entry.icon, "BOTTOMRIGHT", 5, 0)
+				else
+					b[i]:SetPoint("LEFT", b[i-1], "RIGHT", 5, 0)
+				end
+				b[i]:Show()
+			end
+			-- Check if we've more buttons than we should
+			if #b > numButtons + 1 then
+				for i = numButtons + 2, #b do b[i]:Hide() end
+			end
+			-- Store the width of this entry. Our handler will set it
+			entry.width = width
+		end
+		Entry:Update(item)
+
+		return Entry
+	end
+
+	function LootFrame.EntryManager:GetRelicEntry(item)
+		local Entry = setmetatable({}, mt)
+		Entry.type = "relic"
+		Entry:Create(LootFrame.frame.content)
+
+		-- Relic entry uses different buttons, so change the function:
+		function Entry.UpdateButtons(entry)
+			local b = entry.buttons -- shortening
+			local width = 150 -- buttons determines the width of the entry
+			local numButtons = addon.mldb.relicNumButtons or addon.db.profile.relicNumButtons
+			for i = 1, numButtons + 1 do
+				if i > numButtons then -- Pass button:
+					b[i] = b[i] or addon:CreateButton(L["Pass"], entry.frame)
+					b[i]:SetText(L["Pass"]) -- In case it was already created
+					b[i]:SetScript("OnClick", function() LootFrame:OnRoll(entry, "PASS") end)
+				else
+					b[i] = b[i] or addon:CreateButton(addon:GetButtonText(i, false, true), entry.frame)
+					b[i]:SetText(addon:GetButtonText(i, false, true)) -- In case it was already created
 					b[i]:SetScript("OnClick", function() LootFrame:OnRoll(entry, i) end)
 				end
 				b[i]:SetWidth(b[i]:GetTextWidth() + 10)

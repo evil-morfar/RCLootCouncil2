@@ -1,18 +1,34 @@
 --- 	core.lua	Contains core elements of the addon
 -- @author Potdisc
 
---[[
---------------------------------
-TODOs/Notes
+--[[ TODOs/Notes
 	Things marked with "todo"
-		- Item subtype in history exports
 		- IDEA Have player's current gear sent with lootAck
 		- Emulate award stuff - i.e. log awards without awarding
 		- Check if players are eligible for loot, otherwise mark them as not
 		- Remember to add mapID for Antorus.
---------------------------------
-CHANGELOG
-	-- SEE CHANGELOG.TXT
+		- Extra checks to make sure an item was actually awarded.
+		- IDEA Change popups so they only hide on award/probably add the error message to it.
+		- IDEA Add some sort of indicator when rows are being filtered.
+-------------------------------- ]]
+
+--[[CHANGELOG
+	-- SEE CHANGELOG.TXT]]
+
+--[[AceEvent-3.0 Messages:
+	core:
+		RCCouncilChanged		-	fires when the council changes.
+		RCConfigTableChanged	-	fires when the user changes a settings. args: [val]; a few settings supplies their name.
+	ml_core:
+		RCMLAddItem				- 	fires when an item is added to the loot table. args: item, session
+		RCMLAwardSuccess		- 	fires when an item is successfully awarded. args: session, winner, status.
+		RCMLAwardFailed		-	fires when an item is unsuccessfully awarded. args: session, winner, status.
+	votingFrame:
+		RCSessionChangedPre	-	fires when the user changes the session, just before SwitchSession() is executed. args: sesion.
+		RCSessionChangedPost	-	fires when the user changes the session, after SwitchSession() is executed. args: session.
+	lootHistory:
+		RCHistory_ResponseEdit - fires when the user edits the response of a history entry. args: data (see LootHistory:BuildData())
+		RCHistory_NameEdit	-	fires when the user edits the receiver of a history entry. args: data.
 ]]
 RCLootCouncil = LibStub("AceAddon-3.0"):NewAddon("RCLootCouncil", "AceConsole-3.0", "AceEvent-3.0", "AceComm-3.0", "AceSerializer-3.0", "AceHook-3.0", "AceTimer-3.0");
 local LibDialog = LibStub("LibDialog-1.0")
@@ -46,12 +62,14 @@ local unregisterGuildEvent = false
 local player_relogged = true -- Determines if we potentially need data from the ML due to /rl
 local lootTable = {}
 
+local IsPartyLFG = IsPartyLFG
+
 function RCLootCouncil:OnInitialize()
 	--IDEA Consider if we want everything on self, or just whatever modules could need.
   	self.version = GetAddOnMetadata("RCLootCouncil", "Version")
 	self.nnp = false
 	self.debug = false
-	self.tVersion = nil -- String or nil. Indicates test version, which alters stuff like version check. Is appended to 'version', i.e. "version-tVersion" (max 10 letters for stupid security)
+	self.tVersion = "Beta.4" -- String or nil. Indicates test version, which alters stuff like version check. Is appended to 'version', i.e. "version-tVersion" (max 10 letters for stupid security)
 
 	self.playerClass = select(2, UnitClass("player"))
 	self.guildRank = L["Unguilded"]
@@ -89,6 +107,7 @@ function RCLootCouncil:OnInitialize()
 			--[[3]]		  { color = {1,0.5,1,1},			sort = 3,		text = L["Tier Piece that doesn't complete a set"],},
 			--[[4]]		  { color = {0.5,1,1,1},			sort = 4,		text = L["Upgrade to existing tier/random upgrade"],},
 		},
+		relic = {}, -- Created further down
 	}
 	self.roleTable = {
 		TANK =		L["Tank"],
@@ -151,7 +170,7 @@ function RCLootCouncil:OnInitialize()
 					y		= 0,
 					x		= 0,
 					point	= "CENTER",
-					scale	= 0.8,
+					scale	= 1.1,--0.8,
 					bgColor = {0, 0, 0.2, 1},
 					borderColor = {0.3, 0.3, 0.5, 1},
 					border = "Blizzard Tooltip",
@@ -238,6 +257,9 @@ function RCLootCouncil:OnInitialize()
 				{	text = L["Other piece"],			whisperKey = "3, other, tier, piece"}, -- 3
 				{	text = L["Upgrade"],					whisperKey = "4, upgrade, up"},			-- 4
 			},
+			relicButtonsEnabled = false,
+			relicNumButtons = 2,
+			relicButtons = {}, -- Created below
 			numMoreInfoButtons = 1,
 			maxAwardReasons = 10,
 			numAwardReasons = 3,
@@ -263,31 +285,38 @@ function RCLootCouncil:OnInitialize()
 	} -- defaults end
 
 	-- create the other buttons/responses
-	for i = #self.defaults.profile.buttons+1, self.defaults.profile.maxButtons do
-		tinsert(self.defaults.profile.buttons, {
-			text = L["Button"].." "..i,
-			whisperKey = ""..i,
-		})
+	for i = 1, self.defaults.profile.maxButtons do
+		if i > self.defaults.profile.numButtons then
+			tinsert(self.defaults.profile.buttons, {
+				text = L["Button"].." "..i,
+				whisperKey = ""..i,
+			})
+			tinsert(self.defaults.profile.responses, {
+				color = {0.7, 0.7,0.7,1},
+				sort = i,
+				text = L["Button"]..i,
+			})
+		end
 		if i > self.defaults.profile.tierNumButtons then
 			tinsert(self.defaults.profile.tierButtons, {
 				text = L["Button"].." "..i,
 				whisperKey = ""..i,
 			})
-		end
-	end
-	for i = self.defaults.profile.numButtons+1, self.defaults.profile.maxButtons do
-		tinsert(self.defaults.profile.responses, {
-			color = {0.7, 0.7,0.7,1},
-			sort = i,
-			text = L["Button"]..i,
-		})
-		if i > self.defaults.profile.tierNumButtons then
 			tinsert(self.defaults.profile.responses.tier, {
 				color = {0.7, 0.7,0.7,1},
 				sort = i,
 				text = L["Button"]..i,
 			})
 		end
+		tinsert(self.defaults.profile.relicButtons, {
+			text = L["Button"].." "..i,
+			whisperKey = ""..i,
+		})
+		tinsert(self.defaults.profile.responses.relic, {
+			color = {0.7, 0.7,0.7,1},
+			sort = i,
+			text = L["Button"]..i,
+		})
 	end
 	-- create the other AwardReasons
 	for i = #self.defaults.profile.awardReasons+1, self.defaults.profile.maxAwardReasons do
@@ -355,11 +384,15 @@ function RCLootCouncil:OnEnable()
 	-- in the :CreateFrame() all :Prints as expected :o
 	self:ActivateSkin(db.currentSkin)
 
-	if self.db.global.version and self:VersionCompare(self.db.global.version, self.version) then -- We've upgraded
-		if self:VersionCompare(self.db.global.version, "2.4.3") then -- Update lootDB with newest changes
-			self:Print("v2.4 adds seperate buttons for tier tokens. You might want to change your buttons setup - have a look in the options menu! (/rc config)")
-			-- delay it abit
-			self:ScheduleTimer("UpdateLootHistory", 5)
+	if self.db.global.version and self:VersionCompare(self.db.global.version, self.version)
+	 	or self.db.global.tVersion
+		then -- We've upgraded
+		if self:VersionCompare(self.db.global.version, "2.6.0") or self.db.global.tVersion then -- Update lootDB with newest changes
+			self:ScheduleTimer("Print", 2, "v2.6 adds seperate buttons for relics. You might want to change your buttons setup - have a look in the options menu! (/rc config)")
+			self:ScheduleTimer("Print", 2.1, "Scaling have also changed been a bit and reset - remember you can always use CTRL-ScrollWhell on any frame to rescale it.")
+			for _, k in pairs(db.UI) do
+				if k.scale then k.scale = 1.1 end
+			end
 		end
 		self.db.global.oldVersion = self.db.global.version
 		self.db.global.version = self.version
@@ -411,9 +444,17 @@ function RCLootCouncil:CouncilChanged()
 end
 
 function RCLootCouncil:ChatCommand(msg)
-	local input, arg1, arg2 = self:GetArgs(msg,3)
+	local input = self:GetArgs(msg,1)
+	local args = {}
+	local arg, startpos = nil, input and #input + 1 or 0
+	repeat
+	    arg, startpos = self:GetArgs(msg, 1, startpos)
+	    if arg then
+	         table.insert(args, arg)
+	    end
+	until arg == nil
 	input = strlower(input or "")
-	self:Debug("/", input, arg1, arg2)
+	self:Debug("/", input, unpack(args))
 	if not input or input:trim() == "" or input == "help" or input == L["help"] then
 		if self.tVersion then print(format(L["chat tVersion string"],self.version, self.tVersion))
 		else print(format(L["chat version String"],self.version)) end
@@ -446,7 +487,7 @@ function RCLootCouncil:ChatCommand(msg)
 
 
 	elseif input == 'test' or input == L["test"] then
-		self:Test(tonumber(arg1) or 1)
+		self:Test(tonumber(args[1]) or 1)
 
 	elseif input == 'version' or input == L["version"] or input == "v" or input == "ver" then
 		self:CallModule("version")
@@ -462,11 +503,10 @@ function RCLootCouncil:ChatCommand(msg)
 		self:Print(L["whisper_help"])
 
 	elseif (input == "add" or input == L["add"]) then
-		if not arg1 or arg1 == "" then return self:ChatCommand("help") end
+		if not args[1] or args[1] == "" then return self:ChatCommand("help") end
 		if self.isMasterLooter then
-			self:GetActiveModule("masterlooter"):AddUserItem(arg1)
-			if arg2 then
-				self:GetActiveModule("masterlooter"):AddUserItem(arg2)
+			for _,v in ipairs(args) do
+			self:GetActiveModule("masterlooter"):AddUserItem(v)
 			end
 		else
 			self:Print(L["You cannot use this command without being the Master Looter"])
@@ -509,7 +549,7 @@ function RCLootCouncil:ChatCommand(msg)
 		wipe(debugLog)
 		self:Print("Debug Log cleared.")
 
-	elseif input == "updatehistory" or (input == "update" and arg1 == "history") then
+	elseif input == "updatehistory" or (input == "update" and args[1] == "history") then
 		self:UpdateLootHistory()
 	elseif input == "sync" then
 		self.Sync:Spawn()
@@ -522,7 +562,7 @@ function RCLootCouncil:ChatCommand(msg)
 	else
 		-- Check if the input matches anything
 		for k, v in pairs(self.customChatCmd) do
-			if k == input then return v.module[v.func](v.module, arg1, arg2) end
+			if k == input then return v.module[v.func](v.module, unpack(args)) end
 		end
 		self:ChatCommand("help")
 	end
@@ -539,9 +579,9 @@ function RCLootCouncil:SendCommand(target, command, ...)
 
 	if target == "group" then
 		if IsInRaid() then -- Raid
-			self:SendCommMessage("RCLootCouncil", toSend, "RAID")
+			self:SendCommMessage("RCLootCouncil", toSend, IsPartyLFG() and "INSTANCE_CHAT" or "RAID")
 		elseif IsInGroup() then -- Party
-			self:SendCommMessage("RCLootCouncil", toSend, "PARTY")
+			self:SendCommMessage("RCLootCouncil", toSend, IsPartyLFG() and "INSTANCE_CHAT" or "PARTY")
 		else--if self.testMode then -- Alone (testing)
 			self:SendCommMessage("RCLootCouncil", toSend, "WHISPER", self.playerName)
 		end
@@ -551,7 +591,7 @@ function RCLootCouncil:SendCommand(target, command, ...)
 
 	else
 		if self:UnitIsUnit(target,"player") then -- If target == "player"
-			self:SendCommMessage("RCLootCouncil", toSend, "WHISPER", self.playerName, "BULK", self.Print, "test")
+			self:SendCommMessage("RCLootCouncil", toSend, "WHISPER", self.playerName)
 		else
 			-- We cannot send "WHISPER" to a crossrealm player
 			if target:find("-") then
@@ -562,7 +602,7 @@ function RCLootCouncil:SendCommand(target, command, ...)
 					-- See "RCLootCouncil:HandleXRealmComms()" for more info
 					toSend = self:Serialize("xrealm", {target, command, ...})
 					if GetNumGroupMembers() > 0 then -- We're in a group
-						self:SendCommMessage("RCLootCouncil", toSend, "RAID")
+						self:SendCommMessage("RCLootCouncil", toSend, IsPartyLFG() and "INSTANCE_CHAT" or "RAID")
 					else -- We're not, probably a guild verTest
 						self:SendCommMessage("RCLootCouncil", toSend, "GUILD")
 					end
@@ -614,7 +654,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 						local iName = GetItemInfo(v.link)
 						if not iName then self:Debug(v.link); cached = false end
 						local subType = select(7, GetItemInfo(v.link))
-						if subType then v.subType = subtype end -- subType should use user localization instead of master looter localization.
+						if subType then v.subType = subType end -- subType should use user localization instead of master looter localization.
 					end
 					if not cached then
 						self:Debug("Some items wasn't cached, delaying loot by 1 sec")
@@ -830,9 +870,12 @@ end
 
 function RCLootCouncil:Test(num)
 	self:Debug("Test", num)
-	local testItems = {105473,105407,105513,105465,105482,104631,105450,105537,104554,105509,104412,105499,104476,104544,104495,
-		137471,137463,137474,137472,137468, -- Artifact relics
-		143562,143563,143564,143565,143566, -- Tier 19 tokens
+	local testItems = {--105473,105407,105513,105465,105482,104631,105450,105537,104554,105509,104412,105499,104476,104544,104495,
+		--137471,137463,137474,137472,137468, 										-- Old Artifact relics
+		152515,152519,152523,152525,152527, 										-- Tier 21 tokens
+		152375,152376,152377,152414,152364,152363,151956,151940,151941,151942,151943,151944,151945,151946,151947,152004,152088,152001, -- Antorus items
+		151961,151962,151963,151964,151967, 										-- Antorus trinkets
+		152044,152045,152060,152050,152035,152039,152026,152034,152056,	-- Antorus Relics
 	}
 	local items = {};
 	-- pick "num" random items
@@ -1055,9 +1098,10 @@ end
 -- @param note			The player's note.
 -- @param subType		The item's subType, needed for Artifact Relics.
 -- @param isTier		Indicates if the response is a tier response. (v2.4.0)
+-- @param isRelic		Indicates if the response is a relic response. (v2.5.0)
 -- @return A formatted table that can be passed directly to :SendCommand("group", "response", -return-).
-function RCLootCouncil:CreateResponse(session, link, ilvl, response, equipLoc, note, subType, isTier)
-	self:DebugLog("CreateResponse", session, link, ilvl, response, equipLoc, note, subType, isTier)
+function RCLootCouncil:CreateResponse(session, link, ilvl, response, equipLoc, note, subType, isTier, isRelic)
+	self:DebugLog("CreateResponse", session, link, ilvl, response, equipLoc, note, subType, isTier, isRelic)
 	local g1, g2;
 	if equipLoc == "" and self.db.global.localizedSubTypes[subType] == "Artifact Relic" then
 		g1, g2 = self:GetArtifactRelics(link)
@@ -1080,6 +1124,7 @@ function RCLootCouncil:CreateResponse(session, link, ilvl, response, equipLoc, n
 			note = note,
 			response = response,
 			isTier = isTier,
+			isRelic = isRelic,
 		}
 end
 
@@ -1105,13 +1150,14 @@ end
 function RCLootCouncil:GetPlayerInfo()
 	-- Check if the player has enchanting
 	local enchant, lvl = nil, 0
-	local prof1, prof2 = GetProfessions()
-	if prof1 or prof2 then
-		for i = 1, 2 do
-			local _, _, rank, _, _, _, id = GetProfessionInfo(select(i, prof1, prof2))
+	local profs = {GetProfessions()}
+	for i = 1, 2 do
+		if profs[i] then
+			local _, _, rank, _, _, _, id = GetProfessionInfo(profs[i])
 			if id and id == 333 then -- NOTE: 333 should be enchanting, let's hope that holds...
 				self:Debug("I'm an enchanter")
 				enchant, lvl = true, rank
+				break
 			end
 		end
 	end
@@ -1349,7 +1395,7 @@ end
 				[1] = responseText,
 				[2] = number of items won,
 				[3] = {color},
-				[4] = responseID, -- see index in self.responses. Award reasons gets 100 addded. TierResponses gets 200 added.
+				[4] = responseID, -- see index in self.responses. Award reasons gets 100 addded. TierResponses gets 200 added. Relic 300.
 			}
 		},
 		raids = {
@@ -1378,6 +1424,7 @@ function RCLootCouncil:GetLootDBStatistics()
 				if type(id) == "number" then -- ID may be string, e.g. "PASS"
 					if entry.isAwardReason then id = id + 100 end -- Bump to distingush from normal awards
 					if entry.tokenRoll then id = id + 200 end
+					if entry.relicRoll then id = id + 300 end
 				end
 				-- We assume the mapID and difficultyID is available on any item if at all.
 				if not numTokens[entry.instance] then numTokens[entry.instance] = {num = 0, mapID = entry.mapID, difficultyID = entry.difficultyID} end
@@ -1390,7 +1437,8 @@ function RCLootCouncil:GetLootDBStatistics()
 					color[id] = #entry.color ~= 0 and #entry.color == 4 and entry.color or {1,1,1}
 				end
 				if lastestAwardFound < 5 and type(id) == "number" and not entry.isAwardReason
-				 	and (id <= db.numMoreInfoButtons or (entry.tokenRoll and id - 200 <= db.numMoreInfoButtons)) then
+				 	and (id <= db.numMoreInfoButtons or (entry.tokenRoll and id - 200 <= db.numMoreInfoButtons)
+							or (entry.relicRoll and id - 300 <= db.numMoreInfoButtons)) then
 					tinsert(lootDBStatistics[name], {entry.lootWon, --[[entry.response .. ", "..]] format(L["'n days' ago"], self:ConvertDateToString(self:GetNumberOfDaysFromNow(entry.date))), color[id], i})
 					lastestAwardFound = lastestAwardFound + 1
 				end
@@ -1669,7 +1717,7 @@ end
 -- @param height Height of the frame, defaults to 325.
 -- @return The frame object.
 function RCLootCouncil:CreateFrame(name, cName, title, width, height)
-	local f = CreateFrame("Frame", name, nil) -- LibWindow seems to work better with nil parent
+	local f = CreateFrame("Frame", name, UIParent) -- LibWindow seems to work better with nil parent
 	f:Hide()
 	f:SetFrameStrata("DIALOG")
 	f:SetWidth(450)
@@ -1872,34 +1920,42 @@ function RCLootCouncil.Ambiguate(name)
 end
 
 --- Returns the text of a button, returning settings from mldb if possible, otherwise from default buttons.
--- @paramsig index [, isTier]
+-- @paramsig index [, isTier, isRelic]
 -- @param index The button's index.
 -- @param isTier True if the response belongs to a tier item.
-function RCLootCouncil:GetButtonText(i, isTier)
+-- @param isRelic True if the response belongs to a relic item.
+function RCLootCouncil:GetButtonText(i, isTier, isRelic)
 	if isTier and self.mldb.tierButtonsEnabled and type(i) == "number" then -- Non numbers is status texts, handled as normal response
 		return (self.mldb.tierButtons and self.mldb.tierButtons[i]) and self.mldb.tierButtons[i].text or db.tierButtons[i].text
+	elseif isRelic and self.mldb.relicButtonsEnabled and type(i) == "number" then
+		return (self.mldb.relicButtons and self.mldb.relicButtons[i]) and self.mldb.relicButtons[i].text or db.relicButtons[i].text
 	else
 		return (self.mldb.buttons and self.mldb.buttons[i]) and self.mldb.buttons[i].text or db.buttons[i].text
 	end
 end
 
 --- The following functions returns the text, sort or color of a response, returning a result from mldb if possible, otherwise from the default responses.
--- @paramsig response [, isTier]
+-- @paramsig response [, isTier, isRelic]
 -- @param response Index in db.responses.
 -- @param isTier True if the response belongs to a tier item.
-function RCLootCouncil:GetResponseText(response, isTier)
+-- @param isRelic True if the response belongs to a relic item.
+function RCLootCouncil:GetResponseText(response, isTier, isRelic)
 	if isTier and self.mldb.tierButtonsEnabled and type(response) == "number" then
 		return (self.mldb.responses.tier and self.mldb.responses.tier[response]) and self.mldb.responses.tier[response].text or db.responses.tier[response].text
+	elseif isRelic and self.mldb.relicButtonsEnabled and type(response) == "number" then
+		return (self.mldb.responses.relic and self.mldb.responses.relic[response]) and self.mldb.responses.relic[response].text or db.responses.relic[response].text
 	else
 		return (self.mldb.responses and self.mldb.responses[response]) and self.mldb.responses[response].text or db.responses[response].text
 	end
 end
 
 ---
-function RCLootCouncil:GetResponseColor(response, isTier)
+function RCLootCouncil:GetResponseColor(response, isTier, isRelic)
 	local color
 	if isTier and self.mldb.tierButtonsEnabled and type(response) == "number" then
-		 color = (self.mldb.responses.tier and self.mldb.responses.tier[response]) and self.mldb.responses.tier[response].color or db.responses.tier[response].color
+		color = (self.mldb.responses.tier and self.mldb.responses.tier[response]) and self.mldb.responses.tier[response].color or db.responses.tier[response].color
+ 	elseif isRelic and self.mldb.relicButtonsEnabled and type(response) == "number" then
+		color = (self.mldb.responses.relic and self.mldb.responses.relic[response]) and self.mldb.responses.relic[response].color or db.responses.relic[response].color
  	else
 		color = (self.mldb.responses and self.mldb.responses[response]) and self.mldb.responses[response].color or db.responses[response].color
 	end
@@ -1907,9 +1963,11 @@ function RCLootCouncil:GetResponseColor(response, isTier)
 end
 
 ---
-function RCLootCouncil:GetResponseSort(response, isTier)
+function RCLootCouncil:GetResponseSort(response, isTier, isRelic)
 	if isTier and self.mldb.tierButtonsEnabled and type(response) == "number" then
 		return (self.mldb.responses.tier and self.mldb.responses.tier[response]) and self.mldb.responses.tier[response].sort or db.responses.tier[response].sort
+	elseif isRelic and self.mldb.relicButtonsEnabled and type(response) == "number" then
+		return (self.mldb.responses.relic and self.mldb.responses.relic[response]) and self.mldb.responses.relic[response].sort or db.responses.relic[response].sort
 	else
 		return (self.mldb.responses and self.mldb.responses[response]) and self.mldb.responses[response].sort or db.responses[response].sort
 	end

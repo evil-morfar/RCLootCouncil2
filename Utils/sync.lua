@@ -32,6 +32,7 @@ sync.declineReasons = { -- Gets delivered "player" and "type"
    not_open        = L["'player' hasn't opened the sync window"],
 }
 local function SendSyncData(target, type)
+   addon:Debug("SendSyncData",target,type)
    local toSend = addon:Serialize("sync", {addon.playerName, type, sync_table[target][type]})
    if addon:UnitIsUnit(target,"player") then -- If target == "player"
 			addon:SendCommMessage("RCLootCouncil", toSend, "WHISPER", addon.playerName, "BULK", sync.OnDataPartSent, sync)
@@ -55,6 +56,7 @@ local function SendSyncData(target, type)
 			addon:SendCommMessage("RCLootCouncil", toSend, "WHISPER", target, "BULK", sync.OnDataPartSent, sync)
 		end
 	end
+   addon:Debug("SendSyncData", "SENT")
 end
 
 -- We want to sync with another player
@@ -188,6 +190,7 @@ function sync:OnDataPartSent(num, total)
    self.frame.statusBar.text:SetText(addon.round(num/total*100) .."% - ".. num/1000 .."kB / ".. total/ 1000 .. "kB")
    if num == total then
       addon:Print(L["Done syncing"])
+      addon:Debug("Done syncing")
    end
 end
 
