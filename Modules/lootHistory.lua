@@ -846,6 +846,8 @@ function LootHistory.RightClickMenu(menu, level)
 
 		elseif value == "EDIT_NAME" and entry.special == value then
 
+			if not LootHistory.frame then return end -- This could be nil if LootHistory frame closes before the rightclick menu.
+			
 			local sorttable = {unpack(LootHistory.frame.name.sorttable)} -- Copy the name table
 			-- 1. If both in the raid , sort by alphabet, ascending
 			-- 2. If neither in the raid, sort by time of last loot received, ascending
