@@ -858,13 +858,15 @@ function LootHistory.RightClickMenu(menu, level)
 				elseif isInRaidb then -- Both in the raid
 					return namea < nameb
 				else -- Neither in the raid
-					local epocha, epochb = 0, 0
+					local epocha, epochb
 					if next(lootDB[namea]) then
 						local datea = lootDB[namea][#lootDB[namea]].date
 						local timea = lootDB[namea][#lootDB[namea]].time
 						local d, m, y = strsplit("/", datea, 3)
 						local h, min, s = strsplit(":", timea, 3)
 						epocha = time({year = "20"..y, month = m, day = d, hour = h, min = min, sec = s})
+					else -- No loot entry
+						epocha = math.huge 
 					end
 
 					if next(lootDB[nameb]) then
@@ -873,6 +875,8 @@ function LootHistory.RightClickMenu(menu, level)
 						local d, m, y = strsplit("/", dateb, 3)
 						local h, min, s = strsplit(":", timeb, 3)
 						epochb = time({year = "20"..y, month = m, day = d, hour = h, min = min, sec = s})
+					else -- No loot entry
+						epochb = math.huge 
 					end
 					return epocha < epochb
 				end
