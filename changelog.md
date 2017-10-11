@@ -21,6 +21,7 @@
 
 * Testing optimization for wowhead urls in exports (#278).
 * Tier and Relic responses now only shows up in rightclick menus if enabled.
+* Better sorting for names in the loot history rightclick menu - thanks to Safetee (#292).
 
 
 ###### Bugfixes
