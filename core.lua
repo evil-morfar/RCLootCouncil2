@@ -10,6 +10,7 @@
 		- Extra checks to make sure an item was actually awarded.
 		- IDEA Change popups so they only hide on award/probably add the error message to it.
 		- IDEA Add some sort of indicator when rows are being filtered.
+		- TODO/IDEA Change chat_commands to seperate lines in order to have a table of printable cmds.
 -------------------------------- ]]
 
 --[[CHANGELOG
@@ -357,6 +358,7 @@ function RCLootCouncil:OnInitialize()
 	self.db.global.verTestCandidates = {}
 	-- Add logged in message in the log
 	self:DebugLog("Logged In")
+	L["chat_commands"] = L["chat_commands"].."\n" -- add extra space (TODO remove at some point)
 end
 
 function RCLootCouncil:OnEnable()
@@ -458,7 +460,7 @@ function RCLootCouncil:ChatCommand(msg)
 	if not input or input:trim() == "" or input == "help" or input == L["help"] then
 		if self.tVersion then print(format(L["chat tVersion string"],self.version, self.tVersion))
 		else print(format(L["chat version String"],self.version)) end
-		self:Print(L["chat_commands"])
+		gsub(L["chat_commands"], "(%C*)\n", print)
 		self:Debug("- debug or d - Toggle debugging")
 		self:Debug("- log - display the debug log")
 		self:Debug("- clearLog - clear the debug log")
@@ -1663,7 +1665,7 @@ function RCLootCouncil:CustomChatCmd(module, funcRef, helpString, ...)
 	for i = 1, select("#", ...) do
 		self.customChatCmd[select(i, ...)] = {module = module, func = funcRef}
 	end
-	L["chat_commands"] = L["chat_commands"] .."\n"..helpString
+	L["chat_commands"] = L["chat_commands"] ..helpString.."\n"
 end
 
 --#end Module support -----------------------------------------------------
