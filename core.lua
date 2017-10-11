@@ -20,6 +20,7 @@
 	core:
 		RCCouncilChanged		-	fires when the council changes.
 		RCConfigTableChanged	-	fires when the user changes a settings. args: [val]; a few settings supplies their name.
+		RCUpdateDB				-	fires when the user receives sync data from another player.
 	ml_core:
 		RCMLAddItem				- 	fires when an item is added to the loot table. args: item, session
 		RCMLAwardSuccess		- 	fires when an item is successfully awarded. args: session, winner, status.
@@ -1488,6 +1489,7 @@ end
 function RCLootCouncil:UpdateDB()
 	db = self.db.profile
 	self.db:RegisterDefaults(self.defaults)
+	self:SendMessage("RCUpdateDB")
 end
 function RCLootCouncil:UpdateHistoryDB()
 	historyDB = self:GetHistoryDB()
