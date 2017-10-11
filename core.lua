@@ -359,7 +359,6 @@ function RCLootCouncil:OnInitialize()
 	self.db.global.verTestCandidates = {}
 	-- Add logged in message in the log
 	self:DebugLog("Logged In")
-	L["chat_commands"] = L["chat_commands"].."\n" -- add extra space (TODO remove at some point)
 end
 
 function RCLootCouncil:OnEnable()
@@ -461,7 +460,7 @@ function RCLootCouncil:ChatCommand(msg)
 	if not input or input:trim() == "" or input == "help" or input == L["help"] then
 		if self.tVersion then print(format(L["chat tVersion string"],self.version, self.tVersion))
 		else print(format(L["chat version String"],self.version)) end
-		gsub(L["chat_commands"], "(%C*)\n", print)
+		gsub(L["chat_commands"], "[^\n]+", print)
 		self:Debug("- debug or d - Toggle debugging")
 		self:Debug("- log - display the debug log")
 		self:Debug("- clearLog - clear the debug log")
@@ -1661,7 +1660,7 @@ end
 -- @param ... The command(s) the user can input.
 -- @usage
 -- -- For example in GroupGear:
---	addon:CustomChatCmd(GroupGear, "Show", "gg", "groupgear", "gear")
+-- RCLootCouncil:CustomChatCmd(GroupGear, "Show", "- gg - Show the GroupGear window (alt. 'groupgear' or 'gear')", "gg", "groupgear", "gear")
 -- -- will result in GroupGear:Show() being called if the user types "/rc gg" (or "/rc groupgear" or "/rc gear")
 function RCLootCouncil:CustomChatCmd(module, funcRef, helpString, ...)
 	for i = 1, select("#", ...) do
