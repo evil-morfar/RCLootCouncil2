@@ -845,7 +845,42 @@ function LootHistory.RightClickMenu(menu, level)
 			end
 
 		elseif value == "EDIT_NAME" and entry.special == value then
-			for _,i in ipairs(LootHistory.frame.name.sorttable) do
+
+			if not LootHistory.frame then return end -- This could be nil if LootHistory frame closes before the rightclick menu.
+			
+			local sorttable = {unpack(LootHistory.frame.name.sorttable)} -- Copy the name table
+			-- 1. If both in the raid , sort by alphabet, ascending
+			-- 2. If neither in the raid, sort by time of last loot received, ascending
+			-- 3. People in the raid are sorted after people not in the raid.
+			table.sort(sorttable, function(a, b)
+				local namea, nameb = LootHistory.frame.name.data[a][2].name, LootHistory.frame.name.data[b][2].name
+				local isInRaida, isInRaidb = UnitInRaid(Ambiguate(namea, "short")), UnitInRaid(Ambiguate(nameb, "short"))
+				if isInRaida ~= isInRaidb then
+					return isInRaidb
+				elseif isInRaidb then -- Both in the raid
+					return namea < nameb
+				else -- Neither in the raid
+					local epocha, epochb = 0, 0
+					if next(lootDB[namea]) then
+						local datea = lootDB[namea][#lootDB[namea]].date
+						local timea = lootDB[namea][#lootDB[namea]].time
+						local d, m, y = strsplit("/", datea, 3)
+						local h, min, s = strsplit(":", timea, 3)
+						epocha = time({year = "20"..y, month = m, day = d, hour = h, min = min, sec = s})
+					end
+
+					if next(lootDB[nameb]) then
+						local dateb = lootDB[nameb][#lootDB[nameb]].date
+						local timeb = lootDB[nameb][#lootDB[nameb]].time
+						local d, m, y = strsplit("/", dateb, 3)
+						local h, min, s = strsplit(":", timeb, 3)
+						epochb = time({year = "20"..y, month = m, day = d, hour = h, min = min, sec = s})
+					end
+					return epocha < epochb
+				end
+			end)
+
+			for _,i in ipairs(sorttable) do
 				local v = LootHistory.frame.name.data[i]
 				info.text = v[2].value
 				local c = addon:GetClassColor(v[1].args[1])
