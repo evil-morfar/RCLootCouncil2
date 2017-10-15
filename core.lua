@@ -22,6 +22,8 @@
 		RCCouncilChanged		-	fires when the council changes.
 		RCConfigTableChanged	-	fires when the user changes a settings. args: [val]; a few settings supplies their name.
 		RCUpdateDB				-	fires when the user receives sync data from another player.
+		RCSendCommandPre        -   fires just before a command is sent. args: target, command, ...
+		RCSendCommandPost       -   fires just after  a command is sent. args: target, command, ...
 	ml_core:
 		RCMLAddItem				- 	fires when an item is added to the loot table. args: item, session
 		RCMLAwardSuccess		- 	fires when an item is successfully awarded. args: session, winner, status.
@@ -577,6 +579,9 @@ end
 -- @param command The command to send.
 -- @param ... Any number of arguments to send along. Will be packaged as a table.
 function RCLootCouncil:SendCommand(target, command, ...)
+
+    self:SendMessage("RCSendCommandPre", target, command, ...)
+
 	-- send all data as a table, and let receiver unpack it
 	local toSend = self:Serialize(command, {...})
 
@@ -616,6 +621,8 @@ function RCLootCouncil:SendCommand(target, command, ...)
 			end
 		end
 	end
+
+	self:SendMessage("RCSendCommandPost", target, command, ...)
 end
 
 --- Receives RCLootCouncil commands.
