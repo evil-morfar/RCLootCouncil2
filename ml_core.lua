@@ -672,15 +672,13 @@ function RCLootCouncilML:AutoAward(lootIndex, item, quality, name, reason, boss)
 	return awarded
 end
 
-RCLootCouncilML.history_table = {}
+local history_table = {}
  function RCLootCouncilML:TrackAndLogLoot(name, item, responseID, boss, votes, itemReplaced1, itemReplaced2, reason, isToken, tokenRoll, relicRoll)
 	if reason and not reason.log then return end -- Reason says don't log
 	if not (db.sendHistory or db.enableHistory) then return end -- No reason to do stuff when we won't use it
 	if addon.testMode and not addon.nnp then return end -- We shouldn't track testing awards.
 	local instanceName, _, difficultyID, difficultyName, _,_,_,mapID, groupSize = GetInstanceInfo()
 	addon:Debug("ML:TrackAndLogLoot()")
-
-	local history_table = self.history_table
 	history_table["lootWon"] 		= item
 	history_table["date"] 			= date("%d/%m/%y")
 	history_table["time"] 			= date("%H:%M:%S")
