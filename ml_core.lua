@@ -777,10 +777,12 @@ function RCLootCouncilML:GetItemsFromMessage(msg, sender)
 	addon:Debug("GetItemsFromMessage()", msg, sender)
 	if not addon.isMasterLooter then return end
 
-	local ses, arg1, arg2, arg3 = addon:GetArgs(msg, 4) -- We only require session to be correct, we can do some error checking on the rest
+	local ses, arg1, arg2, arg3 = addon:GetArgs(msg, 4) -- We only require session to be correct and arg1 exists, we can do some error checking on the rest
 	ses = tonumber(ses)
 	-- Let's test the input
 	if not ses or type(ses) ~= "number" or ses > #self.lootTable then return end -- We need a valid session
+	if not arg1 then return end -- No response or item link
+	
 	-- Set some locals
 	local item1, item2, isTier, isRelic
 	local response = 1
@@ -815,8 +817,20 @@ function RCLootCouncilML:GetItemsFromMessage(msg, sender)
 			end
 		end
 	end
-	local diff = 0
-	if item1 then diff = (self.lootTable[ses].ilvl - select(4, GetItemInfo(item1))) end
+
+	local diff = nil
+	if item2 then
+		local g1diff, g2diff = select(4, GetItemInfo(item1)), select(4, GetItemInfo(item2))
+		if g1diff and g2diff then
+			diff = g1diff >= g2diff and self.lootTable[ses].ilvl - g2diff or self.lootTable[ses].ilvl - g1diff
+		end
+	elseif item1 then
+		local g1diff = select(4, GetItemInfo(item1))
+		if g1diff then
+			diff = self.lootTable[ses].ilvl - g1diff
+		end
+	end
+
 	local toSend = {
 		gear1 = item1,
 		gear2 = item2,
