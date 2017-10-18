@@ -1020,6 +1020,43 @@ function RCLootCouncil:GetArtifactRelics(link)
 	return g1, g2
 end
 
+-- @param link 		The itemLink of the item.
+-- @param rawIlvl	The ilvl of the item. If not provided, use GetItemInfo to fetch it.
+-- @return          The real item level. If the item is not a token, return the item level. Otherwise, return the minimum item level of the gear created by the token.
+function RCLootCouncil:GetRealIlvl(link, rawIlvl)
+	local id = self:GetItemIDFromLink(link)
+	local rawIlvl = rawIlvl or select(4, GetItemInfo(link))
+	local baseIlvl = RCTokenIlvl[id] -- ilvl in normal difficulty
+
+	if not baseIlvl then -- Not token without item level stored
+		return rawIlvl
+	end
+
+	-- Get bonus ids. See epgp/LibItemUtils-1.0.lua
+	local itemString = string.match(link, "item[%-?%d:]+")
+	if not itemString then return rawIlvl end
+
+	local bonuses = {}
+	local tbl = { strsplit(":", itemString) }
+	for key, value in pairs(tbl) do
+	   if key >= 14 then
+	      table.insert(bonuses, tonumber(value))
+	    end
+	end
+
+	for _, value in pairs(bonuses) do
+    -- Item modifiers for heroic are 566 and 570; mythic are 567 and 569
+    -- See epgp/LibGearPoints-1.2.lua
+	    if value == 566 or value == 570 then -- Heroic
+	    	return baseIlvl + 15
+	    end
+	    if value == 567 or value == 569 then -- Mythic
+	    	return baseIlvl + 30
+	    end
+  	end
+  	return baseIlvl
+end
+
 function RCLootCouncil:Timer(type, ...)
 	self:Debug("Timer "..type.." passed")
 	if type == "LocalizeSubTypes" then
@@ -1124,6 +1161,9 @@ function RCLootCouncil:CreateResponse(session, link, ilvl, response, equipLoc, n
 	else
 	 	g1, g2 = self:GetPlayersGear(link, equipLoc)
 	end
+
+	ilvl = self:GetRealIlvl(link, ilvl) -- If the item is a token, set the ilvl to be the min ilvl of the gear it creates.
+
 	local diff = nil
 	if g2 then
 		local g1diff, g2diff = select(4, GetItemInfo(g1)), select(4, GetItemInfo(g2))
