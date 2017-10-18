@@ -109,7 +109,15 @@ function LootFrame:OnRoll(entry, button)
 	local isRelic = entry.item.isRelic and addon.mldb.relicButtonsEnabled
 	addon:Debug("LootFrame:OnRoll", entry.realID, button, "Response:", addon:GetResponseText(button, isTier, isRelic))
 	local item = entry.item
-	addon:SendCommand("group", "response", addon:CreateResponse(item.session, item.link, item.ilvl, button, item.equipLoc, item.note, item.subType, isTier, isRelic))
+
+	local session, playerName, responseData = addon:CreateResponse(item.session, item.link, item.ilvl, button, item.equipLoc, item.note, item.subType, isTier, isRelic)
+
+	if session then
+		addon:SendCommand("group", "response", session, playerName, responseData)
+	else
+		addon:Debug("Some items wasn't cached, delaying response by 1 sec")
+		self:ScheduleTimer("OnRoll", 1, entry, button)
+	end
 
 	numRolled = numRolled + 1
 	item.rolled = true

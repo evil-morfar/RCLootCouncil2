@@ -669,7 +669,13 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 					if GetNumGroupMembers() >= 8 and not IsInInstance() then
 						self:DebugLog("NotInRaid respond to lootTable")
 						for ses, v in ipairs(lootTable) do
-						 	self:SendCommand("group", "response", self:CreateResponse(ses, v.link, v.ilvl, "NOTINRAID", v.equipLoc, nil, v.subType))
+							local session, playerName, responseData = self:CreateResponse(ses, v.link, v.ilvl, "NOTINRAID", v.equipLoc, nil, v.subType)
+							if session then
+						 		self:SendCommand("group", "response", session, playerName, responseData)
+						 	else
+						 		self:Debug("Some items wasn't cached, delaying loot by 1 sec")
+						 		return self:ScheduleTimer("OnCommReceived", 1, prefix, serializedMsg, distri, sender)
+						 	end
 						end
 						return
 					end
@@ -686,9 +692,16 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 						for ses, v in ipairs(lootTable) do
 							if (v.boe and db.autoPassBoE) or not v.boe then
 								if self:AutoPassCheck(v.subType, v.equipLoc, v.link, v.token, v.relic) then
+									local session, playerName, responseData = self:CreateResponse(ses, v.link, v.ilvl, "AUTOPASS", v.equipLoc, nil, v.subType)
+									if session then
+										self:SendCommand("group", "response", session, playerName, responseData)
+									else
+										self:Debug("Some items wasn't cached, delaying loot by 1 sec")
+						 				return self:ScheduleTimer("OnCommReceived", 1, prefix, serializedMsg, distri, sender)
+									end
+
 									self:Debug("Autopassed on: ", v.link)
 									if not db.silentAutoPass then self:Print(format(L["Autopassed on 'item'"], v.link)) end
-									self:SendCommand("group", "response", self:CreateResponse(ses, v.link, v.ilvl, "AUTOPASS", v.equipLoc, nil, v.subType))
 									lootTable[ses].autopass = true
 								end
 							else
@@ -1102,7 +1115,7 @@ end
 -- @param subType		The item's subType, needed for Artifact Relics.
 -- @param isTier		Indicates if the response is a tier response. (v2.4.0)
 -- @param isRelic		Indicates if the response is a relic response. (v2.5.0)
--- @return A formatted table that can be passed directly to :SendCommand("group", "response", -return-).
+-- @return A formatted table that can be passed directly to :SendCommand("group", "response", -return-). nil if a item needs caching.
 function RCLootCouncil:CreateResponse(session, link, ilvl, response, equipLoc, note, subType, isTier, isRelic)
 	self:DebugLog("CreateResponse", session, link, ilvl, response, equipLoc, note, subType, isTier, isRelic)
 	local g1, g2;
@@ -1114,9 +1127,20 @@ function RCLootCouncil:CreateResponse(session, link, ilvl, response, equipLoc, n
 	local diff = nil
 	if g2 then
 		local g1diff, g2diff = select(4, GetItemInfo(g1)), select(4, GetItemInfo(g2))
-		diff = g1diff >= g2diff and ilvl - g2diff or ilvl - g1diff
+		if g1diff and g2diff then
+			diff = g1diff >= g2diff and ilvl - g2diff or ilvl - g1diff
+		else
+			return nil
+		end
 	elseif g1 then -- Artifact Relic might be nil
-		diff = (ilvl - select(4, GetItemInfo(g1))) end
+		local g1diff = select(4, GetItemInfo(g1))
+		if g1diff then
+			diff = ilvl - g1diff
+		else
+			return nil
+		end
+	end
+
 	return
 		session,
 		self.playerName,
