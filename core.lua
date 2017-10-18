@@ -688,18 +688,15 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 
 					self:SendCommand("group", "lootAck", self.playerName) -- send ack
 
-					if db.autoPass then -- Do autopassing
-						for ses, v in ipairs(lootTable) do
+					-- Send the information of current equipped gear immediately when we receive the loot table.
+					-- The actual response/note are left unsent if not autopassed.
+					for ses, v in ipairs(lootTable) do
+						local response = nil
+
+						if db.autoPass then
 							if (v.boe and db.autoPassBoE) or not v.boe then
 								if self:AutoPassCheck(v.subType, v.equipLoc, v.link, v.token, v.relic) then
-									local session, playerName, responseData = self:CreateResponse(ses, v.link, v.ilvl, "AUTOPASS", v.equipLoc, nil, v.subType)
-									if session then
-										self:SendCommand("group", "response", session, playerName, responseData)
-									else
-										self:Debug("Some items wasn't cached, delaying loot by 1 sec")
-						 				return self:ScheduleTimer("OnCommReceived", 1, prefix, serializedMsg, distri, sender)
-									end
-
+									response = "AUTOPASS"
 									self:Debug("Autopassed on: ", v.link)
 									if not db.silentAutoPass then self:Print(format(L["Autopassed on 'item'"], v.link)) end
 									lootTable[ses].autopass = true
@@ -707,6 +704,14 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 							else
 								self:Debug("Didn't autopass on: "..v.link.." because it's BoE!")
 							end
+						end
+
+						local session, playerName, responseData = self:CreateResponse(ses, v.link, v.ilvl, response, v.equipLoc, nil, v.subType)
+						if session then
+							self:SendCommand("group", "response", session, playerName, responseData)
+						else
+							self:Debug("Some items wasn't cached, delaying loot by 1 sec")
+			 				return self:ScheduleTimer("OnCommReceived", 1, prefix, serializedMsg, distri, sender)
 						end
 					end
 
