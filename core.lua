@@ -659,23 +659,6 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 						local subType = select(7, GetItemInfo(v.link))
 						if subType then v.subType = subType end -- subType should use user localization instead of master looter localization.
 					end
-
-					-- Cache all equipped items.
-					for i = INVSLOT_FIRST_EQUIPPED, INVSLOT_LAST_EQUIPPED do
-						local iLink = GetInventoryItemLink("player", i)
-						if iLink then
-							local iName = GetItemInfo(iLink)
-							if not iName then cached = false end
-						end
-					end
-					for i = 1, C_ArtifactUI.GetEquippedArtifactNumRelicSlots() or 0 do
-						local iLink = select(4, C_ArtifactUI.GetEquippedArtifactRelicInfo(i))
-						if iLink then
-							local iName = GetItemInfo(iLink)
-							if not iName then cached = false end
-						end
-					end
-
 					if not cached then
 						self:Debug("Some items wasn't cached, delaying loot by 1 sec")
 						return self:ScheduleTimer("OnCommReceived", 1, prefix, serializedMsg, distri, sender)
