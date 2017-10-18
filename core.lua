@@ -1114,9 +1114,15 @@ function RCLootCouncil:CreateResponse(session, link, ilvl, response, equipLoc, n
 	local diff = nil
 	if g2 then
 		local g1diff, g2diff = select(4, GetItemInfo(g1)), select(4, GetItemInfo(g2))
-		diff = g1diff >= g2diff and ilvl - g2diff or ilvl - g1diff
+		if g1diff and g2diff then -- could be nil if the item info is not cached.
+			diff = g1diff >= g2diff and ilvl - g2diff or ilvl - g1diff
+		end
 	elseif g1 then -- Artifact Relic might be nil
-		diff = (ilvl - select(4, GetItemInfo(g1))) end
+		local g1diff = select(4, GetItemInfo(g1))
+		if g1diff then -- could be nil if the item info is not cached.
+			diff = ilvl - g1diff
+		end
+	end
 	return
 		session,
 		self.playerName,
