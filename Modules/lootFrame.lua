@@ -110,14 +110,8 @@ function LootFrame:OnRoll(entry, button)
 	addon:Debug("LootFrame:OnRoll", entry.realID, button, "Response:", addon:GetResponseText(button, isTier, isRelic))
 	local item = entry.item
 
-	local session, playerName, responseData = addon:CreateResponse(item.session, item.link, item.ilvl, button, item.equipLoc, item.note, item.subType, isTier, isRelic)
-
-	if session then
-		addon:SendCommand("group", "response", session, playerName, responseData)
-	else
-		addon:Debug("Some items wasn't cached, delaying response by 1 sec")
-		self:ScheduleTimer("OnRoll", 1, entry, button)
-	end
+	-- Only send minimum neccessary data, because the information of current equipped gear has been sent when we receive the loot table.
+	addon:SendCommand("group", "response", item.session, addon.playerName, {response = button, note = item.note, isTier = isTier, isRelic = isRelic,})
 
 	numRolled = numRolled + 1
 	item.rolled = true
