@@ -1198,17 +1198,8 @@ function RCLootCouncil:IsItemBoE(item)
 	return false
 end
 
--- Send response until success. This fails when CreateResponse didn't cache the info of an item.
-function RCLootCouncil:SendResponse(target, session, link, ilvl, response, equipLoc, note, subType, isTier, isRelic, sendAvgIlvl)
-	local session, playerName, responseData = self:CreateResponse(session, link, ilvl, response, equipLoc, note, subType, isTier, isRelic, sendAvgIlvl)
-	if session then -- success
-		self:SendCommand(target, "response", session, playerName, responseData)
-	else -- failed. Retry after 1s.
-		self:ScheduleTimer("SendResponse", 1, target, session, link, ilvl, response, equipLoc, note, subType, isTier, isRelic, sendAvgIlvl)
-	end
-end
-
---- Formats a response for the player to be send to the group.
+-- Send response until success. The response includes the information of the player at the start of most recent encounter or login.
+-- No current information is sent.
 -- @param session		The session to respond to.
 -- @param link 		The itemLink of the item in the session.
 -- @param ilvl			The ilvl of the item in the session.
@@ -1219,43 +1210,40 @@ end
 -- @param isTier		Indicates if the response is a tier response. (v2.4.0)
 -- @param isRelic		Indicates if the response is a relic response. (v2.5.0)
 -- @param sendAvgIlvl   Indidates whether we send average ilvl.
--- @return A formatted table that can be passed directly to :SendCommand("group", "response", -return-). 
--- @return nil if a item needs caching.
-function RCLootCouncil:CreateResponse(session, link, ilvl, response, equipLoc, note, subType, isTier, isRelic, sendAvgIlvl)
-	self:DebugLog("CreateResponse", session, link, ilvl, response, equipLoc, note, subType, isTier, isRelic, sendAvgIlvl)
+-- @return nil
+function RCLootCouncil:SendResponse(target, session, link, ilvl, response, equipLoc, note, subType, isTier, isRelic, sendAvgIlvl)
+	self:DebugLog("SendResponse", target, session, link, ilvl, response, equipLoc, note, subType, isTier, isRelic, sendAvgIlvl)
 	local g1, g2;
 	local diff = nil
 
 	if link and ilvl and equipLoc and subType then
 		if equipLoc == "" and self.db.global.localizedSubTypes[subType] == "Artifact Relic" then
-			g1, g2 = self:GetArtifactRelics(link, true)
+			g1, g2 = self:GetArtifactRelics(link, true) -- Use relic info at the start of encounter
 		else
-		 	g1, g2 = self:GetPlayersGear(link, equipLoc, true)
+		 	g1, g2 = self:GetPlayersGear(link, equipLoc, true) -- Use gear info at the start of encounter
 		end
 
 		ilvl = self:GetRealIlvl(link, ilvl) -- If the item is a token, set the ilvl to be the min ilvl of the gear it creates.
 
+		local itemNeedCaching = false
+		local g1diff, g2diff = g1 and select(4, GetItemInfo(g1)), g2 and select(4, GetItemInfo(g2))
+		if g1diff and g2diff then
+			diff = g1diff >= g2diff and ilvl - g2diff or ilvl - g1diff
+		elseif g1 and g2 then
+			itemNeedCaching = true
+		elseif g1diff then
+			diff = ilvl - g1diff
+		elseif g1 then
+			itemNeedCaching = true
+		end
 
-		if g2 then
-			local g1diff, g2diff = select(4, GetItemInfo(g1)), select(4, GetItemInfo(g2))
-			if g1diff and g2diff then
-				diff = g1diff >= g2diff and ilvl - g2diff or ilvl - g1diff
-			else
-				self:Debug("Items need caching in CreateResponse", g1, g2)
-				return nil
-			end
-		elseif g1 then -- Artifact Relic might be nil
-			local g1diff = select(4, GetItemInfo(g1))
-			if g1diff then
-				diff = ilvl - g1diff
-			else
-				self:Debug("Items need caching in CreateResponse", g1)
-				return nil
-			end
+		if itemNeedCaching then
+			self:Debug("Items need caching in SendResponse", g1, g2)
+			return self:ScheduleTimer("SendResponse", 1, target, session, link, ilvl, response, equipLoc, note, subType, isTier, isRelic, sendAvgIlvl)
 		end
 	end
 
-	return
+	self:SendCommand(target, "response",
 		session,
 		self.playerName,
 		{	gear1 = g1,
@@ -1266,7 +1254,7 @@ function RCLootCouncil:CreateResponse(session, link, ilvl, response, equipLoc, n
 			response = response,
 			isTier = isTier,
 			isRelic = isRelic,
-		}
+		})
 end
 
 function RCLootCouncil:GetPlayersGuildRank()

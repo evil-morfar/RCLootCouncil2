@@ -836,21 +836,25 @@ function RCLootCouncilML:GetItemsFromMessage(msg, sender, retry)
 		end
 	end
 
-	local diff = nil
-	if item2 then
-		local g1diff, g2diff = select(4, GetItemInfo(item1)), select(4, GetItemInfo(item2))
-		if g1diff and g2diff then
-			diff = g1diff >= g2diff and self.lootTable[ses].ilvl - g2diff or self.lootTable[ses].ilvl - g1diff
-		elseif retry < MAX_RETRY then -- Item is not cached, retry after 1s. Need retry limit in case user input is ilformed.
-			return self:ScheduleTimer("GetItemsFromMessage", 1, msg, sender, retry + 1)
-		end
-	elseif item1 then
-		local g1diff = select(4, GetItemInfo(item1))
-		if g1diff then
-			diff = self.lootTable[ses].ilvl - g1diff
-		elseif retry < MAX_RETRY then -- Item is not cached, retry after 1s. Need retry limit in case user input is ilformed.
-			return self:ScheduleTimer("GetItemsFromMessage", 1, msg, sender, retry + 1)
-		end
+
+	local ilvl = self.lootTable[ses].ilvl
+	local g1 = item1
+	local g2 = item2
+
+	local itemNeedCaching = false
+	local g1diff, g2diff = g1 and select(4, GetItemInfo(g1)), g2 and select(4, GetItemInfo(g2))
+	if g1diff and g2diff then
+		diff = g1diff >= g2diff and ilvl - g2diff or ilvl - g1diff
+	elseif g1 and g2 then
+		itemNeedCaching = true
+	elseif g1diff then
+		diff = ilvl - g1diff
+	elseif g1 then
+		itemNeedCaching = true
+	end
+
+	if itemNeedCaching and retry < MAX_RETRY then -- Limit retry times to avoid infinite loop. User can send invalid link that can never be cached.
+		return self:ScheduleTimer("GetItemsFromMessage", 1, msg, sender, retry + 1)
 	end
 
 	local toSend = {
