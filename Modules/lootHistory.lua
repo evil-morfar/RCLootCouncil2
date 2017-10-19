@@ -830,12 +830,12 @@ function LootHistory.RightClickMenu(menu, level)
 		info = Lib_UIDropDownMenu_CreateInfo()
 		if not entry.special then
 			if not entry.onValue or entry.onValue == value then
-				if not (entry.hidden and type(entry.hidden) == "function" and entry.hidden(candidateName, data)) or not entry.hidden then
+				if not (entry.hidden and type(entry.hidden) == "function" and entry.hidden(data.name, data)) or not entry.hidden then
 					for name, val in pairs(entry) do
 						if name == "func" then
-							info[name] = function() return val(candidateName, data) end -- This needs to be set as a func, but fed with our params
+							info[name] = function() return val(data.name, data) end -- This needs to be set as a func, but fed with our params
 						elseif type(val) == "function" then
-							info[name] = val(candidateName, data) -- This needs to be evaluated
+							info[name] = val(data.name, data) -- This needs to be evaluated
 						else
 							info[name] = val
 						end
@@ -847,7 +847,6 @@ function LootHistory.RightClickMenu(menu, level)
 		elseif value == "EDIT_NAME" and entry.special == value then
 
 			if not LootHistory.frame then return end -- This could be nil if LootHistory frame closes before the rightclick menu.
-			
 			local sorttable = {unpack(LootHistory.frame.name.sorttable)} -- Copy the name table
 			-- 1. If both in the raid , sort by alphabet, ascending
 			-- 2. If neither in the raid, sort by time of last loot received, ascending
