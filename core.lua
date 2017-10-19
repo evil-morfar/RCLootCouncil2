@@ -644,7 +644,8 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 					-- Send "DISABLED" response when not enabled
 					if not self.enabled then
 						for i = 1, #lootTable do
-							self:SendCommand("group", "response", i, self.playerName, {response = "DISABLED"})
+							-- target, session, link, ilvl, response, equipLoc, note, subType, isTier, isRelic, sendAvgIlvl
+							self:SendResponse("group", i, nil, nil, "DISABLED")
 						end
 						return self:Debug("Sent 'DISABLED' response to", sender)
 					end
@@ -669,13 +670,8 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 					if GetNumGroupMembers() >= 8 and not IsInInstance() then
 						self:DebugLog("NotInRaid respond to lootTable")
 						for ses, v in ipairs(lootTable) do
-							local session, playerName, responseData = self:CreateResponse(ses, v.link, v.ilvl, "NOTINRAID", v.equipLoc, nil, v.subType)
-							if session then
-						 		self:SendCommand("group", "response", session, playerName, responseData)
-						 	else
-						 		self:Debug("Some items wasn't cached, delaying loot by 1 sec")
-						 		return self:ScheduleTimer("OnCommReceived", 1, prefix, serializedMsg, distri, sender)
-						 	end
+							-- target, session, link, ilvl, response, equipLoc, note, subType, isTier, isRelic, sendAvgIlvl
+							self:SendResponse("group", ses, v.link, v.ilvl, "NOTINRAID", v.equipLoc, nil, v.subType, nil, nil, true)
 						end
 						return
 					end
@@ -690,7 +686,6 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 
 					-- Send the information of current equipped gear immediately when we receive the loot table.
 					-- The actual response/note are left unsent if not autopassed.
-					local responsesCache = {} -- Cache all responses before send any command, in case some item needs to be cached.
 					for ses, v in ipairs(lootTable) do
 						if db.autoPass then
 							if (v.boe and db.autoPassBoE) or not v.boe then
@@ -698,7 +693,8 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 									self:Debug("Autopassed on: ", v.link)
 									if not db.silentAutoPass then self:Print(format(L["Autopassed on 'item'"], v.link)) end
 									lootTable[ses].autopass = true
-									responsesCache[ses] = {ses, self.playerName, {response = "AUTOPASS"}}
+									-- target, session, link, ilvl, response, equipLoc, note, subType, isTier, isRelic, sendAvgIlvl
+									self:SendResponse("group", ses, nil, nil, "AUTOPASS")
 								end
 							else
 								self:Debug("Didn't autopass on: "..v.link.." because it's BoE!")
@@ -706,16 +702,9 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 						end
 
 						if not lootTable[ses].autopass then
-							responsesCache[ses] = {self:CreateResponse(ses, v.link, v.ilvl, nil, v.equipLoc, nil, v.subType)}
-							if not responsesCache[ses][1] then
-								self:Debug("Some items wasn't cached, delaying loot by 1 sec")
-				 				return self:ScheduleTimer("OnCommReceived", 1, prefix, serializedMsg, distri, sender)
-							end
+							-- target, session, link, ilvl, response, equipLoc, note, subType, isTier, isRelic, sendAvgIlvl
+							self:SendResponse("group", ses, v.link, v.ilvl, nil, v.equipLoc, nil, v.subType, nil, nil, true)
 						end
-					end
-
-					for ses, v in ipairs(lootTable) do
-						self:SendCommand("group", "response", unpack(responsesCache[ses]))
 					end
 
 					-- Show  the LootFrame
@@ -1150,6 +1139,16 @@ function RCLootCouncil:IsItemBoE(item)
 	return false
 end
 
+-- Send response until success. This fails when CreateResponse didn't cache the info of an item.
+function RCLootCouncil:SendResponse(target, session, link, ilvl, response, equipLoc, note, subType, isTier, isRelic, sendAvgIlvl)
+	local session, playerName, responseData = self:CreateResponse(session, link, ilvl, response, equipLoc, note, subType, isTier, isRelic, sendAvgIlvl)
+	if session then -- success
+		self:SendCommand(target, "response", session, playerName, responseData)
+	else -- failed. Retry after 1s.
+		self:ScheduleTimer("SendResponse", 1, target, session, link, ilvl, response, equipLoc, note, subType, isTier, isRelic, sendAvgIlvl)
+	end
+end
+
 --- Formats a response for the player to be send to the group.
 -- @param session		The session to respond to.
 -- @param link 		The itemLink of the item in the session.
@@ -1160,32 +1159,40 @@ end
 -- @param subType		The item's subType, needed for Artifact Relics.
 -- @param isTier		Indicates if the response is a tier response. (v2.4.0)
 -- @param isRelic		Indicates if the response is a relic response. (v2.5.0)
--- @return A formatted table that can be passed directly to :SendCommand("group", "response", -return-). nil if a item needs caching.
-function RCLootCouncil:CreateResponse(session, link, ilvl, response, equipLoc, note, subType, isTier, isRelic)
-	self:DebugLog("CreateResponse", session, link, ilvl, response, equipLoc, note, subType, isTier, isRelic)
+-- @param sendAvgIlvl   Indidates whether we send average ilvl.
+-- @return A formatted table that can be passed directly to :SendCommand("group", "response", -return-). 
+-- @return nil if a item needs caching.
+function RCLootCouncil:CreateResponse(session, link, ilvl, response, equipLoc, note, subType, isTier, isRelic, sendAvgIlvl)
+	self:DebugLog("CreateResponse", session, link, ilvl, response, equipLoc, note, subType, isTier, isRelic, sendAvgIlvl)
 	local g1, g2;
-	if equipLoc == "" and self.db.global.localizedSubTypes[subType] == "Artifact Relic" then
-		g1, g2 = self:GetArtifactRelics(link)
-	else
-	 	g1, g2 = self:GetPlayersGear(link, equipLoc)
-	end
-
-	ilvl = self:GetRealIlvl(link, ilvl) -- If the item is a token, set the ilvl to be the min ilvl of the gear it creates.
-
 	local diff = nil
-	if g2 then
-		local g1diff, g2diff = select(4, GetItemInfo(g1)), select(4, GetItemInfo(g2))
-		if g1diff and g2diff then
-			diff = g1diff >= g2diff and ilvl - g2diff or ilvl - g1diff
+
+	if link and ilvl and equipLoc and subType then
+		if equipLoc == "" and self.db.global.localizedSubTypes[subType] == "Artifact Relic" then
+			g1, g2 = self:GetArtifactRelics(link)
 		else
-			return nil
+		 	g1, g2 = self:GetPlayersGear(link, equipLoc)
 		end
-	elseif g1 then -- Artifact Relic might be nil
-		local g1diff = select(4, GetItemInfo(g1))
-		if g1diff then
-			diff = ilvl - g1diff
-		else
-			return nil
+
+		ilvl = self:GetRealIlvl(link, ilvl) -- If the item is a token, set the ilvl to be the min ilvl of the gear it creates.
+
+
+		if g2 then
+			local g1diff, g2diff = select(4, GetItemInfo(g1)), select(4, GetItemInfo(g2))
+			if g1diff and g2diff then
+				diff = g1diff >= g2diff and ilvl - g2diff or ilvl - g1diff
+			else
+				self:Debug("Items need caching in CreateResponse", g1, g2)
+				return nil
+			end
+		elseif g1 then -- Artifact Relic might be nil
+			local g1diff = select(4, GetItemInfo(g1))
+			if g1diff then
+				diff = ilvl - g1diff
+			else
+				self:Debug("Items need caching in CreateResponse", g1)
+				return nil
+			end
 		end
 	end
 
@@ -1194,7 +1201,7 @@ function RCLootCouncil:CreateResponse(session, link, ilvl, response, equipLoc, n
 		self.playerName,
 		{	gear1 = g1,
 			gear2 = g2,
-			ilvl = select(2,GetAverageItemLevel()),
+			ilvl = sendAvgIlvl and select(2,GetAverageItemLevel()) or nil,
 			diff = diff,
 			note = note,
 			response = response,
