@@ -687,6 +687,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 					-- Send the information of current equipped gear immediately when we receive the loot table.
 					-- The actual response/note are left unsent if not autopassed.
 					for ses, v in ipairs(lootTable) do
+						local response = nil
 						if db.autoPass then
 							if (v.boe and db.autoPassBoE) or not v.boe then
 								if self:AutoPassCheck(v.subType, v.equipLoc, v.link, v.token, v.relic) then
@@ -694,17 +695,15 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 									if not db.silentAutoPass then self:Print(format(L["Autopassed on 'item'"], v.link)) end
 									lootTable[ses].autopass = true
 									-- target, session, link, ilvl, response, equipLoc, note, subType, isTier, isRelic, sendAvgIlvl
-									self:SendResponse("group", ses, nil, nil, "AUTOPASS")
+									response = "AUTOPASS"
 								end
 							else
 								self:Debug("Didn't autopass on: "..v.link.." because it's BoE!")
 							end
 						end
 
-						if not lootTable[ses].autopass then
-							-- target, session, link, ilvl, response, equipLoc, note, subType, isTier, isRelic, sendAvgIlvl
-							self:SendResponse("group", ses, v.link, v.ilvl, nil, v.equipLoc, nil, v.subType, nil, nil, true)
-						end
+						-- target, session, link, ilvl, response, equipLoc, note, subType, isTier, isRelic, sendAvgIlvl
+						self:SendResponse("group", ses, v.link, v.ilvl, response, v.equipLoc, nil, v.subType, nil, nil, true)
 					end
 
 					-- Show  the LootFrame
