@@ -1028,17 +1028,7 @@ function RCLootCouncil:GetRealIlvl(link, rawIlvl)
 		return rawIlvl
 	end
 
-	-- Get bonus ids. See epgp/LibItemUtils-1.0.lua
-	local itemString = string.match(link, "item[%-?%d:]+")
-	if not itemString then return rawIlvl end
-
-	local bonuses = {}
-	local tbl = { strsplit(":", itemString) }
-	for key, value in pairs(tbl) do
-	   if key >= 14 then
-	      table.insert(bonuses, tonumber(value))
-	    end
-	end
+	local bonuses = select(17, self:DecodeItemLink(link))
 
 	for _, value in pairs(bonuses) do
     -- Item modifiers for heroic are 566 and 570; mythic are 567 and 569
