@@ -706,6 +706,7 @@ local history_table = {}
 	elseif db.enableHistory then -- Just log it
 		addon:SendCommand("player", "history", name, history_table)
 	end
+	history_table = {} -- wipe to ensure integrety
 end
 
 function RCLootCouncilML:HasAllItemsBeenAwarded()
