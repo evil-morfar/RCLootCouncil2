@@ -699,6 +699,8 @@ local history_table = {}
 	history_table["tokenRoll"]		= tokenRoll																						-- New in v2.4+
 	history_table["relicRoll"]		= relicRoll																						-- New in v2.5+
 
+	addon:SendMessage("RCMLLootHistorySend", history_table, name, item, responseID, boss, votes, itemReplaced1, itemReplaced2, reason, isToken, tokenRoll, relicRoll)
+
 	if db.sendHistory then -- Send it, and let comms handle the logging
 		addon:SendCommand("group", "history", name, history_table)
 	elseif db.enableHistory then -- Just log it
