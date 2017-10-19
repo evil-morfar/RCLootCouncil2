@@ -1,3 +1,10 @@
+### v2.6.1
+---
+
+###### Bugfixes
++ *Using "Award for ..." would cause an error (#305) - props to safetee.*
+
+
 ### v2.6.0
 ---
 * **Relic Buttons**
