@@ -1179,7 +1179,7 @@ do
 					info.text = v.text
 					info.notCheckable = true
 					info.func = function()
-						LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_AWARD", RCVotingFrame:GetAwardPopupData(session, name, data, v))
+						LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_AWARD", RCVotingFrame:GetAwardPopupData(session, candidateName, data, v))
 					end
 					Lib_UIDropDownMenu_AddButton(info, level)
 				end

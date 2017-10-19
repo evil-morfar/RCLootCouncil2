@@ -585,12 +585,23 @@ function RCLootCouncilML:Award(session, winner, response, reason)
 	end
 end
 
+--- Substitution strings for AnnounceItems
+-- Each keyword will be replaced with the func result if it's used in db.announceItemString
+-- The function receives session, itemlink, lootTable[session] as arguments
+RCLootCouncilML.announceItemStrings = {
+	["&s"] = function(ses) return ses end,
+	["&i"] = function(...) return select(2,...) end,
+}
 function RCLootCouncilML:AnnounceItems()
 	if not db.announceItems then return end
 	addon:DebugLog("ML:AnnounceItems()")
 	SendChatMessage(db.announceText, addon:GetAnnounceChannel(db.announceChannel))
 	for k,v in ipairs(self.lootTable) do
-		SendChatMessage(k .. ": " .. v.link, addon:GetAnnounceChannel(db.announceChannel))
+		local msg = db.announceItemString
+		for text, func in pairs(self.announceItemStrings) do
+			message = gsub(msg, text, tostring(func(k, v.link, v)))
+		end
+		SendChatMessage(msg, addon:GetAnnounceChannel(db.announceChannel))
 	end
 end
 
@@ -609,7 +620,7 @@ RCLootCouncilML.awardStrings = {
 -- @param name 		The unambiguated name of the winner
 -- @param link 		The itemlink of the awarded item
 -- @param response	The text matching the candidate's response
--- @param roll 		The candidate's roll
+-- @param roll 		The candidates' roll
 -- @param session		The session of the awarded item
 function RCLootCouncilML:AnnounceAward(name, link, response, roll, session)
 	if db.announceAward then
@@ -699,11 +710,14 @@ local history_table = {}
 	history_table["tokenRoll"]		= tokenRoll																						-- New in v2.4+
 	history_table["relicRoll"]		= relicRoll																						-- New in v2.5+
 
+	addon:SendMessage("RCMLLootHistorySend", history_table, name, item, responseID, boss, votes, itemReplaced1, itemReplaced2, reason, isToken, tokenRoll, relicRoll)
+
 	if db.sendHistory then -- Send it, and let comms handle the logging
 		addon:SendCommand("group", "history", name, history_table)
 	elseif db.enableHistory then -- Just log it
 		addon:SendCommand("player", "history", name, history_table)
 	end
+	history_table = {} -- wipe to ensure integrety
 end
 
 function RCLootCouncilML:HasAllItemsBeenAwarded()
