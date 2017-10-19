@@ -68,6 +68,10 @@ local lootTable = {}
 
 local IsPartyLFG = IsPartyLFG
 
+local gearsWhenEncounterStart = {} -- Gears when encounter starts/login. key: slot number(1-19)
+local relicsWhenEncounterStart = {} -- Relics when encounter starts/login. key: slot number(1-3)
+local playersDataWhenEncounterStart = {} -- player's data that can be changed by the player (spec, equipped ilvl, etc)
+
 function RCLootCouncil:OnInitialize()
 	--IDEA Consider if we want everything on self, or just whatever modules could need.
   	self.version = GetAddOnMetadata("RCLootCouncil", "Version")
@@ -377,6 +381,7 @@ function RCLootCouncil:OnEnable()
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
 	self:RegisterEvent("PLAYER_REGEN_DISABLED", "EnterCombat")
 	self:RegisterEvent("PLAYER_REGEN_ENABLED", "LeaveCombat")
+	self:RegisterEvent("ENCOUNTER_START", "OnEvent")
 	self:RegisterEvent("ENCOUNTER_END", 	"OnEvent")
 	--self:RegisterEvent("GROUP_ROSTER_UPDATE", "Debug", "event")
 
@@ -975,7 +980,66 @@ local INVTYPE_Slots = {
 		INVTYPE_TRINKET		    = {"TRINKET0SLOT", "TRINKET1SLOT"}
 }
 
-function RCLootCouncil:GetPlayersGear(link, equipLoc)
+-- Cache player's gear. Call this function when login or encounter starts.
+function RCLootCouncil:CachePlayersGear(startSlot, endSlot)
+	if not startSlot then startSlot = INVSLOT_FIRST_EQUIPPED end
+	if not endSlot then endSlot = INVSLOT_LAST_EQUIPPED end
+	for i = startSlot, endSlot  do
+		gearsWhenEncounterStart[i] = nil
+		local iLink = GetInventoryItemLink("player", i)
+		if iLink then
+			local iName = GetItemInfo(iLink)
+			if iName then 
+				gearsWhenEncounterStart[i] = iLink
+			else -- Blizzard bug that GetInventoryItemLink returns incomplete link. Retry
+				self:ScheduleTimer("CachePlayersGear", 1, i, i)
+			end	
+		end
+	end
+end
+
+-- Cache player's relic. Call this function when login or encounter starts.
+function RCLootCouncil:CacheArtifactRelics(startSlot, endSlot)
+	if not startSlot then startSlot = 1 end
+	if not endSlot then endSlot = 3 end
+
+	for i = startSlot, endSlot do
+		relicsWhenEncounterStart[i] = nil
+		if i <= C_ArtifactUI.GetEquippedArtifactNumRelicSlots() or 0 then
+			local iLink = select(4,C_ArtifactUI.GetEquippedArtifactRelicInfo(i))
+			if iLink then
+				local iName = GetItemInfo(iLink)
+				if iName then
+					relicsWhenEncounterStart[i] = iLink
+				else  -- Uncached. Retry to make sure this is a correct link.
+					self:ScheduleTimer("CacheArtifactRelics", 1, i, i)
+				end
+			end
+		end
+	end
+end
+
+-- Cache player's data which is changable by the player. (specid, equipped ilvl, etc)
+function RCLootCouncil:CachePlayersData()
+	playersDataWhenEncounterStart.specID = GetSpecialization() and GetSpecializationInfo(GetSpecialization())
+	playersDataWhenEncounterStart.ilvl = select(2,GetAverageItemLevel())
+end
+
+function RCLootCouncil:CacheAllData()
+	self:CachePlayersGear()
+	self:CacheArtifactRelics()
+	self:CachePlayersData()
+end
+
+-- @param link A gear that we want to compare against the equipped gears
+-- @param whenEncounterStart if true, compare against gears equipped when the most recent ecounter starts or login rather than currently equipped.
+-- @return the gear(s) that with the same slot of the input link.
+function RCLootCouncil:GetPlayersGear(link, equipLoc, whenEncounterStart)
+	local GetInventoryItemLink = GetInventoryItemLink
+	if whenEncounterStart then -- lazy code
+		GetInventoryItemLink = function(_, slotNum) return gearsWhenEncounterStart[slotNum] end
+	end
+
 	local itemID = self:GetItemIDFromLink(link) -- Convert to itemID
 	self:DebugLog("GetPlayersGear", itemID, equipLoc)
 	if not itemID then return nil, nil; end
@@ -1002,16 +1066,20 @@ function RCLootCouncil:GetPlayersGear(link, equipLoc)
 	return item1, item2;
 end
 
-function RCLootCouncil:GetArtifactRelics(link)
+-- @param link A relic that we want to compare against the equipped relics
+-- @param whenEncounterStart if true, compare against relics equipped when the most recent ecounter starts or login rather than currently equipped.
+-- @return the relic(s) that with the same type of the input link.
+function RCLootCouncil:GetArtifactRelics(link, whenEncounterStart)
 	local id = self:GetItemIDFromLink(link)
 	local g1,g2;
-	if not C_ArtifactUI.GetEquippedArtifactNumRelicSlots() then return end -- Check if we even have an artifact
-	for i = 1, C_ArtifactUI.GetEquippedArtifactNumRelicSlots() do
-		if C_ArtifactUI.CanApplyRelicItemIDToEquippedArtifactSlot(id,i) then -- We can equip it
+	for i = 1, whenEncounterStart and 3 or C_ArtifactUI.GetEquippedArtifactNumRelicSlots() or 0 do
+		local iLink = whenEncounterStart and relicsWhenEncounterStart[i] or select(4,C_ArtifactUI.GetEquippedArtifactRelicInfo(i))
+		if iLink and select(3, C_ArtifactUI.GetRelicInfoByItemID(self:GetItemIDFromLink(iLink))) == 
+					 select(3, C_ArtifactUI.GetRelicInfoByItemID(id)) then
 			if g1 then
-				g2 = select(4,C_ArtifactUI.GetEquippedArtifactRelicInfo(i))
+				g2 = iLink
 			else
-				g1 = select(4,C_ArtifactUI.GetEquippedArtifactRelicInfo(i))
+				g1 = iLink
 			end
 		end
 	end
@@ -1160,9 +1228,9 @@ function RCLootCouncil:CreateResponse(session, link, ilvl, response, equipLoc, n
 
 	if link and ilvl and equipLoc and subType then
 		if equipLoc == "" and self.db.global.localizedSubTypes[subType] == "Artifact Relic" then
-			g1, g2 = self:GetArtifactRelics(link)
+			g1, g2 = self:GetArtifactRelics(link, true)
 		else
-		 	g1, g2 = self:GetPlayersGear(link, equipLoc)
+		 	g1, g2 = self:GetPlayersGear(link, equipLoc, true)
 		end
 
 		ilvl = self:GetRealIlvl(link, ilvl) -- If the item is a token, set the ilvl to be the min ilvl of the gear it creates.
@@ -1192,7 +1260,7 @@ function RCLootCouncil:CreateResponse(session, link, ilvl, response, equipLoc, n
 		self.playerName,
 		{	gear1 = g1,
 			gear2 = g2,
-			ilvl = sendAvgIlvl and select(2,GetAverageItemLevel()) or nil,
+			ilvl = sendAvgIlvl and playersDataWhenEncounterStart.ilvl or nil,
 			diff = diff,
 			note = note,
 			response = response,
@@ -1301,16 +1369,20 @@ function RCLootCouncil:OnEvent(event, ...)
 		end, 5)
 
 	elseif event == "PLAYER_ENTERING_WORLD" then
-		self:Debug("Event:", event, ...)
-		self:NewMLCheck()
-		-- Ask for data when we have done a /rl and have a ML
-		if not self.isMasterLooter and self.masterLooter and self.masterLooter ~= "" and player_relogged then
-			self:Debug("Player relog...")
-			self:ScheduleTimer("SendCommand", 2, self.masterLooter, "reconnect")
-			self:SendCommand(self.masterLooter, "playerInfo", self:GetPlayerInfo()) -- Also send out info, just in case
+		if player_relogged then
+			self:Debug("Event:", event, ...)
+			self:NewMLCheck()
+			-- Ask for data when we have done a /rl and have a ML
+			if not self.isMasterLooter and self.masterLooter and self.masterLooter ~= "" and player_relogged then
+				self:Debug("Player relog...")
+				self:ScheduleTimer("SendCommand", 2, self.masterLooter, "reconnect")
+				self:SendCommand(self.masterLooter, "playerInfo", self:GetPlayerInfo()) -- Also send out info, just in case
+			end
+			self:CacheAllData()
+			player_relogged = false
 		end
-		player_relogged = false
-
+	elseif event == "ENCOUNTER_START" then
+			self:CacheAllData()
 	elseif event == "GUILD_ROSTER_UPDATE" then
 		self.guildRank = self:GetPlayersGuildRank();
 		if unregisterGuildEvent then
