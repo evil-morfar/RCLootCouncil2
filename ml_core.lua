@@ -599,7 +599,7 @@ function RCLootCouncilML:AnnounceItems()
 	for k,v in ipairs(self.lootTable) do
 		local msg = db.announceItemString
 		for text, func in pairs(self.announceItemStrings) do
-			message = gsub(msg, text, tostring(func(k, v.link, v)))
+			msg = gsub(msg, text, tostring(func(k, v.link, v)))
 		end
 		SendChatMessage(msg, addon:GetAnnounceChannel(db.announceChannel))
 	end
