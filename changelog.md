@@ -4,6 +4,9 @@
 ###### Bugfixes
 + *Using "Award for ..." would cause an error (#305) - props to safetee.*
 
+* ***Dev***
+* Added RCMLLootHistorySend message to allow for edits to the loot history send outs.
+
 
 ### v2.6.0
 ---
