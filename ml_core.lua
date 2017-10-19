@@ -495,7 +495,7 @@ end
 --@param reason	Entry in db.awardReasons.
 --@returns True if awarded successfully
 function RCLootCouncilML:Award(session, winner, response, reason)
-	addon:DebugLog("ML:Award", session, winner, response, reason, isToken)
+	addon:DebugLog("ML:Award", session, winner, response, reason)
 	if addon.testMode then
 		if winner then
 			addon:SendCommand("group", "awarded", session, winner)
