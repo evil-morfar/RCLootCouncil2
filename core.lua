@@ -1369,9 +1369,9 @@ function RCLootCouncil:OnEvent(event, ...)
 		end, 5)
 
 	elseif event == "PLAYER_ENTERING_WORLD" then
+		self:Debug("Event:", event, ...)
+		self:NewMLCheck()
 		if player_relogged then
-			self:Debug("Event:", event, ...)
-			self:NewMLCheck()
 			-- Ask for data when we have done a /rl and have a ML
 			if not self.isMasterLooter and self.masterLooter and self.masterLooter ~= "" and player_relogged then
 				self:Debug("Player relog...")
