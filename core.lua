@@ -651,7 +651,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 					-- Send "DISABLED" response when not enabled
 					if not self.enabled then
 						for i = 1, #lootTable do
-							-- target, session, link, ilvl, response, equipLoc, note, subType, isTier, isRelic, sendAvgIlvl
+							-- target, session, link, ilvl, response, equipLoc, note, subType, isTier, isRelic, sendAvgIlvl, specID
 							self:SendResponse("group", i, nil, nil, "DISABLED")
 						end
 						return self:Debug("Sent 'DISABLED' response to", sender)
@@ -677,8 +677,8 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 					if GetNumGroupMembers() >= 8 and not IsInInstance() then
 						self:DebugLog("NotInRaid respond to lootTable")
 						for ses, v in ipairs(lootTable) do
-							-- target, session, link, ilvl, response, equipLoc, note, subType, isTier, isRelic, sendAvgIlvl
-							self:SendResponse("group", ses, v.link, v.ilvl, "NOTINRAID", v.equipLoc, nil, v.subType, nil, nil, true)
+							-- target, session, link, ilvl, response, equipLoc, note, subType, isTier, isRelic, sendAvgIlvl, sendSpecID
+							self:SendResponse("group", ses, v.link, v.ilvl, "NOTINRAID", v.equipLoc, nil, v.subType, nil, nil, true, true)
 						end
 						return
 					end
@@ -709,8 +709,8 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 							end
 						end
 
-						-- target, session, link, ilvl, response, equipLoc, note, subType, isTier, isRelic, sendAvgIlvl
-						self:SendResponse("group", ses, v.link, v.ilvl, response, v.equipLoc, nil, v.subType, nil, nil, true)
+						-- target, session, link, ilvl, response, equipLoc, note, subType, isTier, isRelic, sendAvgIlvl, sendSpecID
+						self:SendResponse("group", ses, v.link, v.ilvl, response, v.equipLoc, nil, v.subType, nil, nil, true, true)
 					end
 
 					-- Show  the LootFrame
@@ -1210,9 +1210,10 @@ end
 -- @param isTier		Indicates if the response is a tier response. (v2.4.0)
 -- @param isRelic		Indicates if the response is a relic response. (v2.5.0)
 -- @param sendAvgIlvl   Indidates whether we send average ilvl.
+-- @param sendSpecID    Indidates whether we send spec id.
 -- @return nil
-function RCLootCouncil:SendResponse(target, session, link, ilvl, response, equipLoc, note, subType, isTier, isRelic, sendAvgIlvl)
-	self:DebugLog("SendResponse", target, session, link, ilvl, response, equipLoc, note, subType, isTier, isRelic, sendAvgIlvl)
+function RCLootCouncil:SendResponse(target, session, link, ilvl, response, equipLoc, note, subType, isTier, isRelic, sendAvgIlvl, sendSpecID)
+	self:DebugLog("SendResponse", target, session, link, ilvl, response, equipLoc, note, subType, isTier, isRelic, sendAvgIlvl, sendSpecID)
 	local g1, g2;
 	local diff = nil
 
@@ -1239,7 +1240,7 @@ function RCLootCouncil:SendResponse(target, session, link, ilvl, response, equip
 
 		if itemNeedCaching then
 			self:Debug("Items need caching in SendResponse", g1, g2)
-			return self:ScheduleTimer("SendResponse", 1, target, session, link, ilvl, response, equipLoc, note, subType, isTier, isRelic, sendAvgIlvl)
+			return self:ScheduleTimer("SendResponse", 1, target, session, link, ilvl, response, equipLoc, note, subType, isTier, isRelic, sendAvgIlvl, sendSpecID)
 		end
 	end
 
@@ -1254,6 +1255,7 @@ function RCLootCouncil:SendResponse(target, session, link, ilvl, response, equip
 			response = response,
 			isTier = isTier,
 			isRelic = isRelic,
+			specID = sendSpecID and playersDataWhenEncounterStart.specID or nil,
 		})
 end
 

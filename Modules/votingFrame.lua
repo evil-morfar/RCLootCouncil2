@@ -30,19 +30,20 @@ function RCVotingFrame:OnInitialize()
 	-- Contains all the default data needed for the scroll table
 	-- The default values are in sorted order
 	defaultScrollTableData = {
-		{ name = "",				DoCellUpdate = RCVotingFrame.SetCellClass,		colName = "class",	sortnext = 2,		width = 20, },										-- 1 Class
-		{ name = L["Name"],		DoCellUpdate = RCVotingFrame.SetCellName,			colName = "name",								width = 120,},										-- 2 Candidate Name
-		{ name = L["Rank"],		DoCellUpdate = RCVotingFrame.SetCellRank,			colName = "rank",		sortnext = 5,		width = 95, comparesort = GuildRankSort,},-- 3 Guild rank
-		{ name = L["Role"],		DoCellUpdate = RCVotingFrame.SetCellRole,			colName = "role",		sortnext = 5,		width = 55, },										-- 4 Role
-		{ name = L["Response"],	DoCellUpdate = RCVotingFrame.SetCellResponse,	colName = "response",sortnext = 13,		width = 240, comparesort = ResponseSort,},-- 5 Response
-		{ name = L["ilvl"],		DoCellUpdate = RCVotingFrame.SetCellIlvl,			colName = "ilvl",		sortnext = 7,		width = 45, },										-- 6 Total ilvl
-		{ name = L["Diff"],		DoCellUpdate = RCVotingFrame.SetCellDiff,			colName = "diff",								width = 40, },										-- 7 ilvl difference
-		{ name = L["g1"],			DoCellUpdate = RCVotingFrame.SetCellGear,			colName = "gear1",	sortnext = 5,		width = 20, align = "CENTER", },				-- 8 Current gear 1
-		{ name = L["g2"],			DoCellUpdate = RCVotingFrame.SetCellGear,			colName = "gear2",	sortnext = 5,		width = 20, align = "CENTER", },				-- 9 Current gear 2
-		{ name = L["Votes"], 	DoCellUpdate = RCVotingFrame.SetCellVotes,		colName = "votes",	sortnext = 7,		width = 40, align = "CENTER", },				-- 10 Number of votes
-		{ name = L["Vote"],		DoCellUpdate = RCVotingFrame.SetCellVote,			colName = "vote",		sortnext = 10,		width = 60, align = "CENTER", },				-- 11 Vote button
-		{ name = L["Notes"],		DoCellUpdate = RCVotingFrame.SetCellNote,			colName = "note",								width = 40, align = "CENTER", },				-- 12 Note icon
-		{ name = L["Roll"],		DoCellUpdate = RCVotingFrame.SetCellRoll, 		colName = "roll",		sortnext = 10,		width = 30, align = "CENTER", },				-- 13 Roll
+		{ name = "",			DoCellUpdate = RCVotingFrame.SetCellClass,		colName = "class",		sortnext = 3,		width = 20, },										-- 1 Class
+		{ name = "",			DoCellUpdate = RCVotingFrame.SetCellSpec,		colName = "spec",		sortnext = 3,		width = 20, },										-- 2 Spec
+		{ name = L["Name"],		DoCellUpdate = RCVotingFrame.SetCellName,		colName = "name",							width = 120,},										-- 3 Candidate Name
+		{ name = L["Rank"],		DoCellUpdate = RCVotingFrame.SetCellRank,		colName = "rank",		sortnext = 6,		width = 95, comparesort = GuildRankSort,},-- 4 Guild rank
+		{ name = L["Role"],		DoCellUpdate = RCVotingFrame.SetCellRole,		colName = "role",		sortnext = 6,		width = 55, },										-- 5 Role
+		{ name = L["Response"],	DoCellUpdate = RCVotingFrame.SetCellResponse,	colName = "response",	sortnext = 14,		width = 240, comparesort = ResponseSort,},-- 6 Response
+		{ name = L["ilvl"],		DoCellUpdate = RCVotingFrame.SetCellIlvl,		colName = "ilvl",		sortnext = 8,		width = 45, },										-- 7 Total ilvl
+		{ name = L["Diff"],		DoCellUpdate = RCVotingFrame.SetCellDiff,		colName = "diff",							width = 40, },										-- 8 ilvl difference
+		{ name = L["g1"],		DoCellUpdate = RCVotingFrame.SetCellGear,		colName = "gear1",		sortnext = 6,		width = 20, align = "CENTER", },				-- 9 Current gear 1
+		{ name = L["g2"],		DoCellUpdate = RCVotingFrame.SetCellGear,		colName = "gear2",		sortnext = 6,		width = 20, align = "CENTER", },				-- 10 Current gear 2
+		{ name = L["Votes"], 	DoCellUpdate = RCVotingFrame.SetCellVotes,		colName = "votes",		sortnext = 8,		width = 40, align = "CENTER", },				-- 11 Number of votes
+		{ name = L["Vote"],		DoCellUpdate = RCVotingFrame.SetCellVote,		colName = "vote",		sortnext = 11,		width = 60, align = "CENTER", },				-- 12 Vote button
+		{ name = L["Notes"],	DoCellUpdate = RCVotingFrame.SetCellNote,		colName = "note",							width = 40, align = "CENTER", },				-- 13 Note icon
+		{ name = L["Roll"],		DoCellUpdate = RCVotingFrame.SetCellRoll, 		colName = "roll",		sortnext = 11,		width = 30, align = "CENTER", },				-- 14 Roll
 	}
 	-- The actual table being worked on, new entries should be added to this table "tinsert(RCVotingFrame.scrollCols, data)"
 	-- If you want to add or remove columns, you should do so on your OnInitialize. See RCVotingFrame:RemoveColumn() for removal.
@@ -762,6 +763,20 @@ end
 function RCVotingFrame.SetCellClass(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
 	local name = data[realrow].name
 	addon.SetCellClassIcon(rowFrame, frame, data, cols, row, realrow, column, fShow, table, lootTable[session].candidates[name].class)
+end
+
+function RCVotingFrame.SetCellSpec(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
+	local name = data[realrow].name
+	local name = data[realrow].name
+	local specID = lootTable[session].candidates[name].specID
+   	local icon = specID and select(4, GetSpecializationInfoByID(specID))
+
+	if icon then
+		frame:SetNormalTexture(icon);
+	else -- if there's no class
+		frame:SetNormalTexture("Interface/ICONS/INV_Sigil_Thorim.png")
+	end
+	data[realrow].cols[column].value = specID or ""
 end
 
 function RCVotingFrame.SetCellName(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
