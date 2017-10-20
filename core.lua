@@ -427,6 +427,10 @@ function RCLootCouncil:OnEnable()
 	ChatFrame_AddMessageEventFilter("CHAT_MSG_WHISPER_INFORM", filterFunc)
 
 	self:LocalizeSubTypes()
+
+	self.gearsWhenEncounterStart = gearsWhenEncounterStart
+	self.relicsWhenEncounterStart = relicsWhenEncounterStart
+	self.playersDataWhenEncounterStart = playersDataWhenEncounterStart
 end
 
 function RCLootCouncil:OnDisable()
