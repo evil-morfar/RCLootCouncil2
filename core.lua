@@ -68,9 +68,21 @@ local lootTable = {}
 
 local IsPartyLFG = IsPartyLFG
 
-local gearsWhenEncounterStart = {} -- Gears when encounter starts/login. key: slot number(1-19)
-local relicsWhenEncounterStart = {} -- Relics when encounter starts/login. key: slot number(1-3)
-local playersDataWhenEncounterStart = {} -- player's data that can be changed by the player (spec, equipped ilvl, etc)
+local playersData = {
+	gears = {
+		-- [slotNum] = {link=xxx,}
+	},
+	relics = {
+		--[[ 
+		[specID] = {
+			[1/2/3] =  {
+				link = xxx,	
+			},
+		} 
+		--]]
+	},
+}
+local itemInfoCache = {}
 
 function RCLootCouncil:OnInitialize()
 	--IDEA Consider if we want everything on self, or just whatever modules could need.
@@ -428,9 +440,7 @@ function RCLootCouncil:OnEnable()
 
 	self:LocalizeSubTypes()
 
-	self.gearsWhenEncounterStart = gearsWhenEncounterStart
-	self.relicsWhenEncounterStart = relicsWhenEncounterStart
-	self.playersDataWhenEncounterStart = playersDataWhenEncounterStart
+	self.playersData = playersData
 end
 
 function RCLootCouncil:OnDisable()
@@ -655,8 +665,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 					-- Send "DISABLED" response when not enabled
 					if not self.enabled then
 						for i = 1, #lootTable do
-							-- target, session, link, ilvl, response, equipLoc, note, subType, isTier, isRelic, sendAvgIlvl, specID
-							self:SendResponse("group", i, nil, nil, "DISABLED")
+							self:SendResponse("group", i, "DISABLED")
 						end
 						return self:Debug("Sent 'DISABLED' response to", sender)
 					end
@@ -664,7 +673,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 					-- TODO: v2.2.0 While we don't rely on the cache for normal items, we do for artifact relics.
 					-- I can't get around it until I find out if C_ArtifactUI.GetRelicInfoByItemID() returns a localized result.
 					-- So meanwhile, we'll just delay everything until we've got it cached:
-					local cached = true
+					local cached = self:CacheAllItemInfoInTable(lootTable)
 					for ses, v in ipairs(lootTable) do
 						local iName = GetItemInfo(v.link)
 						if not iName then self:Debug(v.link); cached = false end
@@ -676,16 +685,6 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 						return self:ScheduleTimer("OnCommReceived", 1, prefix, serializedMsg, distri, sender)
 					end
 
-					-- Out of instance support
-					-- assume 8 people means we're actually raiding
-					if GetNumGroupMembers() >= 8 and not IsInInstance() then
-						self:DebugLog("NotInRaid respond to lootTable")
-						for ses, v in ipairs(lootTable) do
-							-- target, session, link, ilvl, response, equipLoc, note, subType, isTier, isRelic, sendAvgIlvl, sendSpecID
-							self:SendResponse("group", ses, v.link, v.ilvl, "NOTINRAID", v.equipLoc, nil, v.subType, nil, nil, true, true)
-						end
-						return
-					end
 					-- v2.0.1: It seems people somehow receives mldb without numButtons, so check for it aswell.
 					if not self.mldb or (self.mldb and not self.mldb.numButtons) then -- Really shouldn't happen, but I'm tired of people somehow not receiving it...
 						self:Debug("Received loot table without having mldb :(", sender)
@@ -693,28 +692,26 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 						return self:ScheduleTimer("OnCommReceived", 5, prefix, serializedMsg, distri, sender)
 					end
 
-					self:SendCommand("group", "lootAck", self.playerName) -- send ack
+					self:SendCommand("group", "lootAck", self.playerName, self.playersData)
 
-					-- Send the information of current equipped gear immediately when we receive the loot table.
-					-- The actual response/note are left unsent if not autopassed.
 					for ses, v in ipairs(lootTable) do
-						local response = nil
-						if db.autoPass then
+						-- Out of instance support
+						-- assume 8 people means we're actually raiding
+						if GetNumGroupMembers() >= 8 and not IsInInstance() then
+							self:DebugLog("NotInRaid respond to lootTable")
+							self:SendResponse("group", ses, "NOTINRAID")
+						elseif db.autoPass then -- Do autopassing
 							if (v.boe and db.autoPassBoE) or not v.boe then
 								if self:AutoPassCheck(v.subType, v.equipLoc, v.link, v.token, v.relic) then
 									self:Debug("Autopassed on: ", v.link)
 									if not db.silentAutoPass then self:Print(format(L["Autopassed on 'item'"], v.link)) end
+									self:SendResponse("group", ses, "AUTOPASS")
 									lootTable[ses].autopass = true
-									-- target, session, link, ilvl, response, equipLoc, note, subType, isTier, isRelic, sendAvgIlvl
-									response = "AUTOPASS"
 								end
 							else
 								self:Debug("Didn't autopass on: "..v.link.." because it's BoE!")
 							end
 						end
-
-						-- target, session, link, ilvl, response, equipLoc, note, subType, isTier, isRelic, sendAvgIlvl, sendSpecID
-						self:SendResponse("group", ses, v.link, v.ilvl, response, v.equipLoc, nil, v.subType, nil, nil, true, true)
 					end
 
 					-- Show  the LootFrame
@@ -984,68 +981,172 @@ local INVTYPE_Slots = {
 		INVTYPE_TRINKET		    = {"TRINKET0SLOT", "TRINKET1SLOT"}
 }
 
--- Cache player's gear. Call this function when login or encounter starts.
-function RCLootCouncil:CachePlayersGear(startSlot, endSlot)
+function RCLootCouncil:UpdatePlayersGears(startSlot, endSlot, retryTimes)
+	if not retryTimes or type(retryTimes) ~= "number" then retryTimes = 0 end
+	if retryTimes > 10 then return self:Debug("Stuck in infinite loop", "UpdatePlayersGear", startSlot, endSlot, retryTimes) end
 	if not startSlot then startSlot = INVSLOT_FIRST_EQUIPPED end
 	if not endSlot then endSlot = INVSLOT_LAST_EQUIPPED end
-	for i = startSlot, endSlot  do
-		gearsWhenEncounterStart[i] = nil
-		local iLink = GetInventoryItemLink("player", i)
-		if iLink then
-			local iName = GetItemInfo(iLink)
-			if iName then 
-				gearsWhenEncounterStart[i] = iLink
-			else -- Blizzard bug that GetInventoryItemLink returns incomplete link. Retry
-				self:ScheduleTimer("CachePlayersGear", 1, i, i)
-			end	
+
+	local gears = self.playersData.gears
+	for i = startSlot, endSlot do
+		local item = GetInventoryItemLink("player", i)
+		if item then
+			gears[i] = gears[i] or {}
+			local success = self:CacheItemInfo(item)
+			if success then -- check if Blizzard API is bugged.
+				gears[i].link = item
+			else
+				self:ScheduleTimer("UpdatePlayersGear", 1, i, i, retryTimes + 1)
+			end
+		else
+			gears[i] = nil
 		end
 	end
 end
 
--- Cache player's relic. Call this function when login or encounter starts.
-function RCLootCouncil:CacheArtifactRelics(startSlot, endSlot)
+function RCLootCouncil:UpdatePlayersArtifactRelics(startSlot, endSlot, retryTimes)
+	if not retryTimes or type(retryTimes) ~= "number" then retryTimes = 0 end
+	if retryTimes > 10 then return self:Debug("Stuck in infinite loop", "UpdatePlayersArtifactRelics", startSlot, endSlot, retryTimes) end
 	if not startSlot then startSlot = 1 end
 	if not endSlot then endSlot = 3 end
 
-	for i = startSlot, endSlot do
-		relicsWhenEncounterStart[i] = nil
-		if i <= C_ArtifactUI.GetEquippedArtifactNumRelicSlots() or 0 then
-			local iLink = select(4,C_ArtifactUI.GetEquippedArtifactRelicInfo(i))
-			if iLink then
-				local iName = GetItemInfo(iLink)
-				if iName then
-					relicsWhenEncounterStart[i] = iLink
-				else  -- Uncached. Retry to make sure this is a correct link.
-					self:ScheduleTimer("CacheArtifactRelics", 1, i, i)
+	local relics = self.playersData.relics
+	local specID = GetSpecialization() and GetSpecializationInfo(GetSpecialization())
+
+	if specID then
+		relics[specID] = relics[specID] or {}
+		local currentRelics = relics[specID]
+		for i = startSlot, endSlot do
+			local item 
+			if i <= C_ArtifactUI.GetEquippedArtifactNumRelicSlots() or 0 then
+				item = select(4, C_ArtifactUI.GetEquippedArtifactRelicInfo(i))
+				if item then
+					currentRelics[i] = currentRelics[i] or {}
+					local success = self:CacheItemInfo(item)
+					if success then -- check if Blizzard API is bugged.
+						currentRelics[i].link = item
+					else
+						self:ScheduleTimer("UpdatePlayersArtifactRelics", 1, i, i, retryTimes + 1)
+					end
 				end
+			end
+			if not item then
+				-- No need to clear currentRelics[i] because relic cant be unequipped.
 			end
 		end
 	end
 end
 
--- Cache player's data which is changable by the player. (specid, equipped ilvl, etc)
-function RCLootCouncil:CachePlayersData()
-	playersDataWhenEncounterStart.specID = GetSpecialization() and GetSpecializationInfo(GetSpecialization())
-	playersDataWhenEncounterStart.ilvl = select(2,GetAverageItemLevel())
+function RCLootCouncil:UpdatePlayersData()
+	self.playersData.specID = GetSpecialization() and GetSpecializationInfo(GetSpecialization())
+	self.playersData.ilvl = select(2,GetAverageItemLevel())
+	self:UpdatePlayersGears()
+	self:UpdatePlayersArtifactRelics()
 end
 
-function RCLootCouncil:CacheAllData()
-	self:CachePlayersGear()
-	self:CacheArtifactRelics()
-	self:CachePlayersData()
+local itemInfoCategories =
+{
+	id = true,
+	name = true, -- The name of the item in the language of itemLink
+	ourName = true, -- The name of the item in our locale.
+	link = true,
+	quality = true, 
+	ilvl = true, -- If it is a token, return the min ilvl of the item it creates.
+	rawIlvl = true, -- raw ilvl returns by _G.GetItemInfo
+	link = true,
+	equipLoc = true,
+	texture = true,
+	boe = true,
+	relicType = true,
+	token = true,
+}
+
+-- In most places, we should use this function to get the information of the item. 
+function RCLootCouncil:GetItemInfo(item, category)
+	if not item then return end
+	local data = itemInfoCache[item]
+	if not category or not itemInfoCategories[category] then
+		error("Item info category does not exists: "..tostring(category), 2)
+		return
+	end
+	if not data then
+		error("Item hasn't been cached", 2)
+		return
+	end
+	return data[category]
+end
+
+-- Cache the information of the items.
+-- @param item the item link
+-- @param autoRetry if true, auto retry is the item hasn't been cached by the Blizzard API.
+-- @param retryTimes How many times we have retried. This variable is to avoid infinite loop.
+-- @return true if the item has been cached. false if hasn't been cached.
+function RCLootCouncil:CacheItemInfo(item, autoRetry, retryTimes)
+	if not retryTimes or type(retryTimes) ~= "number" then retryTimes = 0 end
+	if retryTimes >= 10 then return self:Debug("Stuck in infinite loop", "CacheItemInfo", item, autoRetry, retryTimes) end
+	if not item then return end
+	if itemInfoCache[item] then return true end
+
+	local ourName, link, rarity, ilvl, iMinLevel, type, subType, iStackCount, equipLoc, texture, vendorPrice = GetItemInfo(item)
+	local id = link and self:GetItemIDFromLink(link)
+	local name = self:GetItemNameFromLink(link)
+	if link then
+		itemInfoCache[item] = itemInfoCache[item] or {}
+		local cache = itemInfoCache[item]
+		cache.id = id
+		cache.name = self:GetItemNameFromLink(link)
+		cache.ourName = ourName -- name in our localization. Although we can get item name from item link, name in the item link may be from other localization.
+		cache.link = link
+		cache.rawIlvl = ilvl
+		cache.ilvl = self:GetRealIlvl(link, ilvl)
+		cache.subType = subType
+		cache.equipLoc = equipLoc
+		cache.texture = texture
+		cache.boe = self:IsItemBoE(link)
+		cache.relicType = id and IsArtifactRelicItem(id) and select(3, C_ArtifactUI.GetRelicInfoByItemID(id)) 
+		cache.token = id and RCTokenTable[id]
+		return true
+	elseif autoRetry then
+		self:ScheduleTimer("CacheItemInfo", 1, item, autoRetry, retryTimes + 1)
+	end
+	return false
+end
+
+-- Recursively cache all item strings in a table.
+-- @param t a table that it or its sub-table constain item strings
+-- @param autoRetry auto retry to cache the item if fails
+-- @return true if a item strings in the table has been cached. false otherwise.
+function RCLootCouncil:CacheAllItemInfoInTable(t, autoRetry)
+	local cached = true
+	for _, u in pairs(t) do
+		if type(u) == "string" and string.find(u, "|Hitem:") then
+			if not self:CacheItemInfo(u, autoRetry) then
+				cached = false
+			end
+		elseif type(u) == "table" then
+			if not self:CacheAllItemInfoInTable(u, autoRetry) then
+				cached = false
+			end
+		end
+	end
+	return cached
 end
 
 -- @param link A gear that we want to compare against the equipped gears
--- @param whenEncounterStart if true, compare against gears equipped when the most recent ecounter starts or login rather than currently equipped.
+-- @param gears a table that stores any player's gears. If not nil, use this table to extract gear info.
+--              Otherwise use the current player's current gear to extract info
 -- @return the gear(s) that with the same slot of the input link.
-function RCLootCouncil:GetPlayersGear(link, equipLoc, whenEncounterStart)
+function RCLootCouncil:GetPlayersGear(link, gears)
+	if not gears then
+		error("Deplecated. you should specify gears table.", 2)
+	end
 	local GetInventoryItemLink = GetInventoryItemLink
-	if whenEncounterStart then -- lazy code
-		GetInventoryItemLink = function(_, slotNum) return gearsWhenEncounterStart[slotNum] end
+	if gears then -- lazy code
+		GetInventoryItemLink = function(_, slotNum) return gears[slotNum] and gears[slotNum].link end
 	end
 
 	local itemID = self:GetItemIDFromLink(link) -- Convert to itemID
-	self:DebugLog("GetPlayersGear", itemID, equipLoc)
+	self:DebugLog("GetPlayersGear", itemID, self:GetItemInfo(link, "equipLoc"))
 	if not itemID then return nil, nil; end
 	local item1, item2;
 	-- check if the item is a token, and if it is, return the matching current gear
@@ -1058,7 +1159,7 @@ function RCLootCouncil:GetPlayersGear(link, equipLoc, whenEncounterStart)
 		end
 		return item1, item2
 	end
-	local slot = INVTYPE_Slots[equipLoc]
+	local slot = INVTYPE_Slots[self:GetItemInfo(link, "equipLoc")]
 	if not slot then return nil, nil; end;
 	item1 = GetInventoryItemLink("player", GetInventorySlotInfo(slot[1] or slot))
 	if not item1 and slot['or'] then
@@ -1071,15 +1172,21 @@ function RCLootCouncil:GetPlayersGear(link, equipLoc, whenEncounterStart)
 end
 
 -- @param link A relic that we want to compare against the equipped relics
--- @param whenEncounterStart if true, compare against relics equipped when the most recent ecounter starts or login rather than currently equipped.
+-- @param relics a table that stores any player's relics. If not nil, use this table to extract relic info.
+--               Otherwise use the current player's current relics to extract info
+-- @parm specID which spec id to get relics from table "relics". Must be specified if "relics" option is specified.
 -- @return the relic(s) that with the same type of the input link.
-function RCLootCouncil:GetArtifactRelics(link, whenEncounterStart)
-	local id = self:GetItemIDFromLink(link)
+function RCLootCouncil:GetArtifactRelics(link, relics, specID)
+	if not relics then
+		error("Deplecated. you should specify relics table.", 2)
+	end
 	local g1,g2;
-	for i = 1, whenEncounterStart and 3 or C_ArtifactUI.GetEquippedArtifactNumRelicSlots() or 0 do
-		local iLink = whenEncounterStart and relicsWhenEncounterStart[i] or select(4,C_ArtifactUI.GetEquippedArtifactRelicInfo(i))
-		if iLink and select(3, C_ArtifactUI.GetRelicInfoByItemID(self:GetItemIDFromLink(iLink))) == 
-					 select(3, C_ArtifactUI.GetRelicInfoByItemID(id)) then
+	if relics and not relics[specID] then return end
+
+	for i = 1, relics and 3 or C_ArtifactUI.GetEquippedArtifactNumRelicSlots() or 0 do
+		local iLink = relics and relics[specID][i] and relics[specID][i].link or 
+					  select(4, C_ArtifactUI.GetEquippedArtifactRelicInfo(i))
+		if iLink and self:GetItemInfo(iLink, "relicType") == self:GetItemInfo(link, "relicType") then
 			if g1 then
 				g2 = iLink
 			else
@@ -1088,33 +1195,6 @@ function RCLootCouncil:GetArtifactRelics(link, whenEncounterStart)
 		end
 	end
 	return g1, g2
-end
-
--- @param link 		The itemLink of the item.
--- @param rawIlvl	The ilvl of the item. If not provided, use GetItemInfo to fetch it.
--- @return          The real item level. If the item is not a token, return the item level. Otherwise, return the minimum item level of the gear created by the token.
-function RCLootCouncil:GetRealIlvl(link, rawIlvl)
-	local id = self:GetItemIDFromLink(link)
-	local rawIlvl = rawIlvl or select(4, GetItemInfo(link))
-	local baseIlvl = RCTokenIlvl[id] -- ilvl in normal difficulty
-
-	if not baseIlvl then -- Not token without item level stored
-		return rawIlvl
-	end
-
-	local bonuses = select(17, self:DecodeItemLink(link))
-
-	for _, value in pairs(bonuses) do
-    -- Item modifiers for heroic are 566 and 570; mythic are 567 and 569
-    -- See epgp/LibGearPoints-1.2.lua
-	    if value == 566 or value == 570 then -- Heroic
-	    	return baseIlvl + 15
-	    end
-	    if value == 567 or value == 569 then -- Mythic
-	    	return baseIlvl + 30
-	    end
-  	end
-  	return baseIlvl
 end
 
 function RCLootCouncil:Timer(type, ...)
@@ -1202,64 +1282,22 @@ function RCLootCouncil:IsItemBoE(item)
 	return false
 end
 
--- Send response until success. The response includes the information of the player at the start of most recent encounter or login.
--- No current information is sent.
 -- @param session		The session to respond to.
--- @param link 		The itemLink of the item in the session.
--- @param ilvl			The ilvl of the item in the session.
--- @param response	The selected response, must be index of db.responses.
--- @param equipLoc	The item in the session's equipLoc.
+-- @param response	    The selected response, must be index of db.responses.
 -- @param note			The player's note.
--- @param subType		The item's subType, needed for Artifact Relics.
 -- @param isTier		Indicates if the response is a tier response. (v2.4.0)
 -- @param isRelic		Indicates if the response is a relic response. (v2.5.0)
--- @param sendAvgIlvl   Indidates whether we send average ilvl.
--- @param sendSpecID    Indidates whether we send spec id.
--- @return nil
-function RCLootCouncil:SendResponse(target, session, link, ilvl, response, equipLoc, note, subType, isTier, isRelic, sendAvgIlvl, sendSpecID)
-	self:DebugLog("SendResponse", target, session, link, ilvl, response, equipLoc, note, subType, isTier, isRelic, sendAvgIlvl, sendSpecID)
-	local g1, g2;
-	local diff = nil
-
-	if link and ilvl and equipLoc and subType then
-		if equipLoc == "" and self.db.global.localizedSubTypes[subType] == "Artifact Relic" then
-			g1, g2 = self:GetArtifactRelics(link, true) -- Use relic info at the start of encounter
-		else
-		 	g1, g2 = self:GetPlayersGear(link, equipLoc, true) -- Use gear info at the start of encounter
-		end
-
-		ilvl = self:GetRealIlvl(link, ilvl) -- If the item is a token, set the ilvl to be the min ilvl of the gear it creates.
-
-		local itemNeedCaching = false
-		local g1diff, g2diff = g1 and select(4, GetItemInfo(g1)), g2 and select(4, GetItemInfo(g2))
-		if g1diff and g2diff then
-			diff = g1diff >= g2diff and ilvl - g2diff or ilvl - g1diff
-		elseif g1 and g2 then
-			itemNeedCaching = true
-		elseif g1diff then
-			diff = ilvl - g1diff
-		elseif g1 then
-			itemNeedCaching = true
-		end
-
-		if itemNeedCaching then
-			self:Debug("Items need caching in SendResponse", g1, g2)
-			return self:ScheduleTimer("SendResponse", 1, target, session, link, ilvl, response, equipLoc, note, subType, isTier, isRelic, sendAvgIlvl, sendSpecID)
-		end
-	end
+function RCLootCouncil:SendResponse(target, session, response, note, isTier, isRelic)
+	self:DebugLog("SendResponse", target, session, note, isTier, isRelic)
 
 	self:SendCommand(target, "response",
 		session,
 		self.playerName,
-		{	gear1 = g1,
-			gear2 = g2,
-			ilvl = sendAvgIlvl and playersDataWhenEncounterStart.ilvl or nil,
-			diff = diff,
-			note = note,
+		{
 			response = response,
+			note = note,
 			isTier = isTier,
 			isRelic = isRelic,
-			specID = sendSpecID and playersDataWhenEncounterStart.specID or nil,
 		})
 end
 
@@ -1372,11 +1410,11 @@ function RCLootCouncil:OnEvent(event, ...)
 				self:ScheduleTimer("SendCommand", 2, self.masterLooter, "reconnect")
 				self:SendCommand(self.masterLooter, "playerInfo", self:GetPlayerInfo()) -- Also send out info, just in case
 			end
-			self:CacheAllData()
+			self:UpdatePlayersData()
 			player_relogged = false
 		end
 	elseif event == "ENCOUNTER_START" then
-			self:CacheAllData()
+			self:UpdatePlayersData()
 	elseif event == "GUILD_ROSTER_UPDATE" then
 		self.guildRank = self:GetPlayersGuildRank();
 		if unregisterGuildEvent then
@@ -1633,6 +1671,33 @@ end
 
 function RCLootCouncil:GetAnnounceChannel(channel)
 	return channel == "group" and (IsInRaid() and "RAID" or "PARTY") or channel
+end
+
+-- @param link 		The itemLink of the item.
+-- @param rawIlvl	The ilvl of the item. If not provided, use GetItemInfo to fetch it.
+-- @return          The real item level. If the item is not a token, return the item level. Otherwise, return the minimum item level of the gear created by the token.
+function RCLootCouncil:GetRealIlvl(link, rawIlvl)
+	local id = self:GetItemIDFromLink(link)
+	local rawIlvl = rawIlvl or select(4, GetItemInfo(link))
+	local baseIlvl = RCTokenIlvl[id] -- ilvl in normal difficulty
+
+	if not baseIlvl then -- Not token without item level stored
+		return rawIlvl
+	end
+
+	local bonuses = select(17, self:DecodeItemLink(link))
+
+	for _, value in pairs(bonuses) do
+    -- Item modifiers for heroic are 566 and 570; mythic are 567 and 569
+    -- See epgp/LibGearPoints-1.2.lua
+	    if value == 566 or value == 570 then -- Heroic
+	    	return baseIlvl + 15
+	    end
+	    if value == 567 or value == 569 then -- Mythic
+	    	return baseIlvl + 30
+	    end
+  	end
+  	return baseIlvl
 end
 
 function RCLootCouncil:GetItemIDFromLink(link)

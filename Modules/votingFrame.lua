@@ -148,9 +148,56 @@ function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
 				self:Update()
 
 			elseif command == "lootAck" then
-				local name = unpack(data)
+				local name, playersData = unpack(data)
+
+				if playersData then
+					local cached = true
+
+					if playersData.gears and not addon:CacheAllItemInfoInTable(playersData.gears) then
+						cached = false
+					end
+					if playersData.gears and not addon:CacheAllItemInfoInTable(playersData.gears) then
+						cached = false
+					end
+					if not cached then 
+						return self:ScheduleTimer("OnCommReceived", 1, prefix, serializedMsg, distri, sender) 
+					end
+
+					for ses, v in ipairs(lootTable) do
+
+						for k, v2 in pairs(playersData) do -- copy the player's data into each session.
+							self:SetCandidateData(ses, name, k, v2)
+						end
+
+						local g1, g2;
+						local diff = nil
+
+						if addon:GetItemInfo(v.link, "relicType") and playersData.relics then
+							g1, g2 = addon:GetArtifactRelics(v.link, playersData.relics, playersData.specID)
+						elseif playersData.gears then
+						 	g1, g2 = addon:GetPlayersGear(v.link, playersData.gears)
+						end
+
+						local ilvl = addon:GetItemInfo(v.link, "ilvl")
+
+						local g1Ilvl, g2Ilvl = g1 and addon:GetItemInfo(g1, "ilvl"), g2 and addon:GetItemInfo(g2, "ilvl")
+						if g1Ilvl and g2Ilvl then
+							diff = g1Ilvl >= g2Ilvl and ilvl - g2Ilvl or ilvl - g1Ilvl
+						elseif g1Ilvl then
+							diff = ilvl - g1Ilvl
+						end
+
+						if diff then self:SetCandidateData(ses, name, "diff", diff) end
+						if g1 then self:SetCandidateData(ses, name, "gear1", g1) end
+						if g2 then self:SetCandidateData(ses, name, "gear2", g2) end
+					end
+				end
+
 				for i = 1, #lootTable do
-					self:SetCandidateData(i, name, "response", "WAIT")
+					local oldResponse = RCVotingFrame:GetCandidateData(i, name, "response")
+					if not oldResponse or oldResponse == "NOTANNOUNCED" or oldResponse == "ANNOUNCED" or oldResponse == "NOTHING" then
+						self:SetCandidateData(i, name, "response", "WAIT")
+					end
 				end
 				self:Update()
 
