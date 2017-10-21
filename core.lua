@@ -983,10 +983,10 @@ local INVTYPE_Slots = {
 		INVTYPE_TRINKET		    = {"TRINKET0SLOT", "TRINKET1SLOT"}
 }
 
--- Cache player's gear. Call this function when login or encounter starts.
-function RCLootCouncil:UpdatePlayersGear(startSlot, endSlot)
-	if not startSlot then startSlot = INVSLOT_FIRST_EQUIPPED end
-	if not endSlot then endSlot = INVSLOT_LAST_EQUIPPED end
+function RCLootCouncil:UpdatePlayersGears(startSlot, endSlot)
+	startSlot = startSlot or INVSLOT_FIRST_EQUIPPED
+	endSlot = endSlot or INVSLOT_LAST_EQUIPPED
+
 	for i = startSlot, endSlot do
 		local iLink = GetInventoryItemLink("player", i)
 		if iLink then
@@ -994,7 +994,7 @@ function RCLootCouncil:UpdatePlayersGear(startSlot, endSlot)
 			if iName then 
 				playersData.gears[i] = iLink
 			else -- Blizzard bug that GetInventoryItemLink returns incomplete link. Retry
-				self:ScheduleTimer("UpdatePlayersGear", 1, i, i)
+				self:ScheduleTimer("UpdatePlayersGears", 1, i, i)
 			end	
 		else
 			playersData.gears[i] = nil
@@ -1002,10 +1002,9 @@ function RCLootCouncil:UpdatePlayersGear(startSlot, endSlot)
 	end
 end
 
--- Cache player's relic. Call this function when login or encounter starts.
 function RCLootCouncil:UpdatePlayerRelics(startSlot, endSlot)
-	if not startSlot then startSlot = 1 end
-	if not endSlot then endSlot = 3 end
+	startSlot = startSlot or 1
+	endSlot = endSlot or 3
 
 	for i = startSlot, endSlot do
 		if i <= C_ArtifactUI.GetEquippedArtifactNumRelicSlots() or 0 then
@@ -1030,7 +1029,7 @@ end
 function RCLootCouncil:UpdatePlayersData()
 	playersData.specID = GetSpecialization() and GetSpecializationInfo(GetSpecialization())
 	playersData.ilvl = select(2,GetAverageItemLevel())
-	self:UpdatePlayersGear()
+	self:UpdatePlayersGears()
 	self:UpdatePlayerRelics()
 end
 
@@ -1097,24 +1096,21 @@ function RCLootCouncil:GetRealIlvl(link, rawIlvl)
 	local id = self:GetItemIDFromLink(link)
 	local rawIlvl = rawIlvl or select(4, GetItemInfo(link))
 	local baseIlvl = RCTokenIlvl[id] -- ilvl in normal difficulty
-
-	if not baseIlvl then -- Not token without item level stored
+	if not baseIlvl then
 		return rawIlvl
 	end
 
 	local bonuses = select(17, self:DecodeItemLink(link))
-
 	for _, value in pairs(bonuses) do
-    -- Item modifiers for heroic are 566 and 570; mythic are 567 and 569
-    -- See epgp/LibGearPoints-1.2.lua
-	    if value == 566 or value == 570 then -- Heroic
+   		-- @see epgp/LibGearPoints-1.2.lua
+	    if value == 566 or value == 570 then -- Heroic difficulty
 	    	return baseIlvl + 15
 	    end
-	    if value == 567 or value == 569 then -- Mythic
+	    if value == 567 or value == 569 then -- Mythic difficulty
 	    	return baseIlvl + 30
 	    end
   	end
-  	return baseIlvl
+  	return baseIlvl -- Normal difficulty
 end
 
 function RCLootCouncil:Timer(type, ...)
