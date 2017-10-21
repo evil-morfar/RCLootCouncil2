@@ -996,7 +996,7 @@ function RCLootCouncil:UpdatePlayersGears(startSlot, endSlot, retryTimes)
 			if success then -- check if Blizzard API is bugged.
 				gears[i].link = item
 			else
-				self:ScheduleTimer("UpdatePlayersGear", 1, i, i, retryTimes + 1)
+				self:ScheduleTimer("UpdatePlayersGears", 1, i, i, retryTimes + 1)
 			end
 		else
 			gears[i] = nil
