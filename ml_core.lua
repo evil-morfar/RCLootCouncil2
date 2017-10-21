@@ -787,12 +787,12 @@ function RCLootCouncilML:GetCouncilInGroup()
 	return council
 end
 
--- @param retry: How many times we have retried to execute this function.
-function RCLootCouncilML:GetItemsFromMessage(msg, sender, retry)
-	local MAX_RETRY = 3
+-- @param retryCount: How many times we have retried to execute this function.
+function RCLootCouncilML:GetItemsFromMessage(msg, sender, retryCount)
+	local MAX_RETRY = 5
 
-	if not retry then retry = 0 end
-	addon:Debug("GetItemsFromMessage()", msg, sender, retry)
+	if not retryCount then retryCount = 0 end
+	addon:Debug("GetItemsFromMessage()", msg, sender, retryCount)
 	if not addon.isMasterLooter then return end
 
 	local ses, arg1, arg2, arg3 = addon:GetArgs(msg, 4) -- We only require session to be correct and arg1 exists, we can do some error checking on the rest
@@ -853,8 +853,8 @@ function RCLootCouncilML:GetItemsFromMessage(msg, sender, retry)
 		itemNeedCaching = true
 	end
 
-	if itemNeedCaching and retry < MAX_RETRY then -- Limit retry times to avoid infinite loop. User can send invalid link that can never be cached.
-		return self:ScheduleTimer("GetItemsFromMessage", 1, msg, sender, retry + 1)
+	if itemNeedCaching and retryCount < MAX_RETRY then -- Limit retryCount to avoid infinite loop. User can send invalid link that can never be cached.
+		return self:ScheduleTimer("GetItemsFromMessage", 1, msg, sender, retryCount + 1)
 	end
 
 	local toSend = {
