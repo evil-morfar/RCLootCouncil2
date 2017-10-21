@@ -144,8 +144,35 @@ function addon:OptionsTable()
 									},
 								},
 							},
-							lootHistoryOptions = {
+							frameOptions = {
 								order = 5,
+								type = "group",
+								name = L["Frame Options"],
+								inline = true,
+								args = {
+									showSpecIcon = {
+										order = 1,
+										name = L["Show Spec Icon"],
+										desc = L["show_spec_icon_desc"],
+										type = "toggle",
+										set = function(_, value) 
+												self.db.profile.showSpecIcon = value
+												if not value then
+													self.db.profile.hideClassIcon = false
+												end
+											  end,
+									},
+									hideClassIcon = {
+										order = 2,
+										name = L["Hide Class Icon"],
+										desc = L["hide_class_icon_desc"],
+										type = "toggle",
+										disabled = function() return not self.db.profile.showSpecIcon end
+									},	
+								},
+							},
+							lootHistoryOptions = {
+								order = 6,
 								type = "group",
 								name = L["Loot History"],
 								inline = true,
@@ -536,7 +563,7 @@ function addon:OptionsTable()
 										name = L["Add Rolls"],
 										desc = L["add_rolls_desc"],
 										type = "toggle",
-									}
+									},
 								},
 							},
 							ignoreOptions = {

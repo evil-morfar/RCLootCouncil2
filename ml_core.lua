@@ -53,8 +53,11 @@ end
 -- @param bagged True if the item is in the ML's inventory
 -- @param slotIndex Index of the lootSlot, or nil if none - either this or 'bagged' needs to be supplied
 -- @param index Index in self.lootTable, used to set data in a specific session
-function RCLootCouncilML:AddItem(item, bagged, slotIndex, index)
-	addon:DebugLog("ML:AddItem", item, bagged, slotIndex, index)
+function RCLootCouncilML:AddItem(item, bagged, slotIndex, index, retryCount)
+	if not retryCount or type(retryCount) ~= "number" then retryCount = 0 end
+	if retryCount > 10 then return addon:Debug("Stuck in infinite loop", "ML:AddItem", item, bagged, slotIndex, index, retryCount) end
+	
+	addon:DebugLog("ML:AddItem", item, bagged, slotIndex, index, retryCount)
 	local name, link, rarity, ilvl, iMinLevel, type, subType, iStackCount, equipLoc, texture = GetItemInfo(item)
 	local itemID = link and addon:GetItemIDFromLink(link)
 	self.lootTable[index or #self.lootTable + 1] = { -- We want to reserve the index even if we haven't fully loaded the item
@@ -74,7 +77,7 @@ function RCLootCouncilML:AddItem(item, bagged, slotIndex, index)
 	}
 		-- Item isn't properly loaded, so update the data in 1 sec (Should only happen with /rc test)
 	if not name then
-		self:ScheduleTimer("Timer", 1, "AddItem", item, bagged, slotIndex, index or #self.lootTable)
+		self:ScheduleTimer("Timer", 1, "AddItem", item, bagged, slotIndex, index or #self.lootTable, retryCount + 1)
 		addon:Debug("Started timer:", "AddItem", "for", item)
 	else
 		addon:SendMessage("RCMLAddItem", item, index or #self.lootTable)
@@ -787,14 +790,20 @@ function RCLootCouncilML:GetCouncilInGroup()
 	return council
 end
 
-function RCLootCouncilML:GetItemsFromMessage(msg, sender)
-	addon:Debug("GetItemsFromMessage()", msg, sender)
+-- @param retryCount: How many times we have retried to execute this function.
+function RCLootCouncilML:GetItemsFromMessage(msg, sender, retryCount)
+	local MAX_RETRY = 3
+
+	if not retryCount then retryCount = 0 end
+	addon:Debug("GetItemsFromMessage()", msg, sender, retryCount)
 	if not addon.isMasterLooter then return end
 
-	local ses, arg1, arg2, arg3 = addon:GetArgs(msg, 4) -- We only require session to be correct, we can do some error checking on the rest
+	local ses, arg1, arg2, arg3 = addon:GetArgs(msg, 4) -- We only require session to be correct and arg1 exists, we can do some error checking on the rest
 	ses = tonumber(ses)
 	-- Let's test the input
 	if not ses or type(ses) ~= "number" or ses > #self.lootTable then return end -- We need a valid session
+	if not arg1 then return end -- No response or item link
+
 	-- Set some locals
 	local item1, item2, isTier, isRelic
 	local response = 1
@@ -829,8 +838,28 @@ function RCLootCouncilML:GetItemsFromMessage(msg, sender)
 			end
 		end
 	end
-	local diff = 0
-	if item1 then diff = (self.lootTable[ses].ilvl - select(4, GetItemInfo(item1))) end
+
+
+	local ilvl = self.lootTable[ses].ilvl
+	local g1 = item1
+	local g2 = item2
+
+	local itemNeedCaching = false
+	local g1diff, g2diff = g1 and select(4, GetItemInfo(g1)), g2 and select(4, GetItemInfo(g2))
+	if g1diff and g2diff then
+		diff = g1diff >= g2diff and ilvl - g2diff or ilvl - g1diff
+	elseif g1 and g2 then
+		itemNeedCaching = true
+	elseif g1diff then
+		diff = ilvl - g1diff
+	elseif g1 then
+		itemNeedCaching = true
+	end
+
+	if itemNeedCaching and retryCount < MAX_RETRY then -- Limit retry times to avoid infinite loop. User can send invalid link that can never be cached.
+		return self:ScheduleTimer("GetItemsFromMessage", 1, msg, sender, retryCount + 1)
+	end
+
 	local toSend = {
 		gear1 = item1,
 		gear2 = item2,

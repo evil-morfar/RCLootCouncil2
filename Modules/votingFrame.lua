@@ -30,19 +30,20 @@ function RCVotingFrame:OnInitialize()
 	-- Contains all the default data needed for the scroll table
 	-- The default values are in sorted order
 	defaultScrollTableData = {
-		{ name = "",				DoCellUpdate = RCVotingFrame.SetCellClass,		colName = "class",	sortnext = 2,		width = 20, },										-- 1 Class
-		{ name = L["Name"],		DoCellUpdate = RCVotingFrame.SetCellName,			colName = "name",								width = 120,},										-- 2 Candidate Name
-		{ name = L["Rank"],		DoCellUpdate = RCVotingFrame.SetCellRank,			colName = "rank",		sortnext = 5,		width = 95, comparesort = GuildRankSort,},-- 3 Guild rank
-		{ name = L["Role"],		DoCellUpdate = RCVotingFrame.SetCellRole,			colName = "role",		sortnext = 5,		width = 55, },										-- 4 Role
-		{ name = L["Response"],	DoCellUpdate = RCVotingFrame.SetCellResponse,	colName = "response",sortnext = 13,		width = 240, comparesort = ResponseSort,},-- 5 Response
-		{ name = L["ilvl"],		DoCellUpdate = RCVotingFrame.SetCellIlvl,			colName = "ilvl",		sortnext = 7,		width = 45, },										-- 6 Total ilvl
-		{ name = L["Diff"],		DoCellUpdate = RCVotingFrame.SetCellDiff,			colName = "diff",								width = 40, },										-- 7 ilvl difference
-		{ name = L["g1"],			DoCellUpdate = RCVotingFrame.SetCellGear,			colName = "gear1",	sortnext = 5,		width = 20, align = "CENTER", },				-- 8 Current gear 1
-		{ name = L["g2"],			DoCellUpdate = RCVotingFrame.SetCellGear,			colName = "gear2",	sortnext = 5,		width = 20, align = "CENTER", },				-- 9 Current gear 2
-		{ name = L["Votes"], 	DoCellUpdate = RCVotingFrame.SetCellVotes,		colName = "votes",	sortnext = 7,		width = 40, align = "CENTER", },				-- 10 Number of votes
-		{ name = L["Vote"],		DoCellUpdate = RCVotingFrame.SetCellVote,			colName = "vote",		sortnext = 10,		width = 60, align = "CENTER", },				-- 11 Vote button
-		{ name = L["Notes"],		DoCellUpdate = RCVotingFrame.SetCellNote,			colName = "note",								width = 40, align = "CENTER", },				-- 12 Note icon
-		{ name = L["Roll"],		DoCellUpdate = RCVotingFrame.SetCellRoll, 		colName = "roll",		sortnext = 10,		width = 30, align = "CENTER", },				-- 13 Roll
+		{ name = "",			DoCellUpdate = RCVotingFrame.SetCellClass,		colName = "class",		sortnext = 3,		width = 20, },										-- 1 Class
+		{ name = "",			DoCellUpdate = RCVotingFrame.SetCellSpec,		colName = "spec",		sortnext = 3,		width = 20, },										-- 2 Spec
+		{ name = L["Name"],		DoCellUpdate = RCVotingFrame.SetCellName,		colName = "name",							width = 120,},										-- 3 Candidate Name
+		{ name = L["Rank"],		DoCellUpdate = RCVotingFrame.SetCellRank,		colName = "rank",		sortnext = 6,		width = 95, comparesort = GuildRankSort,},-- 4 Guild rank
+		{ name = L["Role"],		DoCellUpdate = RCVotingFrame.SetCellRole,		colName = "role",		sortnext = 6,		width = 55, },										-- 5 Role
+		{ name = L["Response"],	DoCellUpdate = RCVotingFrame.SetCellResponse,	colName = "response",	sortnext = 14,		width = 240, comparesort = ResponseSort,},-- 6 Response
+		{ name = L["ilvl"],		DoCellUpdate = RCVotingFrame.SetCellIlvl,		colName = "ilvl",		sortnext = 8,		width = 45, },										-- 7 Total ilvl
+		{ name = L["Diff"],		DoCellUpdate = RCVotingFrame.SetCellDiff,		colName = "diff",							width = 40, },										-- 8 ilvl difference
+		{ name = L["g1"],		DoCellUpdate = RCVotingFrame.SetCellGear,		colName = "gear1",		sortnext = 6,		width = 20, align = "CENTER", },				-- 9 Current gear 1
+		{ name = L["g2"],		DoCellUpdate = RCVotingFrame.SetCellGear,		colName = "gear2",		sortnext = 6,		width = 20, align = "CENTER", },				-- 10 Current gear 2
+		{ name = L["Votes"], 	DoCellUpdate = RCVotingFrame.SetCellVotes,		colName = "votes",		sortnext = 8,		width = 40, align = "CENTER", },				-- 11 Number of votes
+		{ name = L["Vote"],		DoCellUpdate = RCVotingFrame.SetCellVote,		colName = "vote",		sortnext = 11,		width = 60, align = "CENTER", },				-- 12 Vote button
+		{ name = L["Notes"],	DoCellUpdate = RCVotingFrame.SetCellNote,		colName = "note",							width = 40, align = "CENTER", },				-- 13 Note icon
+		{ name = L["Roll"],		DoCellUpdate = RCVotingFrame.SetCellRoll, 		colName = "roll",		sortnext = 11,		width = 30, align = "CENTER", },				-- 14 Roll
 	}
 	-- The actual table being worked on, new entries should be added to this table "tinsert(RCVotingFrame.scrollCols, data)"
 	-- If you want to add or remove columns, you should do so on your OnInitialize. See RCVotingFrame:RemoveColumn() for removal.
@@ -124,7 +125,10 @@ function RCVotingFrame:RemoveColumn(id)
 	end
 end
 
-function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
+function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender, retryCount)
+	if not retryCount or type(retryCount) ~= "number" then retryCount = 0 end
+	if retryCount > 10 then return addon:Debug("Stuck in infinite loop", "RCVotingFrame:OnCommReceived", prefix, serializedMsg, distri, send, retryCount) end
+
 	if prefix == "RCLootCouncil" then
 		-- data is always a table to be unpacked
 		local test, command, data = addon:Deserialize(serializedMsg)
@@ -147,9 +151,56 @@ function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
 				self:Update()
 
 			elseif command == "lootAck" then
-				local name = unpack(data)
+				local name, playersData = unpack(data)
+
+				if playersData then
+					local cached = true
+
+					if playersData.gears and not addon:CacheAllItemInfoInTable(playersData.gears) then
+						cached = false
+					end
+					if playersData.gears and not addon:CacheAllItemInfoInTable(playersData.gears) then
+						cached = false
+					end
+					if not cached then 
+						return self:ScheduleTimer("OnCommReceived", 1, prefix, serializedMsg, distri, sender, retryCount + 1) 
+					end
+
+					for ses, v in ipairs(lootTable) do
+
+						for k, v2 in pairs(playersData) do -- copy the player's data into each session.
+							self:SetCandidateData(ses, name, k, v2)
+						end
+
+						local g1, g2;
+						local diff = nil
+
+						if addon:GetItemInfo(v.link, "relicType") and playersData.relics then
+							g1, g2 = addon:GetArtifactRelics(v.link, playersData.relics, playersData.specID)
+						elseif playersData.gears then
+						 	g1, g2 = addon:GetPlayersGear(v.link, playersData.gears)
+						end
+
+						local ilvl = addon:GetItemInfo(v.link, "ilvl")
+
+						local g1Ilvl, g2Ilvl = g1 and addon:GetItemInfo(g1, "ilvl"), g2 and addon:GetItemInfo(g2, "ilvl")
+						if g1Ilvl and g2Ilvl then
+							diff = g1Ilvl >= g2Ilvl and ilvl - g2Ilvl or ilvl - g1Ilvl
+						elseif g1Ilvl then
+							diff = ilvl - g1Ilvl
+						end
+
+						if diff then self:SetCandidateData(ses, name, "diff", diff) end
+						if g1 then self:SetCandidateData(ses, name, "gear1", g1) end
+						if g2 then self:SetCandidateData(ses, name, "gear2", g2) end
+					end
+				end
+
 				for i = 1, #lootTable do
-					self:SetCandidateData(i, name, "response", "WAIT")
+					local oldResponse = RCVotingFrame:GetCandidateData(i, name, "response")
+					if not oldResponse or oldResponse == "NOTANNOUNCED" or oldResponse == "ANNOUNCED" or oldResponse == "NOTHING" then
+						self:SetCandidateData(i, name, "response", "WAIT")
+					end
 				end
 				self:Update()
 
@@ -761,7 +812,28 @@ end
 
 function RCVotingFrame.SetCellClass(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
 	local name = data[realrow].name
-	addon.SetCellClassIcon(rowFrame, frame, data, cols, row, realrow, column, fShow, table, lootTable[session].candidates[name].class)
+	local specID = lootTable[session].candidates[name].specID
+   	local specIcon = specID and select(4, GetSpecializationInfoByID(specID))
+   	if specIcon and db.hideClassIcon then
+		frame:SetNormalTexture(specIcon);
+		frame:GetNormalTexture():SetTexCoord(0, 1, 0, 1);
+	else
+		addon.SetCellClassIcon(rowFrame, frame, data, cols, row, realrow, column, fShow, table, lootTable[session].candidates[name].class)
+	end
+	data[realrow].cols[column].value = lootTable[session].candidates[name].class or ""
+end
+
+function RCVotingFrame.SetCellSpec(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
+	local name = data[realrow].name
+	local specID = lootTable[session].candidates[name].specID
+   	local specIcon = specID and select(4, GetSpecializationInfoByID(specID))
+
+	if specIcon and db.showSpecIcon and not db.hideClassIcon then
+		frame:SetNormalTexture(specIcon);
+	else
+		frame:SetNormalTexture(nil)
+	end
+	data[realrow].cols[column].value = specID or ""
 end
 
 function RCVotingFrame.SetCellName(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)

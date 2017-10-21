@@ -109,7 +109,8 @@ function LootFrame:OnRoll(entry, button)
 	local isRelic = entry.item.isRelic and addon.mldb.relicButtonsEnabled
 	addon:Debug("LootFrame:OnRoll", entry.realID, button, "Response:", addon:GetResponseText(button, isTier, isRelic))
 	local item = entry.item
-	addon:SendCommand("group", "response", addon:CreateResponse(item.session, item.link, item.ilvl, button, item.equipLoc, item.note, item.subType, isTier, isRelic))
+
+	addon:SendResponse("group", item.session, button, item.note, isTier, isRelic)
 
 	numRolled = numRolled + 1
 	item.rolled = true
