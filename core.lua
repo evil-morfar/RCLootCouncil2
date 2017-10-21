@@ -174,6 +174,7 @@ function RCLootCouncil:OnInitialize()
 			--neverML = false, -- Never use the addon as ML
 			minimizeInCombat = false,
 			iLvlDecimal = false,
+			showSpecIcon = false,
 
 			UI = { -- stores all ui information
 				['**'] = { -- Defaults
@@ -654,7 +655,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 					-- Send "DISABLED" response when not enabled
 					if not self.enabled then
 						for i = 1, #lootTable do
-							-- target, session, link, ilvl, response, equipLoc, note, subType, isTier, isRelic, sendAvgIlvl
+							-- target, session, link, ilvl, response, equipLoc, note, subType, isTier, isRelic, sendAvgIlvl, sendSpecID
 							self:SendResponse("group", i, nil, nil, "DISABLED")
 						end
 						return self:Debug("Sent 'DISABLED' response to", sender)
@@ -680,8 +681,8 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 					if GetNumGroupMembers() >= 8 and not IsInInstance() then
 						self:DebugLog("NotInRaid respond to lootTable")
 						for ses, v in ipairs(lootTable) do
-							-- target, session, link, ilvl, response, equipLoc, note, subType, isTier, isRelic, sendAvgIlvl
-							self:SendResponse("group", ses, v.link, v.ilvl, "NOTINRAID", v.equipLoc, nil, v.subType, nil, nil, true)
+							-- target, session, link, ilvl, response, equipLoc, note, subType, isTier, isRelic, sendAvgIlvl, sendSpecID
+							self:SendResponse("group", ses, v.link, v.ilvl, "NOTINRAID", v.equipLoc, nil, v.subType, nil, nil, true, true)
 						end
 						return
 					end
@@ -704,7 +705,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 									self:Debug("Autopassed on: ", v.link)
 									if not db.silentAutoPass then self:Print(format(L["Autopassed on 'item'"], v.link)) end
 									lootTable[ses].autopass = true
-									-- target, session, link, ilvl, response, equipLoc, note, subType, isTier, isRelic, sendAvgIlvl
+									-- target, session, link, ilvl, response, equipLoc, note, subType, isTier, isRelic, sendAvgIlvl, sendSpecID
 									response = "AUTOPASS"
 								end
 							else
@@ -712,8 +713,8 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 							end
 						end
 
-						-- target, session, link, ilvl, response, equipLoc, note, subType, isTier, isRelic, sendAvgIlvl
-						self:SendResponse("group", ses, v.link, v.ilvl, response, v.equipLoc, nil, v.subType, nil, nil, true)
+						-- target, session, link, ilvl, response, equipLoc, note, subType, isTier, isRelic, sendAvgIlvl, sendSpecID
+						self:SendResponse("group", ses, v.link, v.ilvl, response, v.equipLoc, nil, v.subType, nil, nil, true, true)
 					end
 
 					-- Show  the LootFrame
@@ -1234,9 +1235,10 @@ end
 -- @param subType		The item's subType, needed for Artifact Relics.
 -- @param isTier		Indicates if the response is a tier response. (v2.4.0)
 -- @param isRelic		Indicates if the response is a relic response. (v2.5.0)
--- @param sendAvgIlvl   Indidates whether we send average ilvl.
+-- @param sendAvgIlvl   Indicates whether we send average ilvl.
+-- @param sendSpecID    Indicates whether we send spec id.
 -- @return nil
-function RCLootCouncil:SendResponse(target, session, link, ilvl, response, equipLoc, note, subType, isTier, isRelic, sendAvgIlvl)
+function RCLootCouncil:SendResponse(target, session, link, ilvl, response, equipLoc, note, subType, isTier, isRelic, sendAvgIlvl, sendSpecID)
 	self:DebugLog("SendResponse", target, session, link, ilvl, response, equipLoc, note, subType, isTier, isRelic, sendAvgIlvl)
 	local g1, g2;
 	local diff = nil
@@ -1279,6 +1281,7 @@ function RCLootCouncil:SendResponse(target, session, link, ilvl, response, equip
 			response = response,
 			isTier = isTier,
 			isRelic = isRelic,
+			specID = sendSpecID and playersData.specID or nil,
 		})
 end
 
