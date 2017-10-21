@@ -125,7 +125,10 @@ function RCVotingFrame:RemoveColumn(id)
 	end
 end
 
-function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
+function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender, retryCount)
+	if not retryCount or type(retryCount) ~= "number" then retryCount = 0 end
+	if retryCount > 10 then return addon:Debug("Stuck in infinite loop", "RCVotingFrame:OnCommReceived", prefix, serializedMsg, distri, send, retryCount) end
+
 	if prefix == "RCLootCouncil" then
 		-- data is always a table to be unpacked
 		local test, command, data = addon:Deserialize(serializedMsg)
@@ -160,7 +163,7 @@ function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
 						cached = false
 					end
 					if not cached then 
-						return self:ScheduleTimer("OnCommReceived", 1, prefix, serializedMsg, distri, sender) 
+						return self:ScheduleTimer("OnCommReceived", 1, prefix, serializedMsg, distri, sender, retryCount + 1) 
 					end
 
 					for ses, v in ipairs(lootTable) do

@@ -651,7 +651,10 @@ end
 --
 -- -- To ensure correct handling of x-realm commands, include this line aswell:
 -- if RCLootCouncil:HandleXRealmComms(self, command, data, sender) then return end
-function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
+function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender, retryCount)
+	if not retryCount or type(retryCount) ~= "number" then retryCount = 0 end
+	if retryCount > 10 then return addon:Debug("Stuck in infinite loop", "OnCommReceived", prefix, serializedMsg, distri, send, retryCount) end
+
 	if prefix == "RCLootCouncil" then
 		self:DebugLog("Comm received:" .. serializedMsg, "from:", sender, "distri:", distri)
 		-- data is always a table to be unpacked
@@ -684,14 +687,14 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 					end
 					if not cached then
 						self:Debug("Some items wasn't cached, delaying loot by 1 sec")
-						return self:ScheduleTimer("OnCommReceived", 1, prefix, serializedMsg, distri, sender)
+						return self:ScheduleTimer("OnCommReceived", 1, prefix, serializedMsg, distri, sender, retryCount + 1)
 					end
 
 					-- v2.0.1: It seems people somehow receives mldb without numButtons, so check for it aswell.
 					if not self.mldb or (self.mldb and not self.mldb.numButtons) then -- Really shouldn't happen, but I'm tired of people somehow not receiving it...
 						self:Debug("Received loot table without having mldb :(", sender)
 						self:SendCommand(self.masterLooter, "MLdb_request")
-						return self:ScheduleTimer("OnCommReceived", 5, prefix, serializedMsg, distri, sender)
+						return self:ScheduleTimer("OnCommReceived", 5, prefix, serializedMsg, distri, sender, retryCount + 1)
 					end
 
 					self:SendCommand("group", "lootAck", self.playerName, self.playersData)
@@ -983,9 +986,9 @@ local INVTYPE_Slots = {
 		INVTYPE_TRINKET		    = {"TRINKET0SLOT", "TRINKET1SLOT"}
 }
 
-function RCLootCouncil:UpdatePlayersGears(startSlot, endSlot, retryTimes)
-	if not retryTimes or type(retryTimes) ~= "number" then retryTimes = 0 end
-	if retryTimes > 10 then return self:Debug("Stuck in infinite loop", "UpdatePlayersGear", startSlot, endSlot, retryTimes) end
+function RCLootCouncil:UpdatePlayersGears(startSlot, endSlot, retryCount)
+	if not retryCount or type(retryCount) ~= "number" then retryCount = 0 end
+	if retryCount > 10 then return self:Debug("Stuck in infinite loop", "UpdatePlayersGear", startSlot, endSlot, retryCount) end
 	if not startSlot then startSlot = INVSLOT_FIRST_EQUIPPED end
 	if not endSlot then endSlot = INVSLOT_LAST_EQUIPPED end
 
@@ -998,7 +1001,7 @@ function RCLootCouncil:UpdatePlayersGears(startSlot, endSlot, retryTimes)
 			if success then -- check if Blizzard API is bugged.
 				gears[i].link = item
 			else
-				self:ScheduleTimer("UpdatePlayersGears", 1, i, i, retryTimes + 1)
+				self:ScheduleTimer("UpdatePlayersGears", 1, i, i, retryCount + 1)
 			end
 		else
 			gears[i] = nil
@@ -1006,9 +1009,9 @@ function RCLootCouncil:UpdatePlayersGears(startSlot, endSlot, retryTimes)
 	end
 end
 
-function RCLootCouncil:UpdatePlayersArtifactRelics(startSlot, endSlot, retryTimes)
-	if not retryTimes or type(retryTimes) ~= "number" then retryTimes = 0 end
-	if retryTimes > 10 then return self:Debug("Stuck in infinite loop", "UpdatePlayersArtifactRelics", startSlot, endSlot, retryTimes) end
+function RCLootCouncil:UpdatePlayersArtifactRelics(startSlot, endSlot, retryCount)
+	if not retryCount or type(retryCount) ~= "number" then retryCount = 0 end
+	if retryCount > 10 then return self:Debug("Stuck in infinite loop", "UpdatePlayersArtifactRelics", startSlot, endSlot, retryCount) end
 	if not startSlot then startSlot = 1 end
 	if not endSlot then endSlot = 3 end
 
@@ -1028,7 +1031,7 @@ function RCLootCouncil:UpdatePlayersArtifactRelics(startSlot, endSlot, retryTime
 					if success then -- check if Blizzard API is bugged.
 						currentRelics[i].link = item
 					else
-						self:ScheduleTimer("UpdatePlayersArtifactRelics", 1, i, i, retryTimes + 1)
+						self:ScheduleTimer("UpdatePlayersArtifactRelics", 1, i, i, retryCount + 1)
 					end
 				end
 			end
@@ -1081,11 +1084,11 @@ end
 -- Cache the information of the items.
 -- @param item the item link
 -- @param autoRetry if true, auto retry is the item hasn't been cached by the Blizzard API.
--- @param retryTimes How many times we have retried. This variable is to avoid infinite loop.
+-- @param retryCount How many times we have retried. This variable is to avoid infinite loop.
 -- @return true if the item has been cached. false if hasn't been cached.
-function RCLootCouncil:CacheItemInfo(item, autoRetry, retryTimes)
-	if not retryTimes or type(retryTimes) ~= "number" then retryTimes = 0 end
-	if retryTimes >= 10 then return self:Debug("Stuck in infinite loop", "CacheItemInfo", item, autoRetry, retryTimes) end
+function RCLootCouncil:CacheItemInfo(item, autoRetry, retryCount)
+	if not retryCount or type(retryCount) ~= "number" then retryCount = 0 end
+	if retryCount >= 10 then return self:Debug("Stuck in infinite loop", "CacheItemInfo", item, autoRetry, retryCount) end
 	if not item then return end
 	if itemInfoCache[item] then return true end
 
@@ -1109,7 +1112,7 @@ function RCLootCouncil:CacheItemInfo(item, autoRetry, retryTimes)
 		cache.token = id and RCTokenTable[id]
 		return true
 	elseif autoRetry then
-		self:ScheduleTimer("CacheItemInfo", 1, item, autoRetry, retryTimes + 1)
+		self:ScheduleTimer("CacheItemInfo", 1, item, autoRetry, retryCount + 1)
 	end
 	return false
 end
