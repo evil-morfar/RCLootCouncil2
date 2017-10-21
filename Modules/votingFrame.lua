@@ -809,19 +809,26 @@ end
 
 function RCVotingFrame.SetCellClass(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
 	local name = data[realrow].name
-	addon.SetCellClassIcon(rowFrame, frame, data, cols, row, realrow, column, fShow, table, lootTable[session].candidates[name].class)
+	local specID = lootTable[session].candidates[name].specID
+   	local specIcon = specID and select(4, GetSpecializationInfoByID(specID))
+   	if specIcon and db.hideClassIcon then
+		frame:SetNormalTexture(specIcon);
+		frame:GetNormalTexture():SetTexCoord(0, 1, 0, 1);
+	else
+		addon.SetCellClassIcon(rowFrame, frame, data, cols, row, realrow, column, fShow, table, lootTable[session].candidates[name].class)
+	end
+	data[realrow].cols[column].value = lootTable[session].candidates[name].class or ""
 end
 
 function RCVotingFrame.SetCellSpec(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
 	local name = data[realrow].name
-	local name = data[realrow].name
 	local specID = lootTable[session].candidates[name].specID
-   	local icon = specID and select(4, GetSpecializationInfoByID(specID))
+   	local specIcon = specID and select(4, GetSpecializationInfoByID(specID))
 
-	if icon then
-		frame:SetNormalTexture(icon);
-	else -- if there's no class
-		frame:SetNormalTexture("Interface/ICONS/INV_Sigil_Thorim.png")
+	if specIcon and db.showSpecIcon and not db.hideClassIcon then
+		frame:SetNormalTexture(specIcon);
+	else
+		frame:SetNormalTexture(nil)
 	end
 	data[realrow].cols[column].value = specID or ""
 end

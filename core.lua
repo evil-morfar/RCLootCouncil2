@@ -184,6 +184,8 @@ function RCLootCouncil:OnInitialize()
 			--neverML = false, -- Never use the addon as ML
 			minimizeInCombat = false,
 			iLvlDecimal = false,
+			showSpecIcon = false,
+			hideClassIcon = false,
 
 			UI = { -- stores all ui information
 				['**'] = { -- Defaults
