@@ -71,6 +71,7 @@ function RCLootCouncilML:AddItem(item, bagged, slotIndex, index)
 		["boe"]			= addon:IsItemBoE(link),
 		["relic"]		= itemID and IsArtifactRelicItem(itemID) and select(3, C_ArtifactUI.GetRelicInfoByItemID(itemID)),
 		["token"]		= itemID and RCTokenTable[itemID],
+		["englishSubType"] = addon.db.global.localizedSubTypes[subType],
 	}
 		-- Item isn't properly loaded, so update the data in 1 sec (Should only happen with /rc test)
 	if not name then
