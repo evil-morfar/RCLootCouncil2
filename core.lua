@@ -1187,10 +1187,26 @@ local subTypeLookup = {
 	["Wands"]					= 128096, -- Demonspine Wand
 	["Warglaives"]				= 141604, -- Glaive of the Fallen
 	["Artifact Relic"]		= 141271, -- Hope of the Forest
+	["Miscellaneous"]       = 151961, -- Legionsteel Flywheel (Trinket)
+	["Junk"]                = 152528, -- Antoran Leggings of the Conqueror (Armor token)
 }
 
 function RCLootCouncil:LocalizeSubTypes()
-	if self.db.global.localizedSubTypes.created == GetLocale() then return end -- We only need to create it once, if game locale is the same as stored locale.
+	if self.db.global.localizedSubTypes.created == GetLocale() then
+		local cached = true
+		localizedSubTypesInverse = {}
+		for sType, name in pairs(self.db.global.localizedSubTypes) do
+			localizedSubTypesInverse[name] = sType
+		end
+		for name, _ in pairs(subTypeLookup) do
+			if not localizedSubTypesInverse[name] then
+				cached = false
+			end
+		end
+		if cached then 
+			return -- We only need to create it once, if game locale is the same as stored locale, and everything is cached.
+		end 
+	end
 	-- Get the item info
 	for _, item in pairs(subTypeLookup) do
 		GetItemInfo(item)
@@ -1203,8 +1219,8 @@ function RCLootCouncil:LocalizeSubTypes()
 			self:DebugLog("Found "..name.." localized as: "..sType)
 		else -- Probably not cached, set a timer
 			self:Debug("We didn't find:", name, item)
-			self:ScheduleTimer("Timer", 2, "LocalizeSubTypes")
 			self.db.global.localizedSubTypes.created = false
+			self:ScheduleTimer("Timer", 2, "LocalizeSubTypes")
 			return
 		end
 	end
