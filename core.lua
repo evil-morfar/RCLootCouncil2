@@ -655,7 +655,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 					-- Send "DISABLED" response when not enabled
 					if not self.enabled then
 						for i = 1, #lootTable do
-							-- target, session, link, ilvl, response, equipLoc, note, subType, isTier, isRelic, sendAvgIlvl, sendSpecID
+							-- target, session, link, ilvl, response, equipLoc, note, subType, relicType, isTier, isRelic, sendAvgIlvl, sendSpecID
 							self:SendResponse("group", i, nil, nil, "DISABLED")
 						end
 						return self:Debug("Sent 'DISABLED' response to", sender)
@@ -690,8 +690,8 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 					if GetNumGroupMembers() >= 8 and not IsInInstance() then
 						self:DebugLog("NotInRaid respond to lootTable")
 						for ses, v in ipairs(lootTable) do
-							-- target, session, link, ilvl, response, equipLoc, note, subType, isTier, isRelic, sendAvgIlvl, sendSpecID
-							self:SendResponse("group", ses, v.link, v.ilvl, "NOTINRAID", v.equipLoc, nil, v.subType, nil, nil, true, true)
+							-- target, session, link, ilvl, response, equipLoc, note, subType, relicType, isTier, isRelic, sendAvgIlvl, sendSpecID
+							self:SendResponse("group", ses, v.link, v.ilvl, "NOTINRAID", v.equipLoc, nil, v.subType, v.relic, nil, nil, true, true)
 						end
 						return
 					end
@@ -714,7 +714,6 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 									self:Debug("Autopassed on: ", v.link)
 									if not db.silentAutoPass then self:Print(format(L["Autopassed on 'item'"], v.link)) end
 									lootTable[ses].autopass = true
-									-- target, session, link, ilvl, response, equipLoc, note, subType, isTier, isRelic, sendAvgIlvl, sendSpecID
 									response = "AUTOPASS"
 								end
 							else
@@ -722,8 +721,8 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 							end
 						end
 
-						-- target, session, link, ilvl, response, equipLoc, note, subType, isTier, isRelic, sendAvgIlvl, sendSpecID
-						self:SendResponse("group", ses, v.link, v.ilvl, response, v.equipLoc, nil, v.subType, nil, nil, true, true)
+						-- target, session, link, ilvl, response, equipLoc, note, subType, relicType, isTier, isRelic, sendAvgIlvl, sendSpecID
+						self:SendResponse("group", ses, v.link, v.ilvl, response, v.equipLoc, nil, v.subType, v.relic, nil, nil, true, true)
 					end
 
 					-- Show  the LootFrame
@@ -1103,17 +1102,19 @@ function RCLootCouncil:GetPlayersGear(link, equipLoc, gearsTable)
 	return item1, item2;
 end
 
+-- This function assumes all items in "relicsTable" to be cached. "link" does not need to be cached if relicType is specified.
 -- @param link A relic that we want to compare against the equipped relics
+-- @parm relicType the relic type of the item. If not specified, fetch it(need item to be cached)
 -- @param relicsTable if specified, compare against relics stored in the table instead of the current equipped relics, whose key is slot number and value is the item link of the relic.
 -- @return the relic(s) that with the same type of the input link.
-function RCLootCouncil:GetArtifactRelics(link, relicsTable)
+function RCLootCouncil:GetArtifactRelics(link, relicType, relicsTable)
 	local id = self:GetItemIDFromLink(link)
+	relicType = relicType or select(3, C_ArtifactUI.GetRelicInfoByItemID(id))
 	local g1,g2;
 	local n = relicsTable and 3 or C_ArtifactUI.GetEquippedArtifactNumRelicSlots() or 0
 	for i = 1, n do
 		local iLink = relicsTable and relicsTable[i] or select(4,C_ArtifactUI.GetEquippedArtifactRelicInfo(i))
-		if iLink and select(3, C_ArtifactUI.GetRelicInfoByItemID(self:GetItemIDFromLink(iLink))) == 
-					 select(3, C_ArtifactUI.GetRelicInfoByItemID(id)) then
+		if iLink and select(3, C_ArtifactUI.GetRelicInfoByItemID(self:GetItemIDFromLink(iLink))) == relicType then
 			if g1 then
 				g2 = iLink
 			else
@@ -1258,19 +1259,20 @@ end
 -- @param equipLoc	The item in the session's equipLoc.
 -- @param note			The player's note.
 -- @param subType		The item's subType, needed for Artifact Relics.
+-- @param relicType     The type of relic
 -- @param isTier		Indicates if the response is a tier response. (v2.4.0)
 -- @param isRelic		Indicates if the response is a relic response. (v2.5.0)
 -- @param sendAvgIlvl   Indicates whether we send average ilvl.
 -- @param sendSpecID    Indicates whether we send spec id.
 -- @return nil
-function RCLootCouncil:SendResponse(target, session, link, ilvl, response, equipLoc, note, subType, isTier, isRelic, sendAvgIlvl, sendSpecID)
-	self:DebugLog("SendResponse", target, session, link, ilvl, response, equipLoc, note, subType, isTier, isRelic, sendAvgIlvl)
+function RCLootCouncil:SendResponse(target, session, link, ilvl, response, equipLoc, note, subType, relicType, isTier, isRelic, sendAvgIlvl, sendSpecID)
+	self:DebugLog("SendResponse", target, session, link, ilvl, response, equipLoc, note, subType, relicType, isTier, isRelic, sendAvgIlvl, sendSpecID)
 	local g1, g2;
 	local diff = nil
 
 	if link and ilvl and equipLoc and subType then
-		if equipLoc == "" and self.db.global.localizedSubTypes[subType] == "Artifact Relic" then
-			g1, g2 = self:GetArtifactRelics(link, playersData.relics) -- Use relic info we stored before
+		if self.db.global.localizedSubTypes[subType] == "Artifact Relic" then
+			g1, g2 = self:GetArtifactRelics(link, relicType, playersData.relics) -- Use relic info we stored before
 		else
 		 	g1, g2 = self:GetPlayersGear(link, equipLoc, playersData.gears) -- Use gear info we stored before
 		end
@@ -1291,7 +1293,7 @@ function RCLootCouncil:SendResponse(target, session, link, ilvl, response, equip
 
 		if itemNeedCaching then
 			self:Debug("Items need caching in SendResponse", g1, g2)
-			return self:ScheduleTimer("SendResponse", 1, target, session, link, ilvl, response, equipLoc, note, subType, isTier, isRelic, sendAvgIlvl)
+			return self:ScheduleTimer("SendResponse", 1, target, session, link, ilvl, response, equipLoc, note, subType, relicType, isTier, isRelic, sendAvgIlvl, sendSpecID)
 		end
 	end
 
