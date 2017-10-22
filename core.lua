@@ -1932,6 +1932,28 @@ function RCLootCouncil:HideTooltip()
 	GameTooltip:Hide()
 end
 
+-- @return a text of the link explaining its type. For example, "Fel Artifact Relic", "Chest, Mail"
+function RCLootCouncil:GetItemTypeText(link, subType, equipLoc, relicType)
+	local nonLocalizedSubType = self.db.global.localizedSubTypes[subType]
+	if RCTokenTable[self:GetItemIDFromLink(link)] then -- It's a token
+		return L["Armor Token"]
+	elseif "Artifact Relic" == nonLocalizedSubType then
+		local id = self:GetItemIDFromLink(link)
+		relicType = relicType or select(3, C_ArtifactUI.GetRelicInfoByItemID(id)) or ""
+		local localizedRelicType = _G["RELIC_SLOT_TYPE_" .. relicType:upper()] or ""
+		local relicTooltipName = string.format(RELIC_TOOLTIP_TYPE, localizedRelicType)
+        return relicTooltipName
+    elseif equipLoc ~= "" and getglobal(equipLoc) then
+    	if subType and nonLocalizedSubType ~= "Miscellaneous" then
+			return getglobal(equipLoc)..", "..subType -- getGlobal to translate from global constant to localized name
+		else
+			return getglobal(equipLoc)
+		end
+	else
+		return subType or ""
+	end
+end
+
 --- Formats a name with or without realmName.
 -- @paramsig name
 -- @param name Name with(out) realmname.
