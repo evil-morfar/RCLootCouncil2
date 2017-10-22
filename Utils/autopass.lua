@@ -75,7 +75,7 @@ local relics = {
 --@return true if the player should autopass the given item.
 function RCLootCouncil:AutoPassCheck(subType, equipLoc, link, isToken, isRelic)
 	if not tContains(autopassOverride, equipLoc) then
-		if isRelic or (equipLoc == "" and subType == self.db.global.localizedSubTypes["Artifact Relic"]) then
+		if isRelic or (equipLoc == "" and "Artifact Relic" == self.db.global.localizedSubTypes[subType]) then
 			if isRelic then -- New in v2.3+
 				self:DebugLog("NewRelicAutopassCheck", link, isRelic)
 				return not tContains(relics[self.playerClass], isRelic)
