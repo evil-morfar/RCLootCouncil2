@@ -674,7 +674,10 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 						else -- Need to get subType in our locale from GetItemInfo
 							iName, _, _, _, _, _, subType = GetItemInfo(v.link)
 							if not iName then self:Debug(v.link); cached = false end
-							if subType then v.subType = subType end 
+							if subType then 
+								v.subType = subType
+								v.englishSubType = self.db.global.localizedSubTypes[subType]
+							end 
 						end
 					end
 					if not cached then
