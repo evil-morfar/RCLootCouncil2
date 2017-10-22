@@ -1052,6 +1052,7 @@ local subTypeLookup = {
 	["Warglaives"]				= 141604, -- Glaive of the Fallen
 	["Artifact Relic"]		= 141271, -- Hope of the Forest
 	["Miscellaneous"]       = 151961, -- Legionsteel Flywheel (Trinket)
+	["Junk"]                = 152528, -- Antoran Leggings of the Conqueror (Armor token)
 }
 
 function RCLootCouncil:LocalizeSubTypes()
