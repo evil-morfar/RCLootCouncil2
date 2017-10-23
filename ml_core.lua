@@ -64,7 +64,7 @@ function RCLootCouncilML:AddItem(item, bagged, slotIndex, index)
 		["name"]			= name, -- REVIEW This is really not needed as it's contained in itemLink. Remove next time we break backwards com
 		["link"]			= link,
 		["quality"]		= rarity,
-		["ilvl"]			= ilvl,
+		["ilvl"]			= addon:GetTokenIlvl(link) or ilvl, -- if the item is a token, ilvl is the min ilvl of the item it creates.
 		["subType"]		= subType,
 		["equipLoc"]	= equipLoc,
 		["texture"]		= texture,

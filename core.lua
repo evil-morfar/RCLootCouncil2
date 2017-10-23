@@ -1133,14 +1133,13 @@ function RCLootCouncil:GetArtifactRelics(link, relicType, relicsTable)
 end
 
 -- @param link 		The itemLink of the item.
--- @param rawIlvl	The ilvl of the item. If not provided, use GetItemInfo to fetch it.
--- @return          The real item level. If the item is not a token, return the item level. Otherwise, return the minimum item level of the gear created by the token.
-function RCLootCouncil:GetRealIlvl(link, rawIlvl)
+-- @return          If the item is not a token, return nil. Otherwise, return the minimum item level of the gear created by the token.
+function RCLootCouncil:GetTokenIlvl(link)
 	local id = self:GetItemIDFromLink(link)
-	local rawIlvl = rawIlvl or select(4, GetItemInfo(link))
+	if not id then return end
 	local baseIlvl = RCTokenIlvl[id] -- ilvl in normal difficulty
 	if not baseIlvl then
-		return rawIlvl
+		return nil
 	end
 
 	local bonuses = select(17, self:DecodeItemLink(link))
@@ -1284,8 +1283,6 @@ function RCLootCouncil:SendResponse(target, session, link, ilvl, response, equip
 		else
 		 	g1, g2 = self:GetPlayersGear(link, equipLoc, playersData.gears) -- Use gear info we stored before
 		end
-
-		ilvl = self:GetRealIlvl(link, ilvl) -- If the item is a token, set the ilvl to be the min ilvl of the gear it creates.
 
 		local itemNeedCaching = false
 		local g1diff, g2diff = g1 and select(4, GetItemInfo(g1)), g2 and select(4, GetItemInfo(g2))
