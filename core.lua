@@ -1936,12 +1936,28 @@ end
 -- @return a text of the link explaining its type. For example, "Fel Artifact Relic", "Chest, Mail"
 function RCLootCouncil:GetItemTypeText(link, subType, equipLoc, relicType)
 	local englishSubType = self.db.global.localizedSubTypes[subType]
-	if RCTokenTable[self:GetItemIDFromLink(link)] then -- It's a token
-		return L["Armor Token"]
+
+	local tokenSlot = RCTokenTable[self:GetItemIDFromLink(link)]
+	if tokenSlot then -- It's a token
+		if tokenSlot == "Trinket" then
+			equipLoc = INVTYPE_TRINKET
+		else
+			for loc, slot in pairs(INVTYPE_Slots) do
+				if slot == tokenSlot then
+					equipLoc = loc
+				end
+			end
+		end
+		local locText = getglobal(equipLoc)
+		if locText then
+			return locText..", "..L["Armor Token"]
+		else
+			return L["Armor Token"]
+		end
 	elseif "Artifact Relic" == englishSubType then
 		local id = self:GetItemIDFromLink(link)
 		relicType = relicType or select(3, C_ArtifactUI.GetRelicInfoByItemID(id)) or ""
-		local localizedRelicType = _G["RELIC_SLOT_TYPE_" .. relicType:upper()] or ""
+		local localizedRelicType = getglobal("RELIC_SLOT_TYPE_" .. relicType:upper()) or ""
 		local relicTooltipName = string.format(RELIC_TOOLTIP_TYPE, localizedRelicType)
 		return relicTooltipName
 	elseif equipLoc ~= "" and getglobal(equipLoc) then
