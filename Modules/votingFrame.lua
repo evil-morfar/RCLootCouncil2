@@ -829,7 +829,7 @@ end
 function RCVotingFrame.SetCellGear(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
 	local col = data[realrow].cols[column].colName -- gear1 or gear2
 	local name = data[realrow].name
-	gear = lootTable[session].candidates[name][col] -- Get the actual gear
+	local gear = lootTable[session].candidates[name][col] -- Get the actual gear
 	if gear then
 		local texture = lootTable[session].candidates[name][col.."texture"] or select(10, GetItemInfo(gear))
 		if texture then
