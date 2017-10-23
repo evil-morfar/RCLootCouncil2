@@ -10,7 +10,7 @@ local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 
 local items = {} -- item.i = {name, link, lvl, texture} (i == session)
 local entries = {}
-local ENTRY_HEIGHT = 75
+local ENTRY_HEIGHT = 100
 local MAX_ENTRIES = 5
 local numRolled = 0
 local MIN_BUTTON_WIDTH = 40
@@ -141,7 +141,7 @@ do
 			entry.item = item
 			entry.itemText:SetText(entry.item.link or "error")
 			entry.icon:SetNormalTexture(entry.item.texture or "Interface\\InventoryItems\\WoWUnknownItem01")
-			entry.itemLvl:SetText(format(L["ilvl: x"], entry.item.ilvl or 0))
+			entry.itemLvl:SetText(entry.item.ilvl.."  |cff7fffff"..entry.item.subType.."|r") -- TODO: Change subType display after merged with PR #25
 			if addon.mldb.timeout then
 				entry.timeoutBar:SetMinMaxValues(0, addon.mldb.timeout or addon.db.profile.timeout)
 				entry.timeoutBar:Show()
@@ -215,10 +215,10 @@ do
 			end
 			-------- Note button ---------
 			entry.noteButton = CreateFrame("Button", nil, entry.frame)
-			entry.noteButton:SetSize(20,20)
+			entry.noteButton:SetSize(25,25)
 			entry.noteButton:SetHighlightTexture("Interface\\Minimap\\UI-Minimap-ZoomButton-Highlight")
 			entry.noteButton:SetNormalTexture("Interface\\Buttons\\UI-GuildButton-PublicNote-Up")
-			entry.noteButton:SetPoint("BOTTOMRIGHT", -12, 12)
+			entry.noteButton:SetPoint("BOTTOMRIGHT", -12, 20)
 			entry.noteButton:SetScript("OnEnter", function()
 				if entry.item.note then -- If they already entered a note:
 					addon:CreateTooltip(L["Your note:"], entry.item.note, "\nClick to change your note.")
@@ -235,7 +235,7 @@ do
 			entry.itemText:SetText("Fatal error!!!!") -- Set text for reasons
 
 			entry.itemLvl = entry.frame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-			entry.itemLvl:SetPoint("TOPRIGHT", entry.frame, "TOPRIGHT", -12, -13)
+			entry.itemLvl:SetPoint("TOPLEFT", entry.itemText, "BOTTOMLEFT", 0, -4)
 			entry.itemLvl:SetTextColor(1, 1, 1) -- White
 			entry.itemLvl:SetText("error")
 
