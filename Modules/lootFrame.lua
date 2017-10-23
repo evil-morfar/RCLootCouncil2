@@ -91,7 +91,7 @@ function LootFrame:Update()
 	if numRolled == #items then -- We're through them all, so hide the frame
 		return self:Disable()
 	end
-	local width = 140
+	local width = 150
 	local numEntries = 0
 	for _,item in ipairs(items) do
 		if numEntries >= MAX_ENTRIES then break end -- Only show a certain amount of items at a time
@@ -166,7 +166,7 @@ do
 
 			-------- Item Icon -------------
 			entry.icon = CreateFrame("Button", nil, entry.frame, "UIPanelButtonTemplate")
-			entry.icon:SetSize(ENTRY_HEIGHT*0.7, ENTRY_HEIGHT*0.7)
+			entry.icon:SetSize(ENTRY_HEIGHT*0.73, ENTRY_HEIGHT*0.73)
 			entry.icon:SetPoint("TOPLEFT", entry.frame, "TOPLEFT", 9, -9)
 			entry.icon:SetScript("OnEnter", function()
 				if not entry.item.link then return end
@@ -184,7 +184,7 @@ do
 			entry.buttons = {}
 			entry.UpdateButtons = function(entry)
 				local b = entry.buttons -- shortening
-				local width = 140 -- buttons determines the width of the entry
+				local width = 150 -- buttons determines the width of the entry
 				local numButtons = addon.mldb.numButtons or addon.db.profile.numButtons
 				for i = 1, numButtons + 1 do
 					if i > numButtons then -- Pass button:
@@ -215,10 +215,10 @@ do
 			end
 			-------- Note button ---------
 			entry.noteButton = CreateFrame("Button", nil, entry.frame)
-			entry.noteButton:SetSize(25,25)
+			entry.noteButton:SetSize(28,28)
 			entry.noteButton:SetHighlightTexture("Interface\\Minimap\\UI-Minimap-ZoomButton-Highlight")
 			entry.noteButton:SetNormalTexture("Interface\\Buttons\\UI-GuildButton-PublicNote-Up")
-			entry.noteButton:SetPoint("BOTTOMRIGHT", -8, 17)
+			entry.noteButton:SetPoint("BOTTOMRIGHT", -8, 13)
 			entry.noteButton:SetScript("OnEnter", function()
 				if entry.item.note then -- If they already entered a note:
 					addon:CreateTooltip(L["Your note:"], entry.item.note, "\nClick to change your note.")
@@ -304,7 +304,7 @@ do
 
 	-- Updates the order of the entries along with the width of self.frame
 	function LootFrame.EntryManager:Update()
-		local max = 0 -- We need 140 px + whatever the lenght of the buttons are
+		local max = 0 -- We need 150 px + whatever the lenght of the buttons are
 		for i, entry in ipairs(self.entries) do
 			if entry.width > max then max = entry.width end
 			if i == 1 then
@@ -373,7 +373,7 @@ do
 		-- Tier entry uses different buttons, so change the function:
 		function Entry.UpdateButtons(entry)
 			local b = entry.buttons -- shortening
-			local width = 140 -- buttons determines the width of the entry
+			local width = 150 -- buttons determines the width of the entry
 			local numButtons = addon.mldb.tierNumButtons or addon.db.profile.tierNumButtons
 			for i = 1, numButtons + 1 do
 				if i > numButtons then -- Pass button:
@@ -415,7 +415,7 @@ do
 		-- Relic entry uses different buttons, so change the function:
 		function Entry.UpdateButtons(entry)
 			local b = entry.buttons -- shortening
-			local width = 140 -- buttons determines the width of the entry
+			local width = 150 -- buttons determines the width of the entry
 			local numButtons = addon.mldb.relicNumButtons or addon.db.profile.relicNumButtons
 			for i = 1, numButtons + 1 do
 				if i > numButtons then -- Pass button:
