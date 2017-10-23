@@ -629,6 +629,31 @@ function RCLootCouncil:SendCommand(target, command, ...)
 	end
 end
 
+-- @param lootTable
+-- @return true if the lootTable is fully localized. false otherwise.
+function RCLootCouncil:LocalizeLootTable(lootTable)
+	-- v2.7 We need to cache if we need to get subType in our locale.
+	-- C_ArtifactUI.GetRelicInfoByItemID() always return english result. So it is not the reason we need to cache.
+	local cached = true
+	for ses, v in ipairs(lootTable) do
+		if v.englishSubType then -- New in v2.7. We don't need to cache if ML sends english subType
+			for subType, englishSubType in pairs(self.db.global.localizedSubTypes) do
+				if englishSubType == v.englishSubType then -- Translate english to our locale
+					v.subType = subType
+				end
+			end
+		else -- Need to get subType in our locale from GetItemInfo
+			iName, _, _, _, _, _, subType = GetItemInfo(v.link)
+			if not iName then self:Debug(v.link); cached = false end
+			if subType then 
+				v.subType = subType
+				v.englishSubType = self.db.global.localizedSubTypes[subType]
+			end 
+		end
+	end
+	return cached
+end
+
 --- Receives RCLootCouncil commands.
 -- Params are delivered by AceComm-3.0, but we need to extract our data created with the
 -- RCLootCouncil:SendCommand function.
@@ -661,25 +686,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 						return self:Debug("Sent 'DISABLED' response to", sender)
 					end
 
-					-- v2.7 We need to cache if we need to get subType in our locale.
-					-- C_ArtifactUI.GetRelicInfoByItemID() always return english result. So it is not the reason we need to cache.
-					local cached = true
-					for ses, v in ipairs(lootTable) do
-						if v.englishSubType then -- New in v2.7. We don't need to cache if ML sends english subType
-							for subType, englishSubType in pairs(self.db.global.localizedSubTypes) do
-								if englishSubType == v.englishSubType then -- Translate english to our locale
-									v.subType = subType
-								end
-							end
-						else -- Need to get subType in our locale from GetItemInfo
-							iName, _, _, _, _, _, subType = GetItemInfo(v.link)
-							if not iName then self:Debug(v.link); cached = false end
-							if subType then 
-								v.subType = subType
-								v.englishSubType = self.db.global.localizedSubTypes[subType]
-							end 
-						end
-					end
+					local cached = self:LocalizeLootTable(lootTable)
 					if not cached then
 						self:Debug("Some items wasn't cached, delaying loot by 1 sec")
 						return self:ScheduleTimer("OnCommReceived", 1, prefix, serializedMsg, distri, sender)

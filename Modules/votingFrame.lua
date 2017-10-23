@@ -179,7 +179,13 @@ function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
 
 			elseif command == "lootTable" and addon:UnitIsUnit(sender, addon.masterLooter) then
 				active = true
-				self:Setup(unpack(data))
+				local lootTable = unpack(data)
+				local cached = addon:LocalizeLootTable(lootTable)
+				if not cached then
+					self:Debug("RCVotingFrame: Some items wasn't cached, delaying loot by 1 sec")
+					return self:ScheduleTimer("OnCommReceived", 1, prefix, serializedMsg, distri, sender)
+				end
+				self:Setup(lootTable)
 				if not addon.enabled then return end -- We just want things ready
 				if db.autoOpen then
 					self:Show()
