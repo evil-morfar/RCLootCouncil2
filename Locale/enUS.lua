@@ -433,7 +433,6 @@ L["Vote"] = true
 L["Voters"] = true
 L["Votes"] = true
 L["Voting options"] = true
-L["Waiting for item info"] = true
 L["Waiting for response"] = true
 L["whisper"] = true
 L["whisper_guide"] = "[RCLootCouncil]: number response [item1] [item2]. Link your item(s) that item (number) would replace, (response) being of the keywords below: Ex. '1 Greed [item1]' would greed on item #1"
