@@ -144,8 +144,22 @@ function addon:OptionsTable()
 									},
 								},
 							},
-							lootHistoryOptions = {
+							frameOptions = {
 								order = 5,
+								type = "group",
+								name = L["Frame options"],
+								inline = true,
+								args = {
+									showSpecIcon = {
+										order = 1,
+										name = L["Show Spec Icon"],
+										desc = L["show_spec_icon_desc"],
+										type = "toggle",
+									}
+								}
+							},
+							lootHistoryOptions = {
+								order = 6,
 								type = "group",
 								name = L["Loot History"],
 								inline = true,
