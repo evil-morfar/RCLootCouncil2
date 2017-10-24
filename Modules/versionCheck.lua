@@ -150,7 +150,7 @@ function RCVersionCheck:GetFrame()
 	b2:SetScript("OnClick", function() self:Query("group") end)
 	f.raidBtn = b2
 
-	local b3 = addon:CreateButton(L["Close"], f.content)
+	local b3 = addon:CreateButton(_G.CLOSE, f.content)
 	b3:SetPoint("BOTTOMRIGHT", f, "BOTTOMRIGHT", -10, 10)
 	b3:SetScript("OnClick", function() self:Disable() end)
 	f.closeBtn = b3

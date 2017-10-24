@@ -472,7 +472,7 @@ function LootHistory:GetFrame()
 	})
 
 	-- Abort button
-	local b1 = addon:CreateButton(L["Close"], f.content)
+	local b1 = addon:CreateButton(_G.CLOSE, f.content)
 	b1:SetPoint("TOPRIGHT", f, "TOPRIGHT", -10, -100)
 	b1:SetScript("OnClick", function() self:Disable() end)
 	f.closeBtn = b1

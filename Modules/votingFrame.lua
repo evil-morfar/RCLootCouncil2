@@ -352,11 +352,11 @@ function RCVotingFrame:Update()
 		if active then
 			self.frame.abortBtn:SetText(L["Abort"])
 		else
-			self.frame.abortBtn:SetText(L["Close"])
+			self.frame.abortBtn:SetText(_G.CLOSE)
 		end
 		self.frame.disenchant:Show()
 	else -- Non-MLs:
-		self.frame.abortBtn:SetText(L["Close"])
+		self.frame.abortBtn:SetText(_G.CLOSE)
 		self.frame.disenchant:Hide()
 	end
 end
@@ -553,7 +553,7 @@ function RCVotingFrame:GetFrame()
 	--#end----------------------------
 
 	-- Abort button
-	local b1 = addon:CreateButton(L["Close"], f.content)
+	local b1 = addon:CreateButton(_G.CLOSE, f.content)
 	b1:SetPoint("TOPRIGHT", f, "TOPRIGHT", -10, -50)
 	b1:SetScript("OnClick", function()
 		-- This needs to be dynamic if the ML has changed since this was first created

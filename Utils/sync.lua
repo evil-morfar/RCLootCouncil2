@@ -250,7 +250,7 @@ function sync:Spawn()
       if not self.syncTarget then return addon:Print(L["You must select a target"]) end
       self:SendSyncRequest(self.syncTarget, self.syncType, self.syncHandlers[self.syncType].send())
    end)
-   f.exitButton = addon:CreateButton(L["Close"], f.content)
+   f.exitButton = addon:CreateButton(_G.CLOSE, f.content)
    f.exitButton:SetPoint("LEFT", f.syncButton, "RIGHT", 20, 0)
    f.exitButton:SetScript("OnClick", function()
       self.frame:Hide()

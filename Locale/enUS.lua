@@ -149,7 +149,6 @@ L["Clear Selection"] = true
 L["Click to add note to send to the council."] = true
 L["Click to expand/collapse more info"] = true
 L["Click to switch to 'item'"] = "Click to switch to %s"
-L["Close"] = true
 L["config"] = true
 L["confirm_usage_text"] = "|cFF87CEFA RCLootCouncil |r\n\nWould you like to use RCLootCouncil with this group?"
 L["Could not Auto Award i because the Loot Threshold is too high!"] = "Could not Auto Award %s because the Loot Threshold is too high!"
