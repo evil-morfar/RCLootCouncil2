@@ -77,7 +77,7 @@ function RCLootCouncilML:AddItem(item, bagged, slotIndex, index)
 	local tokenSlot = self.lootTable[#self.lootTable].token
 	if tokenSlot then
 		if tokenSlot == "Trinket" then
-			self.lootTable[#self.lootTable].equipLoc = INVTYPE_TRINKET
+			self.lootTable[#self.lootTable].equipLoc = "INVTYPE_TRINKET"
 		else
 			for loc, slot in pairs(addon.INVTYPE_Slots) do
 				if slot == tokenSlot then
