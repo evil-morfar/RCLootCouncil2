@@ -1005,6 +1005,7 @@ local INVTYPE_Slots = {
 		INVTYPE_HOLDABLE	    = {"SecondaryHandSlot", ["or"] = "MainHandSlot"},
 		INVTYPE_TRINKET		    = {"TRINKET0SLOT", "TRINKET1SLOT"}
 }
+RCLootCouncil.INVTYPE_Slots = INVTYPE_Slots
 
 function RCLootCouncil:UpdatePlayersGears(startSlot, endSlot)
 	startSlot = startSlot or INVSLOT_FIRST_EQUIPPED
@@ -2069,6 +2070,33 @@ function RCLootCouncil:HideTooltip()
 		self.tooltip.showing = false
 	end
 	GameTooltip:Hide()
+end
+
+-- @return a text of the link explaining its type. For example, "Fel Artifact Relic", "Chest, Mail"
+function RCLootCouncil:GetItemTypeText(link, subType, equipLoc, tokenSlot, relicType)
+	local englishSubType = self.db.global.localizedSubTypes[subType]
+
+	if tokenSlot then -- It's a token
+		if equipLoc ~= "" and getglobal(equipLoc) then
+			return getglobal(equipLoc)..", "..L["Armor Token"]
+		else
+			return L["Armor Token"]
+		end
+	elseif "Artifact Relic" == englishSubType then
+		local id = self:GetItemIDFromLink(link)
+		relicType = relicType or select(3, C_ArtifactUI.GetRelicInfoByItemID(id)) or ""
+		local localizedRelicType = getglobal("RELIC_SLOT_TYPE_" .. relicType:upper()) or ""
+		local relicTooltipName = string.format(RELIC_TOOLTIP_TYPE, localizedRelicType)
+		return relicTooltipName
+	elseif equipLoc ~= "" and getglobal(equipLoc) then
+		if subType and englishSubType ~= "Miscellaneous" and englishSubType ~= "Junk" then
+			return getglobal(equipLoc)..", "..subType -- getGlobal to translate from global constant to localized name
+		else
+			return getglobal(equipLoc)
+		end
+	else
+		return subType or ""
+	end
 end
 
 --- Formats a name with or without realmName.

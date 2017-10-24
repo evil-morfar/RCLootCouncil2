@@ -373,22 +373,8 @@ function RCVotingFrame:SwitchSession(s)
 	self.frame.iState:SetText(self:GetItemStatus(t.link))
 	self.frame.itemLvl:SetText(format(L["ilvl: x"], t.ilvl))
 	-- Set a proper item type text
-	if t.subType and t.subType ~= "Miscellaneous" and t.subType ~= "Junk" and t.equipLoc ~= "" then
-		self.frame.itemType:SetText(getglobal(t.equipLoc)..", "..t.subType); -- getGlobal to translate from global constant to localized name
-	elseif t.subType ~= "Miscellaneous" and t.subType ~= "Junk" then
-		if t.subType == addon.db.global.localizedSubTypes["Artifact Relic"] then
-			local id = addon:GetItemIDFromLink(t.link)
-         self.frame.itemType:SetText((t.relic or select(3, C_ArtifactUI.GetRelicInfoByItemID(id))) or "".." "..t.subType or "")
-		else
-			self.frame.itemType:SetText(tostring(t.subType))
-		end
-	else
-		if RCTokenTable[addon:GetItemIDFromLink(t.link)] then -- It's a token
-			self.frame.itemType:SetText(L["Armor Token"])
-		else
-			self.frame.itemType:SetText(getglobal(t.equipLoc));
-		end
-	end
+
+	self.frame.itemType:SetText(addon:GetItemTypeText(t.link, t.subType, t.equipLoc, t.token, t.relic))
 
 	-- Update the session buttons
 	sessionButtons[s] = self:UpdateSessionButton(s, t.texture, t.link, t.awarded)

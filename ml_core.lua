@@ -72,6 +72,20 @@ function RCLootCouncilML:AddItem(item, bagged, slotIndex, index)
 		["relic"]		= itemID and IsArtifactRelicItem(itemID) and select(3, C_ArtifactUI.GetRelicInfoByItemID(itemID)),
 		["token"]		= itemID and RCTokenTable[itemID],
 	}
+
+	-- Calculate the equipment slots of the token
+	local tokenSlot = self.lootTable[#self.lootTable].token
+	if tokenSlot then
+		if tokenSlot == "Trinket" then
+			self.lootTable[#self.lootTable].equipLoc = INVTYPE_TRINKET
+		else
+			for loc, slot in pairs(addon.INVTYPE_Slots) do
+				if slot == tokenSlot then
+					self.lootTable[#self.lootTable].equipLoc = loc
+				end
+			end
+		end
+	end
 		-- Item isn't properly loaded, so update the data in 1 sec (Should only happen with /rc test)
 	if not name then
 		self:ScheduleTimer("Timer", 1, "AddItem", item, bagged, slotIndex, index or #self.lootTable)
@@ -111,8 +125,9 @@ function RCLootCouncilML:UpdateGroup(ask)
 	for name in pairs(self.candidates) do	group_copy[name] = true end
 	for i = 1, GetNumGroupMembers() do
 		local name, _, _, _, _, class, _, _, _, _, _, role  = GetRaidRosterInfo(i)
-		name = addon:UnitName(name) -- Get their unambiguated name
+		
 		if name then -- Apparantly name can be nil (ticket #223)
+			name = addon:UnitName(name) -- Get their unambiguated name
 			if group_copy[name] then	-- If they're already registered
 				group_copy[name] = nil	-- remove them from the check
 			else -- add them
@@ -123,6 +138,9 @@ function RCLootCouncilML:UpdateGroup(ask)
 				self:AddCandidate(name, class, role) -- Add them in case they haven't installed the adoon
 				updates = true
 			end
+		else
+			addon:Debug("ML:UpdateGroup", "GetRaidRosterInfo returns nil. Abort and retry after 1s.")
+			return self:ScheduleTimer("UpdateGroup", 1, ask) -- Group info is not ready. Abort and retry.
 		end
 	end
 	-- If anything's left in group_copy it means they left the raid, so lets remove them
@@ -591,7 +609,17 @@ end
 RCLootCouncilML.announceItemStrings = {
 	["&s"] = function(ses) return ses end,
 	["&i"] = function(...) return select(2,...) end,
+	["&l"] = function(_, _, v) return v.ilvl or "" end,
+	["&t"] = function(_, _, v) return "" end, -- TODO: change this after merged PR #25
 }
+-- The description for each keyword
+RCLootCouncilML.announceItemStringsDesc = {
+	["&s"] = L["announce_&s_desc"],
+	["&i"] = L["announce_&i_desc"],
+	["&l"] = L["announce_&l_desc"],
+	["&t"] = L["announce_&t_desc"],
+}
+
 function RCLootCouncilML:AnnounceItems()
 	if not db.announceItems then return end
 	addon:DebugLog("ML:AnnounceItems()")
@@ -613,7 +641,20 @@ RCLootCouncilML.awardStrings = {
 	["&i"] = function(...) return select(2, ...) end,
 	["&r"] = function(...) return select(3, ...) end,
 	["&n"] = function(...) return select(4, ...) or "" end,
+	["&l"] = function(...) return RCLootCouncilML.lootTable[select(5, ...)].ilvl or "" end,
+	["&t"] = function(...) return "" end,  -- TODO: change this after merged PR #25
 }
+
+-- The description for each keyword
+RCLootCouncilML.awardStringsDesc = {
+	["&p"] = L["announce_&p_desc"],
+	["&i"] = L["announce_&i_desc"],
+	["&r"] = L["announce_&r_desc"],
+	["&n"] = L["announce_&n_desc"],
+	["&l"] = L["announce_&l_desc"],
+	["&t"] = L["announce_&t_desc"],
+}
+
 
 -- See above for text substitutions
 -- @paramsig 			name, link, text [,roll, session]
