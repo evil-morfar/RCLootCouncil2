@@ -1934,23 +1934,12 @@ function RCLootCouncil:HideTooltip()
 end
 
 -- @return a text of the link explaining its type. For example, "Fel Artifact Relic", "Chest, Mail"
-function RCLootCouncil:GetItemTypeText(link, subType, equipLoc, relicType)
+function RCLootCouncil:GetItemTypeText(link, subType, equipLoc, tokenSlot, relicType)
 	local englishSubType = self.db.global.localizedSubTypes[subType]
 
-	local tokenSlot = RCTokenTable[self:GetItemIDFromLink(link)]
 	if tokenSlot then -- It's a token
-		if tokenSlot == "Trinket" then
-			equipLoc = INVTYPE_TRINKET
-		else
-			for loc, slot in pairs(INVTYPE_Slots) do
-				if slot == tokenSlot then
-					equipLoc = loc
-				end
-			end
-		end
-		local locText = getglobal(equipLoc)
-		if locText then
-			return locText..", "..L["Armor Token"]
+		if getglobal(equipLoc) then
+			return getglobal(equipLoc)..", "..L["Armor Token"]
 		else
 			return L["Armor Token"]
 		end
