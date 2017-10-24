@@ -72,6 +72,20 @@ function RCLootCouncilML:AddItem(item, bagged, slotIndex, index)
 		["relic"]		= itemID and IsArtifactRelicItem(itemID) and select(3, C_ArtifactUI.GetRelicInfoByItemID(itemID)),
 		["token"]		= itemID and RCTokenTable[itemID],
 	}
+
+	-- Calculate the equipment slots of the token
+	local tokenSlot = self.lootTable[#self.lootTable].token
+	if tokenSlot then
+		if tokenSlot == "Trinket" then
+			self.lootTable[#self.lootTable].equipLoc = INVTYPE_TRINKET
+		else
+			for loc, slot in pairs(addon.INVTYPE_Slots) do
+				if slot == tokenSlot then
+					self.lootTable[#self.lootTable].equipLoc = loc
+				end
+			end
+		end
+	end
 		-- Item isn't properly loaded, so update the data in 1 sec (Should only happen with /rc test)
 	if not name then
 		self:ScheduleTimer("Timer", 1, "AddItem", item, bagged, slotIndex, index or #self.lootTable)

@@ -965,6 +965,7 @@ local INVTYPE_Slots = {
 		INVTYPE_HOLDABLE	    = {"SecondaryHandSlot", ["or"] = "MainHandSlot"},
 		INVTYPE_TRINKET		    = {"TRINKET0SLOT", "TRINKET1SLOT"}
 }
+RCLootCouncil.INVTYPE_Slots = INVTYPE_Slots
 
 function RCLootCouncil:GetPlayersGear(link, equipLoc)
 	local itemID = self:GetItemIDFromLink(link) -- Convert to itemID
