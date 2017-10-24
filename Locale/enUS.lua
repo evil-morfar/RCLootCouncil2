@@ -414,7 +414,6 @@ L["tVersion_outdated_msg"] = "Newest RCLootCouncil test version is: %s"
 L["Unable to give 'item' to 'player' - (player offline, left group or instance?)"] = "Unable to give %s to %s - (player offline, left group or instance?)"
 L["Unable to give out loot without the loot window open."] = true
 L["Unguilded"] = true
-L["Unknown"] = true
 L["Unknown/Chest"] = true
 L["Unknown date"] = true
 L["Unvote"] = true

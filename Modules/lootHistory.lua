@@ -126,7 +126,7 @@ function LootHistory:BuildData()
 				end
 			end
 			if not data[date][name][i].instance then
-				data[date][name][i].instance = L["Unknown"]
+				data[date][name][i].instance = _G.UNKNOWN
 			end
 		end
 	end
@@ -624,17 +624,17 @@ function LootHistory:UpdateMoreInfo(rowFrame, cellFrame, dat, cols, row, realrow
 	local data = lootDB[row.name][row.num]
 	tip:AddLine(addon.Ambiguate(row.name), color.r, color.g, color.b)
 	tip:AddLine("")
-	tip:AddDoubleLine(L["Time"]..":", (data.time or L["Unknown"]) .." ".. row.date or L["Unknown"], 1,1,1, 1,1,1)
-	tip:AddDoubleLine(L["Loot won:"], data.lootWon or L["Unknown"], 1,1,1, 1,1,1)
+	tip:AddDoubleLine(L["Time"]..":", (data.time or _G.UNKNOWN) .." ".. row.date or _G.UNKNOWN, 1,1,1, 1,1,1)
+	tip:AddDoubleLine(L["Loot won:"], data.lootWon or _G.UNKNOWN, 1,1,1, 1,1,1)
 	if data.itemReplaced1 then
 		tip:AddDoubleLine(L["Item(s) replaced:"], data.itemReplaced1, 1,1,1)
 		if data.itemReplaced2 then
 			tip:AddDoubleLine(" ", data.itemReplaced2)
 		end
 	end
-	tip:AddDoubleLine(L["Dropped by:"], data.boss or L["Unknown"], 1,1,1, 0.862745, 0.0784314, 0.235294)
-	tip:AddDoubleLine(L["From:"], data.instance or L["Unknown"], 1,1,1, 0.823529, 0.411765, 0.117647)
-	tip:AddDoubleLine(L["Votes"]..":", data.votes or L["Unknown"], 1,1,1, 1,1,1)
+	tip:AddDoubleLine(L["Dropped by:"], data.boss or _G.UNKNOWN, 1,1,1, 0.862745, 0.0784314, 0.235294)
+	tip:AddDoubleLine(L["From:"], data.instance or _G.UNKNOWN, 1,1,1, 0.823529, 0.411765, 0.117647)
+	tip:AddDoubleLine(L["Votes"]..":", data.votes or _G.UNKNOWN, 1,1,1, 1,1,1)
 	tip:AddLine(" ")
 	tip:AddLine(L["Tokens received"])
 	-- Add tier tokens

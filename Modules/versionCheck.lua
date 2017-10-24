@@ -70,7 +70,7 @@ function RCVersionCheck:Query(group)
 		for i = 1, GetNumGroupMembers() do
 			local name, _, _, _, _, class, _, online = GetRaidRosterInfo(i)
 			if online then
-				self:AddEntry(name, class, L["Unknown"], L["Waiting for response"])
+				self:AddEntry(name, class, _G.UNKNOWN, L["Waiting for response"])
 			end
 		end
 	end
