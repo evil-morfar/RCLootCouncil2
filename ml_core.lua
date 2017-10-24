@@ -596,6 +596,12 @@ RCLootCouncilML.announceItemStrings = {
 	["&s"] = function(ses) return ses end,
 	["&i"] = function(...) return select(2,...) end,
 }
+-- The description for each keyword
+RCLootCouncilML.announceItemStringsDesc = {
+	["&s"] = L["announce_item_string_&s_desc"],
+	["&i"] = L["announce_item_string_&i_desc"],
+}
+
 function RCLootCouncilML:AnnounceItems()
 	if not db.announceItems then return end
 	addon:DebugLog("ML:AnnounceItems()")
@@ -618,6 +624,15 @@ RCLootCouncilML.awardStrings = {
 	["&r"] = function(...) return select(3, ...) end,
 	["&n"] = function(...) return select(4, ...) or "" end,
 }
+
+-- The description for each keyword
+RCLootCouncilML.awardStringsDesc = {
+	["&p"] = L["announce_awards_&p_desc"],
+	["&i"] = L["announce_awards_&i_desc"],
+	["&r"] = L["announce_awards_&r_desc"],
+	["&n"] = L["announce_awards_&n_desc"],
+}
+
 
 -- See above for text substitutions
 -- @paramsig 			name, link, text [,roll, session]
