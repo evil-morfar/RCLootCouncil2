@@ -883,25 +883,21 @@ end
 function RCLootCouncil:Test(num)
 	self:Debug("Test", num)
 	local testItems = {
-
 		-- Tier21 Tokens (Head, Shoulder, Cloak, Chest, Hands, Legs)
 		152524, 152530, 152517, 152518, 152521, 152527, -- Vanquisher: DK, Druid, Mage, Rogue
 		152525, 152531, 152516, 152519, 152522, 152528, -- Conqueror : DH, Paladin, Priest, Warlock
 		152526, 152532, 152515, 152520, 152523, 152529, -- Protector : Hunder, Monk, Shaman, Warrior
-
 		-- Tier21 Armors (Head, Shoulder, Chest, Wrist, Hands, Waist, Legs, Feet)
 		152014, 152019, 152017, 152023, 152686, 152020, 152016, 152009, -- Plate
 		152423, 152005, 151994, 152008, 151998, 152006, 152002, 151996, -- Mail
 		151985, 151988, 151982, 151992, 151984, 151986, 151987, 151981, -- Leather
 		151943, 151949, 152679, 151953, 152680, 151942, 151946, 151939, -- Cloth
-
 		-- Tier21 Trinkets
 		151975, 151977, -- Tank
 		151956, 151970, -- Healer
 		151964, 151967, -- Melee DPS
 		151968, 151963, -- Non-caster DPS
 		151970, 151971, -- Caster DPS
-
 		-- Tier21 Relics
 		152024, 152025, -- Arcane
 		152028, 152029, -- Blood
@@ -920,17 +916,14 @@ function RCLootCouncil:Test(num)
 		local j = math.random(1, #testItems)
 		tinsert(items, testItems[j])
 	end
-
 	self.testMode = true;
 	self.isMasterLooter, self.masterLooter = self:GetML()
-
 	-- We must be in a group and not the ML
 	if not self.isMasterLooter then
 		self:Print(L["You cannot initiate a test while in a group without being the MasterLooter."])
 		self.testMode = false
 		return
 	end
-
 	-- Call ML module and let it handle the rest
 	self:CallModule("masterlooter")
 	self:GetActiveModule("masterlooter"):NewML(self.masterLooter)
@@ -1052,13 +1045,13 @@ end
 -- @param gearsTable if specified, compare against gears stored in the table instead of the current equipped gears, whose key is slot number and value is the item link of the gear.
 -- @return the gear(s) that with the same slot of the input link.
 function RCLootCouncil:GetPlayersGear(link, equipLoc, gearsTable)
+	self:DebugLog("GetPlayersGear", itemID, equipLoc)
 	local GetInventoryItemLink = GetInventoryItemLink
 	if gearsTable then -- lazy code
 		GetInventoryItemLink = function(_, slotNum) return gearsTable[slotNum] end
 	end
 
 	local itemID = self:GetItemIDFromLink(link) -- Convert to itemID
-	self:DebugLog("GetPlayersGear", itemID, equipLoc)
 	if not itemID then return nil, nil; end
 	local item1, item2;
 	-- check if the item is a token, and if it is, return the matching current gear
@@ -1106,15 +1099,73 @@ function RCLootCouncil:GetArtifactRelics(link, relicType, relicsTable)
 	return g1, g2
 end
 
--- @param link 		The itemLink of the item.
--- @return          If the item is not a token, return nil. Otherwise, return the minimum item level of the gear created by the token.
+-- Sends a response. Uses the gear equipped at the start of most recent encounter or login.
+-- @paramsig session [, ...]
+-- link, ilvl, equipLoc and subType must be provided to send out gear information.
+-- @param session			The session to respond to.
+-- @param link 			The itemLink of the item in the session.
+-- @param ilvl				The ilvl of the item in the session.
+-- @param response		The selected response, must be index of db.responses.
+-- @param equipLoc		The item in the session's equipLoc.
+-- @param note				The player's note.
+-- @param subType			The item's subType, needed for Artifact Relics.
+-- @param relicType     The type of relic
+-- @param isTier			Indicates if the response is a tier response. (v2.4.0)
+-- @param isRelic			Indicates if the response is a relic response. (v2.5.0)
+-- @param sendAvgIlvl   Indicates whether we send average ilvl.
+-- @param sendSpecID    Indicates whether we send spec id.
+function RCLootCouncil:SendResponse(target, session, link, ilvl, response, equipLoc, note, subType, relicType, isTier, isRelic, sendAvgIlvl, sendSpecID)
+	self:DebugLog("SendResponse", target, session, link, ilvl, response, equipLoc, note, subType, relicType, isTier, isRelic, sendAvgIlvl, sendSpecID)
+	local g1, g2;
+	local diff = nil
+
+	if link and ilvl and equipLoc and subType then
+		if self.db.global.localizedSubTypes[subType] == "Artifact Relic" then
+			g1, g2 = self:GetArtifactRelics(link, relicType, playersData.relics) -- Use relic info we stored before
+		else
+		 	g1, g2 = self:GetPlayersGear(link, equipLoc, playersData.gears) -- Use gear info we stored before
+		end
+
+		local itemNeedCaching = false
+		local g1diff, g2diff = g1 and select(4, GetItemInfo(g1)), g2 and select(4, GetItemInfo(g2))
+		if g1diff and g2diff then
+			diff = g1diff >= g2diff and ilvl - g2diff or ilvl - g1diff
+		elseif g1 and g2 then
+			itemNeedCaching = true
+		elseif g1diff then
+			diff = ilvl - g1diff
+		elseif g1 then
+			itemNeedCaching = true
+		end
+
+		if itemNeedCaching then
+			self:Debug("Items need caching in SendResponse", g1, g2)
+			return self:ScheduleTimer("SendResponse", 1, target, session, link, ilvl, response, equipLoc, note, subType, relicType, isTier, isRelic, sendAvgIlvl, sendSpecID)
+		end
+	end
+
+	self:SendCommand(target, "response",
+		session,
+		self.playerName,
+		{	gear1 = g1,
+			gear2 = g2,
+			ilvl = sendAvgIlvl and playersData.ilvl or nil,
+			diff = diff,
+			note = note,
+			response = response,
+			isTier = isTier,
+			isRelic = isRelic,
+			specID = sendSpecID and playersData.specID or nil,
+		})
+end
+
+-- @param link The itemLink of the item.
+-- @return If the item is not a token, return nil. Otherwise, return the minimum item level of the gear created by the token.
 function RCLootCouncil:GetTokenIlvl(link)
 	local id = self:GetItemIDFromLink(link)
 	if not id then return end
 	local baseIlvl = RCTokenIlvl[id] -- ilvl in normal difficulty
-	if not baseIlvl then
-		return nil
-	end
+	if not baseIlvl then return end
 
 	local bonuses = select(17, self:DecodeItemLink(link))
 	for _, value in pairs(bonuses) do
@@ -1214,66 +1265,6 @@ function RCLootCouncil:IsItemBoE(item)
 	end
 	GameTooltip:Hide()
 	return false
-end
-
--- Send response until success. The response includes the information of the player at the start of most recent encounter or login.
--- No current information is sent.
--- @param session		The session to respond to.
--- @param link 		The itemLink of the item in the session.
--- @param ilvl			The ilvl of the item in the session.
--- @param response	The selected response, must be index of db.responses.
--- @param equipLoc	The item in the session's equipLoc.
--- @param note			The player's note.
--- @param subType		The item's subType, needed for Artifact Relics.
--- @param relicType     The type of relic
--- @param isTier		Indicates if the response is a tier response. (v2.4.0)
--- @param isRelic		Indicates if the response is a relic response. (v2.5.0)
--- @param sendAvgIlvl   Indicates whether we send average ilvl.
--- @param sendSpecID    Indicates whether we send spec id.
--- @return nil
-function RCLootCouncil:SendResponse(target, session, link, ilvl, response, equipLoc, note, subType, relicType, isTier, isRelic, sendAvgIlvl, sendSpecID)
-	self:DebugLog("SendResponse", target, session, link, ilvl, response, equipLoc, note, subType, relicType, isTier, isRelic, sendAvgIlvl, sendSpecID)
-	local g1, g2;
-	local diff = nil
-
-	if link and ilvl and equipLoc and subType then
-		if self.db.global.localizedSubTypes[subType] == "Artifact Relic" then
-			g1, g2 = self:GetArtifactRelics(link, relicType, playersData.relics) -- Use relic info we stored before
-		else
-		 	g1, g2 = self:GetPlayersGear(link, equipLoc, playersData.gears) -- Use gear info we stored before
-		end
-
-		local itemNeedCaching = false
-		local g1diff, g2diff = g1 and select(4, GetItemInfo(g1)), g2 and select(4, GetItemInfo(g2))
-		if g1diff and g2diff then
-			diff = g1diff >= g2diff and ilvl - g2diff or ilvl - g1diff
-		elseif g1 and g2 then
-			itemNeedCaching = true
-		elseif g1diff then
-			diff = ilvl - g1diff
-		elseif g1 then
-			itemNeedCaching = true
-		end
-
-		if itemNeedCaching then
-			self:Debug("Items need caching in SendResponse", g1, g2)
-			return self:ScheduleTimer("SendResponse", 1, target, session, link, ilvl, response, equipLoc, note, subType, relicType, isTier, isRelic, sendAvgIlvl, sendSpecID)
-		end
-	end
-
-	self:SendCommand(target, "response",
-		session,
-		self.playerName,
-		{	gear1 = g1,
-			gear2 = g2,
-			ilvl = sendAvgIlvl and playersData.ilvl or nil,
-			diff = diff,
-			note = note,
-			response = response,
-			isTier = isTier,
-			isRelic = isRelic,
-			specID = sendSpecID and playersData.specID or nil,
-		})
 end
 
 function RCLootCouncil:GetPlayersGuildRank()
