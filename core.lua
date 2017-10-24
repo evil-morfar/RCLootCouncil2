@@ -237,6 +237,7 @@ function RCLootCouncil:OnInitialize()
 			announceItems = false,
 			announceText = L["Items under consideration:"],
 			announceChannel = "group",
+			announceItemString = "&s: &i", -- The message posted for each item, default: "session: itemlink"
 
 			responses = self.responses,
 

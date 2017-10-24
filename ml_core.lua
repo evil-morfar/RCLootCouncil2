@@ -585,22 +585,19 @@ function RCLootCouncilML:Award(session, winner, response, reason)
 	end
 end
 
-RCLootCouncilML.announceItemString = "&s: &i (ilvl &l, &t)" -- The message posted for each item, default: "session: itemlink itemlvl itemType"
 --- Substitution strings for AnnounceItems
 -- Each keyword will be replaced with the func result if it's used in db.announceItemString
 -- The function receives session, itemlink, lootTable[session] as arguments
 RCLootCouncilML.announceItemStrings = {
 	["&s"] = function(ses) return ses end,
-	["&i"] = function(ses, link) return link end,
-	["&l"] = function(ses, link, data) return data.ilvl end, -- TODO: Use the real ilvl for the token.
-	["&t"] = function(ses, link, data) return "" end, -- TODO: until PR #24 is merge.
+	["&i"] = function(...) return select(2,...) end,
 }
 function RCLootCouncilML:AnnounceItems()
 	if not db.announceItems then return end
 	addon:DebugLog("ML:AnnounceItems()")
 	SendChatMessage(db.announceText, addon:GetAnnounceChannel(db.announceChannel))
 	for k,v in ipairs(self.lootTable) do
-		local msg = self.announceItemString
+		local msg = db.announceItemString
 		for text, func in pairs(self.announceItemStrings) do
 			msg = gsub(msg, text, tostring(func(k, v.link, v)))
 		end
