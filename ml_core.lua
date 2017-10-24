@@ -125,7 +125,7 @@ function RCLootCouncilML:UpdateGroup(ask)
 	for name in pairs(self.candidates) do	group_copy[name] = true end
 	for i = 1, GetNumGroupMembers() do
 		local name, _, _, _, _, class, _, _, _, _, _, role  = GetRaidRosterInfo(i)
-		
+
 		if name then -- Apparantly name can be nil (ticket #223)
 			name = addon:UnitName(name) -- Get their unambiguated name
 			if group_copy[name] then	-- If they're already registered
@@ -614,10 +614,10 @@ RCLootCouncilML.announceItemStrings = {
 }
 -- The description for each keyword
 RCLootCouncilML.announceItemStringsDesc = {
-	["&s"] = L["announce_&s_desc"],
-	["&i"] = L["announce_&i_desc"],
-	["&l"] = L["announce_&l_desc"],
-	["&t"] = L["announce_&t_desc"],
+	L["announce_&s_desc"],
+	L["announce_&i_desc"],
+	L["announce_&l_desc"],
+	L["announce_&t_desc"],
 }
 
 function RCLootCouncilML:AnnounceItems()
@@ -647,12 +647,12 @@ RCLootCouncilML.awardStrings = {
 
 -- The description for each keyword
 RCLootCouncilML.awardStringsDesc = {
-	["&p"] = L["announce_&p_desc"],
-	["&i"] = L["announce_&i_desc"],
-	["&r"] = L["announce_&r_desc"],
-	["&n"] = L["announce_&n_desc"],
-	["&l"] = L["announce_&l_desc"],
-	["&t"] = L["announce_&t_desc"],
+	L["announce_&p_desc"],
+	L["announce_&i_desc"],
+	L["announce_&r_desc"],
+	L["announce_&n_desc"],
+	L["announce_&l_desc"],
+	L["announce_&t_desc"],
 }
 
 

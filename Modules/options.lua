@@ -739,18 +739,7 @@ function addon:OptionsTable()
 									},
 									outputDesc = {
 										order = 2,
-										name = function()
-											local text = L["announce_awards_desc2"]
-											local sorted = {}
-											for _, desc in pairs(RCLootCouncilML.awardStringsDesc) do
-												table.insert(sorted, desc)
-											end
-											table.sort(sorted)
-											for _, desc in ipairs(sorted) do
-												text = text..desc.." "
-											end
-											return text
-										end,
+										name = L["announce_awards_desc2"]..table.concat(RCLootCouncilML.awardStringsDesc, " "),
 										type = "description",
 										hidden = function() return not self.db.profile.announceAward end,
 									},
@@ -806,18 +795,7 @@ function addon:OptionsTable()
 									},
 									announceItemStringDesc ={
 										order = 4,
-										name = function()
-											local text = L["announce_item_string_desc"]
-											local sorted = {}
-											for _, desc in pairs(RCLootCouncilML.announceItemStringsDesc) do
-												table.insert(sorted, desc)
-											end
-											table.sort(sorted)
-											for _, desc in ipairs(sorted) do
-												text = text..desc.." "
-											end
-											return text
-										end,
+										name = L["announce_item_string_desc"]..table.concat(RCLootCouncilML.announceItemStringsDesc, " "),
 										type = "description",
 										hidden = function() return not self.db.profile.announceItems end,
 									},
