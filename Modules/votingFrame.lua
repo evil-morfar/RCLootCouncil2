@@ -1408,7 +1408,7 @@ function RCVotingFrame:StartManualRoll()
 		self:RegisterEvent("CHAT_MSG_SYSTEM")
 		addon:Debug("Start Manual Roll")
 
-		SendChatMessage(string.format(L["manual_roll_announcement"], lootTable[session].link), "RAID")
+		SendChatMessage(string.format(L["request_rolls_announcement"], lootTable[session].link), "RAID")
 	else
 		addon:Debug("Start manual roll by non-ML?")
 	end
