@@ -111,8 +111,9 @@ function RCLootCouncilML:UpdateGroup(ask)
 	for name in pairs(self.candidates) do	group_copy[name] = true end
 	for i = 1, GetNumGroupMembers() do
 		local name, _, _, _, _, class, _, _, _, _, _, role  = GetRaidRosterInfo(i)
-		name = addon:UnitName(name) -- Get their unambiguated name
+		
 		if name then -- Apparantly name can be nil (ticket #223)
+			name = addon:UnitName(name) -- Get their unambiguated name
 			if group_copy[name] then	-- If they're already registered
 				group_copy[name] = nil	-- remove them from the check
 			else -- add them
@@ -123,6 +124,9 @@ function RCLootCouncilML:UpdateGroup(ask)
 				self:AddCandidate(name, class, role) -- Add them in case they haven't installed the adoon
 				updates = true
 			end
+		else
+			addon:Debug("ML:UpdateGroup", "GetRaidRosterInfo returns nil. Abort and retry after 1s.")
+			return self:ScheduleTimer("UpdateGroup", 1, ask) -- Group info is not ready. Abort and retry.
 		end
 	end
 	-- If anything's left in group_copy it means they left the raid, so lets remove them
