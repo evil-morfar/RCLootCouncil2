@@ -175,7 +175,6 @@ L["Disenchant"] = true
 L["disenchant_desc"] = "Select to use this reason when awarding an item via the 'Disenchant' button"
 L["Double click to delete this entry."] = true
 L["Done syncing"] = true
-L["DPS"] = true
 L["Dropped by:"] = true
 L["Edit Entry"] = true
 L["Enable Loot History"] = true
@@ -204,7 +203,6 @@ L["Group"] = true
 L["group_council_members_desc"] = "Use this to add council members from another realm or guild."
 L["group_council_members_head"] = "Add council members from your current group."
 L["Guild Council Members"] = true
-L["Healer"] = true
 L["help"] = true
 L["Hide Votes"] = true
 L["hide_votes_desc"] = "Only players that have already voted will be able to see votes."
@@ -361,7 +359,6 @@ This window needs to be open to initiate a sync,
 but closing it won't stop a sync in progress.
 
 Targets include online guild- and groupmembers, friends and your current friendly target.]]
-L["Tank"] = true
 L["test"] = true
 L["Test"] = true
 L["test_desc"] = "Click to emulate master looting items for yourself and anyone in your raid."

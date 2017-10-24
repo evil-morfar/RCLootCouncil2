@@ -120,9 +120,9 @@ function RCLootCouncil:OnInitialize()
 		relic = {}, -- Created further down
 	}
 	self.roleTable = {
-		TANK =		L["Tank"],
-		HEALER =		L["Healer"],
-		DAMAGER =	L["DPS"],
+		TANK =		_G.TANK,
+		HEALER =		_G.HEALER,
+		DAMAGER =	_G.DAMAGER,
 		NONE =		_G.NONE,
 	}
 
