@@ -827,16 +827,12 @@ function RCVotingFrame.SetCellDiff(rowFrame, frame, data, cols, row, realrow, co
 end
 
 function RCVotingFrame.SetCellGear(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
-	local col = data[realrow].cols[column].colName -- gear1 or gear2
+	local gear = data[realrow].cols[column].colName -- gear1 or gear2
 	local name = data[realrow].name
-	local gear = lootTable[session].candidates[name][col] -- Get the actual gear
+	gear = lootTable[session].candidates[name][gear] -- Get the actual gear
 	if gear then
-		local texture = lootTable[session].candidates[name][col.."texture"] or select(10, GetItemInfo(gear))
-		if texture then
-			frame:SetNormalTexture(texture)
-		else
-			frame:SetNormalTexture("Interface/ICONS/INV_Sigil_Thorim.png")
-		end
+		local texture = select(5, GetItemInfoInstant(gear))
+		frame:SetNormalTexture(texture)
 		frame:SetScript("OnEnter", function() addon:CreateHypertip(gear) end)
 		frame:SetScript("OnLeave", function() addon:HideTooltip() end)
 		frame:SetScript("OnClick", function()

@@ -1274,7 +1274,6 @@ end
 function RCLootCouncil:SendResponse(target, session, link, ilvl, response, equipLoc, note, subType, relicType, isTier, isRelic, sendAvgIlvl, sendSpecID)
 	self:DebugLog("SendResponse", target, session, link, ilvl, response, equipLoc, note, subType, relicType, isTier, isRelic, sendAvgIlvl, sendSpecID)
 	local g1, g2;
-	local g1texture, g2texture
 	local diff = nil
 
 	if link and ilvl and equipLoc and subType then
@@ -1300,9 +1299,6 @@ function RCLootCouncil:SendResponse(target, session, link, ilvl, response, equip
 			self:Debug("Items need caching in SendResponse", g1, g2)
 			return self:ScheduleTimer("SendResponse", 1, target, session, link, ilvl, response, equipLoc, note, subType, relicType, isTier, isRelic, sendAvgIlvl, sendSpecID)
 		end
-
-		g1texture = g1 and select(10, GetItemInfo(g1))
-		g2texture = g2 and select(10, GetItemInfo(g2))
 	end
 
 	self:SendCommand(target, "response",
@@ -1310,8 +1306,6 @@ function RCLootCouncil:SendResponse(target, session, link, ilvl, response, equip
 		self.playerName,
 		{	gear1 = g1,
 			gear2 = g2,
-			gear1texture = g1texture, -- Send texture to avoid no icon display in the voting frame for uncached items.
-			gear2texture = g2texture,
 			ilvl = sendAvgIlvl and playersData.ilvl or nil,
 			diff = diff,
 			note = note,
