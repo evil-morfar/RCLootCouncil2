@@ -145,7 +145,7 @@ function RCVersionCheck:GetFrame()
 	b1:SetScript("OnClick", function() self:Query("guild") end)
 	f.guildBtn = b1
 
-	local b2 = addon:CreateButton(L["Group"], f.content)
+	local b2 = addon:CreateButton(_G.GROUP, f.content)
 	b2:SetPoint("LEFT", b1, "RIGHT", 15, 0)
 	b2:SetScript("OnClick", function() self:Query("group") end)
 	f.raidBtn = b2

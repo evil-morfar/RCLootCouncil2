@@ -195,7 +195,6 @@ L["g2"] = true
 L["General options"] = true
 L["General"] = true
 L["Group Council Members"] = true
-L["Group"] = true
 L["group_council_members_desc"] = "Use this to add council members from another realm or guild."
 L["group_council_members_head"] = "Add council members from your current group."
 L["Guild Council Members"] = true
