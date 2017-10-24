@@ -1298,7 +1298,7 @@ function addon:OptionsTable()
 			type = "select",
 			style = "dropdown",
 			values = {
-				NONE = L["None"],
+				NONE = _G.NONE,
 				SAY = _G.CHAT_MSG_SAY,
 				YELL = _G.CHAT_MSG_YELL,
 				PARTY = _G.CHAT_MSG_PARTY,

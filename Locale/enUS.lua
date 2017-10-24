@@ -264,7 +264,6 @@ L["No items to award later registered"] = true
 L["No recipients available"] = true
 L["No session running"] = true
 L["No winners registered"] = true
-L["None"] = true
 L["Not announced"] = true
 L["Not cached, please reopen."] = true
 L["Not Found"] = true

@@ -123,7 +123,7 @@ function RCLootCouncil:OnInitialize()
 		TANK =		L["Tank"],
 		HEALER =		L["Healer"],
 		DAMAGER =	L["DPS"],
-		NONE =		L["None"],
+		NONE =		_G.NONE,
 	}
 
 	self.testMode = false;
@@ -167,7 +167,7 @@ function RCLootCouncil:OnInitialize()
 			autoAward = false,
 			autoAwardLowerThreshold = 2,
 			autoAwardUpperThreshold = 3,
-			autoAwardTo = L["None"],
+			autoAwardTo = _G.NONE,
 			autoAwardReason = 1,
 			observe = false, -- observe mode on/off
 			silentAutoPass = false, -- Show autopass message
