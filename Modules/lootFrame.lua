@@ -10,7 +10,7 @@ local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 
 local items = {} -- item.i = {name, link, lvl, texture} (i == session)
 local entries = {}
-local ENTRY_HEIGHT = 90
+local ENTRY_HEIGHT = 85
 local MAX_ENTRIES = 5
 local numRolled = 0
 local MIN_BUTTON_WIDTH = 40
@@ -127,6 +127,7 @@ function LootFrame:GetFrame()
 	if self.frame then return self.frame end
 	addon:DebugLog("LootFrame","GetFrame()")
 	self.frame = addon:CreateFrame("DefaultRCLootFrame", "lootframe", L["RCLootCouncil Loot Frame"], 250, 375)
+	self.frame.title:SetPoint("BOTTOM", self.frame, "TOP", 0 ,-5)
 	return self.frame
 end
 
@@ -215,10 +216,10 @@ do
 			end
 			-------- Note button ---------
 			entry.noteButton = CreateFrame("Button", nil, entry.frame)
-			entry.noteButton:SetSize(28,28)
+			entry.noteButton:SetSize(23,23)
 			entry.noteButton:SetHighlightTexture("Interface\\Minimap\\UI-Minimap-ZoomButton-Highlight")
 			entry.noteButton:SetNormalTexture("Interface\\Buttons\\UI-GuildButton-PublicNote-Up")
-			entry.noteButton:SetPoint("BOTTOMRIGHT", -8, 13)
+			entry.noteButton:SetPoint("BOTTOMRIGHT", -8, 15)
 			entry.noteButton:SetScript("OnEnter", function()
 				if entry.item.note then -- If they already entered a note:
 					addon:CreateTooltip(L["Your note:"], entry.item.note, "\nClick to change your note.")
@@ -231,7 +232,7 @@ do
 
 			----- item text/lvl ---------------
 			entry.itemText = entry.frame:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
-			entry.itemText:SetPoint("TOPLEFT", entry.icon, "TOPRIGHT", 7, -4)
+			entry.itemText:SetPoint("TOPLEFT", entry.icon, "TOPRIGHT", 7, -1)
 			entry.itemText:SetText("Fatal error!!!!") -- Set text for reasons
 
 			entry.itemLvl = entry.frame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
@@ -242,7 +243,7 @@ do
 			------------ Timeout -------------
 			entry.timeoutBar = CreateFrame("StatusBar", nil, entry.frame, "TextStatusBar")
 			entry.timeoutBar:SetSize(entry.frame:GetWidth(), 6)
-			entry.timeoutBar:SetPoint("BOTTOMLEFT", 12,4)
+			entry.timeoutBar:SetPoint("BOTTOMLEFT", 12,0)
 			entry.timeoutBar:SetStatusBarTexture("Interface\\TargetingFrame\\UI-StatusBar")
 			--entry.timeoutBar:SetStatusBarColor(0.1, 0, 0.6, 0.8) -- blue
 			entry.timeoutBar:SetStatusBarColor(0.5, 0.5, 0.5, 1) -- grey
