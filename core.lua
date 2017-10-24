@@ -68,8 +68,7 @@ local lootTable = {}
 
 local IsPartyLFG = IsPartyLFG
 
-local playersData = -- Update on login/encounter starts. it stores the information of the player at that moment.
-{
+local playersData = {-- Update on login/encounter starts. it stores the information of the player at that moment.
 	gears = {}, -- Gears key: slot number(1-19), value: item link
 	relics = {}, -- Relics key: slot number(1-3), value: item link
 } -- player's data that can be changed by the player (spec, equipped ilvl, gaers, relics etc)
@@ -367,7 +366,6 @@ function RCLootCouncil:OnInitialize()
 	self.optionsFrame.ml = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("RCLootCouncil", "Master Looter", "RCLootCouncil", "mlSettings")
 	-- reset verTestCandidates
 	self.db.global.verTestCandidates = {}
-	self.playersData = {}
 	-- Add logged in message in the log
 	self:DebugLog("Logged In")
 end
