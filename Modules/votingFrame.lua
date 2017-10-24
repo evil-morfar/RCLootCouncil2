@@ -1439,7 +1439,7 @@ function RCVotingFrame:CHAT_MSG_SYSTEM(event, msg)
 	    	name = addon:UnitName(name)
 
 	    	-- Only the first roll is valid and only the default "/roll" is valid.
-	    	if (not manualRollResults[name]) and low == 1 and high == 100 then
+	    	if lootTable[manualRollSession].candidates[name] and (not manualRollResults[name]) and low == 1 and high == 100 then
 	    		manualRollResults[name] = roll
 	    		addon:Debug("Manual Roll", name, roll, low, high)
 	    		addon:SendCommand("group", "rolls", manualRollSession, {[name] = roll})
