@@ -39,7 +39,7 @@ function LootHistory:OnInitialize()
 	}
 	self.scrollCols = {
 		{name = "",					width = ROW_HEIGHT, },			-- Class icon, should be same row as player
-		{name = L["Name"],		width = 100, 				},		-- Name of the player
+		{name = _G.NAME,		width = 100, 				},		-- Name of the player
 		{name = L["Time"],		width = 125, comparesort = self.DateTimeSort, sort = "dsc",},			-- Time of awarding
 		{name = "",					width = ROW_HEIGHT, },			-- Item at index icon
 		{name = L["Item"],		width = 250, 				}, 	-- Item string
@@ -458,7 +458,7 @@ function LootHistory:GetFrame()
 	})
 
 	--Name selection
-	f.name = LibStub("ScrollingTable"):CreateST({{name = "", width = ROW_HEIGHT},{name = L["Name"], width = 100, sort = "desc"}}, 5, ROW_HEIGHT, { ["r"] = 1.0, ["g"] = 0.9, ["b"] = 0.0, ["a"] = 0.5 }, f.content)
+	f.name = LibStub("ScrollingTable"):CreateST({{name = "", width = ROW_HEIGHT},{name = _G.NAME, width = 100, sort = "desc"}}, 5, ROW_HEIGHT, { ["r"] = 1.0, ["g"] = 0.9, ["b"] = 0.0, ["a"] = 0.5 }, f.content)
 	f.name.frame:SetPoint("TOPLEFT", f.date.frame, "TOPRIGHT", 20, 0)
 	f.name:EnableSelection(true)
 	f.name:RegisterEvents({
@@ -761,7 +761,7 @@ LootHistory.rightClickEntries = {
 			disabled = true,
 		},
 		{ -- 2 Name
-			text = L["Name"],
+			text = _G.NAME,
 			value = "EDIT_NAME",
 			notCheckable = true,
 			hasArrow = true,

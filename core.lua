@@ -257,7 +257,7 @@ function RCLootCouncil:OnInitialize()
 			maxButtons = 10,
 			numButtons = 3,
 			buttons = {
-				{	text = L["Need"],					whisperKey = L["whisperKey_need"], },	-- 1
+				{	text = _G.NEED,					whisperKey = L["whisperKey_need"], },	-- 1
 				{	text = L["Greed"],				whisperKey = L["whisperKey_greed"],},	-- 2
 				{	text = L["Minor Upgrade"],		whisperKey = L["whisperKey_minor"],},	-- 3
 			},
