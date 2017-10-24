@@ -1,3 +1,28 @@
+### v2.7.0
+---
+* **Localization**
++ Armor Token is no longer displayed as "Junk" for non-English client.
++ Relics are now shown as "'type' Artifact Relic" instead of 'type'.
+   + Relic type is now also shown for non-English client.
++ Trinkets are now shown as "Trinket" instead of "Trinket, Miscellaneous" for non-English client
+
+
+* **Announcements**
+* Added a few more keyword replacements for announcement options.
+* It's now possible to edit the announcement string for individual items.
+* Have a look at the redesigned "Announcements" tab for the changes.
+
+
+###### Bugfixes
++ *Fixed a few localization related bugs for non-english clients.*
++ *A session starting immidiately after doing a /reload could cause an error.*
++ *Fixed a few spelling errors in english locale.*
+
+###### Dev
++ Added ```GetItemTypeText()``` for displaying various item types.
++ "Miscellaneous" and "Junk" is added to the ```subTypeLookup```.
+
+
 ### v2.6.1
 ---
 
