@@ -86,7 +86,7 @@ function RCSessionFrame.SetCellText(rowFrame, frame, data, cols, row, realrow, c
 		frame.text:SetFontObject("GameFontNormal") -- We want bigger font
 	end
 	if not data[realrow].link then
-		frame.text:SetText("--"..L["Waiting for item info"].."--")
+		frame.text:SetText("--"..RETRIEVING_ITEM_INFO.."--")
 		loadingItems = true
 		RCSessionFrame:ScheduleTimer("Show", 1, ml.lootTable) -- Expect data to be available in 1 sec and then recreate the frame
 	else
