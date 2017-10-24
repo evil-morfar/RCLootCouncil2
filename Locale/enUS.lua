@@ -109,7 +109,6 @@ L["Banking"] = true
 L["Button"] = true
 L["Buttons and Responses"] = true
 L["buttons_and_responses_desc"] = "Configure the reply buttons to show on raiders' Loot Frame.\nThe order showed here determines the order when sorting the voting frame, and is displayed left to right on the loot frame - use the slider to choose how many buttons you want (max %d).\n\nA \"Pass\" button is added furthest to the right automatically"
-L["Cancel"] = true
 L["Candidate didn't respond on time"] = true
 L["Candidate has disabled RCLootCouncil"] = true
 L["Candidate is not in the instance"] = true

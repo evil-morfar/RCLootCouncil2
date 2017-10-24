@@ -155,7 +155,7 @@ function RCSessionFrame:GetFrame()
 	f.guildBtn = b1
 
 	-- Cancel button
-	local b2 = addon:CreateButton(L["Cancel"], f.content)
+	local b2 = addon:CreateButton(_G.CANCEL, f.content)
 	b2:SetPoint("LEFT", b1, "RIGHT", 15, 0)
 	b2:SetScript("OnClick", function()
 		ml.lootTable = {}
