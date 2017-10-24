@@ -127,7 +127,7 @@ function RCSessionFrame:GetFrame()
 	f.toggle = tgl
 
 	-- Start button
-	local b1 = addon:CreateButton(L["Start"], f.content)
+	local b1 = addon:CreateButton(_G.START, f.content)
 	b1:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", 10, 10)
 	b1:SetScript("OnClick", function()
 		if loadingItems then
