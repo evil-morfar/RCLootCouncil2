@@ -293,7 +293,6 @@ L["open"] = true
 L["open_the_loot_history_desc"] = "Click to open the Loot History."
 L["Opens the synchronizer"] = true
 L["Other piece"] = true
-L["Party"] = true
 L["'player' can't receive 'type'"] = "%s can't receive %s - version mismatch?"
 L["'player' declined your sync request"] = "%s declined your sync request"
 L["'player' has asked you to reroll"] = "%s has asked you to reroll"

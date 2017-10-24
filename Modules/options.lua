@@ -790,7 +790,7 @@ function addon:OptionsTable()
 										values = {
 											SAY = L["Say"],
 											YELL = L["Yell"],
-											PARTY = L["Party"],
+											PARTY = _G.PARTY,
 											GUILD = L["Guild"],
 											OFFICER = L["Officer"],
 											RAID = L["Raid"],
@@ -1301,7 +1301,7 @@ function addon:OptionsTable()
 				NONE = L["None"],
 				SAY = L["Say"],
 				YELL = L["Yell"],
-				PARTY = L["Party"],
+				PARTY = _G.CHAT_MSG_PARTY,
 				GUILD = L["Guild"],
 				OFFICER = L["Officer"],
 				RAID = L["Raid"],
