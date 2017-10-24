@@ -372,7 +372,7 @@ function RCVotingFrame:SwitchSession(s)
 	self.frame.itemLvl:SetText(format(L["ilvl: x"], t.ilvl))
 	-- Set a proper item type text
 
-	self.frame.itemType:SetText(addon:GetItemTypeText(t.link, t.subType, t.equipLoc, t.relic))
+	self.frame.itemType:SetText(addon:GetItemTypeText(t.link, t.subType, t.equipLoc, t.token, t.relic))
 
 	-- Update the session buttons
 	sessionButtons[s] = self:UpdateSessionButton(s, t.texture, t.link, t.awarded)
