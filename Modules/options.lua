@@ -783,7 +783,7 @@ function addon:OptionsTable()
 									},
 									announceChannel = {
 										order = 3,
-										name = L["Channel"],
+										name = _G.CHANNEL,
 										desc = L["channel_desc"],
 										type = "select",
 										style = "dropdown",
@@ -1293,7 +1293,7 @@ function addon:OptionsTable()
 	for i = 1, #self.db.profile.awardText do
 		options.args.mlSettings.args.announcementsTab.args.awardAnnouncement.args["outputSelect"..i] = {
 			order = i+3,
-			name = L["Channel"]..i..":",
+			name = _G.CHANNEL..i..":",
 			desc = L["channel_desc"],
 			type = "select",
 			style = "dropdown",

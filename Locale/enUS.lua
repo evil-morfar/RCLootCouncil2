@@ -119,7 +119,6 @@ L["Cannot give 'item' to 'player' due to Blizzard limitations. Gave it to you fo
 L["Change Response"] = true
 L["Changing loot threshold to enable Auto Awarding"] = true
 L["Changing LootMethod to Master Looting"] = true
-L["Channel"] = true
 L["channel_desc"] = "Select a channel to announce awards to."
 L["channel_desc"] = "The channel to send the message to."
 L["chat tVersion string"] = "|cFF87CEFARCLootCouncil |cFFFFFFFFversion |cFFFFA500 %s - %s"
