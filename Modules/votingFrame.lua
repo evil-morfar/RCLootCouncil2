@@ -1429,14 +1429,16 @@ function RCVotingFrame:CHAT_MSG_SYSTEM(event, msg)
 	if manualRollSession and addon.isMasterLooter and active and msg then
         -- parse the message
 		local pattern = RANDOM_ROLL_RESULT
-		pattern = string.gsub(pattern, "[%(%)-]", "%%%1")
-		pattern = string.gsub(pattern, "%%s", "%(%%S+%)%%s%*")
+		pattern = string.gsub(pattern, "[%(%)%-]", "%%%1")
+		pattern = string.gsub(pattern, "%%s", "%(%.%+%)")
 		pattern = string.gsub(pattern, "%%d", "%(%%d+%)")
+		pattern = string.gsub(pattern, "%%%d%$s", "%(%.%+%)") -- for "deDE"
+		pattern = string.gsub(pattern, "%%%d%$d", "%(%%d+%)") -- for "deDE"
 		local name, roll, low, high = string.match(msg, pattern)
 		roll, low, high = tonumber(roll), tonumber(low), tonumber(high)
 
 		if name then
-	    	name = addon:UnitName(name)
+	    	name = addon:UnitName(name) -- Note: name may contain space.
 
 	    	-- Only the first roll is valid and only the default "/roll" is valid.
 	    	if lootTable[manualRollSession].candidates[name] and (not manualRollResults[name]) and low == 1 and high == 100 then
