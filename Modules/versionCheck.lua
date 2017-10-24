@@ -140,7 +140,7 @@ function RCVersionCheck:GetFrame()
 	if self.frame then return self.frame end
 	local f = addon:CreateFrame("DefaultRCVersionCheckFrame", "versionCheck", L["RCLootCouncil Version Checker"], 250)
 
-	local b1 = addon:CreateButton(L["Guild"], f.content)
+	local b1 = addon:CreateButton(_G.GUILD, f.content)
 	b1:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", 10, 10)
 	b1:SetScript("OnClick", function() self:Query("guild") end)
 	f.guildBtn = b1
