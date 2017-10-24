@@ -379,7 +379,6 @@ L["Tier Tokens ..."] = true
 L["Tier tokens received from here:"] = true
 L["Time"] = true
 L["Timeout"] = true
-L["Time left (num seconds)"] = "Time left: %d"
 L["Tokens received"] = true
 L["To target"] = true
 L["Total awards"] = true

@@ -257,7 +257,7 @@ do
 					return LootFrame:OnRoll(entry, "TIMEOUT")
 				end
 				entry.item.timeLeft = entry.item.timeLeft - elapsed
-				this.text:SetText(format(L["Time left (num seconds)"], ceil(entry.item.timeLeft)))
+				this.text:SetText(_G.CLOSES_IN..": "..ceil(entry.item.timeLeft)) -- _G.CLOSES_IN == "Time Left" for English
 				this:SetValue(entry.item.timeLeft)
 			end)
 
