@@ -592,7 +592,7 @@ function RCVotingFrame:GetFrame()
 	f.moreInfo = CreateFrame( "GameTooltip", "RCVotingFrameMoreInfo", nil, "GameTooltipTemplate" )
 
 	-- Filter
-	local b3 = addon:CreateButton(L["Filter"], f.content)
+	local b3 = addon:CreateButton(_G.FILTER, f.content)
 	b3:SetPoint("RIGHT", b1, "LEFT", -10, 0)
 	b3:SetScript("OnClick", function(self) Lib_ToggleDropDownMenu(1, nil, filterMenu, self, 0, 0) end )
 	b3:SetScript("OnEnter", function() addon:CreateTooltip(L["Deselect responses to filter them"]) end)
@@ -1275,7 +1275,7 @@ do
 				end
 			end
 
-			info.text = L["Filter"]
+			info.text = _G.FILTER
 			info.isTitle = true
 			info.notCheckable = true
 			info.disabled = true

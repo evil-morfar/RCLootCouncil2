@@ -186,7 +186,6 @@ L["Enter your note:"] = true
 L["EQdkp-Plus XML output, tailored for Enjin import."] = true
 L["Everyone have voted"] = true
 L["Export"] = true
-L["Filter"] = true
 L["Following winners was registered:"] = true
 L["Frame options"] = true
 L["Free"] = true

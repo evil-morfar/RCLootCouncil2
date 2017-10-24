@@ -515,7 +515,7 @@ function LootHistory:GetFrame()
 	f.importBtn = b5
 
 	-- Filter
-	local b4 = addon:CreateButton(L["Filter"], f.content)
+	local b4 = addon:CreateButton(_G.FILTER, f.content)
 	b4:SetPoint("RIGHT", f.importBtn, "LEFT", -10, 0)
 	b4:SetScript("OnClick", function(self) Lib_ToggleDropDownMenu(1, nil, filterMenu, self, 0, 0) end )
 	f.filter = b4
@@ -707,7 +707,7 @@ function LootHistory.FilterMenu(menu, level)
 				db.modules["RCLootHistory"].filters[k] = true -- Default as true
 			end
 		end
-		info.text = L["Filter"]
+		info.text = _G.FILTER
 		info.isTitle = true
 		info.notCheckable = true
 		info.disabled = true
