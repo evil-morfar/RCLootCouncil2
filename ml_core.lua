@@ -610,7 +610,7 @@ RCLootCouncilML.announceItemStrings = {
 	["&s"] = function(ses) return ses end,
 	["&i"] = function(...) return select(2,...) end,
 	["&l"] = function(_, _, v) return v.ilvl or "" end,
-	["&t"] = function(_, _, v) return "" end, -- TODO: change this after merged PR #25
+	["&t"] = function(_, _, t) return addon:GetItemTypeText(t.link, t.subType, t.equipLoc, t.token, t.relic) end,
 }
 -- The description for each keyword
 RCLootCouncilML.announceItemStringsDesc = {
@@ -642,7 +642,10 @@ RCLootCouncilML.awardStrings = {
 	["&r"] = function(...) return select(3, ...) end,
 	["&n"] = function(...) return select(4, ...) or "" end,
 	["&l"] = function(...) return RCLootCouncilML.lootTable[select(5, ...)].ilvl or "" end,
-	["&t"] = function(...) return "" end,  -- TODO: change this after merged PR #25
+	["&t"] = function(...)
+		local t = RCLootCouncilML.lootTable[select(5,...)]
+		return addon:GetItemTypeText(t.link, t.subType, t.equipLoc, t.token, t.relic)
+	end,
 }
 
 -- The description for each keyword
