@@ -328,7 +328,6 @@ L["session_error"] = "Something went wrong - please restart the session"
 L["Set the text for button i's response."] = "Set the text for button %d's response'"
 L["Set the text on button 'number'"] = "Set the text on button %i"
 L["Set the whisper keys for button i."] = "Set the whisper keys for button %d."
-L["Settings"] = true
 L["Show Spec Icon"] = true
 L["show_spec_icon_desc"] = "Show spec icon instead of the class icon in the voting frame, if the spec information is received from the user."
 L["Silent Auto Pass"] = true

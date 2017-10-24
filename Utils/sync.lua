@@ -14,7 +14,7 @@ local last_sync_time = 0
 -- Handlers for incoming sync data - determines which sync types we can handle
 sync.syncHandlers = {
    settings = {
-      text = L["Settings"],
+      text = _G.SETTINGS,
       receive = function(data) for k,v in pairs(data) do addon.db.profile[k] = v end; addon:UpdateDB(); addon:ActivateSkin(addon.db.profile.currentSkin) end,
       send = function() return addon.db.profile end,
    },
