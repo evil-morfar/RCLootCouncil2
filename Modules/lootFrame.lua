@@ -144,7 +144,7 @@ do
 			entry.item = item
 			entry.itemText:SetText(entry.item.link or "error")
 			entry.icon:SetNormalTexture(entry.item.texture or "Interface\\InventoryItems\\WoWUnknownItem01")
-			entry.itemLvl:SetText(format(L["ilvl: x"], entry.item.ilvl or 0))
+			entry.itemLvl:SetText(format(_G.ITEM_LEVEL, entry.item.ilvl or 0))
 			if addon.mldb.timeout then
 				entry.timeoutBar:SetMinMaxValues(0, addon.mldb.timeout or addon.db.profile.timeout)
 				entry.timeoutBar:Show()
