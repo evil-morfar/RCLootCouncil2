@@ -311,7 +311,6 @@ L["relic_buttons_desc"] = "Select which buttons/responses to use when handling r
 L["Remove All"] = true
 L["Remove from consideration"] = true
 L["remove_all_desc"] = "Remove all council members"
-L["reset"] = true
 L["reset_announce_to_default_desc"] = "Resets all the announcement options to default"
 L["reset_buttons_to_default_desc"] = "Resets all the buttons, colors and responses to default"
 L["reset_to_default_desc"] = "Resets the award reasons to default."
