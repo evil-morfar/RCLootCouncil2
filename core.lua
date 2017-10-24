@@ -12,6 +12,10 @@
 		- IDEA Add some sort of indicator when rows are being filtered.
 		- TODO/IDEA Change chat_commands to seperate lines in order to have a table of printable cmds.
 		- TODO Use token ilvl to display a token's projected ilvl in the votingframe.
+
+	Backwards compability breaks:
+		- Remove equipLoc, subType, texture from lootTable. They can all be created with GetItemInfoInstant()
+		- Remove name from lootTable. This isn't needed at all.
 -------------------------------- ]]
 
 --[[CHANGELOG
@@ -628,16 +632,6 @@ function RCLootCouncil:SendCommand(target, command, ...)
 	end
 end
 
--- Change the subType in lootTable to our locale.
-function RCLootCouncil:LocalizeLootTable(lootTable)
-	-- v2.7 We need to cache if we need to get subType in our locale.
-	-- C_ArtifactUI.GetRelicInfoByItemID() always return english result. So it is not the reason we need to cache.
-	for ses, v in ipairs(lootTable) do
-		local _, _, subType, equipLoc, texture = GetItemInfoInstant(v.link)
-		v.subType = subType -- Subtype should use our local instead of ML's locale.
-	end
-end
-
 --- Receives RCLootCouncil commands.
 -- Params are delivered by AceComm-3.0, but we need to extract our data created with the
 -- RCLootCouncil:SendCommand function.
@@ -1193,6 +1187,14 @@ function RCLootCouncil:LocalizeSubTypes()
 		self:DebugLog("Found "..name.." localized as: "..sType)
 	end
 	self.db.global.localizedSubTypes.created = GetLocale() -- Only mark this as created after everything is done.
+end
+
+-- Changes the subType in lootTable to our locale.
+function RCLootCouncil:LocalizeLootTable(lootTable)
+	for ses, v in ipairs(lootTable) do
+		local _, _, subType, equipLoc, texture = GetItemInfoInstant(v.link)
+		v.subType = subType -- Subtype should be in our locale
+	end
 end
 
 function RCLootCouncil:IsItemBoE(item)
