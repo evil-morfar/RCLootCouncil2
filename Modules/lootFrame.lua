@@ -109,7 +109,10 @@ function LootFrame:OnRoll(entry, button)
 	local isRelic = entry.item.isRelic and addon.mldb.relicButtonsEnabled
 	addon:Debug("LootFrame:OnRoll", entry.realID, button, "Response:", addon:GetResponseText(button, isTier, isRelic))
 	local item = entry.item
-	addon:SendCommand("group", "response", addon:CreateResponse(item.session, item.link, item.ilvl, button, item.equipLoc, item.note, item.subType, isTier, isRelic))
+
+	-- Only send minimum neccessary data, because the information of current equipped gear has been sent when we receive the loot table.
+	-- target, session, link, ilvl, response, equipLoc, note, subType, relicType, isTier, isRelic, sendAvgIlvl, sendSpecID
+	addon:SendResponse("group", item.session, nil, nil, button, nil, item.note, nil, nil, isTier, isRelic, nil, nil)
 
 	numRolled = numRolled + 1
 	item.rolled = true

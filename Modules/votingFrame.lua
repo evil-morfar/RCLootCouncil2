@@ -179,7 +179,9 @@ function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
 
 			elseif command == "lootTable" and addon:UnitIsUnit(sender, addon.masterLooter) then
 				active = true
-				self:Setup(unpack(data))
+				local lootTable = unpack(data)
+				addon:LocalizeLootTable(lootTable)
+				self:Setup(lootTable)
 				if not addon.enabled then return end -- We just want things ready
 				if db.autoOpen then
 					self:Show()
@@ -747,7 +749,15 @@ end
 
 function RCVotingFrame.SetCellClass(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
 	local name = data[realrow].name
-	addon.SetCellClassIcon(rowFrame, frame, data, cols, row, realrow, column, fShow, table, lootTable[session].candidates[name].class)
+	local specID = lootTable[session].candidates[name].specID
+   	local specIcon = specID and select(4, GetSpecializationInfoByID(specID))
+   	if specIcon and db.showSpecIcon then
+		frame:SetNormalTexture(specIcon);
+		frame:GetNormalTexture():SetTexCoord(0, 1, 0, 1);
+	else
+		addon.SetCellClassIcon(rowFrame, frame, data, cols, row, realrow, column, fShow, table, lootTable[session].candidates[name].class)
+	end
+	data[realrow].cols[column].value = lootTable[session].candidates[name].class or ""
 end
 
 function RCVotingFrame.SetCellName(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
@@ -803,7 +813,7 @@ function RCVotingFrame.SetCellGear(rowFrame, frame, data, cols, row, realrow, co
 	local name = data[realrow].name
 	gear = lootTable[session].candidates[name][gear] -- Get the actual gear
 	if gear then
-		local texture = select(10, GetItemInfo(gear))
+		local texture = select(5, GetItemInfoInstant(gear))
 		frame:SetNormalTexture(texture)
 		frame:SetScript("OnEnter", function() addon:CreateHypertip(gear) end)
 		frame:SetScript("OnLeave", function() addon:HideTooltip() end)

@@ -144,8 +144,22 @@ function addon:OptionsTable()
 									},
 								},
 							},
-							lootHistoryOptions = {
+							frameOptions = {
 								order = 5,
+								type = "group",
+								name = L["Frame options"],
+								inline = true,
+								args = {
+									showSpecIcon = {
+										order = 1,
+										name = L["Show Spec Icon"],
+										desc = L["show_spec_icon_desc"],
+										type = "toggle",
+									}
+								}
+							},
+							lootHistoryOptions = {
+								order = 6,
 								type = "group",
 								name = L["Loot History"],
 								inline = true,
@@ -705,7 +719,7 @@ function addon:OptionsTable()
 									-- Award reasons made further down
 									reset = {
 										order = -1,
-										name = L["Reset to default"],
+										name = RESET_TO_DEFAULT,
 										desc = L["reset_to_default_desc"],
 										type = "execute",
 										confirm = true,
@@ -832,7 +846,7 @@ function addon:OptionsTable()
 							},
 							reset = {
 								order = -1,
-								name = L["Reset to default"],
+								name = RESET_TO_DEFAULT,
 								desc = L["reset_announce_to_default_desc"],
 								type = "execute",
 								confirm = true,
@@ -1023,7 +1037,7 @@ function addon:OptionsTable()
 							},
 							reset = {
 								order = -1,
-								name = L["Reset to default"],
+								name = RESET_TO_DEFAULT,
 								desc = L["reset_buttons_to_default_desc"],
 								type = "execute",
 								confirm = true,
