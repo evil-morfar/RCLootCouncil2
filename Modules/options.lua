@@ -793,6 +793,19 @@ function addon:OptionsTable()
 										width = "double",
 										hidden = function() return not self.db.profile.announceItems end,
 									},
+									announceItemStringDesc ={
+										order = 4,
+										name = L["announce_item_string_desc"],
+										type = "description",
+										hidden = function() return not self.db.profile.announceItems end,
+									},
+									announceItemString = {
+										name = L["Message for each item"],
+										order = 4.1,
+										type = "input",
+										width = "double",
+										hidden = function() return not self.db.profile.announceItems end,
+									},
 								},
 							},
 							reset = {
