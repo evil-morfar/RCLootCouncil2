@@ -191,8 +191,8 @@ do
 				local numButtons = addon.mldb.numButtons or addon.db.profile.numButtons
 				for i = 1, numButtons + 1 do
 					if i > numButtons then -- Pass button:
-						b[i] = b[i] or addon:CreateButton(L["Pass"], entry.frame)
-						b[i]:SetText(L["Pass"]) -- In case it was already created
+						b[i] = b[i] or addon:CreateButton(_G.PASS, entry.frame)
+						b[i]:SetText(_G.PASS) -- In case it was already created
 						b[i]:SetScript("OnClick", function() LootFrame:OnRoll(entry, "PASS") end)
 					else
 						b[i] = b[i] or addon:CreateButton(addon:GetButtonText(i), entry.frame)
@@ -380,8 +380,8 @@ do
 			local numButtons = addon.mldb.tierNumButtons or addon.db.profile.tierNumButtons
 			for i = 1, numButtons + 1 do
 				if i > numButtons then -- Pass button:
-					b[i] = b[i] or addon:CreateButton(L["Pass"], entry.frame)
-					b[i]:SetText(L["Pass"]) -- In case it was already created
+					b[i] = b[i] or addon:CreateButton(_G.PASS, entry.frame)
+					b[i]:SetText(_G.PASS) -- In case it was already created
 					b[i]:SetScript("OnClick", function() LootFrame:OnRoll(entry, "PASS") end)
 				else
 					b[i] = b[i] or addon:CreateButton(addon:GetButtonText(i, true), entry.frame)
@@ -422,8 +422,8 @@ do
 			local numButtons = addon.mldb.relicNumButtons or addon.db.profile.relicNumButtons
 			for i = 1, numButtons + 1 do
 				if i > numButtons then -- Pass button:
-					b[i] = b[i] or addon:CreateButton(L["Pass"], entry.frame)
-					b[i]:SetText(L["Pass"]) -- In case it was already created
+					b[i] = b[i] or addon:CreateButton(_G.PASS, entry.frame)
+					b[i]:SetText(_G.PASS) -- In case it was already created
 					b[i]:SetScript("OnClick", function() LootFrame:OnRoll(entry, "PASS") end)
 				else
 					b[i] = b[i] or addon:CreateButton(addon:GetButtonText(i, false, true), entry.frame)
