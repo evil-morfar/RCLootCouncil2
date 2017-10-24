@@ -719,7 +719,7 @@ function addon:OptionsTable()
 									-- Award reasons made further down
 									reset = {
 										order = -1,
-										name = RESET_TO_DEFAULT,
+										name = _G.RESET_TO_DEFAULT,
 										desc = L["reset_to_default_desc"],
 										type = "execute",
 										confirm = true,
@@ -826,7 +826,7 @@ function addon:OptionsTable()
 							},
 							reset = {
 								order = -1,
-								name = RESET_TO_DEFAULT,
+								name = _G.RESET_TO_DEFAULT,
 								desc = L["reset_announce_to_default_desc"],
 								type = "execute",
 								confirm = true,
@@ -1017,7 +1017,7 @@ function addon:OptionsTable()
 							},
 							reset = {
 								order = -1,
-								name = RESET_TO_DEFAULT,
+								name = _G.RESET_TO_DEFAULT,
 								desc = L["reset_buttons_to_default_desc"],
 								type = "execute",
 								confirm = true,
