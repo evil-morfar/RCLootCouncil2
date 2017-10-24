@@ -1204,7 +1204,7 @@ local subTypeLookup = {
 function RCLootCouncil:LocalizeSubTypes()
 	if self.db.global.localizedSubTypes.created == GetLocale() then
 		local cached = true
-		localizedSubTypesInverse = {}
+		local localizedSubTypesInverse = {}
 		for sType, name in pairs(self.db.global.localizedSubTypes) do
 			localizedSubTypesInverse[name] = sType
 		end
