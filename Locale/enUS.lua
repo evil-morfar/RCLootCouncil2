@@ -343,7 +343,6 @@ L["skins_description"] = "Select one of the default skins or create your own. No
 L["Something went wrong :'("] = true
 L["Something went wrong during syncing, please try again."] = true
 L["Standard .csv output."] = true
-_G.START = true
 L["Status texts"] = true
 L["Successfully imported 'number' entries."] = "Successfully imported %d entries."
 L["Successfully received 'type' from 'player'"] = "Successfully received %s from %s."
