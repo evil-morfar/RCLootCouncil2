@@ -1191,16 +1191,9 @@ function RCLootCouncil:LocalizeSubTypes()
 
 	self.db.global.localizedSubTypes = {} -- reset
 	for name, item in pairs(subTypeLookup) do
-		local sType = select(7, GetItemInfo(item))
-		if sType then
-			self.db.global.localizedSubTypes[sType] = name
-			self:DebugLog("Found "..name.." localized as: "..sType)
-		else -- Probably not cached, set a timer
-			self:Debug("We didn't find:", name, item)
-			self.db.global.localizedSubTypes.created = false
-			self:ScheduleTimer("Timer", 2, "LocalizeSubTypes")
-			return
-		end
+		local sType = select(3, GetItemInfoInstant(item))
+		self.db.global.localizedSubTypes[sType] = name
+		self:DebugLog("Found "..name.." localized as: "..sType)
 	end
 	self.db.global.localizedSubTypes.created = GetLocale() -- Only mark this as created after everything is done.
 end
