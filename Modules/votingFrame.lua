@@ -60,7 +60,6 @@ end
 
 function RCVotingFrame:OnEnable()
 	self:RegisterComm("RCLootCouncil")
-	self:RegisterEvent("CHAT_MSG_SYSTEM")
 	db = addon:Getdb()
 	active = true
 	moreInfo = db.modules["RCVotingFrame"].moreInfo
@@ -1406,6 +1405,7 @@ function RCVotingFrame:StartManualRoll()
 
 		manualRollSession = session
 		wipe(manualRollResults)
+		self:RegisterEvent("CHAT_MSG_SYSTEM")
 		addon:Debug("Start Manual Roll")
 
 		SendChatMessage(string.format(L["manual_roll_announcement"], lootTable[session].link), "RAID")
@@ -1416,6 +1416,7 @@ end
 
 function RCVotingFrame:EndManualRoll()
 	if addon.isMasterLooter then
+		self:UnregisterEvent("CHAT_MSG_SYSTEM")
 		manualRollSession = nil
 		wipe(manualRollResults)
 		addon:Debug("End Manual Roll")
