@@ -595,11 +595,15 @@ end
 RCLootCouncilML.announceItemStrings = {
 	["&s"] = function(ses) return ses end,
 	["&i"] = function(...) return select(2,...) end,
+	["&l"] = function(_, _, v) return v.ilvl or "" end,
+	["&t"] = function(_, _, v) return "" end, -- TODO: change this after merged PR #25
 }
 -- The description for each keyword
 RCLootCouncilML.announceItemStringsDesc = {
 	["&s"] = L["announce_&s_desc"],
 	["&i"] = L["announce_&i_desc"],
+	["&l"] = L["announce_&l_desc"],
+	["&t"] = L["announce_&t_desc"],
 }
 
 function RCLootCouncilML:AnnounceItems()
@@ -623,6 +627,8 @@ RCLootCouncilML.awardStrings = {
 	["&i"] = function(...) return select(2, ...) end,
 	["&r"] = function(...) return select(3, ...) end,
 	["&n"] = function(...) return select(4, ...) or "" end,
+	["&l"] = function(...) return RCLootCouncilML.lootTable[select(5, ...)].ilvl or "" end,
+	["&t"] = function(...) return "" end,  -- TODO: change this after merged PR #25
 }
 
 -- The description for each keyword
@@ -631,6 +637,8 @@ RCLootCouncilML.awardStringsDesc = {
 	["&i"] = L["announce_&i_desc"],
 	["&r"] = L["announce_&r_desc"],
 	["&n"] = L["announce_&n_desc"],
+	["&l"] = L["announce_&l_desc"],
+	["&t"] = L["announce_&t_desc"],
 }
 
 
