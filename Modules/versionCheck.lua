@@ -17,7 +17,7 @@ function RCVersionCheck:OnInitialize()
 	self.scrollCols = {
 		{ name = "",				width = 20, sortnext = 2,},
 		{ name = _G.NAME,		width = 150, },
-		{ name = L["Rank"],		width = 90, comparesort = GuildRankSort},
+		{ name = _G.RANK,		width = 90, comparesort = GuildRankSort},
 		{ name = L["Version"],	width = 140, align = "RIGHT", comparesort = self.VersionSort },
 	}
 end

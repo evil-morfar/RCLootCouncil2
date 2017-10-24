@@ -290,7 +290,6 @@ L["'player' has ended the session"] = "%s has ended the session"
 L["'player' hasn't opened the sync window"] = "%s hasn't opened the sync window (/rc sync)"
 L["Please wait a few seconds until all data has been synchronized."] = true
 L["Please wait before trying to sync again."] = true
-L["Rank"] = true
 L["Raw lua output. Doesn't work well with date selection."] = true
 L["RCLootCouncil Loot Frame"] = true
 L["RCLootCouncil Loot History"] = true
