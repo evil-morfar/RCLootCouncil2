@@ -902,14 +902,14 @@ function RCLootCouncil:Test(num)
 		152423, 152005, 151994, 152008, 151998, 152006, 152002, 151996, -- Mail
 		151985, 151988, 151982, 151992, 151984, 151986, 151987, 151981, -- Leather
 		151943, 151949, 152679, 151953, 152680, 151942, 151946, 151939, -- Cloth
-		
+
 		-- Tier21 Trinkets
 		151975, 151977, -- Tank
 		151956, 151970, -- Healer
 		151964, 151967, -- Melee DPS
 		151968, 151963, -- Non-caster DPS
-		151970, 151971, -- Caster DPS										
-		
+		151970, 151971, -- Caster DPS
+
 		-- Tier21 Relics
 		152024, 152025, -- Arcane
 		152028, 152029, -- Blood
@@ -981,7 +981,7 @@ end
 	Used by getCurrentGear to determine slot types
 	Inspired by EPGPLootMaster
 --]]
-local INVTYPE_Slots = {
+RCLootCouncil.INVTYPE_Slots = {
 		INVTYPE_HEAD		    = "HeadSlot",
 		INVTYPE_NECK		    = "NeckSlot",
 		INVTYPE_SHOULDER	    = "ShoulderSlot",
@@ -1005,7 +1005,6 @@ local INVTYPE_Slots = {
 		INVTYPE_HOLDABLE	    = {"SecondaryHandSlot", ["or"] = "MainHandSlot"},
 		INVTYPE_TRINKET		    = {"TRINKET0SLOT", "TRINKET1SLOT"}
 }
-RCLootCouncil.INVTYPE_Slots = INVTYPE_Slots
 
 function RCLootCouncil:UpdatePlayersGears(startSlot, endSlot)
 	startSlot = startSlot or INVSLOT_FIRST_EQUIPPED
@@ -1015,11 +1014,11 @@ function RCLootCouncil:UpdatePlayersGears(startSlot, endSlot)
 		local iLink = GetInventoryItemLink("player", i)
 		if iLink then
 			local iName = GetItemInfo(iLink)
-			if iName then 
+			if iName then
 				playersData.gears[i] = iLink
 			else -- Blizzard bug that GetInventoryItemLink returns incomplete link. Retry
 				self:ScheduleTimer("UpdatePlayersGears", 1, i, i)
-			end	
+			end
 		else
 			playersData.gears[i] = nil
 		end
@@ -1080,7 +1079,7 @@ function RCLootCouncil:GetPlayersGear(link, equipLoc, gearsTable)
 		end
 		return item1, item2
 	end
-	local slot = INVTYPE_Slots[equipLoc]
+	local slot = self.INVTYPE_Slots[equipLoc]
 	if not slot then return nil, nil; end;
 	item1 = GetInventoryItemLink("player", GetInventorySlotInfo(slot[1] or slot))
 	if not item1 and slot['or'] then
