@@ -594,8 +594,8 @@ RCLootCouncilML.announceItemStrings = {
 }
 -- The description for each keyword
 RCLootCouncilML.announceItemStringsDesc = {
-	["&s"] = L["announce_item_string_&s_desc"],
-	["&i"] = L["announce_item_string_&i_desc"],
+	["&s"] = L["announce_&s_desc"],
+	["&i"] = L["announce_&i_desc"],
 }
 
 function RCLootCouncilML:AnnounceItems()
@@ -623,10 +623,10 @@ RCLootCouncilML.awardStrings = {
 
 -- The description for each keyword
 RCLootCouncilML.awardStringsDesc = {
-	["&p"] = L["announce_awards_&p_desc"],
-	["&i"] = L["announce_awards_&i_desc"],
-	["&r"] = L["announce_awards_&r_desc"],
-	["&n"] = L["announce_awards_&n_desc"],
+	["&p"] = L["announce_&p_desc"],
+	["&i"] = L["announce_&i_desc"],
+	["&r"] = L["announce_&r_desc"],
+	["&n"] = L["announce_&n_desc"],
 }
 
 
