@@ -585,7 +585,7 @@ function RCLootCouncilML:Award(session, winner, response, reason)
 	end
 end
 
-RCLootCouncilML.announceItemString = "&s: &i (&l, &t)" -- The message posted for each item, default: "session: itemlink itemlvl itemType"
+RCLootCouncilML.announceItemString = "&s: &i (ilvl &l, &t)" -- The message posted for each item, default: "session: itemlink itemlvl itemType"
 --- Substitution strings for AnnounceItems
 -- Each keyword will be replaced with the func result if it's used in db.announceItemString
 -- The function receives session, itemlink, lootTable[session] as arguments
