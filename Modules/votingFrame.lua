@@ -1436,7 +1436,6 @@ function RCVotingFrame:CHAT_MSG_SYSTEM(event, msg)
 	    roll, low, high = tonumber(roll), tonumber(low), tonumber(high)
 
 	    if name then
-	    	name = Ambiguate(name, "short")
 	    	name = addon:UnitName(name)
 
 	    	-- Only the first roll is valid and only the default "/roll" is valid.
