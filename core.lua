@@ -1939,7 +1939,7 @@ function RCLootCouncil:GetItemTypeText(link, subType, equipLoc, tokenSlot, relic
 	local englishSubType = self.db.global.localizedSubTypes[subType]
 
 	if tokenSlot then -- It's a token
-		if getglobal(equipLoc) then
+		if equipLoc ~= "" and getglobal(equipLoc) then
 			return getglobal(equipLoc)..", "..L["Armor Token"]
 		else
 			return L["Armor Token"]
