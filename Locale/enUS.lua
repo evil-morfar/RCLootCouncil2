@@ -323,7 +323,6 @@ L["Remove All"] = true
 L["Remove from consideration"] = true
 L["remove_all_desc"] = "Remove all council members"
 L["Reset to default"] = RESET_TO_DEFAULT -- For backward compatibility to EU
-L["reset"] = true
 L["reset_announce_to_default_desc"] = "Resets all the announcement options to default"
 L["reset_buttons_to_default_desc"] = "Resets all the buttons, colors and responses to default"
 L["reset_to_default_desc"] = "Resets the award reasons to default."
