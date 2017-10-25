@@ -188,7 +188,6 @@ L["Export"] = true
 L["Following winners was registered:"] = true
 L["Frame options"] = true
 L["Free"] = true
-L["From:"] = true
 L["g1"] = true
 L["g2"] = true
 L["General options"] = true

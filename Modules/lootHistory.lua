@@ -633,7 +633,7 @@ function LootHistory:UpdateMoreInfo(rowFrame, cellFrame, dat, cols, row, realrow
 		end
 	end
 	tip:AddDoubleLine(L["Dropped by:"], data.boss or _G.UNKNOWN, 1,1,1, 0.862745, 0.0784314, 0.235294)
-	tip:AddDoubleLine(L["From:"], data.instance or _G.UNKNOWN, 1,1,1, 0.823529, 0.411765, 0.117647)
+	tip:AddDoubleLine(_G.FROM, data.instance or _G.UNKNOWN, 1,1,1, 0.823529, 0.411765, 0.117647)
 	tip:AddDoubleLine(L["Votes"]..":", data.votes or _G.UNKNOWN, 1,1,1, 1,1,1)
 	tip:AddLine(" ")
 	tip:AddLine(L["Tokens received"])
