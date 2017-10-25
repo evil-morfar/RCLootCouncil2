@@ -10,7 +10,7 @@ local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 
 local items = {} -- item.i = {name, link, lvl, texture} (i == session)
 local entries = {}
-local ENTRY_HEIGHT = 85
+local ENTRY_HEIGHT = 80
 local MAX_ENTRIES = 5
 local numRolled = 0
 local MIN_BUTTON_WIDTH = 40
@@ -101,7 +101,7 @@ function LootFrame:Update()
 		end
 	end
 	self.EntryManager:Update()
-	self.frame:SetHeight(numEntries * ENTRY_HEIGHT + 2)
+	self.frame:SetHeight(numEntries * ENTRY_HEIGHT + 7)
 end
 
 function LootFrame:OnRoll(entry, button)
@@ -163,7 +163,7 @@ do
 		-- Expects caller to setup buttons and position.
 		Create = function(entry, parent)
 			entry.width = parent:GetWidth()
-			entry.frame = CreateFrame("Frame", "DefualtRCLootFrameEntry("..LootFrame.EntryManager.numEntries..")", parent)
+			entry.frame = CreateFrame("Frame", "DefaultRCLootFrameEntry("..LootFrame.EntryManager.numEntries..")", parent)
 			entry.frame:SetWidth(entry.width)
 			entry.frame:SetHeight(ENTRY_HEIGHT)
 			-- We expect entry constructors to place the frame correctly:
@@ -171,8 +171,8 @@ do
 
 			-------- Item Icon -------------
 			entry.icon = CreateFrame("Button", nil, entry.frame, "UIPanelButtonTemplate")
-			entry.icon:SetSize(ENTRY_HEIGHT*0.73, ENTRY_HEIGHT*0.73)
-			entry.icon:SetPoint("TOPLEFT", entry.frame, "TOPLEFT", 9, -9)
+			entry.icon:SetSize(ENTRY_HEIGHT*0.75, ENTRY_HEIGHT*0.75)
+			entry.icon:SetPoint("TOPLEFT", entry.frame, "TOPLEFT", 9, -5)
 			entry.icon:SetScript("OnEnter", function()
 				if not entry.item.link then return end
 				addon:CreateHypertip(entry.item.link)
@@ -189,8 +189,9 @@ do
 			entry.buttons = {}
 			entry.UpdateButtons = function(entry)
 				local b = entry.buttons -- shortening
-				local width = 150 -- buttons determines the width of the entry
 				local numButtons = addon.mldb.numButtons or addon.db.profile.numButtons
+				-- (IconWidth (60) + indent(9)) + pass button (5) + (noteButton(24)  + indent(5+7)) + numButton * space(5)
+				local width = 110 + numButtons * 5
 				for i = 1, numButtons + 1 do
 					if i > numButtons then -- Pass button:
 						b[i] = b[i] or addon:CreateButton(_G.PASS, entry.frame)
@@ -220,10 +221,10 @@ do
 			end
 			-------- Note button ---------
 			entry.noteButton = CreateFrame("Button", nil, entry.frame)
-			entry.noteButton:SetSize(23,23)
+			entry.noteButton:SetSize(24,24)
 			entry.noteButton:SetHighlightTexture("Interface\\Minimap\\UI-Minimap-ZoomButton-Highlight")
 			entry.noteButton:SetNormalTexture("Interface\\Buttons\\UI-GuildButton-PublicNote-Up")
-			entry.noteButton:SetPoint("BOTTOMRIGHT", -8, 15)
+			entry.noteButton:SetPoint("BOTTOMRIGHT", -9, 14)
 			entry.noteButton:SetScript("OnEnter", function()
 				if entry.item.note then -- If they already entered a note:
 					addon:CreateTooltip(L["Your note:"], entry.item.note, "\nClick to change your note.")
@@ -247,7 +248,7 @@ do
 			------------ Timeout -------------
 			entry.timeoutBar = CreateFrame("StatusBar", nil, entry.frame, "TextStatusBar")
 			entry.timeoutBar:SetSize(entry.frame:GetWidth(), 6)
-			entry.timeoutBar:SetPoint("BOTTOMLEFT", 12,0)
+			entry.timeoutBar:SetPoint("BOTTOMLEFT", 9,5)
 			entry.timeoutBar:SetStatusBarTexture("Interface\\TargetingFrame\\UI-StatusBar")
 			--entry.timeoutBar:SetStatusBarColor(0.1, 0, 0.6, 0.8) -- blue
 			entry.timeoutBar:SetStatusBarColor(0.5, 0.5, 0.5, 1) -- grey
@@ -266,7 +267,7 @@ do
 			-- We want to update the width of the timeout bar everytime the width of the whole frame changes:
 			local main_width = entry.frame.SetWidth
 			function entry:SetWidth(width)
-				self.timeoutBar:SetWidth(width - 24) -- 12 indent on each side
+				self.timeoutBar:SetWidth(width - 18) -- 9 indent on each side
 				main_width(self.frame, width)
 				self.width = width
 			end
@@ -313,7 +314,7 @@ do
 		for i, entry in ipairs(self.entries) do
 			if entry.width > max then max = entry.width end
 			if i == 1 then
-				entry.frame:SetPoint("TOPLEFT", LootFrame.frame.content, "TOPLEFT")
+				entry.frame:SetPoint("TOPLEFT", LootFrame.frame.content, "TOPLEFT",0,-5)
 			else
 				entry.frame:SetPoint("TOPLEFT", self.entries[i-1].frame, "BOTTOMLEFT")
 			end
@@ -378,8 +379,8 @@ do
 		-- Tier entry uses different buttons, so change the function:
 		function Entry.UpdateButtons(entry)
 			local b = entry.buttons -- shortening
-			local width = 150 -- buttons determines the width of the entry
 			local numButtons = addon.mldb.tierNumButtons or addon.db.profile.tierNumButtons
+			local width = 110 + numButtons * 5
 			for i = 1, numButtons + 1 do
 				if i > numButtons then -- Pass button:
 					b[i] = b[i] or addon:CreateButton(_G.PASS, entry.frame)
@@ -420,8 +421,8 @@ do
 		-- Relic entry uses different buttons, so change the function:
 		function Entry.UpdateButtons(entry)
 			local b = entry.buttons -- shortening
-			local width = 150 -- buttons determines the width of the entry
 			local numButtons = addon.mldb.relicNumButtons or addon.db.profile.relicNumButtons
+			local width = 110 + numButtons * 5
 			for i = 1, numButtons + 1 do
 				if i > numButtons then -- Pass button:
 					b[i] = b[i] or addon:CreateButton(_G.PASS, entry.frame)
