@@ -1216,7 +1216,7 @@ do
 				end
 				-- And relics
 				if db.relicButtonsEnabled then
-					info.text = L["Relics"].." ..."
+					info.text = _G.RELICSLOT.." ..."
 					info.value = "RELICS"
 					info.hasArrow = true
 					info.notCheckable = true
