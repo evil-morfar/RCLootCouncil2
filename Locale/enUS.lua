@@ -191,7 +191,6 @@ L["group_council_members_head"] = "Add council members from your current group."
 L["Guild Council Members"] = true
 L["Hide Votes"] = true
 L["hide_votes_desc"] = "Only players that have already voted will be able to see votes."
-L["history"] = true
 L["How to sync"] = true
 L["Ignore List"] = true
 L["Ignore Options"] = true

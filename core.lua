@@ -507,7 +507,7 @@ function RCLootCouncil:ChatCommand(msg)
 	elseif input == 'version' or input == L["version"] or input == "v" or input == "ver" then
 		self:CallModule("version")
 
-	elseif input == "history" or input == L["history"] or input == "h" or input == "his" then
+	elseif input == "history" or input == string.lower(_G.HISTORY) or input == "h" or input == "his" then
 		self:CallModule("history")
 --@debug@
 	elseif input == "nnp" then
