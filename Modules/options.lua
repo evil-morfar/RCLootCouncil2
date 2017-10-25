@@ -321,7 +321,7 @@ function addon:OptionsTable()
 									},
 									border = {
 										order = 5,
-										name = _G.EMBLEM_BORDER, -- "Border"
+										name = L["Border"],
 										type = "select",
 										width = "double",
 										dialogControl = "LSM30_Border",
@@ -336,7 +336,7 @@ function addon:OptionsTable()
 									},
 									borderColor = {
 										order = 6,
-										name = _G.EMBLEM_BORDER_COLOR, -- "Border color"
+										name = L["Border Color"],
 										type = "color",
 										hasAlpha = true,
 										get = function() return unpack(db.UI.default.borderColor) end,
