@@ -517,7 +517,7 @@ function RCLootCouncil:ChatCommand(msg)
 	elseif input == "whisper" or input == L["whisper"] then
 		self:Print(L["whisper_help"])
 
-	elseif (input == "add" or input == L["add"]) then
+	elseif input == "add" or input == string.lower(_G.ADD) then
 		if not args[1] or args[1] == "" then return self:ChatCommand("help") end
 		if self.isMasterLooter then
 			for _,v in ipairs(args) do

@@ -34,7 +34,6 @@ L["Add Item"] = true
 L["Add Note"] = true
 L["Add ranks"] = true
 L["Add rolls"] = true
-L["add"] = true
 L["add_ranks_desc"] = "Choose minimum rank to participate in lootcouncil:"
 L["add_ranks_desc2"] = "\n\nSelect a rank above to add all members at and above that rank to the council.\n\nClick on the ranks to the left to add individual players to the council.\n\nClick the 'Current Council' tab to see your selection."
 L["All items has been awarded and  the loot session concluded"] = true
