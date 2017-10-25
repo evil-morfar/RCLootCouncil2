@@ -937,8 +937,10 @@ function RCVotingFrame.filterFunc(table, row)
 	if not db.modules["RCVotingFrame"].filters then return true end -- db hasn't been initialized, so just show it
 	local response = lootTable[session].candidates[row.name].response
 	if response == "AUTOPASS" or response == "PASS" or type(response) == "number" then
-		if lootTable[session].token and addon.mldb.tierButtonsEnabled and type(response) == "number" then
+		if lootTable[session].token and addon.mldb.tierButtonsEnabled and type(response) == "number"then
 			return db.modules["RCVotingFrame"].filters.tier[response]
+		elseif lootTable[session].relic and addon.mldb.relicButtonsEnabled and type(response) == "number" then
+			return db.modules["RCVotingFrame"].filters.relic[response]
 		else
 			return db.modules["RCVotingFrame"].filters[response]
 		end
@@ -1271,16 +1273,20 @@ do
 			end
 
 			-- Build the data table:
-			local data = {["STATUS"] = true, ["PASS"] = true, ["AUTOPASS"] = true, tier = {}}
+			local data = {["STATUS"] = true, ["PASS"] = true, ["AUTOPASS"] = true, tier = {}, relic = {}}
 
-			local isTier = false
+			local isTier, isRelic
 			-- If we're viewing a tier token and the ML have it enabled, we want to see it
 			if lootTable[session].token and addon.mldb.tierButtonsEnabled then
 				isTier = true
 				for i = 1, addon.mldb.tierNumButtons or db.tierNumButtons do
 					data.tier[i] = i
 				end
-
+			elseif lootTable[session].relic and addon.mldb.relicButtonsEnabled then
+				isRelic = true
+				for i = 1, addon.mldb.relicNumButtons or db.relicNumButtons do
+					data.relic[i] = i
+				end
 			else -- otherwise just do the normal buttons
 				for i = 1, addon.mldb.numButtons or db.numButtons do
 					data[i] = i
@@ -1298,11 +1304,23 @@ do
 					info.text = addon:GetResponseText(k, isTier)
 					info.colorCode = "|cff"..addon:RGBToHex(addon:GetResponseColor(k, isTier))
 					info.func = function()
-						addon:Debug("Update Filter")
+						addon:Debug("Update tier Filter")
 						db.modules["RCVotingFrame"].filters.tier[k] = not db.modules["RCVotingFrame"].filters.tier[k]
 						RCVotingFrame:Update()
 					end
 					info.checked = db.modules["RCVotingFrame"].filters.tier[k]
+					Lib_UIDropDownMenu_AddButton(info, level)
+				end
+			elseif isRelic then -- relic filters
+				for k in ipairs(data.relic) do
+					info.text = addon:GetResponseText(k, false, true)
+					info.colorCode = "|cff"..addon:RGBToHex(addon:GetResponseColor(k, false, true))
+					info.func = function()
+						addon:Debug("Update relic Filter")
+						db.modules["RCVotingFrame"].filters.relic[k] = not db.modules["RCVotingFrame"].filters.relic[k]
+						RCVotingFrame:Update()
+					end
+					info.checked = db.modules["RCVotingFrame"].filters.relic[k]
 					Lib_UIDropDownMenu_AddButton(info, level)
 				end
 			else -- add normal buttons
@@ -1319,7 +1337,7 @@ do
 				end
 			end
 			for k in pairs(data) do -- A bit redundency, but it makes sure these "specials" comes last
-				if type(k) == "string" and k ~= "tier" then
+				if type(k) == "string" and k ~= "tier" and k ~= "relic" then
 					if k == "STATUS" then
 						info.text = L["Status texts"]
 						info.colorCode = "|cffde34e2" -- purpleish

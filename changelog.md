@@ -26,6 +26,7 @@
    + E.g. the council can now see a candidates gear and ilvl before a candidates responds.
 * RCLootCouncil now sends the gear a candidate had equipped during the most recent encounter instead of the gear equipped when rolling.
    + This way candidates can't change their gear to appear to have lower ilvl.
+* If enabled, relic responses can now be filtered separately.
 
 
 * **Rolls**

@@ -234,6 +234,9 @@ function RCLootCouncil:OnInitialize()
 						tier = { -- New section in v2.4.0
 							['*'] = true,
 						},
+						relic = { -- v2.7
+							['*'] = true
+						},
 					},
 				},
 			},
