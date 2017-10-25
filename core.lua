@@ -1287,7 +1287,7 @@ function RCLootCouncil:GetPlayersGuildRank()
 			unregisterGuildEvent = true;
 			return rank;
 		else
-			return _G.ERR_LOOT_PLAYER_NOT_FOUND; -- "Player not found"
+			return L["Not Found"];
 		end
 	else
 		return L["Unguilded"];
