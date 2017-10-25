@@ -10,7 +10,7 @@ local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 
 local items = {} -- item.i = {name, link, lvl, texture} (i == session)
 local entries = {}
-local ENTRY_HEIGHT = 75
+local ENTRY_HEIGHT = 85
 local MAX_ENTRIES = 5
 local numRolled = 0
 local MIN_BUTTON_WIDTH = 40
@@ -130,6 +130,7 @@ function LootFrame:GetFrame()
 	if self.frame then return self.frame end
 	addon:DebugLog("LootFrame","GetFrame()")
 	self.frame = addon:CreateFrame("DefaultRCLootFrame", "lootframe", L["RCLootCouncil Loot Frame"], 250, 375)
+	self.frame.title:SetPoint("BOTTOM", self.frame, "TOP", 0 ,-5)
 	return self.frame
 end
 
@@ -144,7 +145,7 @@ do
 			entry.item = item
 			entry.itemText:SetText(entry.item.link or "error")
 			entry.icon:SetNormalTexture(entry.item.texture or "Interface\\InventoryItems\\WoWUnknownItem01")
-			entry.itemLvl:SetText(format(_G.ITEM_LEVEL, entry.item.ilvl or 0))
+			entry.itemLvl:SetText((entry.item.ilvl or 0).."  |cff7fffff"..entry.item.subType.."|r") -- TODO: Change subType display after merged with PR #25
 			if addon.mldb.timeout then
 				entry.timeoutBar:SetMinMaxValues(0, addon.mldb.timeout or addon.db.profile.timeout)
 				entry.timeoutBar:Show()
@@ -169,8 +170,8 @@ do
 
 			-------- Item Icon -------------
 			entry.icon = CreateFrame("Button", nil, entry.frame, "UIPanelButtonTemplate")
-			entry.icon:SetSize(ENTRY_HEIGHT*2/3, ENTRY_HEIGHT*2/3)
-			entry.icon:SetPoint("TOPLEFT", entry.frame, "TOPLEFT", 12, -13)
+			entry.icon:SetSize(ENTRY_HEIGHT*0.73, ENTRY_HEIGHT*0.73)
+			entry.icon:SetPoint("TOPLEFT", entry.frame, "TOPLEFT", 9, -9)
 			entry.icon:SetScript("OnEnter", function()
 				if not entry.item.link then return end
 				addon:CreateHypertip(entry.item.link)
@@ -218,10 +219,10 @@ do
 			end
 			-------- Note button ---------
 			entry.noteButton = CreateFrame("Button", nil, entry.frame)
-			entry.noteButton:SetSize(20,20)
+			entry.noteButton:SetSize(23,23)
 			entry.noteButton:SetHighlightTexture("Interface\\Minimap\\UI-Minimap-ZoomButton-Highlight")
 			entry.noteButton:SetNormalTexture("Interface\\Buttons\\UI-GuildButton-PublicNote-Up")
-			entry.noteButton:SetPoint("BOTTOMRIGHT", -12, 12)
+			entry.noteButton:SetPoint("BOTTOMRIGHT", -8, 15)
 			entry.noteButton:SetScript("OnEnter", function()
 				if entry.item.note then -- If they already entered a note:
 					addon:CreateTooltip(L["Your note:"], entry.item.note, "\nClick to change your note.")
@@ -234,18 +235,18 @@ do
 
 			----- item text/lvl ---------------
 			entry.itemText = entry.frame:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
-			entry.itemText:SetPoint("TOPLEFT", entry.icon, "TOPRIGHT", 5, -5)
+			entry.itemText:SetPoint("TOPLEFT", entry.icon, "TOPRIGHT", 7, -1)
 			entry.itemText:SetText("Fatal error!!!!") -- Set text for reasons
 
 			entry.itemLvl = entry.frame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-			entry.itemLvl:SetPoint("TOPRIGHT", entry.frame, "TOPRIGHT", -12, -13)
+			entry.itemLvl:SetPoint("TOPLEFT", entry.itemText, "BOTTOMLEFT", 1, -4)
 			entry.itemLvl:SetTextColor(1, 1, 1) -- White
 			entry.itemLvl:SetText("error")
 
 			------------ Timeout -------------
 			entry.timeoutBar = CreateFrame("StatusBar", nil, entry.frame, "TextStatusBar")
 			entry.timeoutBar:SetSize(entry.frame:GetWidth(), 6)
-			entry.timeoutBar:SetPoint("BOTTOMLEFT", 12,4)
+			entry.timeoutBar:SetPoint("BOTTOMLEFT", 12,0)
 			entry.timeoutBar:SetStatusBarTexture("Interface\\TargetingFrame\\UI-StatusBar")
 			--entry.timeoutBar:SetStatusBarColor(0.1, 0, 0.6, 0.8) -- blue
 			entry.timeoutBar:SetStatusBarColor(0.5, 0.5, 0.5, 1) -- grey
