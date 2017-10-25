@@ -1185,6 +1185,20 @@ function RCLootCouncil:GetTokenIlvl(link)
   	return baseIlvl -- Normal difficulty
 end
 
+function RCLootCouncil:GetTokenEquipLoc(tokenSlot)
+	if tokenSlot then
+		if tokenSlot == "Trinket" then
+			return "INVTYPE_TRINKET"
+		else
+			for loc, slot in pairs(self.INVTYPE_Slots) do
+				if slot == tokenSlot then
+					return loc
+				end
+			end
+		end
+	end
+end
+
 function RCLootCouncil:Timer(type, ...)
 	self:Debug("Timer "..type.." passed")
 	if type == "LocalizeSubTypes" then
