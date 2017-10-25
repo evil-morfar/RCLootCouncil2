@@ -908,7 +908,7 @@ function RCVotingFrame.SetCellNote(rowFrame, frame, data, cols, row, realrow, co
 	f:SetPoint("CENTER", frame, "CENTER")
 	if note then
 		f:SetNormalTexture("Interface/BUTTONS/UI-GuildButton-PublicNote-Up.png")
-		f:SetScript("OnEnter", function() addon:CreateTooltip(L["Note"], note)	end)
+		f:SetScript("OnEnter", function() addon:CreateTooltip(_G.LABEL_NOTE, note)	end) -- _G.LABEL_NOTE == "Note" in English
 		f:SetScript("OnLeave", function() addon:HideTooltip() end)
 		data[realrow].cols[column].value = 1 -- Set value for sorting compability
 	else

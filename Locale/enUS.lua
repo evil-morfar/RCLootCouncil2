@@ -255,7 +255,6 @@ L["Not announced"] = true
 L["Not cached, please reopen."] = true
 L["Not Found"] = true
 L["Not installed"] = true
-L["Note"] = true
 L["Notes"] = true
 L["notes_desc"] = "Enables candidates to send a note to the council along with their roll."
 L["Note: Huge exports will cause lag."] = true
