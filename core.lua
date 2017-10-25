@@ -2087,6 +2087,25 @@ function RCLootCouncil:GetItemTypeText(link, subType, equipLoc, tokenSlot, relic
 	end
 end
 
+function RCLootCouncil:GetItemClassText(link, withColor)
+	local id = self:GetItemIDFromLink(link)
+	if not RCTokenClasses[id] then
+		return ""
+	end
+
+	local text = ""
+	for i, class in ipairs(RCTokenClasses[id]) do
+		if withColor then
+			text = text.."|c"..RAID_CLASS_COLORS[class].colorStr..LOCALIZED_CLASS_NAMES_MALE[class].."|r"
+		else
+			text = text..LOCALIZED_CLASS_NAMES_MALE[class]
+		end
+		if i ~= #RCTokenClasses[id] then
+			text = text..", "
+		end
+	end
+	return text
+end
 --- Formats a name with or without realmName.
 -- @paramsig name
 -- @param name Name with(out) realmname.

@@ -413,6 +413,7 @@ function RCVotingFrame:SwitchSession(s)
 	-- Set a proper item type text
 
 	self.frame.itemType:SetText(addon:GetItemTypeText(t.link, t.subType, t.equipLoc, t.token, t.relic))
+	self.frame.itemClass:SetText(addon:GetItemClassText(t.link, true))
 
 	-- Update the session buttons
 	sessionButtons[s] = self:UpdateSessionButton(s, t.texture, t.link, t.awarded)
@@ -562,7 +563,7 @@ function RCVotingFrame:GetFrame()
 		    HandleModifiedItemClick(lootTable[session].link);
         end
     end);
-	item:SetPoint("TOPLEFT", f, "TOPLEFT", 10, -20)
+	item:SetPoint("TOPLEFT", f, "TOPLEFT", 10, -15)
 	item:SetSize(50,50)
 	f.itemIcon = item
 
@@ -588,6 +589,12 @@ function RCVotingFrame:GetFrame()
 	iType:SetTextColor(0.5, 1, 1) -- Turqouise
 	iType:SetText("")
 	f.itemType = iType
+
+	local iClass = f.content:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+	iClass:SetPoint("TOPLEFT", iType, "BOTTOMLEFT", 0, -4)
+	iClass:SetTextColor(1, 1, 1) -- White
+	iClass:SetText("")
+	f.itemClass = iClass
 	--#end----------------------------
 
 	-- Abort button
