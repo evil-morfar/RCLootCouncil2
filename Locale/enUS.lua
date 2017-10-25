@@ -73,7 +73,6 @@ L["Auto Close"] = true
 L["auto_close_desc"] = "Check to automatically close the voting frame when the Master Looter ends the session"
 L["Auto Enable"] = true
 L["Auto extracted from whisper"] = true
-L["Auto Loot"] = true
 L["Auto Open"] = true
 L["Auto pass BoE"] = true
 L["Auto Pass"] = true

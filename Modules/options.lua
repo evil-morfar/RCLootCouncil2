@@ -476,7 +476,7 @@ function addon:OptionsTable()
 									},
 									autoLoot = {
 										order = 5,
-										name = L["Auto Loot"],
+										name = _G.AUTO_LOOT_DEFAULT_TEXT,
 										desc = L["auto_loot_desc"],
 										type = "toggle",
 									},
