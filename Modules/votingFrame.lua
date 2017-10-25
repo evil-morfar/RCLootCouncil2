@@ -31,18 +31,18 @@ function RCVotingFrame:OnInitialize()
 	-- The default values are in sorted order
 	defaultScrollTableData = {
 		{ name = "",				DoCellUpdate = RCVotingFrame.SetCellClass,		colName = "class",	sortnext = 2,		width = 20, },										-- 1 Class
-		{ name = L["Name"],		DoCellUpdate = RCVotingFrame.SetCellName,			colName = "name",								width = 120,},										-- 2 Candidate Name
-		{ name = L["Rank"],		DoCellUpdate = RCVotingFrame.SetCellRank,			colName = "rank",		sortnext = 5,		width = 95, comparesort = GuildRankSort,},-- 3 Guild rank
-		{ name = L["Role"],		DoCellUpdate = RCVotingFrame.SetCellRole,			colName = "role",		sortnext = 5,		width = 55, },										-- 4 Role
+		{ name = _G.NAME,		DoCellUpdate = RCVotingFrame.SetCellName,			colName = "name",								width = 120,},										-- 2 Candidate Name
+		{ name = _G.RANK,		DoCellUpdate = RCVotingFrame.SetCellRank,			colName = "rank",		sortnext = 5,		width = 95, comparesort = GuildRankSort,},-- 3 Guild rank
+		{ name = _G.ROLE,		DoCellUpdate = RCVotingFrame.SetCellRole,			colName = "role",		sortnext = 5,		width = 55, },										-- 4 Role
 		{ name = L["Response"],	DoCellUpdate = RCVotingFrame.SetCellResponse,	colName = "response",sortnext = 13,		width = 240, comparesort = ResponseSort,},-- 5 Response
-		{ name = L["ilvl"],		DoCellUpdate = RCVotingFrame.SetCellIlvl,			colName = "ilvl",		sortnext = 7,		width = 45, },										-- 6 Total ilvl
+		{ name = _G.ITEM_LEVEL_ABBR,		DoCellUpdate = RCVotingFrame.SetCellIlvl,			colName = "ilvl",		sortnext = 7,		width = 45, },										-- 6 Total ilvl
 		{ name = L["Diff"],		DoCellUpdate = RCVotingFrame.SetCellDiff,			colName = "diff",								width = 40, },										-- 7 ilvl difference
 		{ name = L["g1"],			DoCellUpdate = RCVotingFrame.SetCellGear,			colName = "gear1",	sortnext = 5,		width = 20, align = "CENTER", },				-- 8 Current gear 1
 		{ name = L["g2"],			DoCellUpdate = RCVotingFrame.SetCellGear,			colName = "gear2",	sortnext = 5,		width = 20, align = "CENTER", },				-- 9 Current gear 2
 		{ name = L["Votes"], 	DoCellUpdate = RCVotingFrame.SetCellVotes,		colName = "votes",	sortnext = 7,		width = 40, align = "CENTER", },				-- 10 Number of votes
 		{ name = L["Vote"],		DoCellUpdate = RCVotingFrame.SetCellVote,			colName = "vote",		sortnext = 10,		width = 60, align = "CENTER", },				-- 11 Vote button
 		{ name = L["Notes"],		DoCellUpdate = RCVotingFrame.SetCellNote,			colName = "note",								width = 40, align = "CENTER", },				-- 12 Note icon
-		{ name = L["Roll"],		DoCellUpdate = RCVotingFrame.SetCellRoll, 		colName = "roll",		sortnext = 10,		width = 30, align = "CENTER", },				-- 13 Roll
+		{ name = _G.ROLL,		DoCellUpdate = RCVotingFrame.SetCellRoll, 		colName = "roll",		sortnext = 10,		width = 30, align = "CENTER", },				-- 13 Roll
 	}
 	-- The actual table being worked on, new entries should be added to this table "tinsert(RCVotingFrame.scrollCols, data)"
 	-- If you want to add or remove columns, you should do so on your OnInitialize. See RCVotingFrame:RemoveColumn() for removal.
@@ -352,11 +352,11 @@ function RCVotingFrame:Update()
 		if active then
 			self.frame.abortBtn:SetText(L["Abort"])
 		else
-			self.frame.abortBtn:SetText(L["Close"])
+			self.frame.abortBtn:SetText(_G.CLOSE)
 		end
 		self.frame.disenchant:Show()
 	else -- Non-MLs:
-		self.frame.abortBtn:SetText(L["Close"])
+		self.frame.abortBtn:SetText(_G.CLOSE)
 		self.frame.disenchant:Hide()
 	end
 end
@@ -371,7 +371,7 @@ function RCVotingFrame:SwitchSession(s)
 	self.frame.itemIcon:SetNormalTexture(t.texture)
 	self.frame.itemText:SetText(t.link)
 	self.frame.iState:SetText(self:GetItemStatus(t.link))
-	self.frame.itemLvl:SetText(format(L["ilvl: x"], t.ilvl))
+	self.frame.itemLvl:SetText(format(_G.ITEM_LEVEL, t.ilvl))
 	-- Set a proper item type text
 
 	self.frame.itemType:SetText(addon:GetItemTypeText(t.link, t.subType, t.equipLoc, t.token, t.relic))
@@ -437,7 +437,7 @@ function RCVotingFrame:UpdateMoreInfo(row, data)
 			tip:AddDoubleLine(v[1], v[2], nil,nil,nil, r or 1, g or 1, b or 1)
 		end
 		tip:AddLine(" ") -- spacer
-		tip:AddLine(L["Totals"])
+		tip:AddLine(_G.TOTAL)
 		for _, v in pairs(moreInfoData[name].totals.responses) do
 			if v[3] then r,g,b = unpack(v[3],1,3) end
 			tip:AddDoubleLine(v[1], v[2], r or 1,g or 1,b or 1, r or 1,g or 1,b or 1)
@@ -553,7 +553,7 @@ function RCVotingFrame:GetFrame()
 	--#end----------------------------
 
 	-- Abort button
-	local b1 = addon:CreateButton(L["Close"], f.content)
+	local b1 = addon:CreateButton(_G.CLOSE, f.content)
 	b1:SetPoint("TOPRIGHT", f, "TOPRIGHT", -10, -50)
 	b1:SetScript("OnClick", function()
 		-- This needs to be dynamic if the ML has changed since this was first created
@@ -592,7 +592,7 @@ function RCVotingFrame:GetFrame()
 	f.moreInfo = CreateFrame( "GameTooltip", "RCVotingFrameMoreInfo", nil, "GameTooltipTemplate" )
 
 	-- Filter
-	local b3 = addon:CreateButton(L["Filter"], f.content)
+	local b3 = addon:CreateButton(_G.FILTER, f.content)
 	b3:SetPoint("RIGHT", b1, "LEFT", -10, 0)
 	b3:SetScript("OnClick", function(self) Lib_ToggleDropDownMenu(1, nil, filterMenu, self, 0, 0) end )
 	b3:SetScript("OnEnter", function() addon:CreateTooltip(L["Deselect responses to filter them"]) end)
@@ -600,7 +600,7 @@ function RCVotingFrame:GetFrame()
 	f.filter = b3
 
 	-- Disenchant button
-	local b4 = addon:CreateButton(L["Disenchant"], f.content)
+	local b4 = addon:CreateButton(_G.ROLL_DISENCHANT, f.content)
 	b4:SetPoint("RIGHT", b3, "LEFT", -10, 0)
 	b4:SetScript("OnClick", function(self) Lib_ToggleDropDownMenu(1, nil, enchanters, self, 0, 0) end )
 	--b4:SetNormalTexture("Interface\\Icons\\INV_Enchant_Disenchant")
@@ -908,7 +908,7 @@ function RCVotingFrame.SetCellNote(rowFrame, frame, data, cols, row, realrow, co
 	f:SetPoint("CENTER", frame, "CENTER")
 	if note then
 		f:SetNormalTexture("Interface/BUTTONS/UI-GuildButton-PublicNote-Up.png")
-		f:SetScript("OnEnter", function() addon:CreateTooltip(L["Note"], note)	end)
+		f:SetScript("OnEnter", function() addon:CreateTooltip(_G.LABEL_NOTE, note)	end) -- _G.LABEL_NOTE == "Note" in English
 		f:SetScript("OnLeave", function() addon:HideTooltip() end)
 		data[realrow].cols[column].value = 1 -- Set value for sorting compability
 	else
@@ -1216,7 +1216,7 @@ do
 				end
 				-- And relics
 				if db.relicButtonsEnabled then
-					info.text = L["Relics"].." ..."
+					info.text = _G.INVTYPE_RELIC.." ..."
 					info.value = "RELICS"
 					info.hasArrow = true
 					info.notCheckable = true
@@ -1275,7 +1275,7 @@ do
 				end
 			end
 
-			info.text = L["Filter"]
+			info.text = _G.FILTER
 			info.isTitle = true
 			info.notCheckable = true
 			info.disabled = true

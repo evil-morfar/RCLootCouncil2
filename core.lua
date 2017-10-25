@@ -107,7 +107,7 @@ function RCLootCouncil:OnInitialize()
 		TIMEOUT			= { color = {1,0,0,1},				sort = 504,		text = L["Candidate didn't respond on time"], },
 		REMOVED			= { color = {0.8,0.5,0,1},			sort = 505,		text = L["Candidate removed"], },
 		NOTHING			= { color = {0.5,0.5,0.5,1},		sort = 505,		text = L["Offline or RCLootCouncil not installed"], },
-		PASS				= { color = {0.7, 0.7,0.7,1},		sort = 800,		text = L["Pass"],},
+		PASS				= { color = {0.7, 0.7,0.7,1},		sort = 800,		text = _G.PASS,},
 		AUTOPASS			= { color = {0.7,0.7,0.7,1},		sort = 801,		text = L["Autopass"], },
 		DISABLED			= { color = {0.3,0.35,0.5,1},		sort = 802,		text = L["Candidate has disabled RCLootCouncil"], },
 		NOTINRAID		= { color = {0.7,0.6,0,1}, 		sort = 803, 	text = L["Candidate is not in the instance"]},
@@ -123,10 +123,10 @@ function RCLootCouncil:OnInitialize()
 		relic = {}, -- Created further down
 	}
 	self.roleTable = {
-		TANK =		L["Tank"],
-		HEALER =		L["Healer"],
-		DAMAGER =	L["DPS"],
-		NONE =		L["None"],
+		TANK =		_G.TANK,
+		HEALER =		_G.HEALER,
+		DAMAGER =	_G.DAMAGER,
+		NONE =		_G.NONE,
 	}
 
 	self.testMode = false;
@@ -170,7 +170,7 @@ function RCLootCouncil:OnInitialize()
 			autoAward = false,
 			autoAwardLowerThreshold = 2,
 			autoAwardUpperThreshold = 3,
-			autoAwardTo = L["None"],
+			autoAwardTo = _G.NONE,
 			autoAwardReason = 1,
 			observe = false, -- observe mode on/off
 			silentAutoPass = false, -- Show autopass message
@@ -260,8 +260,8 @@ function RCLootCouncil:OnInitialize()
 			maxButtons = 10,
 			numButtons = 3,
 			buttons = {
-				{	text = L["Need"],					whisperKey = L["whisperKey_need"], },	-- 1
-				{	text = L["Greed"],				whisperKey = L["whisperKey_greed"],},	-- 2
+				{	text = _G.NEED,					whisperKey = L["whisperKey_need"], },	-- 1
+				{	text = _G.GREED,				whisperKey = L["whisperKey_greed"],},	-- 2
 				{	text = L["Minor Upgrade"],		whisperKey = L["whisperKey_minor"],},	-- 3
 			},
 			tierButtonsEnabled = true,
@@ -270,7 +270,7 @@ function RCLootCouncil:OnInitialize()
 				{	text = L["4 Piece"],					whisperKey = "1, 4tier, 4piece"},		-- 1
 				{	text = L["2 Piece"],					whisperKey = "2, 2tier, 2piece"},		-- 2
 				{	text = L["Other piece"],			whisperKey = "3, other, tier, piece"}, -- 3
-				{	text = L["Upgrade"],					whisperKey = "4, upgrade, up"},			-- 4
+				{	text = _G.UPGRADE,					whisperKey = "4, upgrade, up"},			-- 4
 			},
 			relicButtonsEnabled = false,
 			relicNumButtons = 2,
@@ -279,7 +279,7 @@ function RCLootCouncil:OnInitialize()
 			maxAwardReasons = 10,
 			numAwardReasons = 3,
 			awardReasons = {
-				{ color = {1, 1, 1, 1}, disenchant = true, log = true,	sort = 401,	text = L["Disenchant"], },
+				{ color = {1, 1, 1, 1}, disenchant = true, log = true,	sort = 401,	text = _G.ROLL_DISENCHANT, },
 				{ color = {1, 1, 1, 1}, disenchant = false, log = true,	sort = 402,	text = L["Banking"], },
 				{ color = {1, 1, 1, 1}, disenchant = false, log = false, sort = 403,	text = L["Free"],},
 			},
@@ -472,7 +472,7 @@ function RCLootCouncil:ChatCommand(msg)
 	until arg == nil
 	input = strlower(input or "")
 	self:Debug("/", input, unpack(args))
-	if not input or input:trim() == "" or input == "help" or input == L["help"] then
+	if not input or input:trim() == "" or input == "help" or input == string.lower(_G.HELP_LABEL) then
 		if self.tVersion then print(format(L["chat tVersion string"],self.version, self.tVersion))
 		else print(format(L["chat version String"],self.version)) end
 		gsub(L["chat_commands"], "[^\n]+", print)
@@ -509,17 +509,17 @@ function RCLootCouncil:ChatCommand(msg)
 	elseif input == 'version' or input == L["version"] or input == "v" or input == "ver" then
 		self:CallModule("version")
 
-	elseif input == "history" or input == L["history"] or input == "h" or input == "his" then
+	elseif input == "history" or input == string.lower(_G.HISTORY) or input == "h" or input == "his" then
 		self:CallModule("history")
 --@debug@
 	elseif input == "nnp" then
 		self.nnp = not self.nnp
 		self:Print("nnp = "..tostring(self.nnp))
 --@end-debug@
-	elseif input == "whisper" or input == L["whisper"] then
+	elseif input == "whisper" or input == string.lower(_G.WHISPER) then
 		self:Print(L["whisper_help"])
 
-	elseif (input == "add" or input == L["add"]) then
+	elseif input == "add" or input == string.lower(_G.ADD) then
 		if not args[1] or args[1] == "" then return self:ChatCommand("help") end
 		if self.isMasterLooter then
 			for _,v in ipairs(args) do
@@ -543,7 +543,7 @@ function RCLootCouncil:ChatCommand(msg)
 			self:Print(L["You cannot use this command without being the Master Looter"])
 		end
 
-	elseif input == "reset" or input == L["reset"] then
+	elseif input == "reset" or input == string.lower(_G.RESET) then
 		for k, v in pairs(db.UI) do -- We can't easily reset due to the wildcard in defaults
 			if k == "lootframe" then -- Loot Frame is special
 				v.y		= -200
@@ -1509,7 +1509,7 @@ function RCLootCouncil:GetInstalledModulesFormattedData()
 		if self:GetModule(name).version then -- People might not have added version
 			modules[num] = self:GetModule(name).baseName.. " - "..self:GetModule(name).version
 		else
-			modules[num] = self:GetModule(name).baseName.. " - "..L["Unknown"]
+			modules[num] = self:GetModule(name).baseName.. " - ".._G.UNKNOWN
 		end
 	end
 	return modules
