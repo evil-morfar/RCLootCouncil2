@@ -97,12 +97,15 @@ function RCVotingFrame:Show()
 end
 
 function RCVotingFrame:EndSession(hide)
-	active = false -- The session has ended, so deactivate
-	if addon.isMasterLooter then
-		self:EndManualRoll()
+	if active then -- Only end session once
+		addon:Debug("RCVotingFrame:EndSession", hide)
+		active = false -- The session has ended, so deactivate
+		if addon.isMasterLooter then
+			self:EndManualRoll()
+		end
+		self:Update()
+		if hide then self:Hide() end -- Hide if need be
 	end
-	self:Update()
-	if hide then self:Hide() end -- Hide if need be
 end
 
 function RCVotingFrame:CandidateCheck()
