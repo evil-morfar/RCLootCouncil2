@@ -1959,7 +1959,7 @@ function RCLootCouncil:CreateFrame(name, cName, title, width, height)
 	end
 	local old_setheight = f.SetHeight
 	f.SetHeight = function(self, height)
-		old_setheight(self, width)
+		old_setheight(self, height)
 		self.content:SetHeight(height)
 	end
 	f.Update = function(self)
