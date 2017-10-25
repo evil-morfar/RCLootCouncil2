@@ -293,7 +293,7 @@ function addon:OptionsTable()
 									},
 									background = {
 										order = 3,
-										name = _G.BACKGROUND,
+										name = L["Background"],
 										width = "double",
 										type = "select",
 										dialogControl = "LSM30_Background",
