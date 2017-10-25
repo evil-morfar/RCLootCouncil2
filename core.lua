@@ -895,7 +895,7 @@ function RCLootCouncil:Test(num)
 		-- Tier21 Trinkets
 		151975, 151977, -- Tank
 		151956, 151970, -- Healer
-		151964, 151967, -- Melee DPS
+		151963, 151964, -- Melee DPS
 		151968, 151963, -- Non-caster DPS
 		151970, 151971, -- Caster DPS
 		-- Tier21 Relics
