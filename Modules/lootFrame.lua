@@ -171,7 +171,7 @@ do
 
 			-------- Item Icon -------------
 			entry.icon = CreateFrame("Button", nil, entry.frame, "UIPanelButtonTemplate")
-			entry.icon:SetSize(ENTRY_HEIGHT*0.75, ENTRY_HEIGHT*0.75)
+			entry.icon:SetSize(ENTRY_HEIGHT*0.78, ENTRY_HEIGHT*0.78)
 			entry.icon:SetPoint("TOPLEFT", entry.frame, "TOPLEFT", 9, -5)
 			entry.icon:SetScript("OnEnter", function()
 				if not entry.item.link then return end
@@ -190,8 +190,8 @@ do
 			entry.UpdateButtons = function(entry)
 				local b = entry.buttons -- shortening
 				local numButtons = addon.mldb.numButtons or addon.db.profile.numButtons
-				-- (IconWidth (60) + indent(9)) + pass button (5) + (noteButton(24)  + indent(5+7)) + numButton * space(5)
-				local width = 110 + numButtons * 5
+				-- (IconWidth (63) + indent(9)) + pass button (5) + (noteButton(24)  + indent(5+7)) + numButton * space(5)
+				local width = 113 + numButtons * 5
 				for i = 1, numButtons + 1 do
 					if i > numButtons then -- Pass button:
 						b[i] = b[i] or addon:CreateButton(_G.PASS, entry.frame)
@@ -224,7 +224,7 @@ do
 			entry.noteButton:SetSize(24,24)
 			entry.noteButton:SetHighlightTexture("Interface\\Minimap\\UI-Minimap-ZoomButton-Highlight")
 			entry.noteButton:SetNormalTexture("Interface\\Buttons\\UI-GuildButton-PublicNote-Up")
-			entry.noteButton:SetPoint("BOTTOMRIGHT", -9, 14)
+			entry.noteButton:SetPoint("BOTTOMRIGHT", entry.frame, "TOPRIGHT", -9, -entry.icon:GetHeight()-5)
 			entry.noteButton:SetScript("OnEnter", function()
 				if entry.item.note then -- If they already entered a note:
 					addon:CreateTooltip(L["Your note:"], entry.item.note, "\nClick to change your note.")
@@ -237,7 +237,7 @@ do
 
 			----- item text/lvl ---------------
 			entry.itemText = entry.frame:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
-			entry.itemText:SetPoint("TOPLEFT", entry.icon, "TOPRIGHT", 7, -1)
+			entry.itemText:SetPoint("TOPLEFT", entry.icon, "TOPRIGHT", 6, -1)
 			entry.itemText:SetText("Fatal error!!!!") -- Set text for reasons
 
 			entry.itemLvl = entry.frame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
@@ -248,7 +248,7 @@ do
 			------------ Timeout -------------
 			entry.timeoutBar = CreateFrame("StatusBar", nil, entry.frame, "TextStatusBar")
 			entry.timeoutBar:SetSize(entry.frame:GetWidth(), 6)
-			entry.timeoutBar:SetPoint("BOTTOMLEFT", 9,5)
+			entry.timeoutBar:SetPoint("BOTTOMLEFT", 9,3)
 			entry.timeoutBar:SetStatusBarTexture("Interface\\TargetingFrame\\UI-StatusBar")
 			--entry.timeoutBar:SetStatusBarColor(0.1, 0, 0.6, 0.8) -- blue
 			entry.timeoutBar:SetStatusBarColor(0.5, 0.5, 0.5, 1) -- grey
@@ -380,7 +380,7 @@ do
 		function Entry.UpdateButtons(entry)
 			local b = entry.buttons -- shortening
 			local numButtons = addon.mldb.tierNumButtons or addon.db.profile.tierNumButtons
-			local width = 110 + numButtons * 5
+			local width = 113 + numButtons * 5
 			for i = 1, numButtons + 1 do
 				if i > numButtons then -- Pass button:
 					b[i] = b[i] or addon:CreateButton(_G.PASS, entry.frame)
@@ -422,7 +422,7 @@ do
 		function Entry.UpdateButtons(entry)
 			local b = entry.buttons -- shortening
 			local numButtons = addon.mldb.relicNumButtons or addon.db.profile.relicNumButtons
-			local width = 110 + numButtons * 5
+			local width = 113 + numButtons * 5
 			for i = 1, numButtons + 1 do
 				if i > numButtons then -- Pass button:
 					b[i] = b[i] or addon:CreateButton(_G.PASS, entry.frame)
