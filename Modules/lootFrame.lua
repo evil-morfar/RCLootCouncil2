@@ -109,7 +109,10 @@ function LootFrame:OnRoll(entry, button)
 	local isRelic = entry.item.isRelic and addon.mldb.relicButtonsEnabled
 	addon:Debug("LootFrame:OnRoll", entry.realID, button, "Response:", addon:GetResponseText(button, isTier, isRelic))
 	local item = entry.item
-	addon:SendCommand("group", "response", addon:CreateResponse(item.session, item.link, item.ilvl, button, item.equipLoc, item.note, item.subType, isTier, isRelic))
+
+	-- Only send minimum neccessary data, because the information of current equipped gear has been sent when we receive the loot table.
+	-- target, session, link, ilvl, response, equipLoc, note, subType, relicType, isTier, isRelic, sendAvgIlvl, sendSpecID
+	addon:SendResponse("group", item.session, nil, nil, button, nil, item.note, nil, nil, isTier, isRelic, nil, nil)
 
 	numRolled = numRolled + 1
 	item.rolled = true
@@ -141,7 +144,7 @@ do
 			entry.item = item
 			entry.itemText:SetText(entry.item.link or "error")
 			entry.icon:SetNormalTexture(entry.item.texture or "Interface\\InventoryItems\\WoWUnknownItem01")
-			entry.itemLvl:SetText(format(L["ilvl: x"], entry.item.ilvl or 0))
+			entry.itemLvl:SetText(format(_G.ITEM_LEVEL, entry.item.ilvl or 0))
 			if addon.mldb.timeout then
 				entry.timeoutBar:SetMinMaxValues(0, addon.mldb.timeout or addon.db.profile.timeout)
 				entry.timeoutBar:Show()
@@ -188,8 +191,8 @@ do
 				local numButtons = addon.mldb.numButtons or addon.db.profile.numButtons
 				for i = 1, numButtons + 1 do
 					if i > numButtons then -- Pass button:
-						b[i] = b[i] or addon:CreateButton(L["Pass"], entry.frame)
-						b[i]:SetText(L["Pass"]) -- In case it was already created
+						b[i] = b[i] or addon:CreateButton(_G.PASS, entry.frame)
+						b[i]:SetText(_G.PASS) -- In case it was already created
 						b[i]:SetScript("OnClick", function() LootFrame:OnRoll(entry, "PASS") end)
 					else
 						b[i] = b[i] or addon:CreateButton(addon:GetButtonText(i), entry.frame)
@@ -254,7 +257,7 @@ do
 					return LootFrame:OnRoll(entry, "TIMEOUT")
 				end
 				entry.item.timeLeft = entry.item.timeLeft - elapsed
-				this.text:SetText(format(L["Time left (num seconds)"], ceil(entry.item.timeLeft)))
+				this.text:SetText(_G.CLOSES_IN..": "..ceil(entry.item.timeLeft)) -- _G.CLOSES_IN == "Time Left" for English
 				this:SetValue(entry.item.timeLeft)
 			end)
 
@@ -377,8 +380,8 @@ do
 			local numButtons = addon.mldb.tierNumButtons or addon.db.profile.tierNumButtons
 			for i = 1, numButtons + 1 do
 				if i > numButtons then -- Pass button:
-					b[i] = b[i] or addon:CreateButton(L["Pass"], entry.frame)
-					b[i]:SetText(L["Pass"]) -- In case it was already created
+					b[i] = b[i] or addon:CreateButton(_G.PASS, entry.frame)
+					b[i]:SetText(_G.PASS) -- In case it was already created
 					b[i]:SetScript("OnClick", function() LootFrame:OnRoll(entry, "PASS") end)
 				else
 					b[i] = b[i] or addon:CreateButton(addon:GetButtonText(i, true), entry.frame)
@@ -419,8 +422,8 @@ do
 			local numButtons = addon.mldb.relicNumButtons or addon.db.profile.relicNumButtons
 			for i = 1, numButtons + 1 do
 				if i > numButtons then -- Pass button:
-					b[i] = b[i] or addon:CreateButton(L["Pass"], entry.frame)
-					b[i]:SetText(L["Pass"]) -- In case it was already created
+					b[i] = b[i] or addon:CreateButton(_G.PASS, entry.frame)
+					b[i]:SetText(_G.PASS) -- In case it was already created
 					b[i]:SetScript("OnClick", function() LootFrame:OnRoll(entry, "PASS") end)
 				else
 					b[i] = b[i] or addon:CreateButton(addon:GetButtonText(i, false, true), entry.frame)

@@ -57,14 +57,15 @@ function RCLootCouncilML:AddItem(item, bagged, slotIndex, index)
 	addon:DebugLog("ML:AddItem", item, bagged, slotIndex, index)
 	local name, link, rarity, ilvl, iMinLevel, type, subType, iStackCount, equipLoc, texture = GetItemInfo(item)
 	local itemID = link and addon:GetItemIDFromLink(link)
-	self.lootTable[index or #self.lootTable + 1] = { -- We want to reserve the index even if we haven't fully loaded the item
+	local session = index or #self.lootTable + 1
+	self.lootTable[session] = { -- We want to reserve the index even if we haven't fully loaded the item
 		["bagged"]		= bagged,
 		["lootSlot"]	= slotIndex,
 		["awarded"]		= false,
 		["name"]			= name, -- REVIEW This is really not needed as it's contained in itemLink. Remove next time we break backwards com
 		["link"]			= link,
 		["quality"]		= rarity,
-		["ilvl"]			= ilvl,
+		["ilvl"]			= addon:GetTokenIlvl(link) or ilvl, -- if the item is a token, ilvl is the min ilvl of the item it creates.
 		["subType"]		= subType,
 		["equipLoc"]	= equipLoc,
 		["texture"]		= texture,
@@ -72,12 +73,26 @@ function RCLootCouncilML:AddItem(item, bagged, slotIndex, index)
 		["relic"]		= itemID and IsArtifactRelicItem(itemID) and select(3, C_ArtifactUI.GetRelicInfoByItemID(itemID)),
 		["token"]		= itemID and RCTokenTable[itemID],
 	}
+
+	-- Calculate the equipment slots of the token
+	local tokenSlot = self.lootTable[session].token
+	if tokenSlot then
+		if tokenSlot == "Trinket" then
+			self.lootTable[session].equipLoc = "INVTYPE_TRINKET"
+		else
+			for loc, slot in pairs(addon.INVTYPE_Slots) do
+				if slot == tokenSlot then
+					self.lootTable[session].equipLoc = loc
+				end
+			end
+		end
+	end
 		-- Item isn't properly loaded, so update the data in 1 sec (Should only happen with /rc test)
 	if not name then
-		self:ScheduleTimer("Timer", 1, "AddItem", item, bagged, slotIndex, index or #self.lootTable)
+		self:ScheduleTimer("Timer", 1, "AddItem", item, bagged, slotIndex, session)
 		addon:Debug("Started timer:", "AddItem", "for", item)
 	else
-		addon:SendMessage("RCMLAddItem", item, index or #self.lootTable)
+		addon:SendMessage("RCMLAddItem", item, session)
 	end
 end
 
@@ -111,8 +126,9 @@ function RCLootCouncilML:UpdateGroup(ask)
 	for name in pairs(self.candidates) do	group_copy[name] = true end
 	for i = 1, GetNumGroupMembers() do
 		local name, _, _, _, _, class, _, _, _, _, _, role  = GetRaidRosterInfo(i)
-		name = addon:UnitName(name) -- Get their unambiguated name
+
 		if name then -- Apparantly name can be nil (ticket #223)
+			name = addon:UnitName(name) -- Get their unambiguated name
 			if group_copy[name] then	-- If they're already registered
 				group_copy[name] = nil	-- remove them from the check
 			else -- add them
@@ -123,6 +139,9 @@ function RCLootCouncilML:UpdateGroup(ask)
 				self:AddCandidate(name, class, role) -- Add them in case they haven't installed the adoon
 				updates = true
 			end
+		else
+			addon:Debug("ML:UpdateGroup", "GetRaidRosterInfo returns nil. Abort and retry after 1s.")
+			return self:ScheduleTimer("UpdateGroup", 1, ask) -- Group info is not ready. Abort and retry.
 		end
 	end
 	-- If anything's left in group_copy it means they left the raid, so lets remove them
@@ -495,7 +514,7 @@ end
 --@param reason	Entry in db.awardReasons.
 --@returns True if awarded successfully
 function RCLootCouncilML:Award(session, winner, response, reason)
-	addon:DebugLog("ML:Award", session, winner, response, reason, isToken)
+	addon:DebugLog("ML:Award", session, winner, response, reason)
 	if addon.testMode then
 		if winner then
 			addon:SendCommand("group", "awarded", session, winner)
@@ -591,7 +610,17 @@ end
 RCLootCouncilML.announceItemStrings = {
 	["&s"] = function(ses) return ses end,
 	["&i"] = function(...) return select(2,...) end,
+	["&l"] = function(_, _, v) return v.ilvl or "" end,
+	["&t"] = function(_, _, t) return addon:GetItemTypeText(t.link, t.subType, t.equipLoc, t.token, t.relic) end,
 }
+-- The description for each keyword
+RCLootCouncilML.announceItemStringsDesc = {
+	L["announce_&s_desc"],
+	L["announce_&i_desc"],
+	L["announce_&l_desc"],
+	L["announce_&t_desc"],
+}
+
 function RCLootCouncilML:AnnounceItems()
 	if not db.announceItems then return end
 	addon:DebugLog("ML:AnnounceItems()")
@@ -599,7 +628,7 @@ function RCLootCouncilML:AnnounceItems()
 	for k,v in ipairs(self.lootTable) do
 		local msg = db.announceItemString
 		for text, func in pairs(self.announceItemStrings) do
-			message = gsub(msg, text, tostring(func(k, v.link, v)))
+			msg = gsub(msg, text, tostring(func(k, v.link, v)))
 		end
 		SendChatMessage(msg, addon:GetAnnounceChannel(db.announceChannel))
 	end
@@ -613,7 +642,23 @@ RCLootCouncilML.awardStrings = {
 	["&i"] = function(...) return select(2, ...) end,
 	["&r"] = function(...) return select(3, ...) end,
 	["&n"] = function(...) return select(4, ...) or "" end,
+	["&l"] = function(...) return RCLootCouncilML.lootTable[select(5, ...)].ilvl or "" end,
+	["&t"] = function(...)
+		local t = RCLootCouncilML.lootTable[select(5,...)]
+		return addon:GetItemTypeText(t.link, t.subType, t.equipLoc, t.token, t.relic)
+	end,
 }
+
+-- The description for each keyword
+RCLootCouncilML.awardStringsDesc = {
+	L["announce_&p_desc"],
+	L["announce_&i_desc"],
+	L["announce_&r_desc"],
+	L["announce_&n_desc"],
+	L["announce_&l_desc"],
+	L["announce_&t_desc"],
+}
+
 
 -- See above for text substitutions
 -- @paramsig 			name, link, text [,roll, session]
@@ -694,7 +739,7 @@ local history_table = {}
 	history_table["date"] 			= date("%d/%m/%y")
 	history_table["time"] 			= date("%H:%M:%S")
 	history_table["instance"] 		= instanceName.."-"..difficultyName
-	history_table["boss"] 			= boss or L["Unknown"]
+	history_table["boss"] 			= boss or _G.UNKNOWN
 	history_table["votes"] 			= votes
 	history_table["itemReplaced1"]= itemReplaced1
 	history_table["itemReplaced2"]= itemReplaced2
@@ -787,14 +832,20 @@ function RCLootCouncilML:GetCouncilInGroup()
 	return council
 end
 
-function RCLootCouncilML:GetItemsFromMessage(msg, sender)
-	addon:Debug("GetItemsFromMessage()", msg, sender)
+-- @param retryCount: How many times we have retried to execute this function.
+function RCLootCouncilML:GetItemsFromMessage(msg, sender, retryCount)
+	local MAX_RETRY = 5
+
+	if not retryCount then retryCount = 0 end
+	addon:Debug("GetItemsFromMessage()", msg, sender, retryCount)
 	if not addon.isMasterLooter then return end
 
-	local ses, arg1, arg2, arg3 = addon:GetArgs(msg, 4) -- We only require session to be correct, we can do some error checking on the rest
+	local ses, arg1, arg2, arg3 = addon:GetArgs(msg, 4) -- We only require session to be correct and arg1 exists, we can do some error checking on the rest
 	ses = tonumber(ses)
 	-- Let's test the input
 	if not ses or type(ses) ~= "number" or ses > #self.lootTable then return end -- We need a valid session
+	if not arg1 then return end -- No response or item link
+
 	-- Set some locals
 	local item1, item2, isTier, isRelic
 	local response = 1
@@ -829,8 +880,28 @@ function RCLootCouncilML:GetItemsFromMessage(msg, sender)
 			end
 		end
 	end
-	local diff = 0
-	if item1 then diff = (self.lootTable[ses].ilvl - select(4, GetItemInfo(item1))) end
+
+
+	local ilvl = self.lootTable[ses].ilvl
+	local g1 = item1
+	local g2 = item2
+
+	local itemNeedCaching = false
+	local g1diff, g2diff = g1 and select(4, GetItemInfo(g1)), g2 and select(4, GetItemInfo(g2))
+	if g1diff and g2diff then
+		diff = g1diff >= g2diff and ilvl - g2diff or ilvl - g1diff
+	elseif g1 and g2 then
+		itemNeedCaching = true
+	elseif g1diff then
+		diff = ilvl - g1diff
+	elseif g1 then
+		itemNeedCaching = true
+	end
+
+	if itemNeedCaching and retryCount < MAX_RETRY then -- Limit retryCount to avoid infinite loop. User can send invalid link that can never be cached.
+		return self:ScheduleTimer("GetItemsFromMessage", 1, msg, sender, retryCount + 1)
+	end
+
 	local toSend = {
 		gear1 = item1,
 		gear2 = item2,

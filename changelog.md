@@ -1,3 +1,57 @@
+### v2.7.0
+---
+* **General**
+* Sessions now starts way faster thanks to some caching cleanup.
+* Tier tokens now uses the minimum ilvl of the item the token will create as their ilvl.
+   + This way all ilvl calculations will show more useful numbers.
+   + Note: RCLootCouncil cannot track if these items will be Warforged/Titanforged. Only the guaranteed minimum ilvl is used.
+* There's now one of each item type included in the test items.
+* The class icon can now be replaced with spec icon.
+
+
+* **Localization**
++ Armor Token is no longer displayed as "Junk" for non-English client.
++ Relics are now shown as "'type' Artifact Relic" instead of 'type'.
+   + Relic type is now also shown for non-English client.
++ Trinkets are now shown as "Trinket" instead of "Trinket, Miscellaneous" for non-English client
+
+
+* **Announcements**
+* Added a few more keyword replacements for announcement options.
+* It's now possible to edit the announcement string for individual items.
+* Have a look at the redesigned "Announcements" tab for the changes.
+
+
+* **Responses**
+* Most response related information is now sent immediately when a session starts instead of after rolling.
+   + E.g. the council can now see a candidates gear and ilvl before a candidates responds.
+* RCLootCouncil now sends the gear a candidate had equipped during the most recent encounter instead of the gear equipped when rolling.
+   + This way candidates can't change their gear to appear to have lower ilvl.
+
+
+###### Bugfixes
++ *Fixed a few localization related bugs for non-english clients.*
++ *A session starting immidiately after doing a /reload could cause an error.*
++ *Fixed a few spelling errors in english locale.*
++ *Fixed an error when the ML receives an integer from whisper during a session with whisper feature enabled*.
+
+###### Dev
+* **New**
+   + ```:GetItemTypeText()``` for displaying various item types.
+   + ```:LocalizeLootTable()``` replaces the ```subType``` in the lootTable with the subType in our localization.
+   + ```:UpdatePlayersData()``` uses the two new functions ```:UpdatePlayersRelics()``` and ```:UpdatePlayerGears()``` to cache the player's gear/info.
+   + ```:SendResponse(target, session, link, ilvl, response, equipLoc, note, subType, isTier, isRelic, sendAvgIlvl)``` sends response to the target.
+   + SpecID is now included in the candidate data.
+
+* **Changed**
+   + ~~```:CreateResponse()```~~ is consolidated into ```:SendResponse(...)``` which now creates and sends responses.
+   * ```:GetPlayersGear(link, equipLoc, gearsTable)``` adds an arg ```gearsTable```. If specified, use that table to fetch item data instead of from the player's current equipped gears.
+   * ```:GetArtifactRelics(link, relicsTable)``` added arg ```relicsTable```. Similar to above.
+   * "Miscellaneous" and "Junk" is added to the ```subTypeLookup```.
+
+
+*Huge shoutout to __Safetee__ for most of these changes!*
+
 ### v2.6.1
 ---
 
