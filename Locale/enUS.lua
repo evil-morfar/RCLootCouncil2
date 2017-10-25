@@ -395,7 +395,6 @@ L["Voters"] = true
 L["Votes"] = true
 L["Voting options"] = true
 L["Waiting for response"] = true
-L["whisper"] = true
 L["whisper_guide"] = "[RCLootCouncil]: number response [item1] [item2]. Link your item(s) that item (number) would replace, (response) being of the keywords below: Ex. '1 Greed [item1]' would greed on item #1"
 L["whisper_guide2"] = "[RCLootCouncil]: You'll get a confirmation message if you were successfully added."
 L["whisper_help"] = "Raiders can use the whisper system in case someone haven't installed the addon.\nWhispering 'rchelp' to the Master Looter will get them a guide along with the list of keywords, which can be edited at the 'Buttons and Responses' optiontab.\nIt's recommended for the ML to turn on 'Announce Considerations' as each item's number is required to use the whisper system.\nNOTE: People should still get the addon installed, otherwise all player information won't be available."

@@ -514,7 +514,7 @@ function RCLootCouncil:ChatCommand(msg)
 		self.nnp = not self.nnp
 		self:Print("nnp = "..tostring(self.nnp))
 --@end-debug@
-	elseif input == "whisper" or input == L["whisper"] then
+	elseif input == "whisper" or input == string.lower(_G.WHISPER) then
 		self:Print(L["whisper_help"])
 
 	elseif input == "add" or input == string.lower(_G.ADD) then
