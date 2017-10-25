@@ -372,7 +372,6 @@ L["Tokens received"] = true
 L["To target"] = true
 L["Total awards"] = true
 L["Total items received:"] = true
-L["Totals"] = true
 L["tVersion_outdated_msg"] = "Newest RCLootCouncil test version is: %s"
 L["Unable to give 'item' to 'player' - (player offline, left group or instance?)"] = "Unable to give %s to %s - (player offline, left group or instance?)"
 L["Unable to give out loot without the loot window open."] = true
