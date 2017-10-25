@@ -382,6 +382,7 @@ L["This item has been awarded"] = true
 L["This item"] = true
 L["Tier 19"] = true
 L["Tier 20"] = true
+L["Tier 21"] = true
 L["Tier Buttons and Responses"] = true
 L["tier_buttons_desc"] = "Select which buttons/responses to use when handling tier pieces. It's basically the same concept as above, except these are shown when tier pieces drop.\nA pass button is still added to the right."
 L["Tier Piece that doesn't complete a set"] = true

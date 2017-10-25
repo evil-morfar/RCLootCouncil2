@@ -57,6 +57,7 @@ end
 local tierLookUpTable = { -- instanceMapID to Tier text
 	[1530] = L["Tier 19"],
 	[1676] = L["Tier 20"],
+	[1712] = L["Tier 21"],
 }
 
 local difficultyLookupTable = {
