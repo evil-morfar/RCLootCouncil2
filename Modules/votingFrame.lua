@@ -1415,7 +1415,6 @@ function RCVotingFrame:EndManualRoll()
 		self:UnregisterEvent("CHAT_MSG_SYSTEM")
 		manualRollSession = nil
 		wipe(manualRollResults)
-		addon:Debug("End Manual Roll")
 	else
 		addon:Debug("End manual roll by non-ML?")
 	end

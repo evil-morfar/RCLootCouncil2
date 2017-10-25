@@ -1036,6 +1036,7 @@ end
 
 -- Update player's data which is changable by the player. (specid, equipped ilvl, specs, gears, etc)
 function RCLootCouncil:UpdatePlayersData()
+	self:DebugLog("UpdatePlayersData()")
 	playersData.specID = GetSpecialization() and GetSpecializationInfo(GetSpecialization())
 	playersData.ilvl = select(2,GetAverageItemLevel())
 	self:UpdatePlayersGears()
