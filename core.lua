@@ -781,8 +781,10 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 
 			elseif command == "reroll" and self:UnitIsUnit(sender, self.masterLooter) and self.enabled then
 				self:Print(format(L["'player' has asked you to reroll"], self.Ambiguate(sender)))
+				local table = unpack(data)
+				self:LocalizeLootTable(table)
 				self:CallModule("lootframe")
-				self:GetActiveModule("lootframe"):ReRoll(unpack(data))
+				self:GetActiveModule("lootframe"):ReRoll(table)
 
 			elseif command == "playerInfoRequest" then
 				self:SendCommand(sender, "playerInfo", self:GetPlayerInfo())
