@@ -370,6 +370,7 @@ function RCLootCouncil:OnInitialize()
 	self.optionsFrame.ml = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("RCLootCouncil", "Master Looter", "RCLootCouncil", "mlSettings")
 	-- reset verTestCandidates
 	self.db.global.verTestCandidates = {}
+	self.playersData = playersData -- Make it globally available
 	-- Add logged in message in the log
 	self:DebugLog("Logged In")
 end
