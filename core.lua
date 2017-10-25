@@ -2077,7 +2077,7 @@ function RCLootCouncil:GetItemTypeText(link, subType, equipLoc, tokenSlot, relic
 		local relicTooltipName = string.format(RELIC_TOOLTIP_TYPE, localizedRelicType)
 		return relicTooltipName
 	elseif equipLoc ~= "" and getglobal(equipLoc) then
-		if subType and englishSubType ~= "Miscellaneous" and englishSubType ~= "Junk" then
+		if subType and englishSubType ~= "Miscellaneous" and englishSubType ~= "Junk" and equipLoc ~= "INVTYPE_CLOAK"then
 			return getglobal(equipLoc)..", "..subType -- getGlobal to translate from global constant to localized name
 		else
 			return getglobal(equipLoc)
