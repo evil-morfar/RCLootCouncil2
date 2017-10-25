@@ -379,7 +379,6 @@ L["Unguilded"] = true
 L["Unknown/Chest"] = true
 L["Unknown date"] = true
 L["Unvote"] = true
-L["Upgrade"] = true
 L["Upgrade to existing tier/random upgrade"] = true
 L["Upper Quality Limit"] = true
 L["upper_quality_limit_desc"] = "Select the upper quality limit of items to auto award (this quality included!).\nNote: This overrides the normal loot treshhold."

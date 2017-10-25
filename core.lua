@@ -267,7 +267,7 @@ function RCLootCouncil:OnInitialize()
 				{	text = L["4 Piece"],					whisperKey = "1, 4tier, 4piece"},		-- 1
 				{	text = L["2 Piece"],					whisperKey = "2, 2tier, 2piece"},		-- 2
 				{	text = L["Other piece"],			whisperKey = "3, other, tier, piece"}, -- 3
-				{	text = L["Upgrade"],					whisperKey = "4, upgrade, up"},			-- 4
+				{	text = _G.UPGRADE,					whisperKey = "4, upgrade, up"},			-- 4
 			},
 			relicButtonsEnabled = false,
 			relicNumButtons = 2,
