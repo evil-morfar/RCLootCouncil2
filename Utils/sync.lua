@@ -116,7 +116,7 @@ function sync.OnSyncAccept(_, data)
    addon:SendCommand(sender, "syncAck", addon.playerName, type)
    sync.frame.statusBar:Show()
    sync.frame.statusBar.text:Show()
-   sync.frame.statusBar.text:SetText(L["Receiving data..."])
+   sync.frame.statusBar.text:SetText(_G.RETRIEVING_DATA)
    --sync.frame.statusBar:Hide()
 end
 -- LibDialog OnDecline

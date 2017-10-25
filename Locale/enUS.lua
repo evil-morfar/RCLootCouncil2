@@ -282,7 +282,6 @@ L["RCLootCouncil Voting Frame"] = true
 L["Reannounce ..."] = true
 L["Reason"] = true
 L["reason_desc"] = "The award reason to add to the Loot History when auto awarding."
-L["Receiving data..."] = true
 L["Relic Buttons and Responses"] = true
 L["relic_buttons_desc"] = "Select which buttons/responses to use when handling relics. It's basically the same concept as above, except these are shown when relics drop.\nA pass button is still added to the right."
 L["Remove All"] = true
