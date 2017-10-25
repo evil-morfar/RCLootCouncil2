@@ -145,7 +145,8 @@ do
 			entry.item = item
 			entry.itemText:SetText(entry.item.link or "error")
 			entry.icon:SetNormalTexture(entry.item.texture or "Interface\\InventoryItems\\WoWUnknownItem01")
-			entry.itemLvl:SetText((entry.item.ilvl or 0).."  |cff7fffff"..entry.item.subType.."|r") -- TODO: Change subType display after merged with PR #25
+			local typeText = addon:GetItemTypeText(item.link, item.subType, item.equipLoc, item.isTier, item.isRelic)
+			entry.itemLvl:SetText((entry.item.ilvl or 0).."  |cff7fffff"..typeText.."|r")
 			if addon.mldb.timeout then
 				entry.timeoutBar:SetMinMaxValues(0, addon.mldb.timeout or addon.db.profile.timeout)
 				entry.timeoutBar:Show()
