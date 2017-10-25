@@ -3,7 +3,6 @@
 
 --[[ TODOs/Notes
 	Things marked with "todo"
-		- IDEA Have player's current gear sent with lootAck
 		- Emulate award stuff - i.e. log awards without awarding
 		- Check if players are eligible for loot, otherwise mark them as not
 		- Remember to add mapID for Antorus.
@@ -11,11 +10,11 @@
 		- IDEA Change popups so they only hide on award/probably add the error message to it.
 		- IDEA Add some sort of indicator when rows are being filtered.
 		- TODO/IDEA Change chat_commands to seperate lines in order to have a table of printable cmds.
-		- TODO Use token ilvl to display a token's projected ilvl in the votingframe.
 
 	Backwards compability breaks:
 		- Remove equipLoc, subType, texture from lootTable. They can all be created with GetItemInfoInstant()
 		- Remove name from lootTable. This isn't needed at all.
+		- IDEA Have player's current gear sent with lootAck
 -------------------------------- ]]
 
 --[[CHANGELOG
