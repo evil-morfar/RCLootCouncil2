@@ -208,7 +208,7 @@ function addon:OptionsTable()
 					appearanceTab = {
 						order = 3,
 						type = "group",
-						name = L["Appearance"],
+						name = _G.APPEARANCE_LABEL,
 						args = {
 							skins = {
 								order = 1,

@@ -60,7 +60,6 @@ L["announce_item_string_desc"] = "\nEnter the text to announce for each item. Th
 L["Announcements"] = true
 L["Anonymous Voting"] = true
 L["anonymous_voting_desc"] = "Enables Anonymous Voting, i.e. people can't see who's voting for whom."
-L["Appearance"] = true
 L["Are you sure you want to abort?"] = true
 L["Are you sure you want to give #item to #player?"] = "Are you sure you want to give %s to %s?"
 L["Armor Token"] = true
