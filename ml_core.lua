@@ -102,14 +102,15 @@ function RCLootCouncilML:RemoveItem(session)
 	tremove(self.lootTable, session)
 end
 
-function RCLootCouncilML:AddCandidate(name, class, role, rank, enchant, lvl)
-	addon:DebugLog("ML:AddCandidate",name, class, role, rank, enchant, lvl)
+function RCLootCouncilML:AddCandidate(name, class, role, rank, enchant, lvl, ilvl, specID)
+	addon:DebugLog("ML:AddCandidate",name, class, role, rank, enchant, lvl, specID)
 	self.candidates[name] = {
 		["class"]		= class,
 		["role"]			= role,
 		["rank"]			= rank or "", -- Rank cannot be nil for votingFrame
 		["enchanter"] 	= enchant,
 		["enchant_lvl"]= lvl,
+		["specID"]		= specID,
 	}
 end
 
