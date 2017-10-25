@@ -1216,7 +1216,7 @@ do
 				end
 				-- And relics
 				if db.relicButtonsEnabled then
-					info.text = _G.RELICSLOT.." ..."
+					info.text = _G.INVTYPE_RELIC.." ..."
 					info.value = "RELICS"
 					info.hasArrow = true
 					info.notCheckable = true

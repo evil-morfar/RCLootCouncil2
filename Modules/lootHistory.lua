@@ -789,7 +789,7 @@ LootHistory.rightClickEntries = {
 			disabled = function() return not db.tierButtonsEnabled end,
 		},
 		{ -- 4 Relics
-			text = _G.RELICSLOT.." ...",
+			text = _G.INVTYPE_RELIC.." ...",
 			onValue = "EDIT_RESPONSE",
 			value = "RELICS",
 			hasArrow = true,
