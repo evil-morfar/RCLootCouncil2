@@ -5,7 +5,7 @@
 -- Create Date : 12/15/2014 8:54:35 PM
 
 local addon = LibStub("AceAddon-3.0"):GetAddon("RCLootCouncil")
-local RCVotingFrame = addon:NewModule("RCVotingFrame", "AceComm-3.0", "AceTimer-3.0")
+local RCVotingFrame = addon:NewModule("RCVotingFrame", "AceComm-3.0", "AceTimer-3.0", "AceEvent-3.0")
 local LibDialog = LibStub("LibDialog-1.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 
@@ -25,6 +25,8 @@ local guildRanks = {} -- returned from addon:GetGuildRanks()
 local GuildRankSort, ResponseSort -- Initialize now to avoid errors
 local defaultScrollTableData = {} -- See below
 local moreInfoData = {}
+local manualRollSession = nil -- The current session we are doing the manual roll
+local manualRollResults = {}  -- The result of manual rolls, to record if a player has rolled.
 
 function RCVotingFrame:OnInitialize()
 	-- Contains all the default data needed for the scroll table
@@ -96,6 +98,9 @@ end
 
 function RCVotingFrame:EndSession(hide)
 	active = false -- The session has ended, so deactivate
+	if addon.isMasterLooter then
+		self:EndManualRoll()
+	end
 	self:Update()
 	if hide then self:Hide() end -- Hide if need be
 end
@@ -1076,6 +1081,10 @@ do
 				text = L["Add rolls"],
 				notCheckable = true,
 				func = function() RCVotingFrame:DoRandomRolls(session) end,
+			},{ -- 10 Request rolls from raid members
+				text = L["Request rolls from raid members"],
+				notCheckable = true,
+				func = function() RCVotingFrame:StartManualRoll() end,
 			},
 		},
 		{ -- Level 2
@@ -1380,4 +1389,59 @@ function RCVotingFrame:GetItemStatus(item)
 	end
 	GameTooltip:Hide()
 	return text
+end
+
+function RCVotingFrame:StartManualRoll()
+	if addon.isMasterLooter then
+		local table = {}
+		for name, v in pairs (lootTable[session].candidates) do
+			table[name] = ""
+		end
+		addon:SendCommand("group", "rolls", session, table) -- Reset current rolls
+
+		manualRollSession = session
+		wipe(manualRollResults)
+		self:RegisterEvent("CHAT_MSG_SYSTEM")
+		addon:Debug("Start Manual Roll")
+
+		SendChatMessage(string.format(L["request_rolls_announcement"], lootTable[session].link), "RAID")
+	else
+		addon:Debug("Start manual roll by non-ML?")
+	end
+end
+
+function RCVotingFrame:EndManualRoll()
+	if addon.isMasterLooter then
+		self:UnregisterEvent("CHAT_MSG_SYSTEM")
+		manualRollSession = nil
+		wipe(manualRollResults)
+		addon:Debug("End Manual Roll")
+	else
+		addon:Debug("End manual roll by non-ML?")
+	end
+end
+
+function RCVotingFrame:CHAT_MSG_SYSTEM(event, msg)
+	if manualRollSession and addon.isMasterLooter and active and msg then
+        -- parse the message
+		local pattern = RANDOM_ROLL_RESULT
+		pattern = string.gsub(pattern, "[%(%)%-]", "%%%1")
+		pattern = string.gsub(pattern, "%%s", "%(%.%+%)")
+		pattern = string.gsub(pattern, "%%d", "%(%%d+%)")
+		pattern = string.gsub(pattern, "%%%d%$s", "%(%.%+%)") -- for "deDE"
+		pattern = string.gsub(pattern, "%%%d%$d", "%(%%d+%)") -- for "deDE"
+		local name, roll, low, high = string.match(msg, pattern)
+		roll, low, high = tonumber(roll), tonumber(low), tonumber(high)
+
+		if name then
+	    	name = addon:UnitName(name) -- Note: name may contain space.
+
+	    	-- Only the first roll is valid and only the default "/roll" is valid.
+	    	if lootTable[manualRollSession].candidates[name] and (not manualRollResults[name]) and low == 1 and high == 100 then
+	    		manualRollResults[name] = roll
+	    		addon:Debug("Manual Roll", name, roll, low, high)
+	    		addon:SendCommand("group", "rolls", manualRollSession, {[name] = roll})
+	    	end
+	    end
+	end
 end
