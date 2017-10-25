@@ -1,7 +1,6 @@
 ### v2.7.0
 ---
 * **General**
-* Sessions now starts way faster thanks to some caching cleanup.
 * Tier tokens now uses the minimum ilvl of the item the token will create as their ilvl.
    + This way all ilvl calculations will show more useful numbers.
    + Note: RCLootCouncil cannot track if these items will be Warforged/Titanforged. Only the guaranteed minimum ilvl is used.
@@ -35,6 +34,12 @@
    * Everyone can then type "/roll", and that roll is then used in the voting frame.
    * Only the first roll counts, so you can't cheat by rolling multiple times.
 * This is entirely optional, and the normal roll system still exists.
+
+
+* **Loot Frame**
+* The loot frame will now trigger immediately when a session starts instead of after ~2 seconds delay.
+* Now shows items' type and subType alongside the ilvl.
+* The layout is now more consistent in general.
 
 
 ###### Bugfixes
