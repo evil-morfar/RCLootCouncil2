@@ -86,7 +86,7 @@ function RCSessionFrame.SetCellText(rowFrame, frame, data, cols, row, realrow, c
 		frame.text:SetFontObject("GameFontNormal") -- We want bigger font
 	end
 	if not data[realrow].link then
-		frame.text:SetText("--"..L["Waiting for item info"].."--")
+		frame.text:SetText("--".._G.RETRIEVING_ITEM_INFO.."--")
 		loadingItems = true
 		RCSessionFrame:ScheduleTimer("Show", 1, ml.lootTable) -- Expect data to be available in 1 sec and then recreate the frame
 	else
@@ -127,7 +127,7 @@ function RCSessionFrame:GetFrame()
 	f.toggle = tgl
 
 	-- Start button
-	local b1 = addon:CreateButton(L["Start"], f.content)
+	local b1 = addon:CreateButton(_G.START, f.content)
 	b1:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", 10, 10)
 	b1:SetScript("OnClick", function()
 		if loadingItems then
@@ -155,7 +155,7 @@ function RCSessionFrame:GetFrame()
 	f.guildBtn = b1
 
 	-- Cancel button
-	local b2 = addon:CreateButton(L["Cancel"], f.content)
+	local b2 = addon:CreateButton(_G.CANCEL, f.content)
 	b2:SetPoint("LEFT", b1, "RIGHT", 15, 0)
 	b2:SetScript("OnClick", function()
 		ml.lootTable = {}

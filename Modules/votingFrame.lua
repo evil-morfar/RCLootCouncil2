@@ -5,7 +5,7 @@
 -- Create Date : 12/15/2014 8:54:35 PM
 
 local addon = LibStub("AceAddon-3.0"):GetAddon("RCLootCouncil")
-local RCVotingFrame = addon:NewModule("RCVotingFrame", "AceComm-3.0", "AceTimer-3.0")
+local RCVotingFrame = addon:NewModule("RCVotingFrame", "AceComm-3.0", "AceTimer-3.0", "AceEvent-3.0")
 local LibDialog = LibStub("LibDialog-1.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 
@@ -25,24 +25,26 @@ local guildRanks = {} -- returned from addon:GetGuildRanks()
 local GuildRankSort, ResponseSort -- Initialize now to avoid errors
 local defaultScrollTableData = {} -- See below
 local moreInfoData = {}
+local manualRollSession = nil -- The current session we are doing the manual roll
+local manualRollResults = {}  -- The result of manual rolls, to record if a player has rolled.
 
 function RCVotingFrame:OnInitialize()
 	-- Contains all the default data needed for the scroll table
 	-- The default values are in sorted order
 	defaultScrollTableData = {
 		{ name = "",				DoCellUpdate = RCVotingFrame.SetCellClass,		colName = "class",	sortnext = 2,		width = 20, },										-- 1 Class
-		{ name = L["Name"],		DoCellUpdate = RCVotingFrame.SetCellName,			colName = "name",								width = 120,},										-- 2 Candidate Name
-		{ name = L["Rank"],		DoCellUpdate = RCVotingFrame.SetCellRank,			colName = "rank",		sortnext = 5,		width = 95, comparesort = GuildRankSort,},-- 3 Guild rank
-		{ name = L["Role"],		DoCellUpdate = RCVotingFrame.SetCellRole,			colName = "role",		sortnext = 5,		width = 55, },										-- 4 Role
+		{ name = _G.NAME,		DoCellUpdate = RCVotingFrame.SetCellName,			colName = "name",								width = 120,},										-- 2 Candidate Name
+		{ name = _G.RANK,		DoCellUpdate = RCVotingFrame.SetCellRank,			colName = "rank",		sortnext = 5,		width = 95, comparesort = GuildRankSort,},-- 3 Guild rank
+		{ name = _G.ROLE,		DoCellUpdate = RCVotingFrame.SetCellRole,			colName = "role",		sortnext = 5,		width = 55, },										-- 4 Role
 		{ name = L["Response"],	DoCellUpdate = RCVotingFrame.SetCellResponse,	colName = "response",sortnext = 13,		width = 240, comparesort = ResponseSort,},-- 5 Response
-		{ name = L["ilvl"],		DoCellUpdate = RCVotingFrame.SetCellIlvl,			colName = "ilvl",		sortnext = 7,		width = 45, },										-- 6 Total ilvl
+		{ name = _G.ITEM_LEVEL_ABBR,		DoCellUpdate = RCVotingFrame.SetCellIlvl,			colName = "ilvl",		sortnext = 7,		width = 45, },										-- 6 Total ilvl
 		{ name = L["Diff"],		DoCellUpdate = RCVotingFrame.SetCellDiff,			colName = "diff",								width = 40, },										-- 7 ilvl difference
 		{ name = L["g1"],			DoCellUpdate = RCVotingFrame.SetCellGear,			colName = "gear1",	sortnext = 5,		width = 20, align = "CENTER", },				-- 8 Current gear 1
 		{ name = L["g2"],			DoCellUpdate = RCVotingFrame.SetCellGear,			colName = "gear2",	sortnext = 5,		width = 20, align = "CENTER", },				-- 9 Current gear 2
 		{ name = L["Votes"], 	DoCellUpdate = RCVotingFrame.SetCellVotes,		colName = "votes",	sortnext = 7,		width = 40, align = "CENTER", },				-- 10 Number of votes
 		{ name = L["Vote"],		DoCellUpdate = RCVotingFrame.SetCellVote,			colName = "vote",		sortnext = 10,		width = 60, align = "CENTER", },				-- 11 Vote button
 		{ name = L["Notes"],		DoCellUpdate = RCVotingFrame.SetCellNote,			colName = "note",								width = 40, align = "CENTER", },				-- 12 Note icon
-		{ name = L["Roll"],		DoCellUpdate = RCVotingFrame.SetCellRoll, 		colName = "roll",		sortnext = 10,		width = 30, align = "CENTER", },				-- 13 Roll
+		{ name = _G.ROLL,		DoCellUpdate = RCVotingFrame.SetCellRoll, 		colName = "roll",		sortnext = 10,		width = 30, align = "CENTER", },				-- 13 Roll
 	}
 	-- The actual table being worked on, new entries should be added to this table "tinsert(RCVotingFrame.scrollCols, data)"
 	-- If you want to add or remove columns, you should do so on your OnInitialize. See RCVotingFrame:RemoveColumn() for removal.
@@ -95,9 +97,15 @@ function RCVotingFrame:Show()
 end
 
 function RCVotingFrame:EndSession(hide)
-	active = false -- The session has ended, so deactivate
-	self:Update()
-	if hide then self:Hide() end -- Hide if need be
+	if active then -- Only end session once
+		addon:Debug("RCVotingFrame:EndSession", hide)
+		active = false -- The session has ended, so deactivate
+		if addon.isMasterLooter then
+			self:EndManualRoll()
+		end
+		self:Update()
+		if hide then self:Hide() end -- Hide if need be
+	end
 end
 
 function RCVotingFrame:CandidateCheck()
@@ -179,7 +187,9 @@ function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
 
 			elseif command == "lootTable" and addon:UnitIsUnit(sender, addon.masterLooter) then
 				active = true
-				self:Setup(unpack(data))
+				local lootTable = unpack(data)
+				addon:LocalizeLootTable(lootTable)
+				self:Setup(lootTable)
 				if not addon.enabled then return end -- We just want things ready
 				if db.autoOpen then
 					self:Show()
@@ -350,11 +360,11 @@ function RCVotingFrame:Update()
 		if active then
 			self.frame.abortBtn:SetText(L["Abort"])
 		else
-			self.frame.abortBtn:SetText(L["Close"])
+			self.frame.abortBtn:SetText(_G.CLOSE)
 		end
 		self.frame.disenchant:Show()
 	else -- Non-MLs:
-		self.frame.abortBtn:SetText(L["Close"])
+		self.frame.abortBtn:SetText(_G.CLOSE)
 		self.frame.disenchant:Hide()
 	end
 end
@@ -369,24 +379,10 @@ function RCVotingFrame:SwitchSession(s)
 	self.frame.itemIcon:SetNormalTexture(t.texture)
 	self.frame.itemText:SetText(t.link)
 	self.frame.iState:SetText(self:GetItemStatus(t.link))
-	self.frame.itemLvl:SetText(format(L["ilvl: x"], t.ilvl))
+	self.frame.itemLvl:SetText(format(_G.ITEM_LEVEL, t.ilvl))
 	-- Set a proper item type text
-	if t.subType and t.subType ~= "Miscellaneous" and t.subType ~= "Junk" and t.equipLoc ~= "" then
-		self.frame.itemType:SetText(getglobal(t.equipLoc)..", "..t.subType); -- getGlobal to translate from global constant to localized name
-	elseif t.subType ~= "Miscellaneous" and t.subType ~= "Junk" then
-		if t.subType == addon.db.global.localizedSubTypes["Artifact Relic"] then
-			local id = addon:GetItemIDFromLink(t.link)
-         self.frame.itemType:SetText((t.relic or select(3, C_ArtifactUI.GetRelicInfoByItemID(id))) or "".." "..t.subType or "")
-		else
-			self.frame.itemType:SetText(tostring(t.subType))
-		end
-	else
-		if RCTokenTable[addon:GetItemIDFromLink(t.link)] then -- It's a token
-			self.frame.itemType:SetText(L["Armor Token"])
-		else
-			self.frame.itemType:SetText(getglobal(t.equipLoc));
-		end
-	end
+
+	self.frame.itemType:SetText(addon:GetItemTypeText(t.link, t.subType, t.equipLoc, t.token, t.relic))
 
 	-- Update the session buttons
 	sessionButtons[s] = self:UpdateSessionButton(s, t.texture, t.link, t.awarded)
@@ -449,7 +445,7 @@ function RCVotingFrame:UpdateMoreInfo(row, data)
 			tip:AddDoubleLine(v[1], v[2], nil,nil,nil, r or 1, g or 1, b or 1)
 		end
 		tip:AddLine(" ") -- spacer
-		tip:AddLine(L["Totals"])
+		tip:AddLine(_G.TOTAL)
 		for _, v in pairs(moreInfoData[name].totals.responses) do
 			if v[3] then r,g,b = unpack(v[3],1,3) end
 			tip:AddDoubleLine(v[1], v[2], r or 1,g or 1,b or 1, r or 1,g or 1,b or 1)
@@ -565,7 +561,7 @@ function RCVotingFrame:GetFrame()
 	--#end----------------------------
 
 	-- Abort button
-	local b1 = addon:CreateButton(L["Close"], f.content)
+	local b1 = addon:CreateButton(_G.CLOSE, f.content)
 	b1:SetPoint("TOPRIGHT", f, "TOPRIGHT", -10, -50)
 	b1:SetScript("OnClick", function()
 		-- This needs to be dynamic if the ML has changed since this was first created
@@ -604,7 +600,7 @@ function RCVotingFrame:GetFrame()
 	f.moreInfo = CreateFrame( "GameTooltip", "RCVotingFrameMoreInfo", nil, "GameTooltipTemplate" )
 
 	-- Filter
-	local b3 = addon:CreateButton(L["Filter"], f.content)
+	local b3 = addon:CreateButton(_G.FILTER, f.content)
 	b3:SetPoint("RIGHT", b1, "LEFT", -10, 0)
 	b3:SetScript("OnClick", function(self) Lib_ToggleDropDownMenu(1, nil, filterMenu, self, 0, 0) end )
 	b3:SetScript("OnEnter", function() addon:CreateTooltip(L["Deselect responses to filter them"]) end)
@@ -612,7 +608,7 @@ function RCVotingFrame:GetFrame()
 	f.filter = b3
 
 	-- Disenchant button
-	local b4 = addon:CreateButton(L["Disenchant"], f.content)
+	local b4 = addon:CreateButton(_G.ROLL_DISENCHANT, f.content)
 	b4:SetPoint("RIGHT", b3, "LEFT", -10, 0)
 	b4:SetScript("OnClick", function(self) Lib_ToggleDropDownMenu(1, nil, enchanters, self, 0, 0) end )
 	--b4:SetNormalTexture("Interface\\Icons\\INV_Enchant_Disenchant")
@@ -761,7 +757,15 @@ end
 
 function RCVotingFrame.SetCellClass(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
 	local name = data[realrow].name
-	addon.SetCellClassIcon(rowFrame, frame, data, cols, row, realrow, column, fShow, table, lootTable[session].candidates[name].class)
+	local specID = lootTable[session].candidates[name].specID
+   	local specIcon = specID and select(4, GetSpecializationInfoByID(specID))
+   	if specIcon and db.showSpecIcon then
+		frame:SetNormalTexture(specIcon);
+		frame:GetNormalTexture():SetTexCoord(0, 1, 0, 1);
+	else
+		addon.SetCellClassIcon(rowFrame, frame, data, cols, row, realrow, column, fShow, table, lootTable[session].candidates[name].class)
+	end
+	data[realrow].cols[column].value = lootTable[session].candidates[name].class or ""
 end
 
 function RCVotingFrame.SetCellName(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
@@ -817,7 +821,7 @@ function RCVotingFrame.SetCellGear(rowFrame, frame, data, cols, row, realrow, co
 	local name = data[realrow].name
 	gear = lootTable[session].candidates[name][gear] -- Get the actual gear
 	if gear then
-		local texture = select(10, GetItemInfo(gear))
+		local texture = select(5, GetItemInfoInstant(gear))
 		frame:SetNormalTexture(texture)
 		frame:SetScript("OnEnter", function() addon:CreateHypertip(gear) end)
 		frame:SetScript("OnLeave", function() addon:HideTooltip() end)
@@ -912,7 +916,7 @@ function RCVotingFrame.SetCellNote(rowFrame, frame, data, cols, row, realrow, co
 	f:SetPoint("CENTER", frame, "CENTER")
 	if note then
 		f:SetNormalTexture("Interface/BUTTONS/UI-GuildButton-PublicNote-Up.png")
-		f:SetScript("OnEnter", function() addon:CreateTooltip(L["Note"], note)	end)
+		f:SetScript("OnEnter", function() addon:CreateTooltip(_G.LABEL_NOTE, note)	end) -- _G.LABEL_NOTE == "Note" in English
 		f:SetScript("OnLeave", function() addon:HideTooltip() end)
 		data[realrow].cols[column].value = 1 -- Set value for sorting compability
 	else
@@ -1080,6 +1084,10 @@ do
 				text = L["Add rolls"],
 				notCheckable = true,
 				func = function() RCVotingFrame:DoRandomRolls(session) end,
+			},{ -- 10 Request rolls from raid members
+				text = L["Request rolls from raid members"],
+				notCheckable = true,
+				func = function() RCVotingFrame:StartManualRoll() end,
 			},
 		},
 		{ -- Level 2
@@ -1220,7 +1228,7 @@ do
 				end
 				-- And relics
 				if db.relicButtonsEnabled then
-					info.text = L["Relics"].." ..."
+					info.text = _G.INVTYPE_RELIC.." ..."
 					info.value = "RELICS"
 					info.hasArrow = true
 					info.notCheckable = true
@@ -1279,7 +1287,7 @@ do
 				end
 			end
 
-			info.text = L["Filter"]
+			info.text = _G.FILTER
 			info.isTitle = true
 			info.notCheckable = true
 			info.disabled = true
@@ -1384,4 +1392,61 @@ function RCVotingFrame:GetItemStatus(item)
 	end
 	GameTooltip:Hide()
 	return text
+end
+
+function RCVotingFrame:StartManualRoll()
+	if addon.isMasterLooter then
+		addon:Debug("Start Manual Roll")
+		local table = {}
+		for name, v in pairs (lootTable[session].candidates) do
+			table[name] = ""
+		end
+		addon:SendCommand("group", "rolls", session, table) -- Reset current rolls
+
+		manualRollSession = session
+		wipe(manualRollResults)
+		self:RegisterEvent("CHAT_MSG_SYSTEM")
+		if IsInGroup() then
+			SendChatMessage(string.format(L["request_rolls_announcement"], lootTable[session].link), addon:GetAnnounceChannel("group"))
+		else -- Alone, just print it for clarity
+			addon:Print(string.format(L["request_rolls_announcement"], lootTable[session].link))
+		end
+	else
+		addon:Debug("Start manual roll by non-ML?")
+	end
+end
+
+function RCVotingFrame:EndManualRoll()
+	if addon.isMasterLooter then
+		self:UnregisterEvent("CHAT_MSG_SYSTEM")
+		manualRollSession = nil
+		wipe(manualRollResults)
+	else
+		addon:Debug("End manual roll by non-ML?")
+	end
+end
+
+function RCVotingFrame:CHAT_MSG_SYSTEM(event, msg)
+	if manualRollSession and addon.isMasterLooter and active and msg then
+        -- parse the message
+		local pattern = RANDOM_ROLL_RESULT
+		pattern = string.gsub(pattern, "[%(%)%-]", "%%%1")
+		pattern = string.gsub(pattern, "%%s", "%(%.%+%)")
+		pattern = string.gsub(pattern, "%%d", "%(%%d+%)")
+		pattern = string.gsub(pattern, "%%%d%$s", "%(%.%+%)") -- for "deDE"
+		pattern = string.gsub(pattern, "%%%d%$d", "%(%%d+%)") -- for "deDE"
+		local name, roll, low, high = string.match(msg, pattern)
+		roll, low, high = tonumber(roll), tonumber(low), tonumber(high)
+
+		if name then
+	    	name = addon:UnitName(name) -- Note: name may contain space.
+
+	    	-- Only the first roll is valid and only the default "/roll" is valid.
+	    	if lootTable[manualRollSession].candidates[name] and (not manualRollResults[name]) and low == 1 and high == 100 then
+	    		manualRollResults[name] = roll
+	    		addon:Debug("Manual Roll", name, roll, low, high)
+	    		addon:SendCommand("group", "rolls", manualRollSession, {[name] = roll})
+	    	end
+	    end
+	end
 end

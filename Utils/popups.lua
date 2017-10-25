@@ -12,7 +12,7 @@ LibDialog:Register("RCLOOTCOUNCIL_CONFIRM_USAGE", {
       self:SetFrameStrata("FULLSCREEN")
    end,
    buttons = {
-      {	text = L["Yes"],
+      {	text = _G.YES,
          on_click = function()
             addon:DebugLog("Player confirmed usage")
             -- The player might have passed on ML before accepting :O
@@ -37,7 +37,7 @@ LibDialog:Register("RCLOOTCOUNCIL_CONFIRM_USAGE", {
             addon:GetActiveModule("masterlooter"):NewML(addon.masterLooter)
          end,
       },
-      {	text = L["No"],
+      {	text = _G.NO,
          on_click = function()
             addon:DebugLog("Player declined usage")
             addon:Print(L[" is not active in this raid."])
@@ -56,10 +56,10 @@ LibDialog:Register("RCLOOTCOUNCIL_SYNC_REQUEST", {
       self.text:SetText(format("Receive %s data from %s", text, sender))
    end,
    buttons = {
-      {  text = L["Yes"],
+      {  text = _G.YES,
          on_click = addon.Sync.OnSyncAccept
       },
-      {  text = L["No"],
+      {  text = _G.NO,
          on_click = addon.Sync.OnSyncDeclined
       }
    },
@@ -74,7 +74,7 @@ LibDialog:Register("RCLOOTCOUNCIL_CONFIRM_ABORT", {
 		self:SetFrameStrata("FULLSCREEN")
 	end,
 	buttons = {
-		{	text = L["Yes"],
+		{	text = _G.YES,
 			on_click = function(self)
 				addon:DebugLog("ML aborted session")
 				RCLootCouncilML:EndSession()
@@ -82,7 +82,7 @@ LibDialog:Register("RCLOOTCOUNCIL_CONFIRM_ABORT", {
 				addon:GetActiveModule("votingframe"):EndSession(true)
 			end,
 		},
-		{	text = L["No"],
+		{	text = _G.NO,
 		},
 	},
 	hide_on_escape = true,
@@ -93,10 +93,10 @@ LibDialog:Register("RCLOOTCOUNCIL_CONFIRM_AWARD", {
 	icon = "",
 	on_show = RCLootCouncilML.AwardPopupOnShow,
 	buttons = {
-		{	text = L["Yes"],
+		{	text = _G.YES,
 			on_click = RCLootCouncilML.AwardPopupOnClickYes
 		},
-		{	text = L["No"],
+		{	text = _G.NO,
          on_click = RCLootCouncilML.AwardPopupOnClickNo
 		},
 	},

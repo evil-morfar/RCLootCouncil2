@@ -17,7 +17,7 @@ function addon:OptionsTable()
 			settings = {
 				order = 1,
 				type = "group",
-				name = L["General"],
+				name = _G.GENERAL,
 				childGroups = "tab",
 				args = {
 					version = {
@@ -28,7 +28,7 @@ function addon:OptionsTable()
 					generalSettingsTab = {
 						order = 2,
 						type = "group",
-						name = L["General"],
+						name = _G.GENERAL,
 						childGroups = "tab",
 						args = {
 							generalOptions = {
@@ -144,8 +144,22 @@ function addon:OptionsTable()
 									},
 								},
 							},
-							lootHistoryOptions = {
+							frameOptions = {
 								order = 5,
+								type = "group",
+								name = L["Frame options"],
+								inline = true,
+								args = {
+									showSpecIcon = {
+										order = 1,
+										name = L["Show Spec Icon"],
+										desc = L["show_spec_icon_desc"],
+										type = "toggle",
+									}
+								}
+							},
+							lootHistoryOptions = {
+								order = 6,
 								type = "group",
 								name = L["Loot History"],
 								inline = true,
@@ -194,7 +208,7 @@ function addon:OptionsTable()
 					appearanceTab = {
 						order = 3,
 						type = "group",
-						name = L["Appearance"],
+						name = _G.APPEARANCE_LABEL,
 						args = {
 							skins = {
 								order = 1,
@@ -378,7 +392,7 @@ function addon:OptionsTable()
 					generalTab = {
 						order = 2,
 						type = "group",
-						name = L["General"],
+						name = _G.GENERAL,
 						args = {
 							usageOptions = {
 								order = 1,
@@ -462,7 +476,7 @@ function addon:OptionsTable()
 									},
 									autoLoot = {
 										order = 5,
-										name = L["Auto Loot"],
+										name = _G.AUTO_LOOT_DEFAULT_TEXT,
 										desc = L["auto_loot_desc"],
 										type = "toggle",
 									},
@@ -705,7 +719,7 @@ function addon:OptionsTable()
 									-- Award reasons made further down
 									reset = {
 										order = -1,
-										name = L["Reset to default"],
+										name = _G.RESET_TO_DEFAULT,
 										desc = L["reset_to_default_desc"],
 										type = "execute",
 										confirm = true,
@@ -739,7 +753,8 @@ function addon:OptionsTable()
 									},
 									outputDesc = {
 										order = 2,
-										name = L["announce_awards_desc2"],
+										fontSize = "medium",
+										name = L["announce_awards_desc2"].."\n"..table.concat(RCLootCouncilML.awardStringsDesc, "\n"),
 										type = "description",
 										hidden = function() return not self.db.profile.announceAward end,
 									},
@@ -768,19 +783,19 @@ function addon:OptionsTable()
 									},
 									announceChannel = {
 										order = 3,
-										name = L["Channel"],
+										name = _G.CHANNEL,
 										desc = L["channel_desc"],
 										type = "select",
 										style = "dropdown",
 										values = {
-											SAY = L["Say"],
-											YELL = L["Yell"],
-											PARTY = L["Party"],
-											GUILD = L["Guild"],
-											OFFICER = L["Officer"],
-											RAID = L["Raid"],
-											RAID_WARNING = L["Raid Warning"],
-											group = L["Group"], -- must be converted
+											SAY = _G.CHAT_MSG_SAY,
+											YELL = _G.CHAT_MSG_YELL,
+											PARTY = _G.CHAT_MSG_PARTY,
+											GUILD = _G.CHAT_MSG_GUILD,
+											OFFICER = _G.CHAT_MSG_OFFICER,
+											RAID = _G.CHAT_MSG_RAID	,
+											RAID_WARNING = _G.CHAT_MSG_RAID_WARNING,
+											group = _G.GROUP, -- must be converted
 										},
 										set = function(i,v) self.db.profile.announceChannel = v end,
 										hidden = function() return not self.db.profile.announceItems end,
@@ -793,11 +808,25 @@ function addon:OptionsTable()
 										width = "double",
 										hidden = function() return not self.db.profile.announceItems end,
 									},
+									announceItemStringDesc ={
+										order = 4,
+										fontSize = "medium",
+										name = L["announce_item_string_desc"].."\n"..table.concat(RCLootCouncilML.announceItemStringsDesc, "\n"),
+										type = "description",
+										hidden = function() return not self.db.profile.announceItems end,
+									},
+									announceItemString = {
+										name = L["Message for each item"],
+										order = 4.1,
+										type = "input",
+										width = "double",
+										hidden = function() return not self.db.profile.announceItems end,
+									},
 								},
 							},
 							reset = {
 								order = -1,
-								name = L["Reset to default"],
+								name = _G.RESET_TO_DEFAULT,
 								desc = L["reset_announce_to_default_desc"],
 								type = "execute",
 								confirm = true,
@@ -988,7 +1017,7 @@ function addon:OptionsTable()
 							},
 							reset = {
 								order = -1,
-								name = L["Reset to default"],
+								name = _G.RESET_TO_DEFAULT,
 								desc = L["reset_buttons_to_default_desc"],
 								type = "execute",
 								confirm = true,
@@ -1246,7 +1275,7 @@ function addon:OptionsTable()
 		}
 		options.args.mlSettings.args.awardsTab.args.awardReasons.args["DE"..i] = {
 			order = i +1.3,
-			name = L["Disenchant"],
+			name = _G.ROLL_DISENCHANT,
 			desc = L["disenchant_desc"],
 			type = "toggle",
 			get = function() return self.db.profile.awardReasons[i].disenchant end,
@@ -1264,20 +1293,20 @@ function addon:OptionsTable()
 	for i = 1, #self.db.profile.awardText do
 		options.args.mlSettings.args.announcementsTab.args.awardAnnouncement.args["outputSelect"..i] = {
 			order = i+3,
-			name = L["Channel"]..i..":",
+			name = _G.CHANNEL..i..":",
 			desc = L["channel_desc"],
 			type = "select",
 			style = "dropdown",
 			values = {
-				NONE = L["None"],
-				SAY = L["Say"],
-				YELL = L["Yell"],
-				PARTY = L["Party"],
-				GUILD = L["Guild"],
-				OFFICER = L["Officer"],
-				RAID = L["Raid"],
-				RAID_WARNING = L["Raid Warning"],
-				group = L["Group"],
+				NONE = _G.NONE,
+				SAY = _G.CHAT_MSG_SAY,
+				YELL = _G.CHAT_MSG_YELL,
+				PARTY = _G.CHAT_MSG_PARTY,
+				GUILD = _G.CHAT_MSG_GUILD,
+				OFFICER = _G.CHAT_MSG_RAID_WARNING,
+				RAID = _G.CHAT_MSG_RAID,
+				RAID_WARNING = _G.CHAT_MSG_RAID_WARNING,
+				group = _G.GROUP,
 			},
 			set = function(j,v) self.db.profile.awardText[i].channel = v	end,
 			get = function() return self.db.profile.awardText[i].channel end,

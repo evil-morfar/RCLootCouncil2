@@ -12,6 +12,10 @@
 		- IDEA Add some sort of indicator when rows are being filtered.
 		- TODO/IDEA Change chat_commands to seperate lines in order to have a table of printable cmds.
 		- TODO Use token ilvl to display a token's projected ilvl in the votingframe.
+
+	Backwards compability breaks:
+		- Remove equipLoc, subType, texture from lootTable. They can all be created with GetItemInfoInstant()
+		- Remove name from lootTable. This isn't needed at all.
 -------------------------------- ]]
 
 --[[CHANGELOG
@@ -68,6 +72,11 @@ local lootTable = {}
 
 local IsPartyLFG = IsPartyLFG
 
+local playersData = {-- Update on login/encounter starts. it stores the information of the player at that moment.
+	gears = {}, -- Gears key: slot number(1-19), value: item link
+	relics = {}, -- Relics key: slot number(1-3), value: item link
+} -- player's data that can be changed by the player (spec, equipped ilvl, gaers, relics etc)
+
 function RCLootCouncil:OnInitialize()
 	--IDEA Consider if we want everything on self, or just whatever modules could need.
   	self.version = GetAddOnMetadata("RCLootCouncil", "Version")
@@ -98,7 +107,7 @@ function RCLootCouncil:OnInitialize()
 		TIMEOUT			= { color = {1,0,0,1},				sort = 504,		text = L["Candidate didn't respond on time"], },
 		REMOVED			= { color = {0.8,0.5,0,1},			sort = 505,		text = L["Candidate removed"], },
 		NOTHING			= { color = {0.5,0.5,0.5,1},		sort = 505,		text = L["Offline or RCLootCouncil not installed"], },
-		PASS				= { color = {0.7, 0.7,0.7,1},		sort = 800,		text = L["Pass"],},
+		PASS				= { color = {0.7, 0.7,0.7,1},		sort = 800,		text = _G.PASS,},
 		AUTOPASS			= { color = {0.7,0.7,0.7,1},		sort = 801,		text = L["Autopass"], },
 		DISABLED			= { color = {0.3,0.35,0.5,1},		sort = 802,		text = L["Candidate has disabled RCLootCouncil"], },
 		NOTINRAID		= { color = {0.7,0.6,0,1}, 		sort = 803, 	text = L["Candidate is not in the instance"]},
@@ -114,10 +123,10 @@ function RCLootCouncil:OnInitialize()
 		relic = {}, -- Created further down
 	}
 	self.roleTable = {
-		TANK =		L["Tank"],
-		HEALER =		L["Healer"],
-		DAMAGER =	L["DPS"],
-		NONE =		L["None"],
+		TANK =		_G.TANK,
+		HEALER =		_G.HEALER,
+		DAMAGER =	_G.DAMAGER,
+		NONE =		_G.NONE,
 	}
 
 	self.testMode = false;
@@ -161,13 +170,14 @@ function RCLootCouncil:OnInitialize()
 			autoAward = false,
 			autoAwardLowerThreshold = 2,
 			autoAwardUpperThreshold = 3,
-			autoAwardTo = L["None"],
+			autoAwardTo = _G.NONE,
 			autoAwardReason = 1,
 			observe = false, -- observe mode on/off
 			silentAutoPass = false, -- Show autopass message
 			--neverML = false, -- Never use the addon as ML
 			minimizeInCombat = false,
 			iLvlDecimal = false,
+			showSpecIcon = false,
 
 			UI = { -- stores all ui information
 				['**'] = { -- Defaults
@@ -250,8 +260,8 @@ function RCLootCouncil:OnInitialize()
 			maxButtons = 10,
 			numButtons = 3,
 			buttons = {
-				{	text = L["Need"],					whisperKey = L["whisperKey_need"], },	-- 1
-				{	text = L["Greed"],				whisperKey = L["whisperKey_greed"],},	-- 2
+				{	text = _G.NEED,					whisperKey = L["whisperKey_need"], },	-- 1
+				{	text = _G.GREED,				whisperKey = L["whisperKey_greed"],},	-- 2
 				{	text = L["Minor Upgrade"],		whisperKey = L["whisperKey_minor"],},	-- 3
 			},
 			tierButtonsEnabled = true,
@@ -260,7 +270,7 @@ function RCLootCouncil:OnInitialize()
 				{	text = L["4 Piece"],					whisperKey = "1, 4tier, 4piece"},		-- 1
 				{	text = L["2 Piece"],					whisperKey = "2, 2tier, 2piece"},		-- 2
 				{	text = L["Other piece"],			whisperKey = "3, other, tier, piece"}, -- 3
-				{	text = L["Upgrade"],					whisperKey = "4, upgrade, up"},			-- 4
+				{	text = _G.UPGRADE,					whisperKey = "4, upgrade, up"},			-- 4
 			},
 			relicButtonsEnabled = false,
 			relicNumButtons = 2,
@@ -269,7 +279,7 @@ function RCLootCouncil:OnInitialize()
 			maxAwardReasons = 10,
 			numAwardReasons = 3,
 			awardReasons = {
-				{ color = {1, 1, 1, 1}, disenchant = true, log = true,	sort = 401,	text = L["Disenchant"], },
+				{ color = {1, 1, 1, 1}, disenchant = true, log = true,	sort = 401,	text = _G.ROLL_DISENCHANT, },
 				{ color = {1, 1, 1, 1}, disenchant = false, log = true,	sort = 402,	text = L["Banking"], },
 				{ color = {1, 1, 1, 1}, disenchant = false, log = false, sort = 403,	text = L["Free"],},
 			},
@@ -360,6 +370,7 @@ function RCLootCouncil:OnInitialize()
 	self.optionsFrame.ml = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("RCLootCouncil", "Master Looter", "RCLootCouncil", "mlSettings")
 	-- reset verTestCandidates
 	self.db.global.verTestCandidates = {}
+	self.playersData = playersData -- Make it globally available
 	-- Add logged in message in the log
 	self:DebugLog("Logged In")
 end
@@ -377,6 +388,7 @@ function RCLootCouncil:OnEnable()
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
 	self:RegisterEvent("PLAYER_REGEN_DISABLED", "EnterCombat")
 	self:RegisterEvent("PLAYER_REGEN_ENABLED", "LeaveCombat")
+	self:RegisterEvent("ENCOUNTER_START", "OnEvent")
 	self:RegisterEvent("ENCOUNTER_END", 	"OnEvent")
 	--self:RegisterEvent("GROUP_ROSTER_UPDATE", "Debug", "event")
 
@@ -401,6 +413,7 @@ function RCLootCouncil:OnEnable()
 		end
 		self.db.global.oldVersion = self.db.global.version
 		self.db.global.version = self.version
+		self.db.global.localizedSubTypes.created = false -- Force to fully rerun LocalizeSubTypes if upgraded
 	else -- Mostly for first time load
 		self.db.global.version = self.version;
 	end
@@ -460,7 +473,7 @@ function RCLootCouncil:ChatCommand(msg)
 	until arg == nil
 	input = strlower(input or "")
 	self:Debug("/", input, unpack(args))
-	if not input or input:trim() == "" or input == "help" or input == L["help"] then
+	if not input or input:trim() == "" or input == "help" or input == string.lower(_G.HELP_LABEL) then
 		if self.tVersion then print(format(L["chat tVersion string"],self.version, self.tVersion))
 		else print(format(L["chat version String"],self.version)) end
 		gsub(L["chat_commands"], "[^\n]+", print)
@@ -497,17 +510,17 @@ function RCLootCouncil:ChatCommand(msg)
 	elseif input == 'version' or input == L["version"] or input == "v" or input == "ver" then
 		self:CallModule("version")
 
-	elseif input == "history" or input == L["history"] or input == "h" or input == "his" then
+	elseif input == "history" or input == string.lower(_G.HISTORY) or input == "h" or input == "his" then
 		self:CallModule("history")
 --@debug@
 	elseif input == "nnp" then
 		self.nnp = not self.nnp
 		self:Print("nnp = "..tostring(self.nnp))
 --@end-debug@
-	elseif input == "whisper" or input == L["whisper"] then
+	elseif input == "whisper" or input == string.lower(_G.WHISPER) then
 		self:Print(L["whisper_help"])
 
-	elseif (input == "add" or input == L["add"]) then
+	elseif input == "add" or input == string.lower(_G.ADD) then
 		if not args[1] or args[1] == "" then return self:ChatCommand("help") end
 		if self.isMasterLooter then
 			for _,v in ipairs(args) do
@@ -531,7 +544,7 @@ function RCLootCouncil:ChatCommand(msg)
 			self:Print(L["You cannot use this command without being the Master Looter"])
 		end
 
-	elseif input == "reset" or input == L["reset"] then
+	elseif input == "reset" or input == string.lower(_G.RESET) then
 		for k, v in pairs(db.UI) do -- We can't easily reset due to the wildcard in defaults
 			if k == "lootframe" then -- Loot Frame is special
 				v.y		= -200
@@ -646,32 +659,21 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 					-- Send "DISABLED" response when not enabled
 					if not self.enabled then
 						for i = 1, #lootTable do
-							self:SendCommand("group", "response", i, self.playerName, {response = "DISABLED"})
+							-- target, session, link, ilvl, response, equipLoc, note, subType, relicType, isTier, isRelic, sendAvgIlvl, sendSpecID
+							self:SendResponse("group", i, nil, nil, "DISABLED")
 						end
 						return self:Debug("Sent 'DISABLED' response to", sender)
 					end
 
-					-- TODO: v2.2.0 While we don't rely on the cache for normal items, we do for artifact relics.
-					-- I can't get around it until I find out if C_ArtifactUI.GetRelicInfoByItemID() returns a localized result.
-					-- So meanwhile, we'll just delay everything until we've got it cached:
-					local cached = true
-					for ses, v in ipairs(lootTable) do
-						local iName = GetItemInfo(v.link)
-						if not iName then self:Debug(v.link); cached = false end
-						local subType = select(7, GetItemInfo(v.link))
-						if subType then v.subType = subType end -- subType should use user localization instead of master looter localization.
-					end
-					if not cached then
-						self:Debug("Some items wasn't cached, delaying loot by 1 sec")
-						return self:ScheduleTimer("OnCommReceived", 1, prefix, serializedMsg, distri, sender)
-					end
+					self:LocalizeLootTable(lootTable)
 
 					-- Out of instance support
 					-- assume 8 people means we're actually raiding
 					if GetNumGroupMembers() >= 8 and not IsInInstance() then
 						self:DebugLog("NotInRaid respond to lootTable")
 						for ses, v in ipairs(lootTable) do
-						 	self:SendCommand("group", "response", self:CreateResponse(ses, v.link, v.ilvl, "NOTINRAID", v.equipLoc, nil, v.subType))
+							-- target, session, link, ilvl, response, equipLoc, note, subType, relicType, isTier, isRelic, sendAvgIlvl, sendSpecID
+							self:SendResponse("group", ses, v.link, v.ilvl, "NOTINRAID", v.equipLoc, nil, v.subType, v.relic, nil, nil, true, true)
 						end
 						return
 					end
@@ -684,19 +686,25 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 
 					self:SendCommand("group", "lootAck", self.playerName) -- send ack
 
-					if db.autoPass then -- Do autopassing
-						for ses, v in ipairs(lootTable) do
+					-- Send the information of current equipped gear immediately when we receive the loot table.
+					-- The actual response/note are left unsent if not autopassed.
+					for ses, v in ipairs(lootTable) do
+						local response = nil
+						if db.autoPass then
 							if (v.boe and db.autoPassBoE) or not v.boe then
 								if self:AutoPassCheck(v.subType, v.equipLoc, v.link, v.token, v.relic) then
 									self:Debug("Autopassed on: ", v.link)
 									if not db.silentAutoPass then self:Print(format(L["Autopassed on 'item'"], v.link)) end
-									self:SendCommand("group", "response", self:CreateResponse(ses, v.link, v.ilvl, "AUTOPASS", v.equipLoc, nil, v.subType))
 									lootTable[ses].autopass = true
+									response = "AUTOPASS"
 								end
 							else
 								self:Debug("Didn't autopass on: "..v.link.." because it's BoE!")
 							end
 						end
+
+						-- target, session, link, ilvl, response, equipLoc, note, subType, relicType, isTier, isRelic, sendAvgIlvl, sendSpecID
+						self:SendResponse("group", ses, v.link, v.ilvl, response, v.equipLoc, nil, v.subType, v.relic, nil, nil, true, true)
 					end
 
 					-- Show  the LootFrame
@@ -875,12 +883,33 @@ end
 
 function RCLootCouncil:Test(num)
 	self:Debug("Test", num)
-	local testItems = {--105473,105407,105513,105465,105482,104631,105450,105537,104554,105509,104412,105499,104476,104544,104495,
-		--137471,137463,137474,137472,137468, 										-- Old Artifact relics
-		152515,152519,152523,152525,152527, 										-- Tier 21 tokens
-		152375,152376,152377,152414,152364,152363,151956,151940,151941,151942,151943,151944,151945,151946,151947,152004,152088,152001, -- Antorus items
-		151961,151962,151963,151964,151967, 										-- Antorus trinkets
-		152044,152045,152060,152050,152035,152039,152026,152034,152056,	-- Antorus Relics
+	local testItems = {
+		-- Tier21 Tokens (Head, Shoulder, Cloak, Chest, Hands, Legs)
+		152524, 152530, 152517, 152518, 152521, 152527, -- Vanquisher: DK, Druid, Mage, Rogue
+		152525, 152531, 152516, 152519, 152522, 152528, -- Conqueror : DH, Paladin, Priest, Warlock
+		152526, 152532, 152515, 152520, 152523, 152529, -- Protector : Hunder, Monk, Shaman, Warrior
+		-- Tier21 Armors (Head, Shoulder, Chest, Wrist, Hands, Waist, Legs, Feet)
+		152014, 152019, 152017, 152023, 152686, 152020, 152016, 152009, -- Plate
+		152423, 152005, 151994, 152008, 151998, 152006, 152002, 151996, -- Mail
+		151985, 151988, 151982, 151992, 151984, 151986, 151987, 151981, -- Leather
+		151943, 151949, 152679, 151953, 152680, 151942, 151946, 151939, -- Cloth
+		-- Tier21 Trinkets
+		151975, 151977, -- Tank
+		151956, 151970, -- Healer
+		151963, 151964, -- Melee DPS
+		151968, 151963, -- Non-caster DPS
+		151970, 151971, -- Caster DPS
+		-- Tier21 Relics
+		152024, 152025, -- Arcane
+		152028, 152029, -- Blood
+		152031, 152032, -- Fel
+		152035, 152036, -- Fire
+		152039, 152040, -- Frost
+		152043, 152044, -- Holy
+		152047, 152048, -- Iron
+		152050, 152051, -- Life
+		152054, 152055, -- Shadow
+		152058, 152059, -- Storm
 	}
 	local items = {};
 	-- pick "num" random items
@@ -888,17 +917,14 @@ function RCLootCouncil:Test(num)
 		local j = math.random(1, #testItems)
 		tinsert(items, testItems[j])
 	end
-
 	self.testMode = true;
 	self.isMasterLooter, self.masterLooter = self:GetML()
-
 	-- We must be in a group and not the ML
 	if not self.isMasterLooter then
 		self:Print(L["You cannot initiate a test while in a group without being the MasterLooter."])
 		self.testMode = false
 		return
 	end
-
 	-- Call ML module and let it handle the rest
 	self:CallModule("masterlooter")
 	self:GetActiveModule("masterlooter"):NewML(self.masterLooter)
@@ -941,7 +967,7 @@ end
 	Used by getCurrentGear to determine slot types
 	Inspired by EPGPLootMaster
 --]]
-local INVTYPE_Slots = {
+RCLootCouncil.INVTYPE_Slots = {
 		INVTYPE_HEAD		    = "HeadSlot",
 		INVTYPE_NECK		    = "NeckSlot",
 		INVTYPE_SHOULDER	    = "ShoulderSlot",
@@ -966,9 +992,68 @@ local INVTYPE_Slots = {
 		INVTYPE_TRINKET		    = {"TRINKET0SLOT", "TRINKET1SLOT"}
 }
 
-function RCLootCouncil:GetPlayersGear(link, equipLoc)
-	local itemID = self:GetItemIDFromLink(link) -- Convert to itemID
+function RCLootCouncil:UpdatePlayersGears(startSlot, endSlot)
+	startSlot = startSlot or INVSLOT_FIRST_EQUIPPED
+	endSlot = endSlot or INVSLOT_LAST_EQUIPPED
+
+	for i = startSlot, endSlot do
+		local iLink = GetInventoryItemLink("player", i)
+		if iLink then
+			local iName = GetItemInfo(iLink)
+			if iName then
+				playersData.gears[i] = iLink
+			else -- Blizzard bug that GetInventoryItemLink returns incomplete link. Retry
+				self:ScheduleTimer("UpdatePlayersGears", 1, i, i)
+			end
+		else
+			playersData.gears[i] = nil
+		end
+	end
+end
+
+function RCLootCouncil:UpdatePlayerRelics(startSlot, endSlot)
+	startSlot = startSlot or 1
+	endSlot = endSlot or 3
+
+	for i = startSlot, endSlot do
+		if i <= C_ArtifactUI.GetEquippedArtifactNumRelicSlots() or 0 then
+			local iLink = select(4,C_ArtifactUI.GetEquippedArtifactRelicInfo(i))
+			if iLink then
+				local iName = GetItemInfo(iLink)
+				if iName then
+					playersData.relics[i] = iLink
+				else  -- Uncached. Retry to make sure this is a correct link.
+					self:ScheduleTimer("UpdatePlayerRelics", 1, i, i)
+				end
+			else
+				playersData.relics[i] = nil
+			end
+		else
+			playersData.relics[i] = nil
+		end
+	end
+end
+
+-- Update player's data which is changable by the player. (specid, equipped ilvl, specs, gears, etc)
+function RCLootCouncil:UpdatePlayersData()
+	self:DebugLog("UpdatePlayersData()")
+	playersData.specID = GetSpecialization() and GetSpecializationInfo(GetSpecialization())
+	playersData.ilvl = select(2,GetAverageItemLevel())
+	self:UpdatePlayersGears()
+	self:UpdatePlayerRelics()
+end
+
+-- @param link A gear that we want to compare against the equipped gears
+-- @param gearsTable if specified, compare against gears stored in the table instead of the current equipped gears, whose key is slot number and value is the item link of the gear.
+-- @return the gear(s) that with the same slot of the input link.
+function RCLootCouncil:GetPlayersGear(link, equipLoc, gearsTable)
 	self:DebugLog("GetPlayersGear", itemID, equipLoc)
+	local GetInventoryItemLink = GetInventoryItemLink
+	if gearsTable then -- lazy code
+		GetInventoryItemLink = function(_, slotNum) return gearsTable[slotNum] end
+	end
+
+	local itemID = self:GetItemIDFromLink(link) -- Convert to itemID
 	if not itemID then return nil, nil; end
 	local item1, item2;
 	-- check if the item is a token, and if it is, return the matching current gear
@@ -981,7 +1066,7 @@ function RCLootCouncil:GetPlayersGear(link, equipLoc)
 		end
 		return item1, item2
 	end
-	local slot = INVTYPE_Slots[equipLoc]
+	local slot = self.INVTYPE_Slots[equipLoc]
 	if not slot then return nil, nil; end;
 	item1 = GetInventoryItemLink("player", GetInventorySlotInfo(slot[1] or slot))
 	if not item1 and slot['or'] then
@@ -993,20 +1078,108 @@ function RCLootCouncil:GetPlayersGear(link, equipLoc)
 	return item1, item2;
 end
 
-function RCLootCouncil:GetArtifactRelics(link)
+-- This function assumes all items in "relicsTable" to be cached. "link" does not need to be cached if relicType is specified.
+-- @param link A relic that we want to compare against the equipped relics
+-- @parm relicType the relic type of the item. If not specified, fetch it(need item to be cached)
+-- @param relicsTable if specified, compare against relics stored in the table instead of the current equipped relics, whose key is slot number and value is the item link of the relic.
+-- @return the relic(s) that with the same type of the input link.
+function RCLootCouncil:GetArtifactRelics(link, relicType, relicsTable)
 	local id = self:GetItemIDFromLink(link)
+	relicType = relicType or select(3, C_ArtifactUI.GetRelicInfoByItemID(id))
 	local g1,g2;
-	if not C_ArtifactUI.GetEquippedArtifactNumRelicSlots() then return end -- Check if we even have an artifact
-	for i = 1, C_ArtifactUI.GetEquippedArtifactNumRelicSlots() do
-		if C_ArtifactUI.CanApplyRelicItemIDToEquippedArtifactSlot(id,i) then -- We can equip it
+	local n = relicsTable and 3 or C_ArtifactUI.GetEquippedArtifactNumRelicSlots() or 0
+	for i = 1, n do
+		local iLink = relicsTable and relicsTable[i] or select(4,C_ArtifactUI.GetEquippedArtifactRelicInfo(i))
+		if iLink and select(3, C_ArtifactUI.GetRelicInfoByItemID(self:GetItemIDFromLink(iLink))) == relicType then
 			if g1 then
-				g2 = select(4,C_ArtifactUI.GetEquippedArtifactRelicInfo(i))
+				g2 = iLink
 			else
-				g1 = select(4,C_ArtifactUI.GetEquippedArtifactRelicInfo(i))
+				g1 = iLink
 			end
 		end
 	end
 	return g1, g2
+end
+
+-- Sends a response. Uses the gear equipped at the start of most recent encounter or login.
+-- @paramsig session [, ...]
+-- link, ilvl, equipLoc and subType must be provided to send out gear information.
+-- @param session			The session to respond to.
+-- @param link 			The itemLink of the item in the session.
+-- @param ilvl				The ilvl of the item in the session.
+-- @param response		The selected response, must be index of db.responses.
+-- @param equipLoc		The item in the session's equipLoc.
+-- @param note				The player's note.
+-- @param subType			The item's subType, needed for Artifact Relics.
+-- @param relicType     The type of relic
+-- @param isTier			Indicates if the response is a tier response. (v2.4.0)
+-- @param isRelic			Indicates if the response is a relic response. (v2.5.0)
+-- @param sendAvgIlvl   Indicates whether we send average ilvl.
+-- @param sendSpecID    Indicates whether we send spec id.
+function RCLootCouncil:SendResponse(target, session, link, ilvl, response, equipLoc, note, subType, relicType, isTier, isRelic, sendAvgIlvl, sendSpecID)
+	self:DebugLog("SendResponse", target, session, link, ilvl, response, equipLoc, note, subType, relicType, isTier, isRelic, sendAvgIlvl, sendSpecID)
+	local g1, g2;
+	local diff = nil
+
+	if link and ilvl and equipLoc and subType then
+		if self.db.global.localizedSubTypes[subType] == "Artifact Relic" then
+			g1, g2 = self:GetArtifactRelics(link, relicType, playersData.relics) -- Use relic info we stored before
+		else
+		 	g1, g2 = self:GetPlayersGear(link, equipLoc, playersData.gears) -- Use gear info we stored before
+		end
+
+		local itemNeedCaching = false
+		local g1diff, g2diff = g1 and select(4, GetItemInfo(g1)), g2 and select(4, GetItemInfo(g2))
+		if g1diff and g2diff then
+			diff = g1diff >= g2diff and ilvl - g2diff or ilvl - g1diff
+		elseif g1 and g2 then
+			itemNeedCaching = true
+		elseif g1diff then
+			diff = ilvl - g1diff
+		elseif g1 then
+			itemNeedCaching = true
+		end
+
+		if itemNeedCaching then
+			self:Debug("Items need caching in SendResponse", g1, g2)
+			return self:ScheduleTimer("SendResponse", 1, target, session, link, ilvl, response, equipLoc, note, subType, relicType, isTier, isRelic, sendAvgIlvl, sendSpecID)
+		end
+	end
+
+	self:SendCommand(target, "response",
+		session,
+		self.playerName,
+		{	gear1 = g1,
+			gear2 = g2,
+			ilvl = sendAvgIlvl and playersData.ilvl or nil,
+			diff = diff,
+			note = note,
+			response = response,
+			isTier = isTier,
+			isRelic = isRelic,
+			specID = sendSpecID and playersData.specID or nil,
+		})
+end
+
+-- @param link The itemLink of the item.
+-- @return If the item is not a token, return nil. Otherwise, return the minimum item level of the gear created by the token.
+function RCLootCouncil:GetTokenIlvl(link)
+	local id = self:GetItemIDFromLink(link)
+	if not id then return end
+	local baseIlvl = RCTokenIlvl[id] -- ilvl in normal difficulty
+	if not baseIlvl then return end
+
+	local bonuses = select(17, self:DecodeItemLink(link))
+	for _, value in pairs(bonuses) do
+   		-- @see epgp/LibGearPoints-1.2.lua
+	    if value == 566 or value == 570 then -- Heroic difficulty
+	    	return baseIlvl + 15
+	    end
+	    if value == 567 or value == 569 then -- Mythic difficulty
+	    	return baseIlvl + 30
+	    end
+  	end
+  	return baseIlvl -- Normal difficulty
 end
 
 function RCLootCouncil:Timer(type, ...)
@@ -1051,28 +1224,30 @@ local subTypeLookup = {
 	["Wands"]					= 128096, -- Demonspine Wand
 	["Warglaives"]				= 141604, -- Glaive of the Fallen
 	["Artifact Relic"]		= 141271, -- Hope of the Forest
+	["Miscellaneous"]       = 151961, -- Legionsteel Flywheel (Trinket)
+	["Junk"]                = 152528, -- Antoran Leggings of the Conqueror (Armor token)
 }
 
 function RCLootCouncil:LocalizeSubTypes()
-	if self.db.global.localizedSubTypes.created == GetLocale() then return end -- We only need to create it once, if game locale is the same as stored locale.
-	-- Get the item info
-	for _, item in pairs(subTypeLookup) do
-		GetItemInfo(item)
+	if self.db.global.localizedSubTypes.created == GetLocale() then
+		return -- We only need to create it once, if game locale is the same as stored locale.
 	end
+
 	self.db.global.localizedSubTypes = {} -- reset
 	for name, item in pairs(subTypeLookup) do
-		local sType = select(7, GetItemInfo(item))
-		if sType then
-			self.db.global.localizedSubTypes[sType] = name
-			self:DebugLog("Found "..name.." localized as: "..sType)
-		else -- Probably not cached, set a timer
-			self:Debug("We didn't find:", name, item)
-			self:ScheduleTimer("Timer", 2, "LocalizeSubTypes")
-			self.db.global.localizedSubTypes.created = false
-			return
-		end
+		local sType = select(3, GetItemInfoInstant(item))
+		self.db.global.localizedSubTypes[sType] = name
+		self:DebugLog("Found "..name.." localized as: "..sType)
 	end
 	self.db.global.localizedSubTypes.created = GetLocale() -- Only mark this as created after everything is done.
+end
+
+-- Changes the subType in lootTable to our locale.
+function RCLootCouncil:LocalizeLootTable(lootTable)
+	for ses, v in ipairs(lootTable) do
+		local _, _, subType, equipLoc, texture = GetItemInfoInstant(v.link)
+		v.subType = subType -- Subtype should be in our locale
+	end
 end
 
 function RCLootCouncil:IsItemBoE(item)
@@ -1092,45 +1267,6 @@ function RCLootCouncil:IsItemBoE(item)
 	end
 	GameTooltip:Hide()
 	return false
-end
-
---- Formats a response for the player to be send to the group.
--- @param session		The session to respond to.
--- @param link 		The itemLink of the item in the session.
--- @param ilvl			The ilvl of the item in the session.
--- @param response	The selected response, must be index of db.responses.
--- @param equipLoc	The item in the session's equipLoc.
--- @param note			The player's note.
--- @param subType		The item's subType, needed for Artifact Relics.
--- @param isTier		Indicates if the response is a tier response. (v2.4.0)
--- @param isRelic		Indicates if the response is a relic response. (v2.5.0)
--- @return A formatted table that can be passed directly to :SendCommand("group", "response", -return-).
-function RCLootCouncil:CreateResponse(session, link, ilvl, response, equipLoc, note, subType, isTier, isRelic)
-	self:DebugLog("CreateResponse", session, link, ilvl, response, equipLoc, note, subType, isTier, isRelic)
-	local g1, g2;
-	if equipLoc == "" and self.db.global.localizedSubTypes[subType] == "Artifact Relic" then
-		g1, g2 = self:GetArtifactRelics(link)
-	else
-	 	g1, g2 = self:GetPlayersGear(link, equipLoc)
-	end
-	local diff = nil
-	if g2 then
-		local g1diff, g2diff = select(4, GetItemInfo(g1)), select(4, GetItemInfo(g2))
-		diff = g1diff >= g2diff and ilvl - g2diff or ilvl - g1diff
-	elseif g1 then -- Artifact Relic might be nil
-		diff = (ilvl - select(4, GetItemInfo(g1))) end
-	return
-		session,
-		self.playerName,
-		{	gear1 = g1,
-			gear2 = g2,
-			ilvl = select(2,GetAverageItemLevel()),
-			diff = diff,
-			note = note,
-			response = response,
-			isTier = isTier,
-			isRelic = isRelic,
-		}
 end
 
 function RCLootCouncil:GetPlayersGuildRank()
@@ -1167,7 +1303,7 @@ function RCLootCouncil:GetPlayerInfo()
 		end
 	end
 	local ilvl = select(2,GetAverageItemLevel())
-	return self.playerName, self.playerClass, self:GetPlayerRole(), self.guildRank, enchant, lvl, ilvl
+	return self.playerName, self.playerClass, self:GetPlayerRole(), self.guildRank, enchant, lvl, ilvl, playersData.specID
 end
 
 function RCLootCouncil:GetPlayerRole()
@@ -1235,14 +1371,18 @@ function RCLootCouncil:OnEvent(event, ...)
 	elseif event == "PLAYER_ENTERING_WORLD" then
 		self:Debug("Event:", event, ...)
 		self:NewMLCheck()
-		-- Ask for data when we have done a /rl and have a ML
-		if not self.isMasterLooter and self.masterLooter and self.masterLooter ~= "" and player_relogged then
-			self:Debug("Player relog...")
-			self:ScheduleTimer("SendCommand", 2, self.masterLooter, "reconnect")
-			self:SendCommand(self.masterLooter, "playerInfo", self:GetPlayerInfo()) -- Also send out info, just in case
+		if player_relogged then
+			-- Ask for data when we have done a /rl and have a ML
+			if not self.isMasterLooter and self.masterLooter and self.masterLooter ~= "" and player_relogged then
+				self:Debug("Player relog...")
+				self:ScheduleTimer("SendCommand", 2, self.masterLooter, "reconnect")
+				self:SendCommand(self.masterLooter, "playerInfo", self:GetPlayerInfo()) -- Also send out info, just in case
+			end
+			self:UpdatePlayersData()
+			player_relogged = false
 		end
-		player_relogged = false
-
+	elseif event == "ENCOUNTER_START" then
+			self:UpdatePlayersData()
 	elseif event == "GUILD_ROSTER_UPDATE" then
 		self.guildRank = self:GetPlayersGuildRank();
 		if unregisterGuildEvent then
@@ -1371,7 +1511,7 @@ function RCLootCouncil:GetInstalledModulesFormattedData()
 		if self:GetModule(name).version then -- People might not have added version
 			modules[num] = self:GetModule(name).baseName.. " - "..self:GetModule(name).version
 		else
-			modules[num] = self:GetModule(name).baseName.. " - "..L["Unknown"]
+			modules[num] = self:GetModule(name).baseName.. " - ".._G.UNKNOWN
 		end
 	end
 	return modules
@@ -1915,6 +2055,33 @@ function RCLootCouncil:HideTooltip()
 		self.tooltip.showing = false
 	end
 	GameTooltip:Hide()
+end
+
+-- @return a text of the link explaining its type. For example, "Fel Artifact Relic", "Chest, Mail"
+function RCLootCouncil:GetItemTypeText(link, subType, equipLoc, tokenSlot, relicType)
+	local englishSubType = self.db.global.localizedSubTypes[subType]
+
+	if tokenSlot then -- It's a token
+		if equipLoc ~= "" and getglobal(equipLoc) then
+			return getglobal(equipLoc)..", "..L["Armor Token"]
+		else
+			return L["Armor Token"]
+		end
+	elseif "Artifact Relic" == englishSubType then
+		local id = self:GetItemIDFromLink(link)
+		relicType = relicType or select(3, C_ArtifactUI.GetRelicInfoByItemID(id)) or ""
+		local localizedRelicType = getglobal("RELIC_SLOT_TYPE_" .. relicType:upper()) or ""
+		local relicTooltipName = string.format(RELIC_TOOLTIP_TYPE, localizedRelicType)
+		return relicTooltipName
+	elseif equipLoc ~= "" and getglobal(equipLoc) then
+		if subType and englishSubType ~= "Miscellaneous" and englishSubType ~= "Junk" then
+			return getglobal(equipLoc)..", "..subType -- getGlobal to translate from global constant to localized name
+		else
+			return getglobal(equipLoc)
+		end
+	else
+		return subType or ""
+	end
 end
 
 --- Formats a name with or without realmName.
