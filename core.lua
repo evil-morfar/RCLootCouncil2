@@ -276,7 +276,7 @@ function RCLootCouncil:OnInitialize()
 			maxAwardReasons = 10,
 			numAwardReasons = 3,
 			awardReasons = {
-				{ color = {1, 1, 1, 1}, disenchant = true, log = true,	sort = 401,	text = L["Disenchant"], },
+				{ color = {1, 1, 1, 1}, disenchant = true, log = true,	sort = 401,	text = _G.ROLL_DISENCHANT, },
 				{ color = {1, 1, 1, 1}, disenchant = false, log = true,	sort = 402,	text = L["Banking"], },
 				{ color = {1, 1, 1, 1}, disenchant = false, log = false, sort = 403,	text = L["Free"],},
 			},

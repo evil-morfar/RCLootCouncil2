@@ -600,7 +600,7 @@ function RCVotingFrame:GetFrame()
 	f.filter = b3
 
 	-- Disenchant button
-	local b4 = addon:CreateButton(L["Disenchant"], f.content)
+	local b4 = addon:CreateButton(_G.ROLL_DISENCHANT, f.content)
 	b4:SetPoint("RIGHT", b3, "LEFT", -10, 0)
 	b4:SetScript("OnClick", function(self) Lib_ToggleDropDownMenu(1, nil, enchanters, self, 0, 0) end )
 	--b4:SetNormalTexture("Interface\\Icons\\INV_Enchant_Disenchant")

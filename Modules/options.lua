@@ -1275,7 +1275,7 @@ function addon:OptionsTable()
 		}
 		options.args.mlSettings.args.awardsTab.args.awardReasons.args["DE"..i] = {
 			order = i +1.3,
-			name = L["Disenchant"],
+			name = _G.ROLL_DISENCHANT,
 			desc = L["disenchant_desc"],
 			type = "toggle",
 			get = function() return self.db.profile.awardReasons[i].disenchant end,
