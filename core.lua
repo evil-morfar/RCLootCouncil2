@@ -8,7 +8,6 @@
 		- Remember to add mapID for Antorus.
 		- Extra checks to make sure an item was actually awarded.
 		- IDEA Change popups so they only hide on award/probably add the error message to it.
-		- IDEA Add some sort of indicator when rows are being filtered.
 		- TODO/IDEA Change chat_commands to seperate lines in order to have a table of printable cmds.
 
 	Backwards compability breaks:

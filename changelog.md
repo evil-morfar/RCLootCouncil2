@@ -6,6 +6,7 @@
    + Note: RCLootCouncil cannot track if these items will be Warforged/Titanforged. Only the guaranteed minimum ilvl is used.
 * There's now one of each item type included in the test items.
 * The class icon can now be replaced with spec icon.
+* Filter buttons' text now change color to indicate a filter is active.
 
 
 * **Localization**
