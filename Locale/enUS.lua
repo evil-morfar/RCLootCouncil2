@@ -97,7 +97,6 @@ L["Award Reasons"] = true
 L["Award"] = true
 L["award_reasons_desc"] = "Award reasons that can't be chosen during a roll.\nUsed when changing a response with the right click menu and for Auto Awards.\n"
 L["Awards"] = true
-L["Background"] = true
 L["Background Color"] = true
 L["BBCode export, tailored for SMF."] = true
 L["Banking"] = true
