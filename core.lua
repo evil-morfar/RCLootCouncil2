@@ -470,7 +470,7 @@ function RCLootCouncil:ChatCommand(msg)
 	until arg == nil
 	input = strlower(input or "")
 	self:Debug("/", input, unpack(args))
-	if not input or input:trim() == "" or input == "help" or input == L["help"] then
+	if not input or input:trim() == "" or input == "help" or input == string.lower(_G.HELP_LABEL) then
 		if self.tVersion then print(format(L["chat tVersion string"],self.version, self.tVersion))
 		else print(format(L["chat version String"],self.version)) end
 		gsub(L["chat_commands"], "[^\n]+", print)
@@ -541,7 +541,7 @@ function RCLootCouncil:ChatCommand(msg)
 			self:Print(L["You cannot use this command without being the Master Looter"])
 		end
 
-	elseif input == "reset" or input == _G.RESET then
+	elseif input == "reset" or input == string.lower(_G.RESET) then
 		for k, v in pairs(db.UI) do -- We can't easily reset due to the wildcard in defaults
 			if k == "lootframe" then -- Loot Frame is special
 				v.y		= -200
