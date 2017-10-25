@@ -29,6 +29,14 @@
    + This way candidates can't change their gear to appear to have lower ilvl.
 
 
+* **Rolls**
+* Added a new feature that involves raiders in the roll system, making it seem less "random" and more transparent.
+   * There's a new option in the ML's right click menu that starts a roll session.
+   * Everyone can then type "/roll", and that roll is then used in the voting frame.
+   * Only the first roll counts, so you can't cheat by rolling multiple times.
+* This is entirely optional, and the normal roll system still exists.
+
+
 ###### Bugfixes
 + *Fixed a few localization related bugs for non-english clients.*
 + *A session starting immidiately after doing a /reload could cause an error.*
