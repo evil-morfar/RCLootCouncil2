@@ -230,7 +230,6 @@ function RCLootCouncil:OnInitialize()
 				['*'] = {
 					filters = { -- Default filtering is showed
 						['*'] = true,
-						showPlayersCantUseTheItem = false,
 						tier = { -- New section in v2.4.0
 							['*'] = true,
 						},
