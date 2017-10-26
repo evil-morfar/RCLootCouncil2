@@ -2069,11 +2069,11 @@ function RCLootCouncil:GetItemTypeText(link, subType, equipLoc, tokenSlot, relic
 		local tokenText = L["Armor Token"]
 		local classes = RCTokenClasses[id]
 		if tContains(classes, "PALADIN") then
-			tokenText = L["Conqueror Armor Token"]
+			tokenText = L["Conqueror Token"]
 		elseif tContains(classes, "WARRIOR") then
-			tokenText = L["Protector Armor Token"]
+			tokenText = L["Protector Token"]
 		elseif tContains(classes, "ROGUE") then
-			tokenText = L["Vanquisher Armor Token"]
+			tokenText = L["Vanquisher Token"]
 		end
 
 		if equipLoc ~= "" and getglobal(equipLoc) then
