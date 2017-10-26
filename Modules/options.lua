@@ -118,10 +118,10 @@ function addon:OptionsTable()
 									},
 								},
 							},
-							autoPassOptions = {
+							responseOptions = {
 								order = 4,
 								type = "group",
-								name = L["Auto Pass"],
+								name = L["Resposne options"],
 								inline = true,
 								args = {
 									autoPass = {
