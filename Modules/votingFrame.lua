@@ -1341,7 +1341,6 @@ do
 			Lib_UIDropDownMenu_AddButton(info, level)
 
 			info = Lib_UIDropDownMenu_CreateInfo()
-			info.keepShownOnClick = true
 			info.text = L["Players that cant use the item"]
 			info.func = function()
 				addon:Debug("Update Filter")
@@ -1359,7 +1358,6 @@ do
 			Lib_UIDropDownMenu_AddButton(info, level)
 
 			info = Lib_UIDropDownMenu_CreateInfo()
-			info.keepShownOnClick = true
 			if isTier then -- add tier buttons
 				for k in ipairs(data.tier) do
 					info.text = addon:GetResponseText(k, isTier)
