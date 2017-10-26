@@ -142,6 +142,18 @@ function addon:OptionsTable()
 										desc = L["auto_pass_boe_desc"],
 										type = "toggle",
 									},
+									autoRepeat = {
+										order = 4,
+										name = L["Auto Repeat"],
+										desc = L["auto_repeat_desc"],
+										type = "toggle",
+									},
+									silentAutoRepeat = {
+										order = 5,
+										name = L["Silent Auto Repeat"],
+										desc = L["silent_auto_repeat_desc"],
+										type = "toggle",
+									},
 								},
 							},
 							frameOptions = {

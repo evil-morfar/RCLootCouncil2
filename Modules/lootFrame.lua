@@ -104,11 +104,12 @@ function LootFrame:Update()
 	self.frame.content:SetHeight(numEntries * ENTRY_HEIGHT + 7)
 end
 
-function LootFrame:OnRoll(entry, button)
+function LootFrame:OnRoll(entry, button, autoRepeating)
 	local isTier = entry.item.isTier and addon.mldb.tierButtonsEnabled
 	local isRelic = entry.item.isRelic and addon.mldb.relicButtonsEnabled
 	addon:Debug("LootFrame:OnRoll", entry.realID, button, "Response:", addon:GetResponseText(button, isTier, isRelic))
 	local item = entry.item
+	local link = item.link
 
 	-- Only send minimum neccessary data, because the information of current equipped gear has been sent when we receive the loot table.
 	-- target, session, link, ilvl, response, equipLoc, note, subType, relicType, isTier, isRelic, sendAvgIlvl, sendSpecID
@@ -118,6 +119,19 @@ function LootFrame:OnRoll(entry, button)
 	item.rolled = true
 	self.EntryManager:Trash(entry)
 	self:Update()
+
+	if not autoRepeating and addon:Getdb().autoRepeat then
+		for _, item in ipairs(items) do
+			if not item.rolled and item.link == link then
+				self:OnRoll(self.EntryManager:GetEntry(item), button, true)
+				
+			end
+		end
+	end
+
+	if autoRepeating and not addon:Getdb().silentAutoRepeat then
+		addon:Print(string.format(L["Auto repeat response on 'item'"], link))
+	end
 end
 
 function LootFrame:ResetTimers()

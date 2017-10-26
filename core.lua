@@ -155,6 +155,7 @@ function RCLootCouncil:OnInitialize()
 			autolootBoE = true,
 			autoOpen = true, -- auto open the voting frame
 			autoClose = false, -- Auto close voting frame on session end
+			autoRepeat = true, -- Auto repeat response for duplicate items.
 			autoPassBoE = true,
 			autoPass = true,
 			altClickLooting = true,
@@ -172,6 +173,7 @@ function RCLootCouncil:OnInitialize()
 			autoAwardReason = 1,
 			observe = false, -- observe mode on/off
 			silentAutoPass = false, -- Show autopass message
+			silentAutoRepeat = false, -- Show autorepat message
 			--neverML = false, -- Never use the addon as ML
 			minimizeInCombat = false,
 			iLvlDecimal = false,
