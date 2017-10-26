@@ -174,6 +174,7 @@ function RCLootCouncil:OnInitialize()
 			observe = false, -- observe mode on/off
 			silentAutoPass = false, -- Show autopass message
 			silentAutoRepeat = false, -- Show autorepat message
+			printResponse = false, -- Print response in chat
 			--neverML = false, -- Never use the addon as ML
 			minimizeInCombat = false,
 			iLvlDecimal = false,

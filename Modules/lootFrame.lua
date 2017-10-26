@@ -120,6 +120,12 @@ function LootFrame:OnRoll(entry, button, autoRepeating)
 	self.EntryManager:Trash(entry)
 	self:Update()
 
+	if autoRepeating and not addon:Getdb().silentAutoRepeat then
+		addon:Print(string.format(L["Auto repeat response on 'item'"], link))
+	elseif not autoRepeating and addon:Getdb().printResponse then
+		addon:Print(string.format(L["Response to 'item'"], link)..": "..addon:GetResponseText(button, isTier, isRelic))
+	end
+	
 	if not autoRepeating and addon:Getdb().autoRepeat then
 		for _, item in ipairs(items) do
 			if not item.rolled and item.link == link then
@@ -129,9 +135,7 @@ function LootFrame:OnRoll(entry, button, autoRepeating)
 		end
 	end
 
-	if autoRepeating and not addon:Getdb().silentAutoRepeat then
-		addon:Print(string.format(L["Auto repeat response on 'item'"], link))
-	end
+
 end
 
 function LootFrame:ResetTimers()

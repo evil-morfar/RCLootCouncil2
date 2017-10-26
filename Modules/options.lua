@@ -154,6 +154,12 @@ function addon:OptionsTable()
 										desc = L["silent_auto_repeat_desc"],
 										type = "toggle",
 									},
+									printResponse = {
+										order = 6,
+										name = L["Print Response"],
+										desc = L["print_response_desc"],
+										type = "toggle",
+									},
 								},
 							},
 							frameOptions = {
