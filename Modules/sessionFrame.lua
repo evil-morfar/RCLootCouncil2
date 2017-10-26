@@ -17,7 +17,7 @@ function RCSessionFrame:OnInitialize()
 	self.scrollCols = {
 		{ name = "", sortnext = 3,	width = 30 }, 			-- remove item
 		{ name = "", sortnext = 3,	width = ROW_HEIGHT },-- item icon
-		{ name = L["Item"],			width = 160}, 			-- item link
+		{ name = "",			width = 160}, 			-- item link
 	}
 end
 
@@ -152,7 +152,7 @@ function RCSessionFrame:GetFrame()
 		end
 		self:Disable()
 	end)
-	f.guildBtn = b1
+	f.startBtn = b1
 
 	-- Cancel button
 	local b2 = addon:CreateButton(_G.CANCEL, f.content)
@@ -161,11 +161,12 @@ function RCSessionFrame:GetFrame()
 		ml.lootTable = {}
 		self:Disable()
 	end)
-	f.guildBtn = b2
+	f.closeBtn = b2
 
 	local st = ST:CreateST(self.scrollCols, 5, ROW_HEIGHT, nil, f.content)
-	st.frame:SetPoint("TOPLEFT",f,"TOPLEFT",10,-40)
+	st.frame:SetPoint("TOPLEFT",f,"TOPLEFT",10,-20)
 	f:SetWidth(st.frame:GetWidth()+20)
+	f:SetHeight(305)
 	f.rows = {} -- the row data
 	f.st = st
 	return f

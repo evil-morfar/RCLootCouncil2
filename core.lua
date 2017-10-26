@@ -8,7 +8,6 @@
 		- Remember to add mapID for Antorus.
 		- Extra checks to make sure an item was actually awarded.
 		- IDEA Change popups so they only hide on award/probably add the error message to it.
-		- IDEA Add some sort of indicator when rows are being filtered.
 		- TODO/IDEA Change chat_commands to seperate lines in order to have a table of printable cmds.
 
 	Backwards compability breaks:
@@ -234,6 +233,9 @@ function RCLootCouncil:OnInitialize()
 						showPlayersCantUseTheItem = false,
 						tier = { -- New section in v2.4.0
 							['*'] = true,
+						},
+						relic = { -- v2.7
+							['*'] = true
 						},
 					},
 				},
@@ -1958,7 +1960,7 @@ function RCLootCouncil:CreateFrame(name, cName, title, width, height)
 	end
 	local old_setheight = f.SetHeight
 	f.SetHeight = function(self, height)
-		old_setheight(self, width)
+		old_setheight(self, height)
 		self.content:SetHeight(height)
 	end
 	f.Update = function(self)

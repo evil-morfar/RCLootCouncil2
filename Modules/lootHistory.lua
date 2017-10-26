@@ -417,8 +417,19 @@ end
 -- Visuals.
 -- @section Visuals.
 ---------------------------------------------------
+local function IsFiltering()
+	for k,v in pairs(db.modules["RCLootHistory"].filters) do
+		if not v then return true end
+	end
+end
+
 function LootHistory:Update()
 	self.frame.st:SortData()
+	if IsFiltering() then
+		self.frame.filter.Text:SetTextColor(0.86,0.5,0.22) -- #db8238
+	else
+		self.frame.filter.Text:SetTextColor(_G.NORMAL_FONT_COLOR:GetRGB()) --#ffd100
+	end
 end
 
 function LootHistory:GetFrame()
@@ -700,12 +711,6 @@ function LootHistory.FilterMenu(menu, level)
 		if not db.modules["RCLootHistory"].filters then -- Create the db entry
 			addon:DebugLog("Created LootHistory filters")
 			db.modules["RCLootHistory"].filters = {}
-		end
-		for k in pairs(data) do -- Update the db entry to make sure we have all buttons in it
-			if type(db.modules["RCLootHistory"].filters[k]) ~= "boolean" then
-				addon:Debug("Didn't contain "..k)
-				db.modules["RCLootHistory"].filters[k] = true -- Default as true
-			end
 		end
 		info.text = _G.FILTER
 		info.isTitle = true

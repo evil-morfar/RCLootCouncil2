@@ -101,7 +101,7 @@ function LootFrame:Update()
 		end
 	end
 	self.EntryManager:Update()
-	self.frame:SetHeight(numEntries * ENTRY_HEIGHT + 7)
+	self.frame.content:SetHeight(numEntries * ENTRY_HEIGHT + 7)
 end
 
 function LootFrame:OnRoll(entry, button)
