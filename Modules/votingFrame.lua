@@ -337,6 +337,9 @@ end
 ------------------------------------------------------------------
 -- Returns true if a filter is set for this session
 local function IsFiltering(session)
+	if not db.modules["RCVotingFrame"].filters.showPlayersCantUseTheItem then
+		return true
+	end
 	if lootTable[session].token and addon.mldb.tierButtonsEnabled then
 		for _, v in pairs(db.modules["RCVotingFrame"].filters.tier) do
 			if not v then return true end
