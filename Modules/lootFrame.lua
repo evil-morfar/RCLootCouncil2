@@ -15,51 +15,58 @@ local MAX_ENTRIES = 5
 local numRolled = 0
 local MIN_BUTTON_WIDTH = 40
 
-function LootFrame:Start(table)
+function LootFrame:Start(table, reRoll)
 	addon:DebugLog("LootFrame:Start()")
+
+	local offset = 0
+	if reRoll then
+		offset = #items  -- Insert to "items" if reRoll
+	end
+
 	for k = 1, #table do
-		if table[k].autopass then
-			items[k] = { rolled = true} -- it's autopassed, so pretend we rolled it
+		if table[k].autopass and not reRoll then -- No autopass if reRolling.
+			items[offset+k] = { rolled = true} -- it's autopassed, so pretend we rolled it
 			numRolled = numRolled + 1
 		else
-			items[k] = {
+			items[offset+k] = {
 			--	name = table[k].name,
 				link = table[k].link,
 				ilvl = table[k].ilvl,
 				texture = table[k].texture,
 				rolled = false,
 				note = nil,
-				session = k,
 				equipLoc = table[k].equipLoc,
 				timeLeft = addon.mldb.timeout,
 				subType = table[k].subType,
 				isTier = table[k].token,
 				isRelic = table[k].relic,
+				count = 1,
+				sessions = {reRoll and table[k].session or k}, -- ".session" does not exist if not rerolling.
 			}
 		end
 	end
+
+	if addon:Getdb().stackItems then -- Stack duplicate items in one entry
+		for k = offset+1, offset+#table do -- Only check the entries we added just now.
+			if not items[k].rolled then
+				for j = offset+1, offset+#table do
+					if j ~= k and items[k].link == items[j].link and not items[j].rolled then
+						items[k].count = items[k].count + 1
+						tinsert(items[k].sessions, items[j].sessions[1])
+						items[j].rolled = true -- Pretend we have rolled it.
+						numRolled = numRolled + 1
+					end
+				end
+			end
+		end
+	end
+
 	self:Show()
 end
 
 function LootFrame:ReRoll(table)
 	addon:DebugLog("LootFrame:ReRoll(#table)", #table)
-	for k,v in ipairs(table) do
-		tinsert(items,  {
-		--	name = v.name,
-			link = v.link,
-			ilvl = v.ilvl,
-			texture = v.texture,
-			rolled = false,
-			note = nil,
-			session = v.session,
-			equipLoc = v.equipLoc,
-			timeLeft = addon.mldb.timeout,
-			subType = v.subType,
-			isTier = v.token,
-			isRelic = v.relic,
-		})
-	end
-	self:Show()
+	self:Start(table, true)
 end
 
 function LootFrame:OnEnable()
@@ -109,33 +116,22 @@ function LootFrame:OnRoll(entry, button, autoRepeating)
 	local isRelic = entry.item.isRelic and addon.mldb.relicButtonsEnabled
 	addon:Debug("LootFrame:OnRoll", entry.realID, button, "Response:", addon:GetResponseText(button, isTier, isRelic))
 	local item = entry.item
-	local link = item.link
 
 	-- Only send minimum neccessary data, because the information of current equipped gear has been sent when we receive the loot table.
 	-- target, session, link, ilvl, response, equipLoc, note, subType, relicType, isTier, isRelic, sendAvgIlvl, sendSpecID
-	addon:SendResponse("group", item.session, nil, nil, button, nil, item.note, nil, nil, isTier, isRelic, nil, nil)
+	for _, session in ipairs(item.sessions) do
+		addon:SendResponse("group", session, nil, nil, button, nil, item.note, nil, nil, isTier, isRelic, nil, nil)
+	end
 
-	numRolled = numRolled + 1
+	if addon:Getdb().printResponse then
+		addon:Print(string.format(L["Response to 'item'"], addon:GetItemTextWithCount(item.link, item.count))..": "..addon:GetResponseText(button, isTier, isRelic))
+	end
+
+	numRolled = numRolled + 1 -- numRolled should only be added by 1 here.
 	item.rolled = true
+
 	self.EntryManager:Trash(entry)
 	self:Update()
-
-	if autoRepeating and not addon:Getdb().silentAutoRepeat then
-		addon:Print(string.format(L["Auto repeat response on 'item'"], link))
-	elseif not autoRepeating and addon:Getdb().printResponse then
-		addon:Print(string.format(L["Response to 'item'"], link)..": "..addon:GetResponseText(button, isTier, isRelic))
-	end
-	
-	if not autoRepeating and addon:Getdb().autoRepeat then
-		for _, item in ipairs(items) do
-			if not item.rolled and item.link == link then
-				self:OnRoll(self.EntryManager:GetEntry(item), button, true)
-				
-			end
-		end
-	end
-
-
 end
 
 function LootFrame:ResetTimers()
@@ -159,10 +155,11 @@ do
 			if not item then
 				return addon:Debug("Entry update error @ item:", item)
 			end
-		--addon:DebugLog("Updating entry:", item, item.session)
+
 			entry.item = item
-			entry.itemText:SetText(entry.item.link or "error")
+			entry.itemText:SetText(addon:GetItemTextWithCount(entry.item.link or "error", entry.item.count))
 			entry.icon:SetNormalTexture(entry.item.texture or "Interface\\InventoryItems\\WoWUnknownItem01")
+			entry.itemCount:SetText(entry.item.count > 1 and entry.item.count or "")
 			local typeText = addon:GetItemTypeText(item.link, item.subType, item.equipLoc, item.isTier, item.isRelic)
 			entry.itemLvl:SetText(addon:GetItemLevelText(entry.item.ilvl, entry.item.isTier).."  |cff7fffff"..typeText.."|r")
 			if addon.mldb.timeout then
@@ -202,6 +199,11 @@ do
 					HandleModifiedItemClick(entry.item.link);
 				end
 			end)
+
+			entry.itemCount = entry.icon:CreateFontString(nil, "OVERLAY", "NumberFontNormalLarge")
+			entry.itemCount:SetJustifyH("RIGHT")
+			entry.itemCount:SetPoint("BOTTOMRIGHT", entry.icon, "BOTTOMRIGHT", -2, 4)
+			entry.itemCount:SetText("error")
 
 			-------- Buttons -------------
 			entry.buttons = {}

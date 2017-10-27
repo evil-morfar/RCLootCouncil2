@@ -142,16 +142,10 @@ function addon:OptionsTable()
 										desc = L["auto_pass_boe_desc"],
 										type = "toggle",
 									},
-									autoRepeat = {
+									stackItem = {
 										order = 4,
-										name = L["Auto Repeat"],
-										desc = L["auto_repeat_desc"],
-										type = "toggle",
-									},
-									silentAutoRepeat = {
-										order = 5,
-										name = L["Silent Auto Repeat"],
-										desc = L["silent_auto_repeat_desc"],
+										name = L["Stack Items"],
+										desc = L["stack_items_desc"],
 										type = "toggle",
 									},
 									printResponse = {
