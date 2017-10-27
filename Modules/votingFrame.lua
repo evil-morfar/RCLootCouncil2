@@ -1165,7 +1165,7 @@ do
 					end
 					addon:SendCommand(candidateName, "reroll", t)
 				end,
-			},{ -- 3 REANNOUNCE, 3 All items usable by the candiate.
+			},{ -- 3 REANNOUNCE, 3 All items usable by the candidate.
 				onValue = "REANNOUNCE",
 				text = L["All items usable by the candidate"],
 				notCheckable = true,
