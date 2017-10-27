@@ -2076,6 +2076,15 @@ function RCLootCouncil:HideTooltip()
 	GameTooltip:Hide()
 end
 
+function RCLootCouncil:GetItemLevelText(ilvl, token)
+	if not ilvl then ilvl = 0 end
+	if token then
+		return ilvl.."+"
+	else
+		return ilvl
+	end
+end
+
 -- @return a text of the link explaining its type. For example, "Fel Artifact Relic", "Chest, Mail"
 function RCLootCouncil:GetItemTypeText(link, subType, equipLoc, tokenSlot, relicType)
 	local englishSubType = self.db.global.localizedSubTypes[subType]
