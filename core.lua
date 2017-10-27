@@ -8,7 +8,6 @@
 		- Remember to add mapID for Antorus.
 		- Extra checks to make sure an item was actually awarded.
 		- IDEA Change popups so they only hide on award/probably add the error message to it.
-		- IDEA Add some sort of indicator when rows are being filtered.
 		- TODO/IDEA Change chat_commands to seperate lines in order to have a table of printable cmds.
 
 	Backwards compability breaks:
@@ -29,6 +28,7 @@
 		RCMLAddItem				- 	fires when an item is added to the loot table. args: item, session
 		RCMLAwardSuccess		- 	fires when an item is successfully awarded. args: session, winner, status.
 		RCMLAwardFailed		-	fires when an item is unsuccessfully awarded. args: session, winner, status.
+		RCMLBuildMLdb       -   fires just before the MLdb is built. arg: MLdb, the master looter db table.
 		RCMLLootHistorySend	- 	fires just before loot history is sent out. args: loot_history table (the table sent to users), all arguments from ML:TrackAndLogLoot()
 	votingFrame:
 		RCSessionChangedPre	-	fires when the user changes the session, just before SwitchSession() is executed. args: sesion.
@@ -234,6 +234,9 @@ function RCLootCouncil:OnInitialize()
 						tier = { -- New section in v2.4.0
 							['*'] = true,
 						},
+						relic = { -- v2.7
+							['*'] = true
+						},
 					},
 				},
 			},
@@ -246,7 +249,7 @@ function RCLootCouncil:OnInitialize()
 			announceItems = false,
 			announceText = L["Items under consideration:"],
 			announceChannel = "group",
-			announceItemString = "&s: &i", -- The message posted for each item, default: "session: itemlink"
+			announceItemString = "&s: &i (&l, &t)", -- The message posted for each item, default: "session: itemlink (ilvl, type)"
 
 			responses = self.responses,
 
@@ -582,6 +585,21 @@ function RCLootCouncil:ChatCommand(msg)
 			if k == input then return v.module[v.func](v.module, unpack(args)) end
 		end
 		self:ChatCommand("help")
+	end
+end
+
+-- Send the msg to the channel if it is valid. Otherwise just print the messsage.
+function RCLootCouncil:SendAnnouncement(msg, channel)
+	if channel == "NONE" then return end
+	if self.testMode then
+		msg = "("..L["Test"]..") "..msg
+	end
+	if not IsInGroup() and (channel == "group" or channel == "RAID" or channel == "PARTY" or channel == "INSTANCE_CHAT") then
+		self:Print(msg)
+	elseif not IsInGuild() and (channel == "GUILD" or channel == "OFFICER") then
+		self:Print(msg)
+	else
+		SendChatMessage(msg, self:GetAnnounceChannel(channel))
 	end
 end
 
@@ -1973,7 +1991,7 @@ function RCLootCouncil:CreateFrame(name, cName, title, width, height)
 	end
 	local old_setheight = f.SetHeight
 	f.SetHeight = function(self, height)
-		old_setheight(self, width)
+		old_setheight(self, height)
 		self.content:SetHeight(height)
 	end
 	f.Update = function(self)
@@ -2074,18 +2092,37 @@ function RCLootCouncil:HideTooltip()
 	GameTooltip:Hide()
 end
 
+function RCLootCouncil:GetItemLevelText(ilvl, token)
+	if not ilvl then ilvl = 0 end
+	if token then
+		return ilvl.."+"
+	else
+		return ilvl
+	end
+end
+
 -- @return a text of the link explaining its type. For example, "Fel Artifact Relic", "Chest, Mail"
 function RCLootCouncil:GetItemTypeText(link, subType, equipLoc, tokenSlot, relicType)
 	local englishSubType = self.db.global.localizedSubTypes[subType]
 
+	local id = self:GetItemIDFromLink(link)
 	if tokenSlot then -- It's a token
+		local tokenText = L["Armor Token"]
+		local classes = RCTokenClasses[id]
+		if tContains(classes, "PALADIN") then
+			tokenText = L["Conqueror Token"]
+		elseif tContains(classes, "WARRIOR") then
+			tokenText = L["Protector Token"]
+		elseif tContains(classes, "ROGUE") then
+			tokenText = L["Vanquisher Token"]
+		end
+
 		if equipLoc ~= "" and getglobal(equipLoc) then
-			return getglobal(equipLoc)..", "..L["Armor Token"]
+			return getglobal(equipLoc)..", "..tokenText
 		else
-			return L["Armor Token"]
+			return tokenText
 		end
 	elseif "Artifact Relic" == englishSubType then
-		local id = self:GetItemIDFromLink(link)
 		relicType = relicType or select(3, C_ArtifactUI.GetRelicInfoByItemID(id)) or ""
 		local localizedRelicType = getglobal("RELIC_SLOT_TYPE_" .. relicType:upper()) or ""
 		local relicTooltipName = string.format(RELIC_TOOLTIP_TYPE, localizedRelicType)

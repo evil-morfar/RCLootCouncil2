@@ -41,10 +41,10 @@ function RCVotingFrame:OnInitialize()
 		{ name = L["Diff"],		DoCellUpdate = RCVotingFrame.SetCellDiff,			colName = "diff",								width = 40, },										-- 7 ilvl difference
 		{ name = L["g1"],			DoCellUpdate = RCVotingFrame.SetCellGear,			colName = "gear1",	sortnext = 5,		width = 20, align = "CENTER", },				-- 8 Current gear 1
 		{ name = L["g2"],			DoCellUpdate = RCVotingFrame.SetCellGear,			colName = "gear2",	sortnext = 5,		width = 20, align = "CENTER", },				-- 9 Current gear 2
-		{ name = L["Votes"], 	DoCellUpdate = RCVotingFrame.SetCellVotes,		colName = "votes",	sortnext = 7,		width = 40, align = "CENTER", },				-- 10 Number of votes
+		{ name = L["Votes"], 	DoCellUpdate = RCVotingFrame.SetCellVotes,		colName = "votes",	sortnext = 7,		width = 50, align = "CENTER", },				-- 10 Number of votes
 		{ name = L["Vote"],		DoCellUpdate = RCVotingFrame.SetCellVote,			colName = "vote",		sortnext = 10,		width = 60, align = "CENTER", },				-- 11 Vote button
-		{ name = L["Notes"],		DoCellUpdate = RCVotingFrame.SetCellNote,			colName = "note",								width = 40, align = "CENTER", },				-- 12 Note icon
-		{ name = _G.ROLL,		DoCellUpdate = RCVotingFrame.SetCellRoll, 		colName = "roll",		sortnext = 10,		width = 30, align = "CENTER", },				-- 13 Roll
+		{ name = L["Notes"],		DoCellUpdate = RCVotingFrame.SetCellNote,			colName = "note",								width = 50, align = "CENTER", },				-- 12 Note icon
+		{ name = _G.ROLL,		DoCellUpdate = RCVotingFrame.SetCellRoll, 		colName = "roll",		sortnext = 10,		width = 50, align = "CENTER", },				-- 13 Roll
 	}
 	-- The actual table being worked on, new entries should be added to this table "tinsert(RCVotingFrame.scrollCols, data)"
 	-- If you want to add or remove columns, you should do so on your OnInitialize. See RCVotingFrame:RemoveColumn() for removal.
@@ -335,6 +335,34 @@ end
 --	Visuals
 -- @section Visuals
 ------------------------------------------------------------------
+-- Returns true if a filter is set for this session
+local function IsFiltering(session)
+	if not db.modules["RCVotingFrame"].filters.showPlayersCantUseTheItem then
+		return true
+	end
+	if lootTable[session].token and addon.mldb.tierButtonsEnabled then
+		for _, v in pairs(db.modules["RCVotingFrame"].filters.tier) do
+			if not v then return true end
+		end
+	elseif lootTable[session].relic and addon.mldb.relicButtonsEnabled then
+		for _, v in pairs(db.modules["RCVotingFrame"].filters.relic) do
+			if not v then return true end
+		end
+	else
+		for k,v in pairs(db.modules["RCVotingFrame"].filters) do
+			if type(k) == "number" then
+				if not v then return true end
+			end
+		end
+	end
+	-- Check the universals (pass, autopass, status) last
+	for k,v in pairs(db.modules["RCVotingFrame"].filters) do
+		if type(k) == "string" and k ~= "tier" and k ~= "relic" then
+			if not v then return true end
+		end
+	end
+end
+
 function RCVotingFrame:Update()
 	if not self.frame then return end -- No updates when it doesn't exist
 	self.frame.st:SortData()
@@ -367,6 +395,11 @@ function RCVotingFrame:Update()
 		self.frame.abortBtn:SetText(_G.CLOSE)
 		self.frame.disenchant:Hide()
 	end
+	if IsFiltering(session) then
+		self.frame.filter.Text:SetTextColor(0.86,0.5,0.22) -- #db8238
+	else
+		self.frame.filter.Text:SetTextColor(_G.NORMAL_FONT_COLOR:GetRGB()) --#ffd100
+	end
 end
 
 function RCVotingFrame:SwitchSession(s)
@@ -379,7 +412,7 @@ function RCVotingFrame:SwitchSession(s)
 	self.frame.itemIcon:SetNormalTexture(t.texture)
 	self.frame.itemText:SetText(t.link)
 	self.frame.iState:SetText(self:GetItemStatus(t.link))
-	self.frame.itemLvl:SetText(format(_G.ITEM_LEVEL_ABBR..": %d", t.ilvl))
+	self.frame.itemLvl:SetText(_G.ITEM_LEVEL_ABBR..": "..addon:GetItemLevelText(t.ilvl, t.token))
 	-- Set a proper item type text
 
 	self.frame.itemType:SetText(addon:GetItemTypeText(t.link, t.subType, t.equipLoc, t.token, t.relic))
@@ -936,9 +969,18 @@ end
 function RCVotingFrame.filterFunc(table, row)
 	if not db.modules["RCVotingFrame"].filters then return true end -- db hasn't been initialized, so just show it
 	local response = lootTable[session].candidates[row.name].response
+	if not db.modules["RCVotingFrame"].filters.showPlayersCantUseTheItem then
+		local v = lootTable[session]
+		if addon:AutoPassCheck(v.subType, v.equipLoc, v.link, v.token, v.relic, v.class) then
+			return false
+		end
+	end
+
 	if response == "AUTOPASS" or response == "PASS" or type(response) == "number" then
-		if lootTable[session].token and addon.mldb.tierButtonsEnabled and type(response) == "number" then
+		if lootTable[session].token and addon.mldb.tierButtonsEnabled and type(response) == "number"then
 			return db.modules["RCVotingFrame"].filters.tier[response]
+		elseif lootTable[session].relic and addon.mldb.relicButtonsEnabled and type(response) == "number" then
+			return db.modules["RCVotingFrame"].filters.relic[response]
 		else
 			return db.modules["RCVotingFrame"].filters[response]
 		end
@@ -1271,38 +1313,73 @@ do
 			end
 
 			-- Build the data table:
-			local data = {["STATUS"] = true, ["PASS"] = true, ["AUTOPASS"] = true, tier = {}}
+			local data = {["STATUS"] = true, ["PASS"] = true, ["AUTOPASS"] = true, tier = {}, relic = {}}
 
-			local isTier = false
+			local isTier, isRelic
 			-- If we're viewing a tier token and the ML have it enabled, we want to see it
 			if lootTable[session].token and addon.mldb.tierButtonsEnabled then
 				isTier = true
 				for i = 1, addon.mldb.tierNumButtons or db.tierNumButtons do
 					data.tier[i] = i
 				end
-
+			elseif lootTable[session].relic and addon.mldb.relicButtonsEnabled then
+				isRelic = true
+				for i = 1, addon.mldb.relicNumButtons or db.relicNumButtons do
+					data.relic[i] = i
+				end
 			else -- otherwise just do the normal buttons
 				for i = 1, addon.mldb.numButtons or db.numButtons do
 					data[i] = i
 				end
 			end
 
-			info.text = _G.FILTER
+			local info = Lib_UIDropDownMenu_CreateInfo()
+			info.text = _G.GENERAL
 			info.isTitle = true
 			info.notCheckable = true
 			info.disabled = true
 			Lib_UIDropDownMenu_AddButton(info, level)
+
+			info = Lib_UIDropDownMenu_CreateInfo()
+			info.text = L["Candidates that can't use the item"]
+			info.func = function()
+				addon:Debug("Update Filter")
+				db.modules["RCVotingFrame"].filters.showPlayersCantUseTheItem = not db.modules["RCVotingFrame"].filters.showPlayersCantUseTheItem
+				RCVotingFrame:Update()
+			end
+			info.checked = db.modules["RCVotingFrame"].filters.showPlayersCantUseTheItem
+			Lib_UIDropDownMenu_AddButton(info, level)
+
+			info = Lib_UIDropDownMenu_CreateInfo()
+			info.text = L["Responses"]
+			info.isTitle = true
+			info.notCheckable = true
+			info.disabled = true
+			Lib_UIDropDownMenu_AddButton(info, level)
+
 			info = Lib_UIDropDownMenu_CreateInfo()
 			if isTier then -- add tier buttons
 				for k in ipairs(data.tier) do
 					info.text = addon:GetResponseText(k, isTier)
 					info.colorCode = "|cff"..addon:RGBToHex(addon:GetResponseColor(k, isTier))
 					info.func = function()
-						addon:Debug("Update Filter")
+						addon:Debug("Update tier Filter")
 						db.modules["RCVotingFrame"].filters.tier[k] = not db.modules["RCVotingFrame"].filters.tier[k]
 						RCVotingFrame:Update()
 					end
 					info.checked = db.modules["RCVotingFrame"].filters.tier[k]
+					Lib_UIDropDownMenu_AddButton(info, level)
+				end
+			elseif isRelic then -- relic filters
+				for k in ipairs(data.relic) do
+					info.text = addon:GetResponseText(k, false, true)
+					info.colorCode = "|cff"..addon:RGBToHex(addon:GetResponseColor(k, false, true))
+					info.func = function()
+						addon:Debug("Update relic Filter")
+						db.modules["RCVotingFrame"].filters.relic[k] = not db.modules["RCVotingFrame"].filters.relic[k]
+						RCVotingFrame:Update()
+					end
+					info.checked = db.modules["RCVotingFrame"].filters.relic[k]
 					Lib_UIDropDownMenu_AddButton(info, level)
 				end
 			else -- add normal buttons
@@ -1319,7 +1396,7 @@ do
 				end
 			end
 			for k in pairs(data) do -- A bit redundency, but it makes sure these "specials" comes last
-				if type(k) == "string" and k ~= "tier" then
+				if type(k) == "string" and k ~= "tier" and k ~= "relic" then
 					if k == "STATUS" then
 						info.text = L["Status texts"]
 						info.colorCode = "|cffde34e2" -- purpleish
@@ -1406,11 +1483,7 @@ function RCVotingFrame:StartManualRoll()
 		manualRollSession = session
 		wipe(manualRollResults)
 		self:RegisterEvent("CHAT_MSG_SYSTEM")
-		if IsInGroup() then
-			SendChatMessage(string.format(L["request_rolls_announcement"], lootTable[session].link), addon:GetAnnounceChannel("group"))
-		else -- Alone, just print it for clarity
-			addon:Print(string.format(L["request_rolls_announcement"], lootTable[session].link))
-		end
+		addon:SendAnnouncement(string.format(L["request_rolls_announcement"], lootTable[session].link), "group")
 	else
 		addon:Debug("Start manual roll by non-ML?")
 	end

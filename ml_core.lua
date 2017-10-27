@@ -258,7 +258,8 @@ function RCLootCouncilML:BuildMLdb()
 			changedRelicButtons[i] = {text = db.relicButtons[i].text}
 		end
 	end
-	return {
+
+	local MLdb = {
 		selfVote			= db.selfVote,
 		multiVote		= db.multiVote,
 		anonymousVoting = db.anonymousVoting,
@@ -276,6 +277,9 @@ function RCLootCouncilML:BuildMLdb()
 		tierButtonsEnabled = db.tierButtonsEnabled,
 		relicButtonsEnabled = db.relicButtonsEnabled,
 	}
+
+	addon:SendMessage("RCMLBuildMLdb", MLdb)
+	return MLdb
 end
 
 function RCLootCouncilML:NewML(newML)
@@ -508,6 +512,8 @@ function RCLootCouncilML:Award(session, winner, response, reason)
 			addon:SendCommand("group", "awarded", session, winner)
 			addon:Print(format(L["The item would now be awarded to 'player'"], addon.Ambiguate(winner)))
 			self.lootTable[session].awarded = winner
+			self:AnnounceAward(winner, self.lootTable[session].link,
+			 reason and reason.text or response, addon:GetActiveModule("votingframe"):GetCandidateData(session, winner, "roll"), session)
 			if self:HasAllItemsBeenAwarded() then
 				 addon:Print(L["All items has been awarded and  the loot session concluded"])
 			end
@@ -598,7 +604,7 @@ end
 RCLootCouncilML.announceItemStrings = {
 	["&s"] = function(ses) return ses end,
 	["&i"] = function(...) return select(2,...) end,
-	["&l"] = function(_, _, v) return v.ilvl or "" end,
+	["&l"] = function(_, _, v) return addon:GetItemLevelText(v.ilvl, v.token) end,
 	["&t"] = function(_, _, t) return addon:GetItemTypeText(t.link, t.subType, t.equipLoc, t.token, t.relic) end,
 }
 -- The description for each keyword
@@ -612,13 +618,13 @@ RCLootCouncilML.announceItemStringsDesc = {
 function RCLootCouncilML:AnnounceItems()
 	if not db.announceItems then return end
 	addon:DebugLog("ML:AnnounceItems()")
-	SendChatMessage(db.announceText, addon:GetAnnounceChannel(db.announceChannel))
+	addon:SendAnnouncement(db.announceText, db.announceChannel)
 	for k,v in ipairs(self.lootTable) do
 		local msg = db.announceItemString
 		for text, func in pairs(self.announceItemStrings) do
 			msg = gsub(msg, text, tostring(func(k, v.link, v)))
 		end
-		SendChatMessage(msg, addon:GetAnnounceChannel(db.announceChannel))
+		addon:SendAnnouncement(msg, db.announceChannel)
 	end
 end
 
@@ -630,7 +636,8 @@ RCLootCouncilML.awardStrings = {
 	["&i"] = function(...) return select(2, ...) end,
 	["&r"] = function(...) return select(3, ...) end,
 	["&n"] = function(...) return select(4, ...) or "" end,
-	["&l"] = function(...) return RCLootCouncilML.lootTable[select(5, ...)].ilvl or "" end,
+	["&l"] = function(...) local t = RCLootCouncilML.lootTable[select(5, ...)]
+							return addon:GetItemLevelText(t.ilvl, t.token) end,
 	["&t"] = function(...)
 		local t = RCLootCouncilML.lootTable[select(5,...)]
 		return addon:GetItemTypeText(t.link, t.subType, t.equipLoc, t.token, t.relic)
@@ -659,12 +666,10 @@ function RCLootCouncilML:AnnounceAward(name, link, response, roll, session)
 	if db.announceAward then
 		for k,v in pairs(db.awardText) do
 			local message = v.text
-			if v.channel ~= "NONE" then
-				for text, func in pairs(self.awardStrings) do
-					message = gsub(message, text, tostring(func(name, link, response, roll, session)))
-				end
-				SendChatMessage(message, addon:GetAnnounceChannel(v.channel))
+			for text, func in pairs(self.awardStrings) do
+				message = gsub(message, text, tostring(func(name, link, response, roll, session)))
 			end
+			addon:SendAnnouncement(message, v.channel)
 		end
 	end
 end
