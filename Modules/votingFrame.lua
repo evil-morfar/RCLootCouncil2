@@ -1341,7 +1341,7 @@ do
 			Lib_UIDropDownMenu_AddButton(info, level)
 
 			info = Lib_UIDropDownMenu_CreateInfo()
-			info.text = L["Players that cant use the item"]
+			info.text = L["Candidates that can't use the item"]
 			info.func = function()
 				addon:Debug("Update Filter")
 				db.modules["RCVotingFrame"].filters.showPlayersCantUseTheItem = not db.modules["RCVotingFrame"].filters.showPlayersCantUseTheItem
