@@ -7,13 +7,15 @@
 * There's now one of each item type included in the test items.
 * The class icon can now be replaced with spec icon.
 * Filter buttons' text now change color to indicate a filter is active.
+* During tests all outputs are now preceeded with "(test)".
+* Any chat output during solo tests are now replaced with chat prints.
 
 
 * **Localization**
-+ Armor Token is no longer displayed as "Junk" for non-English client.
++ Armor Token is no longer displayed as "Junk" for non-English clients.
 + Relics are now shown as "'type' Artifact Relic" instead of 'type'.
    + Relic type is now also shown for non-English client.
-+ Trinkets are now shown as "Trinket" instead of "Trinket, Miscellaneous" for non-English client
++ Trinkets are now shown as "Trinket" instead of "Trinket, Miscellaneous" for non-English client.
 
 
 * **Announcements**
@@ -57,6 +59,7 @@
    + ```:UpdatePlayersData()``` uses the two new functions ```:UpdatePlayersRelics()``` and ```:UpdatePlayerGears()``` to cache the player's gear/info.
    + ```:SendResponse(target, session, link, ilvl, response, equipLoc, note, subType, isTier, isRelic, sendAvgIlvl)``` sends response to the target.
    + SpecID is now included in the candidate data.
+   + New message on ```:BuildMLdb()```.
 
 * **Changed**
    + ~~```:CreateResponse()```~~ is consolidated into ```:SendResponse(...)``` which now creates and sends responses.
