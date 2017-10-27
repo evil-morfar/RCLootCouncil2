@@ -2095,7 +2095,7 @@ function RCLootCouncil:HideTooltip()
 end
 
 function RCLootCouncil:GetItemTextWithCount(link, count)
-	return link..(count and count > 1 and (" (x"..count..")") or "")
+	return link..(count and count > 1 and (" x"..count) or "")
 end
 
 function RCLootCouncil:GetItemLevelText(ilvl, token)
