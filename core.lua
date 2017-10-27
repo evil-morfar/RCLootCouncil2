@@ -682,7 +682,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 						return self:Debug("Sent 'DISABLED' response to", sender)
 					end
 
-					self:LocalizeLootTable(lootTable)
+					self:PrepareLootTable(lootTable)
 
 					-- Out of instance support
 					-- assume 8 people means we're actually raiding
@@ -799,7 +799,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 			elseif command == "reroll" and self:UnitIsUnit(sender, self.masterLooter) and self.enabled then
 				self:Print(format(L["'player' has asked you to reroll"], self.Ambiguate(sender)))
 				local table = unpack(data)
-				self:LocalizeLootTable(table)
+				self:PrepareLootTable(table)
 				self:CallModule("lootframe")
 				self:GetActiveModule("lootframe"):ReRoll(table)
 
@@ -1277,8 +1277,10 @@ function RCLootCouncil:LocalizeSubTypes()
 	self.db.global.localizedSubTypes.created = GetLocale() -- Only mark this as created after everything is done.
 end
 
--- Changes the subType in lootTable to our locale.
-function RCLootCouncil:LocalizeLootTable(lootTable)
+--- Updates the loot table with some local data.
+-- 1 Changes the subType in lootTable to our locale.
+-- 2 Extracts tokens equipLoc
+function RCLootCouncil:PrepareLootTable(lootTable)
 	for ses, v in ipairs(lootTable) do
 		local _, _, subType, equipLoc, texture = GetItemInfoInstant(v.link)
 		v.subType = subType -- Subtype should be in our locale

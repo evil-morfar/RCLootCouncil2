@@ -56,7 +56,7 @@
 ###### Dev
 * **New**
    + ```:GetItemTypeText()``` for displaying various item types.
-   + ```:LocalizeLootTable()``` replaces the ```subType``` in the lootTable with the subType in our localization.
+   + ```:PrepareLootTable()``` replaces the ```subType``` in the lootTable with the subType in our localization.
    + ```:UpdatePlayersData()``` uses the two new functions ```:UpdatePlayersRelics()``` and ```:UpdatePlayerGears()``` to cache the player's gear/info.
    + ```:SendResponse(target, session, link, ilvl, response, equipLoc, note, subType, isTier, isRelic, sendAvgIlvl)``` sends response to the target.
    + SpecID is now included in the candidate data.

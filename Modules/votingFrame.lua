@@ -188,7 +188,7 @@ function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
 			elseif command == "lootTable" and addon:UnitIsUnit(sender, addon.masterLooter) then
 				active = true
 				local lootTable = unpack(data)
-				addon:LocalizeLootTable(lootTable)
+				addon:PrepareLootTable(lootTable)
 				self:Setup(lootTable)
 				if not addon.enabled then return end -- We just want things ready
 				if db.autoOpen then
