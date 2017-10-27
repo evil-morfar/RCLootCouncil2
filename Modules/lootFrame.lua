@@ -202,7 +202,7 @@ do
 
 			entry.itemCount = entry.icon:CreateFontString(nil, "OVERLAY", "NumberFontNormalLarge")
 			entry.itemCount:SetJustifyH("RIGHT")
-			entry.itemCount:SetPoint("BOTTOMRIGHT", entry.icon, "BOTTOMRIGHT", -2, 4)
+			entry.itemCount:SetPoint("BOTTOMRIGHT", entry.icon, "BOTTOMRIGHT", -2, 2)
 			entry.itemCount:SetText("error")
 
 			-------- Buttons -------------
