@@ -521,6 +521,8 @@ function RCLootCouncilML:Award(session, winner, response, reason)
 			addon:SendCommand("group", "awarded", session, winner)
 			addon:Print(format(L["The item would now be awarded to 'player'"], addon.Ambiguate(winner)))
 			self.lootTable[session].awarded = winner
+			self:AnnounceAward(winner, self.lootTable[session].link,
+			 reason and reason.text or response, addon:GetActiveModule("votingframe"):GetCandidateData(session, winner, "roll"), session)
 			if self:HasAllItemsBeenAwarded() then
 				 addon:Print(L["All items has been awarded and  the loot session concluded"])
 			end
