@@ -202,7 +202,7 @@ do
 
 			entry.itemCount = entry.icon:CreateFontString(nil, "OVERLAY", "NumberFontNormalLarge")
 			local fileName, fontHeight, flags = entry.itemCount:GetFont()
-			entry.itemCount:SetFont(fileName, fontHeight*1.2, flags)
+			entry.itemCount:SetFont(fileName, 20, flags)
 			entry.itemCount:SetJustifyH("RIGHT")
 			entry.itemCount:SetPoint("BOTTOMRIGHT", entry.icon, "BOTTOMRIGHT", -2, 2)
 			entry.itemCount:SetText("error")
