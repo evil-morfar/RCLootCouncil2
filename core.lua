@@ -2089,14 +2089,24 @@ end
 function RCLootCouncil:GetItemTypeText(link, subType, equipLoc, tokenSlot, relicType)
 	local englishSubType = self.db.global.localizedSubTypes[subType]
 
+	local id = self:GetItemIDFromLink(link)
 	if tokenSlot then -- It's a token
+		local tokenText = L["Armor Token"]
+		local classes = RCTokenClasses[id]
+		if tContains(classes, "PALADIN") then
+			tokenText = L["Conqueror Token"]
+		elseif tContains(classes, "WARRIOR") then
+			tokenText = L["Protector Token"]
+		elseif tContains(classes, "ROGUE") then
+			tokenText = L["Vanquisher Token"]
+		end
+
 		if equipLoc ~= "" and getglobal(equipLoc) then
-			return getglobal(equipLoc)..", "..L["Armor Token"]
+			return getglobal(equipLoc)..", "..tokenText
 		else
-			return L["Armor Token"]
+			return tokenText
 		end
 	elseif "Artifact Relic" == englishSubType then
-		local id = self:GetItemIDFromLink(link)
 		relicType = relicType or select(3, C_ArtifactUI.GetRelicInfoByItemID(id)) or ""
 		local localizedRelicType = getglobal("RELIC_SLOT_TYPE_" .. relicType:upper()) or ""
 		local relicTooltipName = string.format(RELIC_TOOLTIP_TYPE, localizedRelicType)
