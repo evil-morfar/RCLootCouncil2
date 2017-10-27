@@ -28,6 +28,7 @@
 		RCMLAddItem				- 	fires when an item is added to the loot table. args: item, session
 		RCMLAwardSuccess		- 	fires when an item is successfully awarded. args: session, winner, status.
 		RCMLAwardFailed		-	fires when an item is unsuccessfully awarded. args: session, winner, status.
+		RCMLBuildMLdb       -   fires just before the MLdb is built. arg: MLdb, the master looter db table.
 		RCMLLootHistorySend	- 	fires just before loot history is sent out. args: loot_history table (the table sent to users), all arguments from ML:TrackAndLogLoot()
 	votingFrame:
 		RCSessionChangedPre	-	fires when the user changes the session, just before SwitchSession() is executed. args: sesion.

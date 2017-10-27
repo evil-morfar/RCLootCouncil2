@@ -271,7 +271,8 @@ function RCLootCouncilML:BuildMLdb()
 			changedRelicButtons[i] = {text = db.relicButtons[i].text}
 		end
 	end
-	return {
+
+	local MLdb = {
 		selfVote			= db.selfVote,
 		multiVote		= db.multiVote,
 		anonymousVoting = db.anonymousVoting,
@@ -289,6 +290,9 @@ function RCLootCouncilML:BuildMLdb()
 		tierButtonsEnabled = db.tierButtonsEnabled,
 		relicButtonsEnabled = db.relicButtonsEnabled,
 	}
+
+	addon:SendMessage("RCMLBuildMLdb", MLdb)
+	return MLdb
 end
 
 function RCLootCouncilML:NewML(newML)
