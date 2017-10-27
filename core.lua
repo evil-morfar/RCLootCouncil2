@@ -590,7 +590,9 @@ end
 -- Send the msg to the channel if it is valid. Otherwise just print the messsage.
 function RCLootCouncil:SendAnnouncement(msg, channel)
 	if channel == "NONE" then return end
-
+	if self.testMode then
+		msg = "("..L["Test"]..") "..msg
+	end
 	if not IsInGroup() and (channel == "group" or channel == "RAID" or channel == "PARTY" or channel == "INSTANCE_CHAT") then
 		self:Print(msg)
 	elseif not IsInGuild() and (channel == "GUILD" or channel == "OFFICER") then
