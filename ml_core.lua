@@ -151,6 +151,8 @@ function RCLootCouncilML:StartSession()
 	end
 	self.running = true
 
+	self:SortLootTable(self.lootTable) -- Sort the lootTable
+
 	addon:SendCommand("group", "lootTable", self.lootTable)
 
 	self:AnnounceItems()
@@ -947,4 +949,102 @@ end
 
 function RCLootCouncilML.AwardPopupOnClickNo(frame, data)
 	-- Intentionally left empty
+end
+
+-- TRANSFORMED to 'EQUIPLOC_SORT_ORDER["INVTYPE"] = num', below
+RCLootCouncilML.EQUIPLOC_SORT_ORDER = {
+	-- From head to feet
+	"INVTYPE_HEAD",
+	"INVTYPE_NECK",
+	"INVTYPE_SHOULDER",
+	"INVTYPE_CLOAK",
+	"INVTYPE_ROBE",
+	"INVTYPE_CHEST",
+	"INVTYPE_WRIST",
+	"INVTYPE_HAND",
+	"INVTYPE_WAIST",
+	"INVTYPE_LEGS",
+	"INVTYPE_FEET",
+	"INVTYPE_FINGER",
+	"INVTYPE_TRINKET",
+	"",               -- armor tokens, artifact relics
+	"INVTYPE_RELIC",
+
+	"INVTYPE_QUIVER",
+	"INVTYPE_RANGED",
+	"INVTYPE_RANGEDRIGHT",
+	"INVTYPE_THROWN",
+
+	"INVTYPE_2HWEAPON",
+	"INVTYPE_WEAPON",
+	"INVTYPE_WEAPONMAINHAND",
+	"INVTYPE_WEAPONMAINHAND_PET",
+
+	"INVTYPE_WEAPONOFFHAND",
+	"INVTYPE_HOLDABLE",
+	"INVTYPE_SHIELD",
+}
+for k, v in ipairs(RCLootCouncilML.EQUIPLOC_SORT_ORDER) do
+	RCLootCouncilML.EQUIPLOC_SORT_ORDER[v] = k
+	RCLootCouncilML.EQUIPLOC_SORT_ORDER[k] = nil
+end
+
+-- TRANSFORMED to 'SUBTYPE_SORT_ORDER["SUBTYPE"] = num', below
+RCLootCouncilML.SUBTYPE_SORT_ORDER = {
+	"Plate",
+	"Mail",
+	"Leather",
+	"Cloth",
+	"Shields",
+	"Bows",
+	"Crossbows",
+	"Daggers",
+	"Guns",
+	"Fist Weapons",
+	"One-Handed Axes",
+	"One-Handed Maces",
+	"One-Handed Swords",
+	"Polearms",
+	"Staves",
+	"Two-Handed Axes",
+	"Two-Handed Maces",
+	"Two-Handed Swords",
+	"Wands",
+	"Warglaives",
+	"Miscellaneous",
+	"Junk",
+	"Artifact Relic",
+}
+for k, v in ipairs(RCLootCouncilML.SUBTYPE_SORT_ORDER) do
+	RCLootCouncilML.SUBTYPE_SORT_ORDER[v] = k
+	RCLootCouncilML.SUBTYPE_SORT_ORDER[k] = nil
+end
+
+-- Sort the lootTable
+-- REALLY BE CAREFUL when to use this function, because this changes the index of lootTable
+-- LootTable must be ready.
+-- Order: directly equippable gears, token, relics
+function RCLootCouncilML:SortLootTable(lootTable)
+	table.sort(lootTable, function(a, b)
+		if (a.relic and not b.relic) or (not a.relic and b.relic) then
+			return b.relic
+		end
+		if (a.token and not b.token) or (not a.token and b.token) then
+			return b.token
+		end
+		local equipLocA = self.EQUIPLOC_SORT_ORDER[addon:GetTokenEquipLoc(a.token) or a.equipLoc] or math.huge
+		local equipLocB = self.EQUIPLOC_SORT_ORDER[addon:GetTokenEquipLoc(b.token) or b.equipLoc] or math.huge
+		if equipLocA ~= equipLocB then
+			return equipLocA < equipLocB
+		end
+		local subTypeA = self.SUBTYPE_SORT_ORDER[addon.db.global.localizedSubTypes[a.subType]] or math.huge
+		local subTypeB = self.SUBTYPE_SORT_ORDER[addon.db.global.localizedSubTypes[b.subType]] or math.huge
+		if subTypeA ~= subTypeB then
+			return subTypeA < subTypeB
+		end
+		if a.relic ~= b.relic then
+			return a.relic < b.relic
+		end
+		return a.link < b.link
+	end)
 end
