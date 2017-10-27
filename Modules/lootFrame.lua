@@ -111,7 +111,7 @@ function LootFrame:Update()
 	self.frame.content:SetHeight(numEntries * ENTRY_HEIGHT + 7)
 end
 
-function LootFrame:OnRoll(entry, button, autoRepeating)
+function LootFrame:OnRoll(entry, button)
 	local isTier = entry.item.isTier and addon.mldb.tierButtonsEnabled
 	local isRelic = entry.item.isRelic and addon.mldb.relicButtonsEnabled
 	addon:Debug("LootFrame:OnRoll", entry.realID, button, "Response:", addon:GetResponseText(button, isTier, isRelic))
