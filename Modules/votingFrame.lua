@@ -1350,7 +1350,7 @@ do
 			info.checked = db.modules["RCVotingFrame"].filters.showPlayersCantUseTheItem
 			Lib_UIDropDownMenu_AddButton(info, level)
 
-			local info = Lib_UIDropDownMenu_CreateInfo()
+			info = Lib_UIDropDownMenu_CreateInfo()
 			info.text = L["Responses"]
 			info.isTitle = true
 			info.notCheckable = true

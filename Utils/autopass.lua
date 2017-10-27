@@ -68,6 +68,7 @@ local relics = {
 
 --- Checks if the player should autopass on a given item.
 -- All params are supplied by the lootTable from the ML.
+-- Checks for a specific class if 'class' arg is provided, otherwise the player's class.
 -- @usage
 -- -- Check if the item in session 1 should be auto passed:
 -- local dat = lootTable[1] -- Shortening
