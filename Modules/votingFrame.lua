@@ -96,6 +96,17 @@ function RCVotingFrame:Show()
 	end
 end
 
+function RCVotingFrame:ReceiveLootTable(lootTable)
+	active = true
+	self:Setup(lootTable)
+	if not addon.enabled then return end -- We just want things ready
+	if db.autoOpen then
+		self:Show()
+	else
+		addon:Print(L["A new session has begun, type '/rc open' to open the voting frame."])
+	end
+end
+
 function RCVotingFrame:EndSession(hide)
 	if active then -- Only end session once
 		addon:Debug("RCVotingFrame:EndSession", hide)
@@ -184,18 +195,6 @@ function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
 					end
 				end
 				self:Update()
-
-			elseif command == "lootTable" and addon:UnitIsUnit(sender, addon.masterLooter) then
-				active = true
-				local lootTable = unpack(data)
-				addon:PrepareLootTable(lootTable)
-				self:Setup(lootTable)
-				if not addon.enabled then return end -- We just want things ready
-				if db.autoOpen then
-					self:Show()
-				else
-					addon:Print(L["A new session has begun, type '/rc open' to open the voting frame."])
-				end
 
 			elseif command == "response" then
 				local session, name, t = unpack(data)

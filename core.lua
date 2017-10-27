@@ -728,7 +728,10 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 					self:CallModule("lootframe")
 					self:GetActiveModule("lootframe"):Start(lootTable)
 
-					-- The votingFrame handles lootTable itself
+					-- Hand the lootTable to the votingFrame
+					if self.isCouncil or self.mldb.observe then
+						self:GetActiveModule("votingframe"):ReceiveLootTable(lootTable)
+					end
 
 				else -- a non-ML send a lootTable?!
 					self:Debug(tostring(sender).." is not ML, but sent lootTable!")
