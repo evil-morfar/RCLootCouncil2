@@ -337,6 +337,9 @@ end
 ------------------------------------------------------------------
 -- Returns true if a filter is set for this session
 local function IsFiltering(session)
+	if not db.modules["RCVotingFrame"].filters.showPlayersCantUseTheItem then
+		return true
+	end
 	if lootTable[session].token and addon.mldb.tierButtonsEnabled then
 		for _, v in pairs(db.modules["RCVotingFrame"].filters.tier) do
 			if not v then return true end
@@ -966,6 +969,13 @@ end
 function RCVotingFrame.filterFunc(table, row)
 	if not db.modules["RCVotingFrame"].filters then return true end -- db hasn't been initialized, so just show it
 	local response = lootTable[session].candidates[row.name].response
+	if not db.modules["RCVotingFrame"].filters.showPlayersCantUseTheItem then
+		local v = lootTable[session]
+		if addon:AutoPassCheck(v.subType, v.equipLoc, v.link, v.token, v.relic, v.class) then
+			return false
+		end
+	end
+
 	if response == "AUTOPASS" or response == "PASS" or type(response) == "number" then
 		if lootTable[session].token and addon.mldb.tierButtonsEnabled and type(response) == "number"then
 			return db.modules["RCVotingFrame"].filters.tier[response]
@@ -1323,11 +1333,30 @@ do
 				end
 			end
 
-			info.text = _G.FILTER
+			local info = Lib_UIDropDownMenu_CreateInfo()
+			info.text = _G.GENERAL
 			info.isTitle = true
 			info.notCheckable = true
 			info.disabled = true
 			Lib_UIDropDownMenu_AddButton(info, level)
+
+			info = Lib_UIDropDownMenu_CreateInfo()
+			info.text = L["Players that cant use the item"]
+			info.func = function()
+				addon:Debug("Update Filter")
+				db.modules["RCVotingFrame"].filters.showPlayersCantUseTheItem = not db.modules["RCVotingFrame"].filters.showPlayersCantUseTheItem
+				RCVotingFrame:Update()
+			end
+			info.checked = db.modules["RCVotingFrame"].filters.showPlayersCantUseTheItem
+			Lib_UIDropDownMenu_AddButton(info, level)
+
+			local info = Lib_UIDropDownMenu_CreateInfo()
+			info.text = L["Responses"]
+			info.isTitle = true
+			info.notCheckable = true
+			info.disabled = true
+			Lib_UIDropDownMenu_AddButton(info, level)
+
 			info = Lib_UIDropDownMenu_CreateInfo()
 			if isTier then -- add tier buttons
 				for k in ipairs(data.tier) do
