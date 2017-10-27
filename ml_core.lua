@@ -1026,9 +1026,6 @@ end
 -- Order: directly equippable gears, token, relics
 function RCLootCouncilML:SortLootTable(lootTable)
 	table.sort(lootTable, function(a, b)
-		if (a.relic and not b.relic) or (not a.relic and b.relic) then
-			return b.relic
-		end
 		local equipLocA = self.EQUIPLOC_SORT_ORDER[addon:GetTokenEquipLoc(a.token) or a.equipLoc] or math.huge
 		local equipLocB = self.EQUIPLOC_SORT_ORDER[addon:GetTokenEquipLoc(b.token) or b.equipLoc] or math.huge
 		if equipLocA ~= equipLocB then
@@ -1040,7 +1037,11 @@ function RCLootCouncilML:SortLootTable(lootTable)
 			return subTypeA < subTypeB
 		end
 		if a.relic ~= b.relic then
-			return a.relic < b.relic
+			if a.relic and b.relic then 
+				return a.relic < b.relic
+			else
+				return b.relic
+			end
 		end
 		return a.link < b.link
 	end)
