@@ -28,6 +28,7 @@
 		RCMLAddItem				- 	fires when an item is added to the loot table. args: item, session
 		RCMLAwardSuccess		- 	fires when an item is successfully awarded. args: session, winner, status.
 		RCMLAwardFailed		-	fires when an item is unsuccessfully awarded. args: session, winner, status.
+		RCMLBuildMLdb       -   fires just before the MLdb is built. arg: MLdb, the master looter db table.
 		RCMLLootHistorySend	- 	fires just before loot history is sent out. args: loot_history table (the table sent to users), all arguments from ML:TrackAndLogLoot()
 	votingFrame:
 		RCSessionChangedPre	-	fires when the user changes the session, just before SwitchSession() is executed. args: sesion.
@@ -119,12 +120,6 @@ function RCLootCouncil:OnInitialize()
 			--[[4]]		  { color = {0.5,1,1,1},			sort = 4,		text = L["Upgrade to existing tier/random upgrade"],},
 		},
 		relic = {}, -- Created further down
-	}
-	self.roleTable = {
-		TANK =		_G.TANK,
-		HEALER =		_G.HEALER,
-		DAMAGER =	_G.DAMAGER,
-		NONE =		_G.NONE,
 	}
 
 	self.testMode = false;
@@ -251,7 +246,7 @@ function RCLootCouncil:OnInitialize()
 			announceItems = false,
 			announceText = L["Items under consideration:"],
 			announceChannel = "group",
-			announceItemString = "&s: &i", -- The message posted for each item, default: "session: itemlink"
+			announceItemString = "&s: &i (&l, &t)", -- The message posted for each item, default: "session: itemlink (ilvl, type)"
 
 			responses = self.responses,
 
@@ -590,6 +585,21 @@ function RCLootCouncil:ChatCommand(msg)
 	end
 end
 
+-- Send the msg to the channel if it is valid. Otherwise just print the messsage.
+function RCLootCouncil:SendAnnouncement(msg, channel)
+	if channel == "NONE" then return end
+	if self.testMode then
+		msg = "("..L["Test"]..") "..msg
+	end
+	if not IsInGroup() and (channel == "group" or channel == "RAID" or channel == "PARTY" or channel == "INSTANCE_CHAT") then
+		self:Print(msg)
+	elseif not IsInGuild() and (channel == "GUILD" or channel == "OFFICER") then
+		self:Print(msg)
+	else
+		SendChatMessage(msg, self:GetAnnounceChannel(channel))
+	end
+end
+
 --- Send a RCLootCouncil Comm Message using AceComm-3.0
 -- See RCLootCouncil:OnCommReceived() on how to receive these messages.
 -- @param target The receiver of the message. Can be "group", "guild" or "playerName".
@@ -669,7 +679,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 						return self:Debug("Sent 'DISABLED' response to", sender)
 					end
 
-					self:LocalizeLootTable(lootTable)
+					self:PrepareLootTable(lootTable)
 
 					-- Out of instance support
 					-- assume 8 people means we're actually raiding
@@ -715,7 +725,10 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 					self:CallModule("lootframe")
 					self:GetActiveModule("lootframe"):Start(lootTable)
 
-					-- The votingFrame handles lootTable itself
+					-- Hand the lootTable to the votingFrame
+					if self.isCouncil or self.mldb.observe then
+						self:GetActiveModule("votingframe"):ReceiveLootTable(lootTable)
+					end
 
 				else -- a non-ML send a lootTable?!
 					self:Debug(tostring(sender).." is not ML, but sent lootTable!")
@@ -786,7 +799,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 			elseif command == "reroll" and self:UnitIsUnit(sender, self.masterLooter) and self.enabled then
 				self:Print(format(L["'player' has asked you to reroll"], self.Ambiguate(sender)))
 				local table = unpack(data)
-				self:LocalizeLootTable(table)
+				self:PrepareLootTable(table)
 				self:CallModule("lootframe")
 				self:GetActiveModule("lootframe"):ReRoll(table)
 
@@ -899,6 +912,8 @@ function RCLootCouncil:Test(num)
 		152423, 152005, 151994, 152008, 151998, 152006, 152002, 151996, -- Mail
 		151985, 151988, 151982, 151992, 151984, 151986, 151987, 151981, -- Leather
 		151943, 151949, 152679, 151953, 152680, 151942, 151946, 151939, -- Cloth
+		151937, 151938, 152062,                                         -- Cloak
+
 		-- Tier21 Trinkets
 		151975, 151977, -- Tank
 		151956, 151970, -- Healer
@@ -1188,6 +1203,20 @@ function RCLootCouncil:GetTokenIlvl(link)
   	return baseIlvl -- Normal difficulty
 end
 
+function RCLootCouncil:GetTokenEquipLoc(tokenSlot)
+	if tokenSlot then
+		if tokenSlot == "Trinket" then
+			return "INVTYPE_TRINKET"
+		else
+			for loc, slot in pairs(self.INVTYPE_Slots) do
+				if slot == tokenSlot then
+					return loc
+				end
+			end
+		end
+	end
+end
+
 function RCLootCouncil:Timer(type, ...)
 	self:Debug("Timer "..type.." passed")
 	if type == "LocalizeSubTypes" then
@@ -1248,11 +1277,16 @@ function RCLootCouncil:LocalizeSubTypes()
 	self.db.global.localizedSubTypes.created = GetLocale() -- Only mark this as created after everything is done.
 end
 
--- Changes the subType in lootTable to our locale.
-function RCLootCouncil:LocalizeLootTable(lootTable)
+--- Updates the loot table with some local data.
+-- 1 Changes the subType in lootTable to our locale.
+-- 2 Extracts tokens equipLoc
+function RCLootCouncil:PrepareLootTable(lootTable)
 	for ses, v in ipairs(lootTable) do
 		local _, _, subType, equipLoc, texture = GetItemInfoInstant(v.link)
 		v.subType = subType -- Subtype should be in our locale
+		if v.token then
+			v.equipLoc = self:GetTokenEquipLoc(v.token)
+		end
 	end
 end
 
@@ -1316,8 +1350,8 @@ function RCLootCouncil:GetPlayerRole()
 	return UnitGroupRolesAssigned("player")
 end
 
-function RCLootCouncil.TranslateRole(role) -- reasons
-	return (role and role ~= "") and RCLootCouncil.roleTable[role] or ""
+function RCLootCouncil:TranslateRole(role)
+	return (role and role ~= "") and _G[role] or ""
 end
 
 --- Returns a lookup table containing GuildRankNames and their index.
@@ -2063,24 +2097,43 @@ function RCLootCouncil:HideTooltip()
 	GameTooltip:Hide()
 end
 
+function RCLootCouncil:GetItemLevelText(ilvl, token)
+	if not ilvl then ilvl = 0 end
+	if token then
+		return ilvl.."+"
+	else
+		return ilvl
+	end
+end
+
 -- @return a text of the link explaining its type. For example, "Fel Artifact Relic", "Chest, Mail"
 function RCLootCouncil:GetItemTypeText(link, subType, equipLoc, tokenSlot, relicType)
 	local englishSubType = self.db.global.localizedSubTypes[subType]
 
+	local id = self:GetItemIDFromLink(link)
 	if tokenSlot then -- It's a token
+		local tokenText = L["Armor Token"]
+		local classes = RCTokenClasses[id]
+		if tContains(classes, "PALADIN") then
+			tokenText = L["Conqueror Token"]
+		elseif tContains(classes, "WARRIOR") then
+			tokenText = L["Protector Token"]
+		elseif tContains(classes, "ROGUE") then
+			tokenText = L["Vanquisher Token"]
+		end
+
 		if equipLoc ~= "" and getglobal(equipLoc) then
-			return getglobal(equipLoc)..", "..L["Armor Token"]
+			return getglobal(equipLoc)..", "..tokenText
 		else
-			return L["Armor Token"]
+			return tokenText
 		end
 	elseif "Artifact Relic" == englishSubType then
-		local id = self:GetItemIDFromLink(link)
 		relicType = relicType or select(3, C_ArtifactUI.GetRelicInfoByItemID(id)) or ""
 		local localizedRelicType = getglobal("RELIC_SLOT_TYPE_" .. relicType:upper()) or ""
 		local relicTooltipName = string.format(RELIC_TOOLTIP_TYPE, localizedRelicType)
 		return relicTooltipName
 	elseif equipLoc ~= "" and getglobal(equipLoc) then
-		if subType and englishSubType ~= "Miscellaneous" and englishSubType ~= "Junk" then
+		if subType and englishSubType ~= "Miscellaneous" and englishSubType ~= "Junk" and equipLoc ~= "INVTYPE_CLOAK" then
 			return getglobal(equipLoc)..", "..subType -- getGlobal to translate from global constant to localized name
 		else
 			return getglobal(equipLoc)

@@ -96,6 +96,17 @@ function RCVotingFrame:Show()
 	end
 end
 
+function RCVotingFrame:ReceiveLootTable(lootTable)
+	active = true
+	self:Setup(lootTable)
+	if not addon.enabled then return end -- We just want things ready
+	if db.autoOpen then
+		self:Show()
+	else
+		addon:Print(L["A new session has begun, type '/rc open' to open the voting frame."])
+	end
+end
+
 function RCVotingFrame:EndSession(hide)
 	if active then -- Only end session once
 		addon:Debug("RCVotingFrame:EndSession", hide)
@@ -184,18 +195,6 @@ function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
 					end
 				end
 				self:Update()
-
-			elseif command == "lootTable" and addon:UnitIsUnit(sender, addon.masterLooter) then
-				active = true
-				local lootTable = unpack(data)
-				addon:LocalizeLootTable(lootTable)
-				self:Setup(lootTable)
-				if not addon.enabled then return end -- We just want things ready
-				if db.autoOpen then
-					self:Show()
-				else
-					addon:Print(L["A new session has begun, type '/rc open' to open the voting frame."])
-				end
 
 			elseif command == "response" then
 				local session, name, t = unpack(data)
@@ -337,6 +336,9 @@ end
 ------------------------------------------------------------------
 -- Returns true if a filter is set for this session
 local function IsFiltering(session)
+	if not db.modules["RCVotingFrame"].filters.showPlayersCantUseTheItem then
+		return true
+	end
 	if lootTable[session].token and addon.mldb.tierButtonsEnabled then
 		for _, v in pairs(db.modules["RCVotingFrame"].filters.tier) do
 			if not v then return true end
@@ -409,7 +411,7 @@ function RCVotingFrame:SwitchSession(s)
 	self.frame.itemIcon:SetNormalTexture(t.texture)
 	self.frame.itemText:SetText(t.link)
 	self.frame.iState:SetText(self:GetItemStatus(t.link))
-	self.frame.itemLvl:SetText(format(_G.ITEM_LEVEL_ABBR..": %d", t.ilvl))
+	self.frame.itemLvl:SetText(_G.ITEM_LEVEL_ABBR..": "..addon:GetItemLevelText(t.ilvl, t.token))
 	-- Set a proper item type text
 
 	self.frame.itemType:SetText(addon:GetItemTypeText(t.link, t.subType, t.equipLoc, t.token, t.relic))
@@ -819,7 +821,7 @@ function RCVotingFrame.SetCellRole(rowFrame, frame, data, cols, row, realrow, co
 	local name = data[realrow].name
 	local isTier = lootTable[session].candidates[name].isTier
 	local isRelic = lootTable[session].candidates[name].isRelic
-	local role = addon.TranslateRole(lootTable[session].candidates[name].role)
+	local role = addon:TranslateRole(lootTable[session].candidates[name].role)
 	frame.text:SetText(role)
 	frame.text:SetTextColor(addon:GetResponseColor(lootTable[session].candidates[name].response,isTier,isRelic))
 	data[realrow].cols[column].value = role or ""
@@ -966,6 +968,13 @@ end
 function RCVotingFrame.filterFunc(table, row)
 	if not db.modules["RCVotingFrame"].filters then return true end -- db hasn't been initialized, so just show it
 	local response = lootTable[session].candidates[row.name].response
+	if not db.modules["RCVotingFrame"].filters.showPlayersCantUseTheItem then
+		local v = lootTable[session]
+		if addon:AutoPassCheck(v.subType, v.equipLoc, v.link, v.token, v.relic, v.class) then
+			return false
+		end
+	end
+
 	if response == "AUTOPASS" or response == "PASS" or type(response) == "number" then
 		if lootTable[session].token and addon.mldb.tierButtonsEnabled and type(response) == "number"then
 			return db.modules["RCVotingFrame"].filters.tier[response]
@@ -1323,11 +1332,30 @@ do
 				end
 			end
 
-			info.text = _G.FILTER
+			local info = Lib_UIDropDownMenu_CreateInfo()
+			info.text = _G.GENERAL
 			info.isTitle = true
 			info.notCheckable = true
 			info.disabled = true
 			Lib_UIDropDownMenu_AddButton(info, level)
+
+			info = Lib_UIDropDownMenu_CreateInfo()
+			info.text = L["Candidates that can't use the item"]
+			info.func = function()
+				addon:Debug("Update Filter")
+				db.modules["RCVotingFrame"].filters.showPlayersCantUseTheItem = not db.modules["RCVotingFrame"].filters.showPlayersCantUseTheItem
+				RCVotingFrame:Update()
+			end
+			info.checked = db.modules["RCVotingFrame"].filters.showPlayersCantUseTheItem
+			Lib_UIDropDownMenu_AddButton(info, level)
+
+			info = Lib_UIDropDownMenu_CreateInfo()
+			info.text = L["Responses"]
+			info.isTitle = true
+			info.notCheckable = true
+			info.disabled = true
+			Lib_UIDropDownMenu_AddButton(info, level)
+
 			info = Lib_UIDropDownMenu_CreateInfo()
 			if isTier then -- add tier buttons
 				for k in ipairs(data.tier) do
@@ -1454,11 +1482,7 @@ function RCVotingFrame:StartManualRoll()
 		manualRollSession = session
 		wipe(manualRollResults)
 		self:RegisterEvent("CHAT_MSG_SYSTEM")
-		if IsInGroup() then
-			SendChatMessage(string.format(L["request_rolls_announcement"], lootTable[session].link), addon:GetAnnounceChannel("group"))
-		else -- Alone, just print it for clarity
-			addon:Print(string.format(L["request_rolls_announcement"], lootTable[session].link))
-		end
+		addon:SendAnnouncement(string.format(L["request_rolls_announcement"], lootTable[session].link), "group")
 	else
 		addon:Debug("Start manual roll by non-ML?")
 	end
