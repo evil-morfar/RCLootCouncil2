@@ -121,12 +121,6 @@ function RCLootCouncil:OnInitialize()
 		},
 		relic = {}, -- Created further down
 	}
-	self.roleTable = {
-		TANK =		_G.TANK,
-		HEALER =		_G.HEALER,
-		DAMAGER =	_G.DAMAGER,
-		NONE =		_G.NONE,
-	}
 
 	self.testMode = false;
 
@@ -1353,8 +1347,8 @@ function RCLootCouncil:GetPlayerRole()
 	return UnitGroupRolesAssigned("player")
 end
 
-function RCLootCouncil.TranslateRole(role) -- reasons
-	return (role and role ~= "") and RCLootCouncil.roleTable[role] or ""
+function RCLootCouncil:TranslateRole(role)
+	return (role and role ~= "") and _G[role] or ""
 end
 
 --- Returns a lookup table containing GuildRankNames and their index.

@@ -821,7 +821,7 @@ function RCVotingFrame.SetCellRole(rowFrame, frame, data, cols, row, realrow, co
 	local name = data[realrow].name
 	local isTier = lootTable[session].candidates[name].isTier
 	local isRelic = lootTable[session].candidates[name].isRelic
-	local role = addon.TranslateRole(lootTable[session].candidates[name].role)
+	local role = addon:TranslateRole(lootTable[session].candidates[name].role)
 	frame.text:SetText(role)
 	frame.text:SetTextColor(addon:GetResponseColor(lootTable[session].candidates[name].response,isTier,isRelic))
 	data[realrow].cols[column].value = role or ""
