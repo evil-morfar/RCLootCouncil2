@@ -918,7 +918,7 @@ function RCLootCouncilML:GetItemsFromMessage(msg, sender, retryCount)
 
 	-- Let people know we've done stuff
 	addon:Print(format(L["Item received and added from 'player'"], addon.Ambiguate(sender)))
-	SendChatMessage("[RCLootCouncil]: "..format(L["Response to 'response' acknowledged as 'response'"],
+	SendChatMessage("[RCLootCouncil]: "..format(L["Response to 'item' acknowledged as 'response'"],
 		addon:GetItemTextWithCount(link, count), addon:GetResponseText(response, isTier)), "WHISPER", nil, sender)
 end
 
