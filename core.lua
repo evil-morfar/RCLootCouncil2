@@ -912,6 +912,8 @@ function RCLootCouncil:Test(num)
 		152423, 152005, 151994, 152008, 151998, 152006, 152002, 151996, -- Mail
 		151985, 151988, 151982, 151992, 151984, 151986, 151987, 151981, -- Leather
 		151943, 151949, 152679, 151953, 152680, 151942, 151946, 151939, -- Cloth
+		151937, 151938, 152062,                                         -- Cloak
+
 		-- Tier21 Trinkets
 		151975, 151977, -- Tank
 		151956, 151970, -- Healer
@@ -1199,6 +1201,20 @@ function RCLootCouncil:GetTokenIlvl(link)
 	    end
   	end
   	return baseIlvl -- Normal difficulty
+end
+
+function RCLootCouncil:GetTokenEquipLoc(tokenSlot)
+	if tokenSlot then
+		if tokenSlot == "Trinket" then
+			return "INVTYPE_TRINKET"
+		else
+			for loc, slot in pairs(self.INVTYPE_Slots) do
+				if slot == tokenSlot then
+					return loc
+				end
+			end
+		end
+	end
 end
 
 function RCLootCouncil:Timer(type, ...)
@@ -2112,7 +2128,7 @@ function RCLootCouncil:GetItemTypeText(link, subType, equipLoc, tokenSlot, relic
 		local relicTooltipName = string.format(RELIC_TOOLTIP_TYPE, localizedRelicType)
 		return relicTooltipName
 	elseif equipLoc ~= "" and getglobal(equipLoc) then
-		if subType and englishSubType ~= "Miscellaneous" and englishSubType ~= "Junk" then
+		if subType and englishSubType ~= "Miscellaneous" and englishSubType ~= "Junk" and equipLoc ~= "INVTYPE_CLOAK" then
 			return getglobal(equipLoc)..", "..subType -- getGlobal to translate from global constant to localized name
 		else
 			return getglobal(equipLoc)
