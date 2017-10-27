@@ -1029,9 +1029,6 @@ function RCLootCouncilML:SortLootTable(lootTable)
 		if (a.relic and not b.relic) or (not a.relic and b.relic) then
 			return b.relic
 		end
-		if (a.token and not b.token) or (not a.token and b.token) then
-			return b.token
-		end
 		local equipLocA = self.EQUIPLOC_SORT_ORDER[addon:GetTokenEquipLoc(a.token) or a.equipLoc] or math.huge
 		local equipLocB = self.EQUIPLOC_SORT_ORDER[addon:GetTokenEquipLoc(b.token) or b.equipLoc] or math.huge
 		if equipLocA ~= equipLocB then
