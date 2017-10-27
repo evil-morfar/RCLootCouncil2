@@ -38,6 +38,7 @@ L["add_ranks_desc"] = "Choose minimum rank to participate in lootcouncil:"
 L["add_ranks_desc2"] = "\n\nSelect a rank above to add all members at and above that rank to the council.\n\nClick on the ranks to the left to add individual players to the council.\n\nClick the 'Current Council' tab to see your selection."
 L["All items has been awarded and  the loot session concluded"] = true
 L["All items"] = true
+L["All items usable by the candidate"] = true
 L["Alt click Looting"] = true
 L["alt_click_looting_desc"] = "Enables Alt click Looting, i.e. start a looting session by holding down alt and (left)clicking an item."
 L["Alternatively, flag the loot as award later."] = true

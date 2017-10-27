@@ -1161,7 +1161,31 @@ do
 					addon:SendCommand(candidateName, "reroll", t)
 					addon:SendCommand("group", "change_response", session, candidateName, "WAIT")
 				end,
-			},{ -- 3 REANNOUNCE, 3 All items
+			},{ -- 3 REANNOUNCE, 3 All items usable by the candiate.
+				onValue = "REANNOUNCE",
+				text = L["All items usable by the candidate"],
+				notCheckable = true,
+				func = function(candidateName)
+					local t = {}
+					for k,v in ipairs(lootTable) do
+						if not v.awarded and not addon:AutoPassCheck(v.subType, v.equipLoc, v.link, v.token, v.relic
+																	, lootTable[session].candidates[candidateName].class) then
+							tinsert(t, {
+								name = v.name,
+								link = v.link,
+								ilvl = v.ilvl,
+								texture = v.texture,
+								session = k,
+								equipLoc = v.equipLoc,
+								token = v.token,
+								relic = v.relic,
+							})
+							addon:SendCommand("group", "change_response", k, candidateName, "WAIT")
+						end
+					end
+					addon:SendCommand(candidateName, "reroll", t)
+				end,
+			},{ -- 4 REANNOUNCE, 3 All items
 				onValue = "REANNOUNCE",
 				text = L["All items"],
 				notCheckable = true,
