@@ -249,7 +249,7 @@ function RCLootCouncil:OnInitialize()
 			announceItems = false,
 			announceText = L["Items under consideration:"],
 			announceChannel = "group",
-			announceItemString = "&s: &i", -- The message posted for each item, default: "session: itemlink"
+			announceItemString = "&s: &i (&l, &t)", -- The message posted for each item, default: "session: itemlink (ilvl, type)"
 
 			responses = self.responses,
 
@@ -585,6 +585,21 @@ function RCLootCouncil:ChatCommand(msg)
 			if k == input then return v.module[v.func](v.module, unpack(args)) end
 		end
 		self:ChatCommand("help")
+	end
+end
+
+-- Send the msg to the channel if it is valid. Otherwise just print the messsage.
+function RCLootCouncil:SendAnnouncement(msg, channel)
+	if channel == "NONE" then return end
+	if self.testMode then
+		msg = "("..L["Test"]..") "..msg
+	end
+	if not IsInGroup() and (channel == "group" or channel == "RAID" or channel == "PARTY" or channel == "INSTANCE_CHAT") then
+		self:Print(msg)
+	elseif not IsInGuild() and (channel == "GUILD" or channel == "OFFICER") then
+		self:Print(msg)
+	else
+		SendChatMessage(msg, self:GetAnnounceChannel(channel))
 	end
 end
 
