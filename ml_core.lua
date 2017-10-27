@@ -905,7 +905,14 @@ function RCLootCouncilML:GetItemsFromMessage(msg, sender, retryCount)
 		isTier = isTier,
 		isRelic = isRelic,
 	}
-	addon:SendCommand("group", "response", ses, sender, toSend)
+
+	-- Send Responses to all duplicate items.
+	for s, v in ipairs(self.lootTable) do
+		if v.link == self.lootTable[ses].link then
+			addon:SendCommand("group", "response", s, sender, toSend)
+		end
+	end
+
 	-- Let people know we've done stuff
 	addon:Print(format(L["Item received and added from 'player'"], addon.Ambiguate(sender)))
 	SendChatMessage("[RCLootCouncil]: "..format(L["Acknowledged as 'response'"], addon:GetResponseText(response, isTier)), "WHISPER", nil, sender)
