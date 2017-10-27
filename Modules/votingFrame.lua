@@ -1454,11 +1454,7 @@ function RCVotingFrame:StartManualRoll()
 		manualRollSession = session
 		wipe(manualRollResults)
 		self:RegisterEvent("CHAT_MSG_SYSTEM")
-		if IsInGroup() then
-			SendChatMessage(string.format(L["request_rolls_announcement"], lootTable[session].link), addon:GetAnnounceChannel("group"))
-		else -- Alone, just print it for clarity
-			addon:Print(string.format(L["request_rolls_announcement"], lootTable[session].link))
-		end
+		addon:SendAnnouncement(string.format(L["request_rolls_announcement"], lootTable[session].link), "group")
 	else
 		addon:Debug("Start manual roll by non-ML?")
 	end

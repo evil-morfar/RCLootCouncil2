@@ -587,6 +587,19 @@ function RCLootCouncil:ChatCommand(msg)
 	end
 end
 
+-- Send the msg to the channel if it is valid. Otherwise just print the messsage.
+function RCLootCouncil:SendAnnouncement(msg, channel)
+	if channel == "NONE" then return end
+
+	if not IsInGroup() and (channel == "group" or channel == "RAID" or channel == "PARTY" or channel == "INSTANCE_CHAT") then
+		self:Print(msg)
+	elseif not IsInGuild() and (channel == "GUILD" or channel == "OFFICER") then
+		self:Print(msg)
+	else
+		SendChatMessage(msg, self:GetAnnounceChannel(channel))
+	end
+end
+
 --- Send a RCLootCouncil Comm Message using AceComm-3.0
 -- See RCLootCouncil:OnCommReceived() on how to receive these messages.
 -- @param target The receiver of the message. Can be "group", "guild" or "playerName".
