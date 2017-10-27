@@ -2094,6 +2094,10 @@ function RCLootCouncil:HideTooltip()
 	GameTooltip:Hide()
 end
 
+function RCLootCouncil:GetItemTextWithCount(link, count)
+	return link..(count and count > 1 and (" (x"..count..")") or "")
+end
+
 function RCLootCouncil:GetItemLevelText(ilvl, token)
 	if not ilvl then ilvl = 0 end
 	if token then
