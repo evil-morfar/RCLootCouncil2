@@ -24,7 +24,7 @@ function LootFrame:Start(table, reRoll)
 	end
 
 	for k = 1, #table do
-		if table[k].autopass and not reRoll then -- No autopass if reRolling.
+		if table[k].autopass then
 			items[offset+k] = { rolled = true} -- it's autopassed, so pretend we rolled it
 			numRolled = numRolled + 1
 		else
