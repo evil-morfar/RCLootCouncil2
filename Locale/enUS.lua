@@ -89,7 +89,6 @@ L["Autoloot BoE"] = true
 L["autoloot_BoE_desc"] = "Enables autolooting of BoE (Bind on Equip) items."
 L["Autopass"] = true
 L["Autopassed on 'item'"] = "Autopassed on %s"
-L["Auto repeat response on 'item'"] = "Auto repeat response on %s"
 L["award"] = true
 L["Award Announcement"] = true
 L["Award for ..."] = true
