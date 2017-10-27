@@ -1282,6 +1282,9 @@ function RCLootCouncil:LocalizeLootTable(lootTable)
 	for ses, v in ipairs(lootTable) do
 		local _, _, subType, equipLoc, texture = GetItemInfoInstant(v.link)
 		v.subType = subType -- Subtype should be in our locale
+		if v.token then
+			v.equipLoc = self:GetTokenEquipLoc(v.token)
+		end
 	end
 end
 

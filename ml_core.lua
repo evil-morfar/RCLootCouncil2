@@ -66,12 +66,12 @@ function RCLootCouncilML:AddItem(item, bagged, slotIndex, index)
 		["link"]			= link,
 		["quality"]		= rarity,
 		["ilvl"]			= addon:GetTokenIlvl(link) or ilvl, -- if the item is a token, ilvl is the min ilvl of the item it creates.
+		["equipLoc"]	= equipLoc,
 		["subType"]		= subType,
 		["texture"]		= texture,
 		["boe"]			= addon:IsItemBoE(link),
 		["relic"]		= itemID and IsArtifactRelicItem(itemID) and select(3, C_ArtifactUI.GetRelicInfoByItemID(itemID)),
 		["token"]		= itemID and RCTokenTable[itemID],
-		["equipLoc"]	= addon:GetTokenEquipLoc(itemID and RCTokenTable[itemID]) or equipLoc,
 	}
 
 		-- Item isn't properly loaded, so update the data in 1 sec (Should only happen with /rc test)
