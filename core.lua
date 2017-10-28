@@ -965,7 +965,7 @@ function RCLootCouncil:Test(num, fullTest)
 
 		if not cached then
 			self:Print("Retriving item info from EncounterJournal")
-			return self:ScheduleTimer("Test", num, true)
+			return self:ScheduleTimer("Test", 1, num, true)
 		end
 	end
 
