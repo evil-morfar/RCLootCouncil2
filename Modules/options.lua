@@ -458,15 +458,21 @@ function addon:OptionsTable()
 								inline = true,
 								args = {
 									autoStart = {
-										order = 2,
+										order = 1,
 										name = L["Auto Start"],
 										desc = L["auto_start_desc"],
 										type = "toggle",
 									},
 									altClickLooting = {
-										order = 3,
+										order = 2,
 										name = L["Alt click Looting"],
 										desc = L["alt_click_looting_desc"],
+										type = "toggle",
+									},
+									sortItems = {
+										order = 3,
+										name = L["Sort Items"],
+										desc = L["sort_items_desc"],
 										type = "toggle",
 									},
 									spacer = {

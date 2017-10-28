@@ -151,7 +151,9 @@ function RCLootCouncilML:StartSession()
 	end
 	self.running = true
 
-	self:SortLootTable(self.lootTable) -- Sort the lootTable
+	if db.sortItems then
+		self:SortLootTable(self.lootTable) -- Sort the lootTable
+	end
 
 	addon:SendCommand("group", "lootTable", self.lootTable)
 
