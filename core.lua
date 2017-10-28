@@ -502,7 +502,7 @@ function RCLootCouncil:ChatCommand(msg)
 
 	elseif input == 'test' or input == L["test"] then
 		self:Test(tonumber(args[1]) or 1)
-	elseif input == 'fulltest' then
+	elseif input == 'fulltest' or input == 'ftest' then
 		self:Test(tonumber(args[1]) or 1, true)
 
 	elseif input == 'version' or input == L["version"] or input == "v" or input == "ver" then
@@ -938,11 +938,8 @@ function RCLootCouncil:Test(num, fullTest)
 		152058, 152059, -- Storm
 	}
 
-	if fullTest then
-		local cached = true
-
+	if fullTest then -- Add items from encounter journal which includes items from different difficulties.
 		LoadAddOn("Blizzard_EncounterJournal")
-		-- Fetch items from encounter journal which includes items from different difficulties.
 		local instanceID = 946 -- Antorus, the Burning Throne
 		local difficulties = {14, 15, 16} -- Normal, Heroic, Mythic
 
@@ -950,25 +947,21 @@ function RCLootCouncil:Test(num, fullTest)
 		EJ_ResetLootFilter()
 		for _, difficulty in pairs(difficulties) do
 			EJ_SetDifficulty(difficulty)
-			if not EJ_GetNumLoot() then
-				cached = false
-			end
-			for i = 1, EJ_GetNumLoot() or 0 do
-			    local link = select(7, EJ_GetLootInfoByIndex(i))
-			    if link then
-			    	tinsert(testItems, link)
-			    else
-			    	cached = false
-			    end
-			end
-		end
+			self:Debug("EJ_SetDifficulty()", difficulty)
 
-		if not cached then
-			self:Print("Retriving item info from EncounterJournal")
-			return self:ScheduleTimer("Test", 1, num, true)
+			local n = EJ_GetNumLoot()
+			self:Debug("EJ_GetNumLoot()", n)
+
+			for i = 1, n or 0 do
+				local link = select(7, EJ_GetLootInfoByIndex(i))
+				if link then
+					tinsert(testItems, link)
+				else
+					self:Debug("Get no link from EJ_GetLootInfoByIndex()", i)
+				end
+			end
 		end
 	end
-
 
 	local items = {};
 	-- pick "num" random items
