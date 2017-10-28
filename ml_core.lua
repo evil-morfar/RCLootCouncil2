@@ -1020,10 +1020,38 @@ for k, v in ipairs(RCLootCouncilML.SUBTYPE_SORT_ORDER) do
 	RCLootCouncilML.SUBTYPE_SORT_ORDER[k] = nil
 end
 
+-- Evaluate the bonuses of the item to help to sort the item with the same ilvl from best to worst
+-- sockets = 2 points. leech = 1.5. avoidance = 1. speed = 0.5. indestructive = 0.1 
+local function EvaluateItemBonus(link)
+	local score = 0
+	local bonuses = select(17, addon:DecodeItemLink(link))
+	for _, value in pairs(bonuses) do
+		if value == 523 or value == 563 or value == 564 or value == 565 or
+			value == 572 or value == 1808 then -- socket
+			score = score + 2
+		elseif value == 40 then -- Avoidance
+			score = score + 1
+		elseif value == 41 then -- Leech
+			score = score + 1.5
+		elseif value == 42 then -- Speed
+			score = score + 0.5
+		elseif value == 43 then -- Indestruct
+			score = score + 0.1
+		end
+	end
+	return score
+end
+
 -- Sort the lootTable
 -- REALLY BE CAREFUL when to use this function, because this changes the index of lootTable
 -- LootTable must be ready.
--- Order: directly token, equippable gears, relics
+-- Sorted by:
+-- 1. equipment slot: head, neck, ...
+-- 2. subType: junk(armor token), plate, mail, ...
+-- 3. relicType: Arcane, Life, ..
+-- 4. Item level from high to low
+-- 5. The value of item bonuses(socket, leech, etc) from high to low
+-- 6. Item link
 function RCLootCouncilML:SortLootTable(lootTable)
 	table.sort(lootTable, function(a, b)
 		local equipLocA = self.EQUIPLOC_SORT_ORDER[addon:GetTokenEquipLoc(a.token) or a.equipLoc] or math.huge
@@ -1045,6 +1073,11 @@ function RCLootCouncilML:SortLootTable(lootTable)
 		end
 		if a.ilvl ~= b.ilvl then
 			return a.ilvl > b.ilvl
+		end
+		local bonusA = EvaluateItemBonus(a.link)
+		local bonusB = EvaluateItemBonus(b.link)
+		if bonusA ~= bonusB then
+			return bonusA > bonusB
 		end
 		return a.link < b.link
 	end)
