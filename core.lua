@@ -904,12 +904,17 @@ function RCLootCouncil:Test(num)
 		152524, 152530, 152517, 152518, 152521, 152527, -- Vanquisher: DK, Druid, Mage, Rogue
 		152525, 152531, 152516, 152519, 152522, 152528, -- Conqueror : DH, Paladin, Priest, Warlock
 		152526, 152532, 152515, 152520, 152523, 152529, -- Protector : Hunder, Monk, Shaman, Warrior
+
 		-- Tier21 Armors (Head, Shoulder, Chest, Wrist, Hands, Waist, Legs, Feet)
 		152014, 152019, 152017, 152023, 152686, 152020, 152016, 152009, -- Plate
 		152423, 152005, 151994, 152008, 151998, 152006, 152002, 151996, -- Mail
 		151985, 151988, 151982, 151992, 151984, 151986, 151987, 151981, -- Leather
 		151943, 151949, 152679, 151953, 152680, 151942, 151946, 151939, -- Cloth
+
+		-- Tier21 Miscellaneous
+		152283, 151965, 151973,                                         -- Neck
 		151937, 151938, 152062,                                         -- Cloak
+		151972, 152063, 152284,                                         -- Rings
 
 		-- Tier21 Trinkets
 		151975, 151977, -- Tank
