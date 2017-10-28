@@ -940,6 +940,7 @@ function RCLootCouncil:Test(num, fullTest)
 
 	if fullTest then -- Add items from encounter journal which includes items from different difficulties.
 		LoadAddOn("Blizzard_EncounterJournal")
+		local cached = true
 		local instanceID = 946 -- Antorus, the Burning Throne
 		local difficulties = {14, 15, 16} -- Normal, Heroic, Mythic
 
@@ -952,13 +953,20 @@ function RCLootCouncil:Test(num, fullTest)
 			local n = EJ_GetNumLoot()
 			self:Debug("EJ_GetNumLoot()", n)
 
+			if not n then
+				cached = false
+			end
 			for i = 1, n or 0 do
 				local link = select(7, EJ_GetLootInfoByIndex(i))
 				if link then
 					tinsert(testItems, link)
 				else
-					self:Debug("Get no link from EJ_GetLootInfoByIndex()", i)
+					cached = false
 				end
+			end
+			if not cached then
+				self:Debug("Retrieving item info from Encounter Journal. Retry after 1s.")
+				return self:ScheduleTimer("Test", 1, num, fullTest)
 			end
 		end
 	end
