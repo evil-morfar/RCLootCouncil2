@@ -157,7 +157,7 @@ do
 			end
 
 			entry.item = item
-			entry.itemText:SetText(addon:GetItemTextWithCount(entry.item.link or "error", entry.item.count))
+			entry.itemText:SetText(entry.item.link or "error")
 			entry.icon:SetNormalTexture(entry.item.texture or "Interface\\InventoryItems\\WoWUnknownItem01")
 			entry.itemCount:SetText(entry.item.count > 1 and entry.item.count or "")
 			local typeText = addon:GetItemTypeText(item.link, item.subType, item.equipLoc, item.isTier, item.isRelic)
