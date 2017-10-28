@@ -991,6 +991,7 @@ end
 
 -- TRANSFORMED to 'SUBTYPE_SORT_ORDER["SUBTYPE"] = num', below
 RCLootCouncilML.SUBTYPE_SORT_ORDER = {
+	"Junk", -- armor token
 	"Plate",
 	"Mail",
 	"Leather",
@@ -1012,7 +1013,6 @@ RCLootCouncilML.SUBTYPE_SORT_ORDER = {
 	"Wands",
 	"Warglaives",
 	"Miscellaneous",
-	"Junk",
 	"Artifact Relic",
 }
 for k, v in ipairs(RCLootCouncilML.SUBTYPE_SORT_ORDER) do
@@ -1023,7 +1023,7 @@ end
 -- Sort the lootTable
 -- REALLY BE CAREFUL when to use this function, because this changes the index of lootTable
 -- LootTable must be ready.
--- Order: directly equippable gears, token, relics
+-- Order: directly token, equippable gears, relics
 function RCLootCouncilML:SortLootTable(lootTable)
 	table.sort(lootTable, function(a, b)
 		local equipLocA = self.EQUIPLOC_SORT_ORDER[addon:GetTokenEquipLoc(a.token) or a.equipLoc] or math.huge
@@ -1042,6 +1042,9 @@ function RCLootCouncilML:SortLootTable(lootTable)
 			else
 				return b.relic
 			end
+		end
+		if a.ilvl ~= b.ilvl then
+			return a.ilvl > b.ilvl
 		end
 		return a.link < b.link
 	end)
