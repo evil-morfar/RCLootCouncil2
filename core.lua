@@ -409,7 +409,6 @@ function RCLootCouncil:OnEnable()
 		end
 		self.db.global.oldVersion = self.db.global.version
 		self.db.global.version = self.version
-		self.db.global.localizedSubTypes.created = false -- Force to fully rerun LocalizeSubTypes if upgraded
 	else -- Mostly for first time load
 		self.db.global.version = self.version;
 	end
@@ -1261,17 +1260,11 @@ local subTypeLookup = {
 }
 
 function RCLootCouncil:LocalizeSubTypes()
-	if self.db.global.localizedSubTypes.created == GetLocale() then
-		return -- We only need to create it once, if game locale is the same as stored locale.
-	end
-
-	self.db.global.localizedSubTypes = {} -- reset
 	for name, item in pairs(subTypeLookup) do
 		local sType = select(3, GetItemInfoInstant(item))
 		self.db.global.localizedSubTypes[sType] = name
 		self:DebugLog("Found "..name.." localized as: "..sType)
 	end
-	self.db.global.localizedSubTypes.created = GetLocale() -- Only mark this as created after everything is done.
 end
 
 --- Updates the loot table with some local data.
