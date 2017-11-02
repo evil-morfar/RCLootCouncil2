@@ -1047,7 +1047,18 @@ end
 
 -- Sort the lootTable
 -- REALLY BE CAREFUL when to use this function, because this changes the index of lootTable
--- LootTable must be READY (all items are loaded) when sort the loot table.
+-- LootTable must be READY (all items are loaded) when sorted.
+function RCLootCouncilML:SortLootTable(lootTable)
+	for k, v in ipairs(lootTable) do
+		if not v.link then
+			error("LootTable is not ready when sorted.")
+			return
+		end
+	end
+	table.sort(lootTable, self.LootTableCompare)
+end
+
+-- The loottable sort compare function
 -- Sorted by:
 -- 1. equipment slot: head, neck, ...
 -- 2. subType: junk(armor token), plate, mail, ...
@@ -1055,11 +1066,7 @@ end
 -- 4. Item level from high to low
 -- 5. The value of item bonuses(socket, leech, etc) from high to low
 -- 6. Item link
-function RCLootCouncilML:SortLootTable(lootTable)
-	table.sort(lootTable, self.LootTableCompare)
-end
-
--- The sort function
+--
 -- @param a: an entry in the lootTable
 -- @param b: The other entry in the looTable
 -- @return true if a is sorted before b
