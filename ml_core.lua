@@ -83,7 +83,11 @@ function RCLootCouncilML:AddItem(item, bagged, slotIndex, entry)
 		self:ScheduleTimer("Timer", 1, "AddItem", item, bagged, slotIndex, entry)
 		addon:Debug("Started timer:", "AddItem", "for", item)
 	else
-		addon:SendMessage("RCMLAddItem", item, session)
+		addon:SendMessage("RCMLAddItem", item, entry)
+
+		if db.sortItems then
+			table.sort(self.lootTable, self.LootTableCompare)
+		end
 	end
 end
 
@@ -154,10 +158,6 @@ function RCLootCouncilML:StartSession()
 		return addon:Debug("Data wasn't ready", addon.candidates[addon.playerName], #addon.council)
 	end
 	self.running = true
-
-	if db.sortItems then
-		self:SortLootTable(self.lootTable) -- Sort the lootTable
-	end
 
 	addon:SendCommand("group", "lootTable", self.lootTable)
 
@@ -1047,19 +1047,6 @@ local function EvaluateItemBonus(link)
 		end
 	end
 	return score
-end
-
--- Sort the lootTable
--- REALLY BE CAREFUL when to use this function, because this changes the index of lootTable
--- LootTable must be READY (all items are loaded) when sorted.
-function RCLootCouncilML:SortLootTable(lootTable)
-	for k, v in ipairs(lootTable) do
-		if not v.link then
-			addon:Debug("LootTable is not ready when sorted!")
-			return
-		end
-	end
-	table.sort(lootTable, self.LootTableCompare)
 end
 
 -- The loottable sort compare function
