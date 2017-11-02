@@ -152,7 +152,7 @@ function RCLootCouncilML:StartSession()
 	self.running = true
 
 	if db.sortItems then
-		addon:SortLootTable(self.lootTable) -- Sort the lootTable
+		self:SortLootTable(self.lootTable) -- Sort the lootTable
 	end
 
 	addon:SendCommand("group", "lootTable", self.lootTable)
@@ -951,4 +951,145 @@ end
 
 function RCLootCouncilML.AwardPopupOnClickNo(frame, data)
 	-- Intentionally left empty
+end
+
+
+-- TRANSFORMED to 'EQUIPLOC_SORT_ORDER["INVTYPE"] = num', below
+RCLootCouncilML.EQUIPLOC_SORT_ORDER = {
+	-- From head to feet
+	"INVTYPE_HEAD",
+	"INVTYPE_NECK",
+	"INVTYPE_SHOULDER",
+	"INVTYPE_CLOAK",
+	"INVTYPE_ROBE",
+	"INVTYPE_CHEST",
+	"INVTYPE_WRIST",
+	"INVTYPE_HAND",
+	"INVTYPE_WAIST",
+	"INVTYPE_LEGS",
+	"INVTYPE_FEET",
+	"INVTYPE_FINGER",
+	"INVTYPE_TRINKET",
+	"",               -- armor tokens, artifact relics
+	"INVTYPE_RELIC",
+
+	"INVTYPE_QUIVER",
+	"INVTYPE_RANGED",
+	"INVTYPE_RANGEDRIGHT",
+	"INVTYPE_THROWN",
+
+	"INVTYPE_2HWEAPON",
+	"INVTYPE_WEAPON",
+	"INVTYPE_WEAPONMAINHAND",
+	"INVTYPE_WEAPONMAINHAND_PET",
+
+	"INVTYPE_WEAPONOFFHAND",
+	"INVTYPE_HOLDABLE",
+	"INVTYPE_SHIELD",
+}
+for k, v in ipairs(RCLootCouncilML.EQUIPLOC_SORT_ORDER) do
+	RCLootCouncilML.EQUIPLOC_SORT_ORDER[v] = k
+	RCLootCouncilML.EQUIPLOC_SORT_ORDER[k] = nil
+end
+
+-- TRANSFORMED to 'SUBTYPE_SORT_ORDER["SUBTYPE"] = num', below
+RCLootCouncilML.SUBTYPE_SORT_ORDER = {
+	"Junk", -- armor token
+	"Plate",
+	"Mail",
+	"Leather",
+	"Cloth",
+	"Shields",
+	"Bows",
+	"Crossbows",
+	"Daggers",
+	"Guns",
+	"Fist Weapons",
+	"One-Handed Axes",
+	"One-Handed Maces",
+	"One-Handed Swords",
+	"Polearms",
+	"Staves",
+	"Two-Handed Axes",
+	"Two-Handed Maces",
+	"Two-Handed Swords",
+	"Wands",
+	"Warglaives",
+	"Miscellaneous",
+	"Artifact Relic",
+}
+for k, v in ipairs(RCLootCouncilML.SUBTYPE_SORT_ORDER) do
+	RCLootCouncilML.SUBTYPE_SORT_ORDER[v] = k
+	RCLootCouncilML.SUBTYPE_SORT_ORDER[k] = nil
+end
+
+-- Evaluate the bonuses of the item to help to sort the item with the same ilvl from best to worst
+-- sockets = 2 points. leech = 1.5. avoidance = 1. speed = 0.5. indestructive = 0.1 
+local function EvaluateItemBonus(link)
+	local score = 0
+	local bonuses = select(17, addon:DecodeItemLink(link))
+	for _, value in pairs(bonuses) do
+		if value == 523 or value == 563 or value == 564 or value == 565 or
+			value == 572 or value == 1808 then -- socket
+			score = score + 2
+		elseif value == 40 then -- Avoidance
+			score = score + 1
+		elseif value == 41 then -- Leech
+			score = score + 1.5
+		elseif value == 42 then -- Speed
+			score = score + 0.5
+		elseif value == 43 then -- Indestruct
+			score = score + 0.1
+		end
+	end
+	return score
+end
+
+-- Sort the lootTable
+-- REALLY BE CAREFUL when to use this function, because this changes the index of lootTable
+-- LootTable must be READY (all items are loaded) when sort the loot table.
+-- Sorted by:
+-- 1. equipment slot: head, neck, ...
+-- 2. subType: junk(armor token), plate, mail, ...
+-- 3. relicType: Arcane, Life, ..
+-- 4. Item level from high to low
+-- 5. The value of item bonuses(socket, leech, etc) from high to low
+-- 6. Item link
+function RCLootCouncilML:SortLootTable(lootTable)
+	table.sort(lootTable, self.LootTableCompare)
+end
+
+-- The sort function
+-- @param a: an entry in the lootTable
+-- @param b: The other entry in the looTable
+-- @return true if a is sorted before b
+function RCLootCouncilML.LootTableCompare(a, b)
+	if not a.link then return false end
+	if not b.link then return true end -- Item hasn't been loaded.
+	local equipLocA = RCLootCouncilML.EQUIPLOC_SORT_ORDER[addon:GetTokenEquipLoc(a.token) or a.equipLoc] or math.huge
+	local equipLocB = RCLootCouncilML.EQUIPLOC_SORT_ORDER[addon:GetTokenEquipLoc(b.token) or b.equipLoc] or math.huge
+	if equipLocA ~= equipLocB then
+		return equipLocA < equipLocB
+	end
+	local subTypeA = RCLootCouncilML.SUBTYPE_SORT_ORDER[addon.db.global.localizedSubTypes[a.subType]] or math.huge
+	local subTypeB = RCLootCouncilML.SUBTYPE_SORT_ORDER[addon.db.global.localizedSubTypes[b.subType]] or math.huge
+	if subTypeA ~= subTypeB then
+		return subTypeA < subTypeB
+	end
+	if a.relic ~= b.relic then
+		if a.relic and b.relic then 
+			return a.relic < b.relic
+		else
+			return b.relic
+		end
+	end
+	if a.ilvl ~= b.ilvl then
+		return a.ilvl > b.ilvl
+	end
+	local bonusA = EvaluateItemBonus(a.link)
+	local bonusB = EvaluateItemBonus(b.link)
+	if bonusA ~= bonusB then
+		return bonusA > bonusB
+	end
+	return a.link < b.link
 end

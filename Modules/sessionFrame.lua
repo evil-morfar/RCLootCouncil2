@@ -99,7 +99,7 @@ end
 function RCSessionFrame.Sort(table, rowa, rowb)
 	local a, b = table:GetRow(rowa), table:GetRow(rowb)
 	if addon:Getdb().sortItems then
-		return addon.LootTableCompare(ml.lootTable[a.session], ml.lootTable[b.session])
+		return ml.LootTableCompare(ml.lootTable[a.session], ml.lootTable[b.session])
 	else
 		return a.session < b.session
 	end
