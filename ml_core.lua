@@ -48,35 +48,39 @@ function RCLootCouncilML:OnEnable()
 end
 
 --- Add an item to the lootTable
+-- You CAN sort or delete entries in the lootTable while an item is being added.
 -- @paramsig item[, bagged, slotIndex, index]
 -- @param item Any: ItemID|itemString|itemLink
 -- @param bagged True if the item is in the ML's inventory
 -- @param slotIndex Index of the lootSlot, or nil if none - either this or 'bagged' needs to be supplied
--- @param index Index in self.lootTable, used to set data in a specific session
-function RCLootCouncilML:AddItem(item, bagged, slotIndex, index)
-	addon:DebugLog("ML:AddItem", item, bagged, slotIndex, index)
+-- @param entry Used to set data in a specific lootTable entry.
+function RCLootCouncilML:AddItem(item, bagged, slotIndex, entry)
+	addon:DebugLog("ML:AddItem", item, bagged, slotIndex, entry)
 	local name, link, rarity, ilvl, iMinLevel, type, subType, iStackCount, equipLoc, texture = GetItemInfo(item)
 	local itemID = link and addon:GetItemIDFromLink(link)
-	local session = index or #self.lootTable + 1
-	self.lootTable[session] = { -- We want to reserve the index even if we haven't fully loaded the item
-		["bagged"]		= bagged,
-		["lootSlot"]	= slotIndex,
-		["awarded"]		= false,
-		["name"]			= name, -- REVIEW This is really not needed as it's contained in itemLink. Remove next time we break backwards com
-		["link"]			= link,
-		["quality"]		= rarity,
-		["ilvl"]			= addon:GetTokenIlvl(link) or ilvl, -- if the item is a token, ilvl is the min ilvl of the item it creates.
-		["equipLoc"]	= equipLoc,
-		["subType"]		= subType,
-		["texture"]		= texture,
-		["boe"]			= addon:IsItemBoE(link),
-		["relic"]		= itemID and IsArtifactRelicItem(itemID) and select(3, C_ArtifactUI.GetRelicInfoByItemID(itemID)),
-		["token"]		= itemID and RCTokenTable[itemID],
-	}
 
-		-- Item isn't properly loaded, so update the data in 1 sec (Should only happen with /rc test)
+	if not entry then
+		entry = {}
+		self.lootTable[#self.lootTable + 1] = entry
+	end
+
+	entry.bagged = bagged
+	entry.lootSlot = slotIndex
+	entry.awarded = false
+	entry.name = name -- REVIEW This is really not needed as it's contained in itemLink. Remove next time we break backwards com
+	entry.link	= link
+	entry.quality = rarity
+	entry.ilvl = addon:GetTokenIlvl(link) or ilvl -- if the item is a token, ilvl is the min ilvl of the item it creates.
+	entry.equipLoc = equipLoc
+	entry.subType = subType
+	entry.texture = texture
+	entry.boe = addon:IsItemBoE(link)
+	entry.relic	= itemID and IsArtifactRelicItem(itemID) and select(3, C_ArtifactUI.GetRelicInfoByItemID(itemID))
+	entry.token	= itemID and RCTokenTable[itemID]
+
+	-- Item isn't properly loaded, so update the data in 1 sec (Should only happen with /rc test)
 	if not name then
-		self:ScheduleTimer("Timer", 1, "AddItem", item, bagged, slotIndex, session)
+		self:ScheduleTimer("Timer", 1, "AddItem", item, bagged, slotIndex, entry)
 		addon:Debug("Started timer:", "AddItem", "for", item)
 	else
 		addon:SendMessage("RCMLAddItem", item, session)
