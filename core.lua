@@ -2393,32 +2393,40 @@ end
 -- 5. The value of item bonuses(socket, leech, etc) from high to low
 -- 6. Item link
 function RCLootCouncil:SortLootTable(lootTable)
-	table.sort(lootTable, function(a, b)
-		local equipLocA = self.EQUIPLOC_SORT_ORDER[self:GetTokenEquipLoc(a.token) or a.equipLoc] or math.huge
-		local equipLocB = self.EQUIPLOC_SORT_ORDER[self:GetTokenEquipLoc(b.token) or b.equipLoc] or math.huge
-		if equipLocA ~= equipLocB then
-			return equipLocA < equipLocB
-		end
-		local subTypeA = self.SUBTYPE_SORT_ORDER[self.db.global.localizedSubTypes[a.subType]] or math.huge
-		local subTypeB = self.SUBTYPE_SORT_ORDER[self.db.global.localizedSubTypes[b.subType]] or math.huge
-		if subTypeA ~= subTypeB then
-			return subTypeA < subTypeB
-		end
-		if a.relic ~= b.relic then
-			if a.relic and b.relic then 
-				return a.relic < b.relic
-			else
-				return b.relic
-			end
-		end
-		if a.ilvl ~= b.ilvl then
-			return a.ilvl > b.ilvl
-		end
-		local bonusA = EvaluateItemBonus(a.link)
-		local bonusB = EvaluateItemBonus(b.link)
-		if bonusA ~= bonusB then
-			return bonusA > bonusB
-		end
-		return a.link < b.link
-	end)
+	table.sort(lootTable, self.lootTableSortFunc)
 end
+
+-- The sort function
+-- @param a: an entry in the lootTable
+-- @param b: The other entry in the looTable
+-- @return true if a is sorted before b
+function RCLootCouncil.lootTableSortFunc(a, b)
+	local equipLocA = RCLootCouncil.EQUIPLOC_SORT_ORDER[RCLootCouncil:GetTokenEquipLoc(a.token) or a.equipLoc] or math.huge
+	local equipLocB = RCLootCouncil.EQUIPLOC_SORT_ORDER[RCLootCouncil:GetTokenEquipLoc(b.token) or b.equipLoc] or math.huge
+	if equipLocA ~= equipLocB then
+		return equipLocA < equipLocB
+	end
+	local subTypeA = RCLootCouncil.SUBTYPE_SORT_ORDER[RCLootCouncil.db.global.localizedSubTypes[a.subType]] or math.huge
+	local subTypeB = RCLootCouncil.SUBTYPE_SORT_ORDER[RCLootCouncil.db.global.localizedSubTypes[b.subType]] or math.huge
+	if subTypeA ~= subTypeB then
+		return subTypeA < subTypeB
+	end
+	if a.relic ~= b.relic then
+		if a.relic and b.relic then 
+			return a.relic < b.relic
+		else
+			return b.relic
+		end
+	end
+	if a.ilvl ~= b.ilvl then
+		return a.ilvl > b.ilvl
+	end
+	local bonusA = EvaluateItemBonus(a.link)
+	local bonusB = EvaluateItemBonus(b.link)
+	if bonusA ~= bonusB then
+		return bonusA > bonusB
+	end
+	return a.link < b.link
+end
+
+
