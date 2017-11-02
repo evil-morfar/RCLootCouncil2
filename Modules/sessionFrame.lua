@@ -34,7 +34,13 @@ end
 
 function RCSessionFrame:Show(data)
 	self.frame = self:GetFrame()
+	if not self.frame:IsShown() then
+		for _, v in ipairs(self.frame.st.cols) do -- Reset sorting.
+			v.sort = nil
+		end
+	end
 	self.frame:Show()
+
 	if data then
 		loadingItems = false
 		self:ExtractData(data)
@@ -89,8 +95,10 @@ function RCSessionFrame.SetCellText(rowFrame, frame, data, cols, row, realrow, c
 		frame.text:SetText("--".._G.RETRIEVING_ITEM_INFO.."--")
 		loadingItems = true
 		RCSessionFrame:ScheduleTimer("Show", 1, ml.lootTable) -- Expect data to be available in 1 sec and then recreate the frame
+		data[realrow].cols[column].value = ""
 	else
 		frame.text:SetText(data[realrow].link)
+		data[realrow].cols[column].value = addon:GetItemNameFromLink(data[realrow].link)
 	end
 end
 
