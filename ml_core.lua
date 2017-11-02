@@ -1069,7 +1069,7 @@ end
 -- 3. relicType: Arcane, Life, ..
 -- 4. Item level from high to low
 -- 5. The value of item bonuses(socket, leech, etc) from high to low
--- 6. Item link
+-- 6. Item name
 --
 -- @param a: an entry in the lootTable
 -- @param b: The other entry in the looTable
@@ -1102,5 +1102,5 @@ function RCLootCouncilML.LootTableCompare(a, b)
 	if bonusA ~= bonusB then
 		return bonusA > bonusB
 	end
-	return a.link < b.link
+	return addon:GetItemNameFromLink(a.link) < addon:GetItemNameFromLink(b.link)
 end
