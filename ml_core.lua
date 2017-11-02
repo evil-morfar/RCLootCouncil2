@@ -1055,7 +1055,7 @@ end
 function RCLootCouncilML:SortLootTable(lootTable)
 	for k, v in ipairs(lootTable) do
 		if not v.link then
-			addon:Debug("LootTable is not ready when sorted!")
+			error("LootTable is not ready when sorted.")
 			return
 		end
 	end
