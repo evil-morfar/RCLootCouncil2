@@ -15,9 +15,10 @@ local loadingItems = false
 
 function RCSessionFrame:OnInitialize()
 	self.scrollCols = {
-		{ name = "", sortnext = 3,	width = 30 }, 			-- remove item
-		{ name = "", sortnext = 3,	width = ROW_HEIGHT },-- item icon
-		{ name = "",			width = 160}, 			-- item link
+		-- All columns are sorted in the same way, so display does not change when user clicks the title of scroll table.
+		{ name = "", sortnext = 3,	width = 30, comparesort = self.Sort}, 			-- remove item
+		{ name = "", sortnext = 3,	width = ROW_HEIGHT, comparesort = self.Sort},-- item icon
+		{ name = "",			width = 160, comparesort = self.Sort}, 	-- item link
 	}
 end
 
@@ -60,6 +61,7 @@ function RCSessionFrame:ExtractData(data)
 	-- And set the new
 	for k,v in ipairs(data) do
 		self.frame.rows[k] = {
+			session = k,
 			texture = v.texture or nil,
 			link = v.link,
 			cols = {
@@ -91,6 +93,15 @@ function RCSessionFrame.SetCellText(rowFrame, frame, data, cols, row, realrow, c
 		RCSessionFrame:ScheduleTimer("Show", 1, ml.lootTable) -- Expect data to be available in 1 sec and then recreate the frame
 	else
 		frame.text:SetText(data[realrow].link)
+	end
+end
+
+function RCSessionFrame.Sort(table, rowa, rowb)
+	local a, b = table:GetRow(rowa), table:GetRow(rowb)
+	if addon:Getdb().sortItems then
+		return addon.LootTableCompare(ml.lootTable[a.session], ml.lootTable[b.session])
+	else
+		return a.session < b.session
 	end
 end
 
@@ -164,6 +175,7 @@ function RCSessionFrame:GetFrame()
 	f.closeBtn = b2
 
 	local st = ST:CreateST(self.scrollCols, 5, ROW_HEIGHT, nil, f.content)
+	st.cols[1].sort = "asc"
 	st.frame:SetPoint("TOPLEFT",f,"TOPLEFT",10,-20)
 	f:SetWidth(st.frame:GetWidth()+20)
 	f:SetHeight(305)

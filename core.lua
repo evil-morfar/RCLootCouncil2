@@ -2393,14 +2393,16 @@ end
 -- 5. The value of item bonuses(socket, leech, etc) from high to low
 -- 6. Item link
 function RCLootCouncil:SortLootTable(lootTable)
-	table.sort(lootTable, self.lootTableSortFunc)
+	table.sort(lootTable, self.LootTableCompare)
 end
 
 -- The sort function
 -- @param a: an entry in the lootTable
 -- @param b: The other entry in the looTable
 -- @return true if a is sorted before b
-function RCLootCouncil.lootTableSortFunc(a, b)
+function RCLootCouncil.LootTableCompare(a, b)
+	if not a.link then return false end
+	if not b.link then return true end -- Item hasn't been loaded.
 	local equipLocA = RCLootCouncil.EQUIPLOC_SORT_ORDER[RCLootCouncil:GetTokenEquipLoc(a.token) or a.equipLoc] or math.huge
 	local equipLocB = RCLootCouncil.EQUIPLOC_SORT_ORDER[RCLootCouncil:GetTokenEquipLoc(b.token) or b.equipLoc] or math.huge
 	if equipLocA ~= equipLocB then
