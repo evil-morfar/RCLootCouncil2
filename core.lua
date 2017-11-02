@@ -2289,4 +2289,3 @@ function RCLootCouncil:UpdateLootHistory()
 	end
 	self:Print("Done")
 end
-
