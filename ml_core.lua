@@ -193,6 +193,30 @@ function RCLootCouncilML:PrintAwardedInBags()
 	-- IDEA Do we delete awardedInBags here or keep it?
 end
 
+function RCLootCouncilML:AddAwardedInBagsToTradeWindow()
+	if self.isMasterLooter then
+		local tradeIndex = 1
+		for _, v in ipairs(self.awardedInBags) do
+			if addon:UnitIsUnit("NPC", v.winner) and UnitIsPlayer("NPC") then -- "npc" is the unitid of the player we are trading
+				for container=1, 5 do
+					for slot=1, GetContainerNumSlots(container) or 0 do
+						local texture, count, locked, quality, readable, lootable, link = GetContainerItemInfo(container, slot)
+						if link == v.link and not locked then
+							ClearCursor()
+							PickupContainerItem(container, slot)
+							ClickTradeButton(tradeIndex)
+							tradeIndex = tradeIndex + 1
+							if tradeIndex > MAX_TRADE_ITEMS then
+								break
+							end
+						end
+					end
+				end
+			end
+		end
+	end
+end
+
 function RCLootCouncilML:ConfigTableChanged(val)
 	-- The db was changed, so check if we should make a new mldb
 	-- We can do this by checking if the changed value is a key in mldb
