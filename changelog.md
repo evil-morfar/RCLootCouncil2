@@ -31,6 +31,7 @@
    + This way candidates can't change their gear to appear to have lower ilvl.
 * If enabled, relic responses can now be filtered separately.
 * You can now filter responses from candidates that can't use a given item.
+* It's now possible to ask a candidate to reroll only on items they can use.
 
 
 * **Rolls**
