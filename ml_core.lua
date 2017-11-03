@@ -457,7 +457,9 @@ function RCLootCouncilML:OnEvent(event, ...)
 					if addon:UnitIsUnit(winner, self.tradeTarget) and link == tradeItemLink  then
 						addon:Debug("Remove item from awardedInBags because traded to", winner, link)
 						tremove(self.awardedInBags, i)
-						-- TODO: Announce to the raid, or print some msg?
+						if addon.isMasterLooter	then
+							-- TODO: Announce to the raid, or print some msg?
+						end
 						break
 					end
 				end
