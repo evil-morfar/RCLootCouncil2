@@ -158,7 +158,7 @@ function RCLootCouncilML:StartSession()
 	self.running = true
 
 	if db.sortItems then
-		table.sort(self.lootTable, self.LootTableCompare)
+		self:SortLootTable(self.lootTable)
 	end
 
 	addon:SendCommand("group", "lootTable", self.lootTable)
@@ -1049,6 +1049,10 @@ local function EvaluateItemBonus(link)
 		end
 	end
 	return score
+end
+
+function RCLootCouncilML:SortLootTable(lootTable)
+	table.sort(lootTable, self.LootTableCompare)
 end
 
 -- The loottable sort compare function
