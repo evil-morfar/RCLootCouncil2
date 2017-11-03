@@ -144,7 +144,7 @@ function addon:OptionsTable()
 									},
 									printResponse = {
 										order = 4,
-										name = L["Print Response"],
+										name = L["Print Responses"],
 										desc = L["print_response_desc"],
 										type = "toggle",
 									},
