@@ -202,6 +202,11 @@ do
 						b[i]:SetText(addon:GetButtonText(i)) -- In case it was already created
 						b[i]:SetScript("OnClick", function() LootFrame:OnRoll(entry, i) end)
 					end
+					b[i]:SetScript("OnEnter", function()
+						if entry.item.note then
+							addon:CreateTooltip(L["Your note:"], entry.item.note)
+						end
+					end)
 					b[i]:SetWidth(b[i]:GetTextWidth() + 10)
 					if b[i]:GetWidth() < MIN_BUTTON_WIDTH then b[i]:SetWidth(MIN_BUTTON_WIDTH) end -- ensure minimum width
 					width = width + b[i]:GetWidth()
@@ -412,6 +417,11 @@ do
 					b[i]:SetText(addon:GetButtonText(i, true)) -- In case it was already created
 					b[i]:SetScript("OnClick", function() LootFrame:OnRoll(entry, i) end)
 				end
+				b[i]:SetScript("OnEnter", function()
+					if entry.item.note then
+						addon:CreateTooltip(L["Your note:"], entry.item.note)
+					end
+				end)
 				b[i]:SetWidth(b[i]:GetTextWidth() + 10)
 				if b[i]:GetWidth() < MIN_BUTTON_WIDTH then b[i]:SetWidth(MIN_BUTTON_WIDTH) end -- ensure minimum width
 				width = width + b[i]:GetWidth()
@@ -454,6 +464,11 @@ do
 					b[i]:SetText(addon:GetButtonText(i, false, true)) -- In case it was already created
 					b[i]:SetScript("OnClick", function() LootFrame:OnRoll(entry, i) end)
 				end
+				b[i]:SetScript("OnEnter", function()
+					if entry.item.note then
+						addon:CreateTooltip(L["Your note:"], entry.item.note)
+					end
+				end)
 				b[i]:SetWidth(b[i]:GetTextWidth() + 10)
 				if b[i]:GetWidth() < MIN_BUTTON_WIDTH then b[i]:SetWidth(MIN_BUTTON_WIDTH) end -- ensure minimum width
 				width = width + b[i]:GetWidth()
