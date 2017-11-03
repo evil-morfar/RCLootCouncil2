@@ -31,6 +31,7 @@
    + This way candidates can't change their gear to appear to have lower ilvl.
 * If enabled, relic responses can now be filtered separately.
 * You can now filter responses from candidates that can't use a given item.
+* It's now possible to ask a candidate to reroll only on items they can use.
 
 
 * **Rolls**
@@ -42,9 +43,11 @@
 
 
 * **Loot Frame**
+* Multiple copies of the same item now stacks together so only one roll is required.
 * The loot frame will now trigger immediately when a session starts instead of after ~2 seconds delay.
 * Now shows items' type and subType alongside the ilvl.
 * The layout is now more consistent in general.
+* Added an option to print out responses as they're sent.
 
 
 ###### Bugfixes
@@ -67,6 +70,7 @@
    * ```:GetPlayersGear(link, equipLoc, gearsTable)``` adds an arg ```gearsTable```. If specified, use that table to fetch item data instead of from the player's current equipped gears.
    * ```:GetArtifactRelics(link, relicsTable)``` added arg ```relicsTable```. Similar to above.
    * "Miscellaneous" and "Junk" is added to the ```subTypeLookup```.
+   * The ```lootTable``` in core is now the same as in votingFrame. Use ```RCLootCouncil:GetLootTable()``` to fetch it, as the votingFrame one will be removed.
 
 
 *Huge shoutout to __Safetee__ for most of these changes!*
