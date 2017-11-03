@@ -70,6 +70,7 @@
    * ```:GetPlayersGear(link, equipLoc, gearsTable)``` adds an arg ```gearsTable```. If specified, use that table to fetch item data instead of from the player's current equipped gears.
    * ```:GetArtifactRelics(link, relicsTable)``` added arg ```relicsTable```. Similar to above.
    * "Miscellaneous" and "Junk" is added to the ```subTypeLookup```.
+   * The ```lootTable``` in core is now the same as in votingFrame. Use ```RCLootCouncil:GetLootTable()``` to fetch it, as the votingFrame one will be removed.
 
 
 *Huge shoutout to __Safetee__ for most of these changes!*

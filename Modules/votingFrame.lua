@@ -254,6 +254,7 @@ function RCVotingFrame:GetCandidateData(session, candidate, data)
 	else return arg end
 end
 
+-- TODO: DEPRECATED - use RCLootCouncil:GetLootTable()
 function RCVotingFrame:GetLootTable()
 	return lootTable
 end
