@@ -139,11 +139,7 @@ do
 		type = "normal",
 		Update = function(entry, item)
 			if not item then
-				if not entry.item then
-					return addon:Debug("Entry update error @ item:", item)
-				else
-					item = entry.item
-				end
+				return addon:Debug("Entry update error @ item:", item)
 			end
 		--addon:DebugLog("Updating entry:", item, item.session)
 			entry.item = item
@@ -151,11 +147,6 @@ do
 			entry.icon:SetNormalTexture(entry.item.texture or "Interface\\InventoryItems\\WoWUnknownItem01")
 			local typeText = addon:GetItemTypeText(item.link, item.subType, item.equipLoc, item.isTier, item.isRelic)
 			entry.itemLvl:SetText(addon:GetItemLevelText(entry.item.ilvl, entry.item.isTier).."  |cff7fffff"..typeText.."|r")
-			if entry.item.note then
-				entry.noteButton:SetNormalTexture("Interface\\Buttons\\UI-GuildButton-PublicNote-Up")
-			else
-				entry.noteButton:SetNormalTexture("Interface\\Buttons\\UI-GuildButton-PublicNote-Disabled")
-			end
 			if addon.mldb.timeout then
 				entry.timeoutBar:SetMinMaxValues(0, addon.mldb.timeout or addon.db.profile.timeout)
 				entry.timeoutBar:Show()
@@ -242,7 +233,28 @@ do
 				end
 			end)
 			entry.noteButton:SetScript("OnLeave", function() addon:HideTooltip() end)
-			entry.noteButton:SetScript("OnClick", function() LibDialog:Spawn("RCLOOTCOUNCIL_LOOTFRAME_NOTE", entry) end)
+			entry.noteButton:SetScript("OnClick", function() entry.noteEditbox:Show() end)
+
+			entry.noteEditbox = CreateFrame("EditBox", nil, entry.frame, "AutoCompleteEditBoxTemplate")
+			entry.noteEditbox:SetBackdrop(LootFrame.frame.title:GetBackdrop())
+			entry.noteEditbox:SetBackdropColor(LootFrame.frame.title:GetBackdropColor())
+			entry.noteEditbox:SetBackdropBorderColor(LootFrame.frame.title:GetBackdropBorderColor())
+			entry.noteEditbox:SetFontObject(ChatFontNormal)
+			entry.noteEditbox:SetJustifyV("BOTTOM")
+			entry.noteEditbox:SetWidth(100)
+			entry.noteEditbox:SetHeight(24)
+			entry.noteEditbox:SetPoint("BOTTOMLEFT", entry.frame, "TOPRIGHT", 0, -entry.icon:GetHeight()-5)
+			entry.noteEditbox:SetTextInsets(5, 5, 0, 0)
+			entry.noteEditbox:SetScript("OnEnterPressed", function(self) 
+				entry.item.note = self:GetText() ~= "" and self:GetText()
+				if entry.item.note then
+					entry.noteButton:SetNormalTexture("Interface\\Buttons\\UI-GuildButton-PublicNote-Up")
+				else
+					entry.noteButton:SetNormalTexture("Interface\\Buttons\\UI-GuildButton-PublicNote-Disabled")
+				end
+				self:Hide()
+			end)
+			entry.noteEditbox:Hide()
 
 			----- item text/lvl ---------------
 			entry.itemText = entry.frame:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
