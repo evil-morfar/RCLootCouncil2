@@ -1142,26 +1142,54 @@ do
 				isTitle = true,
 				notCheckable = true,
 				disabled = true,
-			},{ -- 3 REANNOUNCE, 2 This item
+			},{ -- 3 REANNOUNCE, 2 This item, including all unawarded duplicates
 				onValue = "REANNOUNCE",
 				text = L["This item"],
 				notCheckable = true,
 				func = function(candidateName)
-					local t = {
-						{	name = lootTable[session].name,
-						link = lootTable[session].link,
-						ilvl = lootTable[session].ilvl,
-						texture = lootTable[session].texture,
-						session = session,
-						equipLoc = lootTable[session].equipLoc,
-						token = lootTable[session].token,
-						relic = lootTable[session].relic,
-						}
-					}
+					local t = {}
+					for k,v in ipairs(lootTable) do
+						if k==session or (v.link == lootTable[session].link and not v.awarded) then
+							tinsert(t, {
+								name = v.name,
+								link = v.link,
+								ilvl = v.ilvl,
+								texture = v.texture,
+								session = k,
+								equipLoc = v.equipLoc,
+								token = v.token,
+								relic = v.relic,
+							})
+							addon:SendCommand("group", "change_response", k, candidateName, "WAIT")
+						end
+					end
 					addon:SendCommand(candidateName, "reroll", t)
-					addon:SendCommand("group", "change_response", session, candidateName, "WAIT")
 				end,
-			},{ -- 3 REANNOUNCE, 3 All items
+			},{ -- 3 REANNOUNCE, 3 All items usable by the candidate.
+				onValue = "REANNOUNCE",
+				text = L["All items usable by the candidate"],
+				notCheckable = true,
+				func = function(candidateName)
+					local t = {}
+					for k,v in ipairs(lootTable) do
+						if not v.awarded and not addon:AutoPassCheck(v.subType, v.equipLoc, v.link, v.token, v.relic
+																	, lootTable[session].candidates[candidateName].class) then
+							tinsert(t, {
+								name = v.name,
+								link = v.link,
+								ilvl = v.ilvl,
+								texture = v.texture,
+								session = k,
+								equipLoc = v.equipLoc,
+								token = v.token,
+								relic = v.relic,
+							})
+							addon:SendCommand("group", "change_response", k, candidateName, "WAIT")
+						end
+					end
+					addon:SendCommand(candidateName, "reroll", t)
+				end,
+			},{ -- 3 REANNOUNCE, 4 All items
 				onValue = "REANNOUNCE",
 				text = L["All items"],
 				notCheckable = true,

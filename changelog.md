@@ -42,9 +42,11 @@
 
 
 * **Loot Frame**
+* Multiple copies of the same item now stacks together so only one roll is required.
 * The loot frame will now trigger immediately when a session starts instead of after ~2 seconds delay.
 * Now shows items' type and subType alongside the ilvl.
 * The layout is now more consistent in general.
+* Added an option to print out responses as they're sent.
 
 
 ###### Bugfixes

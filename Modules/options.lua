@@ -118,10 +118,10 @@ function addon:OptionsTable()
 									},
 								},
 							},
-							autoPassOptions = {
+							responseOptions = {
 								order = 4,
 								type = "group",
-								name = L["Auto Pass"],
+								name = L["Response options"],
 								inline = true,
 								args = {
 									autoPass = {
@@ -140,6 +140,12 @@ function addon:OptionsTable()
 										order = 3,
 										name = L["Auto pass BoE"],
 										desc = L["auto_pass_boe_desc"],
+										type = "toggle",
+									},
+									printResponse = {
+										order = 4,
+										name = L["Print Response"],
+										desc = L["print_response_desc"],
 										type = "toggle",
 									},
 								},
