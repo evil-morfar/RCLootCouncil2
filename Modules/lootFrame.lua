@@ -151,7 +151,10 @@ do
 			if not item then
 				return addon:Debug("Entry update error @ item:", item)
 			end
-
+			if item ~= entry.item then
+				entry.noteEditbox:Hide()
+				entry.noteEditbox:SetText("")
+			end
 			entry.item = item
 			entry.itemText:SetText(addon:GetItemTextWithCount(entry.item.link or "error", #entry.item.sessions))
 			entry.icon:SetNormalTexture(entry.item.texture or "Interface\\InventoryItems\\WoWUnknownItem01")
@@ -163,7 +166,6 @@ do
 			else
 				entry.noteButton:SetNormalTexture("Interface\\Buttons\\UI-GuildButton-PublicNote-Disabled")
 			end
-			entry.noteEditbox:SetText(entry.item.note or "")
 			if addon.mldb.timeout then
 				entry.timeoutBar:SetMinMaxValues(0, addon.mldb.timeout or addon.db.profile.timeout)
 				entry.timeoutBar:Show()
