@@ -493,7 +493,6 @@ function RCVotingFrame:UpdateMoreInfo(row, data)
 	else
 		tip:AddLine(L["No entries in the Loot History"])
 	end
-	tip:SetScale(self.frame:GetScale() * 0.6) -- Make it a bit smaller, as it's too wide otherwise
 	tip:Show()
 	tip:SetAnchorType("ANCHOR_RIGHT", 0, -tip:GetHeight())
 end
@@ -632,6 +631,9 @@ function RCVotingFrame:GetFrame()
 	f.moreInfoBtn = b2
 
 	f.moreInfo = CreateFrame( "GameTooltip", "RCVotingFrameMoreInfo", nil, "GameTooltipTemplate" )
+	f.content:SetScript("OnSizeChanged", function()
+ 		f.moreInfo:SetScale(self.frame:GetScale() * 0.6)
+ 	end)
 
 	-- Filter
 	local b3 = addon:CreateButton(_G.FILTER, f.content)
