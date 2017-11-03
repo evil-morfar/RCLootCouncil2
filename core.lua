@@ -152,6 +152,7 @@ function RCLootCouncil:OnInitialize()
 			autoClose = false, -- Auto close voting frame on session end
 			autoPassBoE = true,
 			autoPass = true,
+			stackItems = true, -- Should we stack items in the loot frame
 			altClickLooting = true,
 			acceptWhispers = true,
 			selfVote = true,
@@ -167,6 +168,7 @@ function RCLootCouncil:OnInitialize()
 			autoAwardReason = 1,
 			observe = false, -- observe mode on/off
 			silentAutoPass = false, -- Show autopass message
+			printResponse = false, -- Print response in chat
 			--neverML = false, -- Never use the addon as ML
 			minimizeInCombat = false,
 			iLvlDecimal = false,
@@ -2092,6 +2094,10 @@ function RCLootCouncil:HideTooltip()
 		self.tooltip.showing = false
 	end
 	GameTooltip:Hide()
+end
+
+function RCLootCouncil:GetItemTextWithCount(link, count)
+	return link..(count and count > 1 and (" x"..count) or "")
 end
 
 function RCLootCouncil:GetItemLevelText(ilvl, token)
