@@ -121,7 +121,7 @@ function addon:OptionsTable()
 							responseOptions = {
 								order = 4,
 								type = "group",
-								name = L["Resposne options"],
+								name = L["Response options"],
 								inline = true,
 								args = {
 									autoPass = {
