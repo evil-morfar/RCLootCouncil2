@@ -147,6 +147,12 @@ do
 			entry.icon:SetNormalTexture(entry.item.texture or "Interface\\InventoryItems\\WoWUnknownItem01")
 			local typeText = addon:GetItemTypeText(item.link, item.subType, item.equipLoc, item.isTier, item.isRelic)
 			entry.itemLvl:SetText(addon:GetItemLevelText(entry.item.ilvl, entry.item.isTier).."  |cff7fffff"..typeText.."|r")
+			if entry.item.note then
+				entry.noteButton:SetNormalTexture("Interface\\Buttons\\UI-GuildButton-PublicNote-Up")
+			else
+				entry.noteButton:SetNormalTexture("Interface\\Buttons\\UI-GuildButton-PublicNote-Disabled")
+			end
+			entry.noteEditbox:SetText(entry.item.note or "")
 			if addon.mldb.timeout then
 				entry.timeoutBar:SetMinMaxValues(0, addon.mldb.timeout or addon.db.profile.timeout)
 				entry.timeoutBar:Show()
@@ -251,13 +257,9 @@ do
 			entry.noteEditbox:SetPoint("BOTTOMLEFT", entry.frame, "TOPRIGHT", 0, -entry.icon:GetHeight()-5)
 			entry.noteEditbox:SetTextInsets(5, 5, 0, 0)
 			entry.noteEditbox:SetScript("OnEnterPressed", function(self) 
-				entry.item.note = self:GetText() ~= "" and self:GetText()
-				if entry.item.note then
-					entry.noteButton:SetNormalTexture("Interface\\Buttons\\UI-GuildButton-PublicNote-Up")
-				else
-					entry.noteButton:SetNormalTexture("Interface\\Buttons\\UI-GuildButton-PublicNote-Disabled")
-				end
 				self:Hide()
+				entry.item.note = self:GetText() ~= "" and self:GetText()
+				entry:Update(entry.item)
 			end)
 			entry.noteEditbox:Hide()
 
