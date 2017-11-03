@@ -197,9 +197,13 @@ function RCLootCouncilML:PrintAwardedInBags()
 end
 
 function RCLootCouncilML:AddAwardedInBagsToTradeWindow()
-	if self.isMasterLooter then
+	if addon.isMasterLooter then
 		local tradeIndex = 1
 		for _, v in ipairs(self.awardedInBags) do
+			if tradeIndex > MAX_TRADE_ITEMS then
+				break
+			end
+			local itemAdded = false
 			if addon:UnitIsUnit("NPC", v.winner) and UnitIsPlayer("NPC") then -- "npc" is the unitid of the player we are trading
 				for container=0, NUM_BAG_SLOTS do
 					for slot=1, GetContainerNumSlots(container) or 0 do
@@ -210,11 +214,13 @@ function RCLootCouncilML:AddAwardedInBagsToTradeWindow()
 								PickupContainerItem(container, slot)
 								ClickTradeButton(tradeIndex)
 								tradeIndex = tradeIndex + 1
-								if tradeIndex > MAX_TRADE_ITEMS then
-									break
-								end
+								itemAdded = true
+								break
 							end
 						end
+					end
+					if itemAdded then
+						break
 					end
 				end
 			end
