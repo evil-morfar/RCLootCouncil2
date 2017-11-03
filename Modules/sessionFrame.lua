@@ -15,9 +15,9 @@ local loadingItems = false
 
 function RCSessionFrame:OnInitialize()
 	self.scrollCols = {
-		{ name = "", sortnext = 3,	width = 30 }, 			-- remove item
-		{ name = "", sortnext = 3,	width = ROW_HEIGHT },-- item icon
-		{ name = "",			width = 160}, 			-- item link
+		{ name = "", width = 30, defaultsort = "dsc"}, 			-- remove item, sort by session number.
+		{ name = "", sortnext = 3,	width = ROW_HEIGHT, defaultsort = "dsc"},-- item icon
+		{ name = "",			width = 160, defaultsort = "dsc"}, 			-- item link
 	}
 end
 
@@ -35,8 +35,12 @@ end
 function RCSessionFrame:Show(data)
 	self.frame = self:GetFrame()
 	if not self.frame:IsShown() then
-		for _, v in ipairs(self.frame.st.cols) do -- Reset sorting.
-			v.sort = nil
+		for k, v in ipairs(self.frame.st.cols) do -- Reset sorting.
+			if k == 1 then 
+				v.sort = "dsc" -- In default sort function of lib-st, "dsc" is "asc" -_-
+			else 
+				v.sort = nil
+			end
 		end
 	end
 	self.frame:Show()
@@ -69,9 +73,9 @@ function RCSessionFrame:ExtractData(data)
 			texture = v.texture or nil,
 			link = v.link,
 			cols = {
-				{ value = "",	DoCellUpdate = self.SetCellDeleteBtn, },
-				{ value = "",	DoCellUpdate = self.SetCellItemIcon},
-				{ value = v.link,	DoCellUpdate = self.SetCellText },
+				{ value = k,	DoCellUpdate = self.SetCellDeleteBtn, },
+				{ value = v.texture or "",	DoCellUpdate = self.SetCellItemIcon},
+				{ value = v.link and addon:GetItemNameFromLink(v.link) or "",	DoCellUpdate = self.SetCellText },
 			},
 		}
 	end
@@ -95,10 +99,8 @@ function RCSessionFrame.SetCellText(rowFrame, frame, data, cols, row, realrow, c
 		frame.text:SetText("--".._G.RETRIEVING_ITEM_INFO.."--")
 		loadingItems = true
 		RCSessionFrame:ScheduleTimer("Show", 1, ml.lootTable) -- Expect data to be available in 1 sec and then recreate the frame
-		data[realrow].cols[column].value = ""
 	else
 		frame.text:SetText(data[realrow].link)
-		data[realrow].cols[column].value = addon:GetItemNameFromLink(data[realrow].link)
 	end
 end
 
