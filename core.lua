@@ -1521,6 +1521,22 @@ function RCLootCouncil:GetML()
 		-- Check to see if we have recieved mldb within 15 secs, otherwise request it
 		self:ScheduleTimer("Timer", 15, "MLdb_check")
 		return IsMasterLooter(), name
+	else -- Set the Group leader as the ML if the loot method is not master loot
+		local name;
+		for i=1, GetNumGroupMembers() or 0 do
+			local _, rank = GetRaidRosterInfo(i)
+			if rank == 2 then -- Group leader
+				if IsInRaid() then
+					name = self:UnitName("raid"..i)
+				else
+					name = self:UnitName("party"..i)
+				end
+				break
+			end
+		end
+		if name then
+			return UnitIsGroupLeader("player"), name
+		end
 	end
 	return false, nil;
 end
