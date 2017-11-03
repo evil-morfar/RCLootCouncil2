@@ -698,6 +698,11 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 						return self:ScheduleTimer("OnCommReceived", 5, prefix, serializedMsg, distri, sender)
 					end
 
+					-- Hand the lootTable to the votingFrame
+					if self.isCouncil or self.mldb.observe then
+						self:GetActiveModule("votingframe"):ReceiveLootTable(lootTable)
+					end
+
 					self:SendCommand("group", "lootAck", self.playerName) -- send ack
 
 					-- Send the information of current equipped gear immediately when we receive the loot table.
@@ -724,11 +729,6 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 					-- Show  the LootFrame
 					self:CallModule("lootframe")
 					self:GetActiveModule("lootframe"):Start(lootTable)
-
-					-- Hand the lootTable to the votingFrame
-					if self.isCouncil or self.mldb.observe then
-						self:GetActiveModule("votingframe"):ReceiveLootTable(lootTable)
-					end
 
 				else -- a non-ML send a lootTable?!
 					self:Debug(tostring(sender).." is not ML, but sent lootTable!")
