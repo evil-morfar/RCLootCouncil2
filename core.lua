@@ -1330,6 +1330,10 @@ function RCLootCouncil:PrepareLootTable(lootTable)
 	end
 end
 
+function RCLootCouncil:GetLootTable()
+	return lootTable
+end
+
 function RCLootCouncil:IsItemBoE(item)
 	if not item then return false end
 	GameTooltip:SetOwner(UIParent, "ANCHOR_NONE")
