@@ -62,6 +62,8 @@ function RCLootCouncilML:AddItem(item, bagged, slotIndex, entry)
 	if not entry then
 		entry = {}
 		self.lootTable[#self.lootTable + 1] = entry
+	else
+		wipe(entry) -- Clear the entry. Don't use 'entry = {}' here to preserve table pointer.
 	end
 
 	entry.bagged = bagged
