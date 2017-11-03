@@ -236,6 +236,10 @@ do
 				end
 				-- Store the width of this entry. Our handler will set it
 				entry.width = width
+
+				-- Adjust the width to match item text and item level, in case we have few buttons.
+				entry.width = math.max(entry.width, 90 + entry.itemText:GetStringWidth())
+				entry.width = math.max(entry.width, 89 + entry.itemLvl:GetStringWidth())
 			end
 			-------- Note button ---------
 			entry.noteButton = CreateFrame("Button", nil, entry.frame)
@@ -425,6 +429,10 @@ do
 			end
 			-- Store the width of this entry. Our handler will set it
 			entry.width = width
+
+			-- Adjust the width to match item text and item level, in case we have few buttons.
+			entry.width = math.max(entry.width, 90 + entry.itemText:GetStringWidth())
+			entry.width = math.max(entry.width, 89 + entry.itemLvl:GetStringWidth())
 		end
 		Entry:Update(item)
 
@@ -467,6 +475,10 @@ do
 			end
 			-- Store the width of this entry. Our handler will set it
 			entry.width = width
+
+			-- Adjust the width to match item text and item level, in case we have few buttons.
+			entry.width = math.max(entry.width, 90 + entry.itemText:GetStringWidth())
+			entry.width = math.max(entry.width, 89 + entry.itemLvl:GetStringWidth())
 		end
 		Entry:Update(item)
 
