@@ -254,6 +254,7 @@ function RCVotingFrame:GetCandidateData(session, candidate, data)
 	else return arg end
 end
 
+-- TODO: DEPRECATED - use RCLootCouncil:GetLootTable()
 function RCVotingFrame:GetLootTable()
 	return lootTable
 end
@@ -364,6 +365,7 @@ end
 
 function RCVotingFrame:Update()
 	if not self.frame then return end -- No updates when it doesn't exist
+	if not lootTable[session] then return addon:Debug("VotingFrame:Update() without lootTable!!") end -- No updates if lootTable doesn't exist.
 	self.frame.st:SortData()
 	-- update awardString
 	if lootTable[session] and lootTable[session].awarded then
@@ -491,7 +493,6 @@ function RCVotingFrame:UpdateMoreInfo(row, data)
 	else
 		tip:AddLine(L["No entries in the Loot History"])
 	end
-	tip:SetScale(self.frame:GetScale() * 0.6) -- Make it a bit smaller, as it's too wide otherwise
 	tip:Show()
 	tip:SetAnchorType("ANCHOR_RIGHT", 0, -tip:GetHeight())
 end
@@ -630,6 +631,9 @@ function RCVotingFrame:GetFrame()
 	f.moreInfoBtn = b2
 
 	f.moreInfo = CreateFrame( "GameTooltip", "RCVotingFrameMoreInfo", nil, "GameTooltipTemplate" )
+	f.content:SetScript("OnSizeChanged", function()
+ 		f.moreInfo:SetScale(self.frame:GetScale() * 0.6)
+ 	end)
 
 	-- Filter
 	local b3 = addon:CreateButton(_G.FILTER, f.content)
@@ -1147,24 +1151,28 @@ do
 				isTitle = true,
 				notCheckable = true,
 				disabled = true,
-			},{ -- 3 REANNOUNCE, 2 This item
+			},{ -- 3 REANNOUNCE, 2 This item, including all unawarded duplicates
 				onValue = "REANNOUNCE",
 				text = L["This item"],
 				notCheckable = true,
 				func = function(candidateName)
-					local t = {
-						{	name = lootTable[session].name,
-						link = lootTable[session].link,
-						ilvl = lootTable[session].ilvl,
-						texture = lootTable[session].texture,
-						session = session,
-						equipLoc = lootTable[session].equipLoc,
-						token = lootTable[session].token,
-						relic = lootTable[session].relic,
-						}
-					}
+					local t = {}
+					for k,v in ipairs(lootTable) do
+						if k==session or (v.link == lootTable[session].link and not v.awarded) then
+							tinsert(t, {
+								name = v.name,
+								link = v.link,
+								ilvl = v.ilvl,
+								texture = v.texture,
+								session = k,
+								equipLoc = v.equipLoc,
+								token = v.token,
+								relic = v.relic,
+							})
+							addon:SendCommand("group", "change_response", k, candidateName, "WAIT")
+						end
+					end
 					addon:SendCommand(candidateName, "reroll", t)
-					addon:SendCommand("group", "change_response", session, candidateName, "WAIT")
 				end,
 			},{ -- 3 REANNOUNCE, 3 All items
 				onValue = "REANNOUNCE",
@@ -1188,6 +1196,32 @@ do
 						end
 					end
 					addon:SendCommand(candidateName, "reroll", t)
+				end,
+			},{ -- 3 REANNOUNCE, 4 All items usable by the candidate.
+				onValue = "REANNOUNCE",
+				text = L["All items usable by the candidate"],
+				notCheckable = true,
+				func = function(candidateName)
+					local t = {}
+					for k,v in ipairs(lootTable) do
+						if not v.awarded and not addon:AutoPassCheck(v.subType, v.equipLoc, v.link, v.token, v.relic,
+																	lootTable[session].candidates[candidateName].class) then
+							tinsert(t, {
+								name = v.name,
+								link = v.link,
+								ilvl = v.ilvl,
+								texture = v.texture,
+								session = k,
+								equipLoc = v.equipLoc,
+								token = v.token,
+								relic = v.relic,
+							})
+							addon:SendCommand("group", "change_response", k, candidateName, "WAIT")
+						end
+					end
+					if #t > 0 then
+						addon:SendCommand(candidateName, "reroll", t)
+					end
 				end,
 			},
 		},

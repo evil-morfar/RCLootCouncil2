@@ -841,7 +841,7 @@ function RCLootCouncilML:GetItemsFromMessage(msg, sender, retryCount)
 	if not arg1 then return end -- No response or item link
 
 	-- Set some locals
-	local item1, item2, isTier, isRelic
+	local item1, item2, isTier, isRelic, diff
 	local response = 1
 	if arg1:find("|Hitem:") then -- they didn't give a response
 		item1, item2 = arg1, arg2
@@ -906,10 +906,21 @@ function RCLootCouncilML:GetItemsFromMessage(msg, sender, retryCount)
 		isTier = isTier,
 		isRelic = isRelic,
 	}
-	addon:SendCommand("group", "response", ses, sender, toSend)
+
+	local count = 0
+	local link = self.lootTable[ses].link
+	-- Send Responses to all duplicate items.
+	for s, v in ipairs(self.lootTable) do
+		if v.link == link then
+			addon:SendCommand("group", "response", s, sender, toSend)
+			count = count + 1
+		end
+	end
+
 	-- Let people know we've done stuff
 	addon:Print(format(L["Item received and added from 'player'"], addon.Ambiguate(sender)))
-	SendChatMessage("[RCLootCouncil]: "..format(L["Acknowledged as 'response'"], addon:GetResponseText(response, isTier)), "WHISPER", nil, sender)
+	SendChatMessage("[RCLootCouncil]: "..format(L["Response to 'item' acknowledged as 'response'"],
+		addon:GetItemTextWithCount(link, count), addon:GetResponseText(response, isTier)), "WHISPER", nil, sender)
 end
 
 function RCLootCouncilML:SendWhisperHelp(target)

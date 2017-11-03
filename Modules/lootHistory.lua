@@ -513,6 +513,10 @@ function LootHistory:GetFrame()
 	b2:SetScript("OnLeave", function() addon:HideTooltip() end)
 	f.moreInfoBtn = b2
 
+	f.content:SetScript("OnSizeChanged", function()
+ 		self.moreInfo:SetScale(self.frame:GetScale() * 0.6)
+ 	end)
+
 	-- Export
 	local b3 = addon:CreateButton(L["Export"], f.content)
 	b3:SetPoint("RIGHT", b1, "LEFT", -10, 0)
