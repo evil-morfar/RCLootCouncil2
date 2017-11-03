@@ -19,11 +19,18 @@ LibDialog:Register("RCLOOTCOUNCIL_CONFIRM_USAGE", {
             if not addon.isMasterLooter and addon.masterLooter and addon.masterLooter ~= "" then return end
             local lootMethod = GetLootMethod()
             if lootMethod ~= "master" then
-               addon:Print(L["Changing LootMethod to Master Looting"])
-               SetLootMethod("master", addon.Ambiguate(addon.playerName)) -- activate ML
+               if addon:CanSetML() and not addon:Getdb().workWithoutML then
+                  addon:Print(L["Changing LootMethod to Master Looting"])
+                  SetLootMethod("master", addon.Ambiguate(addon.playerName)) -- activate ML
+                  lootMethod = "master"
+               elseif not addon:Getdb().workWithoutML then
+                  -- We can neither change the loot method to ML, nor we allow RC to work without ML.
+                  -- TODO: error msg.
+                  return
+               end
             end
             local db = addon:Getdb()
-            if db.autoAward and GetLootThreshold() ~= 2 and GetLootThreshold() > db.autoAwardLowerThreshold  then
+            if db.autoAward and GetLootThreshold() ~= 2 and GetLootThreshold() > db.autoAwardLowerThreshold and lootMethod == "master" then
                addon:Print(L["Changing loot threshold to enable Auto Awarding"])
                SetLootThreshold(db.autoAwardLowerThreshold >= 2 and db.autoAwardLowerThreshold or 2)
             end

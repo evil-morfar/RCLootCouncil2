@@ -142,6 +142,7 @@ function RCLootCouncil:OnInitialize()
 				state = "ask_ml", 	-- Current state
 			},
 			onlyUseInRaids = true,
+			workWithoutML = false,
 			ambiguate = false, -- Append realm names to players
 			autoAddRolls = false,
 			autoStart = false, -- start a session with all eligible items
@@ -1459,10 +1460,13 @@ function RCLootCouncil:NewMLCheck()
 	-- Check if we can use in party
 	if not IsInRaid() and db.onlyUseInRaids then return end
 
+	-- Check if we can use without ML
+	if GetLootMethod() ~= "master" and not db.workWithoutML then return end	
+
 	-- We are ML and shouldn't ask the player for usage
 	if self.isMasterLooter and db.usage.ml then -- addon should auto start
 		self:Print(L["Now handles looting"])
-		if db.autoAward and GetLootThreshold() ~= 2 and GetLootThreshold() > db.autoAwardLowerThreshold  then
+		if db.autoAward and GetLootThreshold() ~= 2 and GetLootThreshold() > db.autoAwardLowerThreshold and GetLootMethod() == "master" then
 			self:Print(L["Changing loot threshold to enable Auto Awarding"])
 			SetLootThreshold(db.autoAwardLowerThreshold >= 2 and db.autoAwardLowerThreshold or 2)
 		end
@@ -1484,11 +1488,19 @@ function RCLootCouncil:OnRaidEnter(arg)
 	if not self.masterLooter and UnitIsGroupLeader("player") then
 		-- We don't need to ask the player for usage, so change loot method to master, and make the player ML
 		if db.usage.leader then
-			SetLootMethod("master", self.Ambiguate(self.playerName))
-			self:Print(L[" you are now the Master Looter and RCLootCouncil is now handling looting."])
-			if db.autoAward and GetLootThreshold() ~= 2 and GetLootThreshold() > db.autoAwardLowerThreshold  then
-				self:Print(L["Changing loot threshold to enable Auto Awarding"])
-				SetLootThreshold(db.autoAwardLowerThreshold >= 2 and db.autoAwardLowerThreshold or 2)
+			if self:CanSetML() and not db.workWithoutML then 
+				SetLootMethod("master", self.Ambiguate(self.playerName))
+				self:Print(L[" you are now the Master Looter and RCLootCouncil is now handling looting."])
+				if db.autoAward and GetLootThreshold() ~= 2 and GetLootThreshold() > db.autoAwardLowerThreshold  then
+					self:Print(L["Changing loot threshold to enable Auto Awarding"])
+					SetLootThreshold(db.autoAwardLowerThreshold >= 2 and db.autoAwardLowerThreshold or 2)
+				end
+			elseif db.workWithoutML	then -- RC works without ML
+				self:Print(L["Now handles looting"])
+			else 
+				-- We can neither change the loot method to ML, nor we allow RC to work without ML.
+				-- TODO: error msg.
+				return 
 			end
 			self.isMasterLooter, self.masterLooter = true, self.playerName
 			self:CallModule("masterlooter")
@@ -1542,6 +1554,14 @@ function RCLootCouncil:GetML()
 		end
 	end
 	return false, nil;
+end
+
+-- Whether or not the player can set master looter
+function RCLootCouncil:CanSetML()
+	-- Code is from FrameXML/UnitPopup.lua
+	local inInstance, instanceType = IsInInstance();
+	local isLeader = UnitIsGroupLeader("player")
+	return (inRaid() or (inInstance and instanceType == "raid")) and isLeader and not HasLFGRestrictions() and IsInGuildGroup();
 end
 
 function RCLootCouncil:IsCouncil(name)

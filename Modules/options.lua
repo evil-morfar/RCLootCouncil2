@@ -449,6 +449,18 @@ function addon:OptionsTable()
 										desc = L["onlyUseInRaids_desc"],
 										type = "toggle",
 									},
+									spacer2 = {
+										order = 5,
+										type = "header",
+										name = "",
+									},
+									workWithoutML = {
+										order = 6,
+										name = L["Allow RCLootCouncil to work without master looter"],
+										desc = L["workWithoutML_desc"],
+										type = "toggle",
+										width = "full",
+									},
 								},
 							},
 							lootingOptions = {
