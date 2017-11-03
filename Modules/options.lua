@@ -142,14 +142,8 @@ function addon:OptionsTable()
 										desc = L["auto_pass_boe_desc"],
 										type = "toggle",
 									},
-									stackItem = {
-										order = 4,
-										name = L["Stack Items"],
-										desc = L["stack_items_desc"],
-										type = "toggle",
-									},
 									printResponse = {
-										order = 6,
+										order = 4,
 										name = L["Print Response"],
 										desc = L["print_response_desc"],
 										type = "toggle",

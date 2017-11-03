@@ -45,15 +45,13 @@ function LootFrame:Start(table, reRoll)
 		end
 	end
 
-	if addon:Getdb().stackItems then -- Stack duplicate items in one entry
-		for k = offset+1, offset+#table do -- Only check the entries we added just now.
-			if not items[k].rolled then
-				for j = offset+1, offset+#table do
-					if j ~= k and items[k].link == items[j].link and not items[j].rolled then
-						tinsert(items[k].sessions, items[j].sessions[1])
-						items[j].rolled = true -- Pretend we have rolled it.
-						numRolled = numRolled + 1
-					end
+	for k = offset+1, offset+#table do -- Only check the entries we added just now.
+		if not items[k].rolled then
+			for j = offset+1, offset+#table do
+				if j ~= k and items[k].link == items[j].link and not items[j].rolled then
+					tinsert(items[k].sessions, items[j].sessions[1])
+					items[j].rolled = true -- Pretend we have rolled it.
+					numRolled = numRolled + 1
 				end
 			end
 		end

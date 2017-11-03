@@ -152,7 +152,6 @@ function RCLootCouncil:OnInitialize()
 			autoClose = false, -- Auto close voting frame on session end
 			autoPassBoE = true,
 			autoPass = true,
-			stackItems = true, -- Should we stack items in the loot frame
 			altClickLooting = true,
 			acceptWhispers = true,
 			selfVote = true,
