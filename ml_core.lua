@@ -441,7 +441,7 @@ function RCLootCouncilML:OnEvent(event, ...)
 	elseif event == "TRADE_ACCEPT_UPDATE" then -- Record the item traded
 		if select(1, ...) == 1 or select(2, ...) == 1 then
 			wipe(self.tradeItems)
-			for i = 1, MAX_TRADE_ITEMS-1 do
+			for i = 1, MAX_TRADE_ITEMS-1 do -- The last trade slot is "Will not be traded"
 				local link = GetTradePlayerItemLink(i)
 				if link then
 					tinsert(self.tradeItems, link)
