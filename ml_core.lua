@@ -201,7 +201,7 @@ function RCLootCouncilML:AddAwardedInBagsToTradeWindow()
 		local tradeIndex = 1
 		for _, v in ipairs(self.awardedInBags) do
 			if addon:UnitIsUnit("NPC", v.winner) and UnitIsPlayer("NPC") then -- "npc" is the unitid of the player we are trading
-				for container=1, 5 do
+				for container=0, NUM_BAG_SLOTS do
 					for slot=1, GetContainerNumSlots(container) or 0 do
 						if self.trading then
 							local texture, count, locked, quality, readable, lootable, link = GetContainerItemInfo(container, slot)
