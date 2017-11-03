@@ -40,7 +40,6 @@ function LootFrame:Start(table, reRoll)
 				subType = table[k].subType,
 				isTier = table[k].token,
 				isRelic = table[k].relic,
-				count = 1,
 				sessions = {reRoll and table[k].session or k}, -- ".session" does not exist if not rerolling.
 			}
 		end
@@ -51,7 +50,6 @@ function LootFrame:Start(table, reRoll)
 			if not items[k].rolled then
 				for j = offset+1, offset+#table do
 					if j ~= k and items[k].link == items[j].link and not items[j].rolled then
-						items[k].count = items[k].count + 1
 						tinsert(items[k].sessions, items[j].sessions[1])
 						items[j].rolled = true -- Pretend we have rolled it.
 						numRolled = numRolled + 1
@@ -124,7 +122,7 @@ function LootFrame:OnRoll(entry, button)
 	end
 
 	if addon:Getdb().printResponse then
-		addon:Print(string.format(L["Response to 'item'"], addon:GetItemTextWithCount(item.link, item.count))..": "..addon:GetResponseText(button, isTier, isRelic))
+		addon:Print(string.format(L["Response to 'item'"], addon:GetItemTextWithCount(item.link, #item.sessions))..": "..addon:GetResponseText(button, isTier, isRelic))
 	end
 
 	numRolled = numRolled + 1 -- numRolled should only be added by 1 here.
@@ -157,9 +155,9 @@ do
 			end
 
 			entry.item = item
-			entry.itemText:SetText(addon:GetItemTextWithCount(entry.item.link or "error", entry.item.count))
+			entry.itemText:SetText(addon:GetItemTextWithCount(entry.item.link or "error", #entry.item.sessions))
 			entry.icon:SetNormalTexture(entry.item.texture or "Interface\\InventoryItems\\WoWUnknownItem01")
-			entry.itemCount:SetText(entry.item.count > 1 and entry.item.count or "")
+			entry.itemCount:SetText(#entry.item.sessions > 1 and #entry.item.sessions or "")
 			local typeText = addon:GetItemTypeText(item.link, item.subType, item.equipLoc, item.isTier, item.isRelic)
 			entry.itemLvl:SetText(addon:GetItemLevelText(entry.item.ilvl, entry.item.isTier).."  |cff7fffff"..typeText.."|r")
 			if addon.mldb.timeout then
