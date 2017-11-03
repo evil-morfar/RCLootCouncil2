@@ -86,10 +86,6 @@ function RCLootCouncilML:AddItem(item, bagged, slotIndex, entry)
 		addon:Debug("Started timer:", "AddItem", "for", item)
 	else
 		addon:SendMessage("RCMLAddItem", item, entry)
-
-		if db.sortItems then
-			table.sort(self.lootTable, self.LootTableCompare)
-		end
 	end
 end
 
@@ -160,6 +156,10 @@ function RCLootCouncilML:StartSession()
 		return addon:Debug("Data wasn't ready", addon.candidates[addon.playerName], #addon.council)
 	end
 	self.running = true
+
+	if db.sortItems then
+		table.sort(self.lootTable, self.LootTableCompare)
+	end
 
 	addon:SendCommand("group", "lootTable", self.lootTable)
 

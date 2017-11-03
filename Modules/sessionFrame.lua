@@ -47,6 +47,9 @@ function RCSessionFrame:Show(data)
 
 	if data then
 		loadingItems = false
+		if addon:Getdb().sortItems then
+			table.sort(data, ml.LootTableCompare)
+		end
 		self:ExtractData(data)
 		self.frame.st:SetData(self.frame.rows)
 		self:Update()
