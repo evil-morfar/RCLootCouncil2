@@ -200,7 +200,10 @@ function RCLootCouncilML:AddAwardedInBagsToTradeWindow()
 	if addon.isMasterLooter then
 		local tradeIndex = 1
 		for _, v in ipairs(self.awardedInBags) do
-			if tradeIndex > MAX_TRADE_ITEMS then
+			while (GetTradePlayerItemInfo(tradeIndex)) do
+				tradeIndex = tradeIndex	+ 1
+			end
+			if tradeIndex > MAX_TRADE_ITEMS - 1 then -- Have used all available slots(The last trade slot is "Will not be traded" slot).
 				break
 			end
 			local itemAdded = false
