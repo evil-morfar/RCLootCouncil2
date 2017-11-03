@@ -118,10 +118,10 @@ function addon:OptionsTable()
 									},
 								},
 							},
-							autoPassOptions = {
+							responseOptions = {
 								order = 4,
 								type = "group",
-								name = L["Auto Pass"],
+								name = L["Response options"],
 								inline = true,
 								args = {
 									autoPass = {
@@ -140,6 +140,12 @@ function addon:OptionsTable()
 										order = 3,
 										name = L["Auto pass BoE"],
 										desc = L["auto_pass_boe_desc"],
+										type = "toggle",
+									},
+									printResponse = {
+										order = 4,
+										name = L["Print Responses"],
+										desc = L["print_response_desc"],
 										type = "toggle",
 									},
 								},
@@ -839,6 +845,7 @@ function addon:OptionsTable()
 									self.db.profile.announceItems = self.defaults.profile.announceItems
 									self.db.profile.announceChannel = self.defaults.profile.announceChannel
 									self.db.profile.announceText = self.defaults.profile.announceText
+									self.db.profile.announceItemString = self.defaults.profile.announceItemString
 									self:ConfigTableChanged()
 								end
 							},

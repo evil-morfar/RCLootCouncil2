@@ -81,7 +81,7 @@ function RCLootCouncil:OnInitialize()
   	self.version = GetAddOnMetadata("RCLootCouncil", "Version")
 	self.nnp = false
 	self.debug = false
-	self.tVersion = nil -- String or nil. Indicates test version, which alters stuff like version check. Is appended to 'version', i.e. "version-tVersion" (max 10 letters for stupid security)
+	self.tVersion = "Alpha.1" -- String or nil. Indicates test version, which alters stuff like version check. Is appended to 'version', i.e. "version-tVersion" (max 10 letters for stupid security)
 
 	self.playerClass = select(2, UnitClass("player"))
 	self.guildRank = L["Unguilded"]
@@ -167,6 +167,7 @@ function RCLootCouncil:OnInitialize()
 			autoAwardReason = 1,
 			observe = false, -- observe mode on/off
 			silentAutoPass = false, -- Show autopass message
+			printResponse = false, -- Print response in chat
 			--neverML = false, -- Never use the addon as ML
 			minimizeInCombat = false,
 			iLvlDecimal = false,
@@ -243,7 +244,7 @@ function RCLootCouncil:OnInitialize()
 			announceItems = false,
 			announceText = L["Items under consideration:"],
 			announceChannel = "group",
-			announceItemString = "&s: &i (&l, &t)", -- The message posted for each item, default: "session: itemlink (ilvl, type)"
+			announceItemString = "&s: &i", -- The message posted for each item, default: "session: itemlink"
 
 			responses = self.responses,
 
@@ -400,13 +401,6 @@ function RCLootCouncil:OnEnable()
 	if self.db.global.version and self:VersionCompare(self.db.global.version, self.version)
 	 	or self.db.global.tVersion
 		then -- We've upgraded
-		if self:VersionCompare(self.db.global.version, "2.6.0") or self.db.global.tVersion then -- Update lootDB with newest changes
-			self:ScheduleTimer("Print", 2, "v2.6 adds seperate buttons for relics. You might want to change your buttons setup - have a look in the options menu! (/rc config)")
-			self:ScheduleTimer("Print", 2.1, "Scaling have also changed been a bit and reset - remember you can always use CTRL-ScrollWhell on any frame to rescale it.")
-			for _, k in pairs(db.UI) do
-				if k.scale then k.scale = 1.1 end
-			end
-		end
 		self.db.global.oldVersion = self.db.global.version
 		self.db.global.version = self.version
 		self.db.global.localizedSubTypes.created = false -- Force to fully rerun LocalizeSubTypes if upgraded
@@ -502,6 +496,8 @@ function RCLootCouncil:ChatCommand(msg)
 
 	elseif input == 'test' or input == L["test"] then
 		self:Test(tonumber(args[1]) or 1)
+	elseif input == 'fulltest' or input == 'ftest' then
+		self:Test(tonumber(args[1]) or 1, true)
 
 	elseif input == 'version' or input == L["version"] or input == "v" or input == "ver" then
 		self:CallModule("version")
@@ -695,6 +691,11 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 						return self:ScheduleTimer("OnCommReceived", 5, prefix, serializedMsg, distri, sender)
 					end
 
+					-- Hand the lootTable to the votingFrame
+					if self.isCouncil or self.mldb.observe then
+						self:GetActiveModule("votingframe"):ReceiveLootTable(lootTable)
+					end
+
 					self:SendCommand("group", "lootAck", self.playerName) -- send ack
 
 					-- Send the information of current equipped gear immediately when we receive the loot table.
@@ -721,11 +722,6 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 					-- Show  the LootFrame
 					self:CallModule("lootframe")
 					self:GetActiveModule("lootframe"):Start(lootTable)
-
-					-- Hand the lootTable to the votingFrame
-					if self.isCouncil or self.mldb.observe then
-						self:GetActiveModule("votingframe"):ReceiveLootTable(lootTable)
-					end
 
 				else -- a non-ML send a lootTable?!
 					self:Debug(tostring(sender).." is not ML, but sent lootTable!")
@@ -897,19 +893,25 @@ function RCLootCouncil:DebugLog(msg, ...)
 	tinsert(debugLog, msg)
 end
 
-function RCLootCouncil:Test(num)
+-- if fullTest, add items in the encounterJournal to the test items.
+function RCLootCouncil:Test(num, fullTest)
 	self:Debug("Test", num)
 	local testItems = {
 		-- Tier21 Tokens (Head, Shoulder, Cloak, Chest, Hands, Legs)
 		152524, 152530, 152517, 152518, 152521, 152527, -- Vanquisher: DK, Druid, Mage, Rogue
 		152525, 152531, 152516, 152519, 152522, 152528, -- Conqueror : DH, Paladin, Priest, Warlock
 		152526, 152532, 152515, 152520, 152523, 152529, -- Protector : Hunder, Monk, Shaman, Warrior
+
 		-- Tier21 Armors (Head, Shoulder, Chest, Wrist, Hands, Waist, Legs, Feet)
 		152014, 152019, 152017, 152023, 152686, 152020, 152016, 152009, -- Plate
 		152423, 152005, 151994, 152008, 151998, 152006, 152002, 151996, -- Mail
 		151985, 151988, 151982, 151992, 151984, 151986, 151987, 151981, -- Leather
 		151943, 151949, 152679, 151953, 152680, 151942, 151946, 151939, -- Cloth
+
+		-- Tier21 Miscellaneous
+		152283, 151965, 151973,                                         -- Neck
 		151937, 151938, 152062,                                         -- Cloak
+		151972, 152063, 152284,                                         -- Rings
 
 		-- Tier21 Trinkets
 		151975, 151977, -- Tank
@@ -929,6 +931,40 @@ function RCLootCouncil:Test(num)
 		152054, 152055, -- Shadow
 		152058, 152059, -- Storm
 	}
+
+	if fullTest then -- Add items from encounter journal which includes items from different difficulties.
+		LoadAddOn("Blizzard_EncounterJournal")
+		local cached = true
+		local instanceID = 946 -- Antorus, the Burning Throne
+		local difficulties = {14, 15, 16} -- Normal, Heroic, Mythic
+
+		EJ_SelectInstance(instanceID)
+		EJ_ResetLootFilter()
+		for _, difficulty in pairs(difficulties) do
+			EJ_SetDifficulty(difficulty)
+			self:Debug("EJ_SetDifficulty()", difficulty)
+
+			local n = EJ_GetNumLoot()
+			self:Debug("EJ_GetNumLoot()", n)
+
+			if not n then
+				cached = false
+			end
+			for i = 1, n or 0 do
+				local link = select(7, EJ_GetLootInfoByIndex(i))
+				if link then
+					tinsert(testItems, link)
+				else
+					cached = false
+				end
+			end
+			if not cached then
+				self:Debug("Retrieving item info from Encounter Journal. Retry after 1s.")
+				return self:ScheduleTimer("Test", 1, num, fullTest)
+			end
+		end
+	end
+
 	local items = {};
 	-- pick "num" random items
 	for i = 1, num do
@@ -1065,7 +1101,7 @@ end
 -- @param gearsTable if specified, compare against gears stored in the table instead of the current equipped gears, whose key is slot number and value is the item link of the gear.
 -- @return the gear(s) that with the same slot of the input link.
 function RCLootCouncil:GetPlayersGear(link, equipLoc, gearsTable)
-	self:DebugLog("GetPlayersGear", itemID, equipLoc)
+	self:DebugLog("GetPlayersGear", link, equipLoc)
 	local GetInventoryItemLink = GetInventoryItemLink
 	if gearsTable then -- lazy code
 		GetInventoryItemLink = function(_, slotNum) return gearsTable[slotNum] end
@@ -1281,10 +1317,13 @@ function RCLootCouncil:PrepareLootTable(lootTable)
 	for ses, v in ipairs(lootTable) do
 		local _, _, subType, equipLoc, texture = GetItemInfoInstant(v.link)
 		v.subType = subType -- Subtype should be in our locale
-		if v.token then
-			v.equipLoc = self:GetTokenEquipLoc(v.token)
-		end
+		v.equipLoc = v.token and self:GetTokenEquipLoc(v.token) or equipLoc
+		v.texture = texture
 	end
+end
+
+function RCLootCouncil:GetLootTable()
+	return lootTable
 end
 
 function RCLootCouncil:IsItemBoE(item)
@@ -2092,6 +2131,10 @@ function RCLootCouncil:HideTooltip()
 		self.tooltip.showing = false
 	end
 	GameTooltip:Hide()
+end
+
+function RCLootCouncil:GetItemTextWithCount(link, count)
+	return link..(count and count > 1 and (" x"..count) or "")
 end
 
 function RCLootCouncil:GetItemLevelText(ilvl, token)
