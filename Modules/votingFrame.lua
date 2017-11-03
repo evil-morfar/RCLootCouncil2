@@ -1165,15 +1165,14 @@ do
 					end
 					addon:SendCommand(candidateName, "reroll", t)
 				end,
-			},{ -- 3 REANNOUNCE, 3 All items usable by the candidate.
+			},{ -- 3 REANNOUNCE, 3 All items
 				onValue = "REANNOUNCE",
-				text = L["All items usable by the candidate"],
+				text = L["All items"],
 				notCheckable = true,
 				func = function(candidateName)
 					local t = {}
 					for k,v in ipairs(lootTable) do
-						if not v.awarded and not addon:AutoPassCheck(v.subType, v.equipLoc, v.link, v.token, v.relic
-																	, lootTable[session].candidates[candidateName].class) then
+						if not v.awarded then
 							tinsert(t, {
 								name = v.name,
 								link = v.link,
@@ -1189,14 +1188,15 @@ do
 					end
 					addon:SendCommand(candidateName, "reroll", t)
 				end,
-			},{ -- 3 REANNOUNCE, 4 All items
+			},{ -- 3 REANNOUNCE, 4 All items usable by the candidate.
 				onValue = "REANNOUNCE",
-				text = L["All items"],
+				text = L["All items usable by the candidate"],
 				notCheckable = true,
 				func = function(candidateName)
 					local t = {}
 					for k,v in ipairs(lootTable) do
-						if not v.awarded then
+						if not v.awarded and not addon:AutoPassCheck(v.subType, v.equipLoc, v.link, v.token, v.relic,
+																	lootTable[session].candidates[candidateName].class) then
 							tinsert(t, {
 								name = v.name,
 								link = v.link,
