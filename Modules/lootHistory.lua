@@ -678,9 +678,37 @@ function LootHistory:UpdateMoreInfo(rowFrame, cellFrame, dat, cols, row, realrow
 	end
 	tip:AddDoubleLine(L["Number of raids received loot from:"], moreInfoData[row.name].totals.raids.num, 1,1,1, 1,1,1)
 	tip:AddDoubleLine(L["Total items won:"], moreInfoData[row.name].totals.total, 1,1,1, 0,1,0)
-	if data.note then
+	if data.notes and next(data.notes) then
 		tip:AddLine(" ")
-		tip:AddDoubleLine(L["Notes"], data.note, nil, nil, nil, 1, 1, 1)
+		tip:AddLine(L["Notes"])
+		local sortedNotes = {}
+		for name, note in pairs(data.notes) do
+			tinsert(sortedNotes, {name=name, note=note})
+		end
+		table.sort(sortedNotes, function(a, b)
+			-- Sort by note number (Guild has lots of note is likely using bidding system, so sort by number)
+			local aNum, bNum = tonumber(a.note), tonumber(b.note)
+			if aNum and bNum then
+				return aNum > bNum
+			elseif aNum then
+				return true
+			elseif bNum then
+				return false
+			else 
+				return a.name < b.name
+			end 
+		end)
+		for _, v in ipairs(sortedNotes) do
+			local name = v.name
+			local note = v.note
+			local r, g, b = 1, 1, 1
+			local class = lootDB[name] and lootDB[name][1] and lootDB[name][1].class
+			if class then 
+				local color = addon:GetClassColor(class)
+				r, g, b = color.r, color.g, color.b
+			end
+			tip:AddDoubleLine(addon.Ambiguate(name), note, r, g, b, 1, 1, 1)
+		end
 	end
 
 	-- Debug stuff
