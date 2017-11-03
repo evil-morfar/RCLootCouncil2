@@ -1317,9 +1317,8 @@ function RCLootCouncil:PrepareLootTable(lootTable)
 	for ses, v in ipairs(lootTable) do
 		local _, _, subType, equipLoc, texture = GetItemInfoInstant(v.link)
 		v.subType = subType -- Subtype should be in our locale
-		if v.token then
-			v.equipLoc = self:GetTokenEquipLoc(v.token)
-		end
+		v.equipLoc = v.token and self:GetTokenEquipLoc(v.token) or equipLoc
+		v.texture = texture
 	end
 end
 
