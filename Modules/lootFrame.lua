@@ -238,7 +238,7 @@ do
 			entry.noteButton:SetPoint("BOTTOMRIGHT", entry.frame, "TOPRIGHT", -9, -entry.icon:GetHeight()-5)
 			entry.noteButton:SetScript("OnEnter", function()
 				if entry.item.note then -- If they already entered a note:
-					addon:CreateTooltip(L["Your note:"], entry.item.note, "\nClick to change your note.")
+					addon:CreateTooltip(L["Your note:"], entry.item.note, "\n"..L["Click to change your note."])
 				else
 					addon:CreateTooltip(L["Add Note"], L["Click to add note to send to the council."])
 				end
