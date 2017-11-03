@@ -365,7 +365,7 @@ end
 
 function RCVotingFrame:Update()
 	if not self.frame then return end -- No updates when it doesn't exist
-	if not lootTable[session] then return end -- No updates if lootTable doesn't exist.
+	if not lootTable[session] then return addon:Debug("VotingFrame:Update() without lootTable!!") end -- No updates if lootTable doesn't exist.
 	self.frame.st:SortData()
 	-- update awardString
 	if lootTable[session] and lootTable[session].awarded then
