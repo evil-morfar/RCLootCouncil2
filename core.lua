@@ -380,6 +380,7 @@ function RCLootCouncil:OnEnable()
 
 	-- register events
 	self:RegisterEvent("PARTY_LOOT_METHOD_CHANGED", "OnEvent")
+	self:RegisterEvent("PARTY_LEADER_CHANGED", "OnEvent")
 	self:RegisterEvent("GUILD_ROSTER_UPDATE","OnEvent")
 	self:RegisterEvent("RAID_INSTANCE_WELCOME","OnEvent")
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
@@ -1393,6 +1394,9 @@ end
 
 function RCLootCouncil:OnEvent(event, ...)
 	if event == "PARTY_LOOT_METHOD_CHANGED" then
+		self:Debug("Event:", event, ...)
+		self:NewMLCheck()
+	elseif event == "PARTY_LEADER_CHANGED" then
 		self:Debug("Event:", event, ...)
 		self:NewMLCheck()
 
