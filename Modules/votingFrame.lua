@@ -1210,7 +1210,9 @@ do
 							addon:SendCommand("group", "change_response", k, candidateName, "WAIT")
 						end
 					end
-					addon:SendCommand(candidateName, "reroll", t)
+					if #t > 0 then
+						addon:SendCommand(candidateName, "reroll", t)
+					end
 				end,
 			},
 		},
