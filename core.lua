@@ -503,6 +503,8 @@ function RCLootCouncil:ChatCommand(msg)
 
 	elseif input == 'test' or input == L["test"] then
 		self:Test(tonumber(args[1]) or 1)
+	elseif input == 'fulltest' or input == 'ftest' then
+		self:Test(tonumber(args[1]) or 1, true)
 
 	elseif input == 'version' or input == L["version"] or input == "v" or input == "ver" then
 		self:CallModule("version")
@@ -898,19 +900,25 @@ function RCLootCouncil:DebugLog(msg, ...)
 	tinsert(debugLog, msg)
 end
 
-function RCLootCouncil:Test(num)
+-- if fullTest, add items in the encounterJournal to the test items.
+function RCLootCouncil:Test(num, fullTest)
 	self:Debug("Test", num)
 	local testItems = {
 		-- Tier21 Tokens (Head, Shoulder, Cloak, Chest, Hands, Legs)
 		152524, 152530, 152517, 152518, 152521, 152527, -- Vanquisher: DK, Druid, Mage, Rogue
 		152525, 152531, 152516, 152519, 152522, 152528, -- Conqueror : DH, Paladin, Priest, Warlock
 		152526, 152532, 152515, 152520, 152523, 152529, -- Protector : Hunder, Monk, Shaman, Warrior
+
 		-- Tier21 Armors (Head, Shoulder, Chest, Wrist, Hands, Waist, Legs, Feet)
 		152014, 152019, 152017, 152023, 152686, 152020, 152016, 152009, -- Plate
 		152423, 152005, 151994, 152008, 151998, 152006, 152002, 151996, -- Mail
 		151985, 151988, 151982, 151992, 151984, 151986, 151987, 151981, -- Leather
 		151943, 151949, 152679, 151953, 152680, 151942, 151946, 151939, -- Cloth
+
+		-- Tier21 Miscellaneous
+		152283, 151965, 151973,                                         -- Neck
 		151937, 151938, 152062,                                         -- Cloak
+		151972, 152063, 152284,                                         -- Rings
 
 		-- Tier21 Trinkets
 		151975, 151977, -- Tank
@@ -930,6 +938,40 @@ function RCLootCouncil:Test(num)
 		152054, 152055, -- Shadow
 		152058, 152059, -- Storm
 	}
+
+	if fullTest then -- Add items from encounter journal which includes items from different difficulties.
+		LoadAddOn("Blizzard_EncounterJournal")
+		local cached = true
+		local instanceID = 946 -- Antorus, the Burning Throne
+		local difficulties = {14, 15, 16} -- Normal, Heroic, Mythic
+
+		EJ_SelectInstance(instanceID)
+		EJ_ResetLootFilter()
+		for _, difficulty in pairs(difficulties) do
+			EJ_SetDifficulty(difficulty)
+			self:Debug("EJ_SetDifficulty()", difficulty)
+
+			local n = EJ_GetNumLoot()
+			self:Debug("EJ_GetNumLoot()", n)
+
+			if not n then
+				cached = false
+			end
+			for i = 1, n or 0 do
+				local link = select(7, EJ_GetLootInfoByIndex(i))
+				if link then
+					tinsert(testItems, link)
+				else
+					cached = false
+				end
+			end
+			if not cached then
+				self:Debug("Retrieving item info from Encounter Journal. Retry after 1s.")
+				return self:ScheduleTimer("Test", 1, num, fullTest)
+			end
+		end
+	end
+
 	local items = {};
 	-- pick "num" random items
 	for i = 1, num do
