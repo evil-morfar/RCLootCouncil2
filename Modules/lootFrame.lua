@@ -244,7 +244,15 @@ do
 				end
 			end)
 			entry.noteButton:SetScript("OnLeave", function() addon:HideTooltip() end)
-			entry.noteButton:SetScript("OnClick", function() entry.noteEditbox:Show() end)
+			entry.noteButton:SetScript("OnClick", function() 
+				if not entry.noteEditbox:IsShown() then
+					entry.noteEditbox:Show()
+				else
+					entry.noteEditbox:Hide()
+					entry.item.note = entry.noteEditbox:GetText() ~= "" and entry.noteEditbox:GetText()
+					entry:Update(entry.item)
+				end 
+			end)
 
 			entry.noteEditbox = CreateFrame("EditBox", nil, entry.frame, "AutoCompleteEditBoxTemplate")
 			entry.noteEditbox:SetBackdrop(LootFrame.frame.title:GetBackdrop())
