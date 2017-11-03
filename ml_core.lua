@@ -840,7 +840,7 @@ function RCLootCouncilML:GetItemsFromMessage(msg, sender, retryCount)
 	if not arg1 then return end -- No response or item link
 
 	-- Set some locals
-	local item1, item2, isTier, isRelic
+	local item1, item2, isTier, isRelic, diff
 	local response = 1
 	if arg1:find("|Hitem:") then -- they didn't give a response
 		item1, item2 = arg1, arg2

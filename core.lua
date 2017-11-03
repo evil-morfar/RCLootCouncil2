@@ -1101,7 +1101,7 @@ end
 -- @param gearsTable if specified, compare against gears stored in the table instead of the current equipped gears, whose key is slot number and value is the item link of the gear.
 -- @return the gear(s) that with the same slot of the input link.
 function RCLootCouncil:GetPlayersGear(link, equipLoc, gearsTable)
-	self:DebugLog("GetPlayersGear", itemID, equipLoc)
+	self:DebugLog("GetPlayersGear", link, equipLoc)
 	local GetInventoryItemLink = GetInventoryItemLink
 	if gearsTable then -- lazy code
 		GetInventoryItemLink = function(_, slotNum) return gearsTable[slotNum] end
