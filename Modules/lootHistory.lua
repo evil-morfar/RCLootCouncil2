@@ -664,7 +664,10 @@ function LootHistory:UpdateMoreInfo(rowFrame, cellFrame, dat, cols, row, realrow
 	end
 	tip:AddDoubleLine(L["Number of raids received loot from:"], moreInfoData[row.name].totals.raids.num, 1,1,1, 1,1,1)
 	tip:AddDoubleLine(L["Total items won:"], moreInfoData[row.name].totals.total, 1,1,1, 0,1,0)
-
+	if data.note then
+		tip:AddLine(" ")
+		tip:AddDoubleLine(L["Notes"], data.note, nil, nil, nil, 1, 1, 1)
+	end
 
 	-- Debug stuff
 	if addon.debug then

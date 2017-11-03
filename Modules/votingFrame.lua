@@ -1057,6 +1057,7 @@ function RCVotingFrame:GetAwardPopupData(session, name, data, reason)
 		isRelicRoll	= data.isRelic,
 		link 			= lootTable[session].link,
 		isToken		= lootTable[session].token,
+		note		= data.note,
 	}
 end
 
