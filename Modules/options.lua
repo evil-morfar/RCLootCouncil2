@@ -845,6 +845,7 @@ function addon:OptionsTable()
 									self.db.profile.announceItems = self.defaults.profile.announceItems
 									self.db.profile.announceChannel = self.defaults.profile.announceChannel
 									self.db.profile.announceText = self.defaults.profile.announceText
+									self.db.profile.announceItemString = self.defaults.profile.announceItemString
 									self:ConfigTableChanged()
 								end
 							},
