@@ -39,7 +39,7 @@ function LootHistory:OnInitialize()
 	}
 	self.scrollCols = {
 		{name = "",					width = ROW_HEIGHT, },			-- Class icon, should be same row as player
-		{name = L["Name"],		width = 100, 				},		-- Name of the player
+		{name = _G.NAME,		width = 100, 				},		-- Name of the player
 		{name = L["Time"],		width = 125, comparesort = self.DateTimeSort, sort = "dsc",},			-- Time of awarding
 		{name = "",					width = ROW_HEIGHT, },			-- Item at index icon
 		{name = L["Item"],		width = 250, 				}, 	-- Item string
@@ -127,7 +127,7 @@ function LootHistory:BuildData()
 				end
 			end
 			if not data[date][name][i].instance then
-				data[date][name][i].instance = L["Unknown"]
+				data[date][name][i].instance = _G.UNKNOWN
 			end
 		end
 	end
@@ -418,8 +418,19 @@ end
 -- Visuals.
 -- @section Visuals.
 ---------------------------------------------------
+local function IsFiltering()
+	for k,v in pairs(db.modules["RCLootHistory"].filters) do
+		if not v then return true end
+	end
+end
+
 function LootHistory:Update()
 	self.frame.st:SortData()
+	if IsFiltering() then
+		self.frame.filter.Text:SetTextColor(0.86,0.5,0.22) -- #db8238
+	else
+		self.frame.filter.Text:SetTextColor(_G.NORMAL_FONT_COLOR:GetRGB()) --#ffd100
+	end
 end
 
 function LootHistory:GetFrame()
@@ -459,7 +470,7 @@ function LootHistory:GetFrame()
 	})
 
 	--Name selection
-	f.name = LibStub("ScrollingTable"):CreateST({{name = "", width = ROW_HEIGHT},{name = L["Name"], width = 100, sort = "desc"}}, 5, ROW_HEIGHT, { ["r"] = 1.0, ["g"] = 0.9, ["b"] = 0.0, ["a"] = 0.5 }, f.content)
+	f.name = LibStub("ScrollingTable"):CreateST({{name = "", width = ROW_HEIGHT},{name = _G.NAME, width = 100, sort = "desc"}}, 5, ROW_HEIGHT, { ["r"] = 1.0, ["g"] = 0.9, ["b"] = 0.0, ["a"] = 0.5 }, f.content)
 	f.name.frame:SetPoint("TOPLEFT", f.date.frame, "TOPRIGHT", 20, 0)
 	f.name:EnableSelection(true)
 	f.name:RegisterEvents({
@@ -473,7 +484,7 @@ function LootHistory:GetFrame()
 	})
 
 	-- Abort button
-	local b1 = addon:CreateButton(L["Close"], f.content)
+	local b1 = addon:CreateButton(_G.CLOSE, f.content)
 	b1:SetPoint("TOPRIGHT", f, "TOPRIGHT", -10, -100)
 	b1:SetScript("OnClick", function() self:Disable() end)
 	f.closeBtn = b1
@@ -503,6 +514,10 @@ function LootHistory:GetFrame()
 	b2:SetScript("OnLeave", function() addon:HideTooltip() end)
 	f.moreInfoBtn = b2
 
+	f.content:SetScript("OnSizeChanged", function()
+ 		self.moreInfo:SetScale(self.frame:GetScale() * 0.6)
+ 	end)
+
 	-- Export
 	local b3 = addon:CreateButton(L["Export"], f.content)
 	b3:SetPoint("RIGHT", b1, "LEFT", -10, 0)
@@ -516,7 +531,7 @@ function LootHistory:GetFrame()
 	f.importBtn = b5
 
 	-- Filter
-	local b4 = addon:CreateButton(L["Filter"], f.content)
+	local b4 = addon:CreateButton(_G.FILTER, f.content)
 	b4:SetPoint("RIGHT", f.importBtn, "LEFT", -10, 0)
 	b4:SetScript("OnClick", function(self) Lib_ToggleDropDownMenu(1, nil, filterMenu, self, 0, 0) end )
 	f.filter = b4
@@ -625,17 +640,17 @@ function LootHistory:UpdateMoreInfo(rowFrame, cellFrame, dat, cols, row, realrow
 	local data = lootDB[row.name][row.num]
 	tip:AddLine(addon.Ambiguate(row.name), color.r, color.g, color.b)
 	tip:AddLine("")
-	tip:AddDoubleLine(L["Time"]..":", (data.time or L["Unknown"]) .." ".. row.date or L["Unknown"], 1,1,1, 1,1,1)
-	tip:AddDoubleLine(L["Loot won:"], data.lootWon or L["Unknown"], 1,1,1, 1,1,1)
+	tip:AddDoubleLine(L["Time"]..":", (data.time or _G.UNKNOWN) .." ".. row.date or _G.UNKNOWN, 1,1,1, 1,1,1)
+	tip:AddDoubleLine(L["Loot won:"], data.lootWon or _G.UNKNOWN, 1,1,1, 1,1,1)
 	if data.itemReplaced1 then
 		tip:AddDoubleLine(L["Item(s) replaced:"], data.itemReplaced1, 1,1,1)
 		if data.itemReplaced2 then
 			tip:AddDoubleLine(" ", data.itemReplaced2)
 		end
 	end
-	tip:AddDoubleLine(L["Dropped by:"], data.boss or L["Unknown"], 1,1,1, 0.862745, 0.0784314, 0.235294)
-	tip:AddDoubleLine(L["From:"], data.instance or L["Unknown"], 1,1,1, 0.823529, 0.411765, 0.117647)
-	tip:AddDoubleLine(L["Votes"]..":", data.votes or L["Unknown"], 1,1,1, 1,1,1)
+	tip:AddDoubleLine(L["Dropped by:"], data.boss or _G.UNKNOWN, 1,1,1, 0.862745, 0.0784314, 0.235294)
+	tip:AddDoubleLine(_G.FROM, data.instance or _G.UNKNOWN, 1,1,1, 0.823529, 0.411765, 0.117647)
+	tip:AddDoubleLine(L["Votes"]..":", data.votes or _G.UNKNOWN, 1,1,1, 1,1,1)
 	tip:AddLine(" ")
 	tip:AddLine(L["Tokens received"])
 	-- Add tier tokens
@@ -702,13 +717,7 @@ function LootHistory.FilterMenu(menu, level)
 			addon:DebugLog("Created LootHistory filters")
 			db.modules["RCLootHistory"].filters = {}
 		end
-		for k in pairs(data) do -- Update the db entry to make sure we have all buttons in it
-			if type(db.modules["RCLootHistory"].filters[k]) ~= "boolean" then
-				addon:Debug("Didn't contain "..k)
-				db.modules["RCLootHistory"].filters[k] = true -- Default as true
-			end
-		end
-		info.text = L["Filter"]
+		info.text = _G.FILTER
 		info.isTitle = true
 		info.notCheckable = true
 		info.disabled = true
@@ -762,7 +771,7 @@ LootHistory.rightClickEntries = {
 			disabled = true,
 		},
 		{ -- 2 Name
-			text = L["Name"],
+			text = _G.NAME,
 			value = "EDIT_NAME",
 			notCheckable = true,
 			hasArrow = true,
@@ -790,7 +799,7 @@ LootHistory.rightClickEntries = {
 			disabled = function() return not db.tierButtonsEnabled end,
 		},
 		{ -- 4 Relics
-			text = L["Relics"].." ...",
+			text = _G.INVTYPE_RELIC.." ...",
 			onValue = "EDIT_RESPONSE",
 			value = "RELICS",
 			hasArrow = true,

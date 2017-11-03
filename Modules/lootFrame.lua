@@ -10,56 +10,59 @@ local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 
 local items = {} -- item.i = {name, link, lvl, texture} (i == session)
 local entries = {}
-local ENTRY_HEIGHT = 75
+local ENTRY_HEIGHT = 80
 local MAX_ENTRIES = 5
 local numRolled = 0
 local MIN_BUTTON_WIDTH = 40
 
-function LootFrame:Start(table)
+function LootFrame:Start(table, reRoll)
 	addon:DebugLog("LootFrame:Start()")
+
+	local offset = 0
+	if reRoll then
+		offset = #items  -- Insert to "items" if reRoll
+	end
+
 	for k = 1, #table do
 		if table[k].autopass then
-			items[k] = { rolled = true} -- it's autopassed, so pretend we rolled it
+			items[offset+k] = { rolled = true} -- it's autopassed, so pretend we rolled it
 			numRolled = numRolled + 1
 		else
-			items[k] = {
+			items[offset+k] = {
 			--	name = table[k].name,
 				link = table[k].link,
 				ilvl = table[k].ilvl,
 				texture = table[k].texture,
 				rolled = false,
 				note = nil,
-				session = k,
 				equipLoc = table[k].equipLoc,
 				timeLeft = addon.mldb.timeout,
 				subType = table[k].subType,
 				isTier = table[k].token,
 				isRelic = table[k].relic,
+				sessions = {reRoll and table[k].session or k}, -- ".session" does not exist if not rerolling.
 			}
 		end
 	end
+
+	for k = offset+1, offset+#table do -- Only check the entries we added just now.
+		if not items[k].rolled then
+			for j = offset+1, offset+#table do
+				if j ~= k and items[k].link == items[j].link and not items[j].rolled then
+					tinsert(items[k].sessions, items[j].sessions[1])
+					items[j].rolled = true -- Pretend we have rolled it.
+					numRolled = numRolled + 1
+				end
+			end
+		end
+	end
+
 	self:Show()
 end
 
 function LootFrame:ReRoll(table)
 	addon:DebugLog("LootFrame:ReRoll(#table)", #table)
-	for k,v in ipairs(table) do
-		tinsert(items,  {
-		--	name = v.name,
-			link = v.link,
-			ilvl = v.ilvl,
-			texture = v.texture,
-			rolled = false,
-			note = nil,
-			session = v.session,
-			equipLoc = v.equipLoc,
-			timeLeft = addon.mldb.timeout,
-			subType = v.subType,
-			isTier = v.token,
-			isRelic = v.relic,
-		})
-	end
-	self:Show()
+	self:Start(table, true)
 end
 
 function LootFrame:OnEnable()
@@ -101,7 +104,7 @@ function LootFrame:Update()
 		end
 	end
 	self.EntryManager:Update()
-	self.frame:SetHeight(numEntries * ENTRY_HEIGHT + 2)
+	self.frame.content:SetHeight(numEntries * ENTRY_HEIGHT + 7)
 end
 
 function LootFrame:OnRoll(entry, button)
@@ -109,10 +112,20 @@ function LootFrame:OnRoll(entry, button)
 	local isRelic = entry.item.isRelic and addon.mldb.relicButtonsEnabled
 	addon:Debug("LootFrame:OnRoll", entry.realID, button, "Response:", addon:GetResponseText(button, isTier, isRelic))
 	local item = entry.item
-	addon:SendCommand("group", "response", addon:CreateResponse(item.session, item.link, item.ilvl, button, item.equipLoc, item.note, item.subType, isTier, isRelic))
 
-	numRolled = numRolled + 1
+	-- Only send minimum neccessary data, because the information of current equipped gear has been sent when we receive the loot table.
+	-- target, session, link, ilvl, response, equipLoc, note, subType, relicType, isTier, isRelic, sendAvgIlvl, sendSpecID
+	for _, session in ipairs(item.sessions) do
+		addon:SendResponse("group", session, nil, nil, button, nil, item.note, nil, nil, isTier, isRelic, nil, nil)
+	end
+
+	if addon:Getdb().printResponse then
+		addon:Print(string.format(L["Response to 'item'"], addon:GetItemTextWithCount(item.link, #item.sessions))..": "..addon:GetResponseText(button, isTier, isRelic))
+	end
+
+	numRolled = numRolled + 1 -- numRolled should only be added by 1 here.
 	item.rolled = true
+
 	self.EntryManager:Trash(entry)
 	self:Update()
 end
@@ -127,6 +140,7 @@ function LootFrame:GetFrame()
 	if self.frame then return self.frame end
 	addon:DebugLog("LootFrame","GetFrame()")
 	self.frame = addon:CreateFrame("DefaultRCLootFrame", "lootframe", L["RCLootCouncil Loot Frame"], 250, 375)
+	self.frame.title:SetPoint("BOTTOM", self.frame, "TOP", 0 ,-5)
 	return self.frame
 end
 
@@ -137,11 +151,13 @@ do
 			if not item then
 				return addon:Debug("Entry update error @ item:", item)
 			end
-		--addon:DebugLog("Updating entry:", item, item.session)
+
 			entry.item = item
-			entry.itemText:SetText(entry.item.link or "error")
+			entry.itemText:SetText(addon:GetItemTextWithCount(entry.item.link or "error", #entry.item.sessions))
 			entry.icon:SetNormalTexture(entry.item.texture or "Interface\\InventoryItems\\WoWUnknownItem01")
-			entry.itemLvl:SetText(format(L["ilvl: x"], entry.item.ilvl or 0))
+			entry.itemCount:SetText(#entry.item.sessions > 1 and #entry.item.sessions or "")
+			local typeText = addon:GetItemTypeText(item.link, item.subType, item.equipLoc, item.isTier, item.isRelic)
+			entry.itemLvl:SetText(addon:GetItemLevelText(entry.item.ilvl, entry.item.isTier).."  |cff7fffff"..typeText.."|r")
 			if addon.mldb.timeout then
 				entry.timeoutBar:SetMinMaxValues(0, addon.mldb.timeout or addon.db.profile.timeout)
 				entry.timeoutBar:Show()
@@ -158,7 +174,7 @@ do
 		-- Expects caller to setup buttons and position.
 		Create = function(entry, parent)
 			entry.width = parent:GetWidth()
-			entry.frame = CreateFrame("Frame", "DefualtRCLootFrameEntry("..LootFrame.EntryManager.numEntries..")", parent)
+			entry.frame = CreateFrame("Frame", "DefaultRCLootFrameEntry("..LootFrame.EntryManager.numEntries..")", parent)
 			entry.frame:SetWidth(entry.width)
 			entry.frame:SetHeight(ENTRY_HEIGHT)
 			-- We expect entry constructors to place the frame correctly:
@@ -166,8 +182,8 @@ do
 
 			-------- Item Icon -------------
 			entry.icon = CreateFrame("Button", nil, entry.frame, "UIPanelButtonTemplate")
-			entry.icon:SetSize(ENTRY_HEIGHT*2/3, ENTRY_HEIGHT*2/3)
-			entry.icon:SetPoint("TOPLEFT", entry.frame, "TOPLEFT", 12, -13)
+			entry.icon:SetSize(ENTRY_HEIGHT*0.78, ENTRY_HEIGHT*0.78)
+			entry.icon:SetPoint("TOPLEFT", entry.frame, "TOPLEFT", 9, -5)
 			entry.icon:SetScript("OnEnter", function()
 				if not entry.item.link then return end
 				addon:CreateHypertip(entry.item.link)
@@ -180,16 +196,24 @@ do
 				end
 			end)
 
+			entry.itemCount = entry.icon:CreateFontString(nil, "OVERLAY", "NumberFontNormalLarge")
+			local fileName, fontHeight, flags = entry.itemCount:GetFont()
+			entry.itemCount:SetFont(fileName, 20, flags)
+			entry.itemCount:SetJustifyH("RIGHT")
+			entry.itemCount:SetPoint("BOTTOMRIGHT", entry.icon, "BOTTOMRIGHT", -2, 2)
+			entry.itemCount:SetText("error")
+
 			-------- Buttons -------------
 			entry.buttons = {}
 			entry.UpdateButtons = function(entry)
 				local b = entry.buttons -- shortening
-				local width = 150 -- buttons determines the width of the entry
 				local numButtons = addon.mldb.numButtons or addon.db.profile.numButtons
+				-- (IconWidth (63) + indent(9)) + pass button (5) + (noteButton(24)  + indent(5+7)) + numButton * space(5)
+				local width = 113 + numButtons * 5
 				for i = 1, numButtons + 1 do
 					if i > numButtons then -- Pass button:
-						b[i] = b[i] or addon:CreateButton(L["Pass"], entry.frame)
-						b[i]:SetText(L["Pass"]) -- In case it was already created
+						b[i] = b[i] or addon:CreateButton(_G.PASS, entry.frame)
+						b[i]:SetText(_G.PASS) -- In case it was already created
 						b[i]:SetScript("OnClick", function() LootFrame:OnRoll(entry, "PASS") end)
 					else
 						b[i] = b[i] or addon:CreateButton(addon:GetButtonText(i), entry.frame)
@@ -212,13 +236,17 @@ do
 				end
 				-- Store the width of this entry. Our handler will set it
 				entry.width = width
+
+				-- Adjust the width to match item text and item level, in case we have few buttons.
+				entry.width = math.max(entry.width, 90 + entry.itemText:GetStringWidth())
+				entry.width = math.max(entry.width, 89 + entry.itemLvl:GetStringWidth())
 			end
 			-------- Note button ---------
 			entry.noteButton = CreateFrame("Button", nil, entry.frame)
-			entry.noteButton:SetSize(20,20)
+			entry.noteButton:SetSize(24,24)
 			entry.noteButton:SetHighlightTexture("Interface\\Minimap\\UI-Minimap-ZoomButton-Highlight")
 			entry.noteButton:SetNormalTexture("Interface\\Buttons\\UI-GuildButton-PublicNote-Up")
-			entry.noteButton:SetPoint("BOTTOMRIGHT", -12, 12)
+			entry.noteButton:SetPoint("BOTTOMRIGHT", entry.frame, "TOPRIGHT", -9, -entry.icon:GetHeight()-5)
 			entry.noteButton:SetScript("OnEnter", function()
 				if entry.item.note then -- If they already entered a note:
 					addon:CreateTooltip(L["Your note:"], entry.item.note, "\nClick to change your note.")
@@ -231,18 +259,18 @@ do
 
 			----- item text/lvl ---------------
 			entry.itemText = entry.frame:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
-			entry.itemText:SetPoint("TOPLEFT", entry.icon, "TOPRIGHT", 5, -5)
+			entry.itemText:SetPoint("TOPLEFT", entry.icon, "TOPRIGHT", 6, -1)
 			entry.itemText:SetText("Fatal error!!!!") -- Set text for reasons
 
 			entry.itemLvl = entry.frame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-			entry.itemLvl:SetPoint("TOPRIGHT", entry.frame, "TOPRIGHT", -12, -13)
+			entry.itemLvl:SetPoint("TOPLEFT", entry.itemText, "BOTTOMLEFT", 1, -4)
 			entry.itemLvl:SetTextColor(1, 1, 1) -- White
 			entry.itemLvl:SetText("error")
 
 			------------ Timeout -------------
 			entry.timeoutBar = CreateFrame("StatusBar", nil, entry.frame, "TextStatusBar")
 			entry.timeoutBar:SetSize(entry.frame:GetWidth(), 6)
-			entry.timeoutBar:SetPoint("BOTTOMLEFT", 12,4)
+			entry.timeoutBar:SetPoint("BOTTOMLEFT", 9,3)
 			entry.timeoutBar:SetStatusBarTexture("Interface\\TargetingFrame\\UI-StatusBar")
 			--entry.timeoutBar:SetStatusBarColor(0.1, 0, 0.6, 0.8) -- blue
 			entry.timeoutBar:SetStatusBarColor(0.5, 0.5, 0.5, 1) -- grey
@@ -254,14 +282,14 @@ do
 					return LootFrame:OnRoll(entry, "TIMEOUT")
 				end
 				entry.item.timeLeft = entry.item.timeLeft - elapsed
-				this.text:SetText(format(L["Time left (num seconds)"], ceil(entry.item.timeLeft)))
+				this.text:SetText(_G.CLOSES_IN..": "..ceil(entry.item.timeLeft)) -- _G.CLOSES_IN == "Time Left" for English
 				this:SetValue(entry.item.timeLeft)
 			end)
 
 			-- We want to update the width of the timeout bar everytime the width of the whole frame changes:
 			local main_width = entry.frame.SetWidth
 			function entry:SetWidth(width)
-				self.timeoutBar:SetWidth(width - 24) -- 12 indent on each side
+				self.timeoutBar:SetWidth(width - 18) -- 9 indent on each side
 				main_width(self.frame, width)
 				self.width = width
 			end
@@ -308,7 +336,7 @@ do
 		for i, entry in ipairs(self.entries) do
 			if entry.width > max then max = entry.width end
 			if i == 1 then
-				entry.frame:SetPoint("TOPLEFT", LootFrame.frame.content, "TOPLEFT")
+				entry.frame:SetPoint("TOPLEFT", LootFrame.frame.content, "TOPLEFT",0,-5)
 			else
 				entry.frame:SetPoint("TOPLEFT", self.entries[i-1].frame, "BOTTOMLEFT")
 			end
@@ -373,12 +401,12 @@ do
 		-- Tier entry uses different buttons, so change the function:
 		function Entry.UpdateButtons(entry)
 			local b = entry.buttons -- shortening
-			local width = 150 -- buttons determines the width of the entry
 			local numButtons = addon.mldb.tierNumButtons or addon.db.profile.tierNumButtons
+			local width = 113 + numButtons * 5
 			for i = 1, numButtons + 1 do
 				if i > numButtons then -- Pass button:
-					b[i] = b[i] or addon:CreateButton(L["Pass"], entry.frame)
-					b[i]:SetText(L["Pass"]) -- In case it was already created
+					b[i] = b[i] or addon:CreateButton(_G.PASS, entry.frame)
+					b[i]:SetText(_G.PASS) -- In case it was already created
 					b[i]:SetScript("OnClick", function() LootFrame:OnRoll(entry, "PASS") end)
 				else
 					b[i] = b[i] or addon:CreateButton(addon:GetButtonText(i, true), entry.frame)
@@ -401,6 +429,10 @@ do
 			end
 			-- Store the width of this entry. Our handler will set it
 			entry.width = width
+
+			-- Adjust the width to match item text and item level, in case we have few buttons.
+			entry.width = math.max(entry.width, 90 + entry.itemText:GetStringWidth())
+			entry.width = math.max(entry.width, 89 + entry.itemLvl:GetStringWidth())
 		end
 		Entry:Update(item)
 
@@ -415,12 +447,12 @@ do
 		-- Relic entry uses different buttons, so change the function:
 		function Entry.UpdateButtons(entry)
 			local b = entry.buttons -- shortening
-			local width = 150 -- buttons determines the width of the entry
 			local numButtons = addon.mldb.relicNumButtons or addon.db.profile.relicNumButtons
+			local width = 113 + numButtons * 5
 			for i = 1, numButtons + 1 do
 				if i > numButtons then -- Pass button:
-					b[i] = b[i] or addon:CreateButton(L["Pass"], entry.frame)
-					b[i]:SetText(L["Pass"]) -- In case it was already created
+					b[i] = b[i] or addon:CreateButton(_G.PASS, entry.frame)
+					b[i]:SetText(_G.PASS) -- In case it was already created
 					b[i]:SetScript("OnClick", function() LootFrame:OnRoll(entry, "PASS") end)
 				else
 					b[i] = b[i] or addon:CreateButton(addon:GetButtonText(i, false, true), entry.frame)
@@ -443,6 +475,10 @@ do
 			end
 			-- Store the width of this entry. Our handler will set it
 			entry.width = width
+
+			-- Adjust the width to match item text and item level, in case we have few buttons.
+			entry.width = math.max(entry.width, 90 + entry.itemText:GetStringWidth())
+			entry.width = math.max(entry.width, 89 + entry.itemLvl:GetStringWidth())
 		end
 		Entry:Update(item)
 
