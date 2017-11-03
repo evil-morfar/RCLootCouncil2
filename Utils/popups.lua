@@ -104,6 +104,24 @@ LibDialog:Register("RCLOOTCOUNCIL_CONFIRM_AWARD", {
 	show_while_dead = true,
 })
 
+LibDialog:Register("RCLOOTCOUNCIL_TRADE_ADD_ITEM", {
+   text = "something_went_wrong",
+   on_show = function(self, data)
+      self.text:SetText(format(L["rclootcouncil_trade_add_item_confirm"], data.count))
+   end,
+   buttons = {
+      {  text = _G.YES,
+         on_click = function(self, data)
+            RCLootCouncilML:AddAwardedInBagsToTradeWindow()
+         end,
+      },
+      {  text = _G.NO,
+      },
+   },
+   hide_on_escape = true,
+   show_while_dead = true,
+})
+
 -- Note button (lootframe)
 LibDialog:Register("RCLOOTCOUNCIL_LOOTFRAME_NOTE", {
 	text = L["Enter your note:"],

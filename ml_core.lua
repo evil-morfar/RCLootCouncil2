@@ -203,14 +203,16 @@ function RCLootCouncilML:AddAwardedInBagsToTradeWindow()
 			if addon:UnitIsUnit("NPC", v.winner) and UnitIsPlayer("NPC") then -- "npc" is the unitid of the player we are trading
 				for container=1, 5 do
 					for slot=1, GetContainerNumSlots(container) or 0 do
-						local texture, count, locked, quality, readable, lootable, link = GetContainerItemInfo(container, slot)
-						if link == v.link and not locked then
-							ClearCursor()
-							PickupContainerItem(container, slot)
-							ClickTradeButton(tradeIndex)
-							tradeIndex = tradeIndex + 1
-							if tradeIndex > MAX_TRADE_ITEMS then
-								break
+						if self.trading then
+							local texture, count, locked, quality, readable, lootable, link = GetContainerItemInfo(container, slot)
+							if link == v.link and not locked then
+								ClearCursor()
+								PickupContainerItem(container, slot)
+								ClickTradeButton(tradeIndex)
+								tradeIndex = tradeIndex + 1
+								if tradeIndex > MAX_TRADE_ITEMS then
+									break
+								end
 							end
 						end
 					end
@@ -410,6 +412,17 @@ function RCLootCouncilML:OnEvent(event, ...)
 		end
 	elseif event == "TRADE_SHOW" then
 		self.trading = true
+		if addon.isMasterLooter	then
+			local count = 0
+			for _, v in ipairs(self.awardedInBags) do
+				if addon:UnitIsUnit("NPC", v.winner) and UnitIsPlayer("NPC") then -- "npc" is the unitid of the player we are trading
+					count = count + 1
+				end
+			end
+			if count > 0 then
+				LibDialog:Spawn("RCLOOTCOUNCIL_TRADE_ADD_ITEM", {count=count})
+			end
+		end
 	elseif event == "TRADE_CLOSED" then
 		self.trading = false
 	end
