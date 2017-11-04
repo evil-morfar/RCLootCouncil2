@@ -1320,7 +1320,7 @@ function RCLootCouncil:PrepareLootTable(lootTable)
 		v.equipLoc = v.token and self:GetTokenEquipLoc(v.token) or equipLoc
 		v.texture = texture
 		if not v.classes then -- We didn't receive "classes", because ML is using an old version. Generate it from token data.
-			v.classes = 0xffffffff -- Usable by all classes
+			v.classes = self:GetItemClassesAllowedFlag(v.link) -- will return 0xffffffff(usable by all classes) if the item is not cached, but that's fine.
 			if RCTokenClasses and RCTokenClasses[self:GetItemIDFromLink(v.link)] then
 				v.classes = 0
 				for _, class in ipairs(RCTokenClasses[self:GetItemIDFromLink(v.link)]) do
@@ -1357,7 +1357,7 @@ for i=1, GetNumClasses() do
 end
 
 -- @return The bitwise flag indicates the classes allowed for the item, as specified on the tooltip by "Classes: xxx"
--- If the tooltip does not specify "Classes: xxx", return 0xffffffff
+-- If the tooltip does not specify "Classes: xxx" or if the item is not cached, return 0xffffffff
 -- This function only checks the tooltip and does not consider if the item is equipable by the class.
 -- Item must have been cached to get the correct result.
 --
