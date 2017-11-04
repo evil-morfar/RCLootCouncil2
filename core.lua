@@ -1326,6 +1326,86 @@ function RCLootCouncil:GetLootTable()
 	return lootTable
 end
 
+
+--[[
+1	Warrior			WARRIOR
+2	Paladin			PALADIN
+3	Hunter			HUNTER
+4	Rogue			ROGUE
+5	Priest			PRIEST
+6	Death Knight	DEATHKNIGHT
+7	Shaman			SHAMAN
+8	Mage			MAGE
+9	Warlock			WARLOCK
+10	Monk			MONK
+11	Druid			DRUID
+12	Demon Hunter	DEMONHUNTER
+--]]
+RCLootCouncil.classDisplayNameToID = {} -- Key: localized class display name. value: class id(number)
+RCLootCouncil.classTagNameToID = {} -- key: class name in capital english letters without space. value: class id(number)
+for i=1, GetNumClasses() do
+	RCLootCouncil.classDisplayNameToID[select(1, GetClassInfo(i))] = i
+	RCLootCouncil.classTagNameToID[select(2, GetClassInfo(i))] = i
+end
+
+-- @return The bitwise flag indicates the classes allowed for the item, as specified on the tooltip by "Classes: xxx"
+-- If the tooltip does not specify "Classes: xxx", return 0xffffffff
+-- This function only checks the tooltip and does not consider if the item is equipable by the class.
+-- Item must have been cached to get the correct result.
+--
+-- If the number at binary bit i is 1 (bit 1 is the lowest bit), then the item works for the class with ID i.
+-- 0b100,000,000,010 indicates the item works for Paladin(classID 2) and DemonHunter(class ID 12)
+-- Expected values:
+-- Vanquisher(Rogue, DK, Mage, Druid) == 1192
+-- Conqueror(Paladin, Priest, Warlock, DH) == 2322
+-- Protector(Warrior, Hunter, Shaman, Monk) == 581
+function RCLootCouncil:GetItemClassesAllowedFlag(item)
+	if not item then return 0 end
+	GameTooltip:SetOwner(UIParent, "ANCHOR_NONE")
+	GameTooltip:SetHyperlink(item)
+
+	local prefix = _G.ITEM_CLASSES_ALLOWED:gsub("%%s", "")
+	local separator = ", " -- in-game tests show all locales use this as separator.
+
+	local result = 0
+	for i = 1, GameTooltip:NumLines() or 0 do
+		local line = getglobal('GameTooltipTextLeft' .. i)
+		if line and line.GetText then
+			local text = line:GetText()
+			if text and text:find("^"..prefix) then
+				GameTooltip:Hide()
+				local classesText = text:sub(prefix:len()+1)
+				for className in string.gmatch(classesText..separator, "(.-)"..separator) do
+					local classID = self.classDisplayNameToID[className]
+					if classID then
+						result = result + bit.lshift(1, classID-1)
+					else
+						-- sth is wrong (should never happen)
+						self:Debug("Error while getting classes flag of ", item, "Class does not exist", className)
+					end
+				end
+				return result
+			end
+		end
+	end
+
+	GameTooltip:Hide()
+	return 0xffffffff -- The item works for all classes
+end
+
+function RCLootCouncil:GetItemClassesAllowedTest()
+	local function checkEqual(a, b)
+		return a, a==b
+	end
+	print("Vanquisher", checkEqual(self:GetItemClassesAllowedFlag(select(2, GetItemInfo(147331))), 1192))
+	print("Conqueror", checkEqual(self:GetItemClassesAllowedFlag(select(2, GetItemInfo(147329))), 2322))
+	print("Protector", checkEqual(self:GetItemClassesAllowedFlag(select(2, GetItemInfo(147333))), 581))
+	print("allclass", checkEqual(self:GetItemClassesAllowedFlag("|cffa335ee|Hitem:137487:5890:151580::::::110:264::35:4:3418:1808:1592:3337:::|h[Strand of the Stars]|h|r"),0xffffffff))
+	print("DH", checkEqual(self:GetItemClassesAllowedFlag("|cffa335ee|Hitem:152121::::::::110:264::6:1:3524:::|h[Felreaper Hood]|h|r"), 0x800))
+	print("hunter", checkEqual(self:GetItemClassesAllowedFlag("|cffa335ee|Hitem:152133::::::::110:264::6:1:3524:::|h[Serpentstalker Helmet]|h|r"), 4))
+	print("-------------------------------------------------")
+end
+
 function RCLootCouncil:IsItemBoE(item)
 	if not item then return false end
 	GameTooltip:SetOwner(UIParent, "ANCHOR_NONE")
