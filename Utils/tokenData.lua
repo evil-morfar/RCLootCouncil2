@@ -3,6 +3,10 @@
 -- @author Potdisc
 -- Create Date : 3/11/2013 10:25:13 PM
 
+--@debug@
+if LibDebug then LibDebug() end
+--@end-debug@
+
 -- Equip locations
 RCTokenTable = {
 	--[xxxxxx] = "ExampleSlot",
