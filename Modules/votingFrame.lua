@@ -1163,6 +1163,7 @@ do
 								equipLoc = v.equipLoc,
 								token = v.token,
 								relic = v.relic,
+								classes = v.classes,
 							})
 							addon:SendCommand("group", "change_response", k, candidateName, "WAIT")
 						end
@@ -1186,6 +1187,7 @@ do
 								equipLoc = v.equipLoc,
 								token = v.token,
 								relic = v.relic,
+								classes = v.classes,
 							})
 							addon:SendCommand("group", "change_response", k, candidateName, "WAIT")
 						end
@@ -1210,6 +1212,7 @@ do
 								equipLoc = v.equipLoc,
 								token = v.token,
 								relic = v.relic,
+								classes = v.classes,
 							})
 							addon:SendCommand("group", "change_response", k, candidateName, "WAIT")
 						end
