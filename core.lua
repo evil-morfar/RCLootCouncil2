@@ -1319,6 +1319,15 @@ function RCLootCouncil:PrepareLootTable(lootTable)
 		v.subType = subType -- Subtype should be in our locale
 		v.equipLoc = v.token and self:GetTokenEquipLoc(v.token) or equipLoc
 		v.texture = texture
+		if not v.classes then -- We didn't receive "classes", because ML is using an old version. Generate it from token data.
+			v.classes = 0xffffffff -- Usable by all classes
+			if RCTokenClasses and RCTokenClasses[self:GetItemIDFromLink(v.link)] then
+				v.classes = 0
+				for _, class in ipairs(RCTokenClasses[self:GetItemIDFromLink(v.link)]) do
+					v.classes = v.classes + bit.lshift(1, self.classTagNameToID[class]-1)
+				end
+			end
+		end
 	end
 end
 
