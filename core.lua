@@ -1326,7 +1326,6 @@ function RCLootCouncil:GetLootTable()
 	return lootTable
 end
 
-
 --[[
 1	Warrior			WARRIOR
 2	Paladin			PALADIN
@@ -1391,19 +1390,6 @@ function RCLootCouncil:GetItemClassesAllowedFlag(item)
 
 	GameTooltip:Hide()
 	return 0xffffffff -- The item works for all classes
-end
-
-function RCLootCouncil:GetItemClassesAllowedTest()
-	local function checkEqual(a, b)
-		return a, a==b
-	end
-	print("Vanquisher", checkEqual(self:GetItemClassesAllowedFlag(select(2, GetItemInfo(147331))), 1192))
-	print("Conqueror", checkEqual(self:GetItemClassesAllowedFlag(select(2, GetItemInfo(147329))), 2322))
-	print("Protector", checkEqual(self:GetItemClassesAllowedFlag(select(2, GetItemInfo(147333))), 581))
-	print("allclass", checkEqual(self:GetItemClassesAllowedFlag("|cffa335ee|Hitem:137487:5890:151580::::::110:264::35:4:3418:1808:1592:3337:::|h[Strand of the Stars]|h|r"),0xffffffff))
-	print("DH", checkEqual(self:GetItemClassesAllowedFlag("|cffa335ee|Hitem:152121::::::::110:264::6:1:3524:::|h[Felreaper Hood]|h|r"), 0x800))
-	print("hunter", checkEqual(self:GetItemClassesAllowedFlag("|cffa335ee|Hitem:152133::::::::110:264::6:1:3524:::|h[Serpentstalker Helmet]|h|r"), 4))
-	print("-------------------------------------------------")
 end
 
 function RCLootCouncil:IsItemBoE(item)
