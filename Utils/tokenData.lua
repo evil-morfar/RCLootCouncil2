@@ -8,7 +8,7 @@ if LibDebug then LibDebug() end
 --@end-debug@
 
 -- Equip locations
-RCTokenTable = {
+_G.RCTokenTable = {
 	--[xxxxxx] = "ExampleSlot",
 
 	-- TIER 21 Antorus, the Burning Throne
@@ -449,7 +449,7 @@ RCTokenTable = {
 }
 
 -- Classes that can use the token
-RCTokenClasses = {
+_G.RCTokenClasses = {
 	--[xxxxxx] = {classes that can use the token},
 
 	-- TIER 21 Antorus, the Burning Throne
@@ -554,7 +554,7 @@ RCTokenClasses = {
 }
 
 -- The base item level for the token on normal difficulty
-RCTokenIlvl = {
+_G.RCTokenIlvl = {
 	--[xxxxxx] = ilvl,
 
 	-- TIER 21 Antorus, the Burning Throne

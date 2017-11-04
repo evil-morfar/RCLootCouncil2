@@ -1242,7 +1242,7 @@ do
 		local candidateName = menu.name
 		local data = lootTable[session].candidates[candidateName] -- Shorthand
 
-		local value = LIB_UIDROPDOWNMENU_MENU_VALUE
+		local value = _G.LIB_UIDROPDOWNMENU_MENU_VALUE
 		for i, entry in ipairs(RCVotingFrame.rightClickEntries[level]) do
 			info = Lib_UIDropDownMenu_CreateInfo()
 			if not entry.special then
