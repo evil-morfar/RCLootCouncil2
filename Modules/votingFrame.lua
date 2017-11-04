@@ -974,7 +974,7 @@ function RCVotingFrame.filterFunc(table, row)
 	local response = lootTable[session].candidates[row.name].response
 	if not db.modules["RCVotingFrame"].filters.showPlayersCantUseTheItem then
 		local v = lootTable[session]
-		if addon:AutoPassCheck(v.subType, v.equipLoc, v.link, v.token, v.relic, v.class) then
+		if addon:AutoPassCheck(v.subType, v.equipLoc, v.link, v.token, v.relic, v.classes, v.class) then
 			return false
 		end
 	end
@@ -1199,7 +1199,7 @@ do
 				func = function(candidateName)
 					local t = {}
 					for k,v in ipairs(lootTable) do
-						if not v.awarded and not addon:AutoPassCheck(v.subType, v.equipLoc, v.link, v.token, v.relic,
+						if not v.awarded and not addon:AutoPassCheck(v.subType, v.equipLoc, v.link, v.token, v.relic, v.classes,
 																	lootTable[session].candidates[candidateName].class) then
 							tinsert(t, {
 								name = v.name,

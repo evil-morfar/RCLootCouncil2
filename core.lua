@@ -704,7 +704,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 						local response = nil
 						if db.autoPass then
 							if (v.boe and db.autoPassBoE) or not v.boe then
-								if self:AutoPassCheck(v.subType, v.equipLoc, v.link, v.token, v.relic) then
+								if self:AutoPassCheck(v.subType, v.equipLoc, v.link, v.token, v.relic, v.classes) then
 									self:Debug("Autopassed on: ", v.link)
 									if not db.silentAutoPass then self:Print(format(L["Autopassed on 'item'"], v.link)) end
 									lootTable[ses].autopass = true
