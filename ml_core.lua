@@ -386,26 +386,22 @@ end
 
 function RCLootCouncilML:LootOpened()
 	local sessionframe = addon:GetActiveModule("sessionframe")
-	if addon.isMasterLooter and GetNumLootItems() > 0 and not self.running then -- Dont update if we are running a session
-		if sessionframe:IsRunning() then -- Check if an update is needed
-			self:UpdateLootSlots()
-		else -- Otherwise add the loot
-			for i = 1, GetNumLootItems() do
-				local item = GetLootSlotLink(i)
-				if db.altClickLooting then self:ScheduleTimer("HookLootButton", 0.5, i) end -- Delay lootbutton hooking to ensure other addons have had time to build their frames
-				local _, _, quantity, quality = GetLootSlotInfo(i)
-				if self:ShouldAutoAward(item, quality) and quantity > 0 then
-					self:AutoAward(i, item, quality, db.autoAwardTo, db.autoAwardReason, addon.bossName)
+	if addon.isMasterLooter and GetNumLootItems() > 0 and not self.running and not sessionframe:IsRunning() then -- Dont update if we are running a session or has opened sessionframe.
+		for i = 1, GetNumLootItems() do
+			local item = GetLootSlotLink(i)
+			if db.altClickLooting then self:ScheduleTimer("HookLootButton", 0.5, i) end -- Delay lootbutton hooking to ensure other addons have had time to build their frames
+			local _, _, quantity, quality = GetLootSlotInfo(i)
+			if self:ShouldAutoAward(item, quality) and quantity > 0 then
+				self:AutoAward(i, item, quality, db.autoAwardTo, db.autoAwardReason, addon.bossName)
 
-				elseif self:CanWeLootItem(item, quality) and quantity > 0 then -- check if our options allows us to loot it
-					self:AddItem(item, false, i)
+			elseif self:CanWeLootItem(item, quality) and quantity > 0 then -- check if our options allows us to loot it
+				self:AddItem(item, false, i)
 
-				elseif quantity == 0 then -- it's coin, just loot it
-					LootSlot(i)
-				end
+			elseif quantity == 0 then -- it's coin, just loot it
+				LootSlot(i)
 			end
 		end
-		if #self.lootTable > 0 and not self.running then
+		if #self.lootTable > 0 then
 			if db.autoStart then -- Settings say go
 				self:StartSession()
 			else
@@ -426,27 +422,6 @@ function RCLootCouncilML:CanWeLootItem(item, quality)
 	end
 	addon:Debug("CanWeLootItem", item, quality, ret)
 	return ret
-end
-
-function RCLootCouncilML:UpdateLootSlots()
-	if not self.lootOpen then return addon:Debug("ML:UpdateLootSlots() without loot window open!!") end
-	local updatedLootSlot = {}
-	for i = 1, GetNumLootItems() do
-		local item = GetLootSlotLink(i)
-		for session = 1, #self.lootTable do
-			-- Just skip if we've already awarded the item or found a fitting lootSlot
-			if not self.lootTable[session].awarded and not updatedLootSlot[session] then
-				if item == self.lootTable[session].link then
-					if i ~= self.lootTable[session].lootSlot then -- It has changed!
-						addon:DebugLog("lootSlot @session", session, "Was at:",self.lootTable[session].lootSlot, "is now at:", i)
-						self.lootTable[session].lootSlot = i -- update it
-						updatedLootSlot[session] = true
-					end
-					break
-				end
-			end
-		end
-	end
 end
 
 function RCLootCouncilML:HookLootButton(i)
