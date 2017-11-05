@@ -11,7 +11,6 @@ local addon = LibStub("AceAddon-3.0"):GetAddon("RCLootCouncil")
 RCLootCouncilML = addon:NewModule("RCLootCouncilML", "AceEvent-3.0", "AceBucket-3.0", "AceComm-3.0", "AceTimer-3.0", "AceHook-3.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 local LibDialog = LibStub("LibDialog-1.0")
-local deformat = LibStub("LibDeformat-3.0")
 
 local db;
 
@@ -43,7 +42,6 @@ function RCLootCouncilML:OnEnable()
 	self:RegisterEvent("LOOT_OPENED",		"OnEvent")
 	self:RegisterEvent("LOOT_CLOSED",		"OnEvent")
 	self:RegisterEvent("CHAT_MSG_WHISPER",	"OnEvent")
-	self:RegisterEvent("CHAT_MSG_LOOT", "OnEvent")
 	self:RegisterBucketEvent("GROUP_ROSTER_UPDATE", 10, "UpdateGroup") -- Bursts in group creation, and we should have plenty of time to handle it
 	self:RegisterBucketMessage("RCConfigTableChanged", 2, "ConfigTableChanged") -- The messages can burst
 	self:RegisterMessage("RCCouncilChanged", "CouncilChanged")
@@ -382,42 +380,6 @@ function RCLootCouncilML:OnEvent(event, ...)
 			self:SendWhisperHelp(sender)
 		elseif self.running then
 			self:GetItemsFromMessage(msg, sender)
-		end
-	elseif event == "CHAT_MSG_LOOT" and addon.isMasterLooter then
-		--print(self:ParseLootMsg(...))
-	end
-end
-
-
-local lootMsgPatternKeys = { -- Order is important
-	"LOOT_ITEM_PUSHED_SELF_MULTIPLE",
-	"LOOT_ITEM_PUSHED_MULTIPLE",
-	"LOOT_ITEM_SELF_MULTIPLE",
-	"LOOT_ITEM_MULTIPLE",
-	"LOOT_ITEM_PUSHED_SELF",
-	"LOOT_ITEM_PUSHED",
-	"LOOT_ITEM_SELF",
-	"LOOT_ITEM",
-}
--- Parse msg from CHAT_MSG_LOOT
--- Not sure the difference between LOOT_ITEM_PUSHED, and LOOT_ITEM
--- Inspired by EPGP and QDKP
--- @return the player who receives the loot, the loot link, and the quantity
-function RCLootCouncilML:ParseLootMsg(msg)
-	for _, key in ipairs(lootMsgPatternKeys) do
-		local pattern = _G[key]
-		local name, link, quantity
-		if key:find("SELF") then
-			link, quantity = deformat(msg, pattern)
-			name = addon.playerName
-		else
-			name, link, quantity = deformat(msg, pattern)
-		end
-		if name and link then
-			if not key:find("MULTIPLE") then
-				quantity = 1
-			end
-			return addon:UnitName(name), link, tonumber(quantity)
 		end
 	end
 end
