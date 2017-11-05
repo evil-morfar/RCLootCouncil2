@@ -1729,7 +1729,7 @@ function RCLootCouncil:GetItemNameFromLink(link)
 	return strmatch(link or "", "%[(.+)%]")
 end
 
--- The link of same item generated from different player, or if two links are generated between player spec switch, are NOT the same
+-- The link of same item generated from different player or different spec, are NOT guaranteed to be the same
 -- Because item link contains player's level and spec ID.
 -- This function compares link with link level and spec ID removed.
 -- @return true if two items are the same item
