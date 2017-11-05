@@ -704,7 +704,9 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 					-- The actual response/note are left unsent if not autopassed.
 					for ses, v in ipairs(lootTable) do
 						local response = nil
-						if db.autoPass then
+						if v.lootSlot and not v.bagged and mlCandidates and not mlCandidates[self.playerName] then -- Ineligible for the loot
+							lootTable[ses].autopass = true
+						elseif db.autoPass then
 							if (v.boe and db.autoPassBoE) or not v.boe then
 								if self:AutoPassCheck(v.subType, v.equipLoc, v.link, v.token, v.relic) then
 									self:Debug("Autopassed on: ", v.link)
