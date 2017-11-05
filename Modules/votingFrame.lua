@@ -988,7 +988,7 @@ function RCVotingFrame.filterFunc(table, row)
 		end
 	end
 
-	if response == "AUTOPASS" or response == "PASS" or type(response) == "number" then
+	if response == "AUTOPASS" or response == "PASS" or response == "INELIGIBLE" or type(response) == "number" then
 		if lootTable[session].token and addon.mldb.tierButtonsEnabled and type(response) == "number"then
 			return db.modules["RCVotingFrame"].filters.tier[response]
 		elseif lootTable[session].relic and addon.mldb.relicButtonsEnabled and type(response) == "number" then
@@ -1355,7 +1355,7 @@ do
 			end
 
 			-- Build the data table:
-			local data = {["STATUS"] = true, ["PASS"] = true, ["AUTOPASS"] = true, tier = {}, relic = {}}
+			local data = {["STATUS"] = true, ["PASS"] = true, ["AUTOPASS"] = true, ["INELIGIBLE"] = true, tier = {}, relic = {}}
 
 			local isTier, isRelic
 			-- If we're viewing a tier token and the ML have it enabled, we want to see it
