@@ -527,7 +527,7 @@ function RCLootCouncilML:LootOnClick(button)
 end
 
 -- Status can be one of the following:
--- test_mode, no_loot_slot, loot_not_open, normal, bagged, looted
+-- test_mode, no_loot_slot, loot_not_open, normal, bagged
 -- See :Award() for the different scenarios
 local function awardSuccess(session, winner, status)
 	addon:SendMessage("RCMLAwardSuccess", session, winner, status)
@@ -578,11 +578,10 @@ function RCLootCouncilML:Award(session, winner, response, reason)
 				--addon:Print(L["Alternatively, flag the loot as award later."])
 				return awardFailed(session, winner, "loot_not_open")
 			end
-			-- v2.7+: Check if the item is still in the expected slot, and dont award if not.
+			-- v2.4.4+: Check if the item is still in the expected slot
 			if self.lootTable[session].link ~= GetLootSlotLink(self.lootTable[session].lootSlot) then
 				addon:Debug("LootSlot has changed before award!", session)
-				addon:Print(_G.LOOT_GONE) --"Item already looted."
-				return awardFailed(session, winner, "looted")
+				-- And update them if not
 			end
 			if self.lootTable[session].quality < GetLootThreshold() or GetNumGroupMembers() == 0 then
 				LootSlot(self.lootTable[session].lootSlot)
