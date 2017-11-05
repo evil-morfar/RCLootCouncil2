@@ -96,9 +96,9 @@ function RCVotingFrame:Show()
 	end
 end
 
-function RCVotingFrame:ReceiveLootTable(lootTable)
+function RCVotingFrame:ReceiveLootTable(lootTable, mlCandidates)
 	active = true
-	self:Setup(lootTable)
+	self:Setup(lootTable, mlCandidates)
 	if not addon.enabled then return end -- We just want things ready
 	if db.autoOpen then
 		self:Show()
@@ -239,6 +239,9 @@ end
 -- Handles errors
 function RCVotingFrame:SetCandidateData(session, candidate, data, val)
 	local function Set(session, candidate, data, val)
+		if data == "response" and lootTable[session].candidates[candidate][data] == "INELIGIBLE" then
+			return
+		end
 		lootTable[session].candidates[candidate][data] = val
 	end
 	local ok, arg = pcall(Set, session, candidate, data, val)
@@ -268,9 +271,10 @@ function RCVotingFrame:GetCurrentSession()
 	return session
 end
 
-function RCVotingFrame:Setup(table)
+function RCVotingFrame:Setup(table, mlTable)
 	--lootTable[session] = {bagged, lootSlot, awarded, name, link, quality, ilvl, type, subType, equipLoc, texture, boe}
 	lootTable = table -- Extract all the data we get
+	lootTable.mlCandidates = mlTable
 	for session, t in ipairs(lootTable) do -- and build the rest (candidates)
 		lootTable[session].haveVoted = false -- Have we voted for ANY candidate in this session?
 		t.candidates = {}
@@ -290,7 +294,12 @@ function RCVotingFrame:Setup(table)
 				voters = {},
 				haveVoted = false, -- Have we voted for this particular candidate in this session?
 			}
+			if lootTable[session].lootSlot and not lootTable[session].bagged 
+				and lootTable.mlCandidates and not lootTable.mlCandidates[name] then
+				t.candidates[name].response = "INELIGIBLE"
+			end
 		end
+
 		-- Init session toggle
 		sessionButtons[session] = self:UpdateSessionButton(session, t.texture, t.link, t.awarded)
 		sessionButtons[session]:Show()

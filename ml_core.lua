@@ -30,6 +30,7 @@ end
 function RCLootCouncilML:OnEnable()
 	db = addon:Getdb()
 	self.candidates = {} 	-- candidateName = { class, role, rank }
+	self.mlCandidates = {}  -- candidateName = true, the list of candidates who are eligible to receive loot.
 	self.lootTable = {} 		-- The MLs operating lootTable, see ML:AddItem()
 	self.awardedInBags = {} -- Awarded items that are stored in MLs inventory
 									-- i = { link, winner }
@@ -142,6 +143,23 @@ function RCLootCouncilML:UpdateGroup(ask)
 	end
 end
 
+function RCLootCouncilML:BuildMLCandidates()
+	if not addon.isMasterLooter or GetLootMethod() ~= "master" or not self.lootOpen then
+		return addon:Debug("ML candidates can only be built by ML when loot window is open!!")
+	end
+	local mlCandidates = {} -- This is the union of candidates in all slots
+	for slot = 1, GetNumLootItems() do
+		for i = 1, MAX_RAID_MEMBERS do
+			local name = GetMasterLootCandidate(slot, i)
+			if name then
+				name = addon:UnitName(name)
+				mlCandidates[name] = true
+			end
+		end
+	end
+	return mlCandidates
+end
+
 function RCLootCouncilML:StartSession()
 	addon:Debug("ML:StartSession()")
 	-- Make sure we haven't started the session too fast
@@ -151,7 +169,7 @@ function RCLootCouncilML:StartSession()
 	end
 	self.running = true
 
-	addon:SendCommand("group", "lootTable", self.lootTable)
+	addon:SendCommand("group", "lootTable", self.lootTable, self.mlCandidates)
 
 	self:AnnounceItems()
 	-- Start a timer to set response as offline/not installed unless we receive an ack
@@ -405,6 +423,9 @@ function RCLootCouncilML:LootOpened()
 				end
 			end
 		end
+
+		self.mlCandidates = self:BuildMLCandidates()
+
 		if #self.lootTable > 0 and not self.running then
 			if db.autoStart then -- Settings say go
 				self:StartSession()

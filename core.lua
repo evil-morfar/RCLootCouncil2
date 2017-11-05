@@ -68,6 +68,7 @@ local frames = {} -- Contains all frames created by RCLootCouncil:CreateFrame()
 local unregisterGuildEvent = false
 local player_relogged = true -- Determines if we potentially need data from the ML due to /rl
 local lootTable = {}
+local mlCandidates = nil -- candidates that eligible to receive loot from ML
 
 local IsPartyLFG = IsPartyLFG
 
@@ -108,6 +109,7 @@ function RCLootCouncil:OnInitialize()
 		NOTHING			= { color = {0.5,0.5,0.5,1},		sort = 505,		text = L["Offline or RCLootCouncil not installed"], },
 		PASS				= { color = {0.7, 0.7,0.7,1},		sort = 800,		text = _G.PASS,},
 		AUTOPASS			= { color = {0.7,0.7,0.7,1},		sort = 801,		text = L["Autopass"], },
+		INELIGIBLE 			= { color = {0.7,0.7,0.7,1},		sort = 801,		text = L["Ineligible"], },
 		DISABLED			= { color = {0.3,0.35,0.5,1},		sort = 802,		text = L["Candidate has disabled RCLootCouncil"], },
 		NOTINRAID		= { color = {0.7,0.6,0,1}, 		sort = 803, 	text = L["Candidate is not in the instance"]},
 		--[[1]]			  { color = {0,1,0,1},				sort = 1,		text = L["Mainspec/Need"],},
@@ -662,7 +664,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 		if test then
 			if command == "lootTable" then
 				if self:UnitIsUnit(sender, self.masterLooter) then
-					lootTable = unpack(data)
+					lootTable, mlCandidates = unpack(data)
 					-- Send "DISABLED" response when not enabled
 					if not self.enabled then
 						for i = 1, #lootTable do
@@ -693,7 +695,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 
 					-- Hand the lootTable to the votingFrame
 					if self.isCouncil or self.mldb.observe then
-						self:GetActiveModule("votingframe"):ReceiveLootTable(lootTable)
+						self:GetActiveModule("votingframe"):ReceiveLootTable(lootTable, mlCandidates)
 					end
 
 					self:SendCommand("group", "lootAck", self.playerName) -- send ack
