@@ -424,8 +424,8 @@ end
 
 function RCLootCouncilML:LootOpened()
 	local sessionframe = addon:GetActiveModule("sessionframe")
-	if addon.isMasterLooter and GetNumLootItems() > 0 and not self.running then -- Dont update if we are running a session
-		if sessionframe:IsRunning() then -- Check if an update is needed
+	if addon.isMasterLooter and GetNumLootItems() > 0 then
+		if self.running or sessionframe:IsRunning() then -- Check if an update is needed
 			self:UpdateLootSlots()
 		else -- Otherwise add the loot
 			for i = 1, GetNumLootItems() do
@@ -582,6 +582,7 @@ function RCLootCouncilML:Award(session, winner, response, reason)
 			if self.lootTable[session].link ~= GetLootSlotLink(self.lootTable[session].lootSlot) then
 				addon:Debug("LootSlot has changed before award!", session)
 				-- And update them if not
+				self:UpdateLootSlots()
 			end
 			if self.lootTable[session].quality < GetLootThreshold() or GetNumGroupMembers() == 0 then
 				LootSlot(self.lootTable[session].lootSlot)
