@@ -41,6 +41,7 @@ RCLootCouncil = LibStub("AceAddon-3.0"):NewAddon("RCLootCouncil", "AceConsole-3.
 local LibDialog = LibStub("LibDialog-1.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 local lwin = LibStub("LibWindow-1.1")
+local deformat = LibStub("LibDeformat-3.0")
 
 RCLootCouncil:SetDefaultModuleState(false)
 
@@ -1373,17 +1374,16 @@ function RCLootCouncil:GetItemClassesAllowedFlag(item)
 	GameTooltip:SetOwner(UIParent, "ANCHOR_NONE")
 	GameTooltip:SetHyperlink(item)
 
-	local prefix = _G.ITEM_CLASSES_ALLOWED:gsub("%%s", "")
 	local separator = ", " -- in-game tests show all locales use this as separator.
 
-	local result = 0
 	for i = 1, GameTooltip:NumLines() or 0 do
 		local line = getglobal('GameTooltipTextLeft' .. i)
 		if line and line.GetText then
-			local text = line:GetText()
-			if text and text:find("^"..prefix) then
+			local text = line:GetText() or ""
+			local classesText = deformat(text, _G.ITEM_CLASSES_ALLOWED)
+			if classesText then
 				GameTooltip:Hide()
-				local classesText = text:sub(prefix:len()+1)
+				local result = 0
 				for className in string.gmatch(classesText..separator, "(.-)"..separator) do
 					local classID = self.classDisplayNameToID[className]
 					if classID then
