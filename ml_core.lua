@@ -367,6 +367,10 @@ function RCLootCouncilML:OnEvent(event, ...)
 	if event == "LOOT_OPENED" then -- IDEA Check if event LOOT_READY is useful here (also check GetLootInfo() for this)
 		self.lootOpen = true
 		if not InCombatLockdown() then
+			if not addon.candidates[addon.playerName] or #addon.council == 0 then
+				addon:Print(L["Please wait a few seconds until all data has been synchronized."])
+				return addon:Debug("Data wasn't ready on loot open", addon.candidates[addon.playerName], #addon.council)
+			end
 			self:LootOpened()
 		else
 			addon:Print(L["You can't start a loot session while in combat."])
