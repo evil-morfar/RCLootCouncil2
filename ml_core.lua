@@ -34,6 +34,7 @@ function RCLootCouncilML:OnEnable()
 	self.awardedInBags = {} -- Awarded items that are stored in MLs inventory
 									-- i = { link, winner }
 	self.lootInBags = {} 	-- Items not yet awarded but stored in bags
+	self.lootSlotLinks = {} -- The item link in each loot slot
 	self.lootOpen = false 	-- is the ML lootWindow open or closed?
 	self.running = false		-- true if we're handling a session
 	self.council = self:GetCouncilInGroup()
@@ -42,6 +43,8 @@ function RCLootCouncilML:OnEnable()
 	self:RegisterEvent("LOOT_OPENED",		"OnEvent")
 	self:RegisterEvent("LOOT_CLOSED",		"OnEvent")
 	self:RegisterEvent("CHAT_MSG_WHISPER",	"OnEvent")
+	self:RegisterEvent("LOOT_SLOT_CLEARED", "OnEvent")
+	self:SecureHook("GiveMasterLoot", "OnGiveMasterLoot")
 	self:RegisterBucketEvent("GROUP_ROSTER_UPDATE", 10, "UpdateGroup") -- Bursts in group creation, and we should have plenty of time to handle it
 	self:RegisterBucketMessage("RCConfigTableChanged", 2, "ConfigTableChanged") -- The messages can burst
 	self:RegisterMessage("RCCouncilChanged", "CouncilChanged")
@@ -366,6 +369,10 @@ function RCLootCouncilML:OnEvent(event, ...)
 	addon:DebugLog("ML event", event, ...)
 	if event == "LOOT_OPENED" then -- IDEA Check if event LOOT_READY is useful here (also check GetLootInfo() for this)
 		self.lootOpen = true
+		wipe(self.lootSlotLinks)
+		for i=1,  GetNumLootItems() do
+			self.lootSlotLinks[i] = GetLootSlotLink(i)
+		end
 		if not InCombatLockdown() then
 			self:LootOpened()
 		else
@@ -381,7 +388,17 @@ function RCLootCouncilML:OnEvent(event, ...)
 		elseif self.running then
 			self:GetItemsFromMessage(msg, sender)
 		end
+	elseif event == "LOOT_SLOT_CLEARED" then
+		local slot = ...
+		if self.lootSlotLinks[slot] then -- If not, this is the 2nd event fired for the same thing. No idea why Blizz fires "LOOT_SLOT_CLEARED" twice.
+			-- TODO
+			self.lootSlotLinks[slot] = nil -- Important.
+		end
 	end
+end
+
+function RCLootCouncilML:OnGiveMasterLoot(...)
+	-- TODO
 end
 
 function RCLootCouncilML:LootOpened()
