@@ -108,12 +108,12 @@ function RCLootCouncil:OnInitialize()
 		NOTHING			= { color = {0.5,0.5,0.5,1},		sort = 505,		text = L["Offline or RCLootCouncil not installed"], },
 		PASS				= { color = {0.7, 0.7,0.7,1},		sort = 800,		text = _G.PASS,},
 		AUTOPASS			= { color = {0.7,0.7,0.7,1},		sort = 801,		text = L["Autopass"], },
-		INELIGIBLE 			= { color = {0.7,0.7,0.7,1},		sort = 801,		text = L["Ineligible"], },
 		DISABLED			= { color = {0.3,0.35,0.5,1},		sort = 802,		text = L["Candidate has disabled RCLootCouncil"], },
 		NOTINRAID		= { color = {0.7,0.6,0,1}, 		sort = 803, 	text = L["Candidate is not in the instance"]},
 		--[[1]]			  { color = {0,1,0,1},				sort = 1,		text = L["Mainspec/Need"],},
 		--[[2]]			  { color = {1,0.5,0,1},			sort = 2,		text = L["Offspec/Greed"],	},
 		--[[3]]			  { color = {0,0.7,0.7,1},			sort = 3,		text = L["Minor Upgrade"],},
+		INELIGIBLE 			= { color = {0.7,0.7,0.7,1},		sort = 804,		text = L["Ineligible"], },
 		tier = {
 			--[[1]]		  { color = {0.1,1,0.5,1},			sort = 1,		text = L["4th Tier Piece"],},
 			--[[2]]		  { color = {1,1,0.5,1},			sort = 2,		text = L["2nd Tier Piece"],},
