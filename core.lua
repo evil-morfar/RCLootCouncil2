@@ -68,7 +68,6 @@ local frames = {} -- Contains all frames created by RCLootCouncil:CreateFrame()
 local unregisterGuildEvent = false
 local player_relogged = true -- Determines if we potentially need data from the ML due to /rl
 local lootTable = {}
-local mlCandidates = nil -- candidates that eligible to receive loot from ML
 
 local IsPartyLFG = IsPartyLFG
 
@@ -664,7 +663,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 		if test then
 			if command == "lootTable" then
 				if self:UnitIsUnit(sender, self.masterLooter) then
-					lootTable, mlCandidates = unpack(data)
+					lootTable = unpack(data)
 					-- Send "DISABLED" response when not enabled
 					if not self.enabled then
 						for i = 1, #lootTable do
@@ -695,7 +694,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 
 					-- Hand the lootTable to the votingFrame
 					if self.isCouncil or self.mldb.observe then
-						self:GetActiveModule("votingframe"):ReceiveLootTable(lootTable, mlCandidates)
+						self:GetActiveModule("votingframe"):ReceiveLootTable(lootTable)
 					end
 
 					self:SendCommand("group", "lootAck", self.playerName) -- send ack
@@ -704,7 +703,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 					-- The actual response/note are left unsent if not autopassed.
 					for ses, v in ipairs(lootTable) do
 						local response = nil
-						if v.lootSlot and not v.bagged and mlCandidates and not mlCandidates[self.playerName] then -- Ineligible for the loot
+						if v.lootSlot and not v.bagged and lootTable.mlCandidates and not lootTable.mlCandidates[self.playerName] then -- Ineligible for the loot
 							lootTable[ses].autopass = true
 						elseif db.autoPass then
 							if (v.boe and db.autoPassBoE) or not v.boe then

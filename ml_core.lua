@@ -30,7 +30,6 @@ end
 function RCLootCouncilML:OnEnable()
 	db = addon:Getdb()
 	self.candidates = {} 	-- candidateName = { class, role, rank }
-	self.mlCandidates = {}  -- candidateName = true, the list of candidates who are eligible to receive loot.
 	self.lootTable = {} 		-- The MLs operating lootTable, see ML:AddItem()
 	self.awardedInBags = {} -- Awarded items that are stored in MLs inventory
 									-- i = { link, winner }
@@ -169,7 +168,7 @@ function RCLootCouncilML:StartSession()
 	end
 	self.running = true
 
-	addon:SendCommand("group", "lootTable", self.lootTable, self.mlCandidates)
+	addon:SendCommand("group", "lootTable", self.lootTable)
 
 	self:AnnounceItems()
 	-- Start a timer to set response as offline/not installed unless we receive an ack
@@ -424,7 +423,7 @@ function RCLootCouncilML:LootOpened()
 			end
 		end
 
-		self.mlCandidates = self:BuildMLCandidates()
+		self.lootTable.mlCandidates = self:BuildMLCandidates()
 
 		if #self.lootTable > 0 and not self.running then
 			if db.autoStart then -- Settings say go
