@@ -1220,3 +1220,134 @@ end
 function RCLootCouncilML.AwardPopupOnClickNo(frame, data)
 	-- Intentionally left empty
 end
+
+--@debug@
+-- Test award checking. Only for internal testing purpose.
+local __GetNumLootItems = GetNumLootItems
+local __GetLootSlotInfo = GetLootSlotInfo
+local __GetLootSlotLink = GetLootSlotLink
+local __GetMasterLootCandidate = GetMasterLootCandidate
+local __ShouldAutoAward = RCLootCouncilML.ShouldAutoAward
+local __CanWeLootItem = RCLootCouncilML.CanWeLootItem
+local __GetNumGroupMembers = GetNumGroupMembers
+local __EndSession = RCLootCouncilML.EndSession
+function RCLootCouncilML:AwardTest(testid)
+	if not addon.candidates[addon.playerName] or #addon.council == 0 then
+		return addon:Print(L["Please wait a few seconds until all data has been synchronized."])
+	end
+	if not addon.isMasterLooter or GetLootMethod() ~= "master" then
+		addon:Print("Make sure to run this test in a group as ML.")
+	end
+	local loots = {147328, 147328, 147328, 147328,} -- Transformed into item link below.
+
+	local candidates = {"Tester1-Realm", "Tester2-Realm", "Tester3-Realm", "Tester4-Realm"}	
+	
+	for i, id in pairs(loots) do 
+		local link = select(2, GetItemInfo(id))
+		if not link then 
+			return self:ScheduleTimer("AwardTest", 1, testid)
+		else
+			loots[i] = link
+		end 
+	end  -- Items are not cached.
+
+	if self.awardTesting then
+		return addon:Print("Testing. Please wait.")
+	end
+
+	local db = addon:Getdb()
+	local autoAward = db.autoAward
+	self.awardTesting = true
+	db.autoAward = true
+
+	-- We must send candidates now, since we can't wait the normal 10 secs
+	for k, v in ipairs(candidates) do
+		self.candidates[v] = {
+			["class"]		= "DRUID",
+			["role"]		= "NONE",
+			["rank"]		= "",
+		}
+	end
+	addon:SendCommand("group", "candidates", self.candidates)
+
+	-- Override global functions for test. Restore them after test is done.
+	_G.GetNumLootItems = function()
+	    return #loots
+	end
+	_G.GetLootSlotInfo = function(i)
+		if loots[i] then
+	    	return nil, nil, 1, 4
+	    end
+	end
+	_G.GetLootSlotLink = function(i)
+	    return loots[i]
+	end
+	_G.GetMasterLootCandidate = function(slot, i)
+	    return candidates[i]
+	end
+	_G.GetNumGroupMembers = function()
+		return #candidates
+	end
+	self.ShouldAutoAward = function() return false end
+	self.CanWeLootItem = function() return true end
+
+	self.EndSession = function(self)
+		-- Restore functions
+		db.autoAward = autoAward
+		_G.GetLootSlotInfo = __GetLootSlotLink
+		_G.GetLootSlotLink = __GetLootSlotLink
+		_G.GetMasterLootCandidate = __GetMasterLootCandidate
+		self.ShouldAutoAward = __ShouldAutoAward
+		self.CanWeLootItem = __CanWeLootItem
+		self.awardTesting = false
+		self.EndSession = __EndSession
+		addon:Print("test ends ")
+		__EndSession(self)
+	end
+-------------------------------------------------------------
+--- Test starts ----------------------------------------------
+-------------------------------------------------------------
+	if testid == 1 then
+		candidates = {"Tester1-Realm", "Tester2-Realm"}	
+		addon:Print(testid.."No LOOT_SLOT_CLEARED and no CHAT_MSG_LOOT.Expect: Tester1 fails to get award (not in instance, inventory full or awarded).")
+		self:OnEvent("LOOT_OPENED")
+		self:Award(1, "Tester1-Realm", 1)
+	elseif testid == 2 then
+		addon:Print(testid.."Award item normally. Expect: Tester1 gets session 1 award.")
+		self:OnEvent("LOOT_OPENED")
+		self:Award(1, "Tester1-Realm", 1)
+		self:ScheduleTimer("OnEvent", 0.5, "LOOT_SLOT_CLEARED", 1)
+		self:ScheduleTimer("OnEvent", 1, "CHAT_MSG_LOOT", format(_G.LOOT_ITEM, "Tester1-Realm", loots[1]))
+	elseif testid == 3 then
+		addon:Print(testid.."Get LOOT_SLOT_CLEARED but loot msg is missing. Expect: Tester1 gets session 1 award.")
+		self:OnEvent("LOOT_OPENED")
+		self:Award(1, "Tester1-Realm", 1)
+		self:ScheduleTimer("OnEvent", 0.5, "LOOT_SLOT_CLEARED", 1)
+	elseif testid == 4 then
+		addon:Print(testid..".Expect: Tester1 gets session 1 award. (loot slot cleared missing)")
+		self:OnEvent("LOOT_OPENED")
+		self:Award(1, "Tester1-Realm", 1)
+		self:ScheduleTimer("OnEvent", 1, "CHAT_MSG_LOOT", format(_G.LOOT_ITEM, "Tester1-Realm", loots[1]))
+	elseif testid == 5 then
+		addon:Print(testid..". Expect: Tester1 gets award2. 2 gets award2. 3 gets award3.")
+		self:OnEvent("LOOT_OPENED")
+		self:Award(1, "Tester1-Realm", 1)
+		self:Award(2, "Tester2-Realm", 1)
+		self:Award(3, "Tester3-Realm", 1)
+		self:ScheduleTimer("OnEvent", 0.5, "LOOT_SLOT_CLEARED", 1)
+		self:ScheduleTimer("OnEvent", 0.6, "LOOT_SLOT_CLEARED", 2)
+		self:ScheduleTimer("OnEvent", 0.7, "LOOT_SLOT_CLEARED", 3)
+		self:ScheduleTimer("OnEvent", 1, "CHAT_MSG_LOOT", format(_G.LOOT_ITEM, "Tester1-Realm", loots[1]))
+		self:ScheduleTimer("OnEvent", 1.1, "CHAT_MSG_LOOT", format(_G.LOOT_ITEM, "Tester2-Realm", loots[2]))
+		self:ScheduleTimer("OnEvent", 1.2, "CHAT_MSG_LOOT", format(_G.LOOT_ITEM, "Tester3-Realm", loots[3]))
+	elseif testid == 6 then
+		addon:Print(testid..". Give item2 through loot window to tester1. Expect test1 gets awarded in session2.")
+		self:OnEvent("LOOT_OPENED")
+		GiveMasterLoot(2, 1)
+		self:ScheduleTimer("OnEvent", 0.5, "LOOT_SLOT_CLEARED", 1)
+		self:ScheduleTimer("OnEvent", 1, "CHAT_MSG_LOOT", format(_G.LOOT_ITEM, "Tester1-Realm", loots[1]))
+	end
+end
+
+-- Test ends
+--@end-debug@

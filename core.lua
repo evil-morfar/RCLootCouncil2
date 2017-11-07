@@ -508,6 +508,10 @@ function RCLootCouncil:ChatCommand(msg)
 	elseif input == "nnp" then
 		self.nnp = not self.nnp
 		self:Print("nnp = "..tostring(self.nnp))
+	elseif input == "awardtest" or input == "at" then -- awardtest
+		self:CallModule("masterlooter")
+		self:GetActiveModule("masterlooter"):NewML(self.masterLooter)
+		self:GetActiveModule("masterlooter"):AwardTest(tonumber(args[1]))
 --@end-debug@
 	elseif input == "whisper" or input == string.lower(_G.WHISPER) then
 		self:Print(L["whisper_help"])
