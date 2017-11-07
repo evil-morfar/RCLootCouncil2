@@ -622,9 +622,14 @@ function RCLootCouncilML:OnGiveMasterLootFailed(entry)
 	end
 
 	if entry.reason == "RCAutoAward" then
-		addon:Print(format("Fail to give %s to %s (not in instance, inventory is full or already awarded)?", entry.link, entry.name)) -- TODO: Locale
+		addon:Print(format(L["Unable to give 'item' to 'player' - (Player offline, left group/instance or inventory full?)"], entry.link, entry.name))
 	elseif entry.reason == "RCAwardLater" or entry.reason == "RCAward" then
-		addon:Print(format("Fail to give %s to %s (not in instance, inventory is full or already awarded)?", entry.link, entry.name)) -- TODO: Locale
+		if self.lootTable[entry.session] and self.lootTable[entry.session].awarded then
+			-- If we reach here, it means GiveMasterLoot() on the same slot is executed multiple times quickly before loot msg is received.
+			addon:Print(format(L["Unable to give 'item' to 'player' - (Item has already been awarded.)"], entry.link, entry.name))
+		else
+			addon:Print(format(L["Unable to give 'item' to 'player' - (Player offline, left group/instance or inventory full?)"], entry.link, entry.name))
+		end
 		return awardFailed(entry.session, entry.name, "expired")
 	else
 		-- Dont do anything if award not done by RC fails.
@@ -807,6 +812,10 @@ function RCLootCouncilML:Award(session, winner, response, reason)
 				--addon:Print(L["Alternatively, flag the loot as award later."])
 				return awardFailed(session, winner, "loot_not_open")
 			end
+
+			if self.lootTable[session].awarded then
+				return addon:Print(format(L["Unable to give 'item' to 'player' - (Item has already been awarded.)"], self.lootTable[session].link, winner))
+			end
 			-- v2.4.4+: Check if the item is still in the expected slot
 			if self.lootTable[session].link ~= GetLootSlotLink(self.lootTable[session].lootSlot) then
 				addon:Debug("LootSlot has changed before award!", session)
@@ -835,8 +844,8 @@ function RCLootCouncilML:Award(session, winner, response, reason)
 		if awarded then
 			self.lootTable[session].pendReason = "normal"
 			return awardPending(session, winner, "normal")
-		else -- If we reach here it means we couldn't find a valid MasterLootCandidate, propably due to the winner is unable to receive the loot
-			addon:Print(format(L["Unable to give 'item' to 'player' - (player offline, left group or instance?)"], self.lootTable[session].link, winner))
+		else -- If we reach here it means we couldn't find a valid MasterLootCandidate, because the candidate is ineligible to receive the loot.
+			addon:Print(format(L["Unable to give 'item' to 'player' - (Player is ineligible to receive the loot.)"], self.lootTable[session].link, winner))
 			awardFailed(session, winner, "normal")
 		end
 		return awarded
