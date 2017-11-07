@@ -456,8 +456,9 @@ function RCLootCouncilML:OnGiveMasterLoot(slot, index, reason, session)
 	end
 
 	if reason ~= "RCAward" and reason ~= "RCAutoAward" and reason ~= "RCAwardLater" then -- Master loot is done by other addon, or by loot window.
+		self:UpdateLootSlots()
 		for ses, v in ipairs(self.lootTable) do -- Try to get the session we want to award
-			if addon:ItemIsItem(v.link, link) and not v.awarded then
+			if addon:ItemIsItem(v.link, link) and not v.awarded and v.lootSlot == slot then
 				session = ses
 				break
 			end
