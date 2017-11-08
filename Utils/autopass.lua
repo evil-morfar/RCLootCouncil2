@@ -11,26 +11,30 @@ local autopassOverride = {
 --- Classes that should autopass a subtype.
 -- @table autopassTable
 local autopassTable = {
-	["Cloth"]					= {"WARRIOR", "DEATHKNIGHT", "PALADIN", "DRUID", "MONK", "ROGUE", "HUNTER", "SHAMAN", "DEMONHUNTER"},
-	["Leather"] 				= {"WARRIOR", "DEATHKNIGHT", "PALADIN", "HUNTER", "SHAMAN", "PRIEST", "MAGE", "WARLOCK"},
-	["Mail"] 					= {"WARRIOR", "DEATHKNIGHT", "PALADIN", "DRUID", "MONK", "ROGUE", "PRIEST", "MAGE", "WARLOCK", "DEMONHUNTER"},
-	["Plate"]					= {"DRUID", "MONK", "ROGUE", "HUNTER", "SHAMAN", "PRIEST", "MAGE", "WARLOCK", "DEMONHUNTER"},
-	["Shields"] 				= {"DEATHKNIGHT", "DRUID", "MONK", "ROGUE", "HUNTER","PRIEST", "MAGE", "WARLOCK", "DEMONHUNTER"},
-	["Bows"] 					= {"DEATHKNIGHT", "PALADIN", "DRUID", "MONK", "SHAMAN", "PRIEST", "MAGE", "WARLOCK", "DEMONHUNTER", "WARRIOR"},
-	["Crossbows"] 				= {"DEATHKNIGHT", "PALADIN", "DRUID", "MONK", "SHAMAN", "PRIEST", "MAGE", "WARLOCK", "DEMONHUNTER", "WARRIOR"},
-	["Daggers"]					= {"DEATHKNIGHT", "PALADIN", "MONK", },
-	["Guns"]						= {"DEATHKNIGHT", "PALADIN", "DRUID", "MONK","SHAMAN", "PRIEST", "MAGE", "WARLOCK", "DEMONHUNTER", "WARRIOR"},
-	["Fist Weapons"] 			= {"DEATHKNIGHT", "PALADIN",  "PRIEST", "MAGE", "WARLOCK"},
-	["One-Handed Axes"]		= {"DRUID", "PRIEST", "MAGE", "WARLOCK"},
-	["One-Handed Maces"]		= {"HUNTER", "MAGE", "WARLOCK", "DEMONHUNTER"},
-	["One-Handed Swords"] 	= {"DRUID", "SHAMAN", "PRIEST",},
-	["Polearms"] 				= {"ROGUE", "SHAMAN", "PRIEST", "MAGE", "WARLOCK", "DEMONHUNTER"},
-	["Staves"]					= {"DEATHKNIGHT", "PALADIN",  "ROGUE", "DEMONHUNTER"},
-	["Two-Handed Axes"]		= {"DRUID", "ROGUE", "MONK", "PRIEST", "MAGE", "WARLOCK", "DEMONHUNTER"},
-	["Two-Handed Maces"]		= {"MONK", "ROGUE", "HUNTER", "PRIEST", "MAGE", "WARLOCK", "DEMONHUNTER"},
-	["Two-Handed Swords"]	= {"DRUID", "MONK", "ROGUE", "SHAMAN", "PRIEST", "MAGE", "WARLOCK", "DEMONHUNTER"},
-	["Wands"]					= {"WARRIOR", "DEATHKNIGHT", "PALADIN", "DRUID", "MONK", "ROGUE", "HUNTER", "SHAMAN", "DEMONHUNTER"},
-	["Warglaives"]				= {"WARRIOR", "DEATHKNIGHT", "PALADIN", "DRUID", "MONK", "ROGUE", "PRIEST", "MAGE", "WARLOCK", "HUNTER", "SHAMAN",}
+	[LE_ITEM_CLASS_ARMOR] = {
+		[LE_ITEM_ARMOR_CLOTH]		= {"WARRIOR", "DEATHKNIGHT", "PALADIN", "DRUID", "MONK", "ROGUE", "HUNTER", "SHAMAN", "DEMONHUNTER"},
+		[LE_ITEM_ARMOR_LEATHER] 	= {"WARRIOR", "DEATHKNIGHT", "PALADIN", "HUNTER", "SHAMAN", "PRIEST", "MAGE", "WARLOCK"},
+		[LE_ITEM_ARMOR_MAIL] 		= {"WARRIOR", "DEATHKNIGHT", "PALADIN", "DRUID", "MONK", "ROGUE", "PRIEST", "MAGE", "WARLOCK", "DEMONHUNTER"},
+		[LE_ITEM_ARMOR_PLATE]		= {"DRUID", "MONK", "ROGUE", "HUNTER", "SHAMAN", "PRIEST", "MAGE", "WARLOCK", "DEMONHUNTER"},
+		[LE_ITEM_ARMOR_SHIELD] 		= {"DEATHKNIGHT", "DRUID", "MONK", "ROGUE", "HUNTER","PRIEST", "MAGE", "WARLOCK", "DEMONHUNTER"},
+	},
+	[LE_ITEM_CLASS_WEAPON] = {
+		[LE_ITEM_WEAPON_AXE1H]		= {"DRUID", "PRIEST", "MAGE", "WARLOCK"},
+		[LE_ITEM_WEAPON_AXE2H]		= {"DRUID", "ROGUE", "MONK", "PRIEST", "MAGE", "WARLOCK", "DEMONHUNTER"},
+		[LE_ITEM_WEAPON_BOWS] 		= {"DEATHKNIGHT", "PALADIN", "DRUID", "MONK", "SHAMAN", "PRIEST", "MAGE", "WARLOCK", "DEMONHUNTER", "WARRIOR"},
+		[LE_ITEM_WEAPON_CROSSBOW] 	= {"DEATHKNIGHT", "PALADIN", "DRUID", "MONK", "SHAMAN", "PRIEST", "MAGE", "WARLOCK", "DEMONHUNTER", "WARRIOR"},
+		[LE_ITEM_WEAPON_DAGGER]		= {"DEATHKNIGHT", "PALADIN", "MONK", },
+		[LE_ITEM_WEAPON_GUNS]		= {"DEATHKNIGHT", "PALADIN", "DRUID", "MONK","SHAMAN", "PRIEST", "MAGE", "WARLOCK", "DEMONHUNTER", "WARRIOR"},
+		[LE_ITEM_WEAPON_MACE1H]		= {"HUNTER", "MAGE", "WARLOCK", "DEMONHUNTER"},
+		[LE_ITEM_WEAPON_MACE2H]		= {"MONK", "ROGUE", "HUNTER", "PRIEST", "MAGE", "WARLOCK", "DEMONHUNTER"},
+		[LE_ITEM_WEAPON_POLEARM] 	= {"ROGUE", "SHAMAN", "PRIEST", "MAGE", "WARLOCK", "DEMONHUNTER"},
+		[LE_ITEM_WEAPON_SWORD1H] 	= {"DRUID", "SHAMAN", "PRIEST",},
+		[LE_ITEM_WEAPON_SWORD2H]	= {"DRUID", "MONK", "ROGUE", "SHAMAN", "PRIEST", "MAGE", "WARLOCK", "DEMONHUNTER"},
+		[LE_ITEM_WEAPON_STAFF]		= {"DEATHKNIGHT", "PALADIN",  "ROGUE", "DEMONHUNTER"},
+		[LE_ITEM_WEAPON_WAND]		= {"WARRIOR", "DEATHKNIGHT", "PALADIN", "DRUID", "MONK", "ROGUE", "HUNTER", "SHAMAN", "DEMONHUNTER"},
+		[LE_ITEM_WEAPON_WARGLAIVE]	= {"WARRIOR", "DEATHKNIGHT", "PALADIN", "DRUID", "MONK", "ROGUE", "PRIEST", "MAGE", "WARLOCK", "HUNTER", "SHAMAN",},
+		[LE_ITEM_WEAPON_UNARMED] 	= {"DEATHKNIGHT", "PALADIN",  "PRIEST", "MAGE", "WARLOCK"}, -- Fist weapons
+	},
 }
 
 --- Types of relics. Thanks to xmyno for the list.
@@ -74,15 +78,16 @@ local relics = {
 -- local dat = lootTable[1] -- Shortening
 -- local boolean = RCLootCouncil:AutoPassCheck(dat.subType, dat.equipLoc, dat.link, dat.token, dat.relic)
 --@return true if the player should autopass the given item.
-function RCLootCouncil:AutoPassCheck(subType, equipLoc, link, isToken, isRelic, class)
+function RCLootCouncil:AutoPassCheck(typeID, subTypeID, equipLoc, link, isToken, isRelic, class)
 	local class = class or self.playerClass
-  -- Tokens ignore autopass override
-  local id = type(link) == "number" and link or self:GetItemIDFromLink(link) -- Convert to id if needed
+	-- Tokens ignore autopass override
+	local id = type(link) == "number" and link or self:GetItemIDFromLink(link) -- Convert to id if needed
 	if isToken or RCTokenClasses[id] then -- It's a token
 		return not tContains(RCTokenClasses[id], class)
 	end 
+
 	if not tContains(autopassOverride, equipLoc) then
-		if isRelic or ("Artifact Relic" == self.db.global.localizedSubTypes[subType]) then
+		if self:IsRelicTypeID(typeID, subTypeID) then
 			if isRelic then -- New in v2.3+
 				self:DebugLog("NewRelicAutopassCheck", link, isRelic)
 				return not tContains(relics[class], isRelic)
@@ -94,8 +99,8 @@ function RCLootCouncil:AutoPassCheck(subType, equipLoc, link, isToken, isRelic, 
 	         return not tContains(relics[class], type)
 			end
 
-		elseif subType and autopassTable[self.db.global.localizedSubTypes[subType]] then
-			return tContains(autopassTable[self.db.global.localizedSubTypes[subType]], class)
+		elseif autopassTable[typeID] and autopassTable[typeID][subTypeID] then
+			return tContains(autopassTable[typeID][subTypeID], class)
 		end
 	end
 	return false

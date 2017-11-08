@@ -55,7 +55,8 @@ end
 -- @param index Index in self.lootTable, used to set data in a specific session
 function RCLootCouncilML:AddItem(item, bagged, slotIndex, index)
 	addon:DebugLog("ML:AddItem", item, bagged, slotIndex, index)
-	local name, link, rarity, ilvl, iMinLevel, type, subType, iStackCount, equipLoc, texture = GetItemInfo(item)
+	local name, link, rarity, ilvl, iMinLevel, type, subType, iStackCount, equipLoc, texture, 
+		sellPrice, typeID, subTypeID, bindType, expansionID, itemSetID, isCrafting = GetItemInfo(item)
 	local itemID = link and addon:GetItemIDFromLink(link)
 	local session = index or #self.lootTable + 1
 	self.lootTable[session] = { -- We want to reserve the index even if we haven't fully loaded the item
@@ -72,6 +73,8 @@ function RCLootCouncilML:AddItem(item, bagged, slotIndex, index)
 		["boe"]			= addon:IsItemBoE(link),
 		["relic"]		= itemID and IsArtifactRelicItem(itemID) and select(3, C_ArtifactUI.GetRelicInfoByItemID(itemID)),
 		["token"]		= itemID and RCTokenTable[itemID],
+		["typeID"]		= typeID, -- Not transmitted.
+		["subTypeID"]	= subTypeID, -- Not transmitted.
 	}
 
 		-- Item isn't properly loaded, so update the data in 1 sec (Should only happen with /rc test)
@@ -81,6 +84,20 @@ function RCLootCouncilML:AddItem(item, bagged, slotIndex, index)
 	else
 		addon:SendMessage("RCMLAddItem", item, session)
 	end
+end
+
+-- Generate a copy of lootable which removes stuffs that can be geneated without caching.
+function RCLootCouncilML:GetLootTableForTransmit()
+	local notTransmitted = {"typeID", "subTypeID"}
+	local copy = CopyTable(self.lootTable) -- Defined in SharedXML/util.lua
+
+	for _, key in ipairs(notTransmitted) do
+		for _, v in ipairs(copy) do
+			v[key] = nil
+		end
+	end
+
+	return copy
 end
 
 --- Removes a session from the lootTable
@@ -151,7 +168,7 @@ function RCLootCouncilML:StartSession()
 	end
 	self.running = true
 
-	addon:SendCommand("group", "lootTable", self.lootTable)
+	addon:SendCommand("group", "lootTable", self:GetLootTableForTransmit())
 
 	self:AnnounceItems()
 	-- Start a timer to set response as offline/not installed unless we receive an ack
@@ -605,7 +622,7 @@ RCLootCouncilML.announceItemStrings = {
 	["&s"] = function(ses) return ses end,
 	["&i"] = function(...) return select(2,...) end,
 	["&l"] = function(_, _, v) return addon:GetItemLevelText(v.ilvl, v.token) end,
-	["&t"] = function(_, _, t) return addon:GetItemTypeText(t.link, t.subType, t.equipLoc, t.token, t.relic) end,
+	["&t"] = function(_, _, t) return addon:GetItemTypeText(t.subType, t.typeID, t.subTypeID, t.equipLoc, t.link, t.token, t.relic) end,
 }
 -- The description for each keyword
 RCLootCouncilML.announceItemStringsDesc = {
@@ -640,7 +657,7 @@ RCLootCouncilML.awardStrings = {
 							return addon:GetItemLevelText(t.ilvl, t.token) end,
 	["&t"] = function(...)
 		local t = RCLootCouncilML.lootTable[select(5,...)]
-		return addon:GetItemTypeText(t.link, t.subType, t.equipLoc, t.token, t.relic)
+		return addon:GetItemTypeText(t.subType, t.typeID, t.subTypeID, t.equipLoc, t.link, t.token, t.relic)
 	end,
 }
 

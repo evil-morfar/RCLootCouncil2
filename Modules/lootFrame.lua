@@ -38,6 +38,8 @@ function LootFrame:Start(table, reRoll)
 				equipLoc = table[k].equipLoc,
 				timeLeft = addon.mldb.timeout,
 				subType = table[k].subType,
+				typeID = table[k].typeID,
+				subTypeID = table[k].subTypeID,
 				isTier = table[k].token,
 				isRelic = table[k].relic,
 				sessions = {reRoll and table[k].session or k}, -- ".session" does not exist if not rerolling.
@@ -116,7 +118,7 @@ function LootFrame:OnRoll(entry, button)
 	-- Only send minimum neccessary data, because the information of current equipped gear has been sent when we receive the loot table.
 	-- target, session, link, ilvl, response, equipLoc, note, subType, relicType, isTier, isRelic, sendAvgIlvl, sendSpecID
 	for _, session in ipairs(item.sessions) do
-		addon:SendResponse("group", session, nil, nil, button, nil, item.note, nil, nil, isTier, isRelic, nil, nil)
+		addon:SendResponse("group", session, nil, nil, button, nil, item.note, nil, nil, nil, isTier, isRelic, nil, nil)
 	end
 
 	if addon:Getdb().printResponse then
@@ -156,7 +158,7 @@ do
 			entry.itemText:SetText(addon:GetItemTextWithCount(entry.item.link or "error", #entry.item.sessions))
 			entry.icon:SetNormalTexture(entry.item.texture or "Interface\\InventoryItems\\WoWUnknownItem01")
 			entry.itemCount:SetText(#entry.item.sessions > 1 and #entry.item.sessions or "")
-			local typeText = addon:GetItemTypeText(item.link, item.subType, item.equipLoc, item.isTier, item.isRelic)
+			local typeText = addon:GetItemTypeText(item.subType, item.typeID, item.subTypeID, item.equipLoc, item.link, item.isTier, item.isRelic)
 			entry.itemLvl:SetText(addon:GetItemLevelText(entry.item.ilvl, entry.item.isTier).."  |cff7fffff"..typeText.."|r")
 			if addon.mldb.timeout then
 				entry.timeoutBar:SetMinMaxValues(0, addon.mldb.timeout or addon.db.profile.timeout)
