@@ -1374,7 +1374,7 @@ function RCLootCouncil:GetItemClassesAllowedFlag(item)
 	GameTooltip:SetOwner(UIParent, "ANCHOR_NONE")
 	GameTooltip:SetHyperlink(item)
 
-	local separator = ", " -- in-game tests show all locales use this as separator.
+	local delimiter = ", " -- in-game tests show all locales use this as delimiter.
 
 	for i = 1, GameTooltip:NumLines() or 0 do
 		local line = getglobal('GameTooltipTextLeft' .. i)
@@ -1383,8 +1383,18 @@ function RCLootCouncil:GetItemClassesAllowedFlag(item)
 			local classesText = deformat(text, _G.ITEM_CLASSES_ALLOWED)
 			if classesText then
 				GameTooltip:Hide()
+				-- After reading the Blizzard code, I suspect that it's maybe not intended for Blizz to use ", " for all locales. (Patch 7.3.2)
+				-- The most strange thing is that LIST_DELIMITER is defined first in FrameXML/GlobalStrings.lua as "%s, %s" and it's not the same for all locales.
+				-- Then LIST_DELIMITER is redefined to ", " for all locales in FrameXML/MerchantFrame.lua
+				-- Try some other delimiter constants in case Blizzard changes it some time in the future.
+				if LIST_DELIMITER and LIST_DELIMITER ~= "" and classesText:find(LIST_DELIMITER:gsub("%%s","")) then
+					delimiter = LIST_DELIMITER:gsub("%%s","")
+				elseif PLAYER_LIST_DELIMITER and PLAYER_LIST_DELIMITER ~= "" and classesText:find(PLAYER_LIST_DELIMITER) then
+					delimiter = PLAYER_LIST_DELIMITER
+				end
+
 				local result = 0
-				for className in string.gmatch(classesText..separator, "(.-)"..separator) do
+				for className in string.gmatch(classesText..delimiter, "(.-)"..delimiter) do
 					local classID = self.classDisplayNameToID[className]
 					if classID then
 						result = result + bit.lshift(1, classID-1)
