@@ -154,8 +154,6 @@ function RCLootCouncilML:StartSession()
 	addon:SendCommand("group", "lootTable", self.lootTable)
 
 	self:AnnounceItems()
-	-- Start a timer to set response as offline/not installed unless we receive an ack
-	self:ScheduleTimer("Timer", 10, "LootSend")
 end
 
 function RCLootCouncilML:AddUserItem(item)
@@ -355,6 +353,9 @@ function RCLootCouncilML:OnCommReceived(prefix, serializedMsg, distri, sender)
 					addon:ScheduleTimer("SendCommand", 5, sender, "reconnectData", table)
 				end
 				addon:Debug("Responded to reconnect from", sender)
+			elseif command == "lootTable" and addon:UnitIsUnit(sender, addon.playerName) then
+				-- Start a timer to set response as offline/not installed unless we receive an ack
+				self:ScheduleTimer("Timer", 7, "LootSend")
 			end
 		else
 			addon:Debug("Error in deserializing ML comm: ", command)
