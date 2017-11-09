@@ -1106,7 +1106,7 @@ do
 						rollType = (d.tokenRoll and "token") or (d.relicRoll and "relic") or "normal"
 						-- We might have commas in various things here :/
 						tinsert(export, tostring(player))
-						tinsert(export, tostring(d.date))
+						tinsert(export, tostring(self:GetLocalizedDate(d.date)))
 						tinsert(export, tostring(d.time))
 						tinsert(export, (gsub(tostring(d.lootWon),",","")))
 						tinsert(export, addon:GetItemIDFromLink(d.lootWon))
@@ -1149,7 +1149,7 @@ do
 						if d.tierToken then subType = L["Armor Token"] end
 						rollType = (d.tokenRoll and "token") or (d.relicRoll and "relic") or "normal"
 						tinsert(export, tostring(player))
-						tinsert(export, tostring(d.date))
+						tinsert(export, tostring(self:GetLocalizedDate(d.date)))
 						tinsert(export, tostring(d.time))
 						tinsert(export, "=HYPERLINK(\""..self:GetWowheadLinkFromItemLink(d.lootWon).."\",\""..tostring(d.lootWon).."\")")
 						tinsert(export, addon:GetItemIDFromLink(d.lootWon))
