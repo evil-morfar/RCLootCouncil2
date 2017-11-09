@@ -407,7 +407,7 @@ function RCLootCouncilML:LootOpened()
 			end
 		end
 		if #self.lootTable > 0 and not self.running then
-			if db.autoStart then -- Settings say go
+			if db.autoStart and addon.candidates[addon.playerName] and #addon.council > 0 then -- Auto start only if data is ready
 				self:StartSession()
 			else
 				addon:CallModule("sessionframe")
