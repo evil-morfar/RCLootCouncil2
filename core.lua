@@ -507,6 +507,10 @@ function RCLootCouncil:ChatCommand(msg)
 	elseif input == "nnp" then
 		self.nnp = not self.nnp
 		self:Print("nnp = "..tostring(self.nnp))
+	elseif input == "awardtest" or input == "at" then -- awardtest
+		self:CallModule("masterlooter")
+		self:GetActiveModule("masterlooter"):NewML(self.masterLooter)
+		self:GetActiveModule("masterlooter"):AwardTest(tonumber(args[1]))
 --@end-debug@
 	elseif input == "whisper" or input == string.lower(_G.WHISPER) then
 		self:Print(L["whisper_help"])
@@ -1713,6 +1717,17 @@ end
 
 function RCLootCouncil:GetItemNameFromLink(link)
 	return strmatch(link or "", "%[(.+)%]")
+end
+
+-- The link of same item generated from different player, or if two links are generated between player spec switch, are NOT the same
+-- Because item link contains player's level and spec ID.
+-- This function compares link with link level and spec ID removed.
+-- @return true if two items are the same item
+function RCLootCouncil:ItemIsItem(item1, item2)
+	if type(item1) ~= "string" or type(item2) ~= "string" then return item1 == item2 end
+	local pattern = "|Hitem:(%d*):(%d*):(%d*):(%d*):(%d*):(%d*):(%d*):(%d*):(%d*):(%d*)"
+	local replacement = "|Hitem:%1:%2:%3:%4:%5:%6:%7:%8::"
+	return item1:gsub(pattern, replacement) == item2:gsub(pattern, replacement)
 end
 
 function RCLootCouncil.round(num, decimals)
