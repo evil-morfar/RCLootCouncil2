@@ -99,7 +99,7 @@ end
 function LootHistory:GetLocalizedDate(date) -- date is "DD/MM/YY"
 	local d, m, y = strsplit("/", date, 3)
 	-- FormatShortDate is defined in SharedXML/Util.lua
-	-- "DD/MM/YY" for EU, "MM/DD/YY" otherwise
+	-- "DD/(M)M/YY" for EU, "(M)M/DD/YY" otherwise
 	return FormatShortDate(d, m, y)
 end
 
@@ -208,6 +208,18 @@ function LootHistory.FilterFunc(table, row)
 	end
 
 	return nameAndDate and responseFilter -- Either one can filter the entry
+end
+
+-- for date scrolling table
+function LootHistory.SetCellDate(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
+	frame.text:SetText(LootHistory:GetLocalizedDate(data[realrow][column]))
+	if table.fSelect then 
+		if table.selected == realrow then 
+			table:SetHighLightColor(rowFrame, table:GetDefaultHighlight());
+		else
+			table:SetHighLightColor(rowFrame, table:GetDefaultHighlightBlank());
+		end
+	end
 end
 
 function LootHistory.SetCellGear(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
@@ -462,7 +474,7 @@ function LootHistory:GetFrame()
 	f.st = st
 
 	--Date selection
-	f.date = LibStub("ScrollingTable"):CreateST({{name = L["Date"], width = 70, comparesort = self.DateSort, sort = "desc"}}, 5, ROW_HEIGHT, { ["r"] = 1.0, ["g"] = 0.9, ["b"] = 0.0, ["a"] = 0.5 }, f.content)
+	f.date = LibStub("ScrollingTable"):CreateST({{name = L["Date"], width = 70, comparesort = self.DateSort, sort = "desc", DoCellUpdate = self.SetCellDate}}, 5, ROW_HEIGHT, { ["r"] = 1.0, ["g"] = 0.9, ["b"] = 0.0, ["a"] = 0.5 }, f.content)
 	f.date.frame:SetPoint("TOPLEFT", f, "TOPLEFT", 10, -20)
 	f.date:EnableSelection(true)
 	f.date:RegisterEvents({
