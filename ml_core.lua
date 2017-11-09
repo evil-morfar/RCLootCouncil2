@@ -55,7 +55,7 @@ end
 -- @param index Index in self.lootTable, used to set data in a specific session
 function RCLootCouncilML:AddItem(item, bagged, slotIndex, index)
 	addon:DebugLog("ML:AddItem", item, bagged, slotIndex, index)
-	local name, link, rarity, ilvl, iMinLevel, type, subType, iStackCount, equipLoc, texture, 
+	local name, link, rarity, ilvl, iMinLevel, type, subType, iStackCount, equipLoc, texture,
 		sellPrice, typeID, subTypeID, bindType, expansionID, itemSetID, isCrafting = GetItemInfo(item)
 	local itemID = link and addon:GetItemIDFromLink(link)
 	local session = index or #self.lootTable + 1
@@ -356,7 +356,7 @@ function RCLootCouncilML:OnCommReceived(prefix, serializedMsg, distri, sender)
 				addon:Debug("Responded to reconnect from", sender)
 			elseif command == "lootTable" and addon:UnitIsUnit(sender, addon.playerName) then
 				-- Start a timer to set response as offline/not installed unless we receive an ack
-				self:ScheduleTimer("Timer", 7, "LootSend")
+				self:ScheduleTimer("Timer", 10, "LootSend")
 			end
 		else
 			addon:Debug("Error in deserializing ML comm: ", command)
