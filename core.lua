@@ -2341,3 +2341,57 @@ function RCLootCouncil:UpdateLootHistory()
 	end
 	self:Print("Done")
 end
+
+
+local function __genOrderedIndex(t, compareFunc)
+    local orderedIndex = {}
+    for key, value in pairs(t) do
+        table.insert(orderedIndex, {key, value})
+    end
+    if not compareFunc then
+    	compareFunc = function(a, b) return a[1] < b[1] end
+    end
+    table.sort(orderedIndex, compareFunc)
+    return orderedIndex
+end
+
+local function __orderedNext(t, state, compareFunc)
+    -- Equivalent of the next function, but returns the keys in the alphabetic
+    -- order. We use a temporary ordered key table that is stored in the
+    -- table being iterated.
+
+    local key = nil
+    --print("orderedNext: state = "..tostring(state) )
+    if state == nil then
+        -- the first time, generate the index
+        local compareFunc = t.__orderedCompare
+        t.__orderedCompare = nil
+        t.__orderedIndex = __genOrderedIndex(t, compareFunc)
+        key = t.__orderedIndex[1] and t.__orderedIndex[1][1]
+    else
+        -- fetch the next value
+        for i = 1, table.getn(t.__orderedIndex) do
+            if t.__orderedIndex[i][1] == state then
+                key = t.__orderedIndex[i+1] and t.__orderedIndex[i+1][1]
+            end
+        end
+    end
+
+    if key then
+        return key, t[key]
+    end
+
+    -- no more value to return, cleanup
+    t.__orderedIndex = nil
+    return
+end
+
+-- Return an ordered iterator. 
+-- Modified from http://lua-users.org/wiki/SortedIteration
+-- if compareFunc is nil, return key, value pairs ordered by key
+-- if you want to return key, value pairs ordered by value,
+-- the compareFunc is functiona(a,b) return a[2] < b[2] end
+function RCLootCouncil:OrderedPairs(t, compareFunc)
+	t.__orderedCompare = compareFunc
+    return __orderedNext, t, nil
+end
