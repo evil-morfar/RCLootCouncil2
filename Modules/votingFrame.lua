@@ -8,6 +8,7 @@ local addon = LibStub("AceAddon-3.0"):GetAddon("RCLootCouncil")
 local RCVotingFrame = addon:NewModule("RCVotingFrame", "AceComm-3.0", "AceTimer-3.0", "AceEvent-3.0")
 local LibDialog = LibStub("LibDialog-1.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
+local deformat = LibStub("LibDeformat-3.0")
 
 local ROW_HEIGHT = 20;
 local NUM_ROWS = 15;
@@ -1534,14 +1535,7 @@ end
 
 function RCVotingFrame:CHAT_MSG_SYSTEM(event, msg)
 	if manualRollSession and addon.isMasterLooter and active and msg then
-        -- parse the message
-		local pattern = RANDOM_ROLL_RESULT
-		pattern = string.gsub(pattern, "[%(%)%-]", "%%%1")
-		pattern = string.gsub(pattern, "%%s", "%(%.%+%)")
-		pattern = string.gsub(pattern, "%%d", "%(%%d+%)")
-		pattern = string.gsub(pattern, "%%%d%$s", "%(%.%+%)") -- for "deDE"
-		pattern = string.gsub(pattern, "%%%d%$d", "%(%%d+%)") -- for "deDE"
-		local name, roll, low, high = string.match(msg, pattern)
+		local name, roll, low, high = deformat(msg, _G.RANDOM_ROLL_RESULT)
 		roll, low, high = tonumber(roll), tonumber(low), tonumber(high)
 
 		if name then
