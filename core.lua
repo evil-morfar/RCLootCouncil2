@@ -5,7 +5,6 @@
 	Things marked with "todo"
 		- Emulate award stuff - i.e. log awards without awarding
 		- Check if players are eligible for loot, otherwise mark them as not
-		- Remember to add mapID for Antorus.
 		- Extra checks to make sure an item was actually awarded.
 		- IDEA Change popups so they only hide on award/probably add the error message to it.
 		- TODO/IDEA Change chat_commands to seperate lines in order to have a table of printable cmds.
