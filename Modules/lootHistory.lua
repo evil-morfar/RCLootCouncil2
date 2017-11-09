@@ -1054,7 +1054,7 @@ do
 		end
 
 		wipe(export)
-		tinsert(export, "lootDB = {\r\n")
+		tinsert(export, "local lootDB = {\r\n")
 		-- Because WoW cant display TAB properly and LUA export should have better readiability, use 4 spaces instead of TAB in export.
 		for player, v in addon:OrderedPairs(lootDB) do
 			if selectedName and selectedName == player or not selectedName then
