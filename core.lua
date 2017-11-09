@@ -1327,21 +1327,8 @@ end
 
 function RCLootCouncil:IsItemBoE(item)
 	if not item then return false end
-	GameTooltip:SetOwner(UIParent, "ANCHOR_NONE")
-	GameTooltip:SetHyperlink(item)
-	if GameTooltip:NumLines() > 1 then -- check that there is something here
-		for i = 1, 5 do -- BoE status won't be further away than line 5
-			local line = getglobal('GameTooltipTextLeft' .. i)
-			if line and line.GetText then
-				if line:GetText() == ITEM_BIND_ON_EQUIP then
-					GameTooltip:Hide()
-					return true
-				end
-			end
-		end
-	end
-	GameTooltip:Hide()
-	return false
+	-- Item binding type: 0 - none; 1 - on pickup; 2 - on equip; 3 - on use; 4 - quest.
+	return select(14, GetItemInfo(item)) == LE_ITEM_BIND_ON_EQUIP
 end
 
 function RCLootCouncil:GetPlayersGuildRank()

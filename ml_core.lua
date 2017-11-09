@@ -55,7 +55,8 @@ end
 -- @param index Index in self.lootTable, used to set data in a specific session
 function RCLootCouncilML:AddItem(item, bagged, slotIndex, index)
 	addon:DebugLog("ML:AddItem", item, bagged, slotIndex, index)
-	local name, link, rarity, ilvl, iMinLevel, type, subType, iStackCount, equipLoc, texture = GetItemInfo(item)
+	local name, link, rarity, ilvl, iMinLevel, type, subType, iStackCount, equipLoc, texture, 
+		sellPrice, typeID, subTypeID, bindType, expansionID, itemSetID, isCrafting = GetItemInfo(item)
 	local itemID = link and addon:GetItemIDFromLink(link)
 	local session = index or #self.lootTable + 1
 	self.lootTable[session] = { -- We want to reserve the index even if we haven't fully loaded the item
@@ -69,7 +70,7 @@ function RCLootCouncilML:AddItem(item, bagged, slotIndex, index)
 		["equipLoc"]	= equipLoc,
 		["subType"]		= subType,
 		["texture"]		= texture,
-		["boe"]			= addon:IsItemBoE(link),
+		["boe"]			= bindType == LE_ITEM_BIND_ON_EQUIP,
 		["relic"]		= itemID and IsArtifactRelicItem(itemID) and select(3, C_ArtifactUI.GetRelicInfoByItemID(itemID)),
 		["token"]		= itemID and RCTokenTable[itemID],
 	}
