@@ -112,6 +112,7 @@ function RCLootCouncil:OnInitialize()
 		--[[1]]			  { color = {0,1,0,1},				sort = 1,		text = L["Mainspec/Need"],},
 		--[[2]]			  { color = {1,0.5,0,1},			sort = 2,		text = L["Offspec/Greed"],	},
 		--[[3]]			  { color = {0,0.7,0.7,1},			sort = 3,		text = L["Minor Upgrade"],},
+		INELIGIBLE 			= { color = {0.7,0.7,0.7,1},		sort = 804,		text = L["Ineligible"], },
 		tier = {
 			--[[1]]		  { color = {0.1,1,0.5,1},			sort = 1,		text = L["4th Tier Piece"],},
 			--[[2]]		  { color = {1,1,0.5,1},			sort = 2,		text = L["2nd Tier Piece"],},
@@ -702,7 +703,9 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 					-- The actual response/note are left unsent if not autopassed.
 					for ses, v in ipairs(lootTable) do
 						local response = nil
-						if db.autoPass then
+						if v.lootSlot and not v.bagged and lootTable.mlCandidates and not lootTable.mlCandidates[self.playerName] then -- Ineligible for the loot
+							lootTable[ses].autopass = true
+						elseif db.autoPass then
 							if (v.boe and db.autoPassBoE) or not v.boe then
 								if self:AutoPassCheck(v.subType, v.equipLoc, v.link, v.token, v.relic) then
 									self:Debug("Autopassed on: ", v.link)

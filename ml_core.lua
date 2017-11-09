@@ -143,6 +143,23 @@ function RCLootCouncilML:UpdateGroup(ask)
 	end
 end
 
+function RCLootCouncilML:BuildMLCandidates()
+	if not addon.isMasterLooter or GetLootMethod() ~= "master" or not self.lootOpen then
+		return addon:Debug("ML candidates can only be built by ML when loot window is open!!")
+	end
+	local mlCandidates = {} -- This is the union of candidates in all slots
+	for slot = 1, GetNumLootItems() do
+		for i = 1, MAX_RAID_MEMBERS do
+			local name = GetMasterLootCandidate(slot, i)
+			if name then
+				name = addon:UnitName(name)
+				mlCandidates[name] = true
+			end
+		end
+	end
+	return mlCandidates
+end
+
 function RCLootCouncilML:StartSession()
 	addon:Debug("ML:StartSession()")
 	-- Make sure we haven't started the session too fast
@@ -407,6 +424,9 @@ function RCLootCouncilML:LootOpened()
 				end
 			end
 		end
+
+		self.lootTable.mlCandidates = self:BuildMLCandidates()
+
 		if #self.lootTable > 0 and not self.running then
 			if db.autoStart and addon.candidates[addon.playerName] and #addon.council > 0 then -- Auto start only if data is ready
 				self:StartSession()

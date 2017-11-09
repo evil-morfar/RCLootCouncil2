@@ -239,6 +239,9 @@ end
 -- Handles errors
 function RCVotingFrame:SetCandidateData(session, candidate, data, val)
 	local function Set(session, candidate, data, val)
+		if data == "response" and lootTable[session].candidates[candidate][data] == "INELIGIBLE" then
+			return
+		end
 		lootTable[session].candidates[candidate][data] = val
 	end
 	local ok, arg = pcall(Set, session, candidate, data, val)
@@ -290,6 +293,10 @@ function RCVotingFrame:Setup(table)
 				voters = {},
 				haveVoted = false, -- Have we voted for this particular candidate in this session?
 			}
+			if lootTable[session].lootSlot and not lootTable[session].bagged 
+				and lootTable.mlCandidates and not lootTable.mlCandidates[name] then
+				t.candidates[name].response = "INELIGIBLE"
+			end
 		end
 		-- Init session toggle
 		sessionButtons[session] = self:UpdateSessionButton(session, t.texture, t.link, t.awarded)
@@ -979,7 +986,7 @@ function RCVotingFrame.filterFunc(table, row)
 		end
 	end
 
-	if response == "AUTOPASS" or response == "PASS" or type(response) == "number" then
+	if response == "AUTOPASS" or response == "PASS" or response == "INELIGIBLE" or type(response) == "number" then
 		if lootTable[session].token and addon.mldb.tierButtonsEnabled and type(response) == "number"then
 			return db.modules["RCVotingFrame"].filters.tier[response]
 		elseif lootTable[session].relic and addon.mldb.relicButtonsEnabled and type(response) == "number" then
@@ -1346,7 +1353,7 @@ do
 			end
 
 			-- Build the data table:
-			local data = {["STATUS"] = true, ["PASS"] = true, ["AUTOPASS"] = true, tier = {}, relic = {}}
+			local data = {tier = {}, relic = {}}
 
 			local isTier, isRelic
 			-- If we're viewing a tier token and the ML have it enabled, we want to see it
@@ -1428,8 +1435,7 @@ do
 					Lib_UIDropDownMenu_AddButton(info, level)
 				end
 			end
-			for k in pairs(data) do -- A bit redundency, but it makes sure these "specials" comes last
-				if type(k) == "string" and k ~= "tier" and k ~= "relic" then
+			for _, k in ipairs({"STATUS", "PASS", "AUTOPASS", "INELIGIBLE"}) do
 					if k == "STATUS" then
 						info.text = L["Status texts"]
 						info.colorCode = "|cffde34e2" -- purpleish
@@ -1444,7 +1450,6 @@ do
 					end
 					info.checked = db.modules["RCVotingFrame"].filters[k]
 					Lib_UIDropDownMenu_AddButton(info, level)
-				end
 			end
 		end
 	end
