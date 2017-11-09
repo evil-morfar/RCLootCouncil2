@@ -252,6 +252,15 @@ function LootHistory.SetCellDelete(rowFrame, frame, data, cols, row, realrow, co
 			addon:Debug("Deleting:", name, lootDB[name][num].lootWon)
 			tremove(lootDB[name], num)
 			tremove(data, realrow)
+
+			for _, v in pairs(data) do -- Update data[realrow].num for other rows, they are CHANGED !!!
+				if v.name == name then
+					if v.num >= num then
+						v.num = v.num - 1
+					end
+				end
+			end
+
 			table:SortData()
 			if #lootDB[name] == 0 then -- last entry deleted
 				addon:DebugLog("Last Entry deleted, deleting name: ", name)
