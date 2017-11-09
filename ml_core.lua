@@ -1004,10 +1004,7 @@ RCLootCouncilML.EQUIPLOC_SORT_ORDER = {
 	"INVTYPE_HOLDABLE",
 	"INVTYPE_SHIELD",
 }
-for k, v in ipairs(RCLootCouncilML.EQUIPLOC_SORT_ORDER) do
-	RCLootCouncilML.EQUIPLOC_SORT_ORDER[v] = k
-	RCLootCouncilML.EQUIPLOC_SORT_ORDER[k] = nil
-end
+RCLootCouncilML.EQUIPLOC_SORT_ORDER = tInvert(RCLootCouncilML.EQUIPLOC_SORT_ORDER)
 
 -- TRANSFORMED to 'SUBTYPE_SORT_ORDER["SUBTYPE"] = num', below
 RCLootCouncilML.SUBTYPE_SORT_ORDER = {
@@ -1035,10 +1032,7 @@ RCLootCouncilML.SUBTYPE_SORT_ORDER = {
 	"Miscellaneous",
 	"Artifact Relic",
 }
-for k, v in ipairs(RCLootCouncilML.SUBTYPE_SORT_ORDER) do
-	RCLootCouncilML.SUBTYPE_SORT_ORDER[v] = k
-	RCLootCouncilML.SUBTYPE_SORT_ORDER[k] = nil
-end
+RCLootCouncilML.SUBTYPE_SORT_ORDER = tInvert(RCLootCouncilML.SUBTYPE_SORT_ORDER)
 
 -- Evaluate the bonuses of the item to help to sort the item with the same ilvl from best to worst
 -- sockets = 2 points. leech = 1.5. avoidance = 1. speed = 0.5. indestructive = 0.1 
