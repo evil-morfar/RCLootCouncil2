@@ -144,6 +144,7 @@ L["Clear Loot History"] = true
 L["clear_loot_history_desc"] = "Delete the entire loot history."
 L["Clear Selection"] = true
 L["Click to add note to send to the council."] = true
+L["Click to change your note."] = true
 L["Click to expand/collapse more info"] = true
 L["Click to switch to 'item'"] = "Click to switch to %s"
 L["config"] = true
