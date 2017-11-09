@@ -99,7 +99,7 @@ end
 function LootHistory:GetLocalizedDate(date) -- date is "DD/MM/YY"
 	local d, m, y = strsplit("/", date, 3)
 	-- FormatShortDate is defined in SharedXML/Util.lua
-	-- "DD/(M)M/YY" for EU, "(M)M/DD/YY" otherwise
+	-- "(D)D/(M)M/YY" for EU, "(M)M/DD/YY" otherwise
 	return FormatShortDate(d, m, y)
 end
 
