@@ -197,6 +197,7 @@ L["Guild Council Members"] = true
 L["Hide Votes"] = true
 L["hide_votes_desc"] = "Only players that have already voted will be able to see votes."
 L["How to sync"] = true
+L["huge_export_desc"] = "Huge Export. Only show first line to avoid freezing the game. Ctrl+C to copy full content."
 L["Ignore List"] = true
 L["Ignore Options"] = true
 L["ignore_input_desc"] = "Enter an itemID to add to the ignore list causing RCLootCouncil to never add the item to a session"
