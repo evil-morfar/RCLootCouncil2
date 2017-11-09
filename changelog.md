@@ -9,6 +9,7 @@
 * During tests all outputs are now preceeded with "(test)".
 * Any chat output during solo tests are now replaced with chat prints.
 * Session Frame is now displayed if using "Auto Start" and the session isn't fully ready.
+* "/rc add" once again works without spaces between items.
 
 
 * **Localization**
