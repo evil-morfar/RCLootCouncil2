@@ -1054,7 +1054,7 @@ end
 -- 2. subType: junk(armor token), plate, mail, ...
 -- 3. relicType: Arcane, Life, ..
 -- 4. Item level from high to low
--- 5. The sum of item stats
+-- 5. The sum of item stats, to make sure items with bonuses(socket, leech, etc) are sorted first.
 -- 6. Item name
 --
 -- @param a: an entry in the lootTable
