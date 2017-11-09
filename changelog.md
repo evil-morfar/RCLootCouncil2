@@ -4,7 +4,6 @@
 * Tier tokens now uses the minimum ilvl of the item the token will create as their ilvl.
    + This way all ilvl calculations will show more useful numbers.
    + Note: RCLootCouncil cannot track if these items will be Warforged/Titanforged. Only the guaranteed minimum ilvl is used.
-* There's now one of each item type included in the test items.
 * The class icon can now be replaced with spec icon.
 * Filter buttons' text now change color to indicate a filter is active.
 * During tests all outputs are now preceeded with "(test)".
@@ -48,6 +47,7 @@
 * The loot frame will now trigger immediately when a session starts instead of after ~2 seconds delay.
 * Now shows items' type and subType alongside the ilvl.
 * The layout is now more consistent in general.
+* The note button design received an update.
 * Added an option to print out responses as they're sent.
 
 
