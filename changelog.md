@@ -55,6 +55,7 @@
 + *A session starting immidiately after doing a /reload could cause an error.*
 + *Fixed a few spelling errors in english locale.*
 + *Fixed an error when the ML receives an integer from whisper during a session with whisper feature enabled*.
++ *Fixed an issue when deleting multiple entries in the loot history*.
 
 ###### Dev
 * **New**
