@@ -350,6 +350,15 @@ function LootHistory:EscapeItemLink(link)
 	return gsub(link, "\124", "\124\124")
 end
 
+function LootHistory:GetNotesString(notes)
+	if not notes then return "" end
+	local result = ""
+	for name, note in addon:OrderedPairs(notes) do
+		result = result..name..":"..note.." "
+	end
+	return result
+end
+
 function LootHistory:ExportHistory()
 	--debugprofilestart()
 	local export = self.exports[self.exportSelection].func(self)
@@ -1111,7 +1120,7 @@ do
 		wipe(export)
 		wipe(ret)
 		local subType, equipLoc, rollType
-		tinsert(ret, "player, date, time, item, itemID, itemString, response, votes, class, instance, boss, gear1, gear2, responseID, isAwardReason, rollType, subType, equipLoc\r\n")
+		tinsert(ret, "player, date, time, item, itemID, itemString, response, votes, class, instance, boss, gear1, gear2, responseID, isAwardReason, rollType, subType, equipLoc, notes\r\n")
 		for player, v in pairs(lootDB) do
 			if selectedName and selectedName == player or not selectedName then
 				for i, d in pairs(v) do
@@ -1138,6 +1147,7 @@ do
 						tinsert(export, rollType)
 						tinsert(export, tostring(subType))
 						tinsert(export, tostring(getglobal(equipLoc) or ""))
+						tinsert(export, (gsub(self:GetNotesString(d.notes),",","")))
 						tinsert(ret, table.concat(export, ","))
 						tinsert(ret, "\r\n")
 						wipe(export)
@@ -1155,7 +1165,7 @@ do
 		wipe(export)
 		wipe(ret)
 		local subType, equipLoc, rollType
-		tinsert(ret, "player\tdate\ttime\titem\titemID\titemString\tresponse\tvotes\tclass\tinstance\tboss\tgear1\tgear2\tresponseID\tisAwardReason\trollType\tsubType\tequipLoc\r\n")
+		tinsert(ret, "player\tdate\ttime\titem\titemID\titemString\tresponse\tvotes\tclass\tinstance\tboss\tgear1\tgear2\tresponseID\tisAwardReason\trollType\tsubType\tequipLoc\tnotes\r\n")
 		for player, v in pairs(lootDB) do
 			if selectedName and selectedName == player or not selectedName then
 				for i, d in pairs(v) do
@@ -1181,6 +1191,7 @@ do
 						tinsert(export, rollType)
 						tinsert(export, tostring(subType))
 						tinsert(export, tostring(getglobal(equipLoc) or ""))
+						tinsert(export, self:GetNotesString(d.notes))
 						tinsert(ret, table.concat(export, "\t"))
 						tinsert(ret, "\r\n")
 						wipe(export)
