@@ -96,6 +96,13 @@ function LootHistory:Hide()
 	moreInfo = false
 end
 
+function LootHistory:GetLocalizedDate(date) -- date is "DD/MM/YY"
+	local d, m, y = strsplit("/", date, 3)
+	-- FormatShortDate is defined in SharedXML/Util.lua
+	-- "DD/MM/YY" for EU, "MM/DD/YY" otherwise
+	return FormatShortDate(d, m, y)
+end
+
 function LootHistory:BuildData()
 	addon:Debug("LootHistory:BuildData()")
 	data = {}
@@ -148,7 +155,7 @@ function LootHistory:BuildData()
 						cols = { -- NOTE Don't forget the rightClickMenu dropdown, if the order of these changes
 							{DoCellUpdate = addon.SetCellClassIcon, args = {x.class}},
 							{value = addon.Ambiguate(name), color = addon:GetClassColor(x.class)},
-							{value = date.. "-".. i.time or "", args = {time = i.time, date = date},},
+							{value = self:GetLocalizedDate(date).. "-".. i.time or "", args = {time = i.time, date = date},},
 							{DoCellUpdate = self.SetCellGear, args={i.lootWon}},
 							{value = i.lootWon},
 							{DoCellUpdate = self.SetCellResponse, args = {color = i.color, response = i.response, responseID = i.responseID or 0, isAwardReason = i.isAwardReason, tokenRoll = i.tokenRoll, relicRoll = i.relicRoll}},
