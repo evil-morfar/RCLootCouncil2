@@ -582,16 +582,6 @@ function LootHistory:GetFrame()
 	b6:SetWidth(125)
 	f.clearSelectionBtn = b6
 
-	-- Export string
-	local s = f.content:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-	s:SetPoint("BOTTOMRIGHT", sel.frame, "TOPRIGHT", 0, 5)
-	s:SetPoint("BOTTOMLEFT", sel.frame, "TOPLEFT", 0, 5)
-	s:SetHeight(10)
-	s:SetTextColor(1,1,1)
-	s:SetJustifyH("LEFT")
-	s:SetText(L["Note: Huge exports will cause lag."])
-	f.exportString = s
-
 	-- Export frame
 	local exp = AG:Create("Window")
 	exp:SetLayout("Flow")

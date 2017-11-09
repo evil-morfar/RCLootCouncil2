@@ -253,7 +253,6 @@ L["Not Found"] = true
 L["Not installed"] = true
 L["Notes"] = true
 L["notes_desc"] = "Enables candidates to send a note to the council along with their roll."
-L["Note: Huge exports will cause lag."] = true
 L["Number of buttons"] = true
 L["Number of raids received loot from:"] = true
 L["Number of reasons"] = true
