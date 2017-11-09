@@ -1041,45 +1041,70 @@ do
 
 	--- Lua
 	function LootHistory:ExportLua()
-		wipe(export)
-		for player, v in pairs(lootDB) do
-			if selectedName and selectedName == player or not selectedName then
-				tinsert(export, "[\"")
-				tinsert(export, player)
-				tinsert(export, "\"] = {\r\n")
-				for i, d in pairs(v) do
-					if selectedDate and selectedDate == d.date or not selectedDate then
-						tinsert(export, "\t{\r\n")
-						for label, d in pairs(d) do
-							if label == "color" then -- thats a table
-								tinsert(export, "\t\t[\"")
-								tinsert(export, label)
-								tinsert(export,"\"] = {\r\n")
-								for i,d in pairs(d) do
-									 tinsert(export, "\t\t\t")
-									 tinsert(export, d)
-									 tinsert(export,", --")
-									 tinsert(export,i)
-									 tinsert(export,"\r\n")
-								end
-								 tinsert(export, "\t\t}\r\n")
-							elseif label == "lootWon" or label == "itemReplaced1" or label == "itemReplaced2" then
-								tinsert(export, "\t\t[\"")
-								tinsert(export, label)
-								tinsert(export, (self:EscapeItemLink(d)))
-								tinsert(export, "\"] = ")
-								tinsert(export, "\r\n")
-							else
-								tinsert(export, "\t\t[\""..label.."\"] = "..tostring(d).."\r\n")
-							end
-						end
-						tinsert(export, "\t} --"..i.."\r\n")
-					end
-				end
-				tinsert(export, "}\r\n")
+		local function GetStringExpr(s)
+			if type(s) == "string" then
+				return "\""..self:EscapeItemLink(s).."\""
+			elseif type(s) == "number" then
+				return tostring(s)
+			elseif s == true or s == false or s == nil then
+				return tostring(s)
+			else
+				return ""
 			end
 		end
-	return table.concat(export)
+
+		wipe(export)
+		tinsert(export, "lootDB = {\r\n")
+		-- Because WoW cant display TAB properly and LUA export should have better readiability, use 4 spaces instead of TAB in export.
+		for player, v in addon:OrderedPairs(lootDB) do
+			if selectedName and selectedName == player or not selectedName then
+				local hasEntry = false
+				for i, d in ipairs(v) do
+					if selectedDate and selectedDate == d.date or not selectedDate then
+						hasEntry = true
+					end
+				end
+				if hasEntry then -- Don't export player without entry
+					tinsert(export, "    [\"")
+					tinsert(export, player)
+					tinsert(export, "\"] = {\r\n")
+				end
+				for i, d in ipairs(v) do
+					if selectedDate and selectedDate == d.date or not selectedDate then
+						tinsert(export, "        {\r\n")
+						for label, d in addon:OrderedPairs(d) do
+							if type(d) == "table" then
+								tinsert(export, "            [")
+								tinsert(export, GetStringExpr(label))
+								tinsert(export,"] = {\r\n")
+								for i, d in addon:OrderedPairs(d) do
+									if type(i) == "number" then
+										tinsert(export, "                ")
+										tinsert(export, GetStringExpr(d))
+										tinsert(export,", -- ["..i.."]\r\n")
+									elseif type(i) == "string" then
+										tinsert(export, "                [")
+										tinsert(export, GetStringExpr(i))
+										tinsert(export, "] = ")
+										tinsert(export, GetStringExpr(d))
+										tinsert(export,",\r\n")
+									end
+								end
+								tinsert(export, "            },\r\n")
+							else
+								tinsert(export, "            ["..GetStringExpr(label).."] = "..GetStringExpr(d)..",\r\n")
+							end
+						end
+						tinsert(export, "        }, -- ["..i.."]\r\n")
+					end
+				end
+				if hasEntry then
+					tinsert(export, "    }, \r\n")
+				end
+			end
+		end
+		tinsert(export, "}\r\n")
+		return table.concat(export)
 	end
 
 	--- CSV with all stored data
