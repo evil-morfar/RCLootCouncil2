@@ -346,8 +346,17 @@ function LootHistory:ExportHistory()
 	--addon:Debug("Export time:", debugprofilestop(), "ms")
 	if export and export ~= "" then -- do something
 		--debugprofilestart()
-		self.frame.exportFrame:Show()
-		self:SetExportText(export)
+		if export:len() < 40000 then
+			self.frame.exportFrame.edit:SetText(export)
+			self.frame.exportFrame.edit:HighlightText()
+			self.frame.exportFrame.edit:SetFocus()
+			self.frame.exportFrame:Show()
+		else -- Use hugeExportFrame(Single line editBox) for large export to avoid freezing the game.
+			self.frame.hugeExportFrame:Show()
+			self.frame.hugeExportFrame.edit:SetText(export)
+			self.frame.hugeExportFrame.edit:HighlightText()
+			self.frame.hugeExportFrame.edit:SetFocus()
+		end
 		--addon:Debug("Display time:", debugprofilestop(), "ms")
 	end
 end
@@ -588,7 +597,7 @@ function LootHistory:GetFrame()
 	exp:SetLayout("Flow")
 	exp:SetTitle("RCLootCouncil "..L["Export"])
 	exp:SetWidth(400)
-   exp:SetHeight(550)
+	exp:SetHeight(550)
 
 	local edit = AG:Create("MultiLineEditBox")
 	edit:SetNumLines(20)
@@ -598,11 +607,22 @@ function LootHistory:GetFrame()
 	exp:AddChild(edit)
 	exp:Hide()
 	f.exportFrame = exp
-	self.SetExportText = function(self, text)
-		edit:SetText(text)
-		edit:HighlightText()
-		edit:SetFocus()
-	end
+	f.exportFrame.edit = edit
+
+	-- Frame for huge export. Use single line editbox to avoid freezing.
+	local hugeExp = AG:Create("Window")
+	hugeExp:SetLayout("Flow")
+	hugeExp:SetTitle("RCLootCouncil "..L["Export"])
+	hugeExp:SetWidth(700)
+    hugeExp:SetHeight(100)
+
+	local edit = AG:Create("EditBox")
+	edit:SetFullWidth(true)
+	edit:SetLabel(L["Export"])
+	hugeExp:AddChild(edit)
+	hugeExp:Hide()
+	f.hugeExportFrame = hugeExp
+	f.hugeExportFrame.edit = edit
 
 	-- Import frame
 	local imp = AG:Create("Window")
