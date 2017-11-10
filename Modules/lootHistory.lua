@@ -620,6 +620,7 @@ function LootHistory:GetFrame()
 	local edit = AG:Create("EditBox")
 	edit:SetFullWidth(true)
 	edit:SetLabel(L["huge_export_desc"])
+	edit:SetMaxLetters(0)
 	hugeExp:AddChild(edit)
 	hugeExp:Hide()
 	f.hugeExportFrame = hugeExp
