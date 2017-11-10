@@ -609,7 +609,7 @@ RCLootCouncilML.announceItemStrings = {
 	["&l"] = function(_, _, v) return addon:GetItemLevelText(v.ilvl, v.token) end,
 	["&t"] = function(_, _, t)
 		local _, _, subType, equipLoc, _, typeID, subTypeID = GetItemInfoInstant(t.link)
-		return addon:GetItemTypeText(subType, typeID, subTypeID, equipLoc, t.link, t.token, t.relic) 
+		return addon:GetItemTypeText(t.link, subType, equipLoc, t.token, t.relic, typeID, subTypeID) 
 	end,
 }
 -- The description for each keyword
@@ -647,7 +647,7 @@ RCLootCouncilML.awardStrings = {
 	["&t"] = function(...)
 		local t = RCLootCouncilML.lootTable[select(5,...)]
 		local _, _, subType, equipLoc, _, typeID, subTypeID = GetItemInfoInstant(t.link)
-		return addon:GetItemTypeText(subType, typeID, subTypeID, equipLoc, t.link, t.token, t.relic)
+		return addon:GetItemTypeText(t.link, subType, equipLoc, t.token, t.relic, typeID, subTypeID)
 	end,
 }
 
