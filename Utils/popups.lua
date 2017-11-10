@@ -17,7 +17,7 @@ LibDialog:Register("RCLOOTCOUNCIL_CONFIRM_USAGE", {
             addon:DebugLog("Player confirmed usage")
             -- The player might have passed on ML before accepting :O
             if not addon.isMasterLooter and addon.masterLooter and addon.masterLooter ~= "" then return end
-            local lootMethod = GetLootMethod()
+            local lootMethod = addon.lootMethod
             if lootMethod ~= "master" then
                if addon:CanSetML() and not addon:Getdb().workWithoutML then
                   addon:Print(L["Changing LootMethod to Master Looting"])

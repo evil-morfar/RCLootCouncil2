@@ -86,6 +86,7 @@ function RCLootCouncil:OnInitialize()
 	self.guildRank = L["Unguilded"]
 	self.isMasterLooter = false -- Are we the ML?
 	self.masterLooter = ""  -- Name of the ML
+	self.lootMethod = "personalloot"
 	self.isCouncil = false -- Are we in the Council?
 	self.enabled = true -- turn addon on/off
 	self.inCombat = false -- Are we in combat?
@@ -1466,6 +1467,7 @@ end
 function RCLootCouncil:NewMLCheck()
 	local old_ml = self.masterLooter
 	self.isMasterLooter, self.masterLooter = self:GetML()
+	self.lootMethod = GetLootMethod()
 	if IsPartyLFG() then return end	-- We can't use in lfg/lfd so don't bother
 	if self.masterLooter and self.masterLooter ~= "" and strfind(self.masterLooter, "Unknown") then
 		-- ML might be unknown for some reason
@@ -1487,12 +1489,12 @@ function RCLootCouncil:NewMLCheck()
 	if not IsInRaid() and db.onlyUseInRaids then return end
 
 	-- Check if we can use without ML
-	if GetLootMethod() ~= "master" and not db.workWithoutML then return end	
+	if self.lootMethod ~= "master" and not db.workWithoutML then return end	
 
 	-- We are ML and shouldn't ask the player for usage
 	if self.isMasterLooter and db.usage.ml then -- addon should auto start
 		self:Print(L["Now handles looting"])
-		if db.autoAward and GetLootThreshold() ~= 2 and GetLootThreshold() > db.autoAwardLowerThreshold and GetLootMethod() == "master" then
+		if db.autoAward and GetLootThreshold() ~= 2 and GetLootThreshold() > db.autoAwardLowerThreshold and self.lootMethod == "master" then
 			self:Print(L["Changing loot threshold to enable Auto Awarding"])
 			SetLootThreshold(db.autoAwardLowerThreshold >= 2 and db.autoAwardLowerThreshold or 2)
 		end
