@@ -22,7 +22,6 @@ LibDialog:Register("RCLOOTCOUNCIL_CONFIRM_USAGE", {
             if lootMethod ~= "master" then
                addon:Print(L["Changing LootMethod to Master Looting"])
                SetLootMethod("master", addon.Ambiguate(addon.playerName)) -- activate ML
-               lootMethod = "master"
             end
             local db = addon:Getdb()
             if db.autoAward and GetLootThreshold() ~= 2 and GetLootThreshold() > db.autoAwardLowerThreshold  then
