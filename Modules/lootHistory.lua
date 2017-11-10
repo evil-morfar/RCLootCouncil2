@@ -218,8 +218,8 @@ end
 -- for date scrolling table
 function LootHistory.SetCellDate(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
 	frame.text:SetText(LootHistory:GetLocalizedDate(data[realrow][column]))
-	if table.fSelect then 
-		if table.selected == realrow then 
+	if table.fSelect then
+		if table.selected == realrow then
 			table:SetHighLightColor(rowFrame, table:GetDefaultHighlight());
 		else
 			table:SetHighLightColor(rowFrame, table:GetDefaultHighlightBlank());
@@ -683,6 +683,10 @@ function LootHistory:UpdateMoreInfo(rowFrame, cellFrame, dat, cols, row, realrow
 	tip:AddDoubleLine(L["Dropped by:"], data.boss or _G.UNKNOWN, 1,1,1, 0.862745, 0.0784314, 0.235294)
 	tip:AddDoubleLine(_G.FROM, data.instance or _G.UNKNOWN, 1,1,1, 0.823529, 0.411765, 0.117647)
 	tip:AddDoubleLine(L["Votes"]..":", data.votes or _G.UNKNOWN, 1,1,1, 1,1,1)
+	if data.note then
+		tip:AddLine(" ")
+		tip:AddDoubleLine(_G.LABEL_NOTE..":", data.note, 1,1,1, 1,1,1)
+	end
 	tip:AddLine(" ")
 	tip:AddLine(L["Tokens received"])
 	-- Add tier tokens
@@ -701,10 +705,6 @@ function LootHistory:UpdateMoreInfo(rowFrame, cellFrame, dat, cols, row, realrow
 	end
 	tip:AddDoubleLine(L["Number of raids received loot from:"], moreInfoData[row.name].totals.raids.num, 1,1,1, 1,1,1)
 	tip:AddDoubleLine(L["Total items won:"], moreInfoData[row.name].totals.total, 1,1,1, 0,1,0)
-	if data.note then
-		tip:AddLine(" ")
-		tip:AddDoubleLine(L["Notes"], data.note, 1,1,1, 1,1,1)
-	end
 
 	-- Debug stuff
 	if addon.debug then
