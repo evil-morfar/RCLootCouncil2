@@ -1482,7 +1482,7 @@ function RCLootCouncil:NewMLCheck(ask) -- if ask is exactly true, ask player eve
 		return
 	end
 	if (self:UnitIsUnit(old_ml, self.masterLooter) or self:GetActiveModule("masterlooter"):IsEnabled()) and 
-		not ask == true then -- Must compare with true, because ask can be event arguments. 
+		ask ~= true then -- Must compare with true, because ask can be event arguments. 
 		return -- no change
 	end 
 
