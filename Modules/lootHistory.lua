@@ -347,6 +347,7 @@ function LootHistory:ExportHistory()
 	if export and export ~= "" then -- do something
 		--debugprofilestart()
 		if export:len() < 40000 then
+			self.frame.exportFrame.edit.editBox:SetScript("OnChar", nil)
 			self.frame.exportFrame.edit:SetText(export)
 			self.frame.exportFrame.edit:HighlightText()
 			self.frame.exportFrame.edit:SetFocus()
@@ -355,6 +356,7 @@ function LootHistory:ExportHistory()
 				self:SetText(export)
 			end)
 		else -- Use hugeExportFrame(Single line editBox) for large export to avoid freezing the game.
+			self.frame.hugeExportFrame.edit:SetCallback("OnTextChanged", nil)
 			self.frame.hugeExportFrame.edit:SetText(export)
 			self.frame.hugeExportFrame.edit:HighlightText()
 			self.frame.hugeExportFrame.edit:SetFocus()
