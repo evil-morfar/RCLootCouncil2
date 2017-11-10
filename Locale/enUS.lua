@@ -204,6 +204,7 @@ L["ignore_input_desc"] = "Enter an itemID to add to the ignore list causing RCLo
 L["ignore_input_usage"] = "This function only accepts itemIDs (number)"
 L["ignore_list_desc"] = "Items RCLootCouncil is ignoring. Click on a item to remove it."
 L["ignore_options_desc"] = "Control which items RCLootCouncil should ignore. If you add an item that isn't cached, you need switch to another tab and back before you'll see it in the list."
+L["import_desc"] = "Paste data here. Only show first 2500 characters to avoid freezing the game."
 L["Item received and added from 'player'"] = "Item received and added from %s."
 L["Item was awarded to"] = true
 L["Item"] = true

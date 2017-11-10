@@ -624,7 +624,7 @@ function LootHistory:GetFrame()
 	local edit = AG:Create("MultiLineEditBox")
 	edit:SetNumLines(20)
 	edit:SetFullWidth(true)
-	edit:SetLabel("Import")
+	edit:SetLabel(L["import_desc"])
 	edit:SetFullHeight(true)
 
 	-- Credit to WeakAura2
