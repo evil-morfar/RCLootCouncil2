@@ -1478,6 +1478,7 @@ function RCLootCouncil:NewMLCheck()
 		-- We were ML, but no longer, so disable masterlooter module
 		self:GetActiveModule("masterlooter"):Disable()
 	end
+	if self.masterLooter == nil then return end -- Didn't find a leader or ML.
 	if self:UnitIsUnit(old_ml, self.masterLooter) then 
 		if old_lm == self.lootMethod then return end -- no change
 	else
