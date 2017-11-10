@@ -15,20 +15,13 @@ LibDialog:Register("RCLOOTCOUNCIL_CONFIRM_USAGE", {
       {	text = _G.YES,
          on_click = function()
             addon:DebugLog("Player confirmed usage")
-            -- NOTE: Never use this dialog if you don't intend to use master loot.
             -- The player might have passed on ML before accepting :O
             if not addon.isMasterLooter and addon.masterLooter and addon.masterLooter ~= "" then return end
-            local lootMethod = addon.lootMethod
-            if lootMethod ~= "master" then
-               if addon:CanSetML() then
-                  addon:Print(L["Changing LootMethod to Master Looting"])
-                  SetLootMethod("master", addon.Ambiguate(addon.playerName)) -- activate ML
-                  lootMethod = "master"
-               else
-                  -- We can neither change the loot method to ML, nor we allow RC to work without ML.
-                  -- TODO: error msg.
-                  return
-               end
+            local lootMethod = GetLootMethod()
+            if lootMethod ~= "master" and addon:CanSetML() then
+               addon:Print(L["Changing LootMethod to Master Looting"])
+               SetLootMethod("master", addon.Ambiguate(addon.playerName)) -- activate ML
+               lootMethod = "master"
             end
             local db = addon:Getdb()
             if db.autoAward and GetLootThreshold() ~= 2 and GetLootThreshold() > db.autoAwardLowerThreshold and lootMethod == "master" then
