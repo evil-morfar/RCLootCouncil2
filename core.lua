@@ -2109,7 +2109,7 @@ function RCLootCouncil:GetItemLevelText(ilvl, token)
 end
 
 -- @return a text of the link explaining its type. For example, "Fel Artifact Relic", "Chest, Mail"
-function RCLootCouncil:GetItemTypeText(link, subType, equipLoc, tokenSlot, relicType, typeID, subTypeID)
+function RCLootCouncil:GetItemTypeText(link, subType, equipLoc, typeID, subTypeID, tokenSlot, relicType)
 	local id = self:GetItemIDFromLink(link)
 	if tokenSlot then -- It's a token
 		local tokenText = L["Armor Token"]
@@ -2138,7 +2138,7 @@ function RCLootCouncil:GetItemTypeText(link, subType, equipLoc, tokenSlot, relic
 				((not (typeID == LE_ITEM_CLASS_MISCELLANEOUS and subTypeID == LE_ITEM_MISCELLANEOUS_JUNK)) -- subType: "Junk"
 				and (not (typeID == LE_ITEM_CLASS_ARMOR and subTypeID == LE_ITEM_ARMOR_GENERIC)) -- subType: "Miscellaneous"
 				and (not (typeID == LE_ITEM_CLASS_WEAPON and subTypeID == LE_ITEM_WEAPON_GENERIC))) then -- subType: "Miscellaneous"
-					return getglobal(equipLoc)..", "..subType -- getGlobal to translate from global constant to localized name
+					return getglobal(equipLoc)..", "..(subType or "") -- getGlobal to translate from global constant to localized name
 		else
 			return getglobal(equipLoc)
 		end
