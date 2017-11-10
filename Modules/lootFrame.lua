@@ -116,9 +116,9 @@ function LootFrame:OnRoll(entry, button)
 	local item = entry.item
 
 	-- Only send minimum neccessary data, because the information of current equipped gear has been sent when we receive the loot table.
-	-- target, session, link, ilvl, response, equipLoc, note, subType, relicType, isTier, isRelic, sendAvgIlvl, sendSpecID
+	-- target, session, response, isTier, isRelic, note, link, ilvl, equipLoc, relicType, sendAvgIlvl, sendSpecID
 	for _, session in ipairs(item.sessions) do
-		addon:SendResponse("group", session, nil, nil, button, nil, item.note, nil, nil, nil, isTier, isRelic, nil, nil)
+		addon:SendResponse("group", session, button, isTier, isRelic, item.note)
 	end
 
 	if addon:Getdb().printResponse then
