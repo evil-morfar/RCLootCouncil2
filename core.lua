@@ -1567,14 +1567,9 @@ function RCLootCouncil:GetML()
 	else -- Set the Group leader as the ML if the loot method is not master loot
 		local name;
 		for i=1, GetNumGroupMembers() or 0 do
-			local _, rank = GetRaidRosterInfo(i)
+			local name2, rank = GetRaidRosterInfo(i)
 			if rank == 2 then -- Group leader
-				if IsInRaid() then
-					name = self:UnitName("raid"..i)
-				else
-					name = self:UnitName("party"..i)
-				end
-				break
+				name = self:UnitName(name2)
 			end
 		end
 		if name then
