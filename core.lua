@@ -1507,7 +1507,8 @@ function RCLootCouncil:NewMLCheck(forceCheck) -- If forceCheck is exactly true, 
 		return
 	end
 
-	if (self.lootMethod == "master" or db.workWithoutML) and not self:GetActiveModule("masterlooter"):IsEnabled() and
+	-- if the loot method is not master, there is no need to enable ML module right now.
+	if self.lootMethod == "master" and not self:GetActiveModule("masterlooter"):IsEnabled() and
 		(not self:UnitIsUnit(old_ml, self.masterLooter) or forceCheck == true) then
 
 		if db.usage.ml then -- addon should auto start
@@ -1533,7 +1534,7 @@ function RCLootCouncil:OnRaidEnter(arg)
 	-- Check if we can use in party
 	if not IsInRaid() and db.onlyUseInRaids then return end
 	if UnitIsGroupLeader("player") and not db.workWithoutML and self.lootMethod ~= "master" then
-		-- Only check usage on raid enter when above situation holds. In other cases, usage is checked when the player becomes group leader/master looter.
+		-- Only check usage on raid enter when above situation holds. In other cases, usage is checked when the player becomes master looter.
 		-- We don't need to ask the player for usage, so change loot method to master, and make the player ML
 		if db.usage.leader then
 			if self:CanSetML() then 
