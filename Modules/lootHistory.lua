@@ -1095,6 +1095,10 @@ do
 	return table.concat(export)
 	end
 
+	local function CSVEscape(s)
+		-- Escape double quote in the string and enclose string that can contains comma by double quote
+		return "\"" .. gsub((tostring(s) or ""), "\"", "\"\"") .. "\""
+	end
 	--- CSV with all stored data
 	-- ~14 ms (74%) improvement by switching to table and concat
 	function LootHistory:ExportCSV()
@@ -1114,22 +1118,22 @@ do
 						tinsert(export, tostring(player))
 						tinsert(export, tostring(d.date))
 						tinsert(export, tostring(d.time))
-						tinsert(export, (gsub(tostring(d.lootWon),","," ")))
+						tinsert(export, CSVEscape(d.lootWon))
 						tinsert(export, addon:GetItemIDFromLink(d.lootWon))
 						tinsert(export, addon:GetItemStringFromLink(d.lootWon))
-						tinsert(export, (gsub(tostring(d.response),","," ")))
+						tinsert(export, CSVEscape(d.response))
 						tinsert(export, tostring(d.votes))
 						tinsert(export, tostring(d.class))
-						tinsert(export, (gsub(tostring(d.instance),","," ")))
-						tinsert(export, (gsub(tostring(d.boss),","," ")))
-						tinsert(export, (gsub(tostring(d.itemReplaced1), ","," ")))
-						tinsert(export, (gsub(tostring(d.itemReplaced2), ","," ")))
+						tinsert(export, CSVEscape(d.instance))
+						tinsert(export, CSVEscape(d.boss))
+						tinsert(export, CSVEscape(d.itemReplaced1))
+						tinsert(export, CSVEscape(d.itemReplaced2))
 						tinsert(export, tostring(d.responseID))
 						tinsert(export, tostring(d.isAwardReason or false))
 						tinsert(export, rollType)
 						tinsert(export, tostring(subType))
 						tinsert(export, tostring(getglobal(equipLoc) or ""))
-						tinsert(export, (gsub(d.note or "",","," ")))
+						tinsert(export, CSVEscape(d.note))
 						tinsert(ret, table.concat(export, ","))
 						tinsert(ret, "\r\n")
 						wipe(export)
