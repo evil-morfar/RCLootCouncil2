@@ -1049,10 +1049,6 @@ end
 --- Function for getting the data passed to RCLOOTCOUNCIL_CONFIRM_AWARD
 -- Note reason must be nil for ML:Award() to use responseID (Finicky, I know...)
 function RCVotingFrame:GetAwardPopupData(session, name, data, reason)
-	local notes = {}
-	for name, v in pairs(lootTable[session].candidates) do
-		notes[name] = v.note
-	end
 	return {
 		session 		= session,
 	  	winner		= name,
@@ -1065,7 +1061,7 @@ function RCVotingFrame:GetAwardPopupData(session, name, data, reason)
 		isRelicRoll	= data.isRelic,
 		link 			= lootTable[session].link,
 		isToken		= lootTable[session].token,
-		notes		= notes,
+		note		= data.note,
 	}
 end
 
