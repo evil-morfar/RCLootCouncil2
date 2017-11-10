@@ -56,7 +56,8 @@ end
 -- @param entry Used to set data in a specific lootTable entry.
 function RCLootCouncilML:AddItem(item, bagged, slotIndex, entry)
 	addon:DebugLog("ML:AddItem", item, bagged, slotIndex, entry)
-	local name, link, rarity, ilvl, iMinLevel, type, subType, iStackCount, equipLoc, texture = GetItemInfo(item)
+	local name, link, rarity, ilvl, iMinLevel, type, subType, iStackCount, equipLoc, texture,
+		sellPrice, typeID, subTypeID, bindType, expansionID, itemSetID, isCrafting = GetItemInfo(item)
 	local itemID = link and addon:GetItemIDFromLink(link)
 
 	if not entry then
@@ -164,8 +165,6 @@ function RCLootCouncilML:StartSession()
 	addon:SendCommand("group", "lootTable", self.lootTable)
 
 	self:AnnounceItems()
-	-- Start a timer to set response as offline/not installed unless we receive an ack
-	self:ScheduleTimer("Timer", 10, "LootSend")
 end
 
 function RCLootCouncilML:AddUserItem(item)
@@ -365,6 +364,9 @@ function RCLootCouncilML:OnCommReceived(prefix, serializedMsg, distri, sender)
 					addon:ScheduleTimer("SendCommand", 5, sender, "reconnectData", table)
 				end
 				addon:Debug("Responded to reconnect from", sender)
+			elseif command == "lootTable" and addon:UnitIsUnit(sender, addon.playerName) then
+				-- Start a timer to set response as offline/not installed unless we receive an ack
+				self:ScheduleTimer("Timer", 10, "LootSend")
 			end
 		else
 			addon:Debug("Error in deserializing ML comm: ", command)
@@ -416,7 +418,7 @@ function RCLootCouncilML:LootOpened()
 			end
 		end
 		if #self.lootTable > 0 and not self.running then
-			if db.autoStart then -- Settings say go
+			if db.autoStart and addon.candidates[addon.playerName] and #addon.council > 0 then -- Auto start only if data is ready
 				self:StartSession()
 			else
 				addon:CallModule("sessionframe")
@@ -632,7 +634,8 @@ function RCLootCouncilML:AnnounceItems()
 	for k,v in ipairs(self.lootTable) do
 		local msg = db.announceItemString
 		for text, func in pairs(self.announceItemStrings) do
-			msg = gsub(msg, text, tostring(func(k, v.link, v)))
+			-- escapePatternSymbols is defined in FrameXML/ChatFrame.lua that escapes special characters.
+			msg = gsub(msg, text, escapePatternSymbols(tostring(func(k, v.link, v))))
 		end
 		addon:SendAnnouncement(msg, db.announceChannel)
 	end
@@ -677,7 +680,8 @@ function RCLootCouncilML:AnnounceAward(name, link, response, roll, session)
 		for k,v in pairs(db.awardText) do
 			local message = v.text
 			for text, func in pairs(self.awardStrings) do
-				message = gsub(message, text, tostring(func(name, link, response, roll, session)))
+				-- escapePatternSymbols is defined in FrameXML/ChatFrame.lua that escapes special characters.
+				message = gsub(message, text, escapePatternSymbols(tostring(func(name, link, response, roll, session))))
 			end
 			addon:SendAnnouncement(message, v.channel)
 		end
