@@ -700,11 +700,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 						local response = nil
 						if db.autoPass then
 							if (v.boe and db.autoPassBoE) or not v.boe then
-<<<<<<< HEAD
-								if self:AutoPassCheck(v.link, v.equipLoc, v.typeID, v.subTypeID, v.token, v.relic) then
-=======
-								if self:AutoPassCheck(v.subType, v.equipLoc, v.link, v.token, v.relic, v.classes) then
->>>>>>> Deprecated_RCTokenClasses
+								if self:AutoPassCheck(v.link, v.equipLoc, v.typeID, v.subTypeID, v.classes, v.token, v.relic) then
 									self:Debug("Autopassed on: ", v.link)
 									if not db.silentAutoPass then self:Print(format(L["Autopassed on 'item'"], v.link)) end
 									lootTable[ses].autopass = true
@@ -1269,10 +1265,8 @@ function RCLootCouncil:PrepareLootTable(lootTable)
 		v.token = v.token or RCTokenTable[self:GetItemIDFromLink(v.link)]
 		v.equipLoc = v.token and self:GetTokenEquipLoc(v.token) or equipLoc
 		v.texture = texture
-<<<<<<< HEAD
 		v.typeID = typeID
 		v.subTypeID = subTypeID
-=======
 		if not v.classes then -- We didn't receive "classes", because ML is using an old version. Generate it from token data.
 			if RCTokenClasses and RCTokenClasses[self:GetItemIDFromLink(v.link)] then
 				v.classes = 0
@@ -1283,7 +1277,6 @@ function RCLootCouncil:PrepareLootTable(lootTable)
 				v.classes = self:GetItemClassesAllowedFlag(v.link) -- will return 0xffffffff(usable by all classes) if the item is not cached, but that's fine.
 			end
 		end
->>>>>>> Deprecated_RCTokenClasses
 	end
 end
 
@@ -2202,25 +2195,9 @@ function RCLootCouncil:GetItemLevelText(ilvl, token)
 end
 
 -- @return a text of the link explaining its type. For example, "Fel Artifact Relic", "Chest, Mail"
-<<<<<<< HEAD
-function RCLootCouncil:GetItemTypeText(link, subType, equipLoc, typeID, subTypeID, tokenSlot, relicType)
+function RCLootCouncil:GetItemTypeText(link, subType, equipLoc, typeID, subTypeID, classesFlag, tokenSlot, relicType)
 	local id = self:GetItemIDFromLink(link)
-	if tokenSlot then -- It's a token
-		local tokenText = L["Armor Token"]
-		local classes = RCTokenClasses[id]
-		if classes then
-			if tContains(classes, "PALADIN") then
-				tokenText = L["Conqueror Token"]
-			elseif tContains(classes, "WARRIOR") then
-				tokenText = L["Protector Token"]
-			elseif tContains(classes, "ROGUE") then
-				tokenText = L["Vanquisher Token"]
-			end
-=======
-function RCLootCouncil:GetItemTypeText(link, subType, equipLoc, tokenSlot, relicType, classesFlag)
-	local englishSubType = self.db.global.localizedSubTypes[subType]
 
-	local id = self:GetItemIDFromLink(link)
 	if tokenSlot then -- It's a token
 		local tokenText = L["Armor Token"]
 		if bit.band(classesFlag, 0x912) == 0x912 then
@@ -2229,7 +2206,6 @@ function RCLootCouncil:GetItemTypeText(link, subType, equipLoc, tokenSlot, relic
 			tokenText = L["Protector Token"]
 		elseif bit.band(classesFlag, 0x4a8) == 0x4a8 then
 			tokenText = L["Vanquisher Token"]
->>>>>>> Deprecated_RCTokenClasses
 		end
 
 		if equipLoc ~= "" and getglobal(equipLoc) then

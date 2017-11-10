@@ -162,11 +162,7 @@ do
 			entry.itemText:SetText(addon:GetItemTextWithCount(entry.item.link or "error", #entry.item.sessions))
 			entry.icon:SetNormalTexture(entry.item.texture or "Interface\\InventoryItems\\WoWUnknownItem01")
 			entry.itemCount:SetText(#entry.item.sessions > 1 and #entry.item.sessions or "")
-<<<<<<< HEAD
-			local typeText = addon:GetItemTypeText(item.link, item.subType, item.equipLoc, item.typeID, item.subTypeID, item.isTier, item.isRelic)
-=======
-			local typeText = addon:GetItemTypeText(item.link, item.subType, item.equipLoc, item.isTier, item.isRelic, item.classes)
->>>>>>> Deprecated_RCTokenClasses
+			local typeText = addon:GetItemTypeText(item.link, item.subType, item.equipLoc, item.typeID, item.subTypeID, item.classes, item.isTier, item.isRelic)
 			entry.itemLvl:SetText(addon:GetItemLevelText(entry.item.ilvl, entry.item.isTier).."  |cff7fffff"..typeText.."|r")
 			if entry.item.note then
 				entry.noteButton:SetNormalTexture("Interface\\Buttons\\UI-GuildButton-PublicNote-Up")
