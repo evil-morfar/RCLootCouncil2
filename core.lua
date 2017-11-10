@@ -388,7 +388,7 @@ function RCLootCouncil:OnEnable()
 	self:RegisterEvent("PLAYER_REGEN_ENABLED", "LeaveCombat")
 	self:RegisterEvent("ENCOUNTER_START", "OnEvent")
 	self:RegisterEvent("ENCOUNTER_END", 	"OnEvent")
-	--self:RegisterEvent("GROUP_ROSTER_UPDATE", "OnEvent")
+	--self:RegisterEvent("GROUP_ROSTER_UPDATE", "Debug", "event")
 
 	if IsInGuild() then
 		self.guildRank = select(2, GetGuildInfo("player"))
@@ -1419,10 +1419,10 @@ function RCLootCouncil:ConvertDateToString(day, month, year)
 end
 
 function RCLootCouncil:OnEvent(event, ...)
-	if event == "PARTY_LEADER_CHANGED" then
+	if event == "PARTY_LOOT_METHOD_CHANGED" then
 		self:Debug("Event:", event, ...)
 		self:NewMLCheck()
-	elseif event == "PARTY_LOOT_METHOD_CHANGED" then
+	elseif event == "PARTY_LEADER_CHANGED" then
 		self:Debug("Event:", event, ...)
 		self:NewMLCheck()
 
@@ -1463,7 +1463,7 @@ function RCLootCouncil:OnEvent(event, ...)
 	end
 end
 
-function RCLootCouncil:NewMLCheck(forceCheck) -- If forceCheck is exactly true, try to prompt user even if self.masterLooter does not change
+function RCLootCouncil:NewMLCheck()
 	local old_ml = self.masterLooter
 	self.isMasterLooter, self.masterLooter = self:GetML()
 	self.lootMethod = GetLootMethod()
@@ -1487,7 +1487,7 @@ function RCLootCouncil:NewMLCheck(forceCheck) -- If forceCheck is exactly true, 
 
 	-- if the loot method is not master, there is no need to enable ML module right now.
 	if self.lootMethod == "master" and not self:GetActiveModule("masterlooter"):IsEnabled() and
-		(not self:UnitIsUnit(old_ml, self.masterLooter) or forceCheck == true) then
+		(not self:UnitIsUnit(old_ml, self.masterLooter)) then
 
 		if db.usage.ml then -- addon should auto start
 			self:Print(L["Now handles looting"])

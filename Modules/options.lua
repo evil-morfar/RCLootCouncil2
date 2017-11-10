@@ -420,8 +420,6 @@ function addon:OptionsTable()
 											never			= L["Never use RCLootCouncil"],
 										},
 										set = function(_, key)
-											-- Leader usage is forced enabled with this option on.
-											local leaderUsage = self.db.profile.usage.leader or self.db.profile.usage.ask_leader
 											for k in pairs(self.db.profile.usage) do
 												if k == key then
 													self.db.profile.usage[k] = true
@@ -430,9 +428,6 @@ function addon:OptionsTable()
 												end
 											end
 											self.db.profile.usage.state = key
-											if leaderUsage then
-												self.options.args.mlSettings.args.generalTab.args.usageOptions.args.leaderUsage.set(_, true)
-											end
 										end,
 										get = function() return self.db.profile.usage.state end,
 									},
