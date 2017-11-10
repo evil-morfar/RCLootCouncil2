@@ -3,6 +3,10 @@
 -- @author Potdisc
 -- Create Date : 8/6/2015
 
+--@debug@
+if LibDebug then LibDebug() end
+--@end-debug@
+
 local addon = LibStub("AceAddon-3.0"):GetAddon("RCLootCouncil")
 local LootHistory = addon:NewModule("RCLootHistory")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
@@ -96,6 +100,13 @@ function LootHistory:Hide()
 	moreInfo = false
 end
 
+function LootHistory:GetLocalizedDate(date) -- date is "DD/MM/YY"
+	local d, m, y = strsplit("/", date, 3)
+	-- FormatShortDate is defined in SharedXML/Util.lua
+	-- "(D)D/(M)M/YY" for EU, "(M)M/DD/YY" otherwise
+	return FormatShortDate(d, m, y)
+end
+
 function LootHistory:BuildData()
 	addon:Debug("LootHistory:BuildData()")
 	data = {}
@@ -148,7 +159,7 @@ function LootHistory:BuildData()
 						cols = { -- NOTE Don't forget the rightClickMenu dropdown, if the order of these changes
 							{DoCellUpdate = addon.SetCellClassIcon, args = {x.class}},
 							{value = addon.Ambiguate(name), color = addon:GetClassColor(x.class)},
-							{value = date.. "-".. i.time or "", args = {time = i.time, date = date},},
+							{value = self:GetLocalizedDate(date).. "-".. i.time or "", args = {time = i.time, date = date},},
 							{DoCellUpdate = self.SetCellGear, args={i.lootWon}},
 							{value = i.lootWon},
 							{DoCellUpdate = self.SetCellResponse, args = {color = i.color, response = i.response, responseID = i.responseID or 0, isAwardReason = i.isAwardReason, tokenRoll = i.tokenRoll, relicRoll = i.relicRoll}},
@@ -201,6 +212,18 @@ function LootHistory.FilterFunc(table, row)
 	end
 
 	return nameAndDate and responseFilter -- Either one can filter the entry
+end
+
+-- for date scrolling table
+function LootHistory.SetCellDate(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
+	frame.text:SetText(LootHistory:GetLocalizedDate(data[realrow][column]))
+	if table.fSelect then
+		if table.selected == realrow then
+			table:SetHighLightColor(rowFrame, table:GetDefaultHighlight());
+		else
+			table:SetHighLightColor(rowFrame, table:GetDefaultHighlightBlank());
+		end
+	end
 end
 
 function LootHistory.SetCellGear(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
@@ -464,7 +487,7 @@ function LootHistory:GetFrame()
 	f.st = st
 
 	--Date selection
-	f.date = LibStub("ScrollingTable"):CreateST({{name = L["Date"], width = 70, comparesort = self.DateSort, sort = "desc"}}, 5, ROW_HEIGHT, { ["r"] = 1.0, ["g"] = 0.9, ["b"] = 0.0, ["a"] = 0.5 }, f.content)
+	f.date = LibStub("ScrollingTable"):CreateST({{name = L["Date"], width = 70, comparesort = self.DateSort, sort = "desc", DoCellUpdate = self.SetCellDate}}, 5, ROW_HEIGHT, { ["r"] = 1.0, ["g"] = 0.9, ["b"] = 0.0, ["a"] = 0.5 }, f.content)
 	f.date.frame:SetPoint("TOPLEFT", f, "TOPLEFT", 10, -20)
 	f.date:EnableSelection(true)
 	f.date:RegisterEvents({
@@ -659,6 +682,10 @@ function LootHistory:UpdateMoreInfo(rowFrame, cellFrame, dat, cols, row, realrow
 	tip:AddDoubleLine(L["Dropped by:"], data.boss or _G.UNKNOWN, 1,1,1, 0.862745, 0.0784314, 0.235294)
 	tip:AddDoubleLine(_G.FROM, data.instance or _G.UNKNOWN, 1,1,1, 0.823529, 0.411765, 0.117647)
 	tip:AddDoubleLine(L["Votes"]..":", data.votes or _G.UNKNOWN, 1,1,1, 1,1,1)
+	if data.note then
+		tip:AddLine(" ")
+		tip:AddDoubleLine(_G.LABEL_NOTE..":", data.note, 1,1,1, 1,1,1)
+	end
 	tip:AddLine(" ")
 	tip:AddLine(L["Tokens received"])
 	-- Add tier tokens
@@ -677,7 +704,6 @@ function LootHistory:UpdateMoreInfo(rowFrame, cellFrame, dat, cols, row, realrow
 	end
 	tip:AddDoubleLine(L["Number of raids received loot from:"], moreInfoData[row.name].totals.raids.num, 1,1,1, 1,1,1)
 	tip:AddDoubleLine(L["Total items won:"], moreInfoData[row.name].totals.total, 1,1,1, 0,1,0)
-
 
 	-- Debug stuff
 	if addon.debug then
@@ -842,7 +868,7 @@ function LootHistory.RightClickMenu(menu, level)
 	local info = Lib_UIDropDownMenu_CreateInfo()
 	local data = menu.datatable
 
-	local value = LIB_UIDROPDOWNMENU_MENU_VALUE
+	local value = _G.LIB_UIDROPDOWNMENU_MENU_VALUE
 	if not LootHistory.rightClickEntries[level] then return end
 	for i, entry in ipairs(LootHistory.rightClickEntries[level]) do
 		info = Lib_UIDropDownMenu_CreateInfo()
@@ -1048,6 +1074,15 @@ end
 do
 	local export, ret = {},{}
 
+	local function CSVEscape(s)
+		s = tostring(s or "")
+		if s:find(",") then
+			-- Escape double quote in the string and enclose string that can contains comma by double quote
+			return "\"" .. gsub(s, "\"", "\"\"") .. "\""
+		else
+			return s
+		end
+	end
 	--- CSV with all stored data
 	-- ~14 ms (74%) improvement by switching to table and concat
 	function LootHistory:ExportCSV()
@@ -1055,7 +1090,7 @@ do
 		wipe(export)
 		wipe(ret)
 		local subType, equipLoc, rollType
-		tinsert(ret, "player, date, time, item, itemID, itemString, response, votes, class, instance, boss, gear1, gear2, responseID, isAwardReason, rollType, subType, equipLoc\r\n")
+		tinsert(ret, "player, date, time, item, itemID, itemString, response, votes, class, instance, boss, gear1, gear2, responseID, isAwardReason, rollType, subType, equipLoc, note\r\n")
 		for player, v in pairs(lootDB) do
 			if selectedName and selectedName == player or not selectedName then
 				for i, d in pairs(v) do
@@ -1065,23 +1100,24 @@ do
 						rollType = (d.tokenRoll and "token") or (d.relicRoll and "relic") or "normal"
 						-- We might have commas in various things here :/
 						tinsert(export, tostring(player))
-						tinsert(export, tostring(d.date))
+						tinsert(export, tostring(self:GetLocalizedDate(d.date)))
 						tinsert(export, tostring(d.time))
-						tinsert(export, (gsub(tostring(d.lootWon),",","")))
+						tinsert(export, CSVEscape(d.lootWon))
 						tinsert(export, addon:GetItemIDFromLink(d.lootWon))
 						tinsert(export, addon:GetItemStringFromLink(d.lootWon))
-						tinsert(export, (gsub(tostring(d.response),",","")))
+						tinsert(export, CSVEscape(d.response))
 						tinsert(export, tostring(d.votes))
 						tinsert(export, tostring(d.class))
-						tinsert(export, (gsub(tostring(d.instance),",","")))
-						tinsert(export, (gsub(tostring(d.boss),",","")))
-						tinsert(export, (gsub(tostring(d.itemReplaced1), ",","")))
-						tinsert(export, (gsub(tostring(d.itemReplaced2), ",","")))
+						tinsert(export, CSVEscape(d.instance))
+						tinsert(export, CSVEscape(d.boss))
+						tinsert(export, CSVEscape(d.itemReplaced1))
+						tinsert(export, CSVEscape(d.itemReplaced2))
 						tinsert(export, tostring(d.responseID))
 						tinsert(export, tostring(d.isAwardReason or false))
 						tinsert(export, rollType)
 						tinsert(export, tostring(subType))
 						tinsert(export, tostring(getglobal(equipLoc) or ""))
+						tinsert(export, CSVEscape(d.note))
 						tinsert(ret, table.concat(export, ","))
 						tinsert(ret, "\r\n")
 						wipe(export)
@@ -1099,7 +1135,7 @@ do
 		wipe(export)
 		wipe(ret)
 		local subType, equipLoc, rollType
-		tinsert(ret, "player\tdate\ttime\titem\titemID\titemString\tresponse\tvotes\tclass\tinstance\tboss\tgear1\tgear2\tresponseID\tisAwardReason\trollType\tsubType\tequipLoc\r\n")
+		tinsert(ret, "player\tdate\ttime\titem\titemID\titemString\tresponse\tvotes\tclass\tinstance\tboss\tgear1\tgear2\tresponseID\tisAwardReason\trollType\tsubType\tequipLoc\tnote\r\n")
 		for player, v in pairs(lootDB) do
 			if selectedName and selectedName == player or not selectedName then
 				for i, d in pairs(v) do
@@ -1108,7 +1144,7 @@ do
 						if d.tierToken then subType = L["Armor Token"] end
 						rollType = (d.tokenRoll and "token") or (d.relicRoll and "relic") or "normal"
 						tinsert(export, tostring(player))
-						tinsert(export, tostring(d.date))
+						tinsert(export, tostring(self:GetLocalizedDate(d.date)))
 						tinsert(export, tostring(d.time))
 						tinsert(export, "=HYPERLINK(\""..self:GetWowheadLinkFromItemLink(d.lootWon).."\",\""..tostring(d.lootWon).."\")")
 						tinsert(export, addon:GetItemIDFromLink(d.lootWon))
@@ -1125,6 +1161,7 @@ do
 						tinsert(export, rollType)
 						tinsert(export, tostring(subType))
 						tinsert(export, tostring(getglobal(equipLoc) or ""))
+						tinsert(export, d.note or "")
 						tinsert(ret, table.concat(export, "\t"))
 						tinsert(ret, "\r\n")
 						wipe(export)
