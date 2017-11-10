@@ -87,6 +87,7 @@ function RCLootCouncil:OnInitialize()
 	self.isMasterLooter = false -- Are we the ML?
 	self.masterLooter = ""  -- Name of the ML
 	self.lootMethod = "personalloot"
+	self.isInRaid = IsInRaid()
 	self.isCouncil = false -- Are we in the Council?
 	self.enabled = true -- turn addon on/off
 	self.inCombat = false -- Are we in combat?
@@ -383,6 +384,7 @@ function RCLootCouncil:OnEnable()
 	self:DebugLog(self.playerName, self.version, self.tVersion)
 
 	-- register events
+	self:RegisterEvent("GROUP_LEFT", "OnEvent")
 	self:RegisterEvent("PARTY_LOOT_METHOD_CHANGED", "OnEvent")
 	self:RegisterEvent("PARTY_LEADER_CHANGED", "OnEvent")
 	self:RegisterEvent("GUILD_ROSTER_UPDATE","OnEvent")
@@ -392,7 +394,7 @@ function RCLootCouncil:OnEnable()
 	self:RegisterEvent("PLAYER_REGEN_ENABLED", "LeaveCombat")
 	self:RegisterEvent("ENCOUNTER_START", "OnEvent")
 	self:RegisterEvent("ENCOUNTER_END", 	"OnEvent")
-	--self:RegisterEvent("GROUP_ROSTER_UPDATE", "Debug", "event")
+	self:RegisterEvent("GROUP_ROSTER_UPDATE", "OnEvent")
 
 	if IsInGuild() then
 		self.guildRank = select(2, GetGuildInfo("player"))
@@ -1423,10 +1425,19 @@ function RCLootCouncil:ConvertDateToString(day, month, year)
 end
 
 function RCLootCouncil:OnEvent(event, ...)
-	if event == "PARTY_LOOT_METHOD_CHANGED" then
+	if event == "GROUP_ROSTER_UPDATE" then
+		local isInRaid = IsInRaid()
+		if isInRaid ~= self.isInRaid then -- Party/raid conversion
+			self:NewMLCheck(true)
+		end
+		self.isInRaid = isInRaid
+	elseif event == "PARTY_LEADER_CHANGED" then
 		self:Debug("Event:", event, ...)
 		self:NewMLCheck()
-	elseif event == "PARTY_LEADER_CHANGED" then
+	elseif event == "PARTY_LOOT_METHOD_CHANGED" then
+		self:Debug("Event:", event, ...)
+		self:NewMLCheck()
+	elseif event == "GROUP_LEFT" then
 		self:Debug("Event:", event, ...)
 		self:NewMLCheck()
 
@@ -1467,7 +1478,6 @@ function RCLootCouncil:OnEvent(event, ...)
 	end
 end
 
-function RCLootCouncil:NewMLCheck(ask) -- if ask is exactly true, ask player even if ml does not change.
 function RCLootCouncil.OnMLOptionsHide()
 	if RCLootCouncil.usageOptionsChanged then
 		RCLootCouncil:NewMLCheck(true)
@@ -1475,6 +1485,7 @@ function RCLootCouncil.OnMLOptionsHide()
 	end
 end
 
+function RCLootCouncil:NewMLCheck(forceCheck)
 	local old_ml = self.masterLooter
 	self.isMasterLooter, self.masterLooter = self:GetML()
 	self.lootMethod = GetLootMethod()
@@ -1483,36 +1494,35 @@ end
 		self:Debug("Unknown ML")
 		return self:ScheduleTimer("NewMLCheck", 2)
 	end
+	if not self:UnitIsUnit(old_ml, self.masterLooter) then
+		self:Debug("Resetting council as we have a new ML!")
+		self.council = {}
+	end
 	if db.usage.never or IsPartyLFG() or self.masterLooter == nil or not self:UnitIsUnit(self.masterLooter, "player") or
-		(self.lootMethod ~= "master" and not db.workWithoutML) or (not IsInRaid() and db.onlyUseInRaids) then
-		-- We can no longer use RCLootCouncil to handle loot in these cases.
+		(not IsInRaid() and db.onlyUseInRaids) then
+		-- We cannot use RCLootCouncil to handle loot in these cases.
 		if self:GetActiveModule("masterlooter"):IsEnabled() then
 			self:GetActiveModule("masterlooter"):Disable()
 		end
 		return
 	end
-	if (self:UnitIsUnit(old_ml, self.masterLooter) or self:GetActiveModule("masterlooter"):IsEnabled()) and 
-		ask ~= true then -- Must compare with true, because ask can be event arguments. 
-		return -- no change
-	end 
 
-	-- At this point we know the ML has changed, so we can wipe the council
-	self:Debug("Resetting council as we have a new ML!")
-	self.council = {}
+	if (self.lootMethod == "master" or db.workWithoutML) and not self:GetActiveModule("masterlooter"):IsEnabled() and
+		(not self:UnitIsUnit(old_ml, self.masterLooter) or forceCheck == true) then
 
-	-- We are ML and shouldn't ask the player for usage
-	if self.isMasterLooter and db.usage.ml then -- addon should auto start
-		self:Print(L["Now handles looting"])
-		if db.autoAward and GetLootThreshold() ~= 2 and GetLootThreshold() > db.autoAwardLowerThreshold and self.lootMethod == "master" then
-			self:Print(L["Changing loot threshold to enable Auto Awarding"])
-			SetLootThreshold(db.autoAwardLowerThreshold >= 2 and db.autoAwardLowerThreshold or 2)
+		if db.usage.ml then -- addon should auto start
+			self:Print(L["Now handles looting"])
+			if db.autoAward and GetLootThreshold() ~= 2 and GetLootThreshold() > db.autoAwardLowerThreshold and self.lootMethod == "master" then
+				self:Print(L["Changing loot threshold to enable Auto Awarding"])
+				SetLootThreshold(db.autoAwardLowerThreshold >= 2 and db.autoAwardLowerThreshold or 2)
+			end
+			self:CallModule("masterlooter")
+			self:GetActiveModule("masterlooter"):NewML(self.masterLooter)
+
+		-- We're ML and must ask the player for usage
+		elseif db.usage.ask_ml then
+			return LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_USAGE")
 		end
-		self:CallModule("masterlooter")
-		self:GetActiveModule("masterlooter"):NewML(self.masterLooter)
-
-	-- We're ML and must ask the player for usage
-	elseif self.isMasterLooter and db.usage.ask_ml then
-		return LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_USAGE")
 	end
 end
 
