@@ -43,7 +43,7 @@ function LootHistory:OnInitialize()
 	self.scrollCols = {
 		{name = "",					width = ROW_HEIGHT, },			-- Class icon, should be same row as player
 		{name = _G.NAME,		width = 100, sortnext = 3, defaultsort = "dsc"},		-- Name of the player (There is a bug in default lib-st sort function that "dsc" is "asc")
-		{name = L["Time"],		width = 125, comparesort = self.DateTimeSort, defaultsort = "dsc",},			-- Time of awarding
+		{name = L["Time"],		width = 125, comparesort = self.DateTimeSort, sort="dsc",defaultsort = "dsc",},			-- Time of awarding
 		{name = "",					width = ROW_HEIGHT, },			-- Item at index icon
 		{name = L["Item"],		width = 250, 				}, 	-- Item string
 		{name = L["Reason"],		width = 220, comparesort = self.ResponseSort,  sortnext = 2},	-- Response aka the text supplied to lootDB...response
