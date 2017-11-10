@@ -678,7 +678,10 @@ function LootHistory:UpdateMoreInfo(rowFrame, cellFrame, dat, cols, row, realrow
 	end
 	tip:AddDoubleLine(L["Number of raids received loot from:"], moreInfoData[row.name].totals.raids.num, 1,1,1, 1,1,1)
 	tip:AddDoubleLine(L["Total items won:"], moreInfoData[row.name].totals.total, 1,1,1, 0,1,0)
-
+	if data.note then
+		tip:AddLine(" ")
+		tip:AddDoubleLine(L["Notes"], data.note, r, g, b, 1, 1, 1)
+	end
 
 	-- Debug stuff
 	if addon.debug then
@@ -1092,6 +1095,10 @@ do
 	return table.concat(export)
 	end
 
+	local function CSVEscape(s)
+		-- Escape double quote in the string and enclose string that can contains comma by double quote
+		return "\"" .. gsub((tostring(s) or ""), "\"", "\"\"") .. "\""
+	end
 	--- CSV with all stored data
 	-- ~14 ms (74%) improvement by switching to table and concat
 	function LootHistory:ExportCSV()
@@ -1099,7 +1106,7 @@ do
 		wipe(export)
 		wipe(ret)
 		local subType, equipLoc, rollType
-		tinsert(ret, "player, date, time, item, itemID, itemString, response, votes, class, instance, boss, gear1, gear2, responseID, isAwardReason, rollType, subType, equipLoc\r\n")
+		tinsert(ret, "player, date, time, item, itemID, itemString, response, votes, class, instance, boss, gear1, gear2, responseID, isAwardReason, rollType, subType, equipLoc, note\r\n")
 		for player, v in pairs(lootDB) do
 			if selectedName and selectedName == player or not selectedName then
 				for i, d in pairs(v) do
@@ -1111,21 +1118,22 @@ do
 						tinsert(export, tostring(player))
 						tinsert(export, tostring(d.date))
 						tinsert(export, tostring(d.time))
-						tinsert(export, (gsub(tostring(d.lootWon),",","")))
+						tinsert(export, CSVEscape(d.lootWon))
 						tinsert(export, addon:GetItemIDFromLink(d.lootWon))
 						tinsert(export, addon:GetItemStringFromLink(d.lootWon))
-						tinsert(export, (gsub(tostring(d.response),",","")))
+						tinsert(export, CSVEscape(d.response))
 						tinsert(export, tostring(d.votes))
 						tinsert(export, tostring(d.class))
-						tinsert(export, (gsub(tostring(d.instance),",","")))
-						tinsert(export, (gsub(tostring(d.boss),",","")))
-						tinsert(export, (gsub(tostring(d.itemReplaced1), ",","")))
-						tinsert(export, (gsub(tostring(d.itemReplaced2), ",","")))
+						tinsert(export, CSVEscape(d.instance))
+						tinsert(export, CSVEscape(d.boss))
+						tinsert(export, CSVEscape(d.itemReplaced1))
+						tinsert(export, CSVEscape(d.itemReplaced2))
 						tinsert(export, tostring(d.responseID))
 						tinsert(export, tostring(d.isAwardReason or false))
 						tinsert(export, rollType)
 						tinsert(export, tostring(subType))
 						tinsert(export, tostring(getglobal(equipLoc) or ""))
+						tinsert(export, CSVEscape(d.note))
 						tinsert(ret, table.concat(export, ","))
 						tinsert(ret, "\r\n")
 						wipe(export)
@@ -1143,7 +1151,7 @@ do
 		wipe(export)
 		wipe(ret)
 		local subType, equipLoc, rollType
-		tinsert(ret, "player\tdate\ttime\titem\titemID\titemString\tresponse\tvotes\tclass\tinstance\tboss\tgear1\tgear2\tresponseID\tisAwardReason\trollType\tsubType\tequipLoc\r\n")
+		tinsert(ret, "player\tdate\ttime\titem\titemID\titemString\tresponse\tvotes\tclass\tinstance\tboss\tgear1\tgear2\tresponseID\tisAwardReason\trollType\tsubType\tequipLoc\tnote\r\n")
 		for player, v in pairs(lootDB) do
 			if selectedName and selectedName == player or not selectedName then
 				for i, d in pairs(v) do
@@ -1169,6 +1177,7 @@ do
 						tinsert(export, rollType)
 						tinsert(export, tostring(subType))
 						tinsert(export, tostring(getglobal(equipLoc) or ""))
+						tinsert(export, d.note or "")
 						tinsert(ret, table.concat(export, "\t"))
 						tinsert(ret, "\r\n")
 						wipe(export)
