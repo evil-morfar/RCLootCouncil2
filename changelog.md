@@ -4,11 +4,12 @@
 * Tier tokens now uses the minimum ilvl of the item the token will create as their ilvl.
    + This way all ilvl calculations will show more useful numbers.
    + Note: RCLootCouncil cannot track if these items will be Warforged/Titanforged. Only the guaranteed minimum ilvl is used.
-* There's now one of each item type included in the test items.
 * The class icon can now be replaced with spec icon.
 * Filter buttons' text now change color to indicate a filter is active.
 * During tests all outputs are now preceeded with "(test)".
 * Any chat output during solo tests are now replaced with chat prints.
+* Session Frame is now displayed if using "Auto Start" and the session isn't fully ready.
+* "/rc add" once again works without spaces between items.
 
 
 * **Localization**
@@ -47,6 +48,7 @@
 * The loot frame will now trigger immediately when a session starts instead of after ~2 seconds delay.
 * Now shows items' type and subType alongside the ilvl.
 * The layout is now more consistent in general.
+* The note button design received an update.
 * Added an option to print out responses as they're sent.
 
 
@@ -55,6 +57,7 @@
 + *A session starting immidiately after doing a /reload could cause an error.*
 + *Fixed a few spelling errors in english locale.*
 + *Fixed an error when the ML receives an integer from whisper during a session with whisper feature enabled*.
++ *Fixed an issue when deleting multiple entries in the loot history*.
 
 ###### Dev
 * **New**
