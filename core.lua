@@ -2243,10 +2243,9 @@ function RCLootCouncil:GetItemLevelText(ilvl, token)
 end
 
 -- @return a text of the link explaining its type. For example, "Fel Artifact Relic", "Chest, Mail"
-function RCLootCouncil:GetItemTypeText(link, subType, equipLoc, tokenSlot, relicType, classesFlag)
+function RCLootCouncil:GetItemTypeText(subType, equipLoc, tokenSlot, relicType, classesFlag)
 	local englishSubType = self.db.global.localizedSubTypes[subType]
 
-	local id = self:GetItemIDFromLink(link)
 	if tokenSlot then -- It's a token
 		local tokenText = L["Armor Token"]
 		if bit.band(classesFlag, 0x912) == 0x912 then
@@ -2262,8 +2261,7 @@ function RCLootCouncil:GetItemTypeText(link, subType, equipLoc, tokenSlot, relic
 		else
 			return tokenText
 		end
-	elseif "Artifact Relic" == englishSubType then
-		relicType = relicType or select(3, C_ArtifactUI.GetRelicInfoByItemID(id)) or ""
+	elseif "Artifact Relic" == englishSubType and relicType then
 		local localizedRelicType = getglobal("RELIC_SLOT_TYPE_" .. relicType:upper()) or ""
 		local relicTooltipName = string.format(RELIC_TOOLTIP_TYPE, localizedRelicType)
 		return relicTooltipName
