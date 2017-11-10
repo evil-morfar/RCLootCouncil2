@@ -29,10 +29,9 @@ local NUM_ROWS = 15;
 local tinsert, tostring, getglobal,pairs = tinsert, tostring, getglobal, pairs
 
 function LootHistory:OnInitialize()
-	self.exportSelection = "lua"
+	self.exportSelection = "tsv"
 	-- Pointer to export functions. Expected to return a string containing the export
 	self.exports = {
-		lua = 		{func = self.ExportLua, 		name = "Lua",					tip = L["Raw lua output. Doesn't work well with date selection."]},
 		csv = 		{func = self.ExportCSV,			name = "CSV",					tip = L["Standard .csv output."]},
 		tsv = 		{func = self.ExportTSV,			name = "TSV (Excel)",		tip = L["A tab delimited output for Excel. Might work with other spreadsheets."]},
 		bbcode = 	{func = self.ExportBBCode,		name = "BBCode", 				tip = L["Simple BBCode output."]},
@@ -1074,49 +1073,6 @@ end
 ---------------------------------------------------------------
 do
 	local export, ret = {},{}
-
-	--- Lua
-	function LootHistory:ExportLua()
-		wipe(export)
-		for player, v in pairs(lootDB) do
-			if selectedName and selectedName == player or not selectedName then
-				tinsert(export, "[\"")
-				tinsert(export, player)
-				tinsert(export, "\"] = {\r\n")
-				for i, d in pairs(v) do
-					if selectedDate and selectedDate == d.date or not selectedDate then
-						tinsert(export, "\t{\r\n")
-						for label, d in pairs(d) do
-							if label == "color" then -- thats a table
-								tinsert(export, "\t\t[\"")
-								tinsert(export, label)
-								tinsert(export,"\"] = {\r\n")
-								for i,d in pairs(d) do
-									 tinsert(export, "\t\t\t")
-									 tinsert(export, d)
-									 tinsert(export,", --")
-									 tinsert(export,i)
-									 tinsert(export,"\r\n")
-								end
-								 tinsert(export, "\t\t}\r\n")
-							elseif label == "lootWon" or label == "itemReplaced1" or label == "itemReplaced2" then
-								tinsert(export, "\t\t[\"")
-								tinsert(export, label)
-								tinsert(export, (self:EscapeItemLink(d)))
-								tinsert(export, "\"] = ")
-								tinsert(export, "\r\n")
-							else
-								tinsert(export, "\t\t[\""..label.."\"] = "..tostring(d).."\r\n")
-							end
-						end
-						tinsert(export, "\t} --"..i.."\r\n")
-					end
-				end
-				tinsert(export, "}\r\n")
-			end
-		end
-	return table.concat(export)
-	end
 
 	local function CSVEscape(s)
 		s = tostring(s or "")
