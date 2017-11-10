@@ -613,7 +613,7 @@ function LootHistory:GetFrame()
 	hugeExp:SetLayout("Flow")
 	hugeExp:SetTitle("RCLootCouncil "..L["Export"])
 	hugeExp:SetWidth(700)
-    hugeExp:SetHeight(100)
+	hugeExp:SetHeight(100)
 
 	local edit = AG:Create("EditBox")
 	edit:SetFullWidth(true)
