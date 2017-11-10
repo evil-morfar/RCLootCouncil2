@@ -97,6 +97,13 @@ function LootHistory:Hide()
 	moreInfo = false
 end
 
+function LootHistory:GetLocalizedDate(date) -- date is "DD/MM/YY"
+	local d, m, y = strsplit("/", date, 3)
+	-- FormatShortDate is defined in SharedXML/Util.lua
+	-- "(D)D/(M)M/YY" for EU, "(M)M/DD/YY" otherwise
+	return FormatShortDate(d, m, y)
+end
+
 function LootHistory:BuildData()
 	addon:Debug("LootHistory:BuildData()")
 	data = {}
@@ -149,7 +156,7 @@ function LootHistory:BuildData()
 						cols = { -- NOTE Don't forget the rightClickMenu dropdown, if the order of these changes
 							{DoCellUpdate = addon.SetCellClassIcon, args = {x.class}},
 							{value = addon.Ambiguate(name), color = addon:GetClassColor(x.class)},
-							{value = date.. "-".. i.time or "", args = {time = i.time, date = date},},
+							{value = self:GetLocalizedDate(date).. "-".. i.time or "", args = {time = i.time, date = date},},
 							{DoCellUpdate = self.SetCellGear, args={i.lootWon}},
 							{value = i.lootWon},
 							{DoCellUpdate = self.SetCellResponse, args = {color = i.color, response = i.response, responseID = i.responseID or 0, isAwardReason = i.isAwardReason, tokenRoll = i.tokenRoll, relicRoll = i.relicRoll}},
@@ -202,6 +209,18 @@ function LootHistory.FilterFunc(table, row)
 	end
 
 	return nameAndDate and responseFilter -- Either one can filter the entry
+end
+
+-- for date scrolling table
+function LootHistory.SetCellDate(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
+	frame.text:SetText(LootHistory:GetLocalizedDate(data[realrow][column]))
+	if table.fSelect then 
+		if table.selected == realrow then 
+			table:SetHighLightColor(rowFrame, table:GetDefaultHighlight());
+		else
+			table:SetHighLightColor(rowFrame, table:GetDefaultHighlightBlank());
+		end
+	end
 end
 
 function LootHistory.SetCellGear(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
@@ -465,7 +484,7 @@ function LootHistory:GetFrame()
 	f.st = st
 
 	--Date selection
-	f.date = LibStub("ScrollingTable"):CreateST({{name = L["Date"], width = 70, comparesort = self.DateSort, sort = "desc"}}, 5, ROW_HEIGHT, { ["r"] = 1.0, ["g"] = 0.9, ["b"] = 0.0, ["a"] = 0.5 }, f.content)
+	f.date = LibStub("ScrollingTable"):CreateST({{name = L["Date"], width = 70, comparesort = self.DateSort, sort = "desc", DoCellUpdate = self.SetCellDate}}, 5, ROW_HEIGHT, { ["r"] = 1.0, ["g"] = 0.9, ["b"] = 0.0, ["a"] = 0.5 }, f.content)
 	f.date.frame:SetPoint("TOPLEFT", f, "TOPLEFT", 10, -20)
 	f.date:EnableSelection(true)
 	f.date:RegisterEvents({
@@ -1109,7 +1128,7 @@ do
 						rollType = (d.tokenRoll and "token") or (d.relicRoll and "relic") or "normal"
 						-- We might have commas in various things here :/
 						tinsert(export, tostring(player))
-						tinsert(export, tostring(d.date))
+						tinsert(export, tostring(self:GetLocalizedDate(d.date)))
 						tinsert(export, tostring(d.time))
 						tinsert(export, (gsub(tostring(d.lootWon),",","")))
 						tinsert(export, addon:GetItemIDFromLink(d.lootWon))
@@ -1152,7 +1171,7 @@ do
 						if d.tierToken then subType = L["Armor Token"] end
 						rollType = (d.tokenRoll and "token") or (d.relicRoll and "relic") or "normal"
 						tinsert(export, tostring(player))
-						tinsert(export, tostring(d.date))
+						tinsert(export, tostring(self:GetLocalizedDate(d.date)))
 						tinsert(export, tostring(d.time))
 						tinsert(export, "=HYPERLINK(\""..self:GetWowheadLinkFromItemLink(d.lootWon).."\",\""..tostring(d.lootWon).."\")")
 						tinsert(export, addon:GetItemIDFromLink(d.lootWon))
