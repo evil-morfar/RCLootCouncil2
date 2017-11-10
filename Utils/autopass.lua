@@ -74,13 +74,14 @@ local relics = {
 -- local dat = lootTable[1] -- Shortening
 -- local boolean = RCLootCouncil:AutoPassCheck(dat.subType, dat.equipLoc, dat.link, dat.token, dat.relic)
 --@return true if the player should autopass the given item.
-function RCLootCouncil:AutoPassCheck(subType, equipLoc, link, isToken, isRelic, class)
+function RCLootCouncil:AutoPassCheck(subType, equipLoc, link, isToken, isRelic, classesFlag, class)
 	local class = class or self.playerClass
+	local classID = self.classTagNameToID[class]
+	if bit.band(classesFlag, bit.lshift(1, classID-1)) == 0 then -- The item tooltip writes the allowed clases, but our class is not in it.
+		return true
+	end
   -- Tokens ignore autopass override
   local id = type(link) == "number" and link or self:GetItemIDFromLink(link) -- Convert to id if needed
-	if isToken or RCTokenClasses[id] then -- It's a token
-		return not tContains(RCTokenClasses[id], class)
-	end 
 	if not tContains(autopassOverride, equipLoc) then
 		if isRelic or ("Artifact Relic" == self.db.global.localizedSubTypes[subType]) then
 			if isRelic then -- New in v2.3+
