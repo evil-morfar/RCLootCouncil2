@@ -143,7 +143,6 @@ function RCLootCouncil:OnInitialize()
 				state = "ask_ml", 	-- Current state
 			},
 			onlyUseInRaids = true,
-			workWithoutML = false,
 			ambiguate = false, -- Append realm names to players
 			autoAddRolls = false,
 			autoStart = false, -- start a session with all eligible items
@@ -1533,7 +1532,7 @@ function RCLootCouncil:OnRaidEnter(arg)
 	if IsPartyLFG() then return end	-- We can't use in lfg/lfd so don't bother
 	-- Check if we can use in party
 	if not IsInRaid() and db.onlyUseInRaids then return end
-	if UnitIsGroupLeader("player") and not db.workWithoutML and self.lootMethod ~= "master" then
+	if UnitIsGroupLeader("player") and self.lootMethod ~= "master" then
 		-- Only check usage on raid enter when above situation holds. In other cases, usage is checked when the player becomes master looter.
 		-- We don't need to ask the player for usage, so change loot method to master, and make the player ML
 		if db.usage.leader then

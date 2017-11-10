@@ -422,7 +422,7 @@ function addon:OptionsTable()
 										set = function(_, key)
 											-- Leader usage is forced enabled with this option on.
 											self.usageOptionsChanged = true
-											local leaderUsage = self.db.profile.usage.leader or self.db.profile.usage.ask_leader or self.db.profile.workWithoutML
+											local leaderUsage = self.db.profile.usage.leader or self.db.profile.usage.ask_leader
 											for k in pairs(self.db.profile.usage) do
 												if k == key then
 													self.db.profile.usage[k] = true
@@ -464,25 +464,6 @@ function addon:OptionsTable()
 										set = function(_, val)
 											self.usageOptionsChanged = true
 											self.db.profile.onlyUseInRaids = val
-										end,
-									},
-									spacer2 = {
-										order = 5,
-										type = "header",
-										name = "",
-									},
-									workWithoutML = {
-										order = 6,
-										name = L["Allow RCLootCouncil to work without master looter"],
-										desc = L["workWithoutML_desc"],
-										type = "toggle",
-										width = "full",
-										set = function(_, val)
-											self.usageOptionsChanged = true
-											self.db.profile.workWithoutML = val
-											if val then -- Leader usage is forced enabled with this option on.
-												self.options.args.mlSettings.args.generalTab.args.usageOptions.args.leaderUsage.set(_, true)
-											end
 										end,
 									},
 								},
