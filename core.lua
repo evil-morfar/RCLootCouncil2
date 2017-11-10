@@ -1485,23 +1485,19 @@ function RCLootCouncil:NewMLCheck()
 		return
 	end
 
-	-- if the loot method is not master, there is no need to enable ML module right now.
-	if self.lootMethod == "master" and not self:GetActiveModule("masterlooter"):IsEnabled() and
-		(not self:UnitIsUnit(old_ml, self.masterLooter)) then
-
-		if db.usage.ml then -- addon should auto start
-			self:Print(L["Now handles looting"])
-			if db.autoAward and GetLootThreshold() ~= 2 and GetLootThreshold() > db.autoAwardLowerThreshold and self.lootMethod == "master" then
-				self:Print(L["Changing loot threshold to enable Auto Awarding"])
-				SetLootThreshold(db.autoAwardLowerThreshold >= 2 and db.autoAwardLowerThreshold or 2)
-			end
-			self:CallModule("masterlooter")
-			self:GetActiveModule("masterlooter"):NewML(self.masterLooter)
-
-		-- We're ML and must ask the player for usage
-		elseif db.usage.ask_ml then
-			return LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_USAGE")
+	-- We are ML and shouldn't ask the player for usage
+	if self.lootMethod == "master" and self.isMasterLooter and db.usage.ml then -- addon should auto start
+		self:Print(L["Now handles looting"])
+		if db.autoAward and GetLootThreshold() ~= 2 and GetLootThreshold() > db.autoAwardLowerThreshold  then
+			self:Print(L["Changing loot threshold to enable Auto Awarding"])
+			SetLootThreshold(db.autoAwardLowerThreshold >= 2 and db.autoAwardLowerThreshold or 2)
 		end
+		self:CallModule("masterlooter")
+		self:GetActiveModule("masterlooter"):NewML(self.masterLooter)
+
+	-- We're ML and must ask the player for usage
+	elseif self.lootMethod == "master" and self.isMasterLooter and db.usage.ask_ml then
+		return LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_USAGE")
 	end
 end
 
