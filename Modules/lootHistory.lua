@@ -25,10 +25,9 @@ local NUM_ROWS = 15;
 local tinsert, tostring, getglobal,pairs = tinsert, tostring, getglobal, pairs
 
 function LootHistory:OnInitialize()
-	self.exportSelection = "lua"
+	self.exportSelection = "tsv"
 	-- Pointer to export functions. Expected to return a string containing the export
 	self.exports = {
-		lua = 		{func = self.ExportLua, 		name = "Lua",					tip = L["Raw lua output. Doesn't work well with date selection."]},
 		csv = 		{func = self.ExportCSV,			name = "CSV",					tip = L["Standard .csv output."]},
 		tsv = 		{func = self.ExportTSV,			name = "TSV (Excel)",		tip = L["A tab delimited output for Excel. Might work with other spreadsheets."]},
 		bbcode = 	{func = self.ExportBBCode,		name = "BBCode", 				tip = L["Simple BBCode output."]},
@@ -1038,74 +1037,6 @@ end
 ---------------------------------------------------------------
 do
 	local export, ret = {},{}
-
-	--- Lua
-	function LootHistory:ExportLua()
-		local function GetStringExpr(s)
-			if type(s) == "string" then
-				return "\""..self:EscapeItemLink(s).."\""
-			elseif type(s) == "number" then
-				return tostring(s)
-			elseif s == true or s == false or s == nil then
-				return tostring(s)
-			else
-				return ""
-			end
-		end
-
-		wipe(export)
-		tinsert(export, "local lootDB = {\r\n")
-		-- Because WoW cant display TAB properly and LUA export should have better readiability, use 4 spaces instead of TAB in export.
-		for player, v in addon:OrderedPairs(lootDB) do
-			if selectedName and selectedName == player or not selectedName then
-				local hasEntry = false
-				for i, d in ipairs(v) do
-					if selectedDate and selectedDate == d.date or not selectedDate then
-						hasEntry = true
-					end
-				end
-				if hasEntry then -- Don't export player without entry
-					tinsert(export, "    [\"")
-					tinsert(export, player)
-					tinsert(export, "\"] = {\r\n")
-				end
-				for i, d in ipairs(v) do
-					if selectedDate and selectedDate == d.date or not selectedDate then
-						tinsert(export, "        {\r\n")
-						for label, d in addon:OrderedPairs(d) do
-							if type(d) == "table" then
-								tinsert(export, "            [")
-								tinsert(export, GetStringExpr(label))
-								tinsert(export,"] = {\r\n")
-								for i, d in addon:OrderedPairs(d) do
-									if type(i) == "number" then
-										tinsert(export, "                ")
-										tinsert(export, GetStringExpr(d))
-										tinsert(export,", -- ["..i.."]\r\n")
-									elseif type(i) == "string" then
-										tinsert(export, "                [")
-										tinsert(export, GetStringExpr(i))
-										tinsert(export, "] = ")
-										tinsert(export, GetStringExpr(d))
-										tinsert(export,",\r\n")
-									end
-								end
-								tinsert(export, "            },\r\n")
-							else
-								tinsert(export, "            ["..GetStringExpr(label).."] = "..GetStringExpr(d)..",\r\n")
-							end
-						end
-						tinsert(export, "        }, -- ["..i.."]\r\n")
-					end
-				end
-				if hasEntry then
-					tinsert(export, "    }, \r\n")
-				end
-			end
-		end
-		tinsert(export, "}\r\n")
-		return table.concat(export)
-	end
 
 	--- CSV with all stored data
 	-- ~14 ms (74%) improvement by switching to table and concat
