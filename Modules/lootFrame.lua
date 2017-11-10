@@ -152,13 +152,21 @@ do
 			if not item then
 				return addon:Debug("Entry update error @ item:", item)
 			end
-
+			if item ~= entry.item then
+				entry.noteEditbox:Hide()
+				entry.noteEditbox:SetText("")
+			end
 			entry.item = item
 			entry.itemText:SetText(addon:GetItemTextWithCount(entry.item.link or "error", #entry.item.sessions))
 			entry.icon:SetNormalTexture(entry.item.texture or "Interface\\InventoryItems\\WoWUnknownItem01")
 			entry.itemCount:SetText(#entry.item.sessions > 1 and #entry.item.sessions or "")
 			local typeText = addon:GetItemTypeText(item.link, item.subType, item.equipLoc, item.isTier, item.isRelic, item.classes)
 			entry.itemLvl:SetText(addon:GetItemLevelText(entry.item.ilvl, entry.item.isTier).."  |cff7fffff"..typeText.."|r")
+			if entry.item.note then
+				entry.noteButton:SetNormalTexture("Interface\\Buttons\\UI-GuildButton-PublicNote-Up")
+			else
+				entry.noteButton:SetNormalTexture("Interface\\Buttons\\UI-GuildButton-PublicNote-Disabled")
+			end
 			if addon.mldb.timeout then
 				entry.timeoutBar:SetMinMaxValues(0, addon.mldb.timeout or addon.db.profile.timeout)
 				entry.timeoutBar:Show()
@@ -221,6 +229,11 @@ do
 						b[i]:SetText(addon:GetButtonText(i)) -- In case it was already created
 						b[i]:SetScript("OnClick", function() LootFrame:OnRoll(entry, i) end)
 					end
+					b[i]:SetScript("OnEnter", function()
+						if entry.item.note then
+							addon:CreateTooltip(L["Your note:"], entry.item.note)
+						end
+					end)
 					b[i]:SetWidth(b[i]:GetTextWidth() + 10)
 					if b[i]:GetWidth() < MIN_BUTTON_WIDTH then b[i]:SetWidth(MIN_BUTTON_WIDTH) end -- ensure minimum width
 					width = width + b[i]:GetWidth()
@@ -246,17 +259,43 @@ do
 			entry.noteButton = CreateFrame("Button", nil, entry.frame)
 			entry.noteButton:SetSize(24,24)
 			entry.noteButton:SetHighlightTexture("Interface\\Minimap\\UI-Minimap-ZoomButton-Highlight")
-			entry.noteButton:SetNormalTexture("Interface\\Buttons\\UI-GuildButton-PublicNote-Up")
+			entry.noteButton:SetNormalTexture("Interface\\Buttons\\UI-GuildButton-PublicNote-Disabled")
 			entry.noteButton:SetPoint("BOTTOMRIGHT", entry.frame, "TOPRIGHT", -9, -entry.icon:GetHeight()-5)
 			entry.noteButton:SetScript("OnEnter", function()
 				if entry.item.note then -- If they already entered a note:
-					addon:CreateTooltip(L["Your note:"], entry.item.note, "\nClick to change your note.")
+					addon:CreateTooltip(L["Your note:"], entry.item.note, "\n"..L["Click to change your note."])
 				else
 					addon:CreateTooltip(L["Add Note"], L["Click to add note to send to the council."])
 				end
 			end)
 			entry.noteButton:SetScript("OnLeave", function() addon:HideTooltip() end)
-			entry.noteButton:SetScript("OnClick", function() LibDialog:Spawn("RCLOOTCOUNCIL_LOOTFRAME_NOTE", entry) end)
+			entry.noteButton:SetScript("OnClick", function() 
+				if not entry.noteEditbox:IsShown() then
+					entry.noteEditbox:Show()
+				else
+					entry.noteEditbox:Hide()
+					entry.item.note = entry.noteEditbox:GetText() ~= "" and entry.noteEditbox:GetText()
+					entry:Update(entry.item)
+				end 
+			end)
+
+			entry.noteEditbox = CreateFrame("EditBox", nil, entry.frame, "AutoCompleteEditBoxTemplate")
+			entry.noteEditbox:SetMaxLetters(64)
+			entry.noteEditbox:SetBackdrop(LootFrame.frame.title:GetBackdrop())
+			entry.noteEditbox:SetBackdropColor(LootFrame.frame.title:GetBackdropColor())
+			entry.noteEditbox:SetBackdropBorderColor(LootFrame.frame.title:GetBackdropBorderColor())
+			entry.noteEditbox:SetFontObject(ChatFontNormal)
+			entry.noteEditbox:SetJustifyV("BOTTOM")
+			entry.noteEditbox:SetWidth(100)
+			entry.noteEditbox:SetHeight(24)
+			entry.noteEditbox:SetPoint("BOTTOMLEFT", entry.frame, "TOPRIGHT", 0, -entry.icon:GetHeight()-5)
+			entry.noteEditbox:SetTextInsets(5, 5, 0, 0)
+			entry.noteEditbox:SetScript("OnEnterPressed", function(self) 
+				self:Hide()
+				entry.item.note = self:GetText() ~= "" and self:GetText()
+				entry:Update(entry.item)
+			end)
+			entry.noteEditbox:Hide()
 
 			----- item text/lvl ---------------
 			entry.itemText = entry.frame:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
@@ -414,6 +453,11 @@ do
 					b[i]:SetText(addon:GetButtonText(i, true)) -- In case it was already created
 					b[i]:SetScript("OnClick", function() LootFrame:OnRoll(entry, i) end)
 				end
+				b[i]:SetScript("OnEnter", function()
+					if entry.item.note then
+						addon:CreateTooltip(L["Your note:"], entry.item.note)
+					end
+				end)
 				b[i]:SetWidth(b[i]:GetTextWidth() + 10)
 				if b[i]:GetWidth() < MIN_BUTTON_WIDTH then b[i]:SetWidth(MIN_BUTTON_WIDTH) end -- ensure minimum width
 				width = width + b[i]:GetWidth()
@@ -460,6 +504,11 @@ do
 					b[i]:SetText(addon:GetButtonText(i, false, true)) -- In case it was already created
 					b[i]:SetScript("OnClick", function() LootFrame:OnRoll(entry, i) end)
 				end
+				b[i]:SetScript("OnEnter", function()
+					if entry.item.note then
+						addon:CreateTooltip(L["Your note:"], entry.item.note)
+					end
+				end)
 				b[i]:SetWidth(b[i]:GetTextWidth() + 10)
 				if b[i]:GetWidth() < MIN_BUTTON_WIDTH then b[i]:SetWidth(MIN_BUTTON_WIDTH) end -- ensure minimum width
 				width = width + b[i]:GetWidth()
