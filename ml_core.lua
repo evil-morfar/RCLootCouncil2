@@ -73,6 +73,7 @@ function RCLootCouncilML:AddItem(item, bagged, slotIndex, index)
 		["boe"]			= bindType == LE_ITEM_BIND_ON_EQUIP,
 		["relic"]		= itemID and IsArtifactRelicItem(itemID) and select(3, C_ArtifactUI.GetRelicInfoByItemID(itemID)),
 		["token"]		= itemID and RCTokenTable[itemID],
+		["classes"]		= addon:GetItemClassesAllowedFlag(link),
 	}
 
 		-- Item isn't properly loaded, so update the data in 1 sec (Should only happen with /rc test)
@@ -607,10 +608,14 @@ RCLootCouncilML.announceItemStrings = {
 	["&s"] = function(ses) return ses end,
 	["&i"] = function(...) return select(2,...) end,
 	["&l"] = function(_, _, v) return addon:GetItemLevelText(v.ilvl, v.token) end,
+<<<<<<< HEAD
 	["&t"] = function(_, _, t)
 		local _, _, subType, equipLoc, _, typeID, subTypeID = GetItemInfoInstant(t.link)
 		return addon:GetItemTypeText(t.link, subType, equipLoc, typeID, subTypeID, t.token, t.relic) 
 	end,
+=======
+	["&t"] = function(_, _, t) return addon:GetItemTypeText(t.link, t.subType, t.equipLoc, t.token, t.relic, t.classes) end,
+>>>>>>> Deprecated_RCTokenClasses
 }
 -- The description for each keyword
 RCLootCouncilML.announceItemStringsDesc = {
@@ -646,8 +651,12 @@ RCLootCouncilML.awardStrings = {
 							return addon:GetItemLevelText(t.ilvl, t.token) end,
 	["&t"] = function(...)
 		local t = RCLootCouncilML.lootTable[select(5,...)]
+<<<<<<< HEAD
 		local _, _, subType, equipLoc, _, typeID, subTypeID = GetItemInfoInstant(t.link)
 		return addon:GetItemTypeText(t.link, subType, equipLoc, typeID, subTypeID, t.token, t.relic)
+=======
+		return addon:GetItemTypeText(t.link, t.subType, t.equipLoc, t.token, t.relic, t.classes)
+>>>>>>> Deprecated_RCTokenClasses
 	end,
 }
 

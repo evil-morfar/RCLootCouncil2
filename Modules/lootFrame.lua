@@ -42,6 +42,7 @@ function LootFrame:Start(table, reRoll)
 				subTypeID = table[k].subTypeID,
 				isTier = table[k].token,
 				isRelic = table[k].relic,
+				classes = table[k].classes,
 				sessions = {reRoll and table[k].session or k}, -- ".session" does not exist if not rerolling.
 			}
 		end
@@ -161,7 +162,11 @@ do
 			entry.itemText:SetText(addon:GetItemTextWithCount(entry.item.link or "error", #entry.item.sessions))
 			entry.icon:SetNormalTexture(entry.item.texture or "Interface\\InventoryItems\\WoWUnknownItem01")
 			entry.itemCount:SetText(#entry.item.sessions > 1 and #entry.item.sessions or "")
+<<<<<<< HEAD
 			local typeText = addon:GetItemTypeText(item.link, item.subType, item.equipLoc, item.typeID, item.subTypeID, item.isTier, item.isRelic)
+=======
+			local typeText = addon:GetItemTypeText(item.link, item.subType, item.equipLoc, item.isTier, item.isRelic, item.classes)
+>>>>>>> Deprecated_RCTokenClasses
 			entry.itemLvl:SetText(addon:GetItemLevelText(entry.item.ilvl, entry.item.isTier).."  |cff7fffff"..typeText.."|r")
 			if entry.item.note then
 				entry.noteButton:SetNormalTexture("Interface\\Buttons\\UI-GuildButton-PublicNote-Up")
