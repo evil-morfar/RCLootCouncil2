@@ -40,7 +40,6 @@ RCLootCouncil = LibStub("AceAddon-3.0"):NewAddon("RCLootCouncil", "AceConsole-3.
 local LibDialog = LibStub("LibDialog-1.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 local lwin = LibStub("LibWindow-1.1")
-local deformat = LibStub("LibDeformat-3.0")
 
 RCLootCouncil:SetDefaultModuleState(false)
 
@@ -1375,12 +1374,13 @@ function RCLootCouncil:GetItemClassesAllowedFlag(item)
 	GameTooltip:SetHyperlink(item)
 
 	local delimiter = ", " -- in-game tests show all locales use this as delimiter.
+	local keyword = _G.ITEM_CLASSES_ALLOWED:gsub("%%s", "%(%.%+%)")
 
 	for i = 1, GameTooltip:NumLines() or 0 do
 		local line = getglobal('GameTooltipTextLeft' .. i)
 		if line and line.GetText then
 			local text = line:GetText() or ""
-			local classesText = deformat(text, _G.ITEM_CLASSES_ALLOWED)
+			local classesText = text:match(keyword)
 			if classesText then
 				GameTooltip:Hide()
 				-- After reading the Blizzard code, I suspect that it's maybe not intended for Blizz to use ", " for all locales. (Patch 7.3.2)
