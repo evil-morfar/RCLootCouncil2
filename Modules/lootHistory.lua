@@ -1089,7 +1089,7 @@ do
 		-- Add headers
 		wipe(export)
 		wipe(ret)
-		local subType, equipLoc, rollType
+		local subType, equipLoc, rollType, _
 		tinsert(ret, "player, date, time, item, itemID, itemString, response, votes, class, instance, boss, gear1, gear2, responseID, isAwardReason, rollType, subType, equipLoc, note\r\n")
 		for player, v in pairs(lootDB) do
 			if selectedName and selectedName == player or not selectedName then
@@ -1134,7 +1134,7 @@ do
 		-- Add headers
 		wipe(export)
 		wipe(ret)
-		local subType, equipLoc, rollType
+		local subType, equipLoc, rollType, _
 		tinsert(ret, "player\tdate\ttime\titem\titemID\titemString\tresponse\tvotes\tclass\tinstance\tboss\tgear1\tgear2\tresponseID\tisAwardReason\trollType\tsubType\tequipLoc\tnote\r\n")
 		for player, v in pairs(lootDB) do
 			if selectedName and selectedName == player or not selectedName then
