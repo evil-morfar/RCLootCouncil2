@@ -73,8 +73,6 @@ function RCLootCouncilML:AddItem(item, bagged, slotIndex, index)
 		["boe"]			= bindType == LE_ITEM_BIND_ON_EQUIP,
 		["relic"]		= itemID and IsArtifactRelicItem(itemID) and select(3, C_ArtifactUI.GetRelicInfoByItemID(itemID)),
 		["token"]		= itemID and RCTokenTable[itemID],
-		["typeID"]		= typeID, -- Not transmitted.
-		["subTypeID"]	= subTypeID, -- Not transmitted.
 	}
 
 		-- Item isn't properly loaded, so update the data in 1 sec (Should only happen with /rc test)
@@ -84,20 +82,6 @@ function RCLootCouncilML:AddItem(item, bagged, slotIndex, index)
 	else
 		addon:SendMessage("RCMLAddItem", item, session)
 	end
-end
-
--- Generate a copy of lootable which removes stuffs that can be geneated without caching.
-function RCLootCouncilML:GetLootTableForTransmit()
-	local notTransmitted = {"typeID", "subTypeID"}
-	local copy = CopyTable(self.lootTable) -- Defined in SharedXML/util.lua
-
-	for _, key in ipairs(notTransmitted) do
-		for _, v in ipairs(copy) do
-			v[key] = nil
-		end
-	end
-
-	return copy
 end
 
 --- Removes a session from the lootTable
@@ -168,7 +152,7 @@ function RCLootCouncilML:StartSession()
 	end
 	self.running = true
 
-	addon:SendCommand("group", "lootTable", self:GetLootTableForTransmit())
+	addon:SendCommand("group", "lootTable", self.lootTable)
 
 	self:AnnounceItems()
 end
@@ -623,7 +607,10 @@ RCLootCouncilML.announceItemStrings = {
 	["&s"] = function(ses) return ses end,
 	["&i"] = function(...) return select(2,...) end,
 	["&l"] = function(_, _, v) return addon:GetItemLevelText(v.ilvl, v.token) end,
-	["&t"] = function(_, _, t) return addon:GetItemTypeText(t.subType, t.typeID, t.subTypeID, t.equipLoc, t.link, t.token, t.relic) end,
+	["&t"] = function(_, _, t)
+		local _, _, subType, equipLoc, _, typeID, subTypeID = GetItemInfoInstant(t.link)
+		return addon:GetItemTypeText(subType, typeID, subTypeID, equipLoc, t.link, t.token, t.relic) 
+	end,
 }
 -- The description for each keyword
 RCLootCouncilML.announceItemStringsDesc = {
@@ -659,7 +646,8 @@ RCLootCouncilML.awardStrings = {
 							return addon:GetItemLevelText(t.ilvl, t.token) end,
 	["&t"] = function(...)
 		local t = RCLootCouncilML.lootTable[select(5,...)]
-		return addon:GetItemTypeText(t.subType, t.typeID, t.subTypeID, t.equipLoc, t.link, t.token, t.relic)
+		local _, _, subType, equipLoc, _, typeID, subTypeID = GetItemInfoInstant(t.link)
+		return addon:GetItemTypeText(subType, typeID, subTypeID, equipLoc, t.link, t.token, t.relic)
 	end,
 }
 
