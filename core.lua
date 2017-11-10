@@ -1465,6 +1465,13 @@ function RCLootCouncil:OnEvent(event, ...)
 end
 
 function RCLootCouncil:NewMLCheck(ask) -- if ask is exactly true, ask player even if ml does not change.
+function RCLootCouncil.OnMLOptionsHide()
+	if RCLootCouncil.usageOptionsChanged then
+		RCLootCouncil:NewMLCheck(true)
+		RCLootCouncil.usageOptionsChanged = false
+	end
+end
+
 	local old_ml = self.masterLooter
 	self.isMasterLooter, self.masterLooter = self:GetML()
 	self.lootMethod = GetLootMethod()
