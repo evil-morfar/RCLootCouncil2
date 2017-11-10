@@ -5,7 +5,6 @@
 	Things marked with "todo"
 		- Emulate award stuff - i.e. log awards without awarding
 		- Check if players are eligible for loot, otherwise mark them as not
-		- Remember to add mapID for Antorus.
 		- Extra checks to make sure an item was actually awarded.
 		- IDEA Change popups so they only hide on award/probably add the error message to it.
 		- TODO/IDEA Change chat_commands to seperate lines in order to have a table of printable cmds.
@@ -517,7 +516,8 @@ function RCLootCouncil:ChatCommand(msg)
 	elseif input == "add" or input == string.lower(_G.ADD) then
 		if not args[1] or args[1] == "" then return self:ChatCommand("help") end
 		if self.isMasterLooter then
-			for _,v in ipairs(args) do
+			local links = self:GetSplitedLinks(args) -- Splited the item link to allow user to enter links without space
+			for _,v in ipairs(links) do
 			self:GetActiveModule("masterlooter"):AddUserItem(v)
 			end
 		else
@@ -1330,21 +1330,8 @@ end
 
 function RCLootCouncil:IsItemBoE(item)
 	if not item then return false end
-	GameTooltip:SetOwner(UIParent, "ANCHOR_NONE")
-	GameTooltip:SetHyperlink(item)
-	if GameTooltip:NumLines() > 1 then -- check that there is something here
-		for i = 1, 5 do -- BoE status won't be further away than line 5
-			local line = getglobal('GameTooltipTextLeft' .. i)
-			if line and line.GetText then
-				if line:GetText() == ITEM_BIND_ON_EQUIP then
-					GameTooltip:Hide()
-					return true
-				end
-			end
-		end
-	end
-	GameTooltip:Hide()
-	return false
+	-- Item binding type: 0 - none; 1 - on pickup; 2 - on equip; 3 - on use; 4 - quest.
+	return select(14, GetItemInfo(item)) == LE_ITEM_BIND_ON_EQUIP
 end
 
 function RCLootCouncil:GetPlayersGuildRank()
@@ -1767,6 +1754,29 @@ end
 
 function RCLootCouncil:GetItemNameFromLink(link)
 	return strmatch(link or "", "%[(.+)%]")
+end
+
+--@param links. Table of links. Any link in the table can contain connected links (links without space in between)
+--@return a list of links that contains all spilited item links
+function RCLootCouncil:GetSplitedLinks(links)
+	local result = {}
+	for _, connected in ipairs(links) do
+		local startPos, endPos = 1, nil
+		while (startPos) do
+			if connected:sub(1, 2) == "|c" then
+				startPos, endPos = connected:find("|c.-|r", startPos)
+			elseif connect:sub(1, 2) == "|H" then
+				startPos, endPos = connected:find("|H.-|h.-|h", startPos)
+			else
+				start = nil
+			end
+			if startPos then
+				tinsert(result, connected:sub(startPos, endPos))
+				startPos = startPos + 1
+			end
+		end
+	end
+	return result
 end
 
 function RCLootCouncil.round(num, decimals)
