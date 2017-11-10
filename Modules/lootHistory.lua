@@ -1096,8 +1096,13 @@ do
 	end
 
 	local function CSVEscape(s)
-		-- Escape double quote in the string and enclose string that can contains comma by double quote
-		return "\"" .. gsub((tostring(s) or ""), "\"", "\"\"") .. "\""
+		s = tostring(s or "")
+		if s:find(",") then
+			-- Escape double quote in the string and enclose string that can contains comma by double quote
+			return "\"" .. gsub(s, "\"", "\"\"") .. "\""
+		else
+			return s
+		end
 	end
 	--- CSV with all stored data
 	-- ~14 ms (74%) improvement by switching to table and concat
