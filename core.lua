@@ -1584,7 +1584,7 @@ function RCLootCouncil:CanSetML()
 	-- Code is from FrameXML/UnitPopup.lua
 	local inInstance, instanceType = IsInInstance();
 	local isLeader = UnitIsGroupLeader("player")
-	return (inRaid() or (inInstance and instanceType == "raid")) and isLeader and not HasLFGRestrictions() and IsInGuildGroup();
+	return (IsInRaid() or (inInstance and instanceType == "raid")) and isLeader and not HasLFGRestrictions() and IsInGuildGroup();
 end
 
 function RCLootCouncil:IsCouncil(name)
