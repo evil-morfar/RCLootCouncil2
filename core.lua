@@ -1465,22 +1465,27 @@ end
 
 function RCLootCouncil:NewMLCheck()
 	local old_ml = self.masterLooter
+	local old_lm = self.lootMethod
 	self.isMasterLooter, self.masterLooter = self:GetML()
+	self.lootMethod = GetLootMethod()
 	if IsPartyLFG() then return end	-- We can't use in lfg/lfd so don't bother
 	if self.masterLooter and self.masterLooter ~= "" and strfind(self.masterLooter, "Unknown") then
 		-- ML might be unknown for some reason
 		self:Debug("Unknown ML")
 		return self:ScheduleTimer("NewMLCheck", 2)
 	end
-	if self:UnitIsUnit(old_ml, "player") and not self.isMasterLooter then
+	if self:GetActiveModule("masterlooter"):IsEnabled() and not self.isMasterLooter then
 		-- We were ML, but no longer, so disable masterlooter module
 		self:GetActiveModule("masterlooter"):Disable()
 	end
-	if self:UnitIsUnit(old_ml, self.masterLooter) then return end -- no change
-
-	-- At this point we know the ML has changed, so we can wipe the council
-	self:Debug("Resetting council as we have a new ML!")
-	self.council = {}
+	if self:UnitIsUnit(old_ml, self.masterLooter) then 
+		if old_lm == self.lootMethod then return end -- no change
+	else
+		-- At this point we know the ML has changed, so we can wipe the council
+		self:Debug("Resetting council as we have a new ML!")
+		self.council = {}
+	end
+	
 	if not self.isMasterLooter and self.masterLooter then return end -- Someone else has become ML
 
 	-- Check if we can use in party
