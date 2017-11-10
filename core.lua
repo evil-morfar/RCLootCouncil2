@@ -87,7 +87,6 @@ function RCLootCouncil:OnInitialize()
 	self.isMasterLooter = false -- Are we the ML?
 	self.masterLooter = ""  -- Name of the ML
 	self.lootMethod = "personalloot"
-	self.isInRaid = IsInRaid()
 	self.isCouncil = false -- Are we in the Council?
 	self.enabled = true -- turn addon on/off
 	self.inCombat = false -- Are we in combat?
@@ -383,7 +382,6 @@ function RCLootCouncil:OnEnable()
 	self:DebugLog(self.playerName, self.version, self.tVersion)
 
 	-- register events
-	self:RegisterEvent("GROUP_LEFT", "OnEvent")
 	self:RegisterEvent("PARTY_LOOT_METHOD_CHANGED", "OnEvent")
 	self:RegisterEvent("PARTY_LEADER_CHANGED", "OnEvent")
 	self:RegisterEvent("GUILD_ROSTER_UPDATE","OnEvent")
@@ -393,7 +391,7 @@ function RCLootCouncil:OnEnable()
 	self:RegisterEvent("PLAYER_REGEN_ENABLED", "LeaveCombat")
 	self:RegisterEvent("ENCOUNTER_START", "OnEvent")
 	self:RegisterEvent("ENCOUNTER_END", 	"OnEvent")
-	self:RegisterEvent("GROUP_ROSTER_UPDATE", "OnEvent")
+	--self:RegisterEvent("GROUP_ROSTER_UPDATE", "OnEvent")
 
 	if IsInGuild() then
 		self.guildRank = select(2, GetGuildInfo("player"))
@@ -1424,19 +1422,10 @@ function RCLootCouncil:ConvertDateToString(day, month, year)
 end
 
 function RCLootCouncil:OnEvent(event, ...)
-	if event == "GROUP_ROSTER_UPDATE" then
-		local isInRaid = IsInRaid()
-		if isInRaid ~= self.isInRaid then -- Party/raid conversion
-			self:NewMLCheck(true)
-		end
-		self.isInRaid = isInRaid
-	elseif event == "PARTY_LEADER_CHANGED" then
+	if event == "PARTY_LEADER_CHANGED" then
 		self:Debug("Event:", event, ...)
 		self:NewMLCheck()
 	elseif event == "PARTY_LOOT_METHOD_CHANGED" then
-		self:Debug("Event:", event, ...)
-		self:NewMLCheck()
-	elseif event == "GROUP_LEFT" then
 		self:Debug("Event:", event, ...)
 		self:NewMLCheck()
 
