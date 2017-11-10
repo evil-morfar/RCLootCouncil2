@@ -18,12 +18,12 @@ LibDialog:Register("RCLOOTCOUNCIL_CONFIRM_USAGE", {
             -- The player might have passed on ML before accepting :O
             if not addon.isMasterLooter and addon.masterLooter and addon.masterLooter ~= "" then return end
             local lootMethod = addon.lootMethod
-            if lootMethod ~= "master" then
-               if addon:CanSetML() and not addon:Getdb().workWithoutML then
+            if lootMethod ~= "master" and not addon:Getdb().workWithoutML then
+               if addon:CanSetML() then
                   addon:Print(L["Changing LootMethod to Master Looting"])
                   SetLootMethod("master", addon.Ambiguate(addon.playerName)) -- activate ML
                   lootMethod = "master"
-               elseif not addon:Getdb().workWithoutML then
+               else
                   -- We can neither change the loot method to ML, nor we allow RC to work without ML.
                   -- TODO: error msg.
                   return
