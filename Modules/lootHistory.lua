@@ -619,14 +619,41 @@ function LootHistory:GetFrame()
 	imp:SetLayout("Flow")
 	imp:SetTitle("RCLootCouncil Import")
 	imp:SetWidth(400)
-	imp:SetHeight(100)
+	imp:SetHeight(550)
 
-	local edit = AG:Create("EditBox")
+	local edit = AG:Create("MultiLineEditBox")
+	edit:SetNumLines(20)
 	edit:SetFullWidth(true)
 	edit:SetLabel("Import")
 	edit:SetFullHeight(true)
+
+	-- Credit to WeakAura2
+	-- Import editbox only shows first 2500 bytes to avoid freezing the game.
+	-- Use 'OnChar' event to store other characters in a text buff
+	local textBuffer, i, lastPaste = {}, 0, 0
+	local pasted = ""
+	edit.editBox:SetScript("OnShow", function(self)
+		self:SetText("")
+		pasted = ""
+	end)
+	local function clearBuffer(self)
+		self:SetScript('OnUpdate', nil)
+		pasted = strtrim(table.concat(textBuffer))
+		edit.editBox:ClearFocus()
+	end
+	edit.editBox:SetScript('OnChar', function(self, c)
+		if lastPaste ~= GetTime() then
+			textBuffer, i, lastPaste = {}, 0, GetTime()
+			self:SetScript('OnUpdate', clearBuffer)
+		end
+		i = i + 1
+		textBuffer[i] = c
+	end)
+	edit.editBox:SetMaxBytes(2500)
+	edit.editBox:SetScript("OnMouseUp", nil);
+
 	edit:SetCallback("OnEnterPressed", function()
-		self:ImportHistory(edit:GetText())
+		self:ImportHistory(pasted)
 		imp:Hide()
 	end)
 	imp:AddChild(edit)
