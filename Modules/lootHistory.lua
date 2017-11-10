@@ -535,7 +535,10 @@ function LootHistory:GetFrame()
 	-- Import
 	local b5 = addon:CreateButton("Import", f.content)
 	b5:SetPoint("RIGHT", b3, "LEFT", -10, 0)
-	b5:SetScript("OnClick", function() self.frame.importFrame:Show() end)
+	b5:SetScript("OnClick", function() 
+		self.frame.importFrame:Show() 
+		self.frame.importFrame.edit:SetFocus()
+	end)
 	f.importBtn = b5
 
 	-- Filter
@@ -659,6 +662,7 @@ function LootHistory:GetFrame()
 	imp:AddChild(edit)
 	imp:Hide()
 	f.importFrame = imp
+	f.importFrame.edit = edit
 
 	-- Set a proper width
 	f:SetWidth(st.frame:GetWidth() + 20)
