@@ -3,6 +3,10 @@
 -- @author Potdisc
 -- Create Date : 8/6/2015
 
+--@debug@
+if LibDebug then LibDebug() end
+--@end-debug@
+
 local addon = LibStub("AceAddon-3.0"):GetAddon("RCLootCouncil")
 local LootHistory = addon:NewModule("RCLootHistory")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
@@ -865,7 +869,7 @@ function LootHistory.RightClickMenu(menu, level)
 	local info = Lib_UIDropDownMenu_CreateInfo()
 	local data = menu.datatable
 
-	local value = LIB_UIDROPDOWNMENU_MENU_VALUE
+	local value = _G.LIB_UIDROPDOWNMENU_MENU_VALUE
 	if not LootHistory.rightClickEntries[level] then return end
 	for i, entry in ipairs(LootHistory.rightClickEntries[level]) do
 		info = Lib_UIDropDownMenu_CreateInfo()
