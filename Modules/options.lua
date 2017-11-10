@@ -421,7 +421,6 @@ function addon:OptionsTable()
 										},
 										set = function(_, key)
 											-- Leader usage is forced enabled with this option on.
-											self.usageOptionsChanged = true
 											local leaderUsage = self.db.profile.usage.leader or self.db.profile.usage.ask_leader
 											for k in pairs(self.db.profile.usage) do
 												if k == key then
@@ -449,7 +448,6 @@ function addon:OptionsTable()
 										type = "toggle",
 										get = function() return self.db.profile.usage.leader or self.db.profile.usage.ask_leader end,
 										set = function(_, val)
-											self.usageOptionsChanged = true
 											self.db.profile.usage.leader, self.db.profile.usage.ask_leader = false, false -- Reset for zzzzz
 											if self.db.profile.usage.ml then self.db.profile.usage.leader = val end
 											if self.db.profile.usage.ask_ml then self.db.profile.usage.ask_leader = val end
@@ -461,10 +459,6 @@ function addon:OptionsTable()
 										name = L["Only use in raids"],
 										desc = L["onlyUseInRaids_desc"],
 										type = "toggle",
-										set = function(_, val)
-											self.usageOptionsChanged = true
-											self.db.profile.onlyUseInRaids = val
-										end,
 									},
 								},
 							},

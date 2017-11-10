@@ -365,9 +365,6 @@ function RCLootCouncil:OnInitialize()
 	-- add it to blizz options
 	self.optionsFrame = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("RCLootCouncil", "RCLootCouncil", nil, "settings")
 	self.optionsFrame.ml = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("RCLootCouncil", "Master Looter", "RCLootCouncil", "mlSettings")
-
-	self.optionsFrame.ml:SetScript("OnHide", self.OnMLOptionsHide)
-
 	-- reset verTestCandidates
 	self.db.global.verTestCandidates = {}
 	self.playersData = playersData -- Make it globally available
@@ -1463,13 +1460,6 @@ function RCLootCouncil:OnEvent(event, ...)
 	elseif event == "ENCOUNTER_END" then
 		self:DebugLog("Event:", event, ...)
 		self.bossName = select(2, ...) -- Extract encounter name
-	end
-end
-
-function RCLootCouncil.OnMLOptionsHide()
-	if RCLootCouncil.usageOptionsChanged then
-		RCLootCouncil:NewMLCheck(true)
-		RCLootCouncil.usageOptionsChanged = false
 	end
 end
 

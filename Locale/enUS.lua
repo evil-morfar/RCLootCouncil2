@@ -412,7 +412,6 @@ L["whisperKey_greed"] = "greed, offspec, os, 2"
 L["whisperKey_minor"] = "minorupgrade, minor, 3"
 L["Windows reset"] = true
 L["winners"] = true
-L["workWithoutML_desc"] = "If checked, RCLootCoucil will allow group leader to start a session, when loot method is not master loot. Raid members are required to install RCLootCouncil v2.7+ to receive message from the group leader."
 L["x days"] = "%d days"
 L["x out of x have voted"] = "%d out of %d have voted"
 L["You are not allowed to see the Voting Frame right now."] = true
