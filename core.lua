@@ -1485,7 +1485,7 @@ function RCLootCouncil:NewMLCheck()
 		self:Debug("Resetting council as we have a new ML!")
 		self.council = {}
 	end
-	
+
 	if not self.isMasterLooter and self.masterLooter then return end -- Someone else has become ML
 
 	-- Check if we can use in party
@@ -1537,6 +1537,9 @@ end
 -- @return boolean, "ML_Name". (true if the player is ML), (nil if there's no ML).
 function RCLootCouncil:GetML()
 	self:DebugLog("GetML()")
+	if IsPartyLFG() then 
+		return false, nil
+	end	-- We can't use in lfg/lfd so don't bother
 	if GetNumGroupMembers() == 0 and (self.testMode or self.nnp) then -- always the player when testing alone
 		self:ScheduleTimer("Timer", 5, "MLdb_check")
 		return true, self.playerName
