@@ -350,15 +350,6 @@ function LootHistory:EscapeItemLink(link)
 	return gsub(link, "\124", "\124\124")
 end
 
-function LootHistory:GetNotesString(notes)
-	if not notes then return "" end
-	local result = ""
-	for name, note in addon:OrderedPairs(notes) do
-		result = result..name..":"..note.." "
-	end
-	return result
-end
-
 function LootHistory:ExportHistory()
 	--debugprofilestart()
 	local export = self.exports[self.exportSelection].func(self)
@@ -687,18 +678,9 @@ function LootHistory:UpdateMoreInfo(rowFrame, cellFrame, dat, cols, row, realrow
 	end
 	tip:AddDoubleLine(L["Number of raids received loot from:"], moreInfoData[row.name].totals.raids.num, 1,1,1, 1,1,1)
 	tip:AddDoubleLine(L["Total items won:"], moreInfoData[row.name].totals.total, 1,1,1, 0,1,0)
-	if data.notes and next(data.notes) then
+	if data.note then
 		tip:AddLine(" ")
-		tip:AddLine(L["Notes"])
-		for name, note in addon:OrderedPairs(data.notes, function(a, b) return a[2] > b[2] end) do -- ordered by note.
-			local r, g, b = 1, 1, 1
-			local class = lootDB[name] and lootDB[name][1] and lootDB[name][1].class
-			if class then 
-				local color = addon:GetClassColor(class)
-				r, g, b = color.r, color.g, color.b
-			end
-			tip:AddDoubleLine(addon.Ambiguate(name), note, r, g, b, 1, 1, 1)
-		end
+		tip:AddDoubleLine(L["Notes"], data.note, r, g, b, 1, 1, 1)
 	end
 
 	-- Debug stuff
@@ -1120,7 +1102,7 @@ do
 		wipe(export)
 		wipe(ret)
 		local subType, equipLoc, rollType
-		tinsert(ret, "player, date, time, item, itemID, itemString, response, votes, class, instance, boss, gear1, gear2, responseID, isAwardReason, rollType, subType, equipLoc, notes\r\n")
+		tinsert(ret, "player, date, time, item, itemID, itemString, response, votes, class, instance, boss, gear1, gear2, responseID, isAwardReason, rollType, subType, equipLoc, note\r\n")
 		for player, v in pairs(lootDB) do
 			if selectedName and selectedName == player or not selectedName then
 				for i, d in pairs(v) do
@@ -1147,7 +1129,7 @@ do
 						tinsert(export, rollType)
 						tinsert(export, tostring(subType))
 						tinsert(export, tostring(getglobal(equipLoc) or ""))
-						tinsert(export, (gsub(self:GetNotesString(d.notes),","," ")))
+						tinsert(export, (gsub(d.note or "",","," ")))
 						tinsert(ret, table.concat(export, ","))
 						tinsert(ret, "\r\n")
 						wipe(export)
@@ -1165,7 +1147,7 @@ do
 		wipe(export)
 		wipe(ret)
 		local subType, equipLoc, rollType
-		tinsert(ret, "player\tdate\ttime\titem\titemID\titemString\tresponse\tvotes\tclass\tinstance\tboss\tgear1\tgear2\tresponseID\tisAwardReason\trollType\tsubType\tequipLoc\tnotes\r\n")
+		tinsert(ret, "player\tdate\ttime\titem\titemID\titemString\tresponse\tvotes\tclass\tinstance\tboss\tgear1\tgear2\tresponseID\tisAwardReason\trollType\tsubType\tequipLoc\tnote\r\n")
 		for player, v in pairs(lootDB) do
 			if selectedName and selectedName == player or not selectedName then
 				for i, d in pairs(v) do
@@ -1191,7 +1173,7 @@ do
 						tinsert(export, rollType)
 						tinsert(export, tostring(subType))
 						tinsert(export, tostring(getglobal(equipLoc) or ""))
-						tinsert(export, self:GetNotesString(d.notes))
+						tinsert(export, d.note or "")
 						tinsert(ret, table.concat(export, "\t"))
 						tinsert(ret, "\r\n")
 						wipe(export)
