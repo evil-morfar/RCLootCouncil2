@@ -25,7 +25,7 @@ LibDialog:Register("RCLOOTCOUNCIL_CONFIRM_USAGE", {
                lootMethod = "master"
             end
             local db = addon:Getdb()
-            if db.autoAward and GetLootThreshold() ~= 2 and GetLootThreshold() > db.autoAwardLowerThreshold then
+            if db.autoAward and GetLootThreshold() ~= 2 and GetLootThreshold() > db.autoAwardLowerThreshold  then
                addon:Print(L["Changing loot threshold to enable Auto Awarding"])
                SetLootThreshold(db.autoAwardLowerThreshold >= 2 and db.autoAwardLowerThreshold or 2)
             end
