@@ -452,7 +452,7 @@ function addon:OptionsTable()
 											if self.db.profile.usage.ml then self.db.profile.usage.leader = val end
 											if self.db.profile.usage.ask_ml then self.db.profile.usage.ask_leader = val end
 										end,
-										disabled = function() return self.db.profile.usage.never or self.db.profile.workWithoutML end,
+										disabled = function() return self.db.profile.usage.never end,
 									},
 									onlyUseInRaids = {
 										order = 4,
