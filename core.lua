@@ -1485,7 +1485,7 @@ function RCLootCouncil.OnMLOptionsHide()
 	end
 end
 
-function RCLootCouncil:NewMLCheck(forceCheck)
+function RCLootCouncil:NewMLCheck(forceCheck) -- If forceCheck is exactly true, try to prompt user even if self.masterLooter does not change
 	local old_ml = self.masterLooter
 	self.isMasterLooter, self.masterLooter = self:GetML()
 	self.lootMethod = GetLootMethod()
