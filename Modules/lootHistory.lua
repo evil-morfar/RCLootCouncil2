@@ -39,8 +39,8 @@ function LootHistory:OnInitialize()
 	}
 	self.scrollCols = {
 		{name = "",					width = ROW_HEIGHT, },			-- Class icon, should be same row as player
-		{name = _G.NAME,		width = 100, 				},		-- Name of the player
-		{name = L["Time"],		width = 125, comparesort = self.DateTimeSort, sort = "dsc",},			-- Time of awarding
+		{name = _G.NAME,		width = 100, sortnext = 3, defaultsort = "dsc"},		-- Name of the player (There is a bug in default lib-st sort function that "dsc" is "asc")
+		{name = L["Time"],		width = 125, comparesort = self.DateTimeSort, defaultsort = "dsc",},			-- Time of awarding
 		{name = "",					width = ROW_HEIGHT, },			-- Item at index icon
 		{name = L["Item"],		width = 250, 				}, 	-- Item string
 		{name = L["Reason"],		width = 220, comparesort = self.ResponseSort,  sortnext = 2},	-- Response aka the text supplied to lootDB...response
@@ -57,6 +57,7 @@ end
 local tierLookUpTable = { -- instanceMapID to Tier text
 	[1530] = L["Tier 19"],
 	[1676] = L["Tier 20"],
+	[1712] = L["Tier 21"],
 }
 
 local difficultyLookupTable = {
@@ -271,6 +272,15 @@ function LootHistory.SetCellDelete(rowFrame, frame, data, cols, row, realrow, co
 			addon:Debug("Deleting:", name, lootDB[name][num].lootWon)
 			tremove(lootDB[name], num)
 			tremove(data, realrow)
+
+			for _, v in pairs(data) do -- Update data[realrow].num for other rows, they are CHANGED !!!
+				if v.name == name then
+					if v.num >= num then
+						v.num = v.num - 1
+					end
+				end
+			end
+
 			table:SortData()
 			if #lootDB[name] == 0 then -- last entry deleted
 				addon:DebugLog("Last Entry deleted, deleting name: ", name)

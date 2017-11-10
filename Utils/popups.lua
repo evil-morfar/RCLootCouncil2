@@ -103,23 +103,3 @@ LibDialog:Register("RCLOOTCOUNCIL_CONFIRM_AWARD", {
 	hide_on_escape = true,
 	show_while_dead = true,
 })
-
--- Note button (lootframe)
-LibDialog:Register("RCLOOTCOUNCIL_LOOTFRAME_NOTE", {
-	text = L["Enter your note:"],
-	on_show = function(self)
-		self:SetFrameStrata("FULLSCREEN")
-	end,
-	editboxes = {
-		{
-			on_enter_pressed = function(self, entry)
-				entry.item.note = self:GetText() -- new
-				LibDialog:Dismiss("RCLOOTCOUNCIL_LOOTFRAME_NOTE")
-			end,
-			on_escape_pressed = function(self)
-				LibDialog:Dismiss("RCLOOTCOUNCIL_LOOTFRAME_NOTE")
-			end,
-			auto_focus = true,
-		}
-	},
-})
