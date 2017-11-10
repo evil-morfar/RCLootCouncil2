@@ -639,7 +639,7 @@ function LootHistory:GetFrame()
 
 	-- Credit to WeakAura2
 	-- Import editbox only shows first 2500 bytes to avoid freezing the game.
-	-- Use 'OnChar' event to store other characters in a text buff
+	-- Use 'OnChar' event to store other characters in a text buffer
 	local textBuffer, i, lastPaste = {}, 0, 0
 	local pasted = ""
 	edit.editBox:SetScript("OnShow", function(self)
