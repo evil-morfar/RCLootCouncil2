@@ -579,7 +579,7 @@ function RCLootCouncilML:UpdateLootSlots()
 		for session = 1, #self.lootTable do
 			-- Just skip if we've already awarded the item or found a fitting lootSlot
 			if not self.lootTable[session].awarded and not updatedLootSlot[session] then
-				if addon:ItemIsItem(item, self.lootTable[session].link) then
+				if item == self.lootTable[session].link then
 					if i ~= self.lootTable[session].lootSlot then -- It has changed!
 						addon:DebugLog("lootSlot @session", session, "Was at:",self.lootTable[session].lootSlot, "is now at:", i)
 					end
@@ -1056,7 +1056,7 @@ function RCLootCouncilML:GetItemsFromMessage(msg, sender, retryCount)
 	local link = self.lootTable[ses].link
 	-- Send Responses to all duplicate items.
 	for s, v in ipairs(self.lootTable) do
-		if addon:ItemIsItem(v.link, link) then
+		if v.link == link then
 			addon:SendCommand("group", "response", s, sender, toSend)
 			count = count + 1
 		end
