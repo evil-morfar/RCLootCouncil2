@@ -1514,9 +1514,9 @@ end
 function RCLootCouncil:StartHandleLoot()
 	if not self.isMasterLooter then return end -- Someone else has become ML
 	local lootMethod = GetLootMethod()
-    if lootMethod ~= "master" and not self:CanSetML() then return end -- Cant enable session from loot if we cant use ML loot method.
+    if lootMethod ~= "master" and not self:CanSetML() then return end -- Cant handle loot if we cant use ML loot method.
 
-    self:Debug("Enable session from loot.")
+    self:Debug("Start handle loot.")
 	self.handleLoot = true
 	if lootMethod ~= "master" then
 		SetLootMethod("master", self.Ambiguate(self.playerName)) -- activate ML
@@ -1589,6 +1589,9 @@ function RCLootCouncil:GetML()
 			end
 		end
 		if name then
+			self:Debug("MasterLooter = ", name)
+			-- Check to see if we have recieved mldb within 15 secs, otherwise request it
+			self:ScheduleTimer("Timer", 15, "MLdb_check")
 			return UnitIsGroupLeader("player"), name
 		end
 	end
