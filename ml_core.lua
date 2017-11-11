@@ -141,8 +141,24 @@ function RCLootCouncilML:UpdateGroup(ask)
 		if v then self:RemoveCandidate(name); updates = true end
 	end
 	if updates then
-		self.council = self:GetCouncilInGroup()
 		addon:SendCommand("group", "candidates", self.candidates)
+		
+		local oldCouncil = self.council
+		self.council = self:GetCouncilInGroup()
+		local councilUpdated = false
+		if #self.council ~= #oldCouncil then
+			councilUpdated = true
+		else
+			for i, _ in ipairs(self.council) do
+				if self.council[i] ~= oldCouncil[i] then
+					councilUpdated = true
+					break
+				end
+			end
+		end
+		if councilUpdated then
+			addon:SendCommand("group", "council", self.council)
+		end
 	end
 end
 
