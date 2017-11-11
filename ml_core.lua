@@ -38,11 +38,14 @@ function RCLootCouncilML:OnEnable()
 									-- i = { link, winner }
 	self.lootInBags = {} 	-- Items not yet awarded but stored in bags
 	self.lootOpen = false 	-- is the ML lootWindow open or closed?
+	self.lootSlotInfo = {}  -- Items' data currently in the loot slot
+	self.lootQueue = {}     -- Items ML have attempted to give out that waiting for LOOT_SLOT_CLEARED
 	self.running = false		-- true if we're handling a session
 	self.council = self:GetCouncilInGroup()
 
 	self:RegisterComm("RCLootCouncil", 		"OnCommReceived")
 	self:RegisterEvent("LOOT_OPENED",		"OnEvent")
+	self:RegisterEvent("LOOT_SLOT_CLEARED", "OnEvent")
 	self:RegisterEvent("LOOT_CLOSED",		"OnEvent")
 	self:RegisterEvent("CHAT_MSG_WHISPER",	"OnEvent")
 	self:RegisterBucketEvent("GROUP_ROSTER_UPDATE", 10, "UpdateGroup") -- Bursts in group creation, and we should have plenty of time to handle it
@@ -369,8 +372,23 @@ end
 
 function RCLootCouncilML:OnEvent(event, ...)
 	addon:DebugLog("ML event", event, ...)
-	if event == "LOOT_OPENED" then -- IDEA Check if event LOOT_READY is useful here (also check GetLootInfo() for this)
+	if event == "LOOT_OPENED" then -- ~~~IDEA Check if event LOOT_READY is useful here (also check GetLootInfo() for this)~~~
+								   -- ^ Blizzard code doesn't use LOOT_READY, so don't bother it.
 		self.lootOpen = true
+		wipe(self.lootSlotInfo)
+		for i = 1,  GetNumLootItems() do
+			local texture, name, quantity, quality, locked, isQuestItem, questId, isActive = GetLootSlotInfo(i)
+			local link = GetLootSlotLink(i)
+			if link then
+				self.lootSlotInfo[i] = {
+					name = name,
+					link = link,
+					quantity = quantity,
+					quality = quality,
+					locked = locked,
+				}
+			end
+		end
 		if not InCombatLockdown() then
 			self:LootOpened()
 		else
