@@ -23,7 +23,8 @@ LibDialog:Register("RCLOOTCOUNCIL_CONFIRM_USAGE", {
             -- The player might have passed on ML before accepting :O
             if not addon.isMasterLooter and addon.masterLooter and addon.masterLooter ~= "" then return end
             local lootMethod = GetLootMethod()
-            if lootMethod ~= "master" and not addon:CanSetML() then return end -- No need to enable ML module right now if we cant use ML loot method.
+            if lootMethod ~= "master" and not addon:CanSetML() then return end -- No need to enable session from loot right now if we cant use ML loot method.
+            addon.sessionFromLoot = true
             if lootMethod ~= "master" then
                addon:Print(L["Changing LootMethod to Master Looting"])
                SetLootMethod("master", addon.Ambiguate(addon.playerName)) -- activate ML
@@ -33,14 +34,9 @@ LibDialog:Register("RCLOOTCOUNCIL_CONFIRM_USAGE", {
                addon:Print(L["Changing loot threshold to enable Auto Awarding"])
                SetLootThreshold(db.autoAwardLowerThreshold >= 2 and db.autoAwardLowerThreshold or 2)
             end
-            addon:Print(L["Now handles looting"])
-            addon.isMasterLooter = true
-            addon.masterLooter = addon.playerName
             if #db.council == 0 then -- if there's no council
                addon:Print(L["You haven't set a council! You can edit your council by typing '/rc council'"])
             end
-            addon:CallModule("masterlooter")
-            addon:GetActiveModule("masterlooter"):NewML(addon.masterLooter)
          end,
       },
       {	text = _G.NO,

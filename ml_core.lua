@@ -391,7 +391,7 @@ end
 
 function RCLootCouncilML:LootOpened()
 	local sessionframe = addon:GetActiveModule("sessionframe")
-	if addon.lootMethod == "master" and addon.isMasterLooter and GetNumLootItems() > 0 then
+	if addon.sessionFromLoot and addon.lootMethod == "master" and addon.isMasterLooter and GetNumLootItems() > 0 then
 		if self.running or sessionframe:IsRunning() then -- Check if an update is needed
 			self:UpdateLootSlots()
 		else -- Otherwise add the loot

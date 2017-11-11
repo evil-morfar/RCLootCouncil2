@@ -90,6 +90,7 @@ function RCLootCouncil:OnInitialize()
 	self.isMasterLooter = false -- Are we the ML?
 	self.masterLooter = ""  -- Name of the ML
 	self.lootMethod = "personalloot"
+	self.sessionFromLoot = false -- Start session from the loot window?
 	self.isCouncil = false -- Are we in the Council?
 	self.enabled = true -- turn addon on/off
 	self.inCombat = false -- Are we in combat?
@@ -1477,34 +1478,38 @@ function RCLootCouncil:NewMLCheck()
 		self:Debug("Unknown ML")
 		return self:ScheduleTimer("NewMLCheck", 2)
 	end
-	if self:GetActiveModule("masterlooter"):IsEnabled() and not self.isMasterLooter then
-		-- We were ML, but no longer, so disable masterlooter module
+
+	if not self.isMasterLooter then
 		self:GetActiveModule("masterlooter"):Disable()
+	elseif not self:GetActiveModule("masterlooter"):IsEnabled() then
+		self:CallModule("masterlooter")
+		self:GetActiveModule("masterlooter"):NewML(self.masterLooter)
 	end
+
 	if self.masterLooter == nil then return end -- Didn't find a leader or ML.
 	if self:UnitIsUnit(old_ml, self.masterLooter) then 
-		if old_lm == self.lootMethod then return end -- no change
+		if old_lm == self.lootMethod then return end -- Both ML and loot method have no change, no need to ask for usage again.
 	else
 		-- At this point we know the ML has changed, so we can wipe the council
 		self:Debug("Resetting council as we have a new ML!")
 		self.council = {}
 	end
 
-	if not self.isMasterLooter and self.masterLooter then return end -- Someone else has become ML
+	self.sessionFromLoot = false -- Reset
+
+	if not self.isMasterLooter then return end -- Someone else has become ML
 
 	-- Check if we can use in party
 	if not IsInRaid() and db.onlyUseInRaids then return end
 
 	-- We are ML and shouldn't ask the player for usage
 	if self.lootMethod == "master" and self.isMasterLooter and db.usage.ml then -- addon should auto start
+		self.sessionFromLoot = true
 		self:Print(L["Now handles looting"])
 		if db.autoAward and GetLootThreshold() ~= 2 and GetLootThreshold() > db.autoAwardLowerThreshold  then
 			self:Print(L["Changing loot threshold to enable Auto Awarding"])
 			SetLootThreshold(db.autoAwardLowerThreshold >= 2 and db.autoAwardLowerThreshold or 2)
 		end
-		self:CallModule("masterlooter")
-		self:GetActiveModule("masterlooter"):NewML(self.masterLooter)
-
 	-- We're ML and must ask the player for usage
 	elseif self.lootMethod == "master" and self.isMasterLooter and db.usage.ask_ml then
 		return LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_USAGE")
@@ -1519,16 +1524,16 @@ function RCLootCouncil:OnRaidEnter(arg)
 	if not IsInRaid() and db.onlyUseInRaids then return end
 	if self.lootMethod ~= "master" and self:CanSetML() then
 		-- We don't need to ask the player for usage, so change loot method to master, and make the player ML
+		self.sessionFromLoot = false -- Reset
+
 		if db.usage.leader then
+			self.sessionFromLoot = true
 			SetLootMethod("master", self.Ambiguate(self.playerName))
 			self:Print(L[" you are now the Master Looter and RCLootCouncil is now handling looting."])
 			if db.autoAward and GetLootThreshold() ~= 2 and GetLootThreshold() > db.autoAwardLowerThreshold  then
 				self:Print(L["Changing loot threshold to enable Auto Awarding"])
 				SetLootThreshold(db.autoAwardLowerThreshold >= 2 and db.autoAwardLowerThreshold or 2)
 			end
-			self.isMasterLooter, self.masterLooter = true, self.playerName
-			self:CallModule("masterlooter")
-			self:GetActiveModule("masterlooter"):NewML(self.masterLooter)
 
 		-- We must ask the player for usage
 		elseif db.usage.ask_leader then
