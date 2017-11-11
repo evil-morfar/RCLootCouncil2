@@ -20,7 +20,7 @@ LibDialog:Register("RCLOOTCOUNCIL_CONFIRM_USAGE", {
       {	text = _G.YES,
          on_click = function()
             addon:DebugLog("Player confirmed usage")
-            addon:EnableHandleLoot()
+            addon:StartHandleLoot()
          end,
       },
       {	text = _G.NO,

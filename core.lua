@@ -1504,14 +1504,14 @@ function RCLootCouncil:NewMLCheck()
 
 	-- We are ML and shouldn't ask the player for usage
 	if self.lootMethod == "master" and db.usage.ml then -- addon should auto start
-		self:EnableHandleLoot()
+		self:StartHandleLoot()
 	-- We're ML and must ask the player for usage
 	elseif self.lootMethod == "master" and db.usage.ask_ml then
 		return LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_USAGE")
 	end
 end
 
-function RCLootCouncil:EnableHandleLoot()
+function RCLootCouncil:StartHandleLoot()
 	if not self.isMasterLooter then return end -- Someone else has become ML
 	local lootMethod = GetLootMethod()
     if lootMethod ~= "master" and not self:CanSetML() then return end -- Cant enable session from loot if we cant use ML loot method.
@@ -1546,7 +1546,7 @@ function RCLootCouncil:OnRaidEnter(arg)
 		self.handleLoot = false -- Reset
 
 		if db.usage.leader then
-			self:EnableHandleLoot()
+			self:StartHandleLoot()
 		-- We must ask the player for usage
 		elseif db.usage.ask_leader then
 			return LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_USAGE")
