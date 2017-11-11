@@ -1517,9 +1517,9 @@ end
 function RCLootCouncil:StartHandleLoot()
 	if not self.isMasterLooter then return end -- Someone else has become ML
 	local lootMethod = GetLootMethod()
-    if lootMethod ~= "master" and not self:CanSetML() then return end -- Cant handle loot if we cant use ML loot method.
+	if lootMethod ~= "master" and not self:CanSetML() then return end -- Cant handle loot if we cant use ML loot method.
 
-    self:Debug("Start handle loot.")
+	self:Debug("Start handle loot.")
 	self.handleLoot = true
 	if lootMethod ~= "master" then
 		SetLootMethod("master", self.Ambiguate(self.playerName)) -- activate ML
