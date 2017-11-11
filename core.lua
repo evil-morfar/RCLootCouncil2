@@ -693,6 +693,11 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 						self:SendCommand(self.masterLooter, "MLdb_request")
 						return self:ScheduleTimer("OnCommReceived", 5, prefix, serializedMsg, distri, sender)
 					end
+					if #self.council == 0 then
+						self:Debug("Received loot table without council :(", sender)
+						self:SendCommand(self.masterLooter, "council_request")
+						return self:ScheduleTimer("OnCommReceived", 5, prefix, serializedMsg, distri, sender)
+					end
 
 					-- Hand the lootTable to the votingFrame
 					if self.isCouncil or self.mldb.observe then
