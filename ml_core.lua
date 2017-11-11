@@ -7,8 +7,11 @@
 --[[TODOs/NOTES:
 ]]
 
+--@debug@
+if LibDebug then LibDebug() end
+--@end-debug@
 local addon = LibStub("AceAddon-3.0"):GetAddon("RCLootCouncil")
-RCLootCouncilML = addon:NewModule("RCLootCouncilML", "AceEvent-3.0", "AceBucket-3.0", "AceComm-3.0", "AceTimer-3.0", "AceHook-3.0")
+_G.RCLootCouncilML = addon:NewModule("RCLootCouncilML", "AceEvent-3.0", "AceBucket-3.0", "AceComm-3.0", "AceTimer-3.0", "AceHook-3.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 local LibDialog = LibStub("LibDialog-1.0")
 
@@ -812,7 +815,7 @@ function RCLootCouncilML:AutoAward(lootIndex, item, quality, name, reason, boss)
 end
 
 local history_table = {}
- function RCLootCouncilML:TrackAndLogLoot(name, item, responseID, boss, votes, itemReplaced1, itemReplaced2, reason, isToken, tokenRoll, relicRoll)
+ function RCLootCouncilML:TrackAndLogLoot(name, item, responseID, boss, votes, itemReplaced1, itemReplaced2, reason, isToken, tokenRoll, relicRoll, note)
 	if reason and not reason.log then return end -- Reason says don't log
 	if not (db.sendHistory or db.enableHistory) then return end -- No reason to do stuff when we won't use it
 	if addon.testMode and not addon.nnp then return end -- We shouldn't track testing awards.
@@ -837,8 +840,9 @@ local history_table = {}
 	history_table["tierToken"]		= isToken																						-- New in v2.3+
 	history_table["tokenRoll"]		= tokenRoll																						-- New in v2.4+
 	history_table["relicRoll"]		= relicRoll																						-- New in v2.5+
+	history_table["note"]			= note																							-- New in v2.7+
 
-	addon:SendMessage("RCMLLootHistorySend", history_table, name, item, responseID, boss, votes, itemReplaced1, itemReplaced2, reason, isToken, tokenRoll, relicRoll)
+	addon:SendMessage("RCMLLootHistorySend", history_table, name, item, responseID, boss, votes, itemReplaced1, itemReplaced2, reason, isToken, tokenRoll, relicRoll, note)
 
 	if db.sendHistory then -- Send it, and let comms handle the logging
 		addon:SendCommand("group", "history", name, history_table)
@@ -1039,7 +1043,7 @@ function RCLootCouncilML.AwardPopupOnClickYes(frame, data)
 	local awarded = RCLootCouncilML:Award(data.session, data.winner, data.responseID and addon:GetResponseText(data.responseID, data.isTierRoll, data.isRelicRoll), data.reason)
 	if awarded then -- log it
 		RCLootCouncilML:TrackAndLogLoot(data.winner, data.link, data.responseID, addon.bossName, data.votes, data.gear1, data.gear2,
-		 										  data.reason, data.isToken, data.isTierRoll, data.isRelicRoll)
+		 										  data.reason, data.isToken, data.isTierRoll, data.isRelicRoll, data.note)
 	end
 	-- We need to delay the test mode disabling so comms have a chance to be send first!
 	if addon.testMode and RCLootCouncilML:HasAllItemsBeenAwarded() then RCLootCouncilML:EndSession() end
