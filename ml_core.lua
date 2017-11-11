@@ -489,6 +489,42 @@ function RCLootCouncilML:HaveFreeSpaceForItem(item)
 	return false
 end
 
+-- Return can we give the loot to the winner
+--@return true we can, false and the reason if not
+-- reasons:
+-- "loot_not_open": No loot windowed is open.
+-- "loot_not_exist": No loot on the slot provided.
+-- "locked": The loot slot is locked for us. We are not eligible to loot this slot.
+-- "inventory_full": The winner is ourselves and our inventory is full.
+-- "quality_below_threshold": The winner is not ourselve and the quality of the item is below loot threshold.
+-- "not_ml_candidate": The winner is not ourselve and not in ml candidate
+function RCLootCouncilML:CanGiveLoot(slot, winner)
+	if not self.lootOpen then 
+		return false, "loot_not_open"
+	elseif not self.lootSlotInfo[slot] then
+		return false, "loot_not_exist"
+	elseif not self.lootSlotInfo[slot] then
+		return false, "locked"
+	elseif addon:UnitIsUnit(winner, "player") and not self:HaveFreeSpaceForItem(self.lootSlotInfo[slot].link) then
+		return false, "inventory_full"
+	elseif not addon:UnitIsUnit(winner, "player") then
+		if self.lootSlotInfo[slot].quality < GetLootThreshold() then
+			return false, "quality_below_threshold"
+		end
+		local found = false
+		for i = 1, MAX_RAID_MEMBERS do
+			if addon:UnitIsUnit(GetMasterLootCandidate(slot, i), winner) then
+				found = true
+				break
+			end
+		end
+		if not found then
+			return false, "not_ml_candidate"
+		end
+	end
+
+	return true
+end
 local function OnGiveLootExpired(entryInQueue)
 	for k, v in pairs(self.lootQueue) do -- remove entry from the loot queue.
 		if v == entryInQueue then
