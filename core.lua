@@ -1493,6 +1493,9 @@ function RCLootCouncil:NewMLCheck()
 		-- At this point we know the ML has changed, so we can wipe the council
 		self:Debug("Resetting council as we have a new ML!")
 		self.council = {}
+		self:Debug("MasterLooter = ", self.masterLooter)
+		-- Check to see if we have recieved mldb within 15 secs, otherwise request it
+		self:ScheduleTimer("Timer", 15, "MLdb_check")
 	end
 
 	self.handleLoot = false -- Reset
@@ -1562,7 +1565,6 @@ function RCLootCouncil:GetML()
 		return false, nil -- This is needed to avoid receiving command from LFR group leader.
 	end
 	if GetNumGroupMembers() == 0 and (self.testMode or self.nnp) then -- always the player when testing alone
-		self:ScheduleTimer("Timer", 5, "MLdb_check")
 		return true, self.playerName
 	end
 	local lootMethod, mlPartyID, mlRaidID = GetLootMethod()
@@ -1576,9 +1578,6 @@ function RCLootCouncil:GetML()
 		elseif mlPartyID then		-- Someone in party
 			name = self:UnitName("party"..mlPartyID)
 		end
-		self:Debug("MasterLooter = ", name)
-		-- Check to see if we have recieved mldb within 15 secs, otherwise request it
-		self:ScheduleTimer("Timer", 15, "MLdb_check")
 		return IsMasterLooter(), name
 	else -- Set the Group leader as the ML if the loot method is not master loot
 		local name;
@@ -1589,9 +1588,6 @@ function RCLootCouncil:GetML()
 			end
 		end
 		if name then
-			self:Debug("MasterLooter = ", name)
-			-- Check to see if we have recieved mldb within 15 secs, otherwise request it
-			self:ScheduleTimer("Timer", 15, "MLdb_check")
 			return UnitIsGroupLeader("player"), name
 		end
 	end
