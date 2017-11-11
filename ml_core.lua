@@ -402,15 +402,15 @@ function RCLootCouncilML:OnEvent(event, ...)
 	elseif event == "LOOT_SLOT_CLEARED" then
 		local slot = ...
 		if self.lootSlotInfo[slot] then -- If not, this is the 2nd LOOT_CLEARED event for the same thing. -_-
-			addon:Debug("OnLootSlotCleared()", slot)
-			local link, quantity = self.lootSlotInfo[slot].link, self.lootSlotInfo[slot].quantity
+			local link = self.lootSlotInfo[slot].link
+			addon:Debug("OnLootSlotCleared()", slot, link)
 			for i = #self.lootQueue, 1, -1 do -- Check latest loot attempt first
 				local v = self.lootQueue[i]
-				if v.slot == slot and v.link == link and v.quantity == quantity then -- loot success
+				if v.slot == slot then -- loot success
 					self:CancelTimer(v.timer)
 					tremove(self.lootQueue, i)
 					if (v.callback) then
-						v.callback(true, nil, unpack(v.args or {}))
+						v.callback(true, nil, unpack(v.args))
 					end
 					break
 				end
@@ -487,6 +487,52 @@ function RCLootCouncilML:HaveFreeSpaceForItem(item)
 		end
 	end
 	return false
+end
+
+local function OnGiveLootExpired(entryInQueue)
+	for k, v in pairs(self.lootQueue) do -- remove entry from the loot queue.
+		if v == entryInQueue then
+			tremove(self.lootQueue, k)
+		end
+	end
+	if entryInQueue.callback then
+		entryInQueue.callback(false, "expired", unpack(entryInQueue.args)) -- loot attempt fails
+	end
+end
+
+-- Attempt to give loot to winner.
+-- This function does not check loot eligibility. Use CanGiveLoot for that.
+-- This function always call callback function, with the maximum delay of LOOT_TIMEOUT,
+-- as callback(success, reason, ...), if callback is provided.
+--@param slot the loot slot
+--@param winner The name of the candidate who we want to give the item to
+--@param callback The callback function that do stuff when this loot attempt success/fail
+--@param ... The additional arguments provided to the callback.
+--@return nil
+function RCLootCouncilML:GiveLoot(slot, winner, callback, ...)
+	if self.lootOpen then
+
+		local entryInQueue = {slot = slot, callback = callback, args = {...}, }
+		entryInQueue.timer = self:ScheduleTimer(OnGiveLootExpired, LOOT_TIMEOUT, entryInQueue)
+		tinsert(self.lootQueue, entryInQueue)
+
+		for i = 1, MAX_RAID_MEMBERS do
+			if addon:UnitIsUnit(GetMasterLootCandidate(slot, i), winner) then
+				addon:Debug("GiveMasterLoot", i)
+				GiveMasterLoot(slot, i)
+				break
+			end
+		end
+
+		-- If winner is the ML himself, also attempt to LootSlot(). 
+		-- It's hard to know (and no need to know) exactly whether the item should be distributed by LootSlot() or by GiveMasterLoot(), 
+		-- unless we check if "OPEN_MASTER_LOOT_LIST" event fires immediately after LootSlot(),
+		-- so just try in both way.
+		if addon:UnitIsUnit(winner, "player") then
+			addon:Debug("LootSlot", i)
+			LootSlot(slot)
+		end
+	end
 end
 
 function RCLootCouncilML:UpdateLootSlots()
