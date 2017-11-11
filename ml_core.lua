@@ -17,6 +17,8 @@ local LibDialog = LibStub("LibDialog-1.0")
 
 local db;
 
+local LOOT_TIMEOUT = 1
+
 function RCLootCouncilML:OnInitialize()
 	addon:Debug("ML initialized!")
 end
@@ -376,6 +378,7 @@ function RCLootCouncilML:OnEvent(event, ...)
 								   -- ^ Blizzard code doesn't use LOOT_READY, so don't bother it.
 		self.lootOpen = true
 		wipe(self.lootSlotInfo)
+		wipe(self.lootQueue)
 		for i = 1,  GetNumLootItems() do
 			local texture, name, quantity, quality, locked, isQuestItem, questId, isActive = GetLootSlotInfo(i)
 			local link = GetLootSlotLink(i)
@@ -396,7 +399,24 @@ function RCLootCouncilML:OnEvent(event, ...)
 		end
 	elseif event == "LOOT_CLOSED" then
 		self.lootOpen = false
-
+	elseif event == "LOOT_SLOT_CLEARED" then
+		local slot = ...
+		if self.lootSlotInfo[slot] then -- If not, this is the 2nd LOOT_CLEARED event for the same thing. -_-
+			addon:Debug("OnLootSlotCleared()", slot)
+			local link, quantity = self.lootSlotInfo[slot].link, self.lootSlotInfo[slot].quantity
+			for i = #self.lootQueue, 1, -1 do -- Check latest loot attempt first
+				local v = self.lootQueue[i]
+				if v.slot == slot and v.link == link and v.quantity == quantity then -- loot success
+					self:CancelTimer(v.timer)
+					tremove(self.lootQueue, i)
+					if (v.callback) then
+						v.callback(true, nil, unpack(v.args or {}))
+					end
+					break
+				end
+			end
+			self.lootSlotInfo[slot] = nil
+		end
 	elseif event == "CHAT_MSG_WHISPER" and addon.isMasterLooter and db.acceptWhispers then
 		local msg, sender = ...
 		if msg == "rchelp" then
