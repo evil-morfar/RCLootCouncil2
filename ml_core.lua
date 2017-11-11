@@ -433,6 +433,24 @@ function RCLootCouncilML:CanWeLootItem(item, quality)
 	return ret
 end
 
+-- Do we have free space in our bags to hold this item?
+function RCLootCouncilML:HaveFreeSpaceForItem(item)
+	local itemFamily = GetItemFamily(item)
+	-- If the item is a container, then the itemFamily should be 0
+	local equipSlot = select(4, GetItemInfoInstant(item))
+	if equipSlot == "INVTYPE_BAG" then
+		itemFamily = 0
+	end
+	-- Get the bag's family
+	for bag = BACKPACK_CONTAINER, NUM_BAG_SLOTS do
+		local freeSlots, bagFamily = GetContainerNumFreeSlots(bag)
+		if freeSlots and freeSlots > 0 and (bagFamily == 0 or bit.band(itemFamily, bagFamily) > 0) then
+			return true
+		end
+	end
+	return false
+end
+
 function RCLootCouncilML:UpdateLootSlots()
 	if not self.lootOpen then return addon:Debug("ML:UpdateLootSlots() without loot window open!!") end
 	local updatedLootSlot = {}
