@@ -90,7 +90,7 @@ function RCLootCouncil:OnInitialize()
 	self.isMasterLooter = false -- Are we the ML?
 	self.masterLooter = ""  -- Name of the ML
 	self.lootMethod = "personalloot"
-	self.sessionFromLoot = false -- Start session from the loot window?
+	self.handleLoot = false -- Does RC handle loot(Start session from loot window)?
 	self.isCouncil = false -- Are we in the Council?
 	self.enabled = true -- turn addon on/off
 	self.inCombat = false -- Are we in combat?
@@ -1495,7 +1495,7 @@ function RCLootCouncil:NewMLCheck()
 		self.council = {}
 	end
 
-	self.sessionFromLoot = false -- Reset
+	self.handleLoot = false -- Reset
 
 	if not self.isMasterLooter then return end -- Someone else has become ML
 
@@ -1504,20 +1504,20 @@ function RCLootCouncil:NewMLCheck()
 
 	-- We are ML and shouldn't ask the player for usage
 	if self.lootMethod == "master" and db.usage.ml then -- addon should auto start
-		self:EnableSessionFromLoot()
+		self:EnableHandleLoot()
 	-- We're ML and must ask the player for usage
 	elseif self.lootMethod == "master" and db.usage.ask_ml then
 		return LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_USAGE")
 	end
 end
 
-function RCLootCouncil:EnableSessionFromLoot()
+function RCLootCouncil:EnableHandleLoot()
 	if not self.isMasterLooter then return end -- Someone else has become ML
 	local lootMethod = GetLootMethod()
     if lootMethod ~= "master" and not self:CanSetML() then return end -- Cant enable session from loot if we cant use ML loot method.
 
     self:Debug("Enable session from loot.")
-	self.sessionFromLoot = true
+	self.handleLoot = true
 	if lootMethod ~= "master" then
 		SetLootMethod("master", self.Ambiguate(self.playerName)) -- activate ML
 		self:Print(L[" you are now the Master Looter and RCLootCouncil is now handling looting."])
@@ -1543,10 +1543,10 @@ function RCLootCouncil:OnRaidEnter(arg)
 	if not IsInRaid() and db.onlyUseInRaids then return end
 	if self.lootMethod ~= "master" and self:CanSetML() then
 		-- We don't need to ask the player for usage, so change loot method to master, and make the player ML
-		self.sessionFromLoot = false -- Reset
+		self.handleLoot = false -- Reset
 
 		if db.usage.leader then
-			self:EnableSessionFromLoot()
+			self:EnableHandleLoot()
 		-- We must ask the player for usage
 		elseif db.usage.ask_leader then
 			return LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_USAGE")
