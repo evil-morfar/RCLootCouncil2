@@ -462,9 +462,9 @@ function RCLootCouncilML:UpdateLootSlots()
 				if item == self.lootTable[session].link then
 					if i ~= self.lootTable[session].lootSlot then -- It has changed!
 						addon:DebugLog("lootSlot @session", session, "Was at:",self.lootTable[session].lootSlot, "is now at:", i)
-						self.lootTable[session].lootSlot = i -- update it
-						updatedLootSlot[session] = true
 					end
+					self.lootTable[session].lootSlot = i -- update it
+					updatedLootSlot[session] = true
 					break
 				end
 			end
