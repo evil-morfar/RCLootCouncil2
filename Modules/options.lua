@@ -612,7 +612,7 @@ function addon:OptionsTable()
 											return t
 										end,
 										get = function() return L["Ignore List"] end,
-										set = function(info, val) self.db.profile.ignoredItems[tonumber(val)] = false end,
+										set = function(info, val) self.db.profile.ignoredItems[val] = false end,
 									},
 								},
 							},
