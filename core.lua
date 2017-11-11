@@ -1719,6 +1719,17 @@ function RCLootCouncil:GetItemNameFromLink(link)
 	return strmatch(link or "", "%[(.+)%]")
 end
 
+-- The link of same item generated from different player, or if two links are generated between player spec switch, are NOT the same
+-- Because item link contains player's level and spec ID.
+-- This function compares link with link level and spec ID removed.
+-- @return true if two items are the same item
+function RCLootCouncil:ItemIsItem(item1, item2)
+	if type(item1) ~= "string" or type(item2) ~= "string" then return item1 == item2 end
+	local pattern = "|Hitem:(%d*):(%d*):(%d*):(%d*):(%d*):(%d*):(%d*):(%d*):%d*:%d*"
+	local replacement = "|Hitem:%1:%2:%3:%4:%5:%6:%7:%8::"
+	return item1:gsub(pattern, replacement) == item2:gsub(pattern, replacement)
+end
+
 --@param links. Table of links. Any link in the table can contain connected links (links without space in between)
 --@return a list of links that contains all spilited item links
 function RCLootCouncil:GetSplitedLinks(links)
