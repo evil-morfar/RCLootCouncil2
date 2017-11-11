@@ -617,6 +617,21 @@ function RCLootCouncil:SendCommand(target, command, ...)
 	elseif target == "guild" then
 		self:SendCommMessage("RCLootCouncil", toSend, "GUILD")
 
+	elseif target == "council" then -- This cost large bandwidth, use this only for small command. 
+									-- Only send data to council, for security.
+		if self.mldb.observe or #self.council >= GetNumGroupMembers() then -- Everyone can see the voting frame, just send to the entire group
+			self:SendCommand("group", command, ...)
+		elseif not tContains(self.council, self.masterLooter) then -- council is invalid because it does not contain ML, just send to the entire group so we don't break stuffs.
+			self:Debug("SendCommand to council, but council does not contain ML", self.masterLooter)
+			self:SendCommand("group", command, ...)
+		else
+			self:SendCommand(self.masterLooter, command, ...) -- Send to ML first
+			for _, v in ipairs(self.council) do
+				if v ~= self.masterLooter then -- Then other councilmen
+					self:SendCommand(v, command, ...)
+				end
+			end
+		end
 	else
 		if self:UnitIsUnit(target,"player") then -- If target == "player"
 			self:SendCommMessage("RCLootCouncil", toSend, "WHISPER", self.playerName)
