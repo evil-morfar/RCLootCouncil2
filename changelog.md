@@ -10,6 +10,7 @@
 * Any chat output during solo tests are now replaced with chat prints.
 * Session Frame is now displayed if using "Auto Start" and the session isn't fully ready.
 * "/rc add" once again works without spaces between items.
+* A winner's note (if set) is now stored in the history, and included in TSV and CSV exports. (#306)
 
 
 * **Localization**
