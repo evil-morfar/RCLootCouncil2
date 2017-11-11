@@ -52,7 +52,7 @@ function LootFrame:Start(table, reRoll)
 	for k = offset+1, offset+#table do -- Only check the entries we added just now.
 		if not items[k].rolled then
 			for j = offset+1, offset+#table do
-				if j ~= k and items[k].link == items[j].link and not items[j].rolled then
+				if j ~= k and addon:ItemIsItem(items[k].link, items[j].link) and not items[j].rolled then
 					tinsert(items[k].sessions, items[j].sessions[1])
 					items[j].rolled = true -- Pretend we have rolled it.
 					numRolled = numRolled + 1
