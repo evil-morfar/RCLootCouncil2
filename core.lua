@@ -1503,16 +1503,35 @@ function RCLootCouncil:NewMLCheck()
 	if not IsInRaid() and db.onlyUseInRaids then return end
 
 	-- We are ML and shouldn't ask the player for usage
-	if self.lootMethod == "master" and self.isMasterLooter and db.usage.ml then -- addon should auto start
-		self.sessionFromLoot = true
-		self:Print(L["Now handles looting"])
-		if db.autoAward and GetLootThreshold() ~= 2 and GetLootThreshold() > db.autoAwardLowerThreshold  then
-			self:Print(L["Changing loot threshold to enable Auto Awarding"])
-			SetLootThreshold(db.autoAwardLowerThreshold >= 2 and db.autoAwardLowerThreshold or 2)
-		end
+	if self.lootMethod == "master" and db.usage.ml then -- addon should auto start
+		self:EnableSessionFromLoot()
 	-- We're ML and must ask the player for usage
-	elseif self.lootMethod == "master" and self.isMasterLooter and db.usage.ask_ml then
+	elseif self.lootMethod == "master" and db.usage.ask_ml then
 		return LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_USAGE")
+	end
+end
+
+function RCLootCouncil:EnableSessionFromLoot()
+	if not self.isMasterLooter then return end -- Someone else has become ML
+	local lootMethod = GetLootMethod()
+    if lootMethod ~= "master" and not self:CanSetML() then return end -- Cant enable session from loot if we cant use ML loot method.
+
+    self:Debug("Enable session from loot.")
+	self.sessionFromLoot = true
+	if lootMethod ~= "master" then
+		SetLootMethod("master", self.Ambiguate(self.playerName)) -- activate ML
+		self:Print(L[" you are now the Master Looter and RCLootCouncil is now handling looting."])
+	else
+		self:Print(L["Now handles looting"])
+	end
+
+	if db.autoAward and GetLootThreshold() ~= 2 and GetLootThreshold() > db.autoAwardLowerThreshold  then
+		self:Print(L["Changing loot threshold to enable Auto Awarding"])
+		SetLootThreshold(db.autoAwardLowerThreshold >= 2 and db.autoAwardLowerThreshold or 2)
+	end
+
+	if #db.council == 0 then -- if there's no council
+		self:Print(L["You haven't set a council! You can edit your council by typing '/rc council'"])
 	end
 end
 
@@ -1527,14 +1546,7 @@ function RCLootCouncil:OnRaidEnter(arg)
 		self.sessionFromLoot = false -- Reset
 
 		if db.usage.leader then
-			self.sessionFromLoot = true
-			SetLootMethod("master", self.Ambiguate(self.playerName))
-			self:Print(L[" you are now the Master Looter and RCLootCouncil is now handling looting."])
-			if db.autoAward and GetLootThreshold() ~= 2 and GetLootThreshold() > db.autoAwardLowerThreshold  then
-				self:Print(L["Changing loot threshold to enable Auto Awarding"])
-				SetLootThreshold(db.autoAwardLowerThreshold >= 2 and db.autoAwardLowerThreshold or 2)
-			end
-
+			self:EnableSessionFromLoot()
 		-- We must ask the player for usage
 		elseif db.usage.ask_leader then
 			return LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_USAGE")
