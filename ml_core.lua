@@ -579,7 +579,7 @@ function RCLootCouncilML:UpdateLootSlots()
 		for session = 1, #self.lootTable do
 			-- Just skip if we've already awarded the item or found a fitting lootSlot
 			if not self.lootTable[session].awarded and not updatedLootSlot[session] then
-				if item == self.lootTable[session].link then
+				if addon:ItemIsItem(item, self.lootTable[session].link) then
 					if i ~= self.lootTable[session].lootSlot then -- It has changed!
 						addon:DebugLog("lootSlot @session", session, "Was at:",self.lootTable[session].lootSlot, "is now at:", i)
 					end
@@ -684,7 +684,7 @@ function RCLootCouncilML:Award(session, winner, response, reason)
 				return awardFailed(session, winner, "loot_not_open")
 			end
 			-- v2.4.4+: Check if the item is still in the expected slot
-			if self.lootTable[session].link ~= GetLootSlotLink(self.lootTable[session].lootSlot) then
+			if not addon:ItemIsItem(self.lootTable[session].link, GetLootSlotLink(self.lootTable[session].lootSlot)) then
 				addon:Debug("LootSlot has changed before award!", session)
 				-- And update them if not
 				self:UpdateLootSlots()
