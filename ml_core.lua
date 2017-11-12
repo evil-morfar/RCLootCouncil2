@@ -56,6 +56,29 @@ function RCLootCouncilML:OnEnable()
 	self:RegisterMessage("RCCouncilChanged", "CouncilChanged")
 end
 
+function RCLootCouncilML:GetItemInfo(item)
+	local name, link, rarity, ilvl, iMinLevel, type, subType, iStackCount, equipLoc, texture,
+		sellPrice, typeID, subTypeID, bindType, expansionID, itemSetID, isCrafting = GetItemInfo(item)
+	local itemID = link and addon:GetItemIDFromLink(link)
+	if name then
+		return {
+			["name"]			= name, -- REVIEW This is really not needed as it's contained in itemLink. Remove next time we break backwards com
+			["link"]			= link,
+			["quality"]		= rarity,
+			["ilvl"]			= addon:GetTokenIlvl(link) or ilvl, -- if the item is a token, ilvl is the min ilvl of the item it creates.
+			["equipLoc"]	= RCTokenTable[itemID] and addon:GetTokenEquipLoc(RCTokenTable[itemID]) or equipLoc,
+			["subType"]		= subType,
+			["texture"]		= texture,
+			["boe"]			= bindType == LE_ITEM_BIND_ON_EQUIP,
+			["relic"]		= itemID and IsArtifactRelicItem(itemID) and select(3, C_ArtifactUI.GetRelicInfoByItemID(itemID)),
+			["token"]		= itemID and RCTokenTable[itemID],
+			["typeID"]		= typeID,
+			["subTypeID"]	= subTypeID,
+		}
+	else
+		return nil
+	end
+end
 --- Add an item to the lootTable
 -- @paramsig item[, bagged, slotIndex, index]
 -- @param item Any: ItemID|itemString|itemLink
@@ -72,20 +95,22 @@ function RCLootCouncilML:AddItem(item, bagged, slotIndex, index)
 		["bagged"]		= bagged,
 		["lootSlot"]	= slotIndex,
 		["awarded"]		= false,
-		["name"]			= name, -- REVIEW This is really not needed as it's contained in itemLink. Remove next time we break backwards com
-		["link"]			= link,
-		["quality"]		= rarity,
-		["ilvl"]			= addon:GetTokenIlvl(link) or ilvl, -- if the item is a token, ilvl is the min ilvl of the item it creates.
-		["equipLoc"]	= equipLoc,
-		["subType"]		= subType,
-		["texture"]		= texture,
-		["boe"]			= bindType == LE_ITEM_BIND_ON_EQUIP,
-		["relic"]		= itemID and IsArtifactRelicItem(itemID) and select(3, C_ArtifactUI.GetRelicInfoByItemID(itemID)),
-		["token"]		= itemID and RCTokenTable[itemID],
 	}
 
+	local itemInfo = self:GetItemInfo(item)
+
+	if itemInfo then
+		for k, v in pairs(itemInfo) do
+			if k == "equipLoc" then -- Dont break backward compatibility
+				self.lootTable[session][k] = select(4, GetItemInfoInstant(item))
+			elseif k ~= "typeID" and k ~= "subTypeID" then -- not transmitted
+				self.lootTable[session][k] = v
+			end
+		end
+	end
+
 		-- Item isn't properly loaded, so update the data in 1 sec (Should only happen with /rc test)
-	if not name then
+	if not itemInfo then
 		self:ScheduleTimer("Timer", 1, "AddItem", item, bagged, slotIndex, session)
 		addon:Debug("Started timer:", "AddItem", "for", item)
 	else
@@ -802,8 +827,13 @@ end
 RCLootCouncilML.announceItemStrings = {
 	["&s"] = function(ses) return ses end,
 	["&i"] = function(...) return select(2,...) end,
-	["&l"] = function(_, _, v) return addon:GetItemLevelText(v.ilvl, v.token) end,
-	["&t"] = function(_, _, t) return addon:GetItemTypeText(t.link, t.subType, t.equipLoc, t.token, t.relic) end,
+	["&l"] = function(_, item)
+		local t = RCLootCouncilML:GetItemInfo(item)
+		return t and addon:GetItemLevelText(t.ilvl, t.token) or "" end,
+	["&t"] = function(_, item)
+		local t = RCLootCouncilML:GetItemInfo(item)
+		return t and addon:GetItemTypeText(t.link, t.subType, t.equipLoc, t.token, t.relic) or ""
+	end,
 }
 -- The description for each keyword
 RCLootCouncilML.announceItemStringsDesc = {
@@ -835,11 +865,12 @@ RCLootCouncilML.awardStrings = {
 	["&i"] = function(...) return select(2, ...) end,
 	["&r"] = function(...) return select(3, ...) end,
 	["&n"] = function(...) return select(4, ...) or "" end,
-	["&l"] = function(...) local t = RCLootCouncilML.lootTable[select(5, ...)]
-							return addon:GetItemLevelText(t.ilvl, t.token) end,
-	["&t"] = function(...)
-		local t = RCLootCouncilML.lootTable[select(5,...)]
-		return addon:GetItemTypeText(t.link, t.subType, t.equipLoc, t.token, t.relic)
+	["&l"] = function(_, item)
+		local t = RCLootCouncilML:GetItemInfo(item)
+		return t and addon:GetItemLevelText(t.ilvl, t.token) or "" end,
+	["&t"] = function(_, item)
+		local t = RCLootCouncilML:GetItemInfo(item)
+		return t and addon:GetItemTypeText(t.link, t.subType, t.equipLoc, t.token, t.relic) or ""
 	end,
 }
 
