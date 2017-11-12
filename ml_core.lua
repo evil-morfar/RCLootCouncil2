@@ -525,6 +525,7 @@ function RCLootCouncilML:CanGiveLoot(slot, winner)
 
 	return true
 end
+
 local function OnGiveLootExpired(entryInQueue)
 	for k, v in pairs(self.lootQueue) do -- remove entry from the loot queue.
 		if v == entryInQueue then
@@ -539,7 +540,7 @@ end
 -- Attempt to give loot to winner.
 -- This function does not check loot eligibility. Use CanGiveLoot for that.
 -- This function always call callback function, with the maximum delay of LOOT_TIMEOUT,
--- as callback(success, reason, ...), if callback is provided.
+-- as callback(awarded, reason, ...), if callback is provided.
 --@param slot the loot slot
 --@param winner The name of the candidate who we want to give the item to
 --@param callback The callback function that do stuff when this loot attempt success/fail
@@ -837,33 +838,35 @@ end
 
 function RCLootCouncilML:AutoAward(lootIndex, item, quality, name, reason, boss)
 	addon:DebugLog("ML:AutoAward", lootIndex, item, quality, name, reason, boss)
-	local awarded = false
-	if db.autoAwardLowerThreshold < 2 and quality < 2 then
-		if addon:UnitIsUnit("player",name) then -- give it to the player
-			LootSlot(lootIndex)
-			awarded = true
-		else
-			addon:Print(L["Cannot autoaward:"])
-			addon:Print(format(L["You can only auto award items with a quality lower than 'quality' to yourself due to Blizaard restrictions"],"|cff1eff00"..getglobal("ITEM_QUALITY2_DESC").."|r"))
-			return false
-		end
-	else
-		for i = 1, GetNumGroupMembers() do
-			if addon:UnitIsUnit(GetMasterLootCandidate(lootIndex, i), name) then
-				GiveMasterLoot(lootIndex,i)
-				awarded = true
-			end
-		end
-	end
-	if awarded then
-		addon:Print(format(L["Auto awarded 'item'"], item))
-		self:AnnounceAward(name, item, db.awardReasons[reason].text)
-		self:TrackAndLogLoot(name, item, reason, boss, 0, nil, nil, db.awardReasons[reason])
-	else
+
+	local canGiveLoot, reason = self:CanGiveLoot(lootIndex, name)
+
+	if not canGiveLoot then
 		addon:Print(L["Cannot autoaward:"])
-		addon:Print(format(L["Unable to give 'item' to 'player' - (player offline, left group or instance?)"], item, name))
+		if reason == "inventory_full" then
+			addon:Print(_G.ERR_INV_FULL)
+		elseif reason == "threshold" then
+			local qualityText = (_G.ITEM_QUALITY_COLORS[GetLootThreshold()].hex or "") .. (getglobal("ITEM_QUALITY"..GetLootThreshold().."_DESC") or "") .. "|r"
+			addon:Print(format(L["You can only auto award items with a quality lower than 'quality' to yourself due to Blizaard restrictions"], qualityText))
+		else
+			addon:Print(format(L["Unable to give 'item' to 'player' - (player offline, left group or instance?)"], item, name))
+		end
+		return false
+	else
+		self:GiveLoot(lootIndex, name, function(awarded, reason)
+			if awarded then
+				addon:Print(format(L["Auto awarded 'item'"], item))
+				self:AnnounceAward(name, item, db.awardReasons[reason].text)
+				self:TrackAndLogLoot(name, item, reason, boss, 0, nil, nil, db.awardReasons[reason])
+			else
+				addon:Print(L["Cannot autoaward:"])
+				addon:Print(format(L["Timeout when giving 'item' to 'player' - (player offline, left group or instance, inventory full?)"], item, name))
+			end
+		end)
+
+		return true
 	end
-	return awarded
+
 end
 
 local history_table = {}

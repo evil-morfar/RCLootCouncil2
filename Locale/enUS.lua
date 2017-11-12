@@ -377,6 +377,7 @@ L["Tier Tokens ..."] = true
 L["Tier tokens received from here:"] = true
 L["Time"] = true
 L["Timeout"] = true
+L["Timeout when giving 'item' to 'player' - (player offline, left group or instance, inventory full?)"] = "Timeout when giving %s to %s - (player offline, left group or instance, inventory full?)"
 L["Tokens received"] = true
 L["To target"] = true
 L["Total awards"] = true
