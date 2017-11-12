@@ -739,14 +739,9 @@ function RCLootCouncilML:Award(session, winner, response, reason, callback, ...)
 	end
 
 	-- The rest is direct mode (item is in WoW loot window)
-	if not self.lootOpen then -- we can't give out loot without the loot window open
-		addon:Print(L["Unable to give out loot without the loot window open."])
-		--addon:Print(L["Alternatively, flag the loot as award later."])
-		return awardFailed(session, winner, "loot_not_open", callback, ...)
-	end
 
 	-- v2.4.4+: Check if the item is still in the expected slot
-	if not addon:ItemIsItem(self.lootTable[session].link, GetLootSlotLink(self.lootTable[session].lootSlot)) then
+	if self.lootOpen and not addon:ItemIsItem(self.lootTable[session].link, GetLootSlotLink(self.lootTable[session].lootSlot)) then
 		addon:Debug("LootSlot has changed before award!", session)
 		-- And update them if not
 		self:UpdateLootSlots()
