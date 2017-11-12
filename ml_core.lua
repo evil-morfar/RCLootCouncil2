@@ -1151,16 +1151,20 @@ function RCLootCouncilML.AwardPopupOnShow(frame, data)
 	frame.icon:SetTexture(RCLootCouncilML.lootTable[data.session].texture)
 end
 
-function RCLootCouncilML.AwardPopupOnClickYesCallback(awarded, session, winner, status, data)
+function RCLootCouncilML.AwardPopupOnClickYesCallback(awarded, session, winner, status, data, callback, ...)
 	if awarded then -- log it
+		if callback and type(callback) == "function" then
+			callback(awarded, session, winner, status, data, ...)
+		end
 		RCLootCouncilML:TrackAndLogLoot(data.winner, data.link, data.responseID, addon.bossName, data.votes, data.gear1, data.gear2,
 		 										  data.reason, data.isToken, data.isTierRoll, data.isRelicRoll, data.note)
 	end
 end
 
-function RCLootCouncilML.AwardPopupOnClickYes(frame, data)
+-- Argument to callback: awarded, session, winner, status, data, ...
+function RCLootCouncilML.AwardPopupOnClickYes(frame, data, callback, ...)
 	RCLootCouncilML:Award(data.session, data.winner, data.responseID and addon:GetResponseText(data.responseID, data.isTierRoll, data.isRelicRoll), data.reason,
-		RCLootCouncilML.AwardPopupOnClickYesCallback, data)
+		RCLootCouncilML.AwardPopupOnClickYesCallback, data, callback, ...)
 
 	-- We need to delay the test mode disabling so comms have a chance to be send first!
 	if addon.testMode and RCLootCouncilML:HasAllItemsBeenAwarded() then RCLootCouncilML:EndSession() end
