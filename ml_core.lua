@@ -617,10 +617,10 @@ end
 
 function RCLootCouncilML:HookLootButton(i)
 	local lootButton = getglobal("LootButton"..i)
-	if XLoot then -- hook XLoot
+	if _G.XLoot then -- hook XLoot
 		lootButton = getglobal("XLootButton"..i)
 	end
-	if XLootFrame then -- if XLoot 1.0
+	if _G.XLootFrame then -- if XLoot 1.0
 		lootButton = getglobal("XLootFrameButton"..i)
 	end
 	if getglobal("ElvLootSlot"..i) then -- if ElvUI
