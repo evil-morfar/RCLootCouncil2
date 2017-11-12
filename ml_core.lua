@@ -712,6 +712,10 @@ end
 function RCLootCouncilML:Award(session, winner, response, reason, callback, ...)
 	addon:DebugLog("ML:Award", session, winner, response, reason)
 
+	-- if winner is not nil, then we award the item now. Otherwise store in bags and award later ("give the item to self")
+	local awardNow = not not winner
+	winner = addon:UnitName(winner) or addon.playerName
+
 	local args = {...} --  "..."(Three dots) cant be used in an inner function, use unpack(args) instead.
 
 	if addon.testMode then
@@ -749,9 +753,6 @@ function RCLootCouncilML:Award(session, winner, response, reason, callback, ...)
 		self:UpdateLootSlots()
 	end
 
-	-- if winner is not nil, then we award the item now. Otherwise store in bags and award later ("give the item to self")
-	local awardNow = not not winner
-	winner = winner or addon.playerName
 	local canGiveLoot, cause = self:CanGiveLoot(self.lootTable[session].lootSlot, self.lootTable[session].link, winner)
 
 	if not canGiveLoot then
@@ -890,6 +891,7 @@ function RCLootCouncilML:ShouldAutoAward(item, quality)
 end
 
 function RCLootCouncilML:AutoAward(lootIndex, item, quality, name, reason, boss)
+	name = addon:UnitName(name)
 	addon:DebugLog("ML:AutoAward", lootIndex, item, quality, name, reason, boss)
 
 	if db.autoAwardLowerThreshold < 2 and quality < 2 and not addon:UnitIsUnit(name, "player") then
