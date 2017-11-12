@@ -18,7 +18,7 @@ local LibDialog = LibStub("LibDialog-1.0")
 local db;
 
 local LOOT_TIMEOUT = 1 -- If we give loot to someone, but loot slot is not cleared after this time period, consider this loot distribute as failed.
-						-- The real time needed is the sum of two players' latency, so 1s should be enough.
+						-- The real time needed is the sum of two players'(ML and the awardee) latency, so 1 second timeout should be enough.
 
 function RCLootCouncilML:OnInitialize()
 	addon:Debug("ML initialized!")
@@ -41,7 +41,7 @@ function RCLootCouncilML:OnEnable()
 									-- i = { link, winner }
 	self.lootInBags = {} 	-- Items not yet awarded but stored in bags
 	self.lootOpen = false 	-- is the ML lootWindow open or closed?
-	self.lootSlotInfo = {}  -- Items' data currently in the loot slot
+	self.lootSlotInfo = {}  -- Items' data currently in the loot slot. Need this because inside LOOT_SLOT_CLEARED handler, GetLootSlotLink() returns invalid link.
 	self.lootQueue = {}     -- Items ML have attempted to give out that waiting for LOOT_SLOT_CLEARED
 	self.running = false		-- true if we're handling a session
 	self.council = self:GetCouncilInGroup()
@@ -680,8 +680,7 @@ function RCLootCouncilML:PrintLootErrorMsg(cause, slot, item, winner)
 end
 
 -- Status can be one of the following:
--- test_mode, no_loot_slot, loot_not_open, normal, bagged, loot_gone,
--- locked, inventory_full, not_ml_candidate, timeout, quality_below_threshold
+-- test_mode, normal
 -- See :Award() for the different scenarios
 local function awardSuccess(session, winner, status, callback, ...)
 	addon:SendMessage("RCMLAwardSuccess", session, winner, status)
@@ -690,6 +689,10 @@ local function awardSuccess(session, winner, status, callback, ...)
 	end
 	return true
 end
+
+-- Status can be one of the following:
+-- bagged, loot_not_open, loot_gone, locked, inventory_full, quality_below_threshold, not_in_group, offline, not_ml_candidate, timeout
+-- See :Award() and :CanGiveLoot() for the different scenarios and to get their meanings
 local function awardFailed(session, winner, status, callback, ...)
 	addon:SendMessage("RCMLAwardFailed", session, winner, status)
 	if callback then
@@ -707,7 +710,7 @@ end
 function RCLootCouncilML:Award(session, winner, response, reason, callback, ...)
 	addon:DebugLog("ML:Award", session, winner, response, reason)
 
-	local args = {...} -- ... cant be used in an inner function, use this instead.
+	local args = {...} --  "..."(Three dots) cant be used in an inner function, use unpack(args) instead.
 
 	if addon.testMode then
 		if winner then
@@ -749,7 +752,7 @@ function RCLootCouncilML:Award(session, winner, response, reason, callback, ...)
 		self:UpdateLootSlots()
 	end
 
-	-- if winner is not nil, then we award the item now. Otherwise store in bags and award later ("award to self")
+	-- if winner is not nil, then we award the item now. Otherwise store in bags and award later ("give the item to self")
 	local awardNow = not not winner
 	winner = winner or addon.playerName
 	local canGiveLoot, cause = self:CanGiveLoot(self.lootTable[session].lootSlot, self.lootTable[session].link, winner)
