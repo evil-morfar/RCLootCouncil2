@@ -1251,6 +1251,7 @@ function RCLootCouncil:GetTokenEquipLoc(tokenSlot)
 			end
 		end
 	end
+	return "" -- return nil is bad. equipLoc should always have value
 end
 
 function RCLootCouncil:Timer(type, ...)
@@ -2173,6 +2174,10 @@ function RCLootCouncil:GetItemTypeText(link, subType, equipLoc, tokenSlot, relic
 			tokenText = L["Protector Token"]
 		elseif tContains(classes, "ROGUE") then
 			tokenText = L["Vanquisher Token"]
+		end
+
+		if equipLoc == "" then
+			equipLoc = self:GetTokenEquipLoc(tokenSlot)
 		end
 
 		if equipLoc ~= "" and getglobal(equipLoc) then
