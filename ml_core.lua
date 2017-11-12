@@ -660,7 +660,7 @@ function RCLootCouncilML:PrintLootErrorMsg(cause, slot, item, winner)
 	elseif cause == "timeout" then
 		addon:Print(format(L["Timeout when giving 'item' to 'player'"], item, addon.Ambiguate(winner)), " - ", L["Player is not in this instance or his inventory is full"])
 	elseif cause == "locked" then
-		addon:SessionError("No permission to loot item at slot "..slot)
+		addon:SessionError("No permission to loot the item at slot "..slot)
 	else
 		local prefix = format(L["Unable to give 'item' to 'player'"], item, addon.Ambiguate(winner)).."  - "
 		if cause == "loot_gone" then
@@ -673,8 +673,10 @@ function RCLootCouncilML:PrintLootErrorMsg(cause, slot, item, winner)
 			addon:Print(prefix, L["Player is not in the group"])
 		elseif cause == "offline" then
 			addon:Print(prefix, L["Player is offline"])
-		else
+		elseif cause == "not_ml_candidate" then
 			addon:Print(prefix, L["Player is not in this instance or is ineligible for this item"])
+		else
+			addon:Print(prefix) -- should not happen in programming is correct
 		end
 	end
 end
