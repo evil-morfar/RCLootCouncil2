@@ -682,7 +682,7 @@ end
 function RCLootCouncilML:Award(session, winner, response, reason, callback, ...)
 	addon:DebugLog("ML:Award", session, winner, response, reason)
 
-	local args = {...}
+	local args = {...} -- ... cant be used in an inner function, use this instead.
 
 	if addon.testMode then
 		if winner then
@@ -714,7 +714,7 @@ function RCLootCouncilML:Award(session, winner, response, reason, callback, ...)
 	if not self.lootOpen then -- we can't give out loot without the loot window open
 		addon:Print(L["Unable to give out loot without the loot window open."])
 		--addon:Print(L["Alternatively, flag the loot as award later."])
-		return awardFailed(session, winner, "loot_not_open")
+		return awardFailed(session, winner, "loot_not_open", callback, ...)
 	end
 
 	-- v2.4.4+: Check if the item is still in the expected slot
@@ -756,10 +756,11 @@ function RCLootCouncilML:Award(session, winner, response, reason, callback, ...)
 				if awarded then
 					self.lootTable[session].awarded = winner -- No need to let Comms handle this
 					addon:SendCommand("group", "awarded", session, winner)
+					awardSuccess(session, winner, "normal", callback, unpack(args))
 					self:AnnounceAward(winner, self.lootTable[session].link,
 		 				reason and reason.text or response, addon:GetActiveModule("votingframe"):GetCandidateData(session, winner, "roll"), session)
 					if self:HasAllItemsBeenAwarded() then self:EndSession() end
-					return awardSuccess(session, winner, "normal", callback, unpack(args))
+					return true
 				else
 					addon:Print(format(L["Timeout when giving 'item' to 'player'"], self.lootTable[session].link, addon.Ambiguate(winner)), L["Player is not in this instance or his inventory is full"])
 					return awardFailed(session, winner, "timeout", callback, unpack(args))
@@ -1135,18 +1136,17 @@ function RCLootCouncilML.AwardPopupOnShow(frame, data)
 	frame.icon:SetTexture(RCLootCouncilML.lootTable[data.session].texture)
 end
 
-function RCLootCouncilML.AwardPopupOnClickYesCallback(awarded, reason, data)
+function RCLootCouncilML.AwardPopupOnClickYesCallback(awarded, session, winner, status, data)
 	if awarded then -- log it
-		addon:Debug("AwardPopupOnClickYesCallback")
 		RCLootCouncilML:TrackAndLogLoot(data.winner, data.link, data.responseID, addon.bossName, data.votes, data.gear1, data.gear2,
 		 										  data.reason, data.isToken, data.isTierRoll, data.isRelicRoll, data.note)
 	end
 end
 
 function RCLootCouncilML.AwardPopupOnClickYes(frame, data)
-	local awarded = RCLootCouncilML:Award(data.session, data.winner, data.responseID and addon:GetResponseText(data.responseID, data.isTierRoll, data.isRelicRoll), data.reason,
-		RCLootCouncil.AwardPopupOnClickYesCallback, data)
-
+	RCLootCouncilML:Award(data.session, data.winner, data.responseID and addon:GetResponseText(data.responseID, data.isTierRoll, data.isRelicRoll), data.reason,
+		RCLootCouncilML.AwardPopupOnClickYesCallback, data)
+	
 	-- We need to delay the test mode disabling so comms have a chance to be send first!
 	if addon.testMode and RCLootCouncilML:HasAllItemsBeenAwarded() then RCLootCouncilML:EndSession() end
 	--return awarded -- Doesn't work, as LibDialog only hides the dialog if we return false/nil
