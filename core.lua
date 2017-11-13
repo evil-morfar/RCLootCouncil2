@@ -1957,6 +1957,7 @@ function RCLootCouncil:CreateFrame(name, cName, title, width, height)
 	f:SetFrameStrata("DIALOG")
 	f:SetWidth(450)
 	f:SetHeight(height or 325)
+	f:SetScale(db.UI[cName].scale or 1.1)
 	lwin:Embed(f)
 	f:RegisterConfig(db.UI[cName])
 	f:RestorePosition() -- might need to move this to after whereever GetFrame() is called
