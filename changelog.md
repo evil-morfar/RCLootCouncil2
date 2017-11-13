@@ -5,8 +5,8 @@
    + This way all ilvl calculations will show more useful numbers.
    + Note: RCLootCouncil cannot track if these items will be Warforged/Titanforged. Only the guaranteed minimum ilvl is used.
 * The class icon can now be replaced with spec icon.
-* Filter buttons' text now change color to indicate a filter is active.
-* During tests all outputs are now preceeded with "(test)".
+* Filter button's text now change color to indicate a filter is active.
+* During tests all chat outputs are now preceeded with "(test)".
 * Any chat output during solo tests are now replaced with chat prints.
 * Session Frame is now displayed if using "Auto Start" and the session isn't fully ready.
 * "/rc add" once again works without spaces between items.
@@ -28,9 +28,9 @@
 
 * **Responses**
 * Most response related information is now sent immediately when a session starts instead of after rolling.
-   + E.g. the council can now see a candidates gear and ilvl before a candidates responds.
+   + E.g. the council can now see a candidates gear and ilvl before a candidate responds.
 * RCLootCouncil now sends the gear a candidate had equipped during the most recent encounter instead of the gear equipped when rolling.
-   + This way candidates can't change their gear to appear to have lower ilvl.
+   + This way candidates can't change their gear to appear to have a lower ilvl.
 * If enabled, relic responses can now be filtered separately.
 * You can now filter responses from candidates that can't use a given item.
 * It's now possible to ask a candidate to reroll only on items they can use.
@@ -42,6 +42,7 @@
    * Everyone can then type "/roll", and that roll is then used in the voting frame.
    * Only the first roll counts, so you can't cheat by rolling multiple times.
 * This is entirely optional, and the normal roll system still exists.
+* If the item being rolled for exists multiple times in a session, then the roll is added to all of the item's sessions.
 
 
 * **Loot Frame**
@@ -78,7 +79,7 @@
    * The ```lootTable``` in core is now the same as in votingFrame. Use ```RCLootCouncil:GetLootTable()``` to fetch it, as the votingFrame one will be removed.
 
 
-*Huge shoutout to __Safetee__ for most of these changes!*
+*Huge shoutout to __Safetee__ for the majority of these changes!*
 
 ### v2.6.1
 ---
