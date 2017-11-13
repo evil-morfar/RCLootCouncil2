@@ -29,7 +29,7 @@ local guildRanks = {} -- returned from addon:GetGuildRanks()
 local GuildRankSort, ResponseSort -- Initialize now to avoid errors
 local defaultScrollTableData = {} -- See below
 local moreInfoData = {}
-local manualRollSession = nil -- The current session we are doing the manual roll
+local manualRollItem = nil -- The current session we are doing the manual roll
 local manualRollResults = {}  -- The result of manual rolls, to record if a player has rolled.
 
 function RCVotingFrame:OnInitialize()
@@ -306,7 +306,9 @@ function RCVotingFrame:Setup(table)
 	session = 1
 	self:BuildST()
 	self:SwitchSession(session)
-	if db.autoAddRolls then for i = 1, #lootTable do self:DoRandomRolls(i) end end
+	if addon.isMasterLooter and db.autoAddRolls then 
+		self:DoAllRandomRolls()
+	end
 end
 
 function RCVotingFrame:HandleVote(session, name, vote, voter)
@@ -327,12 +329,50 @@ function RCVotingFrame:HandleVote(session, name, vote, voter)
 	self:UpdatePeopleToVote()
 end
 
-function RCVotingFrame:DoRandomRolls(ses)
-	local table = {}
-	for name, v in pairs (lootTable[ses].candidates) do
-		table[name] = math.random(100)
+-- Get rolls ranged from 1 to 100 for all candidates, and guarantee everyone's roll is different.
+function RCVotingFrame:GenerateNoRepeatRollTable(ses)
+	local rolls = {}
+	for i = 1, 100 do
+		rolls[i] = i
 	end
-	addon:SendCommand("group", "rolls", ses, table)
+
+	local t = {}
+	for name, _ in pairs(lootTable[ses].candidates) do
+		if #rolls > 0 then
+			local i = math.random(#rolls)
+			t[name] = rolls[i]
+			tremove(rolls, i)
+		else -- We have more than 100 candidates !?!?
+			t[name] = 0
+		end
+	end
+	return t
+end
+
+function RCVotingFrame:DoRandomRolls(ses)
+	local table = self:GenerateNoRepeatRollTable(ses)
+	for k, v in ipairs(lootTable) do
+		if addon:ItemIsItem(lootTable[ses].link, v.link) then
+			addon:SendCommand("group", "rolls", k, table)
+		end
+	end
+end
+
+function RCVotingFrame:DoAllRandomRolls()
+	local sessionsDone = {}
+
+	for ses, t in ipairs(lootTable) do
+		if not sessionsDone[ses] then
+			local table = self:GenerateNoRepeatRollTable(ses)
+			for k, v in ipairs(lootTable) do
+				if addon:ItemIsItem(t.link, v.link) then
+					sessionsDone[k] = true
+					addon:SendCommand("group", "rolls", k, table)
+				end
+			end
+		end
+	end
+
 end
 
 ----------------------------------------------------------------- -
@@ -1516,9 +1556,14 @@ function RCVotingFrame:StartManualRoll()
 		for name, v in pairs (lootTable[session].candidates) do
 			table[name] = ""
 		end
-		addon:SendCommand("group", "rolls", session, table) -- Reset current rolls
+		manualRollItem = lootTable[session].link
 
-		manualRollSession = session
+	    for k, v in ipairs(lootTable) do
+			if addon:ItemIsItem(v.link, manualRollItem) then
+				addon:SendCommand("group", "rolls", k, table) -- Reset current rolls
+			end
+		end
+
 		wipe(manualRollResults)
 		self:RegisterEvent("CHAT_MSG_SYSTEM")
 		addon:SendAnnouncement(string.format(L["request_rolls_announcement"], lootTable[session].link), "group")
@@ -1530,7 +1575,7 @@ end
 function RCVotingFrame:EndManualRoll()
 	if addon.isMasterLooter then
 		self:UnregisterEvent("CHAT_MSG_SYSTEM")
-		manualRollSession = nil
+		manualRollItem = nil
 		wipe(manualRollResults)
 	else
 		addon:Debug("End manual roll by non-ML?")
@@ -1538,7 +1583,7 @@ function RCVotingFrame:EndManualRoll()
 end
 
 function RCVotingFrame:CHAT_MSG_SYSTEM(event, msg)
-	if manualRollSession and addon.isMasterLooter and active and msg then
+	if manualRollItem and addon.isMasterLooter and active and msg then
         -- parse the message
 		local pattern = RANDOM_ROLL_RESULT
 		pattern = string.gsub(pattern, "[%(%)%-]", "%%%1")
@@ -1553,10 +1598,14 @@ function RCVotingFrame:CHAT_MSG_SYSTEM(event, msg)
 	    	name = addon:UnitName(name) -- Note: name may contain space.
 
 	    	-- Only the first roll is valid and only the default "/roll" is valid.
-	    	if lootTable[manualRollSession].candidates[name] and (not manualRollResults[name]) and low == 1 and high == 100 then
+	    	if (not manualRollResults[name]) and low == 1 and high == 100 then
 	    		manualRollResults[name] = roll
 	    		addon:Debug("Manual Roll", name, roll, low, high)
-	    		addon:SendCommand("group", "rolls", manualRollSession, {[name] = roll})
+	    		for k, v in ipairs(lootTable) do
+	    			if addon:ItemIsItem(v.link, manualRollItem) then
+	    				addon:SendCommand("group", "rolls", k, {[name] = roll})
+	    			end
+	    		end
 	    	end
 	    end
 	end
