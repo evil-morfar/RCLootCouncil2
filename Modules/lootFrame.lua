@@ -232,11 +232,6 @@ do
 						b[i]:SetText(addon:GetButtonText(i)) -- In case it was already created
 						b[i]:SetScript("OnClick", function() LootFrame:OnRoll(entry, i) end)
 					end
-					b[i]:SetScript("OnEnter", function()
-						if entry.item.note then
-							addon:CreateTooltip(L["Your note:"], entry.item.note)
-						end
-					end)
 					b[i]:SetWidth(b[i]:GetTextWidth() + 10)
 					if b[i]:GetWidth() < MIN_BUTTON_WIDTH then b[i]:SetWidth(MIN_BUTTON_WIDTH) end -- ensure minimum width
 					width = width + b[i]:GetWidth()
@@ -272,14 +267,14 @@ do
 				end
 			end)
 			entry.noteButton:SetScript("OnLeave", function() addon:HideTooltip() end)
-			entry.noteButton:SetScript("OnClick", function() 
+			entry.noteButton:SetScript("OnClick", function()
 				if not entry.noteEditbox:IsShown() then
 					entry.noteEditbox:Show()
 				else
 					entry.noteEditbox:Hide()
 					entry.item.note = entry.noteEditbox:GetText() ~= "" and entry.noteEditbox:GetText()
 					entry:Update(entry.item)
-				end 
+				end
 			end)
 
 			entry.noteEditbox = CreateFrame("EditBox", nil, entry.frame, "AutoCompleteEditBoxTemplate")
@@ -293,7 +288,7 @@ do
 			entry.noteEditbox:SetHeight(24)
 			entry.noteEditbox:SetPoint("BOTTOMLEFT", entry.frame, "TOPRIGHT", 0, -entry.icon:GetHeight()-5)
 			entry.noteEditbox:SetTextInsets(5, 5, 0, 0)
-			entry.noteEditbox:SetScript("OnEnterPressed", function(self) 
+			entry.noteEditbox:SetScript("OnEnterPressed", function(self)
 				self:Hide()
 				entry.item.note = self:GetText() ~= "" and self:GetText()
 				entry:Update(entry.item)
@@ -456,11 +451,6 @@ do
 					b[i]:SetText(addon:GetButtonText(i, true)) -- In case it was already created
 					b[i]:SetScript("OnClick", function() LootFrame:OnRoll(entry, i) end)
 				end
-				b[i]:SetScript("OnEnter", function()
-					if entry.item.note then
-						addon:CreateTooltip(L["Your note:"], entry.item.note)
-					end
-				end)
 				b[i]:SetWidth(b[i]:GetTextWidth() + 10)
 				if b[i]:GetWidth() < MIN_BUTTON_WIDTH then b[i]:SetWidth(MIN_BUTTON_WIDTH) end -- ensure minimum width
 				width = width + b[i]:GetWidth()
@@ -507,11 +497,6 @@ do
 					b[i]:SetText(addon:GetButtonText(i, false, true)) -- In case it was already created
 					b[i]:SetScript("OnClick", function() LootFrame:OnRoll(entry, i) end)
 				end
-				b[i]:SetScript("OnEnter", function()
-					if entry.item.note then
-						addon:CreateTooltip(L["Your note:"], entry.item.note)
-					end
-				end)
 				b[i]:SetWidth(b[i]:GetTextWidth() + 10)
 				if b[i]:GetWidth() < MIN_BUTTON_WIDTH then b[i]:SetWidth(MIN_BUTTON_WIDTH) end -- ensure minimum width
 				width = width + b[i]:GetWidth()
