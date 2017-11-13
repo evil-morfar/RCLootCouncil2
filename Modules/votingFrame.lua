@@ -338,7 +338,7 @@ function RCVotingFrame:DoRandomRolls(ses)
 	end
 
 	for k, v in ipairs(lootTable) do
-		if addon:ItemIsItem(lootTable[session].link, v.link) then
+		if addon:ItemIsItem(lootTable[ses].link, v.link) then
 			addon:SendCommand("group", "rolls", k, table)
 		end
 	end
