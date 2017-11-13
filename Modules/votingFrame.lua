@@ -1202,6 +1202,7 @@ do
 				func = function(candidateName)
 					local t = {}
 					for k,v in ipairs(lootTable) do
+						if (k == session or addon:ItemIsItem(v.link, lootTable[session].link)) and not v.awarded then
 							tinsert(t, {
 								name = v.name,
 								link = v.link,
