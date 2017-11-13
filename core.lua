@@ -287,13 +287,13 @@ function RCLootCouncil:OnInitialize()
 			timeout = 30,
 
 			-- List of items to ignore:
-			ignore = {
-				109693,115502,111245,115504,113588, -- WoD enchant mats
-				124442,124441, 							-- Chaos Crystal (Legion), Leylight Shard (Legion)
-				141303,141304,141305, 					-- Essence of Clarity (Emerald Nightmare quest item)
-				143656,143657,143658, 					-- Echo of Time (Nighthold quest item)
-				132204,151248,151249, 151250,			-- Sticky Volatile Essence, Fragment of the Guardian's Seal (Tomb of Sargeras)
-				152902,152906,152907,					-- Rune of Passage (Antorus shortcut item)
+			ignoredItems = {
+				[109693] = true, [115502] = true, [111245] = true, [115504] = true, [113588] = true, -- WoD enchant mats
+				[124441] = true, [124442] = true, -- Chaos Crystal (Legion), Leylight Shard (Legion)
+				[141303] = true, [141304] = true, [141305] = true, -- Essence of Clarity (Emerald Nightmare quest item)
+				[143656] = true, [143657] = true, [143658] = true, -- Echo of Time (Nighthold quest item)					
+				[132204] = true, [151248] = true, [151249] = true, [151250] = true, -- Sticky Volatile Essence, Fragment of the Guardian's Seal (Tomb of Sargeras)
+				[152902] = true, [152906] = true, [152907] = true, [155831] = true, -- Rune of Passage (Antorus shortcut item), Pantheon's Blessing 
 			},
 		},
 	} -- defaults end

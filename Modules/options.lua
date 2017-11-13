@@ -579,10 +579,16 @@ function addon:OptionsTable()
 										name = L["Add Item"],
 										desc = L["ignore_input_desc"],
 										type = "input",
-										pattern = "%d",
+										validate = function(_, val) return GetItemInfoInstant(val) end,
 										usage = L["ignore_input_usage"],
-										get = function() return "\"itemID\"" end,
-										set = function(info, val) tinsert(self.db.profile.ignore, val); LibStub("AceConfigRegistry-3.0"):NotifyChange("RCLootCouncil") end,
+										get = function() return "\"item ID, Name or Link\"" end,
+										set = function(info, val)
+											local id = GetItemInfoInstant(val)
+											if id then
+												self.db.profile.ignoredItems[id] = true
+												LibStub("AceConfigRegistry-3.0"):NotifyChange("RCLootCouncil")
+											end
+										end,
 									},
 									ignoreList = {
 										order = 3,
@@ -593,14 +599,20 @@ function addon:OptionsTable()
 										width = "double",
 										values = function()
 											local t = {}
-											for i = 1, #self.db.profile.ignore do
-												local link = select(2, GetItemInfo(self.db.profile.ignore[i]))
-												t[i] = link or L["Not cached, please reopen."]
+											for id, val in pairs(self.db.profile.ignoredItems) do
+												if val then
+													local link = select(2, GetItemInfo(id))
+													if link then
+														t[id] = link.."  (id: "..id..")"
+													else
+														t[id] = L["Not cached, please reopen."].."  (id: "..id..")"
+													end
+												end
 											end
 											return t
 										end,
 										get = function() return L["Ignore List"] end,
-										set = function(info, val) tremove(self.db.profile.ignore, val) end,
+										set = function(info, val) self.db.profile.ignoredItems[val] = false end,
 									},
 								},
 							},
