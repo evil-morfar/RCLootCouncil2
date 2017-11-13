@@ -68,6 +68,7 @@
    + ```:SendResponse(target, session, link, ilvl, response, equipLoc, note, subType, isTier, isRelic, sendAvgIlvl)``` sends response to the target.
    + SpecID is now included in the candidate data.
    + New message on ```:BuildMLdb()```.
+   + ```:ItemIsItem(link or itemID or itemName)``` properly compares two items.
 
 * **Changed**
    + ~~```:CreateResponse()```~~ is consolidated into ```:SendResponse(...)``` which now creates and sends responses.
