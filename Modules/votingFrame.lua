@@ -558,12 +558,8 @@ function RCVotingFrame:GetFrame()
 			["OnClick"] = function(rowFrame, cellFrame, data, cols, row, realrow, column, table, button, ...)
 				if button == "RightButton" and row then
 					if active then
-						if lootTable[session].awarded then
-							addon:Print(L["This item has been awarded"])
-						else
-							menuFrame.name = data[realrow].name
-							Lib_ToggleDropDownMenu(1, nil, menuFrame, cellFrame, 0, 0)
-						end
+						menuFrame.name = data[realrow].name
+						Lib_ToggleDropDownMenu(1, nil, menuFrame, cellFrame, 0, 0);
 					else
 						addon:Print(L["You cannot use the menu when the session has ended."])
 					end
