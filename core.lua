@@ -83,7 +83,7 @@ function RCLootCouncil:OnInitialize()
   	self.version = GetAddOnMetadata("RCLootCouncil", "Version")
 	self.nnp = false
 	self.debug = false
-	self.tVersion = "Alpha.1" -- String or nil. Indicates test version, which alters stuff like version check. Is appended to 'version', i.e. "version-tVersion" (max 10 letters for stupid security)
+	self.tVersion = "Beta.2" -- String or nil. Indicates test version, which alters stuff like version check. Is appended to 'version', i.e. "version-tVersion" (max 10 letters for stupid security)
 
 	self.playerClass = select(2, UnitClass("player"))
 	self.guildRank = L["Unguilded"]
@@ -291,9 +291,9 @@ function RCLootCouncil:OnInitialize()
 				[109693] = true, [115502] = true, [111245] = true, [115504] = true, [113588] = true, -- WoD enchant mats
 				[124441] = true, [124442] = true, -- Chaos Crystal (Legion), Leylight Shard (Legion)
 				[141303] = true, [141304] = true, [141305] = true, -- Essence of Clarity (Emerald Nightmare quest item)
-				[143656] = true, [143657] = true, [143658] = true, -- Echo of Time (Nighthold quest item)					
+				[143656] = true, [143657] = true, [143658] = true, -- Echo of Time (Nighthold quest item)
 				[132204] = true, [151248] = true, [151249] = true, [151250] = true, -- Sticky Volatile Essence, Fragment of the Guardian's Seal (Tomb of Sargeras)
-				[152902] = true, [152906] = true, [152907] = true, [155831] = true, -- Rune of Passage (Antorus shortcut item), Pantheon's Blessing 
+				[152902] = true, [152906] = true, [152907] = true, [155831] = true, -- Rune of Passage (Antorus shortcut item), Pantheon's Blessing
 			},
 		},
 	} -- defaults end
@@ -1723,7 +1723,7 @@ end
 -- The link of same item generated from different player, or if two links are generated between player spec switch, are NOT the same
 -- Because item link contains player's level and spec ID.
 -- This function compares link with link level and spec ID removed.
--- Also compare with unique id removed, because wowpedia says that 
+-- Also compare with unique id removed, because wowpedia says that
 -- " In-game testing indicates that the UniqueId can change from the first loot to successive loots on the same item."
 -- Although log shows item in the loot actually has no uniqueId in Legion, but just in case Blizzard changes it in the future.
 -- @return true if two items are the same item
