@@ -52,6 +52,7 @@
 * The layout is now more consistent in general.
 * The note button design received an update.
 * Added an option to print out responses as they're sent.
+* The default timeout is now 60 seconds.
 
 
 ###### Bugfixes
