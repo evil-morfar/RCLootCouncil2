@@ -306,7 +306,7 @@ function RCVotingFrame:Setup(table)
 	session = 1
 	self:BuildST()
 	self:SwitchSession(session)
-	if addon.isMasterLooter and db.autoAddRolls then 
+	if addon.isMasterLooter and db.autoAddRolls then
 		self:DoAllRandomRolls()
 	end
 end
@@ -558,8 +558,12 @@ function RCVotingFrame:GetFrame()
 			["OnClick"] = function(rowFrame, cellFrame, data, cols, row, realrow, column, table, button, ...)
 				if button == "RightButton" and row then
 					if active then
-						menuFrame.name = data[realrow].name
-						Lib_ToggleDropDownMenu(1, nil, menuFrame, cellFrame, 0, 0);
+						if lootTable[session].awarded then
+							addon:Print(L["This item has been awarded"])
+						else
+							menuFrame.name = data[realrow].name
+							Lib_ToggleDropDownMenu(1, nil, menuFrame, cellFrame, 0, 0)
+						end
 					else
 						addon:Print(L["You cannot use the menu when the session has ended."])
 					end
@@ -1198,7 +1202,6 @@ do
 				func = function(candidateName)
 					local t = {}
 					for k,v in ipairs(lootTable) do
-						if k==session or (addon:ItemIsItem(v.link, lootTable[session].link) and not v.awarded) then
 							tinsert(t, {
 								name = v.name,
 								link = v.link,
