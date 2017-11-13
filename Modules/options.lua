@@ -975,7 +975,7 @@ function addon:OptionsTable()
 											if self.db.profile.timeout then
 												self.db.profile.timeout = false
 											else
-												self.db.profile.timeout = 30
+												self.db.profile.timeout = 180
 											end
 										end,
 										get = function()
