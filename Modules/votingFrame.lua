@@ -440,7 +440,7 @@ function RCVotingFrame:Update()
 		self.frame.abortBtn:SetText(_G.CLOSE)
 		self.frame.disenchant:Hide()
 	end
-	if lootTable[session].awarded and lootTable[session].lootSlot then
+	if lootTable[session].awarded then
 		self.frame.disenchant:Disable()
 	else
 		self.frame.disenchant:Enable()
@@ -1151,7 +1151,7 @@ do
 					LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_AWARD", RCVotingFrame:GetAwardPopupData(session, name, data))
 				end,
 				disabled = function(name, data)
-					return lootTable[session] and lootTable[session].awarded and lootTable[session].lootSlot
+					return lootTable[session] and lootTable[session].awarded
 				end,
 			},{ -- 4 Award for
 				text = L["Award for ..."],
@@ -1159,7 +1159,7 @@ do
 				notCheckable = true,
 				hasArrow = true,
 				disabled = function(name, data)
-					return lootTable[session] and lootTable[session].awarded and lootTable[session].lootSlot
+					return lootTable[session] and lootTable[session].awarded
 				end,
 			},{ -- 5 Spacer
 				text = "",
