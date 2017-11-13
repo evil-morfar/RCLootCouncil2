@@ -1145,17 +1145,11 @@ do
 				func = function(name, data)
 					LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_AWARD", RCVotingFrame:GetAwardPopupData(session, name, data))
 				end,
-				disabled = function(name, data)
-					return lootTable[session] and lootTable[session].awarded
-				end,
 			},{ -- 4 Award for
 				text = L["Award for ..."],
 				value = "AWARD_FOR",
 				notCheckable = true,
 				hasArrow = true,
-				disabled = function(name, data)
-					return lootTable[session] and lootTable[session].awarded
-				end,
 			},{ -- 5 Spacer
 				text = "",
 				notCheckable = true,
