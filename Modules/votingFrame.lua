@@ -329,12 +329,28 @@ function RCVotingFrame:HandleVote(session, name, vote, voter)
 	self:UpdatePeopleToVote()
 end
 
-function RCVotingFrame:DoRandomRolls(ses)
-	local table = {}
-	for name, _ in pairs (lootTable[ses].candidates) do
-		table[name] = math.random(100)
+-- Get rolls ranged from 1 to 100 for all candidates, and guarantee everyone's roll is different.
+function RCVotingFrame:GenerateNoRepeatRollTable(ses)
+	local rolls = {}
+	for i = 1, 100 do
+		rolls[i] = i
 	end
 
+	local t = {}
+	for name, _ in pairs(lootTable[ses].candidates) do
+		if #rolls > 0 then
+			local i = math.random(#rolls)
+			t[name] = rolls[i]
+			tremove(rolls, i)
+		else -- We have more than 100 candidates !?!?
+			t[name] = 0
+		end
+	end
+	return t
+end
+
+function RCVotingFrame:DoRandomRolls(ses)
+	local table = self:GenerateNoRepeatRollTable(ses)
 	for k, v in ipairs(lootTable) do
 		if addon:ItemIsItem(lootTable[ses].link, v.link) then
 			addon:SendCommand("group", "rolls", k, table)
@@ -347,10 +363,7 @@ function RCVotingFrame:DoAllRandomRolls()
 
 	for ses, t in ipairs(lootTable) do
 		if not sessionsDone[ses] then
-			local table = {}
-			for name, _ in pairs (lootTable[ses].candidates) do
-				table[name] = math.random(100)
-			end
+			local table = self:GenerateNoRepeatRollTable(ses)
 			for k, v in ipairs(lootTable) do
 				if addon:ItemIsItem(t.link, v.link) then
 					sessionsDone[k] = true
