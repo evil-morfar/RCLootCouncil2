@@ -403,6 +403,8 @@ function RCLootCouncil:OnEnable()
 	if self.db.global.version and self:VersionCompare(self.db.global.version, self.version)
 	 	or self.db.global.tVersion
 		then -- We've upgraded
+		self.db.profile.ignore = nil -- Replaced with ignoredItems in 2.7
+
 		self.db.global.oldVersion = self.db.global.version
 		self.db.global.version = self.version
 		self.db.global.localizedSubTypes.created = false -- Force to fully rerun LocalizeSubTypes if upgraded
