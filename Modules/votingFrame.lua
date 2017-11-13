@@ -307,9 +307,7 @@ function RCVotingFrame:Setup(table)
 	self:BuildST()
 	self:SwitchSession(session)
 	if addon.isMasterLooter and db.autoAddRolls then 
-		for i = 1, #lootTable do 
-			self:DoRandomRolls(i) 
-		end 
+		self:DoAllRandomRolls()
 	end
 end
 
@@ -333,7 +331,7 @@ end
 
 function RCVotingFrame:DoRandomRolls(ses)
 	local table = {}
-	for name, v in pairs (lootTable[ses].candidates) do
+	for name, _ in pairs (lootTable[ses].candidates) do
 		table[name] = math.random(100)
 	end
 
@@ -342,6 +340,26 @@ function RCVotingFrame:DoRandomRolls(ses)
 			addon:SendCommand("group", "rolls", k, table)
 		end
 	end
+end
+
+function RCVotingFrame:DoAllRandomRolls()
+	local sessionsDone = {}
+
+	for ses, t in ipairs(lootTable) do
+		if not sessionsDone[ses] then
+			local table = {}
+			for name, _ in pairs (lootTable[ses].candidates) do
+				table[name] = math.random(100)
+			end
+			for k, v in ipairs(lootTable) do
+				if addon:ItemIsItem(t.link, v.link) then
+					sessionsDone[k] = true
+					addon:SendCommand("group", "rolls", k, table)
+				end
+			end
+		end
+	end
+
 end
 
 ----------------------------------------------------------------- -
