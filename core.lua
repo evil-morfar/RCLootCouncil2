@@ -696,15 +696,9 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 						return self:ScheduleTimer("OnCommReceived", 5, prefix, serializedMsg, distri, sender)
 					end
 
-					local mlInCouncil = false
-					for _, v in ipairs(self.council) do
-						if self:UnitIsUnit(v, self.masterLooter) then
-							mlInCouncil = true
-							break
-						end
-					end
-					if not mlInCouncil then 
-						self:Debug("Received loot table without ml in the council :(", sender)
+					-- Check if council is received
+					if not tContains(self.council, self.masterLooter) then
+						self:Debug("Received loot table without ML in the council", sender)
 						self:SendCommand(self.masterLooter, "council_request")
 						return self:ScheduleTimer("OnCommReceived", 5, prefix, serializedMsg, distri, sender)
 					end
