@@ -912,7 +912,7 @@ function RCVotingFrame.SetCellVote(rowFrame, frame, data, cols, row, realrow, co
 		frame.voteBtn:SetScript("OnClick", function(btn)
 			addon:Debug("Vote button pressed")
 			if lootTable[session].candidates[name].haveVoted then -- unvote
-				addon:SendCommand("group", "vote", session, name, -1)
+				addon:SendCommand("council", "vote", session, name, -1)
 				lootTable[session].candidates[name].haveVoted = false
 
 				-- Check if that was our only vote
@@ -934,7 +934,7 @@ function RCVotingFrame.SetCellVote(rowFrame, frame, data, cols, row, realrow, co
 					end
 				end
 				-- Do the vote
-				addon:SendCommand("group", "vote", session, name, 1)
+				addon:SendCommand("council", "vote", session, name, 1)
 				lootTable[session].candidates[name].haveVoted = true
 				lootTable[session].haveVoted = true
 			end
