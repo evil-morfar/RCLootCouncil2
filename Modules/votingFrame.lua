@@ -440,6 +440,11 @@ function RCVotingFrame:Update()
 		self.frame.abortBtn:SetText(_G.CLOSE)
 		self.frame.disenchant:Hide()
 	end
+	if lootTable[session].awarded then
+		self.frame.disenchant:Disable()
+	else
+		self.frame.disenchant:Enable()
+	end
 	if IsFiltering(session) then
 		self.frame.filter.Text:SetTextColor(0.86,0.5,0.22) -- #db8238
 	else
