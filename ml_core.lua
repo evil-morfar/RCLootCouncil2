@@ -34,9 +34,6 @@ function RCLootCouncilML:OnEnable()
 	db = addon:Getdb()
 	self.candidates = {} 	-- candidateName = { class, role, rank }
 	self.lootTable = {} 		-- The MLs operating lootTable, see ML:AddItem()
-	self.awardedInBags = {} -- Awarded items that are stored in MLs inventory
-									-- i = { link, winner }
-	self.lootInBags = {} 	-- Items not yet awarded but stored in bags
 	self.lootOpen = false 	-- is the ML lootWindow open or closed?
 	self.running = false		-- true if we're handling a session
 	self.council = self:GetCouncilInGroup()
@@ -202,8 +199,8 @@ end
 
 function RCLootCouncilML:SessionFromBags()
 	if self.running then return addon:Print(L["You're already running a session."]) end
-	if #self.lootInBags == 0 then return addon:Print(L["No items to award later registered"]) end
-	for i, link in ipairs(self.lootInBags) do self:AddItem(link, true) end
+	if #db.lootInBags == 0 then return addon:Print(L["No items to award later registered"]) end
+	for i, data in ipairs(db.lootInBags) do self:AddItem(data.link, data) end
 	if db.autoStart then
 		self:StartSession()
 	else
@@ -214,9 +211,9 @@ end
 
 -- TODO awardedInBags should be kept in db incase the player logs out
 function RCLootCouncilML:PrintAwardedInBags()
-	if #self.awardedInBags == 0 then return addon:Print(L["No winners registered"]) end
+	if #db.awardedInBags == 0 then return addon:Print(L["No winners registered"]) end
 	addon:Print(L["Following winners was registered:"])
-	for _, v in ipairs(self.awardedInBags) do
+	for _, v in ipairs(db.awardedInBags) do
 		if self.candidates[v.winner] then
 			local c = addon:GetClassColor(self.candidates[v.winner].class)
 			local text = "|cff"..addon:RGBToHex(c.r,c.g,c.b)..addon.Ambiguate(v.winner).."|r"
@@ -231,7 +228,7 @@ end
 function RCLootCouncilML:AddAwardedInBagsToTradeWindow()
 	if addon.isMasterLooter then
 		local tradeIndex = 1
-		for _, v in ipairs(self.awardedInBags) do
+		for _, v in ipairs(db.awardedInBags) do
 			while (GetTradePlayerItemInfo(tradeIndex)) do
 				tradeIndex = tradeIndex	+ 1
 			end
@@ -462,7 +459,7 @@ function RCLootCouncilML:OnEvent(event, ...)
 		self.tradeTarget = addon:UnitName("NPC") 
 		if addon.isMasterLooter	then
 			local count = 0
-			for _, v in ipairs(self.awardedInBags) do
+			for _, v in ipairs(db.awardedInBags) do
 				if addon:UnitIsUnit(self.tradeTarget, v.winner) then -- "npc" is the unitid of the player we are trading
 					count = count + 1
 				end
@@ -484,12 +481,12 @@ function RCLootCouncilML:OnEvent(event, ...)
 	elseif event == "UI_INFO_MESSAGE" then 
 		if select(1, ...) == _G.LE_GAME_ERR_TRADE_COMPLETE then -- Trade complete
 			for _, tradeItemLink in pairs(self.tradeItems) do -- Remove items in "awardedInBags" if traded to winners
-				for i=#self.awardedInBags, 1, -1 do
-					local winner = self.awardedInBags[i].winner
-					local link = self.awardedInBags[i].link
+				for i=#db.awardedInBags, 1, -1 do
+					local winner = db.awardedInBags[i].winner
+					local link = db.awardedInBags[i].link
 					if addon:UnitIsUnit(winner, self.tradeTarget) and link == tradeItemLink  then
 						addon:Debug("Remove item from awardedInBags because traded to", winner, link)
-						tremove(self.awardedInBags, i)
+						tremove(db.awardedInBags, i)
 						if addon.isMasterLooter	then
 							-- TODO: Announce to the raid, or print some msg?
 						end
@@ -649,8 +646,10 @@ function RCLootCouncilML:Award(session, winner, response, reason)
 		--  give out the loot or store the result, i.e. bagged or not
 		if self.lootTable[session].bagged then   -- indirect mode (the item is in a bag)
 			-- Add to the list of awarded items in MLs bags, and remove it from lootInBags
-			tinsert(self.awardedInBags, {link = self.lootTable[session].link, winner = winner})
-			tremove(self.lootInBags, session)
+
+			tinsert(db.awardedInBags, {link = self.lootTable[session].link, winner = winner, 
+				addedTime = type(self.lootTable[session].bagged) == 'table' and self.lootTable[session].bagged.time or time(date("!*t")), } )
+			tDeleteItem(db.lootInBags, self.lootTable[session].bagged)
 			awarded = true
 
 		else -- Direct (we can award from a WoW loot list)
@@ -669,7 +668,8 @@ function RCLootCouncilML:Award(session, winner, response, reason)
 				LootSlot(self.lootTable[session].lootSlot)
 				if not addon:UnitIsUnit(winner, "player") then
 					addon:Print(format(L["Cannot give 'item' to 'player' due to Blizzard limitations. Gave it to you for distribution."], self.lootTable[session].link, addon.Ambiguate(winner)))
-					tinsert(self.awardedInBags, {link = self.lootTable[session].link, winner = winner})
+					tinsert(db.awardedInBags, {link = self.lootTable[session].link, winner = winner, 
+						addedTime = type(self.lootTable[session].bagged) == 'table' and self.lootTable[session].bagged.time or time(date("!*t")), } )
 				end
 				awarded = true
 
@@ -712,7 +712,7 @@ function RCLootCouncilML:Award(session, winner, response, reason)
 				end
 			end
 		end
-		tinsert(self.lootInBags, self.lootTable[session].link) -- and store data
+		tinsert(db.lootInBags, {link = self.lootTable[session].link, addedTime = time(date("!*t")), }) -- and store data
 		return awardFailed(session, winner, "bagged") -- Item hasn't been awarded
 	end
 end
