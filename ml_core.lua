@@ -239,7 +239,6 @@ function RCLootCouncilML:SessionFromBags()
 	end
 end
 
--- TODO awardedInBags should be kept in db incase the player logs out
 function RCLootCouncilML:PrintAwardedInBags()
 	if #db.awardedInBags == 0 then return addon:Print(L["No winners registered"]) end
 	addon:Print(L["Following winners was registered:"])
@@ -831,7 +830,7 @@ end
 
 -- Status can be one of the following:
 -- bagged, loot_not_open, loot_gone, locked, inventory_full, quality_below_threshold, not_in_group, offline, not_ml_candidate, timeout, test_mode
--- Status when the addon is bugged(should not happen): no_loot_slot, unlooted_in_bag, bagging_no_loot_slot
+-- Status when the addon is bugged(should not happen): no_loot_slot, unlooted_in_bag, bagging_no_loot_slot, bagged_lost
 -- See :Award() and :CanGiveLoot() for the different scenarios and to get their meanings
 local function awardFailed(session, winner, status, callback, ...)
 	addon:SendMessage("RCMLAwardFailed", session, winner, status)
@@ -914,23 +913,19 @@ function RCLootCouncilML:Award(session, winner, response, reason, callback, ...)
 	-- For the rest, item hasn't been awarded.
 
 	if self.lootTable[session].bagged then  -- indirect mode (the item is in a bag)
-		-- Add to the list of awarded items in MLs bags, 
-		local entry = {link = self.lootTable[session].link, winner = winner} -- Note that we have ensured winner is not nil here, by the checkings in the earlier code.
-		self.lootTable[session].awardedInBagsEntry = entry
-		tinsert(self.awardedInBags, entry)
-
-		-- Remove it from lootInBags
-		if type(self.lootTable[session].bagged) == "number" then  -- "number" type indicates the item is awarded later, not added directly by "/rc add". Items from "/rc add" are not in lootInBags
-			for k, v in ipairs(self.lootInBags) do -- It's a bug to replace this loop by: tremove(self.lootInBags, session _OR_ self.lootTable[session].bagged)
-													-- Because awards in other sessions change the index of self.lootInBags.
-				if addon:ItemIsItem(v, self.lootTable[session].link) then -- I can write as tDeleteItem(self.lootInBags, self.lootTable[session].link),
-					tremove(self.lootInBags, k)								-- but I don't want to use raw comparison for item links.
-					break
-				end
-			end
+		-- Add to the list of awarded items in MLs bags,
+		local lootInBagsEntry = FindInTableIf(db.lootInBags, 								-- If duplicate items in lootInBags, one of multiple entries can be returned.
+			function(v) return addon:ItemIsItem(self.lootTable[session].link, v.link) end) -- Return any of them should be fine.
+		if lootInBagsEntry then
+			tDeleteItem(db.lootInBags, lootInBagsEntry)								
+			local entry = {link = lootInBagsEntry.link, winner = winner, addedTime = lootInBagsEntry.addedTime} -- Note that we have ensured winner is not nil here, by the checkings in the earlier code.
+			self.lootTable[session].awardedInBagsEntry = entry -- Record this in case user change the award in voting frame
+			registerAndAnnounceAward(session, winner, response, reason)
+			return awardSuccess(session, winner, "indirect", callback, ...)
+		else -- For debugging purpose, addon bug if this happens, such values never exist at any time.
+			addon:SessionError("The bagged item in session "..session.." is lost in the internal database of RC.") 
+			return awardFailed(session, winner, "bagged_lost", callback, ...)
 		end
-		registerAndAnnounceAward(session, winner, response, reason)
-		return awardSuccess(session, winner, "indirect", callback, ...)
 	end
 
 	-- The rest is direct mode (item is in WoW loot window)
@@ -967,9 +962,9 @@ function RCLootCouncilML:Award(session, winner, response, reason, callback, ...)
 		else -- Store in our bags and award later
 			self:GiveLoot(self.lootTable[session].lootSlot, self.playerName, function(awarded, cause)
 				if awarded then
-					tinsert(self.lootInBags, self.lootTable[session].link) -- and store data
+					tinsert(self.lootInBags, {link=self.lootTable[session].link, addedTime=time(date("!*t"))}) -- and store data
 					self.lootTable[session].lootSlot = nil  -- Now the item is bagged and no longer in the loot window.
-					self.lootTable[session].bagged = #self.lootInBags  -- This allows ML to award the item immediately in the voting frame after that is awarded later.
+					self.lootTable[session].bagged = true  -- This allows ML to award the item immediately in the voting frame after that is awarded later.
 					registerAndAnnounceAwardLater(session, response, reason)
 					return awardFailed(session, nil, "bagged", callback, unpack(args)) -- Item hasn't been awarded
 				else
