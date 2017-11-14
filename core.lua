@@ -1487,23 +1487,20 @@ function RCLootCouncil:NewMLCheck()
 	local old_lm = self.lootMethod
 	self.isMasterLooter, self.masterLooter = self:GetML()
 	self.lootMethod = GetLootMethod()
-	if IsPartyLFG() then return end	-- We can't use in lfg/lfd so don't bother
 	if self.masterLooter and self.masterLooter ~= "" and strfind(self.masterLooter, "Unknown") then
 		-- ML might be unknown for some reason
 		self:Debug("Unknown ML")
 		return self:ScheduleTimer("NewMLCheck", 2)
 	end
 
-	if not self.isMasterLooter then
+	if not self.isMasterLooter then -- we're not ML, so make sure it's disabled
 		self:GetActiveModule("masterlooter"):Disable()
-	elseif not self:GetActiveModule("masterlooter"):IsEnabled() then
-		self:CallModule("masterlooter")
-		self:GetActiveModule("masterlooter"):NewML(self.masterLooter)
+		self.handleLoot = false -- Reset
 	end
-
-	if self.masterLooter == nil then return end -- Didn't find a leader or ML.
-	if self:UnitIsUnit(old_ml, self.masterLooter) then 
-		if old_lm == self.lootMethod then return end -- Both ML and loot method have no change, no need to ask for usage again.
+	if IsPartyLFG() then return end	-- We can't use in lfg/lfd so don't bother
+	if not self.masterLooter then return end -- Didn't find a leader or ML.
+	if self:UnitIsUnit(old_ml, self.masterLooter) then
+		if old_lm == self.lootMethod then return end -- Both ML and loot method have not changed
 	else
 		-- At this point we know the ML has changed, so we can wipe the council
 		self:Debug("Resetting council as we have a new ML!")
@@ -1514,10 +1511,12 @@ function RCLootCouncil:NewMLCheck()
 		self:ScheduleTimer("Timer", 15, "MLdb_check")
 	end
 
-	self.handleLoot = false -- Reset
-
-	if not self.isMasterLooter then return end -- Someone else has become ML
-
+	if not self.isMasterLooter then -- Someone else has become ML
+		return
+	else
+		self:CallModule("masterlooter")
+		self:GetActiveModule("masterlooter"):NewML(self.masterLooter)
+	end
 	-- Check if we can use in party
 	if not IsInRaid() and db.onlyUseInRaids then return end
 
@@ -1531,7 +1530,7 @@ function RCLootCouncil:NewMLCheck()
 end
 
 function RCLootCouncil:StartHandleLoot()
-	if not self.isMasterLooter then return end -- Someone else has become ML
+	if not self.isMasterLooter or db.usage.never then return end -- Someone else has become ML or we don't want to handle loot
 	local lootMethod = GetLootMethod()
 	if lootMethod ~= "master" and not self:CanSetML() then return end -- Cant handle loot if we cant use ML loot method.
 
@@ -1577,7 +1576,7 @@ end
 -- @return boolean, "ML_Name". (true if the player is ML), (nil if there's no ML).
 function RCLootCouncil:GetML()
 	self:DebugLog("GetML()")
-	if IsPartyLFG() then 
+	if IsPartyLFG() then
 		return false, nil -- This is needed to avoid receiving command from LFR group leader.
 	end
 	if GetNumGroupMembers() == 0 and (self.testMode or self.nnp) then -- always the player when testing alone
