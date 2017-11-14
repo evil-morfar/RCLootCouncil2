@@ -800,6 +800,24 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 				else
 					historyDB[name] = {history}
 				end
+				if self:GetActiveModule("history"):IsEnabled() then -- Update history frame if it is shown currently.
+					self:GetActiveModule("history"):BuildData()
+				end
+
+			elseif command == "delete_history" and db.enableHistory then
+				local name, id = unpack(data)
+				if historyDB[name] then
+					for i = #historyDB[name], 1, -1 do
+						local entry = historyDB[name][i]
+						if entry.id == id then
+							tremove(historyDB[name], i)
+							break
+						end
+					end
+				end
+				if self:GetActiveModule("history"):IsEnabled() then -- Update history frame if it is shown currently.
+					self:GetActiveModule("history"):BuildData()
+				end
 
 			elseif command == "reroll" and self:UnitIsUnit(sender, self.masterLooter) and self.enabled then
 				self:Print(format(L["'player' has asked you to reroll"], self.Ambiguate(sender)))

@@ -973,10 +973,11 @@ function RCLootCouncilML:AutoAward(lootIndex, item, quality, name, reason, boss)
 end
 
 local history_table = {}
- function RCLootCouncilML:TrackAndLogLoot(name, item, responseID, boss, votes, itemReplaced1, itemReplaced2, reason, isToken, tokenRoll, relicRoll, note)
+local historyCounter = 0 -- Used to generate history table entry unique id
+function RCLootCouncilML:TrackAndLogLoot(name, item, responseID, boss, votes, itemReplaced1, itemReplaced2, reason, isToken, tokenRoll, relicRoll, note)
 	if reason and not reason.log then return end -- Reason says don't log
 	if not (db.sendHistory or db.enableHistory) then return end -- No reason to do stuff when we won't use it
-	if addon.testMode and not addon.nnp then return end -- We shouldn't track testing awards.
+	-- if addon.testMode and not addon.nnp then return end -- We shouldn't track testing awards.
 	local instanceName, _, difficultyID, difficultyName, _,_,_,mapID, groupSize = GetInstanceInfo()
 	addon:Debug("ML:TrackAndLogLoot()")
 	history_table["lootWon"] 		= item
@@ -999,6 +1000,8 @@ local history_table = {}
 	history_table["tokenRoll"]		= tokenRoll																						-- New in v2.4+
 	history_table["relicRoll"]		= relicRoll																						-- New in v2.5+
 	history_table["note"]			= note																							-- New in v2.7+
+	history_table["id"]				= time(date("!*t")).."-"..historyCounter														-- New in v2.7+. A unique id for the history entry.
+	historyCounter = historyCounter + 1
 
 	addon:SendMessage("RCMLLootHistorySend", history_table, name, item, responseID, boss, votes, itemReplaced1, itemReplaced2, reason, isToken, tokenRoll, relicRoll, note)
 
@@ -1007,7 +1010,20 @@ local history_table = {}
 	elseif db.enableHistory then -- Just log it
 		addon:SendCommand("player", "history", name, history_table)
 	end
+	local toRet = history_table
 	history_table = {} -- wipe to ensure integrety
+	return toRet
+end
+
+-- Remove an entry in the history table
+--@param name: The candidate name
+--@param id: The unique id of history table
+function RCLootCouncilML:UnTrackAndLogLoot(name, id)
+	if db.sendHistory then -- Send it, and let comms handle the logging
+		addon:SendCommand("group", "delete_history", name, id)
+	elseif db.enableHistory then -- Just log it
+		addon:SendCommand("player", "delete_history", name, id)
+	end
 end
 
 function RCLootCouncilML:HasAllItemsBeenAwarded()
@@ -1199,15 +1215,22 @@ end
 
 function RCLootCouncilML.AwardPopupOnClickYesCallback(awarded, session, winner, status, data, callback, ...)
 	if awarded then -- log it
-		if callback and type(callback) == "function" then
-			callback(awarded, session, winner, status, data, ...)
+		local oldWinner = RCLootCouncilML.lootTable[session].awarded
+		local oldHistory = RCLootCouncilML.lootTable[session].history
+		if oldWinner and oldHistory and oldHistory.id then -- Reaward, clear the old history entry
+			RCLootCouncilML:UnTrackAndLogLoot(oldWinner, oldHistory.id)
 		end
-		RCLootCouncilML:TrackAndLogLoot(data.winner, data.link, data.responseID, addon.bossName, data.votes, data.gear1, data.gear2,
+		RCLootCouncilML.lootTable[session].history = RCLootCouncilML:TrackAndLogLoot(data.winner, data.link, data.responseID, addon.bossName, data.votes, data.gear1, data.gear2,
 		 										  data.reason, data.isToken, data.isTierRoll, data.isRelicRoll, data.note)
+	end
+
+	if callback and type(callback) == "function" then
+		callback(awarded, session, winner, status, data, ...)
 	end
 end
 
 -- Argument to callback: awarded, session, winner, status, data, ...
+-- If you want to add a button to the rightclick menu which does award, use this function, the callback function is your custom function to do stuff after award is done.
 function RCLootCouncilML.AwardPopupOnClickYes(frame, data, callback, ...)
 	RCLootCouncilML:Award(data.session, data.winner, data.responseID and addon:GetResponseText(data.responseID, data.isTierRoll, data.isRelicRoll), data.reason,
 		RCLootCouncilML.AwardPopupOnClickYesCallback, data, callback, ...)
