@@ -148,7 +148,7 @@ function RCLootCouncilML:UpdateGroup(ask)
 	end
 	if updates then
 		addon:SendCommand("group", "candidates", self.candidates)
-		
+
 		local oldCouncil = self.council
 		self.council = self:GetCouncilInGroup()
 		local councilUpdated = false
@@ -1087,8 +1087,8 @@ end
 function RCLootCouncilML.LootTableCompare(a, b)
 	if not a.link then return false end
 	if not b.link then return true end -- Item hasn't been loaded.
-	local equipLocA = RCLootCouncilML.EQUIPLOC_SORT_ORDER[addon:GetTokenEquipLoc(a.token) or a.equipLoc] or math.huge
-	local equipLocB = RCLootCouncilML.EQUIPLOC_SORT_ORDER[addon:GetTokenEquipLoc(b.token) or b.equipLoc] or math.huge
+	local equipLocA = RCLootCouncilML.EQUIPLOC_SORT_ORDER[a.token and addon:GetTokenEquipLoc(a.token) or a.equipLoc] or math.huge
+	local equipLocB = RCLootCouncilML.EQUIPLOC_SORT_ORDER[b.token and addon:GetTokenEquipLoc(b.token) or b.equipLoc] or math.huge
 	if equipLocA ~= equipLocB then
 		return equipLocA < equipLocB
 	end
@@ -1098,7 +1098,7 @@ function RCLootCouncilML.LootTableCompare(a, b)
 		return subTypeA < subTypeB
 	end
 	if a.relic ~= b.relic then
-		if a.relic and b.relic then 
+		if a.relic and b.relic then
 			return a.relic < b.relic
 		else
 			return b.relic
