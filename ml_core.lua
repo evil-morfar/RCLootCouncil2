@@ -37,20 +37,24 @@ function RCLootCouncilML:OnEnable()
 	db = addon:Getdb()
 	self.candidates = {} 	-- candidateName = { class, role, rank }
 	self.lootTable = {} 		-- The MLs operating lootTable, see ML:AddItem()
-	self.awardedInBags = {} -- Awarded items that are stored in MLs inventory
-									-- i = { link, winner }
-	self.lootInBags = {} 	-- Items not yet awarded but stored in bags
 	self.lootOpen = false 	-- is the ML lootWindow open or closed?
 	self.lootSlotInfo = {}  -- Items' data currently in the loot slot. Need this because inside LOOT_SLOT_CLEARED handler, GetLootSlotLink() returns invalid link.
 	self.lootQueue = {}     -- Items ML have attempted to give out that waiting for LOOT_SLOT_CLEARED
 	self.running = false		-- true if we're handling a session
 	self.council = self:GetCouncilInGroup()
+	self.trading = false     -- are we trading with another player?
+	self.tradeItems = {}    -- The items we are trading
+	self.tradeTarget = nil   -- The last player name who we trade
 
 	self:RegisterComm("RCLootCouncil", 		"OnCommReceived")
 	self:RegisterEvent("LOOT_OPENED",		"OnEvent")
 	self:RegisterEvent("LOOT_SLOT_CLEARED", "OnEvent")
 	self:RegisterEvent("LOOT_CLOSED",		"OnEvent")
 	self:RegisterEvent("CHAT_MSG_WHISPER",	"OnEvent")
+	self:RegisterEvent("TRADE_SHOW", "OnEvent")
+	self:RegisterEvent("TRADE_CLOSED", "OnEvent")
+	self:RegisterEvent("TRADE_ACCEPT_UPDATE", "OnEvent")
+	self:RegisterEvent("UI_INFO_MESSAGE", "OnEvent")
 	self:RegisterBucketEvent("GROUP_ROSTER_UPDATE", 10, "UpdateGroup") -- Bursts in group creation, and we should have plenty of time to handle it
 	self:RegisterBucketMessage("RCConfigTableChanged", 2, "ConfigTableChanged") -- The messages can burst
 	self:RegisterMessage("RCCouncilChanged", "CouncilChanged")
@@ -225,8 +229,8 @@ end
 
 function RCLootCouncilML:SessionFromBags()
 	if self.running then return addon:Print(L["You're already running a session."]) end
-	if #self.lootInBags == 0 then return addon:Print(L["No items to award later registered"]) end
-	for i, link in ipairs(self.lootInBags) do self:AddItem(link, i) end -- Use number as the argument for "bagged" to differ from :AddUserItem
+	if #db.lootInBags == 0 then return addon:Print(L["No items to award later registered"]) end
+	for i, data in ipairs(db.lootInBags) do self:AddItem(data.link, data) end
 	if db.autoStart then
 		self:StartSession()
 	else
@@ -237,9 +241,9 @@ end
 
 -- TODO awardedInBags should be kept in db incase the player logs out
 function RCLootCouncilML:PrintAwardedInBags()
-	if #self.awardedInBags == 0 then return addon:Print(L["No winners registered"]) end
+	if #db.awardedInBags == 0 then return addon:Print(L["No winners registered"]) end
 	addon:Print(L["Following winners was registered:"])
-	for _, v in ipairs(self.awardedInBags) do
+	for _, v in ipairs(db.awardedInBags) do
 		if self.candidates[v.winner] then
 			local c = addon:GetClassColor(self.candidates[v.winner].class)
 			local text = "|cff"..addon:RGBToHex(c.r,c.g,c.b)..addon.Ambiguate(v.winner).."|r"
@@ -249,6 +253,41 @@ function RCLootCouncilML:PrintAwardedInBags()
 		end
 	end
 	-- IDEA Do we delete awardedInBags here or keep it?
+end
+
+function RCLootCouncilML:AddAwardedInBagsToTradeWindow()
+	if addon.isMasterLooter then
+		local tradeIndex = 1
+		for _, v in ipairs(db.awardedInBags) do
+			while (GetTradePlayerItemInfo(tradeIndex)) do
+				tradeIndex = tradeIndex	+ 1
+			end
+			if tradeIndex > MAX_TRADE_ITEMS - 1 then -- Have used all available slots(The last trade slot is "Will not be traded" slot).
+				break
+			end
+			local itemAdded = false
+			if addon:UnitIsUnit(self.tradeTarget, v.winner) then
+				for container=0, NUM_BAG_SLOTS do
+					for slot=1, GetContainerNumSlots(container) or 0 do
+						if self.trading then
+							local texture, count, locked, quality, readable, lootable, link = GetContainerItemInfo(container, slot)
+							if link == v.link and not locked then
+								ClearCursor()
+								PickupContainerItem(container, slot)
+								ClickTradeButton(tradeIndex)
+								tradeIndex = tradeIndex + 1
+								itemAdded = true
+								break
+							end
+						end
+					end
+					if itemAdded then
+						break
+					end
+				end
+			end
+		end
+	end
 end
 
 function RCLootCouncilML:ConfigTableChanged(val)
@@ -479,6 +518,50 @@ function RCLootCouncilML:OnEvent(event, ...)
 		elseif self.running then
 			self:GetItemsFromMessage(msg, sender)
 		end
+	elseif event == "TRADE_SHOW" then
+		self.trading = true
+		wipe(self.tradeItems)
+		self.tradeTarget = addon:UnitName("NPC") 
+		if addon.isMasterLooter	then
+			local count = 0
+			for _, v in ipairs(db.awardedInBags) do
+				if addon:UnitIsUnit(self.tradeTarget, v.winner) then -- "npc" is the unitid of the player we are trading
+					count = count + 1
+				end
+			end
+			if count > 0 then
+				LibDialog:Spawn("RCLOOTCOUNCIL_TRADE_ADD_ITEM", {count=count})
+			end
+		end
+	elseif event == "TRADE_ACCEPT_UPDATE" then -- Record the item traded
+		if select(1, ...) == 1 or select(2, ...) == 1 then
+			wipe(self.tradeItems)
+			for i = 1, MAX_TRADE_ITEMS-1 do -- The last trade slot is "Will not be traded"
+				local link = GetTradePlayerItemLink(i)
+				if link then
+					tinsert(self.tradeItems, link)
+				end
+			end
+		end
+	elseif event == "UI_INFO_MESSAGE" then 
+		if select(1, ...) == _G.LE_GAME_ERR_TRADE_COMPLETE then -- Trade complete
+			for _, tradeItemLink in pairs(self.tradeItems) do -- Remove items in "awardedInBags" if traded to winners
+				for i=#db.awardedInBags, 1, -1 do
+					local winner = db.awardedInBags[i].winner
+					local link = db.awardedInBags[i].link
+					if addon:UnitIsUnit(winner, self.tradeTarget) and link == tradeItemLink  then
+						addon:Debug("Remove item from awardedInBags because traded to", winner, link)
+						tremove(db.awardedInBags, i)
+						if addon.isMasterLooter	then
+							-- TODO: Announce to the raid, or print some msg?
+						end
+						break
+					end
+				end
+			end
+		end
+	elseif event == "TRADE_CLOSED" then
+		self.trading = false
 	end
 end
 

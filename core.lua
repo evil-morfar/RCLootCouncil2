@@ -137,6 +137,11 @@ function RCLootCouncil:OnInitialize()
 			verTestCandidates = {}, -- Stores received verTests
 		},
 		profile = {
+
+			awardedInBags = {}, -- Awarded items that are stored in MLs inventory 
+								-- i = { {link=link, winner=winner, addedTime=sec between UTC epoch to when the item is added to lootInBags, } }
+			lootInBags = {}, -- Store loot in bags for ML, -- i = { {link=link, addedTime=sec between UTC epoch to when the item is added to this table} }
+
 			usage = { -- State of enabledness
 				ml = false,				-- Enable when ML
 				ask_ml = true,			-- Ask before enabling when ML
