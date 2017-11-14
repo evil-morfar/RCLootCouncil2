@@ -1154,27 +1154,37 @@ do
 				text = "",
 				notCheckable = true,
 				disabled = true,
-			},	{ -- 6 Change response
+			},{ -- 6 Award later
+				text = L["Award later"],
+				notCheckable = true,
+				disabled = function() 
+					return not lootTable[session] or not lootTable[session].lootSlot or lootTable[session].awarded
+				end,
+				func = function()
+					-- LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_AWARD", {session=session})
+					-- addon:GetActiveModule("masterlooter"):Award(session)
+				end,
+			},{ -- 7 Change response
 				text = L["Change Response"],
 				value = "CHANGE_RESPONSE",
 				hasArrow = true,
 				notCheckable = true,
-			},{ -- 7 Reannounce
+			},{ -- 8 Reannounce
 				text = L["Reannounce ..."],
 				value = "REANNOUNCE",
 				hasArrow = true,
 				notCheckable = true,
-			},{ -- 8 Remove from consideration
+			},{ -- 9 Remove from consideration
 				text = L["Remove from consideration"],
 				notCheckable = true,
 				func = function(name)
 					addon:SendCommand("group", "change_response", session, name, "REMOVED")
 				end,
-			},{ -- 9 Add rolls
+			},{ -- 10 Add rolls
 				text = L["Add rolls"],
 				notCheckable = true,
 				func = function() RCVotingFrame:DoRandomRolls(session) end,
-			},{ -- 10 Request rolls from raid members
+			},{ -- 11 Request rolls from raid members
 				text = L["Request rolls from raid members"],
 				notCheckable = true,
 				func = function() RCVotingFrame:StartManualRoll() end,

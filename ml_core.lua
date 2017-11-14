@@ -799,8 +799,9 @@ function RCLootCouncilML:Award(session, winner, response, reason, callback, ...)
 		addon:Session("Session "..session.." has unlooted item in the bag!?")
 		return awardFailed(session, winner, "unlooted_in_bag", callback, ...)
 	end
-	if not winner and not self.lootTable[session].lootSlot then -- For debugging purpose, addon bug if this happens. UI should not allow this.
-		addon:Session("The item of Session "..session.." cant be awarded later because it is not in the loot window.")
+
+	if not winner and not self.lootTable[session].lootSlot then
+		addon:Print(L["The item cant be awarded later because it does not have loot slot or already awarded."]) -- Note award later clears the self.lootTable[session].lootSlot
 		return awardFailed(session, winner, "bagging_no_loot_slot", callback, ...)
 	end
 

@@ -367,6 +367,7 @@ L["Text for reason #i"] = "Text for reason #"
 L["text_color_desc"] = "Color of the text when displayed."
 L["The following council members have voted"] = true
 L["The item would now be awarded to 'player'"] = "The item would now be awarded to %s"
+L["The item cant be awarded later because it does not have loot slot or already awarded."] = true
 L["The loot is already on the list"] = true
 L["The loot master"] = true
 L["The Master Looter doesn't allow multiple votes."] = true
