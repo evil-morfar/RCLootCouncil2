@@ -69,9 +69,9 @@ function RCSessionFrame:ExtractData(data)
 			texture = v.texture or nil,
 			link = v.link,
 			cols = {
-				{ value = k,	DoCellUpdate = self.SetCellDeleteBtn, },
-				{ value = v.texture or "",	DoCellUpdate = self.SetCellItemIcon},
-				{ value = v.link and addon:GetItemNameFromLink(v.link) or "",	DoCellUpdate = self.SetCellText },
+				{ DoCellUpdate = self.SetCellDeleteBtn, },
+				{ DoCellUpdate = self.SetCellItemIcon},
+				{ DoCellUpdate = self.SetCellText },
 			},
 		}
 	end
@@ -171,6 +171,13 @@ function RCSessionFrame:GetFrame()
 
 	local st = ST:CreateST(self.scrollCols, 5, ROW_HEIGHT, nil, f.content)
 	st.frame:SetPoint("TOPLEFT",f,"TOPLEFT",10,-20)
+	st:RegisterEvents({
+		["OnClick"] = function(_, _, _, _, row, realrow)
+			if not (row or realrow) then
+				return true
+			end
+		end
+	})
 	f:SetWidth(st.frame:GetWidth()+20)
 	f:SetHeight(305)
 	f.rows = {} -- the row data
