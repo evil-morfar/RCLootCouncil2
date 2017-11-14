@@ -16,13 +16,19 @@ local ml;
 local ROW_HEIGHT = 40
 local awardLater = false
 local loadingItems = false
+local ascSortByRealRow
 
 function RCSessionFrame:OnInitialize()
 	self.scrollCols = {
-		{ name = "", width = 30}, 				-- remove item, sort by session number.
-		{ name = "", width = ROW_HEIGHT},	-- item icon
-		{ name = "", width = 160}, 			-- item link
+		-- Sort all rows by realrow, effectively disable the sorting of session frame by clicking the "hidden" header of the session frame.
+		{ name = "", width = 30, comparesort = ascSortByRealRow, }, 		-- remove item, sort by session number.
+		{ name = "", width = ROW_HEIGHT, comparesort = ascSortByRealRow, },	-- item icon
+		{ name = "", width = 160, comparesort = ascSortByRealRow}, 			-- item link
 	}
+end
+
+function ascSortByRealRow(table, rowa, rowb, sortbycol)
+	return rowa < rowb
 end
 
 function RCSessionFrame:OnEnable()
