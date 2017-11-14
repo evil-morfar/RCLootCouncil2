@@ -148,7 +148,7 @@ function RCLootCouncilML:UpdateGroup(ask)
 	end
 	if updates then
 		addon:SendCommand("group", "candidates", self.candidates)
-		
+
 		local oldCouncil = self.council
 		self.council = self:GetCouncilInGroup()
 		local councilUpdated = false
@@ -397,10 +397,12 @@ function RCLootCouncilML:OnEvent(event, ...)
 	addon:DebugLog("ML event", event, ...)
 	if event == "LOOT_OPENED" then -- IDEA Check if event LOOT_READY is useful here (also check GetLootInfo() for this)
 		self.lootOpen = true
-		if not InCombatLockdown() then
-			self:LootOpened()
-		else
-			addon:Print(L["You can't start a loot session while in combat."])
+		if addon.handleLoot and addon.lootMethod == "master" then
+			if not InCombatLockdown() then
+				self:LootOpened()
+			else
+				addon:Print(L["You can't start a loot session while in combat."])
+			end
 		end
 	elseif event == "LOOT_CLOSED" then
 		self.lootOpen = false
@@ -1066,7 +1068,7 @@ end
 local function GetItemStatsSum(link)
 	local stats = GetItemStats(link)
 	local sum = 0
-	for stats, value in pairs(stats) do
+	for stats, value in pairs(stats or {}) do
 		sum = sum + value
 	end
 	return sum
@@ -1098,7 +1100,7 @@ function RCLootCouncilML.LootTableCompare(a, b)
 		return subTypeA < subTypeB
 	end
 	if a.relic ~= b.relic then
-		if a.relic and b.relic then 
+		if a.relic and b.relic then
 			return a.relic < b.relic
 		else
 			return b.relic
