@@ -460,7 +460,7 @@ function RCVotingFrame:SwitchSession(s)
 	self.frame.itemLvl:SetText(_G.ITEM_LEVEL_ABBR..": "..addon:GetItemLevelText(t.ilvl, t.token))
 	-- Set a proper item type text
 
-	self.frame.itemType:SetText(addon:GetItemTypeText(t.link, t.subType, t.equipLoc, t.token, t.relic))
+	self.frame.itemType:SetText(addon:GetItemTypeText(t.link, t.subType, t.equipLoc, t.typeID, t.subTypeID, t.classes, t.token, t.relic))
 
 	-- Update the session buttons
 	sessionButtons[s] = self:UpdateSessionButton(s, t.texture, t.link, t.awarded)
@@ -1022,7 +1022,7 @@ function RCVotingFrame.filterFunc(table, row)
 	local response = lootTable[session].candidates[row.name].response
 	if not db.modules["RCVotingFrame"].filters.showPlayersCantUseTheItem then
 		local v = lootTable[session]
-		if addon:AutoPassCheck(v.subType, v.equipLoc, v.link, v.token, v.relic, v.class) then
+		if addon:AutoPassCheck(v.link, v.equipLoc, v.typeID, v.subTypeID, v.classes, v.token, v.relic, v.class) then
 			return false
 		end
 	end
@@ -1212,6 +1212,7 @@ do
 								equipLoc = v.equipLoc,
 								token = v.token,
 								relic = v.relic,
+								classes = v.classes,
 							})
 							addon:SendCommand("group", "change_response", k, candidateName, "WAIT")
 						end
@@ -1235,6 +1236,7 @@ do
 								equipLoc = v.equipLoc,
 								token = v.token,
 								relic = v.relic,
+								classes = v.classes,
 							})
 							addon:SendCommand("group", "change_response", k, candidateName, "WAIT")
 						end
@@ -1248,7 +1250,7 @@ do
 				func = function(candidateName)
 					local t = {}
 					for k,v in ipairs(lootTable) do
-						if not v.awarded and not addon:AutoPassCheck(v.subType, v.equipLoc, v.link, v.token, v.relic,
+						if not v.awarded and not addon:AutoPassCheck(v.link, v.equipLoc, v.typeID, v.subTypeID, v.classes, v.token, v.relic,
 																	lootTable[session].candidates[candidateName].class) then
 							tinsert(t, {
 								name = v.name,
@@ -1259,6 +1261,7 @@ do
 								equipLoc = v.equipLoc,
 								token = v.token,
 								relic = v.relic,
+								classes = v.classes,
 							})
 							addon:SendCommand("group", "change_response", k, candidateName, "WAIT")
 						end
