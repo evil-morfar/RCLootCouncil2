@@ -24,7 +24,7 @@
 		RCConfigTableChanged	-	fires when the user changes a settings. args: [val]; a few settings supplies their name.
 		RCUpdateDB				-	fires when the user receives sync data from another player.
 	ml_core:
-		RCMLAddItem				- 	fires when an item is added to the loot table. args: item, session
+		RCMLAddItem				- 	fires when an item is added to the loot table. args: item, loottable entry
 		RCMLAwardSuccess		- 	fires when an item is successfully awarded. args: session, winner, status.
 		RCMLAwardFailed		-	fires when an item is unsuccessfully awarded. args: session, winner, status.
 		RCMLBuildMLdb       -   fires just before the MLdb is built. arg: MLdb, the master looter db table.
@@ -174,6 +174,7 @@ function RCLootCouncil:OnInitialize()
 			minimizeInCombat = false,
 			iLvlDecimal = false,
 			showSpecIcon = false,
+			sortItems = true, -- Sort sessions by item type and item level
 
 			UI = { -- stores all ui information
 				['**'] = { -- Defaults
