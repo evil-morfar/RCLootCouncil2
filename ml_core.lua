@@ -172,8 +172,24 @@ function RCLootCouncilML:UpdateGroup(ask)
 		if v then self:RemoveCandidate(name); updates = true end
 	end
 	if updates then
-		self.council = self:GetCouncilInGroup()
 		addon:SendCommand("group", "candidates", self.candidates)
+		
+		local oldCouncil = self.council
+		self.council = self:GetCouncilInGroup()
+		local councilUpdated = false
+		if #self.council ~= #oldCouncil then
+			councilUpdated = true
+		else
+			for i, _ in ipairs(self.council) do
+				if self.council[i] ~= oldCouncil[i] then
+					councilUpdated = true
+					break
+				end
+			end
+		end
+		if councilUpdated then
+			addon:SendCommand("group", "council", self.council)
+		end
 	end
 end
 
@@ -1040,7 +1056,7 @@ end
 -- Returns true if we are ignoring the item
 function RCLootCouncilML:IsItemIgnored(link)
 	local itemID = addon:GetItemIDFromLink(link) -- extract itemID
-	return tContains(db.ignore, itemID)
+	return itemID and db.ignoredItems[itemID]
 end
 
 --- Fetches the council members from the current group.
@@ -1146,7 +1162,7 @@ function RCLootCouncilML:GetItemsFromMessage(msg, sender, retryCount)
 	local link = self.lootTable[ses].link
 	-- Send Responses to all duplicate items.
 	for s, v in ipairs(self.lootTable) do
-		if v.link == link then
+		if addon:ItemIsItem(v.link, link) then
 			addon:SendCommand("group", "response", s, sender, toSend)
 			count = count + 1
 		end

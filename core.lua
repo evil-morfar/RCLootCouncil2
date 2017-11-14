@@ -83,7 +83,7 @@ function RCLootCouncil:OnInitialize()
   	self.version = GetAddOnMetadata("RCLootCouncil", "Version")
 	self.nnp = false
 	self.debug = false
-	self.tVersion = "Alpha.1" -- String or nil. Indicates test version, which alters stuff like version check. Is appended to 'version', i.e. "version-tVersion" (max 10 letters for stupid security)
+	self.tVersion = "Beta.2" -- String or nil. Indicates test version, which alters stuff like version check. Is appended to 'version', i.e. "version-tVersion" (max 10 letters for stupid security)
 
 	self.playerClass = select(2, UnitClass("player"))
 	self.guildRank = L["Unguilded"]
@@ -284,16 +284,16 @@ function RCLootCouncil:OnInitialize()
 			},
 			disenchant = true, -- Disenchant enabled, i.e. there's a true in awardReasons.disenchant
 
-			timeout = 30,
+			timeout = 60,
 
 			-- List of items to ignore:
-			ignore = {
-				109693,115502,111245,115504,113588, -- WoD enchant mats
-				124442,124441, 							-- Chaos Crystal (Legion), Leylight Shard (Legion)
-				141303,141304,141305, 					-- Essence of Clarity (Emerald Nightmare quest item)
-				143656,143657,143658, 					-- Echo of Time (Nighthold quest item)
-				132204,151248,151249, 151250,			-- Sticky Volatile Essence, Fragment of the Guardian's Seal (Tomb of Sargeras)
-				152902,152906,152907,					-- Rune of Passage (Antorus shortcut item)
+			ignoredItems = {
+				[109693] = true, [115502] = true, [111245] = true, [115504] = true, [113588] = true, -- WoD enchant mats
+				[124441] = true, [124442] = true, -- Chaos Crystal (Legion), Leylight Shard (Legion)
+				[141303] = true, [141304] = true, [141305] = true, -- Essence of Clarity (Emerald Nightmare quest item)
+				[143656] = true, [143657] = true, [143658] = true, -- Echo of Time (Nighthold quest item)
+				[132204] = true, [151248] = true, [151249] = true, [151250] = true, -- Sticky Volatile Essence, Fragment of the Guardian's Seal (Tomb of Sargeras)
+				[152902] = true, [152906] = true, [152907] = true, [155831] = true, -- Rune of Passage (Antorus shortcut item), Pantheon's Blessing
 			},
 		},
 	} -- defaults end
@@ -403,6 +403,8 @@ function RCLootCouncil:OnEnable()
 	if self.db.global.version and self:VersionCompare(self.db.global.version, self.version)
 	 	or self.db.global.tVersion
 		then -- We've upgraded
+		self.db.profile.ignore = nil -- Replaced with ignoredItems in 2.7
+
 		self.db.global.oldVersion = self.db.global.version
 		self.db.global.version = self.version
 		self.db.global.localizedSubTypes.created = false -- Force to fully rerun LocalizeSubTypes if upgraded
@@ -691,6 +693,13 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 					if not self.mldb or (self.mldb and not self.mldb.numButtons) then -- Really shouldn't happen, but I'm tired of people somehow not receiving it...
 						self:Debug("Received loot table without having mldb :(", sender)
 						self:SendCommand(self.masterLooter, "MLdb_request")
+						return self:ScheduleTimer("OnCommReceived", 5, prefix, serializedMsg, distri, sender)
+					end
+
+					-- Check if council is received
+					if not tContains(self.council, self.masterLooter) then
+						self:Debug("Received loot table without ML in the council", sender)
+						self:SendCommand(self.masterLooter, "council_request")
 						return self:ScheduleTimer("OnCommReceived", 5, prefix, serializedMsg, distri, sender)
 					end
 
@@ -1251,6 +1260,7 @@ function RCLootCouncil:GetTokenEquipLoc(tokenSlot)
 			end
 		end
 	end
+	return "" -- return nil is bad. equipLoc should always have value
 end
 
 function RCLootCouncil:Timer(type, ...)
@@ -1722,7 +1732,7 @@ end
 -- The link of same item generated from different player, or if two links are generated between player spec switch, are NOT the same
 -- Because item link contains player's level and spec ID.
 -- This function compares link with link level and spec ID removed.
--- Also compare with unique id removed, because wowpedia says that 
+-- Also compare with unique id removed, because wowpedia says that
 -- " In-game testing indicates that the UniqueId can change from the first loot to successive loots on the same item."
 -- Although log shows item in the loot actually has no uniqueId in Legion, but just in case Blizzard changes it in the future.
 -- @return true if two items are the same item
@@ -1971,6 +1981,7 @@ function RCLootCouncil:CreateFrame(name, cName, title, width, height)
 	f:SetFrameStrata("DIALOG")
 	f:SetWidth(450)
 	f:SetHeight(height or 325)
+	f:SetScale(db.UI[cName].scale or 1.1)
 	lwin:Embed(f)
 	f:RegisterConfig(db.UI[cName])
 	f:RestorePosition() -- might need to move this to after whereever GetFrame() is called
@@ -2187,6 +2198,10 @@ function RCLootCouncil:GetItemTypeText(link, subType, equipLoc, tokenSlot, relic
 			tokenText = L["Protector Token"]
 		elseif tContains(classes, "ROGUE") then
 			tokenText = L["Vanquisher Token"]
+		end
+
+		if equipLoc == "" then
+			equipLoc = self:GetTokenEquipLoc(tokenSlot)
 		end
 
 		if equipLoc ~= "" and getglobal(equipLoc) then
