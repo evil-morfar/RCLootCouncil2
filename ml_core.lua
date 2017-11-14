@@ -397,10 +397,12 @@ function RCLootCouncilML:OnEvent(event, ...)
 	addon:DebugLog("ML event", event, ...)
 	if event == "LOOT_OPENED" then -- IDEA Check if event LOOT_READY is useful here (also check GetLootInfo() for this)
 		self.lootOpen = true
-		if not InCombatLockdown() then
-			self:LootOpened()
-		else
-			addon:Print(L["You can't start a loot session while in combat."])
+		if addon.handleLoot and addon.lootMethod == "master" then
+			if not InCombatLockdown() then
+				self:LootOpened()
+			else
+				addon:Print(L["You can't start a loot session while in combat."])
+			end
 		end
 	elseif event == "LOOT_CLOSED" then
 		self.lootOpen = false
