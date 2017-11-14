@@ -1066,7 +1066,7 @@ end
 local function GetItemStatsSum(link)
 	local stats = GetItemStats(link)
 	local sum = 0
-	for stats, value in pairs(stats) do
+	for stats, value in pairs(stats or {}) do
 		sum = sum + value
 	end
 	return sum
