@@ -19,9 +19,9 @@ local loadingItems = false
 
 function RCSessionFrame:OnInitialize()
 	self.scrollCols = {
-		{ name = "", sortnext = 3,	width = 30 }, 			-- remove item
-		{ name = "", sortnext = 3,	width = ROW_HEIGHT },-- item icon
-		{ name = "",			width = 160}, 			-- item link
+		{ name = "", width = 30}, 				-- remove item, sort by session number.
+		{ name = "", width = ROW_HEIGHT},	-- item icon
+		{ name = "", width = 160}, 			-- item link
 	}
 end
 
@@ -39,8 +39,12 @@ end
 function RCSessionFrame:Show(data)
 	self.frame = self:GetFrame()
 	self.frame:Show()
+
 	if data then
 		loadingItems = false
+		if addon:Getdb().sortItems then
+			ml:SortLootTable(data)
+		end
 		self:ExtractData(data)
 		self.frame.st:SetData(self.frame.rows)
 		self:Update()
@@ -57,8 +61,6 @@ end
 
 -- Data should be unmodified lootTable from ml_core
 function RCSessionFrame:ExtractData(data)
-	-- We could get an empty table if we haven't got GetItemInfo() from ml_core, so make sure we can handle it
-	--if not data or #data == 0 then data = {{link = false}} end
 	-- Clear any rowdata
 	self.frame.rows = {}
 	-- And set the new
@@ -67,9 +69,9 @@ function RCSessionFrame:ExtractData(data)
 			texture = v.texture or nil,
 			link = v.link,
 			cols = {
-				{ value = "",	DoCellUpdate = self.SetCellDeleteBtn, },
-				{ value = "",	DoCellUpdate = self.SetCellItemIcon},
-				{ value = v.link,	DoCellUpdate = self.SetCellText },
+				{ value = k,	DoCellUpdate = self.SetCellDeleteBtn, },
+				{ value = v.texture or "",	DoCellUpdate = self.SetCellItemIcon},
+				{ value = v.link and addon:GetItemNameFromLink(v.link) or "",	DoCellUpdate = self.SetCellText },
 			},
 		}
 	end

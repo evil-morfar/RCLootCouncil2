@@ -340,9 +340,9 @@ function LootHistory.ResponseSort(table, rowa, rowb, sortbycol)
 	-- NOTE: I'm pretty sure it can only be an awardReason when responseID is nil or 0
 	if aID and aID ~= 0 then
 		if lootDB[rowa.name][rowa.num].isAwardReason then
-			a = db.awardReasons[aID].sort
+			a = db.awardReasons[aID] and db.awardReasons[aID].sort or 500
 		else
-			a = addon:GetResponseSort(aID)
+			a = addon:GetResponseSort(aID) or 500
 		end
 	else
 		-- 500 will be below award reasons and just above status texts
@@ -351,9 +351,9 @@ function LootHistory.ResponseSort(table, rowa, rowb, sortbycol)
 
 	if bID and bID ~= 0 then
 		if lootDB[rowb.name][rowb.num].isAwardReason then
-			b = db.awardReasons[bID].sort
+			b = db.awardReasons[bID] and db.awardReasons[bID].sort or 500
 		else
-			b = addon:GetResponseSort(bID)
+			b = addon:GetResponseSort(bID) or 500
 		end
 
 	else
@@ -378,8 +378,23 @@ function LootHistory:ExportHistory()
 	--addon:Debug("Export time:", debugprofilestop(), "ms")
 	if export and export ~= "" then -- do something
 		--debugprofilestart()
-		self.frame.exportFrame:Show()
-		self:SetExportText(export)
+		if export:len() < 40000 then
+			self.frame.exportFrame:Show()
+			self.frame.exportFrame.edit:SetCallback("OnTextChanged", function(self)
+				self:SetText(export)
+			end)
+			self.frame.exportFrame.edit:SetText(export)
+			self.frame.exportFrame.edit:SetFocus()
+			self.frame.exportFrame.edit:HighlightText()
+		else -- Use hugeExportFrame(Single line editBox) for large export to avoid freezing the game.
+			self.frame.hugeExportFrame:Show()
+			self.frame.hugeExportFrame.edit:SetCallback("OnTextChanged", function(self)
+				self:SetText(export)
+			end)
+			self.frame.hugeExportFrame.edit:SetText(export)
+			self.frame.hugeExportFrame.edit:SetFocus()
+			self.frame.hugeExportFrame.edit:HighlightText()
+		end
 		--addon:Debug("Display time:", debugprofilestop(), "ms")
 	end
 end
@@ -558,7 +573,10 @@ function LootHistory:GetFrame()
 	-- Import
 	local b5 = addon:CreateButton("Import", f.content)
 	b5:SetPoint("RIGHT", b3, "LEFT", -10, 0)
-	b5:SetScript("OnClick", function() self.frame.importFrame:Show() end)
+	b5:SetScript("OnClick", function() 
+		self.frame.importFrame:Show() 
+		self.frame.importFrame.edit:SetFocus()
+	end)
 	f.importBtn = b5
 
 	-- Filter
@@ -605,22 +623,12 @@ function LootHistory:GetFrame()
 	b6:SetWidth(125)
 	f.clearSelectionBtn = b6
 
-	-- Export string
-	local s = f.content:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-	s:SetPoint("BOTTOMRIGHT", sel.frame, "TOPRIGHT", 0, 5)
-	s:SetPoint("BOTTOMLEFT", sel.frame, "TOPLEFT", 0, 5)
-	s:SetHeight(10)
-	s:SetTextColor(1,1,1)
-	s:SetJustifyH("LEFT")
-	s:SetText(L["Note: Huge exports will cause lag."])
-	f.exportString = s
-
 	-- Export frame
 	local exp = AG:Create("Window")
 	exp:SetLayout("Flow")
 	exp:SetTitle("RCLootCouncil "..L["Export"])
-	exp:SetWidth(400)
-   exp:SetHeight(550)
+	exp:SetWidth(700)
+	exp:SetHeight(360)
 
 	local edit = AG:Create("MultiLineEditBox")
 	edit:SetNumLines(20)
@@ -630,31 +638,70 @@ function LootHistory:GetFrame()
 	exp:AddChild(edit)
 	exp:Hide()
 	f.exportFrame = exp
-	self.SetExportText = function(self, text)
-		edit:SetText(text)
-		edit:HighlightText()
-		edit:SetFocus()
-	end
+	f.exportFrame.edit = edit
+
+	-- Frame for huge export. Use single line editbox to avoid freezing.
+	local hugeExp = AG:Create("Window")
+	hugeExp:SetLayout("Flow")
+	hugeExp:SetTitle("RCLootCouncil "..L["Export"])
+	hugeExp:SetWidth(700)
+	hugeExp:SetHeight(100)
+
+	local edit = AG:Create("EditBox")
+	edit:SetFullWidth(true)
+	edit:SetLabel(L["huge_export_desc"])
+	edit:SetMaxLetters(0)
+	hugeExp:AddChild(edit)
+	hugeExp:Hide()
+	f.hugeExportFrame = hugeExp
+	f.hugeExportFrame.edit = edit
 
 	-- Import frame
 	local imp = AG:Create("Window")
 	imp:SetLayout("Flow")
 	imp:SetTitle("RCLootCouncil Import")
-	imp:SetWidth(400)
-   imp:SetHeight(550)
+	imp:SetWidth(700)
+	imp:SetHeight(360)
 
 	local edit = AG:Create("MultiLineEditBox")
 	edit:SetNumLines(20)
 	edit:SetFullWidth(true)
-	edit:SetLabel("Import")
+	edit:SetLabel(L["import_desc"])
 	edit:SetFullHeight(true)
+
+	-- Credit to WeakAura2
+	-- Import editbox only shows first 2500 bytes to avoid freezing the game.
+	-- Use 'OnChar' event to store other characters in a text buffer
+	local textBuffer, i, lastPaste = {}, 0, 0
+	local pasted = ""
+	edit.editBox:SetScript("OnShow", function(self)
+		self:SetText("")
+		pasted = ""
+	end)
+	local function clearBuffer(self)
+		self:SetScript('OnUpdate', nil)
+		pasted = strtrim(table.concat(textBuffer))
+		edit.editBox:ClearFocus()
+	end
+	edit.editBox:SetScript('OnChar', function(self, c)
+		if lastPaste ~= GetTime() then
+			textBuffer, i, lastPaste = {}, 0, GetTime()
+			self:SetScript('OnUpdate', clearBuffer)
+		end
+		i = i + 1
+		textBuffer[i] = c
+	end)
+	edit.editBox:SetMaxBytes(2500)
+	edit.editBox:SetScript("OnMouseUp", nil);
+
 	edit:SetCallback("OnEnterPressed", function()
-		self:ImportHistory(edit:GetText())
+		self:ImportHistory(pasted)
 		imp:Hide()
 	end)
 	imp:AddChild(edit)
 	imp:Hide()
 	f.importFrame = imp
+	f.importFrame.edit = edit
 
 	-- Set a proper width
 	f:SetWidth(st.frame:GetWidth() + 20)
