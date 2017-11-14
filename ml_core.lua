@@ -40,11 +40,18 @@ function RCLootCouncilML:OnEnable()
 	self.lootOpen = false 	-- is the ML lootWindow open or closed?
 	self.running = false		-- true if we're handling a session
 	self.council = self:GetCouncilInGroup()
+	self.trading = false     -- are we trading with another player?
+	self.tradeItems = {}    -- The items we are trading
+	self.tradeTarget = nil   -- The last player name who we trade
 
 	self:RegisterComm("RCLootCouncil", 		"OnCommReceived")
 	self:RegisterEvent("LOOT_OPENED",		"OnEvent")
 	self:RegisterEvent("LOOT_CLOSED",		"OnEvent")
 	self:RegisterEvent("CHAT_MSG_WHISPER",	"OnEvent")
+	self:RegisterEvent("TRADE_SHOW", "OnEvent")
+	self:RegisterEvent("TRADE_CLOSED", "OnEvent")
+	self:RegisterEvent("TRADE_ACCEPT_UPDATE", "OnEvent")
+	self:RegisterEvent("UI_INFO_MESSAGE", "OnEvent")
 	self:RegisterBucketEvent("GROUP_ROSTER_UPDATE", 10, "UpdateGroup") -- Bursts in group creation, and we should have plenty of time to handle it
 	self:RegisterBucketMessage("RCConfigTableChanged", 2, "ConfigTableChanged") -- The messages can burst
 	self:RegisterMessage("RCCouncilChanged", "CouncilChanged")
@@ -220,6 +227,41 @@ function RCLootCouncilML:PrintAwardedInBags()
 		end
 	end
 	-- IDEA Do we delete awardedInBags here or keep it?
+end
+
+function RCLootCouncilML:AddAwardedInBagsToTradeWindow()
+	if addon.isMasterLooter then
+		local tradeIndex = 1
+		for _, v in ipairs(self.awardedInBags) do
+			while (GetTradePlayerItemInfo(tradeIndex)) do
+				tradeIndex = tradeIndex	+ 1
+			end
+			if tradeIndex > MAX_TRADE_ITEMS - 1 then -- Have used all available slots(The last trade slot is "Will not be traded" slot).
+				break
+			end
+			local itemAdded = false
+			if addon:UnitIsUnit(self.tradeTarget, v.winner) then
+				for container=0, NUM_BAG_SLOTS do
+					for slot=1, GetContainerNumSlots(container) or 0 do
+						if self.trading then
+							local texture, count, locked, quality, readable, lootable, link = GetContainerItemInfo(container, slot)
+							if link == v.link and not locked then
+								ClearCursor()
+								PickupContainerItem(container, slot)
+								ClickTradeButton(tradeIndex)
+								tradeIndex = tradeIndex + 1
+								itemAdded = true
+								break
+							end
+						end
+					end
+					if itemAdded then
+						break
+					end
+				end
+			end
+		end
+	end
 end
 
 function RCLootCouncilML:ConfigTableChanged(val)
@@ -415,6 +457,50 @@ function RCLootCouncilML:OnEvent(event, ...)
 		elseif self.running then
 			self:GetItemsFromMessage(msg, sender)
 		end
+	elseif event == "TRADE_SHOW" then
+		self.trading = true
+		wipe(self.tradeItems)
+		self.tradeTarget = addon:UnitName("NPC") 
+		if addon.isMasterLooter	then
+			local count = 0
+			for _, v in ipairs(self.awardedInBags) do
+				if addon:UnitIsUnit(self.tradeTarget, v.winner) then -- "npc" is the unitid of the player we are trading
+					count = count + 1
+				end
+			end
+			if count > 0 then
+				LibDialog:Spawn("RCLOOTCOUNCIL_TRADE_ADD_ITEM", {count=count})
+			end
+		end
+	elseif event == "TRADE_ACCEPT_UPDATE" then -- Record the item traded
+		if select(1, ...) == 1 or select(2, ...) == 1 then
+			wipe(self.tradeItems)
+			for i = 1, MAX_TRADE_ITEMS-1 do -- The last trade slot is "Will not be traded"
+				local link = GetTradePlayerItemLink(i)
+				if link then
+					tinsert(self.tradeItems, link)
+				end
+			end
+		end
+	elseif event == "UI_INFO_MESSAGE" then 
+		if select(1, ...) == _G.LE_GAME_ERR_TRADE_COMPLETE then -- Trade complete
+			for _, tradeItemLink in pairs(self.tradeItems) do -- Remove items in "awardedInBags" if traded to winners
+				for i=#self.awardedInBags, 1, -1 do
+					local winner = self.awardedInBags[i].winner
+					local link = self.awardedInBags[i].link
+					if addon:UnitIsUnit(winner, self.tradeTarget) and link == tradeItemLink  then
+						addon:Debug("Remove item from awardedInBags because traded to", winner, link)
+						tremove(self.awardedInBags, i)
+						if addon.isMasterLooter	then
+							-- TODO: Announce to the raid, or print some msg?
+						end
+						break
+					end
+				end
+			end
+		end
+	elseif event == "TRADE_CLOSED" then
+		self.trading = false
 	end
 end
 
