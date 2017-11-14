@@ -19,9 +19,9 @@ local loadingItems = false
 
 function RCSessionFrame:OnInitialize()
 	self.scrollCols = {
-		{ name = "", width = 30, defaultsort = "dsc"}, 			-- remove item, sort by session number.
-		{ name = "", sortnext = 3,	width = ROW_HEIGHT, defaultsort = "dsc"},-- item icon
-		{ name = "",			width = 160, defaultsort = "dsc"}, 			-- item link
+		{ name = "", width = 30}, 				-- remove item, sort by session number.
+		{ name = "", width = ROW_HEIGHT},	-- item icon
+		{ name = "", width = 160}, 			-- item link
 	}
 end
 
@@ -38,15 +38,6 @@ end
 
 function RCSessionFrame:Show(data)
 	self.frame = self:GetFrame()
-	if not self.frame:IsShown() then
-		for k, v in ipairs(self.frame.st.cols) do -- Reset sorting.
-			if k == 1 then 
-				v.sort = "dsc" -- In default sort function of lib-st, "dsc" is "asc" -_-
-			else 
-				v.sort = nil
-			end
-		end
-	end
 	self.frame:Show()
 
 	if data then
@@ -70,8 +61,6 @@ end
 
 -- Data should be unmodified lootTable from ml_core
 function RCSessionFrame:ExtractData(data)
-	-- We could get an empty table if we haven't got GetItemInfo() from ml_core, so make sure we can handle it
-	--if not data or #data == 0 then data = {{link = false}} end
 	-- Clear any rowdata
 	self.frame.rows = {}
 	-- And set the new
