@@ -26,6 +26,12 @@
 * Have a look at the redesigned "Announcements" tab for the changes.
 
 
+* **Sessions**
+* Items are now sorted before starting a session.
+   + The sorting algorithm follows: type/subtype > ilvl > bonuses > name
+   + This can be disabled in case you prefer your sessions to follow the order items are dropped in.
+
+
 * **Responses**
 * Most response related information is now sent immediately when a session starts instead of after rolling.
    + E.g. the council can now see a candidates gear and ilvl before a candidate responds.

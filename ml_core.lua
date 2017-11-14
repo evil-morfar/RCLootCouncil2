@@ -79,43 +79,47 @@ function RCLootCouncilML:GetItemInfo(item)
 		return nil
 	end
 end
+
 --- Add an item to the lootTable
+-- You CAN sort or delete entries in the lootTable while an item is being added.
 -- @paramsig item[, bagged, slotIndex, index]
 -- @param item Any: ItemID|itemString|itemLink
 -- @param bagged Number if the item is awarded later and in ML's inventory, indicating the link position in the table self.lootInBags WHEN THE SESSION STARTS. 
 --				 true if the item is manually added by ML (not in the table self.lootInBags)
 -- @param slotIndex Index of the lootSlot, or nil if none - either this or 'bagged' needs to be supplied
--- @param index Index in self.lootTable, used to set data in a specific session
-function RCLootCouncilML:AddItem(item, bagged, slotIndex, index)
-	addon:DebugLog("ML:AddItem", item, bagged, slotIndex, index)
-	local name, link, rarity, ilvl, iMinLevel, type, subType, iStackCount, equipLoc, texture,
-		sellPrice, typeID, subTypeID, bindType, expansionID, itemSetID, isCrafting = GetItemInfo(item)
-	local itemID = link and addon:GetItemIDFromLink(link)
-	local session = index or #self.lootTable + 1
-	self.lootTable[session] = { -- We want to reserve the index even if we haven't fully loaded the item
-		["bagged"]		= bagged,
-		["lootSlot"]	= slotIndex,
-		["awarded"]		= false,
-	}
+-- @param entry Used to set data in a specific lootTable entry.
+function RCLootCouncilML:AddItem(item, bagged, slotIndex, entry)
+	addon:DebugLog("ML:AddItem", item, bagged, slotIndex, entry)
+
+	if not entry then
+		entry = {}
+		self.lootTable[#self.lootTable + 1] = entry
+	else
+		wipe(entry) -- Clear the entry. Don't use 'entry = {}' here to preserve table pointer.
+	end
+
+	entry.bagged = bagged
+	entry.lootSlot = slotIndex
+	entry.awarded = false
 
 	local itemInfo = self:GetItemInfo(item)
 
 	if itemInfo then
 		for k, v in pairs(itemInfo) do
 			if k == "equipLoc" then -- Dont break backward compatibility
-				self.lootTable[session][k] = select(4, GetItemInfoInstant(item))
+				entry[k] = select(4, GetItemInfoInstant(item))
 			elseif k ~= "typeID" and k ~= "subTypeID" then -- not transmitted
-				self.lootTable[session][k] = v
+				entry[k] = v
 			end
 		end
 	end
 
-		-- Item isn't properly loaded, so update the data in 1 sec (Should only happen with /rc test)
+	-- Item isn't properly loaded, so update the data in 1 sec (Should only happen with /rc test)
 	if not itemInfo then
-		self:ScheduleTimer("Timer", 1, "AddItem", item, bagged, slotIndex, session)
+		self:ScheduleTimer("Timer", 1, "AddItem", item, bagged, slotIndex, entry)
 		addon:Debug("Started timer:", "AddItem", "for", item)
 	else
-		addon:SendMessage("RCMLAddItem", item, session)
+		addon:SendMessage("RCMLAddItem", item, entry)
 	end
 end
 
@@ -174,7 +178,7 @@ function RCLootCouncilML:UpdateGroup(ask)
 	end
 	if updates then
 		addon:SendCommand("group", "candidates", self.candidates)
-		
+
 		local oldCouncil = self.council
 		self.council = self:GetCouncilInGroup()
 		local councilUpdated = false
@@ -202,6 +206,10 @@ function RCLootCouncilML:StartSession()
 		return addon:Debug("Data wasn't ready", addon.candidates[addon.playerName], #addon.council)
 	end
 	self.running = true
+
+	if db.sortItems then
+		self:SortLootTable(self.lootTable)
+	end
 
 	addon:SendCommand("group", "lootTable", self.lootTable)
 
@@ -435,11 +443,15 @@ function RCLootCouncilML:OnEvent(event, ...)
 				}
 			end
 		end
-		if not InCombatLockdown() then
-			self:LootOpened()
-		else
-			addon:Print(L["You can't start a loot session while in combat."])
+
+		if addon.handleLoot and addon.lootMethod == "master" then
+			if not InCombatLockdown() then
+				self:LootOpened()
+			else
+				addon:Print(L["You can't start a loot session while in combat."])
+			end
 		end
+
 	elseif event == "LOOT_CLOSED" then
 		self.lootOpen = false
 	elseif event == "LOOT_SLOT_CLEARED" then
@@ -1297,4 +1309,125 @@ end
 
 function RCLootCouncilML.AwardPopupOnClickNo(frame, data)
 	-- Intentionally left empty
+end
+
+
+-- TRANSFORMED to 'EQUIPLOC_SORT_ORDER["INVTYPE"] = num', below
+RCLootCouncilML.EQUIPLOC_SORT_ORDER = {
+	-- From head to feet
+	"INVTYPE_HEAD",
+	"INVTYPE_NECK",
+	"INVTYPE_SHOULDER",
+	"INVTYPE_CLOAK",
+	"INVTYPE_ROBE",
+	"INVTYPE_CHEST",
+	"INVTYPE_WRIST",
+	"INVTYPE_HAND",
+	"INVTYPE_WAIST",
+	"INVTYPE_LEGS",
+	"INVTYPE_FEET",
+	"INVTYPE_FINGER",
+	"INVTYPE_TRINKET",
+	"",               -- armor tokens, artifact relics
+	"INVTYPE_RELIC",
+
+	"INVTYPE_QUIVER",
+	"INVTYPE_RANGED",
+	"INVTYPE_RANGEDRIGHT",
+	"INVTYPE_THROWN",
+
+	"INVTYPE_2HWEAPON",
+	"INVTYPE_WEAPON",
+	"INVTYPE_WEAPONMAINHAND",
+	"INVTYPE_WEAPONMAINHAND_PET",
+
+	"INVTYPE_WEAPONOFFHAND",
+	"INVTYPE_HOLDABLE",
+	"INVTYPE_SHIELD",
+}
+RCLootCouncilML.EQUIPLOC_SORT_ORDER = tInvert(RCLootCouncilML.EQUIPLOC_SORT_ORDER)
+RCLootCouncilML.EQUIPLOC_SORT_ORDER["INVTYPE_ROBE"] = RCLootCouncilML.EQUIPLOC_SORT_ORDER["INVTYPE_CHEST"] -- Chest is the same as robe
+
+-- TRANSFORMED to 'SUBTYPE_SORT_ORDER["SUBTYPE"] = num', below
+RCLootCouncilML.SUBTYPE_SORT_ORDER = {
+	"Junk", -- armor token
+	"Plate",
+	"Mail",
+	"Leather",
+	"Cloth",
+	"Shields",
+	"Bows",
+	"Crossbows",
+	"Daggers",
+	"Guns",
+	"Fist Weapons",
+	"One-Handed Axes",
+	"One-Handed Maces",
+	"One-Handed Swords",
+	"Polearms",
+	"Staves",
+	"Two-Handed Axes",
+	"Two-Handed Maces",
+	"Two-Handed Swords",
+	"Wands",
+	"Warglaives",
+	"Miscellaneous",
+	"Artifact Relic",
+}
+RCLootCouncilML.SUBTYPE_SORT_ORDER = tInvert(RCLootCouncilML.SUBTYPE_SORT_ORDER)
+
+function RCLootCouncilML:SortLootTable(lootTable)
+	table.sort(lootTable, self.LootTableCompare)
+end
+
+local function GetItemStatsSum(link)
+	local stats = GetItemStats(link)
+	local sum = 0
+	for stats, value in pairs(stats or {}) do
+		sum = sum + value
+	end
+	return sum
+end
+
+-- The loottable sort compare function
+-- Sorted by:
+-- 1. equipment slot: head, neck, ...
+-- 2. subType: junk(armor token), plate, mail, ...
+-- 3. relicType: Arcane, Life, ..
+-- 4. Item level from high to low
+-- 5. The sum of item stats, to make sure items with bonuses(socket, leech, etc) are sorted first.
+-- 6. Item name
+--
+-- @param a: an entry in the lootTable
+-- @param b: The other entry in the looTable
+-- @return true if a is sorted before b
+function RCLootCouncilML.LootTableCompare(a, b)
+	if not a.link then return false end
+	if not b.link then return true end -- Item hasn't been loaded.
+	local equipLocA = RCLootCouncilML.EQUIPLOC_SORT_ORDER[a.token and addon:GetTokenEquipLoc(a.token) or a.equipLoc] or math.huge
+	local equipLocB = RCLootCouncilML.EQUIPLOC_SORT_ORDER[b.token and addon:GetTokenEquipLoc(b.token) or b.equipLoc] or math.huge
+	if equipLocA ~= equipLocB then
+		return equipLocA < equipLocB
+	end
+	local subTypeA = RCLootCouncilML.SUBTYPE_SORT_ORDER[addon.db.global.localizedSubTypes[a.subType]] or math.huge
+	local subTypeB = RCLootCouncilML.SUBTYPE_SORT_ORDER[addon.db.global.localizedSubTypes[b.subType]] or math.huge
+	if subTypeA ~= subTypeB then
+		return subTypeA < subTypeB
+	end
+	if a.relic ~= b.relic then
+		if a.relic and b.relic then
+			return a.relic < b.relic
+		else
+			return b.relic
+		end
+	end
+	if a.ilvl ~= b.ilvl then
+		return a.ilvl > b.ilvl
+	end
+	local statsA = GetItemStatsSum(a.link)
+	local statsB = GetItemStatsSum(b.link)
+	if statsA ~= statsB then
+		return statsA > statsB
+	end
+	return addon:GetItemNameFromLink(a.link) < addon:GetItemNameFromLink(b.link)
 end

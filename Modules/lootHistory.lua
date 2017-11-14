@@ -340,9 +340,9 @@ function LootHistory.ResponseSort(table, rowa, rowb, sortbycol)
 	-- NOTE: I'm pretty sure it can only be an awardReason when responseID is nil or 0
 	if aID and aID ~= 0 then
 		if lootDB[rowa.name][rowa.num].isAwardReason then
-			a = db.awardReasons[aID].sort
+			a = db.awardReasons[aID] and db.awardReasons[aID].sort or 500
 		else
-			a = addon:GetResponseSort(aID)
+			a = addon:GetResponseSort(aID) or 500
 		end
 	else
 		-- 500 will be below award reasons and just above status texts
@@ -351,9 +351,9 @@ function LootHistory.ResponseSort(table, rowa, rowb, sortbycol)
 
 	if bID and bID ~= 0 then
 		if lootDB[rowb.name][rowb.num].isAwardReason then
-			b = db.awardReasons[bID].sort
+			b = db.awardReasons[bID] and db.awardReasons[bID].sort or 500
 		else
-			b = addon:GetResponseSort(bID)
+			b = addon:GetResponseSort(bID) or 500
 		end
 
 	else
