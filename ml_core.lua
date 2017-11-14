@@ -51,40 +51,46 @@ function RCLootCouncilML:OnEnable()
 end
 
 --- Add an item to the lootTable
+-- You CAN sort or delete entries in the lootTable while an item is being added.
 -- @paramsig item[, bagged, slotIndex, index]
 -- @param item Any: ItemID|itemString|itemLink
 -- @param bagged True if the item is in the ML's inventory
 -- @param slotIndex Index of the lootSlot, or nil if none - either this or 'bagged' needs to be supplied
--- @param index Index in self.lootTable, used to set data in a specific session
-function RCLootCouncilML:AddItem(item, bagged, slotIndex, index)
-	addon:DebugLog("ML:AddItem", item, bagged, slotIndex, index)
+-- @param entry Used to set data in a specific lootTable entry.
+function RCLootCouncilML:AddItem(item, bagged, slotIndex, entry)
+	addon:DebugLog("ML:AddItem", item, bagged, slotIndex, entry)
 	local name, link, rarity, ilvl, iMinLevel, type, subType, iStackCount, equipLoc, texture,
 		sellPrice, typeID, subTypeID, bindType, expansionID, itemSetID, isCrafting = GetItemInfo(item)
 	local itemID = link and addon:GetItemIDFromLink(link)
-	local session = index or #self.lootTable + 1
-	self.lootTable[session] = { -- We want to reserve the index even if we haven't fully loaded the item
-		["bagged"]		= bagged,
-		["lootSlot"]	= slotIndex,
-		["awarded"]		= false,
-		["name"]			= name, -- REVIEW This is really not needed as it's contained in itemLink. Remove next time we break backwards com
-		["link"]			= link,
-		["quality"]		= rarity,
-		["ilvl"]			= addon:GetTokenIlvl(link) or ilvl, -- if the item is a token, ilvl is the min ilvl of the item it creates.
-		["equipLoc"]	= equipLoc,
-		["subType"]		= subType,
-		["texture"]		= texture,
-		["boe"]			= bindType == LE_ITEM_BIND_ON_EQUIP,
-		["relic"]		= itemID and IsArtifactRelicItem(itemID) and select(3, C_ArtifactUI.GetRelicInfoByItemID(itemID)),
-		["token"]		= itemID and RCTokenTable[itemID],
-		["classes"]		= addon:GetItemClassesAllowedFlag(link),
-	}
 
-		-- Item isn't properly loaded, so update the data in 1 sec (Should only happen with /rc test)
+	if not entry then
+		entry = {}
+		self.lootTable[#self.lootTable + 1] = entry
+	else
+		wipe(entry) -- Clear the entry. Don't use 'entry = {}' here to preserve table pointer.
+	end
+
+	entry.bagged = bagged
+	entry.lootSlot = slotIndex
+	entry.awarded = false
+	entry.name = name -- REVIEW This is really not needed as it's contained in itemLink. Remove next time we break backwards com
+	entry.link	= link
+	entry.quality = rarity
+	entry.ilvl = addon:GetTokenIlvl(link) or ilvl -- if the item is a token, ilvl is the min ilvl of the item it creates.
+	entry.equipLoc = equipLoc
+	entry.subType = subType
+	entry.texture = texture
+	entry.boe = addon:IsItemBoE(link)
+	entry.relic	= itemID and IsArtifactRelicItem(itemID) and select(3, C_ArtifactUI.GetRelicInfoByItemID(itemID))
+	entry.token	= itemID and RCTokenTable[itemID]
+	entry.classes = addon:GetItemClassesAllowedFlag(link)
+
+	-- Item isn't properly loaded, so update the data in 1 sec (Should only happen with /rc test)
 	if not name then
-		self:ScheduleTimer("Timer", 1, "AddItem", item, bagged, slotIndex, session)
+		self:ScheduleTimer("Timer", 1, "AddItem", item, bagged, slotIndex, entry)
 		addon:Debug("Started timer:", "AddItem", "for", item)
 	else
-		addon:SendMessage("RCMLAddItem", item, session)
+		addon:SendMessage("RCMLAddItem", item, entry)
 	end
 end
 
@@ -142,8 +148,24 @@ function RCLootCouncilML:UpdateGroup(ask)
 		if v then self:RemoveCandidate(name); updates = true end
 	end
 	if updates then
-		self.council = self:GetCouncilInGroup()
 		addon:SendCommand("group", "candidates", self.candidates)
+
+		local oldCouncil = self.council
+		self.council = self:GetCouncilInGroup()
+		local councilUpdated = false
+		if #self.council ~= #oldCouncil then
+			councilUpdated = true
+		else
+			for i, _ in ipairs(self.council) do
+				if self.council[i] ~= oldCouncil[i] then
+					councilUpdated = true
+					break
+				end
+			end
+		end
+		if councilUpdated then
+			addon:SendCommand("group", "council", self.council)
+		end
 	end
 end
 
@@ -155,6 +177,10 @@ function RCLootCouncilML:StartSession()
 		return addon:Debug("Data wasn't ready", addon.candidates[addon.playerName], #addon.council)
 	end
 	self.running = true
+
+	if db.sortItems then
+		self:SortLootTable(self.lootTable)
+	end
 
 	addon:SendCommand("group", "lootTable", self.lootTable)
 
@@ -372,10 +398,12 @@ function RCLootCouncilML:OnEvent(event, ...)
 	addon:DebugLog("ML event", event, ...)
 	if event == "LOOT_OPENED" then -- IDEA Check if event LOOT_READY is useful here (also check GetLootInfo() for this)
 		self.lootOpen = true
-		if not InCombatLockdown() then
-			self:LootOpened()
-		else
-			addon:Print(L["You can't start a loot session while in combat."])
+		if addon.handleLoot and addon.lootMethod == "master" then
+			if not InCombatLockdown() then
+				self:LootOpened()
+			else
+				addon:Print(L["You can't start a loot session while in combat."])
+			end
 		end
 	elseif event == "LOOT_CLOSED" then
 		self.lootOpen = false
@@ -442,7 +470,7 @@ function RCLootCouncilML:UpdateLootSlots()
 		for session = 1, #self.lootTable do
 			-- Just skip if we've already awarded the item or found a fitting lootSlot
 			if not self.lootTable[session].awarded and not updatedLootSlot[session] then
-				if item == self.lootTable[session].link then
+				if addon:ItemIsItem(item, self.lootTable[session].link) then
 					if i ~= self.lootTable[session].lootSlot then -- It has changed!
 						addon:DebugLog("lootSlot @session", session, "Was at:",self.lootTable[session].lootSlot, "is now at:", i)
 						self.lootTable[session].lootSlot = i -- update it
@@ -547,7 +575,7 @@ function RCLootCouncilML:Award(session, winner, response, reason)
 				return awardFailed(session, winner, "loot_not_open")
 			end
 			-- v2.4.4+: Check if the item is still in the expected slot
-			if self.lootTable[session].link ~= GetLootSlotLink(self.lootTable[session].lootSlot) then
+			if not addon:ItemIsItem(self.lootTable[session].link, GetLootSlotLink(self.lootTable[session].lootSlot)) then
 				addon:Debug("LootSlot has changed before award!", session)
 				-- And update them if not
 				self:UpdateLootSlots()
@@ -817,7 +845,7 @@ end
 -- Returns true if we are ignoring the item
 function RCLootCouncilML:IsItemIgnored(link)
 	local itemID = addon:GetItemIDFromLink(link) -- extract itemID
-	return tContains(db.ignore, itemID)
+	return itemID and db.ignoredItems[itemID]
 end
 
 --- Fetches the council members from the current group.
@@ -923,7 +951,7 @@ function RCLootCouncilML:GetItemsFromMessage(msg, sender, retryCount)
 	local link = self.lootTable[ses].link
 	-- Send Responses to all duplicate items.
 	for s, v in ipairs(self.lootTable) do
-		if v.link == link then
+		if addon:ItemIsItem(v.link, link) then
 			addon:SendCommand("group", "response", s, sender, toSend)
 			count = count + 1
 		end
@@ -971,4 +999,125 @@ end
 
 function RCLootCouncilML.AwardPopupOnClickNo(frame, data)
 	-- Intentionally left empty
+end
+
+
+-- TRANSFORMED to 'EQUIPLOC_SORT_ORDER["INVTYPE"] = num', below
+RCLootCouncilML.EQUIPLOC_SORT_ORDER = {
+	-- From head to feet
+	"INVTYPE_HEAD",
+	"INVTYPE_NECK",
+	"INVTYPE_SHOULDER",
+	"INVTYPE_CLOAK",
+	"INVTYPE_ROBE",
+	"INVTYPE_CHEST",
+	"INVTYPE_WRIST",
+	"INVTYPE_HAND",
+	"INVTYPE_WAIST",
+	"INVTYPE_LEGS",
+	"INVTYPE_FEET",
+	"INVTYPE_FINGER",
+	"INVTYPE_TRINKET",
+	"",               -- armor tokens, artifact relics
+	"INVTYPE_RELIC",
+
+	"INVTYPE_QUIVER",
+	"INVTYPE_RANGED",
+	"INVTYPE_RANGEDRIGHT",
+	"INVTYPE_THROWN",
+
+	"INVTYPE_2HWEAPON",
+	"INVTYPE_WEAPON",
+	"INVTYPE_WEAPONMAINHAND",
+	"INVTYPE_WEAPONMAINHAND_PET",
+
+	"INVTYPE_WEAPONOFFHAND",
+	"INVTYPE_HOLDABLE",
+	"INVTYPE_SHIELD",
+}
+RCLootCouncilML.EQUIPLOC_SORT_ORDER = tInvert(RCLootCouncilML.EQUIPLOC_SORT_ORDER)
+RCLootCouncilML.EQUIPLOC_SORT_ORDER["INVTYPE_ROBE"] = RCLootCouncilML.EQUIPLOC_SORT_ORDER["INVTYPE_CHEST"] -- Chest is the same as robe
+
+-- TRANSFORMED to 'SUBTYPE_SORT_ORDER["SUBTYPE"] = num', below
+RCLootCouncilML.SUBTYPE_SORT_ORDER = {
+	"Junk", -- armor token
+	"Plate",
+	"Mail",
+	"Leather",
+	"Cloth",
+	"Shields",
+	"Bows",
+	"Crossbows",
+	"Daggers",
+	"Guns",
+	"Fist Weapons",
+	"One-Handed Axes",
+	"One-Handed Maces",
+	"One-Handed Swords",
+	"Polearms",
+	"Staves",
+	"Two-Handed Axes",
+	"Two-Handed Maces",
+	"Two-Handed Swords",
+	"Wands",
+	"Warglaives",
+	"Miscellaneous",
+	"Artifact Relic",
+}
+RCLootCouncilML.SUBTYPE_SORT_ORDER = tInvert(RCLootCouncilML.SUBTYPE_SORT_ORDER)
+
+function RCLootCouncilML:SortLootTable(lootTable)
+	table.sort(lootTable, self.LootTableCompare)
+end
+
+local function GetItemStatsSum(link)
+	local stats = GetItemStats(link)
+	local sum = 0
+	for stats, value in pairs(stats or {}) do
+		sum = sum + value
+	end
+	return sum
+end
+
+-- The loottable sort compare function
+-- Sorted by:
+-- 1. equipment slot: head, neck, ...
+-- 2. subType: junk(armor token), plate, mail, ...
+-- 3. relicType: Arcane, Life, ..
+-- 4. Item level from high to low
+-- 5. The sum of item stats, to make sure items with bonuses(socket, leech, etc) are sorted first.
+-- 6. Item name
+--
+-- @param a: an entry in the lootTable
+-- @param b: The other entry in the looTable
+-- @return true if a is sorted before b
+function RCLootCouncilML.LootTableCompare(a, b)
+	if not a.link then return false end
+	if not b.link then return true end -- Item hasn't been loaded.
+	local equipLocA = RCLootCouncilML.EQUIPLOC_SORT_ORDER[a.token and addon:GetTokenEquipLoc(a.token) or a.equipLoc] or math.huge
+	local equipLocB = RCLootCouncilML.EQUIPLOC_SORT_ORDER[b.token and addon:GetTokenEquipLoc(b.token) or b.equipLoc] or math.huge
+	if equipLocA ~= equipLocB then
+		return equipLocA < equipLocB
+	end
+	local subTypeA = RCLootCouncilML.SUBTYPE_SORT_ORDER[addon.db.global.localizedSubTypes[a.subType]] or math.huge
+	local subTypeB = RCLootCouncilML.SUBTYPE_SORT_ORDER[addon.db.global.localizedSubTypes[b.subType]] or math.huge
+	if subTypeA ~= subTypeB then
+		return subTypeA < subTypeB
+	end
+	if a.relic ~= b.relic then
+		if a.relic and b.relic then
+			return a.relic < b.relic
+		else
+			return b.relic
+		end
+	end
+	if a.ilvl ~= b.ilvl then
+		return a.ilvl > b.ilvl
+	end
+	local statsA = GetItemStatsSum(a.link)
+	local statsB = GetItemStatsSum(b.link)
+	if statsA ~= statsB then
+		return statsA > statsB
+	end
+	return addon:GetItemNameFromLink(a.link) < addon:GetItemNameFromLink(b.link)
 end
