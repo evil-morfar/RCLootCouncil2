@@ -697,7 +697,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 					end
 
 					-- Check if council is received
-					if not tContains(self.council, self.masterLooter) then
+					if not FindInTableIf(self.council, function(v) return self:UnitIsUnit(self.masterLooter, v) end) then -- Dont like to do raw comparison to the name, when the operation is important.
 						self:Debug("Received loot table without ML in the council", sender)
 						self:SendCommand(self.masterLooter, "council_request")
 						return self:ScheduleTimer("OnCommReceived", 5, prefix, serializedMsg, distri, sender)
