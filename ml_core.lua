@@ -259,6 +259,17 @@ function RCLootCouncilML:SessionFromBags()
 	addon:Print(L["session_help_from_bag"])
 end
 
+function RCLootCouncilML:ClearOldItemsInBags()
+	for i=#db.baggedItems, 1, -1 do
+		local v = db.baggedItems[i]
+		-- Blizzard has 2h window to trade soulbound items. So dont bother items older than 2h.
+		-- if v.addedTime is not recorded, then sth is wrong, remove it.
+		if (not v.addedTime) or (v.addedTime and time(date("!*t")) - v.addedTime > 7200) then -- time(date("!*t")) is UTC epoch.
+			tremove(db.baggedItems, i)
+		end
+	end
+end
+
 function RCLootCouncilML:PrintAwardedInBags()
 	if not FindInTableIf(db.baggedItems, function(v) return v.winner end) then 
 		return addon:Print(L["No winners registered"]) 
@@ -412,6 +423,7 @@ function RCLootCouncilML:NewML(newML)
 		addon:SendCommand("group", "council", self.council)
 		-- Set a timer to send out the incoming playerInfo changes
 		self:ScheduleTimer("Timer", 10, "GroupUpdate")
+		self:ClearOldItemsInBags()
 	else
 		self:Disable() -- We don't want to use this if we're not the ML
 	end
