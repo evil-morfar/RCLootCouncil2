@@ -78,7 +78,7 @@ function RCLootCouncilML:GetItemInfo(item)
 			["token"]		= itemID and RCTokenTable[itemID],
 			["typeID"]		= typeID,
 			["subTypeID"]	= subTypeID,
-			["clases"]		= addon:GetItemClassesAllowedFlag(link)
+			["classes"]		= addon:GetItemClassesAllowedFlag(link)
 		}
 	else
 		return nil
@@ -93,7 +93,7 @@ end
 -- @param slotIndex Index of the lootSlot, or nil if none - either this or 'bagged' needs to be supplied
 -- @param entry Used to set data in a specific lootTable entry.
 function RCLootCouncilML:AddItem(item, baggedEntry, slotIndex, entry)
-	addon:DebugLog("ML:AddItem", item, bagged, slotIndex, entry)
+	addon:DebugLog("ML:AddItem", item, baggedEntry, slotIndex, entry)
 
 	if not entry then
 		entry = {}
