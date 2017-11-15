@@ -869,11 +869,11 @@ function RCLootCouncilML:PrintLootErrorMsg(cause, slot, item, winner)
 	if cause == "loot_not_open" then
 		addon:Print(L["Unable to give out loot without the loot window open."])
 	elseif cause == "timeout" then
-		addon:Print(format(L["Timeout when giving 'item' to 'player'"], item, addon.Ambiguate(winner)), " - ", L["Player is not in this instance or his inventory is full"])
+		addon:Print(format(L["Timeout when giving 'item' to 'player'"], item, addon:GetUnitClassColoredName(winner)), " - ", L["Player is not in this instance or his inventory is full"])
 	elseif cause == "locked" then
 		addon:SessionError("No permission to loot the item at slot "..slot)
 	else
-		local prefix = format(L["Unable to give 'item' to 'player'"], item, addon.Ambiguate(winner)).."  - "
+		local prefix = format(L["Unable to give 'item' to 'player'"], item, addon:GetUnitClassColoredName(winner)).."  - "
 		if cause == "loot_gone" then
 			addon:Print(prefix, _G.LOOT_GONE) -- "Item already looted."
 		elseif cause == "inventory_full" then
