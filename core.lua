@@ -43,6 +43,8 @@ _G.RCLootCouncil = LibStub("AceAddon-3.0"):NewAddon("RCLootCouncil", "AceConsole
 local LibDialog = LibStub("LibDialog-1.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 local lwin = LibStub("LibWindow-1.1")
+local tooltipForParsing = CreateFrame("GameTooltip", "RCLootCouncil_Tooltip_Parse", nil, "GameTooltipTemplate")
+tooltipForParsing:UnregisterAllEvents() -- Don't use GameTooltip for parsing, because GameTooltip can be hooked by other addons.
 
 RCLootCouncil:SetDefaultModuleState(false)
 
@@ -1367,19 +1369,19 @@ end
 -- Protector(Warrior, Hunter, Shaman, Monk) == 581(0x245)
 function RCLootCouncil:GetItemClassesAllowedFlag(item)
 	if not item then return 0 end
-	GameTooltip:SetOwner(UIParent, "ANCHOR_NONE")
-	GameTooltip:SetHyperlink(item)
+	tooltipForParsing:SetOwner(UIParent, "ANCHOR_NONE") -- This lines clear the current content of tooltip and set its position off-screen
+	tooltipForParsing:SetHyperlink(item) -- Set the tooltip content and show it, should hide the tooltip before function ends
 
 	local delimiter = ", " -- in-game tests show all locales use this as delimiter.
 	local keyword = _G.ITEM_CLASSES_ALLOWED:gsub("%%s", "%(%.%+%)")
 
-	for i = 1, GameTooltip:NumLines() or 0 do
-		local line = getglobal('GameTooltipTextLeft' .. i)
+	for i = 1, tooltipForParsing:NumLines() or 0 do
+		local line = getglobal(tooltipForParsing:GetName()..'TextLeft' .. i)
 		if line and line.GetText then
 			local text = line:GetText() or ""
 			local classesText = text:match(keyword)
 			if classesText then
-				GameTooltip:Hide()
+				tooltipForParsing:Hide()
 				-- After reading the Blizzard code, I suspect that it's maybe not intended for Blizz to use ", " for all locales. (Patch 7.3.2)
 				-- The most strange thing is that LIST_DELIMITER is defined first in FrameXML/GlobalStrings.lua as "%s, %s" and it's not the same for all locales.
 				-- Then LIST_DELIMITER is redefined to ", " for all locales in FrameXML/MerchantFrame.lua
@@ -1405,7 +1407,7 @@ function RCLootCouncil:GetItemClassesAllowedFlag(item)
 		end
 	end
 
-	GameTooltip:Hide()
+	tooltipForParsing:Hide()
 	return 0xffffffff -- The item works for all classes
 end
 
