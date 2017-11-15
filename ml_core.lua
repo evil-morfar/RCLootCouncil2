@@ -956,7 +956,7 @@ local function registerAndAnnounceBagged(session, winner, response, reason)
 	self.lootTable[session].bagged = true
 	if self.running then -- Award later can be done when actually loot session hasn't been started yet.
 		self.lootTable[session].baggedInSession = true
-		addon:SendCommand("group", "bagged", session, self.playerName)
+		addon:SendCommand("group", "bagged", session, addon.playerName)
 	end
 end
 
@@ -1031,10 +1031,10 @@ function RCLootCouncilML:Award(session, winner, response, reason, callback, ...)
 		self:UpdateLootSlots()
 	end
 
-	local canGiveLoot, cause = self:CanGiveLoot(self.lootTable[session].lootSlot, self.lootTable[session].link, winner or self.playerName) -- if winner is nil, give the loot to the ML for award later.
+	local canGiveLoot, cause = self:CanGiveLoot(self.lootTable[session].lootSlot, self.lootTable[session].link, winner or addon.playerName) -- if winner is nil, give the loot to the ML for award later.
 
 	if not canGiveLoot then
-		self:PrintLootErrorMsg(cause, self.lootTable[session].lootSlot, self.lootTable[session].link, winner or self.playerName)
+		self:PrintLootErrorMsg(cause, self.lootTable[session].lootSlot, self.lootTable[session].link, winner or addon.playerName)
 		if cause == "quality_below_threshold" or cause == "not_bop" then
 			addon:Print(L["Gave the item to you for distribution."])
 			return self:Award(session, nil, response, reason, callback, ...) -- cant give the item to other people, award later.
@@ -1054,12 +1054,12 @@ function RCLootCouncilML:Award(session, winner, response, reason, callback, ...)
 				end
 			end)	
 		else -- Store in our bags and award later
-			self:GiveLoot(self.lootTable[session].lootSlot, self.playerName, function(awarded, cause)
+			self:GiveLoot(self.lootTable[session].lootSlot, addon.playerName, function(awarded, cause)
 				if awarded then
 					registerAndAnnounceBagged(session, response, reason)
 					return awardFailed(session, nil, "bagged", callback, unpack(args)) -- Item hasn't been awarded
 				else
-					self:PrintLootErrorMsg(cause, self.lootTable[session].lootSlot, self.lootTable[session].link, self.playerName)
+					self:PrintLootErrorMsg(cause, self.lootTable[session].lootSlot, self.lootTable[session].link, addon.playerName)
 					return awardFailed(session, nil, cause, callback, unpack(args))
 				end
 			end)
