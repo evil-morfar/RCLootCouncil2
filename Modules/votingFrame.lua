@@ -426,6 +426,7 @@ function RCVotingFrame:Update()
 	self.frame.st:SortData()
 	-- update awardString
 	if lootTable[session] and lootTable[session].awarded then
+		self.frame.awardString:SetText(L["Item was awarded to"])
 		self.frame.awardString:Show()
 		local name = lootTable[session].awarded
 		self.frame.awardStringPlayer:SetText(addon.Ambiguate(name))
@@ -436,8 +437,8 @@ function RCVotingFrame:Update()
 		addon.SetCellClassIcon(nil,self.frame.awardStringPlayer.classIcon,nil,nil,nil,nil,nil,nil,nil, lootTable[session].candidates[name].class)
 		self.frame.awardStringPlayer.classIcon:Show()
 	elseif lootTable[session] and lootTable[session].baggedInSession then
-		self.frame.awardStringPlayer:SetText(L["The item will be awarded later"])
-		self.frame.awardStringPlayer:SetTextColor(1, 1, 1, 1)
+		self.frame.awardString:SetText(L["The item will be awarded later"])
+		self.frame.awardString:Show()
 		self.frame.awardStringPlayer:Hide()
 		self.frame.awardStringPlayer.classIcon:Hide()
 	else

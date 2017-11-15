@@ -906,7 +906,8 @@ local function registerAndAnnounceBagged(session, winner, response, reason)
 	local self = RCLootCouncilML
 	self.lootTable[session].baggedEntry = {link=self.lootTable[session].link, addedTime=time(date("!*t"))}
 	tinsert(db.baggedItems, self.lootTable[session].baggedEntry)	
-	if self.lootTable[session].lootSlot then -- Item is looted by ML, announce it.
+	if self.lootTable[session].lootSlot or self.running then -- Item is looted by ML, announce it. 
+															-- Also announce if the item is awarded later in voting frame.
 		self:AnnounceAward(L["The loot master"], self.lootTable[session].link, L["Store in bag and award later"], nil, session)
 	else
 		addon:Print(format(L["'Item' is added to the award later list."], self.lootTable[session].link))
