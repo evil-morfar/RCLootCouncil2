@@ -712,6 +712,7 @@ end
 -- "not_in_group": The winner is not ourselve and not in our group.
 -- "offline": The winner is offline.
 -- "not_ml_candidate": The winner is not ourselve and not in ml candidate
+-- "not_bop": The winner is not ourselves and the item is not a bop that can only be looted by us.
 function RCLootCouncilML:CanGiveLoot(slot, item, winner)
 	if not self.lootOpen then 
 		return false, "loot_not_open"
@@ -746,8 +747,15 @@ function RCLootCouncilML:CanGiveLoot(slot, item, winner)
 				break
 			end
 		end
+
+		local bindType = select(14, item)
+
 		if not found then
-			return false, "not_ml_candidate"
+			if bindType ~= LE_ITEM_BIND_ON_ACQUIRE then
+				return false, "not_bop"
+			else
+				return false, "not_ml_candidate"
+			end
 		end
 
 		-- IDEA: I don't check this now. but is there any way to check if the unit is in the instance?
@@ -886,6 +894,8 @@ function RCLootCouncilML:PrintLootErrorMsg(cause, slot, item, winner)
 			addon:Print(prefix, L["Player is offline"])
 		elseif cause == "not_ml_candidate" then
 			addon:Print(prefix, L["Player is not in this instance or is ineligible for this item"])
+		elseif cause == "not_bop" then
+			addon:Print(prefix, L["The item can only be looted by you but it is not bind on pick up"])
 		else
 			addon:Print(prefix) -- should not happen if programming is correct
 		end
@@ -1025,7 +1035,7 @@ function RCLootCouncilML:Award(session, winner, response, reason, callback, ...)
 
 	if not canGiveLoot then
 		self:PrintLootErrorMsg(cause, self.lootTable[session].lootSlot, self.lootTable[session].link, winner or self.playerName)
-		if cause == "quality_below_threshold" then
+		if cause == "quality_below_threshold" or cause == "not_bop" then
 			addon:Print(L["Gave the item to you for distribution."])
 			return self:Award(session, nil, response, reason, callback, ...) -- cant give the item to other people, award later.
 		else

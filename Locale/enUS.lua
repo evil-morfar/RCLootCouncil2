@@ -386,6 +386,7 @@ L["The Master Looter doesn't allow multiple votes."] = true
 L["The Master Looter doesn't allow votes for yourself."] = true
 L["The session has ended."] = true
 L["This item has been awarded"] = true
+L["The item can only be looted by you but it is not bind on pick up"] = true
 L["This item"] = true
 L["Tier 19"] = true
 L["Tier 20"] = true
