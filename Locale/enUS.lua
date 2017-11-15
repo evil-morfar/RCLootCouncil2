@@ -232,7 +232,6 @@ L["Loot History"] = true
 L["Loot won:"] = true
 L["loot_everything_desc"] = "Enables autolooting of non-equippable items (e.g. mounts, tier-tokens, relics)"
 L["loot_history_desc"] = "RCLootCouncil automatically records relevant information from sessions.\nThe raw data is stored in \".../SavedVariables/RCLootCouncil.lua\".\n\nNote: Non-MasterLooters can only store data sent from the MasterLooter.\n"
-L["Looted items to award later"] = true
 L["Looting options"] = true
 L["Lower Quality Limit"] = true
 L["lower_quality_limit_desc"] = "Select the lower quality limit of items to auto award (this quality included!).\nNote: This overrides the normal loot treshhold."

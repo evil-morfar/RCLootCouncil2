@@ -146,7 +146,6 @@ function RCSessionFrame:GetFrame()
 		end
 		if awardLater then
 			for session in ipairs(ml.lootTable) do ml:Award(session) end
-			addon:Print(L["Looted items to award later"])
 			ml:EndSession()
 		else
 			if not addon.candidates[addon.playerName] or #addon.council == 0 then
