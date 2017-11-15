@@ -231,6 +231,17 @@ function RCLootCouncilML:StartSession()
 	addon:SendCommand("group", "lootTable", self:GetLootTableForTransmit())
 
 	self:AnnounceItems()
+
+	-- Print some help messages for not direct mode.
+	if not addon.testMode then
+		-- Use the first entry in lootTable to determinte mode
+		if not self.lootTable[1].lootSlot then
+			addon:ScheduleTimer("Print", 1, L["session_help_not_direct"]) -- Delay a bit, so annouceItems are printed first.
+		end
+		if self.lootTable[1].bagged then
+			addon:ScheduleTimer("Print", 1, L["session_help_from_bag"]) -- Delay a bit, so annouceItems are printed first.
+		end
+	end
 end
 
 function RCLootCouncilML:AddUserItem(item)
@@ -238,7 +249,6 @@ function RCLootCouncilML:AddUserItem(item)
 	self:AddItem(item, false) -- The item is neither bagged nor in the loot slot.
 	addon:CallModule("sessionframe")
 	addon:GetActiveModule("sessionframe"):Show(self.lootTable)
-	addon:Print(L["session_help_not_direct"])
 end
 
 function RCLootCouncilML:SessionFromBags()
@@ -255,8 +265,6 @@ function RCLootCouncilML:SessionFromBags()
 		addon:CallModule("sessionframe")
 		addon:GetActiveModule("sessionframe"):Show(self.lootTable, true)  -- Disable award later checkbox in the sessionframe
 	end
-	addon:Print(L["session_help_not_direct"])
-	addon:Print(L["session_help_from_bag"])
 end
 
 function RCLootCouncilML:ClearOldItemsInBags()
