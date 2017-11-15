@@ -112,7 +112,7 @@ LibDialog:Register("RCLOOTCOUNCIL_CONFIRM_AWARD_LATER", {
 LibDialog:Register("RCLOOTCOUNCIL_TRADE_ADD_ITEM", {
    text = "something_went_wrong",
    on_show = function(self, data)
-      self.text:SetText(format(L["rclootcouncil_trade_add_item_confirm"], data.count))
+      self.text:SetText(format(L["rclootcouncil_trade_add_item_confirm"], data.count, addon:GetUnitClassColoredName("npc")))
    end,
    buttons = {
       {  text = _G.YES,

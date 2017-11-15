@@ -2082,6 +2082,17 @@ function RCLootCouncil:GetClassColor(class)
 	end
 end
 
+function RCLootCouncil:GetUnitClassColoredName(name)
+	local englishClass = select(2, UnitClass(Ambiguate(name, "short")))
+	name = self:UnitName(name)
+	if not englishClass or not name then
+		return self.Ambiguate(name)
+	else
+		local color = RAID_CLASS_COLORS[englishClass].colorStr
+		return "|c"..color..self.Ambiguate(name).."|r"
+	end
+end
+
 function RCLootCouncil:RGBToHex(r,g,b)
 	return string.format("%02x%02x%02x",255*r, 255*g, 255*b)
 end

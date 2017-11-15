@@ -296,11 +296,39 @@ function RCLootCouncilML:PrintAwardedInBags()
 	end
 end
 
+function RCLootCouncilML:GetNumAwardedInBagsToTradeWindow()
+	local count = 0
+	local countedSlots = {}
+	for _, v in ipairs(db.baggedItems) do
+		if v.winner and addon:UnitIsUnit(self.tradeTarget, v.winner) then
+			local itemCounted = false
+			for container=0, NUM_BAG_SLOTS do
+				for slot=1, GetContainerNumSlots(container) or 0 do
+					if not (countedSlots[container] and countedSlots[container][slot]) then
+						local link = select(7, GetContainerItemInfo(container, slot))
+						if link and addon:ItemIsItem(link, v.link) then
+							itemCounted = true
+							count = count + 1
+							countedSlots[container] = countedSlots[container] or {}
+							countedSlots[container][slot] = true
+							break
+						end
+					end
+				end
+				if itemCounted then
+					break
+				end
+			end
+		end
+	end
+	return count
+end
+
 function RCLootCouncilML:AddAwardedInBagsToTradeWindow()
 	if addon.isMasterLooter then
 		local tradeIndex = 1
 		for _, v in ipairs(db.baggedItems) do
-			if v.winner then
+			if v.winner and addon:UnitIsUnit(self.tradeTarget, v.winner) then
 				while (GetTradePlayerItemInfo(tradeIndex)) do
 					tradeIndex = tradeIndex	+ 1
 				end
@@ -308,24 +336,22 @@ function RCLootCouncilML:AddAwardedInBagsToTradeWindow()
 					break
 				end
 				local itemAdded = false
-				if addon:UnitIsUnit(self.tradeTarget, v.winner) then
-					for container=0, NUM_BAG_SLOTS do
-						for slot=1, GetContainerNumSlots(container) or 0 do
-							if self.trading then
-								local texture, count, locked, quality, readable, lootable, link = GetContainerItemInfo(container, slot)
-								if link == v.link and not locked then
-									ClearCursor()
-									PickupContainerItem(container, slot)
-									ClickTradeButton(tradeIndex)
-									tradeIndex = tradeIndex + 1
-									itemAdded = true
-									break
-								end
+				for container=0, NUM_BAG_SLOTS do
+					for slot=1, GetContainerNumSlots(container) or 0 do
+						if self.trading then
+							local texture, count, locked, quality, readable, lootable, link = GetContainerItemInfo(container, slot)
+							if addon:ItemIsItem(link, v.link) and not locked then
+								ClearCursor()
+								PickupContainerItem(container, slot)
+								ClickTradeButton(tradeIndex)
+								tradeIndex = tradeIndex + 1
+								itemAdded = true
+								break
 							end
 						end
-						if itemAdded then
-							break
-						end
+					end
+					if itemAdded then
+						break
 					end
 				end
 			end
@@ -567,12 +593,7 @@ function RCLootCouncilML:OnEvent(event, ...)
 		wipe(self.tradeItems)
 		self.tradeTarget = addon:UnitName("NPC") 
 		if addon.isMasterLooter	then
-			local count = 0
-			for _, v in ipairs(db.baggedItems) do
-				if addon:UnitIsUnit(self.tradeTarget, v.winner) then -- "npc" is the unitid of the player we are trading
-					count = count + 1
-				end
-			end
+			local count = self:GetNumAwardedInBagsToTradeWindow()
 			if count > 0 then
 				LibDialog:Spawn("RCLOOTCOUNCIL_TRADE_ADD_ITEM", {count=count})
 			end
@@ -587,25 +608,30 @@ function RCLootCouncilML:OnEvent(event, ...)
 				end
 			end
 		end
-	elseif event == "UI_INFO_MESSAGE" then 
-		if select(1, ...) == _G.LE_GAME_ERR_TRADE_COMPLETE then -- Trade complete
-			for _, tradeItemLink in pairs(self.tradeItems) do -- Remove items from db.baggedItems if traded to winners
-				for i=#db.baggedItems, 1, -1 do
+	elseif event == "UI_INFO_MESSAGE" and addon.isMasterLooter then 
+		if select(1, ...) == _G.LE_GAME_ERR_TRADE_COMPLETE then -- Trade complete. Remove items from db.baggedItems if traded to winners
+			local tradedItemsInBag = {}
+
+			for _, link in ipairs(self.tradeItems) do
+				for i=#db.baggedItems, 1, -1 do -- when the loop contains tremove, loop must be traversed in reverse order.
 					local winner = db.baggedItems[i].winner
 					local link = db.baggedItems[i].link
-					if addon:UnitIsUnit(winner, self.tradeTarget) and link == tradeItemLink  then
+					if addon:UnitIsUnit(db.baggedItems[i].winner, self.tradeTarget) and addon:ItemIsItem(db.baggedItems[i].link, link)  then
 						addon:Debug("Remove item from db.baggedItems because traded to", winner, link)
 						tremove(db.baggedItems, i)
-						if addon.isMasterLooter	then
-							-- TODO: Announce to the raid, or print some msg?
-						end
+						tinsert(tradedItemsInBag, link)
 						break
 					end
 				end
 			end
+
+			if #tradedItemsInBag > 0 then
+				addon:Print(format(L["The following items are removed from the award later list and traded to 'player'"], addon:GetUnitClassColoredName(self.tradeTarget)))
+				addon:Print(table.concat(tradedItemsInBag))
+			end
 		end
 	elseif event == "TRADE_CLOSED" then
-		self.trading = false
+		self.trading = false -- Dont clear self.targetTarget here.
 	end
 end
 
