@@ -153,8 +153,15 @@ function RCSessionFrame:GetFrame()
 			return
 		end
 		if awardLater then
-			for session in ipairs(ml.lootTable) do ml:Award(session) end
-			ml:EndSession()
+			local sessionAwardDoneCount = 0
+			for session in ipairs(ml.lootTable) do 
+				ml:Award(session, nil, nil, nil, function()
+					sessionAwardDoneCount = sessionAwardDoneCount + 1
+					if sessionAwardDoneCount >= #ml.lootTable then
+						ml:EndSession()
+					end
+				end) 
+			end
 		else
 			if not addon.candidates[addon.playerName] or #addon.council == 0 then
 				addon:Print(L["Please wait a few seconds until all data has been synchronized."])
