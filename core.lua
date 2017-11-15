@@ -819,12 +819,12 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 				end
 
 			elseif command == "delete_history" and db.enableHistory then
-				local name, id = unpack(data)
-				if historyDB[name] then
-					for i = #historyDB[name], 1, -1 do
-						local entry = historyDB[name][i]
+				local id = unpack(data)
+				for name, d in pairs(historyDB) do
+					for i = #d, 1, -1 do
+						local entry = d[i]
 						if entry.id == id then
-							tremove(historyDB[name], i)
+							tremove(d, i)
 							break
 						end
 					end

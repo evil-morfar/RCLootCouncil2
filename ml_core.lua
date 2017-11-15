@@ -1212,11 +1212,11 @@ end
 -- Remove an entry in the history table
 --@param name: The candidate name
 --@param id: The unique id of history table
-function RCLootCouncilML:UnTrackAndLogLoot(name, id)
+function RCLootCouncilML:UnTrackAndLogLoot(id)
 	if db.sendHistory then -- Send it, and let comms handle the logging
-		addon:SendCommand("group", "delete_history", name, id)
+		addon:SendCommand("group", "delete_history", id)
 	elseif db.enableHistory then -- Just log it
-		addon:SendCommand("player", "delete_history", name, id)
+		addon:SendCommand("player", "delete_history", id)
 	end
 end
 
@@ -1409,10 +1409,9 @@ end
 
 function RCLootCouncilML.AwardPopupOnClickYesCallback(awarded, session, winner, status, data, callback, ...)
 	if awarded then -- log it
-		local oldWinner = RCLootCouncilML.lootTable[session].awarded
 		local oldHistory = RCLootCouncilML.lootTable[session].history
-		if oldWinner and oldHistory and oldHistory.id then -- Reaward, clear the old history entry
-			RCLootCouncilML:UnTrackAndLogLoot(oldWinner, oldHistory.id)
+		if oldHistory and oldHistory.id then -- Reaward, clear the old history entry
+			RCLootCouncilML:UnTrackAndLogLoot(oldHistory.id)
 		end
 		RCLootCouncilML.lootTable[session].history = RCLootCouncilML:TrackAndLogLoot(data.winner, data.link, data.responseID, addon.bossName, data.votes, data.gear1, data.gear2,
 		 										  data.reason, data.isToken, data.isTierRoll, data.isRelicRoll, data.note)
