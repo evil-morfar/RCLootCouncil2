@@ -225,6 +225,7 @@ function RCLootCouncilML:AddUserItem(item)
 	self:AddItem(item, false) -- The item is neither bagged nor in the loot slot.
 	addon:CallModule("sessionframe")
 	addon:GetActiveModule("sessionframe"):Show(self.lootTable)
+	addon:Print(L["session_help_not_direct"])
 end
 
 function RCLootCouncilML:SessionFromBags()
@@ -237,6 +238,8 @@ function RCLootCouncilML:SessionFromBags()
 		addon:CallModule("sessionframe")
 		addon:GetActiveModule("sessionframe"):Show(self.lootTable)
 	end
+	addon:Print(L["session_help_not_direct"])
+	addon:Print(L["session_help_from_bag"])
 end
 
 function RCLootCouncilML:PrintAwardedInBags()

@@ -551,6 +551,15 @@ function RCLootCouncil:ChatCommand(msg)
 			self:Print(L["You cannot use this command without being the Master Looter"])
 		end
 
+	elseif input == "clear" then
+		if self.isMasterLooter then
+			wipe(db.lootInBags)
+			wipe(db.awardedInBags)
+			self:Print(L["Award later item lists have been cleared."])
+		else
+			self:Print(L["You cannot use this command without being the Master Looter"])
+		end
+
 	elseif input == "reset" or input == string.lower(_G.RESET) then
 		for k, v in pairs(db.UI) do -- We can't easily reset due to the wildcard in defaults
 			if k == "lootframe" then -- Loot Frame is special
