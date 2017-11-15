@@ -90,6 +90,22 @@ LibDialog:Register("RCLOOTCOUNCIL_CONFIRM_AWARD", {
 	show_while_dead = true,
 })
 
+LibDialog:Register("RCLOOTCOUNCIL_CONFIRM_AWARD_LATER", {
+   text = L["confirm_award_later_text"],
+   icon = "",
+   buttons = {
+      {  text = _G.YES,
+         on_click = function(self, data)
+            addon:GetActiveModule("masterlooter"):Award(data.session)
+         end,
+      },
+      {  text = _G.NO,
+      },
+   },
+   hide_on_escape = true,
+   show_while_dead = true,
+})
+
 LibDialog:Register("RCLOOTCOUNCIL_TRADE_ADD_ITEM", {
    text = "something_went_wrong",
    on_show = function(self, data)

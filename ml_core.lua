@@ -102,7 +102,7 @@ function RCLootCouncilML:AddItem(item, baggedEntry, slotIndex, entry)
 	end
 
 	if baggedEntry then
-		entry.bagged = bagged
+		entry.bagged = true
 		entry.baggedEntry = baggedEntry
 	end
 	entry.lootSlot = slotIndex
@@ -893,6 +893,7 @@ local function registerAndAnnounceBagged(session, winner, response, reason)
 	self.lootTable[session].lootSlot = nil  -- Now the item is bagged and no longer in the loot window.
 	self.lootTable[session].bagged = true
 	if self.running then -- Award later can be done when actually loot session hasn't been started yet.
+		self.lootTable[session].baggedInSession = true
 		addon:SendCommand("group", "bagged", session, self.playerName)
 	end
 end

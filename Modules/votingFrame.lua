@@ -188,6 +188,19 @@ function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
 				else
 					self:SwitchSession(session) -- Use switch session to update awardstring
 				end
+			elseif command == "bagged" and addon:UnitIsUnit(sender, addon.masterLooter) then
+				self:ScheduleTimer(function()
+					moreInfoData = addon:GetLootDBStatistics() -- Just update it on every award
+				end, 1) -- Make sure we've received the history data before updating
+				local s, winner = unpack(data)
+				if not lootTable[s] then return end -- We might not have lootTable - e.g. if we just reloaded
+				lootTable[s].bagged = true
+				lootTable[s].baggedInSession = true
+				if addon.isMasterLooter and session ~= #lootTable then -- ML should move to the next item on award
+					self:SwitchSession(session + 1)
+				else
+					self:SwitchSession(session) -- Use switch session to update awardstring
+				end
 
 			elseif command == "offline_timer" and addon:UnitIsUnit(sender, addon.masterLooter) then
 				for i = 1, #lootTable do
@@ -422,6 +435,11 @@ function RCVotingFrame:Update()
 		-- Hack-reuse the SetCellClassIcon function
 		addon.SetCellClassIcon(nil,self.frame.awardStringPlayer.classIcon,nil,nil,nil,nil,nil,nil,nil, lootTable[session].candidates[name].class)
 		self.frame.awardStringPlayer.classIcon:Show()
+	elseif lootTable[session] and lootTable[session].baggedInSession then
+		self.frame.awardStringPlayer:SetText(L["The item will be awarded later"])
+		self.frame.awardStringPlayer:SetTextColor(1, 1, 1, 1)
+		self.frame.awardStringPlayer:Hide()
+		self.frame.awardStringPlayer.classIcon:Hide()
 	else
 		self.frame.awardString:Hide()
 		self.frame.awardStringPlayer:Hide()
@@ -1158,11 +1176,10 @@ do
 				text = L["Award later"],
 				notCheckable = true,
 				disabled = function() 
-					return not lootTable[session] or not lootTable[session].lootSlot or lootTable[session].awarded
+					return not lootTable[session] or not lootTable[session].bagged or lootTable[session].awarded
 				end,
 				func = function()
-					-- LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_AWARD", {session=session})
-					-- addon:GetActiveModule("masterlooter"):Award(session)
+					LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_AWARD_LATER", {session=session})
 				end,
 			},{ -- 7 Change response
 				text = L["Change Response"],
