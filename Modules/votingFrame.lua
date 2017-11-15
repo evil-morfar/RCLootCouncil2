@@ -1179,7 +1179,7 @@ do
 					return not lootTable[session] or lootTable[session].bagged or lootTable[session].awarded
 				end,
 				func = function()
-					LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_AWARD_LATER", {session=session})
+					LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_AWARD_LATER", {session=session, link=lootTable[session].link})
 				end,
 			},{ -- 7 Change response
 				text = L["Change Response"],

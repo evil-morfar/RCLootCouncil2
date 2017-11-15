@@ -91,8 +91,11 @@ LibDialog:Register("RCLOOTCOUNCIL_CONFIRM_AWARD", {
 })
 
 LibDialog:Register("RCLOOTCOUNCIL_CONFIRM_AWARD_LATER", {
-   text = L["confirm_award_later_text"],
+   text = "something_went_wrong",
    icon = "",
+   on_show = function(self, data)
+      self.text:SetText(format(L["confirm_award_later_text"], data.link))
+   end,
    buttons = {
       {  text = _G.YES,
          on_click = function(self, data)
