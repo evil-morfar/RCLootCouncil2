@@ -966,7 +966,7 @@ end
 --@param reason	Entry in db.awardReasons.
 --@param callback This function will be called as callback(awarded, session, winner, status, ...)
 --@returns true if award is success. false if award is failed. nil if we don't know the result yet.
-function RCLootCouncilML:Award(session, winner, response, reason, callback, ...)
+function RCLootCouncilML:Award(session, winner, response, reason, callback, ...) -- Note: MAKE SURE callbacks is always called eventually in any case, or there is bug.
 	addon:DebugLog("ML:Award", session, winner, response, reason)
 	local args = {...} --  "..."(Three dots) cant be used in an inner function, use unpack(args) instead.
 

@@ -16,6 +16,8 @@ local ml;
 local ROW_HEIGHT = 40
 local awardLater = false
 local loadingItems = false
+local waitingToEndSessions = false  -- need some time to confirm the result of award later and the session cant be ended until then.
+									-- When user chooses to award later then quickly reopens the loot window when this variable is still true, dont show session frame.
 
 function RCSessionFrame:OnInitialize()
 	self.scrollCols = {
@@ -37,6 +39,10 @@ function RCSessionFrame:OnDisable()
 end
 
 function RCSessionFrame:Show(data, disableAwardLater)
+	if waitingToEndSessions then
+		return		-- Silently fails
+	end
+
 	self.frame = self:GetFrame()
 	self.frame:Show()
 
@@ -154,10 +160,12 @@ function RCSessionFrame:GetFrame()
 		end
 		if awardLater then
 			local sessionAwardDoneCount = 0
+			waitingToEndSessions = true
 			for session in ipairs(ml.lootTable) do 
 				ml:Award(session, nil, nil, nil, function()
 					sessionAwardDoneCount = sessionAwardDoneCount + 1
 					if sessionAwardDoneCount >= #ml.lootTable then
+						waitingToEndSessions = false
 						ml:EndSession()
 					end
 				end) 
