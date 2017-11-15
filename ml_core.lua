@@ -246,14 +246,14 @@ function RCLootCouncilML:SessionFromBags()
 	if #db.baggedItems == 0 then return addon:Print(L["No items to award later registered"]) end
 	for i, v in ipairs(db.baggedItems) do
 		if not v.winner then
-			self:AddItem(entry.link, v)
+			self:AddItem(v.link, v)
 		end
 	end
 	if db.autoStart then
 		self:StartSession()
 	else
 		addon:CallModule("sessionframe")
-		addon:GetActiveModule("sessionframe"):Show(self.lootTable)
+		addon:GetActiveModule("sessionframe"):Show(self.lootTable, true)  -- Disable award later checkbox in the sessionframe
 	end
 	addon:Print(L["session_help_not_direct"])
 	addon:Print(L["session_help_from_bag"])
@@ -867,7 +867,7 @@ end
 
 -- Status can be one of the following:
 -- award later success: bagged, manually_bagged,
--- normal error: bagging_awarded_item, loot_not_open, loot_gone, locked, inventory_full, quality_below_threshold, not_in_group, offline, not_ml_candidate, timeout, test_mode
+-- normal error: bagging_awarded_item, loot_not_open, loot_gone, locked, inventory_full, quality_below_threshold, not_in_group, offline, not_ml_candidate, timeout, test_mode, bagging_bagged
 -- Status when the addon is bugged(should not happen): unlooted_in_bag
 -- See :Award() and :CanGiveLoot() for the different scenarios and to get their meanings
 local function awardFailed(session, winner, status, callback, ...)
@@ -924,6 +924,11 @@ function RCLootCouncilML:Award(session, winner, response, reason, callback, ...)
 	if self.lootTable[session].lootSlot and self.lootTable[session].bagged then -- For debugging purpose, addon bug if this happens, such values never exist at any time.
 		addon:SessionError("Session "..session.." has unlooted item in the bag!?")
 		return awardFailed(session, winner, "unlooted_in_bag", callback, ...)
+	end
+
+	if self.lootTable[session].bagged and not winner then  -- We should also check this in voting frame, but this check is needed due to comm delay between ML and voting frame.
+		addon:Print(L["Items stored in the loot master's bag for award later cannot be awarded later."])
+		return awardedFailed(session, nil, "bagging_bagged", callback, ...)
 	end
 
 	if self.lootTable[session].awarded and not winner then -- We should also check this in voting frame, but this check is needed due to comm delay between ML and voting frame.
@@ -1056,7 +1061,7 @@ end
 RCLootCouncilML.awardStrings = {
 	["&p"] = function(name) return addon.Ambiguate(name) end,
 	["&i"] = function(...) return select(2, ...) end,
-	["&r"] = function(...) return select(3, ...) end,
+	["&r"] = function(...) return select(3, ...) or "" end,
 	["&n"] = function(...) return select(4, ...) or "" end,
 	["&l"] = function(_, item)
 		local t = RCLootCouncilML:GetItemInfo(item)

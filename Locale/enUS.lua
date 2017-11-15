@@ -219,6 +219,7 @@ L["Item was awarded to"] = true
 L["Item"] = true
 L["Item(s) replaced:"] = true
 L["Item quality is below the loot threshold"] = true
+L["Items stored in the loot master's bag for award later cannot be awarded later."] = true
 L["Items under consideration:"] = true
 L["Total items won:"] = true
 L["Latest item(s) won"] = true

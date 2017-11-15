@@ -36,7 +36,7 @@ function RCSessionFrame:OnDisable()
 	awardLater = false
 end
 
-function RCSessionFrame:Show(data)
+function RCSessionFrame:Show(data, disableAwardLater)
 	self.frame = self:GetFrame()
 	self.frame:Show()
 
@@ -48,6 +48,14 @@ function RCSessionFrame:Show(data)
 		self:ExtractData(data)
 		self.frame.st:SetData(self.frame.rows)
 		self:Update()
+	end
+	if disableAwardLater then
+		self.frame.toggle:Disable()
+		getglobal(self.frame.toggle:GetName().."Text"):SetTextColor(0.7, 0.7, 0.7)
+		awardLater = false
+	else
+		self.frame.toggle:Enable()
+		getglobal(self.frame.toggle:GetName().."Text"):SetTextColor(1, 1, 1)
 	end
 end
 
