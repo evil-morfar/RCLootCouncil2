@@ -78,6 +78,7 @@ function RCLootCouncilML:GetItemInfo(item)
 			["token"]		= itemID and RCTokenTable[itemID],
 			["typeID"]		= typeID,
 			["subTypeID"]	= subTypeID,
+			["clases"]		= addon:GetItemClassesAllowedFlag(link)
 		}
 	else
 		return nil
@@ -1013,8 +1014,7 @@ RCLootCouncilML.announceItemStrings = {
 		return t and addon:GetItemLevelText(t.ilvl, t.token) or "" end,
 	["&t"] = function(_, item)
 		local t = RCLootCouncilML:GetItemInfo(item)
-		return t and addon:GetItemTypeText(t.link, t.subType, t.equipLoc, t.token, t.relic) or ""
-	end,
+		return t and addon:GetItemTypeText(t.link, t.subType, t.equipLoc, t.typeID, t.subtypeID, t.classes, t.token, t.relic) or "" end,
 }
 -- The description for each keyword
 RCLootCouncilML.announceItemStringsDesc = {
@@ -1051,8 +1051,7 @@ RCLootCouncilML.awardStrings = {
 		return t and addon:GetItemLevelText(t.ilvl, t.token) or "" end,
 	["&t"] = function(_, item)
 		local t = RCLootCouncilML:GetItemInfo(item)
-		return t and addon:GetItemTypeText(t.link, t.subType, t.equipLoc, t.token, t.relic) or ""
-	end,
+		return t and addon:GetItemTypeText(t.link, t.subType, t.equipLoc, t.typeID, t.subTypeID, t.classes, t.token, t.relic) or "" end,
 }
 
 -- The description for each keyword
