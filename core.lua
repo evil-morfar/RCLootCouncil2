@@ -138,9 +138,8 @@ function RCLootCouncil:OnInitialize()
 		},
 		profile = {
 
-			awardedInBags = {}, -- Awarded items that are stored in MLs inventory 
+			baggedItems = {}, -- Items that are stored in MLs inventory for award later.
 								-- i = { {link=link, winner=winner, addedTime=sec between UTC epoch to when the item is added to lootInBags, } }
-			lootInBags = {}, -- Store loot in bags for ML, -- i = { {link=link, addedTime=sec between UTC epoch to when the item is added to this table} }
 
 			usage = { -- State of enabledness
 				ml = false,				-- Enable when ML
@@ -553,8 +552,7 @@ function RCLootCouncil:ChatCommand(msg)
 
 	elseif input == "clear" then
 		if self.isMasterLooter then
-			wipe(db.lootInBags)
-			wipe(db.awardedInBags)
+			wipe(db.baggedItems)
 			self:Print(L["Award later item lists have been cleared."])
 		else
 			self:Print(L["You cannot use this command without being the Master Looter"])
