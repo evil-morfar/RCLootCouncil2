@@ -1176,7 +1176,7 @@ do
 				text = L["Award later"],
 				notCheckable = true,
 				disabled = function() 
-					return not lootTable[session] or not lootTable[session].bagged or lootTable[session].awarded
+					return not lootTable[session] or lootTable[session].bagged or lootTable[session].awarded
 				end,
 				func = function()
 					LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_AWARD_LATER", {session=session})
