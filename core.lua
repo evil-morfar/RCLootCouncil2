@@ -140,7 +140,7 @@ function RCLootCouncil:OnInitialize()
 		profile = {
 
 			baggedItems = {}, -- Items that are stored in MLs inventory for award later.
-								-- i = { {link=link, winner=winner, addedTime=sec between UTC epoch to when the item is added to lootInBags, } }
+								-- i = { {link=link, winner=winner, addedTime=sec between UTC epoch to when the item is added to lootInBags, }, bop=Item is BOP?}
 
 			usage = { -- State of enabledness
 				ml = false,				-- Enable when ML
@@ -1497,6 +1497,12 @@ function RCLootCouncil:IsItemBoE(item)
 	if not item then return false end
 	-- Item binding type: 0 - none; 1 - on pickup; 2 - on equip; 3 - on use; 4 - quest.
 	return select(14, GetItemInfo(item)) == LE_ITEM_BIND_ON_EQUIP
+end
+
+function RCLootCouncil:IsItemBoP(item)
+	if not item then return false end
+	-- Item binding type: 0 - none; 1 - on pickup; 2 - on equip; 3 - on use; 4 - quest.
+	return select(14, GetItemInfo(item)) == LE_ITEM_BIND_ON_ACQUIRE
 end
 
 function RCLootCouncil:IsRelicTypeID(typeID, subTypeID)

@@ -271,9 +271,10 @@ end
 function RCLootCouncilML:ClearOldItemsInBags()
 	for i=#db.baggedItems, 1, -1 do
 		local v = db.baggedItems[i]
-		-- Blizzard has 2h window to trade soulbound items. So dont bother items older than 2h.
+		-- Expire BOP items after 2h, Because Blizzard gives only 2h window to trade soulbound items.
+		-- Expire items not bop in the award later list older than 6h, in case some guild distribute boe items at the end of raid. 
 		-- if v.addedTime is not recorded, then sth is wrong, remove it.
-		if (not v.addedTime) or (v.addedTime and time(date("!*t")) - v.addedTime > 7200) then -- time(date("!*t")) is UTC epoch.
+		if (not v.addedTime) or (v.bop and time(date("!*t")) - v.addedTime > 3600*2) or (time(date("!*t")) - v.addedTime > 3600*6) then -- time(date("!*t")) is UTC epoch.
 			tremove(db.baggedItems, i)
 		end
 	end
@@ -944,8 +945,8 @@ end
 
 local function registerAndAnnounceBagged(session, winner, response, reason)
 	local self = RCLootCouncilML
-	self.lootTable[session].baggedEntry = {link=self.lootTable[session].link, addedTime=time(date("!*t"))}
-	tinsert(db.baggedItems, self.lootTable[session].baggedEntry)	
+	self.lootTable[session].baggedEntry = {link=self.lootTable[session].link, addedTime=time(date("!*t")), bop = addon:IsItemBoP(self.lootTable[session].link)}
+	tinsert(db.baggedItems, self.lootTable[session].baggedEntry)
 	if self.lootTable[session].lootSlot or self.running then -- Item is looted by ML, announce it. 
 															-- Also announce if the item is awarded later in voting frame.
 		self:AnnounceAward(L["The loot master"], self.lootTable[session].link, L["Store in bag and award later"], nil, session)
