@@ -1373,13 +1373,13 @@ function RCLootCouncil:GetItemClassesAllowedFlag(item)
 	tooltipForParsing:SetHyperlink(item) -- Set the tooltip content and show it, should hide the tooltip before function ends
 
 	local delimiter = ", " -- in-game tests show all locales use this as delimiter.
-	local keyword = _G.ITEM_CLASSES_ALLOWED:gsub("%%s", "%(%.%+%)")
+	local itemClassesAllowedPattern = _G.ITEM_CLASSES_ALLOWED:gsub("%%s", "%(%.%+%)")
 
 	for i = 1, tooltipForParsing:NumLines() or 0 do
 		local line = getglobal(tooltipForParsing:GetName()..'TextLeft' .. i)
 		if line and line.GetText then
 			local text = line:GetText() or ""
-			local classesText = text:match(keyword)
+			local classesText = text:match(itemClassesAllowedPattern)
 			if classesText then
 				tooltipForParsing:Hide()
 				-- After reading the Blizzard code, I suspect that it's maybe not intended for Blizz to use ", " for all locales. (Patch 7.3.2)
@@ -1409,6 +1409,88 @@ function RCLootCouncil:GetItemClassesAllowedFlag(item)
 
 	tooltipForParsing:Hide()
 	return 0xffffffff -- The item works for all classes
+end
+
+-- strings contains plural/singular rule such as "%d |4ora:ore;"
+-- For example, CompleteFormatSimpleStringWithPluralRule("%d |4ora:ore;", 2) returns "2 ore"
+-- Does not work for long string such as "%d |4jour:jours;, %d |4heure:heures;, %d |4minute:minutes;, %d |4seconde:secondes;"
+function RCLootCouncil:CompleteFormatSimpleStringWithPluralRule(str, count)
+	local text = format(str, count)
+	if count < 2 then
+		return text:gsub("|4(.+):(.+);", "%1")
+	else
+		return text:gsub("|4(.+):(.+);", "%2")
+	end
+end
+
+-- Return the remaining trade time in second for an item in the container. 
+-- Return math.huge(infinite) for an item not bounded.
+-- Return the remaining trade time in second if the item is within 2h trade window.
+-- Return 0 if the item is not tradable (bounded and the trade time has expired.)
+function RCLootCouncil:GetContainerItemTradeTimeRemaining(container, slot)
+	tooltipForParsing:SetOwner(UIParent, "ANCHOR_NONE") -- This lines clear the current content of tooltip and set its position off-screen
+	tooltipForParsing:SetBagItem(container, slot) -- Set the tooltip content and show it, should hide the tooltip before function ends
+	if not tooltipForParsing:NumLines() or tooltipForParsing:NumLines() == 0 then
+		return 0
+	end
+
+	local bindTradeTimeRemainingPattern = escapePatternSymbols(BIND_TRADE_TIME_REMAINING):gsub("%%%%s", "%(%.%+%)") -- PT locale contains "-", must escape that.
+												-- P.S. LibDeformat is useful to do deformat things, but not using it because we'll add a new library and lose performance.
+												-- But LibDeformat makes the function more likely to work if Blizzard changes the string constants. 
+												-- Our parser doesn't work if %s to changed to %1$s
+												-- Blizzard should have no reason to change them though.
+	local bounded = false
+
+	for i = 1, tooltipForParsing:NumLines() or 0 do
+		local line = getglobal(tooltipForParsing:GetName()..'TextLeft' .. i)
+		if line and line.GetText then
+			local text = line:GetText() or ""
+			if text == ITEM_SOULBOUND or text == ITEM_ACCOUNTBOUND or text == ITEM_BNETACCOUNTBOUND then
+				bounded = true
+			end
+
+			local timeText = text:match(bindTradeTimeRemainingPattern)
+			if timeText then -- Within 2h trade window, parse the time text
+				tooltipForParsing:Hide()
+
+				for hour=1, 0, -1 do -- time>=60s, format: "1 hour", "1 hour 59 min", "59 min", "1 min"
+					local hourText = ""
+					if hour > 0 then
+						hourText = self:CompleteFormatSimpleStringWithPluralRule(INT_SPELL_DURATION_HOURS, hour) 
+					end
+					for min=59,0,-1 do
+						local time = hourText
+						if min > 0 then
+							if time ~= "" then
+								time = time..TIME_UNIT_DELIMITER
+							end
+							time = time..self:CompleteFormatSimpleStringWithPluralRule(INT_SPELL_DURATION_MIN, min)
+						end
+
+						if time == timeText then
+							return hour*3600 + min*60
+						end
+					end
+				end
+				for sec=59, 1, -1 do -- time<60s, format: "59 s", "1 s"
+					local time = self:CompleteFormatSimpleStringWithPluralRule(INT_SPELL_DURATION_SEC, sec)
+					if time == timeText then
+						return sec
+					end
+				end
+				-- As of Patch 7.3.2(Build 25497), the parser have been tested for all 11 in-game languages when time < 1h and time > 1h. Shouldn't reach here.
+				-- If it reaches here, there are some parsing issues. Let's return 2h.
+				return 7200
+			end
+		end
+	end
+
+	tooltipForParsing:Hide()
+	if bounded then
+		return 0
+	else
+		return math.huge
+	end
 end
 
 function RCLootCouncil:IsItemBoE(item)
