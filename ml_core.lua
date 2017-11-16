@@ -1159,6 +1159,7 @@ end
 -- Each index corrosponds to a keyword in the award string.
 -- If it exists, the function will be called with all the parameters from :AnnounceAward
 RCLootCouncilML.awardStrings = {
+	["&s"] = function(_, _, _, _, session) return session or "" end,
 	["&p"] = function(name) return addon.Ambiguate(name) end,
 	["&i"] = function(...) return select(2, ...) end,
 	["&r"] = function(...) return select(3, ...) or "" end,
@@ -1173,6 +1174,7 @@ RCLootCouncilML.awardStrings = {
 
 -- The description for each keyword
 RCLootCouncilML.awardStringsDesc = {
+	L["announce_&s_desc"],
 	L["announce_&p_desc"],
 	L["announce_&i_desc"],
 	L["announce_&r_desc"],
