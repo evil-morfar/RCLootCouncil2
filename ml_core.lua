@@ -279,6 +279,11 @@ function RCLootCouncilML:ClearOldItemsInBags()
 	end
 end
 
+function RCLootCouncilML:ClearAllItemsInBags()
+	wipe(db.baggedItems)
+	addon:Print(L["The award later list has been cleared."])
+end
+
 -- Print all items in db.baggedItems, regardless awarded or not, in the order when the item was added.
 function RCLootCouncilML:PrintItemsInBags()
 	if #db.baggedItems == 0 then 

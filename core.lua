@@ -565,8 +565,7 @@ function RCLootCouncil:ChatCommand(msg)
 
 	elseif input == "clear" then -- Clear db.baggedItems
 		if self.isMasterLooter then
-			wipe(db.baggedItems)
-			self:Print(L["The award later list has been cleared."])
+			self:GetActiveModule("masterlooter"):ClearAllItemsInBags()
 		else
 			self:Print(L["You cannot use this command without being the Master Looter"])
 		end
