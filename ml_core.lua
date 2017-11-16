@@ -252,7 +252,6 @@ function RCLootCouncilML:AddUserItem(item)
 end
 
 function RCLootCouncilML:SessionFromBags()
-	self:ClearOldItemsInBags()
 	if self.running then return addon:Print(L["You're already running a session."]) end
 	if #db.baggedItems == 0 then return addon:Print(L["No items to award later registered"]) end
 	for i, v in ipairs(db.baggedItems) do
@@ -282,7 +281,6 @@ end
 
 -- Print all items in db.baggedItems, regardless awarded or not, in the order when the item was added.
 function RCLootCouncilML:PrintItemsInBags()
-	self:ClearOldItemsInBags()
 	if #db.baggedItems == 0 then 
 		return addon:Print(L["The award later list is empty."]) 
 	end
@@ -297,7 +295,6 @@ end
 
 -- Print awarded items in db.baggedItems, in the order of awardee's name.
 function RCLootCouncilML:PrintAwardedInBags()
-	self:ClearOldItemsInBags()
 	if not FindInTableIf(db.baggedItems, function(v) return v.winner end) then 
 		return addon:Print(L["No winners registered"]) 
 	end
@@ -350,7 +347,6 @@ function RCLootCouncilML:RemoveItemsInBags(...)
 end
 
 function RCLootCouncilML:GetNumAwardedInBagsToTradeWindow()
-	self:ClearOldItemsInBags()
 	local count = 0
 	local countedSlots = {}
 	for _, v in ipairs(db.baggedItems) do
@@ -380,7 +376,6 @@ end
 
 function RCLootCouncilML:AddAwardedInBagsToTradeWindow()
 	if addon.isMasterLooter then
-		self:ClearOldItemsInBags()
 		local tradeIndex = 1
 		for _, v in ipairs(db.baggedItems) do
 			if v.winner and addon:UnitIsUnit(self.tradeTarget, v.winner) then
