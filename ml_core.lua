@@ -1262,7 +1262,7 @@ local historyCounter = 0 -- Used to generate history table entry unique id
 function RCLootCouncilML:TrackAndLogLoot(name, item, responseID, boss, votes, itemReplaced1, itemReplaced2, reason, isToken, tokenRoll, relicRoll, note)
 	if reason and not reason.log then return end -- Reason says don't log
 	if not (db.sendHistory or db.enableHistory) then return end -- No reason to do stuff when we won't use it
-	-- if addon.testMode and not addon.nnp then return end -- We shouldn't track testing awards.
+	if addon.testMode and not addon.nnp then return end -- We shouldn't track testing awards.
 	local instanceName, _, difficultyID, difficultyName, _,_,_,mapID, groupSize = GetInstanceInfo()
 	addon:Debug("ML:TrackAndLogLoot()")
 	history_table["lootWon"] 		= item
