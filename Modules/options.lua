@@ -418,9 +418,7 @@ function addon:OptionsTable()
 										width = "double",
 										values = {
 											ml 			= L["Always use RCLootCouncil when I'm Master Looter"],
-										--	leader 		= "Always use RCLootCouncil when I'm the group leader and enter a raid",
 											ask_ml		= L["Ask me every time I become Master Looter"],
-										--	ask_leader	= "Ask me every time I'm the group leader and enter a raid",
 											never			= L["Never use RCLootCouncil"],
 										},
 										set = function(_, key)
@@ -442,9 +440,9 @@ function addon:OptionsTable()
 									},
 									leaderUsage = { -- Add leader options here since we can only make a single select dropdown
 										order = 3,
-										name = function() return self.db.profile.usage.ml and L["Always use when leader"] or L["Ask me when leader"] end,
-										desc = L["leaderUsage_desc"],
+										name = function() return self.db.profile.usage.ml and L["Always use master loot when entering instance as leader"] or L["Ask and switch to master loot when entering instance as leader"] end,
 										type = "toggle",
+										width = "full",
 										get = function() return self.db.profile.usage.leader or self.db.profile.usage.ask_leader end,
 										set = function(_, val)
 											self.db.profile.usage.leader, self.db.profile.usage.ask_leader = false, false -- Reset for zzzzz
