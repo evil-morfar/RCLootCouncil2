@@ -17,6 +17,9 @@ local LibDialog = LibStub("LibDialog-1.0")
 
 local db;
 
+local LOOT_ITEM_SELF_PATTERN = _G.LOOT_ITEM_SELF:gsub('%%s', '%(%.%+%)')
+local LOOT_ITEM_PATTERN = _G.LOOT_ITEM:gsub('%%s', '%(%.%+%)')
+
 function RCLootCouncilML:OnInitialize()
 	addon:Debug("ML initialized!")
 end
@@ -45,6 +48,7 @@ function RCLootCouncilML:OnEnable()
 	self:RegisterEvent("LOOT_OPENED",		"OnEvent")
 	self:RegisterEvent("LOOT_CLOSED",		"OnEvent")
 	self:RegisterEvent("CHAT_MSG_WHISPER",	"OnEvent")
+	self:RegisterEvent("CHAT_MSG_LOOT", "OnEvent")
 	self:RegisterBucketEvent("GROUP_ROSTER_UPDATE", 10, "UpdateGroup") -- Bursts in group creation, and we should have plenty of time to handle it
 	self:RegisterBucketMessage("RCConfigTableChanged", 2, "ConfigTableChanged") -- The messages can burst
 	self:RegisterMessage("RCCouncilChanged", "CouncilChanged")
@@ -56,9 +60,10 @@ end
 -- @param item Any: ItemID|itemString|itemLink
 -- @param bagged True if the item is in the ML's inventory
 -- @param slotIndex Index of the lootSlot, or nil if none - either this or 'bagged' needs to be supplied
+-- @param owner The owner of personal looted item.
 -- @param entry Used to set data in a specific lootTable entry.
-function RCLootCouncilML:AddItem(item, bagged, slotIndex, entry)
-	addon:DebugLog("ML:AddItem", item, bagged, slotIndex, entry)
+function RCLootCouncilML:AddItem(item, bagged, slotIndex, owner, entry)
+	addon:DebugLog("ML:AddItem", item, bagged, slotIndex, owner, entry)
 	local name, link, rarity, ilvl, iMinLevel, type, subType, iStackCount, equipLoc, texture,
 		sellPrice, typeID, subTypeID, bindType, expansionID, itemSetID, isCrafting = GetItemInfo(item)
 	local itemID = link and addon:GetItemIDFromLink(link)
@@ -83,10 +88,11 @@ function RCLootCouncilML:AddItem(item, bagged, slotIndex, entry)
 	entry.boe = addon:IsItemBoE(link)
 	entry.relic	= itemID and IsArtifactRelicItem(itemID) and select(3, C_ArtifactUI.GetRelicInfoByItemID(itemID))
 	entry.token	= itemID and RCTokenTable[itemID]
+	entry.owner = owner
 
 	-- Item isn't properly loaded, so update the data in 1 sec (Should only happen with /rc test)
 	if not name then
-		self:ScheduleTimer("Timer", 1, "AddItem", item, bagged, slotIndex, entry)
+		self:ScheduleTimer("Timer", 1, "AddItem", item, bagged, slotIndex, owner, entry)
 		addon:Debug("Started timer:", "AddItem", "for", item)
 	else
 		addon:SendMessage("RCMLAddItem", item, entry)
@@ -186,9 +192,9 @@ function RCLootCouncilML:StartSession()
 	self:AnnounceItems()
 end
 
-function RCLootCouncilML:AddUserItem(item)
+function RCLootCouncilML:AddUserItem(item, owner)
 	if self.running then return addon:Print(L["You're already running a session."]) end
-	self:AddItem(item, true)
+	self:AddItem(item, true, nil, owner)
 	addon:CallModule("sessionframe")
 	addon:GetActiveModule("sessionframe"):Show(self.lootTable)
 end
@@ -413,6 +419,24 @@ function RCLootCouncilML:OnEvent(event, ...)
 			self:SendWhisperHelp(sender)
 		elseif self.running then
 			self:GetItemsFromMessage(msg, sender)
+		end
+
+	elseif event == "CHAT_MSG_LOOT" and addon.isMasterLooter and addon.lootMethod == "personalloot" then
+		local message = ...
+		local item, owner
+		local item = message:match(LOOT_ITEM_SELF_PATTERN)
+		if not item then
+			owner, item = message:match(LOOT_ITEM_PATTERN)
+		else
+			owner = addon.playerName
+		end
+		
+		if item and owner then
+			owner = addon:UnitName(owner)
+			local quality = select(3, GetItemInfo(item))
+			if self:CanWeLootItem(item, quality) then
+				self:AddUserItem(item, owner)
+			end
 		end
 	end
 end
