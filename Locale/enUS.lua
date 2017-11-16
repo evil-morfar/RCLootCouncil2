@@ -221,6 +221,7 @@ L["Item(s) replaced:"] = true
 L["Item quality is below the loot threshold"] = true
 L["Items stored in the loot master's bag for award later cannot be awarded later."] = true
 L["Items under consideration:"] = true
+L["item_in_bags_low_trade_time_remaining_reminder"] = "The following bind on pick up items in your inventory are in the award later list and have less than %s trade time remaining. To avoid this reminder, trade the item, or '/rc remove [index]' to remove the item from the list, or '/rc clear' to clear the award later list, or equip the item to make the item untradable."
 L["Total items won:"] = true
 L["Latest item(s) won"] = true
 L["leaderUsage_desc"] = "Use the same setting when entering an instance as the leader?"

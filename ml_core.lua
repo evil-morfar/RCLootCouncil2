@@ -55,6 +55,7 @@ function RCLootCouncilML:OnEnable()
 	self:RegisterEvent("TRADE_CLOSED", "OnEvent")
 	self:RegisterEvent("TRADE_ACCEPT_UPDATE", "OnEvent")
 	self:RegisterEvent("UI_INFO_MESSAGE", "OnEvent")
+	self:RegisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
 	self:RegisterBucketEvent("GROUP_ROSTER_UPDATE", 10, "UpdateGroup") -- Bursts in group creation, and we should have plenty of time to handle it
 	self:RegisterBucketMessage("RCConfigTableChanged", 2, "ConfigTableChanged") -- The messages can burst
 	self:RegisterMessage("RCCouncilChanged", "CouncilChanged")
@@ -360,7 +361,7 @@ function RCLootCouncilML:GetNumAwardedInBagsToTradeWindow()
 			for container=0, NUM_BAG_SLOTS do
 				for slot=1, GetContainerNumSlots(container) or 0 do
 					if not (countedSlots[container] and countedSlots[container][slot]) then
-						local link = select(7, GetContainerItemInfo(container, slot))
+						local link = GetContainerItemLink(container, slot)
 						if link and addon:ItemIsItem(link, v.link) and addon:GetContainerItemTradeTimeRemaining(container, slot) > 0 then
 							itemCounted = true
 							count = count + 1
@@ -377,6 +378,59 @@ function RCLootCouncilML:GetNumAwardedInBagsToTradeWindow()
 		end
 	end
 	return count
+end
+
+-- Check if there are any BOP item in the player's inventory that is in the award later list and has low trade time remaining.
+-- If yes, print the items to remind the user.
+local lastCheckItemsInBagsLowTradeTimeRemainingReminder = 0
+function RCLootCouncilML:ItemsInBagsLowTradeTimeRemainingReminder()
+	if GetTime() - lastCheckItemsInBagsLowTradeTimeRemainingReminder < 60 then -- Dont spam
+		return
+	end
+
+	local checkedSlots = {}
+	local entriesToRemind = {}
+	local remindThreshold = 1200 -- 20min
+
+	for i, v in ipairs(db.baggedItems) do
+		local itemCounted = false
+		for container=0, NUM_BAG_SLOTS do
+			for slot=1, GetContainerNumSlots(container) or 0 do
+				if not (checkedSlots[container] and checkedSlots[container][slot]) then
+					local link = GetContainerItemLink(container, slot)
+					if link and addon:ItemIsItem(link, v.link) then
+						if not GetItemInfo(link) then -- Not cached
+							return self:ScheduleTimer("ItemsInBagsLowTradeTimeRemainingReminder", 2)
+						end
+						local remainingTime = addon:GetContainerItemTradeTimeRemaining(container, slot)
+						checkedSlots[container] = checkedSlots[container] or {}
+						checkedSlots[container][slot] = true
+						if remainingTime > 0 and remainingTime < remindThreshold then
+							itemCounted = true
+							local entry = CopyTable(v)
+							entry.remainingTime = remainingTime
+							entry.index = i
+							tinsert(entriesToRemind, entry)
+							break
+						end
+					end
+				end
+			end
+			if itemCounted then
+				break
+			end
+		end
+	end
+
+	if #entriesToRemind > 0 then
+		addon:Print(format(L["item_in_bags_low_trade_time_remaining_reminder"], "|cffff0000"..SecondsToTime(remindThreshold).."|r"))
+		for _, v in ipairs(entriesToRemind) do
+			addon:Print(v.index..". "..v.link, "-->", v.winner and addon:GetUnitClassColoredName(v.winner) or L["Unawarded"],
+				"(", _G.CLOSES_IN..":", SecondsToTime(v.remainingTime), ")")
+		end
+	end
+
+	lastCheckItemsInBagsLowTradeTimeRemainingReminder = GetTime()
 end
 
 function RCLootCouncilML:AddAwardedInBagsToTradeWindow()
@@ -517,6 +571,8 @@ function RCLootCouncilML:NewML(newML)
 		if #db.baggedItems > 0 then
 			addon:Print(L["new_ml_bagged_items_reminder"])
 		end
+
+		self:ItemsInBagsLowTradeTimeRemainingReminder()
 	else
 		self:Disable() -- We don't want to use this if we're not the ML
 	end
@@ -691,6 +747,8 @@ function RCLootCouncilML:OnEvent(event, ...)
 		end
 	elseif event == "TRADE_CLOSED" then
 		self.trading = false -- Dont clear self.targetTarget here.
+	elseif event == "PLAYER_REGEN_ENABLED" then
+		self:ItemsInBagsLowTradeTimeRemainingReminder()
 	end
 end
 
