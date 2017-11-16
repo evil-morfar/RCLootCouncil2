@@ -251,6 +251,7 @@ L["More Info"] = true
 L["more_info_desc"] = "Select how many of your responses you want to see the latest awarded items for. E.g. selecting 2 will (with default settings) show the latest awarded Mainspec and Offspec items, along with how long ago they were awarded."
 L["Multi Vote"] = true
 L["multi_vote_desc"] = "Enables multi voting, i.e. voters can vote for several candidates."
+L["new_ml_bagged_items_reminder"] = "There are recent items in your award later list. '/rc list' to view the list, '/rc clear' to clear the list, '/rc remove' to remove selected entry from the list. '/rc award' to start a session from the award later list, '/rc add' with award later checked to add the item into the list."
 L["Never use RCLootCouncil"] = true
 L["No entries in the Loot History"] = true
 L["No entry in the award later list is removed."] = true

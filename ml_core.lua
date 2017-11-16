@@ -508,6 +508,10 @@ function RCLootCouncilML:NewML(newML)
 		-- Set a timer to send out the incoming playerInfo changes
 		self:ScheduleTimer("Timer", 10, "GroupUpdate")
 		self:ClearOldItemsInBags()
+
+		if #db.baggedItems > 0 then
+			addon:Print(L["new_ml_bagged_items_reminder"])
+		end
 	else
 		self:Disable() -- We don't want to use this if we're not the ML
 	end
