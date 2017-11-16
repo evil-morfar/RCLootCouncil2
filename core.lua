@@ -549,10 +549,24 @@ function RCLootCouncil:ChatCommand(msg)
 			self:Print(L["You cannot use this command without being the Master Looter"])
 		end
 
-	elseif input == "clear" then
+	elseif input == "list" then -- Print db.baggedItems
+		if self.isMasterLooter then
+			self:GetActiveModule("masterlooter"):PrintItemsInBags()
+		else
+			self:Print(L["You cannot use this command without being the Master Looter"])
+		end
+
+	elseif input == "remove" then -- Remove one or more entries from db.baggedItems
+		if self.isMasterLooter then
+			self:GetActiveModule("masterlooter"):RemoveItemsInBags(unpack(args))
+		else
+			self:Print(L["You cannot use this command without being the Master Looter"])
+		end
+
+	elseif input == "clear" then -- Clear db.baggedItems
 		if self.isMasterLooter then
 			wipe(db.baggedItems)
-			self:Print(L["The award later item list has been cleared."])
+			self:Print(L["The award later list has been cleared."])
 		else
 			self:Print(L["You cannot use this command without being the Master Looter"])
 		end
@@ -2173,13 +2187,18 @@ function RCLootCouncil:GetClassColor(class)
 end
 
 function RCLootCouncil:GetUnitClassColoredName(name)
-	local englishClass = select(2, UnitClass(Ambiguate(name, "short")))
-	name = self:UnitName(name)
-	if not englishClass or not name then
-		return self.Ambiguate(name)
+	if self.candidates[name] and self.candidates[name].class then
+		local c = self:GetClassColor(self.candidates[name].class)
+		return "|cff"..self:RGBToHex(c.r,c.g,c.b)..self.Ambiguate(name).."|r"
 	else
-		local color = RAID_CLASS_COLORS[englishClass].colorStr
-		return "|c"..color..self.Ambiguate(name).."|r"
+		local englishClass = select(2, UnitClass(Ambiguate(name, "short")))
+		name = self:UnitName(name)
+		if not englishClass or not name then
+			return self.Ambiguate(name)
+		else
+			local color = RAID_CLASS_COLORS[englishClass].colorStr
+			return "|c"..color..self.Ambiguate(name).."|r"
+		end
 	end
 end
 

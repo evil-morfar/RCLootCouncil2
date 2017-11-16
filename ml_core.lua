@@ -280,21 +280,71 @@ function RCLootCouncilML:ClearOldItemsInBags()
 	end
 end
 
+-- Print all items in db.baggedItems, regardless awarded or not, in the order when the item was added.
+function RCLootCouncilML:PrintItemsInBags()
+	self:ClearOldItemsInBags()
+	if #db.baggedItems == 0 then 
+		return addon:Print(L["The award later list is empty."]) 
+	end
+	addon:Print(L["Following items were registered in the award later list:"])
+	for i, v in ipairs(db.baggedItems) do
+		addon:Print(i..". "..v.link, "-->", v.winner and addon:GetUnitClassColoredName(v.winner) or L["Unawarded"],
+			format(GUILD_BANK_LOG_TIME, SecondsToTime(time(date("!*t"))-v.addedTime, true)) )
+		-- GUILD_BANK_LOG_TIME == "( %s ago )", although the constant name does not make sense here, this constant expresses we intend to do.
+		-- SecondsToTime is defined in SharedXML/util.lua
+	end
+end
+
+-- Print awarded items in db.baggedItems, in the order of awardee's name.
 function RCLootCouncilML:PrintAwardedInBags()
 	self:ClearOldItemsInBags()
 	if not FindInTableIf(db.baggedItems, function(v) return v.winner end) then 
 		return addon:Print(L["No winners registered"]) 
 	end
 	addon:Print(L["Following winners was registered:"])
-	for _, v in ipairs(db.baggedItems) do
-		if v.winner then
-			if self.candidates[v.winner] then
-				local c = addon:GetClassColor(self.candidates[v.winner].class)
-				local text = "|cff"..addon:RGBToHex(c.r,c.g,c.b)..addon.Ambiguate(v.winner).."|r"
-				addon:Print(v.link, "-->", text)
-			else
-				addon:Print(v.link, "-->", addon.Ambiguate(v.winner)) -- fallback
-			end
+	local sortedByWinner = tFilter(db.baggedItems, function(v) return v.winner end)
+	table.sort(sortedByWinner, function(a, b)
+		if a.winner == b.winner then
+			return a.addedTime < b.addedTime
+		else
+			return a.winner < b.winner
+		end
+	end)
+
+	for _, v in ipairs(sortedByWinner) do -- difference with :PrintItemsInBags is that the index is not printed.
+		addon:Print(v.link, "-->", v.winner and addon:GetUnitClassColoredName(v.winner) or L["Unawarded"],
+			format(GUILD_BANK_LOG_TIME, SecondsToTime(time(date("!*t"))-v.addedTime)) )
+	end
+end
+
+-- @param ... indexes
+-- Remove entries in the award later list with the those index
+-- Accept number or strings that can be converted into number as input
+function RCLootCouncilML:RemoveItemsInBags(...)
+	local indexes = {...}
+
+	table.sort(indexes, function(a, b)
+		if tonumber(a) and tonumber(b) then
+			return tonumber(a) < tonumber(b)
+		end
+	end)
+
+	local removedEntries = {}
+	for i=#indexes, 1, -1 do
+		local index = tonumber(indexes[i])
+		if index and db.baggedItems[index] then
+			db.baggedItems[index].index = index
+			tinsert(removedEntries, 1, db.baggedItems[index])
+			tremove(db.baggedItems, index)
+		end
+	end
+	if #removedEntries == 0 then
+		addon:Print(L["No entry in the award later list is removed."])
+	else
+		addon:Print(L["The following entries are removed from the award later list:"])
+		for _, v in ipairs(removedEntries) do
+			addon:Print(v.index..". "..v.link, "-->", v.winner and addon:GetUnitClassColoredName(v.winner) or L["Unawarded"],
+				format(GUILD_BANK_LOG_TIME, SecondsToTime(time(date("!*t"))-v.addedTime)) )
 		end
 	end
 end
