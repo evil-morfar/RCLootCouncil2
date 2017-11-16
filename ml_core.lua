@@ -309,7 +309,7 @@ function RCLootCouncilML:GetNumAwardedInBagsToTradeWindow()
 				for slot=1, GetContainerNumSlots(container) or 0 do
 					if not (countedSlots[container] and countedSlots[container][slot]) then
 						local link = select(7, GetContainerItemInfo(container, slot))
-						if link and addon:ItemIsItem(link, v.link) then
+						if link and addon:ItemIsItem(link, v.link) and addon:GetContainerItemTradeTimeRemaining(container, slot) > 0 then
 							itemCounted = true
 							count = count + 1
 							countedSlots[container] = countedSlots[container] or {}
@@ -344,7 +344,7 @@ function RCLootCouncilML:AddAwardedInBagsToTradeWindow()
 					for slot=1, GetContainerNumSlots(container) or 0 do
 						if self.trading then
 							local texture, count, locked, quality, readable, lootable, link = GetContainerItemInfo(container, slot)
-							if addon:ItemIsItem(link, v.link) and not locked then
+							if addon:ItemIsItem(link, v.link) and not locked and addon:GetContainerItemTradeTimeRemaining(container, slot) > 0 then
 								ClearCursor()
 								PickupContainerItem(container, slot)
 								ClickTradeButton(tradeIndex)
