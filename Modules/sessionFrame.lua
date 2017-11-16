@@ -21,6 +21,7 @@ function RCSessionFrame:OnInitialize()
 	self.scrollCols = {
 		{ name = "", width = 30}, 				-- remove item, sort by session number.
 		{ name = "", width = ROW_HEIGHT},	-- item icon
+		{ name = "", width = 45, align = "center", },			-- item level
 		{ name = "", width = 160}, 			-- item link
 	}
 end
@@ -68,9 +69,12 @@ function RCSessionFrame:ExtractData(data)
 		self.frame.rows[k] = {
 			texture = v.texture or nil,
 			link = v.link,
+			owner = v.owner,
 			cols = {
+				-- For the following columns, if DoCellUpdate is not set, it shows "value", otherwise see the code in its DoCellUpdate function.
 				{ value = k,	DoCellUpdate = self.SetCellDeleteBtn, },
 				{ value = v.texture or "",	DoCellUpdate = self.SetCellItemIcon},
+				{ value = addon:GetItemLevelText(v.ilvl, v.token) or "", },
 				{ value = v.link and addon:GetItemNameFromLink(v.link) or "",	DoCellUpdate = self.SetCellText },
 			},
 		}
@@ -96,7 +100,7 @@ function RCSessionFrame.SetCellText(rowFrame, frame, data, cols, row, realrow, c
 		loadingItems = true
 		RCSessionFrame:ScheduleTimer("Show", 1, ml.lootTable) -- Expect data to be available in 1 sec and then recreate the frame
 	else
-		frame.text:SetText(data[realrow].link)
+		frame.text:SetText(data[realrow].link..(data[realrow].owner and ("\n"..addon:GetUnitClassColoredName(data[realrow].owner)) or ""))
 	end
 end
 

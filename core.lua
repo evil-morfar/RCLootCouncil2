@@ -2014,6 +2014,23 @@ function RCLootCouncil:GetClassColor(class)
 	end
 end
 
+function RCLootCouncil:GetUnitClassColoredName(name, alwaysShortName)
+	if self.candidates[name] and self.candidates[name].class then
+		local c = self:GetClassColor(self.candidates[name].class)
+		return "|cff"..self:RGBToHex(c.r,c.g,c.b)..(alwaysShortName and Ambiguate(name, "short") or self.Ambiguate(name)).."|r"
+	else
+		local englishClass = select(2, UnitClass(Ambiguate(name, "short")))
+		name = self:UnitName(name)
+		local displayName = alwaysShortName and Ambiguate(name, "short") or self.Ambiguate(name)
+		if not englishClass or not name then
+			return displayName
+		else
+			local color = RAID_CLASS_COLORS[englishClass].colorStr
+			return "|c"..color..displayName.."|r"
+		end
+	end
+end
+
 function RCLootCouncil:RGBToHex(r,g,b)
 	return string.format("%02x%02x%02x",255*r, 255*g, 255*b)
 end
