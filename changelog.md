@@ -12,6 +12,7 @@
 * A winner's note (if set) is now stored in the history, and included in TSV and CSV exports. (#306)
 * Various localization improvements have been added.
 
+
 **Master Loot**
 * **RCLootCouncil** can now be used without Master Loot enabled (#134, #137, #171).
 * The group leader can now always start a session ("/rc add [item]"), regardless of the loot method being used.
@@ -29,6 +30,12 @@
    + The sorting algorithm follows: type/subtype > ilvl > bonuses > name
    + This can be disabled in case you prefer your sessions to follow the order items are dropped in.
 * Session Frame is now displayed if using "Auto Start" and the session isn't fully ready.
+* Items can now be awarded later even after a session is started.
+* Any errors during awarding are now more detailedly relayed to the user.
+* Items can now be reawarded.
+   + Simply award the already awarded item to another candidate.
+   + This will update everything RCLootCouncil tracks to the new winner.
+   + The original receiver of the item will still have to trade the item to the new winner.
 
 **Responses**
 * Most response related information is now sent immediately when a session starts instead of after rolling.
@@ -61,6 +68,11 @@
 * Huge exports now appear in a single line - you won't see a difference after pasting the data somewhere else though.
 * Minor exports is still fully shown.
 * When importing, only the first 2500 bytes are shown, but the data is still there.
+
+**Loot from bags**
+* Trading with a winner while having awarded items in your bags now prompts to add those items to the trade window.
+* Now keeps an eye on the timer on items that needs to be traded.
+
 
 
 
