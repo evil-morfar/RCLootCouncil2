@@ -606,15 +606,6 @@ function RCVotingFrame:GetFrame()
 		})
 		st:SetFilter(RCVotingFrame.filterFunc)
 		st:EnableSelection(true)
-		local libStCompareSort = st.CompareSort
-
-		st.CompareSort = function(table, rowa, rowb, sortbycol)
-			if RCVotingFrame.SortItemOwnerOnTop(table, rowa, rowb, sortbycol) ~= nil then
-				return RCVotingFrame.SortItemOwnerOnTop(table, rowa, rowb, sortbycol)
-			end
-			return not libStCompareSort(table, rowa, rowb, sortbycol) -- fix the small issue that lib-st default sort inverses "asc" and "dsc"
-		end
-
 		f.st = st
 		f:SetWidth(f.st.frame:GetWidth() + 20)
 	end
@@ -1068,22 +1059,7 @@ function RCVotingFrame.filterFunc(table, row)
 	end
 end
 
-function RCVotingFrame.SortItemOwnerOnTop(table, rowa, rowb, sortbycol)
-	if db.itemOwnerOnTop then
-		local a, b = table:GetRow(rowa), table:GetRow(rowb);
-		local isOwnerA = a.name == lootTable[session].owner
-		local isOwnerB = b.name == lootTable[session].owner
-		if isOwnerA ~= isOwnerB then
-			return isOwnerA
-		end
-	end
-end
-
 function ResponseSort(table, rowa, rowb, sortbycol)
-	if RCVotingFrame.SortItemOwnerOnTop(table, rowa, rowb, sortbycol) ~= nil then
-		return RCVotingFrame.SortItemOwnerOnTop(table, rowa, rowb, sortbycol)
-	end
-
 	local column = table.cols[sortbycol]
 	local a, b = table:GetRow(rowa), table:GetRow(rowb);
 	a, b = addon:GetResponseSort(lootTable[session].candidates[a.name].response), addon:GetResponseSort(lootTable[session].candidates[b.name].response)
@@ -1110,10 +1086,6 @@ function ResponseSort(table, rowa, rowb, sortbycol)
 end
 
 function GuildRankSort(table, rowa, rowb, sortbycol)
-	if RCVotingFrame.SortItemOwnerOnTop(table, rowa, rowb, sortbycol) ~= nil then
-		return RCVotingFrame.SortItemOwnerOnTop(table, rowa, rowb, sortbycol)
-	end
-
 	local column = table.cols[sortbycol]
 	local a, b = table:GetRow(rowa), table:GetRow(rowb);
 	-- Extract the rank index from the name, fallback to 100 if not found

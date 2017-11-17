@@ -183,7 +183,6 @@ function RCLootCouncil:OnInitialize()
 			minimizeInCombat = false,
 			iLvlDecimal = false,
 			showSpecIcon = false,
-			itemOwnerOnTop = false, -- Show item owner on top on voting frame?
 			sortItems = true, -- Sort sessions by item type and item level
 
 			UI = { -- stores all ui information

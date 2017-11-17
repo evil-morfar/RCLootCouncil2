@@ -166,12 +166,6 @@ function addon:OptionsTable()
 										desc = L["show_spec_icon_desc"],
 										type = "toggle",
 									},
-									itemOwnerOnTop = {
-										order = 2,
-										name = L["Item owner on top"],
-										desc = L["item_owner_on_top_desc"],
-										type = "toggle",
-									},
 								}
 							},
 							lootHistoryOptions = {
