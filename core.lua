@@ -372,6 +372,9 @@ function RCLootCouncil:OnInitialize()
 	-- add it to blizz options
 	self.optionsFrame = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("RCLootCouncil", "RCLootCouncil", nil, "settings")
 	self.optionsFrame.ml = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("RCLootCouncil", "Master Looter", "RCLootCouncil", "mlSettings")
+
+	self:SecureHookScript(self.optionsFrame.ml, "OnHide", "OnMLOptionHide")
+
 	-- reset verTestCandidates
 	self.db.global.verTestCandidates = {}
 	self.playersData = playersData -- Make it globally available
@@ -1549,9 +1552,16 @@ function RCLootCouncil:OnEvent(event, ...)
 	end
 end
 
+function RCLootCouncil:OnMLOptionHide()
+	if self.usageOptionChanged then
+		self.usageOptionChanged	= false
+		self:NewMLCheck(true)
+	end
+end
+
 -- Do sth when the group admin changes (or party convert to raid/left group)
 -- Avoid function returns in the middle of this function, otherwise the function logic is very chaotic.
-function RCLootCouncil:NewMLCheck()
+function RCLootCouncil:NewMLCheck(checkUsageWithoutChange)
 	local old_ml = self.masterLooter
 	local old_lm = self.lootMethod
 	local old_isInRaid = self.isInRaid
@@ -1586,7 +1596,7 @@ function RCLootCouncil:NewMLCheck()
 		or IsPartyLFG() then -- Never handle loot in lfg/lfd
 		self.handleLoot = false
 
-	elseif self:UnitIsUnit(old_ml, self.masterLooter) and old_lm == self.lootMethod and old_isInRaid == self.isInRaid then
+	elseif (not checkUsageWithoutChange) and self:UnitIsUnit(old_ml, self.masterLooter) and old_lm == self.lootMethod and old_isInRaid == self.isInRaid then
 		-- ML/loot method/party_or_raid have no change, dont change handle Loot
 	else
 		-- Auto enables/disable handle loot according to user setting

@@ -415,6 +415,10 @@ function addon:OptionsTable()
 								type = "group",
 								name = L["Usage Options"],
 								inline = true,
+								set = function(info, value)
+									addon.usageOptionChanged = true
+									addon:DBSet(info, vaue)
+								end,
 								args = {
 									desc = {
 										name = L["usage_desc"],
@@ -433,6 +437,7 @@ function addon:OptionsTable()
 											never		= L["never_ask_usage_desc"],
 										},
 										set = function(_, key)
+											addon.usageOptionChanged = true
 											for k in pairs(self.db.profile.usage) do
 												if k == key then
 													self.db.profile.usage[k] = true
@@ -456,6 +461,7 @@ function addon:OptionsTable()
 										width = "full",
 										get = function() return self.db.profile.usage.leader or self.db.profile.usage.ask_leader end,
 										set = function(_, val)
+											addon.usageOptionChanged = true
 											self.db.profile.usage.leader, self.db.profile.usage.ask_leader = false, false -- Reset for zzzzz
 											if self.db.profile.usage.ml then self.db.profile.usage.leader = val end
 											if self.db.profile.usage.ask_ml then self.db.profile.usage.ask_leader = val end
