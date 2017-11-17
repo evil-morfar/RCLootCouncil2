@@ -2065,7 +2065,9 @@ function RCLootCouncil:CreateFrame(name, cName, title, width, height)
 	tf:SetScript("OnMouseUp", function(self) -- Get double click by trapping time betweem mouse up
 		local frame = self:GetParent()
 		frame:StopMovingOrSizing()
-		frame:SavePosition()
+		if frame:GetScale() and frame:GetLeft() and frame:GetRight() and frame:GetTop() and frame:GetBottom() then
+			frame:SavePosition() -- LibWindow SavePosition has nil error rarely and randomly and I cant really find the root cause. Let's just do a nil check.
+		end
 		if self.lastClick and GetTime() - self.lastClick <= 0.5 then
 			self.lastClick = nil
 			if frame.minimized then frame:Maximize() else frame:Minimize() end
@@ -2098,7 +2100,13 @@ function RCLootCouncil:CreateFrame(name, cName, title, width, height)
 	c:SetBackdropBorderColor(unpack(db.skins[db.currentSkin].borderColor))
 	c:SetPoint("TOPLEFT")
 	c:SetScript("OnMouseDown", function(self) self:GetParent():StartMoving() end)
-	c:SetScript("OnMouseUp", function(self) self:GetParent():StopMovingOrSizing(); self:GetParent():SavePosition() end)
+	c:SetScript("OnMouseUp", function(self)
+		local frame = self:GetParent()
+		frame:StopMovingOrSizing()
+		if frame:GetScale() and frame:GetLeft() and frame:GetRight() and frame:GetTop() and frame:GetBottom() then
+			frame:SavePosition() -- LibWindow SavePosition has nil error rarely and randomly and I cant really find the root cause. Let's just do a nil check.
+		end
+	end)
 	f.content = c
 	f.minimized = false
 	f.IsMinimized = function(frame) return frame.minimized end
