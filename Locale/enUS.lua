@@ -139,6 +139,18 @@ L["chat_commands"] = [=[
 - winners   - Display the winners of awarded items looted to your inventory
 - sync      - Open the synchronizer view
 ]=]
+L["chat_commands_config"]  = "- config    - Open the options interface"
+L["chat_commands_council"] = "- council   - Open the council interface"
+L["chat_commands_history"] = "- history   - Open the Loot History (alt. 'h' or 'his')"
+L["chat_commands_version"] = "- version   - Open the Version Checker (alt. 'v' or 'ver')"
+L["chat_commands_open"]    = "- open      - Open the voting frame"
+L["chat_commands_reset"]   = "- reset     - Resets the addon's frames' positions"
+L["chat_commands_test"]    = "- test (#)  - Emulate a loot session with # items, 1 if omitted"
+L["chat_commands_whisper"] = "- whisper   - Displays help to whisper commands"
+L["chat_commands_add"]     = "- add [item]- Add an item to the session frame"
+L["chat_commands_award"]   = "- award     - Start a session with items looted to your inventory"
+L["chat_commands_winners"] = "- winners   - Display the winners of awarded items looted to your inventory"
+L["chat_commands_sync"]    = "- sync      - Open the synchronizer view"
 L["Check this to loot the items and distribute them later."] = true
 L["Check to append the realmname of a player from another realm"] = true
 L["Check to have all frames minimize when entering combat"] = true
