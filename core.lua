@@ -550,6 +550,20 @@ function RCLootCouncil:ChatCommand(msg)
 			self:Print(L["You cannot use this command without being the Master Looter"])
 		end
 
+	elseif input == "startloot" then
+		if self.isMasterLooter then
+			self:StartHandleLoot()
+		else
+			self:Print(L["You cannot use this command without being the Master Looter"])
+		end
+	elseif input == "stoploot" then
+		if self.isMasterLooter then
+			self.handleLoot = false
+			self:Print(L["No longer handles looting automatically"])
+		else
+			self:Print(L["You cannot use this command without being the Master Looter"])
+		end
+
 	elseif input == "reset" or input == string.lower(_G.RESET) then
 		for k, v in pairs(db.UI) do -- We can't easily reset due to the wildcard in defaults
 			if k == "lootframe" then -- Loot Frame is special
@@ -1548,7 +1562,7 @@ function RCLootCouncil:NewMLCheck()
 end
 
 function RCLootCouncil:StartHandleLoot(switchToMasterLoot)
-	if not self.isMasterLooter then return end -- Someone else has become ML
+	if not self.isMasterLooter or IsPartyLFG() then return end -- Someone else has become ML or LFG
 
 	self:Debug("Start handle loot.")
 	self.handleLoot = true
@@ -1561,7 +1575,7 @@ function RCLootCouncil:StartHandleLoot(switchToMasterLoot)
 		SetLootMethod("master", self.Ambiguate(self.playerName)) -- activate ML
 		self:Print(L[" you are now the Master Looter and RCLootCouncil is now handling looting."])
 	else
-		self:Print(L["Now handles looting automatically."])
+		self:Print(L["Now handles looting automatically"])
 	end
 
 	if db.autoAward and GetLootThreshold() ~= 2 and GetLootThreshold() > db.autoAwardLowerThreshold  then
