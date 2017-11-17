@@ -146,7 +146,7 @@ function RCLootCouncil:OnInitialize()
 				state = "ask_ml", 	-- Current state
 			},
 			onlyUseInRaids = true,
-			allowHandleLootInPersonal = false,
+			allowHandleLootNonMaster = false,
 			ambiguate = false, -- Append realm names to players
 			autoAddRolls = false,
 			autoStart = false, -- start a session with all eligible items
@@ -1504,7 +1504,9 @@ function RCLootCouncil:NewMLCheck()
 
 	if self.masterLooter == nil then return end -- Didn't find a leader or ML.
 	if self:UnitIsUnit(old_ml, self.masterLooter) then 
-		if old_lm == self.lootMethod then return end -- Both ML and loot method have no change, no need to ask for usage again.
+		if old_lm == self.lootMethod or self.handleLoot then 
+			return 
+		end -- Both ML and loot method have no change, or we are handling loot right now, no need to ask for usage again.
 	else
 		-- At this point we know the ML has changed, so we can wipe the council
 		self:Debug("Resetting council as we have a new ML!")
@@ -1523,35 +1525,42 @@ function RCLootCouncil:NewMLCheck()
 	if not IsInRaid() and db.onlyUseInRaids then return end
 
 	-- We are ML and shouldn't ask the player for usage
-	if self.lootMethod == "master" and db.usage.ml then -- addon should auto start
-		self:StartHandleLoot()
-	-- We're ML and must ask the player for usage
-	elseif self.lootMethod == "master" and db.usage.ask_ml then
-		return LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_USAGE")
+	if self.lootMethod == "master" or db.allowHandleLootNonMaster then
+		if db.usage.ml then -- addon should auto start
+			self:StartHandleLoot()
+		-- We're ML and must ask the player for usage
+		elseif db.usage.ask_ml then
+			return LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_USAGE")
+		end
 	end
 end
 
-function RCLootCouncil:StartHandleLoot()
+function RCLootCouncil:StartHandleLoot(switchToMasterLoot)
 	if not self.isMasterLooter then return end -- Someone else has become ML
-	local lootMethod = GetLootMethod()
-	if lootMethod ~= "master" and not self:CanSetML() then return end -- Cant handle loot if we cant use ML loot method.
+
+	if not (self.lootMethod == "master" or (switchToMasterLoot and self:CanSetML()) or db.allowHandleLootNonMaster) then
+		return 
+	end 
 
 	self:Debug("Start handle loot.")
 	self.handleLoot = true
-	if lootMethod ~= "master" then
-		SetLootMethod("master", self.Ambiguate(self.playerName)) -- activate ML
-		self:Print(L[" you are now the Master Looter and RCLootCouncil is now handling looting."])
-	else
-		self:Print(L["Now handles looting"])
-	end
-
-	if db.autoAward and GetLootThreshold() ~= 2 and GetLootThreshold() > db.autoAwardLowerThreshold  then
-		self:Print(L["Changing loot threshold to enable Auto Awarding"])
-		SetLootThreshold(db.autoAwardLowerThreshold >= 2 and db.autoAwardLowerThreshold or 2)
-	end
 
 	if #db.council == 0 then -- if there's no council
 		self:Print(L["You haven't set a council! You can edit your council by typing '/rc council'"])
+	end
+
+	if switchToMasterLoot and self:CanSetML() then
+		if self.lootMethod ~= "master" then
+			SetLootMethod("master", self.Ambiguate(self.playerName)) -- activate ML
+			self:Print(L[" you are now the Master Looter and RCLootCouncil is now handling looting."])
+		else
+			self:Print(L["Now handles looting"])
+		end
+
+		if db.autoAward and GetLootThreshold() ~= 2 and GetLootThreshold() > db.autoAwardLowerThreshold  then
+			self:Print(L["Changing loot threshold to enable Auto Awarding"])
+			SetLootThreshold(db.autoAwardLowerThreshold >= 2 and db.autoAwardLowerThreshold or 2)
+		end
 	end
 end
 
@@ -1566,10 +1575,10 @@ function RCLootCouncil:OnRaidEnter(arg)
 		self.handleLoot = false -- Reset
 
 		if db.usage.leader then
-			self:StartHandleLoot()
+			self:StartHandleLoot(true)
 		-- We must ask the player for usage
 		elseif db.usage.ask_leader then
-			return LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_USAGE")
+			return LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_USAGE", true)
 		end
 	end
 end

@@ -421,7 +421,7 @@ function RCLootCouncilML:OnEvent(event, ...)
 			self:GetItemsFromMessage(msg, sender)
 		end
 
-	elseif event == "CHAT_MSG_LOOT" and addon.isMasterLooter and addon.lootMethod == "personalloot" then
+	elseif event == "CHAT_MSG_LOOT" and addon.isMasterLooter and addon.lootMethod ~= "master" and addon.handleLoot then
 		local message = ...
 		local item, owner
 		local item = message:match(LOOT_ITEM_SELF_PATTERN)
