@@ -85,7 +85,7 @@ function RCLootCouncil:OnInitialize()
   	self.version = GetAddOnMetadata("RCLootCouncil", "Version")
 	self.nnp = false
 	self.debug = false
-	self.tVersion = "Beta.2" -- String or nil. Indicates test version, which alters stuff like version check. Is appended to 'version', i.e. "version-tVersion" (max 10 letters for stupid security)
+	self.tVersion = "Beta.3" -- String or nil. Indicates test version, which alters stuff like version check. Is appended to 'version', i.e. "version-tVersion" (max 10 letters for stupid security)
 
 	self.playerClass = select(2, UnitClass("player"))
 	self.guildRank = L["Unguilded"]
@@ -1436,7 +1436,7 @@ function RCLootCouncil:CompleteFormatSimpleStringWithPluralRule(str, count)
 	end
 end
 
--- Return the remaining trade time in second for an item in the container. 
+-- Return the remaining trade time in second for an item in the container.
 -- Return math.huge(infinite) for an item not bounded.
 -- Return the remaining trade time in second if the item is within 2h trade window.
 -- Return 0 if the item is not tradable (bounded and the trade time has expired.)
@@ -1449,7 +1449,7 @@ function RCLootCouncil:GetContainerItemTradeTimeRemaining(container, slot)
 
 	local bindTradeTimeRemainingPattern = escapePatternSymbols(BIND_TRADE_TIME_REMAINING):gsub("%%%%s", "%(%.%+%)") -- PT locale contains "-", must escape that.
 												-- P.S. LibDeformat is useful to do deformat things, but not using it because we'll add a new library and lose performance.
-												-- But LibDeformat makes the function more likely to work if Blizzard changes the string constants. 
+												-- But LibDeformat makes the function more likely to work if Blizzard changes the string constants.
 												-- Our parser doesn't work if %s to changed to %1$s
 												-- Blizzard should have no reason to change them though.
 	local bounded = false
@@ -1469,7 +1469,7 @@ function RCLootCouncil:GetContainerItemTradeTimeRemaining(container, slot)
 				for hour=1, 0, -1 do -- time>=60s, format: "1 hour", "1 hour 59 min", "59 min", "1 min"
 					local hourText = ""
 					if hour > 0 then
-						hourText = self:CompleteFormatSimpleStringWithPluralRule(INT_SPELL_DURATION_HOURS, hour) 
+						hourText = self:CompleteFormatSimpleStringWithPluralRule(INT_SPELL_DURATION_HOURS, hour)
 					end
 					for min=59,0,-1 do
 						local time = hourText
@@ -2463,7 +2463,7 @@ function RCLootCouncil:GetItemTypeText(link, subType, equipLoc, typeID, subTypeI
 		local relicTooltipName = format(RELIC_TOOLTIP_TYPE, localizedRelicType)
 		return relicTooltipName
 	elseif equipLoc ~= "" and getglobal(equipLoc) then
-		if equipLoc ~= "INVTYPE_CLOAK" and 
+		if equipLoc ~= "INVTYPE_CLOAK" and
 				((not (typeID == LE_ITEM_CLASS_MISCELLANEOUS and subTypeID == LE_ITEM_MISCELLANEOUS_JUNK)) -- subType: "Junk"
 				and (not (typeID == LE_ITEM_CLASS_ARMOR and subTypeID == LE_ITEM_ARMOR_GENERIC)) -- subType: "Miscellaneous"
 				and (not (typeID == LE_ITEM_CLASS_WEAPON and subTypeID == LE_ITEM_WEAPON_GENERIC))) then -- subType: "Miscellaneous"
