@@ -26,7 +26,7 @@ LibDialog:Register("RCLOOTCOUNCIL_CONFIRM_USAGE", {
       {	text = _G.NO,
          on_click = function()
             addon:DebugLog("Player declined usage")
-            addon:Print(L["No longer handles looting automatically"])
+            addon:Print(L[" is not active in this raid."])
             addon.handleLoot = false
          end,
       },

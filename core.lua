@@ -178,7 +178,7 @@ function RCLootCouncil:OnInitialize()
 			observe = false, -- observe mode on/off
 			silentAutoPass = false, -- Show autopass message
 			printResponse = false, -- Print response in chat
-			--neverML = false, -- Never use the addon as MLs
+			--neverML = false, -- Never use the addon as ML
 			minimizeInCombat = false,
 			iLvlDecimal = false,
 			showSpecIcon = false,
@@ -568,7 +568,7 @@ function RCLootCouncil:ChatCommand(msg)
 	elseif input == "stoploot" then
 		if self.isMasterLooter then
 			self.handleLoot = false
-			self:Print(L["No longer handles looting automatically"])
+			self:Print(L[" is not active in this raid."])
 		else
 			self:Print(L["You cannot use this command without being the Master Looter"])
 		end
@@ -1756,7 +1756,7 @@ function RCLootCouncil:StartHandleLoot(switchToMasterLoot)
 		SetLootMethod("master", self.Ambiguate(self.playerName)) -- activate ML
 		self:Print(L[" you are now the Master Looter and RCLootCouncil is now handling looting."])
 	else
-		self:Print(L["Now handles looting automatically"])
+		self:Print(L["Now handles looting"])
 	end
 
 	if db.autoAward and GetLootThreshold() ~= 2 and GetLootThreshold() > db.autoAwardLowerThreshold  then
