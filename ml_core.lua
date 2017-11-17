@@ -668,6 +668,7 @@ RCLootCouncilML.announceItemStrings = {
 		local _, _, subType, equipLoc, _, typeID, subTypeID = GetItemInfoInstant(t.link)
 		return addon:GetItemTypeText(t.link, subType, equipLoc, typeID, subTypeID, t.classes, t.token, t.relic) 
 	end,
+	["&o"] = function(_, _, t) return addon.Ambiguate(t.owner) or "" end,
 }
 -- The description for each keyword
 RCLootCouncilML.announceItemStringsDesc = {
@@ -675,6 +676,7 @@ RCLootCouncilML.announceItemStringsDesc = {
 	L["announce_&i_desc"],
 	L["announce_&l_desc"],
 	L["announce_&t_desc"],
+	L["announce_&o_desc"],
 }
 
 function RCLootCouncilML:AnnounceItems()
@@ -706,6 +708,7 @@ RCLootCouncilML.awardStrings = {
 		local _, _, subType, equipLoc, _, typeID, subTypeID = GetItemInfoInstant(t.link)
 		return addon:GetItemTypeText(t.link, subType, equipLoc, typeID, subTypeID, t.classes, t.token, t.relic)
 	end,
+	["&o"] = function(...) return addon.Ambiguate(RCLootCouncilML.lootTable[select(5, ...)].owner) or "" end,
 }
 
 -- The description for each keyword
@@ -716,6 +719,7 @@ RCLootCouncilML.awardStringsDesc = {
 	L["announce_&n_desc"],
 	L["announce_&l_desc"],
 	L["announce_&t_desc"],
+	L["announce_&o_desc"],
 }
 
 
