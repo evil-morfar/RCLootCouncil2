@@ -1561,7 +1561,7 @@ function RCLootCouncil:StartHandleLoot(switchToMasterLoot)
 		SetLootMethod("master", self.Ambiguate(self.playerName)) -- activate ML
 		self:Print(L[" you are now the Master Looter and RCLootCouncil is now handling looting."])
 	else
-		self:Print(L["Now handles looting"])
+		self:Print(L["Now handles looting automatically."])
 	end
 
 	if db.autoAward and GetLootThreshold() ~= 2 and GetLootThreshold() > db.autoAwardLowerThreshold  then
