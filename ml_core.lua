@@ -53,7 +53,6 @@ function RCLootCouncilML:OnEnable()
 	self:RegisterEvent("LOOT_SLOT_CLEARED", "OnEvent")
 	self:RegisterEvent("LOOT_CLOSED",		"OnEvent")
 	self:RegisterEvent("CHAT_MSG_WHISPER",	"OnEvent")
-	self:RegisterEvent("CHAT_MSG_LOOT", "OnEvent")
 	self:RegisterEvent("TRADE_SHOW", "OnEvent")
 	self:RegisterEvent("TRADE_CLOSED", "OnEvent")
 	self:RegisterEvent("TRADE_ACCEPT_UPDATE", "OnEvent")
@@ -719,23 +718,6 @@ function RCLootCouncilML:OnEvent(event, ...)
 			self:GetItemsFromMessage(msg, sender)
 		end
 
-	elseif event == "CHAT_MSG_LOOT" and addon.isMasterLooter and addon.lootMethod ~= "master" and addon.handleLoot and not self.running then
-		local message = ...
-		local item, owner
-		local item = message:match(LOOT_ITEM_SELF_PATTERN)
-		if not item then
-			owner, item = message:match(LOOT_ITEM_PATTERN)
-		else
-			owner = addon.playerName
-		end
-		
-		if item and owner then
-			owner = addon:UnitName(owner)
-			local quality = select(3, GetItemInfo(item))
-			if self:CanWeLootItem(item, quality) then
-				self:AddUserItem(item, owner)
-			end
-		end
 	elseif event == "TRADE_SHOW" then
 		self.trading = true
 		wipe(self.tradeItems)

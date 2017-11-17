@@ -462,16 +462,8 @@ function addon:OptionsTable()
 										end,
 										disabled = function() return self.db.profile.usage.never end,
 									},
-									allowHandleLootNonMaster = {
-										order = 4,
-										name = L["Allow RCLootCouncil to handle loot when the loot method is not master loot"],
-										desc = L["allow_handle_loot_non_master"],
-										type = "toggle",
-										width = "full",
-										disabled = function() return self.db.profile.usage.never end,
-									},
 									onlyUseInRaids = {
-										order = 5,
+										order = 4,
 										name = L["Only use in raids"],
 										desc = L["onlyUseInRaids_desc"],
 										type = "toggle",

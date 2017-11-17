@@ -152,7 +152,6 @@ function RCLootCouncil:OnInitialize()
 				state = "ask_ml", 	-- Current state
 			},
 			onlyUseInRaids = true,
-			allowHandleLootNonMaster = false,
 			ambiguate = false, -- Append realm names to players
 			autoAddRolls = false,
 			autoStart = false, -- start a session with all eligible items
@@ -1733,7 +1732,7 @@ function RCLootCouncil:NewMLCheck(checkUsageWithoutChange)
 		-- ML/loot method/party_or_raid have no change, dont change handle Loot
 	else
 		-- Auto enables/disable handle loot according to user setting
-		if not ((self.lootMethod == "master" or db.allowHandleLootNonMaster)
+		if not ((self.lootMethod == "master")
 			and (self.isInRaid or (not db.onlyUseInRaids))) then  -- Note: User is still able to enable loot handling manually, even if these checks are not passed.
 			self.handleLoot = false
 		elseif not self.handleLoot then -- Try to auto enable loot handle if it is not already enabled
@@ -1749,13 +1748,9 @@ end
 
 function RCLootCouncil:StartHandleLoot(switchToMasterLoot)
 	if not self.isMasterLooter or IsPartyLFG() then return end -- Someone else has become ML or LFG
-																-- Dont check usage options such as db.onlyUseInRaids, db.allowHandleLootNonMaster in this function
+																-- Dont check usage options such as db.onlyUseInRaids in this function
 	self:Debug("Start handle loot.")
 	self.handleLoot = true
-
-	if #db.council == 0 then -- if there's no council
-		self:Print(L["You haven't set a council! You can edit your council by typing '/rc council'"])
-	end
 
 	if switchToMasterLoot and self:CanSetML() and self.lootMethod ~= "master" then
 		SetLootMethod("master", self.Ambiguate(self.playerName)) -- activate ML
@@ -1767,6 +1762,10 @@ function RCLootCouncil:StartHandleLoot(switchToMasterLoot)
 	if db.autoAward and GetLootThreshold() ~= 2 and GetLootThreshold() > db.autoAwardLowerThreshold  then
 		self:Print(L["Changing loot threshold to enable Auto Awarding"])
 		SetLootThreshold(db.autoAwardLowerThreshold >= 2 and db.autoAwardLowerThreshold or 2)
+	end
+
+	if #db.council == 0 then -- if there's no council
+		self:Print(L["You haven't set a council! You can edit your council by typing '/rc council'"])
 	end
 end
 
