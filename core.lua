@@ -1756,12 +1756,14 @@ function RCLootCouncil:OnRaidEnter(arg)
 	if not IsInRaid() and db.onlyUseInRaids then return end
 	if self.lootMethod ~= "master" and self:CanSetML() then
 		-- We don't need to ask the player for usage, so change loot method to master, and make the player ML
-		self.handleLoot = false -- Reset
 
+		-- Dont reset handleLoot in this line.
 		if db.usage.leader then
+			self.handleLoot = false -- Reset
 			self:StartHandleLoot()
 		-- We must ask the player for usage
 		elseif db.usage.ask_leader then
+			self.handleLoot = false -- Reset
 			return LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_USAGE")
 		end
 	end
