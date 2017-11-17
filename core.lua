@@ -376,9 +376,6 @@ function RCLootCouncil:OnInitialize()
 	-- add it to blizz options
 	self.optionsFrame = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("RCLootCouncil", "RCLootCouncil", nil, "settings")
 	self.optionsFrame.ml = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("RCLootCouncil", "Master Looter", "RCLootCouncil", "mlSettings")
-
-	self:SecureHookScript(self.optionsFrame.ml, "OnHide", "OnMLOptionHide")
-
 	-- reset verTestCandidates
 	self.db.global.verTestCandidates = {}
 	self.playersData = playersData -- Make it globally available
@@ -1684,13 +1681,6 @@ function RCLootCouncil:OnEvent(event, ...)
 	end
 end
 
-function RCLootCouncil:OnMLOptionHide()
-	if self.usageOptionChanged then
-		self.usageOptionChanged	= false
-		self:NewMLCheck(true)
-	end
-end
-
 -- Do sth when the group admin changes (or party convert to raid/left group)
 -- Avoid function returns in the middle of this function, otherwise the function logic is very chaotic.
 function RCLootCouncil:NewMLCheck(checkUsageWithoutChange)
@@ -1780,13 +1770,13 @@ function RCLootCouncil:OnRaidEnter(arg)
 	if not IsInRaid() and db.onlyUseInRaids then return end
 	if self.lootMethod ~= "master" and self:CanSetML() then
 		-- We don't need to ask the player for usage, so change loot method to master, and make the player ML
-		-- Dont reset self.handleLoot in this line.
+		self.handleLoot = false -- Reset
+
 		if db.usage.leader then
-			self:StartHandleLoot(true)
+			self:StartHandleLoot()
 		-- We must ask the player for usage
 		elseif db.usage.ask_leader then
-			self.handleLoot = false -- reset self.handleLoot here.
-			return LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_USAGE", true)
+			return LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_USAGE")
 		end
 	end
 end
