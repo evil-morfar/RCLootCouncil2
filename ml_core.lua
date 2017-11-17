@@ -195,6 +195,7 @@ end
 
 function RCLootCouncilML:AddUserItem(item, owner)
 	if self.running then return addon:Print(L["You're already running a session."]) end
+	if owner then owner = addon:UnitName(owner) end
 	self:AddItem(item, true, nil, owner)
 	addon:CallModule("sessionframe")
 	addon:GetActiveModule("sessionframe"):Show(self.lootTable)

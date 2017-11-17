@@ -524,9 +524,14 @@ function RCLootCouncil:ChatCommand(msg)
 	elseif input == "add" or input == string.lower(_G.ADD) then
 		if not args[1] or args[1] == "" then return self:ChatCommand("help") end
 		if self.isMasterLooter then
+			local owner = nil
+			if not args[1]:find("|") then -- arg1 is the owner name
+				owner = args[1]
+				tremove(args, 1)
+			end
 			local links = self:GetSplitedLinks(args) -- Splited the item link to allow user to enter links without space
 			for _,v in ipairs(links) do
-			self:GetActiveModule("masterlooter"):AddUserItem(v)
+				self:GetActiveModule("masterlooter"):AddUserItem(v, owner)
 			end
 		else
 			self:Print(L["You cannot use this command without being the Master Looter"])
