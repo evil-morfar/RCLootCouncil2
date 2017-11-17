@@ -16,6 +16,8 @@ local ml;
 local ROW_HEIGHT = 40
 local awardLater = false
 local loadingItems = false
+local waitingToEndSessions = false  -- need some time to confirm the result of award later and the session cant be ended until then.
+									-- When user chooses to award later then quickly reopens the loot window when this variable is still true, dont show session frame.
 
 function RCSessionFrame:OnInitialize()
 	self.scrollCols = {
@@ -37,7 +39,11 @@ function RCSessionFrame:OnDisable()
 	awardLater = false
 end
 
-function RCSessionFrame:Show(data)
+function RCSessionFrame:Show(data, disableAwardLater)
+	if waitingToEndSessions then
+		return		-- Silently fails
+	end
+
 	self.frame = self:GetFrame()
 	self.frame:Show()
 
@@ -49,6 +55,14 @@ function RCSessionFrame:Show(data)
 		self:ExtractData(data)
 		self.frame.st:SetData(self.frame.rows)
 		self:Update()
+	end
+	if disableAwardLater then
+		self.frame.toggle:Disable()
+		getglobal(self.frame.toggle:GetName().."Text"):SetTextColor(0.7, 0.7, 0.7)
+		awardLater = false
+	else
+		self.frame.toggle:Enable()
+		getglobal(self.frame.toggle:GetName().."Text"):SetTextColor(1, 1, 1)
 	end
 end
 
@@ -149,9 +163,17 @@ function RCSessionFrame:GetFrame()
 			return
 		end
 		if awardLater then
-			for session in ipairs(ml.lootTable) do ml:Award(session) end
-			addon:Print(L["Looted items to award later"])
-			ml:EndSession()
+			local sessionAwardDoneCount = 0
+			waitingToEndSessions = true
+			for session in ipairs(ml.lootTable) do 
+				ml:Award(session, nil, nil, nil, function()
+					sessionAwardDoneCount = sessionAwardDoneCount + 1
+					if sessionAwardDoneCount >= #ml.lootTable then
+						waitingToEndSessions = false
+						ml:EndSession()
+					end
+				end) 
+			end
 		else
 			if not addon.candidates[addon.playerName] or #addon.council == 0 then
 				addon:Print(L["Please wait a few seconds until all data has been synchronized."])
