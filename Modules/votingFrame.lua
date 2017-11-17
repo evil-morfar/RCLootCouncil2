@@ -188,6 +188,19 @@ function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
 				else
 					self:SwitchSession(session) -- Use switch session to update awardstring
 				end
+			elseif command == "bagged" and addon:UnitIsUnit(sender, addon.masterLooter) then
+				self:ScheduleTimer(function()
+					moreInfoData = addon:GetLootDBStatistics() -- Just update it on every award
+				end, 1) -- Make sure we've received the history data before updating
+				local s, winner = unpack(data)
+				if not lootTable[s] then return end -- We might not have lootTable - e.g. if we just reloaded
+				lootTable[s].bagged = true
+				lootTable[s].baggedInSession = true
+				if addon.isMasterLooter and session ~= #lootTable then -- ML should move to the next item on award
+					self:SwitchSession(session + 1)
+				else
+					self:SwitchSession(session) -- Use switch session to update awardstring
+				end
 
 			elseif command == "offline_timer" and addon:UnitIsUnit(sender, addon.masterLooter) then
 				for i = 1, #lootTable do
@@ -413,6 +426,7 @@ function RCVotingFrame:Update()
 	self.frame.st:SortData()
 	-- update awardString
 	if lootTable[session] and lootTable[session].awarded then
+		self.frame.awardString:SetText(L["Item was awarded to"])
 		self.frame.awardString:Show()
 		local name = lootTable[session].awarded
 		self.frame.awardStringPlayer:SetText(addon.Ambiguate(name))
@@ -422,6 +436,11 @@ function RCVotingFrame:Update()
 		-- Hack-reuse the SetCellClassIcon function
 		addon.SetCellClassIcon(nil,self.frame.awardStringPlayer.classIcon,nil,nil,nil,nil,nil,nil,nil, lootTable[session].candidates[name].class)
 		self.frame.awardStringPlayer.classIcon:Show()
+	elseif lootTable[session] and lootTable[session].baggedInSession then
+		self.frame.awardString:SetText(L["The item will be awarded later"])
+		self.frame.awardString:Show()
+		self.frame.awardStringPlayer:Hide()
+		self.frame.awardStringPlayer.classIcon:Hide()
 	else
 		self.frame.awardString:Hide()
 		self.frame.awardStringPlayer:Hide()
@@ -558,12 +577,8 @@ function RCVotingFrame:GetFrame()
 			["OnClick"] = function(rowFrame, cellFrame, data, cols, row, realrow, column, table, button, ...)
 				if button == "RightButton" and row then
 					if active then
-						if lootTable[session].awarded then
-							addon:Print(L["This item has been awarded"])
-						else
-							menuFrame.name = data[realrow].name
-							Lib_ToggleDropDownMenu(1, nil, menuFrame, cellFrame, 0, 0)
-						end
+						menuFrame.name = data[realrow].name
+						Lib_ToggleDropDownMenu(1, nil, menuFrame, cellFrame, 0, 0);
 					else
 						addon:Print(L["You cannot use the menu when the session has ended."])
 					end
@@ -1158,27 +1173,36 @@ do
 				text = "",
 				notCheckable = true,
 				disabled = true,
-			},	{ -- 6 Change response
+			},{ -- 6 Award later
+				text = L["Award later"],
+				notCheckable = true,
+				disabled = function() 
+					return not lootTable[session] or lootTable[session].bagged or lootTable[session].awarded
+				end,
+				func = function()
+					LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_AWARD_LATER", {session=session, link=lootTable[session].link})
+				end,
+			},{ -- 7 Change response
 				text = L["Change Response"],
 				value = "CHANGE_RESPONSE",
 				hasArrow = true,
 				notCheckable = true,
-			},{ -- 7 Reannounce
+			},{ -- 8 Reannounce
 				text = L["Reannounce ..."],
 				value = "REANNOUNCE",
 				hasArrow = true,
 				notCheckable = true,
-			},{ -- 8 Remove from consideration
+			},{ -- 9 Remove from consideration
 				text = L["Remove from consideration"],
 				notCheckable = true,
 				func = function(name)
 					addon:SendCommand("group", "change_response", session, name, "REMOVED")
 				end,
-			},{ -- 9 Add rolls
+			},{ -- 10 Add rolls
 				text = L["Add rolls"],
 				notCheckable = true,
 				func = function() RCVotingFrame:DoRandomRolls(session) end,
-			},{ -- 10 Request rolls from raid members
+			},{ -- 11 Request rolls from raid members
 				text = L["Request rolls from raid members"],
 				notCheckable = true,
 				func = function() RCVotingFrame:StartManualRoll() end,

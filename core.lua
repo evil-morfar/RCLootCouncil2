@@ -43,6 +43,8 @@ _G.RCLootCouncil = LibStub("AceAddon-3.0"):NewAddon("RCLootCouncil", "AceConsole
 local LibDialog = LibStub("LibDialog-1.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 local lwin = LibStub("LibWindow-1.1")
+local tooltipForParsing = CreateFrame("GameTooltip", "RCLootCouncil_Tooltip_Parse", nil, "GameTooltipTemplate")
+tooltipForParsing:UnregisterAllEvents() -- Don't use GameTooltip for parsing, because GameTooltip can be hooked by other addons.
 
 RCLootCouncil:SetDefaultModuleState(false)
 
@@ -136,6 +138,10 @@ function RCLootCouncil:OnInitialize()
 			verTestCandidates = {}, -- Stores received verTests
 		},
 		profile = {
+
+			baggedItems = {}, -- Items that are stored in MLs inventory for award later.
+								-- i = { {link=link, winner=winner, addedTime=sec between UTC epoch to when the item is added to lootInBags, }, bop=Item is BOP?}
+
 			usage = { -- State of enabledness
 				ml = false,				-- Enable when ML
 				ask_ml = true,			-- Ask before enabling when ML
@@ -422,6 +428,7 @@ function RCLootCouncil:OnEnable()
 	if self.db.global.tVersion and self.debug then -- recently ran a test version, so reset debugLog
 		self.db.global.log = {}
 	end
+	self.db.global.locale = GetLocale() -- Store locale in log. Important information for debugging.
 
 	self.db.global.tVersion = self.tVersion;
 	GuildRoster()
@@ -538,6 +545,27 @@ function RCLootCouncil:ChatCommand(msg)
 	elseif input == "winners" or input == L["winners"] then
 		if self.isMasterLooter then
 			self:GetActiveModule("masterlooter"):PrintAwardedInBags()
+		else
+			self:Print(L["You cannot use this command without being the Master Looter"])
+		end
+
+	elseif input == "list" then -- Print db.baggedItems
+		if self.isMasterLooter then
+			self:GetActiveModule("masterlooter"):PrintItemsInBags()
+		else
+			self:Print(L["You cannot use this command without being the Master Looter"])
+		end
+
+	elseif input == "remove" then -- Remove one or more entries from db.baggedItems
+		if self.isMasterLooter then
+			self:GetActiveModule("masterlooter"):RemoveItemsInBags(unpack(args))
+		else
+			self:Print(L["You cannot use this command without being the Master Looter"])
+		end
+
+	elseif input == "clear" then -- Clear db.baggedItems
+		if self.isMasterLooter then
+			self:GetActiveModule("masterlooter"):ClearAllItemsInBags()
 		else
 			self:Print(L["You cannot use this command without being the Master Looter"])
 		end
@@ -800,6 +828,24 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 					tinsert(historyDB[name], history)
 				else
 					historyDB[name] = {history}
+				end
+				if self:GetActiveModule("history"):IsEnabled() then -- Update history frame if it is shown currently.
+					self:GetActiveModule("history"):BuildData()
+				end
+
+			elseif command == "delete_history" and db.enableHistory then
+				local id = unpack(data)
+				for name, d in pairs(historyDB) do
+					for i = #d, 1, -1 do
+						local entry = d[i]
+						if entry.id == id then
+							tremove(d, i)
+							break
+						end
+					end
+				end
+				if self:GetActiveModule("history"):IsEnabled() then -- Update history frame if it is shown currently.
+					self:GetActiveModule("history"):BuildData()
 				end
 
 			elseif command == "reroll" and self:UnitIsUnit(sender, self.masterLooter) and self.enabled then
@@ -1336,19 +1382,19 @@ end
 -- Protector(Warrior, Hunter, Shaman, Monk) == 581(0x245)
 function RCLootCouncil:GetItemClassesAllowedFlag(item)
 	if not item then return 0 end
-	GameTooltip:SetOwner(UIParent, "ANCHOR_NONE")
-	GameTooltip:SetHyperlink(item)
+	tooltipForParsing:SetOwner(UIParent, "ANCHOR_NONE") -- This lines clear the current content of tooltip and set its position off-screen
+	tooltipForParsing:SetHyperlink(item) -- Set the tooltip content and show it, should hide the tooltip before function ends
 
 	local delimiter = ", " -- in-game tests show all locales use this as delimiter.
-	local keyword = _G.ITEM_CLASSES_ALLOWED:gsub("%%s", "%(%.%+%)")
+	local itemClassesAllowedPattern = _G.ITEM_CLASSES_ALLOWED:gsub("%%s", "%(%.%+%)")
 
-	for i = 1, GameTooltip:NumLines() or 0 do
-		local line = getglobal('GameTooltipTextLeft' .. i)
+	for i = 1, tooltipForParsing:NumLines() or 0 do
+		local line = getglobal(tooltipForParsing:GetName()..'TextLeft' .. i)
 		if line and line.GetText then
 			local text = line:GetText() or ""
-			local classesText = text:match(keyword)
+			local classesText = text:match(itemClassesAllowedPattern)
 			if classesText then
-				GameTooltip:Hide()
+				tooltipForParsing:Hide()
 				-- After reading the Blizzard code, I suspect that it's maybe not intended for Blizz to use ", " for all locales. (Patch 7.3.2)
 				-- The most strange thing is that LIST_DELIMITER is defined first in FrameXML/GlobalStrings.lua as "%s, %s" and it's not the same for all locales.
 				-- Then LIST_DELIMITER is redefined to ", " for all locales in FrameXML/MerchantFrame.lua
@@ -1374,14 +1420,102 @@ function RCLootCouncil:GetItemClassesAllowedFlag(item)
 		end
 	end
 
-	GameTooltip:Hide()
+	tooltipForParsing:Hide()
 	return 0xffffffff -- The item works for all classes
+end
+
+-- strings contains plural/singular rule such as "%d |4ora:ore;"
+-- For example, CompleteFormatSimpleStringWithPluralRule("%d |4ora:ore;", 2) returns "2 ore"
+-- Does not work for long string such as "%d |4jour:jours;, %d |4heure:heures;, %d |4minute:minutes;, %d |4seconde:secondes;"
+function RCLootCouncil:CompleteFormatSimpleStringWithPluralRule(str, count)
+	local text = format(str, count)
+	if count < 2 then
+		return text:gsub("|4(.+):(.+);", "%1")
+	else
+		return text:gsub("|4(.+):(.+);", "%2")
+	end
+end
+
+-- Return the remaining trade time in second for an item in the container. 
+-- Return math.huge(infinite) for an item not bounded.
+-- Return the remaining trade time in second if the item is within 2h trade window.
+-- Return 0 if the item is not tradable (bounded and the trade time has expired.)
+function RCLootCouncil:GetContainerItemTradeTimeRemaining(container, slot)
+	tooltipForParsing:SetOwner(UIParent, "ANCHOR_NONE") -- This lines clear the current content of tooltip and set its position off-screen
+	tooltipForParsing:SetBagItem(container, slot) -- Set the tooltip content and show it, should hide the tooltip before function ends
+	if not tooltipForParsing:NumLines() or tooltipForParsing:NumLines() == 0 then
+		return 0
+	end
+
+	local bindTradeTimeRemainingPattern = escapePatternSymbols(BIND_TRADE_TIME_REMAINING):gsub("%%%%s", "%(%.%+%)") -- PT locale contains "-", must escape that.
+												-- P.S. LibDeformat is useful to do deformat things, but not using it because we'll add a new library and lose performance.
+												-- But LibDeformat makes the function more likely to work if Blizzard changes the string constants. 
+												-- Our parser doesn't work if %s to changed to %1$s
+												-- Blizzard should have no reason to change them though.
+	local bounded = false
+
+	for i = 1, tooltipForParsing:NumLines() or 0 do
+		local line = getglobal(tooltipForParsing:GetName()..'TextLeft' .. i)
+		if line and line.GetText then
+			local text = line:GetText() or ""
+			if text == ITEM_SOULBOUND or text == ITEM_ACCOUNTBOUND or text == ITEM_BNETACCOUNTBOUND then
+				bounded = true
+			end
+
+			local timeText = text:match(bindTradeTimeRemainingPattern)
+			if timeText then -- Within 2h trade window, parse the time text
+				tooltipForParsing:Hide()
+
+				for hour=1, 0, -1 do -- time>=60s, format: "1 hour", "1 hour 59 min", "59 min", "1 min"
+					local hourText = ""
+					if hour > 0 then
+						hourText = self:CompleteFormatSimpleStringWithPluralRule(INT_SPELL_DURATION_HOURS, hour) 
+					end
+					for min=59,0,-1 do
+						local time = hourText
+						if min > 0 then
+							if time ~= "" then
+								time = time..TIME_UNIT_DELIMITER
+							end
+							time = time..self:CompleteFormatSimpleStringWithPluralRule(INT_SPELL_DURATION_MIN, min)
+						end
+
+						if time == timeText then
+							return hour*3600 + min*60
+						end
+					end
+				end
+				for sec=59, 1, -1 do -- time<60s, format: "59 s", "1 s"
+					local time = self:CompleteFormatSimpleStringWithPluralRule(INT_SPELL_DURATION_SEC, sec)
+					if time == timeText then
+						return sec
+					end
+				end
+				-- As of Patch 7.3.2(Build 25497), the parser have been tested for all 11 in-game languages when time < 1h and time > 1h. Shouldn't reach here.
+				-- If it reaches here, there are some parsing issues. Let's return 2h.
+				return 7200
+			end
+		end
+	end
+
+	tooltipForParsing:Hide()
+	if bounded then
+		return 0
+	else
+		return math.huge
+	end
 end
 
 function RCLootCouncil:IsItemBoE(item)
 	if not item then return false end
 	-- Item binding type: 0 - none; 1 - on pickup; 2 - on equip; 3 - on use; 4 - quest.
 	return select(14, GetItemInfo(item)) == LE_ITEM_BIND_ON_EQUIP
+end
+
+function RCLootCouncil:IsItemBoP(item)
+	if not item then return false end
+	-- Item binding type: 0 - none; 1 - on pickup; 2 - on equip; 3 - on use; 4 - quest.
+	return select(14, GetItemInfo(item)) == LE_ITEM_BIND_ON_ACQUIRE
 end
 
 function RCLootCouncil:IsRelicTypeID(typeID, subTypeID)
@@ -2048,6 +2182,22 @@ function RCLootCouncil:GetClassColor(class)
 	else
 		color.a = 1.0
 		return color
+	end
+end
+
+function RCLootCouncil:GetUnitClassColoredName(name)
+	if self.candidates[name] and self.candidates[name].class then
+		local c = self:GetClassColor(self.candidates[name].class)
+		return "|cff"..self:RGBToHex(c.r,c.g,c.b)..self.Ambiguate(name).."|r"
+	else
+		local englishClass = select(2, UnitClass(Ambiguate(name, "short")))
+		name = self:UnitName(name)
+		if not englishClass or not name then
+			return self.Ambiguate(name)
+		else
+			local color = RAID_CLASS_COLORS[englishClass].colorStr
+			return "|c"..color..self.Ambiguate(name).."|r"
+		end
 	end
 end
 
