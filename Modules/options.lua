@@ -440,7 +440,7 @@ function addon:OptionsTable()
 									},
 									leaderUsage = { -- Add leader options here since we can only make a single select dropdown
 										order = 3,
-										name = function() return self.db.profile.usage.ml and L["Always use master loot when entering instance as leader"] or L["Ask and switch to master loot when entering instance as leader"] end,
+										name = function() return self.db.profile.usage.ml and L["Always use master loot when entering raid instance as leader"] or L["Ask and switch to master loot when entering raid instance as leader"] end,
 										type = "toggle",
 										width = "full",
 										get = function() return self.db.profile.usage.leader or self.db.profile.usage.ask_leader end,
@@ -451,10 +451,10 @@ function addon:OptionsTable()
 										end,
 										disabled = function() return self.db.profile.usage.never end,
 									},
-									allowHandleLootInPersonal = {
+									allowHandleLootNonMaster = {
 										order = 4,
-										name = L["Allow RCLootCouncil to handle loot in personal loot"],
-										desc = L["allow_handle_loot_in_personal"],
+										name = L["Allow RCLootCouncil to handle loot when the loot method is not master loot"],
+										desc = L["allow_handle_loot_non_master"],
 										type = "toggle",
 										width = "full",
 										disabled = function() return self.db.profile.usage.never end,
