@@ -591,6 +591,7 @@ function RCVotingFrame:GetFrame()
 		})
 		st:SetFilter(RCVotingFrame.filterFunc)
 		st:EnableSelection(true)
+		st.CompareSort = self.DefaultCompareSort
 		f.st = st
 		f:SetWidth(f.st.frame:GetWidth() + 20)
 	end
@@ -1044,7 +1045,95 @@ function RCVotingFrame.filterFunc(table, row)
 	end
 end
 
+function RCVotingFrame.SortItemOwnerOnTop(table, rowa, rowb, sortbycol)
+	if db.itemOwnerOnTop then
+		local a, b = table:GetRow(rowa), table:GetRow(rowb);
+		local isOwnerA = a.name == lootTable[session].owner
+		local isOwnerB = b.name == lootTable[session].owner
+		if isOwnerA ~= isOwnerB then
+			return isOwnerA
+		end
+	end
+end
+
+-- Default function to sort the columns. Mostly copied from lib-st
+function RCVotingFrame.DefaultCompareSort(self, rowa, rowb, sortbycol)
+	if RCVotingFrame.SortItemOwnerOnTop(self, rowa, rowb, sortbycol) ~= nil then
+		return RCVotingFrame.SortItemOwnerOnTop(self, rowa, rowb, sortbycol)
+	end
+
+	local cella, cellb = self:GetCell(rowa, sortbycol), self:GetCell(rowb, sortbycol);
+	local a1, b1 = cella, cellb;
+	if type(a1) == 'table' then  
+		a1 = a1.value; 
+	end
+	if type(b1) == 'table' then 
+		b1 = b1.value;
+	end 
+	local column = self.cols[sortbycol];
+	
+	if type(a1) == "function" then 
+		if (cella.args) then 
+			a1 = a1(unpack(cella.args))
+		else
+			a1 = a1(self.data, self.cols, rowa, sortbycol, self);
+		end
+	end
+	if type(b1) == "function" then 
+		if (cellb.args) then 
+			b1 = b1(unpack(cellb.args))
+		else	
+			b1 = b1(self.data, self.cols, rowb, sortbycol, self);
+		end
+	end
+	
+	if type(a1) ~= type(b1) then
+		local typea, typeb = type(a1), type(b1);
+		if typea == "number" and typeb == "string" then 
+			if tonumber(b1) then -- is it a number in a string?
+				b1 = StringToNumber(b1); -- "" = 0
+			else
+				a1 = tostring(a1);
+			end
+		elseif typea == "string" and typeb == "number" then 
+			if tonumber(a1) then -- is it a number in a string?
+				a1 = StringToNumber(a1); -- "" = 0
+			else
+				b1 = tostring(b1);
+			end
+		end
+	end
+	
+	if a1 == b1 then 
+		if column.sortnext then
+			local nextcol = self.cols[column.sortnext];
+			if not(nextcol.sort) then 
+				if nextcol.comparesort then 
+					return nextcol.comparesort(self, rowa, rowb, column.sortnext);
+				else
+					return self:CompareSort(rowa, rowb, column.sortnext);
+				end
+			else
+				return false;
+			end
+		else
+			return false; 
+		end 
+	else
+		local direction = column.sort or column.defaultsort or "asc";
+		if direction:lower() == "asc" then 		
+			return a1 < b1; -- Also fixed a lib-st bug that "asc" is "dsc" here
+		else
+			return a1 > b1;
+		end
+	end
+end
+
 function ResponseSort(table, rowa, rowb, sortbycol)
+	if RCVotingFrame.SortItemOwnerOnTop(table, rowa, rowb, sortbycol) ~= nil then
+		return RCVotingFrame.SortItemOwnerOnTop(table, rowa, rowb, sortbycol)
+	end
+
 	local column = table.cols[sortbycol]
 	local a, b = table:GetRow(rowa), table:GetRow(rowb);
 	a, b = addon:GetResponseSort(lootTable[session].candidates[a.name].response), addon:GetResponseSort(lootTable[session].candidates[b.name].response)
@@ -1071,6 +1160,10 @@ function ResponseSort(table, rowa, rowb, sortbycol)
 end
 
 function GuildRankSort(table, rowa, rowb, sortbycol)
+	if RCVotingFrame.SortItemOwnerOnTop(table, rowa, rowb, sortbycol) ~= nil then
+		return RCVotingFrame.SortItemOwnerOnTop(table, rowa, rowb, sortbycol)
+	end
+
 	local column = table.cols[sortbycol]
 	local a, b = table:GetRow(rowa), table:GetRow(rowb);
 	-- Extract the rank index from the name, fallback to 100 if not found
