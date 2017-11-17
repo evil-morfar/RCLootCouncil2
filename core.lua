@@ -1683,7 +1683,7 @@ end
 
 -- Do sth when the group admin changes (or party convert to raid/left group)
 -- Avoid function returns in the middle of this function, otherwise the function logic is very chaotic.
-function RCLootCouncil:NewMLCheck(checkUsageWithoutChange)
+function RCLootCouncil:NewMLCheck()
 	local old_ml = self.masterLooter
 	local old_lm = self.lootMethod
 	local old_isInRaid = self.isInRaid
@@ -1715,15 +1715,15 @@ function RCLootCouncil:NewMLCheck(checkUsageWithoutChange)
 	end
 	
 	if not self.isMasterLooter  -- Never handle loot without being "ML"
-		or IsPartyLFG() then -- Never handle loot in lfg/lfd
+		or IsPartyLFG()  -- Never handle loot in lfg/lfd
+		or self.lootMethod ~= "master" then
 		self.handleLoot = false
 
-	elseif (not checkUsageWithoutChange) and self:UnitIsUnit(old_ml, self.masterLooter) and old_lm == self.lootMethod and old_isInRaid == self.isInRaid then
+	elseif self:UnitIsUnit(old_ml, self.masterLooter) and old_lm == self.lootMethod and old_isInRaid == self.isInRaid then
 		-- ML/loot method/party_or_raid have no change, dont change handle Loot
 	else
 		-- Auto enables/disable handle loot according to user setting
-		if not ((self.lootMethod == "master")
-			and (self.isInRaid or (not db.onlyUseInRaids))) then  -- Note: User is still able to enable loot handling manually, even if these checks are not passed.
+		if (self.isInRaid or (not db.onlyUseInRaids))) then  -- Note: User is still able to enable loot handling manually, even if these checks are not passed.
 			self.handleLoot = false
 		elseif not self.handleLoot then -- Try to auto enable loot handle if it is not already enabled
 			if db.usage.ml then -- addon should auto start
