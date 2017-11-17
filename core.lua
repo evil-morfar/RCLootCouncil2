@@ -1754,10 +1754,8 @@ function RCLootCouncil:OnRaidEnter(arg)
 	if IsPartyLFG() then return end	-- We can't use in lfg/lfd so don't bother
 	-- Check if we can use in party
 	if not IsInRaid() and db.onlyUseInRaids then return end
-	if self.lootMethod ~= "master" and self:CanSetML() then
+	if self.lootMethod ~= "master" and self:CanSetML() and not self.handleLoot then
 		-- We don't need to ask the player for usage, so change loot method to master, and make the player ML
-		self.handleLoot = false -- Reset
-
 		if db.usage.leader then
 			self:StartHandleLoot()
 		-- We must ask the player for usage
