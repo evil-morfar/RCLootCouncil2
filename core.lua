@@ -146,6 +146,7 @@ function RCLootCouncil:OnInitialize()
 				state = "ask_ml", 	-- Current state
 			},
 			onlyUseInRaids = true,
+			allowHandleLootInPersonal = false,
 			ambiguate = false, -- Append realm names to players
 			autoAddRolls = false,
 			autoStart = false, -- start a session with all eligible items

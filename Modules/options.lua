@@ -451,8 +451,16 @@ function addon:OptionsTable()
 										end,
 										disabled = function() return self.db.profile.usage.never end,
 									},
-									onlyUseInRaids = {
+									allowHandleLootInPersonal = {
 										order = 4,
+										name = L["Allow RCLootCouncil to handle loot in personal loot"],
+										desc = L["allow_handle_loot_in_personal"],
+										type = "toggle",
+										width = "full",
+										disabled = function() return self.db.profile.usage.never end,
+									},
+									onlyUseInRaids = {
+										order = 5,
 										name = L["Only use in raids"],
 										desc = L["onlyUseInRaids_desc"],
 										type = "toggle",
