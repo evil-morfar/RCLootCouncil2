@@ -416,6 +416,11 @@ function addon:OptionsTable()
 								name = L["Usage Options"],
 								inline = true,
 								args = {
+									desc = {
+										name = L["usage_desc"],
+										order = 0.5,
+										type = "description",
+									},
 									usage = {
 										order = 1,
 										name = L["Usage"],
@@ -425,7 +430,7 @@ function addon:OptionsTable()
 										values = {
 											ml 			= L["Always use RCLootCouncil when I'm Master Looter"],
 											ask_ml		= L["Ask me every time I become Master Looter"],
-											never			= L["Never use RCLootCouncil"],
+											never		= L["never_ask_usage_desc"],
 										},
 										set = function(_, key)
 											for k in pairs(self.db.profile.usage) do
