@@ -1673,8 +1673,6 @@ function RCLootCouncil:OnEvent(event, ...)
 	end
 end
 
--- Do sth when the group admin changes (or party convert to raid/left group)
--- Avoid function returns in the middle of this function, otherwise the function logic is very chaotic.
 function RCLootCouncil:NewMLCheck()
 	local old_ml = self.masterLooter
 	local old_lm = self.lootMethod
@@ -1694,7 +1692,7 @@ function RCLootCouncil:NewMLCheck()
 		self.isCouncil = false
 		self:Debug("MasterLooter = ", self.masterLooter)
 		-- Check to see if we have recieved mldb within 15 secs, otherwise request it
-		self:ScheduleTimer("Timer", 15, "MLdb_check")
+		if not IsPartyLFG() then self:ScheduleTimer("Timer", 15, "MLdb_check") end
 	end
 
 	if not self.isMasterLooter then
@@ -1713,7 +1711,7 @@ function RCLootCouncil:NewMLCheck()
 		-- ML/loot method/party_or_raid have no change, dont change handle Loot
 	elseif not self.handleLoot then -- Try to auto enable loot handle if it is not already enabled
 		-- Auto enables/disable handle loot according to user setting
-		if not (IsInRaid() or (not db.onlyUseInRaids))) then  -- Note: User is still able to enable loot handling manually, even if these checks are not passed.
+		if IsInRaid() or (not db.onlyUseInRaids) then  -- Note: User is still able to enable loot handling manually, even if these checks are not passed.
 			if db.usage.ml then -- addon should auto start
 				self:StartHandleLoot()
 			-- We're ML and must ask the player for usage
