@@ -1878,7 +1878,7 @@ function RCLootCouncil:GetSplitedLinks(links)
 		while (startPos) do
 			if connected:sub(1, 2) == "|c" then
 				startPos, endPos = connected:find("|c.-|r", startPos)
-			elseif connect:sub(1, 2) == "|H" then
+			elseif connected:sub(1, 2) == "|H" then
 				startPos, endPos = connected:find("|H.-|h.-|h", startPos)
 			else
 				start = nil
