@@ -1708,7 +1708,7 @@ function RCLootCouncil:NewMLCheck()
 		self.handleLoot = false
 
 	elseif self:UnitIsUnit(old_ml, self.masterLooter) and old_lm == self.lootMethod then
-		-- ML/loot method/party_or_raid have no change, dont change handle Loot
+		-- ML and loot method have no change, dont change handle Loot
 	elseif not self.handleLoot then -- Try to auto enable loot handle if it is not already enabled
 		-- Auto enables/disable handle loot according to user setting
 		if IsInRaid() or (not db.onlyUseInRaids) then  -- Note: User is still able to enable loot handling manually, even if these checks are not passed.
@@ -2209,14 +2209,14 @@ function RCLootCouncil:GetClassColor(class)
 	end
 end
 
-function RCLootCouncil:GetUnitClassColoredName(name, alwaysShortName)
+function RCLootCouncil:GetUnitClassColoredName(name, forceShortName)
 	if self.candidates[name] and self.candidates[name].class then
 		local c = self:GetClassColor(self.candidates[name].class)
-		return "|cff"..self:RGBToHex(c.r,c.g,c.b)..(alwaysShortName and Ambiguate(name, "short") or self.Ambiguate(name)).."|r"
+		return "|cff"..self:RGBToHex(c.r,c.g,c.b)..(forceShortName and Ambiguate(name, "short") or self.Ambiguate(name)).."|r"
 	else
 		local englishClass = select(2, UnitClass(Ambiguate(name, "short")))
 		name = self:UnitName(name)
-		local displayName = alwaysShortName and Ambiguate(name, "short") or self.Ambiguate(name)
+		local displayName = forceShortName and Ambiguate(name, "short") or self.Ambiguate(name)
 		if not englishClass or not name then
 			return displayName
 		else
