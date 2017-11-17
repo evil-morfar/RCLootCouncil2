@@ -117,6 +117,7 @@ L["Candidate is selecting response, please wait"] = true
 L["Candidate removed"] = true
 L["Candidates that can't use the item"] = true
 L["Cannot autoaward:"] = true
+L["cant_handle_loot"] = "cannot handle looting if the loot method cannot be changed to master loot."
 L["Cannot give 'item' to 'player' due to Blizzard limitations. Gave it to you for distribution."] = "Cannot give %s to %s due to Blizzard limitations. Gave it to you for distribution."
 L["Change Award"] = true
 L["Change Response"] = true

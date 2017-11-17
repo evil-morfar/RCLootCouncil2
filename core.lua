@@ -1746,13 +1746,16 @@ function RCLootCouncil:NewMLCheck(checkUsageWithoutChange)
 	end
 end
 
-function RCLootCouncil:StartHandleLoot(switchToMasterLoot)
+function RCLootCouncil:StartHandleLoot()
 	if not self.isMasterLooter or IsPartyLFG() then return end -- Someone else has become ML or LFG
 																-- Dont check usage options such as db.onlyUseInRaids in this function
+	local lootMethod = GetLootMethod()
+	if lootMethod ~= "master" and not self:CanSetML() then
+		return addon:Print(L["cannot_handle_loot"])
+	end
 	self:Debug("Start handle loot.")
 	self.handleLoot = true
-
-	if switchToMasterLoot and self:CanSetML() and self.lootMethod ~= "master" then
+	if lootMethod ~= "master" then
 		SetLootMethod("master", self.Ambiguate(self.playerName)) -- activate ML
 		self:Print(L[" you are now the Master Looter and RCLootCouncil is now handling looting."])
 	else

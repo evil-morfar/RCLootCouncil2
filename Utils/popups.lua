@@ -18,9 +18,9 @@ LibDialog:Register("RCLOOTCOUNCIL_CONFIRM_USAGE", {
    end,
    buttons = {
       {	text = _G.YES,
-         on_click = function(self, switchToMasterLoot)
+         on_click = function()
             addon:DebugLog("Player confirmed usage")
-            addon:StartHandleLoot(switchToMasterLoot)
+            addon:StartHandleLoot()
          end,
       },
       {	text = _G.NO,
