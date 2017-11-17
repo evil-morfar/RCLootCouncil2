@@ -92,7 +92,6 @@ function RCLootCouncil:OnInitialize()
 	self.isMasterLooter = false -- Are we the ML?
 	self.masterLooter = ""  -- Name of the ML
 	self.lootMethod = GetLootMethod() or "personalloot"
-	self.isInRaid = IsInRaid()
 	self.handleLoot = false -- Does RC handle loot(Start session from loot window)?
 	self.isCouncil = false -- Are we in the Council?
 	self.enabled = true -- turn addon on/off
@@ -393,7 +392,6 @@ function RCLootCouncil:OnEnable()
 	self:RegisterEvent("PARTY_LOOT_METHOD_CHANGED", "OnEvent")
 	self:RegisterEvent("PARTY_LEADER_CHANGED", "OnEvent")
 	self:RegisterEvent("GROUP_LEFT", "OnEvent")
-	self:RegisterEvent("GROUP_ROSTER_UPDATE", "OnEvent")
 	self:RegisterEvent("GUILD_ROSTER_UPDATE","OnEvent")
 	self:RegisterEvent("RAID_INSTANCE_WELCOME","OnEvent")
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
@@ -1637,12 +1635,6 @@ function RCLootCouncil:OnEvent(event, ...)
 	elseif event == "GROUP_LEFT" then
 		self:Debug("Event:", event, ...)
 		self:NewMLCheck()
-	elseif event == "GROUP_ROSTER_UPDATE" then
-		if self.isInRaid ~= IsInRaid() then -- Party/Raid conversion
-			self:Debug("Party/Raid Conversion", "Event: ", event, ...)
-			self:NewMLCheck()
-			-- Set isInRaid in NewMLCheck self.isInRaid = IsInRaid()
-		end
 
 	elseif event == "RAID_INSTANCE_WELCOME" then
 		self:Debug("Event:", event, ...)
@@ -1686,10 +1678,8 @@ end
 function RCLootCouncil:NewMLCheck()
 	local old_ml = self.masterLooter
 	local old_lm = self.lootMethod
-	local old_isInRaid = self.isInRaid
 	self.isMasterLooter, self.masterLooter = self:GetML()
 	self.lootMethod = GetLootMethod()
-	self.isInRaid = IsInRaid()
 
 	if self.masterLooter and self.masterLooter ~= "" and strfind(self.masterLooter, "Unknown") then
 		-- ML might be unknown for some reason
@@ -1716,16 +1706,14 @@ function RCLootCouncil:NewMLCheck()
 	
 	if not self.isMasterLooter  -- Never handle loot without being "ML"
 		or IsPartyLFG()  -- Never handle loot in lfg/lfd
-		or self.lootMethod ~= "master" then
+		or self.lootMethod ~= "master" then -- Never actually handle loot when the loot method is not master
 		self.handleLoot = false
 
-	elseif self:UnitIsUnit(old_ml, self.masterLooter) and old_lm == self.lootMethod and old_isInRaid == self.isInRaid then
+	elseif self:UnitIsUnit(old_ml, self.masterLooter) and old_lm == self.lootMethod then
 		-- ML/loot method/party_or_raid have no change, dont change handle Loot
-	else
+	elseif not self.handleLoot then -- Try to auto enable loot handle if it is not already enabled
 		-- Auto enables/disable handle loot according to user setting
-		if (self.isInRaid or (not db.onlyUseInRaids))) then  -- Note: User is still able to enable loot handling manually, even if these checks are not passed.
-			self.handleLoot = false
-		elseif not self.handleLoot then -- Try to auto enable loot handle if it is not already enabled
+		if not (IsInRaid() or (not db.onlyUseInRaids))) then  -- Note: User is still able to enable loot handling manually, even if these checks are not passed.
 			if db.usage.ml then -- addon should auto start
 				self:StartHandleLoot()
 			-- We're ML and must ask the player for usage
