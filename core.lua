@@ -173,11 +173,11 @@ function RCLootCouncil:OnInitialize()
 			observe = false, -- observe mode on/off
 			silentAutoPass = false, -- Show autopass message
 			printResponse = false, -- Print response in chat
-			--neverML = false, -- Never use the addon as ML
+			--neverML = false, -- Never use the addon as MLs
 			minimizeInCombat = false,
 			iLvlDecimal = false,
 			showSpecIcon = false,
-			itemOwnerOnTop = true, -- Show item owner on top on voting frame?
+			itemOwnerOnTop = false, -- Show item owner on top on voting frame?
 			sortItems = true, -- Sort sessions by item type and item level
 
 			UI = { -- stores all ui information
