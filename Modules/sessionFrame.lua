@@ -72,10 +72,10 @@ function RCSessionFrame:ExtractData(data)
 			owner = v.owner,
 			cols = {
 				-- For the following columns, if DoCellUpdate is not set, it shows "value", otherwise see the code in its DoCellUpdate function.
-				{ value = k,	DoCellUpdate = self.SetCellDeleteBtn, },
-				{ value = v.texture or "",	DoCellUpdate = self.SetCellItemIcon},
+				{ DoCellUpdate = self.SetCellDeleteBtn, },
+				{ DoCellUpdate = self.SetCellItemIcon},
 				{ value = addon:GetItemLevelText(v.ilvl, v.token) or "", },
-				{ value = v.link and addon:GetItemNameFromLink(v.link) or "",	DoCellUpdate = self.SetCellText },
+				{ DoCellUpdate = self.SetCellText },
 			},
 		}
 	end
@@ -175,6 +175,13 @@ function RCSessionFrame:GetFrame()
 
 	local st = ST:CreateST(self.scrollCols, 5, ROW_HEIGHT, nil, f.content)
 	st.frame:SetPoint("TOPLEFT",f,"TOPLEFT",10,-20)
+	st:RegisterEvents({
+		["OnClick"] = function(_, _, _, _, row, realrow)
+			if not (row or realrow) then
+				return true
+			end
+		end
+	})
 	f:SetWidth(st.frame:GetWidth()+20)
 	f:SetHeight(305)
 	f.rows = {} -- the row data

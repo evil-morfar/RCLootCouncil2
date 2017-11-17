@@ -1,6 +1,6 @@
 ### v2.7.0
 ---
-* **General**
+**General**
 * Tier tokens now uses the minimum ilvl of the item the token will create as their ilvl.
    + This way all ilvl calculations will show more useful numbers.
    + Note: RCLootCouncil cannot track if these items will be Warforged/Titanforged. Only the guaranteed minimum ilvl is used.
@@ -8,31 +8,29 @@
 * Filter button's text now change color to indicate a filter is active.
 * During tests all chat outputs are now preceeded with "(test)".
 * Any chat output during solo tests are now replaced with chat prints.
-* Session Frame is now displayed if using "Auto Start" and the session isn't fully ready.
 * "/rc add" once again works without spaces between items.
 * A winner's note (if set) is now stored in the history, and included in TSV and CSV exports. (#306)
+* Various localization improvements have been added.
 
+**Master Loot**
+* **RCLootCouncil** can now be used without Master Loot enabled (#134, #137, #171).
+* The group leader can now always start a session ("/rc add [item]"), regardless of the loot method being used.
+   * *The only exception to this is in LFG groups.*
+   * This also requires everyone in the group to use v2.7 or newer.
+* Do note it's still not possible to automatically give out items without using Master Loot due to WoW restrictions.
 
-* **Localization**
-+ Armor Token is no longer displayed as "Junk" for non-English clients.
-+ Relics are now shown as "'type' Artifact Relic" instead of 'type'.
-   + Relic type is now also shown for non-English client.
-+ Trinkets are now shown as "Trinket" instead of "Trinket, Miscellaneous" for non-English client.
-
-
-* **Announcements**
+**Announcements**
 * Added a few more keyword replacements for announcement options.
 * It's now possible to edit the announcement string for individual items.
 * Have a look at the redesigned "Announcements" tab for the changes.
 
-
-* **Sessions**
+**Sessions**
 * Items are now sorted before starting a session.
    + The sorting algorithm follows: type/subtype > ilvl > bonuses > name
    + This can be disabled in case you prefer your sessions to follow the order items are dropped in.
+* Session Frame is now displayed if using "Auto Start" and the session isn't fully ready.
 
-
-* **Responses**
+**Responses**
 * Most response related information is now sent immediately when a session starts instead of after rolling.
    + E.g. the council can now see a candidates gear and ilvl before a candidate responds.
 * RCLootCouncil now sends the gear a candidate had equipped during the most recent encounter instead of the gear equipped when rolling.
@@ -41,17 +39,7 @@
 * You can now filter responses from candidates that can't use a given item.
 * It's now possible to ask a candidate to reroll only on items they can use.
 
-
-* **Rolls**
-* Added a new feature that involves raiders in the roll system, making it seem less "random" and more transparent.
-   * There's a new option in the ML's right click menu that starts a roll session.
-   * Everyone can then type "/roll", and that roll is then used in the voting frame.
-   * Only the first roll counts, so you can't cheat by rolling multiple times.
-* This is entirely optional, and the normal roll system still exists.
-* If the item being rolled for exists multiple times in a session, then the roll is added to all of the item's sessions.
-
-
-* **Loot Frame**
+**Loot Frame**
 * Multiple copies of the same item now stacks together so only one roll is required.
 * The loot frame will now trigger immediately when a session starts instead of after ~2 seconds delay.
 * Now shows items' type and subType alongside the ilvl.
@@ -59,6 +47,21 @@
 * The note button design received an update.
 * Added an option to print out responses as they're sent.
 * The default timeout is now 60 seconds.
+
+**Rolls**
+* Added a new feature that involves raiders in the roll system, making it seem less "random" and more transparent.
+   * There's a new option in the ML's right click menu that starts a roll session.
+   * Everyone can then type "/roll", and that roll is then used in the voting frame.
+   * Only the first roll counts, so you can't cheat by rolling multiple times.
+* This is entirely optional, and the normal roll system still exists.
+* If the item being rolled for exists multiple times in a session, then the roll is added to all of the item's sessions.
+
+**History Export/Import**
+* Removed all lag on import and export.
+* Huge exports now appear in a single line - you won't see a difference after pasting the data somewhere else though.
+* Minor exports is still fully shown.
+* When importing, only the first 2500 bytes are shown, but the data is still there.
+
 
 
 ###### Bugfixes
@@ -77,13 +80,16 @@
    + SpecID is now included in the candidate data.
    + New message on ```:BuildMLdb()```.
    + ```:ItemIsItem(link or itemID or itemName)``` properly compares two items.
+   + ```:CanSetML()``` returns true if and only if we can set the master looter. (The player is raid leader and in a guild group)
 
 * **Changed**
    + ~~```:CreateResponse()```~~ is consolidated into ```:SendResponse(...)``` which now creates and sends responses.
-   * ```:GetPlayersGear(link, equipLoc, gearsTable)``` adds an arg ```gearsTable```. If specified, use that table to fetch item data instead of from the player's current equipped gears.
+   * ```:GetPlayersGear(link, equipLoc, gearsTable)``` added arg ```gearsTable```. If specified, use that table to fetch item data instead of from the player's current equipped gears.
    * ```:GetArtifactRelics(link, relicsTable)``` added arg ```relicsTable```. Similar to above.
    * "Miscellaneous" and "Junk" is added to the ```subTypeLookup```.
    * The ```lootTable``` in core is now the same as in votingFrame. Use ```RCLootCouncil:GetLootTable()``` to fetch it, as the votingFrame one will be removed.
+   * ```ML:AddItem(...)``` is changed to ```ML:AddItem(item, bagged, slotIndex, entry)```.
+   * The argument of message ```RCMLAddItem``` is changed from item, session to item, entry
 
 
 *Huge shoutout to __Safetee__ for the majority of these changes!*
