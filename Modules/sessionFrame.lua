@@ -41,7 +41,7 @@ end
 
 function RCSessionFrame:Show(data, disableAwardLater)
 	if waitingToEndSessions then
-		return		-- Silently fails
+		return addon:Print(L["session_frame_wait_session_end"])
 	end
 
 	self.frame = self:GetFrame()
