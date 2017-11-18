@@ -30,6 +30,7 @@ L["accept_whispers_desc"] = "Enables players to whisper their current item(s) to
 L["Active"] = true
 L["active_desc"] = "Uncheck to disable RCLootCouncil. Useful if you're in a raid group, but not actually participating. Note: This resets on every logout."
 L["Add Item"] = true
+L["Adding 'items' from 'player' to the session frame"] = "Adding %s from %s to the session frame"
 L["Add Note"] = true
 L["Add ranks"] = true
 L["Add rolls"] = true
@@ -39,7 +40,7 @@ L["All items has been awarded and  the loot session concluded"] = true
 L["All items"] = true
 L["All items usable by the candidate"] = true
 L["allow_other_add_name"] = "Allow other group members to add items manually by '/rc add'"
-L["allow_other_add_desc"] = "Allow other group members to add items to your session frame by '/rc add'. They can only add tradable items they own, and they can only execute that command when you are not in combat."
+L["allow_other_add_desc"] = "Allow other group members to add items to your session frame by '/rc add'. They can only add tradable items they own whose quality is not below the loot threshold, and they can only execute that command when you are not in combat and the session is not running."
 L["Alt click Looting"] = true
 L["alt_click_looting_desc"] = "Enables Alt click Looting, i.e. start a looting session by holding down alt and (left)clicking an item."
 L["Alternatively, flag the loot as award later."] = true
@@ -143,6 +144,18 @@ L["chat_commands"] = [=[
 - winners   - Display the winners of awarded items looted to your inventory
 - sync      - Open the synchronizer view
 ]=]
+L["chat_commands_add_detailed_help"] = [=[
+
+For non-ML or (non-group leader, if there is no ML):
+  /rc add [item1, item2, item3,...]
+  Send the items to the ML or group leader's session frame, with some restrictions.
+
+For ML or (group leader, if no ML):
+  /rc add [item1, item2, item3, ...]
+  Add the items into the session frame
+  /rc add [owner] [item1, item2, item3, ...]
+  Add the items while specifying the owner of those items.
+]=]
 L["chat_commands_config"]  = "- config    - Open the options interface"
 L["chat_commands_council"] = "- council   - Open the council interface"
 L["chat_commands_history"] = "- history   - Open the Loot History (alt. 'h' or 'his')"
@@ -155,6 +168,14 @@ L["chat_commands_add"]     = "- add [item]- Add an item to the session frame"
 L["chat_commands_award"]   = "- award     - Start a session with items looted to your inventory"
 L["chat_commands_winners"] = "- winners   - Display the winners of awarded items looted to your inventory"
 L["chat_commands_sync"]    = "- sync      - Open the synchronizer view"
+L["chat_commands_add_sending"] = "Sending %s to the MasterLooter (or the Group Leader)'s session frame."
+L["chat_commands_add_success_non_ml"] = "Successfully add the items to the MasterLooter (or the Group Leader)'s session frame."
+L["chat_commands_add_items_not_eligible"] = "You can only add tradable item in your bag whose quality is not lower than the loot threshold."
+L["chat_commands_error_not_in_group"] = "You cannot use this command without a group."
+L["chat_commands_error_ml_disallow"] = "You cannot use this command because it is not allowed by the Master Looter (or the Group Leader, if no ML)."
+L["chat_commands_error_ml_combat"] = "You cannot use this command because the Master Looter (or the Group Leader, if no ML) is in combat."
+L["chat_commands_error_session_running"] = "You cannot use this command when a session is running."
+L["chat_commands_error_unknown"] = "Command fails for unknown reason."
 L["Check this to loot the items and distribute them later."] = true
 L["Check to append the realmname of a player from another realm"] = true
 L["Check to have all frames minimize when entering combat"] = true

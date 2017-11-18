@@ -526,20 +526,7 @@ function RCLootCouncil:ChatCommand(msg)
 		self:Print(L["whisper_help"])
 
 	elseif input == "add" or input == string.lower(_G.ADD) then
-		if not args[1] or args[1] == "" then return self:ChatCommand("help") end
-		if self.isMasterLooter then
-			local owner = nil
-			if not args[1]:find("|") then -- arg1 is the owner name
-				owner = args[1]
-				tremove(args, 1)
-			end
-			local links = self:GetSplitedLinks(args) -- Splited the item link to allow user to enter links without space
-			for _,v in ipairs(links) do
-				self:GetActiveModule("masterlooter"):AddUserItem(v, owner)
-			end
-		else
-			self:Print(L["You cannot use this command without being the Master Looter"])
-		end
+		self:ChatCommandRCAdd(args)
 
 	elseif input == "award" or input == L["award"] then
 		if self.isMasterLooter then
@@ -632,6 +619,68 @@ function RCLootCouncil:ChatCommand(msg)
 	end
 end
 
+-- "/rc add" command:
+-- For ML: /rc add [owner][item1, item2, item3...] or /rc add [item1, item2, item3]
+-- For others: /rc add [item1, item2, item3]
+function RCLootCouncil:ChatCommandRCAdd(args)
+	if not args[1] or args[1] == "" then
+		return self:Print(L["chat_commands_add_detailed_help"])
+	end
+
+	local owner = nil
+	if self.isMasterLooter then
+		if not args[1]:find("|") then -- arg1 is the owner name
+			owner = args[1]
+			tremove(args, 1)
+		end
+	end
+
+	local links = self:GetSplitedLinks(args) -- Splited the item link to allow user to enter links without space
+
+	if self.isMasterLooter then
+		for _,v in ipairs(links) do
+			self:GetActiveModule("masterlooter"):AddUserItem(v, owner)
+		end
+	elseif GetNumGroupMembers() == 0 or not self.masterLooter then
+		self:Print(L["chat_commands_error_not_in_group"])
+	elseif not self.mldb or not self.mldb.allowOtherAdd then
+		self:Print(L["chat_commands_error_ml_disallow"])
+	elseif UnitAffectingCombat(Ambiguate(self.masterLooter, "short"):lower()) then
+		self:Print(L["chat_commands_error_ml_combat"])
+	else
+		local itemsEligible = true
+		for _, link in ipairs(links) do
+			local rarity = select(3, GetItemInfo(link))
+			if not rarity or rarity < GetLootThreshold() then
+				itemsEligible = false
+				break
+			end
+
+			local itemFound = false
+			for i = 0, NUM_BAG_SLOTS do
+				for j = 1, GetContainerNumSlots(i) do
+					local _, _, _, _, _, _, link2 = GetContainerItemInfo(i, j)
+					if link2 and self:ItemIsItem(link, link2) 
+						and self:GetContainerItemTradeTimeRemaining(i, j) > 0 then
+						itemFound = true
+						break
+					end
+				end
+			end
+			if not itemFound then
+				itemsEligible = false
+				break
+			end
+		end
+
+		if not itemsEligible then
+			self:Print(L["chat_commands_add_items_not_eligible"])
+		else
+			self:SendCommand("group", "add", links)
+			self:Print(format(L["chat_commands_add_sending"], table.concat(links)))
+		end
+	end
+end
 -- Send the msg to the channel if it is valid. Otherwise just print the messsage.
 function RCLootCouncil:SendAnnouncement(msg, channel)
 	if channel == "NONE" then return end
@@ -912,6 +961,19 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 				self.Sync:SyncAckReceived(unpack(data))
 			elseif command == "syncNack" then
 				self.Sync:SyncNackReceived(unpack(data))
+			elseif command == "addAck" and self:UnitIsUnit(sender, self.masterLooter) then -- "/rc add" acknowlegdement from ML
+				local success, cause = unpack(data)
+				if success then
+					self:Print(L["chat_commands_add_success_non_ml"])
+				elseif cause == "combat" then
+					self:Print(L["chat_commands_error_ml_combat"])
+				elseif cause == "running" then
+					self:Print(L["chat_commands_error_session_running"])
+				elseif cause == "disallow" then
+					self:Print(L["chat_commands_error_ml_disallow"])
+				else
+					self:Print(L["chat_commands_error_unknown"])
+				end
 			end
 		else
 			-- Most likely pre 2.0 command
@@ -1988,6 +2050,7 @@ end
 -- Although log shows item in the loot actually has no uniqueId in Legion, but just in case Blizzard changes it in the future.
 -- @return true if two items are the same item
 function RCLootCouncil:ItemIsItem(item1, item2)
+	if not item1 or not item2 then return false end
 	if type(item1) ~= "string" or type(item2) ~= "string" then return item1 == item2 end
 	local pattern = "|Hitem:(%d*):(%d*):(%d*):(%d*):(%d*):(%d*):(%d*):%d*:%d*:%d*"
 	local replacement = "|Hitem:%1:%2:%3:%4:%5:%6:%7:::" -- Compare link with uniqueId, linkLevel and SpecID removed

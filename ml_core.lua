@@ -563,6 +563,7 @@ function RCLootCouncilML:BuildMLdb()
 		timeout			= db.timeout,
 		tierButtonsEnabled = db.tierButtonsEnabled,
 		relicButtonsEnabled = db.relicButtonsEnabled,
+		allowOtherAdd = db.allowOtherAdd,
 	}
 
 	addon:SendMessage("RCMLBuildMLdb", MLdb)
@@ -652,6 +653,21 @@ function RCLootCouncilML:OnCommReceived(prefix, serializedMsg, distri, sender)
 			elseif command == "lootTable" and addon:UnitIsUnit(sender, addon.playerName) then
 				-- Start a timer to set response as offline/not installed unless we receive an ack
 				self:ScheduleTimer("Timer", 10, "LootSend")
+			elseif command == "add" then
+				if InCombatLockdown() then
+					return addon:SendCommand(sender, "addAck", false, "combat")
+				elseif not db.allowOtherAdd then
+					return addon:SendCommand(sender, "addAck", false, "disallow")
+				elseif self.running then
+					return addon:SendCommand(sender, "addAck", false, "running")
+				else
+					local links = unpack(data)
+					for _, link in ipairs(links) do
+						self:AddUserItem(link, sender)
+					end
+					addon:Print(format(L["Adding 'items' from 'player' to the session frame"], table.concat(links), sender))
+					return addon:SendCommand(sender, "addAck", true)
+				end
 			end
 		else
 			addon:Debug("Error in deserializing ML comm: ", command)

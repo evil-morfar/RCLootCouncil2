@@ -520,6 +520,7 @@ function addon:OptionsTable()
 										name = L["allow_other_add_name"],
 										desc = L["allow_other_add_desc"],
 										type = "toggle",
+										width = "full",
 									},
 								},
 							},
