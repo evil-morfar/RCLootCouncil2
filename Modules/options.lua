@@ -510,6 +510,17 @@ function addon:OptionsTable()
 										type = "toggle",
 										disabled = function() return not self.db.profile.autoLoot end,
 									},
+									spacer2 = {
+										order = 8,
+										type = "header",
+										name = "",
+									},
+									allowOtherAdd = {
+										order = 9,
+										name = L["allow_other_add_name"],
+										desc = L["allow_other_add_desc"],
+										type = "toggle",
+									},
 								},
 							},
 							voteOptions = {

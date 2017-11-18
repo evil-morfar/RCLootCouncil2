@@ -157,6 +157,7 @@ function RCLootCouncil:OnInitialize()
 			autoLoot = true, -- Auto loot equippable items
 			autolootEverything = true,
 			autolootBoE = true,
+			allowOtherAdd = true,
 			autoOpen = true, -- auto open the voting frame
 			autoClose = false, -- Auto close voting frame on session end
 			autoPassBoE = true,
