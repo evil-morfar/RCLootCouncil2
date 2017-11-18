@@ -183,6 +183,11 @@ function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
 				local s, winner = unpack(data)
 				if not lootTable[s] then return end -- We might not have lootTable - e.g. if we just reloaded
 				lootTable[s].awarded = winner
+				for k, v in ipairs(lootTable) do
+					if addon:ItemIsItem(v.link, lootTable[session].link) then
+						self:SetCandidateData(k, winner, "response", "AWARDED")
+					end
+				end
 				if addon.isMasterLooter and session ~= #lootTable then -- ML should move to the next item on award
 					self:SwitchSession(session + 1)
 				else
