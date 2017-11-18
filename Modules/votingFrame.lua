@@ -466,6 +466,15 @@ function RCVotingFrame:Update()
 	end
 end
 
+function RCVotingFrame:SortByColumn(colName, dir)
+	local j = 1
+	for i in ipairs(self.frame.st.cols) do
+		self.frame.st.cols[i].sort = nil
+		if self.frame.st.cols[i].colName == colName then j = i end
+	end
+	self.frame.st.cols[j].sort = dir or "asc"
+end
+
 function RCVotingFrame:SwitchSession(s)
 	addon:Debug("SwitchSession", s)
 	addon:SendMessage("RCSessionChangedPre", s)
@@ -486,12 +495,7 @@ function RCVotingFrame:SwitchSession(s)
 	sessionButtons[old] = self:UpdateSessionButton(old, lootTable[old].texture, lootTable[old].link, lootTable[old].awarded)
 
 	-- Since we switched sessions, we want to sort by response
-	local j = 1
-	for i in ipairs(self.frame.st.cols) do
-		self.frame.st.cols[i].sort = nil
-		if self.frame.st.cols[i].colName == "response" then j = i end
-	end
-	self.frame.st.cols[j].sort = "asc"
+	self:SortByColumn("response")
 	FauxScrollFrame_OnVerticalScroll(self.frame.st.scrollframe, 0, self.frame.st.rowHeight, function() self.frame.st:Refresh() end) -- Reset scrolling to 0
 	self:Update()
 	self:UpdatePeopleToVote()
@@ -1201,11 +1205,11 @@ do
 			},{ -- 10 Add rolls
 				text = L["Add rolls"],
 				notCheckable = true,
-				func = function() RCVotingFrame:DoRandomRolls(session) end,
+				func = function() RCVotingFrame:DoRandomRolls(session); RCVotingFrame:SortByColumn("roll"); end,
 			},{ -- 11 Request rolls from raid members
 				text = L["Request rolls from raid members"],
 				notCheckable = true,
-				func = function() RCVotingFrame:StartManualRoll() end,
+				func = function() RCVotingFrame:StartManualRoll(); RCVotingFrame:SortByColumn("roll"); end,
 			},
 		},
 		{ -- Level 2
