@@ -148,7 +148,7 @@ L["chat_commands_add_detailed_help"] = [=[
 
 For non-ML or (non-group leader, if there is no ML):
   /rc add [item1, item2, item3,...]
-  Send the items to the ML or group leader's session frame, with some restrictions.
+  Send the items to the ML or group leader's session frame. only the tradable items he owns can be added.
 
 For ML or (group leader, if no ML):
   /rc add [item1, item2, item3, ...]
@@ -164,7 +164,7 @@ L["chat_commands_open"]    = "- open      - Open the voting frame"
 L["chat_commands_reset"]   = "- reset     - Resets the addon's frames' positions"
 L["chat_commands_test"]    = "- test (#)  - Emulate a loot session with # items, 1 if omitted"
 L["chat_commands_whisper"] = "- whisper   - Displays help to whisper commands"
-L["chat_commands_add"]     = "- add [item]- Add an item to the session frame"
+L["chat_commands_add"]     = "- add [item]- Add an item to the session frame. Everyone can run this command."
 L["chat_commands_award"]   = "- award     - Start a session with items looted to your inventory"
 L["chat_commands_winners"] = "- winners   - Display the winners of awarded items looted to your inventory"
 L["chat_commands_sync"]    = "- sync      - Open the synchronizer view"
