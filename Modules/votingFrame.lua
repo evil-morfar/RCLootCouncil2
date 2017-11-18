@@ -1237,6 +1237,7 @@ do
 								token = v.token,
 								relic = v.relic,
 								classes = v.classes,
+								autopass = false, -- Force no autopass
 							})
 							addon:SendCommand("group", "change_response", k, candidateName, "WAIT")
 						end
@@ -1261,6 +1262,7 @@ do
 								token = v.token,
 								relic = v.relic,
 								classes = v.classes,
+								autopass = false, -- Force no autopass
 							})
 							addon:SendCommand("group", "change_response", k, candidateName, "WAIT")
 						end

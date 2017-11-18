@@ -852,6 +852,23 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 				self:Print(format(L["'player' has asked you to reroll"], self.Ambiguate(sender)))
 				local table = unpack(data)
 				self:PrepareLootTable(table)
+				for _, v in ipairs(table) do
+					local response = nil
+					if db.autoPass and v.autopass ~= false then -- false indicates ML doesn't want us to autopass this item
+						if (v.boe and db.autoPassBoE) or not v.boe then
+							if self:AutoPassCheck(v.link, v.equipLoc, v.typeID, v.subTypeID, v.classes, v.token, v.relic) then
+								self:Debug("Autopassed on: ", v.link)
+								if not db.silentAutoPass then self:Print(format(L["Autopassed on 'item'"], v.link)) end
+								v.autopass = true
+								-- target, session, response, isTier, isRelic, note, link, ilvl, equipLoc, relicType, sendAvgIlvl, sendSpecID
+								self:SendResponse("group", v.session, "AUTOPASS", nil, nil, nil, v.link, v.ilvl, v.equipLoc, v.relic, true, true)
+							end
+						else
+							self:Debug("Didn't autopass on: "..v.link.." because it's BoE!")
+						end
+					end
+				end
+
 				self:CallModule("lootframe")
 				self:GetActiveModule("lootframe"):ReRoll(table)
 
