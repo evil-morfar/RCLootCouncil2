@@ -169,6 +169,15 @@ function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
 				self:SetCandidateData(ses, name, "response", response)
 				self:Update()
 
+			elseif command == "change_response_all" and addon:UnitIsUnit(sender, addon.masterLooter) then
+				local ses, response, isTier, isRelic = unpack(data)
+				for name, _ in pairs(lootTable[session].candidates) do
+					self:SetCandidateData(ses, name, "isTier", isTier)
+					self:SetCandidateData(ses, name, "isRelic", isRelic)
+					self:SetCandidateData(ses, name, "response", response)
+				end
+				self:Update()			
+
 			elseif command == "lootAck" then
 				local name = unpack(data)
 				for i = 1, #lootTable do
@@ -1206,6 +1215,29 @@ do
 				text = L["Request rolls from raid members"],
 				notCheckable = true,
 				func = function() RCVotingFrame:StartManualRoll() end,
+			},{ -- 12 Reannounce to everyone
+				text = L["Reannounce to everyone"],
+				notCheckable = true,
+				func = function()
+					local t = {}
+					for k,v in ipairs(lootTable) do
+						if (k == session or addon:ItemIsItem(v.link, lootTable[session].link)) and not v.awarded then
+							tinsert(t, {
+								name = v.name,
+								link = v.link,
+								ilvl = v.ilvl,
+								texture = v.texture,
+								session = k,
+								equipLoc = v.equipLoc,
+								token = v.token,
+								relic = v.relic,
+								classes = v.classes,
+							})
+							addon:SendCommand("group", "change_response_all", k, "WAIT")
+						end
+					end
+					addon:SendCommand("group", "reroll", t)
+				end,
 			},
 		},
 		{ -- Level 2
