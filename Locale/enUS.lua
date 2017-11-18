@@ -140,16 +140,18 @@ L["chat_commands"] = [=[
 - test (#)  - Emulate a loot session with # items, 1 if omitted
 - whisper   - Displays help to whisper commands
 - add [item]- Add an item to the session frame
+- qadd      - Equivalent to \"add [the last tradable item not below the loot threshold your bag got since the last encounter]\""
 - award     - Start a session with items looted to your inventory
 - winners   - Display the winners of awarded items looted to your inventory
 - sync      - Open the synchronizer view
 ]=]
-L["chat_commands_add_detailed_help"] = [=[
-
+L["chat_commands_add_detailed_help_non_ml"] = [=[
 For non-ML or (non-group leader, if there is no ML):
   /rc add [item1, item2, item3,...]
-  Send the items to the ML or group leader's session frame. only the tradable items he owns can be added.
-
+  Send the items to the ML or group leader's session frame. You can also use the shortcut command "/rc qadd" to avoid linking the item, 
+  which is equivalent to "/rc add" the last tradable item not below the loot threshold your bag got since the last encounter.
+]=]
+L["chat_commands_add_detailed_help_ml"] = [=[
 For ML or (group leader, if no ML):
   /rc add [item1, item2, item3, ...]
   Add the items into the session frame
@@ -165,6 +167,7 @@ L["chat_commands_reset"]   = "- reset     - Resets the addon's frames' positions
 L["chat_commands_test"]    = "- test (#)  - Emulate a loot session with # items, 1 if omitted"
 L["chat_commands_whisper"] = "- whisper   - Displays help to whisper commands"
 L["chat_commands_add"]     = "- add [item]- Add an item to the session frame. Everyone can run this command."
+L["chat_commands_qadd"]    = "- qadd      - Equivalent to \"add [the last tradable item not below the loot threshold your bag got since the last encounter]\""
 L["chat_commands_award"]   = "- award     - Start a session with items looted to your inventory"
 L["chat_commands_winners"] = "- winners   - Display the winners of awarded items looted to your inventory"
 L["chat_commands_sync"]    = "- sync      - Open the synchronizer view"
@@ -176,6 +179,7 @@ L["chat_commands_error_ml_disallow"] = "You cannot use this command because it i
 L["chat_commands_error_ml_combat"] = "You cannot use this command because the Master Looter (or the Group Leader, if no ML) is in combat."
 L["chat_commands_error_session_running"] = "You cannot use this command when a session is running."
 L["chat_commands_error_unknown"] = "Command fails for unknown reason."
+L["chat_commands_qadd_no_recent_addable_item"] = "Your bag didn't receive any new tradable item that is not below loot threshold since the last encounter."
 L["Check this to loot the items and distribute them later."] = true
 L["Check to append the realmname of a player from another realm"] = true
 L["Check to have all frames minimize when entering combat"] = true

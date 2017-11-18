@@ -99,6 +99,7 @@ function RCLootCouncil:OnInitialize()
 	self.recentReconnectRequest = false
 	self.currentInstanceName = ""
 	self.bossName = nil -- Updates after each encounter
+	self.recentAddableItem = nil -- The last tradeable item not below the loot threshold the player gets since the last encounter ends
 
 	self.verCheckDisplayed = false -- Have we shown a "out-of-date"?
 
@@ -400,6 +401,7 @@ function RCLootCouncil:OnEnable()
 	self:RegisterEvent("PLAYER_REGEN_ENABLED", "LeaveCombat")
 	self:RegisterEvent("ENCOUNTER_START", "OnEvent")
 	self:RegisterEvent("ENCOUNTER_END", 	"OnEvent")
+	self:RegisterEvent("CHAT_MSG_LOOT", "OnEvent")
 	--self:RegisterEvent("GROUP_ROSTER_UPDATE", "Debug", "event")
 
 	if IsInGuild() then
@@ -528,6 +530,14 @@ function RCLootCouncil:ChatCommand(msg)
 	elseif input == "add" or input == string.lower(_G.ADD) then
 		self:ChatCommandRCAdd(args)
 
+	elseif input == "qadd" then
+		if not self.recentAddableItem then
+			self:Print(L["chat_commands_qadd_no_recent_addable_item"])
+		else
+			self:Print("/rc add "..self.recentAddableItem)
+			self:ChatCommandRCAdd({self.recentAddableItem})
+		end
+
 	elseif input == "award" or input == L["award"] then
 		if self.isMasterLooter then
 			self:GetActiveModule("masterlooter"):SessionFromBags()
@@ -623,8 +633,12 @@ end
 -- For ML: /rc add [owner][item1, item2, item3...] or /rc add [item1, item2, item3]
 -- For others: /rc add [item1, item2, item3]
 function RCLootCouncil:ChatCommandRCAdd(args)
-	if not args[1] or args[1] == "" then
-		return self:Print(L["chat_commands_add_detailed_help"])
+	if self.isMasterLooter then
+		if not args[1] or args[1] == "" then
+			return self:Print(L["chat_commands_add_detailed_help_ml"])
+		end
+	elseif not args[1] or not args[1]:find("|H") then
+		return self:Print(L["chat_commands_add_detailed_help_non_ml"])
 	end
 
 	local owner = nil
@@ -681,6 +695,22 @@ function RCLootCouncil:ChatCommandRCAdd(args)
 		end
 	end
 end
+
+-- Update the recentAddableItem by link, if it is in bag and tradable.
+function RCLootCouncil:UpdateRecentAddableItem(link)
+	for i = 0, NUM_BAG_SLOTS do
+		for j = 1, GetContainerNumSlots(i) do
+			local _, _, _, _, _, _, link2 = GetContainerItemInfo(i, j)
+			if link2 and self:ItemIsItem(link, link2) 
+				and self:GetContainerItemTradeTimeRemaining(i, j) > 0 then
+				print(3, link)
+				self.recentAddableItem = link
+				return
+			end
+		end
+	end
+end
+
 -- Send the msg to the channel if it is valid. Otherwise just print the messsage.
 function RCLootCouncil:SendAnnouncement(msg, channel)
 	if channel == "NONE" then return end
@@ -1698,6 +1728,7 @@ function RCLootCouncil:OnEvent(event, ...)
 	elseif event == "GROUP_LEFT" then
 		self:Debug("Event:", event, ...)
 		self:NewMLCheck()
+		self.recentAddableItem = nil	
 
 	elseif event == "RAID_INSTANCE_WELCOME" then
 		self:Debug("Event:", event, ...)
@@ -1733,6 +1764,17 @@ function RCLootCouncil:OnEvent(event, ...)
 	elseif event == "ENCOUNTER_END" then
 		self:DebugLog("Event:", event, ...)
 		self.bossName = select(2, ...) -- Extract encounter name
+		self.recentAddableItem = nil
+	elseif event == "CHAT_MSG_LOOT" then
+		local msg = ...
+		local pattern = LOOT_ITEM_SELF:gsub('%%s', '(.+)')
+		local link = msg:match(pattern)
+		print(1, link)
+		if link and select(3, GetItemInfo(link)) >= GetLootThreshold() then
+			-- There is some time between loot msg and the item pushed into the bag.
+			print(2, link)
+			self:ScheduleTimer("UpdateRecentAddableItem", 0.5, link)
+		end
 	end
 end
 
@@ -2069,7 +2111,7 @@ function RCLootCouncil:GetSplitedLinks(links)
 			elseif connected:sub(1, 2) == "|H" then
 				startPos, endPos = connected:find("|H.-|h.-|h", startPos)
 			else
-				start = nil
+				startPos = nil
 			end
 			if startPos then
 				tinsert(result, connected:sub(startPos, endPos))
