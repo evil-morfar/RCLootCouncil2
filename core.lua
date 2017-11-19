@@ -739,26 +739,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 
 					self:SendCommand("group", "lootAck", self.playerName) -- send ack
 
-					-- Send the information of current equipped gear immediately when we receive the loot table.
-					-- The actual response/note are left unsent if not autopassed.
-					for ses, v in ipairs(lootTable) do
-						local response = nil
-						if db.autoPass then
-							if (v.boe and db.autoPassBoE) or not v.boe then
-								if self:AutoPassCheck(v.link, v.equipLoc, v.typeID, v.subTypeID, v.classes, v.token, v.relic) then
-									self:Debug("Autopassed on: ", v.link)
-									if not db.silentAutoPass then self:Print(format(L["Autopassed on 'item'"], v.link)) end
-									lootTable[ses].autopass = true
-									response = "AUTOPASS"
-								end
-							else
-								self:Debug("Didn't autopass on: "..v.link.." because it's BoE!")
-							end
-						end
-
-						-- target, session, response, isTier, isRelic, note, link, ilvl, equipLoc, relicType, sendAvgIlvl, sendSpecID
-						self:SendResponse("group", ses, response, nil, nil, nil, v.link, v.ilvl, v.equipLoc, v.relic, true, true)
-					end
+					self:AutoResponse(lootTable)
 
 					-- Show  the LootFrame
 					self:CallModule("lootframe")
@@ -852,22 +833,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 				self:Print(format(L["'player' has asked you to reroll"], self.Ambiguate(sender)))
 				local table = unpack(data)
 				self:PrepareLootTable(table)
-				for _, v in ipairs(table) do
-					local response = nil
-					if db.autoPass and v.autopass ~= false then -- false indicates ML doesn't want us to autopass this item
-						if (v.boe and db.autoPassBoE) or not v.boe then
-							if self:AutoPassCheck(v.link, v.equipLoc, v.typeID, v.subTypeID, v.classes, v.token, v.relic) then
-								self:Debug("Autopassed on: ", v.link)
-								if not db.silentAutoPass then self:Print(format(L["Autopassed on 'item'"], v.link)) end
-								v.autopass = true
-								-- target, session, response, isTier, isRelic, note, link, ilvl, equipLoc, relicType, sendAvgIlvl, sendSpecID
-								self:SendResponse("group", v.session, "AUTOPASS", nil, nil, nil, v.link, v.ilvl, v.equipLoc, v.relic, true, true)
-							end
-						else
-							self:Debug("Didn't autopass on: "..v.link.." because it's BoE!")
-						end
-					end
-				end
+				self:AutoResponse(table)
 
 				self:CallModule("lootframe")
 				self:GetActiveModule("lootframe"):ReRoll(table)
@@ -1358,6 +1324,29 @@ function RCLootCouncil:PrepareLootTable(lootTable)
 				v.classes = self:GetItemClassesAllowedFlag(v.link) -- will return 0xffffffff(usable by all classes) if the item is not cached, but that's fine.
 			end
 		end
+	end
+end
+
+-- Send the information of current equipped gear immediately when we receive the loot table.
+-- The actual response/note are left unsent if not autopassed.
+function RCLootCouncil:AutoResponse(table)
+	for k, v in ipairs(table) do
+		local response = nil
+		local session = v.session or k
+		if db.autoPass then
+			if (v.boe and db.autoPassBoE) or not v.boe then
+				if self:AutoPassCheck(v.link, v.equipLoc, v.typeID, v.subTypeID, v.classes, v.token, v.relic) then
+					self:Debug("Autopassed on: ", v.link)
+					if not db.silentAutoPass then self:Print(format(L["Autopassed on 'item'"], v.link)) end
+					v.autopass = true
+					response = "AUTOPASS"
+				end
+			else
+				self:Debug("Didn't autopass on: "..v.link.." because it's BoE!")
+			end
+		end
+		-- target, session, response, isTier, isRelic, note, link, ilvl, equipLoc, relicType, sendAvgIlvl, sendSpecID
+		self:SendResponse("group", session, response, nil, nil, nil, v.link, v.ilvl, v.equipLoc, v.relic, true, true)
 	end
 end
 

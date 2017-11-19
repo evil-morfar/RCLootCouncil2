@@ -1128,6 +1128,21 @@ function RCVotingFrame:GetAwardPopupData(session, name, data, reason)
 	}
 end
 
+function RCVotingFrame:GetRerollData(session, isRoll)
+	local v = lootTable[session]
+	return {
+		name = v.name,
+		link = v.link,
+		ilvl = v.ilvl,
+		texture = v.texture,
+		session = session,
+		equipLoc = v.equipLoc,
+		token = v.token,
+		relic = v.relic,
+		classes = v.classes,
+		isRoll = isRoll,
+	}
+end
 ----------------------------------------------------
 --	Dropdowns.
 -- @section Dropdowns.
@@ -1193,23 +1208,13 @@ do
 				hasArrow = true,
 				notCheckable = true,
 			},{ -- 9 Reannounce to everyone
-				text = L["Reannounce to everyone"],
+				text = L["Reannounce this item to everyone"],
 				notCheckable = true,
 				func = function()
 					local t = {}
 					for k,v in ipairs(lootTable) do
 						if addon:ItemIsItem(v.link, lootTable[session].link) then
-							tinsert(t, {
-								name = v.name,
-								link = v.link,
-								ilvl = v.ilvl,
-								texture = v.texture,
-								session = k,
-								equipLoc = v.equipLoc,
-								token = v.token,
-								relic = v.relic,
-								classes = v.classes,
-							})
+							tinsert(t, RCVotingFrame:GetRerollData(k)) -- autopass enabled.
 							for name, _ in pairs(v.candidates) do
 								addon:SendCommand("group", "change_response", k, name, "WAIT")
 							end
@@ -1252,18 +1257,7 @@ do
 					local t = {}
 					for k,v in ipairs(lootTable) do
 						if addon:ItemIsItem(v.link, lootTable[session].link) then
-							tinsert(t, {
-								name = v.name,
-								link = v.link,
-								ilvl = v.ilvl,
-								texture = v.texture,
-								session = k,
-								equipLoc = v.equipLoc,
-								token = v.token,
-								relic = v.relic,
-								classes = v.classes,
-								autopass = false, -- Force no autopass
-							})
+							tinsert(t, RCVotingFrame:GetRerollData(k))
 							addon:SendCommand("group", "change_response", k, candidateName, "WAIT")
 						end
 					end
@@ -1276,19 +1270,8 @@ do
 				func = function(candidateName)
 					local t = {}
 					for k,v in ipairs(lootTable) do
-							tinsert(t, {
-								name = v.name,
-								link = v.link,
-								ilvl = v.ilvl,
-								texture = v.texture,
-								session = k,
-								equipLoc = v.equipLoc,
-								token = v.token,
-								relic = v.relic,
-								classes = v.classes,
-								autopass = false, -- Force no autopass
-							})
-							addon:SendCommand("group", "change_response", k, candidateName, "WAIT")
+						tinsert(t, RCVotingFrame:GetRerollData(k))
+						addon:SendCommand("group", "change_response", k, candidateName, "WAIT")
 					end
 					addon:SendCommand(candidateName, "reroll", t)
 				end,
@@ -1301,17 +1284,7 @@ do
 					for k,v in ipairs(lootTable) do
 						if not addon:AutoPassCheck(v.link, v.equipLoc, v.typeID, v.subTypeID, v.classes, v.token, v.relic,
 																	lootTable[session].candidates[candidateName].class) then
-							tinsert(t, {
-								name = v.name,
-								link = v.link,
-								ilvl = v.ilvl,
-								texture = v.texture,
-								session = k,
-								equipLoc = v.equipLoc,
-								token = v.token,
-								relic = v.relic,
-								classes = v.classes,
-							})
+							tinsert(t, RCVotingFrame:GetRerollData(k))
 							addon:SendCommand("group", "change_response", k, candidateName, "WAIT")
 						end
 					end
