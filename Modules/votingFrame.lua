@@ -370,7 +370,7 @@ function RCVotingFrame:DoAllRandomRolls()
 	local sessionsDone = {}
 
 	for ses, t in ipairs(lootTable) do
-		if not sessionsDone[ses] then
+		if not sessionsDone[ses] and not t.isRoll then -- Don't use auto rolls on session that requesting rolls from raid members.
 			local table = self:GenerateNoRepeatRollTable(ses)
 			for k, v in ipairs(lootTable) do
 				if addon:ItemIsItem(t.link, v.link) then
