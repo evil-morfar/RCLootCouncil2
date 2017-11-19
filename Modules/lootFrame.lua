@@ -86,6 +86,7 @@ function LootFrame:OnDisable()
 	end
 	items = {}
 	numRolled = 0
+	self:CancelAllTimers()
 end
 
 function LootFrame:Show()
