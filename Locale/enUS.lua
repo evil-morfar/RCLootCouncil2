@@ -240,6 +240,7 @@ L["leaderUsage_desc"] = "Use the same setting when entering an instance as the l
 L["Length"] = true
 L["Log"] = true
 L["log_desc"] = "Enables logging in Loot History."
+L["'player' has rolled 'reason' - 'roll' for: 'item'"] = "%s has rolled %s - %d for: %s"
 L["Loot announced, waiting for answer"] = true
 L["Loot Everything"] = true
 L["Loot History"] = true
