@@ -76,7 +76,7 @@ end
 
 function RCVotingFrame:OnDisable()
 	self:Hide()
-	--self.frame:SetParent(nil)
+	--self.frame:SetParent(nil) -- Comment out because memory leak otherwise.
 	--self.frame = nil
 	wipe(lootTable)
 	active = false
