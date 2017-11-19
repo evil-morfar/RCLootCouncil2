@@ -1207,17 +1207,15 @@ do
 				notCheckable = true,
 				func = function()
 					local t = {}
-					local sessions = {}
 					for k,v in ipairs(lootTable) do
 						if addon:ItemIsItem(v.link, lootTable[session].link) then
 							tinsert(t, RCVotingFrame:GetRerollData(k))
 							for name, _ in pairs(v.candidates) do
 								addon:SendCommand("group", "change_response", k, name, "WAIT")
 							end
-							tinsert(sessions, k)
 						end
 					end
-					addon:GetActiveModule("masterlooter"):AnnounceItems(sessions)
+					addon:GetActiveModule("masterlooter"):AnnounceItems(t)
 					addon:SendCommand("group", "reroll", t)
 				end,
 			},{ -- 10 Reannounce to everyone and request rolls
@@ -1225,7 +1223,6 @@ do
 				notCheckable = true,
 				func = function()
 					local t = {}
-					local sessions = {}
 					for k,v in ipairs(lootTable) do
 						local rolls = {}
 						if addon:ItemIsItem(v.link, lootTable[session].link) then
@@ -1234,11 +1231,10 @@ do
 								addon:SendCommand("group", "change_response", k, name, "WAIT")
 								rolls[name] = ""
 							end
-							tinsert(sessions, k)
 							addon:SendCommand("group", "rolls", k, rolls)
 						end
 					end
-					addon:GetActiveModule("masterlooter"):AnnounceItems(sessions, true)
+					addon:GetActiveModule("masterlooter"):AnnounceItems(t)
 					addon:SendCommand("group", "reroll", t)
 				end,
 			},{ -- 11 Request rolls from anyone whose roll is %s
