@@ -76,8 +76,8 @@ end
 
 function RCVotingFrame:OnDisable()
 	self:Hide()
-	self.frame:SetParent(nil)
-	self.frame = nil
+	--self.frame:SetParent(nil)
+	--self.frame = nil
 	wipe(lootTable)
 	active = false
 	session = 1
