@@ -1212,14 +1212,17 @@ do
 				notCheckable = true,
 				func = function()
 					local t = {}
+					local sessions = {}
 					for k,v in ipairs(lootTable) do
 						if addon:ItemIsItem(v.link, lootTable[session].link) then
 							tinsert(t, RCVotingFrame:GetRerollData(k)) -- autopass enabled.
 							for name, _ in pairs(v.candidates) do
 								addon:SendCommand("group", "change_response", k, name, "WAIT")
 							end
+							tinsert(sessions, k)
 						end
 					end
+					addon:GetActiveModule("masterlooter"):AnnounceItems(sessions)
 					addon:SendCommand("group", "reroll", t)
 				end,
 			},{ -- 10 Remove from consideration
