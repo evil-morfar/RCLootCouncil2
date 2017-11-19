@@ -97,6 +97,7 @@ end
 
 function RCSessionFrame:Update()
 	self.frame.toggle:SetChecked(awardLater)
+	self.frame.rollToggle:SetChecked(requestRollsAll)
 end
 
 function RCSessionFrame:DeleteItem(index)

@@ -139,6 +139,7 @@ function LootFrame:Response(item, button, roll)
 			": "..addon:GetResponseText(button, isTier, isRelic)..(roll and (", ".._G.ROLL..":"..roll) or ""))
 	end
 	numRolled = numRolled + 1
+	self:Update()
 end
 
 function LootFrame:OnRoll(entry, button)
@@ -563,12 +564,8 @@ function LootFrame:CHAT_MSG_SYSTEM(event, msg)
 		tremove(responseWaitingRollResultQueue, 1)
 		self:CancelTimer(entryInQueue.timer)
 		local item = entryInQueue.item
-		local isTier = item.isTier and addon.mldb.tierButtonsEnabled
-		local isRelic = item.isRelic and addon.mldb.relicButtonsEnabled
 		self:Response(item, entryInQueue.button, roll)
-		addon:SendAnnouncement(format(L["'player' has rolled 'reason' - 'roll' for: 'item'"], UnitName("player"),
-			'\"'..addon:GetResponseText(entryInQueue.button, isTier, isRelic)..'\"', roll, item.link), "group")
-		self:Update()
+		addon:SendAnnouncement(format(L["'player' has rolled 'roll' for: 'item'"], UnitName("player"), roll, item.link), "group")
     end
 end
 
@@ -577,5 +574,4 @@ end
 function LootFrame:OnRollTimeout(entryInQueue)
 	tDeleteItem(responseWaitingRollResultQueue, entryInQueue)
 	self:Response(entryInQueue.item, entryInQueue.button)
-	self:Update()
 end
