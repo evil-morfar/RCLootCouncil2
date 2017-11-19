@@ -29,8 +29,6 @@ local guildRanks = {} -- returned from addon:GetGuildRanks()
 local GuildRankSort, ResponseSort -- Initialize now to avoid errors
 local defaultScrollTableData = {} -- See below
 local moreInfoData = {}
-local manualRollItem = nil -- The current session we are doing the manual roll
-local manualRollResults = {}  -- The result of manual rolls, to record if a player has rolled.
 
 function RCVotingFrame:OnInitialize()
 	-- Contains all the default data needed for the scroll table
@@ -115,9 +113,6 @@ function RCVotingFrame:EndSession(hide)
 	if active then -- Only end session once
 		addon:Debug("RCVotingFrame:EndSession", hide)
 		active = false -- The session has ended, so deactivate
-		if addon.isMasterLooter then
-			self:EndManualRoll()
-		end
 		self:Update()
 		if hide then self:Hide() end -- Hide if need be
 	end
@@ -1246,20 +1241,45 @@ do
 					addon:GetActiveModule("masterlooter"):AnnounceItems(sessions, true)
 					addon:SendCommand("group", "reroll", t)
 				end,
-			},{ -- 11 Remove from consideration
+			},{ -- 11 Request rolls from anyone whose roll is %s
+				text = function(candidateName) 
+					return format(L["Request rolls from anyone whose roll is 'roll'"], tonumber(lootTable[session].candidates[candidateName].roll) or 0)
+				end,
+				notCheckable = true,
+				func = function(candidateName)
+					local t = {}
+					local sessions = {}
+					for k,v in ipairs(lootTable) do
+						local rolls = {}
+						if addon:ItemIsItem(v.link, lootTable[session].link) then
+							tinsert(t, RCVotingFrame:GetRerollData(k, true)) -- request rolls
+							for name, _ in pairs(v.candidates) do
+								if tonumber(v.candidates[name].roll) == tonumber(v.candidates[candidateName].roll) then
+									addon:SendCommand("group", "change_response", k, name, "WAIT")
+									rolls[name] = ""
+								end
+							end
+							tinsert(sessions, k)
+							addon:SendCommand("group", "rolls", k, rolls)
+						end
+					end
+					addon:GetActiveModule("masterlooter"):AnnounceItems(sessions, true)
+					for name, _ in pairs(lootTable[session].candidates) do
+						if tonumber(lootTable[session].candidates[name].roll) == tonumber(lootTable[session].candidates[candidateName].roll) then
+							addon:SendCommand(name, "reroll", t)
+						end
+					end
+				end,
+			},{ -- 12 Remove from consideration
 				text = L["Remove from consideration"],
 				notCheckable = true,
 				func = function(name)
 					addon:SendCommand("group", "change_response", session, name, "REMOVED")
 				end,
-			},{ -- 12 Add rolls
+			},{ -- 13 Add rolls
 				text = L["Add rolls"],
 				notCheckable = true,
 				func = function() RCVotingFrame:DoRandomRolls(session) end,
-			},{ -- 12 Request rolls from raid members
-				text = L["Request rolls from raid members"],
-				notCheckable = true,
-				func = function() RCVotingFrame:StartManualRoll() end,
 			},
 		},
 		{ -- Level 2
@@ -1273,7 +1293,7 @@ do
 				isTitle = true,
 				notCheckable = true,
 				disabled = true,
-			},{ -- 3 REANNOUNCE, 2 This item, including all unawarded duplicates
+			},{ -- 3 REANNOUNCE, 2 This item, including all duplicates
 				onValue = "REANNOUNCE",
 				text = L["This item"],
 				notCheckable = true,
@@ -1287,7 +1307,22 @@ do
 					end
 					addon:SendCommand(candidateName, "reroll", t)
 				end,
-			},{ -- 3 REANNOUNCE, 3 All items
+			},{ -- 4 REANNOUNCE, 2 This item, including all duplicates and request rolls
+				onValue = "REANNOUNCE",
+				text = L["This item and request rolls"],
+				notCheckable = true,
+				func = function(candidateName)
+					local t = {}
+					for k,v in ipairs(lootTable) do
+						if addon:ItemIsItem(v.link, lootTable[session].link) then
+							tinsert(t, RCVotingFrame:GetRerollData(k, true))
+							addon:SendCommand("group", "rolls", k, {[candidateName]=""})
+							addon:SendCommand("group", "change_response", k, candidateName, "WAIT")
+						end
+					end
+					addon:SendCommand(candidateName, "reroll", t)
+				end,
+			},{ --5 REANNOUNCE, 3 All items
 				onValue = "REANNOUNCE",
 				text = L["All items"],
 				notCheckable = true,
@@ -1299,7 +1334,7 @@ do
 					end
 					addon:SendCommand(candidateName, "reroll", t)
 				end,
-			},{ -- 3 REANNOUNCE, 4 All items usable by the candidate.
+			},{ -- 6 REANNOUNCE, 4 All items usable by the candidate.
 				onValue = "REANNOUNCE",
 				text = L["All items usable by the candidate"],
 				notCheckable = true,
@@ -1600,66 +1635,4 @@ function RCVotingFrame:GetItemStatus(item)
 	end
 	GameTooltip:Hide()
 	return text
-end
-
-function RCVotingFrame:StartManualRoll()
-	if addon.isMasterLooter then
-		addon:Debug("Start Manual Roll")
-		local table = {}
-		for name, v in pairs (lootTable[session].candidates) do
-			table[name] = ""
-		end
-		manualRollItem = lootTable[session].link
-
-	    for k, v in ipairs(lootTable) do
-			if addon:ItemIsItem(v.link, manualRollItem) then
-				addon:SendCommand("group", "rolls", k, table) -- Reset current rolls
-			end
-		end
-
-		wipe(manualRollResults)
-		self:RegisterEvent("CHAT_MSG_SYSTEM")
-		addon:SendAnnouncement(string.format(L["request_rolls_announcement"], lootTable[session].link), "group")
-	else
-		addon:Debug("Start manual roll by non-ML?")
-	end
-end
-
-function RCVotingFrame:EndManualRoll()
-	if addon.isMasterLooter then
-		self:UnregisterEvent("CHAT_MSG_SYSTEM")
-		manualRollItem = nil
-		wipe(manualRollResults)
-	else
-		addon:Debug("End manual roll by non-ML?")
-	end
-end
-
-function RCVotingFrame:CHAT_MSG_SYSTEM(event, msg)
-	if manualRollItem and addon.isMasterLooter and active and msg then
-        -- parse the message
-		local pattern = RANDOM_ROLL_RESULT
-		pattern = string.gsub(pattern, "[%(%)%-]", "%%%1")
-		pattern = string.gsub(pattern, "%%s", "%(%.%+%)")
-		pattern = string.gsub(pattern, "%%d", "%(%%d+%)")
-		pattern = string.gsub(pattern, "%%%d%$s", "%(%.%+%)") -- for "deDE"
-		pattern = string.gsub(pattern, "%%%d%$d", "%(%%d+%)") -- for "deDE"
-		local name, roll, low, high = string.match(msg, pattern)
-		roll, low, high = tonumber(roll), tonumber(low), tonumber(high)
-
-		if name then
-	    	name = addon:UnitName(name) -- Note: name may contain space.
-
-	    	-- Only the first roll is valid and only the default "/roll" is valid.
-	    	if (not manualRollResults[name]) and low == 1 and high == 100 then
-	    		manualRollResults[name] = roll
-	    		addon:Debug("Manual Roll", name, roll, low, high)
-	    		for k, v in ipairs(lootTable) do
-	    			if addon:ItemIsItem(v.link, manualRollItem) then
-	    				addon:SendCommand("group", "rolls", k, {[name] = roll})
-	    			end
-	    		end
-	    	end
-	    end
-	end
 end

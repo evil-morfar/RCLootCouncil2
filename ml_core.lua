@@ -1208,7 +1208,7 @@ RCLootCouncilML.announceItemStringsDesc = {
 function RCLootCouncilML:AnnounceItems(sessions, isRoll)
 	if not db.announceItems then return end
 	addon:DebugLog("ML:AnnounceItems()")
-	addon:SendAnnouncement(db.announceText, db.announceChannel)
+	addon:SendAnnouncement((isRoll and (_G.ROLL..": ") or "")..db.announceText, db.announceChannel)
 	for k,v in ipairs(self.lootTable) do
 		if not sessions or tContains(sessions, k) then
 			local msg = db.announceItemString
