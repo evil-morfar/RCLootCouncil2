@@ -8,7 +8,7 @@ if LibDebug then LibDebug() end
 --@end-debug@
 
 local addon = LibStub("AceAddon-3.0"):GetAddon("RCLootCouncil")
-local LootFrame = addon:NewModule("RCLootFrame", "AceTimer-3.0")
+local LootFrame = addon:NewModule("RCLootFrame", "AceTimer-3.0", "AceEvent-3.0")
 local LibDialog = LibStub("LibDialog-1.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 
@@ -18,6 +18,15 @@ local ENTRY_HEIGHT = 80
 local MAX_ENTRIES = 5
 local numRolled = 0
 local MIN_BUTTON_WIDTH = 40
+
+local responseWaitingRollResultQueue = {}
+
+local RANDOM_ROLL_PATTERN = RANDOM_ROLL_RESULT
+RANDOM_ROLL_PATTERN = RANDOM_ROLL_PATTERN:gsub("[%(%)%-]", "%%%1")
+RANDOM_ROLL_PATTERN = RANDOM_ROLL_PATTERN:gsub("%%s", "%(%.%+%)")
+RANDOM_ROLL_PATTERN = RANDOM_ROLL_PATTERN:gsub("%%d", "%(%%d+%)")
+RANDOM_ROLL_PATTERN = RANDOM_ROLL_PATTERN:gsub("%%%d%$s", "%(%.%+%)") -- for "deDE"
+RANDOM_ROLL_PATTERN = RANDOM_ROLL_PATTERN:gsub("%%%d%$d", "%(%%d+%)") -- for "deDE"
 
 function LootFrame:Start(table, reRoll)
 	addon:DebugLog("LootFrame:Start()")
@@ -48,6 +57,7 @@ function LootFrame:Start(table, reRoll)
 				isRelic = table[k].relic,
 				classes = table[k].classes,
 				sessions = {reRoll and table[k].session or k}, -- ".session" does not exist if not rerolling.
+				isRoll = table[k].isRoll,
 			}
 		end
 	end
@@ -74,6 +84,7 @@ end
 
 function LootFrame:OnEnable()
 	self.frame = self:GetFrame()
+	self:RegisterEvent("CHAT_MSG_SYSTEM")
 end
 
 function LootFrame:OnDisable()
@@ -86,6 +97,7 @@ function LootFrame:OnDisable()
 	end
 	items = {}
 	numRolled = 0
+	self:CancelAllTimers()
 end
 
 function LootFrame:Show()
@@ -114,23 +126,37 @@ function LootFrame:Update()
 	self.frame.content:SetHeight(numEntries * ENTRY_HEIGHT + 7)
 end
 
+function LootFrame:Response(item, button, roll)
+	local isTier = item.isTier and addon.mldb.tierButtonsEnabled
+	local isRelic = item.isRelic and addon.mldb.relicButtonsEnabled
+	addon:Debug("LootFrame:Response", button, "Response:", addon:GetResponseText(button, isTier, isRelic))
+
+	for _, session in ipairs(item.sessions) do
+		addon:SendResponse("group", session, button, isTier, isRelic, item.note, roll)
+	end
+	if addon:Getdb().printResponse then
+		addon:Print(string.format(L["Response to 'item'"], addon:GetItemTextWithCount(item.link, #item.sessions))..
+			": "..addon:GetResponseText(button, isTier, isRelic)..(roll and (", ".._G.ROLL..":"..roll) or ""))
+	end
+	numRolled = numRolled + 1
+end
+
 function LootFrame:OnRoll(entry, button)
-	local isTier = entry.item.isTier and addon.mldb.tierButtonsEnabled
-	local isRelic = entry.item.isRelic and addon.mldb.relicButtonsEnabled
-	addon:Debug("LootFrame:OnRoll", entry.realID, button, "Response:", addon:GetResponseText(button, isTier, isRelic))
+	addon:Debug("LootFrame:Response", entry.realID, button)
 	local item = entry.item
+	-- Note that numRolled is not added here. It is added in :Response(), so we don't disable the module too early, in order to give time for event handler.
 
 	-- Only send minimum neccessary data, because the information of current equipped gear has been sent when we receive the loot table.
 	-- target, session, response, isTier, isRelic, note, link, ilvl, equipLoc, relicType, sendAvgIlvl, sendSpecID
-	for _, session in ipairs(item.sessions) do
-		addon:SendResponse("group", session, button, isTier, isRelic, item.note)
+	if not item.isRoll or button == "PASS" or button == "TIMEOUT" then
+		self:Response(item, button) -- No system roll is needed
+	else
+		-- Need to do system roll and wait for its result.
+		local entryInQueue = {item=item, button=button}
+		tinsert(responseWaitingRollResultQueue, entryInQueue)
+		entryInQueue.timer = self:ScheduleTimer("OnRollTimeout", 2, entryInQueue) -- In case roll result is not received within time limit, discard the result.
+		RandomRoll(1, 100)
 	end
-
-	if addon:Getdb().printResponse then
-		addon:Print(string.format(L["Response to 'item'"], addon:GetItemTextWithCount(item.link, #item.sessions))..": "..addon:GetResponseText(button, isTier, isRelic))
-	end
-
-	numRolled = numRolled + 1 -- numRolled should only be added by 1 here.
 	item.rolled = true
 
 	self.EntryManager:Trash(entry)
@@ -163,7 +189,7 @@ do
 				entry.noteEditbox:SetText("")
 			end
 			entry.item = item
-			entry.itemText:SetText(addon:GetItemTextWithCount(entry.item.link or "error", #entry.item.sessions))
+			entry.itemText:SetText((item.isRoll and (_G.ROLL..": ") or "")..addon:GetItemTextWithCount(entry.item.link or "error", #entry.item.sessions))
 			entry.icon:SetNormalTexture(entry.item.texture or "Interface\\InventoryItems\\WoWUnknownItem01")
 			entry.itemCount:SetText(#entry.item.sessions > 1 and #entry.item.sessions or "")
 			local typeText = addon:GetItemTypeText(item.link, item.subType, item.equipLoc, item.typeID, item.subTypeID, item.classes, item.isTier, item.isRelic)
@@ -525,4 +551,31 @@ do
 
 		return Entry
 	end
+end
+
+-- Process roll message, to send roll with the response.
+function LootFrame:CHAT_MSG_SYSTEM(event, msg)
+	local name, roll, low, high = string.match(msg, RANDOM_ROLL_PATTERN)
+	roll, low, high = tonumber(roll), tonumber(low), tonumber(high)
+
+	if name and low == 1 and high == 100 and UnitIsUnit(Ambiguate(name, "short"), "player") and responseWaitingRollResultQueue[1] then
+		local entryInQueue = responseWaitingRollResultQueue[1]
+		tremove(responseWaitingRollResultQueue, 1)
+		self:CancelTimer(entryInQueue.timer)
+		local item = entryInQueue.item
+		local isTier = item.isTier and addon.mldb.tierButtonsEnabled
+		local isRelic = item.isRelic and addon.mldb.relicButtonsEnabled
+		self:Response(item, entryInQueue.button, roll)
+		addon:SendAnnouncement(format(L["'player' has rolled 'reason' - 'roll' for: 'item'"], UnitName("player"),
+			'\"'..addon:GetResponseText(entryInQueue.button, isTier, isRelic)..'\"', roll, item.link), "group")
+		self:Update()
+    end
+end
+
+-- We did DoRandomRoll(), but no roll result received,
+-- Send Response as if no roll.
+function LootFrame:OnRollTimeout(entryInQueue)
+	tDeleteItem(responseWaitingRollResultQueue, entryInQueue)
+	self:Response(entryInQueue.item, entryInQueue.button)
+	self:Update()
 end

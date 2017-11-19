@@ -1215,7 +1215,7 @@ do
 					local sessions = {}
 					for k,v in ipairs(lootTable) do
 						if addon:ItemIsItem(v.link, lootTable[session].link) then
-							tinsert(t, RCVotingFrame:GetRerollData(k)) -- autopass enabled.
+							tinsert(t, RCVotingFrame:GetRerollData(k))
 							for name, _ in pairs(v.candidates) do
 								addon:SendCommand("group", "change_response", k, name, "WAIT")
 							end
@@ -1225,13 +1225,34 @@ do
 					addon:GetActiveModule("masterlooter"):AnnounceItems(sessions)
 					addon:SendCommand("group", "reroll", t)
 				end,
-			},{ -- 10 Remove from consideration
+			},{ -- 10 Reannounce to everyone and request rolls
+				text = L["Reannounce this item to everyone and request rolls"],
+				notCheckable = true,
+				func = function()
+					local t = {}
+					local sessions = {}
+					for k,v in ipairs(lootTable) do
+						local rolls = {}
+						if addon:ItemIsItem(v.link, lootTable[session].link) then
+							tinsert(t, RCVotingFrame:GetRerollData(k, true)) -- request rolls
+							for name, _ in pairs(v.candidates) do
+								addon:SendCommand("group", "change_response", k, name, "WAIT")
+								rolls[name] = ""
+							end
+							tinsert(sessions, k)
+							addon:SendCommand("group", "rolls", k, rolls)
+						end
+					end
+					addon:GetActiveModule("masterlooter"):AnnounceItems(sessions, true)
+					addon:SendCommand("group", "reroll", t)
+				end,
+			},{ -- 11 Remove from consideration
 				text = L["Remove from consideration"],
 				notCheckable = true,
 				func = function(name)
 					addon:SendCommand("group", "change_response", session, name, "REMOVED")
 				end,
-			},{ -- 11 Add rolls
+			},{ -- 12 Add rolls
 				text = L["Add rolls"],
 				notCheckable = true,
 				func = function() RCVotingFrame:DoRandomRolls(session) end,

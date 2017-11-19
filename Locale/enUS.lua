@@ -321,6 +321,7 @@ L["RCLootCouncil Version Checker"] = true
 L["RCLootCouncil Voting Frame"] = true
 L["Reannounce ..."] = true
 L["Reannounce this item to everyone"] = true
+L["Reannounce this item to everyone and request rolls"] = true
 L["Reason"] = true
 L["reason_desc"] = "The award reason to add to the Loot History when auto awarding."
 L["Relic Buttons and Responses"] = true
