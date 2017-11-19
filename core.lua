@@ -733,9 +733,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 					end
 
 					-- Hand the lootTable to the votingFrame
-					self:GetActiveModule("votingframe"):Disable() -- Disable first, in case voting frame receives the lootTable when it is shown. (It can happen if ML reloads.)
 					if self.isCouncil or self.mldb.observe then
-						self:CallModule("votingframe")
 						self:GetActiveModule("votingframe"):ReceiveLootTable(lootTable)
 					end
 
@@ -762,8 +760,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 						self:SendResponse("group", ses, response, nil, nil, nil, v.link, v.ilvl, v.equipLoc, v.relic, true, true)
 					end
 
-					-- Show the LootFrame
-					self:GetActiveModule("lootframe"):Disable() -- Disable first, in case loot frame receives the lootTable when it is shown. (It can happen if ML reloads.)
+					-- Show  the LootFrame
 					self:CallModule("lootframe")
 					self:GetActiveModule("lootframe"):Start(lootTable)
 
@@ -778,7 +775,9 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 				self.isCouncil = self:IsCouncil(self.playerName)
 
 				-- prepare the voting frame for the right people
-				if not (self.isCouncil or self.mldb.observe) then
+				if self.isCouncil or self.mldb.observe then
+					self:CallModule("votingframe")
+				else
 					self:GetActiveModule("votingframe"):Disable()
 				end
 
