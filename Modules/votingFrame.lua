@@ -167,15 +167,6 @@ function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
 				self:SetCandidateData(ses, name, "isTier", isTier)
 				self:SetCandidateData(ses, name, "isRelic", isRelic)
 				self:SetCandidateData(ses, name, "response", response)
-				self:Update()
-
-			elseif command == "change_response_all" and addon:UnitIsUnit(sender, addon.masterLooter) then
-				local ses, response, isTier, isRelic = unpack(data)
-				for name, _ in pairs(lootTable[session].candidates) do
-					self:SetCandidateData(ses, name, "isTier", isTier)
-					self:SetCandidateData(ses, name, "isRelic", isRelic)
-					self:SetCandidateData(ses, name, "response", response)
-				end
 				self:Update()			
 
 			elseif command == "lootAck" then
@@ -1201,27 +1192,13 @@ do
 				value = "REANNOUNCE",
 				hasArrow = true,
 				notCheckable = true,
-			},{ -- 9 Remove from consideration
-				text = L["Remove from consideration"],
-				notCheckable = true,
-				func = function(name)
-					addon:SendCommand("group", "change_response", session, name, "REMOVED")
-				end,
-			},{ -- 10 Add rolls
-				text = L["Add rolls"],
-				notCheckable = true,
-				func = function() RCVotingFrame:DoRandomRolls(session) end,
-			},{ -- 11 Request rolls from raid members
-				text = L["Request rolls from raid members"],
-				notCheckable = true,
-				func = function() RCVotingFrame:StartManualRoll() end,
-			},{ -- 12 Reannounce to everyone
+			},{ -- 9 Reannounce to everyone
 				text = L["Reannounce to everyone"],
 				notCheckable = true,
 				func = function()
 					local t = {}
 					for k,v in ipairs(lootTable) do
-						if (k == session or addon:ItemIsItem(v.link, lootTable[session].link)) and not v.awarded then
+						if addon:ItemIsItem(v.link, lootTable[session].link) then
 							tinsert(t, {
 								name = v.name,
 								link = v.link,
@@ -1233,11 +1210,27 @@ do
 								relic = v.relic,
 								classes = v.classes,
 							})
-							addon:SendCommand("group", "change_response_all", k, "WAIT")
+							for name, _ in pairs(v.candidates) do
+								addon:SendCommand("group", "change_response", k, name, "WAIT")
+							end
 						end
 					end
 					addon:SendCommand("group", "reroll", t)
 				end,
+			},{ -- 10 Remove from consideration
+				text = L["Remove from consideration"],
+				notCheckable = true,
+				func = function(name)
+					addon:SendCommand("group", "change_response", session, name, "REMOVED")
+				end,
+			},{ -- 11 Add rolls
+				text = L["Add rolls"],
+				notCheckable = true,
+				func = function() RCVotingFrame:DoRandomRolls(session) end,
+			},{ -- 12 Request rolls from raid members
+				text = L["Request rolls from raid members"],
+				notCheckable = true,
+				func = function() RCVotingFrame:StartManualRoll() end,
 			},
 		},
 		{ -- Level 2
