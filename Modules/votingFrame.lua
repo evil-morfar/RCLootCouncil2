@@ -74,15 +74,14 @@ function RCVotingFrame:OnEnable()
 	addon:Debug("RCVotingFrame", "enabled")
 end
 
-function RCVotingFrame:OnDisable()
+function RCVotingFrame:OnDisable() -- We never really call this
 	self:Hide()
-	--self.frame:SetParent(nil)
-	--self.frame = nil
+	self.frame:SetParent(nil)
+	self.frame = nil
 	wipe(lootTable)
 	active = false
 	session = 1
 	self:UnregisterAllComm()
-	self:CancelAllTimers()
 end
 
 function RCVotingFrame:Hide()
