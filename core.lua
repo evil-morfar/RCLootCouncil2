@@ -703,7 +703,6 @@ function RCLootCouncil:UpdateRecentAddableItem(link)
 			local _, _, _, _, _, _, link2 = GetContainerItemInfo(i, j)
 			if link2 and self:ItemIsItem(link, link2) 
 				and self:GetContainerItemTradeTimeRemaining(i, j) > 0 then
-				print(3, link)
 				self.recentAddableItem = link
 				return
 			end
@@ -1769,10 +1768,8 @@ function RCLootCouncil:OnEvent(event, ...)
 		local msg = ...
 		local pattern = LOOT_ITEM_SELF:gsub('%%s', '(.+)')
 		local link = msg:match(pattern)
-		print(1, link)
 		if link and select(3, GetItemInfo(link)) >= GetLootThreshold() then
 			-- There is some time between loot msg and the item pushed into the bag.
-			print(2, link)
 			self:ScheduleTimer("UpdateRecentAddableItem", 0.5, link)
 		end
 	end
