@@ -1156,7 +1156,7 @@ function RCVotingFrame:Reannounce(namePred, sesPred, isRoll, noAutopass, announc
 			tinsert(rerollTable, RCVotingFrame:GetRerollData(k, isRoll, noAutopass))
 
 			for name, _ in pairs(v.candidates) do
-				if namePred == true or (type(namePred)=="string" and name == namePred) or (type(namePred)=="function" and namePred(k)) then
+				if namePred == true or (type(namePred)=="string" and name == namePred) or (type(namePred)=="function" and namePred(name)) then
 					addon:SendCommand("group", "change_response", k, name, "WAIT")
 					rolls[name] = ""
 				end
@@ -1177,7 +1177,7 @@ function RCVotingFrame:Reannounce(namePred, sesPred, isRoll, noAutopass, announc
 			addon:SendCommand("group", "reroll", rerollTable)
 		else
 			for name, _ in pairs(lootTable[session].candidates) do
-				if (type(namePred)=="string" and name == namePred) or (type(namePred)=="function" and namePred(k)) then
+				if (type(namePred)=="string" and name == namePred) or (type(namePred)=="function" and namePred(name)) then
 					addon:SendCommand(name, "reroll", rerollTable)
 				end
 			end
@@ -1190,6 +1190,48 @@ end
 -- @section Dropdowns.
 ----------------------------------------------------
 do
+
+	-- Do reannounce (and request rolls)
+	-- whether request rolls, and who to reannounce is determined by the value of LIB_UIDROPDOWNMENU_MENU_VALUE
+	--@param isThisItem true to reannounce on this item, false to reannounce on all items.
+	RCVotingFrame.reannounceOrRequestRollButton = function(candidateName, isThisItem)
+		if type(LIB_UIDROPDOWNMENU_MENU_VALUE) ~= "string" then return end
+		local namePred, sesPred
+		if isThisItem then
+			sesPred = function(k) return addon:ItemIsItem(lootTable[k].link, lootTable[session].link) end
+		else
+			sesPred = true
+		end
+
+		local isRoll = _G.LIB_UIDROPDOWNMENU_MENU_VALUE:find("^REQUESTROLL")
+
+		local announceInChat = false
+		if LIB_UIDROPDOWNMENU_MENU_VALUE:find("_CANDIDATE$") then
+			namePred = candidateName
+		elseif LIB_UIDROPDOWNMENU_MENU_VALUE:find("_ROLL$") then
+			namePred = function(name) return lootTable[session].candidates[name].roll == lootTable[session].candidates[candidateName].roll end
+		elseif LIB_UIDROPDOWNMENU_MENU_VALUE:find("_CLASS$") then
+			namePred = function(name) return lootTable[session].candidates[name].class == lootTable[session].candidates[candidateName].class end
+		elseif LIB_UIDROPDOWNMENU_MENU_VALUE:find("_ROLE$") then
+			namePred = function(name) return lootTable[session].candidates[name].role == lootTable[session].candidates[candidateName].role end
+		elseif LIB_UIDROPDOWNMENU_MENU_VALUE:find("_RANK$") then
+			namePred = function(name) return lootTable[session].candidates[name].rank == lootTable[session].candidates[candidateName].rank end
+		elseif LIB_UIDROPDOWNMENU_MENU_VALUE:find("_RESPONSE$") then
+			namePred = function(name) return lootTable[session].candidates[name].response == lootTable[session].candidates[candidateName].response and
+			 								 lootTable[session].candidates[name].isTier   == lootTable[session].candidates[candidateName].isTier   and
+			 								 lootTable[session].candidates[name].isRelic  == lootTable[session].candidates[candidateName].isRelic  end
+		elseif LIB_UIDROPDOWNMENU_MENU_VALUE:find("_GROUP$") then
+			announceInChat = true -- Announce in chat when announce to group
+			namePred = true
+		else
+			return addon:Debug("Unexpected dropdown menu value in RCVotingFrame.reannounceOrRequestRollButton: ", LIB_UIDROPDOWNMENU_MENU_VALUE)
+		end
+
+		local noAutopass = isThisItem and LIB_UIDROPDOWNMENU_MENU_VALUE:find("_CANDIDATE$")
+
+		RCVotingFrame:Reannounce(namePred, sesPred, isRoll, noAutopass, announceInChat)
+	end
+
 	--- The entries placed in the rightclick menu.
 	-- Each level in the menu has it's own indexed entries, and each entry requires a text field as minimum,
 	-- but can otherwise have the same values as normal DropDownMenus.
@@ -1249,131 +1291,125 @@ do
 				value = "REANNOUNCE",
 				hasArrow = true,
 				notCheckable = true,
-			},{ -- 9 Reannounce to everyone
-				text = L["Reannounce this item to everyone"],
-				notCheckable = true,
-				func = function()
-					local t = {}
-					for k,v in ipairs(lootTable) do
-						if addon:ItemIsItem(v.link, lootTable[session].link) then
-							tinsert(t, RCVotingFrame:GetRerollData(k))
-							for name, _ in pairs(v.candidates) do
-								addon:SendCommand("group", "change_response", k, name, "WAIT")
-							end
-						end
-					end
-					addon:GetActiveModule("masterlooter"):AnnounceItems(t)
-					addon:SendCommand("group", "reroll", t)
-				end,
-			},{ -- 10 Reannounce to everyone and request rolls
-				text = L["Reannounce this item to everyone and request rolls"],
-				notCheckable = true,
-				func = function()
-					local t = {}
-					for k,v in ipairs(lootTable) do
-						local rolls = {}
-						if addon:ItemIsItem(v.link, lootTable[session].link) then
-							tinsert(t, RCVotingFrame:GetRerollData(k, true)) -- request rolls
-							for name, _ in pairs(v.candidates) do
-								addon:SendCommand("group", "change_response", k, name, "WAIT")
-								rolls[name] = ""
-							end
-							addon:SendCommand("group", "rolls", k, rolls)
-						end
-					end
-					addon:GetActiveModule("masterlooter"):AnnounceItems(t)
-					addon:SendCommand("group", "reroll", t)
-				end,
-			},{ -- 11 Request rolls from anyone whose roll is %s
-				text = function(candidateName) 
-					return format(L["Request rolls from anyone whose roll is 'roll'"], tonumber(lootTable[session].candidates[candidateName].roll) or 0)
-				end,
-				notCheckable = true,
-				func = function(candidateName)
-					local t = {}
-					local sessions = {}
-					for k,v in ipairs(lootTable) do
-						local rolls = {}
-						if addon:ItemIsItem(v.link, lootTable[session].link) then
-							tinsert(t, RCVotingFrame:GetRerollData(k, true)) -- request rolls
-							for name, _ in pairs(v.candidates) do
-								if tonumber(v.candidates[name].roll) == tonumber(v.candidates[candidateName].roll) then
-									addon:SendCommand("group", "change_response", k, name, "WAIT")
-									rolls[name] = ""
-								end
-							end
-							tinsert(sessions, k)
-							addon:SendCommand("group", "rolls", k, rolls)
-						end
-					end
-					addon:GetActiveModule("masterlooter"):AnnounceItems(sessions, true)
-					for name, _ in pairs(lootTable[session].candidates) do
-						if tonumber(lootTable[session].candidates[name].roll) == tonumber(lootTable[session].candidates[candidateName].roll) then
-							addon:SendCommand(name, "reroll", t)
-						end
-					end
-				end,
-			},{ -- 12 Remove from consideration
+			},{ -- 9 Remove from consideration
 				text = L["Remove from consideration"],
 				notCheckable = true,
 				func = function(name)
 					addon:SendCommand("group", "change_response", session, name, "REMOVED")
 				end,
-			},{ -- 13 Add rolls
+			},{ -- 10 Add rolls
 				text = L["Add rolls"],
 				notCheckable = true,
 				func = function() RCVotingFrame:DoRandomRolls(session) end,
-			},
+			},{ -- 11 Reannounce and request rolls
+				text = L["Reannounce and request rolls..."],
+				value = "REQUESTROLL_REANNOUNCE",
+				hasArrow = true,
+				notCheckable = true,
+			}
 		},
 		{ -- Level 2
 			{ -- 1 AWARD_FOR
 				special = "AWARD_FOR",
 			},{ -- 2 CHANGE_RESPONSE
 				special = "CHANGE_RESPONSE",
-			},{ -- 3 REANNOUNCE, 1 title
-				onValue = "REANNOUNCE",
-				text = function(candidateName) return addon.Ambiguate(candidateName) end,
-				isTitle = true,
+			},{ -- 3 Reannounce (and request rolls) to candidate
+				onValue = function() return _G.LIB_UIDROPDOWNMENU_MENU_VALUE == "REANNOUNCE" or _G.LIB_UIDROPDOWNMENU_MENU_VALUE == "REQUESTROLL_REANNOUNCE" end,
+				value = function() return _G.LIB_UIDROPDOWNMENU_MENU_VALUE.."_CANDIDATE" end,
+				text = function(candidateName) return addon:GetUnitClassColoredName(candidateName) end,
 				notCheckable = true,
-				disabled = true,
-			},{ -- 3 REANNOUNCE, 2 This item, including all duplicates
-				onValue = "REANNOUNCE",
-				text = L["This item"],
+				hasArrow = true,
+			},{ -- 4 Reannounce (and request rolls) to group
+				onValue = function() return _G.LIB_UIDROPDOWNMENU_MENU_VALUE == "REANNOUNCE" or _G.LIB_UIDROPDOWNMENU_MENU_VALUE == "REQUESTROLL_REANNOUNCE" end,
+				value = function() return _G.LIB_UIDROPDOWNMENU_MENU_VALUE.."_GROUP" end,
+				text = function(candidateName) return _G.GROUP end,
 				notCheckable = true,
-				func = function(candidateName)
-					return RCVotingFrame:Reannounce(candidateName, session, false, true, false)
+				hasArrow = true,
+			},{ -- 5 Reannounce (and request rolls) to anyone whose roll is the same as the candidate
+				onValue = function() return _G.LIB_UIDROPDOWNMENU_MENU_VALUE == "REANNOUNCE" or _G.LIB_UIDROPDOWNMENU_MENU_VALUE == "REQUESTROLL_REANNOUNCE" end,
+				value = function() return _G.LIB_UIDROPDOWNMENU_MENU_VALUE.."_ROLL" end,
+				text = function(candidateName) return _G.ROLL..": "..(lootTable[session].candidates[candidateName].roll or "") end,
+				notCheckable = true,
+				hasArrow = true,
+			},{ -- 6 Reannounce (and request rolls) to anyone whose response is the same as the candidate
+				onValue = function() return _G.LIB_UIDROPDOWNMENU_MENU_VALUE == "REANNOUNCE" or _G.LIB_UIDROPDOWNMENU_MENU_VALUE == "REQUESTROLL_REANNOUNCE" end,
+				value = function() return _G.LIB_UIDROPDOWNMENU_MENU_VALUE.."_RESPONSE" end,
+				text = function(candidateName)
+					local isTier = lootTable[session].candidates[candidateName].isTier
+					local isRelic = lootTable[session].candidates[candidateName].isRelic
+					return L["Response"]..": "..addon:GetResponseText(lootTable[session].candidates[candidateName].response, isTier, isRelic) or ""
 				end,
-			},{ -- 4 REANNOUNCE, 2 This item, including all duplicates and request rolls
-				onValue = "REANNOUNCE",
-				text = L["This item and request rolls"],
-				notCheckable = true,
-				func = function(candidateName)
-					return RCVotingFrame:Reannounce(candidateName, session, true, true, false)
+				colorCode = function(candidateName)
+					local isTier = lootTable[session].candidates[candidateName].isTier
+					local isRelic = lootTable[session].candidates[candidateName].isRelic
+					return  "|cff"..(addon:RGBToHex(addon:GetResponseColor(lootTable[session].candidates[candidateName].response, isTier, isRelic)) or "ffffff")
 				end,
-			},{ --5 REANNOUNCE, 3 All items
-				onValue = "REANNOUNCE",
-				text = L["All items"],
 				notCheckable = true,
-				func = function(candidateName)
-					return RCVotingFrame:Reannounce(candidateName, true, true, true, false)
+				hasArrow = true,
+			},{ -- 7 Reannounce (and request rolls) to anyone whose role is the same as the candidate
+				onValue = function() return _G.LIB_UIDROPDOWNMENU_MENU_VALUE == "REANNOUNCE" or _G.LIB_UIDROPDOWNMENU_MENU_VALUE == "REQUESTROLL_REANNOUNCE" end,
+				value = function() return _G.LIB_UIDROPDOWNMENU_MENU_VALUE.."_CLASS" end,
+				text = function(candidateName)
+					local class = lootTable[session].candidates[candidateName].class
+					local color = RAID_CLASS_COLORS[class] and ("|c"..RAID_CLASS_COLORS[class].colorStr) or "|cffffffff"
+					return _G.CLASS..": "..color..class.."|r"
 				end,
-			},{ -- 6 REANNOUNCE, 4 All items usable by the candidate.
-				onValue = "REANNOUNCE",
-				text = L["All items usable by the candidate"],
 				notCheckable = true,
-				func = function(candidateName)
-					return RCVotingFrame:Reannounce(candidateName, 
-						function(k) local v = lootTable[k]; return not addon:AutoPassCheck(v.link, v.equipLoc, v.typeID, v.subTypeID, v.classes, v.token, v.relic,
-																	lootTable[session].candidates[candidateName].class) end, 
-						true, true, false)
+				hasArrow = true,
+			},{ -- 8 Reannounce (and request rolls) to anyone whose role is the same as the candidate
+				onValue = function() return _G.LIB_UIDROPDOWNMENU_MENU_VALUE == "REANNOUNCE" or _G.LIB_UIDROPDOWNMENU_MENU_VALUE == "REQUESTROLL_REANNOUNCE" end,
+				value = function() return _G.LIB_UIDROPDOWNMENU_MENU_VALUE.."_ROLE" end,
+				text = function(candidateName)
+					return _G.ROLE..": "..addon:TranslateRole(lootTable[session].candidates[candidateName].role)
 				end,
+				notCheckable = true,
+				hasArrow = true,
+			},{ -- 9 Reannounce (and request rolls) to anyone whose role is the same as the candidate
+				onValue = function() return _G.LIB_UIDROPDOWNMENU_MENU_VALUE == "REANNOUNCE" or _G.LIB_UIDROPDOWNMENU_MENU_VALUE == "REQUESTROLL_REANNOUNCE" end,
+				value = function() return _G.LIB_UIDROPDOWNMENU_MENU_VALUE.."_RANK" end,
+				text = function(candidateName)
+					return _G.RANK..": "..lootTable[session].candidates[candidateName].rank
+				end,
+				notCheckable = true,
+				hasArrow = true,
 			},
 		},
 		{ -- Level 3
-			{ -- 1 Tier Tokens
+			{ -- 1 This item
+				onValue = function() return type(_G.LIB_UIDROPDOWNMENU_MENU_VALUE)=="string" and 
+					(LIB_UIDROPDOWNMENU_MENU_VALUE:find("^REQUESTROLL_REANNOUNCE") or LIB_UIDROPDOWNMENU_MENU_VALUE:find("^REANNOUNCE"))
+				end,
+				text = function()
+					if type(_G.LIB_UIDROPDOWNMENU_MENU_VALUE)=="string" and LIB_UIDROPDOWNMENU_MENU_VALUE:find("^REQUESTROLL_REANNOUNCE") then
+						return L["This item"].." ("..REQUEST_ROLL..")"
+					else
+						return L["This item"]
+					end
+				end,
+				notCheckable = true,
+				func = function(candidateName)
+					return RCVotingFrame.reannounceOrRequestRollButton(candidateName, true)
+				end,
+			},{ -- 2 All items, only shown for "candidate" and "group" reannounce
+				onValue = function() return type(_G.LIB_UIDROPDOWNMENU_MENU_VALUE)=="string" and 
+					(LIB_UIDROPDOWNMENU_MENU_VALUE:find("^REQUESTROLL_REANNOUNCE") or LIB_UIDROPDOWNMENU_MENU_VALUE:find("^REANNOUNCE")) and
+					(LIB_UIDROPDOWNMENU_MENU_VALUE:find("_CANDIDATE$") or LIB_UIDROPDOWNMENU_MENU_VALUE:find("_GROUP$"))
+				end,
+				text = function()
+					if type(_G.LIB_UIDROPDOWNMENU_MENU_VALUE)=="string" and LIB_UIDROPDOWNMENU_MENU_VALUE:find("^REQUESTROLL_REANNOUNCE") then
+						return L["All items"].." ("..REQUEST_ROLL..")"
+					else
+						return L["All items"]
+					end
+				end,
+				notCheckable = true,
+				func = function(candidateName)
+					return RCVotingFrame.reannounceOrRequestRollButton(candidateName, false)
+				end,
+			},{ -- 3 Tier Tokens
 				special = "TIER_TOKENS",
 			},
-			{ -- 2 Relics
+			{ -- 4 Relics
 				special = "RELICS",
 			},
 		},
@@ -1391,7 +1427,7 @@ do
 		for i, entry in ipairs(RCVotingFrame.rightClickEntries[level]) do
 			info = Lib_UIDropDownMenu_CreateInfo()
 			if not entry.special then
-				if not entry.onValue or entry.onValue == value then
+				if not entry.onValue or entry.onValue == value or (type(entry.onValue)=="function" and entry.onValue(candidateName, data)) then
 					if (entry.hidden and type(entry.hidden) == "function" and not entry.hidden(candidateName, data)) or not entry.hidden then
 						for name, val in pairs(entry) do
 							if name == "func" then

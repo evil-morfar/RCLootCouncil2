@@ -190,7 +190,7 @@ function RCSessionFrame:GetFrame()
 	f.toggle = tgl
 
 	local rollTgl = CreateFrame("CheckButton", f:GetName().."RollToggle", f.content, "ChatConfigCheckButtonTemplate")
-	getglobal(rollTgl:GetName().."Text"):SetText(L["Request rolls?"])
+	getglobal(rollTgl:GetName().."Text"):SetText(_G.REQUEST_ROLL.."?")
 	rollTgl:SetPoint("LEFT", getglobal(tgl:GetName().."Text"), "RIGHT", 20, 0)
 	rollTgl:SetPoint("TOP", tgl, "TOP", 0, 0)
 	rollTgl.tooltip = L["request_rolls_checkbox_desc"]
