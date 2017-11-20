@@ -1123,7 +1123,7 @@ function RCVotingFrame:GetAwardPopupData(session, name, data, reason)
 	}
 end
 
-function RCVotingFrame:GetRerollData(session, isRoll)
+function RCVotingFrame:GetRerollData(session, isRoll, noAutopass)
 	local v = lootTable[session]
 	return {
 		name = v.name,
@@ -1136,8 +1136,55 @@ function RCVotingFrame:GetRerollData(session, isRoll)
 		relic = v.relic,
 		classes = v.classes,
 		isRoll = isRoll,
+		noAutopass = noAutopass,
 	}
 end
+
+-- Do an Reannouncement.
+--@param namePred: true or string or func. Determine what candidate should be reannounced. true to reannounce to all candidates. string for specific candidate.
+--@param sesPred: true or number or func. Determine what session should be reannounced. true to reannounce to all candidates. \
+--		 number k to reannounce to session k and other sessions with the same item as session k.
+--@param isRoll: true or false or false. Determine whether we are requesting rolls. true will request rolls and clear the current rolls.
+--@param noAutopass: true or false or nil. Determine whether we force no autopass.
+--@param announceInChat: true or false or nil. Determine if the reannounce sessions should be announced in chat.
+function RCVotingFrame:Reannounce(namePred, sesPred, isRoll, noAutopass, announceInChat)
+	local rerollTable = {}
+
+	for k,v in ipairs(lootTable) do
+		local rolls = {}
+		if sesPred == true or (type(sesPred)=="number" and addon:ItemIsItem(lootTable[k].link, lootTable[sesPred].link)) or (type(sesPred)=="function" and sesPred(k)) then
+			tinsert(rerollTable, RCVotingFrame:GetRerollData(k, isRoll, noAutopass))
+
+			for name, _ in pairs(v.candidates) do
+				if namePred == true or (type(namePred)=="string" and name == namePred) or (type(namePred)=="function" and namePred(k)) then
+					addon:SendCommand("group", "change_response", k, name, "WAIT")
+					rolls[name] = ""
+				end
+			end
+			if isRoll then
+				addon:SendCommand("group", "rolls", k, rolls)
+			end
+		end
+	end
+
+	if #rerollTable > 0 then
+		if announceInChat then
+			addon:GetActiveModule("masterlooter"):AnnounceItems(rerollTable, isRoll)
+		end
+
+
+		if namePred == true then
+			addon:SendCommand("group", "reroll", rerollTable)
+		else
+			for name, _ in pairs(lootTable[session].candidates) do
+				if (type(namePred)=="string" and name == namePred) or (type(namePred)=="function" and namePred(k)) then
+					addon:SendCommand(name, "reroll", rerollTable)
+				end
+			end
+		end
+	end
+end
+
 ----------------------------------------------------
 --	Dropdowns.
 -- @section Dropdowns.
@@ -1294,58 +1341,31 @@ do
 				text = L["This item"],
 				notCheckable = true,
 				func = function(candidateName)
-					local t = {}
-					for k,v in ipairs(lootTable) do
-						if addon:ItemIsItem(v.link, lootTable[session].link) then
-							tinsert(t, RCVotingFrame:GetRerollData(k))
-							addon:SendCommand("group", "change_response", k, candidateName, "WAIT")
-						end
-					end
-					addon:SendCommand(candidateName, "reroll", t)
+					return RCVotingFrame:Reannounce(candidateName, session, false, true, false)
 				end,
 			},{ -- 4 REANNOUNCE, 2 This item, including all duplicates and request rolls
 				onValue = "REANNOUNCE",
 				text = L["This item and request rolls"],
 				notCheckable = true,
 				func = function(candidateName)
-					local t = {}
-					for k,v in ipairs(lootTable) do
-						if addon:ItemIsItem(v.link, lootTable[session].link) then
-							tinsert(t, RCVotingFrame:GetRerollData(k, true))
-							addon:SendCommand("group", "rolls", k, {[candidateName]=""})
-							addon:SendCommand("group", "change_response", k, candidateName, "WAIT")
-						end
-					end
-					addon:SendCommand(candidateName, "reroll", t)
+					return RCVotingFrame:Reannounce(candidateName, session, true, true, false)
 				end,
 			},{ --5 REANNOUNCE, 3 All items
 				onValue = "REANNOUNCE",
 				text = L["All items"],
 				notCheckable = true,
 				func = function(candidateName)
-					local t = {}
-					for k,v in ipairs(lootTable) do
-						tinsert(t, RCVotingFrame:GetRerollData(k))
-						addon:SendCommand("group", "change_response", k, candidateName, "WAIT")
-					end
-					addon:SendCommand(candidateName, "reroll", t)
+					return RCVotingFrame:Reannounce(candidateName, true, true, true, false)
 				end,
 			},{ -- 6 REANNOUNCE, 4 All items usable by the candidate.
 				onValue = "REANNOUNCE",
 				text = L["All items usable by the candidate"],
 				notCheckable = true,
 				func = function(candidateName)
-					local t = {}
-					for k,v in ipairs(lootTable) do
-						if not addon:AutoPassCheck(v.link, v.equipLoc, v.typeID, v.subTypeID, v.classes, v.token, v.relic,
-																	lootTable[session].candidates[candidateName].class) then
-							tinsert(t, RCVotingFrame:GetRerollData(k))
-							addon:SendCommand("group", "change_response", k, candidateName, "WAIT")
-						end
-					end
-					if #t > 0 then
-						addon:SendCommand(candidateName, "reroll", t)
-					end
+					return RCVotingFrame:Reannounce(candidateName, 
+						function(k) local v = lootTable[k]; return not addon:AutoPassCheck(v.link, v.equipLoc, v.typeID, v.subTypeID, v.classes, v.token, v.relic,
+																	lootTable[session].candidates[candidateName].class) end, 
+						true, true, false)
 				end,
 			},
 		},

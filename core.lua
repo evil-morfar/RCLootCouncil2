@@ -1335,7 +1335,7 @@ function RCLootCouncil:AutoResponse(table)
 	for k, v in ipairs(table) do
 		local response = nil
 		local session = v.session or k
-		if db.autoPass then
+		if db.autoPass and not v.noAutopass then
 			if (v.boe and db.autoPassBoE) or not v.boe then
 				if self:AutoPassCheck(v.link, v.equipLoc, v.typeID, v.subTypeID, v.classes, v.token, v.relic) then
 					self:Debug("Autopassed on: ", v.link)
