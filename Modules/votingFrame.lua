@@ -1346,6 +1346,32 @@ do
 				end,
 				notCheckable = true,
 				hasArrow = true,
+			},{ -- 7 Reannounce (and request rolls) to anyone whose role is the same as the candidate
+				onValue = function() return _G.LIB_UIDROPDOWNMENU_MENU_VALUE == "REANNOUNCE" or _G.LIB_UIDROPDOWNMENU_MENU_VALUE == "REQUESTROLL_REANNOUNCE" end,
+				value = function() return _G.LIB_UIDROPDOWNMENU_MENU_VALUE.."_CLASS" end,
+				text = function(candidateName)
+					local class = lootTable[session].candidates[candidateName].class
+					local color = RAID_CLASS_COLORS[class] and ("|c"..RAID_CLASS_COLORS[class].colorStr) or "|cffffffff"
+					return _G.CLASS..": "..color..class.."|r"
+				end,
+				notCheckable = true,
+				hasArrow = true,
+			},{ -- 8 Reannounce (and request rolls) to anyone whose role is the same as the candidate
+				onValue = function() return _G.LIB_UIDROPDOWNMENU_MENU_VALUE == "REANNOUNCE" or _G.LIB_UIDROPDOWNMENU_MENU_VALUE == "REQUESTROLL_REANNOUNCE" end,
+				value = function() return _G.LIB_UIDROPDOWNMENU_MENU_VALUE.."_ROLE" end,
+				text = function(candidateName)
+					return _G.ROLE..": "..addon:TranslateRole(lootTable[session].candidates[candidateName].role)
+				end,
+				notCheckable = true,
+				hasArrow = true,
+			},{ -- 9 Reannounce (and request rolls) to anyone whose role is the same as the candidate
+				onValue = function() return _G.LIB_UIDROPDOWNMENU_MENU_VALUE == "REANNOUNCE" or _G.LIB_UIDROPDOWNMENU_MENU_VALUE == "REQUESTROLL_REANNOUNCE" end,
+				value = function() return _G.LIB_UIDROPDOWNMENU_MENU_VALUE.."_RANK" end,
+				text = function(candidateName)
+					return _G.RANK..": "..lootTable[session].candidates[candidateName].rank
+				end,
+				notCheckable = true,
+				hasArrow = true,
 			},
 		},
 		{ -- Level 3
