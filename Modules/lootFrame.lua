@@ -34,6 +34,9 @@ function LootFrame:Start(table, reRoll)
 	local offset = 0
 	if reRoll then
 		offset = #items  -- Insert to "items" if reRoll
+	elseif #items > 0 then  -- Must start over if it is not reRoll(receive lootTable).
+		--This is to avoid problem if the lootTable is received when lootFrame is shown. This can happen if ML does a reload.
+		self:OnDisable()
 	end
 
 	for k = 1, #table do
@@ -383,7 +386,8 @@ do
 		entry:Hide()
 		if not self.trashPool[entry.type] then self.trashPool[entry.type] = {} end
 		self.trashPool[entry.type][entry] = true
-		tremove(self.entries, entry.position)
+		tDeleteItem(self.entries, entry) -- To make tremove(self.entries, entry.position) works, :Update() must be run after every trash.
+										 -- entry.position is only used for debugging purpose. Dangerous to rely on a changing index for deletion.
 		self.entries[entry.item] = nil
 		self.numEntries = self.numEntries - 1
 	end
