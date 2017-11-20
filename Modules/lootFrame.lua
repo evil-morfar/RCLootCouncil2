@@ -20,6 +20,7 @@ local numRolled = 0
 local MIN_BUTTON_WIDTH = 40
 
 local responseWaitingRollResultQueue = {}
+local ROLL_TIMEOUT = 1.5
 
 local RANDOM_ROLL_PATTERN = RANDOM_ROLL_RESULT
 RANDOM_ROLL_PATTERN = RANDOM_ROLL_PATTERN:gsub("[%(%)%-]", "%%%1")
@@ -114,7 +115,8 @@ end
 
 function LootFrame:Update()
 	if numRolled == #items then -- We're through them all, so hide the frame
-		return self:Disable()
+		self:OnDisable()
+		self:ScheduleTimer(function() if numRolled == 0 and #items == 0 then self:Disable() end end, ROLL_TIMEOUT) -- Delay disable bit to give time to the event handler
 	end
 	local width = 150
 	local numEntries = 0
@@ -141,15 +143,12 @@ function LootFrame:Response(item, button, roll)
 		addon:Print(string.format(L["Response to 'item'"], addon:GetItemTextWithCount(item.link, #item.sessions))..
 			": "..addon:GetResponseText(button, isTier, isRelic)..(roll and (", ".._G.ROLL..":"..roll) or ""))
 	end
-	numRolled = numRolled + 1
-	self:Update()
+
 end
 
 function LootFrame:OnRoll(entry, button)
 	addon:Debug("LootFrame:Response", entry.realID, button)
 	local item = entry.item
-	-- Note that numRolled is not added here. It is added in :Response(), so we don't disable the module too early, in order to give time for event handler.
-
 	-- Only send minimum neccessary data, because the information of current equipped gear has been sent when we receive the loot table.
 	-- target, session, response, isTier, isRelic, note, link, ilvl, equipLoc, relicType, sendAvgIlvl, sendSpecID
 	if not item.isRoll or button == "PASS" or button == "TIMEOUT" then
@@ -158,9 +157,10 @@ function LootFrame:OnRoll(entry, button)
 		-- Need to do system roll and wait for its result.
 		local entryInQueue = {item=item, button=button}
 		tinsert(responseWaitingRollResultQueue, entryInQueue)
-		entryInQueue.timer = self:ScheduleTimer("OnRollTimeout", 2, entryInQueue) -- In case roll result is not received within time limit, discard the result.
+		entryInQueue.timer = self:ScheduleTimer("OnRollTimeout", ROLL_TIMEOUT, entryInQueue) -- In case roll result is not received within time limit, discard the result.
 		RandomRoll(1, 100)
 	end
+	numRolled = numRolled + 1
 	item.rolled = true
 
 	self.EntryManager:Trash(entry)
