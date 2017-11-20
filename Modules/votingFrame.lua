@@ -1210,12 +1210,8 @@ do
 			namePred = candidateName
 		elseif LIB_UIDROPDOWNMENU_MENU_VALUE:find("_ROLL$") then
 			namePred = function(name) return lootTable[session].candidates[name].roll == lootTable[session].candidates[candidateName].roll end
-		elseif LIB_UIDROPDOWNMENU_MENU_VALUE:find("_CLASS$") then
-			namePred = function(name) return lootTable[session].candidates[name].class == lootTable[session].candidates[candidateName].class end
 		elseif LIB_UIDROPDOWNMENU_MENU_VALUE:find("_ROLE$") then
 			namePred = function(name) return lootTable[session].candidates[name].role == lootTable[session].candidates[candidateName].role end
-		elseif LIB_UIDROPDOWNMENU_MENU_VALUE:find("_RANK$") then
-			namePred = function(name) return lootTable[session].candidates[name].rank == lootTable[session].candidates[candidateName].rank end
 		elseif LIB_UIDROPDOWNMENU_MENU_VALUE:find("_RESPONSE$") then
 			namePred = function(name) return lootTable[session].candidates[name].response == lootTable[session].candidates[candidateName].response and
 			 								 lootTable[session].candidates[name].isTier   == lootTable[session].candidates[candidateName].isTier   and
@@ -1346,29 +1342,11 @@ do
 				end,
 				notCheckable = true,
 				hasArrow = true,
-			},{ -- 7 Reannounce (and request rolls) to anyone whose role is the same as the candidate
-				onValue = function() return _G.LIB_UIDROPDOWNMENU_MENU_VALUE == "REANNOUNCE" or _G.LIB_UIDROPDOWNMENU_MENU_VALUE == "REQUESTROLL_REANNOUNCE" end,
-				value = function() return _G.LIB_UIDROPDOWNMENU_MENU_VALUE.."_CLASS" end,
-				text = function(candidateName)
-					local class = lootTable[session].candidates[candidateName].class
-					local color = RAID_CLASS_COLORS[class] and ("|c"..RAID_CLASS_COLORS[class].colorStr) or "|cffffffff"
-					return _G.CLASS..": "..color..class.."|r"
-				end,
-				notCheckable = true,
-				hasArrow = true,
 			},{ -- 8 Reannounce (and request rolls) to anyone whose role is the same as the candidate
 				onValue = function() return _G.LIB_UIDROPDOWNMENU_MENU_VALUE == "REANNOUNCE" or _G.LIB_UIDROPDOWNMENU_MENU_VALUE == "REQUESTROLL_REANNOUNCE" end,
 				value = function() return _G.LIB_UIDROPDOWNMENU_MENU_VALUE.."_ROLE" end,
 				text = function(candidateName)
 					return _G.ROLE..": "..addon:TranslateRole(lootTable[session].candidates[candidateName].role)
-				end,
-				notCheckable = true,
-				hasArrow = true,
-			},{ -- 9 Reannounce (and request rolls) to anyone whose role is the same as the candidate
-				onValue = function() return _G.LIB_UIDROPDOWNMENU_MENU_VALUE == "REANNOUNCE" or _G.LIB_UIDROPDOWNMENU_MENU_VALUE == "REQUESTROLL_REANNOUNCE" end,
-				value = function() return _G.LIB_UIDROPDOWNMENU_MENU_VALUE.."_RANK" end,
-				text = function(candidateName)
-					return _G.RANK..": "..lootTable[session].candidates[candidateName].rank
 				end,
 				notCheckable = true,
 				hasArrow = true,
