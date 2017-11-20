@@ -1210,12 +1210,6 @@ do
 			namePred = candidateName
 		elseif LIB_UIDROPDOWNMENU_MENU_VALUE:find("_ROLL$") then
 			namePred = function(name) return lootTable[session].candidates[name].roll == lootTable[session].candidates[candidateName].roll end
-		elseif LIB_UIDROPDOWNMENU_MENU_VALUE:find("_CLASS$") then
-			namePred = function(name) return lootTable[session].candidates[name].class == lootTable[session].candidates[candidateName].class end
-		elseif LIB_UIDROPDOWNMENU_MENU_VALUE:find("_ROLE$") then
-			namePred = function(name) return lootTable[session].candidates[name].role == lootTable[session].candidates[candidateName].role end
-		elseif LIB_UIDROPDOWNMENU_MENU_VALUE:find("_RANK$") then
-			namePred = function(name) return lootTable[session].candidates[name].rank == lootTable[session].candidates[candidateName].rank end
 		elseif LIB_UIDROPDOWNMENU_MENU_VALUE:find("_RESPONSE$") then
 			namePred = function(name) return lootTable[session].candidates[name].response == lootTable[session].candidates[candidateName].response and
 			 								 lootTable[session].candidates[name].isTier   == lootTable[session].candidates[candidateName].isTier   and
