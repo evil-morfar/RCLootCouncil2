@@ -1224,8 +1224,8 @@ do
 		elseif category == "RESPONSE" or LIB_UIDROPDOWNMENU_MENU_VALUE:find("_RESPONSE$") then
 			local isTier = lootTable[session].candidates[candidateName].isTier
 			local isRelic = lootTable[session].candidates[candidateName].isRelic
-			text = L["Response"]..": "..addon:GetResponseText(lootTable[session].candidates[candidateName].response, isTier, isRelic) or ""
-			text = "|cff"..(addon:RGBToHex(addon:GetResponseColor(lootTable[session].candidates[candidateName].response, isTier, isRelic)) or "ffffff")..text.."|r"
+			text = L["Response"]..": ".."|cff"..(addon:RGBToHex(addon:GetResponseColor(lootTable[session].candidates[candidateName].response, isTier, isRelic)) or "ffffff")
+				..(addon:GetResponseText(lootTable[session].candidates[candidateName].response, isTier, isRelic) or "").."|r"
 		elseif category == "CLASS" or LIB_UIDROPDOWNMENU_MENU_VALUE:find("_CLASS$") then
 			local class = lootTable[session].candidates[candidateName].class
 			local classDisplayName = LOCALIZED_CLASS_NAMES_MALE[class] or class
