@@ -1234,7 +1234,7 @@ do
 		elseif category == "RANK" or LIB_UIDROPDOWNMENU_MENU_VALUE:find("_RANK$") then
 			text = _G.RANK..": "..lootTable[session].candidates[candidateName].rank
 		else
-			error("Unexpected category or dropdown menu value: "..tostring(category).." ,"..tostring(LIB_UIDROPDOWNMENU_MENU_VALUE))
+			addon:Debug("Unexpected category or dropdown menu value: "..tostring(category).." ,"..tostring(LIB_UIDROPDOWNMENU_MENU_VALUE))
 		end
 
 		return text
@@ -1276,7 +1276,7 @@ do
 		elseif LIB_UIDROPDOWNMENU_MENU_VALUE:find("_RANK$") then
 			namePred = function(name) return lootTable[session].candidates[name].rank == lootTable[session].candidates[candidateName].rank end
 		else
-			error("Unexpected dropdown menu value: "..tostring(LIB_UIDROPDOWNMENU_MENU_VALUE))
+			addon:Debug("Unexpected dropdown menu value: "..tostring(LIB_UIDROPDOWNMENU_MENU_VALUE))
 		end
 
 		local noAutopass = isThisItem and LIB_UIDROPDOWNMENU_MENU_VALUE:find("_CANDIDATE$") and true or false
