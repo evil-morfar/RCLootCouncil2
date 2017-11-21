@@ -67,6 +67,7 @@ L["Ask me every time I become Master Looter"] = true
 L["Ask me when leader"] = true
 L["\"Autoloot\" others' BoE"] = true
 L["autoloot_others_BoE_desc"] = "Enable to automatically add BoE looted by others into a session."
+L["autoloot_others_BoE_combat"] = "%s has looted a BoE %s. The session frame will be shown when the combat ends."
 L["Auto Award to"] = true
 L["Auto Award"] = true
 L["Auto awarded 'item'"] = "Auto awarded %s"

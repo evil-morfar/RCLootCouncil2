@@ -17,6 +17,8 @@ local LibDialog = LibStub("LibDialog-1.0")
 
 local db;
 
+local LOOT_ITEM_PATTERN = "^".._G.LOOT_ITEM:gsub('%%s', '(.+)').."$"
+
 local LOOT_TIMEOUT = 1 -- If we give loot to someone, but loot slot is not cleared after this time period, consider this loot distribute as failed.
 						-- The real time needed is the sum of two players'(ML and the awardee) latency, so 1 second timeout should be enough.
 
@@ -45,12 +47,14 @@ function RCLootCouncilML:OnEnable()
 	self.trading = false     -- are we trading with another player?
 	self.tradeItems = {}    -- The items we are trading
 	self.tradeTarget = nil   -- The last player name who we trade
+	self.combatQueue = {}	-- The functions that will be executed when combat ends. format: [num] = {func, arg1, arg2, ...}
 
 	self:RegisterComm("RCLootCouncil", 		"OnCommReceived")
 	self:RegisterEvent("LOOT_OPENED",		"OnEvent")
 	self:RegisterEvent("LOOT_SLOT_CLEARED", "OnEvent")
 	self:RegisterEvent("LOOT_CLOSED",		"OnEvent")
 	self:RegisterEvent("CHAT_MSG_WHISPER",	"OnEvent")
+	self:RegisterEvent("CHAT_MSG_LOOT", 	"OnEvent")
 	self:RegisterEvent("TRADE_SHOW", "OnEvent")
 	self:RegisterEvent("TRADE_CLOSED", "OnEvent")
 	self:RegisterEvent("TRADE_ACCEPT_UPDATE", "OnEvent")
@@ -749,6 +753,30 @@ function RCLootCouncilML:OnEvent(event, ...)
 		self.trading = false -- Dont clear self.targetTarget here.
 	elseif event == "PLAYER_REGEN_ENABLED" then
 		self:ItemsInBagsLowTradeTimeRemainingReminder()
+		for _, entry in ipairs(self.combatQueue) do
+			entry[1](select(2, unpack(entry)))
+		end
+		wipe(self.combatQueue)
+
+	elseif event == "CHAT_MSG_LOOT" and addon.isMasterLooter and addon.handleLoot and db.autolootOthersBoE then
+		local msg, _, _, _, looter = ...
+		local _, item = msg:match(LOOT_ITEM_PATTERN)
+
+		if not addon:UnitIsUnit(looter, "player") then -- This line is a must
+			local bindType = item and select(14, GetItemInfo(item))
+			local quality = item and select(3, GetItemInfo(item))
+			if bindType and bindType ~= LE_ITEM_BIND_ON_ACQUIRE then -- Safetee: I actually prefer to use the term "non-bop" instead of "boe"
+				if item and (IsEquippableItem(item) or db.autolootEverything) and -- Safetee: I don't want to check db.autoloot here, because this is actually not a loot.
+					(quality and quality >= GetLootThreshold()) then
+					if InCombatLockdown() then
+						addon:Print(format(L["autoloot_others_BoE_combat"], addon:GetUnitClassColoredName(looter), item))
+						tinsert(self.combatQueue, {self.AddUserItem, self, item, looter}) -- Run the function when combat ends
+					else
+						self:AddUserItem(item, looter)
+					end
+				end
+			end
+		end
 	end
 end
 
