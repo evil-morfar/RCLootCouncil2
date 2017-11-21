@@ -80,6 +80,8 @@ local playersData = {-- Update on login/encounter starts. it stores the informat
 	relics = {}, -- Relics key: slot number(1-3), value: item link
 } -- player's data that can be changed by the player (spec, equipped ilvl, gaers, relics etc)
 
+local LOOT_ITEM_SELF_PATTERN = "^".._G.LOOT_ITEM_SELF:gsub('%%s', '(.+)').."$"
+
 function RCLootCouncil:OnInitialize()
 	--IDEA Consider if we want everything on self, or just whatever modules could need.
   	self.version = GetAddOnMetadata("RCLootCouncil", "Version")
@@ -99,6 +101,7 @@ function RCLootCouncil:OnInitialize()
 	self.recentReconnectRequest = false
 	self.currentInstanceName = ""
 	self.bossName = nil -- Updates after each encounter
+	self.recentAddableItem = nil -- The last tradeable item not below the loot threshold the player gets since the last encounter ends
 
 	self.verCheckDisplayed = false -- Have we shown a "out-of-date"?
 
@@ -402,6 +405,7 @@ function RCLootCouncil:OnEnable()
 	self:RegisterEvent("PLAYER_REGEN_ENABLED", "LeaveCombat")
 	self:RegisterEvent("ENCOUNTER_START", "OnEvent")
 	self:RegisterEvent("ENCOUNTER_END", 	"OnEvent")
+	self:RegisterEvent("CHAT_MSG_LOOT", "OnEvent")
 	--self:RegisterEvent("GROUP_ROSTER_UPDATE", "Debug", "event")
 
 	if IsInGuild() then
@@ -612,6 +616,21 @@ function RCLootCouncil:ChatCommand(msg)
 			if k == input then return v.module[v.func](v.module, unpack(args)) end
 		end
 		self:ChatCommand("help")
+	end
+end
+
+-- Update the recentAddableItem by link, if it is in bag and tradable.
+function RCLootCouncil:UpdateAndSendRecentAddableItem(link)
+	for i = 0, NUM_BAG_SLOTS do
+		for j = 1, GetContainerNumSlots(i) do
+			local _, _, _, _, _, _, link2 = GetContainerItemInfo(i, j)
+			if link2 and self:ItemIsItem(link, link2) then
+				--and self:GetContainerItemTradeTimeRemaining(i, j) > 0 then
+				self.recentAddableItem = link
+				self:SendCommand("group", "tradable", link)
+				return
+			end
+		end
 	end
 end
 
@@ -1654,6 +1673,13 @@ function RCLootCouncil:OnEvent(event, ...)
 	elseif event == "ENCOUNTER_END" then
 		self:DebugLog("Event:", event, ...)
 		self.bossName = select(2, ...) -- Extract encounter name
+	elseif event == "CHAT_MSG_LOOT" then
+		local msg = ...
+		local link = msg:match(LOOT_ITEM_SELF_PATTERN)
+		if link and select(3, GetItemInfo(link)) and select(3, GetItemInfo(link)) >= GetLootThreshold() then
+			-- There is some time between loot msg and the item pushed into the bag.
+			self:ScheduleTimer("UpdateAndSendRecentAddableItem", 1, link)
+		end
 	end
 end
 

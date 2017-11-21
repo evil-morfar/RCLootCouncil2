@@ -644,6 +644,32 @@ function RCLootCouncilML:OnCommReceived(prefix, serializedMsg, distri, sender)
 			elseif command == "lootTable" and addon:UnitIsUnit(sender, addon.playerName) then
 				-- Start a timer to set response as offline/not installed unless we receive an ack
 				self:ScheduleTimer("Timer", 10, "LootSend")
+
+			elseif command == "tradable" and not addon:UnitIsUnit(sender, "player") then -- Raid members send the info of the tradable item he looted.
+				local item = unpack(data)
+				addon:Debug("Receive info of tradable item: ", item, sender)
+				if addon.handleLoot and item and GetItemInfoInstant(item) then
+					if not GetItemInfo(item) then
+						addon:Debug("Receive info of tradable item but uncached: ", item, sender)
+						return self:ScheduleTimer("OnCommReceived", 1, prefix, serializedMsg, distri, sender)
+					end
+
+					local bindType = select(14, GetItemInfo(item))
+					local quality = select(3, GetItemInfo(item))
+
+					if (IsEquippableItem(item) or db.autolootEverything) and -- Safetee: I don't want to check db.autoloot here, because this is actually not a loot.
+						(quality and quality >= GetLootThreshold()) then
+						if db.autolootOthersBoE and bindType and bindType ~= LE_ITEM_BIND_ON_ACQUIRE then
+							-- Safetee: I actually prefer to use the term "non-bop" instead of "boe"
+							if InCombatLockdown() then
+								addon:Print(format(L["autoloot_others_item_combat"], addon:GetUnitClassColoredName(looter), item))
+								tinsert(self.combatQueue, {self.AddUserItem, self, item, looter}) -- Run the function when combat ends
+							else
+								self:AddUserItem(item, looter)
+							end
+						end
+					end
+				end
 			end
 		else
 			addon:Debug("Error in deserializing ML comm: ", command)
@@ -757,26 +783,6 @@ function RCLootCouncilML:OnEvent(event, ...)
 			entry[1](select(2, unpack(entry)))
 		end
 		wipe(self.combatQueue)
-
-	elseif event == "CHAT_MSG_LOOT" and addon.isMasterLooter and addon.handleLoot and db.autolootOthersBoE then
-		local msg, _, _, _, looter = ...
-		local _, item = msg:match(LOOT_ITEM_PATTERN)
-
-		if not addon:UnitIsUnit(looter, "player") then -- This line is a must
-			local bindType = item and select(14, GetItemInfo(item))
-			local quality = item and select(3, GetItemInfo(item))
-			if bindType and bindType ~= LE_ITEM_BIND_ON_ACQUIRE then -- Safetee: I actually prefer to use the term "non-bop" instead of "boe"
-				if item and (IsEquippableItem(item) or db.autolootEverything) and -- Safetee: I don't want to check db.autoloot here, because this is actually not a loot.
-					(quality and quality >= GetLootThreshold()) then
-					if InCombatLockdown() then
-						addon:Print(format(L["autoloot_others_BoE_combat"], addon:GetUnitClassColoredName(looter), item))
-						tinsert(self.combatQueue, {self.AddUserItem, self, item, looter}) -- Run the function when combat ends
-					else
-						self:AddUserItem(item, looter)
-					end
-				end
-			end
-		end
 	end
 end
 
