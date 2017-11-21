@@ -1195,17 +1195,35 @@ end
 -- @section Dropdowns.
 ----------------------------------------------------
 do
+
+	function RCVotingFrame.rennaounceOrRequestRolLCreateCategory(category)
+		return 
+		{ -- 3 Reannounce (and request rolls) to candidate
+			onValue = function() return _G.LIB_UIDROPDOWNMENU_MENU_VALUE == "REANNOUNCE" or _G.LIB_UIDROPDOWNMENU_MENU_VALUE == "REQUESTROLL_REANNOUNCE" end,
+			value = function() return _G.LIB_UIDROPDOWNMENU_MENU_VALUE.."_"..category end,
+			text = function(candidateName) return RCVotingFrame.reannounceOrRequestRollText(candidateName, category) end,
+			notCheckable = true,
+			hasArrow = true,
+		}
+	end
 	-- The text of level2 and header of level 3 button of rennaounce (and request roll)
 	--@param category: Used for level2 text to determine what text to shown.
 	-- Level 3 text used the value of LIB_UIDROPDOWNMENU_MENU_VALUE to determine what to show
-	RCVotingFrame.reannounceOrRequestRollText = function(candidateName, category)
+	function RCVotingFrame.reannounceOrRequestRollText(candidateName, category)
 		if type(LIB_UIDROPDOWNMENU_MENU_VALUE) ~= "string" then return end
 
 		local text = ""
 		if category == "CANDIDATE" or LIB_UIDROPDOWNMENU_MENU_VALUE:find("_CANDIDATE$") then
 			text = addon:GetUnitClassColoredName(candidateName)
+		elseif category == "GROUP" or LIB_UIDROPDOWNMENU_MENU_VALUE:find("_GROUP$") then
+			text = _G.GROUP
 		elseif category == "ROLL" or LIB_UIDROPDOWNMENU_MENU_VALUE:find("_ROLL$") then
 			text = _G.ROLL..": "..(lootTable[session].candidates[candidateName].roll or "")
+		elseif category == "RESPONSE" or LIB_UIDROPDOWNMENU_MENU_VALUE:find("_RESPONSE$") then
+			local isTier = lootTable[session].candidates[candidateName].isTier
+			local isRelic = lootTable[session].candidates[candidateName].isRelic
+			text = L["Response"]..": "..addon:GetResponseText(lootTable[session].candidates[candidateName].response, isTier, isRelic) or ""
+			text = "|cff"..(addon:RGBToHex(addon:GetResponseColor(lootTable[session].candidates[candidateName].response, isTier, isRelic)) or "ffffff")..text.."|r"
 		elseif category == "CLASS" or LIB_UIDROPDOWNMENU_MENU_VALUE:find("_CLASS$") then
 			local class = lootTable[session].candidates[candidateName].class
 			local classDisplayName = LOCALIZED_CLASS_NAMES_MALE[class] or class
@@ -1215,15 +1233,8 @@ do
 			text = _G.ROLE..": "..addon:TranslateRole(lootTable[session].candidates[candidateName].role)
 		elseif category == "RANK" or LIB_UIDROPDOWNMENU_MENU_VALUE:find("_RANK$") then
 			text = _G.RANK..": "..lootTable[session].candidates[candidateName].rank
-		elseif category == "RESPONSE" or LIB_UIDROPDOWNMENU_MENU_VALUE:find("_RESPONSE$") then
-			local isTier = lootTable[session].candidates[candidateName].isTier
-			local isRelic = lootTable[session].candidates[candidateName].isRelic
-			text = L["Response"]..": "..addon:GetResponseText(lootTable[session].candidates[candidateName].response, isTier, isRelic) or ""
-			text = "|cff"..(addon:RGBToHex(addon:GetResponseColor(lootTable[session].candidates[candidateName].response, isTier, isRelic)) or "ffffff")..text.."|r"
-		elseif category == "GROUP" or LIB_UIDROPDOWNMENU_MENU_VALUE:find("_GROUP$") then
-			text = _G.GROUP
 		else
-			addon:Debug("Unexpected dropdown menu value in RCVotingFrame.reannounceOrRequestRollButton: ", LIB_UIDROPDOWNMENU_MENU_VALUE)
+			error("Unexpected category or dropdown menu value: "..tostring(category).." ,"..tostring(LIB_UIDROPDOWNMENU_MENU_VALUE))
 		end
 
 		return text
@@ -1249,23 +1260,23 @@ do
 		local announceInChat = false
 		if LIB_UIDROPDOWNMENU_MENU_VALUE:find("_CANDIDATE$") then
 			namePred = candidateName
+		elseif LIB_UIDROPDOWNMENU_MENU_VALUE:find("_GROUP$") then
+			announceInChat = true -- Announce in chat when announce to group
+			namePred = true
 		elseif LIB_UIDROPDOWNMENU_MENU_VALUE:find("_ROLL$") then
 			namePred = function(name) return lootTable[session].candidates[name].roll == lootTable[session].candidates[candidateName].roll end
+		elseif LIB_UIDROPDOWNMENU_MENU_VALUE:find("_RESPONSE$") then
+			namePred = function(name) return lootTable[session].candidates[name].response == lootTable[session].candidates[candidateName].response and
+			 								 booleanCompare(lootTable[session].candidates[name].isTier, lootTable[session].candidates[candidateName].isTier) and
+			 								 booleanCompare(lootTable[session].candidates[name].isRelic, lootTable[session].candidates[candidateName].isRelic) end
 		elseif LIB_UIDROPDOWNMENU_MENU_VALUE:find("_CLASS$") then
 			namePred = function(name) return lootTable[session].candidates[name].class == lootTable[session].candidates[candidateName].class end
 		elseif LIB_UIDROPDOWNMENU_MENU_VALUE:find("_ROLE$") then
 			namePred = function(name) return lootTable[session].candidates[name].role == lootTable[session].candidates[candidateName].role end
 		elseif LIB_UIDROPDOWNMENU_MENU_VALUE:find("_RANK$") then
 			namePred = function(name) return lootTable[session].candidates[name].rank == lootTable[session].candidates[candidateName].rank end
-		elseif LIB_UIDROPDOWNMENU_MENU_VALUE:find("_RESPONSE$") then
-			namePred = function(name) return lootTable[session].candidates[name].response == lootTable[session].candidates[candidateName].response and
-			 								 booleanCompare(lootTable[session].candidates[name].isTier, lootTable[session].candidates[candidateName].isTier) and
-			 								 booleanCompare(lootTable[session].candidates[name].isRelic, lootTable[session].candidates[candidateName].isRelic) end
-		elseif LIB_UIDROPDOWNMENU_MENU_VALUE:find("_GROUP$") then
-			announceInChat = true -- Announce in chat when announce to group
-			namePred = true
 		else
-			return addon:Debug("Unexpected dropdown menu value in RCVotingFrame.reannounceOrRequestRollButton: ", LIB_UIDROPDOWNMENU_MENU_VALUE)
+			error("Unexpected dropdown menu value: "..tostring(LIB_UIDROPDOWNMENU_MENU_VALUE))
 		end
 
 		local noAutopass = isThisItem and LIB_UIDROPDOWNMENU_MENU_VALUE:find("_CANDIDATE$") and true or false
@@ -1354,49 +1365,14 @@ do
 				special = "AWARD_FOR",
 			},{ -- 2 CHANGE_RESPONSE
 				special = "CHANGE_RESPONSE",
-			},{ -- 3 Reannounce (and request rolls) to candidate
-				onValue = function() return _G.LIB_UIDROPDOWNMENU_MENU_VALUE == "REANNOUNCE" or _G.LIB_UIDROPDOWNMENU_MENU_VALUE == "REQUESTROLL_REANNOUNCE" end,
-				value = function() return _G.LIB_UIDROPDOWNMENU_MENU_VALUE.."_CANDIDATE" end,
-				text = function(candidateName) return RCVotingFrame.reannounceOrRequestRollText(candidateName, "CANDIDATE") end,
-				notCheckable = true,
-				hasArrow = true,
-			},{ -- 4 Reannounce (and request rolls) to group
-				onValue = function() return _G.LIB_UIDROPDOWNMENU_MENU_VALUE == "REANNOUNCE" or _G.LIB_UIDROPDOWNMENU_MENU_VALUE == "REQUESTROLL_REANNOUNCE" end,
-				value = function() return _G.LIB_UIDROPDOWNMENU_MENU_VALUE.."_GROUP" end,
-				text = function(candidateName) return RCVotingFrame.reannounceOrRequestRollText(candidateName, "GROUP") end,
-				notCheckable = true,
-				hasArrow = true,
-			},{ -- 5 Reannounce (and request rolls) to anyone whose roll is the same as the candidate
-				onValue = function() return _G.LIB_UIDROPDOWNMENU_MENU_VALUE == "REANNOUNCE" or _G.LIB_UIDROPDOWNMENU_MENU_VALUE == "REQUESTROLL_REANNOUNCE" end,
-				value = function() return _G.LIB_UIDROPDOWNMENU_MENU_VALUE.."_ROLL" end,
-				text = function(candidateName) return RCVotingFrame.reannounceOrRequestRollText(candidateName, "ROLL") end,
-				notCheckable = true,
-				hasArrow = true,
-			},{ -- 6 Reannounce (and request rolls) to anyone whose response is the same as the candidate
-				onValue = function() return _G.LIB_UIDROPDOWNMENU_MENU_VALUE == "REANNOUNCE" or _G.LIB_UIDROPDOWNMENU_MENU_VALUE == "REQUESTROLL_REANNOUNCE" end,
-				value = function() return _G.LIB_UIDROPDOWNMENU_MENU_VALUE.."_RESPONSE" end,
-				text = function(candidateName) return RCVotingFrame.reannounceOrRequestRollText(candidateName, "RESPONSE") end,
-				notCheckable = true,
-				hasArrow = true,
-			},{ -- 7 Reannounce (and request rolls) to anyone whose class is the same as the candidate
-				onValue = function() return _G.LIB_UIDROPDOWNMENU_MENU_VALUE == "REANNOUNCE" or _G.LIB_UIDROPDOWNMENU_MENU_VALUE == "REQUESTROLL_REANNOUNCE" end,
-				value = function() return _G.LIB_UIDROPDOWNMENU_MENU_VALUE.."_CLASS" end,
-				text = function(candidateName) return RCVotingFrame.reannounceOrRequestRollText(candidateName, "CLASS") end,
-				notCheckable = true,
-				hasArrow = true,
-			},{ -- 8 Reannounce (and request rolls) to anyone whose role is the same as the candidate
-				onValue = function() return _G.LIB_UIDROPDOWNMENU_MENU_VALUE == "REANNOUNCE" or _G.LIB_UIDROPDOWNMENU_MENU_VALUE == "REQUESTROLL_REANNOUNCE" end,
-				value = function() return _G.LIB_UIDROPDOWNMENU_MENU_VALUE.."_ROLE" end,
-				text = function(candidateName) return RCVotingFrame.reannounceOrRequestRollText(candidateName, "ROLE") end,
-				notCheckable = true,
-				hasArrow = true,
-			},{ -- 9 Reannounce (and request rolls) to anyone whose rank is the same as the candidate
-				onValue = function() return _G.LIB_UIDROPDOWNMENU_MENU_VALUE == "REANNOUNCE" or _G.LIB_UIDROPDOWNMENU_MENU_VALUE == "REQUESTROLL_REANNOUNCE" end,
-				value = function() return _G.LIB_UIDROPDOWNMENU_MENU_VALUE.."_RANK" end,
-				text = function(candidateName) return RCVotingFrame.reannounceOrRequestRollText(candidateName, "RANK") end,
-				notCheckable = true,
-				hasArrow = true,
-			},
+			}, -- 3,4,5,6,7,8, 9 Reannounce (and request rolls) categories
+			RCVotingFrame.rennaounceOrRequestRolLCreateCategory("CANDIDATE"),
+			RCVotingFrame.rennaounceOrRequestRolLCreateCategory("GROUP"),
+			RCVotingFrame.rennaounceOrRequestRolLCreateCategory("ROLL"),
+			RCVotingFrame.rennaounceOrRequestRolLCreateCategory("RESPONSE"),
+			RCVotingFrame.rennaounceOrRequestRolLCreateCategory("CLASS"),
+			RCVotingFrame.rennaounceOrRequestRolLCreateCategory("ROLE"),
+			RCVotingFrame.rennaounceOrRequestRolLCreateCategory("RANK"),
 		},
 		{ -- Level 3
 			{ -- 1 Header text of reannounce (and request rolls)
@@ -1405,7 +1381,7 @@ do
 				end,
 				text = function(candidateName) return RCVotingFrame.reannounceOrRequestRollText(candidateName) end,
 				notCheckable = true,
-				notClickable = true,
+				isTitle = true,
 				func = function(candidateName)
 					return RCVotingFrame.reannounceOrRequestRollButton(candidateName, true)
 				end,
