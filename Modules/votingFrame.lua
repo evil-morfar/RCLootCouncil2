@@ -1345,12 +1345,8 @@ do
 				text = function(candidateName)
 					local isTier = lootTable[session].candidates[candidateName].isTier
 					local isRelic = lootTable[session].candidates[candidateName].isRelic
-					return L["Response"]..": "..addon:GetResponseText(lootTable[session].candidates[candidateName].response, isTier, isRelic) or ""
-				end,
-				colorCode = function(candidateName)
-					local isTier = lootTable[session].candidates[candidateName].isTier
-					local isRelic = lootTable[session].candidates[candidateName].isRelic
-					return  "|cff"..(addon:RGBToHex(addon:GetResponseColor(lootTable[session].candidates[candidateName].response, isTier, isRelic)) or "ffffff")
+					local text = L["Response"]..": "..addon:GetResponseText(lootTable[session].candidates[candidateName].response, isTier, isRelic) or ""
+					return "|cff"..(addon:RGBToHex(addon:GetResponseColor(lootTable[session].candidates[candidateName].response, isTier, isRelic)) or "ffffff")..text.."|r"
 				end,
 				notCheckable = true,
 				hasArrow = true,
