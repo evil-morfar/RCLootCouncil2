@@ -1374,8 +1374,8 @@ do
 				special = "AWARD_FOR",
 			},{ -- 2 CHANGE_RESPONSE
 				special = "CHANGE_RESPONSE",
-			}, -- 3,4,5,6,7,8, 9 Reannounce (and request rolls) categories
-				("CANDIDATE"),
+			}, -- 3,4,5,6,7,8,9 Reannounce (and request rolls) categories
+			RCVotingFrame.rennaounceOrRequestRollCreateCategoryButton("CANDIDATE"),
 			RCVotingFrame.rennaounceOrRequestRollCreateCategoryButton("GROUP"),
 			RCVotingFrame.rennaounceOrRequestRollCreateCategoryButton("ROLL"),
 			RCVotingFrame.rennaounceOrRequestRollCreateCategoryButton("RESPONSE"),
