@@ -12,6 +12,7 @@ local addon = LibStub("AceAddon-3.0"):GetAddon("RCLootCouncil")
 local RCVotingFrame = addon:NewModule("RCVotingFrame", "AceComm-3.0", "AceTimer-3.0", "AceEvent-3.0")
 local LibDialog = LibStub("LibDialog-1.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
+local LibDialog = LibStub("LibDialog-1.0")
 
 local ROW_HEIGHT = 20;
 local NUM_ROWS = 15;
@@ -1257,6 +1258,7 @@ do
 		end
 
 		local isRoll = _G.LIB_UIDROPDOWNMENU_MENU_VALUE:find("^REQUESTROLL") and true or false
+		local text = ""
 
 		local announceInChat = false
 		if LIB_UIDROPDOWNMENU_MENU_VALUE:find("_CANDIDATE$") then
@@ -1282,7 +1284,13 @@ do
 
 		local noAutopass = isThisItem and LIB_UIDROPDOWNMENU_MENU_VALUE:find("_CANDIDATE$") and true or false
 
-		RCVotingFrame:Reannounce(namePred, sesPred, isRoll, noAutopass, announceInChat)
+		if isThisItem then
+			RCVotingFrame:Reannounce(namePred, sesPred, isRoll, noAutopass, announceInChat)
+		else -- Need to confirm to reannounce for all items.
+			LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_REANNOUNCE_ALL_ITEMS", {text=RCVotingFrame.reannounceOrRequestRollText(candidateName), isRoll = isRoll,
+				func = function() RCVotingFrame:Reannounce(namePred, sesPred, isRoll, noAutopass, announceInChat) end })
+		end
+
 	end
 
 	--- The entries placed in the rightclick menu.
