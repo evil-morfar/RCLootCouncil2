@@ -176,6 +176,8 @@ function RCSessionFrame:GetFrame()
 				return addon:Debug("Data wasn't ready", addon.candidates[addon.playerName], #addon.council)
 			elseif InCombatLockdown() then
 				return addon:Print(L["You can't start a loot session while in combat."])
+			elseif ml.running then
+				return addon:Print(L["You're already running a session."])
 			else
 				ml:StartSession()
 			end
