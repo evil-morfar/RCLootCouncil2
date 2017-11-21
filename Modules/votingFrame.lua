@@ -424,6 +424,7 @@ function RCVotingFrame:Update()
 	if not self.frame then return end -- No updates when it doesn't exist
 	if not lootTable[session] then return addon:Debug("VotingFrame:Update() without lootTable!!") end -- No updates if lootTable doesn't exist.
 	self.frame.st:SortData()
+	self.frame.st:SortData() -- It appears that there is a bug in lib-st that only one SortData() does not use the "sortnext" to correct sort the rows.
 	-- update awardString
 	if lootTable[session] and lootTable[session].awarded then
 		self.frame.awardString:SetText(L["Item was awarded to"])
