@@ -1198,7 +1198,7 @@ end
 ----------------------------------------------------
 do
 
-	function RCVotingFrame.rennaounceOrRequestRolLCreateCategory(category)
+	function RCVotingFrame.rennaounceOrRequestRollCreateCategoryButton(category)
 		return 
 		{ -- 3 Reannounce (and request rolls) to candidate
 			onValue = function() return _G.LIB_UIDROPDOWNMENU_MENU_VALUE == "REANNOUNCE" or _G.LIB_UIDROPDOWNMENU_MENU_VALUE == "REQUESTROLL_REANNOUNCE" end,
@@ -1375,13 +1375,13 @@ do
 			},{ -- 2 CHANGE_RESPONSE
 				special = "CHANGE_RESPONSE",
 			}, -- 3,4,5,6,7,8, 9 Reannounce (and request rolls) categories
-			RCVotingFrame.rennaounceOrRequestRolLCreateCategory("CANDIDATE"),
-			RCVotingFrame.rennaounceOrRequestRolLCreateCategory("GROUP"),
-			RCVotingFrame.rennaounceOrRequestRolLCreateCategory("ROLL"),
-			RCVotingFrame.rennaounceOrRequestRolLCreateCategory("RESPONSE"),
-			RCVotingFrame.rennaounceOrRequestRolLCreateCategory("CLASS"),
-			RCVotingFrame.rennaounceOrRequestRolLCreateCategory("ROLE"),
-			RCVotingFrame.rennaounceOrRequestRolLCreateCategory("RANK"),
+				("CANDIDATE"),
+			RCVotingFrame.rennaounceOrRequestRollCreateCategoryButton("GROUP"),
+			RCVotingFrame.rennaounceOrRequestRollCreateCategoryButton("ROLL"),
+			RCVotingFrame.rennaounceOrRequestRollCreateCategoryButton("RESPONSE"),
+			RCVotingFrame.rennaounceOrRequestRollCreateCategoryButton("CLASS"),
+			RCVotingFrame.rennaounceOrRequestRollCreateCategoryButton("ROLE"),
+			RCVotingFrame.rennaounceOrRequestRollCreateCategoryButton("RANK"),
 		},
 		{ -- Level 3
 			{ -- 1 Header text of reannounce (and request rolls)
