@@ -1191,6 +1191,9 @@ end
 ----------------------------------------------------
 do
 
+	local function booleanCompare(a, b)
+		return (a and b) or (not a and not b)
+	end
 	-- Do reannounce (and request rolls)
 	-- whether request rolls, and who to reannounce is determined by the value of LIB_UIDROPDOWNMENU_MENU_VALUE
 	--@param isThisItem true to reannounce on this item, false to reannounce on all items.
@@ -1218,8 +1221,8 @@ do
 			namePred = function(name) return lootTable[session].candidates[name].rank == lootTable[session].candidates[candidateName].rank end
 		elseif LIB_UIDROPDOWNMENU_MENU_VALUE:find("_RESPONSE$") then
 			namePred = function(name) return lootTable[session].candidates[name].response == lootTable[session].candidates[candidateName].response and
-			 								 lootTable[session].candidates[name].isTier   == lootTable[session].candidates[candidateName].isTier   and
-			 								 lootTable[session].candidates[name].isRelic  == lootTable[session].candidates[candidateName].isRelic  end
+			 								 booleanCompare(lootTable[session].candidates[name].isTier, lootTable[session].candidates[candidateName].isTier) and
+			 								 booleanCompare(lootTable[session].candidates[name].isRelic, lootTable[session].candidates[candidateName].isRelic) end
 		elseif LIB_UIDROPDOWNMENU_MENU_VALUE:find("_GROUP$") then
 			announceInChat = true -- Announce in chat when announce to group
 			namePred = true
@@ -1346,13 +1349,14 @@ do
 				end,
 				notCheckable = true,
 				hasArrow = true,
-			},{ -- 7 Reannounce (and request rolls) to anyone whose role is the same as the candidate
+			},{ -- 7 Reannounce (and request rolls) to anyone whose class is the same as the candidate
 				onValue = function() return _G.LIB_UIDROPDOWNMENU_MENU_VALUE == "REANNOUNCE" or _G.LIB_UIDROPDOWNMENU_MENU_VALUE == "REQUESTROLL_REANNOUNCE" end,
 				value = function() return _G.LIB_UIDROPDOWNMENU_MENU_VALUE.."_CLASS" end,
 				text = function(candidateName)
 					local class = lootTable[session].candidates[candidateName].class
+					local classDisplayName = LOCALIZED_CLASS_NAMES_MALE[class] or class
 					local color = RAID_CLASS_COLORS[class] and ("|c"..RAID_CLASS_COLORS[class].colorStr) or "|cffffffff"
-					return _G.CLASS..": "..color..class.."|r"
+					return _G.CLASS..": "..color..classDisplayName.."|r"
 				end,
 				notCheckable = true,
 				hasArrow = true,
@@ -1364,7 +1368,7 @@ do
 				end,
 				notCheckable = true,
 				hasArrow = true,
-			},{ -- 9 Reannounce (and request rolls) to anyone whose role is the same as the candidate
+			},{ -- 9 Reannounce (and request rolls) to anyone whose rank is the same as the candidate
 				onValue = function() return _G.LIB_UIDROPDOWNMENU_MENU_VALUE == "REANNOUNCE" or _G.LIB_UIDROPDOWNMENU_MENU_VALUE == "REQUESTROLL_REANNOUNCE" end,
 				value = function() return _G.LIB_UIDROPDOWNMENU_MENU_VALUE.."_RANK" end,
 				text = function(candidateName)
