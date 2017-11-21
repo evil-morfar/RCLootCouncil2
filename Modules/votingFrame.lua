@@ -1211,7 +1211,7 @@ do
 			sesPred = true
 		end
 
-		local isRoll = _G.LIB_UIDROPDOWNMENU_MENU_VALUE:find("^REQUESTROLL")
+		local isRoll = _G.LIB_UIDROPDOWNMENU_MENU_VALUE:find("^REQUESTROLL") and true or false
 
 		local announceInChat = false
 		if LIB_UIDROPDOWNMENU_MENU_VALUE:find("_CANDIDATE$") then
@@ -1235,7 +1235,7 @@ do
 			return addon:Debug("Unexpected dropdown menu value in RCVotingFrame.reannounceOrRequestRollButton: ", LIB_UIDROPDOWNMENU_MENU_VALUE)
 		end
 
-		local noAutopass = isThisItem and LIB_UIDROPDOWNMENU_MENU_VALUE:find("_CANDIDATE$")
+		local noAutopass = isThisItem and LIB_UIDROPDOWNMENU_MENU_VALUE:find("_CANDIDATE$") and true or false
 
 		RCVotingFrame:Reannounce(namePred, sesPred, isRoll, noAutopass, announceInChat)
 	end
