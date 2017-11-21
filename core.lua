@@ -106,6 +106,7 @@ function RCLootCouncil:OnInitialize()
 	self.council = {} -- council from ML
 	self.mldb = {} -- db recived from ML
 	self.responses = {
+		AWARDED         = { color = {0,0,1,1},				sort = 500,		text = L["Awarded"],},
 		NOTANNOUNCED	= { color = {1,0,1,1},				sort = 501,		text = L["Not announced"],},
 		ANNOUNCED		= { color = {1,0,1,1},				sort = 502,		text = L["Loot announced, waiting for answer"], },
 		WAIT				= { color = {1,1,0,1},				sort = 503,		text = L["Candidate is selecting response, please wait"], },
@@ -116,6 +117,7 @@ function RCLootCouncil:OnInitialize()
 		AUTOPASS			= { color = {0.7,0.7,0.7,1},		sort = 801,		text = L["Autopass"], },
 		DISABLED			= { color = {0.3,0.35,0.5,1},		sort = 802,		text = L["Candidate has disabled RCLootCouncil"], },
 		NOTINRAID		= { color = {0.7,0.6,0,1}, 		sort = 803, 	text = L["Candidate is not in the instance"]},
+		DEFAULT			= { color = {1,0,0,1},				sort = 899, 	text = L["Response isn't available. Please upgrade RCLootCouncil."]},
 		--[[1]]			  { color = {0,1,0,1},				sort = 1,		text = L["Mainspec/Need"],},
 		--[[2]]			  { color = {1,0.5,0,1},			sort = 2,		text = L["Offspec/Greed"],	},
 		--[[3]]			  { color = {0,0.7,0.7,1},			sort = 3,		text = L["Minor Upgrade"],},
@@ -2513,13 +2515,15 @@ end
 -- @param isTier True if the response belongs to a tier item.
 -- @param isRelic True if the response belongs to a relic item.
 function RCLootCouncil:GetResponseText(response, isTier, isRelic)
+	local ret
 	if isTier and self.mldb.tierButtonsEnabled and type(response) == "number" then
-		return (self.mldb.responses.tier and self.mldb.responses.tier[response]) and self.mldb.responses.tier[response].text or db.responses.tier[response].text
+		ret = (self.mldb.responses.tier and self.mldb.responses.tier[response]) and self.mldb.responses.tier[response].text or db.responses.tier[response].text
 	elseif isRelic and self.mldb.relicButtonsEnabled and type(response) == "number" then
-		return (self.mldb.responses.relic and self.mldb.responses.relic[response]) and self.mldb.responses.relic[response].text or db.responses.relic[response].text
+		ret = (self.mldb.responses.relic and self.mldb.responses.relic[response]) and self.mldb.responses.relic[response].text or db.responses.relic[response].text
 	else
-		return (self.mldb.responses and self.mldb.responses[response]) and self.mldb.responses[response].text or db.responses[response].text
+		ret = (self.mldb.responses and self.mldb.responses[response]) and self.mldb.responses[response].text or db.responses[response].text
 	end
+	return ret or db.responses.DEFAULT.text
 end
 
 ---
@@ -2532,18 +2536,20 @@ function RCLootCouncil:GetResponseColor(response, isTier, isRelic)
  	else
 		color = (self.mldb.responses and self.mldb.responses[response]) and self.mldb.responses[response].color or db.responses[response].color
 	end
-	return unpack(color)
+	return unpack(color or db.responses.DEFAULT.color)
 end
 
 ---
 function RCLootCouncil:GetResponseSort(response, isTier, isRelic)
+	local ret
 	if isTier and self.mldb.tierButtonsEnabled and type(response) == "number" then
-		return (self.mldb.responses.tier and self.mldb.responses.tier[response]) and self.mldb.responses.tier[response].sort or db.responses.tier[response].sort
+		ret = (self.mldb.responses.tier and self.mldb.responses.tier[response]) and self.mldb.responses.tier[response].sort or db.responses.tier[response].sort
 	elseif isRelic and self.mldb.relicButtonsEnabled and type(response) == "number" then
-		return (self.mldb.responses.relic and self.mldb.responses.relic[response]) and self.mldb.responses.relic[response].sort or db.responses.relic[response].sort
+		ret = (self.mldb.responses.relic and self.mldb.responses.relic[response]) and self.mldb.responses.relic[response].sort or db.responses.relic[response].sort
 	else
-		return (self.mldb.responses and self.mldb.responses[response]) and self.mldb.responses[response].sort or db.responses[response].sort
+		ret = (self.mldb.responses and self.mldb.responses[response]) and self.mldb.responses[response].sort or db.responses[response].sort
 	end
+	return ret or db.responses.DEFAULT.sort
 end
 
 --#end UI Functions -----------------------------------------------------
