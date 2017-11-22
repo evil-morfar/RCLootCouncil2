@@ -102,7 +102,8 @@
    * "Miscellaneous" and "Junk" is added to the ```subTypeLookup```.
    * The ```lootTable``` in core is now the same as in votingFrame. Use ```RCLootCouncil:GetLootTable()``` to fetch it, as the votingFrame one will be removed.
    * ```ML:AddItem(...)``` is changed to ```ML:AddItem(item, bagged, slotIndex, entry)```.
-   * The argument of message ```RCMLAddItem``` is changed from item, session to item, entry
+   * The argument of message ```RCMLAddItem``` is changed from item, session to item, entry.
+   * The entries in mldb are now nonexistant (nil) instead of false - just to save a bit of space.
 
 
 *Huge shoutout to __Safetee__ for the majority of these changes!*
