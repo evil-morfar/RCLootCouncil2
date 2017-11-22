@@ -106,7 +106,7 @@ function RCLootCouncil:OnInitialize()
 	self.council = {} -- council from ML
 	self.mldb = {} -- db recived from ML
 	self.responses = {
-		AWARDED         = { color = {0,0,1,1},				sort = 500,		text = L["Awarded"],},
+		AWARDED        = { color = {1,1,1,1},				sort = 0.1,		text = L["Awarded"],},
 		NOTANNOUNCED	= { color = {1,0,1,1},				sort = 501,		text = L["Not announced"],},
 		ANNOUNCED		= { color = {1,0,1,1},				sort = 502,		text = L["Loot announced, waiting for answer"], },
 		WAIT				= { color = {1,1,0,1},				sort = 503,		text = L["Candidate is selecting response, please wait"], },
