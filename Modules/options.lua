@@ -1220,6 +1220,9 @@ function addon:OptionsTable()
 			},
 		},
 	}
+	local function roundColors(r,g,b,a)
+		return addon.round(r,2),addon.round(g,2),addon.round(b,2),addon.round(a,2)
+	end
 
 	-- #region Create options thats made with loops
 	-- Buttons
@@ -1241,7 +1244,7 @@ function addon:OptionsTable()
 			desc = L["response_color_desc"],
 			type = "color",
 			get = function() return unpack(self.db.profile.responses[i].color)	end,
-			set = function(info,r,g,b,a) addon:ConfigTableChanged("responses"); self.db.profile.responses[i].color = {r,g,b,a} end,
+			set = function(info,r,g,b,a) addon:ConfigTableChanged("responses"); self.db.profile.responses[i].color = {roundColors(r,g,b,a)} end,
 			hidden = function() return self.db.profile.numButtons < i end,
 		}
 		options.args.mlSettings.args.buttonsTab.args.buttonOptions.args["picker"..i] = picker;
@@ -1289,7 +1292,7 @@ function addon:OptionsTable()
 			type = "color",
 			width = "half",
 			get = function() return unpack(self.db.profile.awardReasons[i].color) end,
-			set = function(info, r,g,b,a) self.db.profile.awardReasons[i].color = {r,g,b,a} end,
+			set = function(info, r,g,b,a) self.db.profile.awardReasons[i].color = {roundColors(r,g,b,a)} end,
 			hidden = function() return self.db.profile.numAwardReasons < i end,
 		}
 		options.args.mlSettings.args.awardsTab.args.awardReasons.args["log"..i] = {
@@ -1369,7 +1372,7 @@ function addon:OptionsTable()
 			desc = L["response_color_desc"],
 			type = "color",
 			get = function() return unpack(v.color)	end,
-			set = function(info,r,g,b,a) addon:ConfigTableChanged("responses"); v.color = {r,g,b,a} end,
+			set = function(info,r,g,b,a) addon:ConfigTableChanged("responses"); v.color = {roundColors(r,g,b,a)} end,
 			hidden = function() return not self.db.profile.tierButtonsEnabled or self.db.profile.tierNumButtons < v.sort end,
 		}
 		options.args.mlSettings.args.buttonsTab.args.tierButtonsOptions.args["text"..k] = {
@@ -1399,7 +1402,7 @@ function addon:OptionsTable()
 			desc = L["response_color_desc"],
 			type = "color",
 			get = function() return unpack(v.color)	end,
-			set = function(info,r,g,b,a) addon:ConfigTableChanged("responses"); v.color = {r,g,b,a} end,
+			set = function(info,r,g,b,a) addon:ConfigTableChanged("responses"); v.color = {roundColors(r,g,b,a)} end,
 			hidden = function() return not self.db.profile.relicButtonsEnabled or self.db.profile.relicNumButtons < v.sort end,
 		}
 		options.args.mlSettings.args.buttonsTab.args.relicButtonsOptions.args["text"..k] = {
