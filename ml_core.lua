@@ -538,22 +538,22 @@ function RCLootCouncilML:BuildMLdb()
 	end
 
 	local MLdb = {
-		selfVote			= db.selfVote,
-		multiVote		= db.multiVote,
-		anonymousVoting = db.anonymousVoting,
-		allowNotes		= db.allowNotes,
+		selfVote			= db.selfVote or nil,
+		multiVote		= db.multiVote or nil,
+		anonymousVoting= db.anonymousVoting or nil,
+		allowNotes		= db.allowNotes or nil,
 		numButtons		= db.numButtons,
 		tierNumButtons = db.tierNumButtons,
-		relicNumButtons = db.relicNumButtons,
-		hideVotes		= db.hideVotes,
-		observe			= db.observe,
-		buttons			= changedButtons,
+		relicNumButtons= db.relicNumButtons,
+		hideVotes		= db.hideVotes or nil,
+		observe			= db.observe or nil,
+		buttons			= changedButtons,	-- REVIEW I'm not sure if it's feasible to nil out empty tables
 		tierButtons 	= changedTierButtons,
 		relicButtons 	= changedRelicButtons,
 		responses		= changedResponses,
 		timeout			= db.timeout,
-		tierButtonsEnabled = db.tierButtonsEnabled,
-		relicButtonsEnabled = db.relicButtonsEnabled,
+		tierButtonsEnabled = db.tierButtonsEnabled or nil,
+		relicButtonsEnabled = db.relicButtonsEnabled or nil,
 	}
 
 	addon:SendMessage("RCMLBuildMLdb", MLdb)
