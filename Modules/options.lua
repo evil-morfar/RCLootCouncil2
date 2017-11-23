@@ -782,7 +782,7 @@ function addon:OptionsTable()
 									outputDesc = {
 										order = 2,
 										fontSize = "medium",
-										name = L["announce_awards_desc2"].."\n"..table.concat(RCLootCouncilML.awardStringsDesc, "\n"),
+										name = function() return L["announce_awards_desc2"].."\n"..table.concat(RCLootCouncilML.awardStringsDesc, "\n") end, -- use function so module can update this
 										type = "description",
 										hidden = function() return not self.db.profile.announceAward end,
 									},
@@ -839,7 +839,7 @@ function addon:OptionsTable()
 									announceItemStringDesc ={
 										order = 4,
 										fontSize = "medium",
-										name = L["announce_item_string_desc"].."\n"..table.concat(RCLootCouncilML.announceItemStringsDesc, "\n"),
+										name = function() return L["announce_item_string_desc"].."\n"..table.concat(RCLootCouncilML.announceItemStringsDesc, "\n") end, -- use function so module can update this
 										type = "description",
 										hidden = function() return not self.db.profile.announceItems end,
 									},
