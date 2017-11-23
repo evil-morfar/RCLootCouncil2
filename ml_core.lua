@@ -1578,6 +1578,9 @@ function RCLootCouncilML.AwardPopupOnShow(frame, data)
 end
 
 function RCLootCouncilML.AwardPopupOnClickYesCallback(awarded, session, winner, status, data, callback, ...)
+	if callback and type(callback) == "function" then
+		callback(awarded, session, winner, status, data, ...)
+	end
 	if awarded then -- log it
 		local oldHistory = RCLootCouncilML.lootTable[session].history
 		if oldHistory and oldHistory.id then -- Reaward, clear the old history entry
@@ -1585,10 +1588,6 @@ function RCLootCouncilML.AwardPopupOnClickYesCallback(awarded, session, winner, 
 		end
 		RCLootCouncilML.lootTable[session].history = RCLootCouncilML:TrackAndLogLoot(data.winner, data.link, data.responseID, addon.bossName, data.votes, data.gear1, data.gear2,
 		 										  data.reason, data.isToken, data.isTierRoll, data.isRelicRoll, data.note)
-	end
-
-	if callback and type(callback) == "function" then
-		callback(awarded, session, winner, status, data, ...)
 	end
 end
 
