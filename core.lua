@@ -364,9 +364,9 @@ function RCLootCouncil:OnInitialize()
 		 		 "color", "class", "isAwardReason", "difficultyID", "mapID", "groupSize", "tierToken"}
 	},
 	]]
-	self.db.RegisterCallback(self, "OnProfileChanged", "RefreshConfig")
-	self.db.RegisterCallback(self, "OnProfileCopied", "RefreshConfig")
-	self.db.RegisterCallback(self, "OnProfileReset", "RefreshConfig")
+	self.db.RegisterCallback(self, "OnProfileChanged", ReloadUI)
+	self.db.RegisterCallback(self, "OnProfileCopied", ReloadUI)
+	self.db.RegisterCallback(self, "OnProfileReset", ReloadUI)
 
 	-- add shortcuts
 	db = self.db.profile
@@ -454,12 +454,6 @@ function RCLootCouncil:OnDisable()
 		-- delete all windows
 		-- disable modules(?)
 	self:UnregisterAllEvents()
-end
-
-function RCLootCouncil:RefreshConfig(event, database, profile)
-	self:Debug("RefreshConfig",event, database, profile)
-	self.db.profile = database.profile
-	db = database.profile
 end
 
 function RCLootCouncil:ConfigTableChanged(val)
