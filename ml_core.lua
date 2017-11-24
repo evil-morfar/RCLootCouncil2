@@ -270,9 +270,9 @@ end
 function RCLootCouncilML:ClearOldItemsInBags()
 	for i=#db.baggedItems, 1, -1 do
 		local v = db.baggedItems[i]
-		-- Expire BOP items after 2h, Because Blizzard gives only 2h window to trade soulbound items.
-		-- Expire items not bop in the award later list older than 6h, in case some guild distribute boe items at the end of raid.
-		-- if v.addedTime is not recorded, then sth is wrong, remove it.
+		-- Expire BOP items after 2h, Because Blizzard only gives a 2h window to trade soulbound items.
+		-- Expire items non BoP after 6h, in case some guild distribute boe items at the end of raid.
+		-- if v.addedTime is not recorded, then something is wrong, just remove it.
 		if (not v.addedTime) or (v.bop and time(date("!*t")) - v.addedTime > 3600*2) or (time(date("!*t")) - v.addedTime > 3600*6) then -- time(date("!*t")) is UTC epoch.
 			tremove(db.baggedItems, i)
 		end
@@ -885,12 +885,7 @@ function RCLootCouncilML:CanGiveLoot(slot, item, winner)
 				return false, "not_ml_candidate"
 			end
 		end
-
-		-- IDEA: I don't check this now. but is there any way to check if the unit is in the instance?
-		-- Currently I know: UnitIsVisible() does not work, it does not always return true when in the same instance.
-		-- Compare zone argument in GetRaidRosterInfo() does not work, because one instance has mutliple value for this argument.
 	end
-
 	return true
 end
 
@@ -1134,8 +1129,7 @@ function RCLootCouncilML:Award(session, winner, response, reason, callback, ...)
 
 	-- For the rest, the item is not awarded.
 
-	if not self.lootTable[session].lootSlot and not self.lootTable[session].bagged then -- "/rc add" or test mode. Note that "/rc add" does't add the item to db.baggedItems
-																						-- unless award later is checked.
+	if not self.lootTable[session].lootSlot and not self.lootTable[session].bagged then -- "/rc add" or test mode. Note that "/rc add" does't add the item to db.baggedItems unless award later is checked.
 		if winner then
 			awardSuccess(session, winner, addon.testMode and "test_mode" or "manually_added", callback, ...)
 			registerAndAnnounceAward(session, winner, response, reason)
@@ -1208,8 +1202,6 @@ function RCLootCouncilML:Award(session, winner, response, reason, callback, ...)
 			end)
 		end
 	end
-
-	-- return nil. Don't know the award result yet
 end
 
 --- Substitution strings for AnnounceItems
@@ -1379,7 +1371,7 @@ function RCLootCouncilML:TrackAndLogLoot(name, item, responseID, boss, votes, it
 	history_table["tokenRoll"]		= tokenRoll																						-- New in v2.4+
 	history_table["relicRoll"]		= relicRoll																						-- New in v2.5+
 	history_table["note"]			= note																							-- New in v2.7+
-	history_table["id"]				= time(date("!*t")).."-"..historyCounter														-- New in v2.7+. A unique id for the history entry.
+	history_table["id"]				= time(date("!*t")).."-"..historyCounter												-- New in v2.7+. A unique id for the history entry.
 	historyCounter = historyCounter + 1
 
 	addon:SendMessage("RCMLLootHistorySend", history_table, name, item, responseID, boss, votes, itemReplaced1, itemReplaced2, reason, isToken, tokenRoll, relicRoll, note)
@@ -1521,7 +1513,6 @@ function RCLootCouncilML:GetItemsFromMessage(msg, sender, retryCount)
 		end
 	end
 
-
 	local ilvl = self.lootTable[ses].ilvl
 	local g1 = item1
 	local g2 = item2
@@ -1581,7 +1572,6 @@ function RCLootCouncilML:SendWhisperHelp(target)
 	SendChatMessage(L["whisper_guide2"], "WHISPER", nil, target)
 	addon:Print(format(L["Sent whisper help to 'player'"], addon.Ambiguate(target)))
 end
-
 
 --- Award popup control functions
 -- Provided for easy hook access

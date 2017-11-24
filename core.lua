@@ -744,7 +744,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 					end
 
 					-- Check if council is received
-					if not FindInTableIf(self.council, function(v) return self:UnitIsUnit(self.masterLooter, v) end) then -- Dont like to do raw comparison to the name, when the operation is important.
+					if not FindInTableIf(self.council, function(v) return self:UnitIsUnit(self.masterLooter, v) end) then
 						self:Debug("Received loot table without ML in the council", sender)
 						self:SendCommand(self.masterLooter, "council_request")
 						return self:ScheduleTimer("OnCommReceived", 5, prefix, serializedMsg, distri, sender)
@@ -1317,7 +1317,7 @@ function RCLootCouncil:GetTokenEquipLoc(tokenSlot)
 			end
 		end
 	end
-	return "" -- return nil is bad. equipLoc should always have value
+	return ""
 end
 
 function RCLootCouncil:Timer(type, ...)
@@ -1370,14 +1370,14 @@ end
 1	Warrior			WARRIOR
 2	Paladin			PALADIN
 3	Hunter			HUNTER
-4	Rogue			ROGUE
+4	Rogue				ROGUE
 5	Priest			PRIEST
 6	Death Knight	DEATHKNIGHT
 7	Shaman			SHAMAN
-8	Mage			MAGE
+8	Mage				MAGE
 9	Warlock			WARLOCK
-10	Monk			MONK
-11	Druid			DRUID
+10	Monk				MONK
+11	Druid				DRUID
 12	Demon Hunter	DEMONHUNTER
 --]]
 RCLootCouncil.classDisplayNameToID = {} -- Key: localized class display name. value: class id(number)
@@ -1466,10 +1466,6 @@ function RCLootCouncil:GetContainerItemTradeTimeRemaining(container, slot)
 	end
 
 	local bindTradeTimeRemainingPattern = escapePatternSymbols(BIND_TRADE_TIME_REMAINING):gsub("%%%%s", "%(%.%+%)") -- PT locale contains "-", must escape that.
-												-- P.S. LibDeformat is useful to do deformat things, but not using it because we'll add a new library and lose performance.
-												-- But LibDeformat makes the function more likely to work if Blizzard changes the string constants.
-												-- Our parser doesn't work if %s to changed to %1$s
-												-- Blizzard should have no reason to change them though.
 	local bounded = false
 
 	for i = 1, tooltipForParsing:NumLines() or 0 do
@@ -1515,7 +1511,6 @@ function RCLootCouncil:GetContainerItemTradeTimeRemaining(container, slot)
 			end
 		end
 	end
-
 	tooltipForParsing:Hide()
 	if bounded then
 		return 0
@@ -1670,8 +1665,7 @@ function RCLootCouncil:OnEvent(event, ...)
 		self:DebugLog("Event:", event, ...)
 		self.bossName = select(2, ...) -- Extract encounter name
 
-	elseif event == "LOOT_OPENED" then -- ~~~IDEA Check if event LOOT_READY is useful here (also check GetLootInfo() for this)~~~
-								   -- ^ Blizzard code doesn't use LOOT_READY, so don't bother it.
+	elseif event == "LOOT_OPENED" then
 		self.lootOpen = true
 		wipe(self.lootSlotInfo)
 		for i = 1,  GetNumLootItems() do
@@ -2013,11 +2007,10 @@ function RCLootCouncil:GetItemNameFromLink(link)
 	return strmatch(link or "", "%[(.+)%]")
 end
 
--- The link of same item generated from different player, or if two links are generated between player spec switch, are NOT the same
--- Because item link contains player's level and spec ID.
+-- The link of same item generated from different players, or if two links are generated between player spec switch, are NOT the same
 -- This function compares link with link level and spec ID removed.
--- Also compare with unique id removed, because wowpedia says that
--- " In-game testing indicates that the UniqueId can change from the first loot to successive loots on the same item."
+-- Also compare with unique id removed, because wowpedia says that:
+-- "In-game testing indicates that the UniqueId can change from the first loot to successive loots on the same item."
 -- Although log shows item in the loot actually has no uniqueId in Legion, but just in case Blizzard changes it in the future.
 -- @return true if two items are the same item
 function RCLootCouncil:ItemIsItem(item1, item2)
