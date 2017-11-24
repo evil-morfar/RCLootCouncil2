@@ -1226,16 +1226,6 @@ do
 			local isRelic = lootTable[session].candidates[candidateName].isRelic
 			text = L["Response"]..": ".."|cff"..(addon:RGBToHex(addon:GetResponseColor(lootTable[session].candidates[candidateName].response, isTier, isRelic)) or "ffffff")
 				..(addon:GetResponseText(lootTable[session].candidates[candidateName].response, isTier, isRelic) or "").."|r"
-		elseif category == "CLASS" or LIB_UIDROPDOWNMENU_MENU_VALUE:find("_CLASS$") then
-			local class = lootTable[session].candidates[candidateName].class
-			local classDisplayName = LOCALIZED_CLASS_NAMES_MALE[class] or class
-			local color = RAID_CLASS_COLORS[class] and ("|c"..RAID_CLASS_COLORS[class].colorStr) or "|cffffffff"
-			text = _G.CLASS..": "..color..classDisplayName.."|r"
-		elseif category == "ROLE" or LIB_UIDROPDOWNMENU_MENU_VALUE:find("_ROLE$") then
-			text = _G.ROLE..": "..addon:TranslateRole(lootTable[session].candidates[candidateName].role)
-		elseif category == "RANK" or LIB_UIDROPDOWNMENU_MENU_VALUE:find("_RANK$") then
-			text = _G.RANK..": "..lootTable[session].candidates[candidateName].rank
-		else
 			addon:Debug("Unexpected category or dropdown menu value: "..tostring(category).." ,"..tostring(LIB_UIDROPDOWNMENU_MENU_VALUE))
 		end
 
@@ -1272,13 +1262,6 @@ do
 			namePred = function(name) return lootTable[session].candidates[name].response == lootTable[session].candidates[candidateName].response and
 			 								 booleanCompare(lootTable[session].candidates[name].isTier, lootTable[session].candidates[candidateName].isTier) and
 			 								 booleanCompare(lootTable[session].candidates[name].isRelic, lootTable[session].candidates[candidateName].isRelic) end
-		elseif LIB_UIDROPDOWNMENU_MENU_VALUE:find("_CLASS$") then
-			namePred = function(name) return lootTable[session].candidates[name].class == lootTable[session].candidates[candidateName].class end
-		elseif LIB_UIDROPDOWNMENU_MENU_VALUE:find("_ROLE$") then
-			namePred = function(name) return lootTable[session].candidates[name].role == lootTable[session].candidates[candidateName].role end
-		elseif LIB_UIDROPDOWNMENU_MENU_VALUE:find("_RANK$") then
-			namePred = function(name) return lootTable[session].candidates[name].rank == lootTable[session].candidates[candidateName].rank end
-		else
 			addon:Debug("Unexpected dropdown menu value: "..tostring(LIB_UIDROPDOWNMENU_MENU_VALUE))
 		end
 
@@ -1379,9 +1362,6 @@ do
 			RCVotingFrame.rennaounceOrRequestRollCreateCategoryButton("GROUP"),
 			RCVotingFrame.rennaounceOrRequestRollCreateCategoryButton("ROLL"),
 			RCVotingFrame.rennaounceOrRequestRollCreateCategoryButton("RESPONSE"),
-			RCVotingFrame.rennaounceOrRequestRollCreateCategoryButton("CLASS"),
-			RCVotingFrame.rennaounceOrRequestRollCreateCategoryButton("ROLE"),
-			RCVotingFrame.rennaounceOrRequestRollCreateCategoryButton("RANK"),
 		},
 		{ -- Level 3
 			{ -- 1 Header text of reannounce (and request rolls)
