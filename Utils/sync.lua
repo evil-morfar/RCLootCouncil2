@@ -20,7 +20,7 @@ local last_sync_time = 0
 sync.syncHandlers = {
    settings = {
       text = _G.SETTINGS,
-      receive = function(data) for k,v in pairs(data) do addon.db.profile[k] = v end; addon:UpdateDB(); addon:ActivateSkin(addon.db.profile.currentSkin) end,
+      receive = function(data) wipe(addon.db.profile); for k,v in pairs(data) do addon.db.profile[k] = v end; addon:UpdateDB(); addon:ActivateSkin(addon.db.profile.currentSkin) end,
       send = function() return addon.db.profile end,
    },
    history  = {
@@ -45,17 +45,14 @@ end
 
 -- Support to sync module settings
 -- Run in sync:Spawn, because we need to wait for the initialization of other modules.
+-- Module must run registerDefaults after sync is done.
 local function AddModuleSyncSupport()
    if addon.db.children then
       for name, db in pairs(addon.db.children) do
          sync.syncHandlers[name] = {
             text = name,
-            receive = function(data) for k,v in pairs(data) do db.profile[k] = v end; addon:SendMessage("RCSyncComplete", name) end,
-            send = function() 
-               local data = db.profile
-               local serializableData = CopyTableSerializable(data)
-               return serializableData
-            end,
+            receive = function(data) wipe(db.profile); for k,v in pairs(data) do db.profile[k] = v end; addon:SendMessage("RCSyncComplete", name) end,
+            send = function() return CopyTableSerializable(db.profile) end,
          }
       end
    end
