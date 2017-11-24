@@ -2487,7 +2487,7 @@ function RCLootCouncil:GetItemTextWithCount(link, count)
 end
 
 function RCLootCouncil:GetItemLevelText(ilvl, token)
-	if not ilvl then ilvl = 0 end
+	if not ilvl then ilvl = "" end
 	if token then
 		return ilvl.."+"
 	else
