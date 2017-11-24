@@ -517,7 +517,7 @@ function addon:OptionsTable()
 									},
 									autolootOthersBoE = {
 										order = 9,
-										name = L["\"Autoloot\" others' BoE"],
+										name = L["Autoloot all BoE"],
 										desc = L["autoloot_others_BoE_desc"],
 										type = "toggle",
 									},
