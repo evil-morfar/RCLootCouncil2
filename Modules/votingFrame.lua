@@ -1242,9 +1242,9 @@ do
 		if type(LIB_UIDROPDOWNMENU_MENU_VALUE) ~= "string" then return end
 		local namePred, sesPred
 		if isThisItem then
-			sesPred = function(k) return addon:ItemIsItem(lootTable[k].link, lootTable[session].link) end
+			sesPred = function(k) return k==session or (not lootTable[k].awarded and addon:ItemIsItem(lootTable[k].link, lootTable[session].link)) end
 		else
-			sesPred = true
+			sesPred = function(k) return not lootTable[k].awarded end
 		end
 
 		local isRoll = _G.LIB_UIDROPDOWNMENU_MENU_VALUE:find("^REQUESTROLL") and true or false
