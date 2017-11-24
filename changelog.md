@@ -1,6 +1,6 @@
 ### v2.7.0
 ---
-**General**
+* **General**
 * Tier tokens now uses the minimum ilvl of the item the token will create as their ilvl.
    + This way all ilvl calculations will show more useful numbers.
    + Note: RCLootCouncil cannot track if these items will be Warforged/Titanforged. Only the guaranteed minimum ilvl is used.
@@ -13,19 +13,20 @@
 * Various localization improvements have been added.
 
 
-**Master Loot**
+* **Master Loot**
 * **RCLootCouncil** can now be used without Master Loot enabled (#134, #137, #171).
 * The group leader can now always start a session ("/rc add [item]"), regardless of the loot method being used.
    * *The only exception to this is in LFG groups.*
    * This also requires everyone in the group to use v2.7 or newer.
 * Do note it's still not possible to automatically give out items without using Master Loot due to WoW restrictions.
 
-**Announcements**
+* **Announcements**
 * Added a few more keyword replacements for announcement options.
 * It's now possible to edit the announcement string for individual items.
 * Have a look at the redesigned "Announcements" tab for the changes.
 
-**Sessions**
+
+* **Sessions**
 * Items are now sorted before starting a session.
    + The sorting algorithm follows: type/subtype > ilvl > bonuses > name
    + This can be disabled in case you prefer your sessions to follow the order items are dropped in.
@@ -37,8 +38,11 @@
    + This will update everything RCLootCouncil tracks to the new winner.
    + The original receiver of the item will still have to trade the item to the new winner.
 * Awarding an item will change the winner's response to awarded for all duplicate sessions.
+* Added an option to auto add any BoE item looted by another player in the group.
+* Ilvl is now included in the session frame.
 
-**Responses**
+
+* **Responses**
 * Most response related information is now sent immediately when a session starts instead of after rolling.
    + E.g. the council can now see a candidates gear and ilvl before a candidate responds.
 * **RCLootCouncil** now sends the gear a candidate had equipped during the most recent encounter instead of the gear equipped when rolling.
@@ -47,7 +51,8 @@
 * You can now filter responses from candidates that can't use a given item.
 * It's now possible to ask a candidate to reroll only on items they can use.
 
-**Loot Frame**
+
+* **Loot Frame**
 * Multiple copies of the same item now stacks together so only one roll is required.
 * The loot frame will now trigger immediately when a session starts instead of after ~2 seconds delay.
 * Now shows items' type and subType alongside the ilvl.
@@ -56,7 +61,8 @@
 * Added an option to print out responses as they're sent.
 * The default timeout is now 60 seconds.
 
-**Rolls**
+
+* **Rolls**
 * Added a new feature that involves raiders in the roll system, making it seem less "random" and more transparent.
    * There's a new option in the ML's right click menu that starts a roll session.
    * Everyone can then type "/roll", and that roll is then used in the voting frame.
@@ -64,13 +70,15 @@
 * This is entirely optional, and the normal roll system still exists.
 * If the item being rolled for exists multiple times in a session, then the roll is added to all of the item's sessions.
 
-**History Export/Import**
+
+* **History Export/Import**
 * Removed all lag on import and export.
 * Huge exports now appear in a single line - you won't see a difference after pasting the data somewhere else though.
 * Minor exports is still fully shown.
 * When importing, only the first 2500 bytes are shown, but the data is still there.
 
-**Loot from bags**
+
+* **Loot from bags**
 * Trading with a winner while having awarded items in your bags now prompts to add those items to the trade window.
 * Now keeps an eye on the timer on items that needs to be traded.
 
@@ -102,7 +110,8 @@
    * "Miscellaneous" and "Junk" is added to the ```subTypeLookup```.
    * The ```lootTable``` in core is now the same as in votingFrame. Use ```RCLootCouncil:GetLootTable()``` to fetch it, as the votingFrame one will be removed.
    * ```ML:AddItem(...)``` is changed to ```ML:AddItem(item, bagged, slotIndex, entry)```.
-   * The argument of message ```RCMLAddItem``` is changed from item, session to item, entry
+   * The argument of message ```RCMLAddItem``` is changed from item, session to item, entry.
+   * The entries in mldb are now nonexistant (nil) instead of false - just to save a bit of space.
 
 
 *Huge shoutout to __Safetee__ for the majority of these changes!*
