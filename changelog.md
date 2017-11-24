@@ -37,6 +37,7 @@
    + This will update everything RCLootCouncil tracks to the new winner.
    + The original receiver of the item will still have to trade the item to the new winner.
 * Awarding an item will change the winner's response to awarded for all duplicate sessions.
+* Added an option to auto add any BoE item looted by another player in the group.
 
 **Responses**
 * Most response related information is now sent immediately when a session starts instead of after rolling.
