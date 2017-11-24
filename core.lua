@@ -85,7 +85,7 @@ function RCLootCouncil:OnInitialize()
   	self.version = GetAddOnMetadata("RCLootCouncil", "Version")
 	self.nnp = false
 	self.debug = false
-	self.tVersion = "Beta.3" -- String or nil. Indicates test version, which alters stuff like version check. Is appended to 'version', i.e. "version-tVersion" (max 10 letters for stupid security)
+	self.tVersion = nil -- String or nil. Indicates test version, which alters stuff like version check. Is appended to 'version', i.e. "version-tVersion" (max 10 letters for stupid security)
 
 	self.playerClass = select(2, UnitClass("player"))
 	self.guildRank = L["Unguilded"]
@@ -419,10 +419,11 @@ function RCLootCouncil:OnEnable()
 	-- in the :CreateFrame() all :Prints as expected :o
 	self:ActivateSkin(db.currentSkin)
 
-	if self.db.global.version and self:VersionCompare(self.db.global.version, self.version)
-	 	or self.db.global.tVersion
-		then -- We've upgraded
-		self.db.profile.ignore = nil -- Replaced with ignoredItems in 2.7
+	if self.db.global.version and self:VersionCompare(self.db.global.version, self.version) then -- We've upgraded
+		if self:VersionCompare(self.db.global.version, "2.7.0") then
+			self.db.profile.ignore = nil -- Replaced with ignoredItems in 2.7
+			self:ScheduleTimer("Print", 2, "v2.7 contains a lot of new features. See the changelog at https://www.curseforge.com/wow/addons/rclootcouncil/changes")
+		end
 
 		self.db.global.oldVersion = self.db.global.version
 		self.db.global.version = self.version
