@@ -1397,9 +1397,9 @@ do
 				end,
 				text = function()
 					if type(_G.LIB_UIDROPDOWNMENU_MENU_VALUE)=="string" and LIB_UIDROPDOWNMENU_MENU_VALUE:find("^REQUESTROLL_REANNOUNCE") then
-						return L["All items"].." ("..REQUEST_ROLL..")"
+						return L["All unawarded items"].." ("..REQUEST_ROLL..")"
 					else
-						return L["All items"]
+						return L["All unawarded items"]
 					end
 				end,
 				notCheckable = true,
