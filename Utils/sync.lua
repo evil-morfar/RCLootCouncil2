@@ -20,7 +20,7 @@ local last_sync_time = 0
 sync.syncHandlers = {
    settings = {
       text = _G.SETTINGS,
-      receive = function(data) for k,v in pairs(data) do addon.db.profile[k] = v end; addon:UpdateDB(); addon:ActivateSkin(addon.db.profile.currentSkin) end,
+      receive = function(data) wipe(addon.db.profile); for k,v in pairs(data) do addon.db.profile[k] = v end; addon:UpdateDB(); addon:ActivateSkin(addon.db.profile.currentSkin) end,
       send = function() return addon.db.profile end,
    },
    history  = {
@@ -29,6 +29,34 @@ sync.syncHandlers = {
       send = function() return addon:GetHistoryDB() end,
    },
 }
+
+-- Copy table with all function, userdata, thread inside removed
+local function CopyTableSerializable(settings)
+   local copy = {};
+   for k, v in pairs(settings) do
+      if ( type(v) == "table" ) then
+         copy[k] = CopyTableSerializable(v);
+      elseif type(v) ~= "function" and type(v) ~= "userdata" and type(v) ~= "thread" then
+         copy[k] = v;
+      end
+   end
+   return copy;
+end
+
+-- Support to sync module settings
+-- Run in sync:Spawn, because we need to wait for the initialization of other modules.
+-- Module must run registerDefaults after sync is done.
+local function AddModuleSyncSupport()
+   if addon.db.children then
+      for name, db in pairs(addon.db.children) do
+         sync.syncHandlers[name] = {
+            text = name,
+            receive = function(data) wipe(db.profile); for k,v in pairs(data) do db.profile[k] = v end; addon:SendMessage("RCSyncComplete", name) end,
+            send = function() return CopyTableSerializable(db.profile) end,
+         }
+      end
+   end
+end
 
 -- Reasons for declines
 sync.declineReasons = { -- Gets delivered "player" and "type"
@@ -157,7 +185,7 @@ end
 -- Builds a list of targets we can sync to.
 -- Used in the options menu for an AceGUI dropdown.
 function sync:GetSyncTargetOptions()
-   local name, isOnline, class
+   local name, isOnline, class, _
    local ret = {}
    -- target
    if UnitIsFriend("player", "target") and UnitIsPlayer("target") then
@@ -203,6 +231,8 @@ end
 -- Graphics
 -------------------------------------------------
 function sync:Spawn()
+   AddModuleSyncSupport() -- Add modules into the sync list
+
    if self.frame then return self.frame:Open() end
    self.syncType = "settings"
    local f = addon:CreateFrame("DefaultRCLootCouncilSyncFrame", "sync", L["RCLootCouncil - Synchronizer"], nil, 140)
@@ -239,8 +269,10 @@ function sync:Spawn()
    end)
    sel:SetParent(f)
    sel.frame:Show()
+   local old_click = sel.button_cover:GetScript("OnClick")
+   sel.button_cover:SetScript("OnClick", function(this) GuildRoster(); sel:SetList(self:GetSyncTargetOptions()); old_click(this) end) -- User can click button_cover or button to open the menu
    local old_click = sel.button:GetScript("OnClick")
-   sel.button:SetScript("OnClick", function(this) sel:SetList(self:GetSyncTargetOptions()); old_click(this) end)
+   sel.button:SetScript("OnClick", function(this) GuildRoster(); sel:SetList(self:GetSyncTargetOptions()); old_click(this) end) -- Need to call GuildRoster() to refresh online guild members.
    f.syncTargetSelector = sel
 
    txt = f.content:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
