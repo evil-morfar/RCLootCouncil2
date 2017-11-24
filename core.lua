@@ -531,7 +531,10 @@ function RCLootCouncil:ChatCommand(msg)
 	elseif input == "add" or input == string.lower(_G.ADD) then
 		if not args[1] or args[1] == "" then return self:ChatCommand("help") end
 		if self.isMasterLooter then
-			local links = self:SplitItemLinks(args) -- Splited the item link to allow user to enter links without space
+			local links = args
+			if args[1]:find("|h") then -- Only split links if we have at least one
+			 	links = self:SplitItemLinks(args) -- Split item links to allow user to enter links without space
+			end
 			for _,v in ipairs(links) do
 			self:GetActiveModule("masterlooter"):AddUserItem(v)
 			end
@@ -2028,15 +2031,12 @@ function RCLootCouncil:SplitItemLinks(links)
 	for _, connected in ipairs(links) do
 		local startPos, endPos = 1, nil
 		while (startPos) do
-	-- while (startPos <= #connected) do
 			if connected:sub(1, 2) == "|c" then
 				startPos, endPos = connected:find("|c.-|r", startPos)
 			elseif connected:sub(1, 2) == "|H" then
 				startPos, endPos = connected:find("|H.-|h.-|h", startPos)
 			else
 				startPos = nil
-				-- No items, just return what we got
-				--endPos = #connected
 			end
 			if startPos then
 				tinsert(result, connected:sub(startPos, endPos))
