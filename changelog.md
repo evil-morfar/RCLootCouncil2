@@ -38,6 +38,7 @@
    + The original receiver of the item will still have to trade the item to the new winner.
 * Awarding an item will change the winner's response to awarded for all duplicate sessions.
 * Added an option to auto add any BoE item looted by another player in the group.
+* Ilvl is now included in the session frame.
 
 **Responses**
 * Most response related information is now sent immediately when a session starts instead of after rolling.
