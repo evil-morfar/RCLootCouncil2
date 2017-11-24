@@ -842,7 +842,7 @@ end
 -- "not_ml_candidate": The winner is not ourselve and not in ml candidate
 -- "not_bop": The winner is not ourselves and the item is not a bop that can only be looted by us.
 function RCLootCouncilML:CanGiveLoot(slot, item, winner)
-	if not addon.lootOpen then 
+	if not addon.lootOpen then
 		return false, "loot_not_open"
 	elseif not addon.lootSlotInfo[slot] or (not addon:ItemIsItem(addon.lootSlotInfo[slot].link, item)) then
 		return false, "loot_gone"
@@ -1108,19 +1108,19 @@ function RCLootCouncilML:Award(session, winner, response, reason, callback, ...)
 	end
 
 	if self.lootTable[session].bagged and not winner then  -- We should also check this in voting frame, but this check is needed due to comm delay between ML and voting frame.
-		awardedFailed(session, nil, "bagging_bagged", callback, ...)
+		awardFailed(session, nil, "bagging_bagged", callback, ...)
 		addon:Print(L["Items stored in the loot master's bag for award later cannot be awarded later."])
 		return false
 	end
 
 	if self.lootTable[session].awarded and not winner then -- We should also check this in voting frame, but this check is needed due to comm delay between ML and voting frame.
-		awardeFailed(session, nil, "bagging_awarded_item", callback, ...)
+		awardFailed(session, nil, "bagging_awarded_item", callback, ...)
 		addon:Print(L["Awarded item cannot be awarded later."])
 		return false
-	end 
+	end
 
 	-- already awarded. Change award
-	if self.lootTable[session].awarded then 
+	if self.lootTable[session].awarded then
 		if not self.lootTable[session].lootSlot and not self.lootTable[session].bagged then -- "/rc add" or test mode
 			awardSuccess(session, winner, addon.testMode and "test_mode" or "manually_added", callback, ...)
 		elseif self.lootTable[session].bagged then
