@@ -99,6 +99,9 @@ function RCLootCouncil:OnInitialize()
 	self.recentReconnectRequest = false
 	self.currentInstanceName = ""
 	self.bossName = nil -- Updates after each encounter
+	self.recentTradableItem = nil -- The last tradeable item not below the loot threshold the player gets since the last encounter ends
+	self.lootOpen = false 	-- is the ML lootWindow open or closed?
+	self.lootSlotInfo = {}  -- Items' data currently in the loot slot. Need this because inside LOOT_SLOT_CLEARED handler, GetLootSlotLink() returns invalid link.
 
 	self.verCheckDisplayed = false -- Have we shown a "out-of-date"?
 
@@ -159,6 +162,7 @@ function RCLootCouncil:OnInitialize()
 			autoLoot = true, -- Auto loot equippable items
 			autolootEverything = true,
 			autolootBoE = true,
+			autolootOthersBoE = false, -- Auto add BoE looted by others to the session frame
 			autoOpen = true, -- auto open the voting frame
 			autoClose = false, -- Auto close voting frame on session end
 			autoPassBoE = true,
@@ -401,6 +405,9 @@ function RCLootCouncil:OnEnable()
 	self:RegisterEvent("PLAYER_REGEN_ENABLED", "LeaveCombat")
 	self:RegisterEvent("ENCOUNTER_START", "OnEvent")
 	self:RegisterEvent("ENCOUNTER_END", 	"OnEvent")
+	self:RegisterEvent("LOOT_OPENED",		"OnEvent")
+	self:RegisterEvent("LOOT_SLOT_CLEARED", "OnEvent")
+	self:RegisterEvent("LOOT_CLOSED",		"OnEvent")
 	--self:RegisterEvent("GROUP_ROSTER_UPDATE", "Debug", "event")
 
 	if IsInGuild() then
@@ -611,6 +618,21 @@ function RCLootCouncil:ChatCommand(msg)
 			if k == input then return v.module[v.func](v.module, unpack(args)) end
 		end
 		self:ChatCommand("help")
+	end
+end
+
+-- Update the recentTradableItem by link, if it is in bag and tradable.
+function RCLootCouncil:UpdateAndSendRecentTradableItem(link)
+	for i = 0, NUM_BAG_SLOTS do
+		for j = 1, GetContainerNumSlots(i) do
+			local _, _, _, _, _, _, link2 = GetContainerItemInfo(i, j)
+			if link2 and self:ItemIsItem(link, link2)
+				and self:GetContainerItemTradeTimeRemaining(i, j) > 0 then
+				self.recentTradableItem = link
+				self:SendCommand("group", "tradable", link)
+				return
+			end
+		end
 	end
 end
 
@@ -1653,6 +1675,46 @@ function RCLootCouncil:OnEvent(event, ...)
 	elseif event == "ENCOUNTER_END" then
 		self:DebugLog("Event:", event, ...)
 		self.bossName = select(2, ...) -- Extract encounter name
+
+	elseif event == "LOOT_OPENED" then -- ~~~IDEA Check if event LOOT_READY is useful here (also check GetLootInfo() for this)~~~
+								   -- ^ Blizzard code doesn't use LOOT_READY, so don't bother it.
+		self.lootOpen = true
+		wipe(self.lootSlotInfo)
+		for i = 1,  GetNumLootItems() do
+			local texture, name, quantity, quality, locked, isQuestItem, questId, isActive = GetLootSlotInfo(i)
+			local link = GetLootSlotLink(i)
+			if link then
+				self.lootSlotInfo[i] = {
+					name = name,
+					link = link,
+					quantity = quantity,
+					quality = quality,
+					locked = locked,
+				}
+			end
+		end
+		if self.isMasterLooter then
+			self:GetActiveModule("masterlooter"):OnLootOpen()
+		end
+	elseif event == "LOOT_CLOSED" then
+		self.lootOpen = false
+	elseif event == "LOOT_SLOT_CLEARED" then
+		local slot = ...
+		if self.lootSlotInfo[slot] then -- If not, this is the 2nd LOOT_CLEARED event for the same thing. -_-
+			local link = self.lootSlotInfo[slot].link
+			local quality = self.lootSlotInfo[slot].quality
+			self:Debug("OnLootSlotCleared()", slot, link)
+			self.lootSlotInfo[slot] = nil
+
+			if quality and quality >= GetLootThreshold() and IsInInstance() then -- Only send when in instance
+				-- Note that we don't check if this is master looted or not. We only know this is looted by ourselves.
+				self:ScheduleTimer("UpdateAndSendRecentTradableItem", 1, link) -- Delay a bit, need some time to between item removed from loot slot and moved to the bag.
+			end
+
+			if self.isMasterLooter then
+				self:GetActiveModule("masterlooter"):OnLootSlotCleared(slot, link)
+			end
+		end
 	end
 end
 

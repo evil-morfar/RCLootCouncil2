@@ -17,6 +17,8 @@ local LibDialog = LibStub("LibDialog-1.0")
 
 local db;
 
+local LOOT_ITEM_PATTERN = "^".._G.LOOT_ITEM:gsub('%%s', '(.+)').."$"
+
 local LOOT_TIMEOUT = 1 -- If we give loot to someone, but loot slot is not cleared after this time period, consider this loot distribute as failed.
 						-- The real time needed is the sum of two players'(ML and the awardee) latency, so 1 second timeout should be enough.
 
@@ -37,20 +39,17 @@ function RCLootCouncilML:OnEnable()
 	db = addon:Getdb()
 	self.candidates = {} 	-- candidateName = { class, role, rank }
 	self.lootTable = {} 		-- The MLs operating lootTable, see ML:AddItem()
-	self.lootOpen = false 	-- is the ML lootWindow open or closed?
-	self.lootSlotInfo = {}  -- Items' data currently in the loot slot. Need this because inside LOOT_SLOT_CLEARED handler, GetLootSlotLink() returns invalid link.
 	self.lootQueue = {}     -- Items ML have attempted to give out that waiting for LOOT_SLOT_CLEARED
 	self.running = false		-- true if we're handling a session
 	self.council = self:GetCouncilInGroup()
 	self.trading = false     -- are we trading with another player?
 	self.tradeItems = {}    -- The items we are trading
 	self.tradeTarget = nil   -- The last player name who we trade
+	self.combatQueue = {}	-- The functions that will be executed when combat ends. format: [num] = {func, arg1, arg2, ...}
 
 	self:RegisterComm("RCLootCouncil", 		"OnCommReceived")
-	self:RegisterEvent("LOOT_OPENED",		"OnEvent")
-	self:RegisterEvent("LOOT_SLOT_CLEARED", "OnEvent")
-	self:RegisterEvent("LOOT_CLOSED",		"OnEvent")
 	self:RegisterEvent("CHAT_MSG_WHISPER",	"OnEvent")
+	self:RegisterEvent("CHAT_MSG_LOOT", 	"OnEvent")
 	self:RegisterEvent("TRADE_SHOW", "OnEvent")
 	self:RegisterEvent("TRADE_CLOSED", "OnEvent")
 	self:RegisterEvent("TRADE_ACCEPT_UPDATE", "OnEvent")
@@ -643,6 +642,34 @@ function RCLootCouncilML:OnCommReceived(prefix, serializedMsg, distri, sender)
 			elseif command == "lootTable" and addon:UnitIsUnit(sender, addon.playerName) then
 				-- Start a timer to set response as offline/not installed unless we receive an ack
 				self:ScheduleTimer("Timer", 10, "LootSend")
+
+			elseif command == "tradable" then -- Raid members send the info of the tradable item he looted.
+				local item = unpack(data)
+				if db.handleLoot and item and GetItemInfoInstant(item) and IsInInstance() and (not addon:UnitIsUnit(sender, "player") or addon.lootMethod ~= "master") then
+					addon:Debug("Receive info of tradable item: ", item, sender)
+				-- Only do stuff when we are handling loot and in instance.
+				-- For ML loot method, ourselve must be excluded because it should be handled in self:LootOpen()
+					if not GetItemInfo(item) then
+						addon:Debug("Receive info of tradable item but uncached: ", item, sender)
+						return self:ScheduleTimer("OnCommReceived", 1, prefix, serializedMsg, distri, sender)
+					end
+
+					local bindType = select(14, GetItemInfo(item))
+					local quality = select(3, GetItemInfo(item))
+
+					if (IsEquippableItem(item) or db.autolootEverything) and -- Safetee: I don't want to check db.autoloot here, because this is actually not a loot.
+						(quality and quality >= GetLootThreshold()) then
+						if db.autolootOthersBoE and bindType and bindType ~= LE_ITEM_BIND_ON_ACQUIRE then
+							-- Safetee: I actually prefer to use the term "non-bop" instead of "boe"
+							if InCombatLockdown() then
+								addon:Print(format(L["autoloot_others_item_combat"], addon:GetUnitClassColoredName(sender), item))
+								tinsert(self.combatQueue, {self.AddUserItem, self, item, sender}) -- Run the function when combat ends
+							else
+								self:AddUserItem(item, sender)
+							end
+						end
+					end
+				end
 			end
 		else
 			addon:Debug("Error in deserializing ML comm: ", command)
@@ -652,54 +679,7 @@ end
 
 function RCLootCouncilML:OnEvent(event, ...)
 	addon:DebugLog("ML event", event, ...)
-	if event == "LOOT_OPENED" then -- ~~~IDEA Check if event LOOT_READY is useful here (also check GetLootInfo() for this)~~~
-								   -- ^ Blizzard code doesn't use LOOT_READY, so don't bother it.
-		self.lootOpen = true
-		wipe(self.lootSlotInfo)
-		wipe(self.lootQueue)
-		for i = 1,  GetNumLootItems() do
-			local texture, name, quantity, quality, locked, isQuestItem, questId, isActive = GetLootSlotInfo(i)
-			local link = GetLootSlotLink(i)
-			if link then
-				self.lootSlotInfo[i] = {
-					name = name,
-					link = link,
-					quantity = quantity,
-					quality = quality,
-					locked = locked,
-				}
-			end
-		end
-
-		if addon.handleLoot and addon.lootMethod == "master" then
-			if not InCombatLockdown() then
-				self:LootOpened()
-			else
-				addon:Print(L["You can't start a loot session while in combat."])
-			end
-		end
-
-	elseif event == "LOOT_CLOSED" then
-		self.lootOpen = false
-	elseif event == "LOOT_SLOT_CLEARED" then
-		local slot = ...
-		if self.lootSlotInfo[slot] then -- If not, this is the 2nd LOOT_CLEARED event for the same thing. -_-
-			local link = self.lootSlotInfo[slot].link
-			addon:Debug("OnLootSlotCleared()", slot, link)
-			for i = #self.lootQueue, 1, -1 do -- Check latest loot attempt first
-				local v = self.lootQueue[i]
-				if v.slot == slot then -- loot success
-					self:CancelTimer(v.timer)
-					tremove(self.lootQueue, i)
-					if (v.callback) then
-						v.callback(true, nil, unpack(v.args))
-					end
-					break
-				end
-			end
-			self.lootSlotInfo[slot] = nil
-		end
-	elseif event == "CHAT_MSG_WHISPER" and addon.isMasterLooter and db.acceptWhispers then
+	if event == "CHAT_MSG_WHISPER" and addon.isMasterLooter and db.acceptWhispers then
 		local msg, sender = ...
 		if msg == "rchelp" then
 			self:SendWhisperHelp(sender)
@@ -752,6 +732,38 @@ function RCLootCouncilML:OnEvent(event, ...)
 		self.trading = false -- Dont clear self.targetTarget here.
 	elseif event == "PLAYER_REGEN_ENABLED" then
 		self:ItemsInBagsLowTradeTimeRemainingReminder()
+		for _, entry in ipairs(self.combatQueue) do
+			entry[1](select(2, unpack(entry)))
+		end
+		wipe(self.combatQueue)
+	end
+end
+
+-- called in addon:OnEvent
+function RCLootCouncilML:OnLootOpen()
+	wipe(self.lootQueue)
+	if addon.handleLoot and addon.lootMethod == "master" then
+		if not InCombatLockdown() then
+			self:LootOpened()
+		else
+			addon:Print(L["You can't start a loot session while in combat."])
+		end
+	end
+end
+
+-- called in addon:OnEvent
+function RCLootCouncilML:OnLootSlotCleared(slot, link)
+	addon:Debug("ML:OnLootSlotCleared()", slot, link)
+	for i = #self.lootQueue, 1, -1 do -- Check latest loot attempt first
+		local v = self.lootQueue[i]
+		if v.slot == slot then -- loot success
+			self:CancelTimer(v.timer)
+			tremove(self.lootQueue, i)
+			if (v.callback) then
+				v.callback(true, nil, unpack(v.args))
+			end
+			break
+		end
 	end
 end
 
@@ -830,16 +842,16 @@ end
 -- "not_ml_candidate": The winner is not ourselve and not in ml candidate
 -- "not_bop": The winner is not ourselves and the item is not a bop that can only be looted by us.
 function RCLootCouncilML:CanGiveLoot(slot, item, winner)
-	if not self.lootOpen then
+	if not addon.lootOpen then 
 		return false, "loot_not_open"
-	elseif not self.lootSlotInfo[slot] or (not addon:ItemIsItem(self.lootSlotInfo[slot].link, item)) then
+	elseif not addon.lootSlotInfo[slot] or (not addon:ItemIsItem(addon.lootSlotInfo[slot].link, item)) then
 		return false, "loot_gone"
-	elseif self.lootSlotInfo[slot].locked then
+	elseif addon.lootSlotInfo[slot].locked then
 		return false, "locked" -- Side Note: When the loot method is master, but ML is ineligible to loot (didn't tag boss/did the boss earlier in the week), WoW gives loot as if it is group loot method.
-	elseif addon:UnitIsUnit(winner, "player") and not self:HaveFreeSpaceForItem(self.lootSlotInfo[slot].link) then
+	elseif addon:UnitIsUnit(winner, "player") and not self:HaveFreeSpaceForItem(addon.lootSlotInfo[slot].link) then
 		return false, "inventory_full"
 	elseif not addon:UnitIsUnit(winner, "player") then
-		if self.lootSlotInfo[slot].quality < GetLootThreshold() then
+		if addon.lootSlotInfo[slot].quality < GetLootThreshold() then
 			return false, "quality_below_threshold"
 		end
 
@@ -904,7 +916,7 @@ end
 --@param ... The additional arguments provided to the callback.
 --@return nil
 function RCLootCouncilML:GiveLoot(slot, winner, callback, ...)
-	if self.lootOpen then
+	if addon.lootOpen then
 
 		local entryInQueue = {slot = slot, callback = callback, args = {...}, }
 		entryInQueue.timer = self:ScheduleTimer(OnGiveLootTimeout, LOOT_TIMEOUT, entryInQueue)
@@ -930,7 +942,7 @@ function RCLootCouncilML:GiveLoot(slot, winner, callback, ...)
 end
 
 function RCLootCouncilML:UpdateLootSlots()
-	if not self.lootOpen then return addon:Debug("ML:UpdateLootSlots() without loot window open!!") end
+	if not addon.lootOpen then return addon:Debug("ML:UpdateLootSlots() without loot window open!!") end
 	local updatedLootSlot = {}
 	for i = 1, GetNumLootItems() do
 		local item = GetLootSlotLink(i)
@@ -1151,7 +1163,7 @@ function RCLootCouncilML:Award(session, winner, response, reason, callback, ...)
 	-- The rest is direct mode (item is in WoW loot window)
 
 	-- v2.4.4+: Check if the item is still in the expected slot
-	if self.lootOpen and not addon:ItemIsItem(self.lootTable[session].link, GetLootSlotLink(self.lootTable[session].lootSlot)) then
+	if addon.lootOpen and not addon:ItemIsItem(self.lootTable[session].link, GetLootSlotLink(self.lootTable[session].lootSlot)) then
 		addon:Debug("LootSlot has changed before award!", session)
 		-- And update them if not
 		self:UpdateLootSlots()
