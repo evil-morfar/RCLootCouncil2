@@ -115,7 +115,7 @@ end
 
 function LootFrame:Update()
 	if numRolled == #items then -- We're through them all, so hide the frame
-		self:Disable()
+		return self:Disable()
 	end
 	local width = 150
 	local numEntries = 0
