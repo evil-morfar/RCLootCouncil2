@@ -1212,7 +1212,7 @@ RCLootCouncilML.announceItemStrings = {
 	["&i"] = function(...) return select(2,...) end,
 	["&l"] = function(_, item)
 		local t = RCLootCouncilML:GetItemInfo(item)
-		return t and addon:GetItemLevelText(t.ilvl, t.token) or "" end,
+		return t and t.ilvl or "" end,
 	["&t"] = function(_, item)
 		local t = RCLootCouncilML:GetItemInfo(item)
 		return t and addon:GetItemTypeText(t.link, t.subType, t.equipLoc, t.typeID, t.subtypeID, t.classes, t.token, t.relic) or "" end,
@@ -1250,7 +1250,7 @@ RCLootCouncilML.awardStrings = {
 	["&n"] = function(...) return select(4, ...) or "" end,
 	["&l"] = function(_, item)
 		local t = RCLootCouncilML:GetItemInfo(item)
-		return t and addon:GetItemLevelText(t.ilvl, t.token) or "" end,
+		return t and t.ilvl or "" end,
 	["&t"] = function(_, item)
 		local t = RCLootCouncilML:GetItemInfo(item)
 		return t and addon:GetItemTypeText(t.link, t.subType, t.equipLoc, t.typeID, t.subTypeID, t.classes, t.token, t.relic) or "" end,

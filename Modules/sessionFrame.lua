@@ -23,7 +23,7 @@ function RCSessionFrame:OnInitialize()
 	self.scrollCols = {
 		{ name = "", width = 30}, 				-- remove item, sort by session number.
 		{ name = "", width = ROW_HEIGHT},	-- item icon
-		{ name = "", width = ROW_HEIGHT,}, 	-- item lvl
+		{ name = "", width = ROW_HEIGHT, align = "CENTER"}, 	-- item lvl
 		{ name = "", width = 160}, 			-- item link
 	}
 end
@@ -86,7 +86,7 @@ function RCSessionFrame:ExtractData(data)
 			cols = {
 				{ DoCellUpdate = self.SetCellDeleteBtn, },
 				{ DoCellUpdate = self.SetCellItemIcon},
-				{ value = addon:GetItemLevelText(v.ilvl, v.token) or "", },
+				{ value = v.ilvl or "", },
 				{ DoCellUpdate = self.SetCellText },
 			},
 		}

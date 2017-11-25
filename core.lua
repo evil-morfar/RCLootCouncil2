@@ -2480,15 +2480,6 @@ function RCLootCouncil:GetItemTextWithCount(link, count)
 	return link..(count and count > 1 and (" x"..count) or "")
 end
 
-function RCLootCouncil:GetItemLevelText(ilvl, token)
-	if not ilvl then ilvl = "" end
-	if token then
-		return ilvl.."+"
-	else
-		return ilvl
-	end
-end
-
 -- @return a text of the link explaining its type. For example, "Fel Artifact Relic", "Chest, Mail"
 function RCLootCouncil:GetItemTypeText(link, subType, equipLoc, typeID, subTypeID, classesFlag, tokenSlot, relicType)
 	local id = self:GetItemIDFromLink(link)
