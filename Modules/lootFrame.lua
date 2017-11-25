@@ -131,11 +131,10 @@ function LootFrame:Update()
 end
 
 function LootFrame:OnRoll(entry, button)
-	addon:Debug("LootFrame:Response", entry.realID, button)
 	local item = entry.item
-	-- Only send minimum neccessary data, because the information of current equipped gear has been sent when we receive the loot table.
-	-- target, session, response, isTier, isRelic, note, link, ilvl, equipLoc, relicType, sendAvgIlvl, sendSpecID
 	if not item.isRoll then
+		-- Only send minimum neccessary data, because the information of current equipped gear has been sent when we receive the loot table.
+		-- target, session, response, isTier, isRelic, note, link, ilvl, equipLoc, relicType, sendAvgIlvl, sendSpecID
 		local isTier = item.isTier and addon.mldb.tierButtonsEnabled
 		local isRelic = item.isRelic and addon.mldb.relicButtonsEnabled
 		addon:Debug("LootFrame:Response", button, "Response:", addon:GetResponseText(button, isTier, isRelic))
@@ -144,7 +143,7 @@ function LootFrame:OnRoll(entry, button)
 		end
 		if addon:Getdb().printResponse then
 			addon:Print(string.format(L["Response to 'item'"], addon:GetItemTextWithCount(item.link, #item.sessions))..
-				": "..addon:GetResponseText(button, isTier, isRelic)..(roll and (", ".._G.ROLL..":"..roll) or ""))
+				": "..addon:GetResponseText(button, isTier, isRelic))
 		end
 		numRolled = numRolled + 1
 		item.rolled = true
@@ -157,10 +156,11 @@ function LootFrame:OnRoll(entry, button)
 			tinsert(sessionsWaitingRollResultQueue, entryInQueue)
 			entryInQueue.timer = self:ScheduleTimer("OnRollTimeout", ROLL_TIMEOUT, entryInQueue) -- In case roll result is not received within time limit, discard the result.
 			RandomRoll(1, 100)
-			entry.buttons[1]:Disable()
-			entry.buttons[2]:Hide()
+			entry.buttons[1]:Disable() -- Disable "roll" button
+			entry.buttons[2]:Hide() -- Hide pass button
 			-- Hide the frame later
 		else
+			-- When frame is roll type, and we choose to not roll, do nothing.
 			numRolled = numRolled + 1
 			item.rolled = true
 			self.EntryManager:Trash(entry)
