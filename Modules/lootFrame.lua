@@ -586,7 +586,7 @@ do
 			roll:SetHighlightTexture("Interface\\Buttons\\UI-GroupLoot-Dice-Highlight")
 			roll:SetPushedTexture("Interface\\Buttons\\UI-GroupLoot-Dice-Down")
 			roll:SetScript("OnClick", function() LootFrame:OnRoll(entry, "ROLL") end)
-			roll:SetSize(35, 35)
+			roll:SetSize(32, 32)
 			roll:SetPoint("BOTTOMLEFT", entry.icon, "BOTTOMRIGHT", 5, -7)
 			roll:Enable()
 			roll:Show()
@@ -595,7 +595,7 @@ do
 			pass:SetHighlightTexture("Interface\\Buttons\\UI-GroupLoot-Pass-Highlight")
 			pass:SetPushedTexture("Interface\\Buttons\\UI-GroupLoot-Pass-Down")
 			pass:SetScript("OnClick", function() LootFrame:OnRoll(entry, "PASS") end)
-			pass:SetSize(33, 33)
+			pass:SetSize(32, 32)
 			pass:SetPoint("LEFT", roll, "RIGHT", 5, 3)
 			pass:Show()
 
@@ -604,7 +604,7 @@ do
 			entry.rollResult:SetText("")
 			entry.rollResult:Hide()
 
-			local width = 113 + 1 * 5 + 35 + 33
+			local width = 113 + 1 * 5 + 32 + 32
 			-- Store the width of this entry. Our handler will set it
 			entry.width = width
 
