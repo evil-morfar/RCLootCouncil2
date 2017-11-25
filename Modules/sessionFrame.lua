@@ -18,7 +18,6 @@ local awardLater = false
 local loadingItems = false
 local waitingToEndSessions = false  -- need some time to confirm the result of award later and the session cant be ended until then.
 									-- When user chooses to award later then quickly reopens the loot window when this variable is still true, dont show session frame.
-local requestRollsAll = false
 
 function RCSessionFrame:OnInitialize()
 	self.scrollCols = {
@@ -26,7 +25,6 @@ function RCSessionFrame:OnInitialize()
 		{ name = "", width = ROW_HEIGHT},	-- item icon
 		{ name = "", width = ROW_HEIGHT,}, 	-- item lvl
 		{ name = "", width = 160}, 			-- item link
-		{ name = "", width = 20, align = "RIGHT"}, -- Request rolls
 	}
 end
 
@@ -39,7 +37,6 @@ function RCSessionFrame:OnDisable()
 	self.frame:Hide()
 	self.frame.rows = {}
 	awardLater = false
-	requestRollsAll = false
 end
 
 function RCSessionFrame:Show(data, disableAwardLater)
@@ -91,7 +88,6 @@ function RCSessionFrame:ExtractData(data)
 				{ DoCellUpdate = self.SetCellItemIcon},
 				{ value = addon:GetItemLevelText(v.ilvl, v.token) or "", },
 				{ DoCellUpdate = self.SetCellText },
-				{ DoCellUpdate = self.SetCellRequestRollBtn, },
 			},
 		}
 	end
@@ -99,7 +95,6 @@ end
 
 function RCSessionFrame:Update()
 	self.frame.toggle:SetChecked(awardLater)
-	self.frame.rollToggle:SetChecked(requestRollsAll)
 end
 
 function RCSessionFrame:DeleteItem(index)
@@ -123,8 +118,6 @@ end
 
 function RCSessionFrame.SetCellDeleteBtn(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
 	frame:SetNormalTexture("Interface/BUTTONS/UI-GroupLoot-Pass-Up.png")
-	frame:SetHighlightTexture("Interface/BUTTONS/UI-GroupLoot-Pass-Highlight")
-	frame:SetPushedTexture("Interface/BUTTONS/UI-GroupLoot-Pass-Down")
 	frame:SetScript("OnClick", function() RCSessionFrame:DeleteItem(realrow) end)
 	frame:SetSize(20,20)
 end
@@ -142,41 +135,6 @@ function RCSessionFrame.SetCellItemIcon(rowFrame, frame, data, cols, row, realro
 	end)
 end
 
-function RCSessionFrame.SetCellRequestRollBtn(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
-	frame:SetNormalTexture("Interface/BUTTONS/UI-GroupLoot-Dice-Up.png")
-	frame:SetHighlightTexture("Interface/BUTTONS/UI-GroupLoot-Dice-Highlight")
-	frame:SetPushedTexture("Interface/BUTTONS/UI-GroupLoot-Dice-Down")
-	if ml.lootTable[realrow].isRoll then
-		frame:SetAlpha(1)
-	else
-		frame:SetAlpha(0)
-	end
-	frame:SetSize(25,25)
-	frame:SetScript("OnClick", function()
-		for k, v in ipairs(ml.lootTable) do
-			if addon:ItemIsItem(v.link, ml.lootTable[realrow].link) then
-				v.isRoll = not v.isRoll
-			end
-		end
-		table:SortData()
-	end)
-	frame:SetScript("OnLeave", function()
-		if not ml.lootTable[realrow].isRoll then
-			frame:SetAlpha(0)
-		end
-		addon:HideTooltip()
-	end)
-	frame:SetScript("OnEnter", function()
-		if not ml.lootTable[realrow].isRoll then
-			frame:SetAlpha(0.33)
-		end
-		GameTooltip:SetOwner(frame, "ANCHOR_RIGHT")
-		GameTooltip:AddLine(L["Request rolls for this session"])
-		GameTooltip:Show()
-	end)
-
-end
-
 function RCSessionFrame:GetFrame()
 	if self.frame then return self.frame end
 
@@ -188,24 +146,7 @@ function RCSessionFrame:GetFrame()
 	tgl.tooltip = L["Check this to loot the items and distribute them later."]
 	tgl:SetChecked(awardLater)
 	tgl:SetScript("OnClick", function() awardLater = not awardLater; end )
-	tgl:SetHitRectInsets(0, -getglobal(tgl:GetName().."Text"):GetWidth(), 0, 0)
 	f.toggle = tgl
-
-	local rollTgl = CreateFrame("CheckButton", f:GetName().."RollToggle", f.content, "ChatConfigCheckButtonTemplate")
-	getglobal(rollTgl:GetName().."Text"):SetText(_G.REQUEST_ROLL.."?")
-	rollTgl:SetPoint("LEFT", getglobal(tgl:GetName().."Text"), "RIGHT", 20, 0)
-	rollTgl:SetPoint("TOP", tgl, "TOP", 0, 0)
-	rollTgl.tooltip = L["request_rolls_checkbox_desc"]
-	rollTgl:SetChecked(requestRollsAll)
-	rollTgl:SetScript("OnClick", function() 
-		requestRollsAll = not requestRollsAll
-		for _, v in ipairs(ml.lootTable) do
-			v.isRoll = requestRollsAll
-		end
-		f.st:SortData()
-	end)
-	rollTgl:SetHitRectInsets(0, -getglobal(tgl:GetName().."Text"):GetWidth(), 0, 0)
-	f.rollToggle = rollTgl
 
 	-- Start button
 	local b1 = addon:CreateButton(_G.START, f.content)
