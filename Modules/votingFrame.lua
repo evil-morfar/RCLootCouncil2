@@ -163,7 +163,7 @@ function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
 				self:SetCandidateData(ses, name, "isTier", isTier)
 				self:SetCandidateData(ses, name, "isRelic", isRelic)
 				self:SetCandidateData(ses, name, "response", response)
-				self:Update()			
+				self:Update()
 
 			elseif command == "lootAck" then
 				local name = unpack(data)
