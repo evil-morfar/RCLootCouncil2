@@ -20,7 +20,7 @@ local numRolled = 0
 local MIN_BUTTON_WIDTH = 40
 
 local sessionsWaitingRollResultQueue = {}
-local ROLL_TIMEOUT = 3
+local ROLL_TIMEOUT = 1.5
 
 local RANDOM_ROLL_PATTERN = RANDOM_ROLL_RESULT
 RANDOM_ROLL_PATTERN = RANDOM_ROLL_PATTERN:gsub("[%(%)%-]", "%%%1")
