@@ -1154,7 +1154,7 @@ end
 --@param isRoll: true or false or false. Determine whether we are requesting rolls. true will request rolls and clear the current rolls.
 --@param noAutopass: true or false or nil. Determine whether we force no autopass.
 --@param announceInChat: true or false or nil. Determine if the reannounce sessions should be announced in chat.
-function RCVotingFrame:Reannounce(namePred, sesPred, isRoll, noAutopass, announceInChat)
+function RCVotingFrame:ReannounceOrRequestRoll(namePred, sesPred, isRoll, noAutopass, announceInChat)
 	local rerollTable = {}
 
 	for k,v in ipairs(lootTable) do
@@ -1164,7 +1164,9 @@ function RCVotingFrame:Reannounce(namePred, sesPred, isRoll, noAutopass, announc
 
 			for name, _ in pairs(v.candidates) do
 				if namePred == true or (type(namePred)=="string" and name == namePred) or (type(namePred)=="function" and namePred(name)) then
-					addon:SendCommand("group", "change_response", k, name, "WAIT")
+					if not isRoll then
+						addon:SendCommand("group", "change_response", k, name, "WAIT")
+					end
 					rolls[name] = ""
 				end
 			end
@@ -1201,7 +1203,7 @@ do
 	function RCVotingFrame.rennaounceOrRequestRollCreateCategoryButton(category)
 		return 
 		{ -- 3 Reannounce (and request rolls) to candidate
-			onValue = function() return _G.LIB_UIDROPDOWNMENU_MENU_VALUE == "REANNOUNCE" or _G.LIB_UIDROPDOWNMENU_MENU_VALUE == "REQUESTROLL_REANNOUNCE" end,
+			onValue = function() return _G.LIB_UIDROPDOWNMENU_MENU_VALUE == "REANNOUNCE" or _G.LIB_UIDROPDOWNMENU_MENU_VALUE == "REQUESTROLL" end,
 			value = function() return _G.LIB_UIDROPDOWNMENU_MENU_VALUE.."_"..category end,
 			text = function(candidateName) return RCVotingFrame.reannounceOrRequestRollText(candidateName, category) end,
 			notCheckable = true,
@@ -1268,10 +1270,10 @@ do
 		local noAutopass = isThisItem and LIB_UIDROPDOWNMENU_MENU_VALUE:find("_CANDIDATE$") and true or false
 
 		if isThisItem then
-			RCVotingFrame:Reannounce(namePred, sesPred, isRoll, noAutopass, announceInChat)
+			RCVotingFrame:ReannounceOrRequestRoll(namePred, sesPred, isRoll, noAutopass, announceInChat)
 		else -- Need to confirm to reannounce for all items.
 			LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_REANNOUNCE_ALL_ITEMS", {text=RCVotingFrame.reannounceOrRequestRollText(candidateName), isRoll = isRoll,
-				func = function() RCVotingFrame:Reannounce(namePred, sesPred, isRoll, noAutopass, announceInChat) end })
+				func = function() RCVotingFrame:ReannounceOrRequestRoll(namePred, sesPred, isRoll, noAutopass, announceInChat) end })
 		end
 
 	end
@@ -1346,8 +1348,8 @@ do
 				notCheckable = true,
 				func = function() RCVotingFrame:DoRandomRolls(session) end,
 			},{ -- 11 Reannounce and request rolls
-				text = L["Reannounce and request rolls..."],
-				value = "REQUESTROLL_REANNOUNCE",
+				text = _G.REQUEST_ROLL.."...",
+				value = "REQUESTROLL",
 				hasArrow = true,
 				notCheckable = true,
 			}
@@ -1366,7 +1368,7 @@ do
 		{ -- Level 3
 			{ -- 1 Header text of reannounce (and request rolls)
 				onValue = function() return type(_G.LIB_UIDROPDOWNMENU_MENU_VALUE)=="string" and 
-					(LIB_UIDROPDOWNMENU_MENU_VALUE:find("^REQUESTROLL_REANNOUNCE") or LIB_UIDROPDOWNMENU_MENU_VALUE:find("^REANNOUNCE"))
+					(LIB_UIDROPDOWNMENU_MENU_VALUE:find("^REQUESTROLL") or LIB_UIDROPDOWNMENU_MENU_VALUE:find("^REANNOUNCE"))
 				end,
 				text = function(candidateName) return RCVotingFrame.reannounceOrRequestRollText(candidateName) end,
 				notCheckable = true,
@@ -1377,10 +1379,10 @@ do
 			},
 			{ -- 2 This item
 				onValue = function() return type(_G.LIB_UIDROPDOWNMENU_MENU_VALUE)=="string" and 
-					(LIB_UIDROPDOWNMENU_MENU_VALUE:find("^REQUESTROLL_REANNOUNCE") or LIB_UIDROPDOWNMENU_MENU_VALUE:find("^REANNOUNCE"))
+					(LIB_UIDROPDOWNMENU_MENU_VALUE:find("^REQUESTROLL") or LIB_UIDROPDOWNMENU_MENU_VALUE:find("^REANNOUNCE"))
 				end,
 				text = function()
-					if type(_G.LIB_UIDROPDOWNMENU_MENU_VALUE)=="string" and LIB_UIDROPDOWNMENU_MENU_VALUE:find("^REQUESTROLL_REANNOUNCE") then
+					if type(_G.LIB_UIDROPDOWNMENU_MENU_VALUE)=="string" and LIB_UIDROPDOWNMENU_MENU_VALUE:find("^REQUESTROLL") then
 						return L["This item"].." ("..REQUEST_ROLL..")"
 					else
 						return L["This item"]
@@ -1390,13 +1392,13 @@ do
 				func = function(candidateName)
 					return RCVotingFrame.reannounceOrRequestRollButton(candidateName, true)
 				end,
-			},{ -- 3 All items, only shown for "candidate" and "group" reannounce
+			},{ -- 3 All unawarded items, only shown for "candidate" and "group" reannounce
 				onValue = function() return type(_G.LIB_UIDROPDOWNMENU_MENU_VALUE)=="string" and 
-					(LIB_UIDROPDOWNMENU_MENU_VALUE:find("^REQUESTROLL_REANNOUNCE") or LIB_UIDROPDOWNMENU_MENU_VALUE:find("^REANNOUNCE")) and
+					(LIB_UIDROPDOWNMENU_MENU_VALUE:find("^REQUESTROLL") or LIB_UIDROPDOWNMENU_MENU_VALUE:find("^REANNOUNCE")) and
 					(LIB_UIDROPDOWNMENU_MENU_VALUE:find("_CANDIDATE$") or LIB_UIDROPDOWNMENU_MENU_VALUE:find("_GROUP$"))
 				end,
 				text = function()
-					if type(_G.LIB_UIDROPDOWNMENU_MENU_VALUE)=="string" and LIB_UIDROPDOWNMENU_MENU_VALUE:find("^REQUESTROLL_REANNOUNCE") then
+					if type(_G.LIB_UIDROPDOWNMENU_MENU_VALUE)=="string" and LIB_UIDROPDOWNMENU_MENU_VALUE:find("^REQUESTROLL") then
 						return L["All unawarded items"].." ("..REQUEST_ROLL..")"
 					else
 						return L["All unawarded items"]

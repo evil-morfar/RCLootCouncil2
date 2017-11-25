@@ -131,9 +131,9 @@ LibDialog:Register("RCLOOTCOUNCIL_CONFIRM_REANNOUNCE_ALL_ITEMS", {
    text = "something_went_wrong",
    on_show = function(self, data)
       if data.isRoll then
-         self.text:SetText(format(L["Are you sure you want to reannounce all items and request rolls from %s?"], data.text))
+         self.text:SetText(format(L["Are you sure you want to request rolls for all unawarded items from %s?"], data.text))
       else
-         self.text:SetText(format(L["Are you sure you want to reannounce all items to %s?"], data.text))
+         self.text:SetText(format(L["Are you sure you want to reannounce all unawarded items to %s?"], data.text))
       end
    end,
    buttons = {
