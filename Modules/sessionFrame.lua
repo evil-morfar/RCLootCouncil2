@@ -23,7 +23,7 @@ function RCSessionFrame:OnInitialize()
 	self.scrollCols = {
 		{ name = "", width = 30}, 				-- remove item, sort by session number.
 		{ name = "", width = ROW_HEIGHT},	-- item icon
-		{ name = "", width = 45, align = "center", },			-- item level
+		{ name = "", width = ROW_HEIGHT,}, 	-- item lvl
 		{ name = "", width = 160}, 			-- item link
 	}
 end
@@ -167,19 +167,23 @@ function RCSessionFrame:GetFrame()
 		if awardLater then
 			local sessionAwardDoneCount = 0
 			waitingToEndSessions = true
-			for session in ipairs(ml.lootTable) do 
+			for session in ipairs(ml.lootTable) do
 				ml:Award(session, nil, nil, nil, function()
 					sessionAwardDoneCount = sessionAwardDoneCount + 1
 					if sessionAwardDoneCount >= #ml.lootTable then
 						waitingToEndSessions = false
 						ml:EndSession()
 					end
-				end) 
+				end)
 			end
 		else
 			if not addon.candidates[addon.playerName] or #addon.council == 0 then
 				addon:Print(L["Please wait a few seconds until all data has been synchronized."])
 				return addon:Debug("Data wasn't ready", addon.candidates[addon.playerName], #addon.council)
+			elseif InCombatLockdown() then
+				return addon:Print(L["You can't start a loot session while in combat."])
+			elseif ml.running then
+				return addon:Print(L["You're already running a session."])
 			else
 				ml:StartSession()
 			end

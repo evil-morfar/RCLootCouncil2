@@ -85,7 +85,7 @@ function RCLootCouncil:OnInitialize()
   	self.version = GetAddOnMetadata("RCLootCouncil", "Version")
 	self.nnp = false
 	self.debug = false
-	self.tVersion = "Beta.3" -- String or nil. Indicates test version, which alters stuff like version check. Is appended to 'version', i.e. "version-tVersion" (max 10 letters for stupid security)
+	self.tVersion = nil -- String or nil. Indicates test version, which alters stuff like version check. Is appended to 'version', i.e. "version-tVersion" (max 10 letters for stupid security)
 
 	self.playerClass = select(2, UnitClass("player"))
 	self.guildRank = L["Unguilded"]
@@ -99,14 +99,16 @@ function RCLootCouncil:OnInitialize()
 	self.recentReconnectRequest = false
 	self.currentInstanceName = ""
 	self.bossName = nil -- Updates after each encounter
-	self.recentAddableItem = nil -- The last tradeable item not below the loot threshold the player gets since the last encounter ends
-
+	self.recentTradableItem = nil -- The last tradeable item not below the loot threshold the player gets since the last encounter ends
+	self.lootOpen = false 	-- is the ML lootWindow open or closed?
+	self.lootSlotInfo = {}  -- Items' data currently in the loot slot. Need this because inside LOOT_SLOT_CLEARED handler, GetLootSlotLink() returns invalid link.
 	self.verCheckDisplayed = false -- Have we shown a "out-of-date"?
 
 	self.candidates = {}
 	self.council = {} -- council from ML
 	self.mldb = {} -- db recived from ML
 	self.responses = {
+		AWARDED        = { color = {1,1,1,1},				sort = 0.1,		text = L["Awarded"],},
 		NOTANNOUNCED	= { color = {1,0,1,1},				sort = 501,		text = L["Not announced"],},
 		ANNOUNCED		= { color = {1,0,1,1},				sort = 502,		text = L["Loot announced, waiting for answer"], },
 		WAIT				= { color = {1,1,0,1},				sort = 503,		text = L["Candidate is selecting response, please wait"], },
@@ -117,6 +119,7 @@ function RCLootCouncil:OnInitialize()
 		AUTOPASS			= { color = {0.7,0.7,0.7,1},		sort = 801,		text = L["Autopass"], },
 		DISABLED			= { color = {0.3,0.35,0.5,1},		sort = 802,		text = L["Candidate has disabled RCLootCouncil"], },
 		NOTINRAID		= { color = {0.7,0.6,0,1}, 		sort = 803, 	text = L["Candidate is not in the instance"]},
+		DEFAULT			= { color = {1,0,0,1},				sort = 899, 	text = L["Response isn't available. Please upgrade RCLootCouncil."]},
 		--[[1]]			  { color = {0,1,0,1},				sort = 1,		text = L["Mainspec/Need"],},
 		--[[2]]			  { color = {1,0.5,0,1},			sort = 2,		text = L["Offspec/Greed"],	},
 		--[[3]]			  { color = {0,0.7,0.7,1},			sort = 3,		text = L["Minor Upgrade"],},
@@ -158,6 +161,7 @@ function RCLootCouncil:OnInitialize()
 			autoLoot = true, -- Auto loot equippable items
 			autolootEverything = true,
 			autolootBoE = true,
+			autolootOthersBoE = false, -- Auto add BoE looted by others to the session frame
 			allowOtherAdd = true,
 			autoOpen = true, -- auto open the voting frame
 			autoClose = false, -- Auto close voting frame on session end
@@ -360,9 +364,9 @@ function RCLootCouncil:OnInitialize()
 		 		 "color", "class", "isAwardReason", "difficultyID", "mapID", "groupSize", "tierToken"}
 	},
 	]]
-	self.db.RegisterCallback(self, "OnProfileChanged", "RefreshConfig")
-	self.db.RegisterCallback(self, "OnProfileCopied", "RefreshConfig")
-	self.db.RegisterCallback(self, "OnProfileReset", "RefreshConfig")
+	self.db.RegisterCallback(self, "OnProfileChanged", ReloadUI)
+	self.db.RegisterCallback(self, "OnProfileCopied", ReloadUI)
+	self.db.RegisterCallback(self, "OnProfileReset", ReloadUI)
 
 	-- add shortcuts
 	db = self.db.profile
@@ -401,7 +405,9 @@ function RCLootCouncil:OnEnable()
 	self:RegisterEvent("PLAYER_REGEN_ENABLED", "LeaveCombat")
 	self:RegisterEvent("ENCOUNTER_START", "OnEvent")
 	self:RegisterEvent("ENCOUNTER_END", 	"OnEvent")
-	self:RegisterEvent("CHAT_MSG_LOOT", "OnEvent")
+	self:RegisterEvent("LOOT_OPENED",		"OnEvent")
+	self:RegisterEvent("LOOT_SLOT_CLEARED", "OnEvent")
+	self:RegisterEvent("LOOT_CLOSED",		"OnEvent")
 	--self:RegisterEvent("GROUP_ROSTER_UPDATE", "Debug", "event")
 
 	if IsInGuild() then
@@ -413,10 +419,11 @@ function RCLootCouncil:OnEnable()
 	-- in the :CreateFrame() all :Prints as expected :o
 	self:ActivateSkin(db.currentSkin)
 
-	if self.db.global.version and self:VersionCompare(self.db.global.version, self.version)
-	 	or self.db.global.tVersion
-		then -- We've upgraded
-		self.db.profile.ignore = nil -- Replaced with ignoredItems in 2.7
+	if self.db.global.version and self:VersionCompare(self.db.global.version, self.version) then -- We've upgraded
+		if self:VersionCompare(self.db.global.version, "2.7.0") then
+			self.db.profile.ignore = nil -- Replaced with ignoredItems in 2.7
+			self:ScheduleTimer("Print", 2, "v2.7 contains a lot of new features. See the changelog at https://www.curseforge.com/wow/addons/rclootcouncil/changes")
+		end
 
 		self.db.global.oldVersion = self.db.global.version
 		self.db.global.version = self.version
@@ -448,12 +455,6 @@ function RCLootCouncil:OnDisable()
 		-- delete all windows
 		-- disable modules(?)
 	self:UnregisterAllEvents()
-end
-
-function RCLootCouncil:RefreshConfig(event, database, profile)
-	self:Debug("RefreshConfig",event, database, profile)
-	self.db.profile = database.profile
-	db = database.profile
 end
 
 function RCLootCouncil:ConfigTableChanged(val)
@@ -534,8 +535,8 @@ function RCLootCouncil:ChatCommand(msg)
 		if not self.recentAddableItem then
 			self:Print(L["chat_commands_qadd_no_recent_addable_item"])
 		else
-			self:Print("/rc add "..self.recentAddableItem)
-			self:ChatCommandRCAdd({self.recentAddableItem})
+			self:Print("/rc add "..self.recentTradableItem)
+			self:ChatCommandRCAdd({self.recentTradableItem})
 		end
 
 	elseif input == "award" or input == L["award"] then
@@ -637,7 +638,7 @@ function RCLootCouncil:ChatCommandRCAdd(args)
 		if not args[1] or args[1] == "" then
 			return self:Print(L["chat_commands_add_detailed_help_ml"])
 		end
-	elseif not args[1] or not args[1]:find("|H") then
+	elseif not args[1] or (not tonumber(args[1]) and not args[1]:find("|h")) then
 		return self:Print(L["chat_commands_add_detailed_help_non_ml"])
 	end
 
@@ -649,7 +650,11 @@ function RCLootCouncil:ChatCommandRCAdd(args)
 		end
 	end
 
-	local links = self:GetSplitedLinks(args) -- Splited the item link to allow user to enter links without space
+	local links = args
+
+	if args[1]:find("|h") then -- Only split links if we have at least one (support item id)
+		links = self:SplitItemLinks(args) -- Split item links to allow user to enter links without space
+	end
 
 	if self.isMasterLooter then
 		for _,v in ipairs(links) do
@@ -696,14 +701,15 @@ function RCLootCouncil:ChatCommandRCAdd(args)
 	end
 end
 
--- Update the recentAddableItem by link, if it is in bag and tradable.
-function RCLootCouncil:UpdateRecentAddableItem(link)
+-- Update the recentTradableItem by link, if it is in bag and tradable.
+function RCLootCouncil:UpdateAndSendRecentTradableItem(link)
 	for i = 0, NUM_BAG_SLOTS do
 		for j = 1, GetContainerNumSlots(i) do
 			local _, _, _, _, _, _, link2 = GetContainerItemInfo(i, j)
-			if link2 and self:ItemIsItem(link, link2) 
+			if link2 and self:ItemIsItem(link, link2)
 				and self:GetContainerItemTradeTimeRemaining(i, j) > 0 then
-				self.recentAddableItem = link
+				self.recentTradableItem = link
+				self:SendCommand("group", "tradable", link)
 				return
 			end
 		end
@@ -824,7 +830,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 					end
 
 					-- Check if council is received
-					if not FindInTableIf(self.council, function(v) return self:UnitIsUnit(self.masterLooter, v) end) then -- Dont like to do raw comparison to the name, when the operation is important.
+					if not FindInTableIf(self.council, function(v) return self:UnitIsUnit(self.masterLooter, v) end) then
 						self:Debug("Received loot table without ML in the council", sender)
 						self:SendCommand(self.masterLooter, "council_request")
 						return self:ScheduleTimer("OnCommReceived", 5, prefix, serializedMsg, distri, sender)
@@ -1410,7 +1416,7 @@ function RCLootCouncil:GetTokenEquipLoc(tokenSlot)
 			end
 		end
 	end
-	return "" -- return nil is bad. equipLoc should always have value
+	return ""
 end
 
 function RCLootCouncil:Timer(type, ...)
@@ -1463,14 +1469,14 @@ end
 1	Warrior			WARRIOR
 2	Paladin			PALADIN
 3	Hunter			HUNTER
-4	Rogue			ROGUE
+4	Rogue				ROGUE
 5	Priest			PRIEST
 6	Death Knight	DEATHKNIGHT
 7	Shaman			SHAMAN
-8	Mage			MAGE
+8	Mage				MAGE
 9	Warlock			WARLOCK
-10	Monk			MONK
-11	Druid			DRUID
+10	Monk				MONK
+11	Druid				DRUID
 12	Demon Hunter	DEMONHUNTER
 --]]
 RCLootCouncil.classDisplayNameToID = {} -- Key: localized class display name. value: class id(number)
@@ -1559,10 +1565,6 @@ function RCLootCouncil:GetContainerItemTradeTimeRemaining(container, slot)
 	end
 
 	local bindTradeTimeRemainingPattern = escapePatternSymbols(BIND_TRADE_TIME_REMAINING):gsub("%%%%s", "%(%.%+%)") -- PT locale contains "-", must escape that.
-												-- P.S. LibDeformat is useful to do deformat things, but not using it because we'll add a new library and lose performance.
-												-- But LibDeformat makes the function more likely to work if Blizzard changes the string constants.
-												-- Our parser doesn't work if %s to changed to %1$s
-												-- Blizzard should have no reason to change them though.
 	local bounded = false
 
 	for i = 1, tooltipForParsing:NumLines() or 0 do
@@ -1608,7 +1610,6 @@ function RCLootCouncil:GetContainerItemTradeTimeRemaining(container, slot)
 			end
 		end
 	end
-
 	tooltipForParsing:Hide()
 	if bounded then
 		return 0
@@ -1763,14 +1764,45 @@ function RCLootCouncil:OnEvent(event, ...)
 	elseif event == "ENCOUNTER_END" then
 		self:DebugLog("Event:", event, ...)
 		self.bossName = select(2, ...) -- Extract encounter name
-		self.recentAddableItem = nil
-	elseif event == "CHAT_MSG_LOOT" then
-		local msg = ...
-		local pattern = LOOT_ITEM_SELF:gsub('%%s', '(.+)')
-		local link = msg:match(pattern)
-		if link and select(3, GetItemInfo(link)) >= GetLootThreshold() then
-			-- There is some time between loot msg and the item pushed into the bag.
-			self:ScheduleTimer("UpdateRecentAddableItem", 0.5, link)
+		self.recentTradableItem = nil
+
+	elseif event == "LOOT_OPENED" then
+		self.lootOpen = true
+		wipe(self.lootSlotInfo)
+		for i = 1,  GetNumLootItems() do
+			local texture, name, quantity, quality, locked, isQuestItem, questId, isActive = GetLootSlotInfo(i)
+			local link = GetLootSlotLink(i)
+			if link then
+				self.lootSlotInfo[i] = {
+					name = name,
+					link = link,
+					quantity = quantity,
+					quality = quality,
+					locked = locked,
+				}
+			end
+		end
+		if self.isMasterLooter then
+			self:GetActiveModule("masterlooter"):OnLootOpen()
+		end
+	elseif event == "LOOT_CLOSED" then
+		self.lootOpen = false
+	elseif event == "LOOT_SLOT_CLEARED" then
+		local slot = ...
+		if self.lootSlotInfo[slot] then -- If not, this is the 2nd LOOT_CLEARED event for the same thing. -_-
+			local link = self.lootSlotInfo[slot].link
+			local quality = self.lootSlotInfo[slot].quality
+			self:Debug("OnLootSlotCleared()", slot, link)
+			self.lootSlotInfo[slot] = nil
+
+			if quality and quality >= GetLootThreshold() and IsInInstance() then -- Only send when in instance
+				-- Note that we don't check if this is master looted or not. We only know this is looted by ourselves.
+				self:ScheduleTimer("UpdateAndSendRecentTradableItem", 1, link) -- Delay a bit, need some time to between item removed from loot slot and moved to the bag.
+			end
+
+			if self.isMasterLooter then
+				self:GetActiveModule("masterlooter"):OnLootSlotCleared(slot, link)
+			end
 		end
 	end
 end
@@ -2081,11 +2113,10 @@ function RCLootCouncil:GetItemNameFromLink(link)
 	return strmatch(link or "", "%[(.+)%]")
 end
 
--- The link of same item generated from different player, or if two links are generated between player spec switch, are NOT the same
--- Because item link contains player's level and spec ID.
+-- The link of same item generated from different players, or if two links are generated between player spec switch, are NOT the same
 -- This function compares link with link level and spec ID removed.
--- Also compare with unique id removed, because wowpedia says that
--- " In-game testing indicates that the UniqueId can change from the first loot to successive loots on the same item."
+-- Also compare with unique id removed, because wowpedia says that:
+-- "In-game testing indicates that the UniqueId can change from the first loot to successive loots on the same item."
 -- Although log shows item in the loot actually has no uniqueId in Legion, but just in case Blizzard changes it in the future.
 -- @return true if two items are the same item
 function RCLootCouncil:ItemIsItem(item1, item2)
@@ -2096,9 +2127,9 @@ function RCLootCouncil:ItemIsItem(item1, item2)
 	return item1:gsub(pattern, replacement) == item2:gsub(pattern, replacement)
 end
 
---@param links. Table of links. Any link in the table can contain connected links (links without space in between)
---@return a list of links that contains all spilited item links
-function RCLootCouncil:GetSplitedLinks(links)
+--@param links. Table of strings. Any link in the table can contain connected links (links without space in between)
+--@return a list of links that contains all splitted item links
+function RCLootCouncil:SplitItemLinks(links)
 	local result = {}
 	for _, connected in ipairs(links) do
 		local startPos, endPos = 1, nil
@@ -2554,7 +2585,7 @@ function RCLootCouncil:GetItemTextWithCount(link, count)
 end
 
 function RCLootCouncil:GetItemLevelText(ilvl, token)
-	if not ilvl then ilvl = 0 end
+	if not ilvl then ilvl = "" end
 	if token then
 		return ilvl.."+"
 	else
@@ -2633,13 +2664,15 @@ end
 -- @param isTier True if the response belongs to a tier item.
 -- @param isRelic True if the response belongs to a relic item.
 function RCLootCouncil:GetResponseText(response, isTier, isRelic)
+	local ret
 	if isTier and self.mldb.tierButtonsEnabled and type(response) == "number" then
-		return (self.mldb.responses.tier and self.mldb.responses.tier[response]) and self.mldb.responses.tier[response].text or db.responses.tier[response].text
+		ret = (self.mldb.responses.tier and self.mldb.responses.tier[response]) and self.mldb.responses.tier[response].text or db.responses.tier[response].text
 	elseif isRelic and self.mldb.relicButtonsEnabled and type(response) == "number" then
-		return (self.mldb.responses.relic and self.mldb.responses.relic[response]) and self.mldb.responses.relic[response].text or db.responses.relic[response].text
+		ret = (self.mldb.responses.relic and self.mldb.responses.relic[response]) and self.mldb.responses.relic[response].text or db.responses.relic[response].text
 	else
-		return (self.mldb.responses and self.mldb.responses[response]) and self.mldb.responses[response].text or db.responses[response].text
+		ret = (self.mldb.responses and self.mldb.responses[response]) and self.mldb.responses[response].text or db.responses[response].text
 	end
+	return ret or db.responses.DEFAULT.text
 end
 
 ---
@@ -2652,18 +2685,20 @@ function RCLootCouncil:GetResponseColor(response, isTier, isRelic)
  	else
 		color = (self.mldb.responses and self.mldb.responses[response]) and self.mldb.responses[response].color or db.responses[response].color
 	end
-	return unpack(color)
+	return unpack(color or db.responses.DEFAULT.color)
 end
 
 ---
 function RCLootCouncil:GetResponseSort(response, isTier, isRelic)
+	local ret
 	if isTier and self.mldb.tierButtonsEnabled and type(response) == "number" then
-		return (self.mldb.responses.tier and self.mldb.responses.tier[response]) and self.mldb.responses.tier[response].sort or db.responses.tier[response].sort
+		ret = (self.mldb.responses.tier and self.mldb.responses.tier[response]) and self.mldb.responses.tier[response].sort or db.responses.tier[response].sort
 	elseif isRelic and self.mldb.relicButtonsEnabled and type(response) == "number" then
-		return (self.mldb.responses.relic and self.mldb.responses.relic[response]) and self.mldb.responses.relic[response].sort or db.responses.relic[response].sort
+		ret = (self.mldb.responses.relic and self.mldb.responses.relic[response]) and self.mldb.responses.relic[response].sort or db.responses.relic[response].sort
 	else
-		return (self.mldb.responses and self.mldb.responses[response]) and self.mldb.responses[response].sort or db.responses[response].sort
+		ret = (self.mldb.responses and self.mldb.responses[response]) and self.mldb.responses[response].sort or db.responses[response].sort
 	end
+	return ret or db.responses.DEFAULT.sort
 end
 
 --#end UI Functions -----------------------------------------------------
