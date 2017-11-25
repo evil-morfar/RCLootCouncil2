@@ -1868,6 +1868,9 @@ function RCLootCouncil:GetInstalledModulesFormattedData()
 	for num, name in pairs(modules) do
 		if self:GetModule(name).version then -- People might not have added version
 			modules[num] = self:GetModule(name).baseName.. " - "..self:GetModule(name).version
+			if self:GetModule(name).tVersion then
+				modules[num] = modules[num].."-"..self:GetModule(name).tVersion
+			end
 		else
 			modules[num] = self:GetModule(name).baseName.. " - ".._G.UNKNOWN
 		end
