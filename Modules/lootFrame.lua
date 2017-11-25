@@ -115,8 +115,7 @@ end
 
 function LootFrame:Update()
 	if numRolled == #items then -- We're through them all, so hide the frame
-		self:OnDisable()
-		self:ScheduleTimer(function() if numRolled == 0 and #items == 0 then self:Disable() end end, ROLL_TIMEOUT) -- Delay disable bit to give time to the event handler
+		self:Disable()
 	end
 	local width = 150
 	local numEntries = 0
