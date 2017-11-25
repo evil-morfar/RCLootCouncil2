@@ -86,7 +86,7 @@ function RCSessionFrame:ExtractData(data)
 			cols = {
 				{ DoCellUpdate = self.SetCellDeleteBtn, },
 				{ DoCellUpdate = self.SetCellItemIcon},
-				{ value = addon:GetItemLevelText(v.ilvl, v.token) or "", },
+				{ value = v.ilvl or "", },
 				{ DoCellUpdate = self.SetCellText },
 			},
 		}
