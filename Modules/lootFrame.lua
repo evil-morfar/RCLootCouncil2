@@ -586,7 +586,7 @@ do
 			roll:SetHighlightTexture("Interface\\Buttons\\UI-GroupLoot-Dice-Highlight")
 			roll:SetPushedTexture("Interface\\Buttons\\UI-GroupLoot-Dice-Down")
 			roll:SetScript("OnClick", function() LootFrame:OnRoll(entry, "ROLL") end)
-			roll:SetSize(35, 35)
+			roll:SetSize(30, 30)
 			roll:SetPoint("BOTTOMLEFT", entry.icon, "BOTTOMRIGHT", 5, -7)
 			roll:Enable()
 			roll:Show()
@@ -595,7 +595,7 @@ do
 			pass:SetHighlightTexture("Interface\\Buttons\\UI-GroupLoot-Pass-Highlight")
 			pass:SetPushedTexture("Interface\\Buttons\\UI-GroupLoot-Pass-Down")
 			pass:SetScript("OnClick", function() LootFrame:OnRoll(entry, "PASS") end)
-			pass:SetSize(33, 33)
+			pass:SetSize(30, 30)
 			pass:SetPoint("LEFT", roll, "RIGHT", 5, 3)
 			pass:Show()
 
