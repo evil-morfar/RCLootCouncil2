@@ -21,6 +21,7 @@ local MIN_BUTTON_WIDTH = 40
 
 local sessionsWaitingRollResultQueue = {}
 local ROLL_TIMEOUT = 1.5
+local ROLL_SHOW_RESULT_TIME = 1
 
 local RANDOM_ROLL_PATTERN = RANDOM_ROLL_RESULT
 RANDOM_ROLL_PATTERN = RANDOM_ROLL_PATTERN:gsub("[%(%)%-]", "%%%1")
@@ -625,6 +626,7 @@ function LootFrame:CHAT_MSG_SYSTEM(event, msg)
 	if name and low == 1 and high == 100 and UnitIsUnit(Ambiguate(name, "short"), "player") and sessionsWaitingRollResultQueue[1] then
 		local entryInQueue = sessionsWaitingRollResultQueue[1]
 		tremove(sessionsWaitingRollResultQueue, 1)
+		self:CancelTimer(entryInQueue.timer)
 		local entry = entryInQueue.entry
 		local item = entry.item
 		for _, session in ipairs(item.sessions) do
@@ -633,6 +635,7 @@ function LootFrame:CHAT_MSG_SYSTEM(event, msg)
 		addon:SendAnnouncement(format(L["'player' has rolled 'roll' for: 'item'"], UnitName("player"), roll, item.link), "group")
 		entry.rollResult:SetText(roll)
 		entry.rollResult:Show()
+		self:ScheduleTimer("OnRollTimeout", ROLL_SHOW_RESULT_TIME, entryInQueue)
 		-- Hide the frame in "OnRollTimeout"
     end
 end
