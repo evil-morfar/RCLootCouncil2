@@ -157,7 +157,7 @@ end
 -- Builds a list of targets we can sync to.
 -- Used in the options menu for an AceGUI dropdown.
 function sync:GetSyncTargetOptions()
-   local name, isOnline, class
+   local name, isOnline, class, _
    local ret = {}
    -- target
    if UnitIsFriend("player", "target") and UnitIsPlayer("target") then
