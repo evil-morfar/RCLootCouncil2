@@ -1826,7 +1826,10 @@ function RCLootCouncil:GetML()
 		local name;
 		for i=1, GetNumGroupMembers() or 0 do
 			local name2, rank = GetRaidRosterInfo(i)
-			if rank == 2 then -- Group leader
+			if not name2 then -- Group info is not completely ready
+				return false, "Unknown"
+			end
+			if rank == 2 then -- Group leader. Btw, name2 can be nil when rank is 2.
 				name = self:UnitName(name2)
 			end
 		end
