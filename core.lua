@@ -421,6 +421,7 @@ function RCLootCouncil:OnEnable()
 
 	if self.db.global.version and self:VersionCompare(self.db.global.version, self.version) then -- We've upgraded
 		if self:VersionCompare(self.db.global.version, "2.7.0") then
+			self.db.global.localizedSubTypes = nil -- Removed in 2.7
 			self.db.profile.ignore = nil -- Replaced with ignoredItems in 2.7
 			self:ScheduleTimer("Print", 2, "v2.7 contains a lot of new features. See the changelog at https://www.curseforge.com/wow/addons/rclootcouncil/changes")
 		end
