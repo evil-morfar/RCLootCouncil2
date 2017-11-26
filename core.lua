@@ -104,6 +104,7 @@ function RCLootCouncil:OnInitialize()
 	self.lootSlotInfo = {}  -- Items' data currently in the loot slot. Need this because inside LOOT_SLOT_CLEARED handler, GetLootSlotLink() returns invalid link.
 
 	self.verCheckDisplayed = false -- Have we shown a "out-of-date"?
+	self.moduleVerCheckDisplayed = {} -- Have we shown a "out-of-date" for a module? The key of the table is the baseName of the module.
 
 	self.candidates = {}
 	self.council = {} -- council from ML
@@ -831,7 +832,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 				end
 
 			elseif command == "verTestReply" then
-				local name,_,_, otherVersion, tVersion = unpack(data)
+				local name,_,_, otherVersion, tVersion, moduleData = unpack(data)
 				self.db.global.verTestCandidates[name] = otherVersion.. "-" .. tostring(tVersion) .. ": - " .. self.playerName
 				if strfind(otherVersion, "%a+") then return self:Debug("Someone's tampering with version?", otherVersion) end
 				if self:VersionCompare(self.version,otherVersion) and not self.verCheckDisplayed and (not (tVersion or self.tVersion)) then
@@ -842,6 +843,30 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 					if #tVersion >= 10 then return self:Debug("Someone's tampering with tVersion?", tVersion) end
 					self:Print(format(L["tVersion_outdated_msg"], tVersion))
 					self.verCheckDisplayed = true
+				end
+				-- Check modules. Parse the strings.
+				for _, str in pairs(moduleData) do
+					local baseName, otherVersion, tVersion
+					baseName, otherVersion, tVersion = str:match("(.+) %- (.+)%-(.+)")
+					if not baseName then
+						baseName, otherVersion = str:match("(.+) %- (.+)")
+					end
+					if otherVersion and strfind(otherVersion, "%a+") then 
+						self:Debug("Someone's tampering with version in the module?", baseName, otherVersion)
+					elseif baseName then
+						for _, module in pairs(self.modules) do
+							if module.baseName == baseName then
+								if module.version and self:VersionCompare(module.version, otherVersion) and not self.moduleVerCheckDisplayed[baseName] and (not (tVersion or module.tVersion)) then
+									self:Print(format(L["module_version_outdated_msg"], baseName, module.version, otherVersion))
+									self.moduleVerCheckDisplayed[baseName] = true
+								elseif tVersion and module.tVersion and not self.moduleVerCheckDisplayed[baseName] and module.tVersion < tVersion then
+									if #tVersion >= 10 then self:Debug("Someone's tampering with tVersion in the module?", baseName, tVersion) end
+									self:Print(format(L["module_tVersion_outdated_msg"], baseName, tVersion))
+									self.moduleVerCheckDisplayed[baseName] = true
+								end
+							end
+						end
+					end
 				end
 
 			elseif command == "history" and db.enableHistory then
@@ -1868,6 +1893,9 @@ function RCLootCouncil:GetInstalledModulesFormattedData()
 	for num, name in pairs(modules) do
 		if self:GetModule(name).version then -- People might not have added version
 			modules[num] = self:GetModule(name).baseName.. " - "..self:GetModule(name).version
+			if self:GetModule(name).tVersion then
+				modules[num] = modules[num].."-"..self:GetModule(name).tVersion
+			end
 		else
 			modules[num] = self:GetModule(name).baseName.. " - ".._G.UNKNOWN
 		end
