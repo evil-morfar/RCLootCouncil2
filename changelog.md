@@ -65,8 +65,9 @@
 * **Rolls**
 * Added a new feature that involves raiders in the roll system, making it seem less "random" and more transparent.
    * There's a new option in the ML's right click menu that starts a roll session.
-   * Everyone can then type "/roll", and that roll is then used in the voting frame.
-   * Only the first roll counts, so you can't cheat by rolling multiple times.
+   * Clicking it will show a special roll version of the loot frame to the specified candidates.
+   * Candidates can then click the dice button to roll, or simply pass if they want.
+   * Doing that will result in a normal "/roll" which is then sent to the council.
 * This is entirely optional, and the normal roll system still exists.
 * If the item being rolled for exists multiple times in a session, then the roll is added to all of the item's sessions.
 
