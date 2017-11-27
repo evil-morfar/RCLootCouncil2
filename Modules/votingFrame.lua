@@ -1228,6 +1228,7 @@ do
 			local isRelic = lootTable[session].candidates[candidateName].isRelic
 			text = L["Response"]..": ".."|cff"..(addon:RGBToHex(addon:GetResponseColor(lootTable[session].candidates[candidateName].response, isTier, isRelic)) or "ffffff")
 				..(addon:GetResponseText(lootTable[session].candidates[candidateName].response, isTier, isRelic) or "").."|r"
+		else
 			addon:Debug("Unexpected category or dropdown menu value: "..tostring(category).." ,"..tostring(LIB_UIDROPDOWNMENU_MENU_VALUE))
 		end
 
