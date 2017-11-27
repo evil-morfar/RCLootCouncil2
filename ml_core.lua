@@ -230,7 +230,7 @@ function RCLootCouncilML:StartSession()
 
 	addon:SendCommand("group", "lootTable", self:GetLootTableForTransmit())
 
-	self:AnnounceItems()
+	self:AnnounceItems(self.lootTable)
 
 	-- Print some help messages for not direct mode.
 	if not addon.testMode then
@@ -1225,15 +1225,19 @@ RCLootCouncilML.announceItemStringsDesc = {
 	L["announce_&t_desc"],
 }
 
-function RCLootCouncilML:AnnounceItems()
+--@param: table: Table. The lootTable or the reroll table.
+function RCLootCouncilML:AnnounceItems(table)
 	if not db.announceItems then return end
 	addon:DebugLog("ML:AnnounceItems()")
 	addon:SendAnnouncement(db.announceText, db.announceChannel)
-	for k,v in ipairs(self.lootTable) do
+	for k,v in ipairs(table) do
 		local msg = db.announceItemString
 		for text, func in pairs(self.announceItemStrings) do
 			-- escapePatternSymbols is defined in FrameXML/ChatFrame.lua that escapes special characters.
-			msg = gsub(msg, text, escapePatternSymbols(tostring(func(k, v.link, v))))
+			msg = gsub(msg, text, escapePatternSymbols(tostring(func(v.session or k, v.link, v))))
+		end
+		if v.isRoll then
+			msg = _G.ROLL..": "..msg
 		end
 		addon:SendAnnouncement(msg, db.announceChannel)
 	end

@@ -126,3 +126,25 @@ LibDialog:Register("RCLOOTCOUNCIL_TRADE_ADD_ITEM", {
    hide_on_escape = true,
    show_while_dead = true,
 })
+
+LibDialog:Register("RCLOOTCOUNCIL_CONFIRM_REANNOUNCE_ALL_ITEMS", {
+   text = "something_went_wrong",
+   on_show = function(self, data)
+      if data.isRoll then
+         self.text:SetText(format(L["Are you sure you want to request rolls for all unawarded items from %s?"], data.text))
+      else
+         self.text:SetText(format(L["Are you sure you want to reannounce all unawarded items to %s?"], data.text))
+      end
+   end,
+   buttons = {
+      {  text = _G.YES,
+         on_click = function(self, data)
+            data.func()
+         end,
+      },
+      {  text = _G.NO,
+      },
+   },
+   hide_on_escape = true,
+   show_while_dead = true,
+})

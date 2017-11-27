@@ -8,7 +8,7 @@ if LibDebug then LibDebug() end
 --@end-debug@
 
 local addon = LibStub("AceAddon-3.0"):GetAddon("RCLootCouncil")
-local LootFrame = addon:NewModule("RCLootFrame", "AceTimer-3.0")
+local LootFrame = addon:NewModule("RCLootFrame", "AceTimer-3.0", "AceEvent-3.0")
 local LibDialog = LibStub("LibDialog-1.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 
@@ -18,6 +18,17 @@ local ENTRY_HEIGHT = 80
 local MAX_ENTRIES = 5
 local numRolled = 0
 local MIN_BUTTON_WIDTH = 40
+
+local sessionsWaitingRollResultQueue = {}
+local ROLL_TIMEOUT = 1.5
+local ROLL_SHOW_RESULT_TIME = 1
+
+local RANDOM_ROLL_PATTERN = RANDOM_ROLL_RESULT
+RANDOM_ROLL_PATTERN = RANDOM_ROLL_PATTERN:gsub("[%(%)%-]", "%%%1")
+RANDOM_ROLL_PATTERN = RANDOM_ROLL_PATTERN:gsub("%%s", "%(%.%+%)")
+RANDOM_ROLL_PATTERN = RANDOM_ROLL_PATTERN:gsub("%%d", "%(%%d+%)")
+RANDOM_ROLL_PATTERN = RANDOM_ROLL_PATTERN:gsub("%%%d%$s", "%(%.%+%)") -- for "deDE"
+RANDOM_ROLL_PATTERN = RANDOM_ROLL_PATTERN:gsub("%%%d%$d", "%(%%d+%)") -- for "deDE"
 
 function LootFrame:Start(table, reRoll)
 	addon:DebugLog("LootFrame:Start()")
@@ -51,6 +62,7 @@ function LootFrame:Start(table, reRoll)
 				isRelic = table[k].relic,
 				classes = table[k].classes,
 				sessions = {reRoll and table[k].session or k}, -- ".session" does not exist if not rerolling.
+				isRoll = table[k].isRoll,
 			}
 		end
 	end
@@ -77,6 +89,7 @@ end
 
 function LootFrame:OnEnable()
 	self.frame = self:GetFrame()
+	self:RegisterEvent("CHAT_MSG_SYSTEM")
 end
 
 function LootFrame:OnDisable()
@@ -119,26 +132,43 @@ function LootFrame:Update()
 end
 
 function LootFrame:OnRoll(entry, button)
-	local isTier = entry.item.isTier and addon.mldb.tierButtonsEnabled
-	local isRelic = entry.item.isRelic and addon.mldb.relicButtonsEnabled
-	addon:Debug("LootFrame:OnRoll", entry.realID, button, "Response:", addon:GetResponseText(button, isTier, isRelic))
 	local item = entry.item
-
-	-- Only send minimum neccessary data, because the information of current equipped gear has been sent when we receive the loot table.
-	-- target, session, response, isTier, isRelic, note, link, ilvl, equipLoc, relicType, sendAvgIlvl, sendSpecID
-	for _, session in ipairs(item.sessions) do
-		addon:SendResponse("group", session, button, isTier, isRelic, item.note)
+	if not item.isRoll then
+		-- Only send minimum neccessary data, because the information of current equipped gear has been sent when we receive the loot table.
+		-- target, session, response, isTier, isRelic, note, link, ilvl, equipLoc, relicType, sendAvgIlvl, sendSpecID
+		local isTier = item.isTier and addon.mldb.tierButtonsEnabled
+		local isRelic = item.isRelic and addon.mldb.relicButtonsEnabled
+		addon:Debug("LootFrame:Response", button, "Response:", addon:GetResponseText(button, isTier, isRelic))
+		for _, session in ipairs(item.sessions) do
+			addon:SendResponse("group", session, button, isTier, isRelic, item.note)
+		end
+		if addon:Getdb().printResponse then
+			addon:Print(string.format(L["Response to 'item'"], addon:GetItemTextWithCount(item.link, #item.sessions))..
+				": "..addon:GetResponseText(button, isTier, isRelic))
+		end
+		numRolled = numRolled + 1
+		item.rolled = true
+		self.EntryManager:Trash(entry)
+		self:Update()
+	else
+		if button == "ROLL" then
+			-- Need to do system roll and wait for its result.
+			local entryInQueue = {sessions=item.sessions, entry=entry}
+			tinsert(sessionsWaitingRollResultQueue, entryInQueue)
+			entryInQueue.timer = self:ScheduleTimer("OnRollTimeout", ROLL_TIMEOUT, entryInQueue) -- In case roll result is not received within time limit, discard the result.
+			RandomRoll(1, 100)
+			entry.buttons[1]:Disable() -- Disable "roll" button
+			entry.buttons[2]:Hide() -- Hide pass button
+			-- Hide the frame later
+		else
+			-- When frame is roll type, and we choose to not roll, do nothing.
+			numRolled = numRolled + 1
+			item.rolled = true
+			self.EntryManager:Trash(entry)
+			self:Update()
+		end
 	end
 
-	if addon:Getdb().printResponse then
-		addon:Print(string.format(L["Response to 'item'"], addon:GetItemTextWithCount(item.link, #item.sessions))..": "..addon:GetResponseText(button, isTier, isRelic))
-	end
-
-	numRolled = numRolled + 1 -- numRolled should only be added by 1 here.
-	item.rolled = true
-
-	self.EntryManager:Trash(entry)
-	self:Update()
 end
 
 function LootFrame:ResetTimers()
@@ -166,8 +196,13 @@ do
 				entry.noteEditbox:Hide()
 				entry.noteEditbox:SetText("")
 			end
+			if item.isRoll then
+				entry.noteButton:Hide()
+			else
+				entry.noteButton:Show()
+			end
 			entry.item = item
-			entry.itemText:SetText(addon:GetItemTextWithCount(entry.item.link or "error", #entry.item.sessions))
+			entry.itemText:SetText((item.isRoll and (_G.ROLL..": ") or "")..addon:GetItemTextWithCount(entry.item.link or "error", #entry.item.sessions))
 			entry.icon:SetNormalTexture(entry.item.texture or "Interface\\InventoryItems\\WoWUnknownItem01")
 			entry.itemCount:SetText(#entry.item.sessions > 1 and #entry.item.sessions or "")
 			local typeText = addon:GetItemTypeText(item.link, item.subType, item.equipLoc, item.typeID, item.subTypeID, item.classes, item.isTier, item.isRelic)
@@ -403,7 +438,9 @@ do
 		-- Figure out what type of entry we want
 		-- For now we're only handling 2 types: tier and nontier
 		local entry
-		if addon.mldb.tierButtonsEnabled and item.isTier then
+		if item.isRoll then
+			entry = self:Get("roll")
+		elseif addon.mldb.tierButtonsEnabled and item.isTier then
 			entry = self:Get("tier")
 		elseif addon.mldb.relicButtonsEnabled and item.isRelic then
 			entry = self:Get("relic")
@@ -413,7 +450,9 @@ do
 		if entry then -- We restored a previously trashed entry, so just update it to the new item
 			entry:Update(item)
 		else -- Or just create a new entry
-			if addon.mldb.tierButtonsEnabled and item.isTier then
+			if item.isRoll then
+				entry = self:GetRollEntry(item)
+			elseif addon.mldb.tierButtonsEnabled and item.isTier then
 				entry = self:GetTierEntry(item)
 			elseif addon.mldb.relicButtonsEnabled and item.isRelic then
 				entry = self:GetRelicEntry(item)
@@ -530,4 +569,83 @@ do
 
 		return Entry
 	end
+
+	function LootFrame.EntryManager:GetRollEntry(item)
+		local Entry = setmetatable({}, mt)
+		Entry.type = "roll"
+		Entry:Create(LootFrame.frame.content)
+
+		-- Relic entry uses different buttons, so change the function:
+		function Entry.UpdateButtons(entry)
+			local b = entry.buttons -- shortening
+			b[1] = b[1] or CreateFrame("Button", nil, entry.frame) -- ROLL
+			b[2] = b[2] or CreateFrame("Button", nil, entry.frame) -- pass
+			local roll, pass = b[1], b[2]
+
+			roll:SetNormalTexture("Interface\\Buttons\\UI-GroupLoot-Dice-Up")
+			roll:SetHighlightTexture("Interface\\Buttons\\UI-GroupLoot-Dice-Highlight")
+			roll:SetPushedTexture("Interface\\Buttons\\UI-GroupLoot-Dice-Down")
+			roll:SetScript("OnClick", function() LootFrame:OnRoll(entry, "ROLL") end)
+			roll:SetSize(32, 32)
+			roll:SetPoint("BOTTOMLEFT", entry.icon, "BOTTOMRIGHT", 5, -7)
+			roll:Enable()
+			roll:Show()
+
+			pass:SetNormalTexture("Interface\\Buttons\\UI-GroupLoot-Pass-Up")
+			pass:SetHighlightTexture("Interface\\Buttons\\UI-GroupLoot-Pass-Highlight")
+			pass:SetPushedTexture("Interface\\Buttons\\UI-GroupLoot-Pass-Down")
+			pass:SetScript("OnClick", function() LootFrame:OnRoll(entry, "PASS") end)
+			pass:SetSize(32, 32)
+			pass:SetPoint("LEFT", roll, "RIGHT", 5, 3)
+			pass:Show()
+
+			entry.rollResult = entry.rollResult or entry.frame:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+			entry.rollResult:SetPoint("LEFT", roll, "RIGHT", 5, 3)
+			entry.rollResult:SetText("")
+			entry.rollResult:Hide()
+
+			local width = 113 + 1 * 5 + 32 + 32
+			-- Store the width of this entry. Our handler will set it
+			entry.width = width
+
+			-- Adjust the width to match item text and item level, in case we have few buttons.
+			entry.width = math.max(entry.width, 90 + entry.itemText:GetStringWidth())
+			entry.width = math.max(entry.width, 89 + entry.itemLvl:GetStringWidth())
+		end
+		Entry:Update(item)
+
+		return Entry
+	end
+end
+
+-- Process roll message, to send roll with the response.
+function LootFrame:CHAT_MSG_SYSTEM(event, msg)
+	local name, roll, low, high = string.match(msg, RANDOM_ROLL_PATTERN)
+	roll, low, high = tonumber(roll), tonumber(low), tonumber(high)
+
+	if name and low == 1 and high == 100 and UnitIsUnit(Ambiguate(name, "short"), "player") and sessionsWaitingRollResultQueue[1] then
+		local entryInQueue = sessionsWaitingRollResultQueue[1]
+		tremove(sessionsWaitingRollResultQueue, 1)
+		self:CancelTimer(entryInQueue.timer)
+		local entry = entryInQueue.entry
+		local item = entry.item
+		for _, session in ipairs(item.sessions) do
+			addon:SendResponse("group", session, nil, nil, nil, nil, roll)
+		end
+		addon:SendAnnouncement(format(L["'player' has rolled 'roll' for: 'item'"], UnitName("player"), roll, item.link), "group")
+		entry.rollResult:SetText(roll)
+		entry.rollResult:Show()
+		self:ScheduleTimer("OnRollTimeout", ROLL_SHOW_RESULT_TIME, entryInQueue)
+		-- Hide the frame in "OnRollTimeout"
+    end
+end
+
+-- Hide roll frame after some time clicks roll
+function LootFrame:OnRollTimeout(entryInQueue)
+	tDeleteItem(sessionsWaitingRollResultQueue, entryInQueue)
+	local entry = entryInQueue.entry
+	numRolled = numRolled + 1
+	entry.item.rolled = true
+	self.EntryManager:Trash(entry)
+	self:Update()
 end
