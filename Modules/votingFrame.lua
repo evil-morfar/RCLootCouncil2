@@ -1201,7 +1201,7 @@ end
 do
 
 	function RCVotingFrame.rennaounceOrRequestRollCreateCategoryButton(category)
-		return 
+		return
 		{ -- 3 Reannounce (and request rolls) to candidate
 			onValue = function() return _G.LIB_UIDROPDOWNMENU_MENU_VALUE == "REANNOUNCE" or _G.LIB_UIDROPDOWNMENU_MENU_VALUE == "REQUESTROLL" end,
 			value = function() return _G.LIB_UIDROPDOWNMENU_MENU_VALUE.."_"..category end,
@@ -1264,6 +1264,7 @@ do
 			namePred = function(name) return lootTable[session].candidates[name].response == lootTable[session].candidates[candidateName].response and
 			 								 booleanCompare(lootTable[session].candidates[name].isTier, lootTable[session].candidates[candidateName].isTier) and
 			 								 booleanCompare(lootTable[session].candidates[name].isRelic, lootTable[session].candidates[candidateName].isRelic) end
+	 	else
 			addon:Debug("Unexpected dropdown menu value: "..tostring(LIB_UIDROPDOWNMENU_MENU_VALUE))
 		end
 
@@ -1321,7 +1322,7 @@ do
 			},{ -- 6 Award later
 				text = L["Award later"],
 				notCheckable = true,
-				disabled = function() 
+				disabled = function()
 					return not lootTable[session] or lootTable[session].bagged or lootTable[session].awarded
 				end,
 				func = function()
@@ -1367,7 +1368,7 @@ do
 		},
 		{ -- Level 3
 			{ -- 1 Header text of reannounce (and request rolls)
-				onValue = function() return type(_G.LIB_UIDROPDOWNMENU_MENU_VALUE)=="string" and 
+				onValue = function() return type(_G.LIB_UIDROPDOWNMENU_MENU_VALUE)=="string" and
 					(LIB_UIDROPDOWNMENU_MENU_VALUE:find("^REQUESTROLL") or LIB_UIDROPDOWNMENU_MENU_VALUE:find("^REANNOUNCE"))
 				end,
 				text = function(candidateName) return RCVotingFrame.reannounceOrRequestRollText(candidateName) end,
@@ -1378,7 +1379,7 @@ do
 				end,
 			},
 			{ -- 2 This item
-				onValue = function() return type(_G.LIB_UIDROPDOWNMENU_MENU_VALUE)=="string" and 
+				onValue = function() return type(_G.LIB_UIDROPDOWNMENU_MENU_VALUE)=="string" and
 					(LIB_UIDROPDOWNMENU_MENU_VALUE:find("^REQUESTROLL") or LIB_UIDROPDOWNMENU_MENU_VALUE:find("^REANNOUNCE"))
 				end,
 				text = function()
@@ -1393,7 +1394,7 @@ do
 					return RCVotingFrame.reannounceOrRequestRollButton(candidateName, true)
 				end,
 			},{ -- 3 All unawarded items, only shown for "candidate" and "group" reannounce
-				onValue = function() return type(_G.LIB_UIDROPDOWNMENU_MENU_VALUE)=="string" and 
+				onValue = function() return type(_G.LIB_UIDROPDOWNMENU_MENU_VALUE)=="string" and
 					(LIB_UIDROPDOWNMENU_MENU_VALUE:find("^REQUESTROLL") or LIB_UIDROPDOWNMENU_MENU_VALUE:find("^REANNOUNCE")) and
 					(LIB_UIDROPDOWNMENU_MENU_VALUE:find("_CANDIDATE$") or LIB_UIDROPDOWNMENU_MENU_VALUE:find("_GROUP$"))
 				end,
