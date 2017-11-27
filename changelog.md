@@ -84,8 +84,6 @@
 * Now keeps an eye on the timer on items that needs to be traded.
 
 
-
-
 ###### Bugfixes
 + *Fixed a few localization related bugs for non-english clients.*
 + *A session starting immidiately after doing a /reload could cause an error.*
@@ -98,11 +96,11 @@
    + ```:GetItemTypeText()``` for displaying various item types.
    + ```:PrepareLootTable()``` replaces the ```subType``` in the lootTable with the subType in our localization.
    + ```:UpdatePlayersData()``` uses the two new functions ```:UpdatePlayersRelics()``` and ```:UpdatePlayerGears()``` to cache the player's gear/info.
-   + ```:SendResponse(target, session, link, ilvl, response, equipLoc, note, subType, isTier, isRelic, sendAvgIlvl)``` sends response to the target.
    + SpecID is now included in the candidate data.
    + New message on ```:BuildMLdb()```.
    + ```:ItemIsItem(link or itemID or itemName)``` properly compares two items.
    + ```:CanSetML()``` returns true if and only if we can set the master looter. (The player is raid leader and in a guild group)
+   + Loads of other new functions that doesn't alter previous executions noteably.
 
 * **Changed**
    + ~~```:CreateResponse()```~~ is consolidated into ```:SendResponse(...)``` which now creates and sends responses.
@@ -111,6 +109,8 @@
    * "Miscellaneous" and "Junk" is added to the ```subTypeLookup```.
    * The ```lootTable``` in core is now the same as in votingFrame. Use ```RCLootCouncil:GetLootTable()``` to fetch it, as the votingFrame one will be removed.
    * ```ML:AddItem(...)``` is changed to ```ML:AddItem(item, bagged, slotIndex, entry)```.
+   * ```ML:Award(...)``` is more or less completely reworked.
+   * New ruleset for ```GetML()```. Will always indicate the group leader as ML with ML disabled.
    * The argument of message ```RCMLAddItem``` is changed from item, session to item, entry.
    * The entries in mldb are now nonexistant (nil) instead of false - just to save a bit of space.
 
