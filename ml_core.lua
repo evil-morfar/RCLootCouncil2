@@ -1651,34 +1651,6 @@ RCLootCouncilML.EQUIPLOC_SORT_ORDER = {
 RCLootCouncilML.EQUIPLOC_SORT_ORDER = tInvert(RCLootCouncilML.EQUIPLOC_SORT_ORDER)
 RCLootCouncilML.EQUIPLOC_SORT_ORDER["INVTYPE_ROBE"] = RCLootCouncilML.EQUIPLOC_SORT_ORDER["INVTYPE_CHEST"] -- Chest is the same as robe
 
--- TRANSFORMED to 'SUBTYPE_SORT_ORDER["SUBTYPE"] = num', below
-RCLootCouncilML.SUBTYPE_SORT_ORDER = {
-	"Junk", -- armor token
-	"Plate",
-	"Mail",
-	"Leather",
-	"Cloth",
-	"Shields",
-	"Bows",
-	"Crossbows",
-	"Daggers",
-	"Guns",
-	"Fist Weapons",
-	"One-Handed Axes",
-	"One-Handed Maces",
-	"One-Handed Swords",
-	"Polearms",
-	"Staves",
-	"Two-Handed Axes",
-	"Two-Handed Maces",
-	"Two-Handed Swords",
-	"Wands",
-	"Warglaives",
-	"Miscellaneous",
-	"Artifact Relic",
-}
-RCLootCouncilML.SUBTYPE_SORT_ORDER = tInvert(RCLootCouncilML.SUBTYPE_SORT_ORDER)
-
 function RCLootCouncilML:SortLootTable(lootTable)
 	table.sort(lootTable, self.LootTableCompare)
 end
@@ -1712,10 +1684,11 @@ function RCLootCouncilML.LootTableCompare(a, b)
 	if equipLocA ~= equipLocB then
 		return equipLocA < equipLocB
 	end
-	local subTypeA = RCLootCouncilML.SUBTYPE_SORT_ORDER[addon.db.global.localizedSubTypes[a.subType]] or math.huge
-	local subTypeB = RCLootCouncilML.SUBTYPE_SORT_ORDER[addon.db.global.localizedSubTypes[b.subType]] or math.huge
-	if subTypeA ~= subTypeB then
-		return subTypeA < subTypeB
+	if a.typeID ~= b.typeID then
+		return a.typeID > b.typeID
+	end
+	if a.subTypeID ~= b.subTypeID then
+		return a.subTypeID < b.subTypeID
 	end
 	if a.relic ~= b.relic then
 		if a.relic and b.relic then
