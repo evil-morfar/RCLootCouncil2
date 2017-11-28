@@ -188,11 +188,6 @@ function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
 						self:SetCandidateData(k, winner, "response", "AWARDED")
 					end
 				end
-				-- 	for k,v in ipairs(lootTable) do
-				-- 		if addon:UnitIsUnit(v.awarded, oldWinner) then -- This is a reaward - restore old response.
-				-- 		end
-				-- 	end
-				-- end
 				lootTable[s].awarded = winner
 				if addon.isMasterLooter and session ~= #lootTable then -- ML should move to the next item on award
 					self:SwitchSession(session + 1)
