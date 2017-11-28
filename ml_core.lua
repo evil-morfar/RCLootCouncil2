@@ -753,7 +753,6 @@ end
 
 -- called in addon:OnEvent
 function RCLootCouncilML:OnLootSlotCleared(slot, link)
-	addon:Debug("ML:OnLootSlotCleared()", slot, link)
 	for i = #self.lootQueue, 1, -1 do -- Check latest loot attempt first
 		local v = self.lootQueue[i]
 		if v.slot == slot then -- loot success

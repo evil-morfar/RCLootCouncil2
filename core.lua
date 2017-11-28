@@ -833,7 +833,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 					if not baseName then
 						baseName, otherVersion = str:match("(.+) %- (.+)")
 					end
-					if otherVersion and strfind(otherVersion, "%a+") then 
+					if otherVersion and strfind(otherVersion, "%a+") then
 						self:Debug("Someone's tampering with version in the module?", baseName, otherVersion)
 					elseif baseName then
 						for _, module in pairs(self.modules) do
@@ -1692,6 +1692,7 @@ function RCLootCouncil:OnEvent(event, ...)
 			player_relogged = false
 		end
 	elseif event == "ENCOUNTER_START" then
+			self:DebugLog("Event:", event, ...)
 			self:UpdatePlayersData()
 	elseif event == "GUILD_ROSTER_UPDATE" then
 		self.guildRank = self:GetPlayersGuildRank();
@@ -1704,6 +1705,7 @@ function RCLootCouncil:OnEvent(event, ...)
 		self.bossName = select(2, ...) -- Extract encounter name
 
 	elseif event == "LOOT_OPENED" then
+		self:Debug("Event:", event, ...)
 		self.lootOpen = true
 		wipe(self.lootSlotInfo)
 		for i = 1,  GetNumLootItems() do
@@ -1723,6 +1725,7 @@ function RCLootCouncil:OnEvent(event, ...)
 			self:GetActiveModule("masterlooter"):OnLootOpen()
 		end
 	elseif event == "LOOT_CLOSED" then
+		self:Debug("Event:", event, ...)
 		self.lootOpen = false
 	elseif event == "LOOT_SLOT_CLEARED" then
 		local slot = ...
