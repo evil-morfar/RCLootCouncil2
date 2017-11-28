@@ -178,12 +178,22 @@ function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
 				end, 1) -- Make sure we've received the history data before updating
 				local s, winner = unpack(data)
 				if not lootTable[s] then return end -- We might not have lootTable - e.g. if we just reloaded
-				lootTable[s].awarded = winner
+				local oldWinner = lootTable[s].awarded
 				for k, v in ipairs(lootTable) do
-					if addon:ItemIsItem(v.link, lootTable[session].link) then
+					if addon:ItemIsItem(v.link, lootTable[s].link) then
+						if oldWinner and not addon:UnitIsUnit(oldWinner,winner) then -- reawarded
+							self:SetCandidateData(k, oldWinner, "response", self:GetCandidateData(k, oldWinner, "real_response"))
+						end
+						self:SetCandidateData(k, winner, "real_response", self:GetCandidateData(k, winner, "response"))
 						self:SetCandidateData(k, winner, "response", "AWARDED")
 					end
 				end
+				-- 	for k,v in ipairs(lootTable) do
+				-- 		if addon:UnitIsUnit(v.awarded, oldWinner) then -- This is a reaward - restore old response.
+				-- 		end
+				-- 	end
+				-- end
+				lootTable[s].awarded = winner
 				if addon.isMasterLooter and session ~= #lootTable then -- ML should move to the next item on award
 					self:SwitchSession(session + 1)
 				else
