@@ -138,7 +138,7 @@ function LootFrame:OnRoll(entry, button)
 		-- target, session, response, isTier, isRelic, note, link, ilvl, equipLoc, relicType, sendAvgIlvl, sendSpecID
 		local isTier = item.isTier and addon.mldb.tierButtonsEnabled
 		local isRelic = item.isRelic and addon.mldb.relicButtonsEnabled
-		addon:Debug("LootFrame:Response", button, "Response:", addon:GetResponseText(button, isTier, isRelic))
+		addon:Debug("LootFrame:Response", button, "ButtonText:", addon:GetButtonText(button,isTier,isRelic), "Response:", addon:GetResponseText(button,isTier,isRelic))
 		for _, session in ipairs(item.sessions) do
 			addon:SendResponse("group", session, button, isTier, isRelic, item.note)
 		end
