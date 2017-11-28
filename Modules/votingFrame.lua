@@ -1349,22 +1349,22 @@ do
 				value = "REANNOUNCE",
 				hasArrow = true,
 				notCheckable = true,
-			},{ -- 9 Remove from consideration
+			},{ -- 9 Add rolls
+				text = L["Add rolls"],
+				notCheckable = true,
+				func = function() RCVotingFrame:DoRandomRolls(session) end,
+			},{ -- 10 Reannounce and request rolls
+				text = _G.REQUEST_ROLL.."...",
+				value = "REQUESTROLL",
+				hasArrow = true,
+				notCheckable = true,
+			},{ -- 11 Remove from consideration
 				text = L["Remove from consideration"],
 				notCheckable = true,
 				func = function(name)
 					addon:SendCommand("group", "change_response", session, name, "REMOVED")
 				end,
-			},{ -- 10 Add rolls
-				text = L["Add rolls"],
-				notCheckable = true,
-				func = function() RCVotingFrame:DoRandomRolls(session) end,
-			},{ -- 11 Reannounce and request rolls
-				text = _G.REQUEST_ROLL.."...",
-				value = "REQUESTROLL",
-				hasArrow = true,
-				notCheckable = true,
-			}
+			},
 		},
 		{ -- Level 2
 			{ -- 1 AWARD_FOR
