@@ -825,24 +825,26 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 					self.verCheckDisplayed = true
 				end
 				-- Check modules. Parse the strings.
-				for _, str in pairs(moduleData) do
-					local baseName, otherVersion, tVersion
-					baseName, otherVersion, tVersion = str:match("(.+) %- (.+)%-(.+)")
-					if not baseName then
-						baseName, otherVersion = str:match("(.+) %- (.+)")
-					end
-					if otherVersion and strfind(otherVersion, "%a+") then
-						self:Debug("Someone's tampering with version in the module?", baseName, otherVersion)
-					elseif baseName then
-						for _, module in pairs(self.modules) do
-							if module.baseName == baseName then
-								if module.version and self:VersionCompare(module.version, otherVersion) and not self.moduleVerCheckDisplayed[baseName] and (not (tVersion or module.tVersion)) then
-									self:Print(format(L["module_version_outdated_msg"], baseName, module.version, otherVersion))
-									self.moduleVerCheckDisplayed[baseName] = true
-								elseif tVersion and module.tVersion and not self.moduleVerCheckDisplayed[baseName] and module.tVersion < tVersion then
-									if #tVersion >= 10 then self:Debug("Someone's tampering with tVersion in the module?", baseName, tVersion) end
-									self:Print(format(L["module_tVersion_outdated_msg"], baseName, tVersion))
-									self.moduleVerCheckDisplayed[baseName] = true
+				if moduleData then
+					for _, str in pairs(moduleData) do
+						local baseName, otherVersion, tVersion
+						baseName, otherVersion, tVersion = str:match("(.+) %- (.+)%-(.+)")
+						if not baseName then
+							baseName, otherVersion = str:match("(.+) %- (.+)")
+						end
+						if otherVersion and strfind(otherVersion, "%a+") then
+							self:Debug("Someone's tampering with version in the module?", baseName, otherVersion)
+						elseif baseName then
+							for _, module in pairs(self.modules) do
+								if module.baseName == baseName then
+									if module.version and self:VersionCompare(module.version, otherVersion) and not self.moduleVerCheckDisplayed[baseName] and (not (tVersion or module.tVersion)) then
+										self:Print(format(L["module_version_outdated_msg"], baseName, module.version, otherVersion))
+										self.moduleVerCheckDisplayed[baseName] = true
+									elseif tVersion and module.tVersion and not self.moduleVerCheckDisplayed[baseName] and module.tVersion < tVersion then
+										if #tVersion >= 10 then self:Debug("Someone's tampering with tVersion in the module?", baseName, tVersion) end
+										self:Print(format(L["module_tVersion_outdated_msg"], baseName, tVersion))
+										self.moduleVerCheckDisplayed[baseName] = true
+									end
 								end
 							end
 						end
