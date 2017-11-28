@@ -1220,7 +1220,7 @@ do
 		if category == "CANDIDATE" or LIB_UIDROPDOWNMENU_MENU_VALUE:find("_CANDIDATE$") then
 			text = addon:GetUnitClassColoredName(candidateName)
 		elseif category == "GROUP" or LIB_UIDROPDOWNMENU_MENU_VALUE:find("_GROUP$") then
-			text = _G.GROUP
+			text = _G.FRIENDS_FRIENDS_CHOICE_EVERYONE
 		elseif category == "ROLL" or LIB_UIDROPDOWNMENU_MENU_VALUE:find("_ROLL$") then
 			text = _G.ROLL..": "..(lootTable[session].candidates[candidateName].roll or "")
 		elseif category == "RESPONSE" or LIB_UIDROPDOWNMENU_MENU_VALUE:find("_RESPONSE$") then
