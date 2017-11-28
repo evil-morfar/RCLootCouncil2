@@ -1771,6 +1771,7 @@ function RCLootCouncil:NewMLCheck()
 		-- At this point we know the ML has changed, so we can wipe the council
 		self:Debug("Resetting council as we have a new ML!")
 		self.council = {}
+		self.mldb = {}
 		self.isCouncil = false
 		self:Debug("MasterLooter = ", self.masterLooter)
 		-- Check to see if we have recieved mldb within 15 secs, otherwise request it
