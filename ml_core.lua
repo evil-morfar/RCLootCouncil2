@@ -202,7 +202,7 @@ function RCLootCouncilML:UpdateGroup(ask)
 		if #self.council ~= #oldCouncil then
 			councilUpdated = true
 		else
-			for i, _ in ipairs(self.council) do
+			for i in ipairs(self.council) do
 				if self.council[i] ~= oldCouncil[i] then
 					councilUpdated = true
 					break
