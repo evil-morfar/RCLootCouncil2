@@ -1688,7 +1688,7 @@ function RCLootCouncilML.LootTableCompare(a, b)
 		return a.typeID > b.typeID
 	end
 	if a.subTypeID ~= b.subTypeID then
-		return a.subTypeID < b.subTypeID
+		return a.subTypeID > b.subTypeID
 	end
 	if a.relic ~= b.relic then
 		if a.relic and b.relic then
