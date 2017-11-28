@@ -1,3 +1,9 @@
+### v2.7.1
+---
+###### Bugfixes
+* *A breaking bug on session sorting had sneaked into the latest release.*
+
+
 ### v2.7.0
 ---
 * **General**
