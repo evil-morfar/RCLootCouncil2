@@ -787,11 +787,11 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 			elseif command == "MLdb" and not self.isMasterLooter then -- ML sets his own mldb
 				--[[ NOTE: 2.1.7 - While a check for this does make sense, I'm just really tired of mldb problems, and
 					noone should really be able to send it without being ML in the first place. So just accept it as is. ]]
-				--if self:UnitIsUnit(sender, self.masterLooter) then
+				if self:UnitIsUnit(sender, self.masterLooter) then
 					self.mldb = unpack(data)
-				--else
-				--	self:Debug("Non-ML:", sender, "sent Mldb!")
-				--end
+				else
+					self:Debug("Non-ML:", sender, "sent Mldb!")
+				end
 
 			elseif command == "verTest" and not self:UnitIsUnit(sender, "player") then -- Don't reply to our own verTests
 				local otherVersion, tVersion = unpack(data)
