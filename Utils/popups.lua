@@ -1,6 +1,11 @@
 --- Contains all LibDialog popups used by RCLootCouncil
 -- @author: Potdisc
 -- 14/07/2017
+
+--@debug@
+if LibDebug then LibDebug() end
+--@end-debug@
+
 local addon = LibStub("AceAddon-3.0"):GetAddon("RCLootCouncil")
 local LibDialog = LibStub("LibDialog-1.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
@@ -15,26 +20,7 @@ LibDialog:Register("RCLOOTCOUNCIL_CONFIRM_USAGE", {
       {	text = _G.YES,
          on_click = function()
             addon:DebugLog("Player confirmed usage")
-            -- The player might have passed on ML before accepting :O
-            if not addon.isMasterLooter and addon.masterLooter and addon.masterLooter ~= "" then return end
-            local lootMethod = GetLootMethod()
-            if lootMethod ~= "master" then
-               addon:Print(L["Changing LootMethod to Master Looting"])
-               SetLootMethod("master", addon.Ambiguate(addon.playerName)) -- activate ML
-            end
-            local db = addon:Getdb()
-            if db.autoAward and GetLootThreshold() ~= 2 and GetLootThreshold() > db.autoAwardLowerThreshold  then
-               addon:Print(L["Changing loot threshold to enable Auto Awarding"])
-               SetLootThreshold(db.autoAwardLowerThreshold >= 2 and db.autoAwardLowerThreshold or 2)
-            end
-            addon:Print(L["Now handles looting"])
-            addon.isMasterLooter = true
-            addon.masterLooter = addon.playerName
-            if #db.council == 0 then -- if there's no council
-               addon:Print(L["You haven't set a council! You can edit your council by typing '/rc council'"])
-            end
-            addon:CallModule("masterlooter")
-            addon:GetActiveModule("masterlooter"):NewML(addon.masterLooter)
+            addon:StartHandleLoot()
          end,
       },
       {	text = _G.NO,
@@ -104,22 +90,61 @@ LibDialog:Register("RCLOOTCOUNCIL_CONFIRM_AWARD", {
 	show_while_dead = true,
 })
 
--- Note button (lootframe)
-LibDialog:Register("RCLOOTCOUNCIL_LOOTFRAME_NOTE", {
-	text = L["Enter your note:"],
-	on_show = function(self)
-		self:SetFrameStrata("FULLSCREEN")
-	end,
-	editboxes = {
-		{
-			on_enter_pressed = function(self, entry)
-				entry.item.note = self:GetText() -- new
-				LibDialog:Dismiss("RCLOOTCOUNCIL_LOOTFRAME_NOTE")
-			end,
-			on_escape_pressed = function(self)
-				LibDialog:Dismiss("RCLOOTCOUNCIL_LOOTFRAME_NOTE")
-			end,
-			auto_focus = true,
-		}
-	},
+LibDialog:Register("RCLOOTCOUNCIL_CONFIRM_AWARD_LATER", {
+   text = "something_went_wrong",
+   icon = "",
+   on_show = function(self, data)
+      self.text:SetText(format(L["confirm_award_later_text"], data.link))
+   end,
+   buttons = {
+      {  text = _G.YES,
+         on_click = function(self, data)
+            addon:GetActiveModule("masterlooter"):Award(data.session)
+         end,
+      },
+      {  text = _G.NO,
+      },
+   },
+   hide_on_escape = true,
+   show_while_dead = true,
+})
+
+LibDialog:Register("RCLOOTCOUNCIL_TRADE_ADD_ITEM", {
+   text = "something_went_wrong",
+   on_show = function(self, data)
+      self.text:SetText(format(L["rclootcouncil_trade_add_item_confirm"], data.count, addon:GetUnitClassColoredName("npc")))
+   end,
+   buttons = {
+      {  text = _G.YES,
+         on_click = function(self, data)
+            RCLootCouncilML:AddAwardedInBagsToTradeWindow()
+         end,
+      },
+      {  text = _G.NO,
+      },
+   },
+   hide_on_escape = true,
+   show_while_dead = true,
+})
+
+LibDialog:Register("RCLOOTCOUNCIL_CONFIRM_REANNOUNCE_ALL_ITEMS", {
+   text = "something_went_wrong",
+   on_show = function(self, data)
+      if data.isRoll then
+         self.text:SetText(format(L["Are you sure you want to request rolls for all unawarded items from %s?"], data.text))
+      else
+         self.text:SetText(format(L["Are you sure you want to reannounce all unawarded items to %s?"], data.text))
+      end
+   end,
+   buttons = {
+      {  text = _G.YES,
+         on_click = function(self, data)
+            data.func()
+         end,
+      },
+      {  text = _G.NO,
+      },
+   },
+   hide_on_escape = true,
+   show_while_dead = true,
 })

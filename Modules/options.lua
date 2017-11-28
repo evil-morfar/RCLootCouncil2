@@ -2,6 +2,10 @@
 -- @author Potdisc
 -- Create Date : 5/24/2012 6:24:55 PM
 
+--@debug@
+if LibDebug then LibDebug() end
+--@end-debug@
+
 local addon = LibStub("AceAddon-3.0"):GetAddon("RCLootCouncil")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 ------ Options ------
@@ -464,15 +468,21 @@ function addon:OptionsTable()
 								inline = true,
 								args = {
 									autoStart = {
-										order = 2,
+										order = 1,
 										name = L["Auto Start"],
 										desc = L["auto_start_desc"],
 										type = "toggle",
 									},
 									altClickLooting = {
-										order = 3,
+										order = 2,
 										name = L["Alt click Looting"],
 										desc = L["alt_click_looting_desc"],
+										type = "toggle",
+									},
+									sortItems = {
+										order = 3,
+										name = L["Sort Items"],
+										desc = L["sort_items_desc"],
 										type = "toggle",
 									},
 									spacer = {
@@ -499,6 +509,12 @@ function addon:OptionsTable()
 										desc = L["autoloot_BoE_desc"],
 										type = "toggle",
 										disabled = function() return not self.db.profile.autoLoot end,
+									},
+									autolootOthersBoE = {
+										order = 8,
+										name = L["Autoloot all BoE"],
+										desc = L["autoloot_others_BoE_desc"],
+										type = "toggle",
 									},
 								},
 							},
@@ -575,10 +591,16 @@ function addon:OptionsTable()
 										name = L["Add Item"],
 										desc = L["ignore_input_desc"],
 										type = "input",
-										pattern = "%d",
+										validate = function(_, val) return GetItemInfoInstant(val) end,
 										usage = L["ignore_input_usage"],
-										get = function() return "\"itemID\"" end,
-										set = function(info, val) tinsert(self.db.profile.ignore, val); LibStub("AceConfigRegistry-3.0"):NotifyChange("RCLootCouncil") end,
+										get = function() return "\"item ID, Name or Link\"" end,
+										set = function(info, val)
+											local id = GetItemInfoInstant(val)
+											if id then
+												self.db.profile.ignoredItems[id] = true
+												LibStub("AceConfigRegistry-3.0"):NotifyChange("RCLootCouncil")
+											end
+										end,
 									},
 									ignoreList = {
 										order = 3,
@@ -589,14 +611,20 @@ function addon:OptionsTable()
 										width = "double",
 										values = function()
 											local t = {}
-											for i = 1, #self.db.profile.ignore do
-												local link = select(2, GetItemInfo(self.db.profile.ignore[i]))
-												t[i] = link or L["Not cached, please reopen."]
+											for id, val in pairs(self.db.profile.ignoredItems) do
+												if val then
+													local link = select(2, GetItemInfo(id))
+													if link then
+														t[id] = link.."  (id: "..id..")"
+													else
+														t[id] = L["Not cached, please reopen."].."  (id: "..id..")"
+													end
+												end
 											end
 											return t
 										end,
 										get = function() return L["Ignore List"] end,
-										set = function(info, val) tremove(self.db.profile.ignore, val) end,
+										set = function(info, val) self.db.profile.ignoredItems[val] = false end,
 									},
 								},
 							},
@@ -760,7 +788,7 @@ function addon:OptionsTable()
 									outputDesc = {
 										order = 2,
 										fontSize = "medium",
-										name = L["announce_awards_desc2"].."\n"..table.concat(RCLootCouncilML.awardStringsDesc, "\n"),
+										name = function() return L["announce_awards_desc2"].."\n"..table.concat(RCLootCouncilML.awardStringsDesc, "\n") end,  -- use function so module can update this.
 										type = "description",
 										hidden = function() return not self.db.profile.announceAward end,
 									},
@@ -817,7 +845,7 @@ function addon:OptionsTable()
 									announceItemStringDesc ={
 										order = 4,
 										fontSize = "medium",
-										name = L["announce_item_string_desc"].."\n"..table.concat(RCLootCouncilML.announceItemStringsDesc, "\n"),
+										name = function() return L["announce_item_string_desc"].."\n"..table.concat(RCLootCouncilML.announceItemStringsDesc, "\n") end, -- use function so module can update this.
 										type = "description",
 										hidden = function() return not self.db.profile.announceItems end,
 									},
@@ -959,7 +987,7 @@ function addon:OptionsTable()
 											if self.db.profile.timeout then
 												self.db.profile.timeout = false
 											else
-												self.db.profile.timeout = 30
+												self.db.profile.timeout = self.defaults.profile.timeout
 											end
 										end,
 										get = function()
@@ -1198,6 +1226,9 @@ function addon:OptionsTable()
 			},
 		},
 	}
+	local function roundColors(r,g,b,a)
+		return addon.round(r,2),addon.round(g,2),addon.round(b,2),addon.round(a,2)
+	end
 
 	-- #region Create options thats made with loops
 	-- Buttons
@@ -1219,7 +1250,7 @@ function addon:OptionsTable()
 			desc = L["response_color_desc"],
 			type = "color",
 			get = function() return unpack(self.db.profile.responses[i].color)	end,
-			set = function(info,r,g,b,a) addon:ConfigTableChanged("responses"); self.db.profile.responses[i].color = {r,g,b,a} end,
+			set = function(info,r,g,b,a) addon:ConfigTableChanged("responses"); self.db.profile.responses[i].color = {roundColors(r,g,b,a)} end,
 			hidden = function() return self.db.profile.numButtons < i end,
 		}
 		options.args.mlSettings.args.buttonsTab.args.buttonOptions.args["picker"..i] = picker;
@@ -1267,7 +1298,7 @@ function addon:OptionsTable()
 			type = "color",
 			width = "half",
 			get = function() return unpack(self.db.profile.awardReasons[i].color) end,
-			set = function(info, r,g,b,a) self.db.profile.awardReasons[i].color = {r,g,b,a} end,
+			set = function(info, r,g,b,a) self.db.profile.awardReasons[i].color = {roundColors(r,g,b,a)} end,
 			hidden = function() return self.db.profile.numAwardReasons < i end,
 		}
 		options.args.mlSettings.args.awardsTab.args.awardReasons.args["log"..i] = {
@@ -1347,7 +1378,7 @@ function addon:OptionsTable()
 			desc = L["response_color_desc"],
 			type = "color",
 			get = function() return unpack(v.color)	end,
-			set = function(info,r,g,b,a) addon:ConfigTableChanged("responses"); v.color = {r,g,b,a} end,
+			set = function(info,r,g,b,a) addon:ConfigTableChanged("responses"); v.color = {roundColors(r,g,b,a)} end,
 			hidden = function() return not self.db.profile.tierButtonsEnabled or self.db.profile.tierNumButtons < v.sort end,
 		}
 		options.args.mlSettings.args.buttonsTab.args.tierButtonsOptions.args["text"..k] = {
@@ -1377,7 +1408,7 @@ function addon:OptionsTable()
 			desc = L["response_color_desc"],
 			type = "color",
 			get = function() return unpack(v.color)	end,
-			set = function(info,r,g,b,a) addon:ConfigTableChanged("responses"); v.color = {r,g,b,a} end,
+			set = function(info,r,g,b,a) addon:ConfigTableChanged("responses"); v.color = {roundColors(r,g,b,a)} end,
 			hidden = function() return not self.db.profile.relicButtonsEnabled or self.db.profile.relicNumButtons < v.sort end,
 		}
 		options.args.mlSettings.args.buttonsTab.args.relicButtonsOptions.args["text"..k] = {

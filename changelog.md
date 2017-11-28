@@ -4,19 +4,21 @@
 * Tier tokens now uses the minimum ilvl of the item the token will create as their ilvl.
    + This way all ilvl calculations will show more useful numbers.
    + Note: RCLootCouncil cannot track if these items will be Warforged/Titanforged. Only the guaranteed minimum ilvl is used.
-* There's now one of each item type included in the test items.
 * The class icon can now be replaced with spec icon.
-* Filter buttons' text now change color to indicate a filter is active.
-* During tests all outputs are now preceeded with "(test)".
+* Filter button's text now change color to indicate a filter is active.
+* During tests all chat outputs are now preceeded with "(test)".
 * Any chat output during solo tests are now replaced with chat prints.
+* "/rc add" once again works without spaces between items.
+* A winner's note (if set) is now stored in the history, and included in TSV and CSV exports. (#306)
+* Various localization improvements have been added.
 
 
-* **Localization**
-+ Armor Token is no longer displayed as "Junk" for non-English clients.
-+ Relics are now shown as "'type' Artifact Relic" instead of 'type'.
-   + Relic type is now also shown for non-English client.
-+ Trinkets are now shown as "Trinket" instead of "Trinket, Miscellaneous" for non-English client.
-
+* **Master Loot**
+* **RCLootCouncil** can now be used without Master Loot enabled (#134, #137, #171).
+* The group leader can now always start a session ("/rc add [item]"), regardless of the loot method being used.
+   * *The only exception to this is in LFG groups.*
+   * This also requires everyone in the group to use v2.7 or newer.
+* Do note it's still not possible to automatically give out items without using Master Loot due to WoW restrictions.
 
 * **Announcements**
 * Added a few more keyword replacements for announcement options.
@@ -24,22 +26,30 @@
 * Have a look at the redesigned "Announcements" tab for the changes.
 
 
+* **Sessions**
+* Items are now sorted before starting a session.
+   + The sorting algorithm follows: type/subtype > ilvl > bonuses > name
+   + This can be disabled in case you prefer your sessions to follow the order items are dropped in.
+* Session Frame is now displayed if using "Auto Start" and the session isn't fully ready.
+* Items can now be awarded later even after a session is started.
+* Any errors during awarding are now more detailedly relayed to the user.
+* Items can now be reawarded.
+   + Simply award the already awarded item to another candidate.
+   + This will update everything RCLootCouncil tracks to the new winner.
+   + The original receiver of the item will still have to trade the item to the new winner.
+* Awarding an item will change the winner's response to awarded for all duplicate sessions.
+* Added an option to auto add any BoE item looted by another player in the group.
+* Ilvl is now included in the session frame.
+
+
 * **Responses**
 * Most response related information is now sent immediately when a session starts instead of after rolling.
-   + E.g. the council can now see a candidates gear and ilvl before a candidates responds.
-* RCLootCouncil now sends the gear a candidate had equipped during the most recent encounter instead of the gear equipped when rolling.
-   + This way candidates can't change their gear to appear to have lower ilvl.
+   + E.g. the council can now see a candidates gear and ilvl before a candidate responds.
+* **RCLootCouncil** now sends the gear a candidate had equipped during the most recent encounter instead of the gear equipped when rolling.
+   + This way candidates can't change their gear to appear to have a lower ilvl.
 * If enabled, relic responses can now be filtered separately.
 * You can now filter responses from candidates that can't use a given item.
 * It's now possible to ask a candidate to reroll only on items they can use.
-
-
-* **Rolls**
-* Added a new feature that involves raiders in the roll system, making it seem less "random" and more transparent.
-   * There's a new option in the ML's right click menu that starts a roll session.
-   * Everyone can then type "/roll", and that roll is then used in the voting frame.
-   * Only the first roll counts, so you can't cheat by rolling multiple times.
-* This is entirely optional, and the normal roll system still exists.
 
 
 * **Loot Frame**
@@ -47,7 +57,31 @@
 * The loot frame will now trigger immediately when a session starts instead of after ~2 seconds delay.
 * Now shows items' type and subType alongside the ilvl.
 * The layout is now more consistent in general.
+* The note button design received an update.
 * Added an option to print out responses as they're sent.
+* The default timeout is now 60 seconds.
+
+
+* **Rolls**
+* Added a new feature that involves raiders in the roll system, making it seem less "random" and more transparent.
+   * There's a new option in the ML's right click menu that starts a roll session.
+   * Clicking it will show a special roll version of the loot frame to the specified candidates.
+   * Candidates can then click the dice button to roll, or simply pass if they want.
+   * Doing that will result in a normal "/roll" which is then sent to the council.
+* This is entirely optional, and the normal roll system still exists.
+* If the item being rolled for exists multiple times in a session, then the roll is added to all of the item's sessions.
+
+
+* **History Export/Import**
+* Removed all lag on import and export.
+* Huge exports now appear in a single line - you won't see a difference after pasting the data somewhere else though.
+* Minor exports is still fully shown.
+* When importing, only the first 2500 bytes are shown, but the data is still there.
+
+
+* **Loot from bags**
+* Trading with a winner while having awarded items in your bags now prompts to add those items to the trade window.
+* Now keeps an eye on the timer on items that needs to be traded.
 
 
 ###### Bugfixes
@@ -55,25 +89,33 @@
 + *A session starting immidiately after doing a /reload could cause an error.*
 + *Fixed a few spelling errors in english locale.*
 + *Fixed an error when the ML receives an integer from whisper during a session with whisper feature enabled*.
++ *Fixed an issue when deleting multiple entries in the loot history*.
 
 ###### Dev
 * **New**
    + ```:GetItemTypeText()``` for displaying various item types.
    + ```:PrepareLootTable()``` replaces the ```subType``` in the lootTable with the subType in our localization.
    + ```:UpdatePlayersData()``` uses the two new functions ```:UpdatePlayersRelics()``` and ```:UpdatePlayerGears()``` to cache the player's gear/info.
-   + ```:SendResponse(target, session, link, ilvl, response, equipLoc, note, subType, isTier, isRelic, sendAvgIlvl)``` sends response to the target.
    + SpecID is now included in the candidate data.
    + New message on ```:BuildMLdb()```.
+   + ```:ItemIsItem(link or itemID or itemName)``` properly compares two items.
+   + ```:CanSetML()``` returns true if and only if we can set the master looter. (The player is raid leader and in a guild group)
+   + Loads of other new functions that doesn't alter previous executions noteably.
 
 * **Changed**
    + ~~```:CreateResponse()```~~ is consolidated into ```:SendResponse(...)``` which now creates and sends responses.
-   * ```:GetPlayersGear(link, equipLoc, gearsTable)``` adds an arg ```gearsTable```. If specified, use that table to fetch item data instead of from the player's current equipped gears.
+   * ```:GetPlayersGear(link, equipLoc, gearsTable)``` added arg ```gearsTable```. If specified, use that table to fetch item data instead of from the player's current equipped gears.
    * ```:GetArtifactRelics(link, relicsTable)``` added arg ```relicsTable```. Similar to above.
    * "Miscellaneous" and "Junk" is added to the ```subTypeLookup```.
    * The ```lootTable``` in core is now the same as in votingFrame. Use ```RCLootCouncil:GetLootTable()``` to fetch it, as the votingFrame one will be removed.
+   * ```ML:AddItem(...)``` is changed to ```ML:AddItem(item, bagged, slotIndex, entry)```.
+   * ```ML:Award(...)``` is more or less completely reworked.
+   * New ruleset for ```GetML()```. Will always indicate the group leader as ML with ML disabled.
+   * The argument of message ```RCMLAddItem``` is changed from item, session to item, entry.
+   * The entries in mldb are now nonexistant (nil) instead of false - just to save a bit of space.
 
 
-*Huge shoutout to __Safetee__ for most of these changes!*
+*Huge shoutout to __Safetee__ for the majority of these changes!*
 
 ### v2.6.1
 ---

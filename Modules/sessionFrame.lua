@@ -3,6 +3,10 @@
 -- @author Potdisc
 -- Create Date : 1/20/2015 3:48:38 AM
 
+--@debug@
+if LibDebug then LibDebug() end
+--@end-debug@
+
 local addon = LibStub("AceAddon-3.0"):GetAddon("RCLootCouncil")
 local RCSessionFrame = addon:NewModule("RCSessionFrame", "AceTimer-3.0")
 local ST = LibStub("ScrollingTable")
@@ -12,12 +16,15 @@ local ml;
 local ROW_HEIGHT = 40
 local awardLater = false
 local loadingItems = false
+local waitingToEndSessions = false  -- need some time to confirm the result of award later and the session cant be ended until then.
+									-- When user chooses to award later then quickly reopens the loot window when this variable is still true, dont show session frame.
 
 function RCSessionFrame:OnInitialize()
 	self.scrollCols = {
-		{ name = "", sortnext = 3,	width = 30 }, 			-- remove item
-		{ name = "", sortnext = 3,	width = ROW_HEIGHT },-- item icon
-		{ name = "",			width = 160}, 			-- item link
+		{ name = "", width = 30}, 				-- remove item, sort by session number.
+		{ name = "", width = ROW_HEIGHT},	-- item icon
+		{ name = "", width = ROW_HEIGHT,}, 	-- item lvl
+		{ name = "", width = 160}, 			-- item link
 	}
 end
 
@@ -32,14 +39,30 @@ function RCSessionFrame:OnDisable()
 	awardLater = false
 end
 
-function RCSessionFrame:Show(data)
+function RCSessionFrame:Show(data, disableAwardLater)
+	if waitingToEndSessions then
+		return		-- Silently fails
+	end
+
 	self.frame = self:GetFrame()
 	self.frame:Show()
+
 	if data then
 		loadingItems = false
+		if addon:Getdb().sortItems then
+			ml:SortLootTable(data)
+		end
 		self:ExtractData(data)
 		self.frame.st:SetData(self.frame.rows)
 		self:Update()
+	end
+	if disableAwardLater then
+		self.frame.toggle:Disable()
+		getglobal(self.frame.toggle:GetName().."Text"):SetTextColor(0.7, 0.7, 0.7)
+		awardLater = false
+	else
+		self.frame.toggle:Enable()
+		getglobal(self.frame.toggle:GetName().."Text"):SetTextColor(1, 1, 1)
 	end
 end
 
@@ -53,8 +76,6 @@ end
 
 -- Data should be unmodified lootTable from ml_core
 function RCSessionFrame:ExtractData(data)
-	-- We could get an empty table if we haven't got GetItemInfo() from ml_core, so make sure we can handle it
-	--if not data or #data == 0 then data = {{link = false}} end
 	-- Clear any rowdata
 	self.frame.rows = {}
 	-- And set the new
@@ -63,9 +84,10 @@ function RCSessionFrame:ExtractData(data)
 			texture = v.texture or nil,
 			link = v.link,
 			cols = {
-				{ value = "",	DoCellUpdate = self.SetCellDeleteBtn, },
-				{ value = "",	DoCellUpdate = self.SetCellItemIcon},
-				{ value = v.link,	DoCellUpdate = self.SetCellText },
+				{ DoCellUpdate = self.SetCellDeleteBtn, },
+				{ DoCellUpdate = self.SetCellItemIcon},
+				{ value = " "..(addon:GetItemLevelText(v.ilvl, v.token) or ""), },
+				{ DoCellUpdate = self.SetCellText },
 			},
 		}
 	end
@@ -139,13 +161,25 @@ function RCSessionFrame:GetFrame()
 			return
 		end
 		if awardLater then
-			for session in ipairs(ml.lootTable) do ml:Award(session) end
-			addon:Print(L["Looted items to award later"])
-			ml:EndSession()
+			local sessionAwardDoneCount = 0
+			waitingToEndSessions = true
+			for session in ipairs(ml.lootTable) do
+				ml:Award(session, nil, nil, nil, function()
+					sessionAwardDoneCount = sessionAwardDoneCount + 1
+					if sessionAwardDoneCount >= #ml.lootTable then
+						waitingToEndSessions = false
+						ml:EndSession()
+					end
+				end)
+			end
 		else
 			if not addon.candidates[addon.playerName] or #addon.council == 0 then
 				addon:Print(L["Please wait a few seconds until all data has been synchronized."])
 				return addon:Debug("Data wasn't ready", addon.candidates[addon.playerName], #addon.council)
+			elseif InCombatLockdown() then
+				return addon:Print(L["You can't start a loot session while in combat."])
+			elseif ml.running then
+				return addon:Print(L["You're already running a session."])
 			else
 				ml:StartSession()
 			end
@@ -165,6 +199,13 @@ function RCSessionFrame:GetFrame()
 
 	local st = ST:CreateST(self.scrollCols, 5, ROW_HEIGHT, nil, f.content)
 	st.frame:SetPoint("TOPLEFT",f,"TOPLEFT",10,-20)
+	st:RegisterEvents({
+		["OnClick"] = function(_, _, _, _, row, realrow)
+			if not (row or realrow) then
+				return true
+			end
+		end
+	})
 	f:SetWidth(st.frame:GetWidth()+20)
 	f:SetHeight(305)
 	f.rows = {} -- the row data
