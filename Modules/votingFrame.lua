@@ -398,34 +398,6 @@ end
 --	Visuals
 -- @section Visuals
 ------------------------------------------------------------------
--- Returns true if a filter is set for this session
-local function IsFiltering(session)
-	if not db.modules["RCVotingFrame"].filters.showPlayersCantUseTheItem then
-		return true
-	end
-	if lootTable[session].token and addon.mldb.tierButtonsEnabled then
-		for _, v in pairs(db.modules["RCVotingFrame"].filters.tier) do
-			if not v then return true end
-		end
-	elseif lootTable[session].relic and addon.mldb.relicButtonsEnabled then
-		for _, v in pairs(db.modules["RCVotingFrame"].filters.relic) do
-			if not v then return true end
-		end
-	else
-		for k,v in pairs(db.modules["RCVotingFrame"].filters) do
-			if type(k) == "number" then
-				if not v then return true end
-			end
-		end
-	end
-	-- Check the universals (pass, autopass, status) last
-	for k,v in pairs(db.modules["RCVotingFrame"].filters) do
-		if type(k) == "string" and k ~= "tier" and k ~= "relic" then
-			if not v then return true end
-		end
-	end
-end
-
 function RCVotingFrame:Update()
 	if not self.frame then return end -- No updates when it doesn't exist
 	if not lootTable[session] then return addon:Debug("VotingFrame:Update() without lootTable!!") end -- No updates if lootTable doesn't exist.
@@ -466,7 +438,7 @@ function RCVotingFrame:Update()
 		self.frame.abortBtn:SetText(_G.CLOSE)
 		self.frame.disenchant:Hide()
 	end
-	if IsFiltering(session) then
+	if #self.frame.st.filtered < #self.frame.st.data then -- Some row is filtered in this session
 		self.frame.filter.Text:SetTextColor(0.86,0.5,0.22) -- #db8238
 	else
 		self.frame.filter.Text:SetTextColor(_G.NORMAL_FONT_COLOR:GetRGB()) --#ffd100
