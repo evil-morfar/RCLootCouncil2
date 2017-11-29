@@ -247,6 +247,10 @@ function RCLootCouncil:OnInitialize()
 						relic = { -- v2.7
 							['*'] = true
 						},
+						ranks = {
+							other = true,
+							['*'] = true
+						},
 					},
 				},
 			},
