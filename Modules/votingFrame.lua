@@ -1246,7 +1246,7 @@ do
 	-- Do reannounce (and request rolls)
 	-- whether request rolls, and who to reannounce is determined by the value of LIB_UIDROPDOWNMENU_MENU_VALUE
 	--@param isThisItem true to reannounce on this item, false to reannounce on all items.
-	RCVotingFrame.reannounceOrRequestRollButton = function(candidateName, isThisItem)
+	function RCVotingFrame.reannounceOrRequestRollButton(candidateName, isThisItem)
 		if type(LIB_UIDROPDOWNMENU_MENU_VALUE) ~= "string" then return end
 		local namePred, sesPred
 		if isThisItem then
@@ -1278,13 +1278,27 @@ do
 
 		if isThisItem then
 			RCVotingFrame:ReannounceOrRequestRoll(namePred, sesPred, isRoll, noAutopass, announceInChat)
+			RCVotingFrame.reannounceOrRequestRollPrint(RCVotingFrame.reannounceOrRequestRollText(candidateName), isThisItem, isRoll)
 		else -- Need to confirm to reannounce for all items.
-			LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_REANNOUNCE_ALL_ITEMS", {text=RCVotingFrame.reannounceOrRequestRollText(candidateName), isRoll = isRoll,
-				func = function() RCVotingFrame:ReannounceOrRequestRoll(namePred, sesPred, isRoll, noAutopass, announceInChat) end })
+			local target = RCVotingFrame.reannounceOrRequestRollText(candidateName)
+			LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_REANNOUNCE_ALL_ITEMS", {text=target, isRoll = isRoll,
+				func = function() 
+					RCVotingFrame:ReannounceOrRequestRoll(namePred, sesPred, isRoll, noAutopass, announceInChat)
+					RCVotingFrame.reannounceOrRequestRollPrint(target, isThisItem, isRoll) 
+				end })
 		end
 
 	end
 
+	-- Print sth when the button or confirmation dialog is clicked.
+	function RCVotingFrame.reannounceOrRequestRollPrint(target, isThisItem, isRoll)
+		local itemText = isThisItem and L["This item"] or L["All unawarded items"]
+		if isRoll then
+			addon:Print(format(L["Requested rolls for 'item' from 'target'"], itemText, target))
+		else
+			addon:Print(format(L["Reannounced 'item' to 'target'"], itemText, target))
+		end
+	end
 	--- The entries placed in the rightclick menu.
 	-- Each level in the menu has it's own indexed entries, and each entry requires a text field as minimum,
 	-- but can otherwise have the same values as normal DropDownMenus.
