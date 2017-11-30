@@ -1,3 +1,9 @@
+### v2.7.2
+---
+###### Bugfixes
+* *The version checker didn't always sort "Not installed" correctly.*
+
+
 ### v2.7.1
 ---
 ###### Bugfixes
