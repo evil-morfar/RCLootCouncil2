@@ -1710,32 +1710,31 @@ function RCLootCouncil:OnEvent(event, ...)
 		if select(1, ...) ~= "scheduled" and self.LootOpenScheduled then return end -- When this function is scheduled to run again, but LOOT_OPENDED event fires, return.
 		self.LootOpenScheduled = false
 		wipe(self.lootSlotInfo)
+		if GetNumLootItems() <= 0 then return end-- In case when function rerun, loot window is closed.
 
-		if GetNumLootItems() > 0 then -- In case when function rerun, loot window is closed.
-			self.lootOpen = true
-			for i = 1,  GetNumLootItems() do
-				if LootSlotHasItem(i) then
-					local texture, name, quantity, quality, locked, isQuestItem, questId, isActive = GetLootSlotInfo(i)
-					local link = GetLootSlotLink(i)
-					if texture then
-						self.lootSlotInfo[i] = {
-							name = name,
-							link = link, -- This could be nil, if the item is money.
-							quantity = quantity,
-							quality = quality,
-							locked = locked,
-						}
-					else -- It's possible that item in the loot window is uncached. Retry in the next frame.
-						self:Debug("Loot uncached when the loot window is opened. Retry in the next frame.", link)
-						self.LootOpenScheduled = true
-						-- Must offer special argument as 2nd argument to indicate this is run from scheduler.
-						return self:ScheduleTimer("OnEvent", 0, "LOOT_OPENED", "scheduled")
-					end
+		self.lootOpen = true
+		for i = 1,  GetNumLootItems() do
+			if LootSlotHasItem(i) then
+				local texture, name, quantity, quality, locked, isQuestItem, questId, isActive = GetLootSlotInfo(i)
+				local link = GetLootSlotLink(i)
+				if texture then
+					self.lootSlotInfo[i] = {
+						name = name,
+						link = link, -- This could be nil, if the item is money.
+						quantity = quantity,
+						quality = quality,
+						locked = locked,
+					}
+				else -- It's possible that item in the loot window is uncached. Retry in the next frame.
+					self:Debug("Loot uncached when the loot window is opened. Retry in the next frame.", link)
+					self.LootOpenScheduled = true
+					-- Must offer special argument as 2nd argument to indicate this is run from scheduler.
+					return self:ScheduleTimer("OnEvent", 0, "LOOT_OPENED", "scheduled")
 				end
 			end
-			if self.isMasterLooter then
-				self:GetActiveModule("masterlooter"):OnLootOpen()
-			end
+		end
+		if self.isMasterLooter then
+			self:GetActiveModule("masterlooter"):OnLootOpen()
 		end
 	elseif event == "LOOT_CLOSED" then
 		self:Debug("Event:", event, ...)
