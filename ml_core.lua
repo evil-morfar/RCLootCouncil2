@@ -773,17 +773,20 @@ function RCLootCouncilML:LootOpened()
 			self:UpdateLootSlots()
 		else -- Otherwise add the loot
 			for i = 1, GetNumLootItems() do
-				local item = GetLootSlotLink(i)
-				if db.altClickLooting then self:ScheduleTimer("HookLootButton", 0.5, i) end -- Delay lootbutton hooking to ensure other addons have had time to build their frames
-				local _, _, quantity, quality = GetLootSlotInfo(i)
-				if self:ShouldAutoAward(item, quality) and quantity > 0 then
-					self:AutoAward(i, item, quality, db.autoAwardTo, db.autoAwardReason, addon.bossName)
+				if addon.lootSlotInfo[i] then
+					local item = addon.lootSlotInfo[i].link -- This can be nil, if this is money(a coin).
+					local quantity = addon.lootSlotInfo[i].quantity
+					local quality = addon.lootSlotInfo[i].quality
+					if db.altClickLooting then self:ScheduleTimer("HookLootButton", 0.5, i) end -- Delay lootbutton hooking to ensure other addons have had time to build their frames
+					if item and self:ShouldAutoAward(item, quality) and quantity > 0 then
+						self:AutoAward(i, item, quality, db.autoAwardTo, db.autoAwardReason, addon.bossName)
 
-				elseif self:CanWeLootItem(item, quality) and quantity > 0 then -- check if our options allows us to loot it
-					self:AddItem(item, false, i)
+					elseif item and self:CanWeLootItem(item, quality) and quantity > 0 then -- check if our options allows us to loot it
+						self:AddItem(item, false, i)
 
-				elseif quantity == 0 then -- it's coin, just loot it
-					LootSlot(i)
+					elseif quantity == 0 then -- it's coin, just loot it
+						LootSlot(i)
+					end
 				end
 			end
 		end
