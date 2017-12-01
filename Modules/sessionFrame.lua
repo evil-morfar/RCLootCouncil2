@@ -18,6 +18,7 @@ local awardLater = false
 local loadingItems = false
 local waitingToEndSessions = false  -- need some time to confirm the result of award later and the session cant be ended until then.
 									-- When user chooses to award later then quickly reopens the loot window when this variable is still true, dont show session frame.
+local scheduledToShowAgain = false       -- Have we scheduled to reshow the frame, due to a uncached item?
 
 function RCSessionFrame:OnInitialize()
 	self.scrollCols = {
@@ -46,6 +47,7 @@ function RCSessionFrame:Show(data, disableAwardLater)
 
 	self.frame = self:GetFrame()
 	self.frame:Show()
+	scheduledToShowAgain = false
 
 	if data then
 		loadingItems = false
@@ -110,7 +112,10 @@ function RCSessionFrame.SetCellText(rowFrame, frame, data, cols, row, realrow, c
 	if not data[realrow].link then
 		frame.text:SetText("--".._G.RETRIEVING_ITEM_INFO.."--")
 		loadingItems = true
-		RCSessionFrame:ScheduleTimer("Show", 1, ml.lootTable) -- Expect data to be available in 1 sec and then recreate the frame
+		if not scheduledToShowAgain then -- Dont make unneeded scheduling
+			scheduledToShowAgain = true
+			RCSessionFrame:ScheduleTimer("Show", 1, ml.lootTable) -- Expect data to be available in 1 sec and then recreate the frame
+		end
 	else
 		frame.text:SetText(data[realrow].link)
 	end
