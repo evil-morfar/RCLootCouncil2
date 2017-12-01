@@ -1047,7 +1047,7 @@ function RCVotingFrame.filterFunc(table, row)
 		if not db.modules["RCVotingFrame"].filters.ranks[guildRanks[rank]] then
 			return false
 		end
-	elseif not db.modules["RCVotingFrame"].filters.ranks.other then
+	elseif not db.modules["RCVotingFrame"].filters.ranks.notInYourGuild then
 		return false
 	end
 
@@ -1672,13 +1672,13 @@ do
 				end
 			end
 
-			info.text = _G.OTHER
+			info.text = L["Not in your guild"]
 			info.func = function()
-				addon:Debug("Update rank Filter", "other")
-				db.modules["RCVotingFrame"].filters.ranks.other = not db.modules["RCVotingFrame"].filters.ranks.other
+				addon:Debug("Update rank Filter", "Not in your guild")
+				db.modules["RCVotingFrame"].filters.ranks.notInYourGuild = not db.modules["RCVotingFrame"].filters.ranks.notInYourGuild
 				RCVotingFrame:Update()
 			end
-			info.checked = db.modules["RCVotingFrame"].filters.ranks.other
+			info.checked = db.modules["RCVotingFrame"].filters.ranks.notInYourGuild
 			Lib_UIDropDownMenu_AddButton(info, level)
 		end
 	end

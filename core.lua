@@ -248,7 +248,6 @@ function RCLootCouncil:OnInitialize()
 							['*'] = true
 						},
 						ranks = {
-							other = true,
 							['*'] = true
 						},
 					},

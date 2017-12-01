@@ -285,6 +285,7 @@ L["No session running"] = true
 L["No winners registered"] = true
 L["Not announced"] = true
 L["Not cached, please reopen."] = true
+L["Not in your guild"] = true
 L["Not Found"] = true
 L["Not installed"] = true
 L["Notes"] = true
