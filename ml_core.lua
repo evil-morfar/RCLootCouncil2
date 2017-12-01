@@ -129,13 +129,10 @@ end
 function RCLootCouncilML:GetLootTableForTransmit()
 	local copy = CopyTable(self.lootTable)
 	for k, v in pairs(copy) do
-		if k == "equipLoc" then -- Dont break backward compatibility, generated when received in new version
-			copy[k] = select(4, GetItemInfoInstant(item))
-		elseif k == "typeID" and k == "subTypeID" then -- Generated when received
-			copy[k] = nil
-		elseif k == "baggedEntry" then -- Only ML needs this
-			copy[k] = nil
-		end
+		v["equipLoc"] = select(4, GetItemInfoInstant(v.link))
+		v["typeID"] = nil
+		v["subTypeID"] = nil
+		v["baggedEntry"] = nil -- Only ML needs this.
 	end
 	return copy
 end
