@@ -641,7 +641,7 @@ function RCLootCouncilML:OnCommReceived(prefix, serializedMsg, distri, sender)
 				addon:Debug("Responded to reconnect from", sender)
 			elseif command == "lootTable" and addon:UnitIsUnit(sender, addon.playerName) then
 				-- Start a timer to set response as offline/not installed unless we receive an ack
-				self:ScheduleTimer("Timer", 10, "LootSend")
+				self:ScheduleTimer("Timer", 15, "LootSend")
 
 			elseif command == "tradable" then -- Raid members send the info of the tradable item he looted.
 				local item = unpack(data)
