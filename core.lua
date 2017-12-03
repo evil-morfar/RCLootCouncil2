@@ -531,6 +531,8 @@ function RCLootCouncil:ChatCommand(msg)
 		self:Test(tonumber(args[1]) or 1)
 	elseif input == 'fulltest' or input == 'ftest' then
 		self:Test(tonumber(args[1]) or 1, true)
+	elseif input == 'trinkettest' or input == 'ttest' then
+		self:Test(tonumber(args[1]) or 1, false, true)
 
 	elseif input == 'version' or input == L["version"] or input == "v" or input == "ver" then
 		self:CallModule("version")
@@ -1002,7 +1004,7 @@ function RCLootCouncil:DebugLog(msg, ...)
 end
 
 -- if fullTest, add items in the encounterJournal to the test items.
-function RCLootCouncil:Test(num, fullTest)
+function RCLootCouncil:Test(num, fullTest, trinketTest)
 	self:Debug("Test", num)
 	local testItems = {
 		-- Tier21 Tokens (Head, Shoulder, Cloak, Chest, Hands, Legs)
@@ -1021,12 +1023,6 @@ function RCLootCouncil:Test(num, fullTest)
 		151937, 151938, 152062,                                         -- Cloak
 		151972, 152063, 152284,                                         -- Rings
 
-		-- Tier21 Trinkets
-		151975, 151977, -- Tank
-		151956, 151970, -- Healer
-		151963, 151964, -- Melee DPS
-		151968, 151963, -- Non-caster DPS
-		151970, 151971, -- Caster DPS
 		-- Tier21 Relics
 		152024, 152025, -- Arcane
 		152028, 152029, -- Blood
@@ -1039,6 +1035,23 @@ function RCLootCouncil:Test(num, fullTest)
 		152054, 152055, -- Shadow
 		152058, 152059, -- Storm
 	}
+
+	local trinkets = {
+		-- Tier21 Trinkets
+		151975, 151977, -- Tank
+		151956, 151970, -- Healer
+		151963, 151964, -- Melee DPS
+		151968, 151963, -- Non-caster DPS
+		151970, 151971, -- Caster DPS
+	}
+
+	if not trinketTest then
+		for _, t in ipairs(trinkets) do
+			tinsert(testItems, t)
+		end
+	else
+		testItems = trinkets
+	end
 
 	if fullTest then -- Add items from encounter journal which includes items from different difficulties.
 		LoadAddOn("Blizzard_EncounterJournal")

@@ -135,7 +135,7 @@ function RCLootCouncil:CacheEJTrinkets()
 	local _, _, curDifficultyID = GetInstanceInfo()
 	local needItemData = false
 
-	if curInstanceID then -- In instance, cache the current instance we are in.
+	if curInstanceID and curInstanceID ~= 0 then -- In instance, cache the current instance we are in.
 		EJ_SelectInstance(curInstanceID)
 		if curDifficultyID and EJ_IsValidInstanceDifficulty(curDifficultyID) then
 			EJ_SetDifficulty(curDifficultyID)
