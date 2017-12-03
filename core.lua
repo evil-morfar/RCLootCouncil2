@@ -1033,11 +1033,15 @@ function RCLootCouncil:Test(num, fullTest, trinketTest)
 
 	local trinkets = {
 		-- Tier21 Trinkets
-		151975, 151977, -- Tank
-		151956, 151970, -- Healer
-		151963, 151964, -- Melee DPS
-		151968, 151963, -- Non-caster DPS
-		151970, 151971, -- Caster DPS
+		151975, 151976, 151977, 151978, 152645, 153544, 154173, -- Tank
+		151956, 151957, 151958, 151960, 152289, 154175, 		-- Healer
+		151964,	152093,	-- Melee DPS
+		154174,			-- Agility DPS
+		151970,			-- Intellect spec
+		151963, 151968, -- Melee and ranged attack DPS
+		151962, 151969,	-- Ranged attack and spell DPS
+		151955, 151970, 151971, 154177, -- Spell DPS
+		154172, -- All classes
 	}
 
 	if not trinketTest then
