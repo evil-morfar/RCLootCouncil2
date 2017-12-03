@@ -109,3 +109,61 @@ function RCLootCouncil:AutoPassCheck(link, equipLoc, typeID, subTypeID, classesF
 	end
 	return false
 end
+
+function RCLootCouncil:CacheEJTrinkets()
+	-- Backup the current EJ instance settings.
+	local instanceID = self.EJInstanceID
+	local encounterID = self.EJEncounterID
+	local difficultyID = EJ_GetDifficulty()
+	local slotFilter = EJ_GetSlotFilter()
+	local classID, specID = EJ_GetLootFilter()
+	if _G.EncounterJournal then
+		-- We have to do this because when EncounterJournal receives the event "EJ_DIFFICULTY_UPDATE", 
+		-- the EJ instance is immediately reseted to the instance which is currently shown in EJ.
+		_G.EncounterJournal:UnregisterEvent("EJ_DIFFICULTY_UPDATE") 
+	end
+
+	local curInstanceID = EJ_GetCurrentInstance()
+	local _, _, curDifficultyID = GetInstanceInfo()
+	local needItemData = false
+
+	if curInstanceID then
+		EJ_SelectInstance(curInstanceID)
+		EJ_SelectInstance(curInstanceID)
+		if curDifficultyID and EJ_IsValidInstanceDifficulty(curDifficultyID) then
+			EJ_SetDifficulty(curDifficultyID)
+		end
+	else
+		EJ_SelectInstance(self.EJLastestInstanceID)
+		EJ_SelectInstance(self.EJLastestInstanceID)
+	end
+
+	EJ_SetSlotFilter(LE_ITEM_FILTER_TYPE_TRINKET)
+	for i = 0, GetNumClasses() do
+	    EJ_SetLootFilter(i, 0)
+	    self.EJTrinkets[i] = self.EJTrinkets[i] or {}
+	    wipe(self.EJTrinkets[i])
+
+	    for j = 1, EJ_GetNumLoot() do
+	        local id = EJ_GetLootInfoByIndex(j)
+	        if id then
+	        	self.EJTrinkets[i][id] = true
+	        else
+	        	needItemData = true
+	        end
+	    end
+	end
+	self.EJNeedItemData = needItemData
+
+	-- Restore settings
+	if instanceID then EJ_SelectInstance(instanceID) end
+	if encounterID then EJ_SelectEncounter(encounterID) end
+	EJ_SetDifficulty(difficultyID)
+	EJ_SetSlotFilter(slotFilter)
+	EJ_SetLootFilter(classID, specID)
+	if _G.EncounterJournal then -- Restore
+		-- In-game tests show that no taint is generated this way.
+		_G.EncounterJournal:RegisterEvent("EJ_DIFFICULTY_UPDATE") 
+	end
+
+end

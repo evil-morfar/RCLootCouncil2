@@ -105,7 +105,8 @@ function RCLootCouncil:OnInitialize()
 	self.moduleVerCheckDisplayed = {} -- Have we shown a "out-of-date" for a module? The key of the table is the baseName of the module.
 
 	self.EJTrinkets = {}    -- The trinket listed in the current instance. Used for autopass. format: [0 (all classes) or classID] = {[itemID]=true}
-	self.EJInstanceID = 0     -- The current Encounter Journal instance id.
+	self.EJNeedItemData = false -- If we gets uncached item when caching EJ, this will become true.
+	self.EJInstanceID = nil     -- The current Encounter Journal instance id.
 	self.EJEncounterID = nil  -- The current Encounter Journal encounter id.
 	self.EJLastestInstanceID = 946 -- UPDATE this whenever we change test data. 
 									-- The lastest raid instance Enouncter Journal id.
