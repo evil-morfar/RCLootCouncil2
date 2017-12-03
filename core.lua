@@ -423,8 +423,8 @@ function RCLootCouncil:OnEnable()
 	self:RegisterBucketEvent("EJ_LOOT_DATA_RECIEVED", 10, "OnEJLootDataReceived") 
 	--self:RegisterEvent("GROUP_ROSTER_UPDATE", "Debug", "event")
 
-	self:SecureHook("EJ_SelectInstance", function(instance) self.EJInstance = instance; self.EJEncounter = nil; end)
-	self:SecureHook("EJ_SelectEncounter", function(encounter) self.EJEncounter = encounter end)
+	self:SecureHook("EJ_SelectInstance", function(instance) self.EJInstanceID = instance; self.EJEncounterID = nil; end)
+	self:SecureHook("EJ_SelectEncounter", function(encounter) self.EJEncounterID = encounter end)
 
 	if IsInGuild() then
 		self.guildRank = select(2, GetGuildInfo("player"))
@@ -1381,7 +1381,7 @@ function RCLootCouncil:Timer(type, ...)
 		end
 	elseif type == "ZONE_CHANGED_NEW_AREA" then
 		local curInstance = EJ_GetCurrentInstance()
-		if curInstance and curInstance ~= 0 then
+		if curInstance and curInstance ~= 0 then -- Only update cache when we enter instance. No update when leave instance.
 			self:CacheEJTrinkets()
 		end
 	end
@@ -1783,8 +1783,8 @@ function RCLootCouncil:OnEvent(event, ...)
 		end
 
 	elseif event == "ZONE_CHANGED_NEW_AREA" then
-		-- Although some tests show IsInInstance immediately fires the new result, I am not quite sure. So Delay by 1s.
-		self:ScheduleTimer("Timer", 2, "ZONE_CHANGED_NEW_AREA")
+		-- Although some tests show IsInInstance immediately fires the new result, I am not quite sure. So Delay by several seconds.
+		self:ScheduleTimer("Timer", 3, "ZONE_CHANGED_NEW_AREA")
 	end
 end
 

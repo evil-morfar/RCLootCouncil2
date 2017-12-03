@@ -125,23 +125,35 @@ function RCLootCouncil:CacheEJTrinkets()
 	local difficultyID = EJ_GetDifficulty()
 	local slotFilter = EJ_GetSlotFilter()
 	local classID, specID = EJ_GetLootFilter()
+
+	local curInstanceID = EJ_GetCurrentInstance() -- The we are current in, not EJ setting.
+	local _, _, curDifficultyID = GetInstanceInfo()
+
+	local newInstanceID, newDifficultyID
+	if curInstanceID and curInstanceID ~= 0 then -- In instance, cache the current instance we are in.
+		newInstanceID = curInstanceID
+		newDifficultyID = curDifficultyID
+	else -- If out of instance, assume to be testing, so cache the lastest instance.
+		newInstanceID = self.EJLastestInstanceID
+		newDifficultyID = 14 -- Normal difficulty
+	end
+	if not self.EJNeedItemData and self.EJTrinkets.instanceID == newInstanceID and self.EJTrinkets.difficultyID == newDifficultyID then
+		print("No need to update")
+		return
+	end
+
 	if _G.EncounterJournal then
 		-- We have to do this because when EncounterJournal receives the event "EJ_DIFFICULTY_UPDATE", 
 		-- the EJ instance is immediately reseted to the instance which is currently shown in EJ.
 		_G.EncounterJournal:UnregisterEvent("EJ_DIFFICULTY_UPDATE") 
 	end
 
-	local curInstanceID = EJ_GetCurrentInstance()
-	local _, _, curDifficultyID = GetInstanceInfo()
+
 	local needItemData = false
 
-	if curInstanceID and curInstanceID ~= 0 then -- In instance, cache the current instance we are in.
-		EJ_SelectInstance(curInstanceID)
-		if curDifficultyID and EJ_IsValidInstanceDifficulty(curDifficultyID) then
-			EJ_SetDifficulty(curDifficultyID)
-		end
-	else -- If out of instance, assume to be testing, so cache the lastest instance.
-		EJ_SelectInstance(self.EJLastestInstanceID)
+	EJ_SelectInstance(newInstanceID)
+	if EJ_IsValidInstanceDifficulty(newDifficultyID) then
+		EJ_SetDifficulty(newDifficultyID)
 	end
 
 	EJ_SetSlotFilter(LE_ITEM_FILTER_TYPE_TRINKET)
@@ -162,6 +174,8 @@ function RCLootCouncil:CacheEJTrinkets()
 	if needItemData then
 		self:Debug("Some item data in the EJ are missing when caching trinkets.")
 	end
+	self.EJTrinkets.instanceID = self.EJInstanceID  -- self.EJInstanceID is set by hooks to EJ_SelectInstance
+	self.EJTrinkets.difficultyID = EJ_GetDifficulty()
 
 	-- Restore settings
 	if instanceID then EJ_SelectInstance(instanceID) end
