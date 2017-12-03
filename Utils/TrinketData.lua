@@ -10,7 +10,8 @@
 -- Only contains trinket in the current expansion by far in the Encounter Journal
 -- Format: [itemID] = classFlag
 -- See the explanation of classFlag in RCLootCouncil:GetItemClassesAllowedFlag(item) in core.lua
-_G.RCTrinketData = {
+
+_G.RCTrinketClasses = {
 	[133641] = 1492,
 	[133644] = 3695,
 	[133645] = 1618,
@@ -159,4 +160,9 @@ _G.RCTrinketData = {
 	[152289] = 1618,
 	[152645] = 3619,
 	[153544] = 3619,
+	[154173] = 3619,
+	[154174] = 3660,
+	[154175] = 1618,
+	[154176] = 35,
+	[154177] = 1488,
 }

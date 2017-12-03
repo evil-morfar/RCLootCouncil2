@@ -92,7 +92,7 @@ function RCLootCouncil:AutoPassCheck(link, equipLoc, typeID, subTypeID, classesF
 	local id = type(link) == "number" and link or self:GetItemIDFromLink(link) -- Convert to id if needed
 	if equipLoc == "INVTYPE_TRINKET" then
 		if self:Getdb().autoPassTrinket then
-			if _G.RCTrinketData and _G.RCTrinketData[id] and bit.band(_G.RCTrinketData[id], bit.lshift(1, classID-1)) == 0 then 
+			if _G.RCTrinketClasses and _G.RCTrinketClasses[id] and bit.band(_G.RCTrinketClasses[id], bit.lshift(1, classID-1)) == 0 then 
 				return true
 			end
 		end
@@ -122,89 +122,127 @@ end
 -- Export all trinkets in the current expansion in the encounter journal not usable by all classes to saved variable.
 -- The format is {[itemID] = classFlag}
 -- See the explanation of classFlag in RCLootCouncil:GetItemClassesAllowedFlag(item)
-local trinketData = {}
+local trinketClasses = {}
 
+local EJ_DIFFICULTIES =
+{   -- Copy and paste from BLizzard_EncounterJournal.lua
+	{ size = "5", prefix = PLAYER_DIFFICULTY1, difficultyID = 1 },
+	{ size = "5", prefix = PLAYER_DIFFICULTY2, difficultyID = 2 },
+	{ size = "5", prefix = PLAYER_DIFFICULTY6, difficultyID = 23 },
+	{ size = "5", prefix = PLAYER_DIFFICULTY_TIMEWALKER, difficultyID = 24 },
+	{ size = "25", prefix = PLAYER_DIFFICULTY3, difficultyID = 7 },
+	{ size = "10", prefix = PLAYER_DIFFICULTY1, difficultyID = 3 },
+	{ size = "10", prefix = PLAYER_DIFFICULTY2, difficultyID = 5 },
+	{ size = "25", prefix = PLAYER_DIFFICULTY1, difficultyID = 4 },
+	{ size = "25", prefix = PLAYER_DIFFICULTY2, difficultyID = 6 },
+	{ prefix = PLAYER_DIFFICULTY3, difficultyID = 17 },
+	{ prefix = PLAYER_DIFFICULTY1, difficultyID = 14 },
+	{ prefix = PLAYER_DIFFICULTY2, difficultyID = 15 },
+	{ prefix = PLAYER_DIFFICULTY6, difficultyID = 16 },
+	{ prefix = PLAYER_DIFFICULTY_TIMEWALKER, difficultyID = 33 },
+}
 -- The params are used internally inside this function
-function RCLootCouncil:ExportTrinketData(nextIsRaid, nextIndex)
+function RCLootCouncil:ExportTrinketData(nextIsRaid, nextIndex, nextDiffIndex)
 	local MAX_CLASSFLAG_VAL = bit.lshift(1, MAX_CLASSES) - 1
-	local TIME_FOR_EACH_INSTANCE = 10
+	local TIME_FOR_EACH_INSTANCE_DIFF = 5
 
 	if not nextIsRaid then
 		nextIsRaid = 0
 		nextIndex = 1
-		self:Print("Exporting the class data of all current tier trinkets to RCLootCouncil.db.profile.RCTrinketData\n"
+		nextDiffIndex = 1
+		self:Print("Exporting the class data of all current tier trinkets to RCLootCouncil.db.global.RCTrinketClasses\n"
 			.."This command is intended to be run by the developer.\n"
 			.."Please reload after exporting is done and copy and paste the data into Utils/TrinketData.lua.\n"
 			.."Dont open EncounterJournal during export.\n"
 			.."Dont run any /rc exporttrinketdata when it is running."
 			.."Clear the export in the Saved Variable by /rc cleartrinketdata")
-		self:Print(format("To ensure the data is correct, process one instance every %d s", TIME_FOR_EACH_INSTANCE))
+		self:Print(format("To ensure the data is correct, process one difficulty of one instance every %d s", TIME_FOR_EACH_INSTANCE_DIFF))
 	end
 
 	EJ_SelectTier(EJ_GetNumTiers()) -- Select current tier
 
-	local delay = 0
+	if _G.EncounterJournal then
+		_G.EncounterJournal:UnregisterAllEvents() -- To help to ensure EncounterJournal does not affect exporting.
+	end
+
 	local instanceIndex = nextIndex
 	for i=nextIsRaid, 1 do
 		while EJ_GetInstanceByIndex(instanceIndex, (i==1)) do
 			local instanceID = EJ_GetInstanceByIndex(instanceIndex, (i==1))
-			self:ExportTrinketDataSingleInstance(instanceID, TIME_FOR_EACH_INSTANCE)
-			return self:ScheduleTimer("ExportTrinketData", TIME_FOR_EACH_INSTANCE, i, instanceIndex + 1)
+			EJ_SelectInstance(instanceID)
+			for diffIndex=nextDiffIndex, #EJ_DIFFICULTIES do
+				local entry = EJ_DIFFICULTIES[diffIndex]
+				if EJ_IsValidInstanceDifficulty(entry.difficultyID) then
+					self:ExportTrinketDataSingleInstance(instanceID, entry.difficultyID, TIME_FOR_EACH_INSTANCE_DIFF)
+					return self:ScheduleTimer("ExportTrinketData", TIME_FOR_EACH_INSTANCE_DIFF, i, instanceIndex, diffIndex + 1)
+				end
+			end
+			nextDiffIndex = 1
+			instanceIndex = instanceIndex + 1
 		end
 		instanceIndex = 1
 	end
 
 	local count = 0
-	for id, val in pairs(trinketData) do
+	for id, val in pairs(trinketClasses) do
 		count = count + 1
 	end
 	self:Print(format("DONE. %d trinkets total", count))
 	count = 0
-	for id, val in pairs(trinketData) do -- Not report if the trinket can be used by all classes.
+	for id, val in pairs(trinketClasses) do -- Not report if the trinket can be used by all classes.
 		if val == MAX_CLASSFLAG_VAL then
-			trinketData[id] = nil
+			trinketClasses[id] = nil
 		else
 			count = count + 1
 		end
 	end
-	self:Print(format("Among them, %d trinket which cannnot be used by all classes are exported to RCLootCouncil.db.profile.RCTrinketData. Please reload now", count))
+	self:Print(format("Among them, %d trinket which cannnot be used by all classes are exported to RCLootCouncil.db.global.RCTrinketClasses. Please reload now", count))
 	self:Print("Dont forget to sort the lines after copy paste the data to Utils/TrinketData.lua")
 	self:Print("Suggest to verify the data for the trinket in the recent raid")
-	self.db.profile.RCTrinketData = trinketData
+	self.db.global.RCTrinketClasses = trinketClasses
 end
 
-function RCLootCouncil:ExportTrinketDataSingleInstance(instanceID, timeLeft)
+function RCLootCouncil:ExportTrinketDataSingleInstance(instanceID, diffID, timeLeft)
 	if _G.EncounterJournal then
 		_G.EncounterJournal:UnregisterAllEvents() -- To help to ensure EncounterJournal does not affect exporting.
 	end
 	local count = 0
-	local trinketIDsInThisInstances = {}
+	local trinketlinksInThisInstances = {}
 	EJ_SelectInstance(instanceID)
+	EJ_SetDifficulty(diffID)
 	EJ_SetSlotFilter(LE_ITEM_FILTER_TYPE_TRINKET)
 	for classID = 0, MAX_CLASSES do
 	    EJ_SetLootFilter(classID, 0)
 	    for j = 1, EJ_GetNumLoot() do -- EJ_GetNumLoot() can be 0 if EJ items are not cached.
-	        local id = EJ_GetLootInfoByIndex(j)
-	        if id then
+	        local id, _, _, _, _, _, link = EJ_GetLootInfoByIndex(j)
+	        if link then
 		        if classID == 0 then
-		        	trinketData[id] = 0
+		        	trinketClasses[id] = 0
 		        	GetItemInfo(id)
 		        	count = count + 1
-		        	tinsert(trinketIDsInThisInstances, id)
+		        	tinsert(trinketlinksInThisInstances, link)
 		        else
-		        	trinketData[id] = trinketData[id] + bit.lshift(1, classID-1)
+		        	trinketClasses[id] = trinketClasses[id] + bit.lshift(1, classID-1)
 		        end
 		    end
 	    end
 	end
 	local interval = 1
 	if timeLeft > interval then -- Rerun many times for correctless
-		return self:ScheduleTimer("ExportTrinketDataSingleInstance", interval, instanceID, timeLeft - interval)
+		return self:ScheduleTimer("ExportTrinketDataSingleInstance", interval, instanceID, diffID, timeLeft - interval)
 	else
+		local diffText = ""
+		for diffIndex=1, #EJ_DIFFICULTIES do
+			local entry = EJ_DIFFICULTIES[diffIndex]
+			if entry.difficultyID == diffID then
+				diffText = entry.prefix
+			end
+		end
 		self:Print("--------------------")
-		self:Print(format("Instance %d. %s. Processed %d trinkets", instanceID, EJ_GetInstanceInfo(instanceID), count))
-		for _, id in ipairs(trinketIDsInThisInstances) do
-			self:Print(format("%s: 0x%X", select(2, GetItemInfo(id)), trinketData[id]))
+		self:Print(format("Instance %d. %s %s. Processed %d trinkets", instanceID, EJ_GetInstanceInfo(instanceID), diffText, count))
+		for _, link in ipairs(trinketlinksInThisInstances) do
+			local id = self:GetItemIDFromLink(link)
+			self:Print(format("%s(%d): 0x%X", link, id, trinketClasses[id]))
 		end
 		self:Print("--------------------")
 	end

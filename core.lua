@@ -536,7 +536,7 @@ function RCLootCouncil:ChatCommand(msg)
 	elseif input == "exporttrinketdata" then
 		self:ExportTrinketData()
 	elseif input == "cleartrinketdata" then
-		self.db.profile.RCTrinketData = nil
+		self.db.global.RCTrinketClasses = nil
 		self:Print("Trinket Data in Saved Variable has been cleared.")
 --@end-debug@
 	elseif input == "whisper" or input == string.lower(_G.WHISPER) then
