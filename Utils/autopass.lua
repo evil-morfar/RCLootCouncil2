@@ -138,7 +138,6 @@ function RCLootCouncil:CacheEJTrinkets()
 		newDifficultyID = 14 -- Normal difficulty
 	end
 	if not self.EJNeedItemData and self.EJTrinkets.instanceID == newInstanceID and self.EJTrinkets.difficultyID == newDifficultyID then
-		print("No need to update")
 		return
 	end
 
