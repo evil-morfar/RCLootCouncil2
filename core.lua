@@ -104,6 +104,15 @@ function RCLootCouncil:OnInitialize()
 	self.verCheckDisplayed = false -- Have we shown a "out-of-date"?
 	self.moduleVerCheckDisplayed = {} -- Have we shown a "out-of-date" for a module? The key of the table is the baseName of the module.
 
+	self.EJTrinkets = {}    -- The trinket listed in the current instance. Used for autopass. format: [0 (all classes) or classID] = {[itemID]=true}
+	self.EJInstanceID = 0     -- The current Encounter Journal instance id.
+	self.EJEncounterID = nil  -- The current Encounter Journal encounter id.
+	self.EJLastestInstanceID = 946 -- UPDATE this whenever we change test data. 
+									-- The lastest raid instance Enouncter Journal id.
+									-- Antorus, the Burning Throne.
+									-- HOWTO get this number: Open the instance we want in the Adventure Journal. Use command '/dump EJ_GetInstanceInfo()'
+									-- The 8th return value is sth like "|cff66bbff|Hjournal:0:946:14|h[Antorus, the Burning Throne]|h|r"
+									-- The number at the position of the above 946 is what we want.
 	self.candidates = {}
 	self.council = {} -- council from ML
 	self.mldb = {} -- db recived from ML
@@ -408,6 +417,9 @@ function RCLootCouncil:OnEnable()
 	self:RegisterEvent("LOOT_SLOT_CLEARED", "OnEvent")
 	self:RegisterEvent("LOOT_CLOSED",		"OnEvent")
 	--self:RegisterEvent("GROUP_ROSTER_UPDATE", "Debug", "event")
+
+	self:SecureHook("EJ_SelectInstance", function(instance) self.EJInstance = instance; self.EJEncounter = nil; end)
+	self:SecureHook("EJ_SelectEncounter", function(encounter) self.EJEncounter = encounter end)
 
 	if IsInGuild() then
 		self.guildRank = select(2, GetGuildInfo("player"))
@@ -1026,10 +1038,9 @@ function RCLootCouncil:Test(num, fullTest)
 	if fullTest then -- Add items from encounter journal which includes items from different difficulties.
 		LoadAddOn("Blizzard_EncounterJournal")
 		local cached = true
-		local instanceID = 946 -- Antorus, the Burning Throne
 		local difficulties = {14, 15, 16} -- Normal, Heroic, Mythic
 
-		EJ_SelectInstance(instanceID)
+		EJ_SelectInstance(self.EJLastestInstanceID)
 		EJ_ResetLootFilter()
 		for _, difficulty in pairs(difficulties) do
 			EJ_SetDifficulty(difficulty)
