@@ -90,6 +90,14 @@ function RCLootCouncil:AutoPassCheck(link, equipLoc, typeID, subTypeID, classesF
 		return true
 	end
 	local id = type(link) == "number" and link or self:GetItemIDFromLink(link) -- Convert to id if needed
+	if equipLoc == "INVTYPE_TRINKET" then
+		if self:Getdb().autoPassTrinket then
+			if self.EJTrinkets[0][id] and not self.EJTrinkets[classID][id] then 
+				-- Found the trinkets in "All classes" of EJ, but not this class
+				return true
+			end
+		end
+	end
 	if not tContains(autopassOverride, equipLoc) then
 		if self:IsRelicTypeID(typeID, subTypeID) then
 			if isRelic then -- New in v2.3+
@@ -108,4 +116,66 @@ function RCLootCouncil:AutoPassCheck(link, equipLoc, typeID, subTypeID, classesF
 		end
 	end
 	return false
+end
+
+--@param force : Force to recaching. Used when receive EJ data.
+function RCLootCouncil:CacheEJTrinkets(force)
+	-- Backup the current EJ instance settings.
+	local instanceID = self.EJInstanceID
+	local encounterID = self.EJEncounterID
+	local difficultyID = EJ_GetDifficulty()
+	local slotFilter = EJ_GetSlotFilter()
+	local classID, specID = EJ_GetLootFilter()
+
+	local curInstanceID = EJ_GetCurrentInstance() -- The we are current in, not EJ setting.
+	local _, _, curDifficultyID = GetInstanceInfo()
+
+	local newInstanceID, newDifficultyID
+	if curInstanceID and curInstanceID ~= 0 then -- In instance, cache the current instance we are in.
+		newInstanceID = curInstanceID
+		newDifficultyID = curDifficultyID
+	else -- If out of instance, assume to be testing, so cache the lastest instance.
+		newInstanceID = self.EJLastestInstanceID
+		newDifficultyID = 14 -- Normal difficulty
+	end
+	if not force and self.EJTrinkets.instanceID == newInstanceID and self.EJTrinkets.difficultyID == newDifficultyID then
+		return
+	end
+
+	if _G.EncounterJournal then
+		-- We have to do this because when EncounterJournal receives the event "EJ_DIFFICULTY_UPDATE", 
+		-- the EJ instance is immediately reseted to the instance which is currently shown in EJ.
+		_G.EncounterJournal:UnregisterEvent("EJ_DIFFICULTY_UPDATE")
+	end
+
+	EJ_SelectInstance(newInstanceID)
+	if EJ_IsValidInstanceDifficulty(newDifficultyID) then
+		EJ_SetDifficulty(newDifficultyID)
+	end
+
+	EJ_SetSlotFilter(LE_ITEM_FILTER_TYPE_TRINKET)
+	for i = 0, GetNumClasses() do
+	    EJ_SetLootFilter(i, 0)
+	    wipe(self.EJTrinkets[i])
+	    for j = 1, EJ_GetNumLoot() do -- EJ_GetNumLoot() can be 0 if EJ items are not cached.
+	        local id = EJ_GetLootInfoByIndex(j)
+	        if id then
+	        	self.EJTrinkets[i][id] = true
+	        end
+	    end
+	end
+	self.EJTrinkets.instanceID = self.EJInstanceID  -- self.EJInstanceID is set by hooks to EJ_SelectInstance
+	self.EJTrinkets.difficultyID = EJ_GetDifficulty()
+
+	-- Restore settings
+	if instanceID then EJ_SelectInstance(instanceID) end
+	if encounterID then EJ_SelectEncounter(encounterID) end
+	EJ_SetDifficulty(difficultyID)
+	EJ_SetSlotFilter(slotFilter)
+	EJ_SetLootFilter(classID, specID)
+	if _G.EncounterJournal then
+		-- In-game tests show that no taint is generated this way.
+		_G.EncounterJournal:RegisterEvent("EJ_DIFFICULTY_UPDATE") 
+	end
+
 end

@@ -37,7 +37,7 @@
 --@debug@
 if LibDebug then LibDebug() end
 --@end-debug@
-_G.RCLootCouncil = LibStub("AceAddon-3.0"):NewAddon("RCLootCouncil", "AceConsole-3.0", "AceEvent-3.0", "AceComm-3.0", "AceSerializer-3.0", "AceHook-3.0", "AceTimer-3.0");
+_G.RCLootCouncil = LibStub("AceAddon-3.0"):NewAddon("RCLootCouncil", "AceConsole-3.0", "AceEvent-3.0", "AceComm-3.0", "AceSerializer-3.0", "AceHook-3.0", "AceTimer-3.0", "AceBucket-3.0");
 local LibDialog = LibStub("LibDialog-1.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 local lwin = LibStub("LibWindow-1.1")
@@ -104,6 +104,19 @@ function RCLootCouncil:OnInitialize()
 	self.verCheckDisplayed = false -- Have we shown a "out-of-date"?
 	self.moduleVerCheckDisplayed = {} -- Have we shown a "out-of-date" for a module? The key of the table is the baseName of the module.
 
+	self.EJTrinkets = {
+		instanceID = nil,
+		difficultyID = nil,
+	}    -- The trinket listed EJ for the current instance. Used for autopass. format: [0 (all classes) or classID] = {[itemID]=true}
+	for i = 0, GetNumClasses() do self.EJTrinkets[i] = {} end
+	self.EJInstanceID = nil     -- The current Encounter Journal instance id.
+	self.EJEncounterID = nil  -- The current Encounter Journal encounter id.
+	self.EJLastestInstanceID = 946 -- UPDATE this whenever we change test data. 
+									-- The lastest raid instance Enouncter Journal id.
+									-- Antorus, the Burning Throne.
+									-- HOWTO get this number: Open the instance we want in the Adventure Journal. Use command '/dump EJ_GetInstanceInfo()'
+									-- The 8th return value is sth like "|cff66bbff|Hjournal:0:946:14|h[Antorus, the Burning Throne]|h|r"
+									-- The number at the position of the above 946 is what we want.
 	self.candidates = {}
 	self.council = {} -- council from ML
 	self.mldb = {} -- db recived from ML
@@ -166,6 +179,7 @@ function RCLootCouncil:OnInitialize()
 			autoClose = false, -- Auto close voting frame on session end
 			autoPassBoE = true,
 			autoPass = true,
+			autoPassTrinket = true,
 			altClickLooting = true,
 			acceptWhispers = true,
 			selfVote = true,
@@ -407,7 +421,12 @@ function RCLootCouncil:OnEnable()
 	self:RegisterEvent("LOOT_OPENED",		"OnEvent")
 	self:RegisterEvent("LOOT_SLOT_CLEARED", "OnEvent")
 	self:RegisterEvent("LOOT_CLOSED",		"OnEvent")
+	self:RegisterEvent("ZONE_CHANGED_NEW_AREA", "OnEvent")
+	self:RegisterBucketEvent("EJ_LOOT_DATA_RECIEVED", 20, "OnEJLootDataReceived") -- This event does not fire often, because EJ data is cached pernamently in cache foler.
 	--self:RegisterEvent("GROUP_ROSTER_UPDATE", "Debug", "event")
+
+	self:SecureHook("EJ_SelectInstance", function(instance) self.EJInstanceID = instance; self.EJEncounterID = nil; end)
+	self:SecureHook("EJ_SelectEncounter", function(encounter) self.EJEncounterID = encounter end)
 
 	if IsInGuild() then
 		self.guildRank = select(2, GetGuildInfo("player"))
@@ -514,6 +533,8 @@ function RCLootCouncil:ChatCommand(msg)
 		self:Test(tonumber(args[1]) or 1)
 	elseif input == 'fulltest' or input == 'ftest' then
 		self:Test(tonumber(args[1]) or 1, true)
+	elseif input == 'trinkettest' or input == 'ttest' then
+		self:Test(tonumber(args[1]) or 1, false, true)
 
 	elseif input == 'version' or input == L["version"] or input == "v" or input == "ver" then
 		self:CallModule("version")
@@ -985,7 +1006,7 @@ function RCLootCouncil:DebugLog(msg, ...)
 end
 
 -- if fullTest, add items in the encounterJournal to the test items.
-function RCLootCouncil:Test(num, fullTest)
+function RCLootCouncil:Test(num, fullTest, trinketTest)
 	self:Debug("Test", num)
 	local testItems = {
 		-- Tier21 Tokens (Head, Shoulder, Cloak, Chest, Hands, Legs)
@@ -1004,12 +1025,6 @@ function RCLootCouncil:Test(num, fullTest)
 		151937, 151938, 152062,                                         -- Cloak
 		151972, 152063, 152284,                                         -- Rings
 
-		-- Tier21 Trinkets
-		151975, 151977, -- Tank
-		151956, 151970, -- Healer
-		151963, 151964, -- Melee DPS
-		151968, 151963, -- Non-caster DPS
-		151970, 151971, -- Caster DPS
 		-- Tier21 Relics
 		152024, 152025, -- Arcane
 		152028, 152029, -- Blood
@@ -1023,13 +1038,33 @@ function RCLootCouncil:Test(num, fullTest)
 		152058, 152059, -- Storm
 	}
 
+	local trinkets = {
+		-- Tier21 Trinkets
+		151975, 151976, 151977, 151978, 152645, 153544, 154173, -- Tank
+		151956, 151957, 151958, 151960, 152289, 154175, 		-- Healer
+		151964,	152093,	-- Melee DPS
+		154174,			-- Agility DPS
+		151970,			-- Intellect spec
+		151963, 151968, -- Melee and ranged attack DPS
+		151962, 151969,	-- Ranged attack and spell DPS
+		151955, 151970, 151971, 154177, -- Spell DPS
+		154172, -- All classes
+	}
+
+	if not trinketTest then
+		for _, t in ipairs(trinkets) do
+			tinsert(testItems, t)
+		end
+	else
+		testItems = trinkets
+	end
+
 	if fullTest then -- Add items from encounter journal which includes items from different difficulties.
 		LoadAddOn("Blizzard_EncounterJournal")
 		local cached = true
-		local instanceID = 946 -- Antorus, the Burning Throne
 		local difficulties = {14, 15, 16} -- Normal, Heroic, Mythic
 
-		EJ_SelectInstance(instanceID)
+		EJ_SelectInstance(self.EJLastestInstanceID)
 		EJ_ResetLootFilter()
 		for _, difficulty in pairs(difficulties) do
 			EJ_SetDifficulty(difficulty)
@@ -1337,8 +1372,8 @@ function RCLootCouncil:GetTokenEquipLoc(tokenSlot)
 end
 
 function RCLootCouncil:Timer(type, ...)
-	self:Debug("Timer "..type.." passed")
 	if type == "MLdb_check" then
+		self:Debug("Timer "..type.." passed")
 		-- If we have a ML
 		if self.masterLooter then
 			-- But haven't received the mldb, then request it
@@ -1349,6 +1384,11 @@ function RCLootCouncil:Timer(type, ...)
 			if #self.council == 0 then
 				self:SendCommand(self.masterLooter, "council_request")
 			end
+		end
+	elseif type == "ZONE_CHANGED_NEW_AREA" then
+		local curInstance = EJ_GetCurrentInstance()
+		if curInstance and curInstance ~= 0 then -- Only update cache when we enter instance. No update when leave instance.
+			self:CacheEJTrinkets()
 		end
 	end
 end
@@ -1691,6 +1731,8 @@ function RCLootCouncil:OnEvent(event, ...)
 			end
 			self:UpdatePlayersData()
 			player_relogged = false
+
+			self:ScheduleTimer("CacheEJTrinkets", 3)
 		end
 	elseif event == "ENCOUNTER_START" then
 			self:DebugLog("Event:", event, ...)
@@ -1745,7 +1787,16 @@ function RCLootCouncil:OnEvent(event, ...)
 				self:GetActiveModule("masterlooter"):OnLootSlotCleared(slot, link)
 			end
 		end
+
+	elseif event == "ZONE_CHANGED_NEW_AREA" then
+		-- Although some tests show IsInInstance immediately fires the new result, I am not quite sure. So Delay by several seconds.
+		self:ScheduleTimer("Timer", 3, "ZONE_CHANGED_NEW_AREA")
 	end
+end
+
+function RCLootCouncil:OnEJLootDataReceived()
+	self:Debug("Recache EJ Trinkets because EJ gets new data.")
+	self:CacheEJTrinkets(true)
 end
 
 function RCLootCouncil:NewMLCheck()
