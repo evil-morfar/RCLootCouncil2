@@ -1046,8 +1046,6 @@ function RCLootCouncil:Test(num, fullTest, trinketTest)
 		for _, t in ipairs(trinkets) do
 			tinsert(testItems, t)
 		end
-	else
-		testItems = trinkets
 	end
 
 	if fullTest then -- Add items from encounter journal which includes items from different difficulties.
@@ -1087,6 +1085,9 @@ function RCLootCouncil:Test(num, fullTest, trinketTest)
 	for i = 1, num do
 		local j = math.random(1, #testItems)
 		tinsert(items, testItems[j])
+	end
+	if trinketTest then -- Always test all trinkets.
+		items = trinkets
 	end
 	self.testMode = true;
 	self.isMasterLooter, self.masterLooter = self:GetML()
