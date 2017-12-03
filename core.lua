@@ -37,7 +37,7 @@
 --@debug@
 if LibDebug then LibDebug() end
 --@end-debug@
-_G.RCLootCouncil = LibStub("AceAddon-3.0"):NewAddon("RCLootCouncil", "AceConsole-3.0", "AceEvent-3.0", "AceComm-3.0", "AceSerializer-3.0", "AceHook-3.0", "AceTimer-3.0", "AceBucket-3.0");
+_G.RCLootCouncil = LibStub("AceAddon-3.0"):NewAddon("RCLootCouncil", "AceConsole-3.0", "AceEvent-3.0", "AceComm-3.0", "AceSerializer-3.0", "AceHook-3.0", "AceTimer-3.0");
 local LibDialog = LibStub("LibDialog-1.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 local lwin = LibStub("LibWindow-1.1")
@@ -104,13 +104,6 @@ function RCLootCouncil:OnInitialize()
 	self.verCheckDisplayed = false -- Have we shown a "out-of-date"?
 	self.moduleVerCheckDisplayed = {} -- Have we shown a "out-of-date" for a module? The key of the table is the baseName of the module.
 
-	self.EJTrinkets = {
-		instanceID = nil,
-		difficultyID = nil,
-	}    -- The trinket listed EJ for the current instance. Used for autopass. format: [0 (all classes) or classID] = {[itemID]=true}
-	for i = 0, GetNumClasses() do self.EJTrinkets[i] = {} end
-	self.EJInstanceID = nil     -- The current Encounter Journal instance id.
-	self.EJEncounterID = nil  -- The current Encounter Journal encounter id.
 	self.EJLastestInstanceID = 946 -- UPDATE this whenever we change test data. 
 									-- The lastest raid instance Enouncter Journal id.
 									-- Antorus, the Burning Throne.
@@ -421,12 +414,7 @@ function RCLootCouncil:OnEnable()
 	self:RegisterEvent("LOOT_OPENED",		"OnEvent")
 	self:RegisterEvent("LOOT_SLOT_CLEARED", "OnEvent")
 	self:RegisterEvent("LOOT_CLOSED",		"OnEvent")
-	self:RegisterEvent("ZONE_CHANGED_NEW_AREA", "OnEvent")
-	self:RegisterBucketEvent("EJ_LOOT_DATA_RECIEVED", 20, "OnEJLootDataReceived") -- This event does not fire often, because EJ data is cached pernamently in cache foler.
 	--self:RegisterEvent("GROUP_ROSTER_UPDATE", "Debug", "event")
-
-	self:SecureHook("EJ_SelectInstance", function(instance) self.EJInstanceID = instance; self.EJEncounterID = nil; end)
-	self:SecureHook("EJ_SelectEncounter", function(encounter) self.EJEncounterID = encounter end)
 
 	if IsInGuild() then
 		self.guildRank = select(2, GetGuildInfo("player"))
@@ -545,6 +533,11 @@ function RCLootCouncil:ChatCommand(msg)
 	elseif input == "nnp" then
 		self.nnp = not self.nnp
 		self:Print("nnp = "..tostring(self.nnp))
+	elseif input == "exporttrinketdata" then
+		self:ExportTrinketData()
+	elseif input == "cleartrinketdata" then
+		self.db.profile.RCTrinketData = nil
+		self:Print("Trinket Data in Saved Variable has been cleared.")
 --@end-debug@
 	elseif input == "whisper" or input == string.lower(_G.WHISPER) then
 		self:Print(L["whisper_help"])
@@ -1372,8 +1365,8 @@ function RCLootCouncil:GetTokenEquipLoc(tokenSlot)
 end
 
 function RCLootCouncil:Timer(type, ...)
+	self:Debug("Timer "..type.." passed")
 	if type == "MLdb_check" then
-		self:Debug("Timer "..type.." passed")
 		-- If we have a ML
 		if self.masterLooter then
 			-- But haven't received the mldb, then request it
@@ -1384,11 +1377,6 @@ function RCLootCouncil:Timer(type, ...)
 			if #self.council == 0 then
 				self:SendCommand(self.masterLooter, "council_request")
 			end
-		end
-	elseif type == "ZONE_CHANGED_NEW_AREA" then
-		local curInstance = EJ_GetCurrentInstance()
-		if curInstance and curInstance ~= 0 then -- Only update cache when we enter instance. No update when leave instance.
-			self:CacheEJTrinkets()
 		end
 	end
 end
@@ -1731,8 +1719,6 @@ function RCLootCouncil:OnEvent(event, ...)
 			end
 			self:UpdatePlayersData()
 			player_relogged = false
-
-			self:ScheduleTimer("CacheEJTrinkets", 3)
 		end
 	elseif event == "ENCOUNTER_START" then
 			self:DebugLog("Event:", event, ...)
@@ -1787,16 +1773,7 @@ function RCLootCouncil:OnEvent(event, ...)
 				self:GetActiveModule("masterlooter"):OnLootSlotCleared(slot, link)
 			end
 		end
-
-	elseif event == "ZONE_CHANGED_NEW_AREA" then
-		-- Although some tests show IsInInstance immediately fires the new result, I am not quite sure. So Delay by several seconds.
-		self:ScheduleTimer("Timer", 3, "ZONE_CHANGED_NEW_AREA")
 	end
-end
-
-function RCLootCouncil:OnEJLootDataReceived()
-	self:Debug("Recache EJ Trinkets because EJ gets new data.")
-	self:CacheEJTrinkets(true)
 end
 
 function RCLootCouncil:NewMLCheck()
