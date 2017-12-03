@@ -90,6 +90,14 @@ function RCLootCouncil:AutoPassCheck(link, equipLoc, typeID, subTypeID, classesF
 		return true
 	end
 	local id = type(link) == "number" and link or self:GetItemIDFromLink(link) -- Convert to id if needed
+	if equipLoc == "INVTYPE_TRINKET" then
+		if self:Getdb().autoPassTrinket then
+			if self.EJTrinkets[0][id] and not self.EJTrinkets[classID][id] then 
+				-- Found the trinkets in "All classes" of EJ, but not this class
+				return true
+			end
+		end
+	end
 	if not tContains(autopassOverride, equipLoc) then
 		if self:IsRelicTypeID(typeID, subTypeID) then
 			if isRelic then -- New in v2.3+
@@ -127,21 +135,18 @@ function RCLootCouncil:CacheEJTrinkets()
 	local _, _, curDifficultyID = GetInstanceInfo()
 	local needItemData = false
 
-	if curInstanceID then
-		EJ_SelectInstance(curInstanceID)
+	if curInstanceID then -- In instance, cache the current instance we are in.
 		EJ_SelectInstance(curInstanceID)
 		if curDifficultyID and EJ_IsValidInstanceDifficulty(curDifficultyID) then
 			EJ_SetDifficulty(curDifficultyID)
 		end
-	else
-		EJ_SelectInstance(self.EJLastestInstanceID)
+	else -- If out of instance, assume to be testing, so cache the lastest instance.
 		EJ_SelectInstance(self.EJLastestInstanceID)
 	end
 
 	EJ_SetSlotFilter(LE_ITEM_FILTER_TYPE_TRINKET)
 	for i = 0, GetNumClasses() do
 	    EJ_SetLootFilter(i, 0)
-	    self.EJTrinkets[i] = self.EJTrinkets[i] or {}
 	    wipe(self.EJTrinkets[i])
 
 	    for j = 1, EJ_GetNumLoot() do
@@ -154,6 +159,9 @@ function RCLootCouncil:CacheEJTrinkets()
 	    end
 	end
 	self.EJNeedItemData = needItemData
+	if needItemData then
+		self:Debug("Some item data in the EJ are missing when caching trinkets.")
+	end
 
 	-- Restore settings
 	if instanceID then EJ_SelectInstance(instanceID) end
@@ -161,7 +169,7 @@ function RCLootCouncil:CacheEJTrinkets()
 	EJ_SetDifficulty(difficultyID)
 	EJ_SetSlotFilter(slotFilter)
 	EJ_SetLootFilter(classID, specID)
-	if _G.EncounterJournal then -- Restore
+	if _G.EncounterJournal then
 		-- In-game tests show that no taint is generated this way.
 		_G.EncounterJournal:RegisterEvent("EJ_DIFFICULTY_UPDATE") 
 	end

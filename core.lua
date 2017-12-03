@@ -37,7 +37,7 @@
 --@debug@
 if LibDebug then LibDebug() end
 --@end-debug@
-_G.RCLootCouncil = LibStub("AceAddon-3.0"):NewAddon("RCLootCouncil", "AceConsole-3.0", "AceEvent-3.0", "AceComm-3.0", "AceSerializer-3.0", "AceHook-3.0", "AceTimer-3.0");
+_G.RCLootCouncil = LibStub("AceAddon-3.0"):NewAddon("RCLootCouncil", "AceConsole-3.0", "AceEvent-3.0", "AceComm-3.0", "AceSerializer-3.0", "AceHook-3.0", "AceTimer-3.0", "AceBucket-3.0");
 local LibDialog = LibStub("LibDialog-1.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 local lwin = LibStub("LibWindow-1.1")
@@ -104,7 +104,8 @@ function RCLootCouncil:OnInitialize()
 	self.verCheckDisplayed = false -- Have we shown a "out-of-date"?
 	self.moduleVerCheckDisplayed = {} -- Have we shown a "out-of-date" for a module? The key of the table is the baseName of the module.
 
-	self.EJTrinkets = {}    -- The trinket listed in the current instance. Used for autopass. format: [0 (all classes) or classID] = {[itemID]=true}
+	self.EJTrinkets = {}    -- The trinket listed EJ for the current instance. Used for autopass. format: [0 (all classes) or classID] = {[itemID]=true}
+	for i = 0, GetNumClasses() do self.EJTrinkets[i] = {} end
 	self.EJNeedItemData = false -- If we gets uncached item when caching EJ, this will become true.
 	self.EJInstanceID = nil     -- The current Encounter Journal instance id.
 	self.EJEncounterID = nil  -- The current Encounter Journal encounter id.
@@ -176,6 +177,7 @@ function RCLootCouncil:OnInitialize()
 			autoClose = false, -- Auto close voting frame on session end
 			autoPassBoE = true,
 			autoPass = true,
+			autoPassTrinket = true,
 			altClickLooting = true,
 			acceptWhispers = true,
 			selfVote = true,
@@ -417,6 +419,8 @@ function RCLootCouncil:OnEnable()
 	self:RegisterEvent("LOOT_OPENED",		"OnEvent")
 	self:RegisterEvent("LOOT_SLOT_CLEARED", "OnEvent")
 	self:RegisterEvent("LOOT_CLOSED",		"OnEvent")
+	self:RegisterEvent("ZONE_CHANGED_NEW_AREA", "OnEvent")
+	self:RegisterBucketEvent("EJ_LOOT_DATA_RECIEVED", 10, "OnEJLootDataReceived") 
 	--self:RegisterEvent("GROUP_ROSTER_UPDATE", "Debug", "event")
 
 	self:SecureHook("EJ_SelectInstance", function(instance) self.EJInstance = instance; self.EJEncounter = nil; end)
@@ -1349,8 +1353,8 @@ function RCLootCouncil:GetTokenEquipLoc(tokenSlot)
 end
 
 function RCLootCouncil:Timer(type, ...)
-	self:Debug("Timer "..type.." passed")
 	if type == "MLdb_check" then
+		self:Debug("Timer "..type.." passed")
 		-- If we have a ML
 		if self.masterLooter then
 			-- But haven't received the mldb, then request it
@@ -1361,6 +1365,11 @@ function RCLootCouncil:Timer(type, ...)
 			if #self.council == 0 then
 				self:SendCommand(self.masterLooter, "council_request")
 			end
+		end
+	elseif type == "ZONE_CHANGED_NEW_AREA" then
+		local curInstance = EJ_GetCurrentInstance()
+		if curInstance and curInstance ~= 0 then
+			self:CacheEJTrinkets()
 		end
 	end
 end
@@ -1703,6 +1712,8 @@ function RCLootCouncil:OnEvent(event, ...)
 			end
 			self:UpdatePlayersData()
 			player_relogged = false
+
+			self:ScheduleTimer("CacheEJTrinkets", 2)
 		end
 	elseif event == "ENCOUNTER_START" then
 			self:DebugLog("Event:", event, ...)
@@ -1757,6 +1768,17 @@ function RCLootCouncil:OnEvent(event, ...)
 				self:GetActiveModule("masterlooter"):OnLootSlotCleared(slot, link)
 			end
 		end
+
+	elseif event == "ZONE_CHANGED_NEW_AREA" then
+		-- Although some tests show IsInInstance immediately fires the new result, I am not quite sure. So Delay by 1s.
+		self:ScheduleTimer("Timer", 2, "ZONE_CHANGED_NEW_AREA")
+	end
+end
+
+function RCLootCouncil:OnEJLootDataReceived()
+	if self.EJNeedItemData then
+		self:Debug("Recache EJ Trinkets, because it needs data.")
+		self:CacheEJTrinkets()
 	end
 end
 
