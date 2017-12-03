@@ -104,9 +104,11 @@ function RCLootCouncil:OnInitialize()
 	self.verCheckDisplayed = false -- Have we shown a "out-of-date"?
 	self.moduleVerCheckDisplayed = {} -- Have we shown a "out-of-date" for a module? The key of the table is the baseName of the module.
 
-	self.EJTrinkets = {}    -- The trinket listed EJ for the current instance. Used for autopass. format: [0 (all classes) or classID] = {[itemID]=true}
+	self.EJTrinkets = {
+		instanceID = nil,
+		difficultyID = nil,
+	}    -- The trinket listed EJ for the current instance. Used for autopass. format: [0 (all classes) or classID] = {[itemID]=true}
 	for i = 0, GetNumClasses() do self.EJTrinkets[i] = {} end
-	self.EJNeedItemData = false -- If we gets uncached item when caching EJ, this will become true.
 	self.EJInstanceID = nil     -- The current Encounter Journal instance id.
 	self.EJEncounterID = nil  -- The current Encounter Journal encounter id.
 	self.EJLastestInstanceID = 946 -- UPDATE this whenever we change test data. 
@@ -420,7 +422,7 @@ function RCLootCouncil:OnEnable()
 	self:RegisterEvent("LOOT_SLOT_CLEARED", "OnEvent")
 	self:RegisterEvent("LOOT_CLOSED",		"OnEvent")
 	self:RegisterEvent("ZONE_CHANGED_NEW_AREA", "OnEvent")
-	self:RegisterBucketEvent("EJ_LOOT_DATA_RECIEVED", 10, "OnEJLootDataReceived") 
+	self:RegisterBucketEvent("EJ_LOOT_DATA_RECIEVED", 20, "OnEJLootDataReceived") -- This event does not fire often, because EJ data is cached pernamently in cache foler.
 	--self:RegisterEvent("GROUP_ROSTER_UPDATE", "Debug", "event")
 
 	self:SecureHook("EJ_SelectInstance", function(instance) self.EJInstanceID = instance; self.EJEncounterID = nil; end)
@@ -1726,7 +1728,7 @@ function RCLootCouncil:OnEvent(event, ...)
 			self:UpdatePlayersData()
 			player_relogged = false
 
-			self:ScheduleTimer("CacheEJTrinkets", 2)
+			self:ScheduleTimer("CacheEJTrinkets", 3)
 		end
 	elseif event == "ENCOUNTER_START" then
 			self:DebugLog("Event:", event, ...)
@@ -1789,10 +1791,8 @@ function RCLootCouncil:OnEvent(event, ...)
 end
 
 function RCLootCouncil:OnEJLootDataReceived()
-	if self.EJNeedItemData then
-		self:Debug("Recache EJ Trinkets, because it needs data.")
-		self:CacheEJTrinkets()
-	end
+	self:Debug("Recache EJ Trinkets because EJ gets new data.")
+	self:CacheEJTrinkets(true)
 end
 
 function RCLootCouncil:NewMLCheck()

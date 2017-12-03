@@ -118,7 +118,8 @@ function RCLootCouncil:AutoPassCheck(link, equipLoc, typeID, subTypeID, classesF
 	return false
 end
 
-function RCLootCouncil:CacheEJTrinkets()
+--@param force : Force to recaching. Used when receive EJ data.
+function RCLootCouncil:CacheEJTrinkets(force)
 	-- Backup the current EJ instance settings.
 	local instanceID = self.EJInstanceID
 	local encounterID = self.EJEncounterID
@@ -137,18 +138,15 @@ function RCLootCouncil:CacheEJTrinkets()
 		newInstanceID = self.EJLastestInstanceID
 		newDifficultyID = 14 -- Normal difficulty
 	end
-	if not self.EJNeedItemData and self.EJTrinkets.instanceID == newInstanceID and self.EJTrinkets.difficultyID == newDifficultyID then
+	if not force and self.EJTrinkets.instanceID == newInstanceID and self.EJTrinkets.difficultyID == newDifficultyID then
 		return
 	end
 
 	if _G.EncounterJournal then
 		-- We have to do this because when EncounterJournal receives the event "EJ_DIFFICULTY_UPDATE", 
 		-- the EJ instance is immediately reseted to the instance which is currently shown in EJ.
-		_G.EncounterJournal:UnregisterEvent("EJ_DIFFICULTY_UPDATE") 
+		_G.EncounterJournal:UnregisterEvent("EJ_DIFFICULTY_UPDATE")
 	end
-
-
-	local needItemData = false
 
 	EJ_SelectInstance(newInstanceID)
 	if EJ_IsValidInstanceDifficulty(newDifficultyID) then
@@ -159,19 +157,12 @@ function RCLootCouncil:CacheEJTrinkets()
 	for i = 0, GetNumClasses() do
 	    EJ_SetLootFilter(i, 0)
 	    wipe(self.EJTrinkets[i])
-
-	    for j = 1, EJ_GetNumLoot() do
+	    for j = 1, EJ_GetNumLoot() do -- EJ_GetNumLoot() can be 0 if EJ items are not cached.
 	        local id = EJ_GetLootInfoByIndex(j)
 	        if id then
 	        	self.EJTrinkets[i][id] = true
-	        else
-	        	needItemData = true
 	        end
 	    end
-	end
-	self.EJNeedItemData = needItemData
-	if needItemData then
-		self:Debug("Some item data in the EJ are missing when caching trinkets.")
 	end
 	self.EJTrinkets.instanceID = self.EJInstanceID  -- self.EJInstanceID is set by hooks to EJ_SelectInstance
 	self.EJTrinkets.difficultyID = EJ_GetDifficulty()
