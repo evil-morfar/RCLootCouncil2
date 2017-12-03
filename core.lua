@@ -535,9 +535,6 @@ function RCLootCouncil:ChatCommand(msg)
 		self:Print("nnp = "..tostring(self.nnp))
 	elseif input == "exporttrinketdata" then
 		self:ExportTrinketData()
-	elseif input == "cleartrinketdata" then
-		self.db.global.RCTrinketClasses = nil
-		self:Print("Trinket Data in Saved Variable has been cleared.")
 --@end-debug@
 	elseif input == "whisper" or input == string.lower(_G.WHISPER) then
 		self:Print(L["whisper_help"])
@@ -1033,15 +1030,16 @@ function RCLootCouncil:Test(num, fullTest, trinketTest)
 
 	local trinkets = {
 		-- Tier21 Trinkets
+		154172, 		-- All classes
 		151975, 151976, 151977, 151978, 152645, 153544, 154173, -- Tank
-		151956, 151957, 151958, 151960, 152289, 154175, 		-- Healer
+		151956, 151957, 151958, 151960, 152289, 154175,			-- Healer
 		151964,	152093,	-- Melee DPS
+		154176, 		-- Strength DPS
 		154174,			-- Agility DPS
-		151970,			-- Intellect spec
-		151963, 151968, -- Melee and ranged attack DPS
+		151970,			-- Intellect DPS/Healer
+		151955, 151971, 154177, -- Intellect DPS
+		151963, 151968,	-- Melee and ranged attack DPS
 		151962, 151969,	-- Ranged attack and spell DPS
-		151955, 151970, 151971, 154177, -- Spell DPS
-		154172, -- All classes
 	}
 
 	if not trinketTest then

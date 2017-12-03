@@ -150,12 +150,11 @@ function RCLootCouncil:ExportTrinketData(nextIsRaid, nextIndex, nextDiffIndex)
 		nextIsRaid = 0
 		nextIndex = 1
 		nextDiffIndex = 1
-		self:Print("Exporting the class data of all current tier trinkets to RCLootCouncil.db.global.RCTrinketClasses\n"
+		self:Print("Exporting the class data of all current tier trinkets\n"
 			.."This command is intended to be run by the developer.\n"
-			.."Please reload after exporting is done and copy and paste the data into Utils/TrinketData.lua.\n"
+			.."After exporting is done and copy and paste the data into Utils/TrinketData.lua.\n"
 			.."Dont open EncounterJournal during export.\n"
-			.."Dont run any /rc exporttrinketdata when it is running."
-			.."Clear the export in the Saved Variable by /rc cleartrinketdata")
+			.."Dont run any extra /rc exporttrinketdata when it is running.")
 		self:Print(format("To ensure the data is correct, process one difficulty of one instance every %d s", TIME_FOR_EACH_INSTANCE_DIFF))
 	end
 
@@ -196,10 +195,25 @@ function RCLootCouncil:ExportTrinketData(nextIsRaid, nextIndex, nextDiffIndex)
 			count = count + 1
 		end
 	end
-	self:Print(format("Among them, %d trinket which cannnot be used by all classes are exported to RCLootCouncil.db.global.RCTrinketClasses. Please reload now", count))
-	self:Print("Dont forget to sort the lines after copy paste the data to Utils/TrinketData.lua")
+	self:Print(format("Among them, %d trinket which cannnot be used by all classes are exported", count))
+	self:Print("Copy paste the data to Utils/TrinketData.lua")
 	self:Print("Suggest to verify the data for the trinket in the recent raid")
-	self.db.global.RCTrinketClasses = trinketClasses
+
+	-- Hack that should only happen in developer mode.
+	local frame = RCLootCouncil:GetActiveModule("history"):GetFrame()
+	frame.exportFrame:Show()
+
+	local exports ="_G.RCTrinketClasses = {\n"
+	local sorted = {}
+	for id, val in pairs(trinketClasses) do
+		tinsert(sorted, {id, val})
+	end
+	table.sort(sorted, function(a, b) return a[1] < b[1] end)
+	for _, entry in ipairs(sorted) do
+		exports = exports.."\t["..entry[1].."] = "..entry[2]..",\n"
+	end
+	exports = exports.."}\n"
+	frame.exportFrame.edit:SetText(exports)
 end
 
 function RCLootCouncil:ExportTrinketDataSingleInstance(instanceID, diffID, timeLeft)
