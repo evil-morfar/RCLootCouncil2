@@ -1,5 +1,5 @@
 --- trinketData.lua
--- Contains useable classes for trinkets
+-- Contains useable classes for trinkets for Legion expansion up to Patch 7.3.2 Build 25549
 -- @author Safetee
 -- Create Date : 12/3/2013
 

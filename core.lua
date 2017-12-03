@@ -37,7 +37,7 @@
 --@debug@
 if LibDebug then LibDebug() end
 --@end-debug@
-_G.RCLootCouncil = LibStub("AceAddon-3.0"):NewAddon("RCLootCouncil", "AceConsole-3.0", "AceEvent-3.0", "AceComm-3.0", "AceSerializer-3.0", "AceHook-3.0", "AceTimer-3.0", "AceBucket-3.0");
+_G.RCLootCouncil = LibStub("AceAddon-3.0"):NewAddon("RCLootCouncil", "AceConsole-3.0", "AceEvent-3.0", "AceComm-3.0", "AceSerializer-3.0", "AceHook-3.0", "AceTimer-3.0");
 local LibDialog = LibStub("LibDialog-1.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 local lwin = LibStub("LibWindow-1.1")
@@ -1769,10 +1769,6 @@ function RCLootCouncil:OnEvent(event, ...)
 				self:GetActiveModule("masterlooter"):OnLootSlotCleared(slot, link)
 			end
 		end
-
-	elseif event == "ZONE_CHANGED_NEW_AREA" then
-		-- Although some tests show IsInInstance immediately fires the new result, I am not quite sure. So Delay by several seconds.
-		self:ScheduleTimer("Timer", 3, "ZONE_CHANGED_NEW_AREA")
 	end
 end
 
