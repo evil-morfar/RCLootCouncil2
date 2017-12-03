@@ -118,64 +118,85 @@ function RCLootCouncil:AutoPassCheck(link, equipLoc, typeID, subTypeID, classesF
 	return false
 end
 
---@param force : Force to recaching. Used when receive EJ data.
-function RCLootCouncil:CacheEJTrinkets(force)
-	-- Backup the current EJ instance settings.
-	local instanceID = self.EJInstanceID
-	local encounterID = self.EJEncounterID
-	local difficultyID = EJ_GetDifficulty()
-	local slotFilter = EJ_GetSlotFilter()
-	local classID, specID = EJ_GetLootFilter()
-
-	local curInstanceID = EJ_GetCurrentInstance() -- The we are current in, not EJ setting.
-	local _, _, curDifficultyID = GetInstanceInfo()
-
-	local newInstanceID, newDifficultyID
-	if curInstanceID and curInstanceID ~= 0 then -- In instance, cache the current instance we are in.
-		newInstanceID = curInstanceID
-		newDifficultyID = curDifficultyID
-	else -- If out of instance, assume to be testing, so cache the lastest instance.
-		newInstanceID = self.EJLastestInstanceID
-		newDifficultyID = 14 -- Normal difficulty
-	end
-	if not force and self.EJTrinkets.instanceID == newInstanceID and self.EJTrinkets.difficultyID == newDifficultyID then
-		return
+--@debug@
+-- This function is used for developer.
+-- Export all trinkets in the encounter journal not usable by all classes to saved variable.
+-- The format is {[itemID] = classFlag}
+-- See the explanation of classFlag in RCLootCouncil:GetItemClassesAllowedFlag(item)
+local trinketData = {}
+local MAX_CLASSFLAG_VAL = bit.lshift(1, MAX_CLASSES) - 1
+local TIME_FOR_EACH_INSTANCE = 8
+function RCLootCouncil:ExportTrinketData(instanceIDStart)
+	if not instanceIDStart then
+		self:Print("Exporting trinket class data to RCLootCouncil.db.profile.RCTrinketData   This command is intended to be run by the developer.\n"..
+				"To ensure the data is correct. Only process one instance every 10s. The export takes about 15min."
+				.."Please reload after exporting is done and copy and paste the data into Utils/TrinketData.lua. Dont open EncounterJournal during export.\n"
+				.."Dont run any /rc exporttrinketdata when it is running."
+				.."Clear the export in the Saved Variable by /rc cleartrinketdata")
+		local instanceCount = 0
+		for i=0,9999 do
+	        local status, val = pcall(function() return EJ_SelectInstance(i) end)
+	        if status then
+	            instanceCount = instanceCount + 1
+	        end
+    	end
+    	self:Print(format("To ensure the data is correct, process one instance every %d s", TIME_FOR_EACH_INSTANCE))
+    	self:Print(format("Found %s instances", instanceCount))
 	end
 
 	if _G.EncounterJournal then
-		-- We have to do this because when EncounterJournal receives the event "EJ_DIFFICULTY_UPDATE", 
-		-- the EJ instance is immediately reseted to the instance which is currently shown in EJ.
-		_G.EncounterJournal:UnregisterEvent("EJ_DIFFICULTY_UPDATE")
+		_G.EncounterJournal:UnregisterAllEvents() -- To ensure EncounterJournal does not affect exporting.
 	end
 
-	EJ_SelectInstance(newInstanceID)
-	if EJ_IsValidInstanceDifficulty(newDifficultyID) then
-		EJ_SetDifficulty(newDifficultyID)
+	instanceIDStart = instanceIDStart or 1
+	local count = 0
+	for id, val in pairs(trinketData) do
+		count = count + 1
+	end
+	
+	for i = instanceIDStart, 9999 do
+		local status, val = pcall(function() return EJ_SelectInstance(i) end)
+		if status then
+			for delay = 0, TIME_FOR_EACH_INSTANCE - 2, 0.5 do -- Run many times to ensure correctness
+				self:ScheduleTimer("ExportTrinketDataCurrentInstance", delay)
+			end
+			self:Print(format("processed trinkets: %d, processing the instance: %d. %s, ", count, i, EJ_GetInstanceInfo(i)))
+			return self:ScheduleTimer("ExportTrinketData", TIME_FOR_EACH_INSTANCE, i + 1)
+		end
 	end
 
+	self:Print(format("DONE. %d trinkets total", count))
+	count = 0
+	for id, val in pairs(trinketData) do -- Not report if the trinket can be used by all classes.
+		if val == MAX_CLASSFLAG_VAL then
+			trinketData[id] = nil
+		else
+			count = count + 1
+		end
+	end
+	self:Print(format("Among them, %d trinket which cannnot be used by all classes are exported to RCLootCouncil.db.profile.RCTrinketData. Please reload now", count))
+	self:Print("Dont forget to sort the lines after copy paste the data to Utils/TrinketData.lua")
+	self:Print("Suggest to verify the data for the trinket in the recent raid")
+	self.db.profile.RCTrinketData = trinketData
+end
+
+function RCLootCouncil:ExportTrinketDataCurrentInstance()
+	if _G.EncounterJournal then
+		_G.EncounterJournal:UnregisterAllEvents() -- To help to ensure EncounterJournal does not affect exporting.
+	end
 	EJ_SetSlotFilter(LE_ITEM_FILTER_TYPE_TRINKET)
-	for i = 0, GetNumClasses() do
-	    EJ_SetLootFilter(i, 0)
-	    wipe(self.EJTrinkets[i])
+	for classID = 0, MAX_CLASSES do
+	    EJ_SetLootFilter(classID, 0)
 	    for j = 1, EJ_GetNumLoot() do -- EJ_GetNumLoot() can be 0 if EJ items are not cached.
 	        local id = EJ_GetLootInfoByIndex(j)
 	        if id then
-	        	self.EJTrinkets[i][id] = true
-	        end
+		        if classID == 0 then
+		        	trinketData[id] = 0
+		        else
+		        	trinketData[id] = trinketData[id] + bit.lshift(1, classID-1)
+		        end
+		    end
 	    end
 	end
-	self.EJTrinkets.instanceID = self.EJInstanceID  -- self.EJInstanceID is set by hooks to EJ_SelectInstance
-	self.EJTrinkets.difficultyID = EJ_GetDifficulty()
-
-	-- Restore settings
-	if instanceID then EJ_SelectInstance(instanceID) end
-	if encounterID then EJ_SelectEncounter(encounterID) end
-	EJ_SetDifficulty(difficultyID)
-	EJ_SetSlotFilter(slotFilter)
-	EJ_SetLootFilter(classID, specID)
-	if _G.EncounterJournal then
-		-- In-game tests show that no taint is generated this way.
-		_G.EncounterJournal:RegisterEvent("EJ_DIFFICULTY_UPDATE") 
-	end
-
 end
+--@end-debug@

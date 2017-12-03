@@ -545,6 +545,11 @@ function RCLootCouncil:ChatCommand(msg)
 	elseif input == "nnp" then
 		self.nnp = not self.nnp
 		self:Print("nnp = "..tostring(self.nnp))
+	elseif input == "exporttrinketdata" then
+		self:ExportTrinketData()
+	elseif input == "cleartrinketdata" then
+		self.db.profile.RCTrinketData = nil
+		self:Print("Trinket Data in Saved Variable has been cleared.")
 --@end-debug@
 	elseif input == "whisper" or input == string.lower(_G.WHISPER) then
 		self:Print(L["whisper_help"])
@@ -1384,7 +1389,7 @@ function RCLootCouncil:Timer(type, ...)
 	elseif type == "ZONE_CHANGED_NEW_AREA" then
 		local curInstance = EJ_GetCurrentInstance()
 		if curInstance and curInstance ~= 0 then -- Only update cache when we enter instance. No update when leave instance.
-			self:CacheEJTrinkets()
+			--self:CacheEJTrinkets()
 		end
 	end
 end
@@ -1728,7 +1733,7 @@ function RCLootCouncil:OnEvent(event, ...)
 			self:UpdatePlayersData()
 			player_relogged = false
 
-			self:ScheduleTimer("CacheEJTrinkets", 3)
+			--self:ScheduleTimer("CacheEJTrinkets", 3)
 		end
 	elseif event == "ENCOUNTER_START" then
 			self:DebugLog("Event:", event, ...)
@@ -1792,7 +1797,7 @@ end
 
 function RCLootCouncil:OnEJLootDataReceived()
 	self:Debug("Recache EJ Trinkets because EJ gets new data.")
-	self:CacheEJTrinkets(true)
+	--self:CacheEJTrinkets(true)
 end
 
 function RCLootCouncil:NewMLCheck()
