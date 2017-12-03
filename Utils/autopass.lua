@@ -92,8 +92,7 @@ function RCLootCouncil:AutoPassCheck(link, equipLoc, typeID, subTypeID, classesF
 	local id = type(link) == "number" and link or self:GetItemIDFromLink(link) -- Convert to id if needed
 	if equipLoc == "INVTYPE_TRINKET" then
 		if self:Getdb().autoPassTrinket then
-			if self.EJTrinkets[0][id] and not self.EJTrinkets[classID][id] then 
-				-- Found the trinkets in "All classes" of EJ, but not this class
+			if _G.RCTrinketData and _G.RCTrinketData[id] and bit.band(_G.RCTrinketData[id], bit.lshift(1, classID-1)) == 0 then 
 				return true
 			end
 		end
