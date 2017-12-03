@@ -120,51 +120,45 @@ end
 
 --@debug@
 -- This function is used for developer.
--- Export all trinkets in the encounter journal not usable by all classes to saved variable.
+-- Export all trinkets in the current expansion in the encounter journal not usable by all classes to saved variable.
 -- The format is {[itemID] = classFlag}
 -- See the explanation of classFlag in RCLootCouncil:GetItemClassesAllowedFlag(item)
 local trinketData = {}
-local MAX_CLASSFLAG_VAL = bit.lshift(1, MAX_CLASSES) - 1
-local TIME_FOR_EACH_INSTANCE = 8
-function RCLootCouncil:ExportTrinketData(instanceIDStart)
-	if not instanceIDStart then
-		self:Print("Exporting trinket class data to RCLootCouncil.db.profile.RCTrinketData   This command is intended to be run by the developer.\n"..
-				"To ensure the data is correct. Only process one instance every 10s. The export takes about 15min."
-				.."Please reload after exporting is done and copy and paste the data into Utils/TrinketData.lua. Dont open EncounterJournal during export.\n"
-				.."Dont run any /rc exporttrinketdata when it is running."
-				.."Clear the export in the Saved Variable by /rc cleartrinketdata")
-		local instanceCount = 0
-		for i=0,9999 do
-	        local status, val = pcall(function() return EJ_SelectInstance(i) end)
-	        if status then
-	            instanceCount = instanceCount + 1
-	        end
-    	end
-    	self:Print(format("To ensure the data is correct, process one instance every %d s", TIME_FOR_EACH_INSTANCE))
-    	self:Print(format("Found %s instances", instanceCount))
+
+-- The params are used internally inside this function
+function RCLootCouncil:ExportTrinketData(nextIsRaid, nextIndex)
+	local MAX_CLASSFLAG_VAL = bit.lshift(1, MAX_CLASSES) - 1
+	local TIME_FOR_EACH_INSTANCE = 10
+
+	if not nextIsRaid then
+		nextIsRaid = 0
+		nextIndex = 1
+		self:Print("Exporting the class data of all current tier trinkets to RCLootCouncil.db.profile.RCTrinketData\n"
+			.."This command is intended to be run by the developer.\n"
+			.."Please reload after exporting is done and copy and paste the data into Utils/TrinketData.lua.\n"
+			.."Dont open EncounterJournal during export.\n"
+			.."Dont run any /rc exporttrinketdata when it is running."
+			.."Clear the export in the Saved Variable by /rc cleartrinketdata")
+		self:Print(format("To ensure the data is correct, process one instance every %d s", TIME_FOR_EACH_INSTANCE))
 	end
 
-	if _G.EncounterJournal then
-		_G.EncounterJournal:UnregisterAllEvents() -- To ensure EncounterJournal does not affect exporting.
+	EJ_SelectTier(EJ_GetNumTiers()) -- Select current tier
+
+	local delay = 0
+	local instanceIndex = nextIndex
+	for i=nextIsRaid, 1 do
+		while EJ_GetInstanceByIndex(instanceIndex, (i==1)) do
+			local instanceID = EJ_GetInstanceByIndex(instanceIndex, (i==1))
+			self:ExportTrinketDataSingleInstance(instanceID, TIME_FOR_EACH_INSTANCE)
+			return self:ScheduleTimer("ExportTrinketData", TIME_FOR_EACH_INSTANCE, i, instanceIndex + 1)
+		end
+		instanceIndex = 1
 	end
 
-	instanceIDStart = instanceIDStart or 1
 	local count = 0
 	for id, val in pairs(trinketData) do
 		count = count + 1
 	end
-	
-	for i = instanceIDStart, 9999 do
-		local status, val = pcall(function() return EJ_SelectInstance(i) end)
-		if status then
-			for delay = 0, TIME_FOR_EACH_INSTANCE - 2, 0.5 do -- Run many times to ensure correctness
-				self:ScheduleTimer("ExportTrinketDataCurrentInstance", delay)
-			end
-			self:Print(format("processed trinkets: %d, processing the instance: %d. %s, ", count, i, EJ_GetInstanceInfo(i)))
-			return self:ScheduleTimer("ExportTrinketData", TIME_FOR_EACH_INSTANCE, i + 1)
-		end
-	end
-
 	self:Print(format("DONE. %d trinkets total", count))
 	count = 0
 	for id, val in pairs(trinketData) do -- Not report if the trinket can be used by all classes.
@@ -180,10 +174,13 @@ function RCLootCouncil:ExportTrinketData(instanceIDStart)
 	self.db.profile.RCTrinketData = trinketData
 end
 
-function RCLootCouncil:ExportTrinketDataCurrentInstance()
+function RCLootCouncil:ExportTrinketDataSingleInstance(instanceID, timeLeft)
 	if _G.EncounterJournal then
 		_G.EncounterJournal:UnregisterAllEvents() -- To help to ensure EncounterJournal does not affect exporting.
 	end
+	local count = 0
+	local trinketIDsInThisInstances = {}
+	EJ_SelectInstance(instanceID)
 	EJ_SetSlotFilter(LE_ITEM_FILTER_TYPE_TRINKET)
 	for classID = 0, MAX_CLASSES do
 	    EJ_SetLootFilter(classID, 0)
@@ -192,11 +189,25 @@ function RCLootCouncil:ExportTrinketDataCurrentInstance()
 	        if id then
 		        if classID == 0 then
 		        	trinketData[id] = 0
+		        	GetItemInfo(id)
+		        	count = count + 1
+		        	tinsert(trinketIDsInThisInstances, id)
 		        else
 		        	trinketData[id] = trinketData[id] + bit.lshift(1, classID-1)
 		        end
 		    end
 	    end
+	end
+	local interval = 1
+	if timeLeft > interval then -- Rerun many times for correctless
+		return self:ScheduleTimer("ExportTrinketDataSingleInstance", interval, instanceID, timeLeft - interval)
+	else
+		self:Print("--------------------")
+		self:Print(format("Instance %d. %s. Processed %d trinkets", instanceID, EJ_GetInstanceInfo(instanceID), count))
+		for _, id in ipairs(trinketIDsInThisInstances) do
+			self:Print(format("%s: 0x%X", select(2, GetItemInfo(id)), trinketData[id]))
+		end
+		self:Print("--------------------")
 	end
 end
 --@end-debug@
