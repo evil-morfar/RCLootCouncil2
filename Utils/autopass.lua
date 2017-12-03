@@ -123,6 +123,7 @@ end
 -- The format is {[itemID] = classFlag}
 -- See the explanation of classFlag in RCLootCouncil:GetItemClassesAllowedFlag(item)
 local trinketClasses = {}
+local trinketNames = {}
 
 local EJ_DIFFICULTIES =
 {   -- Copy and paste from BLizzard_EncounterJournal.lua
@@ -210,7 +211,7 @@ function RCLootCouncil:ExportTrinketData(nextIsRaid, nextIndex, nextDiffIndex)
 	end
 	table.sort(sorted, function(a, b) return a[1] < b[1] end)
 	for _, entry in ipairs(sorted) do
-		exports = exports.."\t["..entry[1].."] = "..entry[2]..",\n"
+		exports = exports.."\t["..entry[1].."] = "..format("0x%X", entry[2])..",\t-- "..trinketNames[entry[1]].."\n"
 	end
 	exports = exports.."}\n"
 	frame.exportFrame.edit:SetText(exports)
@@ -232,6 +233,7 @@ function RCLootCouncil:ExportTrinketDataSingleInstance(instanceID, diffID, timeL
 	        if link then
 		        if classID == 0 then
 		        	trinketClasses[id] = 0
+		        	trinketNames[id] = self:GetItemNameFromLink(link)
 		        	GetItemInfo(id)
 		        	count = count + 1
 		        	tinsert(trinketlinksInThisInstances, link)
