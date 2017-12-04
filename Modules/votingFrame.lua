@@ -1013,6 +1013,16 @@ end
 
 function RCVotingFrame.filterFunc(table, row)
 	if not db.modules["RCVotingFrame"].filters then return true end -- db hasn't been initialized, so just show it
+	local name = row.name
+	local rank = lootTable[session].candidates[name].rank
+	if rank and guildRanks[rank] then
+		if not db.modules["RCVotingFrame"].filters.ranks[guildRanks[rank]] then
+			return false
+		end
+	elseif not db.modules["RCVotingFrame"].filters.ranks.notInYourGuild then
+		return false
+	end
+
 	local response = lootTable[session].candidates[row.name].response
 	if not db.modules["RCVotingFrame"].filters.showPlayersCantUseTheItem then
 		local v = lootTable[session]
@@ -1611,6 +1621,45 @@ do
 					info.checked = db.modules["RCVotingFrame"].filters[k]
 					Lib_UIDropDownMenu_AddButton(info, level)
 				end
+			end
+
+			info = Lib_UIDropDownMenu_CreateInfo()
+			info.text = _G.RANK
+			info.isTitle = true
+			info.notCheckable = true
+			info.disabled = true
+			Lib_UIDropDownMenu_AddButton(info, level)
+
+			info = Lib_UIDropDownMenu_CreateInfo()
+			info.text = _G.RANK.."..."
+			info.notCheckable = true
+			info.hasArrow = true
+			info.value = "FILTER_RANK"
+			Lib_UIDropDownMenu_AddButton(info, level)
+		elseif level == 2 then
+			if LIB_UIDROPDOWNMENU_MENU_VALUE == "FILTER_RANK" then
+				info = Lib_UIDropDownMenu_CreateInfo()
+				if IsInGuild() then
+					for k = 1, GuildControlGetNumRanks() do
+						info.text = GuildControlGetRankName(k)
+						info.func = function()
+							addon:Debug("Update rank Filter", k)
+							db.modules["RCVotingFrame"].filters.ranks[k] = not db.modules["RCVotingFrame"].filters.ranks[k]
+							RCVotingFrame:Update()
+						end
+						info.checked = db.modules["RCVotingFrame"].filters.ranks[k]
+						Lib_UIDropDownMenu_AddButton(info, level)
+					end
+				end
+
+				info.text = L["Not in your guild"]
+				info.func = function()
+					addon:Debug("Update rank Filter", "Not in your guild")
+					db.modules["RCVotingFrame"].filters.ranks.notInYourGuild = not db.modules["RCVotingFrame"].filters.ranks.notInYourGuild
+					RCVotingFrame:Update()
+				end
+				info.checked = db.modules["RCVotingFrame"].filters.ranks.notInYourGuild
+				Lib_UIDropDownMenu_AddButton(info, level)
 			end
 		end
 	end
