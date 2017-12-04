@@ -38,6 +38,7 @@ function LootHistory:OnInitialize()
 		bbcodeSmf = {func = self.ExportBBCodeSMF, name = "BBCode SMF",			tip = L["BBCode export, tailored for SMF."],},
 		eqxml = 		{func = self.ExportEQXML,		name = "EQdkp-Plus XML",	tip = L["EQdkp-Plus XML output, tailored for Enjin import."]},
 		player = 	{func = self.PlayerExport,		name = "Player Export",		tip = L["A format to copy/paste to another player."]},
+		discord = 	{func = self.ExportDiscord, 	name = "Discord", 			tip = L["Discord friendly output."]},
 		--html = self.ExportHTML
 	}
 	self.scrollCols = {
@@ -573,8 +574,8 @@ function LootHistory:GetFrame()
 	-- Import
 	local b5 = addon:CreateButton("Import", f.content)
 	b5:SetPoint("RIGHT", b3, "LEFT", -10, 0)
-	b5:SetScript("OnClick", function() 
-		self.frame.importFrame:Show() 
+	b5:SetScript("OnClick", function()
+		self.frame.importFrame:Show()
 		self.frame.importFrame.edit:SetFocus()
 	end)
 	f.importBtn = b5
@@ -1340,6 +1341,32 @@ do
 		end
 		export=export.. "\t</members>\r\n</raiddata></raidlog>\r\n"
 		return export
+	end
+
+	--- Discord friendly output
+	function LootHistory:ExportDiscord()
+		wipe(export)
+		for player, v in pairs(lootDB) do
+			if selectedName and selectedName == player or not selectedName then
+				tinsert(export, "__ **")
+				tinsert(addon.Ambiguate(player))
+				tinsert(":** __\r\n")
+				for i, d in pairs(v) do
+					if selectedDate and selectedDate == d.date or not selectedDate then
+						tinsert(export, "**Item:** *")
+						tinsert(d.lootWon)
+						tinsert("* - **Response:** *")
+						tinsert(tostring(d.response))
+						tinsert("*.\r\n")
+						tinsert(export, "**View Item:** <")
+						tinsert(self:GetWowheadLinkFromItemLink(d.lootWon))
+						tinsert(">\r\n")
+					end
+				end
+				tinsert(export, "\r\n\r\n")
+			end
+		end
+		return table.concat(export)
 	end
 
 	function LootHistory:ExportHTML()
