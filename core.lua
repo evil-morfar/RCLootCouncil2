@@ -1802,6 +1802,9 @@ function RCLootCouncil:NewMLCheck()
 	-- Check if we can use in party
 	if not IsInRaid() and db.onlyUseInRaids then return end
 
+	-- Don't do popups if we're already handling loot
+	if self.handleLoot then return end
+
 	-- We are ML and shouldn't ask the player for usage
 	if self.lootMethod == "master" and db.usage.ml then -- addon should auto start
 		self:StartHandleLoot()
