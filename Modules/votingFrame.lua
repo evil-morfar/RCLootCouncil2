@@ -443,6 +443,15 @@ function RCVotingFrame:Update()
 	else
 		self.frame.filter.Text:SetTextColor(_G.NORMAL_FONT_COLOR:GetRGB()) --#ffd100
 	end
+	if db.modules["RCVotingFrame"].alwaysShowTooltip then
+		self.frame.itemTooltip:SetOwner(self.frame.content, "ANCHOR_NONE")
+		self.frame.itemTooltip:SetHyperlink(lootTable[session].link)
+		self.frame.itemTooltip:Show()
+		self.frame.itemTooltip:SetPoint("TOP", self.frame, "TOP", 0, 0)
+		self.frame.itemTooltip:SetPoint("RIGHT", sessionButtons[#lootTable], "LEFT", 0, 0)
+	else
+		self.frame.itemTooltip:Hide()
+	end
 end
 
 function RCVotingFrame:SwitchSession(s)
@@ -594,11 +603,14 @@ function RCVotingFrame:GetFrame()
 		Session item icon and strings
 	    ------------------------------]]
 	local item = CreateFrame("Button", nil, f.content)
-	item:EnableMouse()
+	--item:EnableMouse()
     item:SetNormalTexture("Interface/ICONS/INV_Misc_QuestionMark")
     item:SetScript("OnEnter", function()
 		if not lootTable then return; end
 		addon:CreateHypertip(lootTable[session].link)
+		GameTooltip:AddLine("")
+		GameTooltip:AddLine(L["always_show_tooltip_howto"], nil, nil, nil, true)
+		GameTooltip:Show()
 	end)
 	item:SetScript("OnLeave", function() addon:HideTooltip() end)
 	item:SetScript("OnClick", function()
@@ -606,10 +618,27 @@ function RCVotingFrame:GetFrame()
 	    if ( IsModifiedClick() ) then
 		    HandleModifiedItemClick(lootTable[session].link);
         end
+        if item.lastClick and GetTime() - item.lastClick <= 0.5 then
+        	db.modules["RCVotingFrame"].alwaysShowTooltip = not db.modules["RCVotingFrame"].alwaysShowTooltip
+        	self:Update()
+		else
+			item.lastClick = GetTime()
+		end
     end);
 	item:SetPoint("TOPLEFT", f, "TOPLEFT", 10, -20)
 	item:SetSize(50,50)
+
 	f.itemIcon = item
+
+	local itemTooltip = CreateFrame("GameTooltip", "RCVotingFrame_ItemTooltip", f.content, "GameTooltipTemplate")
+	itemTooltip:SetClampedToScreen(false)
+	-- Some addon hooks GameTooltip. So copy the hook.
+ 	itemTooltip:SetScript("OnTooltipSetItem", GameTooltip:GetScript("OnTooltipSetItem"))
+ 	itemTooltip.shoppingTooltips = {} -- GameTooltip contains this table.
+ 	itemTooltip.shoppingTooltips[1] = CreateFrame("GameTooltip", "RCVotingFrame_ItemTooltip_Shop1", itemTooltip, "ShoppingTooltipTemplate")
+ 	itemTooltip.shoppingTooltips[2] = CreateFrame("GameTooltip", "RCVotingFrame_ItemTooltip_Shop2", itemTooltip, "ShoppingTooltipTemplate")
+	f.itemTooltip = itemTooltip
+
 
 	local iTxt = f.content:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
 	iTxt:SetPoint("TOPLEFT", item, "TOPRIGHT", 10, 0)

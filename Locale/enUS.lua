@@ -44,6 +44,7 @@ L["alt_click_looting_desc"] = "Enables Alt click Looting, i.e. start a looting s
 L["Alternatively, flag the loot as award later."] = true
 L["Always use RCLootCouncil when I'm Master Looter"] = true
 L["Always use when leader"] = true
+L["always_show_tooltip_howto"] = "Double click to always show tooltip or cancel it"
 L["Announce Awards"] = true
 L["Announce Considerations"] = true
 L["announce_awards_desc"] = "Enables the announcement of awards in chat."
