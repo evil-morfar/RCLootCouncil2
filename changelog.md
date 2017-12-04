@@ -1,5 +1,8 @@
 ### v2.7.2
 ---
+* Added filtering for guildranks.
+* Added Sigil of the Dark Titan to the ignore list.
+
 ###### Bugfixes
 * *The version checker didn't always sort "Not installed" correctly.*
 
