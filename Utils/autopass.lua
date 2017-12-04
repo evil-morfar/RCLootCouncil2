@@ -210,11 +210,32 @@ function RCLootCouncil:ExportTrinketData(nextIsRaid, nextIndex, nextDiffIndex)
 		tinsert(sorted, {id, val})
 	end
 	table.sort(sorted, function(a, b) return a[1] < b[1] end)
+	local longestNameLen = 0
+	for _, name in pairs(trinketNames) do
+		if #name > longestNameLen then
+			longestNameLen = #name
+		end
+	end
+	local exp = "%-"..format("%d", longestNameLen+1).."s" 
 	for _, entry in ipairs(sorted) do
-		exports = exports.."\t["..entry[1].."] = "..format("0x%X", entry[2])..",\t-- "..trinketNames[entry[1]].."\n"
+		exports = exports.."\t["..entry[1].."] = "..format("0x%X", entry[2])
+			..",\t-- "..format(exp, trinketNames[entry[1]]..",").."\t"..self:ClassesFlagToStr(entry[2]).."\n"
 	end
 	exports = exports.."}\n"
 	frame.exportFrame.edit:SetText(exports)
+end
+
+function RCLootCouncil:ClassesFlagToStr(flag)
+	local text = ""
+	for i=1, MAX_CLASSES do
+		if bit.band(flag, bit.lshift(1, i-1)) > 0 then
+			if text ~= "" then
+				text = text..", "
+			end
+			text = text..GetClassInfo(i)
+		end
+	end
+	return text
 end
 
 function RCLootCouncil:ExportTrinketDataSingleInstance(instanceID, diffID, timeLeft)
