@@ -30,11 +30,10 @@ local guildRanks = {} -- returned from addon:GetGuildRanks()
 local GuildRankSort, ResponseSort -- Initialize now to avoid errors
 local defaultScrollTableData = {} -- See below
 local moreInfoData = {}
-local lastUpdateTime = 0 -- Last Time to update the voting frame.
 local MIN_UPDATE_INTERVAL = 0.2 -- Minimum update interval
+local noUpdateTimeRemaining = 0 -- The time until we allow the next update.
 local updateFrame = CreateFrame("FRAME") -- to ensure the update operations that does not occur, because it's within min update interval, gets updated eventually
 local needUpdate = false -- Does voting frame needs an update after MIN_UPDATE_INTERVAL after the last update?
-local GetTime = GetTime -- Upvalue for better performance
 
 function RCVotingFrame:OnInitialize()
 	-- Contains all the default data needed for the scroll table
@@ -78,6 +77,7 @@ function RCVotingFrame:OnEnable()
 	addon:Debug("RCVotingFrame", "enabled")
 	updateFrame:Show()
 	needUpdate = false
+	noUpdateTimeRemaining = 0
 end
 
 function RCVotingFrame:OnDisable() -- We never really call this
@@ -90,6 +90,7 @@ function RCVotingFrame:OnDisable() -- We never really call this
 	self:UnregisterAllComm()
 	updateFrame:Hide()
 	needUpdate = false
+	noUpdateTimeRemaining = 0
 end
 
 function RCVotingFrame:Hide()
@@ -409,11 +410,10 @@ end
 ------------------------------------------------------------------
 function RCVotingFrame:Update()
 	needUpdate = false
+	if noUpdateTimeRemaining > 0 then needUpdate = true; return end
 	if not self.frame then return end -- No updates when it doesn't exist
-	if GetTime() - lastUpdateTime < MIN_UPDATE_INTERVAL then needUpdate = true; return end
 	if not lootTable[session] then return addon:Debug("VotingFrame:Update() without lootTable!!") end -- No updates if lootTable doesn't exist.
-	lastUpdateTime = GetTime()
-
+	noUpdateTimeRemaining = MIN_UPDATE_INTERVAL
 	self.frame.st:SortData()
 	self.frame.st:SortData() -- It appears that there is a bug in lib-st that only one SortData() does not use the "sortnext" to correct sort the rows.
 	-- update awardString
@@ -458,8 +458,13 @@ function RCVotingFrame:Update()
 	end
 end
 
-updateFrame:SetScript("OnUpdate", function(self)
-	if needUpdate and GetTime() - lastUpdateTime > MIN_UPDATE_INTERVAL then
+updateFrame:SetScript("OnUpdate", function(self, elapsed)
+	if noUpdateTimeRemaining > elapsed then
+		noUpdateTimeRemaining = noUpdateTimeRemaining - elapsed
+	else
+		noUpdateTimeRemaining = 0
+	end
+	if needUpdate and noUpdateTimeRemaining <= 0 then
 		RCVotingFrame:Update()
 	end
 end)
