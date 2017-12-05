@@ -6,6 +6,7 @@
 ###### Bugfixes
 * *The version checker didn't always sort "Not installed" correctly.*
 * *The "Use RCLootCouncil" popup no longer shows twice for certain settings.*
+* *Added a potential fix for disconnect issues with large raid sizes. (#313)*
 
 
 ### v2.7.1
