@@ -603,7 +603,6 @@ function RCVotingFrame:GetFrame()
 		Session item icon and strings
 	    ------------------------------]]
 	local item = CreateFrame("Button", nil, f.content)
-	--item:EnableMouse()
     item:SetNormalTexture("Interface/ICONS/INV_Misc_QuestionMark")
     item:SetScript("OnEnter", function()
 		if not lootTable then return; end
@@ -627,12 +626,11 @@ function RCVotingFrame:GetFrame()
     end);
 	item:SetPoint("TOPLEFT", f, "TOPLEFT", 10, -20)
 	item:SetSize(50,50)
-
 	f.itemIcon = item
 
 	local itemTooltip = CreateFrame("GameTooltip", "RCVotingFrame_ItemTooltip", f.content, "GameTooltipTemplate")
 	itemTooltip:SetClampedToScreen(false)
-	-- Some addon hooks GameTooltip. So copy the hook.
+	-- Some addons hook GameTooltip. So copy the hook.
  	itemTooltip:SetScript("OnTooltipSetItem", GameTooltip:GetScript("OnTooltipSetItem"))
  	itemTooltip.shoppingTooltips = {} -- GameTooltip contains this table.
  	itemTooltip.shoppingTooltips[1] = CreateFrame("GameTooltip", "RCVotingFrame_ItemTooltip_Shop1", itemTooltip, "ShoppingTooltipTemplate")
