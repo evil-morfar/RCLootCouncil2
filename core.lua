@@ -1401,7 +1401,10 @@ function RCLootCouncil:AutoResponse(table)
 			end
 		end
 		-- target, session, response, isTier, isRelic, note, roll, link, ilvl, equipLoc, relicType, sendAvgIlvl, sendSpecID
-		self:SendResponse("group", session, response, nil, nil, nil, nil, v.link, v.ilvl, v.equipLoc, v.relic, true, true)
+		-- v2.7.1: Disconnection reported in large raid. It's likely that it is caused by the large amount of responses received in a short time frame.
+		-- First, delay by 1s, so people won't receive response within the same second of lootTable
+		-- Second, delay incremental short time for each session, to avoid message bursts when lots of items or in large raid.
+		self:ScheduleTimer("SendResponse", 1+0.5*(k-1), "group", session, response, nil, nil, nil, nil, v.link, v.ilvl, v.equipLoc, v.relic, true, true)
 	end
 end
 
