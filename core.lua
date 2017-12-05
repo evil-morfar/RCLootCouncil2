@@ -2445,6 +2445,18 @@ function RCLootCouncil:CreateFrame(name, cName, title, width, height)
 	return f
 end
 
+-- cName is name of the module
+function RCLootCouncil:CreateGameTooltip(cName, parent)
+	local itemTooltip = CreateFrame("GameTooltip", cName.."_ItemTooltip", parent, "GameTooltipTemplate")
+	itemTooltip:SetClampedToScreen(false)
+	-- Some addons hook GameTooltip. So copy the hook.
+ 	itemTooltip:SetScript("OnTooltipSetItem", GameTooltip:GetScript("OnTooltipSetItem"))
+ 	itemTooltip.shoppingTooltips = {} -- GameTooltip contains this table. Need this to prevent error
+ 	itemTooltip.shoppingTooltips[1] = CreateFrame("GameTooltip", cName.."_ShoppingTooltip1", itemTooltip, "ShoppingTooltipTemplate")
+ 	itemTooltip.shoppingTooltips[2] = CreateFrame("GameTooltip", cName.."_ShoppingTooltip2", itemTooltip, "ShoppingTooltipTemplate")
+	return itemTooltip
+end
+
 --- Update all frames registered with RCLootCouncil:CreateFrame().
 -- Updates all the frame's colors as set in the db.
 function RCLootCouncil:UpdateFrames()
