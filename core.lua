@@ -248,6 +248,7 @@ function RCLootCouncil:OnInitialize()
 							['*'] = true
 						},
 					},
+					alwaysShowTooltip = false,
 				},
 			},
 
