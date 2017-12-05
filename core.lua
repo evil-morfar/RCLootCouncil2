@@ -521,8 +521,6 @@ function RCLootCouncil:ChatCommand(msg)
 		self:Test(tonumber(args[1]) or 1)
 	elseif input == 'fulltest' or input == 'ftest' then
 		self:Test(tonumber(args[1]) or 1, true)
-	elseif input == 'trinkettest' or input == 'ttest' then
-		self:Test(tonumber(args[1]) or 1, false, true)
 
 	elseif input == 'version' or input == L["version"] or input == "v" or input == "ver" then
 		self:CallModule("version")
@@ -535,6 +533,9 @@ function RCLootCouncil:ChatCommand(msg)
 		self:Print("nnp = "..tostring(self.nnp))
 	elseif input == "exporttrinketdata" then
 		self:ExportTrinketData()
+	elseif input == 'trinkettest' or input == 'ttest' then
+		self.playerClass = string.upper(args[1])
+		self:Test(1, false, true)
 --@end-debug@
 	elseif input == "whisper" or input == string.lower(_G.WHISPER) then
 		self:Print(L["whisper_help"])
