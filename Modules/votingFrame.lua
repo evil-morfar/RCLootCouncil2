@@ -628,15 +628,7 @@ function RCVotingFrame:GetFrame()
 	item:SetSize(50,50)
 	f.itemIcon = item
 
-	local itemTooltip = CreateFrame("GameTooltip", "RCVotingFrame_ItemTooltip", f.content, "GameTooltipTemplate")
-	itemTooltip:SetClampedToScreen(false)
-	-- Some addons hook GameTooltip. So copy the hook.
- 	itemTooltip:SetScript("OnTooltipSetItem", GameTooltip:GetScript("OnTooltipSetItem"))
- 	itemTooltip.shoppingTooltips = {} -- GameTooltip contains this table.
- 	itemTooltip.shoppingTooltips[1] = CreateFrame("GameTooltip", "RCVotingFrame_ItemTooltip_Shop1", itemTooltip, "ShoppingTooltipTemplate")
- 	itemTooltip.shoppingTooltips[2] = CreateFrame("GameTooltip", "RCVotingFrame_ItemTooltip_Shop2", itemTooltip, "ShoppingTooltipTemplate")
-	f.itemTooltip = itemTooltip
-
+	f.itemTooltip = addon:CreateGameTooltip("votingframe", f.content)
 
 	local iTxt = f.content:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
 	iTxt:SetPoint("TOPLEFT", item, "TOPRIGHT", 10, 0)
