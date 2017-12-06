@@ -1,3 +1,9 @@
+### v2.7.3
+---
+###### Bugfixes
+* *Fixed a bug causing errors when pressing "Pass". (#315)*
+
+
 ### v2.7.2
 ---
 * Added filtering for guildranks.
