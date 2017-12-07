@@ -1,3 +1,9 @@
+### v2.7.4
+---
+Note: This version partially breaks backwards compatibility. All council members needs this version to see player's gear.
+###### Bugfixes
+* *Hopefully fixed disconnect on large raid sizes for real (#313)*
+
 ### v2.7.3
 ---
 ###### Bugfixes
