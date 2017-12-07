@@ -114,7 +114,7 @@ function RCSessionFrame.SetCellText(rowFrame, frame, data, cols, row, realrow, c
 		loadingItems = true
 		if not scheduledToShowAgain then -- Dont make unneeded scheduling
 			scheduledToShowAgain = true
-			RCSessionFrame:ScheduleTimer("Show", 1, ml.lootTable) -- Expect data to be available in 1 sec and then recreate the frame
+			RCSessionFrame:ScheduleTimer("Show", 0, ml.lootTable) -- Try again next frame
 		end
 	else
 		frame.text:SetText(data[realrow].link)
