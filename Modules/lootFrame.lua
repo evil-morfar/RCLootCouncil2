@@ -138,7 +138,7 @@ function LootFrame:OnRoll(entry, button)
 		-- target, session, response, isTier, isRelic, note, link, ilvl, equipLoc, relicType, sendAvgIlvl, sendSpecID
 		local isTier = item.isTier and addon.mldb.tierButtonsEnabled
 		local isRelic = item.isRelic and addon.mldb.relicButtonsEnabled
-		addon:Debug("LootFrame:Response", button, "Response:", addon:GetResponseText(button,isTier,isRelic))
+		addon:Debug("LootFrame:Response", button, "Response:", addon:GetResponseText(button, isTier, isRelic))
 		for _, session in ipairs(item.sessions) do
 			addon:SendResponse("group", session, button, isTier, isRelic, item.note)
 		end
@@ -629,9 +629,7 @@ function LootFrame:CHAT_MSG_SYSTEM(event, msg)
 		self:CancelTimer(entryInQueue.timer)
 		local entry = entryInQueue.entry
 		local item = entry.item
-		for _, session in ipairs(item.sessions) do
-			addon:SendResponse("group", session, nil, nil, nil, nil, roll)
-		end
+		addon:SendCommand("group", "roll", addon.playerName, roll)
 		addon:SendAnnouncement(format(L["'player' has rolled 'roll' for: 'item'"], UnitName("player"), roll, item.link), "group")
 		entry.rollResult:SetText(roll)
 		entry.rollResult:Show()
