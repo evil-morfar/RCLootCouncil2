@@ -179,14 +179,14 @@ function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
 				-- v2.7.4: Extended to contain playerName, specID, ilvl, data
 				-- data contains: diff, gear1[, gear2, response] - each a table for each session
 				local name, specID, ilvl, sessionData = unpack(data)
-				for i = 1, #lootTable do
-					self:SetCandidateData(i, name, "specID", specID)
-					self:SetCandidateData(i, name, "ilvl", ilvl)
-				end
 				for k,d in pairs(sessionData) do
 					for ses, v in pairs(d) do
 						self:SetCandidateData(ses, name, k, v)
 					end
+				end
+				for i = 1, #lootTable do
+					self:SetCandidateData(i, name, "specID", specID)
+					self:SetCandidateData(i, name, "ilvl", ilvl)
 					if not sessionData.response[i] then
 						self:SetCandidateData(i, name, "response", "WAIT")
 					end
