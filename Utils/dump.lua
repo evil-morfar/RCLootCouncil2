@@ -25,15 +25,20 @@ end
 
 -- Dump stuffs in LUA format. Try to be as similar to Blizzard saved variable.
 --@param val: The variable to be dumped
+--@param variableName: if supplied, will export as  variableName = xxxxx
 --@param res: Table to store the result at the each line
 --@param nres: Optional. The current line number.
 --@param indent: Optional. Current indentation
 --@return the last line number of the dump text, and "res"
-function RCLootCouncil:DumpLuaFormat(val, res, nres, indent)
+-- Note that you need to table.contant(res, '\n') to get the final result.
+function RCLootCouncil:DumpLuaFormat(val, variableName, res, nres, indent)
 	nres = nres or 1
 	indent = indent or ""
 	if not res[nres] then
 		res[nres] = ""
+		if variableName then
+			res[nres] = variableName.." = "
+		end
 	end
     local valType = type(val);
     if valType ~= "number" and valType ~= "string" and valType ~= "table" then
@@ -63,7 +68,7 @@ function RCLootCouncil:DumpLuaFormat(val, res, nres, indent)
     		for k, v in ipairs(val) do
     			nres = nres + 1
     			res[nres] = indent.."\t"
-    			nres = self:DumpLuaFormat(v, res, nres, indent.."\t")
+    			nres = self:DumpLuaFormat(v, nil, res, nres, indent.."\t")
     			res[nres] = res[nres]..", -- ["..k.."]"
     		end
     	else
@@ -76,9 +81,9 @@ function RCLootCouncil:DumpLuaFormat(val, res, nres, indent)
     		for k, v in pairs(val) do
     			nres = nres + 1
     			res[nres] = indent.."\t".."["
-    			nres = self:DumpLuaFormat(k, res, nres, indent)
+    			nres = self:DumpLuaFormat(k, nil, res, nres, indent)
     			res[nres] = res[nres].."] = "
-    			nres = self:DumpLuaFormat(v, res, nres, indent.."\t")
+    			nres = self:DumpLuaFormat(v, nil, res, nres, indent.."\t")
     			res[nres] = res[nres]..","
     		end
     	end
@@ -86,4 +91,12 @@ function RCLootCouncil:DumpLuaFormat(val, res, nres, indent)
     	res[nres] = indent.."}"
     end
     return nres, res
+end
+
+function RCLootCouncil:DumpSavedVariables()
+	local res = {}
+	res[1] = "" -- Blizzard Saved variable file starts with new line.
+	local nres, res = self:DumpLuaFormat(RCLootCouncilDB, "RCLootCouncilDB", res, 2)
+	local nres, res = self:DumpLuaFormat(RCLootCouncilLootDB, "RCLootCouncilLootDB", res, nres+1)
+	return nres, res
 end
