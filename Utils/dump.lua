@@ -169,4 +169,17 @@ do
 
 	end
 
+	function RCLootCouncil:ExportSavedVariable()
+		local _, res = self:DumpSavedVariables()
+
+		-- Need to show sth meaningful in the first line of the text, because we only show first line
+		-- Showing sth like space or "{" is very confusing.
+		table.insert(res, 1, "-- Use Ctrl+C to copy this. Go to xxxx to paste this. PLACEHOLDER.") -- TODO locale
+
+		local text = table.concat(res, '\n')
+
+		self:ExportText(text,
+						"RCLootCouncil Issue Report", -- TODO: edit title and create locale.
+						"HOWTO_REPORT_ISSUE_PLACEHOLDER") -- TODO: edit desc and create locale.
+	end
 end
