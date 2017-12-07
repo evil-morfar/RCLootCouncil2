@@ -18,3 +18,4 @@ Utils\tokenData.lua
 Utils\autopass.lua
 Utils\sync.lua
 Utils\popups.lua
+Utils\dump.lua
