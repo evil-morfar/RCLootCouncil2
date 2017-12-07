@@ -6,7 +6,12 @@
 if LibDebug then LibDebug() end
 --@end-debug@
 
+local ipairs = ipairs
+local math = math
+local pairs = pairs
 local string_format = string.format
+local tostring = tostring
+local type = type
 
 --@return true if the table t is an array.
 local function TableIsArray(t)
@@ -45,7 +50,7 @@ function RCLootCouncil:DumpLuaFormat(val, res, nres, indent)
     		res[nres] = res[nres]..tostring(val)
     	end
     elseif valType == "string" then
-    	res[nres] = res[nres]..string.format("%q", val)
+    	res[nres] = res[nres]..string_format("%q", val)
     else -- "table"
     	res[nres] = res[nres].."{"
     	if TableIsArray(val) then
