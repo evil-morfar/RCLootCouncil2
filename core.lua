@@ -1299,7 +1299,7 @@ function RCLootCouncil:GetGear(link, equipLoc, relicType)
 end
 
 function RCLootCouncil:GetDiff(g1, g2, ilvl)
-	local diff
+	local diff = 0
 	local g1diff, g2diff = g1 and select(4, GetItemInfo(g1)), g2 and select(4, GetItemInfo(g2))
 	-- if g1 and g2 are not nil, g1diff and g2diff should always be returned because :GetArtifactRelics and:GetPlayersGear should always return cached link
 	if g1diff and g2diff then
@@ -2085,7 +2085,7 @@ function RCLootCouncil:GetItemIDFromLink(link)
 end
 
 function RCLootCouncil:GetItemStringFromLink(link)
-	return strmatch(link or "", "item:([%d:]+)")
+	return strmatch(link or "", "item:[%d:]+")
 end
 
 function RCLootCouncil:GetItemNameFromLink(link)
