@@ -179,18 +179,24 @@ function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
 				-- v2.7.4: Extended to contain playerName, specID, ilvl, data
 				-- data contains: diff, gear1[, gear2, response] - each a table for each session
 				local name, specID, ilvl, sessionData = unpack(data)
-				for k,d in pairs(sessionData) do
-					for ses, v in pairs(d) do
-						self:SetCandidateData(ses, name, k, v)
-					end
-				end
-				for i = 1, #lootTable do
-					self:SetCandidateData(i, name, "specID", specID)
-					self:SetCandidateData(i, name, "ilvl", ilvl)
-					if not sessionData.response[i] then
+				if not specID then -- Old lootAck
+					for i = 1, #lootTable do
 						self:SetCandidateData(i, name, "response", "WAIT")
-					elseif sessionData.response[i] == true then
-						self:SetCandidateData(i, name, "response", "AUTOPASS")
+					end
+				else
+					for k,d in pairs(sessionData) do
+						for ses, v in pairs(d) do
+							self:SetCandidateData(ses, name, k, v)
+						end
+					end
+					for i = 1, #lootTable do
+						self:SetCandidateData(i, name, "specID", specID)
+						self:SetCandidateData(i, name, "ilvl", ilvl)
+						if not sessionData.response[i] then
+							self:SetCandidateData(i, name, "response", "WAIT")
+						elseif sessionData.response[i] == true then
+							self:SetCandidateData(i, name, "response", "AUTOPASS")
+						end
 					end
 				end
 				self:Update()
