@@ -1400,7 +1400,7 @@ function RCLootCouncil:SendLootAck(table)
 		toSend.gear1[k] = g1
 		toSend.gear2[k] = g2
 		toSend.diff[k] = diff
-		toSend.response[k] = v.autopass and "AUTOPASS"
+		toSend.response[k] = v.autopass
 	end
 	self:SendCommand("group", "lootAck", self.playerName, playersData.specID, playersData.ilvl, toSend)
 end

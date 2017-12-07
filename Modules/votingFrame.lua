@@ -189,6 +189,8 @@ function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
 					self:SetCandidateData(i, name, "ilvl", ilvl)
 					if not sessionData.response[i] then
 						self:SetCandidateData(i, name, "response", "WAIT")
+					elseif sessionData.response[i] == true then
+						self:SetCandidateData(i, name, "response", "AUTOPASS")
 					end
 				end
 				self:Update()
