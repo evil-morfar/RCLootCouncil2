@@ -263,6 +263,7 @@ function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
 				for ses in ipairs(lootTable) do
 					self:SetCandidateData(ses, name, "roll", roll)
 				end
+				self:Update()
 
 			elseif command == "reconnectData" and addon:UnitIsUnit(sender, addon.masterLooter) then
 				-- We assume we always receive a regular lootTable command first
