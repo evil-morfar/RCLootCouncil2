@@ -10,7 +10,6 @@
 	Backwards compability breaks:
 		- Remove equipLoc, subType, texture from lootTable. They can all be created with GetItemInfoInstant()
 		- Remove name from lootTable. This isn't needed at all.
-		- IDEA Have player's current gear sent with lootAck
 -------------------------------- ]]
 
 --[[CHANGELOG
@@ -763,9 +762,8 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 						self:GetActiveModule("votingframe"):ReceiveLootTable(lootTable)
 					end
 
-					self:SendCommand("group", "lootAck", self.playerName) -- send ack
-
-					self:AutoResponse(lootTable)
+					self:DoAutoPasses(lootTable)
+					self:SendLootAck(lootTable)
 
 					-- Show  the LootFrame
 					self:CallModule("lootframe")
@@ -886,7 +884,8 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 				self:Print(format(L["'player' has asked you to reroll"], self.Ambiguate(sender)))
 				local table = unpack(data)
 				self:PrepareLootTable(table)
-				self:AutoResponse(table)
+				self:DoAutoPasses(table)
+				self:SendLootAck(table)
 
 				self:CallModule("lootframe")
 				self:GetActiveModule("lootframe"):ReRoll(table)
@@ -1268,24 +1267,11 @@ end
 -- @param sendSpecID    Indicates whether we send spec id.
 function RCLootCouncil:SendResponse(target, session, response, isTier, isRelic, note, roll, link, ilvl, equipLoc, relicType, sendAvgIlvl, sendSpecID)
 	self:DebugLog("SendResponse", target, session, response, isTier, isRelic, note, roll, link, ilvl, equipLoc, relicType, sendAvgIlvl, sendSpecID)
-	local g1, g2;
-	local diff = nil
+	local g1, g2, diff
 
 	if link and ilvl then
-		if relicType then
-			g1, g2 = self:GetArtifactRelics(link, relicType, playersData.relics) -- Use relic info we stored before
-		else
-		 	g1, g2 = self:GetPlayersGear(link, equipLoc, playersData.gears) -- Use gear info we stored before
-		end
-
-		local g1diff, g2diff = g1 and select(4, GetItemInfo(g1)), g2 and select(4, GetItemInfo(g2))
-		-- if g1 and g2 are not nil, g1diff and g2diff should always be returned because :GetArtifactRelics and:GetPlayersGear should always return cached link
-		-- Check if this is nil just in case sth is wrong
-		if g1diff and g2diff then
-			diff = g1diff >= g2diff and ilvl - g2diff or ilvl - g1diff
-		elseif g1diff then
-			diff = ilvl - g1diff
-		end
+		g1, g2 = self:GetGear(link, equipLoc, relicType)
+		diff = self:GetDiff(g1,g2,ilvl)
 	end
 
 	self:SendCommand(target, "response",
@@ -1302,6 +1288,26 @@ function RCLootCouncil:SendResponse(target, session, response, isTier, isRelic, 
 			specID = sendSpecID and playersData.specID or nil,
 			roll = roll,
 		})
+end
+
+function RCLootCouncil:GetGear(link, equipLoc, relicType)
+	if relicType then
+		return self:GetArtifactRelics(link, relicType, playersData.relics) -- Use relic info we stored before
+	else
+		return self:GetPlayersGear(link, equipLoc, playersData.gears) -- Use gear info we stored before
+	end
+end
+
+function RCLootCouncil:GetDiff(g1, g2, ilvl)
+	local diff
+	local g1diff, g2diff = g1 and select(4, GetItemInfo(g1)), g2 and select(4, GetItemInfo(g2))
+	-- if g1 and g2 are not nil, g1diff and g2diff should always be returned because :GetArtifactRelics and:GetPlayersGear should always return cached link
+	if g1diff and g2diff then
+		diff = g1diff >= g2diff and ilvl - g2diff or ilvl - g1diff
+	elseif g1diff then
+		diff = ilvl - g1diff
+	end
+	return diff
 end
 
 -- @param link The itemLink of the item.
@@ -1382,11 +1388,26 @@ function RCLootCouncil:PrepareLootTable(lootTable)
 	end
 end
 
--- Send the information of current equipped gear immediately when we receive the loot table.
--- The actual response/note are left unsent if not autopassed.
-function RCLootCouncil:AutoResponse(table)
+--- Sends a lootAck to the group containing session related data.
+-- Included is: specID and average ilvl is sent once.
+-- Currently equipped gear and "diff" is sent for each session.
+-- Autopass response is sent if the session has been autopassed. No other response is sent.
+function RCLootCouncil:SendLootAck(table)
+	local toSend = {gear1 = {}, gear2 = {}, diff = {}, response = {}}
 	for k, v in ipairs(table) do
-		local response = nil
+		local g1,g2 = self:GetGear(v.link, v.equipLoc, v.relic)
+		local diff = self:GetDiff(g1, g2, v.ilvl)
+		toSend.gear1[k] = g1
+		toSend.gear2[k] = g2
+		toSend.diff[k] = diff
+		toSend.response[k] = v.autopass and "AUTOPASS"
+	end
+	self:SendCommand("group", "lootAck", self.playerName, playersData.specID, playersData.ilvl, toSend)
+end
+
+-- Sets lootTable[session].autopass = true if an autopass occurs, and informs the user of the change
+function RCLootCouncil:DoAutoPasses(table)
+	for k,v in ipairs(table) do
 		local session = v.session or k
 		if db.autoPass and not v.noAutopass then
 			if (v.boe and db.autoPassBoE) or not v.boe then
@@ -1394,17 +1415,11 @@ function RCLootCouncil:AutoResponse(table)
 					self:Debug("Autopassed on: ", v.link)
 					if not db.silentAutoPass then self:Print(format(L["Autopassed on 'item'"], v.link)) end
 					v.autopass = true
-					response = "AUTOPASS"
 				end
 			else
 				self:Debug("Didn't autopass on: "..v.link.." because it's BoE!")
 			end
 		end
-		-- target, session, response, isTier, isRelic, note, roll, link, ilvl, equipLoc, relicType, sendAvgIlvl, sendSpecID
-		-- v2.7.1: Disconnection reported in large raid. It's likely that it is caused by the large amount of responses received in a short time frame.
-		-- First, delay by 1s, so people won't receive response within the same second of lootTable
-		-- Second, delay incremental short time for each session, to avoid message bursts when lots of items or in large raid.
-		self:ScheduleTimer("SendResponse", 1+0.5*(k-1), "group", session, response, nil, nil, nil, nil, v.link, v.ilvl, v.equipLoc, v.relic, true, true)
 	end
 end
 

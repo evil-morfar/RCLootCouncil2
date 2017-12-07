@@ -176,9 +176,20 @@ function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
 				self:Update()
 
 			elseif command == "lootAck" then
-				local name = unpack(data)
+				-- v2.7.4: Extended to contain playerName, specID, ilvl, data
+				-- data contains: diff, gear1[, gear2, response] - each a table for each session
+				local name, specID, ilvl, sessionData = unpack(data)
 				for i = 1, #lootTable do
-					self:SetCandidateData(i, name, "response", "WAIT")
+					self:SetCandidateData(i, name, "specID", specID)
+					self:SetCandidateData(i, name, "ilvl", ilvl)
+				end
+				for k,d in pairs(sessionData) do
+					for ses, v in pairs(d) do
+						self:SetCandidateData(ses, name, k, v)
+					end
+					if not sessionData.response[i] then
+						self:SetCandidateData(i, name, "response", "WAIT")
+					end
 				end
 				self:Update()
 
@@ -860,10 +871,10 @@ end
 function RCVotingFrame.SetCellClass(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
 	local name = data[realrow].name
 	local specID = lootTable[session].candidates[name].specID
-   	local specIcon = specID and select(4, GetSpecializationInfoByID(specID))
-   	if specIcon and db.showSpecIcon then
-		frame:SetNormalTexture(specIcon);
-		frame:GetNormalTexture():SetTexCoord(0, 1, 0, 1);
+	local specIcon = specID and select(4, GetSpecializationInfoByID(specID))
+	if specIcon and db.showSpecIcon then
+	frame:SetNormalTexture(specIcon);
+	frame:GetNormalTexture():SetTexCoord(0, 1, 0, 1);
 	else
 		addon.SetCellClassIcon(rowFrame, frame, data, cols, row, realrow, column, fShow, table, lootTable[session].candidates[name].class)
 	end
@@ -1288,9 +1299,9 @@ do
 		else -- Need to confirm to reannounce for all items.
 			local target = RCVotingFrame.reannounceOrRequestRollText(candidateName)
 			LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_REANNOUNCE_ALL_ITEMS", {text=target, isRoll = isRoll,
-				func = function() 
+				func = function()
 					RCVotingFrame:ReannounceOrRequestRoll(namePred, sesPred, isRoll, noAutopass, announceInChat)
-					RCVotingFrame.reannounceOrRequestRollPrint(target, isThisItem, isRoll) 
+					RCVotingFrame.reannounceOrRequestRollPrint(target, isThisItem, isRoll)
 				end })
 		end
 
