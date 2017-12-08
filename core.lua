@@ -2085,7 +2085,7 @@ function RCLootCouncil:GetItemIDFromLink(link)
 end
 
 function RCLootCouncil:GetItemStringFromLink(link)
-	return strmatch(link or "", "item:[%d:]+")
+	return strmatch(link or "", "(item:.-):*|h") -- trim trailing colons
 end
 
 function RCLootCouncil:GetItemNameFromLink(link)
