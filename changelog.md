@@ -4,6 +4,12 @@ Note: This version partially breaks backwards compatibility. All council members
 ###### Bugfixes
 * *Hopefully fixed disconnect on large raid sizes for real (#313)*
 
+###### Dev
+* **Changed**
+* "lootAck" now contains player gear for all sessions, along with autopasses.
+* Item links in responses have been replaced with itemstrings.
+*  `AutoResponse()` replaced with `SendLootAck` and `DoAutoPasses`.
+
 ### v2.7.3
 ---
 ###### Bugfixes
