@@ -1277,8 +1277,8 @@ function RCLootCouncil:SendResponse(target, session, response, isTier, isRelic, 
 	self:SendCommand(target, "response",
 		session,
 		self.playerName,
-		{	gear1 = g1,
-			gear2 = g2,
+		{	gear1 = g1 and self:GetItemStringFromLink(g1) or nil,
+			gear2 = g2 and self:GetItemStringFromLink(g2) or nil,
 			ilvl = sendAvgIlvl and playersData.ilvl or nil,
 			diff = diff,
 			note = note,
@@ -2085,7 +2085,7 @@ function RCLootCouncil:GetItemIDFromLink(link)
 end
 
 function RCLootCouncil:GetItemStringFromLink(link)
-	return strmatch(link or "", "item:[%d:]+")
+	return strmatch(link or "", "(item:.-):*|h") -- trim trailing colons
 end
 
 function RCLootCouncil:GetItemNameFromLink(link)
