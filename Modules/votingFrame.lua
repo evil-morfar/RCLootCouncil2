@@ -193,7 +193,11 @@ function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
 						self:SetCandidateData(i, name, "specID", specID)
 						self:SetCandidateData(i, name, "ilvl", ilvl)
 						if not sessionData.response[i] then
-							self:SetCandidateData(i, name, "response", "WAIT")
+							-- We might already have an response, so don't override unless it's announced
+							if self:GetCandidateData(i, name, "response") == "ANNOUNCED" then
+								self:SetCandidateData(i, name, "response", "WAIT")
+							end
+						-- This response == true means autopass
 						elseif sessionData.response[i] == true then
 							self:SetCandidateData(i, name, "response", "AUTOPASS")
 						end
