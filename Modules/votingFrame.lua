@@ -267,8 +267,8 @@ function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
 				end
 
 			elseif command == "roll" then
-				local name, roll = unpack(data)
-				for ses in ipairs(lootTable) do
+				local name, roll, sessions = unpack(data)
+				for _,ses in ipairs(sessions) do
 					self:SetCandidateData(ses, name, "roll", roll)
 				end
 				self:Update()
@@ -1192,6 +1192,7 @@ end
 --@param noAutopass: true or false or nil. Determine whether we force no autopass.
 --@param announceInChat: true or false or nil. Determine if the reannounce sessions should be announced in chat.
 function RCVotingFrame:ReannounceOrRequestRoll(namePred, sesPred, isRoll, noAutopass, announceInChat)
+	addon:Debug("ReannounceOrRequestRoll", namePred, sesPred, isRoll, noAutopass, announceInChat)
 	local rerollTable = {}
 
 	for k,v in ipairs(lootTable) do

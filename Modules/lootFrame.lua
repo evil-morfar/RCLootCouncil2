@@ -629,7 +629,7 @@ function LootFrame:CHAT_MSG_SYSTEM(event, msg)
 		self:CancelTimer(entryInQueue.timer)
 		local entry = entryInQueue.entry
 		local item = entry.item
-		addon:SendCommand("group", "roll", addon.playerName, roll)
+		addon:SendCommand("group", "roll", addon.playerName, roll, item.sessions)
 		addon:SendAnnouncement(format(L["'player' has rolled 'roll' for: 'item'"], UnitName("player"), roll, item.link), "group")
 		entry.rollResult:SetText(roll)
 		entry.rollResult:Show()
