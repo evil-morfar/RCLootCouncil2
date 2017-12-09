@@ -31,8 +31,8 @@ local GuildRankSort, ResponseSort -- Initialize now to avoid errors
 local defaultScrollTableData = {} -- See below
 local moreInfoData = {}
 local updateFrame = CreateFrame("FRAME") -- to ensure the update operations that does not occur, because it's within min update interval, gets updated eventually
-local needUpdate = false
-local updatedThisFrame = false
+local needUpdate = false -- Do we need to update votingframe in the next frame?
+local updatedThisFrame = false -- Have we updated in the time period of frame?
 
 function RCVotingFrame:OnInitialize()
 	-- Contains all the default data needed for the scroll table
@@ -74,9 +74,6 @@ function RCVotingFrame:OnEnable()
 	self:ScheduleTimer("CandidateCheck", 20)
 	guildRanks = addon:GetGuildRanks()
 	addon:Debug("RCVotingFrame", "enabled")
-	needUpdate = false
-	updatedThisFrame = false
-	updateFrame:Show()
 end
 
 function RCVotingFrame:OnDisable() -- We never really call this
@@ -87,15 +84,15 @@ function RCVotingFrame:OnDisable() -- We never really call this
 	active = false
 	session = 1
 	self:UnregisterAllComm()
-	needUpdate = false
-	updatedThisFrame = false
-	updateFrame:Hide()
 end
 
 function RCVotingFrame:Hide()
 	addon:Debug("Hide VotingFrame")
 	self.frame.moreInfo:Hide()
 	self.frame:Hide()
+	updateFrame:Hide()
+	needUpdate = false
+	updatedThisFrame = false
 end
 
 function RCVotingFrame:Show()
@@ -103,6 +100,9 @@ function RCVotingFrame:Show()
 		councilInGroup = addon.council
 		self.frame:Show()
 		self:SwitchSession(session)
+		updateFrame:Show()
+		needUpdate = false
+		updatedThisFrame = false
 	else
 		addon:Print(L["No session running"])
 	end
