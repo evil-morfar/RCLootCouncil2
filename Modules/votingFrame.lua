@@ -31,6 +31,7 @@ local GuildRankSort, ResponseSort -- Initialize now to avoid errors
 local defaultScrollTableData = {} -- See below
 local moreInfoData = {}
 local updateFrame = CreateFrame("FRAME") -- to ensure the update operations that does not occur, because it's within min update interval, gets updated eventually
+updateFrame:Hide()
 local needUpdate = false -- Do we need to update votingframe in the next frame?
 local updatedThisFrame = false -- Have we updated in the time period of frame?
 
