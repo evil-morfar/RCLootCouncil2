@@ -33,7 +33,7 @@ local moreInfoData = {}
 local updateFrame = CreateFrame("FRAME") -- to ensure the update operations that does not occur, because it's within min update interval, gets updated eventually
 updateFrame:Hide()
 local needUpdate = false -- Do we need to update votingframe in the next frame?
-local updatedThisFrame = false -- Have we updated in the time period of frame?
+local lastUpdateTime = 0 -- Have we updated in the time period of frame?
 
 function RCVotingFrame:OnInitialize()
 	-- Contains all the default data needed for the scroll table
@@ -93,7 +93,7 @@ function RCVotingFrame:Hide()
 	self.frame:Hide()
 	updateFrame:Hide()
 	needUpdate = false
-	updatedThisFrame = false
+	lastUpdateTime = 0
 end
 
 function RCVotingFrame:Show()
@@ -103,7 +103,7 @@ function RCVotingFrame:Show()
 		self:SwitchSession(session)
 		updateFrame:Show()
 		needUpdate = false
-		updatedThisFrame = false
+		lastUpdateTime = 0
 	else
 		addon:Print(L["No session running"])
 	end
@@ -440,10 +440,10 @@ end
 ------------------------------------------------------------------
 function RCVotingFrame:Update()
 	needUpdate = false
-	if updatedThisFrame then needUpdate = true; return end
+	if lastUpdateTime == GetTime() then needUpdate = true; return end
 	if not self.frame then return end -- No updates when it doesn't exist
 	if not lootTable[session] then return addon:Debug("VotingFrame:Update() without lootTable!!") end -- No updates if lootTable doesn't exist.
-	updatedThisFrame = true
+	lastUpdateTime = GetTime()
 	self.frame.st:SortData()
 	self.frame.st:SortData() -- It appears that there is a bug in lib-st that only one SortData() does not use the "sortnext" to correct sort the rows.
 	-- update awardString
@@ -489,8 +489,7 @@ function RCVotingFrame:Update()
 end
 
 updateFrame:SetScript("OnUpdate", function(self, elapsed)
-	updatedThisFrame = false
-	if needUpdate then
+	if needUpdate and lastUpdateTime ~= GetTime() then
 		RCVotingFrame:Update()
 	end
 end)
