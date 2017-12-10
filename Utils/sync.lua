@@ -171,12 +171,12 @@ function sync:GetSyncTargetOptions()
    -- friends
    for i = 1, GetNumFriends() do
       name, _, class, _, isOnline = GetFriendInfo(i)
-      if isOnline then addNameToList(ret, name, class) end
+      if isOnline then addNameToList(ret, addon:UnitName(name), class) end
    end
    -- guildmembers
    for i = 1, GetNumGuildMembers() do
       name, _, _, _, _, _, _, _, isOnline,_,class = GetGuildRosterInfo(i)
-      if isOnline then addNameToList(ret, name, class) end
+      if isOnline then addNameToList(ret, addon:UnitName(name), class) end
    end
    -- Remove ourselves
    if not addon.debug then ret[addon.playerName] = nil end
