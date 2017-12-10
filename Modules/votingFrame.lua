@@ -438,6 +438,7 @@ end
 -- @section Visuals
 ------------------------------------------------------------------
 function RCVotingFrame:Update()
+	needUpdate = false
 	if updatedThisFrame then needUpdate = true; return end
 	if not self.frame then return end -- No updates when it doesn't exist
 	if not lootTable[session] then return addon:Debug("VotingFrame:Update() without lootTable!!") end -- No updates if lootTable doesn't exist.
@@ -489,8 +490,7 @@ end
 updateFrame:SetScript("OnUpdate", function(self, elapsed)
 	updatedThisFrame = false
 	if needUpdate then
-		needUpdate = false
-		RCVotingFrame:Update(true)
+		RCVotingFrame:Update()
 	end
 end)
 
