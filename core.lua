@@ -1395,12 +1395,13 @@ end
 function RCLootCouncil:SendLootAck(table)
 	local toSend = {gear1 = {}, gear2 = {}, diff = {}, response = {}}
 	for k, v in ipairs(table) do
+		local session = v.session or k
 		local g1,g2 = self:GetGear(v.link, v.equipLoc, v.relic)
 		local diff = self:GetDiff(g1, g2, v.ilvl)
-		toSend.gear1[k] = self:GetItemStringFromLink(g1)
-		toSend.gear2[k] = self:GetItemStringFromLink(g2)
-		toSend.diff[k] = diff
-		toSend.response[k] = v.autopass
+		toSend.gear1[session] = self:GetItemStringFromLink(g1)
+		toSend.gear2[session] = self:GetItemStringFromLink(g2)
+		toSend.diff[session] = diff
+		toSend.response[session] = v.autopass
 	end
 	self:SendCommand("group", "lootAck", self.playerName, playersData.specID, playersData.ilvl, toSend)
 end
