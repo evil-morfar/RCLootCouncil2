@@ -733,16 +733,6 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 
 					self:PrepareLootTable(lootTable)
 
-					-- Out of instance support
-					-- assume 8 people means we're actually raiding
-					if GetNumGroupMembers() >= 8 and not IsInInstance() then
-						self:DebugLog("NotInRaid respond to lootTable")
-						for ses, v in ipairs(lootTable) do
-							-- target, session, response, isTier, isRelic, note, roll, link, ilvl, equipLoc, relicType, sendAvgIlvl, sendSpecID
-							self:SendResponse("group", ses, "NOTINRAID", nil, nil, nil, nil, v.link, v.ilvl, v.equipLoc, v.relic, true, true)
-						end
-						return
-					end
 					-- v2.0.1: It seems people somehow receives mldb without numButtons, so check for it aswell.
 					if not self.mldb or (self.mldb and not self.mldb.numButtons) then -- Really shouldn't happen, but I'm tired of people somehow not receiving it...
 						self:Debug("Received loot table without having mldb :(", sender)
@@ -760,6 +750,17 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 					-- Hand the lootTable to the votingFrame
 					if self.isCouncil or self.mldb.observe then
 						self:GetActiveModule("votingframe"):ReceiveLootTable(lootTable)
+					end
+
+					-- Out of instance support
+					-- assume 8 people means we're actually raiding
+					if GetNumGroupMembers() >= 8 and not IsInInstance() then
+						self:DebugLog("NotInRaid respond to lootTable")
+						for ses, v in ipairs(lootTable) do
+							-- target, session, response, isTier, isRelic, note, roll, link, ilvl, equipLoc, relicType, sendAvgIlvl, sendSpecID
+							self:SendResponse("group", ses, "NOTINRAID", nil, nil, nil, nil, v.link, v.ilvl, v.equipLoc, v.relic, true, true)
+						end
+						return
 					end
 
 					self:DoAutoPasses(lootTable)
