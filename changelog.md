@@ -1,3 +1,10 @@
+### v2.7.5
+---
+* It's now (again) possible to see the voting frame while not in the instance.
+
+###### Bugfixes
+* *Doing reannounce or request rolls could potentially set autopass response in some sessions (#313).*
+
 ### v2.7.4
 ---
 Note: This version partially breaks backwards compatibility. All council members needs this version to see player's gear.
