@@ -129,6 +129,16 @@ function LootFrame:Update()
 	end
 	self.EntryManager:Update()
 	self.frame.content:SetHeight(numEntries * ENTRY_HEIGHT + 7)
+
+	local firstEntry = self.EntryManager.entries[1]
+	if firstEntry and addon:Getdb().modules["RCLootFrame"].alwaysShowTooltip then
+		self.frame.itemTooltip:SetOwner(self.frame.content, "ANCHOR_NONE")
+		self.frame.itemTooltip:SetHyperlink(firstEntry.item.link)
+		self.frame.itemTooltip:Show()
+		self.frame.itemTooltip:SetPoint("TOPRIGHT", firstEntry.frame, "TOPLEFT", 0, 0)
+	else
+		self.frame.itemTooltip:Hide()
+	end
 end
 
 function LootFrame:OnRoll(entry, button)
@@ -182,6 +192,7 @@ function LootFrame:GetFrame()
 	addon:DebugLog("LootFrame","GetFrame()")
 	self.frame = addon:CreateFrame("DefaultRCLootFrame", "lootframe", L["RCLootCouncil Loot Frame"], 250, 375)
 	self.frame.title:SetPoint("BOTTOM", self.frame, "TOP", 0 ,-5)
+	self.frame.itemTooltip = addon:CreateGameTooltip("lootframe", self.frame.content)
 	return self.frame
 end
 
@@ -241,12 +252,21 @@ do
 			entry.icon:SetScript("OnEnter", function()
 				if not entry.item.link then return end
 				addon:CreateHypertip(entry.item.link)
+				GameTooltip:AddLine("")
+				GameTooltip:AddLine(L["always_show_tooltip_howto"], nil, nil, nil, true)
+				GameTooltip:Show()
 			end)
 			entry.icon:SetScript("OnLeave", function() addon:HideTooltip() end)
 			entry.icon:SetScript("OnClick", function()
 				if not entry.item.link then return end
 				if ( IsModifiedClick() ) then
 					HandleModifiedItemClick(entry.item.link);
+				end
+				if entry.icon.lastClick and GetTime() - entry.icon.lastClick <= 0.5 then
+					addon:Getdb().modules["RCLootFrame"].alwaysShowTooltip = not addon:Getdb().modules["RCLootFrame"].alwaysShowTooltip
+					LootFrame:Update()
+				else
+					entry.icon.lastClick = GetTime()
 				end
 			end)
 
