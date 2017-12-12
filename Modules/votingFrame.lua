@@ -124,7 +124,7 @@ function RCVotingFrame:EndSession(hide)
 	if active then -- Only end session once
 		addon:Debug("RCVotingFrame:EndSession", hide)
 		active = false -- The session has ended, so deactivate
-		self:Update()
+		self:Update(true)
 		if hide then self:Hide() end -- Hide if need be
 	end
 end
@@ -434,13 +434,14 @@ function RCVotingFrame:DoAllRandomRolls()
 
 end
 
------------------------------------------------------------------ -
+------------------------------------------------------------------
 --	Visuals
 -- @section Visuals
 ------------------------------------------------------------------
-function RCVotingFrame:Update()
+--@param forceUpdate If false/nil, updates will be delayed to only happen once every MIN_UPDATE_INTERVAL
+function RCVotingFrame:Update(forceUpdate)
 	needUpdate = false
-	if noUpdateTimeRemaining > 0 then needUpdate = true; return end
+	if not forceUpdate and noUpdateTimeRemaining > 0 then needUpdate = true; return end
 	if not self.frame then return end -- No updates when it doesn't exist
 	if not lootTable[session] then return addon:Debug("VotingFrame:Update() without lootTable!!") end -- No updates if lootTable doesn't exist.
 	noUpdateTimeRemaining = MIN_UPDATE_INTERVAL
@@ -526,7 +527,7 @@ function RCVotingFrame:SwitchSession(s)
 	end
 	self.frame.st.cols[j].sort = "asc"
 	FauxScrollFrame_OnVerticalScroll(self.frame.st.scrollframe, 0, self.frame.st.rowHeight, function() self.frame.st:Refresh() end) -- Reset scrolling to 0
-	self:Update()
+	self:Update(true)
 	self:UpdatePeopleToVote()
 	addon:SendMessage("RCSessionChangedPost", s)
 end
@@ -1623,7 +1624,7 @@ do
 			info.func = function()
 				addon:Debug("Update Filter")
 				db.modules["RCVotingFrame"].filters.showPlayersCantUseTheItem = not db.modules["RCVotingFrame"].filters.showPlayersCantUseTheItem
-				RCVotingFrame:Update()
+				RCVotingFrame:Update(true)
 			end
 			info.checked = db.modules["RCVotingFrame"].filters.showPlayersCantUseTheItem
 			Lib_UIDropDownMenu_AddButton(info, level)
@@ -1643,7 +1644,7 @@ do
 					info.func = function()
 						addon:Debug("Update tier Filter")
 						db.modules["RCVotingFrame"].filters.tier[k] = not db.modules["RCVotingFrame"].filters.tier[k]
-						RCVotingFrame:Update()
+						RCVotingFrame:Update(true)
 					end
 					info.checked = db.modules["RCVotingFrame"].filters.tier[k]
 					Lib_UIDropDownMenu_AddButton(info, level)
@@ -1655,7 +1656,7 @@ do
 					info.func = function()
 						addon:Debug("Update relic Filter")
 						db.modules["RCVotingFrame"].filters.relic[k] = not db.modules["RCVotingFrame"].filters.relic[k]
-						RCVotingFrame:Update()
+						RCVotingFrame:Update(true)
 					end
 					info.checked = db.modules["RCVotingFrame"].filters.relic[k]
 					Lib_UIDropDownMenu_AddButton(info, level)
@@ -1667,7 +1668,7 @@ do
 					info.func = function()
 						addon:Debug("Update Filter")
 						db.modules["RCVotingFrame"].filters[k] = not db.modules["RCVotingFrame"].filters[k]
-						RCVotingFrame:Update()
+						RCVotingFrame:Update(true)
 					end
 					info.checked = db.modules["RCVotingFrame"].filters[k]
 					Lib_UIDropDownMenu_AddButton(info, level)
@@ -1685,7 +1686,7 @@ do
 					info.func = function()
 						addon:Debug("Update Filter")
 						db.modules["RCVotingFrame"].filters[k] = not db.modules["RCVotingFrame"].filters[k]
-						RCVotingFrame:Update()
+						RCVotingFrame:Update(true)
 					end
 					info.checked = db.modules["RCVotingFrame"].filters[k]
 					Lib_UIDropDownMenu_AddButton(info, level)
@@ -1714,7 +1715,7 @@ do
 						info.func = function()
 							addon:Debug("Update rank Filter", k)
 							db.modules["RCVotingFrame"].filters.ranks[k] = not db.modules["RCVotingFrame"].filters.ranks[k]
-							RCVotingFrame:Update()
+							RCVotingFrame:Update(true)
 						end
 						info.checked = db.modules["RCVotingFrame"].filters.ranks[k]
 						Lib_UIDropDownMenu_AddButton(info, level)
@@ -1725,7 +1726,7 @@ do
 				info.func = function()
 					addon:Debug("Update rank Filter", "Not in your guild")
 					db.modules["RCVotingFrame"].filters.ranks.notInYourGuild = not db.modules["RCVotingFrame"].filters.ranks.notInYourGuild
-					RCVotingFrame:Update()
+					RCVotingFrame:Update(true)
 				end
 				info.checked = db.modules["RCVotingFrame"].filters.ranks.notInYourGuild
 				Lib_UIDropDownMenu_AddButton(info, level)
