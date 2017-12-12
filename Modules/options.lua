@@ -136,7 +136,7 @@ function addon:OptionsTable()
 									},
 									autoPassTrinket = {
 										order = 2,
-										name = L["Auto Pass Trinket"],
+										name = L["Auto Pass Trinkets"],
 										desc = L["auto_pass_trinket_desc"],
 										type = "toggle",
 									},
