@@ -80,7 +80,7 @@ local relics = {
 -- @usage
 -- -- Check if the item in session 1 should be auto passed:
 -- local dat = lootTable[1] -- Shortening
--- local boolean = RCLootCouncil:AutoPassCheck(dat.subType, dat.equipLoc, dat.link, dat.token, dat.relic)
+-- local boolean = RCLootCouncil:AutoPassCheck(dat.link, dat.equipLoc, dat.typeID, dat.subTypeID, dat.classesFlag, dat.isToken, dat.isRelic)
 --@return true if the player should autopass the given item.
 function RCLootCouncil:AutoPassCheck(link, equipLoc, typeID, subTypeID, classesFlag, isToken, isRelic, class)
 	local class = class or self.playerClass
