@@ -4,6 +4,7 @@
 
 ###### Bugfixes
 * *Doing reannounce or request rolls could potentially set autopass response in some sessions (#313).*
+* *Attempting to sync with friends or guildmembers on ruRU locale would fail (#317).*
 
 ### v2.7.4
 ---
