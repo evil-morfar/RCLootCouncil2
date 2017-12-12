@@ -2,6 +2,11 @@
 ---
 * It's now (again) possible to see the voting frame while not in the instance.
 
+* **Autopass trinkets**
+* Added a new feature which (by default) autopasses trinkets that are not listed for your class in the Dungeon Journal (#314).
+* This can be toggled in the options menu if needed.
+* Note: Trinkets added before Legion are not included in this check.
+
 ###### Bugfixes
 * *Doing reannounce or request rolls could potentially set autopass response in some sessions (#313).*
 * *Attempting to sync with friends or guildmembers on ruRU locale would fail (#317).*
