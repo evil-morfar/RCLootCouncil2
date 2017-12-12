@@ -103,6 +103,12 @@ function RCLootCouncil:OnInitialize()
 	self.verCheckDisplayed = false -- Have we shown a "out-of-date"?
 	self.moduleVerCheckDisplayed = {} -- Have we shown a "out-of-date" for a module? The key of the table is the baseName of the module.
 
+	self.EJLastestInstanceID = 946 -- UPDATE this whenever we change test data. 
+									-- The lastest raid instance Enouncter Journal id.
+									-- Antorus, the Burning Throne.
+									-- HOWTO get this number: Open the instance we want in the Adventure Journal. Use command '/dump EJ_GetInstanceInfo()'
+									-- The 8th return value is sth like "|cff66bbff|Hjournal:0:946:14|h[Antorus, the Burning Throne]|h|r"
+									-- The number at the position of the above 946 is what we want.
 	self.candidates = {}
 	self.council = {} -- council from ML
 	self.mldb = {} -- db recived from ML
@@ -165,6 +171,7 @@ function RCLootCouncil:OnInitialize()
 			autoClose = false, -- Auto close voting frame on session end
 			autoPassBoE = true,
 			autoPass = true,
+			autoPassTrinket = true,
 			altClickLooting = true,
 			acceptWhispers = true,
 			selfVote = true,
@@ -527,6 +534,11 @@ function RCLootCouncil:ChatCommand(msg)
 	elseif input == "nnp" then
 		self.nnp = not self.nnp
 		self:Print("nnp = "..tostring(self.nnp))
+	elseif input == "exporttrinketdata" then
+		self:ExportTrinketData()
+	elseif input == 'trinkettest' or input == 'ttest' then
+		self.playerClass = string.upper(args[1])
+		self:Test(1, false, true)
 --@end-debug@
 	elseif input == "whisper" or input == string.lower(_G.WHISPER) then
 		self:Print(L["whisper_help"])
@@ -989,7 +1001,7 @@ function RCLootCouncil:DebugLog(msg, ...)
 end
 
 -- if fullTest, add items in the encounterJournal to the test items.
-function RCLootCouncil:Test(num, fullTest)
+function RCLootCouncil:Test(num, fullTest, trinketTest)
 	self:Debug("Test", num)
 	local testItems = {
 		-- Tier21 Tokens (Head, Shoulder, Cloak, Chest, Hands, Legs)
@@ -1008,12 +1020,6 @@ function RCLootCouncil:Test(num, fullTest)
 		151937, 151938, 152062,                                         -- Cloak
 		151972, 152063, 152284,                                         -- Rings
 
-		-- Tier21 Trinkets
-		151975, 151977, -- Tank
-		151956, 151970, -- Healer
-		151963, 151964, -- Melee DPS
-		151968, 151963, -- Non-caster DPS
-		151970, 151971, -- Caster DPS
 		-- Tier21 Relics
 		152024, 152025, -- Arcane
 		152028, 152029, -- Blood
@@ -1027,13 +1033,32 @@ function RCLootCouncil:Test(num, fullTest)
 		152058, 152059, -- Storm
 	}
 
+	local trinkets = {
+		-- Tier21 Trinkets
+		154172, 		-- All classes
+		151975, 151976, 151977, 151978, 152645, 153544, 154173, -- Tank
+		151956, 151957, 151958, 151960, 152289, 154175,			-- Healer
+		151964,	152093,	-- Melee DPS
+		154176, 		-- Strength DPS
+		154174,			-- Agility DPS
+		151970,			-- Intellect DPS/Healer
+		151955, 151971, 154177, -- Intellect DPS
+		151963, 151968,	-- Melee and ranged attack DPS
+		151962, 151969,	-- Ranged attack and spell DPS
+	}
+
+	if not trinketTest then
+		for _, t in ipairs(trinkets) do
+			tinsert(testItems, t)
+		end
+	end
+
 	if fullTest then -- Add items from encounter journal which includes items from different difficulties.
 		LoadAddOn("Blizzard_EncounterJournal")
 		local cached = true
-		local instanceID = 946 -- Antorus, the Burning Throne
 		local difficulties = {14, 15, 16} -- Normal, Heroic, Mythic
 
-		EJ_SelectInstance(instanceID)
+		EJ_SelectInstance(self.EJLastestInstanceID)
 		EJ_ResetLootFilter()
 		for _, difficulty in pairs(difficulties) do
 			EJ_SetDifficulty(difficulty)
@@ -1065,6 +1090,9 @@ function RCLootCouncil:Test(num, fullTest)
 	for i = 1, num do
 		local j = math.random(1, #testItems)
 		tinsert(items, testItems[j])
+	end
+	if trinketTest then -- Always test all trinkets.
+		items = trinkets
 	end
 	self.testMode = true;
 	self.isMasterLooter, self.masterLooter = self:GetML()
