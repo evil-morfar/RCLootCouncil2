@@ -7,9 +7,15 @@
 * This can be toggled in the options menu if needed.
 * Note: Trinkets added before Legion are not included in this check.
 
+* **Tooltips**
+* Tooltips on the voting frame and loot frame can now be permanently shown.
+* Just double click on the item icon to toggle.
+
+
 ###### Bugfixes
 * *Doing reannounce or request rolls could potentially set autopass response in some sessions (#313).*
 * *Attempting to sync with friends or guildmembers on ruRU locale would fail (#317).*
+
 
 ### v2.7.4
 ---
