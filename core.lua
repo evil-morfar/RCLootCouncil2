@@ -103,7 +103,7 @@ function RCLootCouncil:OnInitialize()
 	self.verCheckDisplayed = false -- Have we shown a "out-of-date"?
 	self.moduleVerCheckDisplayed = {} -- Have we shown a "out-of-date" for a module? The key of the table is the baseName of the module.
 
-	self.EJLastestInstanceID = 946 -- UPDATE this whenever we change test data. 
+	self.EJLastestInstanceID = 946 -- UPDATE this whenever we change test data.
 									-- The lastest raid instance Enouncter Journal id.
 									-- Antorus, the Burning Throne.
 									-- HOWTO get this number: Open the instance we want in the Adventure Journal. Use command '/dump EJ_GetInstanceInfo()'
@@ -2517,8 +2517,10 @@ end
 function RCLootCouncil:CreateGameTooltip(cName, parent)
 	local itemTooltip = CreateFrame("GameTooltip", cName.."_ItemTooltip", parent, "GameTooltipTemplate")
 	itemTooltip:SetClampedToScreen(false)
+	itemTooltip:SetScale(parent and parent:GetScale()*.95 or 1) -- Don't use parent scale
 	-- Some addons hook GameTooltip. So copy the hook.
- 	itemTooltip:SetScript("OnTooltipSetItem", GameTooltip:GetScript("OnTooltipSetItem"))
+	-- itemTooltip:SetScript("OnTooltipSetItem", GameTooltip:GetScript("OnTooltipSetItem"))
+
  	itemTooltip.shoppingTooltips = {} -- GameTooltip contains this table. Need this to prevent error
  	itemTooltip.shoppingTooltips[1] = CreateFrame("GameTooltip", cName.."_ShoppingTooltip1", itemTooltip, "ShoppingTooltipTemplate")
  	itemTooltip.shoppingTooltips[2] = CreateFrame("GameTooltip", cName.."_ShoppingTooltip2", itemTooltip, "ShoppingTooltipTemplate")
