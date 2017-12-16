@@ -2,10 +2,12 @@
 ---
 * It's now (again) possible to see the voting frame while not in the instance.
 
+
 * **Autopass trinkets**
 * Added a new feature which (by default) autopasses trinkets that are not listed for your class in the Dungeon Journal (#314).
 * This can be toggled in the options menu if needed.
 * Note: Trinkets added before Legion are not included in this check.
+
 
 * **Tooltips**
 * Tooltips on the voting frame and loot frame can now be permanently shown.
