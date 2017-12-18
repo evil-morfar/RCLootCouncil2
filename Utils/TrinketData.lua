@@ -1,7 +1,8 @@
 --- trinketData.lua
--- Contains usable classes of trinkets of Legion expansion up to Patch 7.3.2 Build 25549
+-- Contains usable classes of all trinkets which cant be used by all classes in the dungeon journal up to Patch 7.3.2 Build 25549
 -- @author Safetee
--- Create Date : 12/3/2017
+-- Create Date : 12/03/2017
+-- Update Date : 12/18/2017
 
 --@debug@
 -- This function is used for developer.
