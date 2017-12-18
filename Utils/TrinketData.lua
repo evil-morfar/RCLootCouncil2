@@ -29,11 +29,13 @@ local EJ_DIFFICULTIES =
 	{ prefix = PLAYER_DIFFICULTY_TIMEWALKER, difficultyID = 33 },
 }
 -- The params are used internally inside this function
-function RCLootCouncil:ExportTrinketData(nextIsRaid, nextIndex, nextDiffIndex)
+function RCLootCouncil:ExportTrinketData(nextTier, nextIsRaid, nextIndex, nextDiffIndex)
+	LoadAddOn("BLizzard_EncounterJournal")
 	local MAX_CLASSFLAG_VAL = bit.lshift(1, MAX_CLASSES) - 1
-	local TIME_FOR_EACH_INSTANCE_DIFF = 5
+	local TIME_FOR_EACH_INSTANCE_DIFF = 4
 
-	if not nextIsRaid then
+	if not nextTier then
+		nextTier = 1
 		nextIsRaid = 0
 		nextIndex = 1
 		nextDiffIndex = 1
@@ -45,28 +47,30 @@ function RCLootCouncil:ExportTrinketData(nextIsRaid, nextIndex, nextDiffIndex)
 		self:Print(format("To ensure the data is correct, process one difficulty of one instance every %d s", TIME_FOR_EACH_INSTANCE_DIFF))
 	end
 
-	EJ_SelectTier(EJ_GetNumTiers()) -- Select current tier
-
 	if _G.EncounterJournal then
 		_G.EncounterJournal:UnregisterAllEvents() -- To help to ensure EncounterJournal does not affect exporting.
 	end
 
 	local instanceIndex = nextIndex
-	for i=nextIsRaid, 1 do
-		while EJ_GetInstanceByIndex(instanceIndex, (i==1)) do
-			local instanceID = EJ_GetInstanceByIndex(instanceIndex, (i==1))
-			EJ_SelectInstance(instanceID)
-			for diffIndex=nextDiffIndex, #EJ_DIFFICULTIES do
-				local entry = EJ_DIFFICULTIES[diffIndex]
-				if EJ_IsValidInstanceDifficulty(entry.difficultyID) then
-					self:ExportTrinketDataSingleInstance(instanceID, entry.difficultyID, TIME_FOR_EACH_INSTANCE_DIFF)
-					return self:ScheduleTimer("ExportTrinketData", TIME_FOR_EACH_INSTANCE_DIFF, i, instanceIndex, diffIndex + 1)
+	for h=nextTier, EJ_GetNumTiers() do
+		EJ_SelectTier(h)
+		for i=nextIsRaid, 1 do
+			while EJ_GetInstanceByIndex(instanceIndex, (i==1)) do
+				local instanceID = EJ_GetInstanceByIndex(instanceIndex, (i==1))
+				EJ_SelectInstance(instanceID)
+				for diffIndex=nextDiffIndex, #EJ_DIFFICULTIES do
+					local entry = EJ_DIFFICULTIES[diffIndex]
+					if EJ_IsValidInstanceDifficulty(entry.difficultyID) then
+						self:ExportTrinketDataSingleInstance(instanceID, entry.difficultyID, TIME_FOR_EACH_INSTANCE_DIFF)
+						return self:ScheduleTimer("ExportTrinketData", TIME_FOR_EACH_INSTANCE_DIFF, nextTier, i, instanceIndex, diffIndex + 1)
+					end
 				end
+				nextDiffIndex = 1
+				instanceIndex = instanceIndex + 1
 			end
-			nextDiffIndex = 1
-			instanceIndex = instanceIndex + 1
+			instanceIndex = 1
 		end
-		instanceIndex = 1
+		nextIsRaid = 0
 	end
 
 	local count = 0
