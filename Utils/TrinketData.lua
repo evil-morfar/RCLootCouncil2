@@ -62,7 +62,7 @@ function RCLootCouncil:ExportTrinketData(nextTier, nextIsRaid, nextIndex, nextDi
 					local entry = EJ_DIFFICULTIES[diffIndex]
 					if EJ_IsValidInstanceDifficulty(entry.difficultyID) then
 						self:ExportTrinketDataSingleInstance(instanceID, entry.difficultyID, TIME_FOR_EACH_INSTANCE_DIFF)
-						return self:ScheduleTimer("ExportTrinketData", TIME_FOR_EACH_INSTANCE_DIFF, nextTier, i, instanceIndex, diffIndex + 1)
+						return self:ScheduleTimer("ExportTrinketData", TIME_FOR_EACH_INSTANCE_DIFF, h, i, instanceIndex, diffIndex + 1)
 					end
 				end
 				nextDiffIndex = 1
