@@ -11,34 +11,22 @@
 local trinketClasses = {}
 local trinketNames = {}
 
-local EJ_DIFFICULTIES =
-{   -- Copy and paste from BLizzard_EncounterJournal.lua
-	{ size = "5", prefix = PLAYER_DIFFICULTY1, difficultyID = 1 },
-	{ size = "5", prefix = PLAYER_DIFFICULTY2, difficultyID = 2 },
-	{ size = "5", prefix = PLAYER_DIFFICULTY6, difficultyID = 23 },
-	{ size = "5", prefix = PLAYER_DIFFICULTY_TIMEWALKER, difficultyID = 24 },
-	{ size = "25", prefix = PLAYER_DIFFICULTY3, difficultyID = 7 },
-	{ size = "10", prefix = PLAYER_DIFFICULTY1, difficultyID = 3 },
-	{ size = "10", prefix = PLAYER_DIFFICULTY2, difficultyID = 5 },
-	{ size = "25", prefix = PLAYER_DIFFICULTY1, difficultyID = 4 },
-	{ size = "25", prefix = PLAYER_DIFFICULTY2, difficultyID = 6 },
-	{ prefix = PLAYER_DIFFICULTY3, difficultyID = 17 },
-	{ prefix = PLAYER_DIFFICULTY1, difficultyID = 14 },
-	{ prefix = PLAYER_DIFFICULTY2, difficultyID = 15 },
-	{ prefix = PLAYER_DIFFICULTY6, difficultyID = 16 },
-	{ prefix = PLAYER_DIFFICULTY_TIMEWALKER, difficultyID = 33 },
-}
 -- The params are used internally inside this function
-function RCLootCouncil:ExportTrinketData(nextTier, nextIsRaid, nextIndex, nextDiffIndex)
+-- Process in the following order:
+-- From expansion vanilla to the latest expansion (nextTier)
+-- Inside each expansion, scan dungeon first then raid (nextIsRaid)
+-- Inside dungeon/raid, scan by its index in the journal (nextIndex)
+-- Inside each instance, scan by difficulty id order(nextDiffID)
+function RCLootCouncil:ExportTrinketData(nextTier, nextIsRaid, nextIndex, nextDiffID)
 	LoadAddOn("BLizzard_EncounterJournal")
 	local MAX_CLASSFLAG_VAL = bit.lshift(1, MAX_CLASSES) - 1
-	local TIME_FOR_EACH_INSTANCE_DIFF = 4
+	local TIME_FOR_EACH_INSTANCE_DIFF = 5
 
 	if not nextTier then
 		nextTier = 1
 		nextIsRaid = 0
 		nextIndex = 1
-		nextDiffIndex = 1
+		nextDiffID = 1
 		self:Print("Exporting the class data of all current tier trinkets\n"
 			.."This command is intended to be run by the developer.\n"
 			.."After exporting is done and copy and paste the data into Utils/TrinketData.lua.\n"
@@ -58,14 +46,13 @@ function RCLootCouncil:ExportTrinketData(nextTier, nextIsRaid, nextIndex, nextDi
 			while EJ_GetInstanceByIndex(instanceIndex, (i==1)) do
 				local instanceID = EJ_GetInstanceByIndex(instanceIndex, (i==1))
 				EJ_SelectInstance(instanceID)
-				for diffIndex=nextDiffIndex, #EJ_DIFFICULTIES do
-					local entry = EJ_DIFFICULTIES[diffIndex]
-					if EJ_IsValidInstanceDifficulty(entry.difficultyID) then
-						self:ExportTrinketDataSingleInstance(instanceID, entry.difficultyID, TIME_FOR_EACH_INSTANCE_DIFF)
-						return self:ScheduleTimer("ExportTrinketData", TIME_FOR_EACH_INSTANCE_DIFF, h, i, instanceIndex, diffIndex + 1)
+				for diffID=nextDiffID, 99 do -- Should be enough to include all difficulties
+					if EJ_IsValidInstanceDifficulty(diffID) then
+						self:ExportTrinketDataSingleInstance(instanceID, diffID, TIME_FOR_EACH_INSTANCE_DIFF)
+						return self:ScheduleTimer("ExportTrinketData", TIME_FOR_EACH_INSTANCE_DIFF, h, i, instanceIndex, diffID + 1)
 					end
 				end
-				nextDiffIndex = 1
+				nextDiffID = 1
 				instanceIndex = instanceIndex + 1
 			end
 			instanceIndex = 1
@@ -108,7 +95,7 @@ function RCLootCouncil:ExportTrinketData(nextTier, nextIsRaid, nextIndex, nextDi
 	end
 	local exp = "%-"..format("%d", longestNameLen+1).."s" 
 	for _, entry in ipairs(sorted) do
-		exports = exports.."\t["..entry[1].."] = "..format("0x%X", entry[2])
+		exports = exports.."\t["..entry[1].."] = "..format("0x%03X", entry[2])
 			..",\t-- "..format(exp, trinketNames[entry[1]]..",").."\t"..self:ClassesFlagToStr(entry[2]).."\n"
 	end
 	exports = exports.."}\n"
@@ -158,13 +145,7 @@ function RCLootCouncil:ExportTrinketDataSingleInstance(instanceID, diffID, timeL
 	if timeLeft > interval then -- Rerun many times for correctless
 		return self:ScheduleTimer("ExportTrinketDataSingleInstance", interval, instanceID, diffID, timeLeft - interval)
 	else
-		local diffText = ""
-		for diffIndex=1, #EJ_DIFFICULTIES do
-			local entry = EJ_DIFFICULTIES[diffIndex]
-			if entry.difficultyID == diffID then
-				diffText = entry.prefix
-			end
-		end
+		local diffText = GetDifficultyInfo(diffID) or "Unknown difficulty"
 		self:Print("--------------------")
 		self:Print(format("Instance %d. %s %s. Processed %d trinkets", instanceID, EJ_GetInstanceInfo(instanceID), diffText, count))
 		for _, link in ipairs(trinketlinksInThisInstances) do
