@@ -1,12 +1,12 @@
 --- trinketData.lua
--- Contains usable classes of all trinkets which cant be used by all classes in the dungeon journal up to Patch 7.3.2 Build 25549
+-- Contains usable classes of all trinkets which cant be used by all classes in the dungeon journal
 -- @author Safetee
 -- Create Date : 12/03/2017
--- Update Date : 12/18/2017
+-- Update Date : 12/18/2017 (7.3.2 Build 25549)
 
 --@debug@
 -- This function is used for developer.
--- Export all trinkets in the current expansion in the encounter journal not usable by all classes to saved variable.
+-- Export all trinkets in the encounter journal not usable by all classes.
 -- The format is {[itemID] = classFlag}
 -- See the explanation of classFlag in RCLootCouncil:GetItemClassesAllowedFlag(item)
 local trinketClasses = {}
@@ -28,7 +28,7 @@ function RCLootCouncil:ExportTrinketData(nextTier, nextIsRaid, nextIndex, nextDi
 		nextIsRaid = 0
 		nextIndex = 1
 		nextDiffID = 1
-		self:Print("Exporting the class data of all current tier trinkets\n"
+		self:Print("Exporting the class data of all trinkets in the dungeon journal\n"
 			.."This command is intended to be run by the developer.\n"
 			.."After exporting is done and copy and paste the data into Utils/TrinketData.lua.\n"
 			.."Dont open EncounterJournal during export.\n"
