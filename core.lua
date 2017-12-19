@@ -1238,7 +1238,9 @@ function RCLootCouncil:GetPlayersGear(link, equipLoc, gearsTable)
 	local item1, item2;
 	-- check if the item is a token, and if it is, return the matching current gear
 	if RCTokenTable[itemID] then
-		if RCTokenTable[itemID] == "Trinket" then -- We need to return both trinkets
+		if RCTokenTable[itemID] == "MultiSlots" then -- Armor tokens for multiple slots, just return nil
+			return
+		elseif RCTokenTable[itemID] == "Trinket" then -- We need to return both trinkets
 			item1 = GetInventoryItemLink("player", GetInventorySlotInfo("TRINKET0SLOT"))
 			item2 = GetInventoryItemLink("player", GetInventorySlotInfo("TRINKET1SLOT"))
 		else	-- Just return the slot from the tokentable
