@@ -1352,6 +1352,9 @@ function RCLootCouncil:GetTokenIlvl(link)
 	local baseIlvl = RCTokenIlvl[id] -- ilvl in normal difficulty
 	if not baseIlvl then return end
 
+	-- Pre WoD, item doesn't share id across difficulties.
+	if baseIlvl < 600 then return baseIlvl end
+
 	local bonuses = select(17, self:DecodeItemLink(link))
 	for _, value in pairs(bonuses) do
    		-- @see epgp/LibGearPoints-1.2.lua
@@ -2612,8 +2615,8 @@ function RCLootCouncil:GetItemTextWithCount(link, count)
 end
 
 function RCLootCouncil:GetItemLevelText(ilvl, token)
-	if not ilvl then ilvl = "" end
-	if token then
+	if not ilvl then return "" end
+	if token and ilvl > 600 then -- Armor token warforged is introduced since WoD
 		return ilvl.."+"
 	else
 		return ilvl
