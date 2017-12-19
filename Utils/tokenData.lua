@@ -15,6 +15,7 @@ if LibDebug then LibDebug() end
 -- Item level data need to be manually entered.
 -- The format is {[itemID] = SLOT}
 local tokenNames = {}
+local tokenIlvls = {}
 
 -- The params are used internally inside this function
 function RCLootCouncil:ExportTokenData(nextID)
@@ -96,11 +97,12 @@ function RCLootCouncil:ExportTokenData(nextID)
 	end
 	exports = exports.."}\n\n"
 
-	exports = exports.."-- Note: Item level data is manually entered."
+	exports = exports.."-- Note: Some of item level data is manually entered."
 	exports = exports.."\n_G.RCTokenIlvl = {\n"
 	for _, entry in ipairs(sorted) do
+		local id = entry[1]
 		local name = entry[2]
-		exports = exports.."\t["..entry[1].."] = 000,\t-- "..format("%s", name..",").."\n"
+		exports = exports.."\t["..id.."] = "..format("%03d", tokenIlvls[id])..",\t-- "..format("%s", name..",").."\n"
 	end
 	exports = exports.."}\n"
 	frame.exportFrame.edit:SetText(exports)
@@ -108,10 +110,11 @@ end
 
 function RCLootCouncil:ExportTokenDataSingle(id)
 	if GetItemInfo(id) then
-        local name, link, quality, _, _, _, _, maxStack = GetItemInfo(id)
+        local name, link, quality, ilvl, _, _, _, maxStack = GetItemInfo(id)
         if self:GetItemClassesAllowedFlag(link) ~= 0xffffffff and maxStack == 1 and quality == 4 then
             DEFAULT_CHAT_FRAME:AddMessage(id.." "..name)
             tokenNames[id] = name
+            tokenIlvls[id] = ilvl
         end
     else
         return C_Timer.After(0, function() self:ExportTokenDataSingle(id) end)
