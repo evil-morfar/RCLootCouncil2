@@ -2,6 +2,7 @@
 -- Contains equip location and useable classes from tier tokens
 -- @author Potdisc
 -- Create Date : 3/11/2013 10:25:13 PM
+-- Update Date : 12/18/2017 (7.3.2 Build 25549)
 
 --@debug@
 if LibDebug then LibDebug() end
