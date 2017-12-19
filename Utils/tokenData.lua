@@ -81,7 +81,7 @@ function RCLootCouncil:ExportTokenData(nextID)
 		elseif l:find("wrist") or l:find("bracer") or l:find("bindings") then
 			slot = "WristSlot"
 		elseif l:find("waist") or l:find("girdle") or l:find("belt") then
-			slot = "WaitSlot"
+			slot = "WaistSlot"
 		elseif l:find("feet") or l:find("sandal") or l:find("boot") or l:find("sabaton") then
 			slot = "FeetSlot"
 		end
