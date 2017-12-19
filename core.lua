@@ -540,6 +540,8 @@ function RCLootCouncil:ChatCommand(msg)
 	elseif input == 'trinkettest' or input == 'ttest' then
 		self.playerClass = string.upper(args[1])
 		self:Test(1, false, true)
+	elseif input == "exporttokendata" then
+		self:ExportTokenData()
 --@end-debug@
 	elseif input == "whisper" or input == string.lower(_G.WHISPER) then
 		self:Print(L["whisper_help"])

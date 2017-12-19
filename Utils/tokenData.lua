@@ -7,6 +7,118 @@
 if LibDebug then LibDebug() end
 --@end-debug@
 
+--@debug@
+-- This function is used for developer.
+-- Export all POTENTIAL tokens. Manual modification is still required.
+-- Only support Engish client
+-- Note that only item type data is automatically(almost) exported.
+-- Item level data need to be manually entered.
+-- The format is {[itemID] = SLOT}
+local tokenNames = {}
+
+-- The params are used internally inside this function
+function RCLootCouncil:ExportTokenData(nextID)
+	if not nextID then 
+		nextID = 1
+		self:Print("Exporting the data of all potential token.\n"
+			.."This command is intended to be run by the developer.\n"
+			.."After exporting is done and copy and paste the data into Utils/tokenData.lua.\n"
+			.."This is semi-automatic. Data (especially item level data) must be verified and modified manually later.\n"
+			.."Only support English Client\n"
+			.."Dont run any extra /rc exporttokendata when it is running."
+			.."Commented lines in exports mean not sure and need to manually determine it.")
+	end
+	local LAST_ID = 250000
+    for i = nextID, LAST_ID do
+        local _, _, _, _, _, typeID, subTypeID = GetItemInfoInstant(i)
+        if typeID == 15 and subTypeID == 0 then -- Miscellaneous, Junk
+            self:ExportTokenDataSingle(i)
+            return C_Timer.After(0, function() self:ExportTokenData(i + 1) end)
+        end
+    end
+    if nextID < LAST_ID then
+        return C_Timer.After(1, function() self:ExportTokenData(LAST_ID + 1) end) -- Extra delay so we don't lose data at the end.
+    end
+
+	local count = 0
+	for id, name in pairs(tokenNames) do
+		count = count + 1
+	end
+	self:Print(format("DONE. %d potential tokens total", count))
+	self:Print("Copy and paste data to Util/tokenData.lua")
+	self:Print("This is semi-automatic. Data must be verified and modified manually.")
+
+	-- Hack that should only happen in developer mode.
+	local frame = RCLootCouncil:GetActiveModule("history"):GetFrame()
+	frame.exportFrame:Show()
+
+	local exports ="_G.RCTokenTable = {\n"
+	local sorted = {}
+	for id, name in pairs(tokenNames) do
+		tinsert(sorted, {id, name})
+	end
+	table.sort(sorted, function(a, b) return a[1] < b[1] end)
+	for _, entry in ipairs(sorted) do
+		local slot = ""
+		local name = entry[2]
+		local l = name:lower()
+		if l:find("helm") or l:find("head") or l:find("crown") or l:find("circlet") then
+			slot = "HeadSlot"
+		elseif l:find("shoulder") or l:find("pauldron") or l:find("mantle") or l:find("spaulder") then
+			slot = "ShoulderSlot"
+		elseif l:find("cloak") then
+			slot = "BackSlot"
+		elseif l:find("breast") or l:find("tunic") or l:find("robe") or l:find("chest") then
+			slot = "ChestSlot"
+		elseif l:find("hand") or l:find("glove") or l:find("gauntlets") then
+			slot = "HandsSlot"
+		elseif l:find("leg") then
+			slot = "LegsSlot"
+		elseif l:find("badge") then
+			slot = "Trinket"
+		elseif l:find("essence") or l:find("regalia") or l:find("sanctification") then
+			slot = "MultiSlots"
+		elseif l:find("wrist") or l:find("bracer") or l:find("bindings") then
+			slot = "WristSlot"
+		elseif l:find("waist") or l:find("girdle") or l:find("belt") then
+			slot = "WaitSlot"
+		elseif l:find("feet") or l:find("sandal") or l:find("boot") or l:find("sabaton") then
+			slot = "FeetSlot"
+		end
+
+		if slot == "" then
+			exports = exports.."\t-- ".."["..entry[1].."] = "..format("%-11s", format("%q", slot))
+					..",\t-- "..format("%s", name..",").."\n"
+		else
+			exports = exports.."\t["..entry[1].."] = "..format("%-14s", format("%q", slot))
+					..",\t-- "..format("%s", name..",").."\n"
+		end
+	end
+	exports = exports.."}\n\n"
+
+	exports = exports.."-- Note: Item level data is manually entered."
+	exports = exports.."\n_G.RCTokenIlvl = {\n"
+	for _, entry in ipairs(sorted) do
+		local name = entry[2]
+		exports = exports.."\t["..entry[1].."] = 000,\t-- "..format("%s", name..",").."\n"
+	end
+	exports = exports.."}\n"
+	frame.exportFrame.edit:SetText(exports)
+end
+
+function RCLootCouncil:ExportTokenDataSingle(id)
+	if GetItemInfo(id) then
+        local name, link, quality, _, _, _, _, maxStack = GetItemInfo(id)
+        if self:GetItemClassesAllowedFlag(link) ~= 0xffffffff and maxStack == 1 and quality == 4 then
+            DEFAULT_CHAT_FRAME:AddMessage(id.." "..name)
+            tokenNames[id] = name
+        end
+    else
+        return C_Timer.After(0, function() self:ExportTokenDataSingle(id) end)
+    end
+end
+--@end-debug@
+
 -- Equip locations
 _G.RCTokenTable = {
 	--[xxxxxx] = "ExampleSlot",
