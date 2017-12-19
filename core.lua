@@ -1345,7 +1345,7 @@ function RCLootCouncil:GetDiff(g1, g2, ilvl)
 end
 
 -- @param link The itemLink of the item.
--- @return If the item is not a token, return nil. Otherwise, return the minimum item level of the gear created by the token.
+-- @return If the item level data is not available, return nil. Otherwise, return the minimum item level of the gear created by the token.
 function RCLootCouncil:GetTokenIlvl(link)
 	local id = self:GetItemIDFromLink(link)
 	if not id then return end
