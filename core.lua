@@ -2578,72 +2578,166 @@ end
 --- show current equipment for an existing tooltip displaying the item link.
 -- This function enhances GameTooltip_ShowCompareItem() that also show current equipment for set tokens.
 -- @param frame The frame which has set the item link to display
--- @param side Which side should the compare frame be shown. ("left", "right" or nil)
-function RCLootCouncil:ShowCompareItem(frame, side)
+-- @param anchorFrame Which frame should be anchored. default is nil(anchored to frame itself) 
+-- @ You can set anchor side in frame.overrideComparisonAnchorSide ("left", "right" or nil)
+function RCLootCouncil:ShowCompareItem(frame, anchorFrame)
 	local _, link = frame:GetItem()
-	if link then
-		frame.overrideComparisonAnchorSide = side
-		local id = self:GetItemIDFromLink(link)
-		local tokenSlot = RCTokenTable[id]
+	if not link then return end
 
-		if tokenSlot then
-			local item1, item2
-			if tokenSlot == "Trinket" then
-				item1 = GetInventoryItemLink("player", GetInventorySlotInfo("TRINKET0SLOT"))
-				item2 = GetInventoryItemLink("player", GetInventorySlotInfo("TRINKET1SLOT"))
-				if not item1 then item1 = item2; item2 = nil end
-			else
-				local slotID = GetInventorySlotInfo(tokenSlot)
-				if slotID then
-					item1 = GetInventoryItemLink("player", slotID)
-				end
-			end
+	if ( not frame ) then
+		frame = GameTooltip;
+	end
 
-			-- Modified from FrameXML/GameTooltip.lua
-			local shoppingTooltip1, shoppingTooltip2 = unpack(frame.shoppingTooltips)
-			if item2 then
-				shoppingTooltip2:SetOwner(frame, "ANCHOR_NONE")
-				shoppingTooltip2:ClearAllPoints()
-				shoppingTooltip1:SetOwner(frame, "ANCHOR_NONE")
-				shoppingTooltip1:ClearAllPoints()
+	if( not anchorFrame ) then
+		anchorFrame = frame.overrideComparisonAnchorFrame or frame;
+	end
 
-				if ( side and side == "left" ) then
-					shoppingTooltip1:SetPoint("TOPRIGHT", frame, "TOPLEFT", 0, -10)
-				else
-					shoppingTooltip2:SetPoint("TOPLEFT", frame, "TOPRIGHT", 0, -10)
-				end
-				if ( side and side == "left" ) then
-					shoppingTooltip2:SetPoint("TOPRIGHT", shoppingTooltip1, "TOPLEFT")
-				else
-					shoppingTooltip1:SetPoint("TOPLEFT", shoppingTooltip2, "TOPRIGHT")
-				end
+	if ( frame.needsReset ) then
+		frame:ResetSecondaryCompareItem();
+		GameTooltip_AdvanceSecondaryCompareItem(frame);
+		frame.needsReset = false;
+	end
 
-				shoppingTooltip1:SetHyperlink(item1)
-				shoppingTooltip1:SetCompareItem(shoppingTooltip2, shoppingTooltip1)
-				shoppingTooltip1:Show() 
-				shoppingTooltip2:SetHyperlink(item2)
-				-- A helper frame to assist to call SetCompareItem()
-				local shoppingTooltipHelper = _G["RCShoppingTooltipHelper"] 
-					or CreateFrame("GameTooltip", "RCShoppingTooltipHelper", UIParent, "ShoppingTooltipTemplate")
-				shoppingTooltipHelper:SetCompareItem(shoppingTooltip2, shoppingTooltip2)
-				shoppingTooltip2:Show()
-				shoppingTooltipHelper:Hide()
-			else
-				shoppingTooltip1:SetOwner(frame, "ANCHOR_NONE")
-				shoppingTooltip1:ClearAllPoints()
-				if ( side and side == "left" ) then
-					shoppingTooltip1:SetPoint("TOPRIGHT", frame, "TOPLEFT", 0, -10)
-				else
-					shoppingTooltip1:SetPoint("TOPLEFT", frame, "TOPRIGHT", 0, -10)
-				end
-				shoppingTooltip1:SetHyperlink(item1)
-				shoppingTooltip1:SetCompareItem(shoppingTooltip1, shoppingTooltip1)
-				shoppingTooltip1:Show()
-				shoppingTooltip2:Hide()
-			end
+	local shoppingTooltip1, shoppingTooltip2 = unpack(frame.shoppingTooltips);
+
+	local primaryItemShown, secondaryItemShown;
+
+	-- Edit: Show current gear for tokens. This does not compare gear stats though
+	local id = self:GetItemIDFromLink(link)
+	local tokenSlot = RCTokenTable[id]
+	if tokenSlot then
+		if tokenSlot == "Trinket" then
+			primaryItemShown = GetInventoryItemLink("player", GetInventorySlotInfo("TRINKET0SLOT"))
+			secondaryItemShown = GetInventoryItemLink("player", GetInventorySlotInfo("TRINKET1SLOT"))
+			if not primaryItemShown then primaryItemShown = secondaryItemShown; secondaryItemShown = nil end
 		else
-			GameTooltip_ShowCompareItem(frame)
+			local slotID = GetInventorySlotInfo(tokenSlot)
+			if slotID then
+				primaryItemShown = GetInventoryItemLink("player", slotID)
+			end
 		end
+		if secondaryItemShown then	
+			shoppingTooltip1:SetHyperlink(primaryItemShown)
+			shoppingTooltip1:SetCompareItem(shoppingTooltip2, shoppingTooltip1)
+			shoppingTooltip1:Show() 
+			shoppingTooltip2:SetHyperlink(secondaryItemShown)
+			-- A helper frame to assist to call SetCompareItem()
+			local shoppingTooltipHelper = _G["RCShoppingTooltipHelper"] 
+				or CreateFrame("GameTooltip", "RCShoppingTooltipHelper", UIParent, "ShoppingTooltipTemplate")
+			shoppingTooltipHelper:SetCompareItem(shoppingTooltip2, shoppingTooltip2)
+			shoppingTooltip2:Show()
+			shoppingTooltipHelper:Hide()
+		elseif primaryItemShown then
+			shoppingTooltip1:SetHyperlink(primaryItemShown)
+			shoppingTooltip1:SetCompareItem(shoppingTooltip1, shoppingTooltip1)
+			shoppingTooltip1:Show()
+			shoppingTooltip2:Hide()
+		end
+	else
+		primaryItemShown, secondaryItemShown = shoppingTooltip1:SetCompareItem(shoppingTooltip2, frame);
+		shoppingTooltip1:Show();
+	end
+
+	local leftPos = anchorFrame:GetLeft();
+	local rightPos = anchorFrame:GetRight();
+
+	local side;
+	local anchorType = frame:GetAnchorType();
+	local totalWidth = 0;
+	if ( primaryItemShown  ) then
+		totalWidth = totalWidth + shoppingTooltip1:GetWidth();
+	end
+	if ( secondaryItemShown  ) then
+		totalWidth = totalWidth + shoppingTooltip2:GetWidth();
+	end
+	if ( frame.overrideComparisonAnchorSide ) then
+		side = frame.overrideComparisonAnchorSide;
+	else
+		-- find correct side
+		local rightDist = 0;
+		if ( not rightPos ) then
+			rightPos = 0;
+		end
+		if ( not leftPos ) then
+			leftPos = 0;
+		end
+
+		rightDist = GetScreenWidth() - rightPos;
+
+		if ( anchorType and totalWidth < leftPos and (anchorType == "ANCHOR_LEFT" or anchorType == "ANCHOR_TOPLEFT" or anchorType == "ANCHOR_BOTTOMLEFT") ) then
+			side = "left";
+		elseif ( anchorType and totalWidth < rightDist and (anchorType == "ANCHOR_RIGHT" or anchorType == "ANCHOR_TOPRIGHT" or anchorType == "ANCHOR_BOTTOMRIGHT") ) then
+			side = "right";
+		elseif ( rightDist < leftPos ) then
+			side = "left";
+		else
+			side = "right";
+		end
+	end
+
+	-- see if we should slide the tooltip
+	-- Edit: Our custom tooltip is not clamped to screen and don't run this
+	if ( anchorType and anchorType ~= "ANCHOR_PRESERVE" and frame:IsClampedToScreen()) then
+		if ( (side == "left") and (totalWidth > leftPos) ) then
+			frame:SetAnchorType(anchorType, (totalWidth - leftPos), 0);
+		elseif ( (side == "right") and (rightPos + totalWidth) >  GetScreenWidth() ) then
+			frame:SetAnchorType(anchorType, -((rightPos + totalWidth) - GetScreenWidth()), 0);
+		end
+	end
+
+	if ( secondaryItemShown ) then
+		shoppingTooltip2:SetOwner(frame, "ANCHOR_NONE");
+		shoppingTooltip2:ClearAllPoints();
+		shoppingTooltip1:SetOwner(frame, "ANCHOR_NONE");
+		shoppingTooltip1:ClearAllPoints();
+
+		if ( side and side == "left" ) then
+			shoppingTooltip1:SetPoint("TOPRIGHT", anchorFrame, "TOPLEFT", 0, -10);
+		else
+			shoppingTooltip2:SetPoint("TOPLEFT", anchorFrame, "TOPRIGHT", 0, -10);
+		end
+
+		if ( side and side == "left" ) then
+			shoppingTooltip2:SetPoint("TOPRIGHT", shoppingTooltip1, "TOPLEFT");
+		else
+			shoppingTooltip1:SetPoint("TOPLEFT", shoppingTooltip2, "TOPRIGHT");
+		end
+	else
+		shoppingTooltip1:SetOwner(frame, "ANCHOR_NONE");
+		shoppingTooltip1:ClearAllPoints();
+
+		if ( side and side == "left" ) then
+			shoppingTooltip1:SetPoint("TOPRIGHT", anchorFrame, "TOPLEFT", 0, -10);
+		else
+			shoppingTooltip1:SetPoint("TOPLEFT", anchorFrame, "TOPRIGHT", 0, -10);
+		end
+
+		shoppingTooltip2:Hide();
+	end
+
+	-- We have to call this again because :SetOwner clears the tooltip.
+	-- Edit: Show current gear for tokens.
+	if tokenSlot then
+		if secondaryItemShown then	
+			shoppingTooltip1:SetHyperlink(primaryItemShown)
+			shoppingTooltip1:SetCompareItem(shoppingTooltip2, shoppingTooltip1)
+			shoppingTooltip1:Show() 
+			shoppingTooltip2:SetHyperlink(secondaryItemShown)
+			-- A helper frame to assist to call SetCompareItem()
+			local shoppingTooltipHelper = _G["RCShoppingTooltipHelper"] 
+				or CreateFrame("GameTooltip", "RCShoppingTooltipHelper", UIParent, "ShoppingTooltipTemplate")
+			shoppingTooltipHelper:SetCompareItem(shoppingTooltip2, shoppingTooltip2)
+			shoppingTooltip2:Show()
+			shoppingTooltipHelper:Hide()
+		elseif primaryItemShown then
+			shoppingTooltip1:SetHyperlink(primaryItemShown)
+			shoppingTooltip1:SetCompareItem(shoppingTooltip1, shoppingTooltip1)
+			shoppingTooltip1:Show()
+			shoppingTooltip2:Hide()
+		end
+	else
+		primaryItemShown, secondaryItemShown = shoppingTooltip1:SetCompareItem(shoppingTooltip2, frame);
+		shoppingTooltip1:Show();
 	end
 end
 

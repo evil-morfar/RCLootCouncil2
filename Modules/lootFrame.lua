@@ -132,11 +132,14 @@ function LootFrame:Update()
 
 	local firstEntry = self.EntryManager.entries[1]
 	if firstEntry and addon:Getdb().modules["RCLootFrame"].alwaysShowTooltip then
+		self.frame.itemTooltip:Hide()
 		self.frame.itemTooltip:SetOwner(self.frame.content, "ANCHOR_NONE")
 		self.frame.itemTooltip:SetHyperlink(firstEntry.item.link)
 		self.frame.itemTooltip:Show()
+		self.frame.itemTooltip:ClearAllPoints()
 		self.frame.itemTooltip:SetPoint("TOPRIGHT", firstEntry.frame, "TOPLEFT", 0, 0)
-		addon:ShowCompareItem(self.frame.itemTooltip, "left")
+		self.frame.itemTooltip.overrideComparisonAnchorSide = "left"
+		addon:ShowCompareItem(self.frame.itemTooltip)
 	else
 		self.frame.itemTooltip:Hide()
 	end
