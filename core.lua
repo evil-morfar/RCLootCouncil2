@@ -2523,7 +2523,9 @@ function RCLootCouncil:CreateGameTooltip(cName, parent)
 
  	itemTooltip.shoppingTooltips = {} -- GameTooltip contains this table. Need this to prevent error
  	itemTooltip.shoppingTooltips[1] = CreateFrame("GameTooltip", cName.."_ShoppingTooltip1", itemTooltip, "ShoppingTooltipTemplate")
+ 	itemTooltip.shoppingTooltips[1]:SetClampedToScreen(false)
  	itemTooltip.shoppingTooltips[2] = CreateFrame("GameTooltip", cName.."_ShoppingTooltip2", itemTooltip, "ShoppingTooltipTemplate")
+ 	itemTooltip.shoppingTooltips[2]:SetClampedToScreen(false)
 	return itemTooltip
 end
 
