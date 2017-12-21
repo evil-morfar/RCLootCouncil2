@@ -254,6 +254,7 @@ do
 				addon:CreateHypertip(entry.item.link)
 				GameTooltip:AddLine("")
 				GameTooltip:AddLine(L["always_show_tooltip_howto"], nil, nil, nil, true)
+				GameTooltip_ShowCompareItem(GameTooltip)
 				GameTooltip:Show()
 			end)
 			entry.icon:SetScript("OnLeave", function() addon:HideTooltip() end)
