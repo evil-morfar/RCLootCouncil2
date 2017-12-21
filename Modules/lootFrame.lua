@@ -136,8 +136,7 @@ function LootFrame:Update()
 		self.frame.itemTooltip:SetHyperlink(firstEntry.item.link)
 		self.frame.itemTooltip:Show()
 		self.frame.itemTooltip:SetPoint("TOPRIGHT", firstEntry.frame, "TOPLEFT", 0, 0)
-		self.frame.itemTooltip.overrideComparisonAnchorSide = "left"
-		GameTooltip_ShowCompareItem(self.frame.itemTooltip)
+		addon:ShowCompareItem(self.frame.itemTooltip, "left")
 	else
 		self.frame.itemTooltip:Hide()
 	end
@@ -257,7 +256,7 @@ do
 				GameTooltip:AddLine("")
 				GameTooltip:AddLine(L["always_show_tooltip_howto"], nil, nil, nil, true)
 				GameTooltip:Show()
-				GameTooltip_ShowCompareItem(GameTooltip)
+				addon:ShowCompareItem(GameTooltip)
 			end)
 			entry.icon:SetScript("OnLeave", function() addon:HideTooltip() end)
 			entry.icon:SetScript("OnClick", function()

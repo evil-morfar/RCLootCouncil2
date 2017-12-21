@@ -2575,6 +2575,78 @@ function RCLootCouncil:CreateTooltip(...)
 	GameTooltip:Show()
 end
 
+--- show current equipment for an existing tooltip displaying the item link.
+-- This function enhances GameTooltip_ShowCompareItem() that also show current equipment for set tokens.
+-- @param frame The frame which has set the item link to display
+-- @param side Which side should the compare frame be shown. ("left", "right" or nil)
+function RCLootCouncil:ShowCompareItem(frame, side)
+	local _, link = frame:GetItem()
+	if link then
+		frame.overrideComparisonAnchorSide = side
+		local id = self:GetItemIDFromLink(link)
+		local tokenSlot = RCTokenTable[id]
+
+		if tokenSlot then
+			local item1, item2
+			if tokenSlot == "Trinket" then
+				item1 = GetInventoryItemLink("player", GetInventorySlotInfo("TRINKET0SLOT"))
+				item2 = GetInventoryItemLink("player", GetInventorySlotInfo("TRINKET1SLOT"))
+				if not item1 then item1 = item2; item2 = nil end
+			else
+				local slotID = GetInventorySlotInfo(tokenSlot)
+				if slotID then
+					item1 = GetInventoryItemLink("player", slotID)
+				end
+			end
+
+			-- Modified from FrameXML/GameTooltip.lua
+			local shoppingTooltip1, shoppingTooltip2 = unpack(frame.shoppingTooltips)
+			if item2 then
+				shoppingTooltip2:SetOwner(frame, "ANCHOR_NONE")
+				shoppingTooltip2:ClearAllPoints()
+				shoppingTooltip1:SetOwner(frame, "ANCHOR_NONE")
+				shoppingTooltip1:ClearAllPoints()
+
+				if ( side and side == "left" ) then
+					shoppingTooltip1:SetPoint("TOPRIGHT", frame, "TOPLEFT", 0, -10)
+				else
+					shoppingTooltip2:SetPoint("TOPLEFT", frame, "TOPRIGHT", 0, -10)
+				end
+				if ( side and side == "left" ) then
+					shoppingTooltip2:SetPoint("TOPRIGHT", shoppingTooltip1, "TOPLEFT")
+				else
+					shoppingTooltip1:SetPoint("TOPLEFT", shoppingTooltip2, "TOPRIGHT")
+				end
+
+				shoppingTooltip1:SetHyperlink(item1)
+				shoppingTooltip1:SetCompareItem(shoppingTooltip2, shoppingTooltip1)
+				shoppingTooltip1:Show() 
+				shoppingTooltip2:SetHyperlink(item2)
+				-- A helper frame to assist to call SetCompareItem()
+				local shoppingTooltipHelper = _G["RCShoppingTooltipHelper"] 
+					or CreateFrame("GameTooltip", "RCShoppingTooltipHelper", UIParent, "ShoppingTooltipTemplate")
+				shoppingTooltipHelper:SetCompareItem(shoppingTooltip2, shoppingTooltip2)
+				shoppingTooltip2:Show()
+				shoppingTooltipHelper:Hide()
+			else
+				shoppingTooltip1:SetOwner(frame, "ANCHOR_NONE")
+				shoppingTooltip1:ClearAllPoints()
+				if ( side and side == "left" ) then
+					shoppingTooltip1:SetPoint("TOPRIGHT", frame, "TOPLEFT", 0, -10)
+				else
+					shoppingTooltip1:SetPoint("TOPLEFT", frame, "TOPRIGHT", 0, -10)
+				end
+				shoppingTooltip1:SetHyperlink(item1)
+				shoppingTooltip1:SetCompareItem(shoppingTooltip1, shoppingTooltip1)
+				shoppingTooltip1:Show()
+				shoppingTooltip2:Hide()
+			end
+		else
+			GameTooltip_ShowCompareItem(frame)
+		end
+	end
+end
+
 --- Displays a hyperlink tooltip.
 -- @paramsig link
 -- @param link The link to display.
