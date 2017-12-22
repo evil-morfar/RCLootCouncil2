@@ -2629,7 +2629,9 @@ end
 local itemStatsRet = {}
 -- Get item bonus text (socket, leech, etc)
 -- Item needs to be cached.
-function RCLootCouncil:GetItemBonusText(link, delimiter)
+function RCLootCouncil:GetItemBonusText(item, delimiter)
+	local link = select(2, GetItemInfo(item))
+	if not link then return "" end
 	if not delimiter then delimiter = "/" end
 	wipe(itemStatsRet)
 	GetItemStats(link, itemStatsRet)
