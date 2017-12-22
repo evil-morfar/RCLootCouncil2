@@ -2616,6 +2616,41 @@ function RCLootCouncil:GetItemLevelText(ilvl, token)
 	end
 end
 
+local itemStatsRet = {}
+-- Get item bonus text (socket, leech, etc)
+-- Item needs to be cached.
+function RCLootCouncil:GetItemBonusText(link, delimiter)
+	if not delimiter then delimiter = "/" end
+	wipe(itemStatsRet)
+	GetItemStats(link, itemStatsRet)
+	local text = ""
+	for k, _ in pairs(itemStatsRet) do
+		if k:find("SOCKET") then
+			text = L["Socket"]
+			break
+		end
+	end
+
+	if itemStatsRet["ITEM_MOD_CR_AVOIDANCE_SHORT"] then
+		if text ~= "" then text = text..delimiter end
+		text = text.._G.ITEM_MOD_CR_AVOIDANCE_SHORT
+	end
+	if itemStatsRet["ITEM_MOD_CR_LIFESTEAL_SHORT"] then
+		if text ~= "" then text = text..delimiter end
+		text = text.._G.ITEM_MOD_CR_LIFESTEAL_SHORT
+	end
+	if itemStatsRet["ITEM_MOD_CR_MULTISTRIKE_SHORT"] then
+		if text ~= "" then text = text..delimiter end
+		text = text.._G.ITEM_MOD_CR_MULTISTRIKE_SHORT
+	end
+	if itemStatsRet["ITEM_MOD_CR_SPEED_SHORT"] then
+		if text ~= "" then text = text..delimiter end
+		text = text.._G.ITEM_MOD_CR_SPEED_SHORT
+	end
+
+	return text
+end
+
 -- @return a text of the link explaining its type. For example, "Fel Artifact Relic", "Chest, Mail"
 function RCLootCouncil:GetItemTypeText(link, subType, equipLoc, typeID, subTypeID, classesFlag, tokenSlot, relicType)
 	local id = self:GetItemIDFromLink(link)
