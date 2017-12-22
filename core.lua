@@ -2643,7 +2643,7 @@ function RCLootCouncil:GetItemBonusText(link, delimiter)
 		if text ~= "" then text = text..delimiter end
 		text = text.._G.ITEM_MOD_CR_SPEED_SHORT
 	end
-	if itemStatsRet["ITEM_MOD_CR_STURDINESS_SHORT"] then
+	if itemStatsRet["ITEM_MOD_CR_STURDINESS_SHORT"] then -- Indestructible
 		if text ~= "" then text = text..delimiter end
 		text = text.._G.ITEM_MOD_CR_STURDINESS_SHORT
 	end
