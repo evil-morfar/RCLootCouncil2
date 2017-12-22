@@ -82,13 +82,15 @@ function RCSessionFrame:ExtractData(data)
 	self.frame.rows = {}
 	-- And set the new
 	for k,v in ipairs(data) do
+		local bonusText = addon:GetItemBonusText(v.link, "\n ")
+		if bonusText ~= "" then bonusText = "\n "..bonusText end
 		self.frame.rows[k] = {
 			texture = v.texture or nil,
 			link = v.link,
 			cols = {
 				{ DoCellUpdate = self.SetCellDeleteBtn, },
 				{ DoCellUpdate = self.SetCellItemIcon},
-				{ value = " "..(addon:GetItemLevelText(v.ilvl, v.token) or ""), },
+				{ value = " "..(addon:GetItemLevelText(v.ilvl, v.token) or "")..bonusText},
 				{ DoCellUpdate = self.SetCellText },
 			},
 		}
