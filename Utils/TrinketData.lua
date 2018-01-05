@@ -9,8 +9,16 @@
 -- Export all trinkets in the encounter journal not usable by all classes.
 -- The format is {[itemID] = classFlag}
 -- See the explanation of classFlag in RCLootCouncil:GetItemClassesAllowedFlag(item)
-local trinketClasses = {}
+local trinketSpecs = {}
 local trinketNames = {}
+
+-- WoW does not support integer constants >= 2^32, but can store 64 bit integer.
+-- Not supported: 0xffffffffffff
+-- Supported: 0xffff*2^32+0xffffffff
+-- Note that bitlib (bit.band, bit.rshift, etc) does not work for 64 bit integer.
+local function Int48ToHexStr(n)
+	return format("0x%04X*2^32+0x%08X", math.floor(n/2^32), math.floor(n%(2^32)))
+end
 
 -- The params are used internally inside this function
 -- Process in the following order:
@@ -21,7 +29,7 @@ local trinketNames = {}
 function RCLootCouncil:ExportTrinketData(nextTier, nextIsRaid, nextIndex, nextDiffID)
 	LoadAddOn("BLizzard_EncounterJournal")
 	local MAX_CLASSFLAG_VAL = bit.lshift(1, MAX_CLASSES) - 1
-	local TIME_FOR_EACH_INSTANCE_DIFF = 5
+	local TIME_FOR_EACH_INSTANCE_DIFF = 2
 
 	if not nextTier then
 		nextTier = 1
@@ -62,19 +70,10 @@ function RCLootCouncil:ExportTrinketData(nextTier, nextIsRaid, nextIndex, nextDi
 	end
 
 	local count = 0
-	for id, val in pairs(trinketClasses) do
+	for id, val in pairs(trinketSpecs) do
 		count = count + 1
 	end
 	self:Print(format("DONE. %d trinkets total", count))
-	count = 0
-	for id, val in pairs(trinketClasses) do -- Not report if the trinket can be used by all classes.
-		if val == MAX_CLASSFLAG_VAL then
-			trinketClasses[id] = nil
-		else
-			count = count + 1
-		end
-	end
-	self:Print(format("Among them, %d trinket which cannnot be used by all classes are exported", count))
 	self:Print("Copy paste the data to Utils/TrinketData.lua")
 	self:Print("Suggest to verify the data for the trinket in the recent raid")
 
@@ -82,9 +81,9 @@ function RCLootCouncil:ExportTrinketData(nextTier, nextIsRaid, nextIndex, nextDi
 	local frame = RCLootCouncil:GetActiveModule("history"):GetFrame()
 	frame.exportFrame:Show()
 
-	local exports ="_G.RCTrinketClasses = {\n"
+	local exports ="_G.RCTrinketSpecs = {\n"
 	local sorted = {}
-	for id, val in pairs(trinketClasses) do
+	for id, val in pairs(trinketSpecs) do
 		tinsert(sorted, {id, val})
 	end
 	table.sort(sorted, function(a, b) return a[1] < b[1] end)
@@ -96,8 +95,8 @@ function RCLootCouncil:ExportTrinketData(nextTier, nextIsRaid, nextIndex, nextDi
 	end
 	local exp = "%-"..format("%d", longestNameLen+1).."s" 
 	for _, entry in ipairs(sorted) do
-		exports = exports.."\t["..entry[1].."] = "..format("0x%03X", entry[2])
-			..",\t-- "..format(exp, trinketNames[entry[1]]..",").."\t"..self:ClassesFlagToStr(entry[2]).."\n"
+		exports = exports.."\t["..entry[1].."] = "..format("%s", Int48ToHexStr(entry[2]))
+			..",\t-- "..format(exp, trinketNames[entry[1]]..",").."\n"
 	end
 	exports = exports.."}\n"
 	frame.exportFrame.edit:SetText(exports)
@@ -126,21 +125,37 @@ function RCLootCouncil:ExportTrinketDataSingleInstance(instanceID, diffID, timeL
 	EJ_SetDifficulty(diffID)
 	EJ_SetSlotFilter(LE_ITEM_FILTER_TYPE_TRINKET)
 	for classID = 0, MAX_CLASSES do
-	    EJ_SetLootFilter(classID, 0)
-	    for j = 1, EJ_GetNumLoot() do -- EJ_GetNumLoot() can be 0 if EJ items are not cached.
-	        local id, _, _, _, _, _, link = EJ_GetLootInfoByIndex(j)
-	        if link then
-		        if classID == 0 then
-		        	trinketClasses[id] = 0
-		        	trinketNames[id] = self:GetItemNameFromLink(link)
-		        	GetItemInfo(id)
-		        	count = count + 1
-		        	tinsert(trinketlinksInThisInstances, link)
-		        else
-		        	trinketClasses[id] = trinketClasses[id] + bit.lshift(1, classID-1)
-		        end
-		    end
+
+	    local specIndexFirst, specIndexLast = 0, 0
+	    if classID ~= 0 then
+	    	specIndexFirst = 1
+	    	specIndexLast = GetNumSpecializationsForClassID(classID)
 	    end
+
+	    for specIndex=specIndexFirst, specIndexLast do
+	    	if classID == 0 then
+	    		EJ_SetLootFilter(classID, 0)
+	    	else
+	    		EJ_SetLootFilter(classID, GetSpecializationInfoForClassID(classID, specIndex))
+	    	end
+		    -- GetSpecializationInfoForClassID
+		    -- GetNumSpecializationsForClassID
+		    for j = 1, EJ_GetNumLoot() do -- EJ_GetNumLoot() can be 0 if EJ items are not cached.
+		        local id, _, _, _, _, _, link = EJ_GetLootInfoByIndex(j)
+		        if link then
+			        if classID == 0 then
+			        	trinketSpecs[id] = 0
+			        	trinketNames[id] = self:GetItemNameFromLink(link)
+			        	GetItemInfo(id)
+			        	count = count + 1
+			        	tinsert(trinketlinksInThisInstances, link)
+			        else
+			        	-- Note that bitlib does not work for 64bit integer, so we don't use it here.
+			        	trinketSpecs[id] = trinketSpecs[id] + 2^(4*(classID-1)+specIndex-1)
+			        end
+			    end
+		    end
+		end
 	end
 	local interval = 1
 	if timeLeft > interval then -- Rerun many times for correctless
@@ -151,13 +166,12 @@ function RCLootCouncil:ExportTrinketDataSingleInstance(instanceID, diffID, timeL
 		self:Print(format("Instance %d. %s %s. Processed %d trinkets", instanceID, EJ_GetInstanceInfo(instanceID), diffText, count))
 		for _, link in ipairs(trinketlinksInThisInstances) do
 			local id = self:GetItemIDFromLink(link)
-			self:Print(format("%s(%d): 0x%X", link, id, trinketClasses[id]))
+			self:Print(format("%s(%d): %s", link, id, Int48ToHexStr(trinketSpecs[id])))
 		end
 		self:Print("--------------------")
 	end
 end
 --@end-debug@
-
 
 -- Automatically generated by command "/rc exporttrinketdata"
 -- The code related to above command is commented out for Curseforge release because
@@ -167,7 +181,7 @@ end
 -- Format: [itemID] = classFlag
 -- See the explanation of classFlag in RCLootCouncil:GetItemClassesAllowedFlag(item) in core.lua
 
-_G.RCTrinketClasses = {
+_G.RCtrinketSpecs = {
 	[11810] = 0xE23,	-- Force of Will,                                  	Warrior, Paladin, Death Knight, Monk, Druid, Demon Hunter
 	[11815] = 0xE6F,	-- Hand of Justice,                                	Warrior, Paladin, Hunter, Rogue, Death Knight, Shaman, Monk, Druid, Demon Hunter
 	[11819] = 0x652,	-- Second Wind,                                    	Paladin, Priest, Shaman, Monk, Druid
