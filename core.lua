@@ -540,6 +540,8 @@ function RCLootCouncil:ChatCommand(msg)
 	elseif input == 'trinkettest' or input == 'ttest' then
 		self.playerClass = string.upper(args[1])
 		self:Test(1, false, true)
+	elseif input == "exporttokendata" then
+		self:ExportTokenData()
 --@end-debug@
 	elseif input == "whisper" or input == string.lower(_G.WHISPER) then
 		self:Print(L["whisper_help"])
@@ -1236,7 +1238,9 @@ function RCLootCouncil:GetPlayersGear(link, equipLoc, gearsTable)
 	local item1, item2;
 	-- check if the item is a token, and if it is, return the matching current gear
 	if RCTokenTable[itemID] then
-		if RCTokenTable[itemID] == "Trinket" then -- We need to return both trinkets
+		if RCTokenTable[itemID] == "MultiSlots" then -- Armor tokens for multiple slots, just return nil
+			return
+		elseif RCTokenTable[itemID] == "Trinket" then -- We need to return both trinkets
 			item1 = GetInventoryItemLink("player", GetInventorySlotInfo("TRINKET0SLOT"))
 			item2 = GetInventoryItemLink("player", GetInventorySlotInfo("TRINKET1SLOT"))
 		else	-- Just return the slot from the tokentable
@@ -1341,12 +1345,15 @@ function RCLootCouncil:GetDiff(g1, g2, ilvl)
 end
 
 -- @param link The itemLink of the item.
--- @return If the item is not a token, return nil. Otherwise, return the minimum item level of the gear created by the token.
+-- @return If the item level data is not available, return nil. Otherwise, return the minimum item level of the gear created by the token.
 function RCLootCouncil:GetTokenIlvl(link)
 	local id = self:GetItemIDFromLink(link)
 	if not id then return end
 	local baseIlvl = RCTokenIlvl[id] -- ilvl in normal difficulty
 	if not baseIlvl then return end
+
+	-- Pre WoD, item doesn't share id across difficulties.
+	if baseIlvl < 600 then return baseIlvl end
 
 	local bonuses = select(17, self:DecodeItemLink(link))
 	for _, value in pairs(bonuses) do
@@ -1487,9 +1494,9 @@ end
 -- If the number at binary bit i is 1 (bit 1 is the lowest bit), then the item works for the class with ID i.
 -- 0b100,000,000,010 indicates the item works for Paladin(classID 2) and DemonHunter(class ID 12)
 -- Expected values:
--- Vanquisher(Rogue, DK, Mage, Druid) == 1192 (0x4a8)
--- Conqueror(Paladin, Priest, Warlock, DH) == 2322(0x912)
--- Protector(Warrior, Hunter, Shaman, Monk) == 581(0x245)
+-- Conqueror(Paladin, Priest, Warlock) == 274(0x112)
+-- Protector(Warrior, Hunter, Shaman) == 69(0x45)
+-- Vanquisher(Rogue, Mage, Druid) == 1160 (0x488)
 function RCLootCouncil:GetItemClassesAllowedFlag(item)
 	if not item then return 0 end
 	tooltipForParsing:SetOwner(UIParent, "ANCHOR_NONE") -- This lines clear the current content of tooltip and set its position off-screen
@@ -2608,8 +2615,8 @@ function RCLootCouncil:GetItemTextWithCount(link, count)
 end
 
 function RCLootCouncil:GetItemLevelText(ilvl, token)
-	if not ilvl then ilvl = "" end
-	if token then
+	if not ilvl then return "" end
+	if token and ilvl > 600 then -- Armor token warforged is introduced since WoD
 		return ilvl.."+"
 	else
 		return ilvl
@@ -2622,11 +2629,11 @@ function RCLootCouncil:GetItemTypeText(link, subType, equipLoc, typeID, subTypeI
 
 	if tokenSlot then -- It's a token
 		local tokenText = L["Armor Token"]
-		if bit.band(classesFlag, 0x912) == 0x912 then
+		if bit.band(classesFlag, 0x112) == 0x112 then
 			tokenText = L["Conqueror Token"]
-		elseif bit.band(classesFlag, 0x245) == 0x245 then
+		elseif bit.band(classesFlag, 0x45) == 0x45 then
 			tokenText = L["Protector Token"]
-		elseif bit.band(classesFlag, 0x4a8) == 0x4a8 then
+		elseif bit.band(classesFlag, 0x488) == 0x488 then
 			tokenText = L["Vanquisher Token"]
 		end
 
