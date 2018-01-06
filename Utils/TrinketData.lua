@@ -2,7 +2,7 @@
 -- Contains loot specs of all trinkets in the dungeon journal
 -- @author Safetee
 -- Create Date : 12/03/2017
--- Update Date : 1/6/2017 (7.3.2 Build 25549)
+-- Update Date : 1/6/2018 (7.3.2 Build 25549)
 
 --@debug@
 --[[
