@@ -244,6 +244,8 @@ end
 -- this is intended to be run by the developer.
 -- The table indicates if the trinket is lootable for certain specs.
 -- Format: [itemID] = specFlag
+-- Manually added: (item id in the EJ is not the same as the item that actually drops -_-)
+-- [151974] = 0x2410*2^32+0x00100024,	-- Eye of Shatug,                                  	Tank
 _G.RCTrinketSpecs = {
 	[11810] = 0x2410*2^32+0x00100024,	-- Force of Will,                                  	Tank
 	[11815] = 0x3650*2^32+0x02707767,	-- Hand of Justice,                                	Strength/Agility
@@ -966,6 +968,7 @@ _G.RCTrinketSpecs = {
 	[151969] = 0x0107*2^32+0x71050300,	-- Terminus Signaling Beacon,                      	Damage, Ranged
 	[151970] = 0x0927*2^32+0x75070010,	-- Vitality Resonator,                             	Intellect
 	[151971] = 0x0107*2^32+0x71050000,	-- Sheath of Asara,                                	Damage, Intellect
+	[151974] = 0x2410*2^32+0x00100024,	-- Eye of Shatug,                                  	Tank	
 	[151975] = 0x2410*2^32+0x00100024,	-- Apocalypse Drive,                               	Tank
 	[151976] = 0x2410*2^32+0x00100024,	-- Riftworld Codex,                                	Tank
 	[151977] = 0x2410*2^32+0x00100024,	-- Diima's Glacial Aegis,                          	Tank
