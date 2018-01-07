@@ -2,7 +2,7 @@
 -- Contains loot specs of all trinkets in the dungeon journal
 -- @author Safetee
 -- Create Date : 12/03/2017
--- Update Date : 1/6/2018 (7.3.2 Build 25549)
+-- Update Date : 1/7/2018 (7.3.2 Build 25549)
 
 --@debug@
 --[[
@@ -11,9 +11,10 @@ Export the loot specs of all trinkets in the encounter journal.
 The format is {[itemID] = specFlag}
 
 specFlag is a large number and one hexadecimal digit represents the spec data for a single class.
+Because WoW does not offer full support to 64bit integer, the data is store as string.
 
 For example,
-0x365002707767
+365002707767
 The least significant hexadecimal digit, 7, represents the loot specs of the trinket for Warrrior (class ID 1)
 The most significant hexadecimal digit, 3, represents the loot specs of the trinket for Demon Hunter (class ID 11)
 
@@ -21,12 +22,8 @@ The least significant digit 0x7=0b0111, shows the trinket is lootable by Arms (s
 The 2nd least significant digit 0x6=0b0110, shows the trinket is lootable by Protection (spec index 2) and Retribution (Spec index 3), and not lootable by Holy (index 1)
 The specIndex here refers to GetSpecializationInfoForClassID(classID, specIndex)
 Holy Paladin is the 1st spec of Paladin (class ID 2) because GetSpecializationInfoForClassID(2, 1) is Holy Paladin
-Overall, 0x365002707767, written as 0x365002707767 in the code shows the trinket is lootable by all specs using Strength or Agility as Primary Stats.
+Overall, 365002707767 shows the trinket is lootable by all specs using Strength or Agility as Primary Stats.
 
-Do note that although WoW can store and do integer calculation on 64bit integer. There are several places that only support 32 bit integers.
-1. 64bit integer constant is not supported. 0x365002707767 is invalid in the source code, however, this can be rewritten as 0x365002707767
-2. bitlib (bit.band, bit.rshift, etc) only support 32bit integer. However, this can be rewritten as division or modulo to power of 2.
-3. Formated string flag "%d" only supports 32bit integer. The following Int48ToHexStr helps to solve the problem.
 --]]
 local trinketSpecs = {}
 local trinketNames = {}
@@ -235,7 +232,7 @@ end
 -- The table indicates if the trinket is lootable for certain specs.
 -- Format: [itemID] = specFlag
 -- Manually added: (item id in the EJ is not the same as the item that actually drops -_-)
--- [151974] = 0x241000100024,	-- Eye of Shatug,                                  	Tank
+-- [151974] = "241000100024",	-- Eye of Shatug,                                  	Tank
 _G.RCTrinketSpecs = {
 	[11810] = 0x241000100024,	-- Force of Will,                                  	Tank
 	[11815] = 0x365002707767,	-- Hand of Justice,                                	Strength/Agility
