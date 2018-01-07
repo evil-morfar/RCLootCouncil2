@@ -1674,11 +1674,12 @@ end
 -- The loottable sort compare function
 -- Sorted by:
 -- 1. equipment slot: head, neck, ...
--- 2. subType: junk(armor token), plate, mail, ...
--- 3. relicType: Arcane, Life, ..
--- 4. Item level from high to low
--- 5. The sum of item stats, to make sure items with bonuses(socket, leech, etc) are sorted first.
--- 6. Item name
+-- 2. trinket category name
+-- 3. subType: junk(armor token), plate, mail, ...
+-- 4. relicType: Arcane, Life, ..
+-- 5. Item level from high to low
+-- 6. The sum of item stats, to make sure items with bonuses(socket, leech, etc) are sorted first.
+-- 7. Item name
 --
 -- @param a: an entry in the lootTable
 -- @param b: The other entry in the looTable
@@ -1690,6 +1691,15 @@ function RCLootCouncilML.LootTableCompare(a, b)
 	local equipLocB = RCLootCouncilML.EQUIPLOC_SORT_ORDER[b.token and addon:GetTokenEquipLoc(b.token) or b.equipLoc] or math.huge
 	if equipLocA ~= equipLocB then
 		return equipLocA < equipLocB
+	end
+	if a.equipLoc == "INVTYPE_TRINKET" and b.equipLoc == "INVTYPE_TRINKET" then
+		local specA = _G.RCTrinketSpecs[addon:GetItemIDFromLink(a.link)]
+		local specB = _G.RCTrinketSpecs[addon:GetItemIDFromLink(b.link)]
+		local categoryA = (specA and _G.RCTrinketCategories[specA]) or ""
+		local categoryB = (specB and _G.RCTrinketCategories[specB]) or ""
+		if categoryA ~= categoryB then
+			return categoryA < categoryB
+		end
 	end
 	if a.typeID ~= b.typeID then
 		return a.typeID > b.typeID
