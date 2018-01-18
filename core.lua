@@ -1917,16 +1917,18 @@ end
 -- @return boolean, "ML_Name". (true if the player is ML), (nil if there's no ML).
 function RCLootCouncil:GetML()
 	self:DebugLog("GetML()")
-	if IsPartyLFG() then
-		return false, nil -- This is needed to avoid receiving command from LFR group leader.
+	local _, type = IsInInstance()
+	if IsPartyLFG() or -- Never use in LFG
+		type == "arena" or type == "pvp" then -- Never use in PvP
+		return false, nil
 	end
 	if GetNumGroupMembers() == 0 and (self.testMode or self.nnp) then -- always the player when testing alone
 		return true, self.playerName
 	end
 	local lootMethod, mlPartyID, mlRaidID = GetLootMethod()
 	self:Debug("LootMethod = ", lootMethod)
+	local name;
 	if lootMethod == "master" then
-		local name;
 		if mlRaidID then 				-- Someone in raid
 			name = self:UnitName("raid"..mlRaidID)
 		elseif mlPartyID == 0 then -- Player in party
@@ -1936,7 +1938,6 @@ function RCLootCouncil:GetML()
 		end
 		return IsMasterLooter(), name
 	else -- Set the Group leader as the ML if the loot method is not master loot
-		local name;
 		for i=1, GetNumGroupMembers() or 0 do
 			local name2, rank = GetRaidRosterInfo(i)
 			if not name2 then -- Group info is not completely ready
