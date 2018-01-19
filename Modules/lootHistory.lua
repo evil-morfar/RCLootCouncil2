@@ -41,13 +41,13 @@ function LootHistory:OnInitialize()
 		--html = self.ExportHTML
 	}
 	self.scrollCols = {
-		{name = "",					width = ROW_HEIGHT, },			-- Class icon, should be same row as player
-		{name = _G.NAME,		width = 100, sortnext = 3, defaultsort = "dsc"},		-- Name of the player (There is a bug in default lib-st sort function that "dsc" is "asc")
-		{name = L["Time"],		width = 125, comparesort = self.DateTimeSort, sort="dsc",defaultsort = "dsc",},			-- Time of awarding
-		{name = "",					width = ROW_HEIGHT, },			-- Item at index icon
-		{name = L["Item"],		width = 250, 				}, 	-- Item string
-		{name = L["Reason"],		width = 220, comparesort = self.ResponseSort,  sortnext = 2},	-- Response aka the text supplied to lootDB...response
-		{name = "",					width = ROW_HEIGHT},				-- Delete button
+		{name = "",				width = ROW_HEIGHT, },																				-- Class icon, should be same row as player
+		{name = _G.NAME,		width = 100, sortnext = 3, defaultsort = "dsc"},											-- Name of the player (There is a bug in default lib-st sort function that "dsc" is "asc")
+		{name = L["Time"],	width = 125, comparesort = self.DateTimeSort, sort="dsc",defaultsort = "dsc",},	-- Time of awarding
+		{name = "",				width = ROW_HEIGHT, },																				-- Item icon
+		{name = L["Item"],	width = 250, comparesort = self.ItemSort,}, 													-- Item string
+		{name = L["Reason"],	width = 220, comparesort = self.ResponseSort,  sortnext = 2},							-- Response aka the text supplied to lootDB...response
+		{name = "",				width = ROW_HEIGHT},																					-- Delete button
 	}
 	filterMenu = CreateFrame("Frame", "RCLootCouncil_LootHistory_FilterMenu", UIParent, "Lib_UIDropDownMenuTemplate")
 	rightClickMenu = CreateFrame("Frame", "RCLootCouncil_LootHistory_RightclickMenu", UIParent, "Lib_UIDropDownMenuTemplate")
@@ -368,6 +368,20 @@ function LootHistory.ResponseSort(table, rowa, rowb, sortbycol)
 	end
 end
 
+function LootHistory.ItemSort(table, rowa, rowb, sortbycol)
+	local column = table.cols[sortbycol]
+	rowa, rowb = table:GetRow(rowa), table:GetRow(rowb);
+	local a,b = lootDB[rowa.name][rowa.num].lootWon, lootDB[rowb.name][rowb.num].lootWon
+	a = addon:GetItemNameFromLink(a)
+	b = addon:GetItemNameFromLink(b)
+	local direction = column.sort or column.defaultsort or "asc";
+	if direction:lower() == "asc" then
+		return a < b;
+	else
+		return a > b;
+	end
+end
+
 function LootHistory:EscapeItemLink(link)
 	return gsub(link, "\124", "\124\124")
 end
@@ -573,8 +587,8 @@ function LootHistory:GetFrame()
 	-- Import
 	local b5 = addon:CreateButton("Import", f.content)
 	b5:SetPoint("RIGHT", b3, "LEFT", -10, 0)
-	b5:SetScript("OnClick", function() 
-		self.frame.importFrame:Show() 
+	b5:SetScript("OnClick", function()
+		self.frame.importFrame:Show()
 		self.frame.importFrame.edit:SetFocus()
 	end)
 	f.importBtn = b5
