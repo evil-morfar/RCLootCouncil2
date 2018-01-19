@@ -83,7 +83,7 @@ function RCSessionFrame:ExtractData(data)
 	-- And set the new
 	for k,v in ipairs(data) do
 		local bonusText = v.link and addon:GetItemBonusText(v.link, "\n ") or ""
-		if bonusText ~= "" then bonusText = "\n "..bonusText end
+		if bonusText ~= "" then bonusText = "\n |cff33ff33"..bonusText end
 		self.frame.rows[k] = {
 			texture = v.texture or nil,
 			link = v.link,
@@ -145,7 +145,7 @@ end
 function RCSessionFrame:GetFrame()
 	if self.frame then return self.frame end
 
-	local f = addon:CreateFrame("DefaultRCSessionSetupFrame", "sessionframe", L["RCLootCouncil Session Setup"], 250)
+	local f = addon:CreateFrame("DefaultRCSessionSetupFrame", "sessionframe", L["RCLootCouncil Session Setup"], 260)
 
 	local tgl = CreateFrame("CheckButton", f:GetName().."Toggle", f.content, "ChatConfigCheckButtonTemplate")
 	getglobal(tgl:GetName().."Text"):SetText(L["Award later?"])

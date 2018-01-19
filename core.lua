@@ -658,9 +658,17 @@ function RCLootCouncil:ChatCommand(msg)
 		self.Sync:Spawn()
 --@debug@
 	elseif input == 't' then -- Tester cmd
-		local lf = self:GetActiveModule("lootframe")
-		self:Debug("LootFrame.EntryManager.entries:")
-		printtable(lf.EntryManager)
+		-- Test items with several modifiers. Should probably be added to the regular test func
+		local items = {
+			"item:147167::::::::110:256::4:4:3564:41:1487:3337",
+			"item:134396::::::::110:256::16:4:3418:42:1582:3336",
+		}
+		self.testMode = true;
+		self.isMasterLooter, self.masterLooter = self:GetML()
+		-- Call ML module and let it handle the rest
+		self:CallModule("masterlooter")
+		self:GetActiveModule("masterlooter"):NewML(self.masterLooter)
+		self:GetActiveModule("masterlooter"):Test(items)
 --@end-debug@
 	else
 		-- Check if the input matches anything

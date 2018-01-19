@@ -218,8 +218,9 @@ do
 			entry.itemCount:SetText(#entry.item.sessions > 1 and #entry.item.sessions or "")
 			local typeText = addon:GetItemTypeText(item.link, item.subType, item.equipLoc, item.typeID, item.subTypeID, item.classes, item.isTier, item.isRelic)
 			local bonusText = addon:GetItemBonusText(item.link, "/")
-			if bonusText ~= "" then bonusText = "/"..bonusText end
-			entry.itemLvl:SetText(addon:GetItemLevelText(entry.item.ilvl, entry.item.isTier)..bonusText.."  |cff7fffff"..typeText.."|r")
+			if bonusText ~= "" then bonusText = "+ "..bonusText end
+			entry.itemLvl:SetText(addon:GetItemLevelText(entry.item.ilvl, entry.item.isTier).." |cff7fffff"..typeText.."|r")
+			entry.bonuses:SetText(bonusText)
 			if entry.item.note then
 				entry.noteButton:SetNormalTexture("Interface\\Buttons\\UI-GuildButton-PublicNote-Up")
 			else
@@ -368,6 +369,10 @@ do
 			entry.itemLvl:SetPoint("TOPLEFT", entry.itemText, "BOTTOMLEFT", 1, -4)
 			entry.itemLvl:SetTextColor(1, 1, 1) -- White
 			entry.itemLvl:SetText("error")
+
+			entry.bonuses = entry.frame:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+			entry.bonuses:SetPoint("LEFT", entry.itemLvl, "RIGHT", 1, 0)
+			entry.bonuses:SetTextColor(0.2,1,0.2) -- Green
 
 			------------ Timeout -------------
 			entry.timeoutBar = CreateFrame("StatusBar", nil, entry.frame, "TextStatusBar")

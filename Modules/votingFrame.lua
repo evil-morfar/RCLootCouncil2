@@ -520,10 +520,11 @@ function RCVotingFrame:SwitchSession(s)
 	self.frame.itemText:SetText(t.link)
 	self.frame.iState:SetText(self:GetItemStatus(t.link))
 	local bonusText = addon:GetItemBonusText(t.link, "/")
-	if bonusText ~= "" then bonusText = "/"..bonusText end
-	self.frame.itemLvl:SetText(_G.ITEM_LEVEL_ABBR..": "..addon:GetItemLevelText(t.ilvl, t.token)..bonusText)
+	if bonusText ~= "" then bonusText = "+ "..bonusText end
+	self.frame.itemLvl:SetText(_G.ITEM_LEVEL_ABBR..": "..addon:GetItemLevelText(t.ilvl, t.token))
 	-- Set a proper item type text
 	self.frame.itemType:SetText(addon:GetItemTypeText(t.link, t.subType, t.equipLoc, t.typeID, t.subTypeID, t.classes, t.token, t.relic))
+	self.frame.bonuses:SetText(bonusText)
 
 	-- Update the session buttons
 	sessionButtons[s] = self:UpdateSessionButton(s, t.texture, t.link, t.awarded)
@@ -708,6 +709,10 @@ function RCVotingFrame:GetFrame()
 	iType:SetTextColor(0.5, 1, 1) -- Turqouise
 	iType:SetText("")
 	f.itemType = iType
+
+	f.bonuses = f.content:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+	f.bonuses:SetPoint("LEFT", f.itemType, "RIGHT", 1, 0)
+	f.bonuses:SetTextColor(0.2,1,0.2) -- Green
 	--#end----------------------------
 
 	-- Abort button
