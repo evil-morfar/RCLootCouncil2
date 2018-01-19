@@ -15,6 +15,10 @@
 * *Fixed an error with syncing in some locales (#318).*
 
 
+###### Dev
+* `:CustomChatCmd()` is now deprecated, use `:ModuleChatCmd()` instead.
+
+
 ### v2.7.5
 ---
 * It's now (again) possible to see the voting frame while not in the instance.

@@ -136,6 +136,21 @@ function RCLootCouncil:OnInitialize()
 		},
 		relic = {}, -- Created further down
 	}
+	self.chatCmdHelp = {
+		{cmd = "config",	desc = L["chat_commands_config"]},
+		{cmd = "council", desc = L["chat_commands_council"]},
+		{cmd = "history", desc = L["chat_commands_history"]},
+		{cmd = "version", desc = L["chat_commands_version"]},
+		{cmd = "open", desc = L["chat_commands_open"]},
+		{cmd = "reset", desc = L["chat_commands_reset"]},
+		{cmd = "test (#)", desc = L["chat_commands_test"]},
+		{cmd = "whisper", desc = L["chat_commands_whisper"]},
+		{cmd = "add [item]", desc = L["chat_commands_add"]},
+		{cmd = "award", desc = L["chat_commands_award"]},
+		{cmd = "winners", desc = L["chat_commands_winners"]},
+		{cmd = "sync", desc = L["chat_commands_sync"]},
+		longestCmd = 10,
+	}
 
 	self.testMode = false;
 
@@ -493,7 +508,21 @@ function RCLootCouncil:ChatCommand(msg)
 	if not input or input:trim() == "" or input == "help" or input == string.lower(_G.HELP_LABEL) then
 		if self.tVersion then print(format(L["chat tVersion string"],self.version, self.tVersion))
 		else print(format(L["chat version String"],self.version)) end
-		gsub(L["chat_commands"], "[^\n]+", print)
+		local module
+		for _, v in ipairs(self.chatCmdHelp) do
+			if v.module ~= module then print "" end -- Space between each module
+			if v.cmd then
+				if #v.cmd < self.chatCmdHelp.longestCmd then -- Pad extra spaces
+					--print("|cff20a200", v.cmd..strrep(" ", self.chatCmdHelp.longestCmd - #v.cmd), "|r:", v.desc)
+					print("|cff20a200", v.cmd, "|r:", v.desc)
+				else
+					print("|cff20a200", v.cmd, "|r:", v.desc)
+				end
+			else
+				print(v.desc) -- For backwards compatibility
+			end
+			module = v.module
+		end
 		self:Debug("- debug or d - Toggle debugging")
 		self:Debug("- log - display the debug log")
 		self:Debug("- clearLog - clear the debug log")
@@ -2321,21 +2350,30 @@ function RCLootCouncil:RegisterUserModule(type, name)
 	userModules[type] = name
 end
 
---- Enables a module to add chat commands to the "/rc" prefix.
--- @paramsig module, funcRef, ...
--- @param module The object to call func on.
--- @param funcRef The function reference to call on module. Passed with module as first arg, and up to two user args.
--- @param helpString A string appended to the list of commands if the user types /rc help
--- @param ... The command(s) the user can input.
--- @usage
--- -- For example in GroupGear:
--- RCLootCouncil:CustomChatCmd(GroupGear, "Show", "- gg - Show the GroupGear window (alt. 'groupgear' or 'gear')", "gg", "groupgear", "gear")
--- -- will result in GroupGear:Show() being called if the user types "/rc gg" (or "/rc groupgear" or "/rc gear")
+-- FIXME DEPRECATED in v2.7.6
 function RCLootCouncil:CustomChatCmd(module, funcRef, helpString, ...)
 	for i = 1, select("#", ...) do
 		self.customChatCmd[select(i, ...)] = {module = module, func = funcRef}
 	end
-	L["chat_commands"] = L["chat_commands"] ..helpString.."\n"
+	tinsert(self.chatCmdHelp, {desc = helpString, module = module})
+end
+
+--- Enables a module to add chat commands to the "/rc" prefix.
+-- @paramsig module, funcRef, ...
+-- @param module 	The object to call func on.
+-- @param funcRef The function reference to call on module. Passed with module as first arg, followed by user provided args.
+-- @param desc 	A string shown if the user types /rc help or an invalid command
+-- @param ... 		The command(s) the user can input. The first is shown with the help string
+-- @usage
+-- -- For example in GroupGear:
+-- RCLootCouncil:ModuleChatCmd(GroupGear, "Show", "Show the GroupGear window (alt. 'groupgear' or 'gear')", "gg", "groupgear", "gear")
+-- -- will result in GroupGear:Show() being called if the user types "/rc gg" (or "/rc groupgear" or "/rc gear")
+-- -- "/rc help" will get "gg: Show the GroupGear window (alt. 'groupgear' or 'gear')" added.
+function RCLootCouncil:ModuleChatCmd(module, funcRef, desc, ...)
+	for i = 1, select("#", ...) do
+		self.customChatCmd[select(i, ...)] = {module = module, func = funcRef}
+	end
+	tinsert(self.chatCmdHelp, {cmd = select(1, ...), desc = desc, module = module})
 end
 
 --#end Module support -----------------------------------------------------
