@@ -149,7 +149,6 @@ function RCLootCouncil:OnInitialize()
 		{cmd = "award", desc = L["chat_commands_award"]},
 		{cmd = "winners", desc = L["chat_commands_winners"]},
 		{cmd = "sync", desc = L["chat_commands_sync"]},
-		longestCmd = 10,
 	}
 
 	self.testMode = false;
@@ -512,12 +511,7 @@ function RCLootCouncil:ChatCommand(msg)
 		for _, v in ipairs(self.chatCmdHelp) do
 			if v.module ~= module then print "" end -- Space between each module
 			if v.cmd then
-				if #v.cmd < self.chatCmdHelp.longestCmd then -- Pad extra spaces
-					--print("|cff20a200", v.cmd..strrep(" ", self.chatCmdHelp.longestCmd - #v.cmd), "|r:", v.desc)
-					print("|cff20a200", v.cmd, "|r:", v.desc)
-				else
-					print("|cff20a200", v.cmd, "|r:", v.desc)
-				end
+				print("|cff20a200", v.cmd, "|r:", v.desc)
 			else
 				print(v.desc) -- For backwards compatibility
 			end
