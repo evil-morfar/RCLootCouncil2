@@ -382,6 +382,7 @@ L["Skins"] = true
 L["skins_description"] = "Select one of the default skins or create your own. Note this is purely aesthetic. Open the version checker to see the results right away ('/rc version')."
 L["Something went wrong :'("] = true
 L["Something went wrong during syncing, please try again."] = true
+L["Socket"] = true
 L["Sort Items"] = true
 L["sort_items_desc"] = "Sort sessions by item type and item level."
 L["Standard .csv output."] = true

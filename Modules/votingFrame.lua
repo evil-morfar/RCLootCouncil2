@@ -518,8 +518,9 @@ function RCVotingFrame:SwitchSession(s)
 	local t = lootTable[s] -- Shortcut
 	self.frame.itemIcon:SetNormalTexture(t.texture)
 	self.frame.itemText:SetText(t.link)
-	self.frame.iState:SetText(self:GetItemStatus(t.link))
-	self.frame.itemLvl:SetText(_G.ITEM_LEVEL_ABBR..": "..addon:GetItemLevelText(t.ilvl, t.token))
+	local bonusText = addon:GetItemBonusText(t.link, "/")
+	if bonusText ~= "" then bonusText = "/"..bonusText end
+	self.frame.itemLvl:SetText(_G.ITEM_LEVEL_ABBR..": "..addon:GetItemLevelText(t.ilvl, t.token)..bonusText)
 	-- Set a proper item type text
 
 	self.frame.itemType:SetText(addon:GetItemTypeText(t.link, t.subType, t.equipLoc, t.typeID, t.subTypeID, t.classes, t.token, t.relic))
@@ -695,12 +696,6 @@ function RCVotingFrame:GetFrame()
 	ilvl:SetTextColor(1, 1, 1) -- White
 	ilvl:SetText("")
 	f.itemLvl = ilvl
-
-	local iState = f.content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-	iState:SetPoint("LEFT", ilvl, "RIGHT", 5, 0)
-	iState:SetTextColor(0,1,0,1) -- Green
-	iState:SetText("")
-	f.iState = iState
 
 	local iType = f.content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 	iType:SetPoint("TOPLEFT", ilvl, "BOTTOMLEFT", 0, -4)
