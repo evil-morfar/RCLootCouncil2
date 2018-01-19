@@ -1861,6 +1861,10 @@ function RCLootCouncil:NewMLCheck()
 	-- Don't do popups if we're already handling loot
 	if self.handleLoot then return end
 
+	-- Don't do pop-ups in pvp
+	local _, type = IsInInstance()
+	if type == "arena" or type == "pvp" then return end
+
 	-- We are ML and shouldn't ask the player for usage
 	if self.lootMethod == "master" and db.usage.ml then -- addon should auto start
 		self:StartHandleLoot()
@@ -1917,11 +1921,7 @@ end
 -- @return boolean, "ML_Name". (true if the player is ML), (nil if there's no ML).
 function RCLootCouncil:GetML()
 	self:DebugLog("GetML()")
-	local _, type = IsInInstance()
-	if IsPartyLFG() or -- Never use in LFG
-		type == "arena" or type == "pvp" then -- Never use in PvP
-		return false, nil
-	end
+	if IsPartyLFG() then return false, nil	end -- Never use in LFG
 	if GetNumGroupMembers() == 0 and (self.testMode or self.nnp) then -- always the player when testing alone
 		return true, self.playerName
 	end
