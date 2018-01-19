@@ -161,7 +161,7 @@ local function titleCaseName(name)
       name, realm = strsplit("-", name, 2)
    end
    name = name:lower():gsub("^%l", string.upper)
-   return name .. "-" .. realm or addon.realmName
+   return name .. "-" .. (realm or addon.realmName)
 end
 -- Builds a list of targets we can sync to.
 -- Used in the options menu for an AceGUI dropdown.
