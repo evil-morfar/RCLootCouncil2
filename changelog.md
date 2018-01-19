@@ -1,3 +1,14 @@
+### v2.7.6
+---
+* **Tokens and trinkets**
+* Every eligible trinket and tier token is now registered according to specs and classes, and can be autopassed.
+
+
+###### Bugfixes
+* *No longer asks for usage in pvp instances.*
+* *Fixed an error with syncing in some locales (#318).*
+
+
 ### v2.7.5
 ---
 * It's now (again) possible to see the voting frame while not in the instance.
@@ -75,6 +86,7 @@ Note: This version partially breaks backwards compatibility. All council members
    * *The only exception to this is in LFG groups.*
    * This also requires everyone in the group to use v2.7 or newer.
 * Do note it's still not possible to automatically give out items without using Master Loot due to WoW restrictions.
+
 
 * **Announcements**
 * Added a few more keyword replacements for announcement options.
