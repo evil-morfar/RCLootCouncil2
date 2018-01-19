@@ -540,6 +540,8 @@ function RCLootCouncil:ChatCommand(msg)
 	elseif input == 'open' or input == L["open"] then
 		if self.isCouncil or self.mldb.observe or self.nnp then -- only the right people may see the window during a raid since they otherwise could watch the entire voting
 			self:GetActiveModule("votingframe"):Show()
+		elseif #lootTable == 0 then
+			self:Print(L["No session running"])
 		else
 			self:Print(L["You are not allowed to see the Voting Frame right now."])
 		end
