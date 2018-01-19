@@ -1040,6 +1040,7 @@ function RCLootCouncil:Test(num, fullTest, trinketTest)
 		-- Tier21 Trinkets
 		154172, 		-- All classes
 		151975, 151976, 151977, 151978, 152645, 153544, 154173, -- Tank
+		151974, -- Eye of Shatug. EJ item id is different with the item id actually drops
 		151956, 151957, 151958, 151960, 152289, 154175,			-- Healer
 		151964,	152093,	-- Melee DPS
 		154176, 		-- Strength DPS
@@ -2653,7 +2654,15 @@ function RCLootCouncil:GetItemTypeText(link, subType, equipLoc, typeID, subTypeI
 		local relicTooltipName = format(RELIC_TOOLTIP_TYPE, localizedRelicType)
 		return relicTooltipName
 	elseif equipLoc ~= "" and getglobal(equipLoc) then
-		if equipLoc ~= "INVTYPE_CLOAK" and
+		if equipLoc == "INVTYPE_TRINKET" then
+			local lootSpec = _G.RCTrinketSpecs[id]
+			local category = lootSpec and _G.RCTrinketCategories[lootSpec]
+			if category then
+				return getglobal(equipLoc).." ("..category..")"
+			else
+				return getglobal(equipLoc)
+			end
+		elseif equipLoc ~= "INVTYPE_CLOAK" and
 				((not (typeID == LE_ITEM_CLASS_MISCELLANEOUS and subTypeID == LE_ITEM_MISCELLANEOUS_JUNK)) -- subType: "Junk"
 				and (not (typeID == LE_ITEM_CLASS_ARMOR and subTypeID == LE_ITEM_ARMOR_GENERIC)) -- subType: "Miscellaneous"
 				and (not (typeID == LE_ITEM_CLASS_WEAPON and subTypeID == LE_ITEM_WEAPON_GENERIC))) then -- subType: "Miscellaneous"

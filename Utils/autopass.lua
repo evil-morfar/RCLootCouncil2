@@ -91,7 +91,7 @@ function RCLootCouncil:AutoPassCheck(link, equipLoc, typeID, subTypeID, classesF
 	local id = type(link) == "number" and link or self:GetItemIDFromLink(link) -- Convert to id if needed
 	if equipLoc == "INVTYPE_TRINKET" then
 		if self:Getdb().autoPassTrinket then
-			if _G.RCTrinketClasses and _G.RCTrinketClasses[id] and bit.band(_G.RCTrinketClasses[id], bit.lshift(1, classID-1)) == 0 then
+			if _G.RCTrinketSpecs and _G.RCTrinketSpecs[id] and _G.RCTrinketSpecs[id]:sub(-classID, -classID)=="0" then
 				return true
 			end
 		end
