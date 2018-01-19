@@ -2,6 +2,12 @@
 ---
 * **Tokens and trinkets**
 * Every eligible trinket and tier token is now registered according to specs and classes, and can be autopassed.
+* The Voting Frame now shows trinkets' intended receiver role and/or main stat.
+
+
+* **Item bonuses**
+* Item bonuses are now displayed in the Voting-, Loot- and Session frame.
+* The bonuses registered are Sockets, Leech, Avoidance, Speed and Indestructible.
 
 
 ###### Bugfixes
