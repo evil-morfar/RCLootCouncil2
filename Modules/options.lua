@@ -510,12 +510,24 @@ function addon:OptionsTable()
 										type = "toggle",
 										disabled = function() return not self.db.profile.autoLoot end,
 									},
+									spacer2 = {
+										order = 8,
+										type = "header",
+										name = "",
+									},
 									autolootOthersBoE = {
 										order = 8,
 										name = L["Autoloot all BoE"],
 										desc = L["autoloot_others_BoE_desc"],
 										type = "toggle",
 									},
+									allowOtherAdd = {
+										order = 10,
+										name = L["allow_other_add_name"],
+										desc = L["allow_other_add_desc"],
+										type = "toggle",
+										width = "full",
+									}
 								},
 							},
 							voteOptions = {

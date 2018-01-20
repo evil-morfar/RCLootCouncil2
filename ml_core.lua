@@ -91,9 +91,13 @@ end
 -- @param item Any: ItemID|itemString|itemLink
 -- @param baggedEntry: The table entry in db.baggedItems, if the item is ML's invenstory for award later.
 -- @param slotIndex Index of the lootSlot, or nil if none - either this or 'bagged' needs to be supplied
+-- @param owner The owner of personal looted item.
 -- @param entry Used to set data in a specific lootTable entry.
-function RCLootCouncilML:AddItem(item, baggedEntry, slotIndex, entry)
-	addon:DebugLog("ML:AddItem", item, baggedEntry, slotIndex, entry)
+function RCLootCouncilML:AddItem(item, baggedEntry, slotIndex, owner, entry)
+	addon:DebugLog("ML:AddItem", item, baggedEntry, slotIndex, owner, entry)
+	local name, link, rarity, ilvl, iMinLevel, type, subType, iStackCount, equipLoc, texture,
+		sellPrice, typeID, subTypeID, bindType, expansionID, itemSetID, isCrafting = GetItemInfo(item)
+	local itemID = link and addon:GetItemIDFromLink(link)
 
 	if not entry then
 		entry = {}
@@ -108,6 +112,7 @@ function RCLootCouncilML:AddItem(item, baggedEntry, slotIndex, entry)
 	end
 	entry.lootSlot = slotIndex
 	entry.awarded = false
+	entry.owner = owner
 
 	local itemInfo = self:GetItemInfo(item)
 
@@ -119,7 +124,7 @@ function RCLootCouncilML:AddItem(item, baggedEntry, slotIndex, entry)
 
 	-- Item isn't properly loaded, so update the data in 1 sec (Should only happen with /rc test)
 	if not itemInfo then
-		self:ScheduleTimer("Timer", 1, "AddItem", item, baggedEntry, slotIndex, entry)
+		self:ScheduleTimer("Timer", 1, "AddItem", item, baggedEntry, slotIndex, owner, entry)
 		addon:Debug("Started timer:", "AddItem", "for", item)
 	else
 		addon:SendMessage("RCMLAddItem", item, entry)
@@ -244,9 +249,16 @@ function RCLootCouncilML:StartSession()
 	end
 end
 
-function RCLootCouncilML:AddUserItem(item)
+function RCLootCouncilML:AddUserItem(item, owner)
 	if self.running then return addon:Print(L["You're already running a session."]) end
-	self:AddItem(item, false) -- The item is neither bagged nor in the loot slot.
+	if owner then
+		if not addon:UnitIsUnit(Ambiguate(owner, "short"):lower(), "player") and not UnitInParty(Ambiguate(owner, "short"):lower())
+			and not UnitInRaid(Ambiguate(owner, "short"):lower()) then
+			return addon:Print(format(L["Could not find 'player' in the group."], owner))
+		end
+		owner = addon:UnitName(owner)
+	end
+	self:AddItem(item, false, nil, owner)
 	addon:CallModule("sessionframe")
 	addon:GetActiveModule("sessionframe"):Show(self.lootTable)
 end
@@ -553,6 +565,7 @@ function RCLootCouncilML:BuildMLdb()
 		timeout			= db.timeout,
 		tierButtonsEnabled = db.tierButtonsEnabled or nil,
 		relicButtonsEnabled = db.relicButtonsEnabled or nil,
+		allowOtherAdd = db.allowOtherAdd or nil,
 	}
 
 	addon:SendMessage("RCMLBuildMLdb", MLdb)
@@ -642,10 +655,25 @@ function RCLootCouncilML:OnCommReceived(prefix, serializedMsg, distri, sender)
 			elseif command == "lootTable" and addon:UnitIsUnit(sender, addon.playerName) then
 				-- Start a timer to set response as offline/not installed unless we receive an ack
 				self:ScheduleTimer("Timer", 10, "LootSend")
+			elseif command == "add" then
+				if InCombatLockdown() then
+					return addon:SendCommand(sender, "addAck", false, "combat")
+				elseif not db.allowOtherAdd then
+					return addon:SendCommand(sender, "addAck", false, "disallow")
+				elseif self.running then
+					return addon:SendCommand(sender, "addAck", false, "running")
+				else
+					local links = unpack(data)
+					for _, link in ipairs(links) do
+						self:AddUserItem(link, sender)
+					end
+					addon:Print(format(L["Adding 'items' from 'player' to the session frame"], table.concat(links), sender))
+					return addon:SendCommand(sender, "addAck", true)
+				end
 
 			elseif command == "tradable" then -- Raid members send the info of the tradable item he looted.
 				local item = unpack(data)
-				if db.handleLoot and item and GetItemInfoInstant(item) and IsInInstance() and (not addon:UnitIsUnit(sender, "player") or addon.lootMethod ~= "master") then
+				if addon.handleLoot and item and GetItemInfoInstant(item) and IsInInstance() and (not addon:UnitIsUnit(sender, "player") or addon.lootMethod ~= "master") then
 					addon:Debug("Receive info of tradable item: ", item, sender)
 				-- Only do stuff when we are handling loot and in instance.
 				-- For ML loot method, ourselve must be excluded because it should be handled in self:LootOpen()
@@ -686,6 +714,7 @@ function RCLootCouncilML:OnEvent(event, ...)
 		elseif self.running then
 			self:GetItemsFromMessage(msg, sender)
 		end
+
 	elseif event == "TRADE_SHOW" then
 		self.trading = true
 		wipe(self.tradeItems)
@@ -1215,6 +1244,7 @@ RCLootCouncilML.announceItemStrings = {
 	["&t"] = function(_, item)
 		local t = RCLootCouncilML:GetItemInfo(item)
 		return t and addon:GetItemTypeText(t.link, t.subType, t.equipLoc, t.typeID, t.subtypeID, t.classes, t.token, t.relic) or "" end,
+	["&o"] = function(_, _, t) return t.owner and addon.Ambiguate(t.owner) or "" end,
 }
 -- The description for each keyword
 RCLootCouncilML.announceItemStringsDesc = {
@@ -1222,6 +1252,7 @@ RCLootCouncilML.announceItemStringsDesc = {
 	L["announce_&i_desc"],
 	L["announce_&l_desc"],
 	L["announce_&t_desc"],
+	L["announce_&o_desc"],
 }
 
 --@param: table: Table. The lootTable or the reroll table.
@@ -1257,6 +1288,7 @@ RCLootCouncilML.awardStrings = {
 	["&t"] = function(_, item)
 		local t = RCLootCouncilML:GetItemInfo(item)
 		return t and addon:GetItemTypeText(t.link, t.subType, t.equipLoc, t.typeID, t.subTypeID, t.classes, t.token, t.relic) or "" end,
+	["&o"] = function(...) return RCLootCouncilML.lootTable[select(5, ...)].owner and addon.Ambiguate(RCLootCouncilML.lootTable[select(5, ...)].owner) or "" end,
 }
 
 -- The description for each keyword
@@ -1268,6 +1300,7 @@ RCLootCouncilML.awardStringsDesc = {
 	L["announce_&n_desc"],
 	L["announce_&l_desc"],
 	L["announce_&t_desc"],
+	L["announce_&o_desc"],
 }
 
 

@@ -30,6 +30,7 @@ L["accept_whispers_desc"] = "Enables players to whisper their current item(s) to
 L["Active"] = true
 L["active_desc"] = "Uncheck to disable RCLootCouncil. Useful if you're in a raid group, but not actually participating. Note: This resets on every logout."
 L["Add Item"] = true
+L["Adding 'items' from 'player' to the session frame"] = "Adding %s from %s to the session frame"
 L["Add Note"] = true
 L["Add ranks"] = true
 L["Add rolls"] = true
@@ -39,6 +40,8 @@ L["All items has been awarded and  the loot session concluded"] = true
 L["All items"] = true
 L["All unawarded items"] = true
 L["All items usable by the candidate"] = true
+L["allow_other_add_name"] = "Allow other group members to add items manually by '/rc add'"
+L["allow_other_add_desc"] = "Allow other group members to add items to your session frame by '/rc add'. They can only add tradable items they own whose quality is not below the loot threshold, and they can only execute that command when you are not in combat and the session is not running."
 L["Alt click Looting"] = true
 L["alt_click_looting_desc"] = "Enables Alt click Looting, i.e. start a looting session by holding down alt and (left)clicking an item."
 L["Alternatively, flag the loot as award later."] = true
@@ -50,6 +53,7 @@ L["announce_awards_desc"] = "Enables the announcement of awards in chat."
 L["announce_awards_desc2"] = "\nChoose which channel(s) you want to announce to along with the text. The following keyword substitutions are available:\n"
 L["announce_&i_desc"] = "|cfffcd400 &i|r: item link."
 L["announce_&l_desc"] = "|cfffcd400 &l|r: item level."
+L["announce_&o_desc"] = "|cfffcd400 &o|r: The owner of the item."
 L["announce_&p_desc"] = "|cfffcd400 &p|r: name of the player getting the loot."
 L["announce_&r_desc"] = "|cfffcd400 &r|r: reason."
 L["announce_&s_desc"] = "|cfffcd400 &s|r: session id."
@@ -123,6 +127,7 @@ L["Candidate is selecting response, please wait"] = true
 L["Candidate removed"] = true
 L["Candidates that can't use the item"] = true
 L["Cannot autoaward:"] = true
+L["cant_handle_loot"] = "cannot handle looting if the loot method cannot be changed to master loot."
 L["Cannot give 'item' to 'player' due to Blizzard limitations. Gave it to you for distribution."] = "Cannot give %s to %s due to Blizzard limitations. Gave it to you for distribution."
 L["Change Award"] = true
 L["Change Response"] = true
@@ -142,9 +147,23 @@ L["chat_commands"] = [=[
 - test (#)  - Emulate a loot session with # items, 1 if omitted
 - whisper   - Displays help to whisper commands
 - add [item]- Add an item to the session frame
+- qadd      - Equivalent to \"add [the last tradable item not below the loot threshold your bag got since the last encounter]\""
 - award     - Start a session with items looted to your inventory
 - winners   - Display the winners of awarded items looted to your inventory
 - sync      - Open the synchronizer view
+]=]
+L["chat_commands_add_detailed_help_non_ml"] = [=[
+For non-ML or (non-group leader, if there is no ML):
+  /rc add [item1, item2, item3,...]
+  Send the items to the ML or group leader's session frame. You can also use the shortcut command "/rc qadd" to avoid linking the item, 
+  which is equivalent to "/rc add" the last tradable item not below the loot threshold your bag got since the last encounter.
+]=]
+L["chat_commands_add_detailed_help_ml"] = [=[
+For ML or (group leader, if no ML):
+  /rc add [item1, item2, item3, ...]
+  Add the items into the session frame
+  /rc add [owner] [item1, item2, item3, ...]
+  Add the items while specifying the owner of those items.
 ]=]
 L["chat_commands_config"]  = "- config    - Open the options interface"
 L["chat_commands_council"] = "- council   - Open the council interface"
@@ -154,10 +173,20 @@ L["chat_commands_open"]    = "- open      - Open the voting frame"
 L["chat_commands_reset"]   = "- reset     - Resets the addon's frames' positions"
 L["chat_commands_test"]    = "- test (#)  - Emulate a loot session with # items, 1 if omitted"
 L["chat_commands_whisper"] = "- whisper   - Displays help to whisper commands"
-L["chat_commands_add"]     = "- add [item]- Add an item to the session frame"
+L["chat_commands_add"]     = "- add [item]- Add an item to the session frame. Everyone can run this command."
+L["chat_commands_qadd"]    = "- qadd      - Equivalent to \"add [the last tradable item not below the loot threshold your bag got since the last encounter]\""
 L["chat_commands_award"]   = "- award     - Start a session with items looted to your inventory"
 L["chat_commands_winners"] = "- winners   - Display the winners of awarded items looted to your inventory"
 L["chat_commands_sync"]    = "- sync      - Open the synchronizer view"
+L["chat_commands_add_sending"] = "Sending %s to the MasterLooter (or the Group Leader)'s session frame."
+L["chat_commands_add_success_non_ml"] = "Successfully add the items to the MasterLooter (or the Group Leader)'s session frame."
+L["chat_commands_add_items_not_eligible"] = "You can only add tradable item in your bag whose quality is not lower than the loot threshold."
+L["chat_commands_error_not_in_group"] = "You cannot use this command without a group."
+L["chat_commands_error_ml_disallow"] = "You cannot use this command because it is not allowed by the Master Looter (or the Group Leader, if no ML)."
+L["chat_commands_error_ml_combat"] = "You cannot use this command because the Master Looter (or the Group Leader, if no ML) is in combat."
+L["chat_commands_error_session_running"] = "You cannot use this command when a session is running."
+L["chat_commands_error_unknown"] = "Command fails for unknown reason."
+L["chat_commands_qadd_no_recent_addable_item"] = "Your bag didn't receive any new tradable item that is not below loot threshold since the last encounter."
 L["Check this to loot the items and distribute them later."] = true
 L["Check to append the realmname of a player from another realm"] = true
 L["Check to have all frames minimize when entering combat"] = true
@@ -364,6 +393,7 @@ L["Sent whisper help to 'player'"] = "Sent whisper help to %s"
 L["session_error"] = "Something went wrong - please restart the session"
 L["session_help_not_direct"] = "Items in this session are not given to the candidates directly. Items needs to be traded."
 L["session_help_from_bag"] = "After the session ends, you can use '/rc winners' to see who you should trade the items to."
+L["session_frame_wait_session_end"] = "processing award later. Please wait."
 L["Set the text for button i's response."] = "Set the text for button %d's response'"
 L["Set the text on button 'number'"] = "Set the text on button %i"
 L["Set the whisper keys for button i."] = "Set the whisper keys for button %d."

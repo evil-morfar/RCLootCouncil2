@@ -27,6 +27,7 @@ LibDialog:Register("RCLOOTCOUNCIL_CONFIRM_USAGE", {
          on_click = function()
             addon:DebugLog("Player declined usage")
             addon:Print(L[" is not active in this raid."])
+            addon.handleLoot = false
          end,
       },
    },

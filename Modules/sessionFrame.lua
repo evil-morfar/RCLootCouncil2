@@ -41,7 +41,9 @@ end
 
 function RCSessionFrame:Show(data, disableAwardLater)
 	if waitingToEndSessions then
-		return		-- Silently fails
+		addon:Print(L["session_frame_wait_session_end"])
+		self:Disable()
+		return
 	end
 
 	self.frame = self:GetFrame()
@@ -83,7 +85,9 @@ function RCSessionFrame:ExtractData(data)
 		self.frame.rows[k] = {
 			texture = v.texture or nil,
 			link = v.link,
+			owner = v.owner,
 			cols = {
+				-- For the following columns, if DoCellUpdate is not set, it shows "value", otherwise see the code in its DoCellUpdate function.
 				{ DoCellUpdate = self.SetCellDeleteBtn, },
 				{ DoCellUpdate = self.SetCellItemIcon},
 				{ value = " "..(addon:GetItemLevelText(v.ilvl, v.token) or ""), },
@@ -112,7 +116,7 @@ function RCSessionFrame.SetCellText(rowFrame, frame, data, cols, row, realrow, c
 		loadingItems = true
 		RCSessionFrame:ScheduleTimer("Show", 1, ml.lootTable) -- Expect data to be available in 1 sec and then recreate the frame
 	else
-		frame.text:SetText(data[realrow].link)
+		frame.text:SetText(data[realrow].link..(data[realrow].owner and ("\n"..addon:GetUnitClassColoredName(data[realrow].owner)) or ""))
 	end
 end
 

@@ -876,7 +876,11 @@ end
 
 function RCVotingFrame.SetCellName(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
 	local name = data[realrow].name
-	frame.text:SetText(addon.Ambiguate(name))
+	if lootTable[session].owner == name then -- addon:UnitIsUnit(lootTable[session].owner, name) 
+		frame.text:SetText("|TInterface\\LOOTFRAME\\LootToast:0:0:0:0:1024:256:610:640:224:256|t"..addon.Ambiguate(name))
+	else
+		frame.text:SetText(addon.Ambiguate(name))
+	end
 	local c = addon:GetClassColor(lootTable[session].candidates[name].class)
 	frame.text:SetTextColor(c.r, c.g, c.b, c.a)
 	data[realrow].cols[column].value = name or ""

@@ -91,7 +91,7 @@ function RCLootCouncil:OnInitialize()
 	self.guildRank = L["Unguilded"]
 	self.isMasterLooter = false -- Are we the ML?
 	self.masterLooter = ""  -- Name of the ML
-	self.lootMethod = "personalloot"
+	self.lootMethod = GetLootMethod() or "personalloot"
 	self.handleLoot = false -- Does RC handle loot(Start session from loot window)?
 	self.isCouncil = false -- Are we in the Council?
 	self.enabled = true -- turn addon on/off
@@ -102,7 +102,6 @@ function RCLootCouncil:OnInitialize()
 	self.recentTradableItem = nil -- The last tradeable item not below the loot threshold the player gets since the last encounter ends
 	self.lootOpen = false 	-- is the ML lootWindow open or closed?
 	self.lootSlotInfo = {}  -- Items' data currently in the loot slot. Need this because inside LOOT_SLOT_CLEARED handler, GetLootSlotLink() returns invalid link.
-
 	self.verCheckDisplayed = false -- Have we shown a "out-of-date"?
 	self.moduleVerCheckDisplayed = {} -- Have we shown a "out-of-date" for a module? The key of the table is the baseName of the module.
 
@@ -164,6 +163,7 @@ function RCLootCouncil:OnInitialize()
 			autolootEverything = true,
 			autolootBoE = true,
 			autolootOthersBoE = false, -- Auto add BoE looted by others to the session frame
+			allowOtherAdd = true,
 			autoOpen = true, -- auto open the voting frame
 			autoClose = false, -- Auto close voting frame on session end
 			autoPassBoE = true,
@@ -531,17 +531,14 @@ function RCLootCouncil:ChatCommand(msg)
 		self:Print(L["whisper_help"])
 
 	elseif input == "add" or input == string.lower(_G.ADD) then
-		if not args[1] or args[1] == "" then return self:ChatCommand("help") end
-		if self.isMasterLooter then
-			local links = args
-			if args[1]:find("|h") then -- Only split links if we have at least one
-			 	links = self:SplitItemLinks(args) -- Split item links to allow user to enter links without space
-			end
-			for _,v in ipairs(links) do
-			self:GetActiveModule("masterlooter"):AddUserItem(v)
-			end
+		self:ChatCommandRCAdd(args)
+
+	elseif input == "qadd" then
+		if not self.recentAddableItem then
+			self:Print(L["chat_commands_qadd_no_recent_addable_item"])
 		else
-			self:Print(L["You cannot use this command without being the Master Looter"])
+			self:Print("/rc add "..self.recentTradableItem)
+			self:ChatCommandRCAdd({self.recentTradableItem})
 		end
 
 	elseif input == "award" or input == L["award"] then
@@ -554,6 +551,20 @@ function RCLootCouncil:ChatCommand(msg)
 	elseif input == "winners" or input == L["winners"] then
 		if self.isMasterLooter then
 			self:GetActiveModule("masterlooter"):PrintAwardedInBags()
+		else
+			self:Print(L["You cannot use this command without being the Master Looter"])
+		end
+
+	elseif input == "startloot" then
+		if self.isMasterLooter then
+			self:StartHandleLoot()
+		else
+			self:Print(L["You cannot use this command without being the Master Looter"])
+		end
+	elseif input == "stoploot" then
+		if self.isMasterLooter then
+			self.handleLoot = false
+			self:Print(L[" is not active in this raid."])
 		else
 			self:Print(L["You cannot use this command without being the Master Looter"])
 		end
@@ -618,6 +629,77 @@ function RCLootCouncil:ChatCommand(msg)
 			if k == input then return v.module[v.func](v.module, unpack(args)) end
 		end
 		self:ChatCommand("help")
+	end
+end
+
+-- "/rc add" command:
+-- For ML: /rc add [owner][item1, item2, item3...] or /rc add [item1, item2, item3]
+-- For others: /rc add [item1, item2, item3]
+function RCLootCouncil:ChatCommandRCAdd(args)
+	if self.isMasterLooter then
+		if not args[1] or args[1] == "" then
+			return self:Print(L["chat_commands_add_detailed_help_ml"])
+		end
+	elseif not args[1] or (not tonumber(args[1]) and not args[1]:find("|h")) then
+		return self:Print(L["chat_commands_add_detailed_help_non_ml"])
+	end
+
+	local owner = nil
+	if self.isMasterLooter then
+		if not args[1]:find("|") then -- arg1 is the owner name
+			owner = args[1]
+			tremove(args, 1)
+		end
+	end
+
+	local links = args
+
+	if args[1]:find("|h") then -- Only split links if we have at least one (support item id)
+		links = self:SplitItemLinks(args) -- Split item links to allow user to enter links without space
+	end
+
+	if self.isMasterLooter then
+		for _,v in ipairs(links) do
+			self:GetActiveModule("masterlooter"):AddUserItem(v, owner)
+		end
+	elseif GetNumGroupMembers() == 0 or not self.masterLooter then
+		self:Print(L["chat_commands_error_not_in_group"])
+	elseif not self.mldb or not self.mldb.allowOtherAdd then
+		self:Print(L["chat_commands_error_ml_disallow"])
+	elseif UnitAffectingCombat(Ambiguate(self.masterLooter, "short"):lower()) then
+		self:Print(L["chat_commands_error_ml_combat"])
+	else
+		local itemsEligible = true
+		for _, link in ipairs(links) do
+			local rarity = select(3, GetItemInfo(link))
+			if not rarity or rarity < GetLootThreshold() then
+				itemsEligible = false
+				break
+			end
+
+			local itemFound = false
+			for i = 0, NUM_BAG_SLOTS do
+				for j = 1, GetContainerNumSlots(i) do
+					local _, _, _, _, _, _, link2 = GetContainerItemInfo(i, j)
+					if link2 and self:ItemIsItem(link, link2) 
+						and self:GetContainerItemTradeTimeRemaining(i, j) > 0 then
+						itemFound = true
+						break
+					end
+				end
+			end
+			if not itemFound then
+				itemsEligible = false
+				break
+			end
+		end
+
+		if not itemsEligible then
+			self:Print(L["chat_commands_add_items_not_eligible"])
+		else
+			self:SendCommand("group", "add", links)
+			self:Print(format(L["chat_commands_add_sending"], table.concat(links)))
+		end
 	end
 end
 
@@ -923,6 +1005,19 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 				self.Sync:SyncAckReceived(unpack(data))
 			elseif command == "syncNack" then
 				self.Sync:SyncNackReceived(unpack(data))
+			elseif command == "addAck" and self:UnitIsUnit(sender, self.masterLooter) then -- "/rc add" acknowlegdement from ML
+				local success, cause = unpack(data)
+				if success then
+					self:Print(L["chat_commands_add_success_non_ml"])
+				elseif cause == "combat" then
+					self:Print(L["chat_commands_error_ml_combat"])
+				elseif cause == "running" then
+					self:Print(L["chat_commands_error_session_running"])
+				elseif cause == "disallow" then
+					self:Print(L["chat_commands_error_ml_disallow"])
+				else
+					self:Print(L["chat_commands_error_unknown"])
+				end
 			end
 		else
 			-- Most likely pre 2.0 command
@@ -1667,6 +1762,7 @@ function RCLootCouncil:OnEvent(event, ...)
 	elseif event == "GROUP_LEFT" then
 		self:Debug("Event:", event, ...)
 		self:NewMLCheck()
+		self.recentAddableItem = nil	
 
 	elseif event == "RAID_INSTANCE_WELCOME" then
 		self:Debug("Event:", event, ...)
@@ -1703,6 +1799,7 @@ function RCLootCouncil:OnEvent(event, ...)
 	elseif event == "ENCOUNTER_END" then
 		self:DebugLog("Event:", event, ...)
 		self.bossName = select(2, ...) -- Extract encounter name
+		self.recentTradableItem = nil
 
 	elseif event == "LOOT_OPENED" then
 		self:Debug("Event:", event, ...)
@@ -1752,53 +1849,57 @@ function RCLootCouncil:NewMLCheck()
 	local old_lm = self.lootMethod
 	self.isMasterLooter, self.masterLooter = self:GetML()
 	self.lootMethod = GetLootMethod()
+
 	if self.masterLooter and self.masterLooter ~= "" and strfind(self.masterLooter, "Unknown") then
 		-- ML might be unknown for some reason
 		self:Debug("Unknown ML")
 		return self:ScheduleTimer("NewMLCheck", 2)
 	end
 
-	if not self.isMasterLooter then -- we're not ML, so make sure it's disabled
-		self:GetActiveModule("masterlooter"):Disable()
-		self.handleLoot = false -- Reset
-	end
-	if IsPartyLFG() then return end	-- We can't use in lfg/lfd so don't bother
-	if not self.masterLooter then return end -- Didn't find a leader or ML.
-	if self:UnitIsUnit(old_ml, self.masterLooter) then
-		if old_lm == self.lootMethod then return end -- Both ML and loot method have not changed
-	else
-		-- At this point we know the ML has changed, so we can wipe the council
+	if self.masterLooter and not self:UnitIsUnit(old_ml, self.masterLooter) then 
+		-- At this point we know the ML has changed when we are still in a group, so we can wipe the council
 		self:Debug("Resetting council as we have a new ML!")
 		self.council = {}
 		self.isCouncil = false
 		self:Debug("MasterLooter = ", self.masterLooter)
 		-- Check to see if we have recieved mldb within 15 secs, otherwise request it
-		self:ScheduleTimer("Timer", 15, "MLdb_check")
+		if not IsPartyLFG() then self:ScheduleTimer("Timer", 15, "MLdb_check") end
 	end
 
-	if not self.isMasterLooter then -- Someone else has become ML
-		return
-	else
+	if not self.isMasterLooter then
+		self:GetActiveModule("masterlooter"):Disable()
+	elseif not self:GetActiveModule("masterlooter"):IsEnabled() then
 		self:CallModule("masterlooter")
 		self:GetActiveModule("masterlooter"):NewML(self.masterLooter)
 	end
-	-- Check if we can use in party
-	if not IsInRaid() and db.onlyUseInRaids then return end
+	
+	if not self.isMasterLooter  -- Never handle loot without being "ML"
+		or IsPartyLFG()  -- Never handle loot in lfg/lfd
+		or self.lootMethod ~= "master" then -- Never actually handle loot when the loot method is not master
+		self.handleLoot = false
 
-	-- We are ML and shouldn't ask the player for usage
-	if self.lootMethod == "master" and db.usage.ml then -- addon should auto start
-		self:StartHandleLoot()
-	-- We're ML and must ask the player for usage
-	elseif self.lootMethod == "master" and db.usage.ask_ml then
-		return LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_USAGE")
+	elseif self:UnitIsUnit(old_ml, self.masterLooter) and old_lm == self.lootMethod then
+		-- ML and loot method have no change, dont change handle Loot
+	elseif not self.handleLoot then -- Try to auto enable loot handle if it is not already enabled
+		-- Auto enables/disable handle loot according to user setting
+		if IsInRaid() or (not db.onlyUseInRaids) then  -- Note: User is still able to enable loot handling manually, even if these checks are not passed.
+			if db.usage.ml then -- addon should auto start
+				self:StartHandleLoot()
+			-- We're ML and must ask the player for usage
+			elseif db.usage.ask_ml then
+				return LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_USAGE")
+			end
+		end
 	end
 end
 
 function RCLootCouncil:StartHandleLoot()
-	if not self.isMasterLooter or db.usage.never then return end -- Someone else has become ML or we don't want to handle loot
+	if not self.isMasterLooter or IsPartyLFG() then return end -- Someone else has become ML or LFG
+																-- Dont check usage options such as db.onlyUseInRaids in this function
 	local lootMethod = GetLootMethod()
-	if lootMethod ~= "master" and not self:CanSetML() then return end -- Cant handle loot if we cant use ML loot method.
-
+	if lootMethod ~= "master" and not self:CanSetML() then
+		return addon:Print(L["cannot_handle_loot"])
+	end
 	self:Debug("Start handle loot.")
 	self.handleLoot = true
 	if lootMethod ~= "master" then
@@ -1824,10 +1925,8 @@ function RCLootCouncil:OnRaidEnter(arg)
 	if IsPartyLFG() then return end	-- We can't use in lfg/lfd so don't bother
 	-- Check if we can use in party
 	if not IsInRaid() and db.onlyUseInRaids then return end
-	if self.lootMethod ~= "master" and self:CanSetML() then
+	if self.lootMethod ~= "master" and self:CanSetML() and not self.handleLoot then
 		-- We don't need to ask the player for usage, so change loot method to master, and make the player ML
-		self.handleLoot = false -- Reset
-
 		if db.usage.leader then
 			self:StartHandleLoot()
 		-- We must ask the player for usage
@@ -2061,6 +2160,7 @@ end
 -- Although log shows item in the loot actually has no uniqueId in Legion, but just in case Blizzard changes it in the future.
 -- @return true if two items are the same item
 function RCLootCouncil:ItemIsItem(item1, item2)
+	if not item1 or not item2 then return false end
 	if type(item1) ~= "string" or type(item2) ~= "string" then return item1 == item2 end
 	local pattern = "|Hitem:(%d*):(%d*):(%d*):(%d*):(%d*):(%d*):(%d*):%d*:%d*:%d*"
 	local replacement = "|Hitem:%1:%2:%3:%4:%5:%6:%7:::" -- Compare link with uniqueId, linkLevel and SpecID removed
@@ -2283,18 +2383,19 @@ function RCLootCouncil:GetClassColor(class)
 	end
 end
 
-function RCLootCouncil:GetUnitClassColoredName(name)
+function RCLootCouncil:GetUnitClassColoredName(name, forceShortName)
 	if self.candidates[name] and self.candidates[name].class then
 		local c = self:GetClassColor(self.candidates[name].class)
-		return "|cff"..self:RGBToHex(c.r,c.g,c.b)..self.Ambiguate(name).."|r"
+		return "|cff"..self:RGBToHex(c.r,c.g,c.b)..(forceShortName and Ambiguate(name, "short") or self.Ambiguate(name)).."|r"
 	else
 		local englishClass = select(2, UnitClass(Ambiguate(name, "short")))
 		name = self:UnitName(name)
+		local displayName = forceShortName and Ambiguate(name, "short") or self.Ambiguate(name)
 		if not englishClass or not name then
-			return self.Ambiguate(name)
+			return displayName
 		else
 			local color = RAID_CLASS_COLORS[englishClass].colorStr
-			return "|c"..color..self.Ambiguate(name).."|r"
+			return "|c"..color..displayName.."|r"
 		end
 	end
 end
