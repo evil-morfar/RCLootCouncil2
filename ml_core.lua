@@ -644,7 +644,7 @@ function RCLootCouncilML:OnCommReceived(prefix, serializedMsg, distri, sender)
 
 			elseif command == "tradable" then -- Raid members send the info of the tradable item he looted.
 				local item = unpack(data)
-				if db.handleLoot and item and GetItemInfoInstant(item) and IsInInstance() and (not addon:UnitIsUnit(sender, "player") or addon.lootMethod ~= "master") then
+				if addon.handleLoot and item and GetItemInfoInstant(item) and IsInInstance() and (not addon:UnitIsUnit(sender, "player") or addon.lootMethod ~= "master") then
 					addon:Debug("Receive info of tradable item: ", item, sender)
 				-- Only do stuff when we are handling loot and in instance.
 				-- For ML loot method, ourselve must be excluded because it should be handled in self:LootOpen()
