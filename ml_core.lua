@@ -252,7 +252,7 @@ end
 function RCLootCouncilML:AddUserItem(item, owner)
 	if self.running then return addon:Print(L["You're already running a session."]) end
 	if owner then
-		if not addon:UnitIsUnit(Ambiguate(owner, "short"):lower(), "player") and not UnitInParty(Ambiguate(owner, "short"):lower()) 
+		if not addon:UnitIsUnit(Ambiguate(owner, "short"):lower(), "player") and not UnitInParty(Ambiguate(owner, "short"):lower())
 			and not UnitInRaid(Ambiguate(owner, "short"):lower()) then
 			return addon:Print(format(L["Could not find 'player' in the group."], owner))
 		end
@@ -673,7 +673,7 @@ function RCLootCouncilML:OnCommReceived(prefix, serializedMsg, distri, sender)
 
 			elseif command == "tradable" then -- Raid members send the info of the tradable item he looted.
 				local item = unpack(data)
-				if db.handleLoot and item and GetItemInfoInstant(item) and IsInInstance() and (not addon:UnitIsUnit(sender, "player") or addon.lootMethod ~= "master") then
+				if addon.handleLoot and item and GetItemInfoInstant(item) and IsInInstance() and (not addon:UnitIsUnit(sender, "player") or addon.lootMethod ~= "master") then
 					addon:Debug("Receive info of tradable item: ", item, sender)
 				-- Only do stuff when we are handling loot and in instance.
 				-- For ML loot method, ourselve must be excluded because it should be handled in self:LootOpen()
