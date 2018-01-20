@@ -660,8 +660,12 @@ function RCLootCouncil:ChatCommand(msg)
 	elseif input == 't' then -- Tester cmd
 		-- Test items with several modifiers. Should probably be added to the regular test func
 		local items = {
+			"item:152159:5442:151583::::::110:256::4:5:3613:42:1808:1472:3337",
 			"item:147167::::::::110:256::4:4:3564:41:1487:3337",
+			"item:151941::::::::110:256::3:5:3610:42:43:1487:3337",
 			"item:134396::::::::110:256::16:4:3418:42:1582:3336",
+			"item:147017::::::::110:256::5:4:41:3562:1497:3528",
+			"item:151955::::::::110:256::3:4:43:3610:1472:3528",
 		}
 		self.testMode = true;
 		self.isMasterLooter, self.masterLooter = self:GetML()
