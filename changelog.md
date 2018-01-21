@@ -14,6 +14,7 @@
 * *No longer asks for usage in pvp instances.*
 * *Fixed an error with syncing in some locales (#318).*
 * *Item names in the loot history are now sorted correctly.*
+* *Changing roles mid raid wouldn't always be registered properly.*
 
 
 ###### Dev

@@ -165,13 +165,13 @@ function RCLootCouncilML:UpdateGroup(ask)
 	if type(ask) ~= "boolean" then ask = false end
 	local group_copy = {}
 	local updates = false
-	for name in pairs(self.candidates) do	group_copy[name] = true end
+	for name, v in pairs(self.candidates) do	group_copy[name] = v.role end
 	for i = 1, GetNumGroupMembers() do
 		local name, _, _, _, _, class, _, _, _, _, _, role  = GetRaidRosterInfo(i)
 
 		if name then -- Apparantly name can be nil (ticket #223)
 			name = addon:UnitName(name) -- Get their unambiguated name
-			if group_copy[name] then	-- If they're already registered
+			if group_copy[name] == role then	-- If they're already registered
 				group_copy[name] = nil	-- remove them from the check
 			else -- add them
 				if not ask then -- ask for playerInfo?
