@@ -1864,7 +1864,8 @@ function RCLootCouncil:OnEvent(event, ...)
 			self:Debug("OnLootSlotCleared()", slot, link)
 			self.lootSlotInfo[slot] = nil
 
-			if quality and quality >= GetLootThreshold() and IsInInstance() then -- Only send when in instance
+			if not self.isMasterLooter and -- The ML must add his own tradable items. Otherwise it's indistinguishable from an award to himself.
+				quality and quality >= GetLootThreshold() and IsInInstance() then -- Only send when in instance
 				-- Note that we don't check if this is master looted or not. We only know this is looted by ourselves.
 				self:ScheduleTimer("UpdateAndSendRecentTradableItem", 1, link) -- Delay a bit, need some time to between item removed from loot slot and moved to the bag.
 			end
