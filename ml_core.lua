@@ -643,6 +643,7 @@ function RCLootCouncilML:OnCommReceived(prefix, serializedMsg, distri, sender)
 				self:ScheduleTimer("Timer", 11 + 0.5*#self.lootTable, "LootSend")
 
 			elseif command == "tradable" then -- Raid members send the info of the tradable item he looted.
+				if not db.autolootOthersBoE then return end -- Don't even bother
 				local item = unpack(data)
 				if db.handleLoot and item and GetItemInfoInstant(item) and IsInInstance() and (not addon:UnitIsUnit(sender, "player") or addon.lootMethod ~= "master") then
 					addon:Debug("Receive info of tradable item: ", item, sender)
@@ -657,8 +658,9 @@ function RCLootCouncilML:OnCommReceived(prefix, serializedMsg, distri, sender)
 					local quality = select(3, GetItemInfo(item))
 
 					if (IsEquippableItem(item) or db.autolootEverything) and -- Safetee: I don't want to check db.autoloot here, because this is actually not a loot.
-						(quality and quality >= GetLootThreshold()) then
-						if db.autolootOthersBoE and bindType and bindType ~= LE_ITEM_BIND_ON_ACQUIRE then
+						not self:IsItemIgnored(item) and -- Item mustn't be ignored
+						(quality and quality >= GetLootThreshold()) and
+						(bindType and bindType ~= LE_ITEM_BIND_ON_ACQUIRE) then
 							-- Safetee: I actually prefer to use the term "non-bop" instead of "boe"
 							if InCombatLockdown() then
 								addon:Print(format(L["autoloot_others_item_combat"], addon:GetUnitClassColoredName(sender), item))
@@ -666,7 +668,6 @@ function RCLootCouncilML:OnCommReceived(prefix, serializedMsg, distri, sender)
 							else
 								self:AddUserItem(item, sender)
 							end
-						end
 					end
 				end
 			end
