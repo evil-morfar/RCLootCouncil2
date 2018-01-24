@@ -150,8 +150,9 @@ function sync:SyncDataReceived(sender, type, data)
 end
 
 local function addNameToList(list, name, class)
+   addon:DebugLog("Sync:addNameToList()", name, class)
    local c = addon:GetClassColor(class)
-   list[name] = "|cff"..addon:RGBToHex(c.r,c.g,c.b) .. name .."|r"
+   list[name] = "|cff"..addon:RGBToHex(c.r,c.g,c.b) .. tostring(name) .."|r"
 end
 
 local function titleCaseName(name)
