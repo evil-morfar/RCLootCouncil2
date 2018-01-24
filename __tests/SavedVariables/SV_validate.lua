@@ -28,33 +28,45 @@ local function spairs(t, order)
 end
 
 local function checkSV()
-   function options()
+   local function options()
       print "Checking options"
       print ""
       -- Filters
+      print "Module  \tOption  \t\tProfile"
       for profile, v in pairs(RCLootCouncilDB.profiles) do
-         if not v.modules then print("\tNo module settings"); break; end
-         for k,v in pairs(v.modules) do
-            if v.moreInfo ~= nil then  print(profile,"module",k,"moreInfo",v.moreInfo) end
+         if not v.modules then
+            print(string.format("%s - \t%s",profile,"No module settings"))
+         else
+            for k,v in pairs(v.modules) do
+               if v.moreInfo ~= nil then  print(string.format("%s: \t%s = %s \t| %s",k,"moreInfo", tostring(v.moreInfo), profile)) end
+            end
          end
       end
       print "Done checking options"
       print "----------"
    end
-   function log()
+   local function numComms()
+      local num =0
+      for k,v in pairs(RCLootCouncilDB.global.log) do
+         if v:find("Comm received:") then num = num + 1 end
+      end
+      print(string.format("Comms: %d of %d = %.2f%%",num, #RCLootCouncilDB.global.log,num/#RCLootCouncilDB.global.log*100))
+   end
+   local function log()
       print "Checking log"
       print("version:", RCLootCouncilDB.global.version)
       print("old version:",RCLootCouncilDB.global.oldVersion)
-      print("locale:", RCLootCouncilDB.global.locale)
+      print("locale:\t", RCLootCouncilDB.global.locale)
+      numComms()
       print ""
       for k,v in ipairs(RCLootCouncilDB.global.log) do
          if v:lower():find("%f[%a]error") then print("Error", k,v) end
          if v:find("Data wasn't ready") then print("Data wasn't ready",k,v) end
       end
-      print "Done checking log"
+      print "\nDone checking log"
       print "----------"
    end
-   function encounters()
+   local function encounters()
       print("Checking Encounters")
       print ""
       local encounters = {}
@@ -89,7 +101,7 @@ local function checkSV()
       end
       print "----------"
    end
-   function lootdb()
+   local function lootdb()
       print("Checking LootDB")
       print ""
       -- Check loot db
@@ -118,8 +130,8 @@ local function checkSV()
       print(icount, "items checked")
       print "----------"
    end
-   function otherVersions()
-      print "Checking other players' version"
+   local function otherVersions()
+      print "Checking other players' version\n"
       local players = {}
       -- First extract the ones we have in verTestCandidates:
       for player, version in pairs(RCLootCouncilDB.global.verTestCandidates) do
@@ -135,25 +147,40 @@ local function checkSV()
       end
       table.sort(players)
       for player, v in spairs(players) do
-         print(string.format("%s: \t\t %s",player, v))
+         print(string.format("%s: %s",v,player))
       end
       print "----------"
    end
-   log()
-   encounters()
-   options()
-   lootdb()
-   otherVersions()
-   local num =0
-   for k,v in pairs(RCLootCouncilDB.global.log) do
-      if v:find("Comm received:") then num = num + 1 end
+
+   local function tradables()
+      print "Checking tradables\n"
+      for i, entry in ipairs(RCLootCouncilDB.global.log) do
+         if entry:find("tradable") then
+            print("Line:",i,entry:match("(item:.-):*|h(.*)|h"))
+         end
+      end
+      print "----------"
    end
-   print("Comms:",num)
+
+   log()
+   otherVersions()
+   options()
+   tradables()
+   encounters()
+   lootdb()
 end
 
 do
    dofile("sv_to_process.lua")
    checkSV()
-
-
+   local ent = {}
+   local var
+   for k,v in ipairs(RCLootCouncilDB.global.log) do
+      var = v:match(" - (%w+)")
+      var = tostring(var)
+      if not ent[var] then ent[var] = 1 else ent[var] = ent[var] + 1 end
+      --print(var)
+   end
+   table.sort(ent)
+   for k,v in spairs(ent) do print(k,v) end
 end
