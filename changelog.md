@@ -1,3 +1,9 @@
+### v2.7.7
+---
+###### Bugfixes
+* *Fixed a `ZERO` bug introduced with v2.7.6.*
+
+
 ### v2.7.6
 ---
 * **Tokens and trinkets**
