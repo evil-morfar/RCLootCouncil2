@@ -4,6 +4,11 @@
 -- Create Date : 12/03/2017
 -- Update Date : 1/7/2018 (7.3.2 Build 25549)
 
+
+local ZERO = ""
+for i=1, GetNumClasses() do
+	ZERO = "0"..ZERO -- "000000000000"
+end
 --@debug@
 --[[
 This function is used for developer.
@@ -31,10 +36,6 @@ local trinketSpecs = {
 local trinketNames = {
 	[151974] = "Eye of",
 }
-local ZERO = ""
-for i=1, GetNumClasses() do 
-	ZERO = "0"..ZERO -- "000000000000"
-end
 
 -- The params are used internally inside this function
 -- Process in the following order:
@@ -109,7 +110,7 @@ function RCLootCouncil:ExportTrinketData(nextTier, nextIsRaid, nextIndex, nextDi
 			longestNameLen = #name
 		end
 	end
-	local exp = "%-"..format("%d", longestNameLen+1).."s" 
+	local exp = "%-"..format("%d", longestNameLen+1).."s"
 	for _, entry in ipairs(sorted) do
 		exports = exports.."\t["..entry[1].."] = "..format("%q", entry[2])
 			..",\t-- "..format(exp, trinketNames[entry[1]]..",").."\t"..(_G.RCTrinketCategories[entry[2]] or "").."\n"
@@ -973,4 +974,3 @@ _G.RCTrinketSpecs = {
 	[154176] = "000000600043",	-- Khaz'goroth's Courage,                          	Damage, Strength
 	[154177] = "010771050000",	-- Norgannon's Prowess,                            	Damage, Intellect
 }
-
