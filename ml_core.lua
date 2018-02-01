@@ -178,7 +178,6 @@ function RCLootCouncilML:UpdateGroup(ask)
 			else -- add them
 				if not ask then -- ask for playerInfo?
 					addon:SendCommand(name, "playerInfoRequest")
-					addon:SendCommand(name, "MLdb", addon.mldb) -- and send mlDB
 				end
 				self:AddCandidate(name, class, role) -- Add them in case they haven't installed the adoon
 				updates = true
@@ -193,6 +192,7 @@ function RCLootCouncilML:UpdateGroup(ask)
 		if v then self:RemoveCandidate(name); updates = true end
 	end
 	if updates then
+		addon:SendCommand("group", "MLdb", addon.mldb)
 		addon:SendCommand("group", "candidates", self.candidates)
 
 		local oldCouncil = self.council
