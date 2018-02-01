@@ -754,7 +754,7 @@ function RCVotingFrame:GetFrame()
 
 	f.moreInfo = CreateFrame( "GameTooltip", "RCVotingFrameMoreInfo", nil, "GameTooltipTemplate" )
 	f.content:SetScript("OnSizeChanged", function()
- 		f.moreInfo:SetScale(self.frame:GetScale() * 0.6)
+ 		f.moreInfo:SetScale(f:GetScale() * 0.6)
  	end)
 
 	-- Filter
