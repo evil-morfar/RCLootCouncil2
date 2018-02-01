@@ -1,3 +1,9 @@
+### v2.7.8
+---
+###### Bugfixes
+* *Changing role could temporarily remove a candidate from future sessions (#328).*
+
+
 ### v2.7.7
 ---
 ###### Bugfixes
@@ -12,8 +18,8 @@
 
 
 * **Item bonuses**
-* Item bonuses are now displayed in the Voting-, Loot- and Session frame.
-* The bonuses registered are Sockets, Leech, Avoidance, Speed and Indestructible.
+ * Item bonuses are now displayed in the Voting-, Loot- and Session frame.
+ * The bonuses registered are Sockets, Leech, Avoidance, Speed and Indestructible.
 
 
 ###### Bugfixes
