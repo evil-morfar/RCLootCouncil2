@@ -1,7 +1,7 @@
 ### v2.7.8
 ---
 ###### Bugfixes
-* *Changing role could temporarily remove a candidate from future sessions (#328).*
+* *Changing role could temporarily remove a candidate from future sessions (#328, #332, #333).*
 * *Fixed an odd potential error related to the voting frame (#330).*
 
 
