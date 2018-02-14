@@ -123,6 +123,7 @@ L["Candidate didn't respond on time"] = true
 L["Candidate has disabled RCLootCouncil"] = true
 L["Candidate is not in the instance"] = true
 L["Candidate is selecting response, please wait"] = true
+L["Candidate owns equal or better version and the appearance of this item"] = true
 L["Candidate removed"] = true
 L["Candidates that can't use the item"] = true
 L["Cannot autoaward:"] = true
