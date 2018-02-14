@@ -1625,6 +1625,7 @@ function RCLootCouncil:IsAppearanceCollected(item)
 end
 
 -- Return true if myItem has the same item id of otherItem, and any stats (primary, secondary, #sockets, leech, etc) of otherItem is not greater than that of myItem
+-- Item enchant is removed before comparison.
 local myItemStats = {}
 local otherItemStats = {}
 function RCLootCouncil:IsEqualOrBetterItem(myItem, otherItem)
@@ -1636,6 +1637,8 @@ function RCLootCouncil:IsEqualOrBetterItem(myItem, otherItem)
 		end
 		wipe(myItemStats)
 		wipe(otherItemStats)
+		myItem = self:GetItemLinkWithoutEnchant(myItem)
+		otherItem = self:GetItemLinkWithoutEnchant(otherItem)
 		GetItemStats(myItem, myItemStats)
 		GetItemStats(otherItem, otherItemStats)
 
@@ -2259,6 +2262,13 @@ end
 
 function RCLootCouncil:GetItemNameFromLink(link)
 	return strmatch(link or "", "%[(.+)%]")
+end
+
+-- Return item link without enchants (enchantId, gemId1, gemId2, gemId3, gemId4, suffixId)
+function RCLootCouncil:GetItemLinkWithoutEnchant(link)
+	local pattern = "|Hitem:(%d*):(%d*):(%d*):(%d*):(%d*):(%d*):(%d*):"
+	local replacement = "|Hitem:%1:::::::"
+	return link:gsub(pattern, replacement)
 end
 
 -- The link of same item generated from different players, or if two links are generated between player spec switch, are NOT the same
