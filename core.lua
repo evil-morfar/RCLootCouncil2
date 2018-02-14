@@ -1626,6 +1626,9 @@ function RCLootCouncil:IsEqualOrBetterItem(myItem, otherItem)
 	if not myItem or not otherItem then return end
 	if myItem == otherItem then return true end
 	if self:GetItemIDFromLink(myItem) == self:GetItemIDFromLink(otherItem) then
+		if select(4, GetItemInfo(otherItem)) > select(4, GetItemInfo(myItem)) then
+			return false
+		end
 		wipe(myItemStats)
 		wipe(otherItemStats)
 		GetItemStats(myItem, myItemStats)
