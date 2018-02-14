@@ -1640,6 +1640,28 @@ function RCLootCouncil:IsEqualOrBetterItem(myItem, otherItem)
 	end
 end
 
+function RCLootCouncil:OwnEqualOrBetterItem(item)
+	if not item or not GetItemInfo(item) then return end
+
+	for i=INVSLOT_FIRST_EQUIPPED, INVSLOT_LAST_EQUIPPED do
+		local link = GetInventoryItemLink("player", i)
+		if link and self:IsEqualOrBetterItem(link, item) then
+			return true, "equipped", i
+		end
+	end
+
+	for i=0, NUM_BAG_SLOTS do
+		for j=1, GetContainerNumSlots(i) or 0 do
+			local link = GetContainerItemLink(i, j)
+			if link and self:IsEqualOrBetterItem(link, item) then
+				return true, "bag", i, j
+			end
+		end
+	end
+
+	return false
+end
+
 -- strings contains plural/singular rule such as "%d |4ora:ore;"
 -- For example, CompleteFormatSimpleStringWithPluralRule("%d |4ora:ore;", 2) returns "2 ore"
 -- Does not work for long string such as "%d |4jour:jours;, %d |4heure:heures;, %d |4minute:minutes;, %d |4seconde:secondes;"
