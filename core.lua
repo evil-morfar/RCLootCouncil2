@@ -1598,6 +1598,26 @@ function RCLootCouncil:GetItemClassesAllowedFlag(item)
 	return 0xffffffff -- The item works for all classes
 end
 
+function RCLootCouncil:IsAppearanceCollected(item)
+	if not item then return end
+	if not GetItemInfo(item) then return end
+	tooltipForParsing:SetOwner(UIParent, "ANCHOR_NONE") -- This lines clear the current content of tooltip and set its position off-screen
+	tooltipForParsing:SetHyperlink(item) -- Set the tooltip content and show it, should hide the tooltip before function ends
+
+	for i = 1, tooltipForParsing:NumLines() or 0 do
+		local line = getglobal(tooltipForParsing:GetName()..'TextLeft' .. i)
+		if line and line.GetText then
+			local text = line:GetText() or ""
+			if text == TRANSMOGRIFY_TOOLTIP_APPEARANCE_UNKNOWN then
+				return false
+			end
+		end
+	end
+
+	tooltipForParsing:Hide()
+	return true
+end
+
 -- strings contains plural/singular rule such as "%d |4ora:ore;"
 -- For example, CompleteFormatSimpleStringWithPluralRule("%d |4ora:ore;", 2) returns "2 ore"
 -- Does not work for long string such as "%d |4jour:jours;, %d |4heure:heures;, %d |4minute:minutes;, %d |4seconde:secondes;"
