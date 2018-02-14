@@ -69,6 +69,7 @@ L["Are you sure you want to request rolls for all unawarded items from %s?"] = t
 L["Armor Token"] = true
 L["Ask me every time I become Master Looter"] = true
 L["Ask me when leader"] = true
+L["Appearance collected and own equal or better version of this item"] = true
 L["Autoloot all BoE"] = true
 L["autoloot_others_BoE_desc"] = "Enable to automatically add BoE items looted by others into a session."
 L["autoloot_others_item_combat"] = "%s has looted %s. This item will be added to the session frame once combat ends."

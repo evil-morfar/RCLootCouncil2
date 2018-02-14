@@ -1512,6 +1512,10 @@ function RCLootCouncil:DoAutoPasses(table)
 					self:Debug("Autopassed on: ", v.link)
 					if not db.silentAutoPass then self:Print(format(L["Autopassed on 'item'"], v.link)) end
 					v.autopass = true
+				elseif db.autoPassOwned and self:OwnEqualOrBetterItem(v.link) then
+					self:Debug("Autopass owned item on: ", v.link)
+					if not db.silentAutoPass then self:Print(format(L["Autopassed on 'item'"].."("..L["Appearance collected and own equal or better version of this item"]..")", v.link)) end
+					v.autopass = "OWNED"
 				end
 			else
 				self:Debug("Didn't autopass on: "..v.link.." because it's BoE!")
