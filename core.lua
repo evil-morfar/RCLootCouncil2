@@ -1624,7 +1624,8 @@ function RCLootCouncil:IsAppearanceCollected(item)
 	return true
 end
 
--- Return true if myItem has the same item id of otherItem, and any stats (primary, secondary, #sockets, leech, etc) of otherItem is not greater than that of myItem
+-- Return true if equippable item myItem has the same item id of otherItem, 
+-- and any stats (primary, secondary, #sockets, leech, etc) of otherItem is not greater than that of myItem
 -- Item enchant is removed before comparison.
 local myItemStats = {}
 local otherItemStats = {}
@@ -1632,6 +1633,9 @@ function RCLootCouncil:IsEqualOrBetterItem(myItem, otherItem)
 	if not myItem or not otherItem then return end
 	if myItem == otherItem then return true end
 	if self:GetItemIDFromLink(myItem) == self:GetItemIDFromLink(otherItem) then
+		if select(9, GetItemInfo(otherItem)) == "" then -- Dont compare non-equppable items.
+			return false
+		end
 		if select(4, GetItemInfo(otherItem)) > select(4, GetItemInfo(myItem)) then
 			return false
 		end
