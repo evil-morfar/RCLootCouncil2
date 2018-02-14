@@ -1618,6 +1618,28 @@ function RCLootCouncil:IsAppearanceCollected(item)
 	return true
 end
 
+-- Return true if myItem has the same item id of otherItem, and any stats (primary, secondary, #sockets, leech, etc) of otherItem is not greater than that of myItem
+local myItemStats = {}
+local otherItemStats = {}
+function RCLootCouncil:IsEqualOrBetterItem(myItem, otherItem)
+	if not myItem or not otherItem then return end
+	if myItem == otherItem then return true end
+	if self:GetItemIDFromLink(myItem) == self:GetItemIDFromLink(otherItem) then
+		wipe(myItemStats)
+		wipe(otherItemStats)
+		GetItemStats(myItem, myItemStats)
+		GetItemStats(otherItem, otherItemStats)
+
+		for stat, value in pairs(otherItemStats) do
+			if (not myItemStats[stat]) or value > myItemStats[stat] then
+				return false
+			end
+		end
+
+		return true
+	end
+end
+
 -- strings contains plural/singular rule such as "%d |4ora:ore;"
 -- For example, CompleteFormatSimpleStringWithPluralRule("%d |4ora:ore;", 2) returns "2 ore"
 -- Does not work for long string such as "%d |4jour:jours;, %d |4heure:heures;, %d |4minute:minutes;, %d |4seconde:secondes;"
