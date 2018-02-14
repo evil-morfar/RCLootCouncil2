@@ -1,3 +1,7 @@
+* *Group members that haven't been awarded anything is now shown in the loot history (Git#151).*
+
+
+
 ### v2.7.8
 ---
 ###### Bugfixes
