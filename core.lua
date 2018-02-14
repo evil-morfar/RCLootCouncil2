@@ -187,6 +187,7 @@ function RCLootCouncil:OnInitialize()
 			autoPassBoE = true,
 			autoPass = true,
 			autoPassTrinket = true,
+			autoPassOwned = true,
 			altClickLooting = true,
 			acceptWhispers = true,
 			selfVote = true,

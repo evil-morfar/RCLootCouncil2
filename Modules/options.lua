@@ -140,20 +140,26 @@ function addon:OptionsTable()
 										desc = L["auto_pass_trinket_desc"],
 										type = "toggle",
 									},
-									silentAutoPass = {
+									autoPassOwned = {
 										order = 3,
+										name = L["Auto Pass Owned Items"],
+										desc = L["auto_pass_owned_items_desc"],
+										type = "toggle",
+									},
+									silentAutoPass = {
+										order = 4,
 										name = L["Silent Auto Pass"],
 										desc = L["silent_auto_pass_desc"],
 										type = "toggle",
 									},
 									autoPassBoE = {
-										order = 4,
+										order = 5,
 										name = L["Auto pass BoE"],
 										desc = L["auto_pass_boe_desc"],
 										type = "toggle",
 									},
 									printResponse = {
-										order = 5,
+										order = 6,
 										name = L["Print Responses"],
 										desc = L["print_response_desc"],
 										type = "toggle",
