@@ -1104,17 +1104,17 @@ function RCVotingFrame.SetCellMog(rowFrame, frame, data, cols, row, realrow, col
 
 		if mog then -- Mog collected
 			frame.text:SetText("|TInterface/RAIDFRAME/ReadyCheck-Ready:0:0|t")
-			frame:SetScript("OnEnter", function() addon:CreateTooltip(_G.APPEARANCE_LABEL, _G.COLLECTED) end)
+			frame:SetScript("OnEnter", function() addon:CreateTooltip(_G.APPEARANCE_LABEL, "|cff00ff00".._G.COLLECTED.."|r") end)
 			frame:SetScript("OnLeave", function() addon:HideTooltip() end)
 			data[realrow].cols[column].value = 3 -- Set value for sorting compability
 		elseif mog == nil then -- We don't know
 			frame.text:SetText("|TInterface/RAIDFRAME/ReadyCheck-Waiting:0:0|t")
-			frame:SetScript("OnEnter", function() addon:CreateTooltip(_G.APPEARANCE_LABEL, _G.UNKNOWN) end)
+			frame:SetScript("OnEnter", function() addon:CreateTooltip(_G.APPEARANCE_LABEL, "|cffffff00".._G.UNKNOWN.."|r") end)
 			frame:SetScript("OnLeave", function() addon:HideTooltip() end)
 			data[realrow].cols[column].value = 2 -- Set value for sorting compability
 		else -- Mog not collected
 			frame.text:SetText("|TInterface/RAIDFRAME/ReadyCheck-NotReady:0:0|t")
-			frame:SetScript("OnEnter", function() addon:CreateTooltip(_G.APPEARANCE_LABEL, _G.NOT_COLLECTED) end)
+			frame:SetScript("OnEnter", function() addon:CreateTooltip(_G.APPEARANCE_LABEL, "|cffff0000".._G.NOT_COLLECTED.."|r") end)
 			frame:SetScript("OnLeave", function() addon:HideTooltip() end)
 			data[realrow].cols[column].value = 1 -- Set value for sorting compability
 		end
