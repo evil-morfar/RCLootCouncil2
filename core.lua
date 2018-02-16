@@ -1378,6 +1378,7 @@ function RCLootCouncil:SendResponse(target, session, response, isTier, isRelic, 
 			isRelic = isRelic or nil,
 			specID = sendSpecID and playersData.specID or nil,
 			roll = roll,
+			mog = self:IsAppearanceCollected(link),
 		})
 end
 
