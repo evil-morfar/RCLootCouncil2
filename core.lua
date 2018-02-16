@@ -1598,9 +1598,12 @@ function RCLootCouncil:GetItemClassesAllowedFlag(item)
 	return 0xffffffff -- The item works for all classes
 end
 
+-- If the item is dressable, Return true if the appearance of the item has been collected, false otherwise
+-- If the item is not dressable, return nil.
 function RCLootCouncil:IsAppearanceCollected(item)
 	if not item then return end
 	if not GetItemInfo(item) then return end
+	if not IsDressableItem(item) then return end
 	tooltipForParsing:SetOwner(UIParent, "ANCHOR_NONE") -- This lines clear the current content of tooltip and set its position off-screen
 	tooltipForParsing:SetHyperlink(item) -- Set the tooltip content and show it, should hide the tooltip before function ends
 
