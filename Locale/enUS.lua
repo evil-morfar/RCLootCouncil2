@@ -259,6 +259,7 @@ L["ml_sees_voting_desc"] = "Allows the Master Looter to see who's voting for who
 L["Modules"] = true
 L["module_tVersion_outdated_msg"] = "Newest module %s test version is: %s"
 L["module_version_outdated_msg"] = "The module %s version %s is outdated. Newer version is %s."
+L["Mog"] = true
 L["More Info"] = true
 L["more_info_desc"] = "Select how many of your responses you want to see the latest awarded items for. E.g. selecting 2 will (with default settings) show the latest awarded Mainspec and Offspec items, along with how long ago they were awarded."
 L["Multi Vote"] = true

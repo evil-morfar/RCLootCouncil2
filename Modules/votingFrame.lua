@@ -51,7 +51,8 @@ function RCVotingFrame:OnInitialize()
 		{ name = L["Votes"], 	DoCellUpdate = RCVotingFrame.SetCellVotes,		colName = "votes",	sortnext = 7,		width = 50, align = "CENTER", },				-- 10 Number of votes
 		{ name = L["Vote"],		DoCellUpdate = RCVotingFrame.SetCellVote,			colName = "vote",		sortnext = 10,		width = 60, align = "CENTER", },				-- 11 Vote button
 		{ name = L["Notes"],		DoCellUpdate = RCVotingFrame.SetCellNote,			colName = "note",								width = 50, align = "CENTER", },				-- 12 Note icon
-		{ name = _G.ROLL,			DoCellUpdate = RCVotingFrame.SetCellRoll, 		colName = "roll",		sortnext = 10,		width = 50, align = "CENTER", },				-- 13 Roll
+		{ name = _G.ROLL,			DoCellUpdate = RCVotingFrame.SetCellRoll, 		colName = "roll",		sortnext = 10,		width = 50, align = "CENTER", },
+		{ name = L["Mog"],			DoCellUpdate = RCVotingFrame.SetCellMog, 		colName = "mog",		sortnext = 10,		width = 30, align = "CENTER", },				-- 13 Roll
 	}
 	-- The actual table being worked on, new entries should be added to this table "tinsert(RCVotingFrame.scrollCols, data)"
 	-- If you want to add or remove columns, you should do so on your OnInitialize. See RCVotingFrame:RemoveColumn() for removal.
@@ -351,7 +352,8 @@ function RCVotingFrame:Setup(table)
 				note = nil,
 				roll = nil,
 				voters = {},
-				haveVoted = false, -- Have we voted for this particular candidate in this session?
+				haveVoted = false, -- Have we voted for this particular candidate in this session?,
+				mog = nil,
 			}
 		end
 		-- Init session toggle
@@ -1089,6 +1091,38 @@ function RCVotingFrame.SetCellRoll(rowFrame, frame, data, cols, row, realrow, co
 	local name = data[realrow].name
 	frame.text:SetText(lootTable[session].candidates[name].roll or "")
 	data[realrow].cols[column].value = lootTable[session].candidates[name].roll or ""
+end
+
+function RCVotingFrame.SetCellMog(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
+	local name = data[realrow].name
+	local mog = lootTable[session].candidates[name].mog
+	local item = lootTable[session].link
+	local v = lootTable[session]
+
+	if addon:ItemHasAppearance(item) and
+		not addon:AutoPassCheck(v.link, v.equipLoc, v.typeID, v.subTypeID, v.classes, v.token, v.relic, lootTable[session].candidates[name].class) then
+
+		if mog then -- Mog collected
+			frame.text:SetText("|TInterface/RAIDFRAME/ReadyCheck-Ready:0:0|t")
+			frame:SetScript("OnEnter", function() addon:CreateTooltip(_G.APPEARANCE_LABEL, _G.COLLECTED) end)
+			frame:SetScript("OnLeave", function() addon:HideTooltip() end)
+			data[realrow].cols[column].value = 3 -- Set value for sorting compability
+		elseif mog == nil then -- We don't know
+			frame.text:SetText("|TInterface/RAIDFRAME/ReadyCheck-Waiting:0:0|t")
+			frame:SetScript("OnEnter", function() addon:CreateTooltip(_G.APPEARANCE_LABEL, _G.UNKNOWN) end)
+			frame:SetScript("OnLeave", function() addon:HideTooltip() end)
+			data[realrow].cols[column].value = 2 -- Set value for sorting compability
+		else -- Mog not collected
+			frame.text:SetText("|TInterface/RAIDFRAME/ReadyCheck-NotReady:0:0|t")
+			frame:SetScript("OnEnter", function() addon:CreateTooltip(_G.APPEARANCE_LABEL, _G.NOT_COLLECTED) end)
+			frame:SetScript("OnLeave", function() addon:HideTooltip() end)
+			data[realrow].cols[column].value = 1 -- Set value for sorting compability
+		end
+	else -- Not dressable or cannot be used by the player, hide the icon
+		frame:SetScript("OnEnter", nil)
+		frame.text:SetText("")
+		data[realrow].cols[column].value = 0
+	end
 end
 
 function RCVotingFrame.filterFunc(table, row)
