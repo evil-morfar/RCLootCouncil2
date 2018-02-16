@@ -828,8 +828,8 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 					if GetNumGroupMembers() >= 8 and not IsInInstance() then
 						self:DebugLog("NotInRaid respond to lootTable")
 						for ses, v in ipairs(lootTable) do
-							-- target, session, response, isTier, isRelic, note, roll, link, ilvl, equipLoc, relicType, sendAvgIlvl, sendSpecID
-							self:SendResponse("group", ses, "NOTINRAID", nil, nil, nil, nil, v.link, v.ilvl, v.equipLoc, v.relic, true, true)
+							-- target, session, response, isTier, isRelic, note, roll, link, ilvl, equipLoc, relicType, sendAvgIlvl, sendSpecID, sendMog
+							self:SendResponse("group", ses, "NOTINRAID", nil, nil, nil, nil, v.link, v.ilvl, v.equipLoc, v.relic, true, true, true)
 						end
 						return
 					end
@@ -1356,7 +1356,8 @@ end
 -- @param relicType     The type of relic
 -- @param sendAvgIlvl   Indicates whether we send average ilvl.
 -- @param sendSpecID    Indicates whether we send spec id.
-function RCLootCouncil:SendResponse(target, session, response, isTier, isRelic, note, roll, link, ilvl, equipLoc, relicType, sendAvgIlvl, sendSpecID)
+-- @param SendMog 		Indicates whether we send mog info
+function RCLootCouncil:SendResponse(target, session, response, isTier, isRelic, note, roll, link, ilvl, equipLoc, relicType, sendAvgIlvl, sendSpecID, sendMog)
 	self:DebugLog("SendResponse", target, session, response, isTier, isRelic, note, roll, link, ilvl, equipLoc, relicType, sendAvgIlvl, sendSpecID)
 	local g1, g2, diff
 
@@ -1378,7 +1379,7 @@ function RCLootCouncil:SendResponse(target, session, response, isTier, isRelic, 
 			isRelic = isRelic or nil,
 			specID = sendSpecID and playersData.specID or nil,
 			roll = roll,
-			mog = self:IsAppearanceCollected(link),
+			mog = sendMog and self:IsAppearanceCollected(link),
 		})
 end
 
@@ -1488,7 +1489,7 @@ end
 -- Currently equipped gear and "diff" is sent for each session.
 -- Autopass response is sent if the session has been autopassed. No other response is sent.
 function RCLootCouncil:SendLootAck(table)
-	local toSend = {gear1 = {}, gear2 = {}, diff = {}, response = {}}
+	local toSend = {gear1 = {}, gear2 = {}, diff = {}, response = {}, mog = {}}
 	for k, v in ipairs(table) do
 		local session = v.session or k
 		local g1,g2 = self:GetGear(v.link, v.equipLoc, v.relic)
@@ -1497,6 +1498,7 @@ function RCLootCouncil:SendLootAck(table)
 		toSend.gear2[session] = self:GetItemStringFromLink(g2)
 		toSend.diff[session] = diff
 		toSend.response[session] = v.autopass
+		toSend.mog[session] = self:IsAppearanceCollected(v.link)
 	end
 	self:SendCommand("group", "lootAck", self.playerName, playersData.specID, playersData.ilvl, toSend)
 end
@@ -1599,12 +1601,18 @@ function RCLootCouncil:GetItemClassesAllowedFlag(item)
 	return 0xffffffff -- The item works for all classes
 end
 
+function RCLootCouncil:ItemHasAppearance(item)
+	local equipLoc = select(9, GetItemInfo(item))
+	-- Don't know why Blizzard considers neck, finger and trinket as dressable.
+	return IsDressableItem(item) and equipLoc ~= "INVTYPE_NECK" and equipLoc ~= "INVTYPE_FINGER" and equipLoc ~= "INVTYPE_TRINKET"
+end
+
 -- If the item is dressable, Return true if the appearance of the item has been collected, false otherwise
 -- If the item is not dressable, return nil.
 function RCLootCouncil:IsAppearanceCollected(item)
 	if not item then return end
 	if not GetItemInfo(item) then return end
-	if not IsDressableItem(item) then return end
+	if not self:ItemHasAppearance(item) then return end
 	tooltipForParsing:SetOwner(UIParent, "ANCHOR_NONE") -- This lines clear the current content of tooltip and set its position off-screen
 	tooltipForParsing:SetHyperlink(item) -- Set the tooltip content and show it, should hide the tooltip before function ends
 
