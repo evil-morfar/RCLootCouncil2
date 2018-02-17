@@ -106,7 +106,7 @@ end
 -- Export text for copy & paste.
 -- Currently redundant with the code in LootHistory.
 -- Should simplify the code in LootHistory later.
-do 
+do
 	-- Export frame
 	local exportFrame = AG:Create("Window")
 	exportFrame:SetLayout("List")
@@ -117,7 +117,7 @@ do
 	exportFrame.desc = AG:Create("Label")
 	exportFrame.desc:SetRelativeWidth(1)
 	exportFrame:AddChild(exportFrame.desc)
-	
+
 	exportFrame.edit = AG:Create("MultiLineEditBox")
 	exportFrame.edit:SetNumLines(20)
 	exportFrame.edit:SetFullWidth(true)
