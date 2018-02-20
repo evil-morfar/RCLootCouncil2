@@ -1,3 +1,7 @@
+dofile("../wow_api.lua")
+dofile("../../Libs/LibStub/LibStub.lua")
+dofile("../../Libs/AceSerializer-3.0/AceSerializer-3.0.lua")
+local AceSer = LibStub("AceSerializer-3.0")
 function string:split(sep)
    local sep, fields = sep or ":", {}
    local pattern = string.format("([^%s]+)", sep)
@@ -42,7 +46,6 @@ local function checkSV()
             end
          end
       end
-      print "Done checking options"
       print "----------"
    end
    local function numComms()
@@ -57,13 +60,12 @@ local function checkSV()
       print("version:", RCLootCouncilDB.global.version)
       print("old version:",RCLootCouncilDB.global.oldVersion)
       print("locale:\t", RCLootCouncilDB.global.locale)
-      numComms()
       print ""
+      numComms()
       for k,v in ipairs(RCLootCouncilDB.global.log) do
          if v:lower():find("%f[%a]error") then print("Error", k,v) end
          if v:find("Data wasn't ready") then print("Data wasn't ready",k,v) end
       end
-      print "\nDone checking log"
       print "----------"
    end
    local function encounters()
@@ -134,8 +136,12 @@ local function checkSV()
       print "Checking other players' version\n"
       local players = {}
       -- First extract the ones we have in verTestCandidates:
-      for player, version in pairs(RCLootCouncilDB.global.verTestCandidates) do
-         players[player:gsub("-.+", "")] = version:gsub("-.+", "")
+      if RCLootCouncilDB.global.verTestCandidates then
+         for player, version in pairs(RCLootCouncilDB.global.verTestCandidates) do
+            players[player:gsub("-.+", "")] = version:gsub("-.+", "")
+         end
+      else
+         print "No 'verTestCandidates'" -- v2.7.8 somehow had a SV without it..
       end
       -- Then check the log:
       for i, entry in ipairs(RCLootCouncilDB.global.log) do
@@ -162,12 +168,37 @@ local function checkSV()
       print "----------"
    end
 
+   local function sessions()
+      print "Gathering sessions:"
+      local num = 1
+      for i, entry in ipairs(RCLootCouncilDB.global.log) do
+         if entry:find("lootTable") then
+            --			"23:21:58 - Comm received:^1^SlootTable^T^N1^T^N1^T^SequipLoc^S^Silvl^N945^Slink^S|cffa335ee|Hitem:152525::::::::110:577::5:1:570:::|h[Helm~`of~`the~`Antoran~`Conqueror]|h|r^Stexture^N133126^SlootSlot^N5^SsubType^SJunk^Srelic^b^Sclasses^N2322^Sname^SHelm~`of~`the~`Antoran~`Conqueror^Stoken^SHeadSlot^Sboe^b^Sawarded^b^Squality^N4^t^N2^T^SequipLoc^S^Silvl^N945^Slink^S|cffa335ee|Hitem:152525::::::::110:577::5:1:570:::|h[Helm~`of~`the~`Antoran~`Conqueror]|h|r^Stexture^N133126^SlootSlot^N4^SsubType^SJunk^Srelic^b^Sclasses^N2322^Sname^SHelm~`of~`the~`Antoran~`Conqueror^Stoken^SHeadSlot^Sboe^b^Sawarded^b^Squality^N4^t^N3^T^SequipLoc^SINVTYPE_CLOAK^Sawarded^b^Slink^S|cffa335ee|Hitem:152062::::::::110:577::5:3:3611:1487:3528:::|h[Greatcloak~`of~`the~`Dark~`Pantheon]|h|r^Srelic^b^Stexture^N1627522^SsubType^SCloth^SlootSlot^N1^Sclasses^N4294967295^Sname^SGreatcloak~`of~`the~`Dark~`Pantheon^Sboe^b^Silvl^N945^Squality^N4^t^N4^T^SequipLoc^SINVTYPE_FEET^Sawarded^b^Slink^S|cffa335ee|Hitem:151940::::::::110:577::5:3:3611:1492:3336:::|h[Sandals~`of~`the~`Reborn~`Colossus]|h|r^Srelic^b^Stexture^N1627657^SsubType^SCloth^SlootSlot^N2^Sclasses^N4294967295^Sname^SSandals~`of~`the~`Reborn~`Colossus^Sboe^b^Silvl^N950^Squality^N4^t^N5^T^SequipLoc^SINVTYPE_FEET^Sawarded^b^Slink^S|cffa335ee|Hitem:151940::::::::110:577::5:3:3611:1487:3528:::|h[Sandals~`of~`the~`Reborn~`Colossus]|h|r^Srelic^b^Stexture^N1627657^SsubType^SCloth^SlootSlot^N3^Sclasses^N4294967295^Sname^SSandals~`of~`the~`Reborn~`Colossus^Sboe^b^Silvl^N945^Squality^N4^t^t^t^^ (from:) (Supadhunter) (distri:) (RAID)", -- [81]
+            print("\nSession ", num, "ML:", entry:match(":%) %((%w+)%)",-35))
+            -- Extract time
+            print("Time:",entry:sub(1,9), "Index:", i)
+            -- And message
+            local msg = entry:match("(%^1.+\^\^)")
+            local l1,l2,lt = AceSer:Deserialize(msg)
+            for k,v in ipairs(unpack(lt)) do
+               print("|  "..k,v.ilvl, v.link)
+               print("|  "..v.equipLoc, v.subType)
+               --print("Classes:", v.classes)
+            end
+            num = num + 1
+         end
+      end
+
+      print "----------"
+   end
+
    log()
    otherVersions()
    options()
    tradables()
    encounters()
    lootdb()
+   sessions()
 end
 
 do
@@ -182,5 +213,6 @@ do
       --print(var)
    end
    table.sort(ent)
-   for k,v in spairs(ent) do print(k,v) end
+   --for k,v in spairs(ent) do print(k,v) end
+
 end
