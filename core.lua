@@ -1624,7 +1624,7 @@ function RCLootCouncil:IsAppearanceCollected(item)
 	return true
 end
 
--- Return true if equippable item myItem has the same item id of otherItem, 
+-- Return true if equippable item myItem has the same item id of otherItem,
 -- and any stats (primary, secondary, #sockets, leech, etc) of otherItem is not greater than that of myItem
 -- Item enchant is removed before comparison.
 local myItemStats = {}
@@ -2270,8 +2270,8 @@ end
 
 -- Return item link without enchants (enchantId, gemId1, gemId2, gemId3, gemId4, suffixId)
 function RCLootCouncil:GetItemLinkWithoutEnchant(link)
-	local pattern = "|Hitem:(%d*):(%d*):(%d*):(%d*):(%d*):(%d*):(%d*):"
-	local replacement = "|Hitem:%1:::::::"
+	local pattern = "item:(%d*):(%d*):(%d*):(%d*):(%d*):(%d*):(%d*):"
+	local replacement = "item:%1:::::::"
 	return link:gsub(pattern, replacement)
 end
 
