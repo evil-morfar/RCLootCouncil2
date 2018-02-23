@@ -181,6 +181,7 @@ L["days and x months"] = "%s and %d months"
 L["days, x months, y years"] = "%s, %d months and %d years"
 L["Deselect responses to filter them"] = true
 L["Diff"] = true
+L["Discord friendly output."] = true
 L["disenchant_desc"] = "Select to use this reason when awarding an item via the 'Disenchant' button"
 L["Double click to delete this entry."] = true
 L["Done syncing"] = true
