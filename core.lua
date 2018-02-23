@@ -1659,9 +1659,12 @@ end
 function RCLootCouncil:OwnEqualOrBetterItem(item)
 	if not item or not GetItemInfo(item) then return end
 
-	for i=INVSLOT_FIRST_EQUIPPED, INVSLOT_LAST_EQUIPPED do
-		local link = GetInventoryItemLink("player", i)
-		if link and self:IsEqualOrBetterItem(link, item) then
+	local equiploc = select(9, GetItemInfo(item))
+	if equiploc and equiploc ~= "" then
+		local slot = GetInventorySlotInfo(self.INVTYPE_Slots[equiploc])
+		local link1 = GetInventoryItemLink("player", slot[1] or slot)
+		local link2 = slot[2] and GetInventoryItemLink("player", slot[2])
+		if (link1 and self:IsEqualOrBetterItem(link1, item)) or (link2 and self:IsEqualOrBetterItem(link2, item)) then
 			return true, "equipped", i
 		end
 	end
