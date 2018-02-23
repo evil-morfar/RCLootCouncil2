@@ -92,6 +92,7 @@ L["auto_enable_desc"] = "Check to always let RCLootCouncil handle loot. Unchecki
 L["auto_loot_desc"] = "Automatically add all eligible items to a session."
 L["auto_open_desc"] = "Check to Auto Open the voting frame when available. The voting frame can otherwise be opened with /rc open. Note: This requires permission from the Master Looter."
 L["auto_pass_trinket_desc"] = "Check to autopass trinkets that's not listed in the Dungeon Journal for your class."
+L["auto_pass_owned_items_desc"] = "Check to autopass items you already own or have a better version of and have collected the appearance from."
 L["auto_pass_boe_desc"] = "Uncheck to never autopass Bind on Equip items."
 L["auto_pass_desc"] = "Check to enable autopassing of items your class cannot use."
 L["auto_start_desc"] = "Enables Auto Start, i.e. start a session with all eligible items. Disabling will show a editable item list before starting a session."
