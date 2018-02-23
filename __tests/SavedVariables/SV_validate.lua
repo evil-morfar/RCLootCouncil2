@@ -178,6 +178,7 @@ local function checkSV()
 
          elseif entry:find("lootTable") then
             --"20:08:43 - Event: (ENCOUNTER_END) (2076) (Garothi Worldbreaker) (16) (20) (0)", -- [803]
+            print("\nSession ", num, lastEncounter:match("%b() %b() (%b())"), "ML: " .. entry:match(":%) %((%w+)%)",-35))
             -- Extract time
             print("Time:",entry:sub(1,9), "Index:", i)
             -- And message
