@@ -171,10 +171,13 @@ local function checkSV()
    local function sessions()
       print "Gathering sessions:"
       local num = 1
+      local lastEncounter
       for i, entry in ipairs(RCLootCouncilDB.global.log) do
-         if entry:find("lootTable") then
-            --			"23:21:58 - Comm received:^1^SlootTable^T^N1^T^N1^T^SequipLoc^S^Silvl^N945^Slink^S|cffa335ee|Hitem:152525::::::::110:577::5:1:570:::|h[Helm~`of~`the~`Antoran~`Conqueror]|h|r^Stexture^N133126^SlootSlot^N5^SsubType^SJunk^Srelic^b^Sclasses^N2322^Sname^SHelm~`of~`the~`Antoran~`Conqueror^Stoken^SHeadSlot^Sboe^b^Sawarded^b^Squality^N4^t^N2^T^SequipLoc^S^Silvl^N945^Slink^S|cffa335ee|Hitem:152525::::::::110:577::5:1:570:::|h[Helm~`of~`the~`Antoran~`Conqueror]|h|r^Stexture^N133126^SlootSlot^N4^SsubType^SJunk^Srelic^b^Sclasses^N2322^Sname^SHelm~`of~`the~`Antoran~`Conqueror^Stoken^SHeadSlot^Sboe^b^Sawarded^b^Squality^N4^t^N3^T^SequipLoc^SINVTYPE_CLOAK^Sawarded^b^Slink^S|cffa335ee|Hitem:152062::::::::110:577::5:3:3611:1487:3528:::|h[Greatcloak~`of~`the~`Dark~`Pantheon]|h|r^Srelic^b^Stexture^N1627522^SsubType^SCloth^SlootSlot^N1^Sclasses^N4294967295^Sname^SGreatcloak~`of~`the~`Dark~`Pantheon^Sboe^b^Silvl^N945^Squality^N4^t^N4^T^SequipLoc^SINVTYPE_FEET^Sawarded^b^Slink^S|cffa335ee|Hitem:151940::::::::110:577::5:3:3611:1492:3336:::|h[Sandals~`of~`the~`Reborn~`Colossus]|h|r^Srelic^b^Stexture^N1627657^SsubType^SCloth^SlootSlot^N2^Sclasses^N4294967295^Sname^SSandals~`of~`the~`Reborn~`Colossus^Sboe^b^Silvl^N950^Squality^N4^t^N5^T^SequipLoc^SINVTYPE_FEET^Sawarded^b^Slink^S|cffa335ee|Hitem:151940::::::::110:577::5:3:3611:1487:3528:::|h[Sandals~`of~`the~`Reborn~`Colossus]|h|r^Srelic^b^Stexture^N1627657^SsubType^SCloth^SlootSlot^N3^Sclasses^N4294967295^Sname^SSandals~`of~`the~`Reborn~`Colossus^Sboe^b^Silvl^N945^Squality^N4^t^t^t^^ (from:) (Supadhunter) (distri:) (RAID)", -- [81]
-            print("\nSession ", num, "ML:", entry:match(":%) %((%w+)%)",-35))
+         if entry:find("ENCOUNTER_END") then
+            lastEncounter = entry -- Log for later
+
+         elseif entry:find("lootTable") then
+            --"20:08:43 - Event: (ENCOUNTER_END) (2076) (Garothi Worldbreaker) (16) (20) (0)", -- [803]
             -- Extract time
             print("Time:",entry:sub(1,9), "Index:", i)
             -- And message
