@@ -80,9 +80,8 @@ local relics = {
 -- @usage
 -- -- Check if the item in session 1 should be auto passed:
 -- local dat = lootTable[1] -- Shortening
--- local boolean = RCLootCouncil:AutoPassCheck(dat.subType, dat.equipLoc, dat.link, dat.token, dat.relic)
+-- local boolean = RCLootCouncil:AutoPassCheck(dat.link, dat.equipLoc, dat.typeID, dat.subTypeID, dat.classesFlag, dat.isToken, dat.isRelic)
 --@return true if the player should autopass the given item.
-
 function RCLootCouncil:AutoPassCheck(link, equipLoc, typeID, subTypeID, classesFlag, isToken, isRelic, class)
 	local class = class or self.playerClass
 	local classID = self.classTagNameToID[class]
@@ -90,6 +89,13 @@ function RCLootCouncil:AutoPassCheck(link, equipLoc, typeID, subTypeID, classesF
 		return true
 	end
 	local id = type(link) == "number" and link or self:GetItemIDFromLink(link) -- Convert to id if needed
+	if equipLoc == "INVTYPE_TRINKET" then
+		if self:Getdb().autoPassTrinket then
+			if _G.RCTrinketSpecs and _G.RCTrinketSpecs[id] and _G.RCTrinketSpecs[id]:sub(-classID, -classID)=="0" then
+				return true
+			end
+		end
+	end
 	if not tContains(autopassOverride, equipLoc) then
 		if self:IsRelicTypeID(typeID, subTypeID) then
 			if isRelic then -- New in v2.3+

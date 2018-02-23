@@ -150,10 +150,20 @@ function sync:SyncDataReceived(sender, type, data)
 end
 
 local function addNameToList(list, name, class)
+   addon:DebugLog("Sync:addNameToList()", name, class)
    local c = addon:GetClassColor(class)
-   list[name] = "|cff"..addon:RGBToHex(c.r,c.g,c.b) .. name .."|r"
+   list[name] = "|cff"..addon:RGBToHex(c.r,c.g,c.b) .. tostring(name) .."|r"
 end
 
+local function titleCaseName(name)
+   if not name then return "" end -- Just in case
+   local realm
+   if (strfind(name, "-", nil, true)) then
+      name, realm = strsplit("-", name, 2)
+   end
+   name = name:lower():gsub("^%l", string.upper)
+   return name .. "-" .. (realm or addon.realmName)
+end
 -- Builds a list of targets we can sync to.
 -- Used in the options menu for an AceGUI dropdown.
 function sync:GetSyncTargetOptions()
@@ -171,12 +181,12 @@ function sync:GetSyncTargetOptions()
    -- friends
    for i = 1, GetNumFriends() do
       name, _, class, _, isOnline = GetFriendInfo(i)
-      if isOnline then addNameToList(ret, name, class) end
+      if isOnline then addNameToList(ret, titleCaseName(name), class) end
    end
    -- guildmembers
    for i = 1, GetNumGuildMembers() do
       name, _, _, _, _, _, _, _, isOnline,_,class = GetGuildRosterInfo(i)
-      if isOnline then addNameToList(ret, name, class) end
+      if isOnline then addNameToList(ret, titleCaseName(name), class) end
    end
    -- Remove ourselves
    if not addon.debug then ret[addon.playerName] = nil end
