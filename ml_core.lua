@@ -880,7 +880,7 @@ function RCLootCouncilML:CanGiveLoot(slot, item, winner)
 			end
 		end
 
-		local bindType = select(14, item)
+		local bindType = select(14, GetItemInfo(item))
 
 		if not found then
 			if bindType ~= LE_ITEM_BIND_ON_ACQUIRE then
