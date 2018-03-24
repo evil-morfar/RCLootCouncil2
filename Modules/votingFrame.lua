@@ -937,7 +937,7 @@ function RCVotingFrame.SetCellName(rowFrame, frame, data, cols, row, realrow, co
 	local c = addon:GetClassColor(lootTable[session].candidates[name].class)
 	if (IsInInstance() and select(4, UnitPosition("player")) ~= select(4, UnitPosition(Ambiguate(name, "short"))))
 			-- Mark as out of instance if the current player is in an instance and the raider is in other instancemap
-			or ((not IsInInstance) and UnitPosition(Ambiguate(name, "short")) ~= nil) then
+			or ((not IsInInstance()) and UnitPosition(Ambiguate(name, "short")) ~= nil) then
 			-- If the current player is not in an instance, mark as out of instance if 1st return of UnitPosition is not nil
 			-- This function returns nil if the raider is in any instance.
 			c = c.." (Out of instance)"
