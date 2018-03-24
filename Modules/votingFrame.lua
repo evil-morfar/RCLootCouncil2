@@ -67,6 +67,7 @@ end
 
 function RCVotingFrame:OnEnable()
 	self:RegisterComm("RCLootCouncil")
+	self:RegisterEvent("GROUP_ROSTER_UPDATE")
 	db = addon:Getdb()
 	active = true
 	moreInfo = db.modules["RCVotingFrame"].moreInfo
@@ -151,6 +152,10 @@ function RCVotingFrame:RemoveColumn(id)
 			end
 		end
 	end
+end
+
+function RCVotingFrame:GROUP_ROSTER_UPDATE(...)
+	self:Update()
 end
 
 function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
