@@ -143,7 +143,7 @@ function RCLootCouncilML:RemoveItem(session)
 	tremove(self.lootTable, session)
 end
 
-function RCLootCouncilML:AddCandidate(name, class, role, rank, enchant, lvl, ilvl, specID)
+function RCLootCouncilML:AddCandidate(name, class, role, rank, enchant, lvl, specID)
 	addon:DebugLog("ML:AddCandidate",name, class, role, rank, enchant, lvl, specID)
 	self.candidates[name] = {
 		["class"]		= class,
@@ -172,7 +172,7 @@ function RCLootCouncilML:UpdateGroup(ask)
 			name = addon:UnitName(name) -- Get their unambiguated name
 			if group_copy[name] then -- If they're already registered
 				if group_copy[name] ~= role then	-- They have changed their role
-					self:AddCandidate(name, class, role, self.candidates[name].enchanter, self.candidates[name].enchant_lvl, self.candidates[name].specID)
+					self:AddCandidate(name, class, role, self.candidates[name].rank, self.candidates[name].enchanter, self.candidates[name].enchant_lvl, self.candidates[name].specID)
 				end
 				group_copy[name] = nil -- Remove them, as they're still in the group
 			else -- add them
@@ -880,7 +880,7 @@ function RCLootCouncilML:CanGiveLoot(slot, item, winner)
 			end
 		end
 
-		local bindType = select(14, item)
+		local bindType = select(14, GetItemInfo(item))
 
 		if not found then
 			if bindType ~= LE_ITEM_BIND_ON_ACQUIRE then

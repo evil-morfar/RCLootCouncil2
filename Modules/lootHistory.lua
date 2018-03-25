@@ -169,14 +169,14 @@ function LootHistory:BuildData()
 					row = row + 1
 				end
 			end
-			if not tContains(insertedNames, name) then -- we only want each name added once
+			if not insertedNames[name] then -- we only want each name added once
 				tinsert(nameData,
 					{
 						{DoCellUpdate = addon.SetCellClassIcon, args = {x.class}},
 						{value = addon.Ambiguate(name), color = addon:GetClassColor(x.class), name = name}
 					}
 				)
-				tinsert(insertedNames, name)
+				insertedNames[name] = true
 			elseif x.class then -- it already exists, but we might need to add the class which we now have
 				for i in pairs(nameData) do
 					if nameData[i][2].name == name then
@@ -186,6 +186,15 @@ function LootHistory:BuildData()
 			end
 		end
 		tinsert(dateData, {date})
+	end
+	-- Insert players in the group who isn't registered in the lootDB
+	for name,v in pairs(addon.candidates or {}) do
+		if not insertedNames[name] then
+			tinsert(nameData, {
+				{DoCellUpdate = addon.SetCellClassIcon, args = {v.class}},
+				{value = addon.Ambiguate(name), color = addon:GetClassColor(v.class), name = name}
+			})
+		end
 	end
 	self.frame.st:SetData(self.frame.rows)
 	self.frame.date:SetData(dateData, true) -- True for minimal data	format
