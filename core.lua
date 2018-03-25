@@ -1650,6 +1650,33 @@ function RCLootCouncil:IsAppearanceCollected(item)
 	return true
 end
 
+-- Return true if the item has any non-stat effect (set piece, use effect, equip effect, chance of hit effect, etc)
+function RCLootCouncil:IsItemHasEffect(item)
+	if not item then return false end
+	if not GetItemInfo(item) then return true end
+	if select(16, GetItemInfo(item)) then return true end -- Set piece
+	tooltipForParsing:SetOwner(UIParent, "ANCHOR_NONE") -- This lines clear the current content of tooltip and set its position off-screen
+	tooltipForParsing:SetHyperlink(item) -- Set the tooltip content and show it, should hide the tooltip before function ends
+
+	local itemSpellEffectPattern = ITEM_SPELL_EFFECT:gsub("%%s", "%(%.%+%)")
+	for i = 1, tooltipForParsing:NumLines() or 0 do
+		local line = getglobal(tooltipForParsing:GetName()..'TextLeft' .. i)
+		if line and line.GetText then
+			local text = line:GetText() or ""
+			if text:find(ITEM_SPELL_TRIGGER_ONEQUIP) -- "Equip:"
+				or text:find(ITEM_SPELL_TRIGGER_ONPROC) -- "Chance on hit:"
+				or text:find(ITEM_SPELL_TRIGGER_ONUSE) -- "Use:"
+				or text:match(ITEM_SPELL_EFFECT) -- "Effect: %s"
+				then
+				return true
+			end
+		end
+	end
+
+	tooltipForParsing:Hide()
+	return false
+end
+
 -- Return true if equippable item myItem has the same item id of otherItem,
 -- and any stats (primary, secondary, #sockets, leech, etc) of otherItem is not greater than that of myItem
 -- Item enchant is removed before comparison.
