@@ -1654,6 +1654,7 @@ end
 function RCLootCouncil:IsItemHasEffect(item)
 	if not item then return false end
 	if not GetItemInfo(item) then return true end
+	if select(4, GetItemInfoInstant(item)) == "" then return true end -- Assume non-equippable item has effect.
 	if select(16, GetItemInfo(item)) then return true end -- Set piece
 	tooltipForParsing:SetOwner(UIParent, "ANCHOR_NONE") -- This lines clear the current content of tooltip and set its position off-screen
 	tooltipForParsing:SetHyperlink(item) -- Set the tooltip content and show it, should hide the tooltip before function ends
@@ -1675,6 +1676,19 @@ function RCLootCouncil:IsItemHasEffect(item)
 
 	tooltipForParsing:Hide()
 	return false
+end
+
+-- Return true if two items are same type item. (same equipment slot and same item type/subtype)
+function RCLootCouncil:IsSimilarItem(item1, item2)
+	if not item1 or not item2 then return false end
+	if item1 == item2 then return true end
+	if self:GetItemIDFromLink(item1) == self:GetItemIDFromLink(item2) then return true end
+	if select(4, GetItemInfoInstant(item1)) == "" or select(4, GetItemInfoInstant(item2)) == "" then return false end -- Dont compare non-equipped items
+	if select(2, GetItemInfoInstant(item1)) ~= select(2, GetItemInfoInstant(item2)) then return false end -- Item Type
+	if select(3, GetItemInfoInstant(item1)) ~= select(3, GetItemInfoInstant(item2)) then return false end -- Item Subtype
+	local loc1 = select(4, GetItemInfoInstant(item1))
+	local loc2 = select(4, GetItemInfoInstant(item2))
+	return loc1 == loc2 or ((loc1 == "INVTYPE_CHEST" or loc1 == "INVTYPE_ROBE") and (loc2 == "INVTYPE_CHEST" or loc2 == "INVTYPE_ROBE"))
 end
 
 -- Return true if equippable item myItem has the same item id of otherItem,
