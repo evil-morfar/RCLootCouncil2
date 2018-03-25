@@ -1667,7 +1667,7 @@ function RCLootCouncil:IsItemHasEffect(item)
 			if text:find(ITEM_SPELL_TRIGGER_ONEQUIP) -- "Equip:"
 				or text:find(ITEM_SPELL_TRIGGER_ONPROC) -- "Chance on hit:"
 				or text:find(ITEM_SPELL_TRIGGER_ONUSE) -- "Use:"
-				or text:match(ITEM_SPELL_EFFECT) -- "Effect: %s"
+				or text:match(itemSpellEffectPattern) -- "Effect: %s"
 				then
 				return true
 			end
