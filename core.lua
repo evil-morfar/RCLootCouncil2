@@ -120,9 +120,9 @@ function RCLootCouncil:OnInitialize()
 		TIMEOUT			= { color = {1,0,0,1},				sort = 504,		text = L["Candidate didn't respond on time"], },
 		REMOVED			= { color = {0.8,0.5,0,1},			sort = 505,		text = L["Candidate removed"], },
 		NOTHING			= { color = {0.5,0.5,0.5,1},		sort = 505,		text = L["Offline or RCLootCouncil not installed"], },
-		OWNED			= { color = {0.7,0.7,0.7,1},		sort = 801,		text = L["Candidate owns equal or better version and the appearance of this item"], },
 		PASS				= { color = {0.7, 0.7,0.7,1},		sort = 800,		text = _G.PASS,},
 		AUTOPASS			= { color = {0.7,0.7,0.7,1},		sort = 801,		text = L["Autopass"], },
+		OWNED				= { color = {0.7,0.7,0.7,1},		sort = 801,		text = L["Candidate has an equal or better version of this item"], },
 		DISABLED			= { color = {0.3,0.35,0.5,1},		sort = 802,		text = L["Candidate has disabled RCLootCouncil"], },
 		NOTINRAID		= { color = {0.7,0.6,0,1}, 		sort = 803, 	text = L["Candidate is not in the instance"]},
 		DEFAULT			= { color = {1,0,0,1},				sort = 899, 	text = L["Response isn't available. Please upgrade RCLootCouncil."]},
@@ -1624,7 +1624,7 @@ function RCLootCouncil:IsAppearanceCollected(item)
 	return true
 end
 
--- Return true if equippable item myItem has the same item id of otherItem, 
+-- Return true if equippable item myItem has the same item id of otherItem,
 -- and any stats (primary, secondary, #sockets, leech, etc) of otherItem is not greater than that of myItem
 -- Item enchant is removed before comparison.
 local myItemStats = {}
@@ -1659,9 +1659,12 @@ end
 function RCLootCouncil:OwnEqualOrBetterItem(item)
 	if not item or not GetItemInfo(item) then return end
 
-	for i=INVSLOT_FIRST_EQUIPPED, INVSLOT_LAST_EQUIPPED do
-		local link = GetInventoryItemLink("player", i)
-		if link and self:IsEqualOrBetterItem(link, item) then
+	local equiploc = select(9, GetItemInfo(item))
+	if equiploc and equiploc ~= "" then
+		local slot = GetInventorySlotInfo(self.INVTYPE_Slots[equiploc])
+		local link1 = GetInventoryItemLink("player", slot[1] or slot)
+		local link2 = slot[2] and GetInventoryItemLink("player", slot[2])
+		if (link1 and self:IsEqualOrBetterItem(link1, item)) or (link2 and self:IsEqualOrBetterItem(link2, item)) then
 			return true, "equipped", i
 		end
 	end
@@ -2270,8 +2273,8 @@ end
 
 -- Return item link without enchants (enchantId, gemId1, gemId2, gemId3, gemId4, suffixId)
 function RCLootCouncil:GetItemLinkWithoutEnchant(link)
-	local pattern = "|Hitem:(%d*):(%d*):(%d*):(%d*):(%d*):(%d*):(%d*):"
-	local replacement = "|Hitem:%1:::::::"
+	local pattern = "item:(%d*):(%d*):(%d*):(%d*):(%d*):(%d*):(%d*):"
+	local replacement = "item:%1:::::::"
 	return link:gsub(pattern, replacement)
 end
 

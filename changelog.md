@@ -1,3 +1,7 @@
+* **Auto Pass Owned Items**
+* By default, RCLootCouncil now auto passes on items you own or have a better version of, and have collected the appearance from.
+* This can be disabled in the options menu if desired.
+
 ### v2.7.9
 ---
 ###### Bugfixes
