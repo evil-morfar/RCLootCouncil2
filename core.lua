@@ -1699,7 +1699,13 @@ local otherItemStats = {}
 function RCLootCouncil:IsEqualOrBetterItem(myItem, otherItem)
 	if not myItem or not otherItem then return end
 	if myItem == otherItem then return true end
-	if self:GetItemIDFromLink(myItem) == self:GetItemIDFromLink(otherItem) then
+
+	myItem = self:GetItemLinkWithoutEnchant(myItem) -- Remove enchant before checking item effect
+	otherItem = self:GetItemLinkWithoutEnchant(otherItem) -- Because enchant can have on-use effect
+
+	if self:GetItemIDFromLink(myItem) == self:GetItemIDFromLink(otherItem) -- Same ID
+		or (self:IsSimilarItem(myItem, otherItem) and not self:IsItemHasEffect(otherItem)) -- Or similar item and otherItem does not have special effect
+		then
 		if select(9, GetItemInfo(otherItem)) == "" then -- Dont compare non-equppable items.
 			return false
 		end
@@ -1708,8 +1714,7 @@ function RCLootCouncil:IsEqualOrBetterItem(myItem, otherItem)
 		end
 		wipe(myItemStats)
 		wipe(otherItemStats)
-		myItem = self:GetItemLinkWithoutEnchant(myItem)
-		otherItem = self:GetItemLinkWithoutEnchant(otherItem)
+
 		GetItemStats(myItem, myItemStats)
 		GetItemStats(otherItem, otherItemStats)
 
