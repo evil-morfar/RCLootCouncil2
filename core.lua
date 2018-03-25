@@ -1664,10 +1664,12 @@ function RCLootCouncil:IsItemHasEffect(item)
 		local line = getglobal(tooltipForParsing:GetName()..'TextLeft' .. i)
 		if line and line.GetText then
 			local text = line:GetText() or ""
-			if text:find(ITEM_SPELL_TRIGGER_ONEQUIP) -- "Equip:"
+			if 	text:match(itemSpellEffectPattern) -- "Effect: %s"
+				or text:find(ITEM_SPELL_TRIGGER_ONEQUIP) -- "Equip:"
 				or text:find(ITEM_SPELL_TRIGGER_ONPROC) -- "Chance on hit:"
 				or text:find(ITEM_SPELL_TRIGGER_ONUSE) -- "Use:"
-				or text:match(itemSpellEffectPattern) -- "Effect: %s"
+				or text:find(ITEM_STARTS_QUEST) -- "This Item Begins a Quest"
+				or text:find(ITEM_TOURNAMENT_GEAR) -- "Tournament Gear"
 				then
 				return true
 			end
@@ -1694,6 +1696,7 @@ end
 -- Return true if equippable item myItem has the same item id of otherItem,
 -- and any stats (primary, secondary, #sockets, leech, etc) of otherItem is not greater than that of myItem
 -- Item enchant is removed before comparison.
+-- TODO: dont compare if myItem is tournament gear
 local myItemStats = {}
 local otherItemStats = {}
 function RCLootCouncil:IsEqualOrBetterItem(myItem, otherItem)
