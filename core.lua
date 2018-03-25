@@ -123,6 +123,7 @@ function RCLootCouncil:OnInitialize()
 		PASS				= { color = {0.7, 0.7,0.7,1},		sort = 800,		text = _G.PASS,},
 		AUTOPASS			= { color = {0.7,0.7,0.7,1},		sort = 801,		text = L["Autopass"], },
 		OWNED				= { color = {0.7,0.7,0.7,1},		sort = 801,		text = L["Candidate has an equal or better version of this item"], },
+		KNOWN				= { color = {0.7,0.7,0.7,1},		sort = 801,		text = ITEM_SPELL_KNOWN, },
 		DISABLED			= { color = {0.3,0.35,0.5,1},		sort = 802,		text = L["Candidate has disabled RCLootCouncil"], },
 		NOTINRAID		= { color = {0.7,0.6,0,1}, 		sort = 803, 	text = L["Candidate is not in the instance"]},
 		DEFAULT			= { color = {1,0,0,1},				sort = 899, 	text = L["Response isn't available. Please upgrade RCLootCouncil."]},
