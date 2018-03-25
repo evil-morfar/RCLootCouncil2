@@ -1744,7 +1744,7 @@ function RCLootCouncil:IsEqualOrBetterItem(myItem, otherItem)
 
 	if self:GetItemIDFromLink(myItem) == self:GetItemIDFromLink(otherItem) -- Same ID
 		or (self:IsSimilarItem(myItem, otherItem) and not self:IsItemHasEffect(otherItem)
-			and not self:IsItemRestricted(myItem) and not self:IsItemRestricted(otherItem)) 
+			and not self:IsItemRestricted(myItem) and not self:IsItemRestricted(otherItem))
 			-- Or similar item and otherItem does not have special effect and both items are not restricted.
 		then
 		if select(9, GetItemInfo(otherItem)) == "" then -- Dont compare non-equppable items.
