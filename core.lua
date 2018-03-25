@@ -1668,6 +1668,42 @@ function RCLootCouncil:IsItemHasEffect(item)
 				or text:find(ITEM_SPELL_TRIGGER_ONEQUIP) -- "Equip:"
 				or text:find(ITEM_SPELL_TRIGGER_ONPROC) -- "Chance on hit:"
 				or text:find(ITEM_SPELL_TRIGGER_ONUSE) -- "Use:"
+				then
+				return true
+			end
+		end
+	end
+
+	tooltipForParsing:Hide()
+	return false
+end
+
+-- Return true if the item has is restricted (uniqueness, tournament gear etc)
+function RCLootCouncil:IsItemRestricted(item)
+	if not item then return false end
+	if not GetItemInfo(item) then return true end
+	if select(4, GetItemInfoInstant(item)) == "" then return true end -- Assume non-equippable item has effect.
+	if select(16, GetItemInfo(item)) then return true end -- Set piece
+	tooltipForParsing:SetOwner(UIParent, "ANCHOR_NONE") -- This lines clear the current content of tooltip and set its position off-screen
+	tooltipForParsing:SetHyperlink(item) -- Set the tooltip content and show it, should hide the tooltip before function ends
+
+	local itemLimitCategoryPattern = ITEM_LIMIT_CATEGORY:gsub("%%s", "%(%.%+%)")
+	itemLimitCategoryPattern = itemLimitCategoryPattern:gsub("%%d", "%(%.%+%)")
+
+	local itemLimitCategoryMultiplePattern = ITEM_LIMIT_CATEGORY_MULTIPLE:gsub("%%s", "%(%.%+%)")
+	itemLimitCategoryMultiplePattern = itemLimitCategoryPattern:gsub("%%d", "%(%.%+%)")
+
+	local itemUniqueMultiple = ITEM_UNIQUE_MULTIPLE:gsub("%%d", "%(%.%+%)")
+
+	for i = 1, tooltipForParsing:NumLines() or 0 do
+		local line = getglobal(tooltipForParsing:GetName()..'TextLeft' .. i)
+		if line and line.GetText then
+			local text = line:GetText() or ""
+			if text:match(itemLimitCategoryPattern) -- "Unique: %s (%d)"
+				or text:match(itemLimitCategoryMultiplePattern) -- "Unique-Equipped: %s (%d)"
+				or text:match(itemUniqueMultiple) -- "Unique (%d)"
+				or text:find(ITEM_UNIQUE) -- "Unique"
+				or text:find(ITEM_UNIQUE_EQUIPPABLE) -- "Unique-Equipped"
 				or text:find(ITEM_STARTS_QUEST) -- "This Item Begins a Quest"
 				or text:find(ITEM_TOURNAMENT_GEAR) -- "Tournament Gear"
 				then
@@ -1707,7 +1743,9 @@ function RCLootCouncil:IsEqualOrBetterItem(myItem, otherItem)
 	otherItem = self:GetItemLinkWithoutEnchant(otherItem) -- Because enchant can have on-use effect
 
 	if self:GetItemIDFromLink(myItem) == self:GetItemIDFromLink(otherItem) -- Same ID
-		or (self:IsSimilarItem(myItem, otherItem) and not self:IsItemHasEffect(otherItem)) -- Or similar item and otherItem does not have special effect
+		or (self:IsSimilarItem(myItem, otherItem) and not self:IsItemHasEffect(otherItem)
+			and not self:IsItemRestricted(myItem) and not self:IsItemRestricted(otherItem)) 
+			-- Or similar item and otherItem does not have special effect and both items are not restricted.
 		then
 		if select(9, GetItemInfo(otherItem)) == "" then -- Dont compare non-equppable items.
 			return false
