@@ -1509,7 +1509,11 @@ function RCLootCouncil:DoAutoPasses(table)
 		local session = v.session or k
 		if db.autoPass and not v.noAutopass then
 			if (v.boe and db.autoPassBoE) or not v.boe then
-				if self:AutoPassCheck(v.link, v.equipLoc, v.typeID, v.subTypeID, v.classes, v.token, v.relic) then
+				if self:IsItemSpellKnown(v.link) then
+					self:Debug("Autopass known item on: ", v.link)
+					if not db.silentAutoPass then self:Print(format(L["Autopassed on 'item'"].." ("..ITEM_SPELL_KNOWN..")", v.link)) end
+					v.autopass = "KNOWN"
+				elseif self:AutoPassCheck(v.link, v.equipLoc, v.typeID, v.subTypeID, v.classes, v.token, v.relic) then
 					self:Debug("Autopassed on: ", v.link)
 					if not db.silentAutoPass then self:Print(format(L["Autopassed on 'item'"], v.link)) end
 					v.autopass = true
