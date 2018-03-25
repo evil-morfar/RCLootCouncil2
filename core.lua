@@ -1605,6 +1605,27 @@ function RCLootCouncil:GetItemClassesAllowedFlag(item)
 	return 0xffffffff -- The item works for all classes
 end
 
+-- Determine if the item has been learned before. (Mount, toy, etc)
+function RCLootCouncil:IsItemSpellKnown(item)
+	if not item then return end
+	if not GetItemInfo(item) then return end
+	tooltipForParsing:SetOwner(UIParent, "ANCHOR_NONE") -- This lines clear the current content of tooltip and set its position off-screen
+	tooltipForParsing:SetHyperlink(item) -- Set the tooltip content and show it, should hide the tooltip before function ends
+
+	for i = 1, tooltipForParsing:NumLines() or 0 do
+		local line = getglobal(tooltipForParsing:GetName()..'TextLeft' .. i)
+		if line and line.GetText then
+			local text = line:GetText() or ""
+			if text == ITEM_SPELL_KNOWN then
+				return true
+			end
+		end
+	end
+
+	tooltipForParsing:Hide()
+	return false
+end
+
 function RCLootCouncil:IsAppearanceCollected(item)
 	if not item then return end
 	if not GetItemInfo(item) then return end
