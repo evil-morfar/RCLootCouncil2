@@ -935,13 +935,6 @@ function RCVotingFrame.SetCellName(rowFrame, frame, data, cols, row, realrow, co
 	local name = data[realrow].name
 	frame.text:SetText(addon.Ambiguate(name))
 	local c = addon:GetClassColor(lootTable[session].candidates[name].class)
-	if (IsInInstance() and select(4, UnitPosition("player")) ~= select(4, UnitPosition(Ambiguate(name, "short"))))
-			-- Mark as out of instance if the current player is in an instance and the raider is in other instancemap
-			or ((not IsInInstance()) and UnitPosition(Ambiguate(name, "short")) ~= nil) then
-			-- If the current player is not in an instance, mark as out of instance if 1st return of UnitPosition is not nil
-			-- This function returns nil if the raider is in any instance.
-			c = c.." (Out of instance)"
-	end
 	frame.text:SetTextColor(c.r, c.g, c.b, c.a)
 	data[realrow].cols[column].value = name or ""
 end
@@ -969,7 +962,16 @@ function RCVotingFrame.SetCellResponse(rowFrame, frame, data, cols, row, realrow
 	local name = data[realrow].name
 	local isTier = lootTable[session].candidates[name].isTier
 	local isRelic = lootTable[session].candidates[name].isRelic
-	frame.text:SetText(addon:GetResponseText(lootTable[session].candidates[name].response, isTier, isRelic))
+	local response = addon:GetResponseText(lootTable[session].candidates[name].response, isTier, isRelic)
+	if (IsInInstance() and select(4, UnitPosition("player")) ~= select(4, UnitPosition(Ambiguate(name, "short"))))
+		-- Mark as out of instance if the current player is in an instance and the raider is in other instancemap
+		or ((not IsInInstance()) and UnitPosition(Ambiguate(name, "short")) ~= nil) then
+		-- If the current player is not in an instance, mark as out of instance if 1st return of UnitPosition is not nil
+		-- This function returns nil if the raider is in any instance.
+		text = text.." (Out of instance)"
+	end
+	frame.text:SetText()
+
 	frame.text:SetTextColor(addon:GetResponseColor(lootTable[session].candidates[name].response, isTier, isRelic))
 end
 
