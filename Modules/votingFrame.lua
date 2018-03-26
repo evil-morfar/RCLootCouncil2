@@ -968,9 +968,9 @@ function RCVotingFrame.SetCellResponse(rowFrame, frame, data, cols, row, realrow
 		or ((not IsInInstance()) and UnitPosition(Ambiguate(name, "short")) ~= nil) then
 		-- If the current player is not in an instance, mark as out of instance if 1st return of UnitPosition is not nil
 		-- This function returns nil if the raider is in any instance.
-		text = text.." (Out of instance)"
+		response = response.." (Out of instance)"
 	end
-	frame.text:SetText()
+	frame.text:SetText(response)
 
 	frame.text:SetTextColor(addon:GetResponseColor(lootTable[session].candidates[name].response, isTier, isRelic))
 end
