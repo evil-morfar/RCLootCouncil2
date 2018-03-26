@@ -15,7 +15,15 @@ _G.RCLootCouncilML = addon:NewModule("RCLootCouncilML", "AceEvent-3.0", "AceBuck
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 local LibDialog = LibStub("LibDialog-1.0")
 
+-- WoW API
+local GetItemInfo, GetItemInfoInstant, GetRaidRosterInfo
+	 = GetItemInfo, GetItemInfoInstant, GetRaidRosterInfo
+-- Lua
+local time, date, tonumber, unpack, select, wipe, pairs, ipairs, format, table, tinsert, tremove, bit, tostring, type
+	 = time, date, tonumber, unpack, select, wipe, pairs, ipairs, format, table, tinsert, tremove, bit, tostring, type
+
 local db;
+local RCTokenTable = RCTokenTable
 
 local LOOT_ITEM_PATTERN = "^".._G.LOOT_ITEM:gsub('%%s', '(.+)').."$"
 
@@ -94,6 +102,7 @@ end
 -- @param entry Used to set data in a specific lootTable entry.
 function RCLootCouncilML:AddItem(item, baggedEntry, slotIndex, entry)
 	addon:DebugLog("ML:AddItem", item, baggedEntry, slotIndex, entry)
+	if type(item) == "string" and item:find("|Hcurrency") then return end -- Ignore "Currency" item links
 
 	if not entry then
 		entry = {}

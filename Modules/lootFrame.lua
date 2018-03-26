@@ -355,8 +355,16 @@ do
 			entry.noteEditbox:SetTextInsets(5, 5, 0, 0)
 			entry.noteEditbox:SetScript("OnEnterPressed", function(self)
 				self:Hide()
-				entry.item.note = self:GetText() ~= "" and self:GetText()
 				entry:Update(entry.item)
+			end)
+			entry.noteEditbox:SetScript("OnTextChanged", function(self)
+				entry.item.note = self:GetText() ~= "" and self:GetText()
+				-- Change the note button instead of calling entry:Update on every single input
+				if entry.item.note then
+					entry.noteButton:SetNormalTexture("Interface\\Buttons\\UI-GuildButton-PublicNote-Up")
+				else
+					entry.noteButton:SetNormalTexture("Interface\\Buttons\\UI-GuildButton-PublicNote-Disabled")
+				end
 			end)
 			entry.noteEditbox:Hide()
 

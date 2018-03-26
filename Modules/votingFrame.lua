@@ -1549,10 +1549,18 @@ do
 					end
 					Lib_UIDropDownMenu_AddButton(info, level)
 				end
+				-- Add pass button as well
+				info.text = db.responses.PASS.text
+				info.colorCode = "|cff"..addon:RGBToHex(unpack(db.responses.PASS.color))
+				info.notCheckable = true
+				info.func = function()
+						addon:SendCommand("group", "change_response", session, candidateName, "PASS")
+				end
+				Lib_UIDropDownMenu_AddButton(info, level)
 				info = Lib_UIDropDownMenu_CreateInfo()
 				if addon.debug then -- Add all possible responses when debugging
 					for k,v in pairs(db.responses) do
-						if type(k) ~= "number" and k ~= "tier" and k~= "relic" then
+						if type(k) ~= "number" and k ~= "tier" and k~= "relic" and k ~= "PASS" then
 							info.text = v.text
 							info.colorCode = "|cff"..addon:RGBToHex(unpack(v.color))
 							info.notCheckable = true

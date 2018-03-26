@@ -2,6 +2,10 @@
 * By default, RCLootCouncil now auto passes on items you own or have a better version of, and have collected the appearance from.
 * This can be disabled in the options menu if desired.
 
+* Added "Pass" button to right click menu -> Change Response.
+* Loot Frame notes no longer requires an "enter" press to save the note.
+* Added a Discord option to Loot History exports.
+
 ### v2.7.9
 ---
 ###### Bugfixes
