@@ -154,10 +154,6 @@ function RCVotingFrame:RemoveColumn(id)
 	end
 end
 
-function RCVotingFrame:GROUP_ROSTER_UPDATE(...)
-	self:Update()
-end
-
 function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
 	if prefix == "RCLootCouncil" then
 		-- data is always a table to be unpacked
