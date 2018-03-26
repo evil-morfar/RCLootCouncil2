@@ -1372,18 +1372,18 @@ do
 		for player, v in pairs(lootDB) do
 			if selectedName and selectedName == player or not selectedName then
 				tinsert(export, "__ **")
-				tinsert(addon.Ambiguate(player))
-				tinsert(":** __\r\n")
+				tinsert(export,addon.Ambiguate(player))
+				tinsert(export, ":** __\r\n")
 				for i, d in pairs(v) do
 					if selectedDate and selectedDate == d.date or not selectedDate then
-						tinsert(export, "**Item:** *")
-						tinsert(d.lootWon)
-						tinsert("* - **Response:** *")
-						tinsert(tostring(d.response))
-						tinsert("*.\r\n")
-						tinsert(export, "**View Item:** <")
-						tinsert(self:GetWowheadLinkFromItemLink(d.lootWon))
-						tinsert(">\r\n")
+						tinsert(export, "Item: **")
+						tinsert(export, d.lootWon)
+						tinsert(export, "** - Response: ***")
+						tinsert(export, tostring(d.response))
+						tinsert(export, "***\r\n")
+						tinsert(export, " - View Item: <")
+						tinsert(export, self:GetWowheadLinkFromItemLink(d.lootWon))
+						tinsert(export, ">\r\n")
 					end
 				end
 				tinsert(export, "\r\n\r\n")

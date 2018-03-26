@@ -1,5 +1,6 @@
 * Added "Pass" button to right click menu -> Change Response.
 * Loot Frame notes no longer requires an "enter" press to save the note.
+* Added a Discord option to Loot History exports.
 
 ### v2.7.9
 ---
