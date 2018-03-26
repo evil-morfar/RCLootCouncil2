@@ -24,7 +24,7 @@ function RCSessionFrame:OnInitialize()
 	self.scrollCols = {
 		{ name = "", width = 30}, 				-- remove item, sort by session number.
 		{ name = "", width = ROW_HEIGHT},	-- item icon
-		{ name = "", width = ROW_HEIGHT,}, 	-- item lvl
+		{ name = "", width = 50,}, 	-- item lvl
 		{ name = "", width = 160}, 			-- item link
 	}
 end
@@ -82,13 +82,15 @@ function RCSessionFrame:ExtractData(data)
 	self.frame.rows = {}
 	-- And set the new
 	for k,v in ipairs(data) do
+		local bonusText = v.link and addon:GetItemBonusText(v.link, "\n ") or ""
+		if bonusText ~= "" then bonusText = "\n |cff33ff33"..bonusText end
 		self.frame.rows[k] = {
 			texture = v.texture or nil,
 			link = v.link,
 			cols = {
 				{ DoCellUpdate = self.SetCellDeleteBtn, },
 				{ DoCellUpdate = self.SetCellItemIcon},
-				{ value = " "..(addon:GetItemLevelText(v.ilvl, v.token) or ""), },
+				{ value = " "..(addon:GetItemLevelText(v.ilvl, v.token) or "")..bonusText},
 				{ DoCellUpdate = self.SetCellText },
 			},
 		}
@@ -114,7 +116,7 @@ function RCSessionFrame.SetCellText(rowFrame, frame, data, cols, row, realrow, c
 		loadingItems = true
 		if not scheduledToShowAgain then -- Dont make unneeded scheduling
 			scheduledToShowAgain = true
-			RCSessionFrame:ScheduleTimer("Show", 1, ml.lootTable) -- Expect data to be available in 1 sec and then recreate the frame
+			RCSessionFrame:ScheduleTimer("Show", 0, ml.lootTable) -- Try again next frame
 		end
 	else
 		frame.text:SetText(data[realrow].link)
@@ -143,7 +145,7 @@ end
 function RCSessionFrame:GetFrame()
 	if self.frame then return self.frame end
 
-	local f = addon:CreateFrame("DefaultRCSessionSetupFrame", "sessionframe", L["RCLootCouncil Session Setup"], 250)
+	local f = addon:CreateFrame("DefaultRCSessionSetupFrame", "sessionframe", L["RCLootCouncil Session Setup"], 260)
 
 	local tgl = CreateFrame("CheckButton", f:GetName().."Toggle", f.content, "ChatConfigCheckButtonTemplate")
 	getglobal(tgl:GetName().."Text"):SetText(L["Award later?"])

@@ -42,13 +42,13 @@ function LootHistory:OnInitialize()
 		--html = self.ExportHTML
 	}
 	self.scrollCols = {
-		{name = "",					width = ROW_HEIGHT, },			-- Class icon, should be same row as player
-		{name = _G.NAME,		width = 100, sortnext = 3, defaultsort = "dsc"},		-- Name of the player (There is a bug in default lib-st sort function that "dsc" is "asc")
-		{name = L["Time"],		width = 125, comparesort = self.DateTimeSort, sort="dsc",defaultsort = "dsc",},			-- Time of awarding
-		{name = "",					width = ROW_HEIGHT, },			-- Item at index icon
-		{name = L["Item"],		width = 250, 				}, 	-- Item string
-		{name = L["Reason"],		width = 220, comparesort = self.ResponseSort,  sortnext = 2},	-- Response aka the text supplied to lootDB...response
-		{name = "",					width = ROW_HEIGHT},				-- Delete button
+		{name = "",				width = ROW_HEIGHT, },																				-- Class icon, should be same row as player
+		{name = _G.NAME,		width = 100, sortnext = 3, defaultsort = "dsc"},											-- Name of the player (There is a bug in default lib-st sort function that "dsc" is "asc")
+		{name = L["Time"],	width = 125, comparesort = self.DateTimeSort, sort="dsc",defaultsort = "dsc",},	-- Time of awarding
+		{name = "",				width = ROW_HEIGHT, },																				-- Item icon
+		{name = L["Item"],	width = 250, comparesort = self.ItemSort,}, 													-- Item string
+		{name = L["Reason"],	width = 220, comparesort = self.ResponseSort,  sortnext = 2},							-- Response aka the text supplied to lootDB...response
+		{name = "",				width = ROW_HEIGHT},																					-- Delete button
 	}
 	filterMenu = CreateFrame("Frame", "RCLootCouncil_LootHistory_FilterMenu", UIParent, "Lib_UIDropDownMenuTemplate")
 	rightClickMenu = CreateFrame("Frame", "RCLootCouncil_LootHistory_RightclickMenu", UIParent, "Lib_UIDropDownMenuTemplate")
@@ -170,14 +170,14 @@ function LootHistory:BuildData()
 					row = row + 1
 				end
 			end
-			if not tContains(insertedNames, name) then -- we only want each name added once
+			if not insertedNames[name] then -- we only want each name added once
 				tinsert(nameData,
 					{
 						{DoCellUpdate = addon.SetCellClassIcon, args = {x.class}},
 						{value = addon.Ambiguate(name), color = addon:GetClassColor(x.class), name = name}
 					}
 				)
-				tinsert(insertedNames, name)
+				insertedNames[name] = true
 			elseif x.class then -- it already exists, but we might need to add the class which we now have
 				for i in pairs(nameData) do
 					if nameData[i][2].name == name then
@@ -187,6 +187,15 @@ function LootHistory:BuildData()
 			end
 		end
 		tinsert(dateData, {date})
+	end
+	-- Insert players in the group who isn't registered in the lootDB
+	for name,v in pairs(addon.candidates or {}) do
+		if not insertedNames[name] then
+			tinsert(nameData, {
+				{DoCellUpdate = addon.SetCellClassIcon, args = {v.class}},
+				{value = addon.Ambiguate(name), color = addon:GetClassColor(v.class), name = name}
+			})
+		end
 	end
 	self.frame.st:SetData(self.frame.rows)
 	self.frame.date:SetData(dateData, true) -- True for minimal data	format
@@ -361,6 +370,20 @@ function LootHistory.ResponseSort(table, rowa, rowb, sortbycol)
 		b = 500
 	end
 
+	local direction = column.sort or column.defaultsort or "asc";
+	if direction:lower() == "asc" then
+		return a < b;
+	else
+		return a > b;
+	end
+end
+
+function LootHistory.ItemSort(table, rowa, rowb, sortbycol)
+	local column = table.cols[sortbycol]
+	rowa, rowb = table:GetRow(rowa), table:GetRow(rowb);
+	local a,b = lootDB[rowa.name][rowa.num].lootWon, lootDB[rowb.name][rowb.num].lootWon
+	a = addon:GetItemNameFromLink(a)
+	b = addon:GetItemNameFromLink(b)
 	local direction = column.sort or column.defaultsort or "asc";
 	if direction:lower() == "asc" then
 		return a < b;

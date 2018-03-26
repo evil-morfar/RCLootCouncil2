@@ -129,6 +129,16 @@ function LootFrame:Update()
 	end
 	self.EntryManager:Update()
 	self.frame.content:SetHeight(numEntries * ENTRY_HEIGHT + 7)
+
+	local firstEntry = self.EntryManager.entries[1]
+	if firstEntry and addon:Getdb().modules["RCLootFrame"].alwaysShowTooltip then
+		self.frame.itemTooltip:SetOwner(self.frame.content, "ANCHOR_NONE")
+		self.frame.itemTooltip:SetHyperlink(firstEntry.item.link)
+		self.frame.itemTooltip:Show()
+		self.frame.itemTooltip:SetPoint("TOPRIGHT", firstEntry.frame, "TOPLEFT", 0, 0)
+	else
+		self.frame.itemTooltip:Hide()
+	end
 end
 
 function LootFrame:OnRoll(entry, button)
@@ -138,7 +148,7 @@ function LootFrame:OnRoll(entry, button)
 		-- target, session, response, isTier, isRelic, note, link, ilvl, equipLoc, relicType, sendAvgIlvl, sendSpecID
 		local isTier = item.isTier and addon.mldb.tierButtonsEnabled
 		local isRelic = item.isRelic and addon.mldb.relicButtonsEnabled
-		addon:Debug("LootFrame:Response", button, "ButtonText:", addon:GetButtonText(button,isTier,isRelic), "Response:", addon:GetResponseText(button,isTier,isRelic))
+		addon:Debug("LootFrame:Response", button, "Response:", addon:GetResponseText(button, isTier, isRelic))
 		for _, session in ipairs(item.sessions) do
 			addon:SendResponse("group", session, button, isTier, isRelic, item.note)
 		end
@@ -182,6 +192,7 @@ function LootFrame:GetFrame()
 	addon:DebugLog("LootFrame","GetFrame()")
 	self.frame = addon:CreateFrame("DefaultRCLootFrame", "lootframe", L["RCLootCouncil Loot Frame"], 250, 375)
 	self.frame.title:SetPoint("BOTTOM", self.frame, "TOP", 0 ,-5)
+	self.frame.itemTooltip = addon:CreateGameTooltip("lootframe", self.frame.content)
 	return self.frame
 end
 
@@ -206,7 +217,10 @@ do
 			entry.icon:SetNormalTexture(entry.item.texture or "Interface\\InventoryItems\\WoWUnknownItem01")
 			entry.itemCount:SetText(#entry.item.sessions > 1 and #entry.item.sessions or "")
 			local typeText = addon:GetItemTypeText(item.link, item.subType, item.equipLoc, item.typeID, item.subTypeID, item.classes, item.isTier, item.isRelic)
-			entry.itemLvl:SetText(addon:GetItemLevelText(entry.item.ilvl, entry.item.isTier).."  |cff7fffff"..typeText.."|r")
+			local bonusText = addon:GetItemBonusText(item.link, "/")
+			if bonusText ~= "" then bonusText = "+ "..bonusText end
+			entry.itemLvl:SetText(addon:GetItemLevelText(entry.item.ilvl, entry.item.isTier).." |cff7fffff"..typeText.."|r")
+			entry.bonuses:SetText(bonusText)
 			if entry.item.note then
 				entry.noteButton:SetNormalTexture("Interface\\Buttons\\UI-GuildButton-PublicNote-Up")
 			else
@@ -241,12 +255,21 @@ do
 			entry.icon:SetScript("OnEnter", function()
 				if not entry.item.link then return end
 				addon:CreateHypertip(entry.item.link)
+				GameTooltip:AddLine("")
+				GameTooltip:AddLine(L["always_show_tooltip_howto"], nil, nil, nil, true)
+				GameTooltip:Show()
 			end)
 			entry.icon:SetScript("OnLeave", function() addon:HideTooltip() end)
 			entry.icon:SetScript("OnClick", function()
 				if not entry.item.link then return end
 				if ( IsModifiedClick() ) then
 					HandleModifiedItemClick(entry.item.link);
+				end
+				if entry.icon.lastClick and GetTime() - entry.icon.lastClick <= 0.5 then
+					addon:Getdb().modules["RCLootFrame"].alwaysShowTooltip = not addon:Getdb().modules["RCLootFrame"].alwaysShowTooltip
+					LootFrame:Update()
+				else
+					entry.icon.lastClick = GetTime()
 				end
 			end)
 
@@ -346,6 +369,10 @@ do
 			entry.itemLvl:SetPoint("TOPLEFT", entry.itemText, "BOTTOMLEFT", 1, -4)
 			entry.itemLvl:SetTextColor(1, 1, 1) -- White
 			entry.itemLvl:SetText("error")
+
+			entry.bonuses = entry.frame:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+			entry.bonuses:SetPoint("LEFT", entry.itemLvl, "RIGHT", 1, 0)
+			entry.bonuses:SetTextColor(0.2,1,0.2) -- Green
 
 			------------ Timeout -------------
 			entry.timeoutBar = CreateFrame("StatusBar", nil, entry.frame, "TextStatusBar")
@@ -629,9 +656,7 @@ function LootFrame:CHAT_MSG_SYSTEM(event, msg)
 		self:CancelTimer(entryInQueue.timer)
 		local entry = entryInQueue.entry
 		local item = entry.item
-		for _, session in ipairs(item.sessions) do
-			addon:SendResponse("group", session, nil, nil, nil, nil, roll)
-		end
+		addon:SendCommand("group", "roll", addon.playerName, roll, item.sessions)
 		addon:SendAnnouncement(format(L["'player' has rolled 'roll' for: 'item'"], UnitName("player"), roll, item.link), "group")
 		entry.rollResult:SetText(roll)
 		entry.rollResult:Show()

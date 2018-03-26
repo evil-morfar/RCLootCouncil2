@@ -7,5 +7,6 @@ manual-changelog:
 ignore:
     - README.md
     - LICENSE.md
+    - __tests
 
 enable-nolib-creation: no
