@@ -296,6 +296,7 @@ L["open"] = true
 L["open_the_loot_history_desc"] = "Click to open the Loot History."
 L["Opens the synchronizer"] = true
 L["Other piece"] = true
+L["Out of instance"] = true
 L["Player is not in the group"] = true
 L["Player is offline"] = true
 L["Player is not in this instance or is ineligible for this item"] = true
