@@ -1,4 +1,5 @@
 * Added "Pass" button to right click menu -> Change Response.
+* Loot Frame notes no longer requires an "enter" press to save the note.
 
 ### v2.7.9
 ---
