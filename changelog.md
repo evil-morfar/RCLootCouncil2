@@ -1,3 +1,6 @@
+* Added a Discord option to Loot History exports.
+
+
 ### v2.7.9
 ---
 ###### Bugfixes
