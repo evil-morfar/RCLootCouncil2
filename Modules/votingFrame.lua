@@ -9,7 +9,7 @@ if LibDebug then LibDebug() end
 --@end-debug@
 
 local addon = LibStub("AceAddon-3.0"):GetAddon("RCLootCouncil")
-local RCVotingFrame = addon:NewModule("RCVotingFrame", "AceComm-3.0", "AceTimer-3.0", "AceEvent-3.0")
+local RCVotingFrame = addon:NewModule("RCVotingFrame", "AceComm-3.0", "AceTimer-3.0", "AceEvent-3.0", "AceBucket-3.0")
 local LibDialog = LibStub("LibDialog-1.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 local LibDialog = LibStub("LibDialog-1.0")
@@ -67,7 +67,7 @@ end
 
 function RCVotingFrame:OnEnable()
 	self:RegisterComm("RCLootCouncil")
-	self:RegisterEvent("GROUP_ROSTER_UPDATE")
+	self:RegisterBucketEvent({"UNIT_PHASE", "ZONE_CHANGED_NEW_AREA"}, 1, "Update") -- Update "Out of instance" text when any raid members change zone
 	db = addon:Getdb()
 	active = true
 	moreInfo = db.modules["RCVotingFrame"].moreInfo
