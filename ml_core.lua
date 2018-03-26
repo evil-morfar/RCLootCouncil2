@@ -94,6 +94,7 @@ end
 -- @param entry Used to set data in a specific lootTable entry.
 function RCLootCouncilML:AddItem(item, baggedEntry, slotIndex, entry)
 	addon:DebugLog("ML:AddItem", item, baggedEntry, slotIndex, entry)
+	if type(item) == "string" and item:find("|Hcurrency") then return end -- Ignore "Currency" item links
 
 	if not entry then
 		entry = {}
