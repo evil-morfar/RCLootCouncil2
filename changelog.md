@@ -1,6 +1,11 @@
+* Added "Pass" button to right click menu -> Change Response.
+* Loot Frame notes no longer requires an "enter" press to save the note.
+
+### v2.7.9
+---
+###### Bugfixes
 * *Group members that haven't been awarded anything is now shown in the loot history (Git#151).*
 * *Some times guild rank could disappear from candidates (#335).*
-
 
 
 ### v2.7.8
