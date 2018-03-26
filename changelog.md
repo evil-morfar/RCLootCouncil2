@@ -1,3 +1,5 @@
+* Added "Pass" button to right click menu -> Change Response.
+
 ### v2.7.9
 ---
 ###### Bugfixes
