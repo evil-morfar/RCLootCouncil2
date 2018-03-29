@@ -1388,16 +1388,45 @@ do
 				notCheckable = true,
 				disabled = true,
 			},{ -- 3 Award
-				text = L["Award"],
+				text = function(name)
+					if addon.lootMethod == "master" then
+						local canGiveLoot, cause = addon:GetActiveModule("masterlooter"):CanGiveLoot(
+							 addon:GetActiveModule("masterlooter").lootTable[session].lootSlot,
+							 addon:GetActiveModule("masterlooter").lootTable[session].link,
+							 name)
+						if (not canGiveLoot) and (cause ~= "not_bop") then
+							return L["Award"] -- TODO: Alter RCLootCouncilML:PrintLootErrorMsg to create a function that returns a string
+						end
+					end
+					return L["Award"]
+				end,
 				notCheckable = true,
 				func = function(name, data)
 					LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_AWARD", RCVotingFrame:GetAwardPopupData(session, name, data))
+				end,
+				disabled = function(name)
+					if addon.lootMethod == "master" then
+						local canGiveLoot, cause = addon:GetActiveModule("masterlooter"):CanGiveLoot(
+							 addon:GetActiveModule("masterlooter").lootTable[session].lootSlot,
+							 addon:GetActiveModule("masterlooter").lootTable[session].link,
+							 name)
+						return (not canGiveLoot) and (cause ~= "not_bop")
+					end
 				end,
 			},{ -- 4 Award for
 				text = L["Award for ..."],
 				value = "AWARD_FOR",
 				notCheckable = true,
 				hasArrow = true,
+				disabled = function(name)
+					if addon.lootMethod == "master" then
+						local canGiveLoot, cause = addon:GetActiveModule("masterlooter"):CanGiveLoot(
+							 addon:GetActiveModule("masterlooter").lootTable[session].lootSlot,
+							 addon:GetActiveModule("masterlooter").lootTable[session].link,
+							 name)
+						return (not canGiveLoot) and (cause ~= "not_bop")
+					end
+				end,
 			},{ -- 5 Spacer
 				text = "",
 				notCheckable = true,
