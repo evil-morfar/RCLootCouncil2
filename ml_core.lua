@@ -23,7 +23,7 @@ local time, date, tonumber, unpack, select, wipe, pairs, ipairs, format, table, 
 	 = time, date, tonumber, unpack, select, wipe, pairs, ipairs, format, table, tinsert, tremove, bit, tostring, type
 
 local db;
-local RCTokenTable = RCTokenTable
+-- local RCTokenTable = RCTokenTable
 
 local LOOT_ITEM_PATTERN = "^".._G.LOOT_ITEM:gsub('%%s', '(.+)').."$"
 
