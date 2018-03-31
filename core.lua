@@ -1795,6 +1795,7 @@ function RCLootCouncil:OwnEqualOrBetterItem(item)
 		end
 
 		if link2 and self:IsEqualOrBetterItem(link2, item) then
+			-- TODO: Check if item is not tradable.
 			if maxEquipped < 2 or foundBetter then -- If item can be equipped twice, need find two better items
 				return true, "equipped", slot2
 			else
