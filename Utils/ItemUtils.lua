@@ -8,19 +8,19 @@ local itemInfos = {}
 
 local tempTable = {}
 
-local strmatch = string.match
-local select = select
-local type = type
 local error = error
+local getglobal = getglobal
+local ipairs = ipairs
+local pairs = pairs
+local select = select
+local string_gmatch = string.gmatch
+local strmatch = string.match
 local tinsert = table.insert
 local tostring = tostring
-local pairs = pairs
-local ipairs = ipairs
+local type = type
+local UIParent = UIParent
 local unpack = unpack
 local wipe = wipe
-local UIParent = UIParent
-local getglobal = getglobal
-local string_gmatch = string.gmatch
 
 local tooltip = CreateFrame("GameTooltip", "RCItemUtils_Tooltip", nil, "GameTooltipTemplate")
 tooltip:UnregisterAllEvents()
