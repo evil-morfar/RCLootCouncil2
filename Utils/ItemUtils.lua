@@ -85,7 +85,7 @@ local function AddAttributeByAPI(needLoad, api, ...)
 end
 
 local function AddAttributeByTooltip(needParse, direction, pattern, ...)
-	if type(needParse) ~= "string" then
+	if type(needParse) ~= "boolean" then
 		error(("Usage: AddAttributeByTooltip(needParse, direction, pattern, attribute...): 'needParse' - boolean expected got '%s' ('%s')."):format(type(needParse), tostring(needParse)), 2)
 	end
 	if direction ~= "left" and direction ~= "right" then
