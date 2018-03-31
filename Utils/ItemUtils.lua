@@ -24,6 +24,7 @@ local string_gmatch = string.gmatch
 
 local tooltip = CreateFrame("GameTooltip", "RCItemUtils_Tooltip", nil, "GameTooltipTemplate")
 tooltip:UnregisterAllEvents()
+tooltip:Hide()
 
 local function GetItemStringFromLink(link)
 	return strmatch(link or "", "(item:.-):*|h") -- trim trailing colons
