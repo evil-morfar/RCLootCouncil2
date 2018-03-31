@@ -35,6 +35,10 @@ local noUpdateTimeRemaining = 0 -- The time until we allow the next update.
 local updateFrame = CreateFrame("FRAME") -- to ensure the update operations that does not occur, because it's within min update interval, gets updated eventually
 local needUpdate = false -- Does voting frame needs an update after MIN_UPDATE_INTERVAL after the last update?
 
+local ItemUtils = LibStub("RCItemUtils-1.0")
+local CacheItem = ItemUtils.CacheItem
+local GetItemAttr = ItemUtils.GetItemAttr
+
 function RCVotingFrame:OnInitialize()
 	-- Contains all the default data needed for the scroll table
 	-- The default values are in sorted order
@@ -979,7 +983,7 @@ function RCVotingFrame.SetCellGear(rowFrame, frame, data, cols, row, realrow, co
 	local name = data[realrow].name
 	gear = lootTable[session].candidates[name][gear] -- Get the actual gear
 	if gear then
-		local texture = select(5, GetItemInfoInstant(gear))
+		local texture = GetItemAttr(gear, "texture")
 		frame:SetNormalTexture(texture)
 		frame:SetScript("OnEnter", function() addon:CreateHypertip(gear) end)
 		frame:SetScript("OnLeave", function() addon:HideTooltip() end)

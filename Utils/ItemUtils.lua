@@ -233,16 +233,16 @@ end
 
 local function GetItemAttrNoCache(item, attribute)
 	if type(item) ~= "string" then
-		error(("Usage: GetItemAttr(item, attribute): 'item' - string expected got '%s' ('%s')."):format(type(item), tostring(item)), 2)
+		error(("Usage: GetItemAttrNoCache(item, attribute): 'item' - string expected got '%s' ('%s')."):format(type(item), tostring(item)), 2)
 	end
 	if type(attribute) ~= "string" then
-		error(("Usage: GetItemAttr(item, attribute): 'attribute' - string expected got '%s' ('%s')."):format(type(attribute), tostring(attribute)), 2)
+		error(("Usage: GetItemAttrNoCache(item, attribute): 'attribute' - string expected got '%s' ('%s')."):format(type(attribute), tostring(attribute)), 2)
 	end
 	if not item:find("item:") then
-		error(("Usage: GetItemAttr(item, attribute): 'item' is not an item string/link ('%s')."):format(item), 2)
+		error(("Usage: GetItemAttrNoCache(item, attribute): 'item' is not an item string/link ('%s')."):format(item), 2)
 	end
 	if not attributesName[attribute] then
-		error(("Usage: GetItemAttr(item, attribute): Attribute does not exist: '%s'."):format(tostring(attribute)), 2)
+		error(("Usage: GetItemAttrNoCache(item, attribute): Attribute does not exist: '%s'."):format(tostring(attribute)), 2)
 	end
 
 	item = GetItemStringFromLink(item)
@@ -309,7 +309,7 @@ end
 -- AddAttributeByAPI(needLoad, api, attribute...)
 AddAttributeByAPI(false, GetItemInfoInstant, "id", "type", "subType", "equipLoc", "texture", "typeID", "subTypeID")
 AddAttributeByAPI(true, GetItemInfo, "name", "link", "quality", "ilvl", "reqLevel", "", "", "maxStack", "", "", "vendorPrice", "", "", "bindType", "expacID", "setID", "isCraftingReagent")
-AddAttributeByAPI(true, function(item) return GetItemQualityColor(GetItemAttrNoCache(item, "quality")) end, "r", "g", "b", "qualityColorHex")
+AddAttributeByAPI(true, function(item) return GetItemQualityColor(select(3, GetItemInfo(item)) or LE_ITEM_QUALITY_COMMON) end, "r", "g", "b", "qualityColorHex")
 AddAttributeByAPI(true, GetItemFamily, "bagType")
 AddAttributeByAPI(true, GetItemStats, "stats")
 AddAttributeByAPI(true, GetItemSpell, "spellName")
@@ -422,7 +422,6 @@ for target, v in pairs(RCItemUtils.embeds) do
 	RCItemUtils:Embed(target)
 end
 RCItemUtils:Embed(RCItemUtils)
-
 
 --[[ WoW API that contains the word "item" in the function name
 
