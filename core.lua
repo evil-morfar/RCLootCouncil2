@@ -1742,6 +1742,8 @@ function RCLootCouncil:IsEqualOrBetterItem(myItem, otherItem)
 	myItem = self:GetItemLinkWithoutEnchant(myItem) -- Remove enchant before checking item effect
 	otherItem = self:GetItemLinkWithoutEnchant(otherItem) -- Because enchant can have on-use effect
 
+	-- TODO: Check if otherItem can be used by the player
+
 	if self:GetItemIDFromLink(myItem) == self:GetItemIDFromLink(otherItem) -- Same ID
 		or (self:IsSimilarItem(myItem, otherItem) and not self:IsItemHasEffect(otherItem)
 			and not self:IsItemRestricted(myItem) and not self:IsItemRestricted(otherItem))
