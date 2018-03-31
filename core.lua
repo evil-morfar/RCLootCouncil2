@@ -2706,13 +2706,11 @@ function RCLootCouncil:GetItemLevelText(ilvl, token)
 	end
 end
 
-local itemStatsRet = {}
 -- Get item bonus text (socket, leech, etc)
 -- Item needs to be cached.
 function RCLootCouncil:GetItemBonusText(link, delimiter)
 	if not delimiter then delimiter = "/" end
-	wipe(itemStatsRet)
-	GetItemStats(link, itemStatsRet)
+	local itemStatsRet = GetItemAttr(link, "stats")
 	local text = ""
 	for k, _ in pairs(itemStatsRet) do
 		if k:find("SOCKET") then
@@ -2742,9 +2740,16 @@ function RCLootCouncil:GetItemBonusText(link, delimiter)
 end
 
 -- @return a text of the link explaining its type. For example, "Fel Artifact Relic", "Chest, Mail"
-function RCLootCouncil:GetItemTypeText(link, subType, equipLoc, typeID, subTypeID, classesFlag, tokenSlot, relicType)
+function RCLootCouncil:GetItemTypeText(link)
 	local id = self:GetItemIDFromLink(link)
 
+	local tokenSlot = GetItemAttr(link, "tokenSlot")
+	local classesFlag = GetItemAttr(link, "classesFlag")
+	local equipLoc = GetItemAttr(link, "equipLoc")
+	local relicType = GetItemAttr(link, "relicType")
+	local subTypeID = GetItemAttr(link, "subTypeID")
+	local typeID = GetItemAttr(link, "typeID")
+	local subType = GetItemAttr(link, "subType")
 	if tokenSlot then -- It's a token
 		local tokenText = L["Armor Token"]
 		if bit.band(classesFlag, 0x112) == 0x112 then
@@ -2764,14 +2769,12 @@ function RCLootCouncil:GetItemTypeText(link, subType, equipLoc, typeID, subTypeI
 		else
 			return tokenText
 		end
-	elseif self:IsRelicTypeID(typeID, subTypeID) then
-		relicType = relicType or select(3, C_ArtifactUI.GetRelicInfoByItemID(id)) or ""
+	elseif relicType then
 		local localizedRelicType = getglobal("RELIC_SLOT_TYPE_" .. relicType:upper()) or ""
 		local relicTooltipName = format(RELIC_TOOLTIP_TYPE, localizedRelicType)
 		return relicTooltipName
 	elseif equipLoc ~= "" and getglobal(equipLoc) then
 		if equipLoc == "INVTYPE_TRINKET" then
-			--local lootSpec = _G.RCTrinketSpecs[id]
 			local lootSpec = GetItemAttr(link, "lootSpec")
 			local category = lootSpec and _G.RCTrinketCategories[lootSpec]
 			if category then

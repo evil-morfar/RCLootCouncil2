@@ -27,6 +27,10 @@ local tooltip = CreateFrame("GameTooltip", "RCItemUtils_Tooltip", nil, "GameTool
 tooltip:UnregisterAllEvents()
 tooltip:Hide()
 
+local function GetItemIDFromLink(link)
+	return tonumber(strmatch(link or "", "item:(%d+):"))
+end
+
 local function GetItemStringFromLink(link)
 	if link:find("|") then
 		return strmatch(link or "", "(item:.-):*|h") -- trim trailing colons
@@ -302,6 +306,16 @@ local function GetItemSpecString(item)
 	end
 	return tconcat(tempTable)
 end
+
+local function GetItemClassesFlag(item)
+	local flag = 0
+	for classID = 1, GetNumClasses()do
+		if DoesItemContainSpec(item, classID) then
+			flag = flag + 2^(classID-1)
+		end
+	end
+	return flag
+end
 ----------------------------------------
 -- Add item attributes here
 ----------------------------------------
@@ -322,6 +336,9 @@ for i=1, GetNumClasses() do
 	AddAttributeByAPI(true, function(item) return DoesItemContainSpec(item, i) end, "class"..i)
 end
 AddAttributeByAPI(true, GetItemSpecString, "lootSpec")
+AddAttributeByAPI(false, function(item) return RCTokenTable[GetItemIDFromLink(item)] end, "tokenSlot")
+AddAttributeByAPI(true, function(item) return select(3, C_ArtifactUI.GetRelicInfoByItemID(GetItemIDFromLink(item))) end, "relicType")
+AddAttributeByAPI(true, GetItemClassesFlag, "classesFlag")
 
 -- AddAttributeByTooltip(needParse, direction, pattern, attribute...)
 AddAttributeByTooltip(false, "left", "^"..ITEM_TOURNAMENT_GEAR.."$", "isTournamentGear")
@@ -358,6 +375,7 @@ for i=1, GetNumClasses() do
 	SetAttributeDefault("class"..i, true)
 end
 SetAttributeDefault("lootSpec", "FFFFFFFFFFFF")
+SetAttributeDefault("classesFlag", 0xffffffff)
 
 -- Other functions in this file should not call this function. Infinite loop otherwise.
 local function GetItemAttr(item, attribute)
@@ -405,6 +423,7 @@ local mixins = {
 	GetItemAttr = GetItemAttr,
 	CacheItem = CacheItem,
 	GetItemStringFromLink = GetItemStringFromLink,
+	GetItemIDFromLink = GetItemIDFromLink,
 }
 
 RCItemUtils.embeds = RCItemUtils.embeds or {}
