@@ -5,16 +5,17 @@ local attributesName = {"numLines", "leftTexts", "rightTexts"}
 local attributesDefault = {}
 local attributesInfo = {}
 local itemInfos = {}
-
 local tempTable = {}
 
 local error = error
+local format = format
 local getglobal = getglobal
 local ipairs = ipairs
 local pairs = pairs
 local select = select
 local string_gmatch = string.gmatch
 local strmatch = string.match
+local tconcat = table.concat
 local tinsert = table.insert
 local tostring = tostring
 local type = type
@@ -27,7 +28,11 @@ tooltip:UnregisterAllEvents()
 tooltip:Hide()
 
 local function GetItemStringFromLink(link)
-	return strmatch(link or "", "(item:.-):*|h") -- trim trailing colons
+	if link:find("|") then
+		return strmatch(link or "", "(item:.-):*|h") -- trim trailing colons
+	else
+		return link
+	end
 end
 
 local function _CheckNewAttributeInput(usage, ...)
@@ -136,7 +141,7 @@ local function _AssignAPIReturnToAttr(itemInfo, apiInfo, ...)
 	for i = 1 , select("#", ...) do
 		local attr = apiInfo[i]
 		if attr and attr ~= "" then
-			itemInfo[attr] = attr
+			itemInfo[attr] = select(i, ...)
 		end
 	end
 end
@@ -226,7 +231,7 @@ local function CacheItem(item)
 	end
 end
 
-local function GetItemAttr(item, attribute)
+local function GetItemAttrNoCache(item, attribute)
 	if type(item) ~= "string" then
 		error(("Usage: GetItemAttr(item, attribute): 'item' - string expected got '%s' ('%s')."):format(type(item), tostring(item)), 2)
 	end
@@ -242,14 +247,61 @@ local function GetItemAttr(item, attribute)
 
 	item = GetItemStringFromLink(item)
 
-	if itemInfos[item] then
-		return itemInfos[item][attribute]
-	else
-		CacheItem(item)
-		return itemInfos[item][attribute] ~= nil and itemInfos[item][attribute] or attributesDefault[attribute]
-	end
+	return itemInfos[item][attribute] ~= nil and itemInfos[item][attribute] or attributesDefault[attribute]
 end
 
+_G.RCTrinketCategories = {
+	["3F7777777777"] = ALL_CLASSES, -- All Classes
+	["365002707767"] = ITEM_MOD_STRENGTH_SHORT.."/"..ITEM_MOD_AGILITY_SHORT, -- Strength/Agility
+	["000000700067"] = ITEM_MOD_STRENGTH_SHORT, -- Strength
+	["365002707467"] = MELEE, -- Melee
+	["3F7777077710"] = ITEM_MOD_AGILITY_SHORT.."/"..ITEM_MOD_INTELLECT_SHORT, -- Agility/Intellect
+	["365002007700"] = ITEM_MOD_AGILITY_SHORT, -- Agility
+	["092775070010"] = ITEM_MOD_INTELLECT_SHORT, -- Intellect
+	["241000100024"] = TANK, -- Tank
+	["000000000024"] = TANK..", "..BLOCK, -- Tank, Block (Warrior, Paladin)
+	["201000100024"] = TANK..", "..PARRY, -- Tank, Parry (Non-Druid)
+	["082004030010"] = HEALER, -- Healer
+	["124002607743"] = DAMAGER..", "..ITEM_MOD_STRENGTH_SHORT.."/"..ITEM_MOD_AGILITY_SHORT, -- Damage, Strength/Agility
+	["000000600043"] = DAMAGER..", "..ITEM_MOD_STRENGTH_SHORT, -- Damage, Strength
+	["124002007700"] = DAMAGER..", "..ITEM_MOD_AGILITY_SHORT, -- Damage, Agility
+	["124002607443"] = DAMAGER..", "..MELEE, -- Damage, Melee
+	["124002007400"] = DAMAGER..", "..MELEE..", "..ITEM_MOD_AGILITY_SHORT, -- Damage, Melee, Agility
+	["010771050300"] = DAMAGER..", "..RANGED, -- Damage, Ranged
+	["010771050000"] = DAMAGER..", "..ITEM_MOD_INTELLECT_SHORT, -- Damage, Intellect
+	["010671040000"] = DAMAGER..", "..ITEM_MOD_INTELLECT_SHORT, -- Damage, Intellect (direct damage, no affliction warlock and shadow priest)
+	["010771040000"] = DAMAGER..", "..ITEM_MOD_INTELLECT_SHORT, -- Damage, Intellect (no discipline)
+
+	-- The following categories does not make sense. Most likely a Blizzard error in the Encounter Journal for several old trinkets.
+	-- Add "?" as a suffix to the description as the result
+	["041000100024"] = ALL_CLASSES.."?", -- All Classes?
+	["365002107467"] = MELEE.."?", -- Melee? （Missing Frost and Unholy DK)
+	["241000100044"] = TANK.."?", -- Tank? (Ret instead of Pro?)
+	["124002607703"] = ITEM_MOD_STRENGTH_SHORT.."/"..ITEM_MOD_AGILITY_SHORT.."?", -- Strength/Agility?
+	["367002707767"] = ITEM_MOD_STRENGTH_SHORT.."/"..ITEM_MOD_AGILITY_SHORT.."?", -- Strength/Agility?
+	["324001607743"] = ITEM_MOD_STRENGTH_SHORT.."/"..ITEM_MOD_AGILITY_SHORT.."?", -- Strength/Agility?
+	["324002007700"] = ITEM_MOD_AGILITY_SHORT.."?", -- Agility? (Missing Brewmaster)
+	["092775070310"] = ITEM_MOD_AGILITY_SHORT.."/"..ITEM_MOD_INTELLECT_SHORT.."?", -- Agility/Intellect?
+	["092005070010"] = ITEM_MOD_INTELLECT_SHORT.."?", -- Intellect? (Missing Mage, Warlock)
+	["092075070010"] = ITEM_MOD_INTELLECT_SHORT.."?", -- Intellect? (Missing Warlock)
+	["010773050000"] = DAMAGER..", "..ITEM_MOD_INTELLECT_SHORT.."?", -- Damage, Intellect? (+Enhancement Shaman)
+}
+
+local function GetItemSpecString(item)
+	wipe(tempTable)
+	for classID = GetNumClasses(), 1, -1 do
+		local numSpec = GetNumSpecializationsForClassID(classID)
+		local classNum = 0
+		for specIndex = 1, 4 do
+			local specID = specIndex <= numSpec and GetSpecializationInfoForClassID(classID, specIndex)
+			if specID and DoesItemContainSpec(item, classID, specID) then
+				classNum = classNum + 2^(specIndex-1)
+			end
+		end
+		tinsert(tempTable, format("%X", classNum))
+	end
+	return tconcat(tempTable)
+end
 ----------------------------------------
 -- Add item attributes here
 ----------------------------------------
@@ -257,7 +309,7 @@ end
 -- AddAttributeByAPI(needLoad, api, attribute...)
 AddAttributeByAPI(false, GetItemInfoInstant, "id", "type", "subType", "equipLoc", "texture", "typeID", "subTypeID")
 AddAttributeByAPI(true, GetItemInfo, "name", "link", "quality", "ilvl", "reqLevel", "", "", "maxStack", "", "", "vendorPrice", "", "", "bindType", "expacID", "setID", "isCraftingReagent")
-AddAttributeByAPI(true, function(item) return GetItemQualityColor(GetItemAttr(item, "quality")) end, "r", "g", "b", "qualityColorHex")
+AddAttributeByAPI(true, function(item) return GetItemQualityColor(GetItemAttrNoCache(item, "quality")) end, "r", "g", "b", "qualityColorHex")
 AddAttributeByAPI(true, GetItemFamily, "bagType")
 AddAttributeByAPI(true, GetItemStats, "stats")
 AddAttributeByAPI(true, GetItemSpell, "spellName")
@@ -269,6 +321,7 @@ AddAttributeByAPI(true, IsArtifactRelicItem, "isArtifactRelic")
 for i=1, GetNumClasses() do
 	AddAttributeByAPI(true, function(item) return DoesItemContainSpec(item, i) end, "class"..i)
 end
+AddAttributeByAPI(true, GetItemSpecString, "lootSpec")
 
 -- AddAttributeByTooltip(needParse, direction, pattern, attribute...)
 AddAttributeByTooltip(false, "left", "^"..ITEM_TOURNAMENT_GEAR.."$", "isTournamentGear")
@@ -304,6 +357,31 @@ SetAttributeDefault("isAppearanceUnknown", true)
 for i=1, GetNumClasses() do
 	SetAttributeDefault("class"..i, true)
 end
+SetAttributeDefault("lootSpec", "FFFFFFFFFFFF")
+
+-- Other functions in this file should not call this function. Infinite loop otherwise.
+local function GetItemAttr(item, attribute)
+	if type(item) ~= "string" then
+		error(("Usage: GetItemAttr(item, attribute): 'item' - string expected got '%s' ('%s')."):format(type(item), tostring(item)), 2)
+	end
+	if type(attribute) ~= "string" then
+		error(("Usage: GetItemAttr(item, attribute): 'attribute' - string expected got '%s' ('%s')."):format(type(attribute), tostring(attribute)), 2)
+	end
+	if not item:find("item:") then
+		error(("Usage: GetItemAttr(item, attribute): 'item' is not an item string/link ('%s')."):format(item), 2)
+	end
+	if not attributesName[attribute] then
+		error(("Usage: GetItemAttr(item, attribute): Attribute does not exist: '%s'."):format(tostring(attribute)), 2)
+	end
+
+	item = GetItemStringFromLink(item)
+
+	if not itemInfos[item] or not itemInfos[item].cached then
+		CacheItem(item)
+	end
+
+	return itemInfos[item][attribute] ~= nil and itemInfos[item][attribute] or attributesDefault[attribute]
+end
 
 -- APIs to be researched
 -- true/false = DoesItemContainSpec(itemLink, classID, [specID])
@@ -315,20 +393,25 @@ end
 -- Base library stuff
 ----------------------------------------
 
-RCItemUtils.internals = {	-- for test scripts
+RCItemUtils.internals = {	-- for test purposes
+	attributesName = attributesName,
+	attributesDefault = attributesDefault,
+	attributesInfo = attributesInfo,
+	itemInfos = itemInfos,
+	GetItemSpecString = GetItemSpecString,
 }
 
 local mixins = {
-	"GetItemAttr",
-	"CacheItem",
-	"GetItemStringFromLink",
+	GetItemAttr = GetItemAttr,
+	CacheItem = CacheItem,
+	GetItemStringFromLink = GetItemStringFromLink,
 }
 
 RCItemUtils.embeds = RCItemUtils.embeds or {}
 
 function RCItemUtils:Embed(target)
 	for k, v in pairs(mixins) do
-		target[v] = self[v]
+		target[k] = mixins[k]
 	end
 	self.embeds[target] = true
 	return target
@@ -338,6 +421,7 @@ end
 for target, v in pairs(RCItemUtils.embeds) do
 	RCItemUtils:Embed(target)
 end
+RCItemUtils:Embed(RCItemUtils)
 
 
 --[[ WoW API that contains the word "item" in the function name

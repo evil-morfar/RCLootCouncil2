@@ -9,6 +9,8 @@
 embeds.xml
 Locale\Locales.xml
 
+Utils\ItemUtils.lua
+
 core.lua
 ml_core.lua
 
@@ -18,4 +20,4 @@ Utils\tokenData.lua
 Utils\autopass.lua
 Utils\sync.lua
 Utils\popups.lua
-Utils\ItemUtils.lua
+

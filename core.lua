@@ -45,6 +45,10 @@ tooltipForParsing:UnregisterAllEvents() -- Don't use GameTooltip for parsing, be
 
 RCLootCouncil:SetDefaultModuleState(false)
 
+local ItemUtils = LibStub("RCItemUtils-1.0")
+local CacheItem = ItemUtils.CacheItem
+local GetItemAttr = ItemUtils.GetItemAttr
+
 -- Init shorthands
 local db, historyDB, debugLog;-- = self.db.profile, self.lootDB.factionrealm, self.db.global.log
 -- init modules
@@ -576,7 +580,7 @@ function RCLootCouncil:ChatCommand(msg)
 	elseif input == "exporttrinketdata" then
 		self:ExportTrinketData()
 	elseif input == 'trinkettest' or input == 'ttest' then
-		self.playerClass = string.upper(args[1])
+		self.playerClass = string.upper(args[1] or self.playerClass)
 		self:Test(1, false, true)
 	elseif input == "exporttokendata" then
 		self:ExportTokenData()
@@ -800,6 +804,9 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 					local cached = true
 					for k, v in ipairs(lootTable) do
 						if not GetItemInfo(v.link) then cached = false end
+					end
+					for k, v in ipairs(lootTable) do
+						CacheItem(v.link)
 					end
 					if not cached then
 						-- Note: Dont print debug log here. It is spamming.
@@ -2765,7 +2772,7 @@ function RCLootCouncil:GetItemTypeText(link, subType, equipLoc, typeID, subTypeI
 	elseif equipLoc ~= "" and getglobal(equipLoc) then
 		if equipLoc == "INVTYPE_TRINKET" then
 			--local lootSpec = _G.RCTrinketSpecs[id]
-			local lootSpec = nil
+			local lootSpec = GetItemAttr(link, "lootSpec")
 			local category = lootSpec and _G.RCTrinketCategories[lootSpec]
 			if category then
 				return getglobal(equipLoc).." ("..category..")"
