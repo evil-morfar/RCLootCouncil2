@@ -1224,7 +1224,7 @@ RCLootCouncil.INVTYPE_Slots = {
 		INVTYPE_LEGS		    = "LegsSlot",
 		INVTYPE_FEET		    = "FeetSlot",
 		INVTYPE_FINGER		    = {"Finger0Slot", "Finger1Slot"},
-		INVTYPE_TRINKET		    = {"TRINKET0SLOT", "TRINKET1SLOT"}
+		INVTYPE_TRINKET		    = {"TRINKET0SLOT", "TRINKET1SLOT"},
 		INVTYPE_WEAPONMAINHAND	= "MainHandSlot",
 		INVTYPE_WEAPONOFFHAND	= "SecondaryHandSlot",
 		INVTYPE_HOLDABLE	    = "SecondaryHandSlot",
@@ -1770,16 +1770,24 @@ function RCLootCouncil:IsEqualOrBetterItem(myItem, otherItem)
 	end
 end
 
+
+-- Special case: two better items needed for one-hand weapon that does not specify main or off hand.
 function RCLootCouncil:OwnEqualOrBetterItem(item)
 	if not item or not GetItemInfo(item) then return end
 
 	local equiploc = select(9, GetItemInfo(item))
+	local maxEquipped = self:GetItemMaxEquipped(item)
+	local foundBetter = false
 	if equiploc and equiploc ~= "" then
 		local slot = GetInventorySlotInfo(self.INVTYPE_Slots[equiploc])
 		local link1 = GetInventoryItemLink("player", slot[1] or slot)
 		local link2 = slot[2] and GetInventoryItemLink("player", slot[2])
 		if (link1 and self:IsEqualOrBetterItem(link1, item)) or (link2 and self:IsEqualOrBetterItem(link2, item)) then
-			return true, "equipped", i
+			if maxEquipped < 2 or foundBetter then -- If item can be equipped twice, need find two better items
+				return true, "equipped", i
+			else
+				foundBetter = true
+			end
 		end
 	end
 
@@ -1787,8 +1795,11 @@ function RCLootCouncil:OwnEqualOrBetterItem(item)
 		for j=1, GetContainerNumSlots(i) or 0 do
 			local link = GetContainerItemLink(i, j)
 			if link and self:IsEqualOrBetterItem(link, item) then
-				return true, "bag", i, j
-			end
+				if maxEquipped < 2 or foundBetter then -- If item can be equipped twice, need find two better items
+					return true, "bag", i, j
+				else
+					foundBetter = true
+				end
 		end
 	end
 
