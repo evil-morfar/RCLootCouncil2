@@ -245,7 +245,7 @@ local function GetItemAttr(item, attribute)
 		return itemInfos[item][attribute]
 	else
 		CacheItem(item)
-		return itemInfos[item][attribute] or attributesDefault[attribute]
+		return itemInfos[item][attribute] ~= nil and itemInfos[item][attribute] or attributesDefault[attribute]
 	end
 end
 
@@ -286,6 +286,11 @@ SetAttributeDefault("r", 1)
 SetAttributeDefault("g", 1)
 SetAttributeDefault("b", 1)
 SetAttributeDefault("qualityColorHex", "ffffff")
+
+SetAttributeDefault("bagType", 0)
+SetAttributeDefault("stats", {})
+SetAttributeDefault("isEquippable", false)
+SetAttributeDefault("isConsumable", false)
 
 SetAttributeDefault("texture", "Interface/ICONS/INV_Misc_QuestionMark")
 SetAttributeDefault("isAppearanceUnknown", true)
