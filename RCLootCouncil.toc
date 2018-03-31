@@ -14,7 +14,6 @@ ml_core.lua
 
 Modules\Modules.xml
 
-Utils\trinketData.lua
 Utils\tokenData.lua
 Utils\autopass.lua
 Utils\sync.lua

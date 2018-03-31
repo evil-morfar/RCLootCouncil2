@@ -2764,7 +2764,8 @@ function RCLootCouncil:GetItemTypeText(link, subType, equipLoc, typeID, subTypeI
 		return relicTooltipName
 	elseif equipLoc ~= "" and getglobal(equipLoc) then
 		if equipLoc == "INVTYPE_TRINKET" then
-			local lootSpec = _G.RCTrinketSpecs[id]
+			--local lootSpec = _G.RCTrinketSpecs[id]
+			local lootSpec = nil
 			local category = lootSpec and _G.RCTrinketCategories[lootSpec]
 			if category then
 				return getglobal(equipLoc).." ("..category..")"

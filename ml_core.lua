@@ -23,7 +23,7 @@ local time, date, tonumber, unpack, select, wipe, pairs, ipairs, format, table, 
 	 = time, date, tonumber, unpack, select, wipe, pairs, ipairs, format, table, tinsert, tremove, bit, tostring, type
 
 local db;
-local RCTokenTable = RCTokenTable
+--local RCTokenTable = RCTokenTable
 
 local LOOT_ITEM_PATTERN = "^".._G.LOOT_ITEM:gsub('%%s', '(.+)').."$"
 
@@ -1705,13 +1705,14 @@ function RCLootCouncilML.LootTableCompare(a, b)
 		return equipLocA < equipLocB
 	end
 	if a.equipLoc == "INVTYPE_TRINKET" and b.equipLoc == "INVTYPE_TRINKET" then
-		local specA = _G.RCTrinketSpecs[addon:GetItemIDFromLink(a.link)]
-		local specB = _G.RCTrinketSpecs[addon:GetItemIDFromLink(b.link)]
-		local categoryA = (specA and _G.RCTrinketCategories[specA]) or ""
-		local categoryB = (specB and _G.RCTrinketCategories[specB]) or ""
-		if categoryA ~= categoryB then
-			return categoryA < categoryB
-		end
+		-- TODO: Reimplement this.
+		--local specA = _G.RCTrinketSpecs[addon:GetItemIDFromLink(a.link)]
+		--local specB = _G.RCTrinketSpecs[addon:GetItemIDFromLink(b.link)]
+		--local categoryA = (specA and _G.RCTrinketCategories[specA]) or ""
+		--local categoryB = (specB and _G.RCTrinketCategories[specB]) or ""
+		--if categoryA ~= categoryB then
+		--	return categoryA < categoryB
+		-- end
 	end
 	if a.typeID ~= b.typeID then
 		return a.typeID > b.typeID
