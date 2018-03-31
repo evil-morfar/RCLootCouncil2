@@ -1800,6 +1800,7 @@ function RCLootCouncil:OwnEqualOrBetterItem(item)
 				else
 					foundBetter = true
 				end
+			end
 		end
 	end
 
