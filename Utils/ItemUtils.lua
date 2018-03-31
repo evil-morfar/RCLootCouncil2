@@ -265,6 +265,10 @@ AddAttributeByAPI(true, IsEquippableItem, "isEquippable")
 AddAttributeByAPI(true, IsConsumableItem, "isConsumable")
 AddAttributeByAPI(true, IsUsableItem, "isUsable")
 AddAttributeByAPI(true, IsEquippedItem, "isEquipped")
+AddAttributeByAPI(true, IsArtifactRelicItem, "isArtifactRelic")
+for i=1, GetNumClasses() do
+	AddAttributeByAPI(true, function(item) return DoesItemContainSpec(item, i) end, "class"..i)
+end
 
 -- AddAttributeByTooltip(needParse, direction, pattern, attribute...)
 AddAttributeByTooltip(false, "left", "^"..ITEM_TOURNAMENT_GEAR.."$", "isTournamentGear")
@@ -297,6 +301,9 @@ SetAttributeDefault("isConsumable", false)
 
 SetAttributeDefault("texture", "Interface/ICONS/INV_Misc_QuestionMark")
 SetAttributeDefault("isAppearanceUnknown", true)
+for i=1, GetNumClasses() do
+	SetAttributeDefault("class"..i, true)
+end
 
 -- APIs to be researched
 -- true/false = DoesItemContainSpec(itemLink, classID, [specID])
