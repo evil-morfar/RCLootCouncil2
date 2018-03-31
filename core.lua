@@ -1779,12 +1779,23 @@ function RCLootCouncil:OwnEqualOrBetterItem(item)
 	local maxEquipped = self:GetItemMaxEquipped(item)
 	local foundBetter = false
 	if equiploc and equiploc ~= "" then
-		local slot = GetInventorySlotInfo(self.INVTYPE_Slots[equiploc])
-		local link1 = GetInventoryItemLink("player", slot[1] or slot)
-		local link2 = slot[2] and GetInventoryItemLink("player", slot[2])
-		if (link1 and self:IsEqualOrBetterItem(link1, item)) or (link2 and self:IsEqualOrBetterItem(link2, item)) then
+		local slots = self.INVTYPE_Slots[equiploc]
+		local slot1 = slots and GetInventorySlotInfo(type(slots) ~= "table" and slots or slots[1])
+		local slot2 = slots and type(slots) == "table" and slots[2] and GetInventorySlotInfo(slots[2])
+		local link1 = slot1 and GetInventoryItemLink("player", slot1)
+		local link2 = slot2 and GetInventoryItemLink("player", slot2)
+
+		if link1 and self:IsEqualOrBetterItem(link1, item) then
 			if maxEquipped < 2 or foundBetter then -- If item can be equipped twice, need find two better items
-				return true, "equipped", i
+				return true, "equipped", slot1
+			else
+				foundBetter = true
+			end
+		end
+
+		if link2 and self:IsEqualOrBetterItem(link2, item) then
+			if maxEquipped < 2 or foundBetter then -- If item can be equipped twice, need find two better items
+				return true, "equipped", slot2
 			else
 				foundBetter = true
 			end
