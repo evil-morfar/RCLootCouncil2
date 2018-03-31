@@ -1705,6 +1705,17 @@ function RCLootCouncil:IsItemRestricted(item)
 	return false
 end
 
+-- Return the max possible count that this item can be equipped on the same character
+function RCLootCouncil:GetItemMaxEquipped(item)
+	if not item then return 1 end
+	if select(4, GetItemInfoInstant(item)) == "" then return 0 end
+	if select(4, GetItemInfoInstant(item)) == "INVTYPE_WEAPON" then
+		-- One hand weapon that does not specify main hand or off-hand
+		return 2
+	end
+	return 1
+end
+
 -- Return true if two items are same type item. (same equipment slot and same item type/subtype)
 function RCLootCouncil:IsSimilarItem(item1, item2)
 	if not item1 or not item2 then return false end
@@ -1716,6 +1727,7 @@ function RCLootCouncil:IsSimilarItem(item1, item2)
 	local loc1 = select(4, GetItemInfoInstant(item1))
 	local loc2 = select(4, GetItemInfoInstant(item2))
 	return loc1 == loc2 or ((loc1 == "INVTYPE_CHEST" or loc1 == "INVTYPE_ROBE") and (loc2 == "INVTYPE_CHEST" or loc2 == "INVTYPE_ROBE"))
+	-- Note: I am not considering the similarity between weapon types at the moment, for example, whether sword is similar to axe.
 end
 
 -- Return true if equippable item myItem has the same item id of otherItem,
