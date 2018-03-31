@@ -263,6 +263,8 @@ AddAttributeByAPI(true, GetItemStats, "stats")
 AddAttributeByAPI(true, GetItemSpell, "spellName")
 AddAttributeByAPI(true, IsEquippableItem, "isEquippable")
 AddAttributeByAPI(true, IsConsumableItem, "isConsumable")
+AddAttributeByAPI(true, IsUsableItem, "isUsable")
+AddAttributeByAPI(true, IsEquippedItem, "isEquipped")
 
 -- AddAttributeByTooltip(needParse, direction, pattern, attribute...)
 AddAttributeByTooltip(false, "left", "^"..ITEM_TOURNAMENT_GEAR.."$", "isTournamentGear")
@@ -295,6 +297,12 @@ SetAttributeDefault("isConsumable", false)
 
 SetAttributeDefault("texture", "Interface/ICONS/INV_Misc_QuestionMark")
 SetAttributeDefault("isAppearanceUnknown", true)
+
+-- APIs to be researched
+-- true/false = DoesItemContainSpec(itemLink, classID, [specID])
+-- {specID1, specID2, ...} = GetItemSpecInfo(itemLink)
+-- {setSpellID1, setSpellID2} = GetSetBonusesForSpecializationByItemID(specID, itemID)
+-- GetInventoryItemBroken  ???
 
 ----------------------------------------
 -- Base library stuff
