@@ -1,7 +1,7 @@
 local MAJOR,MINOR = "RCItemUtils-1.0", 1
 local RCItemUtils, oldminor = LibStub:NewLibrary(MAJOR, MINOR)
 
-local reserved = {"type", "api", "pattern", "dir", "loaded", "numLines", "leftTexts", "rightTexts"}
+local reserved = {"attrType", "api", "pattern", "dir", "loaded", "numLines", "leftTexts", "rightTexts", "needLoad", "needParse"}
 local attributesDefault = {}
 local attributesInfo = {}
 local itemInfos = {}
@@ -65,7 +65,7 @@ local function _CheckNewAttributeInput(usage, ...)
 				error((usage.." attribute already exists: '%s'."):format(tostring(attribute)), 3)
 			elseif tempTable[attribute] then
 				error((usage.." Duplicate attribute: '%s'."):format(tostring(attribute)), 3)
-			elseif reserved[attribute] then
+			elseif tContains(reserved, attribute) then
 				error((usage.." attribute is reserved keyword: '%s'."):format(tostring(attribute)), 3)
 			end
 			tinsert(tempTable, attribute)
@@ -86,15 +86,16 @@ local function AddAttributeByAPI(needLoad, api, ...)
 	end
 	for i = 1, #attributesInfo do
 		local info = attributesInfo[i]
-		if info.type == "api" and info.api == api then
+		if info.attrType == "api" and info.api == api then
 			error(("Usage: AddAttributeByAPI(needLoad, api, attribute...): 'api' - api is already used."):format(tostring(api)), 2)
 		end
 	end
 	_CheckNewAttributeInput("Usage: AddAttributeByAPI(needLoad, api, attribute...): ", ...)
 
 	local info = {}
-	info.type = "api"
+	info.attrType = "api"
 	info.api = api
+	info.needLoad = needLoad
 
 	for i = 1, select("#", ...) do
 		local attribute = select(i, ...)
@@ -129,7 +130,7 @@ local function AddAttributeByTooltip(needParse, direction, pattern, ...)
 	end
 
 	local info = {}
-	info.type = "tooltip"
+	info.attrType = "tooltip"
 	info.needParse = needParse
 	info.dir = direction
 	info.pattern = pattern
@@ -217,11 +218,12 @@ local function _GetItemAttr(item, attribute, noCache)
 	local itemInfo = itemInfos[item] or {}
 	local result = itemInfo[attribute]
 	if result ~= nil then -- Attribute is already cached
-		return result ~= _RC_ITEM_UTILS_NIL and result or attributesDefault[attribute]
+		return result ~= _RC_ITEM_UTILS_NIL and result or nil
 	end
 	local attrInfo = attributesInfo[attribute]
-
-	if attrInfo.type == "api" then
+			if attribute == "subType" then print(attribute, 2) end
+	if attrInfo.attrType == "api" then
+		if attribute == "subType" then print(attribute, 1) end
 		if noCache then
 			return select(attrInfo[attribute], attrInfo.api(item))
 		end
@@ -234,10 +236,10 @@ local function _GetItemAttr(item, attribute, noCache)
 			_AssignAPIReturnToAttr(itemInfo, attrInfo, attrInfo.api(item))
 			result = itemInfo[attribute]
 			if result ~= nil then
-				return result ~= _RC_ITEM_UTILS_NIL and result
+				return result ~= _RC_ITEM_UTILS_NIL and result or nil
 			end
 		end
-	elseif attrInfo.type == "tooltip" then
+	elseif attrInfo.attrType == "tooltip" then
 		if not itemInfo.loaded then
 			if GetItemInfo(item) then
 				itemInfo.loaded = true
@@ -316,7 +318,7 @@ local function _GetItemAttr(item, attribute, noCache)
 		end
 	end
 
-	return nil or attributesDefault[attribute]
+	return attributesDefault[attribute]
 end
 
 local function GetItemAttrNoCache(item, attribute)
