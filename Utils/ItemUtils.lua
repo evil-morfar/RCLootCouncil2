@@ -44,6 +44,10 @@ local function GetItemStringFromLink(link)
 	end
 end
 
+local function ItemIDToItemString(id)
+	return "item:"..id
+end
+
 local function _CheckNewAttributeInput(usage, ...)
 	local nAttributes = select("#", ...)
 	if nAttributes <= 0 then
@@ -171,6 +175,11 @@ local function CacheItem(item)
 	if type(item) ~= "string" and type(item) ~= "number" then
 		error(("Usage: CacheItem(item): 'item' - string/number expected got '%s' ('%s')."):format(type(item), tostring(item)), 2)
 	end
+	if type(item) == "number" then
+		item = ItemIDToItemString(item)
+	else
+		item = GetItemStringFromLink(item)
+	end
 	if not item:find("item") then
 		return
 	end
@@ -197,6 +206,12 @@ local function _GetItemAttr(item, attribute, noCache)
 	end
 	if not attributesInfo[attribute] then
 		error(("Usage: GetItemAttrNoCache(item, attribute): Attribute does not exist: '%s'."):format(tostring(attribute)), 3)
+	end
+
+	if type(item) == "number" then
+		item = ItemIDToItemString(item)
+	else
+		item = GetItemStringFromLink(item)
 	end
 
 	local itemInfo = itemInfos[item]
