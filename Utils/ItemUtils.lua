@@ -1,11 +1,13 @@
 local MAJOR,MINOR = "RCItemUtils-1.0", 1
 local RCItemUtils, oldminor = LibStub:NewLibrary(MAJOR, MINOR)
 
-local attributesName = {"numLines", "leftTexts", "rightTexts"}
+local reserved = {"type", "api", "pattern", "dir", "loaded", "numLines", "leftTexts", "rightTexts"}
 local attributesDefault = {}
 local attributesInfo = {}
 local itemInfos = {}
 local tempTable = {}
+
+local _RC_ITEM_UTILS_NIL = function() end
 
 local error = error
 local format = format
@@ -17,11 +19,14 @@ local string_gmatch = string.gmatch
 local strmatch = string.match
 local tconcat = table.concat
 local tinsert = table.insert
+local tonumber = tonumber
 local tostring = tostring
 local type = type
 local UIParent = UIParent
 local unpack = unpack
 local wipe = wipe
+
+local GetItemInfo = GetItemInfo
 
 local tooltip = CreateFrame("GameTooltip", "RCItemUtils_Tooltip", nil, "GameTooltipTemplate")
 tooltip:UnregisterAllEvents()
@@ -52,10 +57,12 @@ local function _CheckNewAttributeInput(usage, ...)
 			error((usage.." 'attribute' - string expected got '%s' ('%s')."):format(type(attribute), tostring(attribute)), 3)
 		end
 		if attribute ~= "" then
-			if attributesName[attribute] then
+			if attributesInfo[attribute] then
 				error((usage.." attribute already exists: '%s'."):format(tostring(attribute)), 3)
 			elseif tempTable[attribute] then
 				error((usage.." Duplicate attribute: '%s'."):format(tostring(attribute)), 3)
+			elseif reserved[attribute] then
+				error((usage.." attribute is reserved keyword: '%s'."):format(tostring(attribute)), 3)
 			end
 			tinsert(tempTable, attribute)
 			nRealAttributes = nRealAttributes + 1
@@ -87,10 +94,12 @@ local function AddAttributeByAPI(needLoad, api, ...)
 
 	for i = 1, select("#", ...) do
 		local attribute = select(i, ...)
-		info[i] = attribute
-		attributesName[attribute] = true
+		if attribute ~= "" then
+			info[i] = attribute
+			info[attribute] = i
+			attributesInfo[attribute] = info
+		end
 	end
-	tinsert(attributesInfo, info)
 end
 
 local function AddAttributeByTooltip(needParse, direction, pattern, ...)
@@ -102,6 +111,11 @@ local function AddAttributeByTooltip(needParse, direction, pattern, ...)
 	end
 	if type(pattern) ~= "string" then
 		error(("Usage: AddAttributeByTooltip(needParse, direction, pattern, attribute...): 'pattern' - string expected got '%s' ('%s')."):format(type(pattern), tostring(pattern)), 2)
+	end
+	for attr, info in pairs(attributesInfo) do
+		if info.pattern == pattern then
+			error(("Usage: AddAttributeByTooltip(needParse, direction, pattern, attribute...): 'pattern' already used: '%s'."):format(tostring(pattern)), 2)
+		end
 	end
 	_CheckNewAttributeInput("Usage: AddAttributeByTooltip(needParse, direction, pattern, attribute...)", ...)
 	if not needParse then
@@ -118,17 +132,19 @@ local function AddAttributeByTooltip(needParse, direction, pattern, ...)
 
 	for i = 1, select("#", ...) do
 		local attribute = select(i, ...)
-		info[i] = attribute
-		attributesName[attribute] = true
+		if attribute ~= "" then
+			info[i] = attribute
+			info[attribute] = i
+			attributesInfo[attribute] = info
+		end
 	end
-	tinsert(attributesInfo, info)
 end
 
 local function SetAttributeDefault(attribute, default)
 	if type(attribute) ~= "string" then
 		error(("Usage: SetAttributeDefault(attribute, default): 'attribute' - string expected got '%s' ('%s')."):format(type(attribute), tostring(attribute)), 2)
 	end
-	if not attributesName[attribute] then
+	if not attributesInfo[attribute] then
 		error(("Usage: SetAttributeDefault(attribute, default): Attribute does not exist: '%s'."):format(tostring(attribute)), 2)
 	end
 	if attributesDefault[attribute] then
@@ -141,11 +157,12 @@ local function SetAttributeDefault(attribute, default)
 	attributesDefault[attribute] = default
 end
 
-local function _AssignAPIReturnToAttr(itemInfo, apiInfo, ...)
+local function _AssignAPIReturnToAttr(itemInfo, attrInfo, ...)
 	for i = 1 , select("#", ...) do
-		local attr = apiInfo[i]
+		local attr = attrInfo[i]
 		if attr and attr ~= "" then
-			itemInfo[attr] = select(i, ...)
+			local value = select(i, ...)
+			itemInfo[attr] = value == nil and _RC_ITEM_UTILS_NIL or value
 		end
 	end
 end
@@ -154,104 +171,141 @@ local function CacheItem(item)
 	if type(item) ~= "string" then
 		error(("Usage: CacheItem(item): 'item' - string expected got '%s' ('%s')."):format(type(item), tostring(item)), 2)
 	end
-	item = GetItemStringFromLink(item)
-	if itemInfos[item] and itemInfos[item].cached then
+	if not item:find("item") then
 		return
+	end
+	item = GetItemStringFromLink(item)
+	itemInfos[item] = itemInfos[item] or {}
+	local itemInfo = itemInfos[item]
+	if itemInfo.loaded then
+		return true
 	else
-		itemInfos[item] = itemInfos[item] or {}
-		local itemInfo = itemInfos[item]
-		local loaded = GetItemInfo(item) ~= nil -- TODO: Replace this function by cheaper version in BFA
-		for _, apiInfo in ipairs(attributesInfo) do
-			if apiInfo.type == "api" then
-				if loaded or not apiInfo.needLoad then
-					_AssignAPIReturnToAttr(itemInfo, apiInfo, apiInfo.api(item))
-				end
+		itemInfo.loaded = (GetItemInfo(item) ~= nil)
+		return itemInfo.loaded
+	end
+end
+
+local function _GetItemAttr(item, attribute, noCache)
+	if type(item) ~= "string" and type(item) ~= "number" then
+		error(("Usage: GetItemAttrNoCache(item, attribute): 'item' - string/number expected got '%s' ('%s')."):format(type(item), tostring(item)), 3)
+	end
+	if type(attribute) ~= "string" then
+		error(("Usage: GetItemAttrNoCache(item, attribute): 'attribute' - string expected got '%s' ('%s')."):format(type(attribute), tostring(attribute)), 3)
+	end
+	if type(item) == "string" and not item:find("item:") then
+		error(("Usage: GetItemAttrNoCache(item, attribute): 'item' is not an item string/link ('%s')."):format(item), 3)
+	end
+	if not attributesInfo[attribute] then
+		error(("Usage: GetItemAttrNoCache(item, attribute): Attribute does not exist: '%s'."):format(tostring(attribute)), 3)
+	end
+
+	local itemInfo = itemInfos[item]
+	local result = itemInfo[attribute]
+	if result ~= nil then -- Attribute is already cached
+		return result ~= _RC_ITEM_UTILS_NIL and result or attributesDefault[attribute]
+	end
+	local attrInfo = attributesInfo[attribute]
+
+	if attrInfo.type == "api" then
+		if noCache then
+			return select(attrInfo[attribute], attrInfo.api(item))
+		end
+		if attrInfo.needLoad and not itemInfo.loaded then
+			if GetItemInfo(item) then
+				itemInfo.loaded = true
 			end
 		end
-
-		-- Store tooltip texts
-		itemInfo.numLines = 0
-		itemInfo.leftTexts = itemInfo.leftTexts or {}
-		itemInfo.rightTexts = itemInfo.rightTexts or {}
-		wipe(itemInfo.leftTexts)
-		wipe(itemInfo.rightTexts)
-
-		if loaded then
-			tooltip:SetOwner(UIParent, "ANCHOR_NONE") -- This lines clear the current content of tooltip and set its position off-screen
-			tooltip:SetHyperlink(item) -- Set the tooltip content and show it, should hide the tooltip before function ends
-			itemInfo.numLines = tooltip:NumLines() or 0
-
-			-- Store tooltip text
-			for i = 1, itemInfo.numLines do
-				local leftLine = getglobal(tooltip:GetName()..'TextLeft' .. i)
-				local leftText = leftLine and leftLine.GetText and leftLine:GetText()
-				itemInfo.leftTexts[i] = leftText
-
-				local rightLine = getglobal(tooltip:GetName()..'TextRight' .. i)
-				local rightText = rightLine and rightLine.GetText and rightLine:GetText() or ""
-				itemInfo.rightTexts[i] = rightText
+		if not attrInfo.needLoad or itemInfo.loaded then
+			_AssignAPIReturnToAttr(itemInfo, attrInfo, attrInfo.api(item))
+			result = itemInfo[attribute]
+			if result ~= nil then
+				return result ~= _RC_ITEM_UTILS_NIL and result
+			end
+		end
+	elseif attrInfo.type == "tooltip" then
+		if not itemInfo.loaded then
+			if GetItemInfo(item) then
+				itemInfo.loaded = true
+			end
+		end
+		if itemInfo.loaded then
+			local tooltipFrameUsed = false
+			if not itemInfo.numLines then
+				tooltip:SetOwner(UIParent, "ANCHOR_NONE") -- This lines clear the current content of tooltip and set its position off-screen
+				tooltip:SetHyperlink(item) -- Set the tooltip content and show it, should hide the tooltip before function ends
+				tooltipFrameUsed = true
+				if not noCache then
+					itemInfo.numLines = tooltip:NumLines() or 0
+				end
 			end
 
-			tooltip:Hide()
-			itemInfos[item].cached = true
-
 			-- String match tooltip texts to attributes
-			for i = 1, itemInfo.numLines do
-				local leftText = itemInfo.leftTexts[i]
-				local rightText = itemInfo.rightTexts[i]
+			local dir = attrInfo.dir
+			local needParse = attrInfo.needParse
+			local pattern = attrInfo.pattern
 
-				for _, attrInfo in ipairs(attributesInfo) do
-					if attrInfo.type == "tooltip" then
-						local text = ""
-						if attrInfo.dir == "left" and leftText then
-							text = leftText
-						elseif attrInfo.dir == "right" and rightText then
-							text = rightText
-						end
-						if text ~= "" then
-							if attrInfo.needParse then
-								local index = 1
-								for str in string_gmatch(text, attrInfo.pattern) do
-									local attr = attrInfo[i]
-									if attr and attr ~= "" then
-										itemInfo[attr] = str
-									end
-									index = index + 1
-								end
-							else
-								local attr = attrInfo[1]
-								if strmatch(text, attrInfo.pattern) then
-									itemInfo[attr] = true
-								else
-									itemInfo[attr] = false
-								end
+			for i = 1, tooltipFrameUsed and tooltip:NumLines() or itemInfo.numLines or 0 do
+				local text = ""
+				local leftText = ""
+				local rightText = ""
+				if tooltipFrameUsed then
+					local leftLine = getglobal(tooltip:GetName()..'TextLeft' .. i)
+					leftText = leftLine and leftLine.GetText and leftLine:GetText() or ""
+					local rightLine = getglobal(tooltip:GetName()..'TextRight' .. i)
+					rightText = rightLine and rightLine.GetText and rightLine:GetText() or ""
+					if not noCache then
+						itemInfo.leftTexts[i] = leftText
+						itemInfo.rightTexts[i] = rightText
+					end
+				else
+					leftText = itemInfo.leftTexts[i]
+					rightText = itemInfo.rightTexts[i]
+				end
+
+				if dir == "left" then
+					text = leftText
+				elseif dir == "right" then
+					text = rightText
+				end
+
+				if text ~= "" then
+					if needParse then
+						local index = 1
+						for str in string_gmatch(text, pattern) do
+							local attr = attrInfo[i]
+							if attr and attr ~= "" then
+								itemInfo[attr] = str
 							end
+							index = index + 1
+						end
+						return itemInfo[attribute] ~= nil and itemInfo[attribute] or attributesDefault[attribute]
+					else
+						local attr = attrInfo[1]
+						if strmatch(text, pattern) then
+							itemInfo[attr] = true
+							if tooltipFrameUsed then
+								tooltip:Hide()
+							end
+							return true
 						end
 					end
 				end
 			end
-
+			if tooltipFrameUsed then
+				tooltip:Hide()
+			end
+			if not needParse then
+				itemInfo[attribute] = false
+				return false
+			end
 		end
 	end
+
+	return nil or attributesDefault[attribute]
 end
 
 local function GetItemAttrNoCache(item, attribute)
-	if type(item) ~= "string" then
-		error(("Usage: GetItemAttrNoCache(item, attribute): 'item' - string expected got '%s' ('%s')."):format(type(item), tostring(item)), 2)
-	end
-	if type(attribute) ~= "string" then
-		error(("Usage: GetItemAttrNoCache(item, attribute): 'attribute' - string expected got '%s' ('%s')."):format(type(attribute), tostring(attribute)), 2)
-	end
-	if not item:find("item:") then
-		error(("Usage: GetItemAttrNoCache(item, attribute): 'item' is not an item string/link ('%s')."):format(item), 2)
-	end
-	if not attributesName[attribute] then
-		error(("Usage: GetItemAttrNoCache(item, attribute): Attribute does not exist: '%s'."):format(tostring(attribute)), 2)
-	end
-
-	item = GetItemStringFromLink(item)
-
-	return itemInfos[item][attribute] ~= nil and itemInfos[item][attribute] or attributesDefault[attribute]
+	return _GetItemAttr(item, attribute, true)
 end
 
 _G.RCTrinketCategories = {
@@ -379,26 +433,7 @@ SetAttributeDefault("classesFlag", 0xffffffff)
 
 -- Other functions in this file should not call this function. Infinite loop otherwise.
 local function GetItemAttr(item, attribute)
-	if type(item) ~= "string" then
-		error(("Usage: GetItemAttr(item, attribute): 'item' - string expected got '%s' ('%s')."):format(type(item), tostring(item)), 2)
-	end
-	if type(attribute) ~= "string" then
-		error(("Usage: GetItemAttr(item, attribute): 'attribute' - string expected got '%s' ('%s')."):format(type(attribute), tostring(attribute)), 2)
-	end
-	if not item:find("item:") then
-		error(("Usage: GetItemAttr(item, attribute): 'item' is not an item string/link ('%s')."):format(item), 2)
-	end
-	if not attributesName[attribute] then
-		error(("Usage: GetItemAttr(item, attribute): Attribute does not exist: '%s'."):format(tostring(attribute)), 2)
-	end
-
-	item = GetItemStringFromLink(item)
-
-	if not itemInfos[item] or not itemInfos[item].cached then
-		CacheItem(item)
-	end
-
-	return itemInfos[item][attribute] ~= nil and itemInfos[item][attribute] or attributesDefault[attribute]
+	return _GetItemAttr(item, attribute, false)
 end
 
 -- APIs to be researched
@@ -412,9 +447,8 @@ end
 ----------------------------------------
 
 RCItemUtils.internals = {	-- for test purposes
-	attributesName = attributesName,
-	attributesDefault = attributesDefault,
 	attributesInfo = attributesInfo,
+	attributesDefault = attributesDefault,
 	itemInfos = itemInfos,
 	GetItemSpecString = GetItemSpecString,
 }
