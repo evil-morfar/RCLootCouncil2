@@ -1487,7 +1487,7 @@ function RCLootCouncil:PrepareLootTable(lootTable)
 					v.classes = v.classes + bit.lshift(1, self.classTagNameToID[class]-1)
 				end
 			else
-				v.classes = self:GetItemClassesAllowedFlag(v.link) -- will return 0xffffffff(usable by all classes) if the item is not cached, but that's fine.
+				v.classes = GetItemAttr(v.link, "classesFlag") -- will return 0xffffffff(usable by all classes) if the item is not cached, but that's fine.
 			end
 		end
 	end
@@ -1552,61 +1552,6 @@ RCLootCouncil.classTagNameToID = {} -- key: class name in capital english letter
 for i=1, GetNumClasses() do
 	RCLootCouncil.classDisplayNameToID[select(1, GetClassInfo(i))] = i
 	RCLootCouncil.classTagNameToID[select(2, GetClassInfo(i))] = i
-end
-
--- @return The bitwise flag indicates the classes allowed for the item, as specified on the tooltip by "Classes: xxx"
--- If the tooltip does not specify "Classes: xxx" or if the item is not cached, return 0xffffffff
--- This function only checks the tooltip and does not consider if the item is equipable by the class.
--- Item must have been cached to get the correct result.
---
--- If the number at binary bit i is 1 (bit 1 is the lowest bit), then the item works for the class with ID i.
--- 0b100,000,000,010 indicates the item works for Paladin(classID 2) and DemonHunter(class ID 12)
--- Expected values:
--- Conqueror(Paladin, Priest, Warlock) == 274(0x112)
--- Protector(Warrior, Hunter, Shaman) == 69(0x45)
--- Vanquisher(Rogue, Mage, Druid) == 1160 (0x488)
-function RCLootCouncil:GetItemClassesAllowedFlag(item)
-	if not item then return 0 end
-	tooltipForParsing:SetOwner(UIParent, "ANCHOR_NONE") -- This lines clear the current content of tooltip and set its position off-screen
-	tooltipForParsing:SetHyperlink(item) -- Set the tooltip content and show it, should hide the tooltip before function ends
-
-	local delimiter = ", " -- in-game tests show all locales use this as delimiter.
-	local itemClassesAllowedPattern = _G.ITEM_CLASSES_ALLOWED:gsub("%%s", "%(%.%+%)")
-
-	for i = 1, tooltipForParsing:NumLines() or 0 do
-		local line = getglobal(tooltipForParsing:GetName()..'TextLeft' .. i)
-		if line and line.GetText then
-			local text = line:GetText() or ""
-			local classesText = text:match(itemClassesAllowedPattern)
-			if classesText then
-				tooltipForParsing:Hide()
-				-- After reading the Blizzard code, I suspect that it's maybe not intended for Blizz to use ", " for all locales. (Patch 7.3.2)
-				-- The most strange thing is that LIST_DELIMITER is defined first in FrameXML/GlobalStrings.lua as "%s, %s" and it's not the same for all locales.
-				-- Then LIST_DELIMITER is redefined to ", " for all locales in FrameXML/MerchantFrame.lua
-				-- Try some other delimiter constants in case Blizzard changes it some time in the future.
-				if LIST_DELIMITER and LIST_DELIMITER ~= "" and classesText:find(LIST_DELIMITER:gsub("%%s","")) then
-					delimiter = LIST_DELIMITER:gsub("%%s","")
-				elseif PLAYER_LIST_DELIMITER and PLAYER_LIST_DELIMITER ~= "" and classesText:find(PLAYER_LIST_DELIMITER) then
-					delimiter = PLAYER_LIST_DELIMITER
-				end
-
-				local result = 0
-				for className in string.gmatch(classesText..delimiter, "(.-)"..delimiter) do
-					local classID = self.classDisplayNameToID[className]
-					if classID then
-						result = result + bit.lshift(1, classID-1)
-					else
-						-- sth is wrong (should never happen)
-						self:Debug("Error while getting classes flag of ", item, "Class does not exist", className)
-					end
-				end
-				return result
-			end
-		end
-	end
-
-	tooltipForParsing:Hide()
-	return 0xffffffff -- The item works for all classes
 end
 
 -- strings contains plural/singular rule such as "%d |4ora:ore;"

@@ -90,7 +90,7 @@ function RCLootCouncilML:GetItemInfo(item)
 			["token"]		= itemID and RCTokenTable[itemID],
 			["typeID"]		= typeID,
 			["subTypeID"]	= subTypeID,
-			["classes"]		= addon:GetItemClassesAllowedFlag(link)
+			["classes"]		= GetItemAttr(link, "classesFlag")
 		}
 	else
 		return nil
