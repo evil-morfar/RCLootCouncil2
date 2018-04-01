@@ -168,8 +168,8 @@ local function _AssignAPIReturnToAttr(itemInfo, attrInfo, ...)
 end
 
 local function CacheItem(item)
-	if type(item) ~= "string" then
-		error(("Usage: CacheItem(item): 'item' - string expected got '%s' ('%s')."):format(type(item), tostring(item)), 2)
+	if type(item) ~= "string" and type(item) ~= "number" then
+		error(("Usage: CacheItem(item): 'item' - string/number expected got '%s' ('%s')."):format(type(item), tostring(item)), 2)
 	end
 	if not item:find("item") then
 		return
