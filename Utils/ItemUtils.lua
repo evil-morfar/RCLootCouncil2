@@ -214,7 +214,7 @@ local function _GetItemAttr(item, attribute, noCache)
 		item = GetItemStringFromLink(item)
 	end
 
-	local itemInfo = itemInfos[item]
+	local itemInfo = itemInfos[item] or {}
 	local result = itemInfo[attribute]
 	if result ~= nil then -- Attribute is already cached
 		return result ~= _RC_ITEM_UTILS_NIL and result or attributesDefault[attribute]
