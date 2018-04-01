@@ -12,6 +12,10 @@ local LootFrame = addon:NewModule("RCLootFrame", "AceTimer-3.0", "AceEvent-3.0")
 local LibDialog = LibStub("LibDialog-1.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 
+local ItemUtils = LibStub("RCItemUtils-1.0")
+local CacheItem = ItemUtils.CacheItem
+local GetItemAttr = ItemUtils.GetItemAttr
+
 local items = {} -- item.i = {name, link, lvl, texture} (i == session)
 local entries = {}
 local ENTRY_HEIGHT = 80
@@ -213,8 +217,8 @@ do
 				entry.noteButton:Show()
 			end
 			entry.item = item
-			entry.itemText:SetText((item.isRoll and (_G.ROLL..": ") or "")..addon:GetItemTextWithCount(entry.item.link or "error", #entry.item.sessions))
-			entry.icon:SetNormalTexture(entry.item.texture or "Interface\\InventoryItems\\WoWUnknownItem01")
+			entry.itemText:SetText((item.isRoll and (_G.ROLL..": ") or "")..addon:GetItemTextWithCount(GetItemAttr(item.link, "link") or "error", #entry.item.sessions))
+			entry.icon:SetNormalTexture(GetItemAttr(item.link, "texture"))
 			entry.itemCount:SetText(#entry.item.sessions > 1 and #entry.item.sessions or "")
 			local typeText = addon:GetItemTypeText(item.link, item.subType, item.equipLoc, item.typeID, item.subTypeID, item.classes, item.isTier, item.isRelic)
 			local bonusText = addon:GetItemBonusText(item.link, "/")

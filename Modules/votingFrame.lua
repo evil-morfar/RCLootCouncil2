@@ -9,7 +9,7 @@ if LibDebug then LibDebug() end
 --@end-debug@
 
 local addon = LibStub("AceAddon-3.0"):GetAddon("RCLootCouncil")
-local RCVotingFrame = addon:NewModule("RCVotingFrame", "AceComm-3.0", "AceTimer-3.0", "AceEvent-3.0")
+local RCVotingFrame = addon:NewModule("RCVotingFrame", "AceComm-3.0", "AceTimer-3.0", "AceEvent-3.0", "AceBucket-3.0")
 local LibDialog = LibStub("LibDialog-1.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 local LibDialog = LibStub("LibDialog-1.0")
@@ -82,6 +82,7 @@ function RCVotingFrame:OnEnable()
 	updateFrame:Show()
 	needUpdate = false
 	noUpdateTimeRemaining = 0
+	self:RegisterBucketEvent("GET_ITEM_INFO_RECEIVED", 1, "Update")
 end
 
 function RCVotingFrame:OnDisable() -- We never really call this
@@ -359,7 +360,7 @@ function RCVotingFrame:Setup(table)
 			}
 		end
 		-- Init session toggle
-		sessionButtons[session] = self:UpdateSessionButton(session, t.texture, t.link, t.awarded)
+		sessionButtons[session] = self:UpdateSessionButton(session, GetItemAttr(t.link, "texture"), t.link, t.awarded)
 		sessionButtons[session]:Show()
 	end
 	-- Hide unused session buttons
@@ -520,19 +521,19 @@ function RCVotingFrame:SwitchSession(s)
 	local old = session
 	session = s
 	local t = lootTable[s] -- Shortcut
-	self.frame.itemIcon:SetNormalTexture(t.texture)
-	self.frame.itemText:SetText(t.link)
+	self.frame.itemIcon:SetNormalTexture(GetItemAttr(t.link, "texture"))
+	self.frame.itemText:SetText(GetItemAttr(t.link, "link"))
 	self.frame.iState:SetText(self:GetItemStatus(t.link))
 	local bonusText = addon:GetItemBonusText(t.link, "/")
 	if bonusText ~= "" then bonusText = "+ "..bonusText end
-	self.frame.itemLvl:SetText(_G.ITEM_LEVEL_ABBR..": "..addon:GetItemLevelText(t.ilvl, t.token))
+	self.frame.itemLvl:SetText(_G.ITEM_LEVEL_ABBR..": "..addon:GetItemLevelText(GetItemAttr(t.link, "ilvl"), t.token))
 	-- Set a proper item type text
 	self.frame.itemType:SetText(addon:GetItemTypeText(t.link, t.subType, t.equipLoc, t.typeID, t.subTypeID, t.classes, t.token, t.relic))
 	self.frame.bonuses:SetText(bonusText)
 
 	-- Update the session buttons
-	sessionButtons[s] = self:UpdateSessionButton(s, t.texture, t.link, t.awarded)
-	sessionButtons[old] = self:UpdateSessionButton(old, lootTable[old].texture, lootTable[old].link, lootTable[old].awarded)
+	sessionButtons[s] = self:UpdateSessionButton(s, GetItemAttr(t.link, "texture"), t.link, t.awarded)
+	sessionButtons[old] = self:UpdateSessionButton(old, GetItemAttr(lootTable[old].link, "texture"), lootTable[old].link, lootTable[old].awarded)
 
 	-- Since we switched sessions, we want to sort by response
 	local j = 1

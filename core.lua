@@ -802,16 +802,16 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 
 					-- Cache items
 					local cached = true
-					for k, v in ipairs(lootTable) do
-						if not GetItemInfo(v.link) then cached = false end
-					end
+					--for k, v in ipairs(lootTable) do
+					--	if not GetItemInfo(v.link) then cached = false end
+					--end
 					for k, v in ipairs(lootTable) do
 						CacheItem(v.link)
 					end
-					if not cached then
-						-- Note: Dont print debug log here. It is spamming.
-						return self:ScheduleTimer("OnCommReceived", 0, prefix, serializedMsg, distri, sender)
-					end
+					--if not cached then
+					--	-- Note: Dont print debug log here. It is spamming.
+					--	return self:ScheduleTimer("OnCommReceived", 0, prefix, serializedMsg, distri, sender)
+					--end
 
 					-- v2.0.1: It seems people somehow receives mldb without numButtons, so check for it aswell.
 					if not self.mldb or (self.mldb and not self.mldb.numButtons) then -- Really shouldn't happen, but I'm tired of people somehow not receiving it...

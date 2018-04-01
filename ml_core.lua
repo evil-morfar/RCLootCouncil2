@@ -124,19 +124,28 @@ function RCLootCouncilML:AddItem(item, baggedEntry, slotIndex, entry)
 
 	local itemInfo = self:GetItemInfo(item)
 
-	if itemInfo then
-		for k, v in pairs(itemInfo) do
-			entry[k] = v
-		end
+	if type(item) == "number" then
+		entry.link = "item:"..item
+	elseif item:find("|") then
+		entry.link = string.match(item or "", "(item:.-):*|h") -- trim trailing colons
+	else
+		entry.link = item
 	end
 
+	CacheItem(item)
+	--if itemInfo then
+		--for k, v in pairs(itemInfo) do
+		--	entry[k] = v
+		--end
+	--end
+
 	-- Item isn't properly loaded, so update the data next frame (Should only happen with /rc test)
-	if not itemInfo then
-		self:ScheduleTimer("Timer", 0, "AddItem", item, baggedEntry, slotIndex, entry)
-		addon:Debug("Started timer:", "AddItem", "for", item)
-	else
+	--if not itemInfo then
+	--	self:ScheduleTimer("Timer", 0, "AddItem", item, baggedEntry, slotIndex, entry)
+	--	addon:Debug("Started timer:", "AddItem", "for", item)
+	--else
 		addon:SendMessage("RCMLAddItem", item, entry)
-	end
+	--end
 end
 
 function RCLootCouncilML:GetLootTableForTransmit()
@@ -1738,5 +1747,5 @@ function RCLootCouncilML.LootTableCompare(a, b)
 	if statsA ~= statsB then
 		return statsA > statsB
 	end
-	return addon:GetItemNameFromLink(a.link) < addon:GetItemNameFromLink(b.link)
+	return GetItemAttr(a.link, "name") < GetItemAttr(b.link, "name")
 end

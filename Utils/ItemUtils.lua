@@ -33,7 +33,7 @@ tooltip:UnregisterAllEvents()
 tooltip:Hide()
 
 local function GetItemIDFromLink(link)
-	return tonumber(strmatch(link or "", "item:(%d+):"))
+	return tonumber(strmatch(link or "", "item:(%d+)"))
 end
 
 local function GetItemStringFromLink(link)
@@ -44,7 +44,7 @@ local function GetItemStringFromLink(link)
 	end
 end
 
-local function ItemIDToItemString(id)
+local function GetItemStringFromID(id)
 	return "item:"..id
 end
 
@@ -177,7 +177,7 @@ local function CacheItem(item)
 		error(("Usage: CacheItem(item): 'item' - string/number expected got '%s' ('%s')."):format(type(item), tostring(item)), 2)
 	end
 	if type(item) == "number" then
-		item = ItemIDToItemString(item)
+		item = GetItemStringFromID(item)
 	else
 		item = GetItemStringFromLink(item)
 	end
@@ -210,7 +210,7 @@ local function _GetItemAttr(item, attribute, noCache)
 	end
 
 	if type(item) == "number" then
-		item = ItemIDToItemString(item)
+		item = GetItemStringFromID(item)
 	else
 		item = GetItemStringFromLink(item)
 	end
@@ -221,9 +221,7 @@ local function _GetItemAttr(item, attribute, noCache)
 		return result ~= _RC_ITEM_UTILS_NIL and result or nil
 	end
 	local attrInfo = attributesInfo[attribute]
-			if attribute == "subType" then print(attribute, 2) end
 	if attrInfo.attrType == "api" then
-		if attribute == "subType" then print(attribute, 1) end
 		if noCache then
 			return select(attrInfo[attribute], attrInfo.api(item))
 		end
