@@ -813,8 +813,6 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 						return self:ScheduleTimer("OnCommReceived", 0, prefix, serializedMsg, distri, sender)
 					end
 
-					self:PrepareLootTable(lootTable)
-
 					-- v2.0.1: It seems people somehow receives mldb without numButtons, so check for it aswell.
 					if not self.mldb or (self.mldb and not self.mldb.numButtons) then -- Really shouldn't happen, but I'm tired of people somehow not receiving it...
 						self:Debug("Received loot table without having mldb :(", sender)
@@ -966,7 +964,6 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 			elseif command == "reroll" and self:UnitIsUnit(sender, self.masterLooter) and self.enabled then
 				self:Print(format(L["'player' has asked you to reroll"], self.Ambiguate(sender)))
 				local table = unpack(data)
-				self:PrepareLootTable(table)
 				self:DoAutoPasses(table)
 				self:SendLootAck(table)
 
@@ -1463,31 +1460,6 @@ function RCLootCouncil:Timer(type, ...)
 			-- and if we haven't received a council, request it
 			if #self.council == 0 then
 				self:SendCommand(self.masterLooter, "council_request")
-			end
-		end
-	end
-end
-
---- Updates the loot table with some local data.
--- 1 Changes the subType in lootTable to our locale.
--- 2 Extracts tokens equipLoc
-function RCLootCouncil:PrepareLootTable(lootTable)
-	for ses, v in ipairs(lootTable) do
-		local _, _, subType, equipLoc, texture, typeID, subTypeID = GetItemInfoInstant(v.link)
-		v.subType = subType -- Subtype should be in our locale
-		v.token = v.token or RCTokenTable[self:GetItemIDFromLink(v.link)]
-		v.equipLoc = v.token and self:GetTokenEquipLoc(v.token) or equipLoc
-		v.texture = texture
-		v.typeID = typeID
-		v.subTypeID = subTypeID
-		if not v.classes then -- We didn't receive "classes", because ML is using an old version. Generate it from token data.
-			if RCTokenClasses and RCTokenClasses[self:GetItemIDFromLink(v.link)] then
-				v.classes = 0
-				for _, class in ipairs(RCTokenClasses[self:GetItemIDFromLink(v.link)]) do
-					v.classes = v.classes + bit.lshift(1, self.classTagNameToID[class]-1)
-				end
-			else
-				v.classes = GetItemAttr(v.link, "classesFlag") -- will return 0xffffffff(usable by all classes) if the item is not cached, but that's fine.
 			end
 		end
 	end
