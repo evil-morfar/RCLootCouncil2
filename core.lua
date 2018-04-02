@@ -768,6 +768,37 @@ function RCLootCouncil:SendCommand(target, command, ...)
 	end
 end
 
+-- We need to cache all items before doing any responses because autopassing need item info.
+function RCLootCouncil:DoResponses(lootTable)
+		-- Cache items
+	local cached = true
+	for k, v in ipairs(lootTable) do
+		if not GetItemInfo(v.link) then cached = false end
+	end
+	if not cached then
+		return self:ScheduleTimer("DoResponses", 0, lootTable)
+	end
+
+	-- Out of instance support
+	-- assume 8 people means we're actually raiding
+	if GetNumGroupMembers() >= 8 and not IsInInstance() then
+		self:DebugLog("NotInRaid respond to lootTable")
+		for ses, v in ipairs(lootTable) do
+			-- target, session, response, isTier, isRelic, note, roll, link, ilvl, equipLoc, relicType, sendAvgIlvl, sendSpecID
+			self:SendResponse("group", ses, "NOTINRAID", nil, nil, nil, nil, v.link, v.ilvl, v.equipLoc, v.relic, true, true)
+		end
+		return
+	end
+
+	self:DoAutoPasses(lootTable)
+	self:SendLootAck(lootTable)
+
+	-- Show  the LootFrame
+	self:CallModule("lootframe")
+	self:GetActiveModule("lootframe"):Start(lootTable)
+end
+
+
 --- Receives RCLootCouncil commands.
 -- Params are delivered by AceComm-3.0, but we need to extract our data created with the
 -- RCLootCouncil:SendCommand function.
@@ -800,19 +831,6 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 						return self:Debug("Sent 'DISABLED' response to", sender)
 					end
 
-					-- Cache items
-					local cached = true
-					--for k, v in ipairs(lootTable) do
-					--	if not GetItemInfo(v.link) then cached = false end
-					--end
-					for k, v in ipairs(lootTable) do
-						CacheItem(v.link)
-					end
-					--if not cached then
-					--	-- Note: Dont print debug log here. It is spamming.
-					--	return self:ScheduleTimer("OnCommReceived", 0, prefix, serializedMsg, distri, sender)
-					--end
-
 					-- v2.0.1: It seems people somehow receives mldb without numButtons, so check for it aswell.
 					if not self.mldb or (self.mldb and not self.mldb.numButtons) then -- Really shouldn't happen, but I'm tired of people somehow not receiving it...
 						self:Debug("Received loot table without having mldb :(", sender)
@@ -832,24 +850,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 						self:GetActiveModule("votingframe"):ReceiveLootTable(lootTable)
 					end
 
-					-- Out of instance support
-					-- assume 8 people means we're actually raiding
-					if GetNumGroupMembers() >= 8 and not IsInInstance() then
-						self:DebugLog("NotInRaid respond to lootTable")
-						for ses, v in ipairs(lootTable) do
-							-- target, session, response, isTier, isRelic, note, roll, link, ilvl, equipLoc, relicType, sendAvgIlvl, sendSpecID
-							self:SendResponse("group", ses, "NOTINRAID", nil, nil, nil, nil, v.link, v.ilvl, v.equipLoc, v.relic, true, true)
-						end
-						return
-					end
-
-					self:DoAutoPasses(lootTable)
-					self:SendLootAck(lootTable)
-
-					-- Show  the LootFrame
-					self:CallModule("lootframe")
-					self:GetActiveModule("lootframe"):Start(lootTable)
-
+					self:DoResponses(lootTable)
 				else -- a non-ML send a lootTable?!
 					self:Debug(tostring(sender).." is not ML, but sent lootTable!")
 				end
