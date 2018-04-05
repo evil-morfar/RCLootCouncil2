@@ -7,11 +7,9 @@
 if LibDebug then LibDebug() end
 --@end-debug@
 
-local ItemUtils = LibStub("RCItemUtils-1.0")
-local CacheItem = ItemUtils.CacheItem
-local GetItemAttr = ItemUtils.GetItemAttr
+local addon = select(2, ...)
+local Item = addon:GetAPI("Item")
 
-local addon = LibStub("AceAddon-3.0"):GetAddon("RCLootCouncil")
 local RCSessionFrame = addon:NewModule("RCSessionFrame", "AceTimer-3.0")
 local ST = LibStub("ScrollingTable")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
@@ -124,7 +122,7 @@ function RCSessionFrame.SetCellText(rowFrame, frame, data, cols, row, realrow, c
 		end
 	else
 		local link = data[realrow].link
-		link = GetItemAttr(link, "link")
+		link = Item:GetItemAttr(link, "link")
 		frame.text:SetText(link)
 	end
 end
@@ -137,7 +135,7 @@ end
 
 function RCSessionFrame.SetCellItemIcon(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
 	local link = data[realrow].link
-	frame:SetNormalTexture(GetItemAttr(link, "texture"))
+	frame:SetNormalTexture(Item:GetItemAttr(link, "texture"))
 	frame:SetScript("OnEnter", function() addon:CreateHypertip(link) end)
 	frame:SetScript("OnLeave", function() addon:HideTooltip() end)
 	frame:SetScript("OnClick", function()

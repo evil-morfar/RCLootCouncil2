@@ -8,7 +8,7 @@
 if LibDebug then LibDebug() end
 --@end-debug@
 
-local addon = LibStub("AceAddon-3.0"):GetAddon("RCLootCouncil")
+local addon = select(2, ...)
 local RCVotingFrame = addon:NewModule("RCVotingFrame", "AceComm-3.0", "AceTimer-3.0", "AceEvent-3.0", "AceBucket-3.0")
 local LibDialog = LibStub("LibDialog-1.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
@@ -35,9 +35,7 @@ local noUpdateTimeRemaining = 0 -- The time until we allow the next update.
 local updateFrame = CreateFrame("FRAME") -- to ensure the update operations that does not occur, because it's within min update interval, gets updated eventually
 local needUpdate = false -- Does voting frame needs an update after MIN_UPDATE_INTERVAL after the last update?
 
-local ItemUtils = LibStub("RCItemUtils-1.0")
-local CacheItem = ItemUtils.CacheItem
-local GetItemAttr = ItemUtils.GetItemAttr
+local Item = addon:GetAPI("Item")
 
 function RCVotingFrame:OnInitialize()
 	-- Contains all the default data needed for the scroll table
@@ -360,7 +358,7 @@ function RCVotingFrame:Setup(table)
 			}
 		end
 		-- Init session toggle
-		sessionButtons[session] = self:UpdateSessionButton(session, GetItemAttr(t.link, "texture"), t.link, t.awarded)
+		sessionButtons[session] = self:UpdateSessionButton(session, Item:GetItemAttr(t.link, "texture"), t.link, t.awarded)
 		sessionButtons[session]:Show()
 	end
 	-- Hide unused session buttons
@@ -521,19 +519,19 @@ function RCVotingFrame:SwitchSession(s)
 	local old = session
 	session = s
 	local t = lootTable[s] -- Shortcut
-	self.frame.itemIcon:SetNormalTexture(GetItemAttr(t.link, "texture"))
-	self.frame.itemText:SetText(GetItemAttr(t.link, "link"))
+	self.frame.itemIcon:SetNormalTexture(Item:GetItemAttr(t.link, "texture"))
+	self.frame.itemText:SetText(Item:GetItemAttr(t.link, "link"))
 	self.frame.iState:SetText(self:GetItemStatus(t.link))
 	local bonusText = addon:GetItemBonusText(t.link, "/")
 	if bonusText ~= "" then bonusText = "+ "..bonusText end
-	self.frame.itemLvl:SetText(_G.ITEM_LEVEL_ABBR..": "..addon:GetItemLevelText(GetItemAttr(t.link, "ilvl"), t.token))
+	self.frame.itemLvl:SetText(_G.ITEM_LEVEL_ABBR..": "..addon:GetItemLevelText(Item:GetItemAttr(t.link, "ilvl"), t.token))
 	-- Set a proper item type text
 	self.frame.itemType:SetText(addon:GetItemTypeText(t.link, t.subType, t.equipLoc, t.typeID, t.subTypeID, t.classes, t.token, t.relic))
 	self.frame.bonuses:SetText(bonusText)
 
 	-- Update the session buttons
-	sessionButtons[s] = self:UpdateSessionButton(s, GetItemAttr(t.link, "texture"), t.link, t.awarded)
-	sessionButtons[old] = self:UpdateSessionButton(old, GetItemAttr(lootTable[old].link, "texture"), lootTable[old].link, lootTable[old].awarded)
+	sessionButtons[s] = self:UpdateSessionButton(s, Item:GetItemAttr(t.link, "texture"), t.link, t.awarded)
+	sessionButtons[old] = self:UpdateSessionButton(old, Item:GetItemAttr(lootTable[old].link, "texture"), lootTable[old].link, lootTable[old].awarded)
 
 	-- Since we switched sessions, we want to sort by response
 	local j = 1
@@ -984,7 +982,7 @@ function RCVotingFrame.SetCellGear(rowFrame, frame, data, cols, row, realrow, co
 	local name = data[realrow].name
 	gear = lootTable[session].candidates[name][gear] -- Get the actual gear
 	if gear then
-		local texture = GetItemAttr(gear, "texture")
+		local texture = Item:GetItemAttr(gear, "texture")
 		frame:SetNormalTexture(texture)
 		frame:SetScript("OnEnter", function() addon:CreateHypertip(gear) end)
 		frame:SetScript("OnLeave", function() addon:HideTooltip() end)

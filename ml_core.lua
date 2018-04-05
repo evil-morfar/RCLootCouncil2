@@ -10,7 +10,7 @@
 --@debug@
 if LibDebug then LibDebug() end
 --@end-debug@
-local addon = LibStub("AceAddon-3.0"):GetAddon("RCLootCouncil")
+local addon = select(2, ...)
 _G.RCLootCouncilML = addon:NewModule("RCLootCouncilML", "AceEvent-3.0", "AceBucket-3.0", "AceComm-3.0", "AceTimer-3.0", "AceHook-3.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 local LibDialog = LibStub("LibDialog-1.0")
@@ -22,9 +22,7 @@ local GetItemInfo, GetItemInfoInstant, GetRaidRosterInfo
 local time, date, tonumber, unpack, select, wipe, pairs, ipairs, format, table, tinsert, tremove, bit, tostring, type
 	 = time, date, tonumber, unpack, select, wipe, pairs, ipairs, format, table, tinsert, tremove, bit, tostring, type
 
-local ItemUtils = LibStub("RCItemUtils-1.0")
-local CacheItem = ItemUtils.CacheItem
-local GetItemAttr = ItemUtils.GetItemAttr
+local Item = addon:GetAPI("Item")
 
 local db;
 --local RCTokenTable = RCTokenTable
@@ -90,7 +88,7 @@ function RCLootCouncilML:GetItemInfo(item)
 			["token"]		= itemID and RCTokenTable[itemID],
 			["typeID"]		= typeID,
 			["subTypeID"]	= subTypeID,
-			["classes"]		= GetItemAttr(link, "classesFlag")
+			["classes"]		= Item:GetItemAttr(link, "classesFlag")
 		}
 	else
 		return nil
@@ -132,7 +130,7 @@ function RCLootCouncilML:AddItem(item, baggedEntry, slotIndex, entry)
 		entry.link = item
 	end
 
-	CacheItem(item)
+	Item:CacheItem(item)
 	--if itemInfo then
 		--for k, v in pairs(itemInfo) do
 		--	entry[k] = v
@@ -1718,8 +1716,8 @@ function RCLootCouncilML.LootTableCompare(a, b)
 		return equipLocA < equipLocB
 	end
 	if a.equipLoc == "INVTYPE_TRINKET" and b.equipLoc == "INVTYPE_TRINKET" then
-		local specA = GetItemAttr(a.link, "lootSpec")
-		local specB = GetItemAttr(b.link, "lootSpec")
+		local specA = Item:GetItemAttr(a.link, "lootSpec")
+		local specB = Item:GetItemAttr(b.link, "lootSpec")
 		local categoryA = (specA and _G.RCTrinketCategories[specA]) or ""
 		local categoryB = (specB and _G.RCTrinketCategories[specB]) or ""
 		if categoryA ~= categoryB then
@@ -1747,5 +1745,5 @@ function RCLootCouncilML.LootTableCompare(a, b)
 	if statsA ~= statsB then
 		return statsA > statsB
 	end
-	return GetItemAttr(a.link, "name") < GetItemAttr(b.link, "name")
+	return Item:GetItemAttr(a.link, "name") < Item:GetItemAttr(b.link, "name")
 end

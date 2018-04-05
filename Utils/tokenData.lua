@@ -8,9 +8,8 @@
 if LibDebug then LibDebug() end
 --@end-debug@
 
-local ItemUtils = LibStub("RCItemUtils-1.0")
-local CacheItem = ItemUtils.CacheItem
-local GetItemAttr = ItemUtils.GetItemAttr
+local addon = select(2, ...)
+local Item = addon:GetAPI("Item")
 
 --@debug@
 -- This function is used for developer.
@@ -116,7 +115,7 @@ end
 function RCLootCouncil:ExportTokenDataSingle(id)
 	if GetItemInfo(id) then
         local name, link, quality, ilvl, _, _, _, maxStack = GetItemInfo(id)
-        if GetItemAttr(link, "classesFlag") ~= 0xffffffff and maxStack == 1 and quality == 4 then
+        if Item:GetItemAttr(link, "classesFlag") ~= 0xffffffff and maxStack == 1 and quality == 4 then
             DEFAULT_CHAT_FRAME:AddMessage(id.." "..name)
             tokenNames[id] = name
             tokenIlvls[id] = ilvl

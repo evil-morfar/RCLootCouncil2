@@ -36,7 +36,8 @@
 --@debug@
 --if LibDebug then LibDebug() end
 --@end-debug@
-_G.RCLootCouncil = LibStub("AceAddon-3.0"):NewAddon("RCLootCouncil", "AceConsole-3.0", "AceEvent-3.0", "AceComm-3.0", "AceSerializer-3.0", "AceHook-3.0", "AceTimer-3.0");
+local RCLootCouncil = select(2, ...)
+local addon = select(2, ...)
 local LibDialog = LibStub("LibDialog-1.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 local lwin = LibStub("LibWindow-1.1")
@@ -45,9 +46,7 @@ tooltipForParsing:UnregisterAllEvents() -- Don't use GameTooltip for parsing, be
 
 RCLootCouncil:SetDefaultModuleState(false)
 
-local ItemUtils = LibStub("RCItemUtils-1.0")
-local CacheItem = ItemUtils.CacheItem
-local GetItemAttr = ItemUtils.GetItemAttr
+local Item = addon:GetAPI("Item")
 
 -- Init shorthands
 local db, historyDB, debugLog;-- = self.db.profile, self.lootDB.factionrealm, self.db.global.log
@@ -2628,7 +2627,7 @@ end
 -- Item needs to be cached.
 function RCLootCouncil:GetItemBonusText(link, delimiter)
 	if not delimiter then delimiter = "/" end
-	local itemStatsRet = GetItemAttr(link, "stats")
+	local itemStatsRet = Item:GetItemAttr(link, "stats")
 	local text = ""
 	for k, _ in pairs(itemStatsRet) do
 		if k:find("SOCKET") then
@@ -2661,13 +2660,13 @@ end
 function RCLootCouncil:GetItemTypeText(link)
 	local id = self:GetItemIDFromLink(link)
 
-	local tokenSlot = GetItemAttr(link, "tokenSlot")
-	local classesFlag = GetItemAttr(link, "classesFlag")
-	local equipLoc = GetItemAttr(link, "equipLoc")
-	local relicType = GetItemAttr(link, "relicType")
-	local subTypeID = GetItemAttr(link, "subTypeID")
-	local typeID = GetItemAttr(link, "typeID")
-	local subType = GetItemAttr(link, "subType")
+	local tokenSlot = Item:GetItemAttr(link, "tokenSlot")
+	local classesFlag = Item:GetItemAttr(link, "classesFlag")
+	local equipLoc = Item:GetItemAttr(link, "equipLoc")
+	local relicType = Item:GetItemAttr(link, "relicType")
+	local subTypeID = Item:GetItemAttr(link, "subTypeID")
+	local typeID = Item:GetItemAttr(link, "typeID")
+	local subType = Item:GetItemAttr(link, "subType")
 	if tokenSlot then -- It's a token
 		local tokenText = L["Armor Token"]
 		if bit.band(classesFlag, 0x112) == 0x112 then
@@ -2693,8 +2692,8 @@ function RCLootCouncil:GetItemTypeText(link)
 		return relicTooltipName
 	elseif equipLoc ~= "" and getglobal(equipLoc) then
 		if equipLoc == "INVTYPE_TRINKET" then
-			local lootSpec = GetItemAttr(link, "lootSpec")
-			local category = lootSpec and _G.RCTrinketCategories[lootSpec]
+			local lootSpec = Item:GetItemAttr(link, "lootSpec")
+			local category = lootSpec and Item:GetTrinketCategories()[lootSpec]
 			if category then
 				return getglobal(equipLoc).." ("..category..")"
 			else
