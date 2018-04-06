@@ -9,7 +9,7 @@ if LibDebug then LibDebug() end
 --@end-debug@
 
 local addon = LibStub("AceAddon-3.0"):GetAddon("RCLootCouncil")
-local RCVotingFrame = addon:NewModule("RCVotingFrame", "AceComm-3.0", "AceTimer-3.0", "AceEvent-3.0")
+local RCVotingFrame = addon:NewModule("RCVotingFrame", "AceComm-3.0", "AceTimer-3.0", "AceEvent-3.0", "AceBucket-3.0")
 local LibDialog = LibStub("LibDialog-1.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 local LibDialog = LibStub("LibDialog-1.0")
@@ -67,6 +67,7 @@ end
 
 function RCVotingFrame:OnEnable()
 	self:RegisterComm("RCLootCouncil")
+	self:RegisterBucketEvent({"UNIT_PHASE", "ZONE_CHANGED_NEW_AREA"}, 1, "Update") -- Update "Out of instance" text when any raid members change zone
 	db = addon:Getdb()
 	active = true
 	moreInfo = db.modules["RCVotingFrame"].moreInfo
@@ -957,7 +958,16 @@ function RCVotingFrame.SetCellResponse(rowFrame, frame, data, cols, row, realrow
 	local name = data[realrow].name
 	local isTier = lootTable[session].candidates[name].isTier
 	local isRelic = lootTable[session].candidates[name].isRelic
-	frame.text:SetText(addon:GetResponseText(lootTable[session].candidates[name].response, isTier, isRelic))
+	local response = addon:GetResponseText(lootTable[session].candidates[name].response, isTier, isRelic)
+	if (IsInInstance() and select(4, UnitPosition("player")) ~= select(4, UnitPosition(Ambiguate(name, "short"))))
+		-- Mark as out of instance if the current player is in an instance and the raider is in other instancemap
+		or ((not IsInInstance()) and UnitPosition(Ambiguate(name, "short")) ~= nil) then
+		-- If the current player is not in an instance, mark as out of instance if 1st return of UnitPosition is not nil
+		-- This function returns nil if the raider is in any instance.
+		response = response.." ("..L["Out of instance"]..")"
+	end
+	frame.text:SetText(response)
+
 	frame.text:SetTextColor(addon:GetResponseColor(lootTable[session].candidates[name].response, isTier, isRelic))
 end
 
