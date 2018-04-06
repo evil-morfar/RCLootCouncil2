@@ -843,17 +843,21 @@ function RCLootCouncilML:HaveFreeSpaceForItem(item)
 end
 
 -- Return can we give the loot to the winner
+-- Note that it's still possible that GiveMasterLoot fails to be given after this check returns true.
+-- Then the reason is most likely the winner's inventory is full.
 --@return true we can, false and the cause if not
 -- causes:
 -- "loot_not_open": No loot windowed is open.
 -- "loot_gone": No loot on the slot provided or loot on the slot is not the item provided.
 -- "locked": The loot slot is locked for us. We are not eligible to loot this slot.
--- "inventory_full": The winner is ourselves and our inventory is full.
+-- "ml_inventory_full": The winner is ourselves and our inventory is full.
 -- "quality_below_threshold": The winner is not ourselve and the quality of the item is below loot threshold.
 -- "not_in_group": The winner is not ourselve and not in our group.
 -- "offline": The winner is offline.
--- "not_ml_candidate": The winner is not ourselve and not in ml candidate
--- "not_bop": The winner is not ourselves and the item is not a bop that can only be looted by us.
+-- "ml_not_in_instance": ML is not in an instance during a RC session.
+-- "out_of_instance": Winner is not in the ML's instance.
+-- "not_bop": The winner is not ourselves and the item is not a bop that cannot be looted by the winner.
+-- "not_ml_candidate": The winner is not ML and not in ml candidate.
 function RCLootCouncilML:CanGiveLoot(slot, item, winner)
 	if not addon.lootOpen then
 		return false, "loot_not_open"
@@ -862,7 +866,7 @@ function RCLootCouncilML:CanGiveLoot(slot, item, winner)
 	elseif addon.lootSlotInfo[slot].locked then
 		return false, "locked" -- Side Note: When the loot method is master, but ML is ineligible to loot (didn't tag boss/did the boss earlier in the week), WoW gives loot as if it is group loot method.
 	elseif addon:UnitIsUnit(winner, "player") and not self:HaveFreeSpaceForItem(addon.lootSlotInfo[slot].link) then
-		return false, "inventory_full"
+		return false, "ml_inventory_full"
 	elseif not addon:UnitIsUnit(winner, "player") then
 		if addon.lootSlotInfo[slot].quality < GetLootThreshold() then
 			return false, "quality_below_threshold"
@@ -887,6 +891,14 @@ function RCLootCouncilML:CanGiveLoot(slot, item, winner)
 				found = true
 				break
 			end
+		end
+
+		if not IsInInstance() then
+		   return false, "ml_not_in_instance" -- ML leaves the instance during a RC session.
+		end
+
+		if select(4, UnitPosition(winner)) ~= select(4, UnitPosition("player")) then
+		  return false, "out_of_instance" -- Winner not in the same instance as ML
 		end
 
 		local bindType = select(14, GetItemInfo(item))
@@ -1013,14 +1025,14 @@ function RCLootCouncilML:PrintLootErrorMsg(cause, slot, item, winner)
 	if cause == "loot_not_open" then
 		addon:Print(L["Unable to give out loot without the loot window open."])
 	elseif cause == "timeout" then
-		addon:Print(format(L["Timeout when giving 'item' to 'player'"], item, addon:GetUnitClassColoredName(winner)), " - ", L["Player is not in this instance or his inventory is full"])
+		addon:Print(format(L["Timeout when giving 'item' to 'player'"], item, addon:GetUnitClassColoredName(winner)), " - ", _G.ERR_INV_FULL) -- "Inventory is full."
 	elseif cause == "locked" then
 		addon:SessionError("No permission to loot the item at slot "..slot)
 	else
 		local prefix = format(L["Unable to give 'item' to 'player'"], item, addon:GetUnitClassColoredName(winner)).."  - "
 		if cause == "loot_gone" then
 			addon:Print(prefix, _G.LOOT_GONE) -- "Item already looted."
-		elseif cause == "inventory_full" then
+		elseif cause == "ml_inventory_full" then
 			addon:Print(prefix, _G.ERR_INV_FULL) -- "Inventory is full."
 		elseif cause == "quality_below_threshold" then
 			addon:Print(prefix, L["Item quality is below the loot threshold"])
@@ -1028,8 +1040,12 @@ function RCLootCouncilML:PrintLootErrorMsg(cause, slot, item, winner)
 			addon:Print(prefix, L["Player is not in the group"])
 		elseif cause == "offline" then
 			addon:Print(prefix, L["Player is offline"])
+		elseif cause == "ml_not_in_instance" then
+			addon:Print(prefix, L["You are not in an instance"])
+		elseif cause == "out_of_instance" then
+			addon:Print(prefix, L["Player is not in this instance"])
 		elseif cause == "not_ml_candidate" then
-			addon:Print(prefix, L["Player is not in this instance or is ineligible for this item"])
+			addon:Print(prefix, L["Player is ineligible for this item"])
 		elseif cause == "not_bop" then
 			addon:Print(prefix, L["The item can only be looted by you but it is not bind on pick up"])
 		else
@@ -1051,7 +1067,8 @@ end
 
 -- Status can be one of the following:
 -- award later success: bagged, manually_bagged,
--- normal error: bagging_awarded_item, loot_not_open, loot_gone, locked, inventory_full, quality_below_threshold, not_in_group, offline, not_ml_candidate, timeout, test_mode, bagging_bagged
+-- normal error: bagging_awarded_item, loot_not_open, loot_gone, locked, ml_inventory_full, quality_below_threshold
+-- , not_in_group, offline, not_ml_candidate, timeout, test_mode, bagging_bagged, ml_not_in_instance, out_of_instance
 -- Status when the addon is bugged(should not happen): unlooted_in_bag
 -- See :Award() and :CanGiveLoot() for the different scenarios and to get their meanings
 local function awardFailed(session, winner, status, callback, ...)
