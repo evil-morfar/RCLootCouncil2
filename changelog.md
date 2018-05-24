@@ -9,6 +9,8 @@
 
 ###### Bugfixes
 * *Trying to sync/receiving sync in LFG/Battlegrounds could give "Not in Raid" spam (#338).*
+* *Wrong roles on candidates shouldn't happen anymore.*
+* *Missing/wrong guild ranks should happen less frequently (will be fully fixed in another update).*
 
 
 ### v2.7.9
