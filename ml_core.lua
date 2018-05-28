@@ -98,8 +98,9 @@ end
 -- @param item Any: ItemID|itemString|itemLink
 -- @param baggedEntry: The table entry in db.baggedItems, if the item is ML's invenstory for award later.
 -- @param slotIndex Index of the lootSlot, or nil if none - either this or 'bagged' needs to be supplied
+-- @param owner The owner of the item (if any). Defaults to 'BossName'.
 -- @param entry Used to set data in a specific lootTable entry.
-function RCLootCouncilML:AddItem(item, baggedEntry, slotIndex, entry)
+function RCLootCouncilML:AddItem(item, baggedEntry, slotIndex, owner, entry)
 	addon:DebugLog("ML:AddItem", item, baggedEntry, slotIndex, entry)
 	if type(item) == "string" and item:find("|Hcurrency") then return end -- Ignore "Currency" item links
 
@@ -116,6 +117,7 @@ function RCLootCouncilML:AddItem(item, baggedEntry, slotIndex, entry)
 	end
 	entry.lootSlot = slotIndex
 	entry.awarded = false
+	entry.owner = owner or addon.bossName
 
 	local itemInfo = self:GetItemInfo(item)
 
@@ -127,7 +129,7 @@ function RCLootCouncilML:AddItem(item, baggedEntry, slotIndex, entry)
 
 	-- Item isn't properly loaded, so update the data next frame (Should only happen with /rc test)
 	if not itemInfo then
-		self:ScheduleTimer("Timer", 0, "AddItem", item, baggedEntry, slotIndex, entry)
+		self:ScheduleTimer("Timer", 0, "AddItem", item, baggedEntry, slotIndex, owner, entry)
 		addon:Debug("Started timer:", "AddItem", "for", item)
 	else
 		addon:SendMessage("RCMLAddItem", item, entry)
@@ -254,7 +256,7 @@ end
 
 function RCLootCouncilML:AddUserItem(item)
 	if self.running then return addon:Print(L["You're already running a session."]) end
-	self:AddItem(item, false) -- The item is neither bagged nor in the loot slot.
+	self:AddItem(item, false, nil, addon.playerName) -- The item is neither bagged nor in the loot slot.
 	addon:CallModule("sessionframe")
 	addon:GetActiveModule("sessionframe"):Show(self.lootTable)
 end
@@ -264,7 +266,7 @@ function RCLootCouncilML:SessionFromBags()
 	if #db.baggedItems == 0 then return addon:Print(L["No items to award later registered"]) end
 	for i, v in ipairs(db.baggedItems) do
 		if not v.winner then
-			self:AddItem(v.link, v)
+			self:AddItem(v.link, v, nil, addon.playerName)
 		end
 	end
 	if db.autoStart then
@@ -1084,10 +1086,11 @@ local function registerAndAnnounceAward(session, winner, response, reason)
 	local self = RCLootCouncilML
 	local changeAward = self.lootTable[session].awarded
 	self.lootTable[session].awarded = winner
-	addon:SendCommand("group", "awarded", session, winner)
 	if self.lootTable[session].baggedEntry then
 		self.lootTable[session].baggedEntry.winner = winner
 	end
+	addon:SendCommand("group", "awarded", session, winner, self.lootTable[session].owner)
+
 	self:AnnounceAward(winner, self.lootTable[session].link,
 			reason and reason.text or response, addon:GetActiveModule("votingframe"):GetCandidateData(session, winner, "roll"), session, changeAward)
 	if self:HasAllItemsBeenAwarded() then
@@ -1470,7 +1473,7 @@ function RCLootCouncilML:Test(items)
 	addon:SendCommand("group", "candidates", self.candidates)
 	-- Add the items
 	for session, iName in ipairs(items) do
-		self:AddItem(iName, false, false)
+		self:AddItem(iName, false, false, addon.playerName)
 	end
 	if db.autoStart then
 		addon:Print(L["Autostart isn't supported when testing"])

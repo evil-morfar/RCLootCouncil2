@@ -55,6 +55,7 @@ local defaultModules = {
 	version =		"RCVersionCheck",
 	sessionframe =	"RCSessionFrame",
 	votingframe =	"RCVotingFrame",
+	tradeui =		"RCTradeUI",
 }
 local userModules = {
 	masterlooter = nil,
@@ -63,6 +64,7 @@ local userModules = {
 	version = nil,
 	sessionframe = nil,
 	votingframe = nil,
+	tradeui = nil,
 }
 
 local frames = {} -- Contains all frames created by RCLootCouncil:CreateFrame()
@@ -85,7 +87,7 @@ function RCLootCouncil:OnInitialize()
   	self.version = GetAddOnMetadata("RCLootCouncil", "Version")
 	self.nnp = false
 	self.debug = false
-	self.tVersion = "Beta-1" -- String or nil. Indicates test version, which alters stuff like version check. Is appended to 'version', i.e. "version-tVersion" (max 10 letters for stupid security)
+	self.tVersion = "Alpha-1" -- String or nil. Indicates test version, which alters stuff like version check. Is appended to 'version', i.e. "version-tVersion" (max 10 letters for stupid security)
 
 	self.playerClass = select(2, UnitClass("player"))
 	self.guildRank = L["Unguilded"]
@@ -100,6 +102,7 @@ function RCLootCouncil:OnInitialize()
 	self.currentInstanceName = ""
 	self.bossName = nil -- Updates after each encounter
 	self.recentTradableItem = nil -- The last tradeable item not below the loot threshold the player gets since the last encounter ends
+	self.itemsToTrade = {}	-- Items we need to trade. {item = "ItemLink", recepient = "PlayerName"}
 	self.lootOpen = false 	-- is the ML lootWindow open or closed?
 	self.lootSlotInfo = {}  -- Items' data currently in the loot slot. Need this because inside LOOT_SLOT_CLEARED handler, GetLootSlotLink() returns invalid link.
 
@@ -224,6 +227,9 @@ function RCLootCouncil:OnInitialize()
 				},
 				lootframe = { -- We want the Loot Frame to get a little lower
 					y = -200,
+				},
+				tradeui = {
+					x = -300,
 				},
 				default = {}, -- base line
 			},

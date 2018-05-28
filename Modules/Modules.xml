@@ -5,4 +5,5 @@
   <Script file = "sessionFrame.lua" />
   <Script file = "options.lua" />
   <Script file = "lootHistory.lua" />
+  <Script file = "TradeUI.lua" />
 </Ui>
