@@ -100,7 +100,7 @@ function TradeUI:GetFrame()
    local f = addon:CreateFrame("RCDefaultTradeUIFrame", "tradeui", "RCLootCouncil Trade UI", nil, 220)
    f.st = ST:CreateST(self.scrollCols, 5, ROW_HEIGHT, nil, f.content)
    f.st.frame:SetPoint("TOPLEFT",f,"TOPLEFT",10,-20)
-   st:RegisterEvents({
+   f.st:RegisterEvents({
       ["OnClick"] = function(rowFrame, cellFrame, data, cols, row, realrow, column, table, button, ...)
          -- TODO Check for open trade window
 
