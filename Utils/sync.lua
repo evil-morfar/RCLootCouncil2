@@ -51,7 +51,7 @@ local function SendSyncData(target, type)
 				-- See "RCLootCouncil:HandleXRealmComms()" for more info
 				toSend = addon:Serialize("xrealm", {target, "sync", addon.playerName, type, sync_table[target][type]})
 				if GetNumGroupMembers() > 0 then -- We're in a group
-					addon:SendCommMessage("RCLootCouncil", toSend, "RAID", nil, "BULK", sync.OnDataPartSent, sync)
+					addon:SendCommMessage("RCLootCouncil", toSend, IsPartyLFG() and "INSTANCE_CHAT" or "RAID", nil, "BULK", sync.OnDataPartSent, sync)
 				else -- We're not, probably a guild verTest
 					addon:SendCommMessage("RCLootCouncil", toSend, "GUILD", nil, "BULK", sync.OnDataPartSent, sync)
 				end

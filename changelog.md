@@ -1,6 +1,18 @@
+### v2.7.10
+---
 * Added "Pass" button to right click menu -> Change Response.
 * Loot Frame notes no longer requires an "enter" press to save the note.
 * Added a Discord option to Loot History exports.
+
+* **Out of Instance**
+* A message is added to a response if people has left the instance (i.e. impossible to give loot).
+* Various error messages have been updated to better reflect what's going on.
+
+###### Bugfixes
+* *Trying to sync/receiving sync in LFG/Battlegrounds could give "Not in Raid" spam (#338).*
+* *Wrong roles on candidates shouldn't happen anymore.*
+* *Missing/wrong guild ranks should happen less frequently (will be fully fixed in another update).*
+
 
 ### v2.7.9
 ---
