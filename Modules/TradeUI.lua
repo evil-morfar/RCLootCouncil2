@@ -19,8 +19,8 @@ local ROW_HEIGHT = 30
 local db
 
 -- lua
-local select, GetItemInfoInstant, ipairs,  unpack, tinsert, wipe, tremove, format, table
-    = select, GetItemInfoInstant, ipairs,  unpack, tinsert, wipe, tremove, format, table
+local select, GetItemInfoInstant, ipairs,  unpack, tinsert, wipe, tremove, format, table, GetTime
+    = select, GetItemInfoInstant, ipairs,  unpack, tinsert, wipe, tremove, format, table, GetTime
 -- GLOBALS: GetContainerNumSlots, ClickTradeButton, PickupContainerItem, ClearCursor, GetContainerItemInfo, GetContainerItemLink, GetTradePlayerItemInfo,
 -- GLOBALS: IsModifiedClick, HandleModifiedItemClick, GetTradePlayerItemLink
 
@@ -61,15 +61,15 @@ end
 
 function TradeUI:Update()
    if not self.frame then return self:Show() end
-   for k, v in ipairs(addon.itemsToTrade) do
+   for k, v in ipairs(addon.ItemStorage:GetAllItemsOfType("to_trade")) do
       self.frame.rows[k] = {
-         link = v.item,
-         winner = v.recipient,
+         link = v.link,
+         winner = v.args.recipient,
          cols = {
             {DoCellUpdate = self.SetCellItemIcon},
-            {value = v.item},
+            {value = v.link},
             {value = "-->"},
-            {value = addon.Ambiguate(v.recipient), color = addon:GetClassColor(addon.candidates[v.recipient] and addon.candidates[v.recipient].class or "nothing")},
+            {value = addon.Ambiguate(v.args.recipient), color = addon:GetClassColor(addon.candidates[v.args.recipient] and addon.candidates[v.args.recipient].class or "nothing")},
          }
       }
    end
@@ -84,10 +84,7 @@ function TradeUI:OnCommReceived(prefix, serializedMsg, distri, sender)
          local session, winner, trader = unpack(data)
          if addon:UnitIsUnit(trader, "player") then
             -- We should give our item to 'winner'
-            tinsert(addon.itemsToTrade, {
-               item = addon:GetLootTable()[session].link,
-               recipient = winner,
-            })
+            addon.ItemStorage:StoreItem(addon:GetLootTable()[session].link, "to_trade", {recipient = winner})
             self:Show()
          end
       end
@@ -105,13 +102,14 @@ function TradeUI:OnEvent_TRADE_SHOW (event, ...)
    if addon.isMasterLooter	then
       local count = self:GetNumAwardedInBagsToTradeWindow()
       if count > 0 then
+         -- TODO Make this optionally automatic
          LibDialog:Spawn("RCLOOTCOUNCIL_TRADE_ADD_ITEM", {count=count})
       end
    end
 end
 
 function TradeUI:OnEvent_TRADE_CLOSED (event, ...)
-   self.isTrading = false -- Dont clear self.targetTarget here.
+   self.isTrading = false 
 end
 
 function TradeUI:OnEvent_TRADE_ACCEPT_UPDATE (event, ...) -- Record the item traded
@@ -129,87 +127,53 @@ end
 function TradeUI:OnEvent_UI_INFO_MESSAGE (event, ...)
    if select(1, ...) == _G.LE_GAME_ERR_TRADE_COMPLETE then -- Trade complete. Remove items from db.baggedItems if traded to winners
       local tradedItemsInBag = {}
+      addon:Debug("TradeUI: Traded item(s) to", self.tradeTarget)
       for _, link in ipairs(self.tradeItems) do
-         for i = #db.baggedItems, 1, -1 do -- when the loop contains tremove, loop must be traversed in reverse order.
-            local winner = db.baggedItems[i].winner
-            local link = db.baggedItems[i].link
-            if addon:UnitIsUnit(db.baggedItems[i].winner, self.tradeTarget) and addon:ItemIsItem(db.baggedItems[i].link, link)  then
-               addon:Debug("Remove item from db.baggedItems because traded to", winner, link)
-               tremove(db.baggedItems, i)
-               tinsert(tradedItemsInBag, link)
-               break
-            end
-         end
+         addon.ItemStorage:RemoveItem(link)
       end
-
-      if #tradedItemsInBag > 0 then
-         -- TODO Change this string
-         addon:Print(format(L["The following items are removed from the award later list and traded to 'player'"], addon:GetUnitClassColoredName(self.tradeTarget)))
-         addon:Print(table.concat(tradedItemsInBag))
-      end
+      self:Update()
    end
 end
 
+-- These functions will be used multiple times, so make them static
+local funcTradeTargetIsRecipient = function(v) return addon:UnitIsUnit(TradeUI.tradeTarget, v.args.recipient) end  -- Our trade target is the winner
+local funcItemHasMoreTimeLeft    = function(v) return GetTime() < (v.time_added + v.time_remaining) end            -- There's still time remaining
+local funcStorageTypeIsToTrade   = function(v) return v.type == "to_trade" end                                     -- The stored item type is "to_trade"
+
 function TradeUI:GetNumAwardedInBagsToTradeWindow()
-	local count = 0
-	local countedSlots = {}
-	for _, v in ipairs(db.baggedItems) do
-		if v.winner and addon:UnitIsUnit(self.tradeTarget, v.winner) then
-			local itemCounted = false
-			for container=0, _G.NUM_BAG_SLOTS do
-				for slot=1, GetContainerNumSlots(container) or 0 do
-					if not (countedSlots[container] and countedSlots[container][slot]) then
-						local link = GetContainerItemLink(container, slot)
-						if link and addon:ItemIsItem(link, v.link) and addon:GetContainerItemTradeTimeRemaining(container, slot) > 0 then
-							itemCounted = true
-							count = count + 1
-							countedSlots[container] = countedSlots[container] or {}
-							countedSlots[container][slot] = true
-							break
-						end
-					end
-				end
-				if itemCounted then
-					break
-				end
-			end
-		end
-	end
-	return count
+   return #addon.ItemStorage:GetAllItemsMultiPred(
+      funcTradeTargetIsRecipient,
+      funcItemHasMoreTimeLeft
+   )
 end
 
 function TradeUI:AddAwardedInBagsToTradeWindow()
 	if addon.isMasterLooter then
-		local tradeIndex = 1
-		for _, v in ipairs(db.baggedItems) do
-			if v.winner and addon:UnitIsUnit(self.tradeTarget, v.winner) then
-				while (GetTradePlayerItemInfo(tradeIndex)) do
-					tradeIndex = tradeIndex	+ 1
-				end
-				if tradeIndex > _G.MAX_TRADE_ITEMS - 1 then -- Have used all available slots(The last trade slot is "Will not be traded" slot).
-					break
-				end
-				local itemAdded = false
-				for container=0, _G.NUM_BAG_SLOTS do
-					for slot=1, GetContainerNumSlots(container) or 0 do
-						if self.trading then
-							local texture, count, locked, quality, readable, lootable, link = GetContainerItemInfo(container, slot)
-							if addon:ItemIsItem(link, v.link) and not locked and addon:GetContainerItemTradeTimeRemaining(container, slot) > 0 then
-								ClearCursor()
-								PickupContainerItem(container, slot)
-								ClickTradeButton(tradeIndex)
-								tradeIndex = tradeIndex + 1
-								itemAdded = true
-								break
-							end
-						end
-					end
-					if itemAdded then
-						break
-					end
-				end
+      local tradeIndex = 1
+      local items = addon.ItemStorage:GetAllItemsMultiPred(
+         funcTradeTargetIsRecipient, funcItemHasMoreTimeLeft, funcStorageTypeIsToTrade
+      )
+      for k, Item in ipairs(items) do
+         while (GetTradePlayerItemInfo(tradeIndex)) do
+				tradeIndex = tradeIndex	+ 1
 			end
-		end
+			if tradeIndex > _G.MAX_TRADE_ITEMS - 1 then -- All available slots used (The last trade slot is "Will not be traded" slot).
+				break
+			end
+         local c,s = addon.ItemStorage:GetItemContainerSlot(Item)
+         if not c then -- Item is gone?!
+            -- TODO Print something to the user?
+            return addon:Debug("Error TradeUI:", "Item missing when attempting to trade", Item.link, self.tradeTarget)
+         end
+         if self.trading then -- REVIEW Redundant?
+            local _, _, locked, _, _, _, link = GetContainerItemInfo(c, s)
+            if addon:ItemIsItem(link, Item.link) and not locked then -- Extra check, probably also redundant
+               ClearCursor()
+					PickupContainerItem(c, s)
+					ClickTradeButton(tradeIndex)
+            end
+         end
+      end
 	end
 end
 
