@@ -19,8 +19,8 @@ local LibDialog = LibStub("LibDialog-1.0")
 local GetItemInfo, GetItemInfoInstant, GetRaidRosterInfo
 	 = GetItemInfo, GetItemInfoInstant, GetRaidRosterInfo
 -- Lua
-local time, date, tonumber, unpack, select, wipe, pairs, ipairs, format, table, tinsert, tremove, bit, tostring, type
-	 = time, date, tonumber, unpack, select, wipe, pairs, ipairs, format, table, tinsert, tremove, bit, tostring, type
+local time, date, tonumber, unpack, select, wipe, pairs, ipairs, format, table, tinsert, tremove, bit, tostring, type, FindInTableIf, tFilter
+	 = time, date, tonumber, unpack, select, wipe, pairs, ipairs, format, table, tinsert, tremove, bit, tostring, type, FindInTableIf, tFilter
 
 local db;
 
@@ -49,18 +49,11 @@ function RCLootCouncilML:OnEnable()
 	self.lootQueue = {}     -- Items ML have attempted to give out that waiting for LOOT_SLOT_CLEARED
 	self.running = false		-- true if we're handling a session
 	self.council = self:GetCouncilInGroup()
-	self.trading = false     -- are we trading with another player?
-	self.tradeItems = {}    -- The items we are trading
-	self.tradeTarget = nil   -- The last player name who we trade
 	self.combatQueue = {}	-- The functions that will be executed when combat ends. format: [num] = {func, arg1, arg2, ...}
 
 	self:RegisterComm("RCLootCouncil", 		"OnCommReceived")
 	self:RegisterEvent("CHAT_MSG_WHISPER",	"OnEvent")
 	self:RegisterEvent("CHAT_MSG_LOOT", 	"OnEvent")
-	self:RegisterEvent("TRADE_SHOW", "OnEvent")
-	self:RegisterEvent("TRADE_CLOSED", "OnEvent")
-	self:RegisterEvent("TRADE_ACCEPT_UPDATE", "OnEvent")
-	self:RegisterEvent("UI_INFO_MESSAGE", "OnEvent")
 	self:RegisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
 	self:RegisterBucketEvent("GROUP_ROSTER_UPDATE", 10, "UpdateGroup") -- Bursts in group creation, and we should have plenty of time to handle it
 	self:RegisterBucketMessage("RCConfigTableChanged", 5, "ConfigTableChanged") -- The messages can burst
@@ -361,34 +354,6 @@ function RCLootCouncilML:RemoveItemsInBags(...)
 	end
 end
 
-function RCLootCouncilML:GetNumAwardedInBagsToTradeWindow()
-	local count = 0
-	local countedSlots = {}
-	for _, v in ipairs(db.baggedItems) do
-		if v.winner and addon:UnitIsUnit(self.tradeTarget, v.winner) then
-			local itemCounted = false
-			for container=0, NUM_BAG_SLOTS do
-				for slot=1, GetContainerNumSlots(container) or 0 do
-					if not (countedSlots[container] and countedSlots[container][slot]) then
-						local link = GetContainerItemLink(container, slot)
-						if link and addon:ItemIsItem(link, v.link) and addon:GetContainerItemTradeTimeRemaining(container, slot) > 0 then
-							itemCounted = true
-							count = count + 1
-							countedSlots[container] = countedSlots[container] or {}
-							countedSlots[container][slot] = true
-							break
-						end
-					end
-				end
-				if itemCounted then
-					break
-				end
-			end
-		end
-	end
-	return count
-end
-
 -- Check if there are any BOP item in the player's inventory that is in the award later list and has low trade time remaining.
 -- If yes, print the items to remind the user.
 local lastCheckItemsInBagsLowTradeTimeRemainingReminder = 0
@@ -440,41 +405,6 @@ function RCLootCouncilML:ItemsInBagsLowTradeTimeRemainingReminder()
 	end
 
 	lastCheckItemsInBagsLowTradeTimeRemainingReminder = GetTime()
-end
-
-function RCLootCouncilML:AddAwardedInBagsToTradeWindow()
-	if addon.isMasterLooter then
-		local tradeIndex = 1
-		for _, v in ipairs(db.baggedItems) do
-			if v.winner and addon:UnitIsUnit(self.tradeTarget, v.winner) then
-				while (GetTradePlayerItemInfo(tradeIndex)) do
-					tradeIndex = tradeIndex	+ 1
-				end
-				if tradeIndex > MAX_TRADE_ITEMS - 1 then -- Have used all available slots(The last trade slot is "Will not be traded" slot).
-					break
-				end
-				local itemAdded = false
-				for container=0, NUM_BAG_SLOTS do
-					for slot=1, GetContainerNumSlots(container) or 0 do
-						if self.trading then
-							local texture, count, locked, quality, readable, lootable, link = GetContainerItemInfo(container, slot)
-							if addon:ItemIsItem(link, v.link) and not locked and addon:GetContainerItemTradeTimeRemaining(container, slot) > 0 then
-								ClearCursor()
-								PickupContainerItem(container, slot)
-								ClickTradeButton(tradeIndex)
-								tradeIndex = tradeIndex + 1
-								itemAdded = true
-								break
-							end
-						end
-					end
-					if itemAdded then
-						break
-					end
-				end
-			end
-		end
-	end
 end
 
 function RCLootCouncilML:ConfigTableChanged(val)
@@ -699,50 +629,7 @@ function RCLootCouncilML:OnEvent(event, ...)
 		elseif self.running then
 			self:GetItemsFromMessage(msg, sender)
 		end
-	elseif event == "TRADE_SHOW" then
-		self.trading = true
-		wipe(self.tradeItems)
-		self.tradeTarget = addon:UnitName("NPC")
-		if addon.isMasterLooter	then
-			local count = self:GetNumAwardedInBagsToTradeWindow()
-			if count > 0 then
-				LibDialog:Spawn("RCLOOTCOUNCIL_TRADE_ADD_ITEM", {count=count})
-			end
-		end
-	elseif event == "TRADE_ACCEPT_UPDATE" then -- Record the item traded
-		if select(1, ...) == 1 or select(2, ...) == 1 then
-			wipe(self.tradeItems)
-			for i = 1, MAX_TRADE_ITEMS-1 do -- The last trade slot is "Will not be traded"
-				local link = GetTradePlayerItemLink(i)
-				if link then
-					tinsert(self.tradeItems, link)
-				end
-			end
-		end
-	elseif event == "UI_INFO_MESSAGE" and addon.isMasterLooter then
-		if select(1, ...) == _G.LE_GAME_ERR_TRADE_COMPLETE then -- Trade complete. Remove items from db.baggedItems if traded to winners
-			local tradedItemsInBag = {}
 
-			for _, link in ipairs(self.tradeItems) do
-				for i=#db.baggedItems, 1, -1 do -- when the loop contains tremove, loop must be traversed in reverse order.
-					local winner = db.baggedItems[i].winner
-					local link = db.baggedItems[i].link
-					if addon:UnitIsUnit(db.baggedItems[i].winner, self.tradeTarget) and addon:ItemIsItem(db.baggedItems[i].link, link)  then
-						addon:Debug("Remove item from db.baggedItems because traded to", winner, link)
-						tremove(db.baggedItems, i)
-						tinsert(tradedItemsInBag, link)
-						break
-					end
-				end
-			end
-
-			if #tradedItemsInBag > 0 then
-				addon:Print(format(L["The following items are removed from the award later list and traded to 'player'"], addon:GetUnitClassColoredName(self.tradeTarget)))
-				addon:Print(table.concat(tradedItemsInBag))
-			end
-		end
-	elseif event == "TRADE_CLOSED" then
-		self.trading = false -- Dont clear self.targetTarget here.
 	elseif event == "PLAYER_REGEN_ENABLED" then
 		self:ItemsInBagsLowTradeTimeRemainingReminder()
 		for _, entry in ipairs(self.combatQueue) do
