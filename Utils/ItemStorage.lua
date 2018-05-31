@@ -1,4 +1,5 @@
 --- ItemStorage.lua Class mock for handling stored items
+-- Creates 'RCLootCouncil.ItemStorage' as a namespace for storage functions.
 -- @author Potdisc
 -- Create Date : 29/5/2018 18:28:51
 
@@ -10,9 +11,9 @@ addon.ItemStorage = Storage
 local StoredItems = {}
 
 Storage.AcceptedTypes = {
-   "to_trade",    -- Items that should be traded to another player
-   "award_later", -- Items that should be used in a later session
-   "other",       -- Unspecified
+   ["to_trade"]    = true, -- Items that should be traded to another player
+   ["award_later"] = true, -- Items that should be used in a later session
+   ["other"]       = true, -- Unspecified
 }
 
 local item_prototype = {
@@ -29,9 +30,10 @@ local item_methods = {
    end,
 }
 -- lua
-local error, table, tostring, tinsert, tremove, type, select, FindInTableIf, GetTime, tFilter
-    = error, table, tostring, tinsert, tremove, type, select, FindInTableIf, GetTime, tFilter
+local error, table, tostring, tinsert, tremove, type, select, FindInTableIf, GetTime, tFilter, setmetatable, CopyTable
+    = error, table, tostring, tinsert, tremove, type, select, FindInTableIf, GetTime, tFilter, setmetatable, CopyTable
 
+-- GLOBALS: GetContainerNumSlots, GetContainerItemLink
 
 do -- Extract items from our SV to
    for k, v in ipairs(db.itemStorage) do
@@ -42,7 +44,7 @@ end
 local function findItemInBags(link)
    addon:DebugLog("Storage: searching for item:",link)
    if link and link ~= "" then
-      for container=0, NUM_BAG_SLOTS do
+      for container=0, _G.NUM_BAG_SLOTS do
    		for slot=1, GetContainerNumSlots(container) or 0 do
             if addon:ItemIsItem(link, GetContainerItemLink(container, slot)) then
                addon:DebugLog("Found item at",container, slot)
@@ -67,7 +69,7 @@ end
 -- Item is stored in Ace3 db and an internal db for future use. The internal item object is returned
 -- @param item ItemLink|ItemString|ItemID of the item
 -- @param type The storage type. Used for different handlers, @see Storage.AcceptedTypes
--- @param ... Userdata stored in the returned 'Item.args'
+-- @param ... Userdata stored in the returned 'Item.args'. Directly stored if provided as table, otherwise as '{...}'.
 -- @returns Item @see 'item_prototype' when the item is stored succesfully.
 function Storage:StoreItem(item, type, ...)
    if not type then type = "other" end
@@ -86,7 +88,7 @@ function Storage:StoreItem(item, type, ...)
       Item.time_added = OldItem.time_added -- Restore original time added
       Item.args = OldItem.args
    else -- We need to store it in db as well
-      Item.args = ...
+      Item.args = type(...) == "table" and ... or {...}
       tinsert(db.itemStorage, Item)
    end
    tinsert(StoredItems, Item)
