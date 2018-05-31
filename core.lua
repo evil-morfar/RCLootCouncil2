@@ -170,6 +170,7 @@ function RCLootCouncil:OnInitialize()
 
 			baggedItems = {}, -- Items that are stored in MLs inventory for award later.
 								-- i = { {link=link, winner=winner, addedTime=sec between UTC epoch to when the item is added to lootInBags, }, bop=Item is BOP?}
+			itemStorage = {}, -- See ItemStorage.lua
 
 			usage = { -- State of enabledness
 				ml = false,				-- Enable when ML
