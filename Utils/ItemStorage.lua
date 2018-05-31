@@ -30,8 +30,8 @@ local item_methods = {
    end,
 }
 -- lua
-local error, table, tostring, tinsert, tremove, type, select, FindInTableIf, GetTime, tFilter, setmetatable, CopyTable
-    = error, table, tostring, tinsert, tremove, type, select, FindInTableIf, GetTime, tFilter, setmetatable, CopyTable
+local error, table, tostring, tinsert, tremove, type, select, FindInTableIf, GetTime, tFilter, setmetatable, CopyTable, tDeleteItem
+    = error, table, tostring, tinsert, tremove, type, select, FindInTableIf, GetTime, tFilter, setmetatable, CopyTable, tDeleteItem
 
 -- GLOBALS: GetContainerNumSlots, GetContainerItemLink
 
@@ -102,14 +102,14 @@ function Storage:RemoveItem(item)
    addon:Debug("Storage:RemoveItem", item)
    if type(item) == "table" then -- Our Item object
       if StoredItems[item] and db.itemStorage[item] then
-         tremove(StoredItems, item)
-         tremove(db.itemStorage, item)
+         tDeleteItem(StoredItems, item)
+         tDeleteItem(db.itemStorage, item)
          return true
       else -- Item didn't exist, try to extract itemlink
          return self:RemoveItem(item.link)
       end
    elseif type(item) == "string" then -- item link (hopefully)
-      local key = FindInTableIf(StoredItems, function(v) return v.link == item end)
+      local key = FindInTableIf(StoredItems, function(v) return addon:ItemIsItem(v.link,item) end)
       if key then
          tremove(StoredItems, key)
          tremove(db.itemStorage, key)
@@ -140,18 +140,43 @@ end
 function Storage:GetAllItemsOfType(type)
    type = type or "other"
    return tFilter(StoredItems,
-   function(v)
-      return v.type == type
-   end)
+      function(v)
+         return v.type == type
+      end)
 end
 
---- Returns all stored items with less/equal time remaining
+--- Returns all stored Items with less/equal time remaining
 -- @param time Seconds to check for (defaults to 0)
 -- @return An Item table consisting of items with less or equal, time remaining than 'time'.
 function Storage:GetAllItemsLessTimeRemaining(time)
    time = time or 0
    return tFilter(StoredItems,
-   function(v)
-      return v.time_remaining <= time
-   end)
+      function(v)
+         return v.time_remaining <= time
+      end)
+end
+
+--- Returns all stored Items based on multiple predicates
+-- @param ... Predicate functions.
+-- @return The filtered list of times.
+function Storage:GetAllItemsMultiPred(...)
+   local vararg = ...
+   return tFilter(StoredItems,
+      function(v)
+         for i = 1, select("#", vararg) do
+            if not select(i, vararg)(v) then return false end
+         end
+         return true
+      end)
+end
+
+--- Returns Container and Slot ids of the item.
+-- @param item The item to find slots for, either 'Item' object or ItemLink.
+-- @return container,slot The position of the item in the player's bags.
+function Storage:GetItemContainerSlot (item)
+   if type(item) == "table" then -- Our Item object
+      return findItemInBags(item.link)
+   elseif type(item) == "string" then
+      return findItemInBags(item)
+   end
 end
