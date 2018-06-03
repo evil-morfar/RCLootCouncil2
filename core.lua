@@ -1942,6 +1942,10 @@ function RCLootCouncil:NewMLCheck()
 	-- We're ML and must ask the player for usage
 	elseif self.lootMethod == "master" and db.usage.ask_ml then
 		return LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_USAGE")
+	elseif self.lootMethod == "personalloot" and db.usage.pl then -- auto start PL
+		self:StartHandleLoot("personalloot")
+	elseif self.lootMethod == "personalloot" and db.usage.ask_pl then
+		return LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_USAGE")
 	end
 end
 
@@ -1980,7 +1984,7 @@ end
 function RCLootCouncil:OnRaidEnter(arg)
 	-- NOTE: We shouldn't need to call GetML() as it's most likely called on "LOOT_METHOD_CHANGED"
 	-- There's no ML, and lootmethod ~= ML, but we are the group leader
-	if IsPartyLFG() then return end	-- We can't use in lfg/lfd so don't bother
+	if IsPartyLFG() or db.usage.never then return end	-- We can't use in lfg/lfd so don't bother
 	-- Check if we can use in party
 	if not IsInRaid() and db.onlyUseInRaids then return end
 	if self.lootMethod ~= "master" and self:CanSetML() then
