@@ -89,11 +89,11 @@ end
 -- You CAN sort or delete entries in the lootTable while an item is being added.
 -- @paramsig item[, bagged, slotIndex, index]
 -- @param item Any: ItemID|itemString|itemLink
--- @param baggedEntry: The table entry in db.baggedItems, if the item is ML's invenstory for award later.
+-- @param bagged: The Item as stored in ItemStorage. Item is bagged if not nil.
 -- @param slotIndex Index of the lootSlot, or nil if none - either this or 'bagged' needs to be supplied
 -- @param owner The owner of the item (if any). Defaults to 'BossName'.
 -- @param entry Used to set data in a specific lootTable entry.
-function RCLootCouncilML:AddItem(item, baggedEntry, slotIndex, owner, entry)
+function RCLootCouncilML:AddItem(item, bagged, slotIndex, owner, entry)
 	addon:DebugLog("ML:AddItem", item, baggedEntry, slotIndex, entry)
 	if type(item) == "string" and item:find("|Hcurrency") then return end -- Ignore "Currency" item links
 
@@ -104,10 +104,7 @@ function RCLootCouncilML:AddItem(item, baggedEntry, slotIndex, owner, entry)
 		wipe(entry) -- Clear the entry. Don't use 'entry = {}' here to preserve table pointer.
 	end
 
-	if baggedEntry then
-		entry.bagged = true
-		entry.baggedEntry = baggedEntry
-	end
+	entry.bagged = bagged
 	entry.lootSlot = slotIndex
 	entry.awarded = false
 	entry.owner = owner or addon.bossName
@@ -122,7 +119,7 @@ function RCLootCouncilML:AddItem(item, baggedEntry, slotIndex, owner, entry)
 
 	-- Item isn't properly loaded, so update the data next frame (Should only happen with /rc test)
 	if not itemInfo then
-		self:ScheduleTimer("Timer", 0, "AddItem", item, baggedEntry, slotIndex, owner, entry)
+		self:ScheduleTimer("Timer", 0, "AddItem", item, bagged, slotIndex, owner, entry)
 		addon:Debug("Started timer:", "AddItem", "for", item)
 	else
 		addon:SendMessage("RCMLAddItem", item, entry)
@@ -135,7 +132,7 @@ function RCLootCouncilML:GetLootTableForTransmit()
 		v["equipLoc"] = select(4, GetItemInfoInstant(v.link))
 		v["typeID"] = nil
 		v["subTypeID"] = nil
-		v["baggedEntry"] = nil -- Only ML needs this.
+		v["bagged"] = nil -- Only ML needs this.
 	end
 	return copy
 end
@@ -256,11 +253,10 @@ end
 
 function RCLootCouncilML:SessionFromBags()
 	if self.running then return addon:Print(L["You're already running a session."]) end
-	if #db.baggedItems == 0 then return addon:Print(L["No items to award later registered"]) end
-	for i, v in ipairs(db.baggedItems) do
-		if not v.winner then
-			self:AddItem(v.link, v, nil, addon.playerName)
-		end
+	local Items = addon.ItemStorage:GetAllItemsOfType("award_later")
+	if #Items == 0 then return addon:Print(L["No items to award later registered"]) end
+	for i, v in ipairs(Items) do
+		self:AddItem(v.link, v, nil, addon.playerName)
 	end
 	if db.autoStart then
 		self:StartSession()
@@ -271,54 +267,63 @@ function RCLootCouncilML:SessionFromBags()
 end
 
 function RCLootCouncilML:ClearOldItemsInBags()
-	for i=#db.baggedItems, 1, -1 do
-		local v = db.baggedItems[i]
+	local Items = addon.ItemStorage:GetAllItemsOfType("award_later")
+	for k,v in ipairs(Items) do
 		-- Expire BOP items after 2h, Because Blizzard only gives a 2h window to trade soulbound items.
 		-- Expire items non BoP after 6h, in case some guild distribute boe items at the end of raid.
 		-- if v.addedTime is not recorded, then something is wrong, just remove it.
-		if (not v.addedTime) or (v.bop and time(date("!*t")) - v.addedTime > 3600*2) or (time(date("!*t")) - v.addedTime > 3600*6) then -- time(date("!*t")) is UTC epoch.
-			tremove(db.baggedItems, i)
+		-- NOTE: This is the old. It seems overly complicated... Also doesn't work with the new item storage. Kept for reference.
+		-- if (not v.time_added) or (v.args.bop and time(date("!*t")) - v.time_added > 3600*2) or (time(date("!*t")) - v.time_added > 3600*6) then -- time(date("!*t")) is UTC epoch.
+		-- 	tremove(db.baggedItems, i)
+		-- end
+		if (v.args.bop and (v.time_remaining <= 0 or v.time_remaning + v.time_added < time())) or -- BoP item, 2 hrs
+			time() - v.time_added > 3600 * 6 then -- Non BoP, timeout after 6 hrs
+				addon:DebugLog("ML: Removed Item", v.link, "due to timeout.")
+				addon.ItemStorage:RemoveItem(v)
+				-- REVIEW Notify the user?
 		end
 	end
 end
 
 function RCLootCouncilML:ClearAllItemsInBags()
-	wipe(db.baggedItems)
+	addon.ItemStorage:RemoveAllItemsOfType("award_later")
 	addon:Print(L["The award later list has been cleared."])
 end
 
--- Print all items in db.baggedItems, regardless awarded or not, in the order when the item was added.
+-- Print all items that should be awarded later
 function RCLootCouncilML:PrintItemsInBags()
-	if #db.baggedItems == 0 then
+	local Items = addon.ItemStorage:GetAllItemsOfType("award_later")
+	if #Items == 0 then
 		return addon:Print(L["The award later list is empty."])
 	end
 	addon:Print(L["Following items were registered in the award later list:"])
-	for i, v in ipairs(db.baggedItems) do
-		addon:Print(i..". "..v.link, "-->", v.winner and addon:GetUnitClassColoredName(v.winner) or L["Unawarded"],
-			format(GUILD_BANK_LOG_TIME, SecondsToTime(time(date("!*t"))-v.addedTime, true)) )
+	for i, v in ipairs(Items) do
+		addon:Print(i..". "..v.link, format(GUILD_BANK_LOG_TIME, SecondsToTime(time(date("!*t"))-v.addedTime, true)) )
 		-- GUILD_BANK_LOG_TIME == "( %s ago )", although the constant name does not make sense here, this constant expresses we intend to do.
 		-- SecondsToTime is defined in SharedXML/util.lua
 	end
 end
 
--- Print awarded items in db.baggedItems, in the order of awardee's name.
+-- Print awarded items in bags, in the order of awardee's name.
+-- CHANGED: This functionality is now handled by TradeUI, but is updated to still work
 function RCLootCouncilML:PrintAwardedInBags()
-	if not FindInTableIf(db.baggedItems, function(v) return v.winner end) then
+	local Items = addon.ItemStorage:GetAllItemsOfType("to_trade")
+	if #Items == 0 then
 		return addon:Print(L["No winners registered"])
 	end
 	addon:Print(L["Following winners was registered:"])
-	local sortedByWinner = tFilter(db.baggedItems, function(v) return v.winner end)
+	local sortedByWinner = tFilter(Items, function(v) return v.args.recipient end)
 	table.sort(sortedByWinner, function(a, b)
-		if a.winner == b.winner then
-			return a.addedTime < b.addedTime
+		if a.args.recipient == b.args.recipient then
+			return a.time_added < b.time_added
 		else
-			return a.winner < b.winner
+			return a.args.recipient < b.args.recipient
 		end
 	end)
 
 	for _, v in ipairs(sortedByWinner) do -- difference with :PrintItemsInBags is that the index is not printed.
-		addon:Print(v.link, "-->", v.winner and addon:GetUnitClassColoredName(v.winner) or L["Unawarded"],
-			format(GUILD_BANK_LOG_TIME, SecondsToTime(time(date("!*t"))-v.addedTime)) )
+		addon:Print(v.link, "-->", v.args.recipient and addon:GetUnitClassColoredName(v.args.recipient) or L["Unawarded"],
+			format(GUILD_BANK_LOG_TIME, SecondsToTime(time(date("!*t"))-v.time_added)) )
 	end
 end
 
@@ -333,23 +338,22 @@ function RCLootCouncilML:RemoveItemsInBags(...)
 			return tonumber(a) < tonumber(b)
 		end
 	end)
-
+	local Items = addon.ItemStorage:GetAllItemsOfType("award_later")
 	local removedEntries = {}
 	for i=#indexes, 1, -1 do
 		local index = tonumber(indexes[i])
-		if index and db.baggedItems[index] then
-			db.baggedItems[index].index = index
-			tinsert(removedEntries, 1, db.baggedItems[index])
-			tremove(db.baggedItems, index)
+		if index and Items[index] then
+			addon.ItemStorage:RemvoveItem(Items[index])
+			tinsert(removedEntries, 1, Items[index])
 		end
 	end
 	if #removedEntries == 0 then
 		addon:Print(L["No entry in the award later list is removed."])
 	else
 		addon:Print(L["The following entries are removed from the award later list:"])
-		for _, v in ipairs(removedEntries) do
-			addon:Print(v.index..". "..v.link, "-->", v.winner and addon:GetUnitClassColoredName(v.winner) or L["Unawarded"],
-				format(GUILD_BANK_LOG_TIME, SecondsToTime(time(date("!*t"))-v.addedTime)) )
+		for k, v in ipairs(removedEntries) do
+			addon:Print(k..". "..v.link, "-->", v.args.recipient and addon:GetUnitClassColoredName(v.args.recipient) or L["Unawarded"],
+				format(GUILD_BANK_LOG_TIME, SecondsToTime(time(date("!*t"))-v.time_added)) )
 		end
 	end
 end
@@ -358,52 +362,31 @@ end
 -- If yes, print the items to remind the user.
 local lastCheckItemsInBagsLowTradeTimeRemainingReminder = 0
 function RCLootCouncilML:ItemsInBagsLowTradeTimeRemainingReminder()
-	if GetTime() - lastCheckItemsInBagsLowTradeTimeRemainingReminder < 60 then -- Dont spam
+	if GetTime() - lastCheckItemsInBagsLowTradeTimeRemainingReminder < 120 then -- Dont spam
 		return
 	end
-
 	local checkedSlots = {}
 	local entriesToRemind = {}
 	local remindThreshold = 1200 -- 20min
-
-	for i, v in ipairs(db.baggedItems) do
-		local itemCounted = false
-		for container=0, NUM_BAG_SLOTS do
-			for slot=1, GetContainerNumSlots(container) or 0 do
-				if not (checkedSlots[container] and checkedSlots[container][slot]) then
-					local link = GetContainerItemLink(container, slot)
-					if link and addon:ItemIsItem(link, v.link) then
-						if not GetItemInfo(link) then -- Not cached
-							return self:ScheduleTimer("ItemsInBagsLowTradeTimeRemainingReminder", 2)
-						end
-						local remainingTime = addon:GetContainerItemTradeTimeRemaining(container, slot)
-						checkedSlots[container] = checkedSlots[container] or {}
-						checkedSlots[container][slot] = true
-						if remainingTime > 0 and remainingTime < remindThreshold then
-							itemCounted = true
-							local entry = CopyTable(v)
-							entry.remainingTime = remainingTime
-							entry.index = i
-							tinsert(entriesToRemind, entry)
-							break
-						end
-					end
-				end
-			end
-			if itemCounted then
-				break
-			end
+	local Items = addon.ItemStorage:GetAllItemsOfType("award_later")
+	local remaningTime = 0
+	for k, v in ipairs(Items) do
+		-- It should be precise enough to just check time_added + time_remaning
+		remaningTime = time() - v.time_added + v.time_remaning
+		if remaningTime > 0 and remaningTime < remindThreshold then
+			v.remainingTime = remaningTime
+			v.index = k
+			tinsert(entriesToRemind, v)
 		end
 	end
 
 	if #entriesToRemind > 0 then
 		addon:Print(format(L["item_in_bags_low_trade_time_remaining_reminder"], "|cffff0000"..SecondsToTime(remindThreshold).."|r"))
 		for _, v in ipairs(entriesToRemind) do
-			addon:Print(v.index..". "..v.link, "-->", v.winner and addon:GetUnitClassColoredName(v.winner) or L["Unawarded"],
+			addon:Print(v.index..". "..v.link, "-->", v.args.recipient and addon:GetUnitClassColoredName(v.args.recipient) or L["Unawarded"],
 				"(", _G.CLOSES_IN..":", SecondsToTime(v.remainingTime), ")")
 		end
 	end
-
 	lastCheckItemsInBagsLowTradeTimeRemainingReminder = GetTime()
 end
 
@@ -510,7 +493,7 @@ function RCLootCouncilML:NewML(newML)
 		self:ScheduleTimer("Timer", 10, "GroupUpdate")
 		self:ClearOldItemsInBags()
 
-		if #db.baggedItems > 0 then
+		if #addon.ItemStorage:GetAllItemsOfType("award_later") > 0 then
 			addon:Print(L["new_ml_bagged_items_reminder"])
 		end
 
@@ -973,8 +956,8 @@ local function registerAndAnnounceAward(session, winner, response, reason)
 	local self = RCLootCouncilML
 	local changeAward = self.lootTable[session].awarded
 	self.lootTable[session].awarded = winner
-	if self.lootTable[session].baggedEntry then
-		self.lootTable[session].baggedEntry.winner = winner
+	if self.lootTable[session].bagged then
+		addon.ItemStorage:RemoveItem(self.lootTable[session].bagged)
 	end
 	addon:SendCommand("group", "awarded", session, winner, self.lootTable[session].owner)
 
@@ -989,8 +972,7 @@ end
 
 local function registerAndAnnounceBagged(session)
 	local self = RCLootCouncilML
-	self.lootTable[session].baggedEntry = {link=self.lootTable[session].link, addedTime=time(date("!*t")), bop = addon:IsItemBoP(self.lootTable[session].link)}
-	tinsert(db.baggedItems, self.lootTable[session].baggedEntry)
+	local Item = addon.ItemStorage:StoreItem(self.lootTable[session].link, "award_later", {bop = addon:IsItemBoP(self.lootTable[session].link)})
 	if self.lootTable[session].lootSlot or self.running then -- Item is looted by ML, announce it.
 															-- Also announce if the item is awarded later in voting frame.
 		self:AnnounceAward(L["The loot master"], self.lootTable[session].link, L["Store in bag and award later"], nil, session)
@@ -998,9 +980,9 @@ local function registerAndAnnounceBagged(session)
 		addon:Print(format(L["'Item' is added to the award later list."], self.lootTable[session].link))
 	end
 	self.lootTable[session].lootSlot = nil  -- Now the item is bagged and no longer in the loot window.
-	self.lootTable[session].bagged = true
+	self.lootTable[session].bagged = Item
 	if self.running then -- Award later can be done when actually loot session hasn't been started yet.
-		self.lootTable[session].baggedInSession = true
+		self.lootTable[session].baggedInSession = true -- REVIEW This variable is never used?
 		addon:SendCommand("group", "bagged", session, addon.playerName)
 	end
 	return false
@@ -1048,8 +1030,7 @@ function RCLootCouncilML:Award(session, winner, response, reason, callback, ...)
 	end
 
 	-- For the rest, the item is not awarded.
-
-	if not self.lootTable[session].lootSlot and not self.lootTable[session].bagged then -- "/rc add" or test mode. Note that "/rc add" does't add the item to db.baggedItems unless award later is checked.
+	if not self.lootTable[session].lootSlot and not self.lootTable[session].bagged then -- "/rc add" or test mode. Note that "/rc add" does't add the item to ItemStorage unless award later is checked.
 		if winner then
 			awardSuccess(session, winner, addon.testMode and "test_mode" or "manually_added", callback, ...)
 			registerAndAnnounceAward(session, winner, response, reason)
