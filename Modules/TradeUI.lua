@@ -109,7 +109,7 @@ function TradeUI:OnEvent_TRADE_SHOW (event, ...)
 end
 
 function TradeUI:OnEvent_TRADE_CLOSED (event, ...)
-   self.isTrading = false 
+   self.isTrading = false
 end
 
 function TradeUI:OnEvent_TRADE_ACCEPT_UPDATE (event, ...) -- Record the item traded
@@ -126,7 +126,6 @@ end
 
 function TradeUI:OnEvent_UI_INFO_MESSAGE (event, ...)
    if select(1, ...) == _G.LE_GAME_ERR_TRADE_COMPLETE then -- Trade complete. Remove items from db.baggedItems if traded to winners
-      local tradedItemsInBag = {}
       addon:Debug("TradeUI: Traded item(s) to", self.tradeTarget)
       for _, link in ipairs(self.tradeItems) do
          addon.ItemStorage:RemoveItem(link)

@@ -18,7 +18,7 @@ Storage.AcceptedTypes = {
 
 local item_prototype = {
    type = "other", -- Default to unspecified
-   time_remaining = 0,
+   time_remaining = 0, -- NOTE For now I rely on this not being updated for timeout checks. It should be precise enough, but needs testing
    time_added = 0,
    link = "",
    args = {}, -- User args
@@ -30,8 +30,8 @@ local item_methods = {
    end,
 }
 -- lua
-local error, table, tostring, tinsert, tremove, type, select, FindInTableIf, GetTime, tFilter, setmetatable, CopyTable, tDeleteItem
-    = error, table, tostring, tinsert, tremove, type, select, FindInTableIf, GetTime, tFilter, setmetatable, CopyTable, tDeleteItem
+local error, table, tostring, tinsert, tremove, type, select, FindInTableIf, time, tFilter, setmetatable, CopyTable, tDeleteItem
+    = error, table, tostring, tinsert, tremove, type, select, FindInTableIf, time, tFilter, setmetatable, CopyTable, tDeleteItem
 
 -- GLOBALS: GetContainerNumSlots, GetContainerItemLink
 
@@ -61,7 +61,7 @@ local function newItem(link, type, time_remaining)
    Item.link = link
    Item.type = type and type or Item.type
    Item.time_remaining = time_remaining and time_remaining or Item.time_remaining
-   Item.time_added = GetTime()
+   Item.time_added = time()
    return Item
 end
 
@@ -119,6 +119,20 @@ function Storage:RemoveItem(item)
    addon:Debug("Error - Couldn't remove item")
 end
 
+--- Removes all items of a specific type
+-- @param type The type to remove - @see Storage.AcceptedTypes
+function Storage:RemoveAllItemsOfType(type)
+   type = type or "other"
+   -- Do it in reverse for speed
+   for i = #StoredItems, 1, -1 do
+      if StoredItems[i].type == type then
+         -- REVIEW Are we really guaranteed to have the same index in both tables?
+         tremove(StoredItems, i)
+         tremove(db.itemStorage)
+      end
+   end
+end
+
 --- Returns a numerical indexed table of all the stored items
 -- Note: Each value in this table is the item object itself.
 -- @return A copy of all stored items
@@ -131,7 +145,7 @@ end
 -- @return The Item object, or nil if not found
 function Storage:GetItem(item)
    if type(item) ~= "string" then return error("'item' is not a string/ItemLink", 2) end
-   return select(2, FindInTableIf(StoredItems, function(v) return v == item end))
+   return select(2, FindInTableIf(StoredItems, function(v) return addon:ItemIsItem(v.link, item) end))
 end
 
 --- Returns all stored Items of a specific type
@@ -142,7 +156,7 @@ function Storage:GetAllItemsOfType(type)
    return tFilter(StoredItems,
       function(v)
          return v.type == type
-      end)
+      end, true)
 end
 
 --- Returns all stored Items with less/equal time remaining
@@ -153,7 +167,7 @@ function Storage:GetAllItemsLessTimeRemaining(time)
    return tFilter(StoredItems,
       function(v)
          return v.time_remaining <= time
-      end)
+      end, true)
 end
 
 --- Returns all stored Items based on multiple predicates
@@ -167,7 +181,7 @@ function Storage:GetAllItemsMultiPred(...)
             if not select(i, vararg)(v) then return false end
          end
          return true
-      end)
+      end, true)
 end
 
 --- Returns Container and Slot ids of the item.
