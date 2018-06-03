@@ -19,6 +19,7 @@ local NUM_ROWS = 15;
 local db
 local session = 1 -- The session we're viewing - see :GetCurrentSession()
 local lootTable = {} -- Table containing all data, lib-st cells pulls data from this
+local oldLootTable = {}
 local sessionButtons = {}
 local moreInfo = false -- Show more info frame?
 local active = false -- Are we currently in session?
@@ -110,10 +111,16 @@ function RCVotingFrame:Show()
 	end
 end
 
-function RCVotingFrame:ReceiveLootTable(lootTable)
-	active = true
-	self:Setup(lootTable)
+function RCVotingFrame:ReceiveLootTable(lt)
 	if not addon.enabled then return end -- We just want things ready
+	if active then -- A session is already running, the lootTable contains additions
+		self:Setup(lt)
+	else
+		oldLootTable = lootTable
+		lootTable = lt
+		active = true
+		self:Setup(lootTable)
+	end
 	if db.autoOpen then
 		self:Show()
 	else
@@ -334,30 +341,32 @@ end
 
 function RCVotingFrame:Setup(table)
 	--lootTable[session] = {bagged, lootSlot, awarded, name, link, quality, ilvl, type, subType, equipLoc, texture, boe}
-	lootTable = table -- Extract all the data we get
-	for session, t in ipairs(lootTable) do -- and build the rest (candidates)
-		lootTable[session].haveVoted = false -- Have we voted for ANY candidate in this session?
-		t.candidates = {}
-		for name, v in pairs(addon.candidates) do
-			t.candidates[name] = {
-				class = v.class,
-				rank = v.rank,
-				role = v.role,
-				response = "ANNOUNCED",
-				ilvl = "",
-				diff = "",
-				gear1 = nil,
-				gear2 = nil,
-				votes = 0,
-				note = nil,
-				roll = nil,
-				voters = {},
-				haveVoted = false, -- Have we voted for this particular candidate in this session?
-			}
+	for session, t in ipairs(table) do -- and build the rest (candidates)
+		if not t.added then
+			t.added = true -- This entry has been initiated
+			t.haveVoted = false -- Have we voted for ANY candidate in this session?
+			t.candidates = {}
+			for name, v in pairs(addon.candidates) do
+				t.candidates[name] = {
+					class = v.class,
+					rank = v.rank,
+					role = v.role,
+					response = "ANNOUNCED",
+					ilvl = "",
+					diff = "",
+					gear1 = nil,
+					gear2 = nil,
+					votes = 0,
+					note = nil,
+					roll = nil,
+					voters = {},
+					haveVoted = false, -- Have we voted for this particular candidate in this session?
+				}
+			end
+			-- Init session toggle
+			sessionButtons[session] = self:UpdateSessionButton(session, t.texture, t.link, t.awarded)
+			sessionButtons[session]:Show()
 		end
-		-- Init session toggle
-		sessionButtons[session] = self:UpdateSessionButton(session, t.texture, t.link, t.awarded)
-		sessionButtons[session]:Show()
 	end
 	-- Hide unused session buttons
 	for i = #lootTable+1, #sessionButtons do
@@ -367,7 +376,7 @@ function RCVotingFrame:Setup(table)
 	self:BuildST()
 	self:SwitchSession(session)
 	if addon.isMasterLooter and db.autoAddRolls then
-		self:DoAllRandomRolls()
+		self:DoAllRandomRolls() -- REVIEW This will overwrite "old" entries if new entries are added
 	end
 end
 

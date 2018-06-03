@@ -88,24 +88,31 @@ function RCSessionFrame:ExtractData(data)
 	self.frame.rows = {}
 	-- And set the new
 	for k,v in ipairs(data) do
-		local bonusText = v.link and addon:GetItemBonusText(v.link, "\n ") or ""
-		if bonusText ~= "" then bonusText = "\n |cff33ff33"..bonusText end
-		self.frame.rows[k] = {
-			texture = v.texture or nil,
-			link = v.link,
-			owner = v.owner,
-			cols = {
-				{ DoCellUpdate = self.SetCellDeleteBtn, },
-				{ DoCellUpdate = self.SetCellItemIcon},
-				{ value = " "..(addon:GetItemLevelText(v.ilvl, v.token) or "")..bonusText},
-				{ DoCellUpdate = self.SetCellText },
-			},
-		}
+		if not v.isSent then -- Don't add items we've already started a session with
+			local bonusText = v.link and addon:GetItemBonusText(v.link, "\n ") or ""
+			if bonusText ~= "" then bonusText = "\n |cff33ff33"..bonusText end
+			self.frame.rows[k] = {
+				texture = v.texture or nil,
+				link = v.link,
+				owner = v.owner,
+				cols = {
+					{ DoCellUpdate = self.SetCellDeleteBtn, },
+					{ DoCellUpdate = self.SetCellItemIcon},
+					{ value = " "..(addon:GetItemLevelText(v.ilvl, v.token) or "")..bonusText},
+					{ DoCellUpdate = self.SetCellText },
+				},
+			}
+		end
 	end
 end
 
 function RCSessionFrame:Update()
 	self.frame.toggle:SetChecked(awardLater)
+	if ml.running then
+		self.frame.startBtn:SetText(_G.ADD)
+	else
+		self.frame.startBtn:SetText(_G.START)
+	end
 end
 
 function RCSessionFrame:DeleteItem(index)
@@ -192,8 +199,8 @@ function RCSessionFrame:GetFrame()
 				return addon:Debug("Data wasn't ready", addon.candidates[addon.playerName], #addon.council)
 			elseif InCombatLockdown() then
 				return addon:Print(L["You can't start a loot session while in combat."])
-			elseif ml.running then
-				return addon:Print(L["You're already running a session."])
+			--elseif ml.running then
+				--return addon:Print(L["You're already running a session."])
 			else
 				ml:StartSession()
 			end

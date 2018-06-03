@@ -108,6 +108,7 @@ function RCLootCouncilML:AddItem(item, bagged, slotIndex, owner, entry)
 	entry.lootSlot = slotIndex
 	entry.awarded = false
 	entry.owner = owner or addon.bossName
+	entry.isSent = false
 
 	local itemInfo = self:GetItemInfo(item)
 
@@ -133,6 +134,7 @@ function RCLootCouncilML:GetLootTableForTransmit()
 		v["typeID"] = nil
 		v["subTypeID"] = nil
 		v["bagged"] = nil -- Only ML needs this.
+		v.isSent = nil
 	end
 	return copy
 end
@@ -229,6 +231,9 @@ function RCLootCouncilML:StartSession()
 	end
 
 	addon:SendCommand("group", "lootTable", self:GetLootTableForTransmit())
+	for _, v in ipairs(self.lootTable) do
+		v.isSent = true
+	end
 
 	self:AnnounceItems(self.lootTable)
 
