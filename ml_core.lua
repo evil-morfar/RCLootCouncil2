@@ -249,9 +249,8 @@ function RCLootCouncilML:StartSession()
 	end
 end
 
-function RCLootCouncilML:AddUserItem(item)
-	if self.running then return addon:Print(L["You're already running a session."]) end
-	self:AddItem(item, false, nil, addon.playerName) -- The item is neither bagged nor in the loot slot.
+function RCLootCouncilML:AddUserItem(item, username)
+	self:AddItem(item, false, nil, username) -- The item is neither bagged nor in the loot slot.
 	addon:CallModule("sessionframe")
 	addon:GetActiveModule("sessionframe"):Show(self.lootTable)
 end
@@ -577,11 +576,12 @@ function RCLootCouncilML:OnCommReceived(prefix, serializedMsg, distri, sender)
 				if not db.autolootOthersBoE then return end -- Don't even bother
 				local item = unpack(data)
 				if db.handleLoot and item and GetItemInfoInstant(item) and IsInInstance() and (not addon:UnitIsUnit(sender, "player") or addon.lootMethod ~= "master") then
+					sender = addon:UnitName(sender)
 					addon:Debug("Receive info of tradable item: ", item, sender)
 				-- Only do stuff when we are handling loot and in instance.
 				-- For ML loot method, ourselve must be excluded because it should be handled in self:LootOpen()
 					if not GetItemInfo(item) then
-						addon:Debug("Receive info of tradable item but uncached: ", item, sender)
+						addon:Debug("Tradable item uncached: ", item, sender)
 						return self:ScheduleTimer("OnCommReceived", 1, prefix, serializedMsg, distri, sender)
 					end
 
@@ -590,7 +590,7 @@ function RCLootCouncilML:OnCommReceived(prefix, serializedMsg, distri, sender)
 
 					if (IsEquippableItem(item) or db.autolootEverything) and -- Safetee: I don't want to check db.autoloot here, because this is actually not a loot.
 						not self:IsItemIgnored(item) and -- Item mustn't be ignored
-						(quality and quality >= GetLootThreshold()) and
+						(quality and quality >= (GetLootThreshold() or 1)) and
 						(bindType and bindType ~= LE_ITEM_BIND_ON_ACQUIRE) then
 							-- Safetee: I actually prefer to use the term "non-bop" instead of "boe"
 							if InCombatLockdown() then
