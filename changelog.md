@@ -1,3 +1,15 @@
+### v2.8.0
+---
+* **TradeUI**
+* Items that need to be traded to someone else are now presented in a separate window.
+
+
+###### Dev
+* Removed `db.baggedItems`.
+* Added `RCLootCouncil.ItemStorage` for handling all items stored in bags. See file for documentation.
+* Added TradeUI for handling items that should be traded.
+* Changed `award` comm to include `owner` as the last argument.
+
 ### v2.7.10
 ---
 * Added "Pass" button to right click menu -> Change Response.
