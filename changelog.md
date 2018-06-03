@@ -3,6 +3,9 @@
 * **TradeUI**
 * Items that need to be traded to someone else are now presented in a separate window.
 
+* Item owners:
+* Session frame now shows the owner of a particular item.
+
 
 ###### Dev
 * Removed `db.baggedItems`.

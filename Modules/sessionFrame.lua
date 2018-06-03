@@ -20,6 +20,12 @@ local waitingToEndSessions = false  -- need some time to confirm the result of a
 									-- When user chooses to award later then quickly reopens the loot window when this variable is still true, dont show session frame.
 local scheduledToShowAgain = false       -- Have we scheduled to reshow the frame, due to a uncached item?
 
+--- Lua
+local getglobal, ipairs =
+		getglobal, ipairs
+
+-- GLOBALS: CreateFrame, IsModifiedClick, HandleModifiedItemClick, InCombatLockdown, _G
+
 function RCSessionFrame:OnInitialize()
 	self.scrollCols = {
 		{ name = "", width = 30}, 				-- remove item, sort by session number.
@@ -87,6 +93,7 @@ function RCSessionFrame:ExtractData(data)
 		self.frame.rows[k] = {
 			texture = v.texture or nil,
 			link = v.link,
+			owner = v.owner,
 			cols = {
 				{ DoCellUpdate = self.SetCellDeleteBtn, },
 				{ DoCellUpdate = self.SetCellItemIcon},
@@ -108,7 +115,7 @@ function RCSessionFrame:DeleteItem(index)
 end
 
 function RCSessionFrame.SetCellText(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
-	if frame.text:GetFontObject() ~= GameFontNormal then
+	if frame.text:GetFontObject() ~= _G.GameFontNormal then
 		frame.text:SetFontObject("GameFontNormal") -- We want bigger font
 	end
 	if not data[realrow].link then
@@ -119,7 +126,7 @@ function RCSessionFrame.SetCellText(rowFrame, frame, data, cols, row, realrow, c
 			RCSessionFrame:ScheduleTimer("Show", 0, ml.lootTable) -- Try again next frame
 		end
 	else
-		frame.text:SetText(data[realrow].link)
+		frame.text:SetText(data[realrow].link..(data[realrow].owner and addon.candidates[data[realrow].owner]) and "\n"..addon:GetUnitClassColoredName(data[realrow].owner) or "")
 	end
 end
 
