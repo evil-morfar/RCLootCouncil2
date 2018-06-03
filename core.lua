@@ -1938,7 +1938,7 @@ function RCLootCouncil:NewMLCheck()
 
 	-- We are ML and shouldn't ask the player for usage
 	if self.lootMethod == "master" and db.usage.ml then -- addon should auto start
-		self:StartHandleLoot()
+		self:StartHandleLoot("masterloot")
 	-- We're ML and must ask the player for usage
 	elseif self.lootMethod == "master" and db.usage.ask_ml then
 		return LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_USAGE")
@@ -1988,7 +1988,7 @@ function RCLootCouncil:OnRaidEnter(arg)
 		self.handleLoot = false -- Reset
 
 		if db.usage.leader then
-			self:StartHandleLoot()
+			self:StartHandleLoot("masterloot")
 		-- We must ask the player for usage
 		elseif db.usage.ask_leader then
 			return LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_USAGE")

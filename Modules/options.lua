@@ -424,9 +424,11 @@ function addon:OptionsTable()
 										width = "double",
 										values = {
 											ml 			= L["Always use RCLootCouncil when I'm Master Looter"],
-										--	leader 		= "Always use RCLootCouncil when I'm the group leader and enter a raid",
 											ask_ml		= L["Ask me every time I become Master Looter"],
+										--	leader 		= "Always use RCLootCouncil when I'm the group leader and enter a raid",
 										--	ask_leader	= "Ask me every time I'm the group leader and enter a raid",
+											pl				= L["Always use RCLootCouncil with Personal Loot"],
+											ask_pl		= L["Ask me every time Personal Loot is enabled"],
 											never			= L["Never use RCLootCouncil"],
 										},
 										set = function(_, key)
@@ -457,7 +459,7 @@ function addon:OptionsTable()
 											if self.db.profile.usage.ml then self.db.profile.usage.leader = val end
 											if self.db.profile.usage.ask_ml then self.db.profile.usage.ask_leader = val end
 										end,
-										disabled = function() return self.db.profile.usage.never end,
+										disabled = function() return self.db.profile.usage.never or self.db.profile.usage.pl or self.db.profile.usage.ask_pl end,
 									},
 									onlyUseInRaids = {
 										order = 4,
