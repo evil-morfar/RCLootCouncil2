@@ -36,6 +36,9 @@
 --@debug@
 --if LibDebug then LibDebug() end
 --@end-debug@
+
+-- GLOBALS: GetLootMethod, GetAddOnMetadata, UnitClass
+
 _G.RCLootCouncil = LibStub("AceAddon-3.0"):NewAddon("RCLootCouncil", "AceConsole-3.0", "AceEvent-3.0", "AceComm-3.0", "AceSerializer-3.0", "AceHook-3.0", "AceTimer-3.0");
 local LibDialog = LibStub("LibDialog-1.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
@@ -93,7 +96,7 @@ function RCLootCouncil:OnInitialize()
 	self.guildRank = L["Unguilded"]
 	self.isMasterLooter = false -- Are we the ML?
 	self.masterLooter = ""  -- Name of the ML
-	self.lootMethod = "personalloot"
+	self.lootMethod = GetLootMethod() or "personalloot"
 	self.handleLoot = false -- Does RC handle loot(Start session from loot window)?
 	self.isCouncil = false -- Are we in the Council?
 	self.enabled = true -- turn addon on/off
@@ -1942,25 +1945,33 @@ function RCLootCouncil:NewMLCheck()
 	end
 end
 
-function RCLootCouncil:StartHandleLoot()
-	if not self.isMasterLooter or db.usage.never then return end -- Someone else has become ML or we don't want to handle loot
+--- Enables the addon to automatically handle looting
+-- @param method The loot method. Pre BfA this will be either "masterloot" or "personalloot".
+-- REVIEW: This should only handle Personal Loot in BFA.
+function RCLootCouncil:StartHandleLoot(method)
+	--if not self.isMasterLooter or db.usage.never then return end -- Someone else has become ML or we don't want to handle loot
 	local lootMethod = GetLootMethod()
-	if lootMethod ~= "master" and not self:CanSetML() then return end -- Cant handle loot if we cant use ML loot method.
+	if method == "masterloot" then
+		if lootMethod ~= "master" and not self:CanSetML() then return end -- Cant handle loot if we cant use ML loot method.
+		if lootMethod ~= "master" then
+			SetLootMethod("master", self.Ambiguate(self.playerName)) -- activate ML
+			self:Print(L[" you are now the Master Looter and RCLootCouncil is now handling looting."])
+		else
+			self:Print(L["Now handles looting"])
+		end
 
-	self:Debug("Start handle loot.")
-	self.handleLoot = true
-	if lootMethod ~= "master" then
-		SetLootMethod("master", self.Ambiguate(self.playerName)) -- activate ML
-		self:Print(L[" you are now the Master Looter and RCLootCouncil is now handling looting."])
-	else
+		if db.autoAward and GetLootThreshold() ~= 2 and GetLootThreshold() > db.autoAwardLowerThreshold  then
+			self:Print(L["Changing loot threshold to enable Auto Awarding"])
+			SetLootThreshold(db.autoAwardLowerThreshold >= 2 and db.autoAwardLowerThreshold or 2)
+		end
+	else -- Personal Loot
+		if lootMethod ~= "personalloot" then -- Set it
+			SetLootMethod("personalloot")
+		end
 		self:Print(L["Now handles looting"])
 	end
-
-	if db.autoAward and GetLootThreshold() ~= 2 and GetLootThreshold() > db.autoAwardLowerThreshold  then
-		self:Print(L["Changing loot threshold to enable Auto Awarding"])
-		SetLootThreshold(db.autoAwardLowerThreshold >= 2 and db.autoAwardLowerThreshold or 2)
-	end
-
+	self:Debug("Start handle loot.")
+	self.handleLoot = true
 	if #db.council == 0 then -- if there's no council
 		self:Print(L["You haven't set a council! You can edit your council by typing '/rc council'"])
 	end
