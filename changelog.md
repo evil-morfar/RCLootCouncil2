@@ -1,16 +1,36 @@
 ### v2.8.0
 ---
+* **Personal Loot**
+* RCLootCouncil is now fully useable with Personal Loot (PL).
+* All features (except obviously automatic distribution) is available when using PL.
+* PL mode can be activated the same way ML mode is activated (popup in raid/group and/or through options).
+* When in PL mode, any tradeable items looted by any raider is automatically added to the session frame.
+* When items are awarded, players will need to trade the item to the winner, see below.
+* PL sessions still respects all loot/item settings such as autopass, filters etc.
+
+
 * **TradeUI**
 * Items that need to be traded to someone else are now presented in a separate window.
+* *TODO: Make it even easier by (semi) automatically open trade dialog.*
 
-* Item owners:
+
+* **Session additions**
+* Due to the nature of PL items not necessarily all dropping at once, items can now be added to a running session.
+* The MasterLooter/GroupLeader can simply add items through already available methods ('/rc add', alt-clicking or automatically).
+* Depending on settings, items are added to the session automatically, or to the session frame, and candidates are presented with the LootFrame for these items.
+* Due to internal restrictions, these items are not sorted if enabled.
+
+
+* **Item owners**
 * Session- and Voting frame now shows the owner of a particular item.
+* This info is also available for use in announcements.
 
 
 ###### Dev
 * Removed `db.baggedItems`.
 * Added `RCLootCouncil.ItemStorage` for handling all items stored in bags. See file for documentation.
 * Added TradeUI for handling items that should be traded.
+* Added comm `lt_add` to relay lootTable additions.
 * Changed `award` comm to include `owner` as the last argument.
 
 ### v2.7.10
