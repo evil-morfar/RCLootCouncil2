@@ -35,7 +35,8 @@ local error, table, tostring, tinsert, tremove, type, select, FindInTableIf, tim
 
 -- GLOBALS: GetContainerNumSlots, GetContainerItemLink
 
-do -- Extract items from our SV to
+function addon:InitItemStorage()-- Extract items from our SV. Could be more elegant
+   db = self:Getdb()
    for k, v in ipairs(db.itemStorage) do
       Storage:StoreItem(v.link, v.type, "restored", v)
    end

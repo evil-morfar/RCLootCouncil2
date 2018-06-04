@@ -105,7 +105,6 @@ function RCLootCouncil:OnInitialize()
 	self.currentInstanceName = ""
 	self.bossName = nil -- Updates after each encounter
 	self.recentTradableItem = nil -- The last tradeable item not below the loot threshold the player gets since the last encounter ends
-	self.itemsToTrade = {}	-- Items we need to trade. {item = "ItemLink", recepient = "PlayerName"}
 	self.lootOpen = false 	-- is the ML lootWindow open or closed?
 	self.lootSlotInfo = {}  -- Items' data currently in the loot slot. Need this because inside LOOT_SLOT_CLEARED handler, GetLootSlotLink() returns invalid link.
 
@@ -421,6 +420,7 @@ function RCLootCouncil:OnInitialize()
 	-- reset verTestCandidates
 	self.db.global.verTestCandidates = {}
 	self.playersData = playersData -- Make it globally available
+	self:InitItemStorage()
 	-- Add logged in message in the log
 	self:DebugLog("Logged In")
 end
