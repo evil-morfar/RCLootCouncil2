@@ -72,10 +72,10 @@ end
 -- @param type The storage type. Used for different handlers, @see Storage.AcceptedTypes
 -- @param ... Userdata stored in the returned 'Item.args'. Directly stored if provided as table, otherwise as '{...}'.
 -- @returns Item @see 'item_prototype' when the item is stored succesfully.
-function Storage:StoreItem(item, type, ...)
-   if not type then type = "other" end
-   if not self.AcceptedTypes[type] then error("Type: " .. tostring(type) .. " is not accepted. Accepted types are: " .. table.concat(self.AcceptedTypes, ", "),2) end
-   addon:Debug("Storage:StoreItem",item,type,...)
+function Storage:StoreItem(item, typex, ...)
+   if not typex then typex = "other" end
+   if not self.AcceptedTypes[typex] then error("Type: " .. tostring(typex) .. " is not accepted. Accepted types are: " .. table.concat(self.AcceptedTypes, ", "),2) end
+   addon:Debug("Storage:StoreItem",item,typex,...)
    local c,s = findItemInBags(item)
    if not (c and s) then
       -- IDEA Throw error?
@@ -83,7 +83,7 @@ function Storage:StoreItem(item, type, ...)
       return
    end
    local time_remaining = addon:GetContainerItemTradeTimeRemaining(c,s)
-   local Item = newItem(item, type, time_remaining)
+   local Item = newItem(item, typex, time_remaining)
    if select(1, ...) == "restored" then
       local OldItem = select(2, ...)
       Item.time_added = OldItem.time_added -- Restore original time added
