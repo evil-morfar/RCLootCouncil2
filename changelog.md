@@ -25,6 +25,9 @@
 * Session- and Voting frame now shows the owner of a particular item.
 * This info is also available for use in announcements.
 
+* **Discord export**
+* The Loot History can now be exported in a Discord friendly format.
+
 
 ###### Dev
 * Removed `db.baggedItems`.
