@@ -21,8 +21,8 @@ local waitingToEndSessions = false  -- need some time to confirm the result of a
 local scheduledToShowAgain = false       -- Have we scheduled to reshow the frame, due to a uncached item?
 
 --- Lua
-local getglobal, ipairs =
-		getglobal, ipairs
+local getglobal, ipairs, tinsert =
+		getglobal, ipairs, tinsert
 
 -- GLOBALS: CreateFrame, IsModifiedClick, HandleModifiedItemClick, InCombatLockdown, _G
 

@@ -30,10 +30,10 @@ local item_methods = {
    end,
 }
 -- lua
-local error, table, tostring, tinsert, tremove, type, select, FindInTableIf, time, tFilter, setmetatable, CopyTable, tDeleteItem
-    = error, table, tostring, tinsert, tremove, type, select, FindInTableIf, time, tFilter, setmetatable, CopyTable, tDeleteItem
+local error, table, tostring, tinsert, tremove, type, select, FindInTableIf, time, tFilter, setmetatable, CopyTable, tDeleteItem, ipairs
+    = error, table, tostring, tinsert, tremove, type, select, FindInTableIf, time, tFilter, setmetatable, CopyTable, tDeleteItem, ipairs
 
--- GLOBALS: GetContainerNumSlots, GetContainerItemLink
+-- GLOBALS: GetContainerNumSlots, GetContainerItemLink, _G
 
 function addon:InitItemStorage()-- Extract items from our SV. Could be more elegant
    db = self:Getdb()

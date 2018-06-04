@@ -23,6 +23,12 @@ local sessionsWaitingRollResultQueue = {}
 local ROLL_TIMEOUT = 1.5
 local ROLL_SHOW_RESULT_TIME = 1
 
+-- Lua
+local type, pairs, tinsert, ipairs, string, GetTime, math, ceil, tDeleteItem, next, error, tostring, setmetatable, tremove, format, tonumber =
+		type, pairs, tinsert, ipairs, string, GetTime, math, ceil, tDeleteItem, next, error, tostring, setmetatable, tremove, format, tonumber
+
+-- GLOBALS: CreateFrame, RandomRoll, _G, GameTooltip, IsModifiedClick, HandleModifiedItemClick, Ambiguate
+
 local RANDOM_ROLL_PATTERN = RANDOM_ROLL_RESULT
 RANDOM_ROLL_PATTERN = RANDOM_ROLL_PATTERN:gsub("[%(%)%-]", "%%%1")
 RANDOM_ROLL_PATTERN = RANDOM_ROLL_PATTERN:gsub("%%s", "%(%.%+%)")
@@ -346,7 +352,7 @@ do
 			entry.noteEditbox:SetBackdrop(LootFrame.frame.title:GetBackdrop())
 			entry.noteEditbox:SetBackdropColor(LootFrame.frame.title:GetBackdropColor())
 			entry.noteEditbox:SetBackdropBorderColor(LootFrame.frame.title:GetBackdropBorderColor())
-			entry.noteEditbox:SetFontObject(ChatFontNormal)
+			entry.noteEditbox:SetFontObject(_G.ChatFontNormal)
 			entry.noteEditbox:SetJustifyV("BOTTOM")
 			entry.noteEditbox:SetWidth(100)
 			entry.noteEditbox:SetHeight(24)
@@ -657,14 +663,14 @@ function LootFrame:CHAT_MSG_SYSTEM(event, msg)
 	local name, roll, low, high = string.match(msg, RANDOM_ROLL_PATTERN)
 	roll, low, high = tonumber(roll), tonumber(low), tonumber(high)
 
-	if name and low == 1 and high == 100 and UnitIsUnit(Ambiguate(name, "short"), "player") and sessionsWaitingRollResultQueue[1] then
+	if name and low == 1 and high == 100 and addon:UnitIsUnit(Ambiguate(name, "short"), "player") and sessionsWaitingRollResultQueue[1] then
 		local entryInQueue = sessionsWaitingRollResultQueue[1]
 		tremove(sessionsWaitingRollResultQueue, 1)
 		self:CancelTimer(entryInQueue.timer)
 		local entry = entryInQueue.entry
 		local item = entry.item
 		addon:SendCommand("group", "roll", addon.playerName, roll, item.sessions)
-		addon:SendAnnouncement(format(L["'player' has rolled 'roll' for: 'item'"], UnitName("player"), roll, item.link), "group")
+		addon:SendAnnouncement(format(L["'player' has rolled 'roll' for: 'item'"], addon.Ambiguate(addon.playerName), roll, item.link), "group")
 		entry.rollResult:SetText(roll)
 		entry.rollResult:Show()
 		self:ScheduleTimer("OnRollTimeout", ROLL_SHOW_RESULT_TIME, entryInQueue)
