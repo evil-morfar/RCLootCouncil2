@@ -602,7 +602,7 @@ function RCLootCouncil:ChatCommand(msg)
 			 	links = self:SplitItemLinks(args) -- Split item links to allow user to enter links without space
 			end
 			for _,v in ipairs(links) do
-			self:GetActiveModule("masterlooter"):AddUserItem(v)
+			self:GetActiveModule("masterlooter"):AddUserItem(v, self.playerName)
 			end
 		else
 			self:Print(L["You cannot use this command without being the Master Looter"])
@@ -867,6 +867,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 				self:DoAutoPasses(lootTable, oldLenght)
 				self:SendLootAck(lootTable, oldLenght)
 				-- NOTE: Somewhat of a hack, but has the desired effect. Could probably do with a dedicated function.
+				-- FIXME: This doesn't work if the candidate is already rolling for the original lootTable
 				for k,v in ipairs(lootTable) do
 					if k <= oldLenght then
 						v.autopass = true
