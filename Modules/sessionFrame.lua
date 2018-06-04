@@ -91,7 +91,8 @@ function RCSessionFrame:ExtractData(data)
 		if not v.isSent then -- Don't add items we've already started a session with
 			local bonusText = v.link and addon:GetItemBonusText(v.link, "\n ") or ""
 			if bonusText ~= "" then bonusText = "\n |cff33ff33"..bonusText end
-			self.frame.rows[k] = {
+			tinsert(self.frame.rows, {
+				session = k,
 				texture = v.texture or nil,
 				link = v.link,
 				owner = v.owner,
@@ -101,7 +102,7 @@ function RCSessionFrame:ExtractData(data)
 					{ value = " "..(addon:GetItemLevelText(v.ilvl, v.token) or "")..bonusText},
 					{ DoCellUpdate = self.SetCellText },
 				},
-			}
+			})
 		end
 	end
 end
@@ -115,9 +116,9 @@ function RCSessionFrame:Update()
 	end
 end
 
-function RCSessionFrame:DeleteItem(index)
-	addon:Debug("Delete row:", index)
-	ml:RemoveItem(index) -- remove the item from MLs lootTable
+function RCSessionFrame:DeleteItem(session, row)
+	addon:Debug("Delete row:", row, "Sesison:", session)
+	ml:RemoveItem(session) -- remove the item from MLs lootTable
 	self:Show(ml.lootTable)
 end
 
@@ -133,13 +134,13 @@ function RCSessionFrame.SetCellText(rowFrame, frame, data, cols, row, realrow, c
 			RCSessionFrame:ScheduleTimer("Show", 0, ml.lootTable) -- Try again next frame
 		end
 	else
-		frame.text:SetText(data[realrow].link..(data[realrow].owner and addon.candidates[data[realrow].owner]) and "\n"..addon:GetUnitClassColoredName(data[realrow].owner) or "")
+		frame.text:SetText(data[realrow].link..(data[realrow].owner and addon.candidates[data[realrow].owner] and "\n"..addon:GetUnitClassColoredName(data[realrow].owner) or ""))
 	end
 end
 
 function RCSessionFrame.SetCellDeleteBtn(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
 	frame:SetNormalTexture("Interface/BUTTONS/UI-GroupLoot-Pass-Up.png")
-	frame:SetScript("OnClick", function() RCSessionFrame:DeleteItem(realrow) end)
+	frame:SetScript("OnClick", function() RCSessionFrame:DeleteItem(data[realrow].session, realrow) end)
 	frame:SetSize(20,20)
 end
 
