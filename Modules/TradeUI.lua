@@ -48,7 +48,7 @@ function TradeUI:OnEnable()
    self:RegisterEvent("UI_INFO_MESSAGE", "OnEvent_UI_INFO_MESSAGE")
 end
 
-function TradeUI:OnDisable()
+function TradeUI:OnDisable() -- Shouldn't really happen
    addon:DebugLog("TradeUI disabled")
    self.frame:Hide()
 end
@@ -74,6 +74,7 @@ function TradeUI:Update()
       }
    end
    self.frame.st:SetData(self.frame.rows)
+   if #self.frame.rows == 0 then self.frame:Hide() end
 end
 
 function TradeUI:OnCommReceived(prefix, serializedMsg, distri, sender)
