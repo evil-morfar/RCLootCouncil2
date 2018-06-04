@@ -31,7 +31,7 @@ RANDOM_ROLL_PATTERN = RANDOM_ROLL_PATTERN:gsub("%%%d%$s", "%(%.%+%)") -- for "de
 RANDOM_ROLL_PATTERN = RANDOM_ROLL_PATTERN:gsub("%%%d%$d", "%(%%d+%)") -- for "deDE"
 
 function LootFrame:Start(table, reRoll)
-	addon:DebugLog("LootFrame:Start()")
+	addon:DebugLog("LootFrame:Start", #table, reRoll)
 
 	local offset = 0
 	if reRoll then
@@ -78,7 +78,6 @@ function LootFrame:Start(table, reRoll)
 			end
 		end
 	end
-
 	self:Show()
 end
 

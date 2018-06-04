@@ -224,17 +224,23 @@ function RCLootCouncilML:StartSession()
 		addon:Print(L["Please wait a few seconds until all data has been synchronized."])
 		return addon:Debug("Data wasn't ready", addon.candidates[addon.playerName], #addon.council)
 	end
-	self.running = true
 
-	if db.sortItems then
+
+	if db.sortItems and not self.running then
 		self:SortLootTable(self.lootTable)
 	end
-
-	addon:SendCommand("group", "lootTable", self:GetLootTableForTransmit())
+	if self.running then -- We're already running a sessions, so any new items needs to get added
+		-- REVIEW This is not optimal, but will be changed anyway with the planned comms changes for v3.0
+		--local count = 0
+		--for k,v in ipairs(self.lootTable) do if not v.isSent then count = count + 1 end end
+		addon:SendCommand("group", "lt_add", self:GetLootTableForTransmit())
+	else
+		addon:SendCommand("group", "lootTable", self:GetLootTableForTransmit())
+	end
 	for _, v in ipairs(self.lootTable) do
 		v.isSent = true
 	end
-
+	self.running = true
 	self:AnnounceItems(self.lootTable)
 
 	-- Print some help messages for not direct mode.

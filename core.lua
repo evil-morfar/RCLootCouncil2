@@ -859,6 +859,29 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 					self:Debug(tostring(sender).." is not ML, but sent lootTable!")
 				end
 
+			elseif command == "lt_add" and self:UnitIsUnit(sender, self.masterLooter) then
+				-- We can skip most of the normal lootTable checks since a session should running
+				local oldLenght = #lootTable
+self:Debug("lt_add", #lootTable, oldLenght)
+				lootTable = unpack(data)
+				self:Debug(lootTable)
+				self:Debug("lt_add", #lootTable, oldLenght)
+				self:PrepareLootTable(lootTable)
+				self:DoAutoPasses(lootTable, oldLenght)
+				self:SendLootAck(lootTable, oldLenght)
+				-- NOTE: Somewhat of a hack, but has the desired effect. Could probably do with a dedicated function.
+				for k,v in ipairs(lootTable) do
+					if k > oldLenght then
+						v.session = k
+					else
+						self:Debug("lt 'autopass' on", k)
+						v.autopass = true
+					end
+				end
+				self:CallModule("lootframe")
+				self:GetActiveModule("lootframe"):Start(lootTable)
+				-- VotingFrame handles this by itself.
+
 			elseif command == "candidates" and self:UnitIsUnit(sender, self.masterLooter) then
 				self.candidates = unpack(data)
 			elseif command == "council" and self:UnitIsUnit(sender, self.masterLooter) then -- only ML sends council
@@ -1500,33 +1523,43 @@ end
 -- Included is: specID and average ilvl is sent once.
 -- Currently equipped gear and "diff" is sent for each session.
 -- Autopass response is sent if the session has been autopassed. No other response is sent.
-function RCLootCouncil:SendLootAck(table)
+-- @param skip Only sends lootAcks on sessions > skip or 0
+function RCLootCouncil:SendLootAck(table, skip)
 	local toSend = {gear1 = {}, gear2 = {}, diff = {}, response = {}}
+	local hasData = false
 	for k, v in ipairs(table) do
 		local session = v.session or k
-		local g1,g2 = self:GetGear(v.link, v.equipLoc, v.relic)
-		local diff = self:GetDiff(g1, g2, v.ilvl)
-		toSend.gear1[session] = self:GetItemStringFromLink(g1)
-		toSend.gear2[session] = self:GetItemStringFromLink(g2)
-		toSend.diff[session] = diff
-		toSend.response[session] = v.autopass
+		if session > (skip or 0) then
+			hasData = true
+			local g1,g2 = self:GetGear(v.link, v.equipLoc, v.relic)
+			local diff = self:GetDiff(g1, g2, v.ilvl)
+			toSend.gear1[session] = self:GetItemStringFromLink(g1)
+			toSend.gear2[session] = self:GetItemStringFromLink(g2)
+			toSend.diff[session] = diff
+			toSend.response[session] = v.autopass
+		end
 	end
-	self:SendCommand("group", "lootAck", self.playerName, playersData.specID, playersData.ilvl, toSend)
+	if hasData then
+		self:SendCommand("group", "lootAck", self.playerName, playersData.specID, playersData.ilvl, toSend)
+	end
 end
 
 -- Sets lootTable[session].autopass = true if an autopass occurs, and informs the user of the change
-function RCLootCouncil:DoAutoPasses(table)
+-- @param skip Will only auto pass sessions > skip or 0
+function RCLootCouncil:DoAutoPasses(table, skip)
 	for k,v in ipairs(table) do
 		local session = v.session or k
-		if db.autoPass and not v.noAutopass then
-			if (v.boe and db.autoPassBoE) or not v.boe then
-				if self:AutoPassCheck(v.link, v.equipLoc, v.typeID, v.subTypeID, v.classes, v.token, v.relic) then
-					self:Debug("Autopassed on: ", v.link)
-					if not db.silentAutoPass then self:Print(format(L["Autopassed on 'item'"], v.link)) end
-					v.autopass = true
+		if session > (skip or 0) then
+			if db.autoPass and not v.noAutopass then
+				if (v.boe and db.autoPassBoE) or not v.boe then
+					if self:AutoPassCheck(v.link, v.equipLoc, v.typeID, v.subTypeID, v.classes, v.token, v.relic) then
+						self:Debug("Autopassed on: ", v.link)
+						if not db.silentAutoPass then self:Print(format(L["Autopassed on 'item'"], v.link)) end
+						v.autopass = true
+					end
+				else
+					self:Debug("Didn't autopass on: "..v.link.." because it's BoE!")
 				end
-			else
-				self:Debug("Didn't autopass on: "..v.link.." because it's BoE!")
 			end
 		end
 	end
