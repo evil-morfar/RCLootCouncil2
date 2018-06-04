@@ -94,7 +94,7 @@ end
 -- @param owner The owner of the item (if any). Defaults to 'BossName'.
 -- @param entry Used to set data in a specific lootTable entry.
 function RCLootCouncilML:AddItem(item, bagged, slotIndex, owner, entry)
-	addon:DebugLog("ML:AddItem", item, baggedEntry, slotIndex, entry)
+	addon:DebugLog("ML:AddItem", item, bagged, slotIndex, entry)
 	if type(item) == "string" and item:find("|Hcurrency") then return end -- Ignore "Currency" item links
 
 	if not entry then
@@ -573,37 +573,37 @@ function RCLootCouncilML:OnCommReceived(prefix, serializedMsg, distri, sender)
 				self:ScheduleTimer("Timer", 11 + 0.5*#self.lootTable, "LootSend")
 
 			elseif command == "tradable" then -- Raid members send the info of the tradable item he looted.
-				if not db.autolootOthersBoE then return end -- Don't even bother
-				local item = unpack(data)
-				if db.handleLoot and item and GetItemInfoInstant(item) and IsInInstance() and (not addon:UnitIsUnit(sender, "player") or addon.lootMethod ~= "master") then
-					sender = addon:UnitName(sender)
-					addon:Debug("Receive info of tradable item: ", item, sender)
-				-- Only do stuff when we are handling loot and in instance.
-				-- For ML loot method, ourselve must be excluded because it should be handled in self:LootOpen()
-					if not GetItemInfo(item) then
-						addon:Debug("Tradable item uncached: ", item, sender)
-						return self:ScheduleTimer("OnCommReceived", 1, prefix, serializedMsg, distri, sender)
-					end
-
-					local bindType = select(14, GetItemInfo(item))
-					local quality = select(3, GetItemInfo(item))
-
-					if (IsEquippableItem(item) or db.autolootEverything) and -- Safetee: I don't want to check db.autoloot here, because this is actually not a loot.
-						not self:IsItemIgnored(item) and -- Item mustn't be ignored
-						(quality and quality >= (GetLootThreshold() or 1)) and
-						(bindType and bindType ~= LE_ITEM_BIND_ON_ACQUIRE) then
-							-- Safetee: I actually prefer to use the term "non-bop" instead of "boe"
-							if InCombatLockdown() then
-								addon:Print(format(L["autoloot_others_item_combat"], addon:GetUnitClassColoredName(sender), item))
-								tinsert(self.combatQueue, {self.AddUserItem, self, item, sender}) -- Run the function when combat ends
-							else
-								self:AddUserItem(item, sender)
-							end
-					end
-				end
+				self:HandleReceivedTradeable(unpack(data), sender)
 			end
 		else
 			addon:Debug("Error in deserializing ML comm: ", command)
+		end
+	end
+end
+
+function RCLootCouncilML:HandleReceivedTradeable (item, sender)
+	if not (addon.handleLoot and item and item ~= "") then return end -- Auto fail criterias
+	if not GetItemInfo(item) then
+		addon:Debug("Tradable item uncached: ", item, sender)
+		return self:ScheduleTimer("HandleReceivedTradeable", 1, item, sender)
+	end
+	sender = addon:UnitName(sender)
+	addon:Debug("ML:HandleReceivedTradeable", item, sender)
+
+	-- For ML loot method, ourselve must be excluded because it should be handled in self:LootOpen()
+	if not addon:UnitIsUnit(sender, "player") or addon.lootMethod ~= "master" then
+		local quality = select(3, GetItemInfo(item))
+
+		if	(db.autolootOthersBoE and addon:IsItemBoE(item)) or -- BoE
+		 	(IsEquippableItem(item) or db.autolootEverything) and -- Safetee: I don't want to check db.autoloot here, because this is actually not a loot.
+			not self:IsItemIgnored(item) and -- Item mustn't be ignored
+			(quality and quality >= (GetLootThreshold() or 1))  then
+				if InCombatLockdown() then
+					addon:Print(format(L["autoloot_others_item_combat"], addon:GetUnitClassColoredName(sender), item))
+					tinsert(self.combatQueue, {self.AddUserItem, self, item, sender}) -- Run the function when combat ends
+				else
+					self:AddUserItem(item, sender)
+				end
 		end
 	end
 end
