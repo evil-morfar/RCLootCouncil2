@@ -862,19 +862,13 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 			elseif command == "lt_add" and self:UnitIsUnit(sender, self.masterLooter) then
 				-- We can skip most of the normal lootTable checks since a session should running
 				local oldLenght = #lootTable
-self:Debug("lt_add", #lootTable, oldLenght)
 				lootTable = unpack(data)
-				self:Debug(lootTable)
-				self:Debug("lt_add", #lootTable, oldLenght)
 				self:PrepareLootTable(lootTable)
 				self:DoAutoPasses(lootTable, oldLenght)
 				self:SendLootAck(lootTable, oldLenght)
 				-- NOTE: Somewhat of a hack, but has the desired effect. Could probably do with a dedicated function.
 				for k,v in ipairs(lootTable) do
-					if k > oldLenght then
-						v.session = k
-					else
-						self:Debug("lt 'autopass' on", k)
+					if k <= oldLenght then
 						v.autopass = true
 					end
 				end
