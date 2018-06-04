@@ -57,7 +57,10 @@ function RCSessionFrame:Show(data, disableAwardLater)
 
 	if data then
 		loadingItems = false
-		if addon:Getdb().sortItems then
+		if addon:Getdb().sortItems and not ml.running then
+			-- FIXME Sorting after adding new items will screw up the original session order.
+			-- Either don't sort (as now) or we would need something to track the sessions of items
+			-- that's already in a running session.
 			ml:SortLootTable(data)
 		end
 		self:ExtractData(data)
