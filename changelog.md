@@ -2,6 +2,7 @@
 ---
 ###### Bugfixes
 * *Fixed an issue with out of instance checks (#340).*
+* *Fixed an issue sometimes happening on login due to version checks (#341).*
 
 ### v2.7.10
 ---
