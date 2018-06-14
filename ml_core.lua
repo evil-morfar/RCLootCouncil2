@@ -897,7 +897,7 @@ function RCLootCouncilML:CanGiveLoot(slot, item, winner)
 		   return false, "ml_not_in_instance" -- ML leaves the instance during a RC session.
 		end
 
-		if select(4, UnitPosition(winner)) ~= select(4, UnitPosition("player")) then
+		if select(4, UnitPosition(Ambiguate(winner, "short"))) ~= select(4, UnitPosition("player")) then
 		  return false, "out_of_instance" -- Winner not in the same instance as ML
 		end
 

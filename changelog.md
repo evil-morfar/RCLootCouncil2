@@ -1,3 +1,8 @@
+### v2.7.11
+---
+###### Bugfixes
+* *Fixed an issue with out of instance checks (#340).*
+
 ### v2.7.10
 ---
 * Added "Pass" button to right click menu -> Change Response.
