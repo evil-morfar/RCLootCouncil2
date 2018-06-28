@@ -36,6 +36,12 @@
 * Added comm `lt_add` to relay lootTable additions.
 * Changed `award` comm to include `owner` as the last argument.
 
+### v2.7.11
+---
+###### Bugfixes
+* *Fixed an issue with out of instance checks (#340).*
+* *Fixed an issue sometimes happening on login due to version checks (#341).*
+
 ### v2.7.10
 ---
 * Added "Pass" button to right click menu -> Change Response.
