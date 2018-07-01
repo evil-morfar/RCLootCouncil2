@@ -427,6 +427,7 @@ L["Tier tokens received from here:"] = true
 L["Time"] = true
 L["Timeout"] = true
 L["Timeout when giving 'item' to 'player'"] = "Timeout when giving %s to %s"
+L["time_remaining_warning"] = "Warning - The following items in your bags cannot be traded in less than %d minutes:"
 L["Tokens received"] = true
 L["To target"] = true
 L["Total awards"] = true

@@ -8,7 +8,7 @@ if LibDebug then LibDebug() end
 --@end-debug@
 
 local addon = LibStub("AceAddon-3.0"):GetAddon("RCLootCouncil")
-local TradeUI = addon:NewModule("RCTradeUI", "AceComm-3.0", "AceEvent-3.0")
+local TradeUI = addon:NewModule("RCTradeUI", "AceComm-3.0", "AceEvent-3.0", "AceTimer-3.0")
 addon.TradeUI = TradeUI -- Shorthand for easier access
 local ST = LibStub("ScrollingTable")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
@@ -17,6 +17,9 @@ local _G = _G
 
 local ROW_HEIGHT = 30
 local db
+local timer
+local TIME_REMAINING_INTERVAL = 300 -- 5 min
+local TIME_REMAINING_WARNING = 1200 -- 20 min
 
 -- lua
 local select, GetItemInfoInstant, ipairs,  unpack, tinsert, wipe, tremove, format, table, GetTime
@@ -46,6 +49,8 @@ function TradeUI:OnEnable()
    self:RegisterEvent("TRADE_CLOSED", "OnEvent_TRADE_CLOSED")
    self:RegisterEvent("TRADE_ACCEPT_UPDATE", "OnEvent_TRADE_ACCEPT_UPDATE")
    self:RegisterEvent("UI_INFO_MESSAGE", "OnEvent_UI_INFO_MESSAGE")
+   self:CheckTimeRemaining()
+   timer = self:ScheduleRepeatingTimer("CheckTimeRemaining", TIME_REMAINING_INTERVAL)
 end
 
 function TradeUI:OnDisable() -- Shouldn't really happen
@@ -89,6 +94,18 @@ function TradeUI:OnCommReceived(prefix, serializedMsg, distri, sender)
             end
             self:Show()
          end
+      end
+   end
+end
+
+function TradeUI:CheckTimeRemaining()
+   -- This will handle all items in ItemStorage, not just to_trade.
+   -- It might as well since it's always runnning, although I might change that if need be.
+   local Items = addon.ItemStorage:GetAllItemsLessTimeRemaining(TIME_REMAINING_WARNING)
+   if Items then
+      addon:Print(format(L["time_remaining_warning"], TIME_REMAINING_WARNING))
+      for Item in pairs(Items) do
+         addon:Print(Item)
       end
    end
 end
