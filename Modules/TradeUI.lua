@@ -56,7 +56,6 @@ end
 function TradeUI:Show()
    self.frame = self:GetFrame()
    self:Update()
-   self.frame:Show()
 end
 
 function TradeUI:Update()
@@ -74,7 +73,7 @@ function TradeUI:Update()
       }
    end
    self.frame.st:SetData(self.frame.rows)
-   if #self.frame.rows == 0 then self.frame:Hide() end
+   if #self.frame.rows == 0 then self.frame:Hide() else self.frame:Show() end
 end
 
 function TradeUI:OnCommReceived(prefix, serializedMsg, distri, sender)
@@ -85,7 +84,9 @@ function TradeUI:OnCommReceived(prefix, serializedMsg, distri, sender)
          local session, winner, trader = unpack(data)
          if addon:UnitIsUnit(trader, "player") then
             -- We should give our item to 'winner'
-            addon.ItemStorage:StoreItem(addon:GetLootTable()[session].link, "to_trade", {recipient = winner})
+            if not addon:UnitIsUnit(winner, "player") or (addon.testMode or addon.nnp) then -- Don't add ourself unless we're testing
+               addon.ItemStorage:StoreItem(addon:GetLootTable()[session].link, "to_trade", {recipient = winner})
+            end
             self:Show()
          end
       end
