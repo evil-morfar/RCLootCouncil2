@@ -670,6 +670,9 @@ function RCLootCouncil:ChatCommand(msg)
 		self:UpdateLootHistory()
 	elseif input == "sync" then
 		self.Sync:Spawn()
+
+	elseif input == "trade" then
+		self.TradeUI:Show()
 --@debug@
 	elseif input == 't' then -- Tester cmd
 		-- Test items with several modifiers. Should probably be added to the regular test func
