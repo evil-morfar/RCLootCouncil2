@@ -103,10 +103,16 @@ function TradeUI:CheckTimeRemaining()
    -- This will handle all items in ItemStorage, not just to_trade.
    -- It might as well since it's always runnning, although I might change that if need be.
    local Items = addon.ItemStorage:GetAllItemsLessTimeRemaining(TIME_REMAINING_WARNING)
-   if Items then
-      addon:Print(format(L["time_remaining_warning"], TIME_REMAINING_WARNING))
-      for Item in pairs(Items) do
-         addon:Print(Item)
+   if #Items > 0 then
+      addon:Print(format(L["time_remaining_warning"], TIME_REMAINING_WARNING/60))
+      for i, Item in pairs(Items) do
+         addon:Print(i, Item)
+      end
+      for i, Item in pairs(Items) do
+         if Item.time_remaining <= 0 then
+            addon:DebugLog("TradeUI - removed", Item, "due to <= 0 time remaining")
+            addon.ItemStorage:RemoveItem(Item)
+         end
       end
    end
 end

@@ -68,7 +68,12 @@ local function findItemInBags(link)
 end
 
 local function newItem(link, type, time_remaining)
-   local Item = setmetatable({}, item_prototype)
+   local Item = setmetatable({}, {
+      __index = item_prototype,
+      __tostring = function(self)
+         return self.link
+      end,
+   })
    Item.link = link
    Item.type = type and type or Item.type
    Item.time_remaining = time_remaining and time_remaining or Item.time_remaining
