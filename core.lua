@@ -89,7 +89,7 @@ function RCLootCouncil:OnInitialize()
 	--IDEA Consider if we want everything on self, or just whatever modules could need.
   	self.version = GetAddOnMetadata("RCLootCouncil", "Version")
 	self.nnp = false
-	self.debug = false
+	self.debug = true
 	self.tVersion = "Alpha-2" -- String or nil. Indicates test version, which alters stuff like version check. Is appended to 'version', i.e. "version-tVersion" (max 10 letters for stupid security)
 
 	self.playerClass = select(2, UnitClass("player"))
@@ -672,7 +672,7 @@ function RCLootCouncil:ChatCommand(msg)
 		self.Sync:Spawn()
 
 	elseif input == "trade" then
-		self.TradeUI:Show()
+		self.TradeUI:Show(true)
 --@debug@
 	elseif input == 't' then -- Tester cmd
 		-- Test items with several modifiers. Should probably be added to the regular test func
@@ -865,19 +865,20 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 			elseif command == "lt_add" and self:UnitIsUnit(sender, self.masterLooter) then
 				-- We can skip most of the normal lootTable checks since a session should running
 				local oldLenght = #lootTable
-				lootTable = unpack(data)
+				self:Debug("lt_add - old lootTable lenght:", #lootTable)
+				for k,v in pairs(unpack(data)) do
+					lootTable[k] = v
+					self:Debug("lt_add - adding ", k, "new lenght is", #lootTable)
+				end
+				-- REVIEW This runs over the entire lootTable again, but will probably need changing anyway in v3.0
 				self:PrepareLootTable(lootTable)
 				self:DoAutoPasses(lootTable, oldLenght)
 				self:SendLootAck(lootTable, oldLenght)
-				-- NOTE: Somewhat of a hack, but has the desired effect. Could probably do with a dedicated function.
-				-- FIXME: This doesn't work if the candidate is already rolling for the original lootTable
 				for k,v in ipairs(lootTable) do
-					if k <= oldLenght then
-						v.autopass = true
+					if k > oldLenght then
+						self:GetActiveModule("lootframe"):AddSingleItem(v)
 					end
 				end
-				self:CallModule("lootframe")
-				self:GetActiveModule("lootframe"):Start(lootTable)
 				-- VotingFrame handles this by itself.
 
 			elseif command == "candidates" and self:UnitIsUnit(sender, self.masterLooter) then
@@ -1507,6 +1508,7 @@ function RCLootCouncil:PrepareLootTable(lootTable)
 		v.texture = texture
 		v.typeID = typeID
 		v.subTypeID = subTypeID
+		v.session = ses
 		if not v.classes then -- We didn't receive "classes", because ML is using an old version. Generate it from token data.
 			if RCTokenClasses and RCTokenClasses[self:GetItemIDFromLink(v.link)] then
 				v.classes = 0

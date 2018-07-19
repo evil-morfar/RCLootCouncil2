@@ -52,7 +52,7 @@ local function addItem (offset, k, item, reRoll)
 		isTier = item.token,
 		isRelic = item.relic,
 		classes = item.classes,
-		sessions = {reRoll and item.session or item.session or k}, -- ".session" does not exist if not rerolling.
+		sessions = {item.session},
 		isRoll = item.isRoll,
 	}
 end

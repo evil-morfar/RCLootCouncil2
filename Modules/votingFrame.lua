@@ -297,10 +297,9 @@ function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
 				self:UpdatePeopleToVote()
 
 			elseif command == "lt_add" and addon:UnitIsUnit(sender, addon.masterLooter) then
-				local new_lt = unpack(data)
-				for i = #lootTable + 1, #new_lt do
-					lootTable[i] = new_lt[i]
-					self:SetupSession(i, lootTable[i])
+				for k,v in pairs(unpack(data)) do
+					lootTable[k] = v
+					self:SetupSession(k, v)
 					if addon.isMasterLooter and db.autoAddRolls then
 						self:DoAllRandomRolls() -- REVIEW This will overwrite "old" entries if new entries are added
 					end
