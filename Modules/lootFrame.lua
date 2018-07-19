@@ -36,6 +36,41 @@ RANDOM_ROLL_PATTERN = RANDOM_ROLL_PATTERN:gsub("%%d", "%(%%d+%)")
 RANDOM_ROLL_PATTERN = RANDOM_ROLL_PATTERN:gsub("%%%d%$s", "%(%.%+%)") -- for "deDE"
 RANDOM_ROLL_PATTERN = RANDOM_ROLL_PATTERN:gsub("%%%d%$d", "%(%%d+%)") -- for "deDE"
 
+local function addItem (offset, k, item, reRoll)
+	items[offset+k] = {
+	--	name = table[k].name,
+		link = item.link,
+		ilvl = item.ilvl,
+		texture = item.texture,
+		rolled = false,
+		note = nil,
+		equipLoc = item.equipLoc,
+		timeLeft = addon.mldb.timeout,
+		subType = item.subType,
+		typeID = item.typeID,
+		subTypeID = item.subTypeID,
+		isTier = item.token,
+		isRelic = item.relic,
+		classes = item.classes,
+		sessions = {reRoll and item.session or item.session or k}, -- ".session" does not exist if not rerolling.
+		isRoll = item.isRoll,
+	}
+end
+
+local function checkDuplicates (lenght, offset)
+	for k = offset+1, offset + lenght do -- Only check the entries we added just now.
+		if not items[k].rolled then
+			for j = offset+1, offset + lenght do
+				if j ~= k and addon:ItemIsItem(items[k].link, items[j].link) and not items[j].rolled then
+					tinsert(items[k].sessions, items[j].sessions[1])
+					items[j].rolled = true -- Pretend we have rolled it.
+					numRolled = numRolled + 1
+				end
+			end
+		end
+	end
+end
+
 function LootFrame:Start(table, reRoll)
 	addon:DebugLog("LootFrame:Start", #table, reRoll)
 
@@ -52,39 +87,23 @@ function LootFrame:Start(table, reRoll)
 			items[offset+k] = { rolled = true} -- it's autopassed, so pretend we rolled it
 			numRolled = numRolled + 1
 		else
-			items[offset+k] = {
-			--	name = table[k].name,
-				link = table[k].link,
-				ilvl = table[k].ilvl,
-				texture = table[k].texture,
-				rolled = false,
-				note = nil,
-				equipLoc = table[k].equipLoc,
-				timeLeft = addon.mldb.timeout,
-				subType = table[k].subType,
-				typeID = table[k].typeID,
-				subTypeID = table[k].subTypeID,
-				isTier = table[k].token,
-				isRelic = table[k].relic,
-				classes = table[k].classes,
-				sessions = {reRoll and table[k].session or k}, -- ".session" does not exist if not rerolling.
-				isRoll = table[k].isRoll,
-			}
+			addItem(offset, k, table[k], reRoll)
 		end
 	end
 
-	for k = offset+1, offset+#table do -- Only check the entries we added just now.
-		if not items[k].rolled then
-			for j = offset+1, offset+#table do
-				if j ~= k and addon:ItemIsItem(items[k].link, items[j].link) and not items[j].rolled then
-					tinsert(items[k].sessions, items[j].sessions[1])
-					items[j].rolled = true -- Pretend we have rolled it.
-					numRolled = numRolled + 1
-				end
-			end
-		end
-	end
+	checkDuplicates(#table, offset)
 	self:Show()
+end
+
+function LootFrame:AddSingleItem(item)
+	addon:DebugLog("LootFrame:AddSingleItem", item.link, #items)
+	if item.autopass then
+		items[#items+1] = { rolled = true}
+	else
+		addItem(0, #items + 1, item)
+		-- REVIEW Consider duplicates? It doesn't really work in it's current form here.
+		self:Show()
+	end
 end
 
 function LootFrame:ReRoll(table)
