@@ -1891,6 +1891,7 @@ function RCLootCouncil:OnEvent(event, ...)
 						quantity = quantity,
 						quality = quality,
 						locked = locked,
+						guid = (GetLootSourceInfo(i)), -- Boss GUID 
 					}
 				else -- It's possible that item in the loot window is uncached. Retry in the next frame.
 					self:Debug("Loot uncached when the loot window is opened. Retry in the next frame.", link)
