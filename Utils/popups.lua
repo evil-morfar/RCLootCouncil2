@@ -17,14 +17,8 @@ LibDialog:Register("RCLOOTCOUNCIL_CONFIRM_USAGE", {
       self:SetFrameStrata("FULLSCREEN")
    end,
    buttons = {
-      {	text = L["Yes, use Master Looter"],
-         on_click = function()
-            addon:DebugLog("Player confirmed usage, Master Loot")
-            addon:StartHandleLoot("masterloot")
-         end,
-      },
       {
-         text = L["Yes, use Personal Loot"],
+         text = _G.YES,
          on_click = function()
             addon:DebugLog("Player confirmed usage, Personal Loot")
             addon:StartHandleLoot("personalloot")

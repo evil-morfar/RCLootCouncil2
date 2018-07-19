@@ -37,6 +37,7 @@
 * Added TradeUI for handling items that should be traded.
 * Added comm `lt_add` to relay lootTable additions.
 * Changed `award` comm to include `owner` as the last argument.
+* Removed Master Loot (loot method) related stuff.
 
 ### v2.7.11
 ---

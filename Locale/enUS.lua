@@ -467,15 +467,12 @@ L["Windows reset"] = true
 L["winners"] = true
 L["x days"] = "%d days"
 L["x out of x have voted"] = "%d out of %d have voted"
-L["Yes, use Personal Loot"] = true
-L["Yes, use Master Looter"] = true
 L["You are not allowed to see the Voting Frame right now."] = true
 L["You are not in an instance"] = true
 L["You can only auto award items with a quality lower than 'quality' to yourself due to Blizaard restrictions"] = "You can only auto award items with a quality lower than %s to yourself due to Blizzard restrictions"
 L["You cannot start an empty session."] = true
 L["You can't start a loot session while in combat."] = true
 L["You can't start a session before all items are loaded!"] = true
-L["You cannot initiate a test while in a group without being the MasterLooter."] = true
 L["You cannot use the menu when the session has ended."] = true
 L["You cannot use this command without being the Master Looter"] = true
 L["You haven't selected an award reason to use for disenchanting!"] = true
@@ -483,3 +480,5 @@ L["You haven't set a council! You can edit your council by typing '/rc council'"
 L["You must select a target"] = true
 L["You're already running a session."] = true
 L["Your note:"] = true
+
+L["error_test_as_non_leader"] = "You cannot initiate a test while in a group without being the group leader."

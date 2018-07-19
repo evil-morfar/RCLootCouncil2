@@ -423,8 +423,8 @@ function addon:OptionsTable()
 										type = "select",
 										width = "double",
 										values = {
-											ml 			= L["Always use RCLootCouncil when I'm Master Looter"],
-											ask_ml		= L["Ask me every time I become Master Looter"],
+										--	ml 			= L["Always use RCLootCouncil when I'm Master Looter"],
+										--	ask_ml		= L["Ask me every time I become Master Looter"],
 										--	leader 		= "Always use RCLootCouncil when I'm the group leader and enter a raid",
 										--	ask_leader	= "Ask me every time I'm the group leader and enter a raid",
 											pl				= L["Always use RCLootCouncil with Personal Loot"],
