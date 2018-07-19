@@ -130,11 +130,13 @@ end
 function RCLootCouncilML:GetLootTableForTransmit()
 	local copy = CopyTable(self.lootTable)
 	for k, v in pairs(copy) do
-		v["equipLoc"] = select(4, GetItemInfoInstant(v.link))
-		v["typeID"] = nil
-		v["subTypeID"] = nil
-		v["bagged"] = nil -- Only ML needs this.
-		v.isSent = nil
+		if v.isSent then -- Don't retransmit already sent items
+			copy[k] = nil
+		else
+			v["equipLoc"] = select(4, GetItemInfoInstant(v.link))
+			v["typeID"] = nil
+			v["subTypeID"] = nil
+			v["bagged"] = nil -- Only ML needs this.
 	end
 	return copy
 end
