@@ -12,7 +12,6 @@ local LootFrame = addon:NewModule("RCLootFrame", "AceTimer-3.0", "AceEvent-3.0")
 local LibDialog = LibStub("LibDialog-1.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 
-local items = {} -- item.i = {name, link, lvl, texture} (i == session)
 local entries = {}
 local ENTRY_HEIGHT = 80
 local MAX_ENTRIES = 5
@@ -36,8 +35,8 @@ RANDOM_ROLL_PATTERN = RANDOM_ROLL_PATTERN:gsub("%%d", "%(%%d+%)")
 RANDOM_ROLL_PATTERN = RANDOM_ROLL_PATTERN:gsub("%%%d%$s", "%(%.%+%)") -- for "deDE"
 RANDOM_ROLL_PATTERN = RANDOM_ROLL_PATTERN:gsub("%%%d%$d", "%(%%d+%)") -- for "deDE"
 
-local function addItem (offset, k, item, reRoll)
-	items[offset+k] = {
+function LootFrame:AddItem (offset, k, item, reRoll)
+	self.items[offset+k] = {
 	--	name = table[k].name,
 		link = item.link,
 		ilvl = item.ilvl,
@@ -57,13 +56,13 @@ local function addItem (offset, k, item, reRoll)
 	}
 end
 
-local function checkDuplicates (lenght, offset)
+function LootFrame:CheckDuplicates (lenght, offset)
 	for k = offset+1, offset + lenght do -- Only check the entries we added just now.
-		if not items[k].rolled then
+		if not self.items[k].rolled then
 			for j = offset+1, offset + lenght do
-				if j ~= k and addon:ItemIsItem(items[k].link, items[j].link) and not items[j].rolled then
-					tinsert(items[k].sessions, items[j].sessions[1])
-					items[j].rolled = true -- Pretend we have rolled it.
+				if j ~= k and addon:ItemIsItem(self.items[k].link, self.items[j].link) and not self.items[j].rolled then
+					tinsert(self.items[k].sessions, self.items[j].sessions[1])
+					self.items[j].rolled = true -- Pretend we have rolled it.
 					numRolled = numRolled + 1
 				end
 			end
@@ -76,31 +75,33 @@ function LootFrame:Start(table, reRoll)
 
 	local offset = 0
 	if reRoll then
-		offset = #items  -- Insert to "items" if reRoll
-	elseif #items > 0 then  -- Must start over if it is not reRoll(receive lootTable).
+		offset = #self.items  -- Insert to "items" if reRoll
+	elseif #self.items > 0 then  -- Must start over if it is not reRoll(receive lootTable).
 		--This is to avoid problem if the lootTable is received when lootFrame is shown. This can happen if ML does a reload.
 		self:OnDisable()
 	end
 
 	for k = 1, #table do
 		if table[k].autopass then
-			items[offset+k] = { rolled = true} -- it's autopassed, so pretend we rolled it
+			self.items[offset+k] = { rolled = true} -- it's autopassed, so pretend we rolled it
 			numRolled = numRolled + 1
 		else
-			addItem(offset, k, table[k], reRoll)
+			self:AddItem(offset, k, table[k], reRoll)
 		end
 	end
 
-	checkDuplicates(#table, offset)
+	self:CheckDuplicates(#table, offset)
 	self:Show()
 end
 
 function LootFrame:AddSingleItem(item)
-	addon:DebugLog("LootFrame:AddSingleItem", item.link, #items)
+	addon:DebugLog("LootFrame:AddSingleItem", item.link, #self.items)
 	if item.autopass then
-		items[#items+1] = { rolled = true}
+		self.items[#self.items+1] = { rolled = true}
+		numRolled = numRolled + 1
 	else
-		addItem(0, #items + 1, item)
+		if not self:IsEnabled() then self:Enable() end
+		self:AddItem(0, #self.items + 1, item)
 		-- REVIEW Consider duplicates? It doesn't really work in it's current form here.
 		self:Show()
 	end
@@ -112,6 +113,7 @@ function LootFrame:ReRoll(table)
 end
 
 function LootFrame:OnEnable()
+	self.items = {} -- item.i = {name, link, lvl, texture} (i == session)
 	self.frame = self:GetFrame()
 	self:RegisterEvent("CHAT_MSG_SYSTEM")
 end
@@ -124,7 +126,7 @@ function LootFrame:OnDisable()
 			self.EntryManager:Trash(entry)
 		end
 	end
-	items = {}
+	self.items = {}
 	numRolled = 0
 	self:CancelAllTimers()
 end
@@ -139,12 +141,13 @@ end
 --end
 
 function LootFrame:Update()
-	if numRolled == #items then -- We're through them all, so hide the frame
+	addon:Debug("NumRolled:", numRolled, "#items:", #self.items)
+	if numRolled >= #self.items then -- We're through them all, so hide the frame
 		return self:Disable()
 	end
 	local width = 150
 	local numEntries = 0
-	for _,item in ipairs(items) do
+	for _,item in ipairs(self.items) do
 		if numEntries >= MAX_ENTRIES then break end -- Only show a certain amount of items at a time
 		if not item.rolled then -- Only show unrolled items
 			numEntries = numEntries + 1
