@@ -90,7 +90,7 @@ function RCLootCouncil:OnInitialize()
   	self.version = GetAddOnMetadata("RCLootCouncil", "Version")
 	self.nnp = false
 	self.debug = true
-	self.tVersion = "Alpha-2" -- String or nil. Indicates test version, which alters stuff like version check. Is appended to 'version', i.e. "version-tVersion" (max 10 letters for stupid security)
+	self.tVersion = "Alpha-3" -- String or nil. Indicates test version, which alters stuff like version check. Is appended to 'version', i.e. "version-tVersion" (max 10 letters for stupid security)
 
 	self.playerClass = select(2, UnitClass("player"))
 	self.guildRank = L["Unguilded"]
@@ -392,6 +392,7 @@ function RCLootCouncil:OnInitialize()
   	self:RegisterChatCommand("rclc", "ChatCommand")
 	self.customChatCmd = {} -- Modules that wants their cmds used with "/rc"
 	self:RegisterComm("RCLootCouncil")
+	self:RegisterComm("RCLCv")
 	self.db = LibStub("AceDB-3.0"):New("RCLootCouncilDB", self.defaults, true)
 	self.lootDB = LibStub("AceDB-3.0"):New("RCLootCouncilLootDB")
 	--[[ Format:
@@ -777,6 +778,7 @@ function RCLootCouncil:SendCommand(target, command, ...)
 	end
 end
 
+local v3VersionWarningCount = 0
 --- Receives RCLootCouncil commands.
 -- Params are delivered by AceComm-3.0, but we need to extract our data created with the
 -- RCLootCouncil:SendCommand function.
@@ -1047,6 +1049,12 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 				return
 			end
 			self:Debug("Error in deserializing comm:", command, data);
+		end
+
+	elseif prefix == "RCLCv" then
+		-- v3.0 has been released!
+		if v3VersionWarningCount <= 5 then
+			self:Print("RCLootCouncil v3.0 has been released. This version is no longer compatible, please upgrade!")
 		end
 	end
 end
@@ -1891,7 +1899,7 @@ function RCLootCouncil:OnEvent(event, ...)
 						quantity = quantity,
 						quality = quality,
 						locked = locked,
-						guid = (GetLootSourceInfo(i)), -- Boss GUID 
+						guid = (GetLootSourceInfo(i)), -- Boss GUID
 					}
 				else -- It's possible that item in the loot window is uncached. Retry in the next frame.
 					self:Debug("Loot uncached when the loot window is opened. Retry in the next frame.", link)
