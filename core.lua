@@ -867,10 +867,8 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 			elseif command == "lt_add" and self:UnitIsUnit(sender, self.masterLooter) then
 				-- We can skip most of the normal lootTable checks since a session should running
 				local oldLenght = #lootTable
-				self:Debug("lt_add - old lootTable lenght:", #lootTable)
 				for k,v in pairs(unpack(data)) do
 					lootTable[k] = v
-					self:Debug("lt_add - adding ", k, "new lenght is", #lootTable)
 				end
 				-- REVIEW This runs over the entire lootTable again, but will probably need changing anyway in v3.0
 				self:PrepareLootTable(lootTable)

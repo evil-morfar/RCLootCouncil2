@@ -137,6 +137,7 @@ function RCLootCouncilML:GetLootTableForTransmit()
 			v["typeID"] = nil
 			v["subTypeID"] = nil
 			v["bagged"] = nil -- Only ML needs this.
+		end
 	end
 	return copy
 end

@@ -84,7 +84,7 @@ LibDialog:Register("RCLOOTCOUNCIL_CONFIRM_ABORT", {
 LibDialog:Register("RCLOOTCOUNCIL_CONFIRM_AWARD", {
 	text = "something_went_wrong",
 	icon = "",
-	on_show = RCLootCouncilML.AwardPopupOnShow,
+	on_show = _G.RCLootCouncilML.AwardPopupOnShow,
 	buttons = {
 		{	text = _G.YES,
 			on_click = RCLootCouncilML.AwardPopupOnClickYes
