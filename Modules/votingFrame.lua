@@ -112,7 +112,7 @@ end
 
 function RCVotingFrame:ReceiveLootTable(lt)
 	active = true
-	lootTable = lt
+	lootTable = CopyTable(lt)
 	self:Setup(lootTable)
 	if not addon.enabled then return end -- We just want things ready
 	if db.autoOpen then
