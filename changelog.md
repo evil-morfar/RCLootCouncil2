@@ -1,4 +1,4 @@
-### v2.8.0
+### v2.8.0 (patch 8.0)
 ---
 * **Personal Loot**
 * RCLootCouncil is now fully useable with Personal Loot (PL).
