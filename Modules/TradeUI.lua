@@ -58,13 +58,14 @@ function TradeUI:OnDisable() -- Shouldn't really happen
    self.frame:Hide()
 end
 
-function TradeUI:Show()
+-- By default, TradeUI hides when empty
+function TradeUI:Show(forceShow)
    self.frame = self:GetFrame()
-   self:Update()
+   self:Update(forceShow)
 end
 
-function TradeUI:Update()
-   if not self.frame then return self:Show() end
+function TradeUI:Update(forceShow)
+   if not self.frame then return self:Show(forceShow) end
    for k, v in ipairs(addon.ItemStorage:GetAllItemsOfType("to_trade")) do
       self.frame.rows[k] = {
          link = v.link,
@@ -78,7 +79,7 @@ function TradeUI:Update()
       }
    end
    self.frame.st:SetData(self.frame.rows)
-   if #self.frame.rows == 0 then self.frame:Hide() else self.frame:Show() end
+   if not forceShow and #self.frame.rows == 0 then self.frame:Hide() else self.frame:Show() end
 end
 
 function TradeUI:OnCommReceived(prefix, serializedMsg, distri, sender)
