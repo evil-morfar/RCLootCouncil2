@@ -1,3 +1,8 @@
+### v2.8.1
+---
+###### Dev
+* Added two new comm messages for when RCLootCouncil handles loot. See top of core.lua.
+
 ### v2.8.0 (patch 8.0)
 ---
 * **Personal Loot**
