@@ -452,6 +452,7 @@ function RCLootCouncil:OnEnable()
 	self:RegisterEvent("LOOT_OPENED",		"OnEvent")
 	self:RegisterEvent("LOOT_SLOT_CLEARED", "OnEvent")
 	self:RegisterEvent("LOOT_CLOSED",		"OnEvent")
+	self:RegisterEvent("ENCOUNTER_LOOT_RECEIVED", "OnEvent") -- REVIEW Check if boss loot is obtainable through this
 
 	--self:RegisterEvent("GROUP_ROSTER_UPDATE", "Debug", "event")
 
@@ -1886,6 +1887,8 @@ function RCLootCouncil:OnEvent(event, ...)
 
 	elseif event == "LOOT_OPENED" then
 		self:Debug("Event:", event, ...)
+		self:Debug("GetUnitName:", GetUnitName("target"))
+		self:Debug("GetUnitGUID:", GetUnitGUID("target"))
 		if select(1, ...) ~= "scheduled" and self.LootOpenScheduled then return end -- When this function is scheduled to run again, but LOOT_OPENDED event fires, return.
 		self.LootOpenScheduled = false
 		wipe(self.lootSlotInfo)
@@ -1936,6 +1939,9 @@ function RCLootCouncil:OnEvent(event, ...)
 				self:GetActiveModule("masterlooter"):OnLootSlotCleared(slot, link)
 			end
 		end
+
+	else
+		self:Debug("NonHandled Event:", event, ...)
 	end
 end
 
