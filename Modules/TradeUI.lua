@@ -17,15 +17,16 @@ local _G = _G
 
 local ROW_HEIGHT = 30
 local db
-local timer
+local time_remaining_timer, update_targets_timer
 local TIME_REMAINING_INTERVAL = 300 -- 5 min
 local TIME_REMAINING_WARNING = 1200 -- 20 min
+local UPDATE_TIME_INTERVAL = 1 -- 1 sec
 
 -- lua
-local select, GetItemInfoInstant, ipairs,  unpack, tinsert, wipe, tremove, format, table, GetTime
-    = select, GetItemInfoInstant, ipairs,  unpack, tinsert, wipe, tremove, format, table, GetTime
+local select, GetItemInfoInstant, pairs, ipairs,  unpack, tinsert, wipe, tremove, format, table, GetTime, CheckInteractDistance, InitiateTrade
+    = select, GetItemInfoInstant, pairs, ipairs,  unpack, tinsert, wipe, tremove, format, table, GetTime, CheckInteractDistance, InitiateTrade
 -- GLOBALS: GetContainerNumSlots, ClickTradeButton, PickupContainerItem, ClearCursor, GetContainerItemInfo, GetContainerItemLink, GetTradePlayerItemInfo,
--- GLOBALS: IsModifiedClick, HandleModifiedItemClick, GetTradePlayerItemLink
+-- GLOBALS: IsModifiedClick, HandleModifiedItemClick, GetTradePlayerItemLink, Ambiguate
 
 function TradeUI:OnInitialize()
    self.scrollCols = {
@@ -50,18 +51,24 @@ function TradeUI:OnEnable()
    self:RegisterEvent("TRADE_ACCEPT_UPDATE", "OnEvent_TRADE_ACCEPT_UPDATE")
    self:RegisterEvent("UI_INFO_MESSAGE", "OnEvent_UI_INFO_MESSAGE")
    self:CheckTimeRemaining()
-   timer = self:ScheduleRepeatingTimer("CheckTimeRemaining", TIME_REMAINING_INTERVAL)
+   time_remaining_timer = self:ScheduleRepeatingTimer("CheckTimeRemaining", TIME_REMAINING_INTERVAL)
 end
 
 function TradeUI:OnDisable() -- Shouldn't really happen
    addon:DebugLog("TradeUI disabled")
-   self.frame:Hide()
+   self:Hide()
 end
 
 -- By default, TradeUI hides when empty
 function TradeUI:Show(forceShow)
    self.frame = self:GetFrame()
+   update_targets_timer = self:ScheduleRepeatingTimer("Update", UPDATE_TIME_INTERVAL)
    self:Update(forceShow)
+end
+
+function TradeUI:Hide()
+   self:CancelTimer(update_targets_timer)
+   self.frame:Hide()
 end
 
 function TradeUI:Update(forceShow)
@@ -79,7 +86,7 @@ function TradeUI:Update(forceShow)
       }
    end
    self.frame.st:SetData(self.frame.rows)
-   if not forceShow and #self.frame.rows == 0 then self.frame:Hide() else self.frame:Show() end
+   if not forceShow and #self.frame.rows == 0 then self:Hide() else self.frame:Show() end
 end
 
 function TradeUI:OnCommReceived(prefix, serializedMsg, distri, sender)
@@ -226,7 +233,11 @@ function TradeUI:GetFrame()
    f.st.frame:SetPoint("TOPLEFT",f,"TOPLEFT",10,-20)
    f.st:RegisterEvents({
       ["OnClick"] = function(rowFrame, cellFrame, data, cols, row, realrow, column, table, button, ...)
-         -- TODO Check for open trade window
+         if CheckInteractDistance(Ambiguate(data[realrow].winner, "short"), 2) then -- 2 for trade distance
+            InitiateTrade("target")
+         else
+            addon:Debug("TradeUI row OnClick - unit not in trade distance")
+         end
 
          -- Return false to have the default OnClick handler take care of left clicks
          return false
@@ -238,7 +249,7 @@ function TradeUI:GetFrame()
    f.closeBtn = addon:CreateButton(_G.CLOSE, f.content)
    f.closeBtn:SetPoint("BOTTOMRIGHT", f.content, "BOTTOMRIGHT", -10, 10)
    f.closeBtn:SetScript("OnClick", function()
-      f:Hide()
+      self:Hide()
    end)
 
    return f
