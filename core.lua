@@ -5,7 +5,6 @@
 	Things marked with "todo"
 		- Emulate award stuff - i.e. log awards without awarding
 		- IDEA Change popups so they only hide on award/probably add the error message to it.
-		- TODO/IDEA Change chat_commands to seperate lines in order to have a table of printable cmds.
 
 	Backwards compability breaks:
 		- Remove equipLoc, subType, texture from lootTable. They can all be created with GetItemInfoInstant()
@@ -32,6 +31,11 @@
 	lootHistory:
 		RCHistory_ResponseEdit - fires when the user edits the response of a history entry. args: data (see LootHistory:BuildData())
 		RCHistory_NameEdit	-	fires when the user edits the receiver of a history entry. args: data.
+]]
+--[[ Notable AceComm-3.0 messages: (See RCLootCouncil:OnCommReceived() for receiving comms)
+	Comm prefix: "RCLootCouncil"
+		StartHandleLoot 			- Sent whenever RCLootCouncil starts handling loot.
+		StopHandleLoot				- Sent whenever RCLootCouncil stops handling loot.
 ]]
 --@debug@
 --if LibDebug then LibDebug() end
@@ -448,6 +452,7 @@ function RCLootCouncil:OnEnable()
 	self:RegisterEvent("LOOT_OPENED",		"OnEvent")
 	self:RegisterEvent("LOOT_SLOT_CLEARED", "OnEvent")
 	self:RegisterEvent("LOOT_CLOSED",		"OnEvent")
+	self:RegisterEvent("ENCOUNTER_LOOT_RECEIVED", "OnEvent") -- REVIEW Check if boss loot is obtainable through this
 
 	--self:RegisterEvent("GROUP_ROSTER_UPDATE", "Debug", "event")
 
@@ -1882,6 +1887,8 @@ function RCLootCouncil:OnEvent(event, ...)
 
 	elseif event == "LOOT_OPENED" then
 		self:Debug("Event:", event, ...)
+		self:Debug("GetUnitName:", GetUnitName("target"))
+		self:Debug("GetUnitGUID:", GetUnitGUID("target"))
 		if select(1, ...) ~= "scheduled" and self.LootOpenScheduled then return end -- When this function is scheduled to run again, but LOOT_OPENDED event fires, return.
 		self.LootOpenScheduled = false
 		wipe(self.lootSlotInfo)
@@ -1932,6 +1939,9 @@ function RCLootCouncil:OnEvent(event, ...)
 				self:GetActiveModule("masterlooter"):OnLootSlotCleared(slot, link)
 			end
 		end
+
+	else
+		self:Debug("NonHandled Event:", event, ...)
 	end
 end
 
@@ -1947,8 +1957,7 @@ function RCLootCouncil:NewMLCheck()
 	end
 
 	if not self.isMasterLooter then -- we're not ML, so make sure it's disabled
-		self:GetActiveModule("masterlooter"):Disable()
-		self.handleLoot = false -- Reset
+		self:StopHandleLoot()
 	end
 	if IsPartyLFG() then return end	-- We can't use in lfg/lfd so don't bother
 	if not self.masterLooter then return end -- Didn't find a leader or ML.
@@ -1997,9 +2006,18 @@ function RCLootCouncil:StartHandleLoot()
 	self:Print(L["Now handles looting"])
 	self:Debug("Start handle loot.")
 	self.handleLoot = true
+	self:SendCommand("group", "StartHandleLoot")
 	if #db.council == 0 then -- if there's no council
 		self:Print(L["You haven't set a council! You can edit your council by typing '/rc council'"])
 	end
+end
+
+--- Disables loot handling
+function RCLootCouncil:StopHandleLoot()
+	self:Debug("Stop handling loot")
+	self.handleLoot = false
+	self:GetActiveModule("masterlooter"):Disable()
+	self:SendCommand("group", "StopHandleLoot")
 end
 
 function RCLootCouncil:OnRaidEnter(arg)
