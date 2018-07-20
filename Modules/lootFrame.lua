@@ -12,7 +12,6 @@ local LootFrame = addon:NewModule("RCLootFrame", "AceTimer-3.0", "AceEvent-3.0")
 local LibDialog = LibStub("LibDialog-1.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 
-local items = {} -- item.i = {name, link, lvl, texture} (i == session)
 local entries = {}
 local ENTRY_HEIGHT = 80
 local MAX_ENTRIES = 5
@@ -23,6 +22,12 @@ local sessionsWaitingRollResultQueue = {}
 local ROLL_TIMEOUT = 1.5
 local ROLL_SHOW_RESULT_TIME = 1
 
+-- Lua
+local type, pairs, tinsert, ipairs, string, GetTime, math, ceil, tDeleteItem, next, error, tostring, setmetatable, tremove, format, tonumber =
+		type, pairs, tinsert, ipairs, string, GetTime, math, ceil, tDeleteItem, next, error, tostring, setmetatable, tremove, format, tonumber
+
+-- GLOBALS: CreateFrame, RandomRoll, _G, GameTooltip, IsModifiedClick, HandleModifiedItemClick, Ambiguate
+
 local RANDOM_ROLL_PATTERN = RANDOM_ROLL_RESULT
 RANDOM_ROLL_PATTERN = RANDOM_ROLL_PATTERN:gsub("[%(%)%-]", "%%%1")
 RANDOM_ROLL_PATTERN = RANDOM_ROLL_PATTERN:gsub("%%s", "%(%.%+%)")
@@ -30,56 +35,76 @@ RANDOM_ROLL_PATTERN = RANDOM_ROLL_PATTERN:gsub("%%d", "%(%%d+%)")
 RANDOM_ROLL_PATTERN = RANDOM_ROLL_PATTERN:gsub("%%%d%$s", "%(%.%+%)") -- for "deDE"
 RANDOM_ROLL_PATTERN = RANDOM_ROLL_PATTERN:gsub("%%%d%$d", "%(%%d+%)") -- for "deDE"
 
+function LootFrame:AddItem (offset, k, item, reRoll)
+	self.items[offset+k] = {
+	--	name = table[k].name,
+		link = item.link,
+		ilvl = item.ilvl,
+		texture = item.texture,
+		rolled = false,
+		note = nil,
+		equipLoc = item.equipLoc,
+		timeLeft = addon.mldb.timeout,
+		subType = item.subType,
+		typeID = item.typeID,
+		subTypeID = item.subTypeID,
+		isTier = item.token,
+		isRelic = item.relic,
+		classes = item.classes,
+		sessions = {item.session},
+		isRoll = item.isRoll,
+	}
+end
+
+function LootFrame:CheckDuplicates (lenght, offset)
+	for k = offset+1, offset + lenght do -- Only check the entries we added just now.
+		if not self.items[k].rolled then
+			for j = offset+1, offset + lenght do
+				if j ~= k and addon:ItemIsItem(self.items[k].link, self.items[j].link) and not self.items[j].rolled then
+					tinsert(self.items[k].sessions, self.items[j].sessions[1])
+					self.items[j].rolled = true -- Pretend we have rolled it.
+					numRolled = numRolled + 1
+				end
+			end
+		end
+	end
+end
+
 function LootFrame:Start(table, reRoll)
-	addon:DebugLog("LootFrame:Start()")
+	addon:DebugLog("LootFrame:Start", #table, reRoll)
 
 	local offset = 0
 	if reRoll then
-		offset = #items  -- Insert to "items" if reRoll
-	elseif #items > 0 then  -- Must start over if it is not reRoll(receive lootTable).
+		offset = #self.items  -- Insert to "items" if reRoll
+	elseif #self.items > 0 then  -- Must start over if it is not reRoll(receive lootTable).
 		--This is to avoid problem if the lootTable is received when lootFrame is shown. This can happen if ML does a reload.
 		self:OnDisable()
 	end
 
 	for k = 1, #table do
 		if table[k].autopass then
-			items[offset+k] = { rolled = true} -- it's autopassed, so pretend we rolled it
+			self.items[offset+k] = { rolled = true} -- it's autopassed, so pretend we rolled it
 			numRolled = numRolled + 1
 		else
-			items[offset+k] = {
-			--	name = table[k].name,
-				link = table[k].link,
-				ilvl = table[k].ilvl,
-				texture = table[k].texture,
-				rolled = false,
-				note = nil,
-				equipLoc = table[k].equipLoc,
-				timeLeft = addon.mldb.timeout,
-				subType = table[k].subType,
-				typeID = table[k].typeID,
-				subTypeID = table[k].subTypeID,
-				isTier = table[k].token,
-				isRelic = table[k].relic,
-				classes = table[k].classes,
-				sessions = {reRoll and table[k].session or k}, -- ".session" does not exist if not rerolling.
-				isRoll = table[k].isRoll,
-			}
+			self:AddItem(offset, k, table[k], reRoll)
 		end
 	end
 
-	for k = offset+1, offset+#table do -- Only check the entries we added just now.
-		if not items[k].rolled then
-			for j = offset+1, offset+#table do
-				if j ~= k and addon:ItemIsItem(items[k].link, items[j].link) and not items[j].rolled then
-					tinsert(items[k].sessions, items[j].sessions[1])
-					items[j].rolled = true -- Pretend we have rolled it.
-					numRolled = numRolled + 1
-				end
-			end
-		end
-	end
-
+	self:CheckDuplicates(#table, offset)
 	self:Show()
+end
+
+function LootFrame:AddSingleItem(item)
+	addon:DebugLog("LootFrame:AddSingleItem", item.link, #self.items)
+	if item.autopass then
+		self.items[#self.items+1] = { rolled = true}
+		numRolled = numRolled + 1
+	else
+		if not self:IsEnabled() then self:Enable() end
+		self:AddItem(0, #self.items + 1, item)
+		-- REVIEW Consider duplicates? It doesn't really work in it's current form here.
+		self:Show()
+	end
 end
 
 function LootFrame:ReRoll(table)
@@ -88,6 +113,7 @@ function LootFrame:ReRoll(table)
 end
 
 function LootFrame:OnEnable()
+	self.items = {} -- item.i = {name, link, lvl, texture} (i == session)
 	self.frame = self:GetFrame()
 	self:RegisterEvent("CHAT_MSG_SYSTEM")
 end
@@ -100,7 +126,7 @@ function LootFrame:OnDisable()
 			self.EntryManager:Trash(entry)
 		end
 	end
-	items = {}
+	self.items = {}
 	numRolled = 0
 	self:CancelAllTimers()
 end
@@ -115,12 +141,13 @@ end
 --end
 
 function LootFrame:Update()
-	if numRolled == #items then -- We're through them all, so hide the frame
+	addon:Debug("NumRolled:", numRolled, "#items:", #self.items)
+	if numRolled >= #self.items then -- We're through them all, so hide the frame
 		return self:Disable()
 	end
 	local width = 150
 	local numEntries = 0
-	for _,item in ipairs(items) do
+	for _,item in ipairs(self.items) do
 		if numEntries >= MAX_ENTRIES then break end -- Only show a certain amount of items at a time
 		if not item.rolled then -- Only show unrolled items
 			numEntries = numEntries + 1
@@ -347,7 +374,7 @@ do
 			entry.noteEditbox:SetBackdrop(LootFrame.frame.title:GetBackdrop())
 			entry.noteEditbox:SetBackdropColor(LootFrame.frame.title:GetBackdropColor())
 			entry.noteEditbox:SetBackdropBorderColor(LootFrame.frame.title:GetBackdropBorderColor())
-			entry.noteEditbox:SetFontObject(ChatFontNormal)
+			entry.noteEditbox:SetFontObject(_G.ChatFontNormal)
 			entry.noteEditbox:SetJustifyV("BOTTOM")
 			entry.noteEditbox:SetWidth(100)
 			entry.noteEditbox:SetHeight(24)
@@ -658,14 +685,14 @@ function LootFrame:CHAT_MSG_SYSTEM(event, msg)
 	local name, roll, low, high = string.match(msg, RANDOM_ROLL_PATTERN)
 	roll, low, high = tonumber(roll), tonumber(low), tonumber(high)
 
-	if name and low == 1 and high == 100 and UnitIsUnit(Ambiguate(name, "short"), "player") and sessionsWaitingRollResultQueue[1] then
+	if name and low == 1 and high == 100 and addon:UnitIsUnit(Ambiguate(name, "short"), "player") and sessionsWaitingRollResultQueue[1] then
 		local entryInQueue = sessionsWaitingRollResultQueue[1]
 		tremove(sessionsWaitingRollResultQueue, 1)
 		self:CancelTimer(entryInQueue.timer)
 		local entry = entryInQueue.entry
 		local item = entry.item
 		addon:SendCommand("group", "roll", addon.playerName, roll, item.sessions)
-		addon:SendAnnouncement(format(L["'player' has rolled 'roll' for: 'item'"], UnitName("player"), roll, item.link), "group")
+		addon:SendAnnouncement(format(L["'player' has rolled 'roll' for: 'item'"], addon.Ambiguate(addon.playerName), roll, item.link), "group")
 		entry.rollResult:SetText(roll)
 		entry.rollResult:Show()
 		self:ScheduleTimer("OnRollTimeout", ROLL_SHOW_RESULT_TIME, entryInQueue)

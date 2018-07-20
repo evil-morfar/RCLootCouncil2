@@ -69,7 +69,7 @@ function RCVotingFrame:OnEnable()
 	self:RegisterComm("RCLootCouncil")
 	self:RegisterBucketEvent({"UNIT_PHASE", "ZONE_CHANGED_NEW_AREA"}, 1, "Update") -- Update "Out of instance" text when any raid members change zone
 	db = addon:Getdb()
-	active = true
+	--active = true
 	moreInfo = db.modules["RCVotingFrame"].moreInfo
 	moreInfoData = addon:GetLootDBStatistics()
 	self.frame = self:GetFrame()
@@ -110,8 +110,9 @@ function RCVotingFrame:Show()
 	end
 end
 
-function RCVotingFrame:ReceiveLootTable(lootTable)
+function RCVotingFrame:ReceiveLootTable(lt)
 	active = true
+	lootTable = CopyTable(lt)
 	self:Setup(lootTable)
 	if not addon.enabled then return end -- We just want things ready
 	if db.autoOpen then
@@ -294,6 +295,16 @@ function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
 				end
 				self:Update()
 				self:UpdatePeopleToVote()
+
+			elseif command == "lt_add" and addon:UnitIsUnit(sender, addon.masterLooter) then
+				for k,v in pairs(unpack(data)) do
+					lootTable[k] = v
+					self:SetupSession(k, v)
+					if addon.isMasterLooter and db.autoAddRolls then
+						self:DoAllRandomRolls() -- REVIEW This will overwrite "old" entries if new entries are added
+					end
+				end
+				self:SwitchSession(session)
 			end
 		end
 	end
@@ -332,32 +343,38 @@ function RCVotingFrame:GetCurrentSession()
 	return session
 end
 
+function RCVotingFrame:SetupSession(session, t)
+	t.added = true -- This entry has been initiated
+	t.haveVoted = false -- Have we voted for ANY candidate in this session?
+	t.candidates = {}
+	for name, v in pairs(addon.candidates) do
+		t.candidates[name] = {
+			class = v.class,
+			rank = v.rank,
+			role = v.role,
+			response = "ANNOUNCED",
+			ilvl = "",
+			diff = "",
+			gear1 = nil,
+			gear2 = nil,
+			votes = 0,
+			note = nil,
+			roll = nil,
+			voters = {},
+			haveVoted = false, -- Have we voted for this particular candidate in this session?
+		}
+	end
+	-- Init session toggle
+	sessionButtons[session] = self:UpdateSessionButton(session, t.texture, t.link, t.awarded)
+	sessionButtons[session]:Show()
+end
+
 function RCVotingFrame:Setup(table)
 	--lootTable[session] = {bagged, lootSlot, awarded, name, link, quality, ilvl, type, subType, equipLoc, texture, boe}
-	lootTable = table -- Extract all the data we get
-	for session, t in ipairs(lootTable) do -- and build the rest (candidates)
-		lootTable[session].haveVoted = false -- Have we voted for ANY candidate in this session?
-		t.candidates = {}
-		for name, v in pairs(addon.candidates) do
-			t.candidates[name] = {
-				class = v.class,
-				rank = v.rank,
-				role = v.role,
-				response = "ANNOUNCED",
-				ilvl = "",
-				diff = "",
-				gear1 = nil,
-				gear2 = nil,
-				votes = 0,
-				note = nil,
-				roll = nil,
-				voters = {},
-				haveVoted = false, -- Have we voted for this particular candidate in this session?
-			}
+	for session, t in ipairs(table) do -- and build the rest (candidates)
+		if not t.added then
+			self:SetupSession(session, t)
 		end
-		-- Init session toggle
-		sessionButtons[session] = self:UpdateSessionButton(session, t.texture, t.link, t.awarded)
-		sessionButtons[session]:Show()
 	end
 	-- Hide unused session buttons
 	for i = #lootTable+1, #sessionButtons do
@@ -929,7 +946,11 @@ end
 
 function RCVotingFrame.SetCellName(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
 	local name = data[realrow].name
-	frame.text:SetText(addon.Ambiguate(name))
+	if addon:UnitIsUnit(name, lootTable[session].owner) then
+		frame.text:SetText("|TInterface\\LOOTFRAME\\LootToast:0:0:0:0:1024:256:610:640:224:256|t"..addon.Ambiguate(name))
+	else
+		frame.text:SetText(addon.Ambiguate(name))
+	end
 	local c = addon:GetClassColor(lootTable[session].candidates[name].class)
 	frame.text:SetTextColor(c.r, c.g, c.b, c.a)
 	data[realrow].cols[column].value = name or ""

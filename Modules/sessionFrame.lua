@@ -20,6 +20,12 @@ local waitingToEndSessions = false  -- need some time to confirm the result of a
 									-- When user chooses to award later then quickly reopens the loot window when this variable is still true, dont show session frame.
 local scheduledToShowAgain = false       -- Have we scheduled to reshow the frame, due to a uncached item?
 
+--- Lua
+local getglobal, ipairs, tinsert =
+		getglobal, ipairs, tinsert
+
+-- GLOBALS: CreateFrame, IsModifiedClick, HandleModifiedItemClick, InCombatLockdown, _G
+
 function RCSessionFrame:OnInitialize()
 	self.scrollCols = {
 		{ name = "", width = 30}, 				-- remove item, sort by session number.
@@ -51,7 +57,10 @@ function RCSessionFrame:Show(data, disableAwardLater)
 
 	if data then
 		loadingItems = false
-		if addon:Getdb().sortItems then
+		if addon:Getdb().sortItems and not ml.running then
+			-- FIXME Sorting after adding new items will screw up the original session order.
+			-- Either don't sort (as now) or we would need something to track the sessions of items
+			-- that's already in a running session.
 			ml:SortLootTable(data)
 		end
 		self:ExtractData(data)
@@ -82,33 +91,42 @@ function RCSessionFrame:ExtractData(data)
 	self.frame.rows = {}
 	-- And set the new
 	for k,v in ipairs(data) do
-		local bonusText = v.link and addon:GetItemBonusText(v.link, "\n ") or ""
-		if bonusText ~= "" then bonusText = "\n |cff33ff33"..bonusText end
-		self.frame.rows[k] = {
-			texture = v.texture or nil,
-			link = v.link,
-			cols = {
-				{ DoCellUpdate = self.SetCellDeleteBtn, },
-				{ DoCellUpdate = self.SetCellItemIcon},
-				{ value = " "..(addon:GetItemLevelText(v.ilvl, v.token) or "")..bonusText},
-				{ DoCellUpdate = self.SetCellText },
-			},
-		}
+		if not v.isSent then -- Don't add items we've already started a session with
+			local bonusText = v.link and addon:GetItemBonusText(v.link, "\n ") or ""
+			if bonusText ~= "" then bonusText = "\n |cff33ff33"..bonusText end
+			tinsert(self.frame.rows, {
+				session = k,
+				texture = v.texture or nil,
+				link = v.link,
+				owner = v.owner,
+				cols = {
+					{ DoCellUpdate = self.SetCellDeleteBtn, },
+					{ DoCellUpdate = self.SetCellItemIcon},
+					{ value = " "..(addon:GetItemLevelText(v.ilvl, v.token) or "")..bonusText},
+					{ DoCellUpdate = self.SetCellText },
+				},
+			})
+		end
 	end
 end
 
 function RCSessionFrame:Update()
 	self.frame.toggle:SetChecked(awardLater)
+	if ml.running then
+		self.frame.startBtn:SetText(_G.ADD)
+	else
+		self.frame.startBtn:SetText(_G.START)
+	end
 end
 
-function RCSessionFrame:DeleteItem(index)
-	addon:Debug("Delete row:", index)
-	ml:RemoveItem(index) -- remove the item from MLs lootTable
+function RCSessionFrame:DeleteItem(session, row)
+	addon:Debug("Delete row:", row, "Sesison:", session)
+	ml:RemoveItem(session) -- remove the item from MLs lootTable
 	self:Show(ml.lootTable)
 end
 
 function RCSessionFrame.SetCellText(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
-	if frame.text:GetFontObject() ~= GameFontNormal then
+	if frame.text:GetFontObject() ~= _G.GameFontNormal then
 		frame.text:SetFontObject("GameFontNormal") -- We want bigger font
 	end
 	if not data[realrow].link then
@@ -119,13 +137,13 @@ function RCSessionFrame.SetCellText(rowFrame, frame, data, cols, row, realrow, c
 			RCSessionFrame:ScheduleTimer("Show", 0, ml.lootTable) -- Try again next frame
 		end
 	else
-		frame.text:SetText(data[realrow].link)
+		frame.text:SetText(data[realrow].link..(data[realrow].owner and addon.candidates[data[realrow].owner] and "\n"..addon:GetUnitClassColoredName(data[realrow].owner) or ""))
 	end
 end
 
 function RCSessionFrame.SetCellDeleteBtn(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
 	frame:SetNormalTexture("Interface/BUTTONS/UI-GroupLoot-Pass-Up.png")
-	frame:SetScript("OnClick", function() RCSessionFrame:DeleteItem(realrow) end)
+	frame:SetScript("OnClick", function() RCSessionFrame:DeleteItem(data[realrow].session, realrow) end)
 	frame:SetSize(20,20)
 end
 
@@ -185,8 +203,8 @@ function RCSessionFrame:GetFrame()
 				return addon:Debug("Data wasn't ready", addon.candidates[addon.playerName], #addon.council)
 			elseif InCombatLockdown() then
 				return addon:Print(L["You can't start a loot session while in combat."])
-			elseif ml.running then
-				return addon:Print(L["You're already running a session."])
+			--elseif ml.running then
+				--return addon:Print(L["You're already running a session."])
 			else
 				ml:StartSession()
 			end

@@ -17,10 +17,11 @@ LibDialog:Register("RCLOOTCOUNCIL_CONFIRM_USAGE", {
       self:SetFrameStrata("FULLSCREEN")
    end,
    buttons = {
-      {	text = _G.YES,
+      {
+         text = _G.YES,
          on_click = function()
-            addon:DebugLog("Player confirmed usage")
-            addon:StartHandleLoot()
+            addon:DebugLog("Player confirmed usage, Personal Loot")
+            addon:StartHandleLoot("personalloot")
          end,
       },
       {	text = _G.NO,
@@ -77,7 +78,7 @@ LibDialog:Register("RCLOOTCOUNCIL_CONFIRM_ABORT", {
 LibDialog:Register("RCLOOTCOUNCIL_CONFIRM_AWARD", {
 	text = "something_went_wrong",
 	icon = "",
-	on_show = RCLootCouncilML.AwardPopupOnShow,
+	on_show = _G.RCLootCouncilML.AwardPopupOnShow,
 	buttons = {
 		{	text = _G.YES,
 			on_click = RCLootCouncilML.AwardPopupOnClickYes
