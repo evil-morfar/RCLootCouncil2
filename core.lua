@@ -1888,7 +1888,7 @@ function RCLootCouncil:OnEvent(event, ...)
 	elseif event == "LOOT_OPENED" then
 		self:Debug("Event:", event, ...)
 		self:Debug("GetUnitName:", GetUnitName("target"))
-		self:Debug("GetUnitGUID:", GetUnitGUID("target"))
+		self:Debug("UnitGUID:", UnitGUID("target"))
 		if select(1, ...) ~= "scheduled" and self.LootOpenScheduled then return end -- When this function is scheduled to run again, but LOOT_OPENDED event fires, return.
 		self.LootOpenScheduled = false
 		wipe(self.lootSlotInfo)
@@ -1956,7 +1956,7 @@ function RCLootCouncil:NewMLCheck()
 		return self:ScheduleTimer("NewMLCheck", 0.5)
 	end
 
-	if not self.isMasterLooter then -- we're not ML, so make sure it's disabled
+	if not self.isMasterLooter and self:GetActiveModule("masterlooter"):IsEnabled() then -- we're not ML, so make sure it's disabled
 		self:StopHandleLoot()
 	end
 	if IsPartyLFG() then return end	-- We can't use in lfg/lfd so don't bother
@@ -2085,7 +2085,8 @@ function RCLootCouncil:GetInstalledModulesFormattedData()
 				modules[num] = modules[num].."-"..self:GetModule(name).tVersion
 			end
 		else
-			modules[num] = self:GetModule(name).baseName.. " - ".._G.UNKNOWN
+			local ver = GetAddOnMetadata(name, "Version")
+			modules[num] = self:GetModule(name).baseName.. " - "..(ver or _G.UNKNOWN)
 		end
 	end
 	return modules
