@@ -118,7 +118,7 @@ LibDialog:Register("RCLOOTCOUNCIL_TRADE_ADD_ITEM", {
    buttons = {
       {  text = _G.YES,
          on_click = function(self, data)
-            RCLootCouncilML:AddAwardedInBagsToTradeWindow()
+            RCLootCouncil.TradeUI:AddAwardedInBagsToTradeWindow()
          end,
       },
       {  text = _G.NO,

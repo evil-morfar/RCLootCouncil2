@@ -132,12 +132,10 @@ function TradeUI:OnEvent_TRADE_SHOW (event, ...)
    self.isTrading = true
    wipe(self.tradeItems)
    self.tradeTarget = addon:UnitName("NPC")
-   if addon.isMasterLooter	then
-      local count = self:GetNumAwardedInBagsToTradeWindow()
-      if count > 0 then
-         -- TODO Make this optionally automatic
-         LibDialog:Spawn("RCLOOTCOUNCIL_TRADE_ADD_ITEM", {count=count})
-      end
+   local count = self:GetNumAwardedInBagsToTradeWindow()
+   if count > 0 then
+      -- TODO Make this optionally automatic
+      LibDialog:Spawn("RCLOOTCOUNCIL_TRADE_ADD_ITEM", {count=count})
    end
 end
 
@@ -180,33 +178,31 @@ function TradeUI:GetNumAwardedInBagsToTradeWindow()
 end
 
 function TradeUI:AddAwardedInBagsToTradeWindow()
-	if addon.isMasterLooter then
-      local tradeIndex = 1
-      local items = addon.ItemStorage:GetAllItemsMultiPred(
-         funcTradeTargetIsRecipient, funcItemHasMoreTimeLeft, funcStorageTypeIsToTrade
-      )
-      for k, Item in ipairs(items) do
-         while (GetTradePlayerItemInfo(tradeIndex)) do
-				tradeIndex = tradeIndex	+ 1
-			end
-			if tradeIndex > _G.MAX_TRADE_ITEMS - 1 then -- All available slots used (The last trade slot is "Will not be traded" slot).
-				break
-			end
-         local c,s = addon.ItemStorage:GetItemContainerSlot(Item)
-         if not c then -- Item is gone?!
-            -- TODO Print something to the user?
-            return addon:Debug("Error TradeUI:", "Item missing when attempting to trade", Item.link, self.tradeTarget)
-         end
-         if self.trading then -- REVIEW Redundant?
-            local _, _, locked, _, _, _, link = GetContainerItemInfo(c, s)
-            if addon:ItemIsItem(link, Item.link) and not locked then -- Extra check, probably also redundant
-               ClearCursor()
-					PickupContainerItem(c, s)
-					ClickTradeButton(tradeIndex)
-            end
+   local tradeIndex = 1
+   local items = addon.ItemStorage:GetAllItemsMultiPred(
+      funcTradeTargetIsRecipient, funcItemHasMoreTimeLeft, funcStorageTypeIsToTrade
+   )
+   for k, Item in ipairs(items) do
+      while (GetTradePlayerItemInfo(tradeIndex)) do
+			tradeIndex = tradeIndex	+ 1
+		end
+		if tradeIndex > _G.MAX_TRADE_ITEMS - 1 then -- All available slots used (The last trade slot is "Will not be traded" slot).
+			break
+		end
+      local c,s = addon.ItemStorage:GetItemContainerSlot(Item)
+      if not c then -- Item is gone?!
+         -- TODO Print something to the user?
+         return addon:Debug("Error TradeUI:", "Item missing when attempting to trade", Item.link, self.tradeTarget)
+      end
+      if self.trading then -- REVIEW Redundant?
+         local _, _, locked, _, _, _, link = GetContainerItemInfo(c, s)
+         if addon:ItemIsItem(link, Item.link) and not locked then -- Extra check, probably also redundant
+            ClearCursor()
+				PickupContainerItem(c, s)
+				ClickTradeButton(tradeIndex)
          end
       end
-	end
+   end
 end
 
 --------------------------------------------------------

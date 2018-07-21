@@ -1,7 +1,11 @@
 ### v2.8.1
 ---
+###### Bugfixes
+* *Fixed a few issues with the TradeUI (#343, #344).*
+
 ###### Dev
 * Added two new comm messages for when RCLootCouncil handles loot. See top of core.lua.
+
 
 ### v2.8.0 (patch 8.0)
 ---
