@@ -466,10 +466,8 @@ function RCLootCouncil:OnEnable()
 	self:ActivateSkin(db.currentSkin)
 
 	if self.db.global.version and self:VersionCompare(self.db.global.version, self.version) then -- We've upgraded
-		if self:VersionCompare(self.db.global.version, "2.7.0") then
-			self.db.global.localizedSubTypes = nil -- Removed in 2.7
-			self.db.profile.ignore = nil -- Replaced with ignoredItems in 2.7
-			self:ScheduleTimer("Print", 2, "v2.7 contains a lot of new features. See the changelog at https://www.curseforge.com/wow/addons/rclootcouncil/changes")
+		if self:VersionCompare(self.db.global.version, "2.8.1") then
+			wipe(db.itemStorage) -- Just in case some weird items are still there
 		end
 
 		self.db.global.oldVersion = self.db.global.version
@@ -721,6 +719,7 @@ function RCLootCouncil:UpdateAndSendRecentTradableItem(link)
 			end
 		end
 	end
+	self:Debug("Error - UpdateAndSendRecentTradableItem",link, "not found in bags")
 end
 
 -- Send the msg to the channel if it is valid. Otherwise just print the messsage.
@@ -1900,6 +1899,7 @@ function RCLootCouncil:OnEvent(event, ...)
 				local texture, name, quantity, quality, locked, isQuestItem, questId, isActive = GetLootSlotInfo(i)
 				local link = GetLootSlotLink(i)
 				if texture then
+					self:Debug("Adding to self.lootSlotInfo",i,link, quality)
 					self.lootSlotInfo[i] = {
 						name = name,
 						link = link, -- This could be nil, if the item is money.
@@ -1927,17 +1927,22 @@ function RCLootCouncil:OnEvent(event, ...)
 		if self.lootSlotInfo[slot] then -- If not, this is the 2nd LOOT_CLEARED event for the same thing. -_-
 			local link = self.lootSlotInfo[slot].link
 			local quality = self.lootSlotInfo[slot].quality
-			self:Debug("OnLootSlotCleared()", slot, link)
+			self:Debug("OnLootSlotCleared()", slot, link, quality)
 			self.lootSlotInfo[slot] = nil
-
-			if quality and quality >= GetLootThreshold() and IsInInstance() then -- Only send when in instance
+			-- v2.8.1 NOTE Quality is not ready here. Functionality handling on ENCOUNTER_LOOT_RECEIVED
+		--[[	if quality and quality >= GetLootThreshold() and IsInInstance() then -- Only send when in instance
 				-- Note that we don't check if this is master looted or not. We only know this is looted by ourselves.
 				self:ScheduleTimer("UpdateAndSendRecentTradableItem", 1, link) -- Delay a bit, need some time to between item removed from loot slot and moved to the bag.
-			end
+			end]]
 
 			if self.isMasterLooter then
 				self:GetActiveModule("masterlooter"):OnLootSlotCleared(slot, link)
 			end
+		end
+	elseif event == "ENCOUNTER_LOOT_RECEIVED" then
+		self:Debug("Event:", event, ...)
+		if self:UnitIsUnit("player", select(5, ...)) then
+			self:ScheduleTimer("UpdateAndSendRecentTradableItem", 2, select(3,...))
 		end
 
 	else
