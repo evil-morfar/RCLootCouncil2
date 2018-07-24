@@ -1,3 +1,17 @@
+### v2.8.2
+---
+
+* **TradeUI**
+* Added an indicator for when you're in range of the trade target.
+* When in range, simply click the row in the TradeUI to initiate trade.
+* Note: There seems to be issues with automatically adding multiple items at once.
+* It also seems like something has changed that doesn't allow for as automatic trading as I'd hoped.
+
+
+###### Bugfixes
+* *Fixed an issue preventing automatic trading (#347).*
+
+
 ### v2.8.1
 ---
 ###### Bugfixes
