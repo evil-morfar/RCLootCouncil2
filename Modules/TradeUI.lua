@@ -73,6 +73,7 @@ end
 
 function TradeUI:Update(forceShow)
    if not self.frame then return self:Show(forceShow) end
+   wipe(self.frame.rows)
    for k, v in ipairs(addon.ItemStorage:GetAllItemsOfType("to_trade")) do
       self.frame.rows[k] = {
          link = v.link,
@@ -133,6 +134,7 @@ function TradeUI:OnEvent_TRADE_SHOW (event, ...)
    wipe(self.tradeItems)
    self.tradeTarget = addon:UnitName("NPC")
    local count = self:GetNumAwardedInBagsToTradeWindow()
+
    if count > 0 then
       -- TODO Make this optionally automatic
       LibDialog:Spawn("RCLOOTCOUNCIL_TRADE_ADD_ITEM", {count=count})
@@ -182,11 +184,9 @@ function TradeUI:AddAwardedInBagsToTradeWindow()
    local items = addon.ItemStorage:GetAllItemsMultiPred(
       funcTradeTargetIsRecipient, funcItemHasMoreTimeLeft, funcStorageTypeIsToTrade
    )
+   addon:Debug("Number of items to trade:", #items)
    for k, Item in ipairs(items) do
-      while (GetTradePlayerItemInfo(tradeIndex)) do
-			tradeIndex = tradeIndex	+ 1
-		end
-		if tradeIndex > _G.MAX_TRADE_ITEMS - 1 then -- All available slots used (The last trade slot is "Will not be traded" slot).
+      if k > _G.MAX_TRADE_ITEMS - 1 then -- All available slots used (The last trade slot is "Will not be traded" slot).
 			break
 		end
       local c,s = addon.ItemStorage:GetItemContainerSlot(Item)
@@ -194,15 +194,18 @@ function TradeUI:AddAwardedInBagsToTradeWindow()
          -- TODO Print something to the user?
          return addon:Debug("Error TradeUI:", "Item missing when attempting to trade", Item.link, self.tradeTarget)
       end
-      if self.trading then -- REVIEW Redundant?
+      if self.isTrading then
+         addon:Debug("#Trading", k)
          local _, _, locked, _, _, _, link = GetContainerItemInfo(c, s)
-         if addon:ItemIsItem(link, Item.link) and not locked then -- Extra check, probably also redundant
+         if addon:ItemIsItem(link, Item.link) then -- Extra check, probably also redundant
             ClearCursor()
 				PickupContainerItem(c, s)
-				ClickTradeButton(tradeIndex)
+				ClickTradeButton(k)
          end
       end
    end
+   -- TradeFrameTradeButton:Click() REVIEW When calling this, it seems trade is accepted and then immediately unaccepted. Called it through a timer yield ADDON_ACTION_BLOCKED error.
+   -- It might just be protected (HW) after all, but it's odd it doesn't always produce an error.
 end
 
 --------------------------------------------------------
@@ -230,7 +233,7 @@ function TradeUI:GetFrame()
    f.st:RegisterEvents({
       ["OnClick"] = function(rowFrame, cellFrame, data, cols, row, realrow, column, table, button, ...)
          if CheckInteractDistance(Ambiguate(data[realrow].winner, "short"), 2) then -- 2 for trade distance
-            InitiateTrade("target")
+            InitiateTrade(Ambiguate(data[realrow].winner, "short"))
          else
             addon:Debug("TradeUI row OnClick - unit not in trade distance")
          end
