@@ -34,6 +34,7 @@ function TradeUI:OnInitialize()
       { name = "", width = 120,},          -- Item Link
       { name = "", width = ROW_HEIGHT - 5},-- Arrow
       { name = "", width = 100,},          -- Recipient
+      { name = "", width = 40,},           -- Trade
    }
    self:Enable()
 end
@@ -62,7 +63,7 @@ end
 -- By default, TradeUI hides when empty
 function TradeUI:Show(forceShow)
    self.frame = self:GetFrame()
-   update_targets_timer = self:ScheduleRepeatingTimer("Update", UPDATE_TIME_INTERVAL)
+   update_targets_timer = self:ScheduleRepeatingTimer(function() self.frame.st:Refresh() end, UPDATE_TIME_INTERVAL)
    self:Update(forceShow)
 end
 
@@ -83,6 +84,7 @@ function TradeUI:Update(forceShow)
             {value = v.link},
             {value = "-->"},
             {value = addon.Ambiguate(v.args.recipient), color = addon:GetClassColor(addon.candidates[v.args.recipient] and addon.candidates[v.args.recipient].class or "nothing")},
+            {value = _G.TRADE, color = self.GetTradeLabelColor, colorargs = {self, v.args.recipient},},
          }
       }
    end
@@ -252,4 +254,8 @@ function TradeUI:GetFrame()
    end)
 
    return f
+end
+
+function TradeUI:GetTradeLabelColor(target)
+   return CheckInteractDistance(Ambiguate(target, "short"), 2) and {r=0,g=1,b=0,a=1} or {r=1,g=0,b=0,a=1}
 end
