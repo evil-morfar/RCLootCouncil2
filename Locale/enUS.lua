@@ -482,3 +482,7 @@ L["You're already running a session."] = true
 L["Your note:"] = true
 
 L["error_test_as_non_leader"] = "You cannot initiate a test while in a group without being the group leader."
+L["trade_complete_message"] = "%s traded %s to %s."
+
+L["opt_printCompletedTrade_Name"] = "Trade Messages"
+L["opt_printCompletedTrade_Desc"] = "Check to enable a message every time a candidate trades an awarded item to the winner."

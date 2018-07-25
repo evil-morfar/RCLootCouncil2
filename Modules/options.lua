@@ -524,6 +524,12 @@ function addon:OptionsTable()
 										desc = L["autoloot_others_BoE_desc"],
 										type = "toggle",
 									},
+									printCompletedTrades = {
+										order = 9,
+										name = L["opt_printCompletedTrade_Name"],
+										desc = L["opt_printCompletedTrade_Desc"],
+										type = "toggle",
+									},
 								},
 							},
 							voteOptions = {

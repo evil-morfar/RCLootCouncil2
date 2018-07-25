@@ -1,5 +1,9 @@
 ### v2.8.3
 ---
+* **Trading**
+* The Group Leader now has an option to see whenever candidates trades items to the winners.
+
+
 ###### Bugfixes
 * *Removed usage popup for non group leaders.*
 

@@ -583,10 +583,19 @@ function RCLootCouncilML:OnCommReceived(prefix, serializedMsg, distri, sender)
 
 			elseif command == "tradable" then -- Raid members send the info of the tradable item he looted.
 				self:HandleReceivedTradeable(unpack(data), sender)
+
+			elseif command == "trade_complete" then
+				self:OnTradeComplete(unpack(data))
 			end
 		else
 			addon:Debug("Error in deserializing ML comm: ", command)
 		end
+	end
+end
+
+function RCLootCouncilML:OnTradeComplete(link, recipient, trader)
+	if db.printCompletedTrades then
+		addon:Print(format(L["trade_complete_message"], trader, link, recipient))
 	end
 end
 

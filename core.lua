@@ -217,6 +217,7 @@ function RCLootCouncil:OnInitialize()
 			observe = false, -- observe mode on/off
 			silentAutoPass = false, -- Show autopass message
 			printResponse = false, -- Print response in chat
+			printCompletedTrades = true, -- Print whenever raiders trade their item to the winner
 			--neverML = false, -- Never use the addon as ML
 			minimizeInCombat = false,
 			iLvlDecimal = false,
