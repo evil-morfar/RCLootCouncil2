@@ -176,9 +176,10 @@ local function checkSV()
          if entry:find("ENCOUNTER_END") then
             lastEncounter = entry -- Log for later
 
-         elseif entry:find("lootTable") then
+         elseif entry:find("SlootTable") and not entry:find("xrealm") then
+
             --"20:08:43 - Event: (ENCOUNTER_END) (2076) (Garothi Worldbreaker) (16) (20) (0)", -- [803]
-            print("\nSession ", num, lastEncounter:match("%b() %b() (%b())"), "ML: " .. entry:match(":%) %((%w+)%)",-35))
+            if lastEncounter then print("\nSession ", num, lastEncounter:match("%b() %b() (%b())"), "ML: " .. entry:match(":%) %((%w+)%)",-35)) end
             -- Extract time
             print("Time:",entry:sub(1,9), "Index:", i)
             -- And message
@@ -186,7 +187,7 @@ local function checkSV()
             local l1,l2,lt = AceSer:Deserialize(msg)
             for k,v in ipairs(unpack(lt)) do
                print("|  "..k,v.ilvl, v.link)
-               print("|  "..v.equipLoc, v.subType)
+               print("|  "..v.equipLoc, v.subType, v.owner)
                --print("Classes:", v.classes)
             end
             num = num + 1
