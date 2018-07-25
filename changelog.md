@@ -1,3 +1,9 @@
+### v2.8.3
+---
+###### Bugfixes
+* *Removed usage popup for non group leaders.*
+
+
 ### v2.8.2
 ---
 

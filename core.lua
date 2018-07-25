@@ -2030,11 +2030,13 @@ function RCLootCouncil:OnRaidEnter(arg)
 	if IsPartyLFG() or db.usage.never then return end	-- We can't use in lfg/lfd so don't bother
 	-- Check if we can use in party
 	if not IsInRaid() and db.onlyUseInRaids then return end
-	if db.usage.leader then
-		self:StartHandleLoot()
-	-- We must ask the player for usage
-	elseif db.usage.ask_leader then
-		return LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_USAGE")
+	if UnitIsGroupLeader("player") then
+		if db.usage.leader then
+			self:StartHandleLoot()
+		-- We must ask the player for usage
+		elseif db.usage.ask_leader then
+			return LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_USAGE")
+		end
 	end
 end
 
