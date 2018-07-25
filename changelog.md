@@ -2,6 +2,7 @@
 ---
 * **Trading**
 * The Group Leader now has an option to see whenever candidates trades items to the winners.
+* A warning is printed if a candidate trades an awarded item to the wrong person.
 
 
 ###### Bugfixes

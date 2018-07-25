@@ -167,6 +167,9 @@ function TradeUI:OnEvent_UI_INFO_MESSAGE (event, ...)
          if Item and addon:UnitIsUnit(self.tradeTarget, Item.args.recipient) then
             -- REVIEW This check is probably redundant, but currently TRADE_ACCEPT_UPDATE just adds all traded items, not just those we track
             addon:SendCommand("group", "trade_complete", link, self.tradeTarget, addon.playerName)
+         elseif Item and not addon:UnitIsUnit(self.tradeTarget, Item.args.recipient) then
+            -- Player trades the item to someone else than the winner
+            addon:SendCommand("group", "trade_WrongWinner", link, self.tradeTarget, addon.playerName, Item.args.recipient)
          end
          addon.ItemStorage:RemoveItem(link)
       end
