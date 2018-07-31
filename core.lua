@@ -2684,9 +2684,8 @@ end
 -- @param parent The frame that should hold the button.
 -- @return The button object.
 function RCLootCouncil:CreateButton(text, parent)
-	local b = CreateFrame("Button", nil, parent, "UIPanelButtonTemplate")
+	local b = self.UI:New("Button", parent)
 	b:SetText(text)
-	b:SetSize(100,25)
 	return b
 end
 

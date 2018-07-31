@@ -276,30 +276,53 @@ do
 			entry.frame:SetPoint("TOPLEFT", parent, "TOPLEFT")
 
 			-------- Item Icon -------------
-			entry.icon = CreateFrame("Button", nil, entry.frame, "UIPanelButtonTemplate")
+			-- entry.icon = CreateFrame("Button", nil, entry.frame, "UIPanelButtonTemplate")
+			-- entry.icon:SetSize(ENTRY_HEIGHT*0.78, ENTRY_HEIGHT*0.78)
+			-- entry.icon:SetPoint("TOPLEFT", entry.frame, "TOPLEFT", 9, -5)
+			-- entry.icon:SetScript("OnEnter", function()
+			-- 	if not entry.item.link then return end
+			-- 	addon:CreateHypertip(entry.item.link)
+			-- 	GameTooltip:AddLine("")
+			-- 	GameTooltip:AddLine(L["always_show_tooltip_howto"], nil, nil, nil, true)
+			-- 	GameTooltip:Show()
+			-- end)
+			-- entry.icon:SetScript("OnLeave", function() addon:HideTooltip() end)
+			-- entry.icon:SetScript("OnClick", function()
+			-- 	if not entry.item.link then return end
+			-- 	if ( IsModifiedClick() ) then
+			-- 		HandleModifiedItemClick(entry.item.link);
+			-- 	end
+			-- 	if entry.icon.lastClick and GetTime() - entry.icon.lastClick <= 0.5 then
+			-- 		addon:Getdb().modules["RCLootFrame"].alwaysShowTooltip = not addon:Getdb().modules["RCLootFrame"].alwaysShowTooltip
+			-- 		LootFrame:Update()
+			-- 	else
+			-- 		entry.icon.lastClick = GetTime()
+			-- 	end
+			-- end)
+			entry.icon = addon.UI:New("Icon", entry.frame)
 			entry.icon:SetSize(ENTRY_HEIGHT*0.78, ENTRY_HEIGHT*0.78)
 			entry.icon:SetPoint("TOPLEFT", entry.frame, "TOPLEFT", 9, -5)
-			entry.icon:SetScript("OnEnter", function()
-				if not entry.item.link then return end
-				addon:CreateHypertip(entry.item.link)
-				GameTooltip:AddLine("")
-				GameTooltip:AddLine(L["always_show_tooltip_howto"], nil, nil, nil, true)
-				GameTooltip:Show()
-			end)
-			entry.icon:SetScript("OnLeave", function() addon:HideTooltip() end)
-			entry.icon:SetScript("OnClick", function()
-				if not entry.item.link then return end
-				if ( IsModifiedClick() ) then
-					HandleModifiedItemClick(entry.item.link);
-				end
-				if entry.icon.lastClick and GetTime() - entry.icon.lastClick <= 0.5 then
-					addon:Getdb().modules["RCLootFrame"].alwaysShowTooltip = not addon:Getdb().modules["RCLootFrame"].alwaysShowTooltip
-					LootFrame:Update()
-				else
-					entry.icon.lastClick = GetTime()
-				end
-			end)
-
+			entry.icon:SetMultipleScripts({
+				OnEnter = function()
+					if not entry.item.link then return end
+					addon:CreateHypertip(entry.item.link)
+					GameTooltip:AddLine("")
+					GameTooltip:AddLine(L["always_show_tooltip_howto"], nil, nil, nil, true)
+					GameTooltip:Show()
+				end,
+				OnClick = function()
+					if not entry.item.link then return end
+					if ( IsModifiedClick() ) then
+						HandleModifiedItemClick(entry.item.link);
+					end
+					if entry.icon.lastClick and GetTime() - entry.icon.lastClick <= 0.5 then
+						addon:Getdb().modules["RCLootFrame"].alwaysShowTooltip = not addon:Getdb().modules["RCLootFrame"].alwaysShowTooltip
+						LootFrame:Update()
+					else
+						entry.icon.lastClick = GetTime()
+					end
+				end,
+			})
 			entry.itemCount = entry.icon:CreateFontString(nil, "OVERLAY", "NumberFontNormalLarge")
 			local fileName, fontHeight, flags = entry.itemCount:GetFont()
 			entry.itemCount:SetFont(fileName, 20, flags)
