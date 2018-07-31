@@ -530,6 +530,12 @@ function addon:OptionsTable()
 										desc = L["opt_printCompletedTrade_Desc"],
 										type = "toggle",
 									},
+									rejectTrade = {
+										order = 10,
+										name = L["opt_rejectTrade_Name"],
+										desc = L["opt_rejectTrade_Desc"],
+										type = "toggle",
+									}
 								},
 							},
 							voteOptions = {

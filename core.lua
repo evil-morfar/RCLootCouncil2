@@ -224,6 +224,7 @@ function RCLootCouncil:OnInitialize()
 			iLvlDecimal = false,
 			showSpecIcon = false,
 			sortItems = true, -- Sort sessions by item type and item level
+			rejectTrade = false, -- Can candidates choose not to give loot to the council
 
 			UI = { -- stores all ui information
 				['**'] = { -- Defaults
@@ -715,11 +716,16 @@ function RCLootCouncil:UpdateAndSendRecentTradableItem(link)
 			local _, _, _, _, _, _, link2 = GetContainerItemInfo(i, j)
 			if link2 and self:ItemIsItem(link, link2) then
 				if self:GetContainerItemTradeTimeRemaining(i, j) > 0 then
+					if self.mldb.rejectTrade then
+						LibDialog:Spawn("RCLOOTCOUNCIL_KEEP_ITEM", link)
+						return
+					end
 					self:SendCommand("group", "tradable", link)
 					return
 				else -- Not tradeable
 					-- REVIEW: This might fail if the recipient happens to have an exact copy of the item
 					self:SendCommand("group", "not_tradeable", link)
+					return
 				end
 			end
 		end

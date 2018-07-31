@@ -110,23 +110,6 @@ LibDialog:Register("RCLOOTCOUNCIL_CONFIRM_AWARD_LATER", {
    show_while_dead = true,
 })
 
-LibDialog:Register("RCLOOTCOUNCIL_TRADE_ADD_ITEM", {
-   text = "something_went_wrong",
-   on_show = function(self, data)
-      self.text:SetText(format(L["rclootcouncil_trade_add_item_confirm"], data.count, addon:GetUnitClassColoredName("npc")))
-   end,
-   buttons = {
-      {  text = _G.YES,
-         on_click = function(self, data)
-            RCLootCouncil.TradeUI:AddAwardedInBagsToTradeWindow()
-         end,
-      },
-      {  text = _G.NO,
-      },
-   },
-   hide_on_escape = true,
-   show_while_dead = true,
-})
 
 LibDialog:Register("RCLOOTCOUNCIL_CONFIRM_REANNOUNCE_ALL_ITEMS", {
    text = "something_went_wrong",
@@ -148,4 +131,60 @@ LibDialog:Register("RCLOOTCOUNCIL_CONFIRM_REANNOUNCE_ALL_ITEMS", {
    },
    hide_on_escape = true,
    show_while_dead = true,
+})
+
+----------- Common popups ---------------
+LibDialog:Register("RCLOOTCOUNCIL_TRADE_ADD_ITEM", {
+   text = "something_went_wrong",
+   on_show = function(self, data)
+      self.text:SetText(format(L["rclootcouncil_trade_add_item_confirm"], data.count, addon:GetUnitClassColoredName("npc")))
+   end,
+   buttons = {
+      {  text = _G.YES,
+         on_click = function(self, data)
+            addon.TradeUI:AddAwardedInBagsToTradeWindow()
+         end,
+      },
+      {  text = _G.NO,
+      },
+   },
+   hide_on_escape = true,
+   show_while_dead = true,
+})
+
+LibDialog:Register("RCLOOTCOUNCIL_KEEP_ITEM", {
+   text = "something_went_wrong",
+   on_show = function(self, link)
+      self.text:SetText(format(L["Do you want to keep %s for yourself?"], link))
+      local tex = select(5, GetItemInfoInstant(link))
+      self.icon:SetTexture(tex)
+      local icon = addon.UI:New("Icon", self, tex)
+      icon:SetSize(self.icon:GetSize())
+      icon:SetPoint("TOPLEFT", self.icon, "TOPLEFT")
+      icon:SetScript("OnEnter", function() addon:CreateHypertip(link) end)
+      icon:Show()
+      self.icon2 = icon
+   end,
+   on_cancel = function(self, link)
+      self.buttons[2]:Click(self, link)
+      self.icon2:Hide()
+   end,
+   buttons = {
+      {  text = _G.YES,
+         on_click = function(self, link)
+            addon:SendCommand("group", "rejected_trade", link)
+            self.icon2:Hide()
+         end,
+      },
+      {  text = _G.NO,
+         on_click = function(self, link)
+            addon:SendCommand("group", "tradable", link)
+            self.icon2:Hide()
+         end,
+      },
+   },
+   icon = "",
+   hide_on_escape = true,
+   show_while_dead = true,
+   no_close_button = true,
 })

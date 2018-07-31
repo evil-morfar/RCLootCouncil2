@@ -188,6 +188,7 @@ L["Discord friendly output."] = true
 L["disenchant_desc"] = "Select to use this reason when awarding an item via the 'Disenchant' button"
 L["Double click to delete this entry."] = true
 L["Done syncing"] = true
+L["Do you want to keep %s for yourself?"] = true
 L["Dropped by:"] = true
 L["Edit Entry"] = true
 L["Enable Loot History"] = true
@@ -489,6 +490,8 @@ L["trade_wrongwinner_message"] = "WARNING: %s traded %s to %s instead of %s!"
 
 L["opt_printCompletedTrade_Name"] = "Trade Messages"
 L["opt_printCompletedTrade_Desc"] = "Check to enable a message every time a candidate trades an awarded item to the winner."
+L["opt_rejectTrade_Name"] = "Allow Keeping"
+L["opt_rejectTrade_Desc"] = "Check to enable candidates to choose whether they want to 'give' the item to the council or not. If unchecked, all tradeable PL items are added automatically."
 L["non_tradeable_reason_not_tradeable"] = "Not Tradeable"
 L["non_tradeable_reason_rejected_trade"] = "Wanted to keep item"
 L["non_tradeable_reason_nil"] = "Unknown"

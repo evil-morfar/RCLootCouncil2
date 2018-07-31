@@ -489,6 +489,7 @@ function RCLootCouncilML:BuildMLdb()
 		timeout			= db.timeout,
 		tierButtonsEnabled = db.tierButtonsEnabled or nil,
 		relicButtonsEnabled = db.relicButtonsEnabled or nil,
+		rejectTrade 	= db.rejectTrade or nil
 	}
 
 	addon:SendMessage("RCMLBuildMLdb", MLdb)

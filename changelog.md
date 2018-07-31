@@ -4,14 +4,22 @@
 * The Group Leader now has an option to see whenever candidates trades items to the winners.
 * A warning is printed if a candidate trades an awarded item to the wrong person.
 
+
 * **Personal Loot**
 * The council can now see all items looted whether tradeable or not.
 * New buttons will appear for any items that can't be added to the session under the voting frame.
 
 
+* The Group Leader can now choose whether candidates can keep their items.
+* If enabled (disabled by default) candidates will see a popup whenever they loot a tradeable item.
+
+
 ###### Bugfixes
 * *Removed usage popup for non group leaders.*
 
+###### Dev
+* Two new comm messages (`not_tradeable` and `rejected_trade`).
+* Added UI section. This is the beginning of a consolidation of UI elements - everything will use this format soon ish.
 
 ### v2.8.2
 ---
