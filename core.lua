@@ -182,12 +182,10 @@ function RCLootCouncil:OnInitialize()
 			usage = { -- State of enabledness
 				--ml = false,				-- Enable when ML
 				--ask_ml = true,			-- Ask before enabling when ML
-				leader = false,		-- Enable when leader
-				ask_leader = true,	-- Ask before enabling when leader
 				never = false,			-- Never enable
 				pl = false,				-- Always enable with PL
-				ask_pl = false,			-- Ask before enabling when PL
-				state = "ask_ml", 	-- Current state
+				ask_pl = true,			-- Ask before enabling when PL
+				state = "ask_pl", 	-- Current state
 			},
 			onlyUseInRaids = true,
 			ambiguate = false, -- Append realm names to players
@@ -2045,10 +2043,10 @@ function RCLootCouncil:OnRaidEnter(arg)
 	-- Check if we can use in party
 	if not IsInRaid() and db.onlyUseInRaids then return end
 	if UnitIsGroupLeader("player") then
-		if db.usage.leader then
+		if db.usage.pl then
 			self:StartHandleLoot()
 		-- We must ask the player for usage
-		elseif db.usage.ask_leader then
+		elseif db.usage.ask_pl then
 			return LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_USAGE")
 		end
 	end
