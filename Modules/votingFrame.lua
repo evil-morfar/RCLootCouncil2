@@ -915,14 +915,14 @@ function RCVotingFrame:AddNonTradeable(link, owner, reason)
 	local b = addon.UI:New("IconBordered", self.frame.content, texture)
 	b:Desaturate()
 	if self.numNonTradeables == 1 then
-		b:SetPoint("TOPLEFT", self.frame.content, "BOTTOMLEFT", 0, -5)
+		b:SetPoint("TOPLEFT", self.frame.content, "BOTTOMLEFT", 0, -2)
 	else
 		b:SetPoint("LEFT", self.nonTradeablesButtons[self.numNonTradeables - 1], "RIGHT", 5)
 	end
 	b:SetScript("OnEnter", function()
 		addon:CreateHypertip(link)
 		GameTooltip:AddLine(" ")
-		GameTooltip:AddDoubleLine(L["Looted by:"], addon.Ambiguate(owner), nil, nil, nil, 1,1,1)
+		GameTooltip:AddDoubleLine(L["Looted by:"], addon:GetUnitClassColoredName(addon.Ambiguate(owner)))
 		GameTooltip:AddDoubleLine(L["Non-tradeable reason:"], L["non_tradeable_reason_"..tostring(reason)], nil, nil, nil,1,1,1)
 		GameTooltip:Show()
 	end)
