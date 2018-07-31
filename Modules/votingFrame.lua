@@ -57,6 +57,8 @@ function RCVotingFrame:OnInitialize()
 	-- If you want to add or remove columns, you should do so on your OnInitialize. See RCVotingFrame:RemoveColumn() for removal.
 	self.scrollCols = {unpack(defaultScrollTableData)}
 
+	self.nonTradeablesButtons = {}
+
 	menuFrame = CreateFrame("Frame", "RCLootCouncil_VotingFrame_RightclickMenu", UIParent, "Lib_UIDropDownMenuTemplate")
 	filterMenu = CreateFrame("Frame", "RCLootCouncil_VotingFrame_FilterMenu", UIParent, "Lib_UIDropDownMenuTemplate")
 	enchanters = CreateFrame("Frame", "RCLootCouncil_VotingFrame_EnchantersMenu", UIParent, "Lib_UIDropDownMenuTemplate")
@@ -79,6 +81,7 @@ function RCVotingFrame:OnEnable()
 	updateFrame:Show()
 	needUpdate = false
 	noUpdateTimeRemaining = 0
+	self.numNonTradeables = 0
 end
 
 function RCVotingFrame:OnDisable() -- We never really call this
@@ -92,6 +95,7 @@ function RCVotingFrame:OnDisable() -- We never really call this
 	updateFrame:Hide()
 	needUpdate = false
 	noUpdateTimeRemaining = 0
+	self.numNonTradeables = 0
 end
 
 function RCVotingFrame:Hide()
@@ -111,6 +115,8 @@ function RCVotingFrame:Show()
 end
 
 function RCVotingFrame:ReceiveLootTable(lt)
+	self:HideNonTradeables()
+	self.numNonTradeables = 0
 	active = true
 	lootTable = CopyTable(lt)
 	self:Setup(lootTable)
@@ -305,6 +311,9 @@ function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
 					end
 				end
 				self:SwitchSession(session)
+
+			elseif command == "not_tradeable" or command == "rejected_trade" then
+				self:AddNonTradeable(unpack(data), sender, command)
 			end
 		end
 	end
@@ -895,6 +904,37 @@ function RCVotingFrame:UpdateSessionButton(i, texture, link, awarded)
 	end
 	btn:SetScript("OnEnter", function() addon:CreateTooltip(unpack(lines)) end)
 	return btn
+end
+
+function RCVotingFrame:AddNonTradeable(link, owner, reason)
+	self.numNonTradeables = self.numNonTradeables + 1
+	local texture = select(5, GetItemInfoInstant(link))
+	local b = addon.UI:New("IconBordered", self.frame.content, texture)
+	b:Desaturate()
+	if self.numNonTradeables == 1 then
+		b:SetPoint("TOPLEFT", self.frame.content, "BOTTOMLEFT", 0, -5)
+	else
+		b:SetPoint("LEFT", self.nonTradeablesButtons[self.numNonTradeables - 1], "RIGHT", 5)
+	end
+	b:SetScript("OnEnter", function()
+		addon:CreateHypertip(link)
+		GameTooltip:AddLine(" ")
+		GameTooltip:AddDoubleLine(L["Looted by:"], owner, nil, nil, nil, 1,1,1)
+		GameTooltip:AddDoubleLine(L["Non-tradeable reason:"], L["non_tradeable_reason_"..tostring(reason)], nil, nil, nil,1,1,1)
+		GameTooltip:Show()
+	end)
+	if reason == "rejected_trade" then
+		b:SetBorderColor("purple")
+	else
+		b:SetBorderColor("grey")
+	end
+	b:SetAlpha(0.7)
+	b:Show()
+	self.nonTradeablesButtons[self.numNonTradeables] = b
+end
+
+function RCVotingFrame:HideNonTradeables()
+	for _,v in ipairs(self.nonTradeablesButtons) do v:Hide() end
 end
 
 

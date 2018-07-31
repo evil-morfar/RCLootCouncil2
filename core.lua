@@ -109,9 +109,9 @@ function RCLootCouncil:OnInitialize()
 	self.recentReconnectRequest = false
 	self.currentInstanceName = ""
 	self.bossName = nil -- Updates after each encounter
-	self.recentTradableItem = nil -- The last tradeable item not below the loot threshold the player gets since the last encounter ends
 	self.lootOpen = false 	-- is the ML lootWindow open or closed?
 	self.lootSlotInfo = {}  -- Items' data currently in the loot slot. Need this because inside LOOT_SLOT_CLEARED handler, GetLootSlotLink() returns invalid link.
+	self.nonTradeables = {} -- List of non tradeable items received since the last ENCOUNTER_END
 
 	self.verCheckDisplayed = false -- Have we shown a "out-of-date"?
 	self.moduleVerCheckDisplayed = {} -- Have we shown a "out-of-date" for a module? The key of the table is the baseName of the module.
@@ -713,11 +713,14 @@ function RCLootCouncil:UpdateAndSendRecentTradableItem(link)
 	for i = 0, NUM_BAG_SLOTS do
 		for j = 1, GetContainerNumSlots(i) do
 			local _, _, _, _, _, _, link2 = GetContainerItemInfo(i, j)
-			if link2 and self:ItemIsItem(link, link2)
-				and self:GetContainerItemTradeTimeRemaining(i, j) > 0 then
-				self.recentTradableItem = link
-				self:SendCommand("group", "tradable", link)
-				return
+			if link2 and self:ItemIsItem(link, link2) then
+				if self:GetContainerItemTradeTimeRemaining(i, j) > 0 then
+					self:SendCommand("group", "tradable", link)
+					return
+				else -- Not tradeable
+					-- REVIEW: This might fail if the recipient happens to have an exact copy of the item
+					self:SendCommand("group", "not_tradable", link)
+				end
 			end
 		end
 	end
@@ -1046,6 +1049,8 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 				self.Sync:SyncAckReceived(unpack(data))
 			elseif command == "syncNack" then
 				self.Sync:SyncNackReceived(unpack(data))
+			elseif command == "not_tradable" then
+				tinsert(self.nonTradeables, {link = unpack(data), reason = command, owner = self:UnitName(sender)})
 			end
 		else
 			-- Most likely pre 2.0 command
@@ -1885,6 +1890,7 @@ function RCLootCouncil:OnEvent(event, ...)
 	elseif event == "ENCOUNTER_END" then
 		self:DebugLog("Event:", event, ...)
 		self.bossName = select(2, ...) -- Extract encounter name
+		wipe(self.nonTradeables)
 
 	elseif event == "LOOT_OPENED" then
 		self:Debug("Event:", event, ...)
