@@ -20,6 +20,7 @@
 ###### Dev
 * Two new comm messages (`not_tradeable` and `rejected_trade`).
 * Added UI section. This is the beginning of a consolidation of UI elements - everything will use this format soon ish.
+* Backwards compatibility isn't broken yet, but will be at some point.
 
 ### v2.8.2
 ---
