@@ -16,6 +16,7 @@ function Object:New(parent, name, texture)
       edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
       edgeSize = 18,
    })
+   b:SetScript("OnLeave", addon.UI.HideTooltip)
    b.SetBorderColor = self.SetBorderColor
    b.Desaturate = self.Desaturate
 	return b
@@ -30,6 +31,12 @@ function Object:SetBorderColor(color)
 		self:GetNormalTexture():SetVertexColor(1,1,1)
    elseif color == "grey" or color == "gray" then
       self:SetBackdropBorderColor(0.75,0.75,0.75,1)
+      self:GetNormalTexture():SetVertexColor(1,1,1)
+   elseif color == "red" then
+      self:SetBackdropBorderColor(1,0,0,1)
+      self:GetNormalTexture():SetVertexColor(1,1,1)
+   elseif color == "purple" then
+      self:SetBackdropBorderColor(0.65,0.4,1,1)
       self:GetNormalTexture():SetVertexColor(1,1,1)
    else -- Default to white
       self:SetBackdropBorderColor(1,1,1,1) -- white
