@@ -7,11 +7,11 @@
 
 local addon = LibStub("AceAddon-3.0"):GetAddon("RCLootCouncil")
 local db = addon:Getdb()
-local private = { elements = {}, num = {}}
-addon.UI = {CreateFrame = _G.CreateFrame} -- Embed CreateFrame into UI as it's used by all elements
+local private = { elements = {}, num = {}, embeds = {}}
+addon.UI = {CreateFrame = _G.CreateFrame, private = private} -- Embed CreateFrame into UI as it's used by all elements
 
 -- GLOBALS: _G
-local error, format, type = error, format, type
+local error, format, type, pairs = error, format, type, pairs
 
 --- Exposed function for creating new UI elements
 -- @param type The type of the element.
@@ -47,15 +47,28 @@ function private:New(type, parent, name, ...)
    if self.elements[type] then
       parent = parent or _G.UIParent
       if name then
-         return self.elements[type]:New(parent, name, ...)
+         return self:Embed(self.elements[type]:New(parent, name, ...))
       else
          -- Create a name
          if not self.num[type] then self.num[type] = 0 end
          self.num[type] = self.num[type] + 1
-         return self.elements[type]:New(parent, "RC_UI_"..type..self.num[type], ...)
+         return self:Embed(self.elements[type]:New(parent, "RC_UI_"..type..self.num[type], ...))
       end
    else
       addon:Debug("UI Error in :New(): No such element", type, name)
       error(format("UI Error in :New(): No such element: %s %s", type, name))
+   end
+end
+
+function private:Embed(object)
+   for k,v in pairs(self.embeds) do
+      object[k] = v
+   end
+   return object
+end
+
+private.embeds["SetMultipleScripts"] = function(object, scripts)
+   for k,v in pairs(scripts) do
+      object:SetScript(k,v)
    end
 end
