@@ -28,6 +28,9 @@ function Object:SetBorderColor(color)
    elseif color == "yellow" then
       self:SetBackdropBorderColor(1,1,0,1) -- yellow
 		self:GetNormalTexture():SetVertexColor(1,1,1)
+   elseif color == "grey" or color == "gray" then
+      self:SetBackdropBorderColor(0.75,0.75,0.75,1)
+      self:GetNormalTexture():SetVertexColor(1,1,1)
    else -- Default to white
       self:SetBackdropBorderColor(1,1,1,1) -- white
 		self:GetNormalTexture():SetVertexColor(0.5,0.5,0.5)
