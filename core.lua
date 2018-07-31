@@ -719,7 +719,7 @@ function RCLootCouncil:UpdateAndSendRecentTradableItem(link)
 					return
 				else -- Not tradeable
 					-- REVIEW: This might fail if the recipient happens to have an exact copy of the item
-					self:SendCommand("group", "not_tradable", link)
+					self:SendCommand("group", "not_tradeable", link)
 				end
 			end
 		end
@@ -1049,8 +1049,8 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 				self.Sync:SyncAckReceived(unpack(data))
 			elseif command == "syncNack" then
 				self.Sync:SyncNackReceived(unpack(data))
-			elseif command == "not_tradable" then
-				tinsert(self.nonTradeables, {link = unpack(data), reason = command, owner = self:UnitName(sender)})
+			elseif command == "not_tradeable" or command == "rejected_trade" then
+				tinsert(self.nonTradeables, {link = (unpack(data)), reason = command, owner = self:UnitName(sender)})
 			end
 		else
 			-- Most likely pre 2.0 command

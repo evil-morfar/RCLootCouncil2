@@ -117,6 +117,9 @@ end
 function RCVotingFrame:ReceiveLootTable(lt)
 	self:HideNonTradeables()
 	self.numNonTradeables = 0
+	for k,v in ipairs(addon.nonTradeables) do -- We might have received some before getting the lootTable
+		self:AddNonTradeable(v.link, v.owner, v.reason)
+	end
 	active = true
 	lootTable = CopyTable(lt)
 	self:Setup(lootTable)
@@ -313,7 +316,7 @@ function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
 				self:SwitchSession(session)
 
 			elseif command == "not_tradeable" or command == "rejected_trade" then
-				self:AddNonTradeable(unpack(data), sender, command)
+				self:AddNonTradeable(unpack(data), addon:UnitName(sender), command)
 			end
 		end
 	end
@@ -919,7 +922,7 @@ function RCVotingFrame:AddNonTradeable(link, owner, reason)
 	b:SetScript("OnEnter", function()
 		addon:CreateHypertip(link)
 		GameTooltip:AddLine(" ")
-		GameTooltip:AddDoubleLine(L["Looted by:"], owner, nil, nil, nil, 1,1,1)
+		GameTooltip:AddDoubleLine(L["Looted by:"], addon.Ambiguate(owner), nil, nil, nil, 1,1,1)
 		GameTooltip:AddDoubleLine(L["Non-tradeable reason:"], L["non_tradeable_reason_"..tostring(reason)], nil, nil, nil,1,1,1)
 		GameTooltip:Show()
 	end)
