@@ -589,7 +589,7 @@ function RCLootCouncilML:OnCommReceived(prefix, serializedMsg, distri, sender)
 				self:OnTradeComplete(unpack(data))
 			elseif command == "trade_WrongWinner" then
 				local link, recipient, trader, winner = unpack(data)
-				addon:Print(format(L["trade_wrongwinner_message"], trader, link, recipient, winner))
+				addon:Print(format(L["trade_wrongwinner_message"], addon.Ambiguate(trader), link, addon.Ambiguate(recipient), addon.Ambiguate(winner)))
 			end
 		else
 			addon:Debug("Error in deserializing ML comm: ", command)
@@ -599,7 +599,7 @@ end
 
 function RCLootCouncilML:OnTradeComplete(link, recipient, trader)
 	if db.printCompletedTrades then
-		addon:Print(format(L["trade_complete_message"], trader, link, recipient))
+		addon:Print(format(L["trade_complete_message"], addon.Ambiguate(trader), link, addon.Ambiguate(recipient)))
 	end
 end
 
