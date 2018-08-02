@@ -896,6 +896,7 @@ function RCVotingFrame:UpdateSessionButton(i, texture, link, awarded)
 		btn:SetScript("Onclick", function() RCVotingFrame:SwitchSession(i); end)
 	end
 	-- then update it
+	btn:SetNormalTexture(texture or "Interface\\InventoryItems\\WoWUnknownItem01")
 	local lines = { format(L["Click to switch to 'item'"], link) }
 	if i == session then
 		btn:SetBorderColor("yellow")
