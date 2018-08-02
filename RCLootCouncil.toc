@@ -1,8 +1,8 @@
 ## Author: Potdisc
 ## Interface: 80000
-## Notes: Interface for running a Loot Council v2.8.2
+## Notes: Interface for running a Loot Council v2.8.3
 ## Title: RCLootCouncil
-## Version: 2.8.2
+## Version: 2.8.3
 ## SavedVariables: RCLootCouncilDB, RCLootCouncilLootDB
 ## OptionalDeps: LibStub, CallbackHandler-1.0, Ace3, lib-st, LibWindow-1.1, LibDialog-1.0
 
@@ -11,6 +11,9 @@ Locale\Locales.xml
 
 core.lua
 ml_core.lua
+
+UI\UI.lua
+UI\Widgets\widgets.xml
 
 Modules\Modules.xml
 

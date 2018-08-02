@@ -448,19 +448,6 @@ function addon:OptionsTable()
 												type = "header",
 												name = "",
 									},
-									leaderUsage = { -- Add leader options here since we can only make a single select dropdown
-										order = 3,
-										name = function() return self.db.profile.usage.ml and L["Always use when leader"] or L["Ask me when leader"] end,
-										desc = L["leaderUsage_desc"],
-										type = "toggle",
-										get = function() return self.db.profile.usage.leader or self.db.profile.usage.ask_leader end,
-										set = function(_, val)
-											self.db.profile.usage.leader, self.db.profile.usage.ask_leader = false, false -- Reset for zzzzz
-											if self.db.profile.usage.ml then self.db.profile.usage.leader = val end
-											if self.db.profile.usage.ask_ml then self.db.profile.usage.ask_leader = val end
-										end,
-										disabled = function() return self.db.profile.usage.never or self.db.profile.usage.pl or self.db.profile.usage.ask_pl end,
-									},
 									onlyUseInRaids = {
 										order = 4,
 										name = L["Only use in raids"],
@@ -530,6 +517,12 @@ function addon:OptionsTable()
 										desc = L["opt_printCompletedTrade_Desc"],
 										type = "toggle",
 									},
+									rejectTrade = {
+										order = 10,
+										name = L["opt_rejectTrade_Name"],
+										desc = L["opt_rejectTrade_Desc"],
+										type = "toggle",
+									}
 								},
 							},
 							voteOptions = {

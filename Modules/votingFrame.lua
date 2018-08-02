@@ -57,6 +57,8 @@ function RCVotingFrame:OnInitialize()
 	-- If you want to add or remove columns, you should do so on your OnInitialize. See RCVotingFrame:RemoveColumn() for removal.
 	self.scrollCols = {unpack(defaultScrollTableData)}
 
+	self.nonTradeablesButtons = {}
+
 	menuFrame = CreateFrame("Frame", "RCLootCouncil_VotingFrame_RightclickMenu", UIParent, "Lib_UIDropDownMenuTemplate")
 	filterMenu = CreateFrame("Frame", "RCLootCouncil_VotingFrame_FilterMenu", UIParent, "Lib_UIDropDownMenuTemplate")
 	enchanters = CreateFrame("Frame", "RCLootCouncil_VotingFrame_EnchantersMenu", UIParent, "Lib_UIDropDownMenuTemplate")
@@ -79,6 +81,7 @@ function RCVotingFrame:OnEnable()
 	updateFrame:Show()
 	needUpdate = false
 	noUpdateTimeRemaining = 0
+	self.numNonTradeables = 0
 end
 
 function RCVotingFrame:OnDisable() -- We never really call this
@@ -92,6 +95,7 @@ function RCVotingFrame:OnDisable() -- We never really call this
 	updateFrame:Hide()
 	needUpdate = false
 	noUpdateTimeRemaining = 0
+	self.numNonTradeables = 0
 end
 
 function RCVotingFrame:Hide()
@@ -111,6 +115,11 @@ function RCVotingFrame:Show()
 end
 
 function RCVotingFrame:ReceiveLootTable(lt)
+	self:HideNonTradeables()
+	self.numNonTradeables = 0
+	for k,v in ipairs(addon.nonTradeables) do -- We might have received some before getting the lootTable
+		self:AddNonTradeable(v.link, v.owner, v.reason)
+	end
 	active = true
 	lootTable = CopyTable(lt)
 	self:Setup(lootTable)
@@ -305,6 +314,9 @@ function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
 					end
 				end
 				self:SwitchSession(session)
+
+			elseif command == "not_tradeable" or command == "rejected_trade" then
+				self:AddNonTradeable(unpack(data), addon:UnitName(sender), command)
 			end
 		end
 	end
@@ -873,9 +885,7 @@ end
 function RCVotingFrame:UpdateSessionButton(i, texture, link, awarded)
 	local btn = sessionButtons[i]
 	if not btn then -- create the button
-		btn = CreateFrame("Button", "RCButton"..i, self.frame.sessionToggleFrame)
-		btn:SetSize(40,40)
-		--btn:SetText(i)
+		btn = addon.UI:NewNamed("IconBordered", self.frame.sessionToggleFrame, "RCButton"..i, texture)
 		if i == 1 then
 			btn:SetPoint("TOPRIGHT", self.frame.sessionToggleFrame)
 		elseif mod(i,10) == 1 then
@@ -884,38 +894,51 @@ function RCVotingFrame:UpdateSessionButton(i, texture, link, awarded)
 			btn:SetPoint("TOP", sessionButtons[i-1], "BOTTOM", 0, -2)
 		end
 		btn:SetScript("Onclick", function() RCVotingFrame:SwitchSession(i); end)
-		btn:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square")
-		btn:GetHighlightTexture():SetBlendMode("ADD")
-		btn:SetNormalTexture(texture or "Interface\\InventoryItems\\WoWUnknownItem01")
-		btn:GetNormalTexture():SetDrawLayer("BACKGROUND")
 	end
 	-- then update it
 	btn:SetNormalTexture(texture or "Interface\\InventoryItems\\WoWUnknownItem01")
-	-- Set the colored border and tooltips
-	btn:SetBackdrop({
-		bgFile = "",
-		edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
-		edgeSize = 18,
-		--insets = { left = -4, right = -4, top = -4, bottom = -4 }
-	})
 	local lines = { format(L["Click to switch to 'item'"], link) }
 	if i == session then
-		btn:SetBackdropBorderColor(1,1,0,1) -- yellow
-		--btn:SetBackdropColor(1,1,1,1)
-		btn:GetNormalTexture():SetVertexColor(1,1,1)
+		btn:SetBorderColor("yellow")
 	elseif awarded then
-		btn:SetBackdropBorderColor(0,1,0,1) -- green
-		--btn:SetBackdropColor(1,1,1,0.8)
-		btn:GetNormalTexture():SetVertexColor(0.8,0.8,0.8)
+		btn:SetBorderColor("green")
 		tinsert(lines, L["This item has been awarded"])
 	else
-		btn:SetBackdropBorderColor(1,1,1,1) -- white
-		--btn:SetBackdropColor(0.5,0.5,0.5,0.8)
-		btn:GetNormalTexture():SetVertexColor(0.5,0.5,0.5)
+		btn:SetBorderColor("white") -- white
 	end
 	btn:SetScript("OnEnter", function() addon:CreateTooltip(unpack(lines)) end)
-	btn:SetScript("OnLeave", function() addon:HideTooltip() end)
 	return btn
+end
+
+function RCVotingFrame:AddNonTradeable(link, owner, reason)
+	self.numNonTradeables = self.numNonTradeables + 1
+	local texture = select(5, GetItemInfoInstant(link))
+	local b = addon.UI:New("IconBordered", self.frame.content, texture)
+	b:Desaturate()
+	if self.numNonTradeables == 1 then
+		b:SetPoint("TOPLEFT", self.frame.content, "BOTTOMLEFT", 0, -2)
+	else
+		b:SetPoint("LEFT", self.nonTradeablesButtons[self.numNonTradeables - 1], "RIGHT", 5)
+	end
+	b:SetScript("OnEnter", function()
+		addon:CreateHypertip(link)
+		GameTooltip:AddLine(" ")
+		GameTooltip:AddDoubleLine(L["Looted by:"], addon:GetUnitClassColoredName(addon.Ambiguate(owner)))
+		GameTooltip:AddDoubleLine(L["Non-tradeable reason:"], L["non_tradeable_reason_"..tostring(reason)], nil, nil, nil,1,1,1)
+		GameTooltip:Show()
+	end)
+	if reason == "rejected_trade" then
+		b:SetBorderColor("purple")
+	else
+		b:SetBorderColor("grey")
+	end
+	b:SetAlpha(0.7)
+	b:Show()
+	self.nonTradeablesButtons[self.numNonTradeables] = b
+end
+
+function RCVotingFrame:HideNonTradeables()
+	for _,v in ipairs(self.nonTradeablesButtons) do v:Hide() end
 end
 
 
