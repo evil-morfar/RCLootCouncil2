@@ -991,7 +991,7 @@ local function registerAndAnnounceAward(session, winner, response, reason)
 	self:AnnounceAward(winner, self.lootTable[session].link,
 			reason and reason.text or response, addon:GetActiveModule("votingframe"):GetCandidateData(session, winner, "roll"), session, changeAward)
 	if self:HasAllItemsBeenAwarded() then
-		addon:Print(L["All items has been awarded and  the loot session concluded"])
+		addon:Print(L["All items have been awarded and the loot session concluded"])
 		self:ScheduleTimer("EndSession", 1)  -- Delay a bit to ensure callback is handled before session ends.
 	end
 	return true
