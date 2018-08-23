@@ -2254,6 +2254,10 @@ function RCLootCouncil:GetItemNameFromLink(link)
 	return strmatch(link or "", "%[(.+)%]")
 end
 
+function RCLootCouncil:GetItemStringClean(link)
+	return gsub(self:GetItemStringFromLink(link), "item:", "")
+end
+
 -- The link of same item generated from different players, or if two links are generated between player spec switch, are NOT the same
 -- This function compares link with link level and spec ID removed.
 -- Also compare with unique id removed, because wowpedia says that:

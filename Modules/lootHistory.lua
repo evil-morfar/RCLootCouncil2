@@ -1310,7 +1310,7 @@ do
 						local hour,minute,second = strsplit(":",d.time,3)
 						local sinceEpoch = time({year = "20"..year, month = month, day = day,hour = hour,min = minute,sec=second})
 						itemsData = itemsData.."\t\t<item>\r\n"
-						.."\t\t\t<itemid>" .. addon:GetItemStringFromLink(d.lootWon) .. "</itemid>\r\n"
+						.."\t\t\t<itemid>" .. addon:GetItemStringClean(d.lootWon) .. "</itemid>\r\n"
 						.."\t\t\t<name>" .. addon:GetItemNameFromLink(d.lootWon) .. "</name>\r\n"
 						.."\t\t\t<member>" .. addon.Ambiguate(player) .. "</member>\r\n"
 						.."\t\t\t<time>" .. sinceEpoch .. "</time>\r\n"

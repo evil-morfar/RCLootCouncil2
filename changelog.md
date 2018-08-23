@@ -4,6 +4,9 @@
 * Added a new default Battle for Azeroth skin.
 * Remember to can change the appearance in the options menu.
 
+###### Bugfixes
+* *Fixed EQDKP Plus exports (#360).*
+
 
 ### v2.8.3
 ---
