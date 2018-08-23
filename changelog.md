@@ -1,3 +1,10 @@
+### v2.8.4
+---
+* **Appearance**
+* Added a new default Battle for Azeroth skin.
+* Remember to can change the appearance in the options menu.
+
+
 ### v2.8.3
 ---
 * **Trading**

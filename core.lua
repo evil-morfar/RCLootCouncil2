@@ -266,15 +266,15 @@ function RCLootCouncil:OnInitialize()
 					border = "Blizzard Tooltip",
 					background = "Blizzard Tooltip",
 				},
-				legion = {
-					name = "Legion Green",
-					bgColor = {0.1, 1, 0, 1},
-					borderColor = {0, 0.8, 0, 0.75},
-					background = "Blizzard Garrison Background 2",
-					border = "Blizzard Dialog Gold",
+				bfa = {
+					name = "Battle for Azeroth",
+					bgColor = {0.55, 0.84, 1, 1},
+					borderColor = {0.62, 0.86, 0.87, 0.85},
+					border = "Blizzard Dialog",
+					background = "Blizzard Garrison Background 3",
 				},
 			},
-			currentSkin = "new_blue",
+			currentSkin = "bfa",
 
 			modules = { -- For storing module specific data
 				['*'] = {
