@@ -266,6 +266,13 @@ function RCLootCouncil:OnInitialize()
 					border = "Blizzard Tooltip",
 					background = "Blizzard Tooltip",
 				},
+				legion = {
+					name = "Legion Green",
+					bgColor = {0.1, 1, 0, 1},
+					borderColor = {0, 0.8, 0, 0.75},
+					background = "Blizzard Garrison Background 2",
+					border = "Blizzard Dialog Gold",
+				},
 				bfa = {
 					name = "Battle for Azeroth",
 					bgColor = {0.55, 0.84, 1, 1},
