@@ -24,10 +24,9 @@ local selectedDate, selectedName, filterMenu, moreInfo, moreInfoData
 local rightClickMenu;
 local ROW_HEIGHT = 20;
 local NUM_ROWS = 15;
-local epochDates = {} -- [DateTime] = epoch
 
 --globals
-local tinsert, tostring, getglobal, pairs, ipairs, tremove, strsplit = tinsert, tostring, getglobal, pairs, ipairs, tremove, strsplit
+local tinsert, tostring, getglobal,pairs = tinsert, tostring, getglobal, pairs
 
 function LootHistory:OnInitialize()
 	self.exportSelection = "tsv"
@@ -203,63 +202,6 @@ function LootHistory:BuildData()
 	self.frame.name:SetData(nameData, true)
 end
 
-function LootHistory:GetAllRegisteredCandidates()
-	local names = {}
-	lootDB = addon:GetHistoryDB()
-	for name, v in pairs(lootDB) do
-		for _, v in ipairs(v) do
-			if v.class then
-				names[name] = {name = addon.Ambiguate(name), color = addon:GetClassColor(v.class)}
-				break
-			end
-		end
-	end
-	return names
-end
-
-function LootHistory:DeleteAllEntriesByName(name)
-	addon:Debug("Deleting all loot history entries for ", name)
-	if not lootDB[name] then return addon:Debug("ERROR", name, "wasn't registered in the lootDB!") end
-	addon:Print(format(L["Succesfully deleted %d entries from %s"], #lootDB[name], name))
-	lootDB[name] = nil
-	if self.frame and self.frame:IsVisible() then -- Only update if we're viewing it
-		self:BuildData()
-		self.frame.st:SortData()
-	end
-end
-
-function LootHistory:DeleteEntriesOlderThanEpoch(epoch)
-	addon:Debug("DeleteEntriesOlderThanEpoch", epoch)
-	local removal = {} -- Create a list of the entries to be removed
-	for name, v in pairs(lootDB) do
-		removal[name] = {}
-		local num = 1
-		for i,v in ipairs(v) do
-			local index = v.date..v.time
-			if not epochDates[index] then
-				self:AddEpochDate(v.date, v.time)
-			end
-			if epochDates[index] < epoch then
-				removal[name][num] = i
-				num = num + 1
-			end
-		end
-	end
-	-- Remove the entries in reverse order for a small speed upgrade
-	local sum = 0
-	for name, v in pairs(removal) do
-		for i = #v, 1, -1 do
-			tremove(lootDB[name], i)
-		end
-		sum = sum + #v
-	end
-	addon:Print(format(L["Succesfully deleted %d entries"], sum))
-	if self.frame and self.frame:IsVisible() then
-		self:BuildData()
-		self.frame.st:SortData()
-	end
-end
-
 function LootHistory.FilterFunc(table, row)
 	local nameAndDate = true -- default to show everything
 	if selectedName and selectedDate then
@@ -363,24 +305,22 @@ function LootHistory.SetCellDelete(rowFrame, frame, data, cols, row, realrow, co
 	end)
 end
 
-function LootHistory:AddEpochDate(date, tim)
-	local d, m, y = strsplit("/", date, 3)
-	local h, min, s = strsplit(":", tim, 3)
-	epochDates[date..tim] = time({year = "20"..y, month = m, day = d, hour = h, min = min, sec = s})
-end
-
 function LootHistory.DateTimeSort(table, rowa, rowb, sortbycol)
 	local cella, cellb = table:GetCell(rowa, sortbycol), table:GetCell(rowb, sortbycol);
-	local indexa, indexb = cella.args.date..cella.args.time, cellb.args.date..cellb.args.time
-	if not (epochDates[indexa] and epochDates[indexb]) then
-		LootHistory:AddEpochDate(cella.args.date, cella.args.time)
-		LootHistory:AddEpochDate(cellb.args.date, cellb.args.time)
+	if not (cella.args.epoch and cellb.args.epoch) then
+		local timea, datea, timeb, dateb = cella.args.time, cella.args.date, cellb.args.time, cellb.args.date
+		local d, m, y = strsplit("/", datea, 3)
+		local h, min, s = strsplit(":", timea, 3)
+		cella.args.epoch = time({year = "20"..y, month = m, day = d, hour = h, min = min, sec = s})
+		d, m, y = strsplit("/", dateb, 3)
+		h, min, s = strsplit(":", timeb, 3)
+		cellb.args.epoch = time({year = "20"..y, month = m, day = d, hour = h, min = min, sec = s})
 	end
 	local direction = table.cols[sortbycol].sort or table.cols[sortbycol].defaultsort or "asc";
 	if direction:lower() == "asc" then
-		return epochDates[indexa] < epochDates[indexb]
+		return cella.args.epoch < cellb.args.epoch
 	else
-		return epochDates[indexa] > epochDates[indexb]
+		return cella.args.epoch > cellb.args.epoch
 	end
 end
 
