@@ -304,6 +304,38 @@ function addon:OptionsTable()
 											self:GetActiveModule("history"):DeleteEntriesOlderThanEpoch(selections.deleteDate)
 										end,
 									},
+									deletePatch = {
+										order = 16,
+										name = L["Patch"],
+										desc = L["opt_deletePatch_desc"],
+										type = "select",
+										width = "double",
+										values = {
+											[1534154400] = "Patch 8.0.1 (Battle for Azeroth)",
+											[1510225200] = "Patch 7.3.2 (Tier 21)",
+											[1497348000] = "Patch 7.2.5 (Tier 20)",
+											[1484650800] = "Patch 7.1.5 (Tier 19)",
+										},
+										get = function(info)
+											return selections[info[#info]] or ""
+										end,
+										set = function(info, val)
+											selections[info[#info]] = val
+										end,
+									},
+									deletePatchBtn = {
+										order = 17,
+										name = _G.DELETE,
+										type = "execute",
+										confirm = function() return L["opt_deletePatch_confirm"] end,
+										func = function(info)
+											if not selections.deletePatch then
+												addon:Print(L["Invalid selection"])
+												return
+											end
+											self:GetActiveModule("history"):DeleteEntriesOlderThanEpoch(selections.deletePatch)
+										end,
+									}
 								},
 							},
 						},
