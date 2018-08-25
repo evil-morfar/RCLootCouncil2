@@ -116,7 +116,7 @@ function RCLootCouncil:OnInitialize()
 	self.verCheckDisplayed = false -- Have we shown a "out-of-date"?
 	self.moduleVerCheckDisplayed = {} -- Have we shown a "out-of-date" for a module? The key of the table is the baseName of the module.
 
-	self.EJLastestInstanceID = 946 -- UPDATE this whenever we change test data.
+	self.EJLastestInstanceID = 1231 -- UPDATE this whenever we change test data.
 									-- The lastest raid instance Enouncter Journal id.
 									-- Antorus, the Burning Throne.
 									-- HOWTO get this number: Open the instance we want in the Adventure Journal. Use command '/dump EJ_GetInstanceInfo()'
