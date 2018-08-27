@@ -53,7 +53,6 @@ function RCLootCouncilML:OnEnable()
 
 	self:RegisterComm("RCLootCouncil", 		"OnCommReceived")
 	self:RegisterEvent("CHAT_MSG_WHISPER",	"OnEvent")
-	self:RegisterEvent("CHAT_MSG_LOOT", 	"OnEvent")
 	self:RegisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
 	self:RegisterBucketEvent("GROUP_ROSTER_UPDATE", 10, "UpdateGroup") -- Bursts in group creation, and we should have plenty of time to handle it
 	self:RegisterBucketMessage("RCConfigTableChanged", 5, "ConfigTableChanged") -- The messages can burst
