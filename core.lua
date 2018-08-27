@@ -1915,7 +1915,7 @@ function RCLootCouncil:OnEvent(event, ...)
 		self.lootOpen = true
 		for i = 1,  GetNumLootItems() do
 			if LootSlotHasItem(i) then
-				local texture, name, quantity, quality, locked, isQuestItem, questId, isActive = GetLootSlotInfo(i)
+				local texture, name, quantity, currencyID, quality, locked, isQuestItem, questId, isActive = GetLootSlotInfo(i)
 				local link = GetLootSlotLink(i)
 				if texture then
 					self:Debug("Adding to self.lootSlotInfo",i,link, quality)
@@ -1947,6 +1947,7 @@ function RCLootCouncil:OnEvent(event, ...)
 			local link = self.lootSlotInfo[slot].link
 			local quality = self.lootSlotInfo[slot].quality
 			self:Debug("OnLootSlotCleared()", slot, link, quality)
+			self:Debug("GetLootSourceInfo()", GetLootSourceInfo(slot))
 			self.lootSlotInfo[slot] = nil
 			-- v2.8.1 NOTE Quality is not ready here. Functionality handling on ENCOUNTER_LOOT_RECEIVED
 		--[[	if quality and quality >= GetLootThreshold() and IsInInstance() then -- Only send when in instance
