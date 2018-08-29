@@ -676,6 +676,7 @@ function RCLootCouncilML:OnLootSlotCleared(slot, link)
 	end
 end
 
+-- DEPRECATED
 function RCLootCouncilML:LootOpened()
 	local sessionframe = addon:GetActiveModule("sessionframe")
 	if addon.isMasterLooter and GetNumLootItems() > 0 then
