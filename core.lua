@@ -715,27 +715,27 @@ function RCLootCouncil:ChatCommand(msg)
 end
 
 -- Update the recentTradableItem by link, if it is in bag and tradable.
-function RCLootCouncil:UpdateAndSendRecentTradableItem(link)
+function RCLootCouncil:UpdateAndSendRecentTradableItem(info)
 	for i = 0, NUM_BAG_SLOTS do
 		for j = 1, GetContainerNumSlots(i) do
 			local _, _, _, _, _, _, link2 = GetContainerItemInfo(i, j)
-			if link2 and self:ItemIsItem(link, link2) then
+			if link2 and self:ItemIsItem(info.link, link2) then
 				if self:GetContainerItemTradeTimeRemaining(i, j) > 0 then
 					if self.mldb.rejectTrade then
-						LibDialog:Spawn("RCLOOTCOUNCIL_KEEP_ITEM", link)
+						LibDialog:Spawn("RCLOOTCOUNCIL_KEEP_ITEM", info.link)
 						return
 					end
-					self:SendCommand("group", "tradable", link)
+					self:SendCommand("group", "tradable", info.link, info.guid)
 					return
 				else -- Not tradeable
 					-- REVIEW: This might fail if the recipient happens to have an exact copy of the item
-					self:SendCommand("group", "not_tradeable", link)
+					self:SendCommand("group", "not_tradeable", info.link, info.guid)
 					return
 				end
 			end
 		end
 	end
-	self:Debug("Error - UpdateAndSendRecentTradableItem",link, "not found in bags")
+	self:Debug("Error - UpdateAndSendRecentTradableItem",info.link, "not found in bags")
 end
 
 -- Send the msg to the channel if it is valid. Otherwise just print the messsage.
