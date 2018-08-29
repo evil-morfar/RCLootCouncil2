@@ -1,3 +1,9 @@
+###### Dev
+* Changed parameters in `UpdateAndSendRecentTradableItem()` to contain the table itself.
+* Changed comms `tradeable` and `non_tradeable` to include boss guid as the last parameter.
+* Added to new comms `looted` and `fakeLoot` to deal with looting status.
+
+
 ### v2.8.4
 ---
 * **Appearance**
