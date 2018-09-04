@@ -1259,7 +1259,7 @@ function RCLootCouncilML:TrackAndLogLoot(name, item, responseID, boss, votes, it
 	if reason and not reason.log then return end -- Reason says don't log
 	if not (db.sendHistory or db.enableHistory) then return end -- No reason to do stuff when we won't use it
 	if addon.testMode and not addon.nnp then return end -- We shouldn't track testing awards.
-	local _, link = GetItemInfo(item)
+	local _, link,_,_,_,_,_,_,equipLoc = GetItemInfo(item)
 	local i1,i2
 	if itemReplaced1 then i1 = select(2, GetItemInfo(itemReplaced1)) end
 	if itemReplaced2 then i2 = select(2, GetItemInfo(itemReplaced2)) end
@@ -1274,9 +1274,9 @@ function RCLootCouncilML:TrackAndLogLoot(name, item, responseID, boss, votes, it
 	history_table["votes"] 			= votes
 	history_table["itemReplaced1"]= i1
 	history_table["itemReplaced2"]= i2
-	history_table["response"] 		= reason and reason.text or addon:GetResponseText(responseID, tokenRoll, relicRoll)
+	history_table["response"] 		= reason and reason.text or addon:GetResponse(equipLoc,responseID).text
 	history_table["responseID"] 	= responseID or reason.sort - 400 															-- Changed in v2.0 (reason responseID was 0 pre v2.0)
-	history_table["color"]			= reason and reason.color or {addon:GetResponseColor(responseID, tokenRoll, relicRoll)}	-- New in v2.0
+	history_table["color"]			= reason and reason.color or addon:GetResponse(equipLoc, responseID).color	-- New in v2.0
 	history_table["class"]			= self.candidates[name].class																-- New in v2.0
 	history_table["isAwardReason"]= reason and true or false																	-- New in v2.0
 	history_table["difficultyID"]	= difficultyID																					-- New in v2.3+
