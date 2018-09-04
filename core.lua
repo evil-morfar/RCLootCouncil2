@@ -425,9 +425,7 @@ function RCLootCouncil:OnInitialize()
 	debugLog = self.db.global.log
 
 	-- register the optionstable
-	self.options = self:OptionsTable()
-	self.options.args.settings.args.profiles = LibStub("AceDBOptions-3.0"):GetOptionsTable(self.db)
-	LibStub("AceConfigRegistry-3.0"):RegisterOptionsTable("RCLootCouncil", self.options)
+	LibStub("AceConfigRegistry-3.0"):RegisterOptionsTable("RCLootCouncil", self.OptionsTable)
 
 	-- add it to blizz options
 	self.optionsFrame = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("RCLootCouncil", "RCLootCouncil", nil, "settings")

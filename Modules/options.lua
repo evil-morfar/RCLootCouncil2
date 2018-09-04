@@ -1378,6 +1378,7 @@ function addon:OptionsTable()
 		}
 	end
 	-- #endregion
+	options.args.settings.args.profiles = LibStub("AceDBOptions-3.0"):GetOptionsTable(self.db) -- Add profile tab
 	return options
 end
 
