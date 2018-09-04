@@ -73,8 +73,8 @@ function RCLootCouncilML:GetItemInfo(item)
 			["subType"]		= subType,
 			["texture"]		= texture,
 			["boe"]			= bindType == LE_ITEM_BIND_ON_EQUIP,
-			["relic"]		= itemID and IsArtifactRelicItem(itemID) and select(3, C_ArtifactUI.GetRelicInfoByItemID(itemID)),
-			["token"]		= itemID and RCTokenTable[itemID],
+			--["relic"]		= itemID and IsArtifactRelicItem(itemID) and select(3, C_ArtifactUI.GetRelicInfoByItemID(itemID)),
+			--["token"]		= itemID and RCTokenTable[itemID],
 			["typeID"]		= typeID,
 			["subTypeID"]	= subTypeID,
 			["classes"]		= addon:GetItemClassesAllowedFlag(link)
@@ -429,65 +429,41 @@ function RCLootCouncilML:UpdateMLdb()
 end
 
 function RCLootCouncilML:BuildMLdb()
-	-- Extract changes to normal responses/buttons
+	-- Extract changes to responses/buttons
 	local changedResponses = {};
-	for i = 1, db.numButtons do
-		if db.responses[i].text ~= addon.defaults.profile.responses[i].text or unpack(db.responses[i].color) ~= unpack(addon.defaults.profile.responses[i].color) then
-			changedResponses[i] = db.responses[i]
+	for type, responses in pairs(db.responses) do
+		for i in pairs(responses) do -- Responses might not have numerical order
+			if not addon.defaults.profile.responses[type]
+			or db.responses[type][i].text ~= addon.defaults.profile.responses[type][i].text
+			or unpack(db.responses[type][i].color) ~= unpack(addon.defaults.profile.responses[type][i].color) then
+				if not changedResponses[type] then changedResponses[type] = {} end
+				changedResponses[type][i] = db.responses[type][i]
+			end
 		end
 	end
 	local changedButtons = {};
-	for i = 1, db.numButtons do
-		if db.buttons[i].text ~= addon.defaults.profile.buttons[i].text then
-			changedButtons[i] = {text = db.buttons[i].text}
-		end
-	end
-	local changedTierButtons
-	if db.tierButtonsEnabled then
-		changedResponses.tier,changedTierButtons = {}, {}
-		for k,v in pairs(db.responses.tier) do
-			if v.text ~= addon.defaults.profile.responses.tier[k].text or unpack(v.color) ~= unpack(addon.defaults.profile.responses.tier[k].color) then
-				changedResponses.tier[k] = v
-			end
-		end
-		for i = 1, db.tierNumButtons do
-			if db.tierButtons[i].text ~= addon.defaults.profile.tierButtons[i].text then
-				changedTierButtons[i] = {text = db.tierButtons[i].text}
+	for type, buttons in pairs(db.buttons) do
+		for i in pairs(buttons) do
+			if not addon.defaults.profile.buttons[type]
+			or db.buttons[i].text ~= addon.defaults.profile.buttons[i].text then
+				if not changedButtons[type] then changedButtons[type] = {} end
+				changedButtons[type][i] = {text = db.buttons[type][i].text}
 			end
 		end
 	end
-	local changedRelicButtons
-	if db.relicButtonsEnabled then
-		changedResponses.relic, changedRelicButtons = {},{}
-		for k,v in pairs(db.responses.relic) do
-			if v.text ~= addon.defaults.profile.responses.relic[k].text or unpack(v.color) ~= unpack(addon.defaults.profile.responses.relic[k].color) then
-				changedResponses.relic[k] = v
-			end
-		end
-		for i = 1, db.relicNumButtons do
-			if db.relicButtons[i].text ~= addon.defaults.profile.relicButtons[i].text then
-				changedRelicButtons[i] = {text = db.relicButtons[i].text}
-			end
-		end
-	end
+	if changedButtons.default then changedButtons.default.numButtons = db.numButtons end
 
 	local MLdb = {
 		selfVote			= db.selfVote or nil,
 		multiVote		= db.multiVote or nil,
 		anonymousVoting= db.anonymousVoting or nil,
 		allowNotes		= db.allowNotes or nil,
-		numButtons		= db.numButtons,
-		tierNumButtons = db.tierNumButtons,
-		relicNumButtons= db.relicNumButtons,
+	--	numButtons		= db.numButtons,
 		hideVotes		= db.hideVotes or nil,
 		observe			= db.observe or nil,
 		buttons			= changedButtons,	-- REVIEW I'm not sure if it's feasible to nil out empty tables
-		tierButtons 	= changedTierButtons,
-		relicButtons 	= changedRelicButtons,
 		responses		= changedResponses,
 		timeout			= db.timeout,
-		tierButtonsEnabled = db.tierButtonsEnabled or nil,
-		relicButtonsEnabled = db.relicButtonsEnabled or nil,
 		rejectTrade 	= db.rejectTrade or nil
 	}
 
