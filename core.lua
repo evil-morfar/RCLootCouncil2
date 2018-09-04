@@ -126,21 +126,23 @@ function RCLootCouncil:OnInitialize()
 	self.council = {} -- council from ML
 	self.mldb = {} -- db recived from ML
 	self.responses = {
-		AWARDED        = { color = {1,1,1,1},				sort = 0.1,		text = L["Awarded"],},
-		NOTANNOUNCED	= { color = {1,0,1,1},				sort = 501,		text = L["Not announced"],},
-		ANNOUNCED		= { color = {1,0,1,1},				sort = 502,		text = L["Loot announced, waiting for answer"], },
-		WAIT				= { color = {1,1,0,1},				sort = 503,		text = L["Candidate is selecting response, please wait"], },
-		TIMEOUT			= { color = {1,0,0,1},				sort = 504,		text = L["Candidate didn't respond on time"], },
-		REMOVED			= { color = {0.8,0.5,0,1},			sort = 505,		text = L["Candidate removed"], },
-		NOTHING			= { color = {0.5,0.5,0.5,1},		sort = 505,		text = L["Offline or RCLootCouncil not installed"], },
-		PASS				= { color = {0.7, 0.7,0.7,1},		sort = 800,		text = _G.PASS,},
-		AUTOPASS			= { color = {0.7,0.7,0.7,1},		sort = 801,		text = L["Autopass"], },
-		DISABLED			= { color = {0.3,0.35,0.5,1},		sort = 802,		text = L["Candidate has disabled RCLootCouncil"], },
-		NOTINRAID		= { color = {0.7,0.6,0,1}, 		sort = 803, 	text = L["Candidate is not in the instance"]},
-		DEFAULT			= { color = {1,0,0,1},				sort = 899, 	text = L["Response isn't available. Please upgrade RCLootCouncil."]},
-		--[[1]]			  { color = {0,1,0,1},				sort = 1,		text = L["Mainspec/Need"],},
-		--[[2]]			  { color = {1,0.5,0,1},			sort = 2,		text = L["Offspec/Greed"],	},
-		--[[3]]			  { color = {0,0.7,0.7,1},			sort = 3,		text = L["Minor Upgrade"],},
+		default = {
+			AWARDED        = { color = {1,1,1,1},				sort = 0.1,		text = L["Awarded"],},
+			NOTANNOUNCED	= { color = {1,0,1,1},				sort = 501,		text = L["Not announced"],},
+			ANNOUNCED		= { color = {1,0,1,1},				sort = 502,		text = L["Loot announced, waiting for answer"], },
+			WAIT				= { color = {1,1,0,1},				sort = 503,		text = L["Candidate is selecting response, please wait"], },
+			TIMEOUT			= { color = {1,0,0,1},				sort = 504,		text = L["Candidate didn't respond on time"], },
+			REMOVED			= { color = {0.8,0.5,0,1},			sort = 505,		text = L["Candidate removed"], },
+			NOTHING			= { color = {0.5,0.5,0.5,1},		sort = 505,		text = L["Offline or RCLootCouncil not installed"], },
+			PASS				= { color = {0.7, 0.7,0.7,1},		sort = 800,		text = _G.PASS,},
+			AUTOPASS			= { color = {0.7,0.7,0.7,1},		sort = 801,		text = L["Autopass"], },
+			DISABLED			= { color = {0.3,0.35,0.5,1},		sort = 802,		text = L["Candidate has disabled RCLootCouncil"], },
+			NOTINRAID		= { color = {0.7,0.6,0,1}, 		sort = 803, 	text = L["Candidate is not in the instance"]},
+			DEFAULT			= { color = {1,0,0,1},				sort = 899, 	text = L["Response isn't available. Please upgrade RCLootCouncil."]},
+			--[[1]]			  { color = {0,1,0,1},				sort = 1,		text = L["Mainspec/Need"],},
+			--[[2]]			  { color = {1,0.5,0,1},			sort = 2,		text = L["Offspec/Greed"],	},
+			--[[3]]			  { color = {0,0.7,0.7,1},			sort = 3,		text = L["Minor Upgrade"],},
+		},
 		tier = {
 			--[[1]]		  { color = {0.1,1,0.5,1},			sort = 1,		text = L["4th Tier Piece"],},
 			--[[2]]		  { color = {1,1,0.5,1},			sort = 2,		text = L["2nd Tier Piece"],},
@@ -325,6 +327,9 @@ function RCLootCouncil:OnInitialize()
 				{	text = _G.NEED,					whisperKey = L["whisperKey_need"], },	-- 1
 				{	text = _G.GREED,				whisperKey = L["whisperKey_greed"],},	-- 2
 				{	text = L["Minor Upgrade"],		whisperKey = L["whisperKey_minor"],},	-- 3
+			},
+			enabledButtons = { -- By default all extra buttons are disabled
+				["**"] = false,
 			},
 			tierButtonsEnabled = true,
 			tierNumButtons = 4,
@@ -919,7 +924,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 					noone should really be able to send it without being ML in the first place. So just accept it as is. ]]
 				-- [[2.7: Probably should still check this. There are issues otherwise.]]
 				if self:UnitIsUnit(sender, self.masterLooter) then
-					self.mldb = unpack(data)
+					self:OnMLDBReceived(unpack(data))
 				else
 					self:Debug("Non-ML:", sender, "sent Mldb!")
 				end
@@ -1124,6 +1129,21 @@ function RCLootCouncil:DebugLog(msg, ...)
 		tremove(debugLog, 1)
 	end
 	tinsert(debugLog, msg)
+end
+
+function RCLootCouncil:OnMLDBReceived(mldb)
+	-- mldb inheritance from db
+	for type, responses in pairs(mldb.responses) do
+	   for response in pairs(responses) do
+	      if db.responses[type] and db.responses[type][response] then
+	         setmetatable(mldb.responses[type][response], {__index = db.responses[type][response]})
+	      end
+	   end
+	end
+	setmetatable(mldb.responses.default, {__index = db.responses.default})
+	setmetatable(mldb.buttons, {__index = db.buttons})
+	setmetatable(mldb.buttons.default, { __index = db.buttons.default,})
+	self.mldb = mldb
 end
 
 -- if fullTest, add items in the encounterJournal to the test items.
@@ -2856,62 +2876,67 @@ function RCLootCouncil.Ambiguate(name)
 	return db.ambiguate and Ambiguate(name, "none") or Ambiguate(name, "short")
 end
 
---- Returns the text of a button, returning settings from mldb if possible, otherwise from default buttons.
--- @paramsig index [, isTier, isRelic]
--- @param index The button's index.
--- @param isTier True if the response belongs to a tier item.
--- @param isRelic True if the response belongs to a relic item.
-function RCLootCouncil:GetButtonText(i, isTier, isRelic)
-	if isTier and self.mldb.tierButtonsEnabled and type(i) == "number" then -- Non numbers is status texts, handled as normal response
-		return (self.mldb.tierButtons and self.mldb.tierButtons[i]) and self.mldb.tierButtons[i].text or db.tierButtons[i].text
-	elseif isRelic and self.mldb.relicButtonsEnabled and type(i) == "number" then
-		return (self.mldb.relicButtons and self.mldb.relicButtons[i]) and self.mldb.relicButtons[i].text or db.relicButtons[i].text
-	else
-		return (self.mldb.buttons and self.mldb.buttons[i]) and self.mldb.buttons[i].text or db.buttons[i].text
-	end
+--- Fetches a response of a given type, based on the group leader's settings if possible
+-- @param type The type of response. Defaults to "default".
+-- @param name The name of the response.
+-- @see RCLootCouncil.db.responses
+-- @return A table from db.responses containing the response info
+function RCLootCouncil:GetResponse(type, name)
+   if type == "default" then -- We have a value if mldb is blank
+      if db.responses.default[name] or self.mldb.responses.default[name] then
+         return self.mldb.responses.default[name] or db.responses.default[name]
+      else
+         self:Debug("No db.responses.default entry for response:", name)
+         return db.responses.default.DEFAULT -- Use default
+      end
+   else -- This must be supplied by the ml
+      if next(self.mldb) then
+         if self.mldb.responses[type] then
+            if self.mldb.responses[type][name] then
+               return self.mldb.responses[type][name]
+            else
+               self:Debug("No mldb.responses["..tostring(type).."] entry for response:".. tostring(name))
+            end
+         else
+				-- This type is not enabled, so use default:
+            if db.responses.default[name] or self.mldb.responses.default[name] then
+               return self.mldb.responses.default[name] or db.responses.default[name]
+            else
+               self:Debug("Unknown response entry", type, name)
+               return db.responses.default.DEFAULT -- Use default
+            end
+         end
+      else
+         self:Debug("No mldb for GetReponse: ".. tostring(type).. ", ".. tostring(name))
+      end
+   end
+   return {} -- Fallback
 end
 
---- The following functions returns the text, sort or color of a response, returning a result from mldb if possible, otherwise from the default responses.
--- @paramsig response [, isTier, isRelic]
--- @param response Index in db.responses.
--- @param isTier True if the response belongs to a tier item.
--- @param isRelic True if the response belongs to a relic item.
-function RCLootCouncil:GetResponseText(response, isTier, isRelic)
-	local ret
-	if isTier and self.mldb.tierButtonsEnabled and type(response) == "number" then
-		ret = (self.mldb.responses.tier and self.mldb.responses.tier[response]) and self.mldb.responses.tier[response].text or db.responses.tier[response].text
-	elseif isRelic and self.mldb.relicButtonsEnabled and type(response) == "number" then
-		ret = (self.mldb.responses.relic and self.mldb.responses.relic[response]) and self.mldb.responses.relic[response].text or db.responses.relic[response].text
-	else
-		ret = (self.mldb.responses and self.mldb.responses[response]) and self.mldb.responses[response].text or db.responses[response].text
-	end
-	return ret or db.responses.DEFAULT.text
+--- Returns the number of buttons of a specific type
+function RCLootCouncil:GetNumButtons(type)
+   if not next(self.mldb) then
+      self:Debug("No mldb to GetNumButtons from")
+      return 0
+   end
+   if not type or type == "default" then -- Has special definition
+      return self.mldb.buttons.default.numButtons or #db.buttons.default or 0
+   else -- Here we can rely on the responses as we have no defaults
+      if self.mldb.buttons[type] then
+         return self.mldb.buttons[type].numButtons
+      else
+         error("No mldb.buttons entry for: " .. tostring(type))
+      end
+   end
 end
 
----
-function RCLootCouncil:GetResponseColor(response, isTier, isRelic)
-	local color
-	if isTier and self.mldb.tierButtonsEnabled and type(response) == "number" then
-		color = (self.mldb.responses.tier and self.mldb.responses.tier[response]) and self.mldb.responses.tier[response].color or db.responses.tier[response].color
- 	elseif isRelic and self.mldb.relicButtonsEnabled and type(response) == "number" then
-		color = (self.mldb.responses.relic and self.mldb.responses.relic[response]) and self.mldb.responses.relic[response].color or db.responses.relic[response].color
- 	else
-		color = (self.mldb.responses and self.mldb.responses[response]) and self.mldb.responses[response].color or db.responses[response].color
-	end
-	return unpack(color or db.responses.DEFAULT.color)
+--- Returns all buttons of a specific type, defaults to "default"
+function RCLootCouncil:GetButtons(type)
+   return self.mldb.buttons[type or "default"]
 end
 
----
-function RCLootCouncil:GetResponseSort(response, isTier, isRelic)
-	local ret
-	if isTier and self.mldb.tierButtonsEnabled and type(response) == "number" then
-		ret = (self.mldb.responses.tier and self.mldb.responses.tier[response]) and self.mldb.responses.tier[response].sort or db.responses.tier[response].sort
-	elseif isRelic and self.mldb.relicButtonsEnabled and type(response) == "number" then
-		ret = (self.mldb.responses.relic and self.mldb.responses.relic[response]) and self.mldb.responses.relic[response].sort or db.responses.relic[response].sort
-	else
-		ret = (self.mldb.responses and self.mldb.responses[response]) and self.mldb.responses[response].sort or db.responses[response].sort
-	end
-	return ret or db.responses.DEFAULT.sort
+function RCLootCouncil:GetResponseColor(type, name)
+	return self:GetResponse(type, name).color
 end
 
 --#end UI Functions -----------------------------------------------------
