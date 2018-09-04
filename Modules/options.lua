@@ -22,6 +22,66 @@ local function roundColors(r,g,b,a)
 	return addon.round(r,2),addon.round(g,2),addon.round(b,2),addon.round(a,2)
 end
 
+local function createNewButtonSet(path, name, order)
+	-- Create the group
+	path[name] = {
+		order = order,
+		name = name,
+		desc = "Options group for "..name.. " buttons and responses.",
+		type = "group",
+		inline = true,
+		args = {
+			optionsDesc = {
+				order = 0,
+				name = format(L["buttons_and_responses_desc"], addon.db.profile.maxButtons),
+				type = "description"
+			},
+			numButtons = {
+				order = 1,
+				name = L["Number of buttons"],
+				desc = L["number_of_buttons_desc"],
+				type = "range",
+				width = "full",
+				min = 1,
+				max = addon.db.profile.maxButtons,
+				step = 1,
+				get = function() return addon.db.profile.buttons[name].numButtons or 3 end,
+				set = function(_,v) addon.db.profile.buttons[name].numButtons = v end,
+			},
+		}
+	}
+	-- Create each entry
+	for i = 1, addon.db.profile.buttons[name].numButtons do
+		path[name].args["button"..i] = {
+			order = i * 3 + 1,
+			name = L["Button"].." "..i,
+			desc = format(L["Set the text on button 'number'"], i),
+			type = "input",
+			get = function() return addon.db.profile.buttons[name][i].text end,
+			set = function(info, value) addon:ConfigTableChanged("buttons"); addon.db.profile.buttons[name][i].text = tostring(value) end,
+			hidden = function() return addon.db.profile.buttons[name].numButtons < i end,
+		}
+		path[name].args["picker"..i] = {
+			order = i * 3 + 2,
+			name = L["Response color"],
+			desc = L["response_color_desc"],
+			type = "color",
+			get = function() return unpack(addon.db.profile.responses[name][i].color or {1,1,1,1})	end,
+			set = function(info,r,g,b,a) addon:ConfigTableChanged("responses"); addon.db.profile.responses[name][i].color = {roundColors(r,g,b,a)} end,
+			hidden = function() return addon.db.profile.buttons[name].numButtons < i end,
+		}
+		path[name].args["text"..i] = {
+			order = i * 3 + 3,
+			name = L["Response"],
+			desc = format(L["Set the text for button i's response."], i),
+			type = "input",
+			get = function() return addon.db.profile.responses[name][i].text end,
+			set = function(info, value) addon:ConfigTableChanged("responses"); addon.db.profile.responses[name][i].text = tostring(value) end,
+			hidden = function() return addon.db.profile.buttons[name].numButtons < i end,
+		}
+	end
+end
+
 local selections = {}
 function addon:OptionsTable()
 	local db = self:Getdb()
@@ -1030,7 +1090,7 @@ function addon:OptionsTable()
 								},
 							},
 							timeoutOptions = {
-								order = 3,
+								order = 100,
 								type = "group",
 								name = L["Timeout"],
 								inline = true,
@@ -1065,7 +1125,7 @@ function addon:OptionsTable()
 								},
 							},
 							moreInfoOptions = {
-								order = 4,
+								order = 101,
 								type = "group",
 								name = L["More Info"],
 								inline = true,
@@ -1087,7 +1147,7 @@ function addon:OptionsTable()
 								},
 							},
 							responseFromChat = {
-								order = 5,
+								order = 102,
 								type = "group",
 								name = L["Responses from Chat"],
 								inline = true,
@@ -1415,6 +1475,13 @@ function addon:OptionsTable()
 		}
 	end
 	-- #endregion
+	local i = 4
+	for group in pairs(db.enabledButtons) do
+		self:Debug("Adding buttons", group)
+		createNewButtonSet(options.args.mlSettings.args.buttonsTab.args, group, i)
+		i = i + 1
+	end
+
 	options.args.settings.args.profiles = LibStub("AceDBOptions-3.0"):GetOptionsTable(self.db) -- Add profile tab
 	addon.options = options
 	self:GetGuildOptions()
