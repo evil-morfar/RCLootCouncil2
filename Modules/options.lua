@@ -9,14 +9,23 @@ if LibDebug then LibDebug() end
 local addon = LibStub("AceAddon-3.0"):GetAddon("RCLootCouncil")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 ------ Options ------
+local function DBGet(info)
+	return addon.db.profile[info[#info]]
+end
+
+local function DBSet(info, val)
+	addon.db.profile[info[#info]] = val
+	addon:ConfigTableChanged(info[#info])
+end
+
 function addon:OptionsTable()
 	local db = self:Getdb()
 	local options = {
 		name = "RCLootCouncil",
 		type = "group",
 		handler = addon,
-		get = "DBGet",
-		set = "DBSet",
+		get = DBGet,
+		set = DBSet,
 		args = {
 			settings = {
 				order = 1,
@@ -915,70 +924,70 @@ function addon:OptionsTable()
 									-- Made further down
 								},
 							},
-							tierButtonsOptions = {
-								order = 2,
-								type = "group",
-								name = L["Tier Buttons and Responses"],
-								inline = true,
-								args = {
-									tierButtonsEnabled = {
-										order = 0,
-										name = L["Enable Tier Buttons"],
-										desc = L["enable_tierbuttons_desc"],
-										type = "toggle",
-									},
-									optionsDesc = {
-										order = 0.1,
-										name = L["tier_buttons_desc"],
-										type = "description",
-										hidden = function() return not self.db.profile.tierButtonsEnabled end,
-									},
-									tierNumButtons = {
-										order = 1,
-										name = L["Number of buttons"],
-										desc = L["number_of_buttons_desc"],
-										type = "range",
-										width = "full",
-										min = 1,
-										max = self.db.profile.maxButtons,
-										step = 1,
-										hidden = function() return not self.db.profile.tierButtonsEnabled end,
-									},
-									-- Made further down
-								},
-							},
-							relicButtonsOptions = {
-								order = 2.1,
-								type = "group",
-								name = L["Relic Buttons and Responses"],
-								inline = true,
-								args = {
-									relicButtonsEnabled = {
-										order = 0,
-										name = L["Enable Relic Buttons"],
-										desc = L["enable_relicbuttons_desc"],
-										type = "toggle",
-									},
-									optionsDesc = {
-										order = 0.1,
-										name = L["relic_buttons_desc"],
-										type = "description",
-										hidden = function() return not self.db.profile.relicButtonsEnabled end,
-									},
-									relicNumButtons = {
-										order = 1,
-										name = L["Number of buttons"],
-										desc = L["number_of_buttons_desc"],
-										type = "range",
-										width = "full",
-										min = 1,
-										max = self.db.profile.maxButtons,
-										step = 1,
-										hidden = function() return not self.db.profile.relicButtonsEnabled end,
-									},
-									-- Buttons is made further down
-								},
-							},
+							-- tierButtonsOptions = {
+							-- 	order = 2,
+							-- 	type = "group",
+							-- 	name = L["Tier Buttons and Responses"],
+							-- 	inline = true,
+							-- 	args = {
+							-- 		tierButtonsEnabled = {
+							-- 			order = 0,
+							-- 			name = L["Enable Tier Buttons"],
+							-- 			desc = L["enable_tierbuttons_desc"],
+							-- 			type = "toggle",
+							-- 		},
+							-- 		optionsDesc = {
+							-- 			order = 0.1,
+							-- 			name = L["tier_buttons_desc"],
+							-- 			type = "description",
+							-- 			hidden = function() return not self.db.profile.tierButtonsEnabled end,
+							-- 		},
+							-- 		tierNumButtons = {
+							-- 			order = 1,
+							-- 			name = L["Number of buttons"],
+							-- 			desc = L["number_of_buttons_desc"],
+							-- 			type = "range",
+							-- 			width = "full",
+							-- 			min = 1,
+							-- 			max = self.db.profile.maxButtons,
+							-- 			step = 1,
+							-- 			hidden = function() return not self.db.profile.tierButtonsEnabled end,
+							-- 		},
+							-- 		-- Made further down
+							-- 	},
+							-- },
+							-- relicButtonsOptions = {
+							-- 	order = 2.1,
+							-- 	type = "group",
+							-- 	name = L["Relic Buttons and Responses"],
+							-- 	inline = true,
+							-- 	args = {
+							-- 		relicButtonsEnabled = {
+							-- 			order = 0,
+							-- 			name = L["Enable Relic Buttons"],
+							-- 			desc = L["enable_relicbuttons_desc"],
+							-- 			type = "toggle",
+							-- 		},
+							-- 		optionsDesc = {
+							-- 			order = 0.1,
+							-- 			name = L["relic_buttons_desc"],
+							-- 			type = "description",
+							-- 			hidden = function() return not self.db.profile.relicButtonsEnabled end,
+							-- 		},
+							-- 		relicNumButtons = {
+							-- 			order = 1,
+							-- 			name = L["Number of buttons"],
+							-- 			desc = L["number_of_buttons_desc"],
+							-- 			type = "range",
+							-- 			width = "full",
+							-- 			min = 1,
+							-- 			max = self.db.profile.maxButtons,
+							-- 			step = 1,
+							-- 			hidden = function() return not self.db.profile.relicButtonsEnabled end,
+							-- 		},
+							-- 		-- Buttons is made further down
+							-- 	},
+							-- },
 							timeoutOptions = {
 								order = 3,
 								type = "group",
@@ -1368,77 +1377,8 @@ function addon:OptionsTable()
 			hidden = function() return not self.db.profile.announceAward end,
 		}
 	end
-	-- Tier Buttons/responses
-	for k, v in pairs(self.db.profile.responses.tier) do
-		options.args.mlSettings.args.buttonsTab.args.tierButtonsOptions.args["button"..k] = {
-			order = v.sort * 3 + 1,
-			name = L["Button"].." "..v.sort,
-			desc = format(L["Set the text on button 'number'"], v.sort),
-			type = "input",
-			get = function() return self.db.profile.tierButtons[v.sort].text end,
-			set = function(info, value) addon:ConfigTableChanged("tierButtons"); self.db.profile.tierButtons[v.sort].text = tostring(value) end,
-			hidden = function() return not self.db.profile.tierButtonsEnabled or self.db.profile.tierNumButtons < v.sort end,
-		}
-		options.args.mlSettings.args.buttonsTab.args.tierButtonsOptions.args["color"..k] = {
-			order = v.sort * 3 + 2,
-			name = L["Response color"],
-			desc = L["response_color_desc"],
-			type = "color",
-			get = function() return unpack(v.color)	end,
-			set = function(info,r,g,b,a) addon:ConfigTableChanged("responses"); v.color = {roundColors(r,g,b,a)} end,
-			hidden = function() return not self.db.profile.tierButtonsEnabled or self.db.profile.tierNumButtons < v.sort end,
-		}
-		options.args.mlSettings.args.buttonsTab.args.tierButtonsOptions.args["text"..k] = {
-			order = v.sort * 3 + 3,
-			name = L["Response"],
-			desc = format(L["Set the text for button i's response."], v.sort),
-			type = "input",
-			get = function() return v.text end,
-			set = function(info, value) addon:ConfigTableChanged("responses"); v.text = tostring(value) end,
-			hidden = function() return not self.db.profile.tierButtonsEnabled or self.db.profile.tierNumButtons < v.sort end,
-		}
-	end
-	-- Relic Buttons/Responses
-	for k, v in pairs(self.db.profile.responses.relic) do
-		options.args.mlSettings.args.buttonsTab.args.relicButtonsOptions.args["button"..k] = {
-			order = v.sort * 3 + 1,
-			name = L["Button"].." "..v.sort,
-			desc = format(L["Set the text on button 'number'"], v.sort),
-			type = "input",
-			get = function() return self.db.profile.relicButtons[v.sort].text end,
-			set = function(info, value) addon:ConfigTableChanged("relicButtons"); self.db.profile.relicButtons[v.sort].text = tostring(value) end,
-			hidden = function() return not self.db.profile.relicButtonsEnabled or self.db.profile.relicNumButtons < v.sort end,
-		}
-		options.args.mlSettings.args.buttonsTab.args.relicButtonsOptions.args["color"..k] = {
-			order = v.sort * 3 + 2,
-			name = L["Response color"],
-			desc = L["response_color_desc"],
-			type = "color",
-			get = function() return unpack(v.color)	end,
-			set = function(info,r,g,b,a) addon:ConfigTableChanged("responses"); v.color = {roundColors(r,g,b,a)} end,
-			hidden = function() return not self.db.profile.relicButtonsEnabled or self.db.profile.relicNumButtons < v.sort end,
-		}
-		options.args.mlSettings.args.buttonsTab.args.relicButtonsOptions.args["text"..k] = {
-			order = v.sort * 3 + 3,
-			name = L["Response"],
-			desc = format(L["Set the text for button i's response."], v.sort),
-			type = "input",
-			get = function() return v.text end,
-			set = function(info, value) addon:ConfigTableChanged("responses"); v.text = tostring(value) end,
-			hidden = function() return not self.db.profile.relicButtonsEnabled or self.db.profile.relicNumButtons < v.sort end,
-		}
-	end
 	-- #endregion
 	return options
-end
-
-function RCLootCouncil:DBGet(info)
-	return self.db.profile[info[#info]]
-end
-
-function RCLootCouncil:DBSet(info, val)
-	self.db.profile[info[#info]] = val
-	self:ConfigTableChanged(info[#info])
 end
 
 function addon:GetGuildOptions()
