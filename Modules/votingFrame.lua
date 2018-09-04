@@ -981,38 +981,32 @@ end
 
 function RCVotingFrame.SetCellRank(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
 	local name = data[realrow].name
-	local isTier = lootTable[session].candidates[name].isTier
-	local isRelic = lootTable[session].candidates[name].isRelic
 	frame.text:SetText(lootTable[session].candidates[name].rank)
-	frame.text:SetTextColor(addon:GetResponseColor(lootTable[session].candidates[name].response,isTier, isRelic))
+	frame.text:SetTextColor(addon:GetResponseColor(lootTable[session].equipLoc, lootTable[session].candidates[name].response))
 	data[realrow].cols[column].value = lootTable[session].candidates[name].rank or ""
 end
 
 function RCVotingFrame.SetCellRole(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
 	local name = data[realrow].name
-	local isTier = lootTable[session].candidates[name].isTier
-	local isRelic = lootTable[session].candidates[name].isRelic
 	local role = addon:TranslateRole(lootTable[session].candidates[name].role)
 	frame.text:SetText(role)
-	frame.text:SetTextColor(addon:GetResponseColor(lootTable[session].candidates[name].response,isTier,isRelic))
+	frame.text:SetTextColor(addon:GetResponseColor(lootTable[session].equipLoc, lootTable[session].candidates[name].response))
 	data[realrow].cols[column].value = role or ""
 end
 
 function RCVotingFrame.SetCellResponse(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
 	local name = data[realrow].name
-	local isTier = lootTable[session].candidates[name].isTier
-	local isRelic = lootTable[session].candidates[name].isRelic
-	local response = addon:GetResponseText(lootTable[session].candidates[name].response, isTier, isRelic)
+	local response = addon:GetResponse(lootTable[session].equipLoc, lootTable[session].candidates[name].response)
+	local text = response.text
 	if (IsInInstance() and select(4, UnitPosition("player")) ~= select(4, UnitPosition(Ambiguate(name, "short"))))
 		-- Mark as out of instance if the current player is in an instance and the raider is in other instancemap
 		or ((not IsInInstance()) and UnitPosition(Ambiguate(name, "short")) ~= nil) then
 		-- If the current player is not in an instance, mark as out of instance if 1st return of UnitPosition is not nil
 		-- This function returns nil if the raider is in any instance.
-		response = response.." ("..L["Out of instance"]..")"
+		text = text.." ("..L["Out of instance"]..")"
 	end
-	frame.text:SetText(response)
-
-	frame.text:SetTextColor(addon:GetResponseColor(lootTable[session].candidates[name].response, isTier, isRelic))
+	frame.text:SetText(text)
+	frame.text:SetTextColor(unpack(response.color))
 end
 
 function RCVotingFrame.SetCellIlvl(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
@@ -1166,13 +1160,7 @@ function RCVotingFrame.filterFunc(table, row)
 	end
 
 	if response == "AUTOPASS" or response == "PASS" or type(response) == "number" then
-		if lootTable[session].token and addon.mldb.tierButtonsEnabled and type(response) == "number"then
-			return db.modules["RCVotingFrame"].filters.tier[response]
-		elseif lootTable[session].relic and addon.mldb.relicButtonsEnabled and type(response) == "number" then
-			return db.modules["RCVotingFrame"].filters.relic[response]
-		else
-			return db.modules["RCVotingFrame"].filters[response]
-		end
+		return db.modules["RCVotingFrame"].filters[response]
 	else -- Filter out the status texts
 		return db.modules["RCVotingFrame"].filters["STATUS"]
 	end
@@ -1181,7 +1169,8 @@ end
 function ResponseSort(table, rowa, rowb, sortbycol)
 	local column = table.cols[sortbycol]
 	local a, b = table:GetRow(rowa), table:GetRow(rowb);
-	a, b = addon:GetResponseSort(lootTable[session].candidates[a.name].response), addon:GetResponseSort(lootTable[session].candidates[b.name].response)
+	a, b = addon:GetResponse(lootTable[session].equipLoc, lootTable[session].candidates[a.name].response).sort,
+	 		 addon:GetResponse(lootTable[session].equipLoc, lootTable[session].candidates[b.name].response).sort
 	if a == b then
 		if column.sortnext then
 			local nextcol = table.cols[column.sortnext];
@@ -1346,10 +1335,8 @@ do
 		elseif category == "ROLL" or LIB_UIDROPDOWNMENU_MENU_VALUE:find("_ROLL$") then
 			text = _G.ROLL..": "..(lootTable[session].candidates[candidateName].roll or "")
 		elseif category == "RESPONSE" or LIB_UIDROPDOWNMENU_MENU_VALUE:find("_RESPONSE$") then
-			local isTier = lootTable[session].candidates[candidateName].isTier
-			local isRelic = lootTable[session].candidates[candidateName].isRelic
-			text = L["Response"]..": ".."|cff"..(addon:RGBToHex(addon:GetResponseColor(lootTable[session].candidates[candidateName].response, isTier, isRelic)) or "ffffff")
-				..(addon:GetResponseText(lootTable[session].candidates[candidateName].response, isTier, isRelic) or "").."|r"
+			text = L["Response"]..": ".."|cff"..(addon:RGBToHex(unpack(addon:GetResponse(lootTable[session].equipLoc, lootTable[session].candidates[candidateName].response).color))
+			or "ffffff")..(addon:GetResponse(lootTable[session].equipLoc, lootTable[session].candidates[candidateName].response).text or "").."|r"
 		else
 			addon:Debug("Unexpected category or dropdown menu value: "..tostring(category).." ,"..tostring(LIB_UIDROPDOWNMENU_MENU_VALUE))
 		end
@@ -1384,9 +1371,7 @@ do
 		elseif LIB_UIDROPDOWNMENU_MENU_VALUE:find("_ROLL$") then
 			namePred = function(name) return lootTable[session].candidates[name].roll == lootTable[session].candidates[candidateName].roll end
 		elseif LIB_UIDROPDOWNMENU_MENU_VALUE:find("_RESPONSE$") then
-			namePred = function(name) return lootTable[session].candidates[name].response == lootTable[session].candidates[candidateName].response and
-			 								 booleanCompare(lootTable[session].candidates[name].isTier, lootTable[session].candidates[candidateName].isTier) and
-			 								 booleanCompare(lootTable[session].candidates[name].isRelic, lootTable[session].candidates[candidateName].isRelic) end
+			namePred = function(name) return lootTable[session].candidates[name].response == lootTable[session].candidates[candidateName].response end
 	 	else
 			addon:Debug("Unexpected dropdown menu value: "..tostring(LIB_UIDROPDOWNMENU_MENU_VALUE))
 		end
@@ -1594,7 +1579,7 @@ do
 			elseif value == "CHANGE_RESPONSE" and entry.special == value then
 				local v;
 				for i = 1, db.numButtons do
-					v = db.responses[i]
+					v = db.responses.default[i]
 					info.text = v.text
 					info.colorCode = "|cff"..addon:RGBToHex(unpack(v.color))
 					info.notCheckable = true
@@ -1604,8 +1589,8 @@ do
 					Lib_UIDropDownMenu_AddButton(info, level)
 				end
 				-- Add pass button as well
-				info.text = db.responses.PASS.text
-				info.colorCode = "|cff"..addon:RGBToHex(unpack(db.responses.PASS.color))
+				info.text = db.responses.default.PASS.text
+				info.colorCode = "|cff"..addon:RGBToHex(unpack(db.responses.default.PASS.color))
 				info.notCheckable = true
 				info.func = function()
 						addon:SendCommand("group", "change_response", session, candidateName, "PASS")
@@ -1613,7 +1598,7 @@ do
 				Lib_UIDropDownMenu_AddButton(info, level)
 				info = Lib_UIDropDownMenu_CreateInfo()
 				if addon.debug then -- Add all possible responses when debugging
-					for k,v in pairs(db.responses) do
+					for k,v in pairs(db.responses.default) do
 						if type(k) ~= "number" and k ~= "tier" and k~= "relic" and k ~= "PASS" then
 							info.text = v.text
 							info.colorCode = "|cff"..addon:RGBToHex(unpack(v.color))
@@ -1679,24 +1664,10 @@ do
 			end
 
 			-- Build the data table:
-			local data = {["STATUS"] = true, ["PASS"] = true, ["AUTOPASS"] = true, tier = {}, relic = {}}
+			local data = {["STATUS"] = true, ["PASS"] = true, ["AUTOPASS"] = true, default = {}}
 
-			local isTier, isRelic
-			-- If we're viewing a tier token and the ML have it enabled, we want to see it
-			if lootTable[session].token and addon.mldb.tierButtonsEnabled then
-				isTier = true
-				for i = 1, addon.mldb.tierNumButtons or db.tierNumButtons do
-					data.tier[i] = i
-				end
-			elseif lootTable[session].relic and addon.mldb.relicButtonsEnabled then
-				isRelic = true
-				for i = 1, addon.mldb.relicNumButtons or db.relicNumButtons do
-					data.relic[i] = i
-				end
-			else -- otherwise just do the normal buttons
-				for i = 1, addon.mldb.numButtons or db.numButtons do
-					data[i] = i
-				end
+			for i = 1, addon.mldb.numButtons or db.numButtons do
+				data[i] = i
 			end
 
 			local info = Lib_UIDropDownMenu_CreateInfo()
@@ -1724,42 +1695,16 @@ do
 			Lib_UIDropDownMenu_AddButton(info, level)
 
 			info = Lib_UIDropDownMenu_CreateInfo()
-			if isTier then -- add tier buttons
-				for k in ipairs(data.tier) do
-					info.text = addon:GetResponseText(k, isTier)
-					info.colorCode = "|cff"..addon:RGBToHex(addon:GetResponseColor(k, isTier))
-					info.func = function()
-						addon:Debug("Update tier Filter")
-						db.modules["RCVotingFrame"].filters.tier[k] = not db.modules["RCVotingFrame"].filters.tier[k]
-						RCVotingFrame:Update(true)
-					end
-					info.checked = db.modules["RCVotingFrame"].filters.tier[k]
-					Lib_UIDropDownMenu_AddButton(info, level)
+			for k in ipairs(data) do -- Make sure normal responses are on top
+				info.text = addon:GetResponse("", k).text
+				info.colorCode = "|cff"..addon:RGBToHex(addon:GetResponseColor("",k))
+				info.func = function()
+					addon:Debug("Update Filter")
+					db.modules["RCVotingFrame"].filters[k] = not db.modules["RCVotingFrame"].filters[k]
+					RCVotingFrame:Update(true)
 				end
-			elseif isRelic then -- relic filters
-				for k in ipairs(data.relic) do
-					info.text = addon:GetResponseText(k, false, true)
-					info.colorCode = "|cff"..addon:RGBToHex(addon:GetResponseColor(k, false, true))
-					info.func = function()
-						addon:Debug("Update relic Filter")
-						db.modules["RCVotingFrame"].filters.relic[k] = not db.modules["RCVotingFrame"].filters.relic[k]
-						RCVotingFrame:Update(true)
-					end
-					info.checked = db.modules["RCVotingFrame"].filters.relic[k]
-					Lib_UIDropDownMenu_AddButton(info, level)
-				end
-			else -- add normal buttons
-				for k in ipairs(data) do -- Make sure normal responses are on top
-					info.text = addon:GetResponseText(k)
-					info.colorCode = "|cff"..addon:RGBToHex(addon:GetResponseColor(k))
-					info.func = function()
-						addon:Debug("Update Filter")
-						db.modules["RCVotingFrame"].filters[k] = not db.modules["RCVotingFrame"].filters[k]
-						RCVotingFrame:Update(true)
-					end
-					info.checked = db.modules["RCVotingFrame"].filters[k]
-					Lib_UIDropDownMenu_AddButton(info, level)
-				end
+				info.checked = db.modules["RCVotingFrame"].filters[k]
+				Lib_UIDropDownMenu_AddButton(info, level)
 			end
 			for k in pairs(data) do -- A bit redundency, but it makes sure these "specials" comes last
 				if type(k) == "string" and k ~= "tier" and k ~= "relic" then
@@ -1767,8 +1712,8 @@ do
 						info.text = L["Status texts"]
 						info.colorCode = "|cffde34e2" -- purpleish
 					else
-						info.text = addon:GetResponseText(k)
-						info.colorCode = "|cff"..addon:RGBToHex(addon:GetResponseColor(k))
+						info.text = addon:GetResponse("",k).text
+						info.colorCode = "|cff"..addon:RGBToHex(addon:GetResponseColor("",k))
 					end
 					info.func = function()
 						addon:Debug("Update Filter")

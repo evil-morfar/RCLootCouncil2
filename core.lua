@@ -289,12 +289,6 @@ function RCLootCouncil:OnInitialize()
 				['*'] = {
 					filters = { -- Default filtering is showed
 						['*'] = true,
-						tier = { -- New section in v2.4.0
-							['*'] = true,
-						},
-						relic = { -- v2.7
-							['*'] = true
-						},
 						ranks = {
 							['*'] = true
 						},
@@ -324,9 +318,11 @@ function RCLootCouncil:OnInitialize()
 			maxButtons = 10,
 			numButtons = 3,
 			buttons = {
-				{	text = _G.NEED,					whisperKey = L["whisperKey_need"], },	-- 1
-				{	text = _G.GREED,				whisperKey = L["whisperKey_greed"],},	-- 2
-				{	text = L["Minor Upgrade"],		whisperKey = L["whisperKey_minor"],},	-- 3
+				default = {
+					{	text = _G.NEED,					whisperKey = L["whisperKey_need"], },	-- 1
+					{	text = _G.GREED,					whisperKey = L["whisperKey_greed"],},	-- 2
+					{	text = L["Minor Upgrade"],		whisperKey = L["whisperKey_minor"],},	-- 3
+				},
 			},
 			enabledButtons = { -- By default all extra buttons are disabled
 				["**"] = false,
@@ -430,7 +426,7 @@ function RCLootCouncil:OnInitialize()
 	debugLog = self.db.global.log
 
 	-- register the optionstable
-	LibStub("AceConfigRegistry-3.0"):RegisterOptionsTable("RCLootCouncil", self.OptionsTable)
+	LibStub("AceConfigRegistry-3.0"):RegisterOptionsTable("RCLootCouncil", function() return self:OptionsTable() end)
 
 	-- add it to blizz options
 	self.optionsFrame = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("RCLootCouncil", "RCLootCouncil", nil, "settings")
@@ -849,7 +845,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 					self:PrepareLootTable(lootTable)
 
 					-- v2.0.1: It seems people somehow receives mldb without numButtons, so check for it aswell.
-					if not self.mldb or (self.mldb and not self.mldb.numButtons) then -- Really shouldn't happen, but I'm tired of people somehow not receiving it...
+					if not self.mldb then -- Really shouldn't happen, but I'm tired of people somehow not receiving it...
 						self:Debug("Received loot table without having mldb :(", sender)
 						self:SendCommand(self.masterLooter, "MLdb_request")
 						return self:ScheduleTimer("OnCommReceived", 5, prefix, serializedMsg, distri, sender)
@@ -1132,18 +1128,24 @@ function RCLootCouncil:DebugLog(msg, ...)
 end
 
 function RCLootCouncil:OnMLDBReceived(mldb)
+	self:Debug("OnMLDBReceived")
 	-- mldb inheritance from db
+	self.mldb = mldb
 	for type, responses in pairs(mldb.responses) do
 	   for response in pairs(responses) do
-	      if db.responses[type] and db.responses[type][response] then
-	         setmetatable(mldb.responses[type][response], {__index = db.responses[type][response]})
+	      if self.defaults.profile.responses[type] and self.defaults.profile.responses[type][response] then
+				if not self.mldb.responses[type] then self.mldb.responses[type] = {} end
+				if not self.mldb.responses[type][response] then self.mldb.responses[type][response] = {} end
+	         setmetatable(self.mldb.responses[type][response], {__index = self.defaults.profile.responses[type][response]})
 	      end
 	   end
 	end
-	setmetatable(mldb.responses.default, {__index = db.responses.default})
-	setmetatable(mldb.buttons, {__index = db.buttons})
-	setmetatable(mldb.buttons.default, { __index = db.buttons.default,})
-	self.mldb = mldb
+	if not self.mldb.responses.default then self.mldb.responses.default = {} end
+	setmetatable(self.mldb.responses, {__index = self.defaults.profile.responses.default})
+	setmetatable(self.mldb.buttons, {__index = function() return self.defaults.profile.buttons.default end})
+	if not self.mldb.buttons.default then self.mldb.buttons.default = {} end
+	setmetatable(self.mldb.buttons.default, { __index = self.defaults.profile.buttons.default,})
+	-- self.mldb = mldb
 end
 
 -- if fullTest, add items in the encounterJournal to the test items.
@@ -1914,7 +1916,8 @@ function RCLootCouncil:OnEvent(event, ...)
 		self.guildRank = self:GetPlayersGuildRank();
 		if unregisterGuildEvent then
 			self:UnregisterEvent("GUILD_ROSTER_UPDATE"); -- we don't need it any more
-			self:GetGuildOptions() -- get the guild data to the options table now that it's ready
+			-- v2.9: Handled in options
+			--self:GetGuildOptions() -- get the guild data to the options table now that it's ready
 		end
 	elseif event == "ENCOUNTER_END" then
 		self:DebugLog("Event:", event, ...)
@@ -2010,7 +2013,7 @@ function RCLootCouncil:NewMLCheck()
 		-- At this point we know the ML has changed, so we can wipe the council
 		self:Debug("Resetting council as we have a new ML!")
 		self.council = {}
-		self.mldb = {}
+	--	self.mldb = {}
 		self.isCouncil = false
 		self:Debug("MasterLooter = ", self.masterLooter)
 		-- Check to see if we have recieved mldb within 15 secs, otherwise request it
@@ -2882,12 +2885,12 @@ end
 -- @see RCLootCouncil.db.responses
 -- @return A table from db.responses containing the response info
 function RCLootCouncil:GetResponse(type, name)
-   if type == "default" then -- We have a value if mldb is blank
-      if db.responses.default[name] or self.mldb.responses.default[name] then
-         return self.mldb.responses.default[name] or db.responses.default[name]
+   if type == "default" or (self.mldb and not self.mldb.responses[type]) then -- We have a value if mldb is blank
+      if self.defaults.profile.responses.default[name] or self.mldb.responses.default[name] then
+         return self.mldb.responses.default and self.mldb.responses.default[name] or self.defaults.profile.responses.default[name]
       else
          self:Debug("No db.responses.default entry for response:", name)
-         return db.responses.default.DEFAULT -- Use default
+         return self.defaults.profile.responses.default.DEFAULT -- Use default
       end
    else -- This must be supplied by the ml
       if next(self.mldb) then
@@ -2899,11 +2902,11 @@ function RCLootCouncil:GetResponse(type, name)
             end
          else
 				-- This type is not enabled, so use default:
-            if db.responses.default[name] or self.mldb.responses.default[name] then
-               return self.mldb.responses.default[name] or db.responses.default[name]
+            if self.defaults.profile.responses.default[name] or self.mldb.responses.default[name] then
+               return self.mldb.responses.default and self.mldb.responses.default[name] or self.defaults.profile.responses.default[name]
             else
                self:Debug("Unknown response entry", type, name)
-               return db.responses.default.DEFAULT -- Use default
+               return self.defaults.profile.responses.default.DEFAULT -- Use default
             end
          end
       else
@@ -2919,11 +2922,11 @@ function RCLootCouncil:GetNumButtons(type)
       self:Debug("No mldb to GetNumButtons from")
       return 0
    end
-   if not type or type == "default" then -- Has special definition
-      return self.mldb.buttons.default.numButtons or #db.buttons.default or 0
+   if not type or type == "default" or not self.mldb.buttons[type] then -- Has special definition
+      return self.mldb.buttons.default and self.mldb.buttons.default.numButtons or #self.defaults.profile.buttons.default or 0
    else -- Here we can rely on the responses as we have no defaults
       if self.mldb.buttons[type] then
-         return self.mldb.buttons[type].numButtons
+         return #self.mldb.buttons[type]
       else
          error("No mldb.buttons entry for: " .. tostring(type))
       end
@@ -2932,11 +2935,15 @@ end
 
 --- Returns all buttons of a specific type, defaults to "default"
 function RCLootCouncil:GetButtons(type)
-   return self.mldb.buttons[type or "default"]
+	self:Debug("GetButtons", type)
+	printtable(self.mldb.buttons[type or "default"])
+   return self.mldb and self.mldb.buttons[type or "default"] or {} -- Just in case
 end
 
+--- Shorthand for :GetResponse(type, name).color
+-- @return Returned in an unpacked format for use in SetTextColor functions.
 function RCLootCouncil:GetResponseColor(type, name)
-	return self:GetResponse(type, name).color
+	return unpack(self:GetResponse(type, name).color)
 end
 
 --#end UI Functions -----------------------------------------------------

@@ -424,7 +424,7 @@ end
 function RCLootCouncilML:UpdateMLdb()
 	-- The db has changed, so update the mldb and send the changes
 	addon:Debug("UpdateMLdb")
-	addon.mldb = self:BuildMLdb()
+	addon:OnMLDBReceived(self:BuildMLdb())
 	addon:SendCommand("group", "MLdb", addon.mldb)
 end
 
@@ -432,7 +432,7 @@ function RCLootCouncilML:BuildMLdb()
 	-- Extract changes to responses/buttons
 	local changedResponses = {};
 	for type, responses in pairs(db.responses) do
-		for i in pairs(responses) do -- Responses might not have numerical order
+		for i in ipairs(responses) do
 			if not addon.defaults.profile.responses[type]
 			or db.responses[type][i].text ~= addon.defaults.profile.responses[type][i].text
 			or unpack(db.responses[type][i].color) ~= unpack(addon.defaults.profile.responses[type][i].color) then
@@ -443,7 +443,7 @@ function RCLootCouncilML:BuildMLdb()
 	end
 	local changedButtons = {};
 	for type, buttons in pairs(db.buttons) do
-		for i in pairs(buttons) do
+		for i in ipairs(buttons) do
 			if not addon.defaults.profile.buttons[type]
 			or db.buttons[i].text ~= addon.defaults.profile.buttons[i].text then
 				if not changedButtons[type] then changedButtons[type] = {} end
