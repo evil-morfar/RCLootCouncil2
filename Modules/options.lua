@@ -216,7 +216,7 @@ function addon:OptionsTable()
 										name = L["Open the Loot History"],
 										desc = L["open_the_loot_history_desc"],
 										type = "execute",
-										func = function() self:CallModule("history");	InterfaceOptionsFrame:Hide();end,
+										func = function() self:CallModule("history");	_G.InterfaceOptionsFrame:Hide();end,
 									},
 									clearLootDB = {
 										order = 6,
@@ -350,7 +350,7 @@ function addon:OptionsTable()
 										type = "select",
 										width = "double",
 										dialogControl = "LSM30_Border",
-										values = AceGUIWidgetLSMlists.border,
+										values = _G.AceGUIWidgetLSMlists.border,
 										get = function() return db.UI.default.border end,
 										set = function(info, key)
 											for k,v in pairs(db.UI) do
