@@ -18,6 +18,11 @@ local function DBSet(info, val)
 	addon:ConfigTableChanged(info[#info])
 end
 
+local function roundColors(r,g,b,a)
+	return addon.round(r,2),addon.round(g,2),addon.round(b,2),addon.round(a,2)
+end
+
+local selections = {}
 function addon:OptionsTable()
 	local db = self:Getdb()
 	local options = {
@@ -405,8 +410,8 @@ function addon:OptionsTable()
 				type = "group",
 				childGroups = "tab",
 				handler = addon,
-				get = "DBGet",
-				set = "DBSet",
+				get = DBGet,
+				set = DBSet,
 				--hidden = function() return not db.advancedOptions end,
 				args = {
 					desc = {
@@ -988,6 +993,42 @@ function addon:OptionsTable()
 							-- 		-- Buttons is made further down
 							-- 	},
 							-- },
+							moreButtons = {
+								order = 2,
+								type = "group",
+								name = "More buttons",
+								desc = "",
+								inline = true,
+								args = {
+									desc = {
+										order = 0,
+										type = "description",
+										name = "Add a new set of buttons for a specific gear slot.",
+									},
+									selector = {
+										order = 1,
+										width = "double",
+										name = "Slot",
+										type = "select",
+										values = {
+											AZERITE = "Azerite Armor",
+											TRINKET = _G.INVTYPE_TRINKET,
+										},
+										get = function () return selections.AddMoreButtons or "AZERITE" end,
+										set = function(i,v) selections.AddMoreButtons = v; addon:Print("selected:", selections.AddMoreButtons) end,
+									},
+									addBtn = {
+										order = 2,
+										name = _G.ADD,
+										desc = "Add separate controls for the selected slot.",
+										type = "execute",
+										func = function()
+											db.enabledButtons[selections.AddMoreButtons or "AZERITE"] = true
+											-- TODO Do stuff to add the buttons
+										end,
+									}
+								},
+							},
 							timeoutOptions = {
 								order = 3,
 								type = "group",
@@ -1242,10 +1283,6 @@ function addon:OptionsTable()
 			},
 		},
 	}
-	local function roundColors(r,g,b,a)
-		return addon.round(r,2),addon.round(g,2),addon.round(b,2),addon.round(a,2)
-	end
-
 	-- #region Create options thats made with loops
 	-- Buttons
 	local button, picker, text = {}, {}, {}
@@ -1255,8 +1292,8 @@ function addon:OptionsTable()
 			name = L["Button"].." "..i,
 			desc = format(L["Set the text on button 'number'"], i),
 			type = "input",
-			get = function() return self.db.profile.buttons[i].text end,
-			set = function(info, value) addon:ConfigTableChanged("buttons"); self.db.profile.buttons[i].text = tostring(value) end,
+			get = function() return self.db.profile.buttons.default[i].text end,
+			set = function(info, value) addon:ConfigTableChanged("buttons"); self.db.profile.buttons.default[i].text = tostring(value) end,
 			hidden = function() return self.db.profile.numButtons < i end,
 		}
 		options.args.mlSettings.args.buttonsTab.args.buttonOptions.args["button"..i] = button;
@@ -1265,8 +1302,8 @@ function addon:OptionsTable()
 			name = L["Response color"],
 			desc = L["response_color_desc"],
 			type = "color",
-			get = function() return unpack(self.db.profile.responses[i].color)	end,
-			set = function(info,r,g,b,a) addon:ConfigTableChanged("responses"); self.db.profile.responses[i].color = {roundColors(r,g,b,a)} end,
+			get = function() return unpack(self.db.profile.responses.default[i].color)	end,
+			set = function(info,r,g,b,a) addon:ConfigTableChanged("responses"); self.db.profile.responses.default[i].color = {roundColors(r,g,b,a)} end,
 			hidden = function() return self.db.profile.numButtons < i end,
 		}
 		options.args.mlSettings.args.buttonsTab.args.buttonOptions.args["picker"..i] = picker;
@@ -1275,8 +1312,8 @@ function addon:OptionsTable()
 			name = L["Response"],
 			desc = format(L["Set the text for button i's response."], i),
 			type = "input",
-			get = function() return self.db.profile.responses[i].text end,
-			set = function(info, value) addon:ConfigTableChanged("responses"); self.db.profile.responses[i].text = tostring(value) end,
+			get = function() return self.db.profile.responses.default[i].text end,
+			set = function(info, value) addon:ConfigTableChanged("responses"); self.db.profile.responses.default[i].text = tostring(value) end,
 			hidden = function() return self.db.profile.numButtons < i end,
 		}
 		options.args.mlSettings.args.buttonsTab.args.buttonOptions.args["text"..i] = text;
@@ -1287,8 +1324,8 @@ function addon:OptionsTable()
 			desc = format(L["Set the whisper keys for button i."], i),
 			type = "input",
 			width = "double",
-			get = function() return self.db.profile.buttons[i].whisperKey end,
-			set = function(k,v) self.db.profile.buttons[i].whisperKey = tostring(v) end,
+			get = function() return self.db.profile.buttons.default[i].whisperKey end,
+			set = function(k,v) self.db.profile.buttons.default[i].whisperKey = tostring(v) end,
 			hidden = function() return not (self.db.profile.acceptWhispers or self.db.profile.acceptRaidChat) or self.db.profile.numButtons < i end,
 		}
 		options.args.mlSettings.args.buttonsTab.args.responseFromChat.args["whisperKey"..i] = whisperKeys;
@@ -1379,6 +1416,8 @@ function addon:OptionsTable()
 	end
 	-- #endregion
 	options.args.settings.args.profiles = LibStub("AceDBOptions-3.0"):GetOptionsTable(self.db) -- Add profile tab
+	addon.options = options
+	self:GetGuildOptions()
 	return options
 end
 
