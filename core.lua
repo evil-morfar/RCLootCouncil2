@@ -2855,10 +2855,18 @@ function RCLootCouncil.Ambiguate(name)
 end
 
 RCLootCouncil.BTN_SLOTS = {
-	INVTYPE_HEAD = "AZERITE",
-	INVTYPE_CHEST = "AZERITE",
-	INVTYPE_ROBE = "AZERITE",
-	INVTYPE_SHOULDER = "AZERITE",
+	INVTYPE_HEAD 				= "AZERITE",
+	INVTYPE_CHEST 				= "AZERITE",
+	INVTYPE_ROBE 				= "AZERITE",
+	INVTYPE_SHOULDER 			= "AZERITE",
+	INVTYPE_2HWEAPON			= "WEAPON",
+	INVTYPE_WEAPONMAINHAND	= "WEAPON",
+	INVTYPE_WEAPONOFFHAND	= "WEAPON",
+	INVTYPE_WEAPON				= "WEAPON",
+	INVTYPE_THROWN				= "WEAPON",
+	INVTYPE_RANGED				= "WEAPON",
+	INVTYPE_RANGEDRIGHT		= "WEAPON",
+	INVTYPE_HOLDABLE			= "WEAPON",
 }
 
 --- Fetches a response of a given type, based on the group leader's settings if possible
@@ -2878,7 +2886,7 @@ function RCLootCouncil:GetResponse(type, name)
    else -- This must be supplied by the ml
       if next(self.mldb) then
 			-- Check if the type should be translated to something else
-			if self.BTN_SLOTS[type] and self.mldb.responses[self.BTN_SLOTS[type]] then
+			if not self.mldb.responses[type] and self.BTN_SLOTS[type] and self.mldb.responses[self.BTN_SLOTS[type]] then
 				type = self.BTN_SLOTS[type]
 			end
          if self.mldb.responses[type] then
@@ -2924,7 +2932,7 @@ end
 function RCLootCouncil:GetButtons(type)
 	self:Debug("GetButtons", type)
 	-- Check if the type should be translated to something else
-	if self.BTN_SLOTS[type] and self.mldb.responses[self.BTN_SLOTS[type]] then
+	if not self.mldb.responses[type] and self.BTN_SLOTS[type] and self.mldb.responses[self.BTN_SLOTS[type]] then
 		type = self.BTN_SLOTS[type]
 	end
    return self.mldb and self.mldb.buttons[type or "default"] or {} -- Just in case

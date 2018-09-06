@@ -43,6 +43,8 @@ local function createNewButtonSet(path, name, order)
 				type = "execute",
 				func = function(info)
 					addon.db.profile.enabledButtons[info[#info - 1]] = nil
+					addon.db.profile.responses[info[#info - 1]] = nil
+					addon.db.profile.buttons[info[#info - 1]] = nil
 				end,
 			},
 			numButtons = {
@@ -1018,8 +1020,20 @@ function addon:OptionsTable()
 										type = "select",
 										values = {
 											AZERITE = L["Azerite Armor"],
-											INVTYPE_TRINKET = _G.INVTYPE_TRINKET,
+											INVTYPE_HEAD = _G.INVTYPE_HEAD,
+											INVTYPE_NECK = _G.INVTYPE_NECK,
+											INVTYPE_SHOULDER = _G.INVTYPE_SHOULDER,
+											INVTYPE_CLOAK = _G.INVTYPE_CLOAK,
+											INVTYPE_CHEST = _G.INVTYPE_CHEST,
+											INVTYPE_WRIST = _G.INVTYPE_WRIST,
+											INVTYPE_HAND = _G.INVTYPE_HAND,
+											INVTYPE_WAIST =_G.INVTYPE_WAIST,
+											INVTYPE_LEGS = _G.INVTYPE_LEGS,
+											INVTYPE_FEET = _G.INVTYPE_FEET,
 											INVTYPE_FINGER = _G.INVTYPE_FINGER,
+											INVTYPE_SHIELD = _G.INVTYPE_SHIELD,
+											INVTYPE_TRINKET = _G.INVTYPE_TRINKET,
+											WEAPON = _G.WEAPON,
 										},
 										get = function () return selections.AddMoreButtons or "AZERITE" end,
 										set = function(i,v) selections.AddMoreButtons = v end,

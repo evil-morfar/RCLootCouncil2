@@ -445,6 +445,7 @@ function RCLootCouncilML:BuildMLdb()
 	local changedButtons = {};
 	for type, buttons in pairs(db.buttons) do
 		for i in ipairs(buttons) do
+			if i > db.buttons[type].numButtons then break end
 			if not addon.defaults.profile.buttons[type]
 			or db.buttons[type][i].text ~= addon.defaults.profile.buttons[type][i].text then
 				if not changedButtons[type] then changedButtons[type] = {} end
