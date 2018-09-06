@@ -142,10 +142,12 @@ function RCLootCouncil:OnInitialize()
 			--[[1]]			  { color = {0,1,0,1},				sort = 1,		text = L["Mainspec/Need"],},
 			--[[2]]			  { color = {1,0.5,0,1},			sort = 2,		text = L["Offspec/Greed"],	},
 			--[[3]]			  { color = {0,0.7,0.7,1},			sort = 3,		text = L["Minor Upgrade"],},
+			numButtons = 3,
 		},
 		['*'] = {
 			['*'] = {
-
+				text = L["Response"],
+				color = {1,1,1,1},
 			},
 		},
 		tier = {
@@ -327,10 +329,11 @@ function RCLootCouncil:OnInitialize()
 					{	text = _G.NEED,					whisperKey = L["whisperKey_need"], },	-- 1
 					{	text = _G.GREED,					whisperKey = L["whisperKey_greed"],},	-- 2
 					{	text = L["Minor Upgrade"],		whisperKey = L["whisperKey_minor"],},	-- 3
+					numButtons = 3,
 				},
 				['*'] = {
 					['*'] = {
-						text = "Button",
+						text = L["Button"],
 					},
 					numButtons = 3,
 				},
@@ -1144,10 +1147,10 @@ function RCLootCouncil:OnMLDBReceived(mldb)
 	self.mldb = mldb
 	for type, responses in pairs(mldb.responses) do
 	   for response in pairs(responses) do
-	      if self.defaults.profile.responses[type] and self.defaults.profile.responses[type][response] then
-				if not self.mldb.responses[type] then self.mldb.responses[type] = {} end
-				if not self.mldb.responses[type][response] then self.mldb.responses[type][response] = {} end
-	         setmetatable(self.mldb.responses[type][response], {__index = self.defaults.profile.responses[type][response]})
+	      if not self.defaults.profile.responses[type] then
+				--if not self.mldb.responses[type] then self.mldb.responses[type] = {} end
+				--if not self.mldb.responses[type][response] then self.mldb.responses[type][response] = {} end
+	         setmetatable(self.mldb.responses[type], {__index = self.defaults.profile.responses.default})
 	      end
 	   end
 	end
@@ -2890,12 +2893,20 @@ function RCLootCouncil.Ambiguate(name)
 	return db.ambiguate and Ambiguate(name, "none") or Ambiguate(name, "short")
 end
 
+RCLootCouncil.BTN_SLOTS = {
+	INVTYPE_HEAD = "AZERITE",
+	INVTYPE_CHEST = "AZERITE",
+	INVTYPE_ROBE = "AZERITE",
+	INVTYPE_SHOULDER = "AZERITE",
+}
+
 --- Fetches a response of a given type, based on the group leader's settings if possible
 -- @param type The type of response. Defaults to "default".
 -- @param name The name of the response.
 -- @see RCLootCouncil.db.responses
 -- @return A table from db.responses containing the response info
 function RCLootCouncil:GetResponse(type, name)
+	-- REVIEW With proper inheritance, most of this should be redundant
    if type == "default" or (self.mldb and not self.mldb.responses[type]) then -- We have a value if mldb is blank
       if self.defaults.profile.responses.default[name] or self.mldb.responses.default[name] then
          return self.mldb.responses.default and self.mldb.responses.default[name] or self.defaults.profile.responses.default[name]
@@ -2905,6 +2916,10 @@ function RCLootCouncil:GetResponse(type, name)
       end
    else -- This must be supplied by the ml
       if next(self.mldb) then
+			-- Check if the type should be translated to something else
+			if self.BTN_SLOTS[type] and self.mldb.responses[self.BTN_SLOTS[type]] then
+				type = self.BTN_SLOTS[type]
+			end
          if self.mldb.responses[type] then
             if self.mldb.responses[type][name] then
                return self.mldb.responses[type][name]

@@ -26,18 +26,27 @@ local function createNewButtonSet(path, name, order)
 	-- Create the group
 	path[name] = {
 		order = order,
-		name = name,
-		desc = "Options group for "..name.. " buttons and responses.",
+		name = name == "AZERITE" and L["Azerite Armor"] or _G[name],
+		desc = "",
 		type = "group",
 		inline = true,
 		args = {
 			optionsDesc = {
 				order = 0,
-				name = format(L["buttons_and_responses_desc"], addon.db.profile.maxButtons),
-				type = "description"
+				name = "Options group for "..(name == "AZERITE" and L["Azerite Armor"] or _G[name]).. " buttons and responses.\nSee above for a detailed explanation.",
+				type = "description",
+				width = "double",
+			},
+			remove = {
+				order = 1,
+				name = _G.REMOVE,
+				type = "execute",
+				func = function(info)
+					addon.db.profile.enabledButtons[info[#info - 1]] = nil
+				end,
 			},
 			numButtons = {
-				order = 1,
+				order = 2,
 				name = L["Number of buttons"],
 				desc = L["number_of_buttons_desc"],
 				type = "range",
@@ -52,6 +61,7 @@ local function createNewButtonSet(path, name, order)
 	}
 	-- Create each entry
 	for i = 1, addon.db.profile.buttons[name].numButtons do
+		addon.db.profile.responses[name][i].sort = i -- Sort is static, just set it
 		path[name].args["button"..i] = {
 			order = i * 3 + 1,
 			name = L["Button"].." "..i,
@@ -1071,11 +1081,12 @@ function addon:OptionsTable()
 										name = "Slot",
 										type = "select",
 										values = {
-											AZERITE = "Azerite Armor",
-											TRINKET = _G.INVTYPE_TRINKET,
+											AZERITE = L["Azerite Armor"],
+											INVTYPE_TRINKET = _G.INVTYPE_TRINKET,
+											INVTYPE_FINGER = _G.INVTYPE_FINGER,
 										},
 										get = function () return selections.AddMoreButtons or "AZERITE" end,
-										set = function(i,v) selections.AddMoreButtons = v; addon:Print("selected:", selections.AddMoreButtons) end,
+										set = function(i,v) selections.AddMoreButtons = v end,
 									},
 									addBtn = {
 										order = 2,
@@ -1084,7 +1095,6 @@ function addon:OptionsTable()
 										type = "execute",
 										func = function()
 											db.enabledButtons[selections.AddMoreButtons or "AZERITE"] = true
-											-- TODO Do stuff to add the buttons
 										end,
 									}
 								},
@@ -1175,13 +1185,14 @@ function addon:OptionsTable()
 								confirm = true,
 								func = function()
 									self.db.profile.buttons = self.defaults.profile.buttons
-									self.db.profile.tierButtons = self.defaults.profile.tierButtons
-									self.db.profile.relicButtons = self.defaults.profile.relicButtons
 									self.db.profile.responses = self.defaults.profile.responses
 									self.db.profile.numButtons = self.defaults.profile.numButtons
-									self.db.profile.tierNumButtons = self.defaults.profile.tierNumButtons
-									self.db.profile.relicNumButtons = self.defaults.profile.relicNumButtons
 									self.db.profile.acceptWhispers = self.defaults.profile.acceptWhispers
+									self.db.profile.enabledButtons = {}
+									-- now remove *'s (UpdateDB() will re-register the defaults)
+									for k,v in pairs(self.db.profile.buttons) do if k == '*' then v = nil end end
+									for k,v in pairs(self.db.profile.responses) do if k == '*' then v = nil end end
+									self:UpdateDB()
 									self:ConfigTableChanged()
 								end,
 							},

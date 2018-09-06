@@ -109,6 +109,7 @@ L["Awarded"] = true
 L["award_reasons_desc"] = "Award reasons that can't be chosen during a roll.\nUsed when changing a response with the right click menu and for Auto Awards.\n"
 L["Awarded item cannot be awarded later."] = true
 L["Awards"] = true
+L["Azerite Armor"] = true
 L["Background"] = true
 L["Background Color"] = true
 L["BBCode export, tailored for SMF."] = true
