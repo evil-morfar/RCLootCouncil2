@@ -116,9 +116,9 @@ function RCLootCouncil:OnInitialize()
 	self.verCheckDisplayed = false -- Have we shown a "out-of-date"?
 	self.moduleVerCheckDisplayed = {} -- Have we shown a "out-of-date" for a module? The key of the table is the baseName of the module.
 
-	self.EJLastestInstanceID = 1231 -- UPDATE this whenever we change test data.
+	self.EJLastestInstanceID = 1031 -- UPDATE this whenever we change test data.
 									-- The lastest raid instance Enouncter Journal id.
-									-- Antorus, the Burning Throne.
+									-- Uldir
 									-- HOWTO get this number: Open the instance we want in the Adventure Journal. Use command '/dump EJ_GetInstanceInfo()'
 									-- The 8th return value is sth like "|cff66bbff|Hjournal:0:946:14|h[Antorus, the Burning Throne]|h|r"
 									-- The number at the position of the above 946 is what we want.
@@ -142,7 +142,6 @@ function RCLootCouncil:OnInitialize()
 			--[[1]]			  { color = {0,1,0,1},				sort = 1,		text = L["Mainspec/Need"],},
 			--[[2]]			  { color = {1,0.5,0,1},			sort = 2,		text = L["Offspec/Greed"],	},
 			--[[3]]			  { color = {0,0.7,0.7,1},			sort = 3,		text = L["Minor Upgrade"],},
-			numButtons = 3,
 		},
 		['*'] = {
 			['*'] = {
@@ -379,37 +378,37 @@ function RCLootCouncil:OnInitialize()
 
 	-- create the other buttons/responses
 	for i = 1, self.defaults.profile.maxButtons do
-		if i > self.defaults.profile.numButtons then
-			tinsert(self.defaults.profile.buttons, {
-				text = L["Button"].." "..i,
-				whisperKey = ""..i,
-			})
-			tinsert(self.defaults.profile.responses, {
-				color = {0.7, 0.7,0.7,1},
-				sort = i,
-				text = L["Button"]..i,
-			})
-		end
-		if i > self.defaults.profile.tierNumButtons then
-			tinsert(self.defaults.profile.tierButtons, {
-				text = L["Button"].." "..i,
-				whisperKey = ""..i,
-			})
-			tinsert(self.defaults.profile.responses.tier, {
-				color = {0.7, 0.7,0.7,1},
-				sort = i,
-				text = L["Button"]..i,
-			})
-		end
-		tinsert(self.defaults.profile.relicButtons, {
-			text = L["Button"].." "..i,
-			whisperKey = ""..i,
-		})
-		tinsert(self.defaults.profile.responses.relic, {
-			color = {0.7, 0.7,0.7,1},
-			sort = i,
-			text = L["Button"]..i,
-		})
+		-- if i > self.defaults.profile.buttons.default.numButtons then
+		-- 	tinsert(self.defaults.profile.buttons.default, {
+		-- 		text = L["Button"].." "..i,
+		-- 		whisperKey = ""..i,
+		-- 	})
+		-- 	tinsert(self.defaults.profile.responses.default, {
+		-- 		color = {0.7, 0.7,0.7,1},
+		-- 		sort = i,
+		-- 		text = L["Button"]..i,
+		-- 	})
+		-- end
+		-- if i > self.defaults.profile.tierNumButtons then
+		-- 	tinsert(self.defaults.profile.tierButtons, {
+		-- 		text = L["Button"].." "..i,
+		-- 		whisperKey = ""..i,
+		-- 	})
+		-- 	tinsert(self.defaults.profile.responses.tier, {
+		-- 		color = {0.7, 0.7,0.7,1},
+		-- 		sort = i,
+		-- 		text = L["Button"]..i,
+		-- 	})
+		-- end
+		-- tinsert(self.defaults.profile.relicButtons, {
+		-- 	text = L["Button"].." "..i,
+		-- 	whisperKey = ""..i,
+		-- })
+		-- tinsert(self.defaults.profile.responses.relic, {
+		-- 	color = {0.7, 0.7,0.7,1},
+		-- 	sort = i,
+		-- 	text = L["Button"]..i,
+		-- })
 	end
 	-- create the other AwardReasons
 	for i = #self.defaults.profile.awardReasons+1, self.defaults.profile.maxAwardReasons do
@@ -2962,7 +2961,10 @@ end
 --- Returns all buttons of a specific type, defaults to "default"
 function RCLootCouncil:GetButtons(type)
 	self:Debug("GetButtons", type)
-	printtable(self.mldb.buttons[type or "default"])
+	-- Check if the type should be translated to something else
+	if self.BTN_SLOTS[type] and self.mldb.responses[self.BTN_SLOTS[type]] then
+		type = self.BTN_SLOTS[type]
+	end
    return self.mldb and self.mldb.buttons[type or "default"] or {} -- Just in case
 end
 

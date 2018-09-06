@@ -1095,6 +1095,12 @@ function addon:OptionsTable()
 										type = "execute",
 										func = function()
 											db.enabledButtons[selections.AddMoreButtons or "AZERITE"] = true
+											-- Also setup default options
+											for i = 1, self.db.profile.maxButtons do
+												if not db.buttons[selections.AddMoreButtons][i] then
+													db.buttons[selections.AddMoreButtons][i] = {text = L["Button"]}
+												end
+											end
 										end,
 									}
 								},
