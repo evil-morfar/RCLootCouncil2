@@ -33,7 +33,7 @@ local function createNewButtonSet(path, name, order)
 		args = {
 			optionsDesc = {
 				order = 0,
-				name = "Options group for "..(name == "AZERITE" and L["Azerite Armor"] or _G[name]).. " buttons and responses.\nSee above for a detailed explanation.",
+				name = format(L["opt_buttonsGroup_desc"], name == "AZERITE" and L["Azerite Armor"] or _G[name]) ,
 				type = "description",
 				width = "double",
 			},
@@ -1066,19 +1066,19 @@ function addon:OptionsTable()
 							moreButtons = {
 								order = 2,
 								type = "group",
-								name = "More buttons",
+								name = L["Additional Buttons"],
 								desc = "",
 								inline = true,
 								args = {
 									desc = {
 										order = 0,
 										type = "description",
-										name = "Add a new set of buttons for a specific gear slot.",
+										name = L["opt_moreButtons_desc"],
 									},
 									selector = {
 										order = 1,
 										width = "double",
-										name = "Slot",
+										name = L["Slot"],
 										type = "select",
 										values = {
 											AZERITE = L["Azerite Armor"],
@@ -1091,7 +1091,7 @@ function addon:OptionsTable()
 									addBtn = {
 										order = 2,
 										name = _G.ADD,
-										desc = "Add separate controls for the selected slot.",
+										desc = L["opt_addButton_desc"],
 										type = "execute",
 										func = function()
 											db.enabledButtons[selections.AddMoreButtons or "AZERITE"] = true
