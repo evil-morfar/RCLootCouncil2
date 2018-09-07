@@ -315,7 +315,6 @@ function RCLootCouncil:OnInitialize()
 			council = {},
 
 			maxButtons = 10,
-			numButtons = 3,
 			buttons = {
 				default = {
 					{	text = _G.NEED,					whisperKey = L["whisperKey_need"], },	-- 1
@@ -1116,8 +1115,8 @@ function RCLootCouncil:OnMLDBReceived(mldb)
 	   end
 	end
 	if not self.mldb.responses.default then self.mldb.responses.default = {} end
-	setmetatable(self.mldb.responses, {__index = self.defaults.profile.responses.default})
-	setmetatable(self.mldb.buttons, {__index = function() return self.defaults.profile.buttons.default end})
+	setmetatable(self.mldb.responses.default, {__index = self.defaults.profile.responses.default})
+	--setmetatable(self.mldb.buttons, {__index = function() return self.defaults.profile.buttons.default end})
 	if not self.mldb.buttons.default then self.mldb.buttons.default = {} end
 	setmetatable(self.mldb.buttons.default, { __index = self.defaults.profile.buttons.default,})
 	-- self.mldb = mldb
@@ -2886,6 +2885,10 @@ RCLootCouncil.BTN_SLOTS = {
 -- @return A table from db.responses containing the response info
 function RCLootCouncil:GetResponse(type, name)
 	-- REVIEW With proper inheritance, most of this should be redundant
+	-- Check if the type should be translated to something else
+	if not self.mldb.responses[type] and self.BTN_SLOTS[type] and self.mldb.responses[self.BTN_SLOTS[type]] then
+		type = self.BTN_SLOTS[type]
+	end
    if type == "default" or (self.mldb and not self.mldb.responses[type]) then -- We have a value if mldb is blank
       if self.defaults.profile.responses.default[name] or self.mldb.responses.default[name] then
          return self.mldb.responses.default and self.mldb.responses.default[name] or self.defaults.profile.responses.default[name]
@@ -2895,10 +2898,6 @@ function RCLootCouncil:GetResponse(type, name)
       end
    else -- This must be supplied by the ml
       if next(self.mldb) then
-			-- Check if the type should be translated to something else
-			if not self.mldb.responses[type] and self.BTN_SLOTS[type] and self.mldb.responses[self.BTN_SLOTS[type]] then
-				type = self.BTN_SLOTS[type]
-			end
          if self.mldb.responses[type] then
             if self.mldb.responses[type][name] then
                return self.mldb.responses[type][name]
@@ -2927,8 +2926,11 @@ function RCLootCouncil:GetNumButtons(type)
       self:Debug("No mldb to GetNumButtons from")
       return 0
    end
+	if not self.mldb.buttons[type] and self.BTN_SLOTS[type] and self.mldb.buttons[self.BTN_SLOTS[type]] then
+		type = self.BTN_SLOTS[type]
+	end
    if not type or type == "default" or not self.mldb.buttons[type] then -- Has special definition
-      return self.mldb.buttons.default and self.mldb.buttons.default.numButtons or #self.defaults.profile.buttons.default or 0
+      return self.mldb.buttons.default and self.mldb.buttons.default.numButtons or self.defaults.profile.buttons.default.numButtons or 0
    else -- Here we can rely on the responses as we have no defaults
       if self.mldb.buttons[type] then
          return #self.mldb.buttons[type]
@@ -2942,10 +2944,12 @@ end
 function RCLootCouncil:GetButtons(type)
 	self:Debug("GetButtons", type)
 	-- Check if the type should be translated to something else
-	if not self.mldb.responses[type] and self.BTN_SLOTS[type] and self.mldb.responses[self.BTN_SLOTS[type]] then
+	self:Debug("Status:",self.mldb.buttons[type],self.BTN_SLOTS[type],self.mldb.buttons[self.BTN_SLOTS[type]])
+	if not self.mldb.buttons[type] and self.BTN_SLOTS[type] and self.mldb.buttons[self.BTN_SLOTS[type]] then
 		type = self.BTN_SLOTS[type]
+		self:Debug("Setting type to", type)
 	end
-   return self.mldb and self.mldb.buttons[type or "default"] or {} -- Just in case
+   return self.mldb and self.mldb.buttons[type] or self.mldb.buttons.default
 end
 
 --- Shorthand for :GetResponse(type, name).color
