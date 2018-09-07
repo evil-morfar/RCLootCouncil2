@@ -689,27 +689,27 @@ function RCLootCouncil:ChatCommand(msg)
 end
 
 -- Update the recentTradableItem by link, if it is in bag and tradable.
-function RCLootCouncil:UpdateAndSendRecentTradableItem(link)
+function RCLootCouncil:UpdateAndSendRecentTradableItem(info)
 	for i = 0, NUM_BAG_SLOTS do
 		for j = 1, GetContainerNumSlots(i) do
 			local _, _, _, _, _, _, link2 = GetContainerItemInfo(i, j)
-			if link2 and self:ItemIsItem(link, link2) then
+			if link2 and self:ItemIsItem(info.link, link2) then
 				if self:GetContainerItemTradeTimeRemaining(i, j) > 0 then
 					if self.mldb.rejectTrade then
-						LibDialog:Spawn("RCLOOTCOUNCIL_KEEP_ITEM", link)
+						LibDialog:Spawn("RCLOOTCOUNCIL_KEEP_ITEM", info.link)
 						return
 					end
-					self:SendCommand("group", "tradable", link)
+					self:SendCommand("group", "tradable", info.link, info.guid)
 					return
 				else -- Not tradeable
 					-- REVIEW: This might fail if the recipient happens to have an exact copy of the item
-					self:SendCommand("group", "not_tradeable", link)
+					self:SendCommand("group", "not_tradeable", info.link, info.guid)
 					return
 				end
 			end
 		end
 	end
-	self:Debug("Error - UpdateAndSendRecentTradableItem",link, "not found in bags")
+	self:Debug("Error - UpdateAndSendRecentTradableItem",info.link, "not found in bags")
 end
 
 -- Send the msg to the channel if it is valid. Otherwise just print the messsage.
@@ -1901,8 +1901,8 @@ function RCLootCouncil:OnEvent(event, ...)
 
 	elseif event == "LOOT_OPENED" then
 		self:Debug("Event:", event, ...)
-		self:Debug("GetUnitName:", GetUnitName("target"))
-		self:Debug("UnitGUID:", UnitGUID("target"))
+		-- self:Debug("GetUnitName:", GetUnitName("target"))
+		-- self:Debug("UnitGUID:", UnitGUID("target"))
 		if select(1, ...) ~= "scheduled" and self.LootOpenScheduled then return end -- When this function is scheduled to run again, but LOOT_OPENDED event fires, return.
 		self.LootOpenScheduled = false
 		wipe(self.lootSlotInfo)
@@ -1921,7 +1921,8 @@ function RCLootCouncil:OnEvent(event, ...)
 						quantity = quantity,
 						quality = quality,
 						locked = locked,
-						guid = (GetLootSourceInfo(i)), -- Boss GUID
+						guid = self.Utils:ExtractCreatureID((GetLootSourceInfo(i))), -- Boss GUID
+						boss = (GetUnitName("target")),
 					}
 				else -- It's possible that item in the loot window is uncached. Retry in the next frame.
 					self:Debug("Loot uncached when the loot window is opened. Retry in the next frame.", link)
@@ -1936,6 +1937,17 @@ function RCLootCouncil:OnEvent(event, ...)
 		end
 	elseif event == "LOOT_CLOSED" then
 		self:Debug("Event:", event, ...)
+		local i = 1
+		for k, info in pairs(self.lootSlotInfo) do
+			if not info.isLooted then
+				self:SendCommand("group", "fakeLoot", info.link, info.guid)
+				return
+			end
+			i = k
+		end
+		-- Otherwise they've looted everything, so send ack
+		self:SendCommand("group", "looted", self.lootSlotInfo[i].guid)
+
 		self.lootOpen = false
 	elseif event == "LOOT_SLOT_CLEARED" then
 		local slot = ...
@@ -1943,13 +1955,11 @@ function RCLootCouncil:OnEvent(event, ...)
 			local link = self.lootSlotInfo[slot].link
 			local quality = self.lootSlotInfo[slot].quality
 			self:Debug("OnLootSlotCleared()", slot, link, quality)
-			self:Debug("GetLootSourceInfo()", GetLootSourceInfo(slot))
-			self.lootSlotInfo[slot] = nil
-			-- v2.8.1 NOTE Quality is not ready here. Functionality handling on ENCOUNTER_LOOT_RECEIVED
-		--[[	if quality and quality >= GetLootThreshold() and IsInInstance() then -- Only send when in instance
+			if quality and quality >= GetLootThreshold() and IsInInstance() then -- Only send when in instance
 				-- Note that we don't check if this is master looted or not. We only know this is looted by ourselves.
-				self:ScheduleTimer("UpdateAndSendRecentTradableItem", 1, link) -- Delay a bit, need some time to between item removed from loot slot and moved to the bag.
-			end]]
+				self:ScheduleTimer("UpdateAndSendRecentTradableItem", 2, self.lootSlotInfo[slot]) -- Delay a bit, need some time to between item removed from loot slot and moved to the bag.
+			end
+			self.lootSlotInfo[slot].isLooted = true
 
 			if self.isMasterLooter then
 				self:GetActiveModule("masterlooter"):OnLootSlotCleared(slot, link)
@@ -1957,9 +1967,9 @@ function RCLootCouncil:OnEvent(event, ...)
 		end
 	elseif event == "ENCOUNTER_LOOT_RECEIVED" then
 		self:Debug("Event:", event, ...)
-		if self:UnitIsUnit("player", select(5, ...)) then
-			self:ScheduleTimer("UpdateAndSendRecentTradableItem", 2, select(3,...))
-		end
+		-- if self:UnitIsUnit("player", select(5, ...)) then
+		-- 	self:ScheduleTimer("UpdateAndSendRecentTradableItem", 2, select(3,...))
+		-- end
 
 	else
 		self:Debug("NonHandled Event:", event, ...)

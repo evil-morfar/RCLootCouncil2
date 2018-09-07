@@ -97,7 +97,6 @@ end
 local selections = {}
 function addon:OptionsTable()
 	local db = self:Getdb()
-	local selections = {}
 	local options = {
 		name = "RCLootCouncil",
 		type = "group",

@@ -317,6 +317,12 @@ function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
 
 			elseif command == "not_tradeable" or command == "rejected_trade" then
 				self:AddNonTradeable(unpack(data), addon:UnitName(sender), command)
+
+			elseif command == "looted" then
+				-- TODO
+			elseif command == "fakeLoot" then
+				-- TODO
+
 			end
 		end
 	end

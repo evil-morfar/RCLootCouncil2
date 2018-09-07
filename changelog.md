@@ -1,3 +1,9 @@
+### v2.9.0
+---
+* **Appearance**
+* Added a new default Battle for Azeroth skin.
+* Remember to can change the appearance in the options menu.
+
 * **Buttons and Responses**
 * ~~Removed~~ Tier and relic buttons.
 * Added new buttons for every gear slot available.
@@ -5,15 +11,14 @@
 * By default none of these are enabled, and must be added manually. As always only the group leader's set of buttons is used.
 * The new buttons are not backwards compatible.
 
-
-### v2.8.4
----
-* **Appearance**
-* Added a new default Battle for Azeroth skin.
-* Remember to can change the appearance in the options menu.
-
 ###### Bugfixes
 * *Fixed EQDKP Plus exports (#360).*
+
+
+###### Dev
+* Changed parameters in `UpdateAndSendRecentTradableItem()` to contain the table itself.
+* Changed comms `tradeable` and `non_tradeable` to include boss guid as the last parameter.
+* Added to new comms `looted` and `fakeLoot` to deal with looting status.
 
 
 ### v2.8.3
