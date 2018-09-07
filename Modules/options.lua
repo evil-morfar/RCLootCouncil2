@@ -1115,6 +1115,8 @@ function addon:OptionsTable()
 										min = 1,
 										max = self.db.profile.maxButtons,
 										step = 1,
+										set = function(_,v) self.db.profile.buttons.default.numButtons = v end,
+										get = function() return self.db.profile.buttons.default.numButtons end,
 									},
 									-- Made further down
 								},
@@ -1259,7 +1261,6 @@ function addon:OptionsTable()
 								func = function()
 									self.db.profile.buttons = self.defaults.profile.buttons
 									self.db.profile.responses = self.defaults.profile.responses
-									self.db.profile.numButtons = self.defaults.profile.numButtons
 									self.db.profile.acceptWhispers = self.defaults.profile.acceptWhispers
 									self.db.profile.enabledButtons = {}
 									-- now remove *'s (UpdateDB() will re-register the defaults)
@@ -1438,7 +1439,7 @@ function addon:OptionsTable()
 			type = "input",
 			get = function() return self.db.profile.buttons.default[i].text end,
 			set = function(info, value) addon:ConfigTableChanged("buttons"); self.db.profile.buttons.default[i].text = tostring(value) end,
-			hidden = function() return self.db.profile.numButtons < i end,
+			hidden = function() return self.db.profile.buttons.default.numButtons < i end,
 		}
 		options.args.mlSettings.args.buttonsTab.args.buttonOptions.args["button"..i] = button;
 		picker = {
@@ -1448,7 +1449,7 @@ function addon:OptionsTable()
 			type = "color",
 			get = function() return unpack(self.db.profile.responses.default[i].color)	end,
 			set = function(info,r,g,b,a) addon:ConfigTableChanged("responses"); self.db.profile.responses.default[i].color = {roundColors(r,g,b,a)} end,
-			hidden = function() return self.db.profile.numButtons < i end,
+			hidden = function() return self.db.profile.buttons.default.numButtons < i end,
 		}
 		options.args.mlSettings.args.buttonsTab.args.buttonOptions.args["picker"..i] = picker;
 		text = {
@@ -1458,7 +1459,7 @@ function addon:OptionsTable()
 			type = "input",
 			get = function() return self.db.profile.responses.default[i].text end,
 			set = function(info, value) addon:ConfigTableChanged("responses"); self.db.profile.responses.default[i].text = tostring(value) end,
-			hidden = function() return self.db.profile.numButtons < i end,
+			hidden = function() return self.db.profile.buttons.default.numButtons < i end,
 		}
 		options.args.mlSettings.args.buttonsTab.args.buttonOptions.args["text"..i] = text;
 
@@ -1470,7 +1471,7 @@ function addon:OptionsTable()
 			width = "double",
 			get = function() return self.db.profile.buttons.default[i].whisperKey end,
 			set = function(k,v) self.db.profile.buttons.default[i].whisperKey = tostring(v) end,
-			hidden = function() return not (self.db.profile.acceptWhispers or self.db.profile.acceptRaidChat) or self.db.profile.numButtons < i end,
+			hidden = function() return not (self.db.profile.acceptWhispers or self.db.profile.acceptRaidChat) or self.db.profile.buttons.default.numButtons < i end,
 		}
 		options.args.mlSettings.args.buttonsTab.args.responseFromChat.args["whisperKey"..i] = whisperKeys;
 	end
@@ -1561,7 +1562,6 @@ function addon:OptionsTable()
 	-- #endregion
 	local i = 4
 	for group in pairs(db.enabledButtons) do
-		self:Debug("Adding buttons", group)
 		createNewButtonSet(options.args.mlSettings.args.buttonsTab.args, group, i)
 		i = i + 1
 	end
