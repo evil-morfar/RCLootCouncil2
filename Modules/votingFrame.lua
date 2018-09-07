@@ -1243,6 +1243,7 @@ function RCVotingFrame:GetAwardPopupData(session, name, data, reason)
 		link 			= lootTable[session].link,
 		isToken		= lootTable[session].token,
 		note		= data.note,
+		equipLoc		= lootTable[session].equipLoc,
 	}
 end
 
@@ -1584,7 +1585,7 @@ do
 				end
 			elseif value == "CHANGE_RESPONSE" and entry.special == value then
 				local v;
-				for i = 1, db.numButtons do
+				for i = 1, db.buttons.default.numButtons do
 					v = db.responses.default[i]
 					info.text = v.text
 					info.colorCode = "|cff"..addon:RGBToHex(unpack(v.color))
