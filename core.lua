@@ -128,6 +128,8 @@ function RCLootCouncil:OnInitialize()
 	self.responses = {
 		default = {
 			AWARDED        = { color = {1,1,1,1},				sort = 0.1,		text = L["Awarded"],},
+			PL					= { color = {1, 0.6,0,1},			sort = 498,		text = L["Personal Loot - Non tradeable"]},
+			PL_REJECT		= { color = {0.2,0,0,1},			sort = 499,		text = L["Personal Loot - Rejected Trade"]},
 			NOTANNOUNCED	= { color = {1,0,1,1},				sort = 501,		text = L["Not announced"],},
 			ANNOUNCED		= { color = {1,0,1,1},				sort = 502,		text = L["Loot announced, waiting for answer"], },
 			WAIT				= { color = {1,1,0,1},				sort = 503,		text = L["Candidate is selecting response, please wait"], },
