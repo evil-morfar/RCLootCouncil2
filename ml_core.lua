@@ -567,6 +567,9 @@ function RCLootCouncilML:OnCommReceived(prefix, serializedMsg, distri, sender)
 			elseif command == "trade_WrongWinner" then
 				local link, recipient, trader, winner = unpack(data)
 				addon:Print(format(L["trade_wrongwinner_message"], addon.Ambiguate(trader), link, addon.Ambiguate(recipient), addon.Ambiguate(winner)))
+
+			elseif command == "not_tradeable" or command == "rejected_trade" then
+				self:HandleNonTradeable(unpack(data), addon:UnitName(sender), command)
 			end
 		else
 			addon:Debug("Error in deserializing ML comm: ", command)
@@ -605,6 +608,18 @@ function RCLootCouncilML:HandleReceivedTradeable (item, sender)
 				end
 		end
 	end
+end
+
+function RCLootCouncilML:HandleNonTradeable(link, owner, reason)
+	local responseID
+	if reason == "not_tradeable" then
+		responseID = "PL"
+	elseif reason == "rejected_trade" then
+		responseID = "PL_REJECT"
+	else
+		return addon:Debug("Non handled reason in ML:HandleNonTradeable()",link,owner,reason)
+	end
+	self:TrackAndLogLoot(owner, link, responseID, addon.bossName)
 end
 
 function RCLootCouncilML:OnEvent(event, ...)
