@@ -1,3 +1,11 @@
+* **Buttons and Responses**
+* ~~Removed~~ Tier and relic buttons.
+* Added new buttons for every gear slot available.
+* You can now set custom buttons and responses for each type of gear, and even groups of gear such as Azerite Armor.
+* By default none of these are enabled, and must be added manually. As always only the group leader's set of buttons is used.
+* The new buttons are not backwards compatible.
+
+
 ### v2.8.4
 ---
 * **Appearance**
