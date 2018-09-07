@@ -65,7 +65,6 @@ function RCLootCouncilML:GetItemInfo(item)
 	local itemID = link and addon:GetItemIDFromLink(link)
 	if name then
 		return {
-			["name"]			= name, -- REVIEW This is really not needed as it's contained in itemLink. Remove next time we break backwards com
 			["link"]			= link,
 			["quality"]		= rarity,
 			["ilvl"]			= addon:GetTokenIlvl(link) or ilvl, -- if the item is a token, ilvl is the min ilvl of the item it creates.

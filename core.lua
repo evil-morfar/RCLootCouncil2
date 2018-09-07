@@ -3,12 +3,10 @@
 
 --[[ TODOs/Notes
 	Things marked with "todo"
-		- Emulate award stuff - i.e. log awards without awarding
 		- IDEA Change popups so they only hide on award/probably add the error message to it.
 
 	Backwards compability breaks:
 		- Remove equipLoc, subType, texture from lootTable. They can all be created with GetItemInfoInstant()
-		- Remove name from lootTable. This isn't needed at all.
 -------------------------------- ]]
 
 --[[CHANGELOG

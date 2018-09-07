@@ -35,6 +35,7 @@
 * Changed the structure of `db.responses` and `db.buttons`.
 * Removed `:GetResponseText` and the likes. Use the new `:GetResponse` and `:GetButtons` functions.
 * Changed `mldb` to fit the new scheme, which includes inheritance from normal db.
+* Removed a few values from the lootTable.
 
 
 ### v2.8.3
