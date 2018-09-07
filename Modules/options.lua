@@ -1149,7 +1149,6 @@ function addon:OptionsTable()
 											INVTYPE_LEGS = _G.INVTYPE_LEGS,
 											INVTYPE_FEET = _G.INVTYPE_FEET,
 											INVTYPE_FINGER = _G.INVTYPE_FINGER,
-											INVTYPE_SHIELD = _G.INVTYPE_SHIELD,
 											INVTYPE_TRINKET = _G.INVTYPE_TRINKET,
 											WEAPON = _G.WEAPON,
 										},
