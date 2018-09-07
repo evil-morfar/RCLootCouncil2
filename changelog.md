@@ -20,6 +20,8 @@
 * The backend of this has been implemented.
 * As this was a lot harder to do than anticipated, I still need a bit more time to ensure it's working.
 
+* Added Battle for Azeroth trinkets to the autopass table.
+
 
 ###### Bugfixes
 * *Fixed EQDKP Plus exports (#360).*
