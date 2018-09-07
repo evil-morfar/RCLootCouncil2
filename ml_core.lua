@@ -1489,7 +1489,7 @@ function RCLootCouncilML:GetItemsFromMessage(msg, sender, retryCount)
 	-- Let people know we've done stuff
 	addon:Print(format(L["Item received and added from 'player'"], addon.Ambiguate(sender)))
 	SendChatMessage("[RCLootCouncil]: "..format(L["Response to 'item' acknowledged as 'response'"],
-		addon:GetItemTextWithCount(link, count), addon:GetResponseText(response, isTier)), "WHISPER", nil, sender)
+		addon:GetItemTextWithCount(link, count), addon:GetResponse(self.lootTable[ses].equipLoc, response).text), "WHISPER", nil, sender)
 end
 
 function RCLootCouncilML:SendWhisperHelp(target)
@@ -1531,7 +1531,7 @@ end
 -- Argument to callback: awarded, session, winner, status, data, ...
 -- If you want to add a button to the rightclick menu which does award, use this function, the callback function is your custom function to do stuff after award is done.
 function RCLootCouncilML.AwardPopupOnClickYes(frame, data, callback, ...)
-	RCLootCouncilML:Award(data.session, data.winner, data.responseID and addon:GetResponseText(data.responseID, data.isTierRoll, data.isRelicRoll), data.reason,
+	RCLootCouncilML:Award(data.session, data.winner, data.responseID and addon:GetResponse(data.equipLoc, data.responseID).text, data.reason,
 		RCLootCouncilML.AwardPopupOnClickYesCallback, data, callback, ...)
 
 	-- We need to delay the test mode disabling so comms have a chance to be send first!
