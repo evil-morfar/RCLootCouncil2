@@ -11,6 +11,16 @@
 * By default none of these are enabled, and must be added manually. As always only the group leader's set of buttons is used.
 * The new buttons are not backwards compatible.
 
+* **Loot History Mass Deletion**
+* It's now possible to delete multiple entries at once from the loot history.
+* Just go to the options menu ("/rc config") and have a look at the loot history settings.
+* Currently delete by name, patch, and number of days is supported - let me know if you need more.
+
+* **Candidate Loot Status**
+* The backend of this has been implemented.
+* As this was a lot harder to do than anticipated, I still need a bit more time to ensure it's working.
+
+
 ###### Bugfixes
 * *Fixed EQDKP Plus exports (#360).*
 
@@ -19,6 +29,9 @@
 * Changed parameters in `UpdateAndSendRecentTradableItem()` to contain the table itself.
 * Changed comms `tradeable` and `non_tradeable` to include boss guid as the last parameter.
 * Added to new comms `looted` and `fakeLoot` to deal with looting status.
+* Changed the structure of `db.responses` and `db.buttons`.
+* Removed `:GetResponseText` and the likes. Use the new `:GetResponse` and `:GetButtons` functions.
+* Changed `mldb` to fit the new scheme, which includes inheritance from normal db.
 
 
 ### v2.8.3
