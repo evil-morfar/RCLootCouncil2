@@ -97,6 +97,7 @@ end
 local selections = {}
 function addon:OptionsTable()
 	local db = self:Getdb()
+	local selections = {}
 	local options = {
 		name = "RCLootCouncil",
 		type = "group",
@@ -303,6 +304,124 @@ function addon:OptionsTable()
 										func = function() self.lootDB:ResetDB(); self:UpdateHistoryDB() end,
 										confirm = true,
 									},
+									spacer = {
+										order = 10,
+										type = "header",
+										name = "",
+									},
+									desc = {
+										order = 11,
+										type = "description",
+										name = L["Mass deletion of history entries."],
+									},
+									deleteName = {
+										order = 12,
+										name = _G.NAME,
+										desc = L["opt_deleteName_desc"],
+										type = "select",
+										width = "double",
+										values = function()
+											local nameData = self:GetActiveModule("history"):GetAllRegisteredCandidates()
+											local t = {}
+											for name, v in pairs(nameData) do
+												t[name] = "|cff"..self:RGBToHex(v.color.r,v.color.g,v.color.b)..v.name
+											end
+											return t
+										end,
+										get = function(info)
+											return selections[info[#info]] or ""
+										end,
+										set = function(info, val)
+											selections[info[#info]] = val
+										end,
+									},
+									deleteNameBtn = {
+										order = 13,
+										name = _G.DELETE,
+										type = "execute",
+										confirm = function(info)
+											if selections.deleteName then
+												return format(L["opt_deleteName_confirm"], selections.deleteName)
+											else
+												return false
+											end
+										end,
+										func = function(info)
+											if not selections.deleteName then
+												addon:Print(L["Invalid selection"])
+												return
+											end
+											self:GetActiveModule("history"):DeleteAllEntriesByName(selections.deleteName)
+										end,
+									},
+									deleteDate = {
+										order = 14,
+										name = L["Date"],
+										desc = L["opt_deleteDate_desc"],
+										type = "select",
+										width = "double",
+										values = {
+											[time() - 604800] = format(L["x days"], 7),
+											[time() - 1209600] = format(L["x days"], 14),
+											[time() -2592000] = format(L["x days"], 30),
+											[time() -5184000] = format(L["x days"], 60),
+											[time() -7776000] = format(L["x days"], 90),
+											[time() -10368000] = format(L["x days"], 120),
+											[time() -15552000] = format(L["x days"], 180),
+											[time() -31536000] = format(L["x days"], 365),
+										},
+										get = function(info)
+											return selections[info[#info]] or ""
+										end,
+										set = function(info, val)
+											selections[info[#info]] = val
+										end,
+									},
+									deleteDateBtn = {
+										order = 15,
+										name = _G.DELETE,
+										type = "execute",
+										confirm = function() return L["opt_deleteDate_confirm"] end,
+										func = function(info)
+											if not selections.deleteDate then
+												addon:Print(L["Invalid selection"])
+												return
+											end
+											self:GetActiveModule("history"):DeleteEntriesOlderThanEpoch(selections.deleteDate)
+										end,
+									},
+									deletePatch = {
+										order = 16,
+										name = L["Patch"],
+										desc = L["opt_deletePatch_desc"],
+										type = "select",
+										width = "double",
+										values = {
+											[1534154400] = "Patch 8.0.1 (Battle for Azeroth)",
+											[1510225200] = "Patch 7.3.2 (Tier 21)",
+											[1497348000] = "Patch 7.2.5 (Tier 20)",
+											[1484650800] = "Patch 7.1.5 (Tier 19)",
+										},
+										get = function(info)
+											return selections[info[#info]] or ""
+										end,
+										set = function(info, val)
+											selections[info[#info]] = val
+										end,
+									},
+									deletePatchBtn = {
+										order = 17,
+										name = _G.DELETE,
+										type = "execute",
+										confirm = function() return L["opt_deletePatch_confirm"] end,
+										func = function(info)
+											if not selections.deletePatch then
+												addon:Print(L["Invalid selection"])
+												return
+											end
+											self:GetActiveModule("history"):DeleteEntriesOlderThanEpoch(selections.deletePatch)
+										end,
+									}
 								},
 							},
 						},
