@@ -17,6 +17,7 @@ UI\Widgets\widgets.xml
 
 Modules\Modules.xml
 
+Utils\Utils.lua
 Utils\trinketData.lua
 Utils\tokenData.lua
 Utils\ItemStorage.lua

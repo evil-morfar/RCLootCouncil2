@@ -93,7 +93,7 @@ function RCLootCouncil:OnInitialize()
   	self.version = GetAddOnMetadata("RCLootCouncil", "Version")
 	self.nnp = false
 	self.debug = false
-	self.tVersion = "Alpha.1" -- String or nil. Indicates test version, which alters stuff like version check. Is appended to 'version', i.e. "version-tVersion" (max 10 letters for stupid security)
+	self.tVersion = "Alpha.2" -- String or nil. Indicates test version, which alters stuff like version check. Is appended to 'version', i.e. "version-tVersion" (max 10 letters for stupid security)
 
 	self.playerClass = select(2, UnitClass("player"))
 	self.guildRank = L["Unguilded"]
@@ -1900,6 +1900,7 @@ function RCLootCouncil:OnEvent(event, ...)
 
 	elseif event == "LOOT_OPENED" then
 		self:Debug("Event:", event, ...)
+		if not IsInInstance() then return end -- Don't do anything out of instances
 		-- self:Debug("GetUnitName:", GetUnitName("target"))
 		-- self:Debug("UnitGUID:", UnitGUID("target"))
 		if select(1, ...) ~= "scheduled" and self.LootOpenScheduled then return end -- When this function is scheduled to run again, but LOOT_OPENDED event fires, return.
@@ -1935,6 +1936,7 @@ function RCLootCouncil:OnEvent(event, ...)
 			self:GetActiveModule("masterlooter"):OnLootOpen()
 		end
 	elseif event == "LOOT_CLOSED" then
+		if not IsInInstance() then return end -- Don't do anything out of instances
 		self:Debug("Event:", event, ...)
 		local i = 1
 		for k, info in pairs(self.lootSlotInfo) do
