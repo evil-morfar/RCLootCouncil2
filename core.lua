@@ -165,6 +165,7 @@ function RCLootCouncil:OnInitialize()
 		{cmd = "sync", desc = L["chat_commands_sync"]},
 	}
 
+
 	self.testMode = false;
 
 	-- Option table defaults
@@ -353,6 +354,7 @@ function RCLootCouncil:OnInitialize()
 				[132204] = true, [151248] = true, [151249] = true, [151250] = true, -- Sticky Volatile Essence, Fragment of the Guardian's Seal (Tomb of Sargeras)
 				[152902] = true, [152906] = true, [152907] = true, [155831] = true, -- Rune of Passage (Antorus shortcut item), Pantheon's Blessing
 				[152908] = true, [152909] = true, [152910] = true, -- Sigil of the Dark Titan (Another Antorus shortcut item)
+				[162461] = true, -- Sanguicell (BfA crafting)
 			},
 		},
 	} -- defaults end
