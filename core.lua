@@ -1914,23 +1914,25 @@ function RCLootCouncil:OnEvent(event, ...)
 		for i = 1,  GetNumLootItems() do
 			if LootSlotHasItem(i) then
 				local texture, name, quantity, currencyID, quality, locked, isQuestItem, questId, isActive = GetLootSlotInfo(i)
-				local link = GetLootSlotLink(i)
-				if texture then
-					self:Debug("Adding to self.lootSlotInfo",i,link, quality)
-					self.lootSlotInfo[i] = {
-						name = name,
-						link = link, -- This could be nil, if the item is money.
-						quantity = quantity,
-						quality = quality,
-						locked = locked,
-						guid = self.Utils:ExtractCreatureID((GetLootSourceInfo(i))), -- Boss GUID
-						boss = (GetUnitName("target")),
-					}
-				else -- It's possible that item in the loot window is uncached. Retry in the next frame.
-					self:Debug("Loot uncached when the loot window is opened. Retry in the next frame.", link)
-					self.LootOpenScheduled = true
-					-- Must offer special argument as 2nd argument to indicate this is run from scheduler.
-					return self:ScheduleTimer("OnEvent", 0, "LOOT_OPENED", "scheduled")
+				if not isQuestItem then -- Ignore quest items
+					local link = GetLootSlotLink(i)
+					if texture then
+						self:Debug("Adding to self.lootSlotInfo",i,link, quality)
+						self.lootSlotInfo[i] = {
+							name = name,
+							link = link, -- This could be nil, if the item is money.
+							quantity = quantity,
+							quality = quality,
+							locked = locked,
+							guid = self.Utils:ExtractCreatureID((GetLootSourceInfo(i))), -- Boss GUID
+							boss = (GetUnitName("target")),
+						}
+					else -- It's possible that item in the loot window is uncached. Retry in the next frame.
+						self:Debug("Loot uncached when the loot window is opened. Retry in the next frame.", link)
+						self.LootOpenScheduled = true
+						-- Must offer special argument as 2nd argument to indicate this is run from scheduler.
+						return self:ScheduleTimer("OnEvent", 0, "LOOT_OPENED", "scheduled")
+					end
 				end
 			end
 		end
