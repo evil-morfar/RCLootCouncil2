@@ -451,7 +451,6 @@ function RCLootCouncil:OnEnable()
 -- TODO Fix this before release
 	if self.db.global.version and self:VersionCompare(self.db.global.version, "2.9.1") then --self.version) then -- We've upgraded
 		if #self.db.profile.buttons > 0 or self.db.profile.tierButtons or #self.db.profile.responses > 0 then -- Indicators that old buttons haven't been migrated
-			self:Debug("#buttons", #self.db.profile.buttons)
 			for k,v in ipairs(self.db.profile.buttons) do
 				self.db.profile.buttons.default[k].text = v.text and v.text or self.db.profile.buttons.default[k].text
 				self.db.profile.buttons.default[k].whisperKey = v.whisperKey and v.whisperKey or self.db.profile.buttons.default[k].whisperKey
@@ -459,7 +458,6 @@ function RCLootCouncil:OnEnable()
 			end
 			if #self.db.profile.buttons > 0 then self.db.profile.buttons.default.numButtons = #self.db.profile.buttons end
 			for k,v in ipairs(self.db.profile.responses) do
-				self:Debug("Fixing response", k)
 				if v.text then self.db.profile.responses.default[k].text = v.text end
 				if v.color then self.db.profile.responses.default[k].color = v.color end
 				self.db.profile.responses[k] = nil
