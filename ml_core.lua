@@ -1363,7 +1363,7 @@ function RCLootCouncilML:Test(items)
 	addon:SendCommand("group", "candidates", self.candidates)
 	-- Add the items
 	for session, iName in ipairs(items) do
-		self:AddItem(iName, false, false, addon.playerName)
+		self:AddItem(iName)
 	end
 	if db.autoStart then
 		addon:Print(L["Autostart isn't supported when testing"])

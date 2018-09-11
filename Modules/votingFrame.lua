@@ -1261,6 +1261,7 @@ function RCVotingFrame:GetRerollData(session, isRoll, noAutopass)
 		classes = v.classes,
 		isRoll = isRoll,
 		noAutopass = noAutopass,
+		owner = v.owner,
 	}
 end
 

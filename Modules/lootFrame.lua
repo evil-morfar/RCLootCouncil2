@@ -53,6 +53,7 @@ function LootFrame:AddItem (offset, k, item, reRoll)
 		classes = item.classes,
 		sessions = {item.session},
 		isRoll = item.isRoll,
+		owner = item.owner,
 	}
 end
 
@@ -259,6 +260,16 @@ do
 			else
 				entry.timeoutBar:Hide()
 			end
+			if addon:UnitIsUnit(item.owner, "player") then -- Special coloring
+				entry.frame:SetBackdrop({
+					edgeFile = "Interface/Tooltips/UI-Tooltip-Border",
+				   edgeSize = 20,
+					insets = { left = 2, right = 2, top = -2, bottom = -14 }
+				})
+				entry.frame:SetBackdropBorderColor(0,1,1,1)
+			else
+				entry.frame:SetBackdrop(nil) -- Remove it again
+			end
 			entry:UpdateButtons()
 			entry:Show()
 		end,
@@ -276,29 +287,6 @@ do
 			entry.frame:SetPoint("TOPLEFT", parent, "TOPLEFT")
 
 			-------- Item Icon -------------
-			-- entry.icon = CreateFrame("Button", nil, entry.frame, "UIPanelButtonTemplate")
-			-- entry.icon:SetSize(ENTRY_HEIGHT*0.78, ENTRY_HEIGHT*0.78)
-			-- entry.icon:SetPoint("TOPLEFT", entry.frame, "TOPLEFT", 9, -5)
-			-- entry.icon:SetScript("OnEnter", function()
-			-- 	if not entry.item.link then return end
-			-- 	addon:CreateHypertip(entry.item.link)
-			-- 	GameTooltip:AddLine("")
-			-- 	GameTooltip:AddLine(L["always_show_tooltip_howto"], nil, nil, nil, true)
-			-- 	GameTooltip:Show()
-			-- end)
-			-- entry.icon:SetScript("OnLeave", function() addon:HideTooltip() end)
-			-- entry.icon:SetScript("OnClick", function()
-			-- 	if not entry.item.link then return end
-			-- 	if ( IsModifiedClick() ) then
-			-- 		HandleModifiedItemClick(entry.item.link);
-			-- 	end
-			-- 	if entry.icon.lastClick and GetTime() - entry.icon.lastClick <= 0.5 then
-			-- 		addon:Getdb().modules["RCLootFrame"].alwaysShowTooltip = not addon:Getdb().modules["RCLootFrame"].alwaysShowTooltip
-			-- 		LootFrame:Update()
-			-- 	else
-			-- 		entry.icon.lastClick = GetTime()
-			-- 	end
-			-- end)
 			entry.icon = addon.UI:New("Icon", entry.frame)
 			entry.icon:SetSize(ENTRY_HEIGHT*0.78, ENTRY_HEIGHT*0.78)
 			entry.icon:SetPoint("TOPLEFT", entry.frame, "TOPLEFT", 9, -5)

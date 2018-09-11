@@ -3,6 +3,7 @@
 * **Appearance**
 * Added a new default Battle for Azeroth skin.
 * Remember to can change the appearance in the options menu.
+* The owner of an item there's up for roll now sees another color around the lootFrame of that item.
 
 * **Buttons and Responses**
 * ~~Removed~~ Tier and relic buttons.
