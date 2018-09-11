@@ -412,7 +412,7 @@ function LootHistory.ResponseSort(table, rowa, rowb, sortbycol)
 		if lootDB[rowa.name][rowa.num].isAwardReason then
 			a = db.awardReasons[aID] and db.awardReasons[aID].sort or 500
 		else
-			a = addon:GetResponseSort(aID) or 500
+			a = addon:GetResponse(nil, aID).sort or 500
 		end
 	else
 		-- 500 will be below award reasons and just above status texts
@@ -423,7 +423,7 @@ function LootHistory.ResponseSort(table, rowa, rowb, sortbycol)
 		if lootDB[rowb.name][rowb.num].isAwardReason then
 			b = db.awardReasons[bID] and db.awardReasons[bID].sort or 500
 		else
-			b = addon:GetResponseSort(bID) or 500
+			b = addon:GetResponse(nil, bID).sort or 500
 		end
 
 	else
@@ -875,7 +875,7 @@ function LootHistory.FilterMenu(menu, level)
 	if level == 1 then -- Redundant
 		-- Build the data table:
 		local data = {["STATUS"] = true, ["PASS"] = true, ["AUTOPASS"] = true}
-		for i = 1, addon.mldb.numButtons or db.numButtons do
+		for i = 1, addon:GetNumButtons() do
 			data[i] = i
 		end
 		if not db.modules["RCLootHistory"].filters then -- Create the db entry
@@ -890,8 +890,8 @@ function LootHistory.FilterMenu(menu, level)
 		info = Lib_UIDropDownMenu_CreateInfo()
 
 		for k in ipairs(data) do -- Make sure normal responses are on top
-			info.text = addon:GetResponseText(k)
-			info.colorCode = "|cff"..addon:RGBToHex(addon:GetResponseColor(k))
+			info.text = addon:GetResponse("default",k).text
+			info.colorCode = "|cff"..addon:RGBToHex(addon:GetResponseColor(nil, k))
 			info.func = function()
 				addon:Debug("Update Filter")
 				db.modules["RCLootHistory"].filters[k] = not db.modules["RCLootHistory"].filters[k]
@@ -906,8 +906,8 @@ function LootHistory.FilterMenu(menu, level)
 					info.text = L["Status texts"]
 					info.colorCode = "|cffde34e2" -- purpleish
 				else
-					info.text = addon:GetResponseText(k)
-					info.colorCode = "|cff"..addon:RGBToHex(addon:GetResponseColor(k))
+					info.text = addon:GetResponse("default",k).text
+					info.colorCode = "|cff"..addon:RGBToHex(addon:GetResponseColor(nil, k))
 				end
 				info.func = function()
 					addon:Debug("Update Filter")
@@ -1080,8 +1080,8 @@ function LootHistory.RightClickMenu(menu, level)
 			end
 		elseif value == "EDIT_RESPONSE" and entry.special == value then
 			local v;
-			for i = 1, db.numButtons do
-				v = db.responses[i]
+			for i = 1, db.buttons.default.numButtons do
+				v = db.default.responses[i]
 				info.text = v.text
 				info.colorCode = "|cff"..addon:RGBToHex(unpack(v.color))
 				info.notCheckable = true
@@ -1089,8 +1089,8 @@ function LootHistory.RightClickMenu(menu, level)
 					addon:Debug("Changing response id @", data.name, "from", data.response, "to", i)
 					local entry = lootDB[data.name][data.num]
 					entry.responseID = i
-					entry.response = addon:GetResponseText(i)
-					entry.color = {addon:GetResponseColor(i)}
+					entry.response = addon:GetResponse("default",i).text
+					entry.color = {addon:GetResponseColor("default", i)}
 					entry.isAwardReason = nil
 					entry.tokenRoll = nil
 					entry.relicRoll = nil
@@ -1103,7 +1103,7 @@ function LootHistory.RightClickMenu(menu, level)
 			end
 
 			if addon.debug then
-				for k,v in pairs(db.responses) do
+				for k,v in pairs(db.responses.default) do
 					if type(k) ~= "number" and k ~= "tier" and k ~= "relic" then
 						info.text = v.text
 						info.colorCode = "|cff"..addon:RGBToHex(unpack(v.color))
@@ -1112,8 +1112,8 @@ function LootHistory.RightClickMenu(menu, level)
 							addon:Debug("Changing response id @", data.name, "from", data.response, "to", i)
 							local entry = lootDB[data.name][data.num]
 							entry.responseID = k
-							entry.response = addon:GetResponseText(k)
-							entry.color = {addon:GetResponseColor(k)}
+							entry.response = addon:GetResponse("default",k).text
+							entry.color = {addon:GetResponseColor("default", k)}
 							entry.isAwardReason = nil
 							data.response = k
 							data.cols[6].args = {color = entry.color, response = entry.response, responseID = k}

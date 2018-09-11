@@ -1676,7 +1676,7 @@ do
 			-- Build the data table:
 			local data = {["STATUS"] = true, ["PASS"] = true, ["AUTOPASS"] = true, default = {}}
 
-			for i = 1, addon.mldb.numButtons or db.numButtons do
+			for i = 1, addon:GetNumButtons() do
 				data[i] = i
 			end
 
@@ -1707,7 +1707,7 @@ do
 			info = Lib_UIDropDownMenu_CreateInfo()
 			for k in ipairs(data) do -- Make sure normal responses are on top
 				info.text = addon:GetResponse("", k).text
-				info.colorCode = "|cff"..addon:RGBToHex(addon:GetResponseColor("",k))
+				info.colorCode = "|cff"..addon:RGBToHex(addon:GetResponseColor(nil,k))
 				info.func = function()
 					addon:Debug("Update Filter")
 					db.modules["RCVotingFrame"].filters[k] = not db.modules["RCVotingFrame"].filters[k]
@@ -1723,7 +1723,7 @@ do
 						info.colorCode = "|cffde34e2" -- purpleish
 					else
 						info.text = addon:GetResponse("",k).text
-						info.colorCode = "|cff"..addon:RGBToHex(addon:GetResponseColor("",k))
+						info.colorCode = "|cff"..addon:RGBToHex(addon:GetResponseColor(nil,k))
 					end
 					info.func = function()
 						addon:Debug("Update Filter")

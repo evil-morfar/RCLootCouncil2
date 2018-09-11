@@ -452,14 +452,14 @@ function RCLootCouncilML:BuildMLdb()
 			end
 		end
 	end
-	if changedButtons.default then changedButtons.default.numButtons = db.numButtons end
+	if changedButtons.default then changedButtons.default.numButtons = db.buttons.default.numButtons end
 
 	local MLdb = {
 		selfVote			= db.selfVote or nil,
 		multiVote		= db.multiVote or nil,
 		anonymousVoting= db.anonymousVoting or nil,
 		allowNotes		= db.allowNotes or nil,
-	--	numButtons		= db.numButtons,
+		numButtons		= db.buttons.default.numButtons, -- v2.9: Kept as to not break backwards compability on mldb comms. Not used any more
 		hideVotes		= db.hideVotes or nil,
 		observe			= db.observe or nil,
 		buttons			= changedButtons,	-- REVIEW I'm not sure if it's feasible to nil out empty tables
@@ -1433,7 +1433,7 @@ function RCLootCouncilML:GetItemsFromMessage(msg, sender, retryCount)
 				gsub(db.relicButtons[i]["whisperKey"], '[%w]+', function(x) tinsert(whisperKeys, {key = x, num = i}) end)
 			end
 		else
-			for i = 1, db.numButtons do --go through all the button
+			for i = 1, db.buttons.default.numButtons do --go through all the button
 				gsub(db.buttons[i]["whisperKey"], '[%w]+', function(x) tinsert(whisperKeys, {key = x, num = i}) end) -- extract the whisperKeys to a table
 			end
 		end
@@ -1496,7 +1496,7 @@ function RCLootCouncilML:SendWhisperHelp(target)
 	addon:DebugLog("SendWhisperHelp", target)
 	local msg
 	SendChatMessage(L["whisper_guide"], "WHISPER", nil, target)
-	for i = 1, db.numButtons do
+	for i = 1, db.buttons.default.numButtons do
 		msg = "[RCLootCouncil]: "..db.buttons[i]["text"]..":  " -- i.e. MainSpec/Need:
 		msg = msg..""..db.buttons[i]["whisperKey"].."." -- need, mainspec, etc
 		SendChatMessage(msg, "WHISPER", nil, target)

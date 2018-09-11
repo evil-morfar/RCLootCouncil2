@@ -2892,12 +2892,13 @@ RCLootCouncil.BTN_SLOTS = {
 function RCLootCouncil:GetResponse(type, name)
 	-- REVIEW With proper inheritance, most of this should be redundant
 	-- Check if the type should be translated to something else
-	if not self.mldb.responses[type] and self.BTN_SLOTS[type] and self.mldb.responses[self.BTN_SLOTS[type]] then
+	type = type and type or "default"
+	if self.mldb.responses and not self.mldb.responses[type] and self.BTN_SLOTS[type] and self.mldb.responses[self.BTN_SLOTS[type]] then
 		type = self.BTN_SLOTS[type]
 	end
    if type == "default" or (self.mldb and not self.mldb.responses[type]) then -- We have a value if mldb is blank
       if self.defaults.profile.responses.default[name] or self.mldb.responses.default[name] then
-         return self.mldb.responses.default and self.mldb.responses.default[name] or self.defaults.profile.responses.default[name]
+         return (self.mldb.responses and self.mldb.responses.default and self.mldb.responses.default[name]) or self.defaults.profile.responses.default[name]
       else
          self:Debug("No db.responses.default entry for response:", name)
          return self.defaults.profile.responses.default.DEFAULT -- Use default
@@ -2928,9 +2929,10 @@ end
 
 --- Returns the number of buttons of a specific type
 function RCLootCouncil:GetNumButtons(type)
+	type = type and type or "default"
    if not next(self.mldb) then
-      self:Debug("No mldb to GetNumButtons from")
-      return 0
+      -- No mldb, so just return the default
+		return db.buttons[type] and db.buttons[type].numButtons or 0
    end
 	if not self.mldb.buttons[type] and self.BTN_SLOTS[type] and self.mldb.buttons[self.BTN_SLOTS[type]] then
 		type = self.BTN_SLOTS[type]
@@ -2948,10 +2950,10 @@ end
 
 --- Returns all buttons of a specific type, defaults to "default"
 function RCLootCouncil:GetButtons(type)
+	type = type and type or "default"
 	self:Debug("GetButtons", type)
 	-- Check if the type should be translated to something else
-	self:Debug("Status:",self.mldb.buttons[type],self.BTN_SLOTS[type],self.mldb.buttons[self.BTN_SLOTS[type]])
-	if not self.mldb.buttons[type] and self.BTN_SLOTS[type] and self.mldb.buttons[self.BTN_SLOTS[type]] then
+	if self.mldb and not self.mldb.buttons[type] and self.BTN_SLOTS[type] and self.mldb.buttons[self.BTN_SLOTS[type]] then
 		type = self.BTN_SLOTS[type]
 		self:Debug("Setting type to", type)
 	end
