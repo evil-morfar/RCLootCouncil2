@@ -62,12 +62,14 @@ end
 
 -- By default, TradeUI hides when empty
 function TradeUI:Show(forceShow)
+   addon:Debug("TradeUI:Show()", forceShow)
    self.frame = self:GetFrame()
    update_targets_timer = self:ScheduleRepeatingTimer(function() self.frame.st:Refresh() end, UPDATE_TIME_INTERVAL)
    self:Update(forceShow)
 end
 
 function TradeUI:Hide()
+   addon:Debug("TradeUI:Hide()")
    self:CancelTimer(update_targets_timer)
    self.frame:Hide()
 end
