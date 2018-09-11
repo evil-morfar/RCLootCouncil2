@@ -10,7 +10,7 @@
 * Added new buttons for every gear slot available.
 * You can now set custom buttons and responses for each type of gear, and even groups of gear such as Azerite Armor.
 * By default none of these are enabled, and must be added manually. As always only the group leader's set of buttons is used.
-* The new buttons are not backwards compatible.
+* The new buttons are not backwards compatible with older versions, but altered default buttons/responses have been migrated.
 
 * **Loot History Mass Deletion**
 * It's now possible to delete multiple entries at once from the loot history.

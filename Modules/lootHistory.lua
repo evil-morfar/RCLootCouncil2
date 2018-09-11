@@ -955,23 +955,7 @@ LootHistory.rightClickEntries = {
 		{ -- 2 EDIT_RESPONSE
 			special = "EDIT_RESPONSE",
 		},
-		{ -- 3 Tier tokens ...
-			text = L["Tier Tokens ..."],
-			onValue = "EDIT_RESPONSE",
-			value = "TIER_TOKENS",
-			hasArrow = true,
-			notCheckable = true,
-			disabled = function() return not db.tierButtonsEnabled end,
-		},
-		{ -- 4 Relics
-			text = _G.INVTYPE_RELIC.." ...",
-			onValue = "EDIT_RESPONSE",
-			value = "RELICS",
-			hasArrow = true,
-			notCheckable = true,
-			disabled = function() return not db.relicButtonsEnabled end,
-		},
-		{ -- 5 Award Reasons ...
+		{ -- 3 Award Reasons ...
 			text = L["Award Reasons"] .. " ...",
 			onValue = "EDIT_RESPONSE",
 			value = "AWARD_REASON",
@@ -980,13 +964,7 @@ LootHistory.rightClickEntries = {
 		},
 	},
 	{ -- Level 3
-		{ -- 1 TIER_TOKENS
-			special = "TIER_TOKENS",
-		},
-		{ -- 2 RELICS
-			special = "RELICS",
-		},
-		{ -- 3 AWARD_REASON
+		{ -- 1 AWARD_REASON
 			special = "AWARD_REASON",
 		}
 	},
@@ -1081,7 +1059,7 @@ function LootHistory.RightClickMenu(menu, level)
 		elseif value == "EDIT_RESPONSE" and entry.special == value then
 			local v;
 			for i = 1, db.buttons.default.numButtons do
-				v = db.default.responses[i]
+				v = db.responses.default[i]
 				info.text = v.text
 				info.colorCode = "|cff"..addon:RGBToHex(unpack(v.color))
 				info.notCheckable = true
@@ -1122,52 +1100,6 @@ function LootHistory.RightClickMenu(menu, level)
 						Lib_UIDropDownMenu_AddButton(info, level)
 					end
 				end
-			end
-
-		elseif value == "TIER_TOKENS" and entry.special == value and db.tierButtonsEnabled then
-			for k,v in ipairs(db.responses.tier) do
-				if k > db.tierNumButtons then break end
-				info.text = v.text
-				info.colorCode = "|cff"..addon:RGBToHex(unpack(v.color))
-				info.notCheckable = true
-				info.func = function()
-					addon:Debug("Changing tier response id @", data.name, "from", data.response, "to", k)
-					local entry = lootDB[data.name][data.num]
-					entry.responseID = k
-					entry.response = v.text
-					entry.color = {unpack(v.color)}
-					entry.isAwardReason = nil
-					entry.tokenRoll = true
-					entry.relicRoll = false
-					data.response = k
-					data.cols[6].args = {color = entry.color, response = entry.response, responseID = k, tokenRoll = true}
-					LootHistory.frame.st:SortData()
-					addon:SendMessage("RCHistory_ResponseEdit", data)
-				end
-				Lib_UIDropDownMenu_AddButton(info, level)
-			end
-
-		elseif value == "RELICS" and entry.special == value and db.relicButtonsEnabled then
-			for k,v in ipairs(db.responses.relic) do
-				if k > db.relicNumButtons then break end
-				info.text = v.text
-				info.colorCode = "|cff"..addon:RGBToHex(unpack(v.color))
-				info.notCheckable = true
-				info.func = function()
-					addon:Debug("Changing relic response id @", data.name, "from", data.response, "to", k)
-					local entry = lootDB[data.name][data.num]
-					entry.responseID = k
-					entry.response = v.text
-					entry.color = {unpack(v.color)}
-					entry.isAwardReason = nil
-					entry.tokenRoll = false
-					entry.relicRoll = true
-					data.response = k
-					data.cols[6].args = {color = entry.color, response = entry.response, responseID = k, relicRoll = true}
-					LootHistory.frame.st:SortData()
-					addon:SendMessage("RCHistory_ResponseEdit", data)
-				end
-				Lib_UIDropDownMenu_AddButton(info, level)
 			end
 
 		elseif value == "AWARD_REASON" and entry.special == value then
