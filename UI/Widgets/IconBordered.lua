@@ -17,6 +17,8 @@ function Object:New(parent, name, texture)
       edgeSize = 18,
    })
    b:SetScript("OnLeave", addon.UI.HideTooltip)
+   b:EnableMouse(true)
+   b:RegisterForClicks("AnyUp")
    b.SetBorderColor = self.SetBorderColor
    b.Desaturate = self.Desaturate
 	return b

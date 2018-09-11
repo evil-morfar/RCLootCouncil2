@@ -300,7 +300,7 @@ do
 				end,
 				OnClick = function()
 					if not entry.item.link then return end
-					if ( IsModifiedClick() ) then
+					if IsModifiedClick() then
 						HandleModifiedItemClick(entry.item.link);
 					end
 					if entry.icon.lastClick and GetTime() - entry.icon.lastClick <= 0.5 then

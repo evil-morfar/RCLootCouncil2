@@ -27,6 +27,7 @@
 
 ###### Bugfixes
 * *Fixed EQDKP Plus exports (#360).*
+* *All item icons are now shift-right-clickable to see Azerite Traits.*
 
 
 ###### Dev
