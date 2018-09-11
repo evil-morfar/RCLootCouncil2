@@ -2897,8 +2897,8 @@ function RCLootCouncil:GetResponse(type, name)
 		type = self.BTN_SLOTS[type]
 	end
    if type == "default" or (self.mldb and not self.mldb.responses[type]) then -- We have a value if mldb is blank
-      if self.defaults.profile.responses.default[name] or self.mldb.responses.default[name] then
-         return (self.mldb.responses and self.mldb.responses.default and self.mldb.responses.default[name]) or self.defaults.profile.responses.default[name]
+      if db.responses.default[name] or self.mldb.responses.default[name] then
+         return (self.mldb.responses and self.mldb.responses.default and self.mldb.responses.default[name]) or db.responses.default[name]
       else
          self:Debug("No db.responses.default entry for response:", name)
          return self.defaults.profile.responses.default.DEFAULT -- Use default
@@ -2913,11 +2913,11 @@ function RCLootCouncil:GetResponse(type, name)
             end
          else
 				-- This type is not enabled, so use default:
-            if self.defaults.profile.responses.default[name] or self.mldb.responses.default[name] then
-               return self.mldb.responses.default and self.mldb.responses.default[name] or self.defaults.profile.responses.default[name]
+            if db.responses.default[name] or self.mldb.responses.default[name] then
+               return self.mldb.responses.default and self.mldb.responses.default[name] or db.responses.default[name]
             else
                self:Debug("Unknown response entry", type, name)
-               return self.defaults.profile.responses.default.DEFAULT -- Use default
+               return db.responses.default.DEFAULT -- Use default
             end
          end
       else
@@ -2937,8 +2937,8 @@ function RCLootCouncil:GetNumButtons(type)
 	if not self.mldb.buttons[type] and self.BTN_SLOTS[type] and self.mldb.buttons[self.BTN_SLOTS[type]] then
 		type = self.BTN_SLOTS[type]
 	end
-   if not type or type == "default" or not self.mldb.buttons[type] then -- Has special definition
-      return self.mldb.buttons.default and self.mldb.buttons.default.numButtons or self.defaults.profile.buttons.default.numButtons or 0
+   if type == "default" or not self.mldb.buttons[type] then -- Has special definition
+      return self.mldb.buttons.default and self.mldb.buttons.default.numButtons or db.buttons.default.numButtons or 0
    else -- Here we can rely on the responses as we have no defaults
       if self.mldb.buttons[type] then
          return #self.mldb.buttons[type]
