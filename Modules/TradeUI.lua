@@ -164,6 +164,7 @@ end
 function TradeUI:OnEvent_UI_INFO_MESSAGE (event, ...)
    if select(1, ...) == _G.LE_GAME_ERR_TRADE_COMPLETE then -- Trade complete. Remove items from db.baggedItems if traded to winners
       addon:Debug("TradeUI: Traded item(s) to", self.tradeTarget)
+      -- TODO This records every single item we trade - modify to only do stuff with items we are actively handling
       for _, link in ipairs(self.tradeItems) do
          local Item = addon.ItemStorage:GetItem(link)
          if Item and addon:UnitIsUnit(self.tradeTarget, Item.args.recipient) then
