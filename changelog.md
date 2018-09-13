@@ -23,6 +23,7 @@
 
 * Added Battle for Azeroth trinkets to the autopass table.
 * Non-tradeable and rejected trades from PL is now registered in the loot history.
+* Quest and crafting items are now always ignored.
 
 
 ###### Bugfixes
