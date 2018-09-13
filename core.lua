@@ -1933,26 +1933,26 @@ function RCLootCouncil:OnEvent(event, ...)
 		self.lootOpen = true
 		for i = 1,  GetNumLootItems() do
 			if LootSlotHasItem(i) then
-				local texture, name, quantity, currencyID, quality, locked, isQuestItem, questId, isActive = GetLootSlotInfo(i)
-				if not isQuestItem then -- Ignore quest items
+				local texture, name, quantity, _, quality, _, isQuestItem = GetLootSlotInfo(i)
+				if texture then
+					local isCraftingReagent = select(17, GetItemInfo(link))
 					local link = GetLootSlotLink(i)
-					if texture then
+					if not (isQuestItem or isCraftingReagent) then -- Ignore quest and crafting items
 						self:Debug("Adding to self.lootSlotInfo",i,link, quality)
 						self.lootSlotInfo[i] = {
 							name = name,
 							link = link, -- This could be nil, if the item is money.
 							quantity = quantity,
 							quality = quality,
-							locked = locked,
 							guid = self.Utils:ExtractCreatureID((GetLootSourceInfo(i))), -- Boss GUID
 							boss = (GetUnitName("target")),
 						}
-					else -- It's possible that item in the loot window is uncached. Retry in the next frame.
-						self:Debug("Loot uncached when the loot window is opened. Retry in the next frame.", link)
-						self.LootOpenScheduled = true
-						-- Must offer special argument as 2nd argument to indicate this is run from scheduler.
-						return self:ScheduleTimer("OnEvent", 0, "LOOT_OPENED", "scheduled")
 					end
+				else -- It's possible that item in the loot window is uncached. Retry in the next frame.
+					self:Debug("Loot uncached when the loot window is opened. Retry in the next frame.", link)
+					self.LootOpenScheduled = true
+					-- Must offer special argument as 2nd argument to indicate this is run from scheduler.
+					return self:ScheduleTimer("OnEvent", 0, "LOOT_OPENED", "scheduled")
 				end
 			end
 		end
@@ -1976,7 +1976,7 @@ function RCLootCouncil:OnEvent(event, ...)
 		self.lootOpen = false
 	elseif event == "LOOT_SLOT_CLEARED" then
 		local slot = ...
-		if self.lootSlotInfo[slot] then -- If not, this is the 2nd LOOT_CLEARED event for the same thing. -_-
+		if self.lootSlotInfo[slot] and not self.lootSlotInfo[slot].isLooted then -- If not, this is the 2nd LOOT_CLEARED event for the same thing. -_-
 			local link = self.lootSlotInfo[slot].link
 			local quality = self.lootSlotInfo[slot].quality
 			self:Debug("OnLootSlotCleared()", slot, link, quality)
