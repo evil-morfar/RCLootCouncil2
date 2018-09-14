@@ -93,7 +93,7 @@ function RCLootCouncil:OnInitialize()
   	self.version = GetAddOnMetadata("RCLootCouncil", "Version")
 	self.nnp = false
 	self.debug = false
-	self.tVersion = "Alpha.3" -- String or nil. Indicates test version, which alters stuff like version check. Is appended to 'version', i.e. "version-tVersion" (max 10 letters for stupid security)
+	self.tVersion = nil -- String or nil. Indicates test version, which alters stuff like version check. Is appended to 'version', i.e. "version-tVersion" (max 10 letters for stupid security)
 
 	self.playerClass = select(2, UnitClass("player"))
 	self.guildRank = L["Unguilded"]
@@ -710,7 +710,7 @@ function RCLootCouncil:ChatCommand(msg)
 end
 
 -- Update the recentTradableItem by link, if it is in bag and tradable.
-function RCLootCouncil:UpdateAndSendRecentTradableItem(info)
+function RCLootCouncil:UpdateAndSendRecentTradableItem(info, count)
 	for i = 0, NUM_BAG_SLOTS do
 		for j = 1, GetContainerNumSlots(i) do
 			local _, _, _, _, _, _, link2 = GetContainerItemInfo(i, j)
@@ -729,6 +729,11 @@ function RCLootCouncil:UpdateAndSendRecentTradableItem(info)
 				end
 			end
 		end
+	end
+	-- We haven't found it, maybe we just haven't received it yet, so try again in one second
+	if not count or (count and count < 3) then -- Only try a few times
+		self:Debug("UpdateAndSendRecentTradableItem: Didn't find item on try ", count or 1)
+		return self:ScheduleTimer("UpdateAndSendRecentTradableItem",1,info, count and count + 1 or 1)
 	end
 	self:Debug("Error - UpdateAndSendRecentTradableItem",info.link, "not found in bags")
 end
@@ -1935,8 +1940,11 @@ function RCLootCouncil:OnEvent(event, ...)
 			if LootSlotHasItem(i) then
 				local texture, name, quantity, _, quality, _, isQuestItem = GetLootSlotInfo(i)
 				if texture then
-					local isCraftingReagent = select(17, GetItemInfo(link))
 					local link = GetLootSlotLink(i)
+					local isCraftingReagent
+					if link then  -- Link is not present on coins
+						 isCraftingReagent = select(17, GetItemInfo(link))
+					end
 					if not (isQuestItem or isCraftingReagent) then -- Ignore quest and crafting items
 						self:Debug("Adding to self.lootSlotInfo",i,link, quality)
 						self.lootSlotInfo[i] = {
@@ -1962,7 +1970,7 @@ function RCLootCouncil:OnEvent(event, ...)
 	elseif event == "LOOT_CLOSED" then
 		if not IsInInstance() then return end -- Don't do anything out of instances
 		self:Debug("Event:", event, ...)
-		local i = 1
+		local i = 0
 		for k, info in pairs(self.lootSlotInfo) do
 			if not info.isLooted then
 				self:SendCommand("group", "fakeLoot", info.link, info.guid)
@@ -1971,8 +1979,9 @@ function RCLootCouncil:OnEvent(event, ...)
 			i = k
 		end
 		-- Otherwise they've looted everything, so send ack
-		self:SendCommand("group", "looted", self.lootSlotInfo[i].guid)
-
+		if i ~= 0 then -- We're not guaranteed to have something stored
+			self:SendCommand("group", "looted", self.lootSlotInfo[i].guid)
+		end
 		self.lootOpen = false
 	elseif event == "LOOT_SLOT_CLEARED" then
 		local slot = ...

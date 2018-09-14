@@ -2,8 +2,9 @@
 ---
 * **Appearance**
 * Added a new default Battle for Azeroth skin.
-* Remember to can change the appearance in the options menu.
-* The owner of an item there's up for roll now sees another color around the lootFrame of that item.
+* Remember you can change the appearance in the options menu.
+* Added a different colored frame for when rolling for items you own yourself.
+
 
 * **Buttons and Responses**
 * ~~Removed~~ Tier and relic buttons.
@@ -12,17 +13,20 @@
 * By default none of these are enabled, and must be added manually. As always only the group leader's set of buttons is used.
 * The new buttons are not backwards compatible with older versions, but altered default buttons/responses have been migrated.
 
+
 * **Loot History Mass Deletion**
 * It's now possible to delete multiple entries at once from the loot history.
 * Just go to the options menu ("/rc config") and have a look at the loot history settings.
 * Currently delete by name, patch, and number of days is supported - let me know if you need more.
 
+
 * **Candidate Loot Status**
 * The backend of this has been implemented.
 * As this was a lot harder to do than anticipated, I still need a bit more time to ensure it's working.
 
+
 * Added Battle for Azeroth trinkets to the autopass table.
-* Non-tradeable and rejected trades from PL is now registered in the loot history.
+* Non-tradeable and rejected trades from PL are now registered in the loot history.
 * Quest and crafting items are now always ignored.
 
 
