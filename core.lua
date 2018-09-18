@@ -2590,7 +2590,7 @@ function RCLootCouncil:CreateFrame(name, cName, title, width, height)
 	f:MakeDraggable()
 	f:SetScript("OnMouseWheel", function(f,delta) if IsControlKeyDown() then lwin.OnMouseWheel(f,delta) end end)
 
-	local tf = CreateFrame("Frame", nil, f)
+	local tf = CreateFrame("Frame", "RC_UI_"..cName.."_Title", f)
 	--tf:SetFrameStrata("DIALOG")
 	tf:SetToplevel(true)
 	tf:SetBackdrop({
@@ -2630,7 +2630,7 @@ function RCLootCouncil:CreateFrame(name, cName, title, width, height)
 	tf.text = text
 	f.title = tf
 
-	local c = CreateFrame("Frame", nil, f) -- frame that contains the actual content
+	local c = CreateFrame("Frame", "RC_UI_"..cName.."_Content", f) -- frame that contains the actual content
 	c:SetBackdrop({
 	     --bgFile = "Interface\\DialogFrame\\UI-DialogBox-Gold-Background",
 		  --   bgFile = AceGUIWidgetLSMlists.background[db.UI.default.background],
