@@ -594,8 +594,8 @@ function RCLootCouncilML:HandleReceivedTradeable (item, sender)
 	-- For ML loot method, ourselve must be excluded because it should be handled in self:LootOpen()
 	if not addon:UnitIsUnit(sender, "player") or addon.lootMethod ~= "master" then
 		local quality = select(3, GetItemInfo(item))
-
-		if	(db.autolootOthersBoE and addon:IsItemBoE(item)) or -- BoE
+		local boe = addon:IsItemBoE(item)
+		if	(not boe or (db.autolootOthersBoE and boe)) and -- BoE
 		 	(IsEquippableItem(item) or db.autolootEverything) and -- Safetee: I don't want to check db.autoloot here, because this is actually not a loot.
 			not self:IsItemIgnored(item) and -- Item mustn't be ignored
 			(quality and quality >= (GetLootThreshold() or 1))  then
