@@ -1,3 +1,6 @@
+###### Bugfixes
+* *Disabled all ML registrations in pvp (#354).*
+
 ### v2.9.0
 ---
 * **Appearance**
