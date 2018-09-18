@@ -14,3 +14,9 @@ function Utils:ExtractCreatureID (unitguid)
    local id = unitguid:match(".+(%b--)")
    return id and (id:gsub("-", "")) or nil
 end
+
+--- Shorthand for RCLootCouncil:HideTooltip()
+-- This way we can use the function as a table reference
+function Utils.HideTooltip()
+   addon:HideTooltip()
+end
