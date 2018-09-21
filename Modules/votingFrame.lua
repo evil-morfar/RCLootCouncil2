@@ -56,7 +56,6 @@ function RCVotingFrame:OnInitialize()
 	-- The actual table being worked on, new entries should be added to this table "tinsert(RCVotingFrame.scrollCols, data)"
 	-- If you want to add or remove columns, you should do so on your OnInitialize. See RCVotingFrame:RemoveColumn() for removal.
 	self.scrollCols = {unpack(defaultScrollTableData)}
-	self.lootStatus = {} -- Contains id's of looted mobs
 	self.nonTradeablesButtons = {}
 
 	menuFrame = CreateFrame("Frame", "RCLootCouncil_VotingFrame_RightclickMenu", UIParent, "Lib_UIDropDownMenuTemplate")
@@ -88,7 +87,7 @@ function RCVotingFrame:OnDisable() -- We never really call this
 	self:Hide()
 	self.frame:SetParent(nil)
 	self.frame = nil
-	wipe(self.lootStatus)
+	wipe(addon.lootStatus)
 	wipe(lootTable)
 	active = false
 	session = 1
@@ -319,19 +318,6 @@ function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
 			elseif command == "not_tradeable" or command == "rejected_trade" then
 				self:AddNonTradeable(unpack(data), addon:UnitName(sender), command)
 
-			elseif command == "looted" then
-				local guid = unpack(data)
-				if not self.lootStatus[guid] then self.lootStatus[guid] = {candidates = {}, fake = {}, num = 0} end
-				self.lootStatus[guid].num = self.lootStatus[guid].num + 1
-				self.lootStatus[guid].candidates[addon:UnitName(sender)] = true
-				self:UpdateLootStatus()
-
-			elseif command == "fakeLoot" then
-				local link, guid = unpack(data)
-				if not self.lootStatus[guid] then self.lootStatus[guid] = {candidates = {}, fake = {}, num = 0} end
-				self.lootStatus[guid].num = self.lootStatus[guid].num + 1
-				self.lootStatus[guid].fake[addon:UnitName(sender)] = link
-				self:UpdateLootStatus()
 			end
 		end
 	end
@@ -881,10 +867,10 @@ function RCVotingFrame:GetFrame()
 end
 
 function RCVotingFrame:UpdateLootStatus()
-	if not next(self.lootStatus) then return end -- Might not have any data
+	if not next(addon.lootStatus) then return end -- Might not have any data
 	-- Find out which guid we're working with
 	local id, max = 0, 0
-	for k,v in pairs(self.lootStatus) do
+	for k,v in pairs(addon.lootStatus) do
 		if v.num > max then
 			id = k
 			max = v.num
@@ -893,11 +879,11 @@ function RCVotingFrame:UpdateLootStatus()
 	local looted, unlooted, fake = 0,0,0
 	local list = {} -- [name] = "status"
 	for name in pairs(addon.candidates) do
-		if self.lootStatus[id].candidates[name] then -- They have looted
+		if addon.lootStatus[id].candidates[name] then -- They have looted
 			tinsert(list, {name = name, text = "|cff00ff00Looted"})
 			looted = looted + 1
-		elseif self.lootStatus[id].fake[name] then -- fake loot
-			tinsert(list, {name = name, text = self.lootStatus[id].fake[name] .. "|cffff0000 Fake loot|r"})
+		elseif addon.lootStatus[id].fake[name] then -- fake loot
+			tinsert(list, {name = name, text = addon.lootStatus[id].fake[name] .. "|cffff0000 Fake loot|r"})
 			fake = fake + 1
 		else -- Unlooted
 			tinsert(list, {name = name, text = "|cffffff00Unlooted"})
@@ -912,11 +898,10 @@ function RCVotingFrame:UpdateLootStatus()
 	end)
 	self.frame.lootStatus:SetScript("OnEnter", function()
 		GameTooltip:SetOwner(UIParent, "ANCHOR_CURSOR")
-		addon:Print("On enter")
 		GameTooltip:AddLine("Loot Status")
 		if addon.debug then
 			GameTooltip:AddLine("Debug")
-			for id, v in pairs(self.lootStatus) do
+			for id, v in pairs(addon.lootStatus) do
 				GameTooltip:AddDoubleLine(id, v.num,1,1,1,1,1,1)
 			end
 			GameTooltip:AddLine(" ")
