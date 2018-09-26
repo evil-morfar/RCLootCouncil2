@@ -351,6 +351,7 @@ function addon:OptionsTable()
 												return
 											end
 											self:GetActiveModule("history"):DeleteAllEntriesByName(selections.deleteName)
+											selections.deleteName = "" -- Barrow: Needs to be reset.
 										end,
 									},
 									deleteDate = {
@@ -387,6 +388,7 @@ function addon:OptionsTable()
 												return
 											end
 											self:GetActiveModule("history"):DeleteEntriesOlderThanEpoch(selections.deleteDate)
+											selections.deleteDate = "" -- Barrow: Needs to be reset.
 										end,
 									},
 									deletePatch = {
@@ -419,6 +421,7 @@ function addon:OptionsTable()
 												return
 											end
 											self:GetActiveModule("history"):DeleteEntriesOlderThanEpoch(selections.deletePatch)
+											selections.deletePatch = "" -- Barrow: Needs to be reset.
 										end,
 									}
 								},
