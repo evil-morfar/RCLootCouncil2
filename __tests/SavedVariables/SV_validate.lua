@@ -32,6 +32,13 @@ local function spairs(t, order)
 end
 
 local function checkSV()
+   local encounter_diff = {
+      ["8"] =  "Mythic+",
+      ["14"] = "Normal",
+      ["15"] = "Heroic",
+      ["16"] = "Mythic",
+      ["17"] = "LFR",
+   }
    local function options()
       print "Checking options"
       print ""
@@ -89,16 +96,9 @@ local function checkSV()
             end
          end
       end
-      local names = {
-         ["8"] =  "Mythic+",
-         ["14"] = "Normal",
-         ["15"] = "Heroic",
-         ["16"] = "Mythic",
-         ["17"] = "LFR",
-      }
       for n, v in pairs(encounters) do
          for id, v in pairs(v) do
-            print(string.format("wipes: %d,\t kills: %d\t%s - %s", v.trys, v.kills, n, names[id] or id))
+            print(string.format("wipes: %d,\t kills: %d\t%s - %s", v.trys, v.kills, n, encounter_diff[id] or id))
          end
       end
       print "----------"
@@ -176,16 +176,20 @@ local function checkSV()
          if entry:find("ENCOUNTER_END") then
             lastEncounter = entry -- Log for later
 
-         elseif entry:find("SlootTable") and not entry:find("xrealm") then
+         elseif (entry:find("SlootTable") or entry:find("Slt_add")) and not entry:find("xrealm") then
 
             --"20:08:43 - Event: (ENCOUNTER_END) (2076) (Garothi Worldbreaker) (16) (20) (0)", -- [803]
-            if lastEncounter then print("\nSession ", num, lastEncounter:match("%b() %b() (%b())"), "ML: " .. entry:match(":%) %((%w+)%)",-35)) end
-            -- Extract time
-            print("Time:",entry:sub(1,9), "Index:", i)
+            if not entry:find("Slt_add") then
+               if lastEncounter then print("\nSession ", num, lastEncounter:match("%b() %b() (%b() %b())"):gsub("%(%d+%)", encounter_diff), "ML: " .. entry:match(":%) %((%w+)%)",-35)) end
+               -- Extract time
+               print("Time:",entry:sub(1,9), "Index:", i)
+            else
+               print "add:"
+            end
             -- And message
             local msg = entry:match("(%^1.+\^\^)")
             local l1,l2,lt = AceSer:Deserialize(msg)
-            for k,v in ipairs(unpack(lt)) do
+            for k,v in pairs(unpack(lt)) do
                print("|  "..k,v.ilvl, v.link)
                print("|  "..v.equipLoc, v.subType, v.owner)
                --print("Classes:", v.classes)
@@ -219,5 +223,4 @@ do
    end
    table.sort(ent)
    --for k,v in spairs(ent) do print(k,v) end
-
 end
