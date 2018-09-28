@@ -20,6 +20,7 @@ local item_prototype = {
    type = "other", -- Default to unspecified
    time_remaining = 0, -- NOTE For now I rely on this not being updated for timeout checks. It should be precise enough, but needs testing
    time_added = 0,
+   exists = false,
    link = "",
    args = {}, -- User args
 }
@@ -37,11 +38,11 @@ local error, table, tostring, tinsert, tremove, type, select, FindInTableIf, tim
 
 function addon:InitItemStorage()-- Extract items from our SV. Could be more elegant
    db = self:Getdb()
-   local stored;
+   local Item;
    for k, v in ipairs(db.itemStorage) do
-      stored = Storage:StoreItem(v.link, v.type, "restored", v)
-      if not stored then -- Item probably no longer exists?
-         addon:Debug("Error - ItemsStorage, couldn't add db item:", v.link)
+      Item = Storage:StoreItem(v.link, v.type, "restored", v)
+      if not Item.exists then -- Item probably no longer exists?
+         addon:Debug("Error - ItemStorage, couldn't add db item:", v.link)
          local key = FindInTableIf(db.itemStorage, function(d) return addon:ItemIsItem(v.link, d.link) end)
          if key then
             tremove(db.itemStorage, key)
@@ -86,19 +87,21 @@ end
 -- @param item ItemLink|ItemString|ItemID of the item
 -- @param type The storage type. Used for different handlers, @see Storage.AcceptedTypes
 -- @param ... Userdata stored in the returned 'Item.args'. Directly stored if provided as table, otherwise as '{...}'.
--- @returns Item @see 'item_prototype' when the item is stored succesfully.
+-- @returns Item @see 'item_prototype' when the item is stored succesfully. Has flag Item.exists if present in bags.
 function Storage:StoreItem(item, typex, ...)
    if not typex then typex = "other" end
    if not self.AcceptedTypes[typex] then error("Type: " .. tostring(typex) .. " is not accepted. Accepted types are: " .. table.concat(self.AcceptedTypes, ", "),2) end
    addon:Debug("Storage:StoreItem",item,typex,...)
    local c,s = findItemInBags(item)
+   local Item
    if not (c and s) then
-      -- IDEA Throw error?
-      addon:Debug("Error - Unable to store item")
-      return
+      -- The Item is not in our bags
+      Item = newItem(item, typex)
+   else
+      local time_remaining = addon:GetContainerItemTradeTimeRemaining(c,s)
+      Item = newItem(item, typex, time_remaining)
+      Item.exists = true -- The item is in our bags
    end
-   local time_remaining = addon:GetContainerItemTradeTimeRemaining(c,s)
-   local Item = newItem(item, typex, time_remaining)
    if select(1, ...) == "restored" then
       local OldItem = select(2, ...)
       Item.time_added = OldItem.time_added -- Restore original time added
