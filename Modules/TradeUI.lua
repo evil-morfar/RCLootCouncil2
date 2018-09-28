@@ -204,7 +204,7 @@ function TradeUI:AddAwardedInBagsToTradeWindow()
 		end
       local c,s = addon.ItemStorage:GetItemContainerSlot(Item)
       if not c then -- Item is gone?!
-         -- TODO Print something to the user?
+         addon:Print(L["trade_item_to_trade_not_found"])
          return addon:Debug("Error TradeUI:", "Item missing when attempting to trade", Item.link, self.tradeTarget)
       end
       if self.isTrading then

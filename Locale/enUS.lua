@@ -477,6 +477,7 @@ L["Your note:"] = true
 L["error_test_as_non_leader"] = "You cannot initiate a test while in a group without being the group leader."
 L["trade_complete_message"] = "%s traded %s to %s."
 L["trade_wrongwinner_message"] = "WARNING: %s traded %s to %s instead of %s!"
+L["trade_item_to_trade_not_found"] = "WARNING: Item to trade: %s couldn't be found in your inventory!"
 
 
 L["opt_addButton_desc"] = "Add a new button group for the selected slot."
