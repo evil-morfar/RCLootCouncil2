@@ -1,7 +1,7 @@
 ###### Bugfixes
 * *Disabled all ML registrations in pvp (#354).*
 * *BoE items are now no longer added to sessions when the option is turned off.*
-* *Fixed issue with spec icons.*
+
 
 ### v2.9.0
 ---
