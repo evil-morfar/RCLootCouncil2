@@ -2,6 +2,7 @@
 ---
 
 * Added local chat print option to all announcements.
+* Added a custom number of days input to loot history mass deletion.
 
 
 ###### Bugfixes

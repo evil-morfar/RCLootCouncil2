@@ -423,7 +423,38 @@ function addon:OptionsTable()
 											self:GetActiveModule("history"):DeleteEntriesOlderThanEpoch(selections.deletePatch)
 											selections.deletePatch = "" -- Barrow: Needs to be reset.
 										end,
-									}
+									},
+									deleteCustomDays = {
+										order = 18,
+										name = L["Date"],
+										type = "input",
+										width = "double",
+										validate = function(info, txt)
+											return type(txt) == "number" and true or "Input must be a number"
+										end,
+										get = function(info)
+											return selections[info[#info]] or ""
+										end,
+										set = function(info, txt)
+											selections[info[#info]] = val
+										end,
+									},
+									deleteCustomDaysBtn = {
+										order = 19,
+										name = _G.DELETE,
+										type = "execute",
+										confirm = function() return L["opt_deleteDate_confirm"] end,
+										func = function(info)
+											if not selections.deleteCustomDays then
+												addon:Print(L["Invalid selection"])
+												return
+											end
+											-- Convert days into seconds
+											local days = selections.deleteCustomDays * 60 * 60 * 24
+											self:GetActiveModule("history"):DeleteEntriesOlderThanEpoch(days)
+											selections.deleteCustomDays = ""
+										end,
+									},
 								},
 							},
 						},
