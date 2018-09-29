@@ -1851,14 +1851,6 @@ function RCLootCouncil:GetPlayerInfo()
 	return self.playerName, self.playerClass, self:GetPlayerRole(), self.guildRank, enchant, lvl, ilvl, playersData.specID
 end
 
-function RCLootCouncil:GetPlayerRole()
-	return UnitGroupRolesAssigned("player")
-end
-
-function RCLootCouncil:TranslateRole(role)
-	return (role and role ~= "") and _G[role] or ""
-end
-
 --- Returns a lookup table containing GuildRankNames and their index.
 -- @return table ["GuildRankName"] = rankIndex
 function RCLootCouncil:GetGuildRanks()
@@ -1873,29 +1865,13 @@ function RCLootCouncil:GetGuildRanks()
 	return t;
 end
 
---- Calculates how long ago a given date was.
--- Assumes the date is of year 2000+.
--- @param oldDate A string specifying the date, formatted as "dd/mm/yy".
--- @return day, month, year.
+
 function RCLootCouncil:GetNumberOfDaysFromNow(oldDate)
-	local d, m, y = strsplit("/", oldDate, 3)
-	local sinceEpoch = time({year = "20"..y, month = m, day = d, hour = 0}) -- convert from string to seconds since epoch
-	local diff = date("*t", time() - sinceEpoch) -- get the difference as a table
-	-- Convert to number of d/m/y
-	return diff.day - 1, diff.month - 1, diff.year - 1970
+	return self.Utils:GetNumberOfDaysFromNow(oldDate)
 end
 
---- Takes the return value from :GetNumberOfDaysFromNow() and converts it to text.
--- @see RCLootCouncil:GetNumberOfDaysFromNow
--- @return A formatted string.
 function RCLootCouncil:ConvertDateToString(day, month, year)
-	local text = format(L["x days"], day)
-	if year > 0 then
-		text = format(L["days, x months, y years"], text, month, year)
-	elseif month > 0 then
-		text = format(L["days and x months"], text, month)
-	end
-	return text;
+	return self.Utils:ConvertDateToString(day, month, year)
 end
 
 function RCLootCouncil:OnEvent(event, ...)
@@ -2337,26 +2313,6 @@ function RCLootCouncil:UpdateHistoryDB()
 	historyDB = self:GetHistoryDB()
 end
 
-function RCLootCouncil:GetAnnounceChannel(channel)
-	return channel == "group" and (IsInRaid() and "RAID" or "PARTY") or channel
-end
-
-function RCLootCouncil:GetItemIDFromLink(link)
-	return tonumber(strmatch(link or "", "item:(%d+):"))
-end
-
-function RCLootCouncil:GetItemStringFromLink(link)
-	return strmatch(link or "", "(item:.-):*|h") -- trim trailing colons
-end
-
-function RCLootCouncil:GetItemNameFromLink(link)
-	return strmatch(link or "", "%[(.+)%]")
-end
-
-function RCLootCouncil:GetItemStringClean(link)
-	return gsub(self:GetItemStringFromLink(link), "item:", "")
-end
-
 -- The link of same item generated from different players, or if two links are generated between player spec switch, are NOT the same
 -- This function compares link with link level and spec ID removed.
 -- Also compare with unique id removed, because wowpedia says that:
@@ -2617,10 +2573,6 @@ function RCLootCouncil:GetUnitClassColoredName(name)
 	end
 end
 
-function RCLootCouncil:RGBToHex(r,g,b)
-	return string.format("%02x%02x%02x",255*r, 255*g, 255*b)
-end
-
 --- Creates a standard frame for RCLootCouncil with title, minimizing, positioning and scaling supported.
 --		Adds Minimize(), Maximize() and IsMinimized() functions on the frame, and registers it for hide on combat.
 --		SetWidth/SetHeight called on frame will also be called on frame.content.
@@ -2848,19 +2800,6 @@ function RCLootCouncil:HideTooltip()
 		self.tooltip.showing = false
 	end
 	GameTooltip:Hide()
-end
-
-function RCLootCouncil:GetItemTextWithCount(link, count)
-	return link..(count and count > 1 and (" x"..count) or "")
-end
-
-function RCLootCouncil:GetItemLevelText(ilvl, token)
-	if not ilvl then return "" end
-	if token and ilvl > 600 then -- Armor token warforged is introduced since WoD
-		return ilvl.."+"
-	else
-		return ilvl
-	end
 end
 
 local itemStatsRet = {}
@@ -3138,4 +3077,48 @@ function RCLootCouncil:UpdateLootHistory()
 		end
 	end
 	self:Print("Done")
+end
+
+----------------------------------
+-- The following functions have been moved to RCLootCouncil.Utils
+-- and are now deprecated.
+---------------------------------
+function RCLootCouncil:RGBToHex(r,g,b)
+	return self.Utils:RGBToHex(r,g,b)
+end
+
+function RCLootCouncil:GetAnnounceChannel(channel)
+	return self.Utils:GetAnnounceChannel(channel)
+end
+
+function RCLootCouncil:GetItemIDFromLink(link)
+	return self.Utils:GetItemIDFromLink(link)
+end
+
+function RCLootCouncil:GetItemStringFromLink(link)
+	return self.Utils:GetItemStringFromLink(link)
+end
+
+function RCLootCouncil:GetItemNameFromLink(link)
+	return self.Utils:GetItemNameFromLink(link)
+end
+
+function RCLootCouncil:GetItemStringClean(link)
+	return self.Utils:GetItemStringClean(link)
+end
+
+function RCLootCouncil:GetItemTextWithCount(link, count)
+	return self.Utils:GetItemTextWithCount(link, count)
+end
+
+function RCLootCouncil:GetItemLevelText(ilvl, token)
+	return self.Utils:GetItemLevelText(ilvl, token)
+end
+
+function RCLootCouncil:GetPlayerRole()
+	return self.Utils:GetPlayerRole()
+end
+
+function RCLootCouncil:TranslateRole(role)
+	return self.Utils:TranslateRole(role)
 end
