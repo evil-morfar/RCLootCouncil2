@@ -5,6 +5,10 @@
 	Things marked with "todo"
 		- IDEA Change popups so they only hide on award/probably add the error message to it.
 
+		- Mass deletion by custom number of days.
+		- Announce to private channel.
+		- "Moveable" rows in buttons/responses options.
+
 	Backwards compability breaks:
 		- Remove equipLoc, subType, texture from lootTable. They can all be created with GetItemInfoInstant()
 -------------------------------- ]]
@@ -111,6 +115,7 @@ function RCLootCouncil:OnInitialize()
 	self.lootSlotInfo = {}  -- Items' data currently in the loot slot. Need this because inside LOOT_SLOT_CLEARED handler, GetLootSlotLink() returns invalid link.
 	self.nonTradeables = {} -- List of non tradeable items received since the last ENCOUNTER_END
 
+	self.lootStatus = {}
 	self.verCheckDisplayed = false -- Have we shown a "out-of-date"?
 	self.moduleVerCheckDisplayed = {} -- Have we shown a "out-of-date" for a module? The key of the table is the baseName of the module.
 
@@ -435,7 +440,8 @@ function RCLootCouncil:OnEnable()
 	self:RegisterEvent("LOOT_OPENED",		"OnEvent")
 	self:RegisterEvent("LOOT_SLOT_CLEARED", "OnEvent")
 	self:RegisterEvent("LOOT_CLOSED",		"OnEvent")
-	self:RegisterEvent("ENCOUNTER_LOOT_RECEIVED", "OnEvent") -- REVIEW Check if boss loot is obtainable through this
+	self:RegisterEvent("LOOT_READY", "OnEvent")
+	self:RegisterEvent("ENCOUNTER_LOOT_RECEIVED", "OnEvent")
 
 	--self:RegisterEvent("GROUP_ROSTER_UPDATE", "Debug", "event")
 
@@ -553,7 +559,7 @@ function RCLootCouncil:ChatCommand(msg)
 		self:Debug("- log - display the debug log")
 		self:Debug("- clearLog - clear the debug log")
 
-	elseif input == 'config' or input == L["config"] or input == "c" then
+	elseif input == 'config' or input == L["config"] or input == "c" or input == "opt" or input == "options" then
 		-- Call it twice, because reasons..
 		InterfaceOptionsFrame_OpenToCategory(self.optionsFrame)
 		InterfaceOptionsFrame_OpenToCategory(self.optionsFrame)
@@ -1062,6 +1068,22 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 				self.Sync:SyncNackReceived(unpack(data))
 			elseif command == "not_tradeable" or command == "rejected_trade" then
 				tinsert(self.nonTradeables, {link = (unpack(data)), reason = command, owner = self:UnitName(sender)})
+
+			elseif command == "looted" then
+				local guid = unpack(data)
+				if not guid then return self:Debug("no guid in looted comm", guid, sender) end
+				if not self.lootStatus[guid] then self.lootStatus[guid] = {candidates = {}, fake = {}, num = 0} end
+				self.lootStatus[guid].num = self.lootStatus[guid].num + 1
+				self.lootStatus[guid].candidates[self:UnitName(sender)] = true
+				self:GetActiveModule("votingframe"):UpdateLootStatus()
+
+			elseif command == "fakeLoot" then
+				local link, guid = unpack(data)
+				if not guid then return self:Debug("no guid in fakeLoot comm", guid, sender) end
+				if not self.lootStatus[guid] then self.lootStatus[guid] = {candidates = {}, fake = {}, num = 0} end
+				self.lootStatus[guid].num = self.lootStatus[guid].num + 1
+				self.lootStatus[guid].fake[self:UnitName(sender)] = link
+				self:GetActiveModule("votingframe"):UpdateLootStatus()
 			end
 		else
 			-- Most likely pre 2.0 command
@@ -1810,7 +1832,7 @@ function RCLootCouncil:GetPlayersGuildRank()
 end
 
 --- Returns specific info about the player
--- @return "Name", "Class", "Role", "guildRank", bool isEnchanter, num enchanting_lvl, num ilvl
+-- @return "Name", "Class", "Role", "guildRank", bool isEnchanter, num enchanting_lvl, num ilvl, num specID
 function RCLootCouncil:GetPlayerInfo()
 	-- Check if the player has enchanting
 	local enchant, lvl = nil, 0
@@ -1927,52 +1949,52 @@ function RCLootCouncil:OnEvent(event, ...)
 
 	elseif event == "LOOT_OPENED" then
 		self:Debug("Event:", event, ...)
-		if not IsInInstance() then return end -- Don't do anything out of instances
-		-- self:Debug("GetUnitName:", GetUnitName("target"))
-		-- self:Debug("UnitGUID:", UnitGUID("target"))
-		if select(1, ...) ~= "scheduled" and self.LootOpenScheduled then return end -- When this function is scheduled to run again, but LOOT_OPENDED event fires, return.
-		self.LootOpenScheduled = false
-		wipe(self.lootSlotInfo)
-		if GetNumLootItems() <= 0 then return end-- In case when function rerun, loot window is closed.
-
-		self.lootOpen = true
-		for i = 1,  GetNumLootItems() do
-			if LootSlotHasItem(i) then
-				local texture, name, quantity, _, quality, _, isQuestItem = GetLootSlotInfo(i)
-				if texture then
-					local link = GetLootSlotLink(i)
-					local isCraftingReagent
-					if link then  -- Link is not present on coins
-						 isCraftingReagent = select(17, GetItemInfo(link))
-					end
-					if not (isQuestItem or isCraftingReagent) then -- Ignore quest and crafting items
-						self:Debug("Adding to self.lootSlotInfo",i,link, quality)
-						self.lootSlotInfo[i] = {
-							name = name,
-							link = link, -- This could be nil, if the item is money.
-							quantity = quantity,
-							quality = quality,
-							guid = self.Utils:ExtractCreatureID((GetLootSourceInfo(i))), -- Boss GUID
-							boss = (GetUnitName("target")),
-						}
-					end
-				else -- It's possible that item in the loot window is uncached. Retry in the next frame.
-					self:Debug("Loot uncached when the loot window is opened. Retry in the next frame.", link)
-					self.LootOpenScheduled = true
-					-- Must offer special argument as 2nd argument to indicate this is run from scheduler.
-					return self:ScheduleTimer("OnEvent", 0, "LOOT_OPENED", "scheduled")
-				end
-			end
-		end
-		if self.isMasterLooter then
-			self:GetActiveModule("masterlooter"):OnLootOpen()
-		end
+		-- if not IsInInstance() then return end -- Don't do anything out of instances
+		-- -- self:Debug("GetUnitName:", GetUnitName("target"))
+		-- -- self:Debug("UnitGUID:", UnitGUID("target"))
+		-- if select(1, ...) ~= "scheduled" and self.LootOpenScheduled then return end -- When this function is scheduled to run again, but LOOT_OPENDED event fires, return.
+		-- self.LootOpenScheduled = false
+		-- wipe(self.lootSlotInfo)
+		-- if GetNumLootItems() <= 0 then return end-- In case when function rerun, loot window is closed.
+		--
+		-- self.lootOpen = true
+		-- for i = 1,  GetNumLootItems() do
+		-- 	if LootSlotHasItem(i) then
+		-- 		local texture, name, quantity, _, quality, _, isQuestItem = GetLootSlotInfo(i)
+		-- 		if texture then
+		-- 			local link = GetLootSlotLink(i)
+		-- 			local isCraftingReagent
+		-- 			if link then  -- Link is not present on coins
+		-- 				 isCraftingReagent = select(17, GetItemInfo(link))
+		-- 			end
+		-- 			if not (isQuestItem or isCraftingReagent) then -- Ignore quest and crafting items
+		-- 				self:Debug("Adding to self.lootSlotInfo",i,link, quality)
+		-- 				self.lootSlotInfo[i] = {
+		-- 					name = name,
+		-- 					link = link, -- This could be nil, if the item is money.
+		-- 					quantity = quantity,
+		-- 					quality = quality,
+		-- 					guid = self.Utils:ExtractCreatureID((GetLootSourceInfo(i))), -- Boss GUID
+		-- 					boss = (GetUnitName("target")),
+		-- 				}
+		-- 			end
+		-- 		else -- It's possible that item in the loot window is uncached. Retry in the next frame.
+		-- 			self:Debug("Loot uncached when the loot window is opened. Retry in the next frame.", link)
+		-- 			self.LootOpenScheduled = true
+		-- 			-- Must offer special argument as 2nd argument to indicate this is run from scheduler.
+		-- 			return self:ScheduleTimer("OnEvent", 0, "LOOT_OPENED", "scheduled")
+		-- 		end
+		-- 	end
+		-- end
+		-- if self.isMasterLooter then
+		-- 	self:GetActiveModule("masterlooter"):OnLootOpen()
+		-- end
 	elseif event == "LOOT_CLOSED" then
 		if not IsInInstance() then return end -- Don't do anything out of instances
 		self:Debug("Event:", event, ...)
 		local i = 0
 		for k, info in pairs(self.lootSlotInfo) do
-			if not info.isLooted then
+			if not info.isLooted and info.guid then
 				self:SendCommand("group", "fakeLoot", info.link, info.guid)
 				return
 			end
@@ -2005,6 +2027,40 @@ function RCLootCouncil:OnEvent(event, ...)
 		-- 	self:ScheduleTimer("UpdateAndSendRecentTradableItem", 2, select(3,...))
 		-- end
 
+	elseif event == "LOOT_READY" then
+		self:Debug("Event:", event, ...)
+		if not IsInInstance() then return end -- Don't do anything out of instances
+		if GetNumLootItems() <= 0 then return end-- In case when function rerun, loot window is closed.
+
+		self.lootOpen = true
+		for i = 1,  GetNumLootItems() do
+			if LootSlotHasItem(i) then
+				local texture, name, quantity, _, quality, _, isQuestItem = GetLootSlotInfo(i)
+				if texture then
+					local link = GetLootSlotLink(i)
+					local isCraftingReagent
+					if link then  -- Link is not present on coins
+						 isCraftingReagent = select(17, GetItemInfo(link))
+					end
+					if not (isQuestItem or isCraftingReagent) then -- Ignore quest and crafting items
+						self:Debug("Adding to self.lootSlotInfo",i,link, quality)
+						self.lootSlotInfo[i] = {
+							name = name,
+							link = link, -- This could be nil, if the item is money.
+							quantity = quantity,
+							quality = quality,
+							guid = self.Utils:ExtractCreatureID((GetLootSourceInfo(i))), -- Boss GUID
+							boss = (GetUnitName("target")),
+						}
+					end
+				else -- It's possible that item in the loot window is uncached. Retry in the next frame.
+					self:Debug("Loot uncached when the loot window is opened. Retry in the next frame.", link)
+					self.LootOpenScheduled = true
+					-- Must offer special argument as 2nd argument to indicate this is run from scheduler.
+					return self:ScheduleTimer("OnEvent", 0, "LOOT_OPENED", "scheduled")
+				end
+			end
+		end
 	else
 		self:Debug("NonHandled Event:", event, ...)
 	end
