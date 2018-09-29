@@ -1,3 +1,9 @@
+
+---
+
+* Added local chat print option to all announcements.
+
+
 ###### Bugfixes
 * *Disabled all ML registrations in pvp (#354).*
 * *BoE items are now no longer added to sessions when the option is turned off.*

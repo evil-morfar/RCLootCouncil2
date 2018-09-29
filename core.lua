@@ -6,7 +6,6 @@
 		- IDEA Change popups so they only hide on award/probably add the error message to it.
 
 		- Mass deletion by custom number of days.
-		- Announce to private channel.
 		- "Moveable" rows in buttons/responses options.
 
 	Backwards compability breaks:
@@ -750,9 +749,9 @@ function RCLootCouncil:SendAnnouncement(msg, channel)
 	if self.testMode then
 		msg = "("..L["Test"]..") "..msg
 	end
-	if not IsInGroup() and (channel == "group" or channel == "RAID" or channel == "PARTY" or channel == "INSTANCE_CHAT") then
-		self:Print(msg)
-	elseif not IsInGuild() and (channel == "GUILD" or channel == "OFFICER") then
+	if (not IsInGroup() and (channel == "group" or channel == "RAID" or channel == "PARTY" or channel == "INSTANCE_CHAT"))
+		or channel == "chat"
+		or (not IsInGuild() and (channel == "GUILD" or channel == "OFFICER")) then
 		self:Print(msg)
 	else
 		SendChatMessage(msg, self:GetAnnounceChannel(channel))

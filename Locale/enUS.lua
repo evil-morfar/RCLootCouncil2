@@ -144,6 +144,7 @@ L["chat_commands_add"]     = "Add an item to the session frame"
 L["chat_commands_award"]   = "Start a session with items looted to your inventory"
 L["chat_commands_winners"] = "Display the winners of awarded items looted to your inventory"
 L["chat_commands_sync"]    = "Open the synchronizer view"
+L["Chat print"] = true
 L["Check this to loot the items and distribute them later."] = true
 L["Check to append the realmname of a player from another realm"] = true
 L["Check to have all frames minimize when entering combat"] = true

@@ -1044,6 +1044,7 @@ function addon:OptionsTable()
 											RAID = _G.CHAT_MSG_RAID	,
 											RAID_WARNING = _G.CHAT_MSG_RAID_WARNING,
 											group = _G.GROUP, -- must be converted
+											chat = L["Chat print"],
 										},
 										set = function(i,v) self.db.profile.announceChannel = v end,
 										hidden = function() return not self.db.profile.announceItems end,
@@ -1546,6 +1547,7 @@ function addon:OptionsTable()
 				RAID = _G.CHAT_MSG_RAID,
 				RAID_WARNING = _G.CHAT_MSG_RAID_WARNING,
 				group = _G.GROUP,
+				chat = L["Chat print"],
 			},
 			set = function(j,v) self.db.profile.awardText[i].channel = v	end,
 			get = function() return self.db.profile.awardText[i].channel end,
