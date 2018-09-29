@@ -6,6 +6,9 @@
 ## SavedVariables: RCLootCouncilDB, RCLootCouncilLootDB
 ## OptionalDeps: LibStub, CallbackHandler-1.0, Ace3, lib-st, LibWindow-1.1, LibDialog-1.0
 
+Patches\UiDropDownMenuTaintCommunities.lua
+Patches\UIDropDownMenuTaintHonor.lua
+
 embeds.xml
 Locale\Locales.xml
 

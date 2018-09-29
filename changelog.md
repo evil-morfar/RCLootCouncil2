@@ -8,6 +8,7 @@
 ###### Bugfixes
 * *Disabled all ML registrations in pvp (#354).*
 * *BoE items are now no longer added to sessions when the option is turned off.*
+* *Added a patch for Blizzards taint of dropdown menus (#366, #361, #358).
 
 
 ### v2.9.0
