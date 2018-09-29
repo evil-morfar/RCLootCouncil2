@@ -2030,7 +2030,7 @@ function RCLootCouncil:OnEvent(event, ...)
 						}
 					end
 				else -- It's possible that item in the loot window is uncached. Retry in the next frame.
-					self:Debug("Loot uncached when the loot window is opened. Retry in the next frame.", link)
+					self:Debug("Loot uncached when the loot window is opened. Retry in the next frame.", name)
 					self.LootOpenScheduled = true
 					-- Must offer special argument as 2nd argument to indicate this is run from scheduler.
 					return self:ScheduleTimer("OnEvent", 0, "LOOT_OPENED", "scheduled")
