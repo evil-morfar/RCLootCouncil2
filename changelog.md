@@ -1,6 +1,5 @@
-
+### v2.9.1
 ---
-
 * Added local chat print option to all announcements.
 * Added a custom number of days input to loot history mass deletion.
 
@@ -8,7 +7,7 @@
 ###### Bugfixes
 * *Disabled all ML registrations in pvp (#354).*
 * *BoE items are now no longer added to sessions when the option is turned off.*
-* *Added a patch for Blizzards taint of dropdown menus (#366, #361, #358).
+* *Added a patch for Blizzards taint of dropdown menus (#366, #361, #358).*
 
 
 ### v2.9.0
