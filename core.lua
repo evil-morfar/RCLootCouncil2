@@ -95,7 +95,7 @@ function RCLootCouncil:OnInitialize()
   	self.version = GetAddOnMetadata("RCLootCouncil", "Version")
 	self.nnp = false
 	self.debug = false
-	self.tVersion = "Alpha.1" -- String or nil. Indicates test version, which alters stuff like version check. Is appended to 'version', i.e. "version-tVersion" (max 10 letters for stupid security)
+	self.tVersion = "Alpha.2" -- String or nil. Indicates test version, which alters stuff like version check. Is appended to 'version', i.e. "version-tVersion" (max 10 letters for stupid security)
 
 	self.playerClass = select(2, UnitClass("player"))
 	self.guildRank = L["Unguilded"]
@@ -1075,7 +1075,9 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 				if not self.lootStatus[guid] then self.lootStatus[guid] = {candidates = {}, fake = {}, num = 0} end
 				self.lootStatus[guid].num = self.lootStatus[guid].num + 1
 				self.lootStatus[guid].candidates[self:UnitName(sender)] = true
-				self:GetActiveModule("votingframe"):UpdateLootStatus()
+				if self:IsCouncil(self.playerName) then -- Only councilmen has the voting frame
+					self:GetActiveModule("votingframe"):UpdateLootStatus()
+				end
 
 			elseif command == "fakeLoot" then
 				local link, guid = unpack(data)
@@ -1083,7 +1085,9 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 				if not self.lootStatus[guid] then self.lootStatus[guid] = {candidates = {}, fake = {}, num = 0} end
 				self.lootStatus[guid].num = self.lootStatus[guid].num + 1
 				self.lootStatus[guid].fake[self:UnitName(sender)] = link
-				self:GetActiveModule("votingframe"):UpdateLootStatus()
+				if self:IsCouncil(self.playerName) then
+					self:GetActiveModule("votingframe"):UpdateLootStatus()
+				end
 			end
 		else
 			-- Most likely pre 2.0 command
