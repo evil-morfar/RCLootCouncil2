@@ -426,17 +426,18 @@ function addon:OptionsTable()
 									},
 									deleteCustomDays = {
 										order = 18,
-										name = L["Date"],
+										name = addon:CompleteFormatSimpleStringWithPluralRule(_G.DAYS, 2),
+										desc = L["opt_deleteDate_desc"],
 										type = "input",
 										width = "double",
 										validate = function(info, txt)
-											return type(txt) == "number" and true or "Input must be a number"
+											return type(tonumber(txt)) == "number" and true or "Input must be a number"
 										end,
 										get = function(info)
 											return selections[info[#info]] or ""
 										end,
 										set = function(info, txt)
-											selections[info[#info]] = val
+											selections[info[#info]] = txt
 										end,
 									},
 									deleteCustomDaysBtn = {
