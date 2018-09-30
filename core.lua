@@ -1914,6 +1914,7 @@ function RCLootCouncil:OnEvent(event, ...)
 		end
 	elseif event == "ENCOUNTER_START" then
 			self:DebugLog("Event:", event, ...)
+			wipe(self.lootStatus)
 			self:UpdatePlayersData()
 	elseif event == "GUILD_ROSTER_UPDATE" then
 		self.guildRank = self:GetPlayersGuildRank();
@@ -1981,9 +1982,7 @@ function RCLootCouncil:OnEvent(event, ...)
 				self:SendCommand("group", "fakeLoot", info.link, info.guid)
 				return
 			end
-			if info.link then
-				i = k -- Only update if we have items
-			end
+			i = k -- Only update if we have items
 		end
 		-- Otherwise they've looted everything, so send ack
 		if i ~= 0 then -- We're not guaranteed to have something stored
