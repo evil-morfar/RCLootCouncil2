@@ -715,7 +715,7 @@ end
 
 -- Update the recentTradableItem by link, if it is in bag and tradable.
 function RCLootCouncil:UpdateAndSendRecentTradableItem(info, count)
-	for i = 0, NUM_BAG_SLOTS do
+	for i = 0, _G.NUM_BAG_SLOTS do
 		for j = 1, GetContainerNumSlots(i) do
 			local _, _, _, _, _, _, link2 = GetContainerItemInfo(i, j)
 			if link2 and self:ItemIsItem(info.link, link2) then
@@ -735,9 +735,9 @@ function RCLootCouncil:UpdateAndSendRecentTradableItem(info, count)
 		end
 	end
 	-- We haven't found it, maybe we just haven't received it yet, so try again in one second
-	if not count or (count and count < 3) then -- Only try a few times
+	if not count or (count and count <= 3) then -- Only try a few times
 		self:Debug("UpdateAndSendRecentTradableItem: Didn't find item on try ", count or 1)
-		return self:ScheduleTimer("UpdateAndSendRecentTradableItem",1,info, count and count + 1 or 1)
+		return self:ScheduleTimer("UpdateAndSendRecentTradableItem",1,info, count and count + 1 or 2)
 	end
 	self:Debug("Error - UpdateAndSendRecentTradableItem",info.link, "not found in bags")
 end
@@ -1970,11 +1970,16 @@ function RCLootCouncil:OnEvent(event, ...)
 		self:Debug("Event:", event, ...)
 		local i = 0
 		for k, info in pairs(self.lootSlotInfo) do
-			if not info.isLooted and info.guid then
+			if not info.isLooted and info.guid and info.link then
+				if info.autoloot then -- We've looted the item without getting LOOT_SLOT_CLEARED, properly due to FastLoot addons
+					return self:OnEvent("LOOT_SLOT_CLEARED", k), self:OnEvent("LOOT_CLOSED")
+				end
 				self:SendCommand("group", "fakeLoot", info.link, info.guid)
 				return
 			end
-			i = k
+			if info.link then
+				i = k -- Only update if we have items
+			end
 		end
 		-- Otherwise they've looted everything, so send ack
 		if i ~= 0 then -- We're not guaranteed to have something stored
@@ -2027,6 +2032,7 @@ function RCLootCouncil:OnEvent(event, ...)
 							quality = quality,
 							guid = self.Utils:ExtractCreatureID((GetLootSourceInfo(i))), -- Boss GUID
 							boss = (GetUnitName("target")),
+							autoloot = select(1,...),
 						}
 					end
 				else -- It's possible that item in the loot window is uncached. Retry in the next frame.
