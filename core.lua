@@ -6,6 +6,7 @@
 		- IDEA Change popups so they only hide on award/probably add the error message to it.
 
 		- "Moveable" rows in buttons/responses options.
+		- Changeable chatwindow output.
 
 	Backwards compability breaks:
 		- Remove equipLoc, subType, texture from lootTable. They can all be created with GetItemInfoInstant()
@@ -1337,9 +1338,9 @@ RCLootCouncil.INVTYPE_Slots = {
 		INVTYPE_WEAPONMAINHAND	= "MainHandSlot",
 		INVTYPE_WEAPONOFFHAND	= {"SecondaryHandSlot",["or"] = "MainHandSlot"},
 		INVTYPE_WEAPON		    = {"MainHandSlot","SecondaryHandSlot"},
-		INVTYPE_THROWN		    = {"SecondaryHandSlot", ["or"] = "MainHandSlot"},
-		INVTYPE_RANGED		    = {"SecondaryHandSlot", ["or"] = "MainHandSlot"},
-		INVTYPE_RANGEDRIGHT 	= {"SecondaryHandSlot", ["or"] = "MainHandSlot"},
+		INVTYPE_THROWN		    = {"MainHandSlot", ["or"] = "SecondaryHandSlot"},
+		INVTYPE_RANGED		    = {"MainHandSlot", ["or"] = "SecondaryHandSlot"},
+		INVTYPE_RANGEDRIGHT 	 = {"MainHandSlot", ["or"] = "SecondaryHandSlot"},
 		INVTYPE_FINGER		    = {"Finger0Slot","Finger1Slot"},
 		INVTYPE_HOLDABLE	    = {"SecondaryHandSlot", ["or"] = "MainHandSlot"},
 		INVTYPE_TRINKET		    = {"TRINKET0SLOT", "TRINKET1SLOT"}
