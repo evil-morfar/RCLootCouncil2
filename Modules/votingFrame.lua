@@ -823,13 +823,13 @@ function RCVotingFrame:GetFrame()
 	f.rollResult = rf
 
 	-- Loot Status
-	f.lootStatus = addon.UI:New("Text", f.content, " ")
-	f.lootStatus:SetTextColor(1,1,1,1) -- White for now
-	f.lootStatus:SetHeight(20)
-	f.lootStatus:SetWidth(150)
-	f.lootStatus:SetPoint("RIGHT", rf, "LEFT", -10, 0)
-	f.lootStatus:SetScript("OnLeave", addon.Utils.HideTooltip)
-	f.lootStatus.text:SetJustifyH("RIGHT")
+	-- f.lootStatus = addon.UI:New("Text", f.content, " ")
+	-- f.lootStatus:SetTextColor(1,1,1,1) -- White for now
+	-- f.lootStatus:SetHeight(20)
+	-- f.lootStatus:SetWidth(150)
+	-- f.lootStatus:SetPoint("RIGHT", rf, "LEFT", -10, 0)
+	-- f.lootStatus:SetScript("OnLeave", addon.Utils.HideTooltip)
+	-- f.lootStatus.text:SetJustifyH("RIGHT")
 
 	-- Award string
 	local awdstr = f.content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
