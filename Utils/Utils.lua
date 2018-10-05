@@ -46,7 +46,7 @@ function Utils:GetItemIDFromLink(link)
 end
 
 function Utils:GetItemStringFromLink(link)
-	return strmatch(strmatch(link or "", "item:[%d:-]+"), "(item:.-):*$")
+	return strmatch(strmatch(link or "", "item:[%d:-]+") or "", "(item:.-):*$")
 end
 
 function Utils:GetItemTextWithCount(link, count)
