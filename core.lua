@@ -2029,7 +2029,7 @@ function RCLootCouncil:OnEvent(event, ...)
 						 isCraftingReagent = select(17, GetItemInfo(link))
 					end
 					if not (isQuestItem or isCraftingReagent) then -- Ignore quest and crafting items
-						self:Debug("Adding to self.lootSlotInfo",i,link, quality)
+						self:Debug("Adding to self.lootSlotInfo",i,link, quality, GetLootSourceInfo(i))
 						self.lootSlotInfo[i] = {
 							name = name,
 							link = link, -- This could be nil, if the item is money.
@@ -2334,6 +2334,7 @@ function RCLootCouncil:ItemIsItem(item1, item2)
 	if type(item1) ~= "string" or type(item2) ~= "string" then return item1 == item2 end
 	item1 = self.Utils:GetItemStringFromLink(item1)
 	item2 = self.Utils:GetItemStringFromLink(item2)
+	if not (item1 and item2) then return false end -- KeyStones will fail the GetItemStringFromLink
 	local pattern = "item:(%d*):(%d*):(%d*):(%d*):(%d*):(%d*):(%d*):%d*:%d*:%d*"
 	local replacement = "item:%1:%2:%3:%4:%5:%6:%7:::" -- Compare link with uniqueId, linkLevel and SpecID removed
 	return item1:gsub(pattern, replacement) == item2:gsub(pattern, replacement)
