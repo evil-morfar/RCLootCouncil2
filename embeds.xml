@@ -24,6 +24,5 @@
   <!--@end-debug@-->
   <Script file="Libs\LibWindow-1.1\LibWindow-1.1.lua" />
   <Include file="Libs\lib-st\lib-st.xml" />
-  <Include file="Libs\DropDownMenu\UIDropDownMenuTemplates.xml" />
-  <Script file="Libs\DropDownMenu\UIDropDownMenu.lua"/>
+  <Include file="Libs\DropDownMenu\LibUIDropDownMenu.xml" />
 </Ui>
