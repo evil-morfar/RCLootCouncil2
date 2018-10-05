@@ -2324,15 +2324,17 @@ function RCLootCouncil:UpdateHistoryDB()
 end
 
 -- The link of same item generated from different players, or if two links are generated between player spec switch, are NOT the same
--- This function compares link with link level and spec ID removed.
+-- This function compares the raw item strings with link level and spec ID removed.
 -- Also compare with unique id removed, because wowpedia says that:
 -- "In-game testing indicates that the UniqueId can change from the first loot to successive loots on the same item."
 -- Although log shows item in the loot actually has no uniqueId in Legion, but just in case Blizzard changes it in the future.
 -- @return true if two items are the same item
 function RCLootCouncil:ItemIsItem(item1, item2)
 	if type(item1) ~= "string" or type(item2) ~= "string" then return item1 == item2 end
-	local pattern = "|Hitem:(%d*):(%d*):(%d*):(%d*):(%d*):(%d*):(%d*):%d*:%d*:%d*"
-	local replacement = "|Hitem:%1:%2:%3:%4:%5:%6:%7:::" -- Compare link with uniqueId, linkLevel and SpecID removed
+	item1 = self.Utils:GetItemStringFromLink(item1)
+	item2 = self.Utils:GetItemStringFromLink(item2)
+	local pattern = "item:(%d*):(%d*):(%d*):(%d*):(%d*):(%d*):(%d*):%d*:%d*:%d*"
+	local replacement = "item:%1:%2:%3:%4:%5:%6:%7:::" -- Compare link with uniqueId, linkLevel and SpecID removed
 	return item1:gsub(pattern, replacement) == item2:gsub(pattern, replacement)
 end
 
