@@ -6,7 +6,7 @@
 		- IDEA Change popups so they only hide on award/probably add the error message to it.
 
 		- "Moveable" rows in buttons/responses options.
-		- Changeable chatwindow output.
+		- Changeable chatwindow output. 
 
 	Backwards compability breaks:
 		- Remove equipLoc, subType, texture from lootTable. They can all be created with GetItemInfoInstant()
