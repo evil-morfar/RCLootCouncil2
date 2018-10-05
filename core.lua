@@ -1981,6 +1981,7 @@ function RCLootCouncil:OnEvent(event, ...)
 					return self:OnEvent("LOOT_SLOT_CLEARED", k), self:OnEvent("LOOT_CLOSED")
 				end
 				self:SendCommand("group", "fakeLoot", info.link, info.guid)
+
 				return
 			end
 			i = k -- Only update if we have items
@@ -2016,7 +2017,7 @@ function RCLootCouncil:OnEvent(event, ...)
 		self:Debug("Event:", event, ...)
 		if not IsInInstance() then return end -- Don't do anything out of instances
 		if GetNumLootItems() <= 0 then return end-- In case when function rerun, loot window is closed.
-
+		wipe(self.lootSlotInfo)
 		self.lootOpen = true
 		for i = 1,  GetNumLootItems() do
 			if LootSlotHasItem(i) then
