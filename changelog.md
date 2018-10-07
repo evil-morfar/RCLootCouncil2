@@ -1,3 +1,9 @@
+### v2.9.2
+---
+###### Bugfixes
+* *Fixed issue with dropdown menus that had sneaked in at the last minute.*
+
+
 ### v2.9.1
 ---
 

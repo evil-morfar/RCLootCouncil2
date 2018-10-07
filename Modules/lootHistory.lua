@@ -51,10 +51,10 @@ function LootHistory:OnInitialize()
 		{name = L["Reason"],	width = 220, comparesort = self.ResponseSort,  sortnext = 2},							-- Response aka the text supplied to lootDB...response
 		{name = "",				width = ROW_HEIGHT},																					-- Delete button
 	}
-	filterMenu = CreateFrame("Frame", "RCLootCouncil_LootHistory_FilterMenu", UIParent, "Lib_UIDropDownMenuTemplate")
-	rightClickMenu = CreateFrame("Frame", "RCLootCouncil_LootHistory_RightclickMenu", UIParent, "Lib_UIDropDownMenuTemplate")
-	Lib_UIDropDownMenu_Initialize(filterMenu, self.FilterMenu, "MENU")
-	Lib_UIDropDownMenu_Initialize(rightClickMenu, self.RightClickMenu, "MENU")
+	filterMenu = CreateFrame("Frame", "RCLootCouncil_LootHistory_FilterMenu", UIParent, "L_UIDropDownMenuTemplate")
+	rightClickMenu = CreateFrame("Frame", "RCLootCouncil_LootHistory_RightclickMenu", UIParent, "L_UIDropDownMenuTemplate")
+	L_UIDropDownMenu_Initialize(filterMenu, self.FilterMenu, "MENU")
+	L_UIDropDownMenu_Initialize(rightClickMenu, self.RightClickMenu, "MENU")
 	--MoreInfo
 	self.moreInfo = CreateFrame( "GameTooltip", "RCLootHistoryMoreInfo", nil, "GameTooltipTemplate" )
 end
@@ -577,7 +577,7 @@ function LootHistory:GetFrame()
 					self:UpdateMoreInfo(rowFrame, cellFrame, data, cols, row, realrow, column, table, button, ...)
 				elseif button == "RightButton" then
 					rightClickMenu.datatable = data[realrow]
-					Lib_ToggleDropDownMenu(1,nil,rightClickMenu,cellFrame,0,0)
+					L_ToggleDropDownMenu(1,nil,rightClickMenu,cellFrame,0,0)
 				end
 			end
 			return false
@@ -666,9 +666,9 @@ function LootHistory:GetFrame()
 	-- Filter
 	local b4 = addon:CreateButton(_G.FILTER, f.content)
 	b4:SetPoint("RIGHT", f.importBtn, "LEFT", -10, 0)
-	b4:SetScript("OnClick", function(self) Lib_ToggleDropDownMenu(1, nil, filterMenu, self, 0, 0) end )
+	b4:SetScript("OnClick", function(self) L_ToggleDropDownMenu(1, nil, filterMenu, self, 0, 0) end )
 	f.filter = b4
-	Lib_UIDropDownMenu_Initialize(b4, self.FilterMenu)
+	L_UIDropDownMenu_Initialize(b4, self.FilterMenu)
 	f.filter:SetSize(125,25) -- Needs extra convincing to stay at 25px height
 
 	-- Export selection (AceGUI-3.0)
@@ -871,7 +871,7 @@ end
 -- @section Dropdowns.
 ---------------------------------------------------
 function LootHistory.FilterMenu(menu, level)
-	local info = Lib_UIDropDownMenu_CreateInfo()
+	local info = L_UIDropDownMenu_CreateInfo()
 	if level == 1 then -- Redundant
 		-- Build the data table:
 		local data = {["STATUS"] = true, ["PASS"] = true, ["AUTOPASS"] = true}
@@ -886,8 +886,8 @@ function LootHistory.FilterMenu(menu, level)
 		info.isTitle = true
 		info.notCheckable = true
 		info.disabled = true
-		Lib_UIDropDownMenu_AddButton(info, level)
-		info = Lib_UIDropDownMenu_CreateInfo()
+		L_UIDropDownMenu_AddButton(info, level)
+		info = L_UIDropDownMenu_CreateInfo()
 
 		for k in ipairs(data) do -- Make sure normal responses are on top
 			info.text = addon:GetResponse("default",k).text
@@ -898,7 +898,7 @@ function LootHistory.FilterMenu(menu, level)
 				LootHistory:Update()
 			end
 			info.checked = db.modules["RCLootHistory"].filters[k]
-			Lib_UIDropDownMenu_AddButton(info, level)
+			L_UIDropDownMenu_AddButton(info, level)
 		end
 		for k in pairs(data) do -- A bit redundency, but it makes sure these "specials" comes last
 			if type(k) == "string" then
@@ -915,7 +915,7 @@ function LootHistory.FilterMenu(menu, level)
 					LootHistory:Update()
 				end
 				info.checked = db.modules["RCLootHistory"].filters[k]
-				Lib_UIDropDownMenu_AddButton(info, level)
+				L_UIDropDownMenu_AddButton(info, level)
 			end
 		end
 	end
@@ -974,13 +974,13 @@ LootHistory.rightClickEntries = {
 -- NOTE Changing e.g. a tier token item's response to a non-tier token response is possible display wise,
 -- but it will retain it's tier token tag, and vice versa. Can't decide whether it's a feature or bug.
 function LootHistory.RightClickMenu(menu, level)
-	local info = Lib_UIDropDownMenu_CreateInfo()
+	local info = L_UIDropDownMenu_CreateInfo()
 	local data = menu.datatable
 
-	local value = _G.LIB_UIDROPDOWNMENU_MENU_VALUE
+	local value = _G.L_UIDROPDOWNMENU_MENU_VALUE
 	if not LootHistory.rightClickEntries[level] then return end
 	for i, entry in ipairs(LootHistory.rightClickEntries[level]) do
-		info = Lib_UIDropDownMenu_CreateInfo()
+		info = L_UIDropDownMenu_CreateInfo()
 		if not entry.special then
 			if not entry.onValue or entry.onValue == value then
 				if not (entry.hidden and type(entry.hidden) == "function" and entry.hidden(data.name, data)) or not entry.hidden then
@@ -993,7 +993,7 @@ function LootHistory.RightClickMenu(menu, level)
 							info[name] = val
 						end
 					end
-					Lib_UIDropDownMenu_AddButton(info, level)
+					L_UIDropDownMenu_AddButton(info, level)
 				end
 			end
 
@@ -1054,7 +1054,7 @@ function LootHistory.RightClickMenu(menu, level)
 					LootHistory.frame.st:SortData()
 					addon:SendMessage("RCHistory_NameEdit", data)
 				end
-				Lib_UIDropDownMenu_AddButton(info, level)
+				L_UIDropDownMenu_AddButton(info, level)
 			end
 		elseif value == "EDIT_RESPONSE" and entry.special == value then
 			local v;
@@ -1077,7 +1077,7 @@ function LootHistory.RightClickMenu(menu, level)
 					LootHistory.frame.st:SortData()
 					addon:SendMessage("RCHistory_ResponseEdit", data)
 				end
-				Lib_UIDropDownMenu_AddButton(info, level)
+				L_UIDropDownMenu_AddButton(info, level)
 			end
 
 			if addon.debug then
@@ -1097,7 +1097,7 @@ function LootHistory.RightClickMenu(menu, level)
 							data.cols[6].args = {color = entry.color, response = entry.response, responseID = k}
 							LootHistory.frame.st:SortData()
 						end
-						Lib_UIDropDownMenu_AddButton(info, level)
+						L_UIDropDownMenu_AddButton(info, level)
 					end
 				end
 			end
@@ -1122,7 +1122,7 @@ function LootHistory.RightClickMenu(menu, level)
 					LootHistory.frame.st:SortData()
 					addon:SendMessage("RCHistory_ResponseEdit", data)
 				end
-				Lib_UIDropDownMenu_AddButton(info, level)
+				L_UIDropDownMenu_AddButton(info, level)
 			end
 		end
 	end
