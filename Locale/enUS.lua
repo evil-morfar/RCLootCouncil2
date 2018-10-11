@@ -475,6 +475,8 @@ L["You must select a target"] = true
 L["You're already running a session."] = true
 L["Your note:"] = true
 
+L["chat_cmd_add_invalid_owner"] = "The player %s was either invalid or not a candidate."
+
 L["error_test_as_non_leader"] = "You cannot initiate a test while in a group without being the group leader."
 L["trade_complete_message"] = "%s traded %s to %s."
 L["trade_wrongwinner_message"] = "WARNING: %s traded %s to %s instead of %s!"

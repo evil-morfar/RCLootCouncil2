@@ -1,3 +1,17 @@
+### v2.9.3
+---
+* **Loot Status**  
+* Added a display of whom have looted the boss to the voting frame.
+
+
+* **Add command**
+* The "/rc add" command have been extended to optionally include a player name.
+* Simply type the name of a group member before any items you add.
+* Unless invalid, that player will be added as the owner of the item, which will allow the TradeUI to do it's thing.
+* Note: You must add a space after the player name.
+
+
+
 ### v2.9.2
 ---
 ###### Bugfixes
