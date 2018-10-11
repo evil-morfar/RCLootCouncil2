@@ -6,7 +6,7 @@
 		- IDEA Change popups so they only hide on award/probably add the error message to it.
 
 		- "Moveable" rows in buttons/responses options.
-		- Changeable chatwindow output. 
+		- Changeable chatwindow output.
 
 	Backwards compability breaks:
 		- Remove equipLoc, subType, texture from lootTable. They can all be created with GetItemInfoInstant()
@@ -1077,7 +1077,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 				self.lootStatus[guid].num = self.lootStatus[guid].num + 1
 				self.lootStatus[guid].candidates[self:UnitName(sender)] = true
 				if self:IsCouncil(self.playerName) then -- Only councilmen has the voting frame
-					--self:GetActiveModule("votingframe"):UpdateLootStatus()
+					self:GetActiveModule("votingframe"):UpdateLootStatus()
 				end
 
 			elseif command == "fakeLoot" then
@@ -1087,7 +1087,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 				self.lootStatus[guid].num = self.lootStatus[guid].num + 1
 				self.lootStatus[guid].fake[self:UnitName(sender)] = link
 				if self:IsCouncil(self.playerName) then
-					--self:GetActiveModule("votingframe"):UpdateLootStatus()
+					self:GetActiveModule("votingframe"):UpdateLootStatus()
 				end
 			end
 		else
