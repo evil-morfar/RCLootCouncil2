@@ -65,7 +65,7 @@ local function createNewButtonSet(path, name, order)
 	for i = 1, addon.db.profile.buttons[name].numButtons do
 		addon.db.profile.responses[name][i].sort = i -- Sort is static, just set it
 		path[name].args["button"..i] = {
-			order = i * 3 + 1,
+			order = i * 5 + 1,
 			name = L["Button"].." "..i,
 			desc = format(L["Set the text on button 'number'"], i),
 			type = "input",
@@ -74,7 +74,7 @@ local function createNewButtonSet(path, name, order)
 			hidden = function() return addon.db.profile.buttons[name].numButtons < i end,
 		}
 		path[name].args["picker"..i] = {
-			order = i * 3 + 2,
+			order = i * 5 + 2,
 			name = L["Response color"],
 			desc = L["response_color_desc"],
 			type = "color",
@@ -83,13 +83,53 @@ local function createNewButtonSet(path, name, order)
 			hidden = function() return addon.db.profile.buttons[name].numButtons < i end,
 		}
 		path[name].args["text"..i] = {
-			order = i * 3 + 3,
+			order = i * 5 + 3,
 			name = L["Response"],
 			desc = format(L["Set the text for button i's response."], i),
 			type = "input",
 			get = function() return addon.db.profile.responses[name][i].text end,
 			set = function(info, value) addon:ConfigTableChanged("responses"); addon.db.profile.responses[name][i].text = tostring(value) end,
 			hidden = function() return addon.db.profile.buttons[name].numButtons < i end,
+		}
+		-- Move Up/Down buttons
+		path[name].args["move_up"..i] = {
+			order = i * 5 + 4,
+			name = "Move Up",
+			desc = "Click to move this response up",
+			type = "execute",
+			width = 0.1,
+			icon = "Interface\\Buttons\\UI-ScrollBar-ScrollUpButton-Up",
+			disabled = function() return i == 1 end, -- Disable the top button
+			func = function()
+				-- We basically need to switch two variables, this up, and the former up down.
+				-- Variables: addon.db.profile.responses[name] + addon.db.profile.buttons[name]
+				-- Temp store this data
+				local tempBtn = addon.db.profile.buttons[name][i]
+				local tempResponse = addon.db.profile.responses[name][i]
+				-- Move i - 1 down to i
+				addon.db.profile.buttons[name][i] = addon.db.profile.buttons[name][i - 1]
+				addon.db.profile.responses[name][i] = addon.db.profile.responses[name][i - 1]
+				-- And move the temp up
+				addon.db.profile.buttons[name][i - 1] = tempBtn
+				addon.db.profile.responses[name][i - 1] = tempResponse
+			end,
+		}
+		path[name].args["move_down"..i] = {
+			order = i * 5 + 4,
+			name = "Move Down",
+			desc = "Click to move this response down",
+			type = "execute",
+			width = 0.1,
+			icon = "Interface\\Buttons\\UI-ScrollBar-ScrollDownButton-Up",
+			disabled = function() return i == addon.db.profile.buttons[name].numButtons end, -- Disable the bottom button
+			func = function()
+				local tempBtn = addon.db.profile.buttons[name][i]
+				local tempResponse = addon.db.profile.responses[name][i]
+				addon.db.profile.buttons[name][i] = addon.db.profile.buttons[name][i + 1]
+				addon.db.profile.responses[name][i] = addon.db.profile.responses[name][i + 1]
+				addon.db.profile.buttons[name][i + 1] = tempBtn
+				addon.db.profile.responses[name][i + 1] = tempResponse
+			end,
 		}
 	end
 end
@@ -1465,11 +1505,12 @@ function addon:OptionsTable()
 		},
 	}
 	-- #region Create options thats made with loops
+	-- NOTE Kind of redundant, but the createNewButtonSet() was created with groups in mind, not the default buttons
 	-- Buttons
 	local button, picker, text = {}, {}, {}
-	for i = 1, self.db.profile.maxButtons do
+	for i = 1, self.db.profile.buttons.default.numButtons do
 		button = {
-			order = i * 3 + 1,
+			order = i * 5 + 1,
 			name = L["Button"].." "..i,
 			desc = format(L["Set the text on button 'number'"], i),
 			type = "input",
@@ -1479,7 +1520,7 @@ function addon:OptionsTable()
 		}
 		options.args.mlSettings.args.buttonsTab.args.buttonOptions.args["button"..i] = button;
 		picker = {
-			order = i * 3 + 2,
+			order = i * 5 + 2,
 			name = L["Response color"],
 			desc = L["response_color_desc"],
 			type = "color",
@@ -1489,7 +1530,7 @@ function addon:OptionsTable()
 		}
 		options.args.mlSettings.args.buttonsTab.args.buttonOptions.args["picker"..i] = picker;
 		text = {
-			order = i * 3 + 3,
+			order = i * 5 + 3,
 			name = L["Response"],
 			desc = format(L["Set the text for button i's response."], i),
 			type = "input",
@@ -1498,6 +1539,45 @@ function addon:OptionsTable()
 			hidden = function() return self.db.profile.buttons.default.numButtons < i end,
 		}
 		options.args.mlSettings.args.buttonsTab.args.buttonOptions.args["text"..i] = text;
+		options.args.mlSettings.args.buttonsTab.args.buttonOptions.args["move_up"..i] = {
+			order = i * 5 + 4,
+			name = "Move Up",
+			desc = "Click to move this response up",
+			type = "execute",
+			width = 0.1,
+			icon = "Interface\\Buttons\\UI-ScrollBar-ScrollUpButton-Up",
+			disabled = function() return i == 1 end, -- Disable the top button
+			func = function()
+				-- We basically need to switch two variables, this up, and the former up down.
+				-- Variables: addon.db.profile.responses[name] + addon.db.profile.buttons[name]
+				-- Temp store this data
+				local tempBtn = self.db.profile.buttons[name][i]
+				local tempResponse = self.db.profile.responses[name][i]
+				-- Move i - 1 down to i
+				self.db.profile.buttons.default[i] = self.db.profile.buttons.default[i - 1]
+				self.db.profile.responses.default[i] = self.db.profile.responses.default[i - 1]
+				-- And move the temp up
+				self.db.profile.buttons.default[i - 1] = tempBtn
+				self.db.profile.responses.default[i - 1] = tempResponse
+			end,
+		}
+		options.args.mlSettings.args.buttonsTab.args.buttonOptions.args["move_down"..i] = {
+			order = i * 5 + 4,
+			name = "Move Down",
+			desc = "Click to move this response down",
+			type = "execute",
+			width = 0.1,
+			icon = "Interface\\Buttons\\UI-ScrollBar-ScrollDownButton-Up",
+			disabled = function() return i == self.db.profile.buttons.default.numButtons end,
+			func = function()
+				local tempBtn = self.db.profile.buttons[name][i]
+				local tempResponse = self.db.profile.responses[name][i]
+				self.db.profile.buttons.default[i] = self.db.profile.buttons.default[i + 1]
+				self.db.profile.responses.default[i] = self.db.profile.responses.default[i + 1]
+				self.db.profile.buttons.default[i + 1] = tempBtn
+				self.db.profile.responses.default[i + 1] = tempResponse
+			end,
+		}
 
 		local whisperKeys = {
 			order = i + 3,
