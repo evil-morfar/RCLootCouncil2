@@ -1639,8 +1639,8 @@ do
 				end
 			elseif value == "CHANGE_RESPONSE" and entry.special == value then
 				local v;
-				for i = 1, db.buttons.default.numButtons do
-					v = db.responses.default[i]
+				for i = 1, addon:GetNumButtons(lootTable[session].equipLoc) do
+					v = addon:GetResponse(lootTable[session].equipLoc, i)
 					info.text = v.text
 					info.colorCode = "|cff"..addon:RGBToHex(unpack(v.color))
 					info.notCheckable = true
