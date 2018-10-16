@@ -94,8 +94,8 @@ local function createNewButtonSet(path, name, order)
 		-- Move Up/Down buttons
 		path[name].args["move_up"..i] = {
 			order = i * 5 + 4,
-			name = "Move Up",
-			desc = "Click to move this response up",
+			name = L["Move Up"],
+			desc = L["opt_moveResponseUp_desc"],
 			type = "execute",
 			width = 0.1,
 			icon = "Interface\\Buttons\\UI-ScrollBar-ScrollUpButton-Up",
@@ -116,8 +116,8 @@ local function createNewButtonSet(path, name, order)
 		}
 		path[name].args["move_down"..i] = {
 			order = i * 5 + 4,
-			name = "Move Down",
-			desc = "Click to move this response down",
+			name = L["Move Down"],
+			desc = L["opt_moveResponseDown_desc"],
 			type = "execute",
 			width = 0.1,
 			icon = "Interface\\Buttons\\UI-ScrollBar-ScrollDownButton-Up",
@@ -1541,8 +1541,8 @@ function addon:OptionsTable()
 		options.args.mlSettings.args.buttonsTab.args.buttonOptions.args["text"..i] = text;
 		options.args.mlSettings.args.buttonsTab.args.buttonOptions.args["move_up"..i] = {
 			order = i * 5 + 4,
-			name = "Move Up",
-			desc = "Click to move this response up",
+			name = L["Move Up"],
+			desc = L["opt_moveResponseUp_desc"],
 			type = "execute",
 			width = 0.1,
 			icon = "Interface\\Buttons\\UI-ScrollBar-ScrollUpButton-Up",
@@ -1563,8 +1563,8 @@ function addon:OptionsTable()
 		}
 		options.args.mlSettings.args.buttonsTab.args.buttonOptions.args["move_down"..i] = {
 			order = i * 5 + 4,
-			name = "Move Down",
-			desc = "Click to move this response down",
+			name = L["Move Down"],
+			desc = L["opt_moveResponseDown_desc"],
 			type = "execute",
 			width = 0.1,
 			icon = "Interface\\Buttons\\UI-ScrollBar-ScrollDownButton-Up",
@@ -1642,8 +1642,8 @@ function addon:OptionsTable()
 		}
 		options.args.mlSettings.args.awardsTab.args.awardReasons.args["moveUp"..i] = {
 			order = i + 1.4,
-			name = "Move Up",
-			desc = "Click to move this response up",
+			name = L["Move Up"],
+			desc = L["opt_moveResponseUp_desc"],
 			type = "execute",
 			width = 0.1,
 			icon = "Interface\\Buttons\\UI-ScrollBar-ScrollUpButton-Up",
@@ -1658,8 +1658,8 @@ function addon:OptionsTable()
 		}
 		options.args.mlSettings.args.awardsTab.args.awardReasons.args["moveDown"..i] = {
 			order = i + 1.5,
-			name = "Move Down",
-			desc = "Click to move this response down",
+			name = L["Move Down"],
+			desc = L["opt_moveResponseDown_desc"],
 			type = "execute",
 			width = 0.1,
 			icon = "Interface\\Buttons\\UI-ScrollBar-ScrollDownButton-Up",
