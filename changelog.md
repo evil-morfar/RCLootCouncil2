@@ -1,3 +1,11 @@
+* Added the owner of an item to the Loot History.
+
+###### Dev
+* Changed parameters in ml_core `TrackAndLogLoot`.
+* Updated fields in `history_table` in said function.
+
+
+
 ### v2.9.3
 ---
 * **Loot Status**  
