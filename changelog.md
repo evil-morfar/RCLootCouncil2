@@ -1,4 +1,6 @@
 * Added the owner of an item to the Loot History.
+* The owner has also been added to .csv and .tsv exports.
+* Note: Only items awarded after this release has their owners tracked.
 
 ###### Dev
 * Changed parameters in ml_core `TrackAndLogLoot`.

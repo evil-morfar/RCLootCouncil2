@@ -295,6 +295,7 @@ L["open"] = true
 L["open_the_loot_history_desc"] = "Click to open the Loot History."
 L["Opens the synchronizer"] = true
 L["Out of instance"] = true
+L["Original Owner"] = true
 L["Patch"] = true
 L["Personal Loot - Non tradeable"] = true
 L["Personal Loot - Rejected Trade"] = true
