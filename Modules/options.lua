@@ -1593,7 +1593,7 @@ function addon:OptionsTable()
 	end
 
 	-- Award Reasons
-	for i = 1, self.db.profile.maxAwardReasons do
+	for i = 1, self.db.profile.numAwardReasons do
 		options.args.mlSettings.args.awardsTab.args.awardReasons.args["reason"..i] = {
 			order = i+1,
 			name = L["Reason"]..i,
@@ -1639,6 +1639,38 @@ function addon:OptionsTable()
 				self.db.profile.disenchant = val
 			end,
 			hidden = function() return self.db.profile.numAwardReasons < i end,
+		}
+		options.args.mlSettings.args.awardsTab.args.awardReasons.args["moveUp"..i] = {
+			order = i + 1.4,
+			name = "Move Up",
+			desc = "Click to move this response up",
+			type = "execute",
+			width = 0.1,
+			icon = "Interface\\Buttons\\UI-ScrollBar-ScrollUpButton-Up",
+			disabled = function() return i == 1 end, -- Disable the top button
+			func = function()
+				local tempResponse = self.db.profile.awardReasons[i]
+				-- Move i - 1 down to i
+				self.db.profile.awardReasons[i] = self.db.profile.awardReasons[i - 1]
+				-- And move the temp up
+				self.db.profile.awardReasons[i - 1] = tempResponse
+			end,
+		}
+		options.args.mlSettings.args.awardsTab.args.awardReasons.args["moveDown"..i] = {
+			order = i + 1.5,
+			name = "Move Down",
+			desc = "Click to move this response down",
+			type = "execute",
+			width = 0.1,
+			icon = "Interface\\Buttons\\UI-ScrollBar-ScrollDownButton-Up",
+			disabled = function() return i == self.db.profile.numAwardReasons end, -- Disable the bottom button
+			func = function()
+				local tempResponse = self.db.profile.awardReasons[i]
+				-- Move i - 1 down to i
+				self.db.profile.awardReasons[i] = self.db.profile.awardReasons[i + 1]
+				-- And move the temp up
+				self.db.profile.awardReasons[i + 1] = tempResponse
+			end,
 		}
 	end
 	-- Announce Channels
