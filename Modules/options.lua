@@ -100,7 +100,7 @@ local function createNewButtonSet(path, name, order)
 			type = "execute",
 			width = 0.1,
 			image = "Interface\\Buttons\\UI-ScrollBar-ScrollUpButton-Up",
-			disabled = function(info) printtable(info.option); return i == 1 end, -- Disable the top button
+			disabled = function(info) return i == 1 end, -- Disable the top button
 			func = function()
 				-- We basically need to switch two variables, this up, and the former up down.
 				-- Variables: addon.db.profile.responses[name] + addon.db.profile.buttons[name]
