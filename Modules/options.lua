@@ -77,6 +77,7 @@ local function createNewButtonSet(path, name, order)
 			order = i * 5 + 2,
 			name = L["Response color"],
 			desc = L["response_color_desc"],
+			width = 0.8,
 			type = "color",
 			get = function() return unpack(addon.db.profile.responses[name][i].color or {1,1,1,1})	end,
 			set = function(info,r,g,b,a) addon:ConfigTableChanged("responses"); addon.db.profile.responses[name][i].color = {roundColors(r,g,b,a)} end,
@@ -94,12 +95,12 @@ local function createNewButtonSet(path, name, order)
 		-- Move Up/Down buttons
 		path[name].args["move_up"..i] = {
 			order = i * 5 + 4,
-			name = L["Move Up"],
+			name = "",
 			desc = L["opt_moveResponseUp_desc"],
 			type = "execute",
 			width = 0.1,
-			icon = "Interface\\Buttons\\UI-ScrollBar-ScrollUpButton-Up",
-			disabled = function() return i == 1 end, -- Disable the top button
+			image = "Interface\\Buttons\\UI-ScrollBar-ScrollUpButton-Up",
+			disabled = function(info) printtable(info.option); return i == 1 end, -- Disable the top button
 			func = function()
 				-- We basically need to switch two variables, this up, and the former up down.
 				-- Variables: addon.db.profile.responses[name] + addon.db.profile.buttons[name]
@@ -115,12 +116,12 @@ local function createNewButtonSet(path, name, order)
 			end,
 		}
 		path[name].args["move_down"..i] = {
-			order = i * 5 + 4,
-			name = L["Move Down"],
+			order = i * 5 + 4.1,
+			name = "", --L["Move Down"],
 			desc = L["opt_moveResponseDown_desc"],
 			type = "execute",
 			width = 0.1,
-			icon = "Interface\\Buttons\\UI-ScrollBar-ScrollDownButton-Up",
+			image = "Interface\\Buttons\\UI-ScrollBar-ScrollDownButton-Up",
 			disabled = function() return i == addon.db.profile.buttons[name].numButtons end, -- Disable the bottom button
 			func = function()
 				local tempBtn = addon.db.profile.buttons[name][i]
@@ -1523,6 +1524,7 @@ function addon:OptionsTable()
 			order = i * 5 + 2,
 			name = L["Response color"],
 			desc = L["response_color_desc"],
+			width = 0.8,
 			type = "color",
 			get = function() return unpack(self.db.profile.responses.default[i].color)	end,
 			set = function(info,r,g,b,a) addon:ConfigTableChanged("responses"); self.db.profile.responses.default[i].color = {roundColors(r,g,b,a)} end,
@@ -1541,18 +1543,17 @@ function addon:OptionsTable()
 		options.args.mlSettings.args.buttonsTab.args.buttonOptions.args["text"..i] = text;
 		options.args.mlSettings.args.buttonsTab.args.buttonOptions.args["move_up"..i] = {
 			order = i * 5 + 4,
-			name = L["Move Up"],
-			desc = L["opt_moveResponseUp_desc"],
+			name = "",
 			type = "execute",
 			width = 0.1,
-			icon = "Interface\\Buttons\\UI-ScrollBar-ScrollUpButton-Up",
+			image = "Interface\\Buttons\\UI-ScrollBar-ScrollUpButton-Up",
 			disabled = function() return i == 1 end, -- Disable the top button
 			func = function()
 				-- We basically need to switch two variables, this up, and the former up down.
 				-- Variables: addon.db.profile.responses[name] + addon.db.profile.buttons[name]
 				-- Temp store this data
-				local tempBtn = self.db.profile.buttons[name][i]
-				local tempResponse = self.db.profile.responses[name][i]
+				local tempBtn = self.db.profile.buttons.default[i]
+				local tempResponse = self.db.profile.responses.default[i]
 				-- Move i - 1 down to i
 				self.db.profile.buttons.default[i] = self.db.profile.buttons.default[i - 1]
 				self.db.profile.responses.default[i] = self.db.profile.responses.default[i - 1]
@@ -1562,16 +1563,15 @@ function addon:OptionsTable()
 			end,
 		}
 		options.args.mlSettings.args.buttonsTab.args.buttonOptions.args["move_down"..i] = {
-			order = i * 5 + 4,
-			name = L["Move Down"],
-			desc = L["opt_moveResponseDown_desc"],
+			order = i * 5 + 4.1,
+			name = "",
 			type = "execute",
 			width = 0.1,
-			icon = "Interface\\Buttons\\UI-ScrollBar-ScrollDownButton-Up",
+			image = "Interface\\Buttons\\UI-ScrollBar-ScrollDownButton-Up",
 			disabled = function() return i == self.db.profile.buttons.default.numButtons end,
 			func = function()
-				local tempBtn = self.db.profile.buttons[name][i]
-				local tempResponse = self.db.profile.responses[name][i]
+				local tempBtn = self.db.profile.buttons.default[i]
+				local tempResponse = self.db.profile.responses.default[i]
 				self.db.profile.buttons.default[i] = self.db.profile.buttons.default[i + 1]
 				self.db.profile.responses.default[i] = self.db.profile.responses.default[i + 1]
 				self.db.profile.buttons.default[i + 1] = tempBtn
@@ -1620,7 +1620,7 @@ function addon:OptionsTable()
 			name = L["Log"],
 			desc = L["log_desc"],
 			type = "toggle",
-			width = "half",
+			width = 0.4,
 			get = function() return self.db.profile.awardReasons[i].log end,
 			set = function() self.db.profile.awardReasons[i].log = not self.db.profile.awardReasons[i].log end,
 			hidden = function() return self.db.profile.numAwardReasons < i end,
@@ -1630,6 +1630,7 @@ function addon:OptionsTable()
 			name = _G.ROLL_DISENCHANT,
 			desc = L["disenchant_desc"],
 			type = "toggle",
+			width = 0.8,
 			get = function() return self.db.profile.awardReasons[i].disenchant end,
 			set = function(info, val)
 				for k,v in ipairs(self.db.profile.awardReasons) do
@@ -1642,11 +1643,10 @@ function addon:OptionsTable()
 		}
 		options.args.mlSettings.args.awardsTab.args.awardReasons.args["moveUp"..i] = {
 			order = i + 1.4,
-			name = L["Move Up"],
-			desc = L["opt_moveResponseUp_desc"],
+			name = "",
 			type = "execute",
 			width = 0.1,
-			icon = "Interface\\Buttons\\UI-ScrollBar-ScrollUpButton-Up",
+			image = "Interface\\Buttons\\UI-ScrollBar-ScrollUpButton-Up",
 			disabled = function() return i == 1 end, -- Disable the top button
 			func = function()
 				local tempResponse = self.db.profile.awardReasons[i]
@@ -1658,11 +1658,10 @@ function addon:OptionsTable()
 		}
 		options.args.mlSettings.args.awardsTab.args.awardReasons.args["moveDown"..i] = {
 			order = i + 1.5,
-			name = L["Move Down"],
-			desc = L["opt_moveResponseDown_desc"],
+			name = "",
 			type = "execute",
 			width = 0.1,
-			icon = "Interface\\Buttons\\UI-ScrollBar-ScrollDownButton-Up",
+			image = "Interface\\Buttons\\UI-ScrollBar-ScrollDownButton-Up",
 			disabled = function() return i == self.db.profile.numAwardReasons end, -- Disable the bottom button
 			func = function()
 				local tempResponse = self.db.profile.awardReasons[i]
