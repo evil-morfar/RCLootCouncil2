@@ -10,6 +10,10 @@
 * Unless invalid, that player will be added as the owner of the item, which will allow the TradeUI to do it's thing.
 * Note: You must add a space after the player name.
 
+* **Moveable buttons options**
+* Buttons and responses can now be moved up/down in the options menu to easily change their order.
+* This can also be done on the "Award Reasons".
+
 
 
 ### v2.9.2
