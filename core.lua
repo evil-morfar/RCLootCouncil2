@@ -5,7 +5,6 @@
 	Things marked with "todo"
 		- IDEA Change popups so they only hide on award/probably add the error message to it.
 
-		- "Moveable" rows in buttons/responses options.
 		- Changeable chatwindow output.
 
 	Backwards compability breaks:
