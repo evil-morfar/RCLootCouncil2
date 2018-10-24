@@ -1279,7 +1279,7 @@ function RCLootCouncilML:TrackAndLogLoot(winner, link, responseID, boss, reason,
 	if not (db.sendHistory or db.enableHistory) then return end -- No reason to do stuff when we won't use it
 	if addon.testMode and not addon.nnp then return end -- We shouldn't track testing awards.
 	local equipLoc = self.lootTable[session] and self.lootTable[session].equipLoc or "default"
-	local response = addon:GetRespose(equipLoc, responseID)
+	local response = addon:GetResponse(equipLoc, responseID)
 	local instanceName, _, difficultyID, difficultyName, _,_,_,mapID, groupSize = GetInstanceInfo()
 	addon:Debug("ML:TrackAndLogLoot()", winner, link, responseID, boss, reason, session, candData)
 	history_table["lootWon"] 		= link
@@ -1288,8 +1288,8 @@ function RCLootCouncilML:TrackAndLogLoot(winner, link, responseID, boss, reason,
 	history_table["instance"] 		= instanceName.."-"..difficultyName
 	history_table["boss"] 			= boss or _G.UNKNOWN
 	history_table["votes"] 			= candData and candData.votes
-	history_table["itemReplaced1"]= candData and candData.gear1
-	history_table["itemReplaced2"]= candData and candData.gear2
+	history_table["itemReplaced1"]= (candData and candData.gear1) and select(2,GetItemInfo(candData.gear1))
+	history_table["itemReplaced2"]= (candData and candData.gear2) and select(2,GetItemInfo(candData.gear2))
 	history_table["response"] 		= reason and reason.text or response.text
 	history_table["responseID"] 	= responseID or reason.sort - 400 														-- Changed in v2.0 (reason responseID was 0 pre v2.0)
 	history_table["color"]			= reason and reason.color or response.color											-- New in v2.0
@@ -1306,12 +1306,12 @@ function RCLootCouncilML:TrackAndLogLoot(winner, link, responseID, boss, reason,
 	history_table["owner"]			= self.lootTable[session] and self.lootTable[session].owner or winner		-- New in v2.9+.
 	historyCounter = historyCounter + 1
 
-	addon:SendMessage("RCMLLootHistorySend", history_table, name, item, responseID, boss, votes, itemReplaced1, itemReplaced2, reason, isToken, tokenRoll, relicRoll, note)
+	addon:SendMessage("RCMLLootHistorySend", history_table, winner, responseID, boss, reason, session, candData)
 
 	if db.sendHistory then -- Send it, and let comms handle the logging
-		addon:SendCommand("group", "history", name, history_table)
+		addon:SendCommand("group", "history", winner, history_table)
 	elseif db.enableHistory then -- Just log it
-		addon:SendCommand("player", "history", name, history_table)
+		addon:SendCommand("player", "history", winner, history_table)
 	end
 	local toRet = history_table
 	history_table = {} -- wipe to ensure integrety

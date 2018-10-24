@@ -4,7 +4,7 @@
 
 ###### Dev
 * Changed parameters in ml_core `TrackAndLogLoot`.
-* Updated fields in `history_table` in said function.
+* Updated fields in `history_table` in said function, along with `RCMLLootHistorySend` message.
 
 
 
