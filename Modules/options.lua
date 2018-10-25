@@ -96,7 +96,6 @@ local function createNewButtonSet(path, name, order)
 		path[name].args["move_up"..i] = {
 			order = i * 5 + 4,
 			name = "",
-			desc = L["opt_moveResponseUp_desc"],
 			type = "execute",
 			width = 0.1,
 			image = "Interface\\Buttons\\UI-ScrollBar-ScrollUpButton-Up",
@@ -118,7 +117,6 @@ local function createNewButtonSet(path, name, order)
 		path[name].args["move_down"..i] = {
 			order = i * 5 + 4.1,
 			name = "", --L["Move Down"],
-			desc = L["opt_moveResponseDown_desc"],
 			type = "execute",
 			width = 0.1,
 			image = "Interface\\Buttons\\UI-ScrollBar-ScrollDownButton-Up",
