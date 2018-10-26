@@ -4,7 +4,7 @@
 --[[ TODOs/Notes
 	Things marked with "todo"
 		- IDEA Change popups so they only hide on award/probably add the error message to it.
-
+		- Trade status in TradeUI
 		- Changeable chatwindow output.
 
 	Backwards compability breaks:
