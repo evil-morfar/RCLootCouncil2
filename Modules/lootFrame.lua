@@ -15,7 +15,6 @@ local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 local entries = {}
 local ENTRY_HEIGHT = 80
 local MAX_ENTRIES = 5
-local numRolled = 0
 local MIN_BUTTON_WIDTH = 40
 
 local sessionsWaitingRollResultQueue = {}
@@ -62,9 +61,9 @@ function LootFrame:CheckDuplicates (lenght, offset)
 		if not self.items[k].rolled then
 			for j = offset+1, offset + lenght do
 				if j ~= k and addon:ItemIsItem(self.items[k].link, self.items[j].link) and not self.items[j].rolled then
+					addon:Debug("LootFrame:", self.items[k].link, "is a dublicate of", self.items[j].link)
 					tinsert(self.items[k].sessions, self.items[j].sessions[1])
 					self.items[j].rolled = true -- Pretend we have rolled it.
-					numRolled = numRolled + 1
 				end
 			end
 		end
@@ -85,7 +84,6 @@ function LootFrame:Start(table, reRoll)
 	for k = 1, #table do
 		if table[k].autopass then
 			self.items[offset+k] = { rolled = true} -- it's autopassed, so pretend we rolled it
-			numRolled = numRolled + 1
 		else
 			self:AddItem(offset, k, table[k], reRoll)
 		end
@@ -99,7 +97,6 @@ function LootFrame:AddSingleItem(item)
 	addon:DebugLog("LootFrame:AddSingleItem", item.link, #self.items)
 	if item.autopass then
 		self.items[#self.items+1] = { rolled = true}
-		numRolled = numRolled + 1
 	else
 		if not self:IsEnabled() then self:Enable() end
 		self:AddItem(0, #self.items + 1, item)
@@ -128,7 +125,6 @@ function LootFrame:OnDisable()
 		end
 	end
 	self.items = {}
-	numRolled = 0
 	self:CancelAllTimers()
 end
 
@@ -142,10 +138,6 @@ end
 --end
 
 function LootFrame:Update()
-	addon:Debug("NumRolled:", numRolled, "#items:", #self.items)
-	if numRolled >= #self.items then -- We're through them all, so hide the frame
-		return self:Disable()
-	end
 	local width = 150
 	local numEntries = 0
 	for _,item in ipairs(self.items) do
@@ -154,6 +146,9 @@ function LootFrame:Update()
 			numEntries = numEntries + 1
 			self.EntryManager:GetEntry(item)
 		end
+	end
+	if numEntries == 0 then
+		return self:Disable()
 	end
 	self.EntryManager:Update()
 	self.frame.content:SetHeight(numEntries * ENTRY_HEIGHT + 7)
@@ -184,7 +179,6 @@ function LootFrame:OnRoll(entry, button)
 			addon:Print(string.format(L["Response to 'item'"], addon:GetItemTextWithCount(item.link, #item.sessions))..
 				": "..addon:GetResponse(item.equipLoc, button).text)
 		end
-		numRolled = numRolled + 1
 		item.rolled = true
 		self.EntryManager:Trash(entry)
 		self:Update()
@@ -200,7 +194,6 @@ function LootFrame:OnRoll(entry, button)
 			-- Hide the frame later
 		else
 			-- When frame is roll type, and we choose to not roll, do nothing.
-			numRolled = numRolled + 1
 			item.rolled = true
 			self.EntryManager:Trash(entry)
 			self:Update()
@@ -616,7 +609,6 @@ end
 function LootFrame:OnRollTimeout(entryInQueue)
 	tDeleteItem(sessionsWaitingRollResultQueue, entryInQueue)
 	local entry = entryInQueue.entry
-	numRolled = numRolled + 1
 	entry.item.rolled = true
 	self.EntryManager:Trash(entry)
 	self:Update()
