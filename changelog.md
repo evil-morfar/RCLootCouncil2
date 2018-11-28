@@ -1,3 +1,10 @@
+### v2.9.4
+---
+###### Bugfixes
+* *Fixed issue with loot frame disappearing after rolling for just one item. (#377)*
+
+
+
 ### v2.9.3
 ---
 * **Loot Status**  
