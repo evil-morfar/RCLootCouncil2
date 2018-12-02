@@ -867,7 +867,7 @@ function RCVotingFrame:GetFrame()
 end
 
 function RCVotingFrame:UpdateLootStatus()
-	if not next(addon.lootStatus) then return end -- Might not have any data
+	if not next(addon.lootStatus) or not self.frame then return end -- Might not have any data
 	-- Find out which guid we're working with
 	local id, max = 0, 0
 	for k,v in pairs(addon.lootStatus) do
