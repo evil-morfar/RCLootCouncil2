@@ -4,11 +4,6 @@
 -- Create Date : 3/11/2013 10:25:13 PM
 -- Update Date : 12/18/2017 (7.3.2 Build 25549)
 
---@debug@
-if LibDebug then LibDebug() end
---@end-debug@
-
---@debug@
 -- This function is used for developer.
 -- Export all POTENTIAL tokens. Manual modification is still required.
 -- Only support Engish client
@@ -20,7 +15,7 @@ local tokenIlvls = {}
 
 -- The params are used internally inside this function
 function RCLootCouncil:ExportTokenData(nextID)
-	if not nextID then 
+	if not nextID then
 		nextID = 1
 		self:Print("Exporting the data of all potential token.\n"
 			.."This command is intended to be run by the developer.\n"
@@ -894,7 +889,7 @@ _G.RCTokenIlvl = {
 	[67430] = 372,	-- Gauntlets of the Forlorn Protector,
 	[67431] = 372,	-- Gauntlets of the Forlorn Vanquisher,
 
---[[ Comment out because the 4th return of GetItemInfo() matches the real ilvl	
+--[[ Comment out because the 4th return of GetItemInfo() matches the real ilvl
 	-- Tier 12 - 16
 	[71668] = 378,	-- Helm of the Fiery Vanquisher,
 	[71669] = 391,	-- Gauntlets of the Fiery Vanquisher,

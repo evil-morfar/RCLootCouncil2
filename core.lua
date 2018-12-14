@@ -37,9 +37,6 @@
 		StartHandleLoot 			- Sent whenever RCLootCouncil starts handling loot.
 		StopHandleLoot				- Sent whenever RCLootCouncil stops handling loot.
 ]]
---@debug@
---if LibDebug then LibDebug() end
---@end-debug@
 
 -- GLOBALS: GetLootMethod, GetAddOnMetadata, UnitClass
 

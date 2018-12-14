@@ -3,10 +3,6 @@
 -- @author Potdisc
 -- Create Date : 12/15/2014 8:55:10 PM
 
---@debug@
-if LibDebug then LibDebug() end
---@end-debug@
-
 local addon = LibStub("AceAddon-3.0"):GetAddon("RCLootCouncil")
 local RCVersionCheck = addon:NewModule("RCVersionCheck", "AceTimer-3.0", "AceComm-3.0", "AceHook-3.0")
 local ST = LibStub("ScrollingTable")

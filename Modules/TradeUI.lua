@@ -3,10 +3,6 @@
 -- @author Potdisc
 -- Create Date : 28/5/2018 16:48:38
 
---@debug@
-if LibDebug then LibDebug() end
---@end-debug@
-
 local addon = LibStub("AceAddon-3.0"):GetAddon("RCLootCouncil")
 local TradeUI = addon:NewModule("RCTradeUI", "AceComm-3.0", "AceEvent-3.0", "AceTimer-3.0")
 addon.TradeUI = TradeUI -- Shorthand for easier access

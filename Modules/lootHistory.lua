@@ -3,10 +3,6 @@
 -- @author Potdisc
 -- Create Date : 8/6/2015
 
---@debug@
-if LibDebug then LibDebug() end
---@end-debug@
-
 local addon = LibStub("AceAddon-3.0"):GetAddon("RCLootCouncil")
 local LootHistory = addon:NewModule("RCLootHistory")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")

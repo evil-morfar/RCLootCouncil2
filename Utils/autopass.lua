@@ -2,10 +2,6 @@
 -- @author	Potdisc
 -- Create Date : 23/9/2016
 
---@debug@
-if LibDebug then LibDebug() end
---@end-debug@
-
 --- Never autopass these armor types.
 -- @table autopassOverride
 local autopassOverride = {
