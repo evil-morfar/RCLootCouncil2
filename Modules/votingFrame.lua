@@ -650,7 +650,7 @@ function RCVotingFrame:GetFrame()
 				if button == "RightButton" and row then
 					if active then
 						menuFrame.name = data[realrow].name
-						L_ToggleDropDownMenu(1, nil, menuFrame, cellFrame, 0, 0);
+						MSA_ToggleDropDownMenu(1, nil, menuFrame, cellFrame, 0, 0);
 					else
 						addon:Print(L["You cannot use the menu when the session has ended."])
 					end
@@ -789,7 +789,7 @@ function RCVotingFrame:GetFrame()
 	-- Filter
 	local b3 = addon:CreateButton(_G.FILTER, f.content)
 	b3:SetPoint("RIGHT", b1, "LEFT", -10, 0)
-	b3:SetScript("OnClick", function(self) L_ToggleDropDownMenu(1, nil, filterMenu, self, 0, 0) end )
+	b3:SetScript("OnClick", function(self) MSA_ToggleDropDownMenu(1, nil, filterMenu, self, 0, 0) end )
 	b3:SetScript("OnEnter", function() addon:CreateTooltip(L["Deselect responses to filter them"]) end)
 	b3:SetScript("OnLeave", function() addon:HideTooltip() end)
 	f.filter = b3
@@ -797,7 +797,7 @@ function RCVotingFrame:GetFrame()
 	-- Disenchant button
 	local b4 = addon:CreateButton(_G.ROLL_DISENCHANT, f.content)
 	b4:SetPoint("RIGHT", b3, "LEFT", -10, 0)
-	b4:SetScript("OnClick", function(self) L_ToggleDropDownMenu(1, nil, enchanters, self, 0, 0) end )
+	b4:SetScript("OnClick", function(self) MSA_ToggleDropDownMenu(1, nil, enchanters, self, 0, 0) end )
 	--b4:SetNormalTexture("Interface\\Icons\\INV_Enchant_Disenchant")
 --	b4:Hide() -- hidden by default
 	f.disenchant = b4
@@ -1371,8 +1371,8 @@ do
 	function RCVotingFrame.rennaounceOrRequestRollCreateCategoryButton(category)
 		return
 		{ -- 3 Reannounce (and request rolls) to candidate
-			onValue = function() return _G.MSA_DropDownMenu_MENU_VALUE == "REANNOUNCE" or _G.MSA_DropDownMenu_MENU_VALUE == "REQUESTROLL" end,
-			value = function() return _G.MSA_DropDownMenu_MENU_VALUE.."_"..category end,
+			onValue = function() return _G.MSA_DROPDOWNMENU_MENU_VALUE == "REANNOUNCE" or _G.MSA_DROPDOWNMENU_MENU_VALUE == "REQUESTROLL" end,
+			value = function() return _G.MSA_DROPDOWNMENU_MENU_VALUE.."_"..category end,
 			text = function(candidateName) return RCVotingFrame.reannounceOrRequestRollText(candidateName, category) end,
 			notCheckable = true,
 			hasArrow = true,
@@ -1380,22 +1380,22 @@ do
 	end
 	-- The text of level2 and header of level 3 button of rennaounce (and request roll)
 	--@param category: Used for level2 text to determine what text to shown.
-	-- Level 3 text used the value of MSA_DropDownMenu_MENU_VALUE to determine what to show
+	-- Level 3 text used the value of MSA_DROPDOWNMENU_MENU_VALUE to determine what to show
 	function RCVotingFrame.reannounceOrRequestRollText(candidateName, category)
-		if type(MSA_DropDownMenu_MENU_VALUE) ~= "string" then return end
+		if type(MSA_DROPDOWNMENU_MENU_VALUE) ~= "string" then return end
 
 		local text = ""
-		if category == "CANDIDATE" or MSA_DropDownMenu_MENU_VALUE:find("_CANDIDATE$") then
+		if category == "CANDIDATE" or MSA_DROPDOWNMENU_MENU_VALUE:find("_CANDIDATE$") then
 			text = addon:GetUnitClassColoredName(candidateName)
-		elseif category == "GROUP" or MSA_DropDownMenu_MENU_VALUE:find("_GROUP$") then
+		elseif category == "GROUP" or MSA_DROPDOWNMENU_MENU_VALUE:find("_GROUP$") then
 			text = _G.FRIENDS_FRIENDS_CHOICE_EVERYONE
-		elseif category == "ROLL" or MSA_DropDownMenu_MENU_VALUE:find("_ROLL$") then
+		elseif category == "ROLL" or MSA_DROPDOWNMENU_MENU_VALUE:find("_ROLL$") then
 			text = _G.ROLL..": "..(lootTable[session].candidates[candidateName].roll or "")
-		elseif category == "RESPONSE" or MSA_DropDownMenu_MENU_VALUE:find("_RESPONSE$") then
+		elseif category == "RESPONSE" or MSA_DROPDOWNMENU_MENU_VALUE:find("_RESPONSE$") then
 			text = L["Response"]..": ".."|cff"..(addon:RGBToHex(unpack(addon:GetResponse(lootTable[session].equipLoc, lootTable[session].candidates[candidateName].response).color))
 			or "ffffff")..(addon:GetResponse(lootTable[session].equipLoc, lootTable[session].candidates[candidateName].response).text or "").."|r"
 		else
-			addon:Debug("Unexpected category or dropdown menu value: "..tostring(category).." ,"..tostring(MSA_DropDownMenu_MENU_VALUE))
+			addon:Debug("Unexpected category or dropdown menu value: "..tostring(category).." ,"..tostring(MSA_DROPDOWNMENU_MENU_VALUE))
 		end
 
 		return text
@@ -1405,10 +1405,10 @@ do
 		return (a and b) or (not a and not b)
 	end
 	-- Do reannounce (and request rolls)
-	-- whether request rolls, and who to reannounce is determined by the value of MSA_DropDownMenu_MENU_VALUE
+	-- whether request rolls, and who to reannounce is determined by the value of MSA_DROPDOWNMENU_MENU_VALUE
 	--@param isThisItem true to reannounce on this item, false to reannounce on all items.
 	function RCVotingFrame.reannounceOrRequestRollButton(candidateName, isThisItem)
-		if type(MSA_DropDownMenu_MENU_VALUE) ~= "string" then return end
+		if type(MSA_DROPDOWNMENU_MENU_VALUE) ~= "string" then return end
 		local namePred, sesPred
 		if isThisItem then
 			sesPred = function(k) return k==session or (not lootTable[k].awarded and addon:ItemIsItem(lootTable[k].link, lootTable[session].link)) end
@@ -1416,24 +1416,24 @@ do
 			sesPred = function(k) return not lootTable[k].awarded end
 		end
 
-		local isRoll = _G.MSA_DropDownMenu_MENU_VALUE:find("^REQUESTROLL") and true or false
+		local isRoll = _G.MSA_DROPDOWNMENU_MENU_VALUE:find("^REQUESTROLL") and true or false
 		local text = ""
 
 		local announceInChat = false
-		if MSA_DropDownMenu_MENU_VALUE:find("_CANDIDATE$") then
+		if MSA_DROPDOWNMENU_MENU_VALUE:find("_CANDIDATE$") then
 			namePred = candidateName
-		elseif MSA_DropDownMenu_MENU_VALUE:find("_GROUP$") then
+		elseif MSA_DROPDOWNMENU_MENU_VALUE:find("_GROUP$") then
 			announceInChat = true -- Announce in chat when announce to group
 			namePred = true
-		elseif MSA_DropDownMenu_MENU_VALUE:find("_ROLL$") then
+		elseif MSA_DROPDOWNMENU_MENU_VALUE:find("_ROLL$") then
 			namePred = function(name) return lootTable[session].candidates[name].roll == lootTable[session].candidates[candidateName].roll end
-		elseif MSA_DropDownMenu_MENU_VALUE:find("_RESPONSE$") then
+		elseif MSA_DROPDOWNMENU_MENU_VALUE:find("_RESPONSE$") then
 			namePred = function(name) return lootTable[session].candidates[name].response == lootTable[session].candidates[candidateName].response end
 	 	else
-			addon:Debug("Unexpected dropdown menu value: "..tostring(MSA_DropDownMenu_MENU_VALUE))
+			addon:Debug("Unexpected dropdown menu value: "..tostring(MSA_DROPDOWNMENU_MENU_VALUE))
 		end
 
-		local noAutopass = isThisItem and MSA_DropDownMenu_MENU_VALUE:find("_CANDIDATE$") and true or false
+		local noAutopass = isThisItem and MSA_DROPDOWNMENU_MENU_VALUE:find("_CANDIDATE$") and true or false
 
 		if isThisItem then
 			RCVotingFrame:ReannounceOrRequestRoll(namePred, sesPred, isRoll, noAutopass, announceInChat)
@@ -1467,7 +1467,7 @@ do
 		Any value can be a function, which will be evaluated on creation. Functions gets candidateName and data (the data belonging to the candidate) as parameters.
 		The func field also gets candidateName and data as params, but gets delivered as a function to the dropdown.
 		There's three special fields to enable this kind of structure:
-			onValue :String 				- This entry will only be shown if MSA_DropDownMenu_MENU_VALUE matches onValue. This enables nesting.
+			onValue :String 				- This entry will only be shown if MSA_DROPDOWNMENU_MENU_VALUE matches onValue. This enables nesting.
 			hidden  :boolean/function 	- The entry is only shown if this is false.
 			special :String 				- Handles a couple of special cases that wasn't too suitable for the orignal creating (#lazy)
 								 				- Cases: AWARD_FOR, CHANGE_RESPONSE, TIER_TOKENS
@@ -1547,8 +1547,8 @@ do
 		},
 		{ -- Level 3
 			{ -- 1 Header text of reannounce (and request rolls)
-				onValue = function() return type(_G.MSA_DropDownMenu_MENU_VALUE)=="string" and
-					(MSA_DropDownMenu_MENU_VALUE:find("^REQUESTROLL") or MSA_DropDownMenu_MENU_VALUE:find("^REANNOUNCE"))
+				onValue = function() return type(_G.MSA_DROPDOWNMENU_MENU_VALUE)=="string" and
+					(MSA_DROPDOWNMENU_MENU_VALUE:find("^REQUESTROLL") or MSA_DROPDOWNMENU_MENU_VALUE:find("^REANNOUNCE"))
 				end,
 				text = function(candidateName) return RCVotingFrame.reannounceOrRequestRollText(candidateName) end,
 				notCheckable = true,
@@ -1558,11 +1558,11 @@ do
 				end,
 			},
 			{ -- 2 This item
-				onValue = function() return type(_G.MSA_DropDownMenu_MENU_VALUE)=="string" and
-					(MSA_DropDownMenu_MENU_VALUE:find("^REQUESTROLL") or MSA_DropDownMenu_MENU_VALUE:find("^REANNOUNCE"))
+				onValue = function() return type(_G.MSA_DROPDOWNMENU_MENU_VALUE)=="string" and
+					(MSA_DROPDOWNMENU_MENU_VALUE:find("^REQUESTROLL") or MSA_DROPDOWNMENU_MENU_VALUE:find("^REANNOUNCE"))
 				end,
 				text = function()
-					if type(_G.MSA_DropDownMenu_MENU_VALUE)=="string" and MSA_DropDownMenu_MENU_VALUE:find("^REQUESTROLL") then
+					if type(_G.MSA_DROPDOWNMENU_MENU_VALUE)=="string" and MSA_DROPDOWNMENU_MENU_VALUE:find("^REQUESTROLL") then
 						return L["This item"].." ("..REQUEST_ROLL..")"
 					else
 						return L["This item"]
@@ -1573,12 +1573,12 @@ do
 					return RCVotingFrame.reannounceOrRequestRollButton(candidateName, true)
 				end,
 			},{ -- 3 All unawarded items, only shown for "candidate" and "group" reannounce
-				onValue = function() return type(_G.MSA_DropDownMenu_MENU_VALUE)=="string" and
-					(MSA_DropDownMenu_MENU_VALUE:find("^REQUESTROLL") or MSA_DropDownMenu_MENU_VALUE:find("^REANNOUNCE")) and
-					(MSA_DropDownMenu_MENU_VALUE:find("_CANDIDATE$") or MSA_DropDownMenu_MENU_VALUE:find("_GROUP$"))
+				onValue = function() return type(_G.MSA_DROPDOWNMENU_MENU_VALUE)=="string" and
+					(MSA_DROPDOWNMENU_MENU_VALUE:find("^REQUESTROLL") or MSA_DROPDOWNMENU_MENU_VALUE:find("^REANNOUNCE")) and
+					(MSA_DROPDOWNMENU_MENU_VALUE:find("_CANDIDATE$") or MSA_DROPDOWNMENU_MENU_VALUE:find("_GROUP$"))
 				end,
 				text = function()
-					if type(_G.MSA_DropDownMenu_MENU_VALUE)=="string" and MSA_DropDownMenu_MENU_VALUE:find("^REQUESTROLL") then
+					if type(_G.MSA_DROPDOWNMENU_MENU_VALUE)=="string" and MSA_DROPDOWNMENU_MENU_VALUE:find("^REQUESTROLL") then
 						return L["All unawarded items"].." ("..REQUEST_ROLL..")"
 					else
 						return L["All unawarded items"]
@@ -1588,11 +1588,6 @@ do
 				func = function(candidateName)
 					return RCVotingFrame.reannounceOrRequestRollButton(candidateName, false)
 				end,
-			},{ -- 4 Tier Tokens
-				special = "TIER_TOKENS",
-			},
-			{ -- 5 Relics
-				special = "RELICS",
 			},
 		},
 		-- More levels can be added with tinsert(RCVotingFrame.rightClickEntries, {-- new level})
@@ -1605,7 +1600,7 @@ do
 		local candidateName = menu.name
 		local data = lootTable[session].candidates[candidateName] -- Shorthand
 
-		local value = _G.MSA_DropDownMenu_MENU_VALUE
+		local value = _G.MSA_DROPDOWNMENU_MENU_VALUE
 		for i, entry in ipairs(RCVotingFrame.rightClickEntries[level]) do
 			info = MSA_DropDownMenu_CreateInfo()
 			if not entry.special then
@@ -1668,46 +1663,6 @@ do
 					end
 				end
 				info = MSA_DropDownMenu_CreateInfo()
-				-- Add the tier menu
-				if db.tierButtonsEnabled then
-					info.text = L["Tier Tokens ..."]
-					info.value = "TIER_TOKENS"
-					info.hasArrow = true
-					info.notCheckable = true
-					MSA_DropDownMenu_AddButton(info, level)
-				end
-				-- And relics
-				if db.relicButtonsEnabled then
-					info.text = _G.INVTYPE_RELIC.." ..."
-					info.value = "RELICS"
-					info.hasArrow = true
-					info.notCheckable = true
-					MSA_DropDownMenu_AddButton(info, level)
-				end
-
-			elseif value == "TIER_TOKENS" and entry.special == value then
-				for k,v in ipairs(db.responses.tier) do
-					if k > db.tierNumButtons then break end
-					info.text = v.text
-					info.colorCode = "|cff"..addon:RGBToHex(unpack(v.color))
-					info.notCheckable = true
-					info.func = function()
-							addon:SendCommand("group", "change_response", session, candidateName, k, true)
-					end
-					MSA_DropDownMenu_AddButton(info, level)
-				end
-
-			elseif value == "RELICS" and entry.special == value then
-				for k,v in ipairs(db.responses.relic) do
-					if k > db.relicNumButtons then break end
-					info.text = v.text
-					info.colorCode = "|cff"..addon:RGBToHex(unpack(v.color))
-					info.notCheckable = true
-					info.func = function()
-							addon:SendCommand("group", "change_response", session, candidateName, k, false, true)
-					end
-					MSA_DropDownMenu_AddButton(info, level)
-				end
 			end
 		end
 	end
@@ -1796,7 +1751,7 @@ do
 			info.value = "FILTER_RANK"
 			MSA_DropDownMenu_AddButton(info, level)
 		elseif level == 2 then
-			if MSA_DropDownMenu_MENU_VALUE == "FILTER_RANK" then
+			if MSA_DROPDOWNMENU_MENU_VALUE == "FILTER_RANK" then
 				info = MSA_DropDownMenu_CreateInfo()
 				if IsInGuild() then
 					for k = 1, GuildControlGetNumRanks() do

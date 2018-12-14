@@ -573,7 +573,7 @@ function LootHistory:GetFrame()
 					self:UpdateMoreInfo(rowFrame, cellFrame, data, cols, row, realrow, column, table, button, ...)
 				elseif button == "RightButton" then
 					rightClickMenu.datatable = data[realrow]
-					L_ToggleDropDownMenu(1,nil,rightClickMenu,cellFrame,0,0)
+					MSA_ToggleDropDownMenu(1,nil,rightClickMenu,cellFrame,0,0)
 				end
 			end
 			return false
@@ -662,7 +662,7 @@ function LootHistory:GetFrame()
 	-- Filter
 	local b4 = addon:CreateButton(_G.FILTER, f.content)
 	b4:SetPoint("RIGHT", f.importBtn, "LEFT", -10, 0)
-	b4:SetScript("OnClick", function(self) L_ToggleDropDownMenu(1, nil, filterMenu, self, 0, 0) end )
+	b4:SetScript("OnClick", function(self) MSA_ToggleDropDownMenu(1, nil, filterMenu, self, 0, 0) end )
 	f.filter = b4
 	MSA_DropDownMenu_Initialize(b4, self.FilterMenu)
 	f.filter:SetSize(125,25) -- Needs extra convincing to stay at 25px height
@@ -973,7 +973,7 @@ function LootHistory.RightClickMenu(menu, level)
 	local info = MSA_DropDownMenu_CreateInfo()
 	local data = menu.datatable
 
-	local value = _G.MSA_DropDownMenu_MENU_VALUE
+	local value = _G.MSA_DROPDOWNMENU_MENU_VALUE
 	if not LootHistory.rightClickEntries[level] then return end
 	for i, entry in ipairs(LootHistory.rightClickEntries[level]) do
 		info = MSA_DropDownMenu_CreateInfo()
