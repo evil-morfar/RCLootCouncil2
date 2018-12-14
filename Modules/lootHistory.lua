@@ -1,4 +1,4 @@
-MSA_DropDownMenu--- lootHistory.lua	Adds the interface for displaying the collected loot history.
+--- lootHistory.lua	Adds the interface for displaying the collected loot history.
 -- DefaultModule
 -- @author Potdisc
 -- Create Date : 8/6/2015
