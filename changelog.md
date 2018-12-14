@@ -1,3 +1,10 @@
+### v2.9.5
+---
+###### Bugfixes
+* *Fixed issue with fewer than default buttons not working properly (Git#172).*
+
+
+
 ### v2.9.4
 ---
 ###### Bugfixes
