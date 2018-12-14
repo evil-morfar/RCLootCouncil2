@@ -1,6 +1,7 @@
 ### v2.9.5
 ---
 * Updated .toc for patch 8.1
+* Added patch 8.1 as an option for Loot History mass deletion.
 
 ###### Bugfixes
 * *Fixed issue with fewer than default buttons not working properly (Git#172).*
