@@ -225,6 +225,7 @@ function RCLootCouncil:OnInitialize()
 			showSpecIcon = false,
 			sortItems = true, -- Sort sessions by item type and item level
 			rejectTrade = false, -- Can candidates choose not to give loot to the council
+			autoTrade = false,
 
 			UI = { -- stores all ui information
 				['**'] = { -- Defaults

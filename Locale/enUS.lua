@@ -80,6 +80,7 @@ L["Auto Pass Trinkets"] = true
 L["Auto pass BoE"] = true
 L["Auto Pass"] = true
 L["Auto Start"] = true
+L["Auto Trade"] = true
 L["Autostart isn't supported when testing"] = true
 L["auto_award_desc"] = "Activates Auto Award."
 L["auto_award_to_desc"] = "The player to Auto Award items to. A selectable list of raid members appear if you're in a raid group."
@@ -484,6 +485,7 @@ L["trade_item_to_trade_not_found"] = "WARNING: Item to trade: %s couldn't be fou
 
 
 L["opt_addButton_desc"] = "Add a new button group for the selected slot."
+L["opt_autoTrade_desc"] = "Check to automatically add awarded items to the trade window when trading with the winner. If disabled, you'll see a popup before items are added."
 L["opt_buttonsGroup_desc"] = "Options group for %s buttons and responses.\nSee above for a detailed explanation."
 L["opt_moreButtons_desc"] = "Add a new set of buttons for a specific gear slot. The most specific type is used, i.e. adding buttons for 'Head' and 'Azerite Armor' will make head type armor use the head buttons instead of azerite armor."
 L["opt_deleteDate_confirm"] = "Are you sure you want to delete everything older than the selected?\nThis cannot be undone."

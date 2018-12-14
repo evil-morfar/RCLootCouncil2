@@ -287,8 +287,14 @@ function addon:OptionsTable()
 								name = L["Frame options"],
 								inline = true,
 								args = {
-									showSpecIcon = {
+									autoTrade = {
 										order = 1,
+										name = L["Auto Trade"],
+										desc = L["opt_autoTrade_desc"],
+										type = "toggle",
+									},
+									showSpecIcon = {
+										order = 2,
 										name = L["Show Spec Icon"],
 										desc = L["show_spec_icon_desc"],
 										type = "toggle",

@@ -136,8 +136,11 @@ function TradeUI:OnEvent_TRADE_SHOW (event, ...)
    local count = self:GetNumAwardedInBagsToTradeWindow()
 
    if count > 0 then
-      -- TODO Make this optionally automatic
-      LibDialog:Spawn("RCLOOTCOUNCIL_TRADE_ADD_ITEM", {count=count})
+      if db.autoTrade then
+         self:AddAwardedInBagsToTradeWindow()
+      else
+         LibDialog:Spawn("RCLOOTCOUNCIL_TRADE_ADD_ITEM", {count=count})
+      end
    end
 end
 
