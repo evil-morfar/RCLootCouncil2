@@ -11,6 +11,7 @@ local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 local GuildRankSort
 local guildRanks = {}
 local highestVersion = "0.0.0"
+local listOfNames = {}
 
 function RCVersionCheck:OnInitialize()
 	-- Initialize scrollCols on self so others can change it
@@ -33,6 +34,7 @@ function RCVersionCheck:OnDisable()
 	self:Hide()
 	self:UnregisterAllComm()
 	self.frame.rows = {}
+	wipe(listOfNames)
 end
 
 function RCVersionCheck:Show()
@@ -50,7 +52,9 @@ function RCVersionCheck:OnCommReceived(prefix, serializedMsg, distri, sender)
 		local test, command, data = addon:Deserialize(serializedMsg)
 		if addon:HandleXRealmComms(self, command, data, sender) then return end
 		if test and command == "verTestReply" then
-			self:AddEntry(unpack(data))
+			if listOfNames[data[1]] then -- We only want to add those we've already queried 
+				self:AddEntry(unpack(data))
+			end
 		end
 	end
 end
@@ -123,6 +127,7 @@ function RCVersionCheck:AddEntry(name, class, guildRank, version, tVersion, modu
 			{ value = vVal or L["Waiting for response"],	color = self.GetVersionColor, colorargs = {self,version,tVersion}, DoCellUpdate = self.SetCellModules, args = modules},
 		},
 	})
+	listOfNames[name] = true
 	self:Update()
 end
 

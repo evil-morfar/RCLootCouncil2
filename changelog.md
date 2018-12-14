@@ -7,6 +7,8 @@
 * Added a new option that when enabled bypasses the trade popup and automatically adds items that should be traded.
 * This option is disabled by default.
 
+* The version checker now only shows eligible players at the time of the query *(For Bram)*.
+
 ###### Bugfixes
 * *Fixed issue with fewer than default buttons not working properly (Git#172).*
 * *Items would sometimes be marked as non-tradeable if the player already had a duplicate of the item (#379, #375).*
