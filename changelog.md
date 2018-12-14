@@ -3,6 +3,7 @@
 ###### Bugfixes
 * *Fixed issue with fewer than default buttons not working properly (Git#172).*
 * *Items would sometimes be marked as non-tradeable if the player already had a duplicate of the item (#379, #375).*
+* *Switched to MSA_DropDownMenu-1.0 to avoid errors with DropDownMenus (#376, #374, #366?, #361?).*
 
 
 
