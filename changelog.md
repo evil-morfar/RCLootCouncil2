@@ -3,11 +3,14 @@
 * Updated .toc for patch 8.1
 * Added patch 8.1 as an option for Loot History mass deletion.
 
+
 * **Auto Trade**
 * Added a new option that when enabled bypasses the trade popup and automatically adds items that should be traded.
 * This option is disabled by default.
 
+
 * The version checker now only shows eligible players at the time of the query *(For Bram)*.
+
 
 ###### Bugfixes
 * *Fixed issue with fewer than default buttons not working properly (Git#172).*
