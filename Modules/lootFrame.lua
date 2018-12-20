@@ -189,10 +189,11 @@ function LootFrame:OnRoll(entry, button)
 			entry.buttons[2]:Hide() -- Hide pass button
 			-- Hide the frame later
 		else
-			-- When frame is roll type, and we choose to not roll, do nothing.
+			-- When frame is roll type, and we choose to not roll, but send a "-"
 			item.rolled = true
 			self.EntryManager:Trash(entry)
 			self:Update()
+			addon:SendCommand("group", "roll", addon.playerName, "-", item.sessions)
 		end
 	end
 

@@ -4,6 +4,7 @@
 * Added a new indicator for when candidates fail to loot items due to full bags.
 * This is considered the same as "fake loot" for all intents and purposes.
 
+* Declining manual rolls is now displayed in the voting frame (#329).
 
 ### v2.9.5
 ---
