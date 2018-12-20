@@ -1067,19 +1067,19 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 			elseif command == "looted" then
 				local guid = unpack(data)
 				if not guid then return self:Debug("no guid in looted comm", guid, sender) end
-				if not self.lootStatus[guid] then self.lootStatus[guid] = {candidates = {}, fake = {}, num = 0} end
+				if not self.lootStatus[guid] then self.lootStatus[guid] = {candidates = {}, num = 0} end
 				self.lootStatus[guid].num = self.lootStatus[guid].num + 1
-				self.lootStatus[guid].candidates[self:UnitName(sender)] = true
+				self.lootStatus[guid].candidates[self:UnitName(sender)] = {status = "looted"}
 				if self:IsCouncil(self.playerName) then -- Only councilmen has the voting frame
 					self:GetActiveModule("votingframe"):UpdateLootStatus()
 				end
 
-			elseif command == "fakeLoot" then
+			elseif command == "fakeLoot" or command == "fullbags" then
 				local link, guid = unpack(data)
-				if not guid then return self:Debug("no guid in fakeLoot comm", guid, sender) end
-				if not self.lootStatus[guid] then self.lootStatus[guid] = {candidates = {}, fake = {}, num = 0} end
+				if not guid then return self:Debug(format("no guid in %s comm", command), guid, sender) end
+				if not self.lootStatus[guid] then self.lootStatus[guid] = {candidates = {}, num = 0} end
 				self.lootStatus[guid].num = self.lootStatus[guid].num + 1
-				self.lootStatus[guid].fake[self:UnitName(sender)] = link
+				self.lootStatus[guid].candidates[self:UnitName(sender)] = {status = command, item = link}
 				if self:IsCouncil(self.playerName) then
 					self:GetActiveModule("votingframe"):UpdateLootStatus()
 				end
@@ -1994,6 +1994,10 @@ function RCLootCouncil:OnEvent(event, ...)
 		local i = 0
 		for k, info in pairs(self.lootSlotInfo) do
 			if not info.isLooted and info.guid and info.link then
+				-- Check if we have room in bags
+				if self.Utils:GetNumFreeBagSlots() == 0 then
+					return self:SendCommand("group", "fullbags", info.link, info.guid)
+				end
 				if info.autoloot then -- We've looted the item without getting LOOT_SLOT_CLEARED, properly due to FastLoot addons
 					return self:OnEvent("LOOT_SLOT_CLEARED", k), self:OnEvent("LOOT_CLOSED")
 				end
