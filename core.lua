@@ -433,7 +433,6 @@ function RCLootCouncil:OnEnable()
 	self:RegisterEvent("PLAYER_REGEN_ENABLED", "LeaveCombat")
 	self:RegisterEvent("ENCOUNTER_START", "OnEvent")
 	self:RegisterEvent("ENCOUNTER_END", 	"OnEvent")
-	self:RegisterEvent("LOOT_OPENED",		"OnEvent")
 	self:RegisterEvent("LOOT_SLOT_CLEARED", "OnEvent")
 	self:RegisterEvent("LOOT_CLOSED",		"OnEvent")
 	self:RegisterEvent("LOOT_READY", "OnEvent")
@@ -1946,48 +1945,6 @@ function RCLootCouncil:OnEvent(event, ...)
 		self.bossName = select(2, ...) -- Extract encounter name
 		wipe(self.nonTradeables)
 
-	elseif event == "LOOT_OPENED" then
-		self:Debug("Event:", event, ...)
-		-- if not IsInInstance() then return end -- Don't do anything out of instances
-		-- -- self:Debug("GetUnitName:", GetUnitName("target"))
-		-- -- self:Debug("UnitGUID:", UnitGUID("target"))
-		-- if select(1, ...) ~= "scheduled" and self.LootOpenScheduled then return end -- When this function is scheduled to run again, but LOOT_OPENDED event fires, return.
-		-- self.LootOpenScheduled = false
-		-- wipe(self.lootSlotInfo)
-		-- if GetNumLootItems() <= 0 then return end-- In case when function rerun, loot window is closed.
-		--
-		-- self.lootOpen = true
-		-- for i = 1,  GetNumLootItems() do
-		-- 	if LootSlotHasItem(i) then
-		-- 		local texture, name, quantity, _, quality, _, isQuestItem = GetLootSlotInfo(i)
-		-- 		if texture then
-		-- 			local link = GetLootSlotLink(i)
-		-- 			local isCraftingReagent
-		-- 			if link then  -- Link is not present on coins
-		-- 				 isCraftingReagent = select(17, GetItemInfo(link))
-		-- 			end
-		-- 			if not (isQuestItem or isCraftingReagent) then -- Ignore quest and crafting items
-		-- 				self:Debug("Adding to self.lootSlotInfo",i,link, quality)
-		-- 				self.lootSlotInfo[i] = {
-		-- 					name = name,
-		-- 					link = link, -- This could be nil, if the item is money.
-		-- 					quantity = quantity,
-		-- 					quality = quality,
-		-- 					guid = self.Utils:ExtractCreatureID((GetLootSourceInfo(i))), -- Boss GUID
-		-- 					boss = (GetUnitName("target")),
-		-- 				}
-		-- 			end
-		-- 		else -- It's possible that item in the loot window is uncached. Retry in the next frame.
-		-- 			self:Debug("Loot uncached when the loot window is opened. Retry in the next frame.", link)
-		-- 			self.LootOpenScheduled = true
-		-- 			-- Must offer special argument as 2nd argument to indicate this is run from scheduler.
-		-- 			return self:ScheduleTimer("OnEvent", 0, "LOOT_OPENED", "scheduled")
-		-- 		end
-		-- 	end
-		-- end
-		-- if self.isMasterLooter then
-		-- 	self:GetActiveModule("masterlooter"):OnLootOpen()
-		-- end
 	elseif event == "LOOT_CLOSED" then
 		if not IsInInstance() then return end -- Don't do anything out of instances
 		self:Debug("Event:", event, ...)
@@ -2063,9 +2020,9 @@ function RCLootCouncil:OnEvent(event, ...)
 					end
 				else -- It's possible that item in the loot window is uncached. Retry in the next frame.
 					self:Debug("Loot uncached when the loot window is opened. Retry in the next frame.", name)
-					self.LootOpenScheduled = true
 					-- Must offer special argument as 2nd argument to indicate this is run from scheduler.
-					return self:ScheduleTimer("OnEvent", 0, "LOOT_OPENED", "scheduled")
+					-- REVIEW: 20/12-18: This actually hasn't been used for a long while - removing "scheduled" arg
+					return self:ScheduleTimer("OnEvent", 0, "LOOT_READY")
 				end
 			end
 		end
