@@ -2,7 +2,7 @@
 -- Contains loot specs of all trinkets in the dungeon journal
 -- @author Safetee
 -- Create Date : 12/03/2017
--- Update Date : 25/8/2018 (8.0.1 Build 27404)
+-- Update Date : 23/1/2019 (8.1.0 Build 29139)
 
 
 local ZERO = ""
@@ -31,10 +31,8 @@ Overall, 365002707767 shows the trinket is lootable by all specs using Strength 
 
 --]]
 local trinketSpecs = {
-	[151974] = "241000100024",	-- Manually added, because the item id of actual item does not match item id in EJ
 }
 local trinketNames = {
-	[151974] = "Eye of",
 }
 
 -- The params are used internally inside this function
@@ -1021,4 +1019,18 @@ _G.RCTrinketSpecs = {
 	[161472] = "092775070010",	-- Lion's Grace,                   	Intellect
 	[161473] = "365002007700",	-- Lion's Guile,                   	Agility
 	[161474] = "000000700067",	-- Lion's Strength,                	Strength
+-- Battle of Dazar'Alor
+	[165568] = "124002007700",	-- Invocation of Yu'lon,                           	Damage, Agility
+	[165569] = "082004030010",	-- Ward of Envelopment,                            	Healer
+	[165570] = "000000600043",	-- Everchill Anchor,                               	Damage, Strength
+	[165571] = "092775070010",	-- Incandescent Sliver,                            	Intellect
+	[165572] = "365002007700",	-- Variable Intensity Gigavolt Oscillating Reactor,	Agility
+	[165573] = "241000100024",	-- Diamond-Laced Refracting Prism,                 	Tank
+	[165574] = "000000600043",	-- Grong's Primal Rage,                            	Damage, Strength
+	[165576] = "010771040000",	-- Tidestorm Codex,                                	Damage, Intellect
+	[165577] = "241000100024",	-- Bwonsamdi's Bargain,                            	Tank
+	[165578] = "082004030010",	-- Mirror of Entwined Fate,                        	Healer
+	[165579] = "124002007700",	-- Kimbul's Razor Claw,                            	Damage, Agility
+	[165580] = "000000700067",	-- Ramping Amplitude Gigavolt Engine,              	Strength
+	[166418] = "092775070010",	-- Crest of Pa'ku,                                 	Intellect
 }
