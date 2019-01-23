@@ -49,9 +49,9 @@ function RCLootCouncil:ExportTrinketData(nextTier, nextIsRaid, nextIndex, nextDi
 	local TIME_FOR_EACH_INSTANCE_DIFF = 5
 
 	if not nextTier then
-		nextTier = 1
-		nextIsRaid = 0
-		nextIndex = 1
+		nextTier = 8
+		nextIsRaid = 1
+		nextIndex = 3
 		nextDiffID = 1
 		self:Print("Exporting the loot specs of all trinkets in the dungeon journal\n"
 			.."This command is intended to be run by the developer.\n"

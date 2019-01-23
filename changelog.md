@@ -1,3 +1,6 @@
+* Added trinkets from Battle of Dazar'Alor to the autopass list.
+
+
 ### v2.9.6
 ---
 * **Loot Status**  
