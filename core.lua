@@ -764,9 +764,9 @@ function RCLootCouncil:SendCommand(target, command, ...)
 
 	if target == "group" then
 		if IsInRaid() then -- Raid
-			self:SendCommMessage("RCLootCouncil", toSend, IsPartyLFG() and "INSTANCE_CHAT" or "RAID")
+			self:SendCommMessage("RCLootCouncil", toSend, self.Utils:IsInNonInstance() and "INSTANCE_CHAT" or "RAID")
 		elseif IsInGroup() then -- Party
-			self:SendCommMessage("RCLootCouncil", toSend, IsPartyLFG() and "INSTANCE_CHAT" or "PARTY")
+			self:SendCommMessage("RCLootCouncil", toSend, self.Utils:IsInNonInstance() and "INSTANCE_CHAT" or "PARTY")
 		else--if self.testMode then -- Alone (testing)
 			self:SendCommMessage("RCLootCouncil", toSend, "WHISPER", self.playerName)
 		end
@@ -787,7 +787,7 @@ function RCLootCouncil:SendCommand(target, command, ...)
 					-- See "RCLootCouncil:HandleXRealmComms()" for more info
 					toSend = self:Serialize("xrealm", {target, command, ...})
 					if GetNumGroupMembers() > 0 then -- We're in a group
-						self:SendCommMessage("RCLootCouncil", toSend, IsPartyLFG() and "INSTANCE_CHAT" or "RAID")
+						self:SendCommMessage("RCLootCouncil", toSend, self.Utils:IsInNonInstance() and "INSTANCE_CHAT" or "RAID")
 					else -- We're not, probably a guild verTest
 						self:SendCommMessage("RCLootCouncil", toSend, "GUILD")
 					end

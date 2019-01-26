@@ -19,6 +19,9 @@
 
 * Added trinkets from Battle of Dazar'Alor to the autopass list.
 
+###### Bugfixes
+* *Fixed "Not in raid" spam in Battlegrounds (#380).*
+
 ###### Dev
 * Changed parameters in ml_core `TrackAndLogLoot`.
 * Updated fields in `history_table` in said function, along with `RCMLLootHistorySend` message.
