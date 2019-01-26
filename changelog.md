@@ -1,6 +1,3 @@
-* Added trinkets from Battle of Dazar'Alor to the autopass list.
-
-
 ### v2.9.6
 ---
 * **Loot Status**  
@@ -8,6 +5,17 @@
 * This is considered the same as "fake loot" for all intents and purposes.
 
 * Declining manual rolls is now displayed in the voting frame (#329).
+
+* Added trinkets from Battle of Dazar'Alor to the autopass list.
+
+* Added the owner of an item to the Loot History.
+* The owner has also been added to .csv and .tsv exports.
+* Note: Only items awarded after this release has their owners tracked.
+
+###### Dev
+* Changed parameters in ml_core `TrackAndLogLoot`.
+* Updated fields in `history_table` in said function, along with `RCMLLootHistorySend` message.
+
 
 ### v2.9.5
 ---
@@ -34,17 +42,6 @@
 ---
 ###### Bugfixes
 * *Fixed issue with loot frame disappearing after rolling for just one item. (#377)*
-
-
-
-* Added the owner of an item to the Loot History.
-* The owner has also been added to .csv and .tsv exports.
-* Note: Only items awarded after this release has their owners tracked.
-
-###### Dev
-* Changed parameters in ml_core `TrackAndLogLoot`.
-* Updated fields in `history_table` in said function, along with `RCMLLootHistorySend` message.
-
 
 
 ### v2.9.3
