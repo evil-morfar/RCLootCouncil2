@@ -1253,7 +1253,7 @@ function RCLootCouncilML:AutoAward(lootIndex, item, quality, name, reason, boss)
 			if awarded then
 				addon:Print(format(L["Auto awarded 'item'"], item))
 				self:AnnounceAward(name, item, db.awardReasons[reason].text)
-				self:TrackAndLogLoot(name, item, reason, boss, 0, nil, nil, db.awardReasons[reason])
+				self:TrackAndLogLoot(name, item, reason, boss, db.awardReasons[reason])
 				return true
 			else
 				addon:Print(L["Cannot autoaward:"])
@@ -1269,46 +1269,46 @@ end
 
 local history_table = {}
 local historyCounter = 0 -- Used to generate history table entry unique id
-function RCLootCouncilML:TrackAndLogLoot(name, item, responseID, boss, votes, itemReplaced1, itemReplaced2, reason, isToken, tokenRoll, relicRoll, note)
+-- REVIEW Updated with recent changes in v2.9+.
+-- This should be refactored in v3.0 as several of the sources are no longer viable, and were ment to be used with ML.
+function RCLootCouncilML:TrackAndLogLoot(winner, link, responseID, boss, reason, session, candData)
 	if reason and not reason.log then return end -- Reason says don't log
 	if not (db.sendHistory or db.enableHistory) then return end -- No reason to do stuff when we won't use it
 	if addon.testMode and not addon.nnp then return end -- We shouldn't track testing awards.
-	local _, link,_,_,_,_,_,_,equipLoc = GetItemInfo(item)
-	local i1,i2
-	if itemReplaced1 then i1 = select(2, GetItemInfo(itemReplaced1)) end
-	if itemReplaced2 then i2 = select(2, GetItemInfo(itemReplaced2)) end
-	if not (link and (i1 or not itemReplaced1) and (i2 or not itemReplaced2)) then return self:ScheduleTimer("TrackAndLogLoot", 0, name, item, responseID, boss, votes, itemReplaced1, itemReplaced2, reason, isToken, tokenRoll, relicRoll, note) end
+	local equipLoc = self.lootTable[session] and self.lootTable[session].equipLoc or "default"
+	local response = addon:GetResponse(equipLoc, responseID)
 	local instanceName, _, difficultyID, difficultyName, _,_,_,mapID, groupSize = GetInstanceInfo()
-	addon:Debug("ML:TrackAndLogLoot()")
+	addon:Debug("ML:TrackAndLogLoot()", winner, link, responseID, boss, reason, session, candData)
 	history_table["lootWon"] 		= link
 	history_table["date"] 			= date("%d/%m/%y")
 	history_table["time"] 			= date("%H:%M:%S")
 	history_table["instance"] 		= instanceName.."-"..difficultyName
 	history_table["boss"] 			= boss or _G.UNKNOWN
-	history_table["votes"] 			= votes
-	history_table["itemReplaced1"]= i1
-	history_table["itemReplaced2"]= i2
-	history_table["response"] 		= reason and reason.text or addon:GetResponse(equipLoc,responseID).text
-	history_table["responseID"] 	= responseID or reason.sort - 400 															-- Changed in v2.0 (reason responseID was 0 pre v2.0)
-	history_table["color"]			= reason and reason.color or addon:GetResponse(equipLoc, responseID).color	-- New in v2.0
-	history_table["class"]			= self.candidates[name].class																-- New in v2.0
+	history_table["votes"] 			= candData and candData.votes
+	history_table["itemReplaced1"]= (candData and candData.gear1) and select(2,GetItemInfo(candData.gear1))
+	history_table["itemReplaced2"]= (candData and candData.gear2) and select(2,GetItemInfo(candData.gear2))
+	history_table["response"] 		= reason and reason.text or response.text
+	history_table["responseID"] 	= responseID or reason.sort - 400 														-- Changed in v2.0 (reason responseID was 0 pre v2.0)
+	history_table["color"]			= reason and reason.color or response.color											-- New in v2.0
+	history_table["class"]			= self.candidates[winner].class															-- New in v2.0
 	history_table["isAwardReason"]= reason and true or false																	-- New in v2.0
 	history_table["difficultyID"]	= difficultyID																					-- New in v2.3+
 	history_table["mapID"]			= mapID																							-- New in v2.3+
 	history_table["groupSize"]		= groupSize																						-- New in v2.3+
-	history_table["tierToken"]		= isToken																						-- New in v2.3+
-	history_table["tokenRoll"]		= tokenRoll																						-- New in v2.4+
-	history_table["relicRoll"]		= relicRoll																						-- New in v2.5+
-	history_table["note"]			= note																							-- New in v2.7+
+--	history_table["tierToken"]		= isToken																						-- New in v2.3+ - Removed v2.9
+--	history_table["tokenRoll"]		= tokenRoll																						-- New in v2.4+ - Removed v2.9
+--	history_table["relicRoll"]		= relicRoll																						-- New in v2.5+ - Removed v2.9
+	history_table["note"]			= candData and candData.note																-- New in v2.7+
 	history_table["id"]				= time(date("!*t")).."-"..historyCounter												-- New in v2.7+. A unique id for the history entry.
+	history_table["owner"]			= self.lootTable[session] and self.lootTable[session].owner or winner		-- New in v2.9+.
 	historyCounter = historyCounter + 1
 
-	addon:SendMessage("RCMLLootHistorySend", history_table, name, item, responseID, boss, votes, itemReplaced1, itemReplaced2, reason, isToken, tokenRoll, relicRoll, note)
+	addon:SendMessage("RCMLLootHistorySend", history_table, winner, responseID, boss, reason, session, candData)
 
 	if db.sendHistory then -- Send it, and let comms handle the logging
-		addon:SendCommand("group", "history", name, history_table)
+		addon:SendCommand("group", "history", winner, history_table)
 	elseif db.enableHistory then -- Just log it
-		addon:SendCommand("player", "history", name, history_table)
+		addon:SendCommand("player", "history", winner, history_table)
 	end
 	local toRet = history_table
 	history_table = {} -- wipe to ensure integrety
@@ -1520,8 +1520,7 @@ function RCLootCouncilML.AwardPopupOnClickYesCallback(awarded, session, winner, 
 		if oldHistory and oldHistory.id then -- Reaward, clear the old history entry
 			RCLootCouncilML:UnTrackAndLogLoot(oldHistory.id)
 		end
-		RCLootCouncilML.lootTable[session].history = RCLootCouncilML:TrackAndLogLoot(data.winner, data.link, data.responseID, addon.bossName, data.votes, data.gear1, data.gear2,
-		 										  data.reason, data.isToken, data.isTierRoll, data.isRelicRoll, data.note)
+		RCLootCouncilML.lootTable[session].history = RCLootCouncilML:TrackAndLogLoot(data.winner, data.link, data.responseID, addon.bossName, data.reason, session, data)
 	end
 end
 
