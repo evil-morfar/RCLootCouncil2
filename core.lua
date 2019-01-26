@@ -1300,6 +1300,10 @@ function RCLootCouncil:Test(num, fullTest, trinketTest)
 	self:CallModule("masterlooter")
 	self:GetActiveModule("masterlooter"):NewML(self.masterLooter)
 	self:GetActiveModule("masterlooter"):Test(items)
+
+	self:ScheduleTimer(function()
+		self:SendCommand("group", "looted", 1234)
+	end, 5)
 end
 
 local interface_options_old_cancel = InterfaceOptionsFrameCancel:GetScript("OnClick")

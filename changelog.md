@@ -6,6 +6,11 @@
 
 * Declining manual rolls is now displayed in the voting frame (#329).
 
+* **Tests**
+* `/rc ftest` now always uses items from the newest raid.
+* A `looted` message is now sent on all tests so that people can see the "Loot Status" in action.
+
+
 * Added trinkets from Battle of Dazar'Alor to the autopass list.
 
 * Added the owner of an item to the Loot History.
