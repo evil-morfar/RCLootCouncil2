@@ -6,17 +6,18 @@
 
 
 * **Tests**
-* `/rc ftest` now always uses items from the newest raid.
+* `/rc ftest` now only uses items from the newest raid.
 * A `looted` message is now sent on all tests so that people can see the "Loot Status" in action.
 
 
-* Declining manual rolls is now displayed in the voting frame (#329).
-
-* Added trinkets from Battle of Dazar'Alor to the autopass list.
-
+* **Loot History**
 * Added the owner of an item to the Loot History.
 * The owner has also been added to .csv and .tsv exports.
 * Note: Only items awarded after this release has their owners tracked.
+
+* Declined manual rolls is now displayed in the voting frame (#329).
+
+* Added trinkets from Battle of Dazar'Alor to the autopass list.
 
 ###### Dev
 * Changed parameters in ml_core `TrackAndLogLoot`.
