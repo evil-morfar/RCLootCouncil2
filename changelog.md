@@ -4,12 +4,13 @@
 * Added a new indicator for when candidates fail to loot items due to full bags.
 * This is considered the same as "fake loot" for all intents and purposes.
 
-* Declining manual rolls is now displayed in the voting frame (#329).
 
 * **Tests**
 * `/rc ftest` now always uses items from the newest raid.
 * A `looted` message is now sent on all tests so that people can see the "Loot Status" in action.
 
+
+* Declining manual rolls is now displayed in the voting frame (#329).
 
 * Added trinkets from Battle of Dazar'Alor to the autopass list.
 
