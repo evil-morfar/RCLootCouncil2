@@ -408,8 +408,6 @@ function RCLootCouncil:OnInitialize()
 	-- add it to blizz options
 	self.optionsFrame = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("RCLootCouncil", "RCLootCouncil", nil, "settings")
 	self.optionsFrame.ml = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("RCLootCouncil", "Master Looter", "RCLootCouncil", "mlSettings")
-	-- reset verTestCandidates
-	self.db.global.verTestCandidates = {}
 	self.playersData = playersData -- Make it globally available
 	self:InitItemStorage()
 	-- Add logged in message in the log
@@ -585,7 +583,11 @@ function RCLootCouncil:ChatCommand(msg)
 		self:Test(tonumber(args[1]) or 1, true)
 
 	elseif input == 'version' or input == L["version"] or input == "v" or input == "ver" then
-		self:CallModule("version")
+		if args[1] then -- Print outdated versions
+			self:GetActiveModule("version"):PrintOutDatedClients()
+		else -- Otherwise open it
+			self:CallModule("version")
+		end
 
 	elseif input == "history" or input == string.lower(_G.HISTORY) or input == "h" or input == "his" then
 		self:CallModule("history")
@@ -932,6 +934,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 				if distri == "GUILD" then
 					sender = "guild"
 				end
+				self:GetActiveModule("version"):LogVersion(self:UnitName(sender), otherVersion, tVersion)
 				self:SendCommand(sender, "verTestReply", self.playerName, self.playerClass, self.guildRank, self.version, self.tVersion, self:GetInstalledModulesFormattedData())
 				if strfind(otherVersion, "%a+") then return self:Debug("Someone's tampering with version?", otherVersion) end
 				if self:VersionCompare(self.version,otherVersion) and not self.verCheckDisplayed and (not (tVersion or self.tVersion)) then
@@ -949,7 +952,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 				if not name then -- REVIEW v2.7.11 For some reason name can sometimes be missing (#341)!?
 					return self:DebugLog("Error - verTestReply with nil name", sender, name, otherVersion, tVersion, moduleData)
 				end
-				self.db.global.verTestCandidates[name] = otherVersion.. "-" .. tostring(tVersion) .. ": - " .. self.playerName
+				self:GetActiveModule("version"):LogVersion(self:UnitName(sender), otherVersion, tVersion)
 				if strfind(otherVersion, "%a+") then return self:Debug("Someone's tampering with version?", otherVersion) end
 				if self:VersionCompare(self.version,otherVersion) and not self.verCheckDisplayed and (not (tVersion or self.tVersion)) then
 					self:Print(format(L["version_outdated_msg"], self.version, otherVersion))

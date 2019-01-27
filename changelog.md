@@ -1,3 +1,13 @@
+* **Version Checker**
+* The version checker can now print any detected outdated clients.
+* Simply add any argument to the chat command, e.g. `/rc v 1` to get the list.
+
+
+###### Dev
+* Changed structure of `db.global.verTestCandidates`.
+
+
+
 ### v2.9.6
 ---
 * **Loot Status**  
