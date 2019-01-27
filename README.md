@@ -13,6 +13,10 @@ The latest release is available at [Curse](http://www.curse.com/addons/wow/rcloo
 * EPGP [Curse](https://mods.curse.com/addons/wow/269161-rclootcouncil-epgp) | [GitHub](https://github.com/SafeteeWoW/RCLootCouncil_EPGP) by safetee.
 
 
+#### Git Flow 
+RCLootCouncil is being developed using the Git Flow branch structure from v2.9.6 an onwards.
+
+
 ---
 
 #### Bugtracking
