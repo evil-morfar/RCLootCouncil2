@@ -52,7 +52,7 @@ function RCVersionCheck:OnCommReceived(prefix, serializedMsg, distri, sender)
 		local test, command, data = addon:Deserialize(serializedMsg)
 		if addon:HandleXRealmComms(self, command, data, sender) then return end
 		if test and command == "verTestReply" then
-			if listOfNames[data[1]] then -- We only want to add those we've already queried 
+			if listOfNames[data[1]] then -- We only want to add those we've already queried
 				self:AddEntry(unpack(data))
 			end
 		end
@@ -91,6 +91,37 @@ function RCVersionCheck:QueryTimer()
 		end
 	end
 	self:Update()
+end
+
+local function logversion(name, version, tversion, status)
+	addon.db.global.verTestCandidates[name] = {version, tversion, status}
+end
+-- Static
+function RCVersionCheck:LogVersion(name, version, tversion)
+	if addon.db.global.verTestCandidates[name] then -- Updated
+		logversion(name, version, tversion, time())
+	else -- New
+		logversion(name, version, tversion, "new")
+	end
+end
+
+function RCVersionCheck:PrintOutDatedClients()
+	local outdated = {}
+	local i = 0
+	for name, data in pairs(addon.db.global.verTestCandidates) do
+		if not data[2] and addon:VersionCompare(data[1], addon.version) then -- No tversion, and older than ours
+			i = i + 1
+			outdated[i] = name.. ": " ..data[1]
+		end
+	end
+	if i > 0 then
+		addon:Print("Found the following outdated versions:")
+		for i,v in ipairs(outdated) do
+			addon:Print(i,v)
+		end
+	else
+		addon:Print("Everybody is up to date.")
+	end
 end
 
 function RCVersionCheck:AddEntry(name, class, guildRank, version, tVersion, modules)
