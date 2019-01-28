@@ -1,3 +1,9 @@
+### v2.9.7
+---
+###### Bugfixes
+* *Fixed issue with Loot Status (#382).*
+
+
 ### v2.9.6
 ---
 * **Loot Status**  

@@ -875,7 +875,10 @@ function RCVotingFrame:UpdateLootStatus()
 	local looted, unlooted, fake = 0,0,0
 	local list = {} -- [name] = "status"
 	for name in pairs(addon.candidates) do
-		if addon.lootStatus[id].candidates[name].status == "looted" then -- They have looted
+		if not addon.lootStatus[id].candidates[name] then -- Unlooted
+			tinsert(list, {name = name, text = "|cffffff00"..L["Unlooted"]})
+			unlooted = unlooted + 1
+		elseif addon.lootStatus[id].candidates[name].status == "looted" then -- They have looted
 			tinsert(list, {name = name, text = "|cff00ff00 " .. L["Looted"]})
 			looted = looted + 1
 		elseif addon.lootStatus[id].candidates[name].status == "fakeLoot" then -- fake loot
@@ -884,9 +887,6 @@ function RCVotingFrame:UpdateLootStatus()
 		elseif addon.lootStatus[id].candidates[name].status == "fullbags" then
 			tinsert(list, {name = name, text = addon.lootStatus[id].candidates[name].item .. "|cffff0000 "..L["Full Bags"].."|r"})
 			fake = fake + 1 -- This counts as a fake loot
-		else -- Unlooted
-			tinsert(list, {name = name, text = "|cffffff00"..L["Unlooted"]})
-			unlooted = unlooted + 1
 		end
 	end
 	local num = 0
