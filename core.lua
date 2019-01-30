@@ -1503,7 +1503,7 @@ function RCLootCouncil:SendResponse(target, session, response, isTier, isRelic, 
 
 	if link and ilvl then
 		g1, g2 = self:GetGear(link, equipLoc, relicType)
-		diff = self:GetDiff(g1,g2,ilvl)
+		diff = self:GetIlvlDifference(link, g1,g2)
 	end
 
 	self:SendCommand(target, "response",
@@ -1530,16 +1530,45 @@ function RCLootCouncil:GetGear(link, equipLoc, relicType)
 	end
 end
 
-function RCLootCouncil:GetDiff(g1, g2, ilvl)
-	local diff = 0
-	local g1diff, g2diff = g1 and select(4, GetItemInfo(g1)), g2 and select(4, GetItemInfo(g2))
-	-- if g1 and g2 are not nil, g1diff and g2diff should always be returned because :GetArtifactRelics and:GetPlayersGear should always return cached link
-	if g1diff and g2diff then
-		diff = g1diff >= g2diff and ilvl - g2diff or ilvl - g1diff
-	elseif g1diff then
-		diff = ilvl - g1diff
+--- Gets the ilvl difference between an item and the player's equipped gear.
+-- If a multislot is compared, the lowest ilvl item is normally selected, unless the player has equipped
+-- another version of the same item, in which case that item is compared.
+-- @paramsig item [,g1,g2,equipLoc]
+-- @param item The item to compare with players gear (Anything accepted by `GetItemInfo`).
+-- @param g1 Uses this specific item for the comparison if provided.
+-- @param g2 Same as g1, but for multislot items.
+-- @return Integer - the difference between the comparison item and the equipped gear.
+function RCLootCouncil:GetIlvlDifference(item, g1, g2)
+	if not g1 and g2 then error("You can't provide g2 without g1 in :GetIlvlDifference()") end
+	local _, link, _, ilvl, _, _, _, _, equipLoc = GetItemInfo(item)
+	if not g1 then
+		g1, g2 = self:GetPlayersGear(link, equipLoc, playersData.gears)
 	end
-	return diff
+
+	-- Check if it's a ring or trinket
+	if equipLoc == "INVTYPE_TRINKET" or equipLoc == "INVTYPE_FINGER" then
+		local id = self.Utils:GetItemIDFromLink(link)
+		if id == self.Utils:GetItemIDFromLink(g1) then -- compare with it
+			ilvl2 = select(4, GetItemInfo(g1))
+			return ilvl - ilvl2
+
+		elseif g2 and id == self.Utils:GetItemIDFromLink(g2) then
+			ilvl2 = select(4, GetItemInfo(g2))
+			return ilvl - ilvl2
+
+		else -- shouldn't happen
+			self:DebugLog("<Error> in GetIlvlDifference()")
+		end
+	else -- Do it normally
+		local diff = 0
+		local g1diff, g2diff = g1 and select(4, GetItemInfo(g1)), g2 and select(4, GetItemInfo(g2))
+		if g1diff and g2diff then
+			diff = g1diff >= g2diff and ilvl - g2diff or ilvl - g1diff
+		elseif g1diff then
+			diff = ilvl - g1diff
+		end
+		return diff
+	end
 end
 
 -- @param link The itemLink of the item.
@@ -1637,7 +1666,7 @@ function RCLootCouncil:SendLootAck(table, skip)
 		if session > (skip or 0) then
 			hasData = true
 			local g1,g2 = self:GetGear(v.link, v.equipLoc, v.relic)
-			local diff = self:GetDiff(g1, g2, v.ilvl)
+			local diff = self:GetIlvlDifference(v.link, g1, g2)
 			toSend.gear1[session] = self:GetItemStringFromLink(g1)
 			toSend.gear2[session] = self:GetItemStringFromLink(g2)
 			toSend.diff[session] = diff
