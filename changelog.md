@@ -2,11 +2,18 @@
 * The version checker can now print any detected outdated clients.
 * Simply add any argument to the chat command, e.g. `/rc v 1` to get the list.
 
+
+* **Ilvl comparisons**
+* If a trinket or ring is looted, and the candidate already has equipped a different version of the item,
+RCLootCouncil now uses that item's ilvl when calculating the difference, since that item would have to be replaced (#378).
+
+
 * The owner is now also shown above the award status in the voting frame.
 
 
 ###### Dev
 * Changed structure of `db.global.verTestCandidates`.
+* Replaced `:GetDiff()` with `:GetIlvlDifference()` which takes different arguments.
 
 
 ### v2.9.7
