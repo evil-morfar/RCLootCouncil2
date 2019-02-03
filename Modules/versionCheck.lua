@@ -98,6 +98,7 @@ local function logversion(name, version, tversion, status)
 end
 -- Static
 function RCVersionCheck:LogVersion(name, version, tversion)
+	if not name then return addon:DebugLog("LogVersion", "No name", name, version, tversion) end
 	if addon.db.global.verTestCandidates[name] then -- Updated
 		logversion(name, version, tversion, time())
 	else -- New
