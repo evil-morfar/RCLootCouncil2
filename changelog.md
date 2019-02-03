@@ -1,3 +1,5 @@
+### v2.9.8
+---
 * **Version Checker**
 * The version checker can now print any detected outdated clients.
 * Simply add any argument to the chat command, e.g. `/rc v 1` to get the list.
