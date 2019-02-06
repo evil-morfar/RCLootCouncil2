@@ -555,7 +555,6 @@ function RCVotingFrame:SwitchSession(s)
 
 	-- Owner
 	if t.owner and addon.candidates[t.owner] then -- We have a owner, that's a player in our group
-		self.frame.ownerString:Show()
 		-- Hack-reuse the SetCellClassIcon function
 		addon.SetCellClassIcon(nil,self.frame.ownerString.icon,nil,nil,nil,nil,nil,nil,nil, t.candidates[t.owner].class)
 		self.frame.ownerString.icon:Show()
@@ -564,13 +563,11 @@ function RCVotingFrame:SwitchSession(s)
 		self.frame.ownerString.owner:SetTextColor(c.r,c.g,c.b,c.a)
 		self.frame.ownerString.owner:Show()
 	elseif t.owner then -- We have a owner, probably a boss name
-		self.frame.ownerString:Show()
 		self.frame.ownerString.icon:Hide()
 		self.frame.ownerString.owner:SetText(t.owner)
 		self.frame.ownerString.owner:SetTextColor(1,1,1,1)
 		self.frame.ownerString.owner:Show()
 	else -- Assume there's no owner, shouldn't happen
-		self.frame.ownerString:Hide()
 		self.frame.ownerString.icon:Hide()
 		self.frame.ownerString.owner:Hide()
 	end
@@ -850,25 +847,19 @@ function RCVotingFrame:GetFrame()
 	f.lootStatus.text:SetJustifyH("RIGHT")
 
 	-- Owner
-	f.ownerString = addon.UI:New("Text", f.content, "Owner: ")
-	f.ownerString:SetTextColor(1,1,1,1)
-	f.ownerString:SetHeight(20)
-	f.ownerString:SetWidth(150)
-	f.ownerString:SetPoint("CENTER", f.content, "TOP", 0, -35)
-	f.ownerString:Hide()
-
-	f.ownerString.icon = addon.UI:New("Icon", f.ownerString)
-	f.ownerString.icon:SetPoint("LEFT", f.ownerString, "RIGHT", 5, 0)
+	f.ownerString = {}
+	f.ownerString.icon = addon.UI:New("Icon", f.content)
+	f.ownerString.icon:SetPoint("LEFT", f.bonuses, "RIGHT", 5, 0)
 	f.ownerString.icon:SetSize(15,15)
 	f.ownerString.icon:Hide()
 
-	f.ownerString.owner = addon.UI:New("Text", f.content, " ")
+	f.ownerString.owner = f.content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 	f.ownerString.owner:SetPoint("LEFT", f.ownerString.icon, "RIGHT")
 	f.ownerString.owner:Hide()
 
 	-- Award string
 	local awdstr = f.content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-	awdstr:SetPoint("CENTER", f.ownerString, "TOP", 0, -25)
+	awdstr:SetPoint("CENTER", f.content, "TOP", 0, -35)
 	awdstr:SetText(L["Item was awarded to"])
 	awdstr:SetTextColor(1, 1, 0, 1) -- Yellow
 	awdstr:Hide()
