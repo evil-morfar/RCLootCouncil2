@@ -849,7 +849,7 @@ function RCVotingFrame:GetFrame()
 	-- Owner
 	f.ownerString = {}
 	f.ownerString.icon = addon.UI:New("Icon", f.content)
-	f.ownerString.icon:SetPoint("LEFT", f.bonuses, "RIGHT", 5, 0)
+	f.ownerString.icon:SetPoint("LEFT", f.iState, "RIGHT", 5, 0)
 	f.ownerString.icon:SetSize(15,15)
 	f.ownerString.icon:Hide()
 
