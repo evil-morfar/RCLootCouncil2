@@ -108,11 +108,14 @@ end
 
 function RCVersionCheck:PrintOutDatedClients()
 	local outdated = {}
+	local isgrouped = IsInGroup()
 	local i = 0
 	for name, data in pairs(addon.db.global.verTestCandidates) do
-		if not data[2] and addon:VersionCompare(data[1], addon.version) then -- No tversion, and older than ours
-			i = i + 1
-			outdated[i] = name.. ": " ..data[1]
+		if isgrouped and addon.candidates[name] or not isgrouped then -- Only check people in our group if we're grouped.
+			if not data[2] and addon:VersionCompare(data[1], addon.version) then -- No tversion, and older than ours
+				i = i + 1
+				outdated[i] = name.. ": " ..data[1]
+			end
 		end
 	end
 	if i > 0 then
