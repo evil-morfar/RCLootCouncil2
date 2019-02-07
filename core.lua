@@ -1555,20 +1555,17 @@ function RCLootCouncil:GetIlvlDifference(item, g1, g2)
 		elseif g2 and id == self.Utils:GetItemIDFromLink(g2) then
 			ilvl2 = select(4, GetItemInfo(g2))
 			return ilvl - ilvl2
-
-		else -- shouldn't happen
-			self:DebugLog("<Error> in GetIlvlDifference()", item, g1, g2)
 		end
-	else -- Do it normally
-		local diff = 0
-		local g1diff, g2diff = g1 and select(4, GetItemInfo(g1)), g2 and select(4, GetItemInfo(g2))
-		if g1diff and g2diff then
-			diff = g1diff >= g2diff and ilvl - g2diff or ilvl - g1diff
-		elseif g1diff then
-			diff = ilvl - g1diff
-		end
-		return diff
+		-- We haven't equipped this item, do it normally
 	end
+	local diff = 0
+	local g1diff, g2diff = g1 and select(4, GetItemInfo(g1)), g2 and select(4, GetItemInfo(g2))
+	if g1diff and g2diff then
+		diff = g1diff >= g2diff and ilvl - g2diff or ilvl - g1diff
+	elseif g1diff then
+		diff = ilvl - g1diff
+	end
+	return diff
 end
 
 -- @param link The itemLink of the item.
