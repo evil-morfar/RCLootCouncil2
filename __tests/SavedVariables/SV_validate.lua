@@ -137,8 +137,8 @@ local function checkSV()
       local players = {}
       -- First extract the ones we have in verTestCandidates:
       if RCLootCouncilDB.global.verTestCandidates then
-         for player, version in pairs(RCLootCouncilDB.global.verTestCandidates) do
-            players[player:gsub("-.+", "")] = version:gsub("-.+", "")
+         for player, data in pairs(RCLootCouncilDB.global.verTestCandidates) do
+            players[player:gsub("-.+", "")] = data[1]
          end
       else
          print "No 'verTestCandidates'" -- v2.7.8 somehow had a SV without it..
