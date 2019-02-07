@@ -447,36 +447,12 @@ function RCLootCouncil:OnEnable()
 	-- in the :CreateFrame() all :Prints as expected :o
 	self:ActivateSkin(db.currentSkin)
 
-	if self.db.global.version and self:VersionCompare(self.db.global.version, "2.9.0") then --self.version) then -- We've upgraded
-		if #self.db.profile.buttons > 0 or self.db.profile.tierButtons or #self.db.profile.responses > 0 then -- Indicators that old buttons haven't been migrated
-			for k,v in ipairs(self.db.profile.buttons) do
-				self.db.profile.buttons.default[k].text = v.text and v.text or self.db.profile.buttons.default[k].text
-				self.db.profile.buttons.default[k].whisperKey = v.whisperKey and v.whisperKey or self.db.profile.buttons.default[k].whisperKey
-				self.db.profile.buttons[k] = nil
-			end
-			if #self.db.profile.buttons > 0 then self.db.profile.buttons.default.numButtons = #self.db.profile.buttons end
-			for k,v in ipairs(self.db.profile.responses) do
-				if v.text then self.db.profile.responses.default[k].text = v.text end
-				if v.color then self.db.profile.responses.default[k].color = v.color end
-				self.db.profile.responses[k] = nil
-			end
-			-- Delete unnecessary records
-			self.db.profile.tierNumButtons = nil
-			self.db.profile.relicNumButtons = nil
-			self.db.profile.relicButtonsEnabled = nil
-			self.db.profile.tierButtonsEnabled = nil
-			self.db.profile.numButtons = nil
-			self.db.profile.relicButtons = nil
-			self.db.profile.tierButtons = nil
-			self.db.profile.responses.relic = nil
-			self.db.profile.responses.tier = nil
-		end
-
-		self.db.global.oldVersion = self.db.global.version
-		self.db.global.version = self.version
-	else -- Mostly for first time load
-		self.db.global.version = self.version;
+	if self.db.global.version and self:VersionCompare(self.db.global.version, "2.9.8") then --self.version) then -- We've upgraded
+		self.db.global.verTestCandidates = {} -- Reset due to new structure
 	end
+	self.db.global.oldVersion = self.db.global.version
+	self.db.global.version = self.version
+
 	self.db.global.logMaxEntries = self.defaults.global.logMaxEntries -- reset it now for zzz
 
 	if self.tVersion then
