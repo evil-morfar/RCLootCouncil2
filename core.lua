@@ -1557,7 +1557,7 @@ function RCLootCouncil:GetIlvlDifference(item, g1, g2)
 			return ilvl - ilvl2
 
 		else -- shouldn't happen
-			self:DebugLog("<Error> in GetIlvlDifference()")
+			self:DebugLog("<Error> in GetIlvlDifference()", item, g1, g2)
 		end
 	else -- Do it normally
 		local diff = 0
@@ -2483,7 +2483,7 @@ function RCLootCouncil:UnitName(unit)
 	-- Proceed with UnitName()
 	local name, realm = UnitName(unit)
 	if not realm or realm == "" then realm = self.realmName end -- Extract our own realm
-	if not name then return nil end -- Below won't work without name
+	if not name then self:DebugLog("UnitName returned nil name with:", unit); return nil end -- Below won't work without name
 	-- We also want to make sure the returned name is always title cased (it might not always be! ty Blizzard)
 	name = name:lower():gsub("^%l", string.upper)
 	return name and name.."-"..realm
