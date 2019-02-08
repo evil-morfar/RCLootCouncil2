@@ -8,7 +8,6 @@ local addon = LibStub("AceAddon-3.0"):GetAddon("RCLootCouncil")
 local RCVotingFrame = addon:NewModule("RCVotingFrame", "AceComm-3.0", "AceTimer-3.0", "AceEvent-3.0", "AceBucket-3.0")
 local LibDialog = LibStub("LibDialog-1.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
-local LibDialog = LibStub("LibDialog-1.0")
 
 local ROW_HEIGHT = 20;
 local NUM_ROWS = 15;
@@ -36,7 +35,7 @@ function RCVotingFrame:OnInitialize()
 	-- The default values are in sorted order
 	defaultScrollTableData = {
 		{ name = "",				DoCellUpdate = RCVotingFrame.SetCellClass,		colName = "class",	sortnext = 2,		width = 20, },										-- 1 Class
-		{ name = _G.NAME,			DoCellUpdate = RCVotingFrame.SetCellName,			colName = "name",								width = 120,},										-- 2 Candidate Name
+		{ name = _G.NAME,			DoCellUpdate = RCVotingFrame.SetCellName,			colName = "name",		defaultsort = 1,	width = 120,},									-- 2 Candidate Name
 		{ name = _G.RANK,			DoCellUpdate = RCVotingFrame.SetCellRank,			colName = "rank",		sortnext = 5,		width = 95, comparesort = GuildRankSort,},-- 3 Guild rank
 		{ name = _G.ROLE,			DoCellUpdate = RCVotingFrame.SetCellRole,			colName = "role",		sortnext = 5,		width = 55, },										-- 4 Role
 		{ name = L["Response"],	DoCellUpdate = RCVotingFrame.SetCellResponse,	colName = "response",sortnext = 13,		width = 240, comparesort = ResponseSort,},-- 5 Response
@@ -582,7 +581,7 @@ function RCVotingFrame:SwitchSession(s)
 		self.frame.st.cols[i].sort = nil
 		if self.frame.st.cols[i].colName == "response" then j = i end
 	end
-	self.frame.st.cols[j].sort = "asc"
+	self.frame.st.cols[j].sort = 1
 	FauxScrollFrame_OnVerticalScroll(self.frame.st.scrollframe, 0, self.frame.st.rowHeight, function() self.frame.st:Refresh() end) -- Reset scrolling to 0
 	self:Update(true)
 	self:UpdatePeopleToVote()
@@ -1272,8 +1271,8 @@ function ResponseSort(table, rowa, rowb, sortbycol)
 		end
 		return false
 	else
-		local direction = column.sort or column.defaultsort or "asc";
-		if direction:lower() == "asc" then
+		local direction = column.sort or column.defaultsort or 1
+		if direction == 1 then
 			return a < b;
 		else
 			return a > b;
@@ -1300,11 +1299,11 @@ function GuildRankSort(table, rowa, rowb, sortbycol)
 		end
 		return false
 	else
-		local direction = column.sort or column.defaultsort or "asc";
-		if direction:lower() == "asc" then
-			return a > b;
-		else
+		local direction = column.sort or column.defaultsort or 1
+		if direction == 1 then
 			return a < b;
+		else
+			return a > b;
 		end
 	end
 end

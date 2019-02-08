@@ -12,6 +12,11 @@ RCLootCouncil now uses that item's ilvl when calculating the difference, since t
 
 * The owner is now also shown above the award status in the voting frame.
 
+* Updated Lib-ScrollingTable to the latest version.
+
+
+###### Bugfixes
+* *Sorting the loot history now properly triggers secondary sorts where needed.*
 
 ###### Dev
 * Changed structure of `db.global.verTestCandidates`.

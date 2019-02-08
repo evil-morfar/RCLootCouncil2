@@ -17,9 +17,9 @@ function RCVersionCheck:OnInitialize()
 	-- Initialize scrollCols on self so others can change it
 	self.scrollCols = {
 		{ name = "",				width = 20, sortnext = 2,},
-		{ name = _G.NAME,		width = 150, defaultsort = "dsc"},
+		{ name = _G.NAME,		width = 150},
 		{ name = _G.RANK,		width = 90, comparesort = GuildRankSort},
-		{ name = L["Version"],	width = 140, align = "RIGHT", comparesort = self.VersionSort, sort = "asc", sortnext = 2},
+		{ name = L["Version"],	width = 140, align = "RIGHT", comparesort = self.VersionSort, sort = ST.SORT_DSC, sortnext = 2},
 	}
 end
 
@@ -244,11 +244,11 @@ function GuildRankSort(table, rowa, rowb, sortbycol)
 		end
 		return false
 	else
-		local direction = column.sort or column.defaultsort or "asc";
-		if direction:lower() == "asc" then
-			return a > b;
-		else
+		local direction = column.sort or column.defaultsort or ST.SORT_ASC;
+		if direction == ST.SORT_ASC then
 			return a < b;
+		else
+			return a > b;
 		end
 	end
 end
@@ -272,11 +272,11 @@ function RCVersionCheck.VersionSort(table, rowa, rowb, sortbycol)
 		end
 		return false
 	else
-		local direction = column.sort or column.defaultsort or "asc";
-		if direction:lower() == "asc" then
-			return addon:VersionCompare(b.version, a.version)
-		else
+		local direction = column.sort or column.defaultsort or ST.SORT_ASC
+		if direction == ST.SORT_ASC then
 			return addon:VersionCompare(a.version, b.version)
+		else
+			return addon:VersionCompare(b.version, a.version)
 		end
 	end
 end

@@ -40,11 +40,11 @@ function LootHistory:OnInitialize()
 	}
 	self.scrollCols = {
 		{name = "",				width = ROW_HEIGHT, },																				-- Class icon, should be same row as player
-		{name = _G.NAME,		width = 100, sortnext = 3, defaultsort = "dsc"},											-- Name of the player (There is a bug in default lib-st sort function that "dsc" is "asc")
-		{name = L["Time"],	width = 125, comparesort = self.DateTimeSort, sort="dsc",defaultsort = "dsc",},	-- Time of awarding
+		{name = _G.NAME,		width = 100, sortnext = 3, defaultsort = 1,},												-- Name of the player
+		{name = L["Time"],	width = 125, comparesort = self.DateTimeSort, sort = 2,defaultsort = 2,},			-- Time of awarding
 		{name = "",				width = ROW_HEIGHT, },																				-- Item icon
-		{name = L["Item"],	width = 250, comparesort = self.ItemSort,}, 													-- Item string
-		{name = L["Reason"],	width = 220, comparesort = self.ResponseSort,  sortnext = 2},							-- Response aka the text supplied to lootDB...response
+		{name = L["Item"],	width = 250, comparesort = self.ItemSort, defaultsort = 1, sortnext = 2},			-- Item string
+		{name = L["Reason"],	width = 220, comparesort = self.ResponseSort,  defaultsort = 1, sortnext = 2},	-- Response aka the text supplied to lootDB...response
 		{name = "",				width = ROW_HEIGHT},																					-- Delete button
 	}
 	filterMenu = _G.MSA_DropDownMenu_Create("RCLootCouncil_LootHistory_FilterMenu", UIParent)
@@ -372,11 +372,27 @@ function LootHistory.DateTimeSort(table, rowa, rowb, sortbycol)
 		LootHistory:AddEpochDate(cella.args.date, cella.args.time)
 		LootHistory:AddEpochDate(cellb.args.date, cellb.args.time)
 	end
-	local direction = table.cols[sortbycol].sort or table.cols[sortbycol].defaultsort or "asc";
-	if direction:lower() == "asc" then
-		return epochDates[indexa] < epochDates[indexb]
+	local column = table.cols[sortbycol]
+	local a, b = epochDates[indexa], epochDates[indexb]
+	if a == b then
+		if column.sortnext then
+			local nextcol = table.cols[column.sortnext];
+			if nextcol and not(nextcol.sort) then
+				if nextcol.comparesort then
+					return nextcol.comparesort(table, rowa, rowb, column.sortnext);
+				else
+					return table:CompareSort(rowa, rowb, column.sortnext);
+				end
+			end
+		end
+		return false
 	else
-		return epochDates[indexa] > epochDates[indexb]
+		local direction = table.cols[sortbycol].sort or table.cols[sortbycol].defaultsort or 1
+		if direction == 1 then
+			return a < b
+		else
+			return a > b
+		end
 	end
 end
 
@@ -389,8 +405,8 @@ function LootHistory.DateSort(table, rowa, rowb, sortbycol)
 	local aTime = time({year = "20"..y, month = m, day = d})
 	d, m, y = strsplit("/", b, 3)
 	local bTime = time({year = "20"..y, month = m, day = d})
-	local direction = column.sort or column.defaultsort or "asc";
-	if direction:lower() == "asc" then
+	local direction = column.sort or column.defaultsort or 1;
+	if direction == 1 then
 		return aTime < bTime;
 	else
 		return aTime > bTime;
@@ -425,13 +441,27 @@ function LootHistory.ResponseSort(table, rowa, rowb, sortbycol)
 	else
 		b = 500
 	end
-
-	local direction = column.sort or column.defaultsort or "asc";
-	if direction:lower() == "asc" then
-		return a < b;
-	else
-		return a > b;
-	end
+	local column = table.cols[sortbycol]
+	if a == b then
+			if column.sortnext then
+				local nextcol = table.cols[column.sortnext];
+				if nextcol and not(nextcol.sort) then
+					if nextcol.comparesort then
+						return nextcol.comparesort(table, rowa, rowb, column.sortnext);
+					else
+						return table:CompareSort(rowa, rowb, column.sortnext);
+					end
+				end
+			end
+			return false
+		else
+			local direction = table.cols[sortbycol].sort or table.cols[sortbycol].defaultsort or 1
+			if direction == 1 then
+				return a < b
+			else
+				return a > b
+			end
+		end
 end
 
 function LootHistory.ItemSort(table, rowa, rowb, sortbycol)
@@ -440,11 +470,26 @@ function LootHistory.ItemSort(table, rowa, rowb, sortbycol)
 	local a,b = lootDB[rowa.name][rowa.num].lootWon, lootDB[rowb.name][rowb.num].lootWon
 	a = addon:GetItemNameFromLink(a)
 	b = addon:GetItemNameFromLink(b)
-	local direction = column.sort or column.defaultsort or "asc";
-	if direction:lower() == "asc" then
-		return a < b;
+	local column = table.cols[sortbycol]
+	if a == b then
+		if column.sortnext then
+			local nextcol = table.cols[column.sortnext];
+			if nextcol and not(nextcol.sort) then
+				if nextcol.comparesort then
+					return nextcol.comparesort(table, rowa, rowb, column.sortnext);
+				else
+					return table:CompareSort(rowa, rowb, column.sortnext);
+				end
+			end
+		end
+		return false
 	else
-		return a > b;
+		local direction = table.cols[sortbycol].sort or table.cols[sortbycol].defaultsort or 1
+		if direction == 1 then
+			return a < b
+		else
+			return a > b
+		end
 	end
 end
 
@@ -582,7 +627,7 @@ function LootHistory:GetFrame()
 	f.st = st
 
 	--Date selection
-	f.date = LibStub("ScrollingTable"):CreateST({{name = L["Date"], width = 70, comparesort = self.DateSort, sort = "desc", DoCellUpdate = self.SetCellDate}}, 5, ROW_HEIGHT, { ["r"] = 1.0, ["g"] = 0.9, ["b"] = 0.0, ["a"] = 0.5 }, f.content)
+	f.date = LibStub("ScrollingTable"):CreateST({{name = L["Date"], width = 70, comparesort = self.DateSort, sort = 2, DoCellUpdate = self.SetCellDate}}, 5, ROW_HEIGHT, { ["r"] = 1.0, ["g"] = 0.9, ["b"] = 0.0, ["a"] = 0.5 }, f.content)
 	f.date.frame:SetPoint("TOPLEFT", f, "TOPLEFT", 10, -20)
 	f.date:EnableSelection(true)
 	f.date:RegisterEvents({
@@ -596,7 +641,7 @@ function LootHistory:GetFrame()
 	})
 
 	--Name selection
-	f.name = LibStub("ScrollingTable"):CreateST({{name = "", width = ROW_HEIGHT},{name = _G.NAME, width = 100, sort = "desc"}}, 5, ROW_HEIGHT, { ["r"] = 1.0, ["g"] = 0.9, ["b"] = 0.0, ["a"] = 0.5 }, f.content)
+	f.name = LibStub("ScrollingTable"):CreateST({{name = "", width = ROW_HEIGHT},{name = _G.NAME, width = 100, sort = 1}}, 5, ROW_HEIGHT, { ["r"] = 1.0, ["g"] = 0.9, ["b"] = 0.0, ["a"] = 0.5 }, f.content)
 	f.name.frame:SetPoint("TOPLEFT", f.date.frame, "TOPRIGHT", 20, 0)
 	f.name:EnableSelection(true)
 	f.name:RegisterEvents({
