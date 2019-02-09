@@ -92,7 +92,7 @@ function RCLootCouncil:OnInitialize()
   	self.version = GetAddOnMetadata("RCLootCouncil", "Version")
 	self.nnp = false
 	self.debug = false
-	self.tVersion = "Alpha.1" -- String or nil. Indicates test version, which alters stuff like version check. Is appended to 'version', i.e. "version-tVersion" (max 10 letters for stupid security)
+	self.tVersion = nil -- String or nil. Indicates test version, which alters stuff like version check. Is appended to 'version', i.e. "version-tVersion" (max 10 letters for stupid security)
 
 	self.playerClass = select(2, UnitClass("player"))
 	self.guildRank = L["Unguilded"]
@@ -2185,7 +2185,7 @@ function RCLootCouncil:GetInstalledModulesFormattedData()
 				modules[num] = modules[num].."-"..self:GetModule(name).tVersion
 			end
 		else
-			local ver = GetAddOnMetadata(name, "Version")
+			local ver = GetAddOnMetadata(self:GetModule(name).baseName, "Version")
 			modules[num] = self:GetModule(name).baseName.. " - "..(ver or _G.UNKNOWN)
 		end
 	end
