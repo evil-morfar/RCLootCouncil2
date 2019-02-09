@@ -447,7 +447,7 @@ function RCLootCouncil:OnEnable()
 	-- in the :CreateFrame() all :Prints as expected :o
 	self:ActivateSkin(db.currentSkin)
 
-	if self.db.global.version and self:VersionCompare(self.db.global.version, "2.9.8") then --self.version) then -- We've upgraded
+	if self.db.global.version and self:VersionCompare(self.db.global.version, "2.10.0") then --self.version) then -- We've upgraded
 		self.db.global.verTestCandidates = {} -- Reset due to new structure
 	end
 	self.db.global.oldVersion = self.db.global.version
