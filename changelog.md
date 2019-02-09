@@ -1,4 +1,4 @@
-### v2.9.8
+### v2.10.0
 ---
 * **Version Checker**
 * The version checker can now print any detected outdated clients.
@@ -12,7 +12,8 @@ RCLootCouncil now uses that item's ilvl when calculating the difference, since t
 
 * The owner is now also shown above the award status in the voting frame.
 
-* Updated Lib-ScrollingTable to the latest version.
+
+* Updated Libraries to the latest version(s).
 
 
 ###### Bugfixes

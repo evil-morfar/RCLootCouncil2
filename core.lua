@@ -92,7 +92,7 @@ function RCLootCouncil:OnInitialize()
   	self.version = GetAddOnMetadata("RCLootCouncil", "Version")
 	self.nnp = false
 	self.debug = false
-	self.tVersion = "Alpha.1" -- String or nil. Indicates test version, which alters stuff like version check. Is appended to 'version', i.e. "version-tVersion" (max 10 letters for stupid security)
+	self.tVersion = nil -- String or nil. Indicates test version, which alters stuff like version check. Is appended to 'version', i.e. "version-tVersion" (max 10 letters for stupid security)
 
 	self.playerClass = select(2, UnitClass("player"))
 	self.guildRank = L["Unguilded"]
@@ -440,14 +440,14 @@ function RCLootCouncil:OnEnable()
 
 	if IsInGuild() then
 		self.guildRank = select(2, GetGuildInfo("player"))
-		self:SendCommand("guild", "verTest", self.version, self.tVersion) -- send out a version check
+		self:ScheduleTimer("SendCommand", 2, "guild", "verTest", self.version, self.tVersion) -- send out a version check after a delay
 	end
 
 	-- For some reasons all frames are blank until ActivateSkin() is called, even though the values used
 	-- in the :CreateFrame() all :Prints as expected :o
 	self:ActivateSkin(db.currentSkin)
 
-	if self.db.global.version and self:VersionCompare(self.db.global.version, "2.9.8") then --self.version) then -- We've upgraded
+	if self.db.global.version and self:VersionCompare(self.db.global.version, "2.10.0") then --self.version) then -- We've upgraded
 		self.db.global.verTestCandidates = {} -- Reset due to new structure
 	end
 	self.db.global.oldVersion = self.db.global.version
@@ -2185,7 +2185,7 @@ function RCLootCouncil:GetInstalledModulesFormattedData()
 				modules[num] = modules[num].."-"..self:GetModule(name).tVersion
 			end
 		else
-			local ver = GetAddOnMetadata(name, "Version")
+			local ver = GetAddOnMetadata(self:GetModule(name).baseName, "Version")
 			modules[num] = self:GetModule(name).baseName.. " - "..(ver or _G.UNKNOWN)
 		end
 	end
@@ -2456,7 +2456,9 @@ function RCLootCouncil:UnitName(unit)
 	-- Proceed with UnitName()
 	local name, realm = UnitName(unit)
 	if not realm or realm == "" then realm = self.realmName end -- Extract our own realm
-	if not name then self:DebugLog("UnitName returned nil name with:", unit); return nil end -- Below won't work without name
+	if not name then -- if the name isn't set then UnitName couldn't parse unit, most likely because we're not grouped.
+		name = unit
+	end -- Below won't work without name
 	-- We also want to make sure the returned name is always title cased (it might not always be! ty Blizzard)
 	name = name:lower():gsub("^%l", string.upper)
 	return name and name.."-"..realm
