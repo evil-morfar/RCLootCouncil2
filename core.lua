@@ -440,7 +440,7 @@ function RCLootCouncil:OnEnable()
 
 	if IsInGuild() then
 		self.guildRank = select(2, GetGuildInfo("player"))
-		self:SendCommand("guild", "verTest", self.version, self.tVersion) -- send out a version check
+		self:ScheduleTimer("SendCommand", 2, "guild", "verTest", self.version, self.tVersion) -- send out a version check after a delay
 	end
 
 	-- For some reasons all frames are blank until ActivateSkin() is called, even though the values used
@@ -2456,7 +2456,9 @@ function RCLootCouncil:UnitName(unit)
 	-- Proceed with UnitName()
 	local name, realm = UnitName(unit)
 	if not realm or realm == "" then realm = self.realmName end -- Extract our own realm
-	if not name then self:DebugLog("UnitName returned nil name with:", unit); return nil end -- Below won't work without name
+	if not name then -- if the name isn't set then UnitName couldn't parse unit, most likely because we're not grouped.
+		name = unit
+	end -- Below won't work without name
 	-- We also want to make sure the returned name is always title cased (it might not always be! ty Blizzard)
 	name = name:lower():gsub("^%l", string.upper)
 	return name and name.."-"..realm
