@@ -17,7 +17,7 @@ function RCVersionCheck:OnInitialize()
 	-- Initialize scrollCols on self so others can change it
 	self.scrollCols = {
 		{ name = "",				width = 20, sortnext = 2,},
-		{ name = _G.NAME,		width = 150},
+		{ name = _G.NAME,		width = 150, defaultsort = ST.SORT_ASC},
 		{ name = _G.RANK,		width = 90, comparesort = GuildRankSort},
 		{ name = L["Version"],	width = 140, align = "RIGHT", comparesort = self.VersionSort, sort = ST.SORT_DSC, sortnext = 2},
 	}
