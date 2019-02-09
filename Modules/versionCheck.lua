@@ -17,9 +17,9 @@ function RCVersionCheck:OnInitialize()
 	-- Initialize scrollCols on self so others can change it
 	self.scrollCols = {
 		{ name = "",				width = 20, sortnext = 2,},
-		{ name = _G.NAME,		width = 150, defaultsort = "dsc"},
+		{ name = _G.NAME,		width = 150, defaultsort = ST.SORT_ASC},
 		{ name = _G.RANK,		width = 90, comparesort = GuildRankSort},
-		{ name = L["Version"],	width = 140, align = "RIGHT", comparesort = self.VersionSort, sort = "asc", sortnext = 2},
+		{ name = L["Version"],	width = 140, align = "RIGHT", comparesort = self.VersionSort, sort = ST.SORT_DSC, sortnext = 2},
 	}
 end
 
@@ -52,7 +52,7 @@ function RCVersionCheck:OnCommReceived(prefix, serializedMsg, distri, sender)
 		local test, command, data = addon:Deserialize(serializedMsg)
 		if addon:HandleXRealmComms(self, command, data, sender) then return end
 		if test and command == "verTestReply" then
-			if listOfNames[data[1]] then -- We only want to add those we've already queried 
+			if listOfNames[data[1]] then -- We only want to add those we've already queried
 				self:AddEntry(unpack(data))
 			end
 		end
@@ -91,6 +91,42 @@ function RCVersionCheck:QueryTimer()
 		end
 	end
 	self:Update()
+end
+
+local function logversion(name, version, tversion, status)
+	addon.db.global.verTestCandidates[name] = {version, tversion, status}
+end
+-- Static
+function RCVersionCheck:LogVersion(name, version, tversion)
+	if not name then return addon:DebugLog("LogVersion", "No name", name, version, tversion) end
+	if addon.db.global.verTestCandidates[name] then -- Updated
+		logversion(name, version, tversion, time())
+	else -- New
+		logversion(name, version, tversion, time(), "new")
+	end
+end
+
+function RCVersionCheck:PrintOutDatedClients()
+	local outdated = {}
+	local isgrouped = IsInGroup()
+	local i = 0
+	local tChk = time() - 86400 -- Must be newer than 1 day
+	for name, data in pairs(addon.db.global.verTestCandidates) do
+		if isgrouped and addon.candidates[name] or not isgrouped then -- Only check people in our group if we're grouped.
+			if not data[2] and addon:VersionCompare(data[1], addon.version) and data[3] > tChk then -- No tversion, and older than ours, and fresh
+				i = i + 1
+				outdated[i] = addon:GetUnitClassColoredName(name).. ": " ..data[1]
+			end
+		end
+	end
+	if i > 0 then
+		addon:Print(L["Found the following outdated versions"]..":")
+		for i,v in ipairs(outdated) do
+			addon:Print(i,v)
+		end
+	else
+		addon:Print(L["Everybody is up to date."])
+	end
 end
 
 function RCVersionCheck:AddEntry(name, class, guildRank, version, tVersion, modules)
@@ -209,11 +245,11 @@ function GuildRankSort(table, rowa, rowb, sortbycol)
 		end
 		return false
 	else
-		local direction = column.sort or column.defaultsort or "asc";
-		if direction:lower() == "asc" then
-			return a > b;
-		else
+		local direction = column.sort or column.defaultsort or ST.SORT_ASC;
+		if direction == ST.SORT_ASC then
 			return a < b;
+		else
+			return a > b;
 		end
 	end
 end
@@ -237,11 +273,11 @@ function RCVersionCheck.VersionSort(table, rowa, rowb, sortbycol)
 		end
 		return false
 	else
-		local direction = column.sort or column.defaultsort or "asc";
-		if direction:lower() == "asc" then
-			return addon:VersionCompare(b.version, a.version)
-		else
+		local direction = column.sort or column.defaultsort or ST.SORT_ASC
+		if direction == ST.SORT_ASC then
 			return addon:VersionCompare(a.version, b.version)
+		else
+			return addon:VersionCompare(b.version, a.version)
 		end
 	end
 end

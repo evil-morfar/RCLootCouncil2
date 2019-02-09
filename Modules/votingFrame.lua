@@ -8,7 +8,6 @@ local addon = LibStub("AceAddon-3.0"):GetAddon("RCLootCouncil")
 local RCVotingFrame = addon:NewModule("RCVotingFrame", "AceComm-3.0", "AceTimer-3.0", "AceEvent-3.0", "AceBucket-3.0")
 local LibDialog = LibStub("LibDialog-1.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
-local LibDialog = LibStub("LibDialog-1.0")
 
 local ROW_HEIGHT = 20;
 local NUM_ROWS = 15;
@@ -36,7 +35,7 @@ function RCVotingFrame:OnInitialize()
 	-- The default values are in sorted order
 	defaultScrollTableData = {
 		{ name = "",				DoCellUpdate = RCVotingFrame.SetCellClass,		colName = "class",	sortnext = 2,		width = 20, },										-- 1 Class
-		{ name = _G.NAME,			DoCellUpdate = RCVotingFrame.SetCellName,			colName = "name",								width = 120,},										-- 2 Candidate Name
+		{ name = _G.NAME,			DoCellUpdate = RCVotingFrame.SetCellName,			colName = "name",		defaultsort = 1,	width = 120,},									-- 2 Candidate Name
 		{ name = _G.RANK,			DoCellUpdate = RCVotingFrame.SetCellRank,			colName = "rank",		sortnext = 5,		width = 95, comparesort = GuildRankSort,},-- 3 Guild rank
 		{ name = _G.ROLE,			DoCellUpdate = RCVotingFrame.SetCellRole,			colName = "role",		sortnext = 5,		width = 55, },										-- 4 Role
 		{ name = L["Response"],	DoCellUpdate = RCVotingFrame.SetCellResponse,	colName = "response",sortnext = 13,		width = 240, comparesort = ResponseSort,},-- 5 Response
@@ -553,6 +552,25 @@ function RCVotingFrame:SwitchSession(s)
 	self.frame.itemType:SetText(addon:GetItemTypeText(t.link, t.subType, t.equipLoc, t.typeID, t.subTypeID, t.classes, t.token, t.relic))
 	self.frame.bonuses:SetText(bonusText)
 
+	-- Owner
+	if t.owner and addon.candidates[t.owner] then -- We have a owner, that's a player in our group
+		-- Hack-reuse the SetCellClassIcon function
+		addon.SetCellClassIcon(nil,self.frame.ownerString.icon,nil,nil,nil,nil,nil,nil,nil, t.candidates[t.owner].class)
+		self.frame.ownerString.icon:Show()
+		self.frame.ownerString.owner:SetText(addon.Ambiguate(t.owner))
+		local c = addon:GetClassColor(t.candidates[t.owner].class)
+		self.frame.ownerString.owner:SetTextColor(c.r,c.g,c.b,c.a)
+		self.frame.ownerString.owner:Show()
+	elseif t.owner then -- We have a owner, probably a boss name
+		self.frame.ownerString.icon:Hide()
+		self.frame.ownerString.owner:SetText(t.owner)
+		self.frame.ownerString.owner:SetTextColor(1,1,1,1)
+		self.frame.ownerString.owner:Show()
+	else -- Assume there's no owner, shouldn't happen
+		self.frame.ownerString.icon:Hide()
+		self.frame.ownerString.owner:Hide()
+	end
+
 	-- Update the session buttons
 	sessionButtons[s] = self:UpdateSessionButton(s, t.texture, t.link, t.awarded)
 	sessionButtons[old] = self:UpdateSessionButton(old, lootTable[old].texture, lootTable[old].link, lootTable[old].awarded)
@@ -563,7 +581,7 @@ function RCVotingFrame:SwitchSession(s)
 		self.frame.st.cols[i].sort = nil
 		if self.frame.st.cols[i].colName == "response" then j = i end
 	end
-	self.frame.st.cols[j].sort = "asc"
+	self.frame.st.cols[j].sort = 1
 	FauxScrollFrame_OnVerticalScroll(self.frame.st.scrollframe, 0, self.frame.st.rowHeight, function() self.frame.st:Refresh() end) -- Reset scrolling to 0
 	self:Update(true)
 	self:UpdatePeopleToVote()
@@ -827,9 +845,20 @@ function RCVotingFrame:GetFrame()
 	f.lootStatus:SetScript("OnLeave", addon.Utils.HideTooltip)
 	f.lootStatus.text:SetJustifyH("RIGHT")
 
+	-- Owner
+	f.ownerString = {}
+	f.ownerString.icon = addon.UI:New("Icon", f.content)
+	f.ownerString.icon:SetPoint("LEFT", f.iState, "RIGHT", 5, 0)
+	f.ownerString.icon:SetSize(15,15)
+	f.ownerString.icon:Hide()
+
+	f.ownerString.owner = f.content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+	f.ownerString.owner:SetPoint("LEFT", f.ownerString.icon, "RIGHT")
+	f.ownerString.owner:Hide()
+
 	-- Award string
 	local awdstr = f.content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-	awdstr:SetPoint("CENTER", f.content, "TOP", 0, -53)
+	awdstr:SetPoint("CENTER", f.content, "TOP", 0, -35)
 	awdstr:SetText(L["Item was awarded to"])
 	awdstr:SetTextColor(1, 1, 0, 1) -- Yellow
 	awdstr:Hide()
@@ -1242,8 +1271,8 @@ function ResponseSort(table, rowa, rowb, sortbycol)
 		end
 		return false
 	else
-		local direction = column.sort or column.defaultsort or "asc";
-		if direction:lower() == "asc" then
+		local direction = column.sort or column.defaultsort or 1
+		if direction == 1 then
 			return a < b;
 		else
 			return a > b;
@@ -1270,11 +1299,11 @@ function GuildRankSort(table, rowa, rowb, sortbycol)
 		end
 		return false
 	else
-		local direction = column.sort or column.defaultsort or "asc";
-		if direction:lower() == "asc" then
-			return a > b;
-		else
+		local direction = column.sort or column.defaultsort or 1
+		if direction == 1 then
 			return a < b;
+		else
+			return a > b;
 		end
 	end
 end

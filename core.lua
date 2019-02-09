@@ -408,8 +408,6 @@ function RCLootCouncil:OnInitialize()
 	-- add it to blizz options
 	self.optionsFrame = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("RCLootCouncil", "RCLootCouncil", nil, "settings")
 	self.optionsFrame.ml = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("RCLootCouncil", "Master Looter", "RCLootCouncil", "mlSettings")
-	-- reset verTestCandidates
-	self.db.global.verTestCandidates = {}
 	self.playersData = playersData -- Make it globally available
 	self:InitItemStorage()
 	-- Add logged in message in the log
@@ -442,43 +440,19 @@ function RCLootCouncil:OnEnable()
 
 	if IsInGuild() then
 		self.guildRank = select(2, GetGuildInfo("player"))
-		self:SendCommand("guild", "verTest", self.version, self.tVersion) -- send out a version check
+		self:ScheduleTimer("SendCommand", 2, "guild", "verTest", self.version, self.tVersion) -- send out a version check after a delay
 	end
 
 	-- For some reasons all frames are blank until ActivateSkin() is called, even though the values used
 	-- in the :CreateFrame() all :Prints as expected :o
 	self:ActivateSkin(db.currentSkin)
 
-	if self.db.global.version and self:VersionCompare(self.db.global.version, "2.9.0") then --self.version) then -- We've upgraded
-		if #self.db.profile.buttons > 0 or self.db.profile.tierButtons or #self.db.profile.responses > 0 then -- Indicators that old buttons haven't been migrated
-			for k,v in ipairs(self.db.profile.buttons) do
-				self.db.profile.buttons.default[k].text = v.text and v.text or self.db.profile.buttons.default[k].text
-				self.db.profile.buttons.default[k].whisperKey = v.whisperKey and v.whisperKey or self.db.profile.buttons.default[k].whisperKey
-				self.db.profile.buttons[k] = nil
-			end
-			if #self.db.profile.buttons > 0 then self.db.profile.buttons.default.numButtons = #self.db.profile.buttons end
-			for k,v in ipairs(self.db.profile.responses) do
-				if v.text then self.db.profile.responses.default[k].text = v.text end
-				if v.color then self.db.profile.responses.default[k].color = v.color end
-				self.db.profile.responses[k] = nil
-			end
-			-- Delete unnecessary records
-			self.db.profile.tierNumButtons = nil
-			self.db.profile.relicNumButtons = nil
-			self.db.profile.relicButtonsEnabled = nil
-			self.db.profile.tierButtonsEnabled = nil
-			self.db.profile.numButtons = nil
-			self.db.profile.relicButtons = nil
-			self.db.profile.tierButtons = nil
-			self.db.profile.responses.relic = nil
-			self.db.profile.responses.tier = nil
-		end
-
-		self.db.global.oldVersion = self.db.global.version
-		self.db.global.version = self.version
-	else -- Mostly for first time load
-		self.db.global.version = self.version;
+	if self.db.global.version and self:VersionCompare(self.db.global.version, "2.10.0") then --self.version) then -- We've upgraded
+		self.db.global.verTestCandidates = {} -- Reset due to new structure
 	end
+	self.db.global.oldVersion = self.db.global.version
+	self.db.global.version = self.version
+
 	self.db.global.logMaxEntries = self.defaults.global.logMaxEntries -- reset it now for zzz
 
 	if self.tVersion then
@@ -585,7 +559,11 @@ function RCLootCouncil:ChatCommand(msg)
 		self:Test(tonumber(args[1]) or 1, true)
 
 	elseif input == 'version' or input == L["version"] or input == "v" or input == "ver" then
-		self:CallModule("version")
+		if args[1] then -- Print outdated versions
+			self:GetActiveModule("version"):PrintOutDatedClients()
+		else -- Otherwise open it
+			self:CallModule("version")
+		end
 
 	elseif input == "history" or input == string.lower(_G.HISTORY) or input == "h" or input == "his" then
 		self:CallModule("history")
@@ -928,6 +906,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 
 			elseif command == "verTest" and not self:UnitIsUnit(sender, "player") then -- Don't reply to our own verTests
 				local otherVersion, tVersion = unpack(data)
+				self:GetActiveModule("version"):LogVersion(self:UnitName(sender), otherVersion, tVersion)
 				-- We want to reply to guild chat if that's where the message is sent
 				if distri == "GUILD" then
 					sender = "guild"
@@ -949,7 +928,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 				if not name then -- REVIEW v2.7.11 For some reason name can sometimes be missing (#341)!?
 					return self:DebugLog("Error - verTestReply with nil name", sender, name, otherVersion, tVersion, moduleData)
 				end
-				self.db.global.verTestCandidates[name] = otherVersion.. "-" .. tostring(tVersion) .. ": - " .. self.playerName
+				self:GetActiveModule("version"):LogVersion(self:UnitName(sender), otherVersion, tVersion)
 				if strfind(otherVersion, "%a+") then return self:Debug("Someone's tampering with version?", otherVersion) end
 				if self:VersionCompare(self.version,otherVersion) and not self.verCheckDisplayed and (not (tVersion or self.tVersion)) then
 					self:Print(format(L["version_outdated_msg"], self.version, otherVersion))
@@ -1500,7 +1479,7 @@ function RCLootCouncil:SendResponse(target, session, response, isTier, isRelic, 
 
 	if link and ilvl then
 		g1, g2 = self:GetGear(link, equipLoc, relicType)
-		diff = self:GetDiff(g1,g2,ilvl)
+		diff = self:GetIlvlDifference(link, g1,g2)
 	end
 
 	self:SendCommand(target, "response",
@@ -1527,10 +1506,36 @@ function RCLootCouncil:GetGear(link, equipLoc, relicType)
 	end
 end
 
-function RCLootCouncil:GetDiff(g1, g2, ilvl)
+--- Gets the ilvl difference between an item and the player's equipped gear.
+-- If a multislot is compared, the lowest ilvl item is normally selected, unless the player has equipped
+-- another version of the same item, in which case that item is compared.
+-- @paramsig item [,g1,g2,equipLoc]
+-- @param item The item to compare with players gear (Anything accepted by `GetItemInfo`).
+-- @param g1 Uses this specific item for the comparison if provided.
+-- @param g2 Same as g1, but for multislot items.
+-- @return Integer - the difference between the comparison item and the equipped gear.
+function RCLootCouncil:GetIlvlDifference(item, g1, g2)
+	if not g1 and g2 then error("You can't provide g2 without g1 in :GetIlvlDifference()") end
+	local _, link, _, ilvl, _, _, _, _, equipLoc = GetItemInfo(item)
+	if not g1 then
+		g1, g2 = self:GetPlayersGear(link, equipLoc, playersData.gears)
+	end
+
+	-- Check if it's a ring or trinket
+	if equipLoc == "INVTYPE_TRINKET" or equipLoc == "INVTYPE_FINGER" then
+		local id = self.Utils:GetItemIDFromLink(link)
+		if id == self.Utils:GetItemIDFromLink(g1) then -- compare with it
+			ilvl2 = select(4, GetItemInfo(g1))
+			return ilvl - ilvl2
+
+		elseif g2 and id == self.Utils:GetItemIDFromLink(g2) then
+			ilvl2 = select(4, GetItemInfo(g2))
+			return ilvl - ilvl2
+		end
+		-- We haven't equipped this item, do it normally
+	end
 	local diff = 0
 	local g1diff, g2diff = g1 and select(4, GetItemInfo(g1)), g2 and select(4, GetItemInfo(g2))
-	-- if g1 and g2 are not nil, g1diff and g2diff should always be returned because :GetArtifactRelics and:GetPlayersGear should always return cached link
 	if g1diff and g2diff then
 		diff = g1diff >= g2diff and ilvl - g2diff or ilvl - g1diff
 	elseif g1diff then
@@ -1634,7 +1639,7 @@ function RCLootCouncil:SendLootAck(table, skip)
 		if session > (skip or 0) then
 			hasData = true
 			local g1,g2 = self:GetGear(v.link, v.equipLoc, v.relic)
-			local diff = self:GetDiff(g1, g2, v.ilvl)
+			local diff = self:GetIlvlDifference(v.link, g1, g2)
 			toSend.gear1[session] = self:GetItemStringFromLink(g1)
 			toSend.gear2[session] = self:GetItemStringFromLink(g2)
 			toSend.diff[session] = diff
@@ -2180,7 +2185,7 @@ function RCLootCouncil:GetInstalledModulesFormattedData()
 				modules[num] = modules[num].."-"..self:GetModule(name).tVersion
 			end
 		else
-			local ver = GetAddOnMetadata(name, "Version")
+			local ver = GetAddOnMetadata(self:GetModule(name).baseName, "Version")
 			modules[num] = self:GetModule(name).baseName.. " - "..(ver or _G.UNKNOWN)
 		end
 	end
@@ -2451,7 +2456,9 @@ function RCLootCouncil:UnitName(unit)
 	-- Proceed with UnitName()
 	local name, realm = UnitName(unit)
 	if not realm or realm == "" then realm = self.realmName end -- Extract our own realm
-	if not name then return nil end -- Below won't work without name
+	if not name then -- if the name isn't set then UnitName couldn't parse unit, most likely because we're not grouped.
+		name = unit
+	end -- Below won't work without name
 	-- We also want to make sure the returned name is always title cased (it might not always be! ty Blizzard)
 	name = name:lower():gsub("^%l", string.upper)
 	return name and name.."-"..realm
