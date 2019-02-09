@@ -102,7 +102,7 @@ function RCVersionCheck:LogVersion(name, version, tversion)
 	if addon.db.global.verTestCandidates[name] then -- Updated
 		logversion(name, version, tversion, time())
 	else -- New
-		logversion(name, version, tversion, "new")
+		logversion(name, version, tversion, time(), "new")
 	end
 end
 
@@ -110,11 +110,12 @@ function RCVersionCheck:PrintOutDatedClients()
 	local outdated = {}
 	local isgrouped = IsInGroup()
 	local i = 0
+	local tChk = time() - 86400 -- Must be newer than 1 day
 	for name, data in pairs(addon.db.global.verTestCandidates) do
 		if isgrouped and addon.candidates[name] or not isgrouped then -- Only check people in our group if we're grouped.
-			if not data[2] and addon:VersionCompare(data[1], addon.version) then -- No tversion, and older than ours
+			if not data[2] and addon:VersionCompare(data[1], addon.version) and data[3] > tChk then -- No tversion, and older than ours, and fresh
 				i = i + 1
-				outdated[i] = name.. ": " ..data[1]
+				outdated[i] = addon:GetUnitClassColoredName(name).. ": " ..data[1]
 			end
 		end
 	end
