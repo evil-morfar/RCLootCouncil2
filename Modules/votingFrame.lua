@@ -892,38 +892,9 @@ function RCVotingFrame:GetFrame()
 end
 
 function RCVotingFrame:UpdateLootStatus()
-	if not next(addon.lootStatus) or not self.frame then return end -- Might not have any data
-	-- Find out which guid we're working with
-	local id, max = 0, 0
-	for k,v in pairs(addon.lootStatus) do
-		if v.num > max then
-			id = k
-			max = v.num
-		end
-	end
-	local looted, unlooted, fake = 0,0,0
-	local list = {} -- [name] = "status"
-	for name in pairs(addon.candidates) do
-		if not addon.lootStatus[id].candidates[name] then -- Unlooted
-			tinsert(list, {name = name, text = "|cffffff00"..L["Unlooted"]})
-			unlooted = unlooted + 1
-		elseif addon.lootStatus[id].candidates[name].status == "looted" then -- They have looted
-			tinsert(list, {name = name, text = "|cff00ff00 " .. L["Looted"]})
-			looted = looted + 1
-		elseif addon.lootStatus[id].candidates[name].status == "fakeLoot" then -- fake loot
-			tinsert(list, {name = name, text = addon.lootStatus[id].candidates[name].item .. "|cffff0000 "..L["Fake Loot"].."|r"})
-			fake = fake + 1
-		elseif addon.lootStatus[id].candidates[name].status == "fullbags" then
-			tinsert(list, {name = name, text = addon.lootStatus[id].candidates[name].item .. "|cffff0000 "..L["Full Bags"].."|r"})
-			fake = fake + 1 -- This counts as a fake loot
-		end
-	end
-	local num = 0
-	for k in pairs(addon.candidates) do num = num + 1 end
-	self.frame.lootStatus:SetText(L["Loot Status"] .. format(": |cffff0000%d|cffffffff/|cffffff00%d|cffffffff/|cff00ff00%d|cffffffff/%d|r", fake, unlooted, looted, num))
-	table.sort(list, function(a,b)
-		return a.name < b.name
-	end)
+	if not self.frame then return end -- Might not be created yet
+	local status, list = addon:GetLootStatusData()
+	self.frame.lootStatus:SetText(status)
 	self.frame.lootStatus:SetScript("OnEnter", function()
 		GameTooltip:SetOwner(UIParent, "ANCHOR_CURSOR")
 		GameTooltip:AddLine(L["Loot Status"])

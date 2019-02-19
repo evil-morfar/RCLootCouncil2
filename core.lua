@@ -1905,6 +1905,44 @@ function RCLootCouncil:ConvertDateToString(day, month, year)
 	return self.Utils:ConvertDateToString(day, month, year)
 end
 
+--- Checks the current loot status data and returns it in a formatted data
+-- @return Overview, List. Overview string for display, and a list of names/items and their status (for use in tooltips)
+function RCLootCouncil:GetLootStatusData ()
+	if not next(self.lootStatus) then return "None", {} end -- Might not have any data
+	-- Find out which guid we're working with
+	local id, max = 0, 0
+	for k,v in pairs(self.lootStatus) do
+		if v.num > max then
+			id = k
+			max = v.num
+		end
+	end
+	local looted, unlooted, fake = 0,0,0
+	local list = {} -- [i] = name, text="status"
+	local i = 0
+	for name in pairs(self.candidates) do
+		i = i + 1
+		if not self.lootStatus[id].candidates[name] then -- Unlooted
+			list[i] = {name = name, text = "|cffffff00"..L["Unlooted"]})
+			unlooted = unlooted + 1
+		elseif self.lootStatus[id].candidates[name].status == "looted" then -- They have looted
+			list[i] = {name = name, text = "|cff00ff00 " .. L["Looted"]})
+			looted = looted + 1
+		elseif self.lootStatus[id].candidates[name].status == "fakeLoot" then -- fake loot
+			list[i] = {name = name, text = addon.lootStatus[id].candidates[name].item .. "|cffff0000 "..L["Fake Loot"].."|r"})
+			fake = fake + 1
+		elseif self.lootStatus[id].candidates[name].status == "fullbags" then
+			list[i] = {name = name, text = addon.lootStatus[id].candidates[name].item .. "|cffff0000 "..L["Full Bags"].."|r"})
+			fake = fake + 1 -- This counts as a fake loot
+		end
+	end
+	local status = L["Loot Status"] .. format(": |cffff0000%d|cffffffff/|cffffff00%d|cffffffff/|cff00ff00%d|cffffffff/%d|r", fake, unlooted, looted, i)
+	table.sort(list, function(a,b)
+		return a.name < b.name
+	end)
+	return status, list
+end
+
 function RCLootCouncil:OnEvent(event, ...)
 	if event == "PARTY_LOOT_METHOD_CHANGED" then
 		self:Debug("Event:", event, ...)
