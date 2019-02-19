@@ -3126,3 +3126,11 @@ end
 function RCLootCouncil:TranslateRole(role)
 	return self.Utils:TranslateRole(role)
 end
+
+--[[
+	-- Fix for texts in whisperKeys:
+	/run local c=0;for _,b in pairs(RCLootCouncil.db.profile.buttons)do for i, btn in pairs(b)do if i~="numButtons" and btn.whisperKey and btn.whisperKey.text then btn.whisperKey=nil;c=c+1;end;end;end;print("Fixed", c, "buttons")
+
+	-- Fix for response object in response color:
+	/run local c=0;for _,r in pairs(RCLootCouncil.db.profile.responses.default)do if r.color then r.color.color = nil;r.color.text = nil;c=c+1;end;end;print("Fixed",c,"buttons")
+]]
