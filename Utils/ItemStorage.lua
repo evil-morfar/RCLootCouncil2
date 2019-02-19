@@ -13,23 +13,27 @@ local StoredItems = {}
 Storage.AcceptedTypes = {
    ["to_trade"]    = true, -- Items that should be traded to another player
    ["award_later"] = true, -- Items that should be used in a later session
+   ["temp"]        = true, -- Items we're temporarily storing
    ["other"]       = true, -- Unspecified
 }
 
-local item_prototype = {
+-- Item Class:
+local item_class = {
    type = "other", -- Default to unspecified
    time_remaining = 0, -- NOTE For now I rely on this not being updated for timeout checks. It should be precise enough, but needs testing
    time_added = 0,
    exists = false,
    link = "",
    args = {}, -- User args
-}
 
-local item_methods = {
-   GetTimeRemaining = function(self)
-      return self.time_remaining
+   Store = function(self)
+      tinsert(db.itemStorage, self)
+   end,
+   Unstore = function(self)
+      tDeleteItem(db.itemStorage, self)
    end,
 }
+
 -- lua
 local error, table, tostring, tinsert, tremove, type, select, FindInTableIf, time, tFilter, setmetatable, CopyTable, tDeleteItem, ipairs
     = error, table, tostring, tinsert, tremove, type, select, FindInTableIf, time, tFilter, setmetatable, CopyTable, tDeleteItem, ipairs
@@ -56,21 +60,30 @@ end
 local function findItemInBags(link)
    addon:DebugLog("Storage: searching for item:",link)
    if link and link ~= "" then
+      local c,s,t
       for container=0, _G.NUM_BAG_SLOTS do
    		for slot=1, GetContainerNumSlots(container) or 0 do
             if addon:ItemIsItem(link, GetContainerItemLink(container, slot)) then
+               -- We found it
+               c, s = container, slot
+               -- Now we need to ensure we don't have multiple of it
                addon:DebugLog("Found item at",container, slot)
-               return container, slot
+               t = addon:GetContainerItemTradeTimeRemaining(c,s)
+               if t > 0 then
+                  -- if the item is tradeable, then we've most likely just received it, and can safely return
+                  return c,s,t
+               end
             end
          end
       end
+      return c,s,t
    end
    addon:DebugLog("Error - Couldn't find item")
 end
 
 local function newItem(link, type, time_remaining)
    local Item = setmetatable({}, {
-      __index = item_prototype,
+      __index = item_class,
       __tostring = function(self)
          return self.link
       end,
@@ -82,33 +95,32 @@ local function newItem(link, type, time_remaining)
    return Item
 end
 
---- Pesistantly store an item
--- Item is stored in Ace3 db and an internal db for future use. The internal item object is returned
+
+--- Initiates a new item of item_class
 -- @param item ItemLink|ItemString|ItemID of the item
--- @param type The storage type. Used for different handlers, @see Storage.AcceptedTypes
+-- @param type Optional type for used in various functions, @see Storage.AcceptedTypes
 -- @param ... Userdata stored in the returned 'Item.args'. Directly stored if provided as table, otherwise as '{...}'.
--- @returns Item @see 'item_prototype' when the item is stored succesfully. Has flag Item.exists if present in bags.
-function Storage:StoreItem(item, typex, ...)
+-- @returns Item @see 'item_class' when the item is stored succesfully. Has flag Item.exists if present in bags.
+function Storage:New(item, typex, ...)
    if not typex then typex = "other" end
    if not self.AcceptedTypes[typex] then error("Type: " .. tostring(typex) .. " is not accepted. Accepted types are: " .. table.concat(self.AcceptedTypes, ", "),2) end
-   addon:Debug("Storage:StoreItem",item,typex,...)
-   local c,s = findItemInBags(item)
+   addon:Debug("Storage:New",item,typex,...)
+   local c,s,time_remaining = findItemInBags(item)
    local Item
    if not (c and s) then
       -- The Item is not in our bags
       Item = newItem(item, typex)
    else
-      local time_remaining = addon:GetContainerItemTradeTimeRemaining(c,s)
       Item = newItem(item, typex, time_remaining)
       Item.exists = true -- The item is in our bags
    end
-   if select(1, ...) == "restored" then
+   if select(1, ...) == "restored" then -- Special case, gets stored
       local OldItem = select(2, ...)
       Item.time_added = OldItem.time_added -- Restore original time added
       Item.args = OldItem.args
-   else -- We need to store it in db as well
+      Item:Store()
+   else
       Item.args = type(...) == "table" and ... or {...}
-      tinsert(db.itemStorage, Item)
    end
    tinsert(StoredItems, Item)
    return Item
@@ -203,9 +215,9 @@ function Storage:GetAllItemsMultiPred(...)
       end, true)
 end
 
---- Returns Container and Slot ids of the item.
+--- Returns Container and Slot ids of an item.
 -- @param item The item to find slots for, either 'Item' object or ItemLink.
--- @return container,slot The position of the item in the player's bags.
+-- @return container,slot,time_remaining The position of the item in the player's bags and it's remaining trade time (if present).
 function Storage:GetItemContainerSlot (item)
    if type(item) == "table" then -- Our Item object
       return findItemInBags(item.link)

@@ -99,7 +99,7 @@ function TradeUI:OnCommReceived(prefix, serializedMsg, distri, sender)
          if addon:UnitIsUnit(trader, "player") then
             -- We should give our item to 'winner'
             if not addon:UnitIsUnit(winner, "player") or (addon.testMode or addon.nnp) then -- Don't add ourself unless we're testing
-               addon.ItemStorage:StoreItem(addon:GetLootTable()[session].link, "to_trade", {recipient = winner})
+               addon.ItemStorage:New(addon:GetLootTable()[session].link, "to_trade", {recipient = winner}):Store()
             end
             self:Show()
          end
