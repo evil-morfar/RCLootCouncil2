@@ -64,6 +64,7 @@ end
 function RCVotingFrame:OnEnable()
 	self:RegisterComm("RCLootCouncil")
 	self:RegisterBucketEvent({"UNIT_PHASE", "ZONE_CHANGED_NEW_AREA"}, 1, "Update") -- Update "Out of instance" text when any raid members change zone
+	self:RegisterMessage("RCLootStatusReceived", "UpdateLootStatus")
 	db = addon:Getdb()
 	--active = true
 	moreInfo = db.modules["RCVotingFrame"].moreInfo
@@ -893,6 +894,8 @@ end
 
 function RCVotingFrame:UpdateLootStatus()
 	if not self.frame then return end -- Might not be created yet
+	if not addon:IsCouncil(addon.playerName) then return end
+	
 	local status, list = addon:GetLootStatusData()
 	self.frame.lootStatus:SetText(status)
 	self.frame.lootStatus:SetScript("OnEnter", function()

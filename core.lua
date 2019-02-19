@@ -19,6 +19,7 @@
 		RCCouncilChanged		-	fires when the council changes.
 		RCConfigTableChanged	-	fires when the user changes a settings. args: [val]; a few settings supplies their name.
 		RCUpdateDB				-	fires when the user receives sync data from another player.
+		RCLootStatusReceived - 	fires when new loot status is received, i.e. when it's safe to call :GetLootStatusData.
 	ml_core:
 		RCMLAddItem				- 	fires when an item is added to the loot table. args: item, loottable entry
 		RCMLAwardSuccess		- 	fires when an item is successfully awarded. args: session, winner, status.
@@ -1048,9 +1049,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 				if not self.lootStatus[guid] then self.lootStatus[guid] = {candidates = {}, num = 0} end
 				self.lootStatus[guid].num = self.lootStatus[guid].num + 1
 				self.lootStatus[guid].candidates[self:UnitName(sender)] = {status = "looted"}
-				if self:IsCouncil(self.playerName) then -- Only councilmen has the voting frame
-					self:GetActiveModule("votingframe"):UpdateLootStatus()
-				end
+				self:SendMessage("RCLootStatusReceived")
 
 			elseif command == "fakeLoot" or command == "fullbags" then
 				local link, guid = unpack(data)
@@ -1058,9 +1057,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 				if not self.lootStatus[guid] then self.lootStatus[guid] = {candidates = {}, num = 0} end
 				self.lootStatus[guid].num = self.lootStatus[guid].num + 1
 				self.lootStatus[guid].candidates[self:UnitName(sender)] = {status = command, item = link}
-				if self:IsCouncil(self.playerName) then
-					self:GetActiveModule("votingframe"):UpdateLootStatus()
-				end
+				self:SendMessage("RCLootStatusReceived")
 			end
 		else
 			-- Most likely pre 2.0 command
