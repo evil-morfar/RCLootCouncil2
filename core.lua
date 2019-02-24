@@ -1920,16 +1920,16 @@ function RCLootCouncil:GetLootStatusData ()
 	for name in pairs(self.candidates) do
 		i = i + 1
 		if not self.lootStatus[id].candidates[name] then -- Unlooted
-			list[i] = {name = name, text = "|cffffff00"..L["Unlooted"]})
+			list[i] = {name = name, text = "|cffffff00"..L["Unlooted"]}
 			unlooted = unlooted + 1
 		elseif self.lootStatus[id].candidates[name].status == "looted" then -- They have looted
-			list[i] = {name = name, text = "|cff00ff00 " .. L["Looted"]})
+			list[i] = {name = name, text = "|cff00ff00 " .. L["Looted"]}
 			looted = looted + 1
 		elseif self.lootStatus[id].candidates[name].status == "fakeLoot" then -- fake loot
-			list[i] = {name = name, text = addon.lootStatus[id].candidates[name].item .. "|cffff0000 "..L["Fake Loot"].."|r"})
+			list[i] = {name = name, text = addon.lootStatus[id].candidates[name].item .. "|cffff0000 "..L["Fake Loot"].."|r"}
 			fake = fake + 1
 		elseif self.lootStatus[id].candidates[name].status == "fullbags" then
-			list[i] = {name = name, text = addon.lootStatus[id].candidates[name].item .. "|cffff0000 "..L["Full Bags"].."|r"})
+			list[i] = {name = name, text = addon.lootStatus[id].candidates[name].item .. "|cffff0000 "..L["Full Bags"].."|r"}
 			fake = fake + 1 -- This counts as a fake loot
 		end
 	end
