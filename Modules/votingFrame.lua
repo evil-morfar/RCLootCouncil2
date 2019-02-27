@@ -895,9 +895,9 @@ end
 function RCVotingFrame:UpdateLootStatus()
 	if not self.frame then return end -- Might not be created yet
 	if not addon:IsCouncil(addon.playerName) then return end
-	
+
 	local status, list = addon:GetLootStatusData()
-	self.frame.lootStatus:SetText(status)
+	self.frame.lootStatus:SetText(L["Loot Status"] .. ": " .. status)
 	self.frame.lootStatus:SetScript("OnEnter", function()
 		GameTooltip:SetOwner(UIParent, "ANCHOR_CURSOR")
 		GameTooltip:AddLine(L["Loot Status"])

@@ -1933,7 +1933,7 @@ function RCLootCouncil:GetLootStatusData ()
 			fake = fake + 1 -- This counts as a fake loot
 		end
 	end
-	local status = L["Loot Status"] .. format(": |cffff0000%d|cffffffff/|cffffff00%d|cffffffff/|cff00ff00%d|cffffffff/%d|r", fake, unlooted, looted, i)
+	local status = format("|cffff0000%d|cffffffff/|cffffff00%d|cffffffff/|cff00ff00%d|cffffffff/%d|r", fake, unlooted, looted, i)
 	table.sort(list, function(a,b)
 		return a.name < b.name
 	end)
