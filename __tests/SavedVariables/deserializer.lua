@@ -181,7 +181,10 @@ local textToDecode = {
 [2] = "^1^SlootAck^T^N1^SFreakeer-Area52^N2^N262^N3^N941.875^N4^T^Sresponse^T^N2^B^N3^B^t^Sdiff^T^N1^N15^N2^N15^N3^N0^t^Sgear1^T^N1^Sitem:147180:5929:::::::110:262::5:3:3562:1497:3528^N2^Sitem:147180:5929:::::::110:262::5:3:3562:1497:3528^t^Sgear2^T^t^t^t^^",
 [3] = "^1^Sreroll^T^N1^T^N1^T^SequipLoc^SINVTYPE_SHOULDER^Silvl^N930^Slink^S|cffa335ee|Hitem:152530::::::::110:105::3::::|h[Shoulders~`of~`the~`Antoran~`Vanquisher]|h|r^SisRoll^B^Sclasses^N1192^Sname^SShoulders~`of~`the~`Antoran~`Vanquisher^Stoken^SShoulderSlot^SnoAutopass^b^Srelic^b^Ssession^N2^Stexture^N135053^t^t^t^^",
 [4] = "^1^SlootAck^T^N1^SFreakeer-Area52^N2^N262^N3^N941.875^N4^T^Sresponse^T^N1^B^t^Sdiff^T^N1^N15^t^Sgear1^T^N1^Sitem:147180:5929:::::::110:262::5:3:3562:1497:3528^t^Sgear2^T^t^t^t^^",
+
+"^1^Shistory^T^N1^SGarabeams-Ravencrest^N2^T^SmapID^N2070^Scolor^T^N1^N1^N2^N0^N3^N0.07^N4^N1^t^Sclass^SDEMONHUNTER^SgroupSize^N20^Sboss^SChampion~`of~`the~`Light^Stime^S21:37:04^SitemReplaced1^S|cffa335ee|Hitem:165819::::::::120:104::3:5:4822:1507:4786:5414:4775:::|h[Tidemother's~`Cover]|h|r^Sinstance^SBattle~`of~`Dazar'alor-Mythic^Sowner^SCrawde-Ravencrest^Sresponse^SMultiple~`trait~`upgrade^SdifficultyID^N16^SlootWon^S|cffa335ee|Hitem:165519::::::::120:104::6:4:4824:1537:4786:5420:::|h[Cowl~`of~`Righteous~`Resolve]|h|r^Sid^S1551044224-6^Sdate^S24/02/19^SresponseID^N1^Svotes^N0^SisAwardReason^b^t^t^^",
 }
+
 
 local reconnect = {
      [1] = {
