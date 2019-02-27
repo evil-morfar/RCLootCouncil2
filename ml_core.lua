@@ -1141,6 +1141,7 @@ RCLootCouncilML.announceItemStringsDesc = {
 	L["announce_&i_desc"],
 	L["announce_&l_desc"],
 	L["announce_&t_desc"],
+	L["announce_&o_desc"],
 }
 
 --@param: table: Table. The lootTable or the reroll table.
@@ -1177,6 +1178,7 @@ RCLootCouncilML.awardStrings = {
 		local t = RCLootCouncilML:GetItemInfo(item)
 		return t and addon:GetItemTypeText(t.link, t.subType, t.equipLoc, t.typeID, t.subTypeID, t.classes, t.token, t.relic) or "" end,
 	["&o"] = function(...) return RCLootCouncilML.lootTable[select(5, ...)].owner and addon.Ambiguate(RCLootCouncilML.lootTable[select(5, ...)].owner) or "" end,
+	["&m"] = function(...) return addon:GetActiveModule("votingframe"):GetCandidateData(select(5,...), select(1,...), "note") or "<none>" end,
 }
 
 -- The description for each keyword
@@ -1189,6 +1191,7 @@ RCLootCouncilML.awardStringsDesc = {
 	L["announce_&l_desc"],
 	L["announce_&t_desc"],
 	L["announce_&o_desc"],
+	L["announce_&m_desc"],
 }
 
 

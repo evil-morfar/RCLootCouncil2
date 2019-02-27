@@ -2,6 +2,8 @@
 * Added loot status to the session frame.
 * This allows the ML to see how many have looted the boss before starting a session.
 
+* Added `notes` as an option to announce awards. 
+
 
 
 ### v2.10.0
