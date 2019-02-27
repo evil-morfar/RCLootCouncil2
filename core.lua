@@ -1926,10 +1926,10 @@ function RCLootCouncil:GetLootStatusData ()
 			list[i] = {name = name, text = "|cff00ff00 " .. L["Looted"]}
 			looted = looted + 1
 		elseif self.lootStatus[id].candidates[name].status == "fakeLoot" then -- fake loot
-			list[i] = {name = name, text = addon.lootStatus[id].candidates[name].item .. "|cffff0000 "..L["Fake Loot"].."|r"}
+			list[i] = {name = name, text = self.lootStatus[id].candidates[name].item .. "|cffff0000 "..L["Fake Loot"].."|r"}
 			fake = fake + 1
 		elseif self.lootStatus[id].candidates[name].status == "fullbags" then
-			list[i] = {name = name, text = addon.lootStatus[id].candidates[name].item .. "|cffff0000 "..L["Full Bags"].."|r"}
+			list[i] = {name = name, text = self.lootStatus[id].candidates[name].item .. "|cffff0000 "..L["Full Bags"].."|r"}
 			fake = fake + 1 -- This counts as a fake loot
 		end
 	end
