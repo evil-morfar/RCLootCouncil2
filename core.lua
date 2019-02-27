@@ -2490,7 +2490,7 @@ function RCLootCouncil:UnitName(unit)
 	unit = unit:lower()
 	-- Proceed with UnitName()
 	local name, realm = UnitName(unit)
-	if not realm or realm == "" then realm = self.realmName end -- Extract our own realm
+	if not realm or realm == "" then realm = self.realmName or "" end -- Extract our own realm
 	if not name then -- if the name isn't set then UnitName couldn't parse unit, most likely because we're not grouped.
 		name = unit
 	end -- Below won't work without name
