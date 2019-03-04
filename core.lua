@@ -19,6 +19,7 @@
 		RCCouncilChanged		-	fires when the council changes.
 		RCConfigTableChanged	-	fires when the user changes a settings. args: [val]; a few settings supplies their name.
 		RCUpdateDB				-	fires when the user receives sync data from another player.
+		RCLootStatusReceived - 	fires when new loot status is received, i.e. when it's safe to call :GetLootStatusData.
 	ml_core:
 		RCMLAddItem				- 	fires when an item is added to the loot table. args: item, loottable entry
 		RCMLAwardSuccess		- 	fires when an item is successfully awarded. args: session, winner, status.
@@ -1048,9 +1049,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 				if not self.lootStatus[guid] then self.lootStatus[guid] = {candidates = {}, num = 0} end
 				self.lootStatus[guid].num = self.lootStatus[guid].num + 1
 				self.lootStatus[guid].candidates[self:UnitName(sender)] = {status = "looted"}
-				if self:IsCouncil(self.playerName) then -- Only councilmen has the voting frame
-					self:GetActiveModule("votingframe"):UpdateLootStatus()
-				end
+				self:SendMessage("RCLootStatusReceived")
 
 			elseif command == "fakeLoot" or command == "fullbags" then
 				local link, guid = unpack(data)
@@ -1058,9 +1057,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 				if not self.lootStatus[guid] then self.lootStatus[guid] = {candidates = {}, num = 0} end
 				self.lootStatus[guid].num = self.lootStatus[guid].num + 1
 				self.lootStatus[guid].candidates[self:UnitName(sender)] = {status = command, item = link}
-				if self:IsCouncil(self.playerName) then
-					self:GetActiveModule("votingframe"):UpdateLootStatus()
-				end
+				self:SendMessage("RCLootStatusReceived")
 			end
 		else
 			-- Most likely pre 2.0 command
@@ -1905,6 +1902,44 @@ function RCLootCouncil:ConvertDateToString(day, month, year)
 	return self.Utils:ConvertDateToString(day, month, year)
 end
 
+--- Checks the current loot status data and returns it in a formatted data
+-- @return Overview, List. Overview string for display, and a list of names/items and their status (for use in tooltips)
+function RCLootCouncil:GetLootStatusData ()
+	if not next(self.lootStatus) then return "None", {} end -- Might not have any data
+	-- Find out which guid we're working with
+	local id, max = 0, 0
+	for k,v in pairs(self.lootStatus) do
+		if v.num > max then
+			id = k
+			max = v.num
+		end
+	end
+	local looted, unlooted, fake = 0,0,0
+	local list = {} -- [i] = name, text="status"
+	local i = 0
+	for name in pairs(self.candidates) do
+		i = i + 1
+		if not self.lootStatus[id].candidates[name] then -- Unlooted
+			list[i] = {name = name, text = "|cffffff00"..L["Unlooted"]}
+			unlooted = unlooted + 1
+		elseif self.lootStatus[id].candidates[name].status == "looted" then -- They have looted
+			list[i] = {name = name, text = "|cff00ff00 " .. L["Looted"]}
+			looted = looted + 1
+		elseif self.lootStatus[id].candidates[name].status == "fakeLoot" then -- fake loot
+			list[i] = {name = name, text = self.lootStatus[id].candidates[name].item .. "|cffff0000 "..L["Fake Loot"].."|r"}
+			fake = fake + 1
+		elseif self.lootStatus[id].candidates[name].status == "fullbags" then
+			list[i] = {name = name, text = self.lootStatus[id].candidates[name].item .. "|cffff0000 "..L["Full Bags"].."|r"}
+			fake = fake + 1 -- This counts as a fake loot
+		end
+	end
+	local status = format("|cffff0000%d|cffffffff/|cffffff00%d|cffffffff/|cff00ff00%d|cffffffff/%d|r", fake, unlooted, looted, i)
+	table.sort(list, function(a,b)
+		return a.name < b.name
+	end)
+	return status, list
+end
+
 function RCLootCouncil:OnEvent(event, ...)
 	if event == "PARTY_LOOT_METHOD_CHANGED" then
 		self:Debug("Event:", event, ...)
@@ -2455,7 +2490,7 @@ function RCLootCouncil:UnitName(unit)
 	unit = unit:lower()
 	-- Proceed with UnitName()
 	local name, realm = UnitName(unit)
-	if not realm or realm == "" then realm = self.realmName end -- Extract our own realm
+	if not realm or realm == "" then realm = self.realmName or "" end -- Extract our own realm
 	if not name then -- if the name isn't set then UnitName couldn't parse unit, most likely because we're not grouped.
 		name = unit
 	end -- Below won't work without name
@@ -3126,3 +3161,11 @@ end
 function RCLootCouncil:TranslateRole(role)
 	return self.Utils:TranslateRole(role)
 end
+
+--[[
+	-- Fix for texts in whisperKeys:
+	/run local c=0;for _,b in pairs(RCLootCouncil.db.profile.buttons)do for i, btn in pairs(b)do if i~="numButtons" and btn.whisperKey and btn.whisperKey.text then btn.whisperKey=nil;c=c+1;end;end;end;print("Fixed", c, "buttons")
+
+	-- Fix for response object in response color:
+	/run local c=0;for _,r in pairs(RCLootCouncil.db.profile.responses.default)do if r.color then r.color.color = nil;r.color.text = nil;c=c+1;end;end;print("Fixed",c,"buttons")
+]]
