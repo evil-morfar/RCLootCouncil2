@@ -2961,6 +2961,7 @@ function RCLootCouncil:GetResponse(type, name)
 	if self.mldb.responses and not self.mldb.responses[type] and self.BTN_SLOTS[type] and self.mldb.responses[self.BTN_SLOTS[type]] then
 		type = self.BTN_SLOTS[type]
 	end
+	-- FIXME If we use non default button without mldb (i.e. changing responses in loot history), this will fail.
    if type == "default" or (self.mldb and not self.mldb.responses[type]) then -- We have a value if mldb is blank
       if db.responses.default[name] or self.mldb.responses.default[name] then
          return (self.mldb.responses and self.mldb.responses.default and self.mldb.responses.default[name]) or db.responses.default[name]
