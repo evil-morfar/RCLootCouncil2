@@ -1,3 +1,10 @@
+### v2.10.2
+---
+###### Bugfixes
+* *VotingFrame session buttons now better display the status, particular for council members.*
+
+
+
 ### v2.10.1
 ---
 **Loot Status**

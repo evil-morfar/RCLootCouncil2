@@ -572,9 +572,7 @@ function RCVotingFrame:SwitchSession(s)
 		self.frame.ownerString.owner:Hide()
 	end
 
-	-- Update the session buttons
-	sessionButtons[s] = self:UpdateSessionButton(s, t.texture, t.link, t.awarded)
-	sessionButtons[old] = self:UpdateSessionButton(old, lootTable[old].texture, lootTable[old].link, lootTable[old].awarded)
+	self:UpdateSessionButtons()
 
 	-- Since we switched sessions, we want to sort by response
 	local j = 1
@@ -941,6 +939,12 @@ function RCVotingFrame:UpdatePeopleToVote()
 		addon:CreateTooltip(L["The following council members have voted"], unpack(voters))
 	end)
 	self.frame.rollResult:SetWidth(self.frame.rollResult.text:GetStringWidth())
+end
+
+function RCVotingFrame:UpdateSessionButtons()
+	for i, t in ipairs(self.lootTable) do
+		sessionButtons[i] = self:UpdateSessionButton(i, t.texture, t.link, t.awarded)
+	end
 end
 
 function RCVotingFrame:UpdateSessionButton(i, texture, link, awarded)
