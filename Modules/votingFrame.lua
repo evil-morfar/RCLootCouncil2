@@ -942,7 +942,7 @@ function RCVotingFrame:UpdatePeopleToVote()
 end
 
 function RCVotingFrame:UpdateSessionButtons()
-	for i, t in ipairs(self.lootTable) do
+	for i, t in ipairs(lootTable) do
 		sessionButtons[i] = self:UpdateSessionButton(i, t.texture, t.link, t.awarded)
 	end
 end
