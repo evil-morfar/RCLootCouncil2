@@ -1122,6 +1122,41 @@ function LootHistory.RightClickMenu(menu, level)
 				MSA_DropDownMenu_AddButton(info, level)
 			end
 
+			info = MSA_DropDownMenu_CreateInfo()
+			for k,responses in pairs(db.responses) do
+				addon:Debug("db.responses:", k)
+				if k ~= "default" and k ~= "*" then
+					info.text = k == "AZERITE" and L["Azerite Armor"] or _G[k] or _G.UNKNOWN
+					info.isTitle = true
+					info.disabled = true
+					info.notCheckable = true
+					MSA_DropDownMenu_AddButton(info, level)
+					for i, v in ipairs(responses) do
+						addon:Debug("responses:", i)
+						info.text = v.text
+						info.colorCode = "|cff"..addon:RGBToHex(unpack(v.color))
+						info.isTitle = false
+						info.disabled = false
+						info.notCheckable = true
+						info.func = function()
+							addon:Debug("Changing response id @", data.name, "from", data.response, "to", i)
+							local entry = lootDB[data.name][data.num]
+							entry.responseID = i
+							entry.response = addon:GetResponse(k,i).text
+							entry.color = {addon:GetResponseColor(k, i)}
+							entry.isAwardReason = nil
+							entry.tokenRoll = nil
+							entry.relicRoll = nil
+							data.response = i
+							data.cols[6].args = {color = entry.color, response = entry.response, responseID = i}
+							LootHistory.frame.st:SortData()
+							addon:SendMessage("RCHistory_ResponseEdit", data)
+						end
+						MSA_DropDownMenu_AddButton(info, level)
+					end
+				end
+			end
+
 			if addon.debug then
 				for k,v in pairs(db.responses.default) do
 					if type(k) ~= "number" and k ~= "tier" and k ~= "relic" then

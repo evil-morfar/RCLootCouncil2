@@ -1,3 +1,14 @@
+### v2.10.2
+---
+* **Loot History**
+* Added all non default responses to the list of changeable responses.
+
+
+###### Bugfixes
+* *VotingFrame session buttons now better display the status, particular for council members.*
+
+
+
 ### v2.10.1
 ---
 **Loot Status**
