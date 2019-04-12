@@ -1,3 +1,9 @@
+### v2.10.3
+---
+###### Bugfixes
+* *Added error correcting code for corrupted settings and loot history.*
+
+
 ### v2.10.2
 ---
 * **Loot History**
