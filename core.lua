@@ -451,6 +451,47 @@ function RCLootCouncil:OnEnable()
 	if self.db.global.version and self:VersionCompare(self.db.global.version, "2.10.0") then --self.version) then -- We've upgraded
 		self.db.global.verTestCandidates = {} -- Reset due to new structure
 	end
+	if self.db.global.version and self:VersionCompare(self.db.global.version, "2.10.3") then --self.version) then -- We've upgraded
+		self:ScheduleTimer(function()
+			-- Fix for texts in whisperKeys:
+			local c=0
+			for _,b in pairs(self.db.profile.buttons) do
+				for i, btn in pairs(b) do
+					if i~="numButtons" and btn.whisperKey and btn.whisperKey.text then
+						btn.whisperKey=nil
+						c=c+1
+					end
+				end
+			end
+			self:Debug("Fixed", c, "buttons")
+
+			-- Fix for response object in response color:
+			c=0
+			for _,r in pairs(self.db.profile.responses.default)do
+				if r.color and r.color.color then
+					r.color.color = nil;
+					r.color.text = nil;
+					c=c+1;
+				end;
+			end;
+			self:Debug("Fixed",c,"responses")
+
+			c=0
+			for _, factionrealm in pairs(self.lootDB.sv.factionrealm) do
+				for player, items in pairs(factionrealm) do
+					for _, item in pairs(items) do
+						if item.color and item.color.color then
+							item.color.color = nil
+							item.color.text = nil
+							c=c+1
+						end
+					end
+				end
+			end
+			self:Debug("Fixed", c, "loot history entries")
+
+		end, 10) -- Wait like 10 seconds after login
+	end
 	self.db.global.oldVersion = self.db.global.version
 	self.db.global.version = self.version
 
