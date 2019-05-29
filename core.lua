@@ -93,7 +93,7 @@ function RCLootCouncil:OnInitialize()
   	self.version = GetAddOnMetadata("RCLootCouncil", "Version")
 	self.nnp = false
 	self.debug = false
-	self.tVersion = "alpha.1" -- String or nil. Indicates test version, which alters stuff like version check. Is appended to 'version', i.e. "version-tVersion" (max 10 letters for stupid security)
+	self.tVersion = nil -- String or nil. Indicates test version, which alters stuff like version check. Is appended to 'version', i.e. "version-tVersion" (max 10 letters for stupid security)
 
 	self.playerClass = select(2, UnitClass("player"))
 	self.guildRank = L["Unguilded"]
@@ -450,6 +450,86 @@ function RCLootCouncil:OnEnable()
 
 	if self.db.global.version and self:VersionCompare(self.db.global.version, "2.10.0") then --self.version) then -- We've upgraded
 		self.db.global.verTestCandidates = {} -- Reset due to new structure
+	end
+	if self.db.global.version and self:VersionCompare(self.db.global.version, "2.10.3") then --self.version) then -- We've upgraded
+		self:ScheduleTimer(function()
+			-- Log fixes:
+			self.db.global["2.10.3"] = {}
+			-- Fix for texts in whisperKeys:
+			local c=0
+			for _,b in pairs(self.db.profile.buttons) do
+				for i, btn in pairs(b) do
+					if i~="numButtons" and btn.whisperKey and btn.whisperKey.text then
+						btn.whisperKey=nil
+						c=c+1
+					end
+				end
+			end
+			self.db.global["2.10.3"].buttons = c
+			self:Debug("Fixed", c, "buttons")
+
+			-- Fix for response object in response color:
+			c=0
+			for _,r in pairs(self.db.profile.responses.default)do
+				if r.color and r.color.color then
+					r.color.color = nil;
+					r.color.text = nil;
+					c=c+1;
+				end;
+			end;
+			self.db.global["2.10.3"].responses = c
+			self:Debug("Fixed",c,"responses")
+
+			c=0
+			for _, factionrealm in pairs(self.lootDB.sv.factionrealm) do
+				for player, items in pairs(factionrealm) do
+					for _, item in pairs(items) do
+						if item.color and item.color.color then
+							item.color.color = nil
+							item.color.text = nil
+							c=c+1
+						end
+					end
+				end
+			end
+			self.db.global["2.10.3"].entries = c
+			self:Debug("Fixed", c, "loot history entries")
+
+			-- Fix missing indicies in lootDB color arrays:
+			c=0
+			local colors = {}
+			local needFix = false
+			-- fetch all colors first, and check if we need fixes
+			for _, factionrealm in pairs(self.lootDB.sv.factionrealm) do
+				for player, items in pairs(factionrealm) do
+					for index, item in pairs(items) do
+						colors[item.response] = item.color
+						if not needFix then -- Make it permanent
+							needFix = #item.color == 0
+						end
+					end
+				end
+			end
+			if needFix then
+				local found = false
+				for _, factionrealm in pairs(self.lootDB.sv.factionrealm) do
+					for player, items in pairs(factionrealm) do
+						for _, item in pairs(items) do
+							found = #item.color == 0
+							if found then
+								item.color = colors[item.response]
+								c = c + 1
+							end
+						end
+					end
+				end
+			end
+			self.db.global["2.10.3"].colors = c
+			self:Debug("Color indicies needs fix?", needFix, "Fixed", c, "entries")
+
+
+
+		end, 10) -- Wait like 10 seconds after login
 	end
 	self.db.global.oldVersion = self.db.global.version
 	self.db.global.version = self.version
