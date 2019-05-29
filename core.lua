@@ -1602,11 +1602,11 @@ function RCLootCouncil:GetIlvlDifference(item, g1, g2)
 	if equipLoc == "INVTYPE_TRINKET" or equipLoc == "INVTYPE_FINGER" then
 		local id = self.Utils:GetItemIDFromLink(link)
 		if id == self.Utils:GetItemIDFromLink(g1) then -- compare with it
-			ilvl2 = select(4, GetItemInfo(g1))
+			local ilvl2 = select(4, GetItemInfo(g1))
 			return ilvl - ilvl2
 
 		elseif g2 and id == self.Utils:GetItemIDFromLink(g2) then
-			ilvl2 = select(4, GetItemInfo(g2))
+			local ilvl2 = select(4, GetItemInfo(g2))
 			return ilvl - ilvl2
 		end
 		-- We haven't equipped this item, do it normally
