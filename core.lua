@@ -766,23 +766,17 @@ end
 -- Update the recentTradableItem by link, if it is in bag and tradable.
 function RCLootCouncil:UpdateAndSendRecentTradableItem(info, count)
 	local found = false
-	for i = 0, _G.NUM_BAG_SLOTS do
-		for j = 1, GetContainerNumSlots(i) do
-			local _, _, _, _, _, _, link2 = GetContainerItemInfo(i, j)
-			if link2 and self:ItemIsItem(info.link, link2) then
-				found = true -- We found something, might be an old copy of the item, continue searching.
-				if self:GetContainerItemTradeTimeRemaining(i, j) > 0 then
-					if self.mldb.rejectTrade then
-						LibDialog:Spawn("RCLOOTCOUNCIL_KEEP_ITEM", info.link)
-						return
-					end
-					self:SendCommand("group", "tradable", info.link, info.guid)
-					return
-				end
+	local Item = self.ItemStorage:New(info.link, "temp")
+	if Item.inBags then
+		found = true
+		if Item.time_remaining > 0 then
+			if self.mldb.rejectTrade then
+				LibDialog:Spawn("RCLOOTCOUNCIL_KEEP_ITEM", info.link)
+				return
 			end
+			self:SendCommand("group", "tradable", info.link, info.guid)
+			return
 		end
-	end
-	if found then
 		-- We've searched every single bag space, and found at least 1 item that wasn't tradeable,
 		-- and none that was. We can now safely assume the item can't be traded.
 		return self:SendCommand("group", "not_tradeable", info.link, info.guid)
