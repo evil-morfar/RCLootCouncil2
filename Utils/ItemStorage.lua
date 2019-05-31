@@ -13,7 +13,7 @@ local private = {}
 
 --[[
    Each entry index marks the type of item, and can have following fields:
-      'keep' - Must be in player's bags to be initialized on login?
+      'bagged' - Must be in player's bags to be initialized on login?
 ]]
 Storage.AcceptedTypes = {
    ["to_trade"]    = { -- Items that should be traded to another player
