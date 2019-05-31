@@ -9,12 +9,25 @@ local Storage = {}
 addon.ItemStorage = Storage
 
 local StoredItems = {}
+local private = {}
 
+--[[
+   Each entry index marks the type of item, and can have following fields:
+      'keep' - Must be in player's bags to be initialized on login?
+]]
 Storage.AcceptedTypes = {
-   ["to_trade"]    = true, -- Items that should be traded to another player
-   ["award_later"] = true, -- Items that should be used in a later session
-   ["temp"]        = true, -- Items we're temporarily storing
-   ["other"]       = true, -- Unspecified
+   ["to_trade"]    = { -- Items that should be traded to another player
+      bagged = true,
+   },
+   ["award_later"] = { -- Items that should be used in a later session
+      bagged = false,
+   },
+   ["temp"]        = { -- Items we're temporarily storing
+      bagged = true
+   },
+   ["other"]       = { -- Unspecified
+      bagged = false
+   },
 }
 
 -- Item Class:
@@ -28,9 +41,11 @@ local item_class = {
 
    Store = function(self)
       tinsert(db.itemStorage, self)
+      return self
    end,
    Unstore = function(self)
       tDeleteItem(db.itemStorage, self)
+      return self
    end,
 }
 
@@ -44,57 +59,13 @@ function addon:InitItemStorage()-- Extract items from our SV. Could be more eleg
    db = self:Getdb()
    local Item;
    for k, v in ipairs(db.itemStorage) do
-      Item = Storage:StoreItem(v.link, v.type, "restored", v)
-      if not Item.inBags then -- Item probably no longer exists?
-         addon:Debug("Error - ItemStorage, couldn't add db item:", v.link)
-         local key = FindInTableIf(db.itemStorage, function(d) return addon:ItemIsItem(v.link, d.link) end)
-         if key then
-            tremove(db.itemStorage, key)
-         else
-            addon:Debug("Error - Unable to remove item from db?!")
-         end
+      Item = Storage:New(v.link, v.type, "restored", v)
+      if not Item.inBags and Storage.AcceptedTypes[Item.type] then -- Item probably no longer exists?
+         addon:Debug("Error - ItemStorage, db item no longer in bags", v.link)
+         Storage:RemoveItem(Item)
       end
    end
 end
-
-local function findItemInBags(link)
-   addon:DebugLog("Storage: searching for item:",link)
-   if link and link ~= "" then
-      local c,s,t
-      for container=0, _G.NUM_BAG_SLOTS do
-   		for slot=1, GetContainerNumSlots(container) or 0 do
-            if addon:ItemIsItem(link, GetContainerItemLink(container, slot)) then
-               -- We found it
-               c, s = container, slot
-               -- Now we need to ensure we don't have multiple of it
-               addon:DebugLog("Found item at",container, slot)
-               t = addon:GetContainerItemTradeTimeRemaining(c,s)
-               if t > 0 then
-                  -- if the item is tradeable, then we've most likely just received it, and can safely return
-                  return c,s,t
-               end
-            end
-         end
-      end
-      return c,s,t
-   end
-   addon:DebugLog("Error - Couldn't find item")
-end
-
-local function newItem(link, type, time_remaining)
-   local Item = setmetatable({}, {
-      __index = item_class,
-      __tostring = function(self)
-         return self.link
-      end,
-   })
-   Item.link = link
-   Item.type = type and type or Item.type
-   Item.time_remaining = time_remaining and time_remaining or Item.time_remaining
-   Item.time_added = time()
-   return Item
-end
-
 
 --- Initiates a new item of item_class
 -- @param item ItemLink|ItemString|ItemID of the item
@@ -105,49 +76,54 @@ function Storage:New(item, typex, ...)
    if not typex then typex = "other" end
    if not self.AcceptedTypes[typex] then error("Type: " .. tostring(typex) .. " is not accepted. Accepted types are: " .. table.concat(self.AcceptedTypes, ", "),2) end
    addon:Debug("Storage:New",item,typex,...)
-   local c,s,time_remaining = findItemInBags(item)
+   local c,s,time_remaining = private:findItemInBags(item)
    local Item
    if not (c and s) then
       -- The Item is not in our bags
-      Item = newItem(item, typex)
+      Item = private:newItem(item, typex)
    else
-      Item = newItem(item, typex, time_remaining)
+      Item = private:newItem(item, typex, time_remaining)
       Item.inBags = true -- The item is in our bags
    end
    if select(1, ...) == "restored" then -- Special case, gets stored
       local OldItem = select(2, ...)
       Item.time_added = OldItem.time_added -- Restore original time added
       Item.args = OldItem.args
-      Item:Store()
    else
-      Item.args = type(...) == "table" and ... or {...}
+      Item.args = ... and type(...) == "table" and ... or {...}
    end
    tinsert(StoredItems, Item)
    return Item
 end
 
 --- Remove an item from storage
--- @param item Either an itemlink (@see GetItemInfo) or the Item object returned by :StoreItem
+-- @param item Either an itemlink (@see GetItemInfo) or the Item object returned by :New
 -- @return True if successful
 function Storage:RemoveItem(item)
    addon:Debug("Storage:RemoveItem", item)
-   if type(item) == "table" then -- Our Item object
-      if StoredItems[item] and db.itemStorage[item] then
-         tDeleteItem(StoredItems, item)
-         tDeleteItem(db.itemStorage, item)
-         return true
-      else -- Item didn't exist, try to extract itemlink
-         return self:RemoveItem(item.link)
+   local item_link
+   if type(item) == "table" then -- Maybe our Item object
+      if not (item.type and item.link) then -- Nope
+         return error("Item `item` is not the correct class", 2)
       end
+      item_link = item.link
    elseif type(item) == "string" then -- item link (hopefully)
-      local key = FindInTableIf(StoredItems, function(v) return addon:ItemIsItem(v.link,item) end)
-      if key then
-         tremove(StoredItems, key)
-         tremove(db.itemStorage, key)
-         return true
-      end
+      item_link = item
+   else
+      return error("Unknown item")
    end
-   addon:Debug("Error - Couldn't remove item")
+   -- Find and delete the item
+   local key1 = private:FindItemInTable(db.itemStorage, item_link)
+   local key2 = private:FindItemInTable(StoredItems, item_link)
+   if key1 then tremove(db.itemStorage, key1) end
+   if key2 then tremove(StoredItems, key2) end
+
+   if not (key1 and key2) then
+      addon:Debug("Error - Couldn't remove item", key1, key2)
+      return false
+   else
+      return true
+   end
 end
 
 --- Removes all items of a specific type
@@ -157,9 +133,7 @@ function Storage:RemoveAllItemsOfType(type)
    -- Do it in reverse for speed
    for i = #StoredItems, 1, -1 do
       if StoredItems[i].type == type then
-         -- REVIEW Are we really guaranteed to have the same index in both tables?
-         tremove(StoredItems, i)
-         tremove(db.itemStorage, i)
+         self:RemoveItem(StoredItems[i])
       end
    end
 end
@@ -176,7 +150,7 @@ end
 -- @return The Item object, or nil if not found
 function Storage:GetItem(item)
    if type(item) ~= "string" then return error("'item' is not a string/ItemLink", 2) end
-   return select(2, FindInTableIf(StoredItems, function(v) return addon:ItemIsItem(v.link, item) end))
+   return select(2, private:FindItemInTable(StoredItems, item))
 end
 
 --- Returns all stored Items of a specific type
@@ -220,8 +194,49 @@ end
 -- @return container,slot,time_remaining The position of the item in the player's bags and it's remaining trade time (if present).
 function Storage:GetItemContainerSlot (item)
    if type(item) == "table" then -- Our Item object
-      return findItemInBags(item.link)
+      return private:findItemInBags(item.link)
    elseif type(item) == "string" then
-      return findItemInBags(item)
+      return private:findItemInBags(item)
    end
+end
+
+function private:FindItemInTable(table, item1)
+   return FindInTableIf(table, function(item2) return addon:ItemIsItem(item1, item2.link) end)
+end
+
+function private:findItemInBags(link)
+   addon:DebugLog("Storage: searching for item:",link)
+   if link and link ~= "" then
+      local c,s,t
+      for container=0, _G.NUM_BAG_SLOTS do
+   		for slot=1, GetContainerNumSlots(container) or 0 do
+            if addon:ItemIsItem(link, GetContainerItemLink(container, slot)) then -- We found it
+               addon:DebugLog("Found item at",container, slot)
+               c, s = container, slot
+               -- Now we need to ensure we don't have multiple of it
+               t = addon:GetContainerItemTradeTimeRemaining(c,s)
+               if t > 0 then
+                  -- if the item is tradeable, then we've most likely just received it, and can safely return
+                  return c,s,t
+               end
+            end
+         end
+      end
+      addon:DebugLog("Error - Couldn't find item")
+      return c,s,t
+   end
+end
+
+function private:newItem(link, type, time_remaining)
+   local Item = setmetatable({}, {
+      __index = item_class,
+      __tostring = function(self)
+         return self.link
+      end,
+   })
+   Item.link = link
+   Item.type = type or Item.type
+   Item.time_remaining = time_remaining or Item.time_remaining
+   Item.time_added = time()
+   return Item
 end
