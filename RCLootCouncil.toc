@@ -19,6 +19,7 @@ UI\Widgets\widgets.xml
 
 Modules\Modules.xml
 
+Utils\BackwardsCompat.lua
 Utils\Utils.lua
 Utils\trinketData.lua
 Utils\tokenData.lua

@@ -2,8 +2,14 @@
 ---
 
 
-###### Bugfixes
+###### Bugfixes  
 * *The TradeUI is now able to handle multiple instances of the same item.*
+* *More error correcting code for corrupted loot history*
+
+
+###### Dev
+* **Backwards Compatibility**  
+* Added `addon.Compat` namespace for handling backwards compatibility.
 
 
 ### v2.10.3
