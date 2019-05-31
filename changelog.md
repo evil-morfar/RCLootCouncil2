@@ -5,6 +5,7 @@
 ###### Bugfixes  
 * *The TradeUI is now able to handle multiple instances of the same item.*
 * *More error correcting code for corrupted loot history*
+* *No longer logs `non_tradeable` loots when the addon isn't being used, i.e. dungeons.*
 
 
 ###### Dev

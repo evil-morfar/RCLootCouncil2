@@ -2016,7 +2016,7 @@ function RCLootCouncil:OnEvent(event, ...)
 			local link = self.lootSlotInfo[slot].link
 			local quality = self.lootSlotInfo[slot].quality
 			self:Debug("OnLootSlotCleared()", slot, link, quality)
-			if quality and quality >= GetLootThreshold() and IsInInstance() then -- Only send when in instance
+			if quality and quality >= GetLootThreshold() and IsInInstance() and self.handleLoot then -- Only send when in instance and active
 				-- Note that we don't check if this is master looted or not. We only know this is looted by ourselves.
 				self:ScheduleTimer("UpdateAndSendRecentTradableItem", 2, self.lootSlotInfo[slot]) -- Delay a bit, need some time to between item removed from loot slot and moved to the bag.
 			end
