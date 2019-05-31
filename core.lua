@@ -686,7 +686,7 @@ end
 function RCLootCouncil:UpdateAndSendRecentTradableItem(info, count)
 	local found = false
 	local Item = self.ItemStorage:New(info.link, "temp")
-	if Item.exists then
+	if Item.inBags then
 		found = true
 		if Item.time_remaining > 0 then
 			if self.mldb.rejectTrade then

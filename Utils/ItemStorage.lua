@@ -22,7 +22,7 @@ local item_class = {
    type = "other", -- Default to unspecified
    time_remaining = 0, -- NOTE For now I rely on this not being updated for timeout checks. It should be precise enough, but needs testing
    time_added = 0,
-   exists = false,
+   inBags = false,
    link = "",
    args = {}, -- User args
 
@@ -45,7 +45,7 @@ function addon:InitItemStorage()-- Extract items from our SV. Could be more eleg
    local Item;
    for k, v in ipairs(db.itemStorage) do
       Item = Storage:StoreItem(v.link, v.type, "restored", v)
-      if not Item.exists then -- Item probably no longer exists?
+      if not Item.inBags then -- Item probably no longer exists?
          addon:Debug("Error - ItemStorage, couldn't add db item:", v.link)
          local key = FindInTableIf(db.itemStorage, function(d) return addon:ItemIsItem(v.link, d.link) end)
          if key then
@@ -100,7 +100,7 @@ end
 -- @param item ItemLink|ItemString|ItemID of the item
 -- @param type Optional type for used in various functions, @see Storage.AcceptedTypes
 -- @param ... Userdata stored in the returned 'Item.args'. Directly stored if provided as table, otherwise as '{...}'.
--- @returns Item @see 'item_class' when the item is stored succesfully. Has flag Item.exists if present in bags.
+-- @returns Item @see 'item_class' when the item is stored succesfully. Has flag Item.inBags if present in bags.
 function Storage:New(item, typex, ...)
    if not typex then typex = "other" end
    if not self.AcceptedTypes[typex] then error("Type: " .. tostring(typex) .. " is not accepted. Accepted types are: " .. table.concat(self.AcceptedTypes, ", "),2) end
@@ -112,7 +112,7 @@ function Storage:New(item, typex, ...)
       Item = newItem(item, typex)
    else
       Item = newItem(item, typex, time_remaining)
-      Item.exists = true -- The item is in our bags
+      Item.inBags = true -- The item is in our bags
    end
    if select(1, ...) == "restored" then -- Special case, gets stored
       local OldItem = select(2, ...)
