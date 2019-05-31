@@ -1,3 +1,11 @@
+### v2.xx
+---
+
+
+###### Bugfixes
+* *The TradeUI is now able to handle multiple instances of the same item.*
+
+
 ### v2.10.3
 ---
 ###### Bugfixes
