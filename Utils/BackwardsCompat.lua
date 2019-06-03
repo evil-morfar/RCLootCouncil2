@@ -13,7 +13,7 @@ addon.Compat = Compat
 -- Each compat can only be run once per login, so feel free to call it again.
 function Compat:Run()
    for k,v in ipairs(self.list) do
-      if v.version == "always" or addon:VersionCompare(addon.db.global.version, v.version) and not v.exucuted then
+      if v.version == "always" or addon:VersionCompare(addon.db.global.version, v.version) and not v.executed then
          addon:Debug("Executing compat:", k, v.name or "no_name")
          v.func(addon, addon.version, addon.db.global.version, addon.db.global.oldVersion)
          v.executed = true
@@ -40,7 +40,7 @@ Compat.list = {
    },
    {
       name = "History fixes v1",
-      version = "2.11.0",
+      version = "2.12.0",
       func = function(self, version)
          self:ScheduleTimer(function()
    			-- Log fixes:
