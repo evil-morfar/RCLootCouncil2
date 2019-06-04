@@ -2091,7 +2091,12 @@ function RCLootCouncil:NewMLCheck()
 	if IsPartyLFG() then return end	-- We can't use in lfg/lfd so don't bother
 	if not self.masterLooter then return end -- Didn't find a leader or ML.
 	if self:UnitIsUnit(old_ml, self.masterLooter) then
-		if old_lm == self.lootMethod then return end -- Both ML and loot method have not changed
+		if old_lm == self.lootMethod then
+			if self.isMasterLooter and not IsInRaid() and db.onlyUseInRaids then -- We might have switched to party
+				if self.handleLoot then self:StopHandleLoot() end
+			end
+			return -- Both ML and loot method have not changed
+		end
 	else
 		-- At this point we know the ML has changed, so we can wipe the council
 		self:Debug("Resetting council as we have a new ML!")
