@@ -93,7 +93,7 @@ function RCLootCouncil:OnInitialize()
   	self.version = GetAddOnMetadata("RCLootCouncil", "Version")
 	self.nnp = false
 	self.debug = false
-	self.tVersion = nil -- String or nil. Indicates test version, which alters stuff like version check. Is appended to 'version', i.e. "version-tVersion" (max 10 letters for stupid security)
+	self.tVersion = "alpha.1" -- String or nil. Indicates test version, which alters stuff like version check. Is appended to 'version', i.e. "version-tVersion" (max 10 letters for stupid security)
 
 	self.playerClass = select(2, UnitClass("player"))
 	self.guildRank = L["Unguilded"]
@@ -2028,9 +2028,7 @@ function RCLootCouncil:OnEvent(event, ...)
 		end
 	elseif event == "ENCOUNTER_LOOT_RECEIVED" then
 		self:Debug("Event:", event, ...)
-		-- if self:UnitIsUnit("player", select(5, ...)) then
-		-- 	self:ScheduleTimer("UpdateAndSendRecentTradableItem", 2, select(3,...))
-		-- end
+		local encounterID, itemID, itemLink, quantity, playerName, className = ...
 
 	elseif event == "LOOT_READY" then
 		self:Debug("Event:", event, ...)
