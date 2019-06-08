@@ -175,8 +175,8 @@ function sync:GetSyncTargetOptions()
       if isOnline then addNameToList(ret, addon:UnitName(name), class) end
    end
    -- friends
-   for i = 1, GetNumFriends() do
-      name, _, class, _, isOnline = GetFriendInfo(i)
+   for i = 1, C_FriendList.GetNumOnlineFriends() do
+      name, _, class, _, isOnline = C_FriendList.GetFriendInfoByIndex(i)
       if isOnline then addNameToList(ret, titleCaseName(name), class) end
    end
    -- guildmembers
