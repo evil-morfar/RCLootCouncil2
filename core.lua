@@ -110,6 +110,7 @@ function RCLootCouncil:OnInitialize()
 	self.lootOpen = false 	-- is the ML lootWindow open or closed?
 	self.lootSlotInfo = {}  -- Items' data currently in the loot slot. Need this because inside LOOT_SLOT_CLEARED handler, GetLootSlotLink() returns invalid link.
 	self.nonTradeables = {} -- List of non tradeable items received since the last ENCOUNTER_END
+	self.lastEncounterID = nil
 
 	self.lootStatus = {}
 	self.verCheckDisplayed = false -- Have we shown a "out-of-date"?
@@ -1916,7 +1917,12 @@ function RCLootCouncil:GetLootStatusData ()
 	for name in pairs(self.candidates) do
 		i = i + 1
 		if not self.lootStatus[id].candidates[name] then -- Unlooted
-			list[i] = {name = name, text = "|cffffff00"..L["Unlooted"]}
+			-- Check if they got loot, but just haven't responded yet
+			if self.lootStatus[self.lastEncounterID][name] then
+				list[i] = {name = name, text = self.lootStatus[self.lastEncounterID][name] .. "|cffffff00"..L["Not Found"]}
+			else
+				list[i] = {name = name, text = "|cffffff00"..L["Unlooted"]}
+			end
 			unlooted = unlooted + 1
 		elseif self.lootStatus[id].candidates[name].status == "looted" then -- They have looted
 			list[i] = {name = name, text = "|cff00ff00 " .. L["Looted"]}
@@ -1983,7 +1989,7 @@ function RCLootCouncil:OnEvent(event, ...)
 		end
 	elseif event == "ENCOUNTER_END" then
 		self:DebugLog("Event:", event, ...)
-		self.bossName = select(2, ...) -- Extract encounter name
+		self.lastEncounterID, self.bossName = ... -- Extract encounter name and ID
 		wipe(self.nonTradeables)
 
 	elseif event == "LOOT_CLOSED" then
@@ -2029,6 +2035,11 @@ function RCLootCouncil:OnEvent(event, ...)
 	elseif event == "ENCOUNTER_LOOT_RECEIVED" then
 		self:Debug("Event:", event, ...)
 		local encounterID, itemID, itemLink, quantity, playerName, className = ...
+		if not self.lootStatus[encounterID] then self.lootStatus[encounterID] = {} end
+		local name = self:UnitName(playerName)
+		playerName = name or playerName -- Expect us to get something back from UnitName
+		self.lootStatus[encounterID][playerName] = itemLink
+
 
 	elseif event == "LOOT_READY" then
 		self:Debug("Event:", event, ...)

@@ -1,5 +1,8 @@
 ### v2.xx
 ---
+* **Loot Status**  
+* The loot status now registers all items dropped by a boss, even if the response indicating if it's tradeable isn't received from the candidate.
+
 
 
 ###### Bugfixes  

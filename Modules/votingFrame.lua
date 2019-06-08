@@ -902,7 +902,14 @@ function RCVotingFrame:UpdateLootStatus()
 		if addon.debug then
 			GameTooltip:AddLine("Debug")
 			for id, v in pairs(addon.lootStatus) do
-				GameTooltip:AddDoubleLine(id, v.num,1,1,1,1,1,1)
+				if id ~= addon.lastEncounterID then
+					GameTooltip:AddDoubleLine(id, v.num,1,1,1,1,1,1)
+				else
+					GameTooltip:AddLine("EncounterID: " .. addon.lastEncounterID)
+					for player, item in pairs(v) do
+						GameTooltip:AddDoubleLine(player, item)
+					end
+				end
 			end
 			GameTooltip:AddLine(" ")
 		end
