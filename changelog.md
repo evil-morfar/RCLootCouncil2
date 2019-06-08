@@ -1,8 +1,8 @@
-### v2.xx
+### v2.11.0
 ---
 * **Loot Status**  
 * The loot status now registers all items dropped by a boss, even if the response indicating if it's tradeable isn't received from the candidate.
-
+* Implemented code to ignore certain loot sources (particularly Opulence trash piles), which should overall make the loot status more reliable.
 
 
 ###### Bugfixes  
@@ -12,8 +12,8 @@
 
 
 ###### Dev
-* **Backwards Compatibility**  
 * Added `addon.Compat` namespace for handling backwards compatibility.
+* Added `addon.lootGUIDToIgnore` table indicating guid's that won't have their loot registered.
 
 
 ### v2.10.3

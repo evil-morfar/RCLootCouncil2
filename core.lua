@@ -167,6 +167,10 @@ function RCLootCouncil:OnInitialize()
 		{cmd = "sync", desc = L["chat_commands_sync"]},
 	}
 
+	self.lootGUIDToIgnore = { -- List of GUIDs we shouldn't register loot from
+		["317400"] = true, -- Opulence BoD (trash piles)
+	}
+
 
 	self.testMode = false;
 
@@ -1043,6 +1047,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 			elseif command == "looted" then
 				local guid = unpack(data)
 				if not guid then return self:Debug("no guid in looted comm", guid, sender) end
+				if self.lootGUIDToIgnore[guid] then return end
 				if not self.lootStatus[guid] then self.lootStatus[guid] = {candidates = {}, num = 0} end
 				self.lootStatus[guid].num = self.lootStatus[guid].num + 1
 				self.lootStatus[guid].candidates[self:UnitName(sender)] = {status = "looted"}
@@ -1051,6 +1056,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 			elseif command == "fakeLoot" or command == "fullbags" then
 				local link, guid = unpack(data)
 				if not guid then return self:Debug(format("no guid in %s comm", command), guid, sender) end
+				if self.lootGUIDToIgnore[guid] then return end
 				if not self.lootStatus[guid] then self.lootStatus[guid] = {candidates = {}, num = 0} end
 				self.lootStatus[guid].num = self.lootStatus[guid].num + 1
 				self.lootStatus[guid].candidates[self:UnitName(sender)] = {status = command, item = link}
@@ -2050,6 +2056,8 @@ function RCLootCouncil:OnEvent(event, ...)
 		for i = 1,  GetNumLootItems() do
 			if LootSlotHasItem(i) then
 				local texture, name, quantity, _, quality, _, isQuestItem = GetLootSlotInfo(i)
+				local guid = self.Utils:ExtractCreatureID((GetLootSourceInfo(i)))
+				if guid and self.lootGUIDToIgnore[guid] then return self:Debug("Ignoring loot from ignored source", guid) end
 				if texture then
 					local link = GetLootSlotLink(i)
 					local isCraftingReagent
@@ -2063,7 +2071,7 @@ function RCLootCouncil:OnEvent(event, ...)
 							link = link, -- This could be nil, if the item is money.
 							quantity = quantity,
 							quality = quality,
-							guid = self.Utils:ExtractCreatureID((GetLootSourceInfo(i))), -- Boss GUID
+							guid = guid, -- Boss GUID
 							boss = (GetUnitName("target")),
 							autoloot = select(1,...),
 						}
