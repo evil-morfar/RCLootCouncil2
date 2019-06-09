@@ -1912,7 +1912,7 @@ function RCLootCouncil:GetLootStatusData ()
 	-- Find out which guid we're working with
 	local id, max = 0, 0
 	for k,v in pairs(self.lootStatus) do
-		if v.num > max then
+		if v.num and v.num > max then
 			id = k
 			max = v.num
 		end
@@ -1924,7 +1924,7 @@ function RCLootCouncil:GetLootStatusData ()
 		i = i + 1
 		if not self.lootStatus[id].candidates[name] then -- Unlooted
 			-- Check if they got loot, but just haven't responded yet
-			if self.lootStatus[self.lastEncounterID][name] then
+			if self.lastEncounterID and self.lootStatus[self.lastEncounterID] and self.lootStatus[self.lastEncounterID][name] then
 				list[i] = {name = name, text = self.lootStatus[self.lastEncounterID][name] .. "|cffffff00"..L["Not Found"]}
 			else
 				list[i] = {name = name, text = "|cffffff00"..L["Unlooted"]}
