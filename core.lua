@@ -2663,7 +2663,7 @@ function RCLootCouncil:CreateFrame(name, cName, title, width, height)
 	   --   edgeFile = AceGUIWidgetLSMlists.border[db.UI.default.border],
 		bgFile = AceGUIWidgetLSMlists.background[db.skins[db.currentSkin].background],
 		edgeFile = AceGUIWidgetLSMlists.border[db.skins[db.currentSkin].border],
-	     tile = true, tileSize = 64, edgeSize = 12,
+	     tile = true, tileSize = 16, edgeSize = 12,
 	     insets = { left = 2, right = 2, top = 2, bottom = 2 }
 	})
 	tf:SetBackdropColor(unpack(db.skins[db.currentSkin].bgColor))
@@ -2702,7 +2702,7 @@ function RCLootCouncil:CreateFrame(name, cName, title, width, height)
   	   --   edgeFile = AceGUIWidgetLSMlists.border[db.UI.default.border],
 		bgFile = AceGUIWidgetLSMlists.background[db.skins[db.currentSkin].background],
 		edgeFile = AceGUIWidgetLSMlists.border[db.skins[db.currentSkin].border],
-	   tile = true, tileSize = 64, edgeSize = 12,
+	   tile = true, tileSize = 255, edgeSize = 16,
 	   insets = { left = 2, right = 2, top = 2, bottom = 2 }
 	})
 	c:EnableMouse(true)
