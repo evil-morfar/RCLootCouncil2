@@ -180,8 +180,14 @@ function RCLootCouncil:OnInitialize()
 		[5] = { -- Reagents
 			all = true
 		},
+		[7] = { -- Tradeskills
+			all = true
+		},
 		[12] = { -- Quest
 			all = true
+		},
+		[15] = { -- Misc
+			[1] = true, -- Reagent 
 		}
 	}
 
