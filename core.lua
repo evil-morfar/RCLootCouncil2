@@ -171,6 +171,20 @@ function RCLootCouncil:OnInitialize()
 		["317400"] = true, -- Opulence BoD (trash piles)
 	}
 
+	-- List of item classes all auto looting should ignore
+	-- see https://wow.gamepedia.com/ItemType
+	self.blacklistedItemClasses = {
+		[0] = { -- Consumables
+			all = true
+		},
+		[5] = { -- Reagents
+			all = true
+		},
+		[12] = { -- Quest
+			all = true
+		}
+	}
+
 
 	self.testMode = false;
 
@@ -713,6 +727,7 @@ function RCLootCouncil:UpdateAndSendRecentTradableItem(info, count)
 		self:Debug("UpdateAndSendRecentTradableItem: Didn't find item on try ", count or 1)
 		return self:ScheduleTimer("UpdateAndSendRecentTradableItem",1,info, count and count + 1 or 2)
 	end
+	Item:Unstore()
 	self:Debug("Error - UpdateAndSendRecentTradableItem",info.link, "not found in bags")
 end
 
@@ -2055,16 +2070,14 @@ function RCLootCouncil:OnEvent(event, ...)
 		self.lootOpen = true
 		for i = 1,  GetNumLootItems() do
 			if LootSlotHasItem(i) then
-				local texture, name, quantity, _, quality, _, isQuestItem = GetLootSlotInfo(i)
+				local texture, name, quantity, currencyID, quality, _, isQuestItem = GetLootSlotInfo(i)
 				local guid = self.Utils:ExtractCreatureID((GetLootSourceInfo(i)))
 				if guid and self.lootGUIDToIgnore[guid] then return self:Debug("Ignoring loot from ignored source", guid) end
 				if texture then
 					local link = GetLootSlotLink(i)
-					local isCraftingReagent
-					if link then  -- Link is not present on coins
-						 isCraftingReagent = select(17, GetItemInfo(link))
-					end
-					if not (isQuestItem or isCraftingReagent) then -- Ignore quest and crafting items
+					if currencyID then
+						self:DebugLog("Ignoring", link, "as it's a currency")
+					elseif not self.Utils:IsItemBlacklisted(link) then
 						self:Debug("Adding to self.lootSlotInfo",i,link, quality,quantity, GetLootSourceInfo(i))
 						self.lootSlotInfo[i] = {
 							name = name,
@@ -2378,6 +2391,9 @@ function RCLootCouncil:ItemIsItem(item1, item2)
 	if not (item1 and item2) then return false end -- KeyStones will fail the GetItemStringFromLink
 	local pattern = "item:(%d*):(%d*):(%d*):(%d*):(%d*):(%d*):(%d*):%d*:%d*:%d*"
 	local replacement = "item:%1:%2:%3:%4:%5:%6:%7:::" -- Compare link with uniqueId, linkLevel and SpecID removed
+	--[[ REVIEW The above doesn't take upgradeValues into account.
+		Doing that would require a parsing of the bonusIDs to check the correct positionings.
+	]]
 	return item1:gsub(pattern, replacement) == item2:gsub(pattern, replacement)
 end
 

@@ -113,3 +113,20 @@ function Utils:IsInNonInstance()
       return false
    end
 end
+
+
+--- Checks if the item is in our blacklist
+-- COMBAK Should be moved to it's own class in the future
+-- @param item Any valid input for `GetItemInfoInstant`
+-- @return boolean True if the item is blacklisted
+function Utils:IsItemBlacklisted(item)
+   if not item then return false end
+   local _,_,_,_,_,itemClassID, itemsubClassID = GetItemInfoInstant(item)
+   if not (itemClassID and itemsubClassID) then return false end
+   if addon.blacklistedItemClasses[itemClassID] then
+      if addon.blacklistedItemClasses[itemClassID].all or addon.blacklistedItemClasses[itemClassID][itemsubClassID] then
+         return true
+      end
+   end
+   return false
+end
