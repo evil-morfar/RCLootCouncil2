@@ -114,9 +114,11 @@ function TradeUI:OnCommReceived(prefix, serializedMsg, distri, sender)
 end
 
 function TradeUI:CheckTimeRemaining()
-   -- This will handle all items in ItemStorage, not just to_trade.
-   -- It might as well since it's always runnning, although I might change that if need be.
    local Items = addon.ItemStorage:GetAllItemsLessTimeRemaining(TIME_REMAINING_WARNING)
+   -- Filter for items with "to_trade" and "award_later"
+   Items = tFilter(Items, function(item)
+      return item.type == "to_trade" or item.type == "award_later"
+    end, true)
    if #Items > 0 then
       addon:Print(format(L["time_remaining_warning"], TIME_REMAINING_WARNING/60))
       for i, Item in pairs(Items) do
