@@ -144,14 +144,14 @@ local function checkSV()
          print "No 'verTestCandidates'" -- v2.7.8 somehow had a SV without it..
       end
       -- Then check the log:
-      for i, entry in ipairs(RCLootCouncilDB.global.log) do
-         if entry:find("Comm received:^1^SverTest^T^N1^S") then
-            --"22:16:57 - Comm received:^1^SverTest^T^N1^S2.5.5^t
-            --(from:) (Angramalnyu) (distri:)
-            players[entry:match("%(from:%) %((.-)%)")] = entry:sub(44,48)
-         end
-      end
-      table.sort(players)
+      -- for i, entry in ipairs(RCLootCouncilDB.global.log) do
+      --    if entry:find("Comm received:^1^SverTest^T^N1^S") then
+      --       -- "21:34:20 - Comm received:^1^SverTest^T^N1^S2.10.2^t^^ (from:) (Luvless) (distri:) (GUILD)", -- [60]
+      --       local msg = entry:match("%^.-%^")
+      --       local v = select(3, AceSer:Deserialize(msg))
+      --       players[entry:match("%(from:%) %((.-)%)")] = v
+      --    end
+      -- end
       for player, v in spairs(players) do
          print(string.format("%s: %s",v,player))
       end

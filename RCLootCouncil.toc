@@ -1,8 +1,8 @@
 ## Author: Potdisc
 ## Interface: 80100
-## Notes: Interface for running a Loot Council v2.10.3
+## Notes: Interface for running a Loot Council v2.11.0
 ## Title: RCLootCouncil
-## Version: 2.10.3
+## Version: 2.11.0
 ## SavedVariables: RCLootCouncilDB, RCLootCouncilLootDB
 ## OptionalDeps: LibStub, CallbackHandler-1.0, Ace3, lib-st, LibWindow-1.1, LibDialog-1.0
 
@@ -19,6 +19,7 @@ UI\Widgets\widgets.xml
 
 Modules\Modules.xml
 
+Utils\BackwardsCompat.lua
 Utils\Utils.lua
 Utils\trinketData.lua
 Utils\tokenData.lua

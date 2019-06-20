@@ -81,7 +81,7 @@ function TradeUI:Update(forceShow)
             {DoCellUpdate = self.SetCellItemIcon},
             {value = v.link},
             {value = "-->"},
-            {value = addon.Ambiguate(v.args.recipient), color = addon:GetClassColor(addon.candidates[v.args.recipient] and addon.candidates[v.args.recipient].class or "nothing")},
+            {value = v.args.recipient and addon.Ambiguate(v.args.recipient) or "Unknown", color = addon:GetClassColor(addon.candidates[v.args.recipient] and addon.candidates[v.args.recipient].class or "nothing")},
             {value = _G.TRADE, color = self.GetTradeLabelColor, colorargs = {self, v.args.recipient},},
          }
       }
@@ -99,7 +99,13 @@ function TradeUI:OnCommReceived(prefix, serializedMsg, distri, sender)
          if addon:UnitIsUnit(trader, "player") then
             -- We should give our item to 'winner'
             if not addon:UnitIsUnit(winner, "player") or (addon.testMode or addon.nnp) then -- Don't add ourself unless we're testing
-               addon.ItemStorage:StoreItem(addon:GetLootTable()[session].link, "to_trade", {recipient = winner})
+               local Item = addon.ItemStorage:GetItem(addon:GetLootTable()[session].link) -- Update our temp item
+               if Item then
+                  Item.type = "to_trade"
+                  Item.args.recipient = winner
+               else
+                  Item = addon.ItemStorage:New(addon:GetLootTable()[session].link, "to_trade", {recipient = winner}):Store()
+               end
             end
             self:Show()
          end
@@ -108,9 +114,11 @@ function TradeUI:OnCommReceived(prefix, serializedMsg, distri, sender)
 end
 
 function TradeUI:CheckTimeRemaining()
-   -- This will handle all items in ItemStorage, not just to_trade.
-   -- It might as well since it's always runnning, although I might change that if need be.
    local Items = addon.ItemStorage:GetAllItemsLessTimeRemaining(TIME_REMAINING_WARNING)
+   -- Filter for items with "to_trade" and "award_later"
+   Items = tFilter(Items, function(item)
+      return item.type == "to_trade" or item.type == "award_later"
+    end, true)
    if #Items > 0 then
       addon:Print(format(L["time_remaining_warning"], TIME_REMAINING_WARNING/60))
       for i, Item in pairs(Items) do
