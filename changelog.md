@@ -1,3 +1,7 @@
+###### Bugfixes  
+* *Added a compatibility fix very old loot histories (#388).*
+
+
 ### v2.11.0
 ---
 * **Loot Status**  

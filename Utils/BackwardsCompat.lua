@@ -95,7 +95,7 @@ Compat.list = {
    					for index, item in pairs(items) do
    						colors[item.response] = item.color
    						if not needFix then -- Make it permanent
-   							needFix = #item.color == 0
+   							needFix = item.color and #item.color == 0
    						end
    					end
    				end
@@ -105,7 +105,7 @@ Compat.list = {
    				for _, factionrealm in pairs(self.lootDB.sv.factionrealm) do
    					for player, items in pairs(factionrealm) do
    						for _, item in pairs(items) do
-   							found = #item.color == 0
+   							found = item.color and #item.color == 0
    							if found then
    								item.color = colors[item.response]
    								c = c + 1
