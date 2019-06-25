@@ -1,5 +1,6 @@
 ###### Bugfixes  
 * *Added a compatibility fix very old loot histories (#388).*
+* *Removed any Breath of Bwonsamdi that have been recorded to the history during alpha releases.*
 
 
 ### v2.11.0

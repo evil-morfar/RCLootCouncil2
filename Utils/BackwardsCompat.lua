@@ -1,4 +1,4 @@
---- BackwardsCompat.lua Handler for ondemand upgrading of old stuff.
+--- BackwardsCompat.lua Entry point for running functions based on addon version.
 -- Creates 'RCLootCouncil.Compat' as a namespace for compatibility functions.
 -- @author Potdisc
 -- Create Date : 31/5-2019 05:21:28
@@ -14,7 +14,7 @@ addon.Compat = Compat
 function Compat:Run()
    for k,v in ipairs(self.list) do
       if v.version == "always" or addon:VersionCompare(addon.db.global.version, v.version) and not v.executed then
-         addon:Debug("Executing compat:", k, v.name or "no_name")
+         addon:Debug("<Compat>", "Executing:", k, v.name or "no_name")
          v.func(addon, addon.version, addon.db.global.version, addon.db.global.oldVersion)
          v.executed = true
       end
@@ -118,6 +118,31 @@ Compat.list = {
    			self:Debug("Color indicies needs fix?", needFix, "Fixed", c, "entries")
    		end, 10) -- Wait like 10 seconds after login
       end,
+   },
+   {
+      name = "Breath of Bronsamdi in history from v2.11.0-alpha",
+      version = "2.11.2", -- Run for 2 patches
+      func = function (addon)
+         local count = 0
+         local link
+         for _, factionrealm in pairs(addon.lootDB.sv.factionrealm) do
+            for player, items in pairs(factionrealm) do
+               if items and #items > 0 then
+                  local item
+                  for i = #items, i == 0, i - 1 do
+                     item = items[i]
+                     --165703 == Breath of Bwonsamdi
+                     if (GetItemInfoInstant(item.lootWon)) == 165703 then
+                        table.remove(items, i)
+                        count = count + 1
+                        link = item.lootWon
+                     end
+                  end
+               end
+            end
+         end
+         return count > 0 and addon:Debug("Removed", count, link)
+      end
    }
 
 }
