@@ -123,25 +123,25 @@ Compat.list = {
       name = "Breath of Bronsamdi in history from v2.11.0-alpha",
       version = "2.12.2", -- Run for 2 patches
       func = function (addon)
-         local count = 0
-         local link
-         for _, factionrealm in pairs(addon.lootDB.sv.factionrealm) do
-            for player, items in pairs(factionrealm) do
-               if items and #items > 0 then
-                  local item
-                  for i = #items, i == 0, i - 1 do
-                     item = items[i]
-                     --165703 == Breath of Bwonsamdi
-                     if (GetItemInfoInstant(item.lootWon)) == 165703 then
-                        table.remove(items, i)
-                        count = count + 1
-                        link = item.lootWon
+         addon:ScheduleTimer(function()
+            local count = 0
+            local link
+            for _, factionrealm in pairs(addon.lootDB.sv.factionrealm) do
+               for player, items in pairs(factionrealm) do
+                  if items and #items > 0 then
+                     for i = #items, 1, -1 do
+                        --165703 == Breath of Bwonsamdi
+                        if (GetItemInfoInstant(items[i].lootWon)) == 165703 then
+                           link = items[i].lootWon
+                           table.remove(items, i)
+                           count = count + 1
+                        end
                      end
                   end
                end
             end
-         end
-         return count > 0 and addon:Debug("Removed", count, link)
+            return count > 0 and addon:Debug("Removed", count, link)
+         end, 10)
       end
    }
 
