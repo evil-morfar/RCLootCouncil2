@@ -1,4 +1,4 @@
---- BackwardsCompat.lua Handler for ondemand upgrading of old stuff.
+--- BackwardsCompat.lua Entry point for running functions based on addon version.
 -- Creates 'RCLootCouncil.Compat' as a namespace for compatibility functions.
 -- @author Potdisc
 -- Create Date : 31/5-2019 05:21:28
@@ -14,7 +14,7 @@ addon.Compat = Compat
 function Compat:Run()
    for k,v in ipairs(self.list) do
       if v.version == "always" or addon:VersionCompare(addon.db.global.version, v.version) and not v.executed then
-         addon:Debug("Executing compat:", k, v.name or "no_name")
+         addon:Debug("<Compat>", "Executing:", k, v.name or "no_name")
          v.func(addon, addon.version, addon.db.global.version, addon.db.global.oldVersion)
          v.executed = true
       end
@@ -40,7 +40,7 @@ Compat.list = {
    },
    {
       name = "History fixes v1",
-      version = "2.12.0",
+      version = "2.12.1",
       func = function(self, version)
          self:ScheduleTimer(function()
    			-- Log fixes:
@@ -95,7 +95,7 @@ Compat.list = {
    					for index, item in pairs(items) do
    						colors[item.response] = item.color
    						if not needFix then -- Make it permanent
-   							needFix = #item.color == 0
+   							needFix = item.color and #item.color == 0
    						end
    					end
    				end
@@ -105,7 +105,7 @@ Compat.list = {
    				for _, factionrealm in pairs(self.lootDB.sv.factionrealm) do
    					for player, items in pairs(factionrealm) do
    						for _, item in pairs(items) do
-   							found = #item.color == 0
+   							found = item.color and #item.color == 0
    							if found then
    								item.color = colors[item.response]
    								c = c + 1
@@ -118,6 +118,31 @@ Compat.list = {
    			self:Debug("Color indicies needs fix?", needFix, "Fixed", c, "entries")
    		end, 10) -- Wait like 10 seconds after login
       end,
+   },
+   {
+      name = "Breath of Bronsamdi in history from v2.11.0-alpha",
+      version = "2.12.2", -- Run for 2 patches
+      func = function (addon)
+         addon:ScheduleTimer(function()
+            local count = 0
+            local link
+            for _, factionrealm in pairs(addon.lootDB.sv.factionrealm) do
+               for player, items in pairs(factionrealm) do
+                  if items and #items > 0 then
+                     for i = #items, 1, -1 do
+                        --165703 == Breath of Bwonsamdi
+                        if (GetItemInfoInstant(items[i].lootWon)) == 165703 then
+                           link = items[i].lootWon
+                           table.remove(items, i)
+                           count = count + 1
+                        end
+                     end
+                  end
+               end
+            end
+            return count > 0 and addon:Debug("Removed", count, link)
+         end, 10)
+      end
    }
 
 }

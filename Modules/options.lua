@@ -439,11 +439,13 @@ function addon:OptionsTable()
 										type = "select",
 										width = "double",
 										values = {
+											[1562644800] = "Azshara's Eternal Palace raid",
+											[1561521600] = "Patch 8.2.0 (Rise of Azshara)",
 											[1544515200] = "Patch 8.1.0",
 											[1534154400] = "Patch 8.0.1 (Battle for Azeroth)",
-											[1510225200] = "Patch 7.3.2 (Tier 21)",
-											[1497348000] = "Patch 7.2.5 (Tier 20)",
-											[1484650800] = "Patch 7.1.5 (Tier 19)",
+											-- [1510225200] = "Patch 7.3.2 (Tier 21)",
+											-- [1497348000] = "Patch 7.2.5 (Tier 20)",
+											-- [1484650800] = "Patch 7.1.5 (Tier 19)",
 										},
 										get = function(info)
 											return selections[info[#info]] or ""
