@@ -2,8 +2,6 @@
 ---
 * Added patch 8.2 and Azshara's Eternal Palace as history mass delete options.
 
-
-
 ###### Bugfixes  
 * *Added a compatibility fix very old loot histories (#388).*
 * *Removed any Breath of Bwonsamdi that have been recorded to the history during alpha releases.*

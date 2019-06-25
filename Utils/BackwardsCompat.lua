@@ -40,7 +40,7 @@ Compat.list = {
    },
    {
       name = "History fixes v1",
-      version = "2.12.0",
+      version = "2.12.1",
       func = function(self, version)
          self:ScheduleTimer(function()
    			-- Log fixes:
@@ -121,7 +121,7 @@ Compat.list = {
    },
    {
       name = "Breath of Bronsamdi in history from v2.11.0-alpha",
-      version = "2.11.2", -- Run for 2 patches
+      version = "2.12.2", -- Run for 2 patches
       func = function (addon)
          local count = 0
          local link
