@@ -2,7 +2,7 @@
 -- Contains loot specs of all trinkets in the dungeon journal
 -- @author Safetee
 -- Create Date : 12/03/2017
--- Update Date : 23/1/2019 (8.1.0 Build 29139)
+-- Update Date : 25/6/2019 (8.2.0 Build 30888)
 
 
 local ZERO = ""
@@ -49,7 +49,7 @@ function RCLootCouncil:ExportTrinketData(nextTier, nextIsRaid, nextIndex, nextDi
 	if not nextTier then
 		nextTier = 8
 		nextIsRaid = 1
-		nextIndex = 3
+		nextIndex = 5 -- Eternal Palace
 		nextDiffID = 1
 		self:Print("Exporting the loot specs of all trinkets in the dungeon journal\n"
 			.."This command is intended to be run by the developer.\n"
@@ -1033,4 +1033,25 @@ _G.RCTrinketSpecs = {
 	[165579] = "124002007700",	-- Kimbul's Razor Claw,                            	Damage, Agility
 	[165580] = "000000700067",	-- Ramping Amplitude Gigavolt Engine,              	Strength
 	[166418] = "092775070010",	-- Crest of Pa'ku,                                 	Intellect
+-- Crucible of Storms
+	[167865] = "082004030010",	-- Void Stone,                                     	Healer
+	[167866] = "124002607743",	-- Lurker's Insidious Gift,                        	Damage, Strength/Agility
+	[167867] = "010771040000",	-- Harbinger's Inscrutable Will,                   	Damage, Intellect
+	[167868] = "365002707767",	-- Idol of Indiscriminate Consumption,             	Strength/Agility
+-- The Eternal Palace
+	[168905] = "010771040000",	-- Shiver Venom Relic,                	Damage, Intellect
+	[169304] = "010771040000",	-- Leviathan's Lure,                  	Damage, Intellect
+	[169305] = "010771040000",	-- Aquipotent Nautilus,               	Damage, Intellect
+	[169306] = "092775070010",	-- Za'qul's Portal Key,               	Intellect
+	[169307] = "124002607743",	-- Vision of Demise,                  	Damage, Strength/Agility
+	[169308] = "241000100024",	-- Chain of Suffering,                	Tank
+	[169309] = "082004030010",	-- Zoatroid Egg Sac,                  	Healer
+	[169310] = "241000100024",	-- Bloodthirsty Urchin,               	Tank
+	[169311] = "124002607743",	-- Ashvane's Razor Coral,             	Damage, Strength/Agility
+	[169312] = "082004030010",	-- Luminous Jellyweed,                	Healer
+	[169313] = "124002607443",	-- Phial of the Arcane Tempest,       	Damage, Melee
+	[169314] = "3F7777777777",	-- Azshara's Font of Power,           	All Classes
+	[169315] = "241000100024",	-- Edicts of the Faithless,           	Tank
+	[169316] = "082004030010",	-- Deferred Sentence,                 	Healer
+	[169319] = "124002607743",	-- Dribbling Inkpod,                  	Damage, Strength/Agility
 }
