@@ -1,3 +1,8 @@
+* **Loot History**  
+* Added an option to delete loot history entries by instance name.
+* This allows you to target a specific instance, in particular Mythic+ loot that got added unintentionally.
+
+
 ### v2.12.0 (patch 8.2)
 ---
 * Added patch 8.2 and Azshara's Eternal Palace as history mass delete options.
