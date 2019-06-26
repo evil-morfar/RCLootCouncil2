@@ -1,4 +1,4 @@
-local MAJOR, MINOR = "ScrollingTable", tonumber("1541543953");
+local MAJOR, MINOR = "ScrollingTable", tonumber("15415439531");
 local lib, oldminor = LibStub:NewLibrary(MAJOR, MINOR);
 if not lib then
 	return; -- Already loaded and no upgrade necessary.
@@ -718,7 +718,8 @@ do
 
 		f:SetBackdrop(ScrollPaneBackdrop);
 		f:SetBackdropColor(0.1,0.1,0.1);
-		f:SetPoint("CENTER",UIParent,"CENTER",0,0);
+		-- PATCH 8.2: This cannot be linked to UIParent
+		f:SetPoint("CENTER", parent or UIParent,"CENTER",0,0);
 
 		-- build scroll frame
 		local scrollframe = CreateFrame("ScrollFrame", f:GetName().."ScrollFrame", f, "FauxScrollFrameTemplate");
