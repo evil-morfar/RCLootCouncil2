@@ -686,7 +686,7 @@ function LootHistory:GetFrame()
 	f.moreInfoBtn = b2
 
 	f.content:SetScript("OnSizeChanged", function()
- 		self.moreInfo:SetScale(self.frame:GetScale() * 0.6)
+ 		self.moreInfo:SetScale(f:GetScale() * 0.6)
  	end)
 
 	-- Export
