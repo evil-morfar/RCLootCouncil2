@@ -1,3 +1,10 @@
+### v2.12.1
+---
+###### Bugfixes  
+* *Fixed library issue causing scrolling tables to unstick and break the UI in 8.2.*
+
+
+
 ### v2.12.0 (patch 8.2)
 ---
 * Added patch 8.2 and Azshara's Eternal Palace as history mass delete options.
