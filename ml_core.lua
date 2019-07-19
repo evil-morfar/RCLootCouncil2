@@ -607,6 +607,7 @@ function RCLootCouncilML:HandleReceivedTradeable (item, sender)
 end
 
 function RCLootCouncilML:HandleNonTradeable(link, owner, reason)
+	if not (addon.handleLoot and link and link ~= "") then return end -- Auto fail criterias
 	local responseID
 	if reason == "not_tradeable" then
 		responseID = "PL"
