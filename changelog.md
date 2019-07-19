@@ -1,3 +1,11 @@
+### v2.12.2
+---
+###### Bugfixes
+* *Fixed issue with loot history (#389).*
+* *Fixed error popping up on random trades (#390).*
+* *No longer tracks non-tradeable loot when it isn't supposed to.*
+
+
 ### v2.12.1
 ---
 ###### Bugfixes  
