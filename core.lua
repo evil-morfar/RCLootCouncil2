@@ -489,6 +489,7 @@ function RCLootCouncil:OnEnable()
 		self.db.global.log = {}
 	end
 	self.db.global.locale = GetLocale() -- Store locale in log. Important information for debugging.
+	self.db.global.regionID = GetCurrentRegion()
 
 	self.db.global.tVersion = self.tVersion;
 	GuildRoster()
