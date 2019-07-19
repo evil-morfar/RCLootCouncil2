@@ -2,7 +2,7 @@
 ---
 ###### Bugfixes
 * *Fixed issue with loot history (#389).*
-
+* *Fixed error popping up on random trades (#390).*
 
 
 ### v2.12.1
