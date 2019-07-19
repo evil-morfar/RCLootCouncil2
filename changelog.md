@@ -1,3 +1,10 @@
+### v2.12.2
+---
+###### Bugfixes
+* *Fixed issue with loot history (#389).*
+
+
+
 ### v2.12.1
 ---
 ###### Bugfixes  
