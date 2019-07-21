@@ -1,6 +1,22 @@
+
 * **Loot History**  
 * Added an option to delete loot history entries by instance name.
 * This allows you to target a specific instance, in particular Mythic+ loot that got added unintentionally.
+
+
+### v2.12.2
+---
+###### Bugfixes
+* *Fixed issue with loot history (#389).*
+* *Fixed error popping up on random trades (#390).*
+* *No longer tracks non-tradeable loot when it isn't supposed to.*
+
+
+### v2.12.1
+---
+###### Bugfixes  
+* *Fixed library issue causing scrolling tables to unstick and break the UI in 8.2.*
+
 
 
 ### v2.12.0 (patch 8.2)

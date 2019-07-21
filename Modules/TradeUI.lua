@@ -171,15 +171,15 @@ end
 function TradeUI:OnEvent_UI_INFO_MESSAGE (event, ...)
    if select(1, ...) == _G.LE_GAME_ERR_TRADE_COMPLETE then -- Trade complete. Remove items from db.baggedItems if traded to winners
       addon:Debug("TradeUI: Traded item(s) to", self.tradeTarget)
-      -- TODO This records every single item we trade - modify to only do stuff with items we are actively handling
       for _, link in ipairs(self.tradeItems) do
          local Item = addon.ItemStorage:GetItem(link)
-         if Item and addon:UnitIsUnit(self.tradeTarget, Item.args.recipient) then
-            -- REVIEW This check is probably redundant, but currently TRADE_ACCEPT_UPDATE just adds all traded items, not just those we track
-            addon:SendCommand("group", "trade_complete", link, self.tradeTarget, addon.playerName)
-         elseif Item and not addon:UnitIsUnit(self.tradeTarget, Item.args.recipient) then
-            -- Player trades the item to someone else than the winner
-            addon:SendCommand("group", "trade_WrongWinner", link, self.tradeTarget, addon.playerName, Item.args.recipient)
+         if Item and Item.type and Item.type == "to_trade" then
+            if addon:UnitIsUnit(self.tradeTarget, Item.args.recipient) then
+               addon:SendCommand("group", "trade_complete", link, self.tradeTarget, addon.playerName)
+            elseif Item.args.recipient and not addon:UnitIsUnit(self.tradeTarget, Item.args.recipient) then
+               -- Player trades the item to someone else than the winner
+               addon:SendCommand("group", "trade_WrongWinner", link, self.tradeTarget, addon.playerName, Item.args.recipient)
+            end
          end
          addon.ItemStorage:RemoveItem(link)
       end
