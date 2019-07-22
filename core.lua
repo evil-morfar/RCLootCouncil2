@@ -423,6 +423,8 @@ function RCLootCouncil:OnInitialize()
 	self.db.RegisterCallback(self, "OnProfileCopied", ReloadUI)
 	self.db.RegisterCallback(self, "OnProfileReset", ReloadUI)
 
+	self:ClearOldVerTestCandidates()
+
 	-- add shortcuts
 	db = self.db.profile
 	historyDB = self.lootDB.factionrealm
@@ -2441,6 +2443,15 @@ function RCLootCouncil:VersionCompare(ver1, ver2)
 	local a2,b2,c2 = string.split(".", ver2)
 	if not (c1 and c2) then return end -- Check if it exists
 	if a1 ~= a2 then return  tonumber(a1) < tonumber(a2) elseif b1 ~= b2 then return tonumber(b1) < tonumber(b2) else return tonumber(c1) < tonumber(c2) end
+end
+
+function RCLootCouncil:ClearOldVerTestCandidates()
+	local oneWeekAgo = time() - 604800
+	for name, data in pairs(self.db.global.verTestCandidates) do
+		if data[3] < oneWeekAgo then
+			self.db.global.verTestCandidates[name] = nil
+		end
+	end
 end
 
 -- from LibUtilities-1.0, which adds bonus index after bonus ID
