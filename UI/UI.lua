@@ -5,7 +5,7 @@
 -- @author Potdisc
 -- Create Date : 31/7/2018 03:42:37
 
-local addon = LibStub("AceAddon-3.0"):GetAddon("RCLootCouncil")
+local _,addon = ...
 local db = addon:Getdb()
 local private = { elements = {}, num = {}, embeds = {}}
 addon.UI = {CreateFrame = _G.CreateFrame, private = private} -- Embed CreateFrame into UI as it's used by all elements

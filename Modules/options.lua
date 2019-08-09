@@ -2,7 +2,7 @@
 -- @author Potdisc
 -- Create Date : 5/24/2012 6:24:55 PM
 
-local addon = LibStub("AceAddon-3.0"):GetAddon("RCLootCouncil")
+local _,addon = ...
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 ------ Options ------
 local function DBGet(info)

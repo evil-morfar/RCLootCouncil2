@@ -3,7 +3,7 @@
 -- @author Potdisc
 -- Create Date : 29/5/2018 18:28:51
 
-local addon = LibStub("AceAddon-3.0"):GetAddon("RCLootCouncil")
+local _,addon = ...
 local db = addon:Getdb()
 local Storage = {}
 addon.ItemStorage = Storage
