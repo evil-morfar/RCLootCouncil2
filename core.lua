@@ -1717,8 +1717,11 @@ end
 RCLootCouncil.classDisplayNameToID = {} -- Key: localized class display name. value: class id(number)
 RCLootCouncil.classTagNameToID = {} -- key: class name in capital english letters without space. value: class id(number)
 for i=1, GetNumClasses() do
-	RCLootCouncil.classDisplayNameToID[select(1, GetClassInfo(i))] = i
-	RCLootCouncil.classTagNameToID[select(2, GetClassInfo(i))] = i
+	local info = C_CreatureInfo.GetClassInfo(i)
+	if info then -- Just in case class doesn't exists #Classic
+		RCLootCouncil.classDisplayNameToID[info.className] = i
+		RCLootCouncil.classTagNameToID[info.classFile] = i
+	end
 end
 
 -- @return The bitwise flag indicates the classes allowed for the item, as specified on the tooltip by "Classes: xxx"
