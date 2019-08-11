@@ -11,6 +11,8 @@ Patches\UiDropDownMenuTaintCommunities.lua
 embeds.xml
 Locale\Locales.xml
 
+Core\Defaults.lua
+
 core.lua
 ml_core.lua
 
