@@ -1,3 +1,9 @@
+
+* **Loot History**  
+* Added an option to delete loot history entries by instance name.
+* This allows you to target a specific instance, in particular Mythic+ loot that got added unintentionally.
+
+
 ### v2.12.2
 ---
 ###### Bugfixes
