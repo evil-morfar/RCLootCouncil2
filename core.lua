@@ -229,22 +229,9 @@ function RCLootCouncil:OnEnable()
 	self:DebugLog(self.playerName, self.version, self.tVersion)
 
 	-- register events
-	self:RegisterEvent("PARTY_LOOT_METHOD_CHANGED", "OnEvent")
-	self:RegisterEvent("PARTY_LEADER_CHANGED", "OnEvent")
-	self:RegisterEvent("GROUP_LEFT", "OnEvent")
-	self:RegisterEvent("GUILD_ROSTER_UPDATE","OnEvent")
-	self:RegisterEvent("RAID_INSTANCE_WELCOME","OnEvent")
-	self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
-	self:RegisterEvent("PLAYER_REGEN_DISABLED", "EnterCombat")
-	self:RegisterEvent("PLAYER_REGEN_ENABLED", "LeaveCombat")
-	self:RegisterEvent("ENCOUNTER_START", "OnEvent")
-	self:RegisterEvent("ENCOUNTER_END", 	"OnEvent")
-	self:RegisterEvent("LOOT_SLOT_CLEARED", "OnEvent")
-	self:RegisterEvent("LOOT_CLOSED",		"OnEvent")
-	self:RegisterEvent("LOOT_READY", "OnEvent")
-	self:RegisterEvent("ENCOUNTER_LOOT_RECEIVED", "OnEvent")
-
-	--self:RegisterEvent("GROUP_ROSTER_UPDATE", "Debug", "event")
+	for event, method in pairs(self.coreEvents) do
+		self:RegisterEvent(event, method)
+	end
 
 	if IsInGuild() then
 		self.guildRank = select(2, GetGuildInfo("player"))
