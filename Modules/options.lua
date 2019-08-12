@@ -2,7 +2,7 @@
 -- @author Potdisc
 -- Create Date : 5/24/2012 6:24:55 PM
 
-local addon = LibStub("AceAddon-3.0"):GetAddon("RCLootCouncil")
+local _,addon = ...
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 ------ Options ------
 local function DBGet(info)
@@ -468,8 +468,43 @@ function addon:OptionsTable()
 											selections.deletePatch = "" -- Barrow: Needs to be reset.
 										end,
 									},
+									deleteRaid = {
+										order = 20,
+										name = _G.INSTANCE,
+										desc = L["opt_deleteRaid_desc"],
+										type = "select",
+										width = "double",
+										values = self:GetActiveModule("history"):GetAllRegisteredInstances(),
+										get = function(info)
+											return selections[info[#info]] or ""
+										end,
+										set = function(info, val)
+											selections[info[#info]] = val
+										end,
+									},
+									deleteRaidBtn = {
+										order = 21,
+										name = _G.DELETE,
+										type = "execute",
+										confirm = function()
+											if selections.deleteRaid then
+												return L["opt_deleteRaid_confirm"]
+											else
+												return false
+											end
+										end,
+										func = function ()
+											if not selections.deleteRaid then
+												addon:Print(L["Invalid selection"])
+												return
+											end
+											self:GetActiveModule("history"):DeleteAllEntriesByMapIDDifficulty(strsplit("-", selections.deleteRaid, 2))
+											selections.deleteRaid = ""
+										end
+									},
+
 									deleteCustomDays = {
-										order = 18,
+										order = 22,
 										name = addon:CompleteFormatSimpleStringWithPluralRule(_G.DAYS, 2),
 										desc = L["opt_deleteDate_desc"],
 										type = "input",
@@ -485,7 +520,7 @@ function addon:OptionsTable()
 										end,
 									},
 									deleteCustomDaysBtn = {
-										order = 19,
+										order = 23,
 										name = _G.DELETE,
 										type = "execute",
 										confirm = function() return L["opt_deleteDate_confirm"] end,

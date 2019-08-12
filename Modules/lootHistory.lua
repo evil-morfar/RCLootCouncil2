@@ -3,7 +3,7 @@
 -- @author Potdisc
 -- Create Date : 8/6/2015
 
-local addon = LibStub("AceAddon-3.0"):GetAddon("RCLootCouncil")
+local _,addon = ...
 local LootHistory = addon:NewModule("RCLootHistory")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 local AG = LibStub("AceGUI-3.0")
@@ -213,12 +213,50 @@ function LootHistory:GetAllRegisteredCandidates()
 	return names
 end
 
+---
+-- @return table [mapID-difficultyID] = "instance_name"
+function LootHistory:GetAllRegisteredInstances()
+	local raids = {}
+	lootDB = addon:GetHistoryDB()
+	for _, v in pairs(lootDB) do
+		for _,v in ipairs(v) do
+			if v.mapID and v.instance then
+				raids[v.mapID .. "-" .. v.difficultyID] = v.instance
+			end
+		end
+	end
+	table.sort(raids)
+	return raids
+end
+
 function LootHistory:DeleteAllEntriesByName(name)
 	addon:Debug("Deleting all loot history entries for ", name)
 	if not lootDB[name] then return addon:Debug("ERROR", name, "wasn't registered in the lootDB!") end
 	addon:Print(format(L["Succesfully deleted %d entries from %s"], #lootDB[name], name))
 	lootDB[name] = nil
 	if self.frame and self.frame:IsVisible() then -- Only update if we're viewing it
+		self:BuildData()
+		self.frame.st:SortData()
+	end
+end
+
+function LootHistory:DeleteAllEntriesByMapIDDifficulty(mapID, diff)
+	addon:Debug("Deleting all loot history entires with mapID", mapID, "and difficultyID", diff)
+	local item
+	local sum = 0
+	for _, items in pairs(lootDB) do
+		for i = #items, 1, -1 do
+			item = items[i]
+			if item and item.mapID and item.difficultyID then
+				if item.mapID == tonumber(mapID) and item.difficultyID == tonumber(diff) then
+					table.remove(items, i)
+					sum = sum + 1
+				end
+			end
+		end
+	end
+	addon:Print(format(L["Succesfully deleted %d entries"], sum))
+	if self.frame and self.frame:IsVisible() then
 		self:BuildData()
 		self.frame.st:SortData()
 	end
