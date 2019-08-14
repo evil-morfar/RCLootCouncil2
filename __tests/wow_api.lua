@@ -106,6 +106,10 @@ function GetTime()
 	return _time
 end
 
+function _G.StaticPopup_OnHide(args)
+	-- body...
+end
+
 function IsAddOnLoaded() return nil end
 
 SlashCmdList = {}
@@ -150,12 +154,36 @@ function GetLocale()
 	return "enUS"
 end
 
+function GetCurrentRegion()
+	return 3 -- EU
+end
+
 function GetAddOnInfo()
 	return
 end
 
 function GetNumAddOns()
 	return 0
+end
+
+function IsPartyLFG ()
+	return _G.IsPartyLFGVal
+end
+
+function IsInRaid()
+	return _G.IsInRaidVal
+end
+
+function UnitInRaid()
+	return _G.IsInRaidVal
+end
+
+function UnitInParty()
+	return _G.IsInGroupVal
+end
+
+function IsInGroup ()
+	return _G.IsInGroupVal
 end
 
 function getglobal(k)
@@ -276,7 +304,9 @@ function WoWAPI_FireUpdate(forceNow)
 	end
 end
 
-
+function GetServerTime ()
+	return os.time()
+end
 
 
 -- utility function for "dumping" a number of arguments (return a string representation of them)
@@ -294,3 +324,125 @@ function dump(...)
 	end
 	return "<"..table.concat(t, "> <")..">"
 end
+
+function tDeleteItem(tbl, item)
+	local index = 1;
+	while tbl[index] do
+		if ( item == tbl[index] ) then
+			tremove(tbl, index);
+		else
+			index = index + 1;
+		end
+	end
+end
+
+function tIndexOf(tbl, item)
+	for i, v in ipairs(tbl) do
+		if item == v then
+			return i;
+		end
+	end
+end
+
+function tContains(tbl, item)
+	return tIndexOf(tbl, item) ~= nil;
+end
+
+function tInvert(tbl)
+	local inverted = {};
+	for k, v in pairs(tbl) do
+		inverted[v] = k;
+	end
+	return inverted;
+end
+
+function tFilter(tbl, pred, isIndexTable)
+	local out = {};
+
+	if (isIndexTable) then
+		local currentIndex = 1;
+		for i, v in ipairs(tbl) do
+			if (pred(v)) then
+				out[currentIndex] = v;
+				currentIndex = currentIndex + 1;
+			end
+		end
+	else
+		for k, v in pairs(tbl) do
+			if (pred(v)) then
+				out[k] = v;
+			end
+		end
+	end
+
+	return out;
+end
+
+function CopyTable(settings)
+	local copy = {};
+	for k, v in pairs(settings) do
+		if ( type(v) == "table" ) then
+			copy[k] = CopyTable(v);
+		else
+			copy[k] = v;
+		end
+	end
+	return copy;
+end
+
+function FindInTableIf(tbl, pred)
+	for k, v in pairs(tbl) do
+		if (pred(v)) then
+			return k, v;
+		end
+	end
+
+	return nil;
+end
+
+function Ambiguate(name, method)
+	if method == "short" then
+		name = gsub(name, "%-.+", "")
+	end
+	return name
+end
+
+function string:split(sep)
+   local sep, fields = sep or ":", {}
+   local pattern = string.format("([^%s]+)", sep)
+   self:gsub(pattern, function(c) fields[#fields+1] = c end)
+   return fields
+end
+
+function UnitGUID (name)
+   return "Player-FFF-ABCDF012"
+end
+
+-- Enable some globals
+_G.gsub = string.gsub
+_G.strfind = string.find
+_G.strsplit = string.split
+_G.strsub = string.sub
+_G.tremove = table.remove
+_G.strrep = string.rep
+_G.tinsert = table.insert
+
+-- Not part of the WoWAPI, but added to emulate the ingame /dump cmd
+printtable = function( data, level )
+	if not data then return end
+	level = level or 0
+	local ident=strrep('     ', level)
+	if level>6 then return end
+	if type(data)~='table' then print(tostring(data)) end;
+	for index,value in pairs(data) do repeat
+		if type(value)~='table' then
+			print( ident .. '['..tostring(index)..'] = ' .. tostring(value) .. ' (' .. type(value) .. ')' );
+			break;
+		end
+		print( ident .. '['..tostring(index)..'] = {')
+        printtable(value, level+1)
+        print( ident .. '}' );
+	until true end
+end
+
+C_Timer = {After = function() end}
