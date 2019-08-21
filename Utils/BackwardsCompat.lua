@@ -13,10 +13,15 @@ addon.Compat = Compat
 -- Each compat can only be run once per login, so feel free to call it again.
 function Compat:Run()
    for k,v in ipairs(self.list) do
-      if v.version == "always" or addon:VersionCompare(addon.db.global.version, v.version) and not v.executed then
+      if v.version == "always"
+         or (addon:VersionCompare(addon.db.global.version, v.version) or not addon.db.global.version)
+         and not v.executed then
          addon:Debug("<Compat>", "Executing:", k, v.name or "no_name")
-         v.func(addon, addon.version, addon.db.global.version, addon.db.global.oldVersion)
+         local check = pcall(v.func, addon, addon.version, addon.db.global.version, addon.db.global.oldVersion)
          v.executed = true
+         if not check then
+            addon:Debug("<Compat>", "<ERROR>", "Failed to execute:", v.name)
+         end
       end
    end
 

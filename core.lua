@@ -2218,7 +2218,8 @@ end
 function RCLootCouncil:ClearOldVerTestCandidates()
 	local oneWeekAgo = time() - 604800
 	for name, data in pairs(self.db.global.verTestCandidates) do
-		if data[3] < oneWeekAgo then
+		if not data[3] -- Doesn't exist for ooold versions
+			or data[3] < oneWeekAgo then
 			self.db.global.verTestCandidates[name] = nil
 		end
 	end
