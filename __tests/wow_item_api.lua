@@ -145,4 +145,3 @@ do
       _G.Items[a] = b
    end
 end
-printtable(_G.Items)

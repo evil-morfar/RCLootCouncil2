@@ -186,6 +186,16 @@ function IsInGroup ()
 	return _G.IsInGroupVal
 end
 
+function IsInInstance ()
+	local type = "none"
+	if _G.IsInGroupVal then
+		type = "party"
+	elseif _G.IsInRaidVal then
+		type = "raid"
+	end
+	return (IsInGroup() or IsInRaid()), type
+end
+
 function getglobal(k)
 	return _G[k]
 end
