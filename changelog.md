@@ -1,3 +1,8 @@
+### v2.13.1
+---
+###### Bugfixes
+* *Fixed issues when upgrading from a pre 2.7 version to 2.13 (#391-394).*
+
 ### v2.13.0
 ---
 * **Loot History**  
