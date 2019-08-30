@@ -1110,8 +1110,8 @@ function RCLootCouncilML:Award(session, winner, response, reason, callback, ...)
 		else -- Store in our bags and award later
 			self:GiveLoot(self.lootTable[session].lootSlot, addon.playerName, function(awarded, cause)
 				if awarded then
-					awardFailed(session, nil, "bagged", callback, unpack(args)) -- Item hasn't been awarded
 					registerAndAnnounceBagged(session)
+					awardFailed(session, nil, "bagged", callback, unpack(args)) -- Item hasn't been awarded
 				else
 					awardFailed(session, nil, cause, callback, unpack(args))
 					self:PrintLootErrorMsg(cause, self.lootTable[session].lootSlot, self.lootTable[session].link, addon.playerName)
