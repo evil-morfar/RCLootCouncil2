@@ -16,7 +16,7 @@ LibDialog:Register("RCLOOTCOUNCIL_CONFIRM_USAGE", {
       {
          text = _G.YES,
          on_click = function()
-            addon:DebugLog("Player confirmed usage, Personal Loot")
+            addon:DebugLog("Player confirmed usage")
             addon:StartHandleLoot("personalloot")
          end,
       },
