@@ -1,3 +1,6 @@
+###### Bugfixes
+* *Reawarding an item to the original owner will now remove the old trade entry from the TradeUI.*
+
 ### v2.13.1
 ---
 ###### Bugfixes
