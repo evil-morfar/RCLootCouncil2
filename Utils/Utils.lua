@@ -53,6 +53,16 @@ function Utils:GetItemTextWithCount(link, count)
 	return link..(count and count > 1 and (" x"..count) or "")
 end
 
+local NEUTRALIZE_ITEM_PATTERN = "item:(%d*):(%d*):(%d*):(%d*):(%d*):(%d*):(%d*):%d*:%d*:%d*"
+local NEUTRALIZE_ITEM_REPLACEMENT = "item:%1:%2:%3:%4:%5:%6:%7:::"
+
+--- Removes any character specific data from an item
+-- @param item Any itemlink, itemstring etc.
+-- @return The same item with level, specID, and uniqueID removed
+function Utils:NeutralizeItem (item)
+	return item:gsub(NEUTRALIZE_ITEM_PATTERN, NEUTRALIZE_ITEM_REPLACEMENT)
+end
+
 function Utils:GetItemLevelText(ilvl, token)
 	if not ilvl then return "" end
 	if token and ilvl > 600 then -- Armor token warforged is introduced since WoD

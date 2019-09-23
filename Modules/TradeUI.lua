@@ -98,14 +98,17 @@ function TradeUI:OnCommReceived(prefix, serializedMsg, distri, sender)
          local session, winner, trader = unpack(data)
          if addon:UnitIsUnit(trader, "player") then
             -- We should give our item to 'winner'
-            if not addon:UnitIsUnit(winner, "player") or (addon.testMode or addon.nnp) then -- Don't add ourself unless we're testing
-               local Item = addon.ItemStorage:GetItem(addon:GetLootTable()[session].link) -- Update our temp item
-               if Item then
-                  Item.type = "to_trade"
-                  Item.args.recipient = winner
-               else
-                  Item = addon.ItemStorage:New(addon:GetLootTable()[session].link, "to_trade", {recipient = winner}):Store()
-               end
+            local Item = addon.ItemStorage:GetItem(addon:GetLootTable()[session].link) -- Update our temp item
+            if Item then
+               Item.type = "to_trade"
+               Item.args.recipient = winner
+            else
+               Item = addon.ItemStorage:New(addon:GetLootTable()[session].link, "to_trade", {recipient = winner}):Store()
+            end
+            -- Don't add ourself unless we're testing
+            -- but do add/update the item first, in case it's a reaward to ourself
+            if addon:UnitIsUnit(winner, "player") and not (addon.testMode or addon.nnp) then
+               addon.ItemStorage:RemoveItem(Item)
             end
             self:Show()
          end
