@@ -1,3 +1,6 @@
+###### Bugfixes
+* *The explanation on how to use the whisper system was wrong.*
+
 ### v2.14.0
 ---
 * **Voting Frame**  
