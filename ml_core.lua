@@ -1434,23 +1434,13 @@ function RCLootCouncilML:GetItemsFromMessage(msg, sender, retryCount)
 		if not arg2 or not arg2:find("|Hitem:") then return end
 		item1, item2 = arg2, arg3
 
-		-- check if the response is valid
 		local whisperKeys = {}
-		if self.lootTable[ses].token and addon.mldb.tierButtonsEnabled then
-			isTier = true
-			for i=1, db.tierNumButtons do
-				gsub(db.tierButtons[i]["whisperKey"], '[%w]+', function(x) tinsert(whisperKeys, {key = x, num = i}) end)
-			end
-		elseif self.lootTable[ses].relic and addon.mldb.relicButtonsEnabled then
-			isRelic = true
-			for i=1, db.relicNumButtons do
-				gsub(db.relicButtons[i]["whisperKey"], '[%w]+', function(x) tinsert(whisperKeys, {key = x, num = i}) end)
-			end
-		else
-			for i = 1, db.buttons.default.numButtons do --go through all the button
-				gsub(db.buttons[i]["whisperKey"], '[%w]+', function(x) tinsert(whisperKeys, {key = x, num = i}) end) -- extract the whisperKeys to a table
+		for k, v in pairs(db.buttons.default) do
+			if k ~= "numButtons" then
+				gsub(v.whisperKey, '[%w]+', function(x) tinsert(whisperKeys, {key = x, num = k}) end) -- extract the whisperKeys to a table
 			end
 		end
+
 		for _,v in ipairs(whisperKeys) do
 			if strmatch(arg1, v.key) then -- if we found a match
 				response = v.num
