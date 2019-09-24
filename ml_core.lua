@@ -1501,8 +1501,8 @@ function RCLootCouncilML:SendWhisperHelp(target)
 	local msg
 	SendChatMessage(L["whisper_guide"], "WHISPER", nil, target)
 	for i = 1, db.buttons.default.numButtons do
-		msg = "[RCLootCouncil]: "..db.buttons[i]["text"]..":  " -- i.e. MainSpec/Need:
-		msg = msg..""..db.buttons[i]["whisperKey"].."." -- need, mainspec, etc
+		msg = "[RCLootCouncil]: "..db.buttons.default[i]["text"]..":  " -- i.e. MainSpec/Need:
+		msg = msg..""..db.buttons.default[i]["whisperKey"].."." -- need, mainspec, etc
 		SendChatMessage(msg, "WHISPER", nil, target)
 	end
 	SendChatMessage(L["whisper_guide2"], "WHISPER", nil, target)

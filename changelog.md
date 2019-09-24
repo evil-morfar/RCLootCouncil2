@@ -1,6 +1,7 @@
 ###### Bugfixes
 * *The explanation on how to use the whisper system was wrong.*
-* *The whisper system didn't work properly with responses.*
+* *The whisper system didn't work properly with responses..*
+* *The whisper help system was also broken...*
 
 ### v2.14.0
 ---
