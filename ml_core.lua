@@ -1233,7 +1233,8 @@ function RCLootCouncilML:AnnounceAward(name, link, response, roll, session, chan
 end
 
 function RCLootCouncilML:ShouldAutoAward(item, quality)
-	if db.autoAward and quality >= db.autoAwardLowerThreshold and quality <= db.autoAwardUpperThreshold then
+	if db.autoAward and quality >= db.autoAwardLowerThreshold and quality <= db.autoAwardUpperThreshold
+	 	and IsEquippableItem(item) then
 		if db.autoAwardLowerThreshold >= GetLootThreshold() or db.autoAwardLowerThreshold < 2 then
 			if UnitInRaid(db.autoAwardTo) or UnitInParty(db.autoAwardTo) then -- TEST perhaps use self.group?
 				return true;
