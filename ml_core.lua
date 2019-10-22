@@ -1047,6 +1047,7 @@ function RCLootCouncilML:Award(session, winner, response, reason, callback, ...)
 
 	-- already awarded. Change award
 	if self.lootTable[session].awarded then
+		registerAndAnnounceAward(session, winner, response, reason)
 		if not self.lootTable[session].lootSlot and not self.lootTable[session].bagged then -- "/rc add" or test mode
 			awardSuccess(session, winner, addon.testMode and "test_mode" or "manually_added", callback, ...)
 		elseif self.lootTable[session].bagged then
@@ -1054,7 +1055,6 @@ function RCLootCouncilML:Award(session, winner, response, reason, callback, ...)
 		else
 			awardSuccess(session, winner, "normal", callback, ...)
 		end
-		registerAndAnnounceAward(session, winner, response, reason)
 		return true
 	end
 
@@ -1070,8 +1070,8 @@ function RCLootCouncilML:Award(session, winner, response, reason, callback, ...)
 				addon:Print(L["Award later isn't supported when testing."])
 				return false
 			else -- Award later optioned is checked in "/rc add", put in ML's bag.
-				awardFailed(session, nil, "manually_bagged", callback, ...)
 				registerAndAnnounceBagged(session)
+				awardFailed(session, nil, "manually_bagged", callback, ...)
 				return false
 			end
 		end
@@ -1079,8 +1079,8 @@ function RCLootCouncilML:Award(session, winner, response, reason, callback, ...)
 
 	if self.lootTable[session].bagged then  -- indirect mode (the item is in a bag)
 		-- Add to the list of awarded items in MLs bags,
-		awardSuccess(session, winner, "indirect", callback, ...)
 		registerAndAnnounceAward(session, winner, response, reason)
+		awardSuccess(session, winner, "indirect", callback, ...)
 		return true
 	end
 
@@ -1110,8 +1110,8 @@ function RCLootCouncilML:Award(session, winner, response, reason, callback, ...)
 			-- Attempt to give loot
 			self:GiveLoot(self.lootTable[session].lootSlot, winner, function(awarded, cause)
 				if awarded then
-					awardSuccess(session, winner, "normal", callback, unpack(args))
 					registerAndAnnounceAward(session, winner, response, reason)
+					awardSuccess(session, winner, "normal", callback, unpack(args))
 					return true
 				else
 					awardFailed(session, winner, cause, callback, unpack(args))
