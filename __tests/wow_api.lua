@@ -480,3 +480,7 @@ end
 function GetNumSpecializationsForClassID (classID)
 	return CLASS_INFO[classID].numSpecs
 end
+
+function GetClassInfo (classIndex)
+	return CLASS_INFO[classIndex], "UNDEFINED", classIndex
+end
