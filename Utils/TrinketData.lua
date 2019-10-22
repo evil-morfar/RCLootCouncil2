@@ -5,10 +5,7 @@
 -- Update Date : 25/6/2019 (8.2.0 Build 30888)
 
 
-local ZERO = ""
-for i=1, GetNumClasses() do
-	ZERO = "0"..ZERO -- "000000000000"
-end
+local ZERO = ("0"):rep(GetNumClasses())
 --@debug@
 --[[
 This function is used for developer.
@@ -30,203 +27,225 @@ Holy Paladin is the 1st spec of Paladin (class ID 2) because GetSpecializationIn
 Overall, 365002707767 shows the trinket is lootable by all specs using Strength or Agility as Primary Stats.
 
 --]]
-local trinketSpecs = {
+local trinketData = {
 }
 local trinketNames = {
 }
-
+local trinketIdToIndex = {}
+local instanceNames = {}
 -- The params are used internally inside this function
 -- Process in the following order:
 -- From expansion vanilla to the latest expansion (nextTier)
 -- Inside each expansion, scan dungeon first then raid (nextIsRaid)
 -- Inside dungeon/raid, scan by its index in the journal (nextIndex)
 -- Inside each instance, scan by difficulty id order(nextDiffID)
-function RCLootCouncil:ExportTrinketData(nextTier, nextIsRaid, nextIndex, nextDiffID)
-	LoadAddOn("BLizzard_EncounterJournal")
-	local MAX_CLASSFLAG_VAL = bit.lshift(1, GetNumClasses()) - 1
-	local TIME_FOR_EACH_INSTANCE_DIFF = 5
+function RCLootCouncil:ExportTrinketData(nextTier, nextIsRaid, nextIndex, nextDiffID, maxTier)
+   LoadAddOn("BLizzard_EncounterJournal")
+   local MAX_CLASSFLAG_VAL = bit.lshift(1, GetNumClasses()) - 1
+   local TIME_FOR_EACH_INSTANCE_DIFF = 5
 
-	if not nextTier then
-		nextTier = 8
-		nextIsRaid = 1
-		nextIndex = 5 -- Eternal Palace
-		nextDiffID = 1
-		self:Print("Exporting the loot specs of all trinkets in the dungeon journal\n"
-			.."This command is intended to be run by the developer.\n"
-			.."After exporting is done and copy and paste the data into Utils/TrinketData.lua.\n"
-			.."Dont open EncounterJournal during export.\n"
-			.."Dont run any extra /rc exporttrinketdata when it is running.")
-		self:Print(format("To ensure the data is correct, process one difficulty of one instance every %d s", TIME_FOR_EACH_INSTANCE_DIFF))
-	end
+   if not nextTier then
+      nextTier = 1 -- 8 -- BFA
+      nextIsRaid = 0
+      nextIndex = 1 -- 5 -- Eternal Palace
+      nextDiffID = 1
+      self:Print("Exporting the loot specs of all trinkets in the dungeon journal\n"
+         .."This command is intended to be run by the developer.\n"
+         .."After exporting is done and copy and paste the data into Utils/TrinketData.lua.\n"
+         .."Dont open EncounterJournal during export.\n"
+      .."Dont run any extra /rc exporttrinketdata when it is running.")
+      self:Print(format("To ensure the data is correct, process one difficulty of one instance every %d s", TIME_FOR_EACH_INSTANCE_DIFF))
+   end
 
-	if _G.EncounterJournal then
-		_G.EncounterJournal:UnregisterAllEvents() -- To help to ensure EncounterJournal does not affect exporting.
-	end
+   if _G.EncounterJournal then
+      _G.EncounterJournal:UnregisterAllEvents() -- To help to ensure EncounterJournal does not affect exporting.
+   end
 
-	local instanceIndex = nextIndex
-	for h=nextTier, EJ_GetNumTiers() do
-		EJ_SelectTier(h)
-		for i=nextIsRaid, 1 do
-			while EJ_GetInstanceByIndex(instanceIndex, (i==1)) do
-				local instanceID = EJ_GetInstanceByIndex(instanceIndex, (i==1))
-				EJ_SelectInstance(instanceID)
-				for diffID=nextDiffID, 99 do -- Should be enough to include all difficulties
-					if EJ_IsValidInstanceDifficulty(diffID) then
-						self:ExportTrinketDataSingleInstance(instanceID, diffID, TIME_FOR_EACH_INSTANCE_DIFF)
-						return self:ScheduleTimer("ExportTrinketData", TIME_FOR_EACH_INSTANCE_DIFF, h, i, instanceIndex, diffID + 1)
+   maxTier = maxTier or EJ_GetNumTiers()
+
+   local instanceIndex = nextIndex
+   for h = nextTier, maxTier do
+      EJ_SelectTier(h)
+      for i = nextIsRaid, 1 do
+         while EJ_GetInstanceByIndex(instanceIndex, (i == 1)) do
+            local instanceID = EJ_GetInstanceByIndex(instanceIndex, (i == 1))
+            EJ_SelectInstance(instanceID)
+            for diffID = nextDiffID, 99 do -- Should be enough to include all difficulties
+               if EJ_IsValidInstanceDifficulty(diffID) then
+                  self:ExportTrinketDataSingleInstance(instanceID, diffID, TIME_FOR_EACH_INSTANCE_DIFF)
+                  return self:ScheduleTimer("ExportTrinketData", TIME_FOR_EACH_INSTANCE_DIFF, h, i, instanceIndex, diffID + 1, maxTier)
+					elseif nextTier == 1 and i == 1 and diffID == 9 then
+						-- Classic raids has EJ_GetDifficulty() == 9, but EJ_IsValidInstanceDifficulty(9) == false
+						-- and EJ_SetDifficulty(9) works as intended...
+						-- Except for Ruins of Ahn'Qiraj (10-player) which correctly registers diffID 3.
+						-- #GoodJobBlizzard
+						self:ExportTrinketDataSingleInstance(instanceID, 9, TIME_FOR_EACH_INSTANCE_DIFF)
+                  return self:ScheduleTimer("ExportTrinketData", TIME_FOR_EACH_INSTANCE_DIFF, h, i, instanceIndex + 1, 1, maxTier)
 					end
-				end
-				nextDiffID = 1
-				instanceIndex = instanceIndex + 1
-			end
-			instanceIndex = 1
+            end
+            nextDiffID = 1
+            instanceIndex = instanceIndex + 1
+         end
+         instanceIndex = 1
+      end
+      nextIsRaid = 0
+   end
+	local numinstanceNames = 0
+	for _ in pairs(instanceNames) do numinstanceNames = numinstanceNames + 1 end
+   self:Print(format("DONE. %d trinkets total", #trinketData - numinstanceNames))
+   self:Print("Copy paste the data to Utils/TrinketData.lua")
+   self:Print("Suggest to verify the data for the trinket in the recent raid")
+
+   -- Hack that should only happen in developer mode.
+   local frame = RCLootCouncil:GetActiveModule("history"):GetFrame()
+   frame.exportFrame:Show()
+
+   local exports = "_G.RCTrinketSpecs = {\n"
+   local longestNameLen = 0
+   for _, name in pairs(trinketNames) do
+      if #name > longestNameLen then
+         longestNameLen = #name
+      end
+   end
+   local exp = "%-"..format("%d", longestNameLen + 1).."s"
+   for i, entry in ipairs(trinketData) do
+		if entry[1] == "name" then
+			exports = exports.."-- "..entry[2].."\n"
+		else
+	      exports = exports.."\t["..entry[1].."] = "..format("%q", entry[2])
+	      ..",\t-- "..format(exp, trinketNames[entry[1]]..",").."\t"..(_G.RCTrinketCategories[entry[2]] or "").."\n"
 		end
-		nextIsRaid = 0
-	end
-
-	local count = 0
-	for id, val in pairs(trinketSpecs) do
-		count = count + 1
-	end
-	self:Print(format("DONE. %d trinkets total", count))
-	self:Print("Copy paste the data to Utils/TrinketData.lua")
-	self:Print("Suggest to verify the data for the trinket in the recent raid")
-
-	-- Hack that should only happen in developer mode.
-	local frame = RCLootCouncil:GetActiveModule("history"):GetFrame()
-	frame.exportFrame:Show()
-
-	local exports ="_G.RCTrinketSpecs = {\n"
-	local sorted = {}
-	for id, val in pairs(trinketSpecs) do
-		tinsert(sorted, {id, val})
-	end
-	table.sort(sorted, function(a, b) return a[1] < b[1] end)
-	local longestNameLen = 0
-	for _, name in pairs(trinketNames) do
-		if #name > longestNameLen then
-			longestNameLen = #name
-		end
-	end
-	local exp = "%-"..format("%d", longestNameLen+1).."s"
-	for _, entry in ipairs(sorted) do
-		exports = exports.."\t["..entry[1].."] = "..format("%q", entry[2])
-			..",\t-- "..format(exp, trinketNames[entry[1]]..",").."\t"..(_G.RCTrinketCategories[entry[2]] or "").."\n"
-	end
-	exports = exports.."}\n"
-	frame.exportFrame.edit:SetText(exports)
+   end
+   exports = exports.."}\n"
+   frame.exportFrame.edit:SetText(exports)
 end
 
 function RCLootCouncil:ClassesFlagToStr(flag)
-	local text = ""
-	for i=1, GetNumClasses() do
-		if bit.band(flag, bit.lshift(1, i-1)) > 0 then
-			if text ~= "" then
-				text = text..", "
-			end
-			text = text..GetClassInfo(i)
-		end
-	end
-	return text
+   local text = ""
+   for i = 1, GetNumClasses() do
+      if bit.band(flag, bit.lshift(1, i - 1)) > 0 then
+         if text ~= "" then
+            text = text..", "
+         end
+         text = text..GetClassInfo(i)
+      end
+   end
+   return text
 end
 
 function RCLootCouncil:ExportTrinketDataSingleInstance(instanceID, diffID, timeLeft)
-	if _G.EncounterJournal then
-		_G.EncounterJournal:UnregisterAllEvents() -- To help to ensure EncounterJournal does not affect exporting.
-	end
-	local count = 0
-	local trinketlinksInThisInstances = {}
-	EJ_SelectInstance(instanceID)
-	EJ_SetDifficulty(diffID)
-	EJ_SetSlotFilter(LE_ITEM_FILTER_TYPE_TRINKET)
+   if _G.EncounterJournal then
+      _G.EncounterJournal:UnregisterAllEvents() -- To help to ensure EncounterJournal does not affect exporting.
+   end
+   local count = 0
+   local trinketlinksInThisInstances = {}
+   EJ_SelectInstance(instanceID)
+   EJ_SetDifficulty(diffID)
+   EJ_SetSlotFilter(LE_ITEM_FILTER_TYPE_TRINKET)
 
-	EJ_SetLootFilter(0, 0)
-    for j = 1, EJ_GetNumLoot() do -- EJ_GetNumLoot() can be 0 if EJ items are not cached.
-        local id, _, _, _, _, _, link = EJ_GetLootInfoByIndex(j)
-        if link then
-	        trinketSpecs[id] = ZERO
-	        trinketNames[id] = self:GetItemNameFromLink(link)
-	        GetItemInfo(id)
-	        count = count + 1
-	        tinsert(trinketlinksInThisInstances, link)
-	    end
+	local diffText = GetDifficultyInfo(diffID) or "Unknown difficulty"
+	local instanceText = format("%s %s (id: %d).", EJ_GetInstanceInfo(instanceID), diffText,instanceID)
+	if not instanceNames[instanceText] then
+		instanceNames[instanceText] = true
+		tinsert(trinketData, {"name", instanceText})
 	end
 
-	for classID = 1, GetNumClasses() do
-	    for specIndex=1, GetNumSpecializationsForClassID(classID) do
-	    	EJ_SetLootFilter(classID, GetSpecializationInfoForClassID(classID, specIndex))
-		    for j = 1, EJ_GetNumLoot() do -- EJ_GetNumLoot() can be 0 if EJ items are not cached.
-		        local id, _, _, _, _, _, link = EJ_GetLootInfoByIndex(j)
-		        if link then
-		        	local digit = tonumber(trinketSpecs[id]:sub(-classID, -classID), 16)
-		        	digit = digit + 2^(specIndex-1)
-		        	trinketSpecs[id] = trinketSpecs[id]:sub(1, GetNumClasses()-classID)..format("%X", digit)..trinketSpecs[id]:sub(GetNumClasses()-classID+2, GetNumClasses())
-			    end
-		    end
-		end
-	end
-	local interval = 1
-	if timeLeft > interval then -- Rerun many times for correctless
-		return self:ScheduleTimer("ExportTrinketDataSingleInstance", interval, instanceID, diffID, timeLeft - interval)
-	else
-		local diffText = GetDifficultyInfo(diffID) or "Unknown difficulty"
-		self:Print("--------------------")
-		self:Print(format("Instance %d. %s %s. Processed %d trinkets", instanceID, EJ_GetInstanceInfo(instanceID), diffText, count))
-		for _, link in ipairs(trinketlinksInThisInstances) do
-			local id = self:GetItemIDFromLink(link)
-			self:Print(format("%s(%d): %s", link, id, trinketSpecs[id]))
-		end
-		self:Print("--------------------")
-	end
+   EJ_SetLootFilter(0, 0)
+   for j = 1, EJ_GetNumLoot() do -- EJ_GetNumLoot() can be 0 if EJ items are not cached.
+      local id, _, _, _, _, _, link = EJ_GetLootInfoByIndex(j)
+      if link then
+			if not trinketIdToIndex[id] then
+				tinsert(trinketData, {id, ZERO})
+				trinketIdToIndex[id] = #trinketData
+			else
+				trinketData[trinketIdToIndex[id]][2] = ZERO
+			end
+         trinketNames[id] = self:GetItemNameFromLink(link)
+         GetItemInfo(id)
+         count = count + 1
+         tinsert(trinketlinksInThisInstances, link)
+      else
+         self:Debug("Uncached item @", instanceID, diffID, j, id)
+      end
+   end
+
+   for classID = 1, GetNumClasses() do
+      for specIndex = 1, GetNumSpecializationsForClassID(classID) do
+         EJ_SetLootFilter(classID, GetSpecializationInfoForClassID(classID, specIndex))
+         for j = 1, EJ_GetNumLoot() do -- EJ_GetNumLoot() can be 0 if EJ items are not cached.
+            local id, _, _, _, _, _, link = EJ_GetLootInfoByIndex(j)
+            if link then
+					local index = trinketIdToIndex[id]
+					local specCode = trinketData[index][2]
+               local digit = tonumber(specCode:sub(-classID, - classID), 16)
+               digit = digit + 2^(specIndex - 1)
+               trinketData[index][2] = specCode:sub(1, GetNumClasses() - classID)..format("%X", digit)..specCode:sub(GetNumClasses() - classID + 2, GetNumClasses())
+            end
+         end
+      end
+   end
+   local interval = 1
+   if timeLeft > interval then -- Rerun many times for correctless
+      return self:ScheduleTimer("ExportTrinketDataSingleInstance", interval, instanceID, diffID, timeLeft - interval)
+   else
+      self:Print("--------------------")
+      self:Print(format("Instance %d. %s %s. Processed %d trinkets", instanceID, EJ_GetInstanceInfo(instanceID), diffText, count))
+      for _, link in ipairs(trinketlinksInThisInstances) do
+         local id = self:GetItemIDFromLink(link)
+         self:Print(format("%s(%d): %s", link, id, trinketData[trinketIdToIndex[id]][2]))
+         lastID = id
+      end
+      self:Print("--------------------")
+   end
 end
 --@end-debug@
 
 -- Trinket categories description according to specs that can loot the trinket.
 -- These categories should cover all trinkets in the Encounter Journal. Add more if any trinket is missing category.
 _G.RCTrinketCategories = {
-	["3F7777777777"] = ALL_CLASSES, -- All Classes
-	["365002707767"] = ITEM_MOD_STRENGTH_SHORT.."/"..ITEM_MOD_AGILITY_SHORT, -- Strength/Agility
-	["000000700067"] = ITEM_MOD_STRENGTH_SHORT, -- Strength
-	["365002707467"] = MELEE, -- Melee
-	["3F7777077710"] = ITEM_MOD_AGILITY_SHORT.."/"..ITEM_MOD_INTELLECT_SHORT, -- Agility/Intellect
-	["365002007700"] = ITEM_MOD_AGILITY_SHORT, -- Agility
-	["092775070010"] = ITEM_MOD_INTELLECT_SHORT, -- Intellect
-	["241000100024"] = TANK, -- Tank
-	["000000000024"] = TANK..", "..BLOCK, -- Tank, Block (Warrior, Paladin)
-	["201000100024"] = TANK..", "..PARRY, -- Tank, Parry (Non-Druid)
-	["082004030010"] = HEALER, -- Healer
-	["124002607743"] = DAMAGER..", "..ITEM_MOD_STRENGTH_SHORT.."/"..ITEM_MOD_AGILITY_SHORT, -- Damage, Strength/Agility
-	["000000600043"] = DAMAGER..", "..ITEM_MOD_STRENGTH_SHORT, -- Damage, Strength
-	["124002007700"] = DAMAGER..", "..ITEM_MOD_AGILITY_SHORT, -- Damage, Agility
-	["124002607443"] = DAMAGER..", "..MELEE, -- Damage, Melee
-	["124002007400"] = DAMAGER..", "..MELEE..", "..ITEM_MOD_AGILITY_SHORT, -- Damage, Melee, Agility
-	["010771050300"] = DAMAGER..", "..RANGED, -- Damage, Ranged
-	["010771050000"] = DAMAGER..", "..ITEM_MOD_INTELLECT_SHORT, -- Damage, Intellect
-	["010671040000"] = DAMAGER..", "..ITEM_MOD_INTELLECT_SHORT, -- Damage, Intellect (direct damage, no affliction warlock and shadow priest)
-	["010771040000"] = DAMAGER..", "..ITEM_MOD_INTELLECT_SHORT, -- Damage, Intellect (no discipline)
+   ["3F7777777777"] = ALL_CLASSES, -- All Classes
+   ["365002707767"] = ITEM_MOD_STRENGTH_SHORT.."/"..ITEM_MOD_AGILITY_SHORT, -- Strength/Agility
+   ["000000700067"] = ITEM_MOD_STRENGTH_SHORT, -- Strength
+   ["365002707467"] = MELEE, -- Melee
+   ["3F7777077710"] = ITEM_MOD_AGILITY_SHORT.."/"..ITEM_MOD_INTELLECT_SHORT, -- Agility/Intellect
+   ["365002007700"] = ITEM_MOD_AGILITY_SHORT, -- Agility
+   ["092775070010"] = ITEM_MOD_INTELLECT_SHORT, -- Intellect
+   ["241000100024"] = TANK, -- Tank
+   ["000000000024"] = TANK..", "..BLOCK, -- Tank, Block (Warrior, Paladin)
+   ["201000100024"] = TANK..", "..PARRY, -- Tank, Parry (Non-Druid)
+   ["082004030010"] = HEALER, -- Healer
+   ["124002607743"] = DAMAGER..", "..ITEM_MOD_STRENGTH_SHORT.."/"..ITEM_MOD_AGILITY_SHORT, -- Damage, Strength/Agility
+   ["000000600043"] = DAMAGER..", "..ITEM_MOD_STRENGTH_SHORT, -- Damage, Strength
+   ["124002007700"] = DAMAGER..", "..ITEM_MOD_AGILITY_SHORT, -- Damage, Agility
+   ["124002607443"] = DAMAGER..", "..MELEE, -- Damage, Melee
+   ["124002007400"] = DAMAGER..", "..MELEE..", "..ITEM_MOD_AGILITY_SHORT, -- Damage, Melee, Agility
+   ["010771050300"] = DAMAGER..", "..RANGED, -- Damage, Ranged
+   ["010771050000"] = DAMAGER..", "..ITEM_MOD_INTELLECT_SHORT, -- Damage, Intellect
+   ["010671040000"] = DAMAGER..", "..ITEM_MOD_INTELLECT_SHORT, -- Damage, Intellect (direct damage, no affliction warlock and shadow priest)
+   ["010771040000"] = DAMAGER..", "..ITEM_MOD_INTELLECT_SHORT, -- Damage, Intellect (no discipline)
 
-	-- The following categories does not make sense. Most likely a Blizzard error in the Encounter Journal for several old trinkets.
-	-- Add "?" as a suffix to the description as the result
-	["041000100024"] = ALL_CLASSES.."?", -- All Classes?
-	["365002107467"] = MELEE.."?", -- Melee? （Missing Frost and Unholy DK)
-	["241000100044"] = TANK.."?", -- Tank? (Ret instead of Pro?)
-	["124002607703"] = ITEM_MOD_STRENGTH_SHORT.."/"..ITEM_MOD_AGILITY_SHORT.."?", -- Strength/Agility?
-	["367002707767"] = ITEM_MOD_STRENGTH_SHORT.."/"..ITEM_MOD_AGILITY_SHORT.."?", -- Strength/Agility?
-	["324001607743"] = ITEM_MOD_STRENGTH_SHORT.."/"..ITEM_MOD_AGILITY_SHORT.."?", -- Strength/Agility?
-	["324002007700"] = ITEM_MOD_AGILITY_SHORT.."?", -- Agility? (Missing Brewmaster)
-	["092775070310"] = ITEM_MOD_AGILITY_SHORT.."/"..ITEM_MOD_INTELLECT_SHORT.."?", -- Agility/Intellect?
-	["092005070010"] = ITEM_MOD_INTELLECT_SHORT.."?", -- Intellect? (Missing Mage, Warlock)
-	["092075070010"] = ITEM_MOD_INTELLECT_SHORT.."?", -- Intellect? (Missing Warlock)
-	["010773050000"] = DAMAGER..", "..ITEM_MOD_INTELLECT_SHORT.."?", -- Damage, Intellect? (+Enhancement Shaman)
+   -- The following categories does not make sense. Most likely a Blizzard error in the Encounter Journal for several old trinkets.
+   -- Add "?" as a suffix to the description as the result
+   ["041000100024"] = ALL_CLASSES.."?", -- All Classes?
+   ["365002107467"] = MELEE.."?", -- Melee? （Missing Frost and Unholy DK)
+   ["241000100044"] = TANK.."?", -- Tank? (Ret instead of Pro?)
+   ["124002607703"] = ITEM_MOD_STRENGTH_SHORT.."/"..ITEM_MOD_AGILITY_SHORT.."?", -- Strength/Agility?
+   ["367002707767"] = ITEM_MOD_STRENGTH_SHORT.."/"..ITEM_MOD_AGILITY_SHORT.."?", -- Strength/Agility?
+   ["324001607743"] = ITEM_MOD_STRENGTH_SHORT.."/"..ITEM_MOD_AGILITY_SHORT.."?", -- Strength/Agility?
+   ["324002007700"] = ITEM_MOD_AGILITY_SHORT.."?", -- Agility? (Missing Brewmaster)
+   ["092775070310"] = ITEM_MOD_AGILITY_SHORT.."/"..ITEM_MOD_INTELLECT_SHORT.."?", -- Agility/Intellect?
+   ["092005070010"] = ITEM_MOD_INTELLECT_SHORT.."?", -- Intellect? (Missing Mage, Warlock)
+   ["092075070010"] = ITEM_MOD_INTELLECT_SHORT.."?", -- Intellect? (Missing Warlock)
+   ["010773050000"] = DAMAGER..", "..ITEM_MOD_INTELLECT_SHORT.."?", -- Damage, Intellect? (+Enhancement Shaman)
 }
 -- Class specific trinket
 for classID = 1, GetNumClasses() do
-	local digit = 0
-	for specIndex=1, GetNumSpecializationsForClassID(classID) do
-		digit = digit + 2^(specIndex-1)
-	end
-	local flag = ZERO:sub(1, GetNumClasses()-classID)..format("%X", digit)..ZERO:sub(GetNumClasses()-classID+2, GetNumClasses())
-	_G.RCTrinketCategories[flag] = select(1, GetClassInfo(classID))
+   local digit = 0
+   for specIndex = 1, GetNumSpecializationsForClassID(classID) do
+      digit = digit + 2^(specIndex - 1)
+   end
+   local flag = ZERO:sub(1, GetNumClasses() - classID)..format("%X", digit)..ZERO:sub(GetNumClasses() - classID + 2, GetNumClasses())
+   _G.RCTrinketCategories[flag] = select(1, GetClassInfo(classID))
 end
 
 -- Automatically generated by command "/rc exporttrinketdata"
