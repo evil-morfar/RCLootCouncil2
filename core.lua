@@ -369,7 +369,7 @@ function RCLootCouncil:ChatCommand(msg)
 		self.nnp = not self.nnp
 		self:Print("nnp = "..tostring(self.nnp))
 	elseif input == "exporttrinketdata" then
-		self:ExportTrinketData()
+		self:ExportTrinketData(tonumber(args[1]), 1, 1, 1, tonumber(args[2]))
 	elseif input == 'trinkettest' or input == 'ttest' then
 		self.playerClass = string.upper(args[1])
 		self:Test(1, false, true)
@@ -1541,7 +1541,6 @@ function RCLootCouncil:GetItemClassesAllowedFlag(item)
 			end
 		end
 	end
-
 	tooltipForParsing:Hide()
 	return 0xffffffff -- The item works for all classes
 end
