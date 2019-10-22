@@ -40,6 +40,7 @@ L["Alt click Looting"] = true
 L["alt_click_looting_desc"] = "Enables Alt click Looting, i.e. start a looting session by holding down alt and (left)clicking an item."
 L["Alternatively, flag the loot as award later."] = true
 L["Always use RCLootCouncil with Personal Loot"] = true
+L["Always show owner"] = true
 L["always_show_tooltip_howto"] = "Double click to toggle tooltip"
 L["Announce Awards"] = true
 L["Announce Considerations"] = true

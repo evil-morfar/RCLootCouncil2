@@ -1219,6 +1219,13 @@ function RCVotingFrame.filterFunc(table, row)
 	if not db.modules["RCVotingFrame"].filters then return true end -- db hasn't been initialized, so just show it
 	local name = row.name
 	local rank = lootTable[session].candidates[name].rank
+
+	if db.modules["RCVotingFrame"].filters.alwaysShowOwner then
+		if addon:UnitIsUnit(name, lootTable[session].owner) then
+			return true
+		end
+	end
+
 	if rank and guildRanks[rank] then
 		if not db.modules["RCVotingFrame"].filters.ranks[guildRanks[rank]] then
 			return false
@@ -1709,6 +1716,16 @@ do
 			info.isTitle = true
 			info.notCheckable = true
 			info.disabled = true
+			MSA_DropDownMenu_AddButton(info, level)
+
+			info = MSA_DropDownMenu_CreateInfo()
+			info.text = L["Always show owner"]
+			info.func = function()
+				addon:Debug("Update Filter")
+				db.modules["RCVotingFrame"].filters.alwaysShowOwner = not db.modules["RCVotingFrame"].filters.alwaysShowOwner
+				RCVotingFrame:Update(true)
+			end
+			info.checked = db.modules["RCVotingFrame"].filters.alwaysShowOwner
 			MSA_DropDownMenu_AddButton(info, level)
 
 			info = MSA_DropDownMenu_CreateInfo()
