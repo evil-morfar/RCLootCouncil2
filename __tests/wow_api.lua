@@ -482,5 +482,5 @@ function GetNumSpecializationsForClassID (classID)
 end
 
 function GetClassInfo (classIndex)
-	return CLASS_INFO[classIndex], "UNDEFINED", classIndex
+	return CLASS_INFO[classIndex].name, "UNDEFINED", classIndex
 end
