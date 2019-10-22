@@ -5,8 +5,15 @@ local SpecFlag = {} -- This class
 
 
 local flagsToDecode = {
-   "CC08EC8C8C8C",
-   "082004030010"
+   "365002107467",
+   "241000100044",
+   "124002607703",
+   "367002707767",
+   "324001607743",
+   "324002007700",
+   "092775070310",
+   "092075070010",
+   "010773050000",
 }
 
 function Main ()
@@ -16,10 +23,10 @@ function Main ()
 end
 
 
-local seperator = ("-"):rep(40)
+local seperator = ("-"):rep(80)
 local function printheader (flag)
    print("Decoding: ", flag)
-   print(string.format("ID\t%-13s Bin \t Hex", "Class"))
+   print(string.format("ID\t%-13s Bin \t Hex \t%-15s Specs", "Class", "Roles"))
    print(seperator)
 end
 
@@ -30,10 +37,43 @@ function SpecFlag:DecodeFlag (flag)
       local hex = tonumber(flag:sub(-i, -i), 16)
       local bin = self:Int2Bin(hex)
       if bin ~= "0000" then
-         print(string.format("[%d]\t%s %s \t 0x%x", i,string.format("%-13s",name), bin, hex))
+         print(string.format("[%d]\t%s %s \t 0x%x \t%-15s %s", i,string.format("%-13s",name), bin, hex,
+            table.concat(self:GetRolesForClassSpecs(i, bin), ","),
+            table.concat(self:GetNamesForClassSpecs(i, bin), "/")))
       end
    end
    print(seperator)
+end
+
+-- @param binSpecs String representaion of the binary spec identifier, i.e. 0001
+function SpecFlag:GetRolesForClassSpecs (classID, binSpecs)
+   local result = {}
+   for specNum=1,GetNumSpecializationsForClassID(classID) do
+      if binSpecs:sub(-specNum, -specNum) == "1" then
+         local role = self:GetSpecRole(classID, specNum):gsub("DAMAGER", "DPS")
+         if not tContains(result, role) then tinsert(result, role) end
+      end
+   end
+   return result
+end
+
+function SpecFlag:GetNamesForClassSpecs (classID, binSpecs)
+   local result = {}
+   for specNum=1,GetNumSpecializationsForClassID(classID) do
+      if binSpecs:sub(-specNum, -specNum) == "1" then
+         local name = self:GetSpecName(classID, specNum)
+         if not tContains(result, name) then tinsert(result, name) end
+      end
+   end
+   return result
+end
+
+function SpecFlag:GetSpecRole (classID, specNum)
+   return select(5, GetSpecializationInfoForClassID(classID, specNum))
+end
+
+function SpecFlag:GetSpecName (classID, specNum)
+   return select(2, GetSpecializationInfoForClassID(classID, specNum))
 end
 
 function SpecFlag:Int2Bin (n)
