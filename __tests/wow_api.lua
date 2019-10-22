@@ -761,7 +761,7 @@ local CLASS_INFO = {
    },
 }
 
--- Above was exported with 
+-- Above was exported with
 -- local export = "local CLASS_INFO = {\n"
 -- for classID=1,GetNumClasses() do
 -- 	local classInfo = C_CreatureInfo.GetClassInfo(classID)
@@ -795,9 +795,14 @@ function GetNumClasses ()
 end
 
 function GetNumSpecializationsForClassID (classID)
-   return CLASS_INFO[classID].numSpecs
+   return #CLASS_INFO[classID].specs
 end
 
 function GetClassInfo (classIndex)
-   return CLASS_INFO[classIndex].name, "UNDEFINED", classIndex
+   return CLASS_INFO[classIndex].className, CLASS_INFO[classIndex].classFile, CLASS_INFO[classIndex].classID
+end
+
+function GetSpecializationInfoForClassID (classID, specNum)
+   local spec = CLASS_INFO[classID].specs[specNum]
+   return spec.specID, spec.name, "NOT_IMPLEMENTED", spec.iconID, spec.role, "NOT_IMPLEMENTED","NOT_IMPLEMENTED"
 end
