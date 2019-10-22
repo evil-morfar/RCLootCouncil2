@@ -456,3 +456,27 @@ printtable = function( data, level )
 end
 
 C_Timer = {After = function() end}
+
+-- Classes
+local CLASS_INFO = {
+	{name = "Warrior", numSpecs = 3},
+	{name = "Paladin", numSpecs = 3},
+	{name = "Hunter", numSpecs = 3},
+	{name = "Rogue", numSpecs = 3},
+	{name = "Priest", numSpecs = 3},
+	{name = "Death Knight", numSpecs = 3},
+	{name = "Shaman", numSpecs = 3},
+	{name = "Mage", numSpecs = 3},
+	{name = "Warlock", numSpecs = 3},
+	{name = "Monk", numSpecs = 3},
+	{name = "Druid", numSpecs = 4},
+	{name = "Demon Hunter", numSpecs = 2},
+}
+
+function GetNumClasses ()
+	return 12
+end
+
+function GetNumSpecializationsForClassID (classID)
+	return CLASS_INFO[classID].numSpecs
+end
