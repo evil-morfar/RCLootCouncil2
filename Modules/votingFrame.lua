@@ -157,15 +157,32 @@ end
 -- if succesful, or nil if not. Should be called before any session begins.
 function RCVotingFrame:RemoveColumn(id)
 	addon:Debug("Removing Column", id)
+	local removedCol, remvoedIndex
 	if type(id) == "number" then
-		return tremove(self.scrollCols, id)
+		removedIndex = id
+		removedCol = tremove(self.scrollCols, id)
 	else
-		for i, col in ipairs(self.scrollCols) do
-			if col.colName == id then
-				return tremove(self.scrollCols, i)
-			end
-		end
+		removedIndex = self:GetColumnIndexFromName(id)
+		assert(removedIndex, "ID is not a valid column name")
+		removedCol = tremove(self.scrollCols, removedIndex)
 	end
+	-- Fix sortnext as they could be broken with the removal
+	if removedCol then
+	 	for i,col in ipairs(self.scrollCols) do
+	 		if col.sortNext and col.sortNext > removedIndex then
+				col.sortNext = col.sortNext - 1
+			end
+	 	end
+		return removedCol
+	end
+end
+
+function RCVotingFrame:GetColumnIndexFromName (name)
+	for i,v in ipairs(self.scrollCols) do
+      if v.colName == name then
+         return i
+      end
+   end
 end
 
 function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
