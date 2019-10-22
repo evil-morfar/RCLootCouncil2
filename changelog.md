@@ -1,3 +1,6 @@
+* **Auto Award**
+* Auto Awards can now only happen on equip able items. #Classic.
+
 ###### Bugfixes
 * *The explanation on how to use the whisper system was wrong.*
 * *The whisper system didn't work properly with responses..*
