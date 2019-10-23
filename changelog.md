@@ -1,3 +1,6 @@
+### v2.15.0
+---
+
 * **Auto Award**
 * Auto Awards can now only happen on equip able items. #Classic.
 
