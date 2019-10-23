@@ -148,6 +148,28 @@ Compat.list = {
             return count > 0 and addon:Debug("Removed", count, link)
          end, 10)
       end
+   },
+   {
+      name = "Add iClass and iSubClass to loot history",
+      version = "2.15.0",
+      func = function (addon)
+         addon:ScheduleTimer( -- Wait 20 secs
+            function ()
+               local count = 0
+               for _,factionrealm in pairs(addon.lootDB.sv.factionrealm) do
+                  for player,items  in pairs(factionrealm) do
+                     for i,data in ipairs(items) do
+                        local _, _, _, _, _, itemClassID, itemSubClassID = GetItemInfoInstant(data.lootWon)
+                        data.iClass = itemClassID
+                        data.iSubClass = itemSubClassID
+                        count = count + 1
+                     end
+                  end
+               end
+               addon:DebugLog("Added classID and subClassID to", count, "items")
+            end,
+         20)
+      end
    }
 
 }
