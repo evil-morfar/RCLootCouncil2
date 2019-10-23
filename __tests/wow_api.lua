@@ -267,6 +267,20 @@ if not wipe then
    end
 end
 
+function StaticPopup_SetUpPosition (args)
+   -- body...
+end
+
+function StaticPopup_EscapePressed (args)
+   -- body...
+end
+InterfaceOptionsFrameCancel = {
+   GetScript = function(input) return input end
+}
+C_CreatureInfo = {
+   GetClassInfo = function(classIndex) return end
+}
+
 function hooksecurefunc(func_name, post_hook_func)
    local orig_func = _G[func_name]
    assert(type(orig_func) == "function")
