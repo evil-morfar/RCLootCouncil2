@@ -1318,6 +1318,8 @@ function RCLootCouncilML:TrackAndLogLoot(winner, link, responseID, boss, reason,
 	history_table["note"]			= candData and candData.note																-- New in v2.7+
 	history_table["id"]				= time(date("!*t")).."-"..historyCounter												-- New in v2.7+. A unique id for the history entry.
 	history_table["owner"]			= self.lootTable[session] and self.lootTable[session].owner or winner		-- New in v2.9+.
+	history_table["iClass"]			= self.lootTable[session].typeID															-- New in v2.14+.
+	history_table["iSubClass"]		= self.lootTable[session].subTypeID														-- New in v2.14+.
 	historyCounter = historyCounter + 1
 
 	addon:SendMessage("RCMLLootHistorySend", history_table, winner, responseID, boss, reason, session, candData)
