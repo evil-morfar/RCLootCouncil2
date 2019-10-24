@@ -614,7 +614,7 @@ function RCLootCouncilML:HandleReceivedTradeable (item, sender)
 		 	(IsEquippableItem(item) or db.autolootEverything) and -- Safetee: I don't want to check db.autoloot here, because this is actually not a loot.
 			not self:IsItemIgnored(item) and -- Item mustn't be ignored
 			(quality and quality >= (GetLootThreshold() or 1))  then
-				if InCombatLockdown() and not addon.skipCombatLockdown then
+				if InCombatLockdown() and not db.skipCombatLockdown then
 					addon:Print(format(L["autoloot_others_item_combat"], addon:GetUnitClassColoredName(sender), item))
 					tinsert(self.combatQueue, {self.AddUserItem, self, item, sender}) -- Run the function when combat ends
 				else
@@ -660,7 +660,7 @@ end
 function RCLootCouncilML:OnLootOpen()
 	wipe(self.lootQueue)
 	if addon.handleLoot and addon.lootMethod == "master" then
-		if not InCombatLockdown() or addon.skipCombatLockdown then
+		if not InCombatLockdown() or db.skipCombatLockdown then
 			self:LootOpened()
 		else
 			addon:Print(L["You can't start a loot session while in combat."])

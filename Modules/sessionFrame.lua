@@ -213,7 +213,7 @@ function RCSessionFrame:GetFrame()
 			if not addon.candidates[addon.playerName] or #addon.council == 0 then
 				addon:Print(L["Please wait a few seconds until all data has been synchronized."])
 				return addon:Debug("Data wasn't ready", addon.candidates[addon.playerName], #addon.council)
-			elseif InCombatLockdown() and not addon.skipCombatLockdown then
+			elseif InCombatLockdown() and not addon.db.profile.skipCombatLockdown then
 				return addon:Print(L["You can't start a loot session while in combat."])
 			--elseif ml.running then
 				--return addon:Print(L["You're already running a session."])
