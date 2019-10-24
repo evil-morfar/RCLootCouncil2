@@ -949,7 +949,7 @@ function RCLootCouncil:ChatCmdAdd(args)
 	if not args[1] or args[1] == "" then return end -- We need at least 1 arg
 	local owner
 	-- See if one of the args is a owner
-	if not args[1]:find("|") and type(args[1]) ~= "number" then
+	if not args[1]:find("|") and type(tonumber(args[1])) ~= "number" then
 		-- First arg is neither an item or a item id, see if it's someone in our group
 		owner = self:UnitName(args[1])
 		if not (owner and owner ~= "" and self.candidates[owner]) then
