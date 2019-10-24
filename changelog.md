@@ -1,8 +1,9 @@
 ### v2.15.0
 ---
 
-* **Auto Award**
+* **Auto Award**  
 * Auto Awards can now only happen on equip able items. #Classic.
+
 
 * **Filters**  
 * Added the option to always show the owner of an item in the voting frame.
@@ -13,6 +14,16 @@
 * *The explanation on how to use the whisper system was wrong.*
 * *The whisper system didn't work properly with responses..*
 * *The whisper help system was also broken...*
+
+###### Dev
+* Added `typeCode` to `lootTable`. Used to determine butons/responses for a session. Still backwards compatible with old system.
+* Changed the entire system of adding new button groups. Refer to `ML:GetTypeCodeForItem`.
+* Updated `:PrepareLootTable` to add info from `GetItemInfo` for future comms update.
+* Added "Constants.lua" and moved certain constants there.
+* Added `itemClassID` and `itemSubClassID` to loot history.
+* `RCVotingFrame:RemoveColumn` now automatically updates old sortnext values.
+* Overhauled "TrinketData.lua" with new format and classic trinkets.
+
 
 ### v2.14.0
 ---
