@@ -95,6 +95,8 @@ function RCLootCouncil:OnInitialize()
 	self.debug = false
 	self.tVersion = "Alpha.1" -- String or nil. Indicates test version, which alters stuff like version check. Is appended to 'version', i.e. "version-tVersion" (max 10 letters for stupid security)
 
+	self.skipCombatLockdown = false
+
 	self.playerClass = select(2, UnitClass("player"))
 	self.guildRank = L["Unguilded"]
 	self.isMasterLooter = false -- Are we the ML?
