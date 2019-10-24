@@ -2,18 +2,18 @@
 local _, addon = ...
 
 addon.BTN_SLOTS = {
-	INVTYPE_HEAD 				= "AZERITE",
-	INVTYPE_CHEST 				= "AZERITE",
-	INVTYPE_ROBE 				= "AZERITE",
-	INVTYPE_SHOULDER 			= "AZERITE",
-	INVTYPE_2HWEAPON			= "WEAPON",
-	INVTYPE_WEAPONMAINHAND	= "WEAPON",
-	INVTYPE_WEAPONOFFHAND	= "WEAPON",
-	INVTYPE_WEAPON				= "WEAPON",
-	INVTYPE_THROWN				= "WEAPON",
-	INVTYPE_RANGED				= "WEAPON",
-	INVTYPE_RANGEDRIGHT		= "WEAPON",
-	INVTYPE_HOLDABLE			= "WEAPON",
+   INVTYPE_HEAD = "AZERITE",
+   INVTYPE_CHEST = "AZERITE",
+   INVTYPE_ROBE = "AZERITE",
+   INVTYPE_SHOULDER = "AZERITE",
+   INVTYPE_2HWEAPON = "WEAPON",
+   INVTYPE_WEAPONMAINHAND = "WEAPON",
+   INVTYPE_WEAPONOFFHAND = "WEAPON",
+   INVTYPE_WEAPON = "WEAPON",
+   INVTYPE_THROWN = "WEAPON",
+   INVTYPE_RANGED = "WEAPON",
+   INVTYPE_RANGEDRIGHT = "WEAPON",
+   INVTYPE_HOLDABLE = "WEAPON",
 }
 
 addon.OPT_MORE_BUTTONS_VALUES = {
@@ -25,10 +25,40 @@ addon.OPT_MORE_BUTTONS_VALUES = {
    INVTYPE_CHEST = _G.INVTYPE_CHEST,
    INVTYPE_WRIST = _G.INVTYPE_WRIST,
    INVTYPE_HAND = _G.INVTYPE_HAND,
-   INVTYPE_WAIST =_G.INVTYPE_WAIST,
+   INVTYPE_WAIST = _G.INVTYPE_WAIST,
    INVTYPE_LEGS = _G.INVTYPE_LEGS,
    INVTYPE_FEET = _G.INVTYPE_FEET,
    INVTYPE_FINGER = _G.INVTYPE_FINGER,
    INVTYPE_TRINKET = _G.INVTYPE_TRINKET,
    WEAPON = _G.WEAPON,
+   TOKEN = "Tier Tokens",
+}
+
+--[[
+	Used by getCurrentGear to determine slot types
+	Inspired by EPGPLootMaster
+--]]
+addon.INVTYPE_Slots = {
+   INVTYPE_HEAD = "HeadSlot",
+   INVTYPE_NECK = "NeckSlot",
+   INVTYPE_SHOULDER = "ShoulderSlot",
+   INVTYPE_CLOAK = "BackSlot",
+   INVTYPE_CHEST = "ChestSlot",
+   INVTYPE_WRIST = "WristSlot",
+   INVTYPE_HAND = "HandsSlot",
+   INVTYPE_WAIST = "WaistSlot",
+   INVTYPE_LEGS = "LegsSlot",
+   INVTYPE_FEET = "FeetSlot",
+   INVTYPE_SHIELD = "SecondaryHandSlot",
+   INVTYPE_ROBE = "ChestSlot",
+   INVTYPE_2HWEAPON = {"MainHandSlot", "SecondaryHandSlot"},
+   INVTYPE_WEAPONMAINHAND = "MainHandSlot",
+   INVTYPE_WEAPONOFFHAND = {"SecondaryHandSlot", ["or"] = "MainHandSlot"},
+   INVTYPE_WEAPON = {"MainHandSlot", "SecondaryHandSlot"},
+   INVTYPE_THROWN = {"MainHandSlot", ["or"] = "SecondaryHandSlot"},
+   INVTYPE_RANGED = {"MainHandSlot", ["or"] = "SecondaryHandSlot"},
+   INVTYPE_RANGEDRIGHT = {"MainHandSlot", ["or"] = "SecondaryHandSlot"},
+   INVTYPE_FINGER = {"Finger0Slot", "Finger1Slot"},
+   INVTYPE_HOLDABLE = {"SecondaryHandSlot", ["or"] = "MainHandSlot"},
+   INVTYPE_TRINKET = {"TRINKET0SLOT", "TRINKET1SLOT"}
 }

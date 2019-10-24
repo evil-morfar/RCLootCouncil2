@@ -1112,35 +1112,6 @@ function RCLootCouncil:LeaveCombat()
 	end
 end
 
---[[
-	Used by getCurrentGear to determine slot types
-	Inspired by EPGPLootMaster
---]]
-RCLootCouncil.INVTYPE_Slots = {
-		INVTYPE_HEAD		    = "HeadSlot",
-		INVTYPE_NECK		    = "NeckSlot",
-		INVTYPE_SHOULDER	    = "ShoulderSlot",
-		INVTYPE_CLOAK		    = "BackSlot",
-		INVTYPE_CHEST		    = "ChestSlot",
-		INVTYPE_WRIST		    = "WristSlot",
-		INVTYPE_HAND		    = "HandsSlot",
-		INVTYPE_WAIST		    = "WaistSlot",
-		INVTYPE_LEGS		    = "LegsSlot",
-		INVTYPE_FEET		    = "FeetSlot",
-		INVTYPE_SHIELD		    = "SecondaryHandSlot",
-		INVTYPE_ROBE		    = "ChestSlot",
-		INVTYPE_2HWEAPON	    = {"MainHandSlot","SecondaryHandSlot"},
-		INVTYPE_WEAPONMAINHAND	= "MainHandSlot",
-		INVTYPE_WEAPONOFFHAND	= {"SecondaryHandSlot",["or"] = "MainHandSlot"},
-		INVTYPE_WEAPON		    = {"MainHandSlot","SecondaryHandSlot"},
-		INVTYPE_THROWN		    = {"MainHandSlot", ["or"] = "SecondaryHandSlot"},
-		INVTYPE_RANGED		    = {"MainHandSlot", ["or"] = "SecondaryHandSlot"},
-		INVTYPE_RANGEDRIGHT 	 = {"MainHandSlot", ["or"] = "SecondaryHandSlot"},
-		INVTYPE_FINGER		    = {"Finger0Slot","Finger1Slot"},
-		INVTYPE_HOLDABLE	    = {"SecondaryHandSlot", ["or"] = "MainHandSlot"},
-		INVTYPE_TRINKET		    = {"TRINKET0SLOT", "TRINKET1SLOT"}
-}
-
 function RCLootCouncil:UpdatePlayersGears(startSlot, endSlot)
 	startSlot = startSlot or INVSLOT_FIRST_EQUIPPED
 	endSlot = endSlot or INVSLOT_LAST_EQUIPPED
