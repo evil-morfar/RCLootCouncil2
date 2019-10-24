@@ -1,6 +1,5 @@
 ### v2.15.0
 ---
-
 * **Auto Award**  
 * Auto Awards can now only happen on equip able items. #Classic.
 
@@ -23,6 +22,7 @@
 * Added `itemClassID` and `itemSubClassID` to loot history.
 * `RCVotingFrame:RemoveColumn` now automatically updates old sortnext values.
 * Overhauled "TrinketData.lua" with new format and classic trinkets.
+
 
 
 ### v2.14.0
