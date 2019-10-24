@@ -106,6 +106,7 @@ function RCLootCouncilML:AddItem(item, bagged, slotIndex, owner, entry)
 	entry.awarded = false
 	entry.owner = owner or addon.bossName
 	entry.isSent = false
+	entry.typeCode = self:GetTypeCodeForItem()
 
 	local itemInfo = self:GetItemInfo(item)
 
@@ -143,6 +144,35 @@ end
 -- @param session The session (index) in lootTable to remove
 function RCLootCouncilML:RemoveItem(session)
 	tremove(self.lootTable, session)
+end
+
+--- Generates a "type code" used to determine which set of buttons to use for the item.
+-- The returned code can be used directly in `mldb.responses[code]` and `mldb.buttons[code]`.
+function RCLootCouncilML:GetTypeCodeForItem (item)
+	local itemID, _, _, itemEquipLoc, _, itemClassID, itemSubClassID = GetItemInfoInstant(item)
+	if not itemID then return "default" end -- We can't handle uncached items!
+
+	-- Check for token
+	 if RCTokenTable[itemID] and addon.db.enabledButtons["TOKEN"] then
+		 return "TOKEN"
+	 end
+
+	 -- Check for Azerite Gear
+	 -- To use Azerite Buttons, the item must be one of the 3 azerite items, and no other button group must be set for those equipLocs
+	 if addon.db.enabledButtons.AZERITE and not addon.db.enabledButtons[itemEquipLoc] then
+	 	if addon.BTN_SLOTS[itemEquipLoc] == "AZERITE" then
+	 		return "AZERITE"
+	 	end
+	 end
+
+	 -- Check for Weapon
+	 if addon.db.enabledButtons.WEAPON and addon.BTN_SLOTS[itemEquipLoc] == "WEAPON" then
+	 	return "WEAPON"
+	 end
+
+	 -- Remaining is simply their equipLoc, if set
+	 return addon.db.enabledButtons[itemEquipLoc] and itemEquipLoc or "default"
+
 end
 
 function RCLootCouncilML:AddCandidate(name, class, role, rank, enchant, lvl, ilvl, specID)
