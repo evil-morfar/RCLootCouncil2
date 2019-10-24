@@ -1395,23 +1395,28 @@ function RCLootCouncil:Timer(type, ...)
 	end
 end
 
---- Updates the loot table with some local data.
--- 1 Changes the subType in lootTable to our locale.
--- 2 Extracts tokens equipLoc
+--- Adds needed variables to the loot table.
+-- Should only be called once when the loot table is received (RCLootCouncil:OnCommReceived).
+-- v2.15 The current implementation ensures this only gets called when all items are cached - this function relies on that!
 function RCLootCouncil:PrepareLootTable(lootTable)
 	for ses, v in ipairs(lootTable) do
-		local itemID, _, subType, equipLoc, texture, typeID, subTypeID = GetItemInfoInstant(v.link)
-		v.subType = subType -- Subtype should be in our locale
-		v.token = v.token or RCTokenTable[self:GetItemIDFromLink(v.link)]
-		v.equipLoc = RCTokenTable[itemID] and self:GetTokenEquipLoc(RCTokenTable[itemID]) or equipLoc
-		v.texture = texture
-		v.typeID = typeID
+		local _, _, rarity, ilvl, _, _, subType, _, equipLoc, texture,
+		_, typeID, subTypeID, bindType, _, _, _ = GetItemInfo(v.link)
+		local itemID = GetItemInfoInstant(v.link)
+		v.quality 	= rarity
+		v.ilvl 		= self:GetTokenIlvl(v.link) or ilvl
+		v.equipLoc 	= RCTokenTable[itemID] and self:GetTokenEquipLoc(RCTokenTable[itemID]) or equipLoc
+		v.subType 	= subType -- Subtype should be in our locale
+		v.texture 	= texture
+		v.boe 		= bindType == _G.LE_ITEM_BIND_ON_EQUIP
+		v.typeID 	= typeID
 		v.subTypeID = subTypeID
-		v.session = v.session or ses
+		v.session 	= v.session or ses
+
 		if not v.classes then -- We didn't receive "classes", because ML is using an old version. Generate it from token data.
-			if RCTokenClasses and RCTokenClasses[self:GetItemIDFromLink(v.link)] then
+			if RCTokenClasses and RCTokenClasses[itemID] then
 				v.classes = 0
-				for _, class in ipairs(RCTokenClasses[self:GetItemIDFromLink(v.link)]) do
+				for _, class in ipairs(RCTokenClasses[itemID]) do
 					v.classes = v.classes + bit.lshift(1, self.classTagNameToID[class]-1)
 				end
 			else

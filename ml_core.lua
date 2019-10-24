@@ -57,6 +57,7 @@ function RCLootCouncilML:OnEnable()
 	self:RegisterMessage("RCCouncilChanged", "CouncilChanged")
 end
 
+-- REVIEW v2.15 Almost all of these are added to `RCLootCouncil:PrepareLootTable` and can be removed from here.
 function RCLootCouncilML:GetItemInfo(item)
 	local name, link, rarity, ilvl, iMinLevel, type, subType, iStackCount, equipLoc, texture,
 		sellPrice, typeID, subTypeID, bindType, expansionID, itemSetID, isCrafting = GetItemInfo(item)
