@@ -1254,7 +1254,7 @@ function addon:OptionsTable()
 										name = L["Slot"],
 										type = "select",
 										values = self.OPT_MORE_BUTTONS_VALUES,
-										get = function () return selections.AddMoreButtons or "AZERITE" end,
+										get = function () return selections.AddMoreButtons or "INVTYPE_HEAD" end,
 										set = function(i,v) selections.AddMoreButtons = v end,
 									},
 									addBtn = {
@@ -1263,11 +1263,12 @@ function addon:OptionsTable()
 										desc = L["opt_addButton_desc"],
 										type = "execute",
 										func = function()
-											db.enabledButtons[selections.AddMoreButtons or "AZERITE"] = true
+											local selection = selections.AddMoreButtons or "INVTYPE_HEAD"
+											db.enabledButtons[selection] = true
 											-- Also setup default options
 											for i = 1, self.db.profile.maxButtons do
-												if not db.buttons[selections.AddMoreButtons or "AZERITE"][i] then
-													db.buttons[selections.AddMoreButtons or "AZERITE"][i] = {text = L["Button"]}
+												if not db.buttons[selection][i] then
+													db.buttons[selection][i] = {text = L["Button"]}
 												end
 											end
 										end,
