@@ -1,5 +1,6 @@
 --- Constants.lua
 local _, addon = ...
+local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 
 addon.BTN_SLOTS = {
    INVTYPE_HEAD = "AZERITE",

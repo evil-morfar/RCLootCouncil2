@@ -29,7 +29,7 @@ local function createNewButtonSet(path, name, order)
 		args = {
 			optionsDesc = {
 				order = 0,
-				name = format(L["opt_buttonsGroup_desc"], addon.OPT_MORE_BUTTONS_VALUES[name]) ,
+				name = format(L["opt_buttonsGroup_desc"], addon.OPT_MORE_BUTTONS_VALUES[name]),
 				type = "description",
 				width = "double",
 			},
