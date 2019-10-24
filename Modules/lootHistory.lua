@@ -1164,7 +1164,7 @@ function LootHistory.RightClickMenu(menu, level)
 			for k,responses in pairs(db.responses) do
 				addon:Debug("db.responses:", k)
 				if k ~= "default" and k ~= "*" then
-					info.text = k == "AZERITE" and L["Azerite Armor"] or _G[k] or _G.UNKNOWN
+					info.text = addon.OPT_MORE_BUTTONS_VALUES[k] or _G.UNKNOWN
 					info.isTitle = true
 					info.disabled = true
 					info.notCheckable = true

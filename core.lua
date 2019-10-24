@@ -369,7 +369,7 @@ function RCLootCouncil:ChatCommand(msg)
 		self.nnp = not self.nnp
 		self:Print("nnp = "..tostring(self.nnp))
 	elseif input == "exporttrinketdata" then
-		self:ExportTrinketData()
+		self:ExportTrinketData(tonumber(args[1]), 1, 1, 1, tonumber(args[2]))
 	elseif input == 'trinkettest' or input == 'ttest' then
 		self.playerClass = string.upper(args[1])
 		self:Test(1, false, true)
@@ -761,6 +761,10 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 
 			elseif command == "history" and db.enableHistory then
 				local name, history = unpack(data)
+				-- v2.15 Add itemClass and itemSubClass locally:
+				local _, _, _, _, _, itemClassID, itemSubClassID = GetItemInfoInstant(history.lootWon)
+				history.iClass = itemClassID
+				history.iSubClass = itemSubClassID
 				if historyDB[name] then
 					tinsert(historyDB[name], history)
 				else
@@ -943,7 +947,7 @@ function RCLootCouncil:ChatCmdAdd(args)
 	if not args[1] or args[1] == "" then return end -- We need at least 1 arg
 	local owner
 	-- See if one of the args is a owner
-	if not args[1]:find("|") and type(args[1]) ~= "number" then
+	if not args[1]:find("|") and type(tonumber(args[1])) ~= "number" then
 		-- First arg is neither an item or a item id, see if it's someone in our group
 		owner = self:UnitName(args[1])
 		if not (owner and owner ~= "" and self.candidates[owner]) then
@@ -1107,35 +1111,6 @@ function RCLootCouncil:LeaveCombat()
 		end
 	end
 end
-
---[[
-	Used by getCurrentGear to determine slot types
-	Inspired by EPGPLootMaster
---]]
-RCLootCouncil.INVTYPE_Slots = {
-		INVTYPE_HEAD		    = "HeadSlot",
-		INVTYPE_NECK		    = "NeckSlot",
-		INVTYPE_SHOULDER	    = "ShoulderSlot",
-		INVTYPE_CLOAK		    = "BackSlot",
-		INVTYPE_CHEST		    = "ChestSlot",
-		INVTYPE_WRIST		    = "WristSlot",
-		INVTYPE_HAND		    = "HandsSlot",
-		INVTYPE_WAIST		    = "WaistSlot",
-		INVTYPE_LEGS		    = "LegsSlot",
-		INVTYPE_FEET		    = "FeetSlot",
-		INVTYPE_SHIELD		    = "SecondaryHandSlot",
-		INVTYPE_ROBE		    = "ChestSlot",
-		INVTYPE_2HWEAPON	    = {"MainHandSlot","SecondaryHandSlot"},
-		INVTYPE_WEAPONMAINHAND	= "MainHandSlot",
-		INVTYPE_WEAPONOFFHAND	= {"SecondaryHandSlot",["or"] = "MainHandSlot"},
-		INVTYPE_WEAPON		    = {"MainHandSlot","SecondaryHandSlot"},
-		INVTYPE_THROWN		    = {"MainHandSlot", ["or"] = "SecondaryHandSlot"},
-		INVTYPE_RANGED		    = {"MainHandSlot", ["or"] = "SecondaryHandSlot"},
-		INVTYPE_RANGEDRIGHT 	 = {"MainHandSlot", ["or"] = "SecondaryHandSlot"},
-		INVTYPE_FINGER		    = {"Finger0Slot","Finger1Slot"},
-		INVTYPE_HOLDABLE	    = {"SecondaryHandSlot", ["or"] = "MainHandSlot"},
-		INVTYPE_TRINKET		    = {"TRINKET0SLOT", "TRINKET1SLOT"}
-}
 
 function RCLootCouncil:UpdatePlayersGears(startSlot, endSlot)
 	startSlot = startSlot or INVSLOT_FIRST_EQUIPPED
@@ -1391,23 +1366,28 @@ function RCLootCouncil:Timer(type, ...)
 	end
 end
 
---- Updates the loot table with some local data.
--- 1 Changes the subType in lootTable to our locale.
--- 2 Extracts tokens equipLoc
+--- Adds needed variables to the loot table.
+-- Should only be called once when the loot table is received (RCLootCouncil:OnCommReceived).
+-- v2.15 The current implementation ensures this only gets called when all items are cached - this function relies on that!
 function RCLootCouncil:PrepareLootTable(lootTable)
 	for ses, v in ipairs(lootTable) do
-		local _, _, subType, equipLoc, texture, typeID, subTypeID = GetItemInfoInstant(v.link)
-		v.subType = subType -- Subtype should be in our locale
-		v.token = v.token or RCTokenTable[self:GetItemIDFromLink(v.link)]
-		v.equipLoc = v.token and self:GetTokenEquipLoc(v.token) or equipLoc
-		v.texture = texture
-		v.typeID = typeID
+		local _, _, rarity, ilvl, _, _, subType, _, equipLoc, texture,
+		_, typeID, subTypeID, bindType, _, _, _ = GetItemInfo(v.link)
+		local itemID = GetItemInfoInstant(v.link)
+		v.quality 	= rarity
+		v.ilvl 		= self:GetTokenIlvl(v.link) or ilvl
+		v.equipLoc 	= RCTokenTable[itemID] and self:GetTokenEquipLoc(RCTokenTable[itemID]) or equipLoc
+		v.subType 	= subType -- Subtype should be in our locale
+		v.texture 	= texture
+		v.boe 		= bindType == _G.LE_ITEM_BIND_ON_EQUIP
+		v.typeID 	= typeID
 		v.subTypeID = subTypeID
-		v.session = v.session or ses
+		v.session 	= v.session or ses
+
 		if not v.classes then -- We didn't receive "classes", because ML is using an old version. Generate it from token data.
-			if RCTokenClasses and RCTokenClasses[self:GetItemIDFromLink(v.link)] then
+			if RCTokenClasses and RCTokenClasses[itemID] then
 				v.classes = 0
-				for _, class in ipairs(RCTokenClasses[self:GetItemIDFromLink(v.link)]) do
+				for _, class in ipairs(RCTokenClasses[itemID]) do
 					v.classes = v.classes + bit.lshift(1, self.classTagNameToID[class]-1)
 				end
 			else
@@ -1541,7 +1521,6 @@ function RCLootCouncil:GetItemClassesAllowedFlag(item)
 			end
 		end
 	end
-
 	tooltipForParsing:Hide()
 	return 0xffffffff -- The item works for all classes
 end
@@ -2754,21 +2733,6 @@ end
 function RCLootCouncil.Ambiguate(name)
 	return db.ambiguate and Ambiguate(name, "none") or Ambiguate(name, "short")
 end
-
-RCLootCouncil.BTN_SLOTS = {
-	INVTYPE_HEAD 				= "AZERITE",
-	INVTYPE_CHEST 				= "AZERITE",
-	INVTYPE_ROBE 				= "AZERITE",
-	INVTYPE_SHOULDER 			= "AZERITE",
-	INVTYPE_2HWEAPON			= "WEAPON",
-	INVTYPE_WEAPONMAINHAND	= "WEAPON",
-	INVTYPE_WEAPONOFFHAND	= "WEAPON",
-	INVTYPE_WEAPON				= "WEAPON",
-	INVTYPE_THROWN				= "WEAPON",
-	INVTYPE_RANGED				= "WEAPON",
-	INVTYPE_RANGEDRIGHT		= "WEAPON",
-	INVTYPE_HOLDABLE			= "WEAPON",
-}
 
 --- Fetches a response of a given type, based on the group leader's settings if possible
 -- @param type The type of response. Defaults to "default".

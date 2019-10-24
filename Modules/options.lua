@@ -22,14 +22,14 @@ local function createNewButtonSet(path, name, order)
 	-- Create the group
 	path[name] = {
 		order = order,
-		name = name == "AZERITE" and L["Azerite Armor"] or _G[name],
+		name = addon.OPT_MORE_BUTTONS_VALUES[name],
 		desc = "",
 		type = "group",
 		inline = true,
 		args = {
 			optionsDesc = {
 				order = 0,
-				name = format(L["opt_buttonsGroup_desc"], name == "AZERITE" and L["Azerite Armor"] or _G[name]) ,
+				name = format(L["opt_buttonsGroup_desc"], addon.OPT_MORE_BUTTONS_VALUES[name]),
 				type = "description",
 				width = "double",
 			},
@@ -1253,23 +1253,8 @@ function addon:OptionsTable()
 										width = "double",
 										name = L["Slot"],
 										type = "select",
-										values = {
-											AZERITE = L["Azerite Armor"],
-											INVTYPE_HEAD = _G.INVTYPE_HEAD,
-											INVTYPE_NECK = _G.INVTYPE_NECK,
-											INVTYPE_SHOULDER = _G.INVTYPE_SHOULDER,
-											INVTYPE_CLOAK = _G.INVTYPE_CLOAK,
-											INVTYPE_CHEST = _G.INVTYPE_CHEST,
-											INVTYPE_WRIST = _G.INVTYPE_WRIST,
-											INVTYPE_HAND = _G.INVTYPE_HAND,
-											INVTYPE_WAIST =_G.INVTYPE_WAIST,
-											INVTYPE_LEGS = _G.INVTYPE_LEGS,
-											INVTYPE_FEET = _G.INVTYPE_FEET,
-											INVTYPE_FINGER = _G.INVTYPE_FINGER,
-											INVTYPE_TRINKET = _G.INVTYPE_TRINKET,
-											WEAPON = _G.WEAPON,
-										},
-										get = function () return selections.AddMoreButtons or "AZERITE" end,
+										values = self.OPT_MORE_BUTTONS_VALUES,
+										get = function () return selections.AddMoreButtons or "INVTYPE_HEAD" end,
 										set = function(i,v) selections.AddMoreButtons = v end,
 									},
 									addBtn = {
@@ -1278,11 +1263,12 @@ function addon:OptionsTable()
 										desc = L["opt_addButton_desc"],
 										type = "execute",
 										func = function()
-											db.enabledButtons[selections.AddMoreButtons or "AZERITE"] = true
+											local selection = selections.AddMoreButtons or "INVTYPE_HEAD"
+											db.enabledButtons[selection] = true
 											-- Also setup default options
 											for i = 1, self.db.profile.maxButtons do
-												if not db.buttons[selections.AddMoreButtons or "AZERITE"][i] then
-													db.buttons[selections.AddMoreButtons or "AZERITE"][i] = {text = L["Button"]}
+												if not db.buttons[selection][i] then
+													db.buttons[selection][i] = {text = L["Button"]}
 												end
 											end
 										end,
