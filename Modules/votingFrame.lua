@@ -1075,7 +1075,7 @@ end
 function RCVotingFrame.SetCellRank(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
 	local name = data[realrow].name
 	frame.text:SetText(lootTable[session].candidates[name].rank)
-	frame.text:SetTextColor(addon:GetResponseColor(lootTable[session].equipLoc, lootTable[session].candidates[name].response))
+	frame.text:SetTextColor(addon:GetResponseColor(lootTable[session].typeCode or lootTable[session].equipLoc, lootTable[session].candidates[name].response))
 	data[realrow].cols[column].value = lootTable[session].candidates[name].rank or ""
 end
 
@@ -1083,13 +1083,13 @@ function RCVotingFrame.SetCellRole(rowFrame, frame, data, cols, row, realrow, co
 	local name = data[realrow].name
 	local role = addon:TranslateRole(lootTable[session].candidates[name].role)
 	frame.text:SetText(role)
-	frame.text:SetTextColor(addon:GetResponseColor(lootTable[session].equipLoc, lootTable[session].candidates[name].response))
+	frame.text:SetTextColor(addon:GetResponseColor(lootTable[session].typeCode or lootTable[session].equipLoc, lootTable[session].candidates[name].response))
 	data[realrow].cols[column].value = role or ""
 end
 
 function RCVotingFrame.SetCellResponse(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
 	local name = data[realrow].name
-	local response = addon:GetResponse(lootTable[session].equipLoc, lootTable[session].candidates[name].response)
+	local response = addon:GetResponse(lootTable[session].typeCode or lootTable[session].equipLoc, lootTable[session].candidates[name].response)
 	local text = response.text
 	if (IsInInstance() and select(4, UnitPosition("player")) ~= select(4, UnitPosition(Ambiguate(name, "short"))))
 		-- Mark as out of instance if the current player is in an instance and the raider is in other instancemap
@@ -1269,8 +1269,8 @@ end
 function ResponseSort(table, rowa, rowb, sortbycol)
 	local column = table.cols[sortbycol]
 	local a, b = table:GetRow(rowa), table:GetRow(rowb);
-	a, b = addon:GetResponse(lootTable[session].equipLoc, lootTable[session].candidates[a.name].response).sort,
-	 		 addon:GetResponse(lootTable[session].equipLoc, lootTable[session].candidates[b.name].response).sort
+	a, b = addon:GetResponse(lootTable[session].typeCode or lootTable[session].equipLoc, lootTable[session].candidates[a.name].response).sort,
+	 		 addon:GetResponse(lootTable[session].typeCode or lootTable[session].equipLoc, lootTable[session].candidates[b.name].response).sort
 	if a == b then
 		if column.sortnext then
 			local nextcol = table.cols[column.sortnext];
@@ -1338,7 +1338,8 @@ function RCVotingFrame:GetAwardPopupData(session, name, data, reason)
 		isToken		= lootTable[session].token,
 		note		= data.note,
 		equipLoc		= lootTable[session].equipLoc,
-		texture 		= lootTable[session].texture
+		texture 		= lootTable[session].texture,
+		typeCode 	= lootTable[session].typeCode,
 	}
 end
 
@@ -1357,6 +1358,7 @@ function RCVotingFrame:GetRerollData(session, isRoll, noAutopass)
 		isRoll = isRoll,
 		noAutopass = noAutopass,
 		owner = v.owner,
+		typeCode 	= lootTable[session].typeCode,
 	}
 end
 
@@ -1438,8 +1440,8 @@ do
 		elseif category == "ROLL" or MSA_DROPDOWNMENU_MENU_VALUE:find("_ROLL$") then
 			text = _G.ROLL..": "..(lootTable[session].candidates[candidateName].roll or "")
 		elseif category == "RESPONSE" or MSA_DROPDOWNMENU_MENU_VALUE:find("_RESPONSE$") then
-			text = L["Response"]..": ".."|cff"..(addon:RGBToHex(unpack(addon:GetResponse(lootTable[session].equipLoc, lootTable[session].candidates[candidateName].response).color))
-			or "ffffff")..(addon:GetResponse(lootTable[session].equipLoc, lootTable[session].candidates[candidateName].response).text or "").."|r"
+			text = L["Response"]..": ".."|cff"..(addon:RGBToHex(unpack(addon:GetResponse(lootTable[session].typeCode or lootTable[session].equipLoc, lootTable[session].candidates[candidateName].response).color))
+			or "ffffff")..(addon:GetResponse(lootTable[session].typeCode or lootTable[session].equipLoc, lootTable[session].candidates[candidateName].response).text or "").."|r"
 		else
 			addon:Debug("Unexpected category or dropdown menu value: "..tostring(category).." ,"..tostring(MSA_DROPDOWNMENU_MENU_VALUE))
 		end
@@ -1676,8 +1678,8 @@ do
 				end
 			elseif value == "CHANGE_RESPONSE" and entry.special == value then
 				local v;
-				for i = 1, addon:GetNumButtons(lootTable[session].equipLoc) do
-					v = addon:GetResponse(lootTable[session].equipLoc, i)
+				for i = 1, addon:GetNumButtons(lootTable[session].typeCode or lootTable[session].equipLoc) do
+					v = addon:GetResponse(lootTable[session].typeCode or lootTable[session].equipLoc, i)
 					info.text = v.text
 					info.colorCode = "|cff"..addon:RGBToHex(unpack(v.color))
 					info.notCheckable = true

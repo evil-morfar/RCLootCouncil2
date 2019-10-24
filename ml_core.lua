@@ -106,7 +106,7 @@ function RCLootCouncilML:AddItem(item, bagged, slotIndex, owner, entry)
 	entry.awarded = false
 	entry.owner = owner or addon.bossName
 	entry.isSent = false
-	entry.typeCode = self:GetTypeCodeForItem()
+	entry.typeCode = self:GetTypeCodeForItem(item)
 
 	local itemInfo = self:GetItemInfo(item)
 
@@ -153,25 +153,25 @@ function RCLootCouncilML:GetTypeCodeForItem (item)
 	if not itemID then return "default" end -- We can't handle uncached items!
 
 	-- Check for token
-	 if RCTokenTable[itemID] and addon.db.enabledButtons["TOKEN"] then
+	 if RCTokenTable[itemID] and db.enabledButtons["TOKEN"] then
 		 return "TOKEN"
 	 end
 
 	 -- Check for Azerite Gear
 	 -- To use Azerite Buttons, the item must be one of the 3 azerite items, and no other button group must be set for those equipLocs
-	 if addon.db.enabledButtons.AZERITE and not addon.db.enabledButtons[itemEquipLoc] then
+	 if db.enabledButtons.AZERITE and not db.enabledButtons[itemEquipLoc] then
 	 	if addon.BTN_SLOTS[itemEquipLoc] == "AZERITE" then
 	 		return "AZERITE"
 	 	end
 	 end
 
 	 -- Check for Weapon
-	 if addon.db.enabledButtons.WEAPON and addon.BTN_SLOTS[itemEquipLoc] == "WEAPON" then
+	 if db.enabledButtons.WEAPON and addon.BTN_SLOTS[itemEquipLoc] == "WEAPON" then
 	 	return "WEAPON"
 	 end
 
 	 -- Remaining is simply their equipLoc, if set
-	 return addon.db.enabledButtons[itemEquipLoc] and itemEquipLoc or "default"
+	 return db.enabledButtons[itemEquipLoc] and itemEquipLoc or "default"
 
 end
 
@@ -1324,7 +1324,8 @@ function RCLootCouncilML:TrackAndLogLoot(winner, link, responseID, boss, reason,
 	if not (db.sendHistory or db.enableHistory) then return end -- No reason to do stuff when we won't use it
 	if addon.testMode and not addon.nnp then return end -- We shouldn't track testing awards.
 	local equipLoc = self.lootTable[session] and self.lootTable[session].equipLoc or "default"
-	local response = addon:GetResponse(equipLoc, responseID)
+	local typeCode = self.lootTable[session] and self.lootTable[session].typeCode
+	local response = addon:GetResponse(typeCode or equipLoc, responseID)
 	local instanceName, _, difficultyID, difficultyName, _,_,_,mapID, groupSize = GetInstanceInfo()
 	addon:Debug("ML:TrackAndLogLoot()", winner, link, responseID, boss, reason, session, candData)
 	history_table["lootWon"] 		= link
@@ -1349,6 +1350,8 @@ function RCLootCouncilML:TrackAndLogLoot(winner, link, responseID, boss, reason,
 	history_table["note"]			= candData and candData.note																-- New in v2.7+
 	history_table["id"]				= time(date("!*t")).."-"..historyCounter												-- New in v2.7+. A unique id for the history entry.
 	history_table["owner"]			= self.lootTable[session] and self.lootTable[session].owner or winner		-- New in v2.9+.
+	history_table["typeCode"]			= self.lootTable[session] and self.lootTable[session].typeCode		-- New in v2.15+.
+
 	historyCounter = historyCounter + 1
 
 	addon:SendMessage("RCMLLootHistorySend", history_table, winner, responseID, boss, reason, session, candData)
@@ -1522,10 +1525,12 @@ function RCLootCouncilML:GetItemsFromMessage(msg, sender, retryCount)
 		end
 	end
 
+	local typeCode = self.lootTable[ses].typeCode or self.lootTable[ses].equipLoc
+
 	-- Let people know we've done stuff
 	addon:Print(format(L["Item received and added from 'player'"], addon.Ambiguate(sender)))
 	SendChatMessage("[RCLootCouncil]: "..format(L["Response to 'item' acknowledged as 'response'"],
-		addon:GetItemTextWithCount(link, count), addon:GetResponse(self.lootTable[ses].equipLoc, response).text), "WHISPER", nil, sender)
+		addon:GetItemTextWithCount(link, count), addon:GetResponse(typeCode, response).text), "WHISPER", nil, sender)
 end
 
 function RCLootCouncilML:SendWhisperHelp(target)
@@ -1566,7 +1571,7 @@ end
 -- Argument to callback: awarded, session, winner, status, data, ...
 -- If you want to add a button to the rightclick menu which does award, use this function, the callback function is your custom function to do stuff after award is done.
 function RCLootCouncilML.AwardPopupOnClickYes(frame, data, callback, ...)
-	RCLootCouncilML:Award(data.session, data.winner, data.responseID and addon:GetResponse(data.equipLoc, data.responseID).text, data.reason,
+	RCLootCouncilML:Award(data.session, data.winner, data.responseID and addon:GetResponse(data.typeCode or data.equipLoc, data.responseID).text, data.reason,
 		RCLootCouncilML.AwardPopupOnClickYesCallback, data, callback, ...)
 
 	-- We need to delay the test mode disabling so comms have a chance to be send first!
