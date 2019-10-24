@@ -1396,10 +1396,10 @@ end
 -- 2 Extracts tokens equipLoc
 function RCLootCouncil:PrepareLootTable(lootTable)
 	for ses, v in ipairs(lootTable) do
-		local _, _, subType, equipLoc, texture, typeID, subTypeID = GetItemInfoInstant(v.link)
+		local itemID, _, subType, equipLoc, texture, typeID, subTypeID = GetItemInfoInstant(v.link)
 		v.subType = subType -- Subtype should be in our locale
 		v.token = v.token or RCTokenTable[self:GetItemIDFromLink(v.link)]
-		v.equipLoc = v.token and self:GetTokenEquipLoc(v.token) or equipLoc
+		v.equipLoc = RCTokenTable[itemID] and self:GetTokenEquipLoc(RCTokenTable[itemID]) or equipLoc
 		v.texture = texture
 		v.typeID = typeID
 		v.subTypeID = subTypeID
