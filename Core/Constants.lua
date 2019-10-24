@@ -33,7 +33,7 @@ addon.OPT_MORE_BUTTONS_VALUES = {
    INVTYPE_FINGER = _G.INVTYPE_FINGER,
    INVTYPE_TRINKET = _G.INVTYPE_TRINKET,
    WEAPON = _G.WEAPON,
-   TOKEN = "Tier Tokens",
+   TOKEN = L["Armor Token"],
 }
 
 --[[
