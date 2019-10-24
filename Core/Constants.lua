@@ -1,4 +1,5 @@
 --- Constants.lua
+-- Objects which are intended to be set once (i.e. modules or addons can change them on init)
 local _, addon = ...
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 
@@ -62,4 +63,33 @@ addon.INVTYPE_Slots = {
    INVTYPE_FINGER = {"Finger0Slot", "Finger1Slot"},
    INVTYPE_HOLDABLE = {"SecondaryHandSlot", ["or"] = "MainHandSlot"},
    INVTYPE_TRINKET = {"TRINKET0SLOT", "TRINKET1SLOT"}
+}
+
+--- Functions used for generating response codes
+-- Functions are run numerically, and the first to return non-nil is used, i.e. order matters!
+-- To add a new a button group, simply add it to the options menu (easily done by adding an entry to OPT_MORE_BUTTONS_VALUES), and add a function here to determine if that group should be used for the item.
+-- Each function receives the following parameters:
+-- item, db (addon:Getdb()), itemID, itemEquipLoc,itemClassID, itemSubClassID
+addon.RESPONSE_CODE_GENERATORS = {
+   -- Check for token
+   [1] = function (_, db, itemID)
+      if RCTokenTable[itemID] and db.enabledButtons["TOKEN"] then
+         return "TOKEN"
+      end
+   end,
+   -- Check for Azerite Gear
+   [2] = function (_, db, _, itemEquipLoc)
+     -- To use Azerite Buttons, the item must be one of the 3 azerite items, and no other button group must be set for those equipLocs
+     if db.enabledButtons.AZERITE and not db.enabledButtons[itemEquipLoc] then
+        if addon.BTN_SLOTS[itemEquipLoc] == "AZERITE" then
+           return "AZERITE"
+        end
+     end
+   end,
+   -- Check for Weapon
+   [3] = function (_, db, _, itemEquipLoc)
+      if db.enabledButtons.WEAPON and addon.BTN_SLOTS[itemEquipLoc] == "WEAPON" then
+        return "WEAPON"
+      end
+   end,
 }
