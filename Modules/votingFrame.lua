@@ -169,8 +169,8 @@ function RCVotingFrame:RemoveColumn(id)
 	-- Fix sortnext as they could be broken with the removal
 	if removedCol then
 	 	for i,col in ipairs(self.scrollCols) do
-	 		if col.sortNext and col.sortNext > removedIndex then
-				col.sortNext = col.sortNext - 1
+	 		if col.sortnext and col.sortnext > removedIndex then
+				col.sortnext = col.sortnext - 1
 			end
 	 	end
 		return removedCol
