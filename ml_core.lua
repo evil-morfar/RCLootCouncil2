@@ -91,7 +91,7 @@ end
 -- @param owner The owner of the item (if any). Defaults to 'BossName'.
 -- @param entry Used to set data in a specific lootTable entry.
 function RCLootCouncilML:AddItem(item, bagged, slotIndex, owner, entry)
-	addon:DebugLog("ML:AddItem", item, bagged, slotIndex, entry)
+	addon:DebugLog("ML:AddItem", item, bagged, slotIndex, owner, entry)
 	if type(item) == "string" and item:find("|Hcurrency") then return end -- Ignore "Currency" item links
 
 	if not entry then
@@ -966,6 +966,7 @@ end
 -- test_mode, normal, manually_added, indirect,
 -- See :Award() for the different scenarios
 local function awardSuccess(session, winner, status, callback, ...)
+	addon:DebugLog("ML:awardSuccess", session, winner, status, callback, ...)
 	addon:SendMessage("RCMLAwardSuccess", session, winner, status)
 	if callback then
 		callback(true, session, winner, status, ...)
@@ -980,6 +981,7 @@ end
 -- Status when the addon is bugged(should not happen): unlooted_in_bag
 -- See :Award() and :CanGiveLoot() for the different scenarios and to get their meanings
 local function awardFailed(session, winner, status, callback, ...)
+	addon:DebugLog("ML:awardFailed", session, winner, status, callback, ...)
 	addon:SendMessage("RCMLAwardFailed", session, winner, status)
 	if callback then
 		callback(false, session, winner, status, ...)
