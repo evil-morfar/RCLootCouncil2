@@ -400,7 +400,11 @@ end
 function LootHistory:AddEpochDate(date, tim)
 	local d, m, y = strsplit("/", date, 3)
 	local h, min, s = strsplit(":", tim, 3)
-	epochDates[date..tim] = time({year = "20"..y, month = m, day = d, hour = h, min = min, sec = s})
+	epochDates[date..tim] = self:DateTimeToSeconds(d,m,y,h,min,s)
+end
+
+function LootHistory:DateTimeToSeconds (d,m,y,h,min,s)
+	return time({year = "20"..y or 10, month = m or 1, day = d or 1, hour = h or 0, min = min or 0, sec = s or 0})
 end
 
 function LootHistory.DateTimeSort(table, rowa, rowb, sortbycol)
@@ -1268,7 +1272,7 @@ do
 		wipe(export)
 		wipe(ret)
 		local subType, equipLoc, rollType, _
-		tinsert(ret, "player, date, time, item, itemID, itemString, response, votes, class, instance, boss, gear1, gear2, responseID, isAwardReason, rollType, subType, equipLoc, note, owner\r\n")
+		tinsert(ret, "player, date, time, id, item, itemID, itemString, response, votes, class, instance, boss, gear1, gear2, responseID, isAwardReason, rollType, subType, equipLoc, note, owner\r\n")
 		for player, v in pairs(lootDB) do
 			if selectedName and selectedName == player or not selectedName then
 				for i, d in pairs(v) do
@@ -1280,6 +1284,7 @@ do
 						tinsert(export, tostring(player))
 						tinsert(export, tostring(self:GetLocalizedDate(d.date)))
 						tinsert(export, tostring(d.time))
+						tinsert(export, tostring(d.id))
 						tinsert(export, CSVEscape(d.lootWon))
 						tinsert(export, addon:GetItemIDFromLink(d.lootWon))
 						tinsert(export, addon:GetItemStringFromLink(d.lootWon))
