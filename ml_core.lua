@@ -929,6 +929,7 @@ function RCLootCouncilML:LootOnClick(button)
 end
 
 function RCLootCouncilML:PrintLootErrorMsg(cause, slot, item, winner)
+	addon:Debug("ML:PrintLootErrorMsg", cause, slot, item, winner)
 	if cause == "loot_not_open" then
 		addon:Print(L["Unable to give out loot without the loot window open."])
 	elseif cause == "timeout" then
