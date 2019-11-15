@@ -1,3 +1,7 @@
+###### Bugfixes
+* *Fixed error when council members reconnect during session (Curse#398).*
+
+
 ### v2.15.0
 ---
 * **Auto Award**  
