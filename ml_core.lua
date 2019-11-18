@@ -1525,7 +1525,14 @@ end
 function RCLootCouncilML:SendWhisperHelp(target)
 	addon:DebugLog("SendWhisperHelp", target)
 	local msg
-	SendChatMessage(L["whisper_guide"], "WHISPER", nil, target)
+	local guide1 = L["whisper_guide"]
+	if #guide1 > 254 then -- French locale reported too long
+		SendChatMessage(strsub(guide1, 0, 254), "WHISPER", nil, target)
+		SendChatMessage(strsub(guide1, 255), "WHISPER", nil, target)
+	else
+		SendChatMessage(guide1, "WHISPER", nil, target)
+	end
+
 	for i = 1, db.buttons.default.numButtons do
 		msg = "[RCLootCouncil]: "..db.buttons.default[i]["text"]..":  " -- i.e. MainSpec/Need:
 		msg = msg..""..db.buttons.default[i]["whisperKey"].."." -- need, mainspec, etc

@@ -1,5 +1,6 @@
 ###### Bugfixes
 * *Fixed error when council members reconnect during session (Curse#398).*
+* *Fixed error with 'whisper guide' being too long to send in some locales (#177).*
 
 
 ### v2.15.0
