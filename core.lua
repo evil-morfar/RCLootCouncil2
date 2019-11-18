@@ -707,13 +707,10 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 				self:SendCommand(sender, "verTestReply", self.playerName, self.playerClass, self.guildRank, self.version, self.tVersion, self:GetInstalledModulesFormattedData())
 				if strfind(otherVersion, "%a+") then return self:Debug("Someone's tampering with version?", otherVersion) end
 				if self:VersionCompare(self.version,otherVersion) and not self.verCheckDisplayed and (not (tVersion or self.tVersion)) then
-					self:Print(format(L["version_outdated_msg"], self.version, otherVersion))
-					self.verCheckDisplayed = true
+					self:PrintOutdatedVersionWarning(otherVersion)
 
 				elseif tVersion and self.tVersion and not self.verCheckDisplayed and self.tVersion < tVersion then
-					if #tVersion >= 10 then return self:Debug("Someone's tampering with tVersion?", tVersion) end
-					self:Print(format(L["tVersion_outdated_msg"], tVersion))
-					self.verCheckDisplayed = true
+					self:PrintOutdatedTestVersionWarning(tVersion)
 				end
 
 			elseif command == "verTestReply" then
@@ -724,13 +721,11 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 				self:GetActiveModule("version"):LogVersion(self:UnitName(sender), otherVersion, tVersion)
 				if strfind(otherVersion, "%a+") then return self:Debug("Someone's tampering with version?", otherVersion) end
 				if self:VersionCompare(self.version,otherVersion) and not self.verCheckDisplayed and (not (tVersion or self.tVersion)) then
-					self:Print(format(L["version_outdated_msg"], self.version, otherVersion))
-					self.verCheckDisplayed = true
+						self:PrintOutdatedVersionWarning(otherVersion)
 
 				elseif tVersion and self.tVersion and not self.verCheckDisplayed and self.tVersion < tVersion then
-					if #tVersion >= 10 then return self:Debug("Someone's tampering with tVersion?", tVersion) end
-					self:Print(format(L["tVersion_outdated_msg"], tVersion))
-					self.verCheckDisplayed = true
+					self:PrintOutdatedTestVersionWarning(tVersion)
+
 				end
 				-- Check modules. Parse the strings.
 				if moduleData then
@@ -746,12 +741,10 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 							for _, module in pairs(self.modules) do
 								if module.baseName == baseName then
 									if module.version and self:VersionCompare(module.version, otherVersion) and not self.moduleVerCheckDisplayed[baseName] and (not (tVersion or module.tVersion)) then
-										self:Print(format(L["module_version_outdated_msg"], baseName, module.version, otherVersion))
-										self.moduleVerCheckDisplayed[baseName] = true
+										self:PrintOutdatedModuleVersion(baseName, module.version, otherVersion)
+
 									elseif tVersion and module.tVersion and not self.moduleVerCheckDisplayed[baseName] and module.tVersion < tVersion then
-										if #tVersion >= 10 then self:Debug("Someone's tampering with tVersion in the module?", baseName, tVersion) end
-										self:Print(format(L["module_tVersion_outdated_msg"], baseName, tVersion))
-										self.moduleVerCheckDisplayed[baseName] = true
+										self:PrintOutdatedModuleTestVersion(baseName, module.tVersion)
 									end
 								end
 							end
@@ -1364,6 +1357,28 @@ function RCLootCouncil:Timer(type, ...)
 			end
 		end
 	end
+end
+
+function RCLootCouncil:PrintOutdatedVersionWarning (newVersion, ourVersion)
+	self:Print(format(L["version_outdated_msg"], ourVersion or self.version, newVersion))
+	self.verCheckDisplayed = true
+end
+
+function RCLootCouncil:PrintOutdatedTestVersionWarning (tVersion)
+	if #tVersion >= 10 then return self:Debug("Someone's tampering with tVersion?", tVersion) end
+	self:Print(format(L["tVersion_outdated_msg"], tVersion))
+	self.verCheckDisplayed = true
+end
+
+function RCLootCouncil:PrintOutdatedModuleVersion (name, version, newVersion)
+	self:Print(format(L["module_version_outdated_msg"], name, version, newVersion))
+	self.moduleVerCheckDisplayed[name] = true
+end
+
+function RCLootCouncil:PrintOutdatedModuleTestVersion (name, tVersion)
+	if #tVersion >= 10 then self:Debug("Someone's tampering with tVersion in the module?", name, tVersion) end
+	self:Print(format(L["module_tVersion_outdated_msg"], name, tVersion))
+	self.moduleVerCheckDisplayed[name] = true
 end
 
 --- Adds needed variables to the loot table.
