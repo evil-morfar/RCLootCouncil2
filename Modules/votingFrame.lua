@@ -331,7 +331,7 @@ function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
 					lootTable[k] = v
 					self:SetupSession(k, v)
 					if addon.isMasterLooter and db.autoAddRolls then
-						self:DoAllRandomRolls() -- REVIEW This will overwrite "old" entries if new entries are added
+						self:DoRandomRolls(k)
 					end
 				end
 				self:SwitchSession(session)
