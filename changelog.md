@@ -1,6 +1,7 @@
 ###### Bugfixes
 * *Fixed error when council members reconnect during session (Curse#398).*
 * *Fixed error with 'whisper guide' being too long to send in some locales (#177).*
+* *The 'Keep Loot' popup is now only used in raids to avoid it unintentionally popping up in dungeons. This is a temporary fix, as a proper fix needs way more work (Curse#396).*
 
 
 ### v2.15.0
