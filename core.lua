@@ -705,11 +705,15 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 					sender = "guild"
 				end
 				self:SendCommand(sender, "verTestReply", self.playerName, self.playerClass, self.guildRank, self.version, self.tVersion, self:GetInstalledModulesFormattedData())
-				if strfind(otherVersion, "%a+") then return self:Debug("Someone's tampering with version?", otherVersion) end
-				if self:VersionCompare(self.version,otherVersion) and not self.verCheckDisplayed and (not (tVersion or self.tVersion)) then
+
+				if self.verCheckDisplayed then return end -- Don't bother if we already displayed
+
+				local verCheck = self.Utils:CheckOutdatedVersion(self.version, otherVersion, self.tVersion, tVersion)
+
+				if verCheck == self.VER_CHECK_CODES[2] then
 					self:PrintOutdatedVersionWarning(otherVersion)
 
-				elseif tVersion and self.tVersion and not self.verCheckDisplayed and self.tVersion < tVersion then
+				elseif verCheck == self.VER_CHECK_CODES[3] then
 					self:PrintOutdatedTestVersionWarning(tVersion)
 				end
 
@@ -719,38 +723,19 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 					return self:DebugLog("Error - verTestReply with nil name", sender, name, otherVersion, tVersion, moduleData)
 				end
 				self:GetActiveModule("version"):LogVersion(self:UnitName(sender), otherVersion, tVersion)
-				if strfind(otherVersion, "%a+") then return self:Debug("Someone's tampering with version?", otherVersion) end
-				if self:VersionCompare(self.version,otherVersion) and not self.verCheckDisplayed and (not (tVersion or self.tVersion)) then
-						self:PrintOutdatedVersionWarning(otherVersion)
 
-				elseif tVersion and self.tVersion and not self.verCheckDisplayed and self.tVersion < tVersion then
+				if self.verCheckDisplayed then return end -- Don't bother if we already displayed
+
+				local verCheck = self.Utils:CheckOutdatedVersion(self.version, otherVersion, self.tVersion, tVersion)
+
+				if verCheck == self.VER_CHECK_CODES[2] then
+					self:PrintOutdatedVersionWarning(otherVersion)
+
+				elseif verCheck == self.VER_CHECK_CODES[3] then
 					self:PrintOutdatedTestVersionWarning(tVersion)
-
 				end
-				-- Check modules. Parse the strings.
-				if moduleData then
-					for _, str in pairs(moduleData) do
-						local baseName, otherVersion, tVersion
-						baseName, otherVersion, tVersion = str:match("(.+) %- (.+)%-(.+)")
-						if not baseName then
-							baseName, otherVersion = str:match("(.+) %- (.+)")
-						end
-						if otherVersion and strfind(otherVersion, "%a+") then
-							self:Debug("Someone's tampering with version in the module?", baseName, otherVersion)
-						elseif baseName then
-							for _, module in pairs(self.modules) do
-								if module.baseName == baseName then
-									if module.version and self:VersionCompare(module.version, otherVersion) and not self.moduleVerCheckDisplayed[baseName] and (not (tVersion or module.tVersion)) then
-										self:PrintOutdatedModuleVersion(baseName, module.version, otherVersion)
 
-									elseif tVersion and module.tVersion and not self.moduleVerCheckDisplayed[baseName] and module.tVersion < tVersion then
-										self:PrintOutdatedModuleTestVersion(baseName, module.tVersion)
-									end
-								end
-							end
-						end
-					end
-				end
+				self:DoModulesVersionCheck(moduleData)
 
 			elseif command == "history" and db.enableHistory then
 				local name, history = unpack(data)
@@ -1379,6 +1364,35 @@ function RCLootCouncil:PrintOutdatedModuleTestVersion (name, tVersion)
 	if #tVersion >= 10 then self:Debug("Someone's tampering with tVersion in the module?", name, tVersion) end
 	self:Print(format(L["module_tVersion_outdated_msg"], name, tVersion))
 	self.moduleVerCheckDisplayed[name] = true
+end
+
+--- Runs version checks on all modules data received in a 'verTestReply'
+function RCLootCouncil:DoModulesVersionCheck (moduleData)
+	-- Check modules. Parse the strings.
+	if moduleData then
+		for _, str in pairs(moduleData) do
+			local baseName, otherVersion, tVersion = str:match("(.+) %- (.+)%-(.+)")
+			if not baseName then
+				baseName, otherVersion = str:match("(.+) %- (.+)")
+			end
+			if otherVersion and strfind(otherVersion, "%a+") then
+				self:Debug("Someone's tampering with version in the module?", baseName, otherVersion)
+			elseif baseName then
+				for _, module in pairs(self.modules) do
+					if module.baseName == baseName and module.version and not self.moduleVerCheckDisplayed[baseName] then
+						local verCheck = self.Utils:CheckOutdatedVersion(module.version, otherVersion, module.tVersion, tVersion)
+
+						if verCheck == self.VER_CHECK_CODES[2] then
+							self:PrintOutdatedModuleVersion(baseName, module.version, otherVersion)
+
+						elseif verCheck == self.VER_CHECK_CODES[3] then
+							self:PrintOutdatedModuleTestVersion(baseName, module.tVersion)
+						end
+					end
+				end
+			end
+		end
+	end
 end
 
 --- Adds needed variables to the loot table.
