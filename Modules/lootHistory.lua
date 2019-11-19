@@ -154,6 +154,7 @@ function LootHistory:BuildData()
 						name = name,
 						num = num, -- That's really the index in lootDB[name]
 						response = i.responseID,
+						isAwardReason = i.isAwardReason,
 						cols = { -- NOTE Don't forget the rightClickMenu dropdown, if the order of these changes
 							{DoCellUpdate = addon.SetCellClassIcon, args = {x.class}},
 							{value = addon.Ambiguate(name), color = addon:GetClassColor(x.class)},
@@ -307,7 +308,7 @@ function LootHistory.FilterFunc(table, row)
 	local responseFilter = true -- default to show
 	if not db.modules["RCLootHistory"].filters then return nameAndDate end -- db hasn't been initialized
 	local response = row.response
-	if response == "AUTOPASS" or response == "PASS" or type(response) == "number" then
+	if response == "AUTOPASS" or response == "PASS" or type(response) == "number" and not row.isAwardReason then
 		responseFilter = db.modules["RCLootHistory"].filters[response]
 	else -- Filter out the status texts
 		responseFilter = db.modules["RCLootHistory"].filters["STATUS"]

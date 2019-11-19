@@ -327,11 +327,15 @@ function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
 				self:UpdatePeopleToVote()
 
 			elseif command == "lt_add" and addon:UnitIsUnit(sender, addon.masterLooter) then
+				local oldLenght = #lootTable
 				for k,v in pairs(unpack(data)) do
 					lootTable[k] = v
-					self:SetupSession(k, v)
+				end
+				-- Add the sessions in order to avoid messing with SessionButtons
+				for i = oldLenght + 1, #lootTable do
+					self:SetupSession(i, lootTable[i])
 					if addon.isMasterLooter and db.autoAddRolls then
-						self:DoAllRandomRolls() -- REVIEW This will overwrite "old" entries if new entries are added
+						self:DoRandomRolls(i)
 					end
 				end
 				self:SwitchSession(session)
@@ -364,6 +368,7 @@ function RCVotingFrame:GetCandidateData(session, candidate, data)
 end
 
 -- TODO: DEPRECATED - use RCLootCouncil:GetLootTable()
+-- REVIEW: This is not in sync with the replacement.
 function RCVotingFrame:GetLootTable()
 	return lootTable
 end

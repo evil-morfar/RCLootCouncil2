@@ -42,6 +42,7 @@ function RCSessionFrame:OnDisable()
 	self.frame.rows = {}
 	self:UnregisterMessage("RCLootStatusReceived")
 	awardLater = false
+	addon:DebugLog("RCSessionFrame", "disabled")
 end
 
 function RCSessionFrame:Show(data, disableAwardLater)
