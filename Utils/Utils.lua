@@ -140,3 +140,21 @@ function Utils:IsItemBlacklisted(item)
    end
    return false
 end
+
+--- Checks for outdated versions.
+-- Will prioritise test versions, so if the version contains a test version, the normal version test will be skipped.
+function Utils:CheckOutdatedVersion (baseVersion, newVersion, basetVersion, newtVersion)
+   baseVersion = baseVersion or addon.version
+
+   if strfind(newVersion, "%a+") then return self:Debug("Someone's tampering with version?", newVersion) end
+
+   if addon:VersionCompare(baseVersion,newVersion) and (not (basetVersion or newtVersion)) then
+		return addon.VER_CHECK_CODES[2] -- Outdated
+
+	elseif basetVersion and newtVersion and basetVersion < newtVersion then
+		return addon.VER_CHECK_CODES[3] -- tVersion outdated
+
+   else
+      return addon.VER_CHECK_CODES[1] -- All fine
+	end
+end

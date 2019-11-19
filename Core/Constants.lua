@@ -93,3 +93,10 @@ addon.RESPONSE_CODE_GENERATORS = {
       end
    end,
 }
+
+
+addon.VER_CHECK_CODES = {
+   [1] = "current",
+   [2] = "outdated",
+   [3] = "tVersion",
+}

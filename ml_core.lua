@@ -91,7 +91,7 @@ end
 -- @param owner The owner of the item (if any). Defaults to 'BossName'.
 -- @param entry Used to set data in a specific lootTable entry.
 function RCLootCouncilML:AddItem(item, bagged, slotIndex, owner, entry)
-	addon:DebugLog("ML:AddItem", item, bagged, slotIndex, entry)
+	addon:DebugLog("ML:AddItem", item, bagged, slotIndex, owner, entry)
 	if type(item) == "string" and item:find("|Hcurrency") then return end -- Ignore "Currency" item links
 
 	if not entry then
@@ -190,7 +190,7 @@ function RCLootCouncilML:UpdateGroup(ask)
 			name = addon:UnitName(name) -- Get their unambiguated name
 			if group_copy[name] then -- If they're already registered
 				if group_copy[name] ~= role then	-- They have changed their role
-					self:AddCandidate(name, class, role, self.candidates[name].rank, self.candidates[name].enchanter, self.candidates[name].enchant_lvl, self.candidates[name].specID)
+					self:AddCandidate(name, class, role, self.candidates[name].rank, self.candidates[name].enchanter, self.candidates[name].enchant_lvl, nil, self.candidates[name].specID)
 					updates = true
 				end
 				group_copy[name] = nil -- Remove them, as they're still in the group
@@ -557,7 +557,7 @@ function RCLootCouncilML:OnCommReceived(prefix, serializedMsg, distri, sender)
 					-- v2.2.6 REVIEW For backwards compability we're just sending votingFrame's lootTable
 					-- This is quite redundant and should be removed in the future
 					if db.observe or addon:IsCouncil(sender) then -- Only send all data to councilmen
-						local table = addon:GetLootTable()
+						local table = addon:GetActiveModule("votingframe"):GetLootTable()
 						-- Remove our own voting data if any
 						for ses, v in ipairs(table) do
 							v.haveVoted = false
@@ -929,6 +929,7 @@ function RCLootCouncilML:LootOnClick(button)
 end
 
 function RCLootCouncilML:PrintLootErrorMsg(cause, slot, item, winner)
+	addon:Debug("ML:PrintLootErrorMsg", cause, slot, item, winner)
 	if cause == "loot_not_open" then
 		addon:Print(L["Unable to give out loot without the loot window open."])
 	elseif cause == "timeout" then
@@ -965,6 +966,7 @@ end
 -- test_mode, normal, manually_added, indirect,
 -- See :Award() for the different scenarios
 local function awardSuccess(session, winner, status, callback, ...)
+	addon:DebugLog("ML:awardSuccess", session, winner, status, callback, ...)
 	addon:SendMessage("RCMLAwardSuccess", session, winner, status)
 	if callback then
 		callback(true, session, winner, status, ...)
@@ -979,6 +981,7 @@ end
 -- Status when the addon is bugged(should not happen): unlooted_in_bag
 -- See :Award() and :CanGiveLoot() for the different scenarios and to get their meanings
 local function awardFailed(session, winner, status, callback, ...)
+	addon:DebugLog("ML:awardFailed", session, winner, status, callback, ...)
 	addon:SendMessage("RCMLAwardFailed", session, winner, status)
 	if callback then
 		callback(false, session, winner, status, ...)
@@ -1323,7 +1326,7 @@ function RCLootCouncilML:TrackAndLogLoot(winner, link, responseID, boss, reason,
 	history_table["itemReplaced1"]= (candData and candData.gear1) and select(2,GetItemInfo(candData.gear1))
 	history_table["itemReplaced2"]= (candData and candData.gear2) and select(2,GetItemInfo(candData.gear2))
 	history_table["response"] 		= reason and reason.text or response.text
-	history_table["responseID"] 	= responseID or reason.sort - 400 														-- Changed in v2.0 (reason responseID was 0 pre v2.0)
+	history_table["responseID"] 	= reason and reason.sort - 400 or responseID 										-- Changed in v2.0 (reason responseID was 0 pre v2.0)
 	history_table["color"]			= reason and reason.color or response.color											-- New in v2.0
 	history_table["class"]			= self.candidates[winner].class															-- New in v2.0
 	history_table["isAwardReason"]= reason and true or false																	-- New in v2.0
@@ -1522,7 +1525,14 @@ end
 function RCLootCouncilML:SendWhisperHelp(target)
 	addon:DebugLog("SendWhisperHelp", target)
 	local msg
-	SendChatMessage(L["whisper_guide"], "WHISPER", nil, target)
+	local guide1 = L["whisper_guide"]
+	if #guide1 > 254 then -- French locale reported too long
+		SendChatMessage(strsub(guide1, 0, 254), "WHISPER", nil, target)
+		SendChatMessage(strsub(guide1, 255), "WHISPER", nil, target)
+	else
+		SendChatMessage(guide1, "WHISPER", nil, target)
+	end
+
 	for i = 1, db.buttons.default.numButtons do
 		msg = "[RCLootCouncil]: "..db.buttons.default[i]["text"]..":  " -- i.e. MainSpec/Need:
 		msg = msg..""..db.buttons.default[i]["whisperKey"].."." -- need, mainspec, etc

@@ -1,3 +1,14 @@
+### v2.15.1
+---
+###### Bugfixes
+* *Fixed error when council members reconnect during session (Curse#398).*
+* *Fixed error with 'whisper guide' being too long to send in some locales (#177).*
+* *The 'Keep Loot' popup is now only used in raids to avoid it unintentionally popping up in dungeons. This is a temporary fix, as a proper fix needs way more work (Curse#396).*
+* *Adding items to a session will no longer reset rolls on existing items when "Add Rolls" is enabled.*
+* *Adding more than one item to a session could sometimes mess up and make a session switch button disappear.*
+* *Items awarded with "Award Reasons" would retain their original response when filtering the Loot History (CurseClassic#9).*
+
+
 ### v2.15.0
 ---
 * **Auto Award**  

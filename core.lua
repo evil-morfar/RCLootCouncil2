@@ -487,7 +487,7 @@ function RCLootCouncil:UpdateAndSendRecentTradableItem(info, count)
 		Item:Store()
 		found = true
 		if Item.time_remaining > 0 then
-			if self.mldb.rejectTrade then
+			if self.mldb.rejectTrade and IsInRaid() then
 				LibDialog:Spawn("RCLOOTCOUNCIL_KEEP_ITEM", info.link)
 				return
 			end
@@ -520,7 +520,7 @@ function RCLootCouncil:SendAnnouncement(msg, channel)
 	elseif (not IsInRaid() and (channel == "RAID" or channel == "RAID_WARNING")) then
 		SendChatMessage(msg, "party")
 	else
-		SendChatMessage(msg, self:GetAnnounceChannel(channel))
+		SendChatMessage(msg, self.Utils:GetAnnounceChannel(channel))
 	end
 end
 
@@ -705,15 +705,16 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 					sender = "guild"
 				end
 				self:SendCommand(sender, "verTestReply", self.playerName, self.playerClass, self.guildRank, self.version, self.tVersion, self:GetInstalledModulesFormattedData())
-				if strfind(otherVersion, "%a+") then return self:Debug("Someone's tampering with version?", otherVersion) end
-				if self:VersionCompare(self.version,otherVersion) and not self.verCheckDisplayed and (not (tVersion or self.tVersion)) then
-					self:Print(format(L["version_outdated_msg"], self.version, otherVersion))
-					self.verCheckDisplayed = true
 
-				elseif tVersion and self.tVersion and not self.verCheckDisplayed and self.tVersion < tVersion then
-					if #tVersion >= 10 then return self:Debug("Someone's tampering with tVersion?", tVersion) end
-					self:Print(format(L["tVersion_outdated_msg"], tVersion))
-					self.verCheckDisplayed = true
+				if self.verCheckDisplayed then return end -- Don't bother if we already displayed
+
+				local verCheck = self.Utils:CheckOutdatedVersion(self.version, otherVersion, self.tVersion, tVersion)
+
+				if verCheck == self.VER_CHECK_CODES[2] then
+					self:PrintOutdatedVersionWarning(otherVersion)
+
+				elseif verCheck == self.VER_CHECK_CODES[3] then
+					self:PrintOutdatedTestVersionWarning(tVersion)
 				end
 
 			elseif command == "verTestReply" then
@@ -722,42 +723,19 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 					return self:DebugLog("Error - verTestReply with nil name", sender, name, otherVersion, tVersion, moduleData)
 				end
 				self:GetActiveModule("version"):LogVersion(self:UnitName(sender), otherVersion, tVersion)
-				if strfind(otherVersion, "%a+") then return self:Debug("Someone's tampering with version?", otherVersion) end
-				if self:VersionCompare(self.version,otherVersion) and not self.verCheckDisplayed and (not (tVersion or self.tVersion)) then
-					self:Print(format(L["version_outdated_msg"], self.version, otherVersion))
-					self.verCheckDisplayed = true
 
-				elseif tVersion and self.tVersion and not self.verCheckDisplayed and self.tVersion < tVersion then
-					if #tVersion >= 10 then return self:Debug("Someone's tampering with tVersion?", tVersion) end
-					self:Print(format(L["tVersion_outdated_msg"], tVersion))
-					self.verCheckDisplayed = true
+				if self.verCheckDisplayed then return end -- Don't bother if we already displayed
+
+				local verCheck = self.Utils:CheckOutdatedVersion(self.version, otherVersion, self.tVersion, tVersion)
+
+				if verCheck == self.VER_CHECK_CODES[2] then
+					self:PrintOutdatedVersionWarning(otherVersion)
+
+				elseif verCheck == self.VER_CHECK_CODES[3] then
+					self:PrintOutdatedTestVersionWarning(tVersion)
 				end
-				-- Check modules. Parse the strings.
-				if moduleData then
-					for _, str in pairs(moduleData) do
-						local baseName, otherVersion, tVersion
-						baseName, otherVersion, tVersion = str:match("(.+) %- (.+)%-(.+)")
-						if not baseName then
-							baseName, otherVersion = str:match("(.+) %- (.+)")
-						end
-						if otherVersion and strfind(otherVersion, "%a+") then
-							self:Debug("Someone's tampering with version in the module?", baseName, otherVersion)
-						elseif baseName then
-							for _, module in pairs(self.modules) do
-								if module.baseName == baseName then
-									if module.version and self:VersionCompare(module.version, otherVersion) and not self.moduleVerCheckDisplayed[baseName] and (not (tVersion or module.tVersion)) then
-										self:Print(format(L["module_version_outdated_msg"], baseName, module.version, otherVersion))
-										self.moduleVerCheckDisplayed[baseName] = true
-									elseif tVersion and module.tVersion and not self.moduleVerCheckDisplayed[baseName] and module.tVersion < tVersion then
-										if #tVersion >= 10 then self:Debug("Someone's tampering with tVersion in the module?", baseName, tVersion) end
-										self:Print(format(L["module_tVersion_outdated_msg"], baseName, tVersion))
-										self.moduleVerCheckDisplayed[baseName] = true
-									end
-								end
-							end
-						end
-					end
-				end
+
+				self:DoModulesVersionCheck(moduleData)
 
 			elseif command == "history" and db.enableHistory then
 				local name, history = unpack(data)
@@ -1173,7 +1151,7 @@ function RCLootCouncil:GetPlayersGear(link, equipLoc, gearsTable)
 		GetInventoryItemLink = function(_, slotNum) return gearsTable[slotNum] end
 	end
 
-	local itemID = self:GetItemIDFromLink(link) -- Convert to itemID
+	local itemID = self.Utils:GetItemIDFromLink(link) -- Convert to itemID
 	if not itemID then return nil, nil; end
 	local item1, item2;
 	-- check if the item is a token, and if it is, return the matching current gear
@@ -1206,13 +1184,13 @@ end
 -- @param relicsTable if specified, compare against relics stored in the table instead of the current equipped relics, whose key is slot number and value is the item link of the relic.
 -- @return the relic(s) that with the same type of the input link.
 function RCLootCouncil:GetArtifactRelics(link, relicType, relicsTable)
-	local id = self:GetItemIDFromLink(link)
+	local id = self.Utils:GetItemIDFromLink(link)
 	relicType = relicType or select(3, C_ArtifactUI.GetRelicInfoByItemID(id))
 	local g1,g2;
 	local n = relicsTable and 3 or C_ArtifactUI.GetEquippedArtifactNumRelicSlots() or 0
 	for i = 1, n do
 		local iLink = relicsTable and relicsTable[i] or select(4,C_ArtifactUI.GetEquippedArtifactRelicInfo(i))
-		if iLink and select(3, C_ArtifactUI.GetRelicInfoByItemID(self:GetItemIDFromLink(iLink))) == relicType then
+		if iLink and select(3, C_ArtifactUI.GetRelicInfoByItemID(self.Utils:GetItemIDFromLink(iLink))) == relicType then
 			if g1 then
 				g2 = iLink
 			else
@@ -1251,8 +1229,8 @@ function RCLootCouncil:SendResponse(target, session, response, isTier, isRelic, 
 	self:SendCommand(target, "response",
 		session,
 		self.playerName,
-		{	gear1 = g1 and self:GetItemStringFromLink(g1) or nil,
-			gear2 = g2 and self:GetItemStringFromLink(g2) or nil,
+		{	gear1 = g1 and self.Utils:GetItemStringFromLink(g1) or nil,
+			gear2 = g2 and self.Utils:GetItemStringFromLink(g2) or nil,
 			ilvl = sendAvgIlvl and playersData.ilvl or nil,
 			diff = diff,
 			note = note,
@@ -1313,7 +1291,7 @@ end
 -- @param link The itemLink of the item.
 -- @return If the item level data is not available, return nil. Otherwise, return the minimum item level of the gear created by the token.
 function RCLootCouncil:GetTokenIlvl(link)
-	local id = self:GetItemIDFromLink(link)
+	local id = self.Utils:GetItemIDFromLink(link)
 	if not id then return end
 	local baseIlvl = RCTokenIlvl[id] -- ilvl in normal difficulty
 	if not baseIlvl then return end
@@ -1366,6 +1344,57 @@ function RCLootCouncil:Timer(type, ...)
 	end
 end
 
+function RCLootCouncil:PrintOutdatedVersionWarning (newVersion, ourVersion)
+	self:Print(format(L["version_outdated_msg"], ourVersion or self.version, newVersion))
+	self.verCheckDisplayed = true
+end
+
+function RCLootCouncil:PrintOutdatedTestVersionWarning (tVersion)
+	if #tVersion >= 10 then return self:Debug("Someone's tampering with tVersion?", tVersion) end
+	self:Print(format(L["tVersion_outdated_msg"], tVersion))
+	self.verCheckDisplayed = true
+end
+
+function RCLootCouncil:PrintOutdatedModuleVersion (name, version, newVersion)
+	self:Print(format(L["module_version_outdated_msg"], name, version, newVersion))
+	self.moduleVerCheckDisplayed[name] = true
+end
+
+function RCLootCouncil:PrintOutdatedModuleTestVersion (name, tVersion)
+	if #tVersion >= 10 then self:Debug("Someone's tampering with tVersion in the module?", name, tVersion) end
+	self:Print(format(L["module_tVersion_outdated_msg"], name, tVersion))
+	self.moduleVerCheckDisplayed[name] = true
+end
+
+--- Runs version checks on all modules data received in a 'verTestReply'
+function RCLootCouncil:DoModulesVersionCheck (moduleData)
+	-- Check modules. Parse the strings.
+	if moduleData then
+		for _, str in pairs(moduleData) do
+			local baseName, otherVersion, tVersion = str:match("(.+) %- (.+)%-(.+)")
+			if not baseName then
+				baseName, otherVersion = str:match("(.+) %- (.+)")
+			end
+			if otherVersion and strfind(otherVersion, "%a+") then
+				self:Debug("Someone's tampering with version in the module?", baseName, otherVersion)
+			elseif baseName then
+				for _, module in pairs(self.modules) do
+					if module.baseName == baseName and module.version and not self.moduleVerCheckDisplayed[baseName] then
+						local verCheck = self.Utils:CheckOutdatedVersion(module.version, otherVersion, module.tVersion, tVersion)
+
+						if verCheck == self.VER_CHECK_CODES[2] then
+							self:PrintOutdatedModuleVersion(baseName, module.version, otherVersion)
+
+						elseif verCheck == self.VER_CHECK_CODES[3] then
+							self:PrintOutdatedModuleTestVersion(baseName, module.tVersion)
+						end
+					end
+				end
+			end
+		end
+	end
+end
+
 --- Adds needed variables to the loot table.
 -- Should only be called once when the loot table is received (RCLootCouncil:OnCommReceived).
 -- v2.15 The current implementation ensures this only gets called when all items are cached - this function relies on that!
@@ -1411,8 +1440,8 @@ function RCLootCouncil:SendLootAck(table, skip)
 			hasData = true
 			local g1,g2 = self:GetGear(v.link, v.equipLoc, v.relic)
 			local diff = self:GetIlvlDifference(v.link, g1, g2)
-			toSend.gear1[session] = self:GetItemStringFromLink(g1)
-			toSend.gear2[session] = self:GetItemStringFromLink(g2)
+			toSend.gear1[session] = self.Utils:GetItemStringFromLink(g1)
+			toSend.gear2[session] = self.Utils:GetItemStringFromLink(g2)
 			toSend.diff[session] = diff
 			toSend.response[session] = v.autopass
 		end
@@ -1652,7 +1681,7 @@ function RCLootCouncil:GetPlayerInfo()
 		end
 	end
 	local ilvl = select(2,GetAverageItemLevel())
-	return self.playerName, self.playerClass, self:GetPlayerRole(), self.guildRank, enchant, lvl, ilvl, playersData.specID
+	return self.playerName, self.playerClass, self.Utils:GetPlayerRole(), self.guildRank, enchant, lvl, ilvl, playersData.specID
 end
 
 --- Returns a lookup table containing GuildRankNames and their index.
@@ -2399,7 +2428,7 @@ end
 function RCLootCouncil:GetUnitClassColoredName(name)
 	if self.candidates[name] and self.candidates[name].class then
 		local c = self:GetClassColor(self.candidates[name].class)
-		return "|cff"..self:RGBToHex(c.r,c.g,c.b)..self.Ambiguate(name).."|r"
+		return "|cff"..self.Utils:RGBToHex(c.r,c.g,c.b)..self.Ambiguate(name).."|r"
 	else
 		local englishClass = select(2, UnitClass(Ambiguate(name, "short")))
 		name = self:UnitName(name)
@@ -2678,7 +2707,7 @@ end
 
 -- @return a text of the link explaining its type. For example, "Fel Artifact Relic", "Chest, Mail"
 function RCLootCouncil:GetItemTypeText(link, subType, equipLoc, typeID, subTypeID, classesFlag, tokenSlot, relicType)
-	local id = self:GetItemIDFromLink(link)
+	local id = self.Utils:GetItemIDFromLink(link)
 
 	if tokenSlot then -- It's a token
 		local tokenText = L["Armor Token"]
@@ -2874,7 +2903,7 @@ function RCLootCouncil:UpdateLootHistory()
 	end
 	for name, data in pairs(historyDB) do
 		for i, v in pairs(data) do
-			local id = self:GetItemIDFromLink(v.lootWon)
+			local id = self.Utils:GetItemIDFromLink(v.lootWon)
 			v.tierToken = id and RCTokenTable[id]
 			if strmatch(v.instance, nighthold) then
 				v.mapID = 1530
