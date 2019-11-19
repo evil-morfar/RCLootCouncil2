@@ -1326,7 +1326,7 @@ function RCLootCouncilML:TrackAndLogLoot(winner, link, responseID, boss, reason,
 	history_table["itemReplaced1"]= (candData and candData.gear1) and select(2,GetItemInfo(candData.gear1))
 	history_table["itemReplaced2"]= (candData and candData.gear2) and select(2,GetItemInfo(candData.gear2))
 	history_table["response"] 		= reason and reason.text or response.text
-	history_table["responseID"] 	= responseID or reason.sort - 400 														-- Changed in v2.0 (reason responseID was 0 pre v2.0)
+	history_table["responseID"] 	= reason and reason.sort - 400 or responseID 										-- Changed in v2.0 (reason responseID was 0 pre v2.0)
 	history_table["color"]			= reason and reason.color or response.color											-- New in v2.0
 	history_table["class"]			= self.candidates[winner].class															-- New in v2.0
 	history_table["isAwardReason"]= reason and true or false																	-- New in v2.0
