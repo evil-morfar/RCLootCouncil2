@@ -51,6 +51,17 @@ function RCLootCouncil:ItemIsItem(item1, item2)
 	return self.Utils:NeutralizeItem(item1) == self.Utils:NeutralizeItem(item2)
 end
 
+--- Compares two versions.
+-- Assumes strings of format "x.y.z".
+-- @return True if ver1 is older than ver2, otherwise false.
+function RCLootCouncil:VersionCompare(ver1, ver2)
+	if not ver1 or not ver2 then return end
+	local a1,b1,c1 = string.split(".", ver1)
+	local a2,b2,c2 = string.split(".", ver2)
+	if not (c1 and c2) then return end -- Check if it exists
+	if a1 ~= a2 then return  tonumber(a1) < tonumber(a2) elseif b1 ~= b2 then return tonumber(b1) < tonumber(b2) else return tonumber(c1) < tonumber(c2) end
+end
+
 -- Load utils last
 local utils = assert(loadfile("../../Utils/Utils.lua"))
 utils("",RCLootCouncil)
