@@ -520,7 +520,7 @@ function RCLootCouncil:SendAnnouncement(msg, channel)
 	elseif (not IsInRaid() and (channel == "RAID" or channel == "RAID_WARNING")) then
 		SendChatMessage(msg, "party")
 	else
-		SendChatMessage(msg, self:GetAnnounceChannel(channel))
+		SendChatMessage(msg, self.Utils:GetAnnounceChannel(channel))
 	end
 end
 
@@ -1151,7 +1151,7 @@ function RCLootCouncil:GetPlayersGear(link, equipLoc, gearsTable)
 		GetInventoryItemLink = function(_, slotNum) return gearsTable[slotNum] end
 	end
 
-	local itemID = self:GetItemIDFromLink(link) -- Convert to itemID
+	local itemID = self.Utils:GetItemIDFromLink(link) -- Convert to itemID
 	if not itemID then return nil, nil; end
 	local item1, item2;
 	-- check if the item is a token, and if it is, return the matching current gear
@@ -1184,13 +1184,13 @@ end
 -- @param relicsTable if specified, compare against relics stored in the table instead of the current equipped relics, whose key is slot number and value is the item link of the relic.
 -- @return the relic(s) that with the same type of the input link.
 function RCLootCouncil:GetArtifactRelics(link, relicType, relicsTable)
-	local id = self:GetItemIDFromLink(link)
+	local id = self.Utils:GetItemIDFromLink(link)
 	relicType = relicType or select(3, C_ArtifactUI.GetRelicInfoByItemID(id))
 	local g1,g2;
 	local n = relicsTable and 3 or C_ArtifactUI.GetEquippedArtifactNumRelicSlots() or 0
 	for i = 1, n do
 		local iLink = relicsTable and relicsTable[i] or select(4,C_ArtifactUI.GetEquippedArtifactRelicInfo(i))
-		if iLink and select(3, C_ArtifactUI.GetRelicInfoByItemID(self:GetItemIDFromLink(iLink))) == relicType then
+		if iLink and select(3, C_ArtifactUI.GetRelicInfoByItemID(self.Utils:GetItemIDFromLink(iLink))) == relicType then
 			if g1 then
 				g2 = iLink
 			else
@@ -1229,8 +1229,8 @@ function RCLootCouncil:SendResponse(target, session, response, isTier, isRelic, 
 	self:SendCommand(target, "response",
 		session,
 		self.playerName,
-		{	gear1 = g1 and self:GetItemStringFromLink(g1) or nil,
-			gear2 = g2 and self:GetItemStringFromLink(g2) or nil,
+		{	gear1 = g1 and self.Utils:GetItemStringFromLink(g1) or nil,
+			gear2 = g2 and self.Utils:GetItemStringFromLink(g2) or nil,
 			ilvl = sendAvgIlvl and playersData.ilvl or nil,
 			diff = diff,
 			note = note,
@@ -1291,7 +1291,7 @@ end
 -- @param link The itemLink of the item.
 -- @return If the item level data is not available, return nil. Otherwise, return the minimum item level of the gear created by the token.
 function RCLootCouncil:GetTokenIlvl(link)
-	local id = self:GetItemIDFromLink(link)
+	local id = self.Utils:GetItemIDFromLink(link)
 	if not id then return end
 	local baseIlvl = RCTokenIlvl[id] -- ilvl in normal difficulty
 	if not baseIlvl then return end
@@ -1440,8 +1440,8 @@ function RCLootCouncil:SendLootAck(table, skip)
 			hasData = true
 			local g1,g2 = self:GetGear(v.link, v.equipLoc, v.relic)
 			local diff = self:GetIlvlDifference(v.link, g1, g2)
-			toSend.gear1[session] = self:GetItemStringFromLink(g1)
-			toSend.gear2[session] = self:GetItemStringFromLink(g2)
+			toSend.gear1[session] = self.Utils:GetItemStringFromLink(g1)
+			toSend.gear2[session] = self.Utils:GetItemStringFromLink(g2)
 			toSend.diff[session] = diff
 			toSend.response[session] = v.autopass
 		end
@@ -1681,7 +1681,7 @@ function RCLootCouncil:GetPlayerInfo()
 		end
 	end
 	local ilvl = select(2,GetAverageItemLevel())
-	return self.playerName, self.playerClass, self:GetPlayerRole(), self.guildRank, enchant, lvl, ilvl, playersData.specID
+	return self.playerName, self.playerClass, self.Utils:GetPlayerRole(), self.guildRank, enchant, lvl, ilvl, playersData.specID
 end
 
 --- Returns a lookup table containing GuildRankNames and their index.
@@ -2428,7 +2428,7 @@ end
 function RCLootCouncil:GetUnitClassColoredName(name)
 	if self.candidates[name] and self.candidates[name].class then
 		local c = self:GetClassColor(self.candidates[name].class)
-		return "|cff"..self:RGBToHex(c.r,c.g,c.b)..self.Ambiguate(name).."|r"
+		return "|cff"..self.Utils:RGBToHex(c.r,c.g,c.b)..self.Ambiguate(name).."|r"
 	else
 		local englishClass = select(2, UnitClass(Ambiguate(name, "short")))
 		name = self:UnitName(name)
@@ -2707,7 +2707,7 @@ end
 
 -- @return a text of the link explaining its type. For example, "Fel Artifact Relic", "Chest, Mail"
 function RCLootCouncil:GetItemTypeText(link, subType, equipLoc, typeID, subTypeID, classesFlag, tokenSlot, relicType)
-	local id = self:GetItemIDFromLink(link)
+	local id = self.Utils:GetItemIDFromLink(link)
 
 	if tokenSlot then -- It's a token
 		local tokenText = L["Armor Token"]
@@ -2903,7 +2903,7 @@ function RCLootCouncil:UpdateLootHistory()
 	end
 	for name, data in pairs(historyDB) do
 		for i, v in pairs(data) do
-			local id = self:GetItemIDFromLink(v.lootWon)
+			local id = self.Utils:GetItemIDFromLink(v.lootWon)
 			v.tierToken = id and RCTokenTable[id]
 			if strmatch(v.instance, nighthold) then
 				v.mapID = 1530
