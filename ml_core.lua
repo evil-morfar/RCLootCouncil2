@@ -190,7 +190,7 @@ function RCLootCouncilML:UpdateGroup(ask)
 			name = addon:UnitName(name) -- Get their unambiguated name
 			if group_copy[name] then -- If they're already registered
 				if group_copy[name] ~= role then	-- They have changed their role
-					self:AddCandidate(name, class, role, self.candidates[name].rank, self.candidates[name].enchanter, self.candidates[name].enchant_lvl, self.candidates[name].specID)
+					self:AddCandidate(name, class, role, self.candidates[name].rank, self.candidates[name].enchanter, self.candidates[name].enchant_lvl, nil, self.candidates[name].specID)
 					updates = true
 				end
 				group_copy[name] = nil -- Remove them, as they're still in the group
