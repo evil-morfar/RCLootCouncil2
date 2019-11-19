@@ -327,11 +327,15 @@ function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
 				self:UpdatePeopleToVote()
 
 			elseif command == "lt_add" and addon:UnitIsUnit(sender, addon.masterLooter) then
+				local oldLenght = #lootTable
 				for k,v in pairs(unpack(data)) do
 					lootTable[k] = v
-					self:SetupSession(k, v)
+				end
+				-- Add the sessions in order to avoid messing with SessionButtons
+				for i = oldLenght + 1, #lootTable do
+					self:SetupSession(i, lootTable[i])
 					if addon.isMasterLooter and db.autoAddRolls then
-						self:DoRandomRolls(k)
+						self:DoRandomRolls(i)
 					end
 				end
 				self:SwitchSession(session)
