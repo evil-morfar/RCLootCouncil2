@@ -235,7 +235,7 @@ function RCLootCouncil:OnEnable()
 
 	if IsInGuild() then
 		self.guildRank = select(2, GetGuildInfo("player"))
-		self:ScheduleTimer("SendCommand", 2, "guild", "verTest", self.version, self.tVersion) -- send out a version check after a delay
+		self:ScheduleTimer("SendGuildVerTest", 2) -- send out a version check after a delay
 	end
 
 	-- For some reasons all frames are blank until ActivateSkin() is called, even though the values used
@@ -1364,6 +1364,10 @@ function RCLootCouncil:PrintOutdatedModuleTestVersion (name, tVersion)
 	if #tVersion >= 10 then self:Debug("Someone's tampering with tVersion in the module?", name, tVersion) end
 	self:Print(format(L["module_tVersion_outdated_msg"], name, tVersion))
 	self.moduleVerCheckDisplayed[name] = true
+end
+
+function RCLootCouncil:SendGuildVerTest ()
+	self:SendCommand("guild", "verTest", self.version, self.tVersion)
 end
 
 --- Runs version checks on all modules data received in a 'verTestReply'
