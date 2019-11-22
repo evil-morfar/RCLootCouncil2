@@ -4,6 +4,7 @@ RCLootCouncil = LibStub("AceAddon-3.0"):NewAddon("RCLootCouncil", "AceConsole-3.
 RCLootCouncil.debug = false
 local AceSer = LibStub("AceSerializer-3.0")
 RCLootCouncil.Deserialize = AceSer.Deserialize
+RCLootCouncil.Serialize = AceSer.Serialize
 
 RCLootCouncil.db = {
    profile = {},
@@ -61,6 +62,8 @@ function RCLootCouncil:VersionCompare(ver1, ver2)
 	if not (c1 and c2) then return end -- Check if it exists
 	if a1 ~= a2 then return  tonumber(a1) < tonumber(a2) elseif b1 ~= b2 then return tonumber(b1) < tonumber(b2) else return tonumber(c1) < tonumber(c2) end
 end
+
+loadfile("../../Core/Defaults.lua")("", RCLootCouncil)
 
 -- Load utils last
 local utils = assert(loadfile("../../Utils/Utils.lua"))
