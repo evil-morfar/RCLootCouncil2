@@ -1273,7 +1273,7 @@ do
 		wipe(export)
 		wipe(ret)
 		local subType, equipLoc, rollType, _
-		tinsert(ret, "player, date, time, id, item, itemID, itemString, response, votes, class, instance, boss, gear1, gear2, responseID, isAwardReason, rollType, subType, equipLoc, note, owner\r\n")
+		tinsert(ret, "player,date,time,id,item,itemID,itemString,response,votes,class,instance,boss,difficultyID,mapID,groupSize,gear1,gear2,responseID,isAwardReason,rollType,subType,equipLoc,note,owner\r\n")
 		for player, v in pairs(lootDB) do
 			if selectedName and selectedName == player or not selectedName then
 				for i, d in pairs(v) do
@@ -1294,6 +1294,9 @@ do
 						tinsert(export, tostring(d.class))
 						tinsert(export, CSVEscape(d.instance))
 						tinsert(export, CSVEscape(d.boss))
+						tinsert(export, d.difficultyID)
+						tinsert(export, d.mapID)
+						tinsert(export, d.groupSize)
 						tinsert(export, CSVEscape(d.itemReplaced1))
 						tinsert(export, CSVEscape(d.itemReplaced2))
 						tinsert(export, tostring(d.responseID))
@@ -1302,7 +1305,7 @@ do
 						tinsert(export, tostring(subType))
 						tinsert(export, tostring(getglobal(equipLoc) or ""))
 						tinsert(export, CSVEscape(d.note))
-						tinsert(export, tostring(d.owner or "Unkown"))
+						tinsert(export, tostring(d.owner or "Unknown"))
 						tinsert(ret, table.concat(export, ","))
 						tinsert(ret, "\r\n")
 						wipe(export)
