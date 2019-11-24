@@ -1810,12 +1810,12 @@ function RCLootCouncil:OnEvent(event, ...)
 		local i = 0
 		for k, info in pairs(self.lootSlotInfo) do
 			if not info.isLooted and info.guid and info.link then
+				if info.autoloot then -- We've looted the item without getting LOOT_SLOT_CLEARED, properly due to FastLoot addons
+					return self:OnEvent("LOOT_SLOT_CLEARED", k), self:OnEvent("LOOT_CLOSED")
+				end
 				-- Check if we have room in bags
 				if self.Utils:GetNumFreeBagSlots() == 0 then
 					return self:SendCommand("group", "fullbags", info.link, info.guid)
-				end
-				if info.autoloot then -- We've looted the item without getting LOOT_SLOT_CLEARED, properly due to FastLoot addons
-					return self:OnEvent("LOOT_SLOT_CLEARED", k), self:OnEvent("LOOT_CLOSED")
 				end
 				self:SendCommand("group", "fakeLoot", info.link, info.guid)
 
