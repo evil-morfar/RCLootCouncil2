@@ -324,6 +324,13 @@ function addon:OptionsTable()
 										desc = L["send_history_desc"],
 										type = "toggle",
 									},
+									sendHistoryToGuildChannel = {
+										order = 3.1,
+										name = L["Send to Guild"],
+										desc = L["send_to_guild_desc"],
+										type = "toggle",
+										disabled = function() return not self.db.profile.sendHistory end,
+									},
 									header = {
 										order = 4,
 										type = "header",

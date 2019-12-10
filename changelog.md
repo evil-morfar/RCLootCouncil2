@@ -15,6 +15,11 @@ The names now follows the "Append realm name" option.
 ### Loot History
 The history is now sortable by class. Just click the class icon header.
 
+### Options
+#### Loot History
+Added "Send to guild" option.
+Checking this will send history entries to your guild instead of your group.
+
 
 ### v2.15.1
 ---

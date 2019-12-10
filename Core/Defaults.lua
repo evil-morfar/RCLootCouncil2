@@ -175,6 +175,7 @@ addon.defaults = {
 
       enableHistory = true,
       sendHistory = true,
+      sendHistoryToGuildChannel = false,
 
       minRank = -1,
       council = {},
