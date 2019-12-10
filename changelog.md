@@ -6,6 +6,7 @@
 
 #### Awarding
 You can now Award items by alt-clicking a candidate row, saving you a right-click.
+When Master Looter, awarding an item will now switch session to the first unawarded session instead of simply the next numerical session (i.e. session + 1).
 
 #### Vote Status
 The list is now sorted alphabetically and colored according to the candidates' class.

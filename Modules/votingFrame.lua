@@ -254,8 +254,9 @@ function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
 					end
 				end
 				lootTable[s].awarded = winner
-				if addon.isMasterLooter and session ~= #lootTable then -- ML should move to the next item on award
-					self:SwitchSession(session + 1)
+				local nextSession = self:FetchUnawardedSession()
+				if addon.isMasterLooter and nextSession then -- ML should move to the next item on award
+					self:SwitchSession(nextSession)
 				else
 					self:SwitchSession(session) -- Use switch session to update awardstring
 				end
@@ -380,6 +381,15 @@ end
 -- @usage RCLootCouncil:RegisterMessage("RCSessionChangedPost", --your_function--) (see AceEvent-3.0 for more.)
 function RCVotingFrame:GetCurrentSession()
 	return session
+end
+
+--- Find an unawarded session.
+-- @return number|nil Number of the first session with an un-awarded item, or nil if everything is awarded.
+function RCVotingFrame:FetchUnawardedSession ()
+	for k,v in ipairs(lootTable) do
+		if not v.awarded then return k end
+	end
+	return nil
 end
 
 function RCVotingFrame:SetupSession(session, t)
