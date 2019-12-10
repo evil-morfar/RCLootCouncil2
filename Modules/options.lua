@@ -847,7 +847,13 @@ function addon:OptionsTable()
 										name = L["opt_rejectTrade_Name"],
 										desc = L["opt_rejectTrade_Desc"],
 										type = "toggle",
-									}
+									},
+									awardLater = {
+										order = 11,
+										name = L["Award later"],
+										desc = L["opt_award_later_desc"],
+										type = "toggle"
+									},
 								},
 							},
 							voteOptions = {

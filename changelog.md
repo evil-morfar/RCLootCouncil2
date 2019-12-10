@@ -20,6 +20,10 @@ The history is now sortable by class. Just click the class icon header.
 Added "Send to guild" option.
 Checking this will send history entries to your guild instead of your group.
 
+#### Looting Options
+Added "Award Later" option.
+When enabled, this option will automatically check "Award Later" in the Session Frame.
+
 
 ### v2.15.1
 ---
