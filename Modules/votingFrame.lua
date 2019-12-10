@@ -695,6 +695,10 @@ function RCVotingFrame:GetFrame()
 					MSA_ToggleDropDownMenu(1, nil, menuFrame, cellFrame, 0, 0);
 				elseif button == "LeftButton" and row then -- Update more info
 					self:UpdateMoreInfo(realrow, data)
+					if IsAltKeyDown() then
+						local name = data[realrow].name
+						LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_AWARD", self:GetAwardPopupData(session, name, lootTable[session].candidates[name]))
+					end
 				end
 				-- Return false to have the default OnClick handler take care of left clicks
 				return false

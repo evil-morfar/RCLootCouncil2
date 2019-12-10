@@ -3,6 +3,10 @@
 ## Changes
 
 ### Voting Frame
+
+#### Awarding
+You can now Award items by alt-clicking a candidate row, saving you a right-click.
+
 #### Vote Status
 The list is now sorted alphabetically and colored according to the candidates' class.
 Added people that haven't yet voted to the list.
