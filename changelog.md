@@ -17,6 +17,9 @@ The history is now sortable by class. Just click the class icon header.
 
 ### Options
 
+#### Council
+Current Council list is now sorted alphabetically.
+
 #### Frame Options
 Added an option to select which chat frame RCLootCouncil will print to.
 

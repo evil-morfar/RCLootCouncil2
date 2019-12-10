@@ -1426,12 +1426,16 @@ function addon:OptionsTable()
 										name = "",
 										values = function()
 											local t = {}
-											for k,v in ipairs(self.db.profile.council) do t[k] = self.Ambiguate(v) end
+											for k,v in ipairs(self.db.profile.council) do t[v] = self.Ambiguate(v) end
+											table.sort(t)
 											return t;
 										end,
 										width = "full",
 										get = function() return true end,
-										set = function(m,key) tremove(self.db.profile.council,key); addon:CouncilChanged() end,
+										set = function(m,key)
+											tDeleteItem(self.db.profile.council, key)
+										 	addon:CouncilChanged()
+										end,
 									},
 									removeAll = {
 										order = 3,
