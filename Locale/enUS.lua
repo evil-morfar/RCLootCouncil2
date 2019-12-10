@@ -261,6 +261,7 @@ L["message_desc"] = "The message to send to the selected channel."
 L["Message for each item"] = true
 L["Minimize in combat"] = true
 L["Minor Upgrade"] = true
+L["Missing votes from:"] = true
 L["ML sees voting"] = true
 L["ml_sees_voting_desc"] = "Allows the Master Looter to see who's voting for whom."
 L["Modules"] = true

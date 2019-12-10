@@ -1,3 +1,11 @@
+## Changes
+
+### Voting Frame
+#### People to Vote
+The list is now sorted alphabetically and colored according to the candidates' class.
+Added people that haven't yet voted to the list.
+
+
 ### v2.15.1
 ---
 ###### Bugfixes
