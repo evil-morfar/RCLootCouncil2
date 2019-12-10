@@ -16,6 +16,10 @@ The names now follows the "Append realm name" option.
 The history is now sortable by class. Just click the class icon header.
 
 ### Options
+
+#### Frame Options
+Added an option to select which chat frame RCLootCouncil will print to.
+
 #### Loot History
 Added "Send to guild" option.
 Checking this will send history entries to your guild instead of your group.

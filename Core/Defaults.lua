@@ -91,6 +91,8 @@ addon.defaults = {
       autoTrade = false,
       awardLater = false, -- Auto check award later
 
+      chatFrameName = "DEFAULT_CHAT_FRAME", -- The chat frame to use for :Print()s
+
       UI = { -- stores all ui information
          ['**'] = { -- Defaults
             y		= 0,
