@@ -428,18 +428,14 @@ function RCVotingFrame:Setup(table)
 end
 
 function RCVotingFrame:HandleVote(session, name, vote, voter)
+	voter = addon:UnitName(voter)
 	-- Do the vote
 	lootTable[session].candidates[name].votes = lootTable[session].candidates[name].votes + vote
 	-- And update voters names
 	if vote == 1 then
-		tinsert(lootTable[session].candidates[name].voters, addon.Ambiguate(voter))
+		tinsert(lootTable[session].candidates[name].voters, voter)
 	else
-		for i, n in ipairs(lootTable[session].candidates[name].voters) do
-			if addon:UnitIsUnit(voter, n) then
-				tremove(lootTable[session].candidates[name].voters, i)
-				break
-			end
-		end
+		tDeleteItem(lootTable[session].candidates[name].voters, voter)
 	end
 	self.frame.st:Refresh()
 	self:UpdatePeopleToVote()
@@ -986,6 +982,7 @@ function RCVotingFrame:UpdatePeopleToVote()
 				GameTooltip:AddLine(addon:GetUnitClassColoredName(name))
 			end
 		end
+		GameTooltip:Show()
 	end)
 	self.frame.rollResult:SetWidth(self.frame.rollResult.text:GetStringWidth())
 end
@@ -1161,7 +1158,14 @@ function RCVotingFrame.SetCellVotes(rowFrame, frame, data, cols, row, realrow, c
 	frame:SetScript("OnEnter", function()
 		if not addon.mldb.anonymousVoting or (db.showForML and addon.isMasterLooter) then
 			if not addon.mldb.hideVotes or (addon.mldb.hideVotes and lootTable[session].haveVoted) then
-				addon:CreateTooltip(L["Voters"], unpack(lootTable[session].candidates[name].voters))
+				addon:CreateTooltip(L["Voters"], unpack((function ()
+					local ret = {}
+					for i,name in ipairs(lootTable[session].candidates[name].voters) do
+						ret[i] = addon:GetUnitClassColoredName(name)
+					end
+					return ret
+				end)()
+			))
 			end
 		end
 	end)

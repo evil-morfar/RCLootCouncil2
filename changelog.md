@@ -3,9 +3,14 @@
 ## Changes
 
 ### Voting Frame
-#### People to Vote
+#### Vote Status
 The list is now sorted alphabetically and colored according to the candidates' class.
 Added people that haven't yet voted to the list.
+The names now follows the "Append realm name" option.
+
+#### Votes Column
+Voter names are now class colored.
+The names now follows the "Append realm name" option.
 
 
 ### v2.15.1
