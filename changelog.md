@@ -12,6 +12,9 @@ The names now follows the "Append realm name" option.
 Voter names are now class colored.
 The names now follows the "Append realm name" option.
 
+### Loot History
+The history is now sortable by class. Just click the class icon header.
+
 
 ### v2.15.1
 ---

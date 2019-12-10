@@ -39,7 +39,7 @@ function LootHistory:OnInitialize()
 		--html = self.ExportHTML
 	}
 	self.scrollCols = {
-		{name = "",				width = ROW_HEIGHT, },																				-- Class icon, should be same row as player
+		{name = "",				width = ROW_HEIGHT, sortnext = 2},																-- Class icon, should be same row as player
 		{name = _G.NAME,		width = 100, sortnext = 3, defaultsort = 1,},												-- Name of the player
 		{name = L["Time"],	width = 125, comparesort = self.DateTimeSort, sort = 2,defaultsort = 2,},			-- Time of awarding
 		{name = "",				width = ROW_HEIGHT, },																				-- Item icon
@@ -156,7 +156,7 @@ function LootHistory:BuildData()
 						response = i.responseID,
 						isAwardReason = i.isAwardReason,
 						cols = { -- NOTE Don't forget the rightClickMenu dropdown, if the order of these changes
-							{DoCellUpdate = addon.SetCellClassIcon, args = {x.class}},
+							{DoCellUpdate = addon.SetCellClassIcon, args = {x.class}, value = x.class},
 							{value = addon.Ambiguate(name), color = addon:GetClassColor(x.class)},
 							{value = self:GetLocalizedDate(date).. "-".. i.time or "", args = {time = i.time, date = date},},
 							{DoCellUpdate = self.SetCellGear, args={i.lootWon}},
