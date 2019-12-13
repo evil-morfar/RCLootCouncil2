@@ -469,7 +469,7 @@ printtable = function( data, level )
    until true end
 end
 
-C_Timer = {After = function() end}
+C_Timer = {After = function(delay, callback) callback() end}
 
 -- Classes
 local CLASS_INFO = {
