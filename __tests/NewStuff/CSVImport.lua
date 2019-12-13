@@ -68,7 +68,45 @@ function His:ImportNew (import, delimiter)
    if self:DoErrorCheck() then return end
    data = self:ConvertRebuiltDataToLootDBFormat(rebuilt)
 
-   printtable(data)
+   local overwrites = self:CheckForOverwrites(data)
+   if #overwrites > 0 then
+      print(#overwrites, "overwrites!")
+   else
+      local count = self:InsertIntoHistory(data)
+      print(string.format("Successfully added %d entries to the history", count))
+      if self.frame and self.frame:IsVisible() then -- Update if open
+   		self:BuildData()
+   		self.frame.st:SortData()
+   	end
+   end
+end
+
+function His:InsertIntoHistory (data)
+   local db = addon:GetHistoryDB()
+   local count = 0
+   for name, items in pairs(data) do
+      if not db[name] then db[name] = {} end
+      for _, entry in ipairs(items) do
+         tinsert(db[name], entry)
+         count = count + 1
+      end
+   end
+   return count
+end
+
+function His:CheckForOverwrites (data)
+   local overwrites = {}
+   local db = addon:GetHistoryDB()
+   for name, v in pairs(data) do
+      if db[name] then
+         for i, entry in ipairs(v) do
+            if FindInTableIf(db[name], function (val) return val.id == entry.id end) then
+               tinsert(overwrites, entry)
+            end
+         end
+      end
+   end
+   return overwrites
 end
 
 function His:ConvertRebuiltDataToLootDBFormat (rebuilt)
