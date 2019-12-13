@@ -599,10 +599,12 @@ function LootHistory:ImportHistory(import)
       addon:Debug("<WARNING>", "Malformed string")
       return
    end
+	-- WoW seems to translate tabs (\t) into four spaces. Check for that.
+	import = import:gsub("    ", "\t")
 	local type = self:DetermineImportType(import)
 
 	if not type or type == "Unknown" then
-		addon:Print("The import type is either very malformed or not support.")
+		addon:Print("The import type is either very malformed or not supported.")
 		addon:Print("Supported imports:")
 		-- TODO
 		return
@@ -610,7 +612,7 @@ function LootHistory:ImportHistory(import)
 		return self:ImportCSV(import)
 	elseif type == "tsv-csv" then
 		return self:ImportTSV_CSV(import)
-	elseif type == "playerexport" then 
+	elseif type == "playerexport" then
 		return self:ImportPlayerExport(import)
 	else -- Should not happend
 		error("Unknown import type")
@@ -651,7 +653,7 @@ function LootHistory:ImportPlayerExport (import)
 	addon.lootDB.factionrealm = lootDB -- save it
 	addon:Print(format(L["Successfully imported 'number' entries."], number))
 	addon:Debug("Import successful")
-	if self.frame and self.frame:IsVisible() then self:BuildData() end -- Only rebuild data if we're showing
+	if self.frame and self.frame:IsVisible() then self:BuildData(); self:Show() end -- Only rebuild data if we're showing
 end
 
 function LootHistory:GetWowheadLinkFromItemLink(link)

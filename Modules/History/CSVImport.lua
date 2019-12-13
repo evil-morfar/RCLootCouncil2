@@ -1,5 +1,6 @@
 local _, addon = ...
 local His = addon:GetModule("RCLootHistory")
+local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 local LibDialog = LibStub("LibDialog-1.0")
 local private = {
    errorList = {
@@ -28,13 +29,14 @@ function His:ImportNew (import, delimiter)
       addon:DebugLog("<ERROR>", "Malformed Header:", data[1])
       return
    end
-   local line, lines = {}, {}
+   local line, lines, length = {}, {}, 0
    for i = 2, #data do
-      line = self:ExtractLine(data[i], delimiter)
+      line, length = self:ExtractLine(data[i], delimiter)
       -- Ensure error free lines
-      if #line ~= private.numFields then
-         private:AddError(i, #line, string.format("Row has the wrong number of fields - expected %d", private.numFields))
+      if length ~= private.numFields then
+         private:AddError(i, length, string.format("Row has the wrong number of fields - expected %d", private.numFields))
          printtable(line)
+
       else
          private:ValidateLine(i, line)
          tinsert(lines, line)
@@ -61,7 +63,7 @@ function His:ImportNew (import, delimiter)
          addon:Debug("Declined import overwrite")
          addon:Print("Import aborted")
       end
-      LibDialog:Spawn("RCLOOTCOUNCIL_IMPORT_OVERWRITE", {count = count, OnYesCallback = OnYesCallback, OnNoCallback = OnNoCallback})
+      LibDialog:Spawn("RCLOOTCOUNCIL_IMPORT_OVERWRITE", {count = #overwrites, OnYesCallback = OnYesCallback, OnNoCallback = OnNoCallback})
    else
       self:ExecuteImport(data)
    end
@@ -69,10 +71,11 @@ end
 
 function His:ExecuteImport (data)
    local count = self:InsertIntoHistory(data)
-   addon:Print(string.format("Successfully added %d entries to the history", count))
+   addon:Print(string.format(L["Successfully imported 'number' entries."], count))
    if self.frame and self.frame:IsVisible() then -- Update if open
       self:BuildData()
       self.frame.st:SortData()
+      self:Show() -- Use Show() to update moreInfo
    end
 end
 
@@ -82,7 +85,12 @@ function His:InsertIntoHistory (data)
    for name, items in pairs(data) do
       if not db[name] then db[name] = {} end
       for _, entry in ipairs(items) do
-         tinsert(db[name], entry)
+         local found = FindInTableIf(db[name], function (val) return val.id == entry.id end)
+         if found then
+            db[name][found] = entry
+         else
+            tinsert(db[name], entry)
+         end
          count = count + 1
       end
    end
@@ -194,11 +202,13 @@ function His:ExtractLine (input, delimiter, notFirst)
    else
       ret = {strsplit(delimiter, input)}
    end
+   local length
    if not notFirst then
+      length = #ret
       -- nil out empty strings
       for k,v in ipairs(ret) do if v == "" then ret[k] = nil end end
    end
-   return ret
+   return ret, length
 end
 
 function His:CommaEscapeTSV (data)
@@ -281,7 +291,7 @@ function private:RebuildTime (data, t, line)
       private.idCount = private.idCount + 1
    else
       -- Should never happen
-      return self:AddError(line, string.format("%s|%s|%s", dato, time, id), "Could not recreate time.")
+      return self:AddError(line, string.format("%s,%s,%s", dato, time, id), "Could not recreate time.")
    end
 end
 
@@ -300,20 +310,20 @@ function private:GetItemInfo (name, id, itemString, line)
       useForInfo = id
    end
    if not useForInfo or useForInfo == "" then
-      return self:AddError(line, string.format("%s|%s|%s", tostring(name), tostring(id), tostring(itemString)), "Could not extract the winning item from this info.")
+      return self:AddError(line, string.format("%s,%s,%s", tostring(name), tostring(id), tostring(itemString)), "Could not extract item from this info.")
    end
 
    local iname, ilink, _, _, _, _, _, _,_, _, _, itemClassID, itemSubClassID = GetItemInfo(useForInfo)
-   if not iname then
-      return self:AddError(line, useForInfo, "GetItemInfo() returned nil. Check inputs.")
-   end
+   -- if not iname then
+   --    return self:AddError(line, useForInfo, "GetItemInfo() returned nil. Check inputs.")
+   -- end
    return iname, ilink, itemClassID, itemSubClassID
 end
 
 function private:RebuildLootWon(data ,t, line)
    local itemName, itemID, itemString = data[5],data[6],data[7]
    local iname, ilink, itemClassID, itemSubClassID = self:GetItemInfo(itemName, itemID, itemString, line)
-   if not iname then return self:AddError(line, string.format("%s|%s|%s", tostring(itemName), tostring(itemID), tostring(itemString)), "Error rebuilding lootWon") end
+   if not iname then return self:AddError(line, string.format("%s,%s,%s", tostring(itemName), tostring(itemID), tostring(itemString)), "Error rebuilding lootWon") end
    t.lootWon = ilink
    t.iClass = itemClassID
    t.iSubClass = itemSubClassID
