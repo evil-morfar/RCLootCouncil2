@@ -10,7 +10,7 @@ local private = {
 }
 
 function His:DetermineImportType (import)
-   addon:Debug("His:DetermineImportType", import)
+   addon:Debug("His:DetermineImportType")
    if type(import) ~= "string" then
       addon:Print("The import was malformed (not a string)")
       addon:Debug("<WARNING>", "Malformed string")
@@ -29,8 +29,10 @@ function His:DetermineImportType (import)
             return "tsv-csv" -- Copied from Google Sheet
          end
          return "Unknown"
+      elseif import:sub(7,7) == "," then
+         return "csv"
       end
-      return "csv"
+      return "Unknown"
    elseif import:sub(1, 2) == "^1" then
       return "playerexport"
    else
@@ -50,6 +52,7 @@ function His:ImportNew (import, delimiter)
    addon:Debug("His:ImportNew", #import, delimiter)
    wipe(private.errorList)
    local data = {strsplit("\n", import)}
+   addon:Debug("Data lines:", #data)
    -- Validate the input
    if not private:ValidateHeader(data[1], delimiter) then
       addon:Print("Malformed header")
@@ -61,7 +64,8 @@ function His:ImportNew (import, delimiter)
       line = self:ExtractLine(data[i], delimiter)
       -- Ensure error free lines
       if #line ~= private.numFields then
-         private:AddError(i, #line, string.format("Row has the wrong number of fields - expected %d"), private.numFields)
+         private:AddError(i, #line, string.format("Row has the wrong number of fields - expected %d", private.numFields))
+         printtable(line)
       else
          private:ValidateLine(i, line)
          tinsert(lines, line)
@@ -203,24 +207,27 @@ function His:DoErrorCheck ()
    return false
 end
 
-function His:ExtractLine (input, delimiter)
-   -- print("ExtractLine", input)
+function His:ExtractLine (input, delimiter, notFirst)
    local ret = {}
    -- Check for any escaped commas:
-   if input:find("\"") then
+   if input == "" or input[1] == "\"" then
+      return {}
+   elseif input:find("\"") then
       local first, last = input:find("\".-\"")
-      -- print(first,last)
-      if not first then print(input) end
       -- do the first and second half, and put this in the middle.
-      ret = self:ExtractLine(strsub(input, 1, first - 2), delimiter)
+      ret = self:ExtractLine(strsub(input, 1, math.max(first - 2,0)), delimiter, true)
       tinsert(ret, strsub(input, first + 1, last - 1))
-      local t2 = self:ExtractLine(strsub(input, last + 2), delimiter)
+      local t2 = self:ExtractLine(strsub(input, last + 2), delimiter, true)
       local len = #ret
       for k, v in ipairs(t2) do
          ret[len + k] = v
       end
    else
       ret = {strsplit(delimiter, input)}
+   end
+   if not notFirst then
+      -- nil out empty strings
+      for k,v in ipairs(ret) do if v == "" then ret[k] = nil end end
    end
    return ret
 end
@@ -288,10 +295,12 @@ function private:RebuildTime (data, t, line)
    	t.time = date("%H:%M:%S", secs)
    elseif dato then
       local d, m, y = strsplit("/", dato or "", 3)
+      print(d,m,y)
       local secs = His:DateTimeToSeconds(d,m,y) -- Will provide 0:0:0
+      print(secs)
       t.date = date("%d/%m/%y", secs)
    	t.time = date("%H:%M:%S", secs)
-      t.id = id .. "-"..private.idCount
+      t.id = secs .. "-"..private.idCount
       private.idCount = private.idCount + 1
    elseif time then
       local d, m, y = strsplit("/", date("%d/%m/%y"), 3) -- Use today
@@ -299,7 +308,7 @@ function private:RebuildTime (data, t, line)
       local secs = His:DateTimeToSeconds(d,m,y)
       t.date = date("%d/%m/%y", secs)
    	t.time = date("%H:%M:%S", secs)
-      t.id = id .. "-"..private.idCount
+      t.id = secs .. "-"..private.idCount
       private.idCount = private.idCount + 1
    else
       -- Should never happen
@@ -440,8 +449,8 @@ function private:RebuildInstance(data, t, line)
       t.difficultyID = nil
    elseif instance then
       if string.find(instance, "-") then
-         mapID = mapID or tInvert(mapIDsToText)[(string.split(instance, "-"))]
-         diffID = diffID or tInvert(diffIDToText[select(2,string.split(instance, "-"))])
+         mapID = mapID or tInvert(mapIDsToText)[(string.split("-",instance))]
+         diffID = diffID or tInvert(diffIDToText)[select(2,string.split("-",instance))]
       else
          mapID = mapID or tInvert(mapIDsToText)[instance]
       end
@@ -451,7 +460,6 @@ function private:RebuildInstance(data, t, line)
    else
       self:AddError(line, string.format("%s|%s|%s", tostring(instance), tostring(diffID), tostring(mapID)), "Could not recreate instance info.")
    end
-
 end
 
 function private:AddError (lineNum, value, desc)
@@ -494,19 +502,19 @@ private.validators = {
    end,
    function (num, input) -- itemID
       -- not present or numbers only
-      return not input or #input == 0 or input:match("%d+") or private:AddError(num,input, "Malformed ItemID (nothing or number)")
+      return #input == 0 or input:match("%d+") or private:AddError(num,input, "Malformed ItemID (nothing or number)")
    end,
    function (num, input) -- itemString
       -- not present or valid itemString
-      return not input or #input == 0 or input:match("item:[%d:]+") or private:AddError(num, input,"Malformed itemString")
+      return #input == 0 or input:match("item:[%d:]+") or private:AddError(num, input,"Malformed itemString")
    end,
    function (num, input) -- response
       -- not present or string
-      return not input or #input > 0 or private:AddError(num, input,"Malformed response (nothing or string)")
+      return #input >= 0 or private:AddError(num, input,"Malformed response (nothing or string)")
    end,
    function (num, input) -- votes
       -- not present, 'nil', or number
-      return not input or input == "nil" or input:match("%d+") or private:AddError(num, input,"Malformed votes (nothing or numbers)")
+      return #input == 0 or input == "nil" or input:match("%d+") or private:AddError(num, input,"Malformed votes (nothing or numbers)")
    end,
    function (num, input) -- class
       -- must be valid
@@ -522,15 +530,15 @@ private.validators = {
    end,
    function (num, input) -- difficultyID
       -- empty or number
-      return not input or input:match("[%d]+") or private:AddError(num, input, "Malformed difficultyID (must be a number or empty)")
+      return #input == 0 or input:match("[%d]+") or private:AddError(num, input, "Malformed difficultyID (must be a number or empty)")
    end,
    function (num, input) -- mapID
       -- empty or number
-      return not input or input:match("[%d]+") or private:AddError(num, input, "Malformed mapID (must be a number or empty)")
+      return #input == 0 or input:match("[%d]+") or private:AddError(num, input, "Malformed mapID (must be a number or empty)")
    end,
    function (num, input) -- groupSize
       -- empty or number
-      return not input or input:match("[%d]+") or private:AddError(num, input, "Malformed groupSize (must be a number or empty)")
+      return #input == 0 or input:match("[%d]+") or private:AddError(num, input, "Malformed groupSize (must be a number or empty)")
    end,
    function (num, input) -- gear1
       -- optional
@@ -546,7 +554,7 @@ private.validators = {
    end,
    function (num, input) -- isAwardReason
       -- optional, but TRUE/FALSE if not empty
-      return not input or (input and (input:lower() == "true" or input:lower() == "false")) or private:AddError(num,input, "Malformed isAwardReason - ('true' or 'false' or nothing)")
+      return #input == 0 or (input and (input:lower() == "true" or input:lower() == "false")) or private:AddError(num,input, "Malformed isAwardReason - ('true' or 'false' or nothing)")
    end,
    function (num, input) -- rollType
       -- optional
@@ -566,7 +574,7 @@ private.validators = {
    end,
    function (num, input) -- owner
       -- either nothing or a string
-      return not input or #input > 1 or private:AddError(num, input,"Malformed owner - (nothing or name)")
+      return #input >= 0 or private:AddError(num, input,"Malformed owner - (nothing or name)")
    end,
 }
 private.numFields = #private.validators

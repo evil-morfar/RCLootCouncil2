@@ -228,7 +228,7 @@ function GetCVar(var)
    return "test"
 end
 
-time = os.clock
+time = os.time
 
 strmatch = string.match
 
