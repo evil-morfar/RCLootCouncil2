@@ -314,9 +314,9 @@ function private:GetItemInfo (name, id, itemString, line)
    end
 
    local iname, ilink, _, _, _, _, _, _,_, _, _, itemClassID, itemSubClassID = GetItemInfo(useForInfo)
-   -- if not iname then
-   --    return self:AddError(line, useForInfo, "GetItemInfo() returned nil. Check inputs.")
-   -- end
+   if not iname then
+      return self:AddError(line, useForInfo, "GetItemInfo() returned nil. Check inputs.")
+   end
    return iname, ilink, itemClassID, itemSubClassID
 end
 

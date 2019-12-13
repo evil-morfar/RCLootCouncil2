@@ -221,7 +221,7 @@ function LootHistory:GetAllRegisteredInstances()
 	lootDB = addon:GetHistoryDB()
 	for _, v in pairs(lootDB) do
 		for _,v in ipairs(v) do
-			if v.mapID and v.instance then
+			if v.mapID and v.instance and v.difficultyID then
 				raids[v.mapID .. "-" .. v.difficultyID] = v.instance
 			end
 		end
@@ -1346,14 +1346,14 @@ do
 						tinsert(export, tostring(d.class))
 						tinsert(export, CSVEscape(d.instance))
 						tinsert(export, CSVEscape(d.boss))
-						tinsert(export, d.difficultyID)
-						tinsert(export, d.mapID)
-						tinsert(export, d.groupSize)
-						tinsert(export, CSVEscape(d.itemReplaced1))
-						tinsert(export, CSVEscape(d.itemReplaced2))
+						tinsert(export, d.difficultyID or "")
+						tinsert(export, d.mapID or "")
+						tinsert(export, d.groupSize or "")
+						tinsert(export, CSVEscape(self:EscapeItemLink(d.itemReplaced1 or "")))
+						tinsert(export, CSVEscape(self:EscapeItemLink(d.itemReplaced2 or "")))
 						tinsert(export, tostring(d.responseID))
 						tinsert(export, tostring(d.isAwardReason or false))
-						tinsert(export, rollType)
+						tinsert(export, rollType or "")
 						tinsert(export, tostring(subType))
 						tinsert(export, tostring(getglobal(equipLoc) or ""))
 						tinsert(export, CSVEscape(d.note))
