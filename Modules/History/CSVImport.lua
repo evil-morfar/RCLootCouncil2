@@ -9,37 +9,6 @@ local private = {
    -- numFields: Number -- Number of fields per line. Determined by the number of validators
 }
 
-function His:DetermineImportType (import)
-   addon:Debug("His:DetermineImportType")
-   if type(import) ~= "string" then
-      addon:Print("The import was malformed (not a string)")
-      addon:Debug("<WARNING>", "Malformed string")
-      return
-   end
-
-   -- Check csv
-   if import:sub(1, 6) == "player" then
-      -- Check for Sheet Copy
-      if import:sub(7,7) == "\t" then
-         if import:find("\tboss\tgear1") then -- Standard tsv export - not supported
-            return "tsv"
-         end
-         import = import:gsub("\t", ",")
-         if import:find("boss,difficultyID,mapID,") then
-            return "tsv-csv" -- Copied from Google Sheet
-         end
-         return "Unknown"
-      elseif import:sub(7,7) == "," then
-         return "csv"
-      end
-      return "Unknown"
-   elseif import:sub(1, 2) == "^1" then
-      return "playerexport"
-   else
-      return
-   end
-end
-
 function His:ImportCSV (import)
    return self:ImportNew(import, ",")
 end

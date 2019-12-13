@@ -567,8 +567,58 @@ function LootHistory:ExportHistory()
 	end
 end
 
+function LootHistory:DetermineImportType (import)
+   addon:Debug("His:DetermineImportType")
+   -- Check csv
+   if import:sub(1, 6) == "player" then
+      -- Check for Sheet Copy
+      if import:sub(7,7) == "\t" then
+         if import:find("\tboss\tgear1") then -- Standard tsv export - not supported
+            return "tsv"
+         end
+         import = import:gsub("\t", ",")
+         if import:find("boss,difficultyID,mapID,") then
+            return "tsv-csv" -- Copied from Google Sheet
+         end
+         return "Unknown"
+      elseif import:sub(7,7) == "," then
+         return "csv"
+      end
+      return "Unknown"
+   elseif import:sub(1, 2) == "^1" then
+      return "playerexport"
+   else
+      return
+   end
+end
+
 function LootHistory:ImportHistory(import)
 	addon:Debug("Initiating import")
+	if type(import) ~= "string" then
+      addon:Print("The import was malformed (not a string)")
+      addon:Debug("<WARNING>", "Malformed string")
+      return
+   end
+	local type = self:DetermineImportType(import)
+
+	if not type or type == "Unknown" then
+		addon:Print("The import type is either very malformed or not support.")
+		addon:Print("Supported imports:")
+		-- TODO
+		return
+	elseif type == "csv" then
+		return self:ImportCSV(import)
+	elseif type == "tsv-csv" then
+		return self:ImportTSV_CSV(import)
+	elseif type == "playerexport" then 
+		return self:ImportPlayerExport(import)
+	else -- Should not happend
+		error("Unknown import type")
+	end
+end
+
+-- REVIEW: Needs updating
+function LootHistory:ImportPlayerExport (import)
 	lootDB = addon:GetHistoryDB()
 	-- Start with validating the import:
 	if type(import) ~= "string" then addon:Print("The imported text wasn't a string"); return addon:DebugLog("No string") end
