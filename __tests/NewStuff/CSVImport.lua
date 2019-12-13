@@ -1,15 +1,19 @@
 local _, addon = ...
 local His = addon:GetModule("RCLootHistory")
+local LibDialog = LibStub("LibDialog-1.0")
 local private = {
    errorList = {
       -- [i] = {line, cause}
    },
-   idCount = 0
+   idCount = 0,
+   -- numFields: Number -- Number of fields per line. Determined by the number of validators
 }
 
 function His:DetermineImportType (import)
+   addon:Debug("His:DetermineImportType", import)
    if type(import) ~= "string" then
       addon:Print("The import was malformed (not a string)")
+      addon:Debug("<WARNING>", "Malformed string")
       return
    end
 
@@ -43,41 +47,59 @@ function His:ImportTSV_CSV (import)
 end
 
 function His:ImportNew (import, delimiter)
+   addon:Debug("His:ImportNew", #import, delimiter)
    wipe(private.errorList)
    local data = {strsplit("\n", import)}
    -- Validate the input
    if not private:ValidateHeader(data[1], delimiter) then
-      private.errors.malformed_header()
-      print(data[1])
+      addon:Print("Malformed header")
+      addon:DebugLog("<ERROR>", "Malformed Header:", data[1])
       return
    end
    local line, lines = {}, {}
    for i = 2, #data do
       line = self:ExtractLine(data[i], delimiter)
-      if #line ~= 24 then  print("Error:", i, #line, data[i]) end
-      private:ValidateLine(i, line)
-      tinsert(lines, line)
+      -- Ensure error free lines
+      if #line ~= private.numFields then
+         private:AddError(i, #line, string.format("Row has the wrong number of fields - expected %d"), private.numFields)
+      else
+         private:ValidateLine(i, line)
+         tinsert(lines, line)
+      end
    end
 
-   if self:DoErrorCheck() then return end
+   if self:DoErrorCheck() then return addon:DebugLog("<WARNING>", "Import error'd out at first check") end
 
    -- Time to rebuild
    -- Clear errors and make it ready to be used again
    wipe(private.errorList)
    local rebuilt = self:RebuildData(lines)
-   if self:DoErrorCheck() then return end
+   if self:DoErrorCheck() then return addon:DebugLog("<WARNING>", "Import error'd out at second check") end
    data = self:ConvertRebuiltDataToLootDBFormat(rebuilt)
 
    local overwrites = self:CheckForOverwrites(data)
    if #overwrites > 0 then
-      print(#overwrites, "overwrites!")
+      addon:Debug("Import contained ", #overwrites, "overwrites")
+      local OnYesCallback = function()
+         addon:Debug("Accepted import overwrite")
+         self:ExecuteImport(data)
+      end
+      local OnNoCallback = function()
+         addon:Debug("Declined import overwrite")
+         addon:Print("Import aborted")
+      end
+      LibDialog:Spawn("RCLOOTCOUNCIL_IMPORT_OVERWRITE", {count = count, OnYesCallback = OnYesCallback, OnNoCallback = OnNoCallback})
    else
-      local count = self:InsertIntoHistory(data)
-      print(string.format("Successfully added %d entries to the history", count))
-      if self.frame and self.frame:IsVisible() then -- Update if open
-   		self:BuildData()
-   		self.frame.st:SortData()
-   	end
+      self:ExecuteImport(data)
+   end
+end
+
+function His:ExecuteImport (data)
+   local count = self:InsertIntoHistory(data)
+   addon:Print(string.format("Successfully added %d entries to the history", count))
+   if self.frame and self.frame:IsVisible() then -- Update if open
+      self:BuildData()
+      self.frame.st:SortData()
    end
 end
 
@@ -432,12 +454,6 @@ function private:RebuildInstance(data, t, line)
 
 end
 
-private.errors = {
-   malformed_header = function ()
-      addon:Print("Malformed header")
-   end,
-}
-
 function private:AddError (lineNum, value, desc)
    tinsert(private.errorList, {lineNum, value, desc})
    return nil
@@ -453,7 +469,6 @@ function private:ValidateLine (num, line)
       private.validators[i](num, data)
    end
 end
-
 
 private.validators = {
    function (num, input) -- name
@@ -553,5 +568,5 @@ private.validators = {
       -- either nothing or a string
       return not input or #input > 1 or private:AddError(num, input,"Malformed owner - (nothing or name)")
    end,
-
 }
+private.numFields = #private.validators

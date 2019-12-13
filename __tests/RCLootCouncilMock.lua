@@ -30,6 +30,11 @@ function RCLootCouncil:GetHistoryDB ()
    return self.lootDB.factionrealm
 end
 
+function RCLootCouncil:Debug (...)
+   if self.debug then print(...) end
+   tinsert(self.db.global.log, table.concat({...}, ""))
+end
+
 function RCLootCouncil:UnitName(unit)
 	unit = gsub(unit, " ", "")
 	local find = strfind(unit, "-", nil, true)
