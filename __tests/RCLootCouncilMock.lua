@@ -12,6 +12,9 @@ RCLootCouncil.db = {
       log = {},
    },
 }
+RCLootCouncil.lootDB = {
+   factionrealm = {}
+}
 RCLootCouncil.defaults = {
    global = {
       logMaxEntries = 2000,
@@ -21,6 +24,10 @@ RCLootCouncil.realmName = "Ravencrest"
 
 function RCLootCouncil:Getdb (args)
    return self.db
+end
+
+function RCLootCouncil:GetHistoryDB ()
+   return self.lootDB.factionrealm
 end
 
 function RCLootCouncil:UnitName(unit)
