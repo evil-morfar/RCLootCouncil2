@@ -99,29 +99,29 @@ TestTargetedDataRebuilding = {
 
 
 private.testData = {
-   [1]=[[player	date	time	id	item	itemID	itemString	response	votes	class	instance	boss	difficultyID	mapID	groupSize	gear1	gear2	responseID	isAwardReason	rollType	subType	equipLoc	note	owner
-   Cindermuff-Ravencrest	22/5/19	20:08:07	1558552087-9	[Gloves of Spiritual Grace]	165514	item:165514::::::::120:104::5:4:4799:43:1522:4786	Stat & iLvl upgrade	0	ROGUE	"Battle of Dazar'alor-Heroic"	"Champion of the Light"	15	2070	13	[Mech-Jockey Grips]		1	false	normal	Leather	Hands		Cindermuff-Ravencrest]], -- Google Sheet copy
-   [2]=[[player	date	time	id	item	itemID	itemString	response	votes	class	instance	boss	difficultyID	mapID	groupSize	gear1	gear2	responseID	isAwardReason	rollType	subType	equipLoc	note	owner
-   Cindermuff-Ravencrest	22/5/19	20:08:07	1558552087-10	[Gloves of Spiritual Grace]	165514	item:165514::::::::120:104::5:4:4799:43:1522:4786	Stat & iLvl upgrade	0	ROGUE	Battle of Dazar'alor-Heroic	Champion of the Light	15	2070	13	[Mech-Jockey Grips]		1	false	normal	Leather	Hands		Cindermuff-Ravencrest
-   Stryx-Ravencrest	23/9/18	19:57:50	1537729070-13	[Twitching Tentacle of Xalzaix]	160656	item:160656::::::::120:104::3:3:4798:1477:4786	Best in Slot	0	PALADIN	Uldir-Normal	Mythrax	14	1861	21	[Pearl Diver's Compass]	[Dread Aspirant's Medallion]	1	false	normal	Miscellaneous	Trinket		Unknown]], -- Google Sheet copy
-   [3]=[[player,date,time,id,item,itemID,itemString,response,votes,class,instance,boss,difficultyID,mapID,groupSize,gear1,gear2,responseID,isAwardReason,rollType,subType,equipLoc,note,owner,,,,Maeglas-Ravencrest,12/9/18,20:02:13,1536778933-48,[Sanguicell],162461,item:162461::::::::120:104,Personal Loot -Non tradeable,nil,HUNTER,Uldir-Normal,Vectis,14,1861,21,,,PL,false,normal,Elemental,,,Unknown]], -- CSV
-   [4]=[[player	date	time	id	item	itemID	itemString	response	votes	class	instance	boss	gear1	gear2	responseID	isAwardReason	rollType	subType	equipLoc	note	owner
-	Maeglas-Ravencrest	12/9/18	20:02:13	1536778933-48	[Sanguicell]	162461	item:162461::::::::120:104	Personal Loot - Non tradeable	nil	HUNTER	Uldir-Normal	Vectis	14	1861	21			PL	false	normal	Elemental			Unknown]], -- TSV export mock
-   [5]=[[player	date	time	id	item	itemID	itemString	response	votes	class	instance	boss	mapID gear1	gear2	responseID	isAwardReason	rollType	subType	equipLoc	note	owner
-   Maeglas-Ravencrest	12/9/18	20:02:13	1536778933-48	[Sanguicell]	162461	item:162461::::::::120:104	Personal Loot - Non tradeable	nil	HUNTER	Uldir-Normal	Vectis	14	1861	21			PL	false	normal	Elemental			Unknown]], -- Broken (missing difficultyID)
-   [6]=[[player date	time	id	item	itemID	itemString	response	votes	class	instance	boss	mapID gear1	gear2	responseID	isAwardReason	rollType	subType	equipLoc	note	owner
-   Maeglas-Ravencrest	12/9/18	20:02:13	1536778933-48	[Sanguicell]	162461	item:162461::::::::120:104	Personal Loot - Non tradeable	nil	HUNTER	Uldir-Normal	Vectis	14	1861	21			PL	false	normal	Elemental			Unknown]], -- Broken (space after "player")
+   [1]=[[player	date	time	id	item	itemID	itemString	response	votes	class	instance	boss	difficultyID	mapID	groupSize	gear1	gear2	responseID	isAwardReason	subType	equipLoc	note	owner
+   Cindermuff-Ravencrest	22/5/19	20:08:07	1558552087-9	[Gloves of Spiritual Grace]	165514	item:165514::::::::120:104::5:4:4799:43:1522:4786	Stat & iLvl upgrade	0	ROGUE	"Battle of Dazar'alor-Heroic"	"Champion of the Light"	15	2070	13	162544		1	false	Leather	Hands		Cindermuff-Ravencrest]], -- Google Sheet copy
+   [2]=[[player	date	time	id	item	itemID	itemString	response	votes	class	instance	boss	difficultyID	mapID	groupSize	gear1	gear2	responseID	isAwardReason	subType	equipLoc	note	owner
+   Cindermuff-Ravencrest	22/5/19	20:08:07	1558552087-10	162544	165514	item:165514::::::::120:104::5:4:4799:43:1522:4786	Stat & iLvl upgrade	0	ROGUE	Battle of Dazar'alor-Heroic	Champion of the Light	15	2070	13	162544		1	false	Leather	Hands		Cindermuff-Ravencrest
+   Stryx-Ravencrest	23/9/18	19:57:50	1537729070-13	[Twitching Tentacle of Xalzaix]	160656	item:160656::::::::120:104::3:3:4798:1477:4786	Best in Slot	0	PALADIN	Uldir-Normal	Mythrax	14	1861	21	162544	162544	1	false	Miscellaneous	Trinket		Unknown]], -- Google Sheet copy
+   [3]=[[player,date,time,id,item,itemID,itemString,response,votes,class,instance,boss,difficultyID,mapID,groupSize,gear1,gear2,responseID,isAwardReason,subType,equipLoc,note,owner,,,,Maeglas-Ravencrest,12/9/18,20:02:13,1536778933-48,[Sanguicell],162461,item:162461::::::::120:104,Personal Loot -Non tradeable,nil,HUNTER,Uldir-Normal,Vectis,14,1861,21,,,PL,false,Elemental,,,Unknown]], -- CSV
+   [4]=[[player	date	time	id	item	itemID	itemString	response	votes	class	instance	boss	gear1	gear2	responseID	isAwardReason	subType	equipLoc	note	owner
+	Maeglas-Ravencrest	12/9/18	20:02:13	1536778933-48	[Sanguicell]	162461	item:162461::::::::120:104	Personal Loot - Non tradeable	nil	HUNTER	Uldir-Normal	Vectis	14	1861	21			PL	false	Elemental			Unknown]], -- TSV export mock
+   [5]=[[player	date	time	id	item	itemID	itemString	response	votes	class	instance	boss	mapID gear1	gear2	responseID	isAwardReason	subType	equipLoc	note	owner
+   Maeglas-Ravencrest	12/9/18	20:02:13	1536778933-48	[Sanguicell]	162461	item:162461::::::::120:104	Personal Loot - Non tradeable	nil	HUNTER	Uldir-Normal	Vectis	14	1861	21			PL	false	Elemental			Unknown]], -- Broken (missing difficultyID)
+   [6]=[[player date	time	id	item	itemID	itemString	response	votes	class	instance	boss	mapID gear1	gear2	responseID	isAwardReason	subType	equipLoc	note	owner
+   Maeglas-Ravencrest	12/9/18	20:02:13	1536778933-48	[Sanguicell]	162461	item:162461::::::::120:104	Personal Loot - Non tradeable	nil	HUNTER	Uldir-Normal	Vectis	14	1861	21			PL	false	Elemental			Unknown]], -- Broken (space after "player")
 
 
-   [7] = [[player	date	time	id	item	itemID	itemString	response	votes	class	instance	boss	difficultyID	mapID	groupSize	gear1	gear2	responseID	isAwardReason	rollType	subType	equipLoc	note	owner
-Potdisc-Ravencrest	12/6/19	21:34:34	1560371674-43	[Giga-Charged Shoulderpads]	165497	item:165497::::::::120:104::5:4:4823:1522:4786:5418	Scrap	0	PRIEST		Mekkatorque		2070	19	[Giga-Charged Shoulderpads]		1	false	normal	Cloth	Shoulder		Frostone-Ravencrest]], -- Missing diffID and instance
-   [8] = [[player	date	time	id	item	itemID	itemString	response	votes	class	instance	boss	difficultyID	mapID	groupSize	gear1	gear2	responseID	isAwardReason	rollType	subType	equipLoc	note	owner
-   Potdisc-Ravencrest	12/6/19	21:34:34	1560371674-44	[Giga-Charged Shoulderpads]	165497	item:165497::::::::120:104::5:4:4823:1522:4786:5418	Scrap	0	PRIEST	Battle of Dazar'alor-Heroic	Mekkatorque			19	[Giga-Charged Shoulderpads]		1	false	normal	Cloth	Shoulder		Frostone-Ravencrest]], -- Missing diffID and mapID
+   [7] = [[player	date	time	id	item	itemID	itemString	response	votes	class	instance	boss	difficultyID	mapID	groupSize	gear1	gear2	responseID	isAwardReason	subType	equipLoc	note	owner
+Potdisc-Ravencrest	12/6/19	21:34:34	1560371674-43	[Giga-Charged Shoulderpads]	165497	item:165497::::::::120:104::5:4:4823:1522:4786:5418	Scrap	0	PRIEST		Mekkatorque		2070	19	|cffa335ee|Hitem:162544:5939:::::::120:257::23:3:4779:1517:4783:::|h[Jade Ophidian Band]|h|r		1	false	Cloth	Shoulder		Frostone-Ravencrest]], -- Missing diffID and instance
+   [8] = [[player	date	time	id	item	itemID	itemString	response	votes	class	instance	boss	difficultyID	mapID	groupSize	gear1	gear2	responseID	isAwardReason	subType	equipLoc	note	owner
+   Potdisc-Ravencrest	12/6/19	21:34:34	1560371674-44	[Giga-Charged Shoulderpads]	165497	item:165497::::::::120:104::5:4:4823:1522:4786:5418	Scrap	0	PRIEST	Battle of Dazar'alor-Heroic	Mekkatorque			19	|cffa335ee|Hitem:162544:5939:::::::120:257::23:3:4779:1517:4783:::|h[Jade Ophidian Band]|h|r		1	false	Cloth	Shoulder		Frostone-Ravencrest]], -- Missing diffID and mapID
 
-   [9] = [[player	date	time	id	item	itemID	itemString	response	votes	class	instance	boss	difficultyID	mapID	groupSize	gear1	gear2	responseID	isAwardReason	rollType	subType	equipLoc	note	owner
-   Potdisc-Ravencrest				[Deathspeaker Spire]	165597	item:165597::::::::120:258::5:3:4799:1522:4786	Personal Loot - Non tradeable	nil	PRIEST	Battle of Dazar'alor-Heroic	King Rastakhan	15	2070	14			PL	false	normal	Staves	Two-Hand		Potdisc-Ravencrest]], -- Missing all time vars
+   [9] = [[player	date	time	id	item	itemID	itemString	response	votes	class	instance	boss	difficultyID	mapID	groupSize	gear1	gear2	responseID	isAwardReason	subType	equipLoc	note	owner
+   Potdisc-Ravencrest				[Deathspeaker Spire]	165597	item:165597::::::::120:258::5:3:4799:1522:4786	Personal Loot - Non tradeable	nil	PRIEST	Battle of Dazar'alor-Heroic	King Rastakhan	15	2070	14			PL	false	Staves	Two-Hand		Potdisc-Ravencrest]], -- Missing all time vars
 
-   [10] = [[player	date	time	id	item	itemID	itemString	response	votes	class	instance	boss	difficultyID	mapID	groupSize	gear1	gear2	responseID	isAwardReason	rollType	subType	equipLoc	note	owner
-   Potdisc-Ravencrest	12/5/19	22:01:51		[Deathspeaker Spire]	165597	item:165597::::::::120:258::5:3:4799:1522:4786	Personal Loot - Non tradeable	nil	PRIEST	Battle of Dazar'alor-Heroic	King Rastakhan	15	2070	14			PL	false	normal	Staves	Two-Hand		Potdisc-Ravencrest]], -- Missing id
+   [10] = [[player	date	time	id	item	itemID	itemString	response	votes	class	instance	boss	difficultyID	mapID	groupSize	gear1	gear2	responseID	isAwardReason	subType	equipLoc	note	owner
+   Potdisc-Ravencrest	12/5/19	22:01:51		[Deathspeaker Spire]	165597	item:165597::::::::120:258::5:3:4799:1522:4786	Personal Loot - Non tradeable	nil	PRIEST	Battle of Dazar'alor-Heroic	King Rastakhan	15	2070	14			PL	false	Staves	Two-Hand		Potdisc-Ravencrest]], -- Missing id
 }
 os.exit(lu.LuaUnit.run("-o", "tap"))
