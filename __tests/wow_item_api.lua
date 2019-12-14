@@ -4,14 +4,33 @@
 local _G = getfenv(0)
 _G.Items = {}
 
+local item_mt = {
+   ContinueOnItemLoad = function(self,callback)
+      callback()
+   end,
+   GetItemLink = function(self)
+      return self.itemLink
+   end
+}
+Item = {
+   CreateFromItemLink = function (self,link)
+      return setmetatable({itemLink = link}, {__index = item_mt })
+   end,
+   CreateFromItemID = function(self, id)
+      return setmetatable({itemID = id}, {__index = item_mt })
+   end
+}
+
 function GetItemInfo (item)
-   local i = assert(_G.Items[item], "item "..item .." isn't registered for GetItemInfo")
+   if string.match(item,"^%d+$") then item = tonumber(item) end -- Support for itemID
+   local i = assert(_G.Items[item], "item "..tostring(item) .." isn't registered for GetItemInfo")
    return i.itemName, i.itemLink, i.itemRarity, i.itemLevel, i.itemMinLevel, i.itemType, i.itemSubType, i.itemStackCount, i.itemEquipLoc, i.itemIcon, i.itemSellPrice, i.itemClassID, i.itemSubClassID, i.bindType, i.expacID, i.itemSetID,
 i.isCraftingReagent
 end
 
 function GetItemInfoInstant (item)
-   local i = assert(_G.Items[item], "item "..item .." isn't registered for GetItemInfoInstant")
+   if string.match(item,"^%d+$") then item = tonumber(item) end -- Support for itemID
+   local i = assert(_G.Items[item], "item "..tostring(item) .." isn't registered for GetItemInfoInstant")
    return i.itemID, i.itemType, i.itemSubType, i.itemEquipLoc, i.icon, i.itemClassID, i.itemSubClassID
 end
 
