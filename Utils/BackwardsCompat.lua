@@ -170,6 +170,35 @@ Compat.list = {
             end,
          20)
       end
-   }
+   },
 
+   {
+      name = "Fix for wrong responseID for awardReasons",
+      version = "2.16.0",
+      fun = function (addon, version)
+         -- Build lookup table of the awardReasons text
+         local lookup = {}
+         for k,v in ipairs(addon.db.profile.awardReasons) do
+            lookup[v.text] = k
+         end
+         -- Search for bad awardReasons
+         local count = 0
+         for _,factionrealm in pairs(addon.lootDB.sv.factionrealm) do
+            for player,items  in pairs(factionrealm) do
+               for i,data in ipairs(items) do
+                  if lookup[data.response] then
+                     if type(data.responseID ~= "number") then
+                        data.responseID = lookup[data.response]
+                        count = count + 1
+                     end
+                  end
+               end
+            end
+         end
+         if count > 0 then
+            addon:DebugLog("Fixed", count, "broken award reasons")
+            addon.db.global[version].awardReasons = count
+         end
+      end
+   }
 }
