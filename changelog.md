@@ -20,6 +20,11 @@ The names now respects the "Append realm name" option.
 ### Loot History
 The history is now sortable by class. Just click the class icon header.
 
+#### CSV Import/Export
+Added support for importing custom history through CSV.  
+See the wiki for more info.
+Note: The CSV export has changed fields to comply with the new import system. This also means old CSV exports cannot be imported!
+
 ### Options
 
 #### Council
@@ -40,6 +45,7 @@ When enabled, this option will automatically check "Award Later" in the Session 
 
 ## Bugfixes
 * *Added a potential fix to the occasional false "Full bags" blame.*
+* *Added a history patch for broken "Award Reasons".*
 
 
 ### v2.15.1
