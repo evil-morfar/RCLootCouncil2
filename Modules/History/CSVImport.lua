@@ -218,18 +218,28 @@ end
 function private:RebuildResponseID(data,t, line)
    local responseID = data[18]
    if responseID:match("%d") then responseID = tonumber(responseID) end
-   -- Must be valid, i.e. check every single type of responses
-   for type in pairs(addon.responses) do
-      if addon.responses[type][responseID] then
-         -- also override response
-         t.response = addon.responses[type][responseID].text
-         t.color = addon.responses[type][responseID].color
-         t.responseID = responseID
-         return
-      end
+   local type = select(4, GetItemInfoInstant(t.lootWon)) -- Assume this has been set
+   if not type then return self:AddError(line, type, "Unknown type") end
+   local db = addon:Getdb()
+   -- Check for special buttons
+   if addon.BTN_SLOTS[type] then
+      type = addon.BTN_SLOTS[type]
    end
-   -- Invalid
-   self:AddError(line, responseID, "Not a valid response of your current settings.")
+   -- Check for custom responses
+   if not db.responses[type] then
+      type = "default"
+   end
+   -- and finally validate
+   if db.responses[type][responseID] then
+      -- also override response
+      t.response = db.responses[type][responseID].text
+      t.color = db.responses[type][responseID].color
+      t.responseID = responseID
+      return
+   else
+      -- Invalid
+      self:AddError(line, responseID, "Not a valid response of your current settings.")
+   end
 end
 
 function private:RebuildPlayerName (data, t, line)
