@@ -535,8 +535,8 @@ private.validators = {
       return #input == 0 or input == "nil" or input:match("%d+") or private:AddError(num, input,"Malformed votes (nothing or numbers)")
    end,
    function (num, input) -- class
-      -- must be valid
-      return input and tContains(CLASS_SORT_ORDER, input) or private:AddError(num, input,"Malformed class (must be valid, uppercase class)")
+      -- nothing or valid class
+      return #input == 0 or tContains(CLASS_SORT_ORDER, input) or private:AddError(num, input,"Malformed class (must be valid, uppercase class)")
    end,
    function (num, input) -- instance
       -- optional
