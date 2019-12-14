@@ -223,7 +223,7 @@ function private:RebuildResponseID(data,t, line)
    if t.isAwardReason then -- Special case
       if db.awardReasons[responseID] then
          t.response = db.awardReasons[responseID].text
-         t.color = db.awardReasons[responseID].color
+         t.color = CopyTable(db.awardReasons[responseID].color) -- needed to properly extract default values
          t.responseID = responseID
          return
       else
@@ -245,7 +245,7 @@ function private:RebuildResponseID(data,t, line)
    if db.responses[type][responseID] then
       -- also override response
       t.response = db.responses[type][responseID].text
-      t.color = db.responses[type][responseID].color
+      t.color = CopyTable(db.responses[type][responseID].color)
       t.responseID = responseID
       return
    else
@@ -256,7 +256,7 @@ end
 
 function private:RebuildPlayerName (data, t, line)
    t.winner = addon:UnitName(data[1] or "")
-   t.owner = data[23] and data[23] ~= "Unknown" and addon:UnitName(data[24] or "") or t.owner
+   t.owner = data[23] and data[23] ~= "Unknown" and addon:UnitName(data[23] or "") or t.owner
    if not t.winner or t.winner == "" then
       self:AddError(line, t.winner, "Could not restore playername for ".. data[1])
    end
