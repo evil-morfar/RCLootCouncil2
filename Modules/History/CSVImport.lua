@@ -232,16 +232,6 @@ function private:RebuildResponseID(data,t, line)
    self:AddError(line, responseID, "Not a valid response of your current settings.")
 end
 
-function private:RebuildReplacedGear(data, t,line)
-   local gear1, gear2 = data[16], data[17]
-   if gear1 and gear1 ~= "" then
-      t.itemReplaced1 = select(2, self:GetItemInfo(gear1,nil,nil, line))
-   end
-   if gear2 and gear2 ~= "" then
-      t.itemReplaced2 = select(2, self:GetItemInfo(gear2, nil,nil, line))
-   end
-end
-
 function private:RebuildPlayerName (data, t, line)
    t.winner = addon:UnitName(data[1] or "")
    t.owner = data[24] and data[24] ~= "Unknown" and addon:UnitName(data[24] or "") or t.owner
@@ -295,38 +285,65 @@ function private:RebuildTime (data, t, line)
    end
 end
 
-function private:GetItemInfo (name, id, itemString, line)
-   local useForInfo = ""
+function private:SetItemInfo (id, itemString, line)
+   local status, item
    -- Pick the first we get, in most informative order:
    if itemString then
-      useForInfo = itemString
+      item = Item:CreateFromItemLink(itemString)
    elseif id then
-      useForInfo = id
-   elseif name then
-      if string.find(name, "%[") then -- We can't use brackets
-         useForInfo = string.sub(name, 2, -2)
-      else
-         useForInfo = name
-      end
-   end
-   if not useForInfo or useForInfo == "" then
-      return self:AddError(line, string.format("%s,%s,%s", tostring(name), tostring(id), tostring(itemString)), "Could not extract item from this info.")
+      item = Item:CreateFromItemID(tonumber(id))
+   else
+      return self:AddError(line, string.format("%s,%s", tostring(id), tostring(itemString)), "Could not extract item from this info.")
    end
 
-   local iname, ilink, _, _, _, _, _, _,_, _, _, itemClassID, itemSubClassID = GetItemInfo(useForInfo)
-   if not iname then
-      return self:AddError(line, useForInfo, "GetItemInfo() returned nil. Check inputs.")
+   return item
+end
+
+function private:LoadItem (item, func)
+   return pcall(item.ContinueOnItemLoad, item, function()
+      func(item)
    end
-   return iname, ilink, itemClassID, itemSubClassID
+   )
+end
+
+function private:RebuildReplacedGear(data, t,line)
+   local gear1, gear2 = data[16], data[17]
+   local success
+   if gear1 and gear1 ~= "" then
+      local item = self:SetItemInfo(nil, gear1, line)
+      if item then
+         success = self:LoadItem(item, function ()
+            t.itemReplaced1 = select(2,GetItemInfo(gear1))
+         end)
+      end
+      if not (item and success) then return self:AddError(line, gear1, "Error rebuilding gear1") end
+   end
+   if gear2 and gear2 ~= "" then
+      local item = self:SetItemInfo(nil, gear2, line)
+      if item then
+         success = self:LoadItem(item, function ()
+            t.itemReplaced2 = select(2,GetItemInfo(gear2))
+         end)
+      end
+      if not (item and success) then return self:AddError(line, gear2, "Error rebuilding gear2") end
+   end
 end
 
 function private:RebuildLootWon(data ,t, line)
-   local itemName, itemID, itemString = data[5],data[6],data[7]
-   local iname, ilink, itemClassID, itemSubClassID = self:GetItemInfo(itemName, itemID, itemString, line)
-   if not iname then return self:AddError(line, string.format("%s,%s,%s", tostring(itemName), tostring(itemID), tostring(itemString)), "Error rebuilding lootWon") end
-   t.lootWon = ilink
-   t.iClass = itemClassID
-   t.iSubClass = itemSubClassID
+   local itemID, itemString = data[6],data[7]
+   local success
+
+   local item = self:SetItemInfo(itemID, itemString, line)
+   if item then
+      success = self:LoadItem(item, function()
+         t.lootWon = select(2,GetItemInfo(item:GetItemLink()))
+         local _, _, _, _, _, itemClassID, itemSubClassID = GetItemInfoInstant(t.lootWon)
+         t.iClass = itemClassID
+         t.iSubClass = itemSubClassID
+      end)
+   end
+
+   if not (item and success) then return self:AddError(line, string.format("%s,%s", tostring(itemID), tostring(itemString)), "Error rebuilding lootWon") end
 end
 
 local mapIDsToText = {
