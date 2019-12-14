@@ -162,8 +162,8 @@ function His:RebuildData (lines)
       private:RebuildInstance(lines[i], rebuilt[i], i)
       rebuilt[i].boss = lines[i][12] -- Don't care
       private:RebuildReplacedGear(lines[i], rebuilt[i], i)
-      private:RebuildResponseID(lines[i], rebuilt[i], i)
       rebuilt[i].isAwardReason = lines[i][19] and lines[i][19]:lower() == "true"
+      private:RebuildResponseID(lines[i], rebuilt[i], i)
       rebuilt[i].groupSize = lines[i][15] and tonumber(lines[i][15])
       rebuilt[i].note = lines[i][22] ~= "" and lines[i][22] or nil
    end
@@ -218,9 +218,21 @@ end
 function private:RebuildResponseID(data,t, line)
    local responseID = data[18]
    if responseID:match("%d") then responseID = tonumber(responseID) end
+   local db = addon:Getdb()
+
+   if t.isAwardReason then -- Special case
+      if db.awardReasons[responseID] then
+         t.response = db.awardReasons[responseID].text
+         t.color = db.awardReasons[responseID].color
+         t.responseID = responseID
+         return
+      else
+         return self:AddError(line, responseID, "Invalid responseID for AwardReason")
+      end
+   end
+
    local type = select(4, GetItemInfoInstant(t.lootWon)) -- Assume this has been set
    if not type then return self:AddError(line, type, "Unknown type") end
-   local db = addon:Getdb()
    -- Check for special buttons
    if addon.BTN_SLOTS[type] then
       type = addon.BTN_SLOTS[type]
