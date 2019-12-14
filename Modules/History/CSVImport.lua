@@ -165,7 +165,7 @@ function His:RebuildData (lines)
       private:RebuildResponseID(lines[i], rebuilt[i], i)
       rebuilt[i].isAwardReason = lines[i][19] and lines[i][19]:lower() == "true"
       rebuilt[i].groupSize = lines[i][15] and tonumber(lines[i][15])
-      rebuilt[i].note = lines[i][23] ~= "" and lines[i][23] or nil
+      rebuilt[i].note = lines[i][22] ~= "" and lines[i][22] or nil
    end
    return rebuilt
 end
@@ -234,7 +234,7 @@ end
 
 function private:RebuildPlayerName (data, t, line)
    t.winner = addon:UnitName(data[1] or "")
-   t.owner = data[24] and data[24] ~= "Unknown" and addon:UnitName(data[24] or "") or t.owner
+   t.owner = data[23] and data[23] ~= "Unknown" and addon:UnitName(data[24] or "") or t.owner
    if not t.winner or t.winner == "" then
       self:AddError(line, t.winner, "Could not restore playername for ".. data[1])
    end
@@ -464,7 +464,7 @@ function private:AddError (lineNum, value, desc)
 end
 
 function private:ValidateHeader (header, delimiter)
-   local target = {"player", "date", "time", "id", "item", "itemID", "itemString", "response", "votes", "class", "instance", "boss", "difficultyID", "mapID", "groupSize", "gear1", "gear2", "responseID", "isAwardReason", "rollType", "subType", "equipLoc", "note", "owner"}
+   local target = {"player", "date", "time", "id", "item", "itemID", "itemString", "response", "votes", "class", "instance", "boss", "difficultyID", "mapID", "groupSize", "gear1", "gear2", "responseID", "isAwardReason", "subType", "equipLoc", "note", "owner"}
    return header == table.concat(target,delimiter)
 end
 
@@ -551,10 +551,6 @@ private.validators = {
    function (num, input) -- isAwardReason
       -- optional, but TRUE/FALSE if not empty
       return #input == 0 or (input and (input:lower() == "true" or input:lower() == "false")) or private:AddError(num,input, "Malformed isAwardReason - ('true' or 'false' or nothing)")
-   end,
-   function (num, input) -- rollType
-      -- optional
-      return true
    end,
    function (num, input) -- subType
       -- optional

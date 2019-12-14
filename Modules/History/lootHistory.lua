@@ -1325,7 +1325,7 @@ do
 		wipe(export)
 		wipe(ret)
 		local subType, equipLoc, rollType, _
-		tinsert(ret, "player,date,time,id,item,itemID,itemString,response,votes,class,instance,boss,difficultyID,mapID,groupSize,gear1,gear2,responseID,isAwardReason,rollType,subType,equipLoc,note,owner\r\n")
+		tinsert(ret, "player,date,time,id,item,itemID,itemString,response,votes,class,instance,boss,difficultyID,mapID,groupSize,gear1,gear2,responseID,isAwardReason,subType,equipLoc,note,owner\r\n")
 		for player, v in pairs(lootDB) do
 			if selectedName and selectedName == player or not selectedName then
 				for i, d in pairs(v) do
@@ -1353,7 +1353,6 @@ do
 						tinsert(export, CSVEscape(self:EscapeItemLink(d.itemReplaced2 or "")))
 						tinsert(export, tostring(d.responseID))
 						tinsert(export, tostring(d.isAwardReason or false))
-						tinsert(export, rollType or "")
 						tinsert(export, tostring(subType))
 						tinsert(export, tostring(getglobal(equipLoc) or ""))
 						tinsert(export, CSVEscape(d.note))
