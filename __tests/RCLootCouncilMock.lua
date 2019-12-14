@@ -23,7 +23,7 @@ RCLootCouncil.defaults = {
 RCLootCouncil.realmName = "Ravencrest"
 
 function RCLootCouncil:Getdb (args)
-   return self.db
+   return self.db.profile
 end
 
 function RCLootCouncil:GetHistoryDB ()
@@ -32,6 +32,10 @@ end
 
 function RCLootCouncil:Debug (...)
    if self.debug then print(...) end
+   tinsert(self.db.global.log, table.concat({...}, ""))
+end
+
+function RCLootCouncil:DebugLog (...)
    tinsert(self.db.global.log, table.concat({...}, ""))
 end
 
@@ -76,6 +80,9 @@ function RCLootCouncil:VersionCompare(ver1, ver2)
 end
 
 loadfile("../../Core/Defaults.lua")("", RCLootCouncil)
+loadfile("../../Core/Constants.lua")("", RCLootCouncil)
+
+RCLootCouncil.db.profile.responses = RCLootCouncil.responses
 
 -- Load utils last
 local utils = assert(loadfile("../../Utils/Utils.lua"))
