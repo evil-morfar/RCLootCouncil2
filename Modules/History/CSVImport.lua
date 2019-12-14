@@ -25,7 +25,7 @@ function His:ImportNew (import, delimiter)
    addon:Debug("Data lines:", #data)
    -- Validate the input
    if not private:ValidateHeader(data[1], delimiter) then
-      addon:Print("Malformed header")
+      addon:Print(L["import_malformed_header"])
       addon:DebugLog("<ERROR>", "Malformed Header:", data[1])
       return
    end
@@ -61,7 +61,7 @@ function His:ImportNew (import, delimiter)
       end
       local OnNoCallback = function()
          addon:Debug("Declined import overwrite")
-         addon:Print("Import aborted")
+         addon:Print(L["Import aborted"])
       end
       LibDialog:Spawn("RCLOOTCOUNCIL_IMPORT_OVERWRITE", {count = #overwrites, OnYesCallback = OnYesCallback, OnNoCallback = OnNoCallback})
    else

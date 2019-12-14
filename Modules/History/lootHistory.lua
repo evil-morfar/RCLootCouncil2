@@ -595,7 +595,7 @@ end
 function LootHistory:ImportHistory(import)
 	addon:Debug("Initiating import")
 	if type(import) ~= "string" then
-      addon:Print("The import was malformed (not a string)")
+      addon:Print(L["import_malformed"])
       addon:Debug("<WARNING>", "Malformed string")
       return
    end
@@ -604,9 +604,8 @@ function LootHistory:ImportHistory(import)
 	local type = self:DetermineImportType(import)
 
 	if not type or type == "Unknown" then
-		addon:Print("The import type is either very malformed or not supported.")
-		addon:Print("Supported imports:")
-		-- TODO
+		addon:Print(L["import_not_supported"])
+		addon:Print(L["Accepted imports: 'Player Export' and 'CSV'"])
 		return
 	elseif type == "csv" then
 		return self:ImportCSV(import)
