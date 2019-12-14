@@ -300,14 +300,14 @@ function private:GetItemInfo (name, id, itemString, line)
    -- Pick the first we get, in most informative order:
    if itemString then
       useForInfo = itemString
+   elseif id then
+      useForInfo = id
    elseif name then
       if string.find(name, "%[") then -- We can't use brackets
          useForInfo = string.sub(name, 2, -2)
       else
          useForInfo = name
       end
-   elseif id then
-      useForInfo = id
    end
    if not useForInfo or useForInfo == "" then
       return self:AddError(line, string.format("%s,%s,%s", tostring(name), tostring(id), tostring(itemString)), "Could not extract item from this info.")
@@ -437,7 +437,7 @@ function private:RebuildInstance(data, t, line)
       t.mapID = mapID
       t.difficultyID = diffID
    else
-      self:AddError(line, string.format("%s|%s|%s", tostring(instance), tostring(diffID), tostring(mapID)), "Could not recreate instance info.")
+      -- self:AddError(line, string.format("%s|%s|%s", tostring(instance), tostring(diffID), tostring(mapID)), "Could not recreate instance info.")
    end
 end
 
@@ -488,8 +488,8 @@ private.validators = {
       return #input == 0 or input:match("item:[%d:]+") or private:AddError(num, input,"Malformed itemString")
    end,
    function (num, input) -- response
-      -- not present or string
-      return #input >= 0 or private:AddError(num, input,"Malformed response (nothing or string)")
+      -- whatever
+      return true
    end,
    function (num, input) -- votes
       -- not present, 'nil', or number
