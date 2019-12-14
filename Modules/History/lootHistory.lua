@@ -918,7 +918,13 @@ function LootHistory:GetFrame()
 		self:ImportHistory(pasted)
 		imp:Hide()
 	end)
+
+	local label = AG:Create("Label")
+	label:SetFullWidth(true)
+	label:SetText(L["Accepted imports: 'Player Export' and 'CSV'"])
+	imp:AddChild(label)
 	imp:AddChild(edit)
+
 	imp:Hide()
 	f.importFrame = imp
 	f.importFrame.edit = edit

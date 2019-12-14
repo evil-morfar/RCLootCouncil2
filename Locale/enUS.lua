@@ -13,6 +13,7 @@ if not L then return end
 L["A new session has begun, type '/rc open' to open the voting frame."] = true
 L["A format to copy/paste to another player."] = true
 L["A tab delimited output for Excel. Might work with other spreadsheets."] = true
+L["Accepted imports: 'Player Export' and 'CSV'"] = true
 L["Add Rolls"] = true
 L["add_rolls_desc"] = "Automatically add random 1 - 100 rolls to all sessions."
 L["Additional Buttons"] = true
