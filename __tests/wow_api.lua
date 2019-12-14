@@ -228,7 +228,7 @@ function GetCVar(var)
    return "test"
 end
 
-time = os.clock
+time = os.time
 
 strmatch = string.match
 
@@ -431,11 +431,19 @@ function Ambiguate(name, method)
    return name
 end
 
-function string:split(sep)
-   local sep, fields = sep or ":", {}
-   local pattern = string.format("([^%s]+)", sep)
-   self:gsub(pattern, function(c) fields[#fields + 1] = c end)
-   return fields
+function string.split(sep, s, pieces)
+   sep=sep or '%s'
+   local t={}
+   for field,s in string.gmatch(s, "([^"..sep.."]*)("..sep.."?)") do
+      table.insert(t,field)
+      if (pieces and #t >= pieces) or s=="" then
+         return unpack(t)
+      end
+   end
+end
+
+function split(inputstr, sep)
+
 end
 
 function UnitGUID (name)
@@ -472,6 +480,22 @@ end
 C_Timer = {After = function(delay, callback) callback() end}
 
 -- Classes
+CLASS_SORT_ORDER = {
+	"WARRIOR",
+	"DEATHKNIGHT",
+	"PALADIN",
+	"MONK",
+	"PRIEST",
+	"SHAMAN",
+	"DRUID",
+	"ROGUE",
+	"MAGE",
+	"WARLOCK",
+	"HUNTER",
+	"DEMONHUNTER",
+};
+MAX_CLASSES = #CLASS_SORT_ORDER;
+
 local CLASS_INFO = {
    [1] = {
       className = "Warrior",
