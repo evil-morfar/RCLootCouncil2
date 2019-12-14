@@ -177,7 +177,7 @@ function His:DoErrorCheck ()
       local num = #private.errorList > 10 and 10 or #private.errorList
       for i = 1, num do
          local err = private.errorList[i]
-         addon:Print(string.format("Import error in line: %d: %s - value: '%s'", err[1],err[3],err[2]))
+         addon:Print(string.format("Import error in line: %d: %s - value: '%s'", tostring(err[1]),tostring(err[3]),tostring(err[2])))
       end
       return true
    end
@@ -256,7 +256,7 @@ end
 
 function private:RebuildPlayerName (data, t, line)
    t.winner = addon:UnitName(data[1] or "")
-   t.owner = data[23] and data[23] ~= "Unknown" and addon:UnitName(data[23] or "") or t.owner
+   t.owner = data[23] or t.owner
    if not t.winner or t.winner == "" then
       self:AddError(line, t.winner, "Could not restore playername for ".. data[1])
    end
