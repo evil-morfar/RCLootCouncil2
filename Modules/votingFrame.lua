@@ -254,8 +254,9 @@ function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
 					end
 				end
 				lootTable[s].awarded = winner
-				if addon.isMasterLooter and session ~= #lootTable then -- ML should move to the next item on award
-					self:SwitchSession(session + 1)
+				local nextSession = self:FetchUnawardedSession()
+				if addon.isMasterLooter and nextSession then -- ML should move to the next item on award
+					self:SwitchSession(nextSession)
 				else
 					self:SwitchSession(session) -- Use switch session to update awardstring
 				end
@@ -382,6 +383,15 @@ function RCVotingFrame:GetCurrentSession()
 	return session
 end
 
+--- Find an unawarded session.
+-- @return number|nil Number of the first session with an un-awarded item, or nil if everything is awarded.
+function RCVotingFrame:FetchUnawardedSession ()
+	for k,v in ipairs(lootTable) do
+		if not v.awarded then return k end
+	end
+	return nil
+end
+
 function RCVotingFrame:SetupSession(session, t)
 	t.added = true -- This entry has been initiated
 	t.haveVoted = false -- Have we voted for ANY candidate in this session?
@@ -428,18 +438,14 @@ function RCVotingFrame:Setup(table)
 end
 
 function RCVotingFrame:HandleVote(session, name, vote, voter)
+	voter = addon:UnitName(voter)
 	-- Do the vote
 	lootTable[session].candidates[name].votes = lootTable[session].candidates[name].votes + vote
 	-- And update voters names
 	if vote == 1 then
-		tinsert(lootTable[session].candidates[name].voters, addon.Ambiguate(voter))
+		tinsert(lootTable[session].candidates[name].voters, voter)
 	else
-		for i, n in ipairs(lootTable[session].candidates[name].voters) do
-			if addon:UnitIsUnit(voter, n) then
-				tremove(lootTable[session].candidates[name].voters, i)
-				break
-			end
-		end
+		tDeleteItem(lootTable[session].candidates[name].voters, voter)
 	end
 	self.frame.st:Refresh()
 	self:UpdatePeopleToVote()
@@ -699,6 +705,10 @@ function RCVotingFrame:GetFrame()
 					MSA_ToggleDropDownMenu(1, nil, menuFrame, cellFrame, 0, 0);
 				elseif button == "LeftButton" and row then -- Update more info
 					self:UpdateMoreInfo(realrow, data)
+					if IsAltKeyDown() then
+						local name = data[realrow].name
+						LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_AWARD", self:GetAwardPopupData(session, name, lootTable[session].candidates[name]))
+					end
 				end
 				-- Return false to have the default OnClick handler take care of left clicks
 				return false
@@ -947,29 +957,46 @@ function RCVotingFrame:UpdateLootStatus()
 end
 
 function RCVotingFrame:UpdatePeopleToVote()
-	local voters = {}
+	local hasVoted = {}
+	local shouldVote = CopyTable(addon.council)
+
 	-- Find out who have voted
 	for name in pairs(lootTable[session].candidates) do
 		for _, voter in pairs(lootTable[session].candidates[name].voters) do
-			if not tContains(voters, voter) then
-				tinsert(voters, voter)
+			if not tContains(hasVoted, voter) then
+				tinsert(hasVoted, voter)
+				tDeleteItem(shouldVote, voter)
 			end
 		end
 	end
 	if #councilInGroup == 0 then
 		self.frame.rollResult.text:SetText(L["Couldn't find any councilmembers in the group"])
 		self.frame.rollResult.text:SetTextColor(1,0,0,1) -- Red
-	elseif #voters == #councilInGroup then
+	elseif #shouldVote == 0 then
 		self.frame.rollResult.text:SetText(L["Everyone have voted"])
 		self.frame.rollResult.text:SetTextColor(0,1,0,1) -- Green
-	elseif #voters < #councilInGroup then
-		self.frame.rollResult.text:SetText(format(L["x out of x have voted"], #voters, #councilInGroup))
+	elseif #shouldVote > 0 then
+		self.frame.rollResult.text:SetText(format(L["x out of x have voted"], #hasVoted, #councilInGroup))
 		self.frame.rollResult.text:SetTextColor(1,1,0,1) -- Yellow
 	else
 		addon:Debug("#voters > #councilInGroup ?")
 	end
+	-- Sort the lists
+	table.sort(hasVoted)
+	table.sort(shouldVote)
 	self.frame.rollResult:SetScript("OnEnter", function()
-		addon:CreateTooltip(L["The following council members have voted"], unpack(voters))
+		GameTooltip:SetOwner(UIParent, "ANCHOR_CURSOR")
+		GameTooltip:AddLine(L["The following council members have voted"])
+		for _,name in ipairs(hasVoted) do
+			GameTooltip:AddLine(addon:GetUnitClassColoredName(name))
+		end
+		if #shouldVote > 0 then
+			GameTooltip:AddLine(L["Missing votes from:"])
+			for _,name in ipairs(shouldVote) do
+				GameTooltip:AddLine(addon:GetUnitClassColoredName(name))
+			end
+		end
+		GameTooltip:Show()
 	end)
 	self.frame.rollResult:SetWidth(self.frame.rollResult.text:GetStringWidth())
 end
@@ -1145,7 +1172,14 @@ function RCVotingFrame.SetCellVotes(rowFrame, frame, data, cols, row, realrow, c
 	frame:SetScript("OnEnter", function()
 		if not addon.mldb.anonymousVoting or (db.showForML and addon.isMasterLooter) then
 			if not addon.mldb.hideVotes or (addon.mldb.hideVotes and lootTable[session].haveVoted) then
-				addon:CreateTooltip(L["Voters"], unpack(lootTable[session].candidates[name].voters))
+				addon:CreateTooltip(L["Voters"], unpack((function ()
+					local ret = {}
+					for i,name in ipairs(lootTable[session].candidates[name].voters) do
+						ret[i] = addon:GetUnitClassColoredName(name)
+					end
+					return ret
+				end)()
+			))
 			end
 		end
 	end)

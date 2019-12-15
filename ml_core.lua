@@ -1346,7 +1346,7 @@ function RCLootCouncilML:TrackAndLogLoot(winner, link, responseID, boss, reason,
 	addon:SendMessage("RCMLLootHistorySend", history_table, winner, responseID, boss, reason, session, candData)
 
 	if db.sendHistory then -- Send it, and let comms handle the logging
-		addon:SendCommand("group", "history", winner, history_table)
+		addon:SendCommand(db.sendHistoryToGuildChannel and "guild" or "group", "history", winner, history_table)
 	elseif db.enableHistory then -- Just log it
 		addon:SendCommand("player", "history", winner, history_table)
 	end
@@ -1360,7 +1360,7 @@ end
 --@param id: The unique id of history table
 function RCLootCouncilML:UnTrackAndLogLoot(id)
 	if db.sendHistory then -- Send it, and let comms handle the logging
-		addon:SendCommand("group", "delete_history", id)
+		addon:SendCommand(db.sendHistoryToGuildChannel and "guild" or "group", "delete_history", id)
 	elseif db.enableHistory then -- Just log it
 		addon:SendCommand("player", "delete_history", id)
 	end

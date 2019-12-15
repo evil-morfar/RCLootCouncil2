@@ -39,7 +39,7 @@ function LootHistory:OnInitialize()
 		--html = self.ExportHTML
 	}
 	self.scrollCols = {
-		{name = "",				width = ROW_HEIGHT, },																				-- Class icon, should be same row as player
+		{name = "",				width = ROW_HEIGHT, sortnext = 2},																-- Class icon, should be same row as player
 		{name = _G.NAME,		width = 100, sortnext = 3, defaultsort = 1,},												-- Name of the player
 		{name = L["Time"],	width = 125, comparesort = self.DateTimeSort, sort = 2,defaultsort = 2,},			-- Time of awarding
 		{name = "",				width = ROW_HEIGHT, },																				-- Item icon
@@ -156,7 +156,7 @@ function LootHistory:BuildData()
 						response = i.responseID,
 						isAwardReason = i.isAwardReason,
 						cols = { -- NOTE Don't forget the rightClickMenu dropdown, if the order of these changes
-							{DoCellUpdate = addon.SetCellClassIcon, args = {x.class}},
+							{DoCellUpdate = addon.SetCellClassIcon, args = {x.class}, value = x.class},
 							{value = addon.Ambiguate(name), color = addon:GetClassColor(x.class)},
 							{value = self:GetLocalizedDate(date).. "-".. i.time or "", args = {time = i.time, date = date},},
 							{DoCellUpdate = self.SetCellGear, args={i.lootWon}},
@@ -221,7 +221,7 @@ function LootHistory:GetAllRegisteredInstances()
 	lootDB = addon:GetHistoryDB()
 	for _, v in pairs(lootDB) do
 		for _,v in ipairs(v) do
-			if v.mapID and v.instance then
+			if v.mapID and v.instance and v.difficultyID then
 				raids[v.mapID .. "-" .. v.difficultyID] = v.instance
 			end
 		end
@@ -401,7 +401,11 @@ end
 function LootHistory:AddEpochDate(date, tim)
 	local d, m, y = strsplit("/", date, 3)
 	local h, min, s = strsplit(":", tim, 3)
-	epochDates[date..tim] = time({year = "20"..y, month = m, day = d, hour = h, min = min, sec = s})
+	epochDates[date..tim] = self:DateTimeToSeconds(d,m,y,h,min,s)
+end
+
+function LootHistory:DateTimeToSeconds (d,m,y,h,min,s)
+	return time({year = "20"..y or 10, month = m or 1, day = d or 1, hour = h or 0, min = min or 0, sec = s or 0})
 end
 
 function LootHistory.DateTimeSort(table, rowa, rowb, sortbycol)
@@ -563,8 +567,59 @@ function LootHistory:ExportHistory()
 	end
 end
 
+function LootHistory:DetermineImportType (import)
+   addon:Debug("His:DetermineImportType")
+   -- Check csv
+   if import:sub(1, 6) == "player" then
+      -- Check for Sheet Copy
+      if import:sub(7,7) == "\t" then
+         if import:find("\tboss\tgear1") then -- Standard tsv export - not supported
+            return "tsv"
+         end
+         import = import:gsub("\t", ",")
+         if import:find("boss,difficultyID,mapID,") then
+            return "tsv-csv" -- Copied from Google Sheet
+         end
+         return "Unknown"
+      elseif import:sub(7,7) == "," then
+         return "csv"
+      end
+      return "Unknown"
+   elseif import:sub(1, 2) == "^1" then
+      return "playerexport"
+   else
+      return
+   end
+end
+
 function LootHistory:ImportHistory(import)
 	addon:Debug("Initiating import")
+	if type(import) ~= "string" then
+      addon:Print(L["import_malformed"])
+      addon:Debug("<WARNING>", "Malformed string")
+      return
+   end
+	-- WoW seems to translate tabs (\t) into four spaces. Check for that.
+	import = import:gsub("    ", "\t")
+	local type = self:DetermineImportType(import)
+
+	if not type or type == "Unknown" then
+		addon:Print(L["import_not_supported"])
+		addon:Print(L["Accepted imports: 'Player Export' and 'CSV'"])
+		return
+	elseif type == "csv" then
+		return self:ImportCSV(import)
+	elseif type == "tsv-csv" then
+		return self:ImportTSV_CSV(import)
+	elseif type == "playerexport" then
+		return self:ImportPlayerExport(import)
+	else -- Should not happend
+		error("Unknown import type")
+	end
+end
+
+-- REVIEW: Needs updating
+function LootHistory:ImportPlayerExport (import)
 	lootDB = addon:GetHistoryDB()
 	-- Start with validating the import:
 	if type(import) ~= "string" then addon:Print("The imported text wasn't a string"); return addon:DebugLog("No string") end
@@ -597,7 +652,7 @@ function LootHistory:ImportHistory(import)
 	addon.lootDB.factionrealm = lootDB -- save it
 	addon:Print(format(L["Successfully imported 'number' entries."], number))
 	addon:Debug("Import successful")
-	if self.frame and self.frame:IsVisible() then self:BuildData() end -- Only rebuild data if we're showing
+	if self.frame and self.frame:IsVisible() then self:BuildData(); self:Show() end -- Only rebuild data if we're showing
 end
 
 function LootHistory:GetWowheadLinkFromItemLink(link)
@@ -862,7 +917,13 @@ function LootHistory:GetFrame()
 		self:ImportHistory(pasted)
 		imp:Hide()
 	end)
+
+	local label = AG:Create("Label")
+	label:SetFullWidth(true)
+	label:SetText(L["Accepted imports: 'Player Export' and 'CSV'"])
+	imp:AddChild(label)
 	imp:AddChild(edit)
+
 	imp:Hide()
 	f.importFrame = imp
 	f.importFrame.edit = edit
@@ -1269,7 +1330,7 @@ do
 		wipe(export)
 		wipe(ret)
 		local subType, equipLoc, rollType, _
-		tinsert(ret, "player, date, time, item, itemID, itemString, response, votes, class, instance, boss, gear1, gear2, responseID, isAwardReason, rollType, subType, equipLoc, note, owner\r\n")
+		tinsert(ret, "player,date,time,id,item,itemID,itemString,response,votes,class,instance,boss,difficultyID,mapID,groupSize,gear1,gear2,responseID,isAwardReason,subType,equipLoc,note,owner\r\n")
 		for player, v in pairs(lootDB) do
 			if selectedName and selectedName == player or not selectedName then
 				for i, d in pairs(v) do
@@ -1281,6 +1342,7 @@ do
 						tinsert(export, tostring(player))
 						tinsert(export, tostring(self:GetLocalizedDate(d.date)))
 						tinsert(export, tostring(d.time))
+						tinsert(export, tostring(d.id))
 						tinsert(export, CSVEscape(d.lootWon))
 						tinsert(export, addon:GetItemIDFromLink(d.lootWon))
 						tinsert(export, addon:GetItemStringFromLink(d.lootWon))
@@ -1289,15 +1351,17 @@ do
 						tinsert(export, tostring(d.class))
 						tinsert(export, CSVEscape(d.instance))
 						tinsert(export, CSVEscape(d.boss))
-						tinsert(export, CSVEscape(d.itemReplaced1))
-						tinsert(export, CSVEscape(d.itemReplaced2))
+						tinsert(export, d.difficultyID or "")
+						tinsert(export, d.mapID or "")
+						tinsert(export, d.groupSize or "")
+						tinsert(export, CSVEscape(self:EscapeItemLink(d.itemReplaced1 or "")))
+						tinsert(export, CSVEscape(self:EscapeItemLink(d.itemReplaced2 or "")))
 						tinsert(export, tostring(d.responseID))
 						tinsert(export, tostring(d.isAwardReason or false))
-						tinsert(export, rollType)
 						tinsert(export, tostring(subType))
 						tinsert(export, tostring(getglobal(equipLoc) or ""))
 						tinsert(export, CSVEscape(d.note))
-						tinsert(export, tostring(d.owner or "Unkown"))
+						tinsert(export, tostring(d.owner or "Unknown"))
 						tinsert(ret, table.concat(export, ","))
 						tinsert(ret, "\r\n")
 						wipe(export)

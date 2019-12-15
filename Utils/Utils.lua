@@ -15,6 +15,7 @@ local string, gsub, strmatch, tonumber, format, date, time, strsplit = string, g
 -- @param unitguid The UnitGUID
 -- @return creatureID (string) or nil if nonexistant
 function Utils:ExtractCreatureID (unitguid)
+   if not unitguid then return nil end
    local id = unitguid:match(".+(%b--)")
    return id and (id:gsub("-", "")) or nil
 end

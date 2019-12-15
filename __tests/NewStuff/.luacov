@@ -1,0 +1,14 @@
+exclude = {
+   "../../Libs/*",
+   "Locale/*",
+   "luaunit",
+   "Utils",
+   "RCLootCouncilMock",
+   "csv_test_data",
+   "playerexport_test_data",
+   "wow_api",
+   "wow_item_api"
+}
+
+runreport = true
+deletestats = true

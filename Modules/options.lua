@@ -298,7 +298,25 @@ function addon:OptionsTable()
 										name = L["Show Spec Icon"],
 										desc = L["show_spec_icon_desc"],
 										type = "toggle",
+									},
+									chatFrameName = {
+										order = 3,
+										name = _G.CHAT,
+										desc = L["opt_chatFrameName_desc"],
+										type = "select",
+										values = function ()
+											local ret = {}
+											for _, v in ipairs(getglobal("CHAT_FRAMES")) do
+												ret[v] = getglobal(v).name
+											end
+											return ret
+										end,
+										set = function (info, val)
+											DBSet(info, val)
+											addon:DoChatHook()
+										end
 									}
+
 								}
 							},
 							lootHistoryOptions = {
@@ -323,6 +341,13 @@ function addon:OptionsTable()
 										name = L["Send History"],
 										desc = L["send_history_desc"],
 										type = "toggle",
+									},
+									sendHistoryToGuildChannel = {
+										order = 3.1,
+										name = L["Send to Guild"],
+										desc = L["send_to_guild_desc"],
+										type = "toggle",
+										disabled = function() return not self.db.profile.sendHistory end,
 									},
 									header = {
 										order = 4,
@@ -840,7 +865,13 @@ function addon:OptionsTable()
 										name = L["opt_rejectTrade_Name"],
 										desc = L["opt_rejectTrade_Desc"],
 										type = "toggle",
-									}
+									},
+									awardLater = {
+										order = 11,
+										name = L["Award later"],
+										desc = L["opt_award_later_desc"],
+										type = "toggle"
+									},
 								},
 							},
 							voteOptions = {
@@ -1395,12 +1426,16 @@ function addon:OptionsTable()
 										name = "",
 										values = function()
 											local t = {}
-											for k,v in ipairs(self.db.profile.council) do t[k] = self.Ambiguate(v) end
+											for k,v in ipairs(self.db.profile.council) do t[v] = self.Ambiguate(v) end
+											table.sort(t)
 											return t;
 										end,
 										width = "full",
 										get = function() return true end,
-										set = function(m,key) tremove(self.db.profile.council,key); addon:CouncilChanged() end,
+										set = function(m,key)
+											tDeleteItem(self.db.profile.council, key)
+										 	addon:CouncilChanged()
+										end,
 									},
 									removeAll = {
 										order = 3,

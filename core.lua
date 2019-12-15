@@ -93,7 +93,7 @@ function RCLootCouncil:OnInitialize()
   	self.version = GetAddOnMetadata("RCLootCouncil", "Version")
 	self.nnp = false
 	self.debug = false
-	self.tVersion = nil -- String or nil. Indicates test version, which alters stuff like version check. Is appended to 'version', i.e. "version-tVersion" (max 10 letters for stupid security)
+	self.tVersion = "Beta.1" -- String or nil. Indicates test version, which alters stuff like version check. Is appended to 'version', i.e. "version-tVersion" (max 10 letters for stupid security)
 
 	self.playerClass = select(2, UnitClass("player"))
 	self.guildRank = L["Unguilded"]
@@ -185,6 +185,8 @@ function RCLootCouncil:OnInitialize()
 		tinsert(self.defaults.profile.awardReasons, {color = {1, 1, 1, 1}, disenchant = false, log = true, sort = 400+i, text = "Reason "..i,})
 	end
 
+	self:DoChatHook()
+
 	-- register chat and comms
 	self:RegisterChatCommand("rc", "ChatCommand")
   	self:RegisterChatCommand("rclc", "ChatCommand")
@@ -235,7 +237,7 @@ function RCLootCouncil:OnEnable()
 
 	if IsInGuild() then
 		self.guildRank = select(2, GetGuildInfo("player"))
-		self:ScheduleTimer("SendCommand", 2, "guild", "verTest", self.version, self.tVersion) -- send out a version check after a delay
+		self:ScheduleTimer("SendGuildVerTest", 2) -- send out a version check after a delay
 	end
 
 	-- For some reasons all frames are blank until ActivateSkin() is called, even though the values used
@@ -285,6 +287,15 @@ end
 
 function RCLootCouncil:CouncilChanged()
 	self:SendMessage("RCCouncilChanged")
+end
+
+function RCLootCouncil:DoChatHook ()
+	-- Unhook if already hooked:
+	if self:IsHooked(self, "Print") then self:Unhook(self, "Print") end
+	-- Pass our channel to the original function and magic appears.
+	self:RawHook(self, "Print", function (_, ...)
+		self.hooks[self].Print(self, getglobal(db.chatFrameName), ...)
+	end)
 end
 
 function RCLootCouncil:ChatCommand(msg)
@@ -1366,6 +1377,10 @@ function RCLootCouncil:PrintOutdatedModuleTestVersion (name, tVersion)
 	self.moduleVerCheckDisplayed[name] = true
 end
 
+function RCLootCouncil:SendGuildVerTest ()
+	self:SendCommand("guild", "verTest", self.version, self.tVersion)
+end
+
 --- Runs version checks on all modules data received in a 'verTestReply'
 function RCLootCouncil:DoModulesVersionCheck (moduleData)
 	-- Check modules. Parse the strings.
@@ -1806,12 +1821,12 @@ function RCLootCouncil:OnEvent(event, ...)
 		local i = 0
 		for k, info in pairs(self.lootSlotInfo) do
 			if not info.isLooted and info.guid and info.link then
+				if info.autoloot then -- We've looted the item without getting LOOT_SLOT_CLEARED, properly due to FastLoot addons
+					return self:OnEvent("LOOT_SLOT_CLEARED", k), self:OnEvent("LOOT_CLOSED")
+				end
 				-- Check if we have room in bags
 				if self.Utils:GetNumFreeBagSlots() == 0 then
 					return self:SendCommand("group", "fullbags", info.link, info.guid)
-				end
-				if info.autoloot then -- We've looted the item without getting LOOT_SLOT_CLEARED, properly due to FastLoot addons
-					return self:OnEvent("LOOT_SLOT_CLEARED", k), self:OnEvent("LOOT_CLOSED")
 				end
 				self:SendCommand("group", "fakeLoot", info.link, info.guid)
 
