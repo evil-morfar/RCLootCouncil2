@@ -1,15 +1,19 @@
 local lu = require("luaunit")
 
+require("__tests/wow_api")
+require("__tests/__load_libs")
 
--- TODO Move this initialization to a seperate file:
-dofile("../wow_api.lua")
-dofile("../__load_libs.lua")
-dofile("../RCLootCouncilMock.lua")
-loadfile("../../Core/Constants.lua")("", RCLootCouncil)
-loadfile("../../Utils/Utils.lua")("", RCLootCouncil)
+local isLocalRun = false
+
+if not RCLootCouncil then -- Local run
+   RCLootCouncil = {}
+   isLocalRun = true
+   loadfile("__tests/RCLootCouncilMock.lua")("RCLootCouncil", RCLootCouncil)
+end
+
 local Utils = RCLootCouncil.Utils
 
-TestBasics = {
+TestVersionBasics = {
    TestEqualVersions = function (args)
       local a = Utils:CheckOutdatedVersion("2.15.1", "2.15.1")
       lu.assertEquals(a, RCLootCouncil.VER_CHECK_CODES[1])
@@ -70,4 +74,6 @@ TestBasics = {
    end,
 }
 
-os.exit(lu.LuaUnit.run("-o", "tap"))
+if isLocalRun then
+   os.exit(lu.LuaUnit.run("-o", "tap"))
+end

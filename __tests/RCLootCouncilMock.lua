@@ -1,6 +1,6 @@
-dofile "../../Locale/enUS.lua"
-
-RCLootCouncil = LibStub("AceAddon-3.0"):NewAddon("RCLootCouncil", "AceConsole-3.0")
+dofile "Locale/enUS.lua"
+local addonname, addontable = ...
+RCLootCouncil = LibStub("AceAddon-3.0"):NewAddon(addontable, addonname, "AceConsole-3.0")
 RCLootCouncil.debug = false
 local AceSer = LibStub("AceSerializer-3.0")
 RCLootCouncil.Deserialize = AceSer.Deserialize
@@ -79,11 +79,11 @@ function RCLootCouncil:VersionCompare(ver1, ver2)
 	if a1 ~= a2 then return  tonumber(a1) < tonumber(a2) elseif b1 ~= b2 then return tonumber(b1) < tonumber(b2) else return tonumber(c1) < tonumber(c2) end
 end
 
-loadfile("../../Core/Defaults.lua")("", RCLootCouncil)
-loadfile("../../Core/Constants.lua")("", RCLootCouncil)
+loadfile("Core/Defaults.lua")("", RCLootCouncil)
+loadfile("Core/Constants.lua")("", RCLootCouncil)
 
 RCLootCouncil.db.profile.responses = RCLootCouncil.responses
 
 -- Load utils last
-local utils = assert(loadfile("../../Utils/Utils.lua"))
+local utils = assert(loadfile("Utils/Utils.lua"))
 utils("",RCLootCouncil)

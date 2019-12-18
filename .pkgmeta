@@ -8,5 +8,6 @@ ignore:
     - README.md
     - LICENSE.md
     - __tests
+    - .luacov
 
 enable-nolib-creation: no
