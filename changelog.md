@@ -1,4 +1,4 @@
-# v2.16.0-Beta.1
+# v2.16.0
 
 ## Additions
 

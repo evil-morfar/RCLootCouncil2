@@ -1,14 +1,22 @@
-require "luacov"
-local lu = require("luaunit")
-dofile("../wow_api.lua")
-dofile("../wow_item_api.lua")
-dofile("../__load_libs.lua")
-dofile("../RCLootCouncilMock.lua")
-loadfile("../../Modules/History/lootHistory.lua")("", RCLootCouncil)
+local lu = require "luaunit"
+require("__tests/wow_api")
+require("__tests/wow_item_api")
+require("__tests/__load_libs")
 
-loadfile("../../Modules/History/CSVImport.lua")("", RCLootCouncil)
-local testCSVData = loadfile("csv_test_data.lua")()
-local testPEData = loadfile("playerexport_test_data.lua")()
+local isLocalRun = false
+
+if not RCLootCouncil then -- Local run
+   RCLootCouncil = {}
+   isLocalRun = true
+   loadfile("__tests/RCLootCouncilMock.lua")("RCLootCouncil", RCLootCouncil)
+end
+
+loadfile("Modules/History/lootHistory.lua")("", RCLootCouncil)
+loadfile("Modules/History/CSVImport.lua")("", RCLootCouncil)
+
+local testCSVData = loadfile("__tests/FullTests/History/csv_test_data.lua")()
+local testPEData = loadfile("__tests/FullTests/History/playerexport_test_data.lua")()
+
 local His = RCLootCouncil:GetModule("RCLootHistory")
 RCLootCouncil.debug = true
 
@@ -25,7 +33,7 @@ local private = {}
 -- end
 local testLine = [=[Rageasaurus-Ravencrest,7/11/18,19:14:42,"[Khor, Hammer of the Corrupted]",160679,item:160679::::::::120:104::5:3:4799:1492:4786,Best in Slot,0,WARRIOR,Uldir-Heroic,MOTHER,"[Khor, Hammer of the Corrupted]",[Dismembered Submersible Claw],1,false,normal,Two-Handed Maces,Two-Hand,,Unkown]=]
 
-TestBasics = {
+TestImportBasics = {
    Setup = function (args)
       -- Clear previous db.
       wipe(RCLootCouncil:GetHistoryDB())
@@ -91,7 +99,6 @@ TestTargetedDataRebuilding = {
 
       His:ImportTSV_CSV(private.testData[10])
       entry = RCLootCouncil:GetHistoryDB()["Potdisc-Ravencrest"][2]
-      printtable(entry)
       lu.assertEquals(entry.date, "12/05/19")
       lu.assertEquals(entry.time, "00:00:00")
    end,
@@ -124,4 +131,6 @@ Potdisc-Ravencrest	12/6/19	21:34:34	1560371674-43	[Giga-Charged Shoulderpads]	16
    [10] = [[player	date	time	id	item	itemID	itemString	response	votes	class	instance	boss	difficultyID	mapID	groupSize	gear1	gear2	responseID	isAwardReason	subType	equipLoc	note	owner
    Potdisc-Ravencrest	12/5/19	22:01:51		[Deathspeaker Spire]	165597	item:165597::::::::120:258::5:3:4799:1522:4786	Personal Loot - Non tradeable	nil	PRIEST	Battle of Dazar'alor-Heroic	King Rastakhan	15	2070	14			PL	false	Staves	Two-Hand		Potdisc-Ravencrest]], -- Missing id
 }
-os.exit(lu.LuaUnit.run("-o", "tap"))
+if isLocalRun then
+   os.exit(lu.LuaUnit.run("-o", "tap"))
+end

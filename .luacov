@@ -1,5 +1,5 @@
 exclude = {
-   "../../Libs/*",
+   "Libs/*",
    "Locale/*",
    "luaunit",
    "Utils",
@@ -12,3 +12,4 @@ exclude = {
 
 runreport = true
 deletestats = true
+reportfile = "__tests/luacov.report.out"
