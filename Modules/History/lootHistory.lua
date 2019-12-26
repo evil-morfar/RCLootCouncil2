@@ -16,11 +16,13 @@ data[date][playerName] = {
 	}
 }
 ]]
-local selectedDate, selectedName, filterMenu, moreInfo, moreInfoData
+local selectedDate, filterMenu, moreInfo, moreInfoData
 local rightClickMenu;
 local ROW_HEIGHT = 20;
 local NUM_ROWS = 15;
 local epochDates = {} -- [DateTime] = epoch
+local searchList = {}
+local searchType = "name";
 
 --globals
 local tinsert, tostring, getglobal, pairs, ipairs, tremove, strsplit = tinsert, tostring, getglobal, pairs, ipairs, tremove, strsplit
@@ -46,6 +48,11 @@ function LootHistory:OnInitialize()
 		{name = L["Item"],	width = 250, comparesort = self.ItemSort, defaultsort = 1, sortnext = 2},			-- Item string
 		{name = L["Reason"],	width = 220, comparesort = self.ResponseSort,  defaultsort = 1, sortnext = 2},	-- Response aka the text supplied to lootDB...response
 		{name = "",				width = ROW_HEIGHT},																					-- Delete button
+	}
+	self.searchTypes = {
+		name = 	{func = self.SearchPlaceHolder, name = "Name", tip = L["Search by player name"]},
+		class = {func = self.SearchPlaceHolder,	name = "Class", tip = L["Search by player class."]},
+		item = 	{func = self.SearchPlaceHolder,	name = "Item", tip = L["Search by item name."]},
 	}
 	filterMenu = _G.MSA_DropDownMenu_Create("RCLootCouncil_LootHistory_FilterMenu", UIParent)
 	rightClickMenu = _G.MSA_DropDownMenu_Create("RCLootCouncil_LootHistory_RightclickMenu", UIParent)
@@ -103,6 +110,75 @@ function LootHistory:GetLocalizedDate(date) -- date is "DD/MM/YY"
 	-- FormatShortDate is defined in SharedXML/Util.lua
 	-- "(D)D/(M)M/YY" for EU, "(M)M/DD/YY" otherwise
 	return FormatShortDate(d, m, y)
+end
+
+function LootHistory:ParseItemLink(item_link)
+	local _,_, find_item_link, item_color, item_id, item_name = string.find(item_link , "(|c(%w+).*item:(%d+):.*%[(.*)%]|h|r)")
+	if find_item_link then
+		return find_item_link, item_id, item_name, item_color
+	else
+		return nil, nil, nil, nil
+	end
+end
+
+function LootHistory:ParseStringList(string_list)
+	-- parse a list of comma seperated values into a list 
+	local list = {}
+	for value in string.gmatch(string_list, "[^,]+") do
+		trim_value = (value:gsub("^%s*(.-)%s*$", "%1"))
+		table.insert(list, trim_value)
+	end
+	return list
+end
+
+function LootHistory:ParsePlayerName(full_name)
+	-- parse a full name to just the player's name (Villageburn-Skeram => Villageburn)
+	if not full_name then
+		return full_name
+	end
+
+	partial_name = string.match(full_name, '(.*)-.*')
+	if partial_name then
+		return partial_name
+	else 
+		return full_name
+	end
+end
+
+function LootHistory:StringStartsWith(full_string, partical_string)
+	if not partical_string then
+		return false
+	end 
+    return string.sub(string.lower(full_string),1,string.len(partical_string))==string.lower(partical_string)
+end
+
+function LootHistory:StringContains(full_string, partical_string)
+	if not partical_string then
+		return false
+	end 
+
+
+ 	local _,_,res = string.find(string.lower(full_string) , ".*(" .. string.lower(partical_string) .. ").*")
+ 	
+ 	return res ~= nil
+end 
+
+function LootHistory:ValueInListStartsWith(list, value) 
+	for entry_key, entry_value in ipairs(list) do
+		if LootHistory:StringStartsWith(value, entry_value) then
+			return true
+		end
+	end
+	return false
+end
+
+function LootHistory:ValueInListContains(list, value) 
+	for entry_key, entry_value in ipairs(list) do
+		if LootHistory:StringContains(value, entry_value) then
+			return true
+		end
+	end
+	return false
 end
 
 function LootHistory:BuildData()
@@ -296,17 +372,32 @@ function LootHistory:DeleteEntriesOlderThanEpoch(epoch)
 end
 
 function LootHistory.FilterFunc(table, row)
-	local nameAndDate = true -- default to show everything
-	if selectedName and selectedDate then
-		nameAndDate = row.name == selectedName and row.date == selectedDate
-	elseif selectedName then
-		nameAndDate = row.name == selectedName
-	elseif selectedDate then
-		nameAndDate = row.date == selectedDate
+
+	local dateMatch = (selectedDate and selectedDate == row.date) or not selectedDate
+
+	local searchAndDate = true -- default to show everything
+
+	if searchType == "class" then
+
+		local classMatch = LootHistory:ValueInListStartsWith(searchList, row.class) or next(searchList) == nil
+
+		searchAndDate = dateMatch and classMatch
+
+	elseif searchType == "item" then
+
+		local _, _, itemName, _ = LootHistory:ParseItemLink(lootDB[row.name][row.num].lootWon)
+		local itemMatch = LootHistory:ValueInListContains(searchList, itemName) or next(searchList) == nil
+
+		searchAndDate = dateMatch and itemMatch
+
+	elseif searchType == "name" then
+
+		local nameMatch = LootHistory:ValueInListStartsWith(searchList, row.name) or next(searchList) == nil
+		searchAndDate = dateMatch and nameMatch
 	end
 
 	local responseFilter = true -- default to show
-	if not db.modules["RCLootHistory"].filters then return nameAndDate end -- db hasn't been initialized
+	if not db.modules["RCLootHistory"].filters then return searchAndDate end -- db hasn't been initialized
 	local response = row.response
 	if response == "AUTOPASS" or response == "PASS" or type(response) == "number" and not row.isAwardReason then
 		responseFilter = db.modules["RCLootHistory"].filters[response]
@@ -314,7 +405,7 @@ function LootHistory.FilterFunc(table, row)
 		responseFilter = db.modules["RCLootHistory"].filters["STATUS"]
 	end
 
-	return nameAndDate and responseFilter -- Either one can filter the entry
+	return searchAndDate and responseFilter -- Either one can filter the entry
 end
 
 -- for date scrolling table
@@ -734,23 +825,9 @@ function LootHistory:GetFrame()
 		end
 	})
 
-	--Name selection
-	f.name = LibStub("ScrollingTable"):CreateST({{name = "", width = ROW_HEIGHT},{name = _G.NAME, width = 100, sort = 1}}, 5, ROW_HEIGHT, { ["r"] = 1.0, ["g"] = 0.9, ["b"] = 0.0, ["a"] = 0.5 }, f.content)
-	f.name.frame:SetPoint("TOPLEFT", f.date.frame, "TOPRIGHT", 20, 0)
-	f.name:EnableSelection(true)
-	f.name:RegisterEvents({
-		["OnClick"] = function(rowFrame, cellFrame, data, cols, row, realrow, column, table, button, ...)
-			if button == "LeftButton" and row then
-				selectedName = selectedName ~= data[realrow][column].name and data[realrow][column].name or nil
-				self:Update()
-			end
-			return false
-		end
-	})
-
 	-- Abort button
 	local b1 = addon:CreateButton(_G.CLOSE, f.content)
-	b1:SetPoint("TOPRIGHT", f, "TOPRIGHT", -10, -100)
+	b1:SetPoint("TOPRIGHT", f, "TOPRIGHT", -10, -50)
 	b1:SetScript("OnClick", function() self:Disable() end)
 	f.closeBtn = b1
 
@@ -830,11 +907,85 @@ function LootHistory:GetFrame()
 	sel.frame:Show()
 	f.moreInfoDropdown = sel
 
+	local searchTypeSel = AG:Create("Dropdown")
+	searchTypeSel:SetPoint("TOPLEFT", b4, "BOTTOMLEFT", 0, -10)
+	searchTypeSel:SetPoint("TOPRIGHT", b4, "BOTTOMRIGHT", 0, -10)
+
+	local values = {}
+	for k, v in pairs(self.searchTypes) do
+		values[k] = v.name
+	end
+	searchTypeSel:SetList(values)
+	searchTypeSel:SetValue(searchType)
+	searchTypeSel:SetText(self.searchTypes[searchType].name)
+
+	searchTypeSel:SetCallback("OnEnter", function()
+		addon:CreateTooltip(self.searchTypes[searchType].tip)
+	end)
+	searchTypeSel:SetCallback("OnLeave", function()
+		addon:HideTooltip()
+	end)
+	searchTypeSel:SetParent(f)
+	searchTypeSel.frame:Show()
+
+	f.eb1 = CreateFrame("EditBox", "logEditBox", f.content, "InputBoxTemplate")
+	f.eb1:SetFrameStrata("DIALOG")
+	f.eb1:SetSize(300,25)
+	f.eb1:SetAutoFocus(false)
+	f.eb1:SetText(table.concat(searchList, ","))
+	f.eb1:SetPoint("LEFT", searchTypeSel.frame, "RIGHT", 15, 0)
+	f.eb1:SetScript( "OnEnterPressed", function (char) 
+		searchList = LootHistory:ParseStringList(f.eb1:GetText())
+		self:Update()
+	end);
+
+	searchTypeSel:SetCallback("OnValueChanged", function(_,_, key)
+		searchType = key
+		selectedDate = nil
+		searchList = {}
+		self.frame.eb1:SetText(table.concat(searchList, ","))
+		self.frame.date:ClearSelection()
+		self.frame.name:ClearSelection()
+
+		self:Update()
+	end)
+
+	--Name selection
+	f.name = LibStub("ScrollingTable"):CreateST({{name = "", width = ROW_HEIGHT},{name = _G.NAME, width = 100, sort = 1}}, 5, ROW_HEIGHT, { ["r"] = 1.0, ["g"] = 0.9, ["b"] = 0.0, ["a"] = 0.5 }, f.content)
+	f.name.frame:SetPoint("TOPLEFT", f.date.frame, "TOPRIGHT", 20, 0)
+	f.name:EnableSelection(true)
+	f.name:RegisterEvents({
+		["OnClick"] = function(rowFrame, cellFrame, data, cols, row, realrow, column, table2, button, ...)
+			if button == "LeftButton" and row then
+
+				local playerName = LootHistory:ParsePlayerName(data[realrow][column].name)
+				local nameInList = false
+
+				for key, value in ipairs(searchList) do
+					if LootHistory:StringStartsWith(value, playerName) then
+						nameInList = true
+						table.remove(searchList, key)
+					end
+				end
+
+				if not nameInList then
+					table.insert(searchList, playerName)
+				end
+
+				f.eb1:SetText(table.concat(searchList, ","))
+				self:Update()
+			end
+			return false
+		end
+	})
+
 	-- Clear selection
 	local b6 = addon:CreateButton(L["Clear Selection"], f.content)
 	b6:SetPoint("RIGHT", sel.frame, "LEFT", -10, 0)
 	b6:SetScript("OnClick", function()
-		selectedDate, selectedName = nil, nil
+		selectedDate = nil
+		searchList = {}
+		self.frame.eb1:SetText("")
 		self.frame.date:ClearSelection()
 		self.frame.name:ClearSelection()
 		self:Update()
@@ -1332,7 +1483,7 @@ do
 		local subType, equipLoc, rollType, _
 		tinsert(ret, "player,date,time,id,item,itemID,itemString,response,votes,class,instance,boss,difficultyID,mapID,groupSize,gear1,gear2,responseID,isAwardReason,subType,equipLoc,note,owner\r\n")
 		for player, v in pairs(lootDB) do
-			if selectedName and selectedName == player or not selectedName then
+			if LootHistory:ValueInListStartsWith(searchList, player) or next(searchList) == nil or searchType ~= "name" then
 				for i, d in pairs(v) do
 					if selectedDate and selectedDate == d.date or not selectedDate then
 						_,_,subType, equipLoc = GetItemInfoInstant(d.lootWon)
@@ -1381,7 +1532,7 @@ do
 		local subType, equipLoc, rollType, _
 		tinsert(ret, "player\tdate\ttime\titem\titemID\titemString\tresponse\tvotes\tclass\tinstance\tboss\tgear1\tgear2\tresponseID\tisAwardReason\trollType\tsubType\tequipLoc\tnote\towner\r\n")
 		for player, v in pairs(lootDB) do
-			if selectedName and selectedName == player or not selectedName then
+			if LootHistory:ValueInListStartsWith(searchList, player) or next(searchList) == nil or searchType ~= "name" then
 				for i, d in pairs(v) do
 					if selectedDate and selectedDate == d.date or not selectedDate then
 						_,_,subType, equipLoc = GetItemInfoInstant(d.lootWon)
@@ -1422,7 +1573,7 @@ do
 	function LootHistory:ExportBBCode()
 		wipe(export)
 		for player, v in pairs(lootDB) do
-			if selectedName and selectedName == player or not selectedName then
+			if LootHistory:ValueInListStartsWith(searchList, player) or next(searchList) == nil or searchType ~= "name" then
 				tinsert(export, "[b]"..addon.Ambiguate(player)..":[/b]\r\n")
 				tinsert(export, "[list=1]")
 				local first = true
@@ -1447,7 +1598,7 @@ do
 	function LootHistory:ExportBBCodeSMF()
 		wipe(export)
 		for player, v in pairs(lootDB) do
-			if selectedName and selectedName == player or not selectedName then
+			if LootHistory:ValueInListStartsWith(searchList, player) or next(searchList) == nil or searchType ~= "name" then
 				tinsert(export, "[b]"..addon.Ambiguate(player)..":[/b]\r\n")
 				tinsert(export, "[list]")
 				for i, d in pairs(v) do
@@ -1477,7 +1628,7 @@ do
 		local earliest = 9999999999
 		local latest = 0
 		for player, v in pairs(lootDB) do
-			if selectedName and selectedName == player or not selectedName then
+			if LootHistory:ValueInListStartsWith(searchList, player) or next(searchList) == nil or searchType ~= "name" then
 				for i, d in pairs(v) do
 					if selectedDate and selectedDate == d.date or not selectedDate then
 						local day, month, year = strsplit("/", d.date, 3)
@@ -1544,10 +1695,14 @@ do
 	function LootHistory:ExportDiscord()
 		wipe(export)
 		for player, v in pairs(lootDB) do
-			if selectedName and selectedName == player or not selectedName then
-				tinsert(export, "__ **")
-				tinsert(export,addon.Ambiguate(player))
-				tinsert(export, ":** __\r\n")
+			if LootHistory:ValueInListStartsWith(searchList, player) or next(searchList) == nil or searchType ~= "name" then
+
+				if selectedDate and selectedDate == d.date or not selectedDate then
+					tinsert(export, "__ **")
+					tinsert(export,addon.Ambiguate(player))
+					tinsert(export, ":** __\r\n")
+				end
+
 				for i, d in pairs(v) do
 					if selectedDate and selectedDate == d.date or not selectedDate then
 						tinsert(export, "Item: **")
