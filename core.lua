@@ -185,8 +185,6 @@ function RCLootCouncil:OnInitialize()
 		tinsert(self.defaults.profile.awardReasons, {color = {1, 1, 1, 1}, disenchant = false, log = true, sort = 400+i, text = "Reason "..i,})
 	end
 
-	self:DoChatHook()
-
 	-- register chat and comms
 	self:RegisterChatCommand("rc", "ChatCommand")
   	self:RegisterChatCommand("rclc", "ChatCommand")
@@ -211,6 +209,8 @@ function RCLootCouncil:OnInitialize()
 	db = self.db.profile
 	historyDB = self.lootDB.factionrealm
 	debugLog = self.db.global.log
+
+	self:DoChatHook()
 
 	-- register the optionstable
 	LibStub("AceConfigRegistry-3.0"):RegisterOptionsTable("RCLootCouncil", function() return self:OptionsTable() end)
@@ -289,9 +289,18 @@ function RCLootCouncil:CouncilChanged()
 	self:SendMessage("RCCouncilChanged")
 end
 
+local function validateChatFrame()
+	return type(db.chatFrameName) == "string" and getglobal(db.chatFrameName)
+end
+
 function RCLootCouncil:DoChatHook ()
 	-- Unhook if already hooked:
 	if self:IsHooked(self, "Print") then self:Unhook(self, "Print") end
+	if not validateChatFrame() then
+		self:Print("Warning: Your chat frame", db.chatFrameName, "doesn't exist. ChatFrame has been reset.")
+		self:DebugLog("<ERROR>", "ChatFrameName validation failed, resetting...")
+		db.chatFrameName = self.defaults.profile.chatFrameName
+	end
 	-- Pass our channel to the original function and magic appears.
 	self:RawHook(self, "Print", function (_, ...)
 		self.hooks[self].Print(self, getglobal(db.chatFrameName), ...)
