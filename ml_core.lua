@@ -1255,6 +1255,8 @@ end
 function RCLootCouncilML:ShouldAutoAward(item, quality)
 	if db.autoAward and quality >= db.autoAwardLowerThreshold and quality <= db.autoAwardUpperThreshold
 	 	and IsEquippableItem(item) then
+		local _, _, _, _, _, itemClassID, itemSubClassID = GetItemInfoInstant(item)
+		if itemClassID == 1 then return false end -- Ignore containers
 		if db.autoAwardLowerThreshold >= GetLootThreshold() or db.autoAwardLowerThreshold < 2 then
 			if UnitInRaid(db.autoAwardTo) or UnitInParty(db.autoAwardTo) then -- TEST perhaps use self.group?
 				return true;
