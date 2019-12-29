@@ -6,6 +6,7 @@
 
 ## Bugfixes
 * *Time calculations with raid members in different timezones now works properly (CurseClassic#22).*
+* *The TradeUI now detects reawards when a session has ended.*
 
 # v2.16.0
 

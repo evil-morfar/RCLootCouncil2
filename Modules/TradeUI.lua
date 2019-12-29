@@ -95,24 +95,49 @@ function TradeUI:OnCommReceived(prefix, serializedMsg, distri, sender)
 		local test, command, data = addon:Deserialize(serializedMsg)
 		if addon:HandleXRealmComms(self, command, data, sender) then return end
 		if test and command == "awarded" then
-         local session, winner, trader = unpack(data)
-         if addon:UnitIsUnit(trader, "player") then
-            -- We should give our item to 'winner'
-            local Item = addon.ItemStorage:GetItem(addon:GetLootTable()[session].link) -- Update our temp item
-            if Item then
-               Item.type = "to_trade"
-               Item.args.recipient = winner
-            else
-               Item = addon.ItemStorage:New(addon:GetLootTable()[session].link, "to_trade", {recipient = winner}):Store()
+         self:OnAwardReceived(unpack(data))
+      end
+   end
+end
+
+function TradeUI:OnAwardReceived (session, winner, trader)
+   if addon:UnitIsUnit(trader, "player") then
+      -- We should give our item to 'winner'
+      local Item
+      -- Session might have ended, meaning the lootTable is cleared
+      local lootSession = addon:GetLootTable()[session]
+      if lootSession then
+         Item = addon.ItemStorage:GetItem(lootSession.link) -- Update our temp item
+         if Item then
+            Item.type = "to_trade"
+            Item.args.recipient = winner
+            Item.args.session = session
+         else -- Maybe we don't have a temp item; can be caused by manually adding it.
+            Item = addon.ItemStorage:New(lootSession.link, "to_trade", {recipient = winner, session = session}):Store()
+         end
+      else
+         -- If the session has ended and we receive another award, it's got to be a reaward. Fetch the item based on the session:
+         local Items = self:GetStoredItemBySession(session)
+         if Items and #Items > 0 then
+            if #Items > 1 then -- We have more than one?
+               addon:DebugLog("<WARNING>","Found multiple items for session", session)
             end
-            -- Don't add ourself unless we're testing
-            -- but do add/update the item first, in case it's a reaward to ourself
-            if addon:UnitIsUnit(winner, "player") and not (addon.testMode or addon.nnp) then
-               addon.ItemStorage:RemoveItem(Item)
-            end
-            self:Show()
+            Item = Items[1]
+            Item.args.recipient = winner
+            addon:DebugLog("Changed winner for", session, Item.link, "to", winner)
+         else
+            -- We found no items with the session - probably an error (or we have already traded the item)
+            addon:DebugLog("<ERROR>", "Found no stored items for session:", session)
+            -- REVIEW Fail silently
          end
       end
+
+      -- Don't add ourself unless we're testing
+      -- but do add/update the item first, in case it's a reaward to ourself
+      if Item and addon:UnitIsUnit(winner, "player") and not (addon.testMode or addon.nnp) then
+         addon.ItemStorage:RemoveItem(Item)
+      end
+      self:Show()
    end
 end
 
@@ -200,6 +225,12 @@ function TradeUI:GetNumAwardedInBagsToTradeWindow()
       funcTradeTargetIsRecipient,
       funcItemHasMoreTimeLeft
    )
+end
+
+function TradeUI:GetStoredItemBySession (session)
+   return tFilter(addon.ItemStorage:GetAllItemsOfType("to_trade"), function(v)
+      return v.args.session and v.args.session == session
+   end, true)
 end
 
 function TradeUI:AddAwardedInBagsToTradeWindow()
