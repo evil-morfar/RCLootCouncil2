@@ -1,3 +1,11 @@
+
+## Changes
+
+#### Chat Commands
+`/rc reset` now also resets the chosen chat frame.
+
+
+
 # v2.16.0
 
 ## Additions

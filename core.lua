@@ -447,6 +447,7 @@ function RCLootCouncil:ChatCommand(msg)
 		for _, frame in ipairs(frames) do
 			frame:RestorePosition()
 		end
+		db.chatFrameName = self.defaults.profile.chatFrameName
 		self:Print(L["Windows reset"])
 
 	elseif input == "debuglog" or input == "log" then
