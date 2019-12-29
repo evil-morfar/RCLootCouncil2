@@ -4,7 +4,8 @@
 #### Chat Commands
 `/rc reset` now also resets the chosen chat frame.
 
-
+## Bugfixes
+* *Time calculations with raid members in different timezones now works properly (CurseClassic#22).*
 
 # v2.16.0
 
