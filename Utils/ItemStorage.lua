@@ -222,7 +222,7 @@ function private:findItemInBags(link)
             end
          end
       end
-      addon:DebugLog("Error - Couldn't find item")
+      addon:DebugLog("Found:", c,s,t)
       return c,s,t
    end
 end
