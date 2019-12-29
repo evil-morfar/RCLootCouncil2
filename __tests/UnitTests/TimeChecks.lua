@@ -1,4 +1,4 @@
-dofile "../wow_api.lua"
+dofile "__tests/wow_api.lua"
 D_DAYS = "%d |4Day:Days;";
 D_HOURS = "%d |4Hour:Hours;";
 D_MINUTES = "%d |4Minute:Minutes;";
@@ -177,8 +177,8 @@ print(FormatShortDate(d.day,d.month,d.year))
 print(string.format(SecondsToTimeAbbrev(math.abs(os.time() - 1578149947))))
 print(SecondsToTime(math.abs(os.time() - 1578149947)))
 print(SecondsToClock(math.abs(os.time() - 1578149947)))
-print(GetNumberOfDaysFromNow("26/12/19"))
-local tomorrow = os.time({year = "2019", month = 12, day = 25, hour = 0})
+print(GetNumberOfDaysFromNow("31/12/19"))
+local tomorrow = os.time({year = "2019", month = 12, day = 30, hour = 0})
 print(string.format(SecondsToTimeAbbrev(math.abs(os.time() - tomorrow))))
 print(SecondsToTime(math.abs(os.time() - tomorrow)))
 print(SecondsToClock(math.abs(os.time() - tomorrow)))
