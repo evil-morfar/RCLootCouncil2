@@ -1,5 +1,5 @@
 --- lootHistory.lua	Adds the interface for displaying the collected loot history.
--- DefaultModule
+-- DefaultModule`
 -- @author Potdisc
 -- Create Date : 8/6/2015
 
@@ -49,10 +49,11 @@ function LootHistory:OnInitialize()
 		{name = L["Reason"],	width = 220, comparesort = self.ResponseSort,  defaultsort = 1, sortnext = 2},	-- Response aka the text supplied to lootDB...response
 		{name = "",				width = ROW_HEIGHT},																					-- Delete button
 	}
+	-- TODO localize tips 
 	self.searchTypes = {
-		name = 	{func = self.SearchPlaceHolder, name = "Name", tip = L["Search by player name"]},
-		class = {func = self.SearchPlaceHolder,	name = "Class", tip = L["Search by player class."]},
-		item = 	{func = self.SearchPlaceHolder,	name = "Item", tip = L["Search by item name."]},
+		name = 	{name = "Name", tip = "Search by player name"},
+		class = {name = "Class", tip = "Search by player class."},
+		item = 	{name = "Item", tip = "Search by item name."},
 	}
 	filterMenu = _G.MSA_DropDownMenu_Create("RCLootCouncil_LootHistory_FilterMenu", UIParent)
 	rightClickMenu = _G.MSA_DropDownMenu_Create("RCLootCouncil_LootHistory_RightclickMenu", UIParent)
