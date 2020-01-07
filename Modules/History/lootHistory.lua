@@ -1419,7 +1419,6 @@ do
 	end
 	
 	function LootHistory:ExportJSON()
-		-- Add headers
 		wipe(export)
 		wipe(ret)
 		local subType, equipLoc, rollType, _
