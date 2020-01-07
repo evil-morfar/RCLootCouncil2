@@ -1449,7 +1449,7 @@ do
 						tinsert(export, string.format("\"%s\":%s", "itemID", addon:GetItemIDFromLink(d.lootWon)))
 						tinsert(export, string.format("\"%s\":\"%s\"", "itemString", addon:GetItemStringFromLink(d.lootWon)))
 						tinsert(export, string.format("\"%s\":\"%s\"", "response", tostring(d.response)))
-						tinsert(export, string.format("\"%s\":%s", "votes", tostring(d.votes)))
+						tinsert(export, string.format("\"%s\":%s", "votes", tostring(d.votes or 0)))
 						tinsert(export, string.format("\"%s\":\"%s\"", "class", tostring(d.class)))
 						tinsert(export, string.format("\"%s\":\"%s\"", "instance", tostring(d.instance)))
 						tinsert(export, string.format("\"%s\":\"%s\"", "boss", tostring(d.boss)))
