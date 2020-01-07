@@ -36,7 +36,7 @@ function LootHistory:OnInitialize()
 		eqxml = 		{func = self.ExportEQXML,		name = "EQdkp-Plus XML",	tip = L["EQdkp-Plus XML output, tailored for Enjin import."]},
 		player = 	{func = self.PlayerExport,		name = "Player Export",		tip = L["A format to copy/paste to another player."]},
 		discord = 	{func = self.ExportDiscord, 	name = "Discord", 			tip = L["Discord friendly output."]},
-		json = 		{func = self.ExportJSON,		name = "JSON",				tip = L["Standard JSON Output"]},
+		json = 		{func = self.ExportJSON,		name = "JSON",				tip = L["Standard JSON Output."]},
 		--html = self.ExportHTML
 	}
 	self.scrollCols = {
