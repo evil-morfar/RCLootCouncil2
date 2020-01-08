@@ -237,7 +237,7 @@ function private:RebuildResponseID(data,t, line)
       type = addon.BTN_SLOTS[type]
    end
    -- Check for custom responses
-   if not db.responses[type] then
+   if #db.responses[type] == 0 then
       type = "default"
    end
    -- and finally validate

@@ -1,3 +1,6 @@
+## Bugfixes
+* *Fixed issue with CSV importing non-default responses (CurseClassic#25).*
+
 # v2.16.1
 ## Changes
 
