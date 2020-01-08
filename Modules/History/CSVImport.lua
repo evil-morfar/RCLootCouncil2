@@ -35,7 +35,6 @@ function His:ImportNew (import, delimiter)
       -- Ensure error free lines
       if length ~= private.numFields then
          private:AddError(i, length, string.format("Row has the wrong number of fields - expected %d", private.numFields))
-         printtable(line)
 
       else
          private:ValidateLine(i, line)
@@ -286,9 +285,7 @@ function private:RebuildTime (data, t, line)
    	t.time = date("%H:%M:%S", secs)
    elseif dato then
       local d, m, y = strsplit("/", dato or "", 3)
-      print(d,m,y)
       local secs = His:DateTimeToSeconds(d,m,y) -- Will provide 0:0:0
-      print(secs)
       t.date = date("%d/%m/%y", secs)
    	t.time = date("%H:%M:%S", secs)
       t.id = secs .. "-"..private.idCount
