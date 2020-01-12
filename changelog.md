@@ -2,6 +2,11 @@
 ## Changes
 Updated for patch 8.3.
 
+### Corruption
+Added a new column in the Voting Frame containing candidates' corruption info.
+Mouse over the value to see a tooltip containing even more info.
+It may also be clickable, N'Zoth wills it..
+
 
 ## Bugfixes
 * *Fixed issue with CSV importing non-default responses (CurseClassic#25).*
