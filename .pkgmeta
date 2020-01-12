@@ -9,5 +9,6 @@ ignore:
     - LICENSE.md
     - __tests
     - .luacov
+    - .scripts
 
 enable-nolib-creation: no
