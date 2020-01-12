@@ -5,7 +5,7 @@
 -- Create Date : 12/15/2014 8:54:35 PM
 
 local _,addon = ...
-local RCVotingFrame = addon:NewModule("RCVotingFrame", "AceComm-3.0", "AceTimer-3.0", "AceEvent-3.0", "AceBucket-3.0")
+RCVotingFrame = addon:NewModule("RCVotingFrame", "AceComm-3.0", "AceTimer-3.0", "AceEvent-3.0", "AceBucket-3.0")
 local LibDialog = LibStub("LibDialog-1.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 
@@ -47,7 +47,7 @@ function RCVotingFrame:OnInitialize()
 		{ name = L["Vote"],		DoCellUpdate = RCVotingFrame.SetCellVote,			colName = "vote",		sortnext = 10,		width = 60, align = "CENTER", },				-- 11 Vote button
 		{ name = L["Notes"],		DoCellUpdate = RCVotingFrame.SetCellNote,			colName = "note",								width = 50, align = "CENTER", },				-- 12 Note icon
 		{ name = _G.ROLL,			DoCellUpdate = RCVotingFrame.SetCellRoll, 		colName = "roll",		sortnext = 10,		width = 50, align = "CENTER", },				-- 13 Roll
-		{ name = "Corruption",	DoCellUpdate = RCVotingFrame.SetCellCorruption, colName = "corruption", sortnext = 10, width = 50, align = "CENTER",},				-- 14 Corruption (Patch 8.3)
+		{ name = "",				DoCellUpdate = RCVotingFrame.SetCellCorruption, colName = "corruption", sortnext = 10, width = 50, align = "CENTER",},				-- 14 Corruption (Patch 8.3)
 	}
 	-- The actual table being worked on, new entries should be added to this table "tinsert(RCVotingFrame.scrollCols, data)"
 	-- If you want to add or remove columns, you should do so on your OnInitialize. See RCVotingFrame:RemoveColumn() for removal.
@@ -735,6 +735,14 @@ function RCVotingFrame:GetFrame()
 		st:EnableSelection(true)
 		f.st = st
 		f:SetWidth(f.st.frame:GetWidth() + 20)
+
+		-- Set texture for corruption header, if present
+		local corruptionHeaderID = self:GetColumnIndexFromName("corruption")
+		if corruptionHeaderID then
+			local tex = st.head.cols[corruptionHeaderID]:CreateTexture()
+			tex:SetAtlas("Nzoth-tooltip-topper")
+			tex:SetAllPoints(st.head.cols[corruptionHeaderID])
+		end
 	end
 	f.UpdateSt()
 
@@ -1275,9 +1283,9 @@ end
 
 function RCVotingFrame.SetCellCorruption(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
 	local name = data[realrow].name
-	local data = lootTable[session].candidates[name].corruption or ""
-	frame.text:SetText(data)
-	data[realrow].cols[column].value = data
+	local value = lootTable[session].candidates[name].corruption or ""
+	frame.text:SetText(value)
+	data[realrow].cols[column].value = value
 end
 
 function RCVotingFrame.filterFunc(table, row)
