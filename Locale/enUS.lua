@@ -170,6 +170,7 @@ L["Could not find 'player' in the group."] = "Could not find %s in the group."
 L["Couldn't find any councilmembers in the group"] = true
 L["council"] = true
 L["Council"] = true
+L["Corruption if awarded:"] = true
 L["Current Council"] = true
 L["current_council_desc"] = "\nClick to remove certain people from the council\n"
 L["Customize appearance"] = true

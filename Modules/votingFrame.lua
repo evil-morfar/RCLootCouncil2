@@ -5,7 +5,7 @@
 -- Create Date : 12/15/2014 8:54:35 PM
 
 local _,addon = ...
-RCVotingFrame = addon:NewModule("RCVotingFrame", "AceComm-3.0", "AceTimer-3.0", "AceEvent-3.0", "AceBucket-3.0")
+local RCVotingFrame = addon:NewModule("RCVotingFrame", "AceComm-3.0", "AceTimer-3.0", "AceEvent-3.0", "AceBucket-3.0")
 local LibDialog = LibStub("LibDialog-1.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 
@@ -1317,7 +1317,7 @@ local function CorruptionCellOnEnter (player)
 		currentItemCorruption = addon:GetCorruptionFromTooltip(lootTable[session].link)
 		newTotalCorruption = totalCorruption + currentItemCorruption
 		GameTooltip_AddColoredDoubleLine(GameTooltip, lootTable[session].link, currentItemCorruption == 0 and 0 or "+"..currentItemCorruption, _G.WHITE_FONT_COLOR, _G.CORRUPTION_COLOR)
-		GameTooltip_AddColoredDoubleLine(GameTooltip, "Corruption if awarded:", newTotalCorruption, _G.WHITE_FONT_COLOR, _G.CORRUPTION_COLOR)
+		GameTooltip_AddColoredDoubleLine(GameTooltip, L["Corruption if awarded:"], newTotalCorruption, _G.WHITE_FONT_COLOR, _G.CORRUPTION_COLOR)
 	end
 	GameTooltip_AddBlankLineToTooltip(GameTooltip);
 
