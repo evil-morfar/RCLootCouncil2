@@ -9,6 +9,7 @@ It may also be clickable, N'Zoth wills it..
 
 ### Ny'alotha the Waking City
 Added auto pass data for the new trinkets.
+Added both patch 8.3 and the raid as history mass deletion options.
 
 
 ## Bugfixes
