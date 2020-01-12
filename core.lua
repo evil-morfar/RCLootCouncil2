@@ -1160,14 +1160,16 @@ function RCLootCouncil:UpdatePlayersData()
 	playersData.ilvl = select(2,GetAverageItemLevel())
 	self:UpdatePlayersGears()
 	self:UpdatePlayerRelics()
+	playersData.corruption = self:GetPlayerCorruption()
+end
 
-	-- New in patch 8.3.
-	-- Self contained to avoid clashes with Classic and when it's removed
-	if GetCorruption then
-		local corruption = GetCorruption();
-		local corruptionResistance = GetCorruptionResistance();
-		playersData.corruption = {corruption, corruptionResistance}
-	end
+-- New in patch 8.3.
+-- Self contained to avoid clashes with Classic and when it's removed
+function RCLootCouncil:GetPlayerCorruption ()
+	if not GetCorruption then return end
+	local corruption = GetCorruption()
+	local corruptionResistance = GetCorruptionResistance()
+	return {corruption, corruptionResistance}
 end
 
 -- @param link A gear that we want to compare against the equipped gears
