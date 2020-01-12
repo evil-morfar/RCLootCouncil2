@@ -72,6 +72,11 @@ addon.INVTYPE_Slots = {
 -- Each function receives the following parameters:
 -- item, db (addon:Getdb()), itemID, itemEquipLoc,itemClassID, itemSubClassID
 addon.RESPONSE_CODE_GENERATORS = {
+   -- Corrupted Items
+   function (item, db, itemEquipLoc)
+      return db.enabledButtons.CORRUPTED and GetCorruption and IsCorruptedItem(item) and "CORRUPTED" or nil
+   end,
+   
    -- Check for token
    function (_, db, itemID)
       if RCTokenTable[itemID] and db.enabledButtons["TOKEN"] then
@@ -84,12 +89,6 @@ addon.RESPONSE_CODE_GENERATORS = {
       if db.enabledButtons.WEAPON and addon.BTN_SLOTS[itemEquipLoc] == "WEAPON" then
         return "WEAPON"
       end
-   end,
-
-   -- Corrupted Items
-   function (item, db, itemEquipLoc)
-      -- To be used, the item must be, and no other button group must be set for the equipLoc
-      return db.enabledButtons.CORRUPTED and not db.enabledButtons[itemEquipLoc] and GetCorruption and IsCorruptedItem(item) and "CORRUPTED" or nil
    end,
 
    -- Check for Azerite Gear
