@@ -1,3 +1,8 @@
+# v2.17.0
+## Changes
+Updated for patch 8.3.
+
+
 ## Bugfixes
 * *Fixed issue with CSV importing non-default responses (CurseClassic#25).*
 
