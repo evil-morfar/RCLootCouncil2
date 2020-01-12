@@ -2,7 +2,11 @@
 ## Changes
 Updated for patch 8.3.
 
+## Additions
 ### Corruption
+Added a new button group for corrupted items.
+This group supersedes Azerite Pieces in priority if an item matches both - but still adheres to more specific groups.
+
 Added a new column in the Voting Frame containing candidates' corruption info.
 Mouse over the value to see a tooltip containing even more info.
 It may also be clickable, N'Zoth wills it..

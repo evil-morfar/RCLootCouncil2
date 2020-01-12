@@ -34,6 +34,7 @@ addon.OPT_MORE_BUTTONS_VALUES = {
    INVTYPE_TRINKET = _G.INVTYPE_TRINKET,
    WEAPON = _G.WEAPON,
    TOKEN = L["Armor Token"],
+   CORRUPTED = _G.CORRUPTION_TOOLTIP_TITLE,
 }
 
 --[[
@@ -72,25 +73,33 @@ addon.INVTYPE_Slots = {
 -- item, db (addon:Getdb()), itemID, itemEquipLoc,itemClassID, itemSubClassID
 addon.RESPONSE_CODE_GENERATORS = {
    -- Check for token
-   [1] = function (_, db, itemID)
+   function (_, db, itemID)
       if RCTokenTable[itemID] and db.enabledButtons["TOKEN"] then
          return "TOKEN"
       end
    end,
+
+   -- Check for Weapon
+   function (_, db, _, itemEquipLoc)
+      if db.enabledButtons.WEAPON and addon.BTN_SLOTS[itemEquipLoc] == "WEAPON" then
+        return "WEAPON"
+      end
+   end,
+
+   -- Corrupted Items
+   function (item, db, itemEquipLoc)
+      -- To be used, the item must be, and no other button group must be set for the equipLoc
+      return db.enabledButtons.CORRUPTED and not db.enabledButtons[itemEquipLoc] and GetCorruption and IsCorruptedItem(item) and "CORRUPTED" or nil
+   end,
+
    -- Check for Azerite Gear
-   [2] = function (_, db, _, itemEquipLoc)
+   function (_, db, _, itemEquipLoc)
      -- To use Azerite Buttons, the item must be one of the 3 azerite items, and no other button group must be set for those equipLocs
      if db.enabledButtons.AZERITE and not db.enabledButtons[itemEquipLoc] then
         if addon.BTN_SLOTS[itemEquipLoc] == "AZERITE" then
            return "AZERITE"
         end
      end
-   end,
-   -- Check for Weapon
-   [3] = function (_, db, _, itemEquipLoc)
-      if db.enabledButtons.WEAPON and addon.BTN_SLOTS[itemEquipLoc] == "WEAPON" then
-        return "WEAPON"
-      end
    end,
 }
 

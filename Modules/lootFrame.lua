@@ -506,7 +506,7 @@ do
 		if item.isRoll then
 			entry = self:Get("roll")
 		else
-			entry = self:Get(item.equipLoc)
+			entry = self:Get(item.typeCode or item.equipLoc)
 		end
 		if entry then -- We restored a previously trashed entry, so just update it to the new item
 			entry:Update(item)
