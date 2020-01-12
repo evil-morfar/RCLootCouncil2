@@ -1281,11 +1281,65 @@ function RCVotingFrame.SetCellRoll(rowFrame, frame, data, cols, row, realrow, co
 	data[realrow].cols[column].value = lootTable[session].candidates[name].roll or ""
 end
 
+
+
+local function CorruptionCellOnEnter (player, currentCorruption)
+	-- Use cached data if available
+	if not RCVotingFrame.corruptionEffects then
+		-- Cache some corruption related data
+		local corruptionEffects = GetNegativeCorruptionEffectInfo()
+		table.sort(corruptionEffects, function(a, b)
+			return a.minCorruption < b.minCorruption
+		end)
+		RCVotingFrame.corruptionEffects = corruptionEffects
+	end
+
+	-- Setup corruption tooltip
+	GameTooltip_SetBackdropStyle(GameTooltip, _G.GAME_TOOLTIP_BACKDROP_STYLE_CORRUPTED_ITEM);
+	GameTooltip:SetOwner(RCVotingFrame.frame.content, "ANCHOR_RIGHT");
+	GameTooltip:SetMinimumWidth(250);
+	GameTooltip:AddLine(addon:GetUnitClassColoredName(player))
+	GameTooltip:AddLine("")
+	GameTooltip_AddColoredDoubleLine(GameTooltip, _G.TOTAL_CORRUPTION_TOOLTIP_LINE, currentCorruption, _G.CORRUPTION_COLOR, _G.CORRUPTION_COLOR)
+	local totalCorruption = currentCorruption
+	if IsCorruptedItem(lootTable[session].link) then
+		-- TODO
+	end
+	GameTooltip_AddColoredDoubleLine(GameTooltip, "Corruption with this item:", totalCorruption, _G.CORRUPTION_COLOR, _G.CORRUPTION_COLOR)
+	GameTooltip_AddBlankLineToTooltip(GameTooltip);
+
+	-- Corruption info - Mostly copied from CharacterFrame.lua
+	for i, corruptionInfo in ipairs(RCVotingFrame.corruptionEffects) do
+		if i > 1 then
+			GameTooltip_AddBlankLineToTooltip(GameTooltip);
+		end
+		-- We only show 1 effect above the player's current corruption.
+		local lastEffect = (corruptionInfo.minCorruption > totalCorruption);
+		GameTooltip_AddColoredLine(GameTooltip, _G.CORRUPTION_EFFECT_HEADER:format(corruptionInfo.name, corruptionInfo.minCorruption), lastEffect and _G.GRAY_FONT_COLOR or _G.HIGHLIGHT_FONT_COLOR);
+		GameTooltip_AddColoredLine(GameTooltip, corruptionInfo.description, lastEffect and _G.GRAY_FONT_COLOR or _G.CORRUPTION_COLOR, wrap, 10);
+		if lastEffect then
+			break;
+		end
+	end
+	GameTooltip:SetAnchorType("ANCHOR_RIGHT", 0, -GameTooltip:GetHeight())
+	GameTooltip:Show()
+end
+
 function RCVotingFrame.SetCellCorruption(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
 	local name = data[realrow].name
-	local value = lootTable[session].candidates[name].corruption or ""
-	frame.text:SetText(value)
-	data[realrow].cols[column].value = value
+	local corruption = lootTable[session].candidates[name].corruption or ""
+	frame.text:SetText(corruption)
+	if _G.CORRUPTION_COLOR then
+		frame.text:SetTextColor(_G.CORRUPTION_COLOR:GetRGBA())
+	end
+	data[realrow].cols[column].value = corruption
+
+	-- Tooltip
+	frame:SetScript("OnEnter", function()
+		CorruptionCellOnEnter(name, corruption)
+	end)
+	frame:SetScript("OnLeave", function() addon:HideTooltip() end)
+	frame:SetScript("OnClick", function() PlaySound(SOUNDKIT.NZOTH_EYE_SQUISH) end) -- Bonus :)
 end
 
 function RCVotingFrame.filterFunc(table, row)
