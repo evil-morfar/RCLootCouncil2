@@ -7,6 +7,9 @@ Added a new column in the Voting Frame containing candidates' corruption info.
 Mouse over the value to see a tooltip containing even more info.
 It may also be clickable, N'Zoth wills it..
 
+### Ny'alotha the Waking City
+Added auto pass data for the new trinkets.
+
 
 ## Bugfixes
 * *Fixed issue with CSV importing non-default responses (CurseClassic#25).*
