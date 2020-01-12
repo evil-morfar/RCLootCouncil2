@@ -211,7 +211,7 @@ function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
 			elseif command == "lootAck" then
 				-- v2.7.4: Extended to contain playerName, specID, ilvl, data
 				-- data contains: diff, gear1[, gear2, response] - each a table for each session
-				local name, specID, ilvl, sessionData, corruption = unpack(data)
+				local name, specID, ilvl, sessionData, corruptionData = unpack(data)
 				if not specID then -- Old lootAck
 					for i = 1, #lootTable do
 						self:SetCandidateData(i, name, "response", "WAIT")
@@ -225,7 +225,11 @@ function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
 					for i = 1, #lootTable do
 						self:SetCandidateData(i, name, "specID", specID)
 						self:SetCandidateData(i, name, "ilvl", ilvl)
+						local corruption, corruptionResistance = unpack(corruptionData)
+						local totalCorruption = math.max(corruption - corruptionResistance, 0);
 						self:SetCandidateData(i, name, "corruption", corruption)
+						self:SetCandidateData(i, name, "corruptionResistance", corruptionResistance)
+						self:SetCandidateData(i, name, "totalCorruption", totalCorruption)
 						if not sessionData.response[i] then
 							-- We might already have an response, so don't override unless it's announced
 							if self:GetCandidateData(i, name, "response") == "ANNOUNCED" then
@@ -1284,7 +1288,7 @@ end
 
 
 
-local function CorruptionCellOnEnter (player, currentCorruption)
+local function CorruptionCellOnEnter (player)
 	-- Use cached data if available
 	if not RCVotingFrame.corruptionEffects then
 		-- Cache some corruption related data
@@ -1294,6 +1298,9 @@ local function CorruptionCellOnEnter (player, currentCorruption)
 		end)
 		RCVotingFrame.corruptionEffects = corruptionEffects
 	end
+	local corruption = RCVotingFrame:GetCandidateData(session, player, "corruption")
+	local corruptionResistance = RCVotingFrame:GetCandidateData(session, player, "corruptionResistance")
+	local totalCorruption = RCVotingFrame:GetCandidateData(session, player, "totalCorruption")
 
 	-- Setup corruption tooltip
 	GameTooltip_SetBackdropStyle(GameTooltip, _G.GAME_TOOLTIP_BACKDROP_STYLE_CORRUPTED_ITEM);
@@ -1301,14 +1308,17 @@ local function CorruptionCellOnEnter (player, currentCorruption)
 	GameTooltip:SetMinimumWidth(250);
 	GameTooltip:AddLine(addon:GetUnitClassColoredName(player))
 	GameTooltip:AddLine("")
-	GameTooltip_AddColoredDoubleLine(GameTooltip, _G.TOTAL_CORRUPTION_TOOLTIP_LINE, currentCorruption, _G.CORRUPTION_COLOR, _G.CORRUPTION_COLOR)
-	local totalCorruption, currentItemCorruption = currentCorruption, 0
+	GameTooltip_AddColoredDoubleLine(GameTooltip, _G.CORRUPTION_TOOLTIP_LINE, corruption, _G.HIGHLIGHT_FONT_COLOR, _G.HIGHLIGHT_FONT_COLOR);
+	GameTooltip_AddColoredDoubleLine(GameTooltip, _G.CORRUPTION_RESISTANCE_TOOLTIP_LINE, corruptionResistance, _G.HIGHLIGHT_FONT_COLOR, _G.HIGHLIGHT_FONT_COLOR);
+	GameTooltip_AddColoredDoubleLine(GameTooltip, _G.TOTAL_CORRUPTION_TOOLTIP_LINE, totalCorruption, _G.CORRUPTION_COLOR, _G.CORRUPTION_COLOR)
 	if IsCorruptedItem(lootTable[session].link) then
+		GameTooltip_AddBlankLineToTooltip(GameTooltip);
+		local newTotalCorruption, currentItemCorruption = totalCorruption, 0
 		currentItemCorruption = addon:GetCorruptionFromTooltip(lootTable[session].link)
-		totalCorruption = totalCorruption + currentItemCorruption
+		newTotalCorruption = totalCorruption + currentItemCorruption
+		GameTooltip_AddColoredDoubleLine(GameTooltip, lootTable[session].link, currentItemCorruption == 0 and 0 or "+"..currentItemCorruption, _G.WHITE_FONT_COLOR, _G.CORRUPTION_COLOR)
+		GameTooltip_AddColoredDoubleLine(GameTooltip, "Corruption if awarded:", newTotalCorruption, _G.WHITE_FONT_COLOR, _G.CORRUPTION_COLOR)
 	end
-	GameTooltip_AddColoredDoubleLine(GameTooltip, lootTable[session].link, currentItemCorruption == 0 and 0 or "+"..currentItemCorruption, _G.WHITE_FONT_COLOR, _G.CORRUPTION_COLOR)
-	GameTooltip_AddColoredDoubleLine(GameTooltip, "Corruption if awarded:", totalCorruption, _G.WHITE_FONT_COLOR, _G.CORRUPTION_COLOR)
 	GameTooltip_AddBlankLineToTooltip(GameTooltip);
 
 	-- Corruption info - Mostly copied from CharacterFrame.lua
@@ -1330,7 +1340,7 @@ end
 
 function RCVotingFrame.SetCellCorruption(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
 	local name = data[realrow].name
-	local corruption = lootTable[session].candidates[name].corruption or ""
+	local corruption = RCVotingFrame:GetCandidateData(session, name, "corruption") or ""
 	frame.text:SetText(corruption)
 	if _G.CORRUPTION_COLOR then
 		frame.text:SetTextColor(_G.CORRUPTION_COLOR:GetRGBA())
@@ -1339,7 +1349,7 @@ function RCVotingFrame.SetCellCorruption(rowFrame, frame, data, cols, row, realr
 
 	-- Tooltip
 	frame:SetScript("OnEnter", function()
-		CorruptionCellOnEnter(name, corruption)
+		CorruptionCellOnEnter(name)
 	end)
 	frame:SetScript("OnLeave", function() addon:HideTooltip() end)
 	frame:SetScript("OnClick", function() PlaySound(SOUNDKIT.NZOTH_EYE_SQUISH) end) -- Bonus :)

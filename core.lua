@@ -1166,8 +1166,7 @@ function RCLootCouncil:UpdatePlayersData()
 	if GetCorruption then
 		local corruption = GetCorruption();
 		local corruptionResistance = GetCorruptionResistance();
-		local totalCorruption = math.max(corruption - corruptionResistance, 0);
-		playersData.corruption = totalCorruption
+		playersData.corruption = {corruption, corruptionResistance}
 	end
 end
 
