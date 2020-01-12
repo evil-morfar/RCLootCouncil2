@@ -1303,9 +1303,9 @@ local function CorruptionCellOnEnter (player, currentCorruption)
 	GameTooltip_AddColoredDoubleLine(GameTooltip, _G.TOTAL_CORRUPTION_TOOLTIP_LINE, currentCorruption, _G.CORRUPTION_COLOR, _G.CORRUPTION_COLOR)
 	local totalCorruption = currentCorruption
 	if IsCorruptedItem(lootTable[session].link) then
-		-- TODO
+		totalCorruption = totalCorruption + addon:GetCorruptionFromTooltip(lootTable[session].link)
 	end
-	GameTooltip_AddColoredDoubleLine(GameTooltip, "Corruption with this item:", totalCorruption, _G.CORRUPTION_COLOR, _G.CORRUPTION_COLOR)
+	GameTooltip_AddColoredDoubleLine(GameTooltip, "Corruption if awarded:", totalCorruption, _G.CORRUPTION_COLOR, _G.CORRUPTION_COLOR)
 	GameTooltip_AddBlankLineToTooltip(GameTooltip);
 
 	-- Corruption info - Mostly copied from CharacterFrame.lua

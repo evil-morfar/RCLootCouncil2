@@ -1589,6 +1589,28 @@ function RCLootCouncil:GetItemClassesAllowedFlag(item)
 	return 0xffffffff -- The item works for all classes
 end
 
+--- Parses an item tooltip looking for corruption stat
+-- @param item The item to find corruption for
+-- @return 0 or the amount of corruption on the item.
+-- COMBAK: This should be part of a generic ToolTip parser system in the future.
+function RCLootCouncil:GetCorruptionFromTooltip (item)
+	if not item then return 0 end
+	tooltipForParsing:SetOwner(UIParent, "ANCHOR_NONE")
+	tooltipForParsing:SetHyperlink(item)
+
+	local pattern = _G.ITEM_CORRUPTION_BONUS_STAT:gsub("%%d", "%(%%d%+%)")
+	for i = 1, tooltipForParsing:NumLines() do
+		local line = getglobal(tooltipForParsing:GetName()..'TextLeft' .. i)
+		if line and line.GetText then
+			local text = line:GetText()
+			local found = text:match(pattern)
+			if found then return tonumber(found) end
+		end
+	end
+	-- Didn't find anything
+	return 0
+end
+
 -- strings contains plural/singular rule such as "%d |4ora:ore;"
 -- For example, CompleteFormatSimpleStringWithPluralRule("%d |4ora:ore;", 2) returns "2 ore"
 -- Does not work for long string such as "%d |4jour:jours;, %d |4heure:heures;, %d |4minute:minutes;, %d |4seconde:secondes;"
