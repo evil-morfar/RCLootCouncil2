@@ -47,7 +47,7 @@ function RCVotingFrame:OnInitialize()
 		{ name = L["Vote"],		DoCellUpdate = RCVotingFrame.SetCellVote,			colName = "vote",		sortnext = 10,		width = 60, align = "CENTER", },				-- 11 Vote button
 		{ name = L["Notes"],		DoCellUpdate = RCVotingFrame.SetCellNote,			colName = "note",								width = 50, align = "CENTER", },				-- 12 Note icon
 		{ name = _G.ROLL,			DoCellUpdate = RCVotingFrame.SetCellRoll, 		colName = "roll",		sortnext = 10,		width = 50, align = "CENTER", },				-- 13 Roll
-		{ name = "",				DoCellUpdate = RCVotingFrame.SetCellCorruption, colName = "corruption", sortnext = 10, width = 50, align = "CENTER",},				-- 14 Corruption (Patch 8.3)
+		{ name = "",				DoCellUpdate = RCVotingFrame.SetCellCorruption, colName = "corruption", sortnext = 10, width = 30, align = "CENTER",},				-- 14 Corruption (Patch 8.3)
 	}
 	-- The actual table being worked on, new entries should be added to this table "tinsert(RCVotingFrame.scrollCols, data)"
 	-- If you want to add or remove columns, you should do so on your OnInitialize. See RCVotingFrame:RemoveColumn() for removal.
@@ -742,6 +742,7 @@ function RCVotingFrame:GetFrame()
 			local tex = st.head.cols[corruptionHeaderID]:CreateTexture()
 			tex:SetAtlas("Nzoth-tooltip-topper")
 			tex:SetAllPoints(st.head.cols[corruptionHeaderID])
+			tex:SetTexCoord(0.28,0.72,0,1)
 		end
 	end
 	f.UpdateSt()
