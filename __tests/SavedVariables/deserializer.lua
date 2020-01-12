@@ -1,6 +1,6 @@
-dofile("../wow_api.lua")
-dofile("../../Libs/LibStub/LibStub.lua")
-dofile("../../Libs/AceSerializer-3.0/AceSerializer-3.0.lua")
+dofile("__tests/wow_api.lua")
+dofile("Libs/LibStub/LibStub.lua")
+dofile("Libs/AceSerializer-3.0/AceSerializer-3.0.lua")
 local AceSer = LibStub("AceSerializer-3.0")
 local includeType = false
 local inf = math.huge
