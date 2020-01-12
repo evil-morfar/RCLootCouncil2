@@ -47,6 +47,7 @@ function RCVotingFrame:OnInitialize()
 		{ name = L["Vote"],		DoCellUpdate = RCVotingFrame.SetCellVote,			colName = "vote",		sortnext = 10,		width = 60, align = "CENTER", },				-- 11 Vote button
 		{ name = L["Notes"],		DoCellUpdate = RCVotingFrame.SetCellNote,			colName = "note",								width = 50, align = "CENTER", },				-- 12 Note icon
 		{ name = _G.ROLL,			DoCellUpdate = RCVotingFrame.SetCellRoll, 		colName = "roll",		sortnext = 10,		width = 50, align = "CENTER", },				-- 13 Roll
+		{ name = "Corruption",	DoCellUpdate = RCVotingFrame.SetCellCorruption, colName = "corruption", sortnext = 10, width = 50, align = "CENTER",},				-- 14 Corruption (Patch 8.3)
 	}
 	-- The actual table being worked on, new entries should be added to this table "tinsert(RCVotingFrame.scrollCols, data)"
 	-- If you want to add or remove columns, you should do so on your OnInitialize. See RCVotingFrame:RemoveColumn() for removal.
@@ -210,7 +211,7 @@ function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
 			elseif command == "lootAck" then
 				-- v2.7.4: Extended to contain playerName, specID, ilvl, data
 				-- data contains: diff, gear1[, gear2, response] - each a table for each session
-				local name, specID, ilvl, sessionData = unpack(data)
+				local name, specID, ilvl, sessionData, corruption = unpack(data)
 				if not specID then -- Old lootAck
 					for i = 1, #lootTable do
 						self:SetCandidateData(i, name, "response", "WAIT")
@@ -224,6 +225,7 @@ function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
 					for i = 1, #lootTable do
 						self:SetCandidateData(i, name, "specID", specID)
 						self:SetCandidateData(i, name, "ilvl", ilvl)
+						self:SetCandidateData(i, name, "corruption", corruption)
 						if not sessionData.response[i] then
 							-- We might already have an response, so don't override unless it's announced
 							if self:GetCandidateData(i, name, "response") == "ANNOUNCED" then
@@ -1269,6 +1271,13 @@ function RCVotingFrame.SetCellRoll(rowFrame, frame, data, cols, row, realrow, co
 	local name = data[realrow].name
 	frame.text:SetText(lootTable[session].candidates[name].roll or "")
 	data[realrow].cols[column].value = lootTable[session].candidates[name].roll or ""
+end
+
+function RCVotingFrame.SetCellCorruption(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
+	local name = data[realrow].name
+	local data = lootTable[session].candidates[name].corruption or ""
+	frame.text:SetText(data)
+	data[realrow].cols[column].value = data
 end
 
 function RCVotingFrame.filterFunc(table, row)

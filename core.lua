@@ -1160,6 +1160,15 @@ function RCLootCouncil:UpdatePlayersData()
 	playersData.ilvl = select(2,GetAverageItemLevel())
 	self:UpdatePlayersGears()
 	self:UpdatePlayerRelics()
+
+	-- New in patch 8.3.
+	-- Self contained to avoid clashes with Classic and when it's removed
+	if GetCorruption then
+		local corruption = GetCorruption();
+		local corruptionResistance = GetCorruptionResistance();
+		local totalCorruption = math.max(corruption - corruptionResistance, 0);
+		playersData.corruption = totalCorruption
+	end
 end
 
 -- @param link A gear that we want to compare against the equipped gears
@@ -1452,7 +1461,8 @@ function RCLootCouncil:PrepareLootTable(lootTable)
 end
 
 --- Sends a lootAck to the group containing session related data.
--- Included is: specID and average ilvl is sent once.
+-- Patch 8.3: Added corruption.
+-- specID, average ilvl and corruption is sent once.
 -- Currently equipped gear and "diff" is sent for each session.
 -- Autopass response is sent if the session has been autopassed. No other response is sent.
 -- @param skip Only sends lootAcks on sessions > skip or 0
@@ -1472,7 +1482,7 @@ function RCLootCouncil:SendLootAck(table, skip)
 		end
 	end
 	if hasData then
-		self:SendCommand("group", "lootAck", self.playerName, playersData.specID, playersData.ilvl, toSend)
+		self:SendCommand("group", "lootAck", self.playerName, playersData.specID, playersData.ilvl, toSend, playersData.corruption)
 	end
 end
 
