@@ -391,6 +391,7 @@ L["Socket"] = true
 L["Sort Items"] = true
 L["sort_items_desc"] = "Sort sessions by item type and item level."
 L["Standard .csv output."] = "Standard CSV export that can be edited and reimported."
+L["Standard JSON output."] = "JSON array containing one JSON object per history entry."
 L["Status texts"] = true
 L["Store in bag and award later"] = true
 L["Succesfully deleted %d entries"] = true
