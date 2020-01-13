@@ -464,6 +464,8 @@ function addon:OptionsTable()
 										type = "select",
 										width = "double",
 										values = {
+											[1579593600] = "Ny'alotha the Waking City raid",
+											[1578988800] = "Patch 8.3.0 (Visions of N'Zoth)",
 											[1562644800] = "Azshara's Eternal Palace raid",
 											[1561521600] = "Patch 8.2.0 (Rise of Azshara)",
 											[1544515200] = "Patch 8.1.0",

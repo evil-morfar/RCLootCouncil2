@@ -93,7 +93,7 @@ function RCLootCouncil:OnInitialize()
   	self.version = GetAddOnMetadata("RCLootCouncil", "Version")
 	self.nnp = false
 	self.debug = false
-	self.tVersion = nil -- String or nil. Indicates test version, which alters stuff like version check. Is appended to 'version', i.e. "version-tVersion" (max 10 letters for stupid security)
+	self.tVersion = "Alpha.1" -- String or nil. Indicates test version, which alters stuff like version check. Is appended to 'version', i.e. "version-tVersion" (max 10 letters for stupid security)
 
 	self.playerClass = select(2, UnitClass("player"))
 	self.guildRank = L["Unguilded"]
@@ -116,9 +116,9 @@ function RCLootCouncil:OnInitialize()
 	self.verCheckDisplayed = false -- Have we shown a "out-of-date"?
 	self.moduleVerCheckDisplayed = {} -- Have we shown a "out-of-date" for a module? The key of the table is the baseName of the module.
 
-	self.EJLastestInstanceID = 1179 -- UPDATE this whenever we change test data.
+	self.EJLastestInstanceID = 1180 -- UPDATE this whenever we change test data.
 									-- The lastest raid instance Enouncter Journal id.
-									-- The Eternal Palace
+									-- Ny'alotha, the Waking City
 									-- HOWTO get this number: Open the instance we want in the Adventure Journal. Use command '/dump EJ_GetInstanceInfo()'
 									-- The 8th return value is sth like "|cff66bbff|Hjournal:0:946:14|h[Antorus, the Burning Throne]|h|r"
 									-- The number at the position of the above 946 is what we want.
@@ -389,7 +389,7 @@ function RCLootCouncil:ChatCommand(msg)
 		self.nnp = not self.nnp
 		self:Print("nnp = "..tostring(self.nnp))
 	elseif input == "exporttrinketdata" then
-		self:ExportTrinketData(tonumber(args[1]), 1, 1, 1, tonumber(args[2]))
+		self:ExportTrinketData(tonumber(args[1]), 0, tonumber(args[2]), 1)
 	elseif input == 'trinkettest' or input == 'ttest' then
 		self.playerClass = string.upper(args[1])
 		self:Test(1, false, true)
@@ -855,6 +855,10 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 				self.lootStatus[guid].num = self.lootStatus[guid].num + 1
 				self.lootStatus[guid].candidates[self:UnitName(sender)] = {status = command, item = link}
 				self:SendMessage("RCLootStatusReceived")
+
+			elseif command == "getCorruptionData" then
+				-- Just in case we need it...
+				self:SendCommand(sender, "corruptionData", self:GetPlayerCorruption())
 			end
 		else
 			-- Most likely pre 2.0 command
@@ -1160,6 +1164,16 @@ function RCLootCouncil:UpdatePlayersData()
 	playersData.ilvl = select(2,GetAverageItemLevel())
 	self:UpdatePlayersGears()
 	self:UpdatePlayerRelics()
+	playersData.corruption = self:GetPlayerCorruption()
+end
+
+-- New in patch 8.3.
+-- Self contained to avoid clashes with Classic and when it's removed
+function RCLootCouncil:GetPlayerCorruption ()
+	if not GetCorruption then return end
+	local corruption = GetCorruption()
+	local corruptionResistance = GetCorruptionResistance()
+	return {corruption, corruptionResistance}
 end
 
 -- @param link A gear that we want to compare against the equipped gears
@@ -1452,7 +1466,8 @@ function RCLootCouncil:PrepareLootTable(lootTable)
 end
 
 --- Sends a lootAck to the group containing session related data.
--- Included is: specID and average ilvl is sent once.
+-- Patch 8.3: Added corruption.
+-- specID, average ilvl and corruption is sent once.
 -- Currently equipped gear and "diff" is sent for each session.
 -- Autopass response is sent if the session has been autopassed. No other response is sent.
 -- @param skip Only sends lootAcks on sessions > skip or 0
@@ -1472,7 +1487,7 @@ function RCLootCouncil:SendLootAck(table, skip)
 		end
 	end
 	if hasData then
-		self:SendCommand("group", "lootAck", self.playerName, playersData.specID, playersData.ilvl, toSend)
+		self:SendCommand("group", "lootAck", self.playerName, playersData.specID, playersData.ilvl, toSend, playersData.corruption)
 	end
 end
 
@@ -1577,6 +1592,28 @@ function RCLootCouncil:GetItemClassesAllowedFlag(item)
 	end
 	tooltipForParsing:Hide()
 	return 0xffffffff -- The item works for all classes
+end
+
+--- Parses an item tooltip looking for corruption stat
+-- @param item The item to find corruption for
+-- @return 0 or the amount of corruption on the item.
+-- COMBAK: This should be part of a generic ToolTip parser system in the future.
+function RCLootCouncil:GetCorruptionFromTooltip (item)
+	if not item then return 0 end
+	tooltipForParsing:SetOwner(UIParent, "ANCHOR_NONE")
+	tooltipForParsing:SetHyperlink(item)
+
+	local pattern = _G.ITEM_CORRUPTION_BONUS_STAT:gsub("%%d", "%(%%d%+%)")
+	for i = 1, tooltipForParsing:NumLines() do
+		local line = getglobal(tooltipForParsing:GetName()..'TextLeft' .. i)
+		if line and line.GetText then
+			local text = line:GetText()
+			local found = text:match(pattern)
+			if found then return tonumber(found) end
+		end
+	end
+	-- Didn't find anything
+	return 0
 end
 
 -- strings contains plural/singular rule such as "%d |4ora:ore;"
