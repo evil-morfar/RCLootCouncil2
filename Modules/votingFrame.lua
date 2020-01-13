@@ -210,6 +210,7 @@ function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
 
 			elseif command == "lootAck" then
 				-- v2.7.4: Extended to contain playerName, specID, ilvl, data
+				-- v2.17.0: Added CorruptionData table
 				-- data contains: diff, gear1[, gear2, response] - each a table for each session
 				local name, specID, ilvl, sessionData, corruptionData = unpack(data)
 				if not specID then -- Old lootAck
@@ -225,11 +226,13 @@ function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
 					for i = 1, #lootTable do
 						self:SetCandidateData(i, name, "specID", specID)
 						self:SetCandidateData(i, name, "ilvl", ilvl)
-						local corruption, corruptionResistance = unpack(corruptionData)
-						local totalCorruption = math.max(corruption - corruptionResistance, 0);
-						self:SetCandidateData(i, name, "corruption", corruption)
-						self:SetCandidateData(i, name, "corruptionResistance", corruptionResistance)
-						self:SetCandidateData(i, name, "totalCorruption", totalCorruption)
+						if corruptionData then
+							local corruption, corruptionResistance = unpack(corruptionData)
+							local totalCorruption = math.max(corruption - corruptionResistance, 0);
+							self:SetCandidateData(i, name, "corruption", corruption)
+							self:SetCandidateData(i, name, "corruptionResistance", corruptionResistance)
+							self:SetCandidateData(i, name, "totalCorruption", totalCorruption)
+						end
 						if not sessionData.response[i] then
 							-- We might already have an response, so don't override unless it's announced
 							if self:GetCandidateData(i, name, "response") == "ANNOUNCED" then
