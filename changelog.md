@@ -15,6 +15,9 @@ It may also be clickable, N'Zoth wills it..
 Added auto pass data for the new trinkets.
 Added both patch 8.3 and the raid as history mass deletion options.
 
+### JSON Export
+Sebastianbassen kinda created a JSON export which is now included (#180).
+
 
 ## Bugfixes
 * *Fixed issue with CSV importing non-default responses (CurseClassic#25).*
