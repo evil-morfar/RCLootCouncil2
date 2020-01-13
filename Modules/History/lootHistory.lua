@@ -36,7 +36,7 @@ function LootHistory:OnInitialize()
 		eqxml = 		{func = self.ExportEQXML,		name = "EQdkp-Plus XML",	tip = L["EQdkp-Plus XML output, tailored for Enjin import."]},
 		player = 	{func = self.PlayerExport,		name = "Player Export",		tip = L["A format to copy/paste to another player."]},
 		discord = 	{func = self.ExportDiscord, 	name = "Discord", 			tip = L["Discord friendly output."]},
-		json = 		{func = self.ExportJSON,		name = "JSON",				tip = L["Standard JSON Output."]},
+		json = 		{func = self.ExportJSON,		name = "JSON",					tip = L["Standard JSON output."]},
 		--html = self.ExportHTML
 	}
 	self.scrollCols = {
@@ -1417,13 +1417,13 @@ do
 		end
 		return table.concat(ret)
 	end
-	
+
 	function LootHistory:ExportJSON()
 		wipe(export)
 		wipe(ret)
 		local subType, equipLoc, rollType, _
 		local eligibleEntries = 0;
-		
+
 		for player, v in pairs(lootDB) do
 			if selectedName and selectedName == player or not selectedName then
 				for i, d in pairs(v) do
@@ -1433,9 +1433,9 @@ do
 				end
 			end
 		end
-		
+
 		local processedEntries = 0;
-		
+
 		for player, v in pairs(lootDB) do
 			if selectedName and selectedName == player or not selectedName then
 				for i, d in pairs(v) do
@@ -1462,9 +1462,9 @@ do
 						tinsert(export, string.format("\"%s\":\"%s\"", "equipLoc", tostring(getglobal(equipLoc) or "")))
 						tinsert(export, string.format("\"%s\":\"%s\"", "note", (d.note or "")))
 						tinsert(export, string.format("\"%s\":\"%s\"", "owner", tostring(d.owner or "Unknown")))
-						
+
 						processedEntries = processedEntries + 1;
-						
+
 						if processedEntries < eligibleEntries then
 							tinsert(ret, "{" .. table.concat(export, ",") .. "},")
 						else
