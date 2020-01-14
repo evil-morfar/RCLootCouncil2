@@ -16,11 +16,11 @@ Added auto pass data for the new trinkets.
 Added both patch 8.3 and the raid as history mass deletion options.
 
 ### JSON Export
-Sebastianbassen kinda created a JSON export which is now included (#180).
+Sebastianbassen kindly created a JSON export which is now included (#180).
 
 
 ## Bugfixes
-* *Fixed issue with CSV importing non-default responses (CurseClassic#25).*
+* *Fixed issue with CSV importing responses without button groups (CurseClassic#25).*
 
 # v2.16.1
 ## Changes
