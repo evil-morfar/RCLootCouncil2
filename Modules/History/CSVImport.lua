@@ -35,7 +35,6 @@ function His:ImportNew (import, delimiter)
       -- Ensure error free lines
       if length ~= private.numFields then
          private:AddError(i, length, string.format("Row has the wrong number of fields - expected %d", private.numFields))
-         printtable(line)
 
       else
          private:ValidateLine(i, line)
@@ -238,7 +237,7 @@ function private:RebuildResponseID(data,t, line)
       type = addon.BTN_SLOTS[type]
    end
    -- Check for custom responses
-   if not db.responses[type] then
+   if #db.responses[type] == 0 then
       type = "default"
    end
    -- and finally validate
@@ -286,9 +285,7 @@ function private:RebuildTime (data, t, line)
    	t.time = date("%H:%M:%S", secs)
    elseif dato then
       local d, m, y = strsplit("/", dato or "", 3)
-      print(d,m,y)
       local secs = His:DateTimeToSeconds(d,m,y) -- Will provide 0:0:0
-      print(secs)
       t.date = date("%d/%m/%y", secs)
    	t.time = date("%H:%M:%S", secs)
       t.id = secs .. "-"..private.idCount

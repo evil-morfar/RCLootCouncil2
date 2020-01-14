@@ -1,3 +1,27 @@
+# v2.17.0
+## Changes
+Updated for patch 8.3.
+
+## Additions
+### Corruption
+Added a new button group for corrupted items.
+This group supersedes all other button groups, regardless of their specificity.
+
+Added a new column in the Voting Frame containing candidates' corruption info.
+Mouse over the value to see a tooltip containing even more info.
+It may also be clickable, N'Zoth wills it..
+
+### Ny'alotha the Waking City
+Added auto pass data for the new trinkets.
+Added both patch 8.3 and the raid as history mass deletion options.
+
+### JSON Export
+Sebastianbassen kindly created a JSON export which is now included (#180).
+
+
+## Bugfixes
+* *Fixed issue with CSV importing responses without button groups (CurseClassic#25).*
+
 # v2.16.1
 ## Changes
 

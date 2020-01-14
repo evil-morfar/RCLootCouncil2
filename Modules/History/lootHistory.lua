@@ -36,6 +36,7 @@ function LootHistory:OnInitialize()
 		eqxml = 		{func = self.ExportEQXML,		name = "EQdkp-Plus XML",	tip = L["EQdkp-Plus XML output, tailored for Enjin import."]},
 		player = 	{func = self.PlayerExport,		name = "Player Export",		tip = L["A format to copy/paste to another player."]},
 		discord = 	{func = self.ExportDiscord, 	name = "Discord", 			tip = L["Discord friendly output."]},
+		json = 		{func = self.ExportJSON,		name = "JSON",					tip = L["Standard JSON output."]},
 		--html = self.ExportHTML
 	}
 	self.scrollCols = {
@@ -1415,6 +1416,66 @@ do
 			end
 		end
 		return table.concat(ret)
+	end
+
+	function LootHistory:ExportJSON()
+		wipe(export)
+		wipe(ret)
+		local subType, equipLoc, rollType, _
+		local eligibleEntries = 0;
+
+		for player, v in pairs(lootDB) do
+			if selectedName and selectedName == player or not selectedName then
+				for i, d in pairs(v) do
+					if selectedDate and selectedDate == d.date or not selectedDate then
+						eligibleEntries = eligibleEntries + 1;
+					end
+				end
+			end
+		end
+
+		local processedEntries = 0;
+
+		for player, v in pairs(lootDB) do
+			if selectedName and selectedName == player or not selectedName then
+				for i, d in pairs(v) do
+					if selectedDate and selectedDate == d.date or not selectedDate then
+						_,_,subType, equipLoc = GetItemInfoInstant(d.lootWon)
+						if d.tierToken then subType = L["Armor Token"] end
+						rollType = (d.tokenRoll and "token") or (d.relicRoll and "relic") or "normal"
+						tinsert(export, string.format("\"%s\":\"%s\"", "player", tostring(player)))
+						tinsert(export, string.format("\"%s\":\"%s\"", "date", tostring(self:GetLocalizedDate(d.date))))
+						tinsert(export, string.format("\"%s\":\"%s\"", "time", tostring(d.time)))
+						tinsert(export, string.format("\"%s\":%s", "itemID", addon:GetItemIDFromLink(d.lootWon)))
+						tinsert(export, string.format("\"%s\":\"%s\"", "itemString", addon:GetItemStringFromLink(d.lootWon)))
+						tinsert(export, string.format("\"%s\":\"%s\"", "response", tostring(d.response)))
+						tinsert(export, string.format("\"%s\":%s", "votes", tostring(d.votes or 0)))
+						tinsert(export, string.format("\"%s\":\"%s\"", "class", tostring(d.class)))
+						tinsert(export, string.format("\"%s\":\"%s\"", "instance", tostring(d.instance)))
+						tinsert(export, string.format("\"%s\":\"%s\"", "boss", tostring(d.boss)))
+						tinsert(export, string.format("\"%s\":\"%s\"", "gear1", tostring(d.itemReplaced1 or "")))
+						tinsert(export, string.format("\"%s\":\"%s\"", "gear2", tostring(d.itemReplaced2 or "")))
+						tinsert(export, string.format("\"%s\":\"%s\"", "responseID", tostring(d.responseID)))
+						tinsert(export, string.format("\"%s\":\"%s\"", "isAwardReason", tostring(d.isAwardReason or false)))
+						tinsert(export, string.format("\"%s\":\"%s\"", "rollType", rollType))
+						tinsert(export, string.format("\"%s\":\"%s\"", "subType", tostring(subType)))
+						tinsert(export, string.format("\"%s\":\"%s\"", "equipLoc", tostring(getglobal(equipLoc) or "")))
+						tinsert(export, string.format("\"%s\":\"%s\"", "note", (d.note or "")))
+						tinsert(export, string.format("\"%s\":\"%s\"", "owner", tostring(d.owner or "Unknown")))
+
+						processedEntries = processedEntries + 1;
+
+						if processedEntries < eligibleEntries then
+							tinsert(ret, "{" .. table.concat(export, ",") .. "},")
+						else
+							tinsert(ret, "{" .. table.concat(export, ",") .. "}")
+						end
+						wipe(export)
+					end
+				end
+			end
+		end
+		return "[" .. table.concat(ret) .. "]"
 	end
 
 	--- Simplified BBCode, as supported by CurseForge
