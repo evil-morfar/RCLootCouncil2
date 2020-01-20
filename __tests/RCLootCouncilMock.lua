@@ -9,6 +9,7 @@ RCLootCouncil.Serialize = AceSer.Serialize
 RCLootCouncil.db = {
    profile = {},
    global = {
+      logMaxEntries = 2000,
       log = {},
    },
 }

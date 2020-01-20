@@ -196,6 +196,10 @@ function IsInInstance ()
    return (IsInGroup() or IsInRaid()), type
 end
 
+function GetInstanceInfo()
+   return "The Eternal Palace", nil, 14, "Normal", _,_,_,2164
+end
+
 function getglobal(k)
    return _G[k]
 end
