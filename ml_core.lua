@@ -23,8 +23,9 @@ local db;
 
 local LOOT_ITEM_PATTERN = "^".._G.LOOT_ITEM:gsub('%%s', '(.+)').."$"
 
-local LOOT_TIMEOUT = 1 -- If we give loot to someone, but loot slot is not cleared after this time period, consider this loot distribute as failed.
+local LOOT_TIMEOUT = 3 -- If we give loot to someone, but loot slot is not cleared after this time period, consider this loot distribute as failed.
 						-- The real time needed is the sum of two players'(ML and the awardee) latency, so 1 second timeout should be enough.
+						-- v2.17: There's reports of increased latency, especially in Classic - bump to 3 seconds.
 
 function RCLootCouncilML:OnInitialize()
 	addon:Debug("ML initialized!")
