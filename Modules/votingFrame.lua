@@ -1343,7 +1343,7 @@ end
 
 function RCVotingFrame.SetCellCorruption(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
 	local name = data[realrow].name
-	local corruption = RCVotingFrame:GetCandidateData(session, name, "corruption") or ""
+	local corruption = RCVotingFrame:GetCandidateData(session, name, "totalCorruption") or ""
 	frame.text:SetText(corruption)
 	if _G.CORRUPTION_COLOR then
 		frame.text:SetTextColor(_G.CORRUPTION_COLOR:GetRGBA())

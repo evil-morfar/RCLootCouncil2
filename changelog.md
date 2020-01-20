@@ -1,3 +1,8 @@
+# v2.17.1
+## Changes
+### Corruption
+The corruption column will now show a candidate's effective corruption (corruption - resistance) instead of the total corruption.
+
 # v2.17.0
 ## Changes
 Updated for patch 8.3.
