@@ -1302,6 +1302,7 @@ local function CorruptionCellOnEnter (player)
 		RCVotingFrame.corruptionEffects = corruptionEffects
 	end
 	local corruption = RCVotingFrame:GetCandidateData(session, player, "corruption")
+	if not corruption then return end
 	local corruptionResistance = RCVotingFrame:GetCandidateData(session, player, "corruptionResistance")
 	local totalCorruption = RCVotingFrame:GetCandidateData(session, player, "totalCorruption")
 
