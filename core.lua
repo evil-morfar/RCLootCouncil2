@@ -502,11 +502,10 @@ end
 
 -- Update the recentTradableItem by link, if it is in bag and tradable.
 function RCLootCouncil:UpdateAndSendRecentTradableItem(info, count)
-	local found = false
 	local Item = self.ItemStorage:New(info.link, "temp")
-	if Item.inBags then
+	self.ItemStorage:WatchForItemInBags(Item,
+	function() -- onFound
 		Item:Store()
-		found = true
 		if Item.time_remaining > 0 then
 			if self.mldb.rejectTrade and IsInRaid() then
 				LibDialog:Spawn("RCLOOTCOUNCIL_KEEP_ITEM", info.link)
@@ -517,15 +516,13 @@ function RCLootCouncil:UpdateAndSendRecentTradableItem(info, count)
 		end
 		-- We've searched every single bag space, and found at least 1 item that wasn't tradeable,
 		-- and none that was. We can now safely assume the item can't be traded.
-		return self:SendCommand("group", "not_tradeable", info.link, info.guid)
-	end
-	-- We haven't found it, maybe we just haven't received it yet, so try again in one second
-	if not count or (count and count <= 3) then -- Only try a few times
-		self:Debug("UpdateAndSendRecentTradableItem: Didn't find item on try ", count or 1)
-		return self:ScheduleTimer("UpdateAndSendRecentTradableItem",1,info, count and count + 1 or 2)
-	end
-	Item:Unstore()
-	self:Debug("Error - UpdateAndSendRecentTradableItem",info.link, "not found in bags")
+		self:SendCommand("group", "not_tradeable", info.link, info.guid)
+	end,
+	function() -- onFail
+		-- We haven't found it, maybe we just haven't received it yet, so try again in one second
+		Item:Unstore()
+		self:Debug(format("<ERROR> UpdateAndSendRecentTradableItem: %s not found in bags", Item.link))
+	end)
 end
 
 -- Send the msg to the channel if it is valid. Otherwise just print the messsage.

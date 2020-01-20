@@ -1012,6 +1012,12 @@ end
 local function registerAndAnnounceBagged(session)
 	local self = RCLootCouncilML
 	local Item = addon.ItemStorage:New(self.lootTable[session].link, "award_later", {bop = addon:IsItemBoP(self.lootTable[session].link)}):Store()
+	if not Item.inBags then -- It wasn't found!
+		-- We don't care about onFound, as all we need is to record the time_remaining
+		addon.ItemStorage:WatchForItemInBags(Item, nil, function(Item)
+			addon:DebugLog(format("<ERROR> Award Later item %s was never found in bags!", Item.link))
+		end)
+	end
 	if self.lootTable[session].lootSlot or self.running then -- Item is looted by ML, announce it.
 															-- Also announce if the item is awarded later in voting frame.
 		self:AnnounceAward(L["The loot master"], self.lootTable[session].link, L["Store in bag and award later"], nil, session)

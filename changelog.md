@@ -3,6 +3,10 @@
 ### Corruption
 The corruption column will now show a candidate's effective corruption (corruption - resistance) instead of the total corruption.
 
+### Item Registration
+Changed the detection of looted items to ensure better reliability with high latencies (Classic#9).
+
+
 #### Dev
 Deprecated `:IsCouncil(name)` with `:CouncilContains(name)`. Former function will be removed in a couple of months.
 
