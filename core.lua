@@ -699,7 +699,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 				self.candidates = unpack(data)
 			elseif command == "council" and self:UnitIsUnit(sender, self.masterLooter) then -- only ML sends council
 				self.council = unpack(data)
-				self.isCouncil = self:IsCouncil(self.playerName)
+				self.isCouncil = self:CouncilContains(self.playerName)
 
 				-- prepare the voting frame for the right people
 				if self.isCouncil or self.mldb.observe then
@@ -2073,11 +2073,11 @@ function RCLootCouncil:GetML()
 	return false, nil;
 end
 
-function RCLootCouncil:IsCouncil(name)
+function RCLootCouncil:CouncilContains(name)
 	local ret = tContains(self.council, self:UnitName(name))
 	if self:UnitIsUnit(name, self.playerName) and self.isMasterLooter
 	 or self.nnp or self:UnitIsUnit(name, self.masterLooter) then ret = true end -- ML and nnp is always council
-	self:DebugLog(tostring(ret).." =", "IsCouncil", name)
+	self:DebugLog(tostring(ret).." =", "ConcilContains", name)
 	return ret
 end
 
@@ -3037,6 +3037,10 @@ end
 
 function RCLootCouncil:TranslateRole(role)
 	return self.Utils:TranslateRole(role)
+end
+
+function RCLootCouncil:IsCouncil (name)
+	return self:ConcilContains(name)
 end
 
 --[[

@@ -3,6 +3,9 @@
 ### Corruption
 The corruption column will now show a candidate's effective corruption (corruption - resistance) instead of the total corruption.
 
+#### Dev
+Deprecated `:IsCouncil(name)` with `:CouncilContains(name)`. Former function will be removed in a couple of months.
+
 # v2.17.0
 ## Changes
 Updated for patch 8.3.

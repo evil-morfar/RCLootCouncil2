@@ -556,7 +556,7 @@ function RCLootCouncilML:OnCommReceived(prefix, serializedMsg, distri, sender)
 					addon:ScheduleTimer("SendCommand", 4, sender, "lootTable", self:GetLootTableForTransmit())
 					-- v2.2.6 REVIEW For backwards compability we're just sending votingFrame's lootTable
 					-- This is quite redundant and should be removed in the future
-					if db.observe or addon:IsCouncil(sender) then -- Only send all data to councilmen
+					if db.observe or addon:CouncilContains(sender) then -- Only send all data to councilmen
 						local table = addon:GetActiveModule("votingframe"):GetLootTable()
 						-- Remove our own voting data if any
 						for ses, v in ipairs(table) do
