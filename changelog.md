@@ -2,6 +2,7 @@
 ## Changes
 ### Corruption
 The corruption column will now show a candidate's effective corruption (corruption - resistance) instead of the total corruption.
+When awarding a corruption item, the tooltip showing the new total corruption now takes corruption resistance into consideration.
 
 ### Item Registration
 Changed the detection of looted items to ensure better reliability with high latencies (Classic#9).

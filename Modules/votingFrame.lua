@@ -1319,7 +1319,7 @@ local function CorruptionCellOnEnter (player)
 		GameTooltip_AddBlankLineToTooltip(GameTooltip);
 		local newTotalCorruption, currentItemCorruption = totalCorruption, 0
 		currentItemCorruption = addon:GetCorruptionFromTooltip(lootTable[session].link)
-		newTotalCorruption = totalCorruption + currentItemCorruption
+		newTotalCorruption = math.max(0, corruption - corruptionResistance + currentItemCorruption)
 		GameTooltip_AddColoredDoubleLine(GameTooltip, lootTable[session].link, currentItemCorruption == 0 and 0 or "+"..currentItemCorruption, _G.WHITE_FONT_COLOR, _G.CORRUPTION_COLOR)
 		GameTooltip_AddColoredDoubleLine(GameTooltip, L["Corruption if awarded:"], newTotalCorruption, _G.WHITE_FONT_COLOR, _G.CORRUPTION_COLOR)
 	end
