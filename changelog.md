@@ -9,6 +9,7 @@ Changed the detection of looted items to ensure better reliability with high lat
 
 ## Bugfixes
 * *Mousing over an empty corruption column will no longer result in an error.*
+* *CSV importing data with date and time and no id will now properly add the time part to the history.*
 
 
 #### Dev
