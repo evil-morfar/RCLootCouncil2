@@ -502,11 +502,10 @@ end
 
 -- Update the recentTradableItem by link, if it is in bag and tradable.
 function RCLootCouncil:UpdateAndSendRecentTradableItem(info, count)
-	local found = false
 	local Item = self.ItemStorage:New(info.link, "temp")
-	if Item.inBags then
+	self.ItemStorage:WatchForItemInBags(Item,
+	function() -- onFound
 		Item:Store()
-		found = true
 		if Item.time_remaining > 0 then
 			if self.mldb.rejectTrade and IsInRaid() then
 				LibDialog:Spawn("RCLOOTCOUNCIL_KEEP_ITEM", info.link)
@@ -517,15 +516,13 @@ function RCLootCouncil:UpdateAndSendRecentTradableItem(info, count)
 		end
 		-- We've searched every single bag space, and found at least 1 item that wasn't tradeable,
 		-- and none that was. We can now safely assume the item can't be traded.
-		return self:SendCommand("group", "not_tradeable", info.link, info.guid)
-	end
-	-- We haven't found it, maybe we just haven't received it yet, so try again in one second
-	if not count or (count and count <= 3) then -- Only try a few times
-		self:Debug("UpdateAndSendRecentTradableItem: Didn't find item on try ", count or 1)
-		return self:ScheduleTimer("UpdateAndSendRecentTradableItem",1,info, count and count + 1 or 2)
-	end
-	Item:Unstore()
-	self:Debug("Error - UpdateAndSendRecentTradableItem",info.link, "not found in bags")
+		self:SendCommand("group", "not_tradeable", info.link, info.guid)
+	end,
+	function() -- onFail
+		-- We haven't found it, maybe we just haven't received it yet, so try again in one second
+		Item:Unstore()
+		self:Debug(format("<ERROR> UpdateAndSendRecentTradableItem: %s not found in bags", Item.link))
+	end)
 end
 
 -- Send the msg to the channel if it is valid. Otherwise just print the messsage.
@@ -699,7 +696,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 				self.candidates = unpack(data)
 			elseif command == "council" and self:UnitIsUnit(sender, self.masterLooter) then -- only ML sends council
 				self.council = unpack(data)
-				self.isCouncil = self:IsCouncil(self.playerName)
+				self.isCouncil = self:CouncilContains(self.playerName)
 
 				-- prepare the voting frame for the right people
 				if self.isCouncil or self.mldb.observe then
@@ -2073,11 +2070,11 @@ function RCLootCouncil:GetML()
 	return false, nil;
 end
 
-function RCLootCouncil:IsCouncil(name)
+function RCLootCouncil:CouncilContains(name)
 	local ret = tContains(self.council, self:UnitName(name))
 	if self:UnitIsUnit(name, self.playerName) and self.isMasterLooter
 	 or self.nnp or self:UnitIsUnit(name, self.masterLooter) then ret = true end -- ML and nnp is always council
-	self:DebugLog(tostring(ret).." =", "IsCouncil", name)
+	self:DebugLog(tostring(ret).." =", "ConcilContains", name)
 	return ret
 end
 
@@ -3037,6 +3034,10 @@ end
 
 function RCLootCouncil:TranslateRole(role)
 	return self.Utils:TranslateRole(role)
+end
+
+function RCLootCouncil:IsCouncil (name)
+	return self:ConcilContains(name)
 end
 
 --[[

@@ -153,7 +153,7 @@ function TradeUI:CheckTimeRemaining()
          addon:Print(i, Item)
       end
       for i, Item in pairs(Items) do
-         if Item.time_remaining <= 0 then
+         if Item.time_remaining <= 0 and Item:SafeToRemove() then
             addon:DebugLog("TradeUI - removed", Item, "due to <= 0 time remaining")
             addon.ItemStorage:RemoveItem(Item)
          end

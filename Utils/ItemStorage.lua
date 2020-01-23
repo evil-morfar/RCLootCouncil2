@@ -9,7 +9,9 @@ local Storage = {}
 addon.ItemStorage = Storage
 
 local StoredItems = {}
-local private = {}
+local private = {
+   ITEM_WATCH_DELAY = 1
+}
 
 --[[
    Each entry index marks the type of item, and can have following fields:
@@ -47,6 +49,11 @@ local item_class = {
       tDeleteItem(db.itemStorage, self)
       return self
    end,
+   -- Items shouldn't be removed whilst itemWatch is working it.
+   -- This functions checks that.
+   SafeToRemove = function(self)
+      return self.args.itemWatch == nil
+   end
 }
 
 -- lua
@@ -200,6 +207,25 @@ function Storage:GetItemContainerSlot (item)
    end
 end
 
+--- Attempt to find the item in the players bags every 1 second.
+-- Optional callback functions can be attached for once the item is found.
+-- If the item is found, Item.time_remaining and Item.time_added are updated before callbacks.
+-- @param input The item to find; either 'itemLink' or 'Item' object.
+-- @param onFound (Optional) Function - called when the item is found. Params: Item, containerID, slotID, time_remaining
+-- @param onFail (Optional) Function - called when the item isn't found after max_attempts. Params: Item.
+-- @param max_attempts (Optional) number - maximum number of attempts to find the item. Defaults to 3.
+function Storage:WatchForItemInBags (input, onFound, onFail, max_attempts)
+   local Item
+   if type(input) == "table" then
+      Item = input
+   elseif type(input) == "string" then
+      Item = private:newItem(input, "temp") -- Item is not saved in storage
+   else
+      error(format("%s is not a valid input.", input))
+   end
+   private:InitWatchForItemInBags(Item, max_attempts or 3, onFound, onFail)
+end
+
 function private:FindItemInTable(table, item1)
    return FindInTableIf(table, function(item2) return addon:ItemIsItem(item1, item2.link) end)
 end
@@ -239,4 +265,37 @@ function private:newItem(link, type, time_remaining)
    Item.time_remaining = time_remaining or Item.time_remaining
    Item.time_added = time()
    return Item
+end
+
+function private:itemWatcherScheduler (Item)
+   local c,s,t = self:findItemInBags(Item.link)
+   if c and s then
+      Item.time_remaining = t
+      Item.time_added = time() -- Needs updating now that we updated remaining time
+      Item.inBags = true
+      Item.args.itemWatch.onFound(Item,c,s,t)
+   else
+      Item.args.itemWatch.currentAttempt = Item.args.itemWatch.currentAttempt + 1
+      if Item.args.itemWatch.currentAttempt > Item.args.itemWatch.max_attempts then
+         Item.args.itemWatch.onFail(Item)
+      else
+         addon:ScheduleTimer(self.itemWatcherScheduler, self.ITEM_WATCH_DELAY, self, Item)
+         return -- Don't do cleanup yet
+      end
+   end
+   Item.args.itemWatch = nil
+end
+
+local function noop ()
+   -- Intentionally left empty
+end
+
+function private:InitWatchForItemInBags(Item, max_attempts, onFound, onFail)
+   Item.args.itemWatch = {
+      max_attempts = max_attempts or 3,
+      currentAttempt = 1,
+      onFound = onFound or noop,
+      onFail = onFail or noop
+   }
+   addon:ScheduleTimer(self.itemWatcherScheduler, self.ITEM_WATCH_DELAY, self, Item)
 end

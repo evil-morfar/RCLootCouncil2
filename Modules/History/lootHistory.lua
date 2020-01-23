@@ -982,6 +982,7 @@ function LootHistory:UpdateMoreInfo(rowFrame, cellFrame, dat, cols, row, realrow
 	-- Debug stuff
 	if addon.debug then
 		tip:AddLine("\nDebug:")
+		tip:AddDoubleLine("ID:", tostring(data.id), 1,1,1, 1,1,1)
 		tip:AddDoubleLine("ResponseID", tostring(data.responseID), 1,1,1, 1,1,1)
 		tip:AddDoubleLine("Response:", data.response, 1,1,1, 1,1,1)
 		tip:AddDoubleLine("isAwardReason:", tostring(data.isAwardReason), 1,1,1, 1,1,1)

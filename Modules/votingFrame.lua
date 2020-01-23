@@ -194,7 +194,7 @@ function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
 
 		if test then
 			if command == "vote" then
-				if addon:IsCouncil(sender) then
+				if addon:CouncilContains(sender) then
 					local s, name, vote = unpack(data)
 					self:HandleVote(s, name, vote, sender)
 				else
@@ -946,7 +946,7 @@ end
 
 function RCVotingFrame:UpdateLootStatus()
 	if not self.frame then return end -- Might not be created yet
-	if not addon:IsCouncil(addon.playerName) then return end
+	if not addon:CouncilContains(addon.playerName) then return end
 
 	local status, list = addon:GetLootStatusData()
 	self.frame.lootStatus:SetText(L["Loot Status"] .. ": " .. status)
@@ -1302,6 +1302,7 @@ local function CorruptionCellOnEnter (player)
 		RCVotingFrame.corruptionEffects = corruptionEffects
 	end
 	local corruption = RCVotingFrame:GetCandidateData(session, player, "corruption")
+	if not corruption then return end
 	local corruptionResistance = RCVotingFrame:GetCandidateData(session, player, "corruptionResistance")
 	local totalCorruption = RCVotingFrame:GetCandidateData(session, player, "totalCorruption")
 
@@ -1314,11 +1315,12 @@ local function CorruptionCellOnEnter (player)
 	GameTooltip_AddColoredDoubleLine(GameTooltip, _G.CORRUPTION_TOOLTIP_LINE, corruption, _G.HIGHLIGHT_FONT_COLOR, _G.HIGHLIGHT_FONT_COLOR);
 	GameTooltip_AddColoredDoubleLine(GameTooltip, _G.CORRUPTION_RESISTANCE_TOOLTIP_LINE, corruptionResistance, _G.HIGHLIGHT_FONT_COLOR, _G.HIGHLIGHT_FONT_COLOR);
 	GameTooltip_AddColoredDoubleLine(GameTooltip, _G.TOTAL_CORRUPTION_TOOLTIP_LINE, totalCorruption, _G.CORRUPTION_COLOR, _G.CORRUPTION_COLOR)
+	local newTotalCorruption = totalCorruption
 	if IsCorruptedItem(lootTable[session].link) then
 		GameTooltip_AddBlankLineToTooltip(GameTooltip);
-		local newTotalCorruption, currentItemCorruption = totalCorruption, 0
+		local currentItemCorruption = 0
 		currentItemCorruption = addon:GetCorruptionFromTooltip(lootTable[session].link)
-		newTotalCorruption = totalCorruption + currentItemCorruption
+		newTotalCorruption = math.max(0, corruption - corruptionResistance + currentItemCorruption)
 		GameTooltip_AddColoredDoubleLine(GameTooltip, lootTable[session].link, currentItemCorruption == 0 and 0 or "+"..currentItemCorruption, _G.WHITE_FONT_COLOR, _G.CORRUPTION_COLOR)
 		GameTooltip_AddColoredDoubleLine(GameTooltip, L["Corruption if awarded:"], newTotalCorruption, _G.WHITE_FONT_COLOR, _G.CORRUPTION_COLOR)
 	end
@@ -1330,9 +1332,10 @@ local function CorruptionCellOnEnter (player)
 			GameTooltip_AddBlankLineToTooltip(GameTooltip);
 		end
 		-- We only show 1 effect above the player's current corruption.
-		local lastEffect = (corruptionInfo.minCorruption > totalCorruption);
-		GameTooltip_AddColoredLine(GameTooltip, _G.CORRUPTION_EFFECT_HEADER:format(corruptionInfo.name, corruptionInfo.minCorruption), lastEffect and _G.GRAY_FONT_COLOR or _G.HIGHLIGHT_FONT_COLOR);
-		GameTooltip_AddColoredLine(GameTooltip, corruptionInfo.description, lastEffect and _G.GRAY_FONT_COLOR or _G.CORRUPTION_COLOR, wrap, 10);
+		local lastEffect = (corruptionInfo.minCorruption > newTotalCorruption)
+		local newEffect = corruptionInfo.minCorruption > totalCorruption
+		GameTooltip_AddColoredLine(GameTooltip, _G.CORRUPTION_EFFECT_HEADER:format(corruptionInfo.name, corruptionInfo.minCorruption), lastEffect and _G.GRAY_FONT_COLOR or newEffect and _G.YELLOW_FONT_COLOR or  _G.HIGHLIGHT_FONT_COLOR);
+		GameTooltip_AddColoredLine(GameTooltip, corruptionInfo.description, lastEffect and _G.GRAY_FONT_COLOR or _G.CORRUPTION_COLOR, true, 10);
 		if lastEffect then
 			break;
 		end
@@ -1343,7 +1346,7 @@ end
 
 function RCVotingFrame.SetCellCorruption(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
 	local name = data[realrow].name
-	local corruption = RCVotingFrame:GetCandidateData(session, name, "corruption") or ""
+	local corruption = RCVotingFrame:GetCandidateData(session, name, "totalCorruption") or ""
 	frame.text:SetText(corruption)
 	if _G.CORRUPTION_COLOR then
 		frame.text:SetTextColor(_G.CORRUPTION_COLOR:GetRGBA())

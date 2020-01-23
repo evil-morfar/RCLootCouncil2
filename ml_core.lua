@@ -23,8 +23,9 @@ local db;
 
 local LOOT_ITEM_PATTERN = "^".._G.LOOT_ITEM:gsub('%%s', '(.+)').."$"
 
-local LOOT_TIMEOUT = 1 -- If we give loot to someone, but loot slot is not cleared after this time period, consider this loot distribute as failed.
+local LOOT_TIMEOUT = 3 -- If we give loot to someone, but loot slot is not cleared after this time period, consider this loot distribute as failed.
 						-- The real time needed is the sum of two players'(ML and the awardee) latency, so 1 second timeout should be enough.
+						-- v2.17: There's reports of increased latency, especially in Classic - bump to 3 seconds.
 
 function RCLootCouncilML:OnInitialize()
 	addon:Debug("ML initialized!")
@@ -556,7 +557,7 @@ function RCLootCouncilML:OnCommReceived(prefix, serializedMsg, distri, sender)
 					addon:ScheduleTimer("SendCommand", 4, sender, "lootTable", self:GetLootTableForTransmit())
 					-- v2.2.6 REVIEW For backwards compability we're just sending votingFrame's lootTable
 					-- This is quite redundant and should be removed in the future
-					if db.observe or addon:IsCouncil(sender) then -- Only send all data to councilmen
+					if db.observe or addon:CouncilContains(sender) then -- Only send all data to councilmen
 						local table = addon:GetActiveModule("votingframe"):GetLootTable()
 						-- Remove our own voting data if any
 						for ses, v in ipairs(table) do
@@ -1011,6 +1012,12 @@ end
 local function registerAndAnnounceBagged(session)
 	local self = RCLootCouncilML
 	local Item = addon.ItemStorage:New(self.lootTable[session].link, "award_later", {bop = addon:IsItemBoP(self.lootTable[session].link)}):Store()
+	if not Item.inBags then -- It wasn't found!
+		-- We don't care about onFound, as all we need is to record the time_remaining
+		addon.ItemStorage:WatchForItemInBags(Item, nil, function(Item)
+			addon:DebugLog(format("<ERROR> Award Later item %s was never found in bags!", Item.link))
+		end)
+	end
 	if self.lootTable[session].lootSlot or self.running then -- Item is looted by ML, announce it.
 															-- Also announce if the item is awarded later in voting frame.
 		self:AnnounceAward(L["The loot master"], self.lootTable[session].link, L["Store in bag and award later"], nil, session)

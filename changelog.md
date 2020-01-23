@@ -1,3 +1,21 @@
+# v2.17.1
+## Changes
+### Corruption
+The corruption column will now show a candidate's effective corruption (corruption - resistance) instead of the total corruption.
+When awarding a corruption item, the tooltip showing the new total corruption now takes corruption resistance into consideration.
+Corruption Effects in the tooltip are now colored yellow if an award would make a player exceed its threshold.
+
+### Item Registration
+Changed the detection of looted items to ensure better reliability with high latencies (Classic#9).
+
+## Bugfixes
+* *Mousing over an empty corruption column will no longer result in an error.*
+* *CSV importing data with date and time and no id will now properly add the time part to the history.*
+
+
+#### Dev
+Deprecated `:IsCouncil(name)` with `:CouncilContains(name)`. Former function will be removed in a couple of months.
+
 # v2.17.0
 ## Changes
 Updated for patch 8.3.
