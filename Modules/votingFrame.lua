@@ -1315,9 +1315,10 @@ local function CorruptionCellOnEnter (player)
 	GameTooltip_AddColoredDoubleLine(GameTooltip, _G.CORRUPTION_TOOLTIP_LINE, corruption, _G.HIGHLIGHT_FONT_COLOR, _G.HIGHLIGHT_FONT_COLOR);
 	GameTooltip_AddColoredDoubleLine(GameTooltip, _G.CORRUPTION_RESISTANCE_TOOLTIP_LINE, corruptionResistance, _G.HIGHLIGHT_FONT_COLOR, _G.HIGHLIGHT_FONT_COLOR);
 	GameTooltip_AddColoredDoubleLine(GameTooltip, _G.TOTAL_CORRUPTION_TOOLTIP_LINE, totalCorruption, _G.CORRUPTION_COLOR, _G.CORRUPTION_COLOR)
+	local newTotalCorruption = totalCorruption
 	if IsCorruptedItem(lootTable[session].link) then
 		GameTooltip_AddBlankLineToTooltip(GameTooltip);
-		local newTotalCorruption, currentItemCorruption = totalCorruption, 0
+		local currentItemCorruption = 0
 		currentItemCorruption = addon:GetCorruptionFromTooltip(lootTable[session].link)
 		newTotalCorruption = math.max(0, corruption - corruptionResistance + currentItemCorruption)
 		GameTooltip_AddColoredDoubleLine(GameTooltip, lootTable[session].link, currentItemCorruption == 0 and 0 or "+"..currentItemCorruption, _G.WHITE_FONT_COLOR, _G.CORRUPTION_COLOR)
@@ -1331,9 +1332,10 @@ local function CorruptionCellOnEnter (player)
 			GameTooltip_AddBlankLineToTooltip(GameTooltip);
 		end
 		-- We only show 1 effect above the player's current corruption.
-		local lastEffect = (corruptionInfo.minCorruption > totalCorruption);
-		GameTooltip_AddColoredLine(GameTooltip, _G.CORRUPTION_EFFECT_HEADER:format(corruptionInfo.name, corruptionInfo.minCorruption), lastEffect and _G.GRAY_FONT_COLOR or _G.HIGHLIGHT_FONT_COLOR);
-		GameTooltip_AddColoredLine(GameTooltip, corruptionInfo.description, lastEffect and _G.GRAY_FONT_COLOR or _G.CORRUPTION_COLOR, wrap, 10);
+		local lastEffect = (corruptionInfo.minCorruption > newTotalCorruption)
+		local newEffect = corruptionInfo.minCorruption > totalCorruption
+		GameTooltip_AddColoredLine(GameTooltip, _G.CORRUPTION_EFFECT_HEADER:format(corruptionInfo.name, corruptionInfo.minCorruption), lastEffect and _G.GRAY_FONT_COLOR or newEffect and _G.YELLOW_FONT_COLOR or  _G.HIGHLIGHT_FONT_COLOR);
+		GameTooltip_AddColoredLine(GameTooltip, corruptionInfo.description, lastEffect and _G.GRAY_FONT_COLOR or _G.CORRUPTION_COLOR, true, 10);
 		if lastEffect then
 			break;
 		end
