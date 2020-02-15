@@ -1087,8 +1087,65 @@ function addon:OptionsTable()
 									},
 								},
 							},
-							awardReasons = {
+							autoAwardBoE = {
 								order = 2,
+								name = L["options_autoAwardBoE_name"],
+								type = "group",
+								inline = true,
+								disabled = function () return not self.db.profile.autoAwardBoE end,
+								args = {
+									autoAwardBoE = {
+										order = 1,
+										name = L["options_autoAwardBoE_name"],
+										desc = L["options_autoAwardBoE_desc"],
+										type = "toggle",
+										disabled = false,
+									},
+									autoAwardBoETo2 = {
+										order = 2,
+										name = L["Auto Award to"],
+										desc = L["auto_award_to_desc"],
+										width = "double",
+										type = "input",
+										hidden = function() return GetNumGroupMembers() > 0 end,
+										get = function() return self.db.profile.autoAwardBoETo; end,
+										set = function(i,v) self.db.profile.autoAwardBoETo = v; end,
+									},
+									autoAwardBoETo = {
+										order = 2,
+										name = L["Auto Award to"],
+										desc = L["auto_award_to_desc"],
+										width = "double",
+										type = "select",
+										style = "dropdown",
+										values = function()
+											local t = {}
+											for i = 1, GetNumGroupMembers() do
+												local name = GetRaidRosterInfo(i)
+												t[name] = name
+											end
+											return t;
+										end,
+										hidden = function() return GetNumGroupMembers() == 0 end,
+									},
+									autoAwardBoEReason = {
+										order = 3,
+										name = L["Reason"],
+										desc = L["reason_desc"],
+										type = "select",
+										style = "dropdown",
+										values = function()
+											local t = {}
+											for i = 1, self.db.profile.numAwardReasons do
+												t[i] = self.db.profile.awardReasons[i].text
+											end
+											return t
+										end,
+									},
+								}
+							},
+							awardReasons = {
+								order = 3,
 								type = "group",
 								name = L["Award Reasons"],
 								inline = true,

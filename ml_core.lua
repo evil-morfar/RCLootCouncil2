@@ -610,6 +610,11 @@ function RCLootCouncilML:HandleReceivedTradeable (item, sender)
 	-- For ML loot method, ourselve must be excluded because it should be handled in self:LootOpen()
 	if not addon:UnitIsUnit(sender, "player") or addon.lootMethod ~= "master" then
 		local quality = select(3, GetItemInfo(item))
+		local autoAward, mode, winner = self:ShouldAutoAward(item, quality)
+		if autoAward then
+			self:AutoAward(nil, item, quality, winner, mode, addon.bossName, sender)
+			return
+		end
 		local boe = addon:IsItemBoE(item)
 		if	(not boe or (db.autolootOthersBoE and boe)) and -- BoE
 		 	(IsEquippableItem(item) or db.autolootEverything) and -- Safetee: I don't want to check db.autoloot here, because this is actually not a loot.
@@ -684,7 +689,7 @@ function RCLootCouncilML:OnLootSlotCleared(slot, link)
 	end
 end
 
--- DEPRECATED
+-- DEPRECATED (not used with PL)
 function RCLootCouncilML:LootOpened()
 	local sessionframe = addon:GetActiveModule("sessionframe")
 	if addon.isMasterLooter and GetNumLootItems() > 0 then
@@ -697,8 +702,9 @@ function RCLootCouncilML:LootOpened()
 					local quantity = addon.lootSlotInfo[i].quantity
 					local quality = addon.lootSlotInfo[i].quality
 					if db.altClickLooting then self:ScheduleTimer("HookLootButton", 0.5, i) end -- Delay lootbutton hooking to ensure other addons have had time to build their frames
-					if item and self:ShouldAutoAward(item, quality) and quantity > 0 then
-						self:AutoAward(i, item, quality, db.autoAwardTo, db.autoAwardReason, addon.bossName)
+					local autoAward, mode, winner = item and self:ShouldAutoAward(item, quality)
+					if autoAward and quantity > 0 then
+						self:AutoAward(i, item, quality, winner, mode, addon.bossName)
 
 					elseif item and self:CanWeLootItem(item, quality) and quantity > 0 then -- check if our options allows us to loot it
 						self:AddItem(item, false, i)
@@ -1259,14 +1265,36 @@ function RCLootCouncilML:AnnounceAward(name, link, response, roll, session, chan
 	end
 end
 
+--- Determines if a given item should be auto awarded.
+-- Assumes item is loaded.
+-- Will fail if the selected auto award candidate is not present in group.
+-- @param item: The item to check.
+-- @param quality: Number Item quality.
+-- @return shouldAutoAward[, mode, winner]
+--		shouldAutoAward bool: Whether item should be autoawarded
+--		mode string: AutoAward mode ("boe" or "normal")
+--		winner string: The candidate that should receive the auto award.
 function RCLootCouncilML:ShouldAutoAward(item, quality)
+	local _, _, _, _, _, itemClassID, itemSubClassID = GetItemInfoInstant(item)
+	if itemClassID == 1 then return false end -- Ignore containers
+
+	local boe = addon:IsItemBoE(item)
+	if boe and db.autoAwardBoE and quality == 4 and IsEquippableItem(item) then -- Epic Equippable BoE
+		for name in pairs(self.candidates) do
+			if UnitIsUnit(name, db.autoAwardBoETo) then
+				return true, "boe", db.autoAwardBoETo
+			end
+		end
+		-- Unit not in group
+		addon:Print(L["Cannot autoaward:"])
+		addon:Print(format(L["Could not find 'player' in the group."], db.autoAwardBoETo))
+		return false
+	end
 	if db.autoAward and quality >= db.autoAwardLowerThreshold and quality <= db.autoAwardUpperThreshold
 	 	and IsEquippableItem(item) then
-		local _, _, _, _, _, itemClassID, itemSubClassID = GetItemInfoInstant(item)
-		if itemClassID == 1 then return false end -- Ignore containers
 		if db.autoAwardLowerThreshold >= GetLootThreshold() or db.autoAwardLowerThreshold < 2 then
 			if UnitInRaid(db.autoAwardTo) or UnitInParty(db.autoAwardTo) then -- TEST perhaps use self.group?
-				return true;
+				return true, "normal", db.autoAwardTo
 			else
 				addon:Print(L["Cannot autoaward:"])
 				addon:Print(format(L["Could not find 'player' in the group."], db.autoAwardTo))
@@ -1278,9 +1306,21 @@ function RCLootCouncilML:ShouldAutoAward(item, quality)
 	return false
 end
 
-function RCLootCouncilML:AutoAward(lootIndex, item, quality, name, reason, boss)
+--- Auto award an item to a player.
+-- Item isn't in the lootTable at this point!
+-- @param mode: The mode as returned by `:ShouldAutoAward`. Defaults to "normal".
+function RCLootCouncilML:AutoAward(lootIndex, item, quality, name, mode, boss, owner)
 	name = addon:UnitName(name)
 	addon:DebugLog("ML:AutoAward", lootIndex, item, quality, name, reason, boss)
+	local reason = mode == "boe" and db.autoAwardBoEReason or db.autoAwardReason
+
+	if addon.lootMethod == "personalloot" then -- Normal restrictions doesn't apply here
+		addon:Print(format(L["Auto awarded 'item'"], item))
+		self:SendCommMessage("group", "do_trade", owner, item, name)
+		self:AnnounceAward(name, item, db.awardReasons[reason].text)
+		self:TrackAndLogLoot(name, item, reason, boss, db.awardReasons[reason],nil,nil, owner)
+		return true
+	end
 
 	if db.autoAwardLowerThreshold < 2 and quality < 2 and not addon:UnitIsUnit(name, "player") then
 		local qualityText = _G.ITEM_QUALITY_COLORS[2].hex .. _G.ITEM_QUALITY2_DESC .. "|r"
@@ -1307,17 +1347,15 @@ function RCLootCouncilML:AutoAward(lootIndex, item, quality, name, reason, boss)
 				return false
 			end
 		end)
-
 		return true
 	end
-
 end
 
 local history_table = {}
 local historyCounter = 0 -- Used to generate history table entry unique id
 -- REVIEW Updated with recent changes in v2.9+.
 -- This should be refactored in v3.0 as several of the sources are no longer viable, and were ment to be used with ML.
-function RCLootCouncilML:TrackAndLogLoot(winner, link, responseID, boss, reason, session, candData)
+function RCLootCouncilML:TrackAndLogLoot(winner, link, responseID, boss, reason, session, candData, owner)
 	if reason and not reason.log then return end -- Reason says don't log
 	if not (db.sendHistory or db.enableHistory) then return end -- No reason to do stuff when we won't use it
 	if addon.testMode and not addon.nnp then return end -- We shouldn't track testing awards.
@@ -1347,7 +1385,7 @@ function RCLootCouncilML:TrackAndLogLoot(winner, link, responseID, boss, reason,
 --	history_table["relicRoll"]		= relicRoll																						-- New in v2.5+ - Removed v2.9
 	history_table["note"]			= candData and candData.note																-- New in v2.7+
 	history_table["id"]				= time(date("!*t")).."-"..historyCounter												-- New in v2.7+. A unique id for the history entry.
-	history_table["owner"]			= self.lootTable[session] and self.lootTable[session].owner or winner		-- New in v2.9+.
+	history_table["owner"]			= owner or self.lootTable[session] and self.lootTable[session].owner or winner		-- New in v2.9+.
 	history_table["typeCode"]			= self.lootTable[session] and self.lootTable[session].typeCode		-- New in v2.15+.
 
 	historyCounter = historyCounter + 1

@@ -1,3 +1,22 @@
+# v2.18.0
+## Additions
+### Auto Award BoE's
+Added a new system allowing for auto awarding BoE's.
+Only Epic, Equippable, non-bags items qualify.
+This is checked before the normal auto award, so if both is enabled, this will have priority.
+
+## Changes
+### Auto Award
+Apparently Auto Awards never worked with Personal Loot - this has now been rectified.
+
+
+#### Dev
+* Changed parameters of `ML:AutoAward`.
+* Changed parameters and return type of `ML:ShouldAutoAward`.
+* Added new comm `do_trade` for handling trading of items not contained in `lootTable`.
+
+
+
 # v2.17.1
 ## Changes
 ### Corruption
