@@ -145,11 +145,22 @@ function addon:OptionsTable()
 				name = _G.GENERAL,
 				childGroups = "tab",
 				args = {
+					logo = {
+							order = 1,
+							type = "description",
+							name = " ",
+							image = addon.LOGO_LOCATION,
+							imageWidth = 256,
+							imageHeight = 64,
+							width = 1.5
+					},
 					version = {
-						order = 1,
+						order = 1.2,
 						type = "description",
 						name = function() return self.tVersion and "|cFF87CEFAv"..self.version.."|r-"..self.tVersion or "|cFF87CEFAv"..self.version.."|r" end,
+						width ="half"
 					},
+
 					generalSettingsTab = {
 						order = 2,
 						type = "group",
