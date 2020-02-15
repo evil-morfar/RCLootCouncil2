@@ -1223,7 +1223,10 @@ RCLootCouncilML.awardStrings = {
 	["&t"] = function(_, item)
 		local t = RCLootCouncilML:GetItemInfo(item)
 		return t and addon:GetItemTypeText(t.link, t.subType, t.equipLoc, t.typeID, t.subTypeID, t.classes, t.token, t.relic) or "" end,
-	["&o"] = function(...) return RCLootCouncilML.lootTable[select(5, ...)].owner and addon.Ambiguate(RCLootCouncilML.lootTable[select(5, ...)].owner) or "" end,
+	["&o"] = function(...)
+		local session = select(5, ...)
+		local owner = select(6, ...) or RCLootCouncilML.lootTable[session] and  RCLootCouncilML.lootTable[session].owner
+		return addon.Ambiguate(owner) or _G.UNKNOWN end,
 	["&m"] = function(...) return addon:GetActiveModule("votingframe"):GetCandidateData(select(5,...), select(1,...), "note") or "<none>" end,
 }
 
@@ -1249,13 +1252,14 @@ RCLootCouncilML.awardStringsDesc = {
 -- @param roll 		The candidates' roll
 -- @param session		The session of the awarded item
 -- @param changeAward Indicate whether this is a change to award instead of a new award. If it is, prefix the message by "Change Award"
-function RCLootCouncilML:AnnounceAward(name, link, response, roll, session, changeAward)
+-- @param owner 		Owner of the item, used if not available in lootTable, i.e. on autoAwards
+function RCLootCouncilML:AnnounceAward(name, link, response, roll, session, changeAward, owner)
 	if db.announceAward then
 		for k,v in pairs(db.awardText) do
 			local message = v.text
 			for text, func in pairs(self.awardStrings) do
 				-- escapePatternSymbols is defined in FrameXML/ChatFrame.lua that escapes special characters.
-				message = gsub(message, text, escapePatternSymbols(tostring(func(name, link, response, roll, session))))
+				message = gsub(message, text, escapePatternSymbols(tostring(func(name, link, response, roll, session, owner))))
 			end
 			if changeAward then
 				message = "("..L["Change Award"]..") "..message
@@ -1281,7 +1285,7 @@ function RCLootCouncilML:ShouldAutoAward(item, quality)
 	local boe = addon:IsItemBoE(item)
 	if boe and db.autoAwardBoE and quality == 4 and IsEquippableItem(item) then -- Epic Equippable BoE
 		for name in pairs(self.candidates) do
-			if UnitIsUnit(name, db.autoAwardBoETo) then
+			if addon:UnitIsUnit(name, db.autoAwardBoETo) then
 				return true, "boe", db.autoAwardBoETo
 			end
 		end
@@ -1316,8 +1320,8 @@ function RCLootCouncilML:AutoAward(lootIndex, item, quality, name, mode, boss, o
 
 	if addon.lootMethod == "personalloot" then -- Normal restrictions doesn't apply here
 		addon:Print(format(L["Auto awarded 'item'"], item))
-		self:SendCommMessage("group", "do_trade", owner, item, name)
-		self:AnnounceAward(name, item, db.awardReasons[reason].text)
+		addon:SendCommand("group", "do_trade", owner, item, name)
+		self:AnnounceAward(name, item, db.awardReasons[reason].text, nil, nil, nil, owner)
 		self:TrackAndLogLoot(name, item, reason, boss, db.awardReasons[reason],nil,nil, owner)
 		return true
 	end

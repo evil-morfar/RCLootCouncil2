@@ -110,7 +110,7 @@ function TradeUI:OnDoTrade (trader, item, winner)
       local Item = addon.ItemStorage:GetItem(item)
       if not Item then
          addon:DebugLog("<ERROR>", "Couldn't find item for 'DoTrade'", item, winner)
-         return addon:Print(format("Couldn't find %s to trade to %s"),tostring(item), tostring(winner))
+         return addon:Print(format("Couldn't find %s to trade to %s",tostring(item), tostring(winner)))
       end
       Item.type = "to_trade"
       Item.args.recipient = winner
