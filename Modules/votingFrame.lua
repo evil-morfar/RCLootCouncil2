@@ -158,7 +158,7 @@ end
 -- if succesful, or nil if not. Should be called before any session begins.
 function RCVotingFrame:RemoveColumn(id)
 	addon:Debug("Removing Column", id)
-	local removedCol, remvoedIndex
+	local removedCol, removedIndex
 	if type(id) == "number" then
 		removedIndex = id
 		removedCol = tremove(self.scrollCols, id)
