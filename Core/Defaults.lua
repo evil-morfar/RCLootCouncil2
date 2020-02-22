@@ -163,6 +163,9 @@ addon.defaults = {
                ranks = {
                   ['*'] = true
                },
+               class = {
+                  ['*'] = false
+               }
             },
             alwaysShowTooltip = false,
          },

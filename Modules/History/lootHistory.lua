@@ -21,6 +21,7 @@ local rightClickMenu;
 local ROW_HEIGHT = 20;
 local NUM_ROWS = 15;
 local epochDates = {} -- [DateTime] = epoch
+local useClassFilters = false
 
 --globals
 local tinsert, tostring, getglobal, pairs, ipairs, tremove, strsplit = tinsert, tostring, getglobal, pairs, ipairs, tremove, strsplit
@@ -297,6 +298,7 @@ function LootHistory:DeleteEntriesOlderThanEpoch(epoch)
 end
 
 function LootHistory.FilterFunc(table, row)
+	-- Name and Date filters:
 	local nameAndDate = true -- default to show everything
 	if selectedName and selectedDate then
 		nameAndDate = row.name == selectedName and row.date == selectedDate
@@ -306,6 +308,7 @@ function LootHistory.FilterFunc(table, row)
 		nameAndDate = row.date == selectedDate
 	end
 
+	-- Response filters:
 	local responseFilter = true -- default to show
 	if not db.modules["RCLootHistory"].filters then return nameAndDate end -- db hasn't been initialized
 	local response = row.response
@@ -315,7 +318,14 @@ function LootHistory.FilterFunc(table, row)
 		responseFilter = db.modules["RCLootHistory"].filters["STATUS"]
 	end
 
-	return nameAndDate and responseFilter -- Either one can filter the entry
+	-- Class Filters:
+	local classFilter = true -- Don't filter classes if none are selected
+	if useClassFilters then
+		local classID = addon.classTagNameToID[row.class]
+		classFilter = db.modules["RCLootHistory"].filters.class[classID]
+	end
+
+	return nameAndDate and responseFilter and classFilter -- Either one can filter the entry
 end
 
 -- for date scrolling table
@@ -688,15 +698,21 @@ local function IsFiltering()
 	for k,v in pairs(db.modules["RCLootHistory"].filters) do
 		if not v then return true end
 	end
+	for _,v in pairs(db.modules["RCLootHistory"].filters.class) do
+		if v then
+			useClassFilters = true
+			return true
+		end
+	end
 end
 
 function LootHistory:Update()
-	self.frame.st:SortData()
 	if IsFiltering() then
 		self.frame.filter.Text:SetTextColor(0.86,0.5,0.22) -- #db8238
 	else
 		self.frame.filter.Text:SetTextColor(_G.NORMAL_FONT_COLOR:GetRGB()) --#ffd100
 	end
+	self.frame.st:SortData()
 end
 
 function LootHistory:GetFrame()
@@ -1016,7 +1032,9 @@ end
 ---------------------------------------------------
 function LootHistory.FilterMenu(menu, level)
 	local info = MSA_DropDownMenu_CreateInfo()
-	if level == 1 then -- Redundant
+	local value = _G.MSA_DROPDOWNMENU_MENU_VALUE
+
+	if level == 1 then
 		-- Build the data table:
 		local data = {["STATUS"] = true, ["PASS"] = true, ["AUTOPASS"] = true}
 		for i = 1, addon:GetNumButtons() do
@@ -1024,14 +1042,35 @@ function LootHistory.FilterMenu(menu, level)
 		end
 		if not db.modules["RCLootHistory"].filters then -- Create the db entry
 			addon:DebugLog("Created LootHistory filters")
-			db.modules["RCLootHistory"].filters = {}
+			db.modules["RCLootHistory"].filters = {
+				class = {}
+			}
 		end
+
+
 		info.text = _G.FILTER
 		info.isTitle = true
 		info.notCheckable = true
 		info.disabled = true
 		MSA_DropDownMenu_AddButton(info, level)
 		info = MSA_DropDownMenu_CreateInfo()
+
+		info.text = _G.CLASS
+		info.isTitle = false
+		info.hasArrow = true
+		info.notCheckable = true
+		info.disabled = false
+		info.value = "CLASS"
+		MSA_DropDownMenu_AddButton(info, level)
+		info = MSA_DropDownMenu_CreateInfo()
+
+		info.text = L["Responses"]
+		info.isTitle = true
+		info.notCheckable = true
+		info.disabled = true
+		MSA_DropDownMenu_AddButton(info, level)
+		info = MSA_DropDownMenu_CreateInfo()
+
 
 		for k in ipairs(data) do -- Make sure normal responses are on top
 			info.text = addon:GetResponse("default",k).text
@@ -1061,6 +1100,37 @@ function LootHistory.FilterMenu(menu, level)
 				info.checked = db.modules["RCLootHistory"].filters[k]
 				MSA_DropDownMenu_AddButton(info, level)
 			end
+		end
+	elseif level == 2 then
+		if value == "CLASS" then
+			for id, name in ipairs(addon.classIDToDisplayName) do
+				local col = addon:GetClassColor(addon.classIDToFileName[id])
+				info.text = name
+				info.colorCode = "|cff"..addon:RGBToHex(col.r,col.g,col.b)
+				info.func = function()
+					addon:Debug("Update class filter")
+					db.modules["RCLootHistory"].filters.class[id] = not db.modules["RCLootHistory"].filters.class[id]
+					LootHistory:Update()
+				end
+				info.checked = db.modules["RCLootHistory"].filters.class[id]
+				MSA_DropDownMenu_AddButton(info, level)
+				info = MSA_DropDownMenu_CreateInfo()
+			end
+
+			-- Create constants
+			info.text = "Deselect All"
+			info.notCheckable = true
+			info.keepShownOnClick = true
+			info.func = function()
+				for k in pairs(db.modules["RCLootHistory"].filters.class) do
+					db.modules["RCLootHistory"].filters.class[k] = false
+					MSA_DropDownMenu_SetSelectedName(filterMenu, addon.classIDToDisplayName[k], false)
+					useClassFilters = false
+					LootHistory:Update()
+				end
+			end
+			MSA_DropDownMenu_AddButton(info, level)
+			info = MSA_DropDownMenu_CreateInfo()
 		end
 	end
 end

@@ -5,6 +5,10 @@ Added a new system allowing for auto awarding BoE's.
 Only Epic, Equippable, non-bags items qualify.
 This is checked before the normal auto award, so if both is enabled, this will have priority.
 
+### Class Filter
+Added class filters to the Loot History.
+Unlike the normal filters, these are active when enabled, i.e. checking 'Warrior' and 'Priest' will only show warriors and priests.
+
 ### Require Notes
 Added a new option for ML's that will require a note to be added to all responses.
 When enabled, if no note is supplied, the response is blocked, and the candidate shown a message to why that happened.
