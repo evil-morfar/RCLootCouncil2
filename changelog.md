@@ -1,3 +1,7 @@
+# v2.17.2
+## Bugfixes
+* *Characters with Non-ascii names that have a lower-case by WoW lua's definition can now be council members (Classic#31).*
+
 # v2.17.1
 ## Changes
 ### Corruption

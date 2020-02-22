@@ -1432,8 +1432,12 @@ end
 function RCLootCouncilML:GetCouncilInGroup()
 	local council = {}
 	for _, name in ipairs(addon.db.profile.council) do
-		if self.candidates[name] then
-			tinsert(council, name)
+		-- self.candidates suffers from the problem mentioned in :UnitName, so safely (slowly) compare them
+		for cand in pairs(self.candidates) do
+			if addon:UnitIsUnit(name, cand ) then
+				tinsert(council, name)
+				break
+			end
 		end
 	end
 	if not tContains(council, addon.playerName) then -- Check if the ML (us) is included
