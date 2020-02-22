@@ -1241,8 +1241,8 @@ end
 -- @param target 		The target of response
 -- @param session		The session to respond to.
 -- @param response		The selected response, must be index of db.responses.
--- @param isTier		Indicates if the response is a tier response. (v2.4.0)
--- @param isRelic		Indicates if the response is a relic response. (v2.5.0)
+-- @param isTier		Indicates if the response is a tier response. (v2.4.0) - DEPRECATED
+-- @param isRelic		Indicates if the response is a relic response. (v2.5.0) - DEPRECATED
 -- @param note			The player's note.
 -- @param roll 			The player's roll.
 -- @param link 			The itemLink of the item in the session.
@@ -1269,8 +1269,6 @@ function RCLootCouncil:SendResponse(target, session, response, isTier, isRelic, 
 			diff = diff,
 			note = note,
 			response = response,
-			isTier = isTier or nil,
-			isRelic = isRelic or nil,
 			specID = sendSpecID and playersData.specID or nil,
 			roll = roll,
 		})
