@@ -22,6 +22,9 @@ Apparently Auto Awards never worked with Personal Loot - this has now been recti
 Corrupted items now have a purple border and 'Corrupted' text as their bonus text.
 This should help you spotting those.
 
+### History Exports
+All exports will now respect all currently active filters, i.e. only export what you're currently able to see.
+
 
 #### Dev
 * Changed parameters of `ML:AutoAward`.
