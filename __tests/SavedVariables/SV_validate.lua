@@ -1,6 +1,6 @@
-dofile("../wow_api.lua")
-dofile("../../Libs/LibStub/LibStub.lua")
-dofile("../../Libs/AceSerializer-3.0/AceSerializer-3.0.lua")
+dofile("__tests/wow_api.lua")
+dofile("Libs/LibStub/LibStub.lua")
+dofile("Libs/AceSerializer-3.0/AceSerializer-3.0.lua")
 local AceSer = LibStub("AceSerializer-3.0")
 function string:split(sep)
    local sep, fields = sep or ":", {}
@@ -211,7 +211,7 @@ local function checkSV()
 end
 
 do
-   dofile("sv_to_process.lua")
+   dofile("__tests/SavedVariables/sv_to_process.lua")
    checkSV()
    local ent = {}
    local var

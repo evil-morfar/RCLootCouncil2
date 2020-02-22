@@ -244,11 +244,13 @@ function RCLootCouncil:OnEnable()
 	-- in the :CreateFrame() all :Prints as expected :o
 	self:ActivateSkin(db.currentSkin)
 
-	if self.db.global.version then
+	if self.db.global.version then -- Intentionally run before updating global.version
 		self.Compat:Run() -- Do compatibility changes
 	end
 
-	self.db.global.oldVersion = self.db.global.version
+	if self:VersionCompare(self.db.global.version, self.version) then
+		self.db.global.oldVersion = self.db.global.version
+	end
 	self.db.global.version = self.version
 
 	self.db.global.logMaxEntries = self.defaults.global.logMaxEntries -- reset it now for zzz
