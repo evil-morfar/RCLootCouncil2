@@ -1014,7 +1014,7 @@ local function registerAndAnnounceBagged(session)
 	local Item = addon.ItemStorage:New(self.lootTable[session].link, "award_later", {bop = addon:IsItemBoP(self.lootTable[session].link)}):Store()
 	if not Item.inBags then -- It wasn't found!
 		-- We don't care about onFound, as all we need is to record the time_remaining
-		addon.ItemStorage:WatchForItemInBags(Item, nil, function(Item)
+		addon.ItemStorage:WatchForItemInBags(Item, 5, function(Item)
 			addon:DebugLog(format("<ERROR> Award Later item %s was never found in bags!", Item.link))
 		end)
 	end
