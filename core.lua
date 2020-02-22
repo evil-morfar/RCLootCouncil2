@@ -657,7 +657,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 
 					-- Out of instance support
 					-- assume 8 people means we're actually raiding
-					if GetNumGroupMembers() >= 8 and not IsInInstance() then
+					if self.mldb.outOfRaid and GetNumGroupMembers() >= 8 and not IsInInstance() then
 						self:DebugLog("NotInRaid respond to lootTable")
 						for ses, v in ipairs(lootTable) do
 							-- target, session, response, isTier, isRelic, note, roll, link, ilvl, equipLoc, relicType, sendAvgIlvl, sendSpecID

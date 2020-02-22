@@ -810,6 +810,12 @@ function addon:OptionsTable()
 										desc = L["onlyUseInRaids_desc"],
 										type = "toggle",
 									},
+									outOfRaid = {
+										order = 5,
+										name = L["options_ml_outOfRaid_name"],
+										desc = L["options_ml_outOfRaid_desc"],
+										type = "toggle"
+									},
 								},
 							},
 							lootingOptions = {

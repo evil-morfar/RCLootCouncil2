@@ -483,6 +483,7 @@ function RCLootCouncilML:BuildMLdb()
 		timeout			= db.timeout,
 		rejectTrade 	= db.rejectTrade or nil,
 		requireNotes  	= db.requireNotes or nil,
+		outOfRaid 		= db.outOfRaid or nil,
 	}
 
 	addon:SendMessage("RCMLBuildMLdb", MLdb)

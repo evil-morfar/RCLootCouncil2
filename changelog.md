@@ -29,6 +29,12 @@ This should help you spotting those.
 ### History Exports
 All exports will now respect all currently active filters, i.e. only export what you're currently able to see.
 
+### Out of Raid Support
+An "Out of Raid" response is no longer automatically sent if you're outside an instance while in a group of 8 or more.
+Instead, the Master Looter will now have to specifically enable it in the "Master Looter > Usage Options" options.
+When enabled, it functions exactly as it did before.
+*DevNote: I decided to make this change now, as I've seen an increasingly amount of confusion as to why people didn't get Loot pop-ups when out of an instance. I expect the few that actually use this feature will figure out how to turn it on.*
+
 
 #### Dev
 * Changed parameters of `ML:AutoAward`.
