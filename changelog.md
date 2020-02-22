@@ -11,7 +11,7 @@ When awarding a corruption item, the tooltip showing the new total corruption no
 Corruption Effects in the tooltip are now colored yellow if an award would make a player exceed its threshold.
 
 ### Item Registration
-Changed the detection of looted items to ensure better reliability with high latencies (Classic#9).
+Changed the detection of looted items to ensure better reliability with high latencies (CurseClassic#9).
 
 ## Bugfixes
 * *Mousing over an empty corruption column will no longer result in an error.*
