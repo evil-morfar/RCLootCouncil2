@@ -481,7 +481,8 @@ function RCLootCouncilML:BuildMLdb()
 		buttons			= changedButtons,	-- REVIEW I'm not sure if it's feasible to nil out empty tables
 		responses		= changedResponses,
 		timeout			= db.timeout,
-		rejectTrade 	= db.rejectTrade or nil
+		rejectTrade 	= db.rejectTrade or nil,
+		requireNotes  	= db.requireNotes or nil,
 	}
 
 	addon:SendMessage("RCMLBuildMLdb", MLdb)

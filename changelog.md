@@ -5,6 +5,11 @@ Added a new system allowing for auto awarding BoE's.
 Only Epic, Equippable, non-bags items qualify.
 This is checked before the normal auto award, so if both is enabled, this will have priority.
 
+### Require Notes
+Added a new option for ML's that will require a note to be added to all responses.
+When enabled, if no note is supplied, the response is blocked, and the candidate shown a message to why that happened.
+Note: This is not backwards compatible with older version of the addon.
+
 ## Changes
 ### Auto Award
 Apparently Auto Awards never worked with Personal Loot - this has now been rectified.

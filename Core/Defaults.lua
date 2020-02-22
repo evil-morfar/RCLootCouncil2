@@ -93,6 +93,7 @@ addon.defaults = {
       rejectTrade = false, -- Can candidates choose not to give loot to the council
       autoTrade = false,
       awardLater = false, -- Auto check award later
+      requireNotes = false,
 
       chatFrameName = "DEFAULT_CHAT_FRAME", -- The chat frame to use for :Print()s
 

@@ -941,7 +941,14 @@ function addon:OptionsTable()
 										name = L["Add Rolls"],
 										desc = L["add_rolls_desc"],
 										type = "toggle",
-									}
+									},
+									requireNotes = {
+										order = 9,
+										name = L["Require Notes"],
+										desc = L["options_requireNotes_desc"],
+										type = "toggle",
+										disabled = function() return not self.db.profile.allowNotes end ,
+									},
 								},
 							},
 							ignoreOptions = {

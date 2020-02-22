@@ -164,6 +164,12 @@ end
 function LootFrame:OnRoll(entry, button)
 	local item = entry.item
 	if not item.isRoll then
+		if addon.mldb and addon.mldb.requireNotes then
+			if not item.note or #item.note == 0 then
+				addon:Print(format(L["lootFrame_error_note_required"], addon.Ambiguate(addon.masterLooter)))
+				return
+			end
+		end
 		-- Only send minimum neccessary data, because the information of current equipped gear has been sent when we receive the loot table.
 		-- target, session, response, isTier, isRelic, note, link, ilvl, equipLoc, relicType, sendAvgIlvl, sendSpecID
 		addon:Debug("LootFrame:Response", button, "Response:", addon:GetResponse(item.typeCode or item.equipLoc, button).text)
