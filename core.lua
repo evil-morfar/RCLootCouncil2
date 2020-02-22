@@ -2762,6 +2762,10 @@ function RCLootCouncil:GetItemBonusText(link, delimiter)
 		if text ~= "" then text = text..delimiter end
 		text = text.._G.ITEM_MOD_CR_STURDINESS_SHORT
 	end
+	if itemStatsRet["ITEM_MOD_CORRUPTION"] then
+		if text ~= "" then text = text..delimiter end
+		text = "|c".._G.CORRUPTION_COLOR:GenerateHexColor()..text.._G.ITEM_MOD_CORRUPTION.."|r"
+	end
 
 	return text
 end

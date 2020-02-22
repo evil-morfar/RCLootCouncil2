@@ -9,6 +9,10 @@ This is checked before the normal auto award, so if both is enabled, this will h
 ### Auto Award
 Apparently Auto Awards never worked with Personal Loot - this has now been rectified.
 
+### Corrupted Items
+Corrupted items now have a purple border and 'Corrupted' text as their bonus text.
+This should help you spotting those.
+
 
 #### Dev
 * Changed parameters of `ML:AutoAward`.
