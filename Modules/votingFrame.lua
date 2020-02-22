@@ -589,6 +589,7 @@ function RCVotingFrame:SwitchSession(s)
 	session = s
 	local t = lootTable[s] -- Shortcut
 	self.frame.itemIcon:SetNormalTexture(t.texture)
+	self.frame.itemIcon:SetBorderColor((IsCorruptedItem and IsCorruptedItem(t.link)) and "purple" or nil)
 	self.frame.itemText:SetText(t.link)
 	self.frame.iState:SetText(self:GetItemStatus(t.link))
 	local bonusText = addon:GetItemBonusText(t.link, "/")
@@ -757,32 +758,31 @@ function RCVotingFrame:GetFrame()
 	--[[------------------------------
 		Session item icon and strings
 	    ------------------------------]]
-	local item = CreateFrame("Button", nil, f.content)
-    item:SetNormalTexture("Interface/ICONS/INV_Misc_QuestionMark")
-    item:SetScript("OnEnter", function()
-		if not lootTable then return; end
-		addon:CreateHypertip(lootTable[session].link)
-		GameTooltip:AddLine("")
-		GameTooltip:AddLine(L["always_show_tooltip_howto"], nil, nil, nil, true)
-		GameTooltip:Show()
-	end)
-	item:SetScript("OnLeave", function() addon:HideTooltip() end)
-	item:SetScript("OnClick", function()
-		if not lootTable then return; end
-	    if ( IsModifiedClick() ) then
-		    HandleModifiedItemClick(lootTable[session].link);
-        end
-        if item.lastClick and GetTime() - item.lastClick <= 0.5 then
-        	db.modules["RCVotingFrame"].alwaysShowTooltip = not db.modules["RCVotingFrame"].alwaysShowTooltip
-        	self:Update()
-		else
-			item.lastClick = GetTime()
-		end
-    end);
+	local item = addon.UI:New("IconBordered", f.content, "Interface/ICONS/INV_Misc_QuestionMark")
+	item:SetMultipleScripts({
+		 OnEnter = function()
+			 if not lootTable then return; end
+			 addon:CreateHypertip(lootTable[session].link)
+			 GameTooltip:AddLine("")
+			 GameTooltip:AddLine(L["always_show_tooltip_howto"], nil, nil, nil, true)
+			 GameTooltip:Show()
+		 end,
+		 OnLeave = addon.HideTooltip,
+		 OnClick = function()
+			 if not lootTable then return; end
+			 if ( IsModifiedClick() ) then
+				 HandleModifiedItemClick(lootTable[session].link);
+			 end
+			 if item.lastClick and GetTime() - item.lastClick <= 0.5 then
+				 db.modules["RCVotingFrame"].alwaysShowTooltip = not db.modules["RCVotingFrame"].alwaysShowTooltip
+				 self:Update()
+			 else
+				 item.lastClick = GetTime()
+			 end
+		 end
+	 })
 	item:SetPoint("TOPLEFT", f, "TOPLEFT", 10, -20)
 	item:SetSize(50,50)
-	item:EnableMouse(true)
-   item:RegisterForClicks("AnyUp")
 	f.itemIcon = item
 
 	f.itemTooltip = addon:CreateGameTooltip("votingframe", f.content)
