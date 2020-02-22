@@ -995,6 +995,29 @@ function LootHistory:GetFrame()
 	return f;
 end
 
+--- Returns a table of all the winners of an item.
+-- @param item The item to check for.
+-- @return A table which values are a numeric table of numLoot, name, class
+function LootHistory:GetWinnersOfItem (item)
+	local winners = {}
+	local count = 1
+	local ret = {}
+	for name, items in pairs(lootDB) do
+		for _,entry in pairs(items) do
+			if addon:ItemIsItem(entry.lootWon, item) then
+				if not winners[name] then
+					winners[name] = count
+					ret[count] = {1, name, entry.class}
+					count = count + 1
+				else
+					ret[winners[name]][1] = ret[winners[name]][1] + 1
+				end
+			end
+		end
+	end
+	return ret
+end
+
 function LootHistory:UpdateMoreInfo(rowFrame, cellFrame, dat, cols, row, realrow, column, tabel, button, ...)
 	if not dat then return end
 	if not moreInfoData then return addon:Debug("No moreInfoData in UpdateMoreInfo()") end
@@ -1039,6 +1062,18 @@ function LootHistory:UpdateMoreInfo(rowFrame, cellFrame, dat, cols, row, realrow
 	end
 	tip:AddDoubleLine(L["Number of raids received loot from:"], moreInfoData[row.name].totals.raids.num, 1,1,1, 1,1,1)
 	tip:AddDoubleLine(L["Total items won:"], moreInfoData[row.name].totals.total, 1,1,1, 0,1,0)
+	tip:AddLine(" ")
+
+	-- Other recipient of the item
+	local winners = self:GetWinnersOfItem(data.lootWon)
+	table.sort(winners, function (a,b)
+		return a[2] < b[2]
+	end)
+	tip:AddLine(format(L["lootHistory_moreInfo_winnersOfItem"], data.lootWon))
+	for _, data in ipairs(winners) do
+		local c = addon:GetClassColor(data[3])
+		tip:AddDoubleLine(addon.Ambiguate(data[2]), data[1], c.r,c.g,c.b, 1,1,1)
+	end
 
 	-- Debug stuff
 	if addon.debug then

@@ -501,6 +501,7 @@ L["chat_cmd_add_invalid_owner"] = "The player %s was either invalid or not a can
 
 L["error_test_as_non_leader"] = "You cannot initiate a test while in a group without being the group leader."
 L["lootFrame_error_note_required"] = "You must add a note before submitting your repsonse - %s"
+L["lootHistory_moreInfo_winnersOfItem"] = "Winners of %s:"
 L["trade_complete_message"] = "%s traded %s to %s."
 L["trade_wrongwinner_message"] = "WARNING: %s traded %s to %s instead of %s!"
 L["trade_item_to_trade_not_found"] = "WARNING: Item to trade: %s couldn't be found in your inventory!"

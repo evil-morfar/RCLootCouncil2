@@ -14,6 +14,10 @@ Added a new option for ML's that will require a note to be added to all response
 When enabled, if no note is supplied, the response is blocked, and the candidate shown a message to why that happened.
 Note: This is not backwards compatible with older version of the addon.
 
+### Winners of item
+Added all the winners of the selected item to the More Info tooltip in the Loot History.
+Note: Different versions of an item is not included in the count.
+
 ## Changes
 ### Auto Award
 Apparently Auto Awards never worked with Personal Loot - this has now been rectified.
