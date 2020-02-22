@@ -231,6 +231,11 @@ do
 			else
 				entry.noteButton:Show()
 			end
+			if IsCorruptedItem and IsCorruptedItem(item.link) then
+				entry.icon:SetBorderColor("purple")
+			else
+				entry.icon:SetBorderColor()
+			end
 			entry.item = item
 			entry.itemText:SetText((item.isRoll and (_G.ROLL..": ") or "")..addon:GetItemTextWithCount(entry.item.link or "error", #entry.item.sessions))
 			entry.icon:SetNormalTexture(entry.item.texture or "Interface\\InventoryItems\\WoWUnknownItem01")
@@ -278,7 +283,8 @@ do
 			entry.frame:SetPoint("TOPLEFT", parent, "TOPLEFT")
 
 			-------- Item Icon -------------
-			entry.icon = addon.UI:New("Icon", entry.frame)
+			entry.icon = addon.UI:New("IconBordered", entry.frame)
+			entry.icon:SetBorderColor() -- white
 			entry.icon:SetSize(ENTRY_HEIGHT*0.78, ENTRY_HEIGHT*0.78)
 			entry.icon:SetPoint("TOPLEFT", entry.frame, "TOPLEFT", 9, -5)
 			entry.icon:SetMultipleScripts({
