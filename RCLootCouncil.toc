@@ -20,7 +20,6 @@ ml_core.lua
 
 UI\UI.lua
 UI\Widgets\widgets.xml
-UI\AceGUIWidgets\widgets.xml
 
 Modules\Modules.xml
 
