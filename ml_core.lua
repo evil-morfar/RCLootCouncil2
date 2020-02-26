@@ -236,6 +236,15 @@ function RCLootCouncilML:UpdateGroup(ask)
 	end
 end
 
+-- Helpers for ML:SendCandidates
+local function SendCandidates()
+	addon:SendCommand("group", "candidates", RCLootCouncilML.candidates)
+	RCLootCouncilML.timers.candidate_send = nil
+end
+local function OnCandidatesCooldown()
+	RCLootCouncilML.timers.candidates_cooldown = nil
+end
+
 --- Sends candidates to the group no more than every CANDIDATE_SEND_COOLDOWN seconds.
 -- Use this for all candidate sends!
 function RCLootCouncilML:SendCandidates ()
@@ -245,12 +254,12 @@ function RCLootCouncilML:SendCandidates ()
 		else
 			-- Send the candidates when the grace period is done
 			local timeRemaining = self:TimeLeft(self.timers.candidates_cooldown)
-			self.timers.candidate_send = self:ScheduleTimer(addon.SendCommand, timeRemaining, addon, "group", "candidates", self.candidates)
+			self.timers.candidate_send = self:ScheduleTimer(SendCandidates, timeRemaining)
 			return
 		end
 	else
 		-- No cooldown, send immediately and start the cooldown
-		self.timers.candidates_cooldown = self:ScheduleTimer(addon.noop, CANDIDATE_SEND_COOLDOWN)
+		self.timers.candidates_cooldown = self:ScheduleTimer(OnCandidatesCooldown, CANDIDATE_SEND_COOLDOWN)
 		addon:SendCommand("group", "candidates", self.candidates)
 	end
 end
