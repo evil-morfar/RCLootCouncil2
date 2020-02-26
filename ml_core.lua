@@ -26,6 +26,7 @@ local LOOT_ITEM_PATTERN = "^".._G.LOOT_ITEM:gsub('%%s', '(.+)').."$"
 local LOOT_TIMEOUT = 3 -- If we give loot to someone, but loot slot is not cleared after this time period, consider this loot distribute as failed.
 						-- The real time needed is the sum of two players'(ML and the awardee) latency, so 1 second timeout should be enough.
 						-- v2.17: There's reports of increased latency, especially in Classic - bump to 3 seconds.
+local CANDIDATE_SEND_COOLDOWN = 10
 
 function RCLootCouncilML:OnInitialize()
 	addon:Debug("ML initialized!")
@@ -49,6 +50,7 @@ function RCLootCouncilML:OnEnable()
 	self.running = false		-- true if we're handling a session
 	self.council = self:GetCouncilInGroup()
 	self.combatQueue = {}	-- The functions that will be executed when combat ends. format: [num] = {func, arg1, arg2, ...}
+	self.timers = {}			-- Table to hold timer references. Each value is the name of a timer, whose value is the timer id.
 
 	self:RegisterComm("RCLootCouncil", 		"OnCommReceived")
 	self:RegisterEvent("CHAT_MSG_WHISPER",	"OnEvent")
@@ -213,7 +215,7 @@ function RCLootCouncilML:UpdateGroup(ask)
 	end
 	if updates then
 		addon:SendCommand("group", "MLdb", addon.mldb)
-		addon:SendCommand("group", "candidates", self.candidates)
+		self:SendCandidates()
 
 		local oldCouncil = self.council
 		self.council = self:GetCouncilInGroup()
@@ -231,6 +233,25 @@ function RCLootCouncilML:UpdateGroup(ask)
 		if councilUpdated then
 			addon:SendCommand("group", "council", self.council)
 		end
+	end
+end
+
+--- Sends candidates to the group no more than every CANDIDATE_SEND_COOLDOWN seconds.
+-- Use this for all candidate sends!
+function RCLootCouncilML:SendCandidates ()
+	if self.timers.candidates_cooldown then -- Recently sent one
+		if self.timers.candidate_send then -- And we've queued a new one
+			return -- Do nothing, it'll be sent once the current timer ends
+		else
+			-- Send the candidates when the grace period is done
+			local timeRemaining = self:TimeLeft(self.timers.candidates_cooldown)
+			self.timers.candidate_send = self:ScheduleTimer(addon.SendCommand, timeRemaining, addon, "group", "candidates", self.candidates)
+			return
+		end
+	else
+		-- No cooldown, send immediately and start the cooldown
+		self.timers.candidates_cooldown = self:ScheduleTimer("", CANDIDATE_SEND_COOLDOWN)
+		addon:SendCommand("group", "candidates", self.candidates)
 	end
 end
 
@@ -433,7 +454,7 @@ function RCLootCouncilML:CouncilChanged()
 	self.council = self:GetCouncilInGroup()
 	addon:SendCommand("group", "council", self.council)
 	-- Send candidates so new council members can register it
-	addon:SendCommand("group", "candidates", self.candidates)
+	self:SendCandidates()
 end
 
 function RCLootCouncilML:UpdateMLdb()
@@ -497,8 +518,6 @@ function RCLootCouncilML:NewML(newML)
 		self:UpdateMLdb() -- Will build and send mldb
 		self:UpdateGroup(true)
 		addon:SendCommand("group", "council", self.council)
-		-- Set a timer to send out the incoming playerInfo changes
-		self:ScheduleTimer("Timer", 10, "GroupUpdate")
 		self:ClearOldItemsInBags()
 
 		if #addon.ItemStorage:GetAllItemsOfType("award_later") > 0 then
@@ -517,10 +536,6 @@ function RCLootCouncilML:Timer(type, ...)
 
 	elseif type == "LootSend" then
 		addon:SendCommand("group", "offline_timer")
-
-	elseif type == "GroupUpdate" then
-		addon:SendCommand("group", "council", self.council)
-		addon:SendCommand("group", "candidates", self.candidates)
 	end
 end
 
@@ -533,6 +548,7 @@ function RCLootCouncilML:OnCommReceived(prefix, serializedMsg, distri, sender)
 		if test and addon.isMasterLooter then -- only ML receives these commands
 			if command == "playerInfo" then
 				self:AddCandidate(unpack(data))
+				self:SendCandidates()
 
 			elseif command == "MLdb_request" then
 				-- Just resend to the entire group instead of the sender
@@ -542,7 +558,7 @@ function RCLootCouncilML:OnCommReceived(prefix, serializedMsg, distri, sender)
 				addon:SendCommand("group", "council", self.council)
 
 			elseif command == "candidates_request" then
-				addon:SendCommand("group", "candidates", self.candidates)
+				self:SendCandidates()
 
 			elseif command == "reconnect" and not addon:UnitIsUnit(sender, addon.playerName) then -- Don't receive our own reconnect
 				-- Someone asks for mldb, council and candidates

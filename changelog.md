@@ -35,11 +35,15 @@ Instead, the Master Looter will now have to specifically enable it in the "Maste
 When enabled, it functions exactly as it did before.
 *DevNote: I decided to make this change now, as I've seen an increasingly amount of confusion as to why people didn't get Loot pop-ups when out of an instance. I expect the few that actually use this feature will figure out how to turn it on.*
 
+## Bugfixes
+* *Candidate info no longer has the potential to wait a long time before being sync, i.e. guild rank not showing up in the voting frame.*
+
 
 #### Dev
 * Changed parameters of `ML:AutoAward`.
 * Changed parameters and return type of `ML:ShouldAutoAward`.
 * Added new comm `do_trade` for handling trading of items not contained in `lootTable`.
+* Changed system for sending candidate updates (`ML:SendCandidates`).
 
 
 
