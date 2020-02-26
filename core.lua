@@ -2391,6 +2391,10 @@ function RCLootCouncil:UnitName(unit)
 	return name and name.."-"..realm
 end
 
+function RCLootCouncil:noop ()
+	-- Intentionally left empty
+end
+
 ---------------------------------------------------------------------------
 -- Custom module support funcs.
 -- @section Modules.

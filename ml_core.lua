@@ -250,7 +250,7 @@ function RCLootCouncilML:SendCandidates ()
 		end
 	else
 		-- No cooldown, send immediately and start the cooldown
-		self.timers.candidates_cooldown = self:ScheduleTimer("", CANDIDATE_SEND_COOLDOWN)
+		self.timers.candidates_cooldown = self:ScheduleTimer(addon.noop, CANDIDATE_SEND_COOLDOWN)
 		addon:SendCommand("group", "candidates", self.candidates)
 	end
 end

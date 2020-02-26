@@ -286,16 +286,12 @@ function private:itemWatcherScheduler (Item)
    Item.args.itemWatch = nil
 end
 
-local function noop ()
-   -- Intentionally left empty
-end
-
 function private:InitWatchForItemInBags(Item, max_attempts, onFound, onFail)
    Item.args.itemWatch = {
       max_attempts = max_attempts or 3,
       currentAttempt = 1,
-      onFound = onFound or noop,
-      onFail = onFail or noop
+      onFound = onFound or addon.noop,
+      onFail = onFail or addon.noop
    }
    addon:ScheduleTimer(self.itemWatcherScheduler, self.ITEM_WATCH_DELAY, self, Item)
 end
