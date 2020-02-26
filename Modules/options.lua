@@ -1124,6 +1124,7 @@ function addon:OptionsTable()
 										desc = L["options_autoAwardBoE_desc"],
 										type = "toggle",
 										disabled = false,
+										width = "full",
 									},
 									autoAwardBoETo2 = {
 										order = 2,
