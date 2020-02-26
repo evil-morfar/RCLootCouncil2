@@ -47,6 +47,11 @@ When enabled, it functions exactly as it did before.
 
 
 
+# v2.17.2
+## Bugfixes
+* *Characters with Non-ascii names that have a lower-case by WoW lua's definition can now be council members (CurseClassic#31).*
+* *Fixed issue regarding adding items to a session could potentially cause an error (Curse#406).*
+
 # v2.17.1
 ## Changes
 ### Corruption
@@ -55,7 +60,7 @@ When awarding a corruption item, the tooltip showing the new total corruption no
 Corruption Effects in the tooltip are now colored yellow if an award would make a player exceed its threshold.
 
 ### Item Registration
-Changed the detection of looted items to ensure better reliability with high latencies (Classic#9).
+Changed the detection of looted items to ensure better reliability with high latencies (CurseClassic#9).
 
 ## Bugfixes
 * *Mousing over an empty corruption column will no longer result in an error.*

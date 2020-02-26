@@ -91,11 +91,11 @@ function LootFrame:Start(table, reRoll)
 end
 
 function LootFrame:AddSingleItem(item)
+	if not self:IsEnabled() then self:Enable() end
 	addon:DebugLog("LootFrame:AddSingleItem", item.link, #self.items)
 	if item.autopass then
 		self.items[#self.items+1] = { rolled = true}
 	else
-		if not self:IsEnabled() then self:Enable() end
 		self:AddItem(0, #self.items + 1, item)
 		-- REVIEW Consider duplicates? It doesn't really work in it's current form here.
 		self:Show()
