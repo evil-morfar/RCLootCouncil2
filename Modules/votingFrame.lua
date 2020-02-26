@@ -767,7 +767,7 @@ function RCVotingFrame:GetFrame()
 			 GameTooltip:AddLine(L["always_show_tooltip_howto"], nil, nil, nil, true)
 			 GameTooltip:Show()
 		 end,
-		 OnLeave = addon.HideTooltip,
+		 OnLeave = function() addon:HideTooltip() end,
 		 OnClick = function()
 			 if not lootTable then return; end
 			 if ( IsModifiedClick() ) then
