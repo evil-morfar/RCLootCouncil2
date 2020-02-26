@@ -946,7 +946,7 @@ end
 
 function RCVotingFrame:UpdateLootStatus()
 	if not self.frame then return end -- Might not be created yet
-	if not addon:CouncilContains(addon.playerName) then return end
+	if not addon.isCouncil then return end
 
 	local status, list = addon:GetLootStatusData()
 	self.frame.lootStatus:SetText(L["Loot Status"] .. ": " .. status)
