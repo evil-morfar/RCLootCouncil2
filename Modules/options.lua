@@ -152,13 +152,13 @@ function addon:OptionsTable()
 							image = addon.LOGO_LOCATION,
 							imageWidth = 256,
 							imageHeight = 64,
-							width = 1.5
+							width = 1.6
 					},
 					version = {
 						order = 1.2,
 						type = "description",
 						name = function() return self.tVersion and "|cFF87CEFAv"..self.version.."|r-"..self.tVersion or "|cFF87CEFAv"..self.version.."|r" end,
-						width ="half"
+						width = 0.9
 					},
 
 					generalSettingsTab = {
