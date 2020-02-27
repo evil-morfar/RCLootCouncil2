@@ -1183,7 +1183,7 @@ function LootHistory.FilterMenu(menu, level)
 		end
 	elseif level == 2 then
 		if value == "CLASS" then
-			for id, name in ipairs(addon.classIDToDisplayName) do
+			for id, name in pairs(addon.classIDToDisplayName) do
 				local col = addon:GetClassColor(addon.classIDToFileName[id])
 				info.text = name
 				info.colorCode = "|cff"..addon:RGBToHex(col.r,col.g,col.b)
