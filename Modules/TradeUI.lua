@@ -94,9 +94,30 @@ function TradeUI:OnCommReceived(prefix, serializedMsg, distri, sender)
 	if prefix == "RCLootCouncil" then
 		local test, command, data = addon:Deserialize(serializedMsg)
 		if addon:HandleXRealmComms(self, command, data, sender) then return end
-		if test and command == "awarded" then
-         self:OnAwardReceived(unpack(data))
+		if test then
+         if command == "awarded" then
+            self:OnAwardReceived(unpack(data))
+         elseif command == "do_trade" then
+            self:OnDoTrade(unpack(data))
+         end
       end
+   end
+end
+
+function TradeUI:OnDoTrade (trader, item, winner)
+   if addon:UnitIsUnit(trader, "player") then
+      -- Item should be registered
+      local Item = addon.ItemStorage:GetItem(item)
+      if not Item then
+         addon:DebugLog("<ERROR>", "Couldn't find item for 'DoTrade'", item, winner)
+         return addon:Print(format("Couldn't find %s to trade to %s",tostring(item), tostring(winner)))
+      end
+      Item.type = "to_trade"
+      Item.args.recipient = winner
+      if Item and addon:UnitIsUnit(winner, "player") and not (addon.testMode or addon.nnp) then
+         addon.ItemStorage:RemoveItem(Item)
+      end
+      self:Show()
    end
 end
 

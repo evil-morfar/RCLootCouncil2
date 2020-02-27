@@ -164,13 +164,17 @@ end
 function LootFrame:OnRoll(entry, button)
 	local item = entry.item
 	if not item.isRoll then
+		if addon.mldb and addon.mldb.requireNotes then
+			if not item.note or #item.note == 0 then
+				addon:Print(format(L["lootFrame_error_note_required"], addon.Ambiguate(addon.masterLooter)))
+				return
+			end
+		end
 		-- Only send minimum neccessary data, because the information of current equipped gear has been sent when we receive the loot table.
 		-- target, session, response, isTier, isRelic, note, link, ilvl, equipLoc, relicType, sendAvgIlvl, sendSpecID
-		local isTier = item.isTier and addon.mldb.tierButtonsEnabled
-		local isRelic = item.isRelic and addon.mldb.relicButtonsEnabled
 		addon:Debug("LootFrame:Response", button, "Response:", addon:GetResponse(item.typeCode or item.equipLoc, button).text)
 		for _, session in ipairs(item.sessions) do
-			addon:SendResponse("group", session, button, isTier, isRelic, item.note)
+			addon:SendResponse("group", session, button, nil, nil, item.note)
 		end
 		if addon:Getdb().printResponse then
 			addon:Print(string.format(L["Response to 'item'"], addon:GetItemTextWithCount(item.link, #item.sessions))..
@@ -231,6 +235,11 @@ do
 			else
 				entry.noteButton:Show()
 			end
+			if IsCorruptedItem and IsCorruptedItem(item.link) then
+				entry.icon:SetBorderColor("purple")
+			else
+				entry.icon:SetBorderColor()
+			end
 			entry.item = item
 			entry.itemText:SetText((item.isRoll and (_G.ROLL..": ") or "")..addon:GetItemTextWithCount(entry.item.link or "error", #entry.item.sessions))
 			entry.icon:SetNormalTexture(entry.item.texture or "Interface\\InventoryItems\\WoWUnknownItem01")
@@ -278,7 +287,8 @@ do
 			entry.frame:SetPoint("TOPLEFT", parent, "TOPLEFT")
 
 			-------- Item Icon -------------
-			entry.icon = addon.UI:New("Icon", entry.frame)
+			entry.icon = addon.UI:New("IconBordered", entry.frame)
+			entry.icon:SetBorderColor() -- white
 			entry.icon:SetSize(ENTRY_HEIGHT*0.78, ENTRY_HEIGHT*0.78)
 			entry.icon:SetPoint("TOPLEFT", entry.frame, "TOPLEFT", 9, -5)
 			entry.icon:SetMultipleScripts({

@@ -158,7 +158,7 @@ end
 -- if succesful, or nil if not. Should be called before any session begins.
 function RCVotingFrame:RemoveColumn(id)
 	addon:Debug("Removing Column", id)
-	local removedCol, remvoedIndex
+	local removedCol, removedIndex
 	if type(id) == "number" then
 		removedIndex = id
 		removedCol = tremove(self.scrollCols, id)
@@ -589,6 +589,7 @@ function RCVotingFrame:SwitchSession(s)
 	session = s
 	local t = lootTable[s] -- Shortcut
 	self.frame.itemIcon:SetNormalTexture(t.texture)
+	self.frame.itemIcon:SetBorderColor((IsCorruptedItem and IsCorruptedItem(t.link)) and "purple" or nil)
 	self.frame.itemText:SetText(t.link)
 	self.frame.iState:SetText(self:GetItemStatus(t.link))
 	local bonusText = addon:GetItemBonusText(t.link, "/")
@@ -757,32 +758,31 @@ function RCVotingFrame:GetFrame()
 	--[[------------------------------
 		Session item icon and strings
 	    ------------------------------]]
-	local item = CreateFrame("Button", nil, f.content)
-    item:SetNormalTexture("Interface/ICONS/INV_Misc_QuestionMark")
-    item:SetScript("OnEnter", function()
-		if not lootTable then return; end
-		addon:CreateHypertip(lootTable[session].link)
-		GameTooltip:AddLine("")
-		GameTooltip:AddLine(L["always_show_tooltip_howto"], nil, nil, nil, true)
-		GameTooltip:Show()
-	end)
-	item:SetScript("OnLeave", function() addon:HideTooltip() end)
-	item:SetScript("OnClick", function()
-		if not lootTable then return; end
-	    if ( IsModifiedClick() ) then
-		    HandleModifiedItemClick(lootTable[session].link);
-        end
-        if item.lastClick and GetTime() - item.lastClick <= 0.5 then
-        	db.modules["RCVotingFrame"].alwaysShowTooltip = not db.modules["RCVotingFrame"].alwaysShowTooltip
-        	self:Update()
-		else
-			item.lastClick = GetTime()
-		end
-    end);
+	local item = addon.UI:New("IconBordered", f.content, "Interface/ICONS/INV_Misc_QuestionMark")
+	item:SetMultipleScripts({
+		 OnEnter = function()
+			 if not lootTable then return; end
+			 addon:CreateHypertip(lootTable[session].link)
+			 GameTooltip:AddLine("")
+			 GameTooltip:AddLine(L["always_show_tooltip_howto"], nil, nil, nil, true)
+			 GameTooltip:Show()
+		 end,
+		 OnLeave = function() addon:HideTooltip() end,
+		 OnClick = function()
+			 if not lootTable then return; end
+			 if ( IsModifiedClick() ) then
+				 HandleModifiedItemClick(lootTable[session].link);
+			 end
+			 if item.lastClick and GetTime() - item.lastClick <= 0.5 then
+				 db.modules["RCVotingFrame"].alwaysShowTooltip = not db.modules["RCVotingFrame"].alwaysShowTooltip
+				 self:Update()
+			 else
+				 item.lastClick = GetTime()
+			 end
+		 end
+	 })
 	item:SetPoint("TOPLEFT", f, "TOPLEFT", 10, -20)
 	item:SetSize(50,50)
-	item:EnableMouse(true)
-   item:RegisterForClicks("AnyUp")
 	f.itemIcon = item
 
 	f.itemTooltip = addon:CreateGameTooltip("votingframe", f.content)
@@ -946,7 +946,7 @@ end
 
 function RCVotingFrame:UpdateLootStatus()
 	if not self.frame then return end -- Might not be created yet
-	if not addon:CouncilContains(addon.playerName) then return end
+	if not addon.isCouncil then return end
 
 	local status, list = addon:GetLootStatusData()
 	self.frame.lootStatus:SetText(L["Loot Status"] .. ": " .. status)

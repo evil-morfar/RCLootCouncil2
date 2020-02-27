@@ -145,11 +145,22 @@ function addon:OptionsTable()
 				name = _G.GENERAL,
 				childGroups = "tab",
 				args = {
+					logo = {
+							order = 1,
+							type = "description",
+							name = " ",
+							image = addon.LOGO_LOCATION,
+							imageWidth = 256,
+							imageHeight = 64,
+							width = 1.5
+					},
 					version = {
-						order = 1,
+						order = 1.2,
 						type = "description",
 						name = function() return self.tVersion and "|cFF87CEFAv"..self.version.."|r-"..self.tVersion or "|cFF87CEFAv"..self.version.."|r" end,
+						width ="half"
 					},
+
 					generalSettingsTab = {
 						order = 2,
 						type = "group",
@@ -799,6 +810,12 @@ function addon:OptionsTable()
 										desc = L["onlyUseInRaids_desc"],
 										type = "toggle",
 									},
+									outOfRaid = {
+										order = 5,
+										name = L["options_ml_outOfRaid_name"],
+										desc = L["options_ml_outOfRaid_desc"],
+										type = "toggle"
+									},
 								},
 							},
 							lootingOptions = {
@@ -930,7 +947,14 @@ function addon:OptionsTable()
 										name = L["Add Rolls"],
 										desc = L["add_rolls_desc"],
 										type = "toggle",
-									}
+									},
+									requireNotes = {
+										order = 9,
+										name = L["Require Notes"],
+										desc = L["options_requireNotes_desc"],
+										type = "toggle",
+										disabled = function() return not self.db.profile.allowNotes end ,
+									},
 								},
 							},
 							ignoreOptions = {
@@ -1087,8 +1111,66 @@ function addon:OptionsTable()
 									},
 								},
 							},
-							awardReasons = {
+							autoAwardBoE = {
 								order = 2,
+								name = L["options_autoAwardBoE_name"],
+								type = "group",
+								inline = true,
+								disabled = function () return not self.db.profile.autoAwardBoE end,
+								args = {
+									autoAwardBoE = {
+										order = 1,
+										name = L["options_autoAwardBoE_name"],
+										desc = L["options_autoAwardBoE_desc"],
+										type = "toggle",
+										disabled = false,
+										width = "full",
+									},
+									autoAwardBoETo2 = {
+										order = 2,
+										name = L["Auto Award to"],
+										desc = L["auto_award_to_desc"],
+										width = "double",
+										type = "input",
+										hidden = function() return GetNumGroupMembers() > 0 end,
+										get = function() return self.db.profile.autoAwardBoETo; end,
+										set = function(i,v) self.db.profile.autoAwardBoETo = v; end,
+									},
+									autoAwardBoETo = {
+										order = 2,
+										name = L["Auto Award to"],
+										desc = L["auto_award_to_desc"],
+										width = "double",
+										type = "select",
+										style = "dropdown",
+										values = function()
+											local t = {}
+											for i = 1, GetNumGroupMembers() do
+												local name = GetRaidRosterInfo(i)
+												t[name] = name
+											end
+											return t;
+										end,
+										hidden = function() return GetNumGroupMembers() == 0 end,
+									},
+									autoAwardBoEReason = {
+										order = 3,
+										name = L["Reason"],
+										desc = L["reason_desc"],
+										type = "select",
+										style = "dropdown",
+										values = function()
+											local t = {}
+											for i = 1, self.db.profile.numAwardReasons do
+												t[i] = self.db.profile.awardReasons[i].text
+											end
+											return t
+										end,
+									},
+								}
+							},
+							awardReasons = {
+								order = 3,
 								type = "group",
 								name = L["Award Reasons"],
 								inline = true,

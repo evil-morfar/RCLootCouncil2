@@ -285,7 +285,7 @@ function private:RebuildTime (data, t, line)
    	t.time = date("%H:%M:%S", secs)
    elseif dato and time then
       local d, m, y = strsplit("/", dato or "", 3)
-      local h,mm,s = strsplit(":",time, h,mm,s)
+      local h,mm,s = strsplit(":",time,3)
       local secs = His:DateTimeToSeconds(d,m,y,h,mm,s)
       t.date = date("%d/%m/%y", secs)
    	t.time = date("%H:%M:%S", secs)
