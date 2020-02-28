@@ -1253,7 +1253,7 @@ RCLootCouncilML.awardStrings = {
 	["&o"] = function(...)
 		local session = select(5, ...)
 		local owner = select(6, ...) or RCLootCouncilML.lootTable[session] and  RCLootCouncilML.lootTable[session].owner
-		return addon.Ambiguate(owner) or _G.UNKNOWN end,
+		return owner and addon.Ambiguate(owner) or _G.UNKNOWN end,
 	["&m"] = function(...) return addon:GetActiveModule("votingframe"):GetCandidateData(select(5,...), select(1,...), "note") or "<none>" end,
 }
 
