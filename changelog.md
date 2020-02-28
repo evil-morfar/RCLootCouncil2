@@ -37,6 +37,7 @@ When enabled, it functions exactly as it did before.
 
 ## Bugfixes
 * *Candidate info no longer has the potential to wait a long time before being sync, i.e. guild rank not showing up in the voting frame.*
+* *2.18.1: Previous version would error out when awarding during tests.*
 
 
 #### Dev
