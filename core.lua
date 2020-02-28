@@ -657,7 +657,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 
 					-- Out of instance support
 					-- assume 8 people means we're actually raiding
-					if GetNumGroupMembers() >= 8 and not IsInInstance() then
+					if self.mldb.outOfRaid and GetNumGroupMembers() >= 8 and not IsInInstance() then
 						self:DebugLog("NotInRaid respond to lootTable")
 						for ses, v in ipairs(lootTable) do
 							-- target, session, response, isTier, isRelic, note, roll, link, ilvl, equipLoc, relicType, sendAvgIlvl, sendSpecID
@@ -1241,8 +1241,8 @@ end
 -- @param target 		The target of response
 -- @param session		The session to respond to.
 -- @param response		The selected response, must be index of db.responses.
--- @param isTier		Indicates if the response is a tier response. (v2.4.0)
--- @param isRelic		Indicates if the response is a relic response. (v2.5.0)
+-- @param isTier		Indicates if the response is a tier response. (v2.4.0) - DEPRECATED
+-- @param isRelic		Indicates if the response is a relic response. (v2.5.0) - DEPRECATED
 -- @param note			The player's note.
 -- @param roll 			The player's roll.
 -- @param link 			The itemLink of the item in the session.
@@ -1269,8 +1269,6 @@ function RCLootCouncil:SendResponse(target, session, response, isTier, isRelic, 
 			diff = diff,
 			note = note,
 			response = response,
-			isTier = isTier or nil,
-			isRelic = isRelic or nil,
 			specID = sendSpecID and playersData.specID or nil,
 			roll = roll,
 		})
@@ -1531,6 +1529,8 @@ end
 --]]
 RCLootCouncil.classDisplayNameToID = {} -- Key: localized class display name. value: class id(number)
 RCLootCouncil.classTagNameToID = {} -- key: class name in capital english letters without space. value: class id(number)
+RCLootCouncil.classIDToDisplayName = {} -- key: class id. Value: localized name
+RCLootCouncil.classIDToFileName = {} -- key: class id. Value: File name
 for i=1, GetNumClasses() do
 	local info = C_CreatureInfo.GetClassInfo(i)
 	if info then -- Just in case class doesn't exists #Classic
@@ -1538,6 +1538,8 @@ for i=1, GetNumClasses() do
 		RCLootCouncil.classTagNameToID[info.classFile] = i
 	end
 end
+RCLootCouncil.classIDToDisplayName = tInvert(RCLootCouncil.classDisplayNameToID)
+RCLootCouncil.classIDToFileName = tInvert(RCLootCouncil.classTagNameToID)
 
 -- @return The bitwise flag indicates the classes allowed for the item, as specified on the tooltip by "Classes: xxx"
 -- If the tooltip does not specify "Classes: xxx" or if the item is not cached, return 0xffffffff
@@ -2389,6 +2391,10 @@ function RCLootCouncil:UnitName(unit)
 	return name and name.."-"..realm
 end
 
+function RCLootCouncil:noop ()
+	-- Intentionally left empty
+end
+
 ---------------------------------------------------------------------------
 -- Custom module support funcs.
 -- @section Modules.
@@ -2761,6 +2767,10 @@ function RCLootCouncil:GetItemBonusText(link, delimiter)
 	if itemStatsRet["ITEM_MOD_CR_STURDINESS_SHORT"] then -- Indestructible
 		if text ~= "" then text = text..delimiter end
 		text = text.._G.ITEM_MOD_CR_STURDINESS_SHORT
+	end
+	if itemStatsRet["ITEM_MOD_CORRUPTION"] then
+		if text ~= "" then text = text..delimiter end
+		text = "|c".._G.CORRUPTION_COLOR:GenerateHexColor()..text.._G.ITEM_MOD_CORRUPTION.."|r"
 	end
 
 	return text

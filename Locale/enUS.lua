@@ -341,6 +341,7 @@ L["Reannounce ..."] = true
 L["Reannounced 'item' to 'target'"] = "Reannounced %s to %s"
 L["Reason"] = true
 L["reason_desc"] = "The award reason to add to the Loot History when auto awarding."
+L["Require Notes"] = true
 L["Remove All"] = true
 L["Remove from consideration"] = true
 L["remove_all_desc"] = "Remove all council members"
@@ -499,10 +500,17 @@ L["Your note:"] = true
 L["chat_cmd_add_invalid_owner"] = "The player %s was either invalid or not a candidate."
 
 L["error_test_as_non_leader"] = "You cannot initiate a test while in a group without being the group leader."
+L["lootFrame_error_note_required"] = "You must add a note before submitting your repsonse - %s"
+L["lootHistory_moreInfo_winnersOfItem"] = "Winners of %s:"
 L["trade_complete_message"] = "%s traded %s to %s."
 L["trade_wrongwinner_message"] = "WARNING: %s traded %s to %s instead of %s!"
 L["trade_item_to_trade_not_found"] = "WARNING: Item to trade: %s couldn't be found in your inventory!"
 
+L["options_autoAwardBoE_desc"] = "Enable to automatically award all epic BoE (Bind on Equip) items to a specific person for the selected reason."
+L["options_autoAwardBoE_name"] = "Auto Award BoE's"
+L["options_ml_outOfRaid_desc"] = "When enabled, while in a group of 8 or more members, anyone that isn't in an instance when a session starts will automatically send an 'Out of Raid' response."
+L["options_ml_outOfRaid_name"] = "Out of Raid Support"
+L["options_requireNotes_desc"] = "If enabled, candidates cannot submit their response without having entered a note."
 
 L["opt_addButton_desc"] = "Add a new button group for the selected slot."
 L["opt_autoTrade_desc"] = "Check to automatically add awarded items to the trade window when trading with the winner. If disabled, you'll see a popup before items are added."

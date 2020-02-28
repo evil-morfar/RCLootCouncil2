@@ -3,6 +3,8 @@
 local _, addon = ...
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 
+addon.LOGO_LOCATION = "Interface\\AddOns\\RCLootCouncil\\Media\\rc_logo"
+
 addon.BTN_SLOTS = {
    INVTYPE_HEAD = "AZERITE",
    INVTYPE_CHEST = "AZERITE",
@@ -76,7 +78,7 @@ addon.RESPONSE_CODE_GENERATORS = {
    function (item, db, itemEquipLoc)
       return db.enabledButtons.CORRUPTED and GetCorruption and IsCorruptedItem(item) and "CORRUPTED" or nil
    end,
-   
+
    -- Check for token
    function (_, db, itemID)
       if RCTokenTable[itemID] and db.enabledButtons["TOKEN"] then
