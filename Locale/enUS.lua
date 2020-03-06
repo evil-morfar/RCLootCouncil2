@@ -188,7 +188,7 @@ L["Discord friendly output."] = true
 L["disenchant_desc"] = "Select to use this reason when awarding an item via the 'Disenchant' button"
 L["Double click to delete this entry."] = true
 L["Done syncing"] = true
-L["Do you want to keep %s for yourself?"] = true
+L["Do you want to keep %s for yourself or trade?"] = true
 L["Dropped by:"] = true
 L["Edit Entry"] = true
 L["Enable Loot History"] = true
@@ -241,6 +241,7 @@ L["Items stored in the loot master's bag for award later cannot be awarded later
 L["Items under consideration:"] = true
 L["item_in_bags_low_trade_time_remaining_reminder"] = "The following bind on pick up items in your inventory are in the award later list and have less than %s trade time remaining. To avoid this reminder, trade the item, or '/rc remove [index]' to remove the item from the list, or '/rc clear' to clear the award later list, or equip the item to make the item untradable."
 L["Total items won:"] = true
+L["Keep"] = true
 L["Latest item(s) won"] = true
 L["Length"] = true
 L["Log"] = true

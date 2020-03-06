@@ -151,7 +151,7 @@ LibDialog:Register("RCLOOTCOUNCIL_TRADE_ADD_ITEM", {
 LibDialog:Register("RCLOOTCOUNCIL_KEEP_ITEM", {
    text = "something_went_wrong",
    on_show = function(self, link)
-      self.text:SetText(format(L["Do you want to keep %s for yourself?"], link))
+      self.text:SetText(format(L["Do you want to keep %s for yourself or trade?"], link))
       local tex = select(5, GetItemInfoInstant(link))
       self.icon:SetTexture(tex)
       local icon = addon.UI:New("Icon", self, tex)
@@ -166,13 +166,13 @@ LibDialog:Register("RCLOOTCOUNCIL_KEEP_ITEM", {
       self.icon2:Hide()
    end,
    buttons = {
-      {  text = _G.YES,
+      {  text = L["Keep"],
          on_click = function(self, link)
             addon:SendCommand("group", "rejected_trade", link)
             self.icon2:Hide()
          end,
       },
-      {  text = _G.NO,
+      {  text = _G.TRADE,
          on_click = function(self, link)
             addon:SendCommand("group", "tradable", link)
             self.icon2:Hide()
