@@ -23,6 +23,8 @@ local NUM_ROWS = 15;
 local epochDates = {} -- [DateTime] = epoch
 local useClassFilters = false
 
+LootHistory.wowheadBaseUrl = "https://www.wowhead.com/item="
+
 --globals
 local tinsert, tostring, getglobal, pairs, ipairs, tremove, strsplit = tinsert, tostring, getglobal, pairs, ipairs, tremove, strsplit
 
@@ -718,7 +720,7 @@ function LootHistory:GetWowheadLinkFromItemLink(link)
     local color, itemType, itemID, enchantID, gemID1, gemID2, gemID3, gemID4, suffixID, uniqueID, linkLevel, specializationID,
 	 upgradeTypeID, upgradeID, instanceDifficultyID, numBonuses, bonusIDs = addon:DecodeItemLink(link)
 
-    local itemurl = "https://www.wowhead.com/item="..itemID
+    local itemurl = self.wowheadBaseUrl..itemID
 
 	 -- It seems bonus id 1487 (and basically any other id that's -5 below Wowheads first ilvl upgrade doesn't work)
 	 -- Neither does Warforged items it seems
