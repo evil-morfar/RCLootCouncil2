@@ -1,3 +1,4 @@
+# v2.18.2
 ## Changes
 ### Allow Keeping
 The pop-up for keeping items now shows "Keep"/"Trade" instead of yes/no. (#183).
