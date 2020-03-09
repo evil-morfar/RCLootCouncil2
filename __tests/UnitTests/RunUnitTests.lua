@@ -2,14 +2,8 @@ require "luacov"
 local lu = require("luaunit")
 local path = ...
 
-require("__tests/wow_api")
-require("__tests/wow_item_api")
-require("__tests/__load_libs")
-require("__tests/AddonLoader")
-
 -- run tests
-
-dofile("__tests/UnitTests/VersionTests.lua")
+require("__tests/UnitTests/VersionTests")
 
 
 if not path then os.exit(lu.LuaUnit.run("-o", "tap")) end

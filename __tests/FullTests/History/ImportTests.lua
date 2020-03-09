@@ -5,10 +5,6 @@ require("__tests/__load_libs")
 require("__tests/AddonLoader")
 local isLocalRun = not ...
 
-
-loadfile("Modules/History/lootHistory.lua")("", RCLootCouncil)
-loadfile("Modules/History/CSVImport.lua")("", RCLootCouncil)
-
 local testCSVData = loadfile("__tests/FullTests/History/csv_test_data.lua")()
 local testPEData = loadfile("__tests/FullTests/History/playerexport_test_data.lua")()
 
