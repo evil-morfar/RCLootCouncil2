@@ -6,7 +6,7 @@ local donothing = function() end
 local frames = {} -- Stores globally created frames, and their internal properties.
 
 local FrameClass = {} -- A class for creating frames.
-FrameClass.methods = { "SetScript", "RegisterEvent", "UnregisterEvent", "UnregisterAllEvents", "Show", "Hide", "IsShown", "ClearAllPoints", "SetParent" }
+FrameClass.methods = { "SetScript", "GetScript", "RegisterEvent", "UnregisterEvent", "UnregisterAllEvents", "Show", "Hide", "IsShown", "ClearAllPoints", "SetParent","SetPoint", "CreateFontString" }
 function FrameClass:New()
    local frame = {}
    for i, method in ipairs(self.methods) do
@@ -23,6 +23,9 @@ function FrameClass:New()
 end
 function FrameClass:SetScript(script, handler)
    frames[self].scripts[script] = handler
+end
+function FrameClass:GetScript (script)
+   return frames[self].scripts[script]
 end
 function FrameClass:RegisterEvent(event)
    frames[self].events[event] = true
@@ -49,7 +52,47 @@ end
 function FrameClass:SetParent(parent)
    frames[self].parent = parent
 end
+function FrameClass:SetPoint (...)
+   -- body...
+end
 
+function FrameClass:CreateFontString () -- Very much a mock
+   return {
+      SetPoint = function (args)
+         -- body...
+      end,
+      SetJustifyH = function (args)
+         -- body...
+      end,
+      SetJustifyV = function (args)
+         -- body...
+      end,
+      SetText = function (args)
+         -- body...
+      end
+   }
+end
+
+-- It seems Wow doesn't follow the 5.1 spec for xpcall (no additional arguments),
+-- but instead the one from 5.2 where that's allowed.
+-- Try to recreate that here.
+local orig_xpcall = xpcall
+function xpcall (f, err, ...)
+   local status, code = pcall(f, ...)
+   if not status then
+      return err(code)
+   else
+      return status, code
+   end
+end
+
+function InterfaceOptions_AddCategory ()
+   -- body...
+end
+
+function ChatFrame_AddMessageEventFilter ()
+   -- body...
+end
 
 function CreateFrame(kind, name, parent)
    local frame, internal = FrameClass:New()
@@ -65,8 +108,20 @@ function UnitName(unit)
    return unit
 end
 
+function UnitFullName (unit)
+   return UnitName(unit), GetRealmName()
+end
+
+function GetBuildInfo ()
+   return "mock", "mock","mock", 0
+end
+
 function GetRealmName()
    return "Realm Name"
+end
+
+function GetLootMethod ()
+   return "personalloot"
 end
 
 function UnitClass(unit)
@@ -87,6 +142,10 @@ end
 
 function GetNumPartyMembers()
    return 1
+end
+
+function issecurevariable (obj, method)
+   return false
 end
 
 FACTION_HORDE = "Horde"
@@ -150,6 +209,10 @@ DEFAULT_CHAT_FRAME = ChatFrame1
 debugstack = debug.traceback
 date = os.date
 
+function GetAddOnMetadata(arg)
+   return "NOT_IMPLEMENTED"
+end
+
 function GetLocale()
    return "enUS"
 end
@@ -198,6 +261,14 @@ end
 
 function GetInstanceInfo()
    return "The Eternal Palace", nil, 14, "Normal", _,_,_,2164
+end
+
+function IsInGuild ()
+   return false
+end
+
+function GuildRoster ()
+   -- body...
 end
 
 function getglobal(k)
@@ -269,6 +340,10 @@ if not wipe then
          tbl[k] = nil
       end
    end
+end
+
+function ChatEdit_InsertLink ()
+   -- body...
 end
 
 function StaticPopup_SetUpPosition (args)
