@@ -5,10 +5,7 @@ local path = ...
 require("__tests/wow_api")
 require("__tests/wow_item_api")
 require("__tests/__load_libs")
-if not path then -- local run
-   RCLootCouncil = {}
-   loadfile("__tests/RCLootCouncilMock.lua")("RCLootCouncil", RCLootCouncil)
-end
+require("__tests/AddonLoader")
 
 -- run tests
 

@@ -2,14 +2,9 @@ local lu = require "luaunit"
 require("__tests/wow_api")
 require("__tests/wow_item_api")
 require("__tests/__load_libs")
+require("__tests/AddonLoader")
+local isLocalRun = not ...
 
-local isLocalRun = false
-
-if not RCLootCouncil then -- Local run
-   RCLootCouncil = {}
-   isLocalRun = true
-   loadfile("__tests/RCLootCouncilMock.lua")("RCLootCouncil", RCLootCouncil)
-end
 
 loadfile("Modules/History/lootHistory.lua")("", RCLootCouncil)
 loadfile("Modules/History/CSVImport.lua")("", RCLootCouncil)
