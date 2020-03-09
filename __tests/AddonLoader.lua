@@ -1,4 +1,5 @@
---- Loads all the files!
+--- Script for loading all addon files and it's environment.
+-- Note: This should be loaded from the .toc instead of manually, but I can't get LuaFileSystem working.
 local name,object = "RCLootCouncil", {}
 
 -- Load files
