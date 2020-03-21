@@ -1,3 +1,6 @@
+## Bugfixes
+* *Fixed rare error when award later items have no trade time remaining. (CurseClassic#37)*
+
 # v2.18.2
 ## Changes
 ### Allow Keeping
