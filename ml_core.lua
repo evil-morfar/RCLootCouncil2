@@ -729,7 +729,9 @@ function RCLootCouncilML:LootOpened()
 					local quantity = addon.lootSlotInfo[i].quantity
 					local quality = addon.lootSlotInfo[i].quality
 					if db.altClickLooting then self:ScheduleTimer("HookLootButton", 0.5, i) end -- Delay lootbutton hooking to ensure other addons have had time to build their frames
-					local autoAward, mode, winner = item and self:ShouldAutoAward(item, quality)
+
+					local autoAward, mode, winner = self:ShouldAutoAward(item, quality)
+
 					if autoAward and quantity > 0 then
 						self:AutoAward(i, item, quality, winner, mode, addon.bossName)
 
@@ -1306,6 +1308,7 @@ end
 --		mode string: AutoAward mode ("boe" or "normal")
 --		winner string: The candidate that should receive the auto award.
 function RCLootCouncilML:ShouldAutoAward(item, quality)
+	if not item then return false end
 	local _, _, _, _, _, itemClassID, itemSubClassID = GetItemInfoInstant(item)
 	if itemClassID == 1 then return false end -- Ignore containers
 
