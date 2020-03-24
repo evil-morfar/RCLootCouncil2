@@ -1670,6 +1670,7 @@ do
 		local itemsData = "\t<items>\r\n"
 		local membersData = {}
 		local raidData = {}
+		local bossesAdded = {}
 		local earliest = 9999999999
 		local latest = 0
 		for player, v in pairs(self:GetFilteredDB()) do
@@ -1686,23 +1687,26 @@ do
 				.."\t\t\t<cost>" .. tostring(d.votes) .. "</cost>\r\n"
 				.."\t\t\t<note>" .. tostring(d.response) .. "</note>\r\n"
 				membersData[addon.Ambiguate(player)] = true
-				bossData = bossData .. "\t\t<bosskill>\r\n"
-				if d.boss then
-					itemsData = itemsData .. "\t\t\t<boss>" .. gsub(tostring(d.boss),",","").. "</boss>\r\n"
-					bossData = bossData.. "\t\t\t<name>"..gsub(tostring(d.boss),",","").."</name>\r\n"
-				else
-					itemsData = itemsData .. "\t\t\t<boss />\r\n"
-					bossData = bossData.. "\t\t\t<name>Unknown</name>\r\n"
-				end
+
+				local boss = gsub(tostring(d.boss),",","")
+				itemsData = itemsData .. d.boss and "\t\t\t<boss>" .. boss .. "</boss>\r\n" or "\t\t\t<boss />\r\n"
+
 				if d.instance then
 					itemsData = itemsData .. "\t\t\t<zone>" .. gsub(tostring(d.instance),",","") .. "</zone>\r\n"
 					raidData[time({year="20"..year,month=month,day=day})] = gsub(tostring(d.instance),",","")
-					bossData = bossData.."\t\t\t<time>"..sinceEpoch.."</time>\r\n"
 				else
 					itemsData = itemsData .. "\t\t\t<zone />\r\n"
 				end
 				itemsData = itemsData.."\t\t</item>\r\n"
-				bossData = bossData .. "\t\t</bosskill>\r\n"
+
+				if not bossesAdded[boss] then
+					bossAdded[boss] = true
+					bossData = bossData .. "\t\t<bosskill>\r\n"
+					bossData = bossData .. d.boss and "\t\t\t<name>"..boss.."</name>\r\n" or "\t\t\t<name>Unknown</name>\r\n"
+					bossData = bossData.. d.instance and "\t\t\t<time>"..sinceEpoch.."</time>\r\n" or ""
+					bossData = bossData .. "\t\t</bosskill>\r\n"
+				end
+				latest = max(latest, sinceEpoch + 600)
 			end
 		end
 		bossData = bossData .."\t</bosskills>\r\n"
@@ -1710,10 +1714,9 @@ do
 			zoneData = zoneData .. "\t\t<zone>\r\n"
 			.. "\t\t\t<enter>"..id.."</enter>\r\n"
 			.. "\t\t\t<name>"..name.."</name>\r\n"
-			.. "\t\t\t<leave>"..(id + 26000).."</leave>\r\n"
+			.. "\t\t\t<leave>"..latest.."</leave>\r\n"
 			.. "\t\t</zone>\r\n"
 			earliest = min(earliest, id)
-			latest = max(latest, id + 26000)
 		end
 		zoneData = zoneData .."\t</zones>\r\n"
 		itemsData = itemsData.. "\t</items>\r\n"
@@ -1724,7 +1727,7 @@ do
 			.."\t\t\t<name>"..name.."</name>\r\n"
 			.."\t\t\t<times>\r\n"
 			.."\t\t\t\t<time type='join'>"..earliest.."</time>\r\n"
-			.."\t\t\t\t<time type='leave'>"..latest.."</time>\r\n"
+			.."\t\t\t\t<time type='leave'>".. latest .."</time>\r\n"
 			.."\t\t\t</times>\r\n"
 			.."\t\t</member>\r\n"
 		end
