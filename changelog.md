@@ -1,6 +1,7 @@
 ## Bugfixes
 * *Fixed rare error when award later items have no trade time remaining. (CurseClassic#37)*
 * *Fixed issues with EQdkp Plus XML export (CurseClassic#35).*
+* *Fixed issue with Award Later when items aren't available in the ML's bags when expected.*
 
 # v2.18.2
 ## Changes
