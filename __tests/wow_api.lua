@@ -6,7 +6,7 @@ local donothing = function() end
 local frames = {} -- Stores globally created frames, and their internal properties.
 
 local FrameClass = {} -- A class for creating frames.
-FrameClass.methods = { "SetScript", "RegisterEvent", "UnregisterEvent", "UnregisterAllEvents", "Show", "Hide", "IsShown", "ClearAllPoints", "SetParent" }
+FrameClass.methods = { "SetScript", "GetScript", "RegisterEvent", "UnregisterEvent", "UnregisterAllEvents", "Show", "Hide", "IsShown", "ClearAllPoints", "SetParent","SetPoint","SetFrameStrata","SetAllPoints", "SetBackdrop","EnableMouse","SetBackdropColor", "SetBackdropBorderColor", "CreateFontString", "SetWidth","SetHeight", "GetParent", "SetFrameLevel", "GetFrameLevel", "SetNormalTexture", "CreateTexture", "SetFontString","SetNormalFontObject","SetHighlightFontObject","SetDisabledFontObject", "SetID", "SetToplevel" }
 function FrameClass:New()
    local frame = {}
    for i, method in ipairs(self.methods) do
@@ -15,6 +15,7 @@ function FrameClass:New()
    local frameProps = {
       events = {},
       scripts = {},
+      values = {},
       timer = GetTime(),
       isShow = true,
       parent = nil,
@@ -23,6 +24,9 @@ function FrameClass:New()
 end
 function FrameClass:SetScript(script, handler)
    frames[self].scripts[script] = handler
+end
+function FrameClass:GetScript (script)
+   return frames[self].scripts[script]
 end
 function FrameClass:RegisterEvent(event)
    frames[self].events[event] = true
@@ -49,7 +53,122 @@ end
 function FrameClass:SetParent(parent)
    frames[self].parent = parent
 end
+function FrameClass:SetPoint (...)
+   -- body...
+end
+function FrameClass:SetFrameStrata (...)
+   -- body...
+end
+function FrameClass:EnableMouse (...)
+   -- body...
+end
+function FrameClass:SetAllPoints (...)
+   -- body...
+end
+function FrameClass:SetBackdrop (...)
+   -- body...
+end
+function FrameClass:SetBackdropColor (...)
+   -- body...
+end
+function FrameClass:SetBackdropBorderColor (...)
+   -- body...
+end
+function FrameClass:SetWidth (...)
+   -- body...
+end
+function FrameClass:SetHeight (...)
+   -- body...
+end
+function FrameClass:SetNormalTexture (...)
+   -- body...
+end
+function FrameClass:SetFontString (...)
+   -- body...
+end
+function FrameClass:SetNormalFontObject (...)end
+function FrameClass:SetHighlightFontObject (...)end
+function FrameClass:SetDisabledFontObject (...)end
+function FrameClass:SetID (...)end
+function FrameClass:SetToplevel (...)end
+function FrameClass:GetParent (...)
+   return frames[self].parent
+end
+function FrameClass:SetFrameLevel (lvl)
+   frames[self].values.FrameLevel = lvl
+end
+function FrameClass:GetFrameLevel (...)
+   return frames[self].values.FrameLevel or 0
+end
 
+function FrameClass:CreateFontString () -- Very much a mock
+   return {
+      SetPoint = function (args)
+         -- body...
+      end,
+      SetJustifyH = function (args)
+         -- body...
+      end,
+      SetJustifyV = function (args)
+         -- body...
+      end,
+      SetText = function (args)
+         -- body...
+      end
+   }
+end
+
+function FrameClass:CreateTexture (name, strata)
+   local mt = {
+      __index = {
+         SetTexture = function (args)
+            -- body...
+         end,
+         SetTexCoord = function (args)
+            -- body...
+         end,
+         SetBlendMode = function (args)
+            -- body...
+         end,
+         SetVertexColor = function (args)
+            -- body...
+         end,
+         SetNormalTexture = function (args)
+            -- body...
+         end
+      }
+   }
+   local texture = CreateFrame("Texture", name, self)
+   return setmetatable(texture, mt)
+end
+
+-- Extra hack as I didn't want to implement logic for all the UI functions
+MSA_DropDownList1Button1NormalText = {
+   GetFont = function (args)
+      -- body...
+   end
+}
+
+-- It seems Wow doesn't follow the 5.1 spec for xpcall (no additional arguments),
+-- but instead the one from 5.2 where that's allowed.
+-- Try to recreate that here.
+local orig_xpcall = xpcall
+function xpcall (f, err, ...)
+   local status, code = pcall(f, ...)
+   if not status then
+      return err(code)
+   else
+      return status, code
+   end
+end
+
+function InterfaceOptions_AddCategory ()
+   -- body...
+end
+
+function ChatFrame_AddMessageEventFilter ()
+   -- body...
+end
 
 function CreateFrame(kind, name, parent)
    local frame, internal = FrameClass:New()
@@ -65,8 +184,20 @@ function UnitName(unit)
    return unit
 end
 
+function UnitFullName (unit)
+   return UnitName(unit), GetRealmName()
+end
+
+function GetBuildInfo ()
+   return "mock", "mock","mock", 0
+end
+
 function GetRealmName()
    return "Realm Name"
+end
+
+function GetLootMethod ()
+   return "personalloot"
 end
 
 function UnitClass(unit)
@@ -87,6 +218,10 @@ end
 
 function GetNumPartyMembers()
    return 1
+end
+
+function issecurevariable (obj, method)
+   return false
 end
 
 FACTION_HORDE = "Horde"
@@ -150,6 +285,10 @@ DEFAULT_CHAT_FRAME = ChatFrame1
 debugstack = debug.traceback
 date = os.date
 
+function GetAddOnMetadata(arg)
+   return "NOT_IMPLEMENTED"
+end
+
 function GetLocale()
    return "enUS"
 end
@@ -198,6 +337,14 @@ end
 
 function GetInstanceInfo()
    return "The Eternal Palace", nil, 14, "Normal", _,_,_,2164
+end
+
+function IsInGuild ()
+   return false
+end
+
+function GuildRoster ()
+   -- body...
 end
 
 function getglobal(k)
@@ -269,6 +416,12 @@ if not wipe then
          tbl[k] = nil
       end
    end
+end
+
+table.wipe = wipe
+
+function ChatEdit_InsertLink ()
+   -- body...
 end
 
 function StaticPopup_SetUpPosition (args)
@@ -462,6 +615,7 @@ _G.strsub = string.sub
 _G.tremove = table.remove
 _G.strrep = string.rep
 _G.tinsert = table.insert
+_G.format = string.format
 
 -- Not part of the WoWAPI, but added to emulate the ingame /dump cmd
 printtable = function( data, level )
@@ -848,3 +1002,146 @@ function GetSpecializationInfoForClassID (classID, specNum)
    local spec = CLASS_INFO[classID].specs[specNum]
    return spec.specID, spec.name, "NOT_IMPLEMENTED", spec.iconID, spec.role, "NOT_IMPLEMENTED","NOT_IMPLEMENTED"
 end
+
+------------------------------------------
+-- Constants from various places
+------------------------------------------
+TOOLTIP_DEFAULT_COLOR = { r = 1, g = 1, b = 1 };
+TOOLTIP_DEFAULT_BACKGROUND_COLOR = { r = 0.09, g = 0.09, b = 0.19 };
+NUM_LE_ITEM_ARMORS = 12
+LE_ITEM_ARMOR_GENERIC = 0
+LE_ITEM_ARMOR_CLOTH = 1
+LE_ITEM_ARMOR_LEATHER = 2
+LE_ITEM_ARMOR_MAIL = 3
+LE_ITEM_ARMOR_PLATE = 4
+LE_ITEM_ARMOR_COSMETIC = 5
+LE_ITEM_ARMOR_SHIELD = 6
+LE_ITEM_ARMOR_LIBRAM = 7
+LE_ITEM_ARMOR_IDOL = 8
+LE_ITEM_ARMOR_TOTEM = 9
+LE_ITEM_ARMOR_SIGIL = 10
+LE_ITEM_ARMOR_RELIC = 11
+
+NUM_LE_ITEM_BIND_TYPES = 5
+LE_ITEM_BIND_NONE = 0
+LE_ITEM_BIND_ON_ACQUIRE = 1
+LE_ITEM_BIND_ON_EQUIP = 2
+LE_ITEM_BIND_ON_USE = 3
+LE_ITEM_BIND_QUEST = 4
+NUM_LE_ITEM_QUALITYS = 9
+LE_ITEM_QUALITY_POOR = 0
+LE_ITEM_QUALITY_COMMON = 1
+LE_ITEM_QUALITY_UNCOMMON = 2
+LE_ITEM_QUALITY_RARE = 3
+LE_ITEM_QUALITY_EPIC = 4
+LE_ITEM_QUALITY_LEGENDARY = 5
+LE_ITEM_QUALITY_ARTIFACT = 6
+LE_ITEM_QUALITY_HEIRLOOM = 7
+LE_ITEM_QUALITY_WOW_TOKEN = 8
+NUM_LE_ITEM_CLASSS = 19
+LE_ITEM_CLASS_CONSUMABLE = 0
+LE_ITEM_CLASS_CONTAINER = 1
+LE_ITEM_CLASS_WEAPON = 2
+LE_ITEM_CLASS_GEM = 3
+LE_ITEM_CLASS_ARMOR = 4
+LE_ITEM_CLASS_REAGENT = 5
+LE_ITEM_CLASS_PROJECTILE = 6
+LE_ITEM_CLASS_TRADEGOODS = 7
+LE_ITEM_CLASS_ITEM_ENHANCEMENT = 8
+LE_ITEM_CLASS_RECIPE = 9
+LE_ITEM_CLASS_QUIVER = 11
+LE_ITEM_CLASS_QUESTITEM = 12
+LE_ITEM_CLASS_KEY = 13
+LE_ITEM_CLASS_MISCELLANEOUS = 15
+LE_ITEM_CLASS_GLYPH = 16
+LE_ITEM_CLASS_BATTLEPET = 17
+LE_ITEM_CLASS_WOW_TOKEN = 18
+NUM_LE_ITEM_WEAPONS = 21
+LE_ITEM_WEAPON_AXE1H = 0
+LE_ITEM_WEAPON_AXE2H = 1
+LE_ITEM_WEAPON_BOWS = 2
+LE_ITEM_WEAPON_GUNS = 3
+LE_ITEM_WEAPON_MACE1H = 4
+LE_ITEM_WEAPON_MACE2H = 5
+LE_ITEM_WEAPON_POLEARM = 6
+LE_ITEM_WEAPON_SWORD1H = 7
+LE_ITEM_WEAPON_SWORD2H = 8
+LE_ITEM_WEAPON_WARGLAIVE = 9
+LE_ITEM_WEAPON_STAFF = 10
+LE_ITEM_WEAPON_BEARCLAW = 11
+LE_ITEM_WEAPON_CATCLAW = 12
+LE_ITEM_WEAPON_UNARMED = 13
+LE_ITEM_WEAPON_GENERIC = 14
+LE_ITEM_WEAPON_DAGGER = 15
+LE_ITEM_WEAPON_THROWN = 16
+LE_ITEM_WEAPON_CROSSBOW = 18
+LE_ITEM_WEAPON_WAND = 19
+LE_ITEM_WEAPON_FISHINGPOLE = 20
+
+------------------------------------------
+-- Global Strings
+------------------------------------------
+LOOT_ITEM = "%s receives loot: %s."
+RANDOM_ROLL_RESULT = "%s rolls %d (%d-%d)"
+REQUEST_ROLL = "Request Roll"
+ITEM_MOD_AGILITY = "%c%s Agility";
+ITEM_MOD_AGILITY_OR_INTELLECT_SHORT = "Agility or Intellect";
+ITEM_MOD_AGILITY_OR_STRENGTH_OR_INTELLECT_SHORT = "Agility or Strength or Intellect";
+ITEM_MOD_AGILITY_OR_STRENGTH_SHORT = "Agility or Strength";
+ITEM_MOD_AGILITY_SHORT = "Agility";
+ITEM_MOD_ARMOR_PENETRATION_RATING_SHORT = "Armor Penetration";
+ITEM_MOD_ATTACK_POWER_SHORT = "Attack Power";
+ITEM_MOD_BLOCK_RATING_SHORT = "Block";
+ITEM_MOD_BLOCK_VALUE_SHORT = "Block Value";
+ITEM_MOD_CORRUPTION = "Corruption";
+ITEM_MOD_CORRUPTION_RESISTANCE = "Corruption Resistance";
+ITEM_MOD_CRIT_MELEE_RATING_SHORT = "Critical Strike (Melee)";
+ITEM_MOD_CRIT_RANGED_RATING_SHORT = "Critical Strike (Ranged)";
+ITEM_MOD_CRIT_RATING_SHORT = "Critical Strike";
+ITEM_MOD_CRIT_SPELL_RATING_SHORT = "Critical Strike (Spell)";
+ITEM_MOD_CRIT_TAKEN_MELEE_RATING_SHORT = "Critical Strike Avoidance (Melee)";
+ITEM_MOD_CRIT_TAKEN_RANGED_RATING_SHORT = "Critical Strike Avoidance (Ranged)";
+ITEM_MOD_CRIT_TAKEN_RATING_SHORT = "Critical Strike Avoidance";
+ITEM_MOD_CRIT_TAKEN_SPELL_RATING_SHORT = "Critical Strike Avoidance (Spell)";
+ITEM_MOD_CR_AVOIDANCE_SHORT = "Avoidance";
+ITEM_MOD_CR_LIFESTEAL_SHORT = "Leech";
+ITEM_MOD_CR_MULTISTRIKE_SHORT = "Multistrike";
+ITEM_MOD_CR_SPEED_SHORT = "Speed";
+ITEM_MOD_CR_STURDINESS_SHORT = "Indestructible";
+ITEM_MOD_DODGE_RATING_SHORT = "Dodge";
+ITEM_MOD_EXPERTISE_RATING_SHORT = "Expertise";
+ITEM_MOD_EXTRA_ARMOR_SHORT = "Bonus Armor";
+ITEM_MOD_FERAL_ATTACK_POWER_SHORT = "Attack Power In Forms";
+ITEM_MOD_HASTE_RATING_SHORT = "Haste";
+ITEM_MOD_HEALTH_REGEN = "Restores %s health per 5 sec.";
+ITEM_MOD_HEALTH_REGENERATION_SHORT = "Health Regeneration";
+ITEM_MOD_HEALTH_SHORT = "Health";
+ITEM_MOD_HIT_MELEE_RATING_SHORT = "Hit (Melee)";
+ITEM_MOD_HIT_RANGED_RATING_SHORT = "Hit (Ranged)";
+ITEM_MOD_HIT_RATING_SHORT = "Hit";
+ITEM_MOD_HIT_SPELL_RATING_SHORT = "Hit (Spell)";
+ITEM_MOD_HIT_TAKEN_MELEE_RATING_SHORT = "Hit Avoidance (Melee)";
+ITEM_MOD_HIT_TAKEN_RANGED_RATING_SHORT = "Hit Avoidance (Ranged)";
+ITEM_MOD_HIT_TAKEN_RATING_SHORT = "Hit Avoidance";
+ITEM_MOD_HIT_TAKEN_SPELL_RATING_SHORT = "Hit Avoidance (Spell)";
+ITEM_MOD_INTELLECT_SHORT = "Intellect";
+ITEM_MOD_MANA_REGENERATION_SHORT = "Mana Regeneration";
+ITEM_MOD_MANA_SHORT = "Mana";
+ITEM_MOD_MASTERY_RATING_SHORT = "Mastery";
+ITEM_MOD_MELEE_ATTACK_POWER_SHORT = "Melee Attack Power";
+ITEM_MOD_PARRY_RATING_SHORT = "Parry";
+ITEM_MOD_RANGED_ATTACK_POWER_SHORT = "Ranged Attack Power";
+ITEM_MOD_RESILIENCE_RATING_SHORT = "PvP Resilience";
+ITEM_MOD_SPELL_POWER_SHORT = "Spell Power";
+ITEM_MOD_STAMINA_SHORT = "Stamina";
+ITEM_MOD_STRENGTH_OR_INTELLECT_SHORT = "Strength or Intellect";
+ITEM_MOD_STRENGTH_SHORT = "Strength";
+ITEM_MOD_VERSATILITY = "Versatility";
+
+BLOCK = "Block"
+PARRY = "Parry"
+DAMAGER = "Damage"
+TANK = "Tank"
+HEALER = "Healer"
+MELEE = "Melee"
+RANGED = "Ranged"

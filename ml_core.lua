@@ -729,7 +729,9 @@ function RCLootCouncilML:LootOpened()
 					local quantity = addon.lootSlotInfo[i].quantity
 					local quality = addon.lootSlotInfo[i].quality
 					if db.altClickLooting then self:ScheduleTimer("HookLootButton", 0.5, i) end -- Delay lootbutton hooking to ensure other addons have had time to build their frames
-					local autoAward, mode, winner = item and self:ShouldAutoAward(item, quality)
+
+					local autoAward, mode, winner = self:ShouldAutoAward(item, quality)
+
 					if autoAward and quantity > 0 then
 						self:AutoAward(i, item, quality, winner, mode, addon.bossName)
 
@@ -1047,9 +1049,9 @@ local function registerAndAnnounceBagged(session)
 	local Item = addon.ItemStorage:New(self.lootTable[session].link, "award_later", {bop = addon:IsItemBoP(self.lootTable[session].link)}):Store()
 	if not Item.inBags then -- It wasn't found!
 		-- We don't care about onFound, as all we need is to record the time_remaining
-		addon.ItemStorage:WatchForItemInBags(Item, 5, function(Item)
+		addon.ItemStorage:WatchForItemInBags(Item, function(Item)
 			addon:DebugLog(format("<ERROR> Award Later item %s was never found in bags!", Item.link))
-		end)
+		end, nil, 5)
 	end
 	if self.lootTable[session].lootSlot or self.running then -- Item is looted by ML, announce it.
 															-- Also announce if the item is awarded later in voting frame.
@@ -1306,6 +1308,7 @@ end
 --		mode string: AutoAward mode ("boe" or "normal")
 --		winner string: The candidate that should receive the auto award.
 function RCLootCouncilML:ShouldAutoAward(item, quality)
+	if not item then return false end
 	local _, _, _, _, _, itemClassID, itemSubClassID = GetItemInfoInstant(item)
 	if itemClassID == 1 then return false end -- Ignore containers
 
