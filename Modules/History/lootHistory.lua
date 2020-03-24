@@ -1689,7 +1689,7 @@ do
 				membersData[addon.Ambiguate(player)] = true
 
 				local boss = gsub(tostring(d.boss),",","")
-				itemsData = itemsData .. boss and "\t\t\t<boss>" .. boss .. "</boss>\r\n" or "\t\t\t<boss />\r\n"
+				itemsData = itemsData .. (boss and "\t\t\t<boss>" .. boss .. "</boss>\r\n" or "\t\t\t<boss />\r\n")
 
 				if d.instance then
 					itemsData = itemsData .. "\t\t\t<zone>" .. gsub(tostring(d.instance),",","") .. "</zone>\r\n"
@@ -1702,8 +1702,8 @@ do
 				if not bossesAdded[boss] then
 					bossesAdded[boss] = true
 					bossData = bossData .. "\t\t<bosskill>\r\n"
-					bossData = bossData .. boss and "\t\t\t<name>"..boss.."</name>\r\n" or "\t\t\t<name>Unknown</name>\r\n"
-					bossData = bossData.. d.instance and "\t\t\t<time>"..sinceEpoch.."</time>\r\n" or ""
+					bossData = bossData .. (boss and "\t\t\t<name>"..boss.."</name>\r\n" or "\t\t\t<name>Unknown</name>\r\n")
+					bossData = bossData .. (d.instance and "\t\t\t<time>"..sinceEpoch.."</time>\r\n" or "")
 					bossData = bossData .. "\t\t</bosskill>\r\n"
 				end
 				latest = max(latest, sinceEpoch + 600)
