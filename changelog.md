@@ -1,3 +1,4 @@
+# v2.18.3
 ## Bugfixes
 * *Fixed rare error when award later items have no trade time remaining. (CurseClassic#37)*
 * *Fixed issues with EQdkp Plus XML export (CurseClassic#35).*
