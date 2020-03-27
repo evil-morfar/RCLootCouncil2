@@ -1,6 +1,6 @@
 return {
    _all = {
-      -- coverage = true,
+      coverage = true,
       ROOT = { ".specs"},
       pattern = ".spec",
       output = "utfTerminal"
