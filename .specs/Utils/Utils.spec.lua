@@ -1,11 +1,10 @@
-require "busted.runner"()
-require("__tests/wow_api")
-require("__tests/__load_libs")
-require("__tests/AddonLoader")
+require "busted.runner"({["output"] = "gtest"})
+
+dofile(".specs/AddonLoader.lua")
 
 local Utils
 
-describe("Utils:CheckOutdatedVersion", function()
+describe("#Utils :CheckOutdatedVersion", function()
 
    before_each(function()
       Utils = RCLootCouncil.Utils

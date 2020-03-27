@@ -170,6 +170,10 @@ function ChatFrame_AddMessageEventFilter ()
    -- body...
 end
 
+function LoadAddOn (args)
+   return "Not implemented!"
+end
+
 function CreateFrame(kind, name, parent)
    local frame, internal = FrameClass:New()
    internal.parent = parent
@@ -437,6 +441,10 @@ InterfaceOptionsFrameCancel = {
 C_CreatureInfo = {
    GetClassInfo = function(classIndex) return end
 }
+
+function UIDropDownMenu_InitializeHelper (args)
+   -- body...
+end
 
 function hooksecurefunc(func_name, post_hook_func)
    local orig_func = _G[func_name]
