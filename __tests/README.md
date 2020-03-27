@@ -1,5 +1,7 @@
 ## RCLootCouncil Tests
 
+*These are slowly being migrated to the new .specs testing.*
+
 ### Requirements
 These tests are made with the use of `luaunit` and `luacov`.
 

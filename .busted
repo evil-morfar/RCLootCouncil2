@@ -1,0 +1,8 @@
+return {
+   _all = {
+      -- coverage = true,
+      ROOT = { ".specs"},
+      pattern = ".spec",
+      output = "utfTerminal"
+   }
+}
