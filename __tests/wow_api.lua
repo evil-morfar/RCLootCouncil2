@@ -359,7 +359,7 @@ function setglobal(k, v)
    _G[k] = v
 end
 
-local function _errorhandler(msg)
+function _errorhandler(msg)
    print("--------- geterrorhandler error -------\n"..msg.."\n-----end error-----\n")
 end
 
