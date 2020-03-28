@@ -7,7 +7,11 @@ return {
       ROOT = { ".specs"},
       output = "utfTerminal"
    },
-   utils = {
-      ROOT = "{.specs/Utils}"
+   Utils = {
+      ROOT = {".specs/Utils"}
+   },
+   Classes = {
+      ROOT = {".specs/Classes"},
+      --tags = "Core"
    }
 }
