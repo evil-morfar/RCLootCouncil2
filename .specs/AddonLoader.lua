@@ -1,14 +1,42 @@
 --- AddonLoader.lua
--- This script will load all files specified in 'ADDON_NAME'.toc
+-- Creates an object that can load all files in a specified .toc or .xml file.
 -- Lib files will be loaded as is (dofile "path"), while all other files will get ADDON_NAME and ADDON_OBJECT as arguments.
 -- 'wow_api', 'wow_item_api' and 'bit' will be loaded before any other file.
--- USAGE:loadfile (".specs/lfstest.lua")([debug, ADDON_NAME, ADDON_OBJECT])
+-- USAGE: local Loader = loadfile (".specs/AddonLoader.lua")([debug, ADDON_NAME, ADDON_OBJECT])
+--    Loader.LoadToc("something.toc") -- Loads all files in the .toc file.
+--    Loader.LoadXML("something.xml") -- Loads all files in the .xml file
 -- Defaults to the values below:
 local debug = select(1,...) or false
 local ADDON_NAME = select(2, ...) or "RCLootCouncil"
 local ADDON_OBJECT = select(3, ...) or {}
 
 local Loader = {}
+
+function Loader.LoadToc (file)
+   local lines = Loader.lines_from(file)
+   local files = {}
+   for k, v in pairs(lines) do
+      v = Loader.stripspaces(v)
+      -- Ignore comments
+      if not v:match("^##") and #v > 0 then
+         local ext = Loader.GetFileExtension(v)
+         if ext == ".xml" then
+            local res = Loader.XmlHandler(v)
+            Loader.AddTableToTable(res, files)
+         elseif ext == ".lua" then
+            files[#files + 1] = v
+         end
+      end
+   end
+   -- Actually load the files:
+   Loader.LoadFiles(files)
+end
+
+function Loader.LoadXML(file)
+   Loader.LoadFiles(Loader.XmlHandler(file, 0))
+end
+
+
 function Loader.file_exists(file)
    local f = io.open(file, "rb")
    if f then f:close() end
@@ -102,24 +130,4 @@ function Loader.LoadFiles (files)
    end
 end
 
-function Loader.TocParser (file)
-   local lines = Loader.lines_from(file)
-   local files = {}
-   for k, v in pairs(lines) do
-      v = Loader.stripspaces(v)
-      -- Ignore comments
-      if not v:match("^##") and #v > 0 then
-         local ext = Loader.GetFileExtension(v)
-         if ext == ".xml" then
-            local res = Loader.XmlHandler(v)
-            Loader.AddTableToTable(res, files)
-         elseif ext == ".lua" then
-            files[#files + 1] = v
-         end
-      end
-   end
-   -- Actually load the files:
-   Loader.LoadFiles(files)
-end
-
-Loader.TocParser(ADDON_NAME..'.toc')
+return Loader

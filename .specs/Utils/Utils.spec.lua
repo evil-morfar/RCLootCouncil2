@@ -1,6 +1,6 @@
 require "busted.runner"({["output"] = "gtest"})
 
-dofile(".specs/AddonLoader.lua")
+dofile(".specs/AddonLoader.lua").LoadToc("RCLootCouncil.toc")
 
 local Utils
 
