@@ -5,6 +5,7 @@
 -- USAGE: local Loader = loadfile (".specs/AddonLoader.lua")([debug, ADDON_NAME, ADDON_OBJECT])
 --    Loader.LoadToc("something.toc") -- Loads all files in the .toc file.
 --    Loader.LoadXML("something.xml") -- Loads all files in the .xml file
+--    Loader.LoadArray{"file1.lua", "file2.xml"} -- Loads all files in the array. Will also load all files contained in an xml path.
 -- Defaults to the values below:
 local debug = select(1,...) or false
 local ADDON_NAME = select(2, ...) or "RCLootCouncil"
@@ -34,6 +35,19 @@ end
 
 function Loader.LoadXML(file)
    Loader.LoadFiles(Loader.XmlHandler(file, 0))
+end
+
+function Loader.LoadArray (list)
+   local files = {}
+   for _, file in ipairs(list) do
+      local ext = Loader.GetFileExtension(file)
+      if ext == ".xml" then
+         Loader.AddTableToTable(Loader.XmlHandler(file), files)
+      elseif ext == ".lua" then
+         table.insert(files, file)
+      end
+   end
+   Loader.LoadFiles(files)
 end
 
 
