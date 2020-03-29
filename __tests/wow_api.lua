@@ -360,7 +360,7 @@ function setglobal(k, v)
 end
 
 function _errorhandler(msg)
-   print("--------- geterrorhandler error -------\n"..msg.."\n-----end error-----\n")
+   error(msg,2)--print("--------- geterrorhandler error -------\n"..msg.."\n-----end error-----\n")
 end
 
 function geterrorhandler()
