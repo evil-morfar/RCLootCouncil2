@@ -1,22 +1,16 @@
-local Rx = require "rx"
+local addon = {}
+loadfile("Classes/Core.lua")("", addon)
+loadfile(".specs/AddonLoader.lua")(nil,nil, addon).LoadXML([[Classes\Lib\RxLua\embeds.xml]])
 
-local subject = Rx.Subject.create()
-local obs = subject
-   :take(2)
-local subscription = obs:subscribe(print, print, function()
-   print("obs completed")
-   self = nil
-end)
 
-subject:onNext(1)
-subject:subscribe(print)
-subject:onNext(2)
-subject:onNext(3)
-subject:onNext(4)
-print(collectgarbage("count") )
-collectgarbage()
-print("is unsubbed?", subscription.unsubscribed)
-subscription:unsubscribe()
-print("is unsubbed?", subscription.unsubscribed)
-print(collectgarbage("count") )
-print("Subscription:", subscription, obs)
+local Subject = addon.Require("rx.Subject")
+
+local test = Subject.create()
+
+local sub = test:take(1):subscribe(print)
+print(sub.unsubscribed)
+test(1)
+test(2)
+test(3)
+
+print(sub.unsubscribed)
