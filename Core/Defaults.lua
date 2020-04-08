@@ -78,6 +78,9 @@ addon.defaults = {
       autoAwardUpperThreshold = 3,
       autoAwardTo = _G.NONE,
       autoAwardReason = 1,
+      autoAwardBoE = false,
+      autoAwardBoETo = _G.NONE,
+      autoAwardBoEReason = 2,
       observe = false, -- observe mode on/off
       silentAutoPass = false, -- Show autopass message
       printResponse = false, -- Print response in chat
@@ -90,6 +93,8 @@ addon.defaults = {
       rejectTrade = false, -- Can candidates choose not to give loot to the council
       autoTrade = false,
       awardLater = false, -- Auto check award later
+      requireNotes = false,
+      outOfRaid = false,
 
       chatFrameName = "DEFAULT_CHAT_FRAME", -- The chat frame to use for :Print()s
 
@@ -159,6 +164,9 @@ addon.defaults = {
                ranks = {
                   ['*'] = true
                },
+               class = {
+                  ['*'] = false
+               }
             },
             alwaysShowTooltip = false,
          },

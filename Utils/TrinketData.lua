@@ -2,7 +2,7 @@
 -- Contains loot specs of all trinkets in the dungeon journal
 -- @author Safetee
 -- Create Date : 12/03/2017
--- Update Date : 25/6/2019 (8.2.0 Build 30888)
+-- Update Date : 12/1/2020 (8.3.0 Build 32976)
 
 
 local ZERO = ("0"):rep(GetNumClasses())
@@ -1540,4 +1540,19 @@ _G.RCTrinketSpecs = {
 -- The Eternal Palace Heroic (id: 1179).
 -- The Eternal Palace Mythic (id: 1179).
 -- The Eternal Palace Looking For Raid (id: 1179).
+-- Ny'alotha, the Waking City Normal (id: 1180).
+	[173944] = "092775070010",	-- Forbidden Obsidian Claw,                        	Intellect
+	[174044] = "3F7777777777",	-- Humming Black Dragonscale,                      	All Classes
+	[174277] = "241000100024",	-- Lingering Psychic Shell,                        	Tank
+	[174103] = "092775070010",	-- Manifesto of Madness,                           	Intellect
+	[174180] = "082004030010",	-- Oozing Coagulum,                                	Healer
+	[174060] = "010771040000",	-- Psyche Shredder,                                	Damage, Intellect
+	[173940] = "241000100024",	-- Sigil of Warding,                               	Tank
+	[173943] = "124002607743",	-- Torment in a Jar,                               	Damage, Strength/Agility
+	[174500] = "3F7777777777",	-- Vita-Charged Titanshard,                        	All Classes
+	[174528] = "3F7777777777",	-- Void-Twisted Titanshard,                        	All Classes
+	[173946] = "124002607743",	-- Writhing Segment of Drest'agath,                	Damage, Strength/Agility
+-- Ny'alotha, the Waking City Heroic (id: 1180).
+-- Ny'alotha, the Waking City Mythic (id: 1180).
+-- Ny'alotha, the Waking City Looking For Raid (id: 1180).
 }

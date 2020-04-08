@@ -35,7 +35,6 @@ function His:ImportNew (import, delimiter)
       -- Ensure error free lines
       if length ~= private.numFields then
          private:AddError(i, length, string.format("Row has the wrong number of fields - expected %d", private.numFields))
-         printtable(line)
 
       else
          private:ValidateLine(i, line)
@@ -238,7 +237,7 @@ function private:RebuildResponseID(data,t, line)
       type = addon.BTN_SLOTS[type]
    end
    -- Check for custom responses
-   if not db.responses[type] then
+   if #db.responses[type] == 0 then
       type = "default"
    end
    -- and finally validate
@@ -284,11 +283,17 @@ function private:RebuildTime (data, t, line)
       end
       t.date = date("%d/%m/%y", secs)
    	t.time = date("%H:%M:%S", secs)
+   elseif dato and time then
+      local d, m, y = strsplit("/", dato or "", 3)
+      local h,mm,s = strsplit(":",time,3)
+      local secs = His:DateTimeToSeconds(d,m,y,h,mm,s)
+      t.date = date("%d/%m/%y", secs)
+   	t.time = date("%H:%M:%S", secs)
+      t.id = secs .. "-"..private.idCount
+      private.idCount = private.idCount + 1
    elseif dato then
       local d, m, y = strsplit("/", dato or "", 3)
-      print(d,m,y)
       local secs = His:DateTimeToSeconds(d,m,y) -- Will provide 0:0:0
-      print(secs)
       t.date = date("%d/%m/%y", secs)
    	t.time = date("%H:%M:%S", secs)
       t.id = secs .. "-"..private.idCount
@@ -296,7 +301,7 @@ function private:RebuildTime (data, t, line)
    elseif time then
       local d, m, y = strsplit("/", date("%d/%m/%y"), 3) -- Use today
       local h, min, s = strsplit(":", time, 3) -- but keep the time
-      local secs = His:DateTimeToSeconds(d,m,y)
+      local secs = His:DateTimeToSeconds(d,m,y,h,min,s)
       t.date = date("%d/%m/%y", secs)
    	t.time = date("%H:%M:%S", secs)
       t.id = secs .. "-"..private.idCount

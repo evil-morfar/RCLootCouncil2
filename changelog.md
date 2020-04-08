@@ -1,3 +1,130 @@
+# v2.18.3
+## Bugfixes
+* *Fixed rare error when award later items have no trade time remaining. (CurseClassic#37)*
+* *Fixed issues with EQdkp Plus XML export (CurseClassic#35).*
+* *Fixed issue with Award Later when items aren't available in the ML's bags when expected.*
+
+# v2.18.2
+## Changes
+### Allow Keeping
+The pop-up for keeping items now shows "Keep"/"Trade" instead of yes/no. (#183).
+
+## Bugfixes
+* *Passes no longer require a note with 'Require Notes' enabled. (#184)*
+* *Fixes issue with receiving votes outside an instance (Curse#413).*
+* *Fixed issues with TSV Export hyperlinks.*
+
+
+# v2.18.0
+## Additions
+### Auto Award BoE's
+Added a new system allowing for auto awarding BoE's.
+Only Epic, Equippable, non-bags items qualify.
+This is checked before the normal auto award, so if both is enabled, this will have priority.
+
+### Class Filter
+Added class filters to the Loot History.
+Unlike the normal filters, these are active when enabled, i.e. checking 'Warrior' and 'Priest' will only show warriors and priests.
+
+### Require Notes
+Added a new option for ML's that will require a note to be added to all responses.
+When enabled, if no note is supplied, the response is blocked, and the candidate shown a message to why that happened.
+Note: This is not backwards compatible with older version of the addon.
+
+### Winners of item
+Added all the winners of the selected item to the More Info tooltip in the Loot History.
+Note: Different versions of an item is not included in the count.
+
+## Changes
+### Auto Award
+Apparently Auto Awards never worked with Personal Loot - this has now been rectified.
+
+### Corrupted Items
+Corrupted items now have a purple border and 'Corrupted' text as their bonus text.
+This should help you spotting those.
+
+### History Exports
+All exports will now respect all currently active filters, i.e. only export what you're currently able to see.
+
+### Out of Raid Support
+An "Out of Raid" response is no longer automatically sent if you're outside an instance while in a group of 8 or more.
+Instead, the Master Looter will now have to specifically enable it in the "Master Looter > Usage Options" options.
+When enabled, it functions exactly as it did before.
+*DevNote: I decided to make this change now, as I've seen an increasingly amount of confusion as to why people didn't get Loot pop-ups when out of an instance. I expect the few that actually use this feature will figure out how to turn it on.*
+
+## Bugfixes
+* *Candidate info no longer has the potential to wait a long time before being sync, i.e. guild rank not showing up in the voting frame.*
+* *2.18.1: Previous version would error out when awarding during tests.*
+
+
+#### Dev
+* Changed parameters of `ML:AutoAward`.
+* Changed parameters and return type of `ML:ShouldAutoAward`.
+* Added new comm `do_trade` for handling trading of items not contained in `lootTable`.
+* Changed system for sending candidate updates (`ML:SendCandidates`).
+
+
+
+# v2.17.2
+## Bugfixes
+* *Characters with Non-ascii names that have a lower-case by WoW lua's definition can now be council members (CurseClassic#31).*
+* *Fixed issue regarding adding items to a session could potentially cause an error (Curse#406).*
+
+# v2.17.1
+## Changes
+### Corruption
+The corruption column will now show a candidate's effective corruption (corruption - resistance) instead of the total corruption.
+When awarding a corruption item, the tooltip showing the new total corruption now takes corruption resistance into consideration.
+Corruption Effects in the tooltip are now colored yellow if an award would make a player exceed its threshold.
+
+### Item Registration
+Changed the detection of looted items to ensure better reliability with high latencies (CurseClassic#9).
+
+## Bugfixes
+* *Mousing over an empty corruption column will no longer result in an error.*
+* *CSV importing data with date and time and no id will now properly add the time part to the history.*
+
+
+#### Dev
+Deprecated `:IsCouncil(name)` with `:CouncilContains(name)`. Former function will be removed in a couple of months.
+
+# v2.17.0
+## Changes
+Updated for patch 8.3.
+
+## Additions
+### Corruption
+Added a new button group for corrupted items.
+This group supersedes all other button groups, regardless of their specificity.
+
+Added a new column in the Voting Frame containing candidates' corruption info.
+Mouse over the value to see a tooltip containing even more info.
+It may also be clickable, N'Zoth wills it..
+
+### Ny'alotha the Waking City
+Added auto pass data for the new trinkets.
+Added both patch 8.3 and the raid as history mass deletion options.
+
+### JSON Export
+Sebastianbassen kindly created a JSON export which is now included (#180).
+
+
+## Bugfixes
+* *Fixed issue with CSV importing responses without button groups (CurseClassic#25).*
+
+# v2.16.1
+## Changes
+
+#### Chat Frame
+`/rc reset` now also resets the chosen chat frame.
+The chat frame is also automatically reset to default if the selected chat frame becomes invalid.
+
+
+## Bugfixes
+* *Time calculations with raid members in different timezones now works properly (CurseClassic#22).*
+* *The TradeUI now detects reawards when a session has ended.*
+* *Bags are now properly ignored by the Auto Award system.*
+
 # v2.16.0
 
 ## Additions

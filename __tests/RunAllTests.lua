@@ -6,8 +6,7 @@ local path = "__tests/"
 require(path.."wow_api")
 require(path.."wow_item_api")
 require(path.."__load_libs")
-RCLootCouncil = {}
-loadfile(path.."RCLootCouncilMock.lua")("RCLootCouncil", RCLootCouncil)
+require(path.."AddonLoader")
 
 -- Unit Tests
 require(path.."UnitTests/RunUnitTests")

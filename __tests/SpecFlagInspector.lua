@@ -1,4 +1,4 @@
-dofile("./wow_api.lua")
+dofile("__tests/wow_api.lua")
 require "bit"
 
 local SpecFlag = {} -- This class
@@ -14,6 +14,8 @@ local flagsToDecode = {
    "092775070310",
    "092075070010",
    "010773050000",
+   "4294967295",
+   tostring(0xffffffffff)
 }
 
 function Main ()
@@ -78,7 +80,7 @@ end
 
 function SpecFlag:Int2Bin (n)
    local result = ""
-   while n ~= 0 do
+   while n ~= 0 and n do
       if n % 2 == 0 then
          result = "0"..result
       else

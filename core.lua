@@ -116,9 +116,9 @@ function RCLootCouncil:OnInitialize()
 	self.verCheckDisplayed = false -- Have we shown a "out-of-date"?
 	self.moduleVerCheckDisplayed = {} -- Have we shown a "out-of-date" for a module? The key of the table is the baseName of the module.
 
-	self.EJLastestInstanceID = 1179 -- UPDATE this whenever we change test data.
+	self.EJLastestInstanceID = 1180 -- UPDATE this whenever we change test data.
 									-- The lastest raid instance Enouncter Journal id.
-									-- The Eternal Palace
+									-- Ny'alotha, the Waking City
 									-- HOWTO get this number: Open the instance we want in the Adventure Journal. Use command '/dump EJ_GetInstanceInfo()'
 									-- The 8th return value is sth like "|cff66bbff|Hjournal:0:946:14|h[Antorus, the Burning Throne]|h|r"
 									-- The number at the position of the above 946 is what we want.
@@ -185,8 +185,6 @@ function RCLootCouncil:OnInitialize()
 		tinsert(self.defaults.profile.awardReasons, {color = {1, 1, 1, 1}, disenchant = false, log = true, sort = 400+i, text = "Reason "..i,})
 	end
 
-	self:DoChatHook()
-
 	-- register chat and comms
 	self:RegisterChatCommand("rc", "ChatCommand")
   	self:RegisterChatCommand("rclc", "ChatCommand")
@@ -211,6 +209,8 @@ function RCLootCouncil:OnInitialize()
 	db = self.db.profile
 	historyDB = self.lootDB.factionrealm
 	debugLog = self.db.global.log
+
+	self:DoChatHook()
 
 	-- register the optionstable
 	LibStub("AceConfigRegistry-3.0"):RegisterOptionsTable("RCLootCouncil", function() return self:OptionsTable() end)
@@ -244,11 +244,13 @@ function RCLootCouncil:OnEnable()
 	-- in the :CreateFrame() all :Prints as expected :o
 	self:ActivateSkin(db.currentSkin)
 
-	if self.db.global.version then
+	if self.db.global.version then -- Intentionally run before updating global.version
 		self.Compat:Run() -- Do compatibility changes
 	end
 
-	self.db.global.oldVersion = self.db.global.version
+	if self:VersionCompare(self.db.global.version, self.version) then
+		self.db.global.oldVersion = self.db.global.version
+	end
 	self.db.global.version = self.version
 
 	self.db.global.logMaxEntries = self.defaults.global.logMaxEntries -- reset it now for zzz
@@ -289,9 +291,18 @@ function RCLootCouncil:CouncilChanged()
 	self:SendMessage("RCCouncilChanged")
 end
 
+local function validateChatFrame()
+	return type(db.chatFrameName) == "string" and getglobal(db.chatFrameName)
+end
+
 function RCLootCouncil:DoChatHook ()
 	-- Unhook if already hooked:
 	if self:IsHooked(self, "Print") then self:Unhook(self, "Print") end
+	if not validateChatFrame() then
+		self:Print("Warning: Your chat frame", db.chatFrameName, "doesn't exist. ChatFrame has been reset.")
+		self:DebugLog("<ERROR>", "ChatFrameName validation failed, resetting...")
+		db.chatFrameName = self.defaults.profile.chatFrameName
+	end
 	-- Pass our channel to the original function and magic appears.
 	self:RawHook(self, "Print", function (_, ...)
 		self.hooks[self].Print(self, getglobal(db.chatFrameName), ...)
@@ -380,7 +391,7 @@ function RCLootCouncil:ChatCommand(msg)
 		self.nnp = not self.nnp
 		self:Print("nnp = "..tostring(self.nnp))
 	elseif input == "exporttrinketdata" then
-		self:ExportTrinketData(tonumber(args[1]), 1, 1, 1, tonumber(args[2]))
+		self:ExportTrinketData(tonumber(args[1]), 0, tonumber(args[2]), 1)
 	elseif input == 'trinkettest' or input == 'ttest' then
 		self.playerClass = string.upper(args[1])
 		self:Test(1, false, true)
@@ -447,6 +458,7 @@ function RCLootCouncil:ChatCommand(msg)
 		for _, frame in ipairs(frames) do
 			frame:RestorePosition()
 		end
+		db.chatFrameName = self.defaults.profile.chatFrameName
 		self:Print(L["Windows reset"])
 
 	elseif input == "debuglog" or input == "log" then
@@ -492,11 +504,10 @@ end
 
 -- Update the recentTradableItem by link, if it is in bag and tradable.
 function RCLootCouncil:UpdateAndSendRecentTradableItem(info, count)
-	local found = false
 	local Item = self.ItemStorage:New(info.link, "temp")
-	if Item.inBags then
+	self.ItemStorage:WatchForItemInBags(Item,
+	function() -- onFound
 		Item:Store()
-		found = true
 		if Item.time_remaining > 0 then
 			if self.mldb.rejectTrade and IsInRaid() then
 				LibDialog:Spawn("RCLOOTCOUNCIL_KEEP_ITEM", info.link)
@@ -507,15 +518,13 @@ function RCLootCouncil:UpdateAndSendRecentTradableItem(info, count)
 		end
 		-- We've searched every single bag space, and found at least 1 item that wasn't tradeable,
 		-- and none that was. We can now safely assume the item can't be traded.
-		return self:SendCommand("group", "not_tradeable", info.link, info.guid)
-	end
-	-- We haven't found it, maybe we just haven't received it yet, so try again in one second
-	if not count or (count and count <= 3) then -- Only try a few times
-		self:Debug("UpdateAndSendRecentTradableItem: Didn't find item on try ", count or 1)
-		return self:ScheduleTimer("UpdateAndSendRecentTradableItem",1,info, count and count + 1 or 2)
-	end
-	Item:Unstore()
-	self:Debug("Error - UpdateAndSendRecentTradableItem",info.link, "not found in bags")
+		self:SendCommand("group", "not_tradeable", info.link, info.guid)
+	end,
+	function() -- onFail
+		-- We haven't found it, maybe we just haven't received it yet, so try again in one second
+		Item:Unstore()
+		self:Debug(format("<ERROR> UpdateAndSendRecentTradableItem: %s not found in bags", Item.link))
+	end)
 end
 
 -- Send the msg to the channel if it is valid. Otherwise just print the messsage.
@@ -648,7 +657,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 
 					-- Out of instance support
 					-- assume 8 people means we're actually raiding
-					if GetNumGroupMembers() >= 8 and not IsInInstance() then
+					if self.mldb.outOfRaid and GetNumGroupMembers() >= 8 and not IsInInstance() then
 						self:DebugLog("NotInRaid respond to lootTable")
 						for ses, v in ipairs(lootTable) do
 							-- target, session, response, isTier, isRelic, note, roll, link, ilvl, equipLoc, relicType, sendAvgIlvl, sendSpecID
@@ -689,7 +698,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 				self.candidates = unpack(data)
 			elseif command == "council" and self:UnitIsUnit(sender, self.masterLooter) then -- only ML sends council
 				self.council = unpack(data)
-				self.isCouncil = self:IsCouncil(self.playerName)
+				self.isCouncil = self:CouncilContains(self.playerName)
 
 				-- prepare the voting frame for the right people
 				if self.isCouncil or self.mldb.observe then
@@ -845,6 +854,10 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 				self.lootStatus[guid].num = self.lootStatus[guid].num + 1
 				self.lootStatus[guid].candidates[self:UnitName(sender)] = {status = command, item = link}
 				self:SendMessage("RCLootStatusReceived")
+
+			elseif command == "getCorruptionData" then
+				-- Just in case we need it...
+				self:SendCommand(sender, "corruptionData", self:GetPlayerCorruption())
 			end
 		else
 			-- Most likely pre 2.0 command
@@ -1150,6 +1163,16 @@ function RCLootCouncil:UpdatePlayersData()
 	playersData.ilvl = select(2,GetAverageItemLevel())
 	self:UpdatePlayersGears()
 	self:UpdatePlayerRelics()
+	playersData.corruption = self:GetPlayerCorruption()
+end
+
+-- New in patch 8.3.
+-- Self contained to avoid clashes with Classic and when it's removed
+function RCLootCouncil:GetPlayerCorruption ()
+	if not GetCorruption then return end
+	local corruption = GetCorruption()
+	local corruptionResistance = GetCorruptionResistance()
+	return {corruption, corruptionResistance}
 end
 
 -- @param link A gear that we want to compare against the equipped gears
@@ -1218,8 +1241,8 @@ end
 -- @param target 		The target of response
 -- @param session		The session to respond to.
 -- @param response		The selected response, must be index of db.responses.
--- @param isTier		Indicates if the response is a tier response. (v2.4.0)
--- @param isRelic		Indicates if the response is a relic response. (v2.5.0)
+-- @param isTier		Indicates if the response is a tier response. (v2.4.0) - DEPRECATED
+-- @param isRelic		Indicates if the response is a relic response. (v2.5.0) - DEPRECATED
 -- @param note			The player's note.
 -- @param roll 			The player's roll.
 -- @param link 			The itemLink of the item in the session.
@@ -1246,8 +1269,6 @@ function RCLootCouncil:SendResponse(target, session, response, isTier, isRelic, 
 			diff = diff,
 			note = note,
 			response = response,
-			isTier = isTier or nil,
-			isRelic = isRelic or nil,
 			specID = sendSpecID and playersData.specID or nil,
 			roll = roll,
 		})
@@ -1442,7 +1463,8 @@ function RCLootCouncil:PrepareLootTable(lootTable)
 end
 
 --- Sends a lootAck to the group containing session related data.
--- Included is: specID and average ilvl is sent once.
+-- Patch 8.3: Added corruption.
+-- specID, average ilvl and corruption is sent once.
 -- Currently equipped gear and "diff" is sent for each session.
 -- Autopass response is sent if the session has been autopassed. No other response is sent.
 -- @param skip Only sends lootAcks on sessions > skip or 0
@@ -1462,7 +1484,7 @@ function RCLootCouncil:SendLootAck(table, skip)
 		end
 	end
 	if hasData then
-		self:SendCommand("group", "lootAck", self.playerName, playersData.specID, playersData.ilvl, toSend)
+		self:SendCommand("group", "lootAck", self.playerName, playersData.specID, playersData.ilvl, toSend, playersData.corruption)
 	end
 end
 
@@ -1507,6 +1529,8 @@ end
 --]]
 RCLootCouncil.classDisplayNameToID = {} -- Key: localized class display name. value: class id(number)
 RCLootCouncil.classTagNameToID = {} -- key: class name in capital english letters without space. value: class id(number)
+RCLootCouncil.classIDToDisplayName = {} -- key: class id. Value: localized name
+RCLootCouncil.classIDToFileName = {} -- key: class id. Value: File name
 for i=1, GetNumClasses() do
 	local info = C_CreatureInfo.GetClassInfo(i)
 	if info then -- Just in case class doesn't exists #Classic
@@ -1514,6 +1538,8 @@ for i=1, GetNumClasses() do
 		RCLootCouncil.classTagNameToID[info.classFile] = i
 	end
 end
+RCLootCouncil.classIDToDisplayName = tInvert(RCLootCouncil.classDisplayNameToID)
+RCLootCouncil.classIDToFileName = tInvert(RCLootCouncil.classTagNameToID)
 
 -- @return The bitwise flag indicates the classes allowed for the item, as specified on the tooltip by "Classes: xxx"
 -- If the tooltip does not specify "Classes: xxx" or if the item is not cached, return 0xffffffff
@@ -1567,6 +1593,28 @@ function RCLootCouncil:GetItemClassesAllowedFlag(item)
 	end
 	tooltipForParsing:Hide()
 	return 0xffffffff -- The item works for all classes
+end
+
+--- Parses an item tooltip looking for corruption stat
+-- @param item The item to find corruption for
+-- @return 0 or the amount of corruption on the item.
+-- COMBAK: This should be part of a generic ToolTip parser system in the future.
+function RCLootCouncil:GetCorruptionFromTooltip (item)
+	if not item then return 0 end
+	tooltipForParsing:SetOwner(UIParent, "ANCHOR_NONE")
+	tooltipForParsing:SetHyperlink(item)
+
+	local pattern = _G.ITEM_CORRUPTION_BONUS_STAT:gsub("%%d", "%(%%d%+%)")
+	for i = 1, tooltipForParsing:NumLines() do
+		local line = getglobal(tooltipForParsing:GetName()..'TextLeft' .. i)
+		if line and line.GetText then
+			local text = line:GetText()
+			local found = text:match(pattern)
+			if found then return tonumber(found) end
+		end
+	end
+	-- Didn't find anything
+	return 0
 end
 
 -- strings contains plural/singular rule such as "%d |4ora:ore;"
@@ -1911,7 +1959,7 @@ function RCLootCouncil:NewMLCheck()
 	self.lootMethod = GetLootMethod()
 	local instance_type = select(2, IsInInstance())
 	if instance_type == "pvp" or instance_type == "arena" then return end -- Don't do anything here
-	if self.masterLooter and self.masterLooter ~= "" and (strfind(self.masterLooter, "Unknown") or strfind(self.masterLooter:lower(), _G.UNKNOWNOBJECT:lower())) then
+	if self.masterLooter and self.masterLooter ~= "" and (self.masterLooter == "Unknown" or self.masterLooter:lower() == _G.UNKNOWNOBJECT:lower()) then
 		-- ML might be unknown for some reason
 		self:Debug("Unknown ML")
 		return self:ScheduleTimer("NewMLCheck", 0.5)
@@ -2026,11 +2074,11 @@ function RCLootCouncil:GetML()
 	return false, nil;
 end
 
-function RCLootCouncil:IsCouncil(name)
+function RCLootCouncil:CouncilContains(name)
 	local ret = tContains(self.council, self:UnitName(name))
 	if self:UnitIsUnit(name, self.playerName) and self.isMasterLooter
 	 or self.nnp or self:UnitIsUnit(name, self.masterLooter) then ret = true end -- ML and nnp is always council
-	self:DebugLog(tostring(ret).." =", "IsCouncil", name)
+	self:DebugLog(tostring(ret).." =", "ConcilContains", name)
 	return ret
 end
 
@@ -2341,6 +2389,10 @@ function RCLootCouncil:UnitName(unit)
 	-- We also want to make sure the returned name is always title cased (it might not always be! ty Blizzard)
 	name = name:lower():gsub("^%l", string.upper)
 	return name and name.."-"..realm
+end
+
+function RCLootCouncil:noop ()
+	-- Intentionally left empty
 end
 
 ---------------------------------------------------------------------------
@@ -2716,6 +2768,10 @@ function RCLootCouncil:GetItemBonusText(link, delimiter)
 		if text ~= "" then text = text..delimiter end
 		text = text.._G.ITEM_MOD_CR_STURDINESS_SHORT
 	end
+	if itemStatsRet["ITEM_MOD_CORRUPTION"] then
+		if text ~= "" then text = text..delimiter end
+		text = "|c".._G.CORRUPTION_COLOR:GenerateHexColor()..text.._G.ITEM_MOD_CORRUPTION.."|r"
+	end
 
 	return text
 end
@@ -2990,6 +3046,10 @@ end
 
 function RCLootCouncil:TranslateRole(role)
 	return self.Utils:TranslateRole(role)
+end
+
+function RCLootCouncil:IsCouncil (name)
+	return self:ConcilContains(name)
 end
 
 --[[
