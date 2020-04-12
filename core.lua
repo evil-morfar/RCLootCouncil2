@@ -164,7 +164,6 @@ function RCLootCouncil:OnInitialize()
 		}
 	}
 
-
 	self.testMode = false;
 	-- create the other buttons/responses
 	for i = 1, self.defaults.profile.maxButtons do
@@ -210,6 +209,22 @@ function RCLootCouncil:OnInitialize()
 	historyDB = self.lootDB.factionrealm
 	debugLog = self.db.global.log
 
+	-- Add logged in message in the log
+	self:DebugLog("Logged In")
+end
+
+function RCLootCouncil:OnEnable()
+	if not self:IsCorrectVersion() then
+		self:DebugLog("<ERROR>", "Wrong game version", WOW_PROJECT_ID)
+		self:Print(format("This version of %s is not intended for this game version!\nPlease install the proper version.", self.baseName))
+		return self:Disable()
+	end
+
+	-- Register the player's name
+	self.realmName = select(2, UnitFullName("player"))
+	self.playerName = self:UnitName("player")
+	self:DebugLog(self.playerName, self.version, self.tVersion)
+
 	self:DoChatHook()
 
 	-- register the optionstable
@@ -220,15 +235,6 @@ function RCLootCouncil:OnInitialize()
 	self.optionsFrame.ml = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("RCLootCouncil", "Master Looter", "RCLootCouncil", "mlSettings")
 	self.playersData = playersData -- Make it globally available
 	self:InitItemStorage()
-	-- Add logged in message in the log
-	self:DebugLog("Logged In")
-end
-
-function RCLootCouncil:OnEnable()
-	-- Register the player's name
-	self.realmName = select(2, UnitFullName("player"))
-	self.playerName = self:UnitName("player")
-	self:DebugLog(self.playerName, self.version, self.tVersion)
 
 	-- register events
 	for event, method in pairs(self.coreEvents) do
@@ -274,10 +280,10 @@ function RCLootCouncil:OnEnable()
 end
 
 function RCLootCouncil:OnDisable()
-	self:Debug("OnDisable()")
-	--NOTE (not really needed as we probably never call .Disable() on the addon)
-		-- delete all windows
-		-- disable modules(?)
+	self:DebugLog("OnDisable()")
+	self:UnregisterChatCommand("rc")
+  	self:UnregisterChatCommand("rclc")
+	self:UnregisterAllComm()
 	self:UnregisterAllEvents()
 end
 
@@ -2226,6 +2232,10 @@ function RCLootCouncil:UpdateDB()
 end
 function RCLootCouncil:UpdateHistoryDB()
 	historyDB = self:GetHistoryDB()
+end
+
+function RCLootCouncil:IsCorrectVersion ()
+	return WOW_PROJECT_MAINLINE == WOW_PROJECT_ID
 end
 
 -- The link of same item generated from different players, or if two links are generated between player spec switch, are NOT the same

@@ -1,3 +1,7 @@
+## Changes
+### Classic
+The retail version will now show a chat message if installed in the Classic client and vice versa.
+
 ## Bugfixes
 * *Fixed another issue with EQdkp Plus XML export introduced with v2.18.3.*
 
