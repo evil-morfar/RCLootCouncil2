@@ -1920,9 +1920,9 @@ function RCLootCouncil:OnEvent(event, ...)
 
 	elseif event == "LOOT_READY" then
 		self:Debug("Event:", event, ...)
+		wipe(self.lootSlotInfo)
 		if not IsInInstance() then return end -- Don't do anything out of instances
 		if GetNumLootItems() <= 0 then return end-- In case when function rerun, loot window is closed.
-		wipe(self.lootSlotInfo)
 		self.lootOpen = true
 		for i = 1,  GetNumLootItems() do
 			if LootSlotHasItem(i) then
