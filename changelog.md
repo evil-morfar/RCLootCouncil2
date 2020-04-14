@@ -2,6 +2,10 @@
 ### Classic
 The retail version will now show a chat message if installed in the Classic client and vice versa.
 
+### Voting Frame
+When `Hide Votes` is enabled, the Voting Frame will no longer sort the list when receiving votes from other councilmembers.
+Once the player has voted, the list is sorted as normal.
+
 ## Bugfixes
 * *Fixed another issue with EQdkp Plus XML export introduced with v2.18.3.*
 

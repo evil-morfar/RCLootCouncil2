@@ -1208,7 +1208,10 @@ function RCVotingFrame.SetCellVotes(rowFrame, frame, data, cols, row, realrow, c
 	frame.text:SetText(val)
 
 	if addon.mldb.hideVotes then
-		if not lootTable[session].haveVoted then frame.text:SetText(0) end
+		if not lootTable[session].haveVoted then 
+			frame.text:SetText(0)
+			data[realrow].cols[column].value = 0 -- Don't background sort when we can't see the votes
+		end
 	end
 end
 
