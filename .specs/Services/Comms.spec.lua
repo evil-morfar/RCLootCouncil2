@@ -363,6 +363,29 @@ describe("#Services #Comms", function()
          WoWAPI_FireUpdate(GetTime()+10)
          assert.are.same(rec1, rec2)
       end)
+
+      it("handles unsubscribe", function()
+         local s = spy.new(function(dist,sender,data,...) return unpack(data) end)
+         local sub = Comms:Subscribe(Comms.Prefixes.MAIN, "test", s)
+         local data = "test"
+         Comms:Send{
+            prefix = Comms.Prefixes.MAIN,
+            command = "test",
+            data = data
+         }
+         WoWAPI_FireUpdate(GetTime()+10)
+         assert.spy(s).was_called(1)
+         assert.spy(s).returned_with(data)
+         sub:unsubscribe()
+         Comms:Send{
+            prefix = Comms.Prefixes.MAIN,
+            command = "something else that shouldn't be received",
+            data = data
+         }
+         WoWAPI_FireUpdate(GetTime()+10)
+         assert.spy(s).was_called(1)
+         assert.spy(s).returned_with(data)
+      end)
    end)
 
    it("cross realm", function()
