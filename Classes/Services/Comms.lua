@@ -10,6 +10,7 @@ local _, addon = ...
 local Comms = addon.Init("Services.Comms")
 local Subject = addon.Require("rx.Subject")
 local Log = addon.Require("Log"):Get()
+local TempTable = addon.Require("Utils.TempTable")
 local ld = LibStub("LibDeflate")
 
 local private = {
@@ -107,9 +108,12 @@ function Comms:Send (args)
 end
 
 function private:SendComm(prefix, target, prio, callback, callbackarg, command, ...)
-   local serialized = self:Serialize(command, {...})
+   local data = TempTable:Acquire(...)
+   local serialized = self:Serialize(command, data)
    local compressed = ld:CompressDeflate(serialized, self.compresslevel)
    local encoded    = ld:EncodeForWoWAddonChannel(compressed)
+
+   TempTable:Release(data)
 
    if target == "group" then
       self.AceComm:SendCommMessage(prefix, encoded, self:GetGroupChannel(), nil, prio, callback, callbackarg)
@@ -120,10 +124,13 @@ function private:SendComm(prefix, target, prio, callback, callbackarg, command, 
          self.AceComm:SendCommMessage(prefix, encoded, "WHISPER", target, prio, callback, callbackarg)
       else
          -- Remake command to be "xrealm" and put target and command in the table
-         serialized = self:Serialize("xrealm", {target, command, ...})
+         data = TempTable:Acquire(target, command, ...)
+         serialized = self:Serialize("xrealm", data)
          compressed = ld:CompressDelfate(serialized, self.compresslevel)
          encoded    = ld:EncodeForWoWAddonChannel(compressed)
-         self.AceComm:SendCommMessage(prefix, encoded, self:GetGroupChannel(), nil, prio, callback, callbackarg)
+         local channel, name = self:GetGroupChannel()
+         self.AceComm:SendCommMessage(prefix, encoded, channel, name, prio, callback, callbackarg)
+         TempTable:Release(data)
       end
    end
 end

@@ -13,6 +13,7 @@ loadfile(".specs/AddonLoader.lua")(nil,nil, addon).LoadArray{
    [[Classes\Lib\RxLua\embeds.xml]],
    [[Libs\LibDeflate\LibDeflate.lua]],
    [[Classes\Utils\Log.lua]],
+   [[Classes\Utils\TempTable.lua]],
    [[Classes\Services\Comms.lua]]
 }
 
