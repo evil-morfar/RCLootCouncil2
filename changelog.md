@@ -1,3 +1,4 @@
+# v2.18.4
 ## Changes
 ### Classic
 The retail version will now show a chat message if installed in the Classic client and vice versa.
