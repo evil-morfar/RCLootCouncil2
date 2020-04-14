@@ -2,11 +2,13 @@
 -- @author Potdisc
 -- Create date: 05/04/2020
 
+-- REVIEW Not finished!
+
 local _, addon = ...
 local SlashCommands = addon.Init("Services.SlashCommands")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 local Subject = addon.Require("rx.Subject")
-local Log = addon.Requir("Log")
+local Log = addon.Require("Log")
 
 local private = {
    AceConsole = {},
@@ -30,9 +32,9 @@ end
 -- @param func The function that will be executed whenever the command is encountered. It's called with all console args as arguments.
 -- @return The subsription of the command.
 function SlashCommands:Subscribe (cmds, cmdDesc, helpText, func)
-   assert(type(cmds) == "table" and type(table[1]) == "string", "'cmds' must be an array with at least one string.")
+   assert(type(cmds) == "table" and type(cmds[1]) == "string", "'cmds' must be an array with at least one string.")
    assert(type(func) == "function", "'func' must be a function.")
-   priate:RegisterCommand(cmds, cmdDesc, helpText)
+   private:RegisterCommand(cmds, cmdDesc, helpText)
    return private:SubjectHelper(cmds):subsribe(func)
 end
 
