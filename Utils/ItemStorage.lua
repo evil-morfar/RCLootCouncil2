@@ -231,7 +231,7 @@ function private:FindItemInTable(table, item1)
 end
 
 function private:findItemInBags(link)
-   addon:DebugLog("Storage: searching for item:",link)
+   addon:DebugLog("Storage: searching for item:",gsub(link, "\124", "\124\124"))
    if link and link ~= "" then
       local c,s,t
       for container=0, _G.NUM_BAG_SLOTS do
