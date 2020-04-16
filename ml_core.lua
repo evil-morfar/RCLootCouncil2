@@ -333,7 +333,7 @@ function RCLootCouncilML:ClearOldItemsInBags()
 		-- if (not v.time_added) or (v.args.bop and time(date("!*t")) - v.time_added > 3600*2) or (time(date("!*t")) - v.time_added > 3600*6) then -- time(date("!*t")) is UTC epoch.
 		-- 	tremove(db.baggedItems, i)
 		-- end
-		if (v.args.bop and (v.time_remaining <= 0 or v.time_remaning + v.time_added < time())) or -- BoP item, 2 hrs
+		if (v.args.bop and (v.time_remaining <= 0 or v.time_remaining + v.time_added < time())) or -- BoP item, 2 hrs
 			time() - v.time_added > 3600 * 6 then -- Non BoP, timeout after 6 hrs
 				addon:DebugLog("ML: Removed Item", v.link, "due to timeout.")
 				addon.ItemStorage:RemoveItem(v)
@@ -426,12 +426,12 @@ function RCLootCouncilML:ItemsInBagsLowTradeTimeRemainingReminder()
 	local entriesToRemind = {}
 	local remindThreshold = 1200 -- 20min
 	local Items = addon.ItemStorage:GetAllItemsOfType("award_later")
-	local remaningTime = 0
+	local remainingTime = 0
 	for k, v in ipairs(Items) do
-		-- It should be precise enough to just check time_added + time_remaning
-		remaningTime = time() - v.time_added + v.time_remaning
-		if remaningTime > 0 and remaningTime < remindThreshold then
-			v.remainingTime = remaningTime
+		-- It should be precise enough to just check time_added + time_remaining
+		remainingTime = time() - v.time_added + v.time_remaining
+		if remainingTime > 0 and remainingTime < remindThreshold then
+			v.remainingTime = remainingTime
 			v.index = k
 			tinsert(entriesToRemind, v)
 		end
