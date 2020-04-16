@@ -9,7 +9,7 @@ This is especially dangerous with `Award Later`, as ALL eligible items will be a
 **You have been warned.**
 
 ### Classic
-The retail version will now show a chat message if installed in the Classic client and vice versa.
+The retail version will now show a chat message if installed in the Classic client and vice versa, before disabling itself.
 
 ### Voting Frame
 When `Hide Votes` is enabled, the Voting Frame will no longer sort the list when receiving votes from other councilmembers.
@@ -20,6 +20,7 @@ Once the player has voted, the list is sorted as normal.
 * *Loot should no longer linger in the Session Frame after leaving the instance (CurseClassic#41).*
 * *Multiple items can be automatically added to a pending trade at once.*
 * *Moving responses up/down in the options menu now properly updates their sorting position (Classic#18).*
+
 
 # v2.18.3
 ## Bugfixes
