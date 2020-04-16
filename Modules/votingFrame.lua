@@ -1208,7 +1208,7 @@ function RCVotingFrame.SetCellVotes(rowFrame, frame, data, cols, row, realrow, c
 	frame.text:SetText(val)
 
 	if addon.mldb.hideVotes then
-		if not lootTable[session].haveVoted then 
+		if not lootTable[session].haveVoted then
 			frame.text:SetText(0)
 			data[realrow].cols[column].value = 0 -- Don't background sort when we can't see the votes
 		end
@@ -1473,6 +1473,7 @@ function RCVotingFrame:GetAwardPopupData(session, name, data, reason)
 		equipLoc		= lootTable[session].equipLoc,
 		texture 		= lootTable[session].texture,
 		typeCode 	= lootTable[session].typeCode,
+		boss 			= lootTable[session].boss,
 	}
 end
 

@@ -8,6 +8,10 @@ I generally don't recommend enabling `Auto Start` as you will have no control ov
 This is especially dangerous with `Award Later`, as ALL eligible items will be awarded automatically.  
 **You have been warned.**
 
+### Boss Name in History
+The boss name is now directly attached to items, meaning no matter when you award items the boss name should be correct in the Loot History.
+This would not be the case earlier if another boss was pulled before awarding registered items.
+
 ### Classic
 The retail version will now show a chat message if installed in the Classic client and vice versa, before disabling itself.
 
