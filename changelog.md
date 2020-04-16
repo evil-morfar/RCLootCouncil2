@@ -1,5 +1,13 @@
 # v2.18.4
 ## Changes
+
+### Award Later
+When `Award Later` and `Auto Start` both are enabled, all items are automatically awarded to the Master Looter/Group Leader for award later.
+
+I generally don't recommend enabling `Auto Start` as you will have no control over what happens before setting the addon free to do its thing.
+This is especially dangerous with `Award Later`, as ALL eligible items will be awarded automatically.  
+**You have been warned.**
+
 ### Classic
 The retail version will now show a chat message if installed in the Classic client and vice versa.
 

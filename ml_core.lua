@@ -746,12 +746,30 @@ function RCLootCouncilML:LootOpened()
 		end
 		if #self.lootTable > 0 and not self.running then
 			if db.autoStart and addon.candidates[addon.playerName] and #addon.council > 0 then -- Auto start only if data is ready
-				self:StartSession()
+				if db.awardLater then
+					self:DoAwardLater()
+				else
+					self:StartSession()
+				end
 			else
 				addon:CallModule("sessionframe")
 				sessionframe:Show(self.lootTable)
 			end
 		end
+	end
+end
+
+--- Awards all items in lootTable to the ML for award later
+function RCLootCouncilML:DoAwardLater (lootTable)
+	local awardsDone = 0
+	for session in ipairs(lootTable) do
+		self:Award(session, nil, nil, nil, function()
+			-- Ensure all awards are done before ending the session.
+			awardsDone = awardsDone + 1
+			if awardsDone >= #lootTable then
+				RCLootCouncilML:EndSession()
+			end
+		end)
 	end
 end
 
