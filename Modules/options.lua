@@ -108,6 +108,9 @@ local function createNewButtonSet(path, name, order)
 				-- And move the temp up
 				addon.db.profile.buttons[name][i - 1] = tempBtn
 				addon.db.profile.responses[name][i - 1] = tempResponse
+				-- Now update the sort values
+				addon.db.profile.responses[name][i].sort = i
+				addon.db.profile.responses[name][i - 1].sort = i - 1
 			end,
 		}
 		path[name].args["move_down"..i] = {
@@ -124,6 +127,8 @@ local function createNewButtonSet(path, name, order)
 				addon.db.profile.responses[name][i] = addon.db.profile.responses[name][i + 1]
 				addon.db.profile.buttons[name][i + 1] = tempBtn
 				addon.db.profile.responses[name][i + 1] = tempResponse
+				addon.db.profile.responses[name][i].sort = i
+				addon.db.profile.responses[name][i + 1].sort = i + 1
 			end,
 		}
 	end

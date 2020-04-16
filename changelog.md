@@ -11,6 +11,7 @@ Once the player has voted, the list is sorted as normal.
 * *Fixed another issue with EQdkp Plus XML export introduced with v2.18.3.*
 * *Loot should no longer linger in the Session Frame after leaving the instance (CurseClassic#41).*
 * *Multiple items be automatically added to a pending trade at once.*
+* *Moving responses up/down in the options menu now properly updates their sorting position (Classic#18).*
 
 # v2.18.3
 ## Bugfixes
