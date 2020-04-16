@@ -17,6 +17,7 @@ local time_remaining_timer, update_targets_timer
 local TIME_REMAINING_INTERVAL = 300 -- 5 min
 local TIME_REMAINING_WARNING = 1200 -- 20 min
 local UPDATE_TIME_INTERVAL = 1 -- 1 sec
+local TRADE_ADD_DELAY = 100 -- ms
 
 -- lua
 local select, GetItemInfoInstant, pairs, ipairs,  unpack, tinsert, wipe, tremove, format, table, GetTime, CheckInteractDistance, InitiateTrade
@@ -254,6 +255,12 @@ function TradeUI:GetStoredItemBySession (session)
    end, true)
 end
 
+local function addItemToTradeWindow (tradeBtn, c, s)
+   ClearCursor()
+   PickupContainerItem(c, s)
+   ClickTradeButton(tradeBtn)
+end
+
 function TradeUI:AddAwardedInBagsToTradeWindow()
    local tradeIndex = 1
    local items = addon.ItemStorage:GetAllItemsMultiPred(
@@ -273,9 +280,8 @@ function TradeUI:AddAwardedInBagsToTradeWindow()
          addon:Debug("#Trading", k)
          local _, _, locked, _, _, _, link = GetContainerItemInfo(c, s)
          if addon:ItemIsItem(link, Item.link) then -- Extra check, probably also redundant
-            ClearCursor()
-				PickupContainerItem(c, s)
-				ClickTradeButton(k)
+            -- Delay the adding of items, as we can't add them all at once
+            self:ScheduleTimer(addItemToTradeWindow, TRADE_ADD_DELAY * k, k, c, s)
          end
       end
    end
