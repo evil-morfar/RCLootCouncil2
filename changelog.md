@@ -15,6 +15,10 @@ This would not be the case earlier if another boss was pulled before awarding re
 ### Classic
 The retail version will now show a chat message if installed in the Classic client and vice versa, before disabling itself.
 
+### Error Handler
+RCLootCouncil will now log any lua errors caused by it.
+This will help in debugging errors as users are no longer required to turn on scriptErrors to register them.
+
 ### Voting Frame
 When `Hide Votes` is enabled, the Voting Frame will no longer sort the list when receiving votes from other councilmembers.
 Once the player has voted, the list is sorted as normal.

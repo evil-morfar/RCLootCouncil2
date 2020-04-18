@@ -36,6 +36,7 @@ addon.defaults = {
       logMaxEntries = 2000,
       log = {}, -- debug log
       verTestCandidates = {}, -- Stores received verTests
+      errors = {},
    },
    profile = {
       skipCombatLockdown = false,
