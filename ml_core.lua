@@ -613,10 +613,19 @@ function RCLootCouncilML:OnCommReceived(prefix, serializedMsg, distri, sender)
 
 			elseif command == "not_tradeable" or command == "rejected_trade" then
 				self:HandleNonTradeable(unpack(data), addon:UnitName(sender), command)
+
+			elseif command == "bonus_roll" then
+				self:OnBonusRoll(unpack(data))
 			end
 		else
 			addon:Debug("Error in deserializing ML comm: ", command)
 		end
+	end
+end
+
+function RCLootCouncilML:OnBonusRoll (winner, type, link)
+	if db.saveBonusRolls then
+		self:TrackAndLogLoot(winner, link, "BONUSROLL", addon.bossName)
 	end
 end
 

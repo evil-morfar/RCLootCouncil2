@@ -897,6 +897,12 @@ function addon:OptionsTable()
 										desc = L["opt_award_later_desc"],
 										type = "toggle"
 									},
+									saveBonusRolls = {
+										order = 12,
+										name = L["opt_saveBonusRolls_Name"],
+										desc = L["opt_saveBonusRolls_Desc"],
+										type = "toggle"
+									}
 								},
 							},
 							voteOptions = {

@@ -1964,7 +1964,16 @@ end
 
 function RCLootCouncil:OnBonusRoll (_, type, link)
 	self:DebugLog("BONUS_ROLL", type, link)
-	self:SendCommand("group", "bonus_roll", self.playerName, type, link)
+	if type == "item" or type == "artifact_power" then
+		-- Only handle items and artifact power
+		self:SendCommand("group", "bonus_roll", self.playerName, type, link)
+	end
+	--[[
+		Tests:
+		/run RCLootCouncil:OnBonusRoll("", "artifact_power", "|cff0070dd|Hitem:144297::::::::110:256:8388608:3::26:::|h[Talisman of Victory]|h|r")
+		/run RCLootCouncil:OnBonusRoll("", "item", "|cffa335ee|Hitem:140851::::::::110:256::3:3:3443:1467:1813:::|h[Nighthold Custodian's Hood]|h|r")
+
+	]]
 end
 
 function RCLootCouncil:NewMLCheck()

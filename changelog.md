@@ -8,6 +8,12 @@ I generally don't recommend enabling `Auto Start` as you will have no control ov
 This is especially dangerous with `Award Later`, as ALL eligible items will be awarded automatically.  
 **You have been warned.**
 
+### Bonus Rolls
+Bonus Rolls detection has been moved to the Core addon from Extra Utilities.
+This means all bonus roll detection is built into RCLootCouncil, and doesn't require the EU module to work.
+By default all bonus rolls are logged to the Loot History, but this can be changed with the new `Save Bonus Rolls` option under Master Looter options.
+The column showing bonus rolls is still part of the EU module.
+
 ### Boss Name in History
 The boss name is now directly attached to items, meaning no matter when you award items the boss name should be correct in the Loot History.
 This would not be the case earlier if another boss was pulled before awarding registered items.
@@ -29,6 +35,7 @@ Once the player has voted, the list is sorted as normal.
 * *Multiple items can be automatically added to a pending trade at once.*
 * *Moving responses up/down in the options menu now properly updates their sorting position (Classic#18).*
 * *Fixed issues with TradeUI and multiple copies of the same item.*
+* *Deleting history older than a specified number of days now works correctly.*
 
 
 # v2.18.3
