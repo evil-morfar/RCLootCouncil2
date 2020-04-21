@@ -156,11 +156,11 @@ end
 -- Without type, returns the first found Item that matches the item link.
 -- With type, returns the the first found item that matches both the item link and the type.
 -- @param item ItemLink (@see GetItemInfo)
--- @tparam type string (Optional) The type of the item we want to find
+-- @tparam itemType string (Optional) The type of the item we want to find
 -- @return The Item object, or nil if not found
-function Storage:GetItem(item, type)
+function Storage:GetItem(item, itemType)
    if type(item) ~= "string" then return error("'item' is not a string/ItemLink", 2) end
-   return select(2, private:FindItemInTable(StoredItems, item, type))
+   return select(2, private:FindItemInTable(StoredItems, item, itemType))
 end
 
 --- Returns all stored Items of a specific type
