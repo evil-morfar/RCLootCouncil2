@@ -62,6 +62,7 @@ local defaultModules = {
 	sessionframe =	"RCSessionFrame",
 	votingframe =	"RCVotingFrame",
 	tradeui =		"RCTradeUI",
+	errorhandler = "ErrorHandler",
 }
 local userModules = {
 	masterlooter = nil,
@@ -71,6 +72,7 @@ local userModules = {
 	sessionframe = nil,
 	votingframe = nil,
 	tradeui = nil,
+	errorhandler = nil
 }
 
 local frames = {} -- Contains all frames created by RCLootCouncil:CreateFrame()
