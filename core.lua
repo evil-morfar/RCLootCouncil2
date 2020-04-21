@@ -1962,6 +1962,11 @@ function RCLootCouncil:OnEvent(event, ...)
 	end
 end
 
+function RCLootCouncil:OnBonusRoll (_, type, link)
+	self:DebugLog("BONUS_ROLL", type, link)
+	self:SendCommand("group", "bonus_roll", self.playerName, type, link)
+end
+
 function RCLootCouncil:NewMLCheck()
 	local old_ml = self.masterLooter
 	local old_lm = self.lootMethod

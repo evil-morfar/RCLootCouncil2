@@ -574,7 +574,8 @@ function addon:OptionsTable()
 											end
 											-- Convert days into seconds
 											local days = selections.deleteCustomDays * 60 * 60 * 24
-											self:GetActiveModule("history"):DeleteEntriesOlderThanEpoch(days)
+											local currentTime = GetServerTime()
+											self:GetActiveModule("history"):DeleteEntriesOlderThanEpoch(currentTime - days)
 											selections.deleteCustomDays = ""
 										end,
 									},
