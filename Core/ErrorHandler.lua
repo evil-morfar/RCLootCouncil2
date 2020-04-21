@@ -2,7 +2,7 @@
 -- @author Potdisc
 -- Create Date: 16/04/2020
 
-local addon = LibStub("AceAddon-3.0"):GetAddon("RCLootCouncil")
+local _, addon = ...
 
 local ErrorHandler = addon:NewModule("ErrorHandler", "AceEvent-3.0")
 local private = {
