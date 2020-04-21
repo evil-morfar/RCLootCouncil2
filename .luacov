@@ -1,8 +1,12 @@
 exclude = {
+-- Ignore system files
+   "share/lua/*",
+   "luarocks/*",
+   "luaunit",
+-- Ignore externals and Locales
    "Libs/*",
    "Locale/*",
-   "luaunit",
-   "Utils",
+-- Ignore certain test data
    "RCLootCouncilMock",
    "csv_test_data",
    "playerexport_test_data",

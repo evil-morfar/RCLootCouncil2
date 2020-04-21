@@ -17,4 +17,5 @@ addon.coreEvents = {
    ["LOOT_CLOSED"] = "OnEvent",
    ["LOOT_READY"] = "OnEvent",
    ["ENCOUNTER_LOOT_RECEIVED"] = "OnEvent",
+   ["BONUS_ROLL_RESULT"] = "OnBonusRoll",
 }

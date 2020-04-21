@@ -1,8 +1,8 @@
 ## Author: Potdisc
 ## Interface: 80300
-## Notes: Interface for running a Loot Council v2.18.3
+## Notes: Interface for running a Loot Council v2.19.0-Beta.1
 ## Title: RCLootCouncil
-## Version: 2.18.3
+## Version: 2.19.0
 ## SavedVariables: RCLootCouncilDB, RCLootCouncilLootDB
 ## OptionalDeps: LibStub, CallbackHandler-1.0, Ace3, lib-st, LibWindow-1.1, LibDialog-1.0
 
@@ -16,6 +16,7 @@ Core\Defaults.lua
 Core\CoreEvents.lua
 
 core.lua
+Core\ErrorHandler.lua
 ml_core.lua
 
 UI\UI.lua

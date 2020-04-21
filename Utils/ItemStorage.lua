@@ -152,12 +152,15 @@ function Storage:GetAllItems()
    return CopyTable(StoredItems)
 end
 
---- Returns a specific item object
+--- Returns a specific item object.
+-- Without type, returns the first found Item that matches the item link.
+-- With type, returns the the first found item that matches both the item link and the type.
 -- @param item ItemLink (@see GetItemInfo)
+-- @tparam itemType string (Optional) The type of the item we want to find
 -- @return The Item object, or nil if not found
-function Storage:GetItem(item)
+function Storage:GetItem(item, itemType)
    if type(item) ~= "string" then return error("'item' is not a string/ItemLink", 2) end
-   return select(2, private:FindItemInTable(StoredItems, item))
+   return select(2, private:FindItemInTable(StoredItems, item, itemType))
 end
 
 --- Returns all stored Items of a specific type
@@ -226,12 +229,16 @@ function Storage:WatchForItemInBags (input, onFound, onFail, max_attempts)
    private:InitWatchForItemInBags(Item, max_attempts or 3, onFound, onFail)
 end
 
-function private:FindItemInTable(table, item1)
-   return FindInTableIf(table, function(item2) return addon:ItemIsItem(item1, item2.link) end)
+function private:FindItemInTable(table, item1, type)
+   if type then
+      return FindInTableIf(table, function(item2) return type == item2.type and addon:ItemIsItem(item1, item2.link) end)
+   else
+      return FindInTableIf(table, function(item2) return addon:ItemIsItem(item1, item2.link) end)
+   end
 end
 
 function private:findItemInBags(link)
-   addon:DebugLog("Storage: searching for item:",link)
+   addon:DebugLog("Storage: searching for item:",gsub(link or "", "\124", "\124\124"))
    if link and link ~= "" then
       local c,s,t
       for container=0, _G.NUM_BAG_SLOTS do

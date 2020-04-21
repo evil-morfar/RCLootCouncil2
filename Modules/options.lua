@@ -108,6 +108,9 @@ local function createNewButtonSet(path, name, order)
 				-- And move the temp up
 				addon.db.profile.buttons[name][i - 1] = tempBtn
 				addon.db.profile.responses[name][i - 1] = tempResponse
+				-- Now update the sort values
+				addon.db.profile.responses[name][i].sort = i
+				addon.db.profile.responses[name][i - 1].sort = i - 1
 			end,
 		}
 		path[name].args["move_down"..i] = {
@@ -124,6 +127,8 @@ local function createNewButtonSet(path, name, order)
 				addon.db.profile.responses[name][i] = addon.db.profile.responses[name][i + 1]
 				addon.db.profile.buttons[name][i + 1] = tempBtn
 				addon.db.profile.responses[name][i + 1] = tempResponse
+				addon.db.profile.responses[name][i].sort = i
+				addon.db.profile.responses[name][i + 1].sort = i + 1
 			end,
 		}
 	end
@@ -569,7 +574,8 @@ function addon:OptionsTable()
 											end
 											-- Convert days into seconds
 											local days = selections.deleteCustomDays * 60 * 60 * 24
-											self:GetActiveModule("history"):DeleteEntriesOlderThanEpoch(days)
+											local currentTime = GetServerTime()
+											self:GetActiveModule("history"):DeleteEntriesOlderThanEpoch(currentTime - days)
 											selections.deleteCustomDays = ""
 										end,
 									},
@@ -891,6 +897,12 @@ function addon:OptionsTable()
 										desc = L["opt_award_later_desc"],
 										type = "toggle"
 									},
+									saveBonusRolls = {
+										order = 12,
+										name = L["opt_saveBonusRolls_Name"],
+										desc = L["opt_saveBonusRolls_Desc"],
+										type = "toggle"
+									}
 								},
 							},
 							voteOptions = {

@@ -1,0 +1,13 @@
+return {
+   _all = {
+      pattern = ".spec",
+      coverage = true,
+   },
+   default = {
+      ROOT = { ".specs"},
+      output = "utfTerminal"
+   },
+   utils = {
+      ROOT = "{.specs/Utils}"
+   }
+}

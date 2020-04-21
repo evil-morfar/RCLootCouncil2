@@ -108,6 +108,7 @@ function RCLootCouncilML:AddItem(item, bagged, slotIndex, owner, entry)
 	entry.lootSlot = slotIndex
 	entry.awarded = false
 	entry.owner = owner or addon.bossName
+	entry.boss = addon.bossName
 	entry.isSent = false
 	entry.typeCode = self:GetTypeCodeForItem(item)
 
@@ -333,7 +334,7 @@ function RCLootCouncilML:ClearOldItemsInBags()
 		-- if (not v.time_added) or (v.args.bop and time(date("!*t")) - v.time_added > 3600*2) or (time(date("!*t")) - v.time_added > 3600*6) then -- time(date("!*t")) is UTC epoch.
 		-- 	tremove(db.baggedItems, i)
 		-- end
-		if (v.args.bop and (v.time_remaining <= 0 or v.time_remaning + v.time_added < time())) or -- BoP item, 2 hrs
+		if (v.args.bop and (v.time_remaining <= 0 or v.time_remaining + v.time_added < time())) or -- BoP item, 2 hrs
 			time() - v.time_added > 3600 * 6 then -- Non BoP, timeout after 6 hrs
 				addon:DebugLog("ML: Removed Item", v.link, "due to timeout.")
 				addon.ItemStorage:RemoveItem(v)
@@ -426,12 +427,12 @@ function RCLootCouncilML:ItemsInBagsLowTradeTimeRemainingReminder()
 	local entriesToRemind = {}
 	local remindThreshold = 1200 -- 20min
 	local Items = addon.ItemStorage:GetAllItemsOfType("award_later")
-	local remaningTime = 0
+	local remainingTime = 0
 	for k, v in ipairs(Items) do
-		-- It should be precise enough to just check time_added + time_remaning
-		remaningTime = time() - v.time_added + v.time_remaning
-		if remaningTime > 0 and remaningTime < remindThreshold then
-			v.remainingTime = remaningTime
+		-- It should be precise enough to just check time_added + time_remaining
+		remainingTime = time() - v.time_added + v.time_remaining
+		if remainingTime > 0 and remainingTime < remindThreshold then
+			v.remainingTime = remainingTime
 			v.index = k
 			tinsert(entriesToRemind, v)
 		end
@@ -612,10 +613,19 @@ function RCLootCouncilML:OnCommReceived(prefix, serializedMsg, distri, sender)
 
 			elseif command == "not_tradeable" or command == "rejected_trade" then
 				self:HandleNonTradeable(unpack(data), addon:UnitName(sender), command)
+
+			elseif command == "bonus_roll" then
+				self:OnBonusRoll(unpack(data))
 			end
 		else
 			addon:Debug("Error in deserializing ML comm: ", command)
 		end
+	end
+end
+
+function RCLootCouncilML:OnBonusRoll (winner, type, link)
+	if db.saveBonusRolls then
+		self:TrackAndLogLoot(winner, link, "BONUSROLL", addon.bossName)
 	end
 end
 
@@ -746,12 +756,30 @@ function RCLootCouncilML:LootOpened()
 		end
 		if #self.lootTable > 0 and not self.running then
 			if db.autoStart and addon.candidates[addon.playerName] and #addon.council > 0 then -- Auto start only if data is ready
-				self:StartSession()
+				if db.awardLater then
+					self:DoAwardLater()
+				else
+					self:StartSession()
+				end
 			else
 				addon:CallModule("sessionframe")
 				sessionframe:Show(self.lootTable)
 			end
 		end
+	end
+end
+
+--- Awards all items in lootTable to the ML for award later
+function RCLootCouncilML:DoAwardLater (lootTable)
+	local awardsDone = 0
+	for session in ipairs(lootTable) do
+		self:Award(session, nil, nil, nil, function()
+			-- Ensure all awards are done before ending the session.
+			awardsDone = awardsDone + 1
+			if awardsDone >= #lootTable then
+				RCLootCouncilML:EndSession()
+			end
+		end)
 	end
 end
 
@@ -1046,7 +1074,10 @@ end
 
 local function registerAndAnnounceBagged(session)
 	local self = RCLootCouncilML
-	local Item = addon.ItemStorage:New(self.lootTable[session].link, "award_later", {bop = addon:IsItemBoP(self.lootTable[session].link)}):Store()
+	local Item = addon.ItemStorage:New(self.lootTable[session].link, "award_later", {
+		bop = addon:IsItemBoP(self.lootTable[session].link),
+		boss = self.lootTable[session].boss
+	}):Store()
 	if not Item.inBags then -- It wasn't found!
 		-- We don't care about onFound, as all we need is to record the time_remaining
 		addon.ItemStorage:WatchForItemInBags(Item, function(Item)
@@ -1389,6 +1420,7 @@ local history_table = {}
 local historyCounter = 0 -- Used to generate history table entry unique id
 -- REVIEW Updated with recent changes in v2.9+.
 -- This should be refactored in v3.0 as several of the sources are no longer viable, and were ment to be used with ML.
+-- v2.19.0: Boss is included in lootTable, but kept as arg for backwards compatibility.
 function RCLootCouncilML:TrackAndLogLoot(winner, link, responseID, boss, reason, session, candData, owner)
 	if reason and not reason.log then return end -- Reason says don't log
 	if not (db.sendHistory or db.enableHistory) then return end -- No reason to do stuff when we won't use it
@@ -1397,6 +1429,12 @@ function RCLootCouncilML:TrackAndLogLoot(winner, link, responseID, boss, reason,
 	local typeCode = self.lootTable[session] and self.lootTable[session].typeCode
 	local response = addon:GetResponse(typeCode or equipLoc, responseID)
 	local instanceName, _, difficultyID, difficultyName, _,_,_,mapID, groupSize = GetInstanceInfo()
+	-- Check if the item has a specific boss associated
+	if self.lootTable[session] and self.lootTable[session].bagged and self.lootTable[session].bagged.args.boss then
+		boss = self.lootTable[session].bagged.args.boss
+	elseif self.lootTable[session] and self.lootTable[session].boss then
+		boss = self.lootTable[session].boss
+	end
 	addon:Debug("ML:TrackAndLogLoot()", winner, link, responseID, boss, reason, session, candData)
 	history_table["lootWon"] 		= link
 	history_table["date"] 			= date("%d/%m/%y")
@@ -1645,7 +1683,7 @@ function RCLootCouncilML.AwardPopupOnClickYesCallback(awarded, session, winner, 
 		if oldHistory and oldHistory.id then -- Reaward, clear the old history entry
 			RCLootCouncilML:UnTrackAndLogLoot(oldHistory.id)
 		end
-		RCLootCouncilML.lootTable[session].history = RCLootCouncilML:TrackAndLogLoot(data.winner, data.link, data.responseID, addon.bossName, data.reason, session, data)
+		RCLootCouncilML.lootTable[session].history = RCLootCouncilML:TrackAndLogLoot(data.winner, data.link, data.responseID, data.boss, data.reason, session, data)
 	end
 end
 

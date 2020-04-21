@@ -62,6 +62,7 @@ local defaultModules = {
 	sessionframe =	"RCSessionFrame",
 	votingframe =	"RCVotingFrame",
 	tradeui =		"RCTradeUI",
+	errorhandler = "ErrorHandler",
 }
 local userModules = {
 	masterlooter = nil,
@@ -71,6 +72,7 @@ local userModules = {
 	sessionframe = nil,
 	votingframe = nil,
 	tradeui = nil,
+	errorhandler = nil
 }
 
 local frames = {} -- Contains all frames created by RCLootCouncil:CreateFrame()
@@ -93,7 +95,7 @@ function RCLootCouncil:OnInitialize()
   	self.version = GetAddOnMetadata("RCLootCouncil", "Version")
 	self.nnp = false
 	self.debug = false
-	self.tVersion = nil -- String or nil. Indicates test version, which alters stuff like version check. Is appended to 'version', i.e. "version-tVersion" (max 10 letters for stupid security)
+	self.tVersion = "Beta.1" -- String or nil. Indicates test version, which alters stuff like version check. Is appended to 'version', i.e. "version-tVersion" (max 10 letters for stupid security)
 
 	self.playerClass = select(2, UnitClass("player"))
 	self.guildRank = L["Unguilded"]
@@ -164,7 +166,6 @@ function RCLootCouncil:OnInitialize()
 		}
 	}
 
-
 	self.testMode = false;
 	-- create the other buttons/responses
 	for i = 1, self.defaults.profile.maxButtons do
@@ -189,8 +190,7 @@ function RCLootCouncil:OnInitialize()
 	self:RegisterChatCommand("rc", "ChatCommand")
   	self:RegisterChatCommand("rclc", "ChatCommand")
 	self.customChatCmd = {} -- Modules that wants their cmds used with "/rc"
-	self:RegisterComm("RCLootCouncil")
-	self:RegisterComm("RCLCv")
+	self:RegisterComms()
 	self.db = LibStub("AceDB-3.0"):New("RCLootCouncilDB", self.defaults, true)
 	self.lootDB = LibStub("AceDB-3.0"):New("RCLootCouncilLootDB")
 	--[[ Format:
@@ -210,6 +210,22 @@ function RCLootCouncil:OnInitialize()
 	historyDB = self.lootDB.factionrealm
 	debugLog = self.db.global.log
 
+	-- Add logged in message in the log
+	self:DebugLog("Logged In")
+end
+
+function RCLootCouncil:OnEnable()
+	if not self:IsCorrectVersion() then
+		self:DebugLog("<ERROR>", "Wrong game version", WOW_PROJECT_ID)
+		self:Print(format("This version of %s is not intended for this game version!\nPlease install the proper version.", self.baseName))
+		return self:Disable()
+	end
+
+	-- Register the player's name
+	self.realmName = select(2, UnitFullName("player"))
+	self.playerName = self:UnitName("player")
+	self:DebugLog(self.playerName, self.version, self.tVersion)
+
 	self:DoChatHook()
 
 	-- register the optionstable
@@ -220,15 +236,6 @@ function RCLootCouncil:OnInitialize()
 	self.optionsFrame.ml = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("RCLootCouncil", "Master Looter", "RCLootCouncil", "mlSettings")
 	self.playersData = playersData -- Make it globally available
 	self:InitItemStorage()
-	-- Add logged in message in the log
-	self:DebugLog("Logged In")
-end
-
-function RCLootCouncil:OnEnable()
-	-- Register the player's name
-	self.realmName = select(2, UnitFullName("player"))
-	self.playerName = self:UnitName("player")
-	self:DebugLog(self.playerName, self.version, self.tVersion)
 
 	-- register events
 	for event, method in pairs(self.coreEvents) do
@@ -274,11 +281,16 @@ function RCLootCouncil:OnEnable()
 end
 
 function RCLootCouncil:OnDisable()
-	self:Debug("OnDisable()")
-	--NOTE (not really needed as we probably never call .Disable() on the addon)
-		-- delete all windows
-		-- disable modules(?)
+	self:DebugLog("OnDisable()")
+	self:UnregisterChatCommand("rc")
+  	self:UnregisterChatCommand("rclc")
+	self:UnregisterAllComm()
 	self:UnregisterAllEvents()
+end
+
+function RCLootCouncil:RegisterComms ()
+	self:RegisterComm("RCLootCouncil")
+	self:RegisterComm("RCLCv")
 end
 
 function RCLootCouncil:ConfigTableChanged(val)
@@ -1914,9 +1926,9 @@ function RCLootCouncil:OnEvent(event, ...)
 
 	elseif event == "LOOT_READY" then
 		self:Debug("Event:", event, ...)
+		wipe(self.lootSlotInfo)
 		if not IsInInstance() then return end -- Don't do anything out of instances
 		if GetNumLootItems() <= 0 then return end-- In case when function rerun, loot window is closed.
-		wipe(self.lootSlotInfo)
 		self.lootOpen = true
 		for i = 1,  GetNumLootItems() do
 			if LootSlotHasItem(i) then
@@ -1950,6 +1962,20 @@ function RCLootCouncil:OnEvent(event, ...)
 	else
 		self:Debug("NonHandled Event:", event, ...)
 	end
+end
+
+function RCLootCouncil:OnBonusRoll (_, type, link)
+	self:DebugLog("BONUS_ROLL", type, link)
+	if type == "item" or type == "artifact_power" then
+		-- Only handle items and artifact power
+		self:SendCommand("group", "bonus_roll", self.playerName, type, link)
+	end
+	--[[
+		Tests:
+		/run RCLootCouncil:OnBonusRoll("", "artifact_power", "|cff0070dd|Hitem:144297::::::::110:256:8388608:3::26:::|h[Talisman of Victory]|h|r")
+		/run RCLootCouncil:OnBonusRoll("", "item", "|cffa335ee|Hitem:140851::::::::110:256::3:3:3443:1467:1813:::|h[Nighthold Custodian's Hood]|h|r")
+
+	]]
 end
 
 function RCLootCouncil:NewMLCheck()
@@ -2226,6 +2252,10 @@ function RCLootCouncil:UpdateDB()
 end
 function RCLootCouncil:UpdateHistoryDB()
 	historyDB = self:GetHistoryDB()
+end
+
+function RCLootCouncil:IsCorrectVersion ()
+	return WOW_PROJECT_MAINLINE == WOW_PROJECT_ID
 end
 
 -- The link of same item generated from different players, or if two links are generated between player spec switch, are NOT the same

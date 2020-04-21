@@ -1,4 +1,4 @@
-require "luacov"
+-- require "luacov"
 local lu = require("luaunit")
 
 local path = "__tests/"
