@@ -57,15 +57,15 @@ local item_class = {
 }
 
 -- lua
-local error, table, tostring, tinsert, tremove, type, select, FindInTableIf, time, tFilter, setmetatable, CopyTable, tDeleteItem, ipairs
-    = error, table, tostring, tinsert, tremove, type, select, FindInTableIf, time, tFilter, setmetatable, CopyTable, tDeleteItem, ipairs
+local error, table, tostring, tinsert, tremove, type, select, FindInTableIf, time, tFilter, setmetatable, CopyTable, ipairs
+    = error, table, tostring, tinsert, tremove, type, select, FindInTableIf, time, tFilter, setmetatable, CopyTable, ipairs
 
 -- GLOBALS: GetContainerNumSlots, GetContainerItemLink, _G
 
 function addon:InitItemStorage()-- Extract items from our SV. Could be more elegant
    db = self:Getdb()
    local Item;
-   for k, v in ipairs(db.itemStorage) do
+   for _, v in ipairs(db.itemStorage) do
       Item = Storage:New(v.link, v.type, "restored", v)
       if not Item.inBags and Storage.AcceptedTypes[Item.type] then -- Item probably no longer exists?
          addon:Debug("Error - ItemStorage, db item no longer in bags", v.link)
@@ -242,7 +242,7 @@ function private:findItemInBags(link)
    if link and link ~= "" then
       local c,s,t
       for container=0, _G.NUM_BAG_SLOTS do
-   		for slot=1, GetContainerNumSlots(container) or 0 do
+         for slot=1, GetContainerNumSlots(container) or 0 do
             if addon:ItemIsItem(link, GetContainerItemLink(container, slot)) then -- We found it
                addon:DebugLog("Found item at",container, slot)
                c, s = container, slot

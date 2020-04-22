@@ -13,15 +13,15 @@ local _G = _G
 
 local ROW_HEIGHT = 30
 local db
-local time_remaining_timer, update_targets_timer
+local update_targets_timer
 local TIME_REMAINING_INTERVAL = 300 -- 5 min
 local TIME_REMAINING_WARNING = 1200 -- 20 min
 local UPDATE_TIME_INTERVAL = 1 -- 1 sec
 local TRADE_ADD_DELAY = 100 -- ms
 
 -- lua
-local select, GetItemInfoInstant, pairs, ipairs,  unpack, tinsert, wipe, tremove, format, table, GetTime, CheckInteractDistance, InitiateTrade
-    = select, GetItemInfoInstant, pairs, ipairs,  unpack, tinsert, wipe, tremove, format, table, GetTime, CheckInteractDistance, InitiateTrade
+local select, GetItemInfoInstant, pairs, ipairs,  unpack, tinsert, wipe, format, GetTime, CheckInteractDistance, InitiateTrade
+    = select, GetItemInfoInstant, pairs, ipairs,  unpack, tinsert, wipe, format, GetTime, CheckInteractDistance, InitiateTrade
 -- GLOBALS: GetContainerNumSlots, ClickTradeButton, PickupContainerItem, ClearCursor, GetContainerItemInfo, GetContainerItemLink, GetTradePlayerItemInfo,
 -- GLOBALS: IsModifiedClick, HandleModifiedItemClick, GetTradePlayerItemLink, Ambiguate
 
@@ -49,7 +49,7 @@ function TradeUI:OnEnable()
    self:RegisterEvent("TRADE_ACCEPT_UPDATE", "OnEvent_TRADE_ACCEPT_UPDATE")
    self:RegisterEvent("UI_INFO_MESSAGE", "OnEvent_UI_INFO_MESSAGE")
    self:CheckTimeRemaining()
-   time_remaining_timer = self:ScheduleRepeatingTimer("CheckTimeRemaining", TIME_REMAINING_INTERVAL)
+   self:ScheduleRepeatingTimer("CheckTimeRemaining", TIME_REMAINING_INTERVAL)
 end
 
 function TradeUI:OnDisable() -- Shouldn't really happen
@@ -133,7 +133,7 @@ function TradeUI:OnAwardReceived (session, winner, trader)
          if not Item then -- No temp item - maybe a changed award?
             -- In that case we should have the item registered as "to_trade"
             Item = addon.ItemStorage:GetItem(lootSession.link, "to_trade")
-            if not Item then 
+            if not Item then
                -- If we still don't have, then create a new
                Item = addon.ItemStorage:New(lootSession.link, "to_trade", {recipient = winner, session = session}):Store()
             end
@@ -178,7 +178,7 @@ function TradeUI:CheckTimeRemaining()
       for i, Item in pairs(Items) do
          addon:Print(i, Item)
       end
-      for i, Item in pairs(Items) do
+      for _, Item in pairs(Items) do
          if Item.time_remaining <= 0 and Item:SafeToRemove() then
             addon:DebugLog("TradeUI - removed", Item, "due to <= 0 time remaining")
             addon.ItemStorage:RemoveItem(Item)
@@ -266,7 +266,6 @@ local function addItemToTradeWindow (tradeBtn, c, s)
 end
 
 function TradeUI:AddAwardedInBagsToTradeWindow()
-   local tradeIndex = 1
    local items = addon.ItemStorage:GetAllItemsMultiPred(
       funcTradeTargetIsRecipient, funcItemHasMoreTimeLeft, funcStorageTypeIsToTrade
    )
@@ -282,7 +281,7 @@ function TradeUI:AddAwardedInBagsToTradeWindow()
       end
       if self.isTrading then
          addon:Debug("#Trading", k)
-         local _, _, locked, _, _, _, link = GetContainerItemInfo(c, s)
+         local _, _, _, _, _, _, link = GetContainerItemInfo(c, s)
          if addon:ItemIsItem(link, Item.link) then -- Extra check, probably also redundant
             -- Delay the adding of items, as we can't add them all at once
             self:ScheduleTimer(addItemToTradeWindow, TRADE_ADD_DELAY * k, k, c, s)

@@ -29,7 +29,8 @@ function His:ImportNew (import, delimiter)
       addon:DebugLog("<ERROR>", "Malformed Header:", data[1])
       return
    end
-   local line, lines, length = {}, {}, 0
+   local lines = {}
+   local line, length
    for i = 2, #data do
       line, length = self:ExtractLine(data[i], delimiter)
       -- Ensure error free lines
@@ -101,7 +102,7 @@ function His:CheckForOverwrites (data)
    local db = addon:GetHistoryDB()
    for name, v in pairs(data) do
       if db[name] then
-         for i, entry in ipairs(v) do
+         for _, entry in ipairs(v) do
             if FindInTableIf(db[name], function (val) return val.id == entry.id end) then
                tinsert(overwrites, entry)
             end
@@ -187,7 +188,7 @@ function His:ExtractLine (input, delimiter, notFirst)
    local ret = {}
    -- Check for any escaped commas:
    if input == "" or input[1] == "\"" then
-      return {}
+      return ret
    elseif input:find("\"") then
       local first, last = input:find("\".-\"")
       -- do the first and second half, and put this in the middle.
@@ -266,13 +267,13 @@ function private:RebuildTime (data, t, line)
    if not dato and not time and not id then
       -- Not provided, just use current time
       t.date = date("%d/%m/%y")
-   	t.time = date("%H:%M:%S")
+      t.time = date("%H:%M:%S")
       t.id = GetServerTime() .."-"..private.idCount
       private.idCount = private.idCount + 1
    elseif id then
       -- Rebuild time from id
       -- Check if it's our id, or just a time string
-      local secs = 0
+      local secs
       if id:find("-") then
          secs = strsplit("-", id)
          t.id = id
@@ -282,20 +283,20 @@ function private:RebuildTime (data, t, line)
          private.idCount = private.idCount + 1
       end
       t.date = date("%d/%m/%y", secs)
-   	t.time = date("%H:%M:%S", secs)
+      t.time = date("%H:%M:%S", secs)
    elseif dato and time then
       local d, m, y = strsplit("/", dato or "", 3)
       local h,mm,s = strsplit(":",time,3)
       local secs = His:DateTimeToSeconds(d,m,y,h,mm,s)
       t.date = date("%d/%m/%y", secs)
-   	t.time = date("%H:%M:%S", secs)
+      t.time = date("%H:%M:%S", secs)
       t.id = secs .. "-"..private.idCount
       private.idCount = private.idCount + 1
    elseif dato then
       local d, m, y = strsplit("/", dato or "", 3)
       local secs = His:DateTimeToSeconds(d,m,y) -- Will provide 0:0:0
       t.date = date("%d/%m/%y", secs)
-   	t.time = date("%H:%M:%S", secs)
+      t.time = date("%H:%M:%S", secs)
       t.id = secs .. "-"..private.idCount
       private.idCount = private.idCount + 1
    elseif time then
@@ -303,7 +304,7 @@ function private:RebuildTime (data, t, line)
       local h, min, s = strsplit(":", time, 3) -- but keep the time
       local secs = His:DateTimeToSeconds(d,m,y,h,min,s)
       t.date = date("%d/%m/%y", secs)
-   	t.time = date("%H:%M:%S", secs)
+      t.time = date("%H:%M:%S", secs)
       t.id = secs .. "-"..private.idCount
       private.idCount = private.idCount + 1
    else
@@ -313,7 +314,7 @@ function private:RebuildTime (data, t, line)
 end
 
 function private:SetItemInfo (id, itemString, line)
-   local status, item
+   local item
    -- Pick the first we get, in most informative order:
    if itemString then
       item = Item:CreateFromItemLink(itemString)
@@ -480,7 +481,7 @@ function private:RebuildInstance(data, t, line)
       t.instance = instance
       t.mapID = mapID
       t.difficultyID = diffID
-   else
+   -- else
       -- self:AddError(line, string.format("%s|%s|%s", tostring(instance), tostring(diffID), tostring(mapID)), "Could not recreate instance info.")
    end
 end

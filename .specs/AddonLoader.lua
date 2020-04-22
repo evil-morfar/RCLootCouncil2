@@ -19,7 +19,7 @@ end
 -- list/table if the file does not exist
 function Loader.lines_from(file)
    if not Loader.file_exists(file) then return {} end
-   lines = {}
+   local lines = {}
    for line in io.lines(file) do
       lines[#lines + 1] = line
    end
@@ -47,7 +47,7 @@ function Loader.Log (...)
 end
 
 function Loader.AddTableToTable (tbl, target)
-   for k,v in pairs(tbl) do
+   for _,v in pairs(tbl) do
       target[#target + 1] = v
    end
 end
@@ -105,7 +105,7 @@ end
 function Loader.TocParser (file)
    local lines = Loader.lines_from(file)
    local files = {}
-   for k, v in pairs(lines) do
+   for _, v in pairs(lines) do
       v = Loader.stripspaces(v)
       -- Ignore comments
       if not v:match("^##") and #v > 0 then
