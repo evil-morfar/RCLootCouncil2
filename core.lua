@@ -2214,7 +2214,7 @@ function RCLootCouncil:GetLootDBStatistics()
 			lootDBStatistics[name].totals.tokens = numTokens
 			lootDBStatistics[name].totals.responses = {}
 			for idx, num in pairs(count) do
-				tinsert(lootDBStatistics[name].totals.responses, {responseText[id], num, color[id], idx})
+				tinsert(lootDBStatistics[name].totals.responses, {responseText[idx], num, color[idx], idx})
 				totalNum = totalNum + num
 			end
 			lootDBStatistics[name].totals.total = totalNum
