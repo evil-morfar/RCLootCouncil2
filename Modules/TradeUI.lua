@@ -17,6 +17,7 @@ local time_remaining_timer, update_targets_timer
 local TIME_REMAINING_INTERVAL = 300 -- 5 min
 local TIME_REMAINING_WARNING = 1200 -- 20 min
 local UPDATE_TIME_INTERVAL = 1 -- 1 sec
+local TRADE_ADD_DELAY = 100 -- ms
 
 -- lua
 local select, GetItemInfoInstant, pairs, ipairs,  unpack, tinsert, wipe, tremove, format, table, GetTime, CheckInteractDistance, InitiateTrade
@@ -107,7 +108,7 @@ end
 function TradeUI:OnDoTrade (trader, item, winner)
    if addon:UnitIsUnit(trader, "player") then
       -- Item should be registered
-      local Item = addon.ItemStorage:GetItem(item)
+      local Item = addon.ItemStorage:GetItem(item, "temp")
       if not Item then
          addon:DebugLog("<ERROR>", "Couldn't find item for 'DoTrade'", item, winner)
          return addon:Print(format("Couldn't find %s to trade to %s",tostring(item), tostring(winner)))
@@ -128,14 +129,18 @@ function TradeUI:OnAwardReceived (session, winner, trader)
       -- Session might have ended, meaning the lootTable is cleared
       local lootSession = addon:GetLootTable()[session]
       if lootSession then
-         Item = addon.ItemStorage:GetItem(lootSession.link) -- Update our temp item
-         if Item then
-            Item.type = "to_trade"
-            Item.args.recipient = winner
-            Item.args.session = session
-         else -- Maybe we don't have a temp item; can be caused by manually adding it.
-            Item = addon.ItemStorage:New(lootSession.link, "to_trade", {recipient = winner, session = session}):Store()
+         Item = addon.ItemStorage:GetItem(lootSession.link, "temp") -- Update our temp item
+         if not Item then -- No temp item - maybe a changed award?
+            -- In that case we should have the item registered as "to_trade"
+            Item = addon.ItemStorage:GetItem(lootSession.link, "to_trade")
+            if not Item then 
+               -- If we still don't have, then create a new
+               Item = addon.ItemStorage:New(lootSession.link, "to_trade", {recipient = winner, session = session}):Store()
+            end
          end
+         Item.type = "to_trade"
+         Item.args.recipient = winner
+         Item.args.session = session
       else
          -- If the session has ended and we receive another award, it's got to be a reaward. Fetch the item based on the session:
          local Items = self:GetStoredItemBySession(session)
@@ -254,6 +259,12 @@ function TradeUI:GetStoredItemBySession (session)
    end, true)
 end
 
+local function addItemToTradeWindow (tradeBtn, c, s)
+   ClearCursor()
+   PickupContainerItem(c, s)
+   ClickTradeButton(tradeBtn)
+end
+
 function TradeUI:AddAwardedInBagsToTradeWindow()
    local tradeIndex = 1
    local items = addon.ItemStorage:GetAllItemsMultiPred(
@@ -273,9 +284,8 @@ function TradeUI:AddAwardedInBagsToTradeWindow()
          addon:Debug("#Trading", k)
          local _, _, locked, _, _, _, link = GetContainerItemInfo(c, s)
          if addon:ItemIsItem(link, Item.link) then -- Extra check, probably also redundant
-            ClearCursor()
-				PickupContainerItem(c, s)
-				ClickTradeButton(k)
+            -- Delay the adding of items, as we can't add them all at once
+            self:ScheduleTimer(addItemToTradeWindow, TRADE_ADD_DELAY * k, k, c, s)
          end
       end
    end

@@ -1,5 +1,7 @@
 local lu = require("luaunit")
-
+require "lfs"
+print(lfs.currentdir())
+print("PATH:", arg[0],debug.getinfo(2, "S").source)
 require("__tests/wow_api")
 require("__tests/__load_libs")
 require("__tests/AddonLoader")
