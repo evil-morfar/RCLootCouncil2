@@ -17,7 +17,7 @@ local update_targets_timer
 local TIME_REMAINING_INTERVAL = 300 -- 5 min
 local TIME_REMAINING_WARNING = 1200 -- 20 min
 local UPDATE_TIME_INTERVAL = 1 -- 1 sec
-local TRADE_ADD_DELAY = 100 -- ms
+local TRADE_ADD_DELAY = 0.100 -- sec
 
 -- lua
 local select, GetItemInfoInstant, pairs, ipairs,  unpack, tinsert, wipe, format, GetTime, CheckInteractDistance, InitiateTrade
@@ -128,8 +128,10 @@ function TradeUI:OnAwardReceived (session, winner, trader)
       local Item
       -- Session might have ended, meaning the lootTable is cleared
       local lootSession = addon:GetLootTable()[session]
+      addon:Debug("OnAwardReceived", lootSession, session, winner, trader)
       if lootSession then
          Item = addon.ItemStorage:GetItem(lootSession.link, "temp") -- Update our temp item
+         addon:Debug("Found item as temp")
          if not Item then -- No temp item - maybe a changed award?
             -- In that case we should have the item registered as "to_trade"
             Item = addon.ItemStorage:GetItem(lootSession.link, "to_trade")
@@ -259,10 +261,22 @@ function TradeUI:GetStoredItemBySession (session)
    end, true)
 end
 
-local function addItemToTradeWindow (tradeBtn, c, s)
-   ClearCursor()
-   PickupContainerItem(c, s)
-   ClickTradeButton(tradeBtn)
+local function addItemToTradeWindow (tradeBtn, Item)
+   addon:Debug("addItemToTradeWindow", tradeBtn, Item)
+   local c,s = addon.ItemStorage:GetItemContainerSlot(Item)
+   if not c then -- Item is gone?!
+      addon:Print(L["trade_item_to_trade_not_found"])
+      return addon:Debug("Error TradeUI:", "Item missing when attempting to trade", Item.link, TradeUI.tradeTarget)
+   end
+   local _, _, _, _, _, _, link = GetContainerItemInfo(c, s)
+   if addon:ItemIsItem(link, Item.link) then -- Extra check, probably also redundant
+      addon:Debug("Trading", link, c,s)
+      ClearCursor()
+      PickupContainerItem(c, s)
+      ClickTradeButton(tradeBtn)
+   else -- Shouldn't happen
+      return addon:Debug("<ERROR><TradeUI> Item link mismatch", link, Item.link)
+   end
 end
 
 function TradeUI:AddAwardedInBagsToTradeWindow()
@@ -274,18 +288,10 @@ function TradeUI:AddAwardedInBagsToTradeWindow()
       if k > _G.MAX_TRADE_ITEMS - 1 then -- All available slots used (The last trade slot is "Will not be traded" slot).
 			break
 		end
-      local c,s = addon.ItemStorage:GetItemContainerSlot(Item)
-      if not c then -- Item is gone?!
-         addon:Print(L["trade_item_to_trade_not_found"])
-         return addon:Debug("Error TradeUI:", "Item missing when attempting to trade", Item.link, self.tradeTarget)
-      end
       if self.isTrading then
-         addon:Debug("#Trading", k)
-         local _, _, _, _, _, _, link = GetContainerItemInfo(c, s)
-         if addon:ItemIsItem(link, Item.link) then -- Extra check, probably also redundant
-            -- Delay the adding of items, as we can't add them all at once
-            self:ScheduleTimer(addItemToTradeWindow, TRADE_ADD_DELAY * k, k, c, s)
-         end
+         addon:Debug("<TradeUI> Scheduling trade add timer for #", k)
+         -- Delay the adding of items, as we can't add them all at once
+         self:ScheduleTimer(addItemToTradeWindow, TRADE_ADD_DELAY * k, k, Item)
       end
    end
    -- TradeFrameTradeButton:Click() REVIEW When calling this, it seems trade is accepted and then immediately unaccepted. Called it through a timer yield ADDON_ACTION_BLOCKED error.
