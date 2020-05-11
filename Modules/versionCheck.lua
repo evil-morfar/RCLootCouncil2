@@ -84,7 +84,7 @@ function RCVersionCheck:Query(group)
 end
 
 function RCVersionCheck:QueryTimer()
-	for k,v in pairs(self.frame.rows) do
+	for k in pairs(self.frame.rows) do
 		local cell = self.frame.st:GetCell(k,4)
 		if cell.value == L["Waiting for response"] then
 			cell.value = L["Not installed"]
@@ -121,7 +121,7 @@ function RCVersionCheck:PrintOutDatedClients()
 	end
 	if i > 0 then
 		addon:Print(L["Found the following outdated versions"]..":")
-		for i,v in ipairs(outdated) do
+		for _,v in ipairs(outdated) do
 			addon:Print(i,v)
 		end
 	else
@@ -138,7 +138,7 @@ function RCVersionCheck:AddEntry(name, class, guildRank, version, tVersion, modu
 	end
 	local vVal = version
 	if tVersion then vVal = tostring(version).."-"..tVersion end
-	for row, v in ipairs(self.frame.rows) do
+	for _, v in ipairs(self.frame.rows) do
 		if addon:UnitIsUnit(v.name, name) then -- they're already added, so update them
 			v.cols =	{
 				{ value = "",					DoCellUpdate = addon.SetCellClassIcon, args = {class}, },

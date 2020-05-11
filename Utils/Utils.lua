@@ -4,7 +4,6 @@
 -- Create Date : 27/7/2018 20:49:10
 local _,addon = ...
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
-local db = addon:Getdb()
 local Utils = {}
 addon.Utils = Utils
 

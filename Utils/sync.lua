@@ -85,8 +85,6 @@ function sync:SyncAckReceived(player, type)
    end
    -- We're ready to send
    SendSyncData(player, type)
-   -- clear the table:
-   data = nil
    addon:Print(format(L["Sending 'type' to 'player'..."], type, player))
 end
 
@@ -188,7 +186,7 @@ function sync:GetSyncTargetOptions()
    if not addon.debug then ret[addon.playerName] = nil end
    -- Check if it's empty
    local isEmpty = true
-   for k in pairs(ret) do isEmpty = false; break end
+   for k in pairs(ret) do isEmpty = false; break end --luacheck: ignore
    ret[1] = isEmpty and "--"..L["No recipients available"].."--" or nil
    table.sort(ret, function(a,b) return a > b end)
    return ret

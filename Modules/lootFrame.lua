@@ -5,7 +5,6 @@
 
 local _,addon = ...
 local LootFrame = addon:NewModule("RCLootFrame", "AceTimer-3.0", "AceEvent-3.0")
-local LibDialog = LibStub("LibDialog-1.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 
 local entries = {}
@@ -135,7 +134,6 @@ end
 --end
 
 function LootFrame:Update()
-	local width = 150
 	local numEntries = 0
 	for _,item in ipairs(self.items) do
 		if numEntries >= MAX_ENTRIES then break end -- Only show a certain amount of items at a time
@@ -313,7 +311,7 @@ do
 				end,
 			})
 			entry.itemCount = entry.icon:CreateFontString(nil, "OVERLAY", "NumberFontNormalLarge")
-			local fileName, fontHeight, flags = entry.itemCount:GetFont()
+			local fileName, _, flags = entry.itemCount:GetFont()
 			entry.itemCount:SetFont(fileName, 20, flags)
 			entry.itemCount:SetJustifyH("RIGHT")
 			entry.itemCount:SetPoint("BOTTOMRIGHT", entry.icon, "BOTTOMRIGHT", -2, 2)
@@ -321,7 +319,7 @@ do
 
 			-------- Buttons -------------
 			entry.buttons = {}
-			entry.UpdateButtons = function(entry)
+			entry.UpdateButtons = function(entry) -- luacheck: ignore
 				local b = entry.buttons -- shortening
 				local numButtons = addon:GetNumButtons(entry.type)
 				local buttons = addon:GetButtons(entry.type)
