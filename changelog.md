@@ -1,5 +1,7 @@
-# v2.19.0
-## Changes
+Prefer using id time stamp when deleting history entries by date (CurseClassic#57).
+
+
+# v2.19.0## Changes
 
 ### Award Later
 When `Award Later` and `Auto Start` both are enabled, all items are automatically awarded to the Master Looter/Group Leader for award later.
