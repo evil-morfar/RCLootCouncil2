@@ -1978,7 +1978,7 @@ do
 					info.notCheckable = true
 					info.func = function()
 						for _,v1 in ipairs(db.awardReasons) do
-							if v.disenchant then
+							if v1.disenchant then
 								local data = lootTable[session].candidates[name] -- Shorthand
 								LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_AWARD", RCVotingFrame:GetAwardPopupData(session, name, data, v1))
 								return
