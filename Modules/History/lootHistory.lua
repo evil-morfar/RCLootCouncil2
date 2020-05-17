@@ -282,7 +282,20 @@ function LootHistory:DeleteEntriesOlderThanEpoch(epoch)
 		for i,v in ipairs(a) do
 			local index = v.date..v.time
 			if not epochDates[index] then
-				self:AddEpochDate(v.date, v.time)
+				local added = false
+				-- Prefer using the epoch timestamp from the id
+				if v.id then
+					local id = strsplit(v.id, "-")
+					if id and id ~= "" then
+						id = tonumber(id)
+						epochDates[index] = id
+						added = true
+					end
+				end
+				-- Fallback to recreating the time string from date/time.
+				if not added then
+					self:AddEpochDate(v.date, v.time)
+				end
 			end
 			if epochDates[index] < epoch then
 				removal[name][num] = i
