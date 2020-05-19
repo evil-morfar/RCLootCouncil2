@@ -367,6 +367,10 @@ function geterrorhandler()
    return _errorhandler
 end
 
+function seterrorhandler()
+
+end
+
 function InCombatLockdown()
    return false
 end
