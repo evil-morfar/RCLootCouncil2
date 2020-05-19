@@ -16,7 +16,7 @@ local Loader = {}
 function Loader.LoadToc (file)
    local lines = Loader.lines_from(file)
    local files = {}
-   for k, v in pairs(lines) do
+   for _, v in pairs(lines) do
       v = Loader.stripspaces(v)
       -- Ignore comments
       if not v:match("^##") and #v > 0 then
@@ -163,3 +163,5 @@ function Loader.TocParser (file)
    -- Actually load the files:
    Loader.LoadFiles(files)
 end
+
+return Loader
