@@ -8,15 +8,15 @@ return {
       ["output"] = "utfTerminal"
    },
 
-   Utils = {
-      ["ROOT"] = {".specs/Utils"},
-   },
-
    Classes = {
       ["ROOT"] = {".specs/Classes"},
    },
 
-   Services = {
-      ["ROOT"] = {".specs/Services"},
+   Classes_Utils = {
+      ["ROOT"] = {".specs/Classes/Utils"},
+   },
+
+   Classes_Services = {
+      ["ROOT"] = {".specs/Classes/Services"},
    }
 }

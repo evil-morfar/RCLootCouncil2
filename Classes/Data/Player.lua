@@ -14,6 +14,10 @@ local PLAYER_MT = {
          return self.name
       end,
 
+      GetClass = function(self)
+         return self.class
+      end,
+
       GetShortName = function (self)
          return Ambiguate(self.name, "short")
       end,
@@ -43,13 +47,52 @@ local PLAYER_MT = {
    end
 }
 
-function private:CreatePlayer (name)
-   Log:f("<Data.Player>", "CreatePlayer", name)
-   local Player = setmetatable({
-      name = name
+--- Fetches a player
+-- @tparam input string A player name or GUID
+-- @return Player
+function Player:Get (input)
+   -- Decide if input is a name or guid
+   local name, guid
+   if input and not strmatch(input, "Player%-") and strmatch(input, "%x%x%x%-%x%x%x%x%x%x%x%x") then
+     -- GUID without "Player-"
+     guid = "Player-"..input
+  elseif input and strmatch(input, "%x%x%x%-%x%x%x%x%x%x%x%x") then
+     -- GUID with player
+     guid = input
+  elseif type(input) == "string" then
+     -- Assume UnitName
+     name = input
+  else
+     error(format("%s invalid player", tostring(input)), 2)
+  end
+  local Player = private:GetFromCache(name, guid)
+  if not Player then
+     Player = private:CreatePlayer(name, guid)
+  end
+  return Player
+end
+
+function private:CreatePlayer (name, guid)
+   Log:f("<Data.Player>", "CreatePlayer", name, guid)
+   if not guid then
+      guid = UnitGUID(name)
+   end
+   local _, class, _, _,_, name, realm = GetPlayerInfoByGUID(guid)
+   realm = realm == "" and select(2, UnitFullName("player")) or realm
+   local player = setmetatable({
+      name = name,
+      guid = guid,
+      class = class,
+      realm = realm
    }, PLAYER_MT)
+   private:CachePlayer(player)
+   return player
 end
 
 function private:GetFromCache (name, guid)
+   -- body...
+end
+
+function private:CachePlayer (player)
    -- body...
 end
