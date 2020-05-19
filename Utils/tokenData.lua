@@ -38,7 +38,7 @@ function RCLootCouncil:ExportTokenData(nextID)
     end
 
 	local count = 0
-	for id, name in pairs(tokenNames) do
+	for _ in pairs(tokenNames) do
 		count = count + 1
 	end
 	self:Print(format("DONE. %d potential tokens total", count))

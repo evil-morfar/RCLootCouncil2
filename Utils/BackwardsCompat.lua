@@ -4,7 +4,6 @@
 -- Create Date : 31/5-2019 05:21:28
 local _, addon = ...
 local Compat = {}
-local private = {}
 addon.Compat = Compat
 
 --- Runs all compability changes registered.
@@ -12,10 +11,10 @@ addon.Compat = Compat
 -- Note: Nothing is run on first installs.
 -- Each compat can only be run once per login, so feel free to call it again.
 function Compat:Run()
-   for k,v in ipairs(self.list) do
+   for k, v in ipairs(self.list) do
       if v.version == "always"
-         or (addon:VersionCompare(addon.db.global.version, v.version) or not addon.db.global.version)
-         and not v.executed then
+      or (addon:VersionCompare(addon.db.global.version, v.version) or not addon.db.global.version)
+      and not v.executed then
          addon:Debug("<Compat>", "Executing:", k, v.name or "no_name")
          local check, err = pcall(v.func, addon, addon.version, addon.db.global.version, addon.db.global.oldVersion)
          v.executed = true
@@ -48,80 +47,80 @@ Compat.list = {
       version = "2.12.1",
       func = function(self, version)
          self:ScheduleTimer(function()
-   			-- Log fixes:
-   			self.db.global[version] = {}
-   			-- Fix for texts in whisperKeys:
-   			local c=0
-   			for _,b in pairs(self.db.profile.buttons) do
-   				for i, btn in pairs(b) do
-   					if i~="numButtons" and btn.whisperKey and btn.whisperKey.text then
-   						btn.whisperKey=nil
-   						c=c+1
-   					end
-   				end
-   			end
-   			self.db.global[version].buttons = c
-   			self:Debug("Fixed", c, "buttons")
+            -- Log fixes:
+            self.db.global[version] = {}
+            -- Fix for texts in whisperKeys:
+            local c = 0
+            for _, b in pairs(self.db.profile.buttons) do
+               for i, btn in pairs(b) do
+                  if i ~= "numButtons" and btn.whisperKey and btn.whisperKey.text then
+                     btn.whisperKey = nil
+                     c = c + 1
+                  end
+               end
+            end
+            self.db.global[version].buttons = c
+            self:Debug("Fixed", c, "buttons")
 
-   			-- Fix for response object in response color:
-   			c=0
-   			for _,r in pairs(self.db.profile.responses.default)do
-   				if r.color and r.color.color then
-   					r.color.color = nil;
-   					r.color.text = nil;
-   					c=c+1;
-   				end;
-   			end;
-   			self.db.global[version].responses = c
-   			self:Debug("Fixed",c,"responses")
+            -- Fix for response object in response color:
+            c = 0
+            for _, r in pairs(self.db.profile.responses.default)do
+               if r.color and r.color.color then
+                  r.color.color = nil;
+                  r.color.text = nil;
+                  c = c + 1;
+               end;
+            end;
+            self.db.global[version].responses = c
+            self:Debug("Fixed", c, "responses")
 
-   			c=0
-   			for _, factionrealm in pairs(self.lootDB.sv.factionrealm) do
-   				for player, items in pairs(factionrealm) do
-   					for _, item in pairs(items) do
-   						if item.color and item.color.color then
-   							item.color.color = nil
-   							item.color.text = nil
-   							c=c+1
-   						end
-   					end
-   				end
-   			end
-   			self.db.global[version].entries = c
-   			self:Debug("Fixed", c, "loot history entries")
+            c = 0
+            for _, factionrealm in pairs(self.lootDB.sv.factionrealm) do
+               for _, items in pairs(factionrealm) do
+                  for _, item in pairs(items) do
+                     if item.color and item.color.color then
+                        item.color.color = nil
+                        item.color.text = nil
+                        c = c + 1
+                     end
+                  end
+               end
+            end
+            self.db.global[version].entries = c
+            self:Debug("Fixed", c, "loot history entries")
 
-   			-- Fix missing indicies in lootDB color arrays:
-   			c=0
-   			local colors = {}
-   			local needFix = false
-   			-- fetch all colors first, and check if we need fixes
-   			for _, factionrealm in pairs(self.lootDB.sv.factionrealm) do
-   				for player, items in pairs(factionrealm) do
-   					for index, item in pairs(items) do
-   						colors[item.response] = item.color
-   						if not needFix then -- Make it permanent
-   							needFix = item.color and #item.color == 0
-   						end
-   					end
-   				end
-   			end
-   			if needFix then
-   				local found = false
-   				for _, factionrealm in pairs(self.lootDB.sv.factionrealm) do
-   					for player, items in pairs(factionrealm) do
-   						for _, item in pairs(items) do
-   							found = item.color and #item.color == 0
-   							if found then
-   								item.color = colors[item.response]
-   								c = c + 1
-   							end
-   						end
-   					end
-   				end
-   			end
-   			self.db.global[version].colors = c
-   			self:Debug("Color indicies needs fix?", needFix, "Fixed", c, "entries")
-   		end, 10) -- Wait like 10 seconds after login
+            -- Fix missing indicies in lootDB color arrays:
+            c = 0
+            local colors = {}
+            local needFix = false
+            -- fetch all colors first, and check if we need fixes
+            for _, factionrealm in pairs(self.lootDB.sv.factionrealm) do
+               for _, items in pairs(factionrealm) do
+                  for _, item in pairs(items) do
+                     colors[item.response] = item.color
+                     if not needFix then -- Make it permanent
+                        needFix = item.color and #item.color == 0
+                     end
+                  end
+               end
+            end
+            if needFix then
+               local found
+               for _, factionrealm in pairs(self.lootDB.sv.factionrealm) do
+                  for _, items in pairs(factionrealm) do
+                     for _, item in pairs(items) do
+                        found = item.color and #item.color == 0
+                        if found then
+                           item.color = colors[item.response]
+                           c = c + 1
+                        end
+                     end
+                  end
+               end
+            end
+            self.db.global[version].colors = c
+            self:Debug("Color indicies needs fix?", needFix, "Fixed", c, "entries")
+         end, 10) -- Wait like 10 seconds after login
       end,
    },
    {
@@ -132,9 +131,9 @@ Compat.list = {
             local count = 0
             local link
             for _, factionrealm in pairs(addon.lootDB.sv.factionrealm) do
-               for player, items in pairs(factionrealm) do
+               for _, items in pairs(factionrealm) do
                   if items and #items > 0 then
-                     for i = #items, 1, -1 do
+                     for i = #items, 1, - 1 do
                         --165703 == Breath of Bwonsamdi
                         if (GetItemInfoInstant(items[i].lootWon)) == 165703 then
                            link = items[i].lootWon
@@ -156,9 +155,9 @@ Compat.list = {
          addon:ScheduleTimer( -- Wait 20 secs
             function ()
                local count = 0
-               for _,factionrealm in pairs(addon.lootDB.sv.factionrealm) do
-                  for player,items  in pairs(factionrealm) do
-                     for i,data in ipairs(items) do
+               for _, factionrealm in pairs(addon.lootDB.sv.factionrealm) do
+                  for _, items in pairs(factionrealm) do
+                     for _, data in ipairs(items) do
                         local _, _, _, _, _, itemClassID, itemSubClassID = GetItemInfoInstant(data.lootWon)
                         data.iClass = itemClassID
                         data.iSubClass = itemSubClassID
@@ -180,14 +179,14 @@ Compat.list = {
             function ()
                -- Build lookup table of the awardReasons text
                local lookup = {}
-               for k,v in ipairs(addon.db.profile.awardReasons) do
+               for k, v in ipairs(addon.db.profile.awardReasons) do
                   lookup[v.text] = k
                end
                -- Search for bad awardReasons
                local count = 0
-               for _,factionrealm in pairs(addon.lootDB.sv.factionrealm) do
-                  for player,items  in pairs(factionrealm) do
-                     for i,data in ipairs(items) do
+               for _, factionrealm in pairs(addon.lootDB.sv.factionrealm) do
+                  for _, items in pairs(factionrealm) do
+                     for _, data in ipairs(items) do
                         if lookup[data.response] then
                            if type(data.responseID ~= "number") then
                               data.responseID = lookup[data.response]
@@ -202,7 +201,7 @@ Compat.list = {
                   addon.db.global[version] = count
                end
             end,
-            2)
+         2)
       end
    }
 }

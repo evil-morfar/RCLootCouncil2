@@ -61,7 +61,7 @@ end
 -- list/table if the file does not exist
 function Loader.lines_from(file)
    if not Loader.file_exists(file) then return {} end
-   lines = {}
+   local lines = {}
    for line in io.lines(file) do
       lines[#lines + 1] = line
    end
@@ -89,7 +89,7 @@ function Loader.Log (...)
 end
 
 function Loader.AddTableToTable (tbl, target)
-   for k,v in pairs(tbl) do
+   for _,v in pairs(tbl) do
       target[#target + 1] = v
    end
 end
@@ -144,4 +144,22 @@ function Loader.LoadFiles (files)
    end
 end
 
-return Loader
+function Loader.TocParser (file)
+   local lines = Loader.lines_from(file)
+   local files = {}
+   for _, v in pairs(lines) do
+      v = Loader.stripspaces(v)
+      -- Ignore comments
+      if not v:match("^##") and #v > 0 then
+         local ext = Loader.GetFileExtension(v)
+         if ext == ".xml" then
+            local res = Loader.XmlHandler(v)
+            Loader.AddTableToTable(res, files)
+         elseif ext == ".lua" then
+            files[#files + 1] = v
+         end
+      end
+   end
+   -- Actually load the files:
+   Loader.LoadFiles(files)
+end

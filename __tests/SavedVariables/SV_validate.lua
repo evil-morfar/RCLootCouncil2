@@ -1,6 +1,8 @@
 dofile("__tests/wow_api.lua")
 dofile("Libs/LibStub/LibStub.lua")
 dofile("Libs/AceSerializer-3.0/AceSerializer-3.0.lua")
+
+-- luacheck: globals RCLootCouncilDB RCLootCouncilLootDB
 local AceSer = LibStub("AceSerializer-3.0")
 function string:split(sep)
    local sep, fields = sep or ":", {}
@@ -187,7 +189,7 @@ local function checkSV()
                print "add:"
             end
             -- And message
-            local msg = entry:match("(%^1.+\^\^)")
+            local msg = entry:match("(%^1.+%^%^)")
             local l1,l2,lt = AceSer:Deserialize(msg)
             for k,v in pairs(unpack(lt)) do
                print("|  "..k,v.ilvl, v.link)
@@ -215,7 +217,7 @@ do
    checkSV()
    local ent = {}
    local var
-   for k,v in ipairs(RCLootCouncilDB.global.log) do
+   for k,v in ipairs(_G.RCLootCouncilDB.global.log) do
       var = v:match(" - (%w+)")
       var = tostring(var)
       if not ent[var] then ent[var] = 1 else ent[var] = ent[var] + 1 end
