@@ -1965,8 +1965,8 @@ function RCLootCouncil:OnEvent(event, ...)
 	end
 end
 
-function RCLootCouncil:OnBonusRoll (_, type, link)
-	self:DebugLog("BONUS_ROLL", type, link)
+function RCLootCouncil:OnBonusRoll (_, type, link, ...)
+	self:DebugLog("BONUS_ROLL", type, link, ...)
 	if type == "item" or type == "artifact_power" then
 		-- Only handle items and artifact power
 		self:SendCommand("group", "bonus_roll", self.playerName, type, link)
