@@ -48,27 +48,26 @@ function SlashCommands:ShowHelp ()
    end
 
    for _, v in ipairs(private.commands) do
-         print "" -- spacer
-         if v.module.version and v.module.tVersion then
-            print(v.module.baseName, "|cFFFFA500", v.module.version, v.module.tVersion)
-         elseif v.module.version then
-            print(v.module.baseName, "|cFFFFA500", v.module.version)
-         else
-            print(v.module.baseName, "|cFFFFA500", GetAddOnMetadata(v.module.baseName, "Version"))
-         end
+      print "" -- spacer
+      if v.module.version and v.module.tVersion then
+         print(v.module.baseName, "|cFFFFA500", v.module.version, v.module.tVersion)
+      elseif v.module.version then
+         print(v.module.baseName, "|cFFFFA500", v.module.version)
+      else
+         print(v.module.baseName, "|cFFFFA500", GetAddOnMetadata(v.module.baseName, "Version"))
+      end
       if v.cmd then
          print("|cff20a200", v.cmd, "|r:", v.desc)
       else
          print(v.desc) -- For backwards compatibility
       end
-      module = v.module
    end
    if addon.debug then private:PrintDebugHelp() end
 end
 
 
 function private:RegisterCommand (cmds, cmdDesc, helpText)
-   for i, cmd in ipairs(cmds) do
+   for _, cmd in ipairs(cmds) do
       if not self.commands[cmd] then
          self.commands[cmd] = {
             cmd = cmd,
