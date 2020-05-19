@@ -695,18 +695,6 @@ function RCLootCouncilML:OnEvent(event, ...)
 end
 
 -- called in addon:OnEvent
-function RCLootCouncilML:OnLootOpen()
-	wipe(self.lootQueue)
-	if addon.handleLoot and addon.lootMethod == "master" then
-		if not InCombatLockdown() or db.skipCombatLockdown then
-			self:LootOpened()
-		else
-			addon:Print(L["You can't start a loot session while in combat."])
-		end
-	end
-end
-
--- called in addon:OnEvent
 function RCLootCouncilML:OnLootSlotCleared(slot, link)
 	for i = #self.lootQueue, 1, -1 do -- Check latest loot attempt first
 		local v = self.lootQueue[i]
@@ -717,49 +705,6 @@ function RCLootCouncilML:OnLootSlotCleared(slot, link)
 				v.callback(true, nil, unpack(v.args))
 			end
 			break
-		end
-	end
-end
-
--- DEPRECATED (not used with PL)
-function RCLootCouncilML:LootOpened()
-	local sessionframe = addon:GetActiveModule("sessionframe")
-	if addon.isMasterLooter and GetNumLootItems() > 0 then
-		if self.running or sessionframe:IsRunning() then -- Check if an update is needed
-			self:UpdateLootSlots()
-		else -- Otherwise add the loot
-			for i = 1, GetNumLootItems() do
-				if addon.lootSlotInfo[i] then
-					local item = addon.lootSlotInfo[i].link -- This can be nil, if this is money(a coin).
-					local quantity = addon.lootSlotInfo[i].quantity
-					local quality = addon.lootSlotInfo[i].quality
-					if db.altClickLooting then self:ScheduleTimer("HookLootButton", 0.5, i) end -- Delay lootbutton hooking to ensure other addons have had time to build their frames
-
-					local autoAward, mode, winner = self:ShouldAutoAward(item, quality)
-
-					if autoAward and quantity > 0 then
-						self:AutoAward(i, item, quality, winner, mode, addon.bossName)
-
-					elseif item and self:CanWeLootItem(item, quality) and quantity > 0 then -- check if our options allows us to loot it
-						self:AddItem(item, false, i)
-
-					elseif quantity == 0 then -- it's coin, just loot it
-						LootSlot(i)
-					end
-				end
-			end
-		end
-		if #self.lootTable > 0 and not self.running then
-			if db.autoStart and addon.candidates[addon.playerName] and #addon.council > 0 then -- Auto start only if data is ready
-				if db.awardLater then
-					self:DoAwardLater()
-				else
-					self:StartSession()
-				end
-			else
-				addon:CallModule("sessionframe")
-				sessionframe:Show(self.lootTable)
-			end
 		end
 	end
 end
@@ -946,45 +891,6 @@ function RCLootCouncilML:UpdateLootSlots()
 			end
 		end
 	end
-end
-
-function RCLootCouncilML:HookLootButton(i)
-	local lootButton = getglobal("LootButton"..i)
-	if _G.XLoot then -- hook XLoot
-		lootButton = getglobal("XLootButton"..i)
-	end
-	if _G.XLootFrame then -- if XLoot 1.0
-		lootButton = getglobal("XLootFrameButton"..i)
-	end
-	if getglobal("ElvLootSlot"..i) then -- if ElvUI
-		lootButton = getglobal("ElvLootSlot"..i)
-	end
-	local hooked = self:IsHooked(lootButton, "OnClick")
-	if lootButton and not hooked then
-		addon:DebugLog("ML:HookLootButton", i)
-		self:HookScript(lootButton, "OnClick", "LootOnClick")
-	end
-end
-
-function RCLootCouncilML:LootOnClick(button)
-	if not IsAltKeyDown() or not db.altClickLooting or IsShiftKeyDown() or IsControlKeyDown() then return; end
-	addon:DebugLog("LootAltClick()", button)
-
-	if getglobal("ElvLootFrame") then
-		button.slot = button:GetID() -- ElvUI hack
-	end
-
-	-- Check we're not already looting that item
-	for _, v in ipairs(self.lootTable) do
-		if button.slot == v.lootSlot then
-			addon:Print(L["The loot is already on the list"])
-			return
-		end
-	end
-
-	self:AddItem(GetLootSlotLink(button.slot), false, button.slot)
-	addon:CallModule("sessionframe")
-	addon:GetActiveModule("sessionframe"):Show(self.lootTable)
 end
 
 function RCLootCouncilML:PrintLootErrorMsg(cause, slot, item, winner)
