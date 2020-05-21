@@ -235,7 +235,8 @@ function RCLootCouncil:OnEnable()
 	self.optionsFrame = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("RCLootCouncil", "RCLootCouncil", nil, "settings")
 	self.optionsFrame.ml = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("RCLootCouncil", "Master Looter", "RCLootCouncil", "mlSettings")
 	self.playersData = playersData -- Make it globally available
-	self:InitItemStorage()
+
+	self:ScheduleTimer("InitItemStorage", 5, self) -- Delay to have a better change of getting correct item info
 
 	-- register events
 	for event, method in pairs(self.coreEvents) do

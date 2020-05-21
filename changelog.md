@@ -1,3 +1,6 @@
+## Bugfixes
+* *Detecting 'Award Later' items after a /reload should be more reliable.*
+
 # v2.19.1
 ## Changes
 ### History Deletion
