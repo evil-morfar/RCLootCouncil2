@@ -981,9 +981,9 @@ local function registerAndAnnounceBagged(session)
 	}):Store()
 	if not Item.inBags then -- It wasn't found!
 		-- We don't care about onFound, as all we need is to record the time_remaining
-		addon.ItemStorage:WatchForItemInBags(Item, function(Item)
+		addon.ItemStorage:WatchForItemInBags(Item, _, function(Item)
 			addon:DebugLog(format("<ERROR> Award Later item %s was never found in bags!", Item.link))
-		end, nil, 5)
+		end, 5)
 	end
 	if self.lootTable[session].lootSlot or self.running then -- Item is looted by ML, announce it.
 															-- Also announce if the item is awarded later in voting frame.
