@@ -528,8 +528,7 @@ function RCLootCouncilML:NewML(newML)
 		if #addon.ItemStorage:GetAllItemsOfType("award_later") > 0 then
 			addon:Print(L["new_ml_bagged_items_reminder"])
 		end
-
-		self:ItemsInBagsLowTradeTimeRemainingReminder()
+		self:ScheduleTimer("ItemsInBagsLowTradeTimeRemainingReminder", 5, self) -- Delay a bit as it might not be initialized
 	else
 		self:Disable() -- We don't want to use this if we're not the ML
 	end
