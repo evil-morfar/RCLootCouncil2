@@ -273,6 +273,7 @@ function RCLootCouncilML:StartSession()
 	-- Make sure we haven't started the session too fast
 	if not addon.candidates[addon.playerName] or #addon.council == 0 then
 		addon:Print(L["Please wait a few seconds until all data has been synchronized."])
+		self:SendCandidates() -- Ensure they get sent.
 		return addon:Debug("Data wasn't ready", addon.candidates[addon.playerName], #addon.council)
 	end
 
@@ -987,7 +988,7 @@ local function registerAndAnnounceBagged(session)
 	}):Store()
 	if not Item.inBags then -- It wasn't found!
 		-- We don't care about onFound, as all we need is to record the time_remaining
-		addon.ItemStorage:WatchForItemInBags(Item, _, function(Item)
+		addon.ItemStorage:WatchForItemInBags(Item, nil, function(Item)
 			addon:DebugLog(format("<ERROR> Award Later item %s was never found in bags!", Item.link))
 		end, 5)
 	end
