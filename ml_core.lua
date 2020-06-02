@@ -20,7 +20,7 @@ local time, date, tonumber, unpack, select, wipe, pairs, ipairs, format, table, 
 
 local db;
 
-local LOOT_TIMEOUT = 3 -- If we give loot to someone, but loot slot is not cleared after this time period, consider this loot distribute as failed.
+local LOOT_TIMEOUT = 5 -- If we give loot to someone, but loot slot is not cleared after this time period, consider this loot distribute as failed.
 						-- The real time needed is the sum of two players'(ML and the awardee) latency, so 1 second timeout should be enough.
 						-- v2.17: There's reports of increased latency, especially in Classic - bump to 3 seconds.
 local CANDIDATE_SEND_COOLDOWN = 10
