@@ -736,6 +736,13 @@ end
 
 -- called in addon:OnEvent
 function RCLootCouncilML:OnLootSlotCleared(slot, link)
+	-- REVIEW v2.19.2: Apperantly this is called sometimes without self.lootQueue being initialized - especially in Classic.
+	-- Not sure the exact cause - maybe due to looting between :GetML() registers player as ML and ML module being initialized.
+	-- For now silently log an error and stack trace and hopefully find the issue in some SV.
+	if not self.lootQueue then
+		return addon:GetModule("ErrorHandler"):ThrowSilentError("ML.lootQueue nil")
+	end
+
 	for i = #self.lootQueue, 1, -1 do -- Check latest loot attempt first
 		local v = self.lootQueue[i]
 		if v.slot == slot then -- loot success
