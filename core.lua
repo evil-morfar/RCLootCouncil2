@@ -605,6 +605,11 @@ function RCLootCouncil:SendCommand(target, command, ...)
 	end
 end
 
+--- A direct call to AceComms:SendCommMessage(). For hooking purposes.
+function RCLootCouncil:SendCommandModified (prefix, serializedMsg, channel, target, prio, ...)
+	self:SendCommMessage(prefix, serializedMsg, channel, target, prio, ...)
+end
+
 local v3VersionWarningCount = 0
 --- Receives RCLootCouncil commands.
 -- Params are delivered by AceComm-3.0, but we need to extract our data created with the
