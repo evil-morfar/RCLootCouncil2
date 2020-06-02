@@ -24,6 +24,7 @@ local LOOT_TIMEOUT = 5 -- If we give loot to someone, but loot slot is not clear
 						-- The real time needed is the sum of two players'(ML and the awardee) latency, so 1 second timeout should be enough.
 						-- v2.17: There's reports of increased latency, especially in Classic - bump to 3 seconds.
 local CANDIDATE_SEND_COOLDOWN = 10
+local COUNCIL_COMMS_THROTTLE = 5
 
 function RCLootCouncilML:OnInitialize()
 	addon:Debug("ML initialized!")
@@ -228,7 +229,7 @@ function RCLootCouncilML:UpdateGroup(ask)
 			end
 		end
 		if councilUpdated then
-			addon:SendCommand("group", "council", self.council)
+			self:SendCouncil()
 		end
 	end
 end
@@ -265,6 +266,38 @@ function RCLootCouncilML:SendCandidates ()
 		-- No cooldown, send immediately and start the cooldown
 		self.timers.candidates_cooldown = self:ScheduleTimer(OnCandidatesCooldown, CANDIDATE_SEND_COOLDOWN)
 		addon:SendCommand("group", "candidates", self.candidates)
+	end
+end
+
+local function SendCouncil ()
+	addon:SendCommand("group", "council", RCLootCouncilML.council)
+	RCLootCouncilML.timers.council_send = nil
+	addon:DebugLog("ML:SendCouncil()")
+end
+
+local function OnCouncilCooldown ()
+	RCLootCouncilML.timers.counci_cooldown = nil
+	addon:DebugLog("ML:OnCouncilCooldown()")
+end
+
+-- Quick solution for throtteling council comms.
+-- Group Loot support expects the ML to always send council, which is doesn't
+-- if changing from ML to GL (as the ML hasn't changed).
+-- We will receive numurous `council_request`, but only need to reply once.
+-- Same goes for a few detected edge cases in ML where council isn't properly sent (reason unknown).
+-- Basically a copy of `SendCandidates`
+function RCLootCouncilML:SendCouncil ()
+	if self.timers.council_cooldown then
+		if self.timers.council_send then
+			return -- do nothing, comm is queued.
+		else -- Cooldown, but nothing queued - queue the command for when cooldown is done.
+			local timeRemaining = self:TimeLeft(self.timers.council_cooldown)
+			self.timers.council_send = self:ScheduleTimer(SendCouncil, timeRemaining)
+			return
+		end
+	else -- No cooldown, send and start cooldown
+		self.timers.council_cooldown = self:ScheduleTimer(OnCouncilCooldown, COUNCIL_COMMS_THROTTLE)
+		SendCouncil()
 	end
 end
 
@@ -465,7 +498,7 @@ end
 function RCLootCouncilML:CouncilChanged()
 	-- The council was changed, so send out the council
 	self.council = self:GetCouncilInGroup()
-	addon:SendCommand("group", "council", self.council)
+	self:SendCouncil()
 	-- Send candidates so new council members can register it
 	self:SendCandidates()
 end
@@ -530,7 +563,7 @@ function RCLootCouncilML:NewML(newML)
 		addon:SendCommand("group", "playerInfoRequest")
 		self:UpdateMLdb() -- Will build and send mldb
 		self:UpdateGroup(true)
-		addon:SendCommand("group", "council", self.council)
+		self:SendCouncil()
 		self:ClearOldItemsInBags()
 
 		if #addon.ItemStorage:GetAllItemsOfType("award_later") > 0 then
@@ -567,7 +600,7 @@ function RCLootCouncilML:OnCommReceived(prefix, serializedMsg, distri, sender)
 				addon:SendCommand("group", "MLdb", addon.mldb)
 
 			elseif command == "council_request" then
-				addon:SendCommand("group", "council", self.council)
+				self:SendCouncil()
 
 			elseif command == "candidates_request" then
 				self:SendCandidates()

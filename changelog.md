@@ -1,4 +1,8 @@
 # v2.19.2
+## Changes
+### Council comms
+Council comms is now throttled to avoid sending unnecessary comms.
+
 ## Bugfixes
 *Bumped threshold for detecting ML awards for instability in Classic.*
 *Increased stability of ML/GL detection.*
