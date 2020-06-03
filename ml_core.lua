@@ -276,7 +276,7 @@ local function SendCouncil ()
 end
 
 local function OnCouncilCooldown ()
-	RCLootCouncilML.timers.counci_cooldown = nil
+	RCLootCouncilML.timers.council_cooldown = nil
 	addon:DebugLog("ML:OnCouncilCooldown()")
 end
 
