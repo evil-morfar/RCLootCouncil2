@@ -35,6 +35,18 @@ function ErrorHandler:LogError (msg)
    end
 end
 
+--- Silently throws an error
+function ErrorHandler:ThrowSilentError (message)
+   local _, err = pcall(function ()
+      private.ThrowError(message)
+   end)
+   self:LogError(err)
+end
+
+function private.ThrowError (message)
+   error(message or "", 3)
+end
+
 function private:NewError (err)
    -- Build Call stack
    local stack = {}

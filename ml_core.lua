@@ -20,10 +20,11 @@ local time, date, tonumber, unpack, select, wipe, pairs, ipairs, format, table, 
 
 local db;
 
-local LOOT_TIMEOUT = 3 -- If we give loot to someone, but loot slot is not cleared after this time period, consider this loot distribute as failed.
+local LOOT_TIMEOUT = 5 -- If we give loot to someone, but loot slot is not cleared after this time period, consider this loot distribute as failed.
 						-- The real time needed is the sum of two players'(ML and the awardee) latency, so 1 second timeout should be enough.
 						-- v2.17: There's reports of increased latency, especially in Classic - bump to 3 seconds.
 local CANDIDATE_SEND_COOLDOWN = 10
+local COUNCIL_COMMS_THROTTLE = 5
 
 function RCLootCouncilML:OnInitialize()
 	addon:Debug("ML initialized!")
@@ -228,7 +229,7 @@ function RCLootCouncilML:UpdateGroup(ask)
 			end
 		end
 		if councilUpdated then
-			addon:SendCommand("group", "council", self.council)
+			self:SendCouncil()
 		end
 	end
 end
@@ -237,27 +238,66 @@ end
 local function SendCandidates()
 	addon:SendCommand("group", "candidates", RCLootCouncilML.candidates)
 	RCLootCouncilML.timers.candidate_send = nil
+	addon:DebugLog("ML:SendCandidates()")
 end
 local function OnCandidatesCooldown()
 	RCLootCouncilML.timers.candidates_cooldown = nil
+	addon:DebugLog("RCLootCouncilML:OnCandidatesCooldown()")
 end
 
 --- Sends candidates to the group no more than every CANDIDATE_SEND_COOLDOWN seconds.
 -- Use this for all candidate sends!
 function RCLootCouncilML:SendCandidates ()
+	addon:DebugLog("RCLootCouncilML:SendCandidates()")
 	if self.timers.candidates_cooldown then -- Recently sent one
+		addon:DebugLog("candidates_cooldown == true")
 		if self.timers.candidate_send then -- And we've queued a new one
+			addon:DebugLog("candidate_send == true")
 			return -- Do nothing, it'll be sent once the current timer ends
 		else
+			addon:DebugLog("candidate_send == false")
 			-- Send the candidates when the grace period is done
 			local timeRemaining = self:TimeLeft(self.timers.candidates_cooldown)
 			self.timers.candidate_send = self:ScheduleTimer(SendCandidates, timeRemaining)
 			return
 		end
 	else
+		addon:DebugLog("candidates_cooldown == false")
 		-- No cooldown, send immediately and start the cooldown
 		self.timers.candidates_cooldown = self:ScheduleTimer(OnCandidatesCooldown, CANDIDATE_SEND_COOLDOWN)
 		addon:SendCommand("group", "candidates", self.candidates)
+	end
+end
+
+local function SendCouncil ()
+	addon:SendCommand("group", "council", RCLootCouncilML.council)
+	RCLootCouncilML.timers.council_send = nil
+	addon:DebugLog("ML:SendCouncil()")
+end
+
+local function OnCouncilCooldown ()
+	RCLootCouncilML.timers.council_cooldown = nil
+	addon:DebugLog("ML:OnCouncilCooldown()")
+end
+
+-- Quick solution for throtteling council comms.
+-- Group Loot support expects the ML to always send council, which is doesn't
+-- if changing from ML to GL (as the ML hasn't changed).
+-- We will receive numurous `council_request`, but only need to reply once.
+-- Same goes for a few detected edge cases in ML where council isn't properly sent (reason unknown).
+-- Basically a copy of `SendCandidates`
+function RCLootCouncilML:SendCouncil ()
+	if self.timers.council_cooldown then
+		if self.timers.council_send then
+			return -- do nothing, comm is queued.
+		else -- Cooldown, but nothing queued - queue the command for when cooldown is done.
+			local timeRemaining = self:TimeLeft(self.timers.council_cooldown)
+			self.timers.council_send = self:ScheduleTimer(SendCouncil, timeRemaining)
+			return
+		end
+	else -- No cooldown, send and start cooldown
+		self.timers.council_cooldown = self:ScheduleTimer(OnCouncilCooldown, COUNCIL_COMMS_THROTTLE)
+		SendCouncil()
 	end
 end
 
@@ -266,6 +306,7 @@ function RCLootCouncilML:StartSession()
 	-- Make sure we haven't started the session too fast
 	if not addon.candidates[addon.playerName] or #addon.council == 0 then
 		addon:Print(L["Please wait a few seconds until all data has been synchronized."])
+		self:SendCandidates() -- Ensure they get sent.
 		return addon:Debug("Data wasn't ready", addon.candidates[addon.playerName], #addon.council)
 	end
 
@@ -457,7 +498,7 @@ end
 function RCLootCouncilML:CouncilChanged()
 	-- The council was changed, so send out the council
 	self.council = self:GetCouncilInGroup()
-	addon:SendCommand("group", "council", self.council)
+	self:SendCouncil()
 	-- Send candidates so new council members can register it
 	self:SendCandidates()
 end
@@ -522,14 +563,13 @@ function RCLootCouncilML:NewML(newML)
 		addon:SendCommand("group", "playerInfoRequest")
 		self:UpdateMLdb() -- Will build and send mldb
 		self:UpdateGroup(true)
-		addon:SendCommand("group", "council", self.council)
+		self:SendCouncil()
 		self:ClearOldItemsInBags()
 
 		if #addon.ItemStorage:GetAllItemsOfType("award_later") > 0 then
 			addon:Print(L["new_ml_bagged_items_reminder"])
 		end
-
-		self:ItemsInBagsLowTradeTimeRemainingReminder()
+		self:ScheduleTimer("ItemsInBagsLowTradeTimeRemainingReminder", 5, self) -- Delay a bit as it might not be initialized
 	else
 		self:Disable() -- We don't want to use this if we're not the ML
 	end
@@ -560,7 +600,7 @@ function RCLootCouncilML:OnCommReceived(prefix, serializedMsg, distri, sender)
 				addon:SendCommand("group", "MLdb", addon.mldb)
 
 			elseif command == "council_request" then
-				addon:SendCommand("group", "council", self.council)
+				self:SendCouncil()
 
 			elseif command == "candidates_request" then
 				self:SendCandidates()
@@ -695,19 +735,14 @@ function RCLootCouncilML:OnEvent(event, ...)
 end
 
 -- called in addon:OnEvent
-function RCLootCouncilML:OnLootOpen()
-	wipe(self.lootQueue)
-	if addon.handleLoot and addon.lootMethod == "master" then
-		if not InCombatLockdown() or db.skipCombatLockdown then
-			self:LootOpened()
-		else
-			addon:Print(L["You can't start a loot session while in combat."])
-		end
-	end
-end
-
--- called in addon:OnEvent
 function RCLootCouncilML:OnLootSlotCleared(slot, link)
+	-- REVIEW v2.19.2: Apperantly this is called sometimes without self.lootQueue being initialized - especially in Classic.
+	-- Not sure the exact cause - maybe due to looting between :GetML() registers player as ML and ML module being initialized.
+	-- For now silently log an error and stack trace and hopefully find the issue in some SV.
+	if not self.lootQueue then
+		return addon:GetModule("ErrorHandler"):ThrowSilentError("ML.lootQueue nil")
+	end
+
 	for i = #self.lootQueue, 1, -1 do -- Check latest loot attempt first
 		local v = self.lootQueue[i]
 		if v.slot == slot then -- loot success
@@ -717,49 +752,6 @@ function RCLootCouncilML:OnLootSlotCleared(slot, link)
 				v.callback(true, nil, unpack(v.args))
 			end
 			break
-		end
-	end
-end
-
--- DEPRECATED (not used with PL)
-function RCLootCouncilML:LootOpened()
-	local sessionframe = addon:GetActiveModule("sessionframe")
-	if addon.isMasterLooter and GetNumLootItems() > 0 then
-		if self.running or sessionframe:IsRunning() then -- Check if an update is needed
-			self:UpdateLootSlots()
-		else -- Otherwise add the loot
-			for i = 1, GetNumLootItems() do
-				if addon.lootSlotInfo[i] then
-					local item = addon.lootSlotInfo[i].link -- This can be nil, if this is money(a coin).
-					local quantity = addon.lootSlotInfo[i].quantity
-					local quality = addon.lootSlotInfo[i].quality
-					if db.altClickLooting then self:ScheduleTimer("HookLootButton", 0.5, i) end -- Delay lootbutton hooking to ensure other addons have had time to build their frames
-
-					local autoAward, mode, winner = self:ShouldAutoAward(item, quality)
-
-					if autoAward and quantity > 0 then
-						self:AutoAward(i, item, quality, winner, mode, addon.bossName)
-
-					elseif item and self:CanWeLootItem(item, quality) and quantity > 0 then -- check if our options allows us to loot it
-						self:AddItem(item, false, i)
-
-					elseif quantity == 0 then -- it's coin, just loot it
-						LootSlot(i)
-					end
-				end
-			end
-		end
-		if #self.lootTable > 0 and not self.running then
-			if db.autoStart and addon.candidates[addon.playerName] and #addon.council > 0 then -- Auto start only if data is ready
-				if db.awardLater then
-					self:DoAwardLater()
-				else
-					self:StartSession()
-				end
-			else
-				addon:CallModule("sessionframe")
-				sessionframe:Show(self.lootTable)
-			end
 		end
 	end
 end
@@ -948,45 +940,6 @@ function RCLootCouncilML:UpdateLootSlots()
 	end
 end
 
-function RCLootCouncilML:HookLootButton(i)
-	local lootButton = getglobal("LootButton"..i)
-	if _G.XLoot then -- hook XLoot
-		lootButton = getglobal("XLootButton"..i)
-	end
-	if _G.XLootFrame then -- if XLoot 1.0
-		lootButton = getglobal("XLootFrameButton"..i)
-	end
-	if getglobal("ElvLootSlot"..i) then -- if ElvUI
-		lootButton = getglobal("ElvLootSlot"..i)
-	end
-	local hooked = self:IsHooked(lootButton, "OnClick")
-	if lootButton and not hooked then
-		addon:DebugLog("ML:HookLootButton", i)
-		self:HookScript(lootButton, "OnClick", "LootOnClick")
-	end
-end
-
-function RCLootCouncilML:LootOnClick(button)
-	if not IsAltKeyDown() or not db.altClickLooting or IsShiftKeyDown() or IsControlKeyDown() then return; end
-	addon:DebugLog("LootAltClick()", button)
-
-	if getglobal("ElvLootFrame") then
-		button.slot = button:GetID() -- ElvUI hack
-	end
-
-	-- Check we're not already looting that item
-	for _, v in ipairs(self.lootTable) do
-		if button.slot == v.lootSlot then
-			addon:Print(L["The loot is already on the list"])
-			return
-		end
-	end
-
-	self:AddItem(GetLootSlotLink(button.slot), false, button.slot)
-	addon:CallModule("sessionframe")
-	addon:GetActiveModule("sessionframe"):Show(self.lootTable)
-end
-
 function RCLootCouncilML:PrintLootErrorMsg(cause, slot, item, winner)
 	addon:Debug("ML:PrintLootErrorMsg", cause, slot, item, winner)
 	if cause == "loot_not_open" then
@@ -1075,9 +1028,9 @@ local function registerAndAnnounceBagged(session)
 	}):Store()
 	if not Item.inBags then -- It wasn't found!
 		-- We don't care about onFound, as all we need is to record the time_remaining
-		addon.ItemStorage:WatchForItemInBags(Item, function(Item)
+		addon.ItemStorage:WatchForItemInBags(Item, nil, function(Item)
 			addon:DebugLog(format("<ERROR> Award Later item %s was never found in bags!", Item.link))
-		end, nil, 5)
+		end, 5)
 	end
 	if self.lootTable[session].lootSlot or self.running then -- Item is looted by ML, announce it.
 															-- Also announce if the item is awarded later in voting frame.
