@@ -37,7 +37,9 @@ end
 
 --- Silently throws an error
 function ErrorHandler:ThrowSilentError (message)
-   local _, err = pcall(private.ThrowError(message))
+   local _, err = pcall(function ()
+      private.ThrowError(message)
+   end)
    self:LogError(err)
 end
 
