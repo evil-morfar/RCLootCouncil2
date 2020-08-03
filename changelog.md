@@ -3,6 +3,7 @@
 
 ## Bugfixes
 * *Corrupted weapons should be added automatically again (Curse#421, #189).*
+* *`/rc v 1` correctly prints a numbered list again.*
 
 
 # v2.19.2

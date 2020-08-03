@@ -121,8 +121,8 @@ function RCVersionCheck:PrintOutDatedClients()
 	end
 	if i > 0 then
 		addon:Print(L["Found the following outdated versions"]..":")
-		for _,v in ipairs(outdated) do
-			addon:Print(i,v)
+		for j,v in ipairs(outdated) do
+			addon:Print(j,v)
 		end
 	else
 		addon:Print(L["Everybody is up to date."])
