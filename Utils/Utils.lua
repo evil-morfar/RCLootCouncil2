@@ -166,3 +166,7 @@ function Utils:CheckOutdatedVersion (baseVersion, newVersion, basetVersion, newt
       return addon.VER_CHECK_CODES[1] -- All fine
 	end
 end
+
+function Utils:GuildRoster()
+   return _G.GuildRoster and _G.GuildRoster() or C_GuildInfo.GuildRoster()
+end

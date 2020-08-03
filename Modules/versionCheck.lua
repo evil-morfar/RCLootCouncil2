@@ -62,7 +62,7 @@ end
 function RCVersionCheck:Query(group)
 	addon:DebugLog("Player asked for verTest", group)
 	if group == "guild" then
-		GuildRoster()
+		addon.Utils:GuildRoster()
 		for i = 1, GetNumGuildMembers() do
 			local name, rank, _,_,_,_,_,_, online,_, class = GetGuildRosterInfo(i)
 			if online then

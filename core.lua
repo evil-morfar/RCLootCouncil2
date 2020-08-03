@@ -273,7 +273,7 @@ function RCLootCouncil:OnEnable()
 	self.db.global.regionID = GetCurrentRegion()
 
 	self.db.global.tVersion = self.tVersion;
-	GuildRoster()
+	self.Utils:GuildRoster()
 
 	local filterFunc = function(_, event, msg, player, ...)
 		return strfind(msg, "[[RCLootCouncil]]:")
@@ -1735,7 +1735,7 @@ end
 
 function RCLootCouncil:GetPlayersGuildRank()
 	self:DebugLog("GetPlayersGuildRank()")
-	GuildRoster() -- let the event trigger this func
+	self.Utils:GuildRoster() -- let the event trigger this func
 	if IsInGuild() then
 		local rank = select(2, GetGuildInfo("player"))
 		if rank then
@@ -1775,7 +1775,7 @@ end
 function RCLootCouncil:GetGuildRanks()
 	if not IsInGuild() then return {} end
 	self:DebugLog("GetGuildRankNum()")
-	GuildRoster()
+	self.Utils:GuildRoster()
 	local t = {}
 	for i = 1, GuildControlGetNumRanks() do
 		local name = GuildControlGetRankName(i)
