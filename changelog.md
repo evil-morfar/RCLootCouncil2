@@ -2,6 +2,7 @@
 ## Changes
 
 ## Bugfixes
+* *Corrupted weapons should be added automatically again (Curse#421, #189).*
 
 
 # v2.19.2

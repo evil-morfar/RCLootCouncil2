@@ -124,6 +124,14 @@ function Utils:IsInNonInstance()
    end
 end
 
+--- Removes corruption ID from a weapon.
+-- A hotfix made it so bonusID 6513 is added to corrupted weapons after they're looted,
+-- which causes :ItemIsItem to fail.
+-- This function removes this id, but doesn't alter the numBonuses value.
+function Utils:DiscardWeaponCorruption (itemLink)
+   return itemLink and gsub(itemLink, "6513:", "") or itemLink
+end
+
 
 --- Checks if the item is in our blacklist
 -- COMBAK Should be moved to it's own class in the future
