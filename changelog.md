@@ -1,3 +1,9 @@
+# v2.19.3
+## Changes
+
+## Bugfixes
+
+
 # v2.19.2
 ## Changes
 ### Council comms
