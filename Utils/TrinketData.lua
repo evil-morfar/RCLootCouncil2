@@ -5,7 +5,7 @@
 -- Update Date : 12/1/2020 (8.3.0 Build 32976)
 
 
-local ZERO = ("0"):rep(GetNumClasses())
+local ZERO = ("0"):rep(RCLootCouncil.Utils.GetNumClasses())
 --@debug@
 --[[
 This function is used for developer.
@@ -121,7 +121,7 @@ end
 
 function RCLootCouncil:ClassesFlagToStr(flag)
    local text = ""
-   for i = 1, GetNumClasses() do
+   for i = 1, self.Utils.GetNumClasses() do
       if bit.band(flag, bit.lshift(1, i - 1)) > 0 then
          if text ~= "" then
             text = text..", "
@@ -168,7 +168,7 @@ function RCLootCouncil:ExportTrinketDataSingleInstance(instanceID, diffID, timeL
       end
    end
 
-   for classID = 1, GetNumClasses() do
+   for classID = 1, self.Utils.GetNumClasses() do
       for specIndex = 1, GetNumSpecializationsForClassID(classID) do
          EJ_SetLootFilter(classID, GetSpecializationInfoForClassID(classID, specIndex))
          for j = 1, EJ_GetNumLoot() do -- EJ_GetNumLoot() can be 0 if EJ items are not cached.
@@ -178,7 +178,7 @@ function RCLootCouncil:ExportTrinketDataSingleInstance(instanceID, diffID, timeL
 					local specCode = trinketData[index][2]
                local digit = tonumber(specCode:sub(-classID, - classID), 16)
                digit = digit + 2^(specIndex - 1)
-               trinketData[index][2] = specCode:sub(1, GetNumClasses() - classID)..format("%X", digit)..specCode:sub(GetNumClasses() - classID + 2, GetNumClasses())
+               trinketData[index][2] = specCode:sub(1, self.Utils.GetNumClasses() - classID)..format("%X", digit)..specCode:sub(self.Utils.GetNumClasses() - classID + 2, self.Utils.GetNumClasses())
             end
          end
       end
@@ -237,12 +237,12 @@ _G.RCTrinketCategories = {
    ["010773050000"] = DAMAGER..", "..ITEM_MOD_INTELLECT_SHORT.."?", -- Damage, Intellect? (+Enhancement Shaman)
 }
 -- Class specific trinket
-for classID = 1, GetNumClasses() do
+for classID = 1, RCLootCouncil.Utils.GetNumClasses() do
    local digit = 0
    for specIndex = 1, GetNumSpecializationsForClassID(classID) do
       digit = digit + 2^(specIndex - 1)
    end
-   local flag = ZERO:sub(1, GetNumClasses() - classID)..format("%X", digit)..ZERO:sub(GetNumClasses() - classID + 2, GetNumClasses())
+   local flag = ZERO:sub(1, RCLootCouncil.Utils.GetNumClasses() - classID)..format("%X", digit)..ZERO:sub(RCLootCouncil.Utils.GetNumClasses() - classID + 2, RCLootCouncil.Utils.GetNumClasses())
    _G.RCTrinketCategories[flag] = select(1, GetClassInfo(classID))
 end
 

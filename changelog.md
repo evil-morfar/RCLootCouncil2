@@ -1,3 +1,12 @@
+# v2.19.3
+## Changes
+
+## Bugfixes
+* *Corrupted weapons should be added automatically again (Curse#421, #189).*
+* *`/rc v 1` correctly prints a numbered list again.*
+* *History entries containing quotes are now properly escaped for JSON export.*
+
+
 # v2.19.2
 ## Changes
 ### Council comms

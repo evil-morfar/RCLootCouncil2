@@ -117,11 +117,19 @@ end
 
 function Utils:IsInNonInstance()
    local instance_type = select(2, IsInInstance())
-   if IsPartyLFG() or instance_type == "pvp" or instance_type == "arena" then
+   if self.IsPartyLFG() or instance_type == "pvp" or instance_type == "arena" then
       return true
    else
       return false
    end
+end
+
+--- Removes corruption ID from a weapon.
+-- A hotfix made it so bonusID 6513 is added to corrupted weapons after they're looted,
+-- which causes :ItemIsItem to fail.
+-- This function removes this id, but doesn't alter the numBonuses value.
+function Utils:DiscardWeaponCorruption (itemLink)
+   return itemLink and gsub(itemLink, "6513:", "") or itemLink
 end
 
 
@@ -157,4 +165,17 @@ function Utils:CheckOutdatedVersion (baseVersion, newVersion, basetVersion, newt
    else
       return addon.VER_CHECK_CODES[1] -- All fine
 	end
+end
+
+function Utils:GuildRoster()
+   return _G.GuildRoster and _G.GuildRoster() or C_GuildInfo.GuildRoster()
+end
+
+--- Upvalued for Classic overwrite
+function Utils:GetNumClasses ()
+   return GetNumClasses()
+end
+
+function Utils:IsPartyLFG ()
+   return IsPartyLFG and IsPartyLFG()
 end
