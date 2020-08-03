@@ -84,12 +84,5 @@ describe("#Utils functions", function()
             assert.is_nil(Utils:DiscardWeaponCorruption(nil))
          end)
       end)
-
-      it("should", function()
-         local itemWith = "|cffa335ee|Hitem:172200::::::::120:104::5:7:4823:6572:6578:6579:1502:4786:6513:::|h[Sk'shuul~`Vaz]|h|r"
-         local itemWithout = "|cffa335ee|Hitem:172200::::::::120:104::5:7:4823:6572:6578:6579:1502:4786:::|h[Sk'shuul~`Vaz]|h|r"
-         assert.are.equal(true, RCLootCouncil:ItemIsItem(itemWith, itemWithout))
-      end)
    end)
-
 end)
