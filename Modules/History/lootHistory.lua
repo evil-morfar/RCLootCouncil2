@@ -1492,6 +1492,12 @@ do
 			return s
 		end
 	end
+
+	local function QuotesEscape (s)
+		s = tostring(s or "")
+		return gsub(s, "\"", "\\\"")
+	end
+
 	--- CSV with all stored data
 	-- ~14 ms (74%) improvement by switching to table and concat
 	function LootHistory:ExportCSV()
@@ -1601,19 +1607,19 @@ do
 				tinsert(export, string.format("\"%s\":\"%s\"", "time", tostring(d.time)))
 				tinsert(export, string.format("\"%s\":%s", "itemID", addon:GetItemIDFromLink(d.lootWon)))
 				tinsert(export, string.format("\"%s\":\"%s\"", "itemString", addon:GetItemStringFromLink(d.lootWon)))
-				tinsert(export, string.format("\"%s\":\"%s\"", "response", tostring(d.response)))
+				tinsert(export, string.format("\"%s\":\"%s\"", "response", QuotesEscape(d.response)))
 				tinsert(export, string.format("\"%s\":%s", "votes", tostring(d.votes or 0)))
 				tinsert(export, string.format("\"%s\":\"%s\"", "class", tostring(d.class)))
-				tinsert(export, string.format("\"%s\":\"%s\"", "instance", tostring(d.instance)))
-				tinsert(export, string.format("\"%s\":\"%s\"", "boss", tostring(d.boss)))
-				tinsert(export, string.format("\"%s\":\"%s\"", "gear1", tostring(d.itemReplaced1 or "")))
-				tinsert(export, string.format("\"%s\":\"%s\"", "gear2", tostring(d.itemReplaced2 or "")))
+				tinsert(export, string.format("\"%s\":\"%s\"", "instance", QuotesEscape(d.instance)))
+				tinsert(export, string.format("\"%s\":\"%s\"", "boss", QuotesEscape(d.boss)))
+				tinsert(export, string.format("\"%s\":\"%s\"", "gear1", QuotesEscape(d.itemReplaced1)))
+				tinsert(export, string.format("\"%s\":\"%s\"", "gear2", QuotesEscape(d.itemReplaced2)))
 				tinsert(export, string.format("\"%s\":\"%s\"", "responseID", tostring(d.responseID)))
 				tinsert(export, string.format("\"%s\":\"%s\"", "isAwardReason", tostring(d.isAwardReason or false)))
 				tinsert(export, string.format("\"%s\":\"%s\"", "rollType", rollType))
 				tinsert(export, string.format("\"%s\":\"%s\"", "subType", tostring(subType)))
 				tinsert(export, string.format("\"%s\":\"%s\"", "equipLoc", tostring(getglobal(equipLoc) or "")))
-				tinsert(export, string.format("\"%s\":\"%s\"", "note", (d.note or "")))
+				tinsert(export, string.format("\"%s\":\"%s\"", "note", QuotesEscape(d.note)))
 				tinsert(export, string.format("\"%s\":\"%s\"", "owner", tostring(d.owner or "Unknown")))
 
 				processedEntries = processedEntries + 1;
