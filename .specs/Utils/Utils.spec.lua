@@ -74,6 +74,12 @@ describe("#Utils functions", function()
          assert.are.equal(itemWithout, Utils:DiscardWeaponCorruption(itemWith))
       end)
 
+      it("should compare without numBonuses", function()
+         local itemWith = "|cffa335ee|Hitem:172200::::::::120:104::5:7:4823:6572:6578:6579:1502:4786:6513:::|h[Sk'shuul~`Vaz]|h|r"
+         local itemWithout = "|cffa335ee|Hitem:172200::::::::120:104::5:6:4823:6572:6578:6579:1502:4786:::|h[Sk'shuul~`Vaz]|h|r"
+         assert.is_true(RCLootCouncil:ItemIsItem(itemWith, itemWithout))
+      end)
+
       it("shouldn't touch others", function()
          local item = "|cffa335ee|Hitem:174117::::::::120:256::5:5:4823:1502:4786:6509:4775:::|h[Spaulders of Miasmic Mycelia]|h|r"
          assert.are.equal(item, Utils:DiscardWeaponCorruption(item))
