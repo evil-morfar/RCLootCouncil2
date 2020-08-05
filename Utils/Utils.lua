@@ -128,8 +128,9 @@ end
 -- A hotfix made it so bonusID 6513 is added to corrupted weapons after they're looted,
 -- which causes :ItemIsItem to fail.
 -- This function removes this id, but doesn't alter the numBonuses value.
+-- Note: This will remove all occurances of ":6513:", but it shouldn't really matter afaik.
 function Utils:DiscardWeaponCorruption (itemLink)
-   return itemLink and gsub(itemLink, "6513:", "") or itemLink
+   return itemLink and gsub(itemLink, ":6513:", ":") or itemLink
 end
 
 
