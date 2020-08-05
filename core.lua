@@ -203,6 +203,7 @@ function RCLootCouncil:OnInitialize()
 	self.db.RegisterCallback(self, "OnProfileReset", ReloadUI)
 
 	self:ClearOldVerTestCandidates()
+	self:InitClassIDs()
 
 	-- add shortcuts
 	db = self.db.profile
@@ -1549,19 +1550,21 @@ end
 11	Druid				DRUID
 12	Demon Hunter	DEMONHUNTER
 --]]
-RCLootCouncil.classDisplayNameToID = {} -- Key: localized class display name. value: class id(number)
-RCLootCouncil.classTagNameToID = {} -- key: class name in capital english letters without space. value: class id(number)
-RCLootCouncil.classIDToDisplayName = {} -- key: class id. Value: localized name
-RCLootCouncil.classIDToFileName = {} -- key: class id. Value: File name
-for i=1, RCLootCouncil.Utils.GetNumClasses() do
-	local info = C_CreatureInfo.GetClassInfo(i)
-	if info then -- Just in case class doesn't exists #Classic
-		RCLootCouncil.classDisplayNameToID[info.className] = i
-		RCLootCouncil.classTagNameToID[info.classFile] = i
+function RCLootCouncil:InitClassIDs ()
+	self.classDisplayNameToID = {} -- Key: localized class display name. value: class id(number)
+	self.classTagNameToID = {} -- key: class name in capital english letters without space. value: class id(number)
+	self.classIDToDisplayName = {} -- key: class id. Value: localized name
+	self.classIDToFileName = {} -- key: class id. Value: File name
+	for i=1, self.Utils.GetNumClasses() do
+		local info = C_CreatureInfo.GetClassInfo(i)
+		if info then -- Just in case class doesn't exists #Classic
+			self.classDisplayNameToID[info.className] = i
+			self.classTagNameToID[info.classFile] = i
+		end
 	end
+	self.classIDToDisplayName = tInvert(self.classDisplayNameToID)
+	self.classIDToFileName = tInvert(self.classTagNameToID)
 end
-RCLootCouncil.classIDToDisplayName = tInvert(RCLootCouncil.classDisplayNameToID)
-RCLootCouncil.classIDToFileName = tInvert(RCLootCouncil.classTagNameToID)
 
 -- @return The bitwise flag indicates the classes allowed for the item, as specified on the tooltip by "Classes: xxx"
 -- If the tooltip does not specify "Classes: xxx" or if the item is not cached, return 0xffffffff
