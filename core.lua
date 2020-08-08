@@ -204,6 +204,7 @@ function RCLootCouncil:OnInitialize()
 
 	self:ClearOldVerTestCandidates()
 	self:InitClassIDs()
+	self:InitTrinketData()
 
 	-- add shortcuts
 	db = self.db.profile

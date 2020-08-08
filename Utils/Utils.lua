@@ -169,14 +169,22 @@ function Utils:CheckOutdatedVersion (baseVersion, newVersion, basetVersion, newt
 end
 
 function Utils:GuildRoster()
-   return _G.GuildRoster and _G.GuildRoster() or C_GuildInfo.GuildRoster()
+   if _G.GuildRoster then
+      return _G.GuildRoster()
+   else
+      return C_GuildInfo.GuildRoster()
+   end
 end
 
 --- Upvalued for Classic overwrite
 function Utils:GetNumClasses ()
-   return GetNumClasses()
+   return _G.GetNumClasses and GetNumClasses() or _G.MAX_CLASSES
 end
 
 function Utils:IsPartyLFG ()
    return IsPartyLFG and IsPartyLFG()
+end
+
+function Utils:GetNumSpecializationsForClassID (classID)
+   return _G.GetNumSpecializationsForClassID and _G.GetNumSpecializationsForClassID(classID) or 3
 end
