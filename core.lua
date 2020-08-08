@@ -80,7 +80,6 @@ local unregisterGuildEvent = false
 local player_relogged = true -- Determines if we potentially need data from the ML due to /rl
 local lootTable = {}
 
-local IsPartyLFG = IsPartyLFG
 -- Lua
 local time, date, tonumber, unpack, select, wipe, pairs, ipairs, format, table, tinsert, tremove, bit, tostring, type
 	 = time, date, tonumber, unpack, select, wipe, pairs, ipairs, format, table, tinsert, tremove, bit, tostring, type
@@ -204,6 +203,7 @@ function RCLootCouncil:OnInitialize()
 	self.db.RegisterCallback(self, "OnProfileReset", ReloadUI)
 
 	self:ClearOldVerTestCandidates()
+	self:InitClassIDs()
 
 	-- add shortcuts
 	db = self.db.profile
@@ -273,7 +273,7 @@ function RCLootCouncil:OnEnable()
 	self.db.global.regionID = GetCurrentRegion()
 
 	self.db.global.tVersion = self.tVersion;
-	GuildRoster()
+	self.Utils:GuildRoster()
 
 	local filterFunc = function(_, event, msg, player, ...)
 		return strfind(msg, "[[RCLootCouncil]]:")
@@ -1550,19 +1550,21 @@ end
 11	Druid				DRUID
 12	Demon Hunter	DEMONHUNTER
 --]]
-RCLootCouncil.classDisplayNameToID = {} -- Key: localized class display name. value: class id(number)
-RCLootCouncil.classTagNameToID = {} -- key: class name in capital english letters without space. value: class id(number)
-RCLootCouncil.classIDToDisplayName = {} -- key: class id. Value: localized name
-RCLootCouncil.classIDToFileName = {} -- key: class id. Value: File name
-for i=1, GetNumClasses() do
-	local info = C_CreatureInfo.GetClassInfo(i)
-	if info then -- Just in case class doesn't exists #Classic
-		RCLootCouncil.classDisplayNameToID[info.className] = i
-		RCLootCouncil.classTagNameToID[info.classFile] = i
+function RCLootCouncil:InitClassIDs ()
+	self.classDisplayNameToID = {} -- Key: localized class display name. value: class id(number)
+	self.classTagNameToID = {} -- key: class name in capital english letters without space. value: class id(number)
+	self.classIDToDisplayName = {} -- key: class id. Value: localized name
+	self.classIDToFileName = {} -- key: class id. Value: File name
+	for i=1, self.Utils.GetNumClasses() do
+		local info = C_CreatureInfo.GetClassInfo(i)
+		if info then -- Just in case class doesn't exists #Classic
+			self.classDisplayNameToID[info.className] = i
+			self.classTagNameToID[info.classFile] = i
+		end
 	end
+	self.classIDToDisplayName = tInvert(self.classDisplayNameToID)
+	self.classIDToFileName = tInvert(self.classTagNameToID)
 end
-RCLootCouncil.classIDToDisplayName = tInvert(RCLootCouncil.classDisplayNameToID)
-RCLootCouncil.classIDToFileName = tInvert(RCLootCouncil.classTagNameToID)
 
 -- @return The bitwise flag indicates the classes allowed for the item, as specified on the tooltip by "Classes: xxx"
 -- If the tooltip does not specify "Classes: xxx" or if the item is not cached, return 0xffffffff
@@ -1735,7 +1737,7 @@ end
 
 function RCLootCouncil:GetPlayersGuildRank()
 	self:DebugLog("GetPlayersGuildRank()")
-	GuildRoster() -- let the event trigger this func
+	self.Utils:GuildRoster() -- let the event trigger this func
 	if IsInGuild() then
 		local rank = select(2, GetGuildInfo("player"))
 		if rank then
@@ -1775,7 +1777,7 @@ end
 function RCLootCouncil:GetGuildRanks()
 	if not IsInGuild() then return {} end
 	self:DebugLog("GetGuildRankNum()")
-	GuildRoster()
+	self.Utils:GuildRoster()
 	local t = {}
 	for i = 1, GuildControlGetNumRanks() do
 		local name = GuildControlGetRankName(i)
@@ -2005,7 +2007,7 @@ function RCLootCouncil:NewMLCheck()
 	if not self.isMasterLooter and self:GetActiveModule("masterlooter"):IsEnabled() then -- we're not ML, so make sure it's disabled
 		self:StopHandleLoot()
 	end
-	if IsPartyLFG() then return end	-- We can't use in lfg/lfd so don't bother
+	if self.Utils.IsPartyLFG() then return end	-- We can't use in lfg/lfd so don't bother
 	if not self.masterLooter then return end -- Didn't find a leader or ML.
 	if self:UnitIsUnit(old_ml, self.masterLooter) then
 		if old_lm == self.lootMethod then
@@ -2073,7 +2075,7 @@ end
 
 function RCLootCouncil:OnRaidEnter(arg)
 	-- NOTE: We shouldn't need to call GetML() as it's most likely called on "LOOT_METHOD_CHANGED"
-	if IsPartyLFG() or db.usage.never then return end	-- We can't use in lfg/lfd so don't bother
+	if self.Utils.IsPartyLFG() or db.usage.never then return end	-- We can't use in lfg/lfd so don't bother
 	-- Check if we can use in party
 	if not IsInRaid() and db.onlyUseInRaids then return end
 	if UnitIsGroupLeader("player") then
@@ -2090,7 +2092,7 @@ end
 -- @return boolean, "ML_Name". (true if the player is ML), (nil if there's no ML).
 function RCLootCouncil:GetML()
 	self:DebugLog("GetML()")
-	if IsPartyLFG() then return false, nil	end -- Never use in LFG
+	if self.Utils.IsPartyLFG() then return false, nil	end -- Never use in LFG
 	if GetNumGroupMembers() == 0 and (self.testMode or self.nnp) then -- always the player when testing alone
 		return true, self.playerName
 	end
@@ -2277,6 +2279,8 @@ end
 -- @return true if two items are the same item
 function RCLootCouncil:ItemIsItem(item1, item2)
 	if type(item1) ~= "string" or type(item2) ~= "string" then return item1 == item2 end
+	item1 = self.Utils:DiscardWeaponCorruption(item1)
+	item2 = self.Utils:DiscardWeaponCorruption(item2)
 	item1 = self.Utils:GetItemStringFromLink(item1)
 	item2 = self.Utils:GetItemStringFromLink(item2)
 	if not (item1 and item2) then return false end -- KeyStones will fail the GetItemStringFromLink

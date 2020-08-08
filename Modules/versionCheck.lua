@@ -62,7 +62,7 @@ end
 function RCVersionCheck:Query(group)
 	addon:DebugLog("Player asked for verTest", group)
 	if group == "guild" then
-		GuildRoster()
+		addon.Utils:GuildRoster()
 		for i = 1, GetNumGuildMembers() do
 			local name, rank, _,_,_,_,_,_, online,_, class = GetGuildRosterInfo(i)
 			if online then
@@ -121,8 +121,8 @@ function RCVersionCheck:PrintOutDatedClients()
 	end
 	if i > 0 then
 		addon:Print(L["Found the following outdated versions"]..":")
-		for _,v in ipairs(outdated) do
-			addon:Print(i,v)
+		for j,v in ipairs(outdated) do
+			addon:Print(j,v)
 		end
 	else
 		addon:Print(L["Everybody is up to date."])

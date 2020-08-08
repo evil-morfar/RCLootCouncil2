@@ -53,12 +53,12 @@ function Utils:GetItemTextWithCount(link, count)
 	return link..(count and count > 1 and (" x"..count) or "")
 end
 
-local NEUTRALIZE_ITEM_PATTERN = "item:(%d*):(%d*):(%d*):(%d*):(%d*):(%d*):(%d*):%d*:%d*:%d*:%d*:(%d*):(%d*)"
-local NEUTRALIZE_ITEM_REPLACEMENT = "item:%1:%2:%3:%4:%5:%6:%7::::%8:%9" -- 9: numBonusIDs
+local NEUTRALIZE_ITEM_PATTERN = "item:(%d*):(%d*):(%d*):(%d*):(%d*):(%d*):(%d*):%d*:%d*:%d*:%d*:(%d*):%d*"
+local NEUTRALIZE_ITEM_REPLACEMENT = "item:%1:%2:%3:%4:%5:%6:%7::::%8:"
 
 --- Removes any character specific data from an item
 -- @param item Any itemlink, itemstring etc.
--- @return The same item with level, specID, uniqueID, upgradeTypeID removed
+-- @return The same item with level, specID, uniqueID, upgradeTypeID, numBonuses removed
 function Utils:NeutralizeItem (item)
 	return item:gsub(NEUTRALIZE_ITEM_PATTERN, NEUTRALIZE_ITEM_REPLACEMENT)
 end
@@ -117,11 +117,20 @@ end
 
 function Utils:IsInNonInstance()
    local instance_type = select(2, IsInInstance())
-   if IsPartyLFG() or instance_type == "pvp" or instance_type == "arena" then
+   if self.IsPartyLFG() or instance_type == "pvp" or instance_type == "arena" then
       return true
    else
       return false
    end
+end
+
+--- Removes corruption ID from a weapon.
+-- A hotfix made it so bonusID 6513 is added to corrupted weapons after they're looted,
+-- which causes :ItemIsItem to fail.
+-- This function removes this id, but doesn't alter the numBonuses value.
+-- Note: This will remove all occurances of ":6513:", but it shouldn't really matter afaik.
+function Utils:DiscardWeaponCorruption (itemLink)
+   return itemLink and gsub(itemLink, ":6513:", ":") or itemLink
 end
 
 
@@ -157,4 +166,17 @@ function Utils:CheckOutdatedVersion (baseVersion, newVersion, basetVersion, newt
    else
       return addon.VER_CHECK_CODES[1] -- All fine
 	end
+end
+
+function Utils:GuildRoster()
+   return _G.GuildRoster and _G.GuildRoster() or C_GuildInfo.GuildRoster()
+end
+
+--- Upvalued for Classic overwrite
+function Utils:GetNumClasses ()
+   return GetNumClasses()
+end
+
+function Utils:IsPartyLFG ()
+   return IsPartyLFG and IsPartyLFG()
 end
