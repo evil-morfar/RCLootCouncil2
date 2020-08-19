@@ -1566,7 +1566,7 @@ function addon:OptionsTable()
 												type = "select",
 												width = "full",
 												values = function()
-													C_GuildInfo.GuildRoster();
+													addon.Utils:GuildRoster();
 													local info = {};
 													for ci = 1, GuildControlGetNumRanks() do
 														info[ci] = " "..ci.." - "..GuildControlGetRankName(ci);
