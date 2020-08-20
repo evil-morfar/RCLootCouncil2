@@ -132,6 +132,17 @@ globals = {
 	"UPPER_LEFT_VERTEX",
 	"UPPER_RIGHT_VERTEX",
 
+   -- Namespaces
+   "C_EncounterJounal",
+   "C_DateAndTime",
+   "C_CurrencyInfo",
+   "C_Item",
+   "C_Map",
+   "C_PartyInfo",
+   "C_PlayerInfo",
+   "C_System",
+   "C_Unit",
+
 	-- API functions
 	"AbandonQuest",
 	"AbandonSkill",
