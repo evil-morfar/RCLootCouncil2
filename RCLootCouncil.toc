@@ -11,14 +11,13 @@ Patches\UiDropDownMenuTaintCommunities.lua
 embeds.xml
 Locale\Locales.xml
 
-Classes\Core.lua
-Classes\Utils\Log.lua
-Classes\Utils\TempTable.lua
-
 Core\Constants.lua
 Core\Defaults.lua
 Core\CoreEvents.lua
-Core\ErrorHandler.lua
+
+Classes\Core.lua
+Classes\Utils\Log.lua
+Classes\Utils\TempTable.lua
 
 Classes\Data\Player.lua
 Classes\Data\Council.lua

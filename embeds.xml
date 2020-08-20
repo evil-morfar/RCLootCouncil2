@@ -22,4 +22,5 @@
   <Script file="Libs\LibWindow-1.1\LibWindow-1.1.lua" />
   <Include file="Libs\lib-st\lib-st.xml" />
   <Include file="Libs\MSA-DropDownMenu-1.0\MSA-DropDownMenu-1.0.xml" />
+  <Include file="Libs\LibDeflate\LibDeflate.lua" />
 </Ui>

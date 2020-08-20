@@ -238,3 +238,5 @@ addon.defaults = {
       },
    },
 } -- defaults end
+
+addon.db = setmetatable({}, {__index = addon.defaults})
