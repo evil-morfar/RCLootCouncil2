@@ -1,8 +1,27 @@
+# v2.19.3
+## Changes
+
+## Bugfixes
+* *Corrupted weapons should be added automatically again (Curse#421, #189).*
+* *`/rc v 1` correctly prints a numbered list again.*
+* *History entries containing quotes are now properly escaped for JSON export.*
+
+
+# v2.19.2
+## Changes
+### Council comms
+Council comms is now throttled to avoid sending unnecessary comms.
+
+## Bugfixes
+*Bumped threshold for detecting ML awards for instability in Classic.*
+*Increased stability of ML/GL detection.*
+*Suppressed and logged occasional `lootQueue` error for future inspection.*
+
 # v2.19.1
 ## Changes
 ### History Deletion
 Prefer using id time stamp when deleting history entries by date (CurseClassic#57).
-Should be more precise until a planend overhaul of the time keeping is implemented.
+Should be more precise until a planned overhaul of the time keeping is implemented.
 
 ## Bugfixes
 *Fixed issue with the disenchant button introduced in v2.19.0.*

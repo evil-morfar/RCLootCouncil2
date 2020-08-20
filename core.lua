@@ -80,7 +80,6 @@ local unregisterGuildEvent = false
 local player_relogged = true -- Determines if we potentially need data from the ML due to /rl
 local lootTable = {}
 
-local IsPartyLFG = IsPartyLFG
 -- Lua
 local time, date, tonumber, unpack, select, wipe, pairs, ipairs, format, table, tinsert, tremove, bit, tostring, type
 	 = time, date, tonumber, unpack, select, wipe, pairs, ipairs, format, table, tinsert, tremove, bit, tostring, type
@@ -204,6 +203,8 @@ function RCLootCouncil:OnInitialize()
 	self.db.RegisterCallback(self, "OnProfileReset", ReloadUI)
 
 	self:ClearOldVerTestCandidates()
+	self:InitClassIDs()
+	self:InitTrinketData()
 
 	-- add shortcuts
 	db = self.db.profile
@@ -235,7 +236,8 @@ function RCLootCouncil:OnEnable()
 	self.optionsFrame = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("RCLootCouncil", "RCLootCouncil", nil, "settings")
 	self.optionsFrame.ml = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("RCLootCouncil", "Master Looter", "RCLootCouncil", "mlSettings")
 	self.playersData = playersData -- Make it globally available
-	self:InitItemStorage()
+
+	self:ScheduleTimer("InitItemStorage", 5, self) -- Delay to have a better change of getting correct item info
 
 	-- register events
 	for event, method in pairs(self.coreEvents) do
@@ -272,7 +274,7 @@ function RCLootCouncil:OnEnable()
 	self.db.global.regionID = GetCurrentRegion()
 
 	self.db.global.tVersion = self.tVersion;
-	GuildRoster()
+	self.Utils:GuildRoster()
 
 	local filterFunc = function(_, event, msg, player, ...)
 		return strfind(msg, "[[RCLootCouncil]]:")
@@ -604,6 +606,11 @@ function RCLootCouncil:SendCommand(target, command, ...)
 	end
 end
 
+--- A direct call to AceComms:SendCommMessage(). For hooking purposes.
+function RCLootCouncil:SendCommandModified (prefix, serializedMsg, channel, target, prio, ...)
+	self:SendCommMessage(prefix, serializedMsg, channel, target, prio, ...)
+end
+
 local v3VersionWarningCount = 0
 --- Receives RCLootCouncil commands.
 -- Params are delivered by AceComm-3.0, but we need to extract our data created with the
@@ -627,64 +634,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 		if test then
 			if command == "lootTable" then
 				if self:UnitIsUnit(sender, self.masterLooter) then
-					lootTable = unpack(data)
-					-- Send "DISABLED" response when not enabled
-					if not self.enabled then
-						for i = 1, #lootTable do
-							-- target, session, response, isTier, isRelic, note, roll, link, ilvl, equipLoc, relicType, sendAvgIlvl, sendSpecID
-							self:SendResponse("group", i, "DISABLED")
-						end
-						return self:Debug("Sent 'DISABLED' response to", sender)
-					end
-
-					-- Cache items
-					local cached = true
-					for _, v in ipairs(lootTable) do
-						if not GetItemInfo(v.link) then cached = false end
-					end
-					if not cached then
-						-- Note: Dont print debug log here. It is spamming.
-						return self:ScheduleTimer("OnCommReceived", 0, prefix, serializedMsg, distri, sender)
-					end
-
-					self:PrepareLootTable(lootTable)
-
-					-- v2.0.1: It seems people somehow receives mldb without numButtons, so check for it aswell.
-					if not self.mldb then -- Really shouldn't happen, but I'm tired of people somehow not receiving it...
-						self:Debug("Received loot table without having mldb :(", sender)
-						self:SendCommand(self.masterLooter, "MLdb_request")
-						return self:ScheduleTimer("OnCommReceived", 5, prefix, serializedMsg, distri, sender)
-					end
-
-					-- Check if council is received
-					if not FindInTableIf(self.council, function(v) return self:UnitIsUnit(self.masterLooter, v) end) then
-						self:Debug("Received loot table without ML in the council", sender)
-						self:SendCommand(self.masterLooter, "council_request")
-						return self:ScheduleTimer("OnCommReceived", 5, prefix, serializedMsg, distri, sender)
-					end
-
-					-- Hand the lootTable to the votingFrame
-					if self.isCouncil or self.mldb.observe then
-						self:GetActiveModule("votingframe"):ReceiveLootTable(lootTable)
-					end
-
-					-- Out of instance support
-					-- assume 8 people means we're actually raiding
-					if self.mldb.outOfRaid and GetNumGroupMembers() >= 8 and not IsInInstance() then
-						self:DebugLog("NotInRaid respond to lootTable")
-						for ses, v in ipairs(lootTable) do
-							-- target, session, response, isTier, isRelic, note, roll, link, ilvl, equipLoc, relicType, sendAvgIlvl, sendSpecID
-							self:SendResponse("group", ses, "NOTINRAID", nil, nil, nil, nil, v.link, v.ilvl, v.equipLoc, v.relic, true, true)
-						end
-						return
-					end
-
-					self:DoAutoPasses(lootTable)
-					self:SendLootAck(lootTable)
-
-					-- Show  the LootFrame
-					self:CallModule("lootframe")
-					self:GetActiveModule("lootframe"):Start(lootTable)
+					self:OnLootTableReceived(unpack(data))
 
 				else -- a non-ML send a lootTable?!
 					self:Debug(tostring(sender).." is not ML, but sent lootTable!")
@@ -905,6 +855,67 @@ function RCLootCouncil:HandleXRealmComms(mod, command, data, sender)
 		return true
 	end
 	return false
+end
+
+function RCLootCouncil:OnLootTableReceived (lt)
+	lootTable = lt
+	-- Send "DISABLED" response when not enabled
+	if not self.enabled then
+		for i = 1, #lootTable do
+			-- target, session, response, isTier, isRelic, note, roll, link, ilvl, equipLoc, relicType, sendAvgIlvl, sendSpecID
+			self:SendResponse("group", i, "DISABLED")
+		end
+		return self:Debug("Sent 'DISABLED' response to", self.masterLooter)
+	end
+
+	-- Cache items
+	local cached = true
+	for _, v in ipairs(lootTable) do
+		if not GetItemInfo(v.link) then cached = false end
+	end
+	if not cached then
+		-- Note: Dont print debug log here. It is spamming.
+		return self:ScheduleTimer("OnLootTableReceived", 0, lt)
+	end
+
+	self:PrepareLootTable(lootTable)
+
+	-- v2.0.1: It seems people somehow receives mldb without numButtons, so check for it aswell.
+	if not self.mldb then -- Really shouldn't happen, but I'm tired of people somehow not receiving it...
+		self:Debug("Received loot table without having mldb :(", self.masterLooter)
+		self:SendCommand(self.masterLooter, "MLdb_request")
+		return self:ScheduleTimer("OnLootTableReceived", 0, lt)
+	end
+
+	-- Check if council is received
+	if not FindInTableIf(self.council, function(v) return self:UnitIsUnit(self.masterLooter, v) end) then
+		self:Debug("Received loot table without ML in the council", self.masterLooter)
+		self:SendCommand(self.masterLooter, "council_request")
+		return self:ScheduleTimer("OnLootTableReceived", 0, lt)
+	end
+
+	-- Hand the lootTable to the votingFrame
+	if self.isCouncil or self.mldb.observe then
+		self:GetActiveModule("votingframe"):ReceiveLootTable(lootTable)
+	end
+
+	-- Out of instance support
+	-- assume 8 people means we're actually raiding
+	if self.mldb.outOfRaid and GetNumGroupMembers() >= 8 and not IsInInstance() then
+		self:DebugLog("NotInRaid respond to lootTable")
+		for ses, v in ipairs(lootTable) do
+			-- target, session, response, isTier, isRelic, note, roll, link, ilvl, equipLoc, relicType, sendAvgIlvl, sendSpecID
+			self:SendResponse("group", ses, "NOTINRAID", nil, nil, nil, nil, v.link, v.ilvl, v.equipLoc, v.relic, true, true)
+		end
+		return
+	end
+
+	self:DoAutoPasses(lootTable)
+	self:SendLootAck(lootTable)
+
+	-- Show  the LootFrame
+	self:CallModule("lootframe")
+	self:GetActiveModule("lootframe"):Start(lootTable)
 end
 
 function RCLootCouncil:ResetReconnectRequest()
@@ -1540,19 +1551,21 @@ end
 11	Druid				DRUID
 12	Demon Hunter	DEMONHUNTER
 --]]
-RCLootCouncil.classDisplayNameToID = {} -- Key: localized class display name. value: class id(number)
-RCLootCouncil.classTagNameToID = {} -- key: class name in capital english letters without space. value: class id(number)
-RCLootCouncil.classIDToDisplayName = {} -- key: class id. Value: localized name
-RCLootCouncil.classIDToFileName = {} -- key: class id. Value: File name
-for i=1, GetNumClasses() do
-	local info = C_CreatureInfo.GetClassInfo(i)
-	if info then -- Just in case class doesn't exists #Classic
-		RCLootCouncil.classDisplayNameToID[info.className] = i
-		RCLootCouncil.classTagNameToID[info.classFile] = i
+function RCLootCouncil:InitClassIDs ()
+	self.classDisplayNameToID = {} -- Key: localized class display name. value: class id(number)
+	self.classTagNameToID = {} -- key: class name in capital english letters without space. value: class id(number)
+	self.classIDToDisplayName = {} -- key: class id. Value: localized name
+	self.classIDToFileName = {} -- key: class id. Value: File name
+	for i=1, self.Utils.GetNumClasses() do
+		local info = C_CreatureInfo.GetClassInfo(i)
+		if info then -- Just in case class doesn't exists #Classic
+			self.classDisplayNameToID[info.className] = i
+			self.classTagNameToID[info.classFile] = i
+		end
 	end
+	self.classIDToDisplayName = tInvert(self.classDisplayNameToID)
+	self.classIDToFileName = tInvert(self.classTagNameToID)
 end
-RCLootCouncil.classIDToDisplayName = tInvert(RCLootCouncil.classDisplayNameToID)
-RCLootCouncil.classIDToFileName = tInvert(RCLootCouncil.classTagNameToID)
 
 -- @return The bitwise flag indicates the classes allowed for the item, as specified on the tooltip by "Classes: xxx"
 -- If the tooltip does not specify "Classes: xxx" or if the item is not cached, return 0xffffffff
@@ -1725,7 +1738,7 @@ end
 
 function RCLootCouncil:GetPlayersGuildRank()
 	self:DebugLog("GetPlayersGuildRank()")
-	GuildRoster() -- let the event trigger this func
+	self.Utils:GuildRoster() -- let the event trigger this func
 	if IsInGuild() then
 		local rank = select(2, GetGuildInfo("player"))
 		if rank then
@@ -1765,7 +1778,7 @@ end
 function RCLootCouncil:GetGuildRanks()
 	if not IsInGuild() then return {} end
 	self:DebugLog("GetGuildRankNum()")
-	GuildRoster()
+	self.Utils:GuildRoster()
 	local t = {}
 	for i = 1, GuildControlGetNumRanks() do
 		local name = GuildControlGetRankName(i)
@@ -1986,7 +1999,7 @@ function RCLootCouncil:NewMLCheck()
 	self.lootMethod = GetLootMethod()
 	local instance_type = select(2, IsInInstance())
 	if instance_type == "pvp" or instance_type == "arena" then return end -- Don't do anything here
-	if self.masterLooter and self.masterLooter ~= "" and (self.masterLooter == "Unknown" or self.masterLooter:lower() == _G.UNKNOWNOBJECT:lower()) then
+	if self.masterLooter and self.masterLooter ~= "" and (self.masterLooter == "Unknown" or Ambiguate(self.masterLooter, "short"):lower() == _G.UNKNOWNOBJECT:lower()) then
 		-- ML might be unknown for some reason
 		self:Debug("Unknown ML")
 		return self:ScheduleTimer("NewMLCheck", 0.5)
@@ -1995,7 +2008,7 @@ function RCLootCouncil:NewMLCheck()
 	if not self.isMasterLooter and self:GetActiveModule("masterlooter"):IsEnabled() then -- we're not ML, so make sure it's disabled
 		self:StopHandleLoot()
 	end
-	if IsPartyLFG() then return end	-- We can't use in lfg/lfd so don't bother
+	if self.Utils.IsPartyLFG() then return end	-- We can't use in lfg/lfd so don't bother
 	if not self.masterLooter then return end -- Didn't find a leader or ML.
 	if self:UnitIsUnit(old_ml, self.masterLooter) then
 		if old_lm == self.lootMethod then
@@ -2063,7 +2076,7 @@ end
 
 function RCLootCouncil:OnRaidEnter(arg)
 	-- NOTE: We shouldn't need to call GetML() as it's most likely called on "LOOT_METHOD_CHANGED"
-	if IsPartyLFG() or db.usage.never then return end	-- We can't use in lfg/lfd so don't bother
+	if self.Utils.IsPartyLFG() or db.usage.never then return end	-- We can't use in lfg/lfd so don't bother
 	-- Check if we can use in party
 	if not IsInRaid() and db.onlyUseInRaids then return end
 	if UnitIsGroupLeader("player") then
@@ -2080,7 +2093,7 @@ end
 -- @return boolean, "ML_Name". (true if the player is ML), (nil if there's no ML).
 function RCLootCouncil:GetML()
 	self:DebugLog("GetML()")
-	if IsPartyLFG() then return false, nil	end -- Never use in LFG
+	if self.Utils.IsPartyLFG() then return false, nil	end -- Never use in LFG
 	if GetNumGroupMembers() == 0 and (self.testMode or self.nnp) then -- always the player when testing alone
 		return true, self.playerName
 	end
@@ -2267,6 +2280,8 @@ end
 -- @return true if two items are the same item
 function RCLootCouncil:ItemIsItem(item1, item2)
 	if type(item1) ~= "string" or type(item2) ~= "string" then return item1 == item2 end
+	item1 = self.Utils:DiscardWeaponCorruption(item1)
+	item2 = self.Utils:DiscardWeaponCorruption(item2)
 	item1 = self.Utils:GetItemStringFromLink(item1)
 	item2 = self.Utils:GetItemStringFromLink(item2)
 	if not (item1 and item2) then return false end -- KeyStones will fail the GetItemStringFromLink
