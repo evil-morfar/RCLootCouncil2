@@ -110,6 +110,7 @@ globals = {
 	"UIParent",
 	"WorldFrame",
 	"WorldMapFrame",
+   "BackdropTemplateMixin",
 
 	-- FrameXML globals
 	"ChatFontNormal",

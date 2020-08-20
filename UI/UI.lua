@@ -6,8 +6,8 @@
 -- Create Date : 31/7/2018 03:42:37
 
 local _,addon = ...
-local private = { elements = {}, num = {}, embeds = {}}
-addon.UI = {CreateFrame = _G.CreateFrame, private = private} -- Embed CreateFrame into UI as it's used by all elements
+local private = { elements = {}, num = {}, embeds = {}, }
+addon.UI = {CreateFrame = _G.CreateFrame, private = private, minimizeableFrames = {}} -- Embed CreateFrame into UI as it's used by all elements
 
 -- GLOBALS: _G
 local error, format, type, pairs = error, format, type, pairs
@@ -38,6 +38,10 @@ function addon.UI:RegisterElement(object, etype)
    if type(object) ~= "table" then error("RCLootCouncil.UI:RegisterElement() - 'object' isn't a table.") end
    if type(etype) ~= "string" then error("RCLootCouncil.UI:RegisterElement() - 'type' isn't a string.") end
    private.elements[etype] = object
+end
+
+function addon.UI:RegisterForCombatMinimize (frame)
+   tinsert(self.minimizeableFrames, frame)
 end
 ---------------------------------------------
 -- Internal functions

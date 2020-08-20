@@ -181,7 +181,7 @@ end
 
 function RCVersionCheck:GetFrame()
 	if self.frame then return self.frame end
-	local f = addon:CreateFrame("DefaultRCVersionCheckFrame", "versionCheck", L["RCLootCouncil Version Checker"], 250)
+	local f = addon.UI:NewNamed("Frame", UIParent, "DefaultRCVersionCheckFrame", L["RCLootCouncil Version Checker"], 250)
 
 	local b1 = addon:CreateButton(_G.GUILD, f.content)
 	b1:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", 10, 10)

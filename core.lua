@@ -75,7 +75,6 @@ local userModules = {
 	errorhandler = nil
 }
 
-local frames = {} -- Contains all frames created by RCLootCouncil:CreateFrame()
 local unregisterGuildEvent = false
 local player_relogged = true -- Determines if we potentially need data from the ML due to /rl
 local lootTable = {}
@@ -470,7 +469,7 @@ function RCLootCouncil:ChatCommand(msg)
 			v.x 			= 0
 			v.scale		= 0.8
 		end
-		for _, frame in ipairs(frames) do
+		for _, frame in ipairs(self.UI.minimizeableFrames) do
 			frame:RestorePosition()
 		end
 		db.chatFrameName = self.defaults.profile.chatFrameName
@@ -1115,7 +1114,7 @@ function RCLootCouncil:EnterCombat()
 	end)
 	self.inCombat = true
 	if not db.minimizeInCombat then return end
-	for _,frame in ipairs(frames) do
+	for _,frame in ipairs(self.UI.minimizeableFrames) do
 		if frame:IsVisible() and not frame.combatMinimized then -- only minimize for combat if it isn't already minimized
 			self:Debug("Minimizing for combat")
 			frame.combatMinimized = true -- flag it as being minimized for combat
@@ -1129,7 +1128,7 @@ function RCLootCouncil:LeaveCombat()
 	InterfaceOptionsFrameCancel:SetScript("OnClick", interface_options_old_cancel)
 	self.inCombat = false
 	if not db.minimizeInCombat then return end
-	for _,frame in ipairs(frames) do
+	for _,frame in ipairs(self.UI.minimizeableFrames) do
 		if frame.combatMinimized then -- Reshow it
 			self:Debug("Reshowing frame")
 			frame.combatMinimized = false
@@ -2553,143 +2552,6 @@ function RCLootCouncil:GetUnitClassColoredName(name)
 	end
 end
 
---- Creates a standard frame for RCLootCouncil with title, minimizing, positioning and scaling supported.
---		Adds Minimize(), Maximize() and IsMinimized() functions on the frame, and registers it for hide on combat.
---		SetWidth/SetHeight called on frame will also be called on frame.content.
---		Minimizing is done by double clicking the title. The returned frame and frame.title is NOT hidden.
--- 	Only frame.content is minimized, so put children there for minimize support.
--- @paramsig name, cName, title[, width, height]
--- @param name Global name of the frame.
--- @param cName Name of the module (used for lib-window-1.1 config in db.UI[cName]).
--- @param title The title text.
--- @param width The width of the titleframe, defaults to 250.
--- @param height Height of the frame, defaults to 325.
--- @return The frame object.
-function RCLootCouncil:CreateFrame(name, cName, title, width, height)
-	local f = CreateFrame("Frame", name, UIParent) -- LibWindow seems to work better with nil parent
-	f:Hide()
-	f:SetFrameStrata("DIALOG")
-	f:SetWidth(450)
-	f:SetHeight(height or 325)
-	f:SetScale(db.UI[cName].scale or 1.1)
-	lwin:Embed(f)
-	f:RegisterConfig(db.UI[cName])
-	f:RestorePosition() -- might need to move this to after whereever GetFrame() is called
-	f:MakeDraggable()
-	f:SetScript("OnMouseWheel", function(f,delta) if IsControlKeyDown() then lwin.OnMouseWheel(f,delta) end end)
-
-	local tf = CreateFrame("Frame", "RC_UI_"..cName.."_Title", f)
-	--tf:SetFrameStrata("DIALOG")
-	tf:SetToplevel(true)
-	tf:SetBackdrop({
-	   --   bgFile = AceGUIWidgetLSMlists.background[db.UI.default.background],
-	   --   edgeFile = AceGUIWidgetLSMlists.border[db.UI.default.border],
-		bgFile = AceGUIWidgetLSMlists.background[db.skins[db.currentSkin].background],
-		edgeFile = AceGUIWidgetLSMlists.border[db.skins[db.currentSkin].border],
-	     tile = true, tileSize = 16, edgeSize = 12,
-	     insets = { left = 2, right = 2, top = 2, bottom = 2 }
-	})
-	tf:SetBackdropColor(unpack(db.skins[db.currentSkin].bgColor))
-	tf:SetBackdropBorderColor(unpack(db.skins[db.currentSkin].borderColor))
-	tf:SetHeight(22)
-	tf:EnableMouse()
-	tf:SetMovable(true)
-	tf:SetWidth(width or 250)
-	tf:SetPoint("CENTER",f,"TOP",0,-1)
-	tf:SetScript("OnMouseDown", function(self) self:GetParent():StartMoving() end)
-	tf:SetScript("OnMouseUp", function(self) -- Get double click by trapping time betweem mouse up
-		local frame = self:GetParent()
-		frame:StopMovingOrSizing()
-		if frame:GetScale() and frame:GetLeft() and frame:GetRight() and frame:GetTop() and frame:GetBottom() then
-			frame:SavePosition() -- LibWindow SavePosition has nil error rarely and randomly and I cant really find the root cause. Let's just do a nil check.
-		end
-		if self.lastClick and GetTime() - self.lastClick <= 0.5 then
-			self.lastClick = nil
-			if frame.minimized then frame:Maximize() else frame:Minimize() end
-		else
-			self.lastClick = GetTime()
-		end
-	end)
-
-	local text = tf:CreateFontString(nil,"OVERLAY","GameFontNormal")
-	text:SetPoint("CENTER",tf,"CENTER")
-	text:SetTextColor(1,1,1,1)
-	text:SetText(title)
-	tf.text = text
-	f.title = tf
-
-	local c = CreateFrame("Frame", "RC_UI_"..cName.."_Content", f) -- frame that contains the actual content
-	c:SetBackdrop({
-		bgFile = AceGUIWidgetLSMlists.background[db.skins[db.currentSkin].background],
-		edgeFile = AceGUIWidgetLSMlists.border[db.skins[db.currentSkin].border],
-	   tile = true, tileSize = 255, edgeSize = 16,
-	   insets = { left = 2, right = 2, top = 2, bottom = 2 }
-	})
-	c:EnableMouse(true)
-	c:SetWidth(450)
-	c:SetHeight(height or 325)
-	c:SetBackdropColor(unpack(db.skins[db.currentSkin].bgColor))
-	c:SetBackdropBorderColor(unpack(db.skins[db.currentSkin].borderColor))
-	c:SetPoint("TOPLEFT")
-	c:SetScript("OnMouseDown", function(self) self:GetParent():StartMoving() end)
-	c:SetScript("OnMouseUp", function(self)
-		local frame = self:GetParent()
-		frame:StopMovingOrSizing()
-		if frame:GetScale() and frame:GetLeft() and frame:GetRight() and frame:GetTop() and frame:GetBottom() then
-			frame:SavePosition() -- LibWindow SavePosition has nil error rarely and randomly and I cant really find the root cause. Let's just do a nil check.
-		end
-	end)
-	f.content = c
-	f.minimized = false
-	f.IsMinimized = function(frame) return frame.minimized end
-	f.Minimize = function(frame)
-		self:Debug("Minimize()")
-		if not frame.minimized then
-			frame.content:Hide()
-			frame.minimized = true
-		end
-	end
-	f.Maximize = function(frame)
-		self:Debug("Maximize()")
-		if frame.minimized then
-			frame.content:Show()
-			frame.minimized = false
-		end
-	end
-	-- Support for auto hide in combat:
-	tinsert(frames, f)
-	local old_setwidth = f.SetWidth
-	f.SetWidth = function(self, w) -- Hack so we only have to set width once
-		old_setwidth(self, w)
-		self.content:SetWidth(w)
-	end
-	local old_setheight = f.SetHeight
-	f.SetHeight = function(self, h)
-		old_setheight(self, h)
-		self.content:SetHeight(h)
-	end
-	f.Update = function(self)
-		RCLootCouncil:Debug("UpdateFrame", self:GetName())
-		self.content:SetBackdrop({
-			bgFile = AceGUIWidgetLSMlists.background[db.UI[cName].background],
-			edgeFile = AceGUIWidgetLSMlists.border[db.UI[cName].border],
-			tile = false, tileSize = 64, edgeSize = 12,
-			insets = { left = 2, right = 2, top = 2, bottom = 2 }
-		})
-		self.title:SetBackdrop({
-			bgFile = AceGUIWidgetLSMlists.background[db.UI[cName].background],
-			edgeFile = AceGUIWidgetLSMlists.border[db.UI[cName].border],
-			tile = false, tileSize = 64, edgeSize = 12,
-			insets = { left = 2, right = 2, top = 2, bottom = 2 }
-		})
-		self.content:SetBackdropColor(unpack(db.UI[cName].bgColor))
-		self.content:SetBackdropBorderColor(unpack(db.UI[cName].borderColor))
-		self.title:SetBackdropColor(unpack(db.UI[cName].bgColor))
-		self.title:SetBackdropBorderColor(unpack(db.UI[cName].borderColor))
-	end
-	return f
-end
-
 -- cName is name of the module
 function RCLootCouncil:CreateGameTooltip(cName, parent)
 	local itemTooltip = CreateFrame("GameTooltip", cName.."_ItemTooltip", parent, "GameTooltipTemplate")
@@ -2707,7 +2569,7 @@ end
 --- Update all frames registered with RCLootCouncil:CreateFrame().
 -- Updates all the frame's colors as set in the db.
 function RCLootCouncil:UpdateFrames()
-	for _, frame in pairs(frames) do
+	for _, frame in pairs(self.UI.minimizeableFrames) do
 		frame:Update()
 	end
 end

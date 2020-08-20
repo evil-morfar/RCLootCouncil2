@@ -3,4 +3,5 @@
   <Script file = "Icon.lua" />
   <Script file = "IconBordered.lua" />
   <Script file = "Text.lua" />
+  <Script file = "Frame.lua" />
 </Ui>
