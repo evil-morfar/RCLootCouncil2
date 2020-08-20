@@ -1,7 +1,8 @@
 require "busted.runner"{}
 dofile ".specs/.matchers/isa.lua"
 local addon = {
-   db = {global = { log = {}}},
+   realmName = "Realm1",
+   db = {global = { log = {}, cache={}}},
    defaults = { global = {logMaxEntries = 2000}}
 }
 loadfile(".specs/AddonLoader.lua")(nil,nil, addon).LoadArray{
@@ -14,12 +15,15 @@ loadfile(".specs/AddonLoader.lua")(nil,nil, addon).LoadArray{
    [[Libs\LibDeflate\LibDeflate.lua]],
    [[Classes\Utils\Log.lua]],
    [[Classes\Utils\TempTable.lua]],
+   [[Classes\Data\Player.lua]],
    [[Classes\Services\Comms.lua]]
 }
 
 local Comms = addon.Require("Services.Comms")
+local Player = addon.Require "Data.Player"
 
 describe("#Services #Comms (basics)", function()
+   addon.playerName = Player:Get("Player1")
    local Comms = addon.Require("Services.Comms")
    local Subscription = addon.Require("rx.Subscription")
 
@@ -222,7 +226,7 @@ describe("#Services #Comms", function()
          end)
 
          it("none", function()
-            pending("Requires implementation of playerNames")
+            -- pending("Requires implementation of playerNames")
             Comms:GetSender(Comms.Prefixes.MAIN)("group", "test")
             WoWAPI_FireUpdate(GetTime()+10)
             assert.spy(onReceiveSpy).was_called(1)
@@ -389,11 +393,48 @@ describe("#Services #Comms", function()
       end)
    end)
 
-   it("cross realm", function()
-      pending("Not yet implemented!")
+   it("should send cross realm, send to other realm", function()
+      local s = spy.new(function(dist,sender,data,...) return unpack(data) end)
+      local sub = Comms:Subscribe(Comms.Prefixes.MAIN, "test", s)
+      local target = Player:Get("Player3")
+      local data = "test"
+      Comms:Send{
+         command = "test",
+         data = data,
+         target = target
+      }
+      WoWAPI_FireUpdate(GetTime()+10)
+      assert.spy(s).was_called(0) -- Shouldn't be called as we are not on the same realm as target
+   end)
+   it("should receive cross realm messages", function()
+      local s = spy.new(function(dist,sender,data,...) return unpack(data) end)
+      Comms:Subscribe(Comms.Prefixes.MAIN, "test", s)
+      local target = Player:Get("Player1")
+      local data = "test"
+      addon.realmName = "something else"
+      Comms:Send{
+         command = "test",
+         data = data,
+         target = target
+      }
+      WoWAPI_FireUpdate(GetTime()+10)
+      assert.spy(s).was_called(1)
+      assert.spy(s).returned_with(data)
    end)
 
-   it("specific target", function()
-      pending("Not yet implemented!")
+   it("should send to a specific target", function()
+      local s = spy.new(function(dist,sender,data,...) return unpack(data) end)
+      Comms:Subscribe(Comms.Prefixes.MAIN, "test", s)
+      local target = Player:Get("Player1")
+      addon.realmName = target:GetRealm()
+      local data = "test"
+      Comms:Send{
+         command = "test",
+         data = data,
+         target = target
+      }
+      WoWAPI_FireUpdate(GetTime()+10)
+      assert.spy(s).was_called(1)
+      assert.spy(s).returned_with(data)
    end)
 end)

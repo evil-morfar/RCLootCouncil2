@@ -121,12 +121,12 @@ function private:SendComm(prefix, target, prio, callback, callbackarg, command, 
       self.AceComm:SendCommMessage(prefix, encoded, "GUILD", nil, prio, callback, callbackarg)
    else
       if target:GetRealm() == addon.realmName then -- Our realm
-         self.AceComm:SendCommMessage(prefix, encoded, "WHISPER", target, prio, callback, callbackarg)
+         self.AceComm:SendCommMessage(prefix, encoded, "WHISPER", target:GetName(), prio, callback, callbackarg)
       else
          -- Remake command to be "xrealm" and put target and command in the table
-         data = TempTable:Acquire(target, command, ...)
+         data = TempTable:Acquire(target:GetName(), command, ...)
          serialized = self:Serialize("xrealm", data)
-         compressed = ld:CompressDelfate(serialized, self.compresslevel)
+         compressed = ld:CompressDeflate(serialized, self.compresslevel)
          encoded    = ld:EncodeForWoWAddonChannel(compressed)
          local channel, name = self:GetGroupChannel()
          self.AceComm:SendCommMessage(prefix, encoded, channel, name, prio, callback, callbackarg)
@@ -149,7 +149,7 @@ function private.ReceiveComm(prefix, encodedMsg, distri, sender)
    end
    if command == "xrealm" then
       local target = tremove(data, 1)
-      if target == addon.playerName then
+      if target == addon.playerName:GetName() then
          command = tremove(data, 1)
          self:FireCmd(prefix, distri, sender, command, data)
       end
@@ -170,7 +170,7 @@ function private:GetGroupChannel()
    elseif IsInGroup() then
       return "PARTY"
    else
-      return "WHISPER", addon.playerName.Name -- Fallback
+      return "WHISPER", addon.playerName:GetName() -- Fallback
    end
 end
 
