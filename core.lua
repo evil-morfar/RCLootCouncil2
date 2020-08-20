@@ -1064,7 +1064,7 @@ function RCLootCouncil:Test(num, fullTest, trinketTest)
 				cached = false
 			end
 			for i = 1, n or 0 do
-				local link = select(7, EJ_GetLootInfoByIndex(i))
+				local link = C_EncounterJournal.GetLootInfoByIndex(i).link
 				if link then
 					tinsert(testItems, link)
 				else

@@ -133,7 +133,7 @@ globals = {
 	"UPPER_RIGHT_VERTEX",
 
    -- Namespaces
-   "C_EncounterJounal",
+   "C_EncounterJournal",
    "C_DateAndTime",
    "C_CurrencyInfo",
    "C_Item",
