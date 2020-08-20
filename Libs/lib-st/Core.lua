@@ -1,4 +1,4 @@
-local MAJOR, MINOR = "ScrollingTable", tonumber("15415439531");
+local MAJOR, MINOR = "ScrollingTable", tonumber("15415439532");
 local lib, oldminor = LibStub:NewLibrary(MAJOR, MINOR);
 if not lib then
 	return; -- Already loaded and no upgrade necessary.
@@ -621,7 +621,7 @@ do
 	function lib:CreateST(cols, numRows, rowHeight, highlight, parent)
 		local st = {};
 		self.framecount = self.framecount or 1;
-		local f = CreateFrame("Frame", "ScrollTable" .. self.framecount, parent or UIParent);
+		local f = CreateFrame("Frame", "ScrollTable" .. self.framecount, parent or UIParent, "BackdropTemplate");
 		self.framecount = self.framecount + 1;
 		st.showing = true;
 		st.frame = f;
