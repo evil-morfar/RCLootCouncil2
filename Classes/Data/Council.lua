@@ -34,7 +34,7 @@ end
 -- @args player A 'Data.Player' object
 -- @return The new council lenght
 function Council:Add (player)
-   if not player.name and player.guid then
+   if type(player) ~= "table" or not (player.name and player.guid) then
       error("Not a valid 'Player' object",2)
    end
    private.council[player.guid] = player
@@ -45,7 +45,7 @@ end
 -- @args player A 'Data.Player' object
 -- @return The new council lenght
 function Council:Remove (player)
-   if not player.name and player.guid then
+   if type(player) ~= "table" or not (player.name and player.guid) then
       error("Not a valid 'Player' object",2)
    end
    private.council[player.guid] = nil
