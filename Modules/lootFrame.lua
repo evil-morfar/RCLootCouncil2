@@ -146,7 +146,7 @@ function LootFrame:Update()
 		return self:Disable()
 	end
 	self.EntryManager:Update()
-	self.frame.content:SetHeight(numEntries * ENTRY_HEIGHT + 7)
+	self.frame:SetHeight(numEntries * ENTRY_HEIGHT + 7)
 
 	local firstEntry = self.EntryManager.entries[1]
 	if firstEntry and addon:Getdb().modules["RCLootFrame"].alwaysShowTooltip then
@@ -278,7 +278,7 @@ do
 		-- Expects caller to setup buttons and position.
 		Create = function(entry, parent)
 			entry.width = parent:GetWidth()
-			entry.frame = CreateFrame("Frame", "DefaultRCLootFrameEntry("..LootFrame.EntryManager.numEntries..")", parent)
+			entry.frame = CreateFrame("Frame", "DefaultRCLootFrameEntry("..LootFrame.EntryManager.numEntries..")", parent, "BackdropTemplate")
 			entry.frame:SetWidth(entry.width)
 			entry.frame:SetHeight(ENTRY_HEIGHT)
 			-- We expect entry constructors to place the frame correctly:
@@ -380,7 +380,7 @@ do
 				end
 			end)
 
-			entry.noteEditbox = CreateFrame("EditBox", nil, entry.frame, "AutoCompleteEditBoxTemplate")
+			entry.noteEditbox = CreateFrame("EditBox", nil, entry.frame, "AutoCompleteEditBoxTemplate, BackdropTemplate")
 			entry.noteEditbox:SetMaxLetters(64)
 			entry.noteEditbox:SetBackdrop(LootFrame.frame.title:GetBackdrop())
 			entry.noteEditbox:SetBackdropColor(LootFrame.frame.title:GetBackdropColor())
