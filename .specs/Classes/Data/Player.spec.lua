@@ -1,6 +1,6 @@
 require "busted.runner"()
 local addonName, addon = "RCLootCouncil_Test", {
-   db = {global = { log = {}}},
+   db = {global = { log = {}, cache = {}}},
    defaults = { global = {logMaxEntries = 2000}}
 }
 loadfile(".specs/AddonLoader.lua")(nil, addonName, addon).LoadArray{
@@ -14,8 +14,8 @@ describe("#Player", function()
       Player = addon.Require("Data.Player")
    end)
 
-   describe("Init", function()
-      it("should create 'Data.Player' module", function()
+      describe("Init", function()
+         it("should create 'Data.Player' module", function()
          assert.not_nil(Player)
          assert.is.table(Player)
       end)
@@ -39,18 +39,24 @@ describe("#Player", function()
    end)
 
    describe("class", function()
+      before_each(function()
+         addon.db.global.cache = {}
+      end)
+
       it("stores correct info", function()
          local p = Player:Get("Player2")
-         assert.are.equal(p:GetName(), "Player2-Realm1")
-         assert.are.equal(p:GetClass(), "WARRIOR")
-         assert.are.equal(p:GetShortName(), "Player2")
+         assert.are.equal("Player2-Realm1", p:GetName())
+         assert.are.equal("WARRIOR", p:GetClass())
+         assert.are.equal("Player2", p:GetShortName())
          assert.are.equal(p:GetRealm(), "Realm1")
          assert.are.equal(p:GetGUID(), "Player-AAA-00000002")
+         assert.are.equal("WARRIOR", select(2, p:GetInfo()))
          assert.are.equal(p:GetForTransmit(), "AAA-00000002")
       end)
 
       it("handles invalid input", function()
-         assert.has.errors(function()
+         assert.has.errors(
+         function()
             Player:Get()
          end, "nil invalid player")
          assert.has.errors(function()
@@ -73,9 +79,19 @@ describe("#Player", function()
 
       it("is cached", function()
          local playerA = Player:Get("Player1") -- Should be cached after creation
-         local playerB = Player:Get("Player1") --TODO
+         local playerB = Player:Get("Player1")
          assert.are_not_nil(playerB.cache_time)
          assert.are.equal(playerA, playerB)
+      end)
+
+      it("fetches player from guid", function()
+         local player = Player:Get("Player-AAB-00000003")
+         assert.are.equal("Player3-Realm2", player:GetName())
+      end)
+
+      it("fetches player from stripped guid", function()
+         local player = Player:Get("AAA-00000002")
+         assert.are.equal("Player2-Realm1", player:GetName())
       end)
    end)
 end)
