@@ -13,6 +13,7 @@ addon.responses = {
       TIMEOUT			= { color = {1,0,0,1},				sort = 504,		text = L["Candidate didn't respond on time"], },
       REMOVED			= { color = {0.8,0.5,0,1},			sort = 505,		text = L["Candidate removed"], },
       NOTHING			= { color = {0.5,0.5,0.5,1},		sort = 505,		text = L["Offline or RCLootCouncil not installed"], },
+      BONUSROLL      = { color = {1,0.8,0,1},	      sort = 510,		text = _G.BONUS_ROLL_TOOLTIP_TITLE},
       PASS				= { color = {0.7, 0.7,0.7,1},		sort = 800,		text = _G.PASS,},
       AUTOPASS			= { color = {0.7,0.7,0.7,1},		sort = 801,		text = L["Autopass"], },
       DISABLED			= { color = {0.3,0.35,0.5,1},		sort = 802,		text = L["Candidate has disabled RCLootCouncil"], },
@@ -36,6 +37,8 @@ addon.defaults = {
       logMaxEntries = 2000,
       log = {}, -- debug log
       verTestCandidates = {}, -- Stores received verTests
+      errors = {},
+      cache = {},
    },
    profile = {
       skipCombatLockdown = false,
@@ -95,6 +98,7 @@ addon.defaults = {
       awardLater = false, -- Auto check award later
       requireNotes = false,
       outOfRaid = false,
+      saveBonusRolls = true,
 
       chatFrameName = "DEFAULT_CHAT_FRAME", -- The chat frame to use for :Print()s
 

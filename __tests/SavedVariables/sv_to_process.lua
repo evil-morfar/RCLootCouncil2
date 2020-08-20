@@ -1,3246 +1,2475 @@
 
 RCLootCouncilDB = {
-	["profileKeys"] = {
-		["Vulfpeck - Sulfuras"] = "Default",
-		["Krushem - Sulfuras"] = "Default",
-		["Hashmeerbank - Sulfuras"] = "Default",
-		["Highapm - Sulfuras"] = "Default",
-		["Hashmeer - Sulfuras"] = "Default",
-	},
 	["global"] = {
-		["log"] = {
-			"22:55:10 - LootMethod =  (group)", -- [1]
-			"22:55:11 - Event: (GROUP_LEFT) (2) (Party-4380-000001C9E37A)", -- [2]
-			"22:55:11 - GetML()", -- [3]
-			"22:55:11 - LootMethod =  (group)", -- [4]
-			"22:55:28 - Event: (PLAYER_ENTERING_WORLD) (false) (false)", -- [5]
-			"22:55:28 - GetML()", -- [6]
-			"22:55:28 - LootMethod =  (group)", -- [7]
-			"22:55:28 - Event: (PARTY_LEADER_CHANGED)", -- [8]
-			"22:55:28 - GetML()", -- [9]
-			"22:55:28 - LootMethod =  (group)", -- [10]
-			"22:55:56 - Comm received:^1^SverTest^T^N1^S0.4.2^t^^ (from:) (Latoz) (distri:) (GUILD)", -- [11]
-			"22:56:14 - Comm received:^1^SverTest^T^N1^S0.4.2^t^^ (from:) (Behindyuh) (distri:) (GUILD)", -- [12]
-			"23:03:44 - Comm received:^1^SverTest^T^N1^S0.5.0^N2^SBeta.1^t^^ (from:) (Elôhim) (distri:) (GUILD)", -- [13]
-			"23:03:48 - Comm received:^1^SverTest^T^N1^S0.5.0^N2^SBeta.1^t^^ (from:) (Asepticn) (distri:) (GUILD)", -- [14]
-			"23:08:12 - Comm received:^1^SverTest^T^N1^S0.5.0^N2^SBeta.1^t^^ (from:) (Shadman) (distri:) (GUILD)", -- [15]
-			"23:13:28 - Event: (PLAYER_ENTERING_WORLD) (false) (false)", -- [16]
-			"23:13:28 - GetML()", -- [17]
-			"23:13:28 - LootMethod =  (group)", -- [18]
-			"23:13:28 - Event: (GROUP_LEFT) (2) (Party-4411-0000029AB226)", -- [19]
-			"23:13:28 - GetML()", -- [20]
-			"23:13:28 - LootMethod =  (group)", -- [21]
-			"23:13:39 - Event: (PLAYER_ENTERING_WORLD) (false) (false)", -- [22]
-			"23:13:39 - GetML()", -- [23]
-			"23:13:39 - LootMethod =  (group)", -- [24]
-			"23:13:40 - Event: (PARTY_LEADER_CHANGED)", -- [25]
-			"23:13:40 - GetML()", -- [26]
-			"23:13:40 - LootMethod =  (group)", -- [27]
-			"23:16:31 - Comm received:^1^SverTest^T^N1^S2.14.0^t^^ (from:) (Happyjugs) (distri:) (GUILD)", -- [28]
-			"23:17:51 - Comm received:^1^SverTest^T^N1^S0.5.0^N2^SBeta.1^t^^ (from:) (Asepticn) (distri:) (GUILD)", -- [29]
-			"23:25:00 - Comm received:^1^SverTest^T^N1^S0.3.1^t^^ (from:) (Plainview) (distri:) (GUILD)", -- [30]
-			"23:29:35 - Event: (PLAYER_ENTERING_WORLD) (false) (false)", -- [31]
-			"23:29:35 - GetML()", -- [32]
-			"23:29:35 - LootMethod =  (group)", -- [33]
-			"23:29:35 - Event: (GROUP_LEFT) (2) (Party-4411-0000029ABE9C)", -- [34]
-			"23:29:35 - GetML()", -- [35]
-			"23:29:35 - LootMethod =  (group)", -- [36]
-			"23:30:28 - Event: (PLAYER_ENTERING_WORLD) (false) (false)", -- [37]
-			"23:30:28 - GetML()", -- [38]
-			"23:30:28 - LootMethod =  (group)", -- [39]
-			"23:30:29 - Event: (PARTY_LEADER_CHANGED)", -- [40]
-			"23:30:29 - GetML()", -- [41]
-			"23:30:29 - LootMethod =  (group)", -- [42]
-			"23:30:32 - Event: (PARTY_LEADER_CHANGED)", -- [43]
-			"23:30:32 - GetML()", -- [44]
-			"23:30:32 - LootMethod =  (group)", -- [45]
-			"23:30:37 - Comm received:^1^SverTest^T^N1^S2.14.0^t^^ (from:) (Shway) (distri:) (GUILD)", -- [46]
-			"23:31:35 - Event: (PARTY_LEADER_CHANGED)", -- [47]
-			"23:31:35 - GetML()", -- [48]
-			"23:31:35 - LootMethod =  (group)", -- [49]
-			"23:32:55 - Comm received:^1^SverTest^T^N1^S0.4.2^t^^ (from:) (Malakpierre) (distri:) (GUILD)", -- [50]
-			"23:33:08 - Event: (LOOT_READY) (true)", -- [51]
-			"23:33:08 - Adding to self.lootSlotInfo (1) (nil) (0) (0) (Corpse-0-4380-30-9515-0-0000785A7F) (189)", -- [52]
-			"23:33:08 - Adding to self.lootSlotInfo (2) (|cffffffff|Hitem:17502::::::::60:::::::|h[Frostwolf Soldier's Medal]|h|r) (1) (5) (Corpse-0-4380-30-9515-0-0000785A7F) (5)", -- [53]
-			"23:33:08 - Adding to self.lootSlotInfo (3) (|cffffffff|Hitem:17422::::::::60:::::::|h[Armor Scraps]|h|r) (1) (32) (Corpse-0-4380-30-9515-0-0000785A7F) (32)", -- [54]
-			"23:33:08 - LootOpened", -- [55]
-			"23:33:08 - Event: (LOOT_READY) (true)", -- [56]
-			"23:33:08 - Adding to self.lootSlotInfo (1) (nil) (0) (0) (Corpse-0-4380-30-9515-0-0000785A7F) (189)", -- [57]
-			"23:33:08 - Adding to self.lootSlotInfo (2) (|cffffffff|Hitem:17502::::::::60:::::::|h[Frostwolf Soldier's Medal]|h|r) (1) (5) (Corpse-0-4380-30-9515-0-0000785A7F) (5)", -- [58]
-			"23:33:08 - Adding to self.lootSlotInfo (3) (|cffffffff|Hitem:17422::::::::60:::::::|h[Armor Scraps]|h|r) (1) (32) (Corpse-0-4380-30-9515-0-0000785A7F) (32)", -- [59]
-			"23:33:09 - OnLootSlotCleared() (2) (|cffffffff|Hitem:17502::::::::60:::::::|h[Frostwolf Soldier's Medal]|h|r) (1)", -- [60]
-			"23:33:09 - OnLootSlotCleared() (1) (nil) (0)", -- [61]
-			"23:33:09 - LootClosed", -- [62]
-			"23:34:05 - Comm received:^1^SverTest^T^N1^S2.14.0^t^^ (from:) (Shway) (distri:) (GUILD)", -- [63]
-			"23:45:04 - Comm received:^1^SverTest^T^N1^S0.4.2^t^^ (from:) (Latoz) (distri:) (GUILD)", -- [64]
-			"23:47:47 - Event: (PLAYER_ENTERING_WORLD) (false) (false)", -- [65]
-			"23:47:47 - GetML()", -- [66]
-			"23:47:47 - LootMethod =  (group)", -- [67]
-			"23:47:48 - Event: (GROUP_LEFT) (2) (Party-4380-000001C9FE4E)", -- [68]
-			"23:47:48 - GetML()", -- [69]
-			"23:47:48 - LootMethod =  (group)", -- [70]
-			"23:47:48 - Event: (PARTY_LEADER_CHANGED)", -- [71]
-			"23:47:48 - GetML()", -- [72]
-			"23:47:48 - LootMethod =  (group)", -- [73]
-			"23:48:27 - Event: (PLAYER_ENTERING_WORLD) (false) (false)", -- [74]
-			"23:48:27 - GetML()", -- [75]
-			"23:48:27 - LootMethod =  (group)", -- [76]
-			"23:48:27 - Event: (PARTY_LEADER_CHANGED)", -- [77]
-			"23:48:27 - GetML()", -- [78]
-			"23:48:27 - LootMethod =  (group)", -- [79]
-			"23:52:07 - Comm received:^1^SverTest^T^N1^S0.5.0^N2^SBeta.1^t^^ (from:) (Splice) (distri:) (GUILD)", -- [80]
-			"23:54:21 - Comm received:^1^SverTest^T^N1^S0.5.0^N2^SBeta.1^t^^ (from:) (Topshelf) (distri:) (GUILD)", -- [81]
-			"23:57:30 - Comm received:^1^SverTest^T^N1^S0.4.2^t^^ (from:) (Slimmthicc) (distri:) (GUILD)", -- [82]
-			"23:57:34 - Comm received:^1^SverTest^T^N1^S0.5.0^N2^SBeta.1^t^^ (from:) (Asepticn) (distri:) (GUILD)", -- [83]
-			"00:18:21 - Comm received:^1^SverTest^T^N1^S0.5.0^N2^SBeta.1^t^^ (from:) (Bomann) (distri:) (GUILD)", -- [84]
-			"00:19:47 - Comm received:^1^SverTest^T^N1^S0.4.2^t^^ (from:) (Rykas) (distri:) (GUILD)", -- [85]
-			"00:21:52 - Comm received:^1^SverTest^T^N1^S0.4.2^t^^ (from:) (Redpanda) (distri:) (GUILD)", -- [86]
-			"00:25:56 - Event: (PLAYER_ENTERING_WORLD) (false) (false)", -- [87]
-			"00:25:56 - GetML()", -- [88]
-			"00:25:56 - LootMethod =  (group)", -- [89]
-			"00:25:57 - Event: (GROUP_LEFT) (2) (Party-4411-0000029ACB71)", -- [90]
-			"00:25:57 - GetML()", -- [91]
-			"00:25:57 - LootMethod =  (group)", -- [92]
-			"00:25:57 - Event: (PARTY_LEADER_CHANGED)", -- [93]
-			"00:25:57 - GetML()", -- [94]
-			"00:25:57 - LootMethod =  (group)", -- [95]
-			"00:26:25 - Event: (PLAYER_ENTERING_WORLD) (false) (false)", -- [96]
-			"00:26:25 - GetML()", -- [97]
-			"00:26:25 - LootMethod =  (group)", -- [98]
-			"00:26:25 - Event: (PARTY_LEADER_CHANGED)", -- [99]
-			"00:26:25 - GetML()", -- [100]
-			"00:26:25 - LootMethod =  (group)", -- [101]
-			"00:27:42 - Comm received:^1^SverTest^T^N1^S0.4.2^t^^ (from:) (Redpanda) (distri:) (GUILD)", -- [102]
-			"00:32:05 - Event: (LOOT_READY) (true)", -- [103]
-			"00:32:05 - Adding to self.lootSlotInfo (1) (nil) (0) (0) (Corpse-0-4412-30-12648-0-000078684D) (138)", -- [104]
-			"00:32:05 - Adding to self.lootSlotInfo (2) (|cffffffff|Hitem:17504::::::::60:::::::|h[Frostwolf Commander's Medal]|h|r) (1) (6) (Corpse-0-4412-30-12648-0-000078684D) (6)", -- [105]
-			"00:32:05 - Adding to self.lootSlotInfo (3) (|cffffffff|Hitem:17422::::::::60:::::::|h[Armor Scraps]|h|r) (1) (38) (Corpse-0-4412-30-12648-0-000078684D) (38)", -- [106]
-			"00:32:05 - LootOpened", -- [107]
-			"00:32:05 - Event: (LOOT_READY) (true)", -- [108]
-			"00:32:05 - Adding to self.lootSlotInfo (1) (nil) (0) (0) (Corpse-0-4412-30-12648-0-000078684D) (138)", -- [109]
-			"00:32:05 - Adding to self.lootSlotInfo (2) (|cffffffff|Hitem:17504::::::::60:::::::|h[Frostwolf Commander's Medal]|h|r) (1) (6) (Corpse-0-4412-30-12648-0-000078684D) (6)", -- [110]
-			"00:32:05 - Adding to self.lootSlotInfo (3) (|cffffffff|Hitem:17422::::::::60:::::::|h[Armor Scraps]|h|r) (1) (38) (Corpse-0-4412-30-12648-0-000078684D) (38)", -- [111]
-			"00:32:06 - OnLootSlotCleared() (2) (|cffffffff|Hitem:17504::::::::60:::::::|h[Frostwolf Commander's Medal]|h|r) (1)", -- [112]
-			"00:32:06 - OnLootSlotCleared() (1) (nil) (0)", -- [113]
-			"00:32:06 - LootOpened", -- [114]
-			"00:32:06 - Rebuilding lootSlot (1) (in ClassicModule:LoopOpened)", -- [115]
-			"00:32:06 - Loot uncached when the loot window is opened. Retry in the next frame. (nil)", -- [116]
-			"00:32:06 - LootOpened", -- [117]
-			"00:32:06 - Rebuilding lootSlot (1) (in ClassicModule:LoopOpened)", -- [118]
-			"00:32:06 - Loot uncached when the loot window is opened. Retry in the next frame. (nil)", -- [119]
-			"00:32:06 - LootOpened", -- [120]
-			"00:32:06 - Rebuilding lootSlot (1) (in ClassicModule:LoopOpened)", -- [121]
-			"00:32:06 - Loot uncached when the loot window is opened. Retry in the next frame. (nil)", -- [122]
-			"00:32:06 - LootOpened", -- [123]
-			"00:32:06 - Rebuilding lootSlot (1) (in ClassicModule:LoopOpened)", -- [124]
-			"00:32:06 - Loot uncached when the loot window is opened. Retry in the next frame. (nil)", -- [125]
-			"00:32:06 - LootOpened", -- [126]
-			"00:32:06 - Rebuilding lootSlot (1) (in ClassicModule:LoopOpened)", -- [127]
-			"00:32:06 - Loot uncached when the loot window is opened. Retry in the next frame. (nil)", -- [128]
-			"00:32:06 - LootOpened", -- [129]
-			"00:32:06 - Rebuilding lootSlot (1) (in ClassicModule:LoopOpened)", -- [130]
-			"00:32:06 - Loot uncached when the loot window is opened. Retry in the next frame. (nil)", -- [131]
-			"00:32:06 - LootOpened", -- [132]
-			"00:32:06 - Rebuilding lootSlot (1) (in ClassicModule:LoopOpened)", -- [133]
-			"00:32:06 - Loot uncached when the loot window is opened. Retry in the next frame. (nil)", -- [134]
-			"00:32:06 - LootOpened", -- [135]
-			"00:32:06 - Rebuilding lootSlot (1) (in ClassicModule:LoopOpened)", -- [136]
-			"00:32:06 - Loot uncached when the loot window is opened. Retry in the next frame. (nil)", -- [137]
-			"00:32:06 - LootOpened", -- [138]
-			"00:32:06 - Rebuilding lootSlot (1) (in ClassicModule:LoopOpened)", -- [139]
-			"00:32:06 - Loot uncached when the loot window is opened. Retry in the next frame. (nil)", -- [140]
-			"00:32:06 - OnLootSlotCleared() (3) (|cffffffff|Hitem:17422::::::::60:::::::|h[Armor Scraps]|h|r) (1)", -- [141]
-			"00:32:06 - LootClosed", -- [142]
-			"00:32:06 - LootClosed", -- [143]
-			"00:32:06 - LootOpened", -- [144]
-			"00:32:08 - Event: (LOOT_READY) (true)", -- [145]
-			"00:32:08 - Adding to self.lootSlotInfo (1) (nil) (0) (0) (Corpse-0-4412-30-12648-0-0000786857) (130)", -- [146]
-			"00:32:08 - Adding to self.lootSlotInfo (2) (|cffffffff|Hitem:17504::::::::60:::::::|h[Frostwolf Commander's Medal]|h|r) (1) (10) (Corpse-0-4412-30-12648-0-0000786857) (10)", -- [147]
-			"00:32:08 - Adding to self.lootSlotInfo (3) (|cffffffff|Hitem:17423::::::::60:::::::|h[Storm Crystal]|h|r) (1) (11) (Corpse-0-4412-30-12648-0-0000786857) (11)", -- [148]
-			"00:32:08 - Adding to self.lootSlotInfo (4) (|cffffffff|Hitem:17422::::::::60:::::::|h[Armor Scraps]|h|r) (1) (22) (Corpse-0-4412-30-12648-0-0000786857) (22)", -- [149]
-			"00:32:08 - LootOpened", -- [150]
-			"00:32:08 - Event: (LOOT_READY) (true)", -- [151]
-			"00:32:08 - Adding to self.lootSlotInfo (1) (nil) (0) (0) (Corpse-0-4412-30-12648-0-0000786857) (130)", -- [152]
-			"00:32:08 - Adding to self.lootSlotInfo (2) (|cffffffff|Hitem:17504::::::::60:::::::|h[Frostwolf Commander's Medal]|h|r) (1) (10) (Corpse-0-4412-30-12648-0-0000786857) (10)", -- [153]
-			"00:32:08 - Adding to self.lootSlotInfo (3) (|cffffffff|Hitem:17423::::::::60:::::::|h[Storm Crystal]|h|r) (1) (11) (Corpse-0-4412-30-12648-0-0000786857) (11)", -- [154]
-			"00:32:08 - Adding to self.lootSlotInfo (4) (|cffffffff|Hitem:17422::::::::60:::::::|h[Armor Scraps]|h|r) (1) (22) (Corpse-0-4412-30-12648-0-0000786857) (22)", -- [155]
-			"00:32:09 - OnLootSlotCleared() (2) (|cffffffff|Hitem:17504::::::::60:::::::|h[Frostwolf Commander's Medal]|h|r) (1)", -- [156]
-			"00:32:09 - OnLootSlotCleared() (1) (nil) (0)", -- [157]
-			"00:32:09 - OnLootSlotCleared() (3) (|cffffffff|Hitem:17423::::::::60:::::::|h[Storm Crystal]|h|r) (1)", -- [158]
-			"00:32:10 - OnLootSlotCleared() (4) (|cffffffff|Hitem:17422::::::::60:::::::|h[Armor Scraps]|h|r) (1)", -- [159]
-			"00:32:10 - LootClosed", -- [160]
-			"00:32:10 - LootClosed", -- [161]
-			"00:32:26 - Event: (LOOT_READY) (true)", -- [162]
-			"00:32:26 - Adding to self.lootSlotInfo (1) (nil) (0) (0) (Corpse-0-4412-30-12648-0-0001786869) (159)", -- [163]
-			"00:32:26 - Adding to self.lootSlotInfo (2) (|cffffffff|Hitem:17502::::::::60:::::::|h[Frostwolf Soldier's Medal]|h|r) (1) (6) (Corpse-0-4412-30-12648-0-0001786869) (6)", -- [164]
-			"00:32:26 - Adding to self.lootSlotInfo (3) (|cffffffff|Hitem:17422::::::::60:::::::|h[Armor Scraps]|h|r) (1) (37) (Corpse-0-4412-30-12648-0-0001786869) (37)", -- [165]
-			"00:32:26 - LootOpened", -- [166]
-			"00:32:26 - Event: (LOOT_READY) (true)", -- [167]
-			"00:32:26 - Adding to self.lootSlotInfo (1) (nil) (0) (0) (Corpse-0-4412-30-12648-0-0001786869) (159)", -- [168]
-			"00:32:26 - Adding to self.lootSlotInfo (2) (|cffffffff|Hitem:17502::::::::60:::::::|h[Frostwolf Soldier's Medal]|h|r) (1) (6) (Corpse-0-4412-30-12648-0-0001786869) (6)", -- [169]
-			"00:32:26 - Adding to self.lootSlotInfo (3) (|cffffffff|Hitem:17422::::::::60:::::::|h[Armor Scraps]|h|r) (1) (37) (Corpse-0-4412-30-12648-0-0001786869) (37)", -- [170]
-			"00:32:27 - OnLootSlotCleared() (2) (|cffffffff|Hitem:17502::::::::60:::::::|h[Frostwolf Soldier's Medal]|h|r) (1)", -- [171]
-			"00:32:27 - OnLootSlotCleared() (1) (nil) (0)", -- [172]
-			"00:32:27 - OnLootSlotCleared() (3) (|cffffffff|Hitem:17422::::::::60:::::::|h[Armor Scraps]|h|r) (1)", -- [173]
-			"00:32:27 - LootClosed", -- [174]
-			"00:32:27 - LootClosed", -- [175]
-			"00:34:07 - Comm received:^1^SverTest^T^N1^S0.4.2^t^^ (from:) (Vesseria) (distri:) (GUILD)", -- [176]
-			"00:35:56 - Comm received:^1^SverTest^T^N1^S0.3.1^t^^ (from:) (Agora) (distri:) (GUILD)", -- [177]
-			"00:44:52 - Comm received:^1^SverTest^T^N1^S0.4.2^t^^ (from:) (Redpanda) (distri:) (GUILD)", -- [178]
-			"00:45:51 - Comm received:^1^SverTest^T^N1^S0.4.2^t^^ (from:) (Redpanda) (distri:) (GUILD)", -- [179]
-			"00:51:00 - Comm received:^1^SverTest^T^N1^S0.4.2^t^^ (from:) (Redpanda) (distri:) (GUILD)", -- [180]
-			"00:54:03 - Comm received:^1^SverTest^T^N1^S0.4.2^t^^ (from:) (Redpanda) (distri:) (GUILD)", -- [181]
-			"00:56:07 - Comm received:^1^SverTest^T^N1^S0.3.1^t^^ (from:) (Plainview) (distri:) (GUILD)", -- [182]
-			"00:57:38 - Comm received:^1^SverTest^T^N1^S0.4.2^t^^ (from:) (Redpanda) (distri:) (GUILD)", -- [183]
-			"00:59:35 - Comm received:^1^SverTest^T^N1^S0.4.2^t^^ (from:) (Pidgeethot) (distri:) (GUILD)", -- [184]
-			"01:03:33 - Comm received:^1^SverTest^T^N1^S0.4.2^t^^ (from:) (Behindyuh) (distri:) (GUILD)", -- [185]
-			"01:04:51 - Comm received:^1^SverTest^T^N1^S0.3.1^t^^ (from:) (Plainview) (distri:) (GUILD)", -- [186]
-			"01:05:52 - Comm received:^1^SverTest^T^N1^S0.4.2^t^^ (from:) (Pidgeethot) (distri:) (GUILD)", -- [187]
-			"01:08:05 - Comm received:^1^SverTest^T^N1^S0.4.2^t^^ (from:) (Jerrold) (distri:) (GUILD)", -- [188]
-			"01:10:04 - Comm received:^1^SverTest^T^N1^S0.4.2^t^^ (from:) (Redpanda) (distri:) (GUILD)", -- [189]
-			"01:12:29 - Event: (LOOT_READY) (true)", -- [190]
-			"01:12:29 - Adding to self.lootSlotInfo (1) (nil) (0) (0) (Corpse-0-4412-30-12648-0-0000F871C4) (67)", -- [191]
-			"01:12:29 - Adding to self.lootSlotInfo (2) (|cffffffff|Hitem:17502::::::::60:::::::|h[Frostwolf Soldier's Medal]|h|r) (1) (5) (Corpse-0-4412-30-12648-0-0000F871C4) (5)", -- [192]
-			"01:12:29 - Adding to self.lootSlotInfo (3) (|cffffffff|Hitem:17423::::::::60:::::::|h[Storm Crystal]|h|r) (1) (15) (Corpse-0-4412-30-12648-0-0000F871C4) (15)", -- [193]
-			"01:12:29 - Adding to self.lootSlotInfo (4) (|cffffffff|Hitem:17422::::::::60:::::::|h[Armor Scraps]|h|r) (1) (39) (Corpse-0-4412-30-12648-0-0000F871C4) (39)", -- [194]
-			"01:12:29 - LootOpened", -- [195]
-			"01:12:29 - Event: (LOOT_READY) (true)", -- [196]
-			"01:12:29 - Adding to self.lootSlotInfo (1) (nil) (0) (0) (Corpse-0-4412-30-12648-0-0000F871C4) (67)", -- [197]
-			"01:12:29 - Adding to self.lootSlotInfo (2) (|cffffffff|Hitem:17502::::::::60:::::::|h[Frostwolf Soldier's Medal]|h|r) (1) (5) (Corpse-0-4412-30-12648-0-0000F871C4) (5)", -- [198]
-			"01:12:29 - Adding to self.lootSlotInfo (3) (|cffffffff|Hitem:17423::::::::60:::::::|h[Storm Crystal]|h|r) (1) (15) (Corpse-0-4412-30-12648-0-0000F871C4) (15)", -- [199]
-			"01:12:29 - Adding to self.lootSlotInfo (4) (|cffffffff|Hitem:17422::::::::60:::::::|h[Armor Scraps]|h|r) (1) (39) (Corpse-0-4412-30-12648-0-0000F871C4) (39)", -- [200]
-			"01:12:30 - OnLootSlotCleared() (2) (|cffffffff|Hitem:17502::::::::60:::::::|h[Frostwolf Soldier's Medal]|h|r) (1)", -- [201]
-			"01:12:30 - OnLootSlotCleared() (1) (nil) (0)", -- [202]
-			"01:12:30 - OnLootSlotCleared() (3) (|cffffffff|Hitem:17423::::::::60:::::::|h[Storm Crystal]|h|r) (1)", -- [203]
-			"01:12:31 - OnLootSlotCleared() (4) (|cffffffff|Hitem:17422::::::::60:::::::|h[Armor Scraps]|h|r) (1)", -- [204]
-			"01:12:31 - LootClosed", -- [205]
-			"01:12:31 - LootClosed", -- [206]
-			"01:18:36 - Comm received:^1^SverTest^T^N1^S0.4.2^t^^ (from:) (Booms) (distri:) (GUILD)", -- [207]
-			"01:21:37 - Event: (PLAYER_ENTERING_WORLD) (false) (false)", -- [208]
-			"01:21:37 - GetML()", -- [209]
-			"01:21:37 - LootMethod =  (group)", -- [210]
-			"01:21:37 - Event: (GROUP_LEFT) (2) (Party-4412-0000029AEA9D)", -- [211]
-			"01:21:37 - GetML()", -- [212]
-			"01:21:37 - LootMethod =  (group)", -- [213]
-			"12/17/19", -- [214]
-			"12:51:17 - Logged In", -- [215]
-			"12:51:17 - ML initialized!", -- [216]
-			"12:51:17 - TradeUI enabled", -- [217]
-			"12:51:21 - Highapm-Sulfuras (2.15.1) (nil)", -- [218]
-			"12:51:21 - ActivateSkin (bfa)", -- [219]
-			"12:51:22 - Event: (PLAYER_ENTERING_WORLD) (true) (false)", -- [220]
-			"12:51:22 - GetML()", -- [221]
-			"12:51:22 - LootMethod =  (group)", -- [222]
-			"12:51:22 - UpdatePlayersData()", -- [223]
-			"12:51:22 - ClassicModule enabled (0.4.2) (nil)", -- [224]
-			"12:51:22 - Removing Column (role)", -- [225]
-			"12/17/19", -- [226]
-			"12:52:04 - Logged In", -- [227]
-			"12:52:04 - ML initialized!", -- [228]
-			"12:52:04 - TradeUI enabled", -- [229]
-			"12:52:08 - Hashmeerbank-Sulfuras (2.15.1) (nil)", -- [230]
-			"12:52:08 - ActivateSkin (bfa)", -- [231]
-			"12:52:08 - Event: (PLAYER_ENTERING_WORLD) (true) (false)", -- [232]
-			"12:52:08 - GetML()", -- [233]
-			"12:52:08 - LootMethod =  (group)", -- [234]
-			"12:52:08 - UpdatePlayersData()", -- [235]
-			"12:52:08 - ClassicModule enabled (0.4.2) (nil)", -- [236]
-			"12:52:08 - Removing Column (role)", -- [237]
-			"12/17/19", -- [238]
-			"12:52:18 - Logged In", -- [239]
-			"12:52:18 - ML initialized!", -- [240]
-			"12:52:18 - TradeUI enabled", -- [241]
-			"12:52:21 - Hashmeer-Sulfuras (2.15.1) (nil)", -- [242]
-			"12:52:21 - ActivateSkin (bfa)", -- [243]
-			"12:52:22 - Event: (PLAYER_ENTERING_WORLD) (true) (false)", -- [244]
-			"12:52:22 - GetML()", -- [245]
-			"12:52:22 - LootMethod =  (group)", -- [246]
-			"12:52:22 - UpdatePlayersData()", -- [247]
-			"12:52:22 - ClassicModule enabled (0.4.2) (nil)", -- [248]
-			"12:52:22 - Removing Column (role)", -- [249]
-			"12:52:22 - GetPlayersGuildRank()", -- [250]
-			"12:52:22 - Found Guild Rank: Senior Officer", -- [251]
-			"12:52:23 - Comm received:^1^SverTest^T^N1^S0.4.2^t^^ (from:) (Hashmeer) (distri:) (GUILD)", -- [252]
-			"12:53:55 - Comm received:^1^SverTest^T^N1^S0.4.2^t^^ (from:) (Tankmedaddy) (distri:) (GUILD)", -- [253]
-			"12:57:46 - Event: (PLAYER_ENTERING_WORLD) (false) (false)", -- [254]
-			"12:57:46 - GetML()", -- [255]
-			"12:57:46 - LootMethod =  (group)", -- [256]
-			"12:59:44 - Comm received:^1^SverTest^T^N1^S0.4.2^t^^ (from:) (Schmilsson) (distri:) (GUILD)", -- [257]
-			"13:01:00 - Comm received:^1^SverTest^T^N1^S0.3.1^t^^ (from:) (Agora) (distri:) (GUILD)", -- [258]
-			"13:01:34 - Comm received:^1^SverTest^T^N1^S2.14.0^t^^ (from:) (Derekowns) (distri:) (GUILD)", -- [259]
-			"13:02:08 - Comm received:^1^SverTest^T^N1^S0.4.2^t^^ (from:) (Guptigupta) (distri:) (GUILD)", -- [260]
-			"12/17/19", -- [261]
-			"13:02:23 - Logged In", -- [262]
-			"13:02:23 - ML initialized!", -- [263]
-			"13:02:23 - TradeUI enabled", -- [264]
-			"13:02:28 - Krushem-Sulfuras (2.15.1) (nil)", -- [265]
-			"13:02:28 - ActivateSkin (bfa)", -- [266]
-			"13:02:28 - Event: (PLAYER_ENTERING_WORLD) (true) (false)", -- [267]
-			"13:02:28 - GetML()", -- [268]
-			"13:02:28 - LootMethod =  (group)", -- [269]
-			"13:02:28 - UpdatePlayersData()", -- [270]
-			"13:02:28 - ClassicModule enabled (0.4.2) (nil)", -- [271]
-			"13:02:28 - Removing Column (role)", -- [272]
-			"13:02:28 - GetPlayersGuildRank()", -- [273]
-			"13:02:28 - Found Guild Rank: Officer", -- [274]
-			"13:02:29 - Comm received:^1^SverTest^T^N1^S0.4.2^t^^ (from:) (Krushem) (distri:) (GUILD)", -- [275]
-			"13:06:53 - Comm received:^1^SverTest^T^N1^S0.3.1^t^^ (from:) (Agora) (distri:) (GUILD)", -- [276]
-			"13:07:02 - Comm received:^1^SverTest^T^N1^S0.4.2^t^^ (from:) (Behindyuh) (distri:) (GUILD)", -- [277]
-			"13:09:50 - Comm received:^1^SverTest^T^N1^S2.14.0^t^^ (from:) (Dérek) (distri:) (GUILD)", -- [278]
-			"13:10:49 - Comm received:^1^SverTest^T^N1^S0.4.2^t^^ (from:) (Schmilsson) (distri:) (GUILD)", -- [279]
-			"13:13:14 - Comm received:^1^SverTest^T^N1^S0.5.0^N2^SBeta.1^t^^ (from:) (Birddoggin) (distri:) (GUILD)", -- [280]
-			"13:14:40 - Comm received:^1^SverTest^T^N1^S0.4.2^t^^ (from:) (Schmilsson) (distri:) (GUILD)", -- [281]
-			"13:20:21 - Comm received:^1^SverTest^T^N1^S2.14.0^t^^ (from:) (Derekowns) (distri:) (GUILD)", -- [282]
-			"13:22:27 - Comm received:^1^SverTest^T^N1^S2.14.0^t^^ (from:) (Dérek) (distri:) (GUILD)", -- [283]
-			"13:22:45 - Comm received:^1^SverTest^T^N1^S0.5.0^N2^SBeta.1^t^^ (from:) (Birddoggin) (distri:) (GUILD)", -- [284]
-			"13:23:20 - Comm received:^1^SverTest^T^N1^S2.14.0^t^^ (from:) (Derekowns) (distri:) (GUILD)", -- [285]
-			"13:24:09 - Comm received:^1^SverTest^T^N1^S2.14.0^t^^ (from:) (Dérek) (distri:) (GUILD)", -- [286]
-			"13:26:02 - Comm received:^1^SverTest^T^N1^S2.14.0^t^^ (from:) (Derekowns) (distri:) (GUILD)", -- [287]
-			"12/17/19", -- [288]
-			"13:38:17 - Logged In", -- [289]
-			"13:38:17 - ML initialized!", -- [290]
-			"13:38:17 - TradeUI enabled", -- [291]
-			"13:38:21 - Hashmeer-Sulfuras (2.15.1) (nil)", -- [292]
-			"13:38:21 - ActivateSkin (bfa)", -- [293]
-			"13:38:21 - Event: (PLAYER_ENTERING_WORLD) (true) (false)", -- [294]
-			"13:38:21 - GetML()", -- [295]
-			"13:38:21 - LootMethod =  (group)", -- [296]
-			"13:38:21 - UpdatePlayersData()", -- [297]
-			"13:38:21 - ClassicModule enabled (0.4.2) (nil)", -- [298]
-			"13:38:21 - Removing Column (role)", -- [299]
-			"13:38:21 - GetPlayersGuildRank()", -- [300]
-			"13:38:21 - Found Guild Rank: Senior Officer", -- [301]
-			"13:38:22 - Comm received:^1^SverTest^T^N1^S0.4.2^t^^ (from:) (Hashmeer) (distri:) (GUILD)", -- [302]
-			"13:41:06 - Event: (PLAYER_ENTERING_WORLD) (false) (false)", -- [303]
-			"13:41:06 - GetML()", -- [304]
-			"13:41:06 - LootMethod =  (group)", -- [305]
-			"12/17/19", -- [306]
-			"13:49:36 - Logged In", -- [307]
-			"13:49:36 - ML initialized!", -- [308]
-			"13:49:36 - TradeUI enabled", -- [309]
-			"13:49:40 - Hashmeerbank-Sulfuras (2.15.1) (nil)", -- [310]
-			"13:49:40 - ActivateSkin (bfa)", -- [311]
-			"13:49:40 - Event: (PLAYER_ENTERING_WORLD) (true) (false)", -- [312]
-			"13:49:40 - GetML()", -- [313]
-			"13:49:40 - LootMethod =  (group)", -- [314]
-			"13:49:40 - UpdatePlayersData()", -- [315]
-			"13:49:40 - ClassicModule enabled (0.4.2) (nil)", -- [316]
-			"13:49:40 - Removing Column (role)", -- [317]
-			"12/17/19", -- [318]
-			"13:53:52 - Logged In", -- [319]
-			"13:53:52 - ML initialized!", -- [320]
-			"13:53:52 - TradeUI enabled", -- [321]
-			"13:53:56 - Highapm-Sulfuras (2.15.1) (nil)", -- [322]
-			"13:53:56 - ActivateSkin (bfa)", -- [323]
-			"13:53:57 - Event: (PLAYER_ENTERING_WORLD) (true) (false)", -- [324]
-			"13:53:57 - GetML()", -- [325]
-			"13:53:57 - LootMethod =  (group)", -- [326]
-			"13:53:57 - UpdatePlayersData()", -- [327]
-			"13:53:57 - ClassicModule enabled (0.4.2) (nil)", -- [328]
-			"13:53:57 - Removing Column (role)", -- [329]
-			"13:54:29 - Event: (LOOT_READY) (true)", -- [330]
-			"13:54:29 - LootOpened", -- [331]
-			"13:54:29 - Rebuilding lootSlot (1) (in ClassicModule:LoopOpened)", -- [332]
-			"13:54:29 - Event: (LOOT_READY) (true)", -- [333]
-			"13:54:30 - LootClosed", -- [334]
-			"13:54:30 - LootClosed", -- [335]
-			"12/17/19", -- [336]
-			"13:57:53 - Logged In", -- [337]
-			"13:57:53 - ML initialized!", -- [338]
-			"13:57:53 - TradeUI enabled", -- [339]
-			"13:57:57 - Hashmeer-Sulfuras (2.15.1) (nil)", -- [340]
-			"13:57:57 - ActivateSkin (bfa)", -- [341]
-			"13:57:58 - Event: (PLAYER_ENTERING_WORLD) (true) (false)", -- [342]
-			"13:57:58 - GetML()", -- [343]
-			"13:57:58 - LootMethod =  (group)", -- [344]
-			"13:57:58 - UpdatePlayersData()", -- [345]
-			"13:57:58 - ClassicModule enabled (0.4.2) (nil)", -- [346]
-			"13:57:58 - Removing Column (role)", -- [347]
-			"13:57:58 - GetPlayersGuildRank()", -- [348]
-			"13:57:58 - Found Guild Rank: Senior Officer", -- [349]
-			"13:57:59 - Comm received:^1^SverTest^T^N1^S0.4.2^t^^ (from:) (Hashmeer) (distri:) (GUILD)", -- [350]
-			"14:04:53 - Comm received:^1^SverTest^T^N1^S2.15.1^t^^ (from:) (Cramp) (distri:) (GUILD)", -- [351]
-			"14:07:36 - Comm received:^1^SverTest^T^N1^S0.4.2^t^^ (from:) (Increma) (distri:) (GUILD)", -- [352]
-			"14:08:30 - Comm received:^1^SverTest^T^N1^S2.14.0^t^^ (from:) (Dérek) (distri:) (GUILD)", -- [353]
-			"14:10:02 - Comm received:^1^SverTest^T^N1^S0.4.2^t^^ (from:) (Schmilsson) (distri:) (GUILD)", -- [354]
-			"14:11:15 - Comm received:^1^SverTest^T^N1^S0.4.2^t^^ (from:) (Redpanda) (distri:) (GUILD)", -- [355]
-			"14:11:38 - Comm received:^1^SverTest^T^N1^S0.4.2^t^^ (from:) (Schmilsson) (distri:) (GUILD)", -- [356]
-			"14:17:24 - Comm received:^1^SverTest^T^N1^S0.4.2^t^^ (from:) (Redpanda) (distri:) (GUILD)", -- [357]
-			"14:32:26 - Comm received:^1^SverTest^T^N1^S0.4.2^t^^ (from:) (Tankmedaddy) (distri:) (GUILD)", -- [358]
-			"12/17/19", -- [359]
-			"14:39:56 - Logged In", -- [360]
-			"14:39:56 - ML initialized!", -- [361]
-			"14:39:56 - TradeUI enabled", -- [362]
-			"14:40:00 - Hashmeer-Sulfuras (2.15.1) (nil)", -- [363]
-			"14:40:00 - ActivateSkin (bfa)", -- [364]
-			"14:40:00 - Event: (PLAYER_ENTERING_WORLD) (true) (false)", -- [365]
-			"14:40:00 - GetML()", -- [366]
-			"14:40:00 - LootMethod =  (group)", -- [367]
-			"14:40:00 - UpdatePlayersData()", -- [368]
-			"14:40:00 - ClassicModule enabled (0.4.2) (nil)", -- [369]
-			"14:40:00 - Removing Column (role)", -- [370]
-			"14:40:00 - GetPlayersGuildRank()", -- [371]
-			"14:40:00 - Found Guild Rank: Senior Officer", -- [372]
-			"14:40:02 - Comm received:^1^SverTest^T^N1^S0.4.2^t^^ (from:) (Hashmeer) (distri:) (GUILD)", -- [373]
-			"14:44:55 - Comm received:^1^SverTest^T^N1^S0.4.2^t^^ (from:) (Slimmthicc) (distri:) (GUILD)", -- [374]
-			"14:45:20 - Comm received:^1^SverTest^T^N1^S0.4.2^t^^ (from:) (Jerrold) (distri:) (GUILD)", -- [375]
-			"14:45:28 - Comm received:^1^SverTest^T^N1^S0.4.2^t^^ (from:) (Latoz) (distri:) (GUILD)", -- [376]
-			"14:48:36 - Comm received:^1^SverTest^T^N1^S0.4.2^t^^ (from:) (Bartrarac) (distri:) (GUILD)", -- [377]
-			"14:51:31 - Comm received:^1^SverTest^T^N1^S0.4.2^t^^ (from:) (Renae) (distri:) (GUILD)", -- [378]
-			"14:51:37 - Event: (PLAYER_ENTERING_WORLD) (false) (false)", -- [379]
-			"14:51:37 - GetML()", -- [380]
-			"14:51:37 - LootMethod =  (group)", -- [381]
-			"14:51:37 - Event: (PARTY_LEADER_CHANGED)", -- [382]
-			"14:51:37 - GetML()", -- [383]
-			"14:51:37 - LootMethod =  (freeforall)", -- [384]
-			"14:51:37 - Event: (PARTY_LOOT_METHOD_CHANGED)", -- [385]
-			"14:51:37 - GetML()", -- [386]
-			"14:51:37 - LootMethod =  (freeforall)", -- [387]
-			"14:54:42 - Comm received:^1^SverTest^T^N1^S0.4.2^t^^ (from:) (Schmilsson) (distri:) (GUILD)", -- [388]
-			"14:56:07 - Event: (PARTY_LEADER_CHANGED)", -- [389]
-			"14:56:07 - GetML()", -- [390]
-			"14:56:07 - LootMethod =  (freeforall)", -- [391]
-			"14:56:28 - Event: (PLAYER_ENTERING_WORLD) (false) (false)", -- [392]
-			"14:56:28 - GetML()", -- [393]
-			"14:56:28 - LootMethod =  (freeforall)", -- [394]
-			"14:56:28 - Event: (GROUP_LEFT) (2) (Party-4391-0000029B6EEF)", -- [395]
-			"14:56:28 - GetML()", -- [396]
-			"14:56:28 - LootMethod =  (group)", -- [397]
-			"14:56:53 - Event: (PLAYER_ENTERING_WORLD) (false) (false)", -- [398]
-			"14:56:53 - GetML()", -- [399]
-			"14:56:53 - LootMethod =  (group)", -- [400]
-			"14:56:53 - Event: (PARTY_LEADER_CHANGED)", -- [401]
-			"14:56:53 - GetML()", -- [402]
-			"14:56:53 - LootMethod =  (freeforall)", -- [403]
-			"14:56:53 - Event: (PARTY_LOOT_METHOD_CHANGED)", -- [404]
-			"14:56:53 - GetML()", -- [405]
-			"14:56:53 - LootMethod =  (freeforall)", -- [406]
-			"14:56:55 - Event: (PARTY_LEADER_CHANGED)", -- [407]
-			"14:56:55 - GetML()", -- [408]
-			"14:56:55 - LootMethod =  (freeforall)", -- [409]
-			"14:58:57 - Event: (PARTY_LEADER_CHANGED)", -- [410]
-			"14:58:57 - GetML()", -- [411]
-			"14:58:57 - LootMethod =  (freeforall)", -- [412]
-			"15:01:58 - Comm received:^1^Slooted^T^N1^S13448^t^^ (from:) (Zuba-Herod) (distri:) (INSTANCE_CHAT)", -- [413]
-			"15:07:17 - Comm received:^1^SverTest^T^N1^S0.5.0^N2^SBeta.1^t^^ (from:) (Birddoggin) (distri:) (GUILD)", -- [414]
-			"15:12:35 - Comm received:^1^SverTest^T^N1^S0.4.2^t^^ (from:) (Norgashaks) (distri:) (GUILD)", -- [415]
-			"15:16:48 - Comm received:^1^SverTest^T^N1^S2.15.1^t^^ (from:) (Cramp) (distri:) (GUILD)", -- [416]
-			"15:20:42 - Comm received:^1^SverTest^T^N1^S2.14.0^t^^ (from:) (Dérek) (distri:) (GUILD)", -- [417]
-			"15:26:08 - Comm received:^1^SverTest^T^N1^S2.15.1^t^^ (from:) (Daughty) (distri:) (GUILD)", -- [418]
-			"15:27:04 - Event: (PARTY_LEADER_CHANGED)", -- [419]
-			"15:27:04 - GetML()", -- [420]
-			"15:27:04 - LootMethod =  (freeforall)", -- [421]
-			"15:30:37 - Comm received:^1^SverTest^T^N1^S0.5.0^N2^SBeta.1^t^^ (from:) (Elôhim) (distri:) (GUILD)", -- [422]
-			"15:32:58 - Comm received:^1^SverTest^T^N1^S0.5.0^N2^SBeta.1^t^^ (from:) (Carrihae) (distri:) (GUILD)", -- [423]
-			"15:34:12 - Event: (PLAYER_ENTERING_WORLD) (false) (false)", -- [424]
-			"15:34:12 - GetML()", -- [425]
-			"15:34:12 - LootMethod =  (freeforall)", -- [426]
-			"15:34:12 - Event: (GROUP_LEFT) (2) (Party-4391-0000029B784D)", -- [427]
-			"15:34:12 - GetML()", -- [428]
-			"15:34:12 - LootMethod =  (group)", -- [429]
-			"12/17/19", -- [430]
-			"15:34:49 - Logged In", -- [431]
-			"15:34:49 - ML initialized!", -- [432]
-			"15:34:49 - TradeUI enabled", -- [433]
-			"15:34:50 - Hashmeer-Sulfuras (2.15.1) (nil)", -- [434]
-			"15:34:50 - ActivateSkin (bfa)", -- [435]
-			"15:34:51 - Event: (PLAYER_ENTERING_WORLD) (false) (true)", -- [436]
-			"15:34:51 - GetML()", -- [437]
-			"15:34:51 - LootMethod =  (group)", -- [438]
-			"15:34:51 - UpdatePlayersData()", -- [439]
-			"15:34:51 - GetPlayersGuildRank()", -- [440]
-			"15:34:51 - Found Guild Rank: Senior Officer", -- [441]
-			"15:34:51 - ClassicModule enabled (0.4.2) (nil)", -- [442]
-			"15:34:51 - Removing Column (role)", -- [443]
-			"15:34:51 - Comm received:^1^SverTest^T^N1^S0.4.2^t^^ (from:) (Hashmeer) (distri:) (GUILD)", -- [444]
-			"15:34:55 - Event: (PLAYER_ENTERING_WORLD) (false) (false)", -- [445]
-			"15:34:55 - GetML()", -- [446]
-			"15:34:55 - LootMethod =  (group)", -- [447]
-			"15:34:56 - Event: (PARTY_LEADER_CHANGED)", -- [448]
-			"15:34:56 - GetML()", -- [449]
-			"15:34:56 - LootMethod =  (freeforall)", -- [450]
-			"15:34:56 - Event: (PARTY_LOOT_METHOD_CHANGED)", -- [451]
-			"15:34:56 - GetML()", -- [452]
-			"15:34:56 - LootMethod =  (freeforall)", -- [453]
-			"15:34:58 - Event: (PARTY_LEADER_CHANGED)", -- [454]
-			"15:34:58 - GetML()", -- [455]
-			"15:34:58 - LootMethod =  (freeforall)", -- [456]
-			"15:36:19 - Comm received:^1^SverTest^T^N1^S0.5.0^N2^SBeta.1^t^^ (from:) (Elôhim) (distri:) (GUILD)", -- [457]
-			"15:39:39 - Event: (LOOT_READY) (true)", -- [458]
-			"15:39:39 - Adding to self.lootSlotInfo (1) (nil) (0) (0) (Creature-0-4377-30-1448-11947-0000793BE5) (2436)", -- [459]
-			"15:39:39 - Adding to self.lootSlotInfo (3) (|cffffffff|Hitem:17422::::::::60:::::::|h[Armor Scraps]|h|r) (1) (3) (Creature-0-4377-30-1448-11947-0000793BE5) (3)", -- [460]
-			"15:39:39 - Adding to self.lootSlotInfo (4) (|cffffffff|Hitem:17503::::::::60:::::::|h[Frostwolf Lieutenant's Medal]|h|r) (1) (1) (Creature-0-4377-30-1448-11947-0000793BE5) (1)", -- [461]
-			"15:39:39 - LootOpened", -- [462]
-			"15:39:39 - Rebuilding lootSlot (2) (in ClassicModule:LoopOpened)", -- [463]
-			"15:39:39 - Event: (LOOT_READY) (true)", -- [464]
-			"15:39:39 - Adding to self.lootSlotInfo (1) (nil) (0) (0) (Creature-0-4377-30-1448-11947-0000793BE5) (2436)", -- [465]
-			"15:39:39 - Adding to self.lootSlotInfo (3) (|cffffffff|Hitem:17422::::::::60:::::::|h[Armor Scraps]|h|r) (1) (3) (Creature-0-4377-30-1448-11947-0000793BE5) (3)", -- [466]
-			"15:39:39 - Adding to self.lootSlotInfo (4) (|cffffffff|Hitem:17503::::::::60:::::::|h[Frostwolf Lieutenant's Medal]|h|r) (1) (1) (Creature-0-4377-30-1448-11947-0000793BE5) (1)", -- [467]
-			"15:39:40 - OnLootSlotCleared() (1) (nil) (0)", -- [468]
-			"15:39:40 - LootClosed", -- [469]
-			"15:39:42 - Event: (LOOT_READY) (true)", -- [470]
-			"15:39:42 - Adding to self.lootSlotInfo (1) (|cffffffff|Hitem:17422::::::::60:::::::|h[Armor Scraps]|h|r) (1) (1) (Creature-0-4377-30-1448-13147-0000793BE3) (1)", -- [471]
-			"15:39:42 - Adding to self.lootSlotInfo (2) (|cffffffff|Hitem:17423::::::::60:::::::|h[Storm Crystal]|h|r) (1) (1) (Creature-0-4377-30-1448-13147-0000793BE3) (1)", -- [472]
-			"15:39:43 - LootOpened", -- [473]
-			"15:39:43 - Event: (LOOT_READY) (true)", -- [474]
-			"15:39:43 - Adding to self.lootSlotInfo (1) (|cffffffff|Hitem:17422::::::::60:::::::|h[Armor Scraps]|h|r) (1) (1) (Creature-0-4377-30-1448-13147-0000793BE3) (1)", -- [475]
-			"15:39:43 - Adding to self.lootSlotInfo (2) (|cffffffff|Hitem:17423::::::::60:::::::|h[Storm Crystal]|h|r) (1) (1) (Creature-0-4377-30-1448-13147-0000793BE3) (1)", -- [476]
-			"15:39:43 - OnLootSlotCleared() (2) (|cffffffff|Hitem:17423::::::::60:::::::|h[Storm Crystal]|h|r) (1)", -- [477]
-			"15:39:43 - OnLootSlotCleared() (1) (|cffffffff|Hitem:17422::::::::60:::::::|h[Armor Scraps]|h|r) (1)", -- [478]
-			"15:39:43 - LootClosed", -- [479]
-			"15:39:43 - LootClosed", -- [480]
-			"15:40:19 - Comm received:^1^SverTest^T^N1^S0.5.0^N2^SBeta.1^t^^ (from:) (Asepticn) (distri:) (GUILD)", -- [481]
-			"15:45:02 - Comm received:^1^SverTest^T^N1^S2.15.1^t^^ (from:) (Daughty) (distri:) (GUILD)", -- [482]
-			"15:54:14 - Event: (PLAYER_ENTERING_WORLD) (false) (false)", -- [483]
-			"15:54:14 - GetML()", -- [484]
-			"15:54:14 - LootMethod =  (freeforall)", -- [485]
-			"15:54:14 - Event: (GROUP_LEFT) (2) (Party-4377-000001CA9BC3)", -- [486]
-			"15:54:14 - GetML()", -- [487]
-			"15:54:14 - LootMethod =  (group)", -- [488]
-			"15:54:14 - Event: (PARTY_LEADER_CHANGED)", -- [489]
-			"15:54:14 - GetML()", -- [490]
-			"15:54:14 - LootMethod =  (group)", -- [491]
-			"16:00:13 - Event: (PLAYER_ENTERING_WORLD) (false) (false)", -- [492]
-			"16:00:13 - GetML()", -- [493]
-			"16:00:13 - LootMethod =  (group)", -- [494]
-			"16:00:14 - Event: (PARTY_LEADER_CHANGED)", -- [495]
-			"16:00:14 - GetML()", -- [496]
-			"16:00:14 - LootMethod =  (freeforall)", -- [497]
-			"16:00:14 - Event: (PARTY_LOOT_METHOD_CHANGED)", -- [498]
-			"16:00:14 - GetML()", -- [499]
-			"16:00:14 - LootMethod =  (freeforall)", -- [500]
-			"16:06:24 - Comm received:^1^SverTest^T^N1^S0.4.2^t^^ (from:) (Latoz) (distri:) (GUILD)", -- [501]
-			"16:23:13 - Comm received:^1^SverTest^T^N1^S0.4.2^t^^ (from:) (Scarleet) (distri:) (GUILD)", -- [502]
-			"16:23:45 - Event: (LOOT_READY) (true)", -- [503]
-			"16:23:45 - Adding to self.lootSlotInfo (1) (nil) (0) (0) (Creature-0-4379-30-2285-13137-00007941C0) (2812)", -- [504]
-			"16:23:45 - Adding to self.lootSlotInfo (3) (|cffffffff|Hitem:17504::::::::60:::::::|h[Frostwolf Commander's Medal]|h|r) (1) (1) (Creature-0-4379-30-2285-13137-00007941C0) (1)", -- [505]
-			"16:23:45 - Adding to self.lootSlotInfo (4) (|cffffffff|Hitem:17422::::::::60:::::::|h[Armor Scraps]|h|r) (1) (3) (Creature-0-4379-30-2285-13137-00007941C0) (3)", -- [506]
-			"16:23:46 - LootOpened", -- [507]
-			"16:23:46 - Rebuilding lootSlot (2) (in ClassicModule:LoopOpened)", -- [508]
-			"16:23:46 - Event: (LOOT_READY) (true)", -- [509]
-			"16:23:46 - Adding to self.lootSlotInfo (1) (nil) (0) (0) (Creature-0-4379-30-2285-13137-00007941C0) (2812)", -- [510]
-			"16:23:46 - Adding to self.lootSlotInfo (3) (|cffffffff|Hitem:17504::::::::60:::::::|h[Frostwolf Commander's Medal]|h|r) (1) (1) (Creature-0-4379-30-2285-13137-00007941C0) (1)", -- [511]
-			"16:23:46 - Adding to self.lootSlotInfo (4) (|cffffffff|Hitem:17422::::::::60:::::::|h[Armor Scraps]|h|r) (1) (3) (Creature-0-4379-30-2285-13137-00007941C0) (3)", -- [512]
-			"16:23:46 - LootClosed", -- [513]
-			"16:28:00 - Event: (LOOT_READY) (true)", -- [514]
-			"16:28:00 - Adding to self.lootSlotInfo (1) (nil) (0) (0) (Corpse-0-4379-30-2285-0-0000794862) (168)", -- [515]
-			"16:28:00 - Adding to self.lootSlotInfo (2) (|cffffffff|Hitem:17503::::::::60:::::::|h[Frostwolf Lieutenant's Medal]|h|r) (1) (6) (Corpse-0-4379-30-2285-0-0000794862) (6)", -- [516]
-			"16:28:00 - Adding to self.lootSlotInfo (3) (|cffffffff|Hitem:17422::::::::60:::::::|h[Armor Scraps]|h|r) (1) (30) (Corpse-0-4379-30-2285-0-0000794862) (30)", -- [517]
-			"16:28:00 - LootOpened", -- [518]
-			"16:28:00 - Event: (LOOT_READY) (true)", -- [519]
-			"16:28:00 - Adding to self.lootSlotInfo (1) (nil) (0) (0) (Corpse-0-4379-30-2285-0-0000794862) (168)", -- [520]
-			"16:28:00 - Adding to self.lootSlotInfo (2) (|cffffffff|Hitem:17503::::::::60:::::::|h[Frostwolf Lieutenant's Medal]|h|r) (1) (6) (Corpse-0-4379-30-2285-0-0000794862) (6)", -- [521]
-			"16:28:00 - Adding to self.lootSlotInfo (3) (|cffffffff|Hitem:17422::::::::60:::::::|h[Armor Scraps]|h|r) (1) (30) (Corpse-0-4379-30-2285-0-0000794862) (30)", -- [522]
-			"16:28:00 - LootClosed", -- [523]
-			"16:30:11 - Comm received:^1^SverTest^T^N1^S2.14.0^t^^ (from:) (Derekowns) (distri:) (GUILD)", -- [524]
-			"16:31:11 - Event: (PLAYER_ENTERING_WORLD) (false) (false)", -- [525]
-			"16:31:11 - GetML()", -- [526]
-			"16:31:11 - LootMethod =  (freeforall)", -- [527]
-			"16:31:11 - Event: (GROUP_LEFT) (2) (Party-4379-000001CAA371)", -- [528]
-			"16:31:11 - GetML()", -- [529]
-			"16:31:11 - LootMethod =  (group)", -- [530]
-			"16:37:38 - Comm received:^1^SverTest^T^N1^S2.14.0^t^^ (from:) (Dérek) (distri:) (GUILD)", -- [531]
-			"16:41:23 - Event: (PLAYER_ENTERING_WORLD) (false) (false)", -- [532]
-			"16:41:23 - GetML()", -- [533]
-			"16:41:23 - LootMethod =  (group)", -- [534]
-			"16:41:23 - Event: (PARTY_LEADER_CHANGED)", -- [535]
-			"16:41:23 - GetML()", -- [536]
-			"16:41:23 - LootMethod =  (freeforall)", -- [537]
-			"16:41:23 - Event: (PARTY_LOOT_METHOD_CHANGED)", -- [538]
-			"16:41:23 - GetML()", -- [539]
-			"16:41:23 - LootMethod =  (freeforall)", -- [540]
-			"16:46:24 - Event: (LOOT_READY) (true)", -- [541]
-			"16:46:24 - Adding to self.lootSlotInfo (1) (nil) (0) (0) (Corpse-0-4391-30-3281-0-0000794CAF) (137)", -- [542]
-			"16:46:24 - Adding to self.lootSlotInfo (2) (|cffffffff|Hitem:17502::::::::60:::::::|h[Frostwolf Soldier's Medal]|h|r) (1) (8) (Corpse-0-4391-30-3281-0-0000794CAF) (8)", -- [543]
-			"16:46:24 - Adding to self.lootSlotInfo (3) (|cffffffff|Hitem:17422::::::::60:::::::|h[Armor Scraps]|h|r) (1) (39) (Corpse-0-4391-30-3281-0-0000794CAF) (39)", -- [544]
-			"16:46:24 - LootOpened", -- [545]
-			"16:46:24 - Event: (LOOT_READY) (true)", -- [546]
-			"16:46:24 - Adding to self.lootSlotInfo (1) (nil) (0) (0) (Corpse-0-4391-30-3281-0-0000794CAF) (137)", -- [547]
-			"16:46:24 - Adding to self.lootSlotInfo (2) (|cffffffff|Hitem:17502::::::::60:::::::|h[Frostwolf Soldier's Medal]|h|r) (1) (8) (Corpse-0-4391-30-3281-0-0000794CAF) (8)", -- [548]
-			"16:46:24 - Adding to self.lootSlotInfo (3) (|cffffffff|Hitem:17422::::::::60:::::::|h[Armor Scraps]|h|r) (1) (39) (Corpse-0-4391-30-3281-0-0000794CAF) (39)", -- [549]
-			"16:46:25 - OnLootSlotCleared() (2) (|cffffffff|Hitem:17502::::::::60:::::::|h[Frostwolf Soldier's Medal]|h|r) (1)", -- [550]
-			"16:46:25 - OnLootSlotCleared() (1) (nil) (0)", -- [551]
-			"16:46:25 - OnLootSlotCleared() (3) (|cffffffff|Hitem:17422::::::::60:::::::|h[Armor Scraps]|h|r) (1)", -- [552]
-			"16:46:25 - LootClosed", -- [553]
-			"16:46:25 - LootClosed", -- [554]
-			"16:53:14 - Comm received:^1^SverTest^T^N1^S0.4.2^t^^ (from:) (Alcohlina) (distri:) (GUILD)", -- [555]
-			"17:02:31 - Comm received:^1^SverTest^T^N1^S0.4.2^t^^ (from:) (Latoz) (distri:) (GUILD)", -- [556]
-			"17:03:02 - Event: (PLAYER_ENTERING_WORLD) (false) (false)", -- [557]
-			"17:03:02 - GetML()", -- [558]
-			"17:03:02 - LootMethod =  (freeforall)", -- [559]
-			"17:03:03 - Event: (GROUP_LEFT) (2) (Party-4391-0000029BA871)", -- [560]
-			"17:03:03 - GetML()", -- [561]
-			"17:03:03 - LootMethod =  (group)", -- [562]
-			"17:11:07 - Comm received:^1^SverTest^T^N1^S2.14.0^t^^ (from:) (Derekowns) (distri:) (GUILD)", -- [563]
-			"17:13:42 - Comm received:^1^SverTest^T^N1^S0.3.1^t^^ (from:) (Agora) (distri:) (GUILD)", -- [564]
-			"17:19:02 - Comm received:^1^SverTest^T^N1^S0.4.2^t^^ (from:) (Bountybull) (distri:) (GUILD)", -- [565]
-			"17:20:40 - Comm received:^1^SverTest^T^N1^S2.14.0^t^^ (from:) (Summonu) (distri:) (GUILD)", -- [566]
-			"17:21:39 - Comm received:^1^SverTest^T^N1^S0.5.0^N2^SBeta.1^t^^ (from:) (Asepticn) (distri:) (GUILD)", -- [567]
-			"17:24:06 - Comm received:^1^SverTest^T^N1^S0.5.0^N2^SBeta.1^t^^ (from:) (Splice) (distri:) (GUILD)", -- [568]
-			"12/17/19", -- [569]
-			"17:37:28 - Logged In", -- [570]
-			"17:37:28 - ML initialized!", -- [571]
-			"17:37:28 - TradeUI enabled", -- [572]
-			"17:37:34 - Hashmeer-Sulfuras (2.15.1) (nil)", -- [573]
-			"17:37:34 - ActivateSkin (bfa)", -- [574]
-			"17:37:35 - Event: (PLAYER_ENTERING_WORLD) (true) (false)", -- [575]
-			"17:37:35 - GetML()", -- [576
-			"17:37:35 - LootMethod =  (group)", -- [577]
-			"17:37:35 - UpdatePlayersData()", -- [578]
-			"17:37:35 - Event: (PARTY_LEADER_CHANGED)", -- [579]
-			"17:37:35 - GetML()", -- [580]
-			"17:37:35 - LootMethod =  (group)", -- [581]
-			"17:37:35 - ClassicModule enabled (0.4.2) (nil)", -- [582]
-			"17:37:35 - Removing Column (role)", -- [583]
-			"17:37:35 - GetPlayersGuildRank()", -- [584]
-			"17:37:35 - Found Guild Rank: Senior Officer", -- [585]
-			"17:37:39 - Comm received:^1^SverTest^T^N1^S0.4.2^t^^ (from:) (Hashmeer) (distri:) (GUILD)", -- [586]
-			"17:52:57 - Comm received:^1^SverTest^T^N1^S2.14.0^t^^ (from:) (Derekowns) (distri:) (GUILD)", -- [587]
-			"12/17/19", -- [588]
-			"20:24:24 - Logged In", -- [589]
-			"20:24:24 - ML initialized!", -- [590]
-			"20:24:24 - TradeUI enabled", -- [591]
-			"20:24:28 - Hashmeer-Sulfuras (2.15.1) (nil)", -- [592]
-			"20:24:28 - ActivateSkin (bfa)", -- [593]
-			"20:24:29 - Event: (PLAYER_ENTERING_WORLD) (true) (false)", -- [594]
-			"20:24:29 - GetML()", -- [595]
-			"20:24:29 - LootMethod =  (group)", -- [596]
-			"20:24:29 - UpdatePlayersData()", -- [597]
-			"20:24:30 - ClassicModule enabled (0.4.2) (nil)", -- [598]
-			"20:24:30 - Removing Column (role)", -- [599]
-			"20:24:30 - GetPlayersGuildRank()", -- [600]
-			"20:24:30 - Found Guild Rank: Senior Officer", -- [601]
-			"20:24:30 - Comm received:^1^SverTest^T^N1^S0.4.2^t^^ (from:) (Hashmeer) (distri:) (GUILD)", -- [602]
-			"20:26:54 - Comm received:^1^SverTest^T^N1^S0.4.2^t^^ (from:) (Schmilsson) (distri:) (GUILD)", -- [603]
-			"20:27:06 - Comm received:^1^SverTest^T^N1^S0.4.2^t^^ (from:) (Norgashaks) (distri:) (GUILD)", -- [604]
-			"20:27:09 - Comm received:^1^SverTest^T^N1^S0.5.0^N2^SBeta.1^t^^ (from:) (Bomann) (distri:) (GUILD)", -- [605]
-			"20:27:10 - Comm received:^1^SverTest^T^N1^S2.14.0^t^^ (from:) (Minica) (distri:) (GUILD)", -- [606]
-			"20:27:15 - Comm received:^1^SverTest^T^N1^S2.14.0^t^^ (from:) (Helles) (distri:) (GUILD)", -- [607]
-			"20:27:21 - Comm received:^1^SverTest^T^N1^S0.4.2^t^^ (from:) (Renae) (distri:) (GUILD)", -- [608]
-			"20:27:33 - Comm received:^1^SverTest^T^N1^S2.14.0^t^^ (from:) (Pipers) (distri:) (GUILD)", -- [609]
-			"20:27:34 - Event: (PARTY_LEADER_CHANGED)", -- [610]
-			"20:27:34 - GetML()", -- [611]
-			"20:27:34 - LootMethod =  (group)", -- [612]
-			"20:27:34 - Event: (GROUP_LEFT) (1) (Party-4726-0000029C4E43)", -- [613]
-			"20:27:34 - GetML()", -- [614]
-			"20:27:34 - LootMethod =  (group)", -- [615]
-			"20:27:36 - Event: (PARTY_LEADER_CHANGED)", -- [616]
-			"20:27:36 - GetML()", -- [617]
-			"20:27:36 - LootMethod =  (group)", -- [618]
-			"20:27:49 - Event: (GROUP_LEFT) (1) (Party-4726-0000029C4E4D)", -- [619]
-			"20:27:49 - GetML()", -- [620]
-			"20:27:49 - LootMethod =  (group)", -- [621]
-			"20:27:56 - Comm received:^1^SverTest^T^N1^S0.4.2^t^^ (from:) (Mcmac) (distri:) (GUILD)", -- [622]
-			"20:28:42 - Event: (PARTY_LEADER_CHANGED)", -- [623]
-			"20:28:42 - GetML()", -- [624]
-			"20:28:42 - LootMethod =  (group)", -- [625]
-			"20:29:00 - Comm received:^1^SverTest^T^N1^S0.4.2^t^^ (from:) (Holypally) (distri:) (GUILD)", -- [626]
-			"20:30:16 - Comm received:^1^SverTest^T^N1^S0.3.1^t^^ (from:) (Bellatriix) (distri:) (GUILD)", -- [627]
-			"20:30:25 - Comm received:^1^SverTest^T^N1^S0.3.1^t^^ (from:) (Agora) (distri:) (GUILD)", -- [628]
-			"20:30:48 - Comm received:^1^SverTest^T^N1^S0.3.1^t^^ (from:) (Babycooker) (distri:) (GUILD)", -- [629]
-			"20:31:08 - Comm received:^1^SverTest^T^N1^S0.3.1^t^^ (from:) (Plainview) (distri:) (GUILD)", -- [630]
-			"20:33:10 - Comm received:^1^SverTest^T^N1^S0.3.1^t^^ (from:) (Lrdvoldemort) (distri:) (GUILD)", -- [631]
-			"20:34:40 - Comm received:^1^SverTest^T^N1^S0.4.2^t^^ (from:) (Healwho) (distri:) (GUILD)", -- [632]
-			"20:36:08 - Comm received:^1^SverTest^T^N1^S2.14.0^t^^ (from:) (Derekowns) (distri:) (GUILD)", -- [633]
-			"20:42:33 - Event: (PARTY_LEADER_CHANGED)", -- [634]
-			"20:42:33 - GetML()", -- [635]
-			"20:42:33 - LootMethod =  (group)", -- [636]
-			"20:42:53 - Event: (PARTY_LOOT_METHOD_CHANGED)", -- [637]
-			"20:42:53 - GetML()", -- [638]
-			"20:42:53 - LootMethod =  (master)", -- [639]
-			"20:42:53 - MasterLooter =  (Minica-Sulfuras)", -- [640]
-			"20:42:53 - NewMLCheck (Resetting council as we have a new ML!)", -- [641]
-			"20:42:57 - Comm received:^1^SStartHandleLoot^T^t^^ (from:) (Minica) (distri:) (RAID)", -- [642]
-			"20:42:57 - Comm received:^1^SplayerInfoRequest^T^t^^ (from:) (Minica) (distri:) (RAID)", -- [643]
-			"20:42:57 - Comm received:^1^SMLdb^T^N1^T^SallowNotes^B^Stimeout^N60^SselfVote^B^Sresponses^T^Sdefault^T^t^t^SmultiVote^B^Sbuttons^T^Sdefault^T^SnumButtons^N3^t^t^SnumButtons^N3^t^t^^ (from:) (Minica) (distri:) (RAID)", -- [644]
-			"20:42:57 - OnMLDBReceived", -- [645]
-			"20:42:57 - Comm received:^1^SMLdb^T^N1^T^SallowNotes^B^Stimeout^N60^SselfVote^B^Sresponses^T^Sdefault^T^t^t^SmultiVote^B^Sbuttons^T^Sdefault^T^SnumButtons^N3^t^t^SnumButtons^N3^t^t^^ (from:) (Minica) (distri:) (RAID)", -- [646]
-			"20:42:57 - OnMLDBReceived", -- [647]
-			"20:42:57 - Comm received:^1^Scandidates^T^N1^T^SKaldeezer-Sulfuras^T^Srole^SNONE^Sclass^SDRUID^Srank^S^t^SMinica-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SAgora-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SPipers-Sulfuras^T^Srole^SNONE^Sclass^SDRUID^Srank^S^t^SNorgashaks-Sulfuras^T^Srole^SNONE^Sclass^SWARLOCK^Srank^S^t^SHealwho-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SDerekowns-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SShway-Sulfuras^T^Srole^SNONE^Sclass^SROGUE^Srank^S^t^SHolypally-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SSlimmthicc-Sulfuras^T^Srole^SNONE^Sclass^SPRIEST^Srank^S^t^SHashmeer-Sulfuras^T^Srole^SNONE^Sclass^SWARLOCK^Srank^S^t^SLrdvoldemort-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SMcmac-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SHelles-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SFistandalus-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^STopshelf-Sulfuras^T^Srole^SNONE^Sclass^SDRUID^Srank^S^t^SSchmilsson-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SRenae-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SPlainview-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SGurdurs-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^t^t^^ (from:) (Minica) (distri:) (RAID)", -- [648]
-			"20:42:57 - Comm received:^1^Scouncil^T^N1^T^N1^SMinica-Sulfuras^t^t^^ (from:) (Minica) (distri:) (RAID)", -- [649]
-			"20:42:57 - false = (IsCouncil) (Hashmeer-Sulfuras)", -- [650]
-			"20:43:00 - Event: (PARTY_LOOT_METHOD_CHANGED)", -- [651]
-			"20:43:00 - GetML()", -- [652]
-			"20:43:00 - LootMethod =  (master)", -- [653]
-			"20:43:00 - MasterLooter =  (Hashmeer-Sulfuras)", -- [654]
-			"20:43:00 - NewMLCheck (Resetting council as we have a new ML!)", -- [655]
-			"20:43:08 - Timer MLdb_check passed", -- [656]
-			"20:43:08 - Comm received:^1^Scouncil_request^T^t^^ (from:) (Slimmthicc) (distri:) (WHISPER)", -- [657]
-			"20:43:08 - Comm received:^1^Scouncil_request^T^t^^ (from:) (Hashmeer) (distri:) (WHISPER)", -- [658]
-			"20:43:08 - Comm received:^1^Scouncil_request^T^t^^ (from:) (Kaldeezer) (distri:) (WHISPER)", -- [659]
-			"20:43:08 - Comm received:^1^Scouncil_request^T^t^^ (from:) (Minica) (distri:) (WHISPER)", -- [660]
-			"20:43:08 - Comm received:^1^Scouncil_request^T^t^^ (from:) (Norgashaks) (distri:) (WHISPER)", -- [661]
-			"20:43:08 - Comm received:^1^Scouncil_request^T^t^^ (from:) (Mcmac) (distri:) (WHISPER)", -- [662]
-			"20:43:08 - Comm received:^1^Scouncil_request^T^t^^ (from:) (Plainview) (distri:) (WHISPER)", -- [663]
-			"20:43:08 - Comm received:^1^Scouncil_request^T^t^^ (from:) (Schmilsson) (distri:) (WHISPER)", -- [664]
-			"20:43:08 - Comm received:^1^Scouncil_request^T^t^^ (from:) (Lrdvoldemort) (distri:) (WHISPER)", -- [665]
-			"20:43:08 - Comm received:^1^Scouncil_request^T^t^^ (from:) (Helles) (distri:) (WHISPER)", -- [666]
-			"20:43:08 - Comm received:^1^Scouncil_request^T^t^^ (from:) (Healwho) (distri:) (WHISPER)", -- [667]
-			"20:43:09 - Comm received:^1^Scouncil_request^T^t^^ (from:) (Fistandalus) (distri:) (WHISPER)", -- [668]
-			"20:43:09 - Comm received:^1^Scouncil_request^T^t^^ (from:) (Topshelf) (distri:) (WHISPER)", -- [669]
-			"20:43:15 - Timer MLdb_check passed", -- [670]
-			"20:43:15 - Comm received:^1^Scouncil_request^T^t^^ (from:) (Fistandalus) (distri:) (WHISPER)", -- [671]
-			"20:43:15 - Comm received:^1^Scouncil_request^T^t^^ (from:) (Slimmthicc) (distri:) (WHISPER)", -- [672]
-			"20:43:15 - Comm received:^1^Scouncil_request^T^t^^ (from:) (Hashmeer) (distri:) (WHISPER)", -- [673]
-			"20:43:15 - Comm received:^1^Scouncil_request^T^t^^ (from:) (Topshelf) (distri:) (WHISPER)", -- [674]
-			"20:43:16 - Comm received:^1^Scouncil_request^T^t^^ (from:) (Schmilsson) (distri:) (WHISPER)", -- [675]
-			"20:43:16 - Comm received:^1^Scouncil_request^T^t^^ (from:) (Mcmac) (distri:) (WHISPER)", -- [676]
-			"20:43:16 - Comm received:^1^Scouncil_request^T^t^^ (from:) (Kaldeezer) (distri:) (WHISPER)", -- [677]
-			"20:43:16 - Comm received:^1^Scouncil_request^T^t^^ (from:) (Helles) (distri:) (WHISPER)", -- [678]
-			"20:43:16 - Comm received:^1^Scouncil_request^T^t^^ (from:) (Lrdvoldemort) (distri:) (WHISPER)", -- [679]
-			"20:43:16 - Comm received:^1^Scouncil_request^T^t^^ (from:) (Plainview) (distri:) (WHISPER)", -- [680]
-			"20:43:16 - Comm received:^1^Scouncil_request^T^t^^ (from:) (Healwho) (distri:) (WHISPER)", -- [681]
-			"20:43:16 - Comm received:^1^Scouncil_request^T^t^^ (from:) (Minica) (distri:) (WHISPER)", -- [682]
-			"20:43:16 - Comm received:^1^Scouncil_request^T^t^^ (from:) (Norgashaks) (distri:) (WHISPER)", -- [683]
-			"20:43:34 - Player confirmed usage", -- [684]
-			"20:43:34 - Start handle loot.", -- [685]
-			"20:43:34 - GetCouncilInGroup (Hashmeer-Sulfuras)", -- [686]
-			"20:43:34 - ML:NewML (Hashmeer-Sulfuras)", -- [687]
-			"20:43:34 - UpdateMLdb", -- [688]
-			"20:43:34 - OnMLDBReceived", -- [689]
-			"20:43:34 - UpdateGroup (true)", -- [690]
-			"20:43:34 - ML:AddCandidate (Minica-Sulfuras) (WARRIOR) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [691]
-			"20:43:34 - ML:AddCandidate (Schmilsson-Sulfuras) (WARRIOR) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [692]
-			"20:43:34 - ML:AddCandidate (Gurdurs-Sulfuras) (WARRIOR) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [693]
-			"20:43:34 - ML:AddCandidate (Norgashaks-Sulfuras) (WARLOCK) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [694]
-			"20:43:34 - ML:AddCandidate (Plainview-Sulfuras) (HUNTER) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [695]
-			"20:43:34 - ML:AddCandidate (Derekowns-Sulfuras) (HUNTER) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [696]
-			"20:43:34 - ML:AddCandidate (Mcmac-Sulfuras) (HUNTER) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [697]
-			"20:43:34 - ML:AddCandidate (Shway-Sulfuras) (ROGUE) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [698]
-			"20:43:34 - ML:AddCandidate (Agora-Sulfuras) (WARRIOR) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [699]
-			"20:43:34 - ML:AddCandidate (Renae-Sulfuras) (MAGE) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [700]
-			"20:43:34 - ML:AddCandidate (Kaldeezer-Sulfuras) (DRUID) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [701]
-			"20:43:34 - ML:AddCandidate (Lrdvoldemort-Sulfuras) (MAGE) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [702]
-			"20:43:34 - ML:AddCandidate (Hashmeer-Sulfuras) (WARLOCK) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [703]
-			"20:43:34 - ML:AddCandidate (Topshelf-Sulfuras) (DRUID) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [704]
-			"20:43:34 - ML:AddCandidate (Pipers-Sulfuras) (DRUID) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [705]
-			"20:43:34 - ML:AddCandidate (Slimmthicc-Sulfuras) (PRIEST) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [706]
-			"20:43:34 - ML:AddCandidate (Fistandalus-Sulfuras) (PALADIN) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [707]
-			"20:43:34 - ML:AddCandidate (Helles-Sulfuras) (PALADIN) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [708]
-			"20:43:34 - ML:AddCandidate (Holypally-Sulfuras) (PALADIN) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [709]
-			"20:43:34 - ML:AddCandidate (Healwho-Sulfuras) (PALADIN) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [710]
-			"20:43:34 - GetCouncilInGroup (Topshelf-Sulfuras) (Hashmeer-Sulfuras)", -- [711]
-			"20:43:34 - Comm received:^1^SStartHandleLoot^T^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [712]
-			"20:43:34 - Comm received:^1^SplayerInfoRequest^T^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [713]
-			"20:43:34 - Comm received:^1^SMLdb^T^N1^T^SallowNotes^B^Stimeout^N60^SselfVote^B^Sresponses^T^Sdefault^T^t^t^SmultiVote^B^Sbuttons^T^Sdefault^T^SnumButtons^N3^t^t^SnumButtons^N3^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [714]
-			"20:43:34 - Comm received:^1^SMLdb^T^N1^T^SallowNotes^B^Stimeout^N60^SselfVote^B^Sresponses^T^Sdefault^T^t^t^SmultiVote^B^Sbuttons^T^Sdefault^T^SnumButtons^N3^t^t^SnumButtons^N3^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [715]
-			"20:43:34 - Comm received:^1^Scandidates^T^N1^T^SKaldeezer-Sulfuras^T^Srole^SNONE^Sclass^SDRUID^Srank^S^t^SMinica-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SAgora-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SPipers-Sulfuras^T^Srole^SNONE^Sclass^SDRUID^Srank^S^t^SNorgashaks-Sulfuras^T^Srole^SNONE^Sclass^SWARLOCK^Srank^S^t^SHealwho-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SDerekowns-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SShway-Sulfuras^T^Srole^SNONE^Sclass^SROGUE^Srank^S^t^SHolypally-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SSlimmthicc-Sulfuras^T^Srole^SNONE^Sclass^SPRIEST^Srank^S^t^SHashmeer-Sulfuras^T^Srole^SNONE^Sclass^SWARLOCK^Srank^S^t^SLrdvoldemort-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SMcmac-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SHelles-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SFistandalus-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^STopshelf-Sulfuras^T^Srole^SNONE^Sclass^SDRUID^Srank^S^t^SSchmilsson-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SPlainview-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SRenae-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SGurdurs-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [716]
-			"20:43:34 - Comm received:^1^Scouncil^T^N1^T^N1^STopshelf-Sulfuras^N2^SHashmeer-Sulfuras^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [717]
-			"20:43:34 - true = (IsCouncil) (Hashmeer-Sulfuras)", -- [718]
-			"20:43:34 - GetLootDBStatistics()", -- [719]
-			"20:43:34 - GetGuildRankNum()", -- [720]
-			"20:43:34 - RCVotingFrame (enabled)", -- [721]
-			"20:43:34 - Comm received:^1^Scouncil^T^N1^T^N1^STopshelf-Sulfuras^N2^SHashmeer-Sulfuras^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [722]
-			"20:43:34 - true = (IsCouncil) (Hashmeer-Sulfuras)", -- [723]
-			"20:43:34 - Comm received:^1^SplayerInfo^T^N1^SHealwho-Sulfuras^N2^SPALADIN^N3^SNONE^N4^SMember^N5^B^N6^S<~`300^N7^N56.59^t^^ (from:) (Healwho) (distri:) (WHISPER)", -- [724]
-			"20:43:34 - ML:AddCandidate (Healwho-Sulfuras) (PALADIN) (NONE) (Member) (true) (< 300) (56.59) (nil)", -- [725]
-			"20:43:34 - Comm received:^1^SplayerInfo^T^N1^SKaldeezer-Sulfuras^N2^SDRUID^N3^SNONE^N4^SRaider^N6^N0^N7^N54.82^t^^ (from:) (Kaldeezer) (distri:) (WHISPER)", -- [726]
-			"20:43:34 - ML:AddCandidate (Kaldeezer-Sulfuras) (DRUID) (NONE) (Raider) (nil) (0) (54.82) (nil)", -- [727]
-			"20:43:34 - Comm received:^1^SplayerInfo^T^N1^SSlimmthicc-Sulfuras^N2^SPRIEST^N3^SNONE^N4^SRaider^N5^B^N6^S<~`300^N7^N54.11^t^^ (from:) (Slimmthicc) (distri:) (WHISPER)", -- [728]
-			"20:43:34 - ML:AddCandidate (Slimmthicc-Sulfuras) (PRIEST) (NONE) (Raider) (true) (< 300) (54.11) (nil)", -- [729]
-			"20:43:34 - Comm received:^1^SplayerInfo^T^N1^SHashmeer-Sulfuras^N2^SWARLOCK^N3^SNONE^N4^SSenior~`Officer^N6^N0^N7^N59.89^t^^ (from:) (Hashmeer) (distri:) (WHISPER)", -- [730]
-			"20:43:34 - ML:AddCandidate (Hashmeer-Sulfuras) (WARLOCK) (NONE) (Senior Officer) (nil) (0) (59.89) (nil)", -- [731]
-			"20:43:34 - Comm received:^1^SplayerInfo^T^N1^SNorgashaks-Sulfuras^N2^SWARLOCK^N3^SNONE^N4^SClass~`Leader^N6^N0^N7^N54.42^t^^ (from:) (Norgashaks) (distri:) (WHISPER)", -- [732]
-			"20:43:34 - ML:AddCandidate (Norgashaks-Sulfuras) (WARLOCK) (NONE) (Class Leader) (nil) (0) (54.42) (nil)", -- [733]
-			"20:43:34 - Comm received:^1^SplayerInfo^T^N1^SSchmilsson-Sulfuras^N2^SWARRIOR^N3^SNONE^N4^SSenior~`Officer^N6^N0^N7^N55.83^t^^ (from:) (Schmilsson) (distri:) (WHISPER)", -- [734]
-			"20:43:34 - ML:AddCandidate (Schmilsson-Sulfuras) (WARRIOR) (NONE) (Senior Officer) (nil) (0) (55.83) (nil)", -- [735]
-			"20:43:34 - Comm received:^1^SplayerInfo^T^N1^SLrdvoldemort-Sulfuras^N2^SMAGE^N4^SRaider^N6^N0^N7^N62.76^t^^ (from:) (Lrdvoldemort) (distri:) (WHISPER)", -- [736]
-			"20:43:34 - ML:AddCandidate (Lrdvoldemort-Sulfuras) (MAGE) (nil) (Raider) (nil) (0) (62.76) (nil)", -- [737]
-			"20:43:34 - Comm received:^1^SplayerInfo^T^N1^SMinica-Sulfuras^N2^SWARRIOR^N4^SOfficer^N6^N0^N7^N59.95^t^^ (from:) (Minica) (distri:) (WHISPER)", -- [738]
-			"20:43:34 - ML:AddCandidate (Minica-Sulfuras) (WARRIOR) (nil) (Officer) (nil) (0) (59.95) (nil)", -- [739]
-			"20:43:34 - Comm received:^1^SplayerInfo^T^N1^SHelles-Sulfuras^N2^SPALADIN^N4^SClass~`Leader^N6^N0^N7^N57.67^t^^ (from:) (Helles) (distri:) (WHISPER)", -- [740]
-			"20:43:34 - ML:AddCandidate (Helles-Sulfuras) (PALADIN) (nil) (Class Leader) (nil) (0) (57.67) (nil)", -- [741]
-			"20:43:34 - Comm received:^1^SplayerInfo^T^N1^SMcmac-Sulfuras^N2^SHUNTER^N3^SNONE^N4^SClass~`Leader^N6^N0^N7^N63.61^t^^ (from:) (Mcmac) (distri:) (WHISPER)", -- [742]
-			"20:43:34 - ML:AddCandidate (Mcmac-Sulfuras) (HUNTER) (NONE) (Class Leader) (nil) (0) (63.61) (nil)", -- [743]
-			"20:43:34 - Comm received:^1^SplayerInfo^T^N1^SFistandalus-Sulfuras^N2^SPALADIN^N3^SNONE^N4^STrial^N6^N0^N7^N49.74^t^^ (from:) (Fistandalus) (distri:) (WHISPER)", -- [744]
-			"20:43:34 - ML:AddCandidate (Fistandalus-Sulfuras) (PALADIN) (NONE) (Trial) (nil) (0) (49.74) (nil)", -- [745]
-			"20:43:34 - Comm received:^1^SplayerInfo^T^N1^SPlainview-Sulfuras^N2^SHUNTER^N4^SRaider^N6^N0^N7^N59.78^t^^ (from:) (Plainview) (distri:) (WHISPER)", -- [746]
-			"20:43:34 - ML:AddCandidate (Plainview-Sulfuras) (HUNTER) (nil) (Raider) (nil) (0) (59.78) (nil)", -- [747]
-			"20:43:34 - Comm received:^1^SplayerInfo^T^N1^STopshelf-Sulfuras^N2^SDRUID^N3^SNONE^N4^SGuild~`Master^N6^N0^N7^N60.65^t^^ (from:) (Topshelf) (distri:) (WHISPER)", -- [748]
-			"20:43:34 - ML:AddCandidate (Topshelf-Sulfuras) (DRUID) (NONE) (Guild Master) (nil) (0) (60.65) (nil)", -- [749]
-			"20:43:35 - VotingFrame:Update() without lootTable!!", -- [750]
-			"20:43:38 - VotingFrame:Update() without lootTable!!", -- [751]
-			"20:43:40 - VotingFrame:Update() without lootTable!!", -- [752]
-			"20:43:43 - VotingFrame:Update() without lootTable!!", -- [753]
-			"20:43:44 - Comm received:^1^Scouncil^T^N1^T^N1^STopshelf-Sulfuras^N2^SHashmeer-Sulfuras^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [754]
-			"20:43:44 - true = (IsCouncil) (Hashmeer-Sulfuras)", -- [755]
-			"20:43:44 - Comm received:^1^Scandidates^T^N1^T^SKaldeezer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SRaider^t^SMinica-Sulfuras^T^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SOfficer^t^SAgora-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SPipers-Sulfuras^T^Srole^SNONE^Sclass^SDRUID^Srank^S^t^SNorgashaks-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SClass~`Leader^t^SHealwho-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPALADIN^Senchanter^B^Srank^SMember^t^SDerekowns-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SShway-Sulfuras^T^Srole^SNONE^Sclass^SROGUE^Srank^S^t^SHolypally-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SSlimmthicc-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPRIEST^Senchanter^B^Srank^SRaider^t^SHashmeer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SSenior~`Officer^t^SLrdvoldemort-Sulfuras^T^Senchant_lvl^N0^Sclass^SMAGE^Srank^SRaider^t^SMcmac-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SClass~`Leader^t^SHelles-Sulfuras^T^Senchant_lvl^N0^Sclass^SPALADIN^Srank^SClass~`Leader^t^SFistandalus-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SPALADIN^Srank^STrial^t^STopshelf-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SGuild~`Master^t^SSchmilsson-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SSenior~`Officer^t^SPlainview-Sulfuras^T^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SRaider^t^SRenae-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SGurdurs-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [756]
-			"20:43:44 - UpdateGroup (table: 0000012E6C015380)", -- [757]
-			"20:43:44 - ML:AddCandidate (Minica-Sulfuras) (WARRIOR) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [758]
-			"20:43:44 - ML:AddCandidate (Helles-Sulfuras) (PALADIN) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [759]
-			"20:43:44 - ML:AddCandidate (Plainview-Sulfuras) (HUNTER) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [760]
-			"20:43:44 - ML:AddCandidate (Lrdvoldemort-Sulfuras) (MAGE) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [761]
-			"20:43:44 - GetCouncilInGroup (Topshelf-Sulfuras) (Hashmeer-Sulfuras)", -- [762]
-			"20:43:45 - Comm received:^1^SMLdb^T^N1^T^SallowNotes^B^Stimeout^N60^SselfVote^B^Sresponses^T^Sdefault^T^t^t^SmultiVote^B^Sbuttons^T^Sdefault^T^SnumButtons^N3^t^t^SnumButtons^N3^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [763]
-			"20:43:45 - Comm received:^1^Scandidates^T^N1^T^SKaldeezer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SRaider^t^SMinica-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SAgora-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SPipers-Sulfuras^T^Srole^SNONE^Sclass^SDRUID^Srank^S^t^SNorgashaks-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SClass~`Leader^t^SHealwho-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPALADIN^Senchanter^B^Srank^SMember^t^SDerekowns-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SShway-Sulfuras^T^Srole^SNONE^Sclass^SROGUE^Srank^S^t^SHolypally-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SSlimmthicc-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPRIEST^Senchanter^B^Srank^SRaider^t^SHashmeer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SSenior~`Officer^t^SLrdvoldemort-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SMcmac-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SClass~`Leader^t^SHelles-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SFistandalus-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SPALADIN^Srank^STrial^t^STopshelf-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SGuild~`Master^t^SSchmilsson-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SSenior~`Officer^t^SPlainview-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SRenae-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SGurdurs-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [764]
-			"20:43:45 - Comm received:^1^SplayerInfo^T^N1^SMinica-Sulfuras^N2^SWARRIOR^N4^SOfficer^N6^N0^N7^N59.95^t^^ (from:) (Minica) (distri:) (WHISPER)", -- [765]
-			"20:43:45 - ML:AddCandidate (Minica-Sulfuras) (WARRIOR) (nil) (Officer) (nil) (0) (59.95) (nil)", -- [766]
-			"20:43:45 - Comm received:^1^SplayerInfo^T^N1^SHelles-Sulfuras^N2^SPALADIN^N4^SClass~`Leader^N6^N0^N7^N57.67^t^^ (from:) (Helles) (distri:) (WHISPER)", -- [767]
-			"20:43:45 - ML:AddCandidate (Helles-Sulfuras) (PALADIN) (nil) (Class Leader) (nil) (0) (57.67) (nil)", -- [768]
-			"20:43:45 - Comm received:^1^SplayerInfo^T^N1^SLrdvoldemort-Sulfuras^N2^SMAGE^N4^SRaider^N6^N0^N7^N62.76^t^^ (from:) (Lrdvoldemort) (distri:) (WHISPER)", -- [769]
-			"20:43:45 - ML:AddCandidate (Lrdvoldemort-Sulfuras) (MAGE) (nil) (Raider) (nil) (0) (62.76) (nil)", -- [770]
-			"20:43:45 - Comm received:^1^SplayerInfo^T^N1^SPlainview-Sulfuras^N2^SHUNTER^N4^SRaider^N6^N0^N7^N59.78^t^^ (from:) (Plainview) (distri:) (WHISPER)", -- [771]
-			"20:43:45 - ML:AddCandidate (Plainview-Sulfuras) (HUNTER) (nil) (Raider) (nil) (0) (59.78) (nil)", -- [772]
-			"20:43:54 - UpdateGroup (table: 0000012E6C015380)", -- [773]
-			"20:43:54 - ML:AddCandidate (Minica-Sulfuras) (WARRIOR) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [774]
-			"20:43:54 - ML:AddCandidate (Helles-Sulfuras) (PALADIN) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [775]
-			"20:43:54 - ML:AddCandidate (Plainview-Sulfuras) (HUNTER) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [776]
-			"20:43:54 - ML:AddCandidate (Lrdvoldemort-Sulfuras) (MAGE) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [777]
-			"20:43:54 - GetCouncilInGroup (Topshelf-Sulfuras) (Hashmeer-Sulfuras)", -- [778]
-			"20:43:55 - Comm received:^1^SMLdb^T^N1^T^SallowNotes^B^Stimeout^N60^SselfVote^B^Sresponses^T^Sdefault^T^t^t^SmultiVote^B^Sbuttons^T^Sdefault^T^SnumButtons^N3^t^t^SnumButtons^N3^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [779]
-			"20:43:55 - Comm received:^1^Scandidates^T^N1^T^SKaldeezer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SRaider^t^SMinica-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SAgora-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SPipers-Sulfuras^T^Srole^SNONE^Sclass^SDRUID^Srank^S^t^SNorgashaks-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SClass~`Leader^t^SHealwho-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPALADIN^Senchanter^B^Srank^SMember^t^SDerekowns-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SShway-Sulfuras^T^Srole^SNONE^Sclass^SROGUE^Srank^S^t^SHolypally-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SSlimmthicc-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPRIEST^Senchanter^B^Srank^SRaider^t^SHashmeer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SSenior~`Officer^t^SLrdvoldemort-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SMcmac-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SClass~`Leader^t^SHelles-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SFistandalus-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SPALADIN^Srank^STrial^t^STopshelf-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SGuild~`Master^t^SSchmilsson-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SSenior~`Officer^t^SPlainview-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SRenae-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SGurdurs-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [780]
-			"20:43:55 - Comm received:^1^SplayerInfo^T^N1^SLrdvoldemort-Sulfuras^N2^SMAGE^N4^SRaider^N6^N0^N7^N62.76^t^^ (from:) (Lrdvoldemort) (distri:) (WHISPER)", -- [781]
-			"20:43:55 - ML:AddCandidate (Lrdvoldemort-Sulfuras) (MAGE) (nil) (Raider) (nil) (0) (62.76) (nil)", -- [782]
-			"20:43:55 - Comm received:^1^SplayerInfo^T^N1^SHelles-Sulfuras^N2^SPALADIN^N4^SClass~`Leader^N6^N0^N7^N57.67^t^^ (from:) (Helles) (distri:) (WHISPER)", -- [783]
-			"20:43:55 - ML:AddCandidate (Helles-Sulfuras) (PALADIN) (nil) (Class Leader) (nil) (0) (57.67) (nil)", -- [784]
-			"20:43:55 - Comm received:^1^SplayerInfo^T^N1^SMinica-Sulfuras^N2^SWARRIOR^N4^SOfficer^N6^N0^N7^N59.95^t^^ (from:) (Minica) (distri:) (WHISPER)", -- [785]
-			"20:43:55 - ML:AddCandidate (Minica-Sulfuras) (WARRIOR) (nil) (Officer) (nil) (0) (59.95) (nil)", -- [786]
-			"20:43:55 - Comm received:^1^SplayerInfo^T^N1^SPlainview-Sulfuras^N2^SHUNTER^N4^SRaider^N6^N0^N7^N59.78^t^^ (from:) (Plainview) (distri:) (WHISPER)", -- [787]
-			"20:43:55 - ML:AddCandidate (Plainview-Sulfuras) (HUNTER) (nil) (Raider) (nil) (0) (59.78) (nil)", -- [788]
-			"20:44:04 - UpdateGroup (table: 0000012E6C015380)", -- [789]
-			"20:44:04 - ML:AddCandidate (Minica-Sulfuras) (WARRIOR) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [790]
-			"20:44:04 - ML:AddCandidate (Helles-Sulfuras) (PALADIN) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [791]
-			"20:44:04 - ML:AddCandidate (Plainview-Sulfuras) (HUNTER) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [792]
-			"20:44:04 - ML:AddCandidate (Lrdvoldemort-Sulfuras) (MAGE) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [793]
-			"20:44:04 - GetCouncilInGroup (Topshelf-Sulfuras) (Hashmeer-Sulfuras)", -- [794]
-			"20:44:05 - Comm received:^1^SMLdb^T^N1^T^SallowNotes^B^Stimeout^N60^SselfVote^B^Sresponses^T^Sdefault^T^t^t^SmultiVote^B^Sbuttons^T^Sdefault^T^SnumButtons^N3^t^t^SnumButtons^N3^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [795]
-			"20:44:05 - Comm received:^1^Scandidates^T^N1^T^SKaldeezer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SRaider^t^SMinica-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SAgora-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SPipers-Sulfuras^T^Srole^SNONE^Sclass^SDRUID^Srank^S^t^SNorgashaks-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SClass~`Leader^t^SHealwho-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPALADIN^Senchanter^B^Srank^SMember^t^SDerekowns-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SShway-Sulfuras^T^Srole^SNONE^Sclass^SROGUE^Srank^S^t^SHolypally-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SSlimmthicc-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPRIEST^Senchanter^B^Srank^SRaider^t^SHashmeer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SSenior~`Officer^t^SLrdvoldemort-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SMcmac-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SClass~`Leader^t^SHelles-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SFistandalus-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SPALADIN^Srank^STrial^t^STopshelf-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SGuild~`Master^t^SSchmilsson-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SSenior~`Officer^t^SPlainview-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SRenae-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SGurdurs-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [796]
-			"20:44:05 - Comm received:^1^SplayerInfo^T^N1^SMinica-Sulfuras^N2^SWARRIOR^N4^SOfficer^N6^N0^N7^N59.95^t^^ (from:) (Minica) (distri:) (WHISPER)", -- [797]
-			"20:44:05 - ML:AddCandidate (Minica-Sulfuras) (WARRIOR) (nil) (Officer) (nil) (0) (59.95) (nil)", -- [798]
-			"20:44:05 - Comm received:^1^SplayerInfo^T^N1^SLrdvoldemort-Sulfuras^N2^SMAGE^N4^SRaider^N6^N0^N7^N62.76^t^^ (from:) (Lrdvoldemort) (distri:) (WHISPER)", -- [799]
-			"20:44:05 - ML:AddCandidate (Lrdvoldemort-Sulfuras) (MAGE) (nil) (Raider) (nil) (0) (62.76) (nil)", -- [800]
-			"20:44:05 - Comm received:^1^SplayerInfo^T^N1^SHelles-Sulfuras^N2^SPALADIN^N4^SClass~`Leader^N6^N0^N7^N57.67^t^^ (from:) (Helles) (distri:) (WHISPER)", -- [801]
-			"20:44:05 - ML:AddCandidate (Helles-Sulfuras) (PALADIN) (nil) (Class Leader) (nil) (0) (57.67) (nil)", -- [802]
-			"20:44:05 - Comm received:^1^SplayerInfo^T^N1^SPlainview-Sulfuras^N2^SHUNTER^N4^SRaider^N6^N0^N7^N59.78^t^^ (from:) (Plainview) (distri:) (WHISPER)", -- [803]
-			"20:44:05 - ML:AddCandidate (Plainview-Sulfuras) (HUNTER) (nil) (Raider) (nil) (0) (59.78) (nil)", -- [804]
-			"20:44:16 - VotingFrame:Update() without lootTable!!", -- [805]
-			"20:44:19 - VotingFrame:Update() without lootTable!!", -- [806]
-			"20:44:21 - VotingFrame:Update() without lootTable!!", -- [807]
-			"20:44:30 - UpdateGroup (table: 0000012E6C015380)", -- [808]
-			"20:44:30 - ML:AddCandidate (Minica-Sulfuras) (WARRIOR) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [809]
-			"20:44:30 - ML:AddCandidate (Helles-Sulfuras) (PALADIN) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [810]
-			"20:44:30 - ML:AddCandidate (Plainview-Sulfuras) (HUNTER) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [811]
-			"20:44:30 - ML:AddCandidate (Happyjugs-Sulfuras) (PALADIN) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [812]
-			"20:44:30 - ML:AddCandidate (Lrdvoldemort-Sulfuras) (MAGE) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [813]
-			"20:44:30 - GetCouncilInGroup (Topshelf-Sulfuras) (Hashmeer-Sulfuras)", -- [814]
-			"20:44:31 - Comm received:^1^SMLdb^T^N1^T^SallowNotes^B^Stimeout^N60^SselfVote^B^Sresponses^T^Sdefault^T^t^t^SmultiVote^B^Sbuttons^T^Sdefault^T^SnumButtons^N3^t^t^SnumButtons^N3^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [815]
-			"20:44:31 - Comm received:^1^Scandidates^T^N1^T^SKaldeezer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SRaider^t^SMinica-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SAgora-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SPipers-Sulfuras^T^Srole^SNONE^Sclass^SDRUID^Srank^S^t^SNorgashaks-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SClass~`Leader^t^SHealwho-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPALADIN^Senchanter^B^Srank^SMember^t^SDerekowns-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SShway-Sulfuras^T^Srole^SNONE^Sclass^SROGUE^Srank^S^t^SHappyjugs-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SHolypally-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SSlimmthicc-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPRIEST^Senchanter^B^Srank^SRaider^t^SHashmeer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SSenior~`Officer^t^SLrdvoldemort-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SMcmac-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SClass~`Leader^t^SHelles-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SFistandalus-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SPALADIN^Srank^STrial^t^STopshelf-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SGuild~`Master^t^SSchmilsson-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SSenior~`Officer^t^SPlainview-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SRenae-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SGurdurs-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [816]
-			"20:44:31 - Comm received:^1^SplayerInfo^T^N1^SMinica-Sulfuras^N2^SWARRIOR^N4^SOfficer^N6^N0^N7^N59.95^t^^ (from:) (Minica) (distri:) (WHISPER)", -- [817]
-			"20:44:31 - ML:AddCandidate (Minica-Sulfuras) (WARRIOR) (nil) (Officer) (nil) (0) (59.95) (nil)", -- [818]
-			"20:44:31 - Comm received:^1^SplayerInfo^T^N1^SPlainview-Sulfuras^N2^SHUNTER^N4^SRaider^N6^N0^N7^N59.78^t^^ (from:) (Plainview) (distri:) (WHISPER)", -- [819]
-			"20:44:31 - ML:AddCandidate (Plainview-Sulfuras) (HUNTER) (nil) (Raider) (nil) (0) (59.78) (nil)", -- [820]
-			"20:44:31 - Comm received:^1^SplayerInfo^T^N1^SHappyjugs-Sulfuras^N2^SPALADIN^N4^SRaider^N6^N0^N7^N58.35^t^^ (from:) (Happyjugs) (distri:) (WHISPER)", -- [821]
-			"20:44:31 - ML:AddCandidate (Happyjugs-Sulfuras) (PALADIN) (nil) (Raider) (nil) (0) (58.35) (nil)", -- [822]
-			"20:44:31 - Comm received:^1^SplayerInfo^T^N1^SHelles-Sulfuras^N2^SPALADIN^N4^SClass~`Leader^N6^N0^N7^N57.67^t^^ (from:) (Helles) (distri:) (WHISPER)", -- [823]
-			"20:44:31 - ML:AddCandidate (Helles-Sulfuras) (PALADIN) (nil) (Class Leader) (nil) (0) (57.67) (nil)", -- [824]
-			"20:44:31 - Comm received:^1^SplayerInfo^T^N1^SLrdvoldemort-Sulfuras^N2^SMAGE^N4^SRaider^N6^N0^N7^N62.76^t^^ (from:) (Lrdvoldemort) (distri:) (WHISPER)", -- [825]
-			"20:44:31 - ML:AddCandidate (Lrdvoldemort-Sulfuras) (MAGE) (nil) (Raider) (nil) (0) (62.76) (nil)", -- [826]
-			"20:44:32 - VotingFrame:Update() without lootTable!!", -- [827]
-			"20:44:36 - Comm received:^1^Scouncil_request^T^t^^ (from:) (Happyjugs) (distri:) (WHISPER)", -- [828]
-			"20:44:36 - Comm received:^1^Scouncil_request^T^t^^ (from:) (Happyjugs) (distri:) (WHISPER)", -- [829]
-			"20:44:36 - Comm received:^1^Scouncil^T^N1^T^N1^STopshelf-Sulfuras^N2^SHashmeer-Sulfuras^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [830]
-			"20:44:36 - true = (IsCouncil) (Hashmeer-Sulfuras)", -- [831]
-			"20:44:36 - Comm received:^1^Scouncil^T^N1^T^N1^STopshelf-Sulfuras^N2^SHashmeer-Sulfuras^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [832]
-			"20:44:36 - true = (IsCouncil) (Hashmeer-Sulfuras)", -- [833]
-			"20:44:36 - VotingFrame:Update() without lootTable!!", -- [834]
-			"20:44:40 - VotingFrame:Update() without lootTable!!", -- [835]
-			"20:44:45 - VotingFrame:Update() without lootTable!!", -- [836]
-			"20:44:46 - VotingFrame:Update() without lootTable!!", -- [837]
-			"20:44:48 - VotingFrame:Update() without lootTable!!", -- [838]
-			"20:44:52 - VotingFrame:Update() without lootTable!!", -- [839]
-			"20:44:54 - VotingFrame:Update() without lootTable!!", -- [840]
-			"20:44:57 - VotingFrame:Update() without lootTable!!", -- [841]
-			"20:45:09 - VotingFrame:Update() without lootTable!!", -- [842]
-			"20:45:10 - VotingFrame:Update() without lootTable!!", -- [843]
-			"20:45:23 - Comm received:^1^SverTest^T^N1^S0.4.2^t^^ (from:) (Renae) (distri:) (GUILD)", -- [844]
-			"20:45:26 - Comm received:^1^SverTest^T^N1^S0.4.2^t^^ (from:) (Gurdurs) (distri:) (GUILD)", -- [845]
-			"20:45:26 - UpdateGroup (table: 0000012E6C015380)", -- [846]
-			"20:45:26 - ML:AddCandidate (Minica-Sulfuras) (WARRIOR) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [847]
-			"20:45:26 - ML:AddCandidate (Helles-Sulfuras) (PALADIN) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [848]
-			"20:45:26 - ML:AddCandidate (Plainview-Sulfuras) (HUNTER) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [849]
-			"20:45:26 - ML:AddCandidate (Happyjugs-Sulfuras) (PALADIN) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [850]
-			"20:45:26 - ML:AddCandidate (Lrdvoldemort-Sulfuras) (MAGE) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [851]
-			"20:45:26 - GetCouncilInGroup (Topshelf-Sulfuras) (Hashmeer-Sulfuras)", -- [852]
-			"20:45:27 - Comm received:^1^SMLdb^T^N1^T^SallowNotes^B^Stimeout^N60^SselfVote^B^Sresponses^T^Sdefault^T^t^t^SmultiVote^B^Sbuttons^T^Sdefault^T^SnumButtons^N3^t^t^SnumButtons^N3^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [853]
-			"20:45:27 - Comm received:^1^Scandidates^T^N1^T^SKaldeezer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SRaider^t^SMinica-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SAgora-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SPipers-Sulfuras^T^Srole^SNONE^Sclass^SDRUID^Srank^S^t^SNorgashaks-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SClass~`Leader^t^SHealwho-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPALADIN^Senchanter^B^Srank^SMember^t^SDerekowns-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SShway-Sulfuras^T^Srole^SNONE^Sclass^SROGUE^Srank^S^t^SHappyjugs-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SHolypally-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SSlimmthicc-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPRIEST^Senchanter^B^Srank^SRaider^t^SHashmeer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SSenior~`Officer^t^SLrdvoldemort-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SMcmac-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SClass~`Leader^t^SHelles-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SFistandalus-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SPALADIN^Srank^STrial^t^STopshelf-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SGuild~`Master^t^SSchmilsson-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SSenior~`Officer^t^SPlainview-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SRenae-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SGurdurs-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [854]
-			"20:45:27 - Comm received:^1^SplayerInfo^T^N1^SMinica-Sulfuras^N2^SWARRIOR^N4^SOfficer^N6^N0^N7^N59.95^t^^ (from:) (Minica) (distri:) (WHISPER)", -- [855]
-			"20:45:27 - ML:AddCandidate (Minica-Sulfuras) (WARRIOR) (nil) (Officer) (nil) (0) (59.95) (nil)", -- [856]
-			"20:45:27 - Comm received:^1^SplayerInfo^T^N1^SPlainview-Sulfuras^N2^SHUNTER^N4^SRaider^N6^N0^N7^N59.78^t^^ (from:) (Plainview) (distri:) (WHISPER)", -- [857]
-			"20:45:27 - ML:AddCandidate (Plainview-Sulfuras) (HUNTER) (nil) (Raider) (nil) (0) (59.78) (nil)", -- [858]
-			"20:45:27 - Comm received:^1^SplayerInfo^T^N1^SLrdvoldemort-Sulfuras^N2^SMAGE^N4^SRaider^N6^N0^N7^N62.76^t^^ (from:) (Lrdvoldemort) (distri:) (WHISPER)", -- [859]
-			"20:45:27 - ML:AddCandidate (Lrdvoldemort-Sulfuras) (MAGE) (nil) (Raider) (nil) (0) (62.76) (nil)", -- [860]
-			"20:45:27 - Comm received:^1^SplayerInfo^T^N1^SHelles-Sulfuras^N2^SPALADIN^N4^SClass~`Leader^N6^N0^N7^N57.67^t^^ (from:) (Helles) (distri:) (WHISPER)", -- [861]
-			"20:45:27 - ML:AddCandidate (Helles-Sulfuras) (PALADIN) (nil) (Class Leader) (nil) (0) (57.67) (nil)", -- [862]
-			"20:45:27 - Comm received:^1^SplayerInfo^T^N1^SHappyjugs-Sulfuras^N2^SPALADIN^N4^SRaider^N6^N0^N7^N58.35^t^^ (from:) (Happyjugs) (distri:) (WHISPER)", -- [863]
-			"20:45:27 - ML:AddCandidate (Happyjugs-Sulfuras) (PALADIN) (nil) (Raider) (nil) (0) (58.35) (nil)", -- [864]
-			"20:45:35 - Comm received:^1^Scouncil_request^T^t^^ (from:) (Renae) (distri:) (WHISPER)", -- [865]
-			"20:45:35 - Comm received:^1^Scouncil_request^T^t^^ (from:) (Renae) (distri:) (WHISPER)", -- [866]
-			"20:45:35 - Comm received:^1^SverTest^T^N1^S0.5.0^N2^SBeta.1^t^^ (from:) (Birddoggin) (distri:) (GUILD)", -- [867]
-			"20:45:35 - Comm received:^1^Scouncil^T^N1^T^N1^STopshelf-Sulfuras^N2^SHashmeer-Sulfuras^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [868]
-			"20:45:35 - true = (IsCouncil) (Hashmeer-Sulfuras)", -- [869]
-			"20:45:35 - Comm received:^1^Scouncil^T^N1^T^N1^STopshelf-Sulfuras^N2^SHashmeer-Sulfuras^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [870]
-			"20:45:35 - true = (IsCouncil) (Hashmeer-Sulfuras)", -- [871]
-			"20:45:39 - VotingFrame:Update() without lootTable!!", -- [872]
-			"20:45:40 - VotingFrame:Update() without lootTable!!", -- [873]
-			"20:45:41 - VotingFrame:Update() without lootTable!!", -- [874]
-			"20:45:43 - VotingFrame:Update() without lootTable!!", -- [875]
-			"20:45:45 - VotingFrame:Update() without lootTable!!", -- [876]
-			"20:45:48 - UpdateGroup (table: 0000012E6C015380)", -- [877]
-			"20:45:48 - ML:AddCandidate (Minica-Sulfuras) (WARRIOR) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [878]
-			"20:45:48 - ML:AddCandidate (Helles-Sulfuras) (PALADIN) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [879]
-			"20:45:48 - ML:AddCandidate (Plainview-Sulfuras) (HUNTER) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [880]
-			"20:45:48 - ML:AddCandidate (Happyjugs-Sulfuras) (PALADIN) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [881]
-			"20:45:48 - ML:AddCandidate (Lrdvoldemort-Sulfuras) (MAGE) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [882]
-			"20:45:48 - ML:AddCandidate (Odarnwewiped-Sulfuras) (PRIEST) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [883]
-			"20:45:48 - GetCouncilInGroup (Topshelf-Sulfuras) (Hashmeer-Sulfuras)", -- [884]
-			"20:45:48 - Comm received:^1^SMLdb^T^N1^T^SallowNotes^B^Stimeout^N60^SselfVote^B^Sresponses^T^Sdefault^T^t^t^SmultiVote^B^Sbuttons^T^Sdefault^T^SnumButtons^N3^t^t^SnumButtons^N3^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [885]
-			"20:45:48 - Comm received:^1^Scandidates^T^N1^T^SKaldeezer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SRaider^t^SMinica-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SAgora-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SPipers-Sulfuras^T^Srole^SNONE^Sclass^SDRUID^Srank^S^t^SNorgashaks-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SClass~`Leader^t^SHealwho-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPALADIN^Senchanter^B^Srank^SMember^t^SDerekowns-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SShway-Sulfuras^T^Srole^SNONE^Sclass^SROGUE^Srank^S^t^SOdarnwewiped-Sulfuras^T^Srole^SNONE^Sclass^SPRIEST^Srank^S^t^SHappyjugs-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SHolypally-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SSlimmthicc-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPRIEST^Senchanter^B^Srank^SRaider^t^SHashmeer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SSenior~`Officer^t^SLrdvoldemort-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SMcmac-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SClass~`Leader^t^SHelles-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SFistandalus-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SPALADIN^Srank^STrial^t^STopshelf-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SGuild~`Master^t^SSchmilsson-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SSenior~`Officer^t^SPlainview-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SRenae-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SGurdurs-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [886]
-			"20:45:48 - Comm received:^1^SplayerInfo^T^N1^SMinica-Sulfuras^N2^SWARRIOR^N4^SOfficer^N6^N0^N7^N59.95^t^^ (from:) (Minica) (distri:) (WHISPER)", -- [887]
-			"20:45:48 - ML:AddCandidate (Minica-Sulfuras) (WARRIOR) (nil) (Officer) (nil) (0) (59.95) (nil)", -- [888]
-			"20:45:48 - Comm received:^1^SplayerInfo^T^N1^SLrdvoldemort-Sulfuras^N2^SMAGE^N4^SRaider^N6^N0^N7^N62.76^t^^ (from:) (Lrdvoldemort) (distri:) (WHISPER)", -- [889]
-			"20:45:48 - ML:AddCandidate (Lrdvoldemort-Sulfuras) (MAGE) (nil) (Raider) (nil) (0) (62.76) (nil)", -- [890]
-			"20:45:48 - Comm received:^1^SplayerInfo^T^N1^SHelles-Sulfuras^N2^SPALADIN^N4^SClass~`Leader^N6^N0^N7^N57.67^t^^ (from:) (Helles) (distri:) (WHISPER)", -- [891]
-			"20:45:48 - ML:AddCandidate (Helles-Sulfuras) (PALADIN) (nil) (Class Leader) (nil) (0) (57.67) (nil)", -- [892]
-			"20:45:48 - Comm received:^1^SplayerInfo^T^N1^SPlainview-Sulfuras^N2^SHUNTER^N4^SRaider^N6^N0^N7^N59.78^t^^ (from:) (Plainview) (distri:) (WHISPER)", -- [893]
-			"20:45:48 - ML:AddCandidate (Plainview-Sulfuras) (HUNTER) (nil) (Raider) (nil) (0) (59.78) (nil)", -- [894]
-			"20:45:48 - Comm received:^1^SplayerInfo^T^N1^SHappyjugs-Sulfuras^N2^SPALADIN^N4^SRaider^N6^N0^N7^N58.35^t^^ (from:) (Happyjugs) (distri:) (WHISPER)", -- [895]
-			"20:45:48 - ML:AddCandidate (Happyjugs-Sulfuras) (PALADIN) (nil) (Raider) (nil) (0) (58.35) (nil)", -- [896]
-			"20:45:57 - VotingFrame:Update() without lootTable!!", -- [897]
-			"20:46:08 - VotingFrame:Update() without lootTable!!", -- [898]
-			"20:46:09 - UpdateGroup (table: 0000012E6C015380)", -- [899]
-			"20:46:09 - ML:AddCandidate (Minica-Sulfuras) (WARRIOR) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [900]
-			"20:46:09 - ML:AddCandidate (Helles-Sulfuras) (PALADIN) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [901]
-			"20:46:09 - ML:AddCandidate (Plainview-Sulfuras) (HUNTER) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [902]
-			"20:46:09 - ML:AddCandidate (Happyjugs-Sulfuras) (PALADIN) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [903]
-			"20:46:09 - ML:AddCandidate (Lrdvoldemort-Sulfuras) (MAGE) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [904]
-			"20:46:09 - GetCouncilInGroup (Topshelf-Sulfuras) (Hashmeer-Sulfuras)", -- [905]
-			"20:46:09 - Comm received:^1^SMLdb^T^N1^T^SallowNotes^B^Stimeout^N60^SselfVote^B^Sresponses^T^Sdefault^T^t^t^SmultiVote^B^Sbuttons^T^Sdefault^T^SnumButtons^N3^t^t^SnumButtons^N3^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [906]
-			"20:46:09 - Comm received:^1^Scandidates^T^N1^T^SKaldeezer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SRaider^t^SMinica-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SAgora-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SPipers-Sulfuras^T^Srole^SNONE^Sclass^SDRUID^Srank^S^t^SNorgashaks-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SClass~`Leader^t^SHealwho-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPALADIN^Senchanter^B^Srank^SMember^t^SDerekowns-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SShway-Sulfuras^T^Srole^SNONE^Sclass^SROGUE^Srank^S^t^SOdarnwewiped-Sulfuras^T^Srole^SNONE^Sclass^SPRIEST^Srank^S^t^SHappyjugs-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SHolypally-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SSlimmthicc-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPRIEST^Senchanter^B^Srank^SRaider^t^SHashmeer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SSenior~`Officer^t^SLrdvoldemort-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SMcmac-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SClass~`Leader^t^SHelles-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SFistandalus-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SPALADIN^Srank^STrial^t^STopshelf-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SGuild~`Master^t^SSchmilsson-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SSenior~`Officer^t^SPlainview-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SRenae-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SGurdurs-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [907]
-			"20:46:09 - Comm received:^1^SplayerInfo^T^N1^SHappyjugs-Sulfuras^N2^SPALADIN^N4^SRaider^N6^N0^N7^N58.35^t^^ (from:) (Happyjugs) (distri:) (WHISPER)", -- [908]
-			"20:46:09 - ML:AddCandidate (Happyjugs-Sulfuras) (PALADIN) (nil) (Raider) (nil) (0) (58.35) (nil)", -- [909]
-			"20:46:09 - Comm received:^1^SplayerInfo^T^N1^SHelles-Sulfuras^N2^SPALADIN^N4^SClass~`Leader^N6^N0^N7^N57.67^t^^ (from:) (Helles) (distri:) (WHISPER)", -- [910]
-			"20:46:09 - ML:AddCandidate (Helles-Sulfuras) (PALADIN) (nil) (Class Leader) (nil) (0) (57.67) (nil)", -- [911]
-			"20:46:09 - Comm received:^1^SplayerInfo^T^N1^SMinica-Sulfuras^N2^SWARRIOR^N4^SOfficer^N6^N0^N7^N59.95^t^^ (from:) (Minica) (distri:) (WHISPER)", -- [912]
-			"20:46:09 - ML:AddCandidate (Minica-Sulfuras) (WARRIOR) (nil) (Officer) (nil) (0) (59.95) (nil)", -- [913]
-			"20:46:09 - Comm received:^1^SplayerInfo^T^N1^SLrdvoldemort-Sulfuras^N2^SMAGE^N4^SRaider^N6^N0^N7^N62.76^t^^ (from:) (Lrdvoldemort) (distri:) (WHISPER)", -- [914]
-			"20:46:09 - ML:AddCandidate (Lrdvoldemort-Sulfuras) (MAGE) (nil) (Raider) (nil) (0) (62.76) (nil)", -- [915]
-			"20:46:09 - Comm received:^1^SplayerInfo^T^N1^SPlainview-Sulfuras^N2^SHUNTER^N4^SRaider^N6^N0^N7^N59.78^t^^ (from:) (Plainview) (distri:) (WHISPER)", -- [916]
-			"20:46:09 - ML:AddCandidate (Plainview-Sulfuras) (HUNTER) (nil) (Raider) (nil) (0) (59.78) (nil)", -- [917]
-			"20:46:09 - VotingFrame:Update() without lootTable!!", -- [918]
-			"20:46:17 - VotingFrame:Update() without lootTable!!", -- [919]
-			"20:46:18 - VotingFrame:Update() without lootTable!!", -- [920]
-			"20:46:36 - VotingFrame:Update() without lootTable!!", -- [921]
-			"20:46:40 - VotingFrame:Update() without lootTable!!", -- [922]
-			"20:46:45 - VotingFrame:Update() without lootTable!!", -- [923]
-			"20:46:59 - UpdateGroup (table: 0000012E6C015380)", -- [924]
-			"20:46:59 - ML:AddCandidate (Minica-Sulfuras) (WARRIOR) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [925]
-			"20:46:59 - ML:AddCandidate (Helles-Sulfuras) (PALADIN) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [926]
-			"20:46:59 - ML:AddCandidate (Plainview-Sulfuras) (HUNTER) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [927]
-			"20:46:59 - ML:AddCandidate (Happyjugs-Sulfuras) (PALADIN) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [928]
-			"20:46:59 - ML:AddCandidate (Lrdvoldemort-Sulfuras) (MAGE) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [929]
-			"20:46:59 - GetCouncilInGroup (Topshelf-Sulfuras) (Hashmeer-Sulfuras)", -- [930]
-			"20:46:59 - Comm received:^1^SMLdb^T^N1^T^SallowNotes^B^Stimeout^N60^SselfVote^B^Sresponses^T^Sdefault^T^t^t^SmultiVote^B^Sbuttons^T^Sdefault^T^SnumButtons^N3^t^t^SnumButtons^N3^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [931]
-			"20:46:59 - Comm received:^1^Scandidates^T^N1^T^SKaldeezer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SRaider^t^SMinica-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SAgora-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SPipers-Sulfuras^T^Srole^SNONE^Sclass^SDRUID^Srank^S^t^SNorgashaks-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SClass~`Leader^t^SHealwho-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPALADIN^Senchanter^B^Srank^SMember^t^SDerekowns-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SShway-Sulfuras^T^Srole^SNONE^Sclass^SROGUE^Srank^S^t^SOdarnwewiped-Sulfuras^T^Srole^SNONE^Sclass^SPRIEST^Srank^S^t^SHappyjugs-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SHolypally-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SSlimmthicc-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPRIEST^Senchanter^B^Srank^SRaider^t^SHashmeer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SSenior~`Officer^t^SLrdvoldemort-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SMcmac-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SClass~`Leader^t^SHelles-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SFistandalus-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SPALADIN^Srank^STrial^t^STopshelf-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SGuild~`Master^t^SSchmilsson-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SSenior~`Officer^t^SPlainview-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SRenae-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SGurdurs-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [932]
-			"20:46:59 - Comm received:^1^SplayerInfo^T^N1^SMinica-Sulfuras^N2^SWARRIOR^N4^SOfficer^N6^N0^N7^N59.95^t^^ (from:) (Minica) (distri:) (WHISPER)", -- [933]
-			"20:46:59 - ML:AddCandidate (Minica-Sulfuras) (WARRIOR) (nil) (Officer) (nil) (0) (59.95) (nil)", -- [934]
-			"20:46:59 - Comm received:^1^SplayerInfo^T^N1^SPlainview-Sulfuras^N2^SHUNTER^N4^SRaider^N6^N0^N7^N59.78^t^^ (from:) (Plainview) (distri:) (WHISPER)", -- [935]
-			"20:46:59 - ML:AddCandidate (Plainview-Sulfuras) (HUNTER) (nil) (Raider) (nil) (0) (59.78) (nil)", -- [936]
-			"20:47:00 - Comm received:^1^SplayerInfo^T^N1^SHelles-Sulfuras^N2^SPALADIN^N4^SClass~`Leader^N6^N0^N7^N57.67^t^^ (from:) (Helles) (distri:) (WHISPER)", -- [937]
-			"20:47:00 - ML:AddCandidate (Helles-Sulfuras) (PALADIN) (nil) (Class Leader) (nil) (0) (57.67) (nil)", -- [938]
-			"20:47:00 - Comm received:^1^SplayerInfo^T^N1^SLrdvoldemort-Sulfuras^N2^SMAGE^N4^SRaider^N6^N0^N7^N62.76^t^^ (from:) (Lrdvoldemort) (distri:) (WHISPER)", -- [939]
-			"20:47:00 - ML:AddCandidate (Lrdvoldemort-Sulfuras) (MAGE) (nil) (Raider) (nil) (0) (62.76) (nil)", -- [940]
-			"20:47:00 - Comm received:^1^SplayerInfo^T^N1^SHappyjugs-Sulfuras^N2^SPALADIN^N4^SRaider^N6^N0^N7^N58.18^t^^ (from:) (Happyjugs) (distri:) (WHISPER)", -- [941]
-			"20:47:00 - ML:AddCandidate (Happyjugs-Sulfuras) (PALADIN) (nil) (Raider) (nil) (0) (58.18) (nil)", -- [942]
-			"20:47:01 - VotingFrame:Update() without lootTable!!", -- [943]
-			"20:47:03 - VotingFrame:Update() without lootTable!!", -- [944]
-			"20:47:07 - ML event (CHAT_MSG_WHISPER) (yeah im logged out mc) (Budlightning-Sulfuras) () () (Budlightning) () (0) (0) () (0) (5434) (Player-4726-01616295) (0) (false) (false) (false) (false)", -- [945]
-			"20:47:08 - VotingFrame:Update() without lootTable!!", -- [946]
-			"20:47:10 - ML event (CHAT_MSG_WHISPER) (with ony buff lol) (Budlightning-Sulfuras) () () (Budlightning) () (0) (0) () (0) (5435) (Player-4726-01616295) (0) (false) (false) (false) (false)", -- [947]
-			"20:47:15 - VotingFrame:Update() without lootTable!!", -- [948]
-			"20:47:21 - VotingFrame:Update() without lootTable!!", -- [949]
-			"20:47:22 - VotingFrame:Update() without lootTable!!", -- [950]
-			"20:47:25 - VotingFrame:Update() without lootTable!!", -- [951]
-			"20:47:27 - Comm received:^1^SverTest^T^N1^S0.4.2^t^^ (from:) (Bountybull) (distri:) (GUILD)", -- [952]
-			"20:47:29 - VotingFrame:Update() without lootTable!!", -- [953]
-			"20:47:31 - VotingFrame:Update() without lootTable!!", -- [954]
-			"20:47:32 - VotingFrame:Update() without lootTable!!", -- [955]
-			"20:47:35 - VotingFrame:Update() without lootTable!!", -- [956]
-			"20:47:39 - UpdateGroup (table: 0000012E6C015380)", -- [957]
-			"20:47:39 - ML:AddCandidate (Minica-Sulfuras) (WARRIOR) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [958]
-			"20:47:39 - ML:AddCandidate (Helles-Sulfuras) (PALADIN) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [959]
-			"20:47:39 - ML:AddCandidate (Plainview-Sulfuras) (HUNTER) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [960]
-			"20:47:39 - ML:AddCandidate (Happyjugs-Sulfuras) (PALADIN) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [961]
-			"20:47:39 - ML:AddCandidate (Lrdvoldemort-Sulfuras) (MAGE) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [962]
-			"20:47:39 - ML:AddCandidate (Bountybull-Sulfuras) (MAGE) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [963]
-			"20:47:39 - GetCouncilInGroup (Topshelf-Sulfuras) (Hashmeer-Sulfuras)", -- [964]
-			"20:47:40 - Comm received:^1^SMLdb^T^N1^T^SallowNotes^B^Stimeout^N60^SselfVote^B^Sresponses^T^Sdefault^T^t^t^SmultiVote^B^Sbuttons^T^Sdefault^T^SnumButtons^N3^t^t^SnumButtons^N3^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [965]
-			"20:47:40 - Comm received:^1^Scandidates^T^N1^T^SKaldeezer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SRaider^t^SMinica-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SAgora-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SPipers-Sulfuras^T^Srole^SNONE^Sclass^SDRUID^Srank^S^t^SNorgashaks-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SClass~`Leader^t^SHealwho-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPALADIN^Senchanter^B^Srank^SMember^t^SDerekowns-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SShway-Sulfuras^T^Srole^SNONE^Sclass^SROGUE^Srank^S^t^SHelles-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SOdarnwewiped-Sulfuras^T^Srole^SNONE^Sclass^SPRIEST^Srank^S^t^SHappyjugs-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SHolypally-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SSlimmthicc-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPRIEST^Senchanter^B^Srank^SRaider^t^SHashmeer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SSenior~`Officer^t^SLrdvoldemort-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SMcmac-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SClass~`Leader^t^SBountybull-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SFistandalus-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SPALADIN^Srank^STrial^t^STopshelf-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SGuild~`Master^t^SSchmilsson-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SSenior~`Officer^t^SPlainview-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SRenae-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SGurdurs-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [966]
-			"20:47:40 - Comm received:^1^SplayerInfo^T^N1^SMinica-Sulfuras^N2^SWARRIOR^N4^SOfficer^N6^N0^N7^N59.95^t^^ (from:) (Minica) (distri:) (WHISPER)", -- [967]
-			"20:47:40 - ML:AddCandidate (Minica-Sulfuras) (WARRIOR) (nil) (Officer) (nil) (0) (59.95) (nil)", -- [968]
-			"20:47:40 - Comm received:^1^SplayerInfo^T^N1^SPlainview-Sulfuras^N2^SHUNTER^N4^SRaider^N6^N0^N7^N59.78^t^^ (from:) (Plainview) (distri:) (WHISPER)", -- [969]
-			"20:47:40 - ML:AddCandidate (Plainview-Sulfuras) (HUNTER) (nil) (Raider) (nil) (0) (59.78) (nil)", -- [970]
-			"20:47:40 - Comm received:^1^SplayerInfo^T^N1^SHelles-Sulfuras^N2^SPALADIN^N4^SClass~`Leader^N6^N0^N7^N57.67^t^^ (from:) (Helles) (distri:) (WHISPER)", -- [971]
-			"20:47:40 - ML:AddCandidate (Helles-Sulfuras) (PALADIN) (nil) (Class Leader) (nil) (0) (57.67) (nil)", -- [972]
-			"20:47:40 - Comm received:^1^SplayerInfo^T^N1^SLrdvoldemort-Sulfuras^N2^SMAGE^N4^SRaider^N6^N0^N7^N62.76^t^^ (from:) (Lrdvoldemort) (distri:) (WHISPER)", -- [973]
-			"20:47:40 - ML:AddCandidate (Lrdvoldemort-Sulfuras) (MAGE) (nil) (Raider) (nil) (0) (62.76) (nil)", -- [974]
-			"20:47:40 - Comm received:^1^SplayerInfo^T^N1^SBountybull-Sulfuras^N2^SMAGE^N3^SNONE^N4^SRaider^N5^B^N6^S<~`300^N7^N56.39^t^^ (from:) (Bountybull) (distri:) (WHISPER)", -- [975]
-			"20:47:40 - ML:AddCandidate (Bountybull-Sulfuras) (MAGE) (NONE) (Raider) (true) (< 300) (56.39) (nil)", -- [976]
-			"20:47:40 - Comm received:^1^SplayerInfo^T^N1^SHappyjugs-Sulfuras^N2^SPALADIN^N4^SRaider^N6^N0^N7^N58.18^t^^ (from:) (Happyjugs) (distri:) (WHISPER)", -- [977]
-			"20:47:40 - ML:AddCandidate (Happyjugs-Sulfuras) (PALADIN) (nil) (Raider) (nil) (0) (58.18) (nil)", -- [978]
-			"20:47:42 - VotingFrame:Update() without lootTable!!", -- [979]
-			"20:47:45 - Comm received:^1^Scouncil_request^T^t^^ (from:) (Bountybull) (distri:) (WHISPER)", -- [980]
-			"20:47:45 - Comm received:^1^Scouncil_request^T^t^^ (from:) (Bountybull) (distri:) (WHISPER)", -- [981]
-			"20:47:45 - Comm received:^1^Scouncil^T^N1^T^N1^STopshelf-Sulfuras^N2^SHashmeer-Sulfuras^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [982]
-			"20:47:45 - true = (IsCouncil) (Hashmeer-Sulfuras)", -- [983]
-			"20:47:45 - Comm received:^1^Scouncil^T^N1^T^N1^STopshelf-Sulfuras^N2^SHashmeer-Sulfuras^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [984]
-			"20:47:45 - true = (IsCouncil) (Hashmeer-Sulfuras)", -- [985]
-			"20:47:51 - ML event (CHAT_MSG_WHISPER) (u should be in the group instad of a holypally ;D) (Kaldeezer-Sulfuras) () () (Kaldeezer) () (0) (0) () (0) (5457) (Player-4726-00AAFA9B) (0) (false) (false) (false) (false)", -- [986]
-			"20:48:12 - Comm received:^1^SverTest^T^N1^S0.4.2^t^^ (from:) (Budlightning) (distri:) (GUILD)", -- [987]
-			"20:48:12 - VotingFrame:Update() without lootTable!!", -- [988]
-			"20:48:14 - VotingFrame:Update() without lootTable!!", -- [989]
-			"20:48:18 - VotingFrame:Update() without lootTable!!", -- [990]
-			"20:49:11 - Comm received:^1^SverTest^T^N1^S0.4.2^t^^ (from:) (Renae) (distri:) (GUILD)", -- [991]
-			"20:49:16 - UpdateGroup (table: 0000012E6C015380)", -- [992]
-			"20:49:16 - ML:AddCandidate (Minica-Sulfuras) (WARRIOR) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [993]
-			"20:49:16 - ML:AddCandidate (Helles-Sulfuras) (PALADIN) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [994]
-			"20:49:16 - ML:AddCandidate (Plainview-Sulfuras) (HUNTER) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [995]
-			"20:49:16 - ML:AddCandidate (Happyjugs-Sulfuras) (PALADIN) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [996]
-			"20:49:16 - ML:AddCandidate (Lrdvoldemort-Sulfuras) (MAGE) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [997]
-			"20:49:16 - GetCouncilInGroup (Topshelf-Sulfuras) (Hashmeer-Sulfuras)", -- [998]
-			"20:49:16 - Comm received:^1^SMLdb^T^N1^T^SallowNotes^B^Stimeout^N60^SselfVote^B^Sresponses^T^Sdefault^T^t^t^SmultiVote^B^Sbuttons^T^Sdefault^T^SnumButtons^N3^t^t^SnumButtons^N3^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [999]
-			"20:49:16 - Comm received:^1^Scandidates^T^N1^T^SKaldeezer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SRaider^t^SMinica-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SAgora-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SPipers-Sulfuras^T^Srole^SNONE^Sclass^SDRUID^Srank^S^t^SNorgashaks-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SClass~`Leader^t^SHealwho-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPALADIN^Senchanter^B^Srank^SMember^t^SDerekowns-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SShway-Sulfuras^T^Srole^SNONE^Sclass^SROGUE^Srank^S^t^SHelles-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SOdarnwewiped-Sulfuras^T^Srole^SNONE^Sclass^SPRIEST^Srank^S^t^SHappyjugs-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SHolypally-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SSlimmthicc-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPRIEST^Senchanter^B^Srank^SRaider^t^SHashmeer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SSenior~`Officer^t^SLrdvoldemort-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SMcmac-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SClass~`Leader^t^SBountybull-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SMAGE^Senchanter^B^Srank^SRaider^t^SFistandalus-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SPALADIN^Srank^STrial^t^STopshelf-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SGuild~`Master^t^SSchmilsson-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SSenior~`Officer^t^SPlainview-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SRenae-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SGurdurs-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1000]
-			"20:49:16 - Comm received:^1^SplayerInfo^T^N1^SMinica-Sulfuras^N2^SWARRIOR^N4^SOfficer^N6^N0^N7^N59.95^t^^ (from:) (Minica) (distri:) (WHISPER)", -- [1001]
-			"20:49:16 - ML:AddCandidate (Minica-Sulfuras) (WARRIOR) (nil) (Officer) (nil) (0) (59.95) (nil)", -- [1002]
-			"20:49:16 - Comm received:^1^SplayerInfo^T^N1^SLrdvoldemort-Sulfuras^N2^SMAGE^N4^SRaider^N6^N0^N7^N62.76^t^^ (from:) (Lrdvoldemort) (distri:) (WHISPER)", -- [1003]
-			"20:49:16 - ML:AddCandidate (Lrdvoldemort-Sulfuras) (MAGE) (nil) (Raider) (nil) (0) (62.76) (nil)", -- [1004]
-			"20:49:16 - Comm received:^1^SplayerInfo^T^N1^SHelles-Sulfuras^N2^SPALADIN^N4^SClass~`Leader^N6^N0^N7^N57.67^t^^ (from:) (Helles) (distri:) (WHISPER)", -- [1005]
-			"20:49:16 - ML:AddCandidate (Helles-Sulfuras) (PALADIN) (nil) (Class Leader) (nil) (0) (57.67) (nil)", -- [1006]
-			"20:49:16 - Comm received:^1^SplayerInfo^T^N1^SPlainview-Sulfuras^N2^SHUNTER^N4^SRaider^N6^N0^N7^N59.78^t^^ (from:) (Plainview) (distri:) (WHISPER)", -- [1007]
-			"20:49:16 - ML:AddCandidate (Plainview-Sulfuras) (HUNTER) (nil) (Raider) (nil) (0) (59.78) (nil)", -- [1008]
-			"20:49:16 - Comm received:^1^SplayerInfo^T^N1^SHappyjugs-Sulfuras^N2^SPALADIN^N4^SRaider^N6^N0^N7^N58.18^t^^ (from:) (Happyjugs) (distri:) (WHISPER)", -- [1009]
-			"20:49:16 - ML:AddCandidate (Happyjugs-Sulfuras) (PALADIN) (nil) (Raider) (nil) (0) (58.18) (nil)", -- [1010]
-			"20:49:23 - Comm received:^1^Scouncil_request^T^t^^ (from:) (Renae) (distri:) (WHISPER)", -- [1011]
-			"20:49:23 - Comm received:^1^Scouncil_request^T^t^^ (from:) (Renae) (distri:) (WHISPER)", -- [1012]
-			"20:49:23 - Comm received:^1^Scouncil^T^N1^T^N1^STopshelf-Sulfuras^N2^SHashmeer-Sulfuras^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1013]
-			"20:49:23 - true = (IsCouncil) (Hashmeer-Sulfuras)", -- [1014]
-			"20:49:23 - Comm received:^1^Scouncil^T^N1^T^N1^STopshelf-Sulfuras^N2^SHashmeer-Sulfuras^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1015]
-			"20:49:23 - true = (IsCouncil) (Hashmeer-Sulfuras)", -- [1016]
-			"20:49:38 - Comm received:^1^SverTest^T^N1^S0.4.2^t^^ (from:) (Hoogs) (distri:) (GUILD)", -- [1017]
-			"20:49:41 - VotingFrame:Update() without lootTable!!", -- [1018]
-			"20:49:44 - VotingFrame:Update() without lootTable!!", -- [1019]
-			"20:49:53 - UpdateGroup (table: 0000012E6C015380)", -- [1020]
-			"20:49:53 - ML:AddCandidate (Minica-Sulfuras) (WARRIOR) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1021]
-			"20:49:53 - ML:AddCandidate (Helles-Sulfuras) (PALADIN) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1022]
-			"20:49:53 - ML:AddCandidate (Plainview-Sulfuras) (HUNTER) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1023]
-			"20:49:53 - ML:AddCandidate (Happyjugs-Sulfuras) (PALADIN) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1024]
-			"20:49:53 - ML:AddCandidate (Lrdvoldemort-Sulfuras) (MAGE) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1025]
-			"20:49:53 - ML:AddCandidate (Hoogs-Sulfuras) (PRIEST) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1026]
-			"20:49:53 - GetCouncilInGroup (Topshelf-Sulfuras) (Hashmeer-Sulfuras)", -- [1027]
-			"20:49:53 - Comm received:^1^SMLdb^T^N1^T^SallowNotes^B^Stimeout^N60^SselfVote^B^Sresponses^T^Sdefault^T^t^t^SmultiVote^B^Sbuttons^T^Sdefault^T^SnumButtons^N3^t^t^SnumButtons^N3^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1028]
-			"20:49:53 - Comm received:^1^Scandidates^T^N1^T^SKaldeezer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SRaider^t^SMinica-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SAgora-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SPipers-Sulfuras^T^Srole^SNONE^Sclass^SDRUID^Srank^S^t^SNorgashaks-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SClass~`Leader^t^SHealwho-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPALADIN^Senchanter^B^Srank^SMember^t^SDerekowns-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SShway-Sulfuras^T^Srole^SNONE^Sclass^SROGUE^Srank^S^t^SHoogs-Sulfuras^T^Srole^SNONE^Sclass^SPRIEST^Srank^S^t^SHelles-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SOdarnwewiped-Sulfuras^T^Srole^SNONE^Sclass^SPRIEST^Srank^S^t^SHappyjugs-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SHolypally-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SSlimmthicc-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPRIEST^Senchanter^B^Srank^SRaider^t^SHashmeer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SSenior~`Officer^t^SLrdvoldemort-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SMcmac-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SClass~`Leader^t^SBountybull-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SMAGE^Senchanter^B^Srank^SRaider^t^SFistandalus-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SPALADIN^Srank^STrial^t^STopshelf-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SGuild~`Master^t^SSchmilsson-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SSenior~`Officer^t^SPlainview-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SRenae-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SGurdurs-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1029]
-			"20:49:53 - Comm received:^1^SplayerInfo^T^N1^SMinica-Sulfuras^N2^SWARRIOR^N4^SOfficer^N6^N0^N7^N59.95^t^^ (from:) (Minica) (distri:) (WHISPER)", -- [1030]
-			"20:49:53 - ML:AddCandidate (Minica-Sulfuras) (WARRIOR) (nil) (Officer) (nil) (0) (59.95) (nil)", -- [1031]
-			"20:49:53 - Comm received:^1^SplayerInfo^T^N1^SLrdvoldemort-Sulfuras^N2^SMAGE^N4^SRaider^N6^N0^N7^N62.76^t^^ (from:) (Lrdvoldemort) (distri:) (WHISPER)", -- [1032]
-			"20:49:53 - ML:AddCandidate (Lrdvoldemort-Sulfuras) (MAGE) (nil) (Raider) (nil) (0) (62.76) (nil)", -- [1033]
-			"20:49:53 - Comm received:^1^SplayerInfo^T^N1^SHoogs-Sulfuras^N2^SPRIEST^N3^SNONE^N4^SClass~`Leader^N6^N0^N7^N54.94^t^^ (from:) (Hoogs) (distri:) (WHISPER)", -- [1034]
-			"20:49:53 - ML:AddCandidate (Hoogs-Sulfuras) (PRIEST) (NONE) (Class Leader) (nil) (0) (54.94) (nil)", -- [1035]
-			"20:49:53 - Comm received:^1^SplayerInfo^T^N1^SHelles-Sulfuras^N2^SPALADIN^N4^SClass~`Leader^N6^N0^N7^N57.67^t^^ (from:) (Helles) (distri:) (WHISPER)", -- [1036]
-			"20:49:53 - ML:AddCandidate (Helles-Sulfuras) (PALADIN) (nil) (Class Leader) (nil) (0) (57.67) (nil)", -- [1037]
-			"20:49:53 - Comm received:^1^SplayerInfo^T^N1^SPlainview-Sulfuras^N2^SHUNTER^N4^SRaider^N6^N0^N7^N59.78^t^^ (from:) (Plainview) (distri:) (WHISPER)", -- [1038]
-			"20:49:53 - ML:AddCandidate (Plainview-Sulfuras) (HUNTER) (nil) (Raider) (nil) (0) (59.78) (nil)", -- [1039]
-			"20:49:53 - Comm received:^1^SplayerInfo^T^N1^SHappyjugs-Sulfuras^N2^SPALADIN^N4^SRaider^N6^N0^N7^N58.18^t^^ (from:) (Happyjugs) (distri:) (WHISPER)", -- [1040]
-			"20:49:53 - ML:AddCandidate (Happyjugs-Sulfuras) (PALADIN) (nil) (Raider) (nil) (0) (58.18) (nil)", -- [1041]
-			"20:49:57 - Comm received:^1^Scouncil_request^T^t^^ (from:) (Hoogs) (distri:) (WHISPER)", -- [1042]
-			"20:49:57 - Comm received:^1^Scouncil_request^T^t^^ (from:) (Hoogs) (distri:) (WHISPER)", -- [1043]
-			"20:49:57 - Comm received:^1^Scouncil^T^N1^T^N1^STopshelf-Sulfuras^N2^SHashmeer-Sulfuras^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1044]
-			"20:49:57 - true = (IsCouncil) (Hashmeer-Sulfuras)", -- [1045]
-			"20:49:57 - Comm received:^1^Scouncil^T^N1^T^N1^STopshelf-Sulfuras^N2^SHashmeer-Sulfuras^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1046]
-			"20:49:57 - true = (IsCouncil) (Hashmeer-Sulfuras)", -- [1047]
-			"20:50:19 - ML event (CHAT_MSG_WHISPER) (i was gonna suggest it) (Topshelf-Sulfuras) () () (Topshelf) () (0) (0) () (0) (5505) (Player-4726-00B8B56B) (0) (false) (false) (false) (false)", -- [1048]
-			"20:50:25 - ML event (CHAT_MSG_WHISPER) (i'll ask him) (Topshelf-Sulfuras) () () (Topshelf) () (0) (0) () (0) (5511) (Player-4726-00B8B56B) (0) (false) (false) (false) (false)", -- [1049]
-			"20:52:04 - ML event (CHAT_MSG_WHISPER) (he needs to leave at 10.45 (bomann)) (Topshelf-Sulfuras) () () (Topshelf) () (0) (0) () (0) (5523) (Player-4726-00B8B56B) (0) (false) (false) (false) (false)", -- [1050]
-			"20:52:29 - ML event (CHAT_MSG_WHISPER) (ok want me to invite?) (Topshelf-Sulfuras) () () (Topshelf) () (0) (0) () (0) (5529) (Player-4726-00B8B56B) (0) (false) (false) (false) (false)", -- [1051]
-			"20:52:57 - ML event (CHAT_MSG_WHISPER) (he won't mind...he is down to help) (Topshelf-Sulfuras) () () (Topshelf) () (0) (0) () (0) (5540) (Player-4726-00B8B56B) (0) (false) (false) (false) (false)", -- [1052]
-			"20:53:05 - ML event (CHAT_MSG_WHISPER) (i figure as long as he stays for gar) (Topshelf-Sulfuras) () () (Topshelf) () (0) (0) () (0) (5542) (Player-4726-00B8B56B) (0) (false) (false) (false) (false)", -- [1053]
-			"20:53:21 - VotingFrame:Update() without lootTable!!", -- [1054]
-			"20:53:26 - ML event (CHAT_MSG_WHISPER) (up to you) (Topshelf-Sulfuras) () () (Topshelf) () (0) (0) () (0) (5546) (Player-4726-00B8B56B) (0) (false) (false) (false) (false)", -- [1055]
-			"20:53:29 - UpdateGroup (table: 0000012E6C015380)", -- [1056]
-			"20:53:29 - ML:AddCandidate (Minica-Sulfuras) (WARRIOR) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1057]
-			"20:53:29 - ML:AddCandidate (Helles-Sulfuras) (PALADIN) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1058]
-			"20:53:29 - ML:AddCandidate (Plainview-Sulfuras) (HUNTER) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1059]
-			"20:53:29 - ML:AddCandidate (Happyjugs-Sulfuras) (PALADIN) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1060]
-			"20:53:29 - ML:AddCandidate (Lrdvoldemort-Sulfuras) (MAGE) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1061]
-			"20:53:29 - GetCouncilInGroup (Topshelf-Sulfuras) (Hashmeer-Sulfuras)", -- [1062]
-			"20:53:30 - Comm received:^1^SMLdb^T^N1^T^SallowNotes^B^Stimeout^N60^SselfVote^B^Sresponses^T^Sdefault^T^t^t^SmultiVote^B^Sbuttons^T^Sdefault^T^SnumButtons^N3^t^t^SnumButtons^N3^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1063]
-			"20:53:30 - Comm received:^1^Scandidates^T^N1^T^SKaldeezer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SRaider^t^SMinica-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SAgora-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SPipers-Sulfuras^T^Srole^SNONE^Sclass^SDRUID^Srank^S^t^SNorgashaks-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SClass~`Leader^t^SHealwho-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPALADIN^Senchanter^B^Srank^SMember^t^SDerekowns-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SShway-Sulfuras^T^Srole^SNONE^Sclass^SROGUE^Srank^S^t^SHoogs-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SPRIEST^Srank^SClass~`Leader^t^SHelles-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SOdarnwewiped-Sulfuras^T^Srole^SNONE^Sclass^SPRIEST^Srank^S^t^SHappyjugs-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SHolypally-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SSlimmthicc-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPRIEST^Senchanter^B^Srank^SRaider^t^SHashmeer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SSenior~`Officer^t^SLrdvoldemort-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SMcmac-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SClass~`Leader^t^SBountybull-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SMAGE^Senchanter^B^Srank^SRaider^t^SFistandalus-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SPALADIN^Srank^STrial^t^STopshelf-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SGuild~`Master^t^SSchmilsson-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SSenior~`Officer^t^SPlainview-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SRenae-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SGurdurs-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1064]
-			"20:53:30 - Comm received:^1^SplayerInfo^T^N1^SMinica-Sulfuras^N2^SWARRIOR^N4^SOfficer^N6^N0^N7^N59.95^t^^ (from:) (Minica) (distri:) (WHISPER)", -- [1065]
-			"20:53:30 - ML:AddCandidate (Minica-Sulfuras) (WARRIOR) (nil) (Officer) (nil) (0) (59.95) (nil)", -- [1066]
-			"20:53:30 - Comm received:^1^SplayerInfo^T^N1^SHelles-Sulfuras^N2^SPALADIN^N4^SClass~`Leader^N6^N0^N7^N57.67^t^^ (from:) (Helles) (distri:) (WHISPER)", -- [1067]
-			"20:53:30 - ML:AddCandidate (Helles-Sulfuras) (PALADIN) (nil) (Class Leader) (nil) (0) (57.67) (nil)", -- [1068]
-			"20:53:30 - Comm received:^1^SplayerInfo^T^N1^SLrdvoldemort-Sulfuras^N2^SMAGE^N4^SRaider^N6^N0^N7^N62.76^t^^ (from:) (Lrdvoldemort) (distri:) (WHISPER)", -- [1069]
-			"20:53:30 - ML:AddCandidate (Lrdvoldemort-Sulfuras) (MAGE) (nil) (Raider) (nil) (0) (62.76) (nil)", -- [1070]
-			"20:53:30 - Comm received:^1^SplayerInfo^T^N1^SPlainview-Sulfuras^N2^SHUNTER^N4^SRaider^N6^N0^N7^N59.78^t^^ (from:) (Plainview) (distri:) (WHISPER)", -- [1071]
-			"20:53:30 - ML:AddCandidate (Plainview-Sulfuras) (HUNTER) (nil) (Raider) (nil) (0) (59.78) (nil)", -- [1072]
-			"20:53:30 - Comm received:^1^SplayerInfo^T^N1^SHappyjugs-Sulfuras^N2^SPALADIN^N4^SRaider^N6^N0^N7^N58.18^t^^ (from:) (Happyjugs) (distri:) (WHISPER)", -- [1073]
-			"20:53:30 - ML:AddCandidate (Happyjugs-Sulfuras) (PALADIN) (nil) (Raider) (nil) (0) (58.18) (nil)", -- [1074]
-			"20:56:52 - Comm received:^1^SverTest^T^N1^S0.5.0^N2^SBeta.1^t^^ (from:) (Bomann) (distri:) (GUILD)", -- [1075]
-			"20:56:56 - VotingFrame:Update() without lootTable!!", -- [1076]
-			"20:57:05 - UpdateGroup (table: 0000012E6C015380)", -- [1077]
-			"20:57:05 - ML:AddCandidate (Minica-Sulfuras) (WARRIOR) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1078]
-			"20:57:05 - ML:AddCandidate (Helles-Sulfuras) (PALADIN) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1079]
-			"20:57:05 - ML:AddCandidate (Bomann-Sulfuras) (WARLOCK) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1080]
-			"20:57:05 - ML:AddCandidate (Plainview-Sulfuras) (HUNTER) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1081]
-			"20:57:05 - ML:AddCandidate (Happyjugs-Sulfuras) (PALADIN) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1082]
-			"20:57:05 - ML:AddCandidate (Lrdvoldemort-Sulfuras) (MAGE) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1083]
-			"20:57:05 - GetCouncilInGroup (Topshelf-Sulfuras) (Hashmeer-Sulfuras)", -- [1084]
-			"20:57:05 - Comm received:^1^SMLdb^T^N1^T^SallowNotes^B^Stimeout^N60^SselfVote^B^Sresponses^T^Sdefault^T^t^t^SmultiVote^B^Sbuttons^T^Sdefault^T^SnumButtons^N3^t^t^SnumButtons^N3^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1085]
-			"20:57:05 - Comm received:^1^Scandidates^T^N1^T^SKaldeezer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SRaider^t^SMinica-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SAgora-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SPipers-Sulfuras^T^Srole^SNONE^Sclass^SDRUID^Srank^S^t^SNorgashaks-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SClass~`Leader^t^SHealwho-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPALADIN^Senchanter^B^Srank^SMember^t^SDerekowns-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SBomann-Sulfuras^T^Srole^SNONE^Sclass^SWARLOCK^Srank^S^t^SShway-Sulfuras^T^Srole^SNONE^Sclass^SROGUE^Srank^S^t^SHoogs-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SPRIEST^Srank^SClass~`Leader^t^SHelles-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SOdarnwewiped-Sulfuras^T^Srole^SNONE^Sclass^SPRIEST^Srank^S^t^SHappyjugs-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SHolypally-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SSlimmthicc-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPRIEST^Senchanter^B^Srank^SRaider^t^SHashmeer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SSenior~`Officer^t^SLrdvoldemort-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SMcmac-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SClass~`Leader^t^SBountybull-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SMAGE^Senchanter^B^Srank^SRaider^t^SFistandalus-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SPALADIN^Srank^STrial^t^STopshelf-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SGuild~`Master^t^SSchmilsson-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SSenior~`Officer^t^SPlainview-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SRenae-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SGurdurs-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1086]
-			"20:57:05 - Comm received:^1^SplayerInfo^T^N1^SMinica-Sulfuras^N2^SWARRIOR^N4^SOfficer^N6^N0^N7^N59.95^t^^ (from:) (Minica) (distri:) (WHISPER)", -- [1087]
-			"20:57:05 - ML:AddCandidate (Minica-Sulfuras) (WARRIOR) (nil) (Officer) (nil) (0) (59.95) (nil)", -- [1088]
-			"20:57:05 - Comm received:^1^SplayerInfo^T^N1^SHelles-Sulfuras^N2^SPALADIN^N4^SClass~`Leader^N6^N0^N7^N57.67^t^^ (from:) (Helles) (distri:) (WHISPER)", -- [1089]
-			"20:57:05 - ML:AddCandidate (Helles-Sulfuras) (PALADIN) (nil) (Class Leader) (nil) (0) (57.67) (nil)", -- [1090]
-			"20:57:05 - Comm received:^1^SplayerInfo^T^N1^SLrdvoldemort-Sulfuras^N2^SMAGE^N4^SRaider^N6^N0^N7^N62.76^t^^ (from:) (Lrdvoldemort) (distri:) (WHISPER)", -- [1091]
-			"20:57:05 - ML:AddCandidate (Lrdvoldemort-Sulfuras) (MAGE) (nil) (Raider) (nil) (0) (62.76) (nil)", -- [1092]
-			"20:57:05 - Comm received:^1^SplayerInfo^T^N1^SPlainview-Sulfuras^N2^SHUNTER^N4^SRaider^N6^N0^N7^N59.78^t^^ (from:) (Plainview) (distri:) (WHISPER)", -- [1093]
-			"20:57:05 - ML:AddCandidate (Plainview-Sulfuras) (HUNTER) (nil) (Raider) (nil) (0) (59.78) (nil)", -- [1094]
-			"20:57:05 - Comm received:^1^SplayerInfo^T^N1^SHappyjugs-Sulfuras^N2^SPALADIN^N4^SRaider^N6^N0^N7^N58.18^t^^ (from:) (Happyjugs) (distri:) (WHISPER)", -- [1095]
-			"20:57:05 - ML:AddCandidate (Happyjugs-Sulfuras) (PALADIN) (nil) (Raider) (nil) (0) (58.18) (nil)", -- [1096]
-			"20:57:05 - Comm received:^1^SplayerInfo^T^N1^SBomann-Sulfuras^N2^SWARLOCK^N3^SNONE^N4^STrial^N6^N0^N7^N59.22^t^^ (from:) (Bomann) (distri:) (WHISPER)", -- [1097]
-			"20:57:05 - ML:AddCandidate (Bomann-Sulfuras) (WARLOCK) (NONE) (Trial) (nil) (0) (59.22) (nil)", -- [1098]
-			"20:57:15 - UpdateGroup (table: 0000012E6C015380)", -- [1099]
-			"20:57:15 - ML:AddCandidate (Minica-Sulfuras) (WARRIOR) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1100]
-			"20:57:15 - ML:AddCandidate (Helles-Sulfuras) (PALADIN) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1101]
-			"20:57:15 - ML:AddCandidate (Plainview-Sulfuras) (HUNTER) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1102]
-			"20:57:15 - ML:AddCandidate (Happyjugs-Sulfuras) (PALADIN) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1103]
-			"20:57:15 - ML:AddCandidate (Lrdvoldemort-Sulfuras) (MAGE) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1104]
-			"20:57:15 - GetCouncilInGroup (Topshelf-Sulfuras) (Hashmeer-Sulfuras)", -- [1105]
-			"20:57:15 - Comm received:^1^SMLdb^T^N1^T^SallowNotes^B^Stimeout^N60^SselfVote^B^Sresponses^T^Sdefault^T^t^t^SmultiVote^B^Sbuttons^T^Sdefault^T^SnumButtons^N3^t^t^SnumButtons^N3^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1106]
-			"20:57:15 - Comm received:^1^Scandidates^T^N1^T^SKaldeezer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SRaider^t^SMinica-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SAgora-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SPipers-Sulfuras^T^Srole^SNONE^Sclass^SDRUID^Srank^S^t^SNorgashaks-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SClass~`Leader^t^SHealwho-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPALADIN^Senchanter^B^Srank^SMember^t^SDerekowns-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SBomann-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^STrial^t^SShway-Sulfuras^T^Srole^SNONE^Sclass^SROGUE^Srank^S^t^SHoogs-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SPRIEST^Srank^SClass~`Leader^t^SHelles-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SOdarnwewiped-Sulfuras^T^Srole^SNONE^Sclass^SPRIEST^Srank^S^t^SHappyjugs-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SHolypally-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SSlimmthicc-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPRIEST^Senchanter^B^Srank^SRaider^t^SHashmeer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SSenior~`Officer^t^SLrdvoldemort-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SMcmac-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SClass~`Leader^t^SBountybull-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SMAGE^Senchanter^B^Srank^SRaider^t^SFistandalus-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SPALADIN^Srank^STrial^t^STopshelf-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SGuild~`Master^t^SSchmilsson-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SSenior~`Officer^t^SPlainview-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SRenae-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SGurdurs-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1107]
-			"20:57:15 - Comm received:^1^SplayerInfo^T^N1^SHappyjugs-Sulfuras^N2^SPALADIN^N4^SRaider^N6^N0^N7^N58.18^t^^ (from:) (Happyjugs) (distri:) (WHISPER)", -- [1108]
-			"20:57:15 - ML:AddCandidate (Happyjugs-Sulfuras) (PALADIN) (nil) (Raider) (nil) (0) (58.18) (nil)", -- [1109]
-			"20:57:15 - Comm received:^1^SplayerInfo^T^N1^SHelles-Sulfuras^N2^SPALADIN^N4^SClass~`Leader^N6^N0^N7^N57.67^t^^ (from:) (Helles) (distri:) (WHISPER)", -- [1110]
-			"20:57:15 - ML:AddCandidate (Helles-Sulfuras) (PALADIN) (nil) (Class Leader) (nil) (0) (57.67) (nil)", -- [1111]
-			"20:57:15 - Comm received:^1^SplayerInfo^T^N1^SLrdvoldemort-Sulfuras^N2^SMAGE^N4^SRaider^N6^N0^N7^N62.76^t^^ (from:) (Lrdvoldemort) (distri:) (WHISPER)", -- [1112]
-			"20:57:15 - ML:AddCandidate (Lrdvoldemort-Sulfuras) (MAGE) (nil) (Raider) (nil) (0) (62.76) (nil)", -- [1113]
-			"20:57:15 - Comm received:^1^SplayerInfo^T^N1^SMinica-Sulfuras^N2^SWARRIOR^N4^SOfficer^N6^N0^N7^N59.95^t^^ (from:) (Minica) (distri:) (WHISPER)", -- [1114]
-			"20:57:15 - ML:AddCandidate (Minica-Sulfuras) (WARRIOR) (nil) (Officer) (nil) (0) (59.95) (nil)", -- [1115]
-			"20:57:15 - Comm received:^1^SplayerInfo^T^N1^SPlainview-Sulfuras^N2^SHUNTER^N4^SRaider^N6^N0^N7^N59.78^t^^ (from:) (Plainview) (distri:) (WHISPER)", -- [1116]
-			"20:57:15 - ML:AddCandidate (Plainview-Sulfuras) (HUNTER) (nil) (Raider) (nil) (0) (59.78) (nil)", -- [1117]
-			"20:57:22 - Comm received:^1^SverTest^T^N1^S0.3.1^t^^ (from:) (Acroyear) (distri:) (GUILD)", -- [1118]
-			"20:57:27 - VotingFrame:Update() without lootTable!!", -- [1119]
-			"20:57:35 - UpdateGroup (table: 0000012E6C015380)", -- [1120]
-			"20:57:35 - ML:AddCandidate (Minica-Sulfuras) (WARRIOR) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1121]
-			"20:57:35 - ML:AddCandidate (Helles-Sulfuras) (PALADIN) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1122]
-			"20:57:35 - ML:AddCandidate (Plainview-Sulfuras) (HUNTER) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1123]
-			"20:57:35 - ML:AddCandidate (Happyjugs-Sulfuras) (PALADIN) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1124]
-			"20:57:35 - ML:AddCandidate (Lrdvoldemort-Sulfuras) (MAGE) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1125]
-			"20:57:35 - ML:AddCandidate (Acroyear-Sulfuras) (MAGE) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1126]
-			"20:57:35 - GetCouncilInGroup (Topshelf-Sulfuras) (Hashmeer-Sulfuras)", -- [1127]
-			"20:57:36 - Comm received:^1^SMLdb^T^N1^T^SallowNotes^B^Stimeout^N60^SselfVote^B^Sresponses^T^Sdefault^T^t^t^SmultiVote^B^Sbuttons^T^Sdefault^T^SnumButtons^N3^t^t^SnumButtons^N3^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1128]
-			"20:57:36 - Comm received:^1^Scandidates^T^N1^T^SKaldeezer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SRaider^t^SMinica-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SAgora-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SPipers-Sulfuras^T^Srole^SNONE^Sclass^SDRUID^Srank^S^t^SNorgashaks-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SClass~`Leader^t^SHealwho-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPALADIN^Senchanter^B^Srank^SMember^t^SHoogs-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SPRIEST^Srank^SClass~`Leader^t^SDerekowns-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SBomann-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^STrial^t^SShway-Sulfuras^T^Srole^SNONE^Sclass^SROGUE^Srank^S^t^SAcroyear-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SHelles-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SOdarnwewiped-Sulfuras^T^Srole^SNONE^Sclass^SPRIEST^Srank^S^t^SHappyjugs-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SHolypally-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SSlimmthicc-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPRIEST^Senchanter^B^Srank^SRaider^t^SHashmeer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SSenior~`Officer^t^SLrdvoldemort-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SMcmac-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SClass~`Leader^t^SBountybull-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SMAGE^Senchanter^B^Srank^SRaider^t^SFistandalus-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SPALADIN^Srank^STrial^t^STopshelf-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SGuild~`Master^t^SSchmilsson-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SSenior~`Officer^t^SPlainview-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SRenae-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SGurdurs-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1129]
-			"20:57:36 - Comm received:^1^SplayerInfo^T^N1^SMinica-Sulfuras^N2^SWARRIOR^N4^SOfficer^N6^N0^N7^N59.95^t^^ (from:) (Minica) (distri:) (WHISPER)", -- [1130]
-			"20:57:36 - ML:AddCandidate (Minica-Sulfuras) (WARRIOR) (nil) (Officer) (nil) (0) (59.95) (nil)", -- [1131]
-			"20:57:36 - Comm received:^1^SplayerInfo^T^N1^SHelles-Sulfuras^N2^SPALADIN^N4^SClass~`Leader^N6^N0^N7^N57.67^t^^ (from:) (Helles) (distri:) (WHISPER)", -- [1132]
-			"20:57:36 - ML:AddCandidate (Helles-Sulfuras) (PALADIN) (nil) (Class Leader) (nil) (0) (57.67) (nil)", -- [1133]
-			"20:57:36 - Comm received:^1^SplayerInfo^T^N1^SLrdvoldemort-Sulfuras^N2^SMAGE^N4^SRaider^N6^N0^N7^N62.76^t^^ (from:) (Lrdvoldemort) (distri:) (WHISPER)", -- [1134]
-			"20:57:36 - ML:AddCandidate (Lrdvoldemort-Sulfuras) (MAGE) (nil) (Raider) (nil) (0) (62.76) (nil)", -- [1135]
-			"20:57:36 - Comm received:^1^SplayerInfo^T^N1^SAcroyear-Sulfuras^N2^SMAGE^N4^SRaider^N6^N0^N7^N54.84^t^^ (from:) (Acroyear) (distri:) (WHISPER)", -- [1136]
-			"20:57:36 - ML:AddCandidate (Acroyear-Sulfuras) (MAGE) (nil) (Raider) (nil) (0) (54.84) (nil)", -- [1137]
-			"20:57:36 - Comm received:^1^SplayerInfo^T^N1^SPlainview-Sulfuras^N2^SHUNTER^N4^SRaider^N6^N0^N7^N59.78^t^^ (from:) (Plainview) (distri:) (WHISPER)", -- [1138]
-			"20:57:36 - ML:AddCandidate (Plainview-Sulfuras) (HUNTER) (nil) (Raider) (nil) (0) (59.78) (nil)", -- [1139]
-			"20:57:36 - Comm received:^1^SplayerInfo^T^N1^SHappyjugs-Sulfuras^N2^SPALADIN^N4^SRaider^N6^N0^N7^N58.18^t^^ (from:) (Happyjugs) (distri:) (WHISPER)", -- [1140]
-			"20:57:36 - ML:AddCandidate (Happyjugs-Sulfuras) (PALADIN) (nil) (Raider) (nil) (0) (58.18) (nil)", -- [1141]
-			"20:57:40 - Comm received:^1^Scouncil_request^T^t^^ (from:) (Acroyear) (distri:) (WHISPER)", -- [1142]
-			"20:57:40 - Comm received:^1^Scouncil_request^T^t^^ (from:) (Acroyear) (distri:) (WHISPER)", -- [1143]
-			"20:57:41 - Comm received:^1^Scouncil^T^N1^T^N1^STopshelf-Sulfuras^N2^SHashmeer-Sulfuras^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1144]
-			"20:57:41 - true = (IsCouncil) (Hashmeer-Sulfuras)", -- [1145]
-			"20:57:41 - Comm received:^1^Scouncil^T^N1^T^N1^STopshelf-Sulfuras^N2^SHashmeer-Sulfuras^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1146]
-			"20:57:41 - true = (IsCouncil) (Hashmeer-Sulfuras)", -- [1147]
-			"20:57:56 - ML event (CHAT_MSG_WHISPER) (should be) (Redpanda-Sulfuras) () () (Redpanda) () (0) (0) () (0) (5622) (Player-4726-00E03C66) (0) (false) (false) (false) (false)", -- [1148]
-			"20:57:59 - ML event (CHAT_MSG_WHISPER) (you can run a test ) (Redpanda-Sulfuras) () () (Redpanda) () (0) (0) () (0) (5623) (Player-4726-00E03C66) (0) (false) (false) (false) (false)", -- [1149]
-			"20:58:06 - ML event (CHAT_MSG_WHISPER) (give yourself the items or something and then check history) (Redpanda-Sulfuras) () () (Redpanda) () (0) (0) () (0) (5624) (Player-4726-00E03C66) (0) (false) (false) (false) (false)", -- [1150]
-			"20:58:24 - / (open)", -- [1151]
-			"20:58:27 - / (config)", -- [1152]
-			"20:58:34 - LootHistory:OnEnable()", -- [1153]
-			"20:58:34 - LootHistory:BuildData()", -- [1154]
-			"20:58:34 - LootHistory:Show()", -- [1155]
-			"20:58:34 - GetLootDBStatistics()", -- [1156]
-			"20:58:41 - / (config)", -- [1157]
-			"20:58:45 - Test (3) (nil) (nil)", -- [1158]
-			"20:58:45 - GetML()", -- [1159]
-			"20:58:45 - LootMethod =  (master)", -- [1160]
-			"20:58:45 - MasterLooter =  (Hashmeer-Sulfuras)", -- [1161]
-			"20:58:45 - ML:NewML (Hashmeer-Sulfuras)", -- [1162]
-			"20:58:45 - UpdateMLdb", -- [1163]
-			"20:58:45 - OnMLDBReceived", -- [1164]
-			"20:58:45 - UpdateGroup (true)", -- [1165]
-			"20:58:45 - ML:AddCandidate (Minica-Sulfuras) (WARRIOR) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1166]
-			"20:58:45 - ML:AddCandidate (Helles-Sulfuras) (PALADIN) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1167]
-			"20:58:45 - ML:AddCandidate (Plainview-Sulfuras) (HUNTER) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1168]
-			"20:58:45 - ML:AddCandidate (Happyjugs-Sulfuras) (PALADIN) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1169]
-			"20:58:45 - ML:AddCandidate (Lrdvoldemort-Sulfuras) (MAGE) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1170]
-			"20:58:45 - ML:AddCandidate (Acroyear-Sulfuras) (MAGE) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1171]
-			"20:58:45 - GetCouncilInGroup (Topshelf-Sulfuras) (Hashmeer-Sulfuras)", -- [1172]
-			"20:58:45 - ML:AddCandidate (Hashmeer-Sulfuras) (WARLOCK) (NONE) (Senior Officer) (nil) (nil) (nil) (nil)", -- [1173]
-			"20:58:45 - ML:AddItem (12757) (nil) (nil) (nil) (nil)", -- [1174]
-			"20:58:45 - Started timer: (AddItem) (for) (12757)", -- [1175]
-			"20:58:45 - ML:AddItem (19140) (nil) (nil) (nil) (nil)", -- [1176]
-			"20:58:45 - Started timer: (AddItem) (for) (19140)", -- [1177]
-			"20:58:45 - ML:AddItem (18821) (nil) (nil) (nil) (nil)", -- [1178]
-			"20:58:45 - Started timer: (AddItem) (for) (18821)", -- [1179]
-			"20:58:45 - RCSessionFrame (enabled)", -- [1180]
-			"20:58:45 - ML:AddItem (12757) (nil) (nil) (nil) (table: 0000012E6CED86F0)", -- [1181]
-			"20:58:45 - ML:AddItem (19140) (nil) (nil) (nil) (table: 0000012E6CEDA590)", -- [1182]
-			"20:58:45 - ML:AddItem (18821) (nil) (nil) (nil) (table: 0000012E6CEDD2E0)", -- [1183]
-			"20:58:45 - Comm received:^1^SplayerInfoRequest^T^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1184]
-			"20:58:45 - Comm received:^1^SMLdb^T^N1^T^SallowNotes^B^Stimeout^N60^SselfVote^B^Sresponses^T^Sdefault^T^t^t^SmultiVote^B^Sbuttons^T^Sdefault^T^SnumButtons^N3^t^t^SnumButtons^N3^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1185]
-			"20:58:45 - Comm received:^1^SMLdb^T^N1^T^SallowNotes^B^Stimeout^N60^SselfVote^B^Sresponses^T^Sdefault^T^t^t^SmultiVote^B^Sbuttons^T^Sdefault^T^SnumButtons^N3^t^t^SnumButtons^N3^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1186]
-			"20:58:45 - Comm received:^1^Scandidates^T^N1^T^SKaldeezer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SRaider^t^SMinica-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SAgora-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SPipers-Sulfuras^T^Srole^SNONE^Sclass^SDRUID^Srank^S^t^SNorgashaks-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SClass~`Leader^t^SHealwho-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPALADIN^Senchanter^B^Srank^SMember^t^SHoogs-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SPRIEST^Srank^SClass~`Leader^t^SDerekowns-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SBomann-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^STrial^t^SShway-Sulfuras^T^Srole^SNONE^Sclass^SROGUE^Srank^S^t^SAcroyear-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SHelles-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SOdarnwewiped-Sulfuras^T^Srole^SNONE^Sclass^SPRIEST^Srank^S^t^SHappyjugs-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SHolypally-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SSlimmthicc-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPRIEST^Senchanter^B^Srank^SRaider^t^SHashmeer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SSenior~`Officer^t^SLrdvoldemort-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SMcmac-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SClass~`Leader^t^SBountybull-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SMAGE^Senchanter^B^Srank^SRaider^t^SFistandalus-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SPALADIN^Srank^STrial^t^STopshelf-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SGuild~`Master^t^SSchmilsson-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SSenior~`Officer^t^SPlainview-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SRenae-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SGurdurs-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1187]
-			"20:58:45 - Comm received:^1^Scouncil^T^N1^T^N1^STopshelf-Sulfuras^N2^SHashmeer-Sulfuras^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1188]
-			"20:58:45 - true = (IsCouncil) (Hashmeer-Sulfuras)", -- [1189]
-			"20:58:45 - Comm received:^1^SplayerInfo^T^N1^SSlimmthicc-Sulfuras^N2^SPRIEST^N3^SNONE^N4^SRaider^N5^B^N6^S<~`300^N7^N54.11^t^^ (from:) (Slimmthicc) (distri:) (WHISPER)", -- [1190]
-			"20:58:45 - ML:AddCandidate (Slimmthicc-Sulfuras) (PRIEST) (NONE) (Raider) (true) (< 300) (54.11) (nil)", -- [1191]
-			"20:58:45 - Comm received:^1^SplayerInfo^T^N1^SKaldeezer-Sulfuras^N2^SDRUID^N3^SNONE^N4^SRaider^N6^N0^N7^N54.82^t^^ (from:) (Kaldeezer) (distri:) (WHISPER)", -- [1192]
-			"20:58:45 - ML:AddCandidate (Kaldeezer-Sulfuras) (DRUID) (NONE) (Raider) (nil) (0) (54.82) (nil)", -- [1193]
-			"20:58:45 - Comm received:^1^SplayerInfo^T^N1^SGurdurs-Sulfuras^N2^SWARRIOR^N3^SNONE^N4^SOfficer^N6^N0^N7^N62.44^t^^ (from:) (Gurdurs) (distri:) (WHISPER)", -- [1194]
-			"20:58:45 - ML:AddCandidate (Gurdurs-Sulfuras) (WARRIOR) (NONE) (Officer) (nil) (0) (62.44) (nil)", -- [1195]
-			"20:58:45 - Comm received:^1^SplayerInfo^T^N1^SSchmilsson-Sulfuras^N2^SWARRIOR^N3^SNONE^N4^SSenior~`Officer^N6^N0^N7^N55.83^t^^ (from:) (Schmilsson) (distri:) (WHISPER)", -- [1196]
-			"20:58:45 - ML:AddCandidate (Schmilsson-Sulfuras) (WARRIOR) (NONE) (Senior Officer) (nil) (0) (55.83) (nil)", -- [1197]
-			"20:58:45 - Comm received:^1^SplayerInfo^T^N1^SHoogs-Sulfuras^N2^SPRIEST^N3^SNONE^N4^SClass~`Leader^N6^N0^N7^N54.94^t^^ (from:) (Hoogs) (distri:) (WHISPER)", -- [1198]
-			"20:58:45 - ML:AddCandidate (Hoogs-Sulfuras) (PRIEST) (NONE) (Class Leader) (nil) (0) (54.94) (nil)", -- [1199]
-			"20:58:45 - Comm received:^1^SplayerInfo^T^N1^SFistandalus-Sulfuras^N2^SPALADIN^N3^SNONE^N4^STrial^N6^N0^N7^N49.74^t^^ (from:) (Fistandalus) (distri:) (WHISPER)", -- [1200]
-			"20:58:45 - ML:AddCandidate (Fistandalus-Sulfuras) (PALADIN) (NONE) (Trial) (nil) (0) (49.74) (nil)", -- [1201]
-			"20:58:45 - Comm received:^1^SplayerInfo^T^N1^SHelles-Sulfuras^N2^SPALADIN^N4^SClass~`Leader^N6^N0^N7^N57.67^t^^ (from:) (Helles) (distri:) (WHISPER)", -- [1202]
-			"20:58:45 - ML:AddCandidate (Helles-Sulfuras) (PALADIN) (nil) (Class Leader) (nil) (0) (57.67) (nil)", -- [1203]
-			"20:58:45 - Comm received:^1^SplayerInfo^T^N1^SMinica-Sulfuras^N2^SWARRIOR^N4^SOfficer^N6^N0^N7^N59.95^t^^ (from:) (Minica) (distri:) (WHISPER)", -- [1204]
-			"20:58:45 - ML:AddCandidate (Minica-Sulfuras) (WARRIOR) (nil) (Officer) (nil) (0) (59.95) (nil)", -- [1205]
-			"20:58:45 - Comm received:^1^SplayerInfo^T^N1^SNorgashaks-Sulfuras^N2^SWARLOCK^N3^SNONE^N4^SClass~`Leader^N6^N0^N7^N54.42^t^^ (from:) (Norgashaks) (distri:) (WHISPER)", -- [1206]
-			"20:58:45 - ML:AddCandidate (Norgashaks-Sulfuras) (WARLOCK) (NONE) (Class Leader) (nil) (0) (54.42) (nil)", -- [1207]
-			"20:58:45 - Comm received:^1^SplayerInfo^T^N1^SHealwho-Sulfuras^N2^SPALADIN^N3^SNONE^N4^SMember^N5^B^N6^S<~`300^N7^N56.59^t^^ (from:) (Healwho) (distri:) (WHISPER)", -- [1208]
-			"20:58:45 - ML:AddCandidate (Healwho-Sulfuras) (PALADIN) (NONE) (Member) (true) (< 300) (56.59) (nil)", -- [1209]
-			"20:58:45 - Comm received:^1^SplayerInfo^T^N1^SLrdvoldemort-Sulfuras^N2^SMAGE^N4^SRaider^N6^N0^N7^N62.76^t^^ (from:) (Lrdvoldemort) (distri:) (WHISPER)", -- [1210]
-			"20:58:45 - ML:AddCandidate (Lrdvoldemort-Sulfuras) (MAGE) (nil) (Raider) (nil) (0) (62.76) (nil)", -- [1211]
-			"20:58:45 - Comm received:^1^SplayerInfo^T^N1^SMcmac-Sulfuras^N2^SHUNTER^N3^SNONE^N4^SClass~`Leader^N6^N0^N7^N63.61^t^^ (from:) (Mcmac) (distri:) (WHISPER)", -- [1212]
-			"20:58:45 - ML:AddCandidate (Mcmac-Sulfuras) (HUNTER) (NONE) (Class Leader) (nil) (0) (63.61) (nil)", -- [1213]
-			"20:58:45 - Comm received:^1^SplayerInfo^T^N1^SAcroyear-Sulfuras^N2^SMAGE^N4^SRaider^N6^N0^N7^N54.84^t^^ (from:) (Acroyear) (distri:) (WHISPER)", -- [1214]
-			"20:58:45 - ML:AddCandidate (Acroyear-Sulfuras) (MAGE) (nil) (Raider) (nil) (0) (54.84) (nil)", -- [1215]
-			"20:58:45 - Comm received:^1^SplayerInfo^T^N1^SPlainview-Sulfuras^N2^SHUNTER^N4^SRaider^N6^N0^N7^N59.78^t^^ (from:) (Plainview) (distri:) (WHISPER)", -- [1216]
-			"20:58:45 - ML:AddCandidate (Plainview-Sulfuras) (HUNTER) (nil) (Raider) (nil) (0) (59.78) (nil)", -- [1217]
-			"20:58:45 - Comm received:^1^SplayerInfo^T^N1^SHappyjugs-Sulfuras^N2^SPALADIN^N4^SRaider^N6^N0^N7^N58.18^t^^ (from:) (Happyjugs) (distri:) (WHISPER)", -- [1218]
-			"20:58:45 - ML:AddCandidate (Happyjugs-Sulfuras) (PALADIN) (nil) (Raider) (nil) (0) (58.18) (nil)", -- [1219]
-			"20:58:45 - Comm received:^1^SplayerInfo^T^N1^STopshelf-Sulfuras^N2^SDRUID^N3^SNONE^N4^SGuild~`Master^N6^N0^N7^N60.65^t^^ (from:) (Topshelf) (distri:) (WHISPER)", -- [1220]
-			"20:58:45 - ML:AddCandidate (Topshelf-Sulfuras) (DRUID) (NONE) (Guild Master) (nil) (0) (60.65) (nil)", -- [1221]
-			"20:58:45 - Comm received:^1^SplayerInfo^T^N1^SBomann-Sulfuras^N2^SWARLOCK^N3^SNONE^N4^STrial^N6^N0^N7^N59.22^t^^ (from:) (Bomann) (distri:) (WHISPER)", -- [1222]
-			"20:58:45 - ML:AddCandidate (Bomann-Sulfuras) (WARLOCK) (NONE) (Trial) (nil) (0) (59.22) (nil)", -- [1223]
-			"20:58:45 - Comm received:^1^SplayerInfo^T^N1^SHashmeer-Sulfuras^N2^SWARLOCK^N3^SNONE^N4^SSenior~`Officer^N6^N0^N7^N59.89^t^^ (from:) (Hashmeer) (distri:) (WHISPER)", -- [1224]
-			"20:58:45 - ML:AddCandidate (Hashmeer-Sulfuras) (WARLOCK) (NONE) (Senior Officer) (nil) (0) (59.89) (nil)", -- [1225]
-			"20:58:46 - Comm received:^1^Scandidates^T^N1^T^SKaldeezer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SRaider^t^SMinica-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SAgora-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SPipers-Sulfuras^T^Srole^SNONE^Sclass^SDRUID^Srank^S^t^SNorgashaks-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SClass~`Leader^t^SHealwho-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPALADIN^Senchanter^B^Srank^SMember^t^SHoogs-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SPRIEST^Srank^SClass~`Leader^t^SDerekowns-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SBomann-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^STrial^t^SShway-Sulfuras^T^Srole^SNONE^Sclass^SROGUE^Srank^S^t^SAcroyear-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SHelles-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SOdarnwewiped-Sulfuras^T^Srole^SNONE^Sclass^SPRIEST^Srank^S^t^SHappyjugs-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SHolypally-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SSlimmthicc-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPRIEST^Senchanter^B^Srank^SRaider^t^SHashmeer-Sulfuras^T^Srole^SNONE^Sclass^SWARLOCK^Srank^SSenior~`Officer^t^SLrdvoldemort-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SMcmac-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SClass~`Leader^t^SBountybull-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SMAGE^Senchanter^B^Srank^SRaider^t^SFistandalus-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SPALADIN^Srank^STrial^t^STopshelf-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SGuild~`Master^t^SSchmilsson-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SSenior~`Officer^t^SPlainview-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SRenae-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SGurdurs-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1226]
-			"20:58:49 - ML:Award (1) (nil) (nil) (nil)", -- [1227]
-			"20:58:49 - ML:awardFailed (1) (nil) (test_mode) (function: 0000012E62E78240)", -- [1228]
-			"20:58:49 - ML:Award (2) (nil) (nil) (nil)", -- [1229]
-			"20:58:49 - ML:awardFailed (2) (nil) (test_mode) (function: 0000012E62E78BA0)", -- [1230]
-			"20:58:49 - ML:Award (3) (nil) (nil) (nil)", -- [1231]
-			"20:58:49 - ML:awardFailed (3) (nil) (test_mode) (function: 0000012E62E78E70)", -- [1232]
-			"20:58:49 - ML:EndSession()", -- [1233]
-			"20:58:49 - RCSessionFrame (disabled)", -- [1234]
-			"20:58:49 - Comm received:^1^Ssession_end^T^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1235]
-			"20:58:50 - Comm received:^1^Slooted^T^N1^N1234^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1236]
-			"20:58:50 - GetML()", -- [1237]
-			"20:58:50 - LootMethod =  (master)", -- [1238]
-			"20:58:50 - MasterLooter =  (Hashmeer-Sulfuras)", -- [1239]
-			"20:58:50 - NewMLCheck (No ML Change)", -- [1240]
-			"20:58:56 - / (config)", -- [1241]
-			"20:59:00 - Timer MLdb_check passed", -- [1242]
-			"20:59:05 - Timer MLdb_check passed", -- [1243]
-			"20:59:13 - Comm received:^1^SverTest^T^N1^S2.14.0^t^^ (from:) (Pipers) (distri:) (GUILD)", -- [1244]
-			"20:59:17 - UpdateGroup (table: 0000012E6C015380)", -- [1245]
-			"20:59:17 - ML:AddCandidate (Minica-Sulfuras) (WARRIOR) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1246]
-			"20:59:17 - ML:AddCandidate (Helles-Sulfuras) (PALADIN) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1247]
-			"20:59:17 - ML:AddCandidate (Plainview-Sulfuras) (HUNTER) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1248]
-			"20:59:17 - ML:AddCandidate (Happyjugs-Sulfuras) (PALADIN) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1249]
-			"20:59:17 - ML:AddCandidate (Lrdvoldemort-Sulfuras) (MAGE) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1250]
-			"20:59:17 - ML:AddCandidate (Acroyear-Sulfuras) (MAGE) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1251]
-			"20:59:17 - GetCouncilInGroup (Topshelf-Sulfuras) (Hashmeer-Sulfuras)", -- [1252]
-			"20:59:17 - Comm received:^1^SMLdb^T^N1^T^SallowNotes^B^Stimeout^N60^SselfVote^B^Sresponses^T^Sdefault^T^t^t^SmultiVote^B^Sbuttons^T^Sdefault^T^SnumButtons^N3^t^t^SnumButtons^N3^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1253]
-			"20:59:17 - Comm received:^1^Scandidates^T^N1^T^SKaldeezer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SRaider^t^SMinica-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SAgora-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SPipers-Sulfuras^T^Srole^SNONE^Sclass^SDRUID^Srank^S^t^SNorgashaks-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SClass~`Leader^t^SHealwho-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPALADIN^Senchanter^B^Srank^SMember^t^SHoogs-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SPRIEST^Srank^SClass~`Leader^t^SDerekowns-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SBomann-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^STrial^t^SShway-Sulfuras^T^Srole^SNONE^Sclass^SROGUE^Srank^S^t^SAcroyear-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SHelles-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SOdarnwewiped-Sulfuras^T^Srole^SNONE^Sclass^SPRIEST^Srank^S^t^SHappyjugs-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SHolypally-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SSlimmthicc-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPRIEST^Senchanter^B^Srank^SRaider^t^SHashmeer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SSenior~`Officer^t^SLrdvoldemort-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SMcmac-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SClass~`Leader^t^SBountybull-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SMAGE^Senchanter^B^Srank^SRaider^t^SFistandalus-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SPALADIN^Srank^STrial^t^STopshelf-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SGuild~`Master^t^SSchmilsson-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SSenior~`Officer^t^SPlainview-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SRenae-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SGurdurs-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SOfficer^t^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1254]
-			"20:59:17 - Comm received:^1^SplayerInfo^T^N1^SMinica-Sulfuras^N2^SWARRIOR^N4^SOfficer^N6^N0^N7^N59.95^t^^ (from:) (Minica) (distri:) (WHISPER)", -- [1255]
-			"20:59:17 - ML:AddCandidate (Minica-Sulfuras) (WARRIOR) (nil) (Officer) (nil) (0) (59.95) (nil)", -- [1256]
-			"20:59:17 - Comm received:^1^SplayerInfo^T^N1^SPlainview-Sulfuras^N2^SHUNTER^N4^SRaider^N6^N0^N7^N59.78^t^^ (from:) (Plainview) (distri:) (WHISPER)", -- [1257]
-			"20:59:17 - ML:AddCandidate (Plainview-Sulfuras) (HUNTER) (nil) (Raider) (nil) (0) (59.78) (nil)", -- [1258]
-			"20:59:17 - Comm received:^1^SplayerInfo^T^N1^SLrdvoldemort-Sulfuras^N2^SMAGE^N4^SRaider^N6^N0^N7^N62.76^t^^ (from:) (Lrdvoldemort) (distri:) (WHISPER)", -- [1259]
-			"20:59:17 - ML:AddCandidate (Lrdvoldemort-Sulfuras) (MAGE) (nil) (Raider) (nil) (0) (62.76) (nil)", -- [1260]
-			"20:59:17 - Comm received:^1^SplayerInfo^T^N1^SHelles-Sulfuras^N2^SPALADIN^N4^SClass~`Leader^N6^N0^N7^N57.67^t^^ (from:) (Helles) (distri:) (WHISPER)", -- [1261]
-			"20:59:17 - ML:AddCandidate (Helles-Sulfuras) (PALADIN) (nil) (Class Leader) (nil) (0) (57.67) (nil)", -- [1262]
-			"20:59:17 - Comm received:^1^SplayerInfo^T^N1^SAcroyear-Sulfuras^N2^SMAGE^N4^SRaider^N6^N0^N7^N54.84^t^^ (from:) (Acroyear) (distri:) (WHISPER)", -- [1263]
-			"20:59:17 - ML:AddCandidate (Acroyear-Sulfuras) (MAGE) (nil) (Raider) (nil) (0) (54.84) (nil)", -- [1264]
-			"20:59:17 - Comm received:^1^SplayerInfo^T^N1^SHappyjugs-Sulfuras^N2^SPALADIN^N4^SRaider^N6^N0^N7^N58.18^t^^ (from:) (Happyjugs) (distri:) (WHISPER)", -- [1265]
-			"20:59:17 - ML:AddCandidate (Happyjugs-Sulfuras) (PALADIN) (nil) (Raider) (nil) (0) (58.18) (nil)", -- [1266]
-			"20:59:23 - Comm received:^1^Scouncil_request^T^t^^ (from:) (Pipers) (distri:) (WHISPER)", -- [1267]
-			"20:59:23 - Comm received:^1^Scouncil_request^T^t^^ (from:) (Pipers) (distri:) (WHISPER)", -- [1268]
-			"20:59:23 - Comm received:^1^Scouncil^T^N1^T^N1^STopshelf-Sulfuras^N2^SHashmeer-Sulfuras^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1269]
-			"20:59:23 - true = (IsCouncil) (Hashmeer-Sulfuras)", -- [1270]
-			"20:59:23 - Comm received:^1^Scouncil^T^N1^T^N1^STopshelf-Sulfuras^N2^SHashmeer-Sulfuras^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1271]
-			"20:59:23 - true = (IsCouncil) (Hashmeer-Sulfuras)", -- [1272]
-			"20:59:46 - Comm received:^1^SverTest^T^N1^S0.4.2^t^^ (from:) (Gadaris) (distri:) (GUILD)", -- [1273]
-			"21:00:31 - Comm received:^1^SverTest^T^N1^S0.5.0^N2^SBeta.1^t^^ (from:) (Rivane) (distri:) (GUILD)", -- [1274]
-			"21:00:47 - Comm received:^1^SverTest^T^N1^S0.4.2^t^^ (from:) (Renae) (distri:) (GUILD)", -- [1275]
-			"21:00:51 - UpdateGroup (table: 0000012E6C015380)", -- [1276]
-			"21:00:51 - ML:AddCandidate (Minica-Sulfuras) (WARRIOR) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1277]
-			"21:00:51 - ML:AddCandidate (Helles-Sulfuras) (PALADIN) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1278]
-			"21:00:51 - ML:AddCandidate (Plainview-Sulfuras) (HUNTER) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1279]
-			"21:00:51 - ML:AddCandidate (Happyjugs-Sulfuras) (PALADIN) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1280]
-			"21:00:51 - ML:AddCandidate (Lrdvoldemort-Sulfuras) (MAGE) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1281]
-			"21:00:51 - ML:AddCandidate (Acroyear-Sulfuras) (MAGE) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1282]
-			"21:00:51 - GetCouncilInGroup (Topshelf-Sulfuras) (Hashmeer-Sulfuras)", -- [1283]
-			"21:00:51 - Comm received:^1^SMLdb^T^N1^T^SallowNotes^B^Stimeout^N60^SselfVote^B^Sresponses^T^Sdefault^T^t^t^SmultiVote^B^Sbuttons^T^Sdefault^T^SnumButtons^N3^t^t^SnumButtons^N3^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1284]
-			"21:00:51 - Comm received:^1^Scandidates^T^N1^T^SKaldeezer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SRaider^t^SMinica-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SAgora-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SPipers-Sulfuras^T^Srole^SNONE^Sclass^SDRUID^Srank^S^t^SNorgashaks-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SClass~`Leader^t^SHealwho-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPALADIN^Senchanter^B^Srank^SMember^t^SHoogs-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SPRIEST^Srank^SClass~`Leader^t^SDerekowns-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SBomann-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^STrial^t^SShway-Sulfuras^T^Srole^SNONE^Sclass^SROGUE^Srank^S^t^SAcroyear-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SHelles-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SOdarnwewiped-Sulfuras^T^Srole^SNONE^Sclass^SPRIEST^Srank^S^t^SHappyjugs-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SHolypally-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SSlimmthicc-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPRIEST^Senchanter^B^Srank^SRaider^t^SHashmeer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SSenior~`Officer^t^SLrdvoldemort-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SMcmac-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SClass~`Leader^t^SBountybull-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SMAGE^Senchanter^B^Srank^SRaider^t^SFistandalus-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SPALADIN^Srank^STrial^t^STopshelf-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SGuild~`Master^t^SSchmilsson-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SSenior~`Officer^t^SPlainview-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SRenae-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SGurdurs-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SOfficer^t^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1285]
-			"21:00:51 - Comm received:^1^SplayerInfo^T^N1^SMinica-Sulfuras^N2^SWARRIOR^N4^SOfficer^N6^N0^N7^N59.95^t^^ (from:) (Minica) (distri:) (WHISPER)", -- [1286]
-			"21:00:51 - ML:AddCandidate (Minica-Sulfuras) (WARRIOR) (nil) (Officer) (nil) (0) (59.95) (nil)", -- [1287]
-			"21:00:51 - Comm received:^1^SplayerInfo^T^N1^SPlainview-Sulfuras^N2^SHUNTER^N4^SRaider^N6^N0^N7^N59.78^t^^ (from:) (Plainview) (distri:) (WHISPER)", -- [1288]
-			"21:00:51 - ML:AddCandidate (Plainview-Sulfuras) (HUNTER) (nil) (Raider) (nil) (0) (59.78) (nil)", -- [1289]
-			"21:00:51 - Comm received:^1^SplayerInfo^T^N1^SHelles-Sulfuras^N2^SPALADIN^N4^SClass~`Leader^N6^N0^N7^N57.67^t^^ (from:) (Helles) (distri:) (WHISPER)", -- [1290]
-			"21:00:51 - ML:AddCandidate (Helles-Sulfuras) (PALADIN) (nil) (Class Leader) (nil) (0) (57.67) (nil)", -- [1291]
-			"21:00:51 - Comm received:^1^SplayerInfo^T^N1^SLrdvoldemort-Sulfuras^N2^SMAGE^N4^SRaider^N6^N0^N7^N62.76^t^^ (from:) (Lrdvoldemort) (distri:) (WHISPER)", -- [1292]
-			"21:00:51 - ML:AddCandidate (Lrdvoldemort-Sulfuras) (MAGE) (nil) (Raider) (nil) (0) (62.76) (nil)", -- [1293]
-			"21:00:51 - Comm received:^1^SplayerInfo^T^N1^SAcroyear-Sulfuras^N2^SMAGE^N4^SRaider^N6^N0^N7^N54.84^t^^ (from:) (Acroyear) (distri:) (WHISPER)", -- [1294]
-			"21:00:51 - ML:AddCandidate (Acroyear-Sulfuras) (MAGE) (nil) (Raider) (nil) (0) (54.84) (nil)", -- [1295]
-			"21:00:51 - Comm received:^1^SplayerInfo^T^N1^SHappyjugs-Sulfuras^N2^SPALADIN^N4^SRaider^N6^N0^N7^N58.18^t^^ (from:) (Happyjugs) (distri:) (WHISPER)", -- [1296]
-			"21:00:51 - ML:AddCandidate (Happyjugs-Sulfuras) (PALADIN) (nil) (Raider) (nil) (0) (58.18) (nil)", -- [1297]
-			"21:00:51 - ML event (CHAT_MSG_WHISPER) (of course im comfortable) (Minica-Sulfuras) () () (Minica) () (0) (0) () (0) (5668) (Player-4726-00C01D39) (0) (false) (false) (false) (false)", -- [1298]
-			"21:00:58 - ML event (CHAT_MSG_WHISPER) (not much we can do) (Minica-Sulfuras) () () (Minica) () (0) (0) () (0) (5670) (Player-4726-00C01D39) (0) (false) (false) (false) (false)", -- [1299]
-			"21:00:58 - Comm received:^1^Scouncil_request^T^t^^ (from:) (Renae) (distri:) (WHISPER)", -- [1300]
-			"21:00:58 - Comm received:^1^Scouncil_request^T^t^^ (from:) (Renae) (distri:) (WHISPER)", -- [1301]
-			"21:00:58 - Comm received:^1^Scouncil^T^N1^T^N1^STopshelf-Sulfuras^N2^SHashmeer-Sulfuras^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1302]
-			"21:00:58 - true = (IsCouncil) (Hashmeer-Sulfuras)", -- [1303]
-			"21:00:58 - Comm received:^1^Scouncil^T^N1^T^N1^STopshelf-Sulfuras^N2^SHashmeer-Sulfuras^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1304]
-			"21:00:58 - true = (IsCouncil) (Hashmeer-Sulfuras)", -- [1305]
-			"21:01:00 - ML event (CHAT_MSG_WHISPER) (lol) (Minica-Sulfuras) () () (Minica) () (0) (0) () (0) (5672) (Player-4726-00C01D39) (0) (false) (false) (false) (false)", -- [1306]
-			"21:01:24 - VotingFrame:Update() without lootTable!!", -- [1307]
-			"21:01:33 - UpdateGroup (table: 0000012E6C015380)", -- [1308]
-			"21:01:33 - ML:AddCandidate (Minica-Sulfuras) (WARRIOR) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1309]
-			"21:01:33 - ML:AddCandidate (Helles-Sulfuras) (PALADIN) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1310]
-			"21:01:33 - ML:AddCandidate (Plainview-Sulfuras) (HUNTER) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1311]
-			"21:01:33 - ML:AddCandidate (Happyjugs-Sulfuras) (PALADIN) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1312]
-			"21:01:33 - ML:AddCandidate (Lrdvoldemort-Sulfuras) (MAGE) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1313]
-			"21:01:33 - ML:AddCandidate (Acroyear-Sulfuras) (MAGE) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1314]
-			"21:01:33 - ML:AddCandidate (Lexxii-Sulfuras) (MAGE) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1315]
-			"21:01:33 - GetCouncilInGroup (Topshelf-Sulfuras) (Hashmeer-Sulfuras)", -- [1316]
-			"21:01:33 - Comm received:^1^SMLdb^T^N1^T^SallowNotes^B^Stimeout^N60^SselfVote^B^Sresponses^T^Sdefault^T^t^t^SmultiVote^B^Sbuttons^T^Sdefault^T^SnumButtons^N3^t^t^SnumButtons^N3^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1317]
-			"21:01:33 - Comm received:^1^Scandidates^T^N1^T^SKaldeezer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SRaider^t^SMinica-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SAgora-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SPipers-Sulfuras^T^Srole^SNONE^Sclass^SDRUID^Srank^S^t^SNorgashaks-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SClass~`Leader^t^SHoogs-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SPRIEST^Srank^SClass~`Leader^t^SHealwho-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPALADIN^Senchanter^B^Srank^SMember^t^SLexxii-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SDerekowns-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SBomann-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^STrial^t^SShway-Sulfuras^T^Srole^SNONE^Sclass^SROGUE^Srank^S^t^SAcroyear-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SHelles-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SOdarnwewiped-Sulfuras^T^Srole^SNONE^Sclass^SPRIEST^Srank^S^t^SHappyjugs-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SHolypally-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SSlimmthicc-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPRIEST^Senchanter^B^Srank^SRaider^t^SHashmeer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SSenior~`Officer^t^SLrdvoldemort-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SMcmac-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SClass~`Leader^t^SBountybull-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SMAGE^Senchanter^B^Srank^SRaider^t^SFistandalus-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SPALADIN^Srank^STrial^t^STopshelf-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SGuild~`Master^t^SSchmilsson-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SSenior~`Officer^t^SPlainview-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SRenae-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SGurdurs-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SOfficer^t^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1318]
-			"21:01:33 - Comm received:^1^SplayerInfo^T^N1^SHelles-Sulfuras^N2^SPALADIN^N4^SClass~`Leader^N6^N0^N7^N57.67^t^^ (from:) (Helles) (distri:) (WHISPER)", -- [1319]
-			"21:01:33 - ML:AddCandidate (Helles-Sulfuras) (PALADIN) (nil) (Class Leader) (nil) (0) (57.67) (nil)", -- [1320]
-			"21:01:33 - Comm received:^1^SplayerInfo^T^N1^SLrdvoldemort-Sulfuras^N2^SMAGE^N4^SRaider^N6^N0^N7^N62.76^t^^ (from:) (Lrdvoldemort) (distri:) (WHISPER)", -- [1321]
-			"21:01:33 - ML:AddCandidate (Lrdvoldemort-Sulfuras) (MAGE) (nil) (Raider) (nil) (0) (62.76) (nil)", -- [1322]
-			"21:01:33 - Comm received:^1^SplayerInfo^T^N1^SMinica-Sulfuras^N2^SWARRIOR^N4^SOfficer^N6^N0^N7^N59.95^t^^ (from:) (Minica) (distri:) (WHISPER)", -- [1323]
-			"21:01:33 - ML:AddCandidate (Minica-Sulfuras) (WARRIOR) (nil) (Officer) (nil) (0) (59.95) (nil)", -- [1324]
-			"21:01:33 - Comm received:^1^SplayerInfo^T^N1^SAcroyear-Sulfuras^N2^SMAGE^N4^SRaider^N6^N0^N7^N53.95^t^^ (from:) (Acroyear) (distri:) (WHISPER)", -- [1325]
-			"21:01:33 - ML:AddCandidate (Acroyear-Sulfuras) (MAGE) (nil) (Raider) (nil) (0) (53.95) (nil)", -- [1326]
-			"21:01:33 - Comm received:^1^SplayerInfo^T^N1^SHappyjugs-Sulfuras^N2^SPALADIN^N4^SRaider^N6^N0^N7^N58.18^t^^ (from:) (Happyjugs) (distri:) (WHISPER)", -- [1327]
-			"21:01:33 - ML:AddCandidate (Happyjugs-Sulfuras) (PALADIN) (nil) (Raider) (nil) (0) (58.18) (nil)", -- [1328]
-			"21:01:33 - Comm received:^1^SplayerInfo^T^N1^SPlainview-Sulfuras^N2^SHUNTER^N4^SRaider^N6^N0^N7^N59.78^t^^ (from:) (Plainview) (distri:) (WHISPER)", -- [1329]
-			"21:01:33 - ML:AddCandidate (Plainview-Sulfuras) (HUNTER) (nil) (Raider) (nil) (0) (59.78) (nil)", -- [1330]
-			"21:01:37 - Comm received:^1^SverTest^T^N1^S0.5.0^N2^SBeta.1^t^^ (from:) (Shadman) (distri:) (GUILD)", -- [1331]
-			"21:01:37 - ML event (CHAT_MSG_WHISPER) (if you really need me) (Helles-Sulfuras) () () (Helles) () (0) (0) () (0) (5680) (Player-4726-00B8A31A) (0) (false) (false) (false) (false)", -- [1332]
-			"21:01:43 - UpdateGroup (table: 0000012E6C015380)", -- [1333]
-			"21:01:43 - ML:AddCandidate (Minica-Sulfuras) (WARRIOR) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1334]
-			"21:01:43 - ML:AddCandidate (Helles-Sulfuras) (PALADIN) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1335]
-			"21:01:43 - ML:AddCandidate (Plainview-Sulfuras) (HUNTER) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1336]
-			"21:01:43 - ML:AddCandidate (Happyjugs-Sulfuras) (PALADIN) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1337]
-			"21:01:43 - ML:AddCandidate (Lrdvoldemort-Sulfuras) (MAGE) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1338]
-			"21:01:43 - ML:AddCandidate (Acroyear-Sulfuras) (MAGE) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1339]
-			"21:01:43 - GetCouncilInGroup (Topshelf-Sulfuras) (Hashmeer-Sulfuras)", -- [1340]
-			"21:01:43 - Comm received:^1^SMLdb^T^N1^T^SallowNotes^B^Stimeout^N60^SselfVote^B^Sresponses^T^Sdefault^T^t^t^SmultiVote^B^Sbuttons^T^Sdefault^T^SnumButtons^N3^t^t^SnumButtons^N3^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1341]
-			"21:01:43 - Comm received:^1^Scandidates^T^N1^T^SKaldeezer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SRaider^t^SMinica-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SAgora-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SPipers-Sulfuras^T^Srole^SNONE^Sclass^SDRUID^Srank^S^t^SNorgashaks-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SClass~`Leader^t^SHoogs-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SPRIEST^Srank^SClass~`Leader^t^SHealwho-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPALADIN^Senchanter^B^Srank^SMember^t^SLexxii-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SDerekowns-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SBomann-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^STrial^t^SShway-Sulfuras^T^Srole^SNONE^Sclass^SROGUE^Srank^S^t^SAcroyear-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SHelles-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SOdarnwewiped-Sulfuras^T^Srole^SNONE^Sclass^SPRIEST^Srank^S^t^SHappyjugs-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SHolypally-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SSlimmthicc-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPRIEST^Senchanter^B^Srank^SRaider^t^SHashmeer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SSenior~`Officer^t^SLrdvoldemort-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SMcmac-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SClass~`Leader^t^SBountybull-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SMAGE^Senchanter^B^Srank^SRaider^t^SFistandalus-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SPALADIN^Srank^STrial^t^STopshelf-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SGuild~`Master^t^SSchmilsson-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SSenior~`Officer^t^SPlainview-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SRenae-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SGurdurs-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SOfficer^t^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1342]
-			"21:01:43 - Comm received:^1^SplayerInfo^T^N1^SMinica-Sulfuras^N2^SWARRIOR^N4^SOfficer^N6^N0^N7^N59.95^t^^ (from:) (Minica) (distri:) (WHISPER)", -- [1343]
-			"21:01:43 - ML:AddCandidate (Minica-Sulfuras) (WARRIOR) (nil) (Officer) (nil) (0) (59.95) (nil)", -- [1344]
-			"21:01:43 - Comm received:^1^SplayerInfo^T^N1^SLrdvoldemort-Sulfuras^N2^SMAGE^N4^SRaider^N6^N0^N7^N62.76^t^^ (from:) (Lrdvoldemort) (distri:) (WHISPER)", -- [1345]
-			"21:01:43 - ML:AddCandidate (Lrdvoldemort-Sulfuras) (MAGE) (nil) (Raider) (nil) (0) (62.76) (nil)", -- [1346]
-			"21:01:43 - Comm received:^1^SplayerInfo^T^N1^SHelles-Sulfuras^N2^SPALADIN^N4^SClass~`Leader^N6^N0^N7^N57.67^t^^ (from:) (Helles) (distri:) (WHISPER)", -- [1347]
-			"21:01:43 - ML:AddCandidate (Helles-Sulfuras) (PALADIN) (nil) (Class Leader) (nil) (0) (57.67) (nil)", -- [1348]
-			"21:01:43 - Comm received:^1^SplayerInfo^T^N1^SAcroyear-Sulfuras^N2^SMAGE^N4^SRaider^N6^N0^N7^N53.95^t^^ (from:) (Acroyear) (distri:) (WHISPER)", -- [1349]
-			"21:01:43 - ML:AddCandidate (Acroyear-Sulfuras) (MAGE) (nil) (Raider) (nil) (0) (53.95) (nil)", -- [1350]
-			"21:01:43 - Comm received:^1^SplayerInfo^T^N1^SPlainview-Sulfuras^N2^SHUNTER^N4^SRaider^N6^N0^N7^N59.78^t^^ (from:) (Plainview) (distri:) (WHISPER)", -- [1351]
-			"21:01:43 - ML:AddCandidate (Plainview-Sulfuras) (HUNTER) (nil) (Raider) (nil) (0) (59.78) (nil)", -- [1352]
-			"21:01:43 - Comm received:^1^SplayerInfo^T^N1^SHappyjugs-Sulfuras^N2^SPALADIN^N4^SRaider^N6^N0^N7^N58.18^t^^ (from:) (Happyjugs) (distri:) (WHISPER)", -- [1353]
-			"21:01:43 - ML:AddCandidate (Happyjugs-Sulfuras) (PALADIN) (nil) (Raider) (nil) (0) (58.18) (nil)", -- [1354]
-			"21:01:49 - ML event (CHAT_MSG_WHISPER) (my LC addon is super old version i dont know if that matters lol) (Helles-Sulfuras) () () (Helles) () (0) (0) () (0) (5685) (Player-4726-00B8A31A) (0) (false) (false) (false) (false)", -- [1355]
-			"21:01:51 - Comm received:^1^SverTest^T^N1^S0.4.2^t^^ (from:) (Holypally) (distri:) (GUILD)", -- [1356]
-			"21:01:53 - UpdateGroup (table: 0000012E6C015380)", -- [1357]
-			"21:01:53 - ML:AddCandidate (Minica-Sulfuras) (WARRIOR) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1358]
-			"21:01:53 - ML:AddCandidate (Helles-Sulfuras) (PALADIN) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1359]
-			"21:01:53 - ML:AddCandidate (Plainview-Sulfuras) (HUNTER) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1360]
-			"21:01:53 - ML:AddCandidate (Happyjugs-Sulfuras) (PALADIN) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1361]
-			"21:01:53 - ML:AddCandidate (Lrdvoldemort-Sulfuras) (MAGE) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1362]
-			"21:01:53 - ML:AddCandidate (Acroyear-Sulfuras) (MAGE) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1363]
-			"21:01:53 - GetCouncilInGroup (Topshelf-Sulfuras) (Hashmeer-Sulfuras)", -- [1364]
-			"21:01:53 - Comm received:^1^SMLdb^T^N1^T^SallowNotes^B^Stimeout^N60^SselfVote^B^Sresponses^T^Sdefault^T^t^t^SmultiVote^B^Sbuttons^T^Sdefault^T^SnumButtons^N3^t^t^SnumButtons^N3^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1365]
-			"21:01:53 - Comm received:^1^Scandidates^T^N1^T^SKaldeezer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SRaider^t^SMinica-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SAgora-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SPipers-Sulfuras^T^Srole^SNONE^Sclass^SDRUID^Srank^S^t^SNorgashaks-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SClass~`Leader^t^SHoogs-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SPRIEST^Srank^SClass~`Leader^t^SHealwho-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPALADIN^Senchanter^B^Srank^SMember^t^SLexxii-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SDerekowns-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SBomann-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^STrial^t^SShway-Sulfuras^T^Srole^SNONE^Sclass^SROGUE^Srank^S^t^SAcroyear-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SHelles-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SOdarnwewiped-Sulfuras^T^Srole^SNONE^Sclass^SPRIEST^Srank^S^t^SHappyjugs-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SHolypally-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SSlimmthicc-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPRIEST^Senchanter^B^Srank^SRaider^t^SHashmeer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SSenior~`Officer^t^SLrdvoldemort-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SMcmac-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SClass~`Leader^t^SBountybull-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SMAGE^Senchanter^B^Srank^SRaider^t^SFistandalus-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SPALADIN^Srank^STrial^t^STopshelf-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SGuild~`Master^t^SSchmilsson-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SSenior~`Officer^t^SPlainview-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SRenae-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SGurdurs-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SOfficer^t^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1366]
-			"21:01:53 - Comm received:^1^SplayerInfo^T^N1^SLrdvoldemort-Sulfuras^N2^SMAGE^N4^SRaider^N6^N0^N7^N62.76^t^^ (from:) (Lrdvoldemort) (distri:) (WHISPER)", -- [1367]
-			"21:01:53 - ML:AddCandidate (Lrdvoldemort-Sulfuras) (MAGE) (nil) (Raider) (nil) (0) (62.76) (nil)", -- [1368]
-			"21:01:53 - Comm received:^1^SplayerInfo^T^N1^SHelles-Sulfuras^N2^SPALADIN^N4^SClass~`Leader^N6^N0^N7^N57.67^t^^ (from:) (Helles) (distri:) (WHISPER)", -- [1369]
-			"21:01:53 - ML:AddCandidate (Helles-Sulfuras) (PALADIN) (nil) (Class Leader) (nil) (0) (57.67) (nil)", -- [1370]
-			"21:01:53 - Comm received:^1^SplayerInfo^T^N1^SMinica-Sulfuras^N2^SWARRIOR^N4^SOfficer^N6^N0^N7^N59.95^t^^ (from:) (Minica) (distri:) (WHISPER)", -- [1371]
-			"21:01:53 - ML:AddCandidate (Minica-Sulfuras) (WARRIOR) (nil) (Officer) (nil) (0) (59.95) (nil)", -- [1372]
-			"21:01:53 - Comm received:^1^SplayerInfo^T^N1^SAcroyear-Sulfuras^N2^SMAGE^N4^SRaider^N6^N0^N7^N53.95^t^^ (from:) (Acroyear) (distri:) (WHISPER)", -- [1373]
-			"21:01:53 - ML:AddCandidate (Acroyear-Sulfuras) (MAGE) (nil) (Raider) (nil) (0) (53.95) (nil)", -- [1374]
-			"21:01:53 - Comm received:^1^SplayerInfo^T^N1^SPlainview-Sulfuras^N2^SHUNTER^N4^SRaider^N6^N0^N7^N59.78^t^^ (from:) (Plainview) (distri:) (WHISPER)", -- [1375]
-			"21:01:53 - ML:AddCandidate (Plainview-Sulfuras) (HUNTER) (nil) (Raider) (nil) (0) (59.78) (nil)", -- [1376]
-			"21:01:53 - Comm received:^1^SplayerInfo^T^N1^SHappyjugs-Sulfuras^N2^SPALADIN^N4^SRaider^N6^N0^N7^N58.18^t^^ (from:) (Happyjugs) (distri:) (WHISPER)", -- [1377]
-			"21:01:53 - ML:AddCandidate (Happyjugs-Sulfuras) (PALADIN) (nil) (Raider) (nil) (0) (58.18) (nil)", -- [1378]
-			"21:02:02 - Comm received:^1^Scouncil_request^T^t^^ (from:) (Holypally) (distri:) (WHISPER)", -- [1379]
-			"21:02:02 - Comm received:^1^Scouncil_request^T^t^^ (from:) (Holypally) (distri:) (WHISPER)", -- [1380]
-			"21:02:02 - Comm received:^1^Scouncil^T^N1^T^N1^STopshelf-Sulfuras^N2^SHashmeer-Sulfuras^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1381]
-			"21:02:02 - true = (IsCouncil) (Hashmeer-Sulfuras)", -- [1382]
-			"21:02:02 - Comm received:^1^Scouncil^T^N1^T^N1^STopshelf-Sulfuras^N2^SHashmeer-Sulfuras^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1383]
-			"21:02:02 - true = (IsCouncil) (Hashmeer-Sulfuras)", -- [1384]
-			"21:02:15 - VotingFrame:Update() without lootTable!!", -- [1385]
-			"21:02:47 - VotingFrame:Update() without lootTable!!", -- [1386]
-			"21:02:55 - VotingFrame:Update() without lootTable!!", -- [1387]
-			"21:03:32 - ML event (CHAT_MSG_WHISPER) (id rather not tbh...would be weird doing it for one night then going back. plus im biased as hell) (Helles-Sulfuras) () () (Helles) () (0) (0) () (0) (5714) (Player-4726-00B8A31A) (0) (false) (false) (false) (false)", -- [1388]
-			"21:03:33 - VotingFrame:Update() without lootTable!!", -- [1389]
-			"21:03:34 - ML event (CHAT_MSG_WHISPER) (:D) (Helles-Sulfuras) () () (Helles) () (0) (0) () (0) (5715) (Player-4726-00B8A31A) (0) (false) (false) (false) (false)", -- [1390]
-			"21:03:36 - VotingFrame:Update() without lootTable!!", -- [1391]
-			"21:03:42 - VotingFrame:Update() without lootTable!!", -- [1392]
-			"21:03:42 - ML event (CHAT_MSG_WHISPER) (all loot to helles) (Helles-Sulfuras) () () (Helles) () (0) (0) () (0) (5718) (Player-4726-00B8A31A) (0) (false) (false) (false) (false)", -- [1393]
-			"21:03:44 - VotingFrame:Update() without lootTable!!", -- [1394]
-			"21:03:53 - VotingFrame:Update() without lootTable!!", -- [1395]
-			"21:04:00 - VotingFrame:Update() without lootTable!!", -- [1396]
-			"21:04:01 - VotingFrame:Update() without lootTable!!", -- [1397]
-			"21:04:06 - ML event (CHAT_MSG_WHISPER) (i can do that) (Pipers-Sulfuras) () () (Pipers) () (0) (0) () (0) (5729) (Player-4726-00E1BF90) (0) (false) (false) (false) (false)", -- [1398]
-			"21:04:06 - VotingFrame:Update() without lootTable!!", -- [1399]
-			"21:04:35 - VotingFrame:Update() without lootTable!!", -- [1400]
-			"21:05:06 - Comm received:^1^SverTest^T^N1^S0.4.2^t^^ (from:) (Holypally) (distri:) (GUILD)", -- [1401]
-			"21:05:11 - UpdateGroup (table: 0000012E6C015380)", -- [1402]
-			"21:05:11 - ML:AddCandidate (Minica-Sulfuras) (WARRIOR) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1403]
-			"21:05:11 - ML:AddCandidate (Helles-Sulfuras) (PALADIN) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1404]
-			"21:05:11 - ML:AddCandidate (Plainview-Sulfuras) (HUNTER) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1405]
-			"21:05:11 - ML:AddCandidate (Happyjugs-Sulfuras) (PALADIN) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1406]
-			"21:05:11 - ML:AddCandidate (Lrdvoldemort-Sulfuras) (MAGE) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1407]
-			"21:05:11 - ML:AddCandidate (Acroyear-Sulfuras) (MAGE) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1408]
-			"21:05:11 - GetCouncilInGroup (Topshelf-Sulfuras) (Hashmeer-Sulfuras)", -- [1409]
-			"21:05:11 - Comm received:^1^SMLdb^T^N1^T^SallowNotes^B^Stimeout^N60^SselfVote^B^Sresponses^T^Sdefault^T^t^t^SmultiVote^B^Sbuttons^T^Sdefault^T^SnumButtons^N3^t^t^SnumButtons^N3^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1410]
-			"21:05:11 - Comm received:^1^Scandidates^T^N1^T^SKaldeezer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SRaider^t^SMinica-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SAgora-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SPipers-Sulfuras^T^Srole^SNONE^Sclass^SDRUID^Srank^S^t^SNorgashaks-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SClass~`Leader^t^SHoogs-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SPRIEST^Srank^SClass~`Leader^t^SHealwho-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPALADIN^Senchanter^B^Srank^SMember^t^SLexxii-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SDerekowns-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SBomann-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^STrial^t^SShway-Sulfuras^T^Srole^SNONE^Sclass^SROGUE^Srank^S^t^SAcroyear-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SHelles-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SOdarnwewiped-Sulfuras^T^Srole^SNONE^Sclass^SPRIEST^Srank^S^t^SHappyjugs-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SHolypally-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SSlimmthicc-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPRIEST^Senchanter^B^Srank^SRaider^t^SHashmeer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SSenior~`Officer^t^SLrdvoldemort-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SMcmac-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SClass~`Leader^t^SBountybull-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SMAGE^Senchanter^B^Srank^SRaider^t^SFistandalus-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SPALADIN^Srank^STrial^t^STopshelf-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SGuild~`Master^t^SSchmilsson-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SSenior~`Officer^t^SPlainview-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SRenae-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SGurdurs-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SOfficer^t^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1411]
-			"21:05:11 - Comm received:^1^SplayerInfo^T^N1^SHelles-Sulfuras^N2^SPALADIN^N4^SClass~`Leader^N6^N0^N7^N57.67^t^^ (from:) (Helles) (distri:) (WHISPER)", -- [1412]
-			"21:05:11 - ML:AddCandidate (Helles-Sulfuras) (PALADIN) (nil) (Class Leader) (nil) (0) (57.67) (nil)", -- [1413]
-			"21:05:11 - Comm received:^1^SplayerInfo^T^N1^SLrdvoldemort-Sulfuras^N2^SMAGE^N4^SRaider^N6^N0^N7^N62.76^t^^ (from:) (Lrdvoldemort) (distri:) (WHISPER)", -- [1414]
-			"21:05:11 - ML:AddCandidate (Lrdvoldemort-Sulfuras) (MAGE) (nil) (Raider) (nil) (0) (62.76) (nil)", -- [1415]
-			"21:05:11 - Comm received:^1^SplayerInfo^T^N1^SAcroyear-Sulfuras^N2^SMAGE^N4^SRaider^N6^N0^N7^N53.95^t^^ (from:) (Acroyear) (distri:) (WHISPER)", -- [1416]
-			"21:05:11 - ML:AddCandidate (Acroyear-Sulfuras) (MAGE) (nil) (Raider) (nil) (0) (53.95) (nil)", -- [1417]
-			"21:05:11 - Comm received:^1^SplayerInfo^T^N1^SHappyjugs-Sulfuras^N2^SPALADIN^N4^SRaider^N6^N0^N7^N58.18^t^^ (from:) (Happyjugs) (distri:) (WHISPER)", -- [1418]
-			"21:05:11 - ML:AddCandidate (Happyjugs-Sulfuras) (PALADIN) (nil) (Raider) (nil) (0) (58.18) (nil)", -- [1419]
-			"21:05:11 - Comm received:^1^SplayerInfo^T^N1^SMinica-Sulfuras^N2^SWARRIOR^N4^SOfficer^N6^N0^N7^N59.95^t^^ (from:) (Minica) (distri:) (WHISPER)", -- [1420]
-			"21:05:11 - ML:AddCandidate (Minica-Sulfuras) (WARRIOR) (nil) (Officer) (nil) (0) (59.95) (nil)", -- [1421]
-			"21:05:11 - Comm received:^1^SplayerInfo^T^N1^SPlainview-Sulfuras^N2^SHUNTER^N4^SRaider^N6^N0^N7^N59.78^t^^ (from:) (Plainview) (distri:) (WHISPER)", -- [1422]
-			"21:05:11 - ML:AddCandidate (Plainview-Sulfuras) (HUNTER) (nil) (Raider) (nil) (0) (59.78) (nil)", -- [1423]
-			"21:05:15 - VotingFrame:Update() without lootTable!!", -- [1424]
-			"21:05:17 - Comm received:^1^Scouncil_request^T^t^^ (from:) (Holypally) (distri:) (WHISPER)", -- [1425]
-			"21:05:17 - Comm received:^1^Scouncil_request^T^t^^ (from:) (Holypally) (distri:) (WHISPER)", -- [1426]
-			"21:05:17 - Comm received:^1^Scouncil^T^N1^T^N1^STopshelf-Sulfuras^N2^SHashmeer-Sulfuras^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1427]
-			"21:05:17 - true = (IsCouncil) (Hashmeer-Sulfuras)", -- [1428]
-			"21:05:17 - Comm received:^1^Scouncil^T^N1^T^N1^STopshelf-Sulfuras^N2^SHashmeer-Sulfuras^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1429]
-			"21:05:17 - true = (IsCouncil) (Hashmeer-Sulfuras)", -- [1430]
-			"21:05:21 - UpdateGroup (table: 0000012E6C015380)", -- [1431]
-			"21:05:21 - ML:AddCandidate (Minica-Sulfuras) (WARRIOR) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1432]
-			"21:05:21 - ML:AddCandidate (Helles-Sulfuras) (PALADIN) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1433]
-			"21:05:21 - ML:AddCandidate (Linky-Sulfuras) (MAGE) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1434]
-			"21:05:21 - ML:AddCandidate (Plainview-Sulfuras) (HUNTER) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1435]
-			"21:05:21 - ML:AddCandidate (Happyjugs-Sulfuras) (PALADIN) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1436]
-			"21:05:21 - ML:AddCandidate (Lrdvoldemort-Sulfuras) (MAGE) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1437]
-			"21:05:21 - ML:AddCandidate (Acroyear-Sulfuras) (MAGE) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1438]
-			"21:05:21 - GetCouncilInGroup (Topshelf-Sulfuras) (Hashmeer-Sulfuras)", -- [1439]
-			"21:05:21 - Comm received:^1^SMLdb^T^N1^T^SallowNotes^B^Stimeout^N60^SselfVote^B^Sresponses^T^Sdefault^T^t^t^SmultiVote^B^Sbuttons^T^Sdefault^T^SnumButtons^N3^t^t^SnumButtons^N3^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1440]
-			"21:05:21 - Comm received:^1^Scandidates^T^N1^T^SLinky-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SKaldeezer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SRaider^t^SMinica-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SAgora-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SPipers-Sulfuras^T^Srole^SNONE^Sclass^SDRUID^Srank^S^t^SNorgashaks-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SClass~`Leader^t^SHoogs-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SPRIEST^Srank^SClass~`Leader^t^SHealwho-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPALADIN^Senchanter^B^Srank^SMember^t^SLexxii-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SDerekowns-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SBomann-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^STrial^t^SShway-Sulfuras^T^Srole^SNONE^Sclass^SROGUE^Srank^S^t^SAcroyear-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SHelles-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SOdarnwewiped-Sulfuras^T^Srole^SNONE^Sclass^SPRIEST^Srank^S^t^SHappyjugs-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SHolypally-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SSlimmthicc-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPRIEST^Senchanter^B^Srank^SRaider^t^SHashmeer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SSenior~`Officer^t^SLrdvoldemort-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SMcmac-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SClass~`Leader^t^SBountybull-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SMAGE^Senchanter^B^Srank^SRaider^t^SFistandalus-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SPALADIN^Srank^STrial^t^STopshelf-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SGuild~`Master^t^SSchmilsson-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SSenior~`Officer^t^SPlainview-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SRenae-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SGurdurs-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SOfficer^t^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1441]
-			"21:05:21 - Comm received:^1^SplayerInfo^T^N1^SMinica-Sulfuras^N2^SWARRIOR^N4^SOfficer^N6^N0^N7^N59.95^t^^ (from:) (Minica) (distri:) (WHISPER)", -- [1442]
-			"21:05:21 - ML:AddCandidate (Minica-Sulfuras) (WARRIOR) (nil) (Officer) (nil) (0) (59.95) (nil)", -- [1443]
-			"21:05:21 - Comm received:^1^SplayerInfo^T^N1^SLrdvoldemort-Sulfuras^N2^SMAGE^N4^SRaider^N6^N0^N7^N62.76^t^^ (from:) (Lrdvoldemort) (distri:) (WHISPER)", -- [1444]
-			"21:05:21 - ML:AddCandidate (Lrdvoldemort-Sulfuras) (MAGE) (nil) (Raider) (nil) (0) (62.76) (nil)", -- [1445]
-			"21:05:21 - Comm received:^1^SplayerInfo^T^N1^SAcroyear-Sulfuras^N2^SMAGE^N4^SRaider^N6^N0^N7^N53.95^t^^ (from:) (Acroyear) (distri:) (WHISPER)", -- [1446]
-			"21:05:21 - ML:AddCandidate (Acroyear-Sulfuras) (MAGE) (nil) (Raider) (nil) (0) (53.95) (nil)", -- [1447]
-			"21:05:21 - Comm received:^1^SplayerInfo^T^N1^SHelles-Sulfuras^N2^SPALADIN^N4^SClass~`Leader^N6^N0^N7^N57.67^t^^ (from:) (Helles) (distri:) (WHISPER)", -- [1448]
-			"21:05:21 - ML:AddCandidate (Helles-Sulfuras) (PALADIN) (nil) (Class Leader) (nil) (0) (57.67) (nil)", -- [1449]
-			"21:05:21 - Comm received:^1^SplayerInfo^T^N1^SPlainview-Sulfuras^N2^SHUNTER^N4^SRaider^N6^N0^N7^N59.78^t^^ (from:) (Plainview) (distri:) (WHISPER)", -- [1450]
-			"21:05:21 - ML:AddCandidate (Plainview-Sulfuras) (HUNTER) (nil) (Raider) (nil) (0) (59.78) (nil)", -- [1451]
-			"21:05:21 - Comm received:^1^SplayerInfo^T^N1^SHappyjugs-Sulfuras^N2^SPALADIN^N4^SRaider^N6^N0^N7^N58.18^t^^ (from:) (Happyjugs) (distri:) (WHISPER)", -- [1452]
-			"21:05:21 - ML:AddCandidate (Happyjugs-Sulfuras) (PALADIN) (nil) (Raider) (nil) (0) (58.18) (nil)", -- [1453]
-			"21:05:31 - UpdateGroup (table: 0000012E6C015380)", -- [1454]
-			"21:05:31 - ML:AddCandidate (Minica-Sulfuras) (WARRIOR) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1455]
-			"21:05:31 - ML:AddCandidate (Helles-Sulfuras) (PALADIN) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1456]
-			"21:05:31 - ML:AddCandidate (Plainview-Sulfuras) (HUNTER) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1457]
-			"21:05:31 - ML:AddCandidate (Happyjugs-Sulfuras) (PALADIN) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1458]
-			"21:05:31 - ML:AddCandidate (Lrdvoldemort-Sulfuras) (MAGE) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1459]
-			"21:05:31 - ML:AddCandidate (Acroyear-Sulfuras) (MAGE) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1460]
-			"21:05:31 - ML:RemoveCandidate (Norgashaks-Sulfuras)", -- [1461]
-			"21:05:31 - GetCouncilInGroup (Topshelf-Sulfuras) (Hashmeer-Sulfuras)", -- [1462]
-			"21:05:31 - Comm received:^1^SMLdb^T^N1^T^SallowNotes^B^Stimeout^N60^SselfVote^B^Sresponses^T^Sdefault^T^t^t^SmultiVote^B^Sbuttons^T^Sdefault^T^SnumButtons^N3^t^t^SnumButtons^N3^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1463]
-			"21:05:31 - Comm received:^1^Scandidates^T^N1^T^SLinky-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SKaldeezer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SRaider^t^SMinica-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SAgora-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SPipers-Sulfuras^T^Srole^SNONE^Sclass^SDRUID^Srank^S^t^SHoogs-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SPRIEST^Srank^SClass~`Leader^t^SHealwho-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPALADIN^Senchanter^B^Srank^SMember^t^SLexxii-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SDerekowns-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SBomann-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^STrial^t^SShway-Sulfuras^T^Srole^SNONE^Sclass^SROGUE^Srank^S^t^SAcroyear-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SHelles-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SOdarnwewiped-Sulfuras^T^Srole^SNONE^Sclass^SPRIEST^Srank^S^t^SHappyjugs-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SHolypally-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SSlimmthicc-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPRIEST^Senchanter^B^Srank^SRaider^t^SHashmeer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SSenior~`Officer^t^SLrdvoldemort-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SMcmac-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SClass~`Leader^t^SBountybull-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SMAGE^Senchanter^B^Srank^SRaider^t^SFistandalus-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SPALADIN^Srank^STrial^t^STopshelf-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SGuild~`Master^t^SSchmilsson-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SSenior~`Officer^t^SPlainview-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SRenae-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SGurdurs-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SOfficer^t^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1464]
-			"21:05:31 - Comm received:^1^SplayerInfo^T^N1^SPlainview-Sulfuras^N2^SHUNTER^N4^SRaider^N6^N0^N7^N59.78^t^^ (from:) (Plainview) (distri:) (WHISPER)", -- [1465]
-			"21:05:31 - ML:AddCandidate (Plainview-Sulfuras) (HUNTER) (nil) (Raider) (nil) (0) (59.78) (nil)", -- [1466]
-			"21:05:31 - Comm received:^1^SplayerInfo^T^N1^SMinica-Sulfuras^N2^SWARRIOR^N4^SOfficer^N6^N0^N7^N59.95^t^^ (from:) (Minica) (distri:) (WHISPER)", -- [1467]
-			"21:05:31 - ML:AddCandidate (Minica-Sulfuras) (WARRIOR) (nil) (Officer) (nil) (0) (59.95) (nil)", -- [1468]
-			"21:05:31 - Comm received:^1^SplayerInfo^T^N1^SHelles-Sulfuras^N2^SPALADIN^N4^SClass~`Leader^N6^N0^N7^N57.67^t^^ (from:) (Helles) (distri:) (WHISPER)", -- [1469]
-			"21:05:31 - ML:AddCandidate (Helles-Sulfuras) (PALADIN) (nil) (Class Leader) (nil) (0) (57.67) (nil)", -- [1470]
-			"21:05:31 - Comm received:^1^SplayerInfo^T^N1^SLrdvoldemort-Sulfuras^N2^SMAGE^N4^SRaider^N6^N0^N7^N62.76^t^^ (from:) (Lrdvoldemort) (distri:) (WHISPER)", -- [1471]
-			"21:05:31 - ML:AddCandidate (Lrdvoldemort-Sulfuras) (MAGE) (nil) (Raider) (nil) (0) (62.76) (nil)", -- [1472]
-			"21:05:31 - Comm received:^1^SplayerInfo^T^N1^SAcroyear-Sulfuras^N2^SMAGE^N4^SRaider^N6^N0^N7^N53.95^t^^ (from:) (Acroyear) (distri:) (WHISPER)", -- [1473]
-			"21:05:31 - ML:AddCandidate (Acroyear-Sulfuras) (MAGE) (nil) (Raider) (nil) (0) (53.95) (nil)", -- [1474]
-			"21:05:31 - Comm received:^1^SplayerInfo^T^N1^SHappyjugs-Sulfuras^N2^SPALADIN^N4^SRaider^N6^N0^N7^N58.18^t^^ (from:) (Happyjugs) (distri:) (WHISPER)", -- [1475]
-			"21:05:31 - ML:AddCandidate (Happyjugs-Sulfuras) (PALADIN) (nil) (Raider) (nil) (0) (58.18) (nil)", -- [1476]
-			"21:05:41 - UpdateGroup (table: 0000012E6C015380)", -- [1477]
-			"21:05:41 - ML:AddCandidate (Minica-Sulfuras) (WARRIOR) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1478]
-			"21:05:41 - ML:AddCandidate (Helles-Sulfuras) (PALADIN) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1479]
-			"21:05:41 - ML:AddCandidate (Plainview-Sulfuras) (HUNTER) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1480]
-			"21:05:41 - ML:AddCandidate (Happyjugs-Sulfuras) (PALADIN) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1481]
-			"21:05:41 - ML:AddCandidate (Lrdvoldemort-Sulfuras) (MAGE) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1482]
-			"21:05:41 - ML:AddCandidate (Acroyear-Sulfuras) (MAGE) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1483]
-			"21:05:41 - GetCouncilInGroup (Topshelf-Sulfuras) (Hashmeer-Sulfuras)", -- [1484]
-			"21:05:41 - Comm received:^1^SMLdb^T^N1^T^SallowNotes^B^Stimeout^N60^SselfVote^B^Sresponses^T^Sdefault^T^t^t^SmultiVote^B^Sbuttons^T^Sdefault^T^SnumButtons^N3^t^t^SnumButtons^N3^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1485]
-			"21:05:41 - Comm received:^1^Scandidates^T^N1^T^SLinky-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SKaldeezer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SRaider^t^SMinica-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SAgora-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SPipers-Sulfuras^T^Srole^SNONE^Sclass^SDRUID^Srank^S^t^SHoogs-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SPRIEST^Srank^SClass~`Leader^t^SHealwho-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPALADIN^Senchanter^B^Srank^SMember^t^SLexxii-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SDerekowns-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SBomann-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^STrial^t^SShway-Sulfuras^T^Srole^SNONE^Sclass^SROGUE^Srank^S^t^SAcroyear-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SHelles-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SOdarnwewiped-Sulfuras^T^Srole^SNONE^Sclass^SPRIEST^Srank^S^t^SHappyjugs-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SHolypally-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SSlimmthicc-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPRIEST^Senchanter^B^Srank^SRaider^t^SHashmeer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SSenior~`Officer^t^SLrdvoldemort-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SMcmac-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SClass~`Leader^t^SBountybull-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SMAGE^Senchanter^B^Srank^SRaider^t^SFistandalus-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SPALADIN^Srank^STrial^t^STopshelf-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SGuild~`Master^t^SSchmilsson-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SSenior~`Officer^t^SPlainview-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SRenae-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SGurdurs-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SOfficer^t^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1486]
-			"21:05:41 - Comm received:^1^SplayerInfo^T^N1^SMinica-Sulfuras^N2^SWARRIOR^N4^SOfficer^N6^N0^N7^N59.95^t^^ (from:) (Minica) (distri:) (WHISPER)", -- [1487]
-			"21:05:41 - ML:AddCandidate (Minica-Sulfuras) (WARRIOR) (nil) (Officer) (nil) (0) (59.95) (nil)", -- [1488]
-			"21:05:41 - Comm received:^1^SplayerInfo^T^N1^SLrdvoldemort-Sulfuras^N2^SMAGE^N4^SRaider^N6^N0^N7^N62.76^t^^ (from:) (Lrdvoldemort) (distri:) (WHISPER)", -- [1489]
-			"21:05:41 - ML:AddCandidate (Lrdvoldemort-Sulfuras) (MAGE) (nil) (Raider) (nil) (0) (62.76) (nil)", -- [1490]
-			"21:05:41 - Comm received:^1^SplayerInfo^T^N1^SHelles-Sulfuras^N2^SPALADIN^N4^SClass~`Leader^N6^N0^N7^N57.67^t^^ (from:) (Helles) (distri:) (WHISPER)", -- [1491]
-			"21:05:41 - ML:AddCandidate (Helles-Sulfuras) (PALADIN) (nil) (Class Leader) (nil) (0) (57.67) (nil)", -- [1492]
-			"21:05:41 - Comm received:^1^SplayerInfo^T^N1^SAcroyear-Sulfuras^N2^SMAGE^N4^SRaider^N6^N0^N7^N53.95^t^^ (from:) (Acroyear) (distri:) (WHISPER)", -- [1493]
-			"21:05:41 - ML:AddCandidate (Acroyear-Sulfuras) (MAGE) (nil) (Raider) (nil) (0) (53.95) (nil)", -- [1494]
-			"21:05:41 - Comm received:^1^SplayerInfo^T^N1^SPlainview-Sulfuras^N2^SHUNTER^N4^SRaider^N6^N0^N7^N59.78^t^^ (from:) (Plainview) (distri:) (WHISPER)", -- [1495]
-			"21:05:41 - ML:AddCandidate (Plainview-Sulfuras) (HUNTER) (nil) (Raider) (nil) (0) (59.78) (nil)", -- [1496]
-			"21:05:41 - Comm received:^1^SplayerInfo^T^N1^SHappyjugs-Sulfuras^N2^SPALADIN^N4^SRaider^N6^N0^N7^N58.18^t^^ (from:) (Happyjugs) (distri:) (WHISPER)", -- [1497]
-			"21:05:41 - ML:AddCandidate (Happyjugs-Sulfuras) (PALADIN) (nil) (Raider) (nil) (0) (58.18) (nil)", -- [1498]
-			"21:05:43 - VotingFrame:Update() without lootTable!!", -- [1499]
-			"21:05:59 - VotingFrame:Update() without lootTable!!", -- [1500]
-			"21:06:03 - VotingFrame:Update() without lootTable!!", -- [1501]
-			"21:06:10 - ML event (CHAT_MSG_WHISPER) (what do i need to do it?) (Pipers-Sulfuras) () () (Pipers) () (0) (0) () (0) (5767) (Player-4726-00E1BF90) (0) (false) (false) (false) (false)", -- [1502]
-			"21:06:15 - ML event (PLAYER_REGEN_ENABLED)", -- [1503]
-			"21:06:41 - / (config)", -- [1504]
-			"21:06:59 - Comm received:^1^SverTest^T^N1^S0.4.2^t^^ (from:) (Holypally) (distri:) (GUILD)", -- [1505]
-			"21:07:03 - UpdateGroup (table: 0000012E6C015380)", -- [1506]
-			"21:07:03 - ML:AddCandidate (Minica-Sulfuras) (WARRIOR) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1507]
-			"21:07:03 - ML:AddCandidate (Helles-Sulfuras) (PALADIN) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1508]
-			"21:07:03 - ML:AddCandidate (Plainview-Sulfuras) (HUNTER) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1509]
-			"21:07:03 - ML:AddCandidate (Happyjugs-Sulfuras) (PALADIN) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1510]
-			"21:07:03 - ML:AddCandidate (Lrdvoldemort-Sulfuras) (MAGE) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1511]
-			"21:07:03 - ML:AddCandidate (Acroyear-Sulfuras) (MAGE) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1512]
-			"21:07:03 - GetCouncilInGroup (Topshelf-Sulfuras) (Hashmeer-Sulfuras)", -- [1513]
-			"21:07:03 - Comm received:^1^SMLdb^T^N1^T^SallowNotes^B^Stimeout^N60^SselfVote^B^Sresponses^T^Sdefault^T^t^t^SmultiVote^B^Sbuttons^T^Sdefault^T^SnumButtons^N3^t^t^SnumButtons^N3^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1514]
-			"21:07:03 - Comm received:^1^Scandidates^T^N1^T^SLinky-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SKaldeezer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SRaider^t^SMinica-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SAgora-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SPipers-Sulfuras^T^Srole^SNONE^Sclass^SDRUID^Srank^S^t^SHoogs-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SPRIEST^Srank^SClass~`Leader^t^SHealwho-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPALADIN^Senchanter^B^Srank^SMember^t^SLexxii-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SDerekowns-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SBomann-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^STrial^t^SShway-Sulfuras^T^Srole^SNONE^Sclass^SROGUE^Srank^S^t^SAcroyear-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SHelles-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SOdarnwewiped-Sulfuras^T^Srole^SNONE^Sclass^SPRIEST^Srank^S^t^SHappyjugs-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SHolypally-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SSlimmthicc-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPRIEST^Senchanter^B^Srank^SRaider^t^SHashmeer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SSenior~`Officer^t^SLrdvoldemort-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SMcmac-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SClass~`Leader^t^SBountybull-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SMAGE^Senchanter^B^Srank^SRaider^t^SFistandalus-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SPALADIN^Srank^STrial^t^STopshelf-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SGuild~`Master^t^SSchmilsson-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SSenior~`Officer^t^SPlainview-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SRenae-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SGurdurs-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SOfficer^t^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1515]
-			"21:07:03 - Comm received:^1^SplayerInfo^T^N1^SMinica-Sulfuras^N2^SWARRIOR^N4^SOfficer^N6^N0^N7^N59.95^t^^ (from:) (Minica) (distri:) (WHISPER)", -- [1516]
-			"21:07:03 - ML:AddCandidate (Minica-Sulfuras) (WARRIOR) (nil) (Officer) (nil) (0) (59.95) (nil)", -- [1517]
-			"21:07:03 - Comm received:^1^SplayerInfo^T^N1^SPlainview-Sulfuras^N2^SHUNTER^N4^SRaider^N6^N0^N7^N59.78^t^^ (from:) (Plainview) (distri:) (WHISPER)", -- [1518]
-			"21:07:03 - ML:AddCandidate (Plainview-Sulfuras) (HUNTER) (nil) (Raider) (nil) (0) (59.78) (nil)", -- [1519]
-			"21:07:04 - Comm received:^1^SplayerInfo^T^N1^SHelles-Sulfuras^N2^SPALADIN^N4^SClass~`Leader^N6^N0^N7^N57.67^t^^ (from:) (Helles) (distri:) (WHISPER)", -- [1520]
-			"21:07:04 - ML:AddCandidate (Helles-Sulfuras) (PALADIN) (nil) (Class Leader) (nil) (0) (57.67) (nil)", -- [1521]
-			"21:07:04 - Comm received:^1^SplayerInfo^T^N1^SLrdvoldemort-Sulfuras^N2^SMAGE^N4^SRaider^N6^N0^N7^N62.76^t^^ (from:) (Lrdvoldemort) (distri:) (WHISPER)", -- [1522]
-			"21:07:04 - ML:AddCandidate (Lrdvoldemort-Sulfuras) (MAGE) (nil) (Raider) (nil) (0) (62.76) (nil)", -- [1523]
-			"21:07:04 - Comm received:^1^SplayerInfo^T^N1^SAcroyear-Sulfuras^N2^SMAGE^N4^SRaider^N6^N0^N7^N53.95^t^^ (from:) (Acroyear) (distri:) (WHISPER)", -- [1524]
-			"21:07:04 - ML:AddCandidate (Acroyear-Sulfuras) (MAGE) (nil) (Raider) (nil) (0) (53.95) (nil)", -- [1525]
-			"21:07:04 - Comm received:^1^SplayerInfo^T^N1^SHappyjugs-Sulfuras^N2^SPALADIN^N4^SRaider^N6^N0^N7^N58.18^t^^ (from:) (Happyjugs) (distri:) (WHISPER)", -- [1526]
-			"21:07:04 - ML:AddCandidate (Happyjugs-Sulfuras) (PALADIN) (nil) (Raider) (nil) (0) (58.18) (nil)", -- [1527]
-			"21:07:09 - Comm received:^1^Scouncil_request^T^t^^ (from:) (Holypally) (distri:) (WHISPER)", -- [1528]
-			"21:07:09 - Comm received:^1^Scouncil_request^T^t^^ (from:) (Holypally) (distri:) (WHISPER)", -- [1529]
-			"21:07:09 - Comm received:^1^Scouncil^T^N1^T^N1^STopshelf-Sulfuras^N2^SHashmeer-Sulfuras^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1530]
-			"21:07:09 - true = (IsCouncil) (Hashmeer-Sulfuras)", -- [1531]
-			"21:07:09 - Comm received:^1^Scouncil^T^N1^T^N1^STopshelf-Sulfuras^N2^SHashmeer-Sulfuras^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1532]
-			"21:07:09 - true = (IsCouncil) (Hashmeer-Sulfuras)", -- [1533]
-			"21:07:27 - VotingFrame:Update() without lootTable!!", -- [1534]
-			"21:07:33 - VotingFrame:Update() without lootTable!!", -- [1535]
-			"21:07:59 - ML event (PLAYER_REGEN_ENABLED)", -- [1536]
-			"21:08:14 - VotingFrame:Update() without lootTable!!", -- [1537]
-			"21:09:56 - UpdateGroup (table: 0000012E6C015380)", -- [1538]
-			"21:09:56 - ML:AddCandidate (Minica-Sulfuras) (WARRIOR) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1539]
-			"21:09:56 - ML:AddCandidate (Helles-Sulfuras) (PALADIN) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1540]
-			"21:09:56 - ML:AddCandidate (Plainview-Sulfuras) (HUNTER) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1541]
-			"21:09:56 - ML:AddCandidate (Happyjugs-Sulfuras) (PALADIN) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1542]
-			"21:09:56 - ML:AddCandidate (Lrdvoldemort-Sulfuras) (MAGE) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1543]
-			"21:09:56 - ML:AddCandidate (Acroyear-Sulfuras) (MAGE) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1544]
-			"21:09:56 - GetCouncilInGroup (Topshelf-Sulfuras) (Hashmeer-Sulfuras)", -- [1545]
-			"21:09:56 - Comm received:^1^SMLdb^T^N1^T^SallowNotes^B^Stimeout^N60^SselfVote^B^Sresponses^T^Sdefault^T^t^t^SmultiVote^B^Sbuttons^T^Sdefault^T^SnumButtons^N3^t^t^SnumButtons^N3^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1546]
-			"21:09:56 - Comm received:^1^Scandidates^T^N1^T^SLinky-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SKaldeezer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SRaider^t^SMinica-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SAgora-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SPipers-Sulfuras^T^Srole^SNONE^Sclass^SDRUID^Srank^S^t^SHoogs-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SPRIEST^Srank^SClass~`Leader^t^SHealwho-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPALADIN^Senchanter^B^Srank^SMember^t^SLexxii-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SDerekowns-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SBomann-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^STrial^t^SShway-Sulfuras^T^Srole^SNONE^Sclass^SROGUE^Srank^S^t^SAcroyear-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SHelles-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SOdarnwewiped-Sulfuras^T^Srole^SNONE^Sclass^SPRIEST^Srank^S^t^SHappyjugs-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SHolypally-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SSlimmthicc-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPRIEST^Senchanter^B^Srank^SRaider^t^SHashmeer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SSenior~`Officer^t^SLrdvoldemort-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SMcmac-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SClass~`Leader^t^SBountybull-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SMAGE^Senchanter^B^Srank^SRaider^t^SFistandalus-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SPALADIN^Srank^STrial^t^STopshelf-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SGuild~`Master^t^SSchmilsson-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SSenior~`Officer^t^SPlainview-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SRenae-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SGurdurs-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SOfficer^t^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1547]
-			"21:09:56 - Comm received:^1^SplayerInfo^T^N1^SMinica-Sulfuras^N2^SWARRIOR^N4^SOfficer^N6^N0^N7^N59.95^t^^ (from:) (Minica) (distri:) (WHISPER)", -- [1548]
-			"21:09:56 - ML:AddCandidate (Minica-Sulfuras) (WARRIOR) (nil) (Officer) (nil) (0) (59.95) (nil)", -- [1549]
-			"21:09:56 - Comm received:^1^SplayerInfo^T^N1^SLrdvoldemort-Sulfuras^N2^SMAGE^N4^SRaider^N6^N0^N7^N62.76^t^^ (from:) (Lrdvoldemort) (distri:) (WHISPER)", -- [1550]
-			"21:09:56 - ML:AddCandidate (Lrdvoldemort-Sulfuras) (MAGE) (nil) (Raider) (nil) (0) (62.76) (nil)", -- [1551]
-			"21:09:56 - Comm received:^1^SplayerInfo^T^N1^SAcroyear-Sulfuras^N2^SMAGE^N4^SRaider^N6^N0^N7^N53.95^t^^ (from:) (Acroyear) (distri:) (WHISPER)", -- [1552]
-			"21:09:56 - ML:AddCandidate (Acroyear-Sulfuras) (MAGE) (nil) (Raider) (nil) (0) (53.95) (nil)", -- [1553]
-			"21:09:56 - Comm received:^1^SplayerInfo^T^N1^SHappyjugs-Sulfuras^N2^SPALADIN^N4^SRaider^N6^N0^N7^N58.12^t^^ (from:) (Happyjugs) (distri:) (WHISPER)", -- [1554]
-			"21:09:56 - ML:AddCandidate (Happyjugs-Sulfuras) (PALADIN) (nil) (Raider) (nil) (0) (58.12) (nil)", -- [1555]
-			"21:09:56 - Comm received:^1^SplayerInfo^T^N1^SPlainview-Sulfuras^N2^SHUNTER^N4^SRaider^N6^N0^N7^N59.78^t^^ (from:) (Plainview) (distri:) (WHISPER)", -- [1556]
-			"21:09:56 - ML:AddCandidate (Plainview-Sulfuras) (HUNTER) (nil) (Raider) (nil) (0) (59.78) (nil)", -- [1557]
-			"21:10:27 - UpdateGroup (table: 0000012E6C015380)", -- [1558]
-			"21:10:27 - ML:AddCandidate (Minica-Sulfuras) (WARRIOR) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1559]
-			"21:10:27 - ML:AddCandidate (Plainview-Sulfuras) (HUNTER) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1560]
-			"21:10:27 - ML:AddCandidate (Happyjugs-Sulfuras) (PALADIN) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1561]
-			"21:10:27 - ML:AddCandidate (Acroyear-Sulfuras) (MAGE) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1562]
-			"21:10:27 - ML:AddCandidate (Lrdvoldemort-Sulfuras) (MAGE) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1563]
-			"21:10:27 - GetCouncilInGroup (Topshelf-Sulfuras) (Hashmeer-Sulfuras)", -- [1564]
-			"21:10:28 - Comm received:^1^SMLdb^T^N1^T^SallowNotes^B^Stimeout^N60^SselfVote^B^Sresponses^T^Sdefault^T^t^t^SmultiVote^B^Sbuttons^T^Sdefault^T^SnumButtons^N3^t^t^SnumButtons^N3^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1565]
-			"21:10:28 - Comm received:^1^Scandidates^T^N1^T^SLinky-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SKaldeezer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SRaider^t^SMinica-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SAgora-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SPipers-Sulfuras^T^Srole^SNONE^Sclass^SDRUID^Srank^S^t^SHoogs-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SPRIEST^Srank^SClass~`Leader^t^SHealwho-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPALADIN^Senchanter^B^Srank^SMember^t^SLexxii-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SDerekowns-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SBomann-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^STrial^t^SShway-Sulfuras^T^Srole^SNONE^Sclass^SROGUE^Srank^S^t^SAcroyear-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SHelles-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SOdarnwewiped-Sulfuras^T^Srole^SNONE^Sclass^SPRIEST^Srank^S^t^SHappyjugs-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SHolypally-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SSlimmthicc-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPRIEST^Senchanter^B^Srank^SRaider^t^SHashmeer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SSenior~`Officer^t^SLrdvoldemort-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SMcmac-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SClass~`Leader^t^SBountybull-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SMAGE^Senchanter^B^Srank^SRaider^t^SFistandalus-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SPALADIN^Srank^STrial^t^STopshelf-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SGuild~`Master^t^SSchmilsson-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SSenior~`Officer^t^SPlainview-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SRenae-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SGurdurs-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SOfficer^t^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1566]
-			"21:10:28 - Comm received:^1^SplayerInfo^T^N1^SLrdvoldemort-Sulfuras^N2^SMAGE^N4^SRaider^N6^N0^N7^N62.76^t^^ (from:) (Lrdvoldemort) (distri:) (WHISPER)", -- [1567]
-			"21:10:28 - ML:AddCandidate (Lrdvoldemort-Sulfuras) (MAGE) (nil) (Raider) (nil) (0) (62.76) (nil)", -- [1568]
-			"21:10:28 - Comm received:^1^SplayerInfo^T^N1^SMinica-Sulfuras^N2^SWARRIOR^N4^SOfficer^N6^N0^N7^N59.95^t^^ (from:) (Minica) (distri:) (WHISPER)", -- [1569]
-			"21:10:28 - ML:AddCandidate (Minica-Sulfuras) (WARRIOR) (nil) (Officer) (nil) (0) (59.95) (nil)", -- [1570]
-			"21:10:28 - Comm received:^1^SplayerInfo^T^N1^SAcroyear-Sulfuras^N2^SMAGE^N4^SRaider^N6^N0^N7^N53.95^t^^ (from:) (Acroyear) (distri:) (WHISPER)", -- [1571]
-			"21:10:28 - ML:AddCandidate (Acroyear-Sulfuras) (MAGE) (nil) (Raider) (nil) (0) (53.95) (nil)", -- [1572]
-			"21:10:28 - Comm received:^1^SplayerInfo^T^N1^SPlainview-Sulfuras^N2^SHUNTER^N4^SRaider^N6^N0^N7^N59.78^t^^ (from:) (Plainview) (distri:) (WHISPER)", -- [1573]
-			"21:10:28 - ML:AddCandidate (Plainview-Sulfuras) (HUNTER) (nil) (Raider) (nil) (0) (59.78) (nil)", -- [1574]
-			"21:10:28 - Comm received:^1^SplayerInfo^T^N1^SHappyjugs-Sulfuras^N2^SPALADIN^N4^SRaider^N6^N0^N7^N58.12^t^^ (from:) (Happyjugs) (distri:) (WHISPER)", -- [1575]
-			"21:10:28 - ML:AddCandidate (Happyjugs-Sulfuras) (PALADIN) (nil) (Raider) (nil) (0) (58.12) (nil)", -- [1576]
-			"21:10:37 - UpdateGroup (table: 0000012E6C015380)", -- [1577]
-			"21:10:37 - ML:AddCandidate (Minica-Sulfuras) (WARRIOR) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1578]
-			"21:10:37 - ML:AddCandidate (Happyjugs-Sulfuras) (PALADIN) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1579]
-			"21:10:37 - ML:AddCandidate (Plainview-Sulfuras) (HUNTER) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1580]
-			"21:10:37 - ML:AddCandidate (Acroyear-Sulfuras) (MAGE) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1581]
-			"21:10:37 - ML:AddCandidate (Lrdvoldemort-Sulfuras) (MAGE) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1582]
-			"21:10:37 - GetCouncilInGroup (Topshelf-Sulfuras) (Hashmeer-Sulfuras)", -- [1583]
-			"21:10:38 - Comm received:^1^SMLdb^T^N1^T^SallowNotes^B^Stimeout^N60^SselfVote^B^Sresponses^T^Sdefault^T^t^t^SmultiVote^B^Sbuttons^T^Sdefault^T^SnumButtons^N3^t^t^SnumButtons^N3^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1584]
-			"21:10:38 - Comm received:^1^Scandidates^T^N1^T^SLinky-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SKaldeezer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SRaider^t^SMinica-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SAgora-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SPipers-Sulfuras^T^Srole^SNONE^Sclass^SDRUID^Srank^S^t^SHoogs-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SPRIEST^Srank^SClass~`Leader^t^SHealwho-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPALADIN^Senchanter^B^Srank^SMember^t^SLexxii-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SDerekowns-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SBomann-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^STrial^t^SShway-Sulfuras^T^Srole^SNONE^Sclass^SROGUE^Srank^S^t^SAcroyear-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SHelles-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SOdarnwewiped-Sulfuras^T^Srole^SNONE^Sclass^SPRIEST^Srank^S^t^SHappyjugs-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SHolypally-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SSlimmthicc-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPRIEST^Senchanter^B^Srank^SRaider^t^SHashmeer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SSenior~`Officer^t^SLrdvoldemort-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SMcmac-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SClass~`Leader^t^SBountybull-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SMAGE^Senchanter^B^Srank^SRaider^t^SFistandalus-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SPALADIN^Srank^STrial^t^STopshelf-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SGuild~`Master^t^SSchmilsson-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SSenior~`Officer^t^SPlainview-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SRenae-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SGurdurs-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SOfficer^t^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1585]
-			"21:10:38 - Comm received:^1^SplayerInfo^T^N1^SHappyjugs-Sulfuras^N2^SPALADIN^N4^SRaider^N6^N0^N7^N58.12^t^^ (from:) (Happyjugs) (distri:) (WHISPER)", -- [1586]
-			"21:10:38 - ML:AddCandidate (Happyjugs-Sulfuras) (PALADIN) (nil) (Raider) (nil) (0) (58.12) (nil)", -- [1587]
-			"21:10:38 - Comm received:^1^SplayerInfo^T^N1^SMinica-Sulfuras^N2^SWARRIOR^N4^SOfficer^N6^N0^N7^N59.95^t^^ (from:) (Minica) (distri:) (WHISPER)", -- [1588]
-			"21:10:38 - ML:AddCandidate (Minica-Sulfuras) (WARRIOR) (nil) (Officer) (nil) (0) (59.95) (nil)", -- [1589]
-			"21:10:38 - Comm received:^1^SplayerInfo^T^N1^SLrdvoldemort-Sulfuras^N2^SMAGE^N4^SRaider^N6^N0^N7^N62.76^t^^ (from:) (Lrdvoldemort) (distri:) (WHISPER)", -- [1590]
-			"21:10:38 - ML:AddCandidate (Lrdvoldemort-Sulfuras) (MAGE) (nil) (Raider) (nil) (0) (62.76) (nil)", -- [1591]
-			"21:10:38 - Comm received:^1^SplayerInfo^T^N1^SAcroyear-Sulfuras^N2^SMAGE^N4^SRaider^N6^N0^N7^N53.95^t^^ (from:) (Acroyear) (distri:) (WHISPER)", -- [1592]
-			"21:10:38 - ML:AddCandidate (Acroyear-Sulfuras) (MAGE) (nil) (Raider) (nil) (0) (53.95) (nil)", -- [1593]
-			"21:10:38 - Comm received:^1^SplayerInfo^T^N1^SPlainview-Sulfuras^N2^SHUNTER^N4^SRaider^N6^N0^N7^N59.78^t^^ (from:) (Plainview) (distri:) (WHISPER)", -- [1594]
-			"21:10:38 - ML:AddCandidate (Plainview-Sulfuras) (HUNTER) (nil) (Raider) (nil) (0) (59.78) (nil)", -- [1595]
-			"21:10:52 - VotingFrame:Update() without lootTable!!", -- [1596]
-			"21:10:59 - Comm received:^1^SverTest^T^N1^S0.5.0^N2^SBeta.1^t^^ (from:) (Helles) (distri:) (GUILD)", -- [1597]
-			"21:11:06 - UpdateGroup (table: 0000012E6C015380)", -- [1598]
-			"21:11:06 - ML:AddCandidate (Minica-Sulfuras) (WARRIOR) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1599]
-			"21:11:06 - ML:AddCandidate (Happyjugs-Sulfuras) (PALADIN) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1600]
-			"21:11:06 - ML:AddCandidate (Plainview-Sulfuras) (HUNTER) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1601]
-			"21:11:06 - ML:AddCandidate (Acroyear-Sulfuras) (MAGE) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1602]
-			"21:11:06 - ML:AddCandidate (Lrdvoldemort-Sulfuras) (MAGE) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1603]
-			"21:11:06 - GetCouncilInGroup (Topshelf-Sulfuras) (Hashmeer-Sulfuras)", -- [1604]
-			"21:11:06 - Comm received:^1^SMLdb^T^N1^T^SallowNotes^B^Stimeout^N60^SselfVote^B^Sresponses^T^Sdefault^T^t^t^SmultiVote^B^Sbuttons^T^Sdefault^T^SnumButtons^N3^t^t^SnumButtons^N3^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1605]
-			"21:11:06 - Comm received:^1^Scandidates^T^N1^T^SLinky-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SKaldeezer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SRaider^t^SMinica-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SAgora-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SPipers-Sulfuras^T^Srole^SNONE^Sclass^SDRUID^Srank^S^t^SHoogs-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SPRIEST^Srank^SClass~`Leader^t^SHealwho-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPALADIN^Senchanter^B^Srank^SMember^t^SLexxii-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SDerekowns-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SBomann-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^STrial^t^SShway-Sulfuras^T^Srole^SNONE^Sclass^SROGUE^Srank^S^t^SAcroyear-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SHelles-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SOdarnwewiped-Sulfuras^T^Srole^SNONE^Sclass^SPRIEST^Srank^S^t^SHappyjugs-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SHolypally-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SSlimmthicc-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPRIEST^Senchanter^B^Srank^SRaider^t^SHashmeer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SSenior~`Officer^t^SLrdvoldemort-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SMcmac-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SClass~`Leader^t^SBountybull-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SMAGE^Senchanter^B^Srank^SRaider^t^SFistandalus-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SPALADIN^Srank^STrial^t^STopshelf-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SGuild~`Master^t^SSchmilsson-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SSenior~`Officer^t^SPlainview-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SRenae-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SGurdurs-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SOfficer^t^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1606]
-			"21:11:06 - Comm received:^1^SplayerInfo^T^N1^SMinica-Sulfuras^N2^SWARRIOR^N4^SOfficer^N6^N0^N7^N59.95^t^^ (from:) (Minica) (distri:) (WHISPER)", -- [1607]
-			"21:11:06 - ML:AddCandidate (Minica-Sulfuras) (WARRIOR) (nil) (Officer) (nil) (0) (59.95) (nil)", -- [1608]
-			"21:11:06 - Comm received:^1^SplayerInfo^T^N1^SPlainview-Sulfuras^N2^SHUNTER^N4^SRaider^N6^N0^N7^N59.78^t^^ (from:) (Plainview) (distri:) (WHISPER)", -- [1609]
-			"21:11:06 - ML:AddCandidate (Plainview-Sulfuras) (HUNTER) (nil) (Raider) (nil) (0) (59.78) (nil)", -- [1610]
-			"21:11:06 - Comm received:^1^SplayerInfo^T^N1^SLrdvoldemort-Sulfuras^N2^SMAGE^N4^SRaider^N6^N0^N7^N62.76^t^^ (from:) (Lrdvoldemort) (distri:) (WHISPER)", -- [1611]
-			"21:11:06 - ML:AddCandidate (Lrdvoldemort-Sulfuras) (MAGE) (nil) (Raider) (nil) (0) (62.76) (nil)", -- [1612]
-			"21:11:06 - Comm received:^1^SplayerInfo^T^N1^SAcroyear-Sulfuras^N2^SMAGE^N4^SRaider^N6^N0^N7^N53.95^t^^ (from:) (Acroyear) (distri:) (WHISPER)", -- [1613]
-			"21:11:06 - ML:AddCandidate (Acroyear-Sulfuras) (MAGE) (nil) (Raider) (nil) (0) (53.95) (nil)", -- [1614]
-			"21:11:06 - Comm received:^1^SplayerInfo^T^N1^SHappyjugs-Sulfuras^N2^SPALADIN^N4^SRaider^N6^N0^N7^N58.12^t^^ (from:) (Happyjugs) (distri:) (WHISPER)", -- [1615]
-			"21:11:06 - ML:AddCandidate (Happyjugs-Sulfuras) (PALADIN) (nil) (Raider) (nil) (0) (58.12) (nil)", -- [1616]
-			"21:11:12 - Comm received:^1^Scouncil_request^T^t^^ (from:) (Helles) (distri:) (WHISPER)", -- [1617]
-			"21:11:12 - Comm received:^1^Scouncil_request^T^t^^ (from:) (Helles) (distri:) (WHISPER)", -- [1618]
-			"21:11:12 - Comm received:^1^Scouncil^T^N1^T^N1^STopshelf-Sulfuras^N2^SHashmeer-Sulfuras^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1619]
-			"21:11:12 - true = (IsCouncil) (Hashmeer-Sulfuras)", -- [1620]
-			"21:11:12 - Comm received:^1^Scouncil^T^N1^T^N1^STopshelf-Sulfuras^N2^SHashmeer-Sulfuras^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1621]
-			"21:11:12 - true = (IsCouncil) (Hashmeer-Sulfuras)", -- [1622]
-			"21:11:29 - VotingFrame:Update() without lootTable!!", -- [1623]
-			"21:11:31 - Comm received:^1^SverTest^T^N1^S0.4.2^t^^ (from:) (Increma) (distri:) (GUILD)", -- [1624]
-			"21:11:47 - VotingFrame:Update() without lootTable!!", -- [1625]
-			"21:12:00 - VotingFrame:Update() without lootTable!!", -- [1626]
-			"21:12:01 - Comm received:^1^SverTest^T^N1^S0.4.2^t^^ (from:) (Pidgeethot) (distri:) (GUILD)", -- [1627]
-			"21:12:01 - VotingFrame:Update() without lootTable!!", -- [1628]
-			"21:12:05 - VotingFrame:Update() without lootTable!!", -- [1629]
-			"21:12:08 - Comm received:^1^SverTest^T^N1^S0.3.1^t^^ (from:) (Agora) (distri:) (GUILD)", -- [1630]
-			"21:12:13 - UpdateGroup (table: 0000012E6C015380)", -- [1631]
-			"21:12:13 - ML:AddCandidate (Minica-Sulfuras) (WARRIOR) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1632]
-			"21:12:13 - ML:AddCandidate (Happyjugs-Sulfuras) (PALADIN) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1633]
-			"21:12:13 - ML:AddCandidate (Plainview-Sulfuras) (HUNTER) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1634]
-			"21:12:13 - ML:AddCandidate (Acroyear-Sulfuras) (MAGE) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1635]
-			"21:12:13 - ML:AddCandidate (Lrdvoldemort-Sulfuras) (MAGE) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1636]
-			"21:12:13 - GetCouncilInGroup (Topshelf-Sulfuras) (Hashmeer-Sulfuras)", -- [1637]
-			"21:12:13 - Comm received:^1^SMLdb^T^N1^T^SallowNotes^B^Stimeout^N60^SselfVote^B^Sresponses^T^Sdefault^T^t^t^SmultiVote^B^Sbuttons^T^Sdefault^T^SnumButtons^N3^t^t^SnumButtons^N3^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1638]
-			"21:12:13 - Comm received:^1^Scandidates^T^N1^T^SLinky-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SKaldeezer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SRaider^t^SMinica-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SAgora-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SPipers-Sulfuras^T^Srole^SNONE^Sclass^SDRUID^Srank^S^t^SHoogs-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SPRIEST^Srank^SClass~`Leader^t^SHealwho-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPALADIN^Senchanter^B^Srank^SMember^t^SLexxii-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SDerekowns-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SBomann-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^STrial^t^SShway-Sulfuras^T^Srole^SNONE^Sclass^SROGUE^Srank^S^t^SAcroyear-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SHelles-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SOdarnwewiped-Sulfuras^T^Srole^SNONE^Sclass^SPRIEST^Srank^S^t^SHappyjugs-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SHolypally-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SSlimmthicc-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPRIEST^Senchanter^B^Srank^SRaider^t^SHashmeer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SSenior~`Officer^t^SLrdvoldemort-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SMcmac-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SClass~`Leader^t^SBountybull-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SMAGE^Senchanter^B^Srank^SRaider^t^SFistandalus-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SPALADIN^Srank^STrial^t^STopshelf-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SGuild~`Master^t^SSchmilsson-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SSenior~`Officer^t^SPlainview-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SRenae-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SGurdurs-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SOfficer^t^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1639]
-			"21:12:13 - Comm received:^1^SplayerInfo^T^N1^SMinica-Sulfuras^N2^SWARRIOR^N4^SOfficer^N6^N0^N7^N59.95^t^^ (from:) (Minica) (distri:) (WHISPER)", -- [1640]
-			"21:12:13 - ML:AddCandidate (Minica-Sulfuras) (WARRIOR) (nil) (Officer) (nil) (0) (59.95) (nil)", -- [1641]
-			"21:12:13 - Comm received:^1^SplayerInfo^T^N1^SPlainview-Sulfuras^N2^SHUNTER^N4^SRaider^N6^N0^N7^N59.78^t^^ (from:) (Plainview) (distri:) (WHISPER)", -- [1642]
-			"21:12:13 - ML:AddCandidate (Plainview-Sulfuras) (HUNTER) (nil) (Raider) (nil) (0) (59.78) (nil)", -- [1643]
-			"21:12:13 - Comm received:^1^SplayerInfo^T^N1^SLrdvoldemort-Sulfuras^N2^SMAGE^N4^SRaider^N6^N0^N7^N62.76^t^^ (from:) (Lrdvoldemort) (distri:) (WHISPER)", -- [1644]
-			"21:12:13 - ML:AddCandidate (Lrdvoldemort-Sulfuras) (MAGE) (nil) (Raider) (nil) (0) (62.76) (nil)", -- [1645]
-			"21:12:13 - Comm received:^1^SplayerInfo^T^N1^SAcroyear-Sulfuras^N2^SMAGE^N4^SRaider^N6^N0^N7^N53.95^t^^ (from:) (Acroyear) (distri:) (WHISPER)", -- [1646]
-			"21:12:13 - ML:AddCandidate (Acroyear-Sulfuras) (MAGE) (nil) (Raider) (nil) (0) (53.95) (nil)", -- [1647]
-			"21:12:13 - Comm received:^1^SplayerInfo^T^N1^SHappyjugs-Sulfuras^N2^SPALADIN^N4^SRaider^N6^N0^N7^N58.12^t^^ (from:) (Happyjugs) (distri:) (WHISPER)", -- [1648]
-			"21:12:13 - ML:AddCandidate (Happyjugs-Sulfuras) (PALADIN) (nil) (Raider) (nil) (0) (58.12) (nil)", -- [1649]
-			"21:12:14 - VotingFrame:Update() without lootTable!!", -- [1650]
-			"21:12:19 - Comm received:^1^Scouncil_request^T^t^^ (from:) (Agora) (distri:) (WHISPER)", -- [1651]
-			"21:12:19 - Comm received:^1^Scouncil_request^T^t^^ (from:) (Agora) (distri:) (WHISPER)", -- [1652]
-			"21:12:19 - Comm received:^1^Scouncil^T^N1^T^N1^STopshelf-Sulfuras^N2^SHashmeer-Sulfuras^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1653]
-			"21:12:19 - true = (IsCouncil) (Hashmeer-Sulfuras)", -- [1654]
-			"21:12:19 - Comm received:^1^Scouncil^T^N1^T^N1^STopshelf-Sulfuras^N2^SHashmeer-Sulfuras^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1655]
-			"21:12:19 - true = (IsCouncil) (Hashmeer-Sulfuras)", -- [1656]
-			"21:12:24 - VotingFrame:Update() without lootTable!!", -- [1657]
-			"21:12:34 - VotingFrame:Update() without lootTable!!", -- [1658]
-			"21:12:59 - VotingFrame:Update() without lootTable!!", -- [1659]
-			"21:13:15 - Comm received:^1^SverTest^T^N1^S0.4.2^t^^ (from:) (Holypally) (distri:) (GUILD)", -- [1660]
-			"21:13:19 - UpdateGroup (table: 0000012E6C015380)", -- [1661]
-			"21:13:19 - ML:AddCandidate (Minica-Sulfuras) (WARRIOR) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1662]
-			"21:13:19 - ML:AddCandidate (Happyjugs-Sulfuras) (PALADIN) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1663]
-			"21:13:19 - ML:AddCandidate (Plainview-Sulfuras) (HUNTER) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1664]
-			"21:13:19 - ML:AddCandidate (Acroyear-Sulfuras) (MAGE) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1665]
-			"21:13:19 - ML:AddCandidate (Lrdvoldemort-Sulfuras) (MAGE) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1666]
-			"21:13:19 - GetCouncilInGroup (Topshelf-Sulfuras) (Hashmeer-Sulfuras)", -- [1667]
-			"21:13:20 - Comm received:^1^SMLdb^T^N1^T^SallowNotes^B^Stimeout^N60^SselfVote^B^Sresponses^T^Sdefault^T^t^t^SmultiVote^B^Sbuttons^T^Sdefault^T^SnumButtons^N3^t^t^SnumButtons^N3^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1668]
-			"21:13:20 - Comm received:^1^Scandidates^T^N1^T^SLinky-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SKaldeezer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SRaider^t^SMinica-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SAgora-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SPipers-Sulfuras^T^Srole^SNONE^Sclass^SDRUID^Srank^S^t^SHoogs-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SPRIEST^Srank^SClass~`Leader^t^SHealwho-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPALADIN^Senchanter^B^Srank^SMember^t^SLexxii-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SDerekowns-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SBomann-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^STrial^t^SShway-Sulfuras^T^Srole^SNONE^Sclass^SROGUE^Srank^S^t^SAcroyear-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SHelles-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SOdarnwewiped-Sulfuras^T^Srole^SNONE^Sclass^SPRIEST^Srank^S^t^SHappyjugs-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SHolypally-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SSlimmthicc-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPRIEST^Senchanter^B^Srank^SRaider^t^SHashmeer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SSenior~`Officer^t^SLrdvoldemort-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SMcmac-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SClass~`Leader^t^SBountybull-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SMAGE^Senchanter^B^Srank^SRaider^t^SFistandalus-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SPALADIN^Srank^STrial^t^STopshelf-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SGuild~`Master^t^SSchmilsson-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SSenior~`Officer^t^SPlainview-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SRenae-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SGurdurs-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SOfficer^t^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1669]
-			"21:13:20 - Comm received:^1^SplayerInfo^T^N1^SMinica-Sulfuras^N2^SWARRIOR^N4^SOfficer^N6^N0^N7^N59.95^t^^ (from:) (Minica) (distri:) (WHISPER)", -- [1670]
-			"21:13:20 - ML:AddCandidate (Minica-Sulfuras) (WARRIOR) (nil) (Officer) (nil) (0) (59.95) (nil)", -- [1671]
-			"21:13:20 - Comm received:^1^SplayerInfo^T^N1^SPlainview-Sulfuras^N2^SHUNTER^N4^SRaider^N6^N0^N7^N59.78^t^^ (from:) (Plainview) (distri:) (WHISPER)", -- [1672]
-			"21:13:20 - ML:AddCandidate (Plainview-Sulfuras) (HUNTER) (nil) (Raider) (nil) (0) (59.78) (nil)", -- [1673]
-			"21:13:20 - Comm received:^1^SplayerInfo^T^N1^SLrdvoldemort-Sulfuras^N2^SMAGE^N4^SRaider^N6^N0^N7^N62.76^t^^ (from:) (Lrdvoldemort) (distri:) (WHISPER)", -- [1674]
-			"21:13:20 - ML:AddCandidate (Lrdvoldemort-Sulfuras) (MAGE) (nil) (Raider) (nil) (0) (62.76) (nil)", -- [1675]
-			"21:13:20 - Comm received:^1^SplayerInfo^T^N1^SHappyjugs-Sulfuras^N2^SPALADIN^N4^SRaider^N6^N0^N7^N58.12^t^^ (from:) (Happyjugs) (distri:) (WHISPER)", -- [1676]
-			"21:13:20 - ML:AddCandidate (Happyjugs-Sulfuras) (PALADIN) (nil) (Raider) (nil) (0) (58.12) (nil)", -- [1677]
-			"21:13:20 - Comm received:^1^SplayerInfo^T^N1^SAcroyear-Sulfuras^N2^SMAGE^N4^SRaider^N6^N0^N7^N53.95^t^^ (from:) (Acroyear) (distri:) (WHISPER)", -- [1678]
-			"21:13:20 - ML:AddCandidate (Acroyear-Sulfuras) (MAGE) (nil) (Raider) (nil) (0) (53.95) (nil)", -- [1679]
-			"21:13:25 - Comm received:^1^Scouncil_request^T^t^^ (from:) (Holypally) (distri:) (WHISPER)", -- [1680]
-			"21:13:25 - Comm received:^1^Scouncil_request^T^t^^ (from:) (Holypally) (distri:) (WHISPER)", -- [1681]
-			"21:13:26 - Comm received:^1^Scouncil^T^N1^T^N1^STopshelf-Sulfuras^N2^SHashmeer-Sulfuras^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1682]
-			"21:13:26 - true = (IsCouncil) (Hashmeer-Sulfuras)", -- [1683]
-			"21:13:26 - Comm received:^1^Scouncil^T^N1^T^N1^STopshelf-Sulfuras^N2^SHashmeer-Sulfuras^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1684]
-			"21:13:26 - true = (IsCouncil) (Hashmeer-Sulfuras)", -- [1685]
-			"21:13:46 - VotingFrame:Update() without lootTable!!", -- [1686]
-			"21:13:51 - VotingFrame:Update() without lootTable!!", -- [1687]
-			"21:13:53 - VotingFrame:Update() without lootTable!!", -- [1688]
-			"21:14:05 - VotingFrame:Update() without lootTable!!", -- [1689]
-			"21:14:15 - VotingFrame:Update() without lootTable!!", -- [1690]
-			"21:14:18 - VotingFrame:Update() without lootTable!!", -- [1691]
-			"21:14:31 - VotingFrame:Update() without lootTable!!", -- [1692]
-			"21:15:33 - VotingFrame:Update() without lootTable!!", -- [1693]
-			"21:15:39 - Comm received:^1^SverTest^T^N1^S2.14.0^t^^ (from:) (Derekowns) (distri:) (GUILD)", -- [1694]
-			"21:15:40 - VotingFrame:Update() without lootTable!!", -- [1695]
-			"21:15:42 - UpdateGroup (table: 0000012E6C015380)", -- [1696]
-			"21:15:42 - ML:AddCandidate (Minica-Sulfuras) (WARRIOR) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1697]
-			"21:15:42 - ML:AddCandidate (Happyjugs-Sulfuras) (PALADIN) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1698]
-			"21:15:42 - ML:AddCandidate (Plainview-Sulfuras) (HUNTER) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1699]
-			"21:15:42 - ML:AddCandidate (Acroyear-Sulfuras) (MAGE) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1700]
-			"21:15:42 - ML:AddCandidate (Lrdvoldemort-Sulfuras) (MAGE) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1701]
-			"21:15:42 - ML:AddCandidate (Saidar-Sulfuras) (PRIEST) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1702]
-			"21:15:42 - GetCouncilInGroup (Topshelf-Sulfuras) (Hashmeer-Sulfuras)", -- [1703]
-			"21:15:42 - Comm received:^1^SMLdb^T^N1^T^SallowNotes^B^Stimeout^N60^SselfVote^B^Sresponses^T^Sdefault^T^t^t^SmultiVote^B^Sbuttons^T^Sdefault^T^SnumButtons^N3^t^t^SnumButtons^N3^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1704]
-			"21:15:42 - Comm received:^1^Scandidates^T^N1^T^SLinky-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SKaldeezer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SRaider^t^SMinica-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SAgora-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SPipers-Sulfuras^T^Srole^SNONE^Sclass^SDRUID^Srank^S^t^SSaidar-Sulfuras^T^Srole^SNONE^Sclass^SPRIEST^Srank^S^t^SHoogs-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SPRIEST^Srank^SClass~`Leader^t^SHealwho-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPALADIN^Senchanter^B^Srank^SMember^t^SLexxii-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SDerekowns-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SBomann-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^STrial^t^SShway-Sulfuras^T^Srole^SNONE^Sclass^SROGUE^Srank^S^t^SAcroyear-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SHelles-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SOdarnwewiped-Sulfuras^T^Srole^SNONE^Sclass^SPRIEST^Srank^S^t^SHappyjugs-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SHolypally-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SSlimmthicc-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPRIEST^Senchanter^B^Srank^SRaider^t^SHashmeer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SSenior~`Officer^t^SLrdvoldemort-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SMcmac-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SClass~`Leader^t^SBountybull-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SMAGE^Senchanter^B^Srank^SRaider^t^SFistandalus-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SPALADIN^Srank^STrial^t^STopshelf-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SGuild~`Master^t^SSchmilsson-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SSenior~`Officer^t^SPlainview-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SRenae-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SGurdurs-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SOfficer^t^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1705]
-			"21:15:42 - Comm received:^1^SplayerInfo^T^N1^SMinica-Sulfuras^N2^SWARRIOR^N4^SOfficer^N6^N0^N7^N59.95^t^^ (from:) (Minica) (distri:) (WHISPER)", -- [1706]
-			"21:15:42 - ML:AddCandidate (Minica-Sulfuras) (WARRIOR) (nil) (Officer) (nil) (0) (59.95) (nil)", -- [1707]
-			"21:15:42 - Comm received:^1^SplayerInfo^T^N1^SLrdvoldemort-Sulfuras^N2^SMAGE^N4^SRaider^N6^N0^N7^N62.76^t^^ (from:) (Lrdvoldemort) (distri:) (WHISPER)", -- [1708]
-			"21:15:42 - ML:AddCandidate (Lrdvoldemort-Sulfuras) (MAGE) (nil) (Raider) (nil) (0) (62.76) (nil)", -- [1709]
-			"21:15:42 - Comm received:^1^SplayerInfo^T^N1^SAcroyear-Sulfuras^N2^SMAGE^N4^SRaider^N6^N0^N7^N53.95^t^^ (from:) (Acroyear) (distri:) (WHISPER)", -- [1710]
-			"21:15:42 - ML:AddCandidate (Acroyear-Sulfuras) (MAGE) (nil) (Raider) (nil) (0) (53.95) (nil)", -- [1711]
-			"21:15:42 - Comm received:^1^SplayerInfo^T^N1^SHappyjugs-Sulfuras^N2^SPALADIN^N4^SRaider^N6^N0^N7^N58.12^t^^ (from:) (Happyjugs) (distri:) (WHISPER)", -- [1712]
-			"21:15:42 - ML:AddCandidate (Happyjugs-Sulfuras) (PALADIN) (nil) (Raider) (nil) (0) (58.12) (nil)", -- [1713]
-			"21:15:44 - Comm received:^1^SplayerInfo^T^N1^SPlainview-Sulfuras^N2^SHUNTER^N4^SRaider^N6^N0^N7^N59.78^t^^ (from:) (Plainview) (distri:) (WHISPER)", -- [1714]
-			"21:15:44 - ML:AddCandidate (Plainview-Sulfuras) (HUNTER) (nil) (Raider) (nil) (0) (59.78) (nil)", -- [1715]
-			"21:15:49 - Comm received:^1^Scouncil_request^T^t^^ (from:) (Derekowns) (distri:) (WHISPER)", -- [1716]
-			"21:15:49 - Comm received:^1^Scouncil_request^T^t^^ (from:) (Derekowns) (distri:) (WHISPER)", -- [1717]
-			"21:15:49 - Comm received:^1^Scouncil^T^N1^T^N1^STopshelf-Sulfuras^N2^SHashmeer-Sulfuras^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1718]
-			"21:15:49 - true = (IsCouncil) (Hashmeer-Sulfuras)", -- [1719]
-			"21:15:49 - Comm received:^1^Scouncil^T^N1^T^N1^STopshelf-Sulfuras^N2^SHashmeer-Sulfuras^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1720]
-			"21:15:49 - true = (IsCouncil) (Hashmeer-Sulfuras)", -- [1721]
-			"21:16:15 - VotingFrame:Update() without lootTable!!", -- [1722]
-			"21:17:12 - VotingFrame:Update() without lootTable!!", -- [1723]
-			"21:17:20 - VotingFrame:Update() without lootTable!!", -- [1724]
-			"21:17:31 - VotingFrame:Update() without lootTable!!", -- [1725]
-			"21:17:46 - VotingFrame:Update() without lootTable!!", -- [1726]
-			"21:19:05 - VotingFrame:Update() without lootTable!!", -- [1727]
-			"21:19:08 - VotingFrame:Update() without lootTable!!", -- [1728]
-			"21:19:09 - ML event (PLAYER_REGEN_ENABLED)", -- [1729]
-			"21:19:14 - VotingFrame:Update() without lootTable!!", -- [1730]
-			"21:19:19 - VotingFrame:Update() without lootTable!!", -- [1731]
-			"21:19:24 - VotingFrame:Update() without lootTable!!", -- [1732]
-			"21:19:27 - VotingFrame:Update() without lootTable!!", -- [1733]
-			"21:19:41 - VotingFrame:Update() without lootTable!!", -- [1734]
-			"21:19:44 - VotingFrame:Update() without lootTable!!", -- [1735]
-			"21:19:46 - ML event (CHAT_MSG_WHISPER) (yep) (Derekowns-Sulfuras) () () (Derekowns) () (0) (0) () (0) (6039) (Player-4726-00DC4EF2) (0) (false) (false) (false) (false)", -- [1736]
-			"21:19:53 - VotingFrame:Update() without lootTable!!", -- [1737]
-			"21:19:55 - ML event (PLAYER_REGEN_ENABLED)", -- [1738]
-			"21:20:07 - ML event (PLAYER_REGEN_ENABLED)", -- [1739]
-			"21:20:07 - VotingFrame:Update() without lootTable!!", -- [1740]
-			"21:20:08 - VotingFrame:Update() without lootTable!!", -- [1741]
-			"21:20:12 - Event: (RAID_INSTANCE_WELCOME) (Molten Core) (6) (13) (39) (0)", -- [1742]
-			"21:20:13 - Event: (PLAYER_ENTERING_WORLD) (false) (false)", -- [1743]
-			"21:20:13 - GetML()", -- [1744]
-			"21:20:13 - LootMethod =  (master)", -- [1745]
-			"21:20:13 - MasterLooter =  (Hashmeer-Sulfuras)", -- [1746]
-			"21:20:13 - NewMLCheck (No ML Change)", -- [1747]
-			"21:20:13 - VotingFrame:Update() without lootTable!!", -- [1748]
-			"21:20:14 - VotingFrame:Update() without lootTable!!", -- [1749]
-			"21:20:17 - VotingFrame:Update() without lootTable!!", -- [1750]
-			"21:20:18 - VotingFrame:Update() without lootTable!!", -- [1751]
-			"21:20:19 - VotingFrame:Update() without lootTable!!", -- [1752]
-			"21:20:28 - Timer MLdb_check passed", -- [1753]
-			"21:20:30 - VotingFrame:Update() without lootTable!!", -- [1754]
-			"21:20:36 - / (config)", -- [1755]
-			"21:20:37 - UpdateGroup (table: 0000012E6C015380)", -- [1756]
-			"21:20:37 - ML:AddCandidate (Minica-Sulfuras) (WARRIOR) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1757]
-			"21:20:37 - ML:AddCandidate (Plainview-Sulfuras) (HUNTER) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1758]
-			"21:20:37 - ML:AddCandidate (Happyjugs-Sulfuras) (PALADIN) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1759]
-			"21:20:37 - ML:AddCandidate (Acroyear-Sulfuras) (MAGE) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1760]
-			"21:20:37 - ML:AddCandidate (Lrdvoldemort-Sulfuras) (MAGE) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1761]
-			"21:20:37 - GetCouncilInGroup (Topshelf-Sulfuras) (Hashmeer-Sulfuras)", -- [1762]
-			"21:20:37 - Comm received:^1^SMLdb^T^N1^T^SallowNotes^B^Stimeout^N60^SselfVote^B^Sresponses^T^Sdefault^T^t^t^SmultiVote^B^Sbuttons^T^Sdefault^T^SnumButtons^N3^t^t^SnumButtons^N3^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1763]
-			"21:20:37 - Comm received:^1^Scandidates^T^N1^T^SLinky-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SKaldeezer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SRaider^t^SMinica-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SAgora-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SPipers-Sulfuras^T^Srole^SNONE^Sclass^SDRUID^Srank^S^t^SSaidar-Sulfuras^T^Srole^SNONE^Sclass^SPRIEST^Srank^S^t^SHoogs-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SPRIEST^Srank^SClass~`Leader^t^SHealwho-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPALADIN^Senchanter^B^Srank^SMember^t^SLexxii-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SDerekowns-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SBomann-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^STrial^t^SShway-Sulfuras^T^Srole^SNONE^Sclass^SROGUE^Srank^S^t^SAcroyear-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SHelles-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SOdarnwewiped-Sulfuras^T^Srole^SNONE^Sclass^SPRIEST^Srank^S^t^SHappyjugs-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SHolypally-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SSlimmthicc-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPRIEST^Senchanter^B^Srank^SRaider^t^SHashmeer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SSenior~`Officer^t^SLrdvoldemort-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SMcmac-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SClass~`Leader^t^SBountybull-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SMAGE^Senchanter^B^Srank^SRaider^t^SFistandalus-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SPALADIN^Srank^STrial^t^STopshelf-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SGuild~`Master^t^SSchmilsson-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SSenior~`Officer^t^SPlainview-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SRenae-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SGurdurs-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SOfficer^t^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1764]
-			"21:20:37 - Comm received:^1^SplayerInfo^T^N1^SMinica-Sulfuras^N2^SWARRIOR^N4^SOfficer^N6^N0^N7^N59.95^t^^ (from:) (Minica) (distri:) (WHISPER)", -- [1765]
-			"21:20:37 - ML:AddCandidate (Minica-Sulfuras) (WARRIOR) (nil) (Officer) (nil) (0) (59.95) (nil)", -- [1766]
-			"21:20:37 - Comm received:^1^SplayerInfo^T^N1^SLrdvoldemort-Sulfuras^N2^SMAGE^N4^SRaider^N6^N0^N7^N62.76^t^^ (from:) (Lrdvoldemort) (distri:) (WHISPER)", -- [1767]
-			"21:20:37 - ML:AddCandidate (Lrdvoldemort-Sulfuras) (MAGE) (nil) (Raider) (nil) (0) (62.76) (nil)", -- [1768]
-			"21:20:37 - Comm received:^1^SplayerInfo^T^N1^SAcroyear-Sulfuras^N2^SMAGE^N4^SRaider^N6^N0^N7^N53.95^t^^ (from:) (Acroyear) (distri:) (WHISPER)", -- [1769]
-			"21:20:37 - ML:AddCandidate (Acroyear-Sulfuras) (MAGE) (nil) (Raider) (nil) (0) (53.95) (nil)", -- [1770]
-			"21:20:37 - Comm received:^1^SplayerInfo^T^N1^SHappyjugs-Sulfuras^N2^SPALADIN^N4^SRaider^N6^N0^N7^N58.12^t^^ (from:) (Happyjugs) (distri:) (WHISPER)", -- [1771]
-			"21:20:37 - ML:AddCandidate (Happyjugs-Sulfuras) (PALADIN) (nil) (Raider) (nil) (0) (58.12) (nil)", -- [1772]
-			"21:20:37 - Comm received:^1^SplayerInfo^T^N1^SPlainview-Sulfuras^N2^SHUNTER^N4^SRaider^N6^N0^N7^N59.11^t^^ (from:) (Plainview) (distri:) (WHISPER)", -- [1773]
-			"21:20:37 - ML:AddCandidate (Plainview-Sulfuras) (HUNTER) (nil) (Raider) (nil) (0) (59.11) (nil)", -- [1774]
-			"21:20:39 - VotingFrame:Update() without lootTable!!", -- [1775]
-			"21:20:40 - VotingFrame:Update() without lootTable!!", -- [1776]
-			"21:20:43 - GetCouncilInGroup (Hashmeer-Sulfuras)", -- [1777]
-			"21:20:43 - Comm received:^1^Scouncil^T^N1^T^N1^SHashmeer-Sulfuras^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1778]
-			"21:20:43 - true = (IsCouncil) (Hashmeer-Sulfuras)", -- [1779]
-			"21:20:43 - Comm received:^1^Scandidates^T^N1^T^SLinky-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SKaldeezer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SRaider^t^SMinica-Sulfuras^T^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SOfficer^t^SAgora-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SPipers-Sulfuras^T^Srole^SNONE^Sclass^SDRUID^Srank^S^t^SSaidar-Sulfuras^T^Srole^SNONE^Sclass^SPRIEST^Srank^S^t^SHoogs-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SPRIEST^Srank^SClass~`Leader^t^SHealwho-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPALADIN^Senchanter^B^Srank^SMember^t^SLexxii-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SDerekowns-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SBomann-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^STrial^t^SShway-Sulfuras^T^Srole^SNONE^Sclass^SROGUE^Srank^S^t^SAcroyear-Sulfuras^T^Senchant_lvl^N0^Sclass^SMAGE^Srank^SRaider^t^SHelles-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SOdarnwewiped-Sulfuras^T^Srole^SNONE^Sclass^SPRIEST^Srank^S^t^SHappyjugs-Sulfuras^T^Senchant_lvl^N0^Sclass^SPALADIN^Srank^SRaider^t^SHolypally-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SSlimmthicc-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPRIEST^Senchanter^B^Srank^SRaider^t^SHashmeer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SSenior~`Officer^t^SLrdvoldemort-Sulfuras^T^Senchant_lvl^N0^Sclass^SMAGE^Srank^SRaider^t^SMcmac-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SClass~`Leader^t^SBountybull-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SMAGE^Senchanter^B^Srank^SRaider^t^SFistandalus-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SPALADIN^Srank^STrial^t^STopshelf-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SGuild~`Master^t^SSchmilsson-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SSenior~`Officer^t^SPlainview-Sulfuras^T^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SRaider^t^SRenae-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SGurdurs-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SOfficer^t^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1780]
-			"21:20:43 - GetCouncilInGroup (Hashmeer-Sulfuras)", -- [1781]
-			"21:20:43 - Comm received:^1^Scouncil^T^N1^T^N1^SHashmeer-Sulfuras^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1782]
-			"21:20:43 - true = (IsCouncil) (Hashmeer-Sulfuras)", -- [1783]
-			"21:20:44 - Comm received:^1^Scandidates^T^N1^T^SLinky-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SKaldeezer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SRaider^t^SMinica-Sulfuras^T^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SOfficer^t^SAgora-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SPipers-Sulfuras^T^Srole^SNONE^Sclass^SDRUID^Srank^S^t^SSaidar-Sulfuras^T^Srole^SNONE^Sclass^SPRIEST^Srank^S^t^SHoogs-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SPRIEST^Srank^SClass~`Leader^t^SHealwho-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPALADIN^Senchanter^B^Srank^SMember^t^SLexxii-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SDerekowns-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SBomann-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^STrial^t^SShway-Sulfuras^T^Srole^SNONE^Sclass^SROGUE^Srank^S^t^SAcroyear-Sulfuras^T^Senchant_lvl^N0^Sclass^SMAGE^Srank^SRaider^t^SHelles-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SOdarnwewiped-Sulfuras^T^Srole^SNONE^Sclass^SPRIEST^Srank^S^t^SHappyjugs-Sulfuras^T^Senchant_lvl^N0^Sclass^SPALADIN^Srank^SRaider^t^SHolypally-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SSlimmthicc-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPRIEST^Senchanter^B^Srank^SRaider^t^SHashmeer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SSenior~`Officer^t^SLrdvoldemort-Sulfuras^T^Senchant_lvl^N0^Sclass^SMAGE^Srank^SRaider^t^SMcmac-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SClass~`Leader^t^SBountybull-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SMAGE^Senchanter^B^Srank^SRaider^t^SFistandalus-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SPALADIN^Srank^STrial^t^STopshelf-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SGuild~`Master^t^SSchmilsson-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SSenior~`Officer^t^SPlainview-Sulfuras^T^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SRaider^t^SRenae-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SGurdurs-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SOfficer^t^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1784]
-			"21:20:46 - GetCouncilInGroup (Bountybull-Sulfuras) (Hashmeer-Sulfuras)", -- [1785]
-			"21:20:46 - Comm received:^1^Scouncil^T^N1^T^N1^SBountybull-Sulfuras^N2^SHashmeer-Sulfuras^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1786]
-			"21:20:46 - true = (IsCouncil) (Hashmeer-Sulfuras)", -- [1787]
-			"21:20:47 - GetCouncilInGroup (Bountybull-Sulfuras) (Derekowns-Sulfuras) (Hashmeer-Sulfuras)", -- [1788]
-			"21:20:47 - Comm received:^1^Scandidates^T^N1^T^SLinky-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SKaldeezer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SRaider^t^SMinica-Sulfuras^T^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SOfficer^t^SAgora-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SPipers-Sulfuras^T^Srole^SNONE^Sclass^SDRUID^Srank^S^t^SSaidar-Sulfuras^T^Srole^SNONE^Sclass^SPRIEST^Srank^S^t^SHoogs-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SPRIEST^Srank^SClass~`Leader^t^SHealwho-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPALADIN^Senchanter^B^Srank^SMember^t^SLexxii-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SDerekowns-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SBomann-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^STrial^t^SShway-Sulfuras^T^Srole^SNONE^Sclass^SROGUE^Srank^S^t^SAcroyear-Sulfuras^T^Senchant_lvl^N0^Sclass^SMAGE^Srank^SRaider^t^SHelles-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SOdarnwewiped-Sulfuras^T^Srole^SNONE^Sclass^SPRIEST^Srank^S^t^SHappyjugs-Sulfuras^T^Senchant_lvl^N0^Sclass^SPALADIN^Srank^SRaider^t^SHolypally-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SSlimmthicc-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPRIEST^Senchanter^B^Srank^SRaider^t^SHashmeer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SSenior~`Officer^t^SLrdvoldemort-Sulfuras^T^Senchant_lvl^N0^Sclass^SMAGE^Srank^SRaider^t^SMcmac-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SClass~`Leader^t^SBountybull-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SMAGE^Senchanter^B^Srank^SRaider^t^SFistandalus-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SPALADIN^Srank^STrial^t^STopshelf-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SGuild~`Master^t^SSchmilsson-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SSenior~`Officer^t^SPlainview-Sulfuras^T^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SRaider^t^SRenae-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SGurdurs-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SOfficer^t^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1789]
-			"21:20:48 - Comm received:^1^Scouncil^T^N1^T^N1^SBountybull-Sulfuras^N2^SDerekowns-Sulfuras^N3^SHashmeer-Sulfuras^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1790]
-			"21:20:48 - true = (IsCouncil) (Hashmeer-Sulfuras)", -- [1791]
-			"21:20:51 - Comm received:^1^Scandidates^T^N1^T^SLinky-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SKaldeezer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SRaider^t^SMinica-Sulfuras^T^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SOfficer^t^SAgora-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SPipers-Sulfuras^T^Srole^SNONE^Sclass^SDRUID^Srank^S^t^SSaidar-Sulfuras^T^Srole^SNONE^Sclass^SPRIEST^Srank^S^t^SHoogs-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SPRIEST^Srank^SClass~`Leader^t^SHealwho-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPALADIN^Senchanter^B^Srank^SMember^t^SLexxii-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SDerekowns-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SBomann-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^STrial^t^SShway-Sulfuras^T^Srole^SNONE^Sclass^SROGUE^Srank^S^t^SAcroyear-Sulfuras^T^Senchant_lvl^N0^Sclass^SMAGE^Srank^SRaider^t^SHelles-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SOdarnwewiped-Sulfuras^T^Srole^SNONE^Sclass^SPRIEST^Srank^S^t^SHappyjugs-Sulfuras^T^Senchant_lvl^N0^Sclass^SPALADIN^Srank^SRaider^t^SHolypally-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SSlimmthicc-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPRIEST^Senchanter^B^Srank^SRaider^t^SHashmeer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SSenior~`Officer^t^SLrdvoldemort-Sulfuras^T^Senchant_lvl^N0^Sclass^SMAGE^Srank^SRaider^t^SMcmac-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SClass~`Leader^t^SBountybull-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SMAGE^Senchanter^B^Srank^SRaider^t^SFistandalus-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SPALADIN^Srank^STrial^t^STopshelf-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SGuild~`Master^t^SSchmilsson-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SSenior~`Officer^t^SPlainview-Sulfuras^T^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SRaider^t^SRenae-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SGurdurs-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SOfficer^t^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1792]
-			"21:20:51 - GetCouncilInGroup (Bountybull-Sulfuras) (Derekowns-Sulfuras) (Minica-Sulfuras) (Hashmeer-Sulfuras)", -- [1793]
-			"21:20:51 - Comm received:^1^Scouncil^T^N1^T^N1^SBountybull-Sulfuras^N2^SDerekowns-Sulfuras^N3^SMinica-Sulfuras^N4^SHashmeer-Sulfuras^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1794]
-			"21:20:51 - true = (IsCouncil) (Hashmeer-Sulfuras)", -- [1795]
-			"21:20:53 - GetCouncilInGroup (Bountybull-Sulfuras) (Derekowns-Sulfuras) (Minica-Sulfuras) (Pipers-Sulfuras) (Hashmeer-Sulfuras)", -- [1796]
-			"21:20:54 - Comm received:^1^Scandidates^T^N1^T^SLinky-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SKaldeezer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SRaider^t^SMinica-Sulfuras^T^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SOfficer^t^SAgora-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SPipers-Sulfuras^T^Srole^SNONE^Sclass^SDRUID^Srank^S^t^SSaidar-Sulfuras^T^Srole^SNONE^Sclass^SPRIEST^Srank^S^t^SHoogs-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SPRIEST^Srank^SClass~`Leader^t^SHealwho-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPALADIN^Senchanter^B^Srank^SMember^t^SLexxii-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SDerekowns-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SBomann-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^STrial^t^SShway-Sulfuras^T^Srole^SNONE^Sclass^SROGUE^Srank^S^t^SAcroyear-Sulfuras^T^Senchant_lvl^N0^Sclass^SMAGE^Srank^SRaider^t^SHelles-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SOdarnwewiped-Sulfuras^T^Srole^SNONE^Sclass^SPRIEST^Srank^S^t^SHappyjugs-Sulfuras^T^Senchant_lvl^N0^Sclass^SPALADIN^Srank^SRaider^t^SHolypally-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SSlimmthicc-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPRIEST^Senchanter^B^Srank^SRaider^t^SHashmeer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SSenior~`Officer^t^SLrdvoldemort-Sulfuras^T^Senchant_lvl^N0^Sclass^SMAGE^Srank^SRaider^t^SMcmac-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SClass~`Leader^t^SBountybull-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SMAGE^Senchanter^B^Srank^SRaider^t^SFistandalus-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SPALADIN^Srank^STrial^t^STopshelf-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SGuild~`Master^t^SSchmilsson-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SSenior~`Officer^t^SPlainview-Sulfuras^T^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SRaider^t^SRenae-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SGurdurs-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SOfficer^t^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1797]
-			"21:20:54 - Comm received:^1^Scouncil^T^N1^T^N1^SBountybull-Sulfuras^N2^SDerekowns-Sulfuras^N3^SMinica-Sulfuras^N4^SPipers-Sulfuras^N5^SHashmeer-Sulfuras^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1798]
-			"21:20:54 - true = (IsCouncil) (Hashmeer-Sulfuras)", -- [1799]
-			"21:20:57 - Comm received:^1^Scandidates^T^N1^T^SLinky-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SKaldeezer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SRaider^t^SMinica-Sulfuras^T^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SOfficer^t^SAgora-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SPipers-Sulfuras^T^Srole^SNONE^Sclass^SDRUID^Srank^S^t^SSaidar-Sulfuras^T^Srole^SNONE^Sclass^SPRIEST^Srank^S^t^SHoogs-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SPRIEST^Srank^SClass~`Leader^t^SHealwho-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPALADIN^Senchanter^B^Srank^SMember^t^SLexxii-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SDerekowns-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SBomann-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^STrial^t^SShway-Sulfuras^T^Srole^SNONE^Sclass^SROGUE^Srank^S^t^SAcroyear-Sulfuras^T^Senchant_lvl^N0^Sclass^SMAGE^Srank^SRaider^t^SHelles-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SOdarnwewiped-Sulfuras^T^Srole^SNONE^Sclass^SPRIEST^Srank^S^t^SHappyjugs-Sulfuras^T^Senchant_lvl^N0^Sclass^SPALADIN^Srank^SRaider^t^SHolypally-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SSlimmthicc-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPRIEST^Senchanter^B^Srank^SRaider^t^SHashmeer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SSenior~`Officer^t^SLrdvoldemort-Sulfuras^T^Senchant_lvl^N0^Sclass^SMAGE^Srank^SRaider^t^SMcmac-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SClass~`Leader^t^SBountybull-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SMAGE^Senchanter^B^Srank^SRaider^t^SFistandalus-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SPALADIN^Srank^STrial^t^STopshelf-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SGuild~`Master^t^SSchmilsson-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SSenior~`Officer^t^SPlainview-Sulfuras^T^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SRaider^t^SRenae-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SGurdurs-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SOfficer^t^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1800]
-			"21:21:02 - / (config)", -- [1801]
-			"21:22:33 - Event: (PLAYER_ENTERING_WORLD) (false) (false)", -- [1802]
-			"21:22:33 - GetML()", -- [1803]
-			"21:22:33 - LootMethod =  (master)", -- [1804]
-			"21:22:33 - MasterLooter =  (Hashmeer-Sulfuras)", -- [1805]
-			"21:22:33 - NewMLCheck (No ML Change)", -- [1806]
-			"21:22:34 - VotingFrame:Update() without lootTable!!", -- [1807]
-			"21:22:36 - Comm received:^1^SplayerInfo^T^N1^SFistandalus-Sulfuras^N2^SPALADIN^N3^SNONE^N4^STrial^N6^N0^N7^N50.26^t^^ (from:) (Fistandalus) (distri:) (WHISPER)", -- [1808]
-			"21:22:36 - ML:AddCandidate (Fistandalus-Sulfuras) (PALADIN) (NONE) (Trial) (nil) (0) (50.26) (nil)", -- [1809]
-			"21:22:36 - Comm received:^1^SverTest^T^N1^S0.4.2^t^^ (from:) (Fistandalus) (distri:) (GUILD)", -- [1810]
-			"21:22:36 - Comm received:^1^Sreconnect^T^t^^ (from:) (Fistandalus) (distri:) (WHISPER)", -- [1811]
-			"21:22:36 - Responded to reconnect from (Fistandalus)", -- [1812]
-			"21:22:37 - VotingFrame:Update() without lootTable!!", -- [1813]
-			"21:22:38 - VotingFrame:Update() without lootTable!!", -- [1814]
-			"21:22:39 - VotingFrame:Update() without lootTable!!", -- [1815]
-			"21:22:42 - VotingFrame:Update() without lootTable!!", -- [1816]
-			"21:22:44 - Comm received:^1^SverTest^T^N1^S0.4.2^t^^ (from:) (Bountybull) (distri:) (GUILD)", -- [1817]
-			"21:22:46 - VotingFrame:Update() without lootTable!!", -- [1818]
-			"21:22:48 - Timer MLdb_check passed", -- [1819]
-			"21:22:49 - VotingFrame:Update() without lootTable!!", -- [1820]
-			"21:22:51 - UpdateGroup (table: 0000012E6C015380)", -- [1821]
-			"21:22:51 - ML:AddCandidate (Minica-Sulfuras) (WARRIOR) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1822]
-			"21:22:51 - ML:AddCandidate (Plainview-Sulfuras) (HUNTER) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1823]
-			"21:22:51 - ML:AddCandidate (Happyjugs-Sulfuras) (PALADIN) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1824]
-			"21:22:51 - ML:AddCandidate (Acroyear-Sulfuras) (MAGE) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1825]
-			"21:22:51 - ML:AddCandidate (Lrdvoldemort-Sulfuras) (MAGE) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1826]
-			"21:22:51 - GetCouncilInGroup (Bountybull-Sulfuras) (Derekowns-Sulfuras) (Minica-Sulfuras) (Pipers-Sulfuras) (Hashmeer-Sulfuras)", -- [1827]
-			"21:22:51 - Comm received:^1^SMLdb^T^N1^T^SallowNotes^B^Stimeout^N60^SselfVote^B^Sresponses^T^Sdefault^T^t^t^SmultiVote^B^Sbuttons^T^Sdefault^T^SnumButtons^N3^t^t^SnumButtons^N3^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1828]
-			"21:22:51 - Comm received:^1^Scandidates^T^N1^T^SLinky-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SKaldeezer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SRaider^t^SMinica-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SAgora-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SPipers-Sulfuras^T^Srole^SNONE^Sclass^SDRUID^Srank^S^t^SSaidar-Sulfuras^T^Srole^SNONE^Sclass^SPRIEST^Srank^S^t^SHoogs-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SPRIEST^Srank^SClass~`Leader^t^SHealwho-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPALADIN^Senchanter^B^Srank^SMember^t^SLexxii-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SDerekowns-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SBomann-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^STrial^t^SShway-Sulfuras^T^Srole^SNONE^Sclass^SROGUE^Srank^S^t^SAcroyear-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SHelles-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SOdarnwewiped-Sulfuras^T^Srole^SNONE^Sclass^SPRIEST^Srank^S^t^SHappyjugs-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SHolypally-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SSlimmthicc-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPRIEST^Senchanter^B^Srank^SRaider^t^SHashmeer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SSenior~`Officer^t^SLrdvoldemort-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SMcmac-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SClass~`Leader^t^SBountybull-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SMAGE^Senchanter^B^Srank^SRaider^t^SFistandalus-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SPALADIN^Srank^STrial^t^STopshelf-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SGuild~`Master^t^SSchmilsson-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SSenior~`Officer^t^SPlainview-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SRenae-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SGurdurs-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SOfficer^t^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1829]
-			"21:22:51 - Comm received:^1^SplayerInfo^T^N1^SMinica-Sulfuras^N2^SWARRIOR^N4^SOfficer^N6^N0^N7^N59.95^t^^ (from:) (Minica) (distri:) (WHISPER)", -- [1830]
-			"21:22:51 - ML:AddCandidate (Minica-Sulfuras) (WARRIOR) (nil) (Officer) (nil) (0) (59.95) (nil)", -- [1831]
-			"21:22:51 - Comm received:^1^SplayerInfo^T^N1^SLrdvoldemort-Sulfuras^N2^SMAGE^N4^SRaider^N6^N0^N7^N62.76^t^^ (from:) (Lrdvoldemort) (distri:) (WHISPER)", -- [1832]
-			"21:22:51 - ML:AddCandidate (Lrdvoldemort-Sulfuras) (MAGE) (nil) (Raider) (nil) (0) (62.76) (nil)", -- [1833]
-			"21:22:51 - Comm received:^1^SplayerInfo^T^N1^SPlainview-Sulfuras^N2^SHUNTER^N4^SRaider^N6^N0^N7^N59.11^t^^ (from:) (Plainview) (distri:) (WHISPER)", -- [1834]
-			"21:22:51 - ML:AddCandidate (Plainview-Sulfuras) (HUNTER) (nil) (Raider) (nil) (0) (59.11) (nil)", -- [1835]
-			"21:22:51 - Comm received:^1^SplayerInfo^T^N1^SAcroyear-Sulfuras^N2^SMAGE^N4^SRaider^N6^N0^N7^N53.95^t^^ (from:) (Acroyear) (distri:) (WHISPER)", -- [1836]
-			"21:22:51 - ML:AddCandidate (Acroyear-Sulfuras) (MAGE) (nil) (Raider) (nil) (0) (53.95) (nil)", -- [1837]
-			"21:22:51 - Comm received:^1^SplayerInfo^T^N1^SHappyjugs-Sulfuras^N2^SPALADIN^N4^SRaider^N6^N0^N7^N58.12^t^^ (from:) (Happyjugs) (distri:) (WHISPER)", -- [1838]
-			"21:22:51 - ML:AddCandidate (Happyjugs-Sulfuras) (PALADIN) (nil) (Raider) (nil) (0) (58.12) (nil)", -- [1839]
-			"21:22:52 - VotingFrame:Update() without lootTable!!", -- [1840]
-			"21:22:56 - VotingFrame:Update() without lootTable!!", -- [1841]
-			"21:22:57 - Comm received:^1^Scouncil_request^T^t^^ (from:) (Bountybull) (distri:) (WHISPER)", -- [1842]
-			"21:22:57 - Comm received:^1^Scouncil_request^T^t^^ (from:) (Bountybull) (distri:) (WHISPER)", -- [1843]
-			"21:22:57 - Comm received:^1^Scouncil^T^N1^T^N1^SBountybull-Sulfuras^N2^SDerekowns-Sulfuras^N3^SMinica-Sulfuras^N4^SPipers-Sulfuras^N5^SHashmeer-Sulfuras^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1844]
-			"21:22:57 - true = (IsCouncil) (Hashmeer-Sulfuras)", -- [1845]
-			"21:22:57 - Comm received:^1^Scouncil^T^N1^T^N1^SBountybull-Sulfuras^N2^SDerekowns-Sulfuras^N3^SMinica-Sulfuras^N4^SPipers-Sulfuras^N5^SHashmeer-Sulfuras^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1846]
-			"21:22:57 - true = (IsCouncil) (Hashmeer-Sulfuras)", -- [1847]
-			"21:22:59 - VotingFrame:Update() without lootTable!!", -- [1848]
-			"21:23:01 - UpdateGroup (table: 0000012E6C015380)", -- [1849]
-			"21:23:01 - ML:AddCandidate (Minica-Sulfuras) (WARRIOR) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1850]
-			"21:23:01 - ML:AddCandidate (Plainview-Sulfuras) (HUNTER) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1851]
-			"21:23:01 - ML:AddCandidate (Happyjugs-Sulfuras) (PALADIN) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1852]
-			"21:23:01 - ML:AddCandidate (Acroyear-Sulfuras) (MAGE) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1853]
-			"21:23:01 - ML:AddCandidate (Lrdvoldemort-Sulfuras) (MAGE) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1854]
-			"21:23:01 - GetCouncilInGroup (Bountybull-Sulfuras) (Derekowns-Sulfuras) (Minica-Sulfuras) (Pipers-Sulfuras) (Hashmeer-Sulfuras)", -- [1855]
-			"21:23:01 - Comm received:^1^SMLdb^T^N1^T^SallowNotes^B^Stimeout^N60^SselfVote^B^Sresponses^T^Sdefault^T^t^t^SmultiVote^B^Sbuttons^T^Sdefault^T^SnumButtons^N3^t^t^SnumButtons^N3^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1856]
-			"21:23:01 - Comm received:^1^Scandidates^T^N1^T^SLinky-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SKaldeezer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SRaider^t^SMinica-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SAgora-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SPipers-Sulfuras^T^Srole^SNONE^Sclass^SDRUID^Srank^S^t^SSaidar-Sulfuras^T^Srole^SNONE^Sclass^SPRIEST^Srank^S^t^SHoogs-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SPRIEST^Srank^SClass~`Leader^t^SHealwho-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPALADIN^Senchanter^B^Srank^SMember^t^SLexxii-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SDerekowns-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SBomann-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^STrial^t^SShway-Sulfuras^T^Srole^SNONE^Sclass^SROGUE^Srank^S^t^SAcroyear-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SHelles-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SOdarnwewiped-Sulfuras^T^Srole^SNONE^Sclass^SPRIEST^Srank^S^t^SHappyjugs-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SHolypally-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SSlimmthicc-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPRIEST^Senchanter^B^Srank^SRaider^t^SHashmeer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SSenior~`Officer^t^SLrdvoldemort-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SMcmac-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SClass~`Leader^t^SBountybull-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SMAGE^Senchanter^B^Srank^SRaider^t^SFistandalus-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SPALADIN^Srank^STrial^t^STopshelf-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SGuild~`Master^t^SSchmilsson-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SSenior~`Officer^t^SPlainview-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SRenae-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SGurdurs-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SOfficer^t^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1857]
-			"21:23:01 - Comm received:^1^SplayerInfo^T^N1^SMinica-Sulfuras^N2^SWARRIOR^N4^SOfficer^N6^N0^N7^N59.95^t^^ (from:) (Minica) (distri:) (WHISPER)", -- [1858]
-			"21:23:01 - ML:AddCandidate (Minica-Sulfuras) (WARRIOR) (nil) (Officer) (nil) (0) (59.95) (nil)", -- [1859]
-			"21:23:01 - Comm received:^1^SplayerInfo^T^N1^SPlainview-Sulfuras^N2^SHUNTER^N4^SRaider^N6^N0^N7^N59.11^t^^ (from:) (Plainview) (distri:) (WHISPER)", -- [1860]
-			"21:23:01 - ML:AddCandidate (Plainview-Sulfuras) (HUNTER) (nil) (Raider) (nil) (0) (59.11) (nil)", -- [1861]
-			"21:23:01 - Comm received:^1^SplayerInfo^T^N1^SLrdvoldemort-Sulfuras^N2^SMAGE^N4^SRaider^N6^N0^N7^N62.76^t^^ (from:) (Lrdvoldemort) (distri:) (WHISPER)", -- [1862]
-			"21:23:01 - ML:AddCandidate (Lrdvoldemort-Sulfuras) (MAGE) (nil) (Raider) (nil) (0) (62.76) (nil)", -- [1863]
-			"21:23:01 - Comm received:^1^SplayerInfo^T^N1^SAcroyear-Sulfuras^N2^SMAGE^N4^SRaider^N6^N0^N7^N53.95^t^^ (from:) (Acroyear) (distri:) (WHISPER)", -- [1864]
-			"21:23:01 - ML:AddCandidate (Acroyear-Sulfuras) (MAGE) (nil) (Raider) (nil) (0) (53.95) (nil)", -- [1865]
-			"21:23:01 - Comm received:^1^SplayerInfo^T^N1^SHappyjugs-Sulfuras^N2^SPALADIN^N4^SRaider^N6^N0^N7^N58.12^t^^ (from:) (Happyjugs) (distri:) (WHISPER)", -- [1866]
-			"21:23:01 - ML:AddCandidate (Happyjugs-Sulfuras) (PALADIN) (nil) (Raider) (nil) (0) (58.12) (nil)", -- [1867]
-			"21:23:08 - VotingFrame:Update() without lootTable!!", -- [1868]
-			"21:23:11 - UpdateGroup (table: 0000012E6C015380)", -- [1869]
-			"21:23:11 - ML:AddCandidate (Minica-Sulfuras) (WARRIOR) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1870]
-			"21:23:11 - ML:AddCandidate (Plainview-Sulfuras) (HUNTER) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1871]
-			"21:23:11 - ML:AddCandidate (Happyjugs-Sulfuras) (PALADIN) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1872]
-			"21:23:11 - ML:AddCandidate (Acroyear-Sulfuras) (MAGE) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1873]
-			"21:23:11 - ML:AddCandidate (Lrdvoldemort-Sulfuras) (MAGE) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1874]
-			"21:23:11 - GetCouncilInGroup (Bountybull-Sulfuras) (Derekowns-Sulfuras) (Minica-Sulfuras) (Pipers-Sulfuras) (Hashmeer-Sulfuras)", -- [1875]
-			"21:23:11 - Comm received:^1^SMLdb^T^N1^T^SallowNotes^B^Stimeout^N60^SselfVote^B^Sresponses^T^Sdefault^T^t^t^SmultiVote^B^Sbuttons^T^Sdefault^T^SnumButtons^N3^t^t^SnumButtons^N3^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1876]
-			"21:23:11 - Comm received:^1^Scandidates^T^N1^T^SLinky-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SKaldeezer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SRaider^t^SMinica-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SAgora-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SPipers-Sulfuras^T^Srole^SNONE^Sclass^SDRUID^Srank^S^t^SSaidar-Sulfuras^T^Srole^SNONE^Sclass^SPRIEST^Srank^S^t^SHoogs-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SPRIEST^Srank^SClass~`Leader^t^SHealwho-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPALADIN^Senchanter^B^Srank^SMember^t^SLexxii-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SDerekowns-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SBomann-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^STrial^t^SShway-Sulfuras^T^Srole^SNONE^Sclass^SROGUE^Srank^S^t^SAcroyear-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SHelles-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SOdarnwewiped-Sulfuras^T^Srole^SNONE^Sclass^SPRIEST^Srank^S^t^SHappyjugs-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SHolypally-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SSlimmthicc-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPRIEST^Senchanter^B^Srank^SRaider^t^SHashmeer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SSenior~`Officer^t^SLrdvoldemort-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SMcmac-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SClass~`Leader^t^SBountybull-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SMAGE^Senchanter^B^Srank^SRaider^t^SFistandalus-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SPALADIN^Srank^STrial^t^STopshelf-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SGuild~`Master^t^SSchmilsson-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SSenior~`Officer^t^SPlainview-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SRenae-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SGurdurs-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SOfficer^t^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1877]
-			"21:23:11 - Comm received:^1^SplayerInfo^T^N1^SLrdvoldemort-Sulfuras^N2^SMAGE^N4^SRaider^N6^N0^N7^N62.76^t^^ (from:) (Lrdvoldemort) (distri:) (WHISPER)", -- [1878]
-			"21:23:11 - ML:AddCandidate (Lrdvoldemort-Sulfuras) (MAGE) (nil) (Raider) (nil) (0) (62.76) (nil)", -- [1879]
-			"21:23:11 - Comm received:^1^SplayerInfo^T^N1^SMinica-Sulfuras^N2^SWARRIOR^N4^SOfficer^N6^N0^N7^N59.95^t^^ (from:) (Minica) (distri:) (WHISPER)", -- [1880]
-			"21:23:11 - ML:AddCandidate (Minica-Sulfuras) (WARRIOR) (nil) (Officer) (nil) (0) (59.95) (nil)", -- [1881]
-			"21:23:11 - Comm received:^1^SplayerInfo^T^N1^SPlainview-Sulfuras^N2^SHUNTER^N4^SRaider^N6^N0^N7^N59.11^t^^ (from:) (Plainview) (distri:) (WHISPER)", -- [1882]
-			"21:23:11 - ML:AddCandidate (Plainview-Sulfuras) (HUNTER) (nil) (Raider) (nil) (0) (59.11) (nil)", -- [1883]
-			"21:23:11 - Comm received:^1^SplayerInfo^T^N1^SAcroyear-Sulfuras^N2^SMAGE^N4^SRaider^N6^N0^N7^N53.95^t^^ (from:) (Acroyear) (distri:) (WHISPER)", -- [1884]
-			"21:23:11 - ML:AddCandidate (Acroyear-Sulfuras) (MAGE) (nil) (Raider) (nil) (0) (53.95) (nil)", -- [1885]
-			"21:23:11 - Comm received:^1^SplayerInfo^T^N1^SHappyjugs-Sulfuras^N2^SPALADIN^N4^SRaider^N6^N0^N7^N58.12^t^^ (from:) (Happyjugs) (distri:) (WHISPER)", -- [1886]
-			"21:23:11 - ML:AddCandidate (Happyjugs-Sulfuras) (PALADIN) (nil) (Raider) (nil) (0) (58.12) (nil)", -- [1887]
-			"21:23:14 - VotingFrame:Update() without lootTable!!", -- [1888]
-			"21:23:18 - VotingFrame:Update() without lootTable!!", -- [1889]
-			"21:23:20 - VotingFrame:Update() without lootTable!!", -- [1890]
-			"21:23:21 - UpdateGroup (table: 0000012E6C015380)", -- [1891]
-			"21:23:21 - ML:AddCandidate (Minica-Sulfuras) (WARRIOR) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1892]
-			"21:23:21 - ML:AddCandidate (Plainview-Sulfuras) (HUNTER) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1893]
-			"21:23:21 - ML:AddCandidate (Happyjugs-Sulfuras) (PALADIN) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1894]
-			"21:23:21 - ML:AddCandidate (Acroyear-Sulfuras) (MAGE) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1895]
-			"21:23:21 - ML:AddCandidate (Lrdvoldemort-Sulfuras) (MAGE) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1896]
-			"21:23:21 - GetCouncilInGroup (Bountybull-Sulfuras) (Derekowns-Sulfuras) (Minica-Sulfuras) (Pipers-Sulfuras) (Hashmeer-Sulfuras)", -- [1897]
-			"21:23:21 - VotingFrame:Update() without lootTable!!", -- [1898]
-			"21:23:21 - Comm received:^1^SMLdb^T^N1^T^SallowNotes^B^Stimeout^N60^SselfVote^B^Sresponses^T^Sdefault^T^t^t^SmultiVote^B^Sbuttons^T^Sdefault^T^SnumButtons^N3^t^t^SnumButtons^N3^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1899]
-			"21:23:21 - Comm received:^1^Scandidates^T^N1^T^SLinky-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SKaldeezer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SRaider^t^SMinica-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SAgora-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SPipers-Sulfuras^T^Srole^SNONE^Sclass^SDRUID^Srank^S^t^SSaidar-Sulfuras^T^Srole^SNONE^Sclass^SPRIEST^Srank^S^t^SHoogs-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SPRIEST^Srank^SClass~`Leader^t^SHealwho-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPALADIN^Senchanter^B^Srank^SMember^t^SLexxii-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SDerekowns-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SBomann-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^STrial^t^SShway-Sulfuras^T^Srole^SNONE^Sclass^SROGUE^Srank^S^t^SAcroyear-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SHelles-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SOdarnwewiped-Sulfuras^T^Srole^SNONE^Sclass^SPRIEST^Srank^S^t^SHappyjugs-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SHolypally-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SSlimmthicc-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPRIEST^Senchanter^B^Srank^SRaider^t^SHashmeer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SSenior~`Officer^t^SLrdvoldemort-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SMcmac-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SClass~`Leader^t^SBountybull-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SMAGE^Senchanter^B^Srank^SRaider^t^SFistandalus-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SPALADIN^Srank^STrial^t^STopshelf-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SGuild~`Master^t^SSchmilsson-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SSenior~`Officer^t^SPlainview-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SRenae-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SGurdurs-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SOfficer^t^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1900]
-			"21:23:21 - Comm received:^1^SplayerInfo^T^N1^SLrdvoldemort-Sulfuras^N2^SMAGE^N4^SRaider^N6^N0^N7^N62.76^t^^ (from:) (Lrdvoldemort) (distri:) (WHISPER)", -- [1901]
-			"21:23:21 - ML:AddCandidate (Lrdvoldemort-Sulfuras) (MAGE) (nil) (Raider) (nil) (0) (62.76) (nil)", -- [1902]
-			"21:23:21 - Comm received:^1^SplayerInfo^T^N1^SMinica-Sulfuras^N2^SWARRIOR^N4^SOfficer^N6^N0^N7^N59.95^t^^ (from:) (Minica) (distri:) (WHISPER)", -- [1903]
-			"21:23:21 - ML:AddCandidate (Minica-Sulfuras) (WARRIOR) (nil) (Officer) (nil) (0) (59.95) (nil)", -- [1904]
-			"21:23:21 - Comm received:^1^SplayerInfo^T^N1^SAcroyear-Sulfuras^N2^SMAGE^N4^SRaider^N6^N0^N7^N53.95^t^^ (from:) (Acroyear) (distri:) (WHISPER)", -- [1905]
-			"21:23:21 - ML:AddCandidate (Acroyear-Sulfuras) (MAGE) (nil) (Raider) (nil) (0) (53.95) (nil)", -- [1906]
-			"21:23:21 - Comm received:^1^SplayerInfo^T^N1^SPlainview-Sulfuras^N2^SHUNTER^N4^SRaider^N6^N0^N7^N59.11^t^^ (from:) (Plainview) (distri:) (WHISPER)", -- [1907]
-			"21:23:21 - ML:AddCandidate (Plainview-Sulfuras) (HUNTER) (nil) (Raider) (nil) (0) (59.11) (nil)", -- [1908]
-			"21:23:21 - Comm received:^1^SplayerInfo^T^N1^SHappyjugs-Sulfuras^N2^SPALADIN^N4^SRaider^N6^N0^N7^N58.12^t^^ (from:) (Happyjugs) (distri:) (WHISPER)", -- [1909]
-			"21:23:21 - ML:AddCandidate (Happyjugs-Sulfuras) (PALADIN) (nil) (Raider) (nil) (0) (58.12) (nil)", -- [1910]
-			"21:23:24 - VotingFrame:Update() without lootTable!!", -- [1911]
-			"21:23:25 - ML event (PLAYER_REGEN_ENABLED)", -- [1912]
-			"21:23:30 - VotingFrame:Update() without lootTable!!", -- [1913]
-			"21:23:31 - UpdateGroup (table: 0000012E6C015380)", -- [1914]
-			"21:23:31 - ML:AddCandidate (Minica-Sulfuras) (WARRIOR) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1915]
-			"21:23:31 - ML:AddCandidate (Plainview-Sulfuras) (HUNTER) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1916]
-			"21:23:31 - ML:AddCandidate (Happyjugs-Sulfuras) (PALADIN) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1917]
-			"21:23:31 - ML:AddCandidate (Acroyear-Sulfuras) (MAGE) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1918]
-			"21:23:31 - ML:AddCandidate (Lrdvoldemort-Sulfuras) (MAGE) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1919]
-			"21:23:31 - GetCouncilInGroup (Bountybull-Sulfuras) (Derekowns-Sulfuras) (Minica-Sulfuras) (Pipers-Sulfuras) (Hashmeer-Sulfuras)", -- [1920]
-			"21:23:31 - Comm received:^1^SMLdb^T^N1^T^SallowNotes^B^Stimeout^N60^SselfVote^B^Sresponses^T^Sdefault^T^t^t^SmultiVote^B^Sbuttons^T^Sdefault^T^SnumButtons^N3^t^t^SnumButtons^N3^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1921]
-			"21:23:31 - Comm received:^1^Scandidates^T^N1^T^SLinky-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SKaldeezer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SRaider^t^SMinica-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SAgora-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SPipers-Sulfuras^T^Srole^SNONE^Sclass^SDRUID^Srank^S^t^SSaidar-Sulfuras^T^Srole^SNONE^Sclass^SPRIEST^Srank^S^t^SHoogs-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SPRIEST^Srank^SClass~`Leader^t^SHealwho-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPALADIN^Senchanter^B^Srank^SMember^t^SLexxii-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SDerekowns-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SBomann-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^STrial^t^SShway-Sulfuras^T^Srole^SNONE^Sclass^SROGUE^Srank^S^t^SAcroyear-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SHelles-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SOdarnwewiped-Sulfuras^T^Srole^SNONE^Sclass^SPRIEST^Srank^S^t^SHappyjugs-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SHolypally-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SSlimmthicc-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPRIEST^Senchanter^B^Srank^SRaider^t^SHashmeer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SSenior~`Officer^t^SLrdvoldemort-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SMcmac-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SClass~`Leader^t^SBountybull-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SMAGE^Senchanter^B^Srank^SRaider^t^SFistandalus-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SPALADIN^Srank^STrial^t^STopshelf-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SGuild~`Master^t^SSchmilsson-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SSenior~`Officer^t^SPlainview-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SRenae-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SGurdurs-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SOfficer^t^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1922]
-			"21:23:31 - Comm received:^1^SplayerInfo^T^N1^SMinica-Sulfuras^N2^SWARRIOR^N4^SOfficer^N6^N0^N7^N59.95^t^^ (from:) (Minica) (distri:) (WHISPER)", -- [1923]
-			"21:23:31 - ML:AddCandidate (Minica-Sulfuras) (WARRIOR) (nil) (Officer) (nil) (0) (59.95) (nil)", -- [1924]
-			"21:23:31 - Comm received:^1^SplayerInfo^T^N1^SLrdvoldemort-Sulfuras^N2^SMAGE^N4^SRaider^N6^N0^N7^N62.76^t^^ (from:) (Lrdvoldemort) (distri:) (WHISPER)", -- [1925]
-			"21:23:31 - ML:AddCandidate (Lrdvoldemort-Sulfuras) (MAGE) (nil) (Raider) (nil) (0) (62.76) (nil)", -- [1926]
-			"21:23:31 - Comm received:^1^SplayerInfo^T^N1^SAcroyear-Sulfuras^N2^SMAGE^N4^SRaider^N6^N0^N7^N53.95^t^^ (from:) (Acroyear) (distri:) (WHISPER)", -- [1927]
-			"21:23:31 - ML:AddCandidate (Acroyear-Sulfuras) (MAGE) (nil) (Raider) (nil) (0) (53.95) (nil)", -- [1928]
-			"21:23:31 - Comm received:^1^SplayerInfo^T^N1^SPlainview-Sulfuras^N2^SHUNTER^N4^SRaider^N6^N0^N7^N59.11^t^^ (from:) (Plainview) (distri:) (WHISPER)", -- [1929]
-			"21:23:31 - ML:AddCandidate (Plainview-Sulfuras) (HUNTER) (nil) (Raider) (nil) (0) (59.11) (nil)", -- [1930]
-			"21:23:31 - Comm received:^1^SplayerInfo^T^N1^SHappyjugs-Sulfuras^N2^SPALADIN^N4^SRaider^N6^N0^N7^N58.12^t^^ (from:) (Happyjugs) (distri:) (WHISPER)", -- [1931]
-			"21:23:31 - ML:AddCandidate (Happyjugs-Sulfuras) (PALADIN) (nil) (Raider) (nil) (0) (58.12) (nil)", -- [1932]
-			"21:23:40 - VotingFrame:Update() without lootTable!!", -- [1933]
-			"21:23:52 - ML event (PLAYER_REGEN_ENABLED)", -- [1934]
-			"21:24:01 - VotingFrame:Update() without lootTable!!", -- [1935]
-			"21:24:09 - VotingFrame:Update() without lootTable!!", -- [1936]
-			"21:24:10 - VotingFrame:Update() without lootTable!!", -- [1937]
-			"21:24:35 - VotingFrame:Update() without lootTable!!", -- [1938]
-			"21:25:09 - VotingFrame:Update() without lootTable!!", -- [1939]
-			"21:25:17 - Comm received:^1^SverTest^T^N1^S0.3.1^t^^ (from:) (Acroyear) (distri:) (GUILD)", -- [1940]
-			"21:25:21 - UpdateGroup (table: 0000012E6C015380)", -- [1941]
-			"21:25:21 - ML:AddCandidate (Minica-Sulfuras) (WARRIOR) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1942]
-			"21:25:21 - ML:AddCandidate (Plainview-Sulfuras) (HUNTER) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1943]
-			"21:25:21 - ML:AddCandidate (Happyjugs-Sulfuras) (PALADIN) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1944]
-			"21:25:21 - ML:AddCandidate (Acroyear-Sulfuras) (MAGE) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1945]
-			"21:25:21 - ML:AddCandidate (Lrdvoldemort-Sulfuras) (MAGE) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1946]
-			"21:25:21 - GetCouncilInGroup (Bountybull-Sulfuras) (Derekowns-Sulfuras) (Minica-Sulfuras) (Pipers-Sulfuras) (Hashmeer-Sulfuras)", -- [1947]
-			"21:25:21 - Comm received:^1^SMLdb^T^N1^T^SallowNotes^B^Stimeout^N60^SselfVote^B^Sresponses^T^Sdefault^T^t^t^SmultiVote^B^Sbuttons^T^Sdefault^T^SnumButtons^N3^t^t^SnumButtons^N3^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1948]
-			"21:25:21 - Comm received:^1^Scandidates^T^N1^T^SLinky-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SKaldeezer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SRaider^t^SMinica-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SAgora-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SPipers-Sulfuras^T^Srole^SNONE^Sclass^SDRUID^Srank^S^t^SSaidar-Sulfuras^T^Srole^SNONE^Sclass^SPRIEST^Srank^S^t^SHoogs-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SPRIEST^Srank^SClass~`Leader^t^SHealwho-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPALADIN^Senchanter^B^Srank^SMember^t^SLexxii-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SDerekowns-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SBomann-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^STrial^t^SShway-Sulfuras^T^Srole^SNONE^Sclass^SROGUE^Srank^S^t^SAcroyear-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SHelles-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SOdarnwewiped-Sulfuras^T^Srole^SNONE^Sclass^SPRIEST^Srank^S^t^SHappyjugs-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SHolypally-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SSlimmthicc-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPRIEST^Senchanter^B^Srank^SRaider^t^SHashmeer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SSenior~`Officer^t^SLrdvoldemort-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SMcmac-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SClass~`Leader^t^SBountybull-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SMAGE^Senchanter^B^Srank^SRaider^t^SFistandalus-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SPALADIN^Srank^STrial^t^STopshelf-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SGuild~`Master^t^SSchmilsson-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SSenior~`Officer^t^SPlainview-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SRenae-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SGurdurs-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SOfficer^t^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1949]
-			"21:25:21 - Comm received:^1^SplayerInfo^T^N1^SLrdvoldemort-Sulfuras^N2^SMAGE^N4^SRaider^N6^N0^N7^N62.76^t^^ (from:) (Lrdvoldemort) (distri:) (WHISPER)", -- [1950]
-			"21:25:21 - ML:AddCandidate (Lrdvoldemort-Sulfuras) (MAGE) (nil) (Raider) (nil) (0) (62.76) (nil)", -- [1951]
-			"21:25:21 - Comm received:^1^SplayerInfo^T^N1^SAcroyear-Sulfuras^N2^SMAGE^N4^SRaider^N6^N0^N7^N53.95^t^^ (from:) (Acroyear) (distri:) (WHISPER)", -- [1952]
-			"21:25:21 - ML:AddCandidate (Acroyear-Sulfuras) (MAGE) (nil) (Raider) (nil) (0) (53.95) (nil)", -- [1953]
-			"21:25:21 - Comm received:^1^SplayerInfo^T^N1^SHappyjugs-Sulfuras^N2^SPALADIN^N4^SRaider^N6^N0^N7^N58.12^t^^ (from:) (Happyjugs) (distri:) (WHISPER)", -- [1954]
-			"21:25:21 - ML:AddCandidate (Happyjugs-Sulfuras) (PALADIN) (nil) (Raider) (nil) (0) (58.12) (nil)", -- [1955]
-			"21:25:21 - Comm received:^1^SplayerInfo^T^N1^SMinica-Sulfuras^N2^SWARRIOR^N4^SOfficer^N6^N0^N7^N59.95^t^^ (from:) (Minica) (distri:) (WHISPER)", -- [1956]
-			"21:25:21 - ML:AddCandidate (Minica-Sulfuras) (WARRIOR) (nil) (Officer) (nil) (0) (59.95) (nil)", -- [1957]
-			"21:25:21 - Comm received:^1^SplayerInfo^T^N1^SPlainview-Sulfuras^N2^SHUNTER^N4^SRaider^N6^N0^N7^N59.11^t^^ (from:) (Plainview) (distri:) (WHISPER)", -- [1958]
-			"21:25:21 - ML:AddCandidate (Plainview-Sulfuras) (HUNTER) (nil) (Raider) (nil) (0) (59.11) (nil)", -- [1959]
-			"21:25:27 - Comm received:^1^Scouncil_request^T^t^^ (from:) (Acroyear) (distri:) (WHISPER)", -- [1960]
-			"21:25:27 - Comm received:^1^Scouncil_request^T^t^^ (from:) (Acroyear) (distri:) (WHISPER)", -- [1961]
-			"21:25:27 - Comm received:^1^Scouncil^T^N1^T^N1^SBountybull-Sulfuras^N2^SDerekowns-Sulfuras^N3^SMinica-Sulfuras^N4^SPipers-Sulfuras^N5^SHashmeer-Sulfuras^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1962]
-			"21:25:27 - true = (IsCouncil) (Hashmeer-Sulfuras)", -- [1963]
-			"21:25:27 - Comm received:^1^Scouncil^T^N1^T^N1^SBountybull-Sulfuras^N2^SDerekowns-Sulfuras^N3^SMinica-Sulfuras^N4^SPipers-Sulfuras^N5^SHashmeer-Sulfuras^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1964]
-			"21:25:27 - true = (IsCouncil) (Hashmeer-Sulfuras)", -- [1965]
-			"21:25:35 - VotingFrame:Update() without lootTable!!", -- [1966]
-			"21:25:46 - VotingFrame:Update() without lootTable!!", -- [1967]
-			"21:25:52 - VotingFrame:Update() without lootTable!!", -- [1968]
-			"21:25:55 - UpdateGroup (table: 0000012E6C015380)", -- [1969]
-			"21:25:55 - ML:AddCandidate (Minica-Sulfuras) (WARRIOR) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1970]
-			"21:25:55 - ML:AddCandidate (Plainview-Sulfuras) (HUNTER) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1971]
-			"21:25:55 - ML:AddCandidate (Happyjugs-Sulfuras) (PALADIN) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1972]
-			"21:25:55 - ML:AddCandidate (Acroyear-Sulfuras) (MAGE) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1973]
-			"21:25:55 - ML:AddCandidate (Lrdvoldemort-Sulfuras) (MAGE) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1974]
-			"21:25:55 - GetCouncilInGroup (Bountybull-Sulfuras) (Derekowns-Sulfuras) (Minica-Sulfuras) (Pipers-Sulfuras) (Hashmeer-Sulfuras)", -- [1975]
-			"21:25:55 - Comm received:^1^SMLdb^T^N1^T^SallowNotes^B^Stimeout^N60^SselfVote^B^Sresponses^T^Sdefault^T^t^t^SmultiVote^B^Sbuttons^T^Sdefault^T^SnumButtons^N3^t^t^SnumButtons^N3^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1976]
-			"21:25:55 - Comm received:^1^Scandidates^T^N1^T^SLinky-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SKaldeezer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SRaider^t^SMinica-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SAgora-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SPipers-Sulfuras^T^Srole^SNONE^Sclass^SDRUID^Srank^S^t^SSaidar-Sulfuras^T^Srole^SNONE^Sclass^SPRIEST^Srank^S^t^SHoogs-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SPRIEST^Srank^SClass~`Leader^t^SHealwho-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPALADIN^Senchanter^B^Srank^SMember^t^SLexxii-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SDerekowns-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SBomann-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^STrial^t^SShway-Sulfuras^T^Srole^SNONE^Sclass^SROGUE^Srank^S^t^SAcroyear-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SHelles-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SOdarnwewiped-Sulfuras^T^Srole^SNONE^Sclass^SPRIEST^Srank^S^t^SHappyjugs-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SHolypally-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SSlimmthicc-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPRIEST^Senchanter^B^Srank^SRaider^t^SHashmeer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SSenior~`Officer^t^SLrdvoldemort-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SMcmac-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SClass~`Leader^t^SBountybull-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SMAGE^Senchanter^B^Srank^SRaider^t^SFistandalus-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SPALADIN^Srank^STrial^t^STopshelf-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SGuild~`Master^t^SSchmilsson-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SSenior~`Officer^t^SPlainview-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SRenae-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SGurdurs-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SOfficer^t^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1977]
-			"21:25:55 - Comm received:^1^SplayerInfo^T^N1^SLrdvoldemort-Sulfuras^N2^SMAGE^N4^SRaider^N6^N0^N7^N62.76^t^^ (from:) (Lrdvoldemort) (distri:) (WHISPER)", -- [1978]
-			"21:25:55 - ML:AddCandidate (Lrdvoldemort-Sulfuras) (MAGE) (nil) (Raider) (nil) (0) (62.76) (nil)", -- [1979]
-			"21:25:55 - Comm received:^1^SplayerInfo^T^N1^SAcroyear-Sulfuras^N2^SMAGE^N4^SRaider^N6^N0^N7^N53.95^t^^ (from:) (Acroyear) (distri:) (WHISPER)", -- [1980]
-			"21:25:55 - ML:AddCandidate (Acroyear-Sulfuras) (MAGE) (nil) (Raider) (nil) (0) (53.95) (nil)", -- [1981]
-			"21:25:55 - Comm received:^1^SplayerInfo^T^N1^SMinica-Sulfuras^N2^SWARRIOR^N4^SOfficer^N6^N0^N7^N59.95^t^^ (from:) (Minica) (distri:) (WHISPER)", -- [1982]
-			"21:25:55 - ML:AddCandidate (Minica-Sulfuras) (WARRIOR) (nil) (Officer) (nil) (0) (59.95) (nil)", -- [1983]
-			"21:25:55 - Comm received:^1^SplayerInfo^T^N1^SPlainview-Sulfuras^N2^SHUNTER^N4^SRaider^N6^N0^N7^N59.11^t^^ (from:) (Plainview) (distri:) (WHISPER)", -- [1984]
-			"21:25:55 - ML:AddCandidate (Plainview-Sulfuras) (HUNTER) (nil) (Raider) (nil) (0) (59.11) (nil)", -- [1985]
-			"21:25:55 - Comm received:^1^SplayerInfo^T^N1^SHappyjugs-Sulfuras^N2^SPALADIN^N4^SRaider^N6^N0^N7^N58.12^t^^ (from:) (Happyjugs) (distri:) (WHISPER)", -- [1986]
-			"21:25:55 - ML:AddCandidate (Happyjugs-Sulfuras) (PALADIN) (nil) (Raider) (nil) (0) (58.12) (nil)", -- [1987]
-			"21:25:56 - Comm received:^1^SverTest^T^N1^S0.5.0^N2^SBeta.1^t^^ (from:) (Sgtdrock) (distri:) (GUILD)", -- [1988]
-			"21:26:11 - Comm received:^1^SverTest^T^N1^S0.5.0^N2^SBeta.1^t^^ (from:) (Sgtdrock) (distri:) (GUILD)", -- [1989]
-			"21:26:16 - VotingFrame:Update() without lootTable!!", -- [1990]
-			"21:26:25 - UpdateGroup (table: 0000012E6C015380)", -- [1991]
-			"21:26:25 - ML:AddCandidate (Minica-Sulfuras) (WARRIOR) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1992]
-			"21:26:25 - ML:AddCandidate (Plainview-Sulfuras) (HUNTER) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1993]
-			"21:26:25 - ML:AddCandidate (Sgtdrock-Sulfuras) (WARRIOR) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1994]
-			"21:26:25 - ML:AddCandidate (Happyjugs-Sulfuras) (PALADIN) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1995]
-			"21:26:25 - ML:AddCandidate (Acroyear-Sulfuras) (MAGE) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1996]
-			"21:26:25 - ML:AddCandidate (Lrdvoldemort-Sulfuras) (MAGE) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [1997]
-			"21:26:25 - GetCouncilInGroup (Bountybull-Sulfuras) (Derekowns-Sulfuras) (Minica-Sulfuras) (Pipers-Sulfuras) (Hashmeer-Sulfuras)", -- [1998]
-			"21:26:25 - Comm received:^1^SMLdb^T^N1^T^SallowNotes^B^Stimeout^N60^SselfVote^B^Sresponses^T^Sdefault^T^t^t^SmultiVote^B^Sbuttons^T^Sdefault^T^SnumButtons^N3^t^t^SnumButtons^N3^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [1999]
-			"21:26:25 - Comm received:^1^Scandidates^T^N1^T^SLinky-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SKaldeezer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SRaider^t^SMinica-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SAgora-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SFistandalus-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SPALADIN^Srank^STrial^t^SPipers-Sulfuras^T^Srole^SNONE^Sclass^SDRUID^Srank^S^t^SSaidar-Sulfuras^T^Srole^SNONE^Sclass^SPRIEST^Srank^S^t^SHoogs-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SPRIEST^Srank^SClass~`Leader^t^SHealwho-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPALADIN^Senchanter^B^Srank^SMember^t^SLexxii-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SDerekowns-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SBomann-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^STrial^t^SShway-Sulfuras^T^Srole^SNONE^Sclass^SROGUE^Srank^S^t^SAcroyear-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SHelles-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SOdarnwewiped-Sulfuras^T^Srole^SNONE^Sclass^SPRIEST^Srank^S^t^SHappyjugs-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SHolypally-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SSlimmthicc-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPRIEST^Senchanter^B^Srank^SRaider^t^SHashmeer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SSenior~`Officer^t^SLrdvoldemort-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SMcmac-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SClass~`Leader^t^SBountybull-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SMAGE^Senchanter^B^Srank^SRaider^t^SSgtdrock-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^STopshelf-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SGuild~`Master^t^SSchmilsson-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SSenior~`Officer^t^SPlainview-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SRenae-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SGurdurs-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SOfficer^t^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [2000]
-			"21:26:25 - Comm received:^1^SplayerInfo^T^N1^SSgtdrock-Sulfuras^N2^SWARRIOR^N3^SNONE^N4^STrial^N6^N0^N7^N52.33^t^^ (from:) (Sgtdrock) (distri:) (WHISPER)", -- [2001]
-			"21:26:25 - ML:AddCandidate (Sgtdrock-Sulfuras) (WARRIOR) (NONE) (Trial) (nil) (0) (52.33) (nil)", -- [2002]
-			"21:26:25 - Comm received:^1^SplayerInfo^T^N1^SLrdvoldemort-Sulfuras^N2^SMAGE^N4^SRaider^N6^N0^N7^N62.76^t^^ (from:) (Lrdvoldemort) (distri:) (WHISPER)", -- [2003]
-			"21:26:25 - ML:AddCandidate (Lrdvoldemort-Sulfuras) (MAGE) (nil) (Raider) (nil) (0) (62.76) (nil)", -- [2004]
-			"21:26:25 - Comm received:^1^SplayerInfo^T^N1^SAcroyear-Sulfuras^N2^SMAGE^N4^SRaider^N6^N0^N7^N53.95^t^^ (from:) (Acroyear) (distri:) (WHISPER)", -- [2005]
-			"21:26:25 - ML:AddCandidate (Acroyear-Sulfuras) (MAGE) (nil) (Raider) (nil) (0) (53.95) (nil)", -- [2006]
-			"21:26:25 - Comm received:^1^SplayerInfo^T^N1^SPlainview-Sulfuras^N2^SHUNTER^N4^SRaider^N6^N0^N7^N59.11^t^^ (from:) (Plainview) (distri:) (WHISPER)", -- [2007]
-			"21:26:25 - ML:AddCandidate (Plainview-Sulfuras) (HUNTER) (nil) (Raider) (nil) (0) (59.11) (nil)", -- [2008]
-			"21:26:25 - Comm received:^1^SplayerInfo^T^N1^SHappyjugs-Sulfuras^N2^SPALADIN^N4^SRaider^N6^N0^N7^N58.12^t^^ (from:) (Happyjugs) (distri:) (WHISPER)", -- [2009]
-			"21:26:25 - ML:AddCandidate (Happyjugs-Sulfuras) (PALADIN) (nil) (Raider) (nil) (0) (58.12) (nil)", -- [2010]
-			"21:26:26 - VotingFrame:Update() without lootTable!!", -- [2011]
-			"21:26:27 - Comm received:^1^SplayerInfo^T^N1^SMinica-Sulfuras^N2^SWARRIOR^N4^SOfficer^N6^N0^N7^N59.95^t^^ (from:) (Minica) (distri:) (WHISPER)", -- [2012]
-			"21:26:27 - ML:AddCandidate (Minica-Sulfuras) (WARRIOR) (nil) (Officer) (nil) (0) (59.95) (nil)", -- [2013]
-			"21:26:27 - VotingFrame:Update() without lootTable!!", -- [2014]
-			"21:26:28 - VotingFrame:Update() without lootTable!!", -- [2015]
-			"21:26:29 - VotingFrame:Update() without lootTable!!", -- [2016]
-			"21:26:30 - Comm received:^1^Scouncil_request^T^t^^ (from:) (Sgtdrock) (distri:) (WHISPER)", -- [2017]
-			"21:26:30 - Comm received:^1^Scouncil_request^T^t^^ (from:) (Sgtdrock) (distri:) (WHISPER)", -- [2018]
-			"21:26:30 - VotingFrame:Update() without lootTable!!", -- [2019]
-			"21:26:31 - Comm received:^1^Scouncil^T^N1^T^N1^SBountybull-Sulfuras^N2^SDerekowns-Sulfuras^N3^SMinica-Sulfuras^N4^SPipers-Sulfuras^N5^SHashmeer-Sulfuras^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [2020]
-			"21:26:31 - true = (IsCouncil) (Hashmeer-Sulfuras)", -- [2021]
-			"21:26:31 - Comm received:^1^Scouncil^T^N1^T^N1^SBountybull-Sulfuras^N2^SDerekowns-Sulfuras^N3^SMinica-Sulfuras^N4^SPipers-Sulfuras^N5^SHashmeer-Sulfuras^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [2022]
-			"21:26:31 - true = (IsCouncil) (Hashmeer-Sulfuras)", -- [2023]
-			"21:26:31 - VotingFrame:Update() without lootTable!!", -- [2024]
-			"21:26:32 - VotingFrame:Update() without lootTable!!", -- [2025]
-			"21:26:35 - VotingFrame:Update() without lootTable!!", -- [2026]
-			"21:26:36 - VotingFrame:Update() without lootTable!!", -- [2027]
-			"21:26:47 - VotingFrame:Update() without lootTable!!", -- [2028]
-			"21:26:49 - VotingFrame:Update() without lootTable!!", -- [2029]
-			"21:26:53 - VotingFrame:Update() without lootTable!!", -- [2030]
-			"21:26:56 - VotingFrame:Update() without lootTable!!", -- [2031]
-			"21:26:59 - VotingFrame:Update() without lootTable!!", -- [2032]
-			"21:27:01 - VotingFrame:Update() without lootTable!!", -- [2033]
-			"21:27:02 - VotingFrame:Update() without lootTable!!", -- [2034]
-			"21:27:03 - VotingFrame:Update() without lootTable!!", -- [2035]
-			"21:27:04 - VotingFrame:Update() without lootTable!!", -- [2036]
-			"21:27:12 - VotingFrame:Update() without lootTable!!", -- [2037]
-			"21:27:15 - UpdateGroup (table: 0000012E6C015380)", -- [2038]
-			"21:27:15 - ML:AddCandidate (Minica-Sulfuras) (WARRIOR) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [2039]
-			"21:27:15 - ML:AddCandidate (Plainview-Sulfuras) (HUNTER) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [2040]
-			"21:27:15 - ML:AddCandidate (Happyjugs-Sulfuras) (PALADIN) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [2041]
-			"21:27:15 - ML:AddCandidate (Acroyear-Sulfuras) (MAGE) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [2042]
-			"21:27:15 - ML:AddCandidate (Lrdvoldemort-Sulfuras) (MAGE) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [2043]
-			"21:27:15 - GetCouncilInGroup (Bountybull-Sulfuras) (Derekowns-Sulfuras) (Minica-Sulfuras) (Pipers-Sulfuras) (Hashmeer-Sulfuras)", -- [2044]
-			"21:27:15 - Comm received:^1^SMLdb^T^N1^T^SallowNotes^B^Stimeout^N60^SselfVote^B^Sresponses^T^Sdefault^T^t^t^SmultiVote^B^Sbuttons^T^Sdefault^T^SnumButtons^N3^t^t^SnumButtons^N3^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [2045]
-			"21:27:15 - Comm received:^1^Scandidates^T^N1^T^SLinky-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SKaldeezer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SRaider^t^SMinica-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SAgora-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SFistandalus-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SPALADIN^Srank^STrial^t^SPipers-Sulfuras^T^Srole^SNONE^Sclass^SDRUID^Srank^S^t^SSaidar-Sulfuras^T^Srole^SNONE^Sclass^SPRIEST^Srank^S^t^SHoogs-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SPRIEST^Srank^SClass~`Leader^t^SHealwho-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPALADIN^Senchanter^B^Srank^SMember^t^SLexxii-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SDerekowns-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SBomann-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^STrial^t^SShway-Sulfuras^T^Srole^SNONE^Sclass^SROGUE^Srank^S^t^SAcroyear-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SHelles-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SOdarnwewiped-Sulfuras^T^Srole^SNONE^Sclass^SPRIEST^Srank^S^t^SHappyjugs-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SHolypally-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SSlimmthicc-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPRIEST^Senchanter^B^Srank^SRaider^t^SHashmeer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SSenior~`Officer^t^SLrdvoldemort-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SMcmac-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SClass~`Leader^t^SBountybull-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SMAGE^Senchanter^B^Srank^SRaider^t^SSgtdrock-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^STrial^t^STopshelf-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SGuild~`Master^t^SSchmilsson-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SSenior~`Officer^t^SPlainview-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SRenae-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SGurdurs-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SOfficer^t^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [2046]
-			"21:27:15 - Comm received:^1^SplayerInfo^T^N1^SAcroyear-Sulfuras^N2^SMAGE^N4^SRaider^N6^N0^N7^N53.95^t^^ (from:) (Acroyear) (distri:) (WHISPER)", -- [2047]
-			"21:27:15 - ML:AddCandidate (Acroyear-Sulfuras) (MAGE) (nil) (Raider) (nil) (0) (53.95) (nil)", -- [2048]
-			"21:27:15 - Comm received:^1^SplayerInfo^T^N1^SMinica-Sulfuras^N2^SWARRIOR^N4^SOfficer^N6^N0^N7^N59.95^t^^ (from:) (Minica) (distri:) (WHISPER)", -- [2049]
-			"21:27:15 - ML:AddCandidate (Minica-Sulfuras) (WARRIOR) (nil) (Officer) (nil) (0) (59.95) (nil)", -- [2050]
-			"21:27:15 - Comm received:^1^SplayerInfo^T^N1^SLrdvoldemort-Sulfuras^N2^SMAGE^N4^SRaider^N6^N0^N7^N62.76^t^^ (from:) (Lrdvoldemort) (distri:) (WHISPER)", -- [2051]
-			"21:27:15 - ML:AddCandidate (Lrdvoldemort-Sulfuras) (MAGE) (nil) (Raider) (nil) (0) (62.76) (nil)", -- [2052]
-			"21:27:15 - Comm received:^1^SplayerInfo^T^N1^SPlainview-Sulfuras^N2^SHUNTER^N4^SRaider^N6^N0^N7^N59.11^t^^ (from:) (Plainview) (distri:) (WHISPER)", -- [2053]
-			"21:27:15 - ML:AddCandidate (Plainview-Sulfuras) (HUNTER) (nil) (Raider) (nil) (0) (59.11) (nil)", -- [2054]
-			"21:27:15 - Comm received:^1^SplayerInfo^T^N1^SHappyjugs-Sulfuras^N2^SPALADIN^N4^SRaider^N6^N0^N7^N58.12^t^^ (from:) (Happyjugs) (distri:) (WHISPER)", -- [2055]
-			"21:27:15 - ML:AddCandidate (Happyjugs-Sulfuras) (PALADIN) (nil) (Raider) (nil) (0) (58.12) (nil)", -- [2056]
-			"21:27:16 - ML event (PLAYER_REGEN_ENABLED)", -- [2057]
-			"21:27:28 - ML event (PLAYER_REGEN_ENABLED)", -- [2058]
-			"21:27:30 - VotingFrame:Update() without lootTable!!", -- [2059]
-			"21:27:32 - Comm received:^1^SverTest^T^N1^S0.4.2^t^^ (from:) (Bountybull) (distri:) (GUILD)", -- [2060]
-			"21:27:39 - Event: (RAID_INSTANCE_WELCOME) (Molten Core) (6) (13) (32) (0)", -- [2061]
-			"21:27:40 - Event: (PLAYER_ENTERING_WORLD) (false) (false)", -- [2062]
-			"21:27:40 - GetML()", -- [2063]
-			"21:27:40 - LootMethod =  (master)", -- [2064]
-			"21:27:40 - MasterLooter =  (Hashmeer-Sulfuras)", -- [2065]
-			"21:27:40 - NewMLCheck (No ML Change)", -- [2066]
-			"21:27:40 - UpdateGroup (table: 0000012E6C015380)", -- [2067]
-			"21:27:40 - ML:AddCandidate (Minica-Sulfuras) (WARRIOR) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [2068]
-			"21:27:40 - ML:AddCandidate (Plainview-Sulfuras) (HUNTER) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [2069]
-			"21:27:40 - ML:AddCandidate (Happyjugs-Sulfuras) (PALADIN) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [2070]
-			"21:27:40 - ML:AddCandidate (Acroyear-Sulfuras) (MAGE) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [2071]
-			"21:27:40 - ML:AddCandidate (Lrdvoldemort-Sulfuras) (MAGE) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [2072]
-			"21:27:40 - GetCouncilInGroup (Bountybull-Sulfuras) (Derekowns-Sulfuras) (Minica-Sulfuras) (Pipers-Sulfuras) (Hashmeer-Sulfuras)", -- [2073]
-			"21:27:40 - VotingFrame:Update() without lootTable!!", -- [2074]
-			"21:27:40 - Comm received:^1^SplayerInfo^T^N1^SMinica-Sulfuras^N2^SWARRIOR^N4^SOfficer^N6^N0^N7^N59.95^t^^ (from:) (Minica) (distri:) (WHISPER)", -- [2075]
-			"21:27:40 - ML:AddCandidate (Minica-Sulfuras) (WARRIOR) (nil) (Officer) (nil) (0) (59.95) (nil)", -- [2076]
-			"21:27:40 - Comm received:^1^SplayerInfo^T^N1^SLrdvoldemort-Sulfuras^N2^SMAGE^N4^SRaider^N6^N0^N7^N62.76^t^^ (from:) (Lrdvoldemort) (distri:) (WHISPER)", -- [2077]
-			"21:27:40 - ML:AddCandidate (Lrdvoldemort-Sulfuras) (MAGE) (nil) (Raider) (nil) (0) (62.76) (nil)", -- [2078]
-			"21:27:40 - Comm received:^1^SplayerInfo^T^N1^SAcroyear-Sulfuras^N2^SMAGE^N4^SRaider^N6^N0^N7^N53.95^t^^ (from:) (Acroyear) (distri:) (WHISPER)", -- [2079]
-			"21:27:40 - ML:AddCandidate (Acroyear-Sulfuras) (MAGE) (nil) (Raider) (nil) (0) (53.95) (nil)", -- [2080]
-			"21:27:40 - Comm received:^1^SplayerInfo^T^N1^SPlainview-Sulfuras^N2^SHUNTER^N4^SRaider^N6^N0^N7^N59.11^t^^ (from:) (Plainview) (distri:) (WHISPER)", -- [2081]
-			"21:27:40 - ML:AddCandidate (Plainview-Sulfuras) (HUNTER) (nil) (Raider) (nil) (0) (59.11) (nil)", -- [2082]
-			"21:27:40 - Comm received:^1^SplayerInfo^T^N1^SHappyjugs-Sulfuras^N2^SPALADIN^N4^SRaider^N6^N0^N7^N58.12^t^^ (from:) (Happyjugs) (distri:) (WHISPER)", -- [2083]
-			"21:27:40 - ML:AddCandidate (Happyjugs-Sulfuras) (PALADIN) (nil) (Raider) (nil) (0) (58.12) (nil)", -- [2084]
-			"21:27:42 - Comm received:^1^SMLdb^T^N1^T^SallowNotes^B^Stimeout^N60^SselfVote^B^Sresponses^T^Sdefault^T^t^t^SmultiVote^B^Sbuttons^T^Sdefault^T^SnumButtons^N3^t^t^SnumButtons^N3^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [2085]
-			"21:27:44 - Comm received:^1^Scouncil_request^T^t^^ (from:) (Bountybull) (distri:) (WHISPER)", -- [2086]
-			"21:27:44 - Comm received:^1^Scouncil_request^T^t^^ (from:) (Bountybull) (distri:) (WHISPER)", -- [2087]
-			"21:27:47 - Comm received:^1^Scandidates^T^N1^T^SLinky-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SKaldeezer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SRaider^t^SMinica-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SAgora-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SFistandalus-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SPALADIN^Srank^STrial^t^SPipers-Sulfuras^T^Srole^SNONE^Sclass^SDRUID^Srank^S^t^SSaidar-Sulfuras^T^Srole^SNONE^Sclass^SPRIEST^Srank^S^t^SHoogs-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SPRIEST^Srank^SClass~`Leader^t^SHealwho-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPALADIN^Senchanter^B^Srank^SMember^t^SLexxii-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SDerekowns-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SBomann-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^STrial^t^SShway-Sulfuras^T^Srole^SNONE^Sclass^SROGUE^Srank^S^t^SAcroyear-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SHelles-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SOdarnwewiped-Sulfuras^T^Srole^SNONE^Sclass^SPRIEST^Srank^S^t^SHappyjugs-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SHolypally-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SSlimmthicc-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPRIEST^Senchanter^B^Srank^SRaider^t^SHashmeer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SSenior~`Officer^t^SLrdvoldemort-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SMcmac-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SClass~`Leader^t^SBountybull-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SMAGE^Senchanter^B^Srank^SRaider^t^SSgtdrock-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^STrial^t^STopshelf-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SGuild~`Master^t^SSchmilsson-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SSenior~`Officer^t^SPlainview-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SRenae-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SGurdurs-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SOfficer^t^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [2088]
-			"21:27:48 - Comm received:^1^Scouncil^T^N1^T^N1^SBountybull-Sulfuras^N2^SDerekowns-Sulfuras^N3^SMinica-Sulfuras^N4^SPipers-Sulfuras^N5^SHashmeer-Sulfuras^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [2089]
-			"21:27:48 - true = (IsCouncil) (Hashmeer-Sulfuras)", -- [2090]
-			"21:27:48 - VotingFrame:Update() without lootTable!!", -- [2091]
-			"21:27:48 - Comm received:^1^Scouncil^T^N1^T^N1^SBountybull-Sulfuras^N2^SDerekowns-Sulfuras^N3^SMinica-Sulfuras^N4^SPipers-Sulfuras^N5^SHashmeer-Sulfuras^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [2092]
-			"21:27:48 - true = (IsCouncil) (Hashmeer-Sulfuras)", -- [2093]
-			"21:27:54 - Timer MLdb_check passed", -- [2094]
-			"21:28:43 - ML event (CHAT_MSG_WHISPER) (ok) (Bomann-Sulfuras) () () (Bomann) () (0) (0) () (0) (6229) (Player-4726-014086CB) (0) (false) (false) (false) (false)", -- [2095]
-			"21:29:12 - VotingFrame:Update() without lootTable!!", -- [2096]
-			"21:29:32 - / (sync)", -- [2097]
-			"21:29:32 - Sync:addNameToList() (Minica-Sulfuras) (WARRIOR)", -- [2098]
-			"21:29:32 - Sync:addNameToList() (Helles-Sulfuras) (PALADIN)", -- [2099]
-			"21:29:32 - Sync:addNameToList() (Schmilsson-Sulfuras) (WARRIOR)", -- [2100]
-			"21:29:32 - Sync:addNameToList() (Gurdurs-Sulfuras) (WARRIOR)", -- [2101]
-			"21:29:32 - Sync:addNameToList() (Pipers-Sulfuras) (DRUID)", -- [2102]
-			"21:29:32 - Sync:addNameToList() (Fistandalus-Sulfuras) (PALADIN)", -- [2103]
-			"21:29:32 - Sync:addNameToList() (Derekowns-Sulfuras) (HUNTER)", -- [2104]
-			"21:29:32 - Sync:addNameToList() (Plainview-Sulfuras) (HUNTER)", -- [2105]
-			"21:29:32 - Sync:addNameToList() (Slimmthicc-Sulfuras) (PRIEST)", -- [2106]
-			"21:29:32 - Sync:addNameToList() (Mcmac-Sulfuras) (HUNTER)", -- [2107]
-			"21:29:32 - Sync:addNameToList() (Shway-Sulfuras) (ROGUE)", -- [2108]
-			"21:29:32 - Sync:addNameToList() (Sgtdrock-Sulfuras) (WARRIOR)", -- [2109]
-			"21:29:32 - Sync:addNameToList() (Happyjugs-Sulfuras) (PALADIN)", -- [2110]
-			"21:29:32 - Sync:addNameToList() (Agora-Sulfuras) (WARRIOR)", -- [2111]
-			"21:29:32 - Sync:addNameToList() (Linky-Sulfuras) (MAGE)", -- [2112]
-			"21:29:32 - Sync:addNameToList() (Odarnwewiped-Sulfuras) (PRIEST)", -- [2113]
-			"21:29:32 - Sync:addNameToList() (Topshelf-Sulfuras) (DRUID)", -- [2114]
-			"21:29:32 - Sync:addNameToList() (Hoogs-Sulfuras) (PRIEST)", -- [2115]
-			"21:29:32 - Sync:addNameToList() (Saidar-Sulfuras) (PRIEST)", -- [2116]
-			"21:29:32 - Sync:addNameToList() (Hashmeer-Sulfuras) (WARLOCK)", -- [2117]
-			"21:29:32 - Sync:addNameToList() (Lexxii-Sulfuras) (MAGE)", -- [2118]
-			"21:29:32 - Sync:addNameToList() (Holypally-Sulfuras) (PALADIN)", -- [2119]
-			"21:29:32 - Sync:addNameToList() (Bomann-Sulfuras) (WARLOCK)", -- [2120]
-			"21:29:32 - Sync:addNameToList() (Acroyear-Sulfuras) (MAGE)", -- [2121]
-			"21:29:32 - Sync:addNameToList() (Healwho-Sulfuras) (PALADIN)", -- [2122]
-			"21:29:32 - Sync:addNameToList() (Bountybull-Sulfuras) (MAGE)", -- [2123]
-			"21:29:32 - Sync:addNameToList() (Lrdvoldemort-Sulfuras) (MAGE)", -- [2124]
-			"21:29:32 - Sync:addNameToList() (Kaldeezer-Sulfuras) (DRUID)", -- [2125]
-			"21:29:32 - Sync:addNameToList() (Renae-Sulfuras) (MAGE)", -- [2126]
-			"21:29:32 - Sync:addNameToList() (Acroyear-Sulfuras) (MAGE)", -- [2127]
-			"21:29:32 - Sync:addNameToList() (Agora-Sulfuras) (WARRIOR)", -- [2128]
-			"21:29:32 - Sync:addNameToList() (Bartrarac-Sulfuras) (ROGUE)", -- [2129]
-			"21:29:32 - Sync:addNameToList() (Birddoggin-Sulfuras) (MAGE)", -- [2130]
-			"21:29:32 - Sync:addNameToList() (Bomann-Sulfuras) (WARLOCK)", -- [2131]
-			"21:29:32 - Sync:addNameToList() (Booms-Sulfuras) (WARLOCK)", -- [2132]
-			"21:29:32 - Sync:addNameToList() (Bountybull-Sulfuras) (MAGE)", -- [2133]
-			"21:29:32 - Sync:addNameToList() (Cramp-Sulfuras) (PALADIN)", -- [2134]
-			"21:29:32 - Sync:addNameToList() (Derekowns-Sulfuras) (HUNTER)", -- [2135]
-			"21:29:32 - Sync:addNameToList() (Fistandalus-Sulfuras) (PALADIN)", -- [2136]
-			"21:29:32 - Sync:addNameToList() (Foodvendor-Sulfuras) (MAGE)", -- [2137]
-			"21:29:32 - Sync:addNameToList() (Gurdurs-Sulfuras) (WARRIOR)", -- [2138]
-			"21:29:32 - Sync:addNameToList() (Happyjugs-Sulfuras) (PALADIN)", -- [2139]
-			"21:29:32 - Sync:addNameToList() (Hashmeer-Sulfuras) (WARLOCK)", -- [2140]
-			"21:29:32 - Sync:addNameToList() (Healwho-Sulfuras) (PALADIN)", -- [2141]
-			"21:29:32 - Sync:addNameToList() (Helles-Sulfuras) (PALADIN)", -- [2142]
-			"21:29:32 - Sync:addNameToList() (Holypally-Sulfuras) (PALADIN)", -- [2143]
-			"21:29:32 - Sync:addNameToList() (Hoogs-Sulfuras) (PRIEST)", -- [2144]
-			"21:29:32 - Sync:addNameToList() (Increma-Sulfuras) (WARRIOR)", -- [2145]
-			"21:29:32 - Sync:addNameToList() (Jemini-Sulfuras) (PRIEST)", -- [2146]
-			"21:29:32 - Sync:addNameToList() (Kaldeezer-Sulfuras) (DRUID)", -- [2147]
-			"21:29:32 - Sync:addNameToList() (Latoz-Sulfuras) (DRUID)", -- [2148]
-			"21:29:32 - Sync:addNameToList() (Linky-Sulfuras) (MAGE)", -- [2149]
-			"21:29:32 - Sync:addNameToList() (Lostnspace-Sulfuras) (MAGE)", -- [2150]
-			"21:29:32 - Sync:addNameToList() (Lrdvoldemort-Sulfuras) (MAGE)", -- [2151]
-			"21:29:32 - Sync:addNameToList() (Mcmac-Sulfuras) (HUNTER)", -- [2152]
-			"21:29:32 - Sync:addNameToList() (Melvin-Sulfuras) (PALADIN)", -- [2153]
-			"21:29:32 - Sync:addNameToList() (Minica-Sulfuras) (WARRIOR)", -- [2154]
-			"21:29:32 - Sync:addNameToList() (Odarnwewiped-Sulfuras) (PRIEST)", -- [2155]
-			"21:29:32 - Sync:addNameToList() (Patmayonaise-Sulfuras) (PRIEST)", -- [2156]
-			"21:29:32 - Sync:addNameToList() (Pidgeethot-Sulfuras) (MAGE)", -- [2157]
-			"21:29:32 - Sync:addNameToList() (Pipers-Sulfuras) (DRUID)", -- [2158]
-			"21:29:32 - Sync:addNameToList() (Plainview-Sulfuras) (HUNTER)", -- [2159]
-			"21:29:32 - Sync:addNameToList() (Redpanda-Sulfuras) (WARRIOR)", -- [2160]
-			"21:29:32 - Sync:addNameToList() (Renae-Sulfuras) (MAGE)", -- [2161]
-			"21:29:32 - Sync:addNameToList() (Rivane-Sulfuras) (MAGE)", -- [2162]
-			"21:29:32 - Sync:addNameToList() (Schmilsson-Sulfuras) (WARRIOR)", -- [2163]
-			"21:29:32 - Sync:addNameToList() (Sgtdrock-Sulfuras) (WARRIOR)", -- [2164]
-			"21:29:32 - Sync:addNameToList() (Shadman-Sulfuras) (PALADIN)", -- [2165]
-			"21:29:32 - Sync:addNameToList() (Shway-Sulfuras) (ROGUE)", -- [2166]
-			"21:29:32 - Sync:addNameToList() (Slimmthicc-Sulfuras) (PRIEST)", -- [2167]
-			"21:29:32 - Sync:addNameToList() (Topshelf-Sulfuras) (DRUID)", -- [2168]
-			"21:29:41 - Comm received:^1^SsyncRequest^T^N1^SSchmilsson-Sulfuras^N2^Shistory^t^^ (from:) (Schmilsson) (distri:) (WHISPER)", -- [2169]
-			"21:29:41 - SyncRequestReceived (Schmilsson-Sulfuras) (history)", -- [2170]
-			"21:29:43 - OnSyncAccept (Schmilsson-Sulfuras) (history)", -- [2171]
-			"21:29:44 - Comm received:^1^Ssync^T^N1^SSchmilsson-Sulfuras^N2^Shistory^N3^T^SIsellar-Sulfuras^T^N1^T^SmapID^N409^Sdate^S26/11/19^Sclass^SDRUID^SiSubClass^N0^SgroupSize^N40^SisAwardReason^b^Stime^S21:15:02^SiClass^N9^Sid^S1574838902-0^Sowner^SIsellar-Sulfuras^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^SdifficultyID^N9^SlootWon^S|cff1eff00|Hitem:16665::::::::60:::::::|h[Tome~`of~`Tranquilizing~`Shot]|h|r^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^SresponseID^SPL^Sinstance^SMolten~`Core-40~`Player^Sboss^SLucifron^t^t^SCabbagekrust-Sulfuras^T^N1^T^SmapID^N249^Sdate^S26/11/19^Sclass^SMAGE^SiSubClass^N0^SgroupSize^N40^SisAwardReason^b^Stime^S23:19:11^SiClass^N4^Sid^S1574846351-0^Sowner^SCabbagekrust-Sulfuras^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^SdifficultyID^N9^SlootWon^S|cffa335ee|Hitem:17067::::::::60:::::::|h[Ancient~`Cornerstone~`Grimoire]|h|r^Sboss^SOnyxia^SresponseID^SPL^Sinstance^SOnyxia's~`Lair-40~`Player^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^t^N2^T^SmapID^N249^Sdate^S26/11/19^Sclass^SMAGE^SiSubClass^N0^SgroupSize^N40^SisAwardReason^b^Stime^S23:19:52^SiClass^N4^Sid^S1574846392-1^Sowner^SCabbagekrust-Sulfuras^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^SdifficultyID^N9^SlootWon^S|cffa335ee|Hitem:17067::::::::60:::::::|h[Ancient~`Cornerstone~`Grimoire]|h|r^Sboss^SOnyxia^SresponseID^SPL^Sinstance^SOnyxia's~`Lair-40~`Player^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^t^N3^T^SmapID^N249^Sdate^S26/11/19^Sclass^SMAGE^SiSubClass^N0^SgroupSize^N40^SisAwardReason^b^Stime^S23:19:55^SiClass^N4^Sid^S1574846395-2^Sowner^SCabbagekrust-Sulfuras^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^SdifficultyID^N9^SlootWon^S|cffa335ee|Hitem:17067::::::::60:::::::|h[Ancient~`Cornerstone~`Grimoire]|h|r^Sboss^SOnyxia^SresponseID^SPL^Sinstance^SOnyxia's~`Lair-40~`Player^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^t^N4^T^SmapID^N249^Sdate^S26/11/19^Sclass^SMAGE^SiSubClass^N0^SgroupSize^N40^SisAwardReason^b^Stime^S23:20:12^SiClass^N4^Sid^S1574846412-3^Sowner^SCabbagekrust-Sulfuras^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^SdifficultyID^N9^SlootWon^S|cffa335ee|Hitem:17067::::::::60:::::::|h[Ancient~`Cornerstone~`Grimoire]|h|r^Sboss^SOnyxia^SresponseID^SPL^Sinstance^SOnyxia's~`Lair-40~`Player^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^t^N5^T^SmapID^N249^Sdate^S26/11/19^Sclass^SMAGE^SiSubClass^N0^SgroupSize^N40^SisAwardReason^b^Stime^S23:20:22^SiClass^N4^Sid^S1574846422-4^Sowner^SCabbagekrust-Sulfuras^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^SdifficultyID^N9^SlootWon^S|cffa335ee|Hitem:17067::::::::60:::::::|h[Ancient~`Cornerstone~`Grimoire]|h|r^Sboss^SOnyxia^SresponseID^SPL^Sinstance^SOnyxia's~`Lair-40~`Player^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^t^N6^T^SmapID^N409^Sdate^S10/12/19^Sclass^SMAGE^SiSubClass^N0^SgroupSize^N40^SisAwardReason^b^Stime^S23:14:48^SiClass^N4^Sid^S1576055688-0^Sowner^SCabbagekrust-Sulfuras^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^SdifficultyID^N9^SlootWon^S|cffa335ee|Hitem:19138::::::::60:::::::|h[Band~`of~`Sulfuras]|h|r^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^SresponseID^SPL^Sinstance^SMolten~`Core-40~`Player^Sboss^SRagnaros^t^t^t^t^^ (from:) (Schmilsson) (distri:) (WHISPER)", -- [2172]
-			"21:29:44 - SyncDataReceived (Schmilsson-Sulfuras) (history)", -- [2173]
-			"21:29:44 - Initiating import", -- [2174]
-			"21:29:44 - Validation completed (true) (0)", -- [2175]
-			"21:29:44 - Import successful", -- [2176]
-			"21:29:47 - Comm received:^1^SsyncRequest^T^N1^STopshelf-Sulfuras^N2^Ssettings^t^^ (from:) (Topshelf) (distri:) (WHISPER)", -- [2177]
-			"21:29:47 - SyncRequestReceived (Topshelf-Sulfuras) (settings)", -- [2178]
-			"21:29:48 - Comm received:^1^SsyncRequest^T^N1^SBountybull-Sulfuras^N2^Shistory^t^^ (from:) (Bountybull) (distri:) (WHISPER)", -- [2179]
-			"21:29:48 - SyncRequestReceived (Bountybull-Sulfuras) (history)", -- [2180]
-			"21:29:49 - OnSyncAccept (Topshelf-Sulfuras) (settings)", -- [2181]
-			"21:29:49 - OnSyncAccept (Bountybull-Sulfuras) (history)", -- [2182]
-			"21:29:50 - Comm received:^1^Ssync^T^N1^SBountybull-Sulfuras^N2^Shistory^N3^T^SCabbagekrust-Sulfuras^T^N1^T^SmapID^N409^Sdate^S10/12/19^Sclass^SMAGE^SiSubClass^N0^SgroupSize^N40^SisAwardReason^b^Stime^S23:14:48^SiClass^N4^Sid^S1576055688-0^Sowner^SCabbagekrust-Sulfuras^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^SdifficultyID^N9^SlootWon^S|cffa335ee|Hitem:19138::::::::60:::::::|h[Band~`of~`Sulfuras]|h|r^Sboss^SRagnaros^SresponseID^SPL^Sinstance^SMolten~`Core-40~`Player^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^t^t^t^t^^ (from:) (Bountybull) (distri:) (WHISPER)", -- [2183]
-			"21:29:50 - SyncDataReceived (Bountybull-Sulfuras) (history)", -- [2184]
-			"21:29:50 - Initiating import", -- [2185]
-			"21:29:50 - Validation completed (true) (0)", -- [2186]
-			"21:29:50 - Import successful", -- [2187]
-			"21:29:52 - Comm received:^1^SsyncRequest^T^N1^SMcmac-Sulfuras^N2^Ssettings^t^^ (from:) (Mcmac) (distri:) (WHISPER)", -- [2188]
-			"21:29:52 - SyncRequestReceived (Mcmac-Sulfuras) (settings)", -- [2189]
-			"21:29:54 - Comm received:^1^SsyncRequest^T^N1^SRenae-Sulfuras^N2^Ssettings^t^^ (from:) (Renae) (distri:) (WHISPER)", -- [2190]
-			"21:29:54 - SyncRequestReceived (Renae-Sulfuras) (settings)", -- [2191]
-			"21:29:55 - OnSyncAccept (Mcmac-Sulfuras) (settings)", -- [2192]
-			"21:29:55 - Comm received:^1^SsyncRequest^T^N1^SAgora-Sulfuras^N2^Ssettings^t^^ (from:) (Agora) (distri:) (WHISPER)", -- [2193]
-			"21:29:55 - SyncRequestReceived (Agora-Sulfuras) (settings)", -- [2194]
-			"21:29:55 - OnSyncAccept (Renae-Sulfuras) (settings)", -- [2195]
-			"21:29:55 - OnSyncAccept (Agora-Sulfuras) (settings)", -- [2196]
-			"21:29:55 - Comm received:^1^Ssync^T^N1^STopshelf-Sulfuras^N2^Ssettings^N3^T^Sdisenchant^B^SitemStorage^T^t^SannounceAward^B^SautoClose^b^SawardLater^b^SsortItems^B^Smodules^T^SRCVotingFrame^T^SalwaysShowTooltip^b^Sfilters^T^Sranks^T^t^t^t^t^SsendHistory^B^SanonymousVoting^b^Sresponses^T^Sdefault^T^N1^T^Scolor^T^N1^N0^N2^N1^N3^N0^N4^N1^t^Stext^SMainspec/Need^Ssort^N1^t^N2^T^Scolor^T^N1^N1^N2^N0.5^N3^N0^N4^N1^t^Stext^SOffspec/Greed^Ssort^N2^t^N3^T^Scolor^T^N1^N0^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SMinor~`Upgrade^Ssort^N3^t^N4^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton4^Ssort^N4^t^N5^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton5^Ssort^N5^t^N6^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton6^Ssort^N6^t^N7^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton7^Ssort^N7^t^N8^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton8^Ssort^N8^t^N9^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton9^Ssort^N9^t^N10^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton10^Ssort^N10^t^SNOTINRAID^T^Scolor^T^N1^N0.7^N2^N0.6^N3^N0^N4^N1^t^Stext^SCandidate~`is~`not~`in~`the~`instance^Ssort^N803^t^STIMEOUT^T^Scolor^T^N1^N1^N2^N0^N3^N0^N4^N1^t^Stext^SCandidate~`didn't~`respond~`on~`time^Ssort^N504^t^SNOTHING^T^Scolor^T^N1^N0.5^N2^N0.5^N3^N0.5^N4^N1^t^Stext^SOffline~`or~`RCLootCouncil~`not~`installed^Ssort^N505^t^SWAIT^T^Scolor^T^N1^N1^N2^N1^N3^N0^N4^N1^t^Stext^SCandidate~`is~`selecting~`response,~`please~`wait^Ssort^N503^t^SANNOUNCED^T^Scolor^T^N1^N1^N2^N0^N3^N1^N4^N1^t^Stext^SLoot~`announced,~`waiting~`for~`answer^Ssort^N502^t^SAWARDED^T^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SAwarded^Ssort^N0.1^t^SDEFAULT^T^Scolor^T^N1^N1^N2^N0^N3^N0^N4^N1^t^Stext^SResponse~`isn't~`available.~`Please~`upgrade~`RCLootCouncil.^Ssort^N899^t^SPASS^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SPass^Ssort^N800^t^SPL^T^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^Stext^SPersonal~`Loot~`-~`Non~`tradeable^Ssort^N498^t^SNOTANNOUNCED^T^Scolor^T^N1^N1^N2^N0^N3^N1^N4^N1^t^Stext^SNot~`announced^Ssort^N501^t^SREMOVED^T^Scolor^T^N1^N0.8^N2^N0.5^N3^N0^N4^N1^t^Stext^SCandidate~`removed^Ssort^N505^t^SDISABLED^T^Scolor^T^N1^N0.3^N2^N0.35^N3^N0.5^N4^N1^t^Stext^SCandidate~`has~`disabled~`RCLootCouncil^Ssort^N802^t^SAUTOPASS^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SAutopass^Ssort^N801^t^SPL_REJECT^T^Scolor^T^N1^N0.2^N2^N0^N3^N0^N4^N1^t^Stext^SPersonal~`Loot~`-~`Rejected~`Trade^Ssort^N499^t^t^t^SprintResponse^b^SautoAwardLowerThreshold^N2^Susage^T^Sstate^Sask_ml^Snever^b^Sml^b^Sask_ml^B^t^SmaxButtons^N10^SonlyUseInRaids^B^SshowForML^b^SenableHistory^B^SnumAwardReasons^N3^SaltClickLooting^B^SskipCombatLockdown^b^SsendHistoryToGuildChannel^b^SautolootBoE^B^SselfVote^B^Sobserve^b^ShideVotes^b^SbaggedItems^T^t^SautoLoot^B^SautolootEverything^B^SautoPassBoE^b^SminRank^N-1^SautoOpen^B^SmaxAwardReasons^N10^SawardText^T^N1^T^Schannel^Sgroup^Stext^S&p~`was~`awarded~`with~`&i~`for~`&r!^t^N2^T^Schannel^SNONE^Stext^S^t^t^SautoAwardUpperThreshold^N3^ScurrentSkin^Sbfa^SautoStart^b^SUI^T^Stradeui^T^SbgColor^T^N1^N0.55^N2^N0.84^N3^N1^N4^N1^t^Sx^N-300^Spoint^SCENTER^SborderColor^T^N1^N0.62^N2^N0.86^N3^N0.87^N4^N0.85^t^Sscale^N1.1^Sbackground^SBlizzard~`Garrison~`Background~`3^Sborder^SBlizzard~`Dialog^Sy^N0^t^Slootframe^T^SbgColor^T^N1^N0.55^N2^N0.84^N3^N1^N4^N1^t^Sx^F-4559218181030142^f-46^Spoint^SBOTTOM^SborderColor^T^N1^N0.62^N2^N0.86^N3^N0.87^N4^N0.85^t^Sscale^F4953959697481737^f-52^Sbackground^SBlizzard~`Garrison~`Background~`3^Sborder^SBlizzard~`Dialog^Sy^F-7181317759555559^f-46^t^Ssync^T^Sy^F5115198628415026^f-45^Sx^F-7756199049322433^f-45^Spoint^SCENTER^SborderColor^T^N1^N0.62^N2^N0.86^N3^N0.87^N4^N0.85^t^Sscale^F4953959697481737^f-52^Sbackground^SBlizzard~`Garrison~`Background~`3^Sborder^SBlizzard~`Dialog^SbgColor^T^N1^N0.55^N2^N0.84^N3^N1^N4^N1^t^t^Svotingframe^T^Sy^F4670379757660415^f-46^Sx^F7187489681380794^f-46^Spoint^SLEFT^SborderColor^T^N1^N0.62^N2^N0.86^N3^N0.87^N4^N0.85^t^Sscale^F4953959697481737^f-52^Sbackground^SBlizzard~`Garrison~`Background~`3^Sborder^SBlizzard~`Dialog^SbgColor^T^N1^N0.55^N2^N0.84^N3^N1^N4^N1^t^t^Sdefault^T^SbgColor^T^N1^N0.55^N2^N0.84^N3^N1^N4^N1^t^Sx^N0^Spoint^SCENTER^SborderColor^T^N1^N0.62^N2^N0.86^N3^N0.87^N4^N0.85^t^Sscale^N1.1^Sbackground^SBlizzard~`Garrison~`Background~`3^Sborder^SBlizzard~`Dialog^Sy^N0^t^Shistory^T^Sy^F-6953284958945289^f-68^Sx^F-7612144484876288^f-70^Spoint^SCENTER^SborderColor^T^N1^N0.62^N2^N0.86^N3^N0.87^N4^N0.85^t^Sscale^F4953959697481737^f-52^Sbackground^SBlizzard~`Garrison~`Background~`3^Sborder^SBlizzard~`Dialog^SbgColor^T^N1^N0.55^N2^N0.84^N3^N1^N4^N1^t^t^t^SawardReasons^T^N1^T^Sdisenchant^B^Slog^B^Ssort^N401^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SDisenchant^t^N2^T^Sdisenchant^b^Slog^B^Ssort^N402^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SBanking^t^N3^T^Sdisenchant^b^Slog^b^Ssort^N403^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SFree^t^N4^T^Sdisenchant^b^Slog^B^Ssort^N404^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`4^t^N5^T^Sdisenchant^b^Slog^B^Ssort^N405^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`5^t^N6^T^Sdisenchant^b^Slog^B^Ssort^N406^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`6^t^N7^T^Sdisenchant^b^Slog^B^Ssort^N407^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`7^t^N8^T^Sdisenchant^b^Slog^B^Ssort^N408^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`8^t^N9^T^Sdisenchant^b^Slog^B^Ssort^N409^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`9^t^N10^T^Sdisenchant^b^Slog^B^Ssort^N410^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`10^t^t^SautoAwardTo^SNone^SignoredItems^T^t^SshowSpecIcon^b^SenabledButtons^T^t^SnumMoreInfoButtons^N1^Scouncil^T^t^SautoAddRolls^b^SautoPassTrinket^B^SminimizeInCombat^b^SsilentAutoPass^b^SautoAwardReason^N1^SacceptWhispers^B^SautoPass^B^SiLvlDecimal^b^Stimeout^N60^Sbuttons^T^Sdefault^T^N1^T^Stext^SNeed^SwhisperKey^Sneed,~`mainspec,~`ms,~`1^t^N2^T^Stext^SGreed^SwhisperKey^Sgreed,~`offspec,~`os,~`2^t^N3^T^Stext^SMinor~`Upgrade^SwhisperKey^Sminorupgrade,~`minor,~`3^t^N4^T^Stext^SButton~`4^SwhisperKey^S4^t^N5^T^Stext^SButton~`5^SwhisperKey^S5^t^N6^T^Stext^SButton~`6^SwhisperKey^S6^t^N7^T^Stext^SButton~`7^SwhisperKey^S7^t^N8^T^Stext^SButton~`8^SwhisperKey^S8^t^N9^T^Stext^SButton~`9^SwhisperKey^S9^t^N10^T^Stext^SButton~`10^SwhisperKey^S10^t^SnumButtons^N3^t^t^SannounceItems^b^SautoTrade^b^SmultiVote^B^SchatFrameName^SDEFAULT_CHAT_FRAME^Sskins^T^Slegion^T^SbgColor^T^N1^N0.1^N2^N1^N3^N0^N4^N1^t^Sname^SLegion~`Green^SborderColor^T^N1^N0^N2^N0.8^N3^N0^N4^N0.75^t^Sbackground^SBlizzard~`Garrison~`Background~`2^Sborder^SBlizzard~`Dialog~`Gold^t^Snew_blue^T^SbgColor^T^N1^N0^N2^N0^N3^N0.2^N4^N1^t^Sname^SMidnight~`blue^SborderColor^T^N1^N0.3^N2^N0.3^N3^N0.5^N4^N1^t^Sbackground^SBlizzard~`Tooltip^Sborder^SBlizzard~`Tooltip^t^Sbfa^T^SbgColor^T^N1^N0.55^N2^N0.84^N3^N1^N4^N1^t^Sname^SBattle~`for~`Azeroth^SborderColor^T^N1^N0.62^N2^N0.86^N3^N0.87^N4^N0.85^t^Sbackground^SBlizzard~`Garrison~`Background~`3^Sborder^SBlizzard~`Dialog^t^Sold_red^T^SbgColor^T^N1^N0.5^N2^N0^N3^N0^N4^N1^t^Sname^SOld~`golden~`red^SborderColor^T^N1^N1^N2^N0.5^N3^N0^N4^N1^t^Sbackground^SBlizzard~`Dialog~`Background~`Gold^Sborder^SBlizzard~`Tooltip^t^SminimalGrey^T^SbgColor^T^N1^N0.25^N2^N0.25^N3^N0.25^N4^N1^t^Sname^SMinimal~`Grey^SborderColor^T^N1^N1^N2^N1^N3^N1^N4^N0.2^t^Sbackground^SBlizzard~`Tooltip^Sborder^SBlizzard~`Tooltip^t^t^SallowNotes^B^SannounceChannel^Sgroup^SautoAward^b^SannounceText^SItems~`under~`consideration:^SautolootOthersBoE^b^Sambiguate^b^SannounceItemString^S&s:~`&i^t^t^^ (from:) (Topshelf) (distri:) (WHISPER)", -- [2197]
-			"21:29:55 - SyncDataReceived (Topshelf-Sulfuras) (settings)", -- [2198]
-			"21:29:55 - ActivateSkin (bfa)", -- [2199]
-			"21:29:55 - UpdateFrame (DefaultRCLootCouncilFrame)", -- [2200]
-			"21:29:55 - UpdateFrame (DefaultRCLootHistoryFrame)", -- [2201]
-			"21:29:55 - UpdateFrame (DefaultRCSessionSetupFrame)", -- [2202]
-			"21:29:55 - UpdateFrame (DefaultRCLootCouncilSyncFrame)", -- [2203]
-			"21:29:55 - Comm received:^1^SsyncRequest^T^N1^SDerekowns-Sulfuras^N2^Ssettings^t^^ (from:) (Derekowns) (distri:) (WHISPER)", -- [2204]
-			"21:29:55 - SyncRequestReceived (Derekowns-Sulfuras) (settings)", -- [2205]
-			"21:29:56 - OnSyncAccept (Derekowns-Sulfuras) (settings)", -- [2206]
-			"21:29:58 - Comm received:^1^SsyncRequest^T^N1^SGurdurs-Sulfuras^N2^Ssettings^t^^ (from:) (Gurdurs) (distri:) (WHISPER)", -- [2207]
-			"21:29:58 - SyncRequestReceived (Gurdurs-Sulfuras) (settings)", -- [2208]
-			"21:29:58 - OnSyncAccept (Gurdurs-Sulfuras) (settings)", -- [2209]
-			"21:30:00 - Comm received:^1^Ssync^T^N1^SMcmac-Sulfuras^N2^Ssettings^N3^T^Sdisenchant^B^SitemStorage^T^t^SacceptWhispers^B^SautoClose^b^SautolootEverything^B^SautoPassBoE^b^SautoPass^B^SautoOpen^B^SautoAwardLowerThreshold^N2^SautoPassTrinket^B^SmultiVote^B^SsilentAutoPass^b^SiLvlDecimal^b^SautoTrade^b^SanonymousVoting^b^Sskins^T^Slegion^T^SbgColor^T^N1^N0.1^N2^N1^N3^N0^N4^N1^t^Sname^SLegion~`Green^SborderColor^T^N1^N0^N2^N0.8^N3^N0^N4^N0.75^t^Sbackground^SBlizzard~`Garrison~`Background~`2^Sborder^SBlizzard~`Dialog~`Gold^t^Snew_blue^T^SbgColor^T^N1^N0^N2^N0^N3^N0.2^N4^N1^t^Sname^SMidnight~`blue^SborderColor^T^N1^N0.3^N2^N0.3^N3^N0.5^N4^N1^t^Sbackground^SBlizzard~`Tooltip^Sborder^SBlizzard~`Tooltip^t^Sbfa^T^SbgColor^T^N1^N0.55^N2^N0.84^N3^N1^N4^N1^t^Sname^SBattle~`for~`Azeroth^SborderColor^T^N1^N0.62^N2^N0.86^N3^N0.87^N4^N0.85^t^Sbackground^SBlizzard~`Garrison~`Background~`3^Sborder^SBlizzard~`Dialog^t^Sold_red^T^SbgColor^T^N1^N0.5^N2^N0^N3^N0^N4^N1^t^Sname^SOld~`golden~`red^SborderColor^T^N1^N1^N2^N0.5^N3^N0^N4^N1^t^Sbackground^SBlizzard~`Dialog~`Background~`Gold^Sborder^SBlizzard~`Tooltip^t^SminimalGrey^T^SbgColor^T^N1^N0.25^N2^N0.25^N3^N0.25^N4^N1^t^Sname^SMinimal~`Grey^SborderColor^T^N1^N1^N2^N1^N3^N1^N4^N0.2^t^Sbackground^SBlizzard~`Tooltip^Sborder^SBlizzard~`Tooltip^t^t^SallowNotes^B^SannounceAward^B^SawardText^T^N1^T^Schannel^Sgroup^Stext^S&p~`was~`awarded~`with~`&i~`for~`&r!^t^N2^T^Schannel^SNONE^Stext^S^t^t^SannounceChannel^Sgroup^Sambiguate^b^SautoAward^b^Sresponses^T^Sdefault^T^N1^T^Scolor^T^N1^N0^N2^N1^N3^N0^N4^N1^t^Stext^SMainspec/Need^Ssort^N1^t^N2^T^Scolor^T^N1^N1^N2^N0.5^N3^N0^N4^N1^t^Stext^SOffspec/Greed^Ssort^N2^t^N3^T^Scolor^T^N1^N0^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SMinor~`Upgrade^Ssort^N3^t^N4^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton4^Ssort^N4^t^N5^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton5^Ssort^N5^t^N6^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton6^Ssort^N6^t^N7^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton7^Ssort^N7^t^N8^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton8^Ssort^N8^t^N9^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton9^Ssort^N9^t^N10^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton10^Ssort^N10^t^SNOTINRAID^T^Scolor^T^N1^N0.7^N2^N0.6^N3^N0^N4^N1^t^Stext^SCandidate~`is~`not~`in~`the~`instance^Ssort^N803^t^STIMEOUT^T^Scolor^T^N1^N1^N2^N0^N3^N0^N4^N1^t^Stext^SCandidate~`didn't~`respond~`on~`time^Ssort^N504^t^SNOTHING^T^Scolor^T^N1^N0.5^N2^N0.5^N3^N0.5^N4^N1^t^Stext^SOffline~`or~`RCLootCouncil~`not~`installed^Ssort^N505^t^SWAIT^T^Scolor^T^N1^N1^N2^N1^N3^N0^N4^N1^t^Stext^SCandidate~`is~`selecting~`response,~`please~`wait^Ssort^N503^t^SANNOUNCED^T^Scolor^T^N1^N1^N2^N0^N3^N1^N4^N1^t^Stext^SLoot~`announced,~`waiting~`for~`answer^Ssort^N502^t^SAWARDED^T^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SAwarded^Ssort^N0.1^t^SDEFAULT^T^Scolor^T^N1^N1^N2^N0^N3^N0^N4^N1^t^Stext^SResponse~`isn't~`available.~`Please~`upgrade~`RCLootCouncil.^Ssort^N899^t^SPASS^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SPass^Ssort^N800^t^SPL^T^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^Stext^SPersonal~`Loot~`-~`Non~`tradeable^Ssort^N498^t^SNOTANNOUNCED^T^Scolor^T^N1^N1^N2^N0^N3^N1^N4^N1^t^Stext^SNot~`announced^Ssort^N501^t^SREMOVED^T^Scolor^T^N1^N0.8^N2^N0.5^N3^N0^N4^N1^t^Stext^SCandidate~`removed^Ssort^N505^t^SDISABLED^T^Scolor^T^N1^N0.3^N2^N0.35^N3^N0.5^N4^N1^t^Stext^SCandidate~`has~`disabled~`RCLootCouncil^Ssort^N802^t^SAUTOPASS^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SAutopass^Ssort^N801^t^SPL_REJECT^T^Scolor^T^N1^N0.2^N2^N0^N3^N0^N4^N1^t^Stext^SPersonal~`Loot~`-~`Rejected~`Trade^Ssort^N499^t^t^t^SprintResponse^b^SannounceItems^b^ScurrentSkin^Sbfa^SautoStart^b^SUI^T^Stradeui^T^SbgColor^T^N1^N0.55^N2^N0.84^N3^N1^N4^N1^t^Sx^N-300^Spoint^SCENTER^SborderColor^T^N1^N0.62^N2^N0.86^N3^N0.87^N4^N0.85^t^Sscale^N1.1^Sbackground^SBlizzard~`Garrison~`Background~`3^Sborder^SBlizzard~`Dialog^Sy^N0^t^Slootframe^T^SbgColor^T^N1^N0.55^N2^N0.84^N3^N1^N4^N1^t^Sx^F8578422421159931^f-49^Spoint^SBOTTOM^SborderColor^T^N1^N0.62^N2^N0.86^N3^N0.87^N4^N0.85^t^Sscale^F4953959697481737^f-52^Sbackground^SBlizzard~`Garrison~`Background~`3^Sborder^SBlizzard~`Dialog^Sy^F5404157427586947^f-46^t^Ssync^T^Sy^F7112178079367168^f-68^Sx^F-7272046425800704^f-68^Spoint^SCENTER^SborderColor^T^N1^N0.62^N2^N0.86^N3^N0.87^N4^N0.85^t^Sscale^F4953959697481728^f-52^Sbackground^SBlizzard~`Garrison~`Background~`3^Sborder^SBlizzard~`Dialog^SbgColor^T^N1^N0.55^N2^N0.84^N3^N1^N4^N1^t^t^Sdefault^T^SbgColor^T^N1^N0.55^N2^N0.84^N3^N1^N4^N1^t^Sx^N0^Spoint^SCENTER^SborderColor^T^N1^N0.62^N2^N0.86^N3^N0.87^N4^N0.85^t^Sscale^N1.1^Sbackground^SBlizzard~`Garrison~`Background~`3^Sborder^SBlizzard~`Dialog^Sy^N0^t^t^Susage^T^Sstate^Sask_ml^Snever^b^Sml^b^Sask_ml^B^t^SautolootOthersBoE^b^SonlyUseInRaids^B^Sbuttons^T^Sdefault^T^N1^T^Stext^SNeed^SwhisperKey^Sneed,~`mainspec,~`ms,~`1^t^N2^T^Stext^SGreed^SwhisperKey^Sgreed,~`offspec,~`os,~`2^t^N3^T^Stext^SMinor~`Upgrade^SwhisperKey^Sminorupgrade,~`minor,~`3^t^N4^T^Stext^SButton~`4^SwhisperKey^S4^t^N5^T^Stext^SButton~`5^SwhisperKey^S5^t^N6^T^Stext^SButton~`6^SwhisperKey^S6^t^N7^T^Stext^SButton~`7^SwhisperKey^S7^t^N8^T^Stext^SButton~`8^SwhisperKey^S8^t^N9^T^Stext^SButton~`9^SwhisperKey^S9^t^N10^T^Stext^SButton~`10^SwhisperKey^S10^t^SnumButtons^N3^t^t^SannounceText^SItems~`under~`consideration:^SminRank^N-1^SmaxButtons^N10^SshowForML^b^SenableHistory^B^SnumAwardReasons^N3^SsendHistory^B^SaltClickLooting^B^Scouncil^T^t^SskipCombatLockdown^b^SenabledButtons^T^t^SminimizeInCombat^b^SautolootBoE^B^SautoAwardReason^N1^SshowSpecIcon^b^SautoAddRolls^b^SnumMoreInfoButtons^N1^Stimeout^N60^SselfVote^B^Sobserve^b^SignoredItems^T^t^SautoAwardTo^SNone^SawardReasons^T^N1^T^Sdisenchant^B^Slog^B^Ssort^N401^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SDisenchant^t^N2^T^Sdisenchant^b^Slog^B^Ssort^N402^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SBanking^t^N3^T^Sdisenchant^b^Slog^b^Ssort^N403^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SFree^t^N4^T^Sdisenchant^b^Slog^B^Ssort^N404^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`4^t^N5^T^Sdisenchant^b^Slog^B^Ssort^N405^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`5^t^N6^T^Sdisenchant^b^Slog^B^Ssort^N406^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`6^t^N7^T^Sdisenchant^b^Slog^B^Ssort^N407^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`7^t^N8^T^Sdisenchant^b^Slog^B^Ssort^N408^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`8^t^N9^T^Sdisenchant^b^Slog^B^Ssort^N409^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`9^t^N10^T^Sdisenchant^b^Slog^B^Ssort^N410^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`10^t^t^ShideVotes^b^SbaggedItems^T^t^SautoLoot^B^SautoAwardUpperThreshold^N3^SsortItems^B^Smodules^T^t^SmaxAwardReasons^N10^SannounceItemString^S&s:~`&i^t^t^^ (from:) (Mcmac) (distri:) (WHISPER)", -- [2210]
-			"21:30:00 - SyncDataReceived (Mcmac-Sulfuras) (settings)", -- [2211]
-			"21:30:00 - ActivateSkin (bfa)", -- [2212]
-			"21:30:00 - UpdateFrame (DefaultRCLootCouncilFrame)", -- [2213]
-			"21:30:00 - UpdateFrame (DefaultRCLootHistoryFrame)", -- [2214]
-			"21:30:00 - UpdateFrame (DefaultRCSessionSetupFrame)", -- [2215]
-			"21:30:00 - UpdateFrame (DefaultRCLootCouncilSyncFrame)", -- [2216]
-			"21:30:00 - Comm received:^1^Ssync^T^N1^SRenae-Sulfuras^N2^Ssettings^N3^T^Sdisenchant^B^SitemStorage^T^t^SacceptWhispers^B^SautoClose^b^SautolootEverything^B^SautoPassBoE^b^SautoPass^B^SautoOpen^B^SautoAwardLowerThreshold^N2^SautoPassTrinket^B^SmultiVote^B^SsilentAutoPass^b^SiLvlDecimal^b^SautoTrade^b^SanonymousVoting^b^Sskins^T^Slegion^T^SbgColor^T^N1^N0.1^N2^N1^N3^N0^N4^N1^t^Sname^SLegion~`Green^SborderColor^T^N1^N0^N2^N0.8^N3^N0^N4^N0.75^t^Sbackground^SBlizzard~`Garrison~`Background~`2^Sborder^SBlizzard~`Dialog~`Gold^t^Snew_blue^T^SbgColor^T^N1^N0^N2^N0^N3^N0.2^N4^N1^t^Sname^SMidnight~`blue^SborderColor^T^N1^N0.3^N2^N0.3^N3^N0.5^N4^N1^t^Sbackground^SBlizzard~`Tooltip^Sborder^SBlizzard~`Tooltip^t^Sbfa^T^SbgColor^T^N1^N0.55^N2^N0.84^N3^N1^N4^N1^t^Sname^SBattle~`for~`Azeroth^SborderColor^T^N1^N0.62^N2^N0.86^N3^N0.87^N4^N0.85^t^Sbackground^SBlizzard~`Garrison~`Background~`3^Sborder^SBlizzard~`Dialog^t^Sold_red^T^SbgColor^T^N1^N0.5^N2^N0^N3^N0^N4^N1^t^Sname^SOld~`golden~`red^SborderColor^T^N1^N1^N2^N0.5^N3^N0^N4^N1^t^Sbackground^SBlizzard~`Dialog~`Background~`Gold^Sborder^SBlizzard~`Tooltip^t^SminimalGrey^T^SbgColor^T^N1^N0.25^N2^N0.25^N3^N0.25^N4^N1^t^Sname^SMinimal~`Grey^SborderColor^T^N1^N1^N2^N1^N3^N1^N4^N0.2^t^Sbackground^SBlizzard~`Tooltip^Sborder^SBlizzard~`Tooltip^t^t^SallowNotes^B^SannounceAward^B^SawardText^T^N1^T^Schannel^Sgroup^Stext^S&p~`was~`awarded~`with~`&i~`for~`&r!^t^N2^T^Schannel^SNONE^Stext^S^t^t^SannounceChannel^Sgroup^Sambiguate^b^SautoAward^b^Sresponses^T^Sdefault^T^N1^T^Scolor^T^N1^N0^N2^N1^N3^N0^N4^N1^t^Stext^SMainspec/Need^Ssort^N1^t^N2^T^Scolor^T^N1^N1^N2^N0.5^N3^N0^N4^N1^t^Stext^SOffspec/Greed^Ssort^N2^t^N3^T^Scolor^T^N1^N0^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SMinor~`Upgrade^Ssort^N3^t^N4^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton4^Ssort^N4^t^N5^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton5^Ssort^N5^t^N6^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton6^Ssort^N6^t^N7^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton7^Ssort^N7^t^N8^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton8^Ssort^N8^t^N9^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton9^Ssort^N9^t^N10^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton10^Ssort^N10^t^SNOTINRAID^T^Scolor^T^N1^N0.7^N2^N0.6^N3^N0^N4^N1^t^Stext^SCandidate~`is~`not~`in~`the~`instance^Ssort^N803^t^STIMEOUT^T^Scolor^T^N1^N1^N2^N0^N3^N0^N4^N1^t^Stext^SCandidate~`didn't~`respond~`on~`time^Ssort^N504^t^SNOTHING^T^Scolor^T^N1^N0.5^N2^N0.5^N3^N0.5^N4^N1^t^Stext^SOffline~`or~`RCLootCouncil~`not~`installed^Ssort^N505^t^SWAIT^T^Scolor^T^N1^N1^N2^N1^N3^N0^N4^N1^t^Stext^SCandidate~`is~`selecting~`response,~`please~`wait^Ssort^N503^t^SANNOUNCED^T^Scolor^T^N1^N1^N2^N0^N3^N1^N4^N1^t^Stext^SLoot~`announced,~`waiting~`for~`answer^Ssort^N502^t^SAWARDED^T^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SAwarded^Ssort^N0.1^t^SDEFAULT^T^Scolor^T^N1^N1^N2^N0^N3^N0^N4^N1^t^Stext^SResponse~`isn't~`available.~`Please~`upgrade~`RCLootCouncil.^Ssort^N899^t^SPASS^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SPass^Ssort^N800^t^SPL^T^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^Stext^SPersonal~`Loot~`-~`Non~`tradeable^Ssort^N498^t^SNOTANNOUNCED^T^Scolor^T^N1^N1^N2^N0^N3^N1^N4^N1^t^Stext^SNot~`announced^Ssort^N501^t^SREMOVED^T^Scolor^T^N1^N0.8^N2^N0.5^N3^N0^N4^N1^t^Stext^SCandidate~`removed^Ssort^N505^t^SDISABLED^T^Scolor^T^N1^N0.3^N2^N0.35^N3^N0.5^N4^N1^t^Stext^SCandidate~`has~`disabled~`RCLootCouncil^Ssort^N802^t^SAUTOPASS^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SAutopass^Ssort^N801^t^SPL_REJECT^T^Scolor^T^N1^N0.2^N2^N0^N3^N0^N4^N1^t^Stext^SPersonal~`Loot~`-~`Rejected~`Trade^Ssort^N499^t^t^t^SprintResponse^b^SannounceItems^b^ScurrentSkin^Sbfa^SautoStart^b^SUI^T^Stradeui^T^SbgColor^T^N1^N0.55^N2^N0.84^N3^N1^N4^N1^t^Sx^N-300^Spoint^SCENTER^SborderColor^T^N1^N0.62^N2^N0.86^N3^N0.87^N4^N0.85^t^Sscale^N1.1^Sbackground^SBlizzard~`Garrison~`Background~`3^Sborder^SBlizzard~`Dialog^Sy^N0^t^Slootframe^T^SbgColor^T^N1^N0.55^N2^N0.84^N3^N1^N4^N1^t^Sx^F-4608815415281670^f-48^Spoint^SCENTER^SborderColor^T^N1^N0.62^N2^N0.86^N3^N0.87^N4^N0.85^t^Sscale^F4953959697481737^f-52^Sbackground^SBlizzard~`Garrison~`Background~`3^Sborder^SBlizzard~`Dialog^Sy^N-97.773183011429^t^Ssync^T^Sy^F5285914810189184^f-45^Sx^F-5215441431393792^f-46^Spoint^SCENTER^SborderColor^T^N1^N0.62^N2^N0.86^N3^N0.87^N4^N0.85^t^Sscale^F4953959697481728^f-52^Sbackground^SBlizzard~`Garrison~`Background~`3^Sborder^SBlizzard~`Dialog^SbgColor^T^N1^N0.55^N2^N0.84^N3^N1^N4^N1^t^t^Sdefault^T^SbgColor^T^N1^N0.55^N2^N0.84^N3^N1^N4^N1^t^Sx^N0^Spoint^SCENTER^SborderColor^T^N1^N0.62^N2^N0.86^N3^N0.87^N4^N0.85^t^Sscale^N1.1^Sbackground^SBlizzard~`Garrison~`Background~`3^Sborder^SBlizzard~`Dialog^Sy^N0^t^t^Susage^T^Sstate^Sask_ml^Snever^b^Sml^b^Sask_ml^B^t^SautolootOthersBoE^b^SonlyUseInRaids^B^Sbuttons^T^Sdefault^T^N1^T^Stext^SNeed^SwhisperKey^Sneed,~`mainspec,~`ms,~`1^t^N2^T^Stext^SGreed^SwhisperKey^Sgreed,~`offspec,~`os,~`2^t^N3^T^Stext^SMinor~`Upgrade^SwhisperKey^Sminorupgrade,~`minor,~`3^t^N4^T^Stext^SButton~`4^SwhisperKey^S4^t^N5^T^Stext^SButton~`5^SwhisperKey^S5^t^N6^T^Stext^SButton~`6^SwhisperKey^S6^t^N7^T^Stext^SButton~`7^SwhisperKey^S7^t^N8^T^Stext^SButton~`8^SwhisperKey^S8^t^N9^T^Stext^SButton~`9^SwhisperKey^S9^t^N10^T^Stext^SButton~`10^SwhisperKey^S10^t^SnumButtons^N3^t^t^SannounceText^SItems~`under~`consideration:^SminRank^N-1^SmaxButtons^N10^SshowForML^b^SenableHistory^B^SnumAwardReasons^N3^SsendHistory^B^SaltClickLooting^B^Scouncil^T^t^SskipCombatLockdown^b^SenabledButtons^T^t^SminimizeInCombat^b^SautolootBoE^B^SautoAwardReason^N1^SshowSpecIcon^b^SautoAddRolls^b^SnumMoreInfoButtons^N1^Stimeout^N60^SselfVote^B^Sobserve^b^SignoredItems^T^t^SautoAwardTo^SNone^SawardReasons^T^N1^T^Sdisenchant^B^Slog^B^Ssort^N401^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SDisenchant^t^N2^T^Sdisenchant^b^Slog^B^Ssort^N402^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SBanking^t^N3^T^Sdisenchant^b^Slog^b^Ssort^N403^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SFree^t^N4^T^Sdisenchant^b^Slog^B^Ssort^N404^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`4^t^N5^T^Sdisenchant^b^Slog^B^Ssort^N405^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`5^t^N6^T^Sdisenchant^b^Slog^B^Ssort^N406^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`6^t^N7^T^Sdisenchant^b^Slog^B^Ssort^N407^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`7^t^N8^T^Sdisenchant^b^Slog^B^Ssort^N408^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`8^t^N9^T^Sdisenchant^b^Slog^B^Ssort^N409^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`9^t^N10^T^Sdisenchant^b^Slog^B^Ssort^N410^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`10^t^t^ShideVotes^b^SbaggedItems^T^t^SautoLoot^B^SautoAwardUpperThreshold^N3^SsortItems^B^Smodules^T^t^SmaxAwardReasons^N10^SannounceItemString^S&s:~`&i^t^t^^ (from:) (Renae) (distri:) (WHISPER)", -- [2217]
-			"21:30:00 - SyncDataReceived (Renae-Sulfuras) (settings)", -- [2218]
-			"21:30:00 - ActivateSkin (bfa)", -- [2219]
-			"21:30:00 - UpdateFrame (DefaultRCLootCouncilFrame)", -- [2220]
-			"21:30:00 - UpdateFrame (DefaultRCLootHistoryFrame)", -- [2221]
-			"21:30:00 - UpdateFrame (DefaultRCSessionSetupFrame)", -- [2222]
-			"21:30:00 - UpdateFrame (DefaultRCLootCouncilSyncFrame)", -- [2223]
-			"21:30:00 - Comm received:^1^SsyncRequest^T^N1^SKaldeezer-Sulfuras^N2^Ssettings^t^^ (from:) (Kaldeezer) (distri:) (WHISPER)", -- [2224]
-			"21:30:00 - SyncRequestReceived (Kaldeezer-Sulfuras) (settings)", -- [2225]
-			"21:30:00 - OnSyncAccept (Kaldeezer-Sulfuras) (settings)", -- [2226]
-			"21:30:00 - Comm received:^1^Ssync^T^N1^SAgora-Sulfuras^N2^Ssettings^N3^T^Sdisenchant^B^SitemStorage^T^t^SacceptWhispers^B^SautoClose^b^SautolootEverything^B^SautoPassBoE^b^SautoPass^b^SautoOpen^B^SautoAwardLowerThreshold^N2^SsilentAutoPass^b^SmultiVote^B^SiLvlDecimal^b^SautoTrade^b^Sskins^T^Slegion^T^SbgColor^T^N1^N0.1^N2^N1^N3^N0^N4^N1^t^Sname^SLegion~`Green^SborderColor^T^N1^N0^N2^N0.8^N3^N0^N4^N0.75^t^Sbackground^SBlizzard~`Garrison~`Background~`2^Sborder^SBlizzard~`Dialog~`Gold^t^Snew_blue^T^SbgColor^T^N1^N0^N2^N0^N3^N0.2^N4^N1^t^Sname^SMidnight~`blue^SborderColor^T^N1^N0.3^N2^N0.3^N3^N0.5^N4^N1^t^Sbackground^SBlizzard~`Tooltip^Sborder^SBlizzard~`Tooltip^t^Sbfa^T^SbgColor^T^N1^N0.55^N2^N0.84^N3^N1^N4^N1^t^Sname^SBattle~`for~`Azeroth^SborderColor^T^N1^N0.62^N2^N0.86^N3^N0.87^N4^N0.85^t^Sbackground^SBlizzard~`Garrison~`Background~`3^Sborder^SBlizzard~`Dialog^t^Sold_red^T^SbgColor^T^N1^N0.5^N2^N0^N3^N0^N4^N1^t^Sname^SOld~`golden~`red^SborderColor^T^N1^N1^N2^N0.5^N3^N0^N4^N1^t^Sbackground^SBlizzard~`Dialog~`Background~`Gold^Sborder^SBlizzard~`Tooltip^t^SminimalGrey^T^SbgColor^T^N1^N0.25^N2^N0.25^N3^N0.25^N4^N1^t^Sname^SMinimal~`Grey^SborderColor^T^N1^N1^N2^N1^N3^N1^N4^N0.2^t^Sbackground^SBlizzard~`Tooltip^Sborder^SBlizzard~`Tooltip^t^t^SanonymousVoting^b^SannounceAward^B^SallowNotes^B^SawardText^T^N1^T^Schannel^Sgroup^Stext^S&p~`was~`awarded~`with~`&i~`for~`&r!^t^N2^T^Schannel^SNONE^Stext^S^t^t^SannounceChannel^Sgroup^Sambiguate^b^Sresponses^T^Sdefault^T^N1^T^Scolor^T^N1^N0^N2^N1^N3^N0^N4^N1^t^Stext^SMainspec/Need^Ssort^N1^t^N2^T^Scolor^T^N1^N1^N2^N0.5^N3^N0^N4^N1^t^Stext^SOffspec/Greed^Ssort^N2^t^N3^T^Scolor^T^N1^N0^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SMinor~`Upgrade^Ssort^N3^t^N4^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton4^Ssort^N4^t^N5^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton5^Ssort^N5^t^N6^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton6^Ssort^N6^t^N7^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton7^Ssort^N7^t^N8^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton8^Ssort^N8^t^N9^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton9^Ssort^N9^t^N10^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton10^Ssort^N10^t^SNOTINRAID^T^Scolor^T^N1^N0.7^N2^N0.6^N3^N0^N4^N1^t^Stext^SCandidate~`is~`not~`in~`the~`instance^Ssort^N803^t^STIMEOUT^T^Scolor^T^N1^N1^N2^N0^N3^N0^N4^N1^t^Stext^SCandidate~`didn't~`respond~`on~`time^Ssort^N504^t^SNOTHING^T^Scolor^T^N1^N0.5^N2^N0.5^N3^N0.5^N4^N1^t^Stext^SOffline~`or~`RCLootCouncil~`not~`installed^Ssort^N505^t^SWAIT^T^Scolor^T^N1^N1^N2^N1^N3^N0^N4^N1^t^Stext^SCandidate~`is~`selecting~`response,~`please~`wait^Ssort^N503^t^SANNOUNCED^T^Scolor^T^N1^N1^N2^N0^N3^N1^N4^N1^t^Stext^SLoot~`announced,~`waiting~`for~`answer^Ssort^N502^t^SAWARDED^T^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SAwarded^Ssort^N0.1^t^SDEFAULT^T^Scolor^T^N1^N1^N2^N0^N3^N0^N4^N1^t^Stext^SResponse~`isn't~`available.~`Please~`upgrade~`RCLootCouncil.^Ssort^N899^t^SPASS^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SPass^Ssort^N800^t^SPL^T^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^Stext^SPersonal~`Loot~`-~`Non~`tradeable^Ssort^N498^t^SNOTANNOUNCED^T^Scolor^T^N1^N1^N2^N0^N3^N1^N4^N1^t^Stext^SNot~`announced^Ssort^N501^t^SREMOVED^T^Scolor^T^N1^N0.8^N2^N0.5^N3^N0^N4^N1^t^Stext^SCandidate~`removed^Ssort^N505^t^SDISABLED^T^Scolor^T^N1^N0.3^N2^N0.35^N3^N0.5^N4^N1^t^Stext^SCandidate~`has~`disabled~`RCLootCouncil^Ssort^N802^t^SAUTOPASS^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SAutopass^Ssort^N801^t^SPL_REJECT^T^Scolor^T^N1^N0.2^N2^N0^N3^N0^N4^N1^t^Stext^SPersonal~`Loot~`-~`Rejected~`Trade^Ssort^N499^t^t^t^SautoAward^b^SannounceItems^b^SprintResponse^b^Sbuttons^T^Sdefault^T^N1^T^Stext^SNeed^SwhisperKey^Sneed,~`mainspec,~`ms,~`1^t^N2^T^Stext^SGreed^SwhisperKey^Sgreed,~`offspec,~`os,~`2^t^N3^T^Stext^SMinor~`Upgrade^SwhisperKey^Sminorupgrade,~`minor,~`3^t^N4^T^Stext^SButton~`4^SwhisperKey^S4^t^N5^T^Stext^SButton~`5^SwhisperKey^S5^t^N6^T^Stext^SButton~`6^SwhisperKey^S6^t^N7^T^Stext^SButton~`7^SwhisperKey^S7^t^N8^T^Stext^SButton~`8^SwhisperKey^S8^t^N9^T^Stext^SButton~`9^SwhisperKey^S9^t^N10^T^Stext^SButton~`10^SwhisperKey^S10^t^SnumButtons^N3^t^t^ScurrentSkin^Sbfa^SautoStart^b^SUI^T^Stradeui^T^SbgColor^T^N1^N0.55^N2^N0.84^N3^N1^N4^N1^t^Sx^N-300^Spoint^SCENTER^SborderColor^T^N1^N0.62^N2^N0.86^N3^N0.87^N4^N0.85^t^Sscale^N1.1^Sbackground^SBlizzard~`Garrison~`Background~`3^Sborder^SBlizzard~`Dialog^Sy^N0^t^Slootframe^T^SbgColor^T^N1^N0.55^N2^N0.84^N3^N1^N4^N1^t^Sx^N-5.6801742175594e-05^Spoint^SBOTTOM^SborderColor^T^N1^N0.62^N2^N0.86^N3^N0.87^N4^N0.85^t^Sscale^F4953959697481737^f-52^Sbackground^SBlizzard~`Garrison~`Background~`3^Sborder^SBlizzard~`Dialog^Sy^F5746780290613641^f-48^t^Sdefault^T^SbgColor^T^N1^N0.55^N2^N0.84^N3^N1^N4^N1^t^Sx^N0^Spoint^SCENTER^SborderColor^T^N1^N0.62^N2^N0.86^N3^N0.87^N4^N0.85^t^Sscale^N1.1^Sbackground^SBlizzard~`Garrison~`Background~`3^Sborder^SBlizzard~`Dialog^Sy^N0^t^Ssync^T^Sy^N0^Sx^N0^Spoint^SCENTER^SborderColor^T^N1^N0.3^N2^N0.3^N3^N0.5^N4^N1^t^Sscale^N1.1^Sbackground^SBlizzard~`Tooltip^Sborder^SBlizzard~`Tooltip^SbgColor^T^N1^N0^N2^N0^N3^N0.2^N4^N1^t^t^t^Susage^T^Sstate^Sask_ml^Snever^b^Sml^b^Sask_ml^B^t^SautolootOthersBoE^b^SonlyUseInRaids^B^SannounceText^SItems~`under~`consideration:^SminRank^N-1^SmaxButtons^N10^SsendHistory^B^SshowForML^b^SenableHistory^B^SnumAwardReasons^N3^SignoredItems^T^t^SaltClickLooting^B^Scouncil^T^t^SskipCombatLockdown^b^SenabledButtons^T^t^SminimizeInCombat^b^SautolootBoE^B^SautoAwardReason^N1^SautoAddRolls^b^SnumMoreInfoButtons^N1^SshowSpecIcon^b^Stimeout^N60^SselfVote^B^Sobserve^b^SautoAwardTo^SNone^SawardReasons^T^N1^T^Sdisenchant^B^Slog^B^Ssort^N401^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SDisenchant^t^N2^T^Sdisenchant^b^Slog^B^Ssort^N402^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SBanking^t^N3^T^Sdisenchant^b^Slog^b^Ssort^N403^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SFree^t^N4^T^Sdisenchant^b^Slog^B^Ssort^N404^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`4^t^N5^T^Sdisenchant^b^Slog^B^Ssort^N405^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`5^t^N6^T^Sdisenchant^b^Slog^B^Ssort^N406^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`6^t^N7^T^Sdisenchant^b^Slog^B^Ssort^N407^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`7^t^N8^T^Sdisenchant^b^Slog^B^Ssort^N408^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`8^t^N9^T^Sdisenchant^b^Slog^B^Ssort^N409^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`9^t^N10^T^Sdisenchant^b^Slog^B^Ssort^N410^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`10^t^t^SautoAwardUpperThreshold^N3^ShideVotes^b^SbaggedItems^T^t^SautoLoot^B^SmaxAwardReasons^N10^SautoPassTrinket^b^Smodules^T^t^SsortItems^B^SannounceItemString^S&s:~`&i^t^t^^ (from:) (Agora) (distri:) (WHISPER)", -- [2227]
-			"21:30:00 - SyncDataReceived (Agora-Sulfuras) (settings)", -- [2228]
-			"21:30:00 - ActivateSkin (bfa)", -- [2229]
-			"21:30:00 - UpdateFrame (DefaultRCLootCouncilFrame)", -- [2230]
-			"21:30:00 - UpdateFrame (DefaultRCLootHistoryFrame)", -- [2231]
-			"21:30:00 - UpdateFrame (DefaultRCSessionSetupFrame)", -- [2232]
-			"21:30:00 - UpdateFrame (DefaultRCLootCouncilSyncFrame)", -- [2233]
-			"21:30:01 - Comm received:^1^SsyncRequest^T^N1^STopshelf-Sulfuras^N2^Shistory^t^^ (from:) (Topshelf) (distri:) (WHISPER)", -- [2234]
-			"21:30:01 - SyncRequestReceived (Topshelf-Sulfuras) (history)", -- [2235]
-			"21:30:01 - OnSyncAccept (Topshelf-Sulfuras) (history)", -- [2236]
-			"21:30:02 - Comm received:^1^Ssync^T^N1^STopshelf-Sulfuras^N2^Shistory^N3^T^STinktertot-Sulfuras^T^N1^T^SmapID^N409^Sdate^S27/10/19^Sclass^SWARRIOR^SiSubClass^N4^SgroupSize^N40^SisAwardReason^b^Stime^S22:15:53^SiClass^N4^Sid^S1572268553-2^Sowner^STinktertot-Sulfuras^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^SdifficultyID^N9^SlootWon^S|cffa335ee|Hitem:16861::::::::60:::::::|h[Bracers~`of~`Might]|h|r^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^SresponseID^SPL^Sinstance^SMolten~`Core-40~`Player^Sboss^SOnyxia^t^t^SCare-Sulfuras^T^N1^T^SmapID^N249^Sdate^S06/11/19^Sclass^SPALADIN^SiSubClass^N0^SgroupSize^N40^SisAwardReason^b^Stime^S18:33:04^SiClass^N1^Sid^S1573122784-0^Sowner^SCare-Sulfuras^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^SdifficultyID^N9^SlootWon^S|cff1eff00|Hitem:17966::::::::60:::::::|h[Onyxia~`Hide~`Backpack]|h|r^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^SresponseID^SPL^Sinstance^SOnyxia's~`Lair-40~`Player^Sboss^SUnknown^t^t^SSamaca-Sulfuras^T^N1^T^SmapID^N249^Sdate^S27/10/19^Sclass^SWARLOCK^SiSubClass^N0^SgroupSize^N40^SisAwardReason^b^Stime^S21:05:03^SiClass^N1^Sid^S1572264303-0^Sowner^SSamaca-Sulfuras^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^SdifficultyID^N9^SlootWon^S|cff1eff00|Hitem:17966::::::::60:::::::|h[Onyxia~`Hide~`Backpack]|h|r^Sboss^SOnyxia^SresponseID^SPL^Sinstance^SOnyxia's~`Lair-40~`Player^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^t^t^SClutchnorris-Sulfuras^T^N1^T^SmapID^N249^Sdate^S27/10/19^Sclass^SWARLOCK^SiSubClass^N0^SgroupSize^N40^SisAwardReason^b^Stime^S21:06:02^SiClass^N1^Sid^S1572264362-1^Sowner^SClutchnorris-Sulfuras^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^SdifficultyID^N9^SlootWon^S|cff1eff00|Hitem:17966::::::::60:::::::|h[Onyxia~`Hide~`Backpack]|h|r^Sboss^SOnyxia^SresponseID^SPL^Sinstance^SOnyxia's~`Lair-40~`Player^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^t^t^STeaguru-Sulfuras^T^N1^T^SmapID^N409^Sdate^S26/10/19^Sclass^SHUNTER^SiSubClass^N0^SgroupSize^N40^SisAwardReason^b^Stime^S21:50:05^SiClass^N9^Sid^S1572180605-0^Sowner^STeaguru-Sulfuras^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^SdifficultyID^N9^SlootWon^S|cff1eff00|Hitem:16665::::::::60:::::::|h[Tome~`of~`Tranquilizing~`Shot]|h|r^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^SresponseID^SPL^Sinstance^SMolten~`Core-40~`Player^Sboss^SLucifron^t^t^t^t^^ (from:) (Topshelf) (distri:) (WHISPER)", -- [2237]
-			"21:30:02 - SyncDataReceived (Topshelf-Sulfuras) (history)", -- [2238]
-			"21:30:02 - Initiating import", -- [2239]
-			"21:30:02 - Validation completed (true) (0)", -- [2240]
-			"21:30:02 - Import successful", -- [2241]
-			"21:30:02 - Comm received:^1^Ssync^T^N1^SDerekowns-Sulfuras^N2^Ssettings^N3^T^Sdisenchant^B^SitemStorage^T^t^SacceptWhispers^B^SautoClose^b^SautolootEverything^B^SautoPassBoE^b^SminRank^N-1^SautoOpen^B^SmaxButtons^N10^SsendHistory^B^SautoPassTrinket^b^SautoAwardTo^SNone^SsilentAutoPass^b^SmaxAwardReasons^N10^SprintResponse^b^SawardText^T^N1^T^Schannel^Sgroup^Stext^S&p~`was~`awarded~`with~`&i~`for~`&r!^t^N2^T^Schannel^SNONE^Stext^S^t^t^Susage^T^Sstate^Sask_ml^Snever^b^Sml^b^Sask_ml^B^t^SbaggedItems^T^t^SautoPass^B^SiLvlDecimal^b^SautoAward^b^SsortItems^B^SautoAwardUpperThreshold^N3^Sobserve^b^ScurrentSkin^Sbfa^SautoStart^b^SUI^T^Stradeui^T^SbgColor^T^N1^N0.55^N2^N0.84^N3^N1^N4^N1^t^Sx^N-300^Spoint^SCENTER^SborderColor^T^N1^N0.62^N2^N0.86^N3^N0.87^N4^N0.85^t^Sscale^N1.1^Sbackground^SBlizzard~`Garrison~`Background~`3^Sborder^SBlizzard~`Dialog^Sy^N0^t^Slootframe^T^SbgColor^T^N1^N0.55^N2^N0.84^N3^N1^N4^N1^t^Sx^F5104079265325313^f-47^Spoint^SBOTTOM^SborderColor^T^N1^N0.62^N2^N0.86^N3^N0.87^N4^N0.85^t^Sscale^F4953959697481737^f-52^Sbackground^SBlizzard~`Garrison~`Background~`3^Sborder^SBlizzard~`Dialog^Sy^F-6462967713357307^f-48^t^Sdefault^T^SbgColor^T^N1^N0.55^N2^N0.84^N3^N1^N4^N1^t^Sx^N0^Spoint^SCENTER^SborderColor^T^N1^N0.62^N2^N0.86^N3^N0.87^N4^N0.85^t^Sscale^N1.1^Sbackground^SBlizzard~`Garrison~`Background~`3^Sborder^SBlizzard~`Dialog^Sy^N0^t^Svotingframe^T^Sy^F6705369757456133^f-47^Sx^N93.155595428776^Spoint^SCENTER^SborderColor^T^N1^N0.62^N2^N0.86^N3^N0.87^N4^N0.85^t^Sscale^F4953959697481737^f-52^Sbackground^SBlizzard~`Garrison~`Background~`3^Sborder^SBlizzard~`Dialog^SbgColor^T^N1^N0.55^N2^N0.84^N3^N1^N4^N1^t^t^Ssync^T^Sy^N0^Sx^N0^Spoint^SCENTER^SborderColor^T^N1^N0.3^N2^N0.3^N3^N0.5^N4^N1^t^Sscale^N1.1^Sbackground^SBlizzard~`Tooltip^Sborder^SBlizzard~`Tooltip^SbgColor^T^N1^N0^N2^N0^N3^N0.2^N4^N1^t^t^Shistory^T^Sy^F-5754598780919811^f-48^Sx^F-8006342600594428^f-49^Spoint^STOP^SborderColor^T^N1^N0.62^N2^N0.86^N3^N0.87^N4^N0.85^t^Sscale^F4953959697481737^f-52^Sbackground^SBlizzard~`Garrison~`Background~`3^Sborder^SBlizzard~`Dialog^SbgColor^T^N1^N0.55^N2^N0.84^N3^N1^N4^N1^t^t^t^SawardReasons^T^N1^T^Sdisenchant^B^Slog^B^Ssort^N401^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SDisenchant^t^N2^T^Sdisenchant^b^Slog^B^Ssort^N402^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SBanking^t^N3^T^Sdisenchant^b^Slog^b^Ssort^N403^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SFree^t^N4^T^Sdisenchant^b^Slog^B^Ssort^N404^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`4^t^N5^T^Sdisenchant^b^Slog^B^Ssort^N405^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`5^t^N6^T^Sdisenchant^b^Slog^B^Ssort^N406^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`6^t^N7^T^Sdisenchant^b^Slog^B^Ssort^N407^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`7^t^N8^T^Sdisenchant^b^Slog^B^Ssort^N408^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`8^t^N9^T^Sdisenchant^b^Slog^B^Ssort^N409^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`9^t^N10^T^Sdisenchant^b^Slog^B^Ssort^N410^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`10^t^t^SenabledButtons^T^t^SonlyUseInRaids^B^SselfVote^B^SannounceText^SItems~`under~`consideration:^Sskins^T^Slegion^T^SbgColor^T^N1^N0.1^N2^N1^N3^N0^N4^N1^t^Sname^SLegion~`Green^SborderColor^T^N1^N0^N2^N0.8^N3^N0^N4^N0.75^t^Sbackground^SBlizzard~`Garrison~`Background~`2^Sborder^SBlizzard~`Dialog~`Gold^t^Snew_blue^T^SbgColor^T^N1^N0^N2^N0^N3^N0.2^N4^N1^t^Sname^SMidnight~`blue^SborderColor^T^N1^N0.3^N2^N0.3^N3^N0.5^N4^N1^t^Sbackground^SBlizzard~`Tooltip^Sborder^SBlizzard~`Tooltip^t^Sbfa^T^SbgColor^T^N1^N0.55^N2^N0.84^N3^N1^N4^N1^t^Sname^SBattle~`for~`Azeroth^SborderColor^T^N1^N0.62^N2^N0.86^N3^N0.87^N4^N0.85^t^Sbackground^SBlizzard~`Garrison~`Background~`3^Sborder^SBlizzard~`Dialog^t^Sold_red^T^SbgColor^T^N1^N0.5^N2^N0^N3^N0^N4^N1^t^Sname^SOld~`golden~`red^SborderColor^T^N1^N1^N2^N0.5^N3^N0^N4^N1^t^Sbackground^SBlizzard~`Dialog~`Background~`Gold^Sborder^SBlizzard~`Tooltip^t^SminimalGrey^T^SbgColor^T^N1^N0.25^N2^N0.25^N3^N0.25^N4^N1^t^Sname^SMinimal~`Grey^SborderColor^T^N1^N1^N2^N1^N3^N1^N4^N0.2^t^Sbackground^SBlizzard~`Tooltip^Sborder^SBlizzard~`Tooltip^t^t^Smodules^T^SRCVotingFrame^T^SalwaysShowTooltip^b^Sfilters^T^Sranks^T^t^t^t^t^SignoredItems^T^t^SenableHistory^B^SnumAwardReasons^N3^SaltClickLooting^B^SnumMoreInfoButtons^N1^Scouncil^T^t^SautoAddRolls^b^SannounceAward^B^SminimizeInCombat^b^SautolootBoE^B^SautoAwardReason^N1^SannounceChannel^Sgroup^SshowSpecIcon^b^SshowForML^b^Stimeout^N60^Sbuttons^T^Sdefault^T^N1^T^Stext^SNeed^SwhisperKey^Sneed,~`mainspec,~`ms,~`1^t^N2^T^Stext^SGreed^SwhisperKey^Sgreed,~`offspec,~`os,~`2^t^N3^T^Stext^SMinor~`Upgrade^SwhisperKey^Sminorupgrade,~`minor,~`3^t^N4^T^Stext^SButton~`4^SwhisperKey^S4^t^N5^T^Stext^SButton~`5^SwhisperKey^S5^t^N6^T^Stext^SButton~`6^SwhisperKey^S6^t^N7^T^Stext^SButton~`7^SwhisperKey^S7^t^N8^T^Stext^SButton~`8^SwhisperKey^S8^t^N9^T^Stext^SButton~`9^SwhisperKey^S9^t^N10^T^Stext^SButton~`10^SwhisperKey^S10^t^SnumButtons^N3^t^t^SannounceItems^b^SautolootOthersBoE^b^Sresponses^T^Sdefault^T^N1^T^Scolor^T^N1^N0^N2^N1^N3^N0^N4^N1^t^Stext^SMainspec/Need^Ssort^N1^t^N2^T^Scolor^T^N1^N1^N2^N0.5^N3^N0^N4^N1^t^Stext^SOffspec/Greed^Ssort^N2^t^N3^T^Scolor^T^N1^N0^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SMinor~`Upgrade^Ssort^N3^t^N4^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton4^Ssort^N4^t^N5^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton5^Ssort^N5^t^N6^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton6^Ssort^N6^t^N7^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton7^Ssort^N7^t^N8^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton8^Ssort^N8^t^N9^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton9^Ssort^N9^t^N10^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton10^Ssort^N10^t^SNOTINRAID^T^Scolor^T^N1^N0.7^N2^N0.6^N3^N0^N4^N1^t^Stext^SCandidate~`is~`not~`in~`the~`instance^Ssort^N803^t^STIMEOUT^T^Scolor^T^N1^N1^N2^N0^N3^N0^N4^N1^t^Stext^SCandidate~`didn't~`respond~`on~`time^Ssort^N504^t^SNOTHING^T^Scolor^T^N1^N0.5^N2^N0.5^N3^N0.5^N4^N1^t^Stext^SOffline~`or~`RCLootCouncil~`not~`installed^Ssort^N505^t^SWAIT^T^Scolor^T^N1^N1^N2^N1^N3^N0^N4^N1^t^Stext^SCandidate~`is~`selecting~`response,~`please~`wait^Ssort^N503^t^SANNOUNCED^T^Scolor^T^N1^N1^N2^N0^N3^N1^N4^N1^t^Stext^SLoot~`announced,~`waiting~`for~`answer^Ssort^N502^t^SAWARDED^T^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SAwarded^Ssort^N0.1^t^SDEFAULT^T^Scolor^T^N1^N1^N2^N0^N3^N0^N4^N1^t^Stext^SResponse~`isn't~`available.~`Please~`upgrade~`RCLootCouncil.^Ssort^N899^t^SPASS^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SPass^Ssort^N800^t^SPL^T^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^Stext^SPersonal~`Loot~`-~`Non~`tradeable^Ssort^N498^t^SNOTANNOUNCED^T^Scolor^T^N1^N1^N2^N0^N3^N1^N4^N1^t^Stext^SNot~`announced^Ssort^N501^t^SREMOVED^T^Scolor^T^N1^N0.8^N2^N0.5^N3^N0^N4^N1^t^Stext^SCandidate~`removed^Ssort^N505^t^SDISABLED^T^Scolor^T^N1^N0.3^N2^N0.35^N3^N0.5^N4^N1^t^Stext^SCandidate~`has~`disabled~`RCLootCouncil^Ssort^N802^t^SAUTOPASS^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SAutopass^Ssort^N801^t^SPL_REJECT^T^Scolor^T^N1^N0.2^N2^N0^N3^N0^N4^N1^t^Stext^SPersonal~`Loot~`-~`Rejected~`Trade^Ssort^N499^t^t^t^SautoTrade^b^ShideVotes^b^Sambiguate^b^SautoLoot^B^SmultiVote^B^SautoAwardLowerThreshold^N2^SanonymousVoting^b^SallowNotes^B^SannounceItemString^S&s:~`&i^t^t^^ (from:) (Derekowns) (distri:) (WHISPER)", -- [2242]
-			"21:30:02 - SyncDataReceived (Derekowns-Sulfuras) (settings)", -- [2243]
-			"21:30:02 - ActivateSkin (bfa)", -- [2244]
-			"21:30:02 - UpdateFrame (DefaultRCLootCouncilFrame)", -- [2245]
-			"21:30:02 - UpdateFrame (DefaultRCLootHistoryFrame)", -- [2246]
-			"21:30:02 - UpdateFrame (DefaultRCSessionSetupFrame)", -- [2247]
-			"21:30:02 - UpdateFrame (DefaultRCLootCouncilSyncFrame)", -- [2248]
-			"21:30:02 - Comm received:^1^SsyncRequest^T^N1^SMcmac-Sulfuras^N2^Shistory^t^^ (from:) (Mcmac) (distri:) (WHISPER)", -- [2249]
-			"21:30:02 - SyncRequestReceived (Mcmac-Sulfuras) (history)", -- [2250]
-			"21:30:02 - OnSyncAccept (Mcmac-Sulfuras) (history)", -- [2251]
-			"21:30:03 - Comm received:^1^SsyncRequest^T^N1^SRenae-Sulfuras^N2^Shistory^t^^ (from:) (Renae) (distri:) (WHISPER)", -- [2252]
-			"21:30:03 - SyncRequestReceived (Renae-Sulfuras) (history)", -- [2253]
-			"21:30:03 - OnSyncAccept (Renae-Sulfuras) (history)", -- [2254]
-			"21:30:04 - Comm received:^1^Ssync^T^N1^SGurdurs-Sulfuras^N2^Ssettings^N3^T^Sdisenchant^B^SitemStorage^T^t^SacceptWhispers^B^SautoClose^b^SautolootEverything^B^SautoPassBoE^b^SautoPass^B^SautoOpen^B^SautoAwardLowerThreshold^N2^SautoPassTrinket^B^SmultiVote^B^SsilentAutoPass^b^SiLvlDecimal^b^SautoTrade^b^SanonymousVoting^b^Sskins^T^Slegion^T^SbgColor^T^N1^N0.1^N2^N1^N3^N0^N4^N1^t^Sname^SLegion~`Green^SborderColor^T^N1^N0^N2^N0.8^N3^N0^N4^N0.75^t^Sbackground^SBlizzard~`Garrison~`Background~`2^Sborder^SBlizzard~`Dialog~`Gold^t^Snew_blue^T^SbgColor^T^N1^N0^N2^N0^N3^N0.2^N4^N1^t^Sname^SMidnight~`blue^SborderColor^T^N1^N0.3^N2^N0.3^N3^N0.5^N4^N1^t^Sbackground^SBlizzard~`Tooltip^Sborder^SBlizzard~`Tooltip^t^Sbfa^T^SbgColor^T^N1^N0.55^N2^N0.84^N3^N1^N4^N1^t^Sname^SBattle~`for~`Azeroth^SborderColor^T^N1^N0.62^N2^N0.86^N3^N0.87^N4^N0.85^t^Sbackground^SBlizzard~`Garrison~`Background~`3^Sborder^SBlizzard~`Dialog^t^Sold_red^T^SbgColor^T^N1^N0.5^N2^N0^N3^N0^N4^N1^t^Sname^SOld~`golden~`red^SborderColor^T^N1^N1^N2^N0.5^N3^N0^N4^N1^t^Sbackground^SBlizzard~`Dialog~`Background~`Gold^Sborder^SBlizzard~`Tooltip^t^SminimalGrey^T^SbgColor^T^N1^N0.25^N2^N0.25^N3^N0.25^N4^N1^t^Sname^SMinimal~`Grey^SborderColor^T^N1^N1^N2^N1^N3^N1^N4^N0.2^t^Sbackground^SBlizzard~`Tooltip^Sborder^SBlizzard~`Tooltip^t^t^SallowNotes^B^SannounceAward^B^SawardText^T^N1^T^Schannel^Sgroup^Stext^S&p~`was~`awarded~`with~`&i~`for~`&r!^t^N2^T^Schannel^SNONE^Stext^S^t^t^SannounceChannel^Sgroup^Sambiguate^b^SautoAward^b^Sresponses^T^Sdefault^T^N1^T^Scolor^T^N1^N0^N2^N1^N3^N0^N4^N1^t^Stext^SMainspec/Need^Ssort^N1^t^N2^T^Scolor^T^N1^N1^N2^N0.5^N3^N0^N4^N1^t^Stext^SOffspec/Greed^Ssort^N2^t^N3^T^Scolor^T^N1^N0^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SMinor~`Upgrade^Ssort^N3^t^N4^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton4^Ssort^N4^t^N5^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton5^Ssort^N5^t^N6^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton6^Ssort^N6^t^N7^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton7^Ssort^N7^t^N8^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton8^Ssort^N8^t^N9^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton9^Ssort^N9^t^N10^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton10^Ssort^N10^t^SNOTINRAID^T^Scolor^T^N1^N0.7^N2^N0.6^N3^N0^N4^N1^t^Stext^SCandidate~`is~`not~`in~`the~`instance^Ssort^N803^t^STIMEOUT^T^Scolor^T^N1^N1^N2^N0^N3^N0^N4^N1^t^Stext^SCandidate~`didn't~`respond~`on~`time^Ssort^N504^t^SNOTHING^T^Scolor^T^N1^N0.5^N2^N0.5^N3^N0.5^N4^N1^t^Stext^SOffline~`or~`RCLootCouncil~`not~`installed^Ssort^N505^t^SWAIT^T^Scolor^T^N1^N1^N2^N1^N3^N0^N4^N1^t^Stext^SCandidate~`is~`selecting~`response,~`please~`wait^Ssort^N503^t^SANNOUNCED^T^Scolor^T^N1^N1^N2^N0^N3^N1^N4^N1^t^Stext^SLoot~`announced,~`waiting~`for~`answer^Ssort^N502^t^SAWARDED^T^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SAwarded^Ssort^N0.1^t^SDEFAULT^T^Scolor^T^N1^N1^N2^N0^N3^N0^N4^N1^t^Stext^SResponse~`isn't~`available.~`Please~`upgrade~`RCLootCouncil.^Ssort^N899^t^SPASS^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SPass^Ssort^N800^t^SPL^T^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^Stext^SPersonal~`Loot~`-~`Non~`tradeable^Ssort^N498^t^SNOTANNOUNCED^T^Scolor^T^N1^N1^N2^N0^N3^N1^N4^N1^t^Stext^SNot~`announced^Ssort^N501^t^SREMOVED^T^Scolor^T^N1^N0.8^N2^N0.5^N3^N0^N4^N1^t^Stext^SCandidate~`removed^Ssort^N505^t^SDISABLED^T^Scolor^T^N1^N0.3^N2^N0.35^N3^N0.5^N4^N1^t^Stext^SCandidate~`has~`disabled~`RCLootCouncil^Ssort^N802^t^SAUTOPASS^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SAutopass^Ssort^N801^t^SPL_REJECT^T^Scolor^T^N1^N0.2^N2^N0^N3^N0^N4^N1^t^Stext^SPersonal~`Loot~`-~`Rejected~`Trade^Ssort^N499^t^t^t^SprintResponse^b^SannounceItems^b^ScurrentSkin^Sbfa^SautoStart^b^SUI^T^Stradeui^T^SbgColor^T^N1^N0.55^N2^N0.84^N3^N1^N4^N1^t^Sx^N-300^Spoint^SCENTER^SborderColor^T^N1^N0.62^N2^N0.86^N3^N0.87^N4^N0.85^t^Sscale^N1.1^Sbackground^SBlizzard~`Garrison~`Background~`3^Sborder^SBlizzard~`Dialog^Sy^N0^t^Slootframe^T^SbgColor^T^N1^N0.55^N2^N0.84^N3^N1^N4^N1^t^Sx^F-6605288030396426^f-48^Spoint^SBOTTOM^SborderColor^T^N1^N0.62^N2^N0.86^N3^N0.87^N4^N0.85^t^Sscale^F4953959697481737^f-52^Sbackground^SBlizzard~`Garrison~`Background~`3^Sborder^SBlizzard~`Dialog^Sy^F4572491404557605^f-50^t^Sdefault^T^SbgColor^T^N1^N0.55^N2^N0.84^N3^N1^N4^N1^t^Sx^N0^Spoint^SCENTER^SborderColor^T^N1^N0.62^N2^N0.86^N3^N0.87^N4^N0.85^t^Sscale^N1.1^Sbackground^SBlizzard~`Garrison~`Background~`3^Sborder^SBlizzard~`Dialog^Sy^N0^t^Svotingframe^T^Sy^F8406858767222024^f-48^Sx^F-5430485964879870^f-46^Spoint^SRIGHT^SborderColor^T^N1^N0.62^N2^N0.86^N3^N0.87^N4^N0.85^t^Sscale^F4953959697481737^f-52^Sbackground^SBlizzard~`Garrison~`Background~`3^Sborder^SBlizzard~`Dialog^SbgColor^T^N1^N0.55^N2^N0.84^N3^N1^N4^N1^t^t^Ssync^T^Sy^F-6386923459313659^f-70^Sx^N-3.55539757314^Spoint^SCENTER^SborderColor^T^N1^N0.62^N2^N0.86^N3^N0.87^N4^N0.85^t^Sscale^F4953959697481737^f-52^Sbackground^SBlizzard~`Garrison~`Background~`3^Sborder^SBlizzard~`Dialog^SbgColor^T^N1^N0.55^N2^N0.84^N3^N1^N4^N1^t^t^t^Susage^T^Sstate^Sask_ml^Snever^b^Sml^b^Sask_ml^B^t^SautolootOthersBoE^b^SonlyUseInRaids^B^Sbuttons^T^Sdefault^T^N1^T^Stext^SNeed^SwhisperKey^Sneed,~`mainspec,~`ms,~`1^t^N2^T^Stext^SGreed^SwhisperKey^Sgreed,~`offspec,~`os,~`2^t^N3^T^Stext^SMinor~`Upgrade^SwhisperKey^Sminorupgrade,~`minor,~`3^t^N4^T^Stext^SButton~`4^SwhisperKey^S4^t^N5^T^Stext^SButton~`5^SwhisperKey^S5^t^N6^T^Stext^SButton~`6^SwhisperKey^S6^t^N7^T^Stext^SButton~`7^SwhisperKey^S7^t^N8^T^Stext^SButton~`8^SwhisperKey^S8^t^N9^T^Stext^SButton~`9^SwhisperKey^S9^t^N10^T^Stext^SButton~`10^SwhisperKey^S10^t^SnumButtons^N3^t^t^SannounceText^SItems~`under~`consideration:^SminRank^N-1^SmaxButtons^N10^SshowForML^b^SenableHistory^B^SnumAwardReasons^N3^SsendHistory^B^SaltClickLooting^B^Scouncil^T^t^SskipCombatLockdown^b^SenabledButtons^T^t^SminimizeInCombat^b^SautolootBoE^B^SautoAwardReason^N1^SshowSpecIcon^b^SautoAddRolls^b^SnumMoreInfoButtons^N1^Stimeout^N60^SselfVote^B^Sobserve^b^SignoredItems^T^t^SautoAwardTo^SNone^SawardReasons^T^N1^T^Sdisenchant^B^Slog^B^Ssort^N401^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SDisenchant^t^N2^T^Sdisenchant^b^Slog^B^Ssort^N402^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SBanking^t^N3^T^Sdisenchant^b^Slog^b^Ssort^N403^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SFree^t^N4^T^Sdisenchant^b^Slog^B^Ssort^N404^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`4^t^N5^T^Sdisenchant^b^Slog^B^Ssort^N405^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`5^t^N6^T^Sdisenchant^b^Slog^B^Ssort^N406^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`6^t^N7^T^Sdisenchant^b^Slog^B^Ssort^N407^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`7^t^N8^T^Sdisenchant^b^Slog^B^Ssort^N408^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`8^t^N9^T^Sdisenchant^b^Slog^B^Ssort^N409^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`9^t^N10^T^Sdisenchant^b^Slog^B^Ssort^N410^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`10^t^t^ShideVotes^b^SbaggedItems^T^t^SautoLoot^B^SautoAwardUpperThreshold^N3^SsortItems^B^Smodules^T^SRCVotingFrame^T^SalwaysShowTooltip^b^SmoreInfo^b^Sfilters^T^Sranks^T^t^t^t^t^SmaxAwardReasons^N10^SannounceItemString^S&s:~`&i^t^t^^ (from:) (Gurdurs) (distri:) (WHISPER)", -- [2255]
-			"21:30:04 - SyncDataReceived (Gurdurs-Sulfuras) (settings)", -- [2256]
-			"21:30:04 - ActivateSkin (bfa)", -- [2257]
-			"21:30:04 - UpdateFrame (DefaultRCLootCouncilFrame)", -- [2258]
-			"21:30:04 - UpdateFrame (DefaultRCLootHistoryFrame)", -- [2259]
-			"21:30:04 - UpdateFrame (DefaultRCSessionSetupFrame)", -- [2260]
-			"21:30:04 - UpdateFrame (DefaultRCLootCouncilSyncFrame)", -- [2261]
-			"21:30:05 - Comm received:^1^Ssync^T^N1^SMcmac-Sulfuras^N2^Shistory^N3^T^SIsellar-Sulfuras^T^N1^T^SmapID^N409^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^Sclass^SDRUID^SiSubClass^N0^SgroupSize^N40^SisAwardReason^b^Stime^S21:15:02^SiClass^N9^Sinstance^SMolten~`Core-40~`Player^Sowner^SIsellar-Sulfuras^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^SdifficultyID^N9^SlootWon^S|cff1eff00|Hitem:16665::::::::60:::::::|h[Tome~`of~`Tranquilizing~`Shot]|h|r^Sboss^SLucifron^SresponseID^SPL^Sdate^S26/11/19^Sid^S1574838902-0^t^t^SHolypally-Sulfuras^T^N1^T^SmapID^N249^Sdate^S19/11/19^Sclass^SPALADIN^SiSubClass^N0^SgroupSize^N40^Sboss^SOnyxia^Stime^S23:48:04^SiClass^N1^Sid^S1574243284-0^Sowner^SHolypally-Sulfuras^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^SdifficultyID^N9^SlootWon^S|cff1eff00|Hitem:17966::::::::60:::::::|h[Onyxia~`Hide~`Backpack]|h|r^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^SresponseID^SPL^SisAwardReason^b^Sinstance^SOnyxia's~`Lair-40~`Player^t^t^SCabbagekrust-Sulfuras^T^N1^T^SmapID^N249^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^Sclass^SMAGE^SiSubClass^N0^SgroupSize^N40^Sboss^SOnyxia^Stime^S23:19:11^SiClass^N4^Sid^S1574846351-0^Sowner^SCabbagekrust-Sulfuras^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^SdifficultyID^N9^SlootWon^S|cffa335ee|Hitem:17067::::::::60:::::::|h[Ancient~`Cornerstone~`Grimoire]|h|r^SisAwardReason^b^SresponseID^SPL^Sinstance^SOnyxia's~`Lair-40~`Player^Sdate^S26/11/19^t^N2^T^SmapID^N249^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^Sclass^SMAGE^SiSubClass^N0^SgroupSize^N40^Sboss^SOnyxia^Stime^S23:19:52^SiClass^N4^Sid^S1574846392-1^Sowner^SCabbagekrust-Sulfuras^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^SdifficultyID^N9^SlootWon^S|cffa335ee|Hitem:17067::::::::60:::::::|h[Ancient~`Cornerstone~`Grimoire]|h|r^SisAwardReason^b^SresponseID^SPL^Sinstance^SOnyxia's~`Lair-40~`Player^Sdate^S26/11/19^t^N3^T^SmapID^N249^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^Sclass^SMAGE^SiSubClass^N0^SgroupSize^N40^Sboss^SOnyxia^Stime^S23:19:55^SiClass^N4^Sid^S1574846395-2^Sowner^SCabbagekrust-Sulfuras^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^SdifficultyID^N9^SlootWon^S|cffa335ee|Hitem:17067::::::::60:::::::|h[Ancient~`Cornerstone~`Grimoire]|h|r^SisAwardReason^b^SresponseID^SPL^Sinstance^SOnyxia's~`Lair-40~`Player^Sdate^S26/11/19^t^N4^T^SmapID^N249^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^Sclass^SMAGE^SiSubClass^N0^SgroupSize^N40^Sboss^SOnyxia^Stime^S23:20:12^SiClass^N4^Sid^S1574846412-3^Sowner^SCabbagekrust-Sulfuras^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^SdifficultyID^N9^SlootWon^S|cffa335ee|Hitem:17067::::::::60:::::::|h[Ancient~`Cornerstone~`Grimoire]|h|r^SisAwardReason^b^SresponseID^SPL^Sinstance^SOnyxia's~`Lair-40~`Player^Sdate^S26/11/19^t^N5^T^SmapID^N249^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^Sclass^SMAGE^SiSubClass^N0^SgroupSize^N40^Sboss^SOnyxia^Stime^S23:20:22^SiClass^N4^Sid^S1574846422-4^Sowner^SCabbagekrust-Sulfuras^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^SdifficultyID^N9^SlootWon^S|cffa335ee|Hitem:17067::::::::60:::::::|h[Ancient~`Cornerstone~`Grimoire]|h|r^SisAwardReason^b^SresponseID^SPL^Sinstance^SOnyxia's~`Lair-40~`Player^Sdate^S26/11/19^t^N6^T^SmapID^N409^Sdate^S10/12/19^Sclass^SMAGE^SiSubClass^N0^SgroupSize^N40^SisAwardReason^b^Stime^S23:14:48^SiClass^N4^Sid^S1576055688-0^Sowner^SCabbagekrust-Sulfuras^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^SdifficultyID^N9^SlootWon^S|cffa335ee|Hitem:19138::::::::60:::::::|h[Band~`of~`Sulfuras]|h|r^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^SresponseID^SPL^Sinstance^SMolten~`Core-40~`Player^Sboss^SRagnaros^t^t^t^t^^ (from:) (Mcmac) (distri:) (WHISPER)", -- [2262]
-			"21:30:05 - SyncDataReceived (Mcmac-Sulfuras) (history)", -- [2263]
-			"21:30:05 - Initiating import", -- [2264]
-			"21:30:05 - Validation completed (true) (0)", -- [2265]
-			"21:30:05 - Import successful", -- [2266]
-			"21:30:06 - Comm received:^1^Ssync^T^N1^SKaldeezer-Sulfuras^N2^Ssettings^N3^T^Sdisenchant^B^SitemStorage^T^t^SacceptWhispers^B^SautoClose^b^SautolootEverything^B^SautoPassBoE^b^SautoPass^B^SautoOpen^B^SautoAwardLowerThreshold^N2^SautoPassTrinket^B^SmultiVote^B^SsilentAutoPass^b^SiLvlDecimal^b^SautoTrade^b^SanonymousVoting^b^Sskins^T^Slegion^T^SbgColor^T^N1^N0.1^N2^N1^N3^N0^N4^N1^t^Sname^SLegion~`Green^SborderColor^T^N1^N0^N2^N0.8^N3^N0^N4^N0.75^t^Sbackground^SBlizzard~`Garrison~`Background~`2^Sborder^SBlizzard~`Dialog~`Gold^t^Snew_blue^T^SbgColor^T^N1^N0^N2^N0^N3^N0.2^N4^N1^t^Sname^SMidnight~`blue^SborderColor^T^N1^N0.3^N2^N0.3^N3^N0.5^N4^N1^t^Sbackground^SBlizzard~`Tooltip^Sborder^SBlizzard~`Tooltip^t^Sbfa^T^SbgColor^T^N1^N0.55^N2^N0.84^N3^N1^N4^N1^t^Sname^SBattle~`for~`Azeroth^SborderColor^T^N1^N0.62^N2^N0.86^N3^N0.87^N4^N0.85^t^Sbackground^SBlizzard~`Garrison~`Background~`3^Sborder^SBlizzard~`Dialog^t^Sold_red^T^SbgColor^T^N1^N0.5^N2^N0^N3^N0^N4^N1^t^Sname^SOld~`golden~`red^SborderColor^T^N1^N1^N2^N0.5^N3^N0^N4^N1^t^Sbackground^SBlizzard~`Dialog~`Background~`Gold^Sborder^SBlizzard~`Tooltip^t^SminimalGrey^T^SbgColor^T^N1^N0.25^N2^N0.25^N3^N0.25^N4^N1^t^Sname^SMinimal~`Grey^SborderColor^T^N1^N1^N2^N1^N3^N1^N4^N0.2^t^Sbackground^SBlizzard~`Tooltip^Sborder^SBlizzard~`Tooltip^t^t^SallowNotes^B^SannounceAward^B^SawardText^T^N1^T^Schannel^Sgroup^Stext^S&p~`was~`awarded~`with~`&i~`for~`&r!^t^N2^T^Schannel^SNONE^Stext^S^t^t^SannounceChannel^Sgroup^Sambiguate^b^SautoAward^b^Sresponses^T^Sdefault^T^N1^T^Scolor^T^N1^N0^N2^N1^N3^N0^N4^N1^t^Stext^SMainspec/Need^Ssort^N1^t^N2^T^Scolor^T^N1^N1^N2^N0.5^N3^N0^N4^N1^t^Stext^SOffspec/Greed^Ssort^N2^t^N3^T^Scolor^T^N1^N0^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SMinor~`Upgrade^Ssort^N3^t^N4^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton4^Ssort^N4^t^N5^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton5^Ssort^N5^t^N6^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton6^Ssort^N6^t^N7^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton7^Ssort^N7^t^N8^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton8^Ssort^N8^t^N9^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton9^Ssort^N9^t^N10^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton10^Ssort^N10^t^SNOTINRAID^T^Scolor^T^N1^N0.7^N2^N0.6^N3^N0^N4^N1^t^Stext^SCandidate~`is~`not~`in~`the~`instance^Ssort^N803^t^STIMEOUT^T^Scolor^T^N1^N1^N2^N0^N3^N0^N4^N1^t^Stext^SCandidate~`didn't~`respond~`on~`time^Ssort^N504^t^SNOTHING^T^Scolor^T^N1^N0.5^N2^N0.5^N3^N0.5^N4^N1^t^Stext^SOffline~`or~`RCLootCouncil~`not~`installed^Ssort^N505^t^SWAIT^T^Scolor^T^N1^N1^N2^N1^N3^N0^N4^N1^t^Stext^SCandidate~`is~`selecting~`response,~`please~`wait^Ssort^N503^t^SANNOUNCED^T^Scolor^T^N1^N1^N2^N0^N3^N1^N4^N1^t^Stext^SLoot~`announced,~`waiting~`for~`answer^Ssort^N502^t^SAWARDED^T^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SAwarded^Ssort^N0.1^t^SDEFAULT^T^Scolor^T^N1^N1^N2^N0^N3^N0^N4^N1^t^Stext^SResponse~`isn't~`available.~`Please~`upgrade~`RCLootCouncil.^Ssort^N899^t^SPASS^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SPass^Ssort^N800^t^SPL^T^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^Stext^SPersonal~`Loot~`-~`Non~`tradeable^Ssort^N498^t^SNOTANNOUNCED^T^Scolor^T^N1^N1^N2^N0^N3^N1^N4^N1^t^Stext^SNot~`announced^Ssort^N501^t^SREMOVED^T^Scolor^T^N1^N0.8^N2^N0.5^N3^N0^N4^N1^t^Stext^SCandidate~`removed^Ssort^N505^t^SDISABLED^T^Scolor^T^N1^N0.3^N2^N0.35^N3^N0.5^N4^N1^t^Stext^SCandidate~`has~`disabled~`RCLootCouncil^Ssort^N802^t^SAUTOPASS^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SAutopass^Ssort^N801^t^SPL_REJECT^T^Scolor^T^N1^N0.2^N2^N0^N3^N0^N4^N1^t^Stext^SPersonal~`Loot~`-~`Rejected~`Trade^Ssort^N499^t^t^t^SprintResponse^b^SannounceItems^b^ScurrentSkin^Sbfa^SautoStart^b^SUI^T^Stradeui^T^SbgColor^T^N1^N0.55^N2^N0.84^N3^N1^N4^N1^t^Sx^N-300^Spoint^SCENTER^SborderColor^T^N1^N0.62^N2^N0.86^N3^N0.87^N4^N0.85^t^Sscale^N1.1^Sbackground^SBlizzard~`Garrison~`Background~`3^Sborder^SBlizzard~`Dialog^Sy^N0^t^Slootframe^T^SbgColor^T^N1^N0.55^N2^N0.84^N3^N1^N4^N1^t^Sx^F-6227266733053951^f-50^Spoint^SBOTTOM^SborderColor^T^N1^N0.62^N2^N0.86^N3^N0.87^N4^N0.85^t^Sscale^F4953959697481737^f-52^Sbackground^SBlizzard~`Garrison~`Background~`3^Sborder^SBlizzard~`Dialog^Sy^F-5290892534024258^f-46^t^Sdefault^T^SbgColor^T^N1^N0.55^N2^N0.84^N3^N1^N4^N1^t^Sx^N0^Spoint^SCENTER^SborderColor^T^N1^N0.62^N2^N0.86^N3^N0.87^N4^N0.85^t^Sscale^N1.1^Sbackground^SBlizzard~`Garrison~`Background~`3^Sborder^SBlizzard~`Dialog^Sy^N0^t^Ssync^T^Sy^N0^Sx^N0^Spoint^SCENTER^SborderColor^T^N1^N0.3^N2^N0.3^N3^N0.5^N4^N1^t^Sscale^N1.1^Sbackground^SBlizzard~`Tooltip^Sborder^SBlizzard~`Tooltip^SbgColor^T^N1^N0^N2^N0^N3^N0.2^N4^N1^t^t^t^Susage^T^Sstate^Sask_ml^Snever^b^Sml^b^Sask_ml^B^t^SautolootOthersBoE^b^SonlyUseInRaids^B^Sbuttons^T^Sdefault^T^N1^T^Stext^SNeed^SwhisperKey^Sneed,~`mainspec,~`ms,~`1^t^N2^T^Stext^SGreed^SwhisperKey^Sgreed,~`offspec,~`os,~`2^t^N3^T^Stext^SMinor~`Upgrade^SwhisperKey^Sminorupgrade,~`minor,~`3^t^N4^T^Stext^SButton~`4^SwhisperKey^S4^t^N5^T^Stext^SButton~`5^SwhisperKey^S5^t^N6^T^Stext^SButton~`6^SwhisperKey^S6^t^N7^T^Stext^SButton~`7^SwhisperKey^S7^t^N8^T^Stext^SButton~`8^SwhisperKey^S8^t^N9^T^Stext^SButton~`9^SwhisperKey^S9^t^N10^T^Stext^SButton~`10^SwhisperKey^S10^t^SnumButtons^N3^t^t^SannounceText^SItems~`under~`consideration:^SminRank^N-1^SmaxButtons^N10^SshowForML^b^SenableHistory^B^SnumAwardReasons^N3^SsendHistory^B^SaltClickLooting^B^Scouncil^T^t^SskipCombatLockdown^b^SenabledButtons^T^t^SminimizeInCombat^b^SautolootBoE^B^SautoAwardReason^N1^SshowSpecIcon^b^SautoAddRolls^b^SnumMoreInfoButtons^N1^Stimeout^N60^SselfVote^B^Sobserve^b^SignoredItems^T^t^SautoAwardTo^SNone^SawardReasons^T^N1^T^Sdisenchant^B^Slog^B^Ssort^N401^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SDisenchant^t^N2^T^Sdisenchant^b^Slog^B^Ssort^N402^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SBanking^t^N3^T^Sdisenchant^b^Slog^b^Ssort^N403^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SFree^t^N4^T^Sdisenchant^b^Slog^B^Ssort^N404^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`4^t^N5^T^Sdisenchant^b^Slog^B^Ssort^N405^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`5^t^N6^T^Sdisenchant^b^Slog^B^Ssort^N406^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`6^t^N7^T^Sdisenchant^b^Slog^B^Ssort^N407^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`7^t^N8^T^Sdisenchant^b^Slog^B^Ssort^N408^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`8^t^N9^T^Sdisenchant^b^Slog^B^Ssort^N409^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`9^t^N10^T^Sdisenchant^b^Slog^B^Ssort^N410^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`10^t^t^ShideVotes^b^SbaggedItems^T^t^SautoLoot^B^SautoAwardUpperThreshold^N3^SsortItems^B^Smodules^T^t^SmaxAwardReasons^N10^SannounceItemString^S&s:~`&i^t^t^^ (from:) (Kaldeezer) (distri:) (WHISPER)", -- [2267]
-			"21:30:06 - SyncDataReceived (Kaldeezer-Sulfuras) (settings)", -- [2268]
-			"21:30:06 - ActivateSkin (bfa)", -- [2269]
-			"21:30:06 - UpdateFrame (DefaultRCLootCouncilFrame)", -- [2270]
-			"21:30:06 - UpdateFrame (DefaultRCLootHistoryFrame)", -- [2271]
-			"21:30:06 - UpdateFrame (DefaultRCSessionSetupFrame)", -- [2272]
-			"21:30:06 - UpdateFrame (DefaultRCLootCouncilSyncFrame)", -- [2273]
-			"21:30:07 - Comm received:^1^SsyncRequest^T^N1^SAcroyear-Sulfuras^N2^Ssettings^t^^ (from:) (Acroyear) (distri:) (WHISPER)", -- [2274]
-			"21:30:07 - SyncRequestReceived (Acroyear-Sulfuras) (settings)", -- [2275]
-			"21:30:07 - OnSyncAccept (Acroyear-Sulfuras) (settings)", -- [2276]
-			"21:30:07 - Comm received:^1^SsyncRequest^T^N1^SSgtdrock-Sulfuras^N2^Ssettings^t^^ (from:) (Sgtdrock) (distri:) (WHISPER)", -- [2277]
-			"21:30:07 - SyncRequestReceived (Sgtdrock-Sulfuras) (settings)", -- [2278]
-			"21:30:07 - OnSyncAccept (Sgtdrock-Sulfuras) (settings)", -- [2279]
-			"21:30:09 - Comm received:^1^Ssync^T^N1^SRenae-Sulfuras^N2^Shistory^N3^T^SClutchnorris-Sulfuras^T^N1^T^SmapID^N249^Sdate^S27/10/19^Sclass^SWARLOCK^SiSubClass^N0^SgroupSize^N40^SisAwardReason^b^Stime^S21:06:02^SiClass^N1^Sid^S1572264362-1^Sowner^SClutchnorris-Sulfuras^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^SdifficultyID^N9^SlootWon^S|cff1eff00|Hitem:17966::::::::60:::::::|h[Onyxia~`Hide~`Backpack]|h|r^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^SresponseID^SPL^Sinstance^SOnyxia's~`Lair-40~`Player^Sboss^SOnyxia^t^t^SIsellar-Sulfuras^T^N1^T^SmapID^N409^Sdate^S26/11/19^Sclass^SDRUID^SiSubClass^N0^SgroupSize^N40^SisAwardReason^b^Stime^S21:15:02^SiClass^N9^Sid^S1574838902-0^Sowner^SIsellar-Sulfuras^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^SdifficultyID^N9^SlootWon^S|cff1eff00|Hitem:16665::::::::60:::::::|h[Tome~`of~`Tranquilizing~`Shot]|h|r^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^SresponseID^SPL^Sinstance^SMolten~`Core-40~`Player^Sboss^SLucifron^t^t^SCabbagekrust-Sulfuras^T^N1^T^SmapID^N249^Sdate^S26/11/19^Sclass^SMAGE^SiSubClass^N0^SgroupSize^N40^SisAwardReason^b^Stime^S23:19:11^SiClass^N4^Sid^S1574846351-0^Sowner^SCabbagekrust-Sulfuras^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^SdifficultyID^N9^SlootWon^S|cffa335ee|Hitem:17067::::::::60:::::::|h[Ancient~`Cornerstone~`Grimoire]|h|r^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^SresponseID^SPL^Sinstance^SOnyxia's~`Lair-40~`Player^Sboss^SOnyxia^t^N2^T^SmapID^N249^Sdate^S26/11/19^Sclass^SMAGE^SiSubClass^N0^SgroupSize^N40^SisAwardReason^b^Stime^S23:19:52^SiClass^N4^Sid^S1574846392-1^Sowner^SCabbagekrust-Sulfuras^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^SdifficultyID^N9^SlootWon^S|cffa335ee|Hitem:17067::::::::60:::::::|h[Ancient~`Cornerstone~`Grimoire]|h|r^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^SresponseID^SPL^Sinstance^SOnyxia's~`Lair-40~`Player^Sboss^SOnyxia^t^N3^T^SmapID^N249^Sdate^S26/11/19^Sclass^SMAGE^SiSubClass^N0^SgroupSize^N40^SisAwardReason^b^Stime^S23:19:55^SiClass^N4^Sid^S1574846395-2^Sowner^SCabbagekrust-Sulfuras^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^SdifficultyID^N9^SlootWon^S|cffa335ee|Hitem:17067::::::::60:::::::|h[Ancient~`Cornerstone~`Grimoire]|h|r^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^SresponseID^SPL^Sinstance^SOnyxia's~`Lair-40~`Player^Sboss^SOnyxia^t^N4^T^SmapID^N249^Sdate^S26/11/19^Sclass^SMAGE^SiSubClass^N0^SgroupSize^N40^SisAwardReason^b^Stime^S23:20:12^SiClass^N4^Sid^S1574846412-3^Sowner^SCabbagekrust-Sulfuras^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^SdifficultyID^N9^SlootWon^S|cffa335ee|Hitem:17067::::::::60:::::::|h[Ancient~`Cornerstone~`Grimoire]|h|r^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^SresponseID^SPL^Sinstance^SOnyxia's~`Lair-40~`Player^Sboss^SOnyxia^t^N5^T^SmapID^N249^Sdate^S26/11/19^Sclass^SMAGE^SiSubClass^N0^SgroupSize^N40^SisAwardReason^b^Stime^S23:20:22^SiClass^N4^Sid^S1574846422-4^Sowner^SCabbagekrust-Sulfuras^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^SdifficultyID^N9^SlootWon^S|cffa335ee|Hitem:17067::::::::60:::::::|h[Ancient~`Cornerstone~`Grimoire]|h|r^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^SresponseID^SPL^Sinstance^SOnyxia's~`Lair-40~`Player^Sboss^SOnyxia^t^N6^T^SmapID^N409^Sdate^S10/12/19^Sclass^SMAGE^SiSubClass^N0^SgroupSize^N40^SisAwardReason^b^Stime^S23:14:48^SiClass^N4^Sid^S1576055688-0^Sowner^SCabbagekrust-Sulfuras^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^SdifficultyID^N9^SlootWon^S|cffa335ee|Hitem:19138::::::::60:::::::|h[Band~`of~`Sulfuras]|h|r^Sboss^SRagnaros^SresponseID^SPL^Sinstance^SMolten~`Core-40~`Player^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^t^t^STinktertot-Sulfuras^T^N1^T^SmapID^N409^Sdate^S27/10/19^Sclass^SWARRIOR^SiSubClass^N4^SgroupSize^N40^SisAwardReason^b^Stime^S22:15:53^SiClass^N4^Sid^S1572268553-2^Sowner^STinktertot-Sulfuras^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^SdifficultyID^N9^SlootWon^S|cffa335ee|Hitem:16861::::::::60:::::::|h[Bracers~`of~`Might]|h|r^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^SresponseID^SPL^Sinstance^SMolten~`Core-40~`Player^Sboss^SOnyxia^t^t^SCare-Sulfuras^T^N1^T^SmapID^N249^Sdate^S06/11/19^Sclass^SPALADIN^SiSubClass^N0^SgroupSize^N40^SisAwardReason^b^Stime^S18:33:04^SiClass^N1^Sid^S1573122784-0^Sowner^SCare-Sulfuras^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^SdifficultyID^N9^SlootWon^S|cff1eff00|Hitem:17966::::::::60:::::::|h[Onyxia~`Hide~`Backpack]|h|r^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^SresponseID^SPL^Sinstance^SOnyxia's~`Lair-40~`Player^Sboss^SUnknown^t^t^SSamaca-Sulfuras^T^N1^T^SmapID^N249^Sdate^S27/10/19^Sclass^SWARLOCK^SiSubClass^N0^SgroupSize^N40^SisAwardReason^b^Stime^S21:05:03^SiClass^N1^Sid^S1572264303-0^Sowner^SSamaca-Sulfuras^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^SdifficultyID^N9^SlootWon^S|cff1eff00|Hitem:17966::::::::60:::::::|h[Onyxia~`Hide~`Backpack]|h|r^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^SresponseID^SPL^Sinstance^SOnyxia's~`Lair-40~`Player^Sboss^SOnyxia^t^t^SHolypally-Sulfuras^T^N1^T^SmapID^N249^Sdate^S19/11/19^Sclass^SPALADIN^SiSubClass^N0^SgroupSize^N40^SisAwardReason^b^Stime^S23:48:04^SiClass^N1^Sid^S1574243284-0^Sowner^SHolypally-Sulfuras^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^SdifficultyID^N9^SlootWon^S|cff1eff00|Hitem:17966::::::::60:::::::|h[Onyxia~`Hide~`Backpack]|h|r^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^SresponseID^SPL^Sinstance^SOnyxia's~`Lair-40~`Player^Sboss^SOnyxia^t^t^STeaguru-Sulfuras^T^N1^T^SmapID^N409^Sdate^S26/10/19^Sclass^SHUNTER^SiSubClass^N0^SgroupSize^N40^SisAwardReason^b^Stime^S21:50:05^SiClass^N9^Sid^S1572180605-0^Sowner^STeaguru-Sulfuras^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^SdifficultyID^N9^SlootWon^S|cff1eff00|Hitem:16665::::::::60:::::::|h[Tome~`of~`Tranquilizing~`Shot]|h|r^Sboss^SLucifron^SresponseID^SPL^Sinstance^SMolten~`Core-40~`Player^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^t^t^t^t^^ (from:) (Renae) (distri:) (WHISPER)", -- [2280]
-			"21:30:09 - SyncDataReceived (Renae-Sulfuras) (history)", -- [2281]
-			"21:30:09 - Initiating import", -- [2282]
-			"21:30:09 - Validation completed (true) (0)", -- [2283]
-			"21:30:09 - Import successful", -- [2284]
-			"21:30:09 - Comm received:^1^SsyncRequest^T^N1^SHelles-Sulfuras^N2^Shistory^t^^ (from:) (Helles) (distri:) (WHISPER)", -- [2285]
-			"21:30:09 - SyncRequestReceived (Helles-Sulfuras) (history)", -- [2286]
-			"21:30:09 - OnSyncAccept (Helles-Sulfuras) (history)", -- [2287]
-			"21:30:10 - Comm received:^1^SsyncRequest^T^N1^SBomann-Sulfuras^N2^Ssettings^t^^ (from:) (Bomann) (distri:) (WHISPER)", -- [2288]
-			"21:30:10 - SyncRequestReceived (Bomann-Sulfuras) (settings)", -- [2289]
-			"21:30:10 - OnSyncAccept (Bomann-Sulfuras) (settings)", -- [2290]
-			"21:30:10 - Comm received:^1^Ssync^T^N1^SHelles-Sulfuras^N2^Shistory^N3^T^SIsellar-Sulfuras^T^N1^T^SmapID^N409^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^Sclass^SDRUID^SiSubClass^N0^SgroupSize^N40^Sboss^SLucifron^Stime^S21:15:02^SiClass^N9^Sinstance^SMolten~`Core-40~`Player^Sowner^SIsellar-Sulfuras^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^SdifficultyID^N9^SlootWon^S|cff1eff00|Hitem:16665::::::::60:::::::|h[Tome~`of~`Tranquilizing~`Shot]|h|r^Sdate^S26/11/19^SresponseID^SPL^SisAwardReason^b^Sid^S1574838902-0^t^t^SHolypally-Sulfuras^T^N1^T^SmapID^N249^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^Sclass^SPALADIN^SiSubClass^N0^SgroupSize^N40^SisAwardReason^b^Stime^S23:48:04^SiClass^N1^Sinstance^SOnyxia's~`Lair-40~`Player^Sowner^SHolypally-Sulfuras^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^SdifficultyID^N9^SlootWon^S|cff1eff00|Hitem:17966::::::::60:::::::|h[Onyxia~`Hide~`Backpack]|h|r^Sid^S1574243284-0^SresponseID^SPL^Sdate^S19/11/19^Sboss^SOnyxia^t^t^SCabbagekrust-Sulfuras^T^N1^T^SmapID^N249^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^Sclass^SMAGE^SiSubClass^N0^SgroupSize^N40^Sboss^SOnyxia^Stime^S23:19:11^SiClass^N4^Sinstance^SOnyxia's~`Lair-40~`Player^Sowner^SCabbagekrust-Sulfuras^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^SdifficultyID^N9^SlootWon^S|cffa335ee|Hitem:17067::::::::60:::::::|h[Ancient~`Cornerstone~`Grimoire]|h|r^Sdate^S26/11/19^SresponseID^SPL^SisAwardReason^b^Sid^S1574846351-0^t^N2^T^SmapID^N249^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^Sclass^SMAGE^SiSubClass^N0^SgroupSize^N40^Sboss^SOnyxia^Stime^S23:19:52^SiClass^N4^Sinstance^SOnyxia's~`Lair-40~`Player^Sowner^SCabbagekrust-Sulfuras^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^SdifficultyID^N9^SlootWon^S|cffa335ee|Hitem:17067::::::::60:::::::|h[Ancient~`Cornerstone~`Grimoire]|h|r^Sdate^S26/11/19^SresponseID^SPL^SisAwardReason^b^Sid^S1574846392-1^t^N3^T^SmapID^N249^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^Sclass^SMAGE^SiSubClass^N0^SgroupSize^N40^Sboss^SOnyxia^Stime^S23:19:55^SiClass^N4^Sinstance^SOnyxia's~`Lair-40~`Player^Sowner^SCabbagekrust-Sulfuras^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^SdifficultyID^N9^SlootWon^S|cffa335ee|Hitem:17067::::::::60:::::::|h[Ancient~`Cornerstone~`Grimoire]|h|r^Sdate^S26/11/19^SresponseID^SPL^SisAwardReason^b^Sid^S1574846395-2^t^N4^T^SmapID^N249^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^Sclass^SMAGE^SiSubClass^N0^SgroupSize^N40^Sboss^SOnyxia^Stime^S23:20:12^SiClass^N4^Sinstance^SOnyxia's~`Lair-40~`Player^Sowner^SCabbagekrust-Sulfuras^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^SdifficultyID^N9^SlootWon^S|cffa335ee|Hitem:17067::::::::60:::::::|h[Ancient~`Cornerstone~`Grimoire]|h|r^Sdate^S26/11/19^SresponseID^SPL^SisAwardReason^b^Sid^S1574846412-3^t^N5^T^SmapID^N249^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^Sclass^SMAGE^SiSubClass^N0^SgroupSize^N40^Sboss^SOnyxia^Stime^S23:20:22^SiClass^N4^Sinstance^SOnyxia's~`Lair-40~`Player^Sowner^SCabbagekrust-Sulfuras^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^SdifficultyID^N9^SlootWon^S|cffa335ee|Hitem:17067::::::::60:::::::|h[Ancient~`Cornerstone~`Grimoire]|h|r^Sdate^S26/11/19^SresponseID^SPL^SisAwardReason^b^Sid^S1574846422-4^t^N6^T^SmapID^N409^Sdate^S10/12/19^Sclass^SMAGE^SiSubClass^N0^SgroupSize^N40^SisAwardReason^b^Stime^S23:14:48^SiClass^N4^Sid^S1576055688-0^Sowner^SCabbagekrust-Sulfuras^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^SdifficultyID^N9^SlootWon^S|cffa335ee|Hitem:19138::::::::60:::::::|h[Band~`of~`Sulfuras]|h|r^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^SresponseID^SPL^Sinstance^SMolten~`Core-40~`Player^Sboss^SRagnaros^t^t^t^t^^ (from:) (Helles) (distri:) (WHISPER)", -- [2291]
-			"21:30:10 - SyncDataReceived (Helles-Sulfuras) (history)", -- [2292]
-			"21:30:10 - Initiating import", -- [2293]
-			"21:30:10 - Validation completed (true) (0)", -- [2294]
-			"21:30:10 - Import successful", -- [2295]
-			"21:30:11 - Comm received:^1^SsyncRequest^T^N1^SAgora-Sulfuras^N2^Shistory^t^^ (from:) (Agora) (distri:) (WHISPER)", -- [2296]
-			"21:30:11 - SyncRequestReceived (Agora-Sulfuras) (history)", -- [2297]
-			"21:30:11 - Comm received:^1^SplayerInfo^T^N1^SOdarnwewiped-Sulfuras^N2^SPRIEST^N4^SRaider^N6^N0^N7^N58.88^t^^ (from:) (Odarnwewiped) (distri:) (WHISPER)", -- [2298]
-			"21:30:11 - ML:AddCandidate (Odarnwewiped-Sulfuras) (PRIEST) (nil) (Raider) (nil) (0) (58.88) (nil)", -- [2299]
-			"21:30:11 - Comm received:^1^SsyncRequest^T^N1^SKaldeezer-Sulfuras^N2^Shistory^t^^ (from:) (Kaldeezer) (distri:) (WHISPER)", -- [2300]
-			"21:30:11 - SyncRequestReceived (Kaldeezer-Sulfuras) (history)", -- [2301]
-			"21:30:11 - OnSyncAccept (Agora-Sulfuras) (history)", -- [2302]
-			"21:30:11 - OnSyncAccept (Kaldeezer-Sulfuras) (history)", -- [2303]
-			"21:30:12 - Comm received:^1^Ssync^T^N1^SAgora-Sulfuras^N2^Shistory^N3^T^SCabbagekrust-Sulfuras^T^N1^T^SmapID^N249^Sdate^S26/11/19^Sclass^SMAGE^SiSubClass^N0^SgroupSize^N40^SisAwardReason^b^Stime^S23:19:11^SiClass^N4^Sid^S1574846351-0^Sowner^SCabbagekrust-Sulfuras^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^SdifficultyID^N9^SlootWon^S|cffa335ee|Hitem:17067::::::::60:::::::|h[Ancient~`Cornerstone~`Grimoire]|h|r^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^SresponseID^SPL^Sinstance^SOnyxia's~`Lair-40~`Player^Sboss^SOnyxia^t^N2^T^SmapID^N249^Sdate^S26/11/19^Sclass^SMAGE^SiSubClass^N0^SgroupSize^N40^SisAwardReason^b^Stime^S23:19:52^SiClass^N4^Sid^S1574846392-1^Sowner^SCabbagekrust-Sulfuras^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^SdifficultyID^N9^SlootWon^S|cffa335ee|Hitem:17067::::::::60:::::::|h[Ancient~`Cornerstone~`Grimoire]|h|r^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^SresponseID^SPL^Sinstance^SOnyxia's~`Lair-40~`Player^Sboss^SOnyxia^t^N3^T^SmapID^N249^Sdate^S26/11/19^Sclass^SMAGE^SiSubClass^N0^SgroupSize^N40^SisAwardReason^b^Stime^S23:19:55^SiClass^N4^Sid^S1574846395-2^Sowner^SCabbagekrust-Sulfuras^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^SdifficultyID^N9^SlootWon^S|cffa335ee|Hitem:17067::::::::60:::::::|h[Ancient~`Cornerstone~`Grimoire]|h|r^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^SresponseID^SPL^Sinstance^SOnyxia's~`Lair-40~`Player^Sboss^SOnyxia^t^N4^T^SmapID^N249^Sdate^S26/11/19^Sclass^SMAGE^SiSubClass^N0^SgroupSize^N40^SisAwardReason^b^Stime^S23:20:12^SiClass^N4^Sid^S1574846412-3^Sowner^SCabbagekrust-Sulfuras^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^SdifficultyID^N9^SlootWon^S|cffa335ee|Hitem:17067::::::::60:::::::|h[Ancient~`Cornerstone~`Grimoire]|h|r^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^SresponseID^SPL^Sinstance^SOnyxia's~`Lair-40~`Player^Sboss^SOnyxia^t^N5^T^SmapID^N249^Sdate^S26/11/19^Sclass^SMAGE^SiSubClass^N0^SgroupSize^N40^SisAwardReason^b^Stime^S23:20:22^SiClass^N4^Sid^S1574846422-4^Sowner^SCabbagekrust-Sulfuras^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^SdifficultyID^N9^SlootWon^S|cffa335ee|Hitem:17067::::::::60:::::::|h[Ancient~`Cornerstone~`Grimoire]|h|r^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^SresponseID^SPL^Sinstance^SOnyxia's~`Lair-40~`Player^Sboss^SOnyxia^t^N6^T^SmapID^N409^Sdate^S10/12/19^Sclass^SMAGE^SiSubClass^N0^SgroupSize^N40^SisAwardReason^b^Stime^S23:14:48^SiClass^N4^Sid^S1576055688-0^Sowner^SCabbagekrust-Sulfuras^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^SdifficultyID^N9^SlootWon^S|cffa335ee|Hitem:19138::::::::60:::::::|h[Band~`of~`Sulfuras]|h|r^Sboss^SRagnaros^SresponseID^SPL^Sinstance^SMolten~`Core-40~`Player^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^t^t^SIsellar-Sulfuras^T^N1^T^SmapID^N409^Sdate^S26/11/19^Sclass^SDRUID^SiSubClass^N0^SgroupSize^N40^SisAwardReason^b^Stime^S21:15:02^SiClass^N9^Sid^S1574838902-0^Sowner^SIsellar-Sulfuras^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^SdifficultyID^N9^SlootWon^S|cff1eff00|Hitem:16665::::::::60:::::::|h[Tome~`of~`Tranquilizing~`Shot]|h|r^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^SresponseID^SPL^Sinstance^SMolten~`Core-40~`Player^Sboss^SLucifron^t^t^t^t^^ (from:) (Agora) (distri:) (WHISPER)", -- [2304]
-			"21:30:12 - SyncDataReceived (Agora-Sulfuras) (history)", -- [2305]
-			"21:30:12 - Initiating import", -- [2306]
-			"21:30:12 - Validation completed (true) (0)", -- [2307]
-			"21:30:12 - Import successful", -- [2308]
-			"21:30:12 - Comm received:^1^SverTest^T^N1^S2.14.0^t^^ (from:) (Odarnwewiped) (distri:) (GUILD)", -- [2309]
-			"21:30:12 - Comm received:^1^Sreconnect^T^t^^ (from:) (Odarnwewiped) (distri:) (WHISPER)", -- [2310]
-			"21:30:12 - Responded to reconnect from (Odarnwewiped)", -- [2311]
-			"21:30:12 - Comm received:^1^Ssync^T^N1^SKaldeezer-Sulfuras^N2^Shistory^N3^T^SIsellar-Sulfuras^T^N1^T^SmapID^N409^Sdate^S26/11/19^Sclass^SDRUID^SiSubClass^N0^SgroupSize^N40^SisAwardReason^b^Stime^S21:15:02^SiClass^N9^Sid^S1574838902-0^Sowner^SIsellar-Sulfuras^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^SdifficultyID^N9^SlootWon^S|cff1eff00|Hitem:16665::::::::60:::::::|h[Tome~`of~`Tranquilizing~`Shot]|h|r^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^SresponseID^SPL^Sinstance^SMolten~`Core-40~`Player^Sboss^SLucifron^t^t^SHolypally-Sulfuras^T^N1^T^SmapID^N249^Sdate^S19/11/19^Sclass^SPALADIN^SiSubClass^N0^SgroupSize^N40^SisAwardReason^b^Stime^S23:48:04^SiClass^N1^Sid^S1574243284-0^Sowner^SHolypally-Sulfuras^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^SdifficultyID^N9^SlootWon^S|cff1eff00|Hitem:17966::::::::60:::::::|h[Onyxia~`Hide~`Backpack]|h|r^Sboss^SOnyxia^SresponseID^SPL^Sinstance^SOnyxia's~`Lair-40~`Player^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^t^t^SCabbagekrust-Sulfuras^T^N1^T^SmapID^N249^Sdate^S26/11/19^Sclass^SMAGE^SiSubClass^N0^SgroupSize^N40^SisAwardReason^b^Stime^S23:19:11^SiClass^N4^Sid^S1574846351-0^Sowner^SCabbagekrust-Sulfuras^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^SdifficultyID^N9^SlootWon^S|cffa335ee|Hitem:17067::::::::60:::::::|h[Ancient~`Cornerstone~`Grimoire]|h|r^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^SresponseID^SPL^Sinstance^SOnyxia's~`Lair-40~`Player^Sboss^SOnyxia^t^N2^T^SmapID^N249^Sdate^S26/11/19^Sclass^SMAGE^SiSubClass^N0^SgroupSize^N40^SisAwardReason^b^Stime^S23:19:52^SiClass^N4^Sid^S1574846392-1^Sowner^SCabbagekrust-Sulfuras^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^SdifficultyID^N9^SlootWon^S|cffa335ee|Hitem:17067::::::::60:::::::|h[Ancient~`Cornerstone~`Grimoire]|h|r^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^SresponseID^SPL^Sinstance^SOnyxia's~`Lair-40~`Player^Sboss^SOnyxia^t^N3^T^SmapID^N249^Sdate^S26/11/19^Sclass^SMAGE^SiSubClass^N0^SgroupSize^N40^SisAwardReason^b^Stime^S23:19:55^SiClass^N4^Sid^S1574846395-2^Sowner^SCabbagekrust-Sulfuras^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^SdifficultyID^N9^SlootWon^S|cffa335ee|Hitem:17067::::::::60:::::::|h[Ancient~`Cornerstone~`Grimoire]|h|r^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^SresponseID^SPL^Sinstance^SOnyxia's~`Lair-40~`Player^Sboss^SOnyxia^t^N4^T^SmapID^N249^Sdate^S26/11/19^Sclass^SMAGE^SiSubClass^N0^SgroupSize^N40^SisAwardReason^b^Stime^S23:20:12^SiClass^N4^Sid^S1574846412-3^Sowner^SCabbagekrust-Sulfuras^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^SdifficultyID^N9^SlootWon^S|cffa335ee|Hitem:17067::::::::60:::::::|h[Ancient~`Cornerstone~`Grimoire]|h|r^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^SresponseID^SPL^Sinstance^SOnyxia's~`Lair-40~`Player^Sboss^SOnyxia^t^N5^T^SmapID^N249^Sdate^S26/11/19^Sclass^SMAGE^SiSubClass^N0^SgroupSize^N40^SisAwardReason^b^Stime^S23:20:22^SiClass^N4^Sid^S1574846422-4^Sowner^SCabbagekrust-Sulfuras^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^SdifficultyID^N9^SlootWon^S|cffa335ee|Hitem:17067::::::::60:::::::|h[Ancient~`Cornerstone~`Grimoire]|h|r^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^SresponseID^SPL^Sinstance^SOnyxia's~`Lair-40~`Player^Sboss^SOnyxia^t^N6^T^SmapID^N409^Sdate^S10/12/19^Sclass^SMAGE^SiSubClass^N0^SgroupSize^N40^SisAwardReason^b^Stime^S23:14:48^SiClass^N4^Sid^S1576055688-0^Sowner^SCabbagekrust-Sulfuras^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^SdifficultyID^N9^SlootWon^S|cffa335ee|Hitem:19138::::::::60:::::::|h[Band~`of~`Sulfuras]|h|r^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^SresponseID^SPL^Sinstance^SMolten~`Core-40~`Player^Sboss^SRagnaros^t^t^t^t^^ (from:) (Kaldeezer) (distri:) (WHISPER)", -- [2312]
-			"21:30:12 - SyncDataReceived (Kaldeezer-Sulfuras) (history)", -- [2313]
-			"21:30:12 - Initiating import", -- [2314]
-			"21:30:12 - Validation completed (true) (0)", -- [2315]
-			"21:30:12 - Import successful", -- [2316]
-			"21:30:12 - Comm received:^1^SsyncRequest^T^N1^SSlimmthicc-Sulfuras^N2^Ssettings^t^^ (from:) (Slimmthicc) (distri:) (WHISPER)", -- [2317]
-			"21:30:12 - SyncRequestReceived (Slimmthicc-Sulfuras) (settings)", -- [2318]
-			"21:30:13 - Comm received:^1^Ssync^T^N1^SAcroyear-Sulfuras^N2^Ssettings^N3^T^Sdisenchant^B^SitemStorage^T^t^SacceptWhispers^B^SautoClose^b^SautolootEverything^B^SautoPassBoE^b^SautoPass^B^SautoOpen^B^SautoAwardLowerThreshold^N2^SautoPassTrinket^B^SmultiVote^B^SsilentAutoPass^b^SiLvlDecimal^b^SautoTrade^b^SanonymousVoting^b^Sskins^T^Slegion^T^SbgColor^T^N1^N0.1^N2^N1^N3^N0^N4^N1^t^Sname^SLegion~`Green^SborderColor^T^N1^N0^N2^N0.8^N3^N0^N4^N0.75^t^Sbackground^SBlizzard~`Garrison~`Background~`2^Sborder^SBlizzard~`Dialog~`Gold^t^Snew_blue^T^SbgColor^T^N1^N0^N2^N0^N3^N0.2^N4^N1^t^Sname^SMidnight~`blue^SborderColor^T^N1^N0.3^N2^N0.3^N3^N0.5^N4^N1^t^Sbackground^SBlizzard~`Tooltip^Sborder^SBlizzard~`Tooltip^t^Sbfa^T^SbgColor^T^N1^N0.55^N2^N0.84^N3^N1^N4^N1^t^Sname^SBattle~`for~`Azeroth^SborderColor^T^N1^N0.62^N2^N0.86^N3^N0.87^N4^N0.85^t^Sbackground^SBlizzard~`Garrison~`Background~`3^Sborder^SBlizzard~`Dialog^t^Sold_red^T^SbgColor^T^N1^N0.5^N2^N0^N3^N0^N4^N1^t^Sname^SOld~`golden~`red^SborderColor^T^N1^N1^N2^N0.5^N3^N0^N4^N1^t^Sbackground^SBlizzard~`Dialog~`Background~`Gold^Sborder^SBlizzard~`Tooltip^t^SminimalGrey^T^SbgColor^T^N1^N0.25^N2^N0.25^N3^N0.25^N4^N1^t^Sname^SMinimal~`Grey^SborderColor^T^N1^N1^N2^N1^N3^N1^N4^N0.2^t^Sbackground^SBlizzard~`Tooltip^Sborder^SBlizzard~`Tooltip^t^t^SallowNotes^B^SannounceAward^B^SawardText^T^N1^T^Schannel^Sgroup^Stext^S&p~`was~`awarded~`with~`&i~`for~`&r!^t^N2^T^Schannel^SNONE^Stext^S^t^t^SannounceChannel^Sgroup^Sambiguate^b^SautoAward^b^Sresponses^T^Sdefault^T^N1^T^Scolor^T^N1^N0^N2^N1^N3^N0^N4^N1^t^Stext^SMainspec/Need^Ssort^N1^t^N2^T^Scolor^T^N1^N1^N2^N0.5^N3^N0^N4^N1^t^Stext^SOffspec/Greed^Ssort^N2^t^N3^T^Scolor^T^N1^N0^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SMinor~`Upgrade^Ssort^N3^t^N4^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton4^Ssort^N4^t^N5^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton5^Ssort^N5^t^N6^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton6^Ssort^N6^t^N7^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton7^Ssort^N7^t^N8^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton8^Ssort^N8^t^N9^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton9^Ssort^N9^t^N10^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton10^Ssort^N10^t^SNOTINRAID^T^Scolor^T^N1^N0.7^N2^N0.6^N3^N0^N4^N1^t^Stext^SCandidate~`is~`not~`in~`the~`instance^Ssort^N803^t^STIMEOUT^T^Scolor^T^N1^N1^N2^N0^N3^N0^N4^N1^t^Stext^SCandidate~`didn't~`respond~`on~`time^Ssort^N504^t^SNOTHING^T^Scolor^T^N1^N0.5^N2^N0.5^N3^N0.5^N4^N1^t^Stext^SOffline~`or~`RCLootCouncil~`not~`installed^Ssort^N505^t^SWAIT^T^Scolor^T^N1^N1^N2^N1^N3^N0^N4^N1^t^Stext^SCandidate~`is~`selecting~`response,~`please~`wait^Ssort^N503^t^SANNOUNCED^T^Scolor^T^N1^N1^N2^N0^N3^N1^N4^N1^t^Stext^SLoot~`announced,~`waiting~`for~`answer^Ssort^N502^t^SAWARDED^T^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SAwarded^Ssort^N0.1^t^SDEFAULT^T^Scolor^T^N1^N1^N2^N0^N3^N0^N4^N1^t^Stext^SResponse~`isn't~`available.~`Please~`upgrade~`RCLootCouncil.^Ssort^N899^t^SPASS^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SPass^Ssort^N800^t^SPL^T^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^Stext^SPersonal~`Loot~`-~`Non~`tradeable^Ssort^N498^t^SNOTANNOUNCED^T^Scolor^T^N1^N1^N2^N0^N3^N1^N4^N1^t^Stext^SNot~`announced^Ssort^N501^t^SREMOVED^T^Scolor^T^N1^N0.8^N2^N0.5^N3^N0^N4^N1^t^Stext^SCandidate~`removed^Ssort^N505^t^SDISABLED^T^Scolor^T^N1^N0.3^N2^N0.35^N3^N0.5^N4^N1^t^Stext^SCandidate~`has~`disabled~`RCLootCouncil^Ssort^N802^t^SAUTOPASS^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SAutopass^Ssort^N801^t^SPL_REJECT^T^Scolor^T^N1^N0.2^N2^N0^N3^N0^N4^N1^t^Stext^SPersonal~`Loot~`-~`Rejected~`Trade^Ssort^N499^t^t^t^SprintResponse^b^SannounceItems^b^ScurrentSkin^Sbfa^SautoStart^b^SUI^T^Stradeui^T^SbgColor^T^N1^N0.55^N2^N0.84^N3^N1^N4^N1^t^Sx^N-300^Spoint^SCENTER^SborderColor^T^N1^N0.62^N2^N0.86^N3^N0.87^N4^N0.85^t^Sscale^N1.1^Sbackground^SBlizzard~`Garrison~`Background~`3^Sborder^SBlizzard~`Dialog^Sy^N0^t^Slootframe^T^SbgColor^T^N1^N0.55^N2^N0.84^N3^N1^N4^N1^t^Sx^F-6227266733053951^f-50^Spoint^SBOTTOM^SborderColor^T^N1^N0.62^N2^N0.86^N3^N0.87^N4^N0.85^t^Sscale^F4953959697481737^f-52^Sbackground^SBlizzard~`Garrison~`Background~`3^Sborder^SBlizzard~`Dialog^Sy^F8989384354733565^f-47^t^Sdefault^T^SbgColor^T^N1^N0.55^N2^N0.84^N3^N1^N4^N1^t^Sx^N0^Spoint^SCENTER^SborderColor^T^N1^N0.62^N2^N0.86^N3^N0.87^N4^N0.85^t^Sscale^N1.1^Sbackground^SBlizzard~`Garrison~`Background~`3^Sborder^SBlizzard~`Dialog^Sy^N0^t^Ssync^T^Sy^F5192786991120382^f-67^Sx^F6101847152525341^f-69^Spoint^SCENTER^SborderColor^T^N1^N0.62^N2^N0.86^N3^N0.87^N4^N0.85^t^Sscale^F4953959697481737^f-52^Sbackground^SBlizzard~`Garrison~`Background~`3^Sborder^SBlizzard~`Dialog^SbgColor^T^N1^N0.55^N2^N0.84^N3^N1^N4^N1^t^t^t^Susage^T^Sstate^Sask_ml^Snever^b^Sml^b^Sask_ml^B^t^SautolootOthersBoE^b^SonlyUseInRaids^B^Sbuttons^T^Sdefault^T^N1^T^Stext^SNeed^SwhisperKey^Sneed,~`mainspec,~`ms,~`1^t^N2^T^Stext^SGreed^SwhisperKey^Sgreed,~`offspec,~`os,~`2^t^N3^T^Stext^SMinor~`Upgrade^SwhisperKey^Sminorupgrade,~`minor,~`3^t^N4^T^Stext^SButton~`4^SwhisperKey^S4^t^N5^T^Stext^SButton~`5^SwhisperKey^S5^t^N6^T^Stext^SButton~`6^SwhisperKey^S6^t^N7^T^Stext^SButton~`7^SwhisperKey^S7^t^N8^T^Stext^SButton~`8^SwhisperKey^S8^t^N9^T^Stext^SButton~`9^SwhisperKey^S9^t^N10^T^Stext^SButton~`10^SwhisperKey^S10^t^SnumButtons^N3^t^t^SannounceText^SItems~`under~`consideration:^SminRank^N-1^SmaxButtons^N10^SshowForML^b^SenableHistory^B^SnumAwardReasons^N3^SsendHistory^B^SaltClickLooting^B^Scouncil^T^t^SskipCombatLockdown^b^SenabledButtons^T^t^SminimizeInCombat^b^SautolootBoE^B^SautoAwardReason^N1^SshowSpecIcon^b^SautoAddRolls^b^SnumMoreInfoButtons^N1^Stimeout^N60^SselfVote^B^Sobserve^b^SignoredItems^T^t^SautoAwardTo^SNone^SawardReasons^T^N1^T^Sdisenchant^B^Slog^B^Ssort^N401^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SDisenchant^t^N2^T^Sdisenchant^b^Slog^B^Ssort^N402^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SBanking^t^N3^T^Sdisenchant^b^Slog^b^Ssort^N403^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SFree^t^N4^T^Sdisenchant^b^Slog^B^Ssort^N404^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`4^t^N5^T^Sdisenchant^b^Slog^B^Ssort^N405^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`5^t^N6^T^Sdisenchant^b^Slog^B^Ssort^N406^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`6^t^N7^T^Sdisenchant^b^Slog^B^Ssort^N407^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`7^t^N8^T^Sdisenchant^b^Slog^B^Ssort^N408^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`8^t^N9^T^Sdisenchant^b^Slog^B^Ssort^N409^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`9^t^N10^T^Sdisenchant^b^Slog^B^Ssort^N410^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`10^t^t^ShideVotes^b^SbaggedItems^T^t^SautoLoot^B^SautoAwardUpperThreshold^N3^SsortItems^B^Smodules^T^t^SmaxAwardReasons^N10^SannounceItemString^S&s:~`&i^t^t^^ (from:) (Acroyear) (distri:) (WHISPER)", -- [2319]
-			"21:30:13 - SyncDataReceived (Acroyear-Sulfuras) (settings)", -- [2320]
-			"21:30:13 - ActivateSkin (bfa)", -- [2321]
-			"21:30:13 - UpdateFrame (DefaultRCLootCouncilFrame)", -- [2322]
-			"21:30:13 - UpdateFrame (DefaultRCLootHistoryFrame)", -- [2323]
-			"21:30:13 - UpdateFrame (DefaultRCSessionSetupFrame)", -- [2324]
-			"21:30:13 - UpdateFrame (DefaultRCLootCouncilSyncFrame)", -- [2325]
-			"21:30:13 - Comm received:^1^SsyncRequest^T^N1^SPlainview-Sulfuras^N2^Ssettings^t^^ (from:) (Plainview) (distri:) (WHISPER)", -- [2326]
-			"21:30:13 - SyncRequestReceived (Plainview-Sulfuras) (settings)", -- [2327]
-			"21:30:13 - Comm received:^1^Ssync^T^N1^SSgtdrock-Sulfuras^N2^Ssettings^N3^T^Sdisenchant^B^SitemStorage^T^t^SannounceAward^B^SautoClose^b^SawardLater^b^SsortItems^B^Smodules^T^t^SsendHistory^B^SanonymousVoting^b^Sresponses^T^Sdefault^T^N1^T^Scolor^T^N1^N0^N2^N1^N3^N0^N4^N1^t^Stext^SMainspec/Need^Ssort^N1^t^N2^T^Scolor^T^N1^N1^N2^N0.5^N3^N0^N4^N1^t^Stext^SOffspec/Greed^Ssort^N2^t^N3^T^Scolor^T^N1^N0^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SMinor~`Upgrade^Ssort^N3^t^N4^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton4^Ssort^N4^t^N5^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton5^Ssort^N5^t^N6^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton6^Ssort^N6^t^N7^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton7^Ssort^N7^t^N8^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton8^Ssort^N8^t^N9^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton9^Ssort^N9^t^N10^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton10^Ssort^N10^t^SNOTINRAID^T^Scolor^T^N1^N0.7^N2^N0.6^N3^N0^N4^N1^t^Stext^SCandidate~`is~`not~`in~`the~`instance^Ssort^N803^t^STIMEOUT^T^Scolor^T^N1^N1^N2^N0^N3^N0^N4^N1^t^Stext^SCandidate~`didn't~`respond~`on~`time^Ssort^N504^t^SNOTHING^T^Scolor^T^N1^N0.5^N2^N0.5^N3^N0.5^N4^N1^t^Stext^SOffline~`or~`RCLootCouncil~`not~`installed^Ssort^N505^t^SWAIT^T^Scolor^T^N1^N1^N2^N1^N3^N0^N4^N1^t^Stext^SCandidate~`is~`selecting~`response,~`please~`wait^Ssort^N503^t^SANNOUNCED^T^Scolor^T^N1^N1^N2^N0^N3^N1^N4^N1^t^Stext^SLoot~`announced,~`waiting~`for~`answer^Ssort^N502^t^SAWARDED^T^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SAwarded^Ssort^N0.1^t^SDEFAULT^T^Scolor^T^N1^N1^N2^N0^N3^N0^N4^N1^t^Stext^SResponse~`isn't~`available.~`Please~`upgrade~`RCLootCouncil.^Ssort^N899^t^SPASS^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SPass^Ssort^N800^t^SPL^T^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^Stext^SPersonal~`Loot~`-~`Non~`tradeable^Ssort^N498^t^SNOTANNOUNCED^T^Scolor^T^N1^N1^N2^N0^N3^N1^N4^N1^t^Stext^SNot~`announced^Ssort^N501^t^SREMOVED^T^Scolor^T^N1^N0.8^N2^N0.5^N3^N0^N4^N1^t^Stext^SCandidate~`removed^Ssort^N505^t^SDISABLED^T^Scolor^T^N1^N0.3^N2^N0.35^N3^N0.5^N4^N1^t^Stext^SCandidate~`has~`disabled~`RCLootCouncil^Ssort^N802^t^SAUTOPASS^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SAutopass^Ssort^N801^t^SPL_REJECT^T^Scolor^T^N1^N0.2^N2^N0^N3^N0^N4^N1^t^Stext^SPersonal~`Loot~`-~`Rejected~`Trade^Ssort^N499^t^t^t^SprintResponse^b^SautoAwardLowerThreshold^N2^Susage^T^Sstate^Sask_ml^Snever^b^Sml^b^Sask_ml^B^t^SmaxButtons^N10^SonlyUseInRaids^B^SshowForML^b^SenableHistory^B^SnumAwardReasons^N3^SaltClickLooting^B^SskipCombatLockdown^b^SsendHistoryToGuildChannel^b^SautolootBoE^B^SselfVote^B^Sobserve^b^ShideVotes^b^SbaggedItems^T^t^SautoLoot^B^SautolootEverything^B^SautoPassBoE^b^SminRank^N-1^SautoOpen^B^SmaxAwardReasons^N10^SawardText^T^N1^T^Schannel^Sgroup^Stext^S&p~`was~`awarded~`with~`&i~`for~`&r!^t^N2^T^Schannel^SNONE^Stext^S^t^t^SautoAwardUpperThreshold^N3^ScurrentSkin^Sbfa^SautoStart^b^SUI^T^Stradeui^T^SbgColor^T^N1^N0.55^N2^N0.84^N3^N1^N4^N1^t^Sx^N-300^Spoint^SCENTER^SborderColor^T^N1^N0.62^N2^N0.86^N3^N0.87^N4^N0.85^t^Sscale^N1.1^Sbackground^SBlizzard~`Garrison~`Background~`3^Sborder^SBlizzard~`Dialog^Sy^N0^t^Slootframe^T^SbgColor^T^N1^N0.55^N2^N0.84^N3^N1^N4^N1^t^Sx^N0^Spoint^SCENTER^SborderColor^T^N1^N0.62^N2^N0.86^N3^N0.87^N4^N0.85^t^Sscale^N1.1^Sbackground^SBlizzard~`Garrison~`Background~`3^Sborder^SBlizzard~`Dialog^Sy^N-200^t^Sdefault^T^SbgColor^T^N1^N0.55^N2^N0.84^N3^N1^N4^N1^t^Sx^N0^Spoint^SCENTER^SborderColor^T^N1^N0.62^N2^N0.86^N3^N0.87^N4^N0.85^t^Sscale^N1.1^Sbackground^SBlizzard~`Garrison~`Background~`3^Sborder^SBlizzard~`Dialog^Sy^N0^t^Ssync^T^Sy^N0^Sx^N0^Spoint^SCENTER^SborderColor^T^N1^N0.3^N2^N0.3^N3^N0.5^N4^N1^t^Sscale^N1.1^Sbackground^SBlizzard~`Tooltip^Sborder^SBlizzard~`Tooltip^SbgColor^T^N1^N0^N2^N0^N3^N0.2^N4^N1^t^t^t^SawardReasons^T^N1^T^Sdisenchant^B^Slog^B^Ssort^N401^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SDisenchant^t^N2^T^Sdisenchant^b^Slog^B^Ssort^N402^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SBanking^t^N3^T^Sdisenchant^b^Slog^b^Ssort^N403^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SFree^t^N4^T^Sdisenchant^b^Slog^B^Ssort^N404^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`4^t^N5^T^Sdisenchant^b^Slog^B^Ssort^N405^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`5^t^N6^T^Sdisenchant^b^Slog^B^Ssort^N406^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`6^t^N7^T^Sdisenchant^b^Slog^B^Ssort^N407^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`7^t^N8^T^Sdisenchant^b^Slog^B^Ssort^N408^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`8^t^N9^T^Sdisenchant^b^Slog^B^Ssort^N409^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`9^t^N10^T^Sdisenchant^b^Slog^B^Ssort^N410^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`10^t^t^SautoAwardTo^SNone^SignoredItems^T^t^SshowSpecIcon^b^SenabledButtons^T^t^SnumMoreInfoButtons^N1^Scouncil^T^t^SautoAddRolls^b^SautoPassTrinket^B^SminimizeInCombat^b^SsilentAutoPass^b^SautoAwardReason^N1^SacceptWhispers^B^SautoPass^B^SiLvlDecimal^b^Stimeout^N60^Sbuttons^T^Sdefault^T^N1^T^Stext^SNeed^SwhisperKey^Sneed,~`mainspec,~`ms,~`1^t^N2^T^Stext^SGreed^SwhisperKey^Sgreed,~`offspec,~`os,~`2^t^N3^T^Stext^SMinor~`Upgrade^SwhisperKey^Sminorupgrade,~`minor,~`3^t^N4^T^Stext^SButton~`4^SwhisperKey^S4^t^N5^T^Stext^SButton~`5^SwhisperKey^S5^t^N6^T^Stext^SButton~`6^SwhisperKey^S6^t^N7^T^Stext^SButton~`7^SwhisperKey^S7^t^N8^T^Stext^SButton~`8^SwhisperKey^S8^t^N9^T^Stext^SButton~`9^SwhisperKey^S9^t^N10^T^Stext^SButton~`10^SwhisperKey^S10^t^SnumButtons^N3^t^t^SannounceItems^b^SautoTrade^b^SmultiVote^B^SchatFrameName^SDEFAULT_CHAT_FRAME^Sskins^T^Slegion^T^SbgColor^T^N1^N0.1^N2^N1^N3^N0^N4^N1^t^Sname^SLegion~`Green^SborderColor^T^N1^N0^N2^N0.8^N3^N0^N4^N0.75^t^Sbackground^SBlizzard~`Garrison~`Background~`2^Sborder^SBlizzard~`Dialog~`Gold^t^Snew_blue^T^SbgColor^T^N1^N0^N2^N0^N3^N0.2^N4^N1^t^Sname^SMidnight~`blue^SborderColor^T^N1^N0.3^N2^N0.3^N3^N0.5^N4^N1^t^Sbackground^SBlizzard~`Tooltip^Sborder^SBlizzard~`Tooltip^t^Sbfa^T^SbgColor^T^N1^N0.55^N2^N0.84^N3^N1^N4^N1^t^Sname^SBattle~`for~`Azeroth^SborderColor^T^N1^N0.62^N2^N0.86^N3^N0.87^N4^N0.85^t^Sbackground^SBlizzard~`Garrison~`Background~`3^Sborder^SBlizzard~`Dialog^t^Sold_red^T^SbgColor^T^N1^N0.5^N2^N0^N3^N0^N4^N1^t^Sname^SOld~`golden~`red^SborderColor^T^N1^N1^N2^N0.5^N3^N0^N4^N1^t^Sbackground^SBlizzard~`Dialog~`Background~`Gold^Sborder^SBlizzard~`Tooltip^t^SminimalGrey^T^SbgColor^T^N1^N0.25^N2^N0.25^N3^N0.25^N4^N1^t^Sname^SMinimal~`Grey^SborderColor^T^N1^N1^N2^N1^N3^N1^N4^N0.2^t^Sbackground^SBlizzard~`Tooltip^Sborder^SBlizzard~`Tooltip^t^t^SallowNotes^B^SannounceChannel^Sgroup^SautoAward^b^SannounceText^SItems~`under~`consideration:^SautolootOthersBoE^b^Sambiguate^b^SannounceItemString^S&s:~`&i^t^t^^ (from:) (Sgtdrock) (distri:) (WHISPER)", -- [2328]
-			"21:30:13 - SyncDataReceived (Sgtdrock-Sulfuras) (settings)", -- [2329]
-			"21:30:13 - ActivateSkin (bfa)", -- [2330]
-			"21:30:13 - UpdateFrame (DefaultRCLootCouncilFrame)", -- [2331]
-			"21:30:13 - UpdateFrame (DefaultRCLootHistoryFrame)", -- [2332]
-			"21:30:13 - UpdateFrame (DefaultRCSessionSetupFrame)", -- [2333]
-			"21:30:13 - UpdateFrame (DefaultRCLootCouncilSyncFrame)", -- [2334]
-			"21:30:13 - OnSyncAccept (Slimmthicc-Sulfuras) (settings)", -- [2335]
-			"21:30:13 - OnSyncAccept (Plainview-Sulfuras) (settings)", -- [2336]
-			"21:30:14 - Comm received:^1^SsyncRequest^T^N1^SHolypally-Sulfuras^N2^Ssettings^t^^ (from:) (Holypally) (distri:) (WHISPER)", -- [2337]
-			"21:30:14 - SyncRequestReceived (Holypally-Sulfuras) (settings)", -- [2338]
-			"21:30:15 - Comm received:^1^SsyncRequest^T^N1^SFistandalus-Sulfuras^N2^Ssettings^t^^ (from:) (Fistandalus) (distri:) (WHISPER)", -- [2339]
-			"21:30:15 - SyncRequestReceived (Fistandalus-Sulfuras) (settings)", -- [2340]
-			"21:30:15 - Comm received:^1^SsyncRequest^T^N1^SHealwho-Sulfuras^N2^Ssettings^t^^ (from:) (Healwho) (distri:) (WHISPER)", -- [2341]
-			"21:30:15 - SyncRequestReceived (Healwho-Sulfuras) (settings)", -- [2342]
-			"21:30:15 - OnSyncAccept (Holypally-Sulfuras) (settings)", -- [2343]
-			"21:30:15 - Comm received:^1^SsyncRequest^T^N1^SMinica-Sulfuras^N2^Ssettings^t^^ (from:) (Minica) (distri:) (WHISPER)", -- [2344]
-			"21:30:15 - SyncRequestReceived (Minica-Sulfuras) (settings)", -- [2345]
-			"21:30:15 - OnSyncAccept (Fistandalus-Sulfuras) (settings)", -- [2346]
-			"21:30:16 - Comm received:^1^Ssync^T^N1^SBomann-Sulfuras^N2^Ssettings^N3^T^Sdisenchant^B^SitemStorage^T^t^SannounceAward^B^SautoClose^b^SawardLater^b^SsortItems^B^Smodules^T^t^SsendHistory^B^SanonymousVoting^b^Sresponses^T^Sdefault^T^N1^T^Scolor^T^N1^N0^N2^N1^N3^N0^N4^N1^t^Stext^SMainspec/Need^Ssort^N1^t^N2^T^Scolor^T^N1^N1^N2^N0.5^N3^N0^N4^N1^t^Stext^SOffspec/Greed^Ssort^N2^t^N3^T^Scolor^T^N1^N0^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SMinor~`Upgrade^Ssort^N3^t^N4^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton4^Ssort^N4^t^N5^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton5^Ssort^N5^t^N6^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton6^Ssort^N6^t^N7^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton7^Ssort^N7^t^N8^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton8^Ssort^N8^t^N9^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton9^Ssort^N9^t^N10^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton10^Ssort^N10^t^SNOTINRAID^T^Scolor^T^N1^N0.7^N2^N0.6^N3^N0^N4^N1^t^Stext^SCandidate~`is~`not~`in~`the~`instance^Ssort^N803^t^STIMEOUT^T^Scolor^T^N1^N1^N2^N0^N3^N0^N4^N1^t^Stext^SCandidate~`didn't~`respond~`on~`time^Ssort^N504^t^SNOTHING^T^Scolor^T^N1^N0.5^N2^N0.5^N3^N0.5^N4^N1^t^Stext^SOffline~`or~`RCLootCouncil~`not~`installed^Ssort^N505^t^SWAIT^T^Scolor^T^N1^N1^N2^N1^N3^N0^N4^N1^t^Stext^SCandidate~`is~`selecting~`response,~`please~`wait^Ssort^N503^t^SANNOUNCED^T^Scolor^T^N1^N1^N2^N0^N3^N1^N4^N1^t^Stext^SLoot~`announced,~`waiting~`for~`answer^Ssort^N502^t^SAWARDED^T^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SAwarded^Ssort^N0.1^t^SDEFAULT^T^Scolor^T^N1^N1^N2^N0^N3^N0^N4^N1^t^Stext^SResponse~`isn't~`available.~`Please~`upgrade~`RCLootCouncil.^Ssort^N899^t^SPASS^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SPass^Ssort^N800^t^SPL^T^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^Stext^SPersonal~`Loot~`-~`Non~`tradeable^Ssort^N498^t^SNOTANNOUNCED^T^Scolor^T^N1^N1^N2^N0^N3^N1^N4^N1^t^Stext^SNot~`announced^Ssort^N501^t^SREMOVED^T^Scolor^T^N1^N0.8^N2^N0.5^N3^N0^N4^N1^t^Stext^SCandidate~`removed^Ssort^N505^t^SDISABLED^T^Scolor^T^N1^N0.3^N2^N0.35^N3^N0.5^N4^N1^t^Stext^SCandidate~`has~`disabled~`RCLootCouncil^Ssort^N802^t^SAUTOPASS^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SAutopass^Ssort^N801^t^SPL_REJECT^T^Scolor^T^N1^N0.2^N2^N0^N3^N0^N4^N1^t^Stext^SPersonal~`Loot~`-~`Rejected~`Trade^Ssort^N499^t^t^t^SprintResponse^b^SautoAwardLowerThreshold^N2^Susage^T^Sstate^Sask_ml^Snever^b^Sml^b^Sask_ml^B^t^SmaxButtons^N10^SonlyUseInRaids^B^SshowForML^b^SenableHistory^B^SnumAwardReasons^N3^SaltClickLooting^B^SskipCombatLockdown^b^SsendHistoryToGuildChannel^b^SautolootBoE^B^SselfVote^B^Sobserve^b^ShideVotes^b^SbaggedItems^T^t^SautoLoot^B^SautolootEverything^B^SautoPassBoE^b^SminRank^N-1^SautoOpen^B^SmaxAwardReasons^N10^SawardText^T^N1^T^Schannel^Sgroup^Stext^S&p~`was~`awarded~`with~`&i~`for~`&r!^t^N2^T^Schannel^SNONE^Stext^S^t^t^SautoAwardUpperThreshold^N3^ScurrentSkin^Sbfa^SautoStart^b^SUI^T^Stradeui^T^SbgColor^T^N1^N0.55^N2^N0.84^N3^N1^N4^N1^t^Sx^N-300^Spoint^SCENTER^SborderColor^T^N1^N0.62^N2^N0.86^N3^N0.87^N4^N0.85^t^Sscale^N1.1^Sbackground^SBlizzard~`Garrison~`Background~`3^Sborder^SBlizzard~`Dialog^Sy^N0^t^Slootframe^T^Sy^F4946151339394174^f-48^Sx^F-8473435529962093^f-46^Spoint^SBOTTOM^SborderColor^T^N1^N0.62^N2^N0.86^N3^N0.87^N4^N0.85^t^Sscale^F4953959697481737^f-52^Sbackground^SBlizzard~`Garrison~`Background~`3^Sborder^SBlizzard~`Dialog^SbgColor^T^N1^N0.55^N2^N0.84^N3^N1^N4^N1^t^t^Sdefault^T^SbgColor^T^N1^N0.55^N2^N0.84^N3^N1^N4^N1^t^Sx^N0^Spoint^SCENTER^SborderColor^T^N1^N0.62^N2^N0.86^N3^N0.87^N4^N0.85^t^Sscale^N1.1^Sbackground^SBlizzard~`Garrison~`Background~`3^Sborder^SBlizzard~`Dialog^Sy^N0^t^Ssync^T^Sy^F-8540758286598144^f-53^Sx^F-8173199741674240^f-45^Spoint^SCENTER^SborderColor^T^N1^N0.62^N2^N0.86^N3^N0.87^N4^N0.85^t^Sscale^F4953959697481728^f-52^Sbackground^SBlizzard~`Garrison~`Background~`3^Sborder^SBlizzard~`Dialog^SbgColor^T^N1^N0.55^N2^N0.84^N3^N1^N4^N1^t^t^t^SawardReasons^T^N1^T^Sdisenchant^B^Slog^B^Ssort^N401^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SDisenchant^t^N2^T^Sdisenchant^b^Slog^B^Ssort^N402^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SBanking^t^N3^T^Sdisenchant^b^Slog^b^Ssort^N403^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SFree^t^N4^T^Sdisenchant^b^Slog^B^Ssort^N404^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`4^t^N5^T^Sdisenchant^b^Slog^B^Ssort^N405^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`5^t^N6^T^Sdisenchant^b^Slog^B^Ssort^N406^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`6^t^N7^T^Sdisenchant^b^Slog^B^Ssort^N407^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`7^t^N8^T^Sdisenchant^b^Slog^B^Ssort^N408^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`8^t^N9^T^Sdisenchant^b^Slog^B^Ssort^N409^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`9^t^N10^T^Sdisenchant^b^Slog^B^Ssort^N410^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`10^t^t^SautoAwardTo^SNone^SignoredItems^T^t^SshowSpecIcon^b^SenabledButtons^T^t^SnumMoreInfoButtons^N1^Scouncil^T^t^SautoAddRolls^b^SautoPassTrinket^B^SminimizeInCombat^b^SsilentAutoPass^b^SautoAwardReason^N1^SacceptWhispers^B^SautoPass^B^SiLvlDecimal^b^Stimeout^N60^Sbuttons^T^Sdefault^T^N1^T^Stext^SNeed^SwhisperKey^Sneed,~`mainspec,~`ms,~`1^t^N2^T^Stext^SGreed^SwhisperKey^Sgreed,~`offspec,~`os,~`2^t^N3^T^Stext^SMinor~`Upgrade^SwhisperKey^Sminorupgrade,~`minor,~`3^t^N4^T^Stext^SButton~`4^SwhisperKey^S4^t^N5^T^Stext^SButton~`5^SwhisperKey^S5^t^N6^T^Stext^SButton~`6^SwhisperKey^S6^t^N7^T^Stext^SButton~`7^SwhisperKey^S7^t^N8^T^Stext^SButton~`8^SwhisperKey^S8^t^N9^T^Stext^SButton~`9^SwhisperKey^S9^t^N10^T^Stext^SButton~`10^SwhisperKey^S10^t^SnumButtons^N3^t^t^SannounceItems^b^SautoTrade^b^SmultiVote^B^SchatFrameName^SDEFAULT_CHAT_FRAME^Sskins^T^Slegion^T^SbgColor^T^N1^N0.1^N2^N1^N3^N0^N4^N1^t^Sname^SLegion~`Green^SborderColor^T^N1^N0^N2^N0.8^N3^N0^N4^N0.75^t^Sbackground^SBlizzard~`Garrison~`Background~`2^Sborder^SBlizzard~`Dialog~`Gold^t^Snew_blue^T^SbgColor^T^N1^N0^N2^N0^N3^N0.2^N4^N1^t^Sname^SMidnight~`blue^SborderColor^T^N1^N0.3^N2^N0.3^N3^N0.5^N4^N1^t^Sbackground^SBlizzard~`Tooltip^Sborder^SBlizzard~`Tooltip^t^Sbfa^T^SbgColor^T^N1^N0.55^N2^N0.84^N3^N1^N4^N1^t^Sname^SBattle~`for~`Azeroth^SborderColor^T^N1^N0.62^N2^N0.86^N3^N0.87^N4^N0.85^t^Sbackground^SBlizzard~`Garrison~`Background~`3^Sborder^SBlizzard~`Dialog^t^Sold_red^T^SbgColor^T^N1^N0.5^N2^N0^N3^N0^N4^N1^t^Sname^SOld~`golden~`red^SborderColor^T^N1^N1^N2^N0.5^N3^N0^N4^N1^t^Sbackground^SBlizzard~`Dialog~`Background~`Gold^Sborder^SBlizzard~`Tooltip^t^SminimalGrey^T^SbgColor^T^N1^N0.25^N2^N0.25^N3^N0.25^N4^N1^t^Sname^SMinimal~`Grey^SborderColor^T^N1^N1^N2^N1^N3^N1^N4^N0.2^t^Sbackground^SBlizzard~`Tooltip^Sborder^SBlizzard~`Tooltip^t^t^SallowNotes^B^SannounceChannel^Sgroup^SautoAward^b^SannounceText^SItems~`under~`consideration:^SautolootOthersBoE^b^Sambiguate^b^SannounceItemString^S&s:~`&i^t^t^^ (from:) (Bomann) (distri:) (WHISPER)", -- [2347]
-			"21:30:16 - SyncDataReceived (Bomann-Sulfuras) (settings)", -- [2348]
-			"21:30:16 - ActivateSkin (bfa)", -- [2349]
-			"21:30:16 - UpdateFrame (DefaultRCLootCouncilFrame)", -- [2350]
-			"21:30:16 - UpdateFrame (DefaultRCLootHistoryFrame)", -- [2351]
-			"21:30:16 - UpdateFrame (DefaultRCSessionSetupFrame)", -- [2352]
-			"21:30:16 - UpdateFrame (DefaultRCLootCouncilSyncFrame)", -- [2353]
-			"21:30:16 - OnSyncAccept (Healwho-Sulfuras) (settings)", -- [2354]
-			"21:30:16 - OnSyncAccept (Minica-Sulfuras) (settings)", -- [2355]
-			"21:30:18 - Comm received:^1^SplayerInfo^T^N1^SShway-Sulfuras^N2^SROGUE^N4^SRaider^N6^N0^N7^N59.37^t^^ (from:) (Shway) (distri:) (WHISPER)", -- [2356]
-			"21:30:18 - ML:AddCandidate (Shway-Sulfuras) (ROGUE) (nil) (Raider) (nil) (0) (59.37) (nil)", -- [2357]
-			"21:30:18 - Comm received:^1^Ssync^T^N1^SSlimmthicc-Sulfuras^N2^Ssettings^N3^T^Sdisenchant^B^SitemStorage^T^t^SacceptWhispers^B^SautoClose^b^SautolootEverything^B^SautoPassBoE^b^SautoPass^B^SautoOpen^B^SautoAwardLowerThreshold^N2^SautoPassTrinket^B^SmultiVote^B^SsilentAutoPass^b^SiLvlDecimal^b^SautoTrade^b^SanonymousVoting^b^Sskins^T^Slegion^T^SbgColor^T^N1^N0.1^N2^N1^N3^N0^N4^N1^t^Sname^SLegion~`Green^SborderColor^T^N1^N0^N2^N0.8^N3^N0^N4^N0.75^t^Sbackground^SBlizzard~`Garrison~`Background~`2^Sborder^SBlizzard~`Dialog~`Gold^t^Snew_blue^T^SbgColor^T^N1^N0^N2^N0^N3^N0.2^N4^N1^t^Sname^SMidnight~`blue^SborderColor^T^N1^N0.3^N2^N0.3^N3^N0.5^N4^N1^t^Sbackground^SBlizzard~`Tooltip^Sborder^SBlizzard~`Tooltip^t^Sbfa^T^SbgColor^T^N1^N0.55^N2^N0.84^N3^N1^N4^N1^t^Sname^SBattle~`for~`Azeroth^SborderColor^T^N1^N0.62^N2^N0.86^N3^N0.87^N4^N0.85^t^Sbackground^SBlizzard~`Garrison~`Background~`3^Sborder^SBlizzard~`Dialog^t^Sold_red^T^SbgColor^T^N1^N0.5^N2^N0^N3^N0^N4^N1^t^Sname^SOld~`golden~`red^SborderColor^T^N1^N1^N2^N0.5^N3^N0^N4^N1^t^Sbackground^SBlizzard~`Dialog~`Background~`Gold^Sborder^SBlizzard~`Tooltip^t^SminimalGrey^T^SbgColor^T^N1^N0.25^N2^N0.25^N3^N0.25^N4^N1^t^Sname^SMinimal~`Grey^SborderColor^T^N1^N1^N2^N1^N3^N1^N4^N0.2^t^Sbackground^SBlizzard~`Tooltip^Sborder^SBlizzard~`Tooltip^t^t^SallowNotes^B^SannounceAward^B^SawardText^T^N1^T^Schannel^Sgroup^Stext^S&p~`was~`awarded~`with~`&i~`for~`&r!^t^N2^T^Schannel^SNONE^Stext^S^t^t^SannounceChannel^Sgroup^Sambiguate^b^SautoAward^b^Sresponses^T^Sdefault^T^N1^T^Scolor^T^N1^N0^N2^N1^N3^N0^N4^N1^t^Stext^SMainspec/Need^Ssort^N1^t^N2^T^Scolor^T^N1^N1^N2^N0.5^N3^N0^N4^N1^t^Stext^SOffspec/Greed^Ssort^N2^t^N3^T^Scolor^T^N1^N0^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SMinor~`Upgrade^Ssort^N3^t^N4^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton4^Ssort^N4^t^N5^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton5^Ssort^N5^t^N6^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton6^Ssort^N6^t^N7^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton7^Ssort^N7^t^N8^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton8^Ssort^N8^t^N9^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton9^Ssort^N9^t^N10^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton10^Ssort^N10^t^SNOTINRAID^T^Scolor^T^N1^N0.7^N2^N0.6^N3^N0^N4^N1^t^Stext^SCandidate~`is~`not~`in~`the~`instance^Ssort^N803^t^STIMEOUT^T^Scolor^T^N1^N1^N2^N0^N3^N0^N4^N1^t^Stext^SCandidate~`didn't~`respond~`on~`time^Ssort^N504^t^SNOTHING^T^Scolor^T^N1^N0.5^N2^N0.5^N3^N0.5^N4^N1^t^Stext^SOffline~`or~`RCLootCouncil~`not~`installed^Ssort^N505^t^SWAIT^T^Scolor^T^N1^N1^N2^N1^N3^N0^N4^N1^t^Stext^SCandidate~`is~`selecting~`response,~`please~`wait^Ssort^N503^t^SANNOUNCED^T^Scolor^T^N1^N1^N2^N0^N3^N1^N4^N1^t^Stext^SLoot~`announced,~`waiting~`for~`answer^Ssort^N502^t^SAWARDED^T^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SAwarded^Ssort^N0.1^t^SDEFAULT^T^Scolor^T^N1^N1^N2^N0^N3^N0^N4^N1^t^Stext^SResponse~`isn't~`available.~`Please~`upgrade~`RCLootCouncil.^Ssort^N899^t^SPASS^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SPass^Ssort^N800^t^SPL^T^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^Stext^SPersonal~`Loot~`-~`Non~`tradeable^Ssort^N498^t^SNOTANNOUNCED^T^Scolor^T^N1^N1^N2^N0^N3^N1^N4^N1^t^Stext^SNot~`announced^Ssort^N501^t^SREMOVED^T^Scolor^T^N1^N0.8^N2^N0.5^N3^N0^N4^N1^t^Stext^SCandidate~`removed^Ssort^N505^t^SDISABLED^T^Scolor^T^N1^N0.3^N2^N0.35^N3^N0.5^N4^N1^t^Stext^SCandidate~`has~`disabled~`RCLootCouncil^Ssort^N802^t^SAUTOPASS^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SAutopass^Ssort^N801^t^SPL_REJECT^T^Scolor^T^N1^N0.2^N2^N0^N3^N0^N4^N1^t^Stext^SPersonal~`Loot~`-~`Rejected~`Trade^Ssort^N499^t^t^t^SprintResponse^b^SannounceItems^b^ScurrentSkin^Sbfa^SautoStart^b^SUI^T^Stradeui^T^SbgColor^T^N1^N0.55^N2^N0.84^N3^N1^N4^N1^t^Sx^N-300^Spoint^SCENTER^SborderColor^T^N1^N0.62^N2^N0.86^N3^N0.87^N4^N0.85^t^Sscale^N1.1^Sbackground^SBlizzard~`Garrison~`Background~`3^Sborder^SBlizzard~`Dialog^Sy^N0^t^Slootframe^T^Sy^N20.416683830276^Sx^F7137523218251775^f-67^Spoint^SBOTTOM^SborderColor^T^N1^N0.62^N2^N0.86^N3^N0.87^N4^N0.85^t^Sscale^F4953959697481737^f-52^Sbackground^SBlizzard~`Garrison~`Background~`3^Sborder^SBlizzard~`Dialog^SbgColor^T^N1^N0.55^N2^N0.84^N3^N1^N4^N1^t^t^Sdefault^T^SbgColor^T^N1^N0.55^N2^N0.84^N3^N1^N4^N1^t^Sx^N0^Spoint^SCENTER^SborderColor^T^N1^N0.62^N2^N0.86^N3^N0.87^N4^N0.85^t^Sscale^N1.1^Sbackground^SBlizzard~`Garrison~`Background~`3^Sborder^SBlizzard~`Dialog^Sy^N0^t^Ssync^T^Sy^N0^Sx^N0^Spoint^SCENTER^SborderColor^T^N1^N0.3^N2^N0.3^N3^N0.5^N4^N1^t^Sscale^N1.1^Sbackground^SBlizzard~`Tooltip^Sborder^SBlizzard~`Tooltip^SbgColor^T^N1^N0^N2^N0^N3^N0.2^N4^N1^t^t^t^Susage^T^Sstate^Sask_ml^Snever^b^Sml^b^Sask_ml^B^t^SautolootOthersBoE^b^SonlyUseInRaids^B^Sbuttons^T^Sdefault^T^N1^T^Stext^SNeed^SwhisperKey^Sneed,~`mainspec,~`ms,~`1^t^N2^T^Stext^SGreed^SwhisperKey^Sgreed,~`offspec,~`os,~`2^t^N3^T^Stext^SMinor~`Upgrade^SwhisperKey^Sminorupgrade,~`minor,~`3^t^N4^T^Stext^SButton~`4^SwhisperKey^S4^t^N5^T^Stext^SButton~`5^SwhisperKey^S5^t^N6^T^Stext^SButton~`6^SwhisperKey^S6^t^N7^T^Stext^SButton~`7^SwhisperKey^S7^t^N8^T^Stext^SButton~`8^SwhisperKey^S8^t^N9^T^Stext^SButton~`9^SwhisperKey^S9^t^N10^T^Stext^SButton~`10^SwhisperKey^S10^t^SnumButtons^N3^t^t^SannounceText^SItems~`under~`consideration:^SminRank^N-1^SmaxButtons^N10^SshowForML^b^SenableHistory^B^SnumAwardReasons^N3^SsendHistory^B^SaltClickLooting^B^Scouncil^T^t^SskipCombatLockdown^b^SenabledButtons^T^t^SminimizeInCombat^b^SautolootBoE^B^SautoAwardReason^N1^SshowSpecIcon^b^SautoAddRolls^b^SnumMoreInfoButtons^N1^Stimeout^N60^SselfVote^B^Sobserve^b^SignoredItems^T^t^SautoAwardTo^SNone^SawardReasons^T^N1^T^Sdisenchant^B^Slog^B^Ssort^N401^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SDisenchant^t^N2^T^Sdisenchant^b^Slog^B^Ssort^N402^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SBanking^t^N3^T^Sdisenchant^b^Slog^b^Ssort^N403^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SFree^t^N4^T^Sdisenchant^b^Slog^B^Ssort^N404^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`4^t^N5^T^Sdisenchant^b^Slog^B^Ssort^N405^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`5^t^N6^T^Sdisenchant^b^Slog^B^Ssort^N406^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`6^t^N7^T^Sdisenchant^b^Slog^B^Ssort^N407^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`7^t^N8^T^Sdisenchant^b^Slog^B^Ssort^N408^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`8^t^N9^T^Sdisenchant^b^Slog^B^Ssort^N409^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`9^t^N10^T^Sdisenchant^b^Slog^B^Ssort^N410^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`10^t^t^ShideVotes^b^SbaggedItems^T^t^SautoLoot^B^SautoAwardUpperThreshold^N3^SsortItems^B^Smodules^T^t^SmaxAwardReasons^N10^SannounceItemString^S&s:~`&i^t^t^^ (from:) (Slimmthicc) (distri:) (WHISPER)", -- [2358]
-			"21:30:18 - SyncDataReceived (Slimmthicc-Sulfuras) (settings)", -- [2359]
-			"21:30:18 - ActivateSkin (bfa)", -- [2360]
-			"21:30:18 - UpdateFrame (DefaultRCLootCouncilFrame)", -- [2361]
-			"21:30:18 - UpdateFrame (DefaultRCLootHistoryFrame)", -- [2362]
-			"21:30:18 - UpdateFrame (DefaultRCSessionSetupFrame)", -- [2363]
-			"21:30:18 - UpdateFrame (DefaultRCLootCouncilSyncFrame)", -- [2364]
-			"21:30:19 - Comm received:^1^SverTest^T^N1^S2.14.0^t^^ (from:) (Shway) (distri:) (GUILD)", -- [2365]
-			"21:30:19 - Comm received:^1^Ssync^T^N1^SPlainview-Sulfuras^N2^Ssettings^N3^T^Sdisenchant^B^SitemStorage^T^t^SacceptWhispers^B^SautoClose^b^SautolootEverything^B^SautoPassBoE^b^SautoPass^B^SautoOpen^B^SautoAwardLowerThreshold^N2^SautoPassTrinket^B^SmultiVote^B^SsilentAutoPass^b^SiLvlDecimal^b^SautoTrade^b^SanonymousVoting^b^Sskins^T^Slegion^T^SbgColor^T^N1^N0.1^N2^N1^N3^N0^N4^N1^t^Sname^SLegion~`Green^SborderColor^T^N1^N0^N2^N0.8^N3^N0^N4^N0.75^t^Sbackground^SBlizzard~`Garrison~`Background~`2^Sborder^SBlizzard~`Dialog~`Gold^t^Snew_blue^T^SbgColor^T^N1^N0^N2^N0^N3^N0.2^N4^N1^t^Sname^SMidnight~`blue^SborderColor^T^N1^N0.3^N2^N0.3^N3^N0.5^N4^N1^t^Sbackground^SBlizzard~`Tooltip^Sborder^SBlizzard~`Tooltip^t^Sbfa^T^SbgColor^T^N1^N0.55^N2^N0.84^N3^N1^N4^N1^t^Sname^SBattle~`for~`Azeroth^SborderColor^T^N1^N0.62^N2^N0.86^N3^N0.87^N4^N0.85^t^Sbackground^SBlizzard~`Garrison~`Background~`3^Sborder^SBlizzard~`Dialog^t^Sold_red^T^SbgColor^T^N1^N0.5^N2^N0^N3^N0^N4^N1^t^Sname^SOld~`golden~`red^SborderColor^T^N1^N1^N2^N0.5^N3^N0^N4^N1^t^Sbackground^SBlizzard~`Dialog~`Background~`Gold^Sborder^SBlizzard~`Tooltip^t^SminimalGrey^T^SbgColor^T^N1^N0.25^N2^N0.25^N3^N0.25^N4^N1^t^Sname^SMinimal~`Grey^SborderColor^T^N1^N1^N2^N1^N3^N1^N4^N0.2^t^Sbackground^SBlizzard~`Tooltip^Sborder^SBlizzard~`Tooltip^t^t^SallowNotes^B^SannounceAward^B^SawardText^T^N1^T^Schannel^Sgroup^Stext^S&p~`was~`awarded~`with~`&i~`for~`&r!^t^N2^T^Schannel^SNONE^Stext^S^t^t^SannounceChannel^Sgroup^Sambiguate^b^SautoAward^b^Sresponses^T^Sdefault^T^N1^T^Scolor^T^N1^N0^N2^N1^N3^N0^N4^N1^t^Stext^SMainspec/Need^Ssort^N1^t^N2^T^Scolor^T^N1^N1^N2^N0.5^N3^N0^N4^N1^t^Stext^SOffspec/Greed^Ssort^N2^t^N3^T^Scolor^T^N1^N0^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SMinor~`Upgrade^Ssort^N3^t^N4^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton4^Ssort^N4^t^N5^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton5^Ssort^N5^t^N6^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton6^Ssort^N6^t^N7^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton7^Ssort^N7^t^N8^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton8^Ssort^N8^t^N9^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton9^Ssort^N9^t^N10^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton10^Ssort^N10^t^SNOTINRAID^T^Scolor^T^N1^N0.7^N2^N0.6^N3^N0^N4^N1^t^Stext^SCandidate~`is~`not~`in~`the~`instance^Ssort^N803^t^STIMEOUT^T^Scolor^T^N1^N1^N2^N0^N3^N0^N4^N1^t^Stext^SCandidate~`didn't~`respond~`on~`time^Ssort^N504^t^SNOTHING^T^Scolor^T^N1^N0.5^N2^N0.5^N3^N0.5^N4^N1^t^Stext^SOffline~`or~`RCLootCouncil~`not~`installed^Ssort^N505^t^SWAIT^T^Scolor^T^N1^N1^N2^N1^N3^N0^N4^N1^t^Stext^SCandidate~`is~`selecting~`response,~`please~`wait^Ssort^N503^t^SANNOUNCED^T^Scolor^T^N1^N1^N2^N0^N3^N1^N4^N1^t^Stext^SLoot~`announced,~`waiting~`for~`answer^Ssort^N502^t^SAWARDED^T^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SAwarded^Ssort^N0.1^t^SDEFAULT^T^Scolor^T^N1^N1^N2^N0^N3^N0^N4^N1^t^Stext^SResponse~`isn't~`available.~`Please~`upgrade~`RCLootCouncil.^Ssort^N899^t^SPASS^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SPass^Ssort^N800^t^SPL^T^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^Stext^SPersonal~`Loot~`-~`Non~`tradeable^Ssort^N498^t^SNOTANNOUNCED^T^Scolor^T^N1^N1^N2^N0^N3^N1^N4^N1^t^Stext^SNot~`announced^Ssort^N501^t^SREMOVED^T^Scolor^T^N1^N0.8^N2^N0.5^N3^N0^N4^N1^t^Stext^SCandidate~`removed^Ssort^N505^t^SDISABLED^T^Scolor^T^N1^N0.3^N2^N0.35^N3^N0.5^N4^N1^t^Stext^SCandidate~`has~`disabled~`RCLootCouncil^Ssort^N802^t^SAUTOPASS^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SAutopass^Ssort^N801^t^SPL_REJECT^T^Scolor^T^N1^N0.2^N2^N0^N3^N0^N4^N1^t^Stext^SPersonal~`Loot~`-~`Rejected~`Trade^Ssort^N499^t^t^t^SprintResponse^b^SannounceItems^b^ScurrentSkin^Sbfa^SautoStart^b^SUI^T^Stradeui^T^SbgColor^T^N1^N0.55^N2^N0.84^N3^N1^N4^N1^t^Sx^N-300^Spoint^SCENTER^SborderColor^T^N1^N0.62^N2^N0.86^N3^N0.87^N4^N0.85^t^Sscale^N1.1^Sbackground^SBlizzard~`Garrison~`Background~`3^Sborder^SBlizzard~`Dialog^Sy^N0^t^Slootframe^T^SbgColor^T^N1^N0.55^N2^N0.84^N3^N1^N4^N1^t^Sx^F-5905477758091265^f-67^Spoint^SBOTTOM^SborderColor^T^N1^N0.62^N2^N0.86^N3^N0.87^N4^N0.85^t^Sscale^F4953959697481737^f-52^Sbackground^SBlizzard~`Garrison~`Background~`3^Sborder^SBlizzard~`Dialog^Sy^F5746780290613641^f-48^t^Sdefault^T^SbgColor^T^N1^N0.55^N2^N0.84^N3^N1^N4^N1^t^Sx^N0^Spoint^SCENTER^SborderColor^T^N1^N0.62^N2^N0.86^N3^N0.87^N4^N0.85^t^Sscale^N1.1^Sbackground^SBlizzard~`Garrison~`Background~`3^Sborder^SBlizzard~`Dialog^Sy^N0^t^Ssync^T^Sy^F5192786991120382^f-67^Sx^F6101847152525341^f-69^Spoint^SCENTER^SborderColor^T^N1^N0.62^N2^N0.86^N3^N0.87^N4^N0.85^t^Sscale^F4953959697481737^f-52^Sbackground^SBlizzard~`Garrison~`Background~`3^Sborder^SBlizzard~`Dialog^SbgColor^T^N1^N0.55^N2^N0.84^N3^N1^N4^N1^t^t^t^Susage^T^Sstate^Sask_ml^Snever^b^Sml^b^Sask_ml^B^t^SautolootOthersBoE^b^SonlyUseInRaids^B^Sbuttons^T^Sdefault^T^N1^T^Stext^SNeed^SwhisperKey^Sneed,~`mainspec,~`ms,~`1^t^N2^T^Stext^SGreed^SwhisperKey^Sgreed,~`offspec,~`os,~`2^t^N3^T^Stext^SMinor~`Upgrade^SwhisperKey^Sminorupgrade,~`minor,~`3^t^N4^T^Stext^SButton~`4^SwhisperKey^S4^t^N5^T^Stext^SButton~`5^SwhisperKey^S5^t^N6^T^Stext^SButton~`6^SwhisperKey^S6^t^N7^T^Stext^SButton~`7^SwhisperKey^S7^t^N8^T^Stext^SButton~`8^SwhisperKey^S8^t^N9^T^Stext^SButton~`9^SwhisperKey^S9^t^N10^T^Stext^SButton~`10^SwhisperKey^S10^t^SnumButtons^N3^t^t^SannounceText^SItems~`under~`consideration:^SminRank^N-1^SmaxButtons^N10^SshowForML^b^SenableHistory^B^SnumAwardReasons^N3^SsendHistory^B^SaltClickLooting^B^Scouncil^T^t^SskipCombatLockdown^b^SenabledButtons^T^t^SminimizeInCombat^b^SautolootBoE^B^SautoAwardReason^N1^SshowSpecIcon^b^SautoAddRolls^b^SnumMoreInfoButtons^N1^Stimeout^N60^SselfVote^B^Sobserve^b^SignoredItems^T^t^SautoAwardTo^SNone^SawardReasons^T^N1^T^Sdisenchant^B^Slog^B^Ssort^N401^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SDisenchant^t^N2^T^Sdisenchant^b^Slog^B^Ssort^N402^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SBanking^t^N3^T^Sdisenchant^b^Slog^b^Ssort^N403^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SFree^t^N4^T^Sdisenchant^b^Slog^B^Ssort^N404^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`4^t^N5^T^Sdisenchant^b^Slog^B^Ssort^N405^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`5^t^N6^T^Sdisenchant^b^Slog^B^Ssort^N406^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`6^t^N7^T^Sdisenchant^b^Slog^B^Ssort^N407^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`7^t^N8^T^Sdisenchant^b^Slog^B^Ssort^N408^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`8^t^N9^T^Sdisenchant^b^Slog^B^Ssort^N409^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`9^t^N10^T^Sdisenchant^b^Slog^B^Ssort^N410^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`10^t^t^ShideVotes^b^SbaggedItems^T^t^SautoLoot^B^SautoAwardUpperThreshold^N3^SsortItems^B^Smodules^T^t^SmaxAwardReasons^N10^SannounceItemString^S&s:~`&i^t^t^^ (from:) (Plainview) (distri:) (WHISPER)", -- [2366]
-			"21:30:19 - SyncDataReceived (Plainview-Sulfuras) (settings)", -- [2367]
-			"21:30:19 - ActivateSkin (bfa)", -- [2368]
-			"21:30:19 - UpdateFrame (DefaultRCLootCouncilFrame)", -- [2369]
-			"21:30:19 - UpdateFrame (DefaultRCLootHistoryFrame)", -- [2370]
-			"21:30:19 - UpdateFrame (DefaultRCSessionSetupFrame)", -- [2371]
-			"21:30:19 - UpdateFrame (DefaultRCLootCouncilSyncFrame)", -- [2372]
-			"21:30:19 - Comm received:^1^SsyncRequest^T^N1^SOdarnwewiped-Sulfuras^N2^Shistory^t^^ (from:) (Odarnwewiped) (distri:) (WHISPER)", -- [2373]
-			"21:30:19 - SyncRequestReceived (Odarnwewiped-Sulfuras) (history)", -- [2374]
-			"21:30:20 - Comm received:^1^Sreconnect^T^t^^ (from:) (Shway) (distri:) (WHISPER)", -- [2375]
-			"21:30:20 - Responded to reconnect from (Shway)", -- [2376]
-			"21:30:21 - Comm received:^1^Ssync^T^N1^SHolypally-Sulfuras^N2^Ssettings^N3^T^Sdisenchant^B^SitemStorage^T^t^SacceptWhispers^B^SautoClose^b^SautolootEverything^B^SautoPassBoE^b^SautoPass^B^SautoOpen^B^SautoAwardLowerThreshold^N2^SautoPassTrinket^B^SmultiVote^B^SsilentAutoPass^b^SiLvlDecimal^b^SautoTrade^b^SanonymousVoting^b^Sskins^T^Slegion^T^SbgColor^T^N1^N0.1^N2^N1^N3^N0^N4^N1^t^Sname^SLegion~`Green^SborderColor^T^N1^N0^N2^N0.8^N3^N0^N4^N0.75^t^Sbackground^SBlizzard~`Garrison~`Background~`2^Sborder^SBlizzard~`Dialog~`Gold^t^Snew_blue^T^SbgColor^T^N1^N0^N2^N0^N3^N0.2^N4^N1^t^Sname^SMidnight~`blue^SborderColor^T^N1^N0.3^N2^N0.3^N3^N0.5^N4^N1^t^Sbackground^SBlizzard~`Tooltip^Sborder^SBlizzard~`Tooltip^t^Sbfa^T^SbgColor^T^N1^N0.55^N2^N0.84^N3^N1^N4^N1^t^Sname^SBattle~`for~`Azeroth^SborderColor^T^N1^N0.62^N2^N0.86^N3^N0.87^N4^N0.85^t^Sbackground^SBlizzard~`Garrison~`Background~`3^Sborder^SBlizzard~`Dialog^t^Sold_red^T^SbgColor^T^N1^N0.5^N2^N0^N3^N0^N4^N1^t^Sname^SOld~`golden~`red^SborderColor^T^N1^N1^N2^N0.5^N3^N0^N4^N1^t^Sbackground^SBlizzard~`Dialog~`Background~`Gold^Sborder^SBlizzard~`Tooltip^t^SminimalGrey^T^SbgColor^T^N1^N0.25^N2^N0.25^N3^N0.25^N4^N1^t^Sname^SMinimal~`Grey^SborderColor^T^N1^N1^N2^N1^N3^N1^N4^N0.2^t^Sbackground^SBlizzard~`Tooltip^Sborder^SBlizzard~`Tooltip^t^t^SallowNotes^B^SannounceAward^B^SawardText^T^N1^T^Schannel^Sgroup^Stext^S&p~`was~`awarded~`with~`&i~`for~`&r!^t^N2^T^Schannel^SNONE^Stext^S^t^t^SannounceChannel^Sgroup^Sambiguate^b^SautoAward^b^Sresponses^T^Sdefault^T^N1^T^Scolor^T^N1^N0^N2^N1^N3^N0^N4^N1^t^Stext^SMainspec/Need^Ssort^N1^t^N2^T^Scolor^T^N1^N1^N2^N0.5^N3^N0^N4^N1^t^Stext^SOffspec/Greed^Ssort^N2^t^N3^T^Scolor^T^N1^N0^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SMinor~`Upgrade^Ssort^N3^t^N4^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton4^Ssort^N4^t^N5^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton5^Ssort^N5^t^N6^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton6^Ssort^N6^t^N7^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton7^Ssort^N7^t^N8^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton8^Ssort^N8^t^N9^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton9^Ssort^N9^t^N10^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton10^Ssort^N10^t^SNOTINRAID^T^Scolor^T^N1^N0.7^N2^N0.6^N3^N0^N4^N1^t^Stext^SCandidate~`is~`not~`in~`the~`instance^Ssort^N803^t^STIMEOUT^T^Scolor^T^N1^N1^N2^N0^N3^N0^N4^N1^t^Stext^SCandidate~`didn't~`respond~`on~`time^Ssort^N504^t^SNOTHING^T^Scolor^T^N1^N0.5^N2^N0.5^N3^N0.5^N4^N1^t^Stext^SOffline~`or~`RCLootCouncil~`not~`installed^Ssort^N505^t^SWAIT^T^Scolor^T^N1^N1^N2^N1^N3^N0^N4^N1^t^Stext^SCandidate~`is~`selecting~`response,~`please~`wait^Ssort^N503^t^SANNOUNCED^T^Scolor^T^N1^N1^N2^N0^N3^N1^N4^N1^t^Stext^SLoot~`announced,~`waiting~`for~`answer^Ssort^N502^t^SAWARDED^T^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SAwarded^Ssort^N0.1^t^SDEFAULT^T^Scolor^T^N1^N1^N2^N0^N3^N0^N4^N1^t^Stext^SResponse~`isn't~`available.~`Please~`upgrade~`RCLootCouncil.^Ssort^N899^t^SPASS^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SPass^Ssort^N800^t^SPL^T^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^Stext^SPersonal~`Loot~`-~`Non~`tradeable^Ssort^N498^t^SNOTANNOUNCED^T^Scolor^T^N1^N1^N2^N0^N3^N1^N4^N1^t^Stext^SNot~`announced^Ssort^N501^t^SREMOVED^T^Scolor^T^N1^N0.8^N2^N0.5^N3^N0^N4^N1^t^Stext^SCandidate~`removed^Ssort^N505^t^SDISABLED^T^Scolor^T^N1^N0.3^N2^N0.35^N3^N0.5^N4^N1^t^Stext^SCandidate~`has~`disabled~`RCLootCouncil^Ssort^N802^t^SAUTOPASS^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SAutopass^Ssort^N801^t^SPL_REJECT^T^Scolor^T^N1^N0.2^N2^N0^N3^N0^N4^N1^t^Stext^SPersonal~`Loot~`-~`Rejected~`Trade^Ssort^N499^t^t^t^SprintResponse^b^SannounceItems^b^ScurrentSkin^Sbfa^SautoStart^b^SUI^T^Stradeui^T^SbgColor^T^N1^N0.55^N2^N0.84^N3^N1^N4^N1^t^Sx^N-300^Spoint^SCENTER^SborderColor^T^N1^N0.62^N2^N0.86^N3^N0.87^N4^N0.85^t^Sscale^N1.1^Sbackground^SBlizzard~`Garrison~`Background~`3^Sborder^SBlizzard~`Dialog^Sy^N0^t^Slootframe^T^SbgColor^T^N1^N0.55^N2^N0.84^N3^N1^N4^N1^t^Sx^N0^Spoint^SCENTER^SborderColor^T^N1^N0.62^N2^N0.86^N3^N0.87^N4^N0.85^t^Sscale^N1.1^Sbackground^SBlizzard~`Garrison~`Background~`3^Sborder^SBlizzard~`Dialog^Sy^N-200^t^Sdefault^T^SbgColor^T^N1^N0.55^N2^N0.84^N3^N1^N4^N1^t^Sx^N0^Spoint^SCENTER^SborderColor^T^N1^N0.62^N2^N0.86^N3^N0.87^N4^N0.85^t^Sscale^N1.1^Sbackground^SBlizzard~`Garrison~`Background~`3^Sborder^SBlizzard~`Dialog^Sy^N0^t^Ssync^T^Sy^F7642473396436992^f-72^Sx^F-5530003395575808^f-67^Spoint^SCENTER^SborderColor^T^N1^N0.3^N2^N0.3^N3^N0.5^N4^N1^t^Sscale^F4953959697481728^f-52^Sbackground^SBlizzard~`Tooltip^Sborder^SBlizzard~`Tooltip^SbgColor^T^N1^N0^N2^N0^N3^N0.2^N4^N1^t^t^t^Susage^T^Sstate^Sask_ml^Snever^b^Sml^b^Sask_ml^B^t^SautolootOthersBoE^b^SonlyUseInRaids^B^Sbuttons^T^Sdefault^T^N1^T^Stext^SNeed^SwhisperKey^Sneed,~`mainspec,~`ms,~`1^t^N2^T^Stext^SGreed^SwhisperKey^Sgreed,~`offspec,~`os,~`2^t^N3^T^Stext^SMinor~`Upgrade^SwhisperKey^Sminorupgrade,~`minor,~`3^t^N4^T^Stext^SButton~`4^SwhisperKey^S4^t^N5^T^Stext^SButton~`5^SwhisperKey^S5^t^N6^T^Stext^SButton~`6^SwhisperKey^S6^t^N7^T^Stext^SButton~`7^SwhisperKey^S7^t^N8^T^Stext^SButton~`8^SwhisperKey^S8^t^N9^T^Stext^SButton~`9^SwhisperKey^S9^t^N10^T^Stext^SButton~`10^SwhisperKey^S10^t^SnumButtons^N3^t^t^SannounceText^SItems~`under~`consideration:^SminRank^N-1^SmaxButtons^N10^SshowForML^b^SenableHistory^B^SnumAwardReasons^N3^SsendHistory^B^SaltClickLooting^B^Scouncil^T^t^SskipCombatLockdown^b^SenabledButtons^T^t^SminimizeInCombat^b^SautolootBoE^B^SautoAwardReason^N1^SshowSpecIcon^b^SautoAddRolls^b^SnumMoreInfoButtons^N1^Stimeout^N60^SselfVote^B^Sobserve^b^SignoredItems^T^t^SautoAwardTo^SNone^SawardReasons^T^N1^T^Sdisenchant^B^Slog^B^Ssort^N401^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SDisenchant^t^N2^T^Sdisenchant^b^Slog^B^Ssort^N402^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SBanking^t^N3^T^Sdisenchant^b^Slog^b^Ssort^N403^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SFree^t^N4^T^Sdisenchant^b^Slog^B^Ssort^N404^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`4^t^N5^T^Sdisenchant^b^Slog^B^Ssort^N405^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`5^t^N6^T^Sdisenchant^b^Slog^B^Ssort^N406^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`6^t^N7^T^Sdisenchant^b^Slog^B^Ssort^N407^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`7^t^N8^T^Sdisenchant^b^Slog^B^Ssort^N408^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`8^t^N9^T^Sdisenchant^b^Slog^B^Ssort^N409^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`9^t^N10^T^Sdisenchant^b^Slog^B^Ssort^N410^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`10^t^t^ShideVotes^b^SbaggedItems^T^t^SautoLoot^B^SautoAwardUpperThreshold^N3^SsortItems^B^Smodules^T^t^SmaxAwardReasons^N10^SannounceItemString^S&s:~`&i^t^t^^ (from:) (Holypally) (distri:) (WHISPER)", -- [2377]
-			"21:30:21 - SyncDataReceived (Holypally-Sulfuras) (settings)", -- [2378]
-			"21:30:21 - ActivateSkin (bfa)", -- [2379]
-			"21:30:21 - UpdateFrame (DefaultRCLootCouncilFrame)", -- [2380]
-			"21:30:21 - UpdateFrame (DefaultRCLootHistoryFrame)", -- [2381]
-			"21:30:21 - UpdateFrame (DefaultRCSessionSetupFrame)", -- [2382]
-			"21:30:21 - UpdateFrame (DefaultRCLootCouncilSyncFrame)", -- [2383]
-			"21:30:21 - Comm received:^1^Ssync^T^N1^SFistandalus-Sulfuras^N2^Ssettings^N3^T^Sdisenchant^B^SitemStorage^T^t^SacceptWhispers^B^SautoClose^b^SautolootEverything^B^SautoPassBoE^b^SautoPass^B^SautoOpen^B^SautoAwardLowerThreshold^N2^SautoPassTrinket^B^SmultiVote^B^SsilentAutoPass^b^SiLvlDecimal^b^SautoTrade^b^SanonymousVoting^b^Sskins^T^Slegion^T^SbgColor^T^N1^N0.1^N2^N1^N3^N0^N4^N1^t^Sname^SLegion~`Green^SborderColor^T^N1^N0^N2^N0.8^N3^N0^N4^N0.75^t^Sbackground^SBlizzard~`Garrison~`Background~`2^Sborder^SBlizzard~`Dialog~`Gold^t^Snew_blue^T^SbgColor^T^N1^N0^N2^N0^N3^N0.2^N4^N1^t^Sname^SMidnight~`blue^SborderColor^T^N1^N0.3^N2^N0.3^N3^N0.5^N4^N1^t^Sbackground^SBlizzard~`Tooltip^Sborder^SBlizzard~`Tooltip^t^Sbfa^T^SbgColor^T^N1^N0.55^N2^N0.84^N3^N1^N4^N1^t^Sname^SBattle~`for~`Azeroth^SborderColor^T^N1^N0.62^N2^N0.86^N3^N0.87^N4^N0.85^t^Sbackground^SBlizzard~`Garrison~`Background~`3^Sborder^SBlizzard~`Dialog^t^Sold_red^T^SbgColor^T^N1^N0.5^N2^N0^N3^N0^N4^N1^t^Sname^SOld~`golden~`red^SborderColor^T^N1^N1^N2^N0.5^N3^N0^N4^N1^t^Sbackground^SBlizzard~`Dialog~`Background~`Gold^Sborder^SBlizzard~`Tooltip^t^SminimalGrey^T^SbgColor^T^N1^N0.25^N2^N0.25^N3^N0.25^N4^N1^t^Sname^SMinimal~`Grey^SborderColor^T^N1^N1^N2^N1^N3^N1^N4^N0.2^t^Sbackground^SBlizzard~`Tooltip^Sborder^SBlizzard~`Tooltip^t^t^SallowNotes^B^SannounceAward^B^SawardText^T^N1^T^Schannel^Sgroup^Stext^S&p~`was~`awarded~`with~`&i~`for~`&r!^t^N2^T^Schannel^SNONE^Stext^S^t^t^SannounceChannel^Sgroup^Sambiguate^b^SautoAward^b^Sresponses^T^Sdefault^T^N1^T^Scolor^T^N1^N0^N2^N1^N3^N0^N4^N1^t^Stext^SMainspec/Need^Ssort^N1^t^N2^T^Scolor^T^N1^N1^N2^N0.5^N3^N0^N4^N1^t^Stext^SOffspec/Greed^Ssort^N2^t^N3^T^Scolor^T^N1^N0^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SMinor~`Upgrade^Ssort^N3^t^N4^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton4^Ssort^N4^t^N5^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton5^Ssort^N5^t^N6^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton6^Ssort^N6^t^N7^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton7^Ssort^N7^t^N8^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton8^Ssort^N8^t^N9^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton9^Ssort^N9^t^N10^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton10^Ssort^N10^t^SNOTINRAID^T^Scolor^T^N1^N0.7^N2^N0.6^N3^N0^N4^N1^t^Stext^SCandidate~`is~`not~`in~`the~`instance^Ssort^N803^t^STIMEOUT^T^Scolor^T^N1^N1^N2^N0^N3^N0^N4^N1^t^Stext^SCandidate~`didn't~`respond~`on~`time^Ssort^N504^t^SNOTHING^T^Scolor^T^N1^N0.5^N2^N0.5^N3^N0.5^N4^N1^t^Stext^SOffline~`or~`RCLootCouncil~`not~`installed^Ssort^N505^t^SWAIT^T^Scolor^T^N1^N1^N2^N1^N3^N0^N4^N1^t^Stext^SCandidate~`is~`selecting~`response,~`please~`wait^Ssort^N503^t^SANNOUNCED^T^Scolor^T^N1^N1^N2^N0^N3^N1^N4^N1^t^Stext^SLoot~`announced,~`waiting~`for~`answer^Ssort^N502^t^SAWARDED^T^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SAwarded^Ssort^N0.1^t^SDEFAULT^T^Scolor^T^N1^N1^N2^N0^N3^N0^N4^N1^t^Stext^SResponse~`isn't~`available.~`Please~`upgrade~`RCLootCouncil.^Ssort^N899^t^SPASS^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SPass^Ssort^N800^t^SPL^T^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^Stext^SPersonal~`Loot~`-~`Non~`tradeable^Ssort^N498^t^SNOTANNOUNCED^T^Scolor^T^N1^N1^N2^N0^N3^N1^N4^N1^t^Stext^SNot~`announced^Ssort^N501^t^SREMOVED^T^Scolor^T^N1^N0.8^N2^N0.5^N3^N0^N4^N1^t^Stext^SCandidate~`removed^Ssort^N505^t^SDISABLED^T^Scolor^T^N1^N0.3^N2^N0.35^N3^N0.5^N4^N1^t^Stext^SCandidate~`has~`disabled~`RCLootCouncil^Ssort^N802^t^SAUTOPASS^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SAutopass^Ssort^N801^t^SPL_REJECT^T^Scolor^T^N1^N0.2^N2^N0^N3^N0^N4^N1^t^Stext^SPersonal~`Loot~`-~`Rejected~`Trade^Ssort^N499^t^t^t^SprintResponse^b^SannounceItems^b^ScurrentSkin^Sbfa^SautoStart^b^SUI^T^Stradeui^T^SbgColor^T^N1^N0.55^N2^N0.84^N3^N1^N4^N1^t^Sx^N-300^Spoint^SCENTER^SborderColor^T^N1^N0.62^N2^N0.86^N3^N0.87^N4^N0.85^t^Sscale^N1.1^Sbackground^SBlizzard~`Garrison~`Background~`3^Sborder^SBlizzard~`Dialog^Sy^N0^t^Slootframe^T^SbgColor^T^N1^N0.55^N2^N0.84^N3^N1^N4^N1^t^Sx^N0^Spoint^SCENTER^SborderColor^T^N1^N0.62^N2^N0.86^N3^N0.87^N4^N0.85^t^Sscale^N1.1^Sbackground^SBlizzard~`Garrison~`Background~`3^Sborder^SBlizzard~`Dialog^Sy^N-200^t^Sdefault^T^SbgColor^T^N1^N0.55^N2^N0.84^N3^N1^N4^N1^t^Sx^N0^Spoint^SCENTER^SborderColor^T^N1^N0.62^N2^N0.86^N3^N0.87^N4^N0.85^t^Sscale^N1.1^Sbackground^SBlizzard~`Garrison~`Background~`3^Sborder^SBlizzard~`Dialog^Sy^N0^t^Ssync^T^Sy^N0^Sx^N0^Spoint^SCENTER^SborderColor^T^N1^N0.3^N2^N0.3^N3^N0.5^N4^N1^t^Sscale^N1.1^Sbackground^SBlizzard~`Tooltip^Sborder^SBlizzard~`Tooltip^SbgColor^T^N1^N0^N2^N0^N3^N0.2^N4^N1^t^t^t^Susage^T^Sstate^Sask_ml^Snever^b^Sml^b^Sask_ml^B^t^SautolootOthersBoE^b^SonlyUseInRaids^B^Sbuttons^T^Sdefault^T^N1^T^Stext^SNeed^SwhisperKey^Sneed,~`mainspec,~`ms,~`1^t^N2^T^Stext^SGreed^SwhisperKey^Sgreed,~`offspec,~`os,~`2^t^N3^T^Stext^SMinor~`Upgrade^SwhisperKey^Sminorupgrade,~`minor,~`3^t^N4^T^Stext^SButton~`4^SwhisperKey^S4^t^N5^T^Stext^SButton~`5^SwhisperKey^S5^t^N6^T^Stext^SButton~`6^SwhisperKey^S6^t^N7^T^Stext^SButton~`7^SwhisperKey^S7^t^N8^T^Stext^SButton~`8^SwhisperKey^S8^t^N9^T^Stext^SButton~`9^SwhisperKey^S9^t^N10^T^Stext^SButton~`10^SwhisperKey^S10^t^SnumButtons^N3^t^t^SannounceText^SItems~`under~`consideration:^SminRank^N-1^SmaxButtons^N10^SshowForML^b^SenableHistory^B^SnumAwardReasons^N3^SsendHistory^B^SaltClickLooting^B^Scouncil^T^t^SskipCombatLockdown^b^SenabledButtons^T^t^SminimizeInCombat^b^SautolootBoE^B^SautoAwardReason^N1^SshowSpecIcon^b^SautoAddRolls^b^SnumMoreInfoButtons^N1^Stimeout^N60^SselfVote^B^Sobserve^b^SignoredItems^T^t^SautoAwardTo^SNone^SawardReasons^T^N1^T^Sdisenchant^B^Slog^B^Ssort^N401^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SDisenchant^t^N2^T^Sdisenchant^b^Slog^B^Ssort^N402^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SBanking^t^N3^T^Sdisenchant^b^Slog^b^Ssort^N403^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SFree^t^N4^T^Sdisenchant^b^Slog^B^Ssort^N404^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`4^t^N5^T^Sdisenchant^b^Slog^B^Ssort^N405^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`5^t^N6^T^Sdisenchant^b^Slog^B^Ssort^N406^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`6^t^N7^T^Sdisenchant^b^Slog^B^Ssort^N407^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`7^t^N8^T^Sdisenchant^b^Slog^B^Ssort^N408^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`8^t^N9^T^Sdisenchant^b^Slog^B^Ssort^N409^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`9^t^N10^T^Sdisenchant^b^Slog^B^Ssort^N410^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`10^t^t^ShideVotes^b^SbaggedItems^T^t^SautoLoot^B^SautoAwardUpperThreshold^N3^SsortItems^B^Smodules^T^t^SmaxAwardReasons^N10^SannounceItemString^S&s:~`&i^t^t^^ (from:) (Fistandalus) (distri:) (WHISPER)", -- [2384]
-			"21:30:21 - SyncDataReceived (Fistandalus-Sulfuras) (settings)", -- [2385]
-			"21:30:21 - ActivateSkin (bfa)", -- [2386]
-			"21:30:21 - UpdateFrame (DefaultRCLootCouncilFrame)", -- [2387]
-			"21:30:21 - UpdateFrame (DefaultRCLootHistoryFrame)", -- [2388]
-			"21:30:21 - UpdateFrame (DefaultRCSessionSetupFrame)", -- [2389]
-			"21:30:21 - UpdateFrame (DefaultRCLootCouncilSyncFrame)", -- [2390]
-			"21:30:21 - OnSyncAccept (Odarnwewiped-Sulfuras) (history)", -- [2391]
-			"21:30:21 - Comm received:^1^Ssync^T^N1^SHealwho-Sulfuras^N2^Ssettings^N3^T^Sdisenchant^B^SitemStorage^T^t^SacceptWhispers^B^SautoClose^b^SautolootEverything^B^SautoPassBoE^b^SautoPass^B^SautoOpen^B^SautoAwardLowerThreshold^N2^SautoPassTrinket^B^SmultiVote^B^SsilentAutoPass^b^SiLvlDecimal^b^SautoTrade^b^SanonymousVoting^b^Sskins^T^Slegion^T^SbgColor^T^N1^N0.1^N2^N1^N3^N0^N4^N1^t^Sname^SLegion~`Green^SborderColor^T^N1^N0^N2^N0.8^N3^N0^N4^N0.75^t^Sbackground^SBlizzard~`Garrison~`Background~`2^Sborder^SBlizzard~`Dialog~`Gold^t^Snew_blue^T^SbgColor^T^N1^N0^N2^N0^N3^N0.2^N4^N1^t^Sname^SMidnight~`blue^SborderColor^T^N1^N0.3^N2^N0.3^N3^N0.5^N4^N1^t^Sbackground^SBlizzard~`Tooltip^Sborder^SBlizzard~`Tooltip^t^Sbfa^T^SbgColor^T^N1^N0.55^N2^N0.84^N3^N1^N4^N1^t^Sname^SBattle~`for~`Azeroth^SborderColor^T^N1^N0.62^N2^N0.86^N3^N0.87^N4^N0.85^t^Sbackground^SBlizzard~`Garrison~`Background~`3^Sborder^SBlizzard~`Dialog^t^Sold_red^T^SbgColor^T^N1^N0.5^N2^N0^N3^N0^N4^N1^t^Sname^SOld~`golden~`red^SborderColor^T^N1^N1^N2^N0.5^N3^N0^N4^N1^t^Sbackground^SBlizzard~`Dialog~`Background~`Gold^Sborder^SBlizzard~`Tooltip^t^SminimalGrey^T^SbgColor^T^N1^N0.25^N2^N0.25^N3^N0.25^N4^N1^t^Sname^SMinimal~`Grey^SborderColor^T^N1^N1^N2^N1^N3^N1^N4^N0.2^t^Sbackground^SBlizzard~`Tooltip^Sborder^SBlizzard~`Tooltip^t^t^SallowNotes^B^SannounceAward^B^SawardText^T^N1^T^Schannel^Sgroup^Stext^S&p~`was~`awarded~`with~`&i~`for~`&r!^t^N2^T^Schannel^SNONE^Stext^S^t^t^SannounceChannel^Sgroup^Sambiguate^b^SautoAward^b^Sresponses^T^Sdefault^T^N1^T^Scolor^T^N1^N0^N2^N1^N3^N0^N4^N1^t^Stext^SMainspec/Need^Ssort^N1^t^N2^T^Scolor^T^N1^N1^N2^N0.5^N3^N0^N4^N1^t^Stext^SOffspec/Greed^Ssort^N2^t^N3^T^Scolor^T^N1^N0^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SMinor~`Upgrade^Ssort^N3^t^N4^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton4^Ssort^N4^t^N5^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton5^Ssort^N5^t^N6^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton6^Ssort^N6^t^N7^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton7^Ssort^N7^t^N8^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton8^Ssort^N8^t^N9^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton9^Ssort^N9^t^N10^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton10^Ssort^N10^t^SNOTINRAID^T^Scolor^T^N1^N0.7^N2^N0.6^N3^N0^N4^N1^t^Stext^SCandidate~`is~`not~`in~`the~`instance^Ssort^N803^t^STIMEOUT^T^Scolor^T^N1^N1^N2^N0^N3^N0^N4^N1^t^Stext^SCandidate~`didn't~`respond~`on~`time^Ssort^N504^t^SNOTHING^T^Scolor^T^N1^N0.5^N2^N0.5^N3^N0.5^N4^N1^t^Stext^SOffline~`or~`RCLootCouncil~`not~`installed^Ssort^N505^t^SWAIT^T^Scolor^T^N1^N1^N2^N1^N3^N0^N4^N1^t^Stext^SCandidate~`is~`selecting~`response,~`please~`wait^Ssort^N503^t^SANNOUNCED^T^Scolor^T^N1^N1^N2^N0^N3^N1^N4^N1^t^Stext^SLoot~`announced,~`waiting~`for~`answer^Ssort^N502^t^SAWARDED^T^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SAwarded^Ssort^N0.1^t^SDEFAULT^T^Scolor^T^N1^N1^N2^N0^N3^N0^N4^N1^t^Stext^SResponse~`isn't~`available.~`Please~`upgrade~`RCLootCouncil.^Ssort^N899^t^SPASS^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SPass^Ssort^N800^t^SPL^T^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^Stext^SPersonal~`Loot~`-~`Non~`tradeable^Ssort^N498^t^SNOTANNOUNCED^T^Scolor^T^N1^N1^N2^N0^N3^N1^N4^N1^t^Stext^SNot~`announced^Ssort^N501^t^SREMOVED^T^Scolor^T^N1^N0.8^N2^N0.5^N3^N0^N4^N1^t^Stext^SCandidate~`removed^Ssort^N505^t^SDISABLED^T^Scolor^T^N1^N0.3^N2^N0.35^N3^N0.5^N4^N1^t^Stext^SCandidate~`has~`disabled~`RCLootCouncil^Ssort^N802^t^SAUTOPASS^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SAutopass^Ssort^N801^t^SPL_REJECT^T^Scolor^T^N1^N0.2^N2^N0^N3^N0^N4^N1^t^Stext^SPersonal~`Loot~`-~`Rejected~`Trade^Ssort^N499^t^t^t^SprintResponse^b^SannounceItems^b^ScurrentSkin^Sbfa^SautoStart^b^SUI^T^Stradeui^T^SbgColor^T^N1^N0.55^N2^N0.84^N3^N1^N4^N1^t^Sx^N-300^Spoint^SCENTER^SborderColor^T^N1^N0.62^N2^N0.86^N3^N0.87^N4^N0.85^t^Sscale^N1.1^Sbackground^SBlizzard~`Garrison~`Background~`3^Sborder^SBlizzard~`Dialog^Sy^N0^t^Slootframe^T^SbgColor^T^N1^N0.55^N2^N0.84^N3^N1^N4^N1^t^Sx^N0^Spoint^SCENTER^SborderColor^T^N1^N0.62^N2^N0.86^N3^N0.87^N4^N0.85^t^Sscale^N1.1^Sbackground^SBlizzard~`Garrison~`Background~`3^Sborder^SBlizzard~`Dialog^Sy^N-200^t^Sdefault^T^SbgColor^T^N1^N0.55^N2^N0.84^N3^N1^N4^N1^t^Sx^N0^Spoint^SCENTER^SborderColor^T^N1^N0.62^N2^N0.86^N3^N0.87^N4^N0.85^t^Sscale^N1.1^Sbackground^SBlizzard~`Garrison~`Background~`3^Sborder^SBlizzard~`Dialog^Sy^N0^t^Ssync^T^Sy^N0^Sx^N0^Spoint^SCENTER^SborderColor^T^N1^N0.3^N2^N0.3^N3^N0.5^N4^N1^t^Sscale^N1.1^Sbackground^SBlizzard~`Tooltip^Sborder^SBlizzard~`Tooltip^SbgColor^T^N1^N0^N2^N0^N3^N0.2^N4^N1^t^t^t^Susage^T^Sstate^Sask_ml^Snever^b^Sml^b^Sask_ml^B^t^SautolootOthersBoE^b^SonlyUseInRaids^B^Sbuttons^T^Sdefault^T^N1^T^Stext^SNeed^SwhisperKey^Sneed,~`mainspec,~`ms,~`1^t^N2^T^Stext^SGreed^SwhisperKey^Sgreed,~`offspec,~`os,~`2^t^N3^T^Stext^SMinor~`Upgrade^SwhisperKey^Sminorupgrade,~`minor,~`3^t^N4^T^Stext^SButton~`4^SwhisperKey^S4^t^N5^T^Stext^SButton~`5^SwhisperKey^S5^t^N6^T^Stext^SButton~`6^SwhisperKey^S6^t^N7^T^Stext^SButton~`7^SwhisperKey^S7^t^N8^T^Stext^SButton~`8^SwhisperKey^S8^t^N9^T^Stext^SButton~`9^SwhisperKey^S9^t^N10^T^Stext^SButton~`10^SwhisperKey^S10^t^SnumButtons^N3^t^t^SannounceText^SItems~`under~`consideration:^SminRank^N-1^SmaxButtons^N10^SshowForML^b^SenableHistory^B^SnumAwardReasons^N3^SsendHistory^B^SaltClickLooting^B^Scouncil^T^t^SskipCombatLockdown^b^SenabledButtons^T^t^SminimizeInCombat^b^SautolootBoE^B^SautoAwardReason^N1^SshowSpecIcon^b^SautoAddRolls^b^SnumMoreInfoButtons^N1^Stimeout^N60^SselfVote^B^Sobserve^b^SignoredItems^T^t^SautoAwardTo^SNone^SawardReasons^T^N1^T^Sdisenchant^B^Slog^B^Ssort^N401^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SDisenchant^t^N2^T^Sdisenchant^b^Slog^B^Ssort^N402^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SBanking^t^N3^T^Sdisenchant^b^Slog^b^Ssort^N403^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SFree^t^N4^T^Sdisenchant^b^Slog^B^Ssort^N404^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`4^t^N5^T^Sdisenchant^b^Slog^B^Ssort^N405^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`5^t^N6^T^Sdisenchant^b^Slog^B^Ssort^N406^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`6^t^N7^T^Sdisenchant^b^Slog^B^Ssort^N407^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`7^t^N8^T^Sdisenchant^b^Slog^B^Ssort^N408^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`8^t^N9^T^Sdisenchant^b^Slog^B^Ssort^N409^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`9^t^N10^T^Sdisenchant^b^Slog^B^Ssort^N410^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`10^t^t^ShideVotes^b^SbaggedItems^T^t^SautoLoot^B^SautoAwardUpperThreshold^N3^SsortItems^B^Smodules^T^t^SmaxAwardReasons^N10^SannounceItemString^S&s:~`&i^t^t^^ (from:) (Healwho) (distri:) (WHISPER)", -- [2392]
-			"21:30:21 - SyncDataReceived (Healwho-Sulfuras) (settings)", -- [2393]
-			"21:30:21 - ActivateSkin (bfa)", -- [2394]
-			"21:30:21 - UpdateFrame (DefaultRCLootCouncilFrame)", -- [2395]
-			"21:30:21 - UpdateFrame (DefaultRCLootHistoryFrame)", -- [2396]
-			"21:30:21 - UpdateFrame (DefaultRCSessionSetupFrame)", -- [2397]
-			"21:30:21 - UpdateFrame (DefaultRCLootCouncilSyncFrame)", -- [2398]
-			"21:30:21 - Comm received:^1^SsyncRequest^T^N1^SHappyjugs-Sulfuras^N2^Ssettings^t^^ (from:) (Happyjugs) (distri:) (WHISPER)", -- [2399]
-			"21:30:21 - SyncRequestReceived (Happyjugs-Sulfuras) (settings)", -- [2400]
-			"21:30:22 - Comm received:^1^Ssync^T^N1^SOdarnwewiped-Sulfuras^N2^Shistory^N3^T^SIsellar-Sulfuras^T^N1^T^SmapID^N409^Sid^S1574838902-0^Sclass^SDRUID^Sdate^S26/11/19^Sowner^SIsellar-Sulfuras^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^SgroupSize^N40^Sboss^SLucifron^SisAwardReason^b^SlootWon^S|cff1eff00|Hitem:16665::::::::60:::::::|h[Tome~`of~`Tranquilizing~`Shot]|h|r^SdifficultyID^N9^Stime^S21:15:02^SresponseID^SPL^Sinstance^SMolten~`Core-40~`Player^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^t^t^SHolypally-Sulfuras^T^N1^T^SmapID^N249^Sid^S1574243284-0^Sclass^SPALADIN^Sdate^S19/11/19^Sowner^SHolypally-Sulfuras^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^SgroupSize^N40^Sboss^SOnyxia^SisAwardReason^b^SlootWon^S|cff1eff00|Hitem:17966::::::::60:::::::|h[Onyxia~`Hide~`Backpack]|h|r^SdifficultyID^N9^Stime^S23:48:04^SresponseID^SPL^Sinstance^SOnyxia's~`Lair-40~`Player^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^t^t^SCabbagekrust-Sulfuras^T^N1^T^SmapID^N249^Sid^S1574846351-0^Sclass^SMAGE^Sdate^S26/11/19^Sowner^SCabbagekrust-Sulfuras^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^SgroupSize^N40^Sboss^SOnyxia^SisAwardReason^b^SlootWon^S|cffa335ee|Hitem:17067::::::::60:::::::|h[Ancient~`Cornerstone~`Grimoire]|h|r^SdifficultyID^N9^Stime^S23:19:11^SresponseID^SPL^Sinstance^SOnyxia's~`Lair-40~`Player^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^t^N2^T^SmapID^N249^Sid^S1574846392-1^Sclass^SMAGE^Sdate^S26/11/19^Sowner^SCabbagekrust-Sulfuras^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^SgroupSize^N40^Sboss^SOnyxia^SisAwardReason^b^SlootWon^S|cffa335ee|Hitem:17067::::::::60:::::::|h[Ancient~`Cornerstone~`Grimoire]|h|r^SdifficultyID^N9^Stime^S23:19:52^SresponseID^SPL^Sinstance^SOnyxia's~`Lair-40~`Player^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^t^N3^T^SmapID^N249^Sid^S1574846395-2^Sclass^SMAGE^Sdate^S26/11/19^Sowner^SCabbagekrust-Sulfuras^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^SgroupSize^N40^Sboss^SOnyxia^SisAwardReason^b^SlootWon^S|cffa335ee|Hitem:17067::::::::60:::::::|h[Ancient~`Cornerstone~`Grimoire]|h|r^SdifficultyID^N9^Stime^S23:19:55^SresponseID^SPL^Sinstance^SOnyxia's~`Lair-40~`Player^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^t^N4^T^SmapID^N249^Sid^S1574846412-3^Sclass^SMAGE^Sdate^S26/11/19^Sowner^SCabbagekrust-Sulfuras^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^SgroupSize^N40^Sboss^SOnyxia^SisAwardReason^b^SlootWon^S|cffa335ee|Hitem:17067::::::::60:::::::|h[Ancient~`Cornerstone~`Grimoire]|h|r^SdifficultyID^N9^Stime^S23:20:12^SresponseID^SPL^Sinstance^SOnyxia's~`Lair-40~`Player^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^t^N5^T^SmapID^N249^Sid^S1574846422-4^Sclass^SMAGE^Sdate^S26/11/19^Sowner^SCabbagekrust-Sulfuras^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^SgroupSize^N40^Sboss^SOnyxia^SisAwardReason^b^SlootWon^S|cffa335ee|Hitem:17067::::::::60:::::::|h[Ancient~`Cornerstone~`Grimoire]|h|r^SdifficultyID^N9^Stime^S23:20:22^SresponseID^SPL^Sinstance^SOnyxia's~`Lair-40~`Player^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^t^N6^T^SmapID^N409^Sinstance^SMolten~`Core-40~`Player^Sowner^SCabbagekrust-Sulfuras^Sid^S1576055688-0^Sclass^SMAGE^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^SgroupSize^N40^SisAwardReason^b^Sboss^SRagnaros^Stime^S23:14:48^SdifficultyID^N9^SlootWon^S|cffa335ee|Hitem:19138::::::::60:::::::|h[Band~`of~`Sulfuras]|h|r^SresponseID^SPL^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^Sdate^S10/12/19^t^t^t^t^^ (from:) (Odarnwewiped) (distri:) (WHISPER)", -- [2401]
-			"21:30:22 - SyncDataReceived (Odarnwewiped-Sulfuras) (history)", -- [2402]
-			"21:30:22 - Initiating import", -- [2403]
-			"21:30:22 - Validation completed (true) (0)", -- [2404]
-			"21:30:22 - Import successful", -- [2405]
-			"21:30:22 - Comm received:^1^Ssync^T^N1^SMinica-Sulfuras^N2^Ssettings^N3^T^Sdisenchant^B^SitemStorage^T^t^SacceptWhispers^B^SautoClose^b^SautolootEverything^B^SautoPassBoE^b^SminRank^N-1^SautoOpen^B^SmaxButtons^N10^SsendHistory^B^SautoPassTrinket^b^SautoAwardTo^SNone^SsilentAutoPass^b^SmaxAwardReasons^N10^SprintResponse^b^SawardText^T^N1^T^Schannel^Sgroup^Stext^S&p~`was~`awarded~`with~`&i~`for~`&r!^t^N2^T^Schannel^SNONE^Stext^S^t^t^Susage^T^Sstate^Sask_ml^Snever^b^Sml^b^Sask_ml^B^t^SbaggedItems^T^t^SautoPass^B^SiLvlDecimal^b^SautoAward^b^SsortItems^B^SautoAwardUpperThreshold^N3^Sobserve^b^ScurrentSkin^Sbfa^SautoStart^b^SUI^T^Stradeui^T^SbgColor^T^N1^N0.55^N2^N0.84^N3^N1^N4^N1^t^Sx^N-300^Spoint^SCENTER^SborderColor^T^N1^N0.62^N2^N0.86^N3^N0.87^N4^N0.85^t^Sscale^N1.1^Sbackground^SBlizzard~`Garrison~`Background~`3^Sborder^SBlizzard~`Dialog^Sy^N0^t^Slootframe^T^SbgColor^T^N1^N0.55^N2^N0.84^N3^N1^N4^N1^t^Sx^F7248012678006530^f-45^Spoint^SBOTTOM^SborderColor^T^N1^N0.62^N2^N0.86^N3^N0.87^N4^N0.85^t^Sscale^F4953959697481737^f-52^Sbackground^SBlizzard~`Garrison~`Background~`3^Sborder^SBlizzard~`Dialog^Sy^F5339262778882751^f-45^t^Sdefault^T^SbgColor^T^N1^N0.55^N2^N0.84^N3^N1^N4^N1^t^Sx^N0^Spoint^SCENTER^SborderColor^T^N1^N0.62^N2^N0.86^N3^N0.87^N4^N0.85^t^Sscale^N1.1^Sbackground^SBlizzard~`Garrison~`Background~`3^Sborder^SBlizzard~`Dialog^Sy^N0^t^Svotingframe^T^Sy^N0^Sx^N0^Spoint^SCENTER^SborderColor^T^N1^N0.3^N2^N0.3^N3^N0.5^N4^N1^t^Sscale^N1.1^Sbackground^SBlizzard~`Tooltip^Sborder^SBlizzard~`Tooltip^SbgColor^T^N1^N0^N2^N0^N3^N0.2^N4^N1^t^t^Ssync^T^Sy^N0^Sx^N0^Spoint^SCENTER^SborderColor^T^N1^N0.3^N2^N0.3^N3^N0.5^N4^N1^t^Sscale^N1.1^Sbackground^SBlizzard~`Tooltip^Sborder^SBlizzard~`Tooltip^SbgColor^T^N1^N0^N2^N0^N3^N0.2^N4^N1^t^t^t^SawardReasons^T^N1^T^Sdisenchant^B^Slog^B^Ssort^N401^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SDisenchant^t^N2^T^Sdisenchant^b^Slog^B^Ssort^N402^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SBanking^t^N3^T^Sdisenchant^b^Slog^b^Ssort^N403^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SFree^t^N4^T^Sdisenchant^b^Slog^B^Ssort^N404^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`4^t^N5^T^Sdisenchant^b^Slog^B^Ssort^N405^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`5^t^N6^T^Sdisenchant^b^Slog^B^Ssort^N406^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`6^t^N7^T^Sdisenchant^b^Slog^B^Ssort^N407^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`7^t^N8^T^Sdisenchant^b^Slog^B^Ssort^N408^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`8^t^N9^T^Sdisenchant^b^Slog^B^Ssort^N409^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`9^t^N10^T^Sdisenchant^b^Slog^B^Ssort^N410^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`10^t^t^SenabledButtons^T^t^SonlyUseInRaids^B^SselfVote^B^SannounceText^SItems~`under~`consideration:^Sskins^T^Slegion^T^SbgColor^T^N1^N0.1^N2^N1^N3^N0^N4^N1^t^Sname^SLegion~`Green^SborderColor^T^N1^N0^N2^N0.8^N3^N0^N4^N0.75^t^Sbackground^SBlizzard~`Garrison~`Background~`2^Sborder^SBlizzard~`Dialog~`Gold^t^Snew_blue^T^SbgColor^T^N1^N0^N2^N0^N3^N0.2^N4^N1^t^Sname^SMidnight~`blue^SborderColor^T^N1^N0.3^N2^N0.3^N3^N0.5^N4^N1^t^Sbackground^SBlizzard~`Tooltip^Sborder^SBlizzard~`Tooltip^t^Sbfa^T^SbgColor^T^N1^N0.55^N2^N0.84^N3^N1^N4^N1^t^Sname^SBattle~`for~`Azeroth^SborderColor^T^N1^N0.62^N2^N0.86^N3^N0.87^N4^N0.85^t^Sbackground^SBlizzard~`Garrison~`Background~`3^Sborder^SBlizzard~`Dialog^t^Sold_red^T^SbgColor^T^N1^N0.5^N2^N0^N3^N0^N4^N1^t^Sname^SOld~`golden~`red^SborderColor^T^N1^N1^N2^N0.5^N3^N0^N4^N1^t^Sbackground^SBlizzard~`Dialog~`Background~`Gold^Sborder^SBlizzard~`Tooltip^t^SminimalGrey^T^SbgColor^T^N1^N0.25^N2^N0.25^N3^N0.25^N4^N1^t^Sname^SMinimal~`Grey^SborderColor^T^N1^N1^N2^N1^N3^N1^N4^N0.2^t^Sbackground^SBlizzard~`Tooltip^Sborder^SBlizzard~`Tooltip^t^t^Smodules^T^SRCVotingFrame^T^SalwaysShowTooltip^b^Sfilters^T^Sranks^T^t^t^t^t^SignoredItems^T^t^SenableHistory^B^SnumAwardReasons^N3^SaltClickLooting^B^SnumMoreInfoButtons^N1^Scouncil^T^t^SautoAddRolls^b^SannounceAward^B^SminimizeInCombat^b^SautolootBoE^B^SautoAwardReason^N1^SannounceChannel^Sgroup^SshowSpecIcon^b^SshowForML^b^Stimeout^N60^Sbuttons^T^Sdefault^T^N1^T^Stext^SNeed^SwhisperKey^Sneed,~`mainspec,~`ms,~`1^t^N2^T^Stext^SGreed^SwhisperKey^Sgreed,~`offspec,~`os,~`2^t^N3^T^Stext^SMinor~`Upgrade^SwhisperKey^Sminorupgrade,~`minor,~`3^t^N4^T^Stext^SButton~`4^SwhisperKey^S4^t^N5^T^Stext^SButton~`5^SwhisperKey^S5^t^N6^T^Stext^SButton~`6^SwhisperKey^S6^t^N7^T^Stext^SButton~`7^SwhisperKey^S7^t^N8^T^Stext^SButton~`8^SwhisperKey^S8^t^N9^T^Stext^SButton~`9^SwhisperKey^S9^t^N10^T^Stext^SButton~`10^SwhisperKey^S10^t^SnumButtons^N3^t^t^SannounceItems^b^SautolootOthersBoE^b^Sresponses^T^Sdefault^T^N1^T^Scolor^T^N1^N0^N2^N1^N3^N0^N4^N1^t^Stext^SMainspec/Need^Ssort^N1^t^N2^T^Scolor^T^N1^N1^N2^N0.5^N3^N0^N4^N1^t^Stext^SOffspec/Greed^Ssort^N2^t^N3^T^Scolor^T^N1^N0^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SMinor~`Upgrade^Ssort^N3^t^N4^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton4^Ssort^N4^t^N5^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton5^Ssort^N5^t^N6^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton6^Ssort^N6^t^N7^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton7^Ssort^N7^t^N8^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton8^Ssort^N8^t^N9^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton9^Ssort^N9^t^N10^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton10^Ssort^N10^t^SNOTINRAID^T^Scolor^T^N1^N0.7^N2^N0.6^N3^N0^N4^N1^t^Stext^SCandidate~`is~`not~`in~`the~`instance^Ssort^N803^t^STIMEOUT^T^Scolor^T^N1^N1^N2^N0^N3^N0^N4^N1^t^Stext^SCandidate~`didn't~`respond~`on~`time^Ssort^N504^t^SNOTHING^T^Scolor^T^N1^N0.5^N2^N0.5^N3^N0.5^N4^N1^t^Stext^SOffline~`or~`RCLootCouncil~`not~`installed^Ssort^N505^t^SWAIT^T^Scolor^T^N1^N1^N2^N1^N3^N0^N4^N1^t^Stext^SCandidate~`is~`selecting~`response,~`please~`wait^Ssort^N503^t^SANNOUNCED^T^Scolor^T^N1^N1^N2^N0^N3^N1^N4^N1^t^Stext^SLoot~`announced,~`waiting~`for~`answer^Ssort^N502^t^SAWARDED^T^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SAwarded^Ssort^N0.1^t^SDEFAULT^T^Scolor^T^N1^N1^N2^N0^N3^N0^N4^N1^t^Stext^SResponse~`isn't~`available.~`Please~`upgrade~`RCLootCouncil.^Ssort^N899^t^SPASS^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SPass^Ssort^N800^t^SPL^T^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^Stext^SPersonal~`Loot~`-~`Non~`tradeable^Ssort^N498^t^SNOTANNOUNCED^T^Scolor^T^N1^N1^N2^N0^N3^N1^N4^N1^t^Stext^SNot~`announced^Ssort^N501^t^SREMOVED^T^Scolor^T^N1^N0.8^N2^N0.5^N3^N0^N4^N1^t^Stext^SCandidate~`removed^Ssort^N505^t^SDISABLED^T^Scolor^T^N1^N0.3^N2^N0.35^N3^N0.5^N4^N1^t^Stext^SCandidate~`has~`disabled~`RCLootCouncil^Ssort^N802^t^SAUTOPASS^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SAutopass^Ssort^N801^t^SPL_REJECT^T^Scolor^T^N1^N0.2^N2^N0^N3^N0^N4^N1^t^Stext^SPersonal~`Loot~`-~`Rejected~`Trade^Ssort^N499^t^t^t^SautoTrade^b^ShideVotes^b^Sambiguate^b^SautoLoot^B^SmultiVote^B^SautoAwardLowerThreshold^N2^SanonymousVoting^b^SallowNotes^B^SannounceItemString^S&s:~`&i^t^t^^ (from:) (Minica) (distri:) (WHISPER)", -- [2406]
-			"21:30:22 - SyncDataReceived (Minica-Sulfuras) (settings)", -- [2407]
-			"21:30:22 - ActivateSkin (bfa)", -- [2408]
-			"21:30:22 - UpdateFrame (DefaultRCLootCouncilFrame)", -- [2409]
-			"21:30:22 - UpdateFrame (DefaultRCLootHistoryFrame)", -- [2410]
-			"21:30:22 - UpdateFrame (DefaultRCSessionSetupFrame)", -- [2411]
-			"21:30:22 - UpdateFrame (DefaultRCLootCouncilSyncFrame)", -- [2412]
-			"21:30:25 - OnSyncAccept (Happyjugs-Sulfuras) (settings)", -- [2413]
-			"21:30:26 - Comm received:^1^SsyncRequest^T^N1^SPlainview-Sulfuras^N2^Shistory^t^^ (from:) (Plainview) (distri:) (WHISPER)", -- [2414]
-			"21:30:26 - SyncRequestReceived (Plainview-Sulfuras) (history)", -- [2415]
-			"21:30:30 - OnSyncAccept (Plainview-Sulfuras) (history)", -- [2416]
-			"21:30:31 - Comm received:^1^Ssync^T^N1^SHappyjugs-Sulfuras^N2^Ssettings^N3^T^Sdisenchant^B^SitemStorage^T^t^SacceptWhispers^B^SautoClose^b^SautolootEverything^B^SautoPassBoE^b^SminRank^N-1^SautoOpen^B^SmaxButtons^N10^SsendHistory^B^SautoPassTrinket^b^SautoAwardTo^SNone^SsilentAutoPass^b^SmaxAwardReasons^N10^SprintResponse^b^SawardText^T^N1^T^Schannel^Sgroup^Stext^S&p~`was~`awarded~`with~`&i~`for~`&r!^t^N2^T^Schannel^SNONE^Stext^S^t^t^Susage^T^Sstate^Sask_ml^Snever^b^Sml^b^Sask_ml^B^t^SbaggedItems^T^t^SautoPass^B^SiLvlDecimal^b^SautoAward^b^SsortItems^B^SautoAwardUpperThreshold^N3^Sobserve^b^ScurrentSkin^Sbfa^SautoStart^b^SUI^T^Stradeui^T^SbgColor^T^N1^N0.55^N2^N0.84^N3^N1^N4^N1^t^Sx^N-300^Spoint^SCENTER^SborderColor^T^N1^N0.62^N2^N0.86^N3^N0.87^N4^N0.85^t^Sscale^N1.1^Sbackground^SBlizzard~`Garrison~`Background~`3^Sborder^SBlizzard~`Dialog^Sy^N0^t^Slootframe^T^SbgColor^T^N1^N0.55^N2^N0.84^N3^N1^N4^N1^t^Sx^F-5817141961731534^f-45^Spoint^SCENTER^SborderColor^T^N1^N0.62^N2^N0.86^N3^N0.87^N4^N0.85^t^Sscale^F4953959697481737^f-52^Sbackground^SBlizzard~`Garrison~`Background~`3^Sborder^SBlizzard~`Dialog^Sy^F-6546871606275070^f-47^t^Sdefault^T^SbgColor^T^N1^N0.55^N2^N0.84^N3^N1^N4^N1^t^Sx^N0^Spoint^SCENTER^SborderColor^T^N1^N0.62^N2^N0.86^N3^N0.87^N4^N0.85^t^Sscale^N1.1^Sbackground^SBlizzard~`Garrison~`Background~`3^Sborder^SBlizzard~`Dialog^Sy^N0^t^Ssync^T^Sy^F5337827535814656^f-53^Sx^F6101847152525312^f-69^Spoint^SCENTER^SborderColor^T^N1^N0.3^N2^N0.3^N3^N0.5^N4^N1^t^Sscale^F4953959697481728^f-52^Sbackground^SBlizzard~`Tooltip^Sborder^SBlizzard~`Tooltip^SbgColor^T^N1^N0^N2^N0^N3^N0.2^N4^N1^t^t^t^SawardReasons^T^N1^T^Sdisenchant^B^Slog^B^Ssort^N401^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SDisenchant^t^N2^T^Sdisenchant^b^Slog^B^Ssort^N402^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SBanking^t^N3^T^Sdisenchant^b^Slog^b^Ssort^N403^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SFree^t^N4^T^Sdisenchant^b^Slog^B^Ssort^N404^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`4^t^N5^T^Sdisenchant^b^Slog^B^Ssort^N405^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`5^t^N6^T^Sdisenchant^b^Slog^B^Ssort^N406^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`6^t^N7^T^Sdisenchant^b^Slog^B^Ssort^N407^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`7^t^N8^T^Sdisenchant^b^Slog^B^Ssort^N408^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`8^t^N9^T^Sdisenchant^b^Slog^B^Ssort^N409^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`9^t^N10^T^Sdisenchant^b^Slog^B^Ssort^N410^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`10^t^t^SenabledButtons^T^t^SonlyUseInRaids^B^SselfVote^B^SannounceText^SItems~`under~`consideration:^Sskins^T^Slegion^T^SbgColor^T^N1^N0.1^N2^N1^N3^N0^N4^N1^t^Sname^SLegion~`Green^SborderColor^T^N1^N0^N2^N0.8^N3^N0^N4^N0.75^t^Sbackground^SBlizzard~`Garrison~`Background~`2^Sborder^SBlizzard~`Dialog~`Gold^t^Snew_blue^T^SbgColor^T^N1^N0^N2^N0^N3^N0.2^N4^N1^t^Sname^SMidnight~`blue^SborderColor^T^N1^N0.3^N2^N0.3^N3^N0.5^N4^N1^t^Sbackground^SBlizzard~`Tooltip^Sborder^SBlizzard~`Tooltip^t^Sbfa^T^SbgColor^T^N1^N0.55^N2^N0.84^N3^N1^N4^N1^t^Sname^SBattle~`for~`Azeroth^SborderColor^T^N1^N0.62^N2^N0.86^N3^N0.87^N4^N0.85^t^Sbackground^SBlizzard~`Garrison~`Background~`3^Sborder^SBlizzard~`Dialog^t^Sold_red^T^SbgColor^T^N1^N0.5^N2^N0^N3^N0^N4^N1^t^Sname^SOld~`golden~`red^SborderColor^T^N1^N1^N2^N0.5^N3^N0^N4^N1^t^Sbackground^SBlizzard~`Dialog~`Background~`Gold^Sborder^SBlizzard~`Tooltip^t^SminimalGrey^T^SbgColor^T^N1^N0.25^N2^N0.25^N3^N0.25^N4^N1^t^Sname^SMinimal~`Grey^SborderColor^T^N1^N1^N2^N1^N3^N1^N4^N0.2^t^Sbackground^SBlizzard~`Tooltip^Sborder^SBlizzard~`Tooltip^t^t^Smodules^T^t^SignoredItems^T^t^SenableHistory^B^SnumAwardReasons^N3^SaltClickLooting^B^SnumMoreInfoButtons^N1^Scouncil^T^t^SautoAddRolls^b^SannounceAward^B^SminimizeInCombat^b^SautolootBoE^B^SautoAwardReason^N1^SannounceChannel^Sgroup^SshowSpecIcon^b^SshowForML^b^Stimeout^N60^Sbuttons^T^Sdefault^T^N1^T^Stext^SNeed^SwhisperKey^Sneed,~`mainspec,~`ms,~`1^t^N2^T^Stext^SGreed^SwhisperKey^Sgreed,~`offspec,~`os,~`2^t^N3^T^Stext^SMinor~`Upgrade^SwhisperKey^Sminorupgrade,~`minor,~`3^t^N4^T^Stext^SButton~`4^SwhisperKey^S4^t^N5^T^Stext^SButton~`5^SwhisperKey^S5^t^N6^T^Stext^SButton~`6^SwhisperKey^S6^t^N7^T^Stext^SButton~`7^SwhisperKey^S7^t^N8^T^Stext^SButton~`8^SwhisperKey^S8^t^N9^T^Stext^SButton~`9^SwhisperKey^S9^t^N10^T^Stext^SButton~`10^SwhisperKey^S10^t^SnumButtons^N3^t^t^SannounceItems^b^SautolootOthersBoE^b^Sresponses^T^Sdefault^T^N1^T^Scolor^T^N1^N0^N2^N1^N3^N0^N4^N1^t^Stext^SMainspec/Need^Ssort^N1^t^N2^T^Scolor^T^N1^N1^N2^N0.5^N3^N0^N4^N1^t^Stext^SOffspec/Greed^Ssort^N2^t^N3^T^Scolor^T^N1^N0^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SMinor~`Upgrade^Ssort^N3^t^N4^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton4^Ssort^N4^t^N5^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton5^Ssort^N5^t^N6^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton6^Ssort^N6^t^N7^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton7^Ssort^N7^t^N8^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton8^Ssort^N8^t^N9^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton9^Ssort^N9^t^N10^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton10^Ssort^N10^t^SNOTINRAID^T^Scolor^T^N1^N0.7^N2^N0.6^N3^N0^N4^N1^t^Stext^SCandidate~`is~`not~`in~`the~`instance^Ssort^N803^t^STIMEOUT^T^Scolor^T^N1^N1^N2^N0^N3^N0^N4^N1^t^Stext^SCandidate~`didn't~`respond~`on~`time^Ssort^N504^t^SNOTHING^T^Scolor^T^N1^N0.5^N2^N0.5^N3^N0.5^N4^N1^t^Stext^SOffline~`or~`RCLootCouncil~`not~`installed^Ssort^N505^t^SWAIT^T^Scolor^T^N1^N1^N2^N1^N3^N0^N4^N1^t^Stext^SCandidate~`is~`selecting~`response,~`please~`wait^Ssort^N503^t^SANNOUNCED^T^Scolor^T^N1^N1^N2^N0^N3^N1^N4^N1^t^Stext^SLoot~`announced,~`waiting~`for~`answer^Ssort^N502^t^SAWARDED^T^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SAwarded^Ssort^N0.1^t^SDEFAULT^T^Scolor^T^N1^N1^N2^N0^N3^N0^N4^N1^t^Stext^SResponse~`isn't~`available.~`Please~`upgrade~`RCLootCouncil.^Ssort^N899^t^SPASS^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SPass^Ssort^N800^t^SPL^T^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^Stext^SPersonal~`Loot~`-~`Non~`tradeable^Ssort^N498^t^SNOTANNOUNCED^T^Scolor^T^N1^N1^N2^N0^N3^N1^N4^N1^t^Stext^SNot~`announced^Ssort^N501^t^SREMOVED^T^Scolor^T^N1^N0.8^N2^N0.5^N3^N0^N4^N1^t^Stext^SCandidate~`removed^Ssort^N505^t^SDISABLED^T^Scolor^T^N1^N0.3^N2^N0.35^N3^N0.5^N4^N1^t^Stext^SCandidate~`has~`disabled~`RCLootCouncil^Ssort^N802^t^SAUTOPASS^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SAutopass^Ssort^N801^t^SPL_REJECT^T^Scolor^T^N1^N0.2^N2^N0^N3^N0^N4^N1^t^Stext^SPersonal~`Loot~`-~`Rejected~`Trade^Ssort^N499^t^t^t^SautoTrade^b^ShideVotes^b^Sambiguate^b^SautoLoot^B^SmultiVote^B^SautoAwardLowerThreshold^N2^SanonymousVoting^b^SallowNotes^B^SannounceItemString^S&s:~`&i^t^t^^ (from:) (Happyjugs) (distri:) (WHISPER)", -- [2417]
-			"21:30:31 - SyncDataReceived (Happyjugs-Sulfuras) (settings)", -- [2418]
-			"21:30:31 - ActivateSkin (bfa)", -- [2419]
-			"21:30:31 - UpdateFrame (DefaultRCLootCouncilFrame)", -- [2420]
-			"21:30:31 - UpdateFrame (DefaultRCLootHistoryFrame)", -- [2421]
-			"21:30:31 - UpdateFrame (DefaultRCSessionSetupFrame)", -- [2422]
-			"21:30:31 - UpdateFrame (DefaultRCLootCouncilSyncFrame)", -- [2423]
-			"21:30:31 - Comm received:^1^SsyncRequest^T^N1^SHappyjugs-Sulfuras^N2^Shistory^t^^ (from:) (Happyjugs) (distri:) (WHISPER)", -- [2424]
-			"21:30:31 - SyncRequestReceived (Happyjugs-Sulfuras) (history)", -- [2425]
-			"21:30:32 - Comm received:^1^Ssync^T^N1^SPlainview-Sulfuras^N2^Shistory^N3^T^SIsellar-Sulfuras^T^N1^T^SmapID^N409^Sdate^S26/11/19^Sclass^SDRUID^SiSubClass^N0^SgroupSize^N40^SisAwardReason^b^Stime^S21:15:02^SiClass^N9^Sid^S1574838902-0^Sowner^SIsellar-Sulfuras^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^SdifficultyID^N9^SlootWon^S|cff1eff00|Hitem:16665::::::::60:::::::|h[Tome~`of~`Tranquilizing~`Shot]|h|r^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^SresponseID^SPL^Sinstance^SMolten~`Core-40~`Player^Sboss^SLucifron^t^t^STinktertot-Sulfuras^T^N1^T^SmapID^N409^Sdate^S27/10/19^Sclass^SWARRIOR^SiSubClass^N4^SgroupSize^N40^SisAwardReason^b^Stime^S22:15:53^SiClass^N4^Sid^S1572268553-2^Sowner^STinktertot-Sulfuras^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^SdifficultyID^N9^SlootWon^S|cffa335ee|Hitem:16861::::::::60:::::::|h[Bracers~`of~`Might]|h|r^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^SresponseID^SPL^Sinstance^SMolten~`Core-40~`Player^Sboss^SOnyxia^t^t^STeaguru-Sulfuras^T^N1^T^SmapID^N409^Sdate^S26/10/19^Sclass^SHUNTER^SiSubClass^N0^SgroupSize^N40^SisAwardReason^b^Stime^S21:50:05^SiClass^N9^Sid^S1572180605-0^Sowner^STeaguru-Sulfuras^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^SdifficultyID^N9^SlootWon^S|cff1eff00|Hitem:16665::::::::60:::::::|h[Tome~`of~`Tranquilizing~`Shot]|h|r^Sboss^SLucifron^SresponseID^SPL^Sinstance^SMolten~`Core-40~`Player^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^t^t^SHolypally-Sulfuras^T^N1^T^SmapID^N249^Sdate^S19/11/19^Sclass^SPALADIN^SiSubClass^N0^SgroupSize^N40^SisAwardReason^b^Stime^S23:48:04^SiClass^N1^Sid^S1574243284-0^Sowner^SHolypally-Sulfuras^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^SdifficultyID^N9^SlootWon^S|cff1eff00|Hitem:17966::::::::60:::::::|h[Onyxia~`Hide~`Backpack]|h|r^Sboss^SOnyxia^SresponseID^SPL^Sinstance^SOnyxia's~`Lair-40~`Player^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^t^t^SCabbagekrust-Sulfuras^T^N1^T^SmapID^N249^Sdate^S26/11/19^Sclass^SMAGE^SiSubClass^N0^SgroupSize^N40^SisAwardReason^b^Stime^S23:19:11^SiClass^N4^Sid^S1574846351-0^Sowner^SCabbagekrust-Sulfuras^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^SdifficultyID^N9^SlootWon^S|cffa335ee|Hitem:17067::::::::60:::::::|h[Ancient~`Cornerstone~`Grimoire]|h|r^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^SresponseID^SPL^Sinstance^SOnyxia's~`Lair-40~`Player^Sboss^SOnyxia^t^N2^T^SmapID^N249^Sdate^S26/11/19^Sclass^SMAGE^SiSubClass^N0^SgroupSize^N40^SisAwardReason^b^Stime^S23:19:52^SiClass^N4^Sid^S1574846392-1^Sowner^SCabbagekrust-Sulfuras^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^SdifficultyID^N9^SlootWon^S|cffa335ee|Hitem:17067::::::::60:::::::|h[Ancient~`Cornerstone~`Grimoire]|h|r^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^SresponseID^SPL^Sinstance^SOnyxia's~`Lair-40~`Player^Sboss^SOnyxia^t^N3^T^SmapID^N249^Sdate^S26/11/19^Sclass^SMAGE^SiSubClass^N0^SgroupSize^N40^SisAwardReason^b^Stime^S23:19:55^SiClass^N4^Sid^S1574846395-2^Sowner^SCabbagekrust-Sulfuras^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^SdifficultyID^N9^SlootWon^S|cffa335ee|Hitem:17067::::::::60:::::::|h[Ancient~`Cornerstone~`Grimoire]|h|r^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^SresponseID^SPL^Sinstance^SOnyxia's~`Lair-40~`Player^Sboss^SOnyxia^t^N4^T^SmapID^N249^Sdate^S26/11/19^Sclass^SMAGE^SiSubClass^N0^SgroupSize^N40^SisAwardReason^b^Stime^S23:20:12^SiClass^N4^Sid^S1574846412-3^Sowner^SCabbagekrust-Sulfuras^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^SdifficultyID^N9^SlootWon^S|cffa335ee|Hitem:17067::::::::60:::::::|h[Ancient~`Cornerstone~`Grimoire]|h|r^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^SresponseID^SPL^Sinstance^SOnyxia's~`Lair-40~`Player^Sboss^SOnyxia^t^N5^T^SmapID^N249^Sdate^S26/11/19^Sclass^SMAGE^SiSubClass^N0^SgroupSize^N40^SisAwardReason^b^Stime^S23:20:22^SiClass^N4^Sid^S1574846422-4^Sowner^SCabbagekrust-Sulfuras^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^SdifficultyID^N9^SlootWon^S|cffa335ee|Hitem:17067::::::::60:::::::|h[Ancient~`Cornerstone~`Grimoire]|h|r^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^SresponseID^SPL^Sinstance^SOnyxia's~`Lair-40~`Player^Sboss^SOnyxia^t^N6^T^SmapID^N409^Sdate^S10/12/19^Sclass^SMAGE^SiSubClass^N0^SgroupSize^N40^SisAwardReason^b^Stime^S23:14:48^SiClass^N4^Sid^S1576055688-0^Sowner^SCabbagekrust-Sulfuras^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^SdifficultyID^N9^SlootWon^S|cffa335ee|Hitem:19138::::::::60:::::::|h[Band~`of~`Sulfuras]|h|r^Sboss^SRagnaros^SresponseID^SPL^Sinstance^SMolten~`Core-40~`Player^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^t^t^t^t^^ (from:) (Plainview) (distri:) (WHISPER)", -- [2426]
-			"21:30:32 - SyncDataReceived (Plainview-Sulfuras) (history)", -- [2427]
-			"21:30:32 - Initiating import", -- [2428]
-			"21:30:32 - Validation completed (true) (0)", -- [2429]
-			"21:30:32 - Import successful", -- [2430]
-			"21:30:34 - OnSyncAccept (Happyjugs-Sulfuras) (history)", -- [2431]
-			"21:30:35 - Comm received:^1^Ssync^T^N1^SHappyjugs-Sulfuras^N2^Shistory^N3^T^SIsellar-Sulfuras^T^N1^T^SmapID^N409^Sdate^S26/11/19^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^Sinstance^SMolten~`Core-40~`Player^Sowner^SIsellar-Sulfuras^SgroupSize^N40^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^SlootWon^S|cff1eff00|Hitem:16665::::::::60:::::::|h[Tome~`of~`Tranquilizing~`Shot]|h|r^SisAwardReason^b^Stime^S21:15:02^SdifficultyID^N9^Sboss^SLucifron^SresponseID^SPL^Sclass^SDRUID^Sid^S1574838902-0^t^t^SHolypally-Sulfuras^T^N1^T^SmapID^N249^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^Sinstance^SOnyxia's~`Lair-40~`Player^Sid^S1574243284-0^Sclass^SPALADIN^SgroupSize^N40^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^Stime^S23:48:04^Sboss^SOnyxia^SlootWon^S|cff1eff00|Hitem:17966::::::::60:::::::|h[Onyxia~`Hide~`Backpack]|h|r^SdifficultyID^N9^SisAwardReason^b^SresponseID^SPL^Sowner^SHolypally-Sulfuras^Sdate^S19/11/19^t^t^SCabbagekrust-Sulfuras^T^N1^T^SmapID^N249^Sdate^S26/11/19^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^Sinstance^SOnyxia's~`Lair-40~`Player^Sowner^SCabbagekrust-Sulfuras^SgroupSize^N40^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^SlootWon^S|cffa335ee|Hitem:17067::::::::60:::::::|h[Ancient~`Cornerstone~`Grimoire]|h|r^SisAwardReason^b^Stime^S23:19:11^SdifficultyID^N9^Sboss^SOnyxia^SresponseID^SPL^Sclass^SMAGE^Sid^S1574846351-0^t^N2^T^SmapID^N249^Sdate^S26/11/19^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^Sinstance^SOnyxia's~`Lair-40~`Player^Sowner^SCabbagekrust-Sulfuras^SgroupSize^N40^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^SlootWon^S|cffa335ee|Hitem:17067::::::::60:::::::|h[Ancient~`Cornerstone~`Grimoire]|h|r^SisAwardReason^b^Stime^S23:19:52^SdifficultyID^N9^Sboss^SOnyxia^SresponseID^SPL^Sclass^SMAGE^Sid^S1574846392-1^t^N3^T^SmapID^N249^Sdate^S26/11/19^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^Sinstance^SOnyxia's~`Lair-40~`Player^Sowner^SCabbagekrust-Sulfuras^SgroupSize^N40^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^SlootWon^S|cffa335ee|Hitem:17067::::::::60:::::::|h[Ancient~`Cornerstone~`Grimoire]|h|r^SisAwardReason^b^Stime^S23:19:55^SdifficultyID^N9^Sboss^SOnyxia^SresponseID^SPL^Sclass^SMAGE^Sid^S1574846395-2^t^N4^T^SmapID^N249^Sdate^S26/11/19^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^Sinstance^SOnyxia's~`Lair-40~`Player^Sowner^SCabbagekrust-Sulfuras^SgroupSize^N40^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^SlootWon^S|cffa335ee|Hitem:17067::::::::60:::::::|h[Ancient~`Cornerstone~`Grimoire]|h|r^SisAwardReason^b^Stime^S23:20:12^SdifficultyID^N9^Sboss^SOnyxia^SresponseID^SPL^Sclass^SMAGE^Sid^S1574846412-3^t^N5^T^SmapID^N249^Sdate^S26/11/19^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^Sinstance^SOnyxia's~`Lair-40~`Player^Sowner^SCabbagekrust-Sulfuras^SgroupSize^N40^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^SlootWon^S|cffa335ee|Hitem:17067::::::::60:::::::|h[Ancient~`Cornerstone~`Grimoire]|h|r^SisAwardReason^b^Stime^S23:20:22^SdifficultyID^N9^Sboss^SOnyxia^SresponseID^SPL^Sclass^SMAGE^Sid^S1574846422-4^t^N6^T^SmapID^N409^Sid^S1576055688-0^Sclass^SMAGE^Sdate^S10/12/19^Sowner^SCabbagekrust-Sulfuras^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^SgroupSize^N40^Sboss^SRagnaros^SisAwardReason^b^SlootWon^S|cffa335ee|Hitem:19138::::::::60:::::::|h[Band~`of~`Sulfuras]|h|r^SdifficultyID^N9^Stime^S23:14:48^SresponseID^SPL^Sinstance^SMolten~`Core-40~`Player^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^t^t^t^t^^ (from:) (Happyjugs) (distri:) (WHISPER)", -- [2432]
-			"21:30:35 - SyncDataReceived (Happyjugs-Sulfuras) (history)", -- [2433]
-			"21:30:35 - Initiating import", -- [2434]
-			"21:30:35 - Validation completed (true) (0)", -- [2435]
-			"21:30:35 - Import successful", -- [2436]
-			"21:30:55 - Comm received:^1^SverTest^T^N1^S0.4.2^t^^ (from:) (Sanction) (distri:) (GUILD)", -- [2437]
-			"21:31:02 - Comm received:^1^SsyncRequest^T^N1^SShway-Sulfuras^N2^Shistory^t^^ (from:) (Shway) (distri:) (WHISPER)", -- [2438]
-			"21:31:02 - SyncRequestReceived (Shway-Sulfuras) (history)", -- [2439]
-			"21:31:03 - OnSyncAccept (Shway-Sulfuras) (history)", -- [2440]
-			"21:31:03 - Comm received:^1^Ssync^T^N1^SShway-Sulfuras^N2^Shistory^N3^T^SIsellar-Sulfuras^T^N1^T^SmapID^N409^Sid^S1574838902-0^Sdate^S26/11/19^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^Sclass^SDRUID^SgroupSize^N40^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^Stime^S21:15:02^Sboss^SLucifron^SlootWon^S|cff1eff00|Hitem:16665::::::::60:::::::|h[Tome~`of~`Tranquilizing~`Shot]|h|r^SdifficultyID^N9^SisAwardReason^b^SresponseID^SPL^Sowner^SIsellar-Sulfuras^Sinstance^SMolten~`Core-40~`Player^t^t^SHolypally-Sulfuras^T^N1^T^SmapID^N249^Sinstance^SOnyxia's~`Lair-40~`Player^Sowner^SHolypally-Sulfuras^Sid^S1574243284-0^Sclass^SPALADIN^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^SgroupSize^N40^SisAwardReason^b^Sboss^SOnyxia^Stime^S23:48:04^SdifficultyID^N9^SlootWon^S|cff1eff00|Hitem:17966::::::::60:::::::|h[Onyxia~`Hide~`Backpack]|h|r^SresponseID^SPL^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^Sdate^S19/11/19^t^t^SCabbagekrust-Sulfuras^T^N1^T^SmapID^N249^Sid^S1574846351-0^Sdate^S26/11/19^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^Sclass^SMAGE^SgroupSize^N40^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^Stime^S23:19:11^Sboss^SOnyxia^SlootWon^S|cffa335ee|Hitem:17067::::::::60:::::::|h[Ancient~`Cornerstone~`Grimoire]|h|r^SdifficultyID^N9^SisAwardReason^b^SresponseID^SPL^Sowner^SCabbagekrust-Sulfuras^Sinstance^SOnyxia's~`Lair-40~`Player^t^N2^T^SmapID^N249^Sid^S1574846392-1^Sdate^S26/11/19^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^Sclass^SMAGE^SgroupSize^N40^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^Stime^S23:19:52^Sboss^SOnyxia^SlootWon^S|cffa335ee|Hitem:17067::::::::60:::::::|h[Ancient~`Cornerstone~`Grimoire]|h|r^SdifficultyID^N9^SisAwardReason^b^SresponseID^SPL^Sowner^SCabbagekrust-Sulfuras^Sinstance^SOnyxia's~`Lair-40~`Player^t^N3^T^SmapID^N249^Sid^S1574846395-2^Sdate^S26/11/19^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^Sclass^SMAGE^SgroupSize^N40^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^Stime^S23:19:55^Sboss^SOnyxia^SlootWon^S|cffa335ee|Hitem:17067::::::::60:::::::|h[Ancient~`Cornerstone~`Grimoire]|h|r^SdifficultyID^N9^SisAwardReason^b^SresponseID^SPL^Sowner^SCabbagekrust-Sulfuras^Sinstance^SOnyxia's~`Lair-40~`Player^t^N4^T^SmapID^N249^Sid^S1574846412-3^Sdate^S26/11/19^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^Sclass^SMAGE^SgroupSize^N40^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^Stime^S23:20:12^Sboss^SOnyxia^SlootWon^S|cffa335ee|Hitem:17067::::::::60:::::::|h[Ancient~`Cornerstone~`Grimoire]|h|r^SdifficultyID^N9^SisAwardReason^b^SresponseID^SPL^Sowner^SCabbagekrust-Sulfuras^Sinstance^SOnyxia's~`Lair-40~`Player^t^N5^T^SmapID^N249^Sid^S1574846422-4^Sdate^S26/11/19^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^Sclass^SMAGE^SgroupSize^N40^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^Stime^S23:20:22^Sboss^SOnyxia^SlootWon^S|cffa335ee|Hitem:17067::::::::60:::::::|h[Ancient~`Cornerstone~`Grimoire]|h|r^SdifficultyID^N9^SisAwardReason^b^SresponseID^SPL^Sowner^SCabbagekrust-Sulfuras^Sinstance^SOnyxia's~`Lair-40~`Player^t^N6^T^SmapID^N409^Sid^S1576055688-0^Sclass^SMAGE^Sdate^S10/12/19^Sowner^SCabbagekrust-Sulfuras^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^SgroupSize^N40^Sboss^SRagnaros^SisAwardReason^b^SlootWon^S|cffa335ee|Hitem:19138::::::::60:::::::|h[Band~`of~`Sulfuras]|h|r^SdifficultyID^N9^Stime^S23:14:48^SresponseID^SPL^Sinstance^SMolten~`Core-40~`Player^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^t^t^t^t^^ (from:) (Shway) (distri:) (WHISPER)", -- [2441]
-			"21:31:03 - SyncDataReceived (Shway-Sulfuras) (history)", -- [2442]
-			"21:31:03 - Initiating import", -- [2443]
-			"21:31:03 - Validation completed (true) (0)", -- [2444]
-			"21:31:03 - Import successful", -- [2445]
-			"21:31:05 - ML event (PLAYER_REGEN_ENABLED)", -- [2446]
-			"21:31:06 - Event: (LOOT_READY) (true)", -- [2447]
-			"21:31:06 - Comm received:^1^SverTest^T^N1^S0.4.2^t^^ (from:) (Malakpierre) (distri:) (GUILD)", -- [2448]
-			"21:31:07 - LootOpened", -- [2449]
-			"21:31:07 - Rebuilding lootSlot (1) (in ClassicModule:LoopOpened)", -- [2450]
-			"21:31:07 - Event: (LOOT_READY) (true)", -- [2451]
-			"21:31:11 - LootClosed", -- [2452]
-			"21:31:11 - Event: (LOOT_READY) (true)", -- [2453]
-			"21:31:12 - LootOpened", -- [2454]
-			"21:31:12 - Rebuilding lootSlot (1) (in ClassicModule:LoopOpened)", -- [2455]
-			"21:31:12 - Event: (LOOT_READY) (true)", -- [2456]
-			"21:31:13 - LootClosed", -- [2457]
-			"21:31:15 - Comm received:^1^SsyncRequest^T^N1^SShway-Sulfuras^N2^Shistory^t^^ (from:) (Shway) (distri:) (WHISPER)", -- [2458]
-			"21:31:15 - SyncRequestReceived (Shway-Sulfuras) (history)", -- [2459]
-			"21:31:15 - Comm received:^1^SplayerInfo^T^N1^SLrdvoldemort-Sulfuras^N2^SMAGE^N4^SRaider^N6^N0^N7^N62.76^t^^ (from:) (Lrdvoldemort) (distri:) (WHISPER)", -- [2460]
-			"21:31:15 - ML:AddCandidate (Lrdvoldemort-Sulfuras) (MAGE) (nil) (Raider) (nil) (0) (62.76) (nil)", -- [2461]
-			"21:31:15 - Comm received:^1^SverTest^T^N1^S0.3.1^t^^ (from:) (Lrdvoldemort) (distri:) (GUILD)", -- [2462]
-			"21:31:16 - OnSyncAccept (Shway-Sulfuras) (history)", -- [2463]
-			"21:31:16 - Comm received:^1^Sreconnect^T^t^^ (from:) (Lrdvoldemort) (distri:) (WHISPER)", -- [2464]
-			"21:31:16 - Responded to reconnect from (Lrdvoldemort)", -- [2465]
-			"21:31:16 - Comm received:^1^Ssync^T^N1^SShway-Sulfuras^N2^Shistory^N3^T^SIsellar-Sulfuras^T^N1^T^SmapID^N409^Sid^S1574838902-0^Sdate^S26/11/19^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^Sclass^SDRUID^SgroupSize^N40^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^Stime^S21:15:02^Sboss^SLucifron^SlootWon^S|cff1eff00|Hitem:16665::::::::60:::::::|h[Tome~`of~`Tranquilizing~`Shot]|h|r^SdifficultyID^N9^SisAwardReason^b^SresponseID^SPL^Sowner^SIsellar-Sulfuras^Sinstance^SMolten~`Core-40~`Player^t^t^SHolypally-Sulfuras^T^N1^T^SmapID^N249^Sinstance^SOnyxia's~`Lair-40~`Player^Sowner^SHolypally-Sulfuras^Sid^S1574243284-0^Sclass^SPALADIN^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^SgroupSize^N40^SisAwardReason^b^Sboss^SOnyxia^Stime^S23:48:04^SdifficultyID^N9^SlootWon^S|cff1eff00|Hitem:17966::::::::60:::::::|h[Onyxia~`Hide~`Backpack]|h|r^SresponseID^SPL^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^Sdate^S19/11/19^t^t^SCabbagekrust-Sulfuras^T^N1^T^SmapID^N249^Sid^S1574846351-0^Sdate^S26/11/19^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^Sclass^SMAGE^SgroupSize^N40^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^Stime^S23:19:11^Sboss^SOnyxia^SlootWon^S|cffa335ee|Hitem:17067::::::::60:::::::|h[Ancient~`Cornerstone~`Grimoire]|h|r^SdifficultyID^N9^SisAwardReason^b^SresponseID^SPL^Sowner^SCabbagekrust-Sulfuras^Sinstance^SOnyxia's~`Lair-40~`Player^t^N2^T^SmapID^N249^Sid^S1574846392-1^Sdate^S26/11/19^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^Sclass^SMAGE^SgroupSize^N40^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^Stime^S23:19:52^Sboss^SOnyxia^SlootWon^S|cffa335ee|Hitem:17067::::::::60:::::::|h[Ancient~`Cornerstone~`Grimoire]|h|r^SdifficultyID^N9^SisAwardReason^b^SresponseID^SPL^Sowner^SCabbagekrust-Sulfuras^Sinstance^SOnyxia's~`Lair-40~`Player^t^N3^T^SmapID^N249^Sid^S1574846395-2^Sdate^S26/11/19^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^Sclass^SMAGE^SgroupSize^N40^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^Stime^S23:19:55^Sboss^SOnyxia^SlootWon^S|cffa335ee|Hitem:17067::::::::60:::::::|h[Ancient~`Cornerstone~`Grimoire]|h|r^SdifficultyID^N9^SisAwardReason^b^SresponseID^SPL^Sowner^SCabbagekrust-Sulfuras^Sinstance^SOnyxia's~`Lair-40~`Player^t^N4^T^SmapID^N249^Sid^S1574846412-3^Sdate^S26/11/19^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^Sclass^SMAGE^SgroupSize^N40^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^Stime^S23:20:12^Sboss^SOnyxia^SlootWon^S|cffa335ee|Hitem:17067::::::::60:::::::|h[Ancient~`Cornerstone~`Grimoire]|h|r^SdifficultyID^N9^SisAwardReason^b^SresponseID^SPL^Sowner^SCabbagekrust-Sulfuras^Sinstance^SOnyxia's~`Lair-40~`Player^t^N5^T^SmapID^N249^Sid^S1574846422-4^Sdate^S26/11/19^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^Sclass^SMAGE^SgroupSize^N40^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^Stime^S23:20:22^Sboss^SOnyxia^SlootWon^S|cffa335ee|Hitem:17067::::::::60:::::::|h[Ancient~`Cornerstone~`Grimoire]|h|r^SdifficultyID^N9^SisAwardReason^b^SresponseID^SPL^Sowner^SCabbagekrust-Sulfuras^Sinstance^SOnyxia's~`Lair-40~`Player^t^N6^T^SmapID^N409^Sid^S1576055688-0^Sclass^SMAGE^Sdate^S10/12/19^Sowner^SCabbagekrust-Sulfuras^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^SgroupSize^N40^Sboss^SRagnaros^SisAwardReason^b^SlootWon^S|cffa335ee|Hitem:19138::::::::60:::::::|h[Band~`of~`Sulfuras]|h|r^SdifficultyID^N9^Stime^S23:14:48^SresponseID^SPL^Sinstance^SMolten~`Core-40~`Player^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^t^t^t^t^^ (from:) (Shway) (distri:) (WHISPER)", -- [2466]
-			"21:31:16 - SyncDataReceived (Shway-Sulfuras) (history)", -- [2467]
-			"21:31:16 - Initiating import", -- [2468]
-			"21:31:16 - Validation completed (true) (0)", -- [2469]
-			"21:31:16 - Import successful", -- [2470]
-			"21:31:56 - ML event (PLAYER_REGEN_ENABLED)", -- [2471]
-			"21:31:59 - VotingFrame:Update() without lootTable!!", -- [2472]
-			"21:32:08 - UpdateGroup (table: 0000012E6C015380)", -- [2473]
-			"21:32:08 - ML:AddCandidate (Minica-Sulfuras) (WARRIOR) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [2474]
-			"21:32:08 - ML:AddCandidate (Plainview-Sulfuras) (HUNTER) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [2475]
-			"21:32:08 - ML:AddCandidate (Sanction-Sulfuras) (WARLOCK) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [2476]
-			"21:32:08 - ML:AddCandidate (Shway-Sulfuras) (ROGUE) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [2477]
-			"21:32:08 - ML:AddCandidate (Happyjugs-Sulfuras) (PALADIN) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [2478]
-			"21:32:08 - ML:AddCandidate (Odarnwewiped-Sulfuras) (PRIEST) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [2479]
-			"21:32:08 - ML:AddCandidate (Acroyear-Sulfuras) (MAGE) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [2480]
-			"21:32:08 - ML:AddCandidate (Lrdvoldemort-Sulfuras) (MAGE) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [2481]
-			"21:32:08 - GetCouncilInGroup (Hashmeer-Sulfuras)", -- [2482]
-			"21:32:08 - Comm received:^1^SMLdb^T^N1^T^SallowNotes^B^Stimeout^N60^SselfVote^B^Sresponses^T^Sdefault^T^t^t^SmultiVote^B^Sbuttons^T^Sdefault^T^SnumButtons^N3^t^t^SnumButtons^N3^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [2483]
-			"21:32:08 - Comm received:^1^Scandidates^T^N1^T^SLinky-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SKaldeezer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SRaider^t^SSanction-Sulfuras^T^Srole^SNONE^Sclass^SWARLOCK^Srank^S^t^SMinica-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SAgora-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SFistandalus-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SPALADIN^Srank^STrial^t^SPipers-Sulfuras^T^Srole^SNONE^Sclass^SDRUID^Srank^S^t^SSaidar-Sulfuras^T^Srole^SNONE^Sclass^SPRIEST^Srank^S^t^SHoogs-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SPRIEST^Srank^SClass~`Leader^t^SHealwho-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPALADIN^Senchanter^B^Srank^SMember^t^SLexxii-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SDerekowns-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SBomann-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^STrial^t^SShway-Sulfuras^T^Srole^SNONE^Sclass^SROGUE^Srank^S^t^SAcroyear-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SHelles-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SOdarnwewiped-Sulfuras^T^Srole^SNONE^Sclass^SPRIEST^Srank^S^t^SHappyjugs-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SHolypally-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SSlimmthicc-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPRIEST^Senchanter^B^Srank^SRaider^t^SHashmeer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SSenior~`Officer^t^SLrdvoldemort-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SMcmac-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SClass~`Leader^t^SBountybull-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SMAGE^Senchanter^B^Srank^SRaider^t^SSgtdrock-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^STrial^t^STopshelf-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SGuild~`Master^t^SSchmilsson-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SSenior~`Officer^t^SPlainview-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SRenae-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SGurdurs-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SOfficer^t^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [2484]
-			"21:32:08 - Comm received:^1^Scouncil^T^N1^T^N1^SHashmeer-Sulfuras^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [2485]
-			"21:32:08 - true = (IsCouncil) (Hashmeer-Sulfuras)", -- [2486]
-			"21:32:08 - Comm received:^1^SplayerInfo^T^N1^SSanction-Sulfuras^N2^SWARLOCK^N3^SNONE^N4^SRaider^N6^N0^N7^N61.06^t^^ (from:) (Sanction) (distri:) (WHISPER)", -- [2487]
-			"21:32:08 - ML:AddCandidate (Sanction-Sulfuras) (WARLOCK) (NONE) (Raider) (nil) (0) (61.06) (nil)", -- [2488]
-			"21:32:08 - Comm received:^1^SplayerInfo^T^N1^SMinica-Sulfuras^N2^SWARRIOR^N4^SOfficer^N6^N0^N7^N59.95^t^^ (from:) (Minica) (distri:) (WHISPER)", -- [2489]
-			"21:32:08 - ML:AddCandidate (Minica-Sulfuras) (WARRIOR) (nil) (Officer) (nil) (0) (59.95) (nil)", -- [2490]
-			"21:32:08 - Comm received:^1^SplayerInfo^T^N1^SLrdvoldemort-Sulfuras^N2^SMAGE^N4^SRaider^N6^N0^N7^N62.76^t^^ (from:) (Lrdvoldemort) (distri:) (WHISPER)", -- [2491]
-			"21:32:08 - ML:AddCandidate (Lrdvoldemort-Sulfuras) (MAGE) (nil) (Raider) (nil) (0) (62.76) (nil)", -- [2492]
-			"21:32:08 - Comm received:^1^SplayerInfo^T^N1^SPlainview-Sulfuras^N2^SHUNTER^N4^SRaider^N6^N0^N7^N59.11^t^^ (from:) (Plainview) (distri:) (WHISPER)", -- [2493]
-			"21:32:08 - ML:AddCandidate (Plainview-Sulfuras) (HUNTER) (nil) (Raider) (nil) (0) (59.11) (nil)", -- [2494]
-			"21:32:08 - Comm received:^1^SplayerInfo^T^N1^SShway-Sulfuras^N2^SROGUE^N4^SRaider^N6^N0^N7^N59.37^t^^ (from:) (Shway) (distri:) (WHISPER)", -- [2495]
-			"21:32:08 - ML:AddCandidate (Shway-Sulfuras) (ROGUE) (nil) (Raider) (nil) (0) (59.37) (nil)", -- [2496]
-			"21:32:08 - Comm received:^1^SplayerInfo^T^N1^SAcroyear-Sulfuras^N2^SMAGE^N4^SRaider^N6^N0^N7^N53.95^t^^ (from:) (Acroyear) (distri:) (WHISPER)", -- [2497]
-			"21:32:08 - ML:AddCandidate (Acroyear-Sulfuras) (MAGE) (nil) (Raider) (nil) (0) (53.95) (nil)", -- [2498]
-			"21:32:08 - Comm received:^1^SplayerInfo^T^N1^SOdarnwewiped-Sulfuras^N2^SPRIEST^N4^SRaider^N6^N0^N7^N58.88^t^^ (from:) (Odarnwewiped) (distri:) (WHISPER)", -- [2499]
-			"21:32:08 - ML:AddCandidate (Odarnwewiped-Sulfuras) (PRIEST) (nil) (Raider) (nil) (0) (58.88) (nil)", -- [2500]
-			"21:32:09 - Comm received:^1^SplayerInfo^T^N1^SHappyjugs-Sulfuras^N2^SPALADIN^N4^SRaider^N6^N0^N7^N58.12^t^^ (from:) (Happyjugs) (distri:) (WHISPER)", -- [2501]
-			"21:32:09 - ML:AddCandidate (Happyjugs-Sulfuras) (PALADIN) (nil) (Raider) (nil) (0) (58.12) (nil)", -- [2502]
-			"21:32:22 - ML event (PLAYER_REGEN_ENABLED)", -- [2503]
-			"21:32:32 - ML event (CHAT_MSG_WHISPER) (do you have me on your lootcouncil? if not please open) (Shway-Sulfuras) () () (Shway) () (0) (0) () (0) (6305) (Player-4726-00B893D9) (0) (false) (false) (false) (false)", -- [2504]
-			"21:32:35 - VotingFrame:Update() without lootTable!!", -- [2505]
-			"21:32:36 - TradeUI: Traded item(s) to (Bountybull-Sulfuras)", -- [2506]
-			"21:32:36 - TradeUI:Show() (nil)", -- [2507]
-			"21:32:36 - TradeUI:Hide()", -- [2508]
-			"21:32:44 - UpdateGroup (table: 0000012E6C015380)", -- [2509]
-			"21:32:44 - ML:AddCandidate (Minica-Sulfuras) (WARRIOR) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [2510]
-			"21:32:44 - ML:AddCandidate (Plainview-Sulfuras) (HUNTER) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [2511]
-			"21:32:44 - ML:AddCandidate (Shway-Sulfuras) (ROGUE) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [2512]
-			"21:32:44 - ML:AddCandidate (Happyjugs-Sulfuras) (PALADIN) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [2513]
-			"21:32:44 - ML:AddCandidate (Odarnwewiped-Sulfuras) (PRIEST) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [2514]
-			"21:32:44 - ML:AddCandidate (Acroyear-Sulfuras) (MAGE) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [2515]
-			"21:32:44 - ML:AddCandidate (Lrdvoldemort-Sulfuras) (MAGE) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [2516]
-			"21:32:44 - ML:AddCandidate (Malakpierre-Sulfuras) (WARRIOR) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [2517]
-			"21:32:44 - GetCouncilInGroup (Hashmeer-Sulfuras)", -- [2518]
-			"21:32:44 - Comm received:^1^SMLdb^T^N1^T^SallowNotes^B^Stimeout^N60^SselfVote^B^Sresponses^T^Sdefault^T^t^t^SmultiVote^B^Sbuttons^T^Sdefault^T^SnumButtons^N3^t^t^SnumButtons^N3^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [2519]
-			"21:32:44 - Comm received:^1^Scandidates^T^N1^T^SLinky-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SKaldeezer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SRaider^t^SMalakpierre-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SSanction-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SRaider^t^SMinica-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SAgora-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SFistandalus-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SPALADIN^Srank^STrial^t^SPipers-Sulfuras^T^Srole^SNONE^Sclass^SDRUID^Srank^S^t^SSaidar-Sulfuras^T^Srole^SNONE^Sclass^SPRIEST^Srank^S^t^SHoogs-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SPRIEST^Srank^SClass~`Leader^t^SHealwho-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPALADIN^Senchanter^B^Srank^SMember^t^SLexxii-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SDerekowns-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SBomann-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^STrial^t^SShway-Sulfuras^T^Srole^SNONE^Sclass^SROGUE^Srank^S^t^SAcroyear-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SHelles-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SOdarnwewiped-Sulfuras^T^Srole^SNONE^Sclass^SPRIEST^Srank^S^t^SHappyjugs-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SHolypally-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SSlimmthicc-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPRIEST^Senchanter^B^Srank^SRaider^t^SHashmeer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SSenior~`Officer^t^SLrdvoldemort-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SMcmac-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SClass~`Leader^t^SBountybull-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SMAGE^Senchanter^B^Srank^SRaider^t^SSgtdrock-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^STrial^t^STopshelf-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SGuild~`Master^t^SSchmilsson-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SSenior~`Officer^t^SPlainview-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SRenae-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SGurdurs-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SOfficer^t^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [2520]
-			"21:32:44 - Comm received:^1^SplayerInfo^T^N1^SMalakpierre-Sulfuras^N2^SWARRIOR^N3^SNONE^N4^STrial^N6^N0^N7^N58.39^t^^ (from:) (Malakpierre) (distri:) (WHISPER)", -- [2521]
-			"21:32:44 - ML:AddCandidate (Malakpierre-Sulfuras) (WARRIOR) (NONE) (Trial) (nil) (0) (58.39) (nil)", -- [2522]
-			"21:32:44 - Comm received:^1^SplayerInfo^T^N1^SMinica-Sulfuras^N2^SWARRIOR^N4^SOfficer^N6^N0^N7^N59.95^t^^ (from:) (Minica) (distri:) (WHISPER)", -- [2523]
-			"21:32:44 - ML:AddCandidate (Minica-Sulfuras) (WARRIOR) (nil) (Officer) (nil) (0) (59.95) (nil)", -- [2524]
-			"21:32:44 - Comm received:^1^SplayerInfo^T^N1^SLrdvoldemort-Sulfuras^N2^SMAGE^N4^SRaider^N6^N0^N7^N62.76^t^^ (from:) (Lrdvoldemort) (distri:) (WHISPER)", -- [2525]
-			"21:32:44 - ML:AddCandidate (Lrdvoldemort-Sulfuras) (MAGE) (nil) (Raider) (nil) (0) (62.76) (nil)", -- [2526]
-			"21:32:44 - Comm received:^1^SplayerInfo^T^N1^SPlainview-Sulfuras^N2^SHUNTER^N4^SRaider^N6^N0^N7^N59.11^t^^ (from:) (Plainview) (distri:) (WHISPER)", -- [2527]
-			"21:32:44 - ML:AddCandidate (Plainview-Sulfuras) (HUNTER) (nil) (Raider) (nil) (0) (59.11) (nil)", -- [2528]
-			"21:32:44 - Comm received:^1^SplayerInfo^T^N1^SAcroyear-Sulfuras^N2^SMAGE^N4^SRaider^N6^N0^N7^N53.95^t^^ (from:) (Acroyear) (distri:) (WHISPER)", -- [2529]
-			"21:32:44 - ML:AddCandidate (Acroyear-Sulfuras) (MAGE) (nil) (Raider) (nil) (0) (53.95) (nil)", -- [2530]
-			"21:32:44 - Comm received:^1^SplayerInfo^T^N1^SShway-Sulfuras^N2^SROGUE^N4^SRaider^N6^N0^N7^N59.37^t^^ (from:) (Shway) (distri:) (WHISPER)", -- [2531]
-			"21:32:44 - ML:AddCandidate (Shway-Sulfuras) (ROGUE) (nil) (Raider) (nil) (0) (59.37) (nil)", -- [2532]
-			"21:32:44 - Comm received:^1^SplayerInfo^T^N1^SOdarnwewiped-Sulfuras^N2^SPRIEST^N4^SRaider^N6^N0^N7^N58.88^t^^ (from:) (Odarnwewiped) (distri:) (WHISPER)", -- [2533]
-			"21:32:44 - ML:AddCandidate (Odarnwewiped-Sulfuras) (PRIEST) (nil) (Raider) (nil) (0) (58.88) (nil)", -- [2534]
-			"21:32:44 - Comm received:^1^SplayerInfo^T^N1^SHappyjugs-Sulfuras^N2^SPALADIN^N4^SRaider^N6^N0^N7^N58.12^t^^ (from:) (Happyjugs) (distri:) (WHISPER)", -- [2535]
-			"21:32:44 - ML:AddCandidate (Happyjugs-Sulfuras) (PALADIN) (nil) (Raider) (nil) (0) (58.12) (nil)", -- [2536]
-			"21:32:49 - Comm received:^1^Scouncil_request^T^t^^ (from:) (Malakpierre) (distri:) (WHISPER)", -- [2537]
-			"21:32:49 - Comm received:^1^Scouncil_request^T^t^^ (from:) (Malakpierre) (distri:) (WHISPER)", -- [2538]
-			"21:32:49 - Comm received:^1^SsyncRequest^T^N1^SShway-Sulfuras^N2^Ssettings^t^^ (from:) (Shway) (distri:) (WHISPER)", -- [2539]
-			"21:32:49 - SyncRequestReceived (Shway-Sulfuras) (settings)", -- [2540]
-			"21:32:49 - Comm received:^1^Scouncil^T^N1^T^N1^SHashmeer-Sulfuras^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [2541]
-			"21:32:49 - true = (IsCouncil) (Hashmeer-Sulfuras)", -- [2542]
-			"21:32:49 - Comm received:^1^Scouncil^T^N1^T^N1^SHashmeer-Sulfuras^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [2543]
-			"21:32:49 - true = (IsCouncil) (Hashmeer-Sulfuras)", -- [2544]
-			"21:32:50 - OnSyncAccept (Shway-Sulfuras) (settings)", -- [2545]
-			"21:32:56 - Comm received:^1^Ssync^T^N1^SShway-Sulfuras^N2^Ssettings^N3^T^Sdisenchant^B^SitemStorage^T^t^SacceptWhispers^B^SautoClose^b^SautolootEverything^B^SautoPassBoE^b^SminRank^N-1^SautoOpen^B^SmaxButtons^N10^SsendHistory^B^SautoPassTrinket^b^SautoAwardTo^SNone^SsilentAutoPass^b^SmaxAwardReasons^N10^SprintResponse^b^SawardText^T^N1^T^Schannel^Sgroup^Stext^S&p~`was~`awarded~`with~`&i~`for~`&r!^t^N2^T^Schannel^SNONE^Stext^S^t^t^Susage^T^Sstate^Sask_ml^Snever^b^Sml^b^Sask_ml^B^t^SbaggedItems^T^t^SautoPass^B^SiLvlDecimal^b^SautoAward^b^SsortItems^B^SautoAwardUpperThreshold^N3^Sobserve^b^ScurrentSkin^Sbfa^SautoStart^b^SUI^T^Stradeui^T^SbgColor^T^N1^N0.55^N2^N0.84^N3^N1^N4^N1^t^Sx^N-300^Spoint^SCENTER^SborderColor^T^N1^N0.62^N2^N0.86^N3^N0.87^N4^N0.85^t^Sscale^N1.1^Sbackground^SBlizzard~`Garrison~`Background~`3^Sborder^SBlizzard~`Dialog^Sy^N0^t^Slootframe^T^SbgColor^T^N1^N0.55^N2^N0.84^N3^N1^N4^N1^t^Sx^F4591899705359363^f-48^Spoint^SBOTTOM^SborderColor^T^N1^N0.62^N2^N0.86^N3^N0.87^N4^N0.85^t^Sscale^F4953959697481737^f-52^Sbackground^SBlizzard~`Garrison~`Background~`3^Sborder^SBlizzard~`Dialog^Sy^F8701567637823750^f-47^t^Sdefault^T^SbgColor^T^N1^N0.55^N2^N0.84^N3^N1^N4^N1^t^Sx^N0^Spoint^SCENTER^SborderColor^T^N1^N0.62^N2^N0.86^N3^N0.87^N4^N0.85^t^Sscale^N1.1^Sbackground^SBlizzard~`Garrison~`Background~`3^Sborder^SBlizzard~`Dialog^Sy^N0^t^Ssync^T^Sy^F5780020958068736^f-69^Sx^F7072497950261248^f-67^Spoint^SCENTER^SborderColor^T^N1^N0.3^N2^N0.3^N3^N0.5^N4^N1^t^Sscale^F4953959697481728^f-52^Sbackground^SBlizzard~`Tooltip^Sborder^SBlizzard~`Tooltip^SbgColor^T^N1^N0^N2^N0^N3^N0.2^N4^N1^t^t^t^SawardReasons^T^N1^T^Sdisenchant^B^Slog^B^Ssort^N401^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SDisenchant^t^N2^T^Sdisenchant^b^Slog^B^Ssort^N402^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SBanking^t^N3^T^Sdisenchant^b^Slog^b^Ssort^N403^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SFree^t^N4^T^Sdisenchant^b^Slog^B^Ssort^N404^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`4^t^N5^T^Sdisenchant^b^Slog^B^Ssort^N405^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`5^t^N6^T^Sdisenchant^b^Slog^B^Ssort^N406^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`6^t^N7^T^Sdisenchant^b^Slog^B^Ssort^N407^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`7^t^N8^T^Sdisenchant^b^Slog^B^Ssort^N408^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`8^t^N9^T^Sdisenchant^b^Slog^B^Ssort^N409^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`9^t^N10^T^Sdisenchant^b^Slog^B^Ssort^N410^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SReason~`10^t^t^SenabledButtons^T^t^SonlyUseInRaids^B^SselfVote^B^SannounceText^SItems~`under~`consideration:^Sskins^T^Slegion^T^SbgColor^T^N1^N0.1^N2^N1^N3^N0^N4^N1^t^Sname^SLegion~`Green^SborderColor^T^N1^N0^N2^N0.8^N3^N0^N4^N0.75^t^Sbackground^SBlizzard~`Garrison~`Background~`2^Sborder^SBlizzard~`Dialog~`Gold^t^Snew_blue^T^SbgColor^T^N1^N0^N2^N0^N3^N0.2^N4^N1^t^Sname^SMidnight~`blue^SborderColor^T^N1^N0.3^N2^N0.3^N3^N0.5^N4^N1^t^Sbackground^SBlizzard~`Tooltip^Sborder^SBlizzard~`Tooltip^t^Sbfa^T^SbgColor^T^N1^N0.55^N2^N0.84^N3^N1^N4^N1^t^Sname^SBattle~`for~`Azeroth^SborderColor^T^N1^N0.62^N2^N0.86^N3^N0.87^N4^N0.85^t^Sbackground^SBlizzard~`Garrison~`Background~`3^Sborder^SBlizzard~`Dialog^t^Sold_red^T^SbgColor^T^N1^N0.5^N2^N0^N3^N0^N4^N1^t^Sname^SOld~`golden~`red^SborderColor^T^N1^N1^N2^N0.5^N3^N0^N4^N1^t^Sbackground^SBlizzard~`Dialog~`Background~`Gold^Sborder^SBlizzard~`Tooltip^t^SminimalGrey^T^SbgColor^T^N1^N0.25^N2^N0.25^N3^N0.25^N4^N1^t^Sname^SMinimal~`Grey^SborderColor^T^N1^N1^N2^N1^N3^N1^N4^N0.2^t^Sbackground^SBlizzard~`Tooltip^Sborder^SBlizzard~`Tooltip^t^t^Smodules^T^t^SignoredItems^T^t^SenableHistory^B^SnumAwardReasons^N3^SaltClickLooting^B^SnumMoreInfoButtons^N1^Scouncil^T^t^SautoAddRolls^b^SannounceAward^B^SminimizeInCombat^b^SautolootBoE^B^SautoAwardReason^N1^SannounceChannel^Sgroup^SshowSpecIcon^b^SshowForML^b^Stimeout^N60^Sbuttons^T^Sdefault^T^N1^T^Stext^SNeed^SwhisperKey^Sneed,~`mainspec,~`ms,~`1^t^N2^T^Stext^SGreed^SwhisperKey^Sgreed,~`offspec,~`os,~`2^t^N3^T^Stext^SMinor~`Upgrade^SwhisperKey^Sminorupgrade,~`minor,~`3^t^N4^T^Stext^SButton~`4^SwhisperKey^S4^t^N5^T^Stext^SButton~`5^SwhisperKey^S5^t^N6^T^Stext^SButton~`6^SwhisperKey^S6^t^N7^T^Stext^SButton~`7^SwhisperKey^S7^t^N8^T^Stext^SButton~`8^SwhisperKey^S8^t^N9^T^Stext^SButton~`9^SwhisperKey^S9^t^N10^T^Stext^SButton~`10^SwhisperKey^S10^t^SnumButtons^N3^t^t^SannounceItems^b^SautolootOthersBoE^b^Sresponses^T^Sdefault^T^N1^T^Scolor^T^N1^N0^N2^N1^N3^N0^N4^N1^t^Stext^SMainspec/Need^Ssort^N1^t^N2^T^Scolor^T^N1^N1^N2^N0.5^N3^N0^N4^N1^t^Stext^SOffspec/Greed^Ssort^N2^t^N3^T^Scolor^T^N1^N0^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SMinor~`Upgrade^Ssort^N3^t^N4^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton4^Ssort^N4^t^N5^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton5^Ssort^N5^t^N6^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton6^Ssort^N6^t^N7^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton7^Ssort^N7^t^N8^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton8^Ssort^N8^t^N9^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton9^Ssort^N9^t^N10^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SButton10^Ssort^N10^t^SNOTINRAID^T^Scolor^T^N1^N0.7^N2^N0.6^N3^N0^N4^N1^t^Stext^SCandidate~`is~`not~`in~`the~`instance^Ssort^N803^t^STIMEOUT^T^Scolor^T^N1^N1^N2^N0^N3^N0^N4^N1^t^Stext^SCandidate~`didn't~`respond~`on~`time^Ssort^N504^t^SNOTHING^T^Scolor^T^N1^N0.5^N2^N0.5^N3^N0.5^N4^N1^t^Stext^SOffline~`or~`RCLootCouncil~`not~`installed^Ssort^N505^t^SWAIT^T^Scolor^T^N1^N1^N2^N1^N3^N0^N4^N1^t^Stext^SCandidate~`is~`selecting~`response,~`please~`wait^Ssort^N503^t^SANNOUNCED^T^Scolor^T^N1^N1^N2^N0^N3^N1^N4^N1^t^Stext^SLoot~`announced,~`waiting~`for~`answer^Ssort^N502^t^SAWARDED^T^Scolor^T^N1^N1^N2^N1^N3^N1^N4^N1^t^Stext^SAwarded^Ssort^N0.1^t^SDEFAULT^T^Scolor^T^N1^N1^N2^N0^N3^N0^N4^N1^t^Stext^SResponse~`isn't~`available.~`Please~`upgrade~`RCLootCouncil.^Ssort^N899^t^SPASS^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SPass^Ssort^N800^t^SPL^T^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^Stext^SPersonal~`Loot~`-~`Non~`tradeable^Ssort^N498^t^SNOTANNOUNCED^T^Scolor^T^N1^N1^N2^N0^N3^N1^N4^N1^t^Stext^SNot~`announced^Ssort^N501^t^SREMOVED^T^Scolor^T^N1^N0.8^N2^N0.5^N3^N0^N4^N1^t^Stext^SCandidate~`removed^Ssort^N505^t^SDISABLED^T^Scolor^T^N1^N0.3^N2^N0.35^N3^N0.5^N4^N1^t^Stext^SCandidate~`has~`disabled~`RCLootCouncil^Ssort^N802^t^SAUTOPASS^T^Scolor^T^N1^N0.7^N2^N0.7^N3^N0.7^N4^N1^t^Stext^SAutopass^Ssort^N801^t^SPL_REJECT^T^Scolor^T^N1^N0.2^N2^N0^N3^N0^N4^N1^t^Stext^SPersonal~`Loot~`-~`Rejected~`Trade^Ssort^N499^t^t^t^SautoTrade^b^ShideVotes^b^Sambiguate^b^SautoLoot^B^SmultiVote^B^SautoAwardLowerThreshold^N2^SanonymousVoting^b^SallowNotes^B^SannounceItemString^S&s:~`&i^t^t^^ (from:) (Shway) (distri:) (WHISPER)", -- [2546]
-			"21:32:56 - SyncDataReceived (Shway-Sulfuras) (settings)", -- [2547]
-			"21:32:56 - ActivateSkin (bfa)", -- [2548]
-			"21:32:56 - UpdateFrame (DefaultRCLootCouncilFrame)", -- [2549]
-			"21:32:56 - UpdateFrame (DefaultRCLootHistoryFrame)", -- [2550]
-			"21:32:56 - UpdateFrame (DefaultRCSessionSetupFrame)", -- [2551]
-			"21:32:56 - UpdateFrame (DefaultRCLootCouncilSyncFrame)", -- [2552]
-			"21:32:56 - UpdateFrame (RCDefaultTradeUIFrame)", -- [2553]
-			"21:33:00 - Comm received:^1^SsyncRequest^T^N1^SShway-Sulfuras^N2^Shistory^t^^ (from:) (Shway) (distri:) (WHISPER)", -- [2554]
-			"21:33:00 - SyncRequestReceived (Shway-Sulfuras) (history)", -- [2555]
-			"21:33:01 - OnSyncAccept (Shway-Sulfuras) (history)", -- [2556]
-			"21:33:01 - Comm received:^1^Ssync^T^N1^SShway-Sulfuras^N2^Shistory^N3^T^SIsellar-Sulfuras^T^N1^T^SmapID^N409^Sid^S1574838902-0^Sdate^S26/11/19^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^Sclass^SDRUID^SgroupSize^N40^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^Stime^S21:15:02^Sboss^SLucifron^SlootWon^S|cff1eff00|Hitem:16665::::::::60:::::::|h[Tome~`of~`Tranquilizing~`Shot]|h|r^SdifficultyID^N9^SisAwardReason^b^SresponseID^SPL^Sowner^SIsellar-Sulfuras^Sinstance^SMolten~`Core-40~`Player^t^t^SHolypally-Sulfuras^T^N1^T^SmapID^N249^Sinstance^SOnyxia's~`Lair-40~`Player^Sowner^SHolypally-Sulfuras^Sid^S1574243284-0^Sclass^SPALADIN^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^SgroupSize^N40^SisAwardReason^b^Sboss^SOnyxia^Stime^S23:48:04^SdifficultyID^N9^SlootWon^S|cff1eff00|Hitem:17966::::::::60:::::::|h[Onyxia~`Hide~`Backpack]|h|r^SresponseID^SPL^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^Sdate^S19/11/19^t^t^SCabbagekrust-Sulfuras^T^N1^T^SmapID^N249^Sid^S1574846351-0^Sdate^S26/11/19^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^Sclass^SMAGE^SgroupSize^N40^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^Stime^S23:19:11^Sboss^SOnyxia^SlootWon^S|cffa335ee|Hitem:17067::::::::60:::::::|h[Ancient~`Cornerstone~`Grimoire]|h|r^SdifficultyID^N9^SisAwardReason^b^SresponseID^SPL^Sowner^SCabbagekrust-Sulfuras^Sinstance^SOnyxia's~`Lair-40~`Player^t^N2^T^SmapID^N249^Sid^S1574846392-1^Sdate^S26/11/19^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^Sclass^SMAGE^SgroupSize^N40^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^Stime^S23:19:52^Sboss^SOnyxia^SlootWon^S|cffa335ee|Hitem:17067::::::::60:::::::|h[Ancient~`Cornerstone~`Grimoire]|h|r^SdifficultyID^N9^SisAwardReason^b^SresponseID^SPL^Sowner^SCabbagekrust-Sulfuras^Sinstance^SOnyxia's~`Lair-40~`Player^t^N3^T^SmapID^N249^Sid^S1574846395-2^Sdate^S26/11/19^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^Sclass^SMAGE^SgroupSize^N40^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^Stime^S23:19:55^Sboss^SOnyxia^SlootWon^S|cffa335ee|Hitem:17067::::::::60:::::::|h[Ancient~`Cornerstone~`Grimoire]|h|r^SdifficultyID^N9^SisAwardReason^b^SresponseID^SPL^Sowner^SCabbagekrust-Sulfuras^Sinstance^SOnyxia's~`Lair-40~`Player^t^N4^T^SmapID^N249^Sid^S1574846412-3^Sdate^S26/11/19^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^Sclass^SMAGE^SgroupSize^N40^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^Stime^S23:20:12^Sboss^SOnyxia^SlootWon^S|cffa335ee|Hitem:17067::::::::60:::::::|h[Ancient~`Cornerstone~`Grimoire]|h|r^SdifficultyID^N9^SisAwardReason^b^SresponseID^SPL^Sowner^SCabbagekrust-Sulfuras^Sinstance^SOnyxia's~`Lair-40~`Player^t^N5^T^SmapID^N249^Sid^S1574846422-4^Sdate^S26/11/19^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^Sclass^SMAGE^SgroupSize^N40^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^Stime^S23:20:22^Sboss^SOnyxia^SlootWon^S|cffa335ee|Hitem:17067::::::::60:::::::|h[Ancient~`Cornerstone~`Grimoire]|h|r^SdifficultyID^N9^SisAwardReason^b^SresponseID^SPL^Sowner^SCabbagekrust-Sulfuras^Sinstance^SOnyxia's~`Lair-40~`Player^t^N6^T^SmapID^N409^Sid^S1576055688-0^Sclass^SMAGE^Sdate^S10/12/19^Sowner^SCabbagekrust-Sulfuras^Sresponse^SPersonal~`Loot~`-~`Non~`tradeable^SgroupSize^N40^Sboss^SRagnaros^SisAwardReason^b^SlootWon^S|cffa335ee|Hitem:19138::::::::60:::::::|h[Band~`of~`Sulfuras]|h|r^SdifficultyID^N9^Stime^S23:14:48^SresponseID^SPL^Sinstance^SMolten~`Core-40~`Player^Scolor^T^N1^N1^N2^N0.6^N3^N0^N4^N1^t^t^t^t^t^^ (from:) (Shway) (distri:) (WHISPER)", -- [2557]
-			"21:33:01 - SyncDataReceived (Shway-Sulfuras) (history)", -- [2558]
-			"21:33:01 - Initiating import", -- [2559]
-			"21:33:01 - Validation completed (true) (0)", -- [2560]
-			"21:33:01 - Import successful", -- [2561]
-			"21:33:18 - ML event (CHAT_MSG_WHISPER) (areyou able to tell if it worked? i think it did on my end) (Shway-Sulfuras) () () (Shway) () (0) (0) () (0) (6323) (Player-4726-00B893D9) (0) (false) (false) (false) (false)", -- [2562]
-			"21:33:28 - UpdateGroup (table: 0000012E6C015380)", -- [2563]
-			"21:33:28 - ML:AddCandidate (Minica-Sulfuras) (WARRIOR) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [2564]
-			"21:33:28 - ML:AddCandidate (Plainview-Sulfuras) (HUNTER) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [2565]
-			"21:33:28 - ML:AddCandidate (Shway-Sulfuras) (ROGUE) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [2566]
-			"21:33:28 - ML:AddCandidate (Happyjugs-Sulfuras) (PALADIN) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [2567]
-			"21:33:28 - ML:AddCandidate (Odarnwewiped-Sulfuras) (PRIEST) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [2568]
-			"21:33:28 - ML:AddCandidate (Acroyear-Sulfuras) (MAGE) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [2569]
-			"21:33:28 - ML:AddCandidate (Lrdvoldemort-Sulfuras) (MAGE) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [2570]
-			"21:33:29 - GetCouncilInGroup (Hashmeer-Sulfuras)", -- [2571]
-			"21:33:29 - Comm received:^1^SMLdb^T^N1^T^SallowNotes^B^Stimeout^N60^SselfVote^B^Sresponses^T^Sdefault^T^t^t^SmultiVote^B^Sbuttons^T^Sdefault^T^SnumButtons^N3^t^t^SnumButtons^N3^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [2572]
-			"21:33:29 - Comm received:^1^Scandidates^T^N1^T^SLinky-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SKaldeezer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SRaider^t^SMalakpierre-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^STrial^t^SSanction-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SRaider^t^SMinica-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SAgora-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SFistandalus-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SPALADIN^Srank^STrial^t^SPipers-Sulfuras^T^Srole^SNONE^Sclass^SDRUID^Srank^S^t^SSaidar-Sulfuras^T^Srole^SNONE^Sclass^SPRIEST^Srank^S^t^SHoogs-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SPRIEST^Srank^SClass~`Leader^t^SHealwho-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPALADIN^Senchanter^B^Srank^SMember^t^SLexxii-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SDerekowns-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SBomann-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^STrial^t^SShway-Sulfuras^T^Srole^SNONE^Sclass^SROGUE^Srank^S^t^SAcroyear-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SHelles-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SOdarnwewiped-Sulfuras^T^Srole^SNONE^Sclass^SPRIEST^Srank^S^t^SHappyjugs-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SHolypally-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SSlimmthicc-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPRIEST^Senchanter^B^Srank^SRaider^t^SHashmeer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SSenior~`Officer^t^SLrdvoldemort-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SMcmac-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SClass~`Leader^t^SBountybull-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SMAGE^Senchanter^B^Srank^SRaider^t^SSgtdrock-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^STrial^t^STopshelf-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SGuild~`Master^t^SSchmilsson-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SSenior~`Officer^t^SPlainview-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SRenae-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SGurdurs-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SOfficer^t^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [2573]
-			"21:33:29 - Comm received:^1^SplayerInfo^T^N1^SMinica-Sulfuras^N2^SWARRIOR^N4^SOfficer^N6^N0^N7^N59.95^t^^ (from:) (Minica) (distri:) (WHISPER)", -- [2574]
-			"21:33:29 - ML:AddCandidate (Minica-Sulfuras) (WARRIOR) (nil) (Officer) (nil) (0) (59.95) (nil)", -- [2575]
-			"21:33:29 - Comm received:^1^SplayerInfo^T^N1^SLrdvoldemort-Sulfuras^N2^SMAGE^N4^SRaider^N6^N0^N7^N62.76^t^^ (from:) (Lrdvoldemort) (distri:) (WHISPER)", -- [2576]
-			"21:33:29 - ML:AddCandidate (Lrdvoldemort-Sulfuras) (MAGE) (nil) (Raider) (nil) (0) (62.76) (nil)", -- [2577]
-			"21:33:29 - Comm received:^1^SplayerInfo^T^N1^SShway-Sulfuras^N2^SROGUE^N4^SRaider^N6^N0^N7^N59.37^t^^ (from:) (Shway) (distri:) (WHISPER)", -- [2578]
-			"21:33:29 - ML:AddCandidate (Shway-Sulfuras) (ROGUE) (nil) (Raider) (nil) (0) (59.37) (nil)", -- [2579]
-			"21:33:29 - Comm received:^1^SplayerInfo^T^N1^SAcroyear-Sulfuras^N2^SMAGE^N4^SRaider^N6^N0^N7^N53.95^t^^ (from:) (Acroyear) (distri:) (WHISPER)", -- [2580]
-			"21:33:29 - ML:AddCandidate (Acroyear-Sulfuras) (MAGE) (nil) (Raider) (nil) (0) (53.95) (nil)", -- [2581]
-			"21:33:29 - Comm received:^1^SplayerInfo^T^N1^SOdarnwewiped-Sulfuras^N2^SPRIEST^N4^SRaider^N6^N0^N7^N58.88^t^^ (from:) (Odarnwewiped) (distri:) (WHISPER)", -- [2582]
-			"21:33:29 - ML:AddCandidate (Odarnwewiped-Sulfuras) (PRIEST) (nil) (Raider) (nil) (0) (58.88) (nil)", -- [2583]
-			"21:33:29 - Comm received:^1^SplayerInfo^T^N1^SHappyjugs-Sulfuras^N2^SPALADIN^N4^SRaider^N6^N0^N7^N58.12^t^^ (from:) (Happyjugs) (distri:) (WHISPER)", -- [2584]
-			"21:33:29 - ML:AddCandidate (Happyjugs-Sulfuras) (PALADIN) (nil) (Raider) (nil) (0) (58.12) (nil)", -- [2585]
-			"21:33:29 - Comm received:^1^SplayerInfo^T^N1^SPlainview-Sulfuras^N2^SHUNTER^N4^SRaider^N6^N0^N7^N59.11^t^^ (from:) (Plainview) (distri:) (WHISPER)", -- [2586]
-			"21:33:29 - ML:AddCandidate (Plainview-Sulfuras) (HUNTER) (nil) (Raider) (nil) (0) (59.11) (nil)", -- [2587]
-			"21:33:33 - ML event (CHAT_MSG_WHISPER) (ty) (Shway-Sulfuras) () () (Shway) () (0) (0) () (0) (6330) (Player-4726-00B893D9) (0) (false) (false) (false) (false)", -- [2588]
-			"21:33:35 - VotingFrame:Update() without lootTable!!", -- [2589]
-			"21:33:42 - ML event (PLAYER_REGEN_ENABLED)", -- [2590]
-			"21:34:00 - ML event (CHAT_MSG_WHISPER) (when i get in i need you to toss me a summon :)) (Sanction-Sulfuras) () () (Sanction) () (0) (0) () (0) (6339) (Player-4726-00A93DFC) (0) (false) (false) (false) (false)", -- [2591]
-			"21:34:01 - UpdateGroup (table: 0000012E6C015380)", -- [2592]
-			"21:34:01 - ML:AddCandidate (Minica-Sulfuras) (WARRIOR) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [2593]
-			"21:34:01 - ML:AddCandidate (Plainview-Sulfuras) (HUNTER) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [2594]
-			"21:34:01 - ML:AddCandidate (Shway-Sulfuras) (ROGUE) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [2595]
-			"21:34:01 - ML:AddCandidate (Happyjugs-Sulfuras) (PALADIN) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [2596]
-			"21:34:01 - ML:AddCandidate (Odarnwewiped-Sulfuras) (PRIEST) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [2597]
-			"21:34:01 - ML:AddCandidate (Acroyear-Sulfuras) (MAGE) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [2598]
-			"21:34:01 - ML:AddCandidate (Lrdvoldemort-Sulfuras) (MAGE) (NONE) (nil) (nil) (nil) (nil) (nil)", -- [2599]
-			"21:34:01 - GetCouncilInGroup (Hashmeer-Sulfuras)", -- [2600]
-			"21:34:02 - Comm received:^1^SMLdb^T^N1^T^SallowNotes^B^Stimeout^N60^SselfVote^B^Sresponses^T^Sdefault^T^t^t^SmultiVote^B^Sbuttons^T^Sdefault^T^SnumButtons^N3^t^t^SnumButtons^N3^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [2601]
-			"21:34:02 - Comm received:^1^Scandidates^T^N1^T^SLinky-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SKaldeezer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SRaider^t^SMalakpierre-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^STrial^t^SSanction-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SRaider^t^SMinica-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SAgora-Sulfuras^T^Srole^SNONE^Sclass^SWARRIOR^Srank^S^t^SFistandalus-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SPALADIN^Srank^STrial^t^SPipers-Sulfuras^T^Srole^SNONE^Sclass^SDRUID^Srank^S^t^SSaidar-Sulfuras^T^Srole^SNONE^Sclass^SPRIEST^Srank^S^t^SHoogs-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SPRIEST^Srank^SClass~`Leader^t^SHealwho-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPALADIN^Senchanter^B^Srank^SMember^t^SLexxii-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SDerekowns-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SBomann-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^STrial^t^SShway-Sulfuras^T^Srole^SNONE^Sclass^SROGUE^Srank^S^t^SAcroyear-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SHelles-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SOdarnwewiped-Sulfuras^T^Srole^SNONE^Sclass^SPRIEST^Srank^S^t^SHappyjugs-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SHolypally-Sulfuras^T^Srole^SNONE^Sclass^SPALADIN^Srank^S^t^SSlimmthicc-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SPRIEST^Senchanter^B^Srank^SRaider^t^SHashmeer-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SSenior~`Officer^t^SLrdvoldemort-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SMcmac-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SClass~`Leader^t^SBountybull-Sulfuras^T^Srole^SNONE^Senchant_lvl^S<~`300^Sclass^SMAGE^Senchanter^B^Srank^SRaider^t^SSgtdrock-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^STrial^t^STopshelf-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SDRUID^Srank^SGuild~`Master^t^SSchmilsson-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SSenior~`Officer^t^SPlainview-Sulfuras^T^Srole^SNONE^Sclass^SHUNTER^Srank^S^t^SRenae-Sulfuras^T^Srole^SNONE^Sclass^SMAGE^Srank^S^t^SGurdurs-Sulfuras^T^Srole^SNONE^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SOfficer^t^t^t^^ (from:) (Hashmeer) (distri:) (RAID)", -- [2602]
-			"21:34:02 - Comm received:^1^SplayerInfo^T^N1^SMinica-Sulfuras^N2^SWARRIOR^N4^SOfficer^N6^N0^N7^N59.95^t^^ (from:) (Minica) (distri:) (WHISPER)", -- [2603]
-			"21:34:02 - ML:AddCandidate (Minica-Sulfuras) (WARRIOR) (nil) (Officer) (nil) (0) (59.95) (nil)", -- [2604]
-			"21:34:02 - Comm received:^1^SplayerInfo^T^N1^SLrdvoldemort-Sulfuras^N2^SMAGE^N4^SRaider^N6^N0^N7^N62.76^t^^ (from:) (Lrdvoldemort) (distri:) (WHISPER)", -- [2605]
-			"21:34:02 - ML:AddCandidate (Lrdvoldemort-Sulfuras) (MAGE) (nil) (Raider) (nil) (0) (62.76) (nil)", -- [2606]
-			"21:34:02 - Comm received:^1^SplayerInfo^T^N1^SAcroyear-Sulfuras^N2^SMAGE^N4^SRaider^N6^N0^N7^N53.95^t^^ (from:) (Acroyear) (distri:) (WHISPER)", -- [2607]
-			"21:34:02 - ML:AddCandidate (Acroyear-Sulfuras) (MAGE) (nil) (Raider) (nil) (0) (53.95) (nil)", -- [2608]
-			"21:34:02 - Comm received:^1^SplayerInfo^T^N1^SShway-Sulfuras^N2^SROGUE^N4^SRaider^N6^N0^N7^N59.37^t^^ (from:) (Shway) (distri:) (WHISPER)", -- [2609]
-			"21:34:02 - ML:AddCandidate (Shway-Sulfuras) (ROGUE) (nil) (Raider) (nil) (0) (59.37) (nil)", -- [2610]
-			"21:34:02 - Comm received:^1^SplayerInfo^T^N1^SPlainview-Sulfuras^N2^SHUNTER^N4^SRaider^N6^N0^N7^N59.11^t^^ (from:) (Plainview) (distri:) (WHISPER)", -- [2611]
-			"21:34:02 - ML:AddCandidate (Plainview-Sulfuras) (HUNTER) (nil) (Raider) (nil) (0) (59.11) (nil)", -- [2612]
-			"21:34:02 - Comm received:^1^SplayerInfo^T^N1^SOdarnwewiped-Sulfuras^N2^SPRIEST^N4^SRaider^N6^N0^N7^N58.88^t^^ (from:) (Odarnwewiped) (distri:) (WHISPER)", -- [2613]
-			"21:34:02 - ML:AddCandidate (Odarnwewiped-Sulfuras) (PRIEST) (nil) (Raider) (nil) (0) (58.88) (nil)", -- [2614]
-			"21:34:02 - Comm received:^1^SplayerInfo^T^N1^SHappyjugs-Sulfuras^N2^SPALADIN^N4^SRaider^N6^N0^N7^N58.12^t^^ (from:) (Happyjugs) (distri:) (WHISPER)", -- [2615]
-			"21:34:02 - ML:AddCandidate (Happyjugs-Sulfuras) (PALADIN) (nil) (Raider) (nil) (0) (58.12) (nil)", -- [2616]
-		},
-		["0.3.1"] = {
-			["entries"] = 0,
-			["colors"] = 0,
-			["responses"] = 0,
-			["buttons"] = 0,
-		},
-		["Classic_oldVersion"] = "0.4.2",
-		["oldVersion"] = "2.15.1",
-		["verTestCandidates"] = {
-			["Blues-Sulfuras"] = {
-				"0.4.2", -- [1]
-				nil, -- [2]
-				1576086387, -- [3]
-			},
-			["Jinzoe-Sulfuras"] = {
-				"2.14.0", -- [1]
-				nil, -- [2]
-				1576465819, -- [3]
-			},
-			["Jayriot-Sulfuras"] = {
-				"0.4.2", -- [1]
-				nil, -- [2]
-				1576272515, -- [3]
-			},
-			["Leothoras-Sulfuras"] = {
-				"0.4.2", -- [1]
-				nil, -- [2]
-				1576474345, -- [3]
-			},
-			["Hoogs-Sulfuras"] = {
-				"0.4.2", -- [1]
-				nil, -- [2]
-				1576636276, -- [3]
-			},
-			["Renae-Sulfuras"] = {
-				"0.4.2", -- [1]
-				nil, -- [2]
-				1576636276, -- [3]
-			},
-			["Yeetyaboi-Sulfuras"] = {
-				"0.4.2", -- [1]
-				nil, -- [2]
-				1576473514, -- [3]
-			},
-			["Summonu-Sulfuras"] = {
-				"2.14.0", -- [1]
-				nil, -- [2]
-				1576621300, -- [3]
-			},
-			["Bluefir-Sulfuras"] = {
-				"0.4.2", -- [1]
-				nil, -- [2]
-				1576101305, -- [3]
-			},
-			["Gadariz-Sulfuras"] = {
-				"0.4.2", -- [1]
-				nil, -- [2]
-				1576456132, -- [3]
-			},
-			["Mushimushi-Sulfuras"] = {
-				"2.14.0", -- [1]
-				nil, -- [2]
-				1576634242, -- [3]
-			},
-			["Melvin-Sulfuras"] = {
-				"0.4.2", -- [1]
-				nil, -- [2]
-				1576636276, -- [3]
-			},
-			["Pidgeethot-Sulfuras"] = {
-				"0.4.2", -- [1]
-				nil, -- [2]
-				1576636276, -- [3]
-			},
-			["Callmeblinky-Sulfuras"] = {
-				"0.5.0", -- [1]
-				"Beta.1", -- [2]
-				1576635971, -- [3]
-			},
-			["Slimmthicc-Sulfuras"] = {
-				"0.4.2", -- [1]
-				nil, -- [2]
-				1576636276, -- [3]
-			},
-			["Valenge-Sulfuras"] = {
-				"0.4.2", -- [1]
-				nil, -- [2]
-				1576555424, -- [3]
-			},
-			["Evilgnomly-Sulfuras"] = {
-				"0.4.2", -- [1]
-				nil, -- [2]
-				1576302625, -- [3]
-			},
-			["Guptigupta-Sulfuras"] = {
-				"0.4.2", -- [1]
-				nil, -- [2]
-				1576606190, -- [3]
-			},
-			["Babycooker-Sulfuras"] = {
-				"0.3.1", -- [1]
-				nil, -- [2]
-				1576635091, -- [3]
-			},
-			["Sgtdrock-Sulfuras"] = {
-				"0.5.0", -- [1]
-				"Beta.1", -- [2]
-				1576636276, -- [3]
-			},
-			["Daughty-Sulfuras"] = {
-				"2.15.1", -- [1]
-				nil, -- [2]
-				1576615502, -- [3]
-			},
-			["Liak-Sulfuras"] = {
-				"0.4.2", -- [1]
-				nil, -- [2]
-				1576460885, -- [3]
-			},
-			["Phizzurp-Sulfuras"] = {
-				"0.3.1", -- [1]
-				nil, -- [2]
-				1576358864, -- [3]
-			},
-			["Lrdvoldemort-Sulfuras"] = {
-				"0.3.1", -- [1]
-				nil, -- [2]
-				1576636275, -- [3]
-			},
-			["Kaz-Sulfuras"] = {
-				"0.4.2", -- [1]
-				nil, -- [2]
-				1576635129, -- [3]
-			},
-			["Negaphil-Sulfuras"] = {
-				"0.3.1", -- [1]
-				nil, -- [2]
-				1576040532, -- [3]
-			},
-			["Birddogg-Sulfuras"] = {
-				"0.5.0", -- [1]
-				"Beta.1", -- [2]
-				1576563516, -- [3]
-			},
-			["Gadaris-Sulfuras"] = {
-				"0.4.2", -- [1]
-				nil, -- [2]
-				1576634447, -- [3]
-			},
-			["Bomann-Sulfuras"] = {
-				"0.5.0", -- [1]
-				"Beta.1", -- [2]
-				1576636276, -- [3]
-			},
-			["Zodameth-Sulfuras"] = {
-				"0.4.1", -- [1]
-				nil, -- [2]
-				1576264311, -- [3]
-			},
-			["Topshelf-Sulfuras"] = {
-				"0.5.0", -- [1]
-				"Beta.1", -- [2]
-				1576636276, -- [3]
-			},
-			["Pipers-Sulfuras"] = {
-				"2.14.0", -- [1]
-				nil, -- [2]
-				1576636276, -- [3]
-			},
-			["Fistandalus-Sulfuras"] = {
-				"0.4.2", -- [1]
-				nil, -- [2]
-				1576636276, -- [3]
-			},
-			["Isellar-Sulfuras"] = {
-				"0.4.2", -- [1]
-				nil, -- [2]
-				1576046134, -- [3]
-			},
-			["Carrihae-Sulfuras"] = {
-				"0.5.0", -- [1]
-				"Beta.1", -- [2]
-				1576614891, -- [3]
-			},
-			["Healwho-Sulfuras"] = {
-				"0.4.2", -- [1]
-				nil, -- [2]
-				1576636276, -- [3]
-			},
-			["Zordeuxvdeux-Sulfuras"] = {
-				"0.3.1", -- [1]
-				nil, -- [2]
-				1576472686, -- [3]
-			},
-			["Radioflyer-Sulfuras"] = {
-				"0.4.2", -- [1]
-				nil, -- [2]
-				1576272543, -- [3]
-			},
-			["Bishii-Sulfuras"] = {
-				"2.14.0", -- [1]
-				nil, -- [2]
-				1576126433, -- [3]
-			},
-			["Kevab-Sulfuras"] = {
-				"0.4.2", -- [1]
-				nil, -- [2]
-				1576472686, -- [3]
-			},
-			["Sanction-Sulfuras"] = {
-				"0.4.2", -- [1]
-				nil, -- [2]
-				1576636276, -- [3]
-			},
-			["Elôhim-Sulfuras"] = {
-				"0.5.0", -- [1]
-				"Beta.1", -- [2]
-				1576623177, -- [3]
-			},
-			["Alcohlina-Sulfuras"] = {
-				"0.4.2", -- [1]
-				nil, -- [2]
-				1576620151, -- [3]
-			},
-			["Ughash-Sulfuras"] = {
-				"0.4.2", -- [1]
-				nil, -- [2]
-				1576047062, -- [3]
-			},
-			["Shadman-Sulfuras"] = {
-				"0.5.0", -- [1]
-				"Beta.1", -- [2]
-				1576636276, -- [3]
-			},
-			["Halfkorean-Sulfuras"] = {
-				"2.14.0", -- [1]
-				nil, -- [2]
-				1576178783, -- [3]
-			},
-			["Scarleet-Sulfuras"] = {
-				"0.4.2", -- [1]
-				nil, -- [2]
-				1576621299, -- [3]
-			},
-			["Increma-Sulfuras"] = {
-				"0.4.2", -- [1]
-				nil, -- [2]
-				1576636276, -- [3]
-			},
-			["Krushem-Sulfuras"] = {
-				"0.4.2", -- [1]
-				nil, -- [2]
-				1576607162, -- [3]
-			},
-			["Holypally-Sulfuras"] = {
-				"0.4.2", -- [1]
-				nil, -- [2]
-				1576636276, -- [3]
-			},
-			["Levikilla-Sulfuras"] = {
-				"0.4.2", -- [1]
-				nil, -- [2]
-				1576557246, -- [3]
-			},
-			["Rivane-Sulfuras"] = {
-				"0.5.0", -- [1]
-				"Beta.1", -- [2]
-				1576636276, -- [3]
-			},
-			["Schmilsson-Sulfuras"] = {
-				"0.4.2", -- [1]
-				nil, -- [2]
-				1576636276, -- [3]
-			},
-			["Rykas-Sulfuras"] = {
-				"0.4.2", -- [1]
-				nil, -- [2]
-				1576563516, -- [3]
-			},
-			["Tankmedaddy-Sulfuras"] = {
-				"0.4.2", -- [1]
-				nil, -- [2]
-				1576617796, -- [3]
-			},
-			["Wantedbankto-Sulfuras"] = {
-				"0.4.2", -- [1]
-				nil, -- [2]
-				1576194071, -- [3]
-			},
-			["Vesseria-Sulfuras"] = {
-				"0.4.2", -- [1]
-				nil, -- [2]
-				1576563516, -- [3]
-			},
-			["Kaldeezer-Sulfuras"] = {
-				"0.4.2", -- [1]
-				nil, -- [2]
-				1576636276, -- [3]
-			},
-			["Bartrarac-Sulfuras"] = {
-				"0.4.2", -- [1]
-				nil, -- [2]
-				1576636276, -- [3]
-			},
-			["Minica-Sulfuras"] = {
-				"2.14.0", -- [1]
-				nil, -- [2]
-				1576636276, -- [3]
-			},
-			["Helles-Sulfuras"] = {
-				"0.5.0", -- [1]
-				"Beta.1", -- [2]
-				1576636276, -- [3]
-			},
-			["Invisiboo-Sulfuras"] = {
-				"0.4.2", -- [1]
-				nil, -- [2]
-				1576556272, -- [3]
-			},
-			["Booms-Sulfuras"] = {
-				"0.4.2", -- [1]
-				nil, -- [2]
-				1576636276, -- [3]
-			},
-			["Plainview-Sulfuras"] = {
-				"0.3.1", -- [1]
-				nil, -- [2]
-				1576636276, -- [3]
-			},
-			["Splice-Sulfuras"] = {
-				"0.5.0", -- [1]
-				"Beta.1", -- [2]
-				1576621446, -- [3]
-			},
-			["Cramp-Sulfuras"] = {
-				"0.4.0", -- [1]
-				nil, -- [2]
-				1576636276, -- [3]
-			},
-			["Cleria-Sulfuras"] = {
-				"0.5.0", -- [1]
-				"Beta.1", -- [2]
-				1576560956, -- [3]
-			},
-			["Dérek-Sulfuras"] = {
-				"2.14.0", -- [1]
-				nil, -- [2]
-				1576620151, -- [3]
-			},
-			["Derekowns-Sulfuras"] = {
-				"2.14.0", -- [1]
-				nil, -- [2]
-				1576636276, -- [3]
-			},
-			["Glocktopus-Sulfuras"] = {
-				"0.4.2", -- [1]
-				nil, -- [2]
-				1576046008, -- [3]
-			},
-			["Powder-Sulfuras"] = {
-				"0.4.0", -- [1]
-				nil, -- [2]
-				1576088144, -- [3]
-			},
-			["Acroyear-Sulfuras"] = {
-				"0.3.1", -- [1]
-				nil, -- [2]
-				1576636276, -- [3]
-			},
-			["Iskorka-Sulfuras"] = {
-				"0.4.2", -- [1]
-				nil, -- [2]
-				1576476265, -- [3]
-			},
-			["Happyjugs-Sulfuras"] = {
-				"2.14.0", -- [1]
-				nil, -- [2]
-				1576636276, -- [3]
-			},
-			["Bromance-Sulfuras"] = {
-				"0.5.0", -- [1]
-				"Beta.1", -- [2]
-				1576622260, -- [3]
-			},
-			["Asepticn-Sulfuras"] = {
-				"0.5.0", -- [1]
-				"Beta.1", -- [2]
-				1576623177, -- [3]
-			},
-			["Jerrold-Sulfuras"] = {
-				"0.4.2", -- [1]
-				nil, -- [2]
-				1576612291, -- [3]
-			},
-			["Sapngrope-Sulfuras"] = {
-				"2.14.0", -- [1]
-				nil, -- [2]
-				1576040741, -- [3]
-			},
-			["Latoz-Sulfuras"] = {
-				"0.4.2", -- [1]
-				nil, -- [2]
-				1576636276, -- [3]
-			},
-			["Hashmeer-Sulfuras"] = {
-				"0.4.2", -- [1]
-				nil, -- [2]
-				1576636276, -- [3]
-			},
-			["Pah-Sulfuras"] = {
-				"0.4.2", -- [1]
-				nil, -- [2]
-				1576473848, -- [3]
-			},
-			["Sneaknslash-Sulfuras"] = {
-				"2.14.0", -- [1]
-				nil, -- [2]
-				1576302005, -- [3]
-			},
-			["Synovate-Sulfuras"] = {
-				"0.5.0", -- [1]
-				"Beta.1", -- [2]
-				1576476270, -- [3]
-			},
-			["Yooda-Sulfuras"] = {
-				"0.4.2", -- [1]
-				nil, -- [2]
-				1576036631, -- [3]
-			},
-			["Behindyuh-Sulfuras"] = {
-				"0.4.2", -- [1]
-				nil, -- [2]
-				1576618659, -- [3]
-			},
-			["ää-Sulfuras"] = {
-				"0.4.2", -- [1]
-				nil, -- [2]
-				1576216830, -- [3]
-			},
-			["Amerta-Sulfuras"] = {
-				"0.4.2", -- [1]
-				nil, -- [2]
-				1576194292, -- [3]
-			},
-			["Shinkage-Sulfuras"] = {
-				"0.4.2", -- [1]
-				nil, -- [2]
-				1576473034, -- [3]
-			},
-			["Bockoboy-Sulfuras"] = {
-				"0.4.2", -- [1]
-				nil, -- [2]
-				1576041363, -- [3]
-			},
-			["Bankonit-Sulfuras"] = {
-				"0.4.2", -- [1]
-				nil, -- [2]
-				1576215439, -- [3]
-			},
-			["Rubie-Sulfuras"] = {
-				"0.4.2", -- [1]
-				nil, -- [2]
-				1576555692, -- [3]
-			},
-			["Agora-Sulfuras"] = {
-				"0.3.1", -- [1]
-				nil, -- [2]
-				1576636276, -- [3]
-			},
-			["Bellatriix-Sulfuras"] = {
-				"0.3.1", -- [1]
-				nil, -- [2]
-				1576632668, -- [3]
-			},
-			["Mcduck-Sulfuras"] = {
-				"0.4.2", -- [1]
-				nil, -- [2]
-				1576459893, -- [3]
-			},
-			["Gurdurs-Sulfuras"] = {
-				"0.4.2", -- [1]
-				nil, -- [2]
-				1576636276, -- [3]
-			},
-			["Odarnwewiped-Sulfuras"] = {
-				"2.14.0", -- [1]
-				nil, -- [2]
-				1576636276, -- [3]
-			},
-			["Nightwaddler-Sulfuras"] = {
-				"0.4.2", -- [1]
-				nil, -- [2]
-				1576557904, -- [3]
-			},
-			["Jinzô-Sulfuras"] = {
-				"2.14.0", -- [1]
-				nil, -- [2]
-				1576206053, -- [3]
-			},
-			["Cabbagekrust-Sulfuras"] = {
-				"2.14.0", -- [1]
-				nil, -- [2]
-				1576039591, -- [3]
-			},
-			["Malakpierre-Sulfuras"] = {
-				"0.4.2", -- [1]
-				nil, -- [2]
-				1576636276, -- [3]
-			},
-			["Redpanda-Sulfuras"] = {
-				"0.4.2", -- [1]
-				nil, -- [2]
-				1576636276, -- [3]
-			},
-			["Shway-Sulfuras"] = {
-				"2.14.0", -- [1]
-				nil, -- [2]
-				1576636276, -- [3]
-			},
-			["Ellers-Sulfuras"] = {
-				"0.4.2", -- [1]
-				nil, -- [2]
-				1576194269, -- [3]
-			},
-			["Eindrin-Sulfuras"] = {
-				"0.4.2", -- [1]
-				nil, -- [2]
-				1576216901, -- [3]
-			},
-			["Kiji-Sulfuras"] = {
-				"2.14.0", -- [1]
-				nil, -- [2]
-				1576632415, -- [3]
-			},
-			["Youkickmydog-Sulfuras"] = {
-				"2.14.0", -- [1]
-				nil, -- [2]
-				1576473515, -- [3]
-			},
-			["Budlightning-Sulfuras"] = {
-				"0.4.2", -- [1]
-				nil, -- [2]
-				1576635339, -- [3]
-			},
-			["Temikachan-Sulfuras"] = {
-				"0.4.2", -- [1]
-				nil, -- [2]
-				1576222818, -- [3]
-			},
-			["Ghastlyz-Sulfuras"] = {
-				"0.4.2", -- [1]
-				nil, -- [2]
-				1576044679, -- [3]
-			},
-			["Loso-Sulfuras"] = {
-				"0.5.0", -- [1]
-				"Beta.1", -- [2]
-				1576472686, -- [3]
-			},
-			["Mcmac-Sulfuras"] = {
-				"0.4.2", -- [1]
-				nil, -- [2]
-				1576636276, -- [3]
-			},
-			["Bountybull-Sulfuras"] = {
-				"0.4.2", -- [1]
-				nil, -- [2]
-				1576636275, -- [3]
-			},
-			["Birddoggin-Sulfuras"] = {
-				"0.5.0", -- [1]
-				"Beta.1", -- [2]
-				1576636276, -- [3]
-			},
-			["Darana-Sulfuras"] = {
-				"0.4.2", -- [1]
-				nil, -- [2]
-				1576474345, -- [3]
-			},
-			["Herewego-Sulfuras"] = {
-				"0.4.2", -- [1]
-				nil, -- [2]
-				1576285952, -- [3]
-			},
-			["Humanwarrior-Sulfuras"] = {
-				"0.5.0", -- [1]
-				"Beta.1", -- [2]
-				1576473858, -- [3]
-			},
-			["Norgashaks-Sulfuras"] = {
-				"0.4.2", -- [1]
-				nil, -- [2]
-				1576634706, -- [3]
-			},
-			["Azsharui-Sulfuras"] = {
-				"0.4.2", -- [1]
-				nil, -- [2]
-				1576632270, -- [3]
-			},
-		},
-		["version"] = "2.15.1",
-		["2.14.0"] = {
-			["buttons"] = 0,
-			["responses"] = 0,
-			["colors"] = 0,
-			["entries"] = 0,
-		},
-		["regionID"] = 1,
 		["locale"] = "enUS",
-		["Classic_version"] = "0.4.2",
+		["verTestCandidates"] = {
+			["Bellicuz-Silvermoon"] = {
+				"2.18.3", -- [1]
+				nil, -- [2]
+				1585171759, -- [3]
+			},
+			["Aemenór-Silvermoon"] = {
+				"2.18.3", -- [1]
+				nil, -- [2]
+				1585602557, -- [3]
+			},
+			["Eresha-Silvermoon"] = {
+				"2.18.2", -- [1]
+				nil, -- [2]
+				1585125420, -- [3]
+			},
+			["Vanvida-Silvermoon"] = {
+				"2.18.3", -- [1]
+				nil, -- [2]
+				1585589384, -- [3]
+			},
+			["Nilley-Silvermoon"] = {
+				"2.18.2", -- [1]
+				nil, -- [2]
+				1585591220, -- [3]
+			},
+			["Valthiria-Silvermoon"] = {
+				"2.18.2", -- [1]
+				nil, -- [2]
+				1585655379, -- [3]
+			},
+			["Nïkä-Silvermoon"] = {
+				"2.18.3", -- [1]
+				nil, -- [2]
+				1585602557, -- [3]
+			},
+			["Marival-Silvermoon"] = {
+				"2.18.3", -- [1]
+				nil, -- [2]
+				1585602557, -- [3]
+			},
+			["Faykdh-Silvermoon"] = {
+				"2.18.3", -- [1]
+				nil, -- [2]
+				1585495716, -- [3]
+			},
+			["Babatunde-Silvermoon"] = {
+				"2.17.2", -- [1]
+				nil, -- [2]
+				1585173570, -- [3]
+			},
+			["Asnv-Silvermoon"] = {
+				"2.18.2", -- [1]
+				nil, -- [2]
+				1585602557, -- [3]
+			},
+			["Lorainne-Silvermoon"] = {
+				"2.18.3", -- [1]
+				nil, -- [2]
+				1585173874, -- [3]
+			},
+			["Hulabaloo-Silvermoon"] = {
+				"2.18.3", -- [1]
+				nil, -- [2]
+				1585597314, -- [3]
+			},
+			["Anastania-Silvermoon"] = {
+				"2.18.3", -- [1]
+				nil, -- [2]
+				1585401821, -- [3]
+			},
+			["Cronah-Silvermoon"] = {
+				"2.17.1", -- [1]
+				nil, -- [2]
+				1585602557, -- [3]
+			},
+			["Nephrite-Silvermoon"] = {
+				"2.18.3", -- [1]
+				nil, -- [2]
+				1585602521, -- [3]
+			},
+			["Droyy-Silvermoon"] = {
+				"2.17.2", -- [1]
+				nil, -- [2]
+				1585602444, -- [3]
+			},
+			["Saifai-Silvermoon"] = {
+				"2.18.3", -- [1]
+				nil, -- [2]
+				1585575186, -- [3]
+			},
+			["Cronap-Silvermoon"] = {
+				"2.17.1", -- [1]
+				nil, -- [2]
+				1585655708, -- [3]
+			},
+			["Sykezxo-Silvermoon"] = {
+				"2.18.3", -- [1]
+				nil, -- [2]
+				1585655379, -- [3]
+			},
+			["Madvepriest-Silvermoon"] = {
+				"2.18.3", -- [1]
+				nil, -- [2]
+				1585655708, -- [3]
+			},
+			["Drobadin-Silvermoon"] = {
+				"2.18.3", -- [1]
+				nil, -- [2]
+				1585602558, -- [3]
+			},
+			["Meralda-Silvermoon"] = {
+				"2.18.3", -- [1]
+				nil, -- [2]
+				1585602444, -- [3]
+			},
+			["Svartmusa-Silvermoon"] = {
+				"2.18.3", -- [1]
+				nil, -- [2]
+				1585495787, -- [3]
+			},
+			["Untóuchable-Silvermoon"] = {
+				"2.18.3", -- [1]
+				nil, -- [2]
+				1585406835, -- [3]
+			},
+			["Sensémage-Silvermoon"] = {
+				"2.18.3", -- [1]
+				nil, -- [2]
+				1585602557, -- [3]
+			},
+			["Anastiana-Silvermoon"] = {
+				"2.18.3", -- [1]
+				nil, -- [2]
+				1585655379, -- [3]
+			},
+			["Illidaan-Silvermoon"] = {
+				"2.18.3", -- [1]
+				nil, -- [2]
+				1585516841, -- [3]
+			},
+			["Aerpel-Silvermoon"] = {
+				"2.18.3", -- [1]
+				nil, -- [2]
+				1585398031, -- [3]
+			},
+			["Vandott-Silvermoon"] = {
+				"2.18.3", -- [1]
+				nil, -- [2]
+				1585597314, -- [3]
+			},
+			["Verthigo-Silvermoon"] = {
+				"2.18.2", -- [1]
+				nil, -- [2]
+				1585505151, -- [3]
+			},
+			["Crysdh-Silvermoon"] = {
+				"2.18.3", -- [1]
+				nil, -- [2]
+				1585516948, -- [3]
+			},
+			["Amyntah-Silvermoon"] = {
+				"2.18.3", -- [1]
+				nil, -- [2]
+				1585505150, -- [3]
+			},
+			["Kerpi-Silvermoon"] = {
+				"2.18.3", -- [1]
+				nil, -- [2]
+				1585597314, -- [3]
+			},
+			["Capneckbeard-Silvermoon"] = {
+				"2.18.1", -- [1]
+				nil, -- [2]
+				1585602557, -- [3]
+			},
+			["Sykezlul-Silvermoon"] = {
+				"2.18.2", -- [1]
+				nil, -- [2]
+				1585138271, -- [3]
+			},
+			["Joypopping-Silvermoon"] = {
+				"2.18.3", -- [1]
+				nil, -- [2]
+				1585248875, -- [3]
+			},
+			["Kerpm-Silvermoon"] = {
+				"2.18.3", -- [1]
+				nil, -- [2]
+				1585602557, -- [3]
+			},
+			["Inderite-Silvermoon"] = {
+				"2.18.3", -- [1]
+				nil, -- [2]
+				1585602557, -- [3]
+			},
+			["Faykmage-Silvermoon"] = {
+				"2.18.3", -- [1]
+				nil, -- [2]
+				1585655708, -- [3]
+			},
+			["Kerpr-Silvermoon"] = {
+				"2.18.3", -- [1]
+				nil, -- [2]
+				1585505151, -- [3]
+			},
+			["Stãrßaby-Silvermoon"] = {
+				"2.18.3", -- [1]
+				nil, -- [2]
+				1585498076, -- [3]
+			},
+			["Aeménor-Silvermoon"] = {
+				"2.18.3", -- [1]
+				nil, -- [2]
+				1585655708, -- [3]
+			},
+			["Vanitos-Silvermoon"] = {
+				"2.18.3", -- [1]
+				nil, -- [2]
+				1585602444, -- [3]
+			},
+			["Mesara-Silvermoon"] = {
+				"2.18.1", -- [1]
+				nil, -- [2]
+				1585516550, -- [3]
+			},
+			["Eredr-Silvermoon"] = {
+				"2.18.2", -- [1]
+				nil, -- [2]
+				1585602557, -- [3]
+			},
+			["Azverth-Silvermoon"] = {
+				"2.18.2", -- [1]
+				nil, -- [2]
+				1585602557, -- [3]
+			},
+			["Geesekitty-Silvermoon"] = {
+				"2.18.2", -- [1]
+				nil, -- [2]
+				1585602557, -- [3]
+			},
+		},
+		["version"] = "2.18.3",
+		["oldVersion"] = "2.18.2",
+		["log"] = {
+			"14:00:54 - Adding to self.lootSlotInfo (1) (nil) (1) (0) (Vehicle-0-3110-1205-31638-76877-00007F49A5) (539150)", -- [1]
+			"14:00:54 - Adding to self.lootSlotInfo (2) (|cffa335ee|Hitem:113865::::::::120:102::6:1:567:::|h[Darklight Necklace]|h|r) (4) (1) (Vehicle-0-3110-1205-31638-76877-00007F49A5) (1)", -- [2]
+			"14:00:54 - Adding to self.lootSlotInfo (3) (|cffa335ee|Hitem:113866::::::::120:102::6:1:567:::|h[Phosphorescent Seal]|h|r) (4) (1) (Vehicle-0-3110-1205-31638-76877-00007F49A5) (1)", -- [3]
+			"14:00:55 - Event: (LOOT_READY) (true)", -- [4]
+			"14:00:55 - Adding to self.lootSlotInfo (1) (nil) (1) (0) (Vehicle-0-3110-1205-31638-76877-00007F49A5) (539150)", -- [5]
+			"14:00:55 - Adding to self.lootSlotInfo (2) (|cffa335ee|Hitem:113865::::::::120:102::6:1:567:::|h[Darklight Necklace]|h|r) (4) (1) (Vehicle-0-3110-1205-31638-76877-00007F49A5) (1)", -- [6]
+			"14:00:55 - Adding to self.lootSlotInfo (3) (|cffa335ee|Hitem:113866::::::::120:102::6:1:567:::|h[Phosphorescent Seal]|h|r) (4) (1) (Vehicle-0-3110-1205-31638-76877-00007F49A5) (1)", -- [7]
+			"14:00:55 - OnLootSlotCleared() (1) (nil) (1)", -- [8]
+			"14:00:55 - Event: (ENCOUNTER_LOOT_RECEIVED) (1691) (113864) (|cffa335ee|Hitem:113864::::::::120:102::6:1:567:::|h[Cavedweller's Climbers]|h|r) (1) (Amyntah) (DEMONHUNTER)", -- [9]
+			"14:00:55 - OnLootSlotCleared() (2) (|cffa335ee|Hitem:113865::::::::120:102::6:1:567:::|h[Darklight Necklace]|h|r) (4)", -- [10]
+			"14:00:55 - Event: (ENCOUNTER_LOOT_RECEIVED) (1691) (113866) (|cffa335ee|Hitem:113866::::::::120:102::6:2:40:567:::|h[Phosphorescent Seal]|h|r) (1) (Amyntah) (DEMONHUNTER)", -- [11]
+			"14:00:55 - Event: (ENCOUNTER_LOOT_RECEIVED) (1691) (113865) (|cffa335ee|Hitem:113865::::::::120:102::6:1:567:::|h[Darklight Necklace]|h|r) (1) (Anastania) (DRUID)", -- [12]
+			"14:00:55 - OnLootSlotCleared() (3) (|cffa335ee|Hitem:113866::::::::120:102::6:1:567:::|h[Phosphorescent Seal]|h|r) (4)", -- [13]
+			"14:00:55 - Event: (LOOT_CLOSED)", -- [14]
+			"14:00:55 - Event: (LOOT_CLOSED)", -- [15]
+			"14:00:55 - Event: (ENCOUNTER_LOOT_RECEIVED) (1691) (113866) (|cffa335ee|Hitem:113866::::::::120:102::6:1:567:::|h[Phosphorescent Seal]|h|r) (1) (Anastania) (DRUID)", -- [16]
+			"14:00:55 - Comm received:^1^Slooted^T^N1^S76877^t^^ (from:) (Amyntah) (distri:) (RAID)", -- [17]
+			"14:00:55 - Event: (ENCOUNTER_LOOT_RECEIVED) (1691) (118114) (|cffa335ee|Hitem:118114::::::::120:102::6:2:562:567:::|h[Meaty Dragonspine Trophy]|h|r) (1) (Amyntah) (DEMONHUNTER)", -- [18]
+			"14:00:55 - Comm received:^1^Slooted^T^N1^S76877^t^^ (from:) (Amyntah) (distri:) (RAID)", -- [19]
+			"14:00:55 - Comm received:^1^Slooted^T^N1^S76877^t^^ (from:) (Anastania) (distri:) (RAID)", -- [20]
+			"14:00:55 - Comm received:^1^Slooted^T^N1^S76877^t^^ (from:) (Anastania) (distri:) (RAID)", -- [21]
+			"14:00:57 - Storage:New (|cffa335ee|Hitem:113865::::::::120:102::6:1:567:::|h[Darklight Necklace]|h|r) (temp)", -- [22]
+			"14:00:57 - Storage: searching for item: (|cffa335ee|Hitem:113865::::::::120:102::6:1:567:::|h[Darklight Necklace]|h|r)", -- [23]
+			"14:00:57 - Found item at (0) (6)", -- [24]
+			"14:00:57 - Storage:New (|cffa335ee|Hitem:113866::::::::120:102::6:1:567:::|h[Phosphorescent Seal]|h|r) (temp)", -- [25]
+			"14:00:57 - Storage: searching for item: (|cffa335ee|Hitem:113866::::::::120:102::6:1:567:::|h[Phosphorescent Seal]|h|r)", -- [26]
+			"14:00:57 - Found item at (0) (7)", -- [27]
+			"14:00:58 - Storage: searching for item: (|cffa335ee|Hitem:113865::::::::120:102::6:1:567:::|h[Darklight Necklace]|h|r)", -- [28]
+			"14:00:58 - Found item at (0) (6)", -- [29]
+			"14:00:58 - Storage: searching for item: (|cffa335ee|Hitem:113866::::::::120:102::6:1:567:::|h[Phosphorescent Seal]|h|r)", -- [30]
+			"14:00:58 - Found item at (0) (7)", -- [31]
+			"14:01:02 - Comm received:^1^Srejected_trade^T^N1^S|cffa335ee|Hitem:113864::::::::120:577::6:1:567:::|h[Cavedweller's~`Climbers]|h|r^t^^ (from:) (Amyntah) (distri:) (RAID)", -- [32]
+			"14:01:02 - Comm received:^1^Srejected_trade^T^N1^S|cffa335ee|Hitem:113866::::::::120:577::6:2:40:567:::|h[Phosphorescent~`Seal]|h|r^t^^ (from:) (Amyntah) (distri:) (RAID)", -- [33]
+			"14:01:03 - Comm received:^1^Srejected_trade^T^N1^S|cffa335ee|Hitem:118114::::::::120:577::6:2:562:567:::|h[Meaty~`Dragonspine~`Trophy]|h|r^t^^ (from:) (Amyntah) (distri:) (RAID)", -- [34]
+			"14:01:04 - Comm received:^1^Stradable^T^N1^S|cffa335ee|Hitem:113866::::::::120:102::6:1:567:::|h[Phosphorescent~`Seal]|h|r^t^^ (from:) (Anastania) (distri:) (RAID)", -- [35]
+			"14:01:04 - Comm received:^1^Stradable^T^N1^S|cffa335ee|Hitem:113865::::::::120:102::6:1:567:::|h[Darklight~`Necklace]|h|r^t^^ (from:) (Anastania) (distri:) (RAID)", -- [36]
+			"14:01:48 - ML event (PLAYER_REGEN_ENABLED)", -- [37]
+			"14:01:52 - Event: (ENCOUNTER_START) (1690) (Blast Furnace) (16) (20)", -- [38]
+			"14:01:52 - UpdatePlayersData()", -- [39]
+			"14:07:01 - Event: (ENCOUNTER_END) (1690) (Blast Furnace) (16) (20) (1)", -- [40]
+			"14:07:03 - ML event (PLAYER_REGEN_ENABLED)", -- [41]
+			"14:07:03 - Event: (ENCOUNTER_LOOT_RECEIVED) (1690) (115573) (|cffa335ee|Hitem:115573::::::::120:102::6:2:42:567:::|h[Poisoner's Legguards]|h|r) (1) (Amyntah) (DEMONHUNTER)", -- [42]
+			"14:07:03 - Event: (ENCOUNTER_LOOT_RECEIVED) (1690) (113885) (|cffa335ee|Hitem:113885::::::::120:102::6:1:567:::|h[Mouth of The Fury]|h|r) (1) (Amyntah) (DEMONHUNTER)", -- [43]
+			"14:07:03 - Event: (ENCOUNTER_LOOT_RECEIVED) (1690) (115543) (|cffa335ee|Hitem:115543::::::::120:102::6:1:567:::|h[Living Wood Legguards]|h|r) (1) (Amyntah) (DEMONHUNTER)", -- [44]
+			"14:07:03 - Comm received:^1^Slooted^T^N1^S76806^t^^ (from:) (Amyntah) (distri:) (RAID)", -- [45]
+			"14:07:03 - Comm received:^1^Slooted^T^N1^S76806^t^^ (from:) (Amyntah) (distri:) (RAID)", -- [46]
+			"14:07:03 - Event: (LOOT_READY) (true)", -- [47]
+			"14:07:03 - Adding to self.lootSlotInfo (1) (nil) (1) (0) (Vehicle-0-3110-1205-31638-76806-00007F49A5) (547967)", -- [48]
+			"14:07:03 - Adding to self.lootSlotInfo (2) (|cffa335ee|Hitem:113895::::::::120:102::6:2:42:567:::|h[Furnace Tender's Treads]|h|r) (4) (1) (Vehicle-0-3110-1205-31638-76806-00007F49A5) (1)", -- [49]
+			"14:07:03 - Adding to self.lootSlotInfo (3) (|cffa335ee|Hitem:115580::::::::120:102::6:1:567:::|h[Blackhand's Legguards]|h|r) (4) (1) (Vehicle-0-3110-1205-31638-76806-00007F49A5) (1)", -- [50]
+			"14:07:03 - Adding to self.lootSlotInfo (4) (|cffa335ee|Hitem:113894::::::::120:102::6:1:567:::|h[Lava-Dipped Greathelm]|h|r) (4) (1) (Vehicle-0-3110-1205-31638-76806-00007F49A5) (1)", -- [51]
+			"14:07:03 - Event: (LOOT_READY) (true)", -- [52]
+			"14:07:03 - Adding to self.lootSlotInfo (1) (nil) (1) (0) (Vehicle-0-3110-1205-31638-76806-00007F49A5) (547967)", -- [53]
+			"14:07:03 - Adding to self.lootSlotInfo (2) (|cffa335ee|Hitem:113895::::::::120:102::6:2:42:567:::|h[Furnace Tender's Treads]|h|r) (4) (1) (Vehicle-0-3110-1205-31638-76806-00007F49A5) (1)", -- [54]
+			"14:07:03 - Adding to self.lootSlotInfo (3) (|cffa335ee|Hitem:115580::::::::120:102::6:1:567:::|h[Blackhand's Legguards]|h|r) (4) (1) (Vehicle-0-3110-1205-31638-76806-00007F49A5) (1)", -- [55]
+			"14:07:03 - Adding to self.lootSlotInfo (4) (|cffa335ee|Hitem:113894::::::::120:102::6:1:567:::|h[Lava-Dipped Greathelm]|h|r) (4) (1) (Vehicle-0-3110-1205-31638-76806-00007F49A5) (1)", -- [56]
+			"14:07:04 - OnLootSlotCleared() (1) (nil) (1)", -- [57]
+			"14:07:04 - OnLootSlotCleared() (2) (|cffa335ee|Hitem:113895::::::::120:102::6:2:42:567:::|h[Furnace Tender's Treads]|h|r) (4)", -- [58]
+			"14:07:04 - Event: (ENCOUNTER_LOOT_RECEIVED) (1690) (113895) (|cffa335ee|Hitem:113895::::::::120:102::6:2:42:567:::|h[Furnace Tender's Treads]|h|r) (1) (Anastania) (DRUID)", -- [59]
+			"14:07:04 - OnLootSlotCleared() (3) (|cffa335ee|Hitem:115580::::::::120:102::6:1:567:::|h[Blackhand's Legguards]|h|r) (4)", -- [60]
+			"14:07:04 - Event: (ENCOUNTER_LOOT_RECEIVED) (1690) (115580) (|cffa335ee|Hitem:115580::::::::120:102::6:1:567:::|h[Blackhand's Legguards]|h|r) (1) (Anastania) (DRUID)", -- [61]
+			"14:07:04 - OnLootSlotCleared() (4) (|cffa335ee|Hitem:113894::::::::120:102::6:1:567:::|h[Lava-Dipped Greathelm]|h|r) (4)", -- [62]
+			"14:07:04 - Event: (LOOT_CLOSED)", -- [63]
+			"14:07:04 - Event: (LOOT_CLOSED)", -- [64]
+			"14:07:04 - Event: (ENCOUNTER_LOOT_RECEIVED) (1690) (113894) (|cffa335ee|Hitem:113894::::::::120:102::6:1:567:::|h[Lava-Dipped Greathelm]|h|r) (1) (Anastania) (DRUID)", -- [65]
+			"14:07:04 - Comm received:^1^Slooted^T^N1^S76806^t^^ (from:) (Anastania) (distri:) (RAID)", -- [66]
+			"14:07:04 - Comm received:^1^Slooted^T^N1^S76806^t^^ (from:) (Anastania) (distri:) (RAID)", -- [67]
+			"14:07:06 - Storage:New (|cffa335ee|Hitem:113895::::::::120:102::6:2:42:567:::|h[Furnace Tender's Treads]|h|r) (temp)", -- [68]
+			"14:07:06 - Storage: searching for item: (|cffa335ee|Hitem:113895::::::::120:102::6:2:42:567:::|h[Furnace Tender's Treads]|h|r)", -- [69]
+			"14:07:06 - Found item at (0) (8)", -- [70]
+			"14:07:06 - Storage:New (|cffa335ee|Hitem:115580::::::::120:102::6:1:567:::|h[Blackhand's Legguards]|h|r) (temp)", -- [71]
+			"14:07:06 - Storage: searching for item: (|cffa335ee|Hitem:115580::::::::120:102::6:1:567:::|h[Blackhand's Legguards]|h|r)", -- [72]
+			"14:07:06 - Found item at (0) (9)", -- [73]
+			"14:07:06 - Storage:New (|cffa335ee|Hitem:113894::::::::120:102::6:1:567:::|h[Lava-Dipped Greathelm]|h|r) (temp)", -- [74]
+			"14:07:06 - Storage: searching for item: (|cffa335ee|Hitem:113894::::::::120:102::6:1:567:::|h[Lava-Dipped Greathelm]|h|r)", -- [75]
+			"14:07:06 - Found item at (0) (10)", -- [76]
+			"14:07:07 - Storage: searching for item: (|cffa335ee|Hitem:113895::::::::120:102::6:2:42:567:::|h[Furnace Tender's Treads]|h|r)", -- [77]
+			"14:07:07 - Found item at (0) (8)", -- [78]
+			"14:07:07 - Storage: searching for item: (|cffa335ee|Hitem:115580::::::::120:102::6:1:567:::|h[Blackhand's Legguards]|h|r)", -- [79]
+			"14:07:07 - Found item at (0) (9)", -- [80]
+			"14:07:07 - Storage: searching for item: (|cffa335ee|Hitem:113894::::::::120:102::6:1:567:::|h[Lava-Dipped Greathelm]|h|r)", -- [81]
+			"14:07:07 - Found item at (0) (10)", -- [82]
+			"14:07:09 - Comm received:^1^Stradable^T^N1^S|cffa335ee|Hitem:113895::::::::120:102::6:2:42:567:::|h[Furnace~`Tender's~`Treads]|h|r^t^^ (from:) (Anastania) (distri:) (RAID)", -- [83]
+			"14:07:09 - Comm received:^1^Stradable^T^N1^S|cffa335ee|Hitem:115580::::::::120:102::6:1:567:::|h[Blackhand's~`Legguards]|h|r^t^^ (from:) (Anastania) (distri:) (RAID)", -- [84]
+			"14:07:09 - Comm received:^1^Stradable^T^N1^S|cffa335ee|Hitem:113894::::::::120:102::6:1:567:::|h[Lava-Dipped~`Greathelm]|h|r^t^^ (from:) (Anastania) (distri:) (RAID)", -- [85]
+			"14:07:09 - Comm received:^1^Stradable^T^N1^S|cffa335ee|Hitem:115543::::::::120:577::6:1:567:::|h[Living~`Wood~`Legguards]|h|r^t^^ (from:) (Amyntah) (distri:) (RAID)", -- [86]
+			"14:07:11 - Comm received:^1^Srejected_trade^T^N1^S|cffa335ee|Hitem:115573::::::::120:577::6:2:42:567:::|h[Poisoner's~`Legguards]|h|r^t^^ (from:) (Amyntah) (distri:) (RAID)", -- [87]
+			"14:07:12 - Comm received:^1^Srejected_trade^T^N1^S|cffa335ee|Hitem:113885::::::::120:577::6:1:567:::|h[Mouth~`of~`The~`Fury]|h|r^t^^ (from:) (Amyntah) (distri:) (RAID)", -- [88]
+			"14:07:20 - TradeUI: Traded item(s) to (Amyntah-Silvermoon)", -- [89]
+			"14:07:20 - TradeUI:Show() (nil)", -- [90]
+			"14:07:20 - TradeUI:Hide()", -- [91]
+			"14:07:23 - Comm received:^1^SverTest^T^N1^S2.18.3^t^^ (from:) (Untóuchable) (distri:) (GUILD)", -- [92]
+			"14:08:25 - Event: (ENCOUNTER_START) (1694) (Beastlord Darmac) (16) (20)", -- [93]
+			"14:08:25 - UpdatePlayersData()", -- [94]
+			"14:08:43 - Event: (ENCOUNTER_END) (1694) (Beastlord Darmac) (16) (20) (1)", -- [95]
+			"14:08:45 - Event: (LOOT_READY) (true)", -- [96]
+			"14:08:45 - Adding to self.lootSlotInfo (1) (nil) (1) (0) (Creature-0-3110-1205-31638-76865-00007F49A5) (512701)", -- [97]
+			"14:08:45 - Adding to self.lootSlotInfo (2) (|cffa335ee|Hitem:119192::::::::120:102::6:2:41:567:::|h[Ironspike Chew Toy]|h|r) (4) (1) (Creature-0-3110-1205-31638-76865-00007F49A5) (1)", -- [98]
+			"14:08:45 - Adding to self.lootSlotInfo (3) (|cffa335ee|Hitem:113946::::::::120:102::6:1:567:::|h[Heart of the Clefthoof]|h|r) (4) (1) (Creature-0-3110-1205-31638-76865-00007F49A5) (1)", -- [99]
+			"14:08:45 - Adding to self.lootSlotInfo (4) (|cffa335ee|Hitem:113951::::::::120:102::6:2:42:567:::|h[Unrendable Wolfhide Robes]|h|r) (4) (1) (Creature-0-3110-1205-31638-76865-00007F49A5) (1)", -- [100]
+			"14:08:46 - Event: (LOOT_READY) (true)", -- [101]
+			"14:08:46 - Adding to self.lootSlotInfo (1) (nil) (1) (0) (Creature-0-3110-1205-31638-76865-00007F49A5) (512701)", -- [102]
+			"14:08:46 - Adding to self.lootSlotInfo (2) (|cffa335ee|Hitem:119192::::::::120:102::6:2:41:567:::|h[Ironspike Chew Toy]|h|r) (4) (1) (Creature-0-3110-1205-31638-76865-00007F49A5) (1)", -- [103]
+			"14:08:46 - Adding to self.lootSlotInfo (3) (|cffa335ee|Hitem:113946::::::::120:102::6:1:567:::|h[Heart of the Clefthoof]|h|r) (4) (1) (Creature-0-3110-1205-31638-76865-00007F49A5) (1)", -- [104]
+			"14:08:46 - Adding to self.lootSlotInfo (4) (|cffa335ee|Hitem:113951::::::::120:102::6:2:42:567:::|h[Unrendable Wolfhide Robes]|h|r) (4) (1) (Creature-0-3110-1205-31638-76865-00007F49A5) (1)", -- [105]
+			"14:08:46 - OnLootSlotCleared() (1) (nil) (1)", -- [106]
+			"14:08:46 - OnLootSlotCleared() (2) (|cffa335ee|Hitem:119192::::::::120:102::6:2:41:567:::|h[Ironspike Chew Toy]|h|r) (4)", -- [107]
+			"14:08:46 - Event: (ENCOUNTER_LOOT_RECEIVED) (1694) (119192) (|cffa335ee|Hitem:119192::::::::120:102::6:2:41:567:::|h[Ironspike Chew Toy]|h|r) (1) (Anastania) (DRUID)", -- [108]
+			"14:08:46 - OnLootSlotCleared() (3) (|cffa335ee|Hitem:113946::::::::120:102::6:1:567:::|h[Heart of the Clefthoof]|h|r) (4)", -- [109]
+			"14:08:46 - Event: (ENCOUNTER_LOOT_RECEIVED) (1694) (113946) (|cffa335ee|Hitem:113946::::::::120:102::6:1:567:::|h[Heart of the Clefthoof]|h|r) (1) (Anastania) (DRUID)", -- [110]
+			"14:08:46 - OnLootSlotCleared() (4) (|cffa335ee|Hitem:113951::::::::120:102::6:2:42:567:::|h[Unrendable Wolfhide Robes]|h|r) (4)", -- [111]
+			"14:08:46 - Event: (LOOT_CLOSED)", -- [112]
+			"14:08:46 - Event: (LOOT_CLOSED)", -- [113]
+			"14:08:46 - Event: (ENCOUNTER_LOOT_RECEIVED) (1694) (113951) (|cffa335ee|Hitem:113951::::::::120:102::6:2:42:567:::|h[Unrendable Wolfhide Robes]|h|r) (1) (Anastania) (DRUID)", -- [114]
+			"14:08:47 - Comm received:^1^Slooted^T^N1^S76865^t^^ (from:) (Anastania) (distri:) (RAID)", -- [115]
+			"14:08:47 - Comm received:^1^Slooted^T^N1^S76865^t^^ (from:) (Anastania) (distri:) (RAID)", -- [116]
+			"14:08:47 - Event: (ENCOUNTER_LOOT_RECEIVED) (1694) (113950) (|cffa335ee|Hitem:113950::::::::120:102::6:1:567:::|h[Ironcrusher's Collar]|h|r) (1) (Amyntah) (DEMONHUNTER)", -- [117]
+			"14:08:47 - Event: (ENCOUNTER_LOOT_RECEIVED) (1694) (113940) (|cffa335ee|Hitem:113940::::::::120:102::6:2:565:567:::|h[Seal of the Savage Howl]|h|r) (1) (Amyntah) (DEMONHUNTER)", -- [118]
+			"14:08:47 - Comm received:^1^Slooted^T^N1^S76865^t^^ (from:) (Amyntah) (distri:) (RAID)", -- [119]
+			"14:08:47 - Comm received:^1^Slooted^T^N1^S76865^t^^ (from:) (Amyntah) (distri:) (RAID)", -- [120]
+			"14:08:48 - Storage:New (|cffa335ee|Hitem:119192::::::::120:102::6:2:41:567:::|h[Ironspike Chew Toy]|h|r) (temp)", -- [121]
+			"14:08:48 - Storage: searching for item: (|cffa335ee|Hitem:119192::::::::120:102::6:2:41:567:::|h[Ironspike Chew Toy]|h|r)", -- [122]
+			"14:08:48 - Found item at (0) (12)", -- [123]
+			"14:08:48 - Storage:New (|cffa335ee|Hitem:113946::::::::120:102::6:1:567:::|h[Heart of the Clefthoof]|h|r) (temp)", -- [124]
+			"14:08:48 - Storage: searching for item: (|cffa335ee|Hitem:113946::::::::120:102::6:1:567:::|h[Heart of the Clefthoof]|h|r)", -- [125]
+			"14:08:48 - Found item at (0) (13)", -- [126]
+			"14:08:48 - Storage:New (|cffa335ee|Hitem:113951::::::::120:102::6:2:42:567:::|h[Unrendable Wolfhide Robes]|h|r) (temp)", -- [127]
+			"14:08:48 - Storage: searching for item: (|cffa335ee|Hitem:113951::::::::120:102::6:2:42:567:::|h[Unrendable Wolfhide Robes]|h|r)", -- [128]
+			"14:08:48 - Found item at (0) (15)", -- [129]
+			"14:08:49 - Storage: searching for item: (|cffa335ee|Hitem:119192::::::::120:102::6:2:41:567:::|h[Ironspike Chew Toy]|h|r)", -- [130]
+			"14:08:49 - Found item at (0) (12)", -- [131]
+			"14:08:49 - Storage: searching for item: (|cffa335ee|Hitem:113946::::::::120:102::6:1:567:::|h[Heart of the Clefthoof]|h|r)", -- [132]
+			"14:08:49 - Found item at (0) (13)", -- [133]
+			"14:08:49 - Storage: searching for item: (|cffa335ee|Hitem:113951::::::::120:102::6:2:42:567:::|h[Unrendable Wolfhide Robes]|h|r)", -- [134]
+			"14:08:49 - Found item at (0) (15)", -- [135]
+			"14:08:52 - Comm received:^1^Stradable^T^N1^S|cffa335ee|Hitem:113951::::::::120:102::6:2:42:567:::|h[Unrendable~`Wolfhide~`Robes]|h|r^t^^ (from:) (Anastania) (distri:) (RAID)", -- [136]
+			"14:08:52 - Comm received:^1^Stradable^T^N1^S|cffa335ee|Hitem:113946::::::::120:102::6:1:567:::|h[Heart~`of~`the~`Clefthoof]|h|r^t^^ (from:) (Anastania) (distri:) (RAID)", -- [137]
+			"14:08:52 - Comm received:^1^Stradable^T^N1^S|cffa335ee|Hitem:119192::::::::120:102::6:2:41:567:::|h[Ironspike~`Chew~`Toy]|h|r^t^^ (from:) (Anastania) (distri:) (RAID)", -- [138]
+			"14:08:53 - Comm received:^1^Stradable^T^N1^S|cffa335ee|Hitem:113950::::::::120:577::6:1:567:::|h[Ironcrusher's~`Collar]|h|r^t^^ (from:) (Amyntah) (distri:) (RAID)", -- [139]
+			"14:08:53 - Comm received:^1^Stradable^T^N1^S|cffa335ee|Hitem:113940::::::::120:577::6:2:565:567:::|h[Seal~`of~`the~`Savage~`Howl]|h|r^t^^ (from:) (Amyntah) (distri:) (RAID)", -- [140]
+			"14:11:46 - Event: (ENCOUNTER_START) (1692) (Operator Thogar) (16) (20)", -- [141]
+			"14:11:46 - UpdatePlayersData()", -- [142]
+			"14:11:54 - Event: (ENCOUNTER_END) (1692) (Operator Thogar) (16) (20) (1)", -- [143]
+			"14:11:56 - Event: (ENCOUNTER_LOOT_RECEIVED) (1692) (113953) (|cffa335ee|Hitem:113953::::::::120:102::6:2:41:567:::|h[Thogar's Control Rod]|h|r) (1) (Amyntah) (DEMONHUNTER)", -- [144]
+			"14:11:56 - Event: (ENCOUNTER_LOOT_RECEIVED) (1692) (113953) (|cffa335ee|Hitem:113953::::::::120:102::6:1:567:::|h[Thogar's Control Rod]|h|r) (1) (Amyntah) (DEMONHUNTER)", -- [145]
+			"14:11:56 - Event: (ENCOUNTER_LOOT_RECEIVED) (1692) (115565) (|cffa335ee|Hitem:115565::::::::120:102::6:2:41:567:::|h[Pauldrons of Guiding Light]|h|r) (1) (Amyntah) (DEMONHUNTER)", -- [146]
+			"14:11:56 - Comm received:^1^Slooted^T^N1^S76906^t^^ (from:) (Amyntah) (distri:) (RAID)", -- [147]
+			"14:11:56 - Comm received:^1^Slooted^T^N1^S76906^t^^ (from:) (Amyntah) (distri:) (RAID)", -- [148]
+			"14:11:56 - Event: (LOOT_READY) (true)", -- [149]
+			"14:11:56 - Adding to self.lootSlotInfo (1) (nil) (1) (0) (Creature-0-3110-1205-31638-76906-00007F49A5) (521416)", -- [150]
+			"14:11:56 - Adding to self.lootSlotInfo (2) (|cffa335ee|Hitem:115536::::::::120:102::6:1:567:::|h[Ogreskull Boneplate Pauldrons]|h|r) (4) (1) (Creature-0-3110-1205-31638-76906-00007F49A5) (1)", -- [151]
+			"14:11:56 - Adding to self.lootSlotInfo (3) (|cffa335ee|Hitem:113963::::::::120:102::6:1:567:::|h[Siege Bomber's Band]|h|r) (4) (1) (Creature-0-3110-1205-31638-76906-00007F49A5) (1)", -- [152]
+			"14:11:56 - Adding to self.lootSlotInfo (4) (|cffa335ee|Hitem:115576::::::::120:102::6:2:562:567:::|h[Windspeaker's Mantle]|h|r) (4) (1) (Creature-0-3110-1205-31638-76906-00007F49A5) (1)", -- [153]
+			"14:11:56 - Event: (LOOT_READY) (true)", -- [154]
+			"14:11:56 - Adding to self.lootSlotInfo (1) (nil) (1) (0) (Creature-0-3110-1205-31638-76906-00007F49A5) (521416)", -- [155]
+			"14:11:56 - Adding to self.lootSlotInfo (2) (|cffa335ee|Hitem:115536::::::::120:102::6:1:567:::|h[Ogreskull Boneplate Pauldrons]|h|r) (4) (1) (Creature-0-3110-1205-31638-76906-00007F49A5) (1)", -- [156]
+			"14:11:56 - Adding to self.lootSlotInfo (3) (|cffa335ee|Hitem:113963::::::::120:102::6:1:567:::|h[Siege Bomber's Band]|h|r) (4) (1) (Creature-0-3110-1205-31638-76906-00007F49A5) (1)", -- [157]
+			"14:11:56 - Adding to self.lootSlotInfo (4) (|cffa335ee|Hitem:115576::::::::120:102::6:2:562:567:::|h[Windspeaker's Mantle]|h|r) (4) (1) (Creature-0-3110-1205-31638-76906-00007F49A5) (1)", -- [158]
+			"14:11:57 - OnLootSlotCleared() (1) (nil) (1)", -- [159]
+			"14:11:57 - OnLootSlotCleared() (2) (|cffa335ee|Hitem:115536::::::::120:102::6:1:567:::|h[Ogreskull Boneplate Pauldrons]|h|r) (4)", -- [160]
+			"14:11:57 - Event: (ENCOUNTER_LOOT_RECEIVED) (1692) (115536) (|cffa335ee|Hitem:115536::::::::120:102::6:1:567:::|h[Ogreskull Boneplate Pauldrons]|h|r) (1) (Anastania) (DRUID)", -- [161]
+			"14:11:57 - OnLootSlotCleared() (3) (|cffa335ee|Hitem:113963::::::::120:102::6:1:567:::|h[Siege Bomber's Band]|h|r) (4)", -- [162]
+			"14:11:57 - Event: (ENCOUNTER_LOOT_RECEIVED) (1692) (113963) (|cffa335ee|Hitem:113963::::::::120:102::6:1:567:::|h[Siege Bomber's Band]|h|r) (1) (Anastania) (DRUID)", -- [163]
+			"14:11:57 - OnLootSlotCleared() (4) (|cffa335ee|Hitem:115576::::::::120:102::6:2:562:567:::|h[Windspeaker's Mantle]|h|r) (4)", -- [164]
+			"14:11:57 - Event: (LOOT_CLOSED)", -- [165]
+			"14:11:57 - Event: (LOOT_CLOSED)", -- [166]
+			"14:11:57 - Event: (ENCOUNTER_LOOT_RECEIVED) (1692) (115576) (|cffa335ee|Hitem:115576::::::::120:102::6:2:562:567:::|h[Windspeaker's Mantle]|h|r) (1) (Anastania) (DRUID)", -- [167]
+			"14:11:57 - Comm received:^1^Slooted^T^N1^S76906^t^^ (from:) (Anastania) (distri:) (RAID)", -- [168]
+			"14:11:57 - Comm received:^1^Slooted^T^N1^S76906^t^^ (from:) (Anastania) (distri:) (RAID)", -- [169]
+			"14:11:59 - Storage:New (|cffa335ee|Hitem:115536::::::::120:102::6:1:567:::|h[Ogreskull Boneplate Pauldrons]|h|r) (temp)", -- [170]
+			"14:11:59 - Storage: searching for item: (|cffa335ee|Hitem:115536::::::::120:102::6:1:567:::|h[Ogreskull Boneplate Pauldrons]|h|r)", -- [171]
+			"14:11:59 - Found item at (0) (16)", -- [172]
+			"14:11:59 - Storage:New (|cffa335ee|Hitem:113963::::::::120:102::6:1:567:::|h[Siege Bomber's Band]|h|r) (temp)", -- [173]
+			"14:11:59 - Storage: searching for item: (|cffa335ee|Hitem:113963::::::::120:102::6:1:567:::|h[Siege Bomber's Band]|h|r)", -- [174]
+			"14:11:59 - Found item at (0) (17)", -- [175]
+			"14:11:59 - Storage:New (|cffa335ee|Hitem:115576::::::::120:102::6:2:562:567:::|h[Windspeaker's Mantle]|h|r) (temp)", -- [176]
+			"14:11:59 - Storage: searching for item: (|cffa335ee|Hitem:115576::::::::120:102::6:2:562:567:::|h[Windspeaker's Mantle]|h|r)", -- [177]
+			"14:11:59 - Found item at (0) (18)", -- [178]
+			"14:12:00 - Storage: searching for item: (|cffa335ee|Hitem:115536::::::::120:102::6:1:567:::|h[Ogreskull Boneplate Pauldrons]|h|r)", -- [179]
+			"14:12:00 - Found item at (0) (16)", -- [180]
+			"14:12:00 - Storage: searching for item: (|cffa335ee|Hitem:113963::::::::120:102::6:1:567:::|h[Siege Bomber's Band]|h|r)", -- [181]
+			"14:12:00 - Found item at (0) (17)", -- [182]
+			"14:12:00 - Storage: searching for item: (|cffa335ee|Hitem:115576::::::::120:102::6:2:562:567:::|h[Windspeaker's Mantle]|h|r)", -- [183]
+			"14:12:00 - Found item at (0) (18)", -- [184]
+			"14:12:00 - Comm received:^1^Stradable^T^N1^S|cffa335ee|Hitem:113953::::::::120:577::6:2:41:567:::|h[Thogar's~`Control~`Rod]|h|r^t^^ (from:) (Amyntah) (distri:) (RAID)", -- [185]
+			"14:12:00 - Comm received:^1^Stradable^T^N1^S|cffa335ee|Hitem:115565::::::::120:577::6:2:41:567:::|h[Pauldrons~`of~`Guiding~`Light]|h|r^t^^ (from:) (Amyntah) (distri:) (RAID)", -- [186]
+			"14:12:00 - Comm received:^1^Stradable^T^N1^S|cffa335ee|Hitem:113953::::::::120:577::6:1:567:::|h[Thogar's~`Control~`Rod]|h|r^t^^ (from:) (Amyntah) (distri:) (RAID)", -- [187]
+			"14:12:01 - Comm received:^1^Stradable^T^N1^S|cffa335ee|Hitem:115576::::::::120:102::6:2:562:567:::|h[Windspeaker's~`Mantle]|h|r^t^^ (from:) (Anastania) (distri:) (RAID)", -- [188]
+			"14:12:01 - Comm received:^1^Stradable^T^N1^S|cffa335ee|Hitem:113963::::::::120:102::6:1:567:::|h[Siege~`Bomber's~`Band]|h|r^t^^ (from:) (Anastania) (distri:) (RAID)", -- [189]
+			"14:12:01 - Comm received:^1^Stradable^T^N1^S|cffa335ee|Hitem:115536::::::::120:102::6:1:567:::|h[Ogreskull~`Boneplate~`Pauldrons]|h|r^t^^ (from:) (Anastania) (distri:) (RAID)", -- [190]
+			"14:12:26 - ML event (PLAYER_REGEN_ENABLED)", -- [191]
+			"14:13:15 - ML event (PLAYER_REGEN_ENABLED)", -- [192]
+			"14:13:22 - ML event (PLAYER_REGEN_ENABLED)", -- [193]
+			"14:13:38 - Comm received:^1^Slooted^T^N1^S84841^t^^ (from:) (Amyntah) (distri:) (RAID)", -- [194]
+			"14:13:38 - Comm received:^1^Slooted^T^N1^S84841^t^^ (from:) (Amyntah) (distri:) (RAID)", -- [195]
+			"14:13:40 - Event: (ENCOUNTER_START) (1695) (The Iron Maidens) (16) (20)", -- [196]
+			"14:13:40 - UpdatePlayersData()", -- [197]
+			"14:13:51 - Event: (ENCOUNTER_END) (1695) (The Iron Maidens) (16) (20) (1)", -- [198]
+			"14:13:51 - ML event (PLAYER_REGEN_ENABLED)", -- [199]
+			"14:13:52 - Event: (LOOT_READY) (true)", -- [200]
+			"14:13:52 - Adding to self.lootSlotInfo (1) (nil) (1) (0) (Vehicle-0-3110-1205-31638-77557-00007F49A5) (529263) (Creature-0-3110-1205-31638-84860-00007F49A5) (20375)", -- [201]
+			"14:13:52 - Adding to self.lootSlotInfo (2) (|cffa335ee|Hitem:115578::::::::120:102::6:1:567:::|h[Windspeaker's Handwraps]|h|r) (4) (1) (Vehicle-0-3110-1205-31638-77557-00007F49A5) (1)", -- [202]
+			"14:13:52 - Adding to self.lootSlotInfo (3) (|cffa335ee|Hitem:113965::::::::120:102::6:1:567:::|h[Sorka's Chainfist]|h|r) (4) (1) (Vehicle-0-3110-1205-31638-77557-00007F49A5) (1)", -- [203]
+			"14:13:52 - Adding to self.lootSlotInfo (4) (|cffa335ee|Hitem:113967::::::::120:102::6:1:567:::|h[Deckhand's Rope Belt]|h|r) (4) (1) (Vehicle-0-3110-1205-31638-77557-00007F49A5) (1)", -- [204]
+			"14:13:52 - Adding to self.lootSlotInfo (5) (|cffffffff|Hitem:113681::::::::120:102::::::|h[Iron Horde Scraps]|h|r) (1) (2) (Creature-0-3110-1205-31638-84860-00007F49A5) (2)", -- [205]
+			"14:13:52 - Event: (LOOT_READY) (true)", -- [206]
+			"14:13:52 - Adding to self.lootSlotInfo (1) (nil) (1) (0) (Vehicle-0-3110-1205-31638-77557-00007F49A5) (529263) (Creature-0-3110-1205-31638-84860-00007F49A5) (20375)", -- [207]
+			"14:13:52 - Adding to self.lootSlotInfo (2) (|cffa335ee|Hitem:115578::::::::120:102::6:1:567:::|h[Windspeaker's Handwraps]|h|r) (4) (1) (Vehicle-0-3110-1205-31638-77557-00007F49A5) (1)", -- [208]
+			"14:13:52 - Adding to self.lootSlotInfo (3) (|cffa335ee|Hitem:113965::::::::120:102::6:1:567:::|h[Sorka's Chainfist]|h|r) (4) (1) (Vehicle-0-3110-1205-31638-77557-00007F49A5) (1)", -- [209]
+			"14:13:52 - Adding to self.lootSlotInfo (4) (|cffa335ee|Hitem:113967::::::::120:102::6:1:567:::|h[Deckhand's Rope Belt]|h|r) (4) (1) (Vehicle-0-3110-1205-31638-77557-00007F49A5) (1)", -- [210]
+			"14:13:52 - Adding to self.lootSlotInfo (5) (|cffffffff|Hitem:113681::::::::120:102::::::|h[Iron Horde Scraps]|h|r) (1) (2) (Creature-0-3110-1205-31638-84860-00007F49A5) (2)", -- [211]
+			"14:13:53 - OnLootSlotCleared() (1) (nil) (1)", -- [212]
+			"14:13:53 - OnLootSlotCleared() (2) (|cffa335ee|Hitem:115578::::::::120:102::6:1:567:::|h[Windspeaker's Handwraps]|h|r) (4)", -- [213]
+			"14:13:53 - Event: (ENCOUNTER_LOOT_RECEIVED) (1695) (115578) (|cffa335ee|Hitem:115578::::::::120:102::6:1:567:::|h[Windspeaker's Handwraps]|h|r) (1) (Anastania) (DRUID)", -- [214]
+			"14:13:53 - Event: (ENCOUNTER_LOOT_RECEIVED) (1695) (113972) (|cffa335ee|Hitem:113972::::::::120:102::6:1:567:::|h[Cloak of Sanguine Terror]|h|r) (1) (Amyntah) (DEMONHUNTER)", -- [215]
+			"14:13:53 - Event: (ENCOUNTER_LOOT_RECEIVED) (1695) (115549) (|cffa335ee|Hitem:115549::::::::120:102::6:1:567:::|h[Rylakstalker's Gloves]|h|r) (1) (Amyntah) (DEMONHUNTER)", -- [216]
+			"14:13:53 - OnLootSlotCleared() (3) (|cffa335ee|Hitem:113965::::::::120:102::6:1:567:::|h[Sorka's Chainfist]|h|r) (4)", -- [217]
+			"14:13:53 - Event: (ENCOUNTER_LOOT_RECEIVED) (1695) (113965) (|cffa335ee|Hitem:113965::::::::120:102::6:1:567:::|h[Sorka's Chainfist]|h|r) (1) (Anastania) (DRUID)", -- [218]
+			"14:13:53 - Event: (ENCOUNTER_LOOT_RECEIVED) (1695) (115562) (|cffa335ee|Hitem:115562::::::::120:102::6:1:567:::|h[Soul Priest's Gloves]|h|r) (1) (Amyntah) (DEMONHUNTER)", -- [219]
+			"14:13:53 - OnLootSlotCleared() (4) (|cffa335ee|Hitem:113967::::::::120:102::6:1:567:::|h[Deckhand's Rope Belt]|h|r) (4)", -- [220]
+			"14:13:53 - Event: (ENCOUNTER_LOOT_RECEIVED) (1695) (113967) (|cffa335ee|Hitem:113967::::::::120:102::6:1:567:::|h[Deckhand's Rope Belt]|h|r) (1) (Anastania) (DRUID)", -- [221]
+			"14:13:53 - Comm received:^1^Slooted^T^N1^S77557^t^^ (from:) (Amyntah) (distri:) (RAID)", -- [222]
+			"14:13:53 - Comm received:^1^Slooted^T^N1^S77557^t^^ (from:) (Amyntah) (distri:) (RAID)", -- [223]
+			"14:13:53 - OnLootSlotCleared() (5) (|cffffffff|Hitem:113681::::::::120:102::::::|h[Iron Horde Scraps]|h|r) (1)", -- [224]
+			"14:13:53 - Event: (LOOT_CLOSED)", -- [225]
+			"14:13:53 - Event: (LOOT_CLOSED)", -- [226]
+			"14:13:53 - Comm received:^1^Slooted^T^N1^S84860^t^^ (from:) (Anastania) (distri:) (RAID)", -- [227]
+			"14:13:53 - Comm received:^1^Slooted^T^N1^S84860^t^^ (from:) (Anastania) (distri:) (RAID)", -- [228]
+			"14:13:55 - Storage:New (|cffa335ee|Hitem:115578::::::::120:102::6:1:567:::|h[Windspeaker's Handwraps]|h|r) (temp)", -- [229]
+			"14:13:55 - Storage: searching for item: (|cffa335ee|Hitem:115578::::::::120:102::6:1:567:::|h[Windspeaker's Handwraps]|h|r)", -- [230]
+			"14:13:55 - Found item at (0) (19)", -- [231]
+			"14:13:55 - Storage:New (|cffa335ee|Hitem:113965::::::::120:102::6:1:567:::|h[Sorka's Chainfist]|h|r) (temp)", -- [232]
+			"14:13:55 - Storage: searching for item: (|cffa335ee|Hitem:113965::::::::120:102::6:1:567:::|h[Sorka's Chainfist]|h|r)", -- [233]
+			"14:13:55 - Found item at (0) (20)", -- [234]
+			"14:13:55 - Storage:New (|cffa335ee|Hitem:113967::::::::120:102::6:1:567:::|h[Deckhand's Rope Belt]|h|r) (temp)", -- [235]
+			"14:13:55 - Storage: searching for item: (|cffa335ee|Hitem:113967::::::::120:102::6:1:567:::|h[Deckhand's Rope Belt]|h|r)", -- [236]
+			"14:13:55 - Found item at (1) (1)", -- [237]
+			"14:13:56 - Storage: searching for item: (|cffa335ee|Hitem:115578::::::::120:102::6:1:567:::|h[Windspeaker's Handwraps]|h|r)", -- [238]
+			"14:13:56 - Found item at (0) (19)", -- [239]
+			"14:13:56 - Storage: searching for item: (|cffa335ee|Hitem:113965::::::::120:102::6:1:567:::|h[Sorka's Chainfist]|h|r)", -- [240]
+			"14:13:56 - Found item at (0) (20)", -- [241]
+			"14:13:56 - Storage: searching for item: (|cffa335ee|Hitem:113967::::::::120:102::6:1:567:::|h[Deckhand's Rope Belt]|h|r)", -- [242]
+			"14:13:56 - Found item at (1) (1)", -- [243]
+			"14:13:57 - Comm received:^1^Stradable^T^N1^S|cffa335ee|Hitem:113967::::::::120:102::6:1:567:::|h[Deckhand's~`Rope~`Belt]|h|r^t^^ (from:) (Anastania) (distri:) (RAID)", -- [244]
+			"14:13:57 - Comm received:^1^Stradable^T^N1^S|cffa335ee|Hitem:113965::::::::120:102::6:1:567:::|h[Sorka's~`Chainfist]|h|r^t^^ (from:) (Anastania) (distri:) (RAID)", -- [245]
+			"14:13:57 - Comm received:^1^Stradable^T^N1^S|cffa335ee|Hitem:115578::::::::120:102::6:1:567:::|h[Windspeaker's~`Handwraps]|h|r^t^^ (from:) (Anastania) (distri:) (RAID)", -- [246]
+			"14:13:57 - Comm received:^1^Stradable^T^N1^S|cffa335ee|Hitem:115562::::::::120:577::6:1:567:::|h[Soul~`Priest's~`Gloves]|h|r^t^^ (from:) (Amyntah) (distri:) (RAID)", -- [247]
+			"14:13:57 - Comm received:^1^Stradable^T^N1^S|cffa335ee|Hitem:115549::::::::120:577::6:1:567:::|h[Rylakstalker's~`Gloves]|h|r^t^^ (from:) (Amyntah) (distri:) (RAID)", -- [248]
+			"14:13:57 - Comm received:^1^Stradable^T^N1^S|cffa335ee|Hitem:113972::::::::120:577::6:1:567:::|h[Cloak~`of~`Sanguine~`Terror]|h|r^t^^ (from:) (Amyntah) (distri:) (RAID)", -- [249]
+			"14:16:02 - ML event (PLAYER_REGEN_ENABLED)", -- [250]
+			"14:16:06 - Event: (ENCOUNTER_START) (1693) (Hans'gar & Franzok) (16) (20)", -- [251]
+			"14:16:06 - UpdatePlayersData()", -- [252]
+			"14:16:11 - Event: (ENCOUNTER_END) (1693) (Hans'gar & Franzok) (16) (20) (1)", -- [253]
+			"14:16:12 - ML event (PLAYER_REGEN_ENABLED)", -- [254]
+			"14:16:12 - Event: (LOOT_READY) (true)", -- [255]
+			"14:16:12 - Adding to self.lootSlotInfo (1) (nil) (1) (0) (Vehicle-0-3110-1205-31638-76973-00007F49A6) (539571)", -- [256]
+			"14:16:12 - Adding to self.lootSlotInfo (2) (|cffa335ee|Hitem:113902::::::::120:102::6:1:567:::|h[Chestguard of Unending Roars]|h|r) (4) (1) (Vehicle-0-3110-1205-31638-76973-00007F49A6) (1)", -- [257]
+			"14:16:12 - Adding to self.lootSlotInfo (3) (|cffa335ee|Hitem:113904::::::::120:102::6:1:567:::|h[Franzok's Headsmasher]|h|r) (4) (1) (Vehicle-0-3110-1205-31638-76973-00007F49A6) (1)", -- [258]
+			"14:16:12 - Event: (LOOT_READY) (true)", -- [259]
+			"14:16:12 - Adding to self.lootSlotInfo (1) (nil) (1) (0) (Vehicle-0-3110-1205-31638-76973-00007F49A6) (539571)", -- [260]
+			"14:16:12 - Adding to self.lootSlotInfo (2) (|cffa335ee|Hitem:113902::::::::120:102::6:1:567:::|h[Chestguard of Unending Roars]|h|r) (4) (1) (Vehicle-0-3110-1205-31638-76973-00007F49A6) (1)", -- [261]
+			"14:16:12 - Adding to self.lootSlotInfo (3) (|cffa335ee|Hitem:113904::::::::120:102::6:1:567:::|h[Franzok's Headsmasher]|h|r) (4) (1) (Vehicle-0-3110-1205-31638-76973-00007F49A6) (1)", -- [262]
+			"14:16:12 - Adding to self.lootSlotInfo (4) (|cffa335ee|Hitem:113904::::::::120:102::6:1:567:::|h[Franzok's Headsmasher]|h|r) (4) (1) (Vehicle-0-3110-1205-31638-76973-00007F49A6) (1)", -- [263]
+			"14:16:12 - Event: (LOOT_READY) (true)", -- [264]
+			"14:16:12 - Adding to self.lootSlotInfo (1) (nil) (1) (0) (Vehicle-0-3110-1205-31638-76973-00007F49A6) (539571)", -- [265]
+			"14:16:12 - Adding to self.lootSlotInfo (2) (|cffa335ee|Hitem:113902::::::::120:102::6:1:567:::|h[Chestguard of Unending Roars]|h|r) (4) (1) (Vehicle-0-3110-1205-31638-76973-00007F49A6) (1)", -- [266]
+			"14:16:12 - Adding to self.lootSlotInfo (3) (|cffa335ee|Hitem:113904::::::::120:102::6:1:567:::|h[Franzok's Headsmasher]|h|r) (4) (1) (Vehicle-0-3110-1205-31638-76973-00007F49A6) (1)", -- [267]
+			"14:16:12 - Adding to self.lootSlotInfo (4) (|cffa335ee|Hitem:113904::::::::120:102::6:1:567:::|h[Franzok's Headsmasher]|h|r) (4) (1) (Vehicle-0-3110-1205-31638-76973-00007F49A6) (1)", -- [268]
+			"14:16:12 - Event: (ENCOUNTER_LOOT_RECEIVED) (1693) (113900) (|cffa335ee|Hitem:113900::::::::120:102::6:1:567:::|h[Vertebrae Protector]|h|r) (1) (Amyntah) (DEMONHUNTER)", -- [269]
+			"14:16:13 - OnLootSlotCleared() (1) (nil) (1)", -- [270]
+			"14:16:13 - Event: (ENCOUNTER_LOOT_RECEIVED) (1693) (113908) (|cffa335ee|Hitem:113908::::::::120:102::6:1:567:::|h[Razoredge Blade Ring]|h|r) (1) (Amyntah) (DEMONHUNTER)", -- [271]
+			"14:16:13 - Comm received:^1^Slooted^T^N1^S76973^t^^ (from:) (Amyntah) (distri:) (RAID)", -- [272]
+			"14:16:13 - Comm received:^1^Slooted^T^N1^S76973^t^^ (from:) (Amyntah) (distri:) (RAID)", -- [273]
+			"14:16:13 - OnLootSlotCleared() (2) (|cffa335ee|Hitem:113902::::::::120:102::6:1:567:::|h[Chestguard of Unending Roars]|h|r) (4)", -- [274]
+			"14:16:13 - Event: (ENCOUNTER_LOOT_RECEIVED) (1693) (113902) (|cffa335ee|Hitem:113902::::::::120:102::6:1:567:::|h[Chestguard of Unending Roars]|h|r) (1) (Anastania) (DRUID)", -- [275]
+			"14:16:13 - OnLootSlotCleared() (3) (|cffa335ee|Hitem:113904::::::::120:102::6:1:567:::|h[Franzok's Headsmasher]|h|r) (4)", -- [276]
+			"14:16:13 - Event: (ENCOUNTER_LOOT_RECEIVED) (1693) (113904) (|cffa335ee|Hitem:113904::::::::120:102::6:1:567:::|h[Franzok's Headsmasher]|h|r) (1) (Anastania) (DRUID)", -- [277]
+			"14:16:13 - OnLootSlotCleared() (4) (|cffa335ee|Hitem:113904::::::::120:102::6:1:567:::|h[Franzok's Headsmasher]|h|r) (4)", -- [278]
+			"14:16:13 - Event: (LOOT_CLOSED)", -- [279]
+			"14:16:13 - Event: (LOOT_CLOSED)", -- [280]
+			"14:16:13 - Event: (ENCOUNTER_LOOT_RECEIVED) (1693) (113904) (|cffa335ee|Hitem:113904::::::::120:102::6:1:567:::|h[Franzok's Headsmasher]|h|r) (1) (Anastania) (DRUID)", -- [281]
+			"14:16:13 - Comm received:^1^Slooted^T^N1^S76973^t^^ (from:) (Anastania) (distri:) (RAID)", -- [282]
+			"14:16:13 - Comm received:^1^Slooted^T^N1^S76973^t^^ (from:) (Anastania) (distri:) (RAID)", -- [283]
+			"14:16:15 - Storage:New (|cffa335ee|Hitem:113902::::::::120:102::6:1:567:::|h[Chestguard of Unending Roars]|h|r) (temp)", -- [284]
+			"14:16:15 - Storage: searching for item: (|cffa335ee|Hitem:113902::::::::120:102::6:1:567:::|h[Chestguard of Unending Roars]|h|r)", -- [285]
+			"14:16:15 - Found item at (1) (3)", -- [286]
+			"14:16:15 - Storage:New (|cffa335ee|Hitem:113904::::::::120:102::6:1:567:::|h[Franzok's Headsmasher]|h|r) (temp)", -- [287]
+			"14:16:15 - Storage: searching for item: (|cffa335ee|Hitem:113904::::::::120:102::6:1:567:::|h[Franzok's Headsmasher]|h|r)", -- [288]
+			"14:16:15 - Found item at (1) (4)", -- [289]
+			"14:16:15 - Storage:New (|cffa335ee|Hitem:113904::::::::120:102::6:1:567:::|h[Franzok's Headsmasher]|h|r) (temp)", -- [290]
+			"14:16:15 - Storage: searching for item: (|cffa335ee|Hitem:113904::::::::120:102::6:1:567:::|h[Franzok's Headsmasher]|h|r)", -- [291]
+			"14:16:15 - Found item at (1) (4)", -- [292]
+			"14:16:16 - Storage: searching for item: (|cffa335ee|Hitem:113902::::::::120:102::6:1:567:::|h[Chestguard of Unending Roars]|h|r)", -- [293]
+			"14:16:16 - Found item at (1) (3)", -- [294]
+			"14:16:16 - Storage: searching for item: (|cffa335ee|Hitem:113904::::::::120:102::6:1:567:::|h[Franzok's Headsmasher]|h|r)", -- [295]
+			"14:16:16 - Found item at (1) (4)", -- [296]
+			"14:16:16 - Storage: searching for item: (|cffa335ee|Hitem:113904::::::::120:102::6:1:567:::|h[Franzok's Headsmasher]|h|r)", -- [297]
+			"14:16:16 - Found item at (1) (4)", -- [298]
+			"14:16:16 - Comm received:^1^Stradable^T^N1^S|cffa335ee|Hitem:113904::::::::120:102::6:1:567:::|h[Franzok's~`Headsmasher]|h|r^t^^ (from:) (Anastania) (distri:) (RAID)", -- [299]
+			"14:16:17 - Comm received:^1^Stradable^T^N1^S|cffa335ee|Hitem:113908::::::::120:577::6:1:567:::|h[Razoredge~`Blade~`Ring]|h|r^t^^ (from:) (Amyntah) (distri:) (RAID)", -- [300]
+			"14:16:17 - Comm received:^1^Stradable^T^N1^S|cffa335ee|Hitem:113900::::::::120:577::6:1:567:::|h[Vertebrae~`Protector]|h|r^t^^ (from:) (Amyntah) (distri:) (RAID)", -- [301]
+			"14:16:20 - Comm received:^1^Stradable^T^N1^S|cffa335ee|Hitem:113904::::::::120:102::6:1:567:::|h[Franzok's~`Headsmasher]|h|r^t^^ (from:) (Anastania) (distri:) (RAID)", -- [302]
+			"14:16:20 - Comm received:^1^Stradable^T^N1^S|cffa335ee|Hitem:113902::::::::120:102::6:1:567:::|h[Chestguard~`of~`Unending~`Roars]|h|r^t^^ (from:) (Anastania) (distri:) (RAID)", -- [303]
+			"14:16:53 - ML event (PLAYER_REGEN_ENABLED)", -- [304]
+			"14:16:58 - Event: (ENCOUNTER_START) (1689) (Flamebender Ka'graz) (16) (20)", -- [305]
+			"14:16:58 - UpdatePlayersData()", -- [306]
+			"14:17:06 - Event: (ENCOUNTER_END) (1689) (Flamebender Ka'graz) (16) (20) (1)", -- [307]
+			"14:17:07 - ML event (PLAYER_REGEN_ENABLED)", -- [308]
+			"14:17:08 - Event: (ENCOUNTER_LOOT_RECEIVED) (1689) (115540) (|cffa335ee|Hitem:115540::::::::120:102::6:1:567:::|h[Living Wood Raiment]|h|r) (1) (Amyntah) (DEMONHUNTER)", -- [309]
+			"14:17:08 - Event: (ENCOUNTER_LOOT_RECEIVED) (1689) (115540) (|cffa335ee|Hitem:115540::::::::120:102::6:2:565:567:::|h[Living Wood Raiment]|h|r) (1) (Amyntah) (DEMONHUNTER)", -- [310]
+			"14:17:08 - Event: (LOOT_READY) (true)", -- [311]
+			"14:17:08 - Adding to self.lootSlotInfo (1) (nil) (1) (0) (Vehicle-0-3110-1205-31638-76814-00007F49A5) (501326)", -- [312]
+			"14:17:08 - Adding to self.lootSlotInfo (2) (|cffa335ee|Hitem:115577::::::::120:102::6:1:567:::|h[Windspeaker's Tunic]|h|r) (4) (1) (Vehicle-0-3110-1205-31638-76814-00007F49A5) (1)", -- [313]
+			"14:17:08 - Adding to self.lootSlotInfo (3) (|cffa335ee|Hitem:119193::::::::120:102::6:1:567:::|h[Horn of Screaming Spirits]|h|r) (4) (1) (Vehicle-0-3110-1205-31638-76814-00007F49A5) (1)", -- [314]
+			"14:17:08 - Adding to self.lootSlotInfo (4) (|cffa335ee|Hitem:113917::::::::120:102::6:1:567:::|h[Cinderwolf Signet]|h|r) (4) (1) (Vehicle-0-3110-1205-31638-76814-00007F49A5) (1)", -- [315]
+			"14:17:08 - Event: (ENCOUNTER_LOOT_RECEIVED) (1689) (113916) (|cffa335ee|Hitem:113916::::::::120:102::6:2:42:567:::|h[Charbreath Firecloak]|h|r) (1) (Amyntah) (DEMONHUNTER)", -- [316]
+			"14:17:08 - Event: (LOOT_READY) (true)", -- [317]
+			"14:17:08 - Adding to self.lootSlotInfo (1) (nil) (1) (0) (Vehicle-0-3110-1205-31638-76814-00007F49A5) (501326)", -- [318]
+			"14:17:08 - Adding to self.lootSlotInfo (2) (|cffa335ee|Hitem:115577::::::::120:102::6:1:567:::|h[Windspeaker's Tunic]|h|r) (4) (1) (Vehicle-0-3110-1205-31638-76814-00007F49A5) (1)", -- [319]
+			"14:17:08 - Adding to self.lootSlotInfo (3) (|cffa335ee|Hitem:119193::::::::120:102::6:1:567:::|h[Horn of Screaming Spirits]|h|r) (4) (1) (Vehicle-0-3110-1205-31638-76814-00007F49A5) (1)", -- [320]
+			"14:17:08 - Adding to self.lootSlotInfo (4) (|cffa335ee|Hitem:113917::::::::120:102::6:1:567:::|h[Cinderwolf Signet]|h|r) (4) (1) (Vehicle-0-3110-1205-31638-76814-00007F49A5) (1)", -- [321]
+			"14:17:08 - Comm received:^1^Slooted^T^N1^S76814^t^^ (from:) (Amyntah) (distri:) (RAID)", -- [322]
+			"14:17:08 - Comm received:^1^Slooted^T^N1^S76814^t^^ (from:) (Amyntah) (distri:) (RAID)", -- [323]
+			"14:17:09 - OnLootSlotCleared() (1) (nil) (1)", -- [324]
+			"14:17:09 - OnLootSlotCleared() (2) (|cffa335ee|Hitem:115577::::::::120:102::6:1:567:::|h[Windspeaker's Tunic]|h|r) (4)", -- [325]
+			"14:17:09 - Event: (ENCOUNTER_LOOT_RECEIVED) (1689) (115577) (|cffa335ee|Hitem:115577::::::::120:102::6:1:567:::|h[Windspeaker's Tunic]|h|r) (1) (Anastania) (DRUID)", -- [326]
+			"14:17:09 - OnLootSlotCleared() (3) (|cffa335ee|Hitem:119193::::::::120:102::6:1:567:::|h[Horn of Screaming Spirits]|h|r) (4)", -- [327]
+			"14:17:09 - Event: (ENCOUNTER_LOOT_RECEIVED) (1689) (119193) (|cffa335ee|Hitem:119193::::::::120:102::6:1:567:::|h[Horn of Screaming Spirits]|h|r) (1) (Anastania) (DRUID)", -- [328]
+			"14:17:09 - OnLootSlotCleared() (4) (|cffa335ee|Hitem:113917::::::::120:102::6:1:567:::|h[Cinderwolf Signet]|h|r) (4)", -- [329]
+			"14:17:09 - Event: (LOOT_CLOSED)", -- [330]
+			"14:17:09 - Event: (LOOT_CLOSED)", -- [331]
+			"14:17:09 - Event: (ENCOUNTER_LOOT_RECEIVED) (1689) (113917) (|cffa335ee|Hitem:113917::::::::120:102::6:1:567:::|h[Cinderwolf Signet]|h|r) (1) (Anastania) (DRUID)", -- [332]
+			"14:17:09 - Comm received:^1^Slooted^T^N1^S76814^t^^ (from:) (Anastania) (distri:) (RAID)", -- [333]
+			"14:17:09 - Comm received:^1^Slooted^T^N1^S76814^t^^ (from:) (Anastania) (distri:) (RAID)", -- [334]
+			"14:17:11 - Storage:New (|cffa335ee|Hitem:115577::::::::120:102::6:1:567:::|h[Windspeaker's Tunic]|h|r) (temp)", -- [335]
+			"14:17:11 - Storage: searching for item: (|cffa335ee|Hitem:115577::::::::120:102::6:1:567:::|h[Windspeaker's Tunic]|h|r)", -- [336]
+			"14:17:11 - Found item at (1) (6)", -- [337]
+			"14:17:11 - Storage:New (|cffa335ee|Hitem:119193::::::::120:102::6:1:567:::|h[Horn of Screaming Spirits]|h|r) (temp)", -- [338]
+			"14:17:11 - Storage: searching for item: (|cffa335ee|Hitem:119193::::::::120:102::6:1:567:::|h[Horn of Screaming Spirits]|h|r)", -- [339]
+			"14:17:11 - Found item at (1) (7)", -- [340]
+			"14:17:11 - Storage:New (|cffa335ee|Hitem:113917::::::::120:102::6:1:567:::|h[Cinderwolf Signet]|h|r) (temp)", -- [341]
+			"14:17:11 - Storage: searching for item: (|cffa335ee|Hitem:113917::::::::120:102::6:1:567:::|h[Cinderwolf Signet]|h|r)", -- [342]
+			"14:17:11 - Found item at (1) (8)", -- [343]
+			"14:17:12 - Storage: searching for item: (|cffa335ee|Hitem:115577::::::::120:102::6:1:567:::|h[Windspeaker's Tunic]|h|r)", -- [344]
+			"14:17:12 - Found item at (1) (6)", -- [345]
+			"14:17:12 - Storage: searching for item: (|cffa335ee|Hitem:119193::::::::120:102::6:1:567:::|h[Horn of Screaming Spirits]|h|r)", -- [346]
+			"14:17:12 - Found item at (1) (7)", -- [347]
+			"14:17:12 - Storage: searching for item: (|cffa335ee|Hitem:113917::::::::120:102::6:1:567:::|h[Cinderwolf Signet]|h|r)", -- [348]
+			"14:17:12 - Found item at (1) (8)", -- [349]
+			"14:17:13 - Comm received:^1^Stradable^T^N1^S|cffa335ee|Hitem:115540::::::::120:577::6:1:567:::|h[Living~`Wood~`Raiment]|h|r^t^^ (from:) (Amyntah) (distri:) (RAID)", -- [350]
+			"14:17:13 - Comm received:^1^Stradable^T^N1^S|cffa335ee|Hitem:119193::::::::120:102::6:1:567:::|h[Horn~`of~`Screaming~`Spirits]|h|r^t^^ (from:) (Anastania) (distri:) (RAID)", -- [351]
+			"14:17:13 - Comm received:^1^Stradable^T^N1^S|cffa335ee|Hitem:113917::::::::120:102::6:1:567:::|h[Cinderwolf~`Signet]|h|r^t^^ (from:) (Anastania) (distri:) (RAID)", -- [352]
+			"14:17:13 - Comm received:^1^Stradable^T^N1^S|cffa335ee|Hitem:115577::::::::120:102::6:1:567:::|h[Windspeaker's~`Tunic]|h|r^t^^ (from:) (Anastania) (distri:) (RAID)", -- [353]
+			"14:17:23 - TradeUI: Traded item(s) to (Amyntah-Silvermoon)", -- [354]
+			"14:17:23 - TradeUI:Hide()", -- [355]
+			"14:17:27 - Comm received:^1^Stradable^T^N1^S|cffa335ee|Hitem:113916::::::::120:577::6:2:42:567:::|h[Charbreath~`Firecloak]|h|r^t^^ (from:) (Amyntah) (distri:) (RAID)", -- [356]
+			"14:17:27 - Comm received:^1^Stradable^T^N1^S|cffa335ee|Hitem:115540::::::::120:577::6:2:565:567:::|h[Living~`Wood~`Raiment]|h|r^t^^ (from:) (Amyntah) (distri:) (RAID)", -- [357]
+			"14:17:52 - Event: (ENCOUNTER_START) (1713) (Kromog, Legend of the Mountain) (16) (20)", -- [358]
+			"14:17:52 - UpdatePlayersData()", -- [359]
+			"14:18:02 - Event: (ENCOUNTER_END) (1713) (Kromog, Legend of the Mountain) (16) (20) (1)", -- [360]
+			"14:18:03 - ML event (PLAYER_REGEN_ENABLED)", -- [361]
+			"14:18:04 - Event: (ENCOUNTER_LOOT_RECEIVED) (1713) (115568) (|cffa335ee|Hitem:115568::::::::120:102::6:2:42:567:::|h[Helmet of Guiding Light]|h|r) (1) (Amyntah) (DEMONHUNTER)", -- [362]
+			"14:18:04 - Event: (ENCOUNTER_LOOT_RECEIVED) (1713) (113934) (|cffa335ee|Hitem:113934::::::::120:102::6:1:567:::|h[Fang of the Earth]|h|r) (1) (Amyntah) (DEMONHUNTER)", -- [363]
+			"14:18:04 - Event: (ENCOUNTER_LOOT_RECEIVED) (1713) (113927) (|cffa335ee|Hitem:113927::::::::120:102::6:1:567:::|h[Kromog's Brutal Fist]|h|r) (1) (Amyntah) (DEMONHUNTER)", -- [364]
+			"14:18:04 - Comm received:^1^Slooted^T^N1^S77692^t^^ (from:) (Amyntah) (distri:) (RAID)", -- [365]
+			"14:18:04 - Comm received:^1^Slooted^T^N1^S77692^t^^ (from:) (Amyntah) (distri:) (RAID)", -- [366]
+			"14:18:05 - Event: (LOOT_READY) (true)", -- [367]
+			"14:18:05 - Adding to self.lootSlotInfo (1) (nil) (1) (0) (Creature-0-3110-1205-31638-77692-00007F49A5) (527645)", -- [368]
+			"14:18:05 - Adding to self.lootSlotInfo (2) (|cffa335ee|Hitem:115563::::::::120:102::6:1:567:::|h[Soul Priest's Hood]|h|r) (4) (1) (Creature-0-3110-1205-31638-77692-00007F49A5) (1)", -- [369]
+			"14:18:05 - Adding to self.lootSlotInfo (3) (|cffa335ee|Hitem:113928::::::::120:102::6:1:567:::|h[Earthripple Shoulderpads]|h|r) (4) (1) (Creature-0-3110-1205-31638-77692-00007F49A5) (1)", -- [370]
+			"14:18:05 - Adding to self.lootSlotInfo (4) (|cffa335ee|Hitem:115553::::::::120:102::6:1:567:::|h[Arcanoshatter Hood]|h|r) (4) (1) (Creature-0-3110-1205-31638-77692-00007F49A5) (1)", -- [371]
+			"14:18:05 - Event: (LOOT_READY) (true)", -- [372]
+			"14:18:05 - Adding to self.lootSlotInfo (1) (nil) (1) (0) (Creature-0-3110-1205-31638-77692-00007F49A5) (527645)", -- [373]
+			"14:18:05 - Adding to self.lootSlotInfo (2) (|cffa335ee|Hitem:115563::::::::120:102::6:1:567:::|h[Soul Priest's Hood]|h|r) (4) (1) (Creature-0-3110-1205-31638-77692-00007F49A5) (1)", -- [374]
+			"14:18:05 - Adding to self.lootSlotInfo (3) (|cffa335ee|Hitem:113928::::::::120:102::6:1:567:::|h[Earthripple Shoulderpads]|h|r) (4) (1) (Creature-0-3110-1205-31638-77692-00007F49A5) (1)", -- [375]
+			"14:18:05 - Adding to self.lootSlotInfo (4) (|cffa335ee|Hitem:115553::::::::120:102::6:1:567:::|h[Arcanoshatter Hood]|h|r) (4) (1) (Creature-0-3110-1205-31638-77692-00007F49A5) (1)", -- [376]
+			"14:18:05 - OnLootSlotCleared() (1) (nil) (1)", -- [377]
+			"14:18:06 - OnLootSlotCleared() (2) (|cffa335ee|Hitem:115563::::::::120:102::6:1:567:::|h[Soul Priest's Hood]|h|r) (4)", -- [378]
+			"14:18:06 - Event: (ENCOUNTER_LOOT_RECEIVED) (1713) (115563) (|cffa335ee|Hitem:115563::::::::120:102::6:1:567:::|h[Soul Priest's Hood]|h|r) (1) (Anastania) (DRUID)", -- [379]
+			"14:18:06 - OnLootSlotCleared() (3) (|cffa335ee|Hitem:113928::::::::120:102::6:1:567:::|h[Earthripple Shoulderpads]|h|r) (4)", -- [380]
+			"14:18:06 - Event: (ENCOUNTER_LOOT_RECEIVED) (1713) (113928) (|cffa335ee|Hitem:113928::::::::120:102::6:1:567:::|h[Earthripple Shoulderpads]|h|r) (1) (Anastania) (DRUID)", -- [381]
+			"14:18:06 - OnLootSlotCleared() (4) (|cffa335ee|Hitem:115553::::::::120:102::6:1:567:::|h[Arcanoshatter Hood]|h|r) (4)", -- [382]
+			"14:18:06 - Event: (LOOT_CLOSED)", -- [383]
+			"14:18:06 - Event: (LOOT_CLOSED)", -- [384]
+			"14:18:06 - Event: (ENCOUNTER_LOOT_RECEIVED) (1713) (115553) (|cffa335ee|Hitem:115553::::::::120:102::6:1:567:::|h[Arcanoshatter Hood]|h|r) (1) (Anastania) (DRUID)", -- [385]
+			"14:18:06 - Comm received:^1^Slooted^T^N1^S77692^t^^ (from:) (Anastania) (distri:) (RAID)", -- [386]
+			"14:18:06 - Comm received:^1^Slooted^T^N1^S77692^t^^ (from:) (Anastania) (distri:) (RAID)", -- [387]
+			"14:18:08 - Storage:New (|cffa335ee|Hitem:115563::::::::120:102::6:1:567:::|h[Soul Priest's Hood]|h|r) (temp)", -- [388]
+			"14:18:08 - Storage: searching for item: (|cffa335ee|Hitem:115563::::::::120:102::6:1:567:::|h[Soul Priest's Hood]|h|r)", -- [389]
+			"14:18:08 - Found item at (1) (10)", -- [390]
+			"14:18:08 - Storage:New (|cffa335ee|Hitem:113928::::::::120:102::6:1:567:::|h[Earthripple Shoulderpads]|h|r) (temp)", -- [391]
+			"14:18:08 - Storage: searching for item: (|cffa335ee|Hitem:113928::::::::120:102::6:1:567:::|h[Earthripple Shoulderpads]|h|r)", -- [392]
+			"14:18:08 - Found item at (1) (11)", -- [393]
+			"14:18:08 - Storage:New (|cffa335ee|Hitem:115553::::::::120:102::6:1:567:::|h[Arcanoshatter Hood]|h|r) (temp)", -- [394]
+			"14:18:08 - Storage: searching for item: (|cffa335ee|Hitem:115553::::::::120:102::6:1:567:::|h[Arcanoshatter Hood]|h|r)", -- [395]
+			"14:18:08 - Found item at (1) (12)", -- [396]
+			"14:18:09 - Storage: searching for item: (|cffa335ee|Hitem:115563::::::::120:102::6:1:567:::|h[Soul Priest's Hood]|h|r)", -- [397]
+			"14:18:09 - Found item at (1) (10)", -- [398]
+			"14:18:09 - Storage: searching for item: (|cffa335ee|Hitem:113928::::::::120:102::6:1:567:::|h[Earthripple Shoulderpads]|h|r)", -- [399]
+			"14:18:09 - Found item at (1) (11)", -- [400]
+			"14:18:09 - Storage: searching for item: (|cffa335ee|Hitem:115553::::::::120:102::6:1:567:::|h[Arcanoshatter Hood]|h|r)", -- [401]
+			"14:18:09 - Found item at (1) (12)", -- [402]
+			"14:18:10 - Comm received:^1^Stradable^T^N1^S|cffa335ee|Hitem:115553::::::::120:102::6:1:567:::|h[Arcanoshatter~`Hood]|h|r^t^^ (from:) (Anastania) (distri:) (RAID)", -- [403]
+			"14:18:10 - Comm received:^1^Stradable^T^N1^S|cffa335ee|Hitem:113928::::::::120:102::6:1:567:::|h[Earthripple~`Shoulderpads]|h|r^t^^ (from:) (Anastania) (distri:) (RAID)", -- [404]
+			"14:18:10 - Comm received:^1^Stradable^T^N1^S|cffa335ee|Hitem:115563::::::::120:102::6:1:567:::|h[Soul~`Priest's~`Hood]|h|r^t^^ (from:) (Anastania) (distri:) (RAID)", -- [405]
+			"14:18:16 - Comm received:^1^Stradable^T^N1^S|cffa335ee|Hitem:113934::::::::120:577::6:1:567:::|h[Fang~`of~`the~`Earth]|h|r^t^^ (from:) (Amyntah) (distri:) (RAID)", -- [406]
+			"14:18:16 - Comm received:^1^Stradable^T^N1^S|cffa335ee|Hitem:115568::::::::120:577::6:2:42:567:::|h[Helmet~`of~`Guiding~`Light]|h|r^t^^ (from:) (Amyntah) (distri:) (RAID)", -- [407]
+			"14:18:16 - Comm received:^1^Stradable^T^N1^S|cffa335ee|Hitem:113927::::::::120:577::6:1:567:::|h[Kromog's~`Brutal~`Fist]|h|r^t^^ (from:) (Amyntah) (distri:) (RAID)", -- [408]
+			"14:20:20 - ML event (PLAYER_REGEN_ENABLED)", -- [409]
+			"14:21:41 - Event: (ENCOUNTER_START) (1704) (Blackhand) (16) (20)", -- [410]
+			"14:21:41 - UpdatePlayersData()", -- [411]
+			"14:22:06 - Event: (ENCOUNTER_END) (1704) (Blackhand) (16) (20) (1)", -- [412]
+			"14:22:06 - ML event (PLAYER_REGEN_ENABLED)", -- [413]
+			"14:22:08 - Event: (LOOT_READY) (true)", -- [414]
+			"14:22:08 - Adding to self.lootSlotInfo (1) (nil) (1) (0) (Vehicle-0-3110-1205-31638-77325-00007F49A7) (547274)", -- [415]
+			"14:22:08 - Adding to self.lootSlotInfo (2) (|cff1eff00|Hitem:122200::::::::120:102::6::::|h[Music Roll: A Siege of Worlds]|h|r) (2) (1) (Vehicle-0-3110-1205-31638-77325-00007F49A7) (1)", -- [416]
+			"14:22:08 - Adding to self.lootSlotInfo (3) (|cffa335ee|Hitem:120283::::::::120:102::::::|h[Essence of the Iron Conqueror]|h|r) (4) (1) (Vehicle-0-3110-1205-31638-77325-00007F49A7) (1)", -- [417]
+			"14:22:08 - Adding to self.lootSlotInfo (4) (|cffa335ee|Hitem:113987::::::::120:102::6:2:565:567:::|h[Battering Talisman]|h|r) (4) (1) (Vehicle-0-3110-1205-31638-77325-00007F49A7) (1)", -- [418]
+			"14:22:08 - Adding to self.lootSlotInfo (6) (|cffa335ee|Hitem:120285::::::::120:102::::::|h[Essence of the Iron Vanquisher]|h|r) (4) (1) (Vehicle-0-3110-1205-31638-77325-00007F49A7) (1)", -- [419]
+			"14:22:08 - Event: (LOOT_READY) (true)", -- [420]
+			"14:22:08 - Adding to self.lootSlotInfo (1) (nil) (1) (0) (Vehicle-0-3110-1205-31638-77325-00007F49A7) (547274)", -- [421]
+			"14:22:08 - Adding to self.lootSlotInfo (2) (|cff1eff00|Hitem:122200::::::::120:102::6::::|h[Music Roll: A Siege of Worlds]|h|r) (2) (1) (Vehicle-0-3110-1205-31638-77325-00007F49A7) (1)", -- [422]
+			"14:22:08 - Adding to self.lootSlotInfo (3) (|cffa335ee|Hitem:120283::::::::120:102::::::|h[Essence of the Iron Conqueror]|h|r) (4) (1) (Vehicle-0-3110-1205-31638-77325-00007F49A7) (1)", -- [423]
+			"14:22:08 - Adding to self.lootSlotInfo (4) (|cffa335ee|Hitem:113987::::::::120:102::6:2:565:567:::|h[Battering Talisman]|h|r) (4) (1) (Vehicle-0-3110-1205-31638-77325-00007F49A7) (1)", -- [424]
+			"14:22:08 - Adding to self.lootSlotInfo (6) (|cffa335ee|Hitem:120285::::::::120:102::::::|h[Essence of the Iron Vanquisher]|h|r) (4) (1) (Vehicle-0-3110-1205-31638-77325-00007F49A7) (1)", -- [425]
+			"14:22:08 - OnLootSlotCleared() (1) (nil) (1)", -- [426]
+			"14:22:09 - OnLootSlotCleared() (2) (|cff1eff00|Hitem:122200::::::::120:102::6::::|h[Music Roll: A Siege of Worlds]|h|r) (2)", -- [427]
+			"14:22:09 - OnLootSlotCleared() (3) (|cffa335ee|Hitem:120283::::::::120:102::::::|h[Essence of the Iron Conqueror]|h|r) (4)", -- [428]
+			"14:22:09 - Event: (ENCOUNTER_LOOT_RECEIVED) (1704) (120283) (|cffa335ee|Hitem:120283::::::::120:102::::::|h[Essence of the Iron Conqueror]|h|r) (1) (Anastania) (DRUID)", -- [429]
+			"14:22:09 - OnLootSlotCleared() (4) (|cffa335ee|Hitem:113987::::::::120:102::6:2:565:567:::|h[Battering Talisman]|h|r) (4)", -- [430]
+			"14:22:09 - Event: (ENCOUNTER_LOOT_RECEIVED) (1704) (113987) (|cffa335ee|Hitem:113987::::::::120:102::6:2:565:567:::|h[Battering Talisman]|h|r) (1) (Anastania) (DRUID)", -- [431]
+			"14:22:09 - Event: (ENCOUNTER_LOOT_RECEIVED) (1704) (138809) (|cff0070dd|Hitem:138809::::::::120:102::6::::|h[Illusion: Mark of Blackrock]|h|r) (1) (Anastania) (DRUID)", -- [432]
+			"14:22:09 - OnLootSlotCleared() (6) (|cffa335ee|Hitem:120285::::::::120:102::::::|h[Essence of the Iron Vanquisher]|h|r) (4)", -- [433]
+			"14:22:09 - Event: (LOOT_CLOSED)", -- [434]
+			"14:22:09 - Event: (LOOT_CLOSED)", -- [435]
+			"14:22:09 - Event: (ENCOUNTER_LOOT_RECEIVED) (1704) (120285) (|cffa335ee|Hitem:120285::::::::120:102::::::|h[Essence of the Iron Vanquisher]|h|r) (1) (Anastania) (DRUID)", -- [436]
+			"14:22:09 - Comm received:^1^Slooted^T^N1^S77325^t^^ (from:) (Anastania) (distri:) (RAID)", -- [437]
+			"14:22:09 - Comm received:^1^Slooted^T^N1^S77325^t^^ (from:) (Anastania) (distri:) (RAID)", -- [438]
+			"14:22:10 - Event: (ENCOUNTER_LOOT_RECEIVED) (1704) (120283) (|cffa335ee|Hitem:120283::::::::120:102::::::|h[Essence of the Iron Conqueror]|h|r) (1) (Amyntah) (DEMONHUNTER)", -- [439]
+			"14:22:10 - Event: (ENCOUNTER_LOOT_RECEIVED) (1704) (113984) (|cffa335ee|Hitem:113984::::::::120:102::6:1:567:::|h[Blackiron Micro Crucible]|h|r) (1) (Amyntah) (DEMONHUNTER)", -- [440]
+			"14:22:10 - Event: (ENCOUNTER_LOOT_RECEIVED) (1704) (113981) (|cffa335ee|Hitem:113981::::::::120:102::6:2:565:567:::|h[Slagbomber's Hood]|h|r) (1) (Amyntah) (DEMONHUNTER)", -- [441]
+			"14:22:10 - Comm received:^1^Slooted^T^N1^S77325^t^^ (from:) (Amyntah) (distri:) (RAID)", -- [442]
+			"14:22:10 - Comm received:^1^Slooted^T^N1^S77325^t^^ (from:) (Amyntah) (distri:) (RAID)", -- [443]
+			"14:22:11 - Storage:New (|cff1eff00|Hitem:122200::::::::120:102::6::::|h[Music Roll: A Siege of Worlds]|h|r) (temp)", -- [444]
+			"14:22:11 - Storage: searching for item: (|cff1eff00|Hitem:122200::::::::120:102::6::::|h[Music Roll: A Siege of Worlds]|h|r)", -- [445]
+			"14:22:11 - Found item at (1) (14)", -- [446]
+			"14:22:11 - Found: (1) (14) (0)", -- [447]
+			"14:22:11 - Storage:New (|cffa335ee|Hitem:120283::::::::120:102::::::|h[Essence of the Iron Conqueror]|h|r) (temp)", -- [448]
+			"14:22:11 - Storage: searching for item: (|cffa335ee|Hitem:120283::::::::120:102::::::|h[Essence of the Iron Conqueror]|h|r)", -- [449]
+			"14:22:11 - Found item at (1) (15)", -- [450]
+			"14:22:11 - Storage:New (|cffa335ee|Hitem:113987::::::::120:102::6:2:565:567:::|h[Battering Talisman]|h|r) (temp)", -- [451]
+			"14:22:11 - Storage: searching for item: (|cffa335ee|Hitem:113987::::::::120:102::6:2:565:567:::|h[Battering Talisman]|h|r)", -- [452]
+			"14:22:11 - Found item at (1) (16)", -- [453]
+			"14:22:11 - Storage:New (|cffa335ee|Hitem:120285::::::::120:102::::::|h[Essence of the Iron Vanquisher]|h|r) (temp)", -- [454]
+			"14:22:11 - Storage: searching for item: (|cffa335ee|Hitem:120285::::::::120:102::::::|h[Essence of the Iron Vanquisher]|h|r)", -- [455]
+			"14:22:11 - Found item at (1) (18)", -- [456]
+			"14:22:12 - Storage: searching for item: (|cff1eff00|Hitem:122200::::::::120:102::6::::|h[Music Roll: A Siege of Worlds]|h|r)", -- [457]
+			"14:22:12 - Found item at (1) (14)", -- [458]
+			"14:22:12 - Found: (1) (14) (0)", -- [459]
+			"14:22:12 - Storage: searching for item: (|cffa335ee|Hitem:120283::::::::120:102::::::|h[Essence of the Iron Conqueror]|h|r)", -- [460]
+			"14:22:12 - Found item at (1) (15)", -- [461]
+			"14:22:12 - Comm received:^1^Snot_tradeable^T^N1^S|cff1eff00|Hitem:122200::::::::120:102::6::::|h[Music~`Roll:~`A~`Siege~`of~`Worlds]|h|r^N2^S77325^t^^ (from:) (Anastania) (distri:) (RAID)", -- [462]
+			"14:22:12 - Storage: searching for item: (|cffa335ee|Hitem:113987::::::::120:102::6:2:565:567:::|h[Battering Talisman]|h|r)", -- [463]
+			"14:22:12 - Found item at (1) (16)", -- [464]
+			"14:22:12 - Storage: searching for item: (|cffa335ee|Hitem:120285::::::::120:102::::::|h[Essence of the Iron Vanquisher]|h|r)", -- [465]
+			"14:22:12 - Found item at (1) (18)", -- [466]
+			"14:22:13 - Comm received:^1^Stradable^T^N1^S|cffa335ee|Hitem:120285::::::::120:102::::::|h[Essence~`of~`the~`Iron~`Vanquisher]|h|r^t^^ (from:) (Anastania) (distri:) (RAID)", -- [467]
+			"14:22:13 - Comm received:^1^Stradable^T^N1^S|cffa335ee|Hitem:113987::::::::120:102::6:2:565:567:::|h[Battering~`Talisman]|h|r^t^^ (from:) (Anastania) (distri:) (RAID)", -- [468]
+			"14:22:13 - Comm received:^1^Stradable^T^N1^S|cffa335ee|Hitem:120283::::::::120:102::::::|h[Essence~`of~`the~`Iron~`Conqueror]|h|r^t^^ (from:) (Anastania) (distri:) (RAID)", -- [469]
+			"14:22:22 - Comm received:^1^Stradable^T^N1^S|cffa335ee|Hitem:113981::::::::120:577::6:2:565:567:::|h[Slagbomber's~`Hood]|h|r^t^^ (from:) (Amyntah) (distri:) (RAID)", -- [470]
+			"14:22:22 - Comm received:^1^Stradable^T^N1^S|cffa335ee|Hitem:113984::::::::120:577::6:1:567:::|h[Blackiron~`Micro~`Crucible]|h|r^t^^ (from:) (Amyntah) (distri:) (RAID)", -- [471]
+			"14:22:22 - Comm received:^1^Stradable^T^N1^S|cffa335ee|Hitem:120283::::::::120:577::::::|h[Essence~`of~`the~`Iron~`Conqueror]|h|r^t^^ (from:) (Amyntah) (distri:) (RAID)", -- [472]
+			"14:23:05 - Event: (PLAYER_ENTERING_WORLD) (false) (false)", -- [473]
+			"14:23:05 - GetML()", -- [474]
+			"14:23:11 - VotingFrame:Update() without lootTable!!", -- [475]
+			"14:23:41 - Comm received:^1^SverTest^T^N1^S2.18.3^t^^ (from:) (Marival) (distri:) (GUILD)", -- [476]
+			"03/28/20", -- [477]
+			"14:23:50 - Storage:New (|cffa335ee|Hitem:113874::::::::120:102::6:1:567:::|h[Oregorger's Acid-Etched Gutripper]|h|r) (temp) (restored) (table: 0000013DB7743320)", -- [478]
+			"14:23:50 - Storage: searching for item: (|cffa335ee|Hitem:113874::::::::120:102::6:1:567:::|h[Oregorger's Acid-Etched Gutripper]|h|r)", -- [479]
+			"14:23:50 - Found: (nil) (nil) (nil)", -- [480]
+			"14:23:50 - Error - ItemStorage, db item no longer in bags (|cffa335ee|Hitem:113874::::::::120:102::6:1:567:::|h[Oregorger's Acid-Etched Gutripper]|h|r)", -- [481]
+			"14:23:50 - Storage:RemoveItem (|cffa335ee|Hitem:113874::::::::120:102::6:1:567:::|h[Oregorger's Acid-Etched Gutripper]|h|r)", -- [482]
+			"14:23:50 - Storage:New (|cffa335ee|Hitem:113865::::::::120:102::6:1:567:::|h[Darklight Necklace]|h|r) (temp) (restored) (table: 0000013DB7743460)", -- [483]
+			"14:23:50 - Storage: searching for item: (|cffa335ee|Hitem:113865::::::::120:102::6:1:567:::|h[Darklight Necklace]|h|r)", -- [484]
+			"14:23:50 - Found: (nil) (nil) (nil)", -- [485]
+			"14:23:50 - Error - ItemStorage, db item no longer in bags (|cffa335ee|Hitem:113865::::::::120:102::6:1:567:::|h[Darklight Necklace]|h|r)", -- [486]
+			"14:23:50 - Storage:RemoveItem (|cffa335ee|Hitem:113865::::::::120:102::6:1:567:::|h[Darklight Necklace]|h|r)", -- [487]
+			"14:23:50 - Storage:New (|cffa335ee|Hitem:113895::::::::120:102::6:2:42:567:::|h[Furnace Tender's Treads]|h|r) (temp) (restored) (table: 0000013DB77435A0)", -- [488]
+			"14:23:50 - Storage: searching for item: (|cffa335ee|Hitem:113895::::::::120:102::6:2:42:567:::|h[Furnace Tender's Treads]|h|r)", -- [489]
+			"14:23:50 - Found: (nil) (nil) (nil)", -- [490]
+			"14:23:50 - Error - ItemStorage, db item no longer in bags (|cffa335ee|Hitem:113895::::::::120:102::6:2:42:567:::|h[Furnace Tender's Treads]|h|r)", -- [491]
+			"14:23:50 - Storage:RemoveItem (|cffa335ee|Hitem:113895::::::::120:102::6:2:42:567:::|h[Furnace Tender's Treads]|h|r)", -- [492]
+			"14:23:50 - Storage:New (|cffa335ee|Hitem:113894::::::::120:102::6:1:567:::|h[Lava-Dipped Greathelm]|h|r) (temp) (restored) (table: 0000013DB77436E0)", -- [493]
+			"14:23:50 - Storage: searching for item: (|cffa335ee|Hitem:113894::::::::120:102::6:1:567:::|h[Lava-Dipped Greathelm]|h|r)", -- [494]
+			"14:23:50 - Found: (nil) (nil) (nil)", -- [495]
+			"14:23:50 - Error - ItemStorage, db item no longer in bags (|cffa335ee|Hitem:113894::::::::120:102::6:1:567:::|h[Lava-Dipped Greathelm]|h|r)", -- [496]
+			"14:23:50 - Storage:RemoveItem (|cffa335ee|Hitem:113894::::::::120:102::6:1:567:::|h[Lava-Dipped Greathelm]|h|r)", -- [497]
+			"14:23:50 - Storage:New (|cffa335ee|Hitem:113946::::::::120:102::6:1:567:::|h[Heart of the Clefthoof]|h|r) (temp) (restored) (table: 0000013DB7743820)", -- [498]
+			"14:23:50 - Storage: searching for item: (|cffa335ee|Hitem:113946::::::::120:102::6:1:567:::|h[Heart of the Clefthoof]|h|r)", -- [499]
+			"14:23:50 - Found: (nil) (nil) (nil)", -- [500]
+			"14:23:50 - Error - ItemStorage, db item no longer in bags (|cffa335ee|Hitem:113946::::::::120:102::6:1:567:::|h[Heart of the Clefthoof]|h|r)", -- [501]
+			"14:23:50 - Storage:RemoveItem (|cffa335ee|Hitem:113946::::::::120:102::6:1:567:::|h[Heart of the Clefthoof]|h|r)", -- [502]
+			"14:23:50 - Storage:New (|cffa335ee|Hitem:115536::::::::120:102::6:1:567:::|h[Ogreskull Boneplate Pauldrons]|h|r) (temp) (restored) (table: 0000013DB7743960)", -- [503]
+			"14:23:50 - Storage: searching for item: (|cffa335ee|Hitem:115536::::::::120:102::6:1:567:::|h[Ogreskull Boneplate Pauldrons]|h|r)", -- [504]
+			"14:23:50 - Found: (nil) (nil) (nil)", -- [505]
+			"14:23:50 - Error - ItemStorage, db item no longer in bags (|cffa335ee|Hitem:115536::::::::120:102::6:1:567:::|h[Ogreskull Boneplate Pauldrons]|h|r)", -- [506]
+			"14:23:50 - Storage:RemoveItem (|cffa335ee|Hitem:115536::::::::120:102::6:1:567:::|h[Ogreskull Boneplate Pauldrons]|h|r)", -- [507]
+			"14:23:50 - Storage:New (|cffa335ee|Hitem:115576::::::::120:102::6:2:562:567:::|h[Windspeaker's Mantle]|h|r) (temp) (restored) (table: 0000013DB7743AA0)", -- [508]
+			"14:23:50 - Storage: searching for item: (|cffa335ee|Hitem:115576::::::::120:102::6:2:562:567:::|h[Windspeaker's Mantle]|h|r)", -- [509]
+			"14:23:50 - Found: (nil) (nil) (nil)", -- [510]
+			"14:23:50 - Error - ItemStorage, db item no longer in bags (|cffa335ee|Hitem:115576::::::::120:102::6:2:562:567:::|h[Windspeaker's Mantle]|h|r)", -- [511]
+			"14:23:50 - Storage:RemoveItem (|cffa335ee|Hitem:115576::::::::120:102::6:2:562:567:::|h[Windspeaker's Mantle]|h|r)", -- [512]
+			"14:23:50 - Storage:New (|cffa335ee|Hitem:113965::::::::120:102::6:1:567:::|h[Sorka's Chainfist]|h|r) (temp) (restored) (table: 0000013DB7743BE0)", -- [513]
+			"14:23:50 - Storage: searching for item: (|cffa335ee|Hitem:113965::::::::120:102::6:1:567:::|h[Sorka's Chainfist]|h|r)", -- [514]
+			"14:23:50 - Found: (nil) (nil) (nil)", -- [515]
+			"14:23:50 - Error - ItemStorage, db item no longer in bags (|cffa335ee|Hitem:113965::::::::120:102::6:1:567:::|h[Sorka's Chainfist]|h|r)", -- [516]
+			"14:23:50 - Storage:RemoveItem (|cffa335ee|Hitem:113965::::::::120:102::6:1:567:::|h[Sorka's Chainfist]|h|r)", -- [517]
+			"14:23:50 - Storage:New (|cffa335ee|Hitem:113902::::::::120:102::6:1:567:::|h[Chestguard of Unending Roars]|h|r) (temp) (restored) (table: 0000013DB7743D20)", -- [518]
+			"14:23:50 - Storage: searching for item: (|cffa335ee|Hitem:113902::::::::120:102::6:1:567:::|h[Chestguard of Unending Roars]|h|r)", -- [519]
+			"14:23:50 - Found: (nil) (nil) (nil)", -- [520]
+			"14:23:50 - Error - ItemStorage, db item no longer in bags (|cffa335ee|Hitem:113902::::::::120:102::6:1:567:::|h[Chestguard of Unending Roars]|h|r)", -- [521]
+			"14:23:50 - Storage:RemoveItem (|cffa335ee|Hitem:113902::::::::120:102::6:1:567:::|h[Chestguard of Unending Roars]|h|r)", -- [522]
+			"14:23:50 - Storage:New (|cffa335ee|Hitem:113904::::::::120:102::6:1:567:::|h[Franzok's Headsmasher]|h|r) (temp) (restored) (table: 0000013DB7743E60)", -- [523]
+			"14:23:50 - Storage: searching for item: (|cffa335ee|Hitem:113904::::::::120:102::6:1:567:::|h[Franzok's Headsmasher]|h|r)", -- [524]
+			"14:23:50 - Found: (nil) (nil) (nil)", -- [525]
+			"14:23:50 - Error - ItemStorage, db item no longer in bags (|cffa335ee|Hitem:113904::::::::120:102::6:1:567:::|h[Franzok's Headsmasher]|h|r)", -- [526]
+			"14:23:50 - Storage:RemoveItem (|cffa335ee|Hitem:113904::::::::120:102::6:1:567:::|h[Franzok's Headsmasher]|h|r)", -- [527]
+			"14:23:50 - Storage:New (|cffa335ee|Hitem:119193::::::::120:102::6:1:567:::|h[Horn of Screaming Spirits]|h|r) (temp) (restored) (table: 0000013DB7743FA0)", -- [528]
+			"14:23:50 - Storage: searching for item: (|cffa335ee|Hitem:119193::::::::120:102::6:1:567:::|h[Horn of Screaming Spirits]|h|r)", -- [529]
+			"14:23:50 - Found: (nil) (nil) (nil)", -- [530]
+			"14:23:50 - Error - ItemStorage, db item no longer in bags (|cffa335ee|Hitem:119193::::::::120:102::6:1:567:::|h[Horn of Screaming Spirits]|h|r)", -- [531]
+			"14:23:50 - Storage:RemoveItem (|cffa335ee|Hitem:119193::::::::120:102::6:1:567:::|h[Horn of Screaming Spirits]|h|r)", -- [532]
+			"14:23:50 - Storage:New (|cffa335ee|Hitem:115563::::::::120:102::6:1:567:::|h[Soul Priest's Hood]|h|r) (temp) (restored) (table: 0000013DB77440E0)", -- [533]
+			"14:23:50 - Storage: searching for item: (|cffa335ee|Hitem:115563::::::::120:102::6:1:567:::|h[Soul Priest's Hood]|h|r)", -- [534]
+			"14:23:50 - Found: (nil) (nil) (nil)", -- [535]
+			"14:23:50 - Error - ItemStorage, db item no longer in bags (|cffa335ee|Hitem:115563::::::::120:102::6:1:567:::|h[Soul Priest's Hood]|h|r)", -- [536]
+			"14:23:50 - Storage:RemoveItem (|cffa335ee|Hitem:115563::::::::120:102::6:1:567:::|h[Soul Priest's Hood]|h|r)", -- [537]
+			"14:23:50 - Storage:New (|cffa335ee|Hitem:115553::::::::120:102::6:1:567:::|h[Arcanoshatter Hood]|h|r) (temp) (restored) (table: 0000013DB7744220)", -- [538]
+			"14:23:50 - Storage: searching for item: (|cffa335ee|Hitem:115553::::::::120:102::6:1:567:::|h[Arcanoshatter Hood]|h|r)", -- [539]
+			"14:23:50 - Found: (nil) (nil) (nil)", -- [540]
+			"14:23:50 - Error - ItemStorage, db item no longer in bags (|cffa335ee|Hitem:115553::::::::120:102::6:1:567:::|h[Arcanoshatter Hood]|h|r)", -- [541]
+			"14:23:50 - Storage:RemoveItem (|cffa335ee|Hitem:115553::::::::120:102::6:1:567:::|h[Arcanoshatter Hood]|h|r)", -- [542]
+			"14:23:50 - Storage:New (|cffa335ee|Hitem:120283::::::::120:102::::::|h[Essence of the Iron Conqueror]|h|r) (temp) (restored) (table: 0000013DB7744360)", -- [543]
+			"14:23:50 - Storage: searching for item: (|cffa335ee|Hitem:120283::::::::120:102::::::|h[Essence of the Iron Conqueror]|h|r)", -- [544]
+			"14:23:50 - Found: (nil) (nil) (nil)", -- [545]
+			"14:23:50 - Error - ItemStorage, db item no longer in bags (|cffa335ee|Hitem:120283::::::::120:102::::::|h[Essence of the Iron Conqueror]|h|r)", -- [546]
+			"14:23:50 - Storage:RemoveItem (|cffa335ee|Hitem:120283::::::::120:102::::::|h[Essence of the Iron Conqueror]|h|r)", -- [547]
+			"14:23:50 - Storage:New (|cffa335ee|Hitem:120285::::::::120:102::::::|h[Essence of the Iron Vanquisher]|h|r) (temp) (restored) (table: 0000013DB77444A0)", -- [548]
+			"14:23:50 - Storage: searching for item: (|cffa335ee|Hitem:120285::::::::120:102::::::|h[Essence of the Iron Vanquisher]|h|r)", -- [549]
+			"14:23:50 - Found: (nil) (nil) (nil)", -- [550]
+			"14:23:50 - Error - ItemStorage, db item no longer in bags (|cffa335ee|Hitem:120285::::::::120:102::::::|h[Essence of the Iron Vanquisher]|h|r)", -- [551]
+			"14:23:50 - Storage:RemoveItem (|cffa335ee|Hitem:120285::::::::120:102::::::|h[Essence of the Iron Vanquisher]|h|r)", -- [552]
+			"14:23:50 - Logged In", -- [553]
+			"14:23:50 - ML initialized!", -- [554]
+			"14:23:50 - TradeUI enabled", -- [555]
+			"14:23:56 - Anastiana-Silvermoon (2.18.3) (nil)", -- [556]
+			"14:23:56 - ActivateSkin (bfa)", -- [557]
+			"14:23:59 - Event: (PLAYER_ENTERING_WORLD) (true) (false)", -- [558]
+			"14:23:59 - GetML()", -- [559]
+			"14:23:59 - UpdatePlayersData()", -- [560]
+			"14:24:00 - GetPlayersGuildRank()", -- [561]
+			"14:24:00 - Found Guild Rank: Guild Master", -- [562]
+			"14:24:03 - Comm received:^1^SverTest^T^N1^S2.18.3^t^^ (from:) (Anastiana) (distri:) (GUILD)", -- [563]
+			"14:24:50 - Event: (PARTY_LEADER_CHANGED)", -- [564]
+			"14:24:50 - GetML()", -- [565]
+			"14:24:50 - Resetting council as we have a new ML!", -- [566]
+			"14:24:50 - MasterLooter =  (Marival-Silvermoon)", -- [567]
+			"14:25:04 - Event: (PLAYER_ENTERING_WORLD) (false) (false)", -- [568]
+			"14:25:04 - GetML()", -- [569]
+			"14:25:06 - Timer MLdb_check passed", -- [570]
+			"14:25:09 - Comm received:^1^SMLdb^T^N1^T^SallowNotes^B^Stimeout^N60^SselfVote^B^Sresponses^T^Sdefault^T^t^t^SmultiVote^B^Sbuttons^T^Sdefault^T^SnumButtons^N3^t^t^SnumButtons^N3^t^t^^ (from:) (Marival) (distri:) (PARTY)", -- [571]
+			"14:25:09 - OnMLDBReceived", -- [572]
+			"14:25:09 - Comm received:^1^Scouncil^T^N1^T^N1^SMarival-Silvermoon^t^t^^ (from:) (Marival) (distri:) (PARTY)", -- [573]
+			"14:25:09 - false = (ConcilContains) (Anastiana-Silvermoon)", -- [574]
+			"14:25:23 - Event: (PLAYER_ENTERING_WORLD) (false) (false)", -- [575]
+			"14:25:23 - GetML()", -- [576]
+			"14:25:44 - Event: (PLAYER_ENTERING_WORLD) (false) (false)", -- [577]
+			"14:25:44 - GetML()", -- [578]
+			"14:26:15 - Event: (RAID_INSTANCE_WELCOME) (Hellfire Citadel (Mythic)) (322424) (0) (0)", -- [579]
+			"14:26:16 - Event: (PLAYER_ENTERING_WORLD) (false) (false)", -- [580]
+			"14:26:16 - GetML()", -- [581]
+			"14:26:44 - Event: (ENCOUNTER_START) (1795) (Mannoroth) (16) (20)", -- [582]
+			"14:26:44 - UpdatePlayersData()", -- [583]
+			"14:27:04 - Event: (ENCOUNTER_END) (1795) (Mannoroth) (16) (20) (1)", -- [584]
+			"14:27:06 - Event: (LOOT_READY) (true)", -- [585]
+			"14:27:06 - Adding to self.lootSlotInfo (1) (nil) (1) (0) (Creature-0-3769-1448-19399-91349-00007F5073) (270040)", -- [586]
+			"14:27:06 - Event: (LOOT_READY) (true)", -- [587]
+			"14:27:06 - Adding to self.lootSlotInfo (1) (nil) (1) (0) (Creature-0-3769-1448-19399-91349-00007F5073) (270040)", -- [588]
+			"14:27:06 - Adding to self.lootSlotInfo (2) (|cffa335ee|Hitem:124171::::::::120:250::6:2:1799:1478:::|h[Robe of the Arcanic Conclave]|h|r) (4) (1) (Creature-0-3769-1448-19399-91349-00007F5073) (1)", -- [589]
+			"14:27:06 - Adding to self.lootSlotInfo (3) (|cffa335ee|Hitem:124206::::::::120:250::6:3:1799:565:1478:::|h[Thumping Demonheart Fetish]|h|r) (4) (1) (Creature-0-3769-1448-19399-91349-00007F5073) (1)", -- [590]
+			"14:27:06 - Adding to self.lootSlotInfo (4) (|cffa335ee|Hitem:124230::::::::120:250::6:2:1799:1478:::|h[Prophecy of Fear]|h|r) (4) (1) (Creature-0-3769-1448-19399-91349-00007F5073) (1)", -- [591]
+			"14:27:06 - Event: (LOOT_READY) (true)", -- [592]
+			"14:27:06 - Adding to self.lootSlotInfo (1) (nil) (1) (0) (Creature-0-3769-1448-19399-91349-00007F5073) (270040)", -- [593]
+			"14:27:06 - Adding to self.lootSlotInfo (2) (|cffa335ee|Hitem:124171::::::::120:250::6:2:1799:1478:::|h[Robe of the Arcanic Conclave]|h|r) (4) (1) (Creature-0-3769-1448-19399-91349-00007F5073) (1)", -- [594]
+			"14:27:06 - Adding to self.lootSlotInfo (3) (|cffa335ee|Hitem:124206::::::::120:250::6:3:1799:565:1478:::|h[Thumping Demonheart Fetish]|h|r) (4) (1) (Creature-0-3769-1448-19399-91349-00007F5073) (1)", -- [595]
+			"14:27:06 - Adding to self.lootSlotInfo (4) (|cffa335ee|Hitem:124230::::::::120:250::6:2:1799:1478:::|h[Prophecy of Fear]|h|r) (4) (1) (Creature-0-3769-1448-19399-91349-00007F5073) (1)", -- [596]
+			"14:27:06 - OnLootSlotCleared() (1) (nil) (1)", -- [597]
+			"14:27:06 - OnLootSlotCleared() (2) (|cffa335ee|Hitem:124171::::::::120:250::6:2:1799:1478:::|h[Robe of the Arcanic Conclave]|h|r) (4)", -- [598]
+			"14:27:06 - Event: (ENCOUNTER_LOOT_RECEIVED) (1795) (124171) (|cffa335ee|Hitem:124171::::::::120:250::6:2:1799:1478:::|h[Robe of the Arcanic Conclave]|h|r) (1) (Anastiana) (DEATHKNIGHT)", -- [599]
+			"14:27:06 - OnLootSlotCleared() (3) (|cffa335ee|Hitem:124206::::::::120:250::6:3:1799:565:1478:::|h[Thumping Demonheart Fetish]|h|r) (4)", -- [600]
+			"14:27:06 - Event: (ENCOUNTER_LOOT_RECEIVED) (1795) (124206) (|cffa335ee|Hitem:124206::::::::120:250::6:3:1799:565:1478:::|h[Thumping Demonheart Fetish]|h|r) (1) (Anastiana) (DEATHKNIGHT)", -- [601]
+			"14:27:07 - OnLootSlotCleared() (4) (|cffa335ee|Hitem:124230::::::::120:250::6:2:1799:1478:::|h[Prophecy of Fear]|h|r) (4)", -- [602]
+			"14:27:07 - Event: (LOOT_CLOSED)", -- [603]
+			"14:27:07 - Event: (LOOT_CLOSED)", -- [604]
+			"14:27:07 - Event: (ENCOUNTER_LOOT_RECEIVED) (1795) (124230) (|cffa335ee|Hitem:124230::::::::120:250::6:2:1799:1478:::|h[Prophecy of Fear]|h|r) (1) (Anastiana) (DEATHKNIGHT)", -- [605]
+			"14:27:07 - Comm received:^1^Slooted^T^N1^S91349^t^^ (from:) (Anastiana) (distri:) (PARTY)", -- [606]
+			"14:27:07 - Comm received:^1^Slooted^T^N1^S91349^t^^ (from:) (Anastiana) (distri:) (PARTY)", -- [607]
+			"14:27:07 - Event: (ENCOUNTER_LOOT_RECEIVED) (1795) (124349) (|cffa335ee|Hitem:124349::::::::120:250::6:2:1799:1478:::|h[Annihilan's Waistplate]|h|r) (1) (Marival) (PRIEST)", -- [608]
+			"14:27:07 - Event: (ENCOUNTER_LOOT_RECEIVED) (1795) (124317) (|cffa335ee|Hitem:124317::::::::120:250::6:2:1799:1478:::|h[Demongaze Chestplate]|h|r) (1) (Marival) (PRIEST)", -- [609]
+			"14:27:07 - Event: (ENCOUNTER_LOOT_RECEIVED) (1795) (124303) (|cffa335ee|Hitem:124303::::::::120:250::6:2:1799:1478:::|h[Robe of the Living Mountain]|h|r) (1) (Marival) (PRIEST)", -- [610]
+			"14:27:07 - Comm received:^1^Slooted^T^N1^S91349^t^^ (from:) (Marival) (distri:) (PARTY)", -- [611]
+			"14:27:07 - Comm received:^1^Slooted^T^N1^S91349^t^^ (from:) (Marival) (distri:) (PARTY)", -- [612]
+			"14:27:08 - Storage:New (|cffa335ee|Hitem:124171::::::::120:250::6:2:1799:1478:::|h[Robe of the Arcanic Conclave]|h|r) (temp)", -- [613]
+			"14:27:08 - Storage: searching for item: (|cffa335ee|Hitem:124171::::::::120:250::6:2:1799:1478:::|h[Robe of the Arcanic Conclave]|h|r)", -- [614]
+			"14:27:08 - Found item at (0) (8)", -- [615]
+			"14:27:08 - Storage:New (|cffa335ee|Hitem:124206::::::::120:250::6:3:1799:565:1478:::|h[Thumping Demonheart Fetish]|h|r) (temp)", -- [616]
+			"14:27:08 - Storage: searching for item: (|cffa335ee|Hitem:124206::::::::120:250::6:3:1799:565:1478:::|h[Thumping Demonheart Fetish]|h|r)", -- [617]
+			"14:27:08 - Found item at (0) (9)", -- [618]
+			"14:27:09 - Storage:New (|cffa335ee|Hitem:124230::::::::120:250::6:2:1799:1478:::|h[Prophecy of Fear]|h|r) (temp)", -- [619]
+			"14:27:09 - Storage: searching for item: (|cffa335ee|Hitem:124230::::::::120:250::6:2:1799:1478:::|h[Prophecy of Fear]|h|r)", -- [620]
+			"14:27:09 - Found item at (0) (10)", -- [621]
+			"14:27:09 - Storage: searching for item: (|cffa335ee|Hitem:124171::::::::120:250::6:2:1799:1478:::|h[Robe of the Arcanic Conclave]|h|r)", -- [622]
+			"14:27:09 - Found item at (0) (8)", -- [623]
+			"14:27:09 - Storage: searching for item: (|cffa335ee|Hitem:124206::::::::120:250::6:3:1799:565:1478:::|h[Thumping Demonheart Fetish]|h|r)", -- [624]
+			"14:27:09 - Found item at (0) (9)", -- [625]
+			"14:27:10 - Comm received:^1^Stradable^T^N1^S|cffa335ee|Hitem:124171::::::::120:250::6:2:1799:1478:::|h[Robe~`of~`the~`Arcanic~`Conclave]|h|r^N2^S91349^t^^ (from:) (Anastiana) (distri:) (PARTY)", -- [626]
+			"14:27:10 - Comm received:^1^Stradable^T^N1^S|cffa335ee|Hitem:124206::::::::120:250::6:3:1799:565:1478:::|h[Thumping~`Demonheart~`Fetish]|h|r^N2^S91349^t^^ (from:) (Anastiana) (distri:) (PARTY)", -- [627]
+			"14:27:10 - Storage: searching for item: (|cffa335ee|Hitem:124230::::::::120:250::6:2:1799:1478:::|h[Prophecy of Fear]|h|r)", -- [628]
+			"14:27:10 - Found item at (0) (10)", -- [629]
+			"14:27:10 - Comm received:^1^Stradable^T^N1^S|cffa335ee|Hitem:124230::::::::120:250::6:2:1799:1478:::|h[Prophecy~`of~`Fear]|h|r^N2^S91349^t^^ (from:) (Anastiana) (distri:) (PARTY)", -- [630]
+			"14:27:10 - Comm received:^1^Stradable^T^N1^S|cffa335ee|Hitem:124349::::::::120:257::6:2:1799:1478:::|h[Annihilan's~`Waistplate]|h|r^N2^S91349^t^^ (from:) (Marival) (distri:) (PARTY)", -- [631]
+			"14:27:10 - Comm received:^1^Stradable^T^N1^S|cffa335ee|Hitem:124317::::::::120:257::6:2:1799:1478:::|h[Demongaze~`Chestplate]|h|r^N2^S91349^t^^ (from:) (Marival) (distri:) (PARTY)", -- [632]
+			"14:27:10 - Comm received:^1^Stradable^T^N1^S|cffa335ee|Hitem:124303::::::::120:257::6:2:1799:1478:::|h[Robe~`of~`the~`Living~`Mountain]|h|r^N2^S91349^t^^ (from:) (Marival) (distri:) (PARTY)", -- [633]
+			"14:27:26 - TradeUI: Traded item(s) to (Marival-Silvermoon)", -- [634]
+			"14:27:26 - TradeUI:Show() (nil)", -- [635]
+			"14:27:26 - TradeUI:Hide()", -- [636]
+			"14:27:59 - Event: (ENCOUNTER_START) (1799) (Archimonde) (16) (20)", -- [637]
+			"14:27:59 - UpdatePlayersData()", -- [638]
+			"14:28:24 - Event: (ENCOUNTER_END) (1799) (Archimonde) (16) (20) (1)", -- [639]
+			"14:28:38 - Event: (ENCOUNTER_LOOT_RECEIVED) (1799) (124176) (|cffa335ee|Hitem:124176::::::::120:250::6:2:1799:1478:::|h[Mantle of the Eredar Lord]|h|r) (1) (Marival) (PRIEST)", -- [640]
+			"14:28:38 - Event: (ENCOUNTER_LOOT_RECEIVED) (1799) (124389) (|cffa335ee|Hitem:124389::::::::120:250::6:2:1799:1478:::|h[Calamity's Edge]|h|r) (1) (Marival) (PRIEST)", -- [641]
+			"14:28:38 - Event: (ENCOUNTER_LOOT_RECEIVED) (1799) (124210) (|cffa335ee|Hitem:124210::::::::120:250::6:2:1799:1478:::|h[Choker of the Great Betrayer]|h|r) (1) (Marival) (PRIEST)", -- [642]
+			"14:28:38 - Comm received:^1^Slooted^T^N1^S91331^t^^ (from:) (Marival) (distri:) (PARTY)", -- [643]
+			"14:28:38 - Comm received:^1^Slooted^T^N1^S91331^t^^ (from:) (Marival) (distri:) (PARTY)", -- [644]
+			"14:28:39 - Event: (LOOT_READY) (true)", -- [645]
+			"14:28:39 - Adding to self.lootSlotInfo (1) (nil) (1) (0) (Creature-0-3769-1448-19399-91331-00007F50A9) (267033)", -- [646]
+			"14:28:39 - Adding to self.lootSlotInfo (2) (|cffa335ee|Hitem:124389::::::::120:250::6:2:1799:1478:::|h[Calamity's Edge]|h|r) (4) (1) (Creature-0-3769-1448-19399-91331-00007F50A9) (1)", -- [647]
+			"14:28:39 - Adding to self.lootSlotInfo (3) (|cffa335ee|Hitem:124291::::::::120:250::6:3:1799:565:1478:::|h[Eredar Fel-Chain Gloves]|h|r) (4) (1) (Creature-0-3769-1448-19399-91331-00007F50A9) (1)", -- [648]
+			"14:28:39 - Event: (LOOT_READY) (true)", -- [649]
+			"14:28:39 - Adding to self.lootSlotInfo (1) (nil) (1) (0) (Creature-0-3769-1448-19399-91331-00007F50A9) (267033)", -- [650]
+			"14:28:39 - Adding to self.lootSlotInfo (2) (|cffa335ee|Hitem:124389::::::::120:250::6:2:1799:1478:::|h[Calamity's Edge]|h|r) (4) (1) (Creature-0-3769-1448-19399-91331-00007F50A9) (1)", -- [651]
+			"14:28:39 - Adding to self.lootSlotInfo (3) (|cffa335ee|Hitem:124291::::::::120:250::6:3:1799:565:1478:::|h[Eredar Fel-Chain Gloves]|h|r) (4) (1) (Creature-0-3769-1448-19399-91331-00007F50A9) (1)", -- [652]
+			"14:28:39 - Event: (LOOT_READY) (true)", -- [653]
+			"14:28:39 - Adding to self.lootSlotInfo (1) (nil) (1) (0) (Creature-0-3769-1448-19399-91331-00007F50A9) (267033)", -- [654]
+			"14:28:39 - Adding to self.lootSlotInfo (2) (|cffa335ee|Hitem:124389::::::::120:250::6:2:1799:1478:::|h[Calamity's Edge]|h|r) (4) (1) (Creature-0-3769-1448-19399-91331-00007F50A9) (1)", -- [655]
+			"14:28:39 - Adding to self.lootSlotInfo (3) (|cffa335ee|Hitem:124291::::::::120:250::6:3:1799:565:1478:::|h[Eredar Fel-Chain Gloves]|h|r) (4) (1) (Creature-0-3769-1448-19399-91331-00007F50A9) (1)", -- [656]
+			"14:28:40 - OnLootSlotCleared() (1) (nil) (1)", -- [657]
+			"14:28:40 - OnLootSlotCleared() (2) (|cffa335ee|Hitem:124389::::::::120:250::6:2:1799:1478:::|h[Calamity's Edge]|h|r) (4)", -- [658]
+			"14:28:40 - Event: (ENCOUNTER_LOOT_RECEIVED) (1799) (124389) (|cffa335ee|Hitem:124389::::::::120:250::6:2:1799:1478:::|h[Calamity's Edge]|h|r) (1) (Anastiana) (DEATHKNIGHT)", -- [659]
+			"14:28:40 - OnLootSlotCleared() (3) (|cffa335ee|Hitem:124291::::::::120:250::6:3:1799:565:1478:::|h[Eredar Fel-Chain Gloves]|h|r) (4)", -- [660]
+			"14:28:40 - Event: (LOOT_CLOSED)", -- [661]
+			"14:28:40 - Event: (LOOT_CLOSED)", -- [662]
+			"14:28:40 - Event: (ENCOUNTER_LOOT_RECEIVED) (1799) (124291) (|cffa335ee|Hitem:124291::::::::120:250::6:3:1799:565:1478:::|h[Eredar Fel-Chain Gloves]|h|r) (1) (Anastiana) (DEATHKNIGHT)", -- [663]
+			"14:28:40 - Comm received:^1^Slooted^T^N1^S91331^t^^ (from:) (Anastiana) (distri:) (PARTY)", -- [664]
+			"14:28:40 - Comm received:^1^Slooted^T^N1^S91331^t^^ (from:) (Anastiana) (distri:) (PARTY)", -- [665]
+			"14:28:41 - Comm received:^1^Stradable^T^N1^S|cffa335ee|Hitem:124176::::::::120:257::6:2:1799:1478:::|h[Mantle~`of~`the~`Eredar~`Lord]|h|r^N2^S91331^t^^ (from:) (Marival) (distri:) (PARTY)", -- [666]
+			"14:28:41 - Comm received:^1^Stradable^T^N1^S|cffa335ee|Hitem:124389::::::::120:257::6:2:1799:1478:::|h[Calamity's~`Edge]|h|r^N2^S91331^t^^ (from:) (Marival) (distri:) (PARTY)", -- [667]
+			"14:28:41 - Comm received:^1^Stradable^T^N1^S|cffa335ee|Hitem:124210::::::::120:257::6:2:1799:1478:::|h[Choker~`of~`the~`Great~`Betrayer]|h|r^N2^S91331^t^^ (from:) (Marival) (distri:) (PARTY)", -- [668]
+			"14:28:42 - Storage:New (|cffa335ee|Hitem:124389::::::::120:250::6:2:1799:1478:::|h[Calamity's Edge]|h|r) (temp)", -- [669]
+			"14:28:42 - Storage: searching for item: (|cffa335ee|Hitem:124389::::::::120:250::6:2:1799:1478:::|h[Calamity's Edge]|h|r)", -- [670]
+			"14:28:42 - Found item at (0) (19)", -- [671]
+			"14:28:42 - Storage:New (|cffa335ee|Hitem:124291::::::::120:250::6:3:1799:565:1478:::|h[Eredar Fel-Chain Gloves]|h|r) (temp)", -- [672]
+			"14:28:42 - Storage: searching for item: (|cffa335ee|Hitem:124291::::::::120:250::6:3:1799:565:1478:::|h[Eredar Fel-Chain Gloves]|h|r)", -- [673]
+			"14:28:42 - Found item at (0) (20)", -- [674]
+			"14:28:43 - Storage: searching for item: (|cffa335ee|Hitem:124389::::::::120:250::6:2:1799:1478:::|h[Calamity's Edge]|h|r)", -- [675]
+			"14:28:43 - Found item at (0) (19)", -- [676]
+			"14:28:43 - Storage: searching for item: (|cffa335ee|Hitem:124291::::::::120:250::6:3:1799:565:1478:::|h[Eredar Fel-Chain Gloves]|h|r)", -- [677]
+			"14:28:43 - Found item at (0) (20)", -- [678]
+			"14:28:43 - Comm received:^1^Stradable^T^N1^S|cffa335ee|Hitem:124389::::::::120:250::6:2:1799:1478:::|h[Calamity's~`Edge]|h|r^N2^S91331^t^^ (from:) (Anastiana) (distri:) (PARTY)", -- [679]
+			"14:28:43 - Comm received:^1^Stradable^T^N1^S|cffa335ee|Hitem:124291::::::::120:250::6:3:1799:565:1478:::|h[Eredar~`Fel-Chain~`Gloves]|h|r^N2^S91331^t^^ (from:) (Anastiana) (distri:) (PARTY)", -- [680]
+			"14:30:13 - Event: (PLAYER_ENTERING_WORLD) (false) (false)", -- [681]
+			"14:30:13 - GetML()", -- [682]
+			"14:44:47 - Comm received:^1^SverTest^T^N1^S2.17.2^t^^ (from:) (Vanitos) (distri:) (GUILD)", -- [683]
+			"14:46:14 - Comm received:^1^SverTest^T^N1^S2.18.3^t^^ (from:) (Amyntah) (distri:) (GUILD)", -- [684]
+			"14:47:53 - Event: (PARTY_LEADER_CHANGED)", -- [685]
+			"14:47:53 - GetML()", -- [686]
+			"14:47:53 - Resetting council as we have a new ML!", -- [687]
+			"14:47:53 - MasterLooter =  (Anastiana-Silvermoon)", -- [688]
+			"14:47:53 - GetCouncilInGroup (Anastiana-Silvermoon)", -- [689]
+			"14:47:53 - ML:NewML (Anastiana-Silvermoon)", -- [690]
+			"14:47:53 - UpdateMLdb", -- [691]
+			"14:47:53 - OnMLDBReceived", -- [692]
+			"14:47:53 - UpdateGroup (true)", -- [693]
+			"14:47:53 - ML:AddCandidate (Anastiana-Silvermoon) (DEATHKNIGHT) (TANK) (nil) (nil) (nil) (nil) (nil)", -- [694]
+			"14:47:53 - ML:AddCandidate (Marival-Silvermoon) (PRIEST) (HEALER) (nil) (nil) (nil) (nil) (nil)", -- [695]
+			"14:47:53 - GetCouncilInGroup (Anastiana-Silvermoon) (Marival-Silvermoon)", -- [696]
+			"14:47:53 - Comm received:^1^SplayerInfoRequest^T^t^^ (from:) (Anastiana) (distri:) (PARTY)", -- [697]
+			"14:47:53 - Comm received:^1^SMLdb^T^N1^T^SallowNotes^B^Stimeout^N60^SselfVote^B^Sresponses^T^Sdefault^T^t^t^SrejectTrade^B^SmultiVote^B^Sbuttons^T^Sdefault^T^SnumButtons^N3^t^t^SnumButtons^N3^SanonymousVoting^B^t^t^^ (from:) (Anastiana) (distri:) (PARTY)", -- [698]
+			"14:47:53 - Comm received:^1^SMLdb^T^N1^T^SallowNotes^B^Stimeout^N60^SselfVote^B^Sresponses^T^Sdefault^T^t^t^SrejectTrade^B^SmultiVote^B^Sbuttons^T^Sdefault^T^SnumButtons^N3^t^t^SnumButtons^N3^SanonymousVoting^B^t^t^^ (from:) (Anastiana) (distri:) (PARTY)", -- [699]
+			"14:47:53 - Comm received:^1^Scandidates^T^N1^T^SMarival-Silvermoon^T^Srole^SHEALER^Sclass^SPRIEST^Srank^S^t^SAnastiana-Silvermoon^T^Srole^STANK^Sclass^SDEATHKNIGHT^Srank^S^t^t^t^^ (from:) (Anastiana) (distri:) (PARTY)", -- [700]
+			"14:47:53 - Comm received:^1^Scouncil^T^N1^T^N1^SAnastiana-Silvermoon^N2^SMarival-Silvermoon^t^t^^ (from:) (Anastiana) (distri:) (PARTY)", -- [701]
+			"14:47:53 - true = (ConcilContains) (Anastiana-Silvermoon)", -- [702]
+			"14:47:53 - GetLootDBStatistics()", -- [703]
+			"14:47:53 - GetGuildRankNum()", -- [704]
+			"14:47:53 - RCVotingFrame (enabled)", -- [705]
+			"14:47:53 - Comm received:^1^Scouncil^T^N1^T^N1^SAnastiana-Silvermoon^N2^SMarival-Silvermoon^t^t^^ (from:) (Anastiana) (distri:) (PARTY)", -- [706]
+			"14:47:53 - true = (ConcilContains) (Anastiana-Silvermoon)", -- [707]
+			"14:47:53 - Comm received:^1^SplayerInfo^T^N1^SAnastiana-Silvermoon^N2^SDEATHKNIGHT^N3^STANK^N4^SGuild~`Master^N6^N0^N7^N470.125^N8^N250^t^^ (from:) (Anastiana) (distri:) (WHISPER)", -- [708]
+			"14:47:53 - ML:AddCandidate (Anastiana-Silvermoon) (DEATHKNIGHT) (TANK) (Guild Master) (nil) (0) (470.125) (250)", -- [709]
+			"14:48:03 - Comm received:^1^Scandidates^T^N1^T^SMarival-Silvermoon^T^Srole^SHEALER^Sclass^SPRIEST^Srank^S^t^SAnastiana-Silvermoon^T^Srole^STANK^SspecID^N250^Senchant_lvl^N0^Sclass^SDEATHKNIGHT^Srank^SGuild~`Master^t^t^t^^ (from:) (Anastiana) (distri:) (PARTY)", -- [710]
+			"14:48:08 - Timer MLdb_check passed", -- [711]
+			"14:49:30 - Comm received:^1^SverTest^T^N1^S2.18.3^t^^ (from:) (Nïkä) (distri:) (GUILD)", -- [712]
+			"15:01:55 - Comm received:^1^SverTest^T^N1^S2.17.1^t^^ (from:) (Cronah) (distri:) (GUILD)", -- [713]
+			"03/28/20", -- [714]
+			"15:24:23 - Storage:New (|cffa335ee|Hitem:113881::::::::120:102::6:1:567:::|h[Chestplate of Rolling Fury]|h|r) (temp) (restored) (table: 0000013D9B614E20)", -- [715]
+			"15:24:23 - Storage: searching for item: (|cffa335ee|Hitem:113881::::::::120:102::6:1:567:::|h[Chestplate of Rolling Fury]|h|r)", -- [716]
+			"15:24:23 - Found: (nil) (nil) (nil)", -- [717]
+			"15:24:23 - Error - ItemStorage, db item no longer in bags (|cffa335ee|Hitem:113881::::::::120:102::6:1:567:::|h[Chestplate of Rolling Fury]|h|r)", -- [718]
+			"15:24:23 - Storage:RemoveItem (|cffa335ee|Hitem:113881::::::::120:102::6:1:567:::|h[Chestplate of Rolling Fury]|h|r)", -- [719]
+			"15:24:23 - Storage:New (|cffa335ee|Hitem:115580::::::::120:102::6:1:567:::|h[Blackhand's Legguards]|h|r) (temp) (restored) (table: 0000013D9B614F60)", -- [720]
+			"15:24:23 - Storage: searching for item: (|cffa335ee|Hitem:115580::::::::120:102::6:1:567:::|h[Blackhand's Legguards]|h|r)", -- [721]
+			"15:24:23 - Found: (nil) (nil) (nil)", -- [722]
+			"15:24:23 - Error - ItemStorage, db item no longer in bags (|cffa335ee|Hitem:115580::::::::120:102::6:1:567:::|h[Blackhand's Legguards]|h|r)", -- [723]
+			"15:24:23 - Storage:RemoveItem (|cffa335ee|Hitem:115580::::::::120:102::6:1:567:::|h[Blackhand's Legguards]|h|r)", -- [724]
+			"15:24:23 - Storage:New (|cffa335ee|Hitem:113951::::::::120:102::6:2:42:567:::|h[Unrendable Wolfhide Robes]|h|r) (temp) (restored) (table: 0000013D9B6150A0)", -- [725]
+			"15:24:23 - Storage: searching for item: (|cffa335ee|Hitem:113951::::::::120:102::6:2:42:567:::|h[Unrendable Wolfhide Robes]|h|r)", -- [726]
+			"15:24:23 - Found: (nil) (nil) (nil)", -- [727]
+			"15:24:23 - Error - ItemStorage, db item no longer in bags (|cffa335ee|Hitem:113951::::::::120:102::6:2:42:567:::|h[Unrendable Wolfhide Robes]|h|r)", -- [728]
+			"15:24:23 - Storage:RemoveItem (|cffa335ee|Hitem:113951::::::::120:102::6:2:42:567:::|h[Unrendable Wolfhide Robes]|h|r)", -- [729]
+			"15:24:23 - Storage:New (|cffa335ee|Hitem:115578::::::::120:102::6:1:567:::|h[Windspeaker's Handwraps]|h|r) (temp) (restored) (table: 0000013D9B6151E0)", -- [730]
+			"15:24:23 - Storage: searching for item: (|cffa335ee|Hitem:115578::::::::120:102::6:1:567:::|h[Windspeaker's Handwraps]|h|r)", -- [731]
+			"15:24:23 - Found: (nil) (nil) (nil)", -- [732]
+			"15:24:23 - Error - ItemStorage, db item no longer in bags (|cffa335ee|Hitem:115578::::::::120:102::6:1:567:::|h[Windspeaker's Handwraps]|h|r)", -- [733]
+			"15:24:23 - Storage:RemoveItem (|cffa335ee|Hitem:115578::::::::120:102::6:1:567:::|h[Windspeaker's Handwraps]|h|r)", -- [734]
+			"15:24:23 - Storage:New (|cffa335ee|Hitem:113904::::::::120:102::6:1:567:::|h[Franzok's Headsmasher]|h|r) (temp) (restored) (table: 0000013D9B6152D0)", -- [735]
+			"15:24:23 - Storage: searching for item: (|cffa335ee|Hitem:113904::::::::120:102::6:1:567:::|h[Franzok's Headsmasher]|h|r)", -- [736]
+			"15:24:23 - Found: (nil) (nil) (nil)", -- [737]
+			"15:24:23 - Error - ItemStorage, db item no longer in bags (|cffa335ee|Hitem:113904::::::::120:102::6:1:567:::|h[Franzok's Headsmasher]|h|r)", -- [738]
+			"15:24:23 - Storage:RemoveItem (|cffa335ee|Hitem:113904::::::::120:102::6:1:567:::|h[Franzok's Headsmasher]|h|r)", -- [739]
+			"15:24:23 - Storage:New (|cffa335ee|Hitem:113917::::::::120:102::6:1:567:::|h[Cinderwolf Signet]|h|r) (temp) (restored) (table: 0000013D21D12130)", -- [740]
+			"15:24:23 - Storage: searching for item: (|cffa335ee|Hitem:113917::::::::120:102::6:1:567:::|h[Cinderwolf Signet]|h|r)", -- [741]
+			"15:24:23 - Found: (nil) (nil) (nil)", -- [742]
+			"15:24:23 - Error - ItemStorage, db item no longer in bags (|cffa335ee|Hitem:113917::::::::120:102::6:1:567:::|h[Cinderwolf Signet]|h|r)", -- [743]
+			"15:24:23 - Storage:RemoveItem (|cffa335ee|Hitem:113917::::::::120:102::6:1:567:::|h[Cinderwolf Signet]|h|r)", -- [744]
+			"15:24:23 - Storage:New (|cff1eff00|Hitem:122200::::::::120:102::6::::|h[Music Roll: A Siege of Worlds]|h|r) (temp) (restored) (table: 0000013D21D12220)", -- [745]
+			"15:24:23 - Storage: searching for item: (|cff1eff00|Hitem:122200::::::::120:102::6::::|h[Music Roll: A Siege of Worlds]|h|r)", -- [746]
+			"15:24:23 - Found: (nil) (nil) (nil)", -- [747]
+			"15:24:23 - Error - ItemStorage, db item no longer in bags (|cff1eff00|Hitem:122200::::::::120:102::6::::|h[Music Roll: A Siege of Worlds]|h|r)", -- [748]
+			"15:24:23 - Storage:RemoveItem (|cff1eff00|Hitem:122200::::::::120:102::6::::|h[Music Roll: A Siege of Worlds]|h|r)", -- [749]
+			"15:24:23 - Storage:New (|cffa335ee|Hitem:124171::::::::120:250::6:2:1799:1478:::|h[Robe of the Arcanic Conclave]|h|r) (temp) (restored) (table: 0000013D21D12360)", -- [750]
+			"15:24:23 - Storage: searching for item: (|cffa335ee|Hitem:124171::::::::120:250::6:2:1799:1478:::|h[Robe of the Arcanic Conclave]|h|r)", -- [751]
+			"15:24:23 - Found: (nil) (nil) (nil)", -- [752]
+			"15:24:23 - Error - ItemStorage, db item no longer in bags (|cffa335ee|Hitem:124171::::::::120:250::6:2:1799:1478:::|h[Robe of the Arcanic Conclave]|h|r)", -- [753]
+			"15:24:23 - Storage:RemoveItem (|cffa335ee|Hitem:124171::::::::120:250::6:2:1799:1478:::|h[Robe of the Arcanic Conclave]|h|r)", -- [754]
+			"15:24:23 - Storage:New (|cffa335ee|Hitem:124230::::::::120:250::6:2:1799:1478:::|h[Prophecy of Fear]|h|r) (temp) (restored) (table: 0000013D21D124A0)", -- [755]
+			"15:24:23 - Storage: searching for item: (|cffa335ee|Hitem:124230::::::::120:250::6:2:1799:1478:::|h[Prophecy of Fear]|h|r)", -- [756]
+			"15:24:23 - Found: (nil) (nil) (nil)", -- [757]
+			"15:24:23 - Error - ItemStorage, db item no longer in bags (|cffa335ee|Hitem:124230::::::::120:250::6:2:1799:1478:::|h[Prophecy of Fear]|h|r)", -- [758]
+			"15:24:23 - Storage:RemoveItem (|cffa335ee|Hitem:124230::::::::120:250::6:2:1799:1478:::|h[Prophecy of Fear]|h|r)", -- [759]
+			"15:24:23 - Storage:New (|cffa335ee|Hitem:124291::::::::120:250::6:3:1799:565:1478:::|h[Eredar Fel-Chain Gloves]|h|r) (temp) (restored) (table: 0000013D21D125E0)", -- [760]
+			"15:24:23 - Storage: searching for item: (|cffa335ee|Hitem:124291::::::::120:250::6:3:1799:565:1478:::|h[Eredar Fel-Chain Gloves]|h|r)", -- [761]
+			"15:24:23 - Found: (nil) (nil) (nil)", -- [762]
+			"15:24:23 - Error - ItemStorage, db item no longer in bags (|cffa335ee|Hitem:124291::::::::120:250::6:3:1799:565:1478:::|h[Eredar Fel-Chain Gloves]|h|r)", -- [763]
+			"15:24:23 - Storage:RemoveItem (|cffa335ee|Hitem:124291::::::::120:250::6:3:1799:565:1478:::|h[Eredar Fel-Chain Gloves]|h|r)", -- [764]
+			"15:24:23 - Logged In", -- [765]
+			"15:24:23 - ML initialized!", -- [766]
+			"15:24:23 - TradeUI enabled", -- [767]
+			"15:24:29 - Anastiana-Silvermoon (2.18.3) (nil)", -- [768]
+			"15:24:29 - ActivateSkin (bfa)", -- [769]
+			"15:24:31 - Event: (PLAYER_ENTERING_WORLD) (true) (false)", -- [770]
+			"15:24:31 - GetML()", -- [771]
+			"15:24:31 - UpdatePlayersData()", -- [772]
+			"15:24:34 - GetPlayersGuildRank()", -- [773]
+			"15:24:34 - Found Guild Rank: Guild Master", -- [774]
+			"15:24:35 - Comm received:^1^SverTest^T^N1^S2.18.3^t^^ (from:) (Anastiana) (distri:) (GUILD)", -- [775]
+			"03/28/20", -- [776]
+			"15:32:09 - Storage:New (|cffa335ee|Hitem:113866::::::::120:102::6:1:567:::|h[Phosphorescent Seal]|h|r) (temp) (restored) (table: 000001E7A2757DC0)", -- [777]
+			"15:32:09 - Storage: searching for item: (|cffa335ee|Hitem:113866::::::::120:102::6:1:567:::|h[Phosphorescent Seal]|h|r)", -- [778]
+			"15:32:09 - Found: (nil) (nil) (nil)", -- [779]
+			"15:32:09 - Error - ItemStorage, db item no longer in bags (|cffa335ee|Hitem:113866::::::::120:102::6:1:567:::|h[Phosphorescent Seal]|h|r)", -- [780]
+			"15:32:09 - Storage:RemoveItem (|cffa335ee|Hitem:113866::::::::120:102::6:1:567:::|h[Phosphorescent Seal]|h|r)", -- [781]
+			"15:32:09 - Storage:New (|cffa335ee|Hitem:113963::::::::120:102::6:1:567:::|h[Siege Bomber's Band]|h|r) (temp) (restored) (table: 000001E7A2757F00)", -- [782]
+			"15:32:09 - Storage: searching for item: (|cffa335ee|Hitem:113963::::::::120:102::6:1:567:::|h[Siege Bomber's Band]|h|r)", -- [783]
+			"15:32:09 - Found: (nil) (nil) (nil)", -- [784]
+			"15:32:09 - Error - ItemStorage, db item no longer in bags (|cffa335ee|Hitem:113963::::::::120:102::6:1:567:::|h[Siege Bomber's Band]|h|r)", -- [785]
+			"15:32:09 - Storage:RemoveItem (|cffa335ee|Hitem:113963::::::::120:102::6:1:567:::|h[Siege Bomber's Band]|h|r)", -- [786]
+			"15:32:09 - Storage:New (|cffa335ee|Hitem:115577::::::::120:102::6:1:567:::|h[Windspeaker's Tunic]|h|r) (temp) (restored) (table: 000001E7A46189B0)", -- [787]
+			"15:32:09 - Storage: searching for item: (|cffa335ee|Hitem:115577::::::::120:102::6:1:567:::|h[Windspeaker's Tunic]|h|r)", -- [788]
+			"15:32:09 - Found: (nil) (nil) (nil)", -- [789]
+			"15:32:09 - Error - ItemStorage, db item no longer in bags (|cffa335ee|Hitem:115577::::::::120:102::6:1:567:::|h[Windspeaker's Tunic]|h|r)", -- [790]
+			"15:32:09 - Storage:RemoveItem (|cffa335ee|Hitem:115577::::::::120:102::6:1:567:::|h[Windspeaker's Tunic]|h|r)", -- [791]
+			"15:32:09 - Storage:New (|cffa335ee|Hitem:113987::::::::120:102::6:2:565:567:::|h[Battering Talisman]|h|r) (temp) (restored) (table: 000001E7A4618AF0)", -- [792]
+			"15:32:09 - Storage: searching for item: (|cffa335ee|Hitem:113987::::::::120:102::6:2:565:567:::|h[Battering Talisman]|h|r)", -- [793]
+			"15:32:09 - Found: (nil) (nil) (nil)", -- [794]
+			"15:32:09 - Error - ItemStorage, db item no longer in bags (|cffa335ee|Hitem:113987::::::::120:102::6:2:565:567:::|h[Battering Talisman]|h|r)", -- [795]
+			"15:32:09 - Storage:RemoveItem (|cffa335ee|Hitem:113987::::::::120:102::6:2:565:567:::|h[Battering Talisman]|h|r)", -- [796]
+			"15:32:09 - Storage:New (|cffa335ee|Hitem:124389::::::::120:250::6:2:1799:1478:::|h[Calamity's Edge]|h|r) (temp) (restored) (table: 000001E7A4618C30)", -- [797]
+			"15:32:09 - Storage: searching for item: (|cffa335ee|Hitem:124389::::::::120:250::6:2:1799:1478:::|h[Calamity's Edge]|h|r)", -- [798]
+			"15:32:09 - Found: (nil) (nil) (nil)", -- [799]
+			"15:32:09 - Error - ItemStorage, db item no longer in bags (|cffa335ee|Hitem:124389::::::::120:250::6:2:1799:1478:::|h[Calamity's Edge]|h|r)", -- [800]
+			"15:32:09 - Storage:RemoveItem (|cffa335ee|Hitem:124389::::::::120:250::6:2:1799:1478:::|h[Calamity's Edge]|h|r)", -- [801]
+			"15:32:09 - Logged In", -- [802]
+			"15:32:09 - ML initialized!", -- [803]
+			"15:32:09 - TradeUI enabled", -- [804]
+			"15:32:14 - Anastiana-Silvermoon (2.18.3) (nil)", -- [805]
+			"15:32:14 - ActivateSkin (bfa)", -- [806]
+			"15:32:17 - Event: (PLAYER_ENTERING_WORLD) (true) (false)", -- [807]
+			"15:32:17 - GetML()", -- [808]
+			"15:32:17 - UpdatePlayersData()", -- [809]
+			"15:32:19 - GetPlayersGuildRank()", -- [810]
+			"15:32:19 - Found Guild Rank: Guild Master", -- [811]
+			"15:32:19 - Comm received:^1^SverTest^T^N1^S2.18.3^t^^ (from:) (Anastiana) (distri:) (GUILD)", -- [812]
+			"15:33:58 - Comm received:^1^SverTest^T^N1^S2.18.3^t^^ (from:) (Faykdh) (distri:) (GUILD)", -- [813]
+			"15:47:15 - Comm received:^1^SverTest^T^N1^S2.18.3^t^^ (from:) (Sensémage) (distri:) (GUILD)", -- [814]
+			"03/28/20", -- [815]
+			"21:51:43 - Storage:New (|cffa335ee|Hitem:119192::::::::120:102::6:2:41:567:::|h[Ironspike Chew Toy]|h|r) (temp) (restored) (table: 000002359B394F90)", -- [816]
+			"21:51:43 - Storage: searching for item: (|cffa335ee|Hitem:119192::::::::120:102::6:2:41:567:::|h[Ironspike Chew Toy]|h|r)", -- [817]
+			"21:51:43 - Found: (nil) (nil) (nil)", -- [818]
+			"21:51:43 - Error - ItemStorage, db item no longer in bags (|cffa335ee|Hitem:119192::::::::120:102::6:2:41:567:::|h[Ironspike Chew Toy]|h|r)", -- [819]
+			"21:51:43 - Storage:RemoveItem (|cffa335ee|Hitem:119192::::::::120:102::6:2:41:567:::|h[Ironspike Chew Toy]|h|r)", -- [820]
+			"21:51:43 - Storage:New (|cffa335ee|Hitem:113928::::::::120:102::6:1:567:::|h[Earthripple Shoulderpads]|h|r) (temp) (restored) (table: 000002359B5D2180)", -- [821]
+			"21:51:43 - Storage: searching for item: (|cffa335ee|Hitem:113928::::::::120:102::6:1:567:::|h[Earthripple Shoulderpads]|h|r)", -- [822]
+			"21:51:43 - Found: (nil) (nil) (nil)", -- [823]
+			"21:51:43 - Error - ItemStorage, db item no longer in bags (|cffa335ee|Hitem:113928::::::::120:102::6:1:567:::|h[Earthripple Shoulderpads]|h|r)", -- [824]
+			"21:51:43 - Storage:RemoveItem (|cffa335ee|Hitem:113928::::::::120:102::6:1:567:::|h[Earthripple Shoulderpads]|h|r)", -- [825]
+			"21:51:43 - Logged In", -- [826]
+			"21:51:43 - ML initialized!", -- [827]
+			"21:51:43 - TradeUI enabled", -- [828]
+			"21:51:51 - Anastiana-Silvermoon (2.18.3) (nil)", -- [829]
+			"21:51:51 - ActivateSkin (bfa)", -- [830]
+			"21:51:54 - Event: (PLAYER_ENTERING_WORLD) (true) (false)", -- [831]
+			"21:51:54 - GetML()", -- [832]
+			"21:51:54 - UpdatePlayersData()", -- [833]
+			"21:51:55 - GetPlayersGuildRank()", -- [834]
+			"21:51:55 - GetPlayersGuildRank()", -- [835]
+			"21:51:55 - Found Guild Rank: Guild Master", -- [836]
+			"21:51:59 - Comm received:^1^SverTest^T^N1^S2.18.3^t^^ (from:) (Anastiana) (distri:) (GUILD)", -- [837]
+			"21:52:09 - Comm received:^1^SverTest^T^N1^S2.18.1^t^^ (from:) (Capneckbeard) (distri:) (GUILD)", -- [838]
+			"21:52:17 - Event: (PARTY_LEADER_CHANGED)", -- [839]
+			"21:52:17 - GetML()", -- [840]
+			"21:52:17 - Resetting council as we have a new ML!", -- [841]
+			"21:52:17 - MasterLooter =  (Anastiana-Silvermoon)", -- [842]
+			"21:52:17 - GetCouncilInGroup (Anastiana-Silvermoon)", -- [843]
+			"21:52:17 - ML:NewML (Anastiana-Silvermoon)", -- [844]
+			"21:52:17 - UpdateMLdb", -- [845]
+			"21:52:17 - OnMLDBReceived", -- [846]
+			"21:52:17 - UpdateGroup (true)", -- [847]
+			"21:52:17 - ML:AddCandidate (Anastiana-Silvermoon) (DEATHKNIGHT) (TANK) (nil) (nil) (nil) (nil) (nil)", -- [848]
+			"21:52:17 - GetCouncilInGroup (Anastiana-Silvermoon)", -- [849]
+			"21:52:17 - Comm received:^1^SplayerInfoRequest^T^t^^ (from:) (Anastiana) (distri:) (PARTY)", -- [850]
+			"21:52:17 - Comm received:^1^SMLdb^T^N1^T^SallowNotes^B^Stimeout^N60^SselfVote^B^Sresponses^T^Sdefault^T^t^t^SrejectTrade^B^SmultiVote^B^Sbuttons^T^Sdefault^T^SnumButtons^N3^t^t^SnumButtons^N3^SanonymousVoting^B^t^t^^ (from:) (Anastiana) (distri:) (PARTY)", -- [851]
+			"21:52:17 - Comm received:^1^SMLdb^T^N1^T^SallowNotes^B^Stimeout^N60^SselfVote^B^Sresponses^T^Sdefault^T^t^t^SrejectTrade^B^SmultiVote^B^Sbuttons^T^Sdefault^T^SnumButtons^N3^t^t^SnumButtons^N3^SanonymousVoting^B^t^t^^ (from:) (Anastiana) (distri:) (PARTY)", -- [852]
+			"21:52:17 - Comm received:^1^Scandidates^T^N1^T^SAnastiana-Silvermoon^T^Srole^STANK^Sclass^SDEATHKNIGHT^Srank^S^t^t^t^^ (from:) (Anastiana) (distri:) (PARTY)", -- [853]
+			"21:52:17 - Comm received:^1^Scouncil^T^N1^T^N1^SAnastiana-Silvermoon^t^t^^ (from:) (Anastiana) (distri:) (PARTY)", -- [854]
+			"21:52:17 - true = (ConcilContains) (Anastiana-Silvermoon)", -- [855]
+			"21:52:17 - GetLootDBStatistics()", -- [856]
+			"21:52:17 - GetGuildRankNum()", -- [857]
+			"21:52:17 - RCVotingFrame (enabled)", -- [858]
+			"21:52:17 - Comm received:^1^SplayerInfo^T^N1^SAnastiana-Silvermoon^N2^SDEATHKNIGHT^N3^STANK^N4^SGuild~`Master^N6^N0^N7^N470.75^N8^N250^t^^ (from:) (Anastiana) (distri:) (WHISPER)", -- [859]
+			"21:52:17 - ML:AddCandidate (Anastiana-Silvermoon) (DEATHKNIGHT) (TANK) (Guild Master) (nil) (0) (470.75) (250)", -- [860]
+			"21:52:27 - Comm received:^1^Scandidates^T^N1^T^SAnastiana-Silvermoon^T^Srole^STANK^SspecID^N250^Senchant_lvl^N0^Sclass^SDEATHKNIGHT^Srank^SGuild~`Master^t^t^t^^ (from:) (Anastiana) (distri:) (PARTY)", -- [861]
+			"21:52:31 - Timer MLdb_check passed", -- [862]
+			"21:52:49 - VotingFrame:Update() without lootTable!!", -- [863]
+			"21:52:52 - VotingFrame:Update() without lootTable!!", -- [864]
+			"21:52:58 - UpdateGroup (table: 00000235D317A920)", -- [865]
+			"21:52:58 - ML:AddCandidate (Marival-Silvermoon) (PRIEST) (HEALER) (nil) (nil) (nil) (nil) (nil)", -- [866]
+			"21:52:58 - ML:AddCandidate (Capneckbeard-Silvermoon) (ROGUE) (DAMAGER) (nil) (nil) (nil) (nil) (nil)", -- [867]
+			"21:52:58 - GetCouncilInGroup (Anastiana-Silvermoon) (Marival-Silvermoon)", -- [868]
+			"21:52:58 - Comm received:^1^SMLdb^T^N1^T^SallowNotes^B^Stimeout^N60^SselfVote^B^Sresponses^T^Sdefault^T^t^t^SrejectTrade^B^SmultiVote^B^Sbuttons^T^Sdefault^T^SnumButtons^N3^t^t^SnumButtons^N3^SanonymousVoting^B^t^t^^ (from:) (Anastiana) (distri:) (PARTY)", -- [869]
+			"21:52:58 - Comm received:^1^Scandidates^T^N1^T^SMarival-Silvermoon^T^Srole^SHEALER^Sclass^SPRIEST^Srank^S^t^SAnastiana-Silvermoon^T^Srole^STANK^SspecID^N250^Senchant_lvl^N0^Sclass^SDEATHKNIGHT^Srank^SGuild~`Master^t^SCapneckbeard-Silvermoon^T^Srole^SDAMAGER^Sclass^SROGUE^Srank^S^t^t^t^^ (from:) (Anastiana) (distri:) (PARTY)", -- [870]
+			"21:52:58 - Comm received:^1^Scouncil^T^N1^T^N1^SAnastiana-Silvermoon^N2^SMarival-Silvermoon^t^t^^ (from:) (Anastiana) (distri:) (PARTY)", -- [871]
+			"21:52:58 - true = (ConcilContains) (Anastiana-Silvermoon)", -- [872]
+			"21:52:58 - Comm received:^1^SplayerInfo^T^N1^SMarival-Silvermoon^N2^SPRIEST^N3^SHEALER^N4^SPusn^N5^B^N6^N175^N7^N472.75^N8^N257^t^^ (from:) (Marival) (distri:) (WHISPER)", -- [873]
+			"21:52:58 - ML:AddCandidate (Marival-Silvermoon) (PRIEST) (HEALER) (Pusn) (true) (175) (472.75) (257)", -- [874]
+			"21:52:58 - Comm received:^1^SplayerInfo^T^N1^SCapneckbeard-Silvermoon^N2^SROGUE^N3^SDAMAGER^N4^SRaider^N6^N0^N7^N465.125^N8^N259^t^^ (from:) (Capneckbeard) (distri:) (WHISPER)", -- [875]
+			"21:52:58 - ML:AddCandidate (Capneckbeard-Silvermoon) (ROGUE) (DAMAGER) (Raider) (nil) (0) (465.125) (259)", -- [876]
+			"21:53:08 - Comm received:^1^Scandidates^T^N1^T^SMarival-Silvermoon^T^Srole^SHEALER^SspecID^N257^Senchant_lvl^N175^Sclass^SPRIEST^Senchanter^B^Srank^SPusn^t^SAnastiana-Silvermoon^T^Srole^STANK^SspecID^N250^Senchant_lvl^N0^Sclass^SDEATHKNIGHT^Srank^SGuild~`Master^t^SCapneckbeard-Silvermoon^T^Srole^SDAMAGER^SspecID^N259^Senchant_lvl^N0^Sclass^SROGUE^Srank^SRaider^t^t^t^^ (from:) (Anastiana) (distri:) (PARTY)", -- [877]
+			"21:53:43 - Comm received:^1^SverTest^T^N1^S2.17.1^t^^ (from:) (Cronah) (distri:) (GUILD)", -- [878]
+			"21:54:05 - VotingFrame:Update() without lootTable!!", -- [879]
+			"21:54:14 - UpdateGroup (table: 00000235D317A920)", -- [880]
+			"21:54:14 - ML:AddCandidate (Cronah-Silvermoon) (DEATHKNIGHT) (TANK) (nil) (nil) (nil) (nil) (nil)", -- [881]
+			"21:54:14 - GetCouncilInGroup (Anastiana-Silvermoon) (Marival-Silvermoon) (Cronah-Silvermoon)", -- [882]
+			"21:54:14 - Comm received:^1^SMLdb^T^N1^T^SallowNotes^B^Stimeout^N60^SselfVote^B^Sresponses^T^Sdefault^T^t^t^SrejectTrade^B^SmultiVote^B^Sbuttons^T^Sdefault^T^SnumButtons^N3^t^t^SnumButtons^N3^SanonymousVoting^B^t^t^^ (from:) (Anastiana) (distri:) (PARTY)", -- [883]
+			"21:54:14 - Comm received:^1^Scandidates^T^N1^T^SMarival-Silvermoon^T^Srole^SHEALER^SspecID^N257^Senchant_lvl^N175^Sclass^SPRIEST^Senchanter^B^Srank^SPusn^t^SAnastiana-Silvermoon^T^Srole^STANK^SspecID^N250^Senchant_lvl^N0^Sclass^SDEATHKNIGHT^Srank^SGuild~`Master^t^SCapneckbeard-Silvermoon^T^Srole^SDAMAGER^SspecID^N259^Senchant_lvl^N0^Sclass^SROGUE^Srank^SRaider^t^SCronah-Silvermoon^T^Srole^STANK^Sclass^SDEATHKNIGHT^Srank^S^t^t^t^^ (from:) (Anastiana) (distri:) (PARTY)", -- [884]
+			"21:54:14 - Comm received:^1^Scouncil^T^N1^T^N1^SAnastiana-Silvermoon^N2^SMarival-Silvermoon^N3^SCronah-Silvermoon^t^t^^ (from:) (Anastiana) (distri:) (PARTY)", -- [885]
+			"21:54:14 - true = (ConcilContains) (Anastiana-Silvermoon)", -- [886]
+			"21:54:14 - Comm received:^1^SplayerInfo^T^N1^SCronah-Silvermoon^N2^SDEATHKNIGHT^N3^STANK^N4^SOfficer^N6^N0^N7^N471.375^N8^N250^t^^ (from:) (Cronah) (distri:) (WHISPER)", -- [887]
+			"21:54:14 - ML:AddCandidate (Cronah-Silvermoon) (DEATHKNIGHT) (TANK) (Officer) (nil) (0) (471.375) (250)", -- [888]
+			"21:54:24 - UpdateGroup (table: 00000235D317A920)", -- [889]
+			"21:54:24 - ML:AddCandidate (Cronah-Silvermoon) (DEATHKNIGHT) (DAMAGER) (Officer) (nil) (0) (nil) (250)", -- [890]
+			"21:54:24 - GetCouncilInGroup (Anastiana-Silvermoon) (Marival-Silvermoon) (Cronah-Silvermoon)", -- [891]
+			"21:54:24 - Comm received:^1^Scandidates^T^N1^T^SMarival-Silvermoon^T^Srole^SHEALER^SspecID^N257^Senchant_lvl^N175^Sclass^SPRIEST^Senchanter^B^Srank^SPusn^t^SAnastiana-Silvermoon^T^Srole^STANK^SspecID^N250^Senchant_lvl^N0^Sclass^SDEATHKNIGHT^Srank^SGuild~`Master^t^SCapneckbeard-Silvermoon^T^Srole^SDAMAGER^SspecID^N259^Senchant_lvl^N0^Sclass^SROGUE^Srank^SRaider^t^SCronah-Silvermoon^T^Srole^STANK^SspecID^N250^Senchant_lvl^N0^Sclass^SDEATHKNIGHT^Srank^SOfficer^t^t^t^^ (from:) (Anastiana) (distri:) (PARTY)", -- [892]
+			"21:54:24 - Comm received:^1^SMLdb^T^N1^T^SallowNotes^B^Stimeout^N60^SselfVote^B^Sresponses^T^Sdefault^T^t^t^SrejectTrade^B^SmultiVote^B^Sbuttons^T^Sdefault^T^SnumButtons^N3^t^t^SnumButtons^N3^SanonymousVoting^B^t^t^^ (from:) (Anastiana) (distri:) (PARTY)", -- [893]
+			"21:54:24 - Comm received:^1^Scandidates^T^N1^T^SMarival-Silvermoon^T^Srole^SHEALER^SspecID^N257^Senchant_lvl^N175^Sclass^SPRIEST^Senchanter^B^Srank^SPusn^t^SAnastiana-Silvermoon^T^Srole^STANK^SspecID^N250^Senchant_lvl^N0^Sclass^SDEATHKNIGHT^Srank^SGuild~`Master^t^SCapneckbeard-Silvermoon^T^Srole^SDAMAGER^SspecID^N259^Senchant_lvl^N0^Sclass^SROGUE^Srank^SRaider^t^SCronah-Silvermoon^T^Srole^SDAMAGER^SspecID^N250^Senchant_lvl^N0^Sclass^SDEATHKNIGHT^Srank^SOfficer^t^t^t^^ (from:) (Anastiana) (distri:) (PARTY)", -- [894]
+			"21:54:42 - ML event (CHAT_MSG_WHISPER) (sure, this is a bust anyhow) (Vanitos-Silvermoon) () () (Vanitos-Silvermoon) () (0) (0) () (0) (75) (Player-3391-0911BA0D) (0) (false) (false) (false) (false)", -- [895]
+			"21:55:32 - ML event (CHAT_MSG_WHISPER) (again plz) (Vanitos-Silvermoon) () () (Vanitos-Silvermoon) () (0) (0) () (0) (119) (Player-3391-0911BA0D) (0) (false) (false) (false) (false)", -- [896]
+			"21:55:40 - VotingFrame:Update() without lootTable!!", -- [897]
+			"21:55:41 - VotingFrame:Update() without lootTable!!", -- [898]
+			"21:55:48 - UpdateGroup (table: 00000235D317A920)", -- [899]
+			"21:55:48 - ML:AddCandidate (Vanitos-Silvermoon) (SHAMAN) (DAMAGER) (nil) (nil) (nil) (nil) (nil)", -- [900]
+			"21:55:48 - GetCouncilInGroup (Anastiana-Silvermoon) (Marival-Silvermoon) (Cronah-Silvermoon)", -- [901]
+			"21:55:49 - Comm received:^1^SMLdb^T^N1^T^SallowNotes^B^Stimeout^N60^SselfVote^B^Sresponses^T^Sdefault^T^t^t^SrejectTrade^B^SmultiVote^B^Sbuttons^T^Sdefault^T^SnumButtons^N3^t^t^SnumButtons^N3^SanonymousVoting^B^t^t^^ (from:) (Anastiana) (distri:) (PARTY)", -- [902]
+			"21:55:49 - Comm received:^1^Scandidates^T^N1^T^SCronah-Silvermoon^T^Srole^SDAMAGER^SspecID^N250^Senchant_lvl^N0^Sclass^SDEATHKNIGHT^Srank^SOfficer^t^SAnastiana-Silvermoon^T^Srole^STANK^SspecID^N250^Senchant_lvl^N0^Sclass^SDEATHKNIGHT^Srank^SGuild~`Master^t^SCapneckbeard-Silvermoon^T^Srole^SDAMAGER^SspecID^N259^Senchant_lvl^N0^Sclass^SROGUE^Srank^SRaider^t^SVanitos-Silvermoon^T^Srole^SDAMAGER^Sclass^SSHAMAN^Srank^S^t^SMarival-Silvermoon^T^Srole^SHEALER^SspecID^N257^Senchant_lvl^N175^Sclass^SPRIEST^Senchanter^B^Srank^SPusn^t^t^t^^ (from:) (Anastiana) (distri:) (PARTY)", -- [903]
+			"21:55:49 - Comm received:^1^SplayerInfo^T^N1^SVanitos-Silvermoon^N2^SSHAMAN^N3^SDAMAGER^N4^SRaider^N6^N0^N7^N470.1875^N8^N263^t^^ (from:) (Vanitos) (distri:) (WHISPER)", -- [904]
+			"21:55:49 - ML:AddCandidate (Vanitos-Silvermoon) (SHAMAN) (DAMAGER) (Raider) (nil) (0) (470.1875) (263)", -- [905]
+			"21:55:54 - Comm received:^1^Scouncil_request^T^t^^ (from:) (Vanitos) (distri:) (WHISPER)", -- [906]
+			"21:55:54 - Comm received:^1^Scouncil^T^N1^T^N1^SAnastiana-Silvermoon^N2^SMarival-Silvermoon^N3^SCronah-Silvermoon^t^t^^ (from:) (Anastiana) (distri:) (PARTY)", -- [907]
+			"21:55:54 - true = (ConcilContains) (Anastiana-Silvermoon)", -- [908]
+			"21:55:59 - Event: (PLAYER_ENTERING_WORLD) (false) (false)", -- [909]
+			"21:55:59 - GetML()", -- [910]
+			"21:56:01 - VotingFrame:Update() without lootTable!!", -- [911]
+			"21:56:04 - Comm received:^1^Scandidates^T^N1^T^SCronah-Silvermoon^T^Srole^SDAMAGER^SspecID^N250^Senchant_lvl^N0^Sclass^SDEATHKNIGHT^Srank^SOfficer^t^SAnastiana-Silvermoon^T^Srole^STANK^SspecID^N250^Senchant_lvl^N0^Sclass^SDEATHKNIGHT^Srank^SGuild~`Master^t^SCapneckbeard-Silvermoon^T^Srole^SDAMAGER^SspecID^N259^Senchant_lvl^N0^Sclass^SROGUE^Srank^SRaider^t^SVanitos-Silvermoon^T^Srole^SDAMAGER^SspecID^N263^Senchant_lvl^N0^Sclass^SSHAMAN^Srank^SRaider^t^SMarival-Silvermoon^T^Srole^SHEALER^SspecID^N257^Senchant_lvl^N175^Sclass^SPRIEST^Senchanter^B^Srank^SPusn^t^t^t^^ (from:) (Anastiana) (distri:) (PARTY)", -- [912]
+			"21:56:29 - VotingFrame:Update() without lootTable!!", -- [913]
+			"21:56:40 - VotingFrame:Update() without lootTable!!", -- [914]
+			"21:56:46 - VotingFrame:Update() without lootTable!!", -- [915]
+			"21:57:02 - VotingFrame:Update() without lootTable!!", -- [916]
+			"21:57:06 - ML event (PLAYER_REGEN_ENABLED)", -- [917]
+			"21:57:11 - VotingFrame:Update() without lootTable!!", -- [918]
+			"21:57:14 - ML event (PLAYER_REGEN_ENABLED)", -- [919]
+			"21:57:22 - ML event (PLAYER_REGEN_ENABLED)", -- [920]
+			"21:57:25 - VotingFrame:Update() without lootTable!!", -- [921]
+			"21:57:33 - ML event (PLAYER_REGEN_ENABLED)", -- [922]
+			"21:57:33 - VotingFrame:Update() without lootTable!!", -- [923]
+			"21:57:56 - VotingFrame:Update() without lootTable!!", -- [924]
+			"21:58:15 - ML event (PLAYER_REGEN_ENABLED)", -- [925]
+			"21:58:20 - ML event (PLAYER_REGEN_ENABLED)", -- [926]
+			"21:58:20 - Event: (RAID_INSTANCE_WELCOME) (Temple of Sethraliss (Heroic)) (36099) (0) (0)", -- [927]
+			"21:58:21 - Event: (PLAYER_ENTERING_WORLD) (false) (false)", -- [928]
+			"21:58:21 - GetML()", -- [929]
+			"21:58:22 - VotingFrame:Update() without lootTable!!", -- [930]
+			"21:58:23 - VotingFrame:Update() without lootTable!!", -- [931]
+			"21:58:25 - ML event (PLAYER_REGEN_ENABLED)", -- [932]
+			"21:58:35 - Event: (PLAYER_ENTERING_WORLD) (false) (false)", -- [933]
+			"21:58:35 - GetML()", -- [934]
+			"21:58:38 - VotingFrame:Update() without lootTable!!", -- [935]
+			"21:58:42 - VotingFrame:Update() without lootTable!!", -- [936]
+			"21:58:45 - Event: (RAID_INSTANCE_WELCOME) (Temple of Sethraliss (Mythic)) (295274) (0) (0)", -- [937]
+			"21:58:46 - Event: (PLAYER_ENTERING_WORLD) (false) (false)", -- [938]
+			"21:58:46 - GetML()", -- [939]
+			"21:58:48 - VotingFrame:Update() without lootTable!!", -- [940]
+			"21:58:50 - UpdateGroup (table: 00000235D317A920)", -- [941]
+			"22:00:59 - ML event (PLAYER_REGEN_ENABLED)", -- [942]
+			"22:01:07 - VotingFrame:Update() without lootTable!!", -- [943]
+			"22:01:08 - VotingFrame:Update() without lootTable!!", -- [944]
+			"22:01:09 - VotingFrame:Update() without lootTable!!", -- [945]
+			"22:02:32 - ML event (PLAYER_REGEN_ENABLED)", -- [946]
+			"22:02:37 - VotingFrame:Update() without lootTable!!", -- [947]
+			"22:02:38 - VotingFrame:Update() without lootTable!!", -- [948]
+			"22:02:39 - VotingFrame:Update() without lootTable!!", -- [949]
+			"22:03:14 - ML event (PLAYER_REGEN_ENABLED)", -- [950]
+			"22:03:48 - Event: (ENCOUNTER_START) (2124) (Adderis and Aspix) (8) (5)", -- [951]
+			"22:03:48 - UpdatePlayersData()", -- [952]
+			"22:05:37 - ML event (PLAYER_REGEN_ENABLED)", -- [953]
+			"22:05:37 - Event: (ENCOUNTER_END) (2124) (Adderis and Aspix) (8) (5) (1)", -- [954]
+			"22:06:30 - ML event (PLAYER_REGEN_ENABLED)", -- [955]
+			"22:06:58 - ML event (PLAYER_REGEN_ENABLED)", -- [956]
+			"22:07:36 - ML event (PLAYER_REGEN_ENABLED)", -- [957]
+			"22:07:52 - VotingFrame:Update() without lootTable!!", -- [958]
+			"22:07:55 - VotingFrame:Update() without lootTable!!", -- [959]
+			"22:07:57 - VotingFrame:Update() without lootTable!!", -- [960]
+			"22:08:00 - VotingFrame:Update() without lootTable!!", -- [961]
+			"22:08:51 - ML event (PLAYER_REGEN_ENABLED)", -- [962]
+			"22:08:54 - VotingFrame:Update() without lootTable!!", -- [963]
+			"22:08:55 - VotingFrame:Update() without lootTable!!", -- [964]
+			"22:08:56 - VotingFrame:Update() without lootTable!!", -- [965]
+			"22:09:16 - VotingFrame:Update() without lootTable!!", -- [966]
+			"22:10:02 - ML event (PLAYER_REGEN_ENABLED)", -- [967]
+			"22:10:11 - VotingFrame:Update() without lootTable!!", -- [968]
+			"22:10:12 - VotingFrame:Update() without lootTable!!", -- [969]
+			"22:10:13 - VotingFrame:Update() without lootTable!!", -- [970]
+			"22:10:14 - VotingFrame:Update() without lootTable!!", -- [971]
+			"22:10:16 - VotingFrame:Update() without lootTable!!", -- [972]
+			"22:10:21 - VotingFrame:Update() without lootTable!!", -- [973]
+			"22:11:12 - VotingFrame:Update() without lootTable!!", -- [974]
+			"22:11:19 - VotingFrame:Update() without lootTable!!", -- [975]
+			"22:11:20 - VotingFrame:Update() without lootTable!!", -- [976]
+			"22:11:23 - VotingFrame:Update() without lootTable!!", -- [977]
+			"22:11:57 - ML event (PLAYER_REGEN_ENABLED)", -- [978]
+			"22:12:56 - ML event (PLAYER_REGEN_ENABLED)", -- [979]
+			"22:13:41 - ML event (PLAYER_REGEN_ENABLED)", -- [980]
+			"22:13:49 - Event: (ENCOUNTER_START) (2125) (Merektha) (8) (5)", -- [981]
+			"22:13:49 - UpdatePlayersData()", -- [982]
+			"22:16:30 - Event: (ENCOUNTER_END) (2125) (Merektha) (8) (5) (1)", -- [983]
+			"22:16:32 - ML event (PLAYER_REGEN_ENABLED)", -- [984]
+			"22:17:37 - ML event (PLAYER_REGEN_ENABLED)", -- [985]
+			"22:18:45 - ML event (PLAYER_REGEN_ENABLED)", -- [986]
+			"22:20:03 - ML event (PLAYER_REGEN_ENABLED)", -- [987]
+			"22:20:21 - Event: (ENCOUNTER_START) (2126) (Galvazzt) (8) (5)", -- [988]
+			"22:20:21 - UpdatePlayersData()", -- [989]
+			"22:21:22 - ML event (PLAYER_REGEN_ENABLED)", -- [990]
+			"22:21:22 - Event: (ENCOUNTER_END) (2126) (Galvazzt) (8) (5) (0)", -- [991]
+			"22:22:16 - Comm received:^1^SverTest^T^N1^S2.18.3^t^^ (from:) (Faykmage) (distri:) (GUILD)", -- [992]
+			"22:22:28 - Event: (ENCOUNTER_START) (2126) (Galvazzt) (8) (5)", -- [993]
+			"22:22:28 - UpdatePlayersData()", -- [994]
+			"22:24:48 - Event: (ENCOUNTER_END) (2126) (Galvazzt) (8) (5) (1)", -- [995]
+			"22:24:48 - ML event (PLAYER_REGEN_ENABLED)", -- [996]
+			"22:25:04 - VotingFrame:Update() without lootTable!!", -- [997]
+			"22:25:06 - VotingFrame:Update() without lootTable!!", -- [998]
+			"22:25:11 - VotingFrame:Update() without lootTable!!", -- [999]
+			"22:26:27 - ML event (PLAYER_REGEN_ENABLED)", -- [1000]
+			"22:26:31 - VotingFrame:Update() without lootTable!!", -- [1001]
+			"22:26:33 - VotingFrame:Update() without lootTable!!", -- [1002]
+			"22:26:34 - VotingFrame:Update() without lootTable!!", -- [1003]
+			"22:26:35 - VotingFrame:Update() without lootTable!!", -- [1004]
+			"22:26:56 - ML event (PLAYER_REGEN_ENABLED)", -- [1005]
+			"22:28:56 - ML event (PLAYER_REGEN_ENABLED)", -- [1006]
+			"22:29:38 - VotingFrame:Update() without lootTable!!", -- [1007]
+			"22:29:39 - VotingFrame:Update() without lootTable!!", -- [1008]
+			"22:29:41 - VotingFrame:Update() without lootTable!!", -- [1009]
+			"22:29:44 - VotingFrame:Update() without lootTable!!", -- [1010]
+			"22:30:03 - VotingFrame:Update() without lootTable!!", -- [1011]
+			"22:31:04 - VotingFrame:Update() without lootTable!!", -- [1012]
+			"22:31:34 - ML event (PLAYER_REGEN_ENABLED)", -- [1013]
+			"22:31:51 - VotingFrame:Update() without lootTable!!", -- [1014]
+			"22:31:55 - VotingFrame:Update() without lootTable!!", -- [1015]
+			"22:31:58 - VotingFrame:Update() without lootTable!!", -- [1016]
+			"22:32:20 - VotingFrame:Update() without lootTable!!", -- [1017]
+			"22:32:41 - ML event (PLAYER_REGEN_ENABLED)", -- [1018]
+			"22:33:01 - ML event (PLAYER_REGEN_ENABLED)", -- [1019]
+			"22:33:06 - Event: (ENCOUNTER_START) (2127) (Avatar of Sethraliss) (8) (5)", -- [1020]
+			"22:33:06 - UpdatePlayersData()", -- [1021]
+			"22:36:40 - Event: (ENCOUNTER_END) (2127) (Avatar of Sethraliss) (8) (5) (1)", -- [1022]
+			"22:36:48 - ML event (PLAYER_REGEN_ENABLED)", -- [1023]
+			"22:36:49 - Event: (LOOT_READY) (true)", -- [1024]
+			"22:36:49 - Ignoring (|cffa335ee|Hcurrency:1553:535|h[Radiant Azerite Fragment]|h|r) (as it's a currency)", -- [1025]
+			"22:36:49 - Event: (LOOT_READY) (true)", -- [1026]
+			"22:36:49 - Ignoring (|cffa335ee|Hcurrency:1553:535|h[Radiant Azerite Fragment]|h|r) (as it's a currency)", -- [1027]
+			"22:36:49 - Event: (ENCOUNTER_LOOT_RECEIVED) (2127) (158366) (|cffa335ee|Hitem:158366::::::::120:250::16:5:6536:6516:6513:1637:4786:::|h[Charged Sandstone Band]|h|r) (1) (Capneckbeard) (ROGUE)", -- [1028]
+			"22:36:50 - Comm received:^1^Slooted^T^N1^S290758^t^^ (from:) (Capneckbeard) (distri:) (PARTY)", -- [1029]
+			"22:36:50 - Comm received:^1^Slooted^T^N1^S290758^t^^ (from:) (Capneckbeard) (distri:) (PARTY)", -- [1030]
+			"22:36:50 - Event: (LOOT_CLOSED)", -- [1031]
+			"22:36:50 - Event: (LOOT_CLOSED)", -- [1032]
+			"22:36:50 - Event: (ENCOUNTER_LOOT_RECEIVED) (2127) (159636) (|cffa335ee|Hitem:159636::::::::120:250::16:5:6536:6516:6515:1637:4786:::|h[Staff of the Lightning Serpent]|h|r) (1) (Vanitos) (SHAMAN)", -- [1033]
+			"22:36:51 - Comm received:^1^Slooted^T^N1^S290758^t^^ (from:) (Vanitos) (distri:) (PARTY)", -- [1034]
+			"22:36:51 - Comm received:^1^Slooted^T^N1^S290758^t^^ (from:) (Vanitos) (distri:) (PARTY)", -- [1035]
+			"22:36:53 - Comm received:^1^Stradable^T^N1^S|cffa335ee|Hitem:158366::::::::120:260::16:5:6536:6516:6513:1637:4786:::|h[Charged~`Sandstone~`Band]|h|r^N2^S290758^t^^ (from:) (Capneckbeard) (distri:) (PARTY)", -- [1036]
+			"22:36:54 - Comm received:^1^Stradable^T^N1^S|cffa335ee|Hitem:159636::::::::120:263::16:5:6536:6516:6515:1637:4786:::|h[Staff~`of~`the~`Lightning~`Serpent]|h|r^N2^S290758^t^^ (from:) (Vanitos) (distri:) (PARTY)", -- [1037]
+			"22:37:27 - Event: (PLAYER_ENTERING_WORLD) (false) (false)", -- [1038]
+			"22:37:27 - GetML()", -- [1039]
+			"22:37:30 - VotingFrame:Update() without lootTable!!", -- [1040]
+			"22:37:39 - UpdateGroup (table: 00000235D317A920)", -- [1041]
+			"22:37:39 - ML:RemoveCandidate (Vanitos-Silvermoon)", -- [1042]
+			"22:37:39 - GetCouncilInGroup (Anastiana-Silvermoon) (Marival-Silvermoon) (Cronah-Silvermoon)", -- [1043]
+			"22:37:39 - Comm received:^1^SMLdb^T^N1^T^SallowNotes^B^Stimeout^N60^SselfVote^B^Sresponses^T^Sdefault^T^t^t^SrejectTrade^B^SmultiVote^B^Sbuttons^T^Sdefault^T^SnumButtons^N3^t^t^SnumButtons^N3^SanonymousVoting^B^t^t^^ (from:) (Anastiana) (distri:) (PARTY)", -- [1044]
+			"22:37:39 - Comm received:^1^Scandidates^T^N1^T^SCronah-Silvermoon^T^Srole^SDAMAGER^SspecID^N250^Senchant_lvl^N0^Sclass^SDEATHKNIGHT^Srank^SOfficer^t^SAnastiana-Silvermoon^T^Srole^STANK^SspecID^N250^Senchant_lvl^N0^Sclass^SDEATHKNIGHT^Srank^SGuild~`Master^t^SCapneckbeard-Silvermoon^T^Srole^SDAMAGER^SspecID^N259^Senchant_lvl^N0^Sclass^SROGUE^Srank^SRaider^t^SMarival-Silvermoon^T^Srole^SHEALER^SspecID^N257^Senchant_lvl^N175^Sclass^SPRIEST^Senchanter^B^Srank^SPusn^t^t^t^^ (from:) (Anastiana) (distri:) (PARTY)", -- [1045]
+			"22:37:42 - VotingFrame:Update() without lootTable!!", -- [1046]
+			"22:37:54 - VotingFrame:Update() without lootTable!!", -- [1047]
+			"22:38:12 - UpdateGroup (table: 00000235D317A920)", -- [1048]
+			"22:38:24 - Comm received:^1^SverTest^T^N1^S2.18.3^t^^ (from:) (Amyntah) (distri:) (GUILD)", -- [1049]
+			"22:39:46 - VotingFrame:Update() without lootTable!!", -- [1050]
+			"22:39:50 - Comm received:^1^SverTest^T^N1^S2.18.3^t^^ (from:) (Marival) (distri:) (GUILD)", -- [1051]
+			"22:39:51 - VotingFrame:Update() without lootTable!!", -- [1052]
+			"22:39:55 - UpdateGroup (table: 00000235D317A920)", -- [1053]
+			"22:40:05 - Comm received:^1^SMLdb_request^T^t^^ (from:) (Marival) (distri:) (WHISPER)", -- [1054]
+			"22:40:05 - Comm received:^1^Scouncil_request^T^t^^ (from:) (Marival) (distri:) (WHISPER)", -- [1055]
+			"22:40:06 - Comm received:^1^SMLdb^T^N1^T^SallowNotes^B^Stimeout^N60^SselfVote^B^Sresponses^T^Sdefault^T^t^t^SrejectTrade^B^SmultiVote^B^Sbuttons^T^Sdefault^T^SnumButtons^N3^t^t^SnumButtons^N3^SanonymousVoting^B^t^t^^ (from:) (Anastiana) (distri:) (PARTY)", -- [1056]
+			"22:40:06 - Comm received:^1^Scouncil^T^N1^T^N1^SAnastiana-Silvermoon^N2^SMarival-Silvermoon^N3^SCronah-Silvermoon^t^t^^ (from:) (Anastiana) (distri:) (PARTY)", -- [1057]
+			"22:40:06 - true = (ConcilContains) (Anastiana-Silvermoon)", -- [1058]
+			"03/29/20", -- [1059]
+			"17:28:20 - Storage:New (|cffa335ee|Hitem:113967::::::::120:102::6:1:567:::|h[Deckhand's Rope Belt]|h|r) (temp) (restored) (table: 0000014A9C29D6A0)", -- [1060]
+			"17:28:20 - Storage: searching for item: (|cffa335ee|Hitem:113967::::::::120:102::6:1:567:::|h[Deckhand's Rope Belt]|h|r)", -- [1061]
+			"17:28:20 - Found: (nil) (nil) (nil)", -- [1062]
+			"17:28:20 - Error - ItemStorage, db item no longer in bags (|cffa335ee|Hitem:113967::::::::120:102::6:1:567:::|h[Deckhand's Rope Belt]|h|r)", -- [1063]
+			"17:28:20 - Storage:RemoveItem (|cffa335ee|Hitem:113967::::::::120:102::6:1:567:::|h[Deckhand's Rope Belt]|h|r)", -- [1064]
+			"17:28:20 - Logged In", -- [1065]
+			"17:28:20 - ML initialized!", -- [1066]
+			"17:28:20 - TradeUI enabled", -- [1067]
+			"17:28:27 - Anastiana-Silvermoon (2.18.3) (nil)", -- [1068]
+			"17:28:27 - ActivateSkin (bfa)", -- [1069]
+			"17:28:30 - Event: (PLAYER_ENTERING_WORLD) (true) (false)", -- [1070]
+			"17:28:30 - GetML()", -- [1071]
+			"17:28:30 - UpdatePlayersData()", -- [1072]
+			"17:28:31 - GetPlayersGuildRank()", -- [1073]
+			"17:28:31 - GetPlayersGuildRank()", -- [1074]
+			"17:28:31 - Found Guild Rank: Guild Master", -- [1075]
+			"17:28:35 - Comm received:^1^SverTest^T^N1^S2.18.3^t^^ (from:) (Anastiana) (distri:) (GUILD)", -- [1076]
+			"17:29:47 - Comm received:^1^SverTest^T^N1^S2.18.3^t^^ (from:) (Faykmage) (distri:) (GUILD)", -- [1077]
+			"17:31:50 - Event: (LOOT_READY) (true)", -- [1078]
+			"17:31:50 - Event: (LOOT_READY) (true)", -- [1079]
+			"17:31:50 - Event: (ENCOUNTER_LOOT_RECEIVED) (0) (169590) (|cffa335ee|Hitem:169590::::::::120:250::::::|h[Burgeoning Battlefield Furor]|h|r) (1) (Anastiana) (DEATHKNIGHT)", -- [1080]
+			"17:31:51 - Event: (ENCOUNTER_LOOT_RECEIVED) (0) (172619) (|cffa335ee|Hitem:172619::::::::120:250::56:5:6362:6388:1557:4786:6505:::|h[Corrupted Gladiator's Plate Headcover]|h|r) (1) (Anastiana) (DEATHKNIGHT)", -- [1081]
+			"17:39:51 - Comm received:^1^SverTest^T^N1^S2.18.3^t^^ (from:) (Madvepriest) (distri:) (GUILD)", -- [1082]
+			"17:44:41 - Comm received:^1^SverTest^T^N1^S2.18.3^t^^ (from:) (Nïkä) (distri:) (GUILD)", -- [1083]
+			"03/29/20", -- [1084]
+			"18:07:42 - Storage:New (|cffa335ee|Hitem:124206::::::::120:250::6:3:1799:565:1478:::|h[Thumping Demonheart Fetish]|h|r) (temp) (restored) (table: 000002091BCC3A10)", -- [1085]
+			"18:07:42 - Storage: searching for item: (|cffa335ee|Hitem:124206::::::::120:250::6:3:1799:565:1478:::|h[Thumping Demonheart Fetish]|h|r)", -- [1086]
+			"18:07:42 - Found: (nil) (nil) (nil)", -- [1087]
+			"18:07:42 - Error - ItemStorage, db item no longer in bags (|cffa335ee|Hitem:124206::::::::120:250::6:3:1799:565:1478:::|h[Thumping Demonheart Fetish]|h|r)", -- [1088]
+			"18:07:42 - Storage:RemoveItem (|cffa335ee|Hitem:124206::::::::120:250::6:3:1799:565:1478:::|h[Thumping Demonheart Fetish]|h|r)", -- [1089]
+			"18:07:42 - Logged In", -- [1090]
+			"18:07:42 - ML initialized!", -- [1091]
+			"18:07:42 - TradeUI enabled", -- [1092]
+			"18:07:48 - Anastiana-Silvermoon (2.18.3) (nil)", -- [1093]
+			"18:07:48 - ActivateSkin (bfa)", -- [1094]
+			"18:07:51 - Event: (PLAYER_ENTERING_WORLD) (true) (false)", -- [1095]
+			"18:07:51 - GetML()", -- [1096]
+			"18:07:51 - UpdatePlayersData()", -- [1097]
+			"18:07:52 - GetPlayersGuildRank()", -- [1098]
+			"18:07:52 - Found Guild Rank: Guild Master", -- [1099]
+			"18:07:55 - Comm received:^1^SverTest^T^N1^S2.18.3^t^^ (from:) (Anastiana) (distri:) (GUILD)", -- [1100]
+			"03/29/20", -- [1101]
+			"20:00:15 - Logged In", -- [1102]
+			"20:00:15 - ML initialized!", -- [1103]
+			"20:00:15 - TradeUI enabled", -- [1104]
+			"20:00:24 - Anastiana-Silvermoon (2.18.3) (nil)", -- [1105]
+			"20:00:24 - ActivateSkin (bfa)", -- [1106]
+			"20:00:27 - Event: (PLAYER_ENTERING_WORLD) (true) (false)", -- [1107]
+			"20:00:27 - GetML()", -- [1108]
+			"20:00:27 - UpdatePlayersData()", -- [1109]
+			"20:00:28 - GetPlayersGuildRank()", -- [1110]
+			"20:00:28 - Found Guild Rank: Guild Master", -- [1111]
+			"20:00:32 - Comm received:^1^SverTest^T^N1^S2.18.3^t^^ (from:) (Anastiana) (distri:) (GUILD)", -- [1112]
+			"20:04:47 - Comm received:^1^SverTest^T^N1^S2.18.3^t^^ (from:) (Meralda) (distri:) (GUILD)", -- [1113]
+			"20:05:14 - Comm received:^1^SverTest^T^N1^S2.18.3^t^^ (from:) (Crysdh) (distri:) (GUILD)", -- [1114]
+			"20:05:50 - Comm received:^1^SverTest^T^N1^S2.18.3^t^^ (from:) (Inderite) (distri:) (GUILD)", -- [1115]
+			"03/29/20", -- [1116]
+			"23:13:31 - Logged In", -- [1117]
+			"23:13:31 - ML initialized!", -- [1118]
+			"23:13:31 - TradeUI enabled", -- [1119]
+			"23:13:39 - Anastiana-Silvermoon (2.18.3) (nil)", -- [1120]
+			"23:13:39 - ActivateSkin (bfa)", -- [1121]
+			"23:13:42 - Event: (PLAYER_ENTERING_WORLD) (true) (false)", -- [1122]
+			"23:13:42 - GetML()", -- [1123]
+			"23:13:42 - UpdatePlayersData()", -- [1124]
+			"23:13:42 - GetPlayersGuildRank()", -- [1125]
+			"23:13:42 - GetPlayersGuildRank()", -- [1126]
+			"23:13:42 - Found Guild Rank: Guild Master", -- [1127]
+			"23:13:46 - Comm received:^1^SverTest^T^N1^S2.18.3^t^^ (from:) (Anastiana) (distri:) (GUILD)", -- [1128]
+			"23:15:50 - Comm received:^1^SverTest^T^N1^S2.18.3^t^^ (from:) (Marival) (distri:) (GUILD)", -- [1129]
+			"23:20:40 - Comm received:^1^SverTest^T^N1^S2.18.3^t^^ (from:) (Crysdh) (distri:) (GUILD)", -- [1130]
+			"23:22:28 - Comm received:^1^SverTest^T^N1^S2.18.3^t^^ (from:) (Drobadin) (distri:) (GUILD)", -- [1131]
+			"03/30/20", -- [1132]
+			"15:32:50 - Logged In", -- [1133]
+			"15:32:50 - ML initialized!", -- [1134]
+			"15:32:50 - TradeUI enabled", -- [1135]
+			"15:32:58 - Anastiana-Silvermoon (2.18.3) (nil)", -- [1136]
+			"15:32:58 - ActivateSkin (bfa)", -- [1137]
+			"15:33:01 - Event: (PLAYER_ENTERING_WORLD) (true) (false)", -- [1138]
+			"15:33:01 - GetML()", -- [1139]
+			"15:33:01 - UpdatePlayersData()", -- [1140]
+			"15:33:02 - GetPlayersGuildRank()", -- [1141]
+			"15:33:02 - GetPlayersGuildRank()", -- [1142]
+			"15:33:02 - Found Guild Rank: Guild Master", -- [1143]
+			"15:33:06 - Comm received:^1^SverTest^T^N1^S2.18.3^t^^ (from:) (Anastiana) (distri:) (GUILD)", -- [1144]
+			"03/30/20", -- [1145]
+			"19:25:28 - Logged In", -- [1146]
+			"19:25:28 - ML initialized!", -- [1147]
+			"19:25:28 - TradeUI enabled", -- [1148]
+			"19:25:35 - Anastiana-Silvermoon (2.18.3) (nil)", -- [1149]
+			"19:25:35 - ActivateSkin (bfa)", -- [1150]
+			"19:25:37 - Event: (PLAYER_ENTERING_WORLD) (true) (false)", -- [1151]
+			"19:25:37 - GetML()", -- [1152]
+			"19:25:37 - UpdatePlayersData()", -- [1153]
+			"19:25:38 - GetPlayersGuildRank()", -- [1154]
+			"19:25:38 - GetPlayersGuildRank()", -- [1155]
+			"19:25:38 - Found Guild Rank: Guild Master", -- [1156]
+			"19:25:42 - Comm received:^1^SverTest^T^N1^S2.18.3^t^^ (from:) (Anastiana) (distri:) (GUILD)", -- [1157]
+			"19:27:57 - Comm received:^1^SverTest^T^N1^S2.18.2^t^^ (from:) (Azverth) (distri:) (GUILD)", -- [1158]
+			"19:29:44 - Comm received:^1^SverTest^T^N1^S2.18.3^t^^ (from:) (Kerpm) (distri:) (GUILD)", -- [1159]
+			"03/30/20", -- [1160]
+			"19:44:38 - Logged In", -- [1161]
+			"19:44:38 - ML initialized!", -- [1162]
+			"19:44:38 - TradeUI enabled", -- [1163]
+			"19:44:44 - Anastiana-Silvermoon (2.18.3) (nil)", -- [1164]
+			"19:44:44 - ActivateSkin (bfa)", -- [1165]
+			"19:44:47 - Event: (PLAYER_ENTERING_WORLD) (true) (false)", -- [1166]
+			"19:44:47 - GetML()", -- [1167]
+			"19:44:47 - UpdatePlayersData()", -- [1168]
+			"19:44:48 - GetPlayersGuildRank()", -- [1169]
+			"19:44:48 - Found Guild Rank: Guild Master", -- [1170]
+			"19:44:49 - Comm received:^1^SverTest^T^N1^S2.18.1^t^^ (from:) (Capneckbeard) (distri:) (GUILD)", -- [1171]
+			"19:44:52 - Comm received:^1^SverTest^T^N1^S2.18.3^t^^ (from:) (Anastiana) (distri:) (GUILD)", -- [1172]
+			"19:45:55 - Comm received:^1^SverTest^T^N1^S2.18.2^t^^ (from:) (Nilley) (distri:) (GUILD)", -- [1173]
+			"19:46:01 - Event: (PARTY_LEADER_CHANGED)", -- [1174]
+			"19:46:01 - GetML()", -- [1175]
+			"19:46:01 - Resetting council as we have a new ML!", -- [1176]
+			"19:46:01 - MasterLooter =  (Anastiana-Silvermoon)", -- [1177]
+			"19:46:01 - GetCouncilInGroup (Anastiana-Silvermoon)", -- [1178]
+			"19:46:01 - ML:NewML (Anastiana-Silvermoon)", -- [1179]
+			"19:46:01 - UpdateMLdb", -- [1180]
+			"19:46:01 - OnMLDBReceived", -- [1181]
+			"19:46:01 - UpdateGroup (true)", -- [1182]
+			"19:46:01 - ML:AddCandidate (Anastiana-Silvermoon) (DEATHKNIGHT) (TANK) (nil) (nil) (nil) (nil) (nil)", -- [1183]
+			"19:46:01 - GetCouncilInGroup (Anastiana-Silvermoon)", -- [1184]
+			"19:46:01 - Comm received:^1^SplayerInfoRequest^T^t^^ (from:) (Anastiana) (distri:) (PARTY)", -- [1185]
+			"19:46:01 - Comm received:^1^SMLdb^T^N1^T^SallowNotes^B^Stimeout^N60^SselfVote^B^Sresponses^T^Sdefault^T^t^t^SrejectTrade^B^SmultiVote^B^Sbuttons^T^Sdefault^T^SnumButtons^N3^t^t^SnumButtons^N3^SanonymousVoting^B^t^t^^ (from:) (Anastiana) (distri:) (PARTY)", -- [1186]
+			"19:46:01 - Comm received:^1^SMLdb^T^N1^T^SallowNotes^B^Stimeout^N60^SselfVote^B^Sresponses^T^Sdefault^T^t^t^SrejectTrade^B^SmultiVote^B^Sbuttons^T^Sdefault^T^SnumButtons^N3^t^t^SnumButtons^N3^SanonymousVoting^B^t^t^^ (from:) (Anastiana) (distri:) (PARTY)", -- [1187]
+			"19:46:01 - Comm received:^1^Scandidates^T^N1^T^SAnastiana-Silvermoon^T^Srole^STANK^Sclass^SDEATHKNIGHT^Srank^S^t^t^t^^ (from:) (Anastiana) (distri:) (PARTY)", -- [1188]
+			"19:46:01 - Comm received:^1^Scouncil^T^N1^T^N1^SAnastiana-Silvermoon^t^t^^ (from:) (Anastiana) (distri:) (PARTY)", -- [1189]
+			"19:46:01 - true = (ConcilContains) (Anastiana-Silvermoon)", -- [1190]
+			"19:46:01 - GetLootDBStatistics()", -- [1191]
+			"19:46:01 - GetGuildRankNum()", -- [1192]
+			"19:46:01 - RCVotingFrame (enabled)", -- [1193]
+			"19:46:01 - Comm received:^1^SplayerInfo^T^N1^SAnastiana-Silvermoon^N2^SDEATHKNIGHT^N3^STANK^N4^SGuild~`Master^N6^N0^N7^N474.1875^N8^N250^t^^ (from:) (Anastiana) (distri:) (WHISPER)", -- [1194]
+			"19:46:01 - ML:AddCandidate (Anastiana-Silvermoon) (DEATHKNIGHT) (TANK) (Guild Master) (nil) (0) (474.1875) (250)", -- [1195]
+			"19:46:04 - VotingFrame:Update() without lootTable!!", -- [1196]
+			"19:46:11 - Comm received:^1^Scandidates^T^N1^T^SAnastiana-Silvermoon^T^Srole^STANK^SspecID^N250^Senchant_lvl^N0^Sclass^SDEATHKNIGHT^Srank^SGuild~`Master^t^t^t^^ (from:) (Anastiana) (distri:) (PARTY)", -- [1197]
+			"19:46:13 - UpdateGroup (table: 000002058F66B210)", -- [1198]
+			"19:46:13 - ML:AddCandidate (Kerpi-Silvermoon) (WARRIOR) (DAMAGER) (nil) (nil) (nil) (nil) (nil)", -- [1199]
+			"19:46:13 - GetCouncilInGroup (Anastiana-Silvermoon)", -- [1200]
+			"19:46:13 - Comm received:^1^SMLdb^T^N1^T^SallowNotes^B^Stimeout^N60^SselfVote^B^Sresponses^T^Sdefault^T^t^t^SrejectTrade^B^SmultiVote^B^Sbuttons^T^Sdefault^T^SnumButtons^N3^t^t^SnumButtons^N3^SanonymousVoting^B^t^t^^ (from:) (Anastiana) (distri:) (PARTY)", -- [1201]
+			"19:46:13 - Comm received:^1^Scandidates^T^N1^T^SKerpi-Silvermoon^T^Srole^SDAMAGER^Sclass^SWARRIOR^Srank^S^t^SAnastiana-Silvermoon^T^Srole^STANK^SspecID^N250^Senchant_lvl^N0^Sclass^SDEATHKNIGHT^Srank^SGuild~`Master^t^t^t^^ (from:) (Anastiana) (distri:) (PARTY)", -- [1202]
+			"19:46:13 - Comm received:^1^SplayerInfo^T^N1^SKerpi-Silvermoon^N2^SWARRIOR^N3^SDAMAGER^N4^SRaider^N6^N0^N7^N471.0625^N8^N71^t^^ (from:) (Kerpi) (distri:) (WHISPER)", -- [1203]
+			"19:46:13 - ML:AddCandidate (Kerpi-Silvermoon) (WARRIOR) (DAMAGER) (Raider) (nil) (0) (471.0625) (71)", -- [1204]
+			"19:46:16 - Timer MLdb_check passed", -- [1205]
+			"19:46:18 - Comm received:^1^SverTest^T^N1^S2.18.3^t^^ (from:) (Aemenór) (distri:) (GUILD)", -- [1206]
+			"19:46:18 - Comm received:^1^Scouncil_request^T^t^^ (from:) (Kerpi) (distri:) (WHISPER)", -- [1207]
+			"19:46:18 - Comm received:^1^Scouncil^T^N1^T^N1^SAnastiana-Silvermoon^t^t^^ (from:) (Anastiana) (distri:) (PARTY)", -- [1208]
+			"19:46:18 - true = (ConcilContains) (Anastiana-Silvermoon)", -- [1209]
+			"19:46:23 - Comm received:^1^Scandidates^T^N1^T^SKerpi-Silvermoon^T^Srole^SDAMAGER^SspecID^N71^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SRaider^t^SAnastiana-Silvermoon^T^Srole^STANK^SspecID^N250^Senchant_lvl^N0^Sclass^SDEATHKNIGHT^Srank^SGuild~`Master^t^t^t^^ (from:) (Anastiana) (distri:) (PARTY)", -- [1210]
+			"19:46:45 - VotingFrame:Update() without lootTable!!", -- [1211]
+			"19:46:46 - VotingFrame:Update() without lootTable!!", -- [1212]
+			"19:46:47 - VotingFrame:Update() without lootTable!!", -- [1213]
+			"19:46:48 - UpdateGroup (table: 000002058F66B210)", -- [1214]
+			"19:46:48 - ML:AddCandidate (Aemenór-Silvermoon) (ROGUE) (DAMAGER) (nil) (nil) (nil) (nil) (nil)", -- [1215]
+			"19:46:48 - ML:AddCandidate (Hulabaloo-Silvermoon) (WARLOCK) (DAMAGER) (nil) (nil) (nil) (nil) (nil)", -- [1216]
+			"19:46:48 - ML:AddCandidate (Vandott-Silvermoon) (WARLOCK) (DAMAGER) (nil) (nil) (nil) (nil) (nil)", -- [1217]
+			"19:46:48 - ML:AddCandidate (Faykmage-Silvermoon) (MAGE) (DAMAGER) (nil) (nil) (nil) (nil) (nil)", -- [1218]
+			"19:46:48 - ML:AddCandidate (Drobadin-Silvermoon) (HUNTER) (DAMAGER) (nil) (nil) (nil) (nil) (nil)", -- [1219]
+			"19:46:48 - ML:AddCandidate (Nilley-Silvermoon) (DEMONHUNTER) (DAMAGER) (nil) (nil) (nil) (nil) (nil)", -- [1220]
+			"19:46:48 - GetCouncilInGroup (Anastiana-Silvermoon) (Nilley-Silvermoon)", -- [1221]
+			"19:46:48 - Comm received:^1^SMLdb^T^N1^T^SallowNotes^B^Stimeout^N60^SselfVote^B^Sresponses^T^Sdefault^T^t^t^SrejectTrade^B^SmultiVote^B^Sbuttons^T^Sdefault^T^SnumButtons^N3^t^t^SnumButtons^N3^SanonymousVoting^B^t^t^^ (from:) (Anastiana) (distri:) (RAID)", -- [1222]
+			"19:46:48 - Comm received:^1^Scandidates^T^N1^T^SNilley-Silvermoon^T^Srole^SDAMAGER^Sclass^SDEMONHUNTER^Srank^S^t^SKerpi-Silvermoon^T^Srole^SDAMAGER^SspecID^N71^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SRaider^t^SFaykmage-Silvermoon^T^Srole^SDAMAGER^Sclass^SMAGE^Srank^S^t^SDrobadin-Silvermoon^T^Srole^SDAMAGER^Sclass^SHUNTER^Srank^S^t^SHulabaloo-Silvermoon^T^Srole^SDAMAGER^Sclass^SWARLOCK^Srank^S^t^SAemenór-Silvermoon^T^Srole^SDAMAGER^Sclass^SROGUE^Srank^S^t^SVandott-Silvermoon^T^Srole^SDAMAGER^Sclass^SWARLOCK^Srank^S^t^SAnastiana-Silvermoon^T^Srole^STANK^SspecID^N250^Senchant_lvl^N0^Sclass^SDEATHKNIGHT^Srank^SGuild~`Master^t^t^t^^ (from:) (Anastiana) (distri:) (RAID)", -- [1223]
+			"19:46:48 - Comm received:^1^Scouncil^T^N1^T^N1^SAnastiana-Silvermoon^N2^SNilley-Silvermoon^t^t^^ (from:) (Anastiana) (distri:) (RAID)", -- [1224]
+			"19:46:48 - true = (ConcilContains) (Anastiana-Silvermoon)", -- [1225]
+			"19:46:48 - Comm received:^1^SplayerInfo^T^N1^SDrobadin-Silvermoon^N2^SHUNTER^N3^SDAMAGER^N4^SRaider^N6^N0^N7^N473.75^N8^N253^t^^ (from:) (Drobadin) (distri:) (WHISPER)", -- [1226]
+			"19:46:48 - ML:AddCandidate (Drobadin-Silvermoon) (HUNTER) (DAMAGER) (Raider) (nil) (0) (473.75) (253)", -- [1227]
+			"19:46:48 - Comm received:^1^SplayerInfo^T^N1^SNilley-Silvermoon^N2^SDEMONHUNTER^N3^SDAMAGER^N4^SOfficer^N6^N0^N7^N473.6875^N8^N577^t^^ (from:) (Nilley) (distri:) (WHISPER)", -- [1228]
+			"19:46:48 - ML:AddCandidate (Nilley-Silvermoon) (DEMONHUNTER) (DAMAGER) (Officer) (nil) (0) (473.6875) (577)", -- [1229]
+			"19:46:48 - Comm received:^1^SplayerInfo^T^N1^SAemenór-Silvermoon^N2^SROGUE^N3^SDAMAGER^N4^STrial^N6^N0^N7^N470.5625^N8^N260^t^^ (from:) (Aemenór) (distri:) (WHISPER)", -- [1230]
+			"19:46:48 - ML:AddCandidate (Aemenór-Silvermoon) (ROGUE) (DAMAGER) (Trial) (nil) (0) (470.5625) (260)", -- [1231]
+			"19:46:48 - Comm received:^1^SplayerInfo^T^N1^SHulabaloo-Silvermoon^N2^SWARLOCK^N3^SDAMAGER^N4^SRaider^N6^N0^N7^N471.5^N8^N267^t^^ (from:) (Hulabaloo) (distri:) (WHISPER)", -- [1232]
+			"19:46:48 - ML:AddCandidate (Hulabaloo-Silvermoon) (WARLOCK) (DAMAGER) (Raider) (nil) (0) (471.5) (267)", -- [1233]
+			"19:46:48 - Comm received:^1^SplayerInfo^T^N1^SFaykmage-Silvermoon^N2^SMAGE^N3^SDAMAGER^N4^SRaider^N6^N0^N7^N468.9375^N8^N63^t^^ (from:) (Faykmage) (distri:) (WHISPER)", -- [1234]
+			"19:46:48 - ML:AddCandidate (Faykmage-Silvermoon) (MAGE) (DAMAGER) (Raider) (nil) (0) (468.9375) (63)", -- [1235]
+			"19:46:48 - Comm received:^1^SplayerInfo^T^N1^SVandott-Silvermoon^N2^SWARLOCK^N3^SDAMAGER^N4^SRaider^N6^N0^N7^N473.75^N8^N266^t^^ (from:) (Vandott) (distri:) (WHISPER)", -- [1236]
+			"19:46:48 - ML:AddCandidate (Vandott-Silvermoon) (WARLOCK) (DAMAGER) (Raider) (nil) (0) (473.75) (266)", -- [1237]
+			"19:46:50 - VotingFrame:Update() without lootTable!!", -- [1238]
+			"19:46:58 - UpdateGroup (table: 000002058F66B210)", -- [1239]
+			"19:46:58 - ML:AddCandidate (Meralda-Silvermoon) (WARRIOR) (DAMAGER) (nil) (nil) (nil) (nil) (nil)", -- [1240]
+			"19:46:58 - GetCouncilInGroup (Anastiana-Silvermoon) (Nilley-Silvermoon)", -- [1241]
+			"19:46:58 - Comm received:^1^Scandidates^T^N1^T^SNilley-Silvermoon^T^Srole^SDAMAGER^SspecID^N577^Senchant_lvl^N0^Sclass^SDEMONHUNTER^Srank^SOfficer^t^SKerpi-Silvermoon^T^Srole^SDAMAGER^SspecID^N71^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SRaider^t^SFaykmage-Silvermoon^T^Srole^SDAMAGER^SspecID^N63^Senchant_lvl^N0^Sclass^SMAGE^Srank^SRaider^t^SDrobadin-Silvermoon^T^Srole^SDAMAGER^SspecID^N253^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SRaider^t^SHulabaloo-Silvermoon^T^Srole^SDAMAGER^SspecID^N267^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SRaider^t^SAemenór-Silvermoon^T^Srole^SDAMAGER^SspecID^N260^Senchant_lvl^N0^Sclass^SROGUE^Srank^STrial^t^SVandott-Silvermoon^T^Srole^SDAMAGER^SspecID^N266^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SRaider^t^SAnastiana-Silvermoon^T^Srole^STANK^SspecID^N250^Senchant_lvl^N0^Sclass^SDEATHKNIGHT^Srank^SGuild~`Master^t^t^t^^ (from:) (Anastiana) (distri:) (RAID)", -- [1242]
+			"19:46:58 - Comm received:^1^SMLdb^T^N1^T^SallowNotes^B^Stimeout^N60^SselfVote^B^Sresponses^T^Sdefault^T^t^t^SrejectTrade^B^SmultiVote^B^Sbuttons^T^Sdefault^T^SnumButtons^N3^t^t^SnumButtons^N3^SanonymousVoting^B^t^t^^ (from:) (Anastiana) (distri:) (RAID)", -- [1243]
+			"19:46:58 - Comm received:^1^Scandidates^T^N1^T^SDrobadin-Silvermoon^T^Srole^SDAMAGER^SspecID^N253^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SRaider^t^SMeralda-Silvermoon^T^Srole^SDAMAGER^Sclass^SWARRIOR^Srank^S^t^SAemenór-Silvermoon^T^Srole^SDAMAGER^SspecID^N260^Senchant_lvl^N0^Sclass^SROGUE^Srank^STrial^t^SNilley-Silvermoon^T^Srole^SDAMAGER^SspecID^N577^Senchant_lvl^N0^Sclass^SDEMONHUNTER^Srank^SOfficer^t^SAnastiana-Silvermoon^T^Srole^STANK^SspecID^N250^Senchant_lvl^N0^Sclass^SDEATHKNIGHT^Srank^SGuild~`Master^t^SFaykmage-Silvermoon^T^Srole^SDAMAGER^SspecID^N63^Senchant_lvl^N0^Sclass^SMAGE^Srank^SRaider^t^SKerpi-Silvermoon^T^Srole^SDAMAGER^SspecID^N71^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SRaider^t^SVandott-Silvermoon^T^Srole^SDAMAGER^SspecID^N266^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SRaider^t^SHulabaloo-Silvermoon^T^Srole^SDAMAGER^SspecID^N267^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SRaider^t^t^t^^ (from:) (Anastiana) (distri:) (RAID)", -- [1244]
+			"19:46:58 - Comm received:^1^SplayerInfo^T^N1^SMeralda-Silvermoon^N2^SWARRIOR^N3^SDAMAGER^N4^SRaider^N6^N0^N7^N472.875^N8^N72^t^^ (from:) (Meralda) (distri:) (WHISPER)", -- [1245]
+			"19:46:58 - ML:AddCandidate (Meralda-Silvermoon) (WARRIOR) (DAMAGER) (Raider) (nil) (0) (472.875) (72)", -- [1246]
+			"19:46:59 - Comm received:^1^Scandidates^T^N1^T^SDrobadin-Silvermoon^T^Srole^SDAMAGER^SspecID^N253^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SRaider^t^SMeralda-Silvermoon^T^Srole^SDAMAGER^SspecID^N72^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SRaider^t^SAemenór-Silvermoon^T^Srole^SDAMAGER^SspecID^N260^Senchant_lvl^N0^Sclass^SROGUE^Srank^STrial^t^SNilley-Silvermoon^T^Srole^SDAMAGER^SspecID^N577^Senchant_lvl^N0^Sclass^SDEMONHUNTER^Srank^SOfficer^t^SAnastiana-Silvermoon^T^Srole^STANK^SspecID^N250^Senchant_lvl^N0^Sclass^SDEATHKNIGHT^Srank^SGuild~`Master^t^SFaykmage-Silvermoon^T^Srole^SDAMAGER^SspecID^N63^Senchant_lvl^N0^Sclass^SMAGE^Srank^SRaider^t^SKerpi-Silvermoon^T^Srole^SDAMAGER^SspecID^N71^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SRaider^t^SVandott-Silvermoon^T^Srole^SDAMAGER^SspecID^N266^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SRaider^t^SHulabaloo-Silvermoon^T^Srole^SDAMAGER^SspecID^N267^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SRaider^t^t^t^^ (from:) (Anastiana) (distri:) (RAID)", -- [1247]
+			"19:46:59 - VotingFrame:Update() without lootTable!!", -- [1248]
+			"19:47:08 - UpdateGroup (table: 000002058F66B210)", -- [1249]
+			"19:47:08 - ML:AddCandidate (Marival-Silvermoon) (PRIEST) (HEALER) (nil) (nil) (nil) (nil) (nil)", -- [1250]
+			"19:47:08 - GetCouncilInGroup (Anastiana-Silvermoon) (Marival-Silvermoon) (Nilley-Silvermoon)", -- [1251]
+			"19:47:08 - Comm received:^1^SMLdb^T^N1^T^SallowNotes^B^Stimeout^N60^SselfVote^B^Sresponses^T^Sdefault^T^t^t^SrejectTrade^B^SmultiVote^B^Sbuttons^T^Sdefault^T^SnumButtons^N3^t^t^SnumButtons^N3^SanonymousVoting^B^t^t^^ (from:) (Anastiana) (distri:) (RAID)", -- [1252]
+			"19:47:08 - Comm received:^1^Scouncil^T^N1^T^N1^SAnastiana-Silvermoon^N2^SMarival-Silvermoon^N3^SNilley-Silvermoon^t^t^^ (from:) (Anastiana) (distri:) (RAID)", -- [1253]
+			"19:47:08 - true = (ConcilContains) (Anastiana-Silvermoon)", -- [1254]
+			"19:47:09 - Comm received:^1^SplayerInfo^T^N1^SMarival-Silvermoon^N2^SPRIEST^N3^SHEALER^N4^SPusn^N5^B^N6^N175^N7^N472.75^N8^N257^t^^ (from:) (Marival) (distri:) (WHISPER)", -- [1255]
+			"19:47:09 - ML:AddCandidate (Marival-Silvermoon) (PRIEST) (HEALER) (Pusn) (true) (175) (472.75) (257)", -- [1256]
+			"19:47:09 - Comm received:^1^Scandidates^T^N1^T^SDrobadin-Silvermoon^T^Srole^SDAMAGER^SspecID^N253^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SRaider^t^SMeralda-Silvermoon^T^Srole^SDAMAGER^SspecID^N72^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SRaider^t^SAemenór-Silvermoon^T^Srole^SDAMAGER^SspecID^N260^Senchant_lvl^N0^Sclass^SROGUE^Srank^STrial^t^SNilley-Silvermoon^T^Srole^SDAMAGER^SspecID^N577^Senchant_lvl^N0^Sclass^SDEMONHUNTER^Srank^SOfficer^t^SAnastiana-Silvermoon^T^Srole^STANK^SspecID^N250^Senchant_lvl^N0^Sclass^SDEATHKNIGHT^Srank^SGuild~`Master^t^SFaykmage-Silvermoon^T^Srole^SDAMAGER^SspecID^N63^Senchant_lvl^N0^Sclass^SMAGE^Srank^SRaider^t^SMarival-Silvermoon^T^Srole^SHEALER^Sclass^SPRIEST^Srank^S^t^SKerpi-Silvermoon^T^Srole^SDAMAGER^SspecID^N71^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SRaider^t^SVandott-Silvermoon^T^Srole^SDAMAGER^SspecID^N266^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SRaider^t^SHulabaloo-Silvermoon^T^Srole^SDAMAGER^SspecID^N267^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SRaider^t^t^t^^ (from:) (Anastiana) (distri:) (RAID)", -- [1257]
+			"19:47:09 - Comm received:^1^Scandidates^T^N1^T^SDrobadin-Silvermoon^T^Srole^SDAMAGER^SspecID^N253^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SRaider^t^SMeralda-Silvermoon^T^Srole^SDAMAGER^SspecID^N72^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SRaider^t^SAemenór-Silvermoon^T^Srole^SDAMAGER^SspecID^N260^Senchant_lvl^N0^Sclass^SROGUE^Srank^STrial^t^SNilley-Silvermoon^T^Srole^SDAMAGER^SspecID^N577^Senchant_lvl^N0^Sclass^SDEMONHUNTER^Srank^SOfficer^t^SAnastiana-Silvermoon^T^Srole^STANK^SspecID^N250^Senchant_lvl^N0^Sclass^SDEATHKNIGHT^Srank^SGuild~`Master^t^SFaykmage-Silvermoon^T^Srole^SDAMAGER^SspecID^N63^Senchant_lvl^N0^Sclass^SMAGE^Srank^SRaider^t^SMarival-Silvermoon^T^Srole^SHEALER^SspecID^N257^Senchant_lvl^N175^Sclass^SPRIEST^Senchanter^B^Srank^SPusn^t^SKerpi-Silvermoon^T^Srole^SDAMAGER^SspecID^N71^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SRaider^t^SVandott-Silvermoon^T^Srole^SDAMAGER^SspecID^N266^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SRaider^t^SHulabaloo-Silvermoon^T^Srole^SDAMAGER^SspecID^N267^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SRaider^t^t^t^^ (from:) (Anastiana) (distri:) (RAID)", -- [1258]
+			"19:47:10 - VotingFrame:Update() without lootTable!!", -- [1259]
+			"19:47:25 - Comm received:^1^SverTest^T^N1^S2.18.3^t^^ (from:) (Aeménor) (distri:) (GUILD)", -- [1260]
+			"19:47:26 - Event: (PLAYER_ENTERING_WORLD) (false) (false)", -- [1261]
+			"19:47:26 - GetML()", -- [1262]
+			"19:47:29 - VotingFrame:Update() without lootTable!!", -- [1263]
+			"19:47:35 - VotingFrame:Update() without lootTable!!", -- [1264]
+			"19:47:39 - VotingFrame:Update() without lootTable!!", -- [1265]
+			"19:47:46 - VotingFrame:Update() without lootTable!!", -- [1266]
+			"19:47:49 - VotingFrame:Update() without lootTable!!", -- [1267]
+			"19:47:55 - Comm received:^1^SverTest^T^N1^S2.18.3^t^^ (from:) (Aeménor) (distri:) (GUILD)", -- [1268]
+			"19:47:55 - Event: (PLAYER_ENTERING_WORLD) (false) (false)", -- [1269]
+			"19:47:55 - GetML()", -- [1270]
+			"19:47:58 - VotingFrame:Update() without lootTable!!", -- [1271]
+			"19:47:59 - Comm received:^1^SverTest^T^N1^S2.18.2^t^^ (from:) (Asnv) (distri:) (GUILD)", -- [1272]
+			"19:48:03 - VotingFrame:Update() without lootTable!!", -- [1273]
+			"19:48:17 - VotingFrame:Update() without lootTable!!", -- [1274]
+			"19:48:18 - VotingFrame:Update() without lootTable!!", -- [1275]
+			"19:48:20 - VotingFrame:Update() without lootTable!!", -- [1276]
+			"19:48:23 - Comm received:^1^SverTest^T^N1^S2.18.2^t^^ (from:) (Azverth) (distri:) (GUILD)", -- [1277]
+			"19:48:26 - UpdateGroup (table: 000002058F66B210)", -- [1278]
+			"19:48:26 - ML:AddCandidate (Asnv-Silvermoon) (HUNTER) (DAMAGER) (nil) (nil) (nil) (nil) (nil)", -- [1279]
+			"19:48:26 - GetCouncilInGroup (Anastiana-Silvermoon) (Marival-Silvermoon) (Asnv-Silvermoon) (Nilley-Silvermoon)", -- [1280]
+			"19:48:26 - Comm received:^1^SMLdb^T^N1^T^SallowNotes^B^Stimeout^N60^SselfVote^B^Sresponses^T^Sdefault^T^t^t^SrejectTrade^B^SmultiVote^B^Sbuttons^T^Sdefault^T^SnumButtons^N3^t^t^SnumButtons^N3^SanonymousVoting^B^t^t^^ (from:) (Anastiana) (distri:) (RAID)", -- [1281]
+			"19:48:26 - Comm received:^1^Scandidates^T^N1^T^SDrobadin-Silvermoon^T^Srole^SDAMAGER^SspecID^N253^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SRaider^t^SMeralda-Silvermoon^T^Srole^SDAMAGER^SspecID^N72^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SRaider^t^SAemenór-Silvermoon^T^Srole^SDAMAGER^SspecID^N260^Senchant_lvl^N0^Sclass^SROGUE^Srank^STrial^t^SNilley-Silvermoon^T^Srole^SDAMAGER^SspecID^N577^Senchant_lvl^N0^Sclass^SDEMONHUNTER^Srank^SOfficer^t^SAnastiana-Silvermoon^T^Srole^STANK^SspecID^N250^Senchant_lvl^N0^Sclass^SDEATHKNIGHT^Srank^SGuild~`Master^t^SFaykmage-Silvermoon^T^Srole^SDAMAGER^SspecID^N63^Senchant_lvl^N0^Sclass^SMAGE^Srank^SRaider^t^SAsnv-Silvermoon^T^Srole^SDAMAGER^Sclass^SHUNTER^Srank^S^t^SMarival-Silvermoon^T^Srole^SHEALER^SspecID^N257^Senchant_lvl^N175^Sclass^SPRIEST^Senchanter^B^Srank^SPusn^t^SKerpi-Silvermoon^T^Srole^SDAMAGER^SspecID^N71^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SRaider^t^SVandott-Silvermoon^T^Srole^SDAMAGER^SspecID^N266^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SRaider^t^SHulabaloo-Silvermoon^T^Srole^SDAMAGER^SspecID^N267^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SRaider^t^t^t^^ (from:) (Anastiana) (distri:) (RAID)", -- [1282]
+			"19:48:26 - Comm received:^1^Scouncil^T^N1^T^N1^SAnastiana-Silvermoon^N2^SMarival-Silvermoon^N3^SAsnv-Silvermoon^N4^SNilley-Silvermoon^t^t^^ (from:) (Anastiana) (distri:) (RAID)", -- [1283]
+			"19:48:26 - true = (ConcilContains) (Anastiana-Silvermoon)", -- [1284]
+			"19:48:26 - Comm received:^1^SplayerInfo^T^N1^SAsnv-Silvermoon^N2^SHUNTER^N3^SDAMAGER^N4^SOfficer^N6^N0^N7^N472.375^N8^N253^t^^ (from:) (Asnv) (distri:) (WHISPER)", -- [1285]
+			"19:48:26 - ML:AddCandidate (Asnv-Silvermoon) (HUNTER) (DAMAGER) (Officer) (nil) (0) (472.375) (253)", -- [1286]
+			"19:48:31 - Comm received:^1^SverTest^T^N1^S2.18.3^t^^ (from:) (Aemenór) (distri:) (GUILD)", -- [1287]
+			"19:48:31 - VotingFrame:Update() without lootTable!!", -- [1288]
+			"19:48:36 - Comm received:^1^Scandidates^T^N1^T^SDrobadin-Silvermoon^T^Srole^SDAMAGER^SspecID^N253^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SRaider^t^SMeralda-Silvermoon^T^Srole^SDAMAGER^SspecID^N72^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SRaider^t^SAemenór-Silvermoon^T^Srole^SDAMAGER^SspecID^N260^Senchant_lvl^N0^Sclass^SROGUE^Srank^STrial^t^SNilley-Silvermoon^T^Srole^SDAMAGER^SspecID^N577^Senchant_lvl^N0^Sclass^SDEMONHUNTER^Srank^SOfficer^t^SAnastiana-Silvermoon^T^Srole^STANK^SspecID^N250^Senchant_lvl^N0^Sclass^SDEATHKNIGHT^Srank^SGuild~`Master^t^SFaykmage-Silvermoon^T^Srole^SDAMAGER^SspecID^N63^Senchant_lvl^N0^Sclass^SMAGE^Srank^SRaider^t^SAsnv-Silvermoon^T^Srole^SDAMAGER^SspecID^N253^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SOfficer^t^SMarival-Silvermoon^T^Srole^SHEALER^SspecID^N257^Senchant_lvl^N175^Sclass^SPRIEST^Senchanter^B^Srank^SPusn^t^SKerpi-Silvermoon^T^Srole^SDAMAGER^SspecID^N71^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SRaider^t^SVandott-Silvermoon^T^Srole^SDAMAGER^SspecID^N266^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SRaider^t^SHulabaloo-Silvermoon^T^Srole^SDAMAGER^SspecID^N267^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SRaider^t^t^t^^ (from:) (Anastiana) (distri:) (RAID)", -- [1289]
+			"19:48:37 - VotingFrame:Update() without lootTable!!", -- [1290]
+			"19:48:45 - Comm received:^1^SMLdb_request^T^t^^ (from:) (Aemenór) (distri:) (WHISPER)", -- [1291]
+			"19:48:45 - Comm received:^1^Scouncil_request^T^t^^ (from:) (Aemenór) (distri:) (WHISPER)", -- [1292]
+			"19:48:45 - Comm received:^1^SMLdb^T^N1^T^SallowNotes^B^Stimeout^N60^SselfVote^B^Sresponses^T^Sdefault^T^t^t^SrejectTrade^B^SmultiVote^B^Sbuttons^T^Sdefault^T^SnumButtons^N3^t^t^SnumButtons^N3^SanonymousVoting^B^t^t^^ (from:) (Anastiana) (distri:) (RAID)", -- [1293]
+			"19:48:45 - Comm received:^1^Scouncil^T^N1^T^N1^SAnastiana-Silvermoon^N2^SMarival-Silvermoon^N3^SAsnv-Silvermoon^N4^SNilley-Silvermoon^t^t^^ (from:) (Anastiana) (distri:) (RAID)", -- [1294]
+			"19:48:45 - true = (ConcilContains) (Anastiana-Silvermoon)", -- [1295]
+			"19:48:47 - VotingFrame:Update() without lootTable!!", -- [1296]
+			"19:48:48 - VotingFrame:Update() without lootTable!!", -- [1297]
+			"19:48:57 - UpdateGroup (table: 000002058F66B210)", -- [1298]
+			"19:48:57 - ML:AddCandidate (Azverth-Silvermoon) (WARRIOR) (DAMAGER) (nil) (nil) (nil) (nil) (nil)", -- [1299]
+			"19:48:57 - GetCouncilInGroup (Anastiana-Silvermoon) (Marival-Silvermoon) (Asnv-Silvermoon) (Nilley-Silvermoon)", -- [1300]
+			"19:48:57 - Comm received:^1^SMLdb^T^N1^T^SallowNotes^B^Stimeout^N60^SselfVote^B^Sresponses^T^Sdefault^T^t^t^SrejectTrade^B^SmultiVote^B^Sbuttons^T^Sdefault^T^SnumButtons^N3^t^t^SnumButtons^N3^SanonymousVoting^B^t^t^^ (from:) (Anastiana) (distri:) (RAID)", -- [1301]
+			"19:48:57 - Comm received:^1^Scandidates^T^N1^T^SDrobadin-Silvermoon^T^Srole^SDAMAGER^SspecID^N253^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SRaider^t^SMeralda-Silvermoon^T^Srole^SDAMAGER^SspecID^N72^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SRaider^t^SAemenór-Silvermoon^T^Srole^SDAMAGER^SspecID^N260^Senchant_lvl^N0^Sclass^SROGUE^Srank^STrial^t^SAzverth-Silvermoon^T^Srole^SDAMAGER^Sclass^SWARRIOR^Srank^S^t^SNilley-Silvermoon^T^Srole^SDAMAGER^SspecID^N577^Senchant_lvl^N0^Sclass^SDEMONHUNTER^Srank^SOfficer^t^SAnastiana-Silvermoon^T^Srole^STANK^SspecID^N250^Senchant_lvl^N0^Sclass^SDEATHKNIGHT^Srank^SGuild~`Master^t^SFaykmage-Silvermoon^T^Srole^SDAMAGER^SspecID^N63^Senchant_lvl^N0^Sclass^SMAGE^Srank^SRaider^t^SAsnv-Silvermoon^T^Srole^SDAMAGER^SspecID^N253^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SOfficer^t^SMarival-Silvermoon^T^Srole^SHEALER^SspecID^N257^Senchant_lvl^N175^Sclass^SPRIEST^Senchanter^B^Srank^SPusn^t^SKerpi-Silvermoon^T^Srole^SDAMAGER^SspecID^N71^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SRaider^t^SVandott-Silvermoon^T^Srole^SDAMAGER^SspecID^N266^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SRaider^t^SHulabaloo-Silvermoon^T^Srole^SDAMAGER^SspecID^N267^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SRaider^t^t^t^^ (from:) (Anastiana) (distri:) (RAID)", -- [1302]
+			"19:48:57 - Comm received:^1^SplayerInfo^T^N1^SAzverth-Silvermoon^N2^SWARRIOR^N3^SDAMAGER^N4^SRaider^N6^N0^N7^N472.6875^N8^N72^t^^ (from:) (Azverth) (distri:) (WHISPER)", -- [1303]
+			"19:48:57 - ML:AddCandidate (Azverth-Silvermoon) (WARRIOR) (DAMAGER) (Raider) (nil) (0) (472.6875) (72)", -- [1304]
+			"19:49:01 - VotingFrame:Update() without lootTable!!", -- [1305]
+			"19:49:02 - Comm received:^1^Scouncil_request^T^t^^ (from:) (Azverth) (distri:) (WHISPER)", -- [1306]
+			"19:49:02 - Comm received:^1^Scouncil^T^N1^T^N1^SAnastiana-Silvermoon^N2^SMarival-Silvermoon^N3^SAsnv-Silvermoon^N4^SNilley-Silvermoon^t^t^^ (from:) (Anastiana) (distri:) (RAID)", -- [1307]
+			"19:49:02 - true = (ConcilContains) (Anastiana-Silvermoon)", -- [1308]
+			"19:49:07 - UpdateGroup (table: 000002058F66B210)", -- [1309]
+			"19:49:07 - ML:RemoveCandidate (Azverth-Silvermoon)", -- [1310]
+			"19:49:07 - GetCouncilInGroup (Anastiana-Silvermoon) (Marival-Silvermoon) (Asnv-Silvermoon) (Nilley-Silvermoon)", -- [1311]
+			"19:49:07 - Comm received:^1^Scandidates^T^N1^T^SDrobadin-Silvermoon^T^Srole^SDAMAGER^SspecID^N253^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SRaider^t^SMeralda-Silvermoon^T^Srole^SDAMAGER^SspecID^N72^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SRaider^t^SAemenór-Silvermoon^T^Srole^SDAMAGER^SspecID^N260^Senchant_lvl^N0^Sclass^SROGUE^Srank^STrial^t^SAzverth-Silvermoon^T^Srole^SDAMAGER^SspecID^N72^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SRaider^t^SNilley-Silvermoon^T^Srole^SDAMAGER^SspecID^N577^Senchant_lvl^N0^Sclass^SDEMONHUNTER^Srank^SOfficer^t^SAnastiana-Silvermoon^T^Srole^STANK^SspecID^N250^Senchant_lvl^N0^Sclass^SDEATHKNIGHT^Srank^SGuild~`Master^t^SFaykmage-Silvermoon^T^Srole^SDAMAGER^SspecID^N63^Senchant_lvl^N0^Sclass^SMAGE^Srank^SRaider^t^SAsnv-Silvermoon^T^Srole^SDAMAGER^SspecID^N253^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SOfficer^t^SMarival-Silvermoon^T^Srole^SHEALER^SspecID^N257^Senchant_lvl^N175^Sclass^SPRIEST^Senchanter^B^Srank^SPusn^t^SKerpi-Silvermoon^T^Srole^SDAMAGER^SspecID^N71^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SRaider^t^SVandott-Silvermoon^T^Srole^SDAMAGER^SspecID^N266^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SRaider^t^SHulabaloo-Silvermoon^T^Srole^SDAMAGER^SspecID^N267^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SRaider^t^t^t^^ (from:) (Anastiana) (distri:) (RAID)", -- [1312]
+			"19:49:07 - Comm received:^1^SMLdb^T^N1^T^SallowNotes^B^Stimeout^N60^SselfVote^B^Sresponses^T^Sdefault^T^t^t^SrejectTrade^B^SmultiVote^B^Sbuttons^T^Sdefault^T^SnumButtons^N3^t^t^SnumButtons^N3^SanonymousVoting^B^t^t^^ (from:) (Anastiana) (distri:) (RAID)", -- [1313]
+			"19:49:07 - Comm received:^1^Scandidates^T^N1^T^SDrobadin-Silvermoon^T^Srole^SDAMAGER^SspecID^N253^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SRaider^t^SMeralda-Silvermoon^T^Srole^SDAMAGER^SspecID^N72^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SRaider^t^SAemenór-Silvermoon^T^Srole^SDAMAGER^SspecID^N260^Senchant_lvl^N0^Sclass^SROGUE^Srank^STrial^t^SNilley-Silvermoon^T^Srole^SDAMAGER^SspecID^N577^Senchant_lvl^N0^Sclass^SDEMONHUNTER^Srank^SOfficer^t^SAnastiana-Silvermoon^T^Srole^STANK^SspecID^N250^Senchant_lvl^N0^Sclass^SDEATHKNIGHT^Srank^SGuild~`Master^t^SFaykmage-Silvermoon^T^Srole^SDAMAGER^SspecID^N63^Senchant_lvl^N0^Sclass^SMAGE^Srank^SRaider^t^SAsnv-Silvermoon^T^Srole^SDAMAGER^SspecID^N253^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SOfficer^t^SMarival-Silvermoon^T^Srole^SHEALER^SspecID^N257^Senchant_lvl^N175^Sclass^SPRIEST^Senchanter^B^Srank^SPusn^t^SKerpi-Silvermoon^T^Srole^SDAMAGER^SspecID^N71^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SRaider^t^SVandott-Silvermoon^T^Srole^SDAMAGER^SspecID^N266^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SRaider^t^SHulabaloo-Silvermoon^T^Srole^SDAMAGER^SspecID^N267^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SRaider^t^t^t^^ (from:) (Anastiana) (distri:) (RAID)", -- [1314]
+			"19:49:08 - VotingFrame:Update() without lootTable!!", -- [1315]
+			"19:49:14 - VotingFrame:Update() without lootTable!!", -- [1316]
+			"19:49:25 - VotingFrame:Update() without lootTable!!", -- [1317]
+			"19:49:29 - VotingFrame:Update() without lootTable!!", -- [1318]
+			"19:49:30 - VotingFrame:Update() without lootTable!!", -- [1319]
+			"19:49:32 - VotingFrame:Update() without lootTable!!", -- [1320]
+			"19:49:37 - UpdateGroup (table: 000002058F66B210)", -- [1321]
+			"19:49:38 - VotingFrame:Update() without lootTable!!", -- [1322]
+			"19:49:47 - Comm received:^1^SverTest^T^N1^S2.18.3^t^^ (from:) (Madvepriest) (distri:) (GUILD)", -- [1323]
+			"19:49:56 - VotingFrame:Update() without lootTable!!", -- [1324]
+			"19:50:02 - VotingFrame:Update() without lootTable!!", -- [1325]
+			"19:50:05 - VotingFrame:Update() without lootTable!!", -- [1326]
+			"19:50:08 - VotingFrame:Update() without lootTable!!", -- [1327]
+			"19:50:12 - VotingFrame:Update() without lootTable!!", -- [1328]
+			"19:50:15 - VotingFrame:Update() without lootTable!!", -- [1329]
+			"19:50:23 - Event: (RAID_INSTANCE_WELCOME) (Ny'alotha, the Waking City (Mythic)) (133776) (1) (0)", -- [1330]
+			"19:50:24 - Event: (PLAYER_ENTERING_WORLD) (false) (false)", -- [1331]
+			"19:50:24 - GetML()", -- [1332]
+			"19:50:26 - VotingFrame:Update() without lootTable!!", -- [1333]
+			"19:50:40 - Player confirmed usage", -- [1334]
+			"19:50:40 - Start handle loot.", -- [1335]
+			"19:50:41 - Comm received:^1^SStartHandleLoot^T^t^^ (from:) (Anastiana) (distri:) (RAID)", -- [1336]
+			"19:50:43 - VotingFrame:Update() without lootTable!!", -- [1337]
+			"19:51:07 - VotingFrame:Update() without lootTable!!", -- [1338]
+			"19:51:16 - VotingFrame:Update() without lootTable!!", -- [1339]
+			"19:51:33 - Comm received:^1^SverTest^T^N1^S2.18.3^t^^ (from:) (Sensémage) (distri:) (GUILD)", -- [1340]
+			"19:51:58 - VotingFrame:Update() without lootTable!!", -- [1341]
+			"19:51:59 - VotingFrame:Update() without lootTable!!", -- [1342]
+			"19:52:07 - UpdateGroup (table: 000002058F66B210)", -- [1343]
+			"19:52:07 - ML:AddCandidate (Nïkä-Silvermoon) (DEATHKNIGHT) (TANK) (nil) (nil) (nil) (nil) (nil)", -- [1344]
+			"19:52:07 - GetCouncilInGroup (Anastiana-Silvermoon) (Marival-Silvermoon) (Asnv-Silvermoon) (Nilley-Silvermoon)", -- [1345]
+			"19:52:07 - Comm received:^1^SMLdb^T^N1^T^SallowNotes^B^Stimeout^N60^SselfVote^B^Sresponses^T^Sdefault^T^t^t^SrejectTrade^B^SmultiVote^B^Sbuttons^T^Sdefault^T^SnumButtons^N3^t^t^SnumButtons^N3^SanonymousVoting^B^t^t^^ (from:) (Anastiana) (distri:) (RAID)", -- [1346]
+			"19:52:07 - Comm received:^1^Scandidates^T^N1^T^SDrobadin-Silvermoon^T^Srole^SDAMAGER^SspecID^N253^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SRaider^t^SMeralda-Silvermoon^T^Srole^SDAMAGER^SspecID^N72^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SRaider^t^SAemenór-Silvermoon^T^Srole^SDAMAGER^SspecID^N260^Senchant_lvl^N0^Sclass^SROGUE^Srank^STrial^t^SAsnv-Silvermoon^T^Srole^SDAMAGER^SspecID^N253^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SOfficer^t^SNilley-Silvermoon^T^Srole^SDAMAGER^SspecID^N577^Senchant_lvl^N0^Sclass^SDEMONHUNTER^Srank^SOfficer^t^SAnastiana-Silvermoon^T^Srole^STANK^SspecID^N250^Senchant_lvl^N0^Sclass^SDEATHKNIGHT^Srank^SGuild~`Master^t^SFaykmage-Silvermoon^T^Srole^SDAMAGER^SspecID^N63^Senchant_lvl^N0^Sclass^SMAGE^Srank^SRaider^t^SNïkä-Silvermoon^T^Srole^STANK^Sclass^SDEATHKNIGHT^Srank^S^t^SMarival-Silvermoon^T^Srole^SHEALER^SspecID^N257^Senchant_lvl^N175^Sclass^SPRIEST^Senchanter^B^Srank^SPusn^t^SKerpi-Silvermoon^T^Srole^SDAMAGER^SspecID^N71^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SRaider^t^SVandott-Silvermoon^T^Srole^SDAMAGER^SspecID^N266^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SRaider^t^SHulabaloo-Silvermoon^T^Srole^SDAMAGER^SspecID^N267^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SRaider^t^t^t^^ (from:) (Anastiana) (distri:) (RAID)", -- [1347]
+			"19:52:07 - Comm received:^1^SplayerInfo^T^N1^SNïkä-Silvermoon^N2^SDEATHKNIGHT^N3^STANK^N4^STrial^N6^N0^N7^N477.75^N8^N251^t^^ (from:) (Nïkä) (distri:) (WHISPER)", -- [1348]
+			"19:52:07 - ML:AddCandidate (Nïkä-Silvermoon) (DEATHKNIGHT) (TANK) (Trial) (nil) (0) (477.75) (251)", -- [1349]
+			"19:52:12 - Comm received:^1^Scouncil_request^T^t^^ (from:) (Nïkä) (distri:) (WHISPER)", -- [1350]
+			"19:52:12 - Comm received:^1^Scouncil^T^N1^T^N1^SAnastiana-Silvermoon^N2^SMarival-Silvermoon^N3^SAsnv-Silvermoon^N4^SNilley-Silvermoon^t^t^^ (from:) (Anastiana) (distri:) (RAID)", -- [1351]
+			"19:52:12 - true = (ConcilContains) (Anastiana-Silvermoon)", -- [1352]
+			"19:52:15 - VotingFrame:Update() without lootTable!!", -- [1353]
+			"19:52:17 - Comm received:^1^Scandidates^T^N1^T^SDrobadin-Silvermoon^T^Srole^SDAMAGER^SspecID^N253^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SRaider^t^SMeralda-Silvermoon^T^Srole^SDAMAGER^SspecID^N72^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SRaider^t^SAemenór-Silvermoon^T^Srole^SDAMAGER^SspecID^N260^Senchant_lvl^N0^Sclass^SROGUE^Srank^STrial^t^SAsnv-Silvermoon^T^Srole^SDAMAGER^SspecID^N253^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SOfficer^t^SNilley-Silvermoon^T^Srole^SDAMAGER^SspecID^N577^Senchant_lvl^N0^Sclass^SDEMONHUNTER^Srank^SOfficer^t^SAnastiana-Silvermoon^T^Srole^STANK^SspecID^N250^Senchant_lvl^N0^Sclass^SDEATHKNIGHT^Srank^SGuild~`Master^t^SFaykmage-Silvermoon^T^Srole^SDAMAGER^SspecID^N63^Senchant_lvl^N0^Sclass^SMAGE^Srank^SRaider^t^SNïkä-Silvermoon^T^Srole^STANK^SspecID^N251^Senchant_lvl^N0^Sclass^SDEATHKNIGHT^Srank^STrial^t^SMarival-Silvermoon^T^Srole^SHEALER^SspecID^N257^Senchant_lvl^N175^Sclass^SPRIEST^Senchanter^B^Srank^SPusn^t^SKerpi-Silvermoon^T^Srole^SDAMAGER^SspecID^N71^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SRaider^t^SVandott-Silvermoon^T^Srole^SDAMAGER^SspecID^N266^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SRaider^t^SHulabaloo-Silvermoon^T^Srole^SDAMAGER^SspecID^N267^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SRaider^t^t^t^^ (from:) (Anastiana) (distri:) (RAID)", -- [1354]
+			"19:52:21 - VotingFrame:Update() without lootTable!!", -- [1355]
+			"19:52:27 - VotingFrame:Update() without lootTable!!", -- [1356]
+			"19:52:33 - VotingFrame:Update() without lootTable!!", -- [1357]
+			"19:52:34 - VotingFrame:Update() without lootTable!!", -- [1358]
+			"19:52:37 - UpdateGroup (table: 000002058F66B210)", -- [1359]
+			"19:52:37 - ML:AddCandidate (Nïkä-Silvermoon) (DEATHKNIGHT) (DAMAGER) (Trial) (nil) (0) (nil) (251)", -- [1360]
+			"19:52:37 - GetCouncilInGroup (Anastiana-Silvermoon) (Marival-Silvermoon) (Asnv-Silvermoon) (Nilley-Silvermoon)", -- [1361]
+			"19:52:37 - Comm received:^1^SMLdb^T^N1^T^SallowNotes^B^Stimeout^N60^SselfVote^B^Sresponses^T^Sdefault^T^t^t^SrejectTrade^B^SmultiVote^B^Sbuttons^T^Sdefault^T^SnumButtons^N3^t^t^SnumButtons^N3^SanonymousVoting^B^t^t^^ (from:) (Anastiana) (distri:) (RAID)", -- [1362]
+			"19:52:37 - VotingFrame:Update() without lootTable!!", -- [1363]
+			"19:52:37 - Comm received:^1^Scandidates^T^N1^T^SDrobadin-Silvermoon^T^Srole^SDAMAGER^SspecID^N253^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SRaider^t^SMeralda-Silvermoon^T^Srole^SDAMAGER^SspecID^N72^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SRaider^t^SAemenór-Silvermoon^T^Srole^SDAMAGER^SspecID^N260^Senchant_lvl^N0^Sclass^SROGUE^Srank^STrial^t^SAsnv-Silvermoon^T^Srole^SDAMAGER^SspecID^N253^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SOfficer^t^SNilley-Silvermoon^T^Srole^SDAMAGER^SspecID^N577^Senchant_lvl^N0^Sclass^SDEMONHUNTER^Srank^SOfficer^t^SAnastiana-Silvermoon^T^Srole^STANK^SspecID^N250^Senchant_lvl^N0^Sclass^SDEATHKNIGHT^Srank^SGuild~`Master^t^SFaykmage-Silvermoon^T^Srole^SDAMAGER^SspecID^N63^Senchant_lvl^N0^Sclass^SMAGE^Srank^SRaider^t^SNïkä-Silvermoon^T^Srole^SDAMAGER^SspecID^N251^Senchant_lvl^N0^Sclass^SDEATHKNIGHT^Srank^STrial^t^SMarival-Silvermoon^T^Srole^SHEALER^SspecID^N257^Senchant_lvl^N175^Sclass^SPRIEST^Senchanter^B^Srank^SPusn^t^SKerpi-Silvermoon^T^Srole^SDAMAGER^SspecID^N71^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SRaider^t^SVandott-Silvermoon^T^Srole^SDAMAGER^SspecID^N266^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SRaider^t^SHulabaloo-Silvermoon^T^Srole^SDAMAGER^SspecID^N267^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SRaider^t^t^t^^ (from:) (Anastiana) (distri:) (RAID)", -- [1364]
+			"19:52:41 - VotingFrame:Update() without lootTable!!", -- [1365]
+			"19:52:52 - VotingFrame:Update() without lootTable!!", -- [1366]
+			"19:52:53 - VotingFrame:Update() without lootTable!!", -- [1367]
+			"19:52:59 - VotingFrame:Update() without lootTable!!", -- [1368]
+			"19:53:05 - VotingFrame:Update() without lootTable!!", -- [1369]
+			"19:53:11 - VotingFrame:Update() without lootTable!!", -- [1370]
+			"19:53:12 - VotingFrame:Update() without lootTable!!", -- [1371]
+			"03/30/20", -- [1372]
+			"19:53:36 - Logged In", -- [1373]
+			"19:53:36 - ML initialized!", -- [1374]
+			"19:53:36 - TradeUI enabled", -- [1375]
+			"19:53:40 - Anastiana-Silvermoon (2.18.3) (nil)", -- [1376]
+			"19:53:40 - ActivateSkin (bfa)", -- [1377]
+			"19:53:43 - Event: (PLAYER_ENTERING_WORLD) (true) (false)", -- [1378]
+			"19:53:43 - GetML()", -- [1379]
+			"19:53:43 - UpdatePlayersData()", -- [1380]
+			"19:53:43 - Event: (PARTY_LEADER_CHANGED)", -- [1381]
+			"19:53:43 - GetML()", -- [1382]
+			"19:53:43 - Resetting council as we have a new ML!", -- [1383]
+			"19:53:43 - MasterLooter =  (Anastiana-Silvermoon)", -- [1384]
+			"19:53:43 - GetCouncilInGroup (Anastiana-Silvermoon)", -- [1385]
+			"19:53:43 - ML:NewML (Anastiana-Silvermoon)", -- [1386]
+			"19:53:43 - UpdateMLdb", -- [1387]
+			"19:53:43 - OnMLDBReceived", -- [1388]
+			"19:53:43 - UpdateGroup (true)", -- [1389]
+			"19:53:43 - ML:AddCandidate (Anastiana-Silvermoon) (DEATHKNIGHT) (TANK) (nil) (nil) (nil) (nil) (nil)", -- [1390]
+			"19:53:43 - ML:AddCandidate (Kerpi-Silvermoon) (WARRIOR) (DAMAGER) (nil) (nil) (nil) (nil) (nil)", -- [1391]
+			"19:53:43 - ML:AddCandidate (Aemenór-Silvermoon) (ROGUE) (DAMAGER) (nil) (nil) (nil) (nil) (nil)", -- [1392]
+			"19:53:43 - ML:AddCandidate (Hulabaloo-Silvermoon) (WARLOCK) (DAMAGER) (nil) (nil) (nil) (nil) (nil)", -- [1393]
+			"19:53:43 - ML:AddCandidate (Vandott-Silvermoon) (WARLOCK) (DAMAGER) (nil) (nil) (nil) (nil) (nil)", -- [1394]
+			"19:53:43 - ML:AddCandidate (Faykmage-Silvermoon) (MAGE) (DAMAGER) (nil) (nil) (nil) (nil) (nil)", -- [1395]
+			"19:53:43 - ML:AddCandidate (Drobadin-Silvermoon) (HUNTER) (DAMAGER) (nil) (nil) (nil) (nil) (nil)", -- [1396]
+			"19:53:43 - ML:AddCandidate (Nilley-Silvermoon) (DEMONHUNTER) (DAMAGER) (nil) (nil) (nil) (nil) (nil)", -- [1397]
+			"19:53:43 - ML:AddCandidate (Meralda-Silvermoon) (WARRIOR) (DAMAGER) (nil) (nil) (nil) (nil) (nil)", -- [1398]
+			"19:53:43 - ML:AddCandidate (Marival-Silvermoon) (PRIEST) (HEALER) (nil) (nil) (nil) (nil) (nil)", -- [1399]
+			"19:53:43 - ML:AddCandidate (Asnv-Silvermoon) (HUNTER) (DAMAGER) (nil) (nil) (nil) (nil) (nil)", -- [1400]
+			"19:53:43 - ML:AddCandidate (Nïkä-Silvermoon) (DEATHKNIGHT) (DAMAGER) (nil) (nil) (nil) (nil) (nil)", -- [1401]
+			"19:53:43 - GetCouncilInGroup (Anastiana-Silvermoon) (Marival-Silvermoon) (Asnv-Silvermoon) (Nilley-Silvermoon)", -- [1402]
+			"19:53:46 - GetPlayersGuildRank()", -- [1403]
+			"19:53:46 - GetPlayersGuildRank()", -- [1404]
+			"19:53:46 - Found Guild Rank: Guild Master", -- [1405]
+			"19:53:46 - Comm received:^1^SverTest^T^N1^S2.18.3^t^^ (from:) (Anastiana) (distri:) (GUILD)", -- [1406]
+			"19:53:46 - Comm received:^1^SplayerInfoRequest^T^t^^ (from:) (Anastiana) (distri:) (RAID)", -- [1407]
+			"19:53:46 - Comm received:^1^SMLdb^T^N1^T^SallowNotes^B^Stimeout^N60^SselfVote^B^Sresponses^T^Sdefault^T^t^t^SrejectTrade^B^SmultiVote^B^Sbuttons^T^Sdefault^T^SnumButtons^N3^t^t^SnumButtons^N3^SanonymousVoting^B^t^t^^ (from:) (Anastiana) (distri:) (RAID)", -- [1408]
+			"19:53:46 - Comm received:^1^SMLdb^T^N1^T^SallowNotes^B^Stimeout^N60^SselfVote^B^Sresponses^T^Sdefault^T^t^t^SrejectTrade^B^SmultiVote^B^Sbuttons^T^Sdefault^T^SnumButtons^N3^t^t^SnumButtons^N3^SanonymousVoting^B^t^t^^ (from:) (Anastiana) (distri:) (RAID)", -- [1409]
+			"19:53:46 - Comm received:^1^Scandidates^T^N1^T^SDrobadin-Silvermoon^T^Srole^SDAMAGER^Sclass^SHUNTER^Srank^S^t^SMeralda-Silvermoon^T^Srole^SDAMAGER^Sclass^SWARRIOR^Srank^S^t^SAemenór-Silvermoon^T^Srole^SDAMAGER^Sclass^SROGUE^Srank^S^t^SAsnv-Silvermoon^T^Srole^SDAMAGER^Sclass^SHUNTER^Srank^S^t^SNilley-Silvermoon^T^Srole^SDAMAGER^Sclass^SDEMONHUNTER^Srank^S^t^SAnastiana-Silvermoon^T^Srole^STANK^Sclass^SDEATHKNIGHT^Srank^S^t^SFaykmage-Silvermoon^T^Srole^SDAMAGER^Sclass^SMAGE^Srank^S^t^SNïkä-Silvermoon^T^Srole^SDAMAGER^Sclass^SDEATHKNIGHT^Srank^S^t^SMarival-Silvermoon^T^Srole^SHEALER^Sclass^SPRIEST^Srank^S^t^SKerpi-Silvermoon^T^Srole^SDAMAGER^Sclass^SWARRIOR^Srank^S^t^SVandott-Silvermoon^T^Srole^SDAMAGER^Sclass^SWARLOCK^Srank^S^t^SHulabaloo-Silvermoon^T^Srole^SDAMAGER^Sclass^SWARLOCK^Srank^S^t^t^t^^ (from:) (Anastiana) (distri:) (RAID)", -- [1410]
+			"19:53:46 - Comm received:^1^Scouncil^T^N1^T^N1^SAnastiana-Silvermoon^N2^SMarival-Silvermoon^N3^SAsnv-Silvermoon^N4^SNilley-Silvermoon^t^t^^ (from:) (Anastiana) (distri:) (RAID)", -- [1411]
+			"19:53:46 - true = (ConcilContains) (Anastiana-Silvermoon)", -- [1412]
+			"19:53:46 - GetLootDBStatistics()", -- [1413]
+			"19:53:46 - GetGuildRankNum()", -- [1414]
+			"19:53:46 - RCVotingFrame (enabled)", -- [1415]
+			"19:53:46 - Comm received:^1^Scouncil^T^N1^T^N1^SAnastiana-Silvermoon^N2^SMarival-Silvermoon^N3^SAsnv-Silvermoon^N4^SNilley-Silvermoon^t^t^^ (from:) (Anastiana) (distri:) (RAID)", -- [1416]
+			"19:53:46 - true = (ConcilContains) (Anastiana-Silvermoon)", -- [1417]
+			"19:53:46 - Comm received:^1^SplayerInfo^T^N1^SDrobadin-Silvermoon^N2^SHUNTER^N3^SDAMAGER^N4^SRaider^N6^N0^N7^N473.75^N8^N253^t^^ (from:) (Drobadin) (distri:) (WHISPER)", -- [1418]
+			"19:53:46 - ML:AddCandidate (Drobadin-Silvermoon) (HUNTER) (DAMAGER) (Raider) (nil) (0) (473.75) (253)", -- [1419]
+			"19:53:46 - Comm received:^1^SplayerInfo^T^N1^SNïkä-Silvermoon^N2^SDEATHKNIGHT^N3^SDAMAGER^N4^STrial^N6^N0^N7^N474.3125^N8^N251^t^^ (from:) (Nïkä) (distri:) (WHISPER)", -- [1420]
+			"19:53:46 - ML:AddCandidate (Nïkä-Silvermoon) (DEATHKNIGHT) (DAMAGER) (Trial) (nil) (0) (474.3125) (251)", -- [1421]
+			"19:53:46 - Comm received:^1^SplayerInfo^T^N1^SAsnv-Silvermoon^N2^SHUNTER^N3^SDAMAGER^N4^SOfficer^N6^N0^N7^N471.75^N8^N253^t^^ (from:) (Asnv) (distri:) (WHISPER)", -- [1422]
+			"19:53:46 - ML:AddCandidate (Asnv-Silvermoon) (HUNTER) (DAMAGER) (Officer) (nil) (0) (471.75) (253)", -- [1423]
+			"19:53:46 - Comm received:^1^SplayerInfo^T^N1^SVandott-Silvermoon^N2^SWARLOCK^N3^SDAMAGER^N4^SRaider^N6^N0^N7^N473.75^N8^N266^t^^ (from:) (Vandott) (distri:) (WHISPER)", -- [1424]
+			"19:53:46 - ML:AddCandidate (Vandott-Silvermoon) (WARLOCK) (DAMAGER) (Raider) (nil) (0) (473.75) (266)", -- [1425]
+			"19:53:46 - Comm received:^1^SplayerInfo^T^N1^SNilley-Silvermoon^N2^SDEMONHUNTER^N3^SDAMAGER^N4^SOfficer^N6^N0^N7^N473.6875^N8^N577^t^^ (from:) (Nilley) (distri:) (WHISPER)", -- [1426]
+			"19:53:46 - ML:AddCandidate (Nilley-Silvermoon) (DEMONHUNTER) (DAMAGER) (Officer) (nil) (0) (473.6875) (577)", -- [1427]
+			"19:53:46 - Comm received:^1^SplayerInfo^T^N1^SFaykmage-Silvermoon^N2^SMAGE^N3^SDAMAGER^N4^SRaider^N6^N0^N7^N468.9375^N8^N63^t^^ (from:) (Faykmage) (distri:) (WHISPER)", -- [1428]
+			"19:53:46 - ML:AddCandidate (Faykmage-Silvermoon) (MAGE) (DAMAGER) (Raider) (nil) (0) (468.9375) (63)", -- [1429]
+			"19:53:46 - Comm received:^1^SplayerInfo^T^N1^SMarival-Silvermoon^N2^SPRIEST^N3^SHEALER^N4^SPusn^N5^B^N6^N175^N7^N472.75^N8^N257^t^^ (from:) (Marival) (distri:) (WHISPER)", -- [1430]
+			"19:53:46 - ML:AddCandidate (Marival-Silvermoon) (PRIEST) (HEALER) (Pusn) (true) (175) (472.75) (257)", -- [1431]
+			"19:53:46 - Comm received:^1^SplayerInfo^T^N1^SMeralda-Silvermoon^N2^SWARRIOR^N3^SDAMAGER^N4^SRaider^N6^N0^N7^N472.875^N8^N72^t^^ (from:) (Meralda) (distri:) (WHISPER)", -- [1432]
+			"19:53:46 - ML:AddCandidate (Meralda-Silvermoon) (WARRIOR) (DAMAGER) (Raider) (nil) (0) (472.875) (72)", -- [1433]
+			"19:53:46 - Comm received:^1^SplayerInfo^T^N1^SHulabaloo-Silvermoon^N2^SWARLOCK^N3^SDAMAGER^N4^SRaider^N6^N0^N7^N471.1875^N8^N267^t^^ (from:) (Hulabaloo) (distri:) (WHISPER)", -- [1434]
+			"19:53:46 - ML:AddCandidate (Hulabaloo-Silvermoon) (WARLOCK) (DAMAGER) (Raider) (nil) (0) (471.1875) (267)", -- [1435]
+			"19:53:46 - Comm received:^1^SplayerInfo^T^N1^SKerpi-Silvermoon^N2^SWARRIOR^N3^SDAMAGER^N4^SRaider^N6^N0^N7^N471.0625^N8^N71^t^^ (from:) (Kerpi) (distri:) (WHISPER)", -- [1436]
+			"19:53:46 - ML:AddCandidate (Kerpi-Silvermoon) (WARRIOR) (DAMAGER) (Raider) (nil) (0) (471.0625) (71)", -- [1437]
+			"19:53:47 - Comm received:^1^SplayerInfo^T^N1^SAnastiana-Silvermoon^N2^SDEATHKNIGHT^N3^STANK^N4^SGuild~`Master^N6^N0^N7^N474.1875^N8^N250^t^^ (from:) (Anastiana) (distri:) (WHISPER)", -- [1438]
+			"19:53:47 - ML:AddCandidate (Anastiana-Silvermoon) (DEATHKNIGHT) (TANK) (Guild Master) (nil) (0) (474.1875) (250)", -- [1439]
+			"19:53:48 - VotingFrame:Update() without lootTable!!", -- [1440]
+			"19:53:48 - Player confirmed usage", -- [1441]
+			"19:53:48 - Start handle loot.", -- [1442]
+			"19:53:48 - Comm received:^1^SStartHandleLoot^T^t^^ (from:) (Anastiana) (distri:) (RAID)", -- [1443]
+			"19:53:49 - Comm received:^1^Scandidates^T^N1^T^SDrobadin-Silvermoon^T^Srole^SDAMAGER^SspecID^N253^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SRaider^t^SMeralda-Silvermoon^T^Srole^SDAMAGER^SspecID^N72^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SRaider^t^SAemenór-Silvermoon^T^Srole^SDAMAGER^Sclass^SROGUE^Srank^S^t^SAsnv-Silvermoon^T^Srole^SDAMAGER^SspecID^N253^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SOfficer^t^SNilley-Silvermoon^T^Srole^SDAMAGER^SspecID^N577^Senchant_lvl^N0^Sclass^SDEMONHUNTER^Srank^SOfficer^t^SAnastiana-Silvermoon^T^Srole^STANK^SspecID^N250^Senchant_lvl^N0^Sclass^SDEATHKNIGHT^Srank^SGuild~`Master^t^SFaykmage-Silvermoon^T^Srole^SDAMAGER^SspecID^N63^Senchant_lvl^N0^Sclass^SMAGE^Srank^SRaider^t^SNïkä-Silvermoon^T^Srole^SDAMAGER^SspecID^N251^Senchant_lvl^N0^Sclass^SDEATHKNIGHT^Srank^STrial^t^SMarival-Silvermoon^T^Srole^SHEALER^SspecID^N257^Senchant_lvl^N175^Sclass^SPRIEST^Senchanter^B^Srank^SPusn^t^SKerpi-Silvermoon^T^Srole^SDAMAGER^SspecID^N71^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SRaider^t^SVandott-Silvermoon^T^Srole^SDAMAGER^SspecID^N266^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SRaider^t^SHulabaloo-Silvermoon^T^Srole^SDAMAGER^SspecID^N267^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SRaider^t^t^t^^ (from:) (Anastiana) (distri:) (RAID)", -- [1444]
+			"19:53:50 - Comm received:^1^SplayerInfo^T^N1^SAemenór-Silvermoon^N2^SROGUE^N3^SDAMAGER^N4^STrial^N6^N0^N7^N470.5625^N8^N260^t^^ (from:) (Aemenór) (distri:) (WHISPER)", -- [1445]
+			"19:53:50 - ML:AddCandidate (Aemenór-Silvermoon) (ROGUE) (DAMAGER) (Trial) (nil) (0) (470.5625) (260)", -- [1446]
+			"19:53:50 - Comm received:^1^Scandidates^T^N1^T^SDrobadin-Silvermoon^T^Srole^SDAMAGER^SspecID^N253^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SRaider^t^SMeralda-Silvermoon^T^Srole^SDAMAGER^SspecID^N72^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SRaider^t^SAemenór-Silvermoon^T^Srole^SDAMAGER^SspecID^N260^Senchant_lvl^N0^Sclass^SROGUE^Srank^STrial^t^SAsnv-Silvermoon^T^Srole^SDAMAGER^SspecID^N253^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SOfficer^t^SNilley-Silvermoon^T^Srole^SDAMAGER^SspecID^N577^Senchant_lvl^N0^Sclass^SDEMONHUNTER^Srank^SOfficer^t^SAnastiana-Silvermoon^T^Srole^STANK^SspecID^N250^Senchant_lvl^N0^Sclass^SDEATHKNIGHT^Srank^SGuild~`Master^t^SFaykmage-Silvermoon^T^Srole^SDAMAGER^SspecID^N63^Senchant_lvl^N0^Sclass^SMAGE^Srank^SRaider^t^SNïkä-Silvermoon^T^Srole^SDAMAGER^SspecID^N251^Senchant_lvl^N0^Sclass^SDEATHKNIGHT^Srank^STrial^t^SMarival-Silvermoon^T^Srole^SHEALER^SspecID^N257^Senchant_lvl^N175^Sclass^SPRIEST^Senchanter^B^Srank^SPusn^t^SKerpi-Silvermoon^T^Srole^SDAMAGER^SspecID^N71^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SRaider^t^SVandott-Silvermoon^T^Srole^SDAMAGER^SspecID^N266^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SRaider^t^SHulabaloo-Silvermoon^T^Srole^SDAMAGER^SspecID^N267^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SRaider^t^t^t^^ (from:) (Anastiana) (distri:) (RAID)", -- [1447]
+			"19:53:54 - Timer MLdb_check passed", -- [1448]
+			"19:53:56 - VotingFrame:Update() without lootTable!!", -- [1449]
+			"19:54:01 - VotingFrame:Update() without lootTable!!", -- [1450]
+			"19:54:03 - VotingFrame:Update() without lootTable!!", -- [1451]
+			"19:54:20 - VotingFrame:Update() without lootTable!!", -- [1452]
+			"19:54:31 - VotingFrame:Update() without lootTable!!", -- [1453]
+			"19:54:40 - VotingFrame:Update() without lootTable!!", -- [1454]
+			"19:54:41 - Comm received:^1^SverTest^T^N1^S2.18.2^t^^ (from:) (Asnv) (distri:) (GUILD)", -- [1455]
+			"19:54:46 - UpdateGroup (table: 0000026EEDE82270)", -- [1456]
+			"19:54:51 - VotingFrame:Update() without lootTable!!", -- [1457]
+			"19:54:53 - Comm received:^1^SMLdb_request^T^t^^ (from:) (Asnv) (distri:) (WHISPER)", -- [1458]
+			"19:54:53 - Comm received:^1^Scouncil_request^T^t^^ (from:) (Asnv) (distri:) (WHISPER)", -- [1459]
+			"19:54:54 - Comm received:^1^SMLdb^T^N1^T^SallowNotes^B^Stimeout^N60^SselfVote^B^Sresponses^T^Sdefault^T^t^t^SrejectTrade^B^SmultiVote^B^Sbuttons^T^Sdefault^T^SnumButtons^N3^t^t^SnumButtons^N3^SanonymousVoting^B^t^t^^ (from:) (Anastiana) (distri:) (RAID)", -- [1460]
+			"19:54:54 - Comm received:^1^Scouncil^T^N1^T^N1^SAnastiana-Silvermoon^N2^SMarival-Silvermoon^N3^SAsnv-Silvermoon^N4^SNilley-Silvermoon^t^t^^ (from:) (Anastiana) (distri:) (RAID)", -- [1461]
+			"19:54:54 - true = (ConcilContains) (Anastiana-Silvermoon)", -- [1462]
+			"19:54:56 - UpdateGroup (table: 0000026EEDE82270)", -- [1463]
+			"19:54:56 - ML:AddCandidate (Droyy-Silvermoon) (MONK) (TANK) (nil) (nil) (nil) (nil) (nil)", -- [1464]
+			"19:54:56 - GetCouncilInGroup (Anastiana-Silvermoon) (Marival-Silvermoon) (Asnv-Silvermoon) (Nilley-Silvermoon)", -- [1465]
+			"19:54:56 - Comm received:^1^SMLdb^T^N1^T^SallowNotes^B^Stimeout^N60^SselfVote^B^Sresponses^T^Sdefault^T^t^t^SrejectTrade^B^SmultiVote^B^Sbuttons^T^Sdefault^T^SnumButtons^N3^t^t^SnumButtons^N3^SanonymousVoting^B^t^t^^ (from:) (Anastiana) (distri:) (RAID)", -- [1466]
+			"19:54:56 - Comm received:^1^Scandidates^T^N1^T^SDrobadin-Silvermoon^T^Srole^SDAMAGER^SspecID^N253^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SRaider^t^SMeralda-Silvermoon^T^Srole^SDAMAGER^SspecID^N72^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SRaider^t^SAemenór-Silvermoon^T^Srole^SDAMAGER^SspecID^N260^Senchant_lvl^N0^Sclass^SROGUE^Srank^STrial^t^SDroyy-Silvermoon^T^Srole^STANK^Sclass^SMONK^Srank^S^t^SAsnv-Silvermoon^T^Srole^SDAMAGER^SspecID^N253^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SOfficer^t^SNilley-Silvermoon^T^Srole^SDAMAGER^SspecID^N577^Senchant_lvl^N0^Sclass^SDEMONHUNTER^Srank^SOfficer^t^SAnastiana-Silvermoon^T^Srole^STANK^SspecID^N250^Senchant_lvl^N0^Sclass^SDEATHKNIGHT^Srank^SGuild~`Master^t^SFaykmage-Silvermoon^T^Srole^SDAMAGER^SspecID^N63^Senchant_lvl^N0^Sclass^SMAGE^Srank^SRaider^t^SNïkä-Silvermoon^T^Srole^SDAMAGER^SspecID^N251^Senchant_lvl^N0^Sclass^SDEATHKNIGHT^Srank^STrial^t^SMarival-Silvermoon^T^Srole^SHEALER^SspecID^N257^Senchant_lvl^N175^Sclass^SPRIEST^Senchanter^B^Srank^SPusn^t^SKerpi-Silvermoon^T^Srole^SDAMAGER^SspecID^N71^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SRaider^t^SVandott-Silvermoon^T^Srole^SDAMAGER^SspecID^N266^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SRaider^t^SHulabaloo-Silvermoon^T^Srole^SDAMAGER^SspecID^N267^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SRaider^t^t^t^^ (from:) (Anastiana) (distri:) (RAID)", -- [1467]
+			"19:54:56 - Comm received:^1^SplayerInfo^T^N1^SDroyy-Silvermoon^N2^SMONK^N3^STANK^N4^STrial^N6^N0^N7^N472^N8^N268^t^^ (from:) (Droyy) (distri:) (WHISPER)", -- [1468]
+			"19:54:56 - ML:AddCandidate (Droyy-Silvermoon) (MONK) (TANK) (Trial) (nil) (0) (472) (268)", -- [1469]
+			"19:55:06 - Comm received:^1^Scandidates^T^N1^T^SDrobadin-Silvermoon^T^Srole^SDAMAGER^SspecID^N253^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SRaider^t^SMeralda-Silvermoon^T^Srole^SDAMAGER^SspecID^N72^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SRaider^t^SAemenór-Silvermoon^T^Srole^SDAMAGER^SspecID^N260^Senchant_lvl^N0^Sclass^SROGUE^Srank^STrial^t^SDroyy-Silvermoon^T^Srole^STANK^SspecID^N268^Senchant_lvl^N0^Sclass^SMONK^Srank^STrial^t^SAsnv-Silvermoon^T^Srole^SDAMAGER^SspecID^N253^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SOfficer^t^SNilley-Silvermoon^T^Srole^SDAMAGER^SspecID^N577^Senchant_lvl^N0^Sclass^SDEMONHUNTER^Srank^SOfficer^t^SAnastiana-Silvermoon^T^Srole^STANK^SspecID^N250^Senchant_lvl^N0^Sclass^SDEATHKNIGHT^Srank^SGuild~`Master^t^SFaykmage-Silvermoon^T^Srole^SDAMAGER^SspecID^N63^Senchant_lvl^N0^Sclass^SMAGE^Srank^SRaider^t^SNïkä-Silvermoon^T^Srole^SDAMAGER^SspecID^N251^Senchant_lvl^N0^Sclass^SDEATHKNIGHT^Srank^STrial^t^SMarival-Silvermoon^T^Srole^SHEALER^SspecID^N257^Senchant_lvl^N175^Sclass^SPRIEST^Senchanter^B^Srank^SPusn^t^SKerpi-Silvermoon^T^Srole^SDAMAGER^SspecID^N71^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SRaider^t^SVandott-Silvermoon^T^Srole^SDAMAGER^SspecID^N266^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SRaider^t^SHulabaloo-Silvermoon^T^Srole^SDAMAGER^SspecID^N267^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SRaider^t^t^t^^ (from:) (Anastiana) (distri:) (RAID)", -- [1470]
+			"19:55:22 - ML event (PLAYER_REGEN_ENABLED)", -- [1471]
+			"19:55:26 - VotingFrame:Update() without lootTable!!", -- [1472]
+			"19:55:31 - VotingFrame:Update() without lootTable!!", -- [1473]
+			"19:55:48 - VotingFrame:Update() without lootTable!!", -- [1474]
+			"19:55:57 - UpdateGroup (table: 0000026EEDE82270)", -- [1475]
+			"19:55:57 - ML:AddCandidate (Joypopping-Silvermoon) (MONK) (HEALER) (nil) (nil) (nil) (nil) (nil)", -- [1476]
+			"19:55:57 - GetCouncilInGroup (Anastiana-Silvermoon) (Marival-Silvermoon) (Asnv-Silvermoon) (Joypopping-Silvermoon) (Nilley-Silvermoon)", -- [1477]
+			"19:55:57 - Comm received:^1^SMLdb^T^N1^T^SallowNotes^B^Stimeout^N60^SselfVote^B^Sresponses^T^Sdefault^T^t^t^SrejectTrade^B^SmultiVote^B^Sbuttons^T^Sdefault^T^SnumButtons^N3^t^t^SnumButtons^N3^SanonymousVoting^B^t^t^^ (from:) (Anastiana) (distri:) (RAID)", -- [1478]
+			"19:55:57 - Comm received:^1^Scandidates^T^N1^T^SDrobadin-Silvermoon^T^Srole^SDAMAGER^SspecID^N253^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SRaider^t^SMeralda-Silvermoon^T^Srole^SDAMAGER^SspecID^N72^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SRaider^t^SJoypopping-Silvermoon^T^Srole^SHEALER^Sclass^SMONK^Srank^S^t^SAemenór-Silvermoon^T^Srole^SDAMAGER^SspecID^N260^Senchant_lvl^N0^Sclass^SROGUE^Srank^STrial^t^SDroyy-Silvermoon^T^Srole^STANK^SspecID^N268^Senchant_lvl^N0^Sclass^SMONK^Srank^STrial^t^SAsnv-Silvermoon^T^Srole^SDAMAGER^SspecID^N253^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SOfficer^t^SNilley-Silvermoon^T^Srole^SDAMAGER^SspecID^N577^Senchant_lvl^N0^Sclass^SDEMONHUNTER^Srank^SOfficer^t^SAnastiana-Silvermoon^T^Srole^STANK^SspecID^N250^Senchant_lvl^N0^Sclass^SDEATHKNIGHT^Srank^SGuild~`Master^t^SFaykmage-Silvermoon^T^Srole^SDAMAGER^SspecID^N63^Senchant_lvl^N0^Sclass^SMAGE^Srank^SRaider^t^SNïkä-Silvermoon^T^Srole^SDAMAGER^SspecID^N251^Senchant_lvl^N0^Sclass^SDEATHKNIGHT^Srank^STrial^t^SMarival-Silvermoon^T^Srole^SHEALER^SspecID^N257^Senchant_lvl^N175^Sclass^SPRIEST^Senchanter^B^Srank^SPusn^t^SKerpi-Silvermoon^T^Srole^SDAMAGER^SspecID^N71^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SRaider^t^SVandott-Silvermoon^T^Srole^SDAMAGER^SspecID^N266^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SRaider^t^SHulabaloo-Silvermoon^T^Srole^SDAMAGER^SspecID^N267^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SRaider^t^t^t^^ (from:) (Anastiana) (distri:) (RAID)", -- [1479]
+			"19:55:57 - Comm received:^1^Scouncil^T^N1^T^N1^SAnastiana-Silvermoon^N2^SMarival-Silvermoon^N3^SAsnv-Silvermoon^N4^SJoypopping-Silvermoon^N5^SNilley-Silvermoon^t^t^^ (from:) (Anastiana) (distri:) (RAID)", -- [1480]
+			"19:55:57 - true = (ConcilContains) (Anastiana-Silvermoon)", -- [1481]
+			"19:56:01 - VotingFrame:Update() without lootTable!!", -- [1482]
+			"19:56:05 - ML event (PLAYER_REGEN_ENABLED)", -- [1483]
+			"19:56:06 - ML event (CHAT_MSG_WHISPER) (what boss are you doing ? ) (Sensémage-Silvermoon) () () (Sensémage-Silvermoon) () (0) (0) () (0) (140) (Player-3391-0ADEBE5B) (0) (false) (false) (false) (false)", -- [1484]
+			"19:56:28 - ML event (PLAYER_REGEN_ENABLED)", -- [1485]
+			"19:56:39 - ML event (CHAT_MSG_WHISPER) (inv) (Azverth-Silvermoon) () () (Azverth-Silvermoon) () (0) (0) () (0) (151) (Player-3391-09CE71D1) (0) (false) (false) (false) (false)", -- [1486]
+			"19:56:43 - VotingFrame:Update() without lootTable!!", -- [1487]
+			"19:56:50 - VotingFrame:Update() without lootTable!!", -- [1488]
+			"19:56:51 - UpdateGroup (table: 0000026EEDE82270)", -- [1489]
+			"19:56:51 - ML:AddCandidate (Azverth-Silvermoon) (WARRIOR) (DAMAGER) (nil) (nil) (nil) (nil) (nil)", -- [1490]
+			"19:56:51 - GetCouncilInGroup (Anastiana-Silvermoon) (Marival-Silvermoon) (Asnv-Silvermoon) (Joypopping-Silvermoon) (Nilley-Silvermoon)", -- [1491]
+			"19:56:51 - ML event (CHAT_MSG_WHISPER) (i need first 3 ) (Sensémage-Silvermoon) () () (Sensémage-Silvermoon) () (0) (0) () (0) (154) (Player-3391-0ADEBE5B) (0) (false) (false) (false) (false)", -- [1492]
+			"19:56:51 - Comm received:^1^SMLdb^T^N1^T^SallowNotes^B^Stimeout^N60^SselfVote^B^Sresponses^T^Sdefault^T^t^t^SrejectTrade^B^SmultiVote^B^Sbuttons^T^Sdefault^T^SnumButtons^N3^t^t^SnumButtons^N3^SanonymousVoting^B^t^t^^ (from:) (Anastiana) (distri:) (RAID)", -- [1493]
+			"19:56:51 - Comm received:^1^Scandidates^T^N1^T^SDrobadin-Silvermoon^T^Srole^SDAMAGER^SspecID^N253^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SRaider^t^SMeralda-Silvermoon^T^Srole^SDAMAGER^SspecID^N72^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SRaider^t^SAzverth-Silvermoon^T^Srole^SDAMAGER^Sclass^SWARRIOR^Srank^S^t^SJoypopping-Silvermoon^T^Srole^SHEALER^Sclass^SMONK^Srank^S^t^SAemenór-Silvermoon^T^Srole^SDAMAGER^SspecID^N260^Senchant_lvl^N0^Sclass^SROGUE^Srank^STrial^t^SDroyy-Silvermoon^T^Srole^STANK^SspecID^N268^Senchant_lvl^N0^Sclass^SMONK^Srank^STrial^t^SAsnv-Silvermoon^T^Srole^SDAMAGER^SspecID^N253^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SOfficer^t^SNilley-Silvermoon^T^Srole^SDAMAGER^SspecID^N577^Senchant_lvl^N0^Sclass^SDEMONHUNTER^Srank^SOfficer^t^SAnastiana-Silvermoon^T^Srole^STANK^SspecID^N250^Senchant_lvl^N0^Sclass^SDEATHKNIGHT^Srank^SGuild~`Master^t^SFaykmage-Silvermoon^T^Srole^SDAMAGER^SspecID^N63^Senchant_lvl^N0^Sclass^SMAGE^Srank^SRaider^t^SNïkä-Silvermoon^T^Srole^SDAMAGER^SspecID^N251^Senchant_lvl^N0^Sclass^SDEATHKNIGHT^Srank^STrial^t^SMarival-Silvermoon^T^Srole^SHEALER^SspecID^N257^Senchant_lvl^N175^Sclass^SPRIEST^Senchanter^B^Srank^SPusn^t^SKerpi-Silvermoon^T^Srole^SDAMAGER^SspecID^N71^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SRaider^t^SVandott-Silvermoon^T^Srole^SDAMAGER^SspecID^N266^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SRaider^t^SHulabaloo-Silvermoon^T^Srole^SDAMAGER^SspecID^N267^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SRaider^t^t^t^^ (from:) (Anastiana) (distri:) (RAID)", -- [1494]
+			"19:56:52 - Comm received:^1^SplayerInfo^T^N1^SAzverth-Silvermoon^N2^SWARRIOR^N3^SDAMAGER^N4^SRaider^N6^N0^N7^N472.6875^N8^N72^t^^ (from:) (Azverth) (distri:) (WHISPER)", -- [1495]
+			"19:56:52 - ML:AddCandidate (Azverth-Silvermoon) (WARRIOR) (DAMAGER) (Raider) (nil) (0) (472.6875) (72)", -- [1496]
+			"19:56:57 - Comm received:^1^Scouncil_request^T^t^^ (from:) (Azverth) (distri:) (WHISPER)", -- [1497]
+			"19:56:57 - ML event (CHAT_MSG_WHISPER) (well only skitra ) (Sensémage-Silvermoon) () () (Sensémage-Silvermoon) () (0) (0) () (0) (158) (Player-3391-0ADEBE5B) (0) (false) (false) (false) (false)", -- [1498]
+			"19:56:57 - Comm received:^1^Scouncil^T^N1^T^N1^SAnastiana-Silvermoon^N2^SMarival-Silvermoon^N3^SAsnv-Silvermoon^N4^SJoypopping-Silvermoon^N5^SNilley-Silvermoon^t^t^^ (from:) (Anastiana) (distri:) (RAID)", -- [1499]
+			"19:56:57 - true = (ConcilContains) (Anastiana-Silvermoon)", -- [1500]
+			"19:57:00 - ML event (PLAYER_REGEN_ENABLED)", -- [1501]
+			"19:57:01 - Comm received:^1^Scandidates^T^N1^T^SDrobadin-Silvermoon^T^Srole^SDAMAGER^SspecID^N253^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SRaider^t^SMeralda-Silvermoon^T^Srole^SDAMAGER^SspecID^N72^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SRaider^t^SAzverth-Silvermoon^T^Srole^SDAMAGER^SspecID^N72^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SRaider^t^SJoypopping-Silvermoon^T^Srole^SHEALER^Sclass^SMONK^Srank^S^t^SAemenór-Silvermoon^T^Srole^SDAMAGER^SspecID^N260^Senchant_lvl^N0^Sclass^SROGUE^Srank^STrial^t^SDroyy-Silvermoon^T^Srole^STANK^SspecID^N268^Senchant_lvl^N0^Sclass^SMONK^Srank^STrial^t^SAsnv-Silvermoon^T^Srole^SDAMAGER^SspecID^N253^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SOfficer^t^SNilley-Silvermoon^T^Srole^SDAMAGER^SspecID^N577^Senchant_lvl^N0^Sclass^SDEMONHUNTER^Srank^SOfficer^t^SAnastiana-Silvermoon^T^Srole^STANK^SspecID^N250^Senchant_lvl^N0^Sclass^SDEATHKNIGHT^Srank^SGuild~`Master^t^SFaykmage-Silvermoon^T^Srole^SDAMAGER^SspecID^N63^Senchant_lvl^N0^Sclass^SMAGE^Srank^SRaider^t^SNïkä-Silvermoon^T^Srole^SDAMAGER^SspecID^N251^Senchant_lvl^N0^Sclass^SDEATHKNIGHT^Srank^STrial^t^SMarival-Silvermoon^T^Srole^SHEALER^SspecID^N257^Senchant_lvl^N175^Sclass^SPRIEST^Senchanter^B^Srank^SPusn^t^SKerpi-Silvermoon^T^Srole^SDAMAGER^SspecID^N71^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SRaider^t^SVandott-Silvermoon^T^Srole^SDAMAGER^SspecID^N266^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SRaider^t^SHulabaloo-Silvermoon^T^Srole^SDAMAGER^SspecID^N267^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SRaider^t^t^t^^ (from:) (Anastiana) (distri:) (RAID)", -- [1502]
+			"19:57:06 - VotingFrame:Update() without lootTable!!", -- [1503]
+			"19:57:12 - VotingFrame:Update() without lootTable!!", -- [1504]
+			"19:57:14 - UpdateGroup (table: 0000026EEDE82270)", -- [1505]
+			"19:57:14 - ML:AddCandidate (Helpr-Silvermoon) (ROGUE) (DAMAGER) (nil) (nil) (nil) (nil) (nil)", -- [1506]
+			"19:57:14 - GetCouncilInGroup (Anastiana-Silvermoon) (Marival-Silvermoon) (Asnv-Silvermoon) (Joypopping-Silvermoon) (Nilley-Silvermoon)", -- [1507]
+			"19:57:15 - Comm received:^1^SMLdb^T^N1^T^SallowNotes^B^Stimeout^N60^SselfVote^B^Sresponses^T^Sdefault^T^t^t^SrejectTrade^B^SmultiVote^B^Sbuttons^T^Sdefault^T^SnumButtons^N3^t^t^SnumButtons^N3^SanonymousVoting^B^t^t^^ (from:) (Anastiana) (distri:) (RAID)", -- [1508]
+			"19:57:15 - Comm received:^1^Scandidates^T^N1^T^SHelpr-Silvermoon^T^Srole^SDAMAGER^Sclass^SROGUE^Srank^S^t^SDrobadin-Silvermoon^T^Srole^SDAMAGER^SspecID^N253^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SRaider^t^SMeralda-Silvermoon^T^Srole^SDAMAGER^SspecID^N72^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SRaider^t^SAzverth-Silvermoon^T^Srole^SDAMAGER^SspecID^N72^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SRaider^t^SJoypopping-Silvermoon^T^Srole^SHEALER^Sclass^SMONK^Srank^S^t^SAemenór-Silvermoon^T^Srole^SDAMAGER^SspecID^N260^Senchant_lvl^N0^Sclass^SROGUE^Srank^STrial^t^SDroyy-Silvermoon^T^Srole^STANK^SspecID^N268^Senchant_lvl^N0^Sclass^SMONK^Srank^STrial^t^SAsnv-Silvermoon^T^Srole^SDAMAGER^SspecID^N253^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SOfficer^t^SNilley-Silvermoon^T^Srole^SDAMAGER^SspecID^N577^Senchant_lvl^N0^Sclass^SDEMONHUNTER^Srank^SOfficer^t^SAnastiana-Silvermoon^T^Srole^STANK^SspecID^N250^Senchant_lvl^N0^Sclass^SDEATHKNIGHT^Srank^SGuild~`Master^t^SFaykmage-Silvermoon^T^Srole^SDAMAGER^SspecID^N63^Senchant_lvl^N0^Sclass^SMAGE^Srank^SRaider^t^SNïkä-Silvermoon^T^Srole^SDAMAGER^SspecID^N251^Senchant_lvl^N0^Sclass^SDEATHKNIGHT^Srank^STrial^t^SMarival-Silvermoon^T^Srole^SHEALER^SspecID^N257^Senchant_lvl^N175^Sclass^SPRIEST^Senchanter^B^Srank^SPusn^t^SKerpi-Silvermoon^T^Srole^SDAMAGER^SspecID^N71^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SRaider^t^SVandott-Silvermoon^T^Srole^SDAMAGER^SspecID^N266^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SRaider^t^SHulabaloo-Silvermoon^T^Srole^SDAMAGER^SspecID^N267^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SRaider^t^t^t^^ (from:) (Anastiana) (distri:) (RAID)", -- [1509]
+			"19:57:26 - VotingFrame:Update() without lootTable!!", -- [1510]
+			"19:57:31 - VotingFrame:Update() without lootTable!!", -- [1511]
+			"19:57:39 - ML event (CHAT_MSG_WHISPER) (well no i need more but im trial xD im sure you got ppl for the raid no N) (Sensémage-Silvermoon) () () (Sensémage-Silvermoon) () (0) (0) () (0) (168) (Player-3391-0ADEBE5B) (0) (false) (false) (false) (false)", -- [1512]
+			"19:57:40 - VotingFrame:Update() without lootTable!!", -- [1513]
+			"19:57:42 - ML event (CHAT_MSG_WHISPER) (?*) (Sensémage-Silvermoon) () () (Sensémage-Silvermoon) () (0) (0) () (0) (169) (Player-3391-0ADEBE5B) (0) (false) (false) (false) (false)", -- [1514]
+			"19:57:44 - ML event (PLAYER_REGEN_ENABLED)", -- [1515]
+			"19:57:45 - VotingFrame:Update() without lootTable!!", -- [1516]
+			"19:57:54 - VotingFrame:Update() without lootTable!!", -- [1517]
+			"19:57:55 - Comm received:^1^Slooted^T^N1^S160183^t^^ (from:) (Vandott) (distri:) (RAID)", -- [1518]
+			"19:58:02 - UpdateGroup (table: 0000026EEDE82270)", -- [1519]
+			"19:58:02 - ML:AddCandidate (Sensémage-Silvermoon) (MAGE) (DAMAGER) (nil) (nil) (nil) (nil) (nil)", -- [1520]
+			"19:58:02 - GetCouncilInGroup (Anastiana-Silvermoon) (Marival-Silvermoon) (Asnv-Silvermoon) (Joypopping-Silvermoon) (Nilley-Silvermoon)", -- [1521]
+			"19:58:02 - Comm received:^1^SMLdb^T^N1^T^SallowNotes^B^Stimeout^N60^SselfVote^B^Sresponses^T^Sdefault^T^t^t^SrejectTrade^B^SmultiVote^B^Sbuttons^T^Sdefault^T^SnumButtons^N3^t^t^SnumButtons^N3^SanonymousVoting^B^t^t^^ (from:) (Anastiana) (distri:) (RAID)", -- [1522]
+			"19:58:02 - Comm received:^1^Scandidates^T^N1^T^SDrobadin-Silvermoon^T^Srole^SDAMAGER^SspecID^N253^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SRaider^t^SMeralda-Silvermoon^T^Srole^SDAMAGER^SspecID^N72^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SRaider^t^SAemenór-Silvermoon^T^Srole^SDAMAGER^SspecID^N260^Senchant_lvl^N0^Sclass^SROGUE^Srank^STrial^t^SNilley-Silvermoon^T^Srole^SDAMAGER^SspecID^N577^Senchant_lvl^N0^Sclass^SDEMONHUNTER^Srank^SOfficer^t^SKerpi-Silvermoon^T^Srole^SDAMAGER^SspecID^N71^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SRaider^t^SNïkä-Silvermoon^T^Srole^SDAMAGER^SspecID^N251^Senchant_lvl^N0^Sclass^SDEATHKNIGHT^Srank^STrial^t^SMarival-Silvermoon^T^Srole^SHEALER^SspecID^N257^Senchant_lvl^N175^Sclass^SPRIEST^Senchanter^B^Srank^SPusn^t^SHelpr-Silvermoon^T^Srole^SDAMAGER^Sclass^SROGUE^Srank^S^t^SAsnv-Silvermoon^T^Srole^SDAMAGER^SspecID^N253^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SOfficer^t^SHulabaloo-Silvermoon^T^Srole^SDAMAGER^SspecID^N267^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SRaider^t^SSensémage-Silvermoon^T^Srole^SDAMAGER^Sclass^SMAGE^Srank^S^t^SFaykmage-Silvermoon^T^Srole^SDAMAGER^SspecID^N63^Senchant_lvl^N0^Sclass^SMAGE^Srank^SRaider^t^SAzverth-Silvermoon^T^Srole^SDAMAGER^SspecID^N72^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SRaider^t^SJoypopping-Silvermoon^T^Srole^SHEALER^Sclass^SMONK^Srank^S^t^SDroyy-Silvermoon^T^Srole^STANK^SspecID^N268^Senchant_lvl^N0^Sclass^SMONK^Srank^STrial^t^SVandott-Silvermoon^T^Srole^SDAMAGER^SspecID^N266^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SRaider^t^SAnastiana-Silvermoon^T^Srole^STANK^SspecID^N250^Senchant_lvl^N0^Sclass^SDEATHKNIGHT^Srank^SGuild~`Master^t^t^t^^ (from:) (Anastiana) (distri:) (RAID)", -- [1523]
+			"19:58:02 - Comm received:^1^SplayerInfo^T^N1^SSensémage-Silvermoon^N2^SMAGE^N3^SDAMAGER^N4^STrial^N5^B^N6^N54^N7^N467.4375^N8^N63^t^^ (from:) (Sensémage) (distri:) (WHISPER)", -- [1524]
+			"19:58:02 - ML:AddCandidate (Sensémage-Silvermoon) (MAGE) (DAMAGER) (Trial) (true) (54) (467.4375) (63)", -- [1525]
+			"19:58:06 - VotingFrame:Update() without lootTable!!", -- [1526]
+			"19:58:07 - Comm received:^1^Scouncil_request^T^t^^ (from:) (Sensémage) (distri:) (WHISPER)", -- [1527]
+			"19:58:07 - Comm received:^1^Scouncil^T^N1^T^N1^SAnastiana-Silvermoon^N2^SMarival-Silvermoon^N3^SAsnv-Silvermoon^N4^SJoypopping-Silvermoon^N5^SNilley-Silvermoon^t^t^^ (from:) (Anastiana) (distri:) (RAID)", -- [1528]
+			"19:58:07 - true = (ConcilContains) (Anastiana-Silvermoon)", -- [1529]
+			"19:58:12 - Comm received:^1^Scandidates^T^N1^T^SDrobadin-Silvermoon^T^Srole^SDAMAGER^SspecID^N253^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SRaider^t^SMeralda-Silvermoon^T^Srole^SDAMAGER^SspecID^N72^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SRaider^t^SAemenór-Silvermoon^T^Srole^SDAMAGER^SspecID^N260^Senchant_lvl^N0^Sclass^SROGUE^Srank^STrial^t^SNilley-Silvermoon^T^Srole^SDAMAGER^SspecID^N577^Senchant_lvl^N0^Sclass^SDEMONHUNTER^Srank^SOfficer^t^SKerpi-Silvermoon^T^Srole^SDAMAGER^SspecID^N71^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SRaider^t^SNïkä-Silvermoon^T^Srole^SDAMAGER^SspecID^N251^Senchant_lvl^N0^Sclass^SDEATHKNIGHT^Srank^STrial^t^SMarival-Silvermoon^T^Srole^SHEALER^SspecID^N257^Senchant_lvl^N175^Sclass^SPRIEST^Senchanter^B^Srank^SPusn^t^SHelpr-Silvermoon^T^Srole^SDAMAGER^Sclass^SROGUE^Srank^S^t^SAsnv-Silvermoon^T^Srole^SDAMAGER^SspecID^N253^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SOfficer^t^SHulabaloo-Silvermoon^T^Srole^SDAMAGER^SspecID^N267^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SRaider^t^SSensémage-Silvermoon^T^Srole^SDAMAGER^SspecID^N63^Senchant_lvl^N54^Sclass^SMAGE^Senchanter^B^Srank^STrial^t^SFaykmage-Silvermoon^T^Srole^SDAMAGER^SspecID^N63^Senchant_lvl^N0^Sclass^SMAGE^Srank^SRaider^t^SAzverth-Silvermoon^T^Srole^SDAMAGER^SspecID^N72^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SRaider^t^SJoypopping-Silvermoon^T^Srole^SHEALER^Sclass^SMONK^Srank^S^t^SDroyy-Silvermoon^T^Srole^STANK^SspecID^N268^Senchant_lvl^N0^Sclass^SMONK^Srank^STrial^t^SVandott-Silvermoon^T^Srole^SDAMAGER^SspecID^N266^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SRaider^t^SAnastiana-Silvermoon^T^Srole^STANK^SspecID^N250^Senchant_lvl^N0^Sclass^SDEATHKNIGHT^Srank^SGuild~`Master^t^t^t^^ (from:) (Anastiana) (distri:) (RAID)", -- [1530]
+			"19:58:17 - VotingFrame:Update() without lootTable!!", -- [1531]
+			"19:58:23 - VotingFrame:Update() without lootTable!!", -- [1532]
+			"19:58:30 - VotingFrame:Update() without lootTable!!", -- [1533]
+			"19:58:31 - ML event (PLAYER_REGEN_ENABLED)", -- [1534]
+			"19:58:51 - VotingFrame:Update() without lootTable!!", -- [1535]
+			"19:58:55 - VotingFrame:Update() without lootTable!!", -- [1536]
+			"19:58:59 - ML event (PLAYER_REGEN_ENABLED)", -- [1537]
+			"19:58:59 - Comm received:^1^Slooted^T^N1^S159764^t^^ (from:) (Nilley) (distri:) (RAID)", -- [1538]
+			"19:58:59 - Comm received:^1^Slooted^T^N1^S159764^t^^ (from:) (Nilley) (distri:) (RAID)", -- [1539]
+			"19:58:59 - Comm received:^1^Slooted^T^N1^S159764^t^^ (from:) (Droyy) (distri:) (RAID)", -- [1540]
+			"19:58:59 - Comm received:^1^Slooted^T^N1^S159764^t^^ (from:) (Droyy) (distri:) (RAID)", -- [1541]
+			"19:58:59 - Event: (LOOT_READY) (true)", -- [1542]
+			"19:58:59 - Adding to self.lootSlotInfo (1) (nil) (1) (0) (Creature-0-3892-2217-28808-160182-000F02310F) (8200)", -- [1543]
+			"19:58:59 - Adding to self.lootSlotInfo (2) (|cff9d9d9d|Hitem:158778::::::::120:250::::::|h[Mucose Tendril]|h|r) (0) (1) (Creature-0-3892-2217-28808-159764-000002310F) (1)", -- [1544]
+			"19:59:00 - Event: (LOOT_READY) (true)", -- [1545]
+			"19:59:00 - Adding to self.lootSlotInfo (1) (nil) (1) (0) (Creature-0-3892-2217-28808-160182-000F02310F) (8200)", -- [1546]
+			"19:59:00 - Adding to self.lootSlotInfo (2) (|cff9d9d9d|Hitem:158778::::::::120:250::::::|h[Mucose Tendril]|h|r) (0) (1) (Creature-0-3892-2217-28808-159764-000002310F) (1)", -- [1547]
+			"19:59:00 - OnLootSlotCleared() (1) (nil) (1)", -- [1548]
+			"19:59:00 - Event: (LOOT_CLOSED)", -- [1549]
+			"19:59:00 - OnLootSlotCleared() (2) (|cff9d9d9d|Hitem:158778::::::::120:250::::::|h[Mucose Tendril]|h|r) (0)", -- [1550]
+			"19:59:00 - Event: (LOOT_CLOSED)", -- [1551]
+			"19:59:00 - Comm received:^1^Slooted^T^N1^S159764^t^^ (from:) (Meralda) (distri:) (RAID)", -- [1552]
+			"19:59:00 - Comm received:^1^Slooted^T^N1^S159764^t^^ (from:) (Meralda) (distri:) (RAID)", -- [1553]
+			"19:59:00 - Comm received:^1^Slooted^T^N1^S159764^t^^ (from:) (Aemenór) (distri:) (RAID)", -- [1554]
+			"19:59:00 - Comm received:^1^Slooted^T^N1^S159764^t^^ (from:) (Faykmage) (distri:) (RAID)", -- [1555]
+			"19:59:00 - Comm received:^1^Slooted^T^N1^S159764^t^^ (from:) (Faykmage) (distri:) (RAID)", -- [1556]
+			"19:59:00 - Comm received:^1^Slooted^T^N1^S159764^t^^ (from:) (Anastiana) (distri:) (RAID)", -- [1557]
+			"19:59:00 - Comm received:^1^Sfullbags^T^N1^S|cff9d9d9d|Hitem:155636::::::::120:71::::::|h[Viscous~`Ink]|h|r^N2^S159764^t^^ (from:) (Kerpi) (distri:) (RAID)", -- [1558]
+			"19:59:00 - Comm received:^1^Slooted^T^N1^S159764^t^^ (from:) (Azverth) (distri:) (RAID)", -- [1559]
+			"19:59:01 - VotingFrame:Update() without lootTable!!", -- [1560]
+			"19:59:03 - Comm received:^1^Slooted^T^N1^S159764^t^^ (from:) (Vandott) (distri:) (RAID)", -- [1561]
+			"19:59:03 - Comm received:^1^Slooted^T^N1^S159764^t^^ (from:) (Vandott) (distri:) (RAID)", -- [1562]
+			"19:59:03 - Comm received:^1^Slooted^T^N1^S159764^t^^ (from:) (Hulabaloo) (distri:) (RAID)", -- [1563]
+			"19:59:03 - Comm received:^1^Slooted^T^N1^S159764^t^^ (from:) (Hulabaloo) (distri:) (RAID)", -- [1564]
+			"19:59:04 - Comm received:^1^Slooted^T^N1^S160182^t^^ (from:) (Marival) (distri:) (RAID)", -- [1565]
+			"19:59:04 - Comm received:^1^Slooted^T^N1^S160182^t^^ (from:) (Marival) (distri:) (RAID)", -- [1566]
+			"19:59:06 - VotingFrame:Update() without lootTable!!", -- [1567]
+			"19:59:11 - VotingFrame:Update() without lootTable!!", -- [1568]
+			"19:59:20 - Comm received:^1^Slooted^T^N1^S160182^t^^ (from:) (Nïkä) (distri:) (RAID)", -- [1569]
+			"19:59:20 - Comm received:^1^Slooted^T^N1^S160182^t^^ (from:) (Nïkä) (distri:) (RAID)", -- [1570]
+			"19:59:27 - VotingFrame:Update() without lootTable!!", -- [1571]
+			"19:59:30 - Comm received:^1^Slooted^T^N1^S160183^t^^ (from:) (Marival) (distri:) (RAID)", -- [1572]
+			"19:59:30 - Comm received:^1^Slooted^T^N1^S160183^t^^ (from:) (Marival) (distri:) (RAID)", -- [1573]
+			"19:59:41 - VotingFrame:Update() without lootTable!!", -- [1574]
+			"19:59:44 - VotingFrame:Update() without lootTable!!", -- [1575]
+			"19:59:56 - Comm received:^1^Slooted^T^N1^S160182^t^^ (from:) (Drobadin) (distri:) (RAID)", -- [1576]
+			"19:59:56 - Comm received:^1^Slooted^T^N1^S160182^t^^ (from:) (Drobadin) (distri:) (RAID)", -- [1577]
+			"20:00:01 - VotingFrame:Update() without lootTable!!", -- [1578]
+			"20:00:11 - ML event (PLAYER_REGEN_ENABLED)", -- [1579]
+			"20:00:12 - Comm received:^1^Slooted^T^N1^S159308^t^^ (from:) (Aemenór) (distri:) (RAID)", -- [1580]
+			"20:00:12 - Comm received:^1^Slooted^T^N1^S159308^t^^ (from:) (Aemenór) (distri:) (RAID)", -- [1581]
+			"20:00:13 - Comm received:^1^Slooted^T^N1^S159308^t^^ (from:) (Meralda) (distri:) (RAID)", -- [1582]
+			"20:00:13 - Comm received:^1^Slooted^T^N1^S159308^t^^ (from:) (Meralda) (distri:) (RAID)", -- [1583]
+			"20:00:14 - Comm received:^1^Slooted^T^N1^S159305^t^^ (from:) (Hulabaloo) (distri:) (RAID)", -- [1584]
+			"20:00:14 - Comm received:^1^Slooted^T^N1^S159305^t^^ (from:) (Hulabaloo) (distri:) (RAID)", -- [1585]
+			"20:00:14 - Comm received:^1^Slooted^T^N1^S159305^t^^ (from:) (Faykmage) (distri:) (RAID)", -- [1586]
+			"20:00:14 - Comm received:^1^Slooted^T^N1^S159305^t^^ (from:) (Faykmage) (distri:) (RAID)", -- [1587]
+			"20:00:15 - Comm received:^1^Slooted^T^N1^S159308^t^^ (from:) (Vandott) (distri:) (RAID)", -- [1588]
+			"20:00:15 - Comm received:^1^Slooted^T^N1^S159308^t^^ (from:) (Vandott) (distri:) (RAID)", -- [1589]
+			"20:00:15 - VotingFrame:Update() without lootTable!!", -- [1590]
+			"20:00:19 - Comm received:^1^Slooted^T^N1^S159308^t^^ (from:) (Marival) (distri:) (RAID)", -- [1591]
+			"20:00:19 - Comm received:^1^Slooted^T^N1^S159308^t^^ (from:) (Marival) (distri:) (RAID)", -- [1592]
+			"20:00:20 - Comm received:^1^SverTest^T^N1^S2.17.1^t^^ (from:) (Cronah) (distri:) (GUILD)", -- [1593]
+			"20:00:23 - Comm received:^1^Slooted^T^N1^S159308^t^^ (from:) (Nilley) (distri:) (RAID)", -- [1594]
+			"20:00:23 - Comm received:^1^Slooted^T^N1^S159308^t^^ (from:) (Nilley) (distri:) (RAID)", -- [1595]
+			"20:00:31 - VotingFrame:Update() without lootTable!!", -- [1596]
+			"20:00:37 - VotingFrame:Update() without lootTable!!", -- [1597]
+			"20:00:46 - UpdateGroup (table: 0000026EEDE82270)", -- [1598]
+			"20:00:46 - ML:AddCandidate (Cronah-Silvermoon) (DEATHKNIGHT) (DAMAGER) (nil) (nil) (nil) (nil) (nil)", -- [1599]
+			"20:00:46 - GetCouncilInGroup (Anastiana-Silvermoon) (Marival-Silvermoon) (Asnv-Silvermoon) (Cronah-Silvermoon) (Joypopping-Silvermoon) (Nilley-Silvermoon)", -- [1600]
+			"20:00:46 - Comm received:^1^SMLdb^T^N1^T^SallowNotes^B^Stimeout^N60^SselfVote^B^Sresponses^T^Sdefault^T^t^t^SrejectTrade^B^SmultiVote^B^Sbuttons^T^Sdefault^T^SnumButtons^N3^t^t^SnumButtons^N3^SanonymousVoting^B^t^t^^ (from:) (Anastiana) (distri:) (RAID)", -- [1601]
+			"20:00:46 - Comm received:^1^Scandidates^T^N1^T^SDrobadin-Silvermoon^T^Srole^SDAMAGER^SspecID^N253^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SRaider^t^SMeralda-Silvermoon^T^Srole^SDAMAGER^SspecID^N72^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SRaider^t^SAemenór-Silvermoon^T^Srole^SDAMAGER^SspecID^N260^Senchant_lvl^N0^Sclass^SROGUE^Srank^STrial^t^SNilley-Silvermoon^T^Srole^SDAMAGER^SspecID^N577^Senchant_lvl^N0^Sclass^SDEMONHUNTER^Srank^SOfficer^t^SKerpi-Silvermoon^T^Srole^SDAMAGER^SspecID^N71^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SRaider^t^SNïkä-Silvermoon^T^Srole^SDAMAGER^SspecID^N251^Senchant_lvl^N0^Sclass^SDEATHKNIGHT^Srank^STrial^t^SMarival-Silvermoon^T^Srole^SHEALER^SspecID^N257^Senchant_lvl^N175^Sclass^SPRIEST^Senchanter^B^Srank^SPusn^t^SHelpr-Silvermoon^T^Srole^SDAMAGER^Sclass^SROGUE^Srank^S^t^SAsnv-Silvermoon^T^Srole^SDAMAGER^SspecID^N253^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SOfficer^t^SHulabaloo-Silvermoon^T^Srole^SDAMAGER^SspecID^N267^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SRaider^t^SCronah-Silvermoon^T^Srole^SDAMAGER^Sclass^SDEATHKNIGHT^Srank^S^t^SSensémage-Silvermoon^T^Srole^SDAMAGER^SspecID^N63^Senchant_lvl^N54^Sclass^SMAGE^Senchanter^B^Srank^STrial^t^SFaykmage-Silvermoon^T^Srole^SDAMAGER^SspecID^N63^Senchant_lvl^N0^Sclass^SMAGE^Srank^SRaider^t^SAzverth-Silvermoon^T^Srole^SDAMAGER^SspecID^N72^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SRaider^t^SJoypopping-Silvermoon^T^Srole^SHEALER^Sclass^SMONK^Srank^S^t^SDroyy-Silvermoon^T^Srole^STANK^SspecID^N268^Senchant_lvl^N0^Sclass^SMONK^Srank^STrial^t^SVandott-Silvermoon^T^Srole^SDAMAGER^SspecID^N266^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SRaider^t^SAnastiana-Silvermoon^T^Srole^STANK^SspecID^N250^Senchant_lvl^N0^Sclass^SDEATHKNIGHT^Srank^SGuild~`Master^t^t^t^^ (from:) (Anastiana) (distri:) (RAID)", -- [1602]
+			"20:00:46 - Comm received:^1^Scouncil^T^N1^T^N1^SAnastiana-Silvermoon^N2^SMarival-Silvermoon^N3^SAsnv-Silvermoon^N4^SCronah-Silvermoon^N5^SJoypopping-Silvermoon^N6^SNilley-Silvermoon^t^t^^ (from:) (Anastiana) (distri:) (RAID)", -- [1603]
+			"20:00:46 - true = (ConcilContains) (Anastiana-Silvermoon)", -- [1604]
+			"20:00:47 - VotingFrame:Update() without lootTable!!", -- [1605]
+			"20:00:53 - VotingFrame:Update() without lootTable!!", -- [1606]
+			"20:00:56 - VotingFrame:Update() without lootTable!!", -- [1607]
+			"20:01:14 - Comm received:^1^SplayerInfo^T^N1^SCronah-Silvermoon^N2^SDEATHKNIGHT^N3^SDAMAGER^N4^SOfficer^N6^N0^N7^N473.875^N8^N252^t^^ (from:) (Cronah) (distri:) (WHISPER)", -- [1608]
+			"20:01:14 - ML:AddCandidate (Cronah-Silvermoon) (DEATHKNIGHT) (DAMAGER) (Officer) (nil) (0) (473.875) (252)", -- [1609]
+			"20:01:14 - Comm received:^1^Scandidates^T^N1^T^SDrobadin-Silvermoon^T^Srole^SDAMAGER^SspecID^N253^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SRaider^t^SMeralda-Silvermoon^T^Srole^SDAMAGER^SspecID^N72^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SRaider^t^SAemenór-Silvermoon^T^Srole^SDAMAGER^SspecID^N260^Senchant_lvl^N0^Sclass^SROGUE^Srank^STrial^t^SNilley-Silvermoon^T^Srole^SDAMAGER^SspecID^N577^Senchant_lvl^N0^Sclass^SDEMONHUNTER^Srank^SOfficer^t^SKerpi-Silvermoon^T^Srole^SDAMAGER^SspecID^N71^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SRaider^t^SNïkä-Silvermoon^T^Srole^SDAMAGER^SspecID^N251^Senchant_lvl^N0^Sclass^SDEATHKNIGHT^Srank^STrial^t^SMarival-Silvermoon^T^Srole^SHEALER^SspecID^N257^Senchant_lvl^N175^Sclass^SPRIEST^Senchanter^B^Srank^SPusn^t^SHelpr-Silvermoon^T^Srole^SDAMAGER^Sclass^SROGUE^Srank^S^t^SAsnv-Silvermoon^T^Srole^SDAMAGER^SspecID^N253^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SOfficer^t^SHulabaloo-Silvermoon^T^Srole^SDAMAGER^SspecID^N267^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SRaider^t^SCronah-Silvermoon^T^Srole^SDAMAGER^SspecID^N252^Senchant_lvl^N0^Sclass^SDEATHKNIGHT^Srank^SOfficer^t^SSensémage-Silvermoon^T^Srole^SDAMAGER^SspecID^N63^Senchant_lvl^N54^Sclass^SMAGE^Senchanter^B^Srank^STrial^t^SFaykmage-Silvermoon^T^Srole^SDAMAGER^SspecID^N63^Senchant_lvl^N0^Sclass^SMAGE^Srank^SRaider^t^SAzverth-Silvermoon^T^Srole^SDAMAGER^SspecID^N72^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SRaider^t^SJoypopping-Silvermoon^T^Srole^SHEALER^Sclass^SMONK^Srank^S^t^SDroyy-Silvermoon^T^Srole^STANK^SspecID^N268^Senchant_lvl^N0^Sclass^SMONK^Srank^STrial^t^SVandott-Silvermoon^T^Srole^SDAMAGER^SspecID^N266^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SRaider^t^SAnastiana-Silvermoon^T^Srole^STANK^SspecID^N250^Senchant_lvl^N0^Sclass^SDEATHKNIGHT^Srank^SGuild~`Master^t^t^t^^ (from:) (Anastiana) (distri:) (RAID)", -- [1610]
+			"20:01:20 - VotingFrame:Update() without lootTable!!", -- [1611]
+			"20:01:22 - ML event (PLAYER_REGEN_ENABLED)", -- [1612]
+			"20:01:23 - Comm received:^1^Slooted^T^N1^S160182^t^^ (from:) (Nilley) (distri:) (RAID)", -- [1613]
+			"20:01:23 - Comm received:^1^Slooted^T^N1^S160182^t^^ (from:) (Nilley) (distri:) (RAID)", -- [1614]
+			"20:01:24 - Comm received:^1^Slooted^T^N1^S159303^t^^ (from:) (Vandott) (distri:) (RAID)", -- [1615]
+			"20:01:24 - Comm received:^1^Slooted^T^N1^S159303^t^^ (from:) (Vandott) (distri:) (RAID)", -- [1616]
+			"20:01:27 - Comm received:^1^Slooted^T^N1^S159417^t^^ (from:) (Drobadin) (distri:) (RAID)", -- [1617]
+			"20:01:27 - Comm received:^1^Slooted^T^N1^S159417^t^^ (from:) (Drobadin) (distri:) (RAID)", -- [1618]
+			"20:01:41 - VotingFrame:Update() without lootTable!!", -- [1619]
+			"20:02:02 - ML event (PLAYER_REGEN_ENABLED)", -- [1620]
+			"20:02:03 - Comm received:^1^Slooted^T^N1^S159308^t^^ (from:) (Aemenór) (distri:) (RAID)", -- [1621]
+			"20:02:03 - Comm received:^1^Slooted^T^N1^S159308^t^^ (from:) (Aemenór) (distri:) (RAID)", -- [1622]
+			"20:02:09 - Comm received:^1^SverTest^T^N1^S2.18.2^t^^ (from:) (Eredr) (distri:) (GUILD)", -- [1623]
+			"20:02:29 - VotingFrame:Update() without lootTable!!", -- [1624]
+			"20:02:44 - VotingFrame:Update() without lootTable!!", -- [1625]
+			"20:02:57 - ML event (PLAYER_REGEN_ENABLED)", -- [1626]
+			"20:02:58 - Comm received:^1^Slooted^T^N1^S159305^t^^ (from:) (Meralda) (distri:) (RAID)", -- [1627]
+			"20:02:58 - Comm received:^1^Slooted^T^N1^S159305^t^^ (from:) (Meralda) (distri:) (RAID)", -- [1628]
+			"20:02:58 - Comm received:^1^Slooted^T^N1^S159305^t^^ (from:) (Nïkä) (distri:) (RAID)", -- [1629]
+			"20:03:00 - Comm received:^1^Slooted^T^N1^S159305^t^^ (from:) (Nïkä) (distri:) (RAID)", -- [1630]
+			"20:03:00 - Comm received:^1^Slooted^T^N1^S159305^t^^ (from:) (Nïkä) (distri:) (RAID)", -- [1631]
+			"20:03:00 - Comm received:^1^Slooted^T^N1^S159305^t^^ (from:) (Faykmage) (distri:) (RAID)", -- [1632]
+			"20:03:51 - VotingFrame:Update() without lootTable!!", -- [1633]
+			"20:03:59 - UpdateGroup (table: 0000026EEDE82270)", -- [1634]
+			"20:04:17 - ML event (PLAYER_REGEN_ENABLED)", -- [1635]
+			"20:04:33 - VotingFrame:Update() without lootTable!!", -- [1636]
+			"20:04:42 - UpdateGroup (table: 0000026EEDE82270)", -- [1637]
+			"20:04:42 - ML:AddCandidate (Eredr-Silvermoon) (DRUID) (HEALER) (nil) (nil) (nil) (nil) (nil)", -- [1638]
+			"20:04:42 - GetCouncilInGroup (Anastiana-Silvermoon) (Marival-Silvermoon) (Asnv-Silvermoon) (Cronah-Silvermoon) (Joypopping-Silvermoon) (Nilley-Silvermoon)", -- [1639]
+			"20:04:42 - Comm received:^1^SMLdb^T^N1^T^SallowNotes^B^Stimeout^N60^SselfVote^B^Sresponses^T^Sdefault^T^t^t^SrejectTrade^B^SmultiVote^B^Sbuttons^T^Sdefault^T^SnumButtons^N3^t^t^SnumButtons^N3^SanonymousVoting^B^t^t^^ (from:) (Anastiana) (distri:) (RAID)", -- [1640]
+			"20:04:42 - Comm received:^1^Scandidates^T^N1^T^SDrobadin-Silvermoon^T^Srole^SDAMAGER^SspecID^N253^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SRaider^t^SMeralda-Silvermoon^T^Srole^SDAMAGER^SspecID^N72^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SRaider^t^SEredr-Silvermoon^T^Srole^SHEALER^Sclass^SDRUID^Srank^S^t^SAemenór-Silvermoon^T^Srole^SDAMAGER^SspecID^N260^Senchant_lvl^N0^Sclass^SROGUE^Srank^STrial^t^SNilley-Silvermoon^T^Srole^SDAMAGER^SspecID^N577^Senchant_lvl^N0^Sclass^SDEMONHUNTER^Srank^SOfficer^t^SKerpi-Silvermoon^T^Srole^SDAMAGER^SspecID^N71^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SRaider^t^SNïkä-Silvermoon^T^Srole^SDAMAGER^SspecID^N251^Senchant_lvl^N0^Sclass^SDEATHKNIGHT^Srank^STrial^t^SMarival-Silvermoon^T^Srole^SHEALER^SspecID^N257^Senchant_lvl^N175^Sclass^SPRIEST^Senchanter^B^Srank^SPusn^t^SHelpr-Silvermoon^T^Srole^SDAMAGER^Sclass^SROGUE^Srank^S^t^SAsnv-Silvermoon^T^Srole^SDAMAGER^SspecID^N253^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SOfficer^t^SHulabaloo-Silvermoon^T^Srole^SDAMAGER^SspecID^N267^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SRaider^t^SCronah-Silvermoon^T^Srole^SDAMAGER^SspecID^N252^Senchant_lvl^N0^Sclass^SDEATHKNIGHT^Srank^SOfficer^t^SSensémage-Silvermoon^T^Srole^SDAMAGER^SspecID^N63^Senchant_lvl^N54^Sclass^SMAGE^Senchanter^B^Srank^STrial^t^SFaykmage-Silvermoon^T^Srole^SDAMAGER^SspecID^N63^Senchant_lvl^N0^Sclass^SMAGE^Srank^SRaider^t^SAzverth-Silvermoon^T^Srole^SDAMAGER^SspecID^N72^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SRaider^t^SJoypopping-Silvermoon^T^Srole^SHEALER^Sclass^SMONK^Srank^S^t^SDroyy-Silvermoon^T^Srole^STANK^SspecID^N268^Senchant_lvl^N0^Sclass^SMONK^Srank^STrial^t^SVandott-Silvermoon^T^Srole^SDAMAGER^SspecID^N266^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SRaider^t^SAnastiana-Silvermoon^T^Srole^STANK^SspecID^N250^Senchant_lvl^N0^Sclass^SDEATHKNIGHT^Srank^SGuild~`Master^t^t^t^^ (from:) (Anastiana) (distri:) (RAID)", -- [1641]
+			"20:04:43 - Comm received:^1^SplayerInfo^T^N1^SEredr-Silvermoon^N2^SDRUID^N3^SHEALER^N4^SOfficer~`Alt^N6^N0^N7^N457.6875^N8^N105^t^^ (from:) (Eredr) (distri:) (WHISPER)", -- [1642]
+			"20:04:43 - ML:AddCandidate (Eredr-Silvermoon) (DRUID) (HEALER) (Officer Alt) (nil) (0) (457.6875) (105)", -- [1643]
+			"20:04:47 - Comm received:^1^Scouncil_request^T^t^^ (from:) (Eredr) (distri:) (WHISPER)", -- [1644]
+			"20:04:48 - Comm received:^1^Scouncil^T^N1^T^N1^SAnastiana-Silvermoon^N2^SMarival-Silvermoon^N3^SAsnv-Silvermoon^N4^SCronah-Silvermoon^N5^SJoypopping-Silvermoon^N6^SNilley-Silvermoon^t^t^^ (from:) (Anastiana) (distri:) (RAID)", -- [1645]
+			"20:04:48 - true = (ConcilContains) (Anastiana-Silvermoon)", -- [1646]
+			"20:04:52 - Comm received:^1^Scandidates^T^N1^T^SDrobadin-Silvermoon^T^Srole^SDAMAGER^SspecID^N253^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SRaider^t^SMeralda-Silvermoon^T^Srole^SDAMAGER^SspecID^N72^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SRaider^t^SEredr-Silvermoon^T^Srole^SHEALER^SspecID^N105^Senchant_lvl^N0^Sclass^SDRUID^Srank^SOfficer~`Alt^t^SAemenór-Silvermoon^T^Srole^SDAMAGER^SspecID^N260^Senchant_lvl^N0^Sclass^SROGUE^Srank^STrial^t^SNilley-Silvermoon^T^Srole^SDAMAGER^SspecID^N577^Senchant_lvl^N0^Sclass^SDEMONHUNTER^Srank^SOfficer^t^SKerpi-Silvermoon^T^Srole^SDAMAGER^SspecID^N71^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SRaider^t^SNïkä-Silvermoon^T^Srole^SDAMAGER^SspecID^N251^Senchant_lvl^N0^Sclass^SDEATHKNIGHT^Srank^STrial^t^SMarival-Silvermoon^T^Srole^SHEALER^SspecID^N257^Senchant_lvl^N175^Sclass^SPRIEST^Senchanter^B^Srank^SPusn^t^SHelpr-Silvermoon^T^Srole^SDAMAGER^Sclass^SROGUE^Srank^S^t^SAsnv-Silvermoon^T^Srole^SDAMAGER^SspecID^N253^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SOfficer^t^SHulabaloo-Silvermoon^T^Srole^SDAMAGER^SspecID^N267^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SRaider^t^SCronah-Silvermoon^T^Srole^SDAMAGER^SspecID^N252^Senchant_lvl^N0^Sclass^SDEATHKNIGHT^Srank^SOfficer^t^SSensémage-Silvermoon^T^Srole^SDAMAGER^SspecID^N63^Senchant_lvl^N54^Sclass^SMAGE^Senchanter^B^Srank^STrial^t^SFaykmage-Silvermoon^T^Srole^SDAMAGER^SspecID^N63^Senchant_lvl^N0^Sclass^SMAGE^Srank^SRaider^t^SAzverth-Silvermoon^T^Srole^SDAMAGER^SspecID^N72^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SRaider^t^SJoypopping-Silvermoon^T^Srole^SHEALER^Sclass^SMONK^Srank^S^t^SDroyy-Silvermoon^T^Srole^STANK^SspecID^N268^Senchant_lvl^N0^Sclass^SMONK^Srank^STrial^t^SVandott-Silvermoon^T^Srole^SDAMAGER^SspecID^N266^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SRaider^t^SAnastiana-Silvermoon^T^Srole^STANK^SspecID^N250^Senchant_lvl^N0^Sclass^SDEATHKNIGHT^Srank^SGuild~`Master^t^t^t^^ (from:) (Anastiana) (distri:) (RAID)", -- [1647]
+			"20:05:06 - Comm received:^1^Slooted^T^N1^S161251^t^^ (from:) (Meralda) (distri:) (RAID)", -- [1648]
+			"20:05:14 - Event: (LOOT_READY) (true)", -- [1649]
+			"20:05:14 - Adding to self.lootSlotInfo (1) (nil) (1) (0) (Creature-0-3892-2217-28808-161251-000302310F) (2884) (Creature-0-3892-2217-28808-161251-000282310F) (4531) (Creature-0-3892-2217-28808-161251-000382310F) (6409)", -- [1650]
+			"20:05:14 - Event: (LOOT_READY) (true)", -- [1651]
+			"20:05:14 - Adding to self.lootSlotInfo (1) (nil) (1) (0) (Creature-0-3892-2217-28808-161251-000302310F) (2884) (Creature-0-3892-2217-28808-161251-000282310F) (4531) (Creature-0-3892-2217-28808-161251-000382310F) (6409)", -- [1652]
+			"20:05:15 - OnLootSlotCleared() (1) (nil) (1)", -- [1653]
+			"20:05:15 - Event: (LOOT_CLOSED)", -- [1654]
+			"20:05:15 - Event: (LOOT_CLOSED)", -- [1655]
+			"20:05:15 - Comm received:^1^Slooted^T^N1^S161251^t^^ (from:) (Anastiana) (distri:) (RAID)", -- [1656]
+			"20:05:15 - Comm received:^1^Slooted^T^N1^S161251^t^^ (from:) (Anastiana) (distri:) (RAID)", -- [1657]
+			"20:05:24 - ML event (PLAYER_REGEN_ENABLED)", -- [1658]
+			"20:05:25 - Comm received:^1^Slooted^T^N1^S161251^t^^ (from:) (Droyy) (distri:) (RAID)", -- [1659]
+			"20:05:25 - Comm received:^1^Slooted^T^N1^S161251^t^^ (from:) (Droyy) (distri:) (RAID)", -- [1660]
+			"20:05:25 - Comm received:^1^Slooted^T^N1^S161251^t^^ (from:) (Hulabaloo) (distri:) (RAID)", -- [1661]
+			"20:05:25 - Comm received:^1^Slooted^T^N1^S161251^t^^ (from:) (Hulabaloo) (distri:) (RAID)", -- [1662]
+			"20:05:26 - Comm received:^1^Slooted^T^N1^S161251^t^^ (from:) (Vandott) (distri:) (RAID)", -- [1663]
+			"20:05:26 - Comm received:^1^Slooted^T^N1^S161251^t^^ (from:) (Vandott) (distri:) (RAID)", -- [1664]
+			"20:05:28 - Event: (LOOT_READY) (true)", -- [1665]
+			"20:05:28 - Adding to self.lootSlotInfo (1) (nil) (1) (0) (Creature-0-3892-2217-28808-159305-000082310F) (10324) (Creature-0-3892-2217-28808-161251-000202310F) (4410)", -- [1666]
+			"20:05:28 - Adding to self.lootSlotInfo (2) (|cff9d9d9d|Hitem:163918::::::::120:250::::::|h[Fleshcarving Knife]|h|r) (0) (1) (Creature-0-3892-2217-28808-161251-000202310F) (1)", -- [1667]
+			"20:05:28 - Event: (LOOT_READY) (true)", -- [1668]
+			"20:05:28 - Adding to self.lootSlotInfo (1) (nil) (1) (0) (Creature-0-3892-2217-28808-159305-000082310F) (10324) (Creature-0-3892-2217-28808-161251-000202310F) (4410)", -- [1669]
+			"20:05:28 - Adding to self.lootSlotInfo (2) (|cff9d9d9d|Hitem:163918::::::::120:250::::::|h[Fleshcarving Knife]|h|r) (0) (1) (Creature-0-3892-2217-28808-161251-000202310F) (1)", -- [1670]
+			"20:05:28 - OnLootSlotCleared() (1) (nil) (1)", -- [1671]
+			"20:05:28 - OnLootSlotCleared() (2) (|cff9d9d9d|Hitem:163918::::::::120:250::::::|h[Fleshcarving Knife]|h|r) (0)", -- [1672]
+			"20:05:28 - Event: (LOOT_CLOSED)", -- [1673]
+			"20:05:28 - Event: (LOOT_CLOSED)", -- [1674]
+			"20:05:29 - Comm received:^1^Slooted^T^N1^S161251^t^^ (from:) (Anastiana) (distri:) (RAID)", -- [1675]
+			"20:05:29 - Comm received:^1^Slooted^T^N1^S161251^t^^ (from:) (Anastiana) (distri:) (RAID)", -- [1676]
+			"20:05:29 - Comm received:^1^Slooted^T^N1^S161251^t^^ (from:) (Faykmage) (distri:) (RAID)", -- [1677]
+			"20:05:29 - Comm received:^1^Slooted^T^N1^S161251^t^^ (from:) (Faykmage) (distri:) (RAID)", -- [1678]
+			"20:05:33 - Comm received:^1^SfakeLoot^T^N1^S|cff9d9d9d|Hitem:155636::::::::120:71::::::|h[Viscous~`Ink]|h|r^N2^S159303^t^^ (from:) (Kerpi) (distri:) (RAID)", -- [1679]
+			"20:05:35 - Comm received:^1^Slooted^T^N1^S161251^t^^ (from:) (Azverth) (distri:) (RAID)", -- [1680]
+			"20:05:35 - Comm received:^1^Slooted^T^N1^S161251^t^^ (from:) (Azverth) (distri:) (RAID)", -- [1681]
+			"20:05:37 - Comm received:^1^Slooted^T^N1^S161251^t^^ (from:) (Meralda) (distri:) (RAID)", -- [1682]
+			"20:05:37 - Comm received:^1^Slooted^T^N1^S161251^t^^ (from:) (Meralda) (distri:) (RAID)", -- [1683]
+			"20:05:41 - Comm received:^1^Slooted^T^N1^S161251^t^^ (from:) (Marival) (distri:) (RAID)", -- [1684]
+			"20:05:41 - Comm received:^1^Slooted^T^N1^S161251^t^^ (from:) (Marival) (distri:) (RAID)", -- [1685]
+			"20:05:43 - Comm received:^1^Slooted^T^N1^S161251^t^^ (from:) (Asnv) (distri:) (RAID)", -- [1686]
+			"20:05:53 - ML event (CHAT_MSG_WHISPER) (nah) (Madvepriest-Silvermoon) () () (Madvepriest-Silvermoon) () (0) (0) () (0) (322) (Player-3391-0AC35EDE) (0) (false) (false) (false) (false)", -- [1687]
+			"20:05:56 - ML event (CHAT_MSG_WHISPER) (im honestly exhausted) (Madvepriest-Silvermoon) () () (Madvepriest-Silvermoon) () (0) (0) () (0) (323) (Player-3391-0AC35EDE) (0) (false) (false) (false) (false)", -- [1688]
+			"20:06:14 - ML event (PLAYER_REGEN_ENABLED)", -- [1689]
+			"20:06:15 - Event: (LOOT_READY) (true)", -- [1690]
+			"20:06:15 - Adding to self.lootSlotInfo (1) (nil) (1) (0) (Creature-0-3892-2217-28808-161251-000182310F) (6255) (Creature-0-3892-2217-28808-161251-000002310F) (6879) (Creature-0-3892-2217-28808-161251-000082310F) (6152) (Creature-0-3892-2217-28808-161251-000102310F) (856)", -- [1691]
+			"20:06:15 - Adding to self.lootSlotInfo (2) (|cff9d9d9d|Hitem:163918::::::::120:250::::::|h[Fleshcarving Knife]|h|r) (0) (1) (Creature-0-3892-2217-28808-161251-000102310F) (1)", -- [1692]
+			"20:06:15 - Event: (LOOT_READY) (true)", -- [1693]
+			"20:06:15 - Adding to self.lootSlotInfo (1) (nil) (1) (0) (Creature-0-3892-2217-28808-161251-000182310F) (6255) (Creature-0-3892-2217-28808-161251-000002310F) (6879) (Creature-0-3892-2217-28808-161251-000082310F) (6152) (Creature-0-3892-2217-28808-161251-000102310F) (856)", -- [1694]
+			"20:06:15 - Adding to self.lootSlotInfo (2) (|cff9d9d9d|Hitem:163918::::::::120:250::::::|h[Fleshcarving Knife]|h|r) (0) (1) (Creature-0-3892-2217-28808-161251-000102310F) (1)", -- [1695]
+			"20:06:15 - OnLootSlotCleared() (1) (nil) (1)", -- [1696]
+			"20:06:15 - Comm received:^1^Slooted^T^N1^S161251^t^^ (from:) (Meralda) (distri:) (RAID)", -- [1697]
+			"20:06:15 - OnLootSlotCleared() (2) (|cff9d9d9d|Hitem:163918::::::::120:250::::::|h[Fleshcarving Knife]|h|r) (0)", -- [1698]
+			"20:06:15 - Event: (LOOT_CLOSED)", -- [1699]
+			"20:06:15 - Event: (LOOT_CLOSED)", -- [1700]
+			"20:06:15 - Comm received:^1^Slooted^T^N1^S161251^t^^ (from:) (Azverth) (distri:) (RAID)", -- [1701]
+			"20:06:15 - Comm received:^1^Slooted^T^N1^S161251^t^^ (from:) (Azverth) (distri:) (RAID)", -- [1702]
+			"20:06:15 - Comm received:^1^Slooted^T^N1^S161251^t^^ (from:) (Anastiana) (distri:) (RAID)", -- [1703]
+			"20:06:16 - Comm received:^1^Slooted^T^N1^S161251^t^^ (from:) (Anastiana) (distri:) (RAID)", -- [1704]
+			"20:06:16 - Comm received:^1^Slooted^T^N1^S161251^t^^ (from:) (Nïkä) (distri:) (RAID)", -- [1705]
+			"20:06:16 - Comm received:^1^Slooted^T^N1^S161251^t^^ (from:) (Nïkä) (distri:) (RAID)", -- [1706]
+			"20:06:16 - Comm received:^1^Slooted^T^N1^S161251^t^^ (from:) (Droyy) (distri:) (RAID)", -- [1707]
+			"20:06:16 - Comm received:^1^Slooted^T^N1^S161251^t^^ (from:) (Droyy) (distri:) (RAID)", -- [1708]
+			"20:06:16 - Comm received:^1^Slooted^T^N1^S161251^t^^ (from:) (Kerpi) (distri:) (RAID)", -- [1709]
+			"20:06:16 - Comm received:^1^Slooted^T^N1^S161251^t^^ (from:) (Kerpi) (distri:) (RAID)", -- [1710]
+			"20:06:18 - Comm received:^1^Slooted^T^N1^S161251^t^^ (from:) (Drobadin) (distri:) (RAID)", -- [1711]
+			"20:06:18 - Comm received:^1^Slooted^T^N1^S161251^t^^ (from:) (Drobadin) (distri:) (RAID)", -- [1712]
+			"20:06:19 - Comm received:^1^Slooted^T^N1^S161251^t^^ (from:) (Faykmage) (distri:) (RAID)", -- [1713]
+			"20:06:19 - Comm received:^1^Slooted^T^N1^S161251^t^^ (from:) (Faykmage) (distri:) (RAID)", -- [1714]
+			"20:06:19 - Comm received:^1^Slooted^T^N1^S161251^t^^ (from:) (Vandott) (distri:) (RAID)", -- [1715]
+			"20:06:19 - Comm received:^1^Slooted^T^N1^S161251^t^^ (from:) (Vandott) (distri:) (RAID)", -- [1716]
+			"20:06:20 - Comm received:^1^Slooted^T^N1^S161251^t^^ (from:) (Marival) (distri:) (RAID)", -- [1717]
+			"20:06:20 - Comm received:^1^Slooted^T^N1^S161251^t^^ (from:) (Marival) (distri:) (RAID)", -- [1718]
+			"20:06:21 - ML event (CHAT_MSG_WHISPER) (my sleeping has been really weird, been going to sleep anywhere between 17-21 and waking up every 3 hours) (Madvepriest-Silvermoon) () () (Madvepriest-Silvermoon) () (0) (0) () (0) (334) (Player-3391-0AC35EDE) (0) (false) (false) (false) (false)", -- [1719]
+			"20:06:25 - Comm received:^1^Slooted^T^N1^S161251^t^^ (from:) (Nïkä) (distri:) (RAID)", -- [1720]
+			"20:06:25 - Comm received:^1^Slooted^T^N1^S161251^t^^ (from:) (Nïkä) (distri:) (RAID)", -- [1721]
+			"20:06:28 - Comm received:^1^Slooted^T^N1^S161251^t^^ (from:) (Aemenór) (distri:) (RAID)", -- [1722]
+			"20:06:30 - VotingFrame:Update() without lootTable!!", -- [1723]
+			"20:06:32 - Comm received:^1^Slooted^T^N1^S161251^t^^ (from:) (Aemenór) (distri:) (RAID)", -- [1724]
+			"20:06:39 - UpdateGroup (table: 0000026EEDE82270)", -- [1725]
+			"20:06:39 - ML:RemoveCandidate (Nilley-Silvermoon)", -- [1726]
+			"20:06:39 - GetCouncilInGroup (Anastiana-Silvermoon) (Marival-Silvermoon) (Asnv-Silvermoon) (Cronah-Silvermoon) (Joypopping-Silvermoon)", -- [1727]
+			"20:06:39 - Comm received:^1^Slooted^T^N1^S161251^t^^ (from:) (Hulabaloo) (distri:) (RAID)", -- [1728]
+			"20:06:39 - Comm received:^1^Slooted^T^N1^S161251^t^^ (from:) (Hulabaloo) (distri:) (RAID)", -- [1729]
+			"20:06:39 - Comm received:^1^SMLdb^T^N1^T^SallowNotes^B^Stimeout^N60^SselfVote^B^Sresponses^T^Sdefault^T^t^t^SrejectTrade^B^SmultiVote^B^Sbuttons^T^Sdefault^T^SnumButtons^N3^t^t^SnumButtons^N3^SanonymousVoting^B^t^t^^ (from:) (Anastiana) (distri:) (RAID)", -- [1730]
+			"20:06:39 - Comm received:^1^Scandidates^T^N1^T^SDrobadin-Silvermoon^T^Srole^SDAMAGER^SspecID^N253^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SRaider^t^SMeralda-Silvermoon^T^Srole^SDAMAGER^SspecID^N72^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SRaider^t^SEredr-Silvermoon^T^Srole^SHEALER^SspecID^N105^Senchant_lvl^N0^Sclass^SDRUID^Srank^SOfficer~`Alt^t^SAemenór-Silvermoon^T^Srole^SDAMAGER^SspecID^N260^Senchant_lvl^N0^Sclass^SROGUE^Srank^STrial^t^SKerpi-Silvermoon^T^Srole^SDAMAGER^SspecID^N71^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SRaider^t^SNïkä-Silvermoon^T^Srole^SDAMAGER^SspecID^N251^Senchant_lvl^N0^Sclass^SDEATHKNIGHT^Srank^STrial^t^SMarival-Silvermoon^T^Srole^SHEALER^SspecID^N257^Senchant_lvl^N175^Sclass^SPRIEST^Senchanter^B^Srank^SPusn^t^SHelpr-Silvermoon^T^Srole^SDAMAGER^Sclass^SROGUE^Srank^S^t^SAsnv-Silvermoon^T^Srole^SDAMAGER^SspecID^N253^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SOfficer^t^SHulabaloo-Silvermoon^T^Srole^SDAMAGER^SspecID^N267^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SRaider^t^SCronah-Silvermoon^T^Srole^SDAMAGER^SspecID^N252^Senchant_lvl^N0^Sclass^SDEATHKNIGHT^Srank^SOfficer^t^SSensémage-Silvermoon^T^Srole^SDAMAGER^SspecID^N63^Senchant_lvl^N54^Sclass^SMAGE^Senchanter^B^Srank^STrial^t^SFaykmage-Silvermoon^T^Srole^SDAMAGER^SspecID^N63^Senchant_lvl^N0^Sclass^SMAGE^Srank^SRaider^t^SAzverth-Silvermoon^T^Srole^SDAMAGER^SspecID^N72^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SRaider^t^SJoypopping-Silvermoon^T^Srole^SHEALER^Sclass^SMONK^Srank^S^t^SDroyy-Silvermoon^T^Srole^STANK^SspecID^N268^Senchant_lvl^N0^Sclass^SMONK^Srank^STrial^t^SVandott-Silvermoon^T^Srole^SDAMAGER^SspecID^N266^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SRaider^t^SAnastiana-Silvermoon^T^Srole^STANK^SspecID^N250^Senchant_lvl^N0^Sclass^SDEATHKNIGHT^Srank^SGuild~`Master^t^t^t^^ (from:) (Anastiana) (distri:) (RAID)", -- [1731]
+			"20:06:39 - Comm received:^1^Scouncil^T^N1^T^N1^SAnastiana-Silvermoon^N2^SMarival-Silvermoon^N3^SAsnv-Silvermoon^N4^SCronah-Silvermoon^N5^SJoypopping-Silvermoon^t^t^^ (from:) (Anastiana) (distri:) (RAID)", -- [1732]
+			"20:06:39 - true = (ConcilContains) (Anastiana-Silvermoon)", -- [1733]
+			"20:06:41 - VotingFrame:Update() without lootTable!!", -- [1734]
+			"20:06:45 - VotingFrame:Update() without lootTable!!", -- [1735]
+			"20:06:49 - UpdateGroup (table: 0000026EEDE82270)", -- [1736]
+			"20:06:51 - VotingFrame:Update() without lootTable!!", -- [1737]
+			"20:06:59 - UpdateGroup (table: 0000026EEDE82270)", -- [1738]
+			"20:07:06 - VotingFrame:Update() without lootTable!!", -- [1739]
+			"20:07:09 - UpdateGroup (table: 0000026EEDE82270)", -- [1740]
+			"20:07:16 - VotingFrame:Update() without lootTable!!", -- [1741]
+			"20:07:40 - VotingFrame:Update() without lootTable!!", -- [1742]
+			"20:07:45 - VotingFrame:Update() without lootTable!!", -- [1743]
+			"20:07:49 - Comm received:^1^Slooted^T^N1^S159305^t^^ (from:) (Asnv) (distri:) (RAID)", -- [1744]
+			"20:08:00 - VotingFrame:Update() without lootTable!!", -- [1745]
+			"20:08:03 - Comm received:^1^Slooted^T^N1^S161251^t^^ (from:) (Drobadin) (distri:) (RAID)", -- [1746]
+			"20:08:03 - Comm received:^1^Slooted^T^N1^S161251^t^^ (from:) (Drobadin) (distri:) (RAID)", -- [1747]
+			"20:08:11 - VotingFrame:Update() without lootTable!!", -- [1748]
+			"20:09:05 - UpdateGroup (table: 0000026EEDE82270)", -- [1749]
+			"20:10:51 - VotingFrame:Update() without lootTable!!", -- [1750]
+			"20:11:00 - UpdateGroup (table: 0000026EEDE82270)", -- [1751]
+			"20:11:00 - ML:AddCandidate (Capneckbeard-Silvermoon) (ROGUE) (DAMAGER) (nil) (nil) (nil) (nil) (nil)", -- [1752]
+			"20:11:00 - GetCouncilInGroup (Anastiana-Silvermoon) (Marival-Silvermoon) (Asnv-Silvermoon) (Cronah-Silvermoon) (Joypopping-Silvermoon)", -- [1753]
+			"20:11:00 - Comm received:^1^SMLdb^T^N1^T^SallowNotes^B^Stimeout^N60^SselfVote^B^Sresponses^T^Sdefault^T^t^t^SrejectTrade^B^SmultiVote^B^Sbuttons^T^Sdefault^T^SnumButtons^N3^t^t^SnumButtons^N3^SanonymousVoting^B^t^t^^ (from:) (Anastiana) (distri:) (RAID)", -- [1754]
+			"20:11:00 - Comm received:^1^Scandidates^T^N1^T^SDrobadin-Silvermoon^T^Srole^SDAMAGER^SspecID^N253^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SRaider^t^SMeralda-Silvermoon^T^Srole^SDAMAGER^SspecID^N72^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SRaider^t^SEredr-Silvermoon^T^Srole^SHEALER^SspecID^N105^Senchant_lvl^N0^Sclass^SDRUID^Srank^SOfficer~`Alt^t^SAemenór-Silvermoon^T^Srole^SDAMAGER^SspecID^N260^Senchant_lvl^N0^Sclass^SROGUE^Srank^STrial^t^SKerpi-Silvermoon^T^Srole^SDAMAGER^SspecID^N71^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SRaider^t^SNïkä-Silvermoon^T^Srole^SDAMAGER^SspecID^N251^Senchant_lvl^N0^Sclass^SDEATHKNIGHT^Srank^STrial^t^SMarival-Silvermoon^T^Srole^SHEALER^SspecID^N257^Senchant_lvl^N175^Sclass^SPRIEST^Senchanter^B^Srank^SPusn^t^SHelpr-Silvermoon^T^Srole^SDAMAGER^Sclass^SROGUE^Srank^S^t^SAsnv-Silvermoon^T^Srole^SDAMAGER^SspecID^N253^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SOfficer^t^SHulabaloo-Silvermoon^T^Srole^SDAMAGER^SspecID^N267^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SRaider^t^SCapneckbeard-Silvermoon^T^Srole^SDAMAGER^Sclass^SROGUE^Srank^S^t^SCronah-Silvermoon^T^Srole^SDAMAGER^SspecID^N252^Senchant_lvl^N0^Sclass^SDEATHKNIGHT^Srank^SOfficer^t^SSensémage-Silvermoon^T^Srole^SDAMAGER^SspecID^N63^Senchant_lvl^N54^Sclass^SMAGE^Senchanter^B^Srank^STrial^t^SFaykmage-Silvermoon^T^Srole^SDAMAGER^SspecID^N63^Senchant_lvl^N0^Sclass^SMAGE^Srank^SRaider^t^SAzverth-Silvermoon^T^Srole^SDAMAGER^SspecID^N72^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SRaider^t^SJoypopping-Silvermoon^T^Srole^SHEALER^Sclass^SMONK^Srank^S^t^SDroyy-Silvermoon^T^Srole^STANK^SspecID^N268^Senchant_lvl^N0^Sclass^SMONK^Srank^STrial^t^SVandott-Silvermoon^T^Srole^SDAMAGER^SspecID^N266^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SRaider^t^SAnastiana-Silvermoon^T^Srole^STANK^SspecID^N250^Senchant_lvl^N0^Sclass^SDEATHKNIGHT^Srank^SGuild~`Master^t^t^t^^ (from:) (Anastiana) (distri:) (RAID)", -- [1755]
+			"20:11:01 - Comm received:^1^SplayerInfo^T^N1^SCapneckbeard-Silvermoon^N2^SROGUE^N3^SDAMAGER^N4^SRaider^N6^N0^N7^N468.5625^N8^N259^t^^ (from:) (Capneckbeard) (distri:) (WHISPER)", -- [1756]
+			"20:11:01 - ML:AddCandidate (Capneckbeard-Silvermoon) (ROGUE) (DAMAGER) (Raider) (nil) (0) (468.5625) (259)", -- [1757]
+			"20:11:05 - Comm received:^1^Scouncil_request^T^t^^ (from:) (Capneckbeard) (distri:) (WHISPER)", -- [1758]
+			"20:11:05 - Comm received:^1^Scouncil^T^N1^T^N1^SAnastiana-Silvermoon^N2^SMarival-Silvermoon^N3^SAsnv-Silvermoon^N4^SCronah-Silvermoon^N5^SJoypopping-Silvermoon^t^t^^ (from:) (Anastiana) (distri:) (RAID)", -- [1759]
+			"20:11:05 - true = (ConcilContains) (Anastiana-Silvermoon)", -- [1760]
+			"20:11:10 - Comm received:^1^Scandidates^T^N1^T^SDrobadin-Silvermoon^T^Srole^SDAMAGER^SspecID^N253^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SRaider^t^SMeralda-Silvermoon^T^Srole^SDAMAGER^SspecID^N72^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SRaider^t^SEredr-Silvermoon^T^Srole^SHEALER^SspecID^N105^Senchant_lvl^N0^Sclass^SDRUID^Srank^SOfficer~`Alt^t^SAemenór-Silvermoon^T^Srole^SDAMAGER^SspecID^N260^Senchant_lvl^N0^Sclass^SROGUE^Srank^STrial^t^SKerpi-Silvermoon^T^Srole^SDAMAGER^SspecID^N71^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SRaider^t^SNïkä-Silvermoon^T^Srole^SDAMAGER^SspecID^N251^Senchant_lvl^N0^Sclass^SDEATHKNIGHT^Srank^STrial^t^SMarival-Silvermoon^T^Srole^SHEALER^SspecID^N257^Senchant_lvl^N175^Sclass^SPRIEST^Senchanter^B^Srank^SPusn^t^SHelpr-Silvermoon^T^Srole^SDAMAGER^Sclass^SROGUE^Srank^S^t^SAsnv-Silvermoon^T^Srole^SDAMAGER^SspecID^N253^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SOfficer^t^SHulabaloo-Silvermoon^T^Srole^SDAMAGER^SspecID^N267^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SRaider^t^SCapneckbeard-Silvermoon^T^Srole^SDAMAGER^SspecID^N259^Senchant_lvl^N0^Sclass^SROGUE^Srank^SRaider^t^SCronah-Silvermoon^T^Srole^SDAMAGER^SspecID^N252^Senchant_lvl^N0^Sclass^SDEATHKNIGHT^Srank^SOfficer^t^SSensémage-Silvermoon^T^Srole^SDAMAGER^SspecID^N63^Senchant_lvl^N54^Sclass^SMAGE^Senchanter^B^Srank^STrial^t^SFaykmage-Silvermoon^T^Srole^SDAMAGER^SspecID^N63^Senchant_lvl^N0^Sclass^SMAGE^Srank^SRaider^t^SAzverth-Silvermoon^T^Srole^SDAMAGER^SspecID^N72^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SRaider^t^SJoypopping-Silvermoon^T^Srole^SHEALER^Sclass^SMONK^Srank^S^t^SDroyy-Silvermoon^T^Srole^STANK^SspecID^N268^Senchant_lvl^N0^Sclass^SMONK^Srank^STrial^t^SVandott-Silvermoon^T^Srole^SDAMAGER^SspecID^N266^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SRaider^t^SAnastiana-Silvermoon^T^Srole^STANK^SspecID^N250^Senchant_lvl^N0^Sclass^SDEATHKNIGHT^Srank^SGuild~`Master^t^t^t^^ (from:) (Anastiana) (distri:) (RAID)", -- [1761]
+			"20:11:28 - ML event (CHAT_MSG_WHISPER) (uuuuh) (Madvepriest-Silvermoon) () () (Madvepriest-Silvermoon) () (0) (0) () (0) (391) (Player-3391-0AC35EDE) (0) (false) (false) (false) (false)", -- [1762]
+			"20:11:32 - ML event (CHAT_MSG_WHISPER) (wc) (Madvepriest-Silvermoon) () () (Madvepriest-Silvermoon) () (0) (0) () (0) (392) (Player-3391-0AC35EDE) (0) (false) (false) (false) (false)", -- [1763]
+			"20:13:10 - VotingFrame:Update() without lootTable!!", -- [1764]
+			"20:13:26 - UpdateGroup (table: 0000026EEDE82270)", -- [1765]
+			"20:20:05 - ML event (CHAT_MSG_WHISPER) (please be easy on ppl who fail, it is very very important to keep the hopes up on this boss) (Azverth-Silvermoon) () () (Azverth-Silvermoon) () (0) (0) () (0) (468) (Player-3391-09CE71D1) (0) (false) (false) (false) (false)", -- [1766]
+			"20:20:59 - Event: (ENCOUNTER_START) (2328) (Dark Inquisitor Xanesh) (16) (20)", -- [1767]
+			"20:20:59 - UpdatePlayersData()", -- [1768]
+			"20:21:53 - VotingFrame:Update() without lootTable!!", -- [1769]
+			"20:21:55 - ML event (PLAYER_REGEN_ENABLED)", -- [1770]
+			"20:22:00 - Event: (ENCOUNTER_END) (2328) (Dark Inquisitor Xanesh) (16) (20) (0)", -- [1771]
+			"20:24:20 - Event: (ENCOUNTER_START) (2328) (Dark Inquisitor Xanesh) (16) (20)", -- [1772]
+			"20:24:20 - UpdatePlayersData()", -- [1773]
+			"20:25:02 - ML event (PLAYER_REGEN_ENABLED)", -- [1774]
+			"20:25:03 - Event: (ENCOUNTER_END) (2328) (Dark Inquisitor Xanesh) (16) (20) (0)", -- [1775]
+			"20:26:42 - Event: (ENCOUNTER_START) (2328) (Dark Inquisitor Xanesh) (16) (20)", -- [1776]
+			"20:26:42 - UpdatePlayersData()", -- [1777]
+			"20:27:20 - ML event (PLAYER_REGEN_ENABLED)", -- [1778]
+			"20:27:22 - Event: (ENCOUNTER_END) (2328) (Dark Inquisitor Xanesh) (16) (20) (0)", -- [1779]
+			"20:28:54 - Event: (ENCOUNTER_START) (2328) (Dark Inquisitor Xanesh) (16) (20)", -- [1780]
+			"20:28:54 - UpdatePlayersData()", -- [1781]
+			"20:29:05 - Comm received:^1^SverTest^T^N1^S2.18.3^t^^ (from:) (Vanitos) (distri:) (GUILD)", -- [1782]
+			"20:29:53 - ML event (PLAYER_REGEN_ENABLED)", -- [1783]
+			"20:29:55 - Event: (ENCOUNTER_END) (2328) (Dark Inquisitor Xanesh) (16) (20) (0)", -- [1784]
+			"20:31:29 - Event: (ENCOUNTER_START) (2328) (Dark Inquisitor Xanesh) (16) (20)", -- [1785]
+			"20:31:29 - UpdatePlayersData()", -- [1786]
+			"20:32:43 - ML event (PLAYER_REGEN_ENABLED)", -- [1787]
+			"20:32:47 - Event: (ENCOUNTER_END) (2328) (Dark Inquisitor Xanesh) (16) (20) (0)", -- [1788]
+			"20:34:54 - ML event (CHAT_MSG_WHISPER) (U NEED?) (Meralda-Silvermoon) () () (Meralda-Silvermoon) () (0) (0) () (0) (675) (Player-3391-0A0CFDF0) (0) (false) (false) (false) (false)", -- [1789]
+			"20:35:10 - ML event (CHAT_MSG_WHISPER) (hahaha) (Meralda-Silvermoon) () () (Meralda-Silvermoon) () (0) (0) () (0) (678) (Player-3391-0A0CFDF0) (0) (false) (false) (false) (false)", -- [1790]
+			"20:35:12 - ML event (CHAT_MSG_WHISPER) (ye) (Meralda-Silvermoon) () () (Meralda-Silvermoon) () (0) (0) () (0) (679) (Player-3391-0A0CFDF0) (0) (false) (false) (false) (false)", -- [1791]
+			"20:35:16 - ML event (CHAT_MSG_WHISPER) (same :)) (Meralda-Silvermoon) () () (Meralda-Silvermoon) () (0) (0) () (0) (680) (Player-3391-0A0CFDF0) (0) (false) (false) (false) (false)", -- [1792]
+			"20:36:16 - Event: (ENCOUNTER_START) (2328) (Dark Inquisitor Xanesh) (16) (20)", -- [1793]
+			"20:36:16 - UpdatePlayersData()", -- [1794]
+			"20:37:27 - ML event (PLAYER_REGEN_ENABLED)", -- [1795]
+			"20:37:28 - Event: (ENCOUNTER_END) (2328) (Dark Inquisitor Xanesh) (16) (20) (0)", -- [1796]
+			"20:40:14 - Event: (ENCOUNTER_START) (2328) (Dark Inquisitor Xanesh) (16) (20)", -- [1797]
+			"20:40:14 - UpdatePlayersData()", -- [1798]
+			"20:41:06 - ML event (PLAYER_REGEN_ENABLED)", -- [1799]
+			"20:41:07 - Event: (ENCOUNTER_END) (2328) (Dark Inquisitor Xanesh) (16) (20) (0)", -- [1800]
+			"20:42:37 - Event: (ENCOUNTER_START) (2328) (Dark Inquisitor Xanesh) (16) (20)", -- [1801]
+			"20:42:37 - UpdatePlayersData()", -- [1802]
+			"20:42:42 - ML event (CHAT_MSG_WHISPER) (was,'t on time) (Vanitos-Silvermoon) () () (Vanitos-Silvermoon) () (0) (0) () (0) (775) (Player-3391-0911BA0D) (0) (false) (false) (false) (false)", -- [1803]
+			"20:42:43 - ML event (CHAT_MSG_WHISPER) (<Deadly Boss Mods> Vanitos is busy fighting against Mythic+ (15) - King Gobbamak (100%, 5/5 people alive)) (Vanitos-Silvermoon) () () (Vanitos-Silvermoon) () (0) (0) () (0) (777) (Player-3391-0911BA0D) (0) (false) (false) (false) (false)", -- [1804]
+			"20:44:14 - ML event (PLAYER_REGEN_ENABLED)", -- [1805]
+			"20:44:15 - Event: (ENCOUNTER_END) (2328) (Dark Inquisitor Xanesh) (16) (20) (0)", -- [1806]
+			"20:44:33 - ML event (CHAT_MSG_WHISPER) (stuck in m+ now) (Vanitos-Silvermoon) () () (Vanitos-Silvermoon) () (0) (0) () (0) (818) (Player-3391-0911BA0D) (0) (false) (false) (false) (false)", -- [1807]
+			"20:44:37 - ML event (CHAT_MSG_WHISPER) (<DBM> Vanitos has defeated Mythic+ (15) - King Gobbamak!) (Vanitos-Silvermoon) () () (Vanitos-Silvermoon) () (0) (0) () (0) (819) (Player-3391-0911BA0D) (0) (false) (false) (false) (false)", -- [1808]
+			"20:46:21 - Comm received:^1^SfakeLoot^T^N1^S|cff9d9d9d|Hitem:168790::::::::120:71::::::|h[Sack~`of~`Fish~`Bones]|h|r^N2^S0^t^^ (from:) (Kerpi) (distri:) (RAID)", -- [1809]
+			"20:46:21 - Comm received:^1^Slooted^T^N1^S0^t^^ (from:) (Meralda) (distri:) (RAID)", -- [1810]
+			"20:46:21 - Comm received:^1^Slooted^T^N1^S0^t^^ (from:) (Meralda) (distri:) (RAID)", -- [1811]
+			"20:46:23 - Comm received:^1^Slooted^T^N1^S0^t^^ (from:) (Eredr) (distri:) (RAID)", -- [1812]
+			"20:46:23 - Comm received:^1^Slooted^T^N1^S0^t^^ (from:) (Eredr) (distri:) (RAID)", -- [1813]
+			"20:46:26 - Comm received:^1^Slooted^T^N1^S0^t^^ (from:) (Sensémage) (distri:) (RAID)", -- [1814]
+			"20:46:26 - Comm received:^1^Slooted^T^N1^S0^t^^ (from:) (Sensémage) (distri:) (RAID)", -- [1815]
+			"20:46:27 - Comm received:^1^Slooted^T^N1^S0^t^^ (from:) (Nïkä) (distri:) (RAID)", -- [1816]
+			"20:46:27 - Comm received:^1^Slooted^T^N1^S0^t^^ (from:) (Nïkä) (distri:) (RAID)", -- [1817]
+			"20:46:55 - Event: (ENCOUNTER_START) (2328) (Dark Inquisitor Xanesh) (16) (20)", -- [1818]
+			"20:46:55 - UpdatePlayersData()", -- [1819]
+			"20:47:59 - ML event (PLAYER_REGEN_ENABLED)", -- [1820]
+			"20:48:15 - Event: (ENCOUNTER_END) (2328) (Dark Inquisitor Xanesh) (16) (20) (0)", -- [1821]
+			"20:48:24 - ML event (CHAT_MSG_WHISPER) (and don't want to get people kicked cause of me) (Vanitos-Silvermoon) () () (Vanitos-Silvermoon) () (0) (0) () (0) (907) (Player-3391-0911BA0D) (0) (false) (false) (false) (false)", -- [1822]
+			"20:48:47 - ML event (CHAT_MSG_WHISPER) (pug one?) (Vanitos-Silvermoon) () () (Vanitos-Silvermoon) () (0) (0) () (0) (914) (Player-3391-0911BA0D) (0) (false) (false) (false) (false)", -- [1823]
+			"20:48:53 - ML event (CHAT_MSG_WHISPER) (gonna wash my hands rl quick 30 sec) (Capneckbeard-Silvermoon) () () (Capneckbeard-Silvermoon) () (0) (0) () (0) (915) (Player-3391-09F6C7BA) (0) (false) (false) (false) (false)", -- [1824]
+			"20:48:54 - ML event (CHAT_MSG_WHISPER) (but fine, inv) (Vanitos-Silvermoon) () () (Vanitos-Silvermoon) () (0) (0) () (0) (919) (Player-3391-0911BA0D) (0) (false) (false) (false) (false)", -- [1825]
+			"20:48:54 - Comm received:^1^Slooted^T^N1^S0^t^^ (from:) (Azverth) (distri:) (RAID)", -- [1826]
+			"20:48:54 - Comm received:^1^Slooted^T^N1^S0^t^^ (from:) (Azverth) (distri:) (RAID)", -- [1827]
+			"20:49:01 - ML event (CHAT_MSG_WHISPER) (don't want to but fuck it) (Vanitos-Silvermoon) () () (Vanitos-Silvermoon) () (0) (0) () (0) (922) (Player-3391-0911BA0D) (0) (false) (false) (false) (false)", -- [1828]
+			"20:49:05 - VotingFrame:Update() without lootTable!!", -- [1829]
+			"20:49:14 - UpdateGroup (table: 0000026EEDE82270)", -- [1830]
+			"20:49:14 - ML:AddCandidate (Vanitos-Silvermoon) (SHAMAN) (DAMAGER) (nil) (nil) (nil) (nil) (nil)", -- [1831]
+			"20:49:14 - GetCouncilInGroup (Anastiana-Silvermoon) (Marival-Silvermoon) (Asnv-Silvermoon) (Cronah-Silvermoon) (Joypopping-Silvermoon)", -- [1832]
+			"20:49:14 - Comm received:^1^SMLdb^T^N1^T^SallowNotes^B^Stimeout^N60^SselfVote^B^Sresponses^T^Sdefault^T^t^t^SrejectTrade^B^SmultiVote^B^Sbuttons^T^Sdefault^T^SnumButtons^N3^t^t^SnumButtons^N3^SanonymousVoting^B^t^t^^ (from:) (Anastiana) (distri:) (RAID)", -- [1833]
+			"20:49:14 - Comm received:^1^Scandidates^T^N1^T^SDrobadin-Silvermoon^T^Srole^SDAMAGER^SspecID^N253^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SRaider^t^SMeralda-Silvermoon^T^Srole^SDAMAGER^SspecID^N72^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SRaider^t^SEredr-Silvermoon^T^Srole^SHEALER^SspecID^N105^Senchant_lvl^N0^Sclass^SDRUID^Srank^SOfficer~`Alt^t^SAemenór-Silvermoon^T^Srole^SDAMAGER^SspecID^N260^Senchant_lvl^N0^Sclass^SROGUE^Srank^STrial^t^SKerpi-Silvermoon^T^Srole^SDAMAGER^SspecID^N71^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SRaider^t^SNïkä-Silvermoon^T^Srole^SDAMAGER^SspecID^N251^Senchant_lvl^N0^Sclass^SDEATHKNIGHT^Srank^STrial^t^SMarival-Silvermoon^T^Srole^SHEALER^SspecID^N257^Senchant_lvl^N175^Sclass^SPRIEST^Senchanter^B^Srank^SPusn^t^SHelpr-Silvermoon^T^Srole^SDAMAGER^Sclass^SROGUE^Srank^S^t^SAsnv-Silvermoon^T^Srole^SDAMAGER^SspecID^N253^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SOfficer^t^SHulabaloo-Silvermoon^T^Srole^SDAMAGER^SspecID^N267^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SRaider^t^SAzverth-Silvermoon^T^Srole^SDAMAGER^SspecID^N72^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SRaider^t^SCapneckbeard-Silvermoon^T^Srole^SDAMAGER^SspecID^N259^Senchant_lvl^N0^Sclass^SROGUE^Srank^SRaider^t^SCronah-Silvermoon^T^Srole^SDAMAGER^SspecID^N252^Senchant_lvl^N0^Sclass^SDEATHKNIGHT^Srank^SOfficer^t^SSensémage-Silvermoon^T^Srole^SDAMAGER^SspecID^N63^Senchant_lvl^N54^Sclass^SMAGE^Senchanter^B^Srank^STrial^t^SFaykmage-Silvermoon^T^Srole^SDAMAGER^SspecID^N63^Senchant_lvl^N0^Sclass^SMAGE^Srank^SRaider^t^SVanitos-Silvermoon^T^Srole^SDAMAGER^Sclass^SSHAMAN^Srank^S^t^SJoypopping-Silvermoon^T^Srole^SHEALER^Sclass^SMONK^Srank^S^t^SDroyy-Silvermoon^T^Srole^STANK^SspecID^N268^Senchant_lvl^N0^Sclass^SMONK^Srank^STrial^t^SVandott-Silvermoon^T^Srole^SDAMAGER^SspecID^N266^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SRaider^t^SAnastiana-Silvermoon^T^Srole^STANK^SspecID^N250^Senchant_lvl^N0^Sclass^SDEATHKNIGHT^Srank^SGuild~`Master^t^t^t^^ (from:) (Anastiana) (distri:) (RAID)", -- [1834]
+			"20:49:14 - Comm received:^1^SplayerInfo^T^N1^SVanitos-Silvermoon^N2^SSHAMAN^N3^SDAMAGER^N4^SRaider^N6^N0^N7^N470.3125^N8^N263^t^^ (from:) (Vanitos) (distri:) (WHISPER)", -- [1835]
+			"20:49:14 - ML:AddCandidate (Vanitos-Silvermoon) (SHAMAN) (DAMAGER) (Raider) (nil) (0) (470.3125) (263)", -- [1836]
+			"20:49:19 - Comm received:^1^Scouncil_request^T^t^^ (from:) (Vanitos) (distri:) (WHISPER)", -- [1837]
+			"20:49:20 - Comm received:^1^Scouncil^T^N1^T^N1^SAnastiana-Silvermoon^N2^SMarival-Silvermoon^N3^SAsnv-Silvermoon^N4^SCronah-Silvermoon^N5^SJoypopping-Silvermoon^t^t^^ (from:) (Anastiana) (distri:) (RAID)", -- [1838]
+			"20:49:20 - true = (ConcilContains) (Anastiana-Silvermoon)", -- [1839]
+			"20:49:24 - Comm received:^1^Scandidates^T^N1^T^SDrobadin-Silvermoon^T^Srole^SDAMAGER^SspecID^N253^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SRaider^t^SMeralda-Silvermoon^T^Srole^SDAMAGER^SspecID^N72^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SRaider^t^SEredr-Silvermoon^T^Srole^SHEALER^SspecID^N105^Senchant_lvl^N0^Sclass^SDRUID^Srank^SOfficer~`Alt^t^SAemenór-Silvermoon^T^Srole^SDAMAGER^SspecID^N260^Senchant_lvl^N0^Sclass^SROGUE^Srank^STrial^t^SKerpi-Silvermoon^T^Srole^SDAMAGER^SspecID^N71^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SRaider^t^SNïkä-Silvermoon^T^Srole^SDAMAGER^SspecID^N251^Senchant_lvl^N0^Sclass^SDEATHKNIGHT^Srank^STrial^t^SMarival-Silvermoon^T^Srole^SHEALER^SspecID^N257^Senchant_lvl^N175^Sclass^SPRIEST^Senchanter^B^Srank^SPusn^t^SHelpr-Silvermoon^T^Srole^SDAMAGER^Sclass^SROGUE^Srank^S^t^SAsnv-Silvermoon^T^Srole^SDAMAGER^SspecID^N253^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SOfficer^t^SHulabaloo-Silvermoon^T^Srole^SDAMAGER^SspecID^N267^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SRaider^t^SAzverth-Silvermoon^T^Srole^SDAMAGER^SspecID^N72^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SRaider^t^SCapneckbeard-Silvermoon^T^Srole^SDAMAGER^SspecID^N259^Senchant_lvl^N0^Sclass^SROGUE^Srank^SRaider^t^SCronah-Silvermoon^T^Srole^SDAMAGER^SspecID^N252^Senchant_lvl^N0^Sclass^SDEATHKNIGHT^Srank^SOfficer^t^SSensémage-Silvermoon^T^Srole^SDAMAGER^SspecID^N63^Senchant_lvl^N54^Sclass^SMAGE^Senchanter^B^Srank^STrial^t^SFaykmage-Silvermoon^T^Srole^SDAMAGER^SspecID^N63^Senchant_lvl^N0^Sclass^SMAGE^Srank^SRaider^t^SVanitos-Silvermoon^T^Srole^SDAMAGER^SspecID^N263^Senchant_lvl^N0^Sclass^SSHAMAN^Srank^SRaider^t^SJoypopping-Silvermoon^T^Srole^SHEALER^Sclass^SMONK^Srank^S^t^SDroyy-Silvermoon^T^Srole^STANK^SspecID^N268^Senchant_lvl^N0^Sclass^SMONK^Srank^STrial^t^SVandott-Silvermoon^T^Srole^SDAMAGER^SspecID^N266^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SRaider^t^SAnastiana-Silvermoon^T^Srole^STANK^SspecID^N250^Senchant_lvl^N0^Sclass^SDEATHKNIGHT^Srank^SGuild~`Master^t^t^t^^ (from:) (Anastiana) (distri:) (RAID)", -- [1840]
+			"20:49:40 - VotingFrame:Update() without lootTable!!", -- [1841]
+			"20:49:48 - ML event (CHAT_MSG_WHISPER) (rdy) (Capneckbeard-Silvermoon) () () (Capneckbeard-Silvermoon) () (0) (0) () (0) (928) (Player-3391-09F6C7BA) (0) (false) (false) (false) (false)", -- [1842]
+			"20:49:59 - VotingFrame:Update() without lootTable!!", -- [1843]
+			"20:50:03 - UpdateGroup (table: 0000026EEDE82270)", -- [1844]
+			"20:50:03 - ML:AddCandidate (Vanitos-Silvermoon) (SHAMAN) (HEALER) (Raider) (nil) (0) (nil) (263)", -- [1845]
+			"20:50:03 - GetCouncilInGroup (Anastiana-Silvermoon) (Marival-Silvermoon) (Asnv-Silvermoon) (Cronah-Silvermoon) (Joypopping-Silvermoon)", -- [1846]
+			"20:50:03 - Comm received:^1^SMLdb^T^N1^T^SallowNotes^B^Stimeout^N60^SselfVote^B^Sresponses^T^Sdefault^T^t^t^SrejectTrade^B^SmultiVote^B^Sbuttons^T^Sdefault^T^SnumButtons^N3^t^t^SnumButtons^N3^SanonymousVoting^B^t^t^^ (from:) (Anastiana) (distri:) (RAID)", -- [1847]
+			"20:50:03 - Comm received:^1^Scandidates^T^N1^T^SDrobadin-Silvermoon^T^Srole^SDAMAGER^SspecID^N253^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SRaider^t^SMeralda-Silvermoon^T^Srole^SDAMAGER^SspecID^N72^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SRaider^t^SEredr-Silvermoon^T^Srole^SHEALER^SspecID^N105^Senchant_lvl^N0^Sclass^SDRUID^Srank^SOfficer~`Alt^t^SAemenór-Silvermoon^T^Srole^SDAMAGER^SspecID^N260^Senchant_lvl^N0^Sclass^SROGUE^Srank^STrial^t^SKerpi-Silvermoon^T^Srole^SDAMAGER^SspecID^N71^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SRaider^t^SNïkä-Silvermoon^T^Srole^SDAMAGER^SspecID^N251^Senchant_lvl^N0^Sclass^SDEATHKNIGHT^Srank^STrial^t^SMarival-Silvermoon^T^Srole^SHEALER^SspecID^N257^Senchant_lvl^N175^Sclass^SPRIEST^Senchanter^B^Srank^SPusn^t^SHelpr-Silvermoon^T^Srole^SDAMAGER^Sclass^SROGUE^Srank^S^t^SAsnv-Silvermoon^T^Srole^SDAMAGER^SspecID^N253^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SOfficer^t^SHulabaloo-Silvermoon^T^Srole^SDAMAGER^SspecID^N267^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SRaider^t^SAzverth-Silvermoon^T^Srole^SDAMAGER^SspecID^N72^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SRaider^t^SCapneckbeard-Silvermoon^T^Srole^SDAMAGER^SspecID^N259^Senchant_lvl^N0^Sclass^SROGUE^Srank^SRaider^t^SCronah-Silvermoon^T^Srole^SDAMAGER^SspecID^N252^Senchant_lvl^N0^Sclass^SDEATHKNIGHT^Srank^SOfficer^t^SSensémage-Silvermoon^T^Srole^SDAMAGER^SspecID^N63^Senchant_lvl^N54^Sclass^SMAGE^Senchanter^B^Srank^STrial^t^SFaykmage-Silvermoon^T^Srole^SDAMAGER^SspecID^N63^Senchant_lvl^N0^Sclass^SMAGE^Srank^SRaider^t^SVanitos-Silvermoon^T^Srole^SHEALER^SspecID^N263^Senchant_lvl^N0^Sclass^SSHAMAN^Srank^SRaider^t^SJoypopping-Silvermoon^T^Srole^SHEALER^Sclass^SMONK^Srank^S^t^SDroyy-Silvermoon^T^Srole^STANK^SspecID^N268^Senchant_lvl^N0^Sclass^SMONK^Srank^STrial^t^SVandott-Silvermoon^T^Srole^SDAMAGER^SspecID^N266^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SRaider^t^SAnastiana-Silvermoon^T^Srole^STANK^SspecID^N250^Senchant_lvl^N0^Sclass^SDEATHKNIGHT^Srank^SGuild~`Master^t^t^t^^ (from:) (Anastiana) (distri:) (RAID)", -- [1848]
+			"20:50:29 - UpdateGroup (table: 0000026EEDE82270)", -- [1849]
+			"20:50:46 - Comm received:^1^Slooted^T^N1^S0^t^^ (from:) (Hulabaloo) (distri:) (RAID)", -- [1850]
+			"20:50:46 - Comm received:^1^Slooted^T^N1^S0^t^^ (from:) (Hulabaloo) (distri:) (RAID)", -- [1851]
+			"20:53:38 - Event: (ENCOUNTER_START) (2328) (Dark Inquisitor Xanesh) (16) (20)", -- [1852]
+			"20:53:38 - UpdatePlayersData()", -- [1853]
+			"20:54:02 - ML event (PLAYER_REGEN_ENABLED)", -- [1854]
+			"20:54:17 - Event: (ENCOUNTER_END) (2328) (Dark Inquisitor Xanesh) (16) (20) (0)", -- [1855]
+			"20:55:41 - Event: (ENCOUNTER_START) (2328) (Dark Inquisitor Xanesh) (16) (20)", -- [1856]
+			"20:55:41 - UpdatePlayersData()", -- [1857]
+			"20:56:41 - ML event (PLAYER_REGEN_ENABLED)", -- [1858]
+			"20:56:45 - Event: (ENCOUNTER_END) (2328) (Dark Inquisitor Xanesh) (16) (20) (0)", -- [1859]
+			"20:58:30 - Event: (ENCOUNTER_START) (2328) (Dark Inquisitor Xanesh) (16) (20)", -- [1860]
+			"20:58:30 - UpdatePlayersData()", -- [1861]
+			"20:59:12 - ML event (PLAYER_REGEN_ENABLED)", -- [1862]
+			"20:59:13 - Event: (ENCOUNTER_END) (2328) (Dark Inquisitor Xanesh) (16) (20) (0)", -- [1863]
+			"20:59:49 - ML event (CHAT_MSG_WHISPER) (are you sneakly recording out wipes to catch more golden moments`?) (Meralda-Silvermoon) () () (Meralda-Silvermoon) () (0) (0) () (0) (1111) (Player-3391-0A0CFDF0) (0) (false) (false) (false) (false)", -- [1864]
+			"20:59:49 - Comm received:^1^Slooted^T^N1^S0^t^^ (from:) (Cronah) (distri:) (RAID)", -- [1865]
+			"20:59:57 - Comm received:^1^Slooted^T^N1^S0^t^^ (from:) (Cronah) (distri:) (RAID)", -- [1866]
+			"20:59:57 - Comm received:^1^Slooted^T^N1^S0^t^^ (from:) (Cronah) (distri:) (RAID)", -- [1867]
+			"21:00:09 - ML event (CHAT_MSG_WHISPER) (our * :P) (Meralda-Silvermoon) () () (Meralda-Silvermoon) () (0) (0) () (0) (1119) (Player-3391-0A0CFDF0) (0) (false) (false) (false) (false)", -- [1868]
+			"21:00:10 - ML event (CHAT_MSG_WHISPER) (:D) (Meralda-Silvermoon) () () (Meralda-Silvermoon) () (0) (0) () (0) (1120) (Player-3391-0A0CFDF0) (0) (false) (false) (false) (false)", -- [1869]
+			"21:00:15 - ML event (CHAT_MSG_WHISPER) (funzies!) (Meralda-Silvermoon) () () (Meralda-Silvermoon) () (0) (0) () (0) (1123) (Player-3391-0A0CFDF0) (0) (false) (false) (false) (false)", -- [1870]
+			"21:01:26 - Event: (ENCOUNTER_START) (2328) (Dark Inquisitor Xanesh) (16) (20)", -- [1871]
+			"21:01:26 - UpdatePlayersData()", -- [1872]
+			"21:02:08 - ML event (PLAYER_REGEN_ENABLED)", -- [1873]
+			"21:02:16 - Event: (ENCOUNTER_END) (2328) (Dark Inquisitor Xanesh) (16) (20) (0)", -- [1874]
+			"21:03:36 - TradeUI: Traded item(s) to (Aemenór-Silvermoon)", -- [1875]
+			"21:03:36 - TradeUI:Show() (nil)", -- [1876]
+			"21:03:36 - TradeUI:Hide()", -- [1877]
+			"21:04:16 - Event: (ENCOUNTER_START) (2328) (Dark Inquisitor Xanesh) (16) (20)", -- [1878]
+			"21:04:16 - UpdatePlayersData()", -- [1879]
+			"21:06:16 - ML event (PLAYER_REGEN_ENABLED)", -- [1880]
+			"21:06:26 - Event: (ENCOUNTER_END) (2328) (Dark Inquisitor Xanesh) (16) (20) (0)", -- [1881]
+			"21:08:21 - Event: (ENCOUNTER_START) (2328) (Dark Inquisitor Xanesh) (16) (20)", -- [1882]
+			"21:08:21 - UpdatePlayersData()", -- [1883]
+			"21:08:44 - ML event (PLAYER_REGEN_ENABLED)", -- [1884]
+			"21:08:59 - Event: (ENCOUNTER_END) (2328) (Dark Inquisitor Xanesh) (16) (20) (0)", -- [1885]
+			"21:09:59 - ML event (CHAT_MSG_WHISPER) (my flask says 11 min :O) (Meralda-Silvermoon) () () (Meralda-Silvermoon) () (0) (0) () (0) (1316) (Player-3391-0A0CFDF0) (0) (false) (false) (false) (false)", -- [1886]
+			"21:10:18 - ML event (CHAT_MSG_WHISPER) (now anymore obv :P) (Meralda-Silvermoon) () () (Meralda-Silvermoon) () (0) (0) () (0) (1319) (Player-3391-0A0CFDF0) (0) (false) (false) (false) (false)", -- [1887]
+			"21:10:37 - Event: (ENCOUNTER_START) (2328) (Dark Inquisitor Xanesh) (16) (20)", -- [1888]
+			"21:10:37 - UpdatePlayersData()", -- [1889]
+			"21:11:52 - ML event (PLAYER_REGEN_ENABLED)", -- [1890]
+			"21:12:03 - Event: (ENCOUNTER_END) (2328) (Dark Inquisitor Xanesh) (16) (20) (0)", -- [1891]
+			"21:13:59 - Event: (ENCOUNTER_START) (2328) (Dark Inquisitor Xanesh) (16) (20)", -- [1892]
+			"21:13:59 - UpdatePlayersData()", -- [1893]
+			"21:16:19 - ML event (PLAYER_REGEN_ENABLED)", -- [1894]
+			"21:16:20 - Event: (ENCOUNTER_END) (2328) (Dark Inquisitor Xanesh) (16) (20) (0)", -- [1895]
+			"21:18:11 - Event: (ENCOUNTER_START) (2328) (Dark Inquisitor Xanesh) (16) (20)", -- [1896]
+			"21:18:11 - UpdatePlayersData()", -- [1897]
+			"21:19:03 - ML event (PLAYER_REGEN_ENABLED)", -- [1898]
+			"21:19:04 - Event: (ENCOUNTER_END) (2328) (Dark Inquisitor Xanesh) (16) (20) (0)", -- [1899]
+			"21:20:13 - TradeUI: Traded item(s) to (Cronah-Silvermoon)", -- [1900]
+			"21:20:13 - Storage:RemoveItem (|cffffffff|Hitem:168655::::::::120:250::::::|h[Greater Mystical Flask]|h|r)", -- [1901]
+			"21:20:13 - Error - Couldn't remove item (nil) (nil)", -- [1902]
+			"21:20:13 - TradeUI:Hide()", -- [1903]
+			"21:20:23 - ML event (CHAT_MSG_WHISPER) (thanks was just about to pop mine :P) (Cronah-Silvermoon) () () (Cronah-Silvermoon) () (0) (0) () (0) (1523) (Player-3391-09529248) (0) (false) (false) (false) (false)", -- [1904]
+			"21:22:24 - ML event (CHAT_MSG_WHISPER) (haha) (Joypopping-Silvermoon) () () (Joypopping-Silvermoon) () (0) (0) () (0) (1539) (Player-3391-0A4211F3) (0) (false) (false) (false) (false)", -- [1905]
+			"21:22:26 - ML event (CHAT_MSG_WHISPER) (enig assssssssssss) (Joypopping-Silvermoon) () () (Joypopping-Silvermoon) () (0) (0) () (0) (1540) (Player-3391-0A4211F3) (0) (false) (false) (false) (false)", -- [1906]
+			"21:24:27 - Event: (ENCOUNTER_START) (2328) (Dark Inquisitor Xanesh) (16) (20)", -- [1907]
+			"21:24:27 - UpdatePlayersData()", -- [1908]
+			"21:25:47 - ML event (PLAYER_REGEN_ENABLED)", -- [1909]
+			"21:25:51 - Event: (ENCOUNTER_END) (2328) (Dark Inquisitor Xanesh) (16) (20) (0)", -- [1910]
+			"21:27:15 - ML event (CHAT_MSG_WHISPER) (10min så jeg rekker butikken?) (Joypopping-Silvermoon) () () (Joypopping-Silvermoon) () (0) (0) () (0) (1622) (Player-3391-0A4211F3) (0) (false) (false) (false) (false)", -- [1911]
+			"21:27:35 - Event: (ENCOUNTER_START) (2328) (Dark Inquisitor Xanesh) (16) (20)", -- [1912]
+			"21:27:35 - UpdatePlayersData()", -- [1913]
+			"21:29:36 - ML event (PLAYER_REGEN_ENABLED)", -- [1914]
+			"21:29:52 - Event: (ENCOUNTER_END) (2328) (Dark Inquisitor Xanesh) (16) (20) (0)", -- [1915]
+			"21:34:03 - Comm received:^1^SverTest^T^N1^S2.18.3^t^^ (from:) (Madvepriest) (distri:) (GUILD)", -- [1916]
+			"21:36:22 - VotingFrame:Update() without lootTable!!", -- [1917]
+			"21:36:25 - Comm received:^1^SverTest^T^N1^S2.18.3^t^^ (from:) (Sensémage) (distri:) (GUILD)", -- [1918]
+			"21:36:30 - UpdateGroup (table: 0000026EEDE82270)", -- [1919]
+			"21:36:39 - Comm received:^1^SMLdb_request^T^t^^ (from:) (Sensémage) (distri:) (WHISPER)", -- [1920]
+			"21:36:39 - Comm received:^1^Scouncil_request^T^t^^ (from:) (Sensémage) (distri:) (WHISPER)", -- [1921]
+			"21:36:39 - Comm received:^1^SMLdb^T^N1^T^SallowNotes^B^Stimeout^N60^SselfVote^B^Sresponses^T^Sdefault^T^t^t^SrejectTrade^B^SmultiVote^B^Sbuttons^T^Sdefault^T^SnumButtons^N3^t^t^SnumButtons^N3^SanonymousVoting^B^t^t^^ (from:) (Anastiana) (distri:) (RAID)", -- [1922]
+			"21:36:39 - Comm received:^1^Scouncil^T^N1^T^N1^SAnastiana-Silvermoon^N2^SMarival-Silvermoon^N3^SAsnv-Silvermoon^N4^SCronah-Silvermoon^N5^SJoypopping-Silvermoon^t^t^^ (from:) (Anastiana) (distri:) (RAID)", -- [1923]
+			"21:36:39 - true = (ConcilContains) (Anastiana-Silvermoon)", -- [1924]
+			"21:41:54 - Comm received:^1^SverTest^T^N1^S2.18.3^t^^ (from:) (Faykmage) (distri:) (GUILD)", -- [1925]
+			"21:41:59 - UpdateGroup (table: 0000026EEDE82270)", -- [1926]
+			"21:42:09 - Comm received:^1^SMLdb_request^T^t^^ (from:) (Faykmage) (distri:) (WHISPER)", -- [1927]
+			"21:42:09 - Comm received:^1^Scouncil_request^T^t^^ (from:) (Faykmage) (distri:) (WHISPER)", -- [1928]
+			"21:42:09 - Comm received:^1^SMLdb^T^N1^T^SallowNotes^B^Stimeout^N60^SselfVote^B^Sresponses^T^Sdefault^T^t^t^SrejectTrade^B^SmultiVote^B^Sbuttons^T^Sdefault^T^SnumButtons^N3^t^t^SnumButtons^N3^SanonymousVoting^B^t^t^^ (from:) (Anastiana) (distri:) (RAID)", -- [1929]
+			"21:42:09 - Comm received:^1^Scouncil^T^N1^T^N1^SAnastiana-Silvermoon^N2^SMarival-Silvermoon^N3^SAsnv-Silvermoon^N4^SCronah-Silvermoon^N5^SJoypopping-Silvermoon^t^t^^ (from:) (Anastiana) (distri:) (RAID)", -- [1930]
+			"21:42:09 - true = (ConcilContains) (Anastiana-Silvermoon)", -- [1931]
+			"21:45:29 - ML event (CHAT_MSG_WHISPER) (måtte på kiwi) (Joypopping-Silvermoon) () () (Joypopping-Silvermoon) () (0) (0) () (0) (1865) (Player-3391-0A4211F3) (0) (false) (false) (false) (false)", -- [1932]
+			"21:45:32 - ML event (CHAT_MSG_WHISPER) (alt er jo stengt kl 9) (Joypopping-Silvermoon) () () (Joypopping-Silvermoon) () (0) (0) () (0) (1867) (Player-3391-0A4211F3) (0) (false) (false) (false) (false)", -- [1933]
+			"21:45:35 - Comm received:^1^Slooted^T^N1^S0^t^^ (from:) (Droyy) (distri:) (RAID)", -- [1934]
+			"21:45:35 - Comm received:^1^Slooted^T^N1^S0^t^^ (from:) (Droyy) (distri:) (RAID)", -- [1935]
+			"21:45:50 - ML event (CHAT_MSG_WHISPER) (rensvik) (Joypopping-Silvermoon) () () (Joypopping-Silvermoon) () (0) (0) () (0) (1872) (Player-3391-0A4211F3) (0) (false) (false) (false) (false)", -- [1936]
+			"21:45:55 - ML event (CHAT_MSG_WHISPER) (bor i omsundet) (Joypopping-Silvermoon) () () (Joypopping-Silvermoon) () (0) (0) () (0) (1873) (Player-3391-0A4211F3) (0) (false) (false) (false) (false)", -- [1937]
+			"21:46:20 - Event: (ENCOUNTER_START) (2328) (Dark Inquisitor Xanesh) (16) (20)", -- [1938]
+			"21:46:20 - UpdatePlayersData()", -- [1939]
+			"21:47:03 - ML event (PLAYER_REGEN_ENABLED)", -- [1940]
+			"21:47:11 - Event: (ENCOUNTER_END) (2328) (Dark Inquisitor Xanesh) (16) (20) (0)", -- [1941]
+			"21:48:38 - Event: (ENCOUNTER_START) (2328) (Dark Inquisitor Xanesh) (16) (20)", -- [1942]
+			"21:48:38 - UpdatePlayersData()", -- [1943]
+			"21:49:02 - ML event (PLAYER_REGEN_ENABLED)", -- [1944]
+			"21:49:16 - Event: (ENCOUNTER_END) (2328) (Dark Inquisitor Xanesh) (16) (20) (0)", -- [1945]
+			"21:50:56 - Event: (ENCOUNTER_START) (2328) (Dark Inquisitor Xanesh) (16) (20)", -- [1946]
+			"21:50:56 - UpdatePlayersData()", -- [1947]
+			"21:52:25 - ML event (PLAYER_REGEN_ENABLED)", -- [1948]
+			"21:52:26 - Event: (ENCOUNTER_END) (2328) (Dark Inquisitor Xanesh) (16) (20) (0)", -- [1949]
+			"21:53:55 - Event: (ENCOUNTER_START) (2328) (Dark Inquisitor Xanesh) (16) (20)", -- [1950]
+			"21:53:55 - UpdatePlayersData()", -- [1951]
+			"21:55:32 - ML event (PLAYER_REGEN_ENABLED)", -- [1952]
+			"21:55:35 - Event: (ENCOUNTER_END) (2328) (Dark Inquisitor Xanesh) (16) (20) (0)", -- [1953]
+			"21:57:16 - Event: (ENCOUNTER_START) (2328) (Dark Inquisitor Xanesh) (16) (20)", -- [1954]
+			"21:57:16 - UpdatePlayersData()", -- [1955]
+			"21:59:39 - ML event (PLAYER_REGEN_ENABLED)", -- [1956]
+			"21:59:40 - Event: (ENCOUNTER_END) (2328) (Dark Inquisitor Xanesh) (16) (20) (0)", -- [1957]
+			"22:01:38 - Event: (ENCOUNTER_START) (2328) (Dark Inquisitor Xanesh) (16) (20)", -- [1958]
+			"22:01:38 - UpdatePlayersData()", -- [1959]
+			"22:04:00 - ML event (PLAYER_REGEN_ENABLED)", -- [1960]
+			"22:04:02 - Event: (ENCOUNTER_END) (2328) (Dark Inquisitor Xanesh) (16) (20) (0)", -- [1961]
+			"22:06:05 - Event: (ENCOUNTER_START) (2328) (Dark Inquisitor Xanesh) (16) (20)", -- [1962]
+			"22:06:05 - UpdatePlayersData()", -- [1963]
+			"22:06:48 - ML event (PLAYER_REGEN_ENABLED)", -- [1964]
+			"22:06:50 - Event: (ENCOUNTER_END) (2328) (Dark Inquisitor Xanesh) (16) (20) (0)", -- [1965]
+			"22:08:50 - Event: (ENCOUNTER_START) (2328) (Dark Inquisitor Xanesh) (16) (20)", -- [1966]
+			"22:08:50 - UpdatePlayersData()", -- [1967]
+			"22:09:35 - ML event (PLAYER_REGEN_ENABLED)", -- [1968]
+			"22:09:36 - Event: (ENCOUNTER_END) (2328) (Dark Inquisitor Xanesh) (16) (20) (0)", -- [1969]
+			"22:11:03 - ML event (CHAT_MSG_WHISPER) (oRA3> Your flask is expiring in less than 10 minutes) (Anastiana-Silvermoon) () () (Anastiana-Silvermoon) () (0) (0) () (0) (2369) (Player-3391-09469621) (0) (false) (false) (false) (false)", -- [1970]
+			"22:11:59 - Event: (ENCOUNTER_START) (2328) (Dark Inquisitor Xanesh) (16) (20)", -- [1971]
+			"22:11:59 - UpdatePlayersData()", -- [1972]
+			"22:14:20 - ML event (PLAYER_REGEN_ENABLED)", -- [1973]
+			"22:14:21 - Event: (ENCOUNTER_END) (2328) (Dark Inquisitor Xanesh) (16) (20) (0)", -- [1974]
+			"22:15:05 - ML event (CHAT_MSG_WHISPER) (oRA3> Your flask is expiring in less than 10 minutes) (Anastiana-Silvermoon) () () (Anastiana-Silvermoon) () (0) (0) () (0) (2441) (Player-3391-09469621) (0) (false) (false) (false) (false)", -- [1975]
+			"22:16:12 - Event: (ENCOUNTER_START) (2328) (Dark Inquisitor Xanesh) (16) (20)", -- [1976]
+			"22:16:12 - UpdatePlayersData()", -- [1977]
+			"22:17:04 - ML event (PLAYER_REGEN_ENABLED)", -- [1978]
+			"22:17:05 - Event: (ENCOUNTER_END) (2328) (Dark Inquisitor Xanesh) (16) (20) (0)", -- [1979]
+			"22:17:36 - ML event (CHAT_MSG_WHISPER) (XD) (Droyy-Silvermoon) () () (Droyy-Silvermoon) () (0) (0) () (0) (2495) (Player-3391-0A9D0730) (0) (false) (false) (false) (false)", -- [1980]
+			"22:18:03 - ML event (CHAT_MSG_WHISPER) (i legit went dmg trinket cuz damn im bored here lmao) (Droyy-Silvermoon) () () (Droyy-Silvermoon) () (0) (0) () (0) (2506) (Player-3391-0A9D0730) (0) (false) (false) (false) (false)", -- [1981]
+			"22:19:33 - ML event (CHAT_MSG_WHISPER) (oRA3> No Flask) (Anastiana-Silvermoon) () () (Anastiana-Silvermoon) () (0) (0) () (0) (2621) (Player-3391-09469621) (0) (false) (false) (false) (false)", -- [1982]
+			"22:20:27 - Event: (ENCOUNTER_START) (2328) (Dark Inquisitor Xanesh) (16) (20)", -- [1983]
+			"22:20:27 - UpdatePlayersData()", -- [1984]
+			"22:21:40 - ML event (PLAYER_REGEN_ENABLED)", -- [1985]
+			"22:21:40 - Event: (ENCOUNTER_END) (2328) (Dark Inquisitor Xanesh) (16) (20) (0)", -- [1986]
+			"22:23:23 - Event: (ENCOUNTER_START) (2328) (Dark Inquisitor Xanesh) (16) (20)", -- [1987]
+			"22:23:23 - UpdatePlayersData()", -- [1988]
+			"22:25:41 - ML event (PLAYER_REGEN_ENABLED)", -- [1989]
+			"22:25:42 - Event: (ENCOUNTER_END) (2328) (Dark Inquisitor Xanesh) (16) (20) (0)", -- [1990]
+			"22:27:48 - Event: (ENCOUNTER_START) (2328) (Dark Inquisitor Xanesh) (16) (20)", -- [1991]
+			"22:27:48 - UpdatePlayersData()", -- [1992]
+			"22:28:30 - ML event (PLAYER_REGEN_ENABLED)", -- [1993]
+			"22:28:32 - Event: (ENCOUNTER_END) (2328) (Dark Inquisitor Xanesh) (16) (20) (0)", -- [1994]
+			"22:30:32 - Event: (ENCOUNTER_START) (2328) (Dark Inquisitor Xanesh) (16) (20)", -- [1995]
+			"22:30:32 - UpdatePlayersData()", -- [1996]
+			"22:31:21 - ML event (PLAYER_REGEN_ENABLED)", -- [1997]
+			"22:31:22 - Event: (ENCOUNTER_END) (2328) (Dark Inquisitor Xanesh) (16) (20) (0)", -- [1998]
+			"22:34:16 - Event: (ENCOUNTER_START) (2328) (Dark Inquisitor Xanesh) (16) (20)", -- [1999]
+			"22:34:16 - UpdatePlayersData()", -- [2000]
+			"22:36:33 - ML event (PLAYER_REGEN_ENABLED)", -- [2001]
+			"22:36:34 - Event: (ENCOUNTER_END) (2328) (Dark Inquisitor Xanesh) (16) (20) (0)", -- [2002]
+			"22:38:47 - Event: (ENCOUNTER_START) (2328) (Dark Inquisitor Xanesh) (16) (20)", -- [2003]
+			"22:38:47 - UpdatePlayersData()", -- [2004]
+			"22:39:33 - ML event (PLAYER_REGEN_ENABLED)", -- [2005]
+			"22:39:35 - Event: (ENCOUNTER_END) (2328) (Dark Inquisitor Xanesh) (16) (20) (0)", -- [2006]
+			"22:41:10 - Event: (ENCOUNTER_START) (2328) (Dark Inquisitor Xanesh) (16) (20)", -- [2007]
+			"22:41:10 - UpdatePlayersData()", -- [2008]
+			"22:41:52 - ML event (PLAYER_REGEN_ENABLED)", -- [2009]
+			"22:41:54 - Event: (ENCOUNTER_END) (2328) (Dark Inquisitor Xanesh) (16) (20) (0)", -- [2010]
+			"22:43:38 - Event: (ENCOUNTER_START) (2328) (Dark Inquisitor Xanesh) (16) (20)", -- [2011]
+			"22:43:38 - UpdatePlayersData()", -- [2012]
+			"22:44:30 - ML event (PLAYER_REGEN_ENABLED)", -- [2013]
+			"22:44:32 - Event: (ENCOUNTER_END) (2328) (Dark Inquisitor Xanesh) (16) (20) (0)", -- [2014]
+			"22:46:04 - Event: (ENCOUNTER_START) (2328) (Dark Inquisitor Xanesh) (16) (20)", -- [2015]
+			"22:46:04 - UpdatePlayersData()", -- [2016]
+			"22:47:16 - ML event (PLAYER_REGEN_ENABLED)", -- [2017]
+			"22:47:24 - Event: (ENCOUNTER_END) (2328) (Dark Inquisitor Xanesh) (16) (20) (0)", -- [2018]
+			"22:48:04 - ML event (CHAT_MSG_WHISPER) (oRA3> Not Well Fed) (Anastiana-Silvermoon) () () (Anastiana-Silvermoon) () (0) (0) () (0) (3221) (Player-3391-09469621) (0) (false) (false) (false) (false)", -- [2019]
+			"22:49:22 - Event: (ENCOUNTER_START) (2328) (Dark Inquisitor Xanesh) (16) (20)", -- [2020]
+			"22:49:22 - UpdatePlayersData()", -- [2021]
+			"22:52:03 - ML event (PLAYER_REGEN_ENABLED)", -- [2022]
+			"22:52:07 - Event: (ENCOUNTER_END) (2328) (Dark Inquisitor Xanesh) (16) (20) (0)", -- [2023]
+			"22:52:49 - ML event (CHAT_MSG_WHISPER) (oRA3> Not Well Fed) (Anastiana-Silvermoon) () () (Anastiana-Silvermoon) () (0) (0) () (0) (3310) (Player-3391-09469621) (0) (false) (false) (false) (false)", -- [2024]
+			"22:53:40 - ML event (CHAT_MSG_WHISPER) (oRA3> Not Well Fed) (Anastiana-Silvermoon) () () (Anastiana-Silvermoon) () (0) (0) () (0) (3329) (Player-3391-09469621) (0) (false) (false) (false) (false)", -- [2025]
+			"22:54:13 - Event: (ENCOUNTER_START) (2328) (Dark Inquisitor Xanesh) (16) (20)", -- [2026]
+			"22:54:13 - UpdatePlayersData()", -- [2027]
+			"22:55:57 - ML event (PLAYER_REGEN_ENABLED)", -- [2028]
+			"22:56:28 - Event: (ENCOUNTER_END) (2328) (Dark Inquisitor Xanesh) (16) (20) (0)", -- [2029]
+			"22:57:51 - ML event (CHAT_MSG_WHISPER) (oRA3> Not Well Fed) (Anastiana-Silvermoon) () () (Anastiana-Silvermoon) () (0) (0) () (0) (3386) (Player-3391-09469621) (0) (false) (false) (false) (false)", -- [2030]
+			"22:58:30 - Event: (ENCOUNTER_START) (2328) (Dark Inquisitor Xanesh) (16) (20)", -- [2031]
+			"22:58:30 - UpdatePlayersData()", -- [2032]
+			"22:59:47 - ML event (PLAYER_REGEN_ENABLED)", -- [2033]
+			"22:59:55 - Event: (ENCOUNTER_END) (2328) (Dark Inquisitor Xanesh) (16) (20) (0)", -- [2034]
+			"23:00:18 - UpdateGroup (table: 0000026EEDE82270)", -- [2035]
+			"23:00:18 - ML:RemoveCandidate (Vandott-Silvermoon)", -- [2036]
+			"23:00:18 - GetCouncilInGroup (Anastiana-Silvermoon) (Marival-Silvermoon) (Asnv-Silvermoon) (Cronah-Silvermoon) (Joypopping-Silvermoon)", -- [2037]
+			"23:00:19 - Comm received:^1^SMLdb^T^N1^T^SallowNotes^B^Stimeout^N60^SselfVote^B^Sresponses^T^Sdefault^T^t^t^SrejectTrade^B^SmultiVote^B^Sbuttons^T^Sdefault^T^SnumButtons^N3^t^t^SnumButtons^N3^SanonymousVoting^B^t^t^^ (from:) (Anastiana) (distri:) (RAID)", -- [2038]
+			"23:00:19 - Comm received:^1^Scandidates^T^N1^T^SDrobadin-Silvermoon^T^Srole^SDAMAGER^SspecID^N253^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SRaider^t^SMeralda-Silvermoon^T^Srole^SDAMAGER^SspecID^N72^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SRaider^t^SEredr-Silvermoon^T^Srole^SHEALER^SspecID^N105^Senchant_lvl^N0^Sclass^SDRUID^Srank^SOfficer~`Alt^t^SAemenór-Silvermoon^T^Srole^SDAMAGER^SspecID^N260^Senchant_lvl^N0^Sclass^SROGUE^Srank^STrial^t^SKerpi-Silvermoon^T^Srole^SDAMAGER^SspecID^N71^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SRaider^t^SNïkä-Silvermoon^T^Srole^SDAMAGER^SspecID^N251^Senchant_lvl^N0^Sclass^SDEATHKNIGHT^Srank^STrial^t^SMarival-Silvermoon^T^Srole^SHEALER^SspecID^N257^Senchant_lvl^N175^Sclass^SPRIEST^Senchanter^B^Srank^SPusn^t^SHelpr-Silvermoon^T^Srole^SDAMAGER^Sclass^SROGUE^Srank^S^t^SAsnv-Silvermoon^T^Srole^SDAMAGER^SspecID^N253^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SOfficer^t^SHulabaloo-Silvermoon^T^Srole^SDAMAGER^SspecID^N267^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SRaider^t^SAzverth-Silvermoon^T^Srole^SDAMAGER^SspecID^N72^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SRaider^t^SCapneckbeard-Silvermoon^T^Srole^SDAMAGER^SspecID^N259^Senchant_lvl^N0^Sclass^SROGUE^Srank^SRaider^t^SCronah-Silvermoon^T^Srole^SDAMAGER^SspecID^N252^Senchant_lvl^N0^Sclass^SDEATHKNIGHT^Srank^SOfficer^t^SSensémage-Silvermoon^T^Srole^SDAMAGER^SspecID^N63^Senchant_lvl^N54^Sclass^SMAGE^Senchanter^B^Srank^STrial^t^SFaykmage-Silvermoon^T^Srole^SDAMAGER^SspecID^N63^Senchant_lvl^N0^Sclass^SMAGE^Srank^SRaider^t^SVanitos-Silvermoon^T^Srole^SHEALER^SspecID^N263^Senchant_lvl^N0^Sclass^SSHAMAN^Srank^SRaider^t^SJoypopping-Silvermoon^T^Srole^SHEALER^Sclass^SMONK^Srank^S^t^SDroyy-Silvermoon^T^Srole^STANK^SspecID^N268^Senchant_lvl^N0^Sclass^SMONK^Srank^STrial^t^SAnastiana-Silvermoon^T^Srole^STANK^SspecID^N250^Senchant_lvl^N0^Sclass^SDEATHKNIGHT^Srank^SGuild~`Master^t^t^t^^ (from:) (Anastiana) (distri:) (RAID)", -- [2039]
+			"23:00:25 - VotingFrame:Update() without lootTable!!", -- [2040]
+			"23:00:26 - ML event (CHAT_MSG_WHISPER) (you want me for the other raids 2 ? ) (Sensémage-Silvermoon) () () (Sensémage-Silvermoon) () (0) (0) () (0) (3442) (Player-3391-0ADEBE5B) (0) (false) (false) (false) (false)", -- [2041]
+			"23:00:27 - VotingFrame:Update() without lootTable!!", -- [2042]
+			"23:00:34 - VotingFrame:Update() without lootTable!!", -- [2043]
+			"23:00:39 - VotingFrame:Update() without lootTable!!", -- [2044]
+			"23:00:42 - VotingFrame:Update() without lootTable!!", -- [2045]
+			"23:00:42 - ML event (CHAT_MSG_WHISPER) (cool) (Sensémage-Silvermoon) () () (Sensémage-Silvermoon) () (0) (0) () (0) (3445) (Player-3391-0ADEBE5B) (0) (false) (false) (false) (false)", -- [2046]
+			"23:00:43 - VotingFrame:Update() without lootTable!!", -- [2047]
+			"23:00:47 - ML event (CHAT_MSG_WHISPER) (true ) (Sensémage-Silvermoon) () () (Sensémage-Silvermoon) () (0) (0) () (0) (3447) (Player-3391-0ADEBE5B) (0) (false) (false) (false) (false)", -- [2048]
+			"23:00:47 - VotingFrame:Update() without lootTable!!", -- [2049]
+			"23:00:49 - ML event (CHAT_MSG_WHISPER) (kekww) (Sensémage-Silvermoon) () () (Sensémage-Silvermoon) () (0) (0) () (0) (3448) (Player-3391-0ADEBE5B) (0) (false) (false) (false) (false)", -- [2050]
+			"23:00:51 - VotingFrame:Update() without lootTable!!", -- [2051]
+			"23:00:51 - UpdateGroup (table: 0000026EEDE82270)", -- [2052]
+			"23:00:51 - ML:RemoveCandidate (Drobadin-Silvermoon)", -- [2053]
+			"23:00:51 - ML:RemoveCandidate (Nïkä-Silvermoon)", -- [2054]
+			"23:00:51 - GetCouncilInGroup (Anastiana-Silvermoon) (Marival-Silvermoon) (Asnv-Silvermoon) (Cronah-Silvermoon) (Joypopping-Silvermoon)", -- [2055]
+			"23:00:51 - Comm received:^1^SMLdb^T^N1^T^SallowNotes^B^Stimeout^N60^SselfVote^B^Sresponses^T^Sdefault^T^t^t^SrejectTrade^B^SmultiVote^B^Sbuttons^T^Sdefault^T^SnumButtons^N3^t^t^SnumButtons^N3^SanonymousVoting^B^t^t^^ (from:) (Anastiana) (distri:) (RAID)", -- [2056]
+			"23:00:51 - Comm received:^1^Scandidates^T^N1^T^SMeralda-Silvermoon^T^Srole^SDAMAGER^SspecID^N72^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SRaider^t^SEredr-Silvermoon^T^Srole^SHEALER^SspecID^N105^Senchant_lvl^N0^Sclass^SDRUID^Srank^SOfficer~`Alt^t^SAemenór-Silvermoon^T^Srole^SDAMAGER^SspecID^N260^Senchant_lvl^N0^Sclass^SROGUE^Srank^STrial^t^SKerpi-Silvermoon^T^Srole^SDAMAGER^SspecID^N71^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SRaider^t^SMarival-Silvermoon^T^Srole^SHEALER^SspecID^N257^Senchant_lvl^N175^Sclass^SPRIEST^Senchanter^B^Srank^SPusn^t^SHelpr-Silvermoon^T^Srole^SDAMAGER^Sclass^SROGUE^Srank^S^t^SAsnv-Silvermoon^T^Srole^SDAMAGER^SspecID^N253^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SOfficer^t^SHulabaloo-Silvermoon^T^Srole^SDAMAGER^SspecID^N267^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SRaider^t^SAzverth-Silvermoon^T^Srole^SDAMAGER^SspecID^N72^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SRaider^t^SCapneckbeard-Silvermoon^T^Srole^SDAMAGER^SspecID^N259^Senchant_lvl^N0^Sclass^SROGUE^Srank^SRaider^t^SCronah-Silvermoon^T^Srole^SDAMAGER^SspecID^N252^Senchant_lvl^N0^Sclass^SDEATHKNIGHT^Srank^SOfficer^t^SSensémage-Silvermoon^T^Srole^SDAMAGER^SspecID^N63^Senchant_lvl^N54^Sclass^SMAGE^Senchanter^B^Srank^STrial^t^SFaykmage-Silvermoon^T^Srole^SDAMAGER^SspecID^N63^Senchant_lvl^N0^Sclass^SMAGE^Srank^SRaider^t^SVanitos-Silvermoon^T^Srole^SHEALER^SspecID^N263^Senchant_lvl^N0^Sclass^SSHAMAN^Srank^SRaider^t^SJoypopping-Silvermoon^T^Srole^SHEALER^Sclass^SMONK^Srank^S^t^SDroyy-Silvermoon^T^Srole^STANK^SspecID^N268^Senchant_lvl^N0^Sclass^SMONK^Srank^STrial^t^SAnastiana-Silvermoon^T^Srole^STANK^SspecID^N250^Senchant_lvl^N0^Sclass^SDEATHKNIGHT^Srank^SGuild~`Master^t^t^t^^ (from:) (Anastiana) (distri:) (RAID)", -- [2057]
+			"23:00:54 - VotingFrame:Update() without lootTable!!", -- [2058]
+			"23:00:57 - VotingFrame:Update() without lootTable!!", -- [2059]
+			"23:01:05 - VotingFrame:Update() without lootTable!!", -- [2060]
+			"23:01:20 - Event: (PLAYER_ENTERING_WORLD) (false) (false)", -- [2061]
+			"23:01:20 - GetML()", -- [2062]
+			"23:01:23 - VotingFrame:Update() without lootTable!!", -- [2063]
+			"23:01:27 - VotingFrame:Update() without lootTable!!", -- [2064]
+			"23:01:42 - VotingFrame:Update() without lootTable!!", -- [2065]
+			"23:01:46 - VotingFrame:Update() without lootTable!!", -- [2066]
+			"23:01:50 - UpdateGroup (table: 0000026EEDE82270)", -- [2067]
+			"23:01:50 - ML:RemoveCandidate (Faykmage-Silvermoon)", -- [2068]
+			"23:01:50 - GetCouncilInGroup (Anastiana-Silvermoon) (Marival-Silvermoon) (Asnv-Silvermoon) (Cronah-Silvermoon) (Joypopping-Silvermoon)", -- [2069]
+			"23:01:50 - Comm received:^1^SMLdb^T^N1^T^SallowNotes^B^Stimeout^N60^SselfVote^B^Sresponses^T^Sdefault^T^t^t^SrejectTrade^B^SmultiVote^B^Sbuttons^T^Sdefault^T^SnumButtons^N3^t^t^SnumButtons^N3^SanonymousVoting^B^t^t^^ (from:) (Anastiana) (distri:) (RAID)", -- [2070]
+			"23:01:50 - Comm received:^1^Scandidates^T^N1^T^SMeralda-Silvermoon^T^Srole^SDAMAGER^SspecID^N72^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SRaider^t^SEredr-Silvermoon^T^Srole^SHEALER^SspecID^N105^Senchant_lvl^N0^Sclass^SDRUID^Srank^SOfficer~`Alt^t^SAemenór-Silvermoon^T^Srole^SDAMAGER^SspecID^N260^Senchant_lvl^N0^Sclass^SROGUE^Srank^STrial^t^SKerpi-Silvermoon^T^Srole^SDAMAGER^SspecID^N71^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SRaider^t^SMarival-Silvermoon^T^Srole^SHEALER^SspecID^N257^Senchant_lvl^N175^Sclass^SPRIEST^Senchanter^B^Srank^SPusn^t^SHelpr-Silvermoon^T^Srole^SDAMAGER^Sclass^SROGUE^Srank^S^t^SAsnv-Silvermoon^T^Srole^SDAMAGER^SspecID^N253^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SOfficer^t^SHulabaloo-Silvermoon^T^Srole^SDAMAGER^SspecID^N267^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SRaider^t^SAzverth-Silvermoon^T^Srole^SDAMAGER^SspecID^N72^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SRaider^t^SCapneckbeard-Silvermoon^T^Srole^SDAMAGER^SspecID^N259^Senchant_lvl^N0^Sclass^SROGUE^Srank^SRaider^t^SCronah-Silvermoon^T^Srole^SDAMAGER^SspecID^N252^Senchant_lvl^N0^Sclass^SDEATHKNIGHT^Srank^SOfficer^t^SSensémage-Silvermoon^T^Srole^SDAMAGER^SspecID^N63^Senchant_lvl^N54^Sclass^SMAGE^Senchanter^B^Srank^STrial^t^SVanitos-Silvermoon^T^Srole^SHEALER^SspecID^N263^Senchant_lvl^N0^Sclass^SSHAMAN^Srank^SRaider^t^SJoypopping-Silvermoon^T^Srole^SHEALER^Sclass^SMONK^Srank^S^t^SDroyy-Silvermoon^T^Srole^STANK^SspecID^N268^Senchant_lvl^N0^Sclass^SMONK^Srank^STrial^t^SAnastiana-Silvermoon^T^Srole^STANK^SspecID^N250^Senchant_lvl^N0^Sclass^SDEATHKNIGHT^Srank^SGuild~`Master^t^t^t^^ (from:) (Anastiana) (distri:) (RAID)", -- [2071]
+			"23:01:52 - VotingFrame:Update() without lootTable!!", -- [2072]
+			"23:01:55 - VotingFrame:Update() without lootTable!!", -- [2073]
+			"23:02:00 - UpdateGroup (table: 0000026EEDE82270)", -- [2074]
+			"23:02:00 - ML:RemoveCandidate (Eredr-Silvermoon)", -- [2075]
+			"23:02:00 - ML:RemoveCandidate (Aemenór-Silvermoon)", -- [2076]
+			"23:02:00 - ML:RemoveCandidate (Azverth-Silvermoon)", -- [2077]
+			"23:02:00 - ML:RemoveCandidate (Helpr-Silvermoon)", -- [2078]
+			"23:02:00 - GetCouncilInGroup (Anastiana-Silvermoon) (Marival-Silvermoon) (Asnv-Silvermoon) (Cronah-Silvermoon) (Joypopping-Silvermoon)", -- [2079]
+			"23:02:01 - Comm received:^1^SMLdb^T^N1^T^SallowNotes^B^Stimeout^N60^SselfVote^B^Sresponses^T^Sdefault^T^t^t^SrejectTrade^B^SmultiVote^B^Sbuttons^T^Sdefault^T^SnumButtons^N3^t^t^SnumButtons^N3^SanonymousVoting^B^t^t^^ (from:) (Anastiana) (distri:) (RAID)", -- [2080]
+			"23:02:01 - Comm received:^1^Scandidates^T^N1^T^SMeralda-Silvermoon^T^Srole^SDAMAGER^SspecID^N72^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SRaider^t^SKerpi-Silvermoon^T^Srole^SDAMAGER^SspecID^N71^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SRaider^t^SMarival-Silvermoon^T^Srole^SHEALER^SspecID^N257^Senchant_lvl^N175^Sclass^SPRIEST^Senchanter^B^Srank^SPusn^t^SAsnv-Silvermoon^T^Srole^SDAMAGER^SspecID^N253^Senchant_lvl^N0^Sclass^SHUNTER^Srank^SOfficer^t^SHulabaloo-Silvermoon^T^Srole^SDAMAGER^SspecID^N267^Senchant_lvl^N0^Sclass^SWARLOCK^Srank^SRaider^t^SCapneckbeard-Silvermoon^T^Srole^SDAMAGER^SspecID^N259^Senchant_lvl^N0^Sclass^SROGUE^Srank^SRaider^t^SCronah-Silvermoon^T^Srole^SDAMAGER^SspecID^N252^Senchant_lvl^N0^Sclass^SDEATHKNIGHT^Srank^SOfficer^t^SSensémage-Silvermoon^T^Srole^SDAMAGER^SspecID^N63^Senchant_lvl^N54^Sclass^SMAGE^Senchanter^B^Srank^STrial^t^SVanitos-Silvermoon^T^Srole^SHEALER^SspecID^N263^Senchant_lvl^N0^Sclass^SSHAMAN^Srank^SRaider^t^SJoypopping-Silvermoon^T^Srole^SHEALER^Sclass^SMONK^Srank^S^t^SDroyy-Silvermoon^T^Srole^STANK^SspecID^N268^Senchant_lvl^N0^Sclass^SMONK^Srank^STrial^t^SAnastiana-Silvermoon^T^Srole^STANK^SspecID^N250^Senchant_lvl^N0^Sclass^SDEATHKNIGHT^Srank^SGuild~`Master^t^t^t^^ (from:) (Anastiana) (distri:) (RAID)", -- [2081]
+			"23:02:03 - VotingFrame:Update() without lootTable!!", -- [2082]
+			"23:02:11 - Event: (GROUP_LEFT) (1) (Party-3391-000049EAF67A)", -- [2083]
+			"23:02:11 - GetML()", -- [2084]
+			"23:02:11 - Stop handling loot", -- [2085]
+			"23:02:11 - ML Disabled", -- [2086]
+			"23:02:11 - Comm received:^1^SStopHandleLoot^T^t^^ (from:) (Anastiana) (distri:) (WHISPER)", -- [2087]
+			"23:07:03 - Event: (PARTY_LEADER_CHANGED)", -- [2088]
+			"23:07:03 - GetML()", -- [2089]
+			"23:07:03 - Resetting council as we have a new ML!", -- [2090]
+			"23:07:03 - MasterLooter =  (Anastiana-Silvermoon)", -- [2091]
+			"23:07:03 - GetCouncilInGroup (Anastiana-Silvermoon)", -- [2092]
+			"23:07:03 - ML:NewML (Anastiana-Silvermoon)", -- [2093]
+			"23:07:03 - UpdateMLdb", -- [2094]
+			"23:07:03 - OnMLDBReceived", -- [2095]
+			"23:07:03 - UpdateGroup (true)", -- [2096]
+			"23:07:03 - ML:AddCandidate (Anastiana-Silvermoon) (DEATHKNIGHT) (TANK) (nil) (nil) (nil) (nil) (nil)", -- [2097]
+			"23:07:03 - GetCouncilInGroup (Anastiana-Silvermoon)", -- [2098]
+			"23:07:03 - Comm received:^1^SplayerInfoRequest^T^t^^ (from:) (Anastiana) (distri:) (PARTY)", -- [2099]
+			"23:07:03 - Comm received:^1^SMLdb^T^N1^T^SallowNotes^B^Stimeout^N60^SselfVote^B^Sresponses^T^Sdefault^T^t^t^SrejectTrade^B^SmultiVote^B^Sbuttons^T^Sdefault^T^SnumButtons^N3^t^t^SnumButtons^N3^SanonymousVoting^B^t^t^^ (from:) (Anastiana) (distri:) (PARTY)", -- [2100]
+			"23:07:03 - Comm received:^1^SMLdb^T^N1^T^SallowNotes^B^Stimeout^N60^SselfVote^B^Sresponses^T^Sdefault^T^t^t^SrejectTrade^B^SmultiVote^B^Sbuttons^T^Sdefault^T^SnumButtons^N3^t^t^SnumButtons^N3^SanonymousVoting^B^t^t^^ (from:) (Anastiana) (distri:) (PARTY)", -- [2101]
+			"23:07:03 - Comm received:^1^Scandidates^T^N1^T^SAnastiana-Silvermoon^T^Srole^STANK^Sclass^SDEATHKNIGHT^Srank^S^t^t^t^^ (from:) (Anastiana) (distri:) (PARTY)", -- [2102]
+			"23:07:03 - Comm received:^1^Scouncil^T^N1^T^N1^SAnastiana-Silvermoon^t^t^^ (from:) (Anastiana) (distri:) (PARTY)", -- [2103]
+			"23:07:03 - true = (ConcilContains) (Anastiana-Silvermoon)", -- [2104]
+			"23:07:03 - Comm received:^1^SplayerInfo^T^N1^SAnastiana-Silvermoon^N2^SDEATHKNIGHT^N3^STANK^N4^SGuild~`Master^N6^N0^N7^N470.75^N8^N250^t^^ (from:) (Anastiana) (distri:) (WHISPER)", -- [2105]
+			"23:07:03 - ML:AddCandidate (Anastiana-Silvermoon) (DEATHKNIGHT) (TANK) (Guild Master) (nil) (0) (470.75) (250)", -- [2106]
+			"23:07:08 - VotingFrame:Update() without lootTable!!", -- [2107]
+			"23:07:13 - Comm received:^1^SverTest^T^N1^S2.18.3^t^^ (from:) (Nïkä) (distri:) (GUILD)", -- [2108]
+			"23:07:13 - Comm received:^1^Scandidates^T^N1^T^SAnastiana-Silvermoon^T^Srole^STANK^SspecID^N250^Senchant_lvl^N0^Sclass^SDEATHKNIGHT^Srank^SGuild~`Master^t^t^t^^ (from:) (Anastiana) (distri:) (RAID)", -- [2109]
+			"23:07:13 - UpdateGroup (table: 0000026EEDE82270)", -- [2110]
+			"23:07:13 - ML:AddCandidate (Meralda-Silvermoon) (WARRIOR) (DAMAGER) (nil) (nil) (nil) (nil) (nil)", -- [2111]
+			"23:07:13 - ML:AddCandidate (Joypopping-Silvermoon) (MONK) (HEALER) (nil) (nil) (nil) (nil) (nil)", -- [2112]
+			"23:07:13 - ML:AddCandidate (Faykmage-Silvermoon) (MAGE) (DAMAGER) (nil) (nil) (nil) (nil) (nil)", -- [2113]
+			"23:07:13 - GetCouncilInGroup (Anastiana-Silvermoon) (Joypopping-Silvermoon)", -- [2114]
+			"23:07:13 - Comm received:^1^SMLdb^T^N1^T^SallowNotes^B^Stimeout^N60^SselfVote^B^Sresponses^T^Sdefault^T^t^t^SrejectTrade^B^SmultiVote^B^Sbuttons^T^Sdefault^T^SnumButtons^N3^t^t^SnumButtons^N3^SanonymousVoting^B^t^t^^ (from:) (Anastiana) (distri:) (RAID)", -- [2115]
+			"23:07:13 - Comm received:^1^Scandidates^T^N1^T^SFaykmage-Silvermoon^T^Srole^SDAMAGER^Sclass^SMAGE^Srank^S^t^SAnastiana-Silvermoon^T^Srole^STANK^SspecID^N250^Senchant_lvl^N0^Sclass^SDEATHKNIGHT^Srank^SGuild~`Master^t^SMeralda-Silvermoon^T^Srole^SDAMAGER^Sclass^SWARRIOR^Srank^S^t^SJoypopping-Silvermoon^T^Srole^SHEALER^Sclass^SMONK^Srank^S^t^t^t^^ (from:) (Anastiana) (distri:) (RAID)", -- [2116]
+			"23:07:13 - Comm received:^1^Scouncil^T^N1^T^N1^SAnastiana-Silvermoon^N2^SJoypopping-Silvermoon^t^t^^ (from:) (Anastiana) (distri:) (RAID)", -- [2117]
+			"23:07:13 - true = (ConcilContains) (Anastiana-Silvermoon)", -- [2118]
+			"23:07:14 - Comm received:^1^SplayerInfo^T^N1^SFaykmage-Silvermoon^N2^SMAGE^N3^SDAMAGER^N4^SRaider^N6^N0^N7^N472.375^N8^N63^t^^ (from:) (Faykmage) (distri:) (WHISPER)", -- [2119]
+			"23:07:14 - ML:AddCandidate (Faykmage-Silvermoon) (MAGE) (DAMAGER) (Raider) (nil) (0) (472.375) (63)", -- [2120]
+			"23:07:14 - Comm received:^1^SplayerInfo^T^N1^SMeralda-Silvermoon^N2^SWARRIOR^N3^SDAMAGER^N4^SRaider^N6^N0^N7^N472.875^N8^N72^t^^ (from:) (Meralda) (distri:) (WHISPER)", -- [2121]
+			"23:07:14 - ML:AddCandidate (Meralda-Silvermoon) (WARRIOR) (DAMAGER) (Raider) (nil) (0) (472.875) (72)", -- [2122]
+			"23:07:17 - VotingFrame:Update() without lootTable!!", -- [2123]
+			"23:07:18 - Timer MLdb_check passed", -- [2124]
+			"23:07:23 - Comm received:^1^Scandidates^T^N1^T^SFaykmage-Silvermoon^T^Srole^SDAMAGER^SspecID^N63^Senchant_lvl^N0^Sclass^SMAGE^Srank^SRaider^t^SAnastiana-Silvermoon^T^Srole^STANK^SspecID^N250^Senchant_lvl^N0^Sclass^SDEATHKNIGHT^Srank^SGuild~`Master^t^SMeralda-Silvermoon^T^Srole^SDAMAGER^SspecID^N72^Senchant_lvl^N0^Sclass^SWARRIOR^Srank^SRaider^t^SJoypopping-Silvermoon^T^Srole^SHEALER^Sclass^SMONK^Srank^S^t^t^t^^ (from:) (Anastiana) (distri:) (RAID)", -- [2125]
+			"23:07:24 - Comm received:^1^SverTest^T^N1^S2.18.3^t^^ (from:) (Kerpm) (distri:) (GUILD)", -- [2126]
+			"23:07:54 - Event: (GROUP_LEFT) (1) (Party-3391-000049EC92BB)", -- [2127]
+			"23:07:54 - GetML()", -- [2128]
+			"23:07:54 - Stop handling loot", -- [2129]
+			"23:07:54 - ML Disabled", -- [2130]
+			"23:07:54 - Comm received:^1^SStopHandleLoot^T^t^^ (from:) (Anastiana) (distri:) (WHISPER)", -- [2131]
+			"23:08:41 - Comm received:^1^SverTest^T^N1^S2.18.3^t^^ (from:) (Nephrite) (distri:) (GUILD)", -- [2132]
+			"23:09:17 - Comm received:^1^SverTest^T^N1^S2.18.3^t^^ (from:) (Inderite) (distri:) (GUILD)", -- [2133]
+			"23:09:17 - Comm received:^1^SverTest^T^N1^S2.18.3^t^^ (from:) (Drobadin) (distri:) (GUILD)", -- [2134]
+			"03/31/20", -- [2135]
+			"11:29:42 - Logged In", -- [2136]
+			"11:29:42 - ML initialized!", -- [2137]
+			"11:29:42 - TradeUI enabled", -- [2138]
+			"11:29:50 - Anastiana-Silvermoon (2.18.3) (nil)", -- [2139]
+			"11:29:50 - ActivateSkin (bfa)", -- [2140]
+			"11:29:52 - Event: (PLAYER_ENTERING_WORLD) (true) (false)", -- [2141]
+			"11:29:52 - GetML()", -- [2142]
+			"11:29:52 - UpdatePlayersData()", -- [2143]
+			"11:29:53 - GetPlayersGuildRank()", -- [2144]
+			"11:29:53 - Found Guild Rank: Guild Master", -- [2145]
+			"11:29:57 - Comm received:^1^SverTest^T^N1^S2.18.3^t^^ (from:) (Anastiana) (distri:) (GUILD)", -- [2146]
+			"11:54:24 - Event: (LOOT_READY) (true)", -- [2147]
+			"11:54:24 - Event: (LOOT_READY) (true)", -- [2148]
+			"03/31/20", -- [2149]
+			"12:02:05 - Logged In", -- [2150]
+			"12:02:05 - ML initialized!", -- [2151]
+			"12:02:05 - TradeUI enabled", -- [2152]
+			"12:02:11 - Anastania-Silvermoon (2.18.3) (nil)", -- [2153]
+			"12:02:11 - ActivateSkin (bfa)", -- [2154]
+			"12:02:14 - Event: (PLAYER_ENTERING_WORLD) (true) (false)", -- [2155]
+			"12:02:14 - GetML()", -- [2156]
+			"12:02:14 - UpdatePlayersData()", -- [2157]
+			"12:02:15 - GetPlayersGuildRank()", -- [2158]
+			"12:02:15 - GetPlayersGuildRank()", -- [2159]
+			"12:02:15 - Found Guild Rank: Officer Alt", -- [2160]
+			"12:02:18 - Comm received:^1^SverTest^T^N1^S2.18.3^t^^ (from:) (Anastania) (distri:) (GUILD)", -- [2161]
+			"03/31/20", -- [2162]
+			"13:38:58 - Logged In", -- [2163]
+			"13:38:58 - ML initialized!", -- [2164]
+			"13:38:58 - TradeUI enabled", -- [2165]
+			"13:39:06 - Anastiana-Silvermoon (2.18.3) (nil)", -- [2166]
+			"13:39:06 - ActivateSkin (bfa)", -- [2167]
+			"13:39:08 - Event: (PLAYER_ENTERING_WORLD) (true) (false)", -- [2168]
+			"13:39:08 - GetML()", -- [2169]
+			"13:39:08 - UpdatePlayersData()", -- [2170]
+			"13:39:09 - GetPlayersGuildRank()", -- [2171]
+			"13:39:09 - GetPlayersGuildRank()", -- [2172]
+			"13:39:09 - Found Guild Rank: Guild Master", -- [2173]
+			"13:39:13 - Comm received:^1^SverTest^T^N1^S2.18.3^t^^ (from:) (Anastiana) (distri:) (GUILD)", -- [2174]
+			"03/31/20", -- [2175]
+			"13:47:24 - Logged In", -- [2176]
+			"13:47:24 - ML initialized!", -- [2177]
+			"13:47:24 - TradeUI enabled", -- [2178]
+			"13:47:25 - Anastiana-Silvermoon (2.18.3) (nil)", -- [2179]
+			"13:47:25 - ActivateSkin (bfa)", -- [2180]
+			"13:47:28 - Event: (PLAYER_ENTERING_WORLD) (false) (true)", -- [2181]
+			"13:47:28 - GetML()", -- [2182]
+			"13:47:28 - UpdatePlayersData()", -- [2183]
+			"13:47:28 - GetPlayersGuildRank()", -- [2184]
+			"13:47:28 - Found Guild Rank: Guild Master", -- [2185]
+			"13:47:29 - Comm received:^1^SverTest^T^N1^S2.18.3^t^^ (from:) (Anastiana) (distri:) (GUILD)", -- [2186]
+			"13:49:39 - Comm received:^1^SverTest^T^N1^S2.18.3^t^^ (from:) (Sykezxo) (distri:) (GUILD)", -- [2187]
+			"13:53:28 - Event: (LOOT_READY) (true)", -- [2188]
+			"13:53:28 - Event: (LOOT_READY) (true)", -- [2189]
+			"13:53:52 - Event: (LOOT_READY) (true)", -- [2190]
+			"13:53:53 - Event: (LOOT_READY) (true)", -- [2191]
+			"03/31/20", -- [2192]
+			"13:54:55 - Logged In", -- [2193]
+			"13:54:55 - ML initialized!", -- [2194]
+			"13:54:55 - TradeUI enabled", -- [2195]
+			"13:55:00 - Anastiana-Silvermoon (2.18.3) (nil)", -- [2196]
+			"13:55:00 - ActivateSkin (bfa)", -- [2197]
+			"13:55:03 - Event: (PLAYER_ENTERING_WORLD) (true) (false)", -- [2198]
+			"13:55:03 - GetML()", -- [2199]
+			"13:55:03 - UpdatePlayersData()", -- [2200]
+			"13:55:04 - GetPlayersGuildRank()", -- [2201]
+			"13:55:04 - Found Guild Rank: Guild Master", -- [2202]
+			"13:55:08 - Comm received:^1^SverTest^T^N1^S2.18.3^t^^ (from:) (Anastiana) (distri:) (GUILD)", -- [2203]
+			"14:04:19 - Event: (LOOT_READY) (true)", -- [2204]
+			"14:04:20 - Event: (LOOT_READY) (true)", -- [2205]
+		},
+		["regionID"] = 3,
+	},
+	["profileKeys"] = {
+		["Anastania - Silvermoon"] = "Default",
+		["Anastiana - Silvermoon"] = "Default",
+		["Bírger - Silvermoon"] = "Default",
 	},
 	["profiles"] = {
 		["Default"] = {
-			["chatFrameName"] = "DEFAULT_CHAT_FRAME",
-			["sendHistoryToGuildChannel"] = false,
+			["modules"] = {
+				["RCVotingFrame"] = {
+					["moreInfo"] = false,
+				},
+			},
+			["anonymousVoting"] = true,
+			["showForML"] = true,
+			["rejectTrade"] = true,
 			["UI"] = {
 				["tradeui"] = {
 					["bgColor"] = {
@@ -3248,12 +2477,14 @@ RCLootCouncilDB = {
 						0.84, -- [2]
 						1, -- [3]
 					},
+					["x"] = 0,
 					["borderColor"] = {
 						0.62, -- [1]
 						0.86, -- [2]
 						0.87, -- [3]
 						0.85, -- [4]
 					},
+					["scale"] = 0.8,
 					["background"] = "Blizzard Garrison Background 3",
 					["border"] = "Blizzard Dialog",
 				},
@@ -3263,36 +2494,17 @@ RCLootCouncilDB = {
 						0.84, -- [2]
 						1, -- [3]
 					},
-					["x"] = 16.3137048949102,
-					["point"] = "BOTTOM",
+					["x"] = 162.0401802236702,
 					["borderColor"] = {
 						0.62, -- [1]
 						0.86, -- [2]
 						0.87, -- [3]
 						0.85, -- [4]
 					},
-					["scale"] = 1.10000002384186,
+					["scale"] = 0.800000011920929,
 					["background"] = "Blizzard Garrison Background 3",
 					["border"] = "Blizzard Dialog",
-					["y"] = 61.8283567478084,
-				},
-				["sync"] = {
-					["y"] = 9.791736374609170e-06,
-					["x"] = 4.792511026607830e-05,
-					["borderColor"] = {
-						0.62, -- [1]
-						0.86, -- [2]
-						0.87, -- [3]
-						0.85, -- [4]
-					},
-					["scale"] = 1.10000002384186,
-					["background"] = "Blizzard Garrison Background 3",
-					["border"] = "Blizzard Dialog",
-					["bgColor"] = {
-						0.55, -- [1]
-						0.84, -- [2]
-						1, -- [3]
-					},
+					["y"] = -130.0546312294373,
 				},
 				["default"] = {
 					["bgColor"] = {
@@ -3306,65 +2518,124 @@ RCLootCouncilDB = {
 						0.87, -- [3]
 						0.85, -- [4]
 					},
+					["scale"] = 0.8,
 					["background"] = "Blizzard Garrison Background 3",
 					["border"] = "Blizzard Dialog",
 				},
+				["votingframe"] = {
+					["y"] = 136.3935473056172,
+					["x"] = 148.2038067697977,
+					["point"] = "LEFT",
+					["borderColor"] = {
+						0.62, -- [1]
+						0.86, -- [2]
+						0.87, -- [3]
+						0.85, -- [4]
+					},
+					["scale"] = 1.354807019233704,
+					["background"] = "Blizzard Garrison Background 3",
+					["border"] = "Blizzard Dialog",
+					["bgColor"] = {
+						0.55, -- [1]
+						0.84, -- [2]
+						1, -- [3]
+					},
+				},
+				["history"] = {
+					["bgColor"] = {
+						0.55, -- [1]
+						0.84, -- [2]
+						1, -- [3]
+					},
+					["borderColor"] = {
+						0.62, -- [1]
+						0.86, -- [2]
+						0.87, -- [3]
+						0.85, -- [4]
+					},
+					["scale"] = 0.8,
+					["background"] = "Blizzard Garrison Background 3",
+					["border"] = "Blizzard Dialog",
+				},
+				["sessionframe"] = {
+					["y"] = 9.325986081870724,
+					["x"] = 149.2167425325861,
+					["borderColor"] = {
+						0.62, -- [1]
+						0.86, -- [2]
+						0.87, -- [3]
+						0.85, -- [4]
+					},
+					["scale"] = 0.800000011920929,
+					["background"] = "Blizzard Garrison Background 3",
+					["border"] = "Blizzard Dialog",
+					["bgColor"] = {
+						0.55, -- [1]
+						0.84, -- [2]
+						1, -- [3]
+					},
+				},
 			},
-			["autoPassTrinket"] = false,
-			["awardLater"] = false,
+			["council"] = {
+				"Anastiana-Silvermoon", -- [1]
+				"Marival-Silvermoon", -- [2]
+				"Asnv-Silvermoon", -- [3]
+				"Cronah-Silvermoon", -- [4]
+				"Ereleen-Silvermoon", -- [5]
+				"Joypopping-Silvermoon", -- [6]
+				"Nilley-Silvermoon", -- [7]
+				"Sykezlul-Silvermoon", -- [8]
+			},
 		},
 	},
 }
 RCLootCouncilLootDB = {
 	["profileKeys"] = {
-		["Highapm - Sulfuras"] = "Highapm - Sulfuras",
-		["Hashmeerbank - Sulfuras"] = "Hashmeerbank - Sulfuras",
-		["Hashmeer - Sulfuras"] = "Hashmeer - Sulfuras",
-		["Krushem - Sulfuras"] = "Krushem - Sulfuras",
+		["Anastania - Silvermoon"] = "Anastania - Silvermoon",
+		["Anastiana - Silvermoon"] = "Anastiana - Silvermoon",
+		["Bírger - Silvermoon"] = "Bírger - Silvermoon",
 	},
 	["factionrealm"] = {
-		["Alliance - Sulfuras"] = {
-			["Samaca-Sulfuras"] = {
+		["Alliance - Silvermoon"] = {
+			["Drobadin-Silvermoon"] = {
 				{
-					["mapID"] = 249,
-					["date"] = "27/10/19",
-					["class"] = "WARLOCK",
-					["iSubClass"] = 0,
-					["groupSize"] = 40,
+					["mapID"] = 2217,
+					["date"] = "02/03/20",
+					["class"] = "HUNTER",
+					["iSubClass"] = 2,
+					["groupSize"] = 12,
 					["isAwardReason"] = false,
-					["time"] = "21:05:03",
-					["iClass"] = 1,
-					["id"] = "1572264303-0",
-					["owner"] = "Samaca-Sulfuras",
-					["response"] = "Personal Loot - Non tradeable",
-					["difficultyID"] = 9,
-					["lootWon"] = "|cff1eff00|Hitem:17966::::::::60:::::::|h[Onyxia Hide Backpack]|h|r",
-					["boss"] = "Onyxia",
-					["responseID"] = "PL",
-					["instance"] = "Onyxia's Lair-40 Player",
+					["time"] = "23:18:53",
+					["iClass"] = 15,
+					["id"] = "1583183933-7",
+					["owner"] = "Drobadin-Silvermoon",
+					["response"] = "Personal Loot - Rejected Trade",
+					["difficultyID"] = 15,
+					["lootWon"] = "|cff0070dd|Hitem:174452::::::::120:253::5::::|h[Eye of Corruption]|h|r",
 					["color"] = {
-						1, -- [1]
-						0.6, -- [2]
+						0.2, -- [1]
+						0, -- [2]
 						0, -- [3]
 						1, -- [4]
 					},
+					["responseID"] = "PL_REJECT",
+					["instance"] = "Ny'alotha, the Waking City-Heroic",
+					["boss"] = "N'Zoth the Corruptor",
 				}, -- [1]
-			},
-			["Isellar-Sulfuras"] = {
 				{
-					["mapID"] = 409,
-					["date"] = "26/11/19",
-					["class"] = "DRUID",
-					["iSubClass"] = 0,
-					["groupSize"] = 40,
+					["mapID"] = 2217,
+					["date"] = "04/03/20",
+					["class"] = "HUNTER",
+					["iSubClass"] = 2,
+					["groupSize"] = 20,
 					["isAwardReason"] = false,
-					["time"] = "21:15:02",
-					["iClass"] = 9,
-					["id"] = "1574838902-0",
-					["owner"] = "Isellar-Sulfuras",
+					["time"] = "20:51:06",
+					["iClass"] = 2,
+					["id"] = "1583347866-6",
+					["owner"] = "Drobadin-Silvermoon",
 					["response"] = "Personal Loot - Non tradeable",
-					["difficultyID"] = 9,
-					["lootWon"] = "|cff1eff00|Hitem:16665::::::::60:::::::|h[Tome of Tranquilizing Shot]|h|r",
+					["difficultyID"] = 16,
+					["lootWon"] = "|cffa335ee|Hitem:172193::::::::120:253::6:9:4824:1808:42:6568:6578:6579:6515:1517:4786:::|h[Whispering Eldritch Bow]|h|r",
 					["color"] = {
 						1, -- [1]
 						0.6, -- [2]
@@ -3372,51 +2643,97 @@ RCLootCouncilLootDB = {
 						1, -- [4]
 					},
 					["responseID"] = "PL",
-					["instance"] = "Molten Core-40 Player",
-					["boss"] = "Lucifron",
-				}, -- [1]
-			},
-			["Clutchnorris-Sulfuras"] = {
+					["instance"] = "Ny'alotha, the Waking City-Mythic",
+					["boss"] = "Prophet Skitra",
+				}, -- [2]
 				{
-					["mapID"] = 249,
-					["date"] = "27/10/19",
-					["class"] = "WARLOCK",
-					["iSubClass"] = 0,
-					["groupSize"] = 40,
+					["mapID"] = 2217,
+					["date"] = "11/03/20",
+					["class"] = "HUNTER",
+					["iSubClass"] = 3,
+					["groupSize"] = 17,
 					["isAwardReason"] = false,
-					["time"] = "21:06:02",
-					["iClass"] = 1,
-					["id"] = "1572264362-1",
-					["owner"] = "Clutchnorris-Sulfuras",
+					["time"] = "22:26:01",
+					["iClass"] = 4,
+					["id"] = "1583958361-20",
+					["owner"] = "Drobadin-Silvermoon",
+					["response"] = "Personal Loot - Rejected Trade",
+					["difficultyID"] = 15,
+					["lootWon"] = "|cffa335ee|Hitem:174158::::::::120:253::5:5:4823:6516:6513:1502:4786:::|h[Watcher's Scheming Girdle]|h|r",
+					["color"] = {
+						0.2, -- [1]
+						0, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = "PL_REJECT",
+					["instance"] = "Ny'alotha, the Waking City-Heroic",
+					["boss"] = "Carapace of N'Zoth",
+				}, -- [3]
+				{
+					["mapID"] = 2217,
+					["date"] = "18/03/20",
+					["class"] = "HUNTER",
+					["iSubClass"] = 2,
+					["groupSize"] = 20,
+					["isAwardReason"] = false,
+					["time"] = "21:46:50",
+					["iClass"] = 15,
+					["id"] = "1584560810-25",
+					["owner"] = "Drobadin-Silvermoon",
+					["response"] = "Personal Loot - Rejected Trade",
+					["difficultyID"] = 16,
+					["lootWon"] = "|cff0070dd|Hitem:174446::::::::120:253::6::::|h[Fractured Obsidian Claw]|h|r",
+					["color"] = {
+						0.2, -- [1]
+						0, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = "PL_REJECT",
+					["instance"] = "Ny'alotha, the Waking City-Mythic",
+					["boss"] = "Maut",
+				}, -- [4]
+			},
+			["Meralda-Silvermoon"] = {
+				{
+					["mapID"] = 2217,
+					["date"] = "02/03/20",
+					["class"] = "WARRIOR",
+					["iSubClass"] = 0,
+					["groupSize"] = 11,
+					["isAwardReason"] = false,
+					["time"] = "23:19:50",
+					["iClass"] = 4,
+					["id"] = "1583183990-10",
+					["owner"] = "Meralda-Silvermoon",
 					["response"] = "Personal Loot - Non tradeable",
-					["difficultyID"] = 9,
-					["lootWon"] = "|cff1eff00|Hitem:17966::::::::60:::::::|h[Onyxia Hide Backpack]|h|r",
-					["boss"] = "Onyxia",
-					["responseID"] = "PL",
-					["instance"] = "Onyxia's Lair-40 Player",
+					["difficultyID"] = 15,
+					["lootWon"] = "|cffa335ee|Hitem:174533::::::::120:72::5:5:4823:6516:6515:1502:4786:::|h[Ring of Cosmic Potential]|h|r",
 					["color"] = {
 						1, -- [1]
 						0.6, -- [2]
 						0, -- [3]
 						1, -- [4]
 					},
+					["responseID"] = "PL",
+					["instance"] = "Ny'alotha, the Waking City-Heroic",
+					["boss"] = "N'Zoth the Corruptor",
 				}, -- [1]
-			},
-			["Tinktertot-Sulfuras"] = {
 				{
-					["mapID"] = 409,
-					["date"] = "27/10/19",
+					["mapID"] = 2217,
+					["date"] = "04/03/20",
 					["class"] = "WARRIOR",
 					["iSubClass"] = 4,
-					["groupSize"] = 40,
+					["groupSize"] = 20,
 					["isAwardReason"] = false,
-					["time"] = "22:15:53",
+					["time"] = "20:33:13",
 					["iClass"] = 4,
-					["id"] = "1572268553-2",
-					["owner"] = "Tinktertot-Sulfuras",
+					["id"] = "1583346793-1",
+					["owner"] = "Meralda-Silvermoon",
 					["response"] = "Personal Loot - Non tradeable",
-					["difficultyID"] = 9,
-					["lootWon"] = "|cffa335ee|Hitem:16861::::::::60:::::::|h[Bracers of Might]|h|r",
+					["difficultyID"] = 16,
+					["lootWon"] = "|cffa335ee|Hitem:174170::::::::120:71::6:5:4824:6516:6513:1517:4786:::|h[Dragonbone Vambraces]|h|r",
 					["color"] = {
 						1, -- [1]
 						0.6, -- [2]
@@ -3424,25 +2741,678 @@ RCLootCouncilLootDB = {
 						1, -- [4]
 					},
 					["responseID"] = "PL",
-					["instance"] = "Molten Core-40 Player",
-					["boss"] = "Onyxia",
+					["instance"] = "Ny'alotha, the Waking City-Mythic",
+					["boss"] = "Wrathion",
+				}, -- [2]
+				{
+					["mapID"] = 2217,
+					["date"] = "18/03/20",
+					["class"] = "WARRIOR",
+					["iSubClass"] = 7,
+					["groupSize"] = 23,
+					["boss"] = "Wrathion",
+					["time"] = "20:08:39",
+					["iClass"] = 2,
+					["itemReplaced1"] = "|cffa335ee|Hitem:172200:5965:::::::120:250::6:5:4824:6578:6515:1517:4786:::|h[Sk'shuul Vaz]|h|r",
+					["typeCode"] = "default",
+					["owner"] = "Aemenór-Silvermoon",
+					["votes"] = 2,
+					["response"] = "Offspec/Greed",
+					["id"] = "1584554919-0",
+					["difficultyID"] = 15,
+					["lootWon"] = "|cffa335ee|Hitem:174105::::::::120:250::5:5:4823:6516:6515:1502:4786:::|h[Mish'un, Blade of Tyrants]|h|r",
+					["isAwardReason"] = false,
+					["color"] = {
+						1, -- [1]
+						0.5, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = 2,
+					["itemReplaced2"] = "|cffa335ee|Hitem:159644:5963:::::::120:250::16:5:6536:6516:6513:1637:4786:::|h[Geti'ikku, Cut of Death]|h|r",
+					["instance"] = "Ny'alotha, the Waking City-Heroic",
+				}, -- [3]
+				{
+					["mapID"] = 2217,
+					["date"] = "18/03/20",
+					["class"] = "WARRIOR",
+					["iSubClass"] = 4,
+					["groupSize"] = 23,
+					["isAwardReason"] = false,
+					["time"] = "20:28:19",
+					["iClass"] = 4,
+					["id"] = "1584556099-2",
+					["owner"] = "Meralda-Silvermoon",
+					["response"] = "Personal Loot - Rejected Trade",
+					["difficultyID"] = 15,
+					["lootWon"] = "|cffa335ee|Hitem:174178::::::::120:72::5:5:4823:6516:6513:1502:4786:::|h[Mirage-Weaver's Gauntlets]|h|r",
+					["color"] = {
+						0.2, -- [1]
+						0, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = "PL_REJECT",
+					["instance"] = "Ny'alotha, the Waking City-Heroic",
+					["boss"] = "Carapace of N'Zoth",
+				}, -- [4]
+				{
+					["mapID"] = 2217,
+					["date"] = "18/03/20",
+					["class"] = "WARRIOR",
+					["iSubClass"] = 8,
+					["groupSize"] = 21,
+					["isAwardReason"] = false,
+					["time"] = "20:41:57",
+					["iClass"] = 2,
+					["id"] = "1584556917-10",
+					["owner"] = "Meralda-Silvermoon",
+					["response"] = "Personal Loot - Rejected Trade",
+					["difficultyID"] = 15,
+					["lootWon"] = "|cffa335ee|Hitem:172187::::::::120:72::5:7:4823:6539:6578:6579:6513:1502:4786:::|h[Devastation's Hour]|h|r",
+					["color"] = {
+						0.2, -- [1]
+						0, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = "PL_REJECT",
+					["instance"] = "Ny'alotha, the Waking City-Heroic",
+					["boss"] = "N'Zoth the Corruptor",
+				}, -- [5]
+				{
+					["mapID"] = 2217,
+					["date"] = "18/03/20",
+					["class"] = "WARRIOR",
+					["iSubClass"] = 4,
+					["groupSize"] = 20,
+					["isAwardReason"] = false,
+					["time"] = "21:46:28",
+					["iClass"] = 4,
+					["id"] = "1584560788-22",
+					["owner"] = "Meralda-Silvermoon",
+					["response"] = "Personal Loot - Non tradeable",
+					["difficultyID"] = 16,
+					["lootWon"] = "|cffa335ee|Hitem:174172::::::::120:72::6:5:4824:6516:6513:1517:4786:::|h[Living Obsidian Legguards]|h|r",
+					["color"] = {
+						1, -- [1]
+						0.6, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = "PL",
+					["instance"] = "Ny'alotha, the Waking City-Mythic",
+					["boss"] = "Maut",
+				}, -- [6]
+				{
+					["mapID"] = 2217,
+					["date"] = "18/03/20",
+					["class"] = "WARRIOR",
+					["iSubClass"] = 0,
+					["groupSize"] = 20,
+					["isAwardReason"] = false,
+					["time"] = "22:48:08",
+					["iClass"] = 4,
+					["id"] = "1584564488-28",
+					["owner"] = "Meralda-Silvermoon",
+					["response"] = "Personal Loot - Rejected Trade",
+					["difficultyID"] = 16,
+					["lootWon"] = "|cffa335ee|Hitem:174531::::::::120:72::6:7:4824:6578:6579:6548:6515:1517:4786:::|h[Void-Etched Band]|h|r",
+					["color"] = {
+						0.2, -- [1]
+						0, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = "PL_REJECT",
+					["instance"] = "Ny'alotha, the Waking City-Mythic",
+					["boss"] = "Shad'har the Insatiable",
+				}, -- [7]
+				{
+					["mapID"] = 2217,
+					["date"] = "23/03/20",
+					["class"] = "WARRIOR",
+					["iSubClass"] = 2,
+					["groupSize"] = 20,
+					["isAwardReason"] = false,
+					["time"] = "23:08:09",
+					["iClass"] = 15,
+					["id"] = "1584997689-1",
+					["owner"] = "Meralda-Silvermoon",
+					["response"] = "Personal Loot - Rejected Trade",
+					["difficultyID"] = 16,
+					["lootWon"] = "|cff0070dd|Hitem:174448::::::::120:72::6::::|h[Aqir Hivespawn]|h|r",
+					["boss"] = "The Hivemind",
+					["responseID"] = "PL_REJECT",
+					["instance"] = "Ny'alotha, the Waking City-Mythic",
+					["color"] = {
+						0.2, -- [1]
+						0, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+				}, -- [8]
+				{
+					["mapID"] = 2217,
+					["date"] = "25/03/20",
+					["class"] = "WARRIOR",
+					["iSubClass"] = 4,
+					["groupSize"] = 20,
+					["isAwardReason"] = false,
+					["time"] = "21:13:27",
+					["iClass"] = 4,
+					["id"] = "1585163607-28",
+					["owner"] = "Meralda-Silvermoon",
+					["response"] = "Personal Loot - Rejected Trade",
+					["difficultyID"] = 16,
+					["lootWon"] = "|cffa335ee|Hitem:174172::::::::120:72::6:5:4824:6516:6515:1517:4786:::|h[Living Obsidian Legguards]|h|r",
+					["color"] = {
+						0.2, -- [1]
+						0, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = "PL_REJECT",
+					["instance"] = "Ny'alotha, the Waking City-Mythic",
+					["boss"] = "Maut",
+				}, -- [9]
+				{
+					["mapID"] = 2217,
+					["date"] = "25/03/20",
+					["class"] = "WARRIOR",
+					["iSubClass"] = 0,
+					["groupSize"] = 20,
+					["isAwardReason"] = false,
+					["time"] = "21:30:30",
+					["iClass"] = 4,
+					["id"] = "1585164630-32",
+					["owner"] = "Meralda-Silvermoon",
+					["response"] = "Personal Loot - Rejected Trade",
+					["difficultyID"] = 16,
+					["lootWon"] = "|cffa335ee|Hitem:175008::::::::120:72::6:5:4824:6516:6515:1517:4786:::|h[Lurking Schemer's Band]|h|r",
+					["color"] = {
+						0.2, -- [1]
+						0, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = "PL_REJECT",
+					["instance"] = "Ny'alotha, the Waking City-Mythic",
+					["boss"] = "Maut",
+				}, -- [10]
+			},
+			["Aemenór-Silvermoon"] = {
+				{
+					["mapID"] = 2217,
+					["date"] = "18/03/20",
+					["class"] = "ROGUE",
+					["iSubClass"] = 0,
+					["groupSize"] = 20,
+					["boss"] = "Shad'har the Insatiable",
+					["time"] = "22:50:09",
+					["iClass"] = 4,
+					["itemReplaced1"] = "|cffa335ee|Hitem:174530:6109:168639::::::120:250::3:6:4822:1808:6578:6513:1487:4786:::|h[Ring of Collective Consciousness]|h|r",
+					["typeCode"] = "default",
+					["owner"] = "Nilley-Silvermoon",
+					["votes"] = 2,
+					["response"] = "Mainspec/Need",
+					["id"] = "1584564609-31",
+					["difficultyID"] = 16,
+					["lootWon"] = "|cffa335ee|Hitem:174531::::::::120:250::6:5:4824:6516:6515:1517:4786:::|h[Void-Etched Band]|h|r",
+					["isAwardReason"] = false,
+					["color"] = {
+						0, -- [1]
+						1, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = 1,
+					["itemReplaced2"] = "|cffa335ee|Hitem:158362:6109:::::::120:250::16:5:6536:6516:6513:1637:4786:::|h[Lord Waycrest's Signet]|h|r",
+					["instance"] = "Ny'alotha, the Waking City-Mythic",
+				}, -- [1]
+				{
+					["mapID"] = 2217,
+					["date"] = "25/03/20",
+					["class"] = "ROGUE",
+					["iSubClass"] = 0,
+					["groupSize"] = 23,
+					["isAwardReason"] = false,
+					["time"] = "20:28:28",
+					["iClass"] = 15,
+					["id"] = "1585160908-5",
+					["owner"] = "Aemenór-Silvermoon",
+					["response"] = "Personal Loot - Non tradeable",
+					["difficultyID"] = 15,
+					["lootWon"] = "|cffff8000|Hitem:175062::::::::120:260::5::::|h[Malefic Core]|h|r",
+					["color"] = {
+						1, -- [1]
+						0.6, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = "PL",
+					["instance"] = "Ny'alotha, the Waking City-Heroic",
+					["boss"] = "N'Zoth the Corruptor",
+				}, -- [2]
+			},
+			["Nilley-Silvermoon"] = {
+				{
+					["mapID"] = 2217,
+					["date"] = "02/03/20",
+					["class"] = "DEMONHUNTER",
+					["iSubClass"] = 2,
+					["groupSize"] = 18,
+					["isAwardReason"] = false,
+					["time"] = "22:48:28",
+					["iClass"] = 4,
+					["id"] = "1583182108-1",
+					["owner"] = "Nilley-Silvermoon",
+					["response"] = "Personal Loot - Rejected Trade",
+					["difficultyID"] = 15,
+					["lootWon"] = "|cffa335ee|Hitem:174142::::::::120:577::5:7:4823:6578:6579:6554:6513:1502:4786:::|h[Belt of Braided Vessels]|h|r",
+					["color"] = {
+						0.2, -- [1]
+						0, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = "PL_REJECT",
+					["instance"] = "Ny'alotha, the Waking City-Heroic",
+					["boss"] = "Il'gynoth, Corruption Reborn",
+				}, -- [1]
+				{
+					["mapID"] = 2217,
+					["date"] = "02/03/20",
+					["class"] = "DEMONHUNTER",
+					["iSubClass"] = 0,
+					["groupSize"] = 11,
+					["boss"] = "N'Zoth the Corruptor",
+					["time"] = "23:19:42",
+					["iClass"] = 4,
+					["itemReplaced1"] = "|cffa335ee|Hitem:175008:6108:168642::::::120:250::6:5:4824:6516:6515:1517:4786:::|h[Lurking Schemer's Band]|h|r",
+					["typeCode"] = "default",
+					["owner"] = "Drobadin-Silvermoon",
+					["votes"] = 2,
+					["response"] = "Mainspec/Need",
+					["id"] = "1583183982-9",
+					["difficultyID"] = 15,
+					["lootWon"] = "|cffa335ee|Hitem:174533::::::::120:250::5:6:4823:40:6516:6513:1502:4786:::|h[Ring of Cosmic Potential]|h|r",
+					["isAwardReason"] = false,
+					["color"] = {
+						0, -- [1]
+						1, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = 1,
+					["itemReplaced2"] = "|cffa335ee|Hitem:159458:6108:::::::120:250::16:5:5009:6516:6513:1627:4786:::|h[Seal of the Regal Loa]|h|r",
+					["instance"] = "Ny'alotha, the Waking City-Heroic",
+				}, -- [2]
+				{
+					["mapID"] = 2217,
+					["date"] = "04/03/20",
+					["class"] = "DEMONHUNTER",
+					["iSubClass"] = 2,
+					["groupSize"] = 20,
+					["isAwardReason"] = false,
+					["time"] = "20:33:11",
+					["iClass"] = 4,
+					["id"] = "1583346791-0",
+					["owner"] = "Nilley-Silvermoon",
+					["response"] = "Personal Loot - Non tradeable",
+					["difficultyID"] = 16,
+					["lootWon"] = "|cffa335ee|Hitem:174139::::::::120:577::6:5:4824:6516:6515:1517:4786:::|h[Onyx-Imbued Breeches]|h|r",
+					["color"] = {
+						1, -- [1]
+						0.6, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = "PL",
+					["instance"] = "Ny'alotha, the Waking City-Mythic",
+					["boss"] = "Wrathion",
+				}, -- [3]
+				{
+					["mapID"] = 2217,
+					["color"] = {
+						0, -- [1]
+						1, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["class"] = "DEMONHUNTER",
+					["iSubClass"] = 2,
+					["groupSize"] = 23,
+					["boss"] = "Carapace of N'Zoth",
+					["time"] = "20:28:50",
+					["iClass"] = 4,
+					["itemReplaced1"] = "|cffa335ee|Hitem:159314::::::::120:250::35:5:5448:1647:4786:6510:4775:::|h[Cephalohide Jacket]|h|r",
+					["instance"] = "Ny'alotha, the Waking City-Heroic",
+					["owner"] = "Droyy-Silvermoon",
+					["response"] = "Mainspec/Need",
+					["isAwardReason"] = false,
+					["difficultyID"] = 15,
+					["lootWon"] = "|cffa335ee|Hitem:174136::::::::120:250::5:4:4823:1502:4786:6507:::|h[Tortured Fleshbeast Cuirass]|h|r",
+					["votes"] = 1,
+					["date"] = "18/03/20",
+					["responseID"] = 1,
+					["id"] = "1584556130-4",
+					["typeCode"] = "default",
+				}, -- [4]
+				{
+					["mapID"] = 2217,
+					["date"] = "25/03/20",
+					["class"] = "DEMONHUNTER",
+					["iSubClass"] = 2,
+					["groupSize"] = 20,
+					["isAwardReason"] = false,
+					["time"] = "20:56:33",
+					["iClass"] = 4,
+					["id"] = "1585162593-23",
+					["owner"] = "Nilley-Silvermoon",
+					["response"] = "Personal Loot - Rejected Trade",
+					["difficultyID"] = 16,
+					["lootWon"] = "|cffa335ee|Hitem:174143::::::::120:577::6:5:4824:6516:6513:1517:4786:::|h[Macabre Ritual Pants]|h|r",
+					["color"] = {
+						0.2, -- [1]
+						0, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = "PL_REJECT",
+					["instance"] = "Ny'alotha, the Waking City-Mythic",
+					["boss"] = "Prophet Skitra",
+				}, -- [5]
+			},
+			["Anastiana-Silvermoon"] = {
+				{
+					["mapID"] = 2217,
+					["date"] = "02/03/20",
+					["class"] = "DEATHKNIGHT",
+					["iSubClass"] = 2,
+					["groupSize"] = 12,
+					["isAwardReason"] = false,
+					["time"] = "23:18:58",
+					["iClass"] = 15,
+					["id"] = "1583183938-8",
+					["owner"] = "Anastiana-Silvermoon",
+					["response"] = "Personal Loot - Rejected Trade",
+					["difficultyID"] = 15,
+					["lootWon"] = "|cff0070dd|Hitem:174452::::::::120:250::5::::|h[Eye of Corruption]|h|r",
+					["color"] = {
+						0.2, -- [1]
+						0, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = "PL_REJECT",
+					["instance"] = "Ny'alotha, the Waking City-Heroic",
+					["boss"] = "N'Zoth the Corruptor",
+				}, -- [1]
+				{
+					["mapID"] = 2217,
+					["date"] = "04/03/20",
+					["class"] = "DEATHKNIGHT",
+					["iSubClass"] = 0,
+					["groupSize"] = 20,
+					["isAwardReason"] = false,
+					["time"] = "20:33:26",
+					["iClass"] = 4,
+					["id"] = "1583346806-3",
+					["owner"] = "Anastiana-Silvermoon",
+					["response"] = "Personal Loot - Non tradeable",
+					["difficultyID"] = 16,
+					["lootWon"] = "|cffa335ee|Hitem:174044::::::::120:250::6:4:4824:6513:1517:4786:::|h[Humming Black Dragonscale]|h|r",
+					["color"] = {
+						1, -- [1]
+						0.6, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = "PL",
+					["instance"] = "Ny'alotha, the Waking City-Mythic",
+					["boss"] = "Wrathion",
+				}, -- [2]
+				{
+					["mapID"] = 2217,
+					["color"] = {
+						0, -- [1]
+						1, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["class"] = "DEATHKNIGHT",
+					["iSubClass"] = 2,
+					["groupSize"] = 12,
+					["boss"] = "Ra-den the Despoiled",
+					["time"] = "23:12:35",
+					["iClass"] = 15,
+					["instance"] = "Ny'alotha, the Waking City-Heroic",
+					["owner"] = "Vanitos-Silvermoon",
+					["response"] = "Mainspec/Need",
+					["isAwardReason"] = false,
+					["difficultyID"] = 15,
+					["lootWon"] = "|cff0070dd|Hitem:174447::::::::120:250::5::::|h[Void-Scarred Anubisath]|h|r",
+					["votes"] = 0,
+					["date"] = "09/03/20",
+					["responseID"] = 1,
+					["id"] = "1583788355-5",
+					["typeCode"] = "default",
+				}, -- [3]
+				{
+					["mapID"] = 2217,
+					["date"] = "11/03/20",
+					["class"] = "DEATHKNIGHT",
+					["iSubClass"] = 4,
+					["groupSize"] = 20,
+					["isAwardReason"] = false,
+					["time"] = "20:59:02",
+					["iClass"] = 4,
+					["id"] = "1583953142-5",
+					["owner"] = "Anastiana-Silvermoon",
+					["response"] = "Personal Loot - Rejected Trade",
+					["difficultyID"] = 16,
+					["lootWon"] = "|cffa335ee|Hitem:174173::::::::120:250::6:6:4824:1808:6516:6513:1517:4786:::|h[Boots of Hallucinatory Reality]|h|r",
+					["color"] = {
+						0.2, -- [1]
+						0, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = "PL_REJECT",
+					["instance"] = "Ny'alotha, the Waking City-Mythic",
+					["boss"] = "Prophet Skitra",
+				}, -- [4]
+				{
+					["mapID"] = 2217,
+					["date"] = "18/03/20",
+					["class"] = "DEATHKNIGHT",
+					["iSubClass"] = 8,
+					["groupSize"] = 23,
+					["isAwardReason"] = false,
+					["time"] = "20:41:18",
+					["iClass"] = 2,
+					["id"] = "1584556878-7",
+					["owner"] = "Anastiana-Silvermoon",
+					["response"] = "Personal Loot - Rejected Trade",
+					["difficultyID"] = 15,
+					["lootWon"] = "|cffa335ee|Hitem:172187::::::::120:250::5:7:4823:6539:6578:6579:6513:1502:4786:::|h[Devastation's Hour]|h|r",
+					["color"] = {
+						0.2, -- [1]
+						0, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = "PL_REJECT",
+					["instance"] = "Ny'alotha, the Waking City-Heroic",
+					["boss"] = "N'Zoth the Corruptor",
+				}, -- [5]
+				{
+					["mapID"] = 2217,
+					["date"] = "18/03/20",
+					["class"] = "DEATHKNIGHT",
+					["iSubClass"] = 2,
+					["groupSize"] = 23,
+					["isAwardReason"] = false,
+					["time"] = "20:41:21",
+					["iClass"] = 15,
+					["id"] = "1584556881-8",
+					["owner"] = "Anastiana-Silvermoon",
+					["response"] = "Personal Loot - Rejected Trade",
+					["difficultyID"] = 15,
+					["lootWon"] = "|cff0070dd|Hitem:174452::::::::120:250::5::::|h[Eye of Corruption]|h|r",
+					["color"] = {
+						0.2, -- [1]
+						0, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = "PL_REJECT",
+					["instance"] = "Ny'alotha, the Waking City-Heroic",
+					["boss"] = "N'Zoth the Corruptor",
+				}, -- [6]
+				{
+					["mapID"] = 2217,
+					["date"] = "18/03/20",
+					["class"] = "DEATHKNIGHT",
+					["iSubClass"] = 0,
+					["groupSize"] = 20,
+					["isAwardReason"] = false,
+					["time"] = "21:54:06",
+					["iClass"] = 4,
+					["id"] = "1584561246-26",
+					["owner"] = "Anastiana-Silvermoon",
+					["response"] = "Personal Loot - Rejected Trade",
+					["difficultyID"] = 16,
+					["lootWon"] = "|cffa335ee|Hitem:175008::::::::120:250::6:5:4824:6516:6515:1517:4786:::|h[Lurking Schemer's Band]|h|r",
+					["color"] = {
+						0.2, -- [1]
+						0, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = "PL_REJECT",
+					["instance"] = "Ny'alotha, the Waking City-Mythic",
+					["boss"] = "Maut",
+				}, -- [7]
+				{
+					["mapID"] = 2217,
+					["date"] = "18/03/20",
+					["class"] = "DEATHKNIGHT",
+					["iSubClass"] = 0,
+					["groupSize"] = 20,
+					["isAwardReason"] = false,
+					["time"] = "22:01:27",
+					["iClass"] = 4,
+					["id"] = "1584561687-27",
+					["owner"] = "Anastiana-Silvermoon",
+					["response"] = "Personal Loot - Rejected Trade",
+					["difficultyID"] = 16,
+					["lootWon"] = "|cffa335ee|Hitem:175008::::::::120:250::6:5:4824:6516:6513:1517:4786:::|h[Lurking Schemer's Band]|h|r",
+					["color"] = {
+						0.2, -- [1]
+						0, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = "PL_REJECT",
+					["instance"] = "Ny'alotha, the Waking City-Mythic",
+					["boss"] = "Maut",
+				}, -- [8]
+				{
+					["mapID"] = 2217,
+					["date"] = "25/03/20",
+					["class"] = "DEATHKNIGHT",
+					["iSubClass"] = 0,
+					["groupSize"] = 23,
+					["isAwardReason"] = false,
+					["time"] = "20:28:30",
+					["iClass"] = 15,
+					["id"] = "1585160910-6",
+					["owner"] = "Anastiana-Silvermoon",
+					["response"] = "Personal Loot - Non tradeable",
+					["difficultyID"] = 15,
+					["lootWon"] = "|cffff8000|Hitem:175062::::::::120:250::5::::|h[Malefic Core]|h|r",
+					["color"] = {
+						1, -- [1]
+						0.6, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = "PL",
+					["instance"] = "Ny'alotha, the Waking City-Heroic",
+					["boss"] = "N'Zoth the Corruptor",
+				}, -- [9]
+				{
+					["mapID"] = 2217,
+					["date"] = "25/03/20",
+					["class"] = "DEATHKNIGHT",
+					["iSubClass"] = 0,
+					["groupSize"] = 10,
+					["boss"] = "N'Zoth the Corruptor",
+					["time"] = "20:29:57",
+					["iClass"] = 4,
+					["itemReplaced1"] = "|cffa335ee|Hitem:162544:6111:::::::120:250::35:5:6536:6578:6513:1647:4786:::|h[Jade Ophidian Band]|h|r",
+					["typeCode"] = "default",
+					["owner"] = "Droyy-Silvermoon",
+					["votes"] = 2,
+					["response"] = "Minor Upgrade",
+					["id"] = "1585160997-14",
+					["difficultyID"] = 15,
+					["lootWon"] = "|cffa335ee|Hitem:174533::::::::120:250::5:5:4823:6516:6513:1502:4786:::|h[Ring of Cosmic Potential]|h|r",
+					["isAwardReason"] = false,
+					["color"] = {
+						0, -- [1]
+						0.7, -- [2]
+						0.7, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = 3,
+					["itemReplaced2"] = "|cffa335ee|Hitem:169160:6111:::::::120:250::16:5:6536:6516:6515:1522:4786:::|h[Shorting Bit Band]|h|r",
+					["instance"] = "Ny'alotha, the Waking City-Heroic",
+				}, -- [10]
+			},
+			["Sensémage-Silvermoon"] = {
+				{
+					["mapID"] = 2217,
+					["date"] = "25/03/20",
+					["class"] = "MAGE",
+					["iSubClass"] = 2,
+					["groupSize"] = 23,
+					["isAwardReason"] = false,
+					["time"] = "20:28:35",
+					["iClass"] = 15,
+					["id"] = "1585160915-10",
+					["owner"] = "Sensémage-Silvermoon",
+					["response"] = "Personal Loot - Rejected Trade",
+					["difficultyID"] = 15,
+					["lootWon"] = "|cff0070dd|Hitem:174452::::::::120:63::5::::|h[Eye of Corruption]|h|r",
+					["color"] = {
+						0.2, -- [1]
+						0, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = "PL_REJECT",
+					["instance"] = "Ny'alotha, the Waking City-Heroic",
+					["boss"] = "N'Zoth the Corruptor",
 				}, -- [1]
 			},
-			["Care-Sulfuras"] = {
+			["Nïkä-Silvermoon"] = {
 				{
-					["mapID"] = 249,
-					["date"] = "06/11/19",
-					["class"] = "PALADIN",
+					["mapID"] = 2217,
+					["date"] = "25/03/20",
+					["class"] = "DEATHKNIGHT",
 					["iSubClass"] = 0,
-					["groupSize"] = 40,
+					["groupSize"] = 23,
 					["isAwardReason"] = false,
-					["time"] = "18:33:04",
-					["iClass"] = 1,
-					["id"] = "1573122784-0",
-					["owner"] = "Care-Sulfuras",
+					["time"] = "20:28:26",
+					["iClass"] = 15,
+					["id"] = "1585160906-3",
+					["owner"] = "Nïkä-Silvermoon",
 					["response"] = "Personal Loot - Non tradeable",
-					["difficultyID"] = 9,
-					["lootWon"] = "|cff1eff00|Hitem:17966::::::::60:::::::|h[Onyxia Hide Backpack]|h|r",
+					["difficultyID"] = 15,
+					["lootWon"] = "|cffff8000|Hitem:175062::::::::120:251::5::::|h[Malefic Core]|h|r",
 					["color"] = {
 						1, -- [1]
 						0.6, -- [2]
@@ -3450,52 +3420,1829 @@ RCLootCouncilLootDB = {
 						1, -- [4]
 					},
 					["responseID"] = "PL",
-					["instance"] = "Onyxia's Lair-40 Player",
-					["boss"] = "Unknown",
+					["instance"] = "Ny'alotha, the Waking City-Heroic",
+					["boss"] = "N'Zoth the Corruptor",
+				}, -- [1]
+				{
+					["mapID"] = 2217,
+					["date"] = "25/03/20",
+					["class"] = "DEATHKNIGHT",
+					["iSubClass"] = 7,
+					["groupSize"] = 20,
+					["isAwardReason"] = false,
+					["time"] = "20:47:20",
+					["iClass"] = 2,
+					["id"] = "1585162040-18",
+					["owner"] = "Nïkä-Silvermoon",
+					["response"] = "Personal Loot - Rejected Trade",
+					["difficultyID"] = 16,
+					["lootWon"] = "|cffa335ee|Hitem:172199::::::::120:251::6:7:4824:6571:6578:6579:6513:1517:4786:::|h[Faralos, Empire's Dream]|h|r",
+					["color"] = {
+						0.2, -- [1]
+						0, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = "PL_REJECT",
+					["instance"] = "Ny'alotha, the Waking City-Mythic",
+					["boss"] = "Wrathion",
+				}, -- [2]
+				{
+					["mapID"] = 2217,
+					["date"] = "25/03/20",
+					["class"] = "DEATHKNIGHT",
+					["iSubClass"] = 0,
+					["groupSize"] = 20,
+					["isAwardReason"] = false,
+					["time"] = "22:42:19",
+					["iClass"] = 4,
+					["id"] = "1585168939-34",
+					["owner"] = "Nïkä-Silvermoon",
+					["response"] = "Personal Loot - Rejected Trade",
+					["difficultyID"] = 16,
+					["lootWon"] = "|cffa335ee|Hitem:174531::::::::120:251::6:6:4824:40:6516:6515:1517:4786:::|h[Void-Etched Band]|h|r",
+					["color"] = {
+						0.2, -- [1]
+						0, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = "PL_REJECT",
+					["instance"] = "Ny'alotha, the Waking City-Mythic",
+					["boss"] = "Shad'har the Insatiable",
+				}, -- [3]
+			},
+			["Marival-Silvermoon"] = {
+				{
+					["mapID"] = 2217,
+					["color"] = {
+						1, -- [1]
+						1, -- [2]
+						1, -- [3]
+						1, -- [4]
+					},
+					["class"] = "PRIEST",
+					["iSubClass"] = 4,
+					["groupSize"] = 17,
+					["boss"] = "Il'gynoth, Corruption Reborn",
+					["time"] = "22:53:35",
+					["iClass"] = 4,
+					["itemReplaced1"] = "|cffa335ee|Hitem:158351::::::::120:250::35:8:6536:6578:6579:6478:6462:6513:1647:4786:::|h[Dashing Bilge Rat Shoes]|h|r",
+					["instance"] = "Ny'alotha, the Waking City-Heroic",
+					["owner"] = "Leinea-Silvermoon",
+					["response"] = "Disenchant",
+					["isAwardReason"] = true,
+					["difficultyID"] = 15,
+					["lootWon"] = "|cffa335ee|Hitem:174176::::::::120:250::5:5:4823:6516:6513:1502:4786:::|h[Sabatons of Malevolent Intent]|h|r",
+					["votes"] = 0,
+					["date"] = "02/03/20",
+					["responseID"] = 1,
+					["id"] = "1583182415-2",
+					["typeCode"] = "default",
+				}, -- [1]
+				{
+					["mapID"] = 2217,
+					["color"] = {
+						1, -- [1]
+						1, -- [2]
+						1, -- [3]
+						1, -- [4]
+					},
+					["class"] = "PRIEST",
+					["iSubClass"] = 3,
+					["groupSize"] = 17,
+					["boss"] = "Il'gynoth, Corruption Reborn",
+					["time"] = "22:53:39",
+					["iClass"] = 4,
+					["itemReplaced1"] = "|cffa335ee|Hitem:174119::::::::120:250::5:5:4823:1502:4786:6507:4775:::|h[Robes of Unreality]|h|r",
+					["instance"] = "Ny'alotha, the Waking City-Heroic",
+					["owner"] = "Bellicuz-Silvermoon",
+					["response"] = "Disenchant",
+					["isAwardReason"] = true,
+					["difficultyID"] = 15,
+					["lootWon"] = "|cffa335ee|Hitem:174150::::::::120:250::5:4:4823:1502:4786:6507:::|h[Scales of the Scheming Behemoth]|h|r",
+					["votes"] = 0,
+					["date"] = "02/03/20",
+					["responseID"] = 1,
+					["id"] = "1583182419-3",
+					["typeCode"] = "default",
+				}, -- [2]
+				{
+					["mapID"] = 2217,
+					["date"] = "04/03/20",
+					["class"] = "PRIEST",
+					["iSubClass"] = 1,
+					["groupSize"] = 20,
+					["isAwardReason"] = false,
+					["time"] = "20:51:11",
+					["iClass"] = 4,
+					["id"] = "1583347871-8",
+					["owner"] = "Marival-Silvermoon",
+					["response"] = "Personal Loot - Rejected Trade",
+					["difficultyID"] = 16,
+					["lootWon"] = "|cffa335ee|Hitem:174119::::::::120:257::6:4:4824:1517:4786:6510:::|h[Robes of Unreality]|h|r",
+					["color"] = {
+						0.2, -- [1]
+						0, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = "PL_REJECT",
+					["instance"] = "Ny'alotha, the Waking City-Mythic",
+					["boss"] = "Prophet Skitra",
+				}, -- [3]
+				{
+					["mapID"] = 2217,
+					["date"] = "09/03/20",
+					["class"] = "PRIEST",
+					["iSubClass"] = 0,
+					["groupSize"] = 15,
+					["isAwardReason"] = false,
+					["time"] = "22:44:43",
+					["iClass"] = 4,
+					["id"] = "1583786683-0",
+					["owner"] = "Marival-Silvermoon",
+					["response"] = "Personal Loot - Non tradeable",
+					["difficultyID"] = 15,
+					["lootWon"] = "|cffa335ee|Hitem:172190::::::::120:257::5:6:4823:1808:6516:6515:1502:4786:::|h[Uhnish Vwah]|h|r",
+					["color"] = {
+						1, -- [1]
+						0.6, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = "PL",
+					["instance"] = "Ny'alotha, the Waking City-Heroic",
+					["boss"] = "Dark Inquisitor Xanesh",
+				}, -- [4]
+				{
+					["mapID"] = 2217,
+					["date"] = "09/03/20",
+					["class"] = "PRIEST",
+					["iSubClass"] = 0,
+					["groupSize"] = 13,
+					["boss"] = "The Hivemind",
+					["time"] = "23:03:25",
+					["iClass"] = 4,
+					["itemReplaced1"] = "|cffa335ee|Hitem:174530:6110:::::::120:250::5:5:4823:6516:6515:1502:4786:::|h[Ring of Collective Consciousness]|h|r",
+					["typeCode"] = "default",
+					["owner"] = "Vanitos-Silvermoon",
+					["votes"] = 0,
+					["response"] = "Mainspec/Need",
+					["id"] = "1583787805-2",
+					["difficultyID"] = 15,
+					["lootWon"] = "|cffa335ee|Hitem:174530::::::::120:250::5:7:4823:6578:6579:6564:6513:1502:4786:::|h[Ring of Collective Consciousness]|h|r",
+					["isAwardReason"] = false,
+					["color"] = {
+						0, -- [1]
+						1, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = 1,
+					["itemReplaced2"] = "|cffa335ee|Hitem:174532:6110:168639::::::120:250::5:6:4823:1808:6516:6515:1502:4786:::|h[Ichorspine Loop]|h|r",
+					["instance"] = "Ny'alotha, the Waking City-Heroic",
+				}, -- [5]
+				{
+					["mapID"] = 2217,
+					["date"] = "11/03/20",
+					["class"] = "PRIEST",
+					["iSubClass"] = 15,
+					["groupSize"] = 20,
+					["isAwardReason"] = false,
+					["time"] = "20:58:55",
+					["iClass"] = 2,
+					["id"] = "1583953135-4",
+					["owner"] = "Marival-Silvermoon",
+					["response"] = "Personal Loot - Non tradeable",
+					["difficultyID"] = 16,
+					["lootWon"] = "|cffa335ee|Hitem:172201::::::::120:257::6:5:4824:6516:6515:1517:4786:::|h[Bloodstained Ritual Athame]|h|r",
+					["color"] = {
+						1, -- [1]
+						0.6, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = "PL",
+					["instance"] = "Ny'alotha, the Waking City-Mythic",
+					["boss"] = "Prophet Skitra",
+				}, -- [6]
+				{
+					["mapID"] = 2217,
+					["color"] = {
+						1, -- [1]
+						1, -- [2]
+						1, -- [3]
+						1, -- [4]
+					},
+					["class"] = "PRIEST",
+					["iSubClass"] = 3,
+					["groupSize"] = 20,
+					["boss"] = "Maut",
+					["time"] = "21:48:39",
+					["iClass"] = 4,
+					["itemReplaced1"] = "|cffa335ee|Hitem:174237::::::::120:250::3:8:4822:6578:6579:6495:6614:6513:1487:4786:::|h[Breeches of Faithful Execution]|h|r",
+					["instance"] = "Ny'alotha, the Waking City-Mythic",
+					["owner"] = "Drobadin-Silvermoon",
+					["response"] = "Disenchant",
+					["isAwardReason"] = true,
+					["difficultyID"] = 16,
+					["lootWon"] = "|cffa335ee|Hitem:174155::::::::120:250::6:5:4824:6516:6515:1517:4786:::|h[Greaves of Forbidden Magics]|h|r",
+					["votes"] = 0,
+					["date"] = "11/03/20",
+					["responseID"] = 1,
+					["id"] = "1583956119-13",
+					["typeCode"] = "default",
+				}, -- [7]
+				{
+					["mapID"] = 2217,
+					["date"] = "11/03/20",
+					["class"] = "PRIEST",
+					["iSubClass"] = 0,
+					["groupSize"] = 17,
+					["boss"] = "Wrathion",
+					["time"] = "22:04:31",
+					["iClass"] = 4,
+					["itemReplaced1"] = "|cffa335ee|Hitem:173944::168639::::::120:250::6:6:4824:1808:42:6515:1517:4786:::|h[Forbidden Obsidian Claw]|h|r",
+					["typeCode"] = "default",
+					["owner"] = "Asnv-Silvermoon",
+					["votes"] = 0,
+					["response"] = "Disenchant",
+					["id"] = "1583957071-15",
+					["difficultyID"] = 15,
+					["lootWon"] = "|cffa335ee|Hitem:174044::::::::120:250::5:4:4823:6515:1502:4786:::|h[Humming Black Dragonscale]|h|r",
+					["isAwardReason"] = true,
+					["color"] = {
+						1, -- [1]
+						1, -- [2]
+						1, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = 1,
+					["itemReplaced2"] = "|cffa335ee|Hitem:171085::168639::::::120:250::13::::|h[Peerless Alchemist Stone]|h|r",
+					["instance"] = "Ny'alotha, the Waking City-Heroic",
+				}, -- [8]
+				{
+					["mapID"] = 2217,
+					["date"] = "11/03/20",
+					["class"] = "PRIEST",
+					["iSubClass"] = 0,
+					["groupSize"] = 17,
+					["boss"] = "Wrathion",
+					["time"] = "22:04:43",
+					["iClass"] = 4,
+					["itemReplaced1"] = "|cffa335ee|Hitem:173944::168639::::::120:250::6:6:4824:1808:42:6515:1517:4786:::|h[Forbidden Obsidian Claw]|h|r",
+					["typeCode"] = "default",
+					["owner"] = "Meralda-Silvermoon",
+					["votes"] = 0,
+					["response"] = "Disenchant",
+					["id"] = "1583957083-16",
+					["difficultyID"] = 15,
+					["lootWon"] = "|cffa335ee|Hitem:174044::::::::120:250::5:4:4823:6513:1502:4786:::|h[Humming Black Dragonscale]|h|r",
+					["isAwardReason"] = true,
+					["color"] = {
+						1, -- [1]
+						1, -- [2]
+						1, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = 1,
+					["itemReplaced2"] = "|cffa335ee|Hitem:171085::168639::::::120:250::13::::|h[Peerless Alchemist Stone]|h|r",
+					["instance"] = "Ny'alotha, the Waking City-Heroic",
+				}, -- [9]
+				{
+					["mapID"] = 2217,
+					["color"] = {
+						1, -- [1]
+						1, -- [2]
+						1, -- [3]
+						1, -- [4]
+					},
+					["class"] = "PRIEST",
+					["iSubClass"] = 4,
+					["groupSize"] = 17,
+					["boss"] = "Wrathion",
+					["time"] = "22:04:47",
+					["iClass"] = 4,
+					["itemReplaced1"] = "|cffa335ee|Hitem:174122:5936:::::::120:250::5:5:4823:6516:6513:1502:4786:::|h[Void-Drenched Wristwraps]|h|r",
+					["instance"] = "Ny'alotha, the Waking City-Heroic",
+					["owner"] = "Cronah-Silvermoon",
+					["response"] = "Disenchant",
+					["isAwardReason"] = true,
+					["difficultyID"] = 15,
+					["lootWon"] = "|cffa335ee|Hitem:174170::::::::120:250::5:5:4823:6516:6515:1502:4786:::|h[Dragonbone Vambraces]|h|r",
+					["votes"] = 0,
+					["date"] = "11/03/20",
+					["responseID"] = 1,
+					["id"] = "1583957087-17",
+					["typeCode"] = "default",
+				}, -- [10]
+				{
+					["mapID"] = 2217,
+					["date"] = "11/03/20",
+					["class"] = "PRIEST",
+					["iSubClass"] = 1,
+					["groupSize"] = 17,
+					["isAwardReason"] = false,
+					["time"] = "22:25:42",
+					["iClass"] = 4,
+					["id"] = "1583958342-19",
+					["owner"] = "Marival-Silvermoon",
+					["response"] = "Personal Loot - Rejected Trade",
+					["difficultyID"] = 15,
+					["lootWon"] = "|cffa335ee|Hitem:174117::::::::120:257::5:4:4823:1502:4786:6509:::|h[Spaulders of Miasmic Mycelia]|h|r",
+					["color"] = {
+						0.2, -- [1]
+						0, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = "PL_REJECT",
+					["instance"] = "Ny'alotha, the Waking City-Heroic",
+					["boss"] = "Carapace of N'Zoth",
+				}, -- [11]
+				{
+					["mapID"] = 2217,
+					["date"] = "18/03/20",
+					["class"] = "PRIEST",
+					["iSubClass"] = 15,
+					["groupSize"] = 20,
+					["boss"] = "Prophet Skitra",
+					["time"] = "21:23:17",
+					["iClass"] = 2,
+					["itemReplaced1"] = "|cffa335ee|Hitem:172189:6112:::::::120:250::5:7:4823:6548:6578:6579:1502:4786:6513:::|h[Eyestalk of Il'gynoth]|h|r",
+					["typeCode"] = "default",
+					["owner"] = "Vandott-Silvermoon",
+					["votes"] = 0,
+					["response"] = "Mainspec/Need",
+					["id"] = "1584559397-21",
+					["difficultyID"] = 16,
+					["lootWon"] = "|cffa335ee|Hitem:172201::::::::120:250::6:7:4824:6578:6579:6548:6513:1517:4786:::|h[Bloodstained Ritual Athame]|h|r",
+					["isAwardReason"] = false,
+					["color"] = {
+						0, -- [1]
+						1, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = 1,
+					["itemReplaced2"] = "|cffa335ee|Hitem:172190::168639::::::120:250::5:6:4823:1808:6516:6515:1502:4786:::|h[Uhnish Vwah]|h|r",
+					["instance"] = "Ny'alotha, the Waking City-Mythic",
+				}, -- [12]
+				{
+					["mapID"] = 2217,
+					["date"] = "23/03/20",
+					["class"] = "PRIEST",
+					["iSubClass"] = 0,
+					["groupSize"] = 20,
+					["isAwardReason"] = false,
+					["time"] = "23:08:30",
+					["iClass"] = 4,
+					["id"] = "1584997710-2",
+					["owner"] = "Marival-Silvermoon",
+					["response"] = "Personal Loot - Rejected Trade",
+					["difficultyID"] = 16,
+					["lootWon"] = "|cffa335ee|Hitem:174530::::::::120:257::6:8:4824:6578:6579:6438:6462:6513:1517:4786:::|h[Ring of Collective Consciousness]|h|r",
+					["boss"] = "The Hivemind",
+					["responseID"] = "PL_REJECT",
+					["instance"] = "Ny'alotha, the Waking City-Mythic",
+					["color"] = {
+						0.2, -- [1]
+						0, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+				}, -- [13]
+				{
+					["mapID"] = 2217,
+					["date"] = "25/03/20",
+					["class"] = "PRIEST",
+					["iSubClass"] = 0,
+					["groupSize"] = 10,
+					["isAwardReason"] = false,
+					["time"] = "20:30:07",
+					["iClass"] = 15,
+					["id"] = "1585161007-16",
+					["owner"] = "Marival-Silvermoon",
+					["response"] = "Personal Loot - Non tradeable",
+					["difficultyID"] = 15,
+					["lootWon"] = "|cffff8000|Hitem:175062::::::::120:257::5::::|h[Malefic Core]|h|r",
+					["color"] = {
+						1, -- [1]
+						0.6, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = "PL",
+					["instance"] = "Ny'alotha, the Waking City-Heroic",
+					["boss"] = "N'Zoth the Corruptor",
+				}, -- [14]
+			},
+			["Joypopping-Silvermoon"] = {
+				{
+					["mapID"] = 2217,
+					["date"] = "09/03/20",
+					["class"] = "MONK",
+					["iSubClass"] = 0,
+					["groupSize"] = 15,
+					["isAwardReason"] = false,
+					["time"] = "22:44:43",
+					["iClass"] = 4,
+					["id"] = "1583786683-1",
+					["owner"] = "Joypopping-Silvermoon",
+					["response"] = "Personal Loot - Non tradeable",
+					["difficultyID"] = 15,
+					["lootWon"] = "|cffa335ee|Hitem:172190::::::::120:269::5:7:4823:6578:6579:6565:6513:1502:4786:::|h[Uhnish Vwah]|h|r",
+					["color"] = {
+						1, -- [1]
+						0.6, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = "PL",
+					["instance"] = "Ny'alotha, the Waking City-Heroic",
+					["boss"] = "Dark Inquisitor Xanesh",
+				}, -- [1]
+				{
+					["mapID"] = 2217,
+					["date"] = "09/03/20",
+					["class"] = "MONK",
+					["iSubClass"] = 10,
+					["groupSize"] = 12,
+					["boss"] = "Ra-den the Despoiled",
+					["time"] = "23:12:43",
+					["iClass"] = 2,
+					["itemReplaced1"] = "|cffa335ee|Hitem:159653:5962:::::::120:250::16:5:6532:6516:6515:1632:4786:::|h[Bile-Stained Crawg Tusks]|h|r",
+					["typeCode"] = "default",
+					["owner"] = "Faykmage-Silvermoon",
+					["votes"] = 0,
+					["response"] = "Offspec/Greed",
+					["id"] = "1583788363-6",
+					["difficultyID"] = 15,
+					["lootWon"] = "|cffa335ee|Hitem:172228::::::::120:250::5:5:4823:6516:6513:1502:4786:::|h[Shandai, Watcher of Cosmos]|h|r",
+					["isAwardReason"] = false,
+					["color"] = {
+						1, -- [1]
+						0.5, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = 2,
+					["itemReplaced2"] = "|cffa335ee|Hitem:174108:5965:::::::120:250::5:7:4823:6553:6578:6579:1502:4786:6513:::|h[Shgla'yos, Astral Malignity]|h|r",
+					["instance"] = "Ny'alotha, the Waking City-Heroic",
+				}, -- [2]
+				{
+					["mapID"] = 2217,
+					["date"] = "18/03/20",
+					["class"] = "MONK",
+					["iSubClass"] = 2,
+					["groupSize"] = 23,
+					["isAwardReason"] = false,
+					["time"] = "20:41:17",
+					["iClass"] = 15,
+					["id"] = "1584556877-6",
+					["owner"] = "Joypopping-Silvermoon",
+					["response"] = "Personal Loot - Rejected Trade",
+					["difficultyID"] = 15,
+					["lootWon"] = "|cff0070dd|Hitem:174452::::::::120:270::5::::|h[Eye of Corruption]|h|r",
+					["color"] = {
+						0.2, -- [1]
+						0, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = "PL_REJECT",
+					["instance"] = "Ny'alotha, the Waking City-Heroic",
+					["boss"] = "N'Zoth the Corruptor",
+				}, -- [3]
+				{
+					["mapID"] = 2217,
+					["date"] = "18/03/20",
+					["class"] = "MONK",
+					["iSubClass"] = 7,
+					["groupSize"] = 20,
+					["isAwardReason"] = false,
+					["time"] = "21:04:40",
+					["iClass"] = 2,
+					["id"] = "1584558280-13",
+					["owner"] = "Joypopping-Silvermoon",
+					["response"] = "Personal Loot - Non tradeable",
+					["difficultyID"] = 16,
+					["lootWon"] = "|cffa335ee|Hitem:174105::::::::120:270::6:5:4824:6516:6515:1517:4786:::|h[Mish'un, Blade of Tyrants]|h|r",
+					["color"] = {
+						1, -- [1]
+						0.6, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = "PL",
+					["instance"] = "Ny'alotha, the Waking City-Mythic",
+					["boss"] = "Wrathion",
+				}, -- [4]
+				{
+					["mapID"] = 2217,
+					["date"] = "18/03/20",
+					["class"] = "MONK",
+					["iSubClass"] = 0,
+					["groupSize"] = 20,
+					["boss"] = "Shad'har the Insatiable",
+					["time"] = "22:50:02",
+					["iClass"] = 4,
+					["itemReplaced1"] = "|cffa335ee|Hitem:169160:6109:::::::120:250::35:7:6536:6578:6579:6541:6515:1532:4786:::|h[Shorting Bit Band]|h|r",
+					["typeCode"] = "default",
+					["owner"] = "Droyy-Silvermoon",
+					["votes"] = 3,
+					["response"] = "Mainspec/Need",
+					["id"] = "1584564602-30",
+					["difficultyID"] = 16,
+					["lootWon"] = "|cffa335ee|Hitem:174531::::::::120:250::6:8:4824:6578:6579:6476:6470:6515:1517:4786:::|h[Void-Etched Band]|h|r",
+					["isAwardReason"] = false,
+					["color"] = {
+						0, -- [1]
+						1, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = 1,
+					["itemReplaced2"] = "|cffa335ee|Hitem:169161:6109:168641::::::120:250::16:6:6532:4802:6578:6513:1517:4786:::|h[Protecting Bit Band]|h|r",
+					["instance"] = "Ny'alotha, the Waking City-Mythic",
+				}, -- [5]
+				{
+					["mapID"] = 2217,
+					["date"] = "25/03/20",
+					["class"] = "MONK",
+					["iSubClass"] = 2,
+					["groupSize"] = 22,
+					["isAwardReason"] = false,
+					["time"] = "20:28:40",
+					["iClass"] = 15,
+					["id"] = "1585160920-11",
+					["owner"] = "Joypopping-Silvermoon",
+					["response"] = "Personal Loot - Rejected Trade",
+					["difficultyID"] = 15,
+					["lootWon"] = "|cff0070dd|Hitem:174452::::::::120:269::5::::|h[Eye of Corruption]|h|r",
+					["color"] = {
+						0.2, -- [1]
+						0, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = "PL_REJECT",
+					["instance"] = "Ny'alotha, the Waking City-Heroic",
+					["boss"] = "N'Zoth the Corruptor",
+				}, -- [6]
+				{
+					["mapID"] = 2217,
+					["date"] = "25/03/20",
+					["class"] = "MONK",
+					["iSubClass"] = 0,
+					["groupSize"] = 20,
+					["boss"] = "N'Zoth the Corruptor",
+					["time"] = "20:33:29",
+					["iClass"] = 4,
+					["itemReplaced1"] = "|cffa335ee|Hitem:169769::::::::120:250::35:4:6536:6515:1532:4786:::|h[Remote Guidance Device]|h|r",
+					["typeCode"] = "default",
+					["owner"] = "Hulabaloo-Silvermoon",
+					["votes"] = 0,
+					["response"] = "Minor Upgrade",
+					["id"] = "1585161209-17",
+					["difficultyID"] = 16,
+					["lootWon"] = "|cffa335ee|Hitem:174103::::::::120:250::5:4:4823:6515:1502:4786:::|h[Manifesto of Madness]|h|r",
+					["isAwardReason"] = false,
+					["color"] = {
+						0, -- [1]
+						0.7, -- [2]
+						0.7, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = 3,
+					["itemReplaced2"] = "|cffa335ee|Hitem:159623::::::::120:250::35:4:6536:6515:1647:4786:::|h[Dead-Eye Spyglass]|h|r",
+					["instance"] = "Ny'alotha, the Waking City-Mythic",
+				}, -- [7]
+			},
+			["Lewelth-Silvermoon"] = {
+				{
+					["mapID"] = 2217,
+					["date"] = "04/03/20",
+					["class"] = "MAGE",
+					["iSubClass"] = 0,
+					["groupSize"] = 20,
+					["isAwardReason"] = false,
+					["time"] = "21:48:26",
+					["iClass"] = 4,
+					["id"] = "1583351306-13",
+					["owner"] = "Lewelth-Silvermoon",
+					["response"] = "Personal Loot - Rejected Trade",
+					["difficultyID"] = 16,
+					["lootWon"] = "|cffa335ee|Hitem:173944::::::::120:63::6:4:4824:6513:1517:4786:::|h[Forbidden Obsidian Claw]|h|r",
+					["color"] = {
+						0.2, -- [1]
+						0, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = "PL_REJECT",
+					["instance"] = "Ny'alotha, the Waking City-Mythic",
+					["boss"] = "Maut",
 				}, -- [1]
 			},
-			["Cabbagekrust-Sulfuras"] = {
+			["Crysdh-Silvermoon"] = {
 				{
-					["mapID"] = 249,
-					["date"] = "26/11/19",
-					["class"] = "MAGE",
-					["iSubClass"] = 0,
-					["groupSize"] = 40,
+					["mapID"] = 2217,
+					["date"] = "11/03/20",
+					["class"] = "DEMONHUNTER",
+					["iSubClass"] = 2,
+					["groupSize"] = 20,
 					["isAwardReason"] = false,
-					["time"] = "23:19:11",
+					["time"] = "21:47:03",
 					["iClass"] = 4,
-					["id"] = "1574846351-0",
-					["owner"] = "Cabbagekrust-Sulfuras",
+					["id"] = "1583956023-8",
+					["owner"] = "Crysdh-Silvermoon",
+					["response"] = "Personal Loot - Rejected Trade",
+					["difficultyID"] = 16,
+					["lootWon"] = "|cffa335ee|Hitem:174132::::::::120:577::6:4:4824:1517:4786:6511:::|h[Stygian Guise]|h|r",
+					["color"] = {
+						0.2, -- [1]
+						0, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = "PL_REJECT",
+					["instance"] = "Ny'alotha, the Waking City-Mythic",
+					["boss"] = "Maut",
+				}, -- [1]
+				{
+					["mapID"] = 2217,
+					["color"] = {
+						0, -- [1]
+						0.7, -- [2]
+						0.7, -- [3]
+						1, -- [4]
+					},
+					["class"] = "DEMONHUNTER",
+					["iSubClass"] = 2,
+					["groupSize"] = 17,
+					["boss"] = "Carapace of N'Zoth",
+					["time"] = "22:27:04",
+					["iClass"] = 4,
+					["itemReplaced1"] = "|cffa335ee|Hitem:173496::168642::::::120:250::54:6:6412:4802:6515:6516:1522:4786:::|h[Footwraps of the Insatiable Maw]|h|r",
+					["instance"] = "Ny'alotha, the Waking City-Heroic",
+					["owner"] = "Nilley-Silvermoon",
+					["response"] = "Minor Upgrade",
+					["isAwardReason"] = false,
+					["difficultyID"] = 15,
+					["lootWon"] = "|cffa335ee|Hitem:174144::::::::120:250::5:7:4823:6578:6579:6562:6515:1502:4786:::|h[Corpuscular Leather Greaves]|h|r",
+					["votes"] = 1,
+					["date"] = "11/03/20",
+					["responseID"] = 3,
+					["id"] = "1583958424-21",
+					["typeCode"] = "default",
+				}, -- [2]
+				{
+					["mapID"] = 2217,
+					["date"] = "11/03/20",
+					["class"] = "DEMONHUNTER",
+					["iSubClass"] = 0,
+					["groupSize"] = 17,
+					["isAwardReason"] = false,
+					["time"] = "22:49:20",
+					["iClass"] = 4,
+					["id"] = "1583959760-23",
+					["owner"] = "Crysdh-Silvermoon",
+					["response"] = "Personal Loot - Rejected Trade",
+					["difficultyID"] = 15,
+					["lootWon"] = "|cffa335ee|Hitem:174277::::::::120:577::5:4:4823:6513:1502:4786:::|h[Lingering Psychic Shell]|h|r",
+					["color"] = {
+						0.2, -- [1]
+						0, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = "PL_REJECT",
+					["instance"] = "Ny'alotha, the Waking City-Heroic",
+					["boss"] = "N'Zoth the Corruptor",
+				}, -- [3]
+				{
+					["mapID"] = 2217,
+					["date"] = "23/03/20",
+					["class"] = "DEMONHUNTER",
+					["iSubClass"] = 9,
+					["groupSize"] = 20,
+					["boss"] = "The Hivemind",
+					["time"] = "23:09:19",
+					["iClass"] = 2,
+					["itemReplaced1"] = "|cffa335ee|Hitem:160110:5965:::::::120:250::35:5:6536:6578:6515:1647:4786:::|h[Warglaive of the Sand Queen]|h|r",
+					["typeCode"] = "default",
+					["owner"] = "Nilley-Silvermoon",
+					["instance"] = "Ny'alotha, the Waking City-Mythic",
+					["response"] = "Minor Upgrade",
+					["id"] = "1584997759-5",
+					["difficultyID"] = 16,
+					["lootWon"] = "|cffa335ee|Hitem:172192::::::::120:250::6:8:4824:6578:6579:6474:6455:6513:1517:4786:::|h[The All-Seeing Eye]|h|r",
+					["isAwardReason"] = false,
+					["color"] = {
+						0, -- [1]
+						0.7, -- [2]
+						0.7, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = 3,
+					["itemReplaced2"] = "|cffa335ee|Hitem:172197:5962:::::::120:250::5:7:4823:6569:6578:6579:6515:1502:4786:::|h[Unguent Caress]|h|r",
+					["votes"] = 0,
+				}, -- [4]
+			},
+			["Kerpi-Silvermoon"] = {
+				{
+					["mapID"] = 2217,
+					["date"] = "04/03/20",
+					["class"] = "WARRIOR",
+					["iSubClass"] = 1,
+					["groupSize"] = 20,
+					["isAwardReason"] = false,
+					["time"] = "21:48:14",
+					["iClass"] = 2,
+					["id"] = "1583351294-11",
+					["owner"] = "Kerpi-Silvermoon",
 					["response"] = "Personal Loot - Non tradeable",
-					["difficultyID"] = 9,
-					["lootWon"] = "|cffa335ee|Hitem:17067::::::::60:::::::|h[Ancient Cornerstone Grimoire]|h|r",
-					["boss"] = "Onyxia",
-					["responseID"] = "PL",
-					["instance"] = "Onyxia's Lair-40 Player",
+					["difficultyID"] = 16,
+					["lootWon"] = "|cffa335ee|Hitem:172200::::::::120:71::6:7:4824:6572:6578:6579:6515:1517:4786:::|h[Sk'shuul Vaz]|h|r",
 					["color"] = {
 						1, -- [1]
 						0.6, -- [2]
 						0, -- [3]
 						1, -- [4]
 					},
+					["responseID"] = "PL",
+					["instance"] = "Ny'alotha, the Waking City-Mythic",
+					["boss"] = "Maut",
 				}, -- [1]
 				{
-					["mapID"] = 249,
-					["date"] = "26/11/19",
-					["class"] = "MAGE",
-					["iSubClass"] = 0,
-					["groupSize"] = 40,
+					["mapID"] = 2217,
+					["date"] = "11/03/20",
+					["class"] = "WARRIOR",
+					["iSubClass"] = 4,
+					["groupSize"] = 20,
 					["isAwardReason"] = false,
-					["time"] = "23:19:52",
+					["time"] = "20:44:40",
 					["iClass"] = 4,
-					["id"] = "1574846392-1",
-					["owner"] = "Cabbagekrust-Sulfuras",
+					["id"] = "1583952280-1",
+					["owner"] = "Kerpi-Silvermoon",
 					["response"] = "Personal Loot - Non tradeable",
-					["difficultyID"] = 9,
-					["lootWon"] = "|cffa335ee|Hitem:17067::::::::60:::::::|h[Ancient Cornerstone Grimoire]|h|r",
-					["boss"] = "Onyxia",
+					["difficultyID"] = 16,
+					["lootWon"] = "|cffa335ee|Hitem:174170::::::::120:72::6:5:4824:6516:6513:1517:4786:::|h[Dragonbone Vambraces]|h|r",
+					["color"] = {
+						1, -- [1]
+						0.6, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
 					["responseID"] = "PL",
-					["instance"] = "Onyxia's Lair-40 Player",
+					["instance"] = "Ny'alotha, the Waking City-Mythic",
+					["boss"] = "Wrathion",
+				}, -- [2]
+				{
+					["mapID"] = 2217,
+					["date"] = "11/03/20",
+					["class"] = "WARRIOR",
+					["iSubClass"] = 1,
+					["groupSize"] = 20,
+					["isAwardReason"] = false,
+					["time"] = "21:47:21",
+					["iClass"] = 2,
+					["id"] = "1583956041-11",
+					["owner"] = "Kerpi-Silvermoon",
+					["response"] = "Personal Loot - Rejected Trade",
+					["difficultyID"] = 16,
+					["lootWon"] = "|cffa335ee|Hitem:172200::::::::120:72::6:8:4824:1808:6572:6578:6579:6515:1517:4786:::|h[Sk'shuul Vaz]|h|r",
+					["color"] = {
+						0.2, -- [1]
+						0, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = "PL_REJECT",
+					["instance"] = "Ny'alotha, the Waking City-Mythic",
+					["boss"] = "Maut",
+				}, -- [3]
+				{
+					["mapID"] = 2217,
+					["date"] = "18/03/20",
+					["class"] = "WARRIOR",
+					["iSubClass"] = 4,
+					["groupSize"] = 20,
+					["isAwardReason"] = false,
+					["time"] = "21:22:44",
+					["iClass"] = 4,
+					["id"] = "1584559364-18",
+					["owner"] = "Kerpi-Silvermoon",
+					["response"] = "Personal Loot - Rejected Trade",
+					["difficultyID"] = 16,
+					["lootWon"] = "|cffa335ee|Hitem:174173::::::::120:72::6:5:4824:6516:6513:1517:4786:::|h[Boots of Hallucinatory Reality]|h|r",
+					["color"] = {
+						0.2, -- [1]
+						0, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = "PL_REJECT",
+					["instance"] = "Ny'alotha, the Waking City-Mythic",
+					["boss"] = "Prophet Skitra",
+				}, -- [4]
+				{
+					["mapID"] = 2217,
+					["date"] = "25/03/20",
+					["class"] = "WARRIOR",
+					["iSubClass"] = 4,
+					["groupSize"] = 20,
+					["isAwardReason"] = false,
+					["time"] = "21:12:19",
+					["iClass"] = 4,
+					["id"] = "1585163539-25",
+					["owner"] = "Kerpi-Silvermoon",
+					["response"] = "Personal Loot - Non tradeable",
+					["difficultyID"] = 16,
+					["lootWon"] = "|cffa335ee|Hitem:174172::::::::120:72::6:6:4824:1808:6516:6515:1517:4786:::|h[Living Obsidian Legguards]|h|r",
+					["color"] = {
+						1, -- [1]
+						0.6, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = "PL",
+					["instance"] = "Ny'alotha, the Waking City-Mythic",
+					["boss"] = "Maut",
+				}, -- [5]
+				{
+					["mapID"] = 2217,
+					["date"] = "25/03/20",
+					["class"] = "WARRIOR",
+					["iSubClass"] = 4,
+					["groupSize"] = 20,
+					["votes"] = 1,
+					["time"] = "21:19:22",
+					["iClass"] = 4,
+					["itemReplaced1"] = "|cffa335ee|Hitem:159420::::::::120:250::35:7:6536:6578:6579:6545:6513:1647:4786:::|h[Stormsurger's Sabatons]|h|r",
+					["instance"] = "Ny'alotha, the Waking City-Mythic",
+					["owner"] = "Anastiana-Silvermoon",
+					["color"] = {
+						0, -- [1]
+						1, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["response"] = "Mainspec/Need",
+					["boss"] = "Maut",
+					["difficultyID"] = 16,
+					["lootWon"] = "|cffa335ee|Hitem:174173::::::::120:250::6:8:4824:6578:6579:6475:6462:6515:1517:4786:::|h[Boots of Hallucinatory Reality]|h|r",
+					["note"] = "gief to I can actually play my mainspec (arms)",
+					["isAwardReason"] = false,
+					["responseID"] = 1,
+					["id"] = "1585163962-31",
+					["typeCode"] = "default",
+				}, -- [6]
+			},
+			["Magagos-Silvermoon"] = {
+				{
+					["mapID"] = 2217,
+					["color"] = {
+						0, -- [1]
+						1, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["class"] = "MAGE",
+					["iSubClass"] = 1,
+					["groupSize"] = 18,
+					["boss"] = "Ra-den the Despoiled",
+					["time"] = "22:20:21",
+					["iClass"] = 4,
+					["itemReplaced1"] = "|cffa335ee|Hitem:174119::::::::120:250::5:5:4823:1502:4786:6507:4775:::|h[Robes of Unreality]|h|r",
+					["instance"] = "Ny'alotha, the Waking City-Heroic",
+					["owner"] = "Faykmage-Silvermoon",
+					["response"] = "Mainspec/Need",
+					["typeCode"] = "default",
+					["difficultyID"] = 15,
+					["lootWon"] = "|cffa335ee|Hitem:174115::::::::120:250::5:4:4823:1502:4786:6507:::|h[Robe of the Fallen Keeper]|h|r",
+					["id"] = "1583180421-0",
+					["date"] = "02/03/20",
+					["responseID"] = 1,
+					["votes"] = 4,
+					["isAwardReason"] = false,
+				}, -- [1]
+				{
+					["mapID"] = 2217,
+					["date"] = "02/03/20",
+					["class"] = "MAGE",
+					["iSubClass"] = 7,
+					["groupSize"] = 18,
+					["isAwardReason"] = false,
+					["time"] = "23:02:48",
+					["iClass"] = 2,
+					["id"] = "1583182968-5",
+					["owner"] = "Magagos-Silvermoon",
+					["response"] = "Personal Loot - Non tradeable",
+					["difficultyID"] = 15,
+					["lootWon"] = "|cffa335ee|Hitem:174108::::::::120:63::5:6:4823:6553:6578:6579:1502:4786:::|h[Shgla'yos, Astral Malignity]|h|r",
+					["color"] = {
+						1, -- [1]
+						0.6, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = "PL",
+					["instance"] = "Ny'alotha, the Waking City-Heroic",
+					["boss"] = "Carapace of N'Zoth",
+				}, -- [2]
+			},
+			["Capneckbeard-Silvermoon"] = {
+				{
+					["mapID"] = 2217,
+					["date"] = "02/03/20",
+					["class"] = "ROGUE",
+					["iSubClass"] = 2,
+					["groupSize"] = 18,
+					["isAwardReason"] = false,
+					["time"] = "22:47:23",
+					["iClass"] = 4,
+					["id"] = "1583182043-0",
+					["owner"] = "Capneckbeard-Silvermoon",
+					["response"] = "Personal Loot - Rejected Trade",
+					["difficultyID"] = 15,
+					["lootWon"] = "|cffa335ee|Hitem:174142::::::::120:260::5:5:4823:6516:6515:1502:4786:::|h[Belt of Braided Vessels]|h|r",
+					["color"] = {
+						0.2, -- [1]
+						0, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = "PL_REJECT",
+					["instance"] = "Ny'alotha, the Waking City-Heroic",
+					["boss"] = "Il'gynoth, Corruption Reborn",
+				}, -- [1]
+				{
+					["mapID"] = 2217,
+					["date"] = "04/03/20",
+					["class"] = "ROGUE",
+					["iSubClass"] = 2,
+					["groupSize"] = 20,
+					["isAwardReason"] = false,
+					["time"] = "20:50:54",
+					["iClass"] = 4,
+					["id"] = "1583347854-5",
+					["owner"] = "Capneckbeard-Silvermoon",
+					["response"] = "Personal Loot - Non tradeable",
+					["difficultyID"] = 16,
+					["lootWon"] = "|cffa335ee|Hitem:174143::::::::120:260::6:5:4824:6516:6515:1517:4786:::|h[Macabre Ritual Pants]|h|r",
+					["color"] = {
+						1, -- [1]
+						0.6, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = "PL",
+					["instance"] = "Ny'alotha, the Waking City-Mythic",
+					["boss"] = "Prophet Skitra",
+				}, -- [2]
+				{
+					["mapID"] = 2217,
+					["date"] = "11/03/20",
+					["class"] = "ROGUE",
+					["iSubClass"] = 2,
+					["groupSize"] = 20,
+					["isAwardReason"] = false,
+					["time"] = "21:47:16",
+					["iClass"] = 4,
+					["id"] = "1583956036-10",
+					["owner"] = "Capneckbeard-Silvermoon",
+					["response"] = "Personal Loot - Non tradeable",
+					["difficultyID"] = 16,
+					["lootWon"] = "|cffa335ee|Hitem:174141::::::::120:259::6:6:4824:1808:6516:6515:1517:4786:::|h[Boots of Manifest Shadow]|h|r",
+					["color"] = {
+						1, -- [1]
+						0.6, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = "PL",
+					["instance"] = "Ny'alotha, the Waking City-Mythic",
+					["boss"] = "Maut",
+				}, -- [3]
+				{
+					["mapID"] = 2217,
+					["date"] = "11/03/20",
+					["class"] = "ROGUE",
+					["iSubClass"] = 7,
+					["groupSize"] = 17,
+					["boss"] = "Carapace of N'Zoth",
+					["time"] = "22:27:56",
+					["iClass"] = 2,
+					["itemReplaced1"] = "|cffa335ee|Hitem:172185:5963:::::::120:250::5:6:4823:43:6516:6515:1502:4786:::|h[Destroyer's Shadowblade]|h|r",
+					["typeCode"] = "default",
+					["owner"] = "Faykmage-Silvermoon",
+					["votes"] = 3,
+					["response"] = "Offspec/Greed",
+					["id"] = "1583958476-22",
+					["difficultyID"] = 15,
+					["lootWon"] = "|cffa335ee|Hitem:174108::::::::120:250::5:7:4823:6553:6578:6579:6513:1502:4786:::|h[Shgla'yos, Astral Malignity]|h|r",
+					["isAwardReason"] = false,
+					["color"] = {
+						1, -- [1]
+						0.5, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = 2,
+					["itemReplaced2"] = "|cffa335ee|Hitem:163882:5965:::::::120:250::29:4:5125:1562:5850:4783:::|h[7th Legionnaire's Dagger]|h|r",
+					["instance"] = "Ny'alotha, the Waking City-Heroic",
+				}, -- [4]
+				{
+					["mapID"] = 2217,
+					["date"] = "11/03/20",
+					["class"] = "ROGUE",
+					["iSubClass"] = 0,
+					["groupSize"] = 12,
+					["boss"] = "N'Zoth the Corruptor",
+					["time"] = "22:50:58",
+					["iClass"] = 4,
+					["itemReplaced1"] = "|cffa335ee|Hitem:165565:6109:168641::::::120:250::6:4:4800:1808:1547:4783:::|h[Band of Multi-Sided Strikes]|h|r",
+					["typeCode"] = "default",
+					["owner"] = "Hulabaloo-Silvermoon",
+					["votes"] = 3,
+					["response"] = "Mainspec/Need",
+					["id"] = "1583959858-25",
+					["difficultyID"] = 15,
+					["lootWon"] = "|cffa335ee|Hitem:174533::::::::120:250::5:5:4823:6516:6515:1502:4786:::|h[Ring of Cosmic Potential]|h|r",
+					["isAwardReason"] = false,
+					["color"] = {
+						0, -- [1]
+						1, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = 1,
+					["itemReplaced2"] = "|cffa335ee|Hitem:172665:6109:::::::120:250::56:8:6363:6389:6578:6579:6544:6513:1557:4786:::|h[Corrupted Gladiator's Signet]|h|r",
+					["instance"] = "Ny'alotha, the Waking City-Heroic",
+				}, -- [5]
+				{
+					["mapID"] = 2217,
+					["date"] = "18/03/20",
+					["class"] = "ROGUE",
+					["iSubClass"] = 2,
+					["groupSize"] = 20,
+					["isAwardReason"] = false,
+					["time"] = "21:22:10",
+					["iClass"] = 4,
+					["id"] = "1584559330-17",
+					["owner"] = "Capneckbeard-Silvermoon",
+					["response"] = "Personal Loot - Non tradeable",
+					["difficultyID"] = 16,
+					["lootWon"] = "|cffa335ee|Hitem:174138::::::::120:259::6:6:4824:1808:6516:6515:1517:4786:::|h[Bracers of Dark Prophecy]|h|r",
+					["color"] = {
+						1, -- [1]
+						0.6, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = "PL",
+					["instance"] = "Ny'alotha, the Waking City-Mythic",
+					["boss"] = "Prophet Skitra",
+				}, -- [6]
+				{
+					["mapID"] = 2217,
+					["date"] = "25/03/20",
+					["class"] = "ROGUE",
+					["iSubClass"] = 15,
+					["groupSize"] = 23,
+					["isAwardReason"] = false,
+					["time"] = "20:06:07",
+					["iClass"] = 2,
+					["id"] = "1585159567-0",
+					["owner"] = "Capneckbeard-Silvermoon",
+					["response"] = "Personal Loot - Rejected Trade",
+					["difficultyID"] = 15,
+					["lootWon"] = "|cffa335ee|Hitem:172227::::::::120:259::5:8:4823:43:6544:6578:6579:6513:1502:4786:::|h[Shard of the Black Empire]|h|r",
+					["color"] = {
+						0.2, -- [1]
+						0, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = "PL_REJECT",
+					["instance"] = "Ny'alotha, the Waking City-Heroic",
+					["boss"] = "Carapace of N'Zoth",
+				}, -- [7]
+				{
+					["mapID"] = 2217,
+					["date"] = "25/03/20",
+					["class"] = "ROGUE",
+					["iSubClass"] = 2,
+					["groupSize"] = 23,
+					["isAwardReason"] = false,
+					["time"] = "20:28:31",
+					["iClass"] = 15,
+					["id"] = "1585160911-7",
+					["owner"] = "Capneckbeard-Silvermoon",
+					["response"] = "Personal Loot - Rejected Trade",
+					["difficultyID"] = 15,
+					["lootWon"] = "|cff0070dd|Hitem:174452::::::::120:259::5::::|h[Eye of Corruption]|h|r",
+					["color"] = {
+						0.2, -- [1]
+						0, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = "PL_REJECT",
+					["instance"] = "Ny'alotha, the Waking City-Heroic",
+					["boss"] = "N'Zoth the Corruptor",
+				}, -- [8]
+			},
+			["Stãrßeam-Silvermoon"] = {
+				{
+					["mapID"] = 2217,
+					["date"] = "18/03/20",
+					["class"] = "DRUID",
+					["iSubClass"] = 2,
+					["groupSize"] = 23,
+					["isAwardReason"] = false,
+					["time"] = "20:28:22",
+					["iClass"] = 4,
+					["id"] = "1584556102-3",
+					["owner"] = "Stãrßeam-Silvermoon",
+					["response"] = "Personal Loot - Non tradeable",
+					["difficultyID"] = 15,
+					["lootWon"] = "|cffa335ee|Hitem:174144::::::::120:102::5:5:4823:6516:6513:1502:4786:::|h[Corpuscular Leather Greaves]|h|r",
+					["color"] = {
+						1, -- [1]
+						0.6, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = "PL",
+					["instance"] = "Ny'alotha, the Waking City-Heroic",
+					["boss"] = "Carapace of N'Zoth",
+				}, -- [1]
+			},
+			["Leinea-Silvermoon"] = {
+				{
+					["mapID"] = 2217,
+					["date"] = "04/03/20",
+					["class"] = "DEATHKNIGHT",
+					["iSubClass"] = 0,
+					["groupSize"] = 20,
+					["isAwardReason"] = false,
+					["time"] = "21:48:31",
+					["iClass"] = 4,
+					["id"] = "1583351311-15",
+					["owner"] = "Leinea-Silvermoon",
+					["response"] = "Personal Loot - Rejected Trade",
+					["difficultyID"] = 16,
+					["lootWon"] = "|cffa335ee|Hitem:173940::::::::120:250::6:5:4824:1808:6513:1517:4786:::|h[Sigil of Warding]|h|r",
+					["color"] = {
+						0.2, -- [1]
+						0, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = "PL_REJECT",
+					["instance"] = "Ny'alotha, the Waking City-Mythic",
+					["boss"] = "Maut",
+				}, -- [1]
+				{
+					["mapID"] = 2217,
+					["date"] = "11/03/20",
+					["class"] = "DEATHKNIGHT",
+					["iSubClass"] = 2,
+					["groupSize"] = 20,
+					["isAwardReason"] = false,
+					["time"] = "21:47:09",
+					["iClass"] = 15,
+					["id"] = "1583956029-9",
+					["owner"] = "Leinea-Silvermoon",
+					["response"] = "Personal Loot - Rejected Trade",
+					["difficultyID"] = 16,
+					["lootWon"] = "|cff0070dd|Hitem:174446::::::::120:250::6::::|h[Fractured Obsidian Claw]|h|r",
+					["color"] = {
+						0.2, -- [1]
+						0, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = "PL_REJECT",
+					["instance"] = "Ny'alotha, the Waking City-Mythic",
+					["boss"] = "Maut",
+				}, -- [2]
+				{
+					["mapID"] = 2217,
+					["color"] = {
+						1, -- [1]
+						0.5, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["class"] = "DEATHKNIGHT",
+					["iSubClass"] = 2,
+					["groupSize"] = 20,
+					["boss"] = "Maut",
+					["time"] = "21:48:18",
+					["iClass"] = 15,
+					["instance"] = "Ny'alotha, the Waking City-Mythic",
+					["owner"] = "Kerpi-Silvermoon",
+					["response"] = "Offspec/Greed",
+					["isAwardReason"] = false,
+					["difficultyID"] = 16,
+					["lootWon"] = "|cff0070dd|Hitem:174446::::::::120:250::6::::|h[Fractured Obsidian Claw]|h|r",
+					["votes"] = 1,
+					["date"] = "11/03/20",
+					["responseID"] = 2,
+					["id"] = "1583956098-12",
+					["typeCode"] = "default",
+				}, -- [3]
+				{
+					["mapID"] = 2217,
+					["date"] = "11/03/20",
+					["class"] = "DEATHKNIGHT",
+					["iSubClass"] = 4,
+					["groupSize"] = 17,
+					["isAwardReason"] = false,
+					["time"] = "22:15:02",
+					["iClass"] = 4,
+					["id"] = "1583957702-18",
+					["owner"] = "Leinea-Silvermoon",
+					["response"] = "Personal Loot - Rejected Trade",
+					["difficultyID"] = 15,
+					["lootWon"] = "|cffa335ee|Hitem:175006::::::::120:250::5:8:4823:41:6578:6579:6539:6513:1502:4786:::|h[Gauntlets of Nightmare Manifest]|h|r",
+					["color"] = {
+						0.2, -- [1]
+						0, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = "PL_REJECT",
+					["instance"] = "Ny'alotha, the Waking City-Heroic",
+					["boss"] = "Wrathion",
+				}, -- [4]
+				{
+					["mapID"] = 2217,
+					["color"] = {
+						0, -- [1]
+						1, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["class"] = "DEATHKNIGHT",
+					["iSubClass"] = 2,
+					["groupSize"] = 13,
+					["boss"] = "N'Zoth the Corruptor",
+					["time"] = "22:51:05",
+					["iClass"] = 15,
+					["instance"] = "Ny'alotha, the Waking City-Heroic",
+					["owner"] = "Crysdh-Silvermoon",
+					["response"] = "Mainspec/Need",
+					["isAwardReason"] = false,
+					["difficultyID"] = 15,
+					["lootWon"] = "|cff0070dd|Hitem:174452::::::::120:250::5::::|h[Eye of Corruption]|h|r",
+					["votes"] = 2,
+					["date"] = "11/03/20",
+					["responseID"] = 1,
+					["id"] = "1583959865-26",
+					["typeCode"] = "default",
+				}, -- [5]
+			},
+			["Hulabaloo-Silvermoon"] = {
+				{
+					["mapID"] = 2217,
+					["date"] = "04/03/20",
+					["class"] = "WARLOCK",
+					["iSubClass"] = 1,
+					["groupSize"] = 20,
+					["isAwardReason"] = false,
+					["time"] = "21:47:42",
+					["iClass"] = 4,
+					["id"] = "1583351262-10",
+					["owner"] = "Hulabaloo-Silvermoon",
+					["response"] = "Personal Loot - Non tradeable",
+					["difficultyID"] = 16,
+					["lootWon"] = "|cffa335ee|Hitem:174124::::::::120:267::6:5:4824:6516:6513:1517:4786:::|h[Mana-Infused Sash]|h|r",
+					["color"] = {
+						1, -- [1]
+						0.6, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = "PL",
+					["instance"] = "Ny'alotha, the Waking City-Mythic",
+					["boss"] = "Maut",
+				}, -- [1]
+				{
+					["mapID"] = 2217,
+					["date"] = "11/03/20",
+					["class"] = "WARLOCK",
+					["iSubClass"] = 2,
+					["groupSize"] = 16,
+					["isAwardReason"] = false,
+					["time"] = "22:49:55",
+					["iClass"] = 15,
+					["id"] = "1583959795-24",
+					["owner"] = "Hulabaloo-Silvermoon",
+					["response"] = "Personal Loot - Rejected Trade",
+					["difficultyID"] = 15,
+					["lootWon"] = "|cff0070dd|Hitem:174452::::::::120:267::5::::|h[Eye of Corruption]|h|r",
+					["color"] = {
+						0.2, -- [1]
+						0, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = "PL_REJECT",
+					["instance"] = "Ny'alotha, the Waking City-Heroic",
+					["boss"] = "N'Zoth the Corruptor",
+				}, -- [2]
+				{
+					["mapID"] = 2217,
+					["date"] = "23/03/20",
+					["class"] = "WARLOCK",
+					["iSubClass"] = 1,
+					["groupSize"] = 20,
+					["isAwardReason"] = false,
+					["time"] = "23:08:56",
+					["iClass"] = 4,
+					["id"] = "1584997736-3",
+					["owner"] = "Hulabaloo-Silvermoon",
+					["response"] = "Personal Loot - Rejected Trade",
+					["difficultyID"] = 16,
+					["lootWon"] = "|cffa335ee|Hitem:174122::::::::120:267::6:5:4824:6516:6515:1517:4786:::|h[Void-Drenched Wristwraps]|h|r",
+					["boss"] = "The Hivemind",
+					["responseID"] = "PL_REJECT",
+					["instance"] = "Ny'alotha, the Waking City-Mythic",
+					["color"] = {
+						0.2, -- [1]
+						0, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+				}, -- [3]
+				{
+					["mapID"] = 2217,
+					["date"] = "25/03/20",
+					["class"] = "WARLOCK",
+					["iSubClass"] = 0,
+					["groupSize"] = 10,
+					["isAwardReason"] = false,
+					["time"] = "20:30:03",
+					["iClass"] = 15,
+					["id"] = "1585161003-15",
+					["owner"] = "Hulabaloo-Silvermoon",
+					["response"] = "Personal Loot - Non tradeable",
+					["difficultyID"] = 15,
+					["lootWon"] = "|cffff8000|Hitem:175062::::::::120:267::5::::|h[Malefic Core]|h|r",
+					["color"] = {
+						1, -- [1]
+						0.6, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = "PL",
+					["instance"] = "Ny'alotha, the Waking City-Heroic",
+					["boss"] = "N'Zoth the Corruptor",
+				}, -- [4]
+				{
+					["mapID"] = 2217,
+					["date"] = "25/03/20",
+					["class"] = "WARLOCK",
+					["iSubClass"] = 2,
+					["groupSize"] = 20,
+					["isAwardReason"] = false,
+					["time"] = "21:12:23",
+					["iClass"] = 15,
+					["id"] = "1585163543-27",
+					["owner"] = "Hulabaloo-Silvermoon",
+					["response"] = "Personal Loot - Rejected Trade",
+					["difficultyID"] = 16,
+					["lootWon"] = "|cff0070dd|Hitem:174446::::::::120:267::6::::|h[Fractured Obsidian Claw]|h|r",
+					["color"] = {
+						0.2, -- [1]
+						0, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = "PL_REJECT",
+					["instance"] = "Ny'alotha, the Waking City-Mythic",
+					["boss"] = "Maut",
+				}, -- [5]
+			},
+			["Droyy-Silvermoon"] = {
+				{
+					["mapID"] = 2217,
+					["date"] = "18/03/20",
+					["class"] = "MONK",
+					["iSubClass"] = 2,
+					["groupSize"] = 23,
+					["isAwardReason"] = false,
+					["time"] = "20:41:21",
+					["iClass"] = 15,
+					["id"] = "1584556881-9",
+					["owner"] = "Droyy-Silvermoon",
+					["response"] = "Personal Loot - Rejected Trade",
+					["difficultyID"] = 15,
+					["lootWon"] = "|cff0070dd|Hitem:174452::::::::120:268::5::::|h[Eye of Corruption]|h|r",
+					["color"] = {
+						0.2, -- [1]
+						0, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = "PL_REJECT",
+					["instance"] = "Ny'alotha, the Waking City-Heroic",
+					["boss"] = "N'Zoth the Corruptor",
+				}, -- [1]
+				{
+					["mapID"] = 2217,
+					["date"] = "18/03/20",
+					["class"] = "MONK",
+					["iSubClass"] = 2,
+					["groupSize"] = 20,
+					["isAwardReason"] = false,
+					["time"] = "21:46:42",
+					["iClass"] = 4,
+					["id"] = "1584560802-24",
+					["owner"] = "Droyy-Silvermoon",
+					["response"] = "Personal Loot - Rejected Trade",
+					["difficultyID"] = 16,
+					["lootWon"] = "|cffa335ee|Hitem:174132::::::::120:268::6:4:4824:1517:4786:6511:::|h[Stygian Guise]|h|r",
+					["color"] = {
+						0.2, -- [1]
+						0, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = "PL_REJECT",
+					["instance"] = "Ny'alotha, the Waking City-Mythic",
+					["boss"] = "Maut",
+				}, -- [2]
+				{
+					["mapID"] = 2217,
+					["date"] = "25/03/20",
+					["class"] = "MONK",
+					["iSubClass"] = 0,
+					["groupSize"] = 22,
+					["isAwardReason"] = false,
+					["time"] = "20:28:43",
+					["iClass"] = 15,
+					["id"] = "1585160923-12",
+					["owner"] = "Droyy-Silvermoon",
+					["response"] = "Personal Loot - Non tradeable",
+					["difficultyID"] = 15,
+					["lootWon"] = "|cffff8000|Hitem:175062::::::::120:268::5::::|h[Malefic Core]|h|r",
+					["color"] = {
+						1, -- [1]
+						0.6, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = "PL",
+					["instance"] = "Ny'alotha, the Waking City-Heroic",
+					["boss"] = "N'Zoth the Corruptor",
+				}, -- [3]
+				{
+					["mapID"] = 2217,
+					["color"] = {
+						1, -- [1]
+						0.5, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["class"] = "MONK",
+					["iSubClass"] = 2,
+					["groupSize"] = 20,
+					["boss"] = "Wrathion",
+					["time"] = "20:49:52",
+					["iClass"] = 4,
+					["itemReplaced1"] = "|cffa335ee|Hitem:159306::::::::120:250::35:5:6536:6578:6513:1647:4786:::|h[Singe-Blotched Britches]|h|r",
+					["instance"] = "Ny'alotha, the Waking City-Mythic",
+					["owner"] = "Joypopping-Silvermoon",
+					["response"] = "Offspec/Greed",
+					["isAwardReason"] = false,
+					["difficultyID"] = 16,
+					["lootWon"] = "|cffa335ee|Hitem:174139::::::::120:250::6:5:4824:6516:6515:1517:4786:::|h[Onyx-Imbued Breeches]|h|r",
+					["votes"] = 2,
+					["date"] = "25/03/20",
+					["responseID"] = 2,
+					["id"] = "1585162192-21",
+					["typeCode"] = "default",
+				}, -- [4]
+				{
+					["mapID"] = 2217,
+					["date"] = "25/03/20",
+					["class"] = "MONK",
+					["iSubClass"] = 2,
+					["groupSize"] = 20,
+					["isAwardReason"] = false,
+					["time"] = "20:56:32",
+					["iClass"] = 4,
+					["id"] = "1585162592-22",
+					["owner"] = "Droyy-Silvermoon",
+					["response"] = "Personal Loot - Rejected Trade",
+					["difficultyID"] = 16,
+					["lootWon"] = "|cffa335ee|Hitem:174143::::::::120:268::6:5:4824:6516:6515:1517:4786:::|h[Macabre Ritual Pants]|h|r",
+					["color"] = {
+						0.2, -- [1]
+						0, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = "PL_REJECT",
+					["instance"] = "Ny'alotha, the Waking City-Mythic",
+					["boss"] = "Prophet Skitra",
+				}, -- [5]
+			},
+			["Azverth-Silvermoon"] = {
+				{
+					["mapID"] = 2217,
+					["date"] = "04/03/20",
+					["class"] = "WARRIOR",
+					["iSubClass"] = 4,
+					["groupSize"] = 20,
+					["isAwardReason"] = false,
+					["time"] = "20:51:07",
+					["iClass"] = 4,
+					["id"] = "1583347867-7",
+					["owner"] = "Azverth-Silvermoon",
+					["response"] = "Personal Loot - Non tradeable",
+					["difficultyID"] = 16,
+					["lootWon"] = "|cffa335ee|Hitem:174173::::::::120:72::6:5:4824:6516:6513:1517:4786:::|h[Boots of Hallucinatory Reality]|h|r",
+					["color"] = {
+						1, -- [1]
+						0.6, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = "PL",
+					["instance"] = "Ny'alotha, the Waking City-Mythic",
+					["boss"] = "Prophet Skitra",
+				}, -- [1]
+				{
+					["mapID"] = 2217,
+					["date"] = "11/03/20",
+					["class"] = "WARRIOR",
+					["iSubClass"] = 4,
+					["groupSize"] = 20,
+					["isAwardReason"] = false,
+					["time"] = "20:44:38",
+					["iClass"] = 4,
+					["id"] = "1583952278-0",
+					["owner"] = "Azverth-Silvermoon",
+					["response"] = "Personal Loot - Non tradeable",
+					["difficultyID"] = 16,
+					["lootWon"] = "|cffa335ee|Hitem:174170::::::::120:72::6:5:4824:6516:6513:1517:4786:::|h[Dragonbone Vambraces]|h|r",
+					["color"] = {
+						1, -- [1]
+						0.6, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = "PL",
+					["instance"] = "Ny'alotha, the Waking City-Mythic",
+					["boss"] = "Wrathion",
+				}, -- [2]
+				{
+					["mapID"] = 2217,
+					["date"] = "11/03/20",
+					["class"] = "WARRIOR",
+					["iSubClass"] = 0,
+					["groupSize"] = 17,
+					["isAwardReason"] = false,
+					["time"] = "22:01:23",
+					["iClass"] = 4,
+					["id"] = "1583956883-14",
+					["owner"] = "Azverth-Silvermoon",
+					["response"] = "Personal Loot - Rejected Trade",
+					["difficultyID"] = 15,
+					["lootWon"] = "|cffa335ee|Hitem:174044::::::::120:72::5:5:4823:42:6513:1502:4786:::|h[Humming Black Dragonscale]|h|r",
+					["color"] = {
+						0.2, -- [1]
+						0, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = "PL_REJECT",
+					["instance"] = "Ny'alotha, the Waking City-Heroic",
+					["boss"] = "Wrathion",
+				}, -- [3]
+				{
+					["mapID"] = 2217,
+					["date"] = "18/03/20",
+					["class"] = "WARRIOR",
+					["iSubClass"] = 8,
+					["groupSize"] = 23,
+					["isAwardReason"] = false,
+					["time"] = "20:41:10",
+					["iClass"] = 2,
+					["id"] = "1584556870-5",
+					["owner"] = "Azverth-Silvermoon",
+					["response"] = "Personal Loot - Non tradeable",
+					["difficultyID"] = 15,
+					["lootWon"] = "|cffa335ee|Hitem:172187::::::::120:72::5:7:4823:6539:6578:6579:6515:1502:4786:::|h[Devastation's Hour]|h|r",
+					["color"] = {
+						1, -- [1]
+						0.6, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = "PL",
+					["instance"] = "Ny'alotha, the Waking City-Heroic",
+					["boss"] = "N'Zoth the Corruptor",
+				}, -- [4]
+				{
+					["mapID"] = 2217,
+					["date"] = "18/03/20",
+					["class"] = "WARRIOR",
+					["iSubClass"] = 4,
+					["groupSize"] = 20,
+					["isAwardReason"] = false,
+					["time"] = "21:46:31",
+					["iClass"] = 4,
+					["id"] = "1584560791-23",
+					["owner"] = "Azverth-Silvermoon",
+					["response"] = "Personal Loot - Non tradeable",
+					["difficultyID"] = 16,
+					["lootWon"] = "|cffa335ee|Hitem:174172::::::::120:72::6:6:4824:1808:6516:6515:1517:4786:::|h[Living Obsidian Legguards]|h|r",
+					["color"] = {
+						1, -- [1]
+						0.6, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = "PL",
+					["instance"] = "Ny'alotha, the Waking City-Mythic",
+					["boss"] = "Maut",
+				}, -- [5]
+				{
+					["mapID"] = 2217,
+					["date"] = "25/03/20",
+					["class"] = "WARRIOR",
+					["iSubClass"] = 4,
+					["groupSize"] = 23,
+					["isAwardReason"] = false,
+					["time"] = "20:06:18",
+					["iClass"] = 4,
+					["id"] = "1585159578-1",
+					["owner"] = "Azverth-Silvermoon",
+					["response"] = "Personal Loot - Rejected Trade",
+					["difficultyID"] = 15,
+					["lootWon"] = "|cffa335ee|Hitem:174166::::::::120:72::5:4:4823:1502:4786:6509:::|h[Pauldrons of Infinite Darkness]|h|r",
+					["color"] = {
+						0.2, -- [1]
+						0, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = "PL_REJECT",
+					["instance"] = "Ny'alotha, the Waking City-Heroic",
+					["boss"] = "Carapace of N'Zoth",
+				}, -- [6]
+				{
+					["mapID"] = 2217,
+					["date"] = "25/03/20",
+					["class"] = "WARRIOR",
+					["iSubClass"] = 0,
+					["groupSize"] = 23,
+					["isAwardReason"] = false,
+					["time"] = "20:28:31",
+					["iClass"] = 15,
+					["id"] = "1585160911-8",
+					["owner"] = "Azverth-Silvermoon",
+					["response"] = "Personal Loot - Non tradeable",
+					["difficultyID"] = 15,
+					["lootWon"] = "|cffff8000|Hitem:175062::::::::120:72::5::::|h[Malefic Core]|h|r",
+					["color"] = {
+						1, -- [1]
+						0.6, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = "PL",
+					["instance"] = "Ny'alotha, the Waking City-Heroic",
+					["boss"] = "N'Zoth the Corruptor",
+				}, -- [7]
+				{
+					["mapID"] = 2217,
+					["date"] = "25/03/20",
+					["class"] = "WARRIOR",
+					["iSubClass"] = 2,
+					["groupSize"] = 17,
+					["isAwardReason"] = false,
+					["time"] = "20:29:16",
+					["iClass"] = 15,
+					["id"] = "1585160956-13",
+					["owner"] = "Azverth-Silvermoon",
+					["response"] = "Personal Loot - Rejected Trade",
+					["difficultyID"] = 15,
+					["lootWon"] = "|cff0070dd|Hitem:174452::::::::120:72::5::::|h[Eye of Corruption]|h|r",
+					["color"] = {
+						0.2, -- [1]
+						0, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = "PL_REJECT",
+					["instance"] = "Ny'alotha, the Waking City-Heroic",
+					["boss"] = "N'Zoth the Corruptor",
+				}, -- [8]
+				{
+					["mapID"] = 2217,
+					["date"] = "25/03/20",
+					["class"] = "WARRIOR",
+					["iSubClass"] = 1,
+					["groupSize"] = 20,
+					["boss"] = "Maut",
+					["time"] = "21:18:22",
+					["iClass"] = 2,
+					["itemReplaced1"] = "|cffa335ee|Hitem:172200:5963:::::::120:250::5:5:4823:6578:1502:4786:6513:::|h[Sk'shuul Vaz]|h|r",
+					["typeCode"] = "default",
+					["owner"] = "Anastiana-Silvermoon",
+					["votes"] = 0,
+					["response"] = "Mainspec/Need",
+					["id"] = "1585163902-30",
+					["difficultyID"] = 16,
+					["lootWon"] = "|cffa335ee|Hitem:172200::::::::120:250::6:7:4824:6572:6578:6579:6515:1517:4786:::|h[Sk'shuul Vaz]|h|r",
+					["isAwardReason"] = false,
+					["color"] = {
+						0, -- [1]
+						1, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = 1,
+					["itemReplaced2"] = "|cffa335ee|Hitem:172195:5965:::::::120:250::5:5:4823:6516:6513:1502:4786:::|h[Halsheth, Slumberer's Spear]|h|r",
+					["instance"] = "Ny'alotha, the Waking City-Mythic",
+				}, -- [9]
+				{
+					["mapID"] = 2217,
+					["date"] = "25/03/20",
+					["class"] = "WARRIOR",
+					["iSubClass"] = 4,
+					["groupSize"] = 20,
+					["isAwardReason"] = false,
+					["time"] = "22:42:49",
+					["iClass"] = 4,
+					["id"] = "1585168969-35",
+					["owner"] = "Azverth-Silvermoon",
+					["response"] = "Personal Loot - Rejected Trade",
+					["difficultyID"] = 16,
+					["lootWon"] = "|cffa335ee|Hitem:174177::::::::120:72::6:5:4824:6516:6513:1517:4786:::|h[Bracers of Phantom Pains]|h|r",
+					["color"] = {
+						0.2, -- [1]
+						0, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = "PL_REJECT",
+					["instance"] = "Ny'alotha, the Waking City-Mythic",
+					["boss"] = "Shad'har the Insatiable",
+				}, -- [10]
+			},
+			["Cronah-Silvermoon"] = {
+				{
+					["mapID"] = 2217,
+					["date"] = "04/03/20",
+					["class"] = "DEATHKNIGHT",
+					["iSubClass"] = 1,
+					["groupSize"] = 20,
+					["isAwardReason"] = false,
+					["time"] = "21:48:15",
+					["iClass"] = 2,
+					["id"] = "1583351295-12",
+					["owner"] = "Cronah-Silvermoon",
+					["response"] = "Personal Loot - Non tradeable",
+					["difficultyID"] = 16,
+					["lootWon"] = "|cffa335ee|Hitem:172200::::::::120:252::6:7:4824:6572:6578:6579:6515:1517:4786:::|h[Sk'shuul Vaz]|h|r",
+					["color"] = {
+						1, -- [1]
+						0.6, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = "PL",
+					["instance"] = "Ny'alotha, the Waking City-Mythic",
+					["boss"] = "Maut",
+				}, -- [1]
+				{
+					["mapID"] = 2217,
+					["date"] = "16/03/20",
+					["class"] = "DEATHKNIGHT",
+					["iSubClass"] = 4,
+					["groupSize"] = 20,
+					["isAwardReason"] = false,
+					["time"] = "22:26:19",
+					["iClass"] = 4,
+					["id"] = "1584390379-2",
+					["owner"] = "Cronah-Silvermoon",
+					["response"] = "Personal Loot - Non tradeable",
+					["difficultyID"] = 16,
+					["lootWon"] = "|cffa335ee|Hitem:174177::::::::120:252::6:6:4824:1808:6516:6515:1517:4786:::|h[Bracers of Phantom Pains]|h|r",
+					["boss"] = "Shad'har the Insatiable",
+					["responseID"] = "PL",
+					["instance"] = "Ny'alotha, the Waking City-Mythic",
 					["color"] = {
 						1, -- [1]
 						0.6, -- [2]
@@ -3504,46 +5251,387 @@ RCLootCouncilLootDB = {
 					},
 				}, -- [2]
 				{
-					["mapID"] = 249,
-					["date"] = "26/11/19",
-					["class"] = "MAGE",
-					["iSubClass"] = 0,
-					["groupSize"] = 40,
+					["mapID"] = 2217,
+					["date"] = "18/03/20",
+					["class"] = "DEATHKNIGHT",
+					["iSubClass"] = 7,
+					["groupSize"] = 23,
+					["votes"] = 1,
+					["time"] = "20:08:54",
+					["iClass"] = 2,
+					["itemReplaced1"] = "|cffa335ee|Hitem:159644:3368:::::::120:250::16:5:6536:6516:6515:1637:4786:::|h[Geti'ikku, Cut of Death]|h|r",
+					["instance"] = "Ny'alotha, the Waking City-Heroic",
+					["owner"] = "Crysdh-Silvermoon",
+					["color"] = {
+						1, -- [1]
+						0.5, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["response"] = "Offspec/Greed",
+					["boss"] = "Wrathion",
+					["difficultyID"] = 15,
+					["lootWon"] = "|cffa335ee|Hitem:174105::::::::120:250::5:5:4823:6516:6513:1502:4786:::|h[Mish'un, Blade of Tyrants]|h|r",
+					["note"] = "os",
 					["isAwardReason"] = false,
-					["time"] = "23:19:55",
+					["responseID"] = 2,
+					["id"] = "1584554934-1",
+					["typeCode"] = "default",
+				}, -- [3]
+				{
+					["mapID"] = 2217,
+					["date"] = "18/03/20",
+					["class"] = "DEATHKNIGHT",
+					["iSubClass"] = 2,
+					["groupSize"] = 15,
+					["isAwardReason"] = false,
+					["time"] = "20:42:13",
+					["iClass"] = 15,
+					["id"] = "1584556933-11",
+					["owner"] = "Cronah-Silvermoon",
+					["response"] = "Personal Loot - Rejected Trade",
+					["difficultyID"] = 15,
+					["lootWon"] = "|cff0070dd|Hitem:174452::::::::120:252::5::::|h[Eye of Corruption]|h|r",
+					["color"] = {
+						0.2, -- [1]
+						0, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = "PL_REJECT",
+					["instance"] = "Ny'alotha, the Waking City-Heroic",
+					["boss"] = "N'Zoth the Corruptor",
+				}, -- [4]
+				{
+					["mapID"] = 2217,
+					["date"] = "18/03/20",
+					["class"] = "DEATHKNIGHT",
+					["iSubClass"] = 0,
+					["groupSize"] = 20,
+					["isAwardReason"] = false,
+					["time"] = "21:04:52",
 					["iClass"] = 4,
-					["id"] = "1574846395-2",
-					["owner"] = "Cabbagekrust-Sulfuras",
+					["id"] = "1584558292-16",
+					["owner"] = "Cronah-Silvermoon",
 					["response"] = "Personal Loot - Non tradeable",
-					["difficultyID"] = 9,
-					["lootWon"] = "|cffa335ee|Hitem:17067::::::::60:::::::|h[Ancient Cornerstone Grimoire]|h|r",
-					["boss"] = "Onyxia",
-					["responseID"] = "PL",
-					["instance"] = "Onyxia's Lair-40 Player",
+					["difficultyID"] = 16,
+					["lootWon"] = "|cffa335ee|Hitem:174044::::::::120:252::6:4:4824:6515:1517:4786:::|h[Humming Black Dragonscale]|h|r",
 					["color"] = {
 						1, -- [1]
 						0.6, -- [2]
 						0, -- [3]
 						1, -- [4]
 					},
+					["responseID"] = "PL",
+					["instance"] = "Ny'alotha, the Waking City-Mythic",
+					["boss"] = "Wrathion",
+				}, -- [5]
+				{
+					["mapID"] = 2217,
+					["date"] = "23/03/20",
+					["class"] = "DEATHKNIGHT",
+					["iSubClass"] = 2,
+					["groupSize"] = 20,
+					["isAwardReason"] = false,
+					["time"] = "23:09:11",
+					["iClass"] = 15,
+					["id"] = "1584997751-4",
+					["owner"] = "Cronah-Silvermoon",
+					["response"] = "Personal Loot - Rejected Trade",
+					["difficultyID"] = 16,
+					["lootWon"] = "|cff0070dd|Hitem:174449::::::::120:252::6::::|h[Ra'kim]|h|r",
+					["boss"] = "The Hivemind",
+					["responseID"] = "PL_REJECT",
+					["instance"] = "Ny'alotha, the Waking City-Mythic",
+					["color"] = {
+						0.2, -- [1]
+						0, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+				}, -- [6]
+				{
+					["mapID"] = 2217,
+					["date"] = "25/03/20",
+					["class"] = "DEATHKNIGHT",
+					["iSubClass"] = 4,
+					["groupSize"] = 20,
+					["isAwardReason"] = false,
+					["time"] = "20:57:58",
+					["iClass"] = 4,
+					["id"] = "1585162678-24",
+					["owner"] = "Cronah-Silvermoon",
+					["response"] = "Personal Loot - Rejected Trade",
+					["difficultyID"] = 16,
+					["lootWon"] = "|cffa335ee|Hitem:174173::::::::120:252::6:8:4824:6578:6579:6475:6462:6515:1517:4786:::|h[Boots of Hallucinatory Reality]|h|r",
+					["color"] = {
+						0.2, -- [1]
+						0, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = "PL_REJECT",
+					["instance"] = "Ny'alotha, the Waking City-Mythic",
+					["boss"] = "Prophet Skitra",
+				}, -- [7]
+			},
+			["Asnv-Silvermoon"] = {
+				{
+					["mapID"] = 2217,
+					["date"] = "11/03/20",
+					["class"] = "HUNTER",
+					["iSubClass"] = 0,
+					["groupSize"] = 20,
+					["boss"] = "Wrathion",
+					["time"] = "20:49:08",
+					["iClass"] = 4,
+					["itemReplaced1"] = "|cffa335ee|Hitem:174500::::::::120:250::5:4:4823:6513:1502:4786:::|h[Vita-Charged Titanshard]|h|r",
+					["typeCode"] = "default",
+					["owner"] = "Hulabaloo-Silvermoon",
+					["votes"] = 2,
+					["response"] = "Mainspec/Need",
+					["id"] = "1583952548-3",
+					["difficultyID"] = 16,
+					["lootWon"] = "|cffa335ee|Hitem:174044::::::::120:250::6:4:4824:6513:1517:4786:::|h[Humming Black Dragonscale]|h|r",
+					["isAwardReason"] = false,
+					["color"] = {
+						0, -- [1]
+						1, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = 1,
+					["itemReplaced2"] = "|cffa335ee|Hitem:169311::::::::120:250::6:4:4800:1517:5850:4783:::|h[Ashvane's Razor Coral]|h|r",
+					["instance"] = "Ny'alotha, the Waking City-Mythic",
+				}, -- [1]
+				{
+					["mapID"] = 2217,
+					["color"] = {
+						0, -- [1]
+						0.7, -- [2]
+						0.7, -- [3]
+						1, -- [4]
+					},
+					["class"] = "HUNTER",
+					["iSubClass"] = 2,
+					["groupSize"] = 20,
+					["boss"] = "Shad'har the Insatiable",
+					["time"] = "22:28:33",
+					["iClass"] = 2,
+					["itemReplaced1"] = "|cffa335ee|Hitem:172193:5950:::::::120:250::6:7:4824:6568:6578:6579:6515:1517:4786:::|h[Whispering Eldritch Bow]|h|r",
+					["instance"] = "Ny'alotha, the Waking City-Mythic",
+					["owner"] = "Drobadin-Silvermoon",
+					["response"] = "Minor Upgrade",
+					["typeCode"] = "default",
+					["difficultyID"] = 16,
+					["lootWon"] = "|cffa335ee|Hitem:174107::::::::120:250::6:5:4824:6516:6513:1517:4786:::|h[Insidious Writhing Longbow]|h|r",
+					["id"] = "1584390513-3",
+					["date"] = "16/03/20",
+					["responseID"] = 3,
+					["votes"] = 4,
+					["isAwardReason"] = false,
+				}, -- [2]
+				{
+					["mapID"] = 2217,
+					["date"] = "25/03/20",
+					["class"] = "HUNTER",
+					["iSubClass"] = 3,
+					["groupSize"] = 20,
+					["isAwardReason"] = false,
+					["time"] = "22:42:17",
+					["iClass"] = 4,
+					["id"] = "1585168937-33",
+					["owner"] = "Asnv-Silvermoon",
+					["response"] = "Personal Loot - Non tradeable",
+					["difficultyID"] = 16,
+					["lootWon"] = "|cffa335ee|Hitem:174162::::::::120:253::6:5:4824:6516:6515:1517:4786:::|h[Ego-Annihilating Grips]|h|r",
+					["color"] = {
+						1, -- [1]
+						0.6, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = "PL",
+					["instance"] = "Ny'alotha, the Waking City-Mythic",
+					["boss"] = "Shad'har the Insatiable",
+				}, -- [3]
+			},
+			["Faykmage-Silvermoon"] = {
+				{
+					["mapID"] = 2217,
+					["date"] = "11/03/20",
+					["class"] = "MAGE",
+					["iSubClass"] = 1,
+					["groupSize"] = 20,
+					["isAwardReason"] = false,
+					["time"] = "20:59:21",
+					["iClass"] = 4,
+					["id"] = "1583953161-6",
+					["owner"] = "Faykmage-Silvermoon",
+					["response"] = "Personal Loot - Rejected Trade",
+					["difficultyID"] = 16,
+					["lootWon"] = "|cffa335ee|Hitem:174123::::::::120:63::6:7:4824:6578:6579:6559:6513:1517:4786:::|h[Psychic's Subtle Slippers]|h|r",
+					["color"] = {
+						0.2, -- [1]
+						0, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = "PL_REJECT",
+					["instance"] = "Ny'alotha, the Waking City-Mythic",
+					["boss"] = "Prophet Skitra",
+				}, -- [1]
+				{
+					["mapID"] = 2217,
+					["date"] = "18/03/20",
+					["class"] = "MAGE",
+					["iSubClass"] = 1,
+					["groupSize"] = 20,
+					["isAwardReason"] = false,
+					["time"] = "21:04:41",
+					["iClass"] = 4,
+					["id"] = "1584558281-14",
+					["owner"] = "Faykmage-Silvermoon",
+					["response"] = "Personal Loot - Non tradeable",
+					["difficultyID"] = 16,
+					["lootWon"] = "|cffa335ee|Hitem:174125::::::::120:63::6:5:4824:6516:6515:1517:4786:::|h[Emberscale Gloves]|h|r",
+					["color"] = {
+						1, -- [1]
+						0.6, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = "PL",
+					["instance"] = "Ny'alotha, the Waking City-Mythic",
+					["boss"] = "Wrathion",
+				}, -- [2]
+				{
+					["mapID"] = 2217,
+					["date"] = "18/03/20",
+					["class"] = "MAGE",
+					["iSubClass"] = 15,
+					["groupSize"] = 20,
+					["boss"] = "Prophet Skitra",
+					["time"] = "21:23:10",
+					["iClass"] = 2,
+					["itemReplaced1"] = "|cffa335ee|Hitem:174108:5949:::::::120:250::5:5:4823:6578:6513:1502:4786:::|h[Shgla'yos, Astral Malignity]|h|r",
+					["typeCode"] = "default",
+					["owner"] = "Marival-Silvermoon",
+					["votes"] = 0,
+					["response"] = "Minor Upgrade",
+					["id"] = "1584559390-20",
+					["difficultyID"] = 16,
+					["lootWon"] = "|cffa335ee|Hitem:172201::::::::120:250::6:6:4824:42:6516:6515:1517:4786:::|h[Bloodstained Ritual Athame]|h|r",
+					["isAwardReason"] = false,
+					["color"] = {
+						0, -- [1]
+						0.7, -- [2]
+						0.7, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = 3,
+					["itemReplaced2"] = "|cffa335ee|Hitem:175009::::::::120:250::5:7:4823:6578:6579:6541:6515:1502:4786:::|h[Zealous Ritualist's Reverie]|h|r",
+					["instance"] = "Ny'alotha, the Waking City-Mythic",
+				}, -- [3]
+			},
+			["Vanitos-Silvermoon"] = {
+				{
+					["mapID"] = 2217,
+					["date"] = "04/03/20",
+					["class"] = "SHAMAN",
+					["iSubClass"] = 3,
+					["groupSize"] = 20,
+					["votes"] = 3,
+					["time"] = "20:52:16",
+					["iClass"] = 4,
+					["itemReplaced1"] = "|cffa335ee|Hitem:157983::::::::120:250::28:8:4803:6578:6579:6472:6462:6513:1637:4786:::|h[Crosswind Footguards]|h|r",
+					["instance"] = "Ny'alotha, the Waking City-Mythic",
+					["owner"] = "Bellicuz-Silvermoon",
+					["color"] = {
+						0, -- [1]
+						0.7, -- [2]
+						0.7, -- [3]
+						1, -- [4]
+					},
+					["response"] = "Minor Upgrade",
+					["boss"] = "Prophet Skitra",
+					["difficultyID"] = 16,
+					["lootWon"] = "|cffa335ee|Hitem:174157::::::::120:250::6:6:4824:40:6516:6515:1517:4786:::|h[Talons of Grim Revelations]|h|r",
+					["note"] = "transmog",
+					["isAwardReason"] = false,
+					["responseID"] = 3,
+					["id"] = "1583347936-9",
+					["typeCode"] = "default",
+				}, -- [1]
+				{
+					["mapID"] = 2217,
+					["date"] = "09/03/20",
+					["class"] = "SHAMAN",
+					["iSubClass"] = 0,
+					["groupSize"] = 12,
+					["boss"] = "Ra-den the Despoiled",
+					["time"] = "23:12:28",
+					["iClass"] = 4,
+					["itemReplaced1"] = "|cffa335ee|Hitem:174528::::::::120:250::3:4:4822:6515:1487:4786:::|h[Void-Twisted Titanshard]|h|r",
+					["typeCode"] = "default",
+					["owner"] = "Anastiana-Silvermoon",
+					["votes"] = 0,
+					["response"] = "Mainspec/Need",
+					["id"] = "1583788348-4",
+					["difficultyID"] = 15,
+					["lootWon"] = "|cffa335ee|Hitem:174528::::::::120:250::5:4:4823:6513:1502:4786:::|h[Void-Twisted Titanshard]|h|r",
+					["isAwardReason"] = false,
+					["color"] = {
+						0, -- [1]
+						1, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = 1,
+					["itemReplaced2"] = "|cffa335ee|Hitem:174500::::::::120:250::5:4:4823:6515:1502:4786:::|h[Vita-Charged Titanshard]|h|r",
+					["instance"] = "Ny'alotha, the Waking City-Heroic",
+				}, -- [2]
+				{
+					["mapID"] = 2217,
+					["date"] = "11/03/20",
+					["class"] = "SHAMAN",
+					["iSubClass"] = 3,
+					["groupSize"] = 20,
+					["isAwardReason"] = false,
+					["time"] = "21:46:52",
+					["iClass"] = 4,
+					["id"] = "1583956012-7",
+					["owner"] = "Vanitos-Silvermoon",
+					["response"] = "Personal Loot - Non tradeable",
+					["difficultyID"] = 16,
+					["lootWon"] = "|cffa335ee|Hitem:174155::::::::120:264::6:5:4824:6516:6513:1517:4786:::|h[Greaves of Forbidden Magics]|h|r",
+					["color"] = {
+						1, -- [1]
+						0.6, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = "PL",
+					["instance"] = "Ny'alotha, the Waking City-Mythic",
+					["boss"] = "Maut",
 				}, -- [3]
 				{
-					["mapID"] = 249,
-					["date"] = "26/11/19",
-					["class"] = "MAGE",
-					["iSubClass"] = 0,
-					["groupSize"] = 40,
+					["mapID"] = 2217,
+					["date"] = "16/03/20",
+					["class"] = "SHAMAN",
+					["iSubClass"] = 4,
+					["groupSize"] = 20,
 					["isAwardReason"] = false,
-					["time"] = "23:20:12",
-					["iClass"] = 4,
-					["id"] = "1574846412-3",
-					["owner"] = "Cabbagekrust-Sulfuras",
+					["time"] = "22:26:11",
+					["iClass"] = 2,
+					["id"] = "1584390371-1",
+					["owner"] = "Vanitos-Silvermoon",
 					["response"] = "Personal Loot - Non tradeable",
-					["difficultyID"] = 9,
-					["lootWon"] = "|cffa335ee|Hitem:17067::::::::60:::::::|h[Ancient Cornerstone Grimoire]|h|r",
-					["boss"] = "Onyxia",
+					["difficultyID"] = 16,
+					["lootWon"] = "|cffa335ee|Hitem:172186::::::::120:264::6:8:4824:1808:6578:6579:6544:6513:1517:4786:::|h[Warmace of Waking Nightmares]|h|r",
+					["boss"] = "Shad'har the Insatiable",
 					["responseID"] = "PL",
-					["instance"] = "Onyxia's Lair-40 Player",
+					["instance"] = "Ny'alotha, the Waking City-Mythic",
 					["color"] = {
 						1, -- [1]
 						0.6, -- [2]
@@ -3552,95 +5640,288 @@ RCLootCouncilLootDB = {
 					},
 				}, -- [4]
 				{
-					["mapID"] = 249,
-					["date"] = "26/11/19",
-					["class"] = "MAGE",
+					["mapID"] = 2217,
+					["date"] = "18/03/20",
+					["class"] = "SHAMAN",
 					["iSubClass"] = 0,
-					["groupSize"] = 40,
+					["groupSize"] = 20,
 					["isAwardReason"] = false,
-					["time"] = "23:20:22",
+					["time"] = "21:04:38",
 					["iClass"] = 4,
-					["id"] = "1574846422-4",
-					["owner"] = "Cabbagekrust-Sulfuras",
+					["id"] = "1584558278-12",
+					["owner"] = "Vanitos-Silvermoon",
 					["response"] = "Personal Loot - Non tradeable",
-					["difficultyID"] = 9,
-					["lootWon"] = "|cffa335ee|Hitem:17067::::::::60:::::::|h[Ancient Cornerstone Grimoire]|h|r",
-					["boss"] = "Onyxia",
-					["responseID"] = "PL",
-					["instance"] = "Onyxia's Lair-40 Player",
+					["difficultyID"] = 16,
+					["lootWon"] = "|cffa335ee|Hitem:174044::::::::120:264::6:5:4824:1808:6513:1517:4786:::|h[Humming Black Dragonscale]|h|r",
 					["color"] = {
 						1, -- [1]
 						0.6, -- [2]
 						0, -- [3]
 						1, -- [4]
 					},
+					["responseID"] = "PL",
+					["instance"] = "Ny'alotha, the Waking City-Mythic",
+					["boss"] = "Wrathion",
 				}, -- [5]
 				{
-					["mapID"] = 409,
-					["date"] = "10/12/19",
-					["class"] = "MAGE",
-					["iSubClass"] = 0,
-					["groupSize"] = 40,
+					["mapID"] = 2217,
+					["date"] = "23/03/20",
+					["class"] = "SHAMAN",
+					["iSubClass"] = 3,
+					["groupSize"] = 20,
 					["isAwardReason"] = false,
-					["time"] = "23:14:48",
+					["time"] = "23:08:06",
 					["iClass"] = 4,
-					["id"] = "1576055688-0",
-					["owner"] = "Cabbagekrust-Sulfuras",
+					["id"] = "1584997686-0",
+					["owner"] = "Vanitos-Silvermoon",
 					["response"] = "Personal Loot - Non tradeable",
-					["difficultyID"] = 9,
-					["lootWon"] = "|cffa335ee|Hitem:19138::::::::60:::::::|h[Band of Sulfuras]|h|r",
+					["difficultyID"] = 16,
+					["lootWon"] = "|cffa335ee|Hitem:174154::::::::120:264::6:5:4824:6516:6513:1517:4786:::|h[Nightmarish Chain Shackles]|h|r",
+					["boss"] = "The Hivemind",
+					["responseID"] = "PL",
+					["instance"] = "Ny'alotha, the Waking City-Mythic",
 					["color"] = {
 						1, -- [1]
 						0.6, -- [2]
 						0, -- [3]
 						1, -- [4]
 					},
-					["responseID"] = "PL",
-					["instance"] = "Molten Core-40 Player",
-					["boss"] = "Ragnaros",
 				}, -- [6]
-			},
-			["Holypally-Sulfuras"] = {
 				{
-					["mapID"] = 249,
-					["date"] = "19/11/19",
-					["class"] = "PALADIN",
-					["iSubClass"] = 0,
-					["groupSize"] = 40,
-					["boss"] = "Onyxia",
-					["time"] = "23:48:04",
-					["iClass"] = 1,
-					["id"] = "1574243284-0",
-					["owner"] = "Holypally-Sulfuras",
+					["mapID"] = 2217,
+					["date"] = "25/03/20",
+					["class"] = "SHAMAN",
+					["iSubClass"] = 3,
+					["groupSize"] = 23,
+					["isAwardReason"] = false,
+					["time"] = "20:07:26",
+					["iClass"] = 4,
+					["id"] = "1585159646-2",
+					["owner"] = "Vanitos-Silvermoon",
+					["response"] = "Personal Loot - Rejected Trade",
+					["difficultyID"] = 15,
+					["lootWon"] = "|cffa335ee|Hitem:174158::::::::120:264::5:7:4823:6578:6579:6543:6515:1502:4786:::|h[Watcher's Scheming Girdle]|h|r",
+					["color"] = {
+						0.2, -- [1]
+						0, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = "PL_REJECT",
+					["instance"] = "Ny'alotha, the Waking City-Heroic",
+					["boss"] = "Carapace of N'Zoth",
+				}, -- [7]
+				{
+					["mapID"] = 2217,
+					["date"] = "25/03/20",
+					["class"] = "SHAMAN",
+					["iSubClass"] = 3,
+					["groupSize"] = 20,
+					["isAwardReason"] = false,
+					["time"] = "21:14:25",
+					["iClass"] = 4,
+					["id"] = "1585163665-29",
+					["owner"] = "Vanitos-Silvermoon",
+					["response"] = "Personal Loot - Rejected Trade",
+					["difficultyID"] = 16,
+					["lootWon"] = "|cffa335ee|Hitem:174152::::::::120:264::6:4:4824:1517:4786:6512:::|h[Pauldrons of Ill Portent]|h|r",
+					["color"] = {
+						0.2, -- [1]
+						0, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = "PL_REJECT",
+					["instance"] = "Ny'alotha, the Waking City-Mythic",
+					["boss"] = "Maut",
+				}, -- [8]
+			},
+			["Bellicuz-Silvermoon"] = {
+				{
+					["mapID"] = 2217,
+					["date"] = "02/03/20",
+					["class"] = "HUNTER",
+					["iSubClass"] = 3,
+					["groupSize"] = 18,
+					["isAwardReason"] = false,
+					["time"] = "23:03:05",
+					["iClass"] = 4,
+					["id"] = "1583182985-6",
+					["owner"] = "Bellicuz-Silvermoon",
+					["response"] = "Personal Loot - Rejected Trade",
+					["difficultyID"] = 15,
+					["lootWon"] = "|cffa335ee|Hitem:174151::::::::120:253::5:4:4823:1502:4786:6508:::|h[Helm of Actualized Visions]|h|r",
+					["color"] = {
+						0.2, -- [1]
+						0, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = "PL_REJECT",
+					["instance"] = "Ny'alotha, the Waking City-Heroic",
+					["boss"] = "Carapace of N'Zoth",
+				}, -- [1]
+				{
+					["mapID"] = 2217,
+					["date"] = "04/03/20",
+					["class"] = "HUNTER",
+					["iSubClass"] = 2,
+					["groupSize"] = 20,
+					["isAwardReason"] = false,
+					["time"] = "21:48:29",
+					["iClass"] = 15,
+					["id"] = "1583351309-14",
+					["owner"] = "Bellicuz-Silvermoon",
+					["response"] = "Personal Loot - Rejected Trade",
+					["difficultyID"] = 16,
+					["lootWon"] = "|cff0070dd|Hitem:174446::::::::120:253::6::::|h[Fractured Obsidian Claw]|h|r",
+					["color"] = {
+						0.2, -- [1]
+						0, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = "PL_REJECT",
+					["instance"] = "Ny'alotha, the Waking City-Mythic",
+					["boss"] = "Maut",
+				}, -- [2]
+				{
+					["mapID"] = 2217,
+					["date"] = "11/03/20",
+					["class"] = "HUNTER",
+					["iSubClass"] = 3,
+					["groupSize"] = 20,
+					["isAwardReason"] = false,
+					["time"] = "20:44:57",
+					["iClass"] = 4,
+					["id"] = "1583952297-2",
+					["owner"] = "Bellicuz-Silvermoon",
+					["response"] = "Personal Loot - Rejected Trade",
+					["difficultyID"] = 16,
+					["lootWon"] = "|cffa335ee|Hitem:174153::::::::120:253::6:5:4824:6516:6513:1517:4786:::|h[Ebony Scaled Gauntlets]|h|r",
+					["color"] = {
+						0.2, -- [1]
+						0, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = "PL_REJECT",
+					["instance"] = "Ny'alotha, the Waking City-Mythic",
+					["boss"] = "Wrathion",
+				}, -- [3]
+				{
+					["mapID"] = 2217,
+					["date"] = "16/03/20",
+					["class"] = "HUNTER",
+					["iSubClass"] = 2,
+					["groupSize"] = 20,
+					["isAwardReason"] = false,
+					["time"] = "22:25:47",
+					["iClass"] = 2,
+					["id"] = "1584390347-0",
+					["owner"] = "Bellicuz-Silvermoon",
 					["response"] = "Personal Loot - Non tradeable",
-					["difficultyID"] = 9,
-					["lootWon"] = "|cff1eff00|Hitem:17966::::::::60:::::::|h[Onyxia Hide Backpack]|h|r",
+					["difficultyID"] = 16,
+					["lootWon"] = "|cffa335ee|Hitem:174107::::::::120:253::6:9:4824:1808:6578:6579:6439:6470:6513:1517:4786:::|h[Insidious Writhing Longbow]|h|r",
+					["boss"] = "Shad'har the Insatiable",
+					["responseID"] = "PL",
+					["instance"] = "Ny'alotha, the Waking City-Mythic",
 					["color"] = {
 						1, -- [1]
 						0.6, -- [2]
 						0, -- [3]
 						1, -- [4]
 					},
-					["responseID"] = "PL",
-					["isAwardReason"] = false,
-					["instance"] = "Onyxia's Lair-40 Player",
-				}, -- [1]
-			},
-			["Teaguru-Sulfuras"] = {
+				}, -- [4]
 				{
-					["mapID"] = 409,
-					["date"] = "26/10/19",
+					["mapID"] = 2217,
+					["date"] = "18/03/20",
+					["class"] = "HUNTER",
+					["iSubClass"] = 3,
+					["groupSize"] = 20,
+					["isAwardReason"] = false,
+					["time"] = "21:04:48",
+					["iClass"] = 4,
+					["id"] = "1584558288-15",
+					["owner"] = "Bellicuz-Silvermoon",
+					["response"] = "Personal Loot - Rejected Trade",
+					["difficultyID"] = 16,
+					["lootWon"] = "|cffa335ee|Hitem:174153::::::::120:253::6:5:4824:6516:6513:1517:4786:::|h[Ebony Scaled Gauntlets]|h|r",
+					["color"] = {
+						0.2, -- [1]
+						0, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = "PL_REJECT",
+					["instance"] = "Ny'alotha, the Waking City-Mythic",
+					["boss"] = "Wrathion",
+				}, -- [5]
+				{
+					["mapID"] = 2217,
+					["color"] = {
+						0, -- [1]
+						1, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["class"] = "HUNTER",
+					["iSubClass"] = 2,
+					["groupSize"] = 20,
+					["boss"] = "Prophet Skitra",
+					["time"] = "21:22:44",
+					["iClass"] = 2,
+					["itemReplaced1"] = "|cffa335ee|Hitem:172193:5950:::::::120:250::5:7:4823:6568:6578:6579:1502:4786:6513:::|h[Whispering Eldritch Bow]|h|r",
+					["instance"] = "Ny'alotha, the Waking City-Mythic",
+					["owner"] = "Asnv-Silvermoon",
+					["response"] = "Mainspec/Need",
+					["isAwardReason"] = false,
+					["difficultyID"] = 16,
+					["lootWon"] = "|cffa335ee|Hitem:172193::::::::120:250::6:8:4824:40:6568:6578:6579:6515:1517:4786:::|h[Whispering Eldritch Bow]|h|r",
+					["votes"] = 1,
+					["date"] = "18/03/20",
+					["responseID"] = 1,
+					["id"] = "1584559364-19",
+					["typeCode"] = "default",
+				}, -- [6]
+				{
+					["mapID"] = 2217,
+					["date"] = "18/03/20",
 					["class"] = "HUNTER",
 					["iSubClass"] = 0,
-					["groupSize"] = 40,
+					["groupSize"] = 20,
 					["isAwardReason"] = false,
-					["time"] = "21:50:05",
-					["iClass"] = 9,
-					["id"] = "1572180605-0",
-					["owner"] = "Teaguru-Sulfuras",
+					["time"] = "22:48:49",
+					["iClass"] = 4,
+					["id"] = "1584564529-29",
+					["owner"] = "Bellicuz-Silvermoon",
+					["response"] = "Personal Loot - Rejected Trade",
+					["difficultyID"] = 16,
+					["lootWon"] = "|cffa335ee|Hitem:174531::::::::120:253::6:7:4824:6578:6579:6540:6515:1517:4786:::|h[Void-Etched Band]|h|r",
+					["color"] = {
+						0.2, -- [1]
+						0, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = "PL_REJECT",
+					["instance"] = "Ny'alotha, the Waking City-Mythic",
+					["boss"] = "Shad'har the Insatiable",
+				}, -- [7]
+				{
+					["mapID"] = 2217,
+					["date"] = "25/03/20",
+					["class"] = "HUNTER",
+					["iSubClass"] = 0,
+					["groupSize"] = 23,
+					["isAwardReason"] = false,
+					["time"] = "20:28:32",
+					["iClass"] = 15,
+					["id"] = "1585160912-9",
+					["owner"] = "Bellicuz-Silvermoon",
 					["response"] = "Personal Loot - Non tradeable",
-					["difficultyID"] = 9,
-					["lootWon"] = "|cff1eff00|Hitem:16665::::::::60:::::::|h[Tome of Tranquilizing Shot]|h|r",
+					["difficultyID"] = 15,
+					["lootWon"] = "|cffff8000|Hitem:175062::::::::120:253::5::::|h[Malefic Core]|h|r",
 					["color"] = {
 						1, -- [1]
 						0.6, -- [2]
@@ -3648,9 +5929,240 @@ RCLootCouncilLootDB = {
 						1, -- [4]
 					},
 					["responseID"] = "PL",
-					["instance"] = "Molten Core-40 Player",
-					["boss"] = "Lucifron",
+					["instance"] = "Ny'alotha, the Waking City-Heroic",
+					["boss"] = "N'Zoth the Corruptor",
+				}, -- [8]
+				{
+					["mapID"] = 2217,
+					["date"] = "25/03/20",
+					["class"] = "HUNTER",
+					["iSubClass"] = 3,
+					["groupSize"] = 20,
+					["isAwardReason"] = false,
+					["time"] = "20:47:33",
+					["iClass"] = 4,
+					["id"] = "1585162053-19",
+					["owner"] = "Bellicuz-Silvermoon",
+					["response"] = "Personal Loot - Rejected Trade",
+					["difficultyID"] = 16,
+					["lootWon"] = "|cffa335ee|Hitem:174153::::::::120:253::6:5:4824:6516:6515:1517:4786:::|h[Ebony Scaled Gauntlets]|h|r",
+					["color"] = {
+						0.2, -- [1]
+						0, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = "PL_REJECT",
+					["instance"] = "Ny'alotha, the Waking City-Mythic",
+					["boss"] = "Wrathion",
+				}, -- [9]
+			},
+			["Trallia-Silvermoon"] = {
+				{
+					["mapID"] = 2217,
+					["date"] = "04/03/20",
+					["class"] = "PALADIN",
+					["iSubClass"] = 0,
+					["groupSize"] = 20,
+					["isAwardReason"] = false,
+					["time"] = "20:34:34",
+					["iClass"] = 4,
+					["id"] = "1583346874-4",
+					["owner"] = "Trallia-Silvermoon",
+					["response"] = "Personal Loot - Rejected Trade",
+					["difficultyID"] = 16,
+					["lootWon"] = "|cffa335ee|Hitem:174044::::::::120:65::6:4:4824:6515:1517:4786:::|h[Humming Black Dragonscale]|h|r",
+					["color"] = {
+						0.2, -- [1]
+						0, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = "PL_REJECT",
+					["instance"] = "Ny'alotha, the Waking City-Mythic",
+					["boss"] = "Wrathion",
 				}, -- [1]
+				{
+					["mapID"] = 2217,
+					["date"] = "09/03/20",
+					["class"] = "PALADIN",
+					["iSubClass"] = 2,
+					["groupSize"] = 13,
+					["isAwardReason"] = false,
+					["time"] = "23:11:52",
+					["iClass"] = 15,
+					["id"] = "1583788312-3",
+					["owner"] = "Trallia-Silvermoon",
+					["response"] = "Personal Loot - Rejected Trade",
+					["difficultyID"] = 15,
+					["lootWon"] = "|cff0070dd|Hitem:174447::::::::120:65::5::::|h[Void-Scarred Anubisath]|h|r",
+					["color"] = {
+						0.2, -- [1]
+						0, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = "PL_REJECT",
+					["instance"] = "Ny'alotha, the Waking City-Heroic",
+					["boss"] = "Ra-den the Despoiled",
+				}, -- [2]
+			},
+			["Vandott-Silvermoon"] = {
+				{
+					["mapID"] = 2217,
+					["date"] = "02/03/20",
+					["class"] = "WARLOCK",
+					["iSubClass"] = 0,
+					["groupSize"] = 18,
+					["boss"] = "Ra-den the Despoiled",
+					["time"] = "22:23:01",
+					["iClass"] = 4,
+					["itemReplaced1"] = "|cffa335ee|Hitem:174060::168639::::::120:250::5:5:4823:1808:6513:1502:4786:::|h[Psyche Shredder]|h|r",
+					["instance"] = "Ny'alotha, the Waking City-Heroic",
+					["typeCode"] = "default",
+					["owner"] = "Drobadin-Silvermoon",
+					["id"] = "1583180581-1",
+					["response"] = "Mainspec/Need",
+					["note"] = "would like to sim",
+					["difficultyID"] = 15,
+					["lootWon"] = "|cffa335ee|Hitem:174528::::::::120:250::5:5:4823:41:6513:1502:4786:::|h[Void-Twisted Titanshard]|h|r",
+					["isAwardReason"] = false,
+					["color"] = {
+						0, -- [1]
+						1, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = 1,
+					["itemReplaced2"] = "|cffa335ee|Hitem:174500::168639::::::120:250::5:5:4823:1808:6513:1502:4786:::|h[Vita-Charged Titanshard]|h|r",
+					["votes"] = 3,
+				}, -- [1]
+				{
+					["mapID"] = 2217,
+					["date"] = "02/03/20",
+					["class"] = "WARLOCK",
+					["iSubClass"] = 1,
+					["groupSize"] = 18,
+					["isAwardReason"] = false,
+					["time"] = "23:02:47",
+					["iClass"] = 4,
+					["id"] = "1583182967-4",
+					["owner"] = "Vandott-Silvermoon",
+					["response"] = "Personal Loot - Non tradeable",
+					["difficultyID"] = 15,
+					["lootWon"] = "|cffa335ee|Hitem:174117::::::::120:267::5:4:4823:1502:4786:6509:::|h[Spaulders of Miasmic Mycelia]|h|r",
+					["color"] = {
+						1, -- [1]
+						0.6, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = "PL",
+					["instance"] = "Ny'alotha, the Waking City-Heroic",
+					["boss"] = "Carapace of N'Zoth",
+				}, -- [2]
+				{
+					["mapID"] = 2217,
+					["date"] = "04/03/20",
+					["class"] = "WARLOCK",
+					["iSubClass"] = 0,
+					["groupSize"] = 20,
+					["isAwardReason"] = false,
+					["time"] = "20:33:19",
+					["iClass"] = 4,
+					["id"] = "1583346799-2",
+					["owner"] = "Vandott-Silvermoon",
+					["response"] = "Personal Loot - Rejected Trade",
+					["difficultyID"] = 16,
+					["lootWon"] = "|cffa335ee|Hitem:174044::::::::120:267::6:4:4824:6515:1517:4786:::|h[Humming Black Dragonscale]|h|r",
+					["color"] = {
+						0.2, -- [1]
+						0, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = "PL_REJECT",
+					["instance"] = "Ny'alotha, the Waking City-Mythic",
+					["boss"] = "Wrathion",
+				}, -- [3]
+			},
+			["Madvepriest-Silvermoon"] = {
+				{
+					["mapID"] = 2217,
+					["date"] = "25/03/20",
+					["class"] = "PRIEST",
+					["iSubClass"] = 1,
+					["groupSize"] = 23,
+					["isAwardReason"] = false,
+					["time"] = "20:28:28",
+					["iClass"] = 4,
+					["id"] = "1585160908-4",
+					["owner"] = "Madvepriest-Silvermoon",
+					["response"] = "Personal Loot - Non tradeable",
+					["difficultyID"] = 15,
+					["lootWon"] = "|cffa335ee|Hitem:174118::::::::120:258::5:4:4823:1502:4786:6508:::|h[Visage of Nightmarish Machinations]|h|r",
+					["color"] = {
+						1, -- [1]
+						0.6, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = "PL",
+					["instance"] = "Ny'alotha, the Waking City-Heroic",
+					["boss"] = "N'Zoth the Corruptor",
+				}, -- [1]
+				{
+					["mapID"] = 2217,
+					["date"] = "25/03/20",
+					["class"] = "PRIEST",
+					["iSubClass"] = 1,
+					["groupSize"] = 20,
+					["votes"] = 3,
+					["time"] = "20:49:44",
+					["iClass"] = 4,
+					["itemReplaced1"] = "|cffa335ee|Hitem:170458:5937:168641::::::120:250::13:1:1692:::|h[Eldritch Seaweave Gloves of the Fireflash]|h|r",
+					["instance"] = "Ny'alotha, the Waking City-Mythic",
+					["owner"] = "Faykmage-Silvermoon",
+					["color"] = {
+						0, -- [1]
+						1, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["response"] = "Mainspec/Need",
+					["boss"] = "Wrathion",
+					["difficultyID"] = 16,
+					["lootWon"] = "|cffa335ee|Hitem:174125::::::::120:250::6:5:4824:6516:6515:1517:4786:::|h[Emberscale Gloves]|h|r",
+					["note"] = "prob gonna drop tailoring, so this is bis",
+					["isAwardReason"] = false,
+					["responseID"] = 1,
+					["id"] = "1585162184-20",
+					["typeCode"] = "default",
+				}, -- [2]
+				{
+					["mapID"] = 2217,
+					["date"] = "25/03/20",
+					["class"] = "PRIEST",
+					["iSubClass"] = 2,
+					["groupSize"] = 20,
+					["isAwardReason"] = false,
+					["time"] = "21:12:21",
+					["iClass"] = 15,
+					["id"] = "1585163541-26",
+					["owner"] = "Madvepriest-Silvermoon",
+					["response"] = "Personal Loot - Rejected Trade",
+					["difficultyID"] = 16,
+					["lootWon"] = "|cff0070dd|Hitem:174446::::::::120:258::6::::|h[Fractured Obsidian Claw]|h|r",
+					["color"] = {
+						0.2, -- [1]
+						0, -- [2]
+						0, -- [3]
+						1, -- [4]
+					},
+					["responseID"] = "PL_REJECT",
+					["instance"] = "Ny'alotha, the Waking City-Mythic",
+					["boss"] = "Maut",
+				}, -- [3]
 			},
 		},
 	},

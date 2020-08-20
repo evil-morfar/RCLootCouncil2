@@ -1,17 +1,22 @@
 return {
    _all = {
-      pattern = ".spec",
-      coverage = true,
+      ["pattern"] = ".spec",
+      ["coverage"] = true,
    },
    default = {
-      ROOT = { ".specs"},
-      output = "utfTerminal"
+      ["ROOT"] = { ".specs"},
+      ["output"] = "utfTerminal"
    },
-   Utils = {
-      ROOT = {".specs/Utils"}
-   },
+
    Classes = {
-      ROOT = {".specs/Classes"},
-      --tags = "Core"
+      ["ROOT"] = {".specs/Classes"},
+   },
+
+   Classes_Utils = {
+      ["ROOT"] = {".specs/Classes/Utils"},
+   },
+
+   Classes_Services = {
+      ["ROOT"] = {".specs/Classes/Services"},
    }
 }

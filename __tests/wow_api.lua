@@ -360,11 +360,15 @@ function setglobal(k, v)
 end
 
 function _errorhandler(msg)
-   print("--------- geterrorhandler error -------\n"..msg.."\n-----end error-----\n")
+   error(msg,2)--print("--------- geterrorhandler error -------\n"..msg.."\n-----end error-----\n")
 end
 
 function geterrorhandler()
    return _errorhandler
+end
+
+function seterrorhandler()
+
 end
 
 function InCombatLockdown()
@@ -611,8 +615,43 @@ function split(inputstr, sep)
 
 end
 
+local playerNameToGUID = {
+   Player1 = {
+      guid = "Player-AAA-00000001",
+      name = "Player1-Realm1",
+      realm = "Realm1",
+      class = "WARRIOR"
+   },
+   Player2 = {
+      guid = "Player-AAA-00000002",
+      name = "Player2-Realm1",
+      realm = "Realm1",
+      class = "WARRIOR"
+   },
+   Player3 = {
+      guid = "Player-AAB-00000003",
+      name = "Player3-Realm2",
+      realm = "Realm2",
+      class = "WARRIOR"
+   },
+}
+
+local playerGUIDInfo = {}
+for _, info in pairs(playerNameToGUID) do
+   playerGUIDInfo[info.guid] = info
+end
+
 function UnitGUID (name)
-   return "Player-FFF-ABCDF012"
+   return playerNameToGUID[name] and playerNameToGUID[name].guid or "Player-FFF-ABCDF012"
+end
+
+function GetPlayerInfoByGUID (guid)
+   local player = playerGUIDInfo[guid]
+   if player then
+      return nil,player.class, nil,nil,nil, player.name, player.realm
+   else
+      return nil, "HUNTER", nil,nil,nil, "Unknown", "Unknown"
+   end
 end
 
 -- Enable some globals

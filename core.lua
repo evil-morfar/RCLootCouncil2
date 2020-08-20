@@ -62,6 +62,7 @@ local defaultModules = {
 	sessionframe =	"RCSessionFrame",
 	votingframe =	"RCVotingFrame",
 	tradeui =		"RCTradeUI",
+	errorhandler = "ErrorHandler",
 }
 local userModules = {
 	masterlooter = nil,
@@ -71,6 +72,7 @@ local userModules = {
 	sessionframe = nil,
 	votingframe = nil,
 	tradeui = nil,
+	errorhandler = nil
 }
 
 local frames = {} -- Contains all frames created by RCLootCouncil:CreateFrame()
@@ -90,7 +92,7 @@ local playersData = {-- Update on login/encounter starts. it stores the informat
 
 function RCLootCouncil:OnInitialize()
 	--IDEA Consider if we want everything on self, or just whatever modules could need.
-  	self.version = GetAddOnMetadata("RCLootCouncil", "Version")
+	self.version = GetAddOnMetadata("RCLootCouncil", "Version")
 	self.nnp = false
 	self.debug = false
 	self.tVersion = nil -- String or nil. Indicates test version, which alters stuff like version check. Is appended to 'version', i.e. "version-tVersion" (max 10 letters for stupid security)
@@ -164,7 +166,6 @@ function RCLootCouncil:OnInitialize()
 		}
 	}
 
-
 	self.testMode = false;
 	-- create the other buttons/responses
 	for i = 1, self.defaults.profile.maxButtons do
@@ -187,16 +188,15 @@ function RCLootCouncil:OnInitialize()
 
 	-- register chat and comms
 	self:RegisterChatCommand("rc", "ChatCommand")
-  	self:RegisterChatCommand("rclc", "ChatCommand")
+	self:RegisterChatCommand("rclc", "ChatCommand")
 	self.customChatCmd = {} -- Modules that wants their cmds used with "/rc"
-	self:RegisterComm("RCLootCouncil")
-	self:RegisterComm("RCLCv")
+	self:RegisterComms()
 	self.db = LibStub("AceDB-3.0"):New("RCLootCouncilDB", self.defaults, true)
 	self.lootDB = LibStub("AceDB-3.0"):New("RCLootCouncilLootDB")
 	--[[ Format:
 	"playerName" = {
 		[#] = {"lootWon", "date (d/m/y)", "time (h:m:s)", "instance", "boss", "votes", "itemReplaced1", "itemReplaced2", "response", "responseID",
-		 		 "color", "class", "isAwardReason", "difficultyID", "mapID", "groupSize", "tierToken"}
+				 "color", "class", "isAwardReason", "difficultyID", "mapID", "groupSize", "tierToken"}
 	},
 	]]
 	self.db.RegisterCallback(self, "OnProfileChanged", ReloadUI)
@@ -210,6 +210,22 @@ function RCLootCouncil:OnInitialize()
 	historyDB = self.lootDB.factionrealm
 	debugLog = self.db.global.log
 
+	-- Add logged in message in the log
+	self:DebugLog("Logged In")
+end
+
+function RCLootCouncil:OnEnable()
+	if not self:IsCorrectVersion() then
+		self:DebugLog("<ERROR>", "Wrong game version", WOW_PROJECT_ID)
+		self:Print(format("This version of %s is not intended for this game version!\nPlease install the proper version.", self.baseName))
+		return self:Disable()
+	end
+
+	-- Register the player's name
+	self.realmName = select(2, UnitFullName("player"))
+	self.playerName = self:UnitName("player")
+	self:DebugLog(self.playerName, self.version, self.tVersion)
+
 	self:DoChatHook()
 
 	-- register the optionstable
@@ -220,15 +236,6 @@ function RCLootCouncil:OnInitialize()
 	self.optionsFrame.ml = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("RCLootCouncil", "Master Looter", "RCLootCouncil", "mlSettings")
 	self.playersData = playersData -- Make it globally available
 	self:InitItemStorage()
-	-- Add logged in message in the log
-	self:DebugLog("Logged In")
-end
-
-function RCLootCouncil:OnEnable()
-	-- Register the player's name
-	self.realmName = select(2, UnitFullName("player"))
-	self.playerName = self:UnitName("player")
-	self:DebugLog(self.playerName, self.version, self.tVersion)
 
 	-- register events
 	for event, method in pairs(self.coreEvents) do
@@ -274,11 +281,16 @@ function RCLootCouncil:OnEnable()
 end
 
 function RCLootCouncil:OnDisable()
-	self:Debug("OnDisable()")
-	--NOTE (not really needed as we probably never call .Disable() on the addon)
-		-- delete all windows
-		-- disable modules(?)
+	self:DebugLog("OnDisable()")
+	self:UnregisterChatCommand("rc")
+	self:UnregisterChatCommand("rclc")
+	self:UnregisterAllComm()
 	self:UnregisterAllEvents()
+end
+
+function RCLootCouncil:RegisterComms ()
+	self:RegisterComm("RCLootCouncil")
+	self:RegisterComm("RCLCv")
 end
 
 function RCLootCouncil:ConfigTableChanged(val)
@@ -312,7 +324,8 @@ end
 function RCLootCouncil:ChatCommand(msg)
 	local input = self:GetArgs(msg,1)
 	local args = {}
-	local arg, startpos = nil, input and #input + 1 or 0
+	local arg
+	local startpos = input and #input + 1 or 0
 	repeat
 	    arg, startpos = self:GetArgs(msg, 1, startpos)
 	    if arg then
@@ -626,7 +639,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 
 					-- Cache items
 					local cached = true
-					for k, v in ipairs(lootTable) do
+					for _, v in ipairs(lootTable) do
 						if not GetItemInfo(v.link) then cached = false end
 					end
 					if not cached then
@@ -774,7 +787,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 
 			elseif command == "delete_history" and db.enableHistory then
 				local id = unpack(data)
-				for name, d in pairs(historyDB) do
+				for _, d in pairs(historyDB) do
 					for i = #d, 1, -1 do
 						local entry = d[i]
 						if entry.id == id then
@@ -886,7 +899,7 @@ function RCLootCouncil:HandleXRealmComms(mod, command, data, sender)
 	if command == "xrealm" then
 		local target = tremove(data, 1)
 		if self:UnitIsUnit(target, "player") then
-			local command = tremove(data, 1)
+			command = tremove(data, 1)
 			mod:OnCommReceived("RCLootCouncil", self:Serialize(command, data), "WHISPER", sender)
 		end
 		return true
@@ -929,7 +942,7 @@ function RCLootCouncil:OnMLDBReceived(mldb)
 	-- mldb inheritance from db
 	self.mldb = mldb
 	for type, responses in pairs(mldb.responses) do
-	   for response in pairs(responses) do
+	   for _ in pairs(responses) do
 	      if not self.defaults.profile.responses[type] then
 				--if not self.mldb.responses[type] then self.mldb.responses[type] = {} end
 				--if not self.mldb.responses[type][response] then self.mldb.responses[type][response] = {} end
@@ -1057,7 +1070,7 @@ function RCLootCouncil:Test(num, fullTest, trinketTest)
 
 	local items = {};
 	-- pick "num" random items
-	for i = 1, num do
+	for i = 1, num do --luacheck: ignore
 		local j = math.random(1, #testItems)
 		tinsert(items, testItems[j])
 	end
@@ -1115,7 +1128,7 @@ function RCLootCouncil:LeaveCombat()
 end
 
 function RCLootCouncil:UpdatePlayersGears(startSlot, endSlot)
-	startSlot = startSlot or INVSLOT_FIRST_EQUIPPED
+	startSlot = startSlot or _G.INVSLOT_FIRST_EQUIPPED
 	endSlot = endSlot or INVSLOT_LAST_EQUIPPED
 
 	for i = startSlot, endSlot do
@@ -1171,7 +1184,7 @@ end
 function RCLootCouncil:GetPlayerCorruption ()
 	if not GetCorruption then return end
 	local corruption = GetCorruption()
-	local corruptionResistance = GetCorruptionResistance()
+	local corruptionResistance = _G.GetCorruptionResistance()
 	return {corruption, corruptionResistance}
 end
 
@@ -1325,7 +1338,7 @@ end
 function RCLootCouncil:GetTokenIlvl(link)
 	local id = self.Utils:GetItemIDFromLink(link)
 	if not id then return end
-	local baseIlvl = RCTokenIlvl[id] -- ilvl in normal difficulty
+	local baseIlvl = _G.RCTokenIlvl[id] -- ilvl in normal difficulty
 	if not baseIlvl then return end
 
 	-- Pre WoD, item doesn't share id across difficulties.
@@ -1333,15 +1346,15 @@ function RCLootCouncil:GetTokenIlvl(link)
 
 	local bonuses = select(17, self:DecodeItemLink(link))
 	for _, value in pairs(bonuses) do
-   		-- @see epgp/LibGearPoints-1.2.lua
+		-- @see epgp/LibGearPoints-1.2.lua
 	    if value == 566 or value == 570 then -- Heroic difficulty
-	    	return baseIlvl + 15
+			return baseIlvl + 15
 	    end
 	    if value == 567 or value == 569 then -- Mythic difficulty
-	    	return baseIlvl + 30
+			return baseIlvl + 30
 	    end
-  	end
-  	return baseIlvl -- Normal difficulty
+	end
+	return baseIlvl -- Normal difficulty
 end
 
 function RCLootCouncil:GetTokenEquipLoc(tokenSlot)
@@ -1905,7 +1918,7 @@ function RCLootCouncil:OnEvent(event, ...)
 		end
 	elseif event == "ENCOUNTER_LOOT_RECEIVED" then
 		self:Debug("Event:", event, ...)
-		local encounterID, itemID, itemLink, quantity, playerName, className = ...
+		local encounterID, _, itemLink, _, playerName, _ = ...
 		if not self.lootStatus[encounterID] then self.lootStatus[encounterID] = {} end
 		local name = self:UnitName(playerName)
 		playerName = name or playerName -- Expect us to get something back from UnitName
@@ -1914,13 +1927,13 @@ function RCLootCouncil:OnEvent(event, ...)
 
 	elseif event == "LOOT_READY" then
 		self:Debug("Event:", event, ...)
+		wipe(self.lootSlotInfo)
 		if not IsInInstance() then return end -- Don't do anything out of instances
 		if GetNumLootItems() <= 0 then return end-- In case when function rerun, loot window is closed.
-		wipe(self.lootSlotInfo)
 		self.lootOpen = true
 		for i = 1,  GetNumLootItems() do
 			if LootSlotHasItem(i) then
-				local texture, name, quantity, currencyID, quality, _, isQuestItem = GetLootSlotInfo(i)
+				local texture, name, quantity, currencyID, quality = GetLootSlotInfo(i)
 				local guid = self.Utils:ExtractCreatureID((GetLootSourceInfo(i)))
 				if guid and self.lootGUIDToIgnore[guid] then return self:Debug("Ignoring loot from ignored source", guid) end
 				if texture then
@@ -1950,6 +1963,20 @@ function RCLootCouncil:OnEvent(event, ...)
 	else
 		self:Debug("NonHandled Event:", event, ...)
 	end
+end
+
+function RCLootCouncil:OnBonusRoll (_, type, link, ...)
+	self:DebugLog("BONUS_ROLL", type, link, ...)
+	if type == "item" or type == "artifact_power" then
+		-- Only handle items and artifact power
+		self:SendCommand("group", "bonus_roll", self.playerName, type, link)
+	end
+	--[[
+		Tests:
+		/run RCLootCouncil:OnBonusRoll("", "artifact_power", "|cff0070dd|Hitem:144297::::::::110:256:8388608:3::26:::|h[Talisman of Victory]|h|r")
+		/run RCLootCouncil:OnBonusRoll("", "item", "|cffa335ee|Hitem:140851::::::::110:256::3:3:3443:1467:1813:::|h[Nighthold Custodian's Hood]|h|r")
+
+	]]
 end
 
 function RCLootCouncil:NewMLCheck()
@@ -2173,7 +2200,7 @@ function RCLootCouncil:GetLootDBStatistics()
 					color[id] = #entry.color ~= 0 and #entry.color == 4 and entry.color or {1,1,1}
 				end
 				if lastestAwardFound < 5 and type(id) == "number" and not entry.isAwardReason
-				 	and (id <= db.numMoreInfoButtons or (entry.tokenRoll and id - 200 <= db.numMoreInfoButtons)
+					and (id <= db.numMoreInfoButtons or (entry.tokenRoll and id - 200 <= db.numMoreInfoButtons)
 							or (entry.relicRoll and id - 300 <= db.numMoreInfoButtons)) then
 					tinsert(lootDBStatistics[name], {entry.lootWon, --[[entry.response .. ", "..]] format(L["'n days' ago"], self:ConvertDateToString(self:GetNumberOfDaysFromNow(entry.date))), color[id], i})
 					lastestAwardFound = lastestAwardFound + 1
@@ -2186,8 +2213,8 @@ function RCLootCouncil:GetLootDBStatistics()
 			lootDBStatistics[name].totals = {}
 			lootDBStatistics[name].totals.tokens = numTokens
 			lootDBStatistics[name].totals.responses = {}
-			for id, num in pairs(count) do
-				tinsert(lootDBStatistics[name].totals.responses, {responseText[id], num, color[id], id})
+			for idx, num in pairs(count) do
+				tinsert(lootDBStatistics[name].totals.responses, {responseText[idx], num, color[idx], idx})
 				totalNum = totalNum + num
 			end
 			lootDBStatistics[name].totals.total = totalNum
@@ -2226,6 +2253,10 @@ function RCLootCouncil:UpdateDB()
 end
 function RCLootCouncil:UpdateHistoryDB()
 	historyDB = self:GetHistoryDB()
+end
+
+function RCLootCouncil:IsCorrectVersion ()
+	return WOW_PROJECT_MAINLINE == WOW_PROJECT_ID
 end
 
 -- The link of same item generated from different players, or if two links are generated between player spec switch, are NOT the same
@@ -2335,8 +2366,7 @@ function RCLootCouncil:DecodeItemLink(itemLink)
 	    upgradeID = tonumber(upgradeID) or 0
 	 end
 
-    return color, linkType, itemID, enchantID, gemID1, gemID2, gemID3, gemID4, suffixID, uniqueID, linkLevel,
-	 		specializationID, upgradeTypeID, upgradeID, instanceDifficultyID, numBonuses, bonusIDs
+    return color, linkType, itemID, enchantID, gemID1, gemID2, gemID3, gemID4, suffixID, uniqueID, linkLevel,	specializationID, upgradeTypeID, upgradeID, instanceDifficultyID, numBonuses, bonusIDs
 end
 
 --- Custom, better UnitIsUnit() function.
@@ -2575,9 +2605,6 @@ function RCLootCouncil:CreateFrame(name, cName, title, width, height)
 
 	local c = CreateFrame("Frame", "RC_UI_"..cName.."_Content", f) -- frame that contains the actual content
 	c:SetBackdrop({
-	     --bgFile = "Interface\\DialogFrame\\UI-DialogBox-Gold-Background",
-		  --   bgFile = AceGUIWidgetLSMlists.background[db.UI.default.background],
-  	   --   edgeFile = AceGUIWidgetLSMlists.border[db.UI.default.border],
 		bgFile = AceGUIWidgetLSMlists.background[db.skins[db.currentSkin].background],
 		edgeFile = AceGUIWidgetLSMlists.border[db.skins[db.currentSkin].border],
 	   tile = true, tileSize = 255, edgeSize = 16,
@@ -2603,28 +2630,28 @@ function RCLootCouncil:CreateFrame(name, cName, title, width, height)
 	f.Minimize = function(frame)
 		self:Debug("Minimize()")
 		if not frame.minimized then
-		  	frame.content:Hide()
+			frame.content:Hide()
 			frame.minimized = true
 		end
 	end
 	f.Maximize = function(frame)
 		self:Debug("Maximize()")
 		if frame.minimized then
-		  	frame.content:Show()
+			frame.content:Show()
 			frame.minimized = false
 		end
 	end
 	-- Support for auto hide in combat:
 	tinsert(frames, f)
 	local old_setwidth = f.SetWidth
-	f.SetWidth = function(self, width) -- Hack so we only have to set width once
-		old_setwidth(self, width)
-		self.content:SetWidth(width)
+	f.SetWidth = function(self, w) -- Hack so we only have to set width once
+		old_setwidth(self, w)
+		self.content:SetWidth(w)
 	end
 	local old_setheight = f.SetHeight
-	f.SetHeight = function(self, height)
-		old_setheight(self, height)
-		self.content:SetHeight(height)
+	f.SetHeight = function(self, h)
+		old_setheight(self, h)
+		self.content:SetHeight(h)
 	end
 	f.Update = function(self)
 		RCLootCouncil:Debug("UpdateFrame", self:GetName())
@@ -2656,9 +2683,9 @@ function RCLootCouncil:CreateGameTooltip(cName, parent)
 	-- Some addons hook GameTooltip. So copy the hook.
 	-- itemTooltip:SetScript("OnTooltipSetItem", GameTooltip:GetScript("OnTooltipSetItem"))
 
- 	itemTooltip.shoppingTooltips = {} -- GameTooltip contains this table. Need this to prevent error
- 	itemTooltip.shoppingTooltips[1] = CreateFrame("GameTooltip", cName.."_ShoppingTooltip1", itemTooltip, "ShoppingTooltipTemplate")
- 	itemTooltip.shoppingTooltips[2] = CreateFrame("GameTooltip", cName.."_ShoppingTooltip2", itemTooltip, "ShoppingTooltipTemplate")
+	itemTooltip.shoppingTooltips = {} -- GameTooltip contains this table. Need this to prevent error
+	itemTooltip.shoppingTooltips[1] = CreateFrame("GameTooltip", cName.."_ShoppingTooltip1", itemTooltip, "ShoppingTooltipTemplate")
+	itemTooltip.shoppingTooltips[2] = CreateFrame("GameTooltip", cName.."_ShoppingTooltip2", itemTooltip, "ShoppingTooltipTemplate")
 	return itemTooltip
 end
 
@@ -2676,7 +2703,7 @@ end
 function RCLootCouncil:ActivateSkin(key)
 	self:Debug("ActivateSkin", key)
 	if not db.skins[key] then return end
-	for k,v in pairs(db.UI) do
+	for _,v in pairs(db.UI) do
 		v.bgColor = {unpack(db.skins[key].bgColor)}
 		v.borderColor = {unpack(db.skins[key].borderColor)}
 		v.background = db.skins[key].background
@@ -2932,7 +2959,7 @@ _G.printtable = function( data, level )
 			break;
 		end
 		print( ident .. '['..tostring(index)..'] = {')
-        printtable(value, level+1)
+        _G.printtable(value, level+1)
         print( ident .. '}' );
 	until true end
 end

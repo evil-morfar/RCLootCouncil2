@@ -4,7 +4,6 @@
 -- Create Date : 27/7/2018 20:49:10
 local _,addon = ...
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
-local db = addon:Getdb()
 local Utils = {}
 addon.Utils = Utils
 
@@ -54,12 +53,12 @@ function Utils:GetItemTextWithCount(link, count)
 	return link..(count and count > 1 and (" x"..count) or "")
 end
 
-local NEUTRALIZE_ITEM_PATTERN = "item:(%d*):(%d*):(%d*):(%d*):(%d*):(%d*):(%d*):%d*:%d*:%d*"
-local NEUTRALIZE_ITEM_REPLACEMENT = "item:%1:%2:%3:%4:%5:%6:%7:::"
+local NEUTRALIZE_ITEM_PATTERN = "item:(%d*):(%d*):(%d*):(%d*):(%d*):(%d*):(%d*):%d*:%d*:%d*:%d*:(%d*):(%d*)"
+local NEUTRALIZE_ITEM_REPLACEMENT = "item:%1:%2:%3:%4:%5:%6:%7::::%8:%9" -- 9: numBonusIDs
 
 --- Removes any character specific data from an item
 -- @param item Any itemlink, itemstring etc.
--- @return The same item with level, specID, and uniqueID removed
+-- @return The same item with level, specID, uniqueID, upgradeTypeID removed
 function Utils:NeutralizeItem (item)
 	return item:gsub(NEUTRALIZE_ITEM_PATTERN, NEUTRALIZE_ITEM_REPLACEMENT)
 end

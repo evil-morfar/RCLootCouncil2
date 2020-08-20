@@ -5,6 +5,7 @@
 -- USAGE: local Loader = loadfile (".specs/AddonLoader.lua")([debug, ADDON_NAME, ADDON_OBJECT])
 --    Loader.LoadToc("something.toc") -- Loads all files in the .toc file.
 --    Loader.LoadXML("something.xml") -- Loads all files in the .xml file
+--    Loader.LoadArray{"file1.lua", "file2.xml"} -- Loads all files in the array. Will also load all files contained in an xml path.
 -- Defaults to the values below:
 local debug = select(1,...) or false
 local ADDON_NAME = select(2, ...) or "RCLootCouncil"
@@ -15,7 +16,7 @@ local Loader = {}
 function Loader.LoadToc (file)
    local lines = Loader.lines_from(file)
    local files = {}
-   for k, v in pairs(lines) do
+   for _, v in pairs(lines) do
       v = Loader.stripspaces(v)
       -- Ignore comments
       if not v:match("^##") and #v > 0 then
@@ -36,6 +37,19 @@ function Loader.LoadXML(file)
    Loader.LoadFiles(Loader.XmlHandler(file, 0))
 end
 
+function Loader.LoadArray (list)
+   local files = {}
+   for _, file in ipairs(list) do
+      local ext = Loader.GetFileExtension(file)
+      if ext == ".xml" then
+         Loader.AddTableToTable(Loader.XmlHandler(file), files)
+      elseif ext == ".lua" then
+         table.insert(files, file)
+      end
+   end
+   Loader.LoadFiles(files)
+end
+
 
 function Loader.file_exists(file)
    local f = io.open(file, "rb")
@@ -47,7 +61,7 @@ end
 -- list/table if the file does not exist
 function Loader.lines_from(file)
    if not Loader.file_exists(file) then return {} end
-   lines = {}
+   local lines = {}
    for line in io.lines(file) do
       lines[#lines + 1] = line
    end
@@ -75,7 +89,7 @@ function Loader.Log (...)
 end
 
 function Loader.AddTableToTable (tbl, target)
-   for k,v in pairs(tbl) do
+   for _,v in pairs(tbl) do
       target[#target + 1] = v
    end
 end
@@ -128,6 +142,26 @@ function Loader.LoadFiles (files)
          loadfile(file)(ADDON_NAME,ADDON_OBJECT)
       end
    end
+end
+
+function Loader.TocParser (file)
+   local lines = Loader.lines_from(file)
+   local files = {}
+   for _, v in pairs(lines) do
+      v = Loader.stripspaces(v)
+      -- Ignore comments
+      if not v:match("^##") and #v > 0 then
+         local ext = Loader.GetFileExtension(v)
+         if ext == ".xml" then
+            local res = Loader.XmlHandler(v)
+            Loader.AddTableToTable(res, files)
+         elseif ext == ".lua" then
+            files[#files + 1] = v
+         end
+      end
+   end
+   -- Actually load the files:
+   Loader.LoadFiles(files)
 end
 
 return Loader
