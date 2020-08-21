@@ -3,12 +3,13 @@
 -- @author Potdisc
 -- Create Date : 30/01/2019 18:56:31
 local _, addon = ...
-local Log = addon.Init("Log")
+Log = addon.Init("Log")
 local private = {
    date_to_debug_log = true,
    debugLog = {},
    lenght = 0,
 }
+Log.private = private
 -----------------------------------------------------------
 -- Class Definitions
 -----------------------------------------------------------
@@ -58,7 +59,7 @@ local LOG_MT = {
 -- @return Log object.
 function Log:New(prefix)
    local object = {
-      prefix = prefix or ""
+      prefix = prefix and "["..prefix.."]" or ""
    }
    return setmetatable(object, LOG_MT)
 end
@@ -110,8 +111,7 @@ function private:Print(msg, ...)
 	end
 end
 
-do -- Initialize logging
-   -- REVIEW: This should be done after the addon's db object has been created!
+function addon:InitLogging()
    private.debugLog = addon.db.global.log
    private.lenght = #private.debugLog -- Use direct table access for better performance.
    addon.db.global.logMaxEntries = addon.defaults.global.logMaxEntries -- reset it now for zzz

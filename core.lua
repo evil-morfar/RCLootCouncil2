@@ -89,6 +89,7 @@ local playersData = {-- Update on login/encounter starts. it stores the informat
 } -- player's data that can be changed by the player (spec, equipped ilvl, gaers, relics etc)
 
 function RCLootCouncil:OnInitialize()
+	self.Log = self.Require "Log":New()
 	--IDEA Consider if we want everything on self, or just whatever modules could need.
 	self.version = GetAddOnMetadata("RCLootCouncil", "Version")
 	self.nnp = false
@@ -190,6 +191,7 @@ function RCLootCouncil:OnInitialize()
 	self.customChatCmd = {} -- Modules that wants their cmds used with "/rc"
 	self:RegisterComms()
 	self.db = LibStub("AceDB-3.0"):New("RCLootCouncilDB", self.defaults, true)
+	self:InitLogging()
 	self.lootDB = LibStub("AceDB-3.0"):New("RCLootCouncilLootDB")
 	--[[ Format:
 	"playerName" = {
@@ -211,12 +213,12 @@ function RCLootCouncil:OnInitialize()
 	debugLog = self.db.global.log
 
 	-- Add logged in message in the log
-	self:DebugLog("Logged In")
+	self.Log("Logged In")
 end
 
 function RCLootCouncil:OnEnable()
 	if not self:IsCorrectVersion() then
-		self:DebugLog("<ERROR>", "Wrong game version", WOW_PROJECT_ID)
+		self.Log:e("Wrong game version", WOW_PROJECT_ID)
 		self:Print(format("This version of %s is not intended for this game version!\nPlease install the proper version.", self.baseName))
 		return self:Disable()
 	end
@@ -224,7 +226,7 @@ function RCLootCouncil:OnEnable()
 	-- Register the player's name
 	self.realmName = select(2, UnitFullName("player"))
 	self.playerName = self:UnitName("player")
-	self:DebugLog(self.playerName, self.version, self.tVersion)
+	self.Log(self.playerName, self.version, self.tVersion)
 
 	self:DoChatHook()
 
@@ -282,7 +284,7 @@ function RCLootCouncil:OnEnable()
 end
 
 function RCLootCouncil:OnDisable()
-	self:DebugLog("OnDisable()")
+	self.Log:Info("OnDisable()")
 	self:UnregisterChatCommand("rc")
 	self:UnregisterChatCommand("rclc")
 	self:UnregisterAllComm()
@@ -313,7 +315,7 @@ function RCLootCouncil:DoChatHook ()
 	if self:IsHooked(self, "Print") then self:Unhook(self, "Print") end
 	if not validateChatFrame() then
 		self:Print("Warning: Your chat frame", db.chatFrameName, "doesn't exist. ChatFrame has been reset.")
-		self:DebugLog("<ERROR>", "ChatFrameName validation failed, resetting...")
+		self.Log:e("ChatFrameName validation failed, resetting...")
 		db.chatFrameName = self.defaults.profile.chatFrameName
 	end
 	-- Pass our channel to the original function and magic appears.
@@ -334,7 +336,7 @@ function RCLootCouncil:ChatCommand(msg)
 	    end
 	until arg == nil
 	input = strlower(input or "")
-	self:Debug("/", input, unpack(args))
+	self.Log:d("/", input, unpack(args))
 	if not input or input:trim() == "" or input == "help" or input == string.lower(_G.HELP_LABEL) then
 		if self.tVersion then print(format(L["chat tVersion string"],self.version, self.tVersion))
 		else print(format(L["chat version String"],self.version)) end
@@ -357,9 +359,9 @@ function RCLootCouncil:ChatCommand(msg)
 			end
 			module = v.module
 		end
-		self:Debug("- debug or d - Toggle debugging")
-		self:Debug("- log - display the debug log")
-		self:Debug("- clearLog - clear the debug log")
+		self.Log:d("- debug or d - Toggle debugging")
+		self.Log:d("- log - display the debug log")
+		self.Log:d("- clearLog - clear the debug log")
 
 	elseif input == 'config' or input == L["config"] or input == "c" or input == "opt" or input == "options" then
 		-- Call it twice, because reasons..
@@ -537,7 +539,7 @@ function RCLootCouncil:UpdateAndSendRecentTradableItem(info, count)
 	function() -- onFail
 		-- We haven't found it, maybe we just haven't received it yet, so try again in one second
 		Item:Unstore()
-		self:Debug(format("<ERROR> UpdateAndSendRecentTradableItem: %s not found in bags", Item.link))
+		self.Log:e(format("UpdateAndSendRecentTradableItem: %s not found in bags", Item.link))
 	end)
 end
 
@@ -623,7 +625,7 @@ local v3VersionWarningCount = 0
 -- if RCLootCouncil:HandleXRealmComms(self, command, data, sender) then return end
 function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 	if prefix == "RCLootCouncil" then
-		self:DebugLog("Comm received:" .. serializedMsg, "from:", sender, "distri:", distri)
+		self.Log("Comm received:" .. serializedMsg, "from:", sender, "distri:", distri)
 		-- data is always a table to be unpacked
 		local test, command, data = self:Deserialize(serializedMsg)
 		-- NOTE: Since I can't find a better way to do this, all xrealms comms is routed through here
@@ -636,7 +638,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 					self:OnLootTableReceived(unpack(data))
 
 				else -- a non-ML send a lootTable?!
-					self:Debug(tostring(sender).." is not ML, but sent lootTable!")
+					self.Log:d(tostring(sender).." is not ML, but sent lootTable!")
 				end
 
 			elseif command == "lt_add" and self:UnitIsUnit(sender, self.masterLooter) then
@@ -676,7 +678,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 				if self:UnitIsUnit(sender, self.masterLooter) then
 					self:OnMLDBReceived(unpack(data))
 				else
-					self:Debug("Non-ML:", sender, "sent Mldb!")
+					self.Log:w("Non-ML:", sender, "sent Mldb!")
 				end
 
 			elseif command == "verTest" and not self:UnitIsUnit(sender, "player") then -- Don't reply to our own verTests
@@ -702,7 +704,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 			elseif command == "verTestReply" then
 				local name,_,_, otherVersion, tVersion, moduleData = unpack(data)
 				if not name then -- REVIEW v2.7.11 For some reason name can sometimes be missing (#341)!?
-					return self:DebugLog("Error - verTestReply with nil name", sender, name, otherVersion, tVersion, moduleData)
+					return self.Log:E("verTestReply with nil name", sender, name, otherVersion, tVersion, moduleData)
 				end
 				self:GetActiveModule("version"):LogVersion(self:UnitName(sender), otherVersion, tVersion)
 
@@ -771,15 +773,15 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 						self:GetActiveModule("votingframe"):EndSession(db.autoClose)
 					end
 				else
-					self:Debug("Non ML:", sender, "sent end session command!")
+					self.Log:W("Non ML:", sender, "sent end session command!")
 				end
 
 			elseif command == "lootAck" and not self:UnitIsUnit(sender, "player") and self.enabled then
 				-- It seems we have message dropping. If we receive a lootAck, but we don't have lootTable, then something's wrong!
 				if not lootTable or #lootTable == 0 then
-					self:Debug("!!!! We got an lootAck without having lootTable!!!!")
+					self.Log:d("!!!! We got an lootAck without having lootTable!!!!")
 					if not self.masterLooter then -- Extra sanity check
-						return self:DebugLog("We don't have a ML?!")
+						return self.Log:d("We don't have a ML?!")
 					end
 					if not self.recentReconnectRequest then -- we don't want to do it too often!
 						self:SendCommand(self.masterLooter, "reconnect")
@@ -801,7 +803,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 
 			elseif command == "looted" then
 				local guid = unpack(data)
-				if not guid then return self:Debug("no guid in looted comm", guid, sender) end
+				if not guid then return self.Log:d("no guid in looted comm", guid, sender) end
 				if self.lootGUIDToIgnore[guid] then return end
 				if not self.lootStatus[guid] then self.lootStatus[guid] = {candidates = {}, num = 0} end
 				self.lootStatus[guid].num = self.lootStatus[guid].num + 1
@@ -810,7 +812,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 
 			elseif command == "fakeLoot" or command == "fullbags" then
 				local link, guid = unpack(data)
-				if not guid then return self:Debug(format("no guid in %s comm", command), guid, sender) end
+				if not guid then return self.Log:d(format("no guid in %s comm", command), guid, sender) end
 				if self.lootGUIDToIgnore[guid] then return end
 				if not self.lootStatus[guid] then self.lootStatus[guid] = {candidates = {}, num = 0} end
 				self.lootStatus[guid].num = self.lootStatus[guid].num + 1
@@ -828,7 +830,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 				self:SendCommand(sender, "verTestReply", self.playerName, self.playerClass, self.guildRank, self.version, self.tVersion)
 				return
 			end
-			self:Debug("Error in deserializing comm:", command, data);
+			self.Log:e("Deserializing comm failed:", command, data);
 		end
 
 	elseif prefix == "RCLCv" then
@@ -864,7 +866,7 @@ function RCLootCouncil:OnLootTableReceived (lt)
 			-- target, session, response, isTier, isRelic, note, roll, link, ilvl, equipLoc, relicType, sendAvgIlvl, sendSpecID
 			self:SendResponse("group", i, "DISABLED")
 		end
-		return self:Debug("Sent 'DISABLED' response to", self.masterLooter)
+		return self.Log("Sent 'DISABLED' response to", self.masterLooter)
 	end
 
 	-- Cache items
@@ -881,14 +883,14 @@ function RCLootCouncil:OnLootTableReceived (lt)
 
 	-- v2.0.1: It seems people somehow receives mldb without numButtons, so check for it aswell.
 	if not self.mldb then -- Really shouldn't happen, but I'm tired of people somehow not receiving it...
-		self:Debug("Received loot table without having mldb :(", self.masterLooter)
+		self.Log:w("Received loot table without having mldb :(", self.masterLooter)
 		self:SendCommand(self.masterLooter, "MLdb_request")
 		return self:ScheduleTimer("OnLootTableReceived", 0, lt)
 	end
 
 	-- Check if council is received
 	if not FindInTableIf(self.council, function(v) return self:UnitIsUnit(self.masterLooter, v) end) then
-		self:Debug("Received loot table without ML in the council", self.masterLooter)
+		self.Log:d("Received loot table without ML in the council", self.masterLooter)
 		self:SendCommand(self.masterLooter, "council_request")
 		return self:ScheduleTimer("OnLootTableReceived", 0, lt)
 	end
@@ -901,7 +903,7 @@ function RCLootCouncil:OnLootTableReceived (lt)
 	-- Out of instance support
 	-- assume 8 people means we're actually raiding
 	if self.mldb.outOfRaid and GetNumGroupMembers() >= 8 and not IsInInstance() then
-		self:DebugLog("NotInRaid respond to lootTable")
+		self.Log("NotInRaid respond to lootTable")
 		for ses, v in ipairs(lootTable) do
 			-- target, session, response, isTier, isRelic, note, roll, link, ilvl, equipLoc, relicType, sendAvgIlvl, sendSpecID
 			self:SendResponse("group", ses, "NOTINRAID", nil, nil, nil, nil, v.link, v.ilvl, v.equipLoc, v.relic, true, true)
@@ -919,36 +921,11 @@ end
 
 function RCLootCouncil:ResetReconnectRequest()
 	self.recentReconnectRequest = false
-	self:DebugLog("ResetReconnectRequest")
-end
-
-function RCLootCouncil:Debug(msg, ...)
-	if self.debug then
-		if select("#", ...) > 0 then
-			self:Print("|cffcb6700debug:|r "..tostring(msg).."|cffff6767", ...)
-		else
-			self:Print("|cffcb6700debug:|r "..tostring(msg).."|r")
-		end
-	end
-	RCLootCouncil:DebugLog(msg, ...)
-end
-
-local date_to_debug_log = true
-function RCLootCouncil:DebugLog(msg, ...)
-	if date_to_debug_log then tinsert(debugLog, date("%x")); date_to_debug_log = false; end
-	-- filter out verTestReply spam
-	if msg:find("verTestReply") then return end
-	local time = date("%X", time())
-	msg = time.." - ".. tostring(msg)
-	for i = 1, select("#", ...) do msg = msg.." ("..tostring(select(i,...))..")" end
-	if #debugLog > self.db.global.logMaxEntries then
-		tremove(debugLog, 1)
-	end
-	tinsert(debugLog, msg)
+	self.Log:d("ResetReconnectRequest")
 end
 
 function RCLootCouncil:OnMLDBReceived(mldb)
-	self:Debug("OnMLDBReceived")
+	self.Log("OnMLDBReceived")
 	-- mldb inheritance from db
 	self.mldb = mldb
 	for type, responses in pairs(mldb.responses) do
@@ -993,7 +970,7 @@ end
 
 -- if fullTest, add items in the encounterJournal to the test items.
 function RCLootCouncil:Test(num, fullTest, trinketTest)
-	self:Debug("Test", num)
+	self.Log:d("Test", num)
 	local testItems = {
 		-- Tier21 Tokens (Head, Shoulder, Cloak, Chest, Hands, Legs)
 		152524, 152530, 152517, 152518, 152521, 152527, -- Vanquisher: DK, Druid, Mage, Rogue
@@ -1055,10 +1032,10 @@ function RCLootCouncil:Test(num, fullTest, trinketTest)
 		EJ_ResetLootFilter()
 		for _, difficulty in pairs(difficulties) do
 			EJ_SetDifficulty(difficulty)
-			self:Debug("EJ_SetDifficulty()", difficulty)
+			self.Log:d("EJ_SetDifficulty()", difficulty)
 
 			local n = EJ_GetNumLoot()
-			self:Debug("EJ_GetNumLoot()", n)
+			self.Log:d("EJ_GetNumLoot()", n)
 
 			if not n then
 				cached = false
@@ -1072,7 +1049,7 @@ function RCLootCouncil:Test(num, fullTest, trinketTest)
 				end
 			end
 			if not cached then
-				self:Debug("Retrieving item info from Encounter Journal. Retry after 1s.")
+				self.Log:d("Retrieving item info from Encounter Journal. Retry after 1s.")
 				return self:ScheduleTimer("Test", 1, num, fullTest)
 			end
 		end
@@ -1116,7 +1093,7 @@ function RCLootCouncil:EnterCombat()
 	if not db.minimizeInCombat then return end
 	for _,frame in ipairs(self.UI.minimizeableFrames) do
 		if frame:IsVisible() and not frame.combatMinimized then -- only minimize for combat if it isn't already minimized
-			self:Debug("Minimizing for combat")
+			self.Log("Minimizing for combat")
 			frame.combatMinimized = true -- flag it as being minimized for combat
 			frame:Minimize()
 		end
@@ -1130,7 +1107,7 @@ function RCLootCouncil:LeaveCombat()
 	if not db.minimizeInCombat then return end
 	for _,frame in ipairs(self.UI.minimizeableFrames) do
 		if frame.combatMinimized then -- Reshow it
-			self:Debug("Reshowing frame")
+			self.Log("Reshowing frame")
 			frame.combatMinimized = false
 			frame:Maximize()
 		end
@@ -1181,7 +1158,7 @@ end
 
 -- Update player's data which is changable by the player. (specid, equipped ilvl, specs, gears, etc)
 function RCLootCouncil:UpdatePlayersData()
-	self:DebugLog("UpdatePlayersData()")
+	self.Log("UpdatePlayersData()")
 	playersData.specID = GetSpecialization() and GetSpecializationInfo(GetSpecialization())
 	playersData.ilvl = select(2,GetAverageItemLevel())
 	self:UpdatePlayersGears()
@@ -1202,7 +1179,7 @@ end
 -- @param gearsTable if specified, compare against gears stored in the table instead of the current equipped gears, whose key is slot number and value is the item link of the gear.
 -- @return the gear(s) that with the same slot of the input link.
 function RCLootCouncil:GetPlayersGear(link, equipLoc, gearsTable)
-	self:DebugLog("GetPlayersGear", link, equipLoc)
+	self.Log("GetPlayersGear", link, equipLoc)
 	local GetInventoryItemLink = GetInventoryItemLink
 	if gearsTable then -- lazy code
 		GetInventoryItemLink = function(_, slotNum) return gearsTable[slotNum] end
@@ -1275,7 +1252,7 @@ end
 -- @param sendAvgIlvl   Indicates whether we send average ilvl.
 -- @param sendSpecID    Indicates whether we send spec id.
 function RCLootCouncil:SendResponse(target, session, response, isTier, isRelic, note, roll, link, ilvl, equipLoc, relicType, sendAvgIlvl, sendSpecID)
-	self:DebugLog("SendResponse", target, session, response, isTier, isRelic, note, roll, link, ilvl, equipLoc, relicType, sendAvgIlvl, sendSpecID)
+	self.Log:d("SendResponse", target, session, response, isTier, isRelic, note, roll, link, ilvl, equipLoc, relicType, sendAvgIlvl, sendSpecID)
 	local g1, g2, diff
 
 	if link and ilvl then
@@ -1383,7 +1360,7 @@ function RCLootCouncil:GetTokenEquipLoc(tokenSlot)
 end
 
 function RCLootCouncil:Timer(type, ...)
-	self:Debug("Timer "..type.." passed")
+	self.Log:d("Timer "..type.." passed")
 	if type == "MLdb_check" then
 		-- If we have a ML
 		if self.masterLooter then
@@ -1405,7 +1382,7 @@ function RCLootCouncil:PrintOutdatedVersionWarning (newVersion, ourVersion)
 end
 
 function RCLootCouncil:PrintOutdatedTestVersionWarning (tVersion)
-	if #tVersion >= 10 then return self:Debug("Someone's tampering with tVersion?", tVersion) end
+	if #tVersion >= 10 then return self.Log:W("tVersion tampering", tVersion) end
 	self:Print(format(L["tVersion_outdated_msg"], tVersion))
 	self.verCheckDisplayed = true
 end
@@ -1416,7 +1393,7 @@ function RCLootCouncil:PrintOutdatedModuleVersion (name, version, newVersion)
 end
 
 function RCLootCouncil:PrintOutdatedModuleTestVersion (name, tVersion)
-	if #tVersion >= 10 then self:Debug("Someone's tampering with tVersion in the module?", name, tVersion) end
+	if #tVersion >= 10 then self.Log:d("Someone's tampering with tVersion in the module?", name, tVersion) end
 	self:Print(format(L["module_tVersion_outdated_msg"], name, tVersion))
 	self.moduleVerCheckDisplayed[name] = true
 end
@@ -1435,7 +1412,7 @@ function RCLootCouncil:DoModulesVersionCheck (moduleData)
 				baseName, otherVersion = str:match("(.+) %- (.+)")
 			end
 			if otherVersion and strfind(otherVersion, "%a+") then
-				self:Debug("Someone's tampering with version in the module?", baseName, otherVersion)
+				self.Log:d("Someone's tampering with version in the module?", baseName, otherVersion)
 			elseif baseName then
 				for _, module in pairs(self.modules) do
 					if module.baseName == baseName and module.version and not self.moduleVerCheckDisplayed[baseName] then
@@ -1520,12 +1497,12 @@ function RCLootCouncil:DoAutoPasses(table, skip)
 			if db.autoPass and not v.noAutopass then
 				if (v.boe and db.autoPassBoE) or not v.boe then
 					if self:AutoPassCheck(v.link, v.equipLoc, v.typeID, v.subTypeID, v.classes, v.token, v.relic) then
-						self:Debug("Autopassed on: ", v.link)
+						self.Log("Autopassed on: ", v.link)
 						if not db.silentAutoPass then self:Print(format(L["Autopassed on 'item'"], v.link)) end
 						v.autopass = true
 					end
 				else
-					self:Debug("Didn't autopass on: "..v.link.." because it's BoE!")
+					self.Log("Didn't autopass on: "..v.link.." because it's BoE!")
 				end
 			end
 		end
@@ -1609,7 +1586,7 @@ function RCLootCouncil:GetItemClassesAllowedFlag(item)
 						result = result + bit.lshift(1, classID-1)
 					else
 						-- sth is wrong (should never happen)
-						self:Debug("Error while getting classes flag of ", item, "Class does not exist", className)
+						self.Log:E("Getting classes flag for ", item, " - class does not exist", className)
 					end
 				end
 				return result
@@ -1736,12 +1713,12 @@ function RCLootCouncil:IsRelicTypeID(typeID, subTypeID)
 end
 
 function RCLootCouncil:GetPlayersGuildRank()
-	self:DebugLog("GetPlayersGuildRank()")
+	self.Log:D("GetPlayersGuildRank()")
 	self.Utils:GuildRoster() -- let the event trigger this func
 	if IsInGuild() then
 		local rank = select(2, GetGuildInfo("player"))
 		if rank then
-			self:Debug("Found Guild Rank: "..rank)
+			self.Log:d("Found Guild Rank: "..rank)
 			unregisterGuildEvent = true;
 			return rank;
 		else
@@ -1762,7 +1739,7 @@ function RCLootCouncil:GetPlayerInfo()
 		if profs[i] then
 			local _, _, rank, _, _, _, id = GetProfessionInfo(profs[i])
 			if id and id == 333 then -- NOTE: 333 should be enchanting, let's hope that holds...
-				self:Debug("I'm an enchanter")
+				self.Log:d("I'm an enchanter")
 				enchant, lvl = true, rank
 				break
 			end
@@ -1776,7 +1753,7 @@ end
 -- @return table ["GuildRankName"] = rankIndex
 function RCLootCouncil:GetGuildRanks()
 	if not IsInGuild() then return {} end
-	self:DebugLog("GetGuildRankNum()")
+	self.Log:dLog("GetGuildRankNum()")
 	self.Utils:GuildRoster()
 	local t = {}
 	for i = 1, GuildControlGetNumRanks() do
@@ -1840,23 +1817,23 @@ end
 
 function RCLootCouncil:OnEvent(event, ...)
 	if event == "PARTY_LOOT_METHOD_CHANGED" then
-		self:Debug("Event:", event, ...)
+		self.Log:d("Event:", event, ...)
 		self:NewMLCheck()
 	elseif event == "PARTY_LEADER_CHANGED" then
-		self:Debug("Event:", event, ...)
+		self.Log:d("Event:", event, ...)
 		self:NewMLCheck()
 	elseif event == "GROUP_LEFT" then
-		self:Debug("Event:", event, ...)
+		self.Log:d("Event:", event, ...)
 		self:NewMLCheck()
 
 	elseif event == "RAID_INSTANCE_WELCOME" then
-		self:Debug("Event:", event, ...)
+		self.Log:d("Event:", event, ...)
 		-- high server-side latency causes the UnitIsGroupLeader("player") condition to fail if queried quickly (upon entering instance) regardless of state.
 		-- NOTE v2.0: Not sure if this is still an issue, but just add a 2 sec timer to the MLCheck call
 		self:ScheduleTimer("OnRaidEnter", 2)
 
 	elseif event == "PLAYER_ENTERING_WORLD" then
-		self:Debug("Event:", event, ...)
+		self.Log:d("Event:", event, ...)
 		self:NewMLCheck()
 		self:ScheduleTimer(function() -- This needs some time to be ready
 			local instanceName, _, _, difficultyName = GetInstanceInfo()
@@ -1865,7 +1842,7 @@ function RCLootCouncil:OnEvent(event, ...)
 		if player_relogged then
 			-- Ask for data when we have done a /rl and have a ML
 			if not self.isMasterLooter and self.masterLooter and self.masterLooter ~= "" and player_relogged then
-				self:Debug("Player relog...")
+				self.Log("Player relog...")
 				self:ScheduleTimer("SendCommand", 2, self.masterLooter, "reconnect")
 				self:SendCommand(self.masterLooter, "playerInfo", self:GetPlayerInfo()) -- Also send out info, just in case
 			end
@@ -1873,7 +1850,7 @@ function RCLootCouncil:OnEvent(event, ...)
 			player_relogged = false
 		end
 	elseif event == "ENCOUNTER_START" then
-			self:DebugLog("Event:", event, ...)
+			self.Log:d("Event:", event, ...)
 			wipe(self.lootStatus)
 			self:UpdatePlayersData()
 	elseif event == "GUILD_ROSTER_UPDATE" then
@@ -1884,13 +1861,13 @@ function RCLootCouncil:OnEvent(event, ...)
 			--self:GetGuildOptions() -- get the guild data to the options table now that it's ready
 		end
 	elseif event == "ENCOUNTER_END" then
-		self:DebugLog("Event:", event, ...)
+		self.Log:dLog("Event:", event, ...)
 		self.lastEncounterID, self.bossName = ... -- Extract encounter name and ID
 		wipe(self.nonTradeables)
 
 	elseif event == "LOOT_CLOSED" then
 		if not IsInInstance() then return end -- Don't do anything out of instances
-		self:Debug("Event:", event, ...)
+		self.Log:d("Event:", event, ...)
 		local i = 0
 		for k, info in pairs(self.lootSlotInfo) do
 			if not info.isLooted and info.guid and info.link then
@@ -1917,7 +1894,7 @@ function RCLootCouncil:OnEvent(event, ...)
 		if self.lootSlotInfo[slot] and not self.lootSlotInfo[slot].isLooted then -- If not, this is the 2nd LOOT_CLEARED event for the same thing. -_-
 			local link = self.lootSlotInfo[slot].link
 			local quality = self.lootSlotInfo[slot].quality
-			self:Debug("OnLootSlotCleared()", slot, link, quality)
+			self.Log:d("OnLootSlotCleared()", slot, link, quality)
 			if quality and quality >= GetLootThreshold() and IsInInstance() then -- Only send when in instance
 				-- Note that we don't check if this is master looted or not. We only know this is looted by ourselves.
 				self:ScheduleTimer("UpdateAndSendRecentTradableItem", 2, self.lootSlotInfo[slot]) -- Delay a bit, need some time to between item removed from loot slot and moved to the bag.
@@ -1929,7 +1906,7 @@ function RCLootCouncil:OnEvent(event, ...)
 			end
 		end
 	elseif event == "ENCOUNTER_LOOT_RECEIVED" then
-		self:Debug("Event:", event, ...)
+		self.Log:d("Event:", event, ...)
 		local encounterID, _, itemLink, _, playerName, _ = ...
 		if not self.lootStatus[encounterID] then self.lootStatus[encounterID] = {} end
 		local name = self:UnitName(playerName)
@@ -1938,7 +1915,7 @@ function RCLootCouncil:OnEvent(event, ...)
 
 
 	elseif event == "LOOT_READY" then
-		self:Debug("Event:", event, ...)
+		self.Log:d("Event:", event, ...)
 		wipe(self.lootSlotInfo)
 		if not IsInInstance() then return end -- Don't do anything out of instances
 		if GetNumLootItems() <= 0 then return end-- In case when function rerun, loot window is closed.
@@ -1947,13 +1924,13 @@ function RCLootCouncil:OnEvent(event, ...)
 			if LootSlotHasItem(i) then
 				local texture, name, quantity, currencyID, quality = GetLootSlotInfo(i)
 				local guid = self.Utils:ExtractCreatureID((GetLootSourceInfo(i)))
-				if guid and self.lootGUIDToIgnore[guid] then return self:Debug("Ignoring loot from ignored source", guid) end
+				if guid and self.lootGUIDToIgnore[guid] then return self.Log:d("Ignoring loot from ignored source", guid) end
 				if texture then
 					local link = GetLootSlotLink(i)
 					if currencyID then
-						self:DebugLog("Ignoring", link, "as it's a currency")
+						self.Log:d("Ignoring", link, "as it's a currency")
 					elseif not self.Utils:IsItemBlacklisted(link) then
-						self:Debug("Adding to self.lootSlotInfo",i,link, quality,quantity, GetLootSourceInfo(i))
+						self.Log:d("Adding to self.lootSlotInfo",i,link, quality,quantity, GetLootSourceInfo(i))
 						self.lootSlotInfo[i] = {
 							name = name,
 							link = link, -- This could be nil, if the item is money.
@@ -1965,7 +1942,7 @@ function RCLootCouncil:OnEvent(event, ...)
 						}
 					end
 				else -- It's possible that item in the loot window is uncached. Retry in the next frame.
-					self:Debug("Loot uncached when the loot window is opened. Retry in the next frame.", name)
+					self.Log:d("Loot uncached when the loot window is opened. Retry in the next frame.", name)
 					-- Must offer special argument as 2nd argument to indicate this is run from scheduler.
 					-- REVIEW: 20/12-18: This actually hasn't been used for a long while - removing "scheduled" arg
 					return self:ScheduleTimer("OnEvent", 0, "LOOT_READY")
@@ -1973,12 +1950,12 @@ function RCLootCouncil:OnEvent(event, ...)
 			end
 		end
 	else
-		self:Debug("NonHandled Event:", event, ...)
+		self.Log:d("NonHandled Event:", event, ...)
 	end
 end
 
 function RCLootCouncil:OnBonusRoll (_, type, link, ...)
-	self:DebugLog("BONUS_ROLL", type, link, ...)
+	self.Log:d("BONUS_ROLL", type, link, ...)
 	if type == "item" or type == "artifact_power" then
 		-- Only handle items and artifact power
 		self:SendCommand("group", "bonus_roll", self.playerName, type, link)
@@ -2000,7 +1977,7 @@ function RCLootCouncil:NewMLCheck()
 	if instance_type == "pvp" or instance_type == "arena" then return end -- Don't do anything here
 	if self.masterLooter and self.masterLooter ~= "" and (self.masterLooter == "Unknown" or Ambiguate(self.masterLooter, "short"):lower() == _G.UNKNOWNOBJECT:lower()) then
 		-- ML might be unknown for some reason
-		self:Debug("Unknown ML")
+		self.Log:d("Unknown ML")
 		return self:ScheduleTimer("NewMLCheck", 0.5)
 	end
 
@@ -2018,11 +1995,11 @@ function RCLootCouncil:NewMLCheck()
 		end
 	else
 		-- At this point we know the ML has changed, so we can wipe the council
-		self:Debug("Resetting council as we have a new ML!")
+		self.Log:d("Resetting council as we have a new ML!")
 		self.council = {}
 	--	self.mldb = {}
 		self.isCouncil = false
-		self:Debug("MasterLooter = ", self.masterLooter)
+		self.Log("MasterLooter = ", self.masterLooter)
 		-- Check to see if we have recieved mldb within 15 secs, otherwise request it
 		self:ScheduleTimer("Timer", 15, "MLdb_check")
 	end
@@ -2057,7 +2034,7 @@ function RCLootCouncil:StartHandleLoot()
 		SetLootMethod("personalloot")
 	end
 	self:Print(L["Now handles looting"])
-	self:Debug("Start handle loot.")
+	self.Log("Start handling loot")
 	self.handleLoot = true
 	self:SendCommand("group", "StartHandleLoot")
 	if #db.council == 0 then -- if there's no council
@@ -2067,7 +2044,7 @@ end
 
 --- Disables loot handling
 function RCLootCouncil:StopHandleLoot()
-	self:Debug("Stop handling loot")
+	self.Log("Stop handling loot")
 	self.handleLoot = false
 	self:GetActiveModule("masterlooter"):Disable()
 	self:SendCommand("group", "StopHandleLoot")
@@ -2091,7 +2068,7 @@ end
 --- Gets information about the current Master Looter, if any.
 -- @return boolean, "ML_Name". (true if the player is ML), (nil if there's no ML).
 function RCLootCouncil:GetML()
-	self:DebugLog("GetML()")
+	self.Log:d("GetML()")
 	if self.Utils.IsPartyLFG() then return false, nil	end -- Never use in LFG
 	if GetNumGroupMembers() == 0 and (self.testMode or self.nnp) then -- always the player when testing alone
 		return true, self.playerName
@@ -2117,7 +2094,7 @@ function RCLootCouncil:CouncilContains(name)
 	local ret = tContains(self.council, self:UnitName(name))
 	if self:UnitIsUnit(name, self.playerName) and self.isMasterLooter
 	 or self.nnp or self:UnitIsUnit(name, self.masterLooter) then ret = true end -- ML and nnp is always council
-	self:DebugLog(tostring(ret).." =", "ConcilContains", name)
+	self.Log:d(tostring(ret).." =", "ConcilContains", name)
 	return ret
 end
 
@@ -2183,7 +2160,7 @@ end
 ]]
 local lootDBStatistics
 function RCLootCouncil:GetLootDBStatistics()
-	self:DebugLog("GetLootDBStatistics()")
+	self.Log:d("GetLootDBStatistics()")
 	-- v2.4: This is very sensitive to errors in the loot history, which will most likely crash calling modules,
 	-- as in ticket #261. For the sole reason of crash proofing, let's catch any errors:
 	local check, ret = pcall(function()
@@ -2238,7 +2215,7 @@ function RCLootCouncil:GetLootDBStatistics()
 		return lootDBStatistics
 	end)
 	if not check then
-		self:DebugLog(ret)
+		self.Log:d(ret)
 		self:Print("Something's wrong in your loot history. Please contact the author.")
 	else
 		return ret
@@ -2247,7 +2224,7 @@ end
 
 function RCLootCouncil:SessionError(...)
 	self:Print(L["session_error"])
-	self:Debug(...)
+	self.Log:E(...)
 end
 
 function RCLootCouncil:Getdb()
@@ -2578,7 +2555,7 @@ end
 -- Skins must be added to the db.skins table first.
 -- @param key Index in db.skins.
 function RCLootCouncil:ActivateSkin(key)
-	self:Debug("ActivateSkin", key)
+	self.Log:d("ActivateSkin", key)
 	if not db.skins[key] then return end
 	for _,v in pairs(db.UI) do
 		v.bgColor = {unpack(db.skins[key].bgColor)}
@@ -2755,7 +2732,7 @@ function RCLootCouncil:GetResponse(type, name)
       if db.responses.default[name] or self.mldb.responses.default[name] then
          return (self.mldb.responses and self.mldb.responses.default and self.mldb.responses.default[name]) or db.responses.default[name]
       else
-         self:Debug("No db.responses.default entry for response:", name)
+         self.Log:d("No db.responses.default entry for response:", name)
          return self.defaults.profile.responses.default.DEFAULT -- Use default
       end
    else -- This must be supplied by the ml
@@ -2764,19 +2741,19 @@ function RCLootCouncil:GetResponse(type, name)
             if self.mldb.responses[type][name] then
                return self.mldb.responses[type][name]
             else
-               self:Debug("No mldb.responses["..tostring(type).."] entry for response:".. tostring(name))
+               self.Log:d("No mldb.responses["..tostring(type).."] entry for response:".. tostring(name))
             end
          else
 				-- This type is not enabled, so use default:
             if db.responses.default[name] or self.mldb.responses.default[name] then
                return self.mldb.responses.default and self.mldb.responses.default[name] or db.responses.default[name]
             else
-               self:Debug("Unknown response entry", type, name)
+               self.Log:d("Unknown response entry", type, name)
                return db.responses.default.DEFAULT -- Use default
             end
          end
       else
-         self:Debug("No mldb for GetReponse: ".. tostring(type).. ", ".. tostring(name))
+         self.Log:d("No mldb for GetReponse: ".. tostring(type).. ", ".. tostring(name))
       end
    end
    return {} -- Fallback
@@ -2806,11 +2783,11 @@ end
 --- Returns all buttons of a specific type, defaults to "default"
 function RCLootCouncil:GetButtons(type)
 	type = type and type or "default"
-	self:Debug("GetButtons", type)
+	self.Log:d("GetButtons", type)
 	-- Check if the type should be translated to something else
 	if self.mldb and not self.mldb.buttons[type] and self.BTN_SLOTS[type] and self.mldb.buttons[self.BTN_SLOTS[type]] then
 		type = self.BTN_SLOTS[type]
-		self:Debug("Setting type to", type)
+		self.Log:d("Setting type to", type)
 	end
    return self.mldb and self.mldb.buttons[type] or self.mldb.buttons.default
 end
@@ -2849,7 +2826,7 @@ function RCLootCouncil:UpdateLootHistory()
 	local nighthold, trialofvalor, emeraldnightmare = "The Nighthold", "Trial of Valor", "The Emerald Nightmare"
 	local normal, heroic, mythic = "Normal", "Heroic", "Mythic"
 	if GetLocale() ~= "enUS" then -- Let's see if we can get creative
-		self:Debug("Trying to extract non-english history update data")
+		self.Log:d("Trying to extract non-english history update data")
 		-- If we find a 2.3.1+ entry, we can use that info to update older entries
 		for _, data in pairs(historyDB) do
 			for _, v in pairs(data) do
@@ -2874,7 +2851,7 @@ function RCLootCouncil:UpdateLootHistory()
 				end
 			end
 		end
-		self:Debug("Result:",nighthold, trialofvalor, emeraldnightmare, normal, heroic, mythic)
+		self.Log:d("Result:",nighthold, trialofvalor, emeraldnightmare, normal, heroic, mythic)
 	end
 	for name, data in pairs(historyDB) do
 		for i, v in pairs(data) do
@@ -2901,7 +2878,7 @@ function RCLootCouncil:UpdateLootHistory()
 				else
 					v.color = {unpack(db.responses[v.responseID].color)}
 				end
-				self:DebugLog("Fixed 2.4beta corruption @", name, i)
+				self.Log("Fixed 2.4beta corruption @", name, i)
 			end
 		end
 	end

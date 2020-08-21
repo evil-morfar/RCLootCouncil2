@@ -57,7 +57,7 @@ function LootFrame:CheckDuplicates (lenght, offset)
 		if not self.items[k].rolled then
 			for j = offset+1, offset + lenght do
 				if j ~= k and addon:ItemIsItem(self.items[k].link, self.items[j].link) and not self.items[j].rolled then
-					addon:Debug("LootFrame:", self.items[k].link, "is a dublicate of", self.items[j].link)
+					addon.Log:D("LootFrame:", self.items[k].link, "is a dublicate of", self.items[j].link)
 					tinsert(self.items[k].sessions, self.items[j].sessions[1])
 					self.items[j].rolled = true -- Pretend we have rolled it.
 				end
@@ -67,7 +67,7 @@ function LootFrame:CheckDuplicates (lenght, offset)
 end
 
 function LootFrame:Start(table, reRoll)
-	addon:DebugLog("LootFrame:Start", #table, reRoll)
+	addon.Log("LootFrame:Start", #table, reRoll)
 
 	local offset = 0
 	if reRoll then
@@ -91,7 +91,7 @@ end
 
 function LootFrame:AddSingleItem(item)
 	if not self:IsEnabled() then self:Enable() end
-	addon:DebugLog("LootFrame:AddSingleItem", item.link, #self.items)
+	addon.Log:D("LootFrame:AddSingleItem", item.link, #self.items)
 	if item.autopass then
 		self.items[#self.items+1] = { rolled = true}
 	else
@@ -102,7 +102,7 @@ function LootFrame:AddSingleItem(item)
 end
 
 function LootFrame:ReRoll(table)
-	addon:DebugLog("LootFrame:ReRoll(#table)", #table)
+	addon.Log:D("LootFrame:ReRoll(#table)", #table)
 	self:Start(table, true)
 end
 
@@ -170,7 +170,7 @@ function LootFrame:OnRoll(entry, button)
 		end
 		-- Only send minimum neccessary data, because the information of current equipped gear has been sent when we receive the loot table.
 		-- target, session, response, isTier, isRelic, note, link, ilvl, equipLoc, relicType, sendAvgIlvl, sendSpecID
-		addon:Debug("LootFrame:Response", button, "Response:", addon:GetResponse(item.typeCode or item.equipLoc, button).text)
+		addon.Log:D("LootFrame:Response", button, "Response:", addon:GetResponse(item.typeCode or item.equipLoc, button).text)
 		for _, session in ipairs(item.sessions) do
 			addon:SendResponse("group", session, button, nil, nil, item.note)
 		end
@@ -210,7 +210,7 @@ end
 
 function LootFrame:GetFrame()
 	if self.frame then return self.frame end
-	addon:DebugLog("LootFrame","GetFrame()")
+	addon.Log:D("LootFrame","GetFrame()")
 	self.frame = addon.UI:NewNamed("Frame", UIParent, "DefaultRCLootFrame", L["RCLootCouncil Loot Frame"], 250, 375)
 	self.frame.title:SetPoint("BOTTOM", self.frame, "TOP", 0 ,-5)
 	self.frame.itemTooltip = addon:CreateGameTooltip("lootframe", self.frame.content)
@@ -222,7 +222,7 @@ do
 		type = "normal",
 		Update = function(entry, item)
 			if not item then
-				return addon:Debug("Entry update error @ item:", item)
+				return addon.Log:E("Entry update error @ item:", item)
 			end
 			if item ~= entry.item then
 				entry.noteEditbox:Hide()
@@ -464,7 +464,7 @@ do
 
 	-- Hides and stores entries for reuse later
 	function LootFrame.EntryManager:Trash(entry)
-		addon:DebugLog("Trashing entry:", entry.position or 0, entry.item.link)
+		addon.Log:D("Trashing entry:", entry.position or 0, entry.item.link)
 		entry:Hide()
 		if not self.trashPool[entry.type] then self.trashPool[entry.type] = {} end
 		self.trashPool[entry.type][entry] = true
@@ -478,7 +478,7 @@ do
 		if not self.trashPool[type] then return nil end
 		local t = next(self.trashPool[type])
 		if t then
-			addon:DebugLog("Restoring entry:", type, t.position or 0)
+			addon.Log:D("Restoring entry:", type, t.position or 0)
 			self.trashPool[type][t] = nil
 			return t
 		end
@@ -496,7 +496,7 @@ do
 			end
 			entry.position = i
 		end
-	--	addon:DebugLog("EntryManager:Update(), width = ", max)
+	--	addon.Log:D("EntryManager:Update(), width = ", max)
 		LootFrame.frame:SetWidth(max)
 		-- Update the width of all entries after we've found the max width
 		for _, entry in ipairs(self.entries) do
@@ -535,7 +535,7 @@ do
 	end
 
 	function LootFrame.EntryManager:GetNewEntry(item)
-		--addon:DebugLog("Creating Entry:", "normal", item.link)
+		--addon.Log:D("Creating Entry:", "normal", item.link)
 		local Entry = setmetatable({}, mt)
 		Entry.type = item.typeCode or item.equipLoc
 		Entry:Create(LootFrame.frame.content)

@@ -32,7 +32,7 @@ function RCSessionFrame:OnInitialize()
 end
 
 function RCSessionFrame:OnEnable()
-	addon:Debug("RCSessionFrame", "enabled")
+	addon.Log("RCSessionFrame enabled")
 	self:RegisterMessage("RCLootStatusReceived", "UpdateLootStatus")
 	ml = addon:GetActiveModule("masterlooter")
 end
@@ -42,7 +42,7 @@ function RCSessionFrame:OnDisable()
 	self.frame.rows = {}
 	self:UnregisterMessage("RCLootStatusReceived")
 	awardLater = false
-	addon:DebugLog("RCSessionFrame", "disabled")
+	addon.Log("RCSessionFrame disabled")
 end
 
 function RCSessionFrame:Show(data, disableAwardLater)
@@ -135,7 +135,7 @@ function RCSessionFrame:UpdateLootStatus ()
 end
 
 function RCSessionFrame:DeleteItem(session, row)
-	addon:Debug("Delete row:", row, "Sesison:", session)
+	addon.Log:D("Delete row:", row, "Sesison:", session)
 	ml:RemoveItem(session) -- remove the item from MLs lootTable
 	self:Show(ml.lootTable)
 end
@@ -197,7 +197,7 @@ function RCSessionFrame:GetFrame()
 		end
 		if not ml.lootTable or #ml.lootTable == 0 then
 			addon:Print(L["You cannot start an empty session."])
-			addon:DebugLog("Player tried to start empty session.")
+			addon.Log:D("Player tried to start empty session.")
 			return
 		end
 		if awardLater then
@@ -215,7 +215,7 @@ function RCSessionFrame:GetFrame()
 		else
 			if not addon.candidates[addon.playerName] or #addon.council == 0 then
 				addon:Print(L["Please wait a few seconds until all data has been synchronized."])
-				return addon:Debug("Data wasn't ready", addon.candidates[addon.playerName], #addon.council)
+				return addon.Log:D("Data wasn't ready", addon.candidates[addon.playerName], #addon.council)
 			elseif InCombatLockdown() and not addon.db.profile.skipCombatLockdown then
 				return addon:Print(L["You can't start a loot session while in combat."])
 			--elseif ml.running then

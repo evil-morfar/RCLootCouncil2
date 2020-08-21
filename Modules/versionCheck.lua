@@ -60,7 +60,7 @@ function RCVersionCheck:OnCommReceived(prefix, serializedMsg, distri, sender)
 end
 
 function RCVersionCheck:Query(group)
-	addon:DebugLog("Player asked for verTest", group)
+	addon.Log("VC", "Player asked for verTest", group)
 	if group == "guild" then
 		addon.Utils:GuildRoster()
 		for i = 1, GetNumGuildMembers() do
@@ -98,7 +98,7 @@ local function logversion(name, version, tversion, status)
 end
 -- Static
 function RCVersionCheck:LogVersion(name, version, tversion)
-	if not name then return addon:DebugLog("LogVersion", "No name", name, version, tversion) end
+	if not name then return addon.Log:D("LogVersion", "No name", name, version, tversion) end
 	if addon.db.global.verTestCandidates[name] then -- Updated
 		logversion(name, version, tversion, time())
 	else -- New

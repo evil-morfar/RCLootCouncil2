@@ -21,12 +21,12 @@ end
 
 -- Temporaryly just print it to log
 function ErrorHandler:OnEvent (...)
-   addon:DebugLog(...)
+   addon.Log:d(...)
 end
 
 function ErrorHandler:LogError (msg)
    msg = private:SanitizeLine(msg)
-   addon:Debug("<ERROR>", msg)
+   addon.Log:e(msg)
    local errObj = private:DoesErrorExist(msg)
    if errObj then -- This is not the first
       private:IncrementErrorCount(errObj)

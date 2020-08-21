@@ -73,7 +73,7 @@ function RCVotingFrame:OnEnable()
 	self.frame = self:GetFrame()
 	self:ScheduleTimer("CandidateCheck", 20)
 	guildRanks = addon:GetGuildRanks()
-	addon:Debug("RCVotingFrame", "enabled")
+	addon.Log("RCVotingFrame", "enabled")
 	updateFrame:Show()
 	needUpdate = false
 	noUpdateTimeRemaining = 0
@@ -96,7 +96,7 @@ function RCVotingFrame:OnDisable() -- We never really call this
 end
 
 function RCVotingFrame:Hide()
-	addon:Debug("Hide VotingFrame")
+	addon.Log("Hide VotingFrame")
 	self.frame.moreInfo:Hide()
 	self.frame:Hide()
 end
@@ -138,7 +138,7 @@ end
 
 function RCVotingFrame:EndSession(hide)
 	if active then -- Only end session once
-		addon:Debug("RCVotingFrame:EndSession", hide)
+		addon.Log:D("RCVotingFrame:EndSession", hide)
 		active = false -- The session has ended, so deactivate
 		self:Update(true)
 		if hide then self:Hide() end -- Hide if need be
@@ -147,7 +147,7 @@ end
 
 function RCVotingFrame:CandidateCheck()
 	if not addon.candidates[addon.playerName] and addon.masterLooter then -- If our own name isn't there, we assume it's not received
-		addon:DebugLog("CandidateCheck", "failed")
+		addon.Log:D("CandidateCheck", "failed")
 		addon:SendCommand(addon.masterLooter, "candidates_request")
 		self:ScheduleTimer("CandidateCheck", 20) -- check again in 20
 	end
@@ -157,7 +157,7 @@ end
 -- Takes either index or colName as the identifier, and returns the removed rows
 -- if succesful, or nil if not. Should be called before any session begins.
 function RCVotingFrame:RemoveColumn(id)
-	addon:Debug("Removing Column", id)
+	addon.Log:D("Removing Column", id)
 	local removedCol, removedIndex
 	if type(id) == "number" then
 		removedIndex = id
@@ -198,7 +198,7 @@ function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
 					local s, name, vote = unpack(data)
 					self:HandleVote(s, name, vote, sender)
 				else
-					addon:Debug("Non-council member (".. tostring(sender) .. ") sent a vote!")
+					addon.Log:W("Non-council member (".. tostring(sender) .. ") sent a vote!")
 				end
 
 			elseif command == "change_response" and addon:UnitIsUnit(sender, addon.masterLooter) then
@@ -287,7 +287,7 @@ function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
 				for i = 1, #lootTable do
 					for name in pairs(lootTable[i].candidates) do
 						if self:GetCandidateData(i, name, "response") == "ANNOUNCED" then
-							addon:DebugLog("No response from:", name)
+							addon.Log:D("No response from:", name)
 							self:SetCandidateData(i, name, "response", "NOTHING")
 						end
 					end
@@ -309,7 +309,7 @@ function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
 					end
 					self:Update()
 				else
-					addon:Debug("Non-ML", sender, "sent rolls!")
+					addon.Log:W("Non-ML", sender, "sent rolls!")
 				end
 
 			elseif command == "roll" then
@@ -365,7 +365,7 @@ function RCVotingFrame:SetCandidateData(session, candidate, data, val)
 		lootTable[session].candidates[candidate][data] = val
 	end
 	local ok, arg = pcall(Set, session, candidate, data, val)
-	if not ok then addon:Debug("Error in 'SetCandidateData':", arg, session, candidate, data, val) end
+	if not ok then addon.Log:W("Error in 'SetCandidateData':", arg, session, candidate, data, val) end
 end
 
 function RCVotingFrame:GetCandidateData(session, candidate, data)
@@ -373,7 +373,7 @@ function RCVotingFrame:GetCandidateData(session, candidate, data)
 		return lootTable[session].candidates[candidate][data]
 	end
 	local ok, arg = pcall(Get, session, candidate, data)
-	if not ok then addon:Debug("Error in 'GetCandidateData':", arg, session, candidate, data)
+	if not ok then addon.Log:W("Error in 'GetCandidateData':", arg, session, candidate, data)
 	else return arg end
 end
 
@@ -516,7 +516,7 @@ function RCVotingFrame:Update(forceUpdate)
 	needUpdate = false
 	if not forceUpdate and noUpdateTimeRemaining > 0 then needUpdate = true; return end
 	if not self.frame then return end -- No updates when it doesn't exist
-	if not lootTable[session] then return addon:Debug("VotingFrame:Update() without lootTable!!") end -- No updates if lootTable doesn't exist.
+	if not lootTable[session] then return addon.Log:D("VotingFrame:Update() without lootTable!!") end -- No updates if lootTable doesn't exist.
 	noUpdateTimeRemaining = MIN_UPDATE_INTERVAL
 	self.frame.st:SortData()
 	self.frame.st:SortData() -- It appears that there is a bug in lib-st that only one SortData() does not use the "sortnext" to correct sort the rows.
@@ -583,7 +583,7 @@ updateFrame:SetScript("OnUpdate", function(self, elapsed)
 end)
 
 function RCVotingFrame:SwitchSession(s)
-	addon:Debug("SwitchSession", s)
+	addon.Log:D("SwitchSession", s)
 	addon:SendMessage("RCSessionChangedPre", s)
 	-- Start with setting up some statics
 	session = s
@@ -997,7 +997,7 @@ function RCVotingFrame:UpdatePeopleToVote()
 		self.frame.rollResult.text:SetText(format(L["x out of x have voted"], #hasVoted, #councilInGroup))
 		self.frame.rollResult.text:SetTextColor(1,1,0,1) -- Yellow
 	else
-		addon:Debug("#voters > #councilInGroup ?")
+		addon.Log:D("#voters > #councilInGroup ?")
 	end
 	-- Sort the lists
 	table.sort(hasVoted)
@@ -1229,7 +1229,7 @@ function RCVotingFrame.SetCellVote(rowFrame, frame, data, cols, row, realrow, co
 			frame.voteBtn:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", 0, 0)
 		end
 		frame.voteBtn:SetScript("OnClick", function(btn)
-			addon:Debug("Vote button pressed")
+			addon.Log:D("Vote button pressed")
 			if lootTable[session].candidates[name].haveVoted then -- unvote
 				addon:SendCommand("group", "vote", session, name, -1)
 				lootTable[session].candidates[name].haveVoted = false
@@ -1502,7 +1502,7 @@ end
 --@param noAutopass: true or false or nil. Determine whether we force no autopass.
 --@param announceInChat: true or false or nil. Determine if the reannounce sessions should be announced in chat.
 function RCVotingFrame:ReannounceOrRequestRoll(namePred, sesPred, isRoll, noAutopass, announceInChat)
-	addon:Debug("ReannounceOrRequestRoll", namePred, sesPred, isRoll, noAutopass, announceInChat)
+	addon.Log:D("ReannounceOrRequestRoll", namePred, sesPred, isRoll, noAutopass, announceInChat)
 	local rerollTable = {}
 
 	for k,v in ipairs(lootTable) do
@@ -1575,7 +1575,7 @@ do
 			text = L["Response"]..": ".."|cff"..(addon:RGBToHex(unpack(addon:GetResponse(lootTable[session].typeCode or lootTable[session].equipLoc, lootTable[session].candidates[candidateName].response).color))
 			or "ffffff")..(addon:GetResponse(lootTable[session].typeCode or lootTable[session].equipLoc, lootTable[session].candidates[candidateName].response).text or "").."|r"
 		else
-			addon:Debug("Unexpected category or dropdown menu value: "..tostring(category).." ,"..tostring(MSA_DROPDOWNMENU_MENU_VALUE))
+			addon.Log:D("Unexpected category or dropdown menu value: "..tostring(category).." ,"..tostring(MSA_DROPDOWNMENU_MENU_VALUE))
 		end
 
 		return text
@@ -1606,7 +1606,7 @@ do
 		elseif MSA_DROPDOWNMENU_MENU_VALUE:find("_RESPONSE$") then
 			namePred = function(name) return lootTable[session].candidates[name].response == lootTable[session].candidates[candidateName].response end
 		else
-			addon:Debug("Unexpected dropdown menu value: "..tostring(MSA_DROPDOWNMENU_MENU_VALUE))
+			addon.Log:D("Unexpected dropdown menu value: "..tostring(MSA_DROPDOWNMENU_MENU_VALUE))
 		end
 
 		local noAutopass = isThisItem and MSA_DROPDOWNMENU_MENU_VALUE:find("_CANDIDATE$") and true or false
@@ -1847,7 +1847,7 @@ do
 		if level == 1 then -- Redundant
 
 			if not db.modules["RCVotingFrame"].filters then -- Create the db entry
-				addon:DebugLog("Created VotingFrame filters")
+				addon.Log:D("Created VotingFrame filters")
 				db.modules["RCVotingFrame"].filters = {}
 			end
 
@@ -1868,7 +1868,7 @@ do
 			info = MSA_DropDownMenu_CreateInfo()
 			info.text = L["Always show owner"]
 			info.func = function()
-				addon:Debug("Update Filter")
+				addon.Log:D("Update Filter")
 				db.modules["RCVotingFrame"].filters.alwaysShowOwner = not db.modules["RCVotingFrame"].filters.alwaysShowOwner
 				RCVotingFrame:Update(true)
 			end
@@ -1878,7 +1878,7 @@ do
 			info = MSA_DropDownMenu_CreateInfo()
 			info.text = L["Candidates that can't use the item"]
 			info.func = function()
-				addon:Debug("Update Filter")
+				addon.Log:D("Update Filter")
 				db.modules["RCVotingFrame"].filters.showPlayersCantUseTheItem = not db.modules["RCVotingFrame"].filters.showPlayersCantUseTheItem
 				RCVotingFrame:Update(true)
 			end
@@ -1897,7 +1897,7 @@ do
 				info.text = addon:GetResponse("", k).text
 				info.colorCode = "|cff"..addon:RGBToHex(addon:GetResponseColor(nil,k))
 				info.func = function()
-					addon:Debug("Update Filter")
+					addon.Log:D("Update Filter")
 					db.modules["RCVotingFrame"].filters[k] = not db.modules["RCVotingFrame"].filters[k]
 					RCVotingFrame:Update(true)
 				end
@@ -1914,7 +1914,7 @@ do
 						info.colorCode = "|cff"..addon:RGBToHex(addon:GetResponseColor(nil,k))
 					end
 					info.func = function()
-						addon:Debug("Update Filter")
+						addon.Log:D("Update Filter")
 						db.modules["RCVotingFrame"].filters[k] = not db.modules["RCVotingFrame"].filters[k]
 						RCVotingFrame:Update(true)
 					end
@@ -1943,7 +1943,7 @@ do
 					for k = 1, GuildControlGetNumRanks() do
 						info.text = GuildControlGetRankName(k)
 						info.func = function()
-							addon:Debug("Update rank Filter", k)
+							addon.Log:D("Update rank Filter", k)
 							db.modules["RCVotingFrame"].filters.ranks[k] = not db.modules["RCVotingFrame"].filters.ranks[k]
 							RCVotingFrame:Update(true)
 						end
@@ -1954,7 +1954,7 @@ do
 
 				info.text = L["Not in your guild"]
 				info.func = function()
-					addon:Debug("Update rank Filter", "Not in your guild")
+					addon.Log:D("Update rank Filter", "Not in your guild")
 					db.modules["RCVotingFrame"].filters.ranks.notInYourGuild = not db.modules["RCVotingFrame"].filters.ranks.notInYourGuild
 					RCVotingFrame:Update(true)
 				end
@@ -2000,7 +2000,7 @@ do
 end
 
 function RCVotingFrame:GetItemStatus(item)
-	-- addon:Debug("GetitemStatus", item)
+	-- addon.Log:D("GetitemStatus", item)
 	if not item then return "" end
 	GameTooltip:SetOwner(UIParent, "ANCHOR_NONE")
 	GameTooltip:SetHyperlink(item)
