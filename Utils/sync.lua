@@ -33,7 +33,7 @@ sync.declineReasons = { -- Gets delivered "player" and "type"
    not_open        = L["'player' hasn't opened the sync window"],
 }
 local function SendSyncData(target, type)
-   addon:Debug("SendSyncData",target,type)
+   addon.Log:D("SendSyncData",target,type)
    local toSend = addon:Serialize("sync", {addon.playerName, type, sync_table[target][type]})
    if addon:UnitIsUnit(target,"player") then -- If target == "player"
 			addon:SendCommandModified("RCLootCouncil", toSend, "WHISPER", addon.playerName, "BULK", sync.OnDataPartSent, sync)
@@ -57,12 +57,12 @@ local function SendSyncData(target, type)
 			addon:SendCommandModified("RCLootCouncil", toSend, "WHISPER", target, "BULK", sync.OnDataPartSent, sync)
 		end
 	end
-   addon:Debug("SendSyncData", "SENT")
+   addon.Log:D("SendSyncData", "SENT")
 end
 
 -- We want to sync with another player
 function sync:SendSyncRequest(player, type, data)
-   addon:DebugLog("SendSyncRequest", player, type)
+   addon.Log:D("SendSyncRequest", player, type)
    if time() - last_sync_time < 10 then -- Limit to 1 sync per 10 sec
       return addon:Print(L["Please wait before trying to sync again."])
    end
@@ -72,16 +72,16 @@ function sync:SendSyncRequest(player, type, data)
       [type] = data
    }
    -- Lets see how much data we're trying to send by approximating it using the Serializer
-   if addon.debug then addon:Debug(type, "Data size:", #addon:Serialize(data)/1000, "Kb") end
+   if addon.debug then addon.Log:D(type, "Data size:", #addon:Serialize(data)/1000, "Kb") end
 end
 
 -- Another player has agreed to receive our data
 function sync:SyncAckReceived(player, type)
-   addon:DebugLog("SyncAckReceived", player, type)
+   addon.Log:D("SyncAckReceived", player, type)
    local data = sync_table[player] and sync_table[player][type]
    if not data then
       addon:Print(L["Something went wrong during syncing, please try again."])
-      return addon:Debug("Data wasn't queued for syncing!!!")
+      return addon.Log:D("Data wasn't queued for syncing!!!")
    end
    -- We're ready to send
    SendSyncData(player, type)
@@ -89,7 +89,7 @@ function sync:SyncAckReceived(player, type)
 end
 
 function sync:SyncNackReceived(player, type, msg)
-   addon:DebugLog("SyncNackReceived", player, type, msg)
+   addon.Log:D("SyncNackReceived", player, type, msg)
    -- Delete them from table
    sync_table[player] = nil
    addon:Print(format(self.declineReasons[msg], player, type))
@@ -97,7 +97,7 @@ end
 
 -- We've received a request to sync with another player
 function sync:SyncRequestReceived(sender, type)
-   addon:DebugLog("SyncRequestReceived", sender, type)
+   addon.Log:D("SyncRequestReceived", sender, type)
    if not self.frame or not self.frame:IsVisible() then
       return self:DeclineSync(sender, type, "not_open")
    end
@@ -111,7 +111,7 @@ end
 -- LibDialog OnAccept
 function sync.OnSyncAccept(_, data)
    local sender, type = unpack(data)
-   addon:Debug("OnSyncAccept", sender, type)
+   addon.Log:D("OnSyncAccept", sender, type)
    addon:SendCommand(sender, "syncAck", addon.playerName, type)
    sync.frame.statusBar:Show()
    sync.frame.statusBar.text:Show()
@@ -125,7 +125,7 @@ function sync.OnSyncDeclined(_, data)
 end
 
 function sync:DeclineSync (sender, type, msg)
-   addon:Debug("OnSyncDeclined", sender, type, msg)
+   addon.Log:D("OnSyncDeclined", sender, type, msg)
    addon:SendCommand(sender, "syncNack", addon.playerName, type, msg)
 end
 
@@ -133,18 +133,18 @@ end
 -- data to send: addon.db.profile
 -- data to send: self:EscapeItemLink(addon:Serialize(lootDB))
 function sync:SyncDataReceived(sender, type, data)
-   addon:DebugLog("SyncDataReceived", sender, type)
+   addon.Log:D("SyncDataReceived", sender, type)
    self.frame.statusBar.text:SetText(L["Data Received"])
    if self.syncHandlers[type] then
       self.syncHandlers[type].receive(data)
    else -- Should never happen
-      return addon:Debug("Unsupported SyncDataReceived", type, "from", sender)
+      return addon.Log:D("Unsupported SyncDataReceived", type, "from", sender)
    end
    addon:Print(format(L["Successfully received 'type' from 'player'"], type, sender))
 end
 
 local function addNameToList(list, name, class)
-   addon:DebugLog("Sync:addNameToList()", name, class)
+   addon.Log:D("Sync:addNameToList()", name, class)
    local c = addon:GetClassColor(class)
    list[name] = "|cff"..addon:RGBToHex(c.r,c.g,c.b) .. tostring(name) .."|r"
 end
@@ -199,7 +199,7 @@ function sync:OnDataPartSent(num, total)
    self.frame.statusBar.text:SetText(addon.round(num/total*100) .."% - ".. num/1000 .."kB / ".. total/ 1000 .. "kB")
    if num == total then
       addon:Print(L["Done syncing"])
-      addon:Debug("Done syncing")
+      addon.Log:D("Done syncing")
    end
 end
 

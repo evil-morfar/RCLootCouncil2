@@ -15,11 +15,11 @@ function Compat:Run()
       if v.version == "always"
       or (addon:VersionCompare(addon.db.global.version, v.version) or not addon.db.global.version)
       and not v.executed then
-         addon:Debug("<Compat>", "Executing:", k, v.name or "no_name")
+         addon.Log("<Compat>", "Executing:", k, v.name or "no_name")
          local check, err = pcall(v.func, addon, addon.version, addon.db.global.version, addon.db.global.oldVersion)
          v.executed = true
          if not check then
-            addon:Debug("<Compat>", "<ERROR>", err)
+            addon.Log:E("<Compat>", err)
          end
       end
    end
@@ -144,7 +144,7 @@ Compat.list = {
                   end
                end
             end
-            return count > 0 and addon:Debug("Removed", count, link)
+            return count > 0 and addon.Log:D("Removed", count, link)
          end, 10)
       end
    },
@@ -165,7 +165,7 @@ Compat.list = {
                      end
                   end
                end
-               addon:DebugLog("Added classID and subClassID to", count, "items")
+               addon.Log:D("Added classID and subClassID to", count, "items")
             end,
          20)
       end
@@ -197,7 +197,7 @@ Compat.list = {
                   end
                end
                if count > 0 then
-                  addon:DebugLog("Fixed", count, "broken award reasons")
+                  addon.Log:D("Fixed", count, "broken award reasons")
                   addon.db.global[version] = count
                end
             end,

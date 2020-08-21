@@ -16,13 +16,13 @@ LibDialog:Register("RCLOOTCOUNCIL_CONFIRM_USAGE", {
       {
          text = _G.YES,
          on_click = function()
-            addon:DebugLog("Player confirmed usage")
+            addon.Log("Player confirmed usage")
             addon:StartHandleLoot("personalloot")
          end,
       },
       {	text = _G.NO,
          on_click = function()
-            addon:DebugLog("Player declined usage")
+            addon.Log("Player declined usage")
             addon:Print(L[" is not active in this raid."])
          end,
       },
@@ -59,7 +59,7 @@ LibDialog:Register("RCLOOTCOUNCIL_CONFIRM_ABORT", {
 	buttons = {
 		{	text = _G.YES,
 			on_click = function(self)
-				addon:DebugLog("ML aborted session")
+				addon.Log("ML aborted session")
 				RCLootCouncilML:EndSession()
 				CloseLoot() -- close the lootlist
 				addon:GetActiveModule("votingframe"):EndSession(true)

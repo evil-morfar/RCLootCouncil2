@@ -95,12 +95,12 @@ function RCLootCouncil:AutoPassCheck(link, equipLoc, typeID, subTypeID, classesF
 	if not tContains(autopassOverride, equipLoc) then
 		if self:IsRelicTypeID(typeID, subTypeID) then
 			if isRelic then -- New in v2.3+
-				self:DebugLog("NewRelicAutopassCheck", link, isRelic)
+				self.Log:D("NewRelicAutopassCheck", link, isRelic)
 				return not tContains(relics[class], isRelic)
 			else
 				id = self:GetItemIDFromLink(link)
 	         local type = select(3, C_ArtifactUI.GetRelicInfoByItemID(id))
-				self:DebugLog("RelicAutopassCheck", type, id)
+				self.Log:D("RelicAutopassCheck", type, id)
 	         -- If the type exists in the table, then the player can use it, so we need to negate it
 	         return not tContains(relics[class], type)
 			end
