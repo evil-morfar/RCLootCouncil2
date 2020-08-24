@@ -8,6 +8,8 @@ loadfile(".specs/AddonLoader.lua")(nil, addonName, addon).LoadArray{
    [[Classes/Utils/Log.lua]],
    [[Classes/Data/Player.lua]]
 }
+addon:InitLogging()
+
 describe("#Player", function()
    local Player
    before_each(function()

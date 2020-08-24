@@ -12,6 +12,8 @@ loadfile(".specs/AddonLoader.lua")(nil, addonName, addon).LoadArray{
    [[Classes/Data/Council.lua]],
 }
 
+addon:InitLogging()
+
 describe("#Council", function()
    local Council
    before_each(function()

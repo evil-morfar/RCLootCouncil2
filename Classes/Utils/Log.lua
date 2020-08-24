@@ -3,13 +3,12 @@
 -- @author Potdisc
 -- Create Date : 30/01/2019 18:56:31
 local _, addon = ...
-Log = addon.Init("Log")
+local Log = addon.Init("Log")
 local private = {
    date_to_debug_log = true,
    debugLog = {},
    lenght = 0,
 }
-Log.private = private
 -----------------------------------------------------------
 -- Class Definitions
 -----------------------------------------------------------

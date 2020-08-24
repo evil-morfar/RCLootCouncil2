@@ -17,13 +17,14 @@ local addon_name, addon = "RCLootCouncil", {
    -- Mock defaults
    defaults = {
       global = {
-         logMaxEntries = 2000
+         logMaxEntries = 4000
       }
    }
 }
 
 loadfile("Classes/Core.lua")(addon_name, addon)
 loadfile("Classes/Utils/Log.lua")(addon_name, addon)
+addon:InitLogging()
 
 describe("#Utils #Log initilizing", function()
    it("should create Log module", function()
@@ -64,7 +65,7 @@ describe("#Utils #Log", function()
       it("should create", function()
          assert.is_not.Nil(addon.Log)
          local log = addon.Require("Log"):New("log")
-         assert.are.equal(log.prefix, "log")
+         assert.are.equal("[log]", log.prefix)
          assert.is.Function(getmetatable(log).__call)
       end)
 
