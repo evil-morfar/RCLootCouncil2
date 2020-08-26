@@ -2,11 +2,20 @@
 -- DefaultModule.
 -- @author Potdisc
 -- Create Date : 12/15/2014 8:55:10 PM
+--[[ Comms:
+	VERSION:
+		v		P - Version Check.
+		r 		P - Version Check Reply.
+		fr 	P - Full version checkc request.
+		f 		T - Full version check reply. Only when open.
+]]
 
 local _,addon = ...
 local RCVersionCheck = addon:NewModule("RCVersionCheck", "AceTimer-3.0", "AceComm-3.0", "AceHook-3.0")
 local ST = LibStub("ScrollingTable")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
+
+local Comms = addon.Require "Services.Comms"
 
 local GuildRankSort
 local guildRanks = {}
@@ -14,6 +23,8 @@ local highestVersion = "0.0.0"
 local listOfNames = {}
 
 function RCVersionCheck:OnInitialize()
+	self.verCheckDisplayed = false -- Have we shown a "out-of-date"?
+	self.moduleVerCheckDisplayed = {} -- Have we shown a "out-of-date" for a module? The key of the table is the baseName of the module.
 	-- Initialize scrollCols on self so others can change it
 	self.scrollCols = {
 		{ name = "",				width = 20, sortnext = 2,},
@@ -21,20 +32,33 @@ function RCVersionCheck:OnInitialize()
 		{ name = _G.RANK,		width = 90, comparesort = GuildRankSort},
 		{ name = L["Version"],	width = 140, align = "RIGHT", comparesort = self.VersionSort, sort = ST.SORT_DSC, sortnext = 2},
 	}
+
+	if IsInGuild() then
+		addon.guildRank = select(2, GetGuildInfo("player"))
+		addon:ScheduleTimer("SendGuildVerTest", 2) -- send out a version check after a delay
+	end
 end
 
 function RCVersionCheck:OnEnable()
 	self.frame = self:GetFrame()
-	self:RegisterComm("RCLootCouncil")
 	self:Show()
 	guildRanks = addon:GetGuildRanks()
+	-- Unsubscribable Comms
+	self.subscriptions = {
+		Comms:Subscribe(Comms.Prefixes.VERSION, "f", function(dist, sender, data)
+			self:AddEntry(sender, unpack(data))
+		end)
+	}
+	self:InitCoreVersionComms()
 end
 
 function RCVersionCheck:OnDisable()
 	self:Hide()
-	self:UnregisterAllComm()
 	self.frame.rows = {}
 	wipe(listOfNames)
+	for _, sub in ipairs(self.subscriptions) do
+		sub:unsubscribe()
+	end
 end
 
 function RCVersionCheck:Show()
@@ -47,21 +71,9 @@ function RCVersionCheck:Hide()
 	self.frame:Hide()
 end
 
-function RCVersionCheck:OnCommReceived(prefix, serializedMsg, distri, sender)
-	if prefix == "RCLootCouncil" then
-		local test, command, data = addon:Deserialize(serializedMsg)
-		if addon:HandleXRealmComms(self, command, data, sender) then return end
-		if test and command == "verTestReply" then
-			if listOfNames[data[1]] then -- We only want to add those we've already queried
-				self:AddEntry(unpack(data))
-			end
-		end
-	end
-end
-
-function RCVersionCheck:Query(group)
-	addon.Log("VC", "Player asked for verTest", group)
-	if group == "guild" then
+function RCVersionCheck:Query(target)
+	addon.Log("VC", "Player asked for verTest", target)
+	if target == "guild" then
 		addon.Utils:GuildRoster()
 		for i = 1, GetNumGuildMembers() do
 			local name, rank, _,_,_,_,_,_, online,_, class = GetGuildRosterInfo(i)
@@ -70,7 +82,7 @@ function RCVersionCheck:Query(group)
 			end
 		end
 
-	elseif group == "group" then
+	elseif target == "group" then
 		for i = 1, GetNumGroupMembers() do
 			local name, _, _, _, _, class, _, online = GetRaidRosterInfo(i)
 			if online then
@@ -78,7 +90,11 @@ function RCVersionCheck:Query(group)
 			end
 		end
 	end
-	addon:SendCommand(group, "verTest", addon.version, addon.tVersion)
+	Comms:Send{
+		prefix = Comms.Prefixes.VERSION,
+		target = target,
+		command = "fr"
+	}
 	self:AddEntry(addon.playerName, addon.playerClass, addon.guildRank, addon.version, addon.tVersion, addon:GetInstalledModulesFormattedData()) -- add ourself
 	self:ScheduleTimer("QueryTimer", 5)
 end
@@ -170,6 +186,121 @@ end
 function RCVersionCheck:Update()
 	self.frame.st:SortData()
 end
+
+-- Permanent comms
+function RCVersionCheck:InitCoreVersionComms ()
+	-- "verTest"
+	Comms:Subscribe(Comms.Prefixes.VERSION, "v", function(dist, sender, data)
+		if addon:UnitIsUnit(sender, "player") then return end -- Don't repond to our own
+		local otherVersion, tVersion = unpack(data)
+		addon:GetActiveModule("version"):LogVersion(addon:UnitName(sender), otherVersion, tVersion)
+
+		local verCheck = addon.Utils:CheckOutdatedVersion(addon.version, otherVersion, addon.tVersion, tVersion)
+
+		if verCheck == addon.VER_CHECK_CODES[1] then return end -- Same as ours, don't do anything
+
+		-- Send response
+		Comms:Send{
+			prefix = Comms.Prefixes.VERSION,
+			target = dist == "GUILD" and "guild" or sender,
+			command = "r",
+			data = {addon.version, addon.tVersion, addon:GetInstalledModulesFormattedData()}
+		}
+
+		self:VerCheckDisplay(otherVersion, tVersion)
+	end)
+	-- verTestReply
+	Comms:Subscribe(Comms.Prefixes.VERSION, "r", function(dist, sender, data)
+		if addon:UnitIsUnit(sender, "player") then return end -- Don't repond to our own
+		local otherVersion, tVersion, moduleData = unpack(data)
+		addon:GetActiveModule("version"):LogVersion(addon:UnitName(sender), otherVersion, tVersion)
+
+		self:VerCheckDisplay(otherVersion, tVersion, moduleData)
+	end)
+	-- New, full version response for the version checker.
+	Comms:Subscribe(Comms.Prefixes.VERSION, "fr", function(dist, sender, data)
+		Comms:Send{
+			prefix = Comms.Prefixes.VERSION,
+			target = sender,
+			command = "f",
+			data = {addon.playerClass, addon.guildRank, addon.version, addon.tVersion, addon:GetInstalledModulesFormattedData()}
+		}
+	end)
+end
+
+--- Displays version status message, but only once per session.
+function RCVersionCheck:VerCheckDisplay (otherVersion, tVersion, moduleData)
+	if self.verCheckDisplayed then return end -- Don't bother if we already displayed
+
+	local verCheck = addon.Utils:CheckOutdatedVersion(addon.version, otherVersion, addon.tVersion, tVersion)
+
+	if verCheck == addon.VER_CHECK_CODES[2] then
+		self:PrintOutdatedVersionWarning(otherVersion)
+
+	elseif verCheck == addon.VER_CHECK_CODES[3] then
+		self:PrintOutdatedTestVersionWarning(tVersion)
+	end
+
+	if moduleData then
+		self:DoModulesVersionCheck(moduleData)
+	end
+end
+
+--- Runs version checks on all modules data received in a 'verTestReply'
+function RCVersionCheck:DoModulesVersionCheck (moduleData)
+	-- Check modules. Parse the strings.
+	if moduleData then
+		for _, str in pairs(moduleData) do
+			local baseName, otherVersion, tVersion = str:match("(.+) %- (.+)%-(.+)")
+			if not baseName then
+				baseName, otherVersion = str:match("(.+) %- (.+)")
+			end
+			if otherVersion and strfind(otherVersion, "%a+") then
+				addon.Log:d("Someone's tampering with version in the module?", baseName, otherVersion)
+			elseif baseName then
+				for _, module in pairs(addon.modules) do
+					if module.baseName == baseName and module.version and not self.moduleVerCheckDisplayed[baseName] then
+						local verCheck = addon.Utils:CheckOutdatedVersion(module.version, otherVersion, module.tVersion, tVersion)
+
+						if verCheck == addon.VER_CHECK_CODES[2] then
+							self:PrintOutdatedModuleVersion(baseName, module.version, otherVersion)
+
+						elseif verCheck == addon.VER_CHECK_CODES[3] then
+							self:PrintOutdatedModuleTestVersion(baseName, module.tVersion)
+						end
+					end
+				end
+			end
+		end
+	end
+end
+
+function RCLootCouncil:PrintOutdatedVersionWarning (newVersion, ourVersion)
+	addon:Print(format(L["version_outdated_msg"], ourVersion or addon.version, newVersion))
+	self.verCheckDisplayed = true
+end
+
+function RCLootCouncil:PrintOutdatedTestVersionWarning (tVersion)
+	if #tVersion >= 10 then return addon.Log:W("tVersion tampering", tVersion) end
+	addon:Print(format(L["tVersion_outdated_msg"], tVersion))
+	self.verCheckDisplayed = true
+end
+
+function RCLootCouncil:PrintOutdatedModuleVersion (name, version, newVersion)
+	addon:Print(format(L["module_version_outdated_msg"], name, version, newVersion))
+	self.moduleVerCheckDisplayed[name] = true
+end
+
+function RCLootCouncil:PrintOutdatedModuleTestVersion (name, tVersion)
+	if #tVersion >= 10 then addon.Log:d("Someone's tampering with tVersion in the module?", name, tVersion) end
+	addon:Print(format(L["module_tVersion_outdated_msg"], name, tVersion))
+	self.moduleVerCheckDisplayed[name] = true
+end
+
+
+---------------------------------------------
+-- UI
+---------------------------------------------
 
 function RCVersionCheck:GetVersionColor(ver,tVer)
 	local green, yellow, red, grey = {r=0,g=1,b=0,a=1},{r=1,g=1,b=0,a=1},{r=1,g=0,b=0,a=1},{r=0.75,g=0.75,b=0.75,a=1}

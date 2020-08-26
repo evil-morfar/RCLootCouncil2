@@ -37,6 +37,7 @@
 	Comm prefix: "RCLootCouncil"
 		StartHandleLoot 			- Sent whenever RCLootCouncil starts handling loot.
 		StopHandleLoot				- Sent whenever RCLootCouncil stops handling loot.
+
 ]]
 
 -- GLOBALS: GetLootMethod, GetAddOnMetadata, UnitClass
@@ -51,6 +52,8 @@ tooltipForParsing:UnregisterAllEvents() -- Don't use GameTooltip for parsing, be
 
 RCLootCouncil:SetDefaultModuleState(false)
 
+local Comms = RCLootCouncil.require "Services.Comms"
+
 -- Init shorthands
 local db, historyDB, debugLog;-- = self.db.profile, self.lootDB.factionrealm, self.db.global.log
 -- init modules
@@ -58,7 +61,7 @@ local defaultModules = {
 	masterlooter =	"RCLootCouncilML",
 	lootframe =		"RCLootFrame",
 	history =		"RCLootHistory",
-	version =		"RCVersionCheck",
+	version =		"VersionCheck",
 	sessionframe =	"RCSessionFrame",
 	votingframe =	"RCVotingFrame",
 	tradeui =		"RCTradeUI",
@@ -114,9 +117,6 @@ function RCLootCouncil:OnInitialize()
 	self.lastEncounterID = nil
 
 	self.lootStatus = {}
-	self.verCheckDisplayed = false -- Have we shown a "out-of-date"?
-	self.moduleVerCheckDisplayed = {} -- Have we shown a "out-of-date" for a module? The key of the table is the baseName of the module.
-
 	self.EJLastestInstanceID = 1180 -- UPDATE this whenever we change test data.
 									-- The lastest raid instance Enouncter Journal id.
 									-- Ny'alotha, the Waking City
@@ -212,6 +212,10 @@ function RCLootCouncil:OnInitialize()
 	historyDB = self.lootDB.factionrealm
 	debugLog = self.db.global.log
 
+	-- Register Core Comms
+	Comms:Register(Comms.Prefixes.MAIN)
+	Comms:Register(Comms.Prefixes.VERSION)
+
 	-- Add logged in message in the log
 	self.Log("Logged In")
 end
@@ -243,11 +247,6 @@ function RCLootCouncil:OnEnable()
 	-- register events
 	for event, method in pairs(self.coreEvents) do
 		self:RegisterEvent(event, method)
-	end
-
-	if IsInGuild() then
-		self.guildRank = select(2, GetGuildInfo("player"))
-		self:ScheduleTimer("SendGuildVerTest", 2) -- send out a version check after a delay
 	end
 
 	-- For some reasons all frames are blank until ActivateSkin() is called, even though the values used
@@ -682,44 +681,44 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 				end
 
 			elseif command == "verTest" and not self:UnitIsUnit(sender, "player") then -- Don't reply to our own verTests
-				local otherVersion, tVersion = unpack(data)
-				self:GetActiveModule("version"):LogVersion(self:UnitName(sender), otherVersion, tVersion)
-				-- We want to reply to guild chat if that's where the message is sent
-				if distri == "GUILD" then
-					sender = "guild"
-				end
-				self:SendCommand(sender, "verTestReply", self.playerName, self.playerClass, self.guildRank, self.version, self.tVersion, self:GetInstalledModulesFormattedData())
-
-				if self.verCheckDisplayed then return end -- Don't bother if we already displayed
-
-				local verCheck = self.Utils:CheckOutdatedVersion(self.version, otherVersion, self.tVersion, tVersion)
-
-				if verCheck == self.VER_CHECK_CODES[2] then
-					self:PrintOutdatedVersionWarning(otherVersion)
-
-				elseif verCheck == self.VER_CHECK_CODES[3] then
-					self:PrintOutdatedTestVersionWarning(tVersion)
-				end
+				-- local otherVersion, tVersion = unpack(data)
+				-- self:GetActiveModule("version"):LogVersion(self:UnitName(sender), otherVersion, tVersion)
+				-- -- We want to reply to guild chat if that's where the message is sent
+				-- if distri == "GUILD" then
+				-- 	sender = "guild"
+				-- end
+				-- self:SendCommand(sender, "verTestReply", self.playerName, self.playerClass, self.guildRank, self.version, self.tVersion, self:GetInstalledModulesFormattedData())
+				--
+				-- if self.verCheckDisplayed then return end -- Don't bother if we already displayed
+				--
+				-- local verCheck = self.Utils:CheckOutdatedVersion(self.version, otherVersion, self.tVersion, tVersion)
+				--
+				-- if verCheck == self.VER_CHECK_CODES[2] then
+				-- 	self:PrintOutdatedVersionWarning(otherVersion)
+				--
+				-- elseif verCheck == self.VER_CHECK_CODES[3] then
+				-- 	self:PrintOutdatedTestVersionWarning(tVersion)
+				-- end
 
 			elseif command == "verTestReply" then
-				local name,_,_, otherVersion, tVersion, moduleData = unpack(data)
-				if not name then -- REVIEW v2.7.11 For some reason name can sometimes be missing (#341)!?
-					return self.Log:E("verTestReply with nil name", sender, name, otherVersion, tVersion, moduleData)
-				end
-				self:GetActiveModule("version"):LogVersion(self:UnitName(sender), otherVersion, tVersion)
-
-				if self.verCheckDisplayed then return end -- Don't bother if we already displayed
-
-				local verCheck = self.Utils:CheckOutdatedVersion(self.version, otherVersion, self.tVersion, tVersion)
-
-				if verCheck == self.VER_CHECK_CODES[2] then
-					self:PrintOutdatedVersionWarning(otherVersion)
-
-				elseif verCheck == self.VER_CHECK_CODES[3] then
-					self:PrintOutdatedTestVersionWarning(tVersion)
-				end
-
-				self:DoModulesVersionCheck(moduleData)
+				-- local name,_,_, otherVersion, tVersion, moduleData = unpack(data)
+				-- if not name then -- REVIEW v2.7.11 For some reason name can sometimes be missing (#341)!?
+				-- 	return self.Log:E("verTestReply with nil name", sender, name, otherVersion, tVersion, moduleData)
+				-- end
+				-- self:GetActiveModule("version"):LogVersion(self:UnitName(sender), otherVersion, tVersion)
+				--
+				-- if self.verCheckDisplayed then return end -- Don't bother if we already displayed
+				--
+				-- local verCheck = self.Utils:CheckOutdatedVersion(self.version, otherVersion, self.tVersion, tVersion)
+				--
+				-- if verCheck == self.VER_CHECK_CODES[2] then
+				-- 	self:PrintOutdatedVersionWarning(otherVersion)
+				--
+				-- elseif verCheck == self.VER_CHECK_CODES[3] then
+				-- 	self:PrintOutdatedTestVersionWarning(tVersion)
+				-- end
+				--
+				-- self:DoModulesVersionCheck(moduleData)
 
 			elseif command == "history" and db.enableHistory then
 				local name, history = unpack(data)
@@ -1376,59 +1375,12 @@ function RCLootCouncil:Timer(type, ...)
 	end
 end
 
-function RCLootCouncil:PrintOutdatedVersionWarning (newVersion, ourVersion)
-	self:Print(format(L["version_outdated_msg"], ourVersion or self.version, newVersion))
-	self.verCheckDisplayed = true
-end
-
-function RCLootCouncil:PrintOutdatedTestVersionWarning (tVersion)
-	if #tVersion >= 10 then return self.Log:W("tVersion tampering", tVersion) end
-	self:Print(format(L["tVersion_outdated_msg"], tVersion))
-	self.verCheckDisplayed = true
-end
-
-function RCLootCouncil:PrintOutdatedModuleVersion (name, version, newVersion)
-	self:Print(format(L["module_version_outdated_msg"], name, version, newVersion))
-	self.moduleVerCheckDisplayed[name] = true
-end
-
-function RCLootCouncil:PrintOutdatedModuleTestVersion (name, tVersion)
-	if #tVersion >= 10 then self.Log:d("Someone's tampering with tVersion in the module?", name, tVersion) end
-	self:Print(format(L["module_tVersion_outdated_msg"], name, tVersion))
-	self.moduleVerCheckDisplayed[name] = true
-end
-
 function RCLootCouncil:SendGuildVerTest ()
-	self:SendCommand("guild", "verTest", self.version, self.tVersion)
-end
-
---- Runs version checks on all modules data received in a 'verTestReply'
-function RCLootCouncil:DoModulesVersionCheck (moduleData)
-	-- Check modules. Parse the strings.
-	if moduleData then
-		for _, str in pairs(moduleData) do
-			local baseName, otherVersion, tVersion = str:match("(.+) %- (.+)%-(.+)")
-			if not baseName then
-				baseName, otherVersion = str:match("(.+) %- (.+)")
-			end
-			if otherVersion and strfind(otherVersion, "%a+") then
-				self.Log:d("Someone's tampering with version in the module?", baseName, otherVersion)
-			elseif baseName then
-				for _, module in pairs(self.modules) do
-					if module.baseName == baseName and module.version and not self.moduleVerCheckDisplayed[baseName] then
-						local verCheck = self.Utils:CheckOutdatedVersion(module.version, otherVersion, module.tVersion, tVersion)
-
-						if verCheck == self.VER_CHECK_CODES[2] then
-							self:PrintOutdatedModuleVersion(baseName, module.version, otherVersion)
-
-						elseif verCheck == self.VER_CHECK_CODES[3] then
-							self:PrintOutdatedModuleTestVersion(baseName, module.tVersion)
-						end
-					end
-				end
-			end
-		end
-	end
+	Comms:Send{prefix = Comms.Prefixes.VERSION,
+		target = "guild",
+		command = "v",
+		data = {self.version, self.tVersion}
+	}
 end
 
 --- Adds needed variables to the loot table.

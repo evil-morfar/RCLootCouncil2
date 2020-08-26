@@ -86,6 +86,8 @@ function Comms:RegisterPrefix (prefix)
    private:RegisterComm(prefix)
 end
 
+Comms.Register = Comms.RegisterPrefix
+
 --- A customizeable sender function.
 -- @param args A Table with the following fields ():
 --[[
