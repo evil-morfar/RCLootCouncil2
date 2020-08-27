@@ -907,15 +907,6 @@ function RCLootCouncilML:GiveLoot(slot, winner, callback, ...)
 				break
 			end
 		end
-
-		-- If winner is the ML himself, also attempt to LootSlot().
-		-- It's hard to know (and no need to know) exactly whether the item should be distributed by LootSlot() or by GiveMasterLoot(),
-		-- unless we check if "OPEN_MASTER_LOOT_LIST" event fires immediately after LootSlot(),
-		-- so just try in both way.
-		if addon:UnitIsUnit(winner, "player") then
-			addon:Debug("LootSlot", slot)
-			LootSlot(slot)
-		end
 	end
 end
 
