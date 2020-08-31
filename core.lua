@@ -52,7 +52,7 @@ tooltipForParsing:UnregisterAllEvents() -- Don't use GameTooltip for parsing, be
 
 RCLootCouncil:SetDefaultModuleState(false)
 
-local Comms = RCLootCouncil.require "Services.Comms"
+local Comms = RCLootCouncil.Require "Services.Comms"
 
 -- Init shorthands
 local db, historyDB, debugLog;-- = self.db.profile, self.lootDB.factionrealm, self.db.global.log
@@ -229,7 +229,7 @@ function RCLootCouncil:OnEnable()
 
 	-- Register the player's name
 	self.realmName = select(2, UnitFullName("player"))
-	self.playerName = self:UnitName("player")
+	self.playerName = self.Require "Data.Player":Get("player")--self:UnitName("player")
 	self.Log(self.playerName, self.version, self.tVersion)
 
 	self:DoChatHook()

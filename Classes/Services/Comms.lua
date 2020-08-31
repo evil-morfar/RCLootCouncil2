@@ -93,8 +93,8 @@ Comms.Register = Comms.RegisterPrefix
 --[[
 -- Required:
     command
-    data    - must be an array or a single value
 -- Optional:
+    data    - must be an array or a single value
     prefix  - defaults to Prefixes.MAIN
     target  - defaults to "group"
     prio    - default to "NORMAL"
@@ -103,7 +103,6 @@ Comms.Register = Comms.RegisterPrefix
 ]]
 function Comms:Send (args)
    assert(type(args)=="table", "Must supply a table")
-   assert(args.data, "Data must be set")
    assert(args.command, "Command must be set")
    args.data = type(args.data) == "table" and args.data or {args.data}
    private:SendComm(args.prefix or self.Prefixes.MAIN, args.target or "group", args.prio, args.callback, args.callbackarg, args.command, unpack(args.data))
@@ -118,7 +117,8 @@ function private:SendComm(prefix, target, prio, callback, callbackarg, command, 
    TempTable:Release(data)
 
    if target == "group" then
-      self.AceComm:SendCommMessage(prefix, encoded, self:GetGroupChannel(), nil, prio, callback, callbackarg)
+      local channel, player = self:GetGroupChannel()
+      self.AceComm:SendCommMessage(prefix, encoded, channel, player, prio, callback, callbackarg)
    elseif target == "guild" then
       self.AceComm:SendCommMessage(prefix, encoded, "GUILD", nil, prio, callback, callbackarg)
    else

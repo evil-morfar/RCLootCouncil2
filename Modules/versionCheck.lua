@@ -11,11 +11,12 @@
 ]]
 
 local _,addon = ...
-local RCVersionCheck = addon:NewModule("RCVersionCheck", "AceTimer-3.0", "AceComm-3.0", "AceHook-3.0")
+local RCVersionCheck = addon:NewModule("VersionCheck", "AceTimer-3.0", "AceComm-3.0", "AceHook-3.0")
 local ST = LibStub("ScrollingTable")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 
 local Comms = addon.Require "Services.Comms"
+local Player = addon.Require "Data.Player"
 
 local GuildRankSort
 local guildRanks = {}
@@ -62,7 +63,7 @@ function RCVersionCheck:OnDisable()
 end
 
 function RCVersionCheck:Show()
-	self:AddEntry(addon.playerName, addon.playerClass, addon.guildRank, addon.version, addon.tVersion,addon:GetInstalledModulesFormattedData()) -- add ourself
+	self:AddEntry(addon.playerName:GetName(), addon.playerClass, addon.guildRank, addon.version, addon.tVersion,addon:GetInstalledModulesFormattedData()) -- add ourself
 	self.frame:Show()
 	self.frame.st:SetData(self.frame.rows)
 end
@@ -95,7 +96,7 @@ function RCVersionCheck:Query(target)
 		target = target,
 		command = "fr"
 	}
-	self:AddEntry(addon.playerName, addon.playerClass, addon.guildRank, addon.version, addon.tVersion, addon:GetInstalledModulesFormattedData()) -- add ourself
+	self:AddEntry(addon.playerName:GetName(), addon.playerClass, addon.guildRank, addon.version, addon.tVersion, addon:GetInstalledModulesFormattedData()) -- add ourself
 	self:ScheduleTimer("QueryTimer", 5)
 end
 
@@ -202,7 +203,7 @@ function RCVersionCheck:InitCoreVersionComms ()
 		-- Send response
 		Comms:Send{
 			prefix = Comms.Prefixes.VERSION,
-			target = dist == "GUILD" and "guild" or sender,
+			target = dist == "GUILD" and "guild" or Player:Get(sender),
 			command = "r",
 			data = {addon.version, addon.tVersion, addon:GetInstalledModulesFormattedData()}
 		}
@@ -221,7 +222,7 @@ function RCVersionCheck:InitCoreVersionComms ()
 	Comms:Subscribe(Comms.Prefixes.VERSION, "fr", function(dist, sender, data)
 		Comms:Send{
 			prefix = Comms.Prefixes.VERSION,
-			target = sender,
+			target = Player:Get(sender),
 			command = "f",
 			data = {addon.playerClass, addon.guildRank, addon.version, addon.tVersion, addon:GetInstalledModulesFormattedData()}
 		}
