@@ -79,7 +79,6 @@ function Council:RestoreFromTransmit (council)
       local player = Player:Get(guid)
       private.council[player.guid] = player
    end
-   TT:Release(council)
    return private:GetCouncilSize()
 end
 

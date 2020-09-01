@@ -287,6 +287,7 @@ function RCLootCouncil:OnEnable()
 	end
 	ChatFrame_AddMessageEventFilter("CHAT_MSG_WHISPER_INFORM", filterFunc)
 	self:CouncilChanged() -- Call to initialize council
+	self:SubscribeToPermanentComms()
 end
 
 function RCLootCouncil:OnDisable()
@@ -2733,7 +2734,7 @@ end
 function RCLootCouncil:SubscribeToPermanentComms ()
 	Comms:BulkSubscribe(Comms.Prefixes.MAIN, {
 		council = function (_, sender, data)
-			self:OnCouncilReceived(sender, data)
+			self:OnCouncilReceived(sender, unpack(data))
 		end
 	})
 end
@@ -2742,8 +2743,14 @@ end
 -- Comm Handlers
 -------------------------------------------------------------
 function RCLootCouncil:OnCouncilReceived (sender, council)
-	if not self:UnitIsUnit(sender, "player") then return self.Log:W("Non ML sent council") end
+	if not self:UnitIsUnit(sender, self.masterLooter) then return self.Log:W("Non ML sent council") end
 	Council:RestoreFromTransmit(council)
 	self.isCouncil = Council:Contains(self.player)
+	self.Log:D("isCouncil", self.isCouncil)
 	-- REVIEW Send a message? Or something else to inform that council is updated.
+	if self.isCouncil or self.mldb.observe then
+		self:CallModule("votingframe")
+	else
+		self:GetActiveModule("votingframe"):Disable()
+	end
 end

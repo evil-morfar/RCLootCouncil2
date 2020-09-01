@@ -214,6 +214,9 @@ function RCLootCouncilML:UpdateGroup(ask)
 			return self:ScheduleTimer("UpdateGroup", 1, ask) -- Group info is not ready. Abort and retry.
 		end
 	end
+	if GetNumGroupMembers() == 0 then
+		self:AddCandidate(addon.player:GetName(), addon.player:GetClass(), addon.Utils:GetPlayerRole(), addon.guildRank)
+	end
 	-- If anything's left in group_copy it means they left the raid, so lets remove them
 	for name, v in pairs(group_copy) do
 		if v then self:RemoveCandidate(name); updates = true end
@@ -277,7 +280,9 @@ function RCLootCouncilML:SendCandidates ()
 end
 
 local function SendCouncil ()
-	RCLootCouncilML:Send("group", "council", Council:GetForTransmit())
+	local council = Council:GetForTransmit()
+	RCLootCouncilML:Send("group", "council", council)
+	TempTable:Release(council)
 	RCLootCouncilML.timers.council_send = nil
 end
 
@@ -1465,15 +1470,8 @@ end
 
 -- Initiates a session with the items handed
 function RCLootCouncilML:Test(items)
-	-- check if we're added in self.group
-	-- (We might not be on solo test)
-	if not tContains(self.candidates, addon.player:GetName()) then
-		self:AddCandidate(addon.player:GetName(), addon.playerClass, addon.Utils:GetPlayerRole(), addon.guildRank)
-	end
 	-- We must send candidates now, since we can't wait the normal 10 secs
 	addon:SendCommand("group", "candidates", self.candidates)
-	self:UpdateGroupCouncil()
-	self:SendCouncil()
 	-- Add the items
 	for _, iName in ipairs(items) do
 		self:AddItem(iName)
@@ -1500,7 +1498,7 @@ function RCLootCouncilML:UpdateGroupCouncil()
 		-- self.candidates suffers from the problem mentioned in :UnitName, so safely (slowly) compare them
 		for cand in pairs(self.candidates) do
 			if addon:UnitIsUnit(name, cand ) then
-				Council:Add(Player:Get(name))
+				Council:Add(Player:Get(cand))
 				break
 			end
 		end
@@ -1509,7 +1507,12 @@ function RCLootCouncilML:UpdateGroupCouncil()
 		Council:Add(addon.player)
 	end
 	self.council = Council:Get()
-	self.Log:d("UpdateGroupCouncil", unpack(self.council))
+	local council = TempTable:Acquire()
+	for _, v in pairs(self.council)do
+		tinsert(council, v.name)
+	end
+	self.Log:d("UpdateGroupCouncil", table.concat(council, ","))
+	TempTable:Release(council)
 end
 
 -- @param retryCount: How many times we have retried to execute this function.

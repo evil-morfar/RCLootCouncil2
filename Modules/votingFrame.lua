@@ -147,7 +147,7 @@ function RCVotingFrame:EndSession(hide)
 end
 
 function RCVotingFrame:CandidateCheck()
-	if not addon.candidates[addon.playerName] and addon.masterLooter then -- If our own name isn't there, we assume it's not received
+	if not addon.candidates[addon.player:GetName()] and addon.masterLooter then -- If our own name isn't there, we assume it's not received
 		addon.Log:D("CandidateCheck", "failed")
 		addon:SendCommand(addon.masterLooter, "candidates_request")
 		self:ScheduleTimer("CandidateCheck", 20) -- check again in 20
@@ -595,7 +595,7 @@ function RCVotingFrame:SwitchSession(s)
 	self.frame.iState:SetText(self:GetItemStatus(t.link))
 	local bonusText = addon:GetItemBonusText(t.link, "/")
 	if bonusText ~= "" then bonusText = "+ "..bonusText end
-	self.frame.itemLvl:SetText(_G.ITEM_LEVEL_ABBR..": "..addon:GetItemLevelText(t.ilvl, t.token))
+	self.frame.itemLvl:SetText(_G.ITEM_LEVEL_ABBR..": "..addon.Utils:GetItemLevelText(t.ilvl, t.token))
 	-- Set a proper item type text
 	self.frame.itemType:SetText(addon:GetItemTypeText(t.link, t.subType, t.equipLoc, t.typeID, t.subTypeID, t.classes, t.token, t.relic))
 	self.frame.bonuses:SetText(bonusText)
@@ -976,8 +976,8 @@ function RCVotingFrame:UpdateLootStatus()
 end
 
 function RCVotingFrame:UpdatePeopleToVote()
-	local hasVoted = TempTable:Aquire()
-	local shouldVote = TempTable:Aquire()
+	local hasVoted = TempTable:Acquire()
+	local shouldVote = TempTable:Acquire()
 	for _, player in pairs(Council:Get()) do
 		tinsert(shouldVote, player.name)
 	end
@@ -1022,8 +1022,8 @@ function RCVotingFrame:UpdatePeopleToVote()
 		GameTooltip:Show()
 	end)
 	self.frame.rollResult:SetWidth(self.frame.rollResult.text:GetStringWidth())
-	hasVoted:Release()
-	shouldVote:Release()
+	TempTable:Release(hasVoted)
+	TempTable:Release(shouldVote)
 end
 
 function RCVotingFrame:UpdateSessionButtons()
@@ -1138,7 +1138,7 @@ end
 
 function RCVotingFrame.SetCellRole(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
 	local name = data[realrow].name
-	local role = addon:TranslateRole(lootTable[session].candidates[name].role)
+	local role = addon.Utils:TranslateRole(lootTable[session].candidates[name].role)
 	frame.text:SetText(role)
 	frame.text:SetTextColor(addon:GetResponseColor(lootTable[session].typeCode or lootTable[session].equipLoc, lootTable[session].candidates[name].response))
 	data[realrow].cols[column].value = role or ""
