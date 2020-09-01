@@ -67,7 +67,7 @@ end
 -- REVIEW v2.15 Almost all of these are added to `RCLootCouncil:PrepareLootTable` and can be removed from here.
 function RCLootCouncilML:GetItemInfo(item)
 	local name, link, rarity, ilvl, iMinLevel, type, subType, iStackCount, equipLoc, texture, sellPrice, typeID, subTypeID, bindType, expansionID, itemSetID, isCrafting = GetItemInfo(item) -- luacheck: ignore
-	local itemID = link and addon:GetItemIDFromLink(link)
+	local itemID = link and addon.Utils:GetItemIDFromLink(link)
 	if name then
 		return {
 			["link"]			= link,
@@ -1464,7 +1464,7 @@ function RCLootCouncilML:Test(items)
 	-- check if we're added in self.group
 	-- (We might not be on solo test)
 	if not tContains(self.candidates, addon.playerName) then
-		self:AddCandidate(addon.playerName, addon.playerClass, addon:GetPlayerRole(), addon.guildRank)
+		self:AddCandidate(addon.playerName, addon.playerClass, addon.Utils:GetPlayerRole(), addon.guildRank)
 	end
 	-- We must send candidates now, since we can't wait the normal 10 secs
 	addon:SendCommand("group", "candidates", self.candidates)
@@ -1721,8 +1721,8 @@ function RCLootCouncilML.LootTableCompare(a, b)
 		return equipLocA < equipLocB
 	end
 	if a.equipLoc == "INVTYPE_TRINKET" and b.equipLoc == "INVTYPE_TRINKET" then
-		local specA = _G.RCTrinketSpecs[addon:GetItemIDFromLink(a.link)]
-		local specB = _G.RCTrinketSpecs[addon:GetItemIDFromLink(b.link)]
+		local specA = _G.RCTrinketSpecs[addon.Utils:GetItemIDFromLink(a.link)]
+		local specB = _G.RCTrinketSpecs[addon.Utils:GetItemIDFromLink(b.link)]
 		local categoryA = (specA and _G.RCTrinketCategories[specA]) or ""
 		local categoryB = (specB and _G.RCTrinketCategories[specB]) or ""
 		if categoryA ~= categoryB then
@@ -1750,5 +1750,5 @@ function RCLootCouncilML.LootTableCompare(a, b)
 	if statsA ~= statsB then
 		return statsA > statsB
 	end
-	return addon:GetItemNameFromLink(a.link) < addon:GetItemNameFromLink(b.link)
+	return addon.Utils:GetItemNameFromLink(a.link) < addon.Utils:GetItemNameFromLink(b.link)
 end

@@ -1147,36 +1147,12 @@ function RCLootCouncil:UpdatePlayersGears(startSlot, endSlot)
 	end
 end
 
-function RCLootCouncil:UpdatePlayerRelics(startSlot, endSlot)
-	startSlot = startSlot or 1
-	endSlot = endSlot or 3
-
-	for i = startSlot, endSlot do
-		if i <= C_ArtifactUI.GetEquippedArtifactNumRelicSlots() or 0 then
-			local iLink = select(4,C_ArtifactUI.GetEquippedArtifactRelicInfo(i))
-			if iLink then
-				local iName = GetItemInfo(iLink)
-				if iName then
-					playersData.relics[i] = iLink
-				else  -- Uncached. Retry to make sure this is a correct link.
-					self:ScheduleTimer("UpdatePlayerRelics", 1, i, i)
-				end
-			else
-				playersData.relics[i] = nil
-			end
-		else
-			playersData.relics[i] = nil
-		end
-	end
-end
-
 -- Update player's data which is changable by the player. (specid, equipped ilvl, specs, gears, etc)
 function RCLootCouncil:UpdatePlayersData()
 	self.Log("UpdatePlayersData()")
 	playersData.specID = GetSpecialization() and GetSpecializationInfo(GetSpecialization())
 	playersData.ilvl = select(2,GetAverageItemLevel())
 	self:UpdatePlayersGears()
-	self:UpdatePlayerRelics()
 	playersData.corruption = self:GetPlayerCorruption()
 end
 
@@ -1226,29 +1202,6 @@ function RCLootCouncil:GetPlayersGear(link, equipLoc, gearsTable)
 	return item1, item2;
 end
 
--- This function assumes all items in "relicsTable" to be cached. "link" does not need to be cached if relicType is specified.
--- @param link A relic that we want to compare against the equipped relics
--- @parm relicType the relic type of the item. If not specified, fetch it(need item to be cached)
--- @param relicsTable if specified, compare against relics stored in the table instead of the current equipped relics, whose key is slot number and value is the item link of the relic.
--- @return the relic(s) that with the same type of the input link.
-function RCLootCouncil:GetArtifactRelics(link, relicType, relicsTable)
-	local id = self.Utils:GetItemIDFromLink(link)
-	relicType = relicType or select(3, C_ArtifactUI.GetRelicInfoByItemID(id))
-	local g1,g2;
-	local n = relicsTable and 3 or C_ArtifactUI.GetEquippedArtifactNumRelicSlots() or 0
-	for i = 1, n do
-		local iLink = relicsTable and relicsTable[i] or select(4,C_ArtifactUI.GetEquippedArtifactRelicInfo(i))
-		if iLink and select(3, C_ArtifactUI.GetRelicInfoByItemID(self.Utils:GetItemIDFromLink(iLink))) == relicType then
-			if g1 then
-				g2 = iLink
-			else
-				g1 = iLink
-			end
-		end
-	end
-	return g1, g2
-end
-
 -- Sends a response. Uses the gear equipped at the start of most recent encounter or login.
 -- @paramsig session [, ...]
 -- link, ilvl, equipLoc and subType must be provided to send out gear information.
@@ -1288,12 +1241,9 @@ function RCLootCouncil:SendResponse(target, session, response, isTier, isRelic, 
 		})
 end
 
-function RCLootCouncil:GetGear(link, equipLoc, relicType)
-	if relicType then
-		return self:GetArtifactRelics(link, relicType, playersData.relics) -- Use relic info we stored before
-	else
-		return self:GetPlayersGear(link, equipLoc, playersData.gears) -- Use gear info we stored before
-	end
+-- REVIEW Not needed
+function RCLootCouncil:GetGear(link, equipLoc)
+	return self:GetPlayersGear(link, equipLoc, playersData.gears) -- Use gear info we stored before
 end
 
 --- Gets the ilvl difference between an item and the player's equipped gear.
@@ -1729,7 +1679,6 @@ function RCLootCouncil:GetGuildRanks()
 	end
 	return t;
 end
-
 
 function RCLootCouncil:GetNumberOfDaysFromNow(oldDate)
 	return self.Utils:GetNumberOfDaysFromNow(oldDate)
@@ -2409,14 +2358,6 @@ function RCLootCouncil:RegisterUserModule(type, name)
 	userModules[type] = name
 end
 
--- FIXME DEPRECATED in v2.7.6
-function RCLootCouncil:CustomChatCmd(module, funcRef, helpString, ...)
-	for i = 1, select("#", ...) do
-		self.customChatCmd[select(i, ...)] = {module = module, func = funcRef}
-	end
-	tinsert(self.chatCmdHelp, {desc = helpString, module = module})
-end
-
 --- Enables a module to add chat commands to the "/rc" prefix.
 -- @paramsig module, funcRef, cmdDesc, desc, ...
 -- @param module 	The object to call func on.
@@ -2779,120 +2720,6 @@ _G.printtable = function( data, level )
 	until true end
 end
 --@end-debug@
-
--- v2.3.1 added some new stuff. This will update old history entries with most of that for english clients.
--- Should be kept for a while so people can update in case their ML is slow to get it done.
-function RCLootCouncil:UpdateLootHistory()
-	self:Print("Updating Loot History")
-	local nighthold, trialofvalor, emeraldnightmare = "The Nighthold", "Trial of Valor", "The Emerald Nightmare"
-	local normal, heroic, mythic = "Normal", "Heroic", "Mythic"
-	if GetLocale() ~= "enUS" then -- Let's see if we can get creative
-		self.Log:d("Trying to extract non-english history update data")
-		-- If we find a 2.3.1+ entry, we can use that info to update older entries
-		for _, data in pairs(historyDB) do
-			for _, v in pairs(data) do
-				if v.mapID then
-					if v.mapID == 1530 then
-						nighthold = strsplit("-", v.instance,2)
-					elseif v.mapID == 1648 then
-						trialofvalor = strsplit("-", v.instance,2)
-					elseif v.mapID == 1520 then
-						emeraldnightmare = strsplit("-", v.instance,2)
-					end
-				end
-				-- double up just in case mapID or difficultyID are missing
-				if v.difficultyID then
-					if v.difficultyID == 14 then
-						_, normal = strsplit("-", v.instance,2)
-					elseif v.difficultyID == 15 then
-						_, heroic = strsplit("-", v.instance,2)
-					elseif v.difficultyID == 16 then
-						_, mythic = strsplit("-", v.instance,2)
-					end
-				end
-			end
-		end
-		self.Log:d("Result:",nighthold, trialofvalor, emeraldnightmare, normal, heroic, mythic)
-	end
-	for name, data in pairs(historyDB) do
-		for i, v in pairs(data) do
-			local id = self.Utils:GetItemIDFromLink(v.lootWon)
-			v.tierToken = id and RCTokenTable[id]
-			if strmatch(v.instance, nighthold) then
-				v.mapID = 1530
-			elseif strmatch(v.instance, trialofvalor) then
-				v.mapID = 1648
-			elseif strmatch(v.instance, emeraldnightmare) then
-				v.mapID = 1520
-			end
-			if strmatch(v.instance, normal) then
-				v.difficultyID = 14
-			elseif strmatch(v.instance, heroic) then
-				v.difficultyID = 15
-			elseif strmatch(v.instance, mythic) then
-				v.difficultyID = 16
-			end
-			-- Fix corruption caused by v2.4-beta:
-			if v.color and type(v.color) ~= "table" then
-				if v.tokenRoll then
-					v.color = {unpack(db.responses.tier[v.responseID].color)}
-				else
-					v.color = {unpack(db.responses[v.responseID].color)}
-				end
-				self.Log("Fixed 2.4beta corruption @", name, i)
-			end
-		end
-	end
-	self:Print("Done")
-end
-
-----------------------------------
--- The following functions have been moved to RCLootCouncil.Utils
--- and are now deprecated.
----------------------------------
-function RCLootCouncil:RGBToHex(r,g,b)
-	return self.Utils:RGBToHex(r,g,b)
-end
-
-function RCLootCouncil:GetAnnounceChannel(channel)
-	return self.Utils:GetAnnounceChannel(channel)
-end
-
-function RCLootCouncil:GetItemIDFromLink(link)
-	return self.Utils:GetItemIDFromLink(link)
-end
-
-function RCLootCouncil:GetItemStringFromLink(link)
-	return self.Utils:GetItemStringFromLink(link)
-end
-
-function RCLootCouncil:GetItemNameFromLink(link)
-	return self.Utils:GetItemNameFromLink(link)
-end
-
-function RCLootCouncil:GetItemStringClean(link)
-	return self.Utils:GetItemStringClean(link)
-end
-
-function RCLootCouncil:GetItemTextWithCount(link, count)
-	return self.Utils:GetItemTextWithCount(link, count)
-end
-
-function RCLootCouncil:GetItemLevelText(ilvl, token)
-	return self.Utils:GetItemLevelText(ilvl, token)
-end
-
-function RCLootCouncil:GetPlayerRole()
-	return self.Utils:GetPlayerRole()
-end
-
-function RCLootCouncil:TranslateRole(role)
-	return self.Utils:TranslateRole(role)
-end
-
-function RCLootCouncil:IsCouncil (name)
-	return self:ConcilContains(name)
-end
 
 --[[
 	-- Fix for texts in whisperKeys:
