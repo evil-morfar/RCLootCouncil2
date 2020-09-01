@@ -239,13 +239,13 @@ do
 				entry.icon:SetBorderColor()
 			end
 			entry.item = item
-			entry.itemText:SetText((item.isRoll and (_G.ROLL..": ") or "")..addon:GetItemTextWithCount(entry.item.link or "error", #entry.item.sessions))
+			entry.itemText:SetText((item.isRoll and (_G.ROLL..": ") or "")..addon.Utils:GetItemTextWithCount(entry.item.link or "error", #entry.item.sessions))
 			entry.icon:SetNormalTexture(entry.item.texture or "Interface\\InventoryItems\\WoWUnknownItem01")
 			entry.itemCount:SetText(#entry.item.sessions > 1 and #entry.item.sessions or "")
 			local typeText = addon:GetItemTypeText(item.link, item.subType, item.equipLoc, item.typeID, item.subTypeID, item.classes, item.isTier, item.isRelic)
 			local bonusText = addon:GetItemBonusText(item.link, "/")
 			if bonusText ~= "" then bonusText = "+ "..bonusText end
-			entry.itemLvl:SetText(addon:GetItemLevelText(entry.item.ilvl, entry.item.isTier).." |cff7fffff"..typeText.."|r")
+			entry.itemLvl:SetText(addon.Utils:GetItemLevelText(entry.item.ilvl, entry.item.isTier).." |cff7fffff"..typeText.."|r")
 			entry.bonuses:SetText(bonusText)
 			if entry.item.note then
 				entry.noteButton:SetNormalTexture("Interface\\Buttons\\UI-GuildButton-PublicNote-Up")

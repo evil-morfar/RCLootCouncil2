@@ -29,6 +29,7 @@ local COUNCIL_COMMS_THROTTLE = 5
 local Player = addon.Require "Data.Player"
 local Council = addon.Require "Data.Council"
 local Comms = addon.Require "Services.Comms"
+local TempTable = addon.Require "Utils.TempTable"
 
 function RCLootCouncilML:OnInitialize()
 	self.Log = addon.Require "Log":New("ML")
@@ -221,10 +222,11 @@ function RCLootCouncilML:UpdateGroup(ask)
 		addon:SendCommand("group", "MLdb", addon.mldb)
 		self:SendCandidates()
 
-		local oldCouncil = self.council
-		self.council = self:UpdateGroupCouncil()
+		local oldCouncilNum = Council:GetNum()
+		local oldCouncil = TempTable:Acquire(Council:Get())
+		self:UpdateGroupCouncil()
 		local councilUpdated = false
-		if self.council:GetNum() ~= oldCouncil:GetNum() then
+		if Council:GetNum() ~= oldCouncilNum then
 			councilUpdated = true
 		else
 			for guid in pairs(self.council) do
@@ -237,6 +239,7 @@ function RCLootCouncilML:UpdateGroup(ask)
 		if councilUpdated then
 			self:SendCouncil()
 		end
+		oldCouncil:Release()
 	end
 end
 
@@ -306,10 +309,10 @@ end
 function RCLootCouncilML:StartSession()
 	self.Log("StartSession")
 	-- Make sure we haven't started the session too fast
-	if not addon.candidates[addon.playerName] or self.council:GetNum() == 0 then
+	if not addon.candidates[addon.player:GetName()] or Council:GetNum() == 0 then
 		addon:Print(L["Please wait a few seconds until all data has been synchronized."])
 		self:SendCandidates() -- Ensure they get sent.
-		return self.Log:d("Data wasn't ready", addon.candidates[addon.playerName], self.council:GetNum())
+		return self.Log:d("Data wasn't ready", addon.candidates[addon.playerName], Council:GetNum())
 	end
 
 
@@ -565,6 +568,7 @@ function RCLootCouncilML:NewML(newML)
 		addon:SendCommand("group", "playerInfoRequest")
 		self:UpdateMLdb() -- Will build and send mldb
 		self:UpdateGroup(true)
+		self:UpdateGroupCouncil()
 		self:SendCouncil()
 		self:ClearOldItemsInBags()
 
@@ -1463,11 +1467,13 @@ end
 function RCLootCouncilML:Test(items)
 	-- check if we're added in self.group
 	-- (We might not be on solo test)
-	if not tContains(self.candidates, addon.playerName) then
-		self:AddCandidate(addon.playerName, addon.playerClass, addon.Utils:GetPlayerRole(), addon.guildRank)
+	if not tContains(self.candidates, addon.player:GetName()) then
+		self:AddCandidate(addon.player:GetName(), addon.playerClass, addon.Utils:GetPlayerRole(), addon.guildRank)
 	end
 	-- We must send candidates now, since we can't wait the normal 10 secs
 	addon:SendCommand("group", "candidates", self.candidates)
+	self:UpdateGroupCouncil()
+	self:SendCouncil()
 	-- Add the items
 	for _, iName in ipairs(items) do
 		self:AddItem(iName)
