@@ -236,7 +236,7 @@ do
 			if IsCorruptedItem and IsCorruptedItem(item.link) then
 				entry.icon:SetBorderColor("purple")
 			else
-				entry.icon:SetBorderColor()
+				entry.icon:SetBorderColor("grey")
 			end
 			entry.item = item
 			entry.itemText:SetText((item.isRoll and (_G.ROLL..": ") or "")..addon.Utils:GetItemTextWithCount(entry.item.link or "error", #entry.item.sessions))
@@ -286,7 +286,7 @@ do
 
 			-------- Item Icon -------------
 			entry.icon = addon.UI:New("IconBordered", entry.frame)
-			entry.icon:SetBorderColor() -- white
+			entry.icon:SetBorderColor("grey") -- white
 			entry.icon:SetSize(ENTRY_HEIGHT*0.78, ENTRY_HEIGHT*0.78)
 			entry.icon:SetPoint("TOPLEFT", entry.frame, "TOPLEFT", 9, -5)
 			entry.icon:SetMultipleScripts({

@@ -11,6 +11,7 @@ function Object:New(parent, name, texture)
    b:GetHighlightTexture():SetBlendMode("ADD")
    b:SetNormalTexture(texture or "Interface\\InventoryItems\\WoWUnknownItem01")
    b:GetNormalTexture():SetDrawLayer("BACKGROUND")
+   b:GetNormalTexture():SetVertexColor(1,1,1)
    b:SetBackdrop({
       bgFile = "",
       edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",

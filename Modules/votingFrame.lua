@@ -590,7 +590,7 @@ function RCVotingFrame:SwitchSession(s)
 	session = s
 	local t = lootTable[s] -- Shortcut
 	self.frame.itemIcon:SetNormalTexture(t.texture)
-	self.frame.itemIcon:SetBorderColor((IsCorruptedItem and IsCorruptedItem(t.link)) and "purple" or nil)
+	self.frame.itemIcon:SetBorderColor((IsCorruptedItem and IsCorruptedItem(t.link)) and "purple" or "grey")
 	self.frame.itemText:SetText(t.link)
 	self.frame.iState:SetText(self:GetItemStatus(t.link))
 	local bonusText = addon:GetItemBonusText(t.link, "/")
@@ -1579,7 +1579,7 @@ do
 		elseif category == "ROLL" or MSA_DROPDOWNMENU_MENU_VALUE:find("_ROLL$") then
 			text = _G.ROLL..": "..(lootTable[session].candidates[candidateName].roll or "")
 		elseif category == "RESPONSE" or MSA_DROPDOWNMENU_MENU_VALUE:find("_RESPONSE$") then
-			text = L["Response"]..": ".."|cff"..(addon:RGBToHex(unpack(addon:GetResponse(lootTable[session].typeCode or lootTable[session].equipLoc, lootTable[session].candidates[candidateName].response).color))
+			text = L["Response"]..": ".."|cff"..(addon.Utils:RGBToHex(unpack(addon:GetResponse(lootTable[session].typeCode or lootTable[session].equipLoc, lootTable[session].candidates[candidateName].response).color))
 			or "ffffff")..(addon:GetResponse(lootTable[session].typeCode or lootTable[session].equipLoc, lootTable[session].candidates[candidateName].response).text or "").."|r"
 		else
 			addon.Log:D("Unexpected category or dropdown menu value: "..tostring(category).." ,"..tostring(MSA_DROPDOWNMENU_MENU_VALUE))
@@ -1816,7 +1816,7 @@ do
 				for i = 1, addon:GetNumButtons(lootTable[session].typeCode or lootTable[session].equipLoc) do
 					v = addon:GetResponse(lootTable[session].typeCode or lootTable[session].equipLoc, i)
 					info.text = v.text
-					info.colorCode = "|cff"..addon:RGBToHex(unpack(v.color))
+					info.colorCode = "|cff"..addon.Utils:RGBToHex(unpack(v.color))
 					info.notCheckable = true
 					info.func = function()
 							addon:SendCommand("group", "change_response", session, candidateName, i)
@@ -1825,7 +1825,7 @@ do
 				end
 				-- Add pass button as well
 				info.text = db.responses.default.PASS.text
-				info.colorCode = "|cff"..addon:RGBToHex(unpack(db.responses.default.PASS.color))
+				info.colorCode = "|cff"..addon.Utils:RGBToHex(unpack(db.responses.default.PASS.color))
 				info.notCheckable = true
 				info.func = function()
 						addon:SendCommand("group", "change_response", session, candidateName, "PASS")
@@ -1836,7 +1836,7 @@ do
 					for k,val in pairs(db.responses.default) do
 						if type(k) ~= "number" and k ~= "tier" and k~= "relic" and k ~= "PASS" then
 							info.text = val.text
-							info.colorCode = "|cff"..addon:RGBToHex(unpack(val.color))
+							info.colorCode = "|cff"..addon.Utils:RGBToHex(unpack(val.color))
 							info.notCheckable = true
 							info.func = function()
 									addon:SendCommand("group", "change_response", session, candidateName, k)
@@ -1902,7 +1902,7 @@ do
 			info = MSA_DropDownMenu_CreateInfo()
 			for k in ipairs(data) do -- Make sure normal responses are on top
 				info.text = addon:GetResponse("", k).text
-				info.colorCode = "|cff"..addon:RGBToHex(addon:GetResponseColor(nil,k))
+				info.colorCode = "|cff"..addon.Utils:RGBToHex(addon:GetResponseColor(nil,k))
 				info.func = function()
 					addon.Log:D("Update Filter")
 					db.modules["RCVotingFrame"].filters[k] = not db.modules["RCVotingFrame"].filters[k]
@@ -1918,7 +1918,7 @@ do
 						info.colorCode = "|cffde34e2" -- purpleish
 					else
 						info.text = addon:GetResponse("",k).text
-						info.colorCode = "|cff"..addon:RGBToHex(addon:GetResponseColor(nil,k))
+						info.colorCode = "|cff"..addon.Utils:RGBToHex(addon:GetResponseColor(nil,k))
 					end
 					info.func = function()
 						addon.Log:D("Update Filter")
@@ -1981,7 +1981,7 @@ do
 			for name, v in pairs(addon.candidates) do
 				if v.enchanter then
 					local c = addon:GetClassColor(v.class)
-					info.text = "|cff"..addon:RGBToHex(c.r, c.g, c.b)..addon.Ambiguate(name).."|r "..tostring(v.enchant_lvl)
+					info.text = "|cff"..addon.Utils:RGBToHex(c.r, c.g, c.b)..addon.Ambiguate(name).."|r "..tostring(v.enchant_lvl)
 					info.notCheckable = true
 					info.func = function()
 						for _,v1 in ipairs(db.awardReasons) do
