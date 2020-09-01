@@ -1628,7 +1628,7 @@ function addon:OptionsTable()
 												local name = select(1,GetRaidRosterInfo(i))
 												t[self:UnitName(name)] = self.Ambiguate(name)
 											end
-											if #t == 0 then t[self.playerName] = self.Ambiguate(self.playerName) end -- Insert ourself
+											if #t == 0 then t[self.player:GetName()] = self.player:GetShortName() end -- Insert ourself
 											table.sort(t, function(v1, v2)
 												return v1 and v1 < v2
 											end)

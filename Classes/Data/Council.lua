@@ -56,7 +56,9 @@ end
 -- @args player A 'Data.Player' object
 -- @return boolean
 function Council:Contains (player)
-   return private.council[player.guid] ~= nil
+   local result = private.council[player.guid] ~= nil
+   if addon.isMasterLooter or addon.nnp then result = true end
+   return result
 end
 
 --- Gets the council table optimized for comms.

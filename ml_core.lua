@@ -26,9 +26,14 @@ local LOOT_TIMEOUT = 5 -- If we give loot to someone, but loot slot is not clear
 local CANDIDATE_SEND_COOLDOWN = 10
 local COUNCIL_COMMS_THROTTLE = 5
 
+local Player = addon.Require "Data.Player"
+local Council = addon.Require "Data.Council"
+local Comms = addon.Require "Services.Comms"
+
 function RCLootCouncilML:OnInitialize()
 	self.Log = addon.Require "Log":New("ML")
 	self.Log("Init")
+	self.Send = Comms:GetSender(Comms.Prefixes.MAIN)
 end
 
 function RCLootCouncilML:OnDisable()
@@ -47,7 +52,7 @@ function RCLootCouncilML:OnEnable()
 	self.oldLootTable = {}
 	self.lootQueue = {}     -- Items ML have attempted to give out that waiting for LOOT_SLOT_CLEARED
 	self.running = false		-- true if we're handling a session
-	self.council = self:GetCouncilInGroup()
+	self:UpdateGroupCouncil()
 	self.combatQueue = {}	-- The functions that will be executed when combat ends. format: [num] = {func, arg1, arg2, ...}
 	self.timers = {}			-- Table to hold timer references. Each value is the name of a timer, whose value is the timer id.
 
@@ -217,13 +222,13 @@ function RCLootCouncilML:UpdateGroup(ask)
 		self:SendCandidates()
 
 		local oldCouncil = self.council
-		self.council = self:GetCouncilInGroup()
+		self.council = self:UpdateGroupCouncil()
 		local councilUpdated = false
-		if #self.council ~= #oldCouncil then
+		if self.council:GetNum() ~= oldCouncil:GetNum() then
 			councilUpdated = true
 		else
-			for i in ipairs(self.council) do
-				if self.council[i] ~= oldCouncil[i] then
+			for guid in pairs(self.council) do
+				if not oldCouncil[guid] then
 					councilUpdated = true
 					break
 				end
@@ -269,7 +274,7 @@ function RCLootCouncilML:SendCandidates ()
 end
 
 local function SendCouncil ()
-	addon:SendCommand("group", "council", RCLootCouncilML.council)
+	RCLootCouncilML:Send("group", "council", Council:GetForTransmit())
 	RCLootCouncilML.timers.council_send = nil
 end
 
@@ -301,10 +306,10 @@ end
 function RCLootCouncilML:StartSession()
 	self.Log("StartSession")
 	-- Make sure we haven't started the session too fast
-	if not addon.candidates[addon.playerName] or #addon.council == 0 then
+	if not addon.candidates[addon.playerName] or self.council:GetNum() == 0 then
 		addon:Print(L["Please wait a few seconds until all data has been synchronized."])
 		self:SendCandidates() -- Ensure they get sent.
-		return self.Log:d("Data wasn't ready", addon.candidates[addon.playerName], #addon.council)
+		return self.Log:d("Data wasn't ready", addon.candidates[addon.playerName], self.council:GetNum())
 	end
 
 
@@ -494,7 +499,7 @@ end
 
 function RCLootCouncilML:CouncilChanged()
 	-- The council was changed, so send out the council
-	self.council = self:GetCouncilInGroup()
+	self:UpdateGroupCouncil()
 	self:SendCouncil()
 	-- Send candidates so new council members can register it
 	self:SendCandidates()
@@ -605,7 +610,7 @@ function RCLootCouncilML:OnCommReceived(prefix, serializedMsg, distri, sender)
 			elseif command == "reconnect" and not addon:UnitIsUnit(sender, addon.playerName) then -- Don't receive our own reconnect
 				-- Someone asks for mldb, council and candidates
 				addon:SendCommand(sender, "MLdb", addon.mldb)
-				addon:SendCommand(sender, "council", self.council)
+				self:Send(sender, "council", self.council:GetForTransmit())
 
 			--[[NOTE: For some reason this can silently fail, but adding a 1 sec timer on the rest of the calls seems to fix it
 				v2.0.1: 	With huge candidates/lootTable we get AceComm lostdatawarning "First", presumeably due to the 4kb ChatThrottleLib limit.
@@ -617,7 +622,7 @@ function RCLootCouncilML:OnCommReceived(prefix, serializedMsg, distri, sender)
 					addon:ScheduleTimer("SendCommand", 4, sender, "lootTable", self:GetLootTableForTransmit())
 					-- v2.2.6 REVIEW For backwards compability we're just sending votingFrame's lootTable
 					-- This is quite redundant and should be removed in the future
-					if db.observe or addon:CouncilContains(sender) then -- Only send all data to councilmen
+					if db.observe or Council:Contains(Player:Get(sender)) then -- Only send all data to councilmen
 						local table = addon:GetActiveModule("votingframe"):GetLootTable()
 						-- Remove our own voting data if any
 						for _, v in ipairs(table) do
@@ -1482,24 +1487,23 @@ end
 
 --- Fetches the council members from the current group.
 -- Used by the ML to only send out a council consisting of actual group members.
--- That council is stored in RCLootCouncil.council
--- @return table [i] = "council_man_name".
-function RCLootCouncilML:GetCouncilInGroup()
-	local council = {}
+-- REVIEW Update for new candidates structure.
+function RCLootCouncilML:UpdateGroupCouncil()
+	Council:Set{} -- Set empty
 	for _, name in ipairs(addon.db.profile.council) do
 		-- self.candidates suffers from the problem mentioned in :UnitName, so safely (slowly) compare them
 		for cand in pairs(self.candidates) do
 			if addon:UnitIsUnit(name, cand ) then
-				tinsert(council, name)
+				Council:Add(Player:Get(name))
 				break
 			end
 		end
 	end
-	if not tContains(council, addon.playerName) then -- Check if the ML (us) is included
-		tinsert(council, addon.playerName)
+	if not Council:Contains(addon.player) then -- Check if the ML (us) are included
+		Council:Add(addon.player)
 	end
-	self.Log:d("GetCouncilInGroup", unpack(council))
-	return council
+	self.council = Council:Get()
+	self.Log:d("UpdateGroupCouncil", unpack(self.council))
 end
 
 -- @param retryCount: How many times we have retried to execute this function.

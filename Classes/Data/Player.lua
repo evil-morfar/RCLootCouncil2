@@ -85,6 +85,7 @@ end
 
 function private:CreatePlayer (guid)
    Log:f("<Data.Player>", "CreatePlayer", guid)
+   if not guid then return {} end
    local _, class, _, _, _, name, realm = GetPlayerInfoByGUID(guid)
    realm = realm == "" and select(2, UnitFullName("player")) or realm
    local player = setmetatable({

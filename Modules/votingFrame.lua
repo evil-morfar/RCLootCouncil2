@@ -9,6 +9,9 @@ local RCVotingFrame = addon:NewModule("RCVotingFrame", "AceComm-3.0", "AceTimer-
 local LibDialog = LibStub("LibDialog-1.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 
+local Council = addon.Require "Data.Council"
+local TempTable = addon.Require "Utils.TempTable"
+
 local ROW_HEIGHT = 20;
 local NUM_ROWS = 15;
 local db
@@ -17,7 +20,6 @@ local lootTable = {} -- Table containing all data, lib-st cells pulls data from 
 local sessionButtons = {}
 local moreInfo = false -- Show more info frame?
 local active = false -- Are we currently in session?
-local councilInGroup = {}
 local menuFrame -- Right click menu frame
 local filterMenu -- Filter drop down menu
 local enchanters -- Enchanters drop down menu frame
@@ -103,7 +105,6 @@ end
 
 function RCVotingFrame:Show()
 	if self.frame and lootTable[session] then
-		councilInGroup = addon.council
 		if self:HasUnawardedItems() then active = true end
 		self.frame:Show()
 		self:SwitchSession(session)
@@ -975,8 +976,11 @@ function RCVotingFrame:UpdateLootStatus()
 end
 
 function RCVotingFrame:UpdatePeopleToVote()
-	local hasVoted = {}
-	local shouldVote = CopyTable(addon.council)
+	local hasVoted = TempTable:Aquire()
+	local shouldVote = TempTable:Aquire()
+	for _, player in pairs(Council:Get()) do
+		tinsert(shouldVote, player.name)
+	end
 
 	-- Find out who have voted
 	for name in pairs(lootTable[session].candidates) do
@@ -987,14 +991,15 @@ function RCVotingFrame:UpdatePeopleToVote()
 			end
 		end
 	end
-	if #councilInGroup == 0 then
+	local numCouncil = Council:GetNum()
+	if numCouncil == 0 then
 		self.frame.rollResult.text:SetText(L["Couldn't find any councilmembers in the group"])
 		self.frame.rollResult.text:SetTextColor(1,0,0,1) -- Red
 	elseif #shouldVote == 0 then
 		self.frame.rollResult.text:SetText(L["Everyone have voted"])
 		self.frame.rollResult.text:SetTextColor(0,1,0,1) -- Green
 	elseif #shouldVote > 0 then
-		self.frame.rollResult.text:SetText(format(L["x out of x have voted"], #hasVoted, #councilInGroup))
+		self.frame.rollResult.text:SetText(format(L["x out of x have voted"], #hasVoted, numCouncil))
 		self.frame.rollResult.text:SetTextColor(1,1,0,1) -- Yellow
 	else
 		addon.Log:D("#voters > #councilInGroup ?")
@@ -1017,6 +1022,8 @@ function RCVotingFrame:UpdatePeopleToVote()
 		GameTooltip:Show()
 	end)
 	self.frame.rollResult:SetWidth(self.frame.rollResult.text:GetStringWidth())
+	hasVoted:Release()
+	shouldVote:Release()
 end
 
 function RCVotingFrame:UpdateSessionButtons()

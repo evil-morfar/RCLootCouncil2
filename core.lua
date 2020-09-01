@@ -38,6 +38,10 @@
 		StartHandleLoot 			- Sent whenever RCLootCouncil starts handling loot.
 		StopHandleLoot				- Sent whenever RCLootCouncil stops handling loot.
 
+	Comms:
+		MAIN:
+			council				P - Council received from ML
+
 ]]
 
 -- GLOBALS: GetLootMethod, GetAddOnMetadata, UnitClass
@@ -53,6 +57,8 @@ tooltipForParsing:UnregisterAllEvents() -- Don't use GameTooltip for parsing, be
 RCLootCouncil:SetDefaultModuleState(false)
 
 local Comms = RCLootCouncil.Require "Services.Comms"
+local Council = RCLootCouncil.Require "Data.Council"
+local Player = RCLootCouncil.Require "Data.Player"
 
 -- Init shorthands
 local db, historyDB, debugLog;-- = self.db.profile, self.lootDB.factionrealm, self.db.global.log
@@ -99,7 +105,7 @@ function RCLootCouncil:OnInitialize()
 	self.debug = false
 	self.tVersion = "Alpha.1" -- String or nil. Indicates test version, which alters stuff like version check. Is appended to 'version', i.e. "version-tVersion" (max 10 letters for stupid security)
 
-	self.playerClass = select(2, UnitClass("player"))
+	self.playerClass = select(2, UnitClass("player")) -- TODO Remove - contained in self.player
 	self.guildRank = L["Unguilded"]
 	self.isMasterLooter = false -- Are we the ML?
 	self.masterLooter = ""  -- Name of the ML
@@ -124,7 +130,6 @@ function RCLootCouncil:OnInitialize()
 									-- The 8th return value is sth like "|cff66bbff|Hjournal:0:946:14|h[Antorus, the Burning Throne]|h|r"
 									-- The number at the position of the above 946 is what we want.
 	self.candidates = {}
-	self.council = {} -- council from ML
 	self.mldb = {} -- db recived from ML
 	self.chatCmdHelp = {
 		{cmd = "config",	desc = L["chat_commands_config"]},
@@ -228,8 +233,9 @@ function RCLootCouncil:OnEnable()
 	end
 
 	-- Register the player's name
-	self.realmName = select(2, UnitFullName("player"))
-	self.playerName = self.Require "Data.Player":Get("player")--self:UnitName("player")
+	self.realmName = select(2, UnitFullName("player")) -- TODO Remove
+	self.playerName = Player:Get("player") -- TODO Remove
+	self.player = Player:Get("player")
 	self.Log(self.playerName, self.version, self.tVersion)
 
 	self:DoChatHook()
@@ -280,6 +286,7 @@ function RCLootCouncil:OnEnable()
 		return strfind(msg, "[[RCLootCouncil]]:")
 	end
 	ChatFrame_AddMessageEventFilter("CHAT_MSG_WHISPER_INFORM", filterFunc)
+	self:CouncilChanged() -- Call to initialize council
 end
 
 function RCLootCouncil:OnDisable()
@@ -302,6 +309,14 @@ function RCLootCouncil:ConfigTableChanged(val)
 end
 
 function RCLootCouncil:CouncilChanged()
+	local council = {}
+	for _, name in ipairs(self.db.profile.council) do
+		local player = Player:Get(name)
+		if player then
+			council[player.guid] = player
+		end
+	end
+	Council:Set(council)
 	self:SendMessage("RCCouncilChanged")
 end
 
@@ -659,16 +674,16 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 
 			elseif command == "candidates" and self:UnitIsUnit(sender, self.masterLooter) then
 				self.candidates = unpack(data)
-			elseif command == "council" and self:UnitIsUnit(sender, self.masterLooter) then -- only ML sends council
-				self.council = unpack(data)
-				self.isCouncil = self:CouncilContains(self.playerName:GetName())
-
-				-- prepare the voting frame for the right people
-				if self.isCouncil or self.mldb.observe then
-					self:CallModule("votingframe")
-				else
-					self:GetActiveModule("votingframe"):Disable()
-				end
+			-- elseif command == "council" and self:UnitIsUnit(sender, self.masterLooter) then -- only ML sends council
+			-- 	self.council = unpack(data)
+			-- 	self.isCouncil = self:CouncilContains(self.playerName:GetName())
+			--
+			-- 	-- prepare the voting frame for the right people
+			-- 	if self.isCouncil or self.mldb.observe then
+			-- 		self:CallModule("votingframe")
+			-- 	else
+			-- 		self:GetActiveModule("votingframe"):Disable()
+			-- 	end
 
 			elseif command == "MLdb" and not self.isMasterLooter then -- ML sets his own mldb
 				--[[ NOTE: 2.1.7 - While a check for this does make sense, I'm just really tired of mldb problems, and
@@ -888,7 +903,7 @@ function RCLootCouncil:OnLootTableReceived (lt)
 	end
 
 	-- Check if council is received
-	if not FindInTableIf(self.council, function(v) return self:UnitIsUnit(self.masterLooter, v) end) then
+	if not Council:Contains(self.masterLooter) then
 		self.Log:d("Received loot table without ML in the council", self.masterLooter)
 		self:SendCommand(self.masterLooter, "council_request")
 		return self:ScheduleTimer("OnLootTableReceived", 0, lt)
@@ -1368,7 +1383,7 @@ function RCLootCouncil:Timer(type, ...)
 				self:SendCommand(self.masterLooter, "MLdb_request")
 			end
 			-- and if we haven't received a council, request it
-			if #self.council == 0 then
+			if Council:GetNum() == 0 then
 				self:SendCommand(self.masterLooter, "council_request")
 			end
 		end
@@ -2040,14 +2055,6 @@ function RCLootCouncil:GetML()
 		return UnitIsGroupLeader("player"), name
 	end
 	return false, nil;
-end
-
-function RCLootCouncil:CouncilContains(name)
-	local ret = tContains(self.council, self:UnitName(name))
-	if self:UnitIsUnit(name, self.playerName) and self.isMasterLooter
-	 or self.nnp or self:UnitIsUnit(name, self.masterLooter) then ret = true end -- ML and nnp is always council
-	self.Log:d(tostring(ret).." =", "ConcilContains", name)
-	return ret
 end
 
 function RCLootCouncil:GetInstalledModulesFormattedData()
@@ -2894,3 +2901,22 @@ end
 	-- Fix for response object in response color:
 	/run local c=0;for _,r in pairs(RCLootCouncil.db.profile.responses.default)do if r.color then r.color.color = nil;r.color.text = nil;c=c+1;end;end;print("Fixed",c,"buttons")
 ]]
+
+--- These comms should lives all the time
+function RCLootCouncil:SubscribeToPermanentComms ()
+	Comms:BulkSubscribe(Comms.Prefixes.MAIN, {
+		council = function (_, sender, data)
+			self:OnCouncilReceived(sender, data)
+		end
+	})
+end
+
+-------------------------------------------------------------
+-- Comm Handlers
+-------------------------------------------------------------
+function RCLootCouncil:OnCouncilReceived (sender, council)
+	if not self:UnitIsUnit(sender, "player") then return self.Log:W("Non ML sent council") end
+	Council:RestoreFromTransmit(council)
+	self.isCouncil = Council:Contains(self.player)
+	-- REVIEW Send a message? Or something else to inform that council is updated.
+end
