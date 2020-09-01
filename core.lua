@@ -574,7 +574,7 @@ function RCLootCouncil:SendCommand(target, command, ...)
 		elseif IsInGroup() then -- Party
 			self:SendCommMessage("RCLootCouncil", toSend, self.Utils:IsInNonInstance() and "INSTANCE_CHAT" or "PARTY")
 		else--if self.testMode then -- Alone (testing)
-			self:SendCommMessage("RCLootCouncil", toSend, "WHISPER", self.playerName)
+			self:SendCommMessage("RCLootCouncil", toSend, "WHISPER", self.playerName:GetName())
 		end
 
 	elseif target == "guild" then
@@ -582,7 +582,7 @@ function RCLootCouncil:SendCommand(target, command, ...)
 
 	else
 		if self:UnitIsUnit(target,"player") then -- If target == "player"
-			self:SendCommMessage("RCLootCouncil", toSend, "WHISPER", self.playerName)
+			self:SendCommMessage("RCLootCouncil", toSend, "WHISPER", self.playerName:GetName())
 		else
 			-- We cannot send "WHISPER" to a crossrealm player
 			if target:find("-") then
@@ -661,7 +661,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 				self.candidates = unpack(data)
 			elseif command == "council" and self:UnitIsUnit(sender, self.masterLooter) then -- only ML sends council
 				self.council = unpack(data)
-				self.isCouncil = self:CouncilContains(self.playerName)
+				self.isCouncil = self:CouncilContains(self.playerName:GetName())
 
 				-- prepare the voting frame for the right people
 				if self.isCouncil or self.mldb.observe then
@@ -826,7 +826,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 			-- Most likely pre 2.0 command
 			local cmd = strsplit(" ", serializedMsg, 2)
 			if cmd and cmd == "verTest" then
-				self:SendCommand(sender, "verTestReply", self.playerName, self.playerClass, self.guildRank, self.version, self.tVersion)
+				self:SendCommand(sender, "verTestReply", self.playerName:GetName(), self.playerClass, self.guildRank, self.version, self.tVersion)
 				return
 			end
 			self.Log:e("Deserializing comm failed:", command, data);
@@ -963,7 +963,7 @@ function RCLootCouncil:ChatCmdAdd(args)
 		links = self:SplitItemLinks(args) -- Split item links to allow user to enter links without space
 	end
 	for _,v in ipairs(links) do
-		self:GetActiveModule("masterlooter"):AddUserItem(v, owner or self.playerName)
+		self:GetActiveModule("masterlooter"):AddUserItem(v, owner or self.playerName:GetName())
 	end
 end
 
@@ -1261,7 +1261,7 @@ function RCLootCouncil:SendResponse(target, session, response, isTier, isRelic, 
 
 	self:SendCommand(target, "response",
 		session,
-		self.playerName,
+		self.playerName:GetName(),
 		{	gear1 = g1 and self.Utils:GetItemStringFromLink(g1) or nil,
 			gear2 = g2 and self.Utils:GetItemStringFromLink(g2) or nil,
 			ilvl = sendAvgIlvl and playersData.ilvl or nil,
@@ -1436,7 +1436,7 @@ function RCLootCouncil:SendLootAck(table, skip)
 		end
 	end
 	if hasData then
-		self:SendCommand("group", "lootAck", self.playerName, playersData.specID, playersData.ilvl, toSend, playersData.corruption)
+		self:SendCommand("group", "lootAck", self.playerName:GetName(), playersData.specID, playersData.ilvl, toSend, playersData.corruption)
 	end
 end
 
@@ -1698,7 +1698,7 @@ function RCLootCouncil:GetPlayerInfo()
 		end
 	end
 	local ilvl = select(2,GetAverageItemLevel())
-	return self.playerName, self.playerClass, self.Utils:GetPlayerRole(), self.guildRank, enchant, lvl, ilvl, playersData.specID
+	return self.playerName:GetName(), self.playerClass, self.Utils:GetPlayerRole(), self.guildRank, enchant, lvl, ilvl, playersData.specID
 end
 
 --- Returns a lookup table containing GuildRankNames and their index.
@@ -1910,7 +1910,7 @@ function RCLootCouncil:OnBonusRoll (_, type, link, ...)
 	self.Log:d("BONUS_ROLL", type, link, ...)
 	if type == "item" or type == "artifact_power" then
 		-- Only handle items and artifact power
-		self:SendCommand("group", "bonus_roll", self.playerName, type, link)
+		self:SendCommand("group", "bonus_roll", self.playerName:GetName(), type, link)
 	end
 	--[[
 		Tests:
@@ -2317,6 +2317,8 @@ end
 -- Seems to be because unit-realm isn't a valid unitid.
 function RCLootCouncil:UnitIsUnit(unit1, unit2)
 	if not unit1 or not unit2 then return false end
+	if unit1.name then unit1 = unit1.name end
+	if unit2.name then unit2 = unit2.name end
 	-- Remove realm names, if any
 	if strfind(unit1, "-", nil, true) ~= nil then
 		unit1 = Ambiguate(unit1, "short")

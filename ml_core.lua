@@ -556,7 +556,7 @@ end
 
 function RCLootCouncilML:NewML(newML)
 	self.Log:d("NewML", newML)
-	if addon:UnitIsUnit(newML, "player") then -- we are the the ML
+	if newML == addon.playerName then -- we are the the ML
 		addon:SendCommand("group", "playerInfoRequest")
 		self:UpdateMLdb() -- Will build and send mldb
 		self:UpdateGroup(true)
