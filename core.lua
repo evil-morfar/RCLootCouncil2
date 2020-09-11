@@ -52,7 +52,7 @@ tooltipForParsing:UnregisterAllEvents() -- Don't use GameTooltip for parsing, be
 
 RCLootCouncil:SetDefaultModuleState(false)
 
-local Comms = RCLootCouncil.require "Services.Comms"
+local Comms = RCLootCouncil.Require "Services.Comms"
 
 -- Init shorthands
 local db, historyDB, debugLog;-- = self.db.profile, self.lootDB.factionrealm, self.db.global.log
