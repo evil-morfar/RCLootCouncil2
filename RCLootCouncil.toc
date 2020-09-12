@@ -42,5 +42,4 @@ Utils\trinketData.lua
 Utils\tokenData.lua
 Utils\ItemStorage.lua
 Utils\autopass.lua
-Utils\sync.lua
 Utils\popups.lua

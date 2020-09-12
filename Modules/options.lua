@@ -254,7 +254,7 @@ function addon:OptionsTable()
 										func = function()
 											InterfaceOptionsFrame:Hide()
 											LibStub("AceConfigDialog-3.0"):CloseAll()
-											self.Sync:Spawn()
+											self.Sync:Enable()
 										end,
 									},
 								},

@@ -810,14 +810,14 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 					end
 				end
 
-			elseif command == "sync" then
-				self.Sync:SyncDataReceived(unpack(data))
-			elseif command == "syncRequest" then
-				self.Sync:SyncRequestReceived(unpack(data))
-			elseif command == "syncAck" then
-				self.Sync:SyncAckReceived(unpack(data))
-			elseif command == "syncNack" then
-				self.Sync:SyncNackReceived(unpack(data))
+			-- elseif command == "sync" then
+			-- 	self.Sync:SyncDataReceived(unpack(data))
+			-- elseif command == "syncRequest" then
+			-- 	self.Sync:SyncRequestReceived(unpack(data))
+			-- elseif command == "syncAck" then
+			-- 	self.Sync:SyncAckReceived(unpack(data))
+			-- elseif command == "syncNack" then
+			-- 	self.Sync:SyncNackReceived(unpack(data))
 			elseif command == "not_tradeable" or command == "rejected_trade" then
 				tinsert(self.nonTradeables, {link = (unpack(data)), reason = command, owner = self:UnitName(sender)})
 

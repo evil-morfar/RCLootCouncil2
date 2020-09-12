@@ -27,6 +27,7 @@ LibStub("AceSerializer-3.0"):Embed(private)
 Comms.Prefixes = {
    MAIN     = "RCLC",
    VERSION  = "RCLCv",
+   SYNC     = "RCLCs"
 }
 
 --- Subscribe to a comm

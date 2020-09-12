@@ -1,16 +1,70 @@
 --- Contains all code required for syncronizing stuff
 -- @author: Potdisc
 -- 14/07/2017
+--[[ Comms:
+   SYNC:
+      syncR          P - Sync request received.
+      syncNack       P - Sync nack recevied.
+      sync           T - Actual sync data.
+      syncAck        T - Sync ack received.
+]]
 
 local _,addon = ...
+local sync = addon:NewModule("Sync")
 local LibDialog = LibStub("LibDialog-1.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 local AG = LibStub("AceGUI-3.0")
-local sync = {}
+local Comms = addon.Require "Services.Comms"
+local PREFIX = Comms.Prefixes.SYNC
 addon.Sync = sync
 
 local sync_table = {}
 local last_sync_time = 0
+local subscriptions = {}
+
+function sync:OnInitialize ()
+   -- General "Sender" object for sync
+   self.Send = function(self, target, command, ...)
+      Comms:Send{
+         prefix = PREFIX,
+         target = target,
+         command = command,
+         data = {...},
+         prio = "BULK",
+         callback = self.OnDataPartSent,
+         callbackarg = self
+      }
+   end
+   -- Register Permanent Comms
+   Comms:BulkSubscribe(PREFIX {
+      syncR = function(_, sender, data)
+         self:SyncRequestReceived(addon:UnitName(sender),unpack(data))
+      end,
+      syncNack = function (_,sender,data)
+         self:SyncRequestReceived(addon:UnitName(sender), unpack(data))
+      end
+   })
+end
+
+function sync:OnEnable ()
+   -- Temporary comms only available with the window open
+   subscriptions = Comms:BulkSubscribe(PREFIX, {
+      sync = function (_,sender,data)
+         self:SyncDataReceived(addon:UnitName(sender),unpack(data))
+      end,
+      syncAck = function (_,sender,data)
+         self:SyncAckReceived(addon:UnitName(sender),unpack(data))
+      end
+   })
+   self:Spawn()
+end
+
+function sync:OnDisable ()
+   if self.frame then self.frame:Hide() end
+   for _, sub in ipairs(subscriptions) do
+      sub:unsubscribe()
+   end
+end
 
 -- Handlers for incoming sync data - determines which sync types we can handle
 sync.syncHandlers = {
@@ -34,41 +88,19 @@ sync.declineReasons = { -- Gets delivered "player" and "type"
 }
 local function SendSyncData(target, type)
    addon.Log:D("SendSyncData",target,type)
-   local toSend = addon:Serialize("sync", {addon.playerName, type, sync_table[target][type]})
-   if addon:UnitIsUnit(target,"player") then -- If target == "player"
-			addon:SendCommandModified("RCLootCouncil", toSend, "WHISPER", addon.playerName, "BULK", sync.OnDataPartSent, sync)
-	else
-		-- We cannot send "WHISPER" to a crossrealm player
-		if target:find("-") then
-			if target:find(addon.realmName) then -- Our own realm, just send it
-				addon:SendCommandModified("RCLootCouncil", toSend, "WHISPER", target, "BULK", sync.OnDataPartSent, sync)
-			else -- Get creative
-				-- Remake command to be "xrealm" and put target and command in the table
-				-- See "RCLootCouncil:HandleXRealmComms()" for more info
-				toSend = addon:Serialize("xrealm", {target, "sync", addon.playerName, type, sync_table[target][type]})
-				if GetNumGroupMembers() > 0 then -- We're in a group
-					addon:SendCommandModified("RCLootCouncil", toSend, addon.Utils.IsPartyLFG() and "INSTANCE_CHAT" or "RAID", nil, "BULK", sync.OnDataPartSent, sync)
-				else -- We're not, probably a guild verTest
-					addon:SendCommandModified("RCLootCouncil", toSend, "GUILD", nil, "BULK", sync.OnDataPartSent, sync)
-				end
-			end
-
-		else -- Should also be our own realm
-			addon:SendCommandModified("RCLootCouncil", toSend, "WHISPER", target, "BULK", sync.OnDataPartSent, sync)
-		end
-	end
+   sync:Send(target, "sync", type, sync_table[target][type])
    addon.Log:D("SendSyncData", "SENT")
 end
 
 -- We want to sync with another player
-function sync:SendSyncRequest(player, type, data)
-   addon.Log:D("SendSyncRequest", player, type)
+function sync:SendSyncRequest(sender, type, data)
+   addon.Log:D("SendSyncRequest", sender, type)
    if time() - last_sync_time < 10 then -- Limit to 1 sync per 10 sec
       return addon:Print(L["Please wait before trying to sync again."])
    end
    last_sync_time = time()
-	addon:SendCommand(player, "syncRequest", addon.playerName, type)
-   sync_table[player] = { -- Store the data
+   self:Send(sender, "syncR", type)
+   sync_table[sender] = { -- Store the data
       [type] = data
    }
    -- Lets see how much data we're trying to send by approximating it using the Serializer
@@ -76,23 +108,23 @@ function sync:SendSyncRequest(player, type, data)
 end
 
 -- Another player has agreed to receive our data
-function sync:SyncAckReceived(player, type)
-   addon.Log:D("SyncAckReceived", player, type)
-   local data = sync_table[player] and sync_table[player][type]
+function sync:SyncAckReceived(sender, type)
+   addon.Log:D("SyncAckReceived", sender, type)
+   local data = sync_table[sender] and sync_table[sender][type]
    if not data then
       addon:Print(L["Something went wrong during syncing, please try again."])
       return addon.Log:D("Data wasn't queued for syncing!!!")
    end
    -- We're ready to send
-   SendSyncData(player, type)
-   addon:Print(format(L["Sending 'type' to 'player'..."], type, player))
+   SendSyncData(sender, type)
+   addon:Print(format(L["Sending 'type' to 'player'..."], type, sender))
 end
 
-function sync:SyncNackReceived(player, type, msg)
-   addon.Log:D("SyncNackReceived", player, type, msg)
+function sync:SyncNackReceived(sender, type, msg)
+   addon.Log:D("SyncNackReceived", sender, type, msg)
    -- Delete them from table
-   sync_table[player] = nil
-   addon:Print(format(self.declineReasons[msg], player, type))
+   sync_table[sender] = nil
+   addon:Print(format(self.declineReasons[msg], sender, type))
 end
 
 -- We've received a request to sync with another player
@@ -112,7 +144,7 @@ end
 function sync.OnSyncAccept(_, data)
    local sender, type = unpack(data)
    addon.Log:D("OnSyncAccept", sender, type)
-   addon:SendCommand(sender, "syncAck", addon.playerName, type)
+   sync:Send(sender, "syncAck", type)
    sync.frame.statusBar:Show()
    sync.frame.statusBar.text:Show()
    sync.frame.statusBar.text:SetText(_G.RETRIEVING_DATA)
@@ -126,7 +158,7 @@ end
 
 function sync:DeclineSync (sender, type, msg)
    addon.Log:D("OnSyncDeclined", sender, type, msg)
-   addon:SendCommand(sender, "syncNack", addon.playerName, type, msg)
+   self:Send(sender, "syncNack", type, msg)
 end
 
 -- We're receiving data from another player
@@ -262,7 +294,7 @@ function sync:Spawn()
    f.exitButton = addon:CreateButton(_G.CLOSE, f.content)
    f.exitButton:SetPoint("LEFT", f.syncButton, "RIGHT", 20, 0)
    f.exitButton:SetScript("OnClick", function()
-      self.frame:Hide()
+      self:Disable()
    end)
 
    f.statusBar = CreateFrame("StatusBar", nil, f.content, "TextStatusBar")
