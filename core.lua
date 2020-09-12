@@ -44,6 +44,8 @@
 			playerInfoRequest P - Request for playerInfo
 			pI 					P - Player Info
 			looted 				P - Received 'looted' from a candidated.
+			fakeLoot				P - Candidate left an item on a boss.
+			fullbags				P - Candidate couldn't loot boss because of full bags.
 
 ]]
 
@@ -828,14 +830,14 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 			-- 	self.lootStatus[guid].candidates[self:UnitName(sender)] = {status = "looted"}
 			-- 	self:SendMessage("RCLootStatusReceived")
 
-			elseif command == "fakeLoot" or command == "fullbags" then
-				local link, guid = unpack(data)
-				if not guid then return self.Log:d(format("no guid in %s comm", command), guid, sender) end
-				if self.lootGUIDToIgnore[guid] then return end
-				if not self.lootStatus[guid] then self.lootStatus[guid] = {candidates = {}, num = 0} end
-				self.lootStatus[guid].num = self.lootStatus[guid].num + 1
-				self.lootStatus[guid].candidates[self:UnitName(sender)] = {status = command, item = link}
-				self:SendMessage("RCLootStatusReceived")
+			-- elseif command == "fakeLoot" or command == "fullbags" then
+			-- 	local link, guid = unpack(data)
+			-- 	if not guid then return self.Log:d(format("no guid in %s comm", command), guid, sender) end
+			-- 	if self.lootGUIDToIgnore[guid] then return end
+			-- 	if not self.lootStatus[guid] then self.lootStatus[guid] = {candidates = {}, num = 0} end
+			-- 	self.lootStatus[guid].num = self.lootStatus[guid].num + 1
+			-- 	self.lootStatus[guid].candidates[self:UnitName(sender)] = {status = command, item = link}
+			-- 	self:SendMessage("RCLootStatusReceived")
 
 			elseif command == "getCorruptionData" then
 				-- Just in case we need it...
@@ -2750,8 +2752,15 @@ function RCLootCouncil:SubscribeToPermanentComms ()
 		end,
 
 		looted = function (_, sender, data)
-			self:OnLootedReceived(sender, unpack(data))
-		end
+			self:OnLootStatusReceived(sender, "looted", nil, unpack(data))
+		end,
+
+		fakeLoot = function(_, sender, data)
+			self:OnLootStatusReceived(sender, "fakeLoot", unpack(data))
+		end,
+		fullbags = function(_, sender, data)
+			self:OnLootStatusReceived(sender, "fullbags", unpack(data))
+		end,
 	})
 end
 
@@ -2771,11 +2780,11 @@ function RCLootCouncil:OnCouncilReceived (sender, council)
 	end
 end
 
-function RCLootCouncil:OnLootedReceived (sender, guid)
-	if not guid then return self.Log:d("no guid in looted comm", guid, sender) end
+function RCLootCouncil:OnLootStatusReceived (sender, command, link, guid)
+	if not guid then return self.Log:d(format("no guid in %s comm", command), guid, sender) end
 	if self.lootGUIDToIgnore[guid] then return end
 	if not self.lootStatus[guid] then self.lootStatus[guid] = {candidates = {}, num = 0} end
 	self.lootStatus[guid].num = self.lootStatus[guid].num + 1
-	self.lootStatus[guid].candidates[self:UnitName(sender)] = {status = "looted"}
+	self.lootStatus[guid].candidates[self:UnitName(sender)] = {status = command, item = link}
 	self:SendMessage("RCLootStatusReceived")
 end
