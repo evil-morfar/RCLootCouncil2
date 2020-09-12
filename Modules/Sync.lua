@@ -15,7 +15,7 @@ local LibDialog = LibStub("LibDialog-1.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 local AG = LibStub("AceGUI-3.0")
 local Comms = addon.Require "Services.Comms"
-local PREFIX = Comms.Prefixes.SYNC
+local PREFIX = addon.PREFIXES.SYNC
 addon.Sync = sync
 
 local sync_table = {}
@@ -37,10 +37,10 @@ function sync:OnInitialize ()
    end
    -- Register Permanent Comms
    Comms:BulkSubscribe(PREFIX {
-      syncR = function(_, sender, data)
+      syncR = function(data, sender)
          self:SyncRequestReceived(addon:UnitName(sender),unpack(data))
       end,
-      syncNack = function (_,sender,data)
+      syncNack = function (data, sender)
          self:SyncRequestReceived(addon:UnitName(sender), unpack(data))
       end
    })
@@ -49,10 +49,10 @@ end
 function sync:OnEnable ()
    -- Temporary comms only available with the window open
    subscriptions = Comms:BulkSubscribe(PREFIX, {
-      sync = function (_,sender,data)
+      sync = function (data, sender)
          self:SyncDataReceived(addon:UnitName(sender),unpack(data))
       end,
-      syncAck = function (_,sender,data)
+      syncAck = function (data, sender)
          self:SyncAckReceived(addon:UnitName(sender),unpack(data))
       end
    })

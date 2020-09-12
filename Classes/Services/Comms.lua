@@ -4,8 +4,7 @@
 -- Create Date : 18/10/2018 13:20:31
 
 -- GLOBALS: error, IsPartyLFG, IsInRaid, IsInGroup, assert
-local tostring, ipairs, pairs, tremove, format, type, tinsert = tostring, ipairs, pairs, tremove, format, type, tinsert
-
+local tostring, pairs, tremove, format, type = tostring, pairs, tremove, format, type
 local _, addon = ...
 local Comms = addon.Init("Services.Comms")
 local Subject = addon.Require("rx.Subject")
@@ -23,25 +22,19 @@ local private = {
 LibStub("AceComm-3.0"):Embed(private.AceComm)
 LibStub("AceSerializer-3.0"):Embed(private)
 
--- TODO Move to constants
-Comms.Prefixes = {
-   MAIN     = "RCLC",
-   VERSION  = "RCLCv",
-   SYNC     = "RCLCs"
-}
-
 --- Subscribe to a comm
 -- TODO Handle order
 -- @param prefix The prefix to subscribe to.
 -- @param command The command to subscribe to.
--- @param func The function that will be called when the command is received. Receives 3 args:
---    distri: The command's distribution channel.
---    sender: The sender of the command.
+-- @param func The function that will be called when the command is received. Receives 4 args:
 --    data:   An array of the data sent with the command.
+--    sender: The sender of the command.
+--    command: The command
+--    distri: The command's distribution channel.
 -- @return A subscription to the Comm
 function Comms:Subscribe (prefix, command, func, order)
    assert(prefix, "Prefix must be supplied")
-   assert(tInvert(Comms.Prefixes)[prefix], format("%s is not a registered prefix!", tostring(prefix)))
+   assert(tInvert(addon.PREFIXES)[prefix], format("%s is not a registered prefix!", tostring(prefix)))
    return private:SubjectHelper(prefix, command):subscribe(func)
 end
 
@@ -106,7 +99,7 @@ function Comms:Send (args)
    assert(type(args)=="table", "Must supply a table")
    assert(args.command, "Command must be set")
    args.data = type(args.data) == "table" and args.data or {args.data}
-   private:SendComm(args.prefix or self.Prefixes.MAIN, args.target or "group", args.prio, args.callback, args.callbackarg, args.command, unpack(args.data))
+   private:SendComm(args.prefix or addon.PREFIXES.MAIN, args.target or "group", args.prio, args.callback, args.callbackarg, args.command, unpack(args.data))
 end
 
 function private:SendComm(prefix, target, prio, callback, callbackarg, command, ...)
@@ -162,7 +155,7 @@ function private.ReceiveComm(prefix, encodedMsg, distri, sender)
 end
 
 function private:FireCmd (prefix, distri, sender, command, data)
-   self:SubjectHelper(prefix, command):next(distri,sender,data)
+   self:SubjectHelper(prefix, command):next(data, sender, command, distri)
 end
 
 function private:GetGroupChannel()
@@ -178,8 +171,8 @@ function private:GetGroupChannel()
 end
 
 function private:RegisterComm(prefix)
-   if not Comms.Prefixes[prefix] then
-      Comms.Prefixes[prefix] = prefix
+   if not addon.PREFIXES[prefix] then
+      addon.PREFIXES[prefix] = prefix
    end
    if not self.registered[prefix] then
       self.registered[prefix] = true

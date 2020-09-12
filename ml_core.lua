@@ -42,7 +42,7 @@ local subscriptions
 function RCLootCouncilML:OnInitialize()
 	self.Log = addon.Require "Log":New("ML")
 	self.Log("Init")
-	self.Send = Comms:GetSender(Comms.Prefixes.MAIN)
+	self.Send = Comms:GetSender(addon.PREFIXES.MAIN)
 end
 
 function RCLootCouncilML:OnDisable()
@@ -1775,11 +1775,11 @@ end
 -- Comm Handlers
 -------------------------------------------------------------
 function RCLootCouncilML:RegisterComms ()
-	subscriptions = Comms:BulkSubscribe(Comms.Prefixes.MAIN, {
-		playerInfo = function (_,_,data)
+	subscriptions = Comms:BulkSubscribe(addon.PREFIXES.MAIN, {
+		playerInfo = function (data)
 			self:OnPlayerInfoReceived(unpack(data))
 		end,
-		MLdb_request = function(_,_,data)
+		MLdb_request = function(data)
 			self:Send("group", "Mldb", addon.mldb)
 		end
 	})

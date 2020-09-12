@@ -46,7 +46,7 @@ function RCVersionCheck:OnEnable()
 	guildRanks = addon:GetGuildRanks()
 	-- Unsubscribable Comms
 	self.subscriptions = {
-		Comms:Subscribe(Comms.Prefixes.VERSION, "f", function(dist, sender, data)
+		Comms:Subscribe(addon.PREFIXES.VERSION, "f", function(data, sender)
 			self:AddEntry(sender, unpack(data))
 		end)
 	}
@@ -92,7 +92,7 @@ function RCVersionCheck:Query(target)
 		end
 	end
 	Comms:Send{
-		prefix = Comms.Prefixes.VERSION,
+		prefix = addon.PREFIXES.VERSION,
 		target = target,
 		command = "fr"
 	}
@@ -191,7 +191,7 @@ end
 -- Permanent comms
 function RCVersionCheck:InitCoreVersionComms ()
 	-- "verTest"
-	Comms:Subscribe(Comms.Prefixes.VERSION, "v", function(dist, sender, data)
+	Comms:Subscribe(addon.PREFIXES.VERSION, "v", function(data,sender,_, dist)
 		if addon:UnitIsUnit(sender, "player") then return end -- Don't repond to our own
 		local otherVersion, tVersion = unpack(data)
 		addon:GetActiveModule("version"):LogVersion(addon:UnitName(sender), otherVersion, tVersion)
@@ -202,7 +202,7 @@ function RCVersionCheck:InitCoreVersionComms ()
 
 		-- Send response
 		Comms:Send{
-			prefix = Comms.Prefixes.VERSION,
+			prefix = addon.PREFIXES.VERSION,
 			target = dist == "GUILD" and "guild" or Player:Get(sender),
 			command = "r",
 			data = {addon.version, addon.tVersion, addon:GetInstalledModulesFormattedData()}
@@ -211,7 +211,7 @@ function RCVersionCheck:InitCoreVersionComms ()
 		self:VerCheckDisplay(otherVersion, tVersion)
 	end)
 	-- verTestReply
-	Comms:Subscribe(Comms.Prefixes.VERSION, "r", function(dist, sender, data)
+	Comms:Subscribe(addon.PREFIXES.VERSION, "r", function(data, sender)
 		if addon:UnitIsUnit(sender, "player") then return end -- Don't repond to our own
 		local otherVersion, tVersion, moduleData = unpack(data)
 		addon:GetActiveModule("version"):LogVersion(addon:UnitName(sender), otherVersion, tVersion)
@@ -219,9 +219,9 @@ function RCVersionCheck:InitCoreVersionComms ()
 		self:VerCheckDisplay(otherVersion, tVersion, moduleData)
 	end)
 	-- New, full version response for the version checker.
-	Comms:Subscribe(Comms.Prefixes.VERSION, "fr", function(dist, sender, data)
+	Comms:Subscribe(addon.PREFIXES.VERSION, "fr", function(data,sender)
 		Comms:Send{
-			prefix = Comms.Prefixes.VERSION,
+			prefix = addon.PREFIXES.VERSION,
 			target = Player:Get(sender),
 			command = "f",
 			data = {addon.playerClass, addon.guildRank, addon.version, addon.tVersion, addon:GetInstalledModulesFormattedData()}

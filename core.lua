@@ -223,9 +223,9 @@ function RCLootCouncil:OnInitialize()
 	debugLog = self.db.global.log
 
 	-- Register Core Comms
-	Comms:Register(Comms.Prefixes.MAIN)
-	Comms:Register(Comms.Prefixes.VERSION)
-	self.Send = Comms:GetSender(Comms.Prefixes.MAIN)
+	Comms:Register(addon.PREFIXES.MAIN)
+	Comms:Register(addon.PREFIXES.VERSION)
+	self.Send = Comms:GetSender(addon.PREFIXES.MAIN)
 
 	-- Add logged in message in the log
 	self.Log("Logged In")
@@ -1288,7 +1288,7 @@ function RCLootCouncil:Timer(type, ...)
 end
 
 function RCLootCouncil:SendGuildVerTest ()
-	Comms:Send{prefix = Comms.Prefixes.VERSION,
+	Comms:Send{prefix = addon.PREFIXES.VERSION,
 		target = "guild",
 		command = "v",
 		data = {self.version, self.tVersion}
@@ -2673,9 +2673,9 @@ end
 
 --- These comms should lives all the time
 function RCLootCouncil:SubscribeToPermanentComms ()
-	Comms:BulkSubscribe(Comms.Prefixes.MAIN, {
+	Comms:BulkSubscribe(addon.PREFIXES.MAIN, {
 		--
-		council = function (_, sender, data)
+		council = function (data, sender)
 			self:OnCouncilReceived(sender, unpack(data))
 		end,
 		--
@@ -2687,21 +2687,21 @@ function RCLootCouncil:SubscribeToPermanentComms ()
 			}
 		end,
 
-		looted = function (_, sender, data)
+		looted = function (data, sender)
 			self:OnLootStatusReceived(sender, "looted", nil, unpack(data))
 		end,
 
-		fakeLoot = function(_, sender, data)
+		fakeLoot = function(data, sender)
 			self:OnLootStatusReceived(sender, "fakeLoot", unpack(data))
 		end,
-		fullbags = function(_, sender, data)
+		fullbags = function(data, sender)
 			self:OnLootStatusReceived(sender, "fullbags", unpack(data))
 		end,
 
-		n_t = function (_,sender,data)
+		n_t = function (data, sender)
 			self:OnTradeableStatusReceived(sender, "not_tradeable", unpack(data))
 		end,
-		r_t = function (_,sender,data)
+		r_t = function (data, sender)
 			self:OnTradeableStatusReceived(sender, "rejected_trade", unpack(data))
 		end,
 
@@ -2709,7 +2709,7 @@ function RCLootCouncil:SubscribeToPermanentComms ()
 			self:OnSessionEndReceived(sender)
 		end,
 
-		lootTable = function (_, sender, data)
+		lootTable = function (data, sender)
 			if not self:UnitIsUnit(sender, self.masterLooter) then
 				return self.Log:d(tostring(sender).." is not ML, but sent lootTable!")
 			end

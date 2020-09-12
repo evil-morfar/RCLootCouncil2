@@ -1,9 +1,14 @@
 --- Constants.lua
 -- Objects which are intended to be set once (i.e. modules or addons can change them on init)
 local _, addon = ...
-local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 
 addon.LOGO_LOCATION = "Interface\\AddOns\\RCLootCouncil\\Media\\rc_logo"
+
+addon.PREFIXES = {
+   MAIN     = "RCLC",
+   VERSION  = "RCLCv",
+   SYNC     = "RCLCs"
+}
 
 addon.BTN_SLOTS = {
    INVTYPE_HEAD = "AZERITE",
@@ -19,9 +24,10 @@ addon.BTN_SLOTS = {
    INVTYPE_RANGEDRIGHT = "WEAPON",
    INVTYPE_HOLDABLE = "WEAPON",
 }
+-- TODO Load those values somewhere else
 
 addon.OPT_MORE_BUTTONS_VALUES = {
-   AZERITE = L["Azerite Armor"],
+   -- AZERITE = L["Azerite Armor"],
    INVTYPE_HEAD = _G.INVTYPE_HEAD,
    INVTYPE_NECK = _G.INVTYPE_NECK,
    INVTYPE_SHOULDER = _G.INVTYPE_SHOULDER,
@@ -35,7 +41,7 @@ addon.OPT_MORE_BUTTONS_VALUES = {
    INVTYPE_FINGER = _G.INVTYPE_FINGER,
    INVTYPE_TRINKET = _G.INVTYPE_TRINKET,
    WEAPON = _G.WEAPON,
-   TOKEN = L["Armor Token"],
+   -- TOKEN = L["Armor Token"],
    CORRUPTED = _G.CORRUPTION_TOOLTIP_TITLE,
 }
 

@@ -13,7 +13,7 @@ local LootHistory = addon:NewModule("RCLootHistory")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 local AG = LibStub("AceGUI-3.0")
 local Comms = addon.Require "Services.Comms"
-local COMMS_PREFIX = Comms.Prefixes.MAIN
+local COMMS_PREFIX = addon.PREFIXES.MAIN
 local lootDB, data, db
 --[[ data structure:
 data[date][playerName] = {
@@ -119,10 +119,10 @@ end
 
 function LootHistory:SubscribeToPermanentComms ()
 	Comms:BulkSubscribe(COMMS_PREFIX, {
-		history = function (_, _, data)
+		history = function (data)
 			self:OnHistoryReceived(unpack(data))
 		end,
-		delete_history = function(_,_,data)
+		delete_history = function(data)
 			self:OnHistoryDeleteReceived(unpack(data))
 		end
 	})

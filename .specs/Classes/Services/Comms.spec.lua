@@ -10,6 +10,7 @@ loadfile(".specs/AddonLoader.lua")(nil,nil, addon).LoadArray{
    [[Libs\CallbackHandler-1.0\CallbackHandler-1.0.xml]],
    [[Libs\AceComm-3.0\AceComm-3.0.xml]],
    [[Libs\AceSerializer-3.0\AceSerializer-3.0.xml]],
+   [[Core\Constants.lua]],
    [[Classes\Core.lua]],
    [[Classes\Lib\RxLua\embeds.xml]],
    [[Libs\LibDeflate\LibDeflate.lua]],
@@ -19,7 +20,6 @@ loadfile(".specs/AddonLoader.lua")(nil,nil, addon).LoadArray{
    [[Classes\Services\Comms.lua]]
 }
 addon:InitLogging()
-local Comms = addon.Require("Services.Comms")
 local Player = addon.Require "Data.Player"
 
 describe("#Services #Comms (basics)", function()
@@ -44,13 +44,13 @@ describe("#Services #Comms (basics)", function()
       end)
 
       it("should return a Subscription", function()
-         local sub = Comms:Subscribe(Comms.Prefixes.MAIN, "something", function() end)
+         local sub = Comms:Subscribe(addon.PREFIXES.MAIN, "something", function() end)
          assert.is_a(sub, Subscription)
       end)
 
       it("should return different subscriptions", function()
-         local sub1 = Comms:Subscribe(Comms.Prefixes.MAIN, "something", function() end)
-         local sub2 = Comms:Subscribe(Comms.Prefixes.MAIN, "something", function() end)
+         local sub1 = Comms:Subscribe(addon.PREFIXES.MAIN, "something", function() end)
+         local sub2 = Comms:Subscribe(addon.PREFIXES.MAIN, "something", function() end)
          assert.is_a(sub1, Subscription)
          assert.is_a(sub2, Subscription)
          assert.are_not.equal(sub1, sub2)
@@ -63,7 +63,7 @@ describe("#Services #Comms (basics)", function()
       end)
 
       it("should return an array of subscriptions", function()
-         local ret = Comms:BulkSubscribe(Comms.Prefixes.MAIN, {
+         local ret = Comms:BulkSubscribe(addon.PREFIXES.MAIN, {
             comm1 = function() end,
             comm2 = function() end,
             comm3 = function() end,
@@ -93,7 +93,7 @@ describe("#Services #Comms (basics)", function()
    describe(":Send", function()
       it("fails with wrong input", function()
          assert.has.errors(Comms.Send,"Must supply a table")
-         assert.has.errors(function() Comms:Send{} end,"Data must be set")
+         assert.has.errors(function() Comms:Send{} end,"Command must be set")
          assert.has.errors(function() Comms:Send{data=true} end,"Command must be set")
       end)
    end)
@@ -118,12 +118,12 @@ describe("#Services #Comms", function()
    describe("sends", function()
       local _ = match._
       local onReceiveSpy, _sub
-      local t = {receiver = function(dist, sender, data,...)
+      local t = {receiver = function(data, sender, ...)
          --print("RECEIVER:", dist, sender, unpack(data),...);
          return unpack(data)
       end}
       setup(function()
-         _sub = Comms:Subscribe(Comms.Prefixes.MAIN, "test", function(...) t.receiver(...) end)
+         _sub = Comms:Subscribe(addon.PREFIXES.MAIN, "test", function(...) t.receiver(...) end)
       end)
 
       teardown(function()
@@ -139,42 +139,42 @@ describe("#Services #Comms", function()
       it("with :GetSender", function()
          local data = "test"
          -- Test with simulated addon:Send() call
-         Comms:GetSender(Comms.Prefixes.MAIN)(addon,"group", "test", data)
+         Comms:GetSender(addon.PREFIXES.MAIN)(addon,"group", "test", data)
          WoWAPI_FireUpdate(GetTime()+10)
          assert.spy(onReceiveSpy).was_called(1)
          assert.spy(onReceiveSpy).returned_with(data)
-         assert.spy(onReceiveSpy).was_called_with("RAID", "Sender", match.is_table())
+         assert.spy(onReceiveSpy).was_called_with(match.is_table(), "Sender", "test", "RAID")
          -- And without
-         Comms:GetSender(Comms.Prefixes.MAIN)("group", "test", data)
+         Comms:GetSender(addon.PREFIXES.MAIN)("group", "test", data)
          WoWAPI_FireUpdate(GetTime()+10)
          assert.spy(onReceiveSpy).was_called(2)
          assert.spy(onReceiveSpy).returned_with(data)
-         assert.spy(onReceiveSpy).was_called_with("RAID", "Sender", match.is_table())
+         assert.spy(onReceiveSpy).was_called_with(match.is_table(), "Sender", "test", "RAID")
 
          onReceiveSpy:clear()
 
          local mock = {} -- Could be addon
-         mock.Send = Comms:GetSender(Comms.Prefixes.MAIN)
+         mock.Send = Comms:GetSender(addon.PREFIXES.MAIN)
          mock:Send("group", "test", data)
          WoWAPI_FireUpdate(GetTime()+10)
          assert.spy(onReceiveSpy).was_called(1)
          assert.spy(onReceiveSpy).returned_with(data)
-         assert.spy(onReceiveSpy).was_called_with("RAID", "Sender", match.is_table())
+         assert.spy(onReceiveSpy).was_called_with(match.is_table(), "Sender", "test", "RAID")
 
          mock.Send("guild", "test", data)
          WoWAPI_FireUpdate(GetTime()+10)
          assert.spy(onReceiveSpy).was_called(2)
          assert.spy(onReceiveSpy).returned_with(data)
-         assert.spy(onReceiveSpy).was_called_with("GUILD", "Sender", match.is_table())
+         assert.spy(onReceiveSpy).was_called_with(match.is_table(), "Sender", "test", "GUILD")
       end)
 
       it("with :GetSender multiple args", function()
          local arg1,arg2,arg3 = 3, "test", {"args"}
-         Comms:GetSender(Comms.Prefixes.MAIN)("group", "test", arg1,arg2,arg3)
+         Comms:GetSender(addon.PREFIXES.MAIN)("group", "test", arg1,arg2,arg3)
          WoWAPI_FireUpdate(GetTime()+10)
          assert.spy(onReceiveSpy).was_called(1)
          assert.spy(onReceiveSpy).returned_with(arg1,arg2,arg3)
-         assert.spy(onReceiveSpy).was_called_with("RAID", "Sender", match.is_table())
+         assert.spy(onReceiveSpy).was_called_with(match.is_table(), "Sender", "test", "RAID")
       end)
 
       it("with different prefix", function()
@@ -201,37 +201,37 @@ describe("#Services #Comms", function()
 
          it("LFG", function()
             _G.IsPartyLFGVal = true
-            Comms:GetSender(Comms.Prefixes.MAIN)("group", "test")
+            Comms:GetSender(addon.PREFIXES.MAIN)("group", "test")
             WoWAPI_FireUpdate(GetTime()+10)
             assert.spy(onReceiveSpy).was_called(1)
             assert.spy(onReceiveSpy).returned_with()
-            assert.spy(onReceiveSpy).was_called_with("INSTANCE_CHAT", "Sender", match.is_table())
+            assert.spy(onReceiveSpy).was_called_with(match.is_table(), "Sender", "test", "INSTANCE_CHAT")
          end)
 
          it("Party", function()
             _G.IsInGroupVal = true
-            Comms:GetSender(Comms.Prefixes.MAIN)("group", "test")
+            Comms:GetSender(addon.PREFIXES.MAIN)("group", "test")
             WoWAPI_FireUpdate(GetTime()+10)
             assert.spy(onReceiveSpy).was_called(1)
             assert.spy(onReceiveSpy).returned_with()
-            assert.spy(onReceiveSpy).was_called_with("PARTY", "Sender", match.is_table())
+            assert.spy(onReceiveSpy).was_called_with(match.is_table(), "Sender", "test", "PARTY")
          end)
 
          it("guild", function()
-            Comms:GetSender(Comms.Prefixes.MAIN)("guild", "test")
+            Comms:GetSender(addon.PREFIXES.MAIN)("guild", "test")
             WoWAPI_FireUpdate(GetTime()+10)
             assert.spy(onReceiveSpy).was_called(1)
             assert.spy(onReceiveSpy).returned_with()
-            assert.spy(onReceiveSpy).was_called_with("GUILD", "Sender", match.is_table())
+            assert.spy(onReceiveSpy).was_called_with(match.is_table(), "Sender", "test", "GUILD")
          end)
 
          it("none", function()
             -- pending("Requires implementation of playerNames")
-            Comms:GetSender(Comms.Prefixes.MAIN)("group", "test")
+            Comms:GetSender(addon.PREFIXES.MAIN)("group", "test")
             WoWAPI_FireUpdate(GetTime()+10)
             assert.spy(onReceiveSpy).was_called(1)
             assert.spy(onReceiveSpy).returned_with()
-            assert.spy(onReceiveSpy).was_called_with("WHISPER", "Sender", match.is_table())
+            assert.spy(onReceiveSpy).was_called_with(match.is_table(), "Sender", "test", "WHISPER")
          end)
       end)
 
@@ -239,7 +239,7 @@ describe("#Services #Comms", function()
          it("basics", function()
             local data = "test2"
             Comms:Send{
-               prefix = Comms.Prefixes.MAIN,
+               prefix = addon.PREFIXES.MAIN,
                command = "test",
                data = data
             }
@@ -247,13 +247,13 @@ describe("#Services #Comms", function()
             WoWAPI_FireUpdate(GetTime()+10)
             assert.spy(onReceiveSpy).was_called(1)
             assert.spy(onReceiveSpy).returned_with(data)
-            assert.spy(onReceiveSpy).was_called_with("RAID", "Sender", match.is_table())
+            assert.spy(onReceiveSpy).was_called_with(match.is_table(), "Sender", "test", "RAID")
          end)
 
          it("with 'ALERT' prio", function()
             local data = "ALERT PRIO"
             Comms:Send{
-               prefix = Comms.Prefixes.MAIN,
+               prefix = addon.PREFIXES.MAIN,
                command = "test",
                data = data,
                prio = "ALERT"
@@ -262,12 +262,12 @@ describe("#Services #Comms", function()
             WoWAPI_FireUpdate(GetTime()+10)
             assert.spy(onReceiveSpy).was_called(1)
             assert.spy(onReceiveSpy).returned_with(data)
-            assert.spy(onReceiveSpy).was_called_with("RAID", "Sender", match.is_table())
+            assert.spy(onReceiveSpy).was_called_with(match.is_table(), "Sender", "test", "RAID")
          end)
          it("with 'BULK' prio", function()
             local data = "BULK PRIO"
             Comms:Send{
-               prefix = Comms.Prefixes.MAIN,
+               prefix = addon.PREFIXES.MAIN,
                command = "test",
                data = data,
                prio = "BULK"
@@ -276,14 +276,14 @@ describe("#Services #Comms", function()
             WoWAPI_FireUpdate(GetTime()+10)
             assert.spy(onReceiveSpy).was_called(1)
             assert.spy(onReceiveSpy).returned_with(data)
-            assert.spy(onReceiveSpy).was_called_with("RAID", "Sender", match.is_table())
+            assert.spy(onReceiveSpy).was_called_with(match.is_table(), "Sender", "test", "RAID")
          end)
 
          it("with callback func", function()
             local s = spy.new(function(...) end)
             local data = "a"
             Comms:Send{
-               prefix = Comms.Prefixes.MAIN,
+               prefix = addon.PREFIXES.MAIN,
                command = "test",
                data = data,
                callback = s
@@ -291,7 +291,7 @@ describe("#Services #Comms", function()
             WoWAPI_FireUpdate(GetTime()+10)
             assert.spy(onReceiveSpy).was_called(1)
             assert.spy(onReceiveSpy).returned_with(data)
-            assert.spy(onReceiveSpy).was_called_with("RAID", "Sender", match.is_table())
+            assert.spy(onReceiveSpy).was_called_with(match.is_table(), "Sender", "test", "RAID")
 
             assert.spy(s).was_called(1)
             assert.spy(s).was_called_with(nil, match.is_number(), match.is_number())
@@ -305,7 +305,7 @@ describe("#Services #Comms", function()
                data[i] = {}
             end
             Comms:Send{
-               prefix = Comms.Prefixes.MAIN,
+               prefix = addon.PREFIXES.MAIN,
                command = "test",
                data = {data},
                callback = s
@@ -313,7 +313,7 @@ describe("#Services #Comms", function()
             WoWAPI_FireUpdate(GetTime()+10)
             assert.spy(onReceiveSpy).was_called(1)
             assert.spy(onReceiveSpy).returned_with(data)
-            assert.spy(onReceiveSpy).was_called_with("RAID", "Sender", match.is_table())
+            assert.spy(onReceiveSpy).was_called_with(match.is_table(), "Sender", "test", "RAID")
 
             assert.spy(s).was_called(2)
             assert.spy(s).was_called_with(nil, match.is_number(), match.is_number())
@@ -324,7 +324,7 @@ describe("#Services #Comms", function()
             local data = "a"
             local arg = {}
             Comms:Send{
-               prefix = Comms.Prefixes.MAIN,
+               prefix = addon.PREFIXES.MAIN,
                command = "test",
                data = data,
                callback = s,
@@ -333,7 +333,7 @@ describe("#Services #Comms", function()
             WoWAPI_FireUpdate(GetTime()+10)
             assert.spy(onReceiveSpy).was_called(1)
             assert.spy(onReceiveSpy).returned_with(data)
-            assert.spy(onReceiveSpy).was_called_with("RAID", "Sender", match.is_table())
+            assert.spy(onReceiveSpy).was_called_with(match.is_table(), "Sender", "test", "RAID")
 
             assert.spy(s).was_called(1)
             assert.spy(s).was_called_with(arg, match.is_number(), match.is_number())
@@ -346,7 +346,7 @@ describe("#Services #Comms", function()
    describe("receives", function()
       it("the same data with both senders", function()
          local rec1, rec2
-         local prefix = Comms.Prefixes.VERSION
+         local prefix = addon.PREFIXES.VERSION
          local cmd1 = ":GetSender"
          local cmd2 = ":Send"
          local data = {
@@ -355,8 +355,8 @@ describe("#Services #Comms", function()
          }
          local data2 = "structure"
          Comms:BulkSubscribe(prefix, {
-            [cmd1] = function(_,_,data) rec1 = data end,
-            [cmd2] = function(_,_,data) rec2 = data end
+            [cmd1] = function(data) rec1 = data end,
+            [cmd2] = function(data) rec2 = data end
          })
 
          Comms:GetSender(prefix)("group", cmd1, data, data2)
@@ -370,11 +370,11 @@ describe("#Services #Comms", function()
       end)
 
       it("handles unsubscribe", function()
-         local s = spy.new(function(dist,sender,data,...) return unpack(data) end)
-         local sub = Comms:Subscribe(Comms.Prefixes.MAIN, "test", s)
+         local s = spy.new(function(data,sender,command, dist) return unpack(data) end)
+         local sub = Comms:Subscribe(addon.PREFIXES.MAIN, "test", s)
          local data = "test"
          Comms:Send{
-            prefix = Comms.Prefixes.MAIN,
+            prefix = addon.PREFIXES.MAIN,
             command = "test",
             data = data
          }
@@ -383,7 +383,7 @@ describe("#Services #Comms", function()
          assert.spy(s).returned_with(data)
          sub:unsubscribe()
          Comms:Send{
-            prefix = Comms.Prefixes.MAIN,
+            prefix = addon.PREFIXES.MAIN,
             command = "something else that shouldn't be received",
             data = data
          }
@@ -394,8 +394,8 @@ describe("#Services #Comms", function()
    end)
 
    it("should send cross realm, send to other realm", function()
-      local s = spy.new(function(dist,sender,data,...) return unpack(data) end)
-      local sub = Comms:Subscribe(Comms.Prefixes.MAIN, "test", s)
+      local s = spy.new(function(data,sender,command, dist) return unpack(data) end)
+      local sub = Comms:Subscribe(addon.PREFIXES.MAIN, "test", s)
       local target = Player:Get("Player3")
       local data = "test"
       Comms:Send{
@@ -407,8 +407,8 @@ describe("#Services #Comms", function()
       assert.spy(s).was_called(0) -- Shouldn't be called as we are not on the same realm as target
    end)
    it("should receive cross realm messages", function()
-      local s = spy.new(function(dist,sender,data,...) return unpack(data) end)
-      Comms:Subscribe(Comms.Prefixes.MAIN, "test", s)
+      local s = spy.new(function(data,sender,command, dist) return unpack(data) end)
+      Comms:Subscribe(addon.PREFIXES.MAIN, "test", s)
       local target = Player:Get("Player1")
       local data = "test"
       addon.realmName = "something else"
@@ -423,8 +423,8 @@ describe("#Services #Comms", function()
    end)
 
    it("should send to a specific target", function()
-      local s = spy.new(function(dist,sender,data,...) return unpack(data) end)
-      Comms:Subscribe(Comms.Prefixes.MAIN, "test", s)
+      local s = spy.new(function(data,sender,command, dist) return unpack(data) end)
+      Comms:Subscribe(addon.PREFIXES.MAIN, "test", s)
       local target = Player:Get("Player1")
       addon.realmName = target:GetRealm()
       local data = "test"
