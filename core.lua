@@ -839,9 +839,9 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 			-- 	self.lootStatus[guid].candidates[self:UnitName(sender)] = {status = command, item = link}
 			-- 	self:SendMessage("RCLootStatusReceived")
 
-			elseif command == "getCorruptionData" then
-				-- Just in case we need it...
-				self:SendCommand(sender, "corruptionData", self:GetPlayerCorruption())
+			-- elseif command == "getCorruptionData" then
+			-- 	-- Just in case we need it...
+			-- 	self:SendCommand(sender, "corruptionData", self:GetPlayerCorruption())
 			end
 		else
 			-- Most likely pre 2.0 command
@@ -2761,6 +2761,7 @@ function RCLootCouncil:SubscribeToPermanentComms ()
 		fullbags = function(_, sender, data)
 			self:OnLootStatusReceived(sender, "fullbags", unpack(data))
 		end,
+
 	})
 end
 
