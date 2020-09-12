@@ -46,6 +46,8 @@
 			looted 				P - Received 'looted' from a candidated.
 			fakeLoot				P - Candidate left an item on a boss.
 			fullbags				P - Candidate couldn't loot boss because of full bags.
+			n_t					P - Candidate received "non-tradeable" loot.
+			r_t					P - Candidatre "rejected_trade" of loot.
 
 ]]
 
@@ -818,8 +820,8 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 			-- 	self.Sync:SyncAckReceived(unpack(data))
 			-- elseif command == "syncNack" then
 			-- 	self.Sync:SyncNackReceived(unpack(data))
-			elseif command == "not_tradeable" or command == "rejected_trade" then
-				tinsert(self.nonTradeables, {link = (unpack(data)), reason = command, owner = self:UnitName(sender)})
+			-- elseif command == "not_tradeable" or command == "rejected_trade" then
+			-- 	tinsert(self.nonTradeables, {link = (unpack(data)), reason = command, owner = self:UnitName(sender)})
 
 			-- elseif command == "looted" then
 			-- 	local guid = unpack(data)
@@ -2727,13 +2729,6 @@ _G.printtable = function( data, level )
 end
 --@end-debug@
 
---[[
-	-- Fix for texts in whisperKeys:
-	/run local c=0;for _,b in pairs(RCLootCouncil.db.profile.buttons)do for i, btn in pairs(b)do if i~="numButtons" and btn.whisperKey and btn.whisperKey.text then btn.whisperKey=nil;c=c+1;end;end;end;print("Fixed", c, "buttons")
-
-	-- Fix for response object in response color:
-	/run local c=0;for _,r in pairs(RCLootCouncil.db.profile.responses.default)do if r.color then r.color.color = nil;r.color.text = nil;c=c+1;end;end;print("Fixed",c,"buttons")
-]]
 
 --- These comms should lives all the time
 function RCLootCouncil:SubscribeToPermanentComms ()
@@ -2762,6 +2757,13 @@ function RCLootCouncil:SubscribeToPermanentComms ()
 			self:OnLootStatusReceived(sender, "fullbags", unpack(data))
 		end,
 
+		n_t = function (_,sender,data)
+			self:OnTradeableStatusReceived(sender, "not_tradeable", unpack(data))
+		end,
+		r_t = function (_,sender,data)
+			self:OnTradeableStatusReceived(sender, "rejected_trade", unpack(data))
+		end
+
 	})
 end
 
@@ -2788,4 +2790,8 @@ function RCLootCouncil:OnLootStatusReceived (sender, command, link, guid)
 	self.lootStatus[guid].num = self.lootStatus[guid].num + 1
 	self.lootStatus[guid].candidates[self:UnitName(sender)] = {status = command, item = link}
 	self:SendMessage("RCLootStatusReceived")
+end
+
+function RCLootCouncil:OnTradeableStatusReceived (sender, reason, link)
+	tinsert(self.nonTradeables, {link = link, reason = reason, owner = self:UnitName(sender)})
 end
