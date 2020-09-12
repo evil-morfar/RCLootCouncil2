@@ -744,35 +744,35 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 				--
 				-- self:DoModulesVersionCheck(moduleData)
 
-			elseif command == "history" and db.enableHistory then
-				local name, history = unpack(data)
-				-- v2.15 Add itemClass and itemSubClass locally:
-				local _, _, _, _, _, itemClassID, itemSubClassID = GetItemInfoInstant(history.lootWon)
-				history.iClass = itemClassID
-				history.iSubClass = itemSubClassID
-				if historyDB[name] then
-					tinsert(historyDB[name], history)
-				else
-					historyDB[name] = {history}
-				end
-				if self:GetActiveModule("history"):IsEnabled() then -- Update history frame if it is shown currently.
-					self:GetActiveModule("history"):BuildData()
-				end
+			-- elseif command == "history" and db.enableHistory then
+			-- 	local name, history = unpack(data)
+			-- 	-- v2.15 Add itemClass and itemSubClass locally:
+			-- 	local _, _, _, _, _, itemClassID, itemSubClassID = GetItemInfoInstant(history.lootWon)
+			-- 	history.iClass = itemClassID
+			-- 	history.iSubClass = itemSubClassID
+			-- 	if historyDB[name] then
+			-- 		tinsert(historyDB[name], history)
+			-- 	else
+			-- 		historyDB[name] = {history}
+			-- 	end
+			-- 	if self:GetActiveModule("history"):IsEnabled() then -- Update history frame if it is shown currently.
+			-- 		self:GetActiveModule("history"):BuildData()
+			-- 	end
 
-			elseif command == "delete_history" and db.enableHistory then
-				local id = unpack(data)
-				for _, d in pairs(historyDB) do
-					for i = #d, 1, -1 do
-						local entry = d[i]
-						if entry.id == id then
-							tremove(d, i)
-							break
-						end
-					end
-				end
-				if self:GetActiveModule("history"):IsEnabled() then -- Update history frame if it is shown currently.
-					self:GetActiveModule("history"):BuildData()
-				end
+			-- elseif command == "delete_history" and db.enableHistory then
+			-- 	local id = unpack(data)
+			-- 	for _, d in pairs(historyDB) do
+			-- 		for i = #d, 1, -1 do
+			-- 			local entry = d[i]
+			-- 			if entry.id == id then
+			-- 				tremove(d, i)
+			-- 				break
+			-- 			end
+			-- 		end
+			-- 	end
+			-- 	if self:GetActiveModule("history"):IsEnabled() then -- Update history frame if it is shown currently.
+			-- 		self:GetActiveModule("history"):BuildData()
+			-- 	end
 
 			elseif command == "reroll" and self:UnitIsUnit(sender, self.masterLooter) and self.enabled then
 				self:Print(format(L["'player' has asked you to reroll"], self.Ambiguate(sender)))

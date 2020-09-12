@@ -2,11 +2,18 @@
 -- DefaultModule
 -- @author Potdisc
 -- Create Date : 8/6/2015
+--[[ COMMS:
+	MAIN:
+		history				P - history received from ML on awards.
+		delete_history		P - ML tells us to delete specific history entry.
+]]
 
 local _,addon = ...
 local LootHistory = addon:NewModule("RCLootHistory")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 local AG = LibStub("AceGUI-3.0")
+local Comms = addon.Require "Services.Comms"
+local COMMS_PREFIX = Comms.Prefixes.MAIN
 local lootDB, data, db
 --[[ data structure:
 data[date][playerName] = {
@@ -57,6 +64,8 @@ function LootHistory:OnInitialize()
 	_G.MSA_DropDownMenu_Initialize(rightClickMenu, self.RightClickMenu, "MENU")
 	--MoreInfo
 	self.moreInfo = CreateFrame( "GameTooltip", "RCLootHistoryMoreInfo", nil, "GameTooltipTemplate" )
+
+	self:SubscribeToPermanentComms()
 end
 
 local tierLookUpTable = { -- instanceMapID to Tier text
@@ -106,6 +115,49 @@ function LootHistory:Hide()
 	self.frame:Hide()
 	self.moreInfo:Hide()
 	moreInfo = false
+end
+
+function LootHistory:SubscribeToPermanentComms ()
+	Comms:BulkSubscribe(COMMS_PREFIX, {
+		history = function (_, _, data)
+			self:OnHistoryReceived(unpack(data))
+		end,
+		delete_history = function(_,_,data)
+			self:OnHistoryDeleteReceived(unpack(data))
+		end
+	})
+end
+
+function LootHistory:OnHistoryReceived (name, history)
+	if not addon:Getdb().enableHistory then return end
+	-- v2.15 Add itemClass and itemSubClass locally:
+	local _, _, _, _, _, itemClassID, itemSubClassID = GetItemInfoInstant(history.lootWon)
+	history.iClass = itemClassID
+	history.iSubClass = itemSubClassID
+	if addon.lootDB.factionrealm[name] then
+		tinsert(addon.lootDB.factionrealm[name], history)
+	else
+		addon.lootDB.factionrealm[name] = {history}
+	end
+	if self:IsEnabled() then -- Update history frame if it is shown currently.
+		self:BuildData()
+	end
+end
+
+function LootHistory:OnHistoryDeleteReceived (id)
+	if not addon:Getdb().enableHistory then return end
+	for _, d in pairs(addon.lootDB.factionrealm) do
+		for i = #d, 1, -1 do
+			local entry = d[i]
+			if entry.id == id then
+				tremove(d, i)
+				break
+			end
+		end
+	end
+	if self:IsEnabled() then -- Update history frame if it is shown currently.
+		self:BuildData()
+	end
 end
 
 function LootHistory:GetLocalizedDate(date) -- date is "DD/MM/YY"
