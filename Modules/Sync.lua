@@ -36,7 +36,7 @@ function sync:OnInitialize ()
       }
    end
    -- Register Permanent Comms
-   Comms:BulkSubscribe(PREFIX {
+   Comms:BulkSubscribe(PREFIX, {
       syncR = function(data, sender)
          self:SyncRequestReceived(addon:UnitName(sender),unpack(data))
       end,

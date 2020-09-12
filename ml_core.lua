@@ -77,18 +77,20 @@ end
 
 function RCLootCouncilML:GetItemInfo(item)
 	local name, link, rarity, ilvl, iMinLevel, type, subType, iStackCount, equipLoc, texture, sellPrice, typeID, subTypeID, bindType, expansionID, itemSetID, isCrafting = GetItemInfo(item) -- luacheck: ignore
+	local itemID = addon.Utils:GetItemIDFromLink(link)
 	if name then
+		-- Most of these are kept for use in SessionFrame
 		return {
 			string = addon.Utils:GetTransmittableItemString(link),
-			-- ["link"]			= link,
+			["link"]			= link,
 			-- ["quality"]		= rarity,
-			-- ["ilvl"]			= addon:GetTokenIlvl(link) or ilvl, -- if the item is a token, ilvl is the min ilvl of the item it creates.
+			["ilvl"]			= addon:GetTokenIlvl(link) or ilvl, -- if the item is a token, ilvl is the min ilvl of the item it creates.
 			-- ["equipLoc"]	= RCTokenTable[itemID] and addon:GetTokenEquipLoc(RCTokenTable[itemID]) or equipLoc,
 			-- ["subType"]		= subType,
-			-- ["texture"]		= texture,
+			["texture"]		= texture,
 			-- ["boe"]			= bindType == LE_ITEM_BIND_ON_EQUIP,
 			--["relic"]		= itemID and IsArtifactRelicItem(itemID) and select(3, C_ArtifactUI.GetRelicInfoByItemID(itemID)),
-			--["token"]		= itemID and RCTokenTable[itemID],
+			["token"]		= itemID and RCTokenTable[itemID],
 			-- ["typeID"]		= typeID,
 			-- ["subTypeID"]	= subTypeID,
 			["classes"]		= addon:GetItemClassesAllowedFlag(link)
@@ -152,6 +154,10 @@ function RCLootCouncilML:GetLootTableForTransmit()
 			v["bagged"] = nil
 			v.isSent = nil
 			v.lootSlot = nil
+			v.link = nil
+			v.ilvl = nil
+			v.texture = nil
+			v.token = nil
 		end
 	end
 	return copy

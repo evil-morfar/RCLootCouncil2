@@ -195,6 +195,10 @@ function RCLootCouncil:OnInitialize()
 		tinsert(self.defaults.profile.awardReasons, {color = {1, 1, 1, 1}, disenchant = false, log = true, sort = 400+i, text = "Reason "..i,})
 	end
 
+	-- add missing constants
+	self.OPT_MORE_BUTTONS_VALUES.AZERITE = L["Azerite Armor"]
+	self.OPT_MORE_BUTTONS_VALUES.TOKEN = L["Armor Token"]
+
 	-- register chat and comms
 	self:RegisterChatCommand("rc", "ChatCommand")
 	self:RegisterChatCommand("rclc", "ChatCommand")
@@ -223,9 +227,9 @@ function RCLootCouncil:OnInitialize()
 	debugLog = self.db.global.log
 
 	-- Register Core Comms
-	Comms:Register(addon.PREFIXES.MAIN)
-	Comms:Register(addon.PREFIXES.VERSION)
-	self.Send = Comms:GetSender(addon.PREFIXES.MAIN)
+	Comms:Register(self.PREFIXES.MAIN)
+	Comms:Register(self.PREFIXES.VERSION)
+	self.Send = Comms:GetSender(self.PREFIXES.MAIN)
 
 	-- Add logged in message in the log
 	self.Log("Logged In")
@@ -508,7 +512,7 @@ function RCLootCouncil:ChatCommand(msg)
 	elseif input == "updatehistory" or (input == "update" and args[1] == "history") then
 		self:UpdateLootHistory()
 	elseif input == "sync" then
-		self.Sync:Spawn()
+		self.Sync:Enable()
 
 	elseif input == "trade" then
 		self.TradeUI:Show(true)
@@ -1301,7 +1305,7 @@ end
 function RCLootCouncil:PrepareLootTable(lootTable)
 	for ses, v in ipairs(lootTable) do
 		local _, link, rarity, ilvl, _, _, subType, _, equipLoc, texture,
-		_, typeID, subTypeID, bindType, _, _, _ = GetItemInfo(v.string)
+		_, typeID, subTypeID, bindType, _, _, _ = GetItemInfo("item:"..v.string)
 		local itemID = GetItemInfoInstant(link)
 		v.link		= link
 		v.quality 	= rarity
@@ -2673,7 +2677,7 @@ end
 
 --- These comms should lives all the time
 function RCLootCouncil:SubscribeToPermanentComms ()
-	Comms:BulkSubscribe(addon.PREFIXES.MAIN, {
+	Comms:BulkSubscribe(self.PREFIXES.MAIN, {
 		--
 		council = function (data, sender)
 			self:OnCouncilReceived(sender, unpack(data))
@@ -2776,7 +2780,7 @@ function RCLootCouncil:OnLootTableReceived (lt)
 	-- Cache items
 	local cached = true
 	for _, v in ipairs(lootTable) do
-		if not GetItemInfo(v.string) then cached = false end
+		if not GetItemInfo("item:"..v.string) then cached = false end
 	end
 	if not cached then
 		-- Note: Dont print debug log here. It is spamming.

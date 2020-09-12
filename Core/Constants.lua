@@ -24,7 +24,6 @@ addon.BTN_SLOTS = {
    INVTYPE_RANGEDRIGHT = "WEAPON",
    INVTYPE_HOLDABLE = "WEAPON",
 }
--- TODO Load those values somewhere else
 
 addon.OPT_MORE_BUTTONS_VALUES = {
    -- AZERITE = L["Azerite Armor"],
@@ -41,7 +40,6 @@ addon.OPT_MORE_BUTTONS_VALUES = {
    INVTYPE_FINGER = _G.INVTYPE_FINGER,
    INVTYPE_TRINKET = _G.INVTYPE_TRINKET,
    WEAPON = _G.WEAPON,
-   -- TOKEN = L["Armor Token"],
    CORRUPTED = _G.CORRUPTION_TOOLTIP_TITLE,
 }
 
