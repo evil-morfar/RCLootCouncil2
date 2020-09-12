@@ -29,6 +29,10 @@ function Utils:RGBToHex(r,g,b)
 	return string.format("%02x%02x%02x",255*r, 255*g, 255*b)
 end
 
+function Utils:GetTransmittableItemString (link)
+   return self:GetItemStringClean(self:NeutralizeItem(link))
+end
+
 function Utils:GetItemStringClean(link)
 	return gsub(self:GetItemStringFromLink(link), "item:", "")
 end
