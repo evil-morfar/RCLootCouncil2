@@ -41,6 +41,7 @@
 	Comms:
 		MAIN:
 			council				P - Council received from ML
+			session_end 		P - ML has ended the session.
 			playerInfoRequest P - Request for playerInfo
 			pI 					P - Player Info
 			looted 				P - Received 'looted' from a candidated.
@@ -786,17 +787,17 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 			-- elseif command == "playerInfoRequest" then
 			-- 	self:SendCommand(sender, "playerInfo", self:GetPlayerInfo())
 
-			elseif command == "session_end" and self.enabled then
-				if self:UnitIsUnit(sender, self.masterLooter) then
-					self:Print(format(L["'player' has ended the session"], self.Ambiguate(self.masterLooter)))
-					self:GetActiveModule("lootframe"):Disable()
-					lootTable = {}
-					if self.isCouncil or self.mldb.observe then -- Don't call the voting frame if it wasn't used
-						self:GetActiveModule("votingframe"):EndSession(db.autoClose)
-					end
-				else
-					self.Log:W("Non ML:", sender, "sent end session command!")
-				end
+			-- elseif command == "session_end" and self.enabled then
+			-- 	if self:UnitIsUnit(sender, self.masterLooter) then
+			-- 		self:Print(format(L["'player' has ended the session"], self.Ambiguate(self.masterLooter)))
+			-- 		self:GetActiveModule("lootframe"):Disable()
+			-- 		lootTable = {}
+			-- 		if self.isCouncil or self.mldb.observe then -- Don't call the voting frame if it wasn't used
+			-- 			self:GetActiveModule("votingframe"):EndSession(db.autoClose)
+			-- 		end
+			-- 	else
+			-- 		self.Log:W("Non ML:", sender, "sent end session command!")
+			-- 	end
 
 			elseif command == "lootAck" and not self:UnitIsUnit(sender, "player") and self.enabled then
 				-- It seems we have message dropping. If we receive a lootAck, but we don't have lootTable, then something's wrong!
@@ -2762,6 +2763,10 @@ function RCLootCouncil:SubscribeToPermanentComms ()
 		end,
 		r_t = function (_,sender,data)
 			self:OnTradeableStatusReceived(sender, "rejected_trade", unpack(data))
+		end,
+
+		session_end = function (_,sender)
+			self:OnSessionEndReceived(sender)
 		end
 
 	})
@@ -2794,4 +2799,18 @@ end
 
 function RCLootCouncil:OnTradeableStatusReceived (sender, reason, link)
 	tinsert(self.nonTradeables, {link = link, reason = reason, owner = self:UnitName(sender)})
+end
+
+function RCLootCouncil:OnSessionEndReceived(sender)
+	if not self.enabled then return end
+	if self:UnitIsUnit(sender, self.masterLooter) then
+		self:Print(format(L["'player' has ended the session"], self.Ambiguate(self.masterLooter)))
+		self:GetActiveModule("lootframe"):Disable()
+		lootTable = {}
+		if self.isCouncil or self.mldb.observe then -- Don't call the voting frame if it wasn't used
+			self:GetActiveModule("votingframe"):EndSession(db.autoClose)
+		end
+	else
+		self.Log:W("Non ML:", sender, "sent end session command!")
+	end
 end
