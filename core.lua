@@ -43,6 +43,7 @@
 			council				P - Council received from ML
 			playerInfoRequest P - Request for playerInfo
 			pI 					P - Player Info
+			looted 				P - Received 'looted' from a candidated.
 
 ]]
 
@@ -818,14 +819,14 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 			elseif command == "not_tradeable" or command == "rejected_trade" then
 				tinsert(self.nonTradeables, {link = (unpack(data)), reason = command, owner = self:UnitName(sender)})
 
-			elseif command == "looted" then
-				local guid = unpack(data)
-				if not guid then return self.Log:d("no guid in looted comm", guid, sender) end
-				if self.lootGUIDToIgnore[guid] then return end
-				if not self.lootStatus[guid] then self.lootStatus[guid] = {candidates = {}, num = 0} end
-				self.lootStatus[guid].num = self.lootStatus[guid].num + 1
-				self.lootStatus[guid].candidates[self:UnitName(sender)] = {status = "looted"}
-				self:SendMessage("RCLootStatusReceived")
+			-- elseif command == "looted" then
+			-- 	local guid = unpack(data)
+			-- 	if not guid then return self.Log:d("no guid in looted comm", guid, sender) end
+			-- 	if self.lootGUIDToIgnore[guid] then return end
+			-- 	if not self.lootStatus[guid] then self.lootStatus[guid] = {candidates = {}, num = 0} end
+			-- 	self.lootStatus[guid].num = self.lootStatus[guid].num + 1
+			-- 	self.lootStatus[guid].candidates[self:UnitName(sender)] = {status = "looted"}
+			-- 	self:SendMessage("RCLootStatusReceived")
 
 			elseif command == "fakeLoot" or command == "fullbags" then
 				local link, guid = unpack(data)
@@ -2735,15 +2736,21 @@ end
 --- These comms should lives all the time
 function RCLootCouncil:SubscribeToPermanentComms ()
 	Comms:BulkSubscribe(Comms.Prefixes.MAIN, {
+		--
 		council = function (_, sender, data)
 			self:OnCouncilReceived(sender, unpack(data))
 		end,
+		--
 		playerInfoRequest = function (_, sender)
 			Comms:Send{
 				target = sender,
 				command = "pI",
 				data = self:GetPlayerInfo()
 			}
+		end,
+
+		looted = function (_, sender, data)
+			self:OnLootedReceived(sender, unpack(data))
 		end
 	})
 end
@@ -2762,4 +2769,13 @@ function RCLootCouncil:OnCouncilReceived (sender, council)
 	else
 		self:GetActiveModule("votingframe"):Disable()
 	end
+end
+
+function RCLootCouncil:OnLootedReceived (sender, guid)
+	if not guid then return self.Log:d("no guid in looted comm", guid, sender) end
+	if self.lootGUIDToIgnore[guid] then return end
+	if not self.lootStatus[guid] then self.lootStatus[guid] = {candidates = {}, num = 0} end
+	self.lootStatus[guid].num = self.lootStatus[guid].num + 1
+	self.lootStatus[guid].candidates[self:UnitName(sender)] = {status = "looted"}
+	self:SendMessage("RCLootStatusReceived")
 end
