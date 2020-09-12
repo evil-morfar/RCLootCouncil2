@@ -65,23 +65,22 @@ function RCLootCouncilML:OnEnable()
 	self:RegisterMessage("RCCouncilChanged", "CouncilChanged")
 end
 
--- REVIEW v2.15 Almost all of these are added to `RCLootCouncil:PrepareLootTable` and can be removed from here.
 function RCLootCouncilML:GetItemInfo(item)
 	local name, link, rarity, ilvl, iMinLevel, type, subType, iStackCount, equipLoc, texture, sellPrice, typeID, subTypeID, bindType, expansionID, itemSetID, isCrafting = GetItemInfo(item) -- luacheck: ignore
-	local itemID = link and addon.Utils:GetItemIDFromLink(link)
 	if name then
 		return {
-			["link"]			= link,
-			["quality"]		= rarity,
-			["ilvl"]			= addon:GetTokenIlvl(link) or ilvl, -- if the item is a token, ilvl is the min ilvl of the item it creates.
-			["equipLoc"]	= RCTokenTable[itemID] and addon:GetTokenEquipLoc(RCTokenTable[itemID]) or equipLoc,
-			["subType"]		= subType,
-			["texture"]		= texture,
-			["boe"]			= bindType == LE_ITEM_BIND_ON_EQUIP,
+			string = addon.Utils:GetTransmittableItemString(link),
+			-- ["link"]			= link,
+			-- ["quality"]		= rarity,
+			-- ["ilvl"]			= addon:GetTokenIlvl(link) or ilvl, -- if the item is a token, ilvl is the min ilvl of the item it creates.
+			-- ["equipLoc"]	= RCTokenTable[itemID] and addon:GetTokenEquipLoc(RCTokenTable[itemID]) or equipLoc,
+			-- ["subType"]		= subType,
+			-- ["texture"]		= texture,
+			-- ["boe"]			= bindType == LE_ITEM_BIND_ON_EQUIP,
 			--["relic"]		= itemID and IsArtifactRelicItem(itemID) and select(3, C_ArtifactUI.GetRelicInfoByItemID(itemID)),
 			--["token"]		= itemID and RCTokenTable[itemID],
-			["typeID"]		= typeID,
-			["subTypeID"]	= subTypeID,
+			-- ["typeID"]		= typeID,
+			-- ["subTypeID"]	= subTypeID,
 			["classes"]		= addon:GetItemClassesAllowedFlag(link)
 		}
 	else
@@ -98,7 +97,7 @@ end
 -- @param owner The owner of the item (if any). Defaults to 'BossName'.
 -- @param entry Used to set data in a specific lootTable entry.
 function RCLootCouncilML:AddItem(item, bagged, slotIndex, owner, entry)
-	self.Log:d("ML:AddItem", item, bagged, slotIndex, owner, entry)
+	self.Log:d("AddItem", item, bagged, slotIndex, owner, entry)
 	if type(item) == "string" and item:find("|Hcurrency") then return end -- Ignore "Currency" item links
 
 	if not entry then
@@ -133,16 +132,16 @@ function RCLootCouncilML:AddItem(item, bagged, slotIndex, owner, entry)
 	end
 end
 
+--- Removes everything that doesn't need to be sent in the lootTable
 function RCLootCouncilML:GetLootTableForTransmit()
 	local copy = CopyTable(self.lootTable)
 	for k, v in pairs(copy) do
 		if v.isSent then -- Don't retransmit already sent items
 			copy[k] = nil
 		else
-			v["equipLoc"] = select(4, GetItemInfoInstant(v.link))
-			v["typeID"] = nil
-			v["subTypeID"] = nil
-			v["bagged"] = nil -- Only ML needs this.
+			v["bagged"] = nil
+			v.isSent = nil
+			v.lootSlot = nil
 		end
 	end
 	return copy
@@ -330,7 +329,7 @@ function RCLootCouncilML:StartSession()
 		--for k,v in ipairs(self.lootTable) do if not v.isSent then count = count + 1 end end
 		addon:SendCommand("group", "lt_add", self:GetLootTableForTransmit())
 	else
-		addon:SendCommand("group", "lootTable", self:GetLootTableForTransmit())
+		self:Send("group", "lootTable", self:GetLootTableForTransmit())
 	end
 	for _, v in ipairs(self.lootTable) do
 		v.isSent = true
@@ -628,7 +627,7 @@ function RCLootCouncilML:OnCommReceived(prefix, serializedMsg, distri, sender)
 
 				addon:ScheduleTimer("SendCommand", 2, sender, "candidates", self.candidates)
 				if self.running then -- Resend lootTable
-					addon:ScheduleTimer("SendCommand", 4, sender, "lootTable", self:GetLootTableForTransmit())
+					self:ScheduleTimer("Send", 4, sender, "lootTable", self:GetLootTableForTransmit())
 					-- v2.2.6 REVIEW For backwards compability we're just sending votingFrame's lootTable
 					-- This is quite redundant and should be removed in the future
 					if db.observe or Council:Contains(Player:Get(sender)) then -- Only send all data to councilmen

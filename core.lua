@@ -6,9 +6,6 @@
 		- IDEA Change popups so they only hide on award/probably add the error message to it.
 		- Trade status in TradeUI
 		- Changeable chatwindow output.
-
-	Backwards compability breaks:
-		- Remove equipLoc, subType, texture from lootTable. They can all be created with GetItemInfoInstant()
 -------------------------------- ]]
 
 --[[CHANGELOG
@@ -228,6 +225,7 @@ function RCLootCouncil:OnInitialize()
 	-- Register Core Comms
 	Comms:Register(Comms.Prefixes.MAIN)
 	Comms:Register(Comms.Prefixes.VERSION)
+	self.Send = Comms:GetSender(Comms.Prefixes.MAIN)
 
 	-- Add logged in message in the log
 	self.Log("Logged In")
@@ -656,15 +654,16 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 		if self:HandleXRealmComms(self, command, data, sender) then return end
 
 		if test then
-			if command == "lootTable" then
-				if self:UnitIsUnit(sender, self.masterLooter) then
-					self:OnLootTableReceived(unpack(data))
-
-				else -- a non-ML send a lootTable?!
-					self.Log:d(tostring(sender).." is not ML, but sent lootTable!")
-				end
-
-			elseif command == "lt_add" and self:UnitIsUnit(sender, self.masterLooter) then
+			-- if command == "lootTable" then
+			-- 	if self:UnitIsUnit(sender, self.masterLooter) then
+			-- 		self:OnLootTableReceived(unpack(data))
+			--
+			-- 	else -- a non-ML send a lootTable?!
+			-- 		self.Log:d(tostring(sender).." is not ML, but sent lootTable!")
+			-- 	end
+			--
+			-- else
+				if command == "lt_add" and self:UnitIsUnit(sender, self.masterLooter) then
 				-- We can skip most of the normal lootTable checks since a session should running
 				local oldLenght = #lootTable
 				for k,v in pairs(unpack(data)) do
@@ -879,67 +878,6 @@ function RCLootCouncil:HandleXRealmComms(mod, command, data, sender)
 		return true
 	end
 	return false
-end
-
-function RCLootCouncil:OnLootTableReceived (lt)
-	lootTable = lt
-	-- Send "DISABLED" response when not enabled
-	if not self.enabled then
-		for i = 1, #lootTable do
-			-- target, session, response, isTier, isRelic, note, roll, link, ilvl, equipLoc, relicType, sendAvgIlvl, sendSpecID
-			self:SendResponse("group", i, "DISABLED")
-		end
-		return self.Log("Sent 'DISABLED' response to", self.masterLooter)
-	end
-
-	-- Cache items
-	local cached = true
-	for _, v in ipairs(lootTable) do
-		if not GetItemInfo(v.link) then cached = false end
-	end
-	if not cached then
-		-- Note: Dont print debug log here. It is spamming.
-		return self:ScheduleTimer("OnLootTableReceived", 0, lt)
-	end
-
-	self:PrepareLootTable(lootTable)
-
-	-- v2.0.1: It seems people somehow receives mldb without numButtons, so check for it aswell.
-	if not self.mldb then -- Really shouldn't happen, but I'm tired of people somehow not receiving it...
-		self.Log:w("Received loot table without having mldb :(", self.masterLooter)
-		self:SendCommand(self.masterLooter, "MLdb_request")
-		return self:ScheduleTimer("OnLootTableReceived", 0, lt)
-	end
-
-	-- Check if council is received
-	if not Council:Contains(self.masterLooter) then
-		self.Log:d("Received loot table without ML in the council", self.masterLooter)
-		self:SendCommand(self.masterLooter, "council_request")
-		return self:ScheduleTimer("OnLootTableReceived", 0, lt)
-	end
-
-	-- Hand the lootTable to the votingFrame
-	if self.isCouncil or self.mldb.observe then
-		self:GetActiveModule("votingframe"):ReceiveLootTable(lootTable)
-	end
-
-	-- Out of instance support
-	-- assume 8 people means we're actually raiding
-	if self.mldb.outOfRaid and GetNumGroupMembers() >= 8 and not IsInInstance() then
-		self.Log("NotInRaid respond to lootTable")
-		for ses, v in ipairs(lootTable) do
-			-- target, session, response, isTier, isRelic, note, roll, link, ilvl, equipLoc, relicType, sendAvgIlvl, sendSpecID
-			self:SendResponse("group", ses, "NOTINRAID", nil, nil, nil, nil, v.link, v.ilvl, v.equipLoc, v.relic, true, true)
-		end
-		return
-	end
-
-	self:DoAutoPasses(lootTable)
-	self:SendLootAck(lootTable)
-
-	-- Show  the LootFrame
-	self:CallModule("lootframe")
-	self:GetActiveModule("lootframe"):Start(lootTable)
 end
 
 function RCLootCouncil:ResetReconnectRequest()
@@ -1362,14 +1300,16 @@ end
 -- v2.15 The current implementation ensures this only gets called when all items are cached - this function relies on that!
 function RCLootCouncil:PrepareLootTable(lootTable)
 	for ses, v in ipairs(lootTable) do
-		local _, _, rarity, ilvl, _, _, subType, _, equipLoc, texture,
-		_, typeID, subTypeID, bindType, _, _, _ = GetItemInfo(v.link)
-		local itemID = GetItemInfoInstant(v.link)
+		local _, link, rarity, ilvl, _, _, subType, _, equipLoc, texture,
+		_, typeID, subTypeID, bindType, _, _, _ = GetItemInfo(v.string)
+		local itemID = GetItemInfoInstant(link)
+		v.link		= link
 		v.quality 	= rarity
 		v.ilvl 		= self:GetTokenIlvl(v.link) or ilvl
 		v.equipLoc 	= RCTokenTable[itemID] and self:GetTokenEquipLoc(RCTokenTable[itemID]) or equipLoc
 		v.subType 	= subType -- Subtype should be in our locale
 		v.texture 	= texture
+		v.token 		= itemID and RCTokenTable[itemID]
 		v.boe 		= bindType == _G.LE_ITEM_BIND_ON_EQUIP
 		v.typeID 	= typeID
 		v.subTypeID = subTypeID
@@ -2767,6 +2707,13 @@ function RCLootCouncil:SubscribeToPermanentComms ()
 
 		session_end = function (_,sender)
 			self:OnSessionEndReceived(sender)
+		end,
+
+		lootTable = function (_, sender, data)
+			if not self:UnitIsUnit(sender, self.masterLooter) then
+				return self.Log:d(tostring(sender).." is not ML, but sent lootTable!")
+			end
+			self:OnLootTableReceived(unpack(data))
 		end
 
 	})
@@ -2813,4 +2760,65 @@ function RCLootCouncil:OnSessionEndReceived(sender)
 	else
 		self.Log:W("Non ML:", sender, "sent end session command!")
 	end
+end
+
+function RCLootCouncil:OnLootTableReceived (lt)
+	lootTable = lt
+	-- Send "DISABLED" response when not enabled
+	if not self.enabled then
+		for i = 1, #lootTable do
+			-- target, session, response, isTier, isRelic, note, roll, link, ilvl, equipLoc, relicType, sendAvgIlvl, sendSpecID
+			self:SendResponse("group", i, "DISABLED")
+		end
+		return self.Log("Sent 'DISABLED' response to", self.masterLooter)
+	end
+
+	-- Cache items
+	local cached = true
+	for _, v in ipairs(lootTable) do
+		if not GetItemInfo(v.string) then cached = false end
+	end
+	if not cached then
+		-- Note: Dont print debug log here. It is spamming.
+		return self:ScheduleTimer("OnLootTableReceived", 0, lt)
+	end
+
+	self:PrepareLootTable(lootTable)
+
+	-- v2.0.1: It seems people somehow receives mldb without numButtons, so check for it aswell.
+	if not self.mldb then -- Really shouldn't happen, but I'm tired of people somehow not receiving it...
+		self.Log:w("Received loot table without having mldb :(", self.masterLooter)
+		self:Send(self.masterLooter, "MLdb_request")
+		return self:ScheduleTimer("OnLootTableReceived", 0, lt)
+	end
+
+	-- Check if council is received
+	if not Council:Contains(self.masterLooter) then
+		self.Log:d("Received loot table without ML in the council", self.masterLooter)
+		self:Send(self.masterLooter, "council_request")
+		return self:ScheduleTimer("OnLootTableReceived", 0, lt)
+	end
+
+	-- Hand the lootTable to the votingFrame
+	if self.isCouncil or self.mldb.observe then
+		self:GetActiveModule("votingframe"):ReceiveLootTable(lootTable)
+	end
+
+	-- Out of instance support
+	-- assume 8 people means we're actually raiding
+	if self.mldb.outOfRaid and GetNumGroupMembers() >= 8 and not IsInInstance() then
+		self.Log("NotInRaid respond to lootTable")
+		for ses, v in ipairs(lootTable) do
+			-- target, session, response, isTier, isRelic, note, roll, link, ilvl, equipLoc, relicType, sendAvgIlvl, sendSpecID
+			self:SendResponse("group", ses, "NOTINRAID", nil, nil, nil, nil, v.link, v.ilvl, v.equipLoc, v.relic, true, true)
+		end
+		return
+	end
+
+	self:DoAutoPasses(lootTable)
+	self:SendLootAck(lootTable)
+
+	-- Show  the LootFrame
+	self:CallModule("lootframe")
+	self:GetActiveModule("lootframe"):Start(lootTable)
 end
