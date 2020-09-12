@@ -41,6 +41,8 @@
 	Comms:
 		MAIN:
 			council				P - Council received from ML
+			playerInfoRequest P - Request for playerInfo
+			pI 					P - Player Info
 
 ]]
 
@@ -776,8 +778,8 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 				self:CallModule("lootframe")
 				self:GetActiveModule("lootframe"):ReRoll(table)
 
-			elseif command == "playerInfoRequest" then
-				self:SendCommand(sender, "playerInfo", self:GetPlayerInfo())
+			-- elseif command == "playerInfoRequest" then
+			-- 	self:SendCommand(sender, "playerInfo", self:GetPlayerInfo())
 
 			elseif command == "session_end" and self.enabled then
 				if self:UnitIsUnit(sender, self.masterLooter) then
@@ -2735,6 +2737,13 @@ function RCLootCouncil:SubscribeToPermanentComms ()
 	Comms:BulkSubscribe(Comms.Prefixes.MAIN, {
 		council = function (_, sender, data)
 			self:OnCouncilReceived(sender, unpack(data))
+		end,
+		playerInfoRequest = function (_, sender)
+			Comms:Send{
+				target = sender,
+				command = "pI",
+				data = self:GetPlayerInfo()
+			}
 		end
 	})
 end
