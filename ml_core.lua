@@ -4,6 +4,13 @@
 	@author Potdisc
 ]]
 
+--[[ COMMS:
+	MAIN:
+		playerInfo 				T - PlayerInfo sent from candidate.
+		MLdb_request			T  - Candidate request for "Mldb".
+
+]]
+
 --[[TODOs/NOTES:
 ]]
 
@@ -30,6 +37,7 @@ local Player = addon.Require "Data.Player"
 local Council = addon.Require "Data.Council"
 local Comms = addon.Require "Services.Comms"
 local TempTable = addon.Require "Utils.TempTable"
+local subscriptions
 
 function RCLootCouncilML:OnInitialize()
 	self.Log = addon.Require "Log":New("ML")
@@ -44,6 +52,7 @@ function RCLootCouncilML:OnDisable()
 	self:UnregisterAllComm()
 	self:UnregisterAllMessages()
 	self:UnhookAll()
+	for _,v in ipairs(subscriptions) do v:unsubscribe() end
 end
 
 function RCLootCouncilML:OnEnable()
@@ -63,6 +72,7 @@ function RCLootCouncilML:OnEnable()
 	self:RegisterBucketEvent("GROUP_ROSTER_UPDATE", 10, "UpdateGroup") -- Bursts in group creation, and we should have plenty of time to handle it
 	self:RegisterBucketMessage("RCConfigTableChanged", 5, "ConfigTableChanged") -- The messages can burst
 	self:RegisterMessage("RCCouncilChanged", "CouncilChanged")
+	self:RegisterComms()
 end
 
 function RCLootCouncilML:GetItemInfo(item)
@@ -1759,4 +1769,23 @@ function RCLootCouncilML.LootTableCompare(a, b)
 		return statsA > statsB
 	end
 	return addon.Utils:GetItemNameFromLink(a.link) < addon.Utils:GetItemNameFromLink(b.link)
+end
+
+-------------------------------------------------------------
+-- Comm Handlers
+-------------------------------------------------------------
+function RCLootCouncilML:RegisterComms ()
+	subscriptions = Comms:BulkSubscribe(Comms.Prefixes.MAIN, {
+		playerInfo = function (_,_,data)
+			self:OnPlayerInfoReceived(unpack(data))
+		end,
+		MLdb_request = function(_,_,data)
+			self:Send("group", "Mldb", addon.mldb)
+		end
+	})
+end
+
+function RCLootCouncilML:OnPlayerInfoReceived(...)
+	self:AddCandidate(...)
+	self:SendCandidates()
 end
