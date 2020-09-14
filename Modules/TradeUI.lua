@@ -2,14 +2,21 @@
 -- DefaultModule
 -- @author Potdisc
 -- Create Date : 28/5/2018 16:48:38
+--[[ Comms:
+   MAIN:
+      awarded        P - ML awards an item.
+      do_trade       P - ML tells us to perfom a trade.
+]]
 
 local _,addon = ...
-local TradeUI = addon:NewModule("RCTradeUI", "AceComm-3.0", "AceEvent-3.0", "AceTimer-3.0")
+local TradeUI = addon:NewModule("TradeUI", "AceEvent-3.0", "AceTimer-3.0")
 addon.TradeUI = TradeUI -- Shorthand for easier access
 local ST = LibStub("ScrollingTable")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 local LibDialog = LibStub("LibDialog-1.0")
 local _G = _G
+local Comms = addon.Require "Services.Comms"
+local PREFIX = addon.PREFIXES.MAIN
 
 local ROW_HEIGHT = 30
 local db
@@ -43,7 +50,7 @@ function TradeUI:OnEnable()
    self.tradeItems = {}    -- Items we are currently trading
    self.tradeTarget = nil  -- Name of our last trade target
 
-   self:RegisterComm("RCLootCouncil")
+   self:RegisterComms()
    self:RegisterEvent("TRADE_SHOW", "OnEvent_TRADE_SHOW")
    self:RegisterEvent("TRADE_CLOSED", "OnEvent_TRADE_CLOSED")
    self:RegisterEvent("TRADE_ACCEPT_UPDATE", "OnEvent_TRADE_ACCEPT_UPDATE")
@@ -55,6 +62,17 @@ end
 function TradeUI:OnDisable() -- Shouldn't really happen
    addon:Log("TradeUI disabled")
    self:Hide()
+end
+
+function TradeUI:RegisterComms ()
+   Comms:BulkSubscribe(PREFIX, {
+      awarded = function (data)
+         self:OnAwardReceived(unpack(data))
+      end,
+      do_trade = function (data)
+         self:OnDoTrade(unpack(data))
+      end
+   })
 end
 
 -- By default, TradeUI hides when empty
@@ -89,20 +107,6 @@ function TradeUI:Update(forceShow)
    end
    self.frame.st:SetData(self.frame.rows)
    if not forceShow and #self.frame.rows == 0 then self:Hide() else self.frame:Show() end
-end
-
-function TradeUI:OnCommReceived(prefix, serializedMsg, distri, sender)
-	if prefix == "RCLootCouncil" then
-		local test, command, data = addon:Deserialize(serializedMsg)
-		if addon:HandleXRealmComms(self, command, data, sender) then return end
-		if test then
-         if command == "awarded" then
-            self:OnAwardReceived(unpack(data))
-         elseif command == "do_trade" then
-            self:OnDoTrade(unpack(data))
-         end
-      end
-   end
 end
 
 function TradeUI:OnDoTrade (trader, item, winner)
@@ -231,10 +235,10 @@ function TradeUI:OnEvent_UI_INFO_MESSAGE (event, ...)
          local Item = addon.ItemStorage:GetItem(link)
          if Item and Item.type and Item.type == "to_trade" then
             if addon:UnitIsUnit(self.tradeTarget, Item.args.recipient) then
-               addon:SendCommand("group", "trade_complete", link, self.tradeTarget, addon.playerName)
+               addon:Send("group", "trade_complete", link, self.tradeTarget, addon.playerName)
             elseif Item.args.recipient and not addon:UnitIsUnit(self.tradeTarget, Item.args.recipient) then
                -- Player trades the item to someone else than the winner
-               addon:SendCommand("group", "trade_WrongWinner", link, self.tradeTarget, addon.playerName, Item.args.recipient)
+               addon:Send("group", "trade_WrongWinner", link, self.tradeTarget, addon.playerName, Item.args.recipient)
             end
          end
          addon.ItemStorage:RemoveItem(link)
