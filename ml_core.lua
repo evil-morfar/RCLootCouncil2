@@ -1,5 +1,4 @@
 --[[--- ml_core.lua	Contains core elements for the MasterLooter.
-	Although possible, this module shouldn't be replaced unless closely replicated as other default modules depend on it.
 	Assumes several functions in SessionFrame and VotingFrame.
 	@author Potdisc
 ]]
@@ -7,8 +6,17 @@
 --[[ COMMS:
 	MAIN:
 		playerInfo 				T - PlayerInfo sent from candidate.
-		MLdb_request			T  - Candidate request for "Mldb".
-
+		MLdb_request			T - Candidate request for "Mldb".
+		council_request 		T - Candidate requests council.
+		candidates_request	T - Candidate requests candidates.
+		reconnect 				T - Candidate has reconnect - needs all data.
+		lootTable 				T - We've received the LootTable we sent out.
+		tradeable				T - Candidate has looted a tradeable item.
+		not_tradeable 			T - Candidate looted a non tradeable item.
+		trade_complete 		T - Candidate completed a trade.
+		trade_WrongWinner 	T - Candidate traded an item to the wrong person.
+		rejected_trade			T - Candidate rejected to put their looted item up for the council.
+		bonus_roll 				T - Canidate performed bonus roll.
 ]]
 
 --[[TODOs/NOTES:
