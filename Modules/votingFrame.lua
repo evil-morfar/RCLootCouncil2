@@ -3,12 +3,29 @@
 -- DefaultModule
 -- @author	Potdisc
 -- Create Date : 12/15/2014 8:54:35 PM
+--[[ Comms:
+	MAIN:
+		vote					T - Councilmember sends vote.
+		change_response 	T - ML changes a response.
+		lootAck 				T - Candidate sends lootAck.
+		awarded 				T - ML has awarded an item.
+		bagged 				T - ML has bagged an item (award later).
+		offline_timer 		T - ML sends offline timer.
+		response 			T - Candidate sends a response.
+		rolls 				T - ML sends random rolls info.
+		roll 					T - Candidate sends roll info.
+		reconnectData 		T - ML sends reconnectData.
+		lt_add 				T - ML sends lootTable additions.
+		not_tradeable 		T - Candidate has looted a non-tradeable item.
+		rejected_trade 	T - Candidate rejected to trade a looted item.
+]]
 
 local _,addon = ...
 local RCVotingFrame = addon:NewModule("RCVotingFrame", "AceComm-3.0", "AceTimer-3.0", "AceEvent-3.0", "AceBucket-3.0")
 local LibDialog = LibStub("LibDialog-1.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 
+local Comms = addon.Require "Services.Comms"
 local Council = addon.Require "Data.Council"
 local TempTable = addon.Require "Utils.TempTable"
 
@@ -31,6 +48,8 @@ local MIN_UPDATE_INTERVAL = 0.2 -- Minimum update interval
 local noUpdateTimeRemaining = 0 -- The time until we allow the next update.
 local updateFrame = CreateFrame("FRAME") -- to ensure the update operations that does not occur, because it's within min update interval, gets updated eventually
 local needUpdate = false -- Does voting frame needs an update after MIN_UPDATE_INTERVAL after the last update?
+local PREFIX = addon.PREFIXES.MAIN
+local subscriptions = {}
 
 function RCVotingFrame:OnInitialize()
 	-- Contains all the default data needed for the scroll table
@@ -65,7 +84,7 @@ function RCVotingFrame:OnInitialize()
 end
 
 function RCVotingFrame:OnEnable()
-	self:RegisterComm("RCLootCouncil")
+	self:RegisterComms()
 	self:RegisterBucketEvent({"UNIT_PHASE", "ZONE_CHANGED_NEW_AREA"}, 1, "Update") -- Update "Out of instance" text when any raid members change zone
 	self:RegisterMessage("RCLootStatusReceived", "UpdateLootStatus")
 	db = addon:Getdb()
@@ -90,11 +109,77 @@ function RCVotingFrame:OnDisable() -- We never really call this
 	wipe(lootTable)
 	active = false
 	session = 1
-	self:UnregisterAllComm()
 	updateFrame:Hide()
 	needUpdate = false
 	noUpdateTimeRemaining = 0
 	self.numNonTradeables = 0
+	for _,sub in ipairs(subscriptions) do
+		sub:unsubscribe()
+	end
+end
+
+function RCVotingFrame:RegisterComms ()
+	subscriptions = Comms:BulkSubscribe(PREFIX, {
+		vote = function (data, sender)
+			if addon:CouncilContains(sender) then
+				self:HandleVote(unpack(data), sender)
+			else
+				addon.Log:W("Non-council member (".. tostring(sender) .. ") sent a vote!")
+			end
+		end,
+		change_response = function (data, sender)
+			if addon:IsMasterLooter(sender) then
+				self:OnChangeResponseReceived(unpack(data))
+			end
+		end,
+		lootAck = function (data)
+			self:OnLootAckReceived(unpack(data))
+		end,
+		awarded = function (data, sender)
+			if addon:IsMasterLooter(sender) then
+				self:OnAwardedReceived(unpack(data))
+			end
+		end,
+		bagged = function (data, sender)
+			if addon:IsMasterLooter(sender) then
+				self:OnBaggedReceived(unpack(data))
+			end
+		end,
+		offline_timer = function (_, sender)
+			if addon:IsMasterLooter(sender) then
+				self:OnOfflineTimerReceived()
+			end
+		end,
+		response = function (data, sender)
+			self:OnResponseReceived(unpack(data))
+		end,
+		rolls = function (data, sender)
+			if addon:IsMasterLooter(sender) then
+				self:OnRollsReceived(unpack(data))
+			else
+				addon.Log:W("Non-ML", sender, "sent rolls!")
+			end
+		end,
+		roll = function (data, sender)
+			self:OnRollReceived(unpack(data))
+		end,
+		reconnectData = function (data, sender)
+			if addon:IsMasterLooter(sender) then
+				self:OnReconnectDataReceived(unpack(data))
+			end
+		end,
+		lt_add = function (data, sender)
+			if addon:IsMasterLooter(sender) then
+				self:OnLootTableAdditionsReceived(unpack(data))
+			end
+		end,
+		not_tradeable = function (data, sender, command)
+			self:AddNonTradeable(unpack(data), addon:UnitName(sender), command)
+		end,
+		rejected_trade = function (data, sender, command)
+			self:AddNonTradeable(unpack(data), addon:UnitName(sender), command)
+		end,
+	})
 end
 
 function RCVotingFrame:Hide()
@@ -149,7 +234,7 @@ end
 function RCVotingFrame:CandidateCheck()
 	if not addon.candidates[addon.player:GetName()] and addon.masterLooter then -- If our own name isn't there, we assume it's not received
 		addon.Log:D("CandidateCheck", "failed")
-		addon:SendCommand(addon.masterLooter, "candidates_request")
+		addon:Send(addon.masterLooter, "candidates_request")
 		self:ScheduleTimer("CandidateCheck", 20) -- check again in 20
 	end
 end
@@ -185,178 +270,6 @@ function RCVotingFrame:GetColumnIndexFromName (name)
          return i
       end
    end
-end
-
-function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
-	if prefix == "RCLootCouncil" then
-		-- data is always a table to be unpacked
-		local test, command, data = addon:Deserialize(serializedMsg)
-		if addon:HandleXRealmComms(self, command, data, sender) then return end
-
-		if test then
-			if command == "vote" then
-				if addon:CouncilContains(sender) then
-					local s, name, vote = unpack(data)
-					self:HandleVote(s, name, vote, sender)
-				else
-					addon.Log:W("Non-council member (".. tostring(sender) .. ") sent a vote!")
-				end
-
-			elseif command == "change_response" and addon:UnitIsUnit(sender, addon.masterLooter) then
-				local ses, name, response, isTier, isRelic = unpack(data)
-				self:SetCandidateData(ses, name, "isTier", isTier)
-				self:SetCandidateData(ses, name, "isRelic", isRelic)
-				self:SetCandidateData(ses, name, "response", response)
-				self:Update()
-
-			elseif command == "lootAck" then
-				-- v2.7.4: Extended to contain playerName, specID, ilvl, data
-				-- v2.17.0: Added CorruptionData table
-				-- data contains: diff, gear1[, gear2, response] - each a table for each session
-				local name, specID, ilvl, sessionData, corruptionData = unpack(data)
-				if not specID then -- Old lootAck
-					for i = 1, #lootTable do
-						self:SetCandidateData(i, name, "response", "WAIT")
-					end
-				else
-					for k,d in pairs(sessionData) do
-						for ses, v in pairs(d) do
-							self:SetCandidateData(ses, name, k, v)
-						end
-					end
-					for i = 1, #lootTable do
-						self:SetCandidateData(i, name, "specID", specID)
-						self:SetCandidateData(i, name, "ilvl", ilvl)
-						if corruptionData then
-							local corruption, corruptionResistance = unpack(corruptionData)
-							local totalCorruption = math.max(corruption - corruptionResistance, 0);
-							self:SetCandidateData(i, name, "corruption", corruption)
-							self:SetCandidateData(i, name, "corruptionResistance", corruptionResistance)
-							self:SetCandidateData(i, name, "totalCorruption", totalCorruption)
-						end
-						if not sessionData.response[i] then
-							-- We might already have an response, so don't override unless it's announced
-							if self:GetCandidateData(i, name, "response") == "ANNOUNCED" then
-								self:SetCandidateData(i, name, "response", "WAIT")
-							end
-						-- This response == true means autopass
-						elseif sessionData.response[i] == true then
-							self:SetCandidateData(i, name, "response", "AUTOPASS")
-						end
-					end
-				end
-				self:Update()
-
-			elseif command == "awarded" and addon:UnitIsUnit(sender, addon.masterLooter) then
-				self:ScheduleTimer(function()
-					moreInfoData = addon:GetLootDBStatistics() -- Just update it on every award
-				end, 1) -- Make sure we've received the history data before updating
-				local s, winner = unpack(data)
-				if not lootTable[s] then return end -- We might not have lootTable - e.g. if we just reloaded
-				local oldWinner = lootTable[s].awarded
-				for k, v in ipairs(lootTable) do
-					if addon:ItemIsItem(v.link, lootTable[s].link) then
-						if oldWinner and not addon:UnitIsUnit(oldWinner,winner) then -- reawarded
-							self:SetCandidateData(k, oldWinner, "response", self:GetCandidateData(k, oldWinner, "real_response"))
-						end
-						self:SetCandidateData(k, winner, "real_response", self:GetCandidateData(k, winner, "response"))
-						self:SetCandidateData(k, winner, "response", "AWARDED")
-					end
-				end
-				lootTable[s].awarded = winner
-				local nextSession = self:FetchUnawardedSession()
-				if addon.isMasterLooter and nextSession then -- ML should move to the next item on award
-					self:SwitchSession(nextSession)
-				else
-					self:SwitchSession(session) -- Use switch session to update awardstring
-				end
-			elseif command == "bagged" and addon:UnitIsUnit(sender, addon.masterLooter) then
-				self:ScheduleTimer(function()
-					moreInfoData = addon:GetLootDBStatistics() -- Just update it on every award
-				end, 1) -- Make sure we've received the history data before updating
-				local s = unpack(data)
-				if not lootTable[s] then return end -- We might not have lootTable - e.g. if we just reloaded
-				lootTable[s].bagged = true
-				lootTable[s].baggedInSession = true
-				if addon.isMasterLooter and session ~= #lootTable then -- ML should move to the next item on award
-					self:SwitchSession(session + 1)
-				else
-					self:SwitchSession(session) -- Use switch session to update awardstring
-				end
-
-			elseif command == "offline_timer" and addon:UnitIsUnit(sender, addon.masterLooter) then
-				for i = 1, #lootTable do
-					for name in pairs(lootTable[i].candidates) do
-						if self:GetCandidateData(i, name, "response") == "ANNOUNCED" then
-							addon.Log:D("No response from:", name)
-							self:SetCandidateData(i, name, "response", "NOTHING")
-						end
-					end
-				end
-				self:Update()
-
-			elseif command == "response" then
-				local session, name, t = unpack(data)
-				for k,v in pairs(t) do
-					self:SetCandidateData(session, name, k, v)
-				end
-				self:Update()
-
-			elseif command == "rolls" then
-				if addon:UnitIsUnit(sender, addon.masterLooter) then
-					local session, table = unpack(data)
-					for name, roll in pairs(table) do
-						self:SetCandidateData(session, name, "roll", roll)
-					end
-					self:Update()
-				else
-					addon.Log:W("Non-ML", sender, "sent rolls!")
-				end
-
-			elseif command == "roll" then
-				local name, roll, sessions = unpack(data)
-				for _,ses in ipairs(sessions) do
-					self:SetCandidateData(ses, name, "roll", roll)
-				end
-				self:Update()
-
-			elseif command == "reconnectData" and addon:UnitIsUnit(sender, addon.masterLooter) then
-				-- We assume we always receive a regular lootTable command first
-				-- All we need to do is updating the loot table and figure out if we've voted previously
-				lootTable = unpack(data)
-				for _, data in ipairs(lootTable) do
-					for _, cand in pairs(data.candidates) do
-						for _, voter in ipairs(cand.voters) do
-							if addon:UnitIsUnit(voter, "player") then -- WE've voted
-								data.haveVoted = true
-								cand.haveVoted = true
-							end
-						end
-					end
-				end
-				self:Update()
-				self:UpdatePeopleToVote()
-
-			elseif command == "lt_add" and addon:UnitIsUnit(sender, addon.masterLooter) then
-				local oldLenght = #lootTable
-				for k,v in pairs(unpack(data)) do
-					lootTable[k] = v
-				end
-				-- Add the sessions in order to avoid messing with SessionButtons
-				for i = oldLenght + 1, #lootTable do
-					self:SetupSession(i, lootTable[i])
-					if addon.isMasterLooter and db.autoAddRolls then
-						self:DoRandomRolls(i)
-					end
-				end
-				self:SwitchSession(session)
-
-			elseif command == "not_tradeable" or command == "rejected_trade" then
-				self:AddNonTradeable(unpack(data), addon:UnitName(sender), command)
-
-			end
-		end
-	end
 end
 
 -- Getter/Setter for candidate data
@@ -486,7 +399,7 @@ function RCVotingFrame:DoRandomRolls(ses)
 	local table = self:GenerateNoRepeatRollTable(ses)
 	for k, v in ipairs(lootTable) do
 		if addon:ItemIsItem(lootTable[ses].link, v.link) then
-			addon:SendCommand("group", "rolls", k, table)
+			addon:Send("group", "rolls", k, table)
 		end
 	end
 end
@@ -500,13 +413,153 @@ function RCVotingFrame:DoAllRandomRolls()
 			for k, v in ipairs(lootTable) do
 				if addon:ItemIsItem(t.link, v.link) then
 					sessionsDone[k] = true
-					addon:SendCommand("group", "rolls", k, table)
+					addon:Send("group", "rolls", k, table)
 				end
 			end
 		end
 	end
-
 end
+
+-----------------------------------------------------------------
+-- Comm Handlers
+-----------------------------------------------------------------
+function RCVotingFrame:OnChangeResponseReceived(ses, name, response, isTier)
+	self:SetCandidateData(ses, name, "isTier", isTier)
+	self:SetCandidateData(ses, name, "response", response)
+	self:Update()
+end
+
+function RCVotingFrame:OnLootAckReceived (name, specID, ilvl, sessionData, corruptionData)
+	for k,d in pairs(sessionData) do
+		for ses, v in pairs(d) do
+			self:SetCandidateData(ses, name, k, v)
+		end
+	end
+	for i = 1, #lootTable do
+		self:SetCandidateData(i, name, "specID", specID)
+		self:SetCandidateData(i, name, "ilvl", ilvl)
+		if corruptionData then
+			local corruption, corruptionResistance = unpack(corruptionData)
+			local totalCorruption = math.max(corruption - corruptionResistance, 0);
+			self:SetCandidateData(i, name, "corruption", corruption)
+			self:SetCandidateData(i, name, "corruptionResistance", corruptionResistance)
+			self:SetCandidateData(i, name, "totalCorruption", totalCorruption)
+		end
+		if not sessionData.response[i] then
+			-- We might already have an response, so don't override unless it's announced
+			if self:GetCandidateData(i, name, "response") == "ANNOUNCED" then
+				self:SetCandidateData(i, name, "response", "WAIT")
+			end
+		-- This response == true means autopass
+		elseif sessionData.response[i] == true then
+			self:SetCandidateData(i, name, "response", "AUTOPASS")
+		end
+	end
+	self:Update()
+end
+
+function RCVotingFrame:OnAwardedReceived (s, winner)
+	self:ScheduleTimer(function()
+		moreInfoData = addon:GetLootDBStatistics() -- Just update it on every award
+	end, 1) -- Make sure we've received the history data before updating
+	if not lootTable[s] then return end -- We might not have lootTable - e.g. if we just reloaded
+	local oldWinner = lootTable[s].awarded
+	for k, v in ipairs(lootTable) do
+		if addon:ItemIsItem(v.link, lootTable[s].link) then
+			if oldWinner and not addon:UnitIsUnit(oldWinner,winner) then -- reawarded
+				self:SetCandidateData(k, oldWinner, "response", self:GetCandidateData(k, oldWinner, "real_response"))
+			end
+			self:SetCandidateData(k, winner, "real_response", self:GetCandidateData(k, winner, "response"))
+			self:SetCandidateData(k, winner, "response", "AWARDED")
+		end
+	end
+	lootTable[s].awarded = winner
+	local nextSession = self:FetchUnawardedSession()
+	if addon.isMasterLooter and nextSession then -- ML should move to the next item on award
+		self:SwitchSession(nextSession)
+	else
+		self:SwitchSession(session) -- Use switch session to update awardstring
+	end
+end
+
+function RCVotingFrame:OnBaggedReceived (s)
+	self:ScheduleTimer(function()
+		moreInfoData = addon:GetLootDBStatistics() -- Just update it on every award
+	end, 1) -- Make sure we've received the history data before updating
+	if not lootTable[s] then return end -- We might not have lootTable - e.g. if we just reloaded
+	lootTable[s].bagged = true
+	lootTable[s].baggedInSession = true
+	if addon.isMasterLooter and session ~= #lootTable then -- ML should move to the next item on award
+		self:SwitchSession(session + 1)
+	else
+		self:SwitchSession(session) -- Use switch session to update awardstring
+	end
+end
+
+function RCVotingFrame:OnOfflineTimerReceived ()
+	for i = 1, #lootTable do
+		for name in pairs(lootTable[i].candidates) do
+			if self:GetCandidateData(i, name, "response") == "ANNOUNCED" then
+				addon.Log:D("No response from:", name)
+				self:SetCandidateData(i, name, "response", "NOTHING")
+			end
+		end
+	end
+	self:Update()
+end
+
+function RCVotingFrame:OnResponseReceived (session, name, data)
+	for k,v in pairs(data) do
+		self:SetCandidateData(session, name, k, v)
+	end
+	self:Update()
+end
+
+function RCVotingFrame:OnRollsReceived (session, table)
+	for name, roll in pairs(table) do
+		self:SetCandidateData(session, name, "roll", roll)
+	end
+	self:Update()
+end
+
+function RCVotingFrame:OnRollReceived (name, roll, sessions)
+	for _,ses in ipairs(sessions) do
+		self:SetCandidateData(ses, name, "roll", roll)
+	end
+	self:Update()
+end
+
+function RCVotingFrame:OnReconnectReceived (lootTable)
+	for _, data in ipairs(lootTable) do
+		for _, cand in pairs(data.candidates) do
+			for _, voter in ipairs(cand.voters) do
+				if addon:UnitIsUnit(voter, "player") then -- WE've voted
+					data.haveVoted = true
+					cand.haveVoted = true
+				end
+			end
+		end
+	end
+	self:Update()
+	self:UpdatePeopleToVote()
+end
+
+function RCVotingFrame:OnLootTableAdditionsReceived (lt)
+	local oldLenght = #lootTable
+	for k,v in pairs(lt) do
+		lootTable[k] = v
+	end
+	-- Add the sessions in order to avoid messing with SessionButtons
+	for i = oldLenght + 1, #lootTable do
+		self:SetupSession(i, lootTable[i])
+		if addon.isMasterLooter and db.autoAddRolls then
+			self:DoRandomRolls(i)
+		end
+	end
+	self:SwitchSession(session)
+end
+
+
 
 ------------------------------------------------------------------
 --	Visuals
@@ -1238,7 +1291,7 @@ function RCVotingFrame.SetCellVote(rowFrame, frame, data, cols, row, realrow, co
 		frame.voteBtn:SetScript("OnClick", function(btn)
 			addon.Log:D("Vote button pressed")
 			if lootTable[session].candidates[name].haveVoted then -- unvote
-				addon:SendCommand("group", "vote", session, name, -1)
+				addon:Send("group", "vote", session, name, -1)
 				lootTable[session].candidates[name].haveVoted = false
 
 				-- Check if that was our only vote
@@ -1260,7 +1313,7 @@ function RCVotingFrame.SetCellVote(rowFrame, frame, data, cols, row, realrow, co
 					end
 				end
 				-- Do the vote
-				addon:SendCommand("group", "vote", session, name, 1)
+				addon:Send("group", "vote", session, name, 1)
 				lootTable[session].candidates[name].haveVoted = true
 				lootTable[session].haveVoted = true
 			end
@@ -1520,13 +1573,13 @@ function RCVotingFrame:ReannounceOrRequestRoll(namePred, sesPred, isRoll, noAuto
 			for name, _ in pairs(v.candidates) do
 				if namePred == true or (type(namePred)=="string" and name == namePred) or (type(namePred)=="function" and namePred(name)) then
 					if not isRoll then
-						addon:SendCommand("group", "change_response", k, name, "WAIT")
+						addon:Send("group", "change_response", k, name, "WAIT")
 					end
 					rolls[name] = ""
 				end
 			end
 			if isRoll then
-				addon:SendCommand("group", "rolls", k, rolls)
+				addon:Send("group", "rolls", k, rolls)
 			end
 		end
 	end
@@ -1538,11 +1591,11 @@ function RCVotingFrame:ReannounceOrRequestRoll(namePred, sesPred, isRoll, noAuto
 
 
 		if namePred == true then
-			addon:SendCommand("group", "reroll", rerollTable)
+			addon:Send("group", "reroll", rerollTable)
 		else
 			for name, _ in pairs(lootTable[session].candidates) do
 				if (type(namePred)=="string" and name == namePred) or (type(namePred)=="function" and namePred(name)) then
-					addon:SendCommand(name, "reroll", rerollTable)
+					addon:Send(name, "reroll", rerollTable)
 				end
 			end
 		end
@@ -1713,7 +1766,7 @@ do
 				text = L["Remove from consideration"],
 				notCheckable = true,
 				func = function(name)
-					addon:SendCommand("group", "change_response", session, name, "REMOVED")
+					addon:Send("group", "change_response", session, name, "REMOVED")
 				end,
 			},
 		},
@@ -1819,7 +1872,7 @@ do
 					info.colorCode = "|cff"..addon.Utils:RGBToHex(unpack(v.color))
 					info.notCheckable = true
 					info.func = function()
-							addon:SendCommand("group", "change_response", session, candidateName, i)
+							addon:Send("group", "change_response", session, candidateName, i)
 					end
 					MSA_DropDownMenu_AddButton(info, level)
 				end
@@ -1828,7 +1881,7 @@ do
 				info.colorCode = "|cff"..addon.Utils:RGBToHex(unpack(db.responses.default.PASS.color))
 				info.notCheckable = true
 				info.func = function()
-						addon:SendCommand("group", "change_response", session, candidateName, "PASS")
+						addon:Send("group", "change_response", session, candidateName, "PASS")
 				end
 				MSA_DropDownMenu_AddButton(info, level)
 				info = MSA_DropDownMenu_CreateInfo()
@@ -1839,7 +1892,7 @@ do
 							info.colorCode = "|cff"..addon.Utils:RGBToHex(unpack(val.color))
 							info.notCheckable = true
 							info.func = function()
-									addon:SendCommand("group", "change_response", session, candidateName, k)
+									addon:Send("group", "change_response", session, candidateName, k)
 							end
 							MSA_DropDownMenu_AddButton(info, level)
 						end
