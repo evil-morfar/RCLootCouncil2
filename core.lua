@@ -50,6 +50,7 @@
 			lt_add 				P - Partial lootTable (additions) sent from ML.
 			MLdb 					P - MLdb sent from ML.
 			candidates			P - Candidates sent from ML.
+			reroll 				P - (Partial) lootTable with items we should reroll on.
 
 ]]
 
@@ -781,15 +782,15 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 			-- 		self:GetActiveModule("history"):BuildData()
 			-- 	end
 
-			elseif command == "reroll" and self:UnitIsUnit(sender, self.masterLooter) and self.enabled then
-				self:Print(format(L["'player' has asked you to reroll"], self.Ambiguate(sender)))
-				local table = unpack(data)
-				self:PrepareLootTable(table)
-				self:DoAutoPasses(table)
-				self:SendLootAck(table)
-
-				self:CallModule("lootframe")
-				self:GetActiveModule("lootframe"):ReRoll(table)
+			-- elseif command == "reroll" and self:UnitIsUnit(sender, self.masterLooter) and self.enabled then
+				-- self:Print(format(L["'player' has asked you to reroll"], self.Ambiguate(sender)))
+				-- local table = unpack(data)
+				-- self:PrepareLootTable(table)
+				-- self:DoAutoPasses(table)
+				-- self:SendLootAck(table)
+				--
+				-- self:CallModule("lootframe")
+				-- self:GetActiveModule("lootframe"):ReRoll(table)
 
 			-- elseif command == "playerInfoRequest" then
 			-- 	self:SendCommand(sender, "playerInfo", self:GetPlayerInfo())
@@ -2726,6 +2727,12 @@ function RCLootCouncil:SubscribeToPermanentComms ()
 			else
 				self.Log:W("Non ML:", sender, "sent candidates")
 			end
+		end,
+
+		reroll = function (data, sender)
+			if self:UnitIsUnit(sender, self.masterLooter) and self.enabled then
+				self:OnReRollReceived(sender, unpack(data))
+			end
 		end
 
 	})
@@ -2883,4 +2890,15 @@ end
 
 function RCLootCouncil:OnCandidatesReceived(candidates)
 	self.candidates = candidates
+end
+
+function RCLootCouncil:OnReRollReceived (sender, lt)
+	self:Print(format(L["'player' has asked you to reroll"], self.Ambiguate(sender)))
+	self:PrepareLootTable(lt)
+	-- REVIEW Are these needed?
+	self:DoAutoPasses(lt)
+	self:SendLootAck(lt)
+
+	self:CallModule("lootframe")
+	self:GetActiveModule("lootframe"):ReRoll(lt)
 end
