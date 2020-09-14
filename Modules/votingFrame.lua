@@ -27,6 +27,7 @@ local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 
 local Comms = addon.Require "Services.Comms"
 local Council = addon.Require "Data.Council"
+local Player = addon.Require "Data.Player"
 local TempTable = addon.Require "Utils.TempTable"
 
 local ROW_HEIGHT = 20;
@@ -121,7 +122,7 @@ end
 function RCVotingFrame:RegisterComms ()
 	subscriptions = Comms:BulkSubscribe(PREFIX, {
 		vote = function (data, sender)
-			if addon:CouncilContains(sender) then
+			if Council:Contains(Player:Get(sender)) then
 				self:HandleVote(unpack(data), sender)
 			else
 				addon.Log:W("Non-council member (".. tostring(sender) .. ") sent a vote!")
