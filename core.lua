@@ -49,6 +49,7 @@
 			lootTable			P - LootTable sent from ML.
 			lt_add 				P - Partial lootTable (additions) sent from ML.
 			MLdb 					P - MLdb sent from ML.
+			candidates			P - Candidates sent from ML.
 
 ]]
 
@@ -688,7 +689,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 				-- -- VotingFrame handles this by itself.
 
 			if command == "candidates" and self:UnitIsUnit(sender, self.masterLooter) then
-				self.candidates = unpack(data)
+				-- self.candidates = unpack(data)
 			-- elseif command == "council" and self:UnitIsUnit(sender, self.masterLooter) then -- only ML sends council
 			-- 	self.council = unpack(data)
 			-- 	self.isCouncil = self:CouncilContains(self.playerName:GetName())
@@ -710,7 +711,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 			-- 		self.Log:w("Non-ML:", sender, "sent Mldb!")
 			-- 	end
 
-			elseif command == "verTest" and not self:UnitIsUnit(sender, "player") then -- Don't reply to our own verTests
+			-- elseif command == "verTest" and not self:UnitIsUnit(sender, "player") then -- Don't reply to our own verTests
 				-- local otherVersion, tVersion = unpack(data)
 				-- self:GetActiveModule("version"):LogVersion(self:UnitName(sender), otherVersion, tVersion)
 				-- -- We want to reply to guild chat if that's where the message is sent
@@ -730,7 +731,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 				-- 	self:PrintOutdatedTestVersionWarning(tVersion)
 				-- end
 
-			elseif command == "verTestReply" then
+			-- elseif command == "verTestReply" then
 				-- local name,_,_, otherVersion, tVersion, moduleData = unpack(data)
 				-- if not name then -- REVIEW v2.7.11 For some reason name can sometimes be missing (#341)!?
 				-- 	return self.Log:E("verTestReply with nil name", sender, name, otherVersion, tVersion, moduleData)
@@ -2717,6 +2718,14 @@ function RCLootCouncil:SubscribeToPermanentComms ()
 			else
 				self.Log:w("Non-ML:", sender, "sent Mldb!")
 			end
+		end,
+
+		candidates = function (data, sender)
+			if self:UnitIsUnit(sender, self.masterLooter) then
+				self:OnCandidatesReceived(unpack(data))
+			else
+				self.Log:W("Non ML:", sender, "sent candidates")
+			end
 		end
 
 	})
@@ -2870,4 +2879,8 @@ function RCLootCouncil:OnMLDBReceived(mldb)
 	if not self.mldb.buttons.default then self.mldb.buttons.default = {} end
 	setmetatable(self.mldb.buttons.default, { __index = self.defaults.profile.buttons.default,})
 	-- self.mldb = mldb
+end
+
+function RCLootCouncil:OnCandidatesReceived(candidates)
+	self.candidates = candidates
 end
