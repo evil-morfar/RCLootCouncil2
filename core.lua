@@ -51,6 +51,7 @@
 			MLdb 					P - MLdb sent from ML.
 			candidates			P - Candidates sent from ML.
 			reroll 				P - (Partial) lootTable with items we should reroll on.
+			lootAck 				P - LootAck received from another player. Used for checking if have received the required data.
 
 ]]
 
@@ -807,19 +808,19 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 			-- 		self.Log:W("Non ML:", sender, "sent end session command!")
 			-- 	end
 
-			elseif command == "lootAck" and not self:UnitIsUnit(sender, "player") and self.enabled then
-				-- It seems we have message dropping. If we receive a lootAck, but we don't have lootTable, then something's wrong!
-				if not lootTable or #lootTable == 0 then
-					self.Log:d("!!!! We got an lootAck without having lootTable!!!!")
-					if not self.masterLooter then -- Extra sanity check
-						return self.Log:d("We don't have a ML?!")
-					end
-					if not self.recentReconnectRequest then -- we don't want to do it too often!
-						self:SendCommand(self.masterLooter, "reconnect")
-						self.recentReconnectRequest = true
-						self:ScheduleTimer("ResetReconnectRequest", 5) -- 5 sec break between each try
-					end
-				end
+			-- elseif command == "lootAck" and not self:UnitIsUnit(sender, "player") and self.enabled then
+			-- 	-- It seems we have message dropping. If we receive a lootAck, but we don't have lootTable, then something's wrong!
+			-- 	if not lootTable or #lootTable == 0 then
+			-- 		self.Log:d("!!!! We got an lootAck without having lootTable!!!!")
+			-- 		if not self.masterLooter then -- Extra sanity check
+			-- 			return self.Log:d("We don't have a ML?!")
+			-- 		end
+			-- 		if not self.recentReconnectRequest then -- we don't want to do it too often!
+			-- 			self:SendCommand(self.masterLooter, "reconnect")
+			-- 			self.recentReconnectRequest = true
+			-- 			self:ScheduleTimer("ResetReconnectRequest", 5) -- 5 sec break between each try
+			-- 		end
+			-- 	end
 
 			-- elseif command == "sync" then
 			-- 	self.Sync:SyncDataReceived(unpack(data))
@@ -2733,6 +2734,12 @@ function RCLootCouncil:SubscribeToPermanentComms ()
 			if self:UnitIsUnit(sender, self.masterLooter) and self.enabled then
 				self:OnReRollReceived(sender, unpack(data))
 			end
+		end,
+
+		lootAck = function (sender)
+			if self.enabled then
+				self:OnLootAckReceived()
+			end
 		end
 
 	})
@@ -2901,4 +2908,20 @@ function RCLootCouncil:OnReRollReceived (sender, lt)
 
 	self:CallModule("lootframe")
 	self:GetActiveModule("lootframe"):ReRoll(lt)
+end
+
+function RCLootCouncil:OnLootAckReceived ()
+	-- If we receive a lootAck, but we don't have lootTable, then something's wrong!
+	-- REVIEW Is this still needed?
+	if not lootTable or #lootTable == 0 then
+		self.Log:d("!!!! We got an lootAck without having lootTable!!!!")
+		if not self.masterLooter then -- Extra sanity check
+			return self.Log:d("We don't have a ML?!")
+		end
+		if not self.recentReconnectRequest then -- we don't want to do it too often!
+			self:Send(self.masterLooter, "reconnect")
+			self.recentReconnectRequest = true
+			self:ScheduleTimer("ResetReconnectRequest", 5) -- 5 sec break between each try
+		end
+	end
 end
