@@ -58,7 +58,7 @@
 -- GLOBALS: GetLootMethod, GetAddOnMetadata, UnitClass
 
 local addonname, addontable = ...
-_G.RCLootCouncil = LibStub("AceAddon-3.0"):NewAddon(addontable,addonname, "AceConsole-3.0", "AceEvent-3.0", "AceComm-3.0", "AceSerializer-3.0", "AceHook-3.0", "AceTimer-3.0");
+_G.RCLootCouncil = LibStub("AceAddon-3.0"):NewAddon(addontable,addonname, "AceConsole-3.0", "AceEvent-3.0", "AceSerializer-3.0", "AceHook-3.0", "AceTimer-3.0");
 local LibDialog = LibStub("LibDialog-1.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 local lwin = LibStub("LibWindow-1.1")
@@ -209,7 +209,6 @@ function RCLootCouncil:OnInitialize()
 	self:RegisterChatCommand("rc", "ChatCommand")
 	self:RegisterChatCommand("rclc", "ChatCommand")
 	self.customChatCmd = {} -- Modules that wants their cmds used with "/rc"
-	self:RegisterComms()
 	self.db = LibStub("AceDB-3.0"):New("RCLootCouncilDB", self.defaults, true)
 	self:InitLogging()
 	self.lootDB = LibStub("AceDB-3.0"):New("RCLootCouncilLootDB")
@@ -310,13 +309,7 @@ function RCLootCouncil:OnDisable()
 	self.Log:Info("OnDisable()")
 	self:UnregisterChatCommand("rc")
 	self:UnregisterChatCommand("rclc")
-	self:UnregisterAllComm()
 	self:UnregisterAllEvents()
-end
-
-function RCLootCouncil:RegisterComms ()
-	self:RegisterComm("RCLootCouncil")
-	self:RegisterComm("RCLCv")
 end
 
 function RCLootCouncil:ConfigTableChanged(val)
@@ -560,12 +553,12 @@ function RCLootCouncil:UpdateAndSendRecentTradableItem(info, count)
 				LibDialog:Spawn("RCLOOTCOUNCIL_KEEP_ITEM", info.link)
 				return
 			end
-			self:SendCommand("group", "tradable", info.link, info.guid)
+			self:Send("group", "tradable", info.link, info.guid)
 			return
 		end
 		-- We've searched every single bag space, and found at least 1 item that wasn't tradeable,
 		-- and none that was. We can now safely assume the item can't be traded.
-		self:SendCommand("group", "not_tradeable", info.link, info.guid)
+		self:Send("group", "not_tradeable", info.link, info.guid)
 	end,
 	function() -- onFail
 		-- We haven't found it, maybe we just haven't received it yet, so try again in one second
@@ -589,305 +582,6 @@ function RCLootCouncil:SendAnnouncement(msg, channel)
 	else
 		SendChatMessage(msg, self.Utils:GetAnnounceChannel(channel))
 	end
-end
-
---- Send a RCLootCouncil Comm Message using AceComm-3.0
--- See RCLootCouncil:OnCommReceived() on how to receive these messages.
--- @param target The receiver of the message. Can be "group", "guild" or "playerName".
--- @param command The command to send.
--- @param ... Any number of arguments to send along. Will be packaged as a table.
-function RCLootCouncil:SendCommand(target, command, ...)
-	-- send all data as a table, and let receiver unpack it
-	local toSend = self:Serialize(command, {...})
-
-	if target == "group" then
-		if IsInRaid() then -- Raid
-			self:SendCommMessage("RCLootCouncil", toSend, self.Utils:IsInNonInstance() and "INSTANCE_CHAT" or "RAID")
-		elseif IsInGroup() then -- Party
-			self:SendCommMessage("RCLootCouncil", toSend, self.Utils:IsInNonInstance() and "INSTANCE_CHAT" or "PARTY")
-		else--if self.testMode then -- Alone (testing)
-			self:SendCommMessage("RCLootCouncil", toSend, "WHISPER", self.playerName:GetName())
-		end
-
-	elseif target == "guild" then
-		self:SendCommMessage("RCLootCouncil", toSend, "GUILD")
-
-	else
-		if self:UnitIsUnit(target,"player") then -- If target == "player"
-			self:SendCommMessage("RCLootCouncil", toSend, "WHISPER", self.playerName:GetName())
-		else
-			-- We cannot send "WHISPER" to a crossrealm player
-			if target:find("-") then
-				if target:find(self.realmName) then -- Our own realm, just send it
-					self:SendCommMessage("RCLootCouncil", toSend, "WHISPER", target)
-				else -- Get creative
-					-- Remake command to be "xrealm" and put target and command in the table
-					-- See "RCLootCouncil:HandleXRealmComms()" for more info
-					toSend = self:Serialize("xrealm", {target, command, ...})
-					if GetNumGroupMembers() > 0 then -- We're in a group
-						self:SendCommMessage("RCLootCouncil", toSend, self.Utils:IsInNonInstance() and "INSTANCE_CHAT" or "RAID")
-					else -- We're not, probably a guild verTest
-						self:SendCommMessage("RCLootCouncil", toSend, "GUILD")
-					end
-				end
-
-			else -- Should also be our own realm
-				self:SendCommMessage("RCLootCouncil", toSend, "WHISPER", target)
-			end
-		end
-	end
-end
-
---- A direct call to AceComms:SendCommMessage(). For hooking purposes.
-function RCLootCouncil:SendCommandModified (prefix, serializedMsg, channel, target, prio, ...)
-	self:SendCommMessage(prefix, serializedMsg, channel, target, prio, ...)
-end
-
-local v3VersionWarningCount = 0
---- Receives RCLootCouncil commands.
--- Params are delivered by AceComm-3.0, but we need to extract our data created with the
--- RCLootCouncil:SendCommand function.
--- @usage
--- --To extract the original data using AceSerializer-3.0:
--- local success, command, data = self:Deserialize(serializedMsg)
--- --'data' is a table containing the varargs delivered to RCLootCouncil:SendCommand().
---
--- -- To ensure correct handling of x-realm commands, include this line aswell:
--- if RCLootCouncil:HandleXRealmComms(self, command, data, sender) then return end
-function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
-	if prefix == "RCLootCouncil" then
-		self.Log("Comm received:" .. serializedMsg, "from:", sender, "distri:", distri)
-		-- data is always a table to be unpacked
-		local test, command, data = self:Deserialize(serializedMsg)
-		-- NOTE: Since I can't find a better way to do this, all xrealms comms is routed through here
-		--			to make sure they get delivered properly. Must be included in every OnCommReceived() function.
-		if self:HandleXRealmComms(self, command, data, sender) then return end
-
-		if test then
-			-- if command == "lootTable" then
-			-- 	if self:UnitIsUnit(sender, self.masterLooter) then
-			-- 		self:OnLootTableReceived(unpack(data))
-			--
-			-- 	else -- a non-ML send a lootTable?!
-			-- 		self.Log:d(tostring(sender).." is not ML, but sent lootTable!")
-			-- 	end
-			--
-			-- else
-				-- if command == "lt_add" and self:UnitIsUnit(sender, self.masterLooter) then
-				-- -- We can skip most of the normal lootTable checks since a session should running
-				-- local oldLenght = #lootTable
-				-- for k,v in pairs(unpack(data)) do
-				-- 	lootTable[k] = v
-				-- end
-				-- -- REVIEW This runs over the entire lootTable again, but will probably need changing anyway in v3.0
-				-- self:PrepareLootTable(lootTable)
-				-- self:DoAutoPasses(lootTable, oldLenght)
-				-- self:SendLootAck(lootTable, oldLenght)
-				-- for k,v in ipairs(lootTable) do
-				-- 	if k > oldLenght then
-				-- 		self:GetActiveModule("lootframe"):AddSingleItem(v)
-				-- 	end
-				-- end
-				-- -- VotingFrame handles this by itself.
-
-			if command == "candidates" and self:UnitIsUnit(sender, self.masterLooter) then
-				-- self.candidates = unpack(data)
-			-- elseif command == "council" and self:UnitIsUnit(sender, self.masterLooter) then -- only ML sends council
-			-- 	self.council = unpack(data)
-			-- 	self.isCouncil = self:CouncilContains(self.playerName:GetName())
-			--
-			-- 	-- prepare the voting frame for the right people
-			-- 	if self.isCouncil or self.mldb.observe then
-			-- 		self:CallModule("votingframe")
-			-- 	else
-			-- 		self:GetActiveModule("votingframe"):Disable()
-			-- 	end
-
-			-- elseif command == "MLdb" and not self.isMasterLooter then -- ML sets his own mldb
-			-- 	--[[ NOTE: 2.1.7 - While a check for this does make sense, I'm just really tired of mldb problems, and
-			-- 		noone should really be able to send it without being ML in the first place. So just accept it as is. ]]
-			-- 	-- [[2.7: Probably should still check this. There are issues otherwise.]]
-			-- 	if self:UnitIsUnit(sender, self.masterLooter) then
-			-- 		self:OnMLDBReceived(unpack(data))
-			-- 	else
-			-- 		self.Log:w("Non-ML:", sender, "sent Mldb!")
-			-- 	end
-
-			-- elseif command == "verTest" and not self:UnitIsUnit(sender, "player") then -- Don't reply to our own verTests
-				-- local otherVersion, tVersion = unpack(data)
-				-- self:GetActiveModule("version"):LogVersion(self:UnitName(sender), otherVersion, tVersion)
-				-- -- We want to reply to guild chat if that's where the message is sent
-				-- if distri == "GUILD" then
-				-- 	sender = "guild"
-				-- end
-				-- self:SendCommand(sender, "verTestReply", self.playerName, self.playerClass, self.guildRank, self.version, self.tVersion, self:GetInstalledModulesFormattedData())
-				--
-				-- if self.verCheckDisplayed then return end -- Don't bother if we already displayed
-				--
-				-- local verCheck = self.Utils:CheckOutdatedVersion(self.version, otherVersion, self.tVersion, tVersion)
-				--
-				-- if verCheck == self.VER_CHECK_CODES[2] then
-				-- 	self:PrintOutdatedVersionWarning(otherVersion)
-				--
-				-- elseif verCheck == self.VER_CHECK_CODES[3] then
-				-- 	self:PrintOutdatedTestVersionWarning(tVersion)
-				-- end
-
-			-- elseif command == "verTestReply" then
-				-- local name,_,_, otherVersion, tVersion, moduleData = unpack(data)
-				-- if not name then -- REVIEW v2.7.11 For some reason name can sometimes be missing (#341)!?
-				-- 	return self.Log:E("verTestReply with nil name", sender, name, otherVersion, tVersion, moduleData)
-				-- end
-				-- self:GetActiveModule("version"):LogVersion(self:UnitName(sender), otherVersion, tVersion)
-				--
-				-- if self.verCheckDisplayed then return end -- Don't bother if we already displayed
-				--
-				-- local verCheck = self.Utils:CheckOutdatedVersion(self.version, otherVersion, self.tVersion, tVersion)
-				--
-				-- if verCheck == self.VER_CHECK_CODES[2] then
-				-- 	self:PrintOutdatedVersionWarning(otherVersion)
-				--
-				-- elseif verCheck == self.VER_CHECK_CODES[3] then
-				-- 	self:PrintOutdatedTestVersionWarning(tVersion)
-				-- end
-				--
-				-- self:DoModulesVersionCheck(moduleData)
-
-			-- elseif command == "history" and db.enableHistory then
-			-- 	local name, history = unpack(data)
-			-- 	-- v2.15 Add itemClass and itemSubClass locally:
-			-- 	local _, _, _, _, _, itemClassID, itemSubClassID = GetItemInfoInstant(history.lootWon)
-			-- 	history.iClass = itemClassID
-			-- 	history.iSubClass = itemSubClassID
-			-- 	if historyDB[name] then
-			-- 		tinsert(historyDB[name], history)
-			-- 	else
-			-- 		historyDB[name] = {history}
-			-- 	end
-			-- 	if self:GetActiveModule("history"):IsEnabled() then -- Update history frame if it is shown currently.
-			-- 		self:GetActiveModule("history"):BuildData()
-			-- 	end
-
-			-- elseif command == "delete_history" and db.enableHistory then
-			-- 	local id = unpack(data)
-			-- 	for _, d in pairs(historyDB) do
-			-- 		for i = #d, 1, -1 do
-			-- 			local entry = d[i]
-			-- 			if entry.id == id then
-			-- 				tremove(d, i)
-			-- 				break
-			-- 			end
-			-- 		end
-			-- 	end
-			-- 	if self:GetActiveModule("history"):IsEnabled() then -- Update history frame if it is shown currently.
-			-- 		self:GetActiveModule("history"):BuildData()
-			-- 	end
-
-			-- elseif command == "reroll" and self:UnitIsUnit(sender, self.masterLooter) and self.enabled then
-				-- self:Print(format(L["'player' has asked you to reroll"], self.Ambiguate(sender)))
-				-- local table = unpack(data)
-				-- self:PrepareLootTable(table)
-				-- self:DoAutoPasses(table)
-				-- self:SendLootAck(table)
-				--
-				-- self:CallModule("lootframe")
-				-- self:GetActiveModule("lootframe"):ReRoll(table)
-
-			-- elseif command == "playerInfoRequest" then
-			-- 	self:SendCommand(sender, "playerInfo", self:GetPlayerInfo())
-
-			-- elseif command == "session_end" and self.enabled then
-			-- 	if self:UnitIsUnit(sender, self.masterLooter) then
-			-- 		self:Print(format(L["'player' has ended the session"], self.Ambiguate(self.masterLooter)))
-			-- 		self:GetActiveModule("lootframe"):Disable()
-			-- 		lootTable = {}
-			-- 		if self.isCouncil or self.mldb.observe then -- Don't call the voting frame if it wasn't used
-			-- 			self:GetActiveModule("votingframe"):EndSession(db.autoClose)
-			-- 		end
-			-- 	else
-			-- 		self.Log:W("Non ML:", sender, "sent end session command!")
-			-- 	end
-
-			-- elseif command == "lootAck" and not self:UnitIsUnit(sender, "player") and self.enabled then
-			-- 	-- It seems we have message dropping. If we receive a lootAck, but we don't have lootTable, then something's wrong!
-			-- 	if not lootTable or #lootTable == 0 then
-			-- 		self.Log:d("!!!! We got an lootAck without having lootTable!!!!")
-			-- 		if not self.masterLooter then -- Extra sanity check
-			-- 			return self.Log:d("We don't have a ML?!")
-			-- 		end
-			-- 		if not self.recentReconnectRequest then -- we don't want to do it too often!
-			-- 			self:SendCommand(self.masterLooter, "reconnect")
-			-- 			self.recentReconnectRequest = true
-			-- 			self:ScheduleTimer("ResetReconnectRequest", 5) -- 5 sec break between each try
-			-- 		end
-			-- 	end
-
-			-- elseif command == "sync" then
-			-- 	self.Sync:SyncDataReceived(unpack(data))
-			-- elseif command == "syncRequest" then
-			-- 	self.Sync:SyncRequestReceived(unpack(data))
-			-- elseif command == "syncAck" then
-			-- 	self.Sync:SyncAckReceived(unpack(data))
-			-- elseif command == "syncNack" then
-			-- 	self.Sync:SyncNackReceived(unpack(data))
-			-- elseif command == "not_tradeable" or command == "rejected_trade" then
-			-- 	tinsert(self.nonTradeables, {link = (unpack(data)), reason = command, owner = self:UnitName(sender)})
-
-			-- elseif command == "looted" then
-			-- 	local guid = unpack(data)
-			-- 	if not guid then return self.Log:d("no guid in looted comm", guid, sender) end
-			-- 	if self.lootGUIDToIgnore[guid] then return end
-			-- 	if not self.lootStatus[guid] then self.lootStatus[guid] = {candidates = {}, num = 0} end
-			-- 	self.lootStatus[guid].num = self.lootStatus[guid].num + 1
-			-- 	self.lootStatus[guid].candidates[self:UnitName(sender)] = {status = "looted"}
-			-- 	self:SendMessage("RCLootStatusReceived")
-
-			-- elseif command == "fakeLoot" or command == "fullbags" then
-			-- 	local link, guid = unpack(data)
-			-- 	if not guid then return self.Log:d(format("no guid in %s comm", command), guid, sender) end
-			-- 	if self.lootGUIDToIgnore[guid] then return end
-			-- 	if not self.lootStatus[guid] then self.lootStatus[guid] = {candidates = {}, num = 0} end
-			-- 	self.lootStatus[guid].num = self.lootStatus[guid].num + 1
-			-- 	self.lootStatus[guid].candidates[self:UnitName(sender)] = {status = command, item = link}
-			-- 	self:SendMessage("RCLootStatusReceived")
-
-			-- elseif command == "getCorruptionData" then
-			-- 	-- Just in case we need it...
-			-- 	self:SendCommand(sender, "corruptionData", self:GetPlayerCorruption())
-			end
-		else
-			-- Most likely pre 2.0 command
-			local cmd = strsplit(" ", serializedMsg, 2)
-			if cmd and cmd == "verTest" then
-				self:SendCommand(sender, "verTestReply", self.playerName:GetName(), self.playerClass, self.guildRank, self.version, self.tVersion)
-				return
-			end
-			self.Log:e("Deserializing comm failed:", command, data);
-		end
-
-	elseif prefix == "RCLCv" then
-		-- v3.0 has been released!
-		if v3VersionWarningCount <= 5 then
-			self:Print("RCLootCouncil v3.0 has been released. This version is no longer compatible, please upgrade!")
-		end
-	end
-end
-
---- Used to make sure "WHISPER" type xrealm comms is handled properly.
--- @usage
--- -- Include this right after unpacking messages. Assumes you use "OnCommReceived" as comm handler:
--- if RCLootCouncil:HandleXRealmComms(self, command, data, sender) then return end
--- @see OnCommReceived
-function RCLootCouncil:HandleXRealmComms(mod, command, data, sender)
-	if command == "xrealm" then
-		local target = tremove(data, 1)
-		if self:UnitIsUnit(target, "player") then
-			command = tremove(data, 1)
-			mod:OnCommReceived("RCLootCouncil", self:Serialize(command, data), "WHISPER", sender)
-		end
-		return true
-	end
-	return false
 end
 
 function RCLootCouncil:ResetReconnectRequest()
@@ -1028,7 +722,7 @@ function RCLootCouncil:Test(num, fullTest, trinketTest)
 	self:GetActiveModule("masterlooter"):Test(items)
 
 	self:ScheduleTimer(function()
-		self:SendCommand("group", "looted", 1234)
+		self:Send("group", "looted", 1234)
 	end, 5)
 end
 
@@ -1163,7 +857,7 @@ function RCLootCouncil:SendResponse(target, session, response, isTier, isRelic, 
 		diff = self:GetIlvlDifference(link, g1,g2)
 	end
 
-	self:SendCommand(target, "response",
+	self:Send(target, "response",
 		session,
 		self.playerName:GetName(),
 		{	gear1 = g1 and self.Utils:GetItemStringFromLink(g1) or nil,
@@ -1266,11 +960,11 @@ function RCLootCouncil:Timer(type, ...)
 		if self.masterLooter then
 			-- But haven't received the mldb, then request it
 			if not self.mldb.buttons then
-				self:SendCommand(self.masterLooter, "MLdb_request")
+				self:Send(self.masterLooter, "MLdb_request")
 			end
 			-- and if we haven't received a council, request it
 			if Council:GetNum() == 0 then
-				self:SendCommand(self.masterLooter, "council_request")
+				self:Send(self.masterLooter, "council_request")
 			end
 		end
 	end
@@ -1339,7 +1033,7 @@ function RCLootCouncil:SendLootAck(table, skip)
 		end
 	end
 	if hasData then
-		self:SendCommand("group", "lootAck", self.playerName:GetName(), playersData.specID, playersData.ilvl, toSend, playersData.corruption)
+		self:Send("group", "lootAck", self.playerName:GetName(), playersData.specID, playersData.ilvl, toSend, playersData.corruption)
 	end
 end
 
@@ -1698,7 +1392,7 @@ function RCLootCouncil:OnEvent(event, ...)
 			if not self.isMasterLooter and self.masterLooter and self.masterLooter ~= "" and player_relogged then
 				self.Log("Player relog...")
 				self:ScheduleTimer("SendCommand", 2, self.masterLooter, "reconnect")
-				self:SendCommand(self.masterLooter, "playerInfo", self:GetPlayerInfo()) -- Also send out info, just in case
+				self:Send(self.masterLooter, "playerInfo", self:GetPlayerInfo()) -- Also send out info, just in case
 			end
 			self:UpdatePlayersData()
 			player_relogged = false
@@ -1730,9 +1424,9 @@ function RCLootCouncil:OnEvent(event, ...)
 				end
 				-- Check if we have room in bags
 				if self.Utils:GetNumFreeBagSlots() == 0 then
-					return self:SendCommand("group", "fullbags", info.link, info.guid)
+					return self:Send("group", "fullbags", info.link, info.guid)
 				end
-				self:SendCommand("group", "fakeLoot", info.link, info.guid)
+				self:Send("group", "fakeLoot", info.link, info.guid)
 
 				return
 			end
@@ -1740,7 +1434,7 @@ function RCLootCouncil:OnEvent(event, ...)
 		end
 		-- Otherwise they've looted everything, so send ack
 		if i ~= 0 then -- We're not guaranteed to have something stored
-			self:SendCommand("group", "looted", self.lootSlotInfo[i].guid)
+			self:Send("group", "looted", self.lootSlotInfo[i].guid)
 		end
 		self.lootOpen = false
 	elseif event == "LOOT_SLOT_CLEARED" then
@@ -1812,7 +1506,7 @@ function RCLootCouncil:OnBonusRoll (_, type, link, ...)
 	self.Log:d("BONUS_ROLL", type, link, ...)
 	if type == "item" or type == "artifact_power" then
 		-- Only handle items and artifact power
-		self:SendCommand("group", "bonus_roll", self.playerName:GetName(), type, link)
+		self:Send("group", "bonus_roll", self.playerName:GetName(), type, link)
 	end
 	--[[
 		Tests:
@@ -1890,7 +1584,7 @@ function RCLootCouncil:StartHandleLoot()
 	self:Print(L["Now handles looting"])
 	self.Log("Start handling loot")
 	self.handleLoot = true
-	self:SendCommand("group", "StartHandleLoot")
+	self:Send("group", "StartHandleLoot")
 	if #db.council == 0 then -- if there's no council
 		self:Print(L["You haven't set a council! You can edit your council by typing '/rc council'"])
 	end
@@ -1901,7 +1595,7 @@ function RCLootCouncil:StopHandleLoot()
 	self.Log("Stop handling loot")
 	self.handleLoot = false
 	self:GetActiveModule("masterlooter"):Disable()
-	self:SendCommand("group", "StopHandleLoot")
+	self:Send("group", "StopHandleLoot")
 end
 
 function RCLootCouncil:OnRaidEnter(arg)
