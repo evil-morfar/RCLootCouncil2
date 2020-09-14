@@ -1,4 +1,4 @@
---[[--- ml_core.lua	Contains core elements for the MasterLooter.
+self:Send--[[--- ml_core.lua	Contains core elements for the MasterLooter.
 	Although possible, this module shouldn't be replaced unless closely replicated as other default modules depend on it.
 	Assumes several functions in SessionFrame and VotingFrame.
 	@author Potdisc
@@ -219,7 +219,7 @@ function RCLootCouncilML:UpdateGroup(ask)
 				group_copy[name] = nil -- Remove them, as they're still in the group
 			else -- add them
 				if not ask then -- ask for playerInfo?
-					addon:SendCommand(name, "playerInfoRequest")
+					self:Send(name, "playerInfoRequest")
 				end
 				self:AddCandidate(name, class, role) -- Add them in case they haven't installed the adoon
 				updates = true
@@ -237,7 +237,7 @@ function RCLootCouncilML:UpdateGroup(ask)
 		if v then self:RemoveCandidate(name); updates = true end
 	end
 	if updates then
-		addon:SendCommand("group", "MLdb", addon.mldb)
+		self:Send("group", "MLdb", addon.mldb)
 		self:SendCandidates()
 
 		local oldCouncilNum = Council:GetNum()
@@ -263,7 +263,7 @@ end
 
 -- Helpers for ML:SendCandidates
 local function SendCandidates()
-	addon:SendCommand("group", "candidates", RCLootCouncilML.candidates)
+	self:Send("group", "candidates", RCLootCouncilML.candidates)
 	RCLootCouncilML.timers.candidate_send = nil
 end
 local function OnCandidatesCooldown()
@@ -290,7 +290,7 @@ function RCLootCouncilML:SendCandidates ()
 		self.Log:d("candidates_cooldown == false")
 		-- No cooldown, send immediately and start the cooldown
 		self.timers.candidates_cooldown = self:ScheduleTimer(OnCandidatesCooldown, CANDIDATE_SEND_COOLDOWN)
-		addon:SendCommand("group", "candidates", self.candidates)
+		self:Send("group", "candidates", self.candidates)
 	end
 end
 
@@ -343,7 +343,7 @@ function RCLootCouncilML:StartSession()
 		-- REVIEW This is not optimal, but will be changed anyway with the planned comms changes for v3.0
 		--local count = 0
 		--for k,v in ipairs(self.lootTable) do if not v.isSent then count = count + 1 end end
-		addon:SendCommand("group", "lt_add", self:GetLootTableForTransmit())
+		self:Send("group", "lt_add", self:GetLootTableForTransmit())
 	else
 		self:Send("group", "lootTable", self:GetLootTableForTransmit())
 	end
@@ -532,7 +532,7 @@ function RCLootCouncilML:UpdateMLdb()
 	-- The db has changed, so update the mldb and send the changes
 	self.Log:d("UpdateMLdb")
 	addon:OnMLDBReceived(self:BuildMLdb())
-	addon:SendCommand("group", "MLdb", addon.mldb)
+	self:Send("group", "MLdb", addon.mldb)
 end
 
 function RCLootCouncilML:BuildMLdb()
@@ -585,7 +585,7 @@ end
 function RCLootCouncilML:NewML(newML)
 	self.Log:d("NewML", newML)
 	if newML == addon.playerName then -- we are the the ML
-		addon:SendCommand("group", "playerInfoRequest")
+		self:Send("group", "playerInfoRequest")
 		self:UpdateMLdb() -- Will build and send mldb
 		self:UpdateGroup(true)
 		self:UpdateGroupCouncil()
@@ -606,83 +606,10 @@ function RCLootCouncilML:Timer(type, ...)
 		self:AddItem(...)
 
 	elseif type == "LootSend" then
-		addon:SendCommand("group", "offline_timer")
+		self:Send("group", "offline_timer")
 	end
 end
 
-function RCLootCouncilML:OnCommReceived(prefix, serializedMsg, distri, sender)
-	if prefix == "RCLootCouncil" then
-		-- data is always a table
-		local test, command, data = addon:Deserialize(serializedMsg)
-		if addon:HandleXRealmComms(self, command, data, sender) then return end
-
-		if test and addon.isMasterLooter then -- only ML receives these commands
-			if command == "playerInfo" then
-				self:AddCandidate(unpack(data))
-				self:SendCandidates()
-
-			elseif command == "MLdb_request" then
-				-- Just resend to the entire group instead of the sender
-				addon:SendCommand("group", "MLdb", addon.mldb)
-
-			elseif command == "council_request" then
-				self:SendCouncil()
-
-			elseif command == "candidates_request" then
-				self:SendCandidates()
-
-			elseif command == "reconnect" and not addon:UnitIsUnit(sender, addon.playerName) then -- Don't receive our own reconnect
-				-- Someone asks for mldb, council and candidates
-				addon:SendCommand(sender, "MLdb", addon.mldb)
-				self:Send(sender, "council", self.council:GetForTransmit())
-
-			--[[NOTE: For some reason this can silently fail, but adding a 1 sec timer on the rest of the calls seems to fix it
-				v2.0.1: 	With huge candidates/lootTable we get AceComm lostdatawarning "First", presumeably due to the 4kb ChatThrottleLib limit.
-							Bumping loottable to 4 secs is tested to work with 27 candidates + 10 items.
-				v2.2.3: 	Got a ticket where candidates wasn't received. Bumped to 2 sec and added extra checks for candidates.]]
-
-				addon:ScheduleTimer("SendCommand", 2, sender, "candidates", self.candidates)
-				if self.running then -- Resend lootTable
-					self:ScheduleTimer("Send", 4, sender, "lootTable", self:GetLootTableForTransmit())
-					-- v2.2.6 REVIEW For backwards compability we're just sending votingFrame's lootTable
-					-- This is quite redundant and should be removed in the future
-					if db.observe or Council:Contains(Player:Get(sender)) then -- Only send all data to councilmen
-						local table = addon:GetActiveModule("votingframe"):GetLootTable()
-						-- Remove our own voting data if any
-						for _, v in ipairs(table) do
-							v.haveVoted = false
-							for _, d in pairs(v.candidates) do
-								d.haveVoted = false
-							end
-						end
-						addon:ScheduleTimer("SendCommand", 5, sender, "reconnectData", table)
-					end
-				end
-				self.Log("Responded to reconnect from", sender)
-			elseif command == "lootTable" and addon:UnitIsUnit(sender, addon.playerName) then
-				-- Start a timer to set response as offline/not installed unless we receive an ack
-				self:ScheduleTimer("Timer", 11 + 0.5*#self.lootTable, "LootSend")
-
-			elseif command == "tradable" then -- Raid members send the info of the tradable item he looted.
-				self:HandleReceivedTradeable(unpack(data), sender)
-
-			elseif command == "trade_complete" then
-				self:OnTradeComplete(unpack(data))
-			elseif command == "trade_WrongWinner" then
-				local link, recipient, trader, winner = unpack(data)
-				addon:Print(format(L["trade_wrongwinner_message"], addon.Ambiguate(trader), link, addon.Ambiguate(recipient), addon.Ambiguate(winner)))
-
-			elseif command == "not_tradeable" or command == "rejected_trade" then
-				self:HandleNonTradeable(unpack(data), addon:UnitName(sender), command)
-
-			elseif command == "bonus_roll" then
-				self:OnBonusRoll(unpack(data))
-			end
-		else
-			self.Log:E("Deserializing comm: ", command)
-		end
-	end
-end
 
 function RCLootCouncilML:OnBonusRoll (winner, type, link)
 	if db.saveBonusRolls then
@@ -1035,7 +962,7 @@ local function registerAndAnnounceAward(session, winner, response, reason)
 	if self.lootTable[session].bagged then
 		addon.ItemStorage:RemoveItem(self.lootTable[session].bagged)
 	end
-	addon:SendCommand("group", "awarded", session, winner, self.lootTable[session].owner)
+	self:Send("group", "awarded", session, winner, self.lootTable[session].owner)
 
 	self:AnnounceAward(winner, self.lootTable[session].link,
 			reason and reason.text or response, addon:GetActiveModule("votingframe"):GetCandidateData(session, winner, "roll"), session, changeAward)
@@ -1068,7 +995,7 @@ local function registerAndAnnounceBagged(session)
 	self.lootTable[session].bagged = Item
 	if self.running then -- Award later can be done when actually loot session hasn't been started yet.
 		self.lootTable[session].baggedInSession = true -- REVIEW This variable is never used?
-		addon:SendCommand("group", "bagged", session, addon.playerName)
+		self:Send("group", "bagged", session, addon.playerName)
 	end
 	return false
 end
@@ -1355,7 +1282,7 @@ function RCLootCouncilML:AutoAward(lootIndex, item, quality, name, mode, boss, o
 
 	if addon.lootMethod == "personalloot" then -- Normal restrictions doesn't apply here
 		addon:Print(format(L["Auto awarded 'item'"], item))
-		addon:SendCommand("group", "do_trade", owner, item, name)
+		self:Send("group", "do_trade", owner, item, name)
 		self:AnnounceAward(name, item, db.awardReasons[reason].text, nil, nil, nil, owner)
 		self:TrackAndLogLoot(name, item, reason, boss, db.awardReasons[reason],nil,nil, owner)
 		return true
@@ -1439,9 +1366,9 @@ function RCLootCouncilML:TrackAndLogLoot(winner, link, responseID, boss, reason,
 	addon:SendMessage("RCMLLootHistorySend", history_table, winner, responseID, boss, reason, session, candData)
 
 	if db.sendHistory then -- Send it, and let comms handle the logging
-		addon:SendCommand(db.sendHistoryToGuildChannel and "guild" or "group", "history", winner, history_table)
+		self:Send(db.sendHistoryToGuildChannel and "guild" or "group", "history", winner, history_table)
 	elseif db.enableHistory then -- Just log it
-		addon:SendCommand("player", "history", winner, history_table)
+		self:Send("player", "history", winner, history_table)
 	end
 	local toRet = history_table
 	history_table = {} -- wipe to ensure integrety
@@ -1453,9 +1380,9 @@ end
 --@param id: The unique id of history table
 function RCLootCouncilML:UnTrackAndLogLoot(id)
 	if db.sendHistory then -- Send it, and let comms handle the logging
-		addon:SendCommand(db.sendHistoryToGuildChannel and "guild" or "group", "delete_history", id)
+		self:Send(db.sendHistoryToGuildChannel and "guild" or "group", "delete_history", id)
 	elseif db.enableHistory then -- Just log it
-		addon:SendCommand("player", "delete_history", id)
+		self:Send("player", "delete_history", id)
 	end
 end
 
@@ -1473,7 +1400,7 @@ function RCLootCouncilML:EndSession()
 	self.Log:d("ML:EndSession()")
 	self.oldLootTable = self.lootTable
 	self.lootTable = {}
-	addon:SendCommand("group", "session_end")
+	self:Send("group", "session_end")
 	self.running = false
 	self:CancelAllTimers()
 	if addon.testMode then -- We need to undo our ML status
@@ -1486,7 +1413,7 @@ end
 -- Initiates a session with the items handed
 function RCLootCouncilML:Test(items)
 	-- We must send candidates now, since we can't wait the normal 10 secs
-	addon:SendCommand("group", "candidates", self.candidates)
+	self:Send("group", "candidates", self.candidates)
 	-- Add the items
 	for _, iName in ipairs(items) do
 		self:AddItem(iName)
@@ -1603,7 +1530,7 @@ function RCLootCouncilML:GetItemsFromMessage(msg, sender, retryCount)
 	-- Send Responses to all duplicate items.
 	for s, v in ipairs(self.lootTable) do
 		if addon:ItemIsItem(v.link, link) then
-			addon:SendCommand("group", "response", s, sender, toSend)
+			self:Send("group", "response", s, sender, toSend)
 			count = count + 1
 		end
 	end
@@ -1787,6 +1714,51 @@ function RCLootCouncilML:RegisterComms ()
 		end,
 		MLdb_request = function(data)
 			self:Send("group", "Mldb", addon.mldb)
+		end,
+
+		council_request = function ()
+			self:SendCouncil()
+		end,
+
+		candidates_request = function()
+			self:SendCandidates()
+		end,
+
+		reconnect = function (_, sender)
+			if not addon:UnitIsUnit(sender, addon.player) then
+				self:OnReconnectReceived(sender)
+			end
+		end,
+
+		lootTable = function (_, sender)
+			if addon:UnitIsUnit(sender, addon.player) then
+				self:ScheduleTimer("Timer", 11 + 0.5*#self.lootTable, "LootSend")
+			end
+		end,
+
+		tradeable = function (data, sender)
+			self:HandleReceivedTradeable(unpack(data), sender)
+		end,
+
+		trade_complete = function (data)
+			self:OnTradeComplete(unpack(data))
+		end,
+
+		trade_WrongWinner = function (data)
+			local link, recipient, trader, winner = unpack(data)
+			addon:Print(format(L["trade_wrongwinner_message"], addon.Ambiguate(trader), link, addon.Ambiguate(recipient), addon.Ambiguate(winner)))
+		end,
+
+		not_tradeable = function (data, sender, command)
+			self:HandleNonTradeable(unpack(data), addon:UnitName(sender), command)
+		end,
+
+		rejected_trade = function (data, sender, command)
+			self:HandleNonTradeable(unpack(data), addon:UnitName(sender), command)
+		end,
+
+		bonus_roll = function (data)
+			self:OnBonusRoll(unpack(data))
 		end
 	})
 end
@@ -1794,4 +1766,35 @@ end
 function RCLootCouncilML:OnPlayerInfoReceived(...)
 	self:AddCandidate(...)
 	self:SendCandidates()
+end
+
+function RCLootCouncilML:OnReconnectReceived (sender)
+	-- Someone asks for mldb, council and candidates
+	self:Send(sender, "MLdb", addon.mldb)
+	self:Send(sender, "council", self.council:GetForTransmit())
+
+	--[[NOTE:
+	v2.0.1: 	With huge candidates/lootTable we get AceComm lostdatawarning "First", presumeably due to the 4kb ChatThrottleLib limit.
+				Bumping loottable to 4 secs is tested to work with 27 candidates + 10 items.
+	v2.2.3: 	Got a ticket where candidates wasn't received. Bumped to 2 sec and added extra checks for candidates.
+	v3.0.0: REVIEW Check if this is still an issue with the rewamped comms.]]
+
+	self:ScheduleTimer("Send", 2, sender, "candidates", self.candidates)
+	if self.running then -- Resend lootTable
+		self:ScheduleTimer("Send", 4, sender, "lootTable", self:GetLootTableForTransmit())
+		-- v2.2.6 REVIEW For backwards compability we're just sending votingFrame's lootTable
+		-- This is quite redundant and should be removed in the future
+		if db.observe or Council:Contains(Player:Get(sender)) then -- Only send all data to councilmen
+			local table = addon:GetActiveModule("votingframe"):GetLootTable()
+			-- Remove our own voting data if any
+			for _, v in ipairs(table) do
+				v.haveVoted = false
+				for _, d in pairs(v.candidates) do
+					d.haveVoted = false
+				end
+			end
+			self:ScheduleTimer("Send", 5, sender, "reconnectData", table)
+		end
+	end
+	self.Log("Responded to reconnect from", sender)
 end
