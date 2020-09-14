@@ -2368,7 +2368,7 @@ function RCLootCouncil:SubscribeToPermanentComms ()
 		--
 		playerInfoRequest = function (_, sender)
 			Comms:Send{
-				target = sender,
+				target = Player:Get(sender),
 				command = "pI",
 				data = self:GetPlayerInfo()
 			}

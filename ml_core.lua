@@ -5,7 +5,7 @@
 
 --[[ COMMS:
 	MAIN:
-		playerInfo 				T - PlayerInfo sent from candidate.
+		pI 						T - PlayerInfo sent from candidate.
 		MLdb_request			T - Candidate request for "Mldb".
 		council_request 		T - Candidate requests council.
 		candidates_request	T - Candidate requests candidates.
@@ -23,7 +23,7 @@
 ]]
 
 local _,addon = ...
-_G.RCLootCouncilML = addon:NewModule("RCLootCouncilML", "AceEvent-3.0", "AceBucket-3.0", "AceComm-3.0", "AceTimer-3.0", "AceHook-3.0")
+_G.RCLootCouncilML = addon:NewModule("RCLootCouncilML", "AceEvent-3.0", "AceBucket-3.0", "AceTimer-3.0", "AceHook-3.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 
 -- WoW API
@@ -57,7 +57,6 @@ function RCLootCouncilML:OnDisable()
 	self.Log("Disabled")
 	self:UnregisterAllEvents()
 	self:UnregisterAllBuckets()
-	self:UnregisterAllComm()
 	self:UnregisterAllMessages()
 	self:UnhookAll()
 	for _,v in ipairs(subscriptions) do v:unsubscribe() end
@@ -74,7 +73,6 @@ function RCLootCouncilML:OnEnable()
 	self.combatQueue = {}	-- The functions that will be executed when combat ends. format: [num] = {func, arg1, arg2, ...}
 	self.timers = {}			-- Table to hold timer references. Each value is the name of a timer, whose value is the timer id.
 
-	self:RegisterComm("RCLootCouncil", 		"OnCommReceived")
 	self:RegisterEvent("CHAT_MSG_WHISPER",	"OnEvent")
 	self:RegisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
 	self:RegisterBucketEvent("GROUP_ROSTER_UPDATE", 10, "UpdateGroup") -- Bursts in group creation, and we should have plenty of time to handle it
@@ -1717,7 +1715,7 @@ end
 -------------------------------------------------------------
 function RCLootCouncilML:RegisterComms ()
 	subscriptions = Comms:BulkSubscribe(addon.PREFIXES.MAIN, {
-		playerInfo = function (data)
+		pI = function (data)
 			self:OnPlayerInfoReceived(unpack(data))
 		end,
 		MLdb_request = function(data)

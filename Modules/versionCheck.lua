@@ -11,7 +11,7 @@
 ]]
 
 local _,addon = ...
-local RCVersionCheck = addon:NewModule("VersionCheck", "AceTimer-3.0", "AceComm-3.0", "AceHook-3.0")
+local RCVersionCheck = addon:NewModule("VersionCheck", "AceTimer-3.0", "AceHook-3.0")
 local ST = LibStub("ScrollingTable")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 
