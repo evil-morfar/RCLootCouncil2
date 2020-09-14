@@ -1,4 +1,4 @@
-self:Send--[[--- ml_core.lua	Contains core elements for the MasterLooter.
+--[[--- ml_core.lua	Contains core elements for the MasterLooter.
 	Although possible, this module shouldn't be replaced unless closely replicated as other default modules depend on it.
 	Assumes several functions in SessionFrame and VotingFrame.
 	@author Potdisc
@@ -263,7 +263,7 @@ end
 
 -- Helpers for ML:SendCandidates
 local function SendCandidates()
-	self:Send("group", "candidates", RCLootCouncilML.candidates)
+	RCLootCouncilML:Send("group", "candidates", RCLootCouncilML.candidates)
 	RCLootCouncilML.timers.candidate_send = nil
 end
 local function OnCandidatesCooldown()
