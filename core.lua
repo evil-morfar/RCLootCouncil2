@@ -48,6 +48,7 @@
 			r_t					P - Candidatre "rejected_trade" of loot.
 			lootTable			P - LootTable sent from ML.
 			lt_add 				P - Partial lootTable (additions) sent from ML.
+			MLdb 					P - MLdb sent from ML.
 
 ]]
 
@@ -699,15 +700,15 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 			-- 		self:GetActiveModule("votingframe"):Disable()
 			-- 	end
 
-			elseif command == "MLdb" and not self.isMasterLooter then -- ML sets his own mldb
-				--[[ NOTE: 2.1.7 - While a check for this does make sense, I'm just really tired of mldb problems, and
-					noone should really be able to send it without being ML in the first place. So just accept it as is. ]]
-				-- [[2.7: Probably should still check this. There are issues otherwise.]]
-				if self:UnitIsUnit(sender, self.masterLooter) then
-					self:OnMLDBReceived(unpack(data))
-				else
-					self.Log:w("Non-ML:", sender, "sent Mldb!")
-				end
+			-- elseif command == "MLdb" and not self.isMasterLooter then -- ML sets his own mldb
+			-- 	--[[ NOTE: 2.1.7 - While a check for this does make sense, I'm just really tired of mldb problems, and
+			-- 		noone should really be able to send it without being ML in the first place. So just accept it as is. ]]
+			-- 	-- [[2.7: Probably should still check this. There are issues otherwise.]]
+			-- 	if self:UnitIsUnit(sender, self.masterLooter) then
+			-- 		self:OnMLDBReceived(unpack(data))
+			-- 	else
+			-- 		self.Log:w("Non-ML:", sender, "sent Mldb!")
+			-- 	end
 
 			elseif command == "verTest" and not self:UnitIsUnit(sender, "player") then -- Don't reply to our own verTests
 				-- local otherVersion, tVersion = unpack(data)
@@ -889,27 +890,6 @@ end
 function RCLootCouncil:ResetReconnectRequest()
 	self.recentReconnectRequest = false
 	self.Log:d("ResetReconnectRequest")
-end
-
-function RCLootCouncil:OnMLDBReceived(mldb)
-	self.Log("OnMLDBReceived")
-	-- mldb inheritance from db
-	self.mldb = mldb
-	for type, responses in pairs(mldb.responses) do
-	   for _ in pairs(responses) do
-	      if not self.defaults.profile.responses[type] then
-				--if not self.mldb.responses[type] then self.mldb.responses[type] = {} end
-				--if not self.mldb.responses[type][response] then self.mldb.responses[type][response] = {} end
-	         setmetatable(self.mldb.responses[type], {__index = self.defaults.profile.responses.default})
-	      end
-	   end
-	end
-	if not self.mldb.responses.default then self.mldb.responses.default = {} end
-	setmetatable(self.mldb.responses.default, {__index = self.defaults.profile.responses.default})
-	--setmetatable(self.mldb.buttons, {__index = function() return self.defaults.profile.buttons.default end})
-	if not self.mldb.buttons.default then self.mldb.buttons.default = {} end
-	setmetatable(self.mldb.buttons.default, { __index = self.defaults.profile.buttons.default,})
-	-- self.mldb = mldb
 end
 
 function RCLootCouncil:ChatCmdAdd(args)
@@ -2727,6 +2707,16 @@ function RCLootCouncil:SubscribeToPermanentComms ()
 				return self.Log.E(tostring(sender), "sent 'lt_add' but was not ML!")
 			end
 			self:OnLootTableAdditionsReceived(unpack(data))
+		end,
+
+		MLdb = function(data, sender)
+			if self.isMasterLooter then
+				return
+			elseif self:UnitIsUnit(sender, self.masterLooter) then
+				self:OnMLDBReceived(unpack(data))
+			else
+				self.Log:w("Non-ML:", sender, "sent Mldb!")
+			end
 		end
 
 	})
@@ -2859,4 +2849,25 @@ function RCLootCouncil:OnLootTableAdditionsReceived (lt)
 		self:GetActiveModule("lootframe"):AddSingleItem(lootTable[i])
 	end
 	-- VotingFrame handles this by itself.
+end
+
+function RCLootCouncil:OnMLDBReceived(mldb)
+	self.Log("OnMLDBReceived")
+	-- mldb inheritance from db
+	self.mldb = mldb
+	for type, responses in pairs(mldb.responses) do
+	   for _ in pairs(responses) do
+	      if not self.defaults.profile.responses[type] then
+				--if not self.mldb.responses[type] then self.mldb.responses[type] = {} end
+				--if not self.mldb.responses[type][response] then self.mldb.responses[type][response] = {} end
+	         setmetatable(self.mldb.responses[type], {__index = self.defaults.profile.responses.default})
+	      end
+	   end
+	end
+	if not self.mldb.responses.default then self.mldb.responses.default = {} end
+	setmetatable(self.mldb.responses.default, {__index = self.defaults.profile.responses.default})
+	--setmetatable(self.mldb.buttons, {__index = function() return self.defaults.profile.buttons.default end})
+	if not self.mldb.buttons.default then self.mldb.buttons.default = {} end
+	setmetatable(self.mldb.buttons.default, { __index = self.defaults.profile.buttons.default,})
+	-- self.mldb = mldb
 end
