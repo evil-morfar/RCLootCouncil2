@@ -196,7 +196,7 @@ function LootFrame:OnRoll(entry, button)
 			item.rolled = true
 			self.EntryManager:Trash(entry)
 			self:Update()
-			addon:SendCommand("group", "roll", addon.playerName, "-", item.sessions)
+			addon:Send("group", "roll", addon.playerName, "-", item.sessions)
 		end
 	end
 
@@ -602,7 +602,7 @@ function LootFrame:CHAT_MSG_SYSTEM(event, msg)
 		self:CancelTimer(entryInQueue.timer)
 		local entry = entryInQueue.entry
 		local item = entry.item
-		addon:SendCommand("group", "roll", addon.playerName, roll, item.sessions)
+		addon:Send("group", "roll", addon.playerName, roll, item.sessions)
 		addon:SendAnnouncement(format(L["'player' has rolled 'roll' for: 'item'"], addon.Ambiguate(addon.playerName), roll, item.link), "group")
 		entry.rollResult:SetText(roll)
 		entry.rollResult:Show()
