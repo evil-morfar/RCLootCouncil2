@@ -1451,9 +1451,9 @@ function RCLootCouncilML:UpdateGroupCouncil()
 			end
 		end
 	end
-	if not Council:Contains(addon.player) then -- Check if the ML (us) are included
-		Council:Add(addon.player)
-	end
+	 -- Ensure ML (us) are included
+	Council:Add(addon.player)
+
 	self.council = Council:Get()
 	local council = TempTable:Acquire()
 	for _, v in pairs(self.council)do

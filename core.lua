@@ -2370,7 +2370,7 @@ function RCLootCouncil:SubscribeToPermanentComms ()
 			Comms:Send{
 				target = Player:Get(sender),
 				command = "pI",
-				data = self:GetPlayerInfo()
+				data = {self:GetPlayerInfo()}
 			}
 		end,
 
