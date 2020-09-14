@@ -46,6 +46,8 @@
 			fullbags				P - Candidate couldn't loot boss because of full bags.
 			n_t					P - Candidate received "non-tradeable" loot.
 			r_t					P - Candidatre "rejected_trade" of loot.
+			lootTable			P - LootTable sent from ML.
+			lt_add 				P - Partial lootTable (additions) sent from ML.
 
 ]]
 
@@ -667,24 +669,24 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 			-- 	end
 			--
 			-- else
-				if command == "lt_add" and self:UnitIsUnit(sender, self.masterLooter) then
-				-- We can skip most of the normal lootTable checks since a session should running
-				local oldLenght = #lootTable
-				for k,v in pairs(unpack(data)) do
-					lootTable[k] = v
-				end
-				-- REVIEW This runs over the entire lootTable again, but will probably need changing anyway in v3.0
-				self:PrepareLootTable(lootTable)
-				self:DoAutoPasses(lootTable, oldLenght)
-				self:SendLootAck(lootTable, oldLenght)
-				for k,v in ipairs(lootTable) do
-					if k > oldLenght then
-						self:GetActiveModule("lootframe"):AddSingleItem(v)
-					end
-				end
-				-- VotingFrame handles this by itself.
+				-- if command == "lt_add" and self:UnitIsUnit(sender, self.masterLooter) then
+				-- -- We can skip most of the normal lootTable checks since a session should running
+				-- local oldLenght = #lootTable
+				-- for k,v in pairs(unpack(data)) do
+				-- 	lootTable[k] = v
+				-- end
+				-- -- REVIEW This runs over the entire lootTable again, but will probably need changing anyway in v3.0
+				-- self:PrepareLootTable(lootTable)
+				-- self:DoAutoPasses(lootTable, oldLenght)
+				-- self:SendLootAck(lootTable, oldLenght)
+				-- for k,v in ipairs(lootTable) do
+				-- 	if k > oldLenght then
+				-- 		self:GetActiveModule("lootframe"):AddSingleItem(v)
+				-- 	end
+				-- end
+				-- -- VotingFrame handles this by itself.
 
-			elseif command == "candidates" and self:UnitIsUnit(sender, self.masterLooter) then
+			if command == "candidates" and self:UnitIsUnit(sender, self.masterLooter) then
 				self.candidates = unpack(data)
 			-- elseif command == "council" and self:UnitIsUnit(sender, self.masterLooter) then -- only ML sends council
 			-- 	self.council = unpack(data)
@@ -1303,7 +1305,7 @@ end
 -- Should only be called once when the loot table is received (RCLootCouncil:OnCommReceived).
 -- v2.15 The current implementation ensures this only gets called when all items are cached - this function relies on that!
 function RCLootCouncil:PrepareLootTable(lootTable)
-	for ses, v in ipairs(lootTable) do
+	for ses, v in pairs(lootTable) do
 		local _, link, rarity, ilvl, _, _, subType, _, equipLoc, texture,
 		_, typeID, subTypeID, bindType, _, _, _ = GetItemInfo("item:"..v.string)
 		local itemID = GetItemInfoInstant(link)
@@ -1341,7 +1343,7 @@ end
 function RCLootCouncil:SendLootAck(table, skip)
 	local toSend = {gear1 = {}, gear2 = {}, diff = {}, response = {}}
 	local hasData = false
-	for k, v in ipairs(table) do
+	for k, v in pairs(table) do
 		local session = v.session or k
 		if session > (skip or 0) then
 			hasData = true
@@ -1361,7 +1363,7 @@ end
 -- Sets lootTable[session].autopass = true if an autopass occurs, and informs the user of the change
 -- @param skip Will only auto pass sessions > skip or 0
 function RCLootCouncil:DoAutoPasses(table, skip)
-	for k,v in ipairs(table) do
+	for k,v in pairs(table) do
 		local session = v.session or k
 		if session > (skip or 0) then
 			if db.autoPass and not v.noAutopass then
@@ -2718,6 +2720,13 @@ function RCLootCouncil:SubscribeToPermanentComms ()
 				return self.Log:d(tostring(sender).." is not ML, but sent lootTable!")
 			end
 			self:OnLootTableReceived(unpack(data))
+		end,
+
+		lt_add = function(data, sender)
+			if not self:UnitIsUnit(sender, self.masterLooter) then
+				return self.Log.E(tostring(sender), "sent 'lt_add' but was not ML!")
+			end
+			self:OnLootTableAdditionsReceived(unpack(data))
 		end
 
 	})
@@ -2766,11 +2775,18 @@ function RCLootCouncil:OnSessionEndReceived(sender)
 	end
 end
 
+local function CheckCachedLootTable (lootTable)
+	local cached = true
+	for _, v in pairs(lootTable) do
+		if not GetItemInfo("item:"..v.string) then cached = false end
+	end
+	return cached
+end
+
 function RCLootCouncil:OnLootTableReceived (lt)
-	lootTable = lt
 	-- Send "DISABLED" response when not enabled
 	if not self.enabled then
-		for i = 1, #lootTable do
+		for i = 1, #lt do
 			-- target, session, response, isTier, isRelic, note, roll, link, ilvl, equipLoc, relicType, sendAvgIlvl, sendSpecID
 			self:SendResponse("group", i, "DISABLED")
 		end
@@ -2778,15 +2794,12 @@ function RCLootCouncil:OnLootTableReceived (lt)
 	end
 
 	-- Cache items
-	local cached = true
-	for _, v in ipairs(lootTable) do
-		if not GetItemInfo("item:"..v.string) then cached = false end
-	end
-	if not cached then
+	if not CheckCachedLootTable(lt) then
 		-- Note: Dont print debug log here. It is spamming.
 		return self:ScheduleTimer("OnLootTableReceived", 0, lt)
 	end
 
+	lootTable = lt
 	self:PrepareLootTable(lootTable)
 
 	-- v2.0.1: It seems people somehow receives mldb without numButtons, so check for it aswell.
@@ -2825,4 +2838,25 @@ function RCLootCouncil:OnLootTableReceived (lt)
 	-- Show  the LootFrame
 	self:CallModule("lootframe")
 	self:GetActiveModule("lootframe"):Start(lootTable)
+end
+
+function RCLootCouncil:OnLootTableAdditionsReceived (lt)
+	-- Ensure items are cached
+	if not CheckCachedLootTable(lt) then
+		return self:ScheduleTimer("OnLootTableAdditionsReceived", 0, lt)
+	end
+	-- Setup the additions
+	self:PrepareLootTable(lt)
+	self:DoAutoPasses(lt)
+	self:SendLootAck(lt)
+	-- Inject into lootTable
+	local oldLenght = #lootTable
+	for k,v in pairs(lt) do
+		lootTable[k] = v
+	end
+
+	for i = oldLenght, #lootTable do
+		self:GetActiveModule("lootframe"):AddSingleItem(lootTable[i])
+	end
+	-- VotingFrame handles this by itself.
 end
