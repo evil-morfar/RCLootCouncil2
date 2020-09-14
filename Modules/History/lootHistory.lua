@@ -81,7 +81,7 @@ local difficultyLookupTable = {
 }
 
 function LootHistory:OnEnable()
-	addon:Debug("LootHistory:OnEnable()")
+	addon.Log("LootHistory:OnEnable()")
 	moreInfo = true
 	db = addon:Getdb()
 	lootDB = addon:GetHistoryDB()
@@ -105,7 +105,7 @@ end
 
 --- Show the LootHistory frame.
 function LootHistory:Show()
-	addon:Debug("LootHistory:Show()")
+	addon.Log("LootHistory:Show()")
 	moreInfoData = addon:GetLootDBStatistics()
 	self.frame:Show()
 end
@@ -168,7 +168,7 @@ function LootHistory:GetLocalizedDate(date) -- date is "DD/MM/YY"
 end
 
 function LootHistory:BuildData()
-	addon:Debug("LootHistory:BuildData()")
+	addon.Log:D("LootHistory:BuildData()")
 	data = {}
 	local date
 	-- We want to rebuild lootDB to the "data" format:
@@ -293,8 +293,8 @@ function LootHistory:GetAllRegisteredInstances()
 end
 
 function LootHistory:DeleteAllEntriesByName(name)
-	addon:Debug("Deleting all loot history entries for ", name)
-	if not lootDB[name] then return addon:Debug("ERROR", name, "wasn't registered in the lootDB!") end
+	addon.Log:D("Deleting all loot history entries for ", name)
+	if not lootDB[name] then return addon.Log.E(name, "wasn't registered in the lootDB!") end
 	addon:Print(format(L["Succesfully deleted %d entries from %s"], #lootDB[name], name))
 	lootDB[name] = nil
 	if self.frame and self.frame:IsVisible() then -- Only update if we're viewing it
@@ -304,7 +304,7 @@ function LootHistory:DeleteAllEntriesByName(name)
 end
 
 function LootHistory:DeleteAllEntriesByMapIDDifficulty(mapID, diff)
-	addon:Debug("Deleting all loot history entires with mapID", mapID, "and difficultyID", diff)
+	addon.Log:D("Deleting all loot history entires with mapID", mapID, "and difficultyID", diff)
 	local item
 	local sum = 0
 	for _, items in pairs(lootDB) do
@@ -326,7 +326,7 @@ function LootHistory:DeleteAllEntriesByMapIDDifficulty(mapID, diff)
 end
 
 function LootHistory:DeleteEntriesOlderThanEpoch(epoch)
-	addon:Debug("DeleteEntriesOlderThanEpoch", epoch)
+	addon.Log:D("DeleteEntriesOlderThanEpoch", epoch)
 	local removal = {} -- Create a list of the entries to be removed
 	for name,a in pairs(lootDB) do
 		removal[name] = {}
@@ -501,7 +501,7 @@ function LootHistory.SetCellDelete(rowFrame, frame, data, cols, row, realrow, co
 		if frame.lastClick and GetTime() - frame.lastClick <= 0.5 then
 			frame.lastClick = nil
 			-- Do deleting
-			addon:Debug("Deleting:", name, lootDB[name][num].lootWon)
+			addon.Log:D("Deleting:", name, lootDB[name][num].lootWon)
 			tremove(lootDB[name], num)
 			tremove(data, realrow)
 
@@ -515,7 +515,7 @@ function LootHistory.SetCellDelete(rowFrame, frame, data, cols, row, realrow, co
 
 			table:SortData()
 			if #lootDB[name] == 0 then -- last entry deleted
-				addon:DebugLog("Last Entry deleted, deleting name: ", name)
+				addon.Log:D("Last Entry deleted, deleting name: ", name)
 				lootDB[name] = nil
 			end
 		else
@@ -667,7 +667,7 @@ end
 function LootHistory:ExportHistory()
 	--debugprofilestart()
 	local export = self.exports[self.exportSelection].func(self)
-	--addon:Debug("Export time:", debugprofilestop(), "ms")
+	--addon.Log:D("Export time:", debugprofilestop(), "ms")
 	if export and export ~= "" then -- do something
 		--debugprofilestart()
 		if export:len() < 40000 then
@@ -687,12 +687,12 @@ function LootHistory:ExportHistory()
 			self.frame.hugeExportFrame.edit:SetFocus()
 			self.frame.hugeExportFrame.edit:HighlightText()
 		end
-		--addon:Debug("Display time:", debugprofilestop(), "ms")
+		--addonLog:D("Display time:", debugprofilestop(), "ms")
 	end
 end
 
 function LootHistory:DetermineImportType (import)
-   addon:Debug("His:DetermineImportType")
+   addon.Log:D("His:DetermineImportType")
    -- Check csv
    if import:sub(1, 6) == "player" then
       -- Check for Sheet Copy
@@ -717,10 +717,10 @@ function LootHistory:DetermineImportType (import)
 end
 
 function LootHistory:ImportHistory(import)
-	addon:Debug("Initiating import")
+	addon.Log:D("Initiating import")
 	if type(import) ~= "string" then
       addon:Print(L["import_malformed"])
-      addon:Debug("<WARNING>", "Malformed string")
+      addon.Log:W("Malformed string")
       return
    end
 	-- WoW seems to translate tabs (\t) into four spaces. Check for that.
@@ -746,11 +746,11 @@ end
 function LootHistory:ImportPlayerExport (import)
 	lootDB = addon:GetHistoryDB()
 	-- Start with validating the import:
-	if type(import) ~= "string" then addon:Print("The imported text wasn't a string"); return addon:DebugLog("No string") end
+	if type(import) ~= "string" then addon:Print("The imported text wasn't a string"); return addon.Log:D("No string") end
 	import = gsub(import, "\124\124", "\124") -- De escape itemslinks
 	local test, import = addon:Deserialize(import)
-	if not test then addon:Print("Deserialization failed - maybe wrong import type?"); return addon:DebugLog("Deserialization failed") end
-	addon:Debug("Validation completed", #lootDB == 0, #lootDB)
+	if not test then addon:Print("Deserialization failed - maybe wrong import type?"); return addon.Log:D("Deserialization failed") end
+	addon.Log:D("Validation completed", #lootDB == 0, #lootDB)
 	-- Now import should be a copy of the orignal exporter's lootDB, so insert any changes
 	-- Start by seeing if we even have a lootDB
 	--if #lootDB == 0 then lootDB = import; return end
@@ -775,7 +775,7 @@ function LootHistory:ImportPlayerExport (import)
 	end
 	addon.lootDB.factionrealm = lootDB -- save it
 	addon:Print(format(L["Successfully imported 'number' entries."], number))
-	addon:Debug("Import successful")
+	addon.Log:D("Import successful")
 	if self.frame and self.frame:IsVisible() then self:BuildData(); self:Show() end -- Only rebuild data if we're showing
 end
 
@@ -899,7 +899,7 @@ function LootHistory:GetFrame()
 			button:SetPushedTexture("Interface\\Buttons\\UI-SpellbookIcon-NextPage-Down")
 			self.moreInfo:Hide()
 		end
-		addon:Debug("moreInfo =",moreInfo)
+		addon.Log:D("moreInfo =",moreInfo)
 	end)
 	b2:SetScript("OnEnter", function() addon:CreateTooltip(L["Click to expand/collapse more info"]) end)
 	b2:SetScript("OnLeave", function() addon:HideTooltip() end)
@@ -1084,7 +1084,7 @@ end
 
 function LootHistory:UpdateMoreInfo(rowFrame, cellFrame, dat, cols, row, realrow, column, tabel, button, ...)
 	if not dat then return end
-	if not moreInfoData then return addon:Debug("No moreInfoData in UpdateMoreInfo()") end
+	if not moreInfoData then return addon.Log:D("No moreInfoData in UpdateMoreInfo()") end
 	local tip = self.moreInfo -- shortening
 	tip:SetOwner(self.frame, "ANCHOR_RIGHT")
 	local row = dat[realrow]
@@ -1185,7 +1185,7 @@ function LootHistory.FilterMenu(menu, level)
 			data[i] = i
 		end
 		if not db.modules["RCLootHistory"].filters then -- Create the db entry
-			addon:DebugLog("Created LootHistory filters")
+			addon.Log:D("Created LootHistory filters")
 			db.modules["RCLootHistory"].filters = {
 				class = {}
 			}
@@ -1220,7 +1220,7 @@ function LootHistory.FilterMenu(menu, level)
 			info.text = addon:GetResponse("default",k).text
 			info.colorCode = "|cff"..addon:RGBToHex(addon:GetResponseColor(nil, k))
 			info.func = function()
-				addon:Debug("Update Filter")
+				addon.Log:D("Update Filter")
 				db.modules["RCLootHistory"].filters[k] = not db.modules["RCLootHistory"].filters[k]
 				LootHistory:Update()
 			end
@@ -1237,7 +1237,7 @@ function LootHistory.FilterMenu(menu, level)
 					info.colorCode = "|cff"..addon:RGBToHex(addon:GetResponseColor(nil, k))
 				end
 				info.func = function()
-					addon:Debug("Update Filter")
+					addon.Log:D("Update Filter")
 					db.modules["RCLootHistory"].filters[k] = not db.modules["RCLootHistory"].filters[k]
 					LootHistory:Update()
 				end
@@ -1252,7 +1252,7 @@ function LootHistory.FilterMenu(menu, level)
 				info.text = name
 				info.colorCode = "|cff"..addon:RGBToHex(col.r,col.g,col.b)
 				info.func = function()
-					addon:Debug("Update class filter")
+					addon.Log:D("Update class filter")
 					db.modules["RCLootHistory"].filters.class[id] = not db.modules["RCLootHistory"].filters.class[id]
 					for _,v in pairs(db.modules["RCLootHistory"].filters.class) do
 						if v then
@@ -1403,7 +1403,7 @@ function LootHistory.RightClickMenu(menu, level)
 				info.notCheckable = true
 				info.hasArrow = false
 				info.func = function()
-					addon:Debug("Moving award from", data.name, "to", v[2].name)
+					addon.Log:D("Moving award from", data.name, "to", v[2].name)
 					-- Since we store data as lootDB[name] = ..., we need to move the entire table to the new recipient
 					tinsert(lootDB[v[2].name], tremove(lootDB[data.name], data.num))
 					-- Now update the data in our display st, which coincidentally is data
@@ -1427,7 +1427,7 @@ function LootHistory.RightClickMenu(menu, level)
 				info.colorCode = "|cff"..addon:RGBToHex(unpack(v.color))
 				info.notCheckable = true
 				info.func = function()
-					addon:Debug("Changing response id @", data.name, "from", data.response, "to", i)
+					addon.Log:D("Changing response id @", data.name, "from", data.response, "to", i)
 					local entry = lootDB[data.name][data.num] --luacheck: ignore
 					entry.responseID = i
 					entry.response = addon:GetResponse("default",i).text
@@ -1445,7 +1445,7 @@ function LootHistory.RightClickMenu(menu, level)
 
 			info = MSA_DropDownMenu_CreateInfo()
 			for k,responses in pairs(db.responses) do
-				addon:Debug("db.responses:", k)
+				addon.Log:D("db.responses:", k)
 				if k ~= "default" and k ~= "*" then
 					info.text = addon.OPT_MORE_BUTTONS_VALUES[k] or _G.UNKNOWN
 					info.isTitle = true
@@ -1453,14 +1453,14 @@ function LootHistory.RightClickMenu(menu, level)
 					info.notCheckable = true
 					MSA_DropDownMenu_AddButton(info, level)
 					for i, v in ipairs(responses) do --luacheck: ignore
-						addon:Debug("responses:", i)
+						addon.Log:D("responses:", i)
 						info.text = v.text
 						info.colorCode = "|cff"..addon:RGBToHex(unpack(v.color))
 						info.isTitle = false
 						info.disabled = false
 						info.notCheckable = true
 						info.func = function()
-							addon:Debug("Changing response id @", data.name, "from", data.response, "to", i)
+							addon.Log:D("Changing response id @", data.name, "from", data.response, "to", i)
 							local entry = lootDB[data.name][data.num] --luacheck: ignore
 							entry.responseID = i
 							entry.response = addon:GetResponse(k,i).text
@@ -1485,7 +1485,7 @@ function LootHistory.RightClickMenu(menu, level)
 						info.colorCode = "|cff"..addon:RGBToHex(unpack(v.color))
 						info.notCheckable = true
 						info.func = function()
-							addon:Debug("Changing response id @", data.name, "from", data.response, "to", i)
+							addon.Log:D("Changing response id @", data.name, "from", data.response, "to", i)
 							local entry = lootDB[data.name][data.num] --luacheck: ignore
 							entry.responseID = k
 							entry.response = addon:GetResponse("default",k).text
@@ -1507,7 +1507,7 @@ function LootHistory.RightClickMenu(menu, level)
 				info.colorCode = "|cff"..addon:RGBToHex(unpack(v.color))
 				info.notCheckable = true
 				info.func = function()
-					addon:Debug("Changing award reason id @", data.name, "from", data.response, "to", k)
+					addon.Log:D("Changing award reason id @", data.name, "from", data.response, "to", k)
 					local entry = lootDB[data.name][data.num] --luacheck: ignore
 					entry.responseID = k
 					entry.response = v.text
