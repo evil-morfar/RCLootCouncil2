@@ -168,7 +168,7 @@ LibDialog:Register("RCLOOTCOUNCIL_KEEP_ITEM", {
    buttons = {
       {  text = L["Keep"],
          on_click = function(self, link)
-            addon:Send("group", "rejected_trade", link)
+            addon:Send("group", "r_t", link)
             self.icon2:Hide()
          end,
       },

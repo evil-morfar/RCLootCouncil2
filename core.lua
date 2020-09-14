@@ -6,6 +6,8 @@
 		- IDEA Change popups so they only hide on award/probably add the error message to it.
 		- Trade status in TradeUI
 		- Changeable chatwindow output.
+
+		- Coms comparison: /rc add 173944 173943 174060 174168 (704 bytes on PTR, ~4kb on live)
 -------------------------------- ]]
 
 --[[CHANGELOG
@@ -45,7 +47,7 @@
 			fakeLoot				P - Candidate left an item on a boss.
 			fullbags				P - Candidate couldn't loot boss because of full bags.
 			n_t					P - Candidate received "non-tradeable" loot.
-			r_t					P - Candidatre "rejected_trade" of loot.
+			r_t					P - Candidate "rejected_trade" of loot.
 			lootTable			P - LootTable sent from ML.
 			lt_add 				P - Partial lootTable (additions) sent from ML.
 			MLdb 					P - MLdb sent from ML.
@@ -558,7 +560,7 @@ function RCLootCouncil:UpdateAndSendRecentTradableItem(info, count)
 		end
 		-- We've searched every single bag space, and found at least 1 item that wasn't tradeable,
 		-- and none that was. We can now safely assume the item can't be traded.
-		self:Send("group", "not_tradeable", info.link, info.guid)
+		self:Send("group", "n_t", info.link, info.guid)
 	end,
 	function() -- onFail
 		-- We haven't found it, maybe we just haven't received it yet, so try again in one second
@@ -2385,11 +2387,11 @@ function RCLootCouncil:SubscribeToPermanentComms ()
 			self:OnLootStatusReceived(sender, "fullbags", unpack(data))
 		end,
 
-		n_t = function (data, sender)
-			self:OnTradeableStatusReceived(sender, "not_tradeable", unpack(data))
+		n_t = function (data, sender, command)
+			self:OnTradeableStatusReceived(sender, command, unpack(data))
 		end,
-		r_t = function (data, sender)
-			self:OnTradeableStatusReceived(sender, "rejected_trade", unpack(data))
+		r_t = function (data, sender, command)
+			self:OnTradeableStatusReceived(sender, command, unpack(data))
 		end,
 
 		session_end = function (_,sender)

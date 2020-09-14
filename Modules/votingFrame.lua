@@ -16,8 +16,8 @@
 		roll 					T - Candidate sends roll info.
 		reconnectData 		T - ML sends reconnectData.
 		lt_add 				T - ML sends lootTable additions.
-		not_tradeable 		T - Candidate has looted a non-tradeable item.
-		rejected_trade 	T - Candidate rejected to trade a looted item.
+		n_t					T - Candidate received "non-tradeable" loot.
+		r_t					T - Candidate "rejected_trade" of loot.
 ]]
 
 local _,addon = ...
@@ -174,10 +174,10 @@ function RCVotingFrame:RegisterComms ()
 				self:OnLootTableAdditionsReceived(unpack(data))
 			end
 		end,
-		not_tradeable = function (data, sender, command)
+		n_t = function (data, sender, command)
 			self:AddNonTradeable(unpack(data), addon:UnitName(sender), command)
 		end,
-		rejected_trade = function (data, sender, command)
+		r_t = function (data, sender, command)
 			self:AddNonTradeable(unpack(data), addon:UnitName(sender), command)
 		end,
 	})
@@ -1131,7 +1131,7 @@ function RCVotingFrame:AddNonTradeable(link, owner, reason)
 		GameTooltip:AddDoubleLine(L["Non-tradeable reason:"], L["non_tradeable_reason_"..tostring(reason)], nil, nil, nil,1,1,1)
 		GameTooltip:Show()
 	end)
-	if reason == "rejected_trade" then
+	if reason == "r_t" then
 		b:SetBorderColor("purple")
 	else
 		b:SetBorderColor("grey")

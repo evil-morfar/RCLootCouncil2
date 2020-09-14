@@ -12,11 +12,11 @@
 		reconnect 				T - Candidate has reconnect - needs all data.
 		lootTable 				T - We've received the LootTable we sent out.
 		tradeable				T - Candidate has looted a tradeable item.
-		not_tradeable 			T - Candidate looted a non tradeable item.
+		n_t						T - Candidate received "non-tradeable" loot.
 		trade_complete 		T - Candidate completed a trade.
 		trade_WrongWinner 	T - Candidate traded an item to the wrong person.
-		rejected_trade			T - Candidate rejected to put their looted item up for the council.
 		bonus_roll 				T - Canidate performed bonus roll.
+		r_t						T - Candidate "rejected_trade" of loot.
 ]]
 
 --[[TODOs/NOTES:
@@ -664,9 +664,9 @@ end
 function RCLootCouncilML:HandleNonTradeable(link, owner, reason)
 	if not (addon.handleLoot and link and link ~= "") then return end -- Auto fail criterias
 	local responseID
-	if reason == "not_tradeable" then
+	if reason == "n_t" then
 		responseID = "PL"
-	elseif reason == "rejected_trade" then
+	elseif reason == "r_t" then
 		responseID = "PL_REJECT"
 	else
 		return self.Log:W("Non handled reason in ML:HandleNonTradeable()",link,owner,reason)
@@ -1755,11 +1755,11 @@ function RCLootCouncilML:RegisterComms ()
 			addon:Print(format(L["trade_wrongwinner_message"], addon.Ambiguate(trader), link, addon.Ambiguate(recipient), addon.Ambiguate(winner)))
 		end,
 
-		not_tradeable = function (data, sender, command)
+		n_t = function (data, sender, command)
 			self:HandleNonTradeable(unpack(data), addon:UnitName(sender), command)
 		end,
 
-		rejected_trade = function (data, sender, command)
+		r_t = function (data, sender, command)
 			self:HandleNonTradeable(unpack(data), addon:UnitName(sender), command)
 		end,
 
