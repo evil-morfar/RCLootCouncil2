@@ -31,7 +31,7 @@ LibStub("AceSerializer-3.0"):Embed(private)
 --    sender: The sender of the command.
 --    command: The command
 --    distri: The command's distribution channel.
--- @return A subscription to the Comm
+-- @return Subscription @A subscription to the Comm
 function Comms:Subscribe (prefix, command, func, order)
    assert(prefix, "Prefix must be supplied")
    assert(tInvert(addon.PREFIXES)[prefix], format("%s is not a registered prefix!", tostring(prefix)))
@@ -39,9 +39,9 @@ function Comms:Subscribe (prefix, command, func, order)
 end
 
 --- Register multiple Comms at once
--- @param prefix The prefix to register
--- @param data A table of structure ["command"] = function, @see Comms:Subscribe
--- @return An array of the created subscriptions
+--- @param prefix string @The prefix to register
+--- @param data table<string,function> @A table of structure ["command"] = function, @see Comms:Subscribe
+--- @return table<number,Subscription> @An array of the created subscriptions
 function Comms:BulkSubscribe (prefix, data)
    if type(data) ~= "table" then return error("Error - wrong data supplied.",2) end
    local subs = {}
@@ -54,9 +54,9 @@ function Comms:BulkSubscribe (prefix, data)
 end
 
 --- Get a Sender function to send commands on the prefix.
--- The returned function can handle implied selfs.
--- @param prefix The prefix to send to. This will be registered autmatically if it isn't.
--- @returns Function - When called with (target, command[, ...]):
+--- The returned function can handle implied selfs.
+--- @param prefix string @The prefix to send to. This will be registered autmatically if it isn't.
+--- @return fun(mod:table, target:string, command:string, vararg:any):void @When called with (target, command[, ...]):
    -- Sends a ace comm to `target`, with `command` and `...` as command arguments.
    -- The command is send using "NORMAL" priority.
 function Comms:GetSender (prefix)
