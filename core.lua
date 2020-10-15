@@ -2566,7 +2566,7 @@ end
 -- @param height Height of the frame, defaults to 325.
 -- @return The frame object.
 function RCLootCouncil:CreateFrame(name, cName, title, width, height)
-	local f = CreateFrame("Frame", name, UIParent) -- LibWindow seems to work better with nil parent
+	local f = CreateFrame("Frame", name, UIParent,  BackdropTemplateMixin and "BackdropTemplate" or nil) -- LibWindow seems to work better with nil parent
 	f:Hide()
 	f:SetFrameStrata("DIALOG")
 	f:SetWidth(450)
@@ -2578,7 +2578,7 @@ function RCLootCouncil:CreateFrame(name, cName, title, width, height)
 	f:MakeDraggable()
 	f:SetScript("OnMouseWheel", function(f,delta) if IsControlKeyDown() then lwin.OnMouseWheel(f,delta) end end)
 
-	local tf = CreateFrame("Frame", "RC_UI_"..cName.."_Title", f)
+	local tf = CreateFrame("Frame", "RC_UI_"..cName.."_Title", f,  BackdropTemplateMixin and "BackdropTemplate" or nil)
 	--tf:SetFrameStrata("DIALOG")
 	tf:SetToplevel(true)
 	tf:SetBackdrop({
@@ -2618,7 +2618,7 @@ function RCLootCouncil:CreateFrame(name, cName, title, width, height)
 	tf.text = text
 	f.title = tf
 
-	local c = CreateFrame("Frame", "RC_UI_"..cName.."_Content", f) -- frame that contains the actual content
+	local c = CreateFrame("Frame", "RC_UI_"..cName.."_Content", f, BackdropTemplateMixin and "BackdropTemplate" or nil) -- frame that contains the actual content
 	c:SetBackdrop({
 		bgFile = AceGUIWidgetLSMlists.background[db.skins[db.currentSkin].background],
 		edgeFile = AceGUIWidgetLSMlists.border[db.skins[db.currentSkin].border],
