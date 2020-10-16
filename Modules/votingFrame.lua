@@ -69,7 +69,7 @@ function RCVotingFrame:OnInitialize()
 		{ name = L["Vote"],		DoCellUpdate = RCVotingFrame.SetCellVote,			colName = "vote",		sortnext = 10,		width = 60, align = "CENTER", },				-- 11 Vote button
 		{ name = L["Notes"],		DoCellUpdate = RCVotingFrame.SetCellNote,			colName = "note",								width = 50, align = "CENTER", },				-- 12 Note icon
 		{ name = _G.ROLL,			DoCellUpdate = RCVotingFrame.SetCellRoll, 		colName = "roll",		sortnext = 10,		width = 50, align = "CENTER", },				-- 13 Roll
-		{ name = "",				DoCellUpdate = RCVotingFrame.SetCellCorruption, colName = "corruption", sortnext = 10, width = 30, align = "CENTER",},				-- 14 Corruption (Patch 8.3)
+		-- { name = "",				DoCellUpdate = RCVotingFrame.SetCellCorruption, colName = "corruption", sortnext = 10, width = 30, align = "CENTER",},				-- 14 Corruption (Patch 8.3)
 	}
 	-- The actual table being worked on, new entries should be added to this table "tinsert(RCVotingFrame.scrollCols, data)"
 	-- If you want to add or remove columns, you should do so on your OnInitialize. See RCVotingFrame:RemoveColumn() for removal.
@@ -430,7 +430,7 @@ function RCVotingFrame:OnChangeResponseReceived(ses, name, response, isTier)
 	self:Update()
 end
 
-function RCVotingFrame:OnLootAckReceived (name, specID, ilvl, sessionData, corruptionData)
+function RCVotingFrame:OnLootAckReceived (name, specID, ilvl, sessionData)
 	for k,d in pairs(sessionData) do
 		for ses, v in pairs(d) do
 			self:SetCandidateData(ses, name, k, v)
@@ -439,13 +439,6 @@ function RCVotingFrame:OnLootAckReceived (name, specID, ilvl, sessionData, corru
 	for i = 1, #lootTable do
 		self:SetCandidateData(i, name, "specID", specID)
 		self:SetCandidateData(i, name, "ilvl", ilvl)
-		if corruptionData then
-			local corruption, corruptionResistance = unpack(corruptionData)
-			local totalCorruption = math.max(corruption - corruptionResistance, 0);
-			self:SetCandidateData(i, name, "corruption", corruption)
-			self:SetCandidateData(i, name, "corruptionResistance", corruptionResistance)
-			self:SetCandidateData(i, name, "totalCorruption", totalCorruption)
-		end
 		if not sessionData.response[i] then
 			-- We might already have an response, so don't override unless it's announced
 			if self:GetCandidateData(i, name, "response") == "ANNOUNCED" then
@@ -644,7 +637,6 @@ function RCVotingFrame:SwitchSession(s)
 	session = s
 	local t = lootTable[s] -- Shortcut
 	self.frame.itemIcon:SetNormalTexture(t.texture)
-	self.frame.itemIcon:SetBorderColor((IsCorruptedItem and IsCorruptedItem(t.link)) and "purple" or "grey")
 	self.frame.itemText:SetText(t.link)
 	self.frame.iState:SetText(self:GetItemStatus(t.link))
 	local bonusText = addon:GetItemBonusText(t.link, "/")
@@ -798,15 +790,6 @@ function RCVotingFrame:GetFrame()
 		st:EnableSelection(true)
 		f.st = st
 		f:SetWidth(f.st.frame:GetWidth() + 20)
-
-		-- Set texture for corruption header, if present
-		local corruptionHeaderID = self:GetColumnIndexFromName("corruption")
-		if corruptionHeaderID then
-			local tex = st.head.cols[corruptionHeaderID]:CreateTexture()
-			tex:SetAtlas("Nzoth-tooltip-topper")
-			tex:SetAllPoints(st.head.cols[corruptionHeaderID])
-			tex:SetTexCoord(0.28,0.72,0,1)
-		end
 	end
 	f.UpdateSt()
 
@@ -1351,77 +1334,6 @@ function RCVotingFrame.SetCellRoll(rowFrame, frame, data, cols, row, realrow, co
 	local name = data[realrow].name
 	frame.text:SetText(lootTable[session].candidates[name].roll or "")
 	data[realrow].cols[column].value = lootTable[session].candidates[name].roll or ""
-end
-
-
-
-local function CorruptionCellOnEnter (player)
-	-- Use cached data if available
-	if not RCVotingFrame.corruptionEffects then
-		-- Cache some corruption related data
-		local corruptionEffects = _G.GetNegativeCorruptionEffectInfo()
-		table.sort(corruptionEffects, function(a, b)
-			return a.minCorruption < b.minCorruption
-		end)
-		RCVotingFrame.corruptionEffects = corruptionEffects
-	end
-	local corruption = RCVotingFrame:GetCandidateData(session, player, "corruption")
-	if not corruption then return end
-	local corruptionResistance = RCVotingFrame:GetCandidateData(session, player, "corruptionResistance")
-	local totalCorruption = RCVotingFrame:GetCandidateData(session, player, "totalCorruption")
-
-	-- Setup corruption tooltip
-	GameTooltip:SetBackdropStyle(GameTooltip, _G.GAME_TOOLTIP_BACKDROP_STYLE_CORRUPTED_ITEM);
-	GameTooltip:SetOwner(RCVotingFrame.frame.content, "ANCHOR_RIGHT");
-	GameTooltip:SetMinimumWidth(250);
-	GameTooltip:AddLine(addon:GetUnitClassColoredName(player))
-	GameTooltip:AddLine("")
-	GameTooltip_AddColoredDoubleLine(GameTooltip, _G.CORRUPTION_TOOLTIP_LINE, corruption, _G.HIGHLIGHT_FONT_COLOR, _G.HIGHLIGHT_FONT_COLOR);
-	GameTooltip_AddColoredDoubleLine(GameTooltip, _G.CORRUPTION_RESISTANCE_TOOLTIP_LINE, corruptionResistance, _G.HIGHLIGHT_FONT_COLOR, _G.HIGHLIGHT_FONT_COLOR);
-	GameTooltip_AddColoredDoubleLine(GameTooltip, _G.TOTAL_CORRUPTION_TOOLTIP_LINE, totalCorruption, _G.CORRUPTION_COLOR, _G.CORRUPTION_COLOR)
-	local newTotalCorruption = totalCorruption
-	if IsCorruptedItem(lootTable[session].link) then
-		GameTooltip_AddBlankLineToTooltip(GameTooltip);
-		local currentItemCorruption = addon:GetCorruptionFromTooltip(lootTable[session].link)
-		newTotalCorruption = math.max(0, corruption - corruptionResistance + currentItemCorruption)
-		GameTooltip_AddColoredDoubleLine(GameTooltip, lootTable[session].link, currentItemCorruption == 0 and 0 or "+"..currentItemCorruption, _G.WHITE_FONT_COLOR, _G.CORRUPTION_COLOR)
-		GameTooltip_AddColoredDoubleLine(GameTooltip, L["Corruption if awarded:"], newTotalCorruption, _G.WHITE_FONT_COLOR, _G.CORRUPTION_COLOR)
-	end
-	GameTooltip_AddBlankLineToTooltip(GameTooltip);
-
-	-- Corruption info - Mostly copied from CharacterFrame.lua
-	for i, corruptionInfo in ipairs(RCVotingFrame.corruptionEffects) do
-		if i > 1 then
-			GameTooltip_AddBlankLineToTooltip(GameTooltip);
-		end
-		-- We only show 1 effect above the player's current corruption.
-		local lastEffect = (corruptionInfo.minCorruption > newTotalCorruption)
-		local newEffect = corruptionInfo.minCorruption > totalCorruption
-		GameTooltip_AddColoredLine(GameTooltip, _G.CORRUPTION_EFFECT_HEADER:format(corruptionInfo.name, corruptionInfo.minCorruption), lastEffect and _G.GRAY_FONT_COLOR or newEffect and _G.YELLOW_FONT_COLOR or  _G.HIGHLIGHT_FONT_COLOR);
-		GameTooltip_AddColoredLine(GameTooltip, corruptionInfo.description, lastEffect and _G.GRAY_FONT_COLOR or _G.CORRUPTION_COLOR, true, 10);
-		if lastEffect then
-			break;
-		end
-	end
-	GameTooltip:SetAnchorType("ANCHOR_RIGHT", 0, -GameTooltip:GetHeight())
-	GameTooltip:Show()
-end
-
-function RCVotingFrame.SetCellCorruption(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
-	local name = data[realrow].name
-	local corruption = RCVotingFrame:GetCandidateData(session, name, "totalCorruption") or ""
-	frame.text:SetText(corruption)
-	if _G.CORRUPTION_COLOR then
-		frame.text:SetTextColor(_G.CORRUPTION_COLOR:GetRGBA())
-	end
-	data[realrow].cols[column].value = corruption
-
-	-- Tooltip
-	frame:SetScript("OnEnter", function()
-		CorruptionCellOnEnter(name)
-	end)
-	frame:SetScript("OnLeave", function() addon:HideTooltip() end)
-	frame:SetScript("OnClick", function() PlaySound(_G.SOUNDKIT.NZOTH_EYE_SQUISH) end) -- Bonus :)
 end
 
 function RCVotingFrame.filterFunc(table, row)

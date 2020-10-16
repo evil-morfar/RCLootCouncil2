@@ -785,16 +785,6 @@ function RCLootCouncil:UpdatePlayersData()
 	playersData.specID = GetSpecialization() and GetSpecializationInfo(GetSpecialization())
 	playersData.ilvl = select(2,GetAverageItemLevel())
 	self:UpdatePlayersGears()
-	playersData.corruption = self:GetPlayerCorruption()
-end
-
--- New in patch 8.3.
--- Self contained to avoid clashes with Classic and when it's removed
-function RCLootCouncil:GetPlayerCorruption ()
-	if not GetCorruption then return end
-	local corruption = GetCorruption()
-	local corruptionResistance = _G.GetCorruptionResistance()
-	return {corruption, corruptionResistance}
 end
 
 -- @param link A gear that we want to compare against the equipped gears
@@ -1014,7 +1004,6 @@ function RCLootCouncil:PrepareLootTable(lootTable)
 end
 
 --- Sends a lootAck to the group containing session related data.
--- Patch 8.3: Added corruption.
 -- specID, average ilvl and corruption is sent once.
 -- Currently equipped gear and "diff" is sent for each session.
 -- Autopass response is sent if the session has been autopassed. No other response is sent.
@@ -1035,7 +1024,7 @@ function RCLootCouncil:SendLootAck(table, skip)
 		end
 	end
 	if hasData then
-		self:Send("group", "lootAck", self.playerName:GetName(), playersData.specID, playersData.ilvl, toSend, playersData.corruption)
+		self:Send("group", "lootAck", self.playerName:GetName(), playersData.specID, playersData.ilvl, toSend)
 	end
 end
 
