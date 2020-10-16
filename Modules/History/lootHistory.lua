@@ -636,8 +636,8 @@ function LootHistory.ItemSort(table, rowa, rowb, sortbycol)
 	local column = table.cols[sortbycol]
 	rowa, rowb = table:GetRow(rowa), table:GetRow(rowb);
 	local a,b = lootDB[rowa.name][rowa.num].lootWon, lootDB[rowb.name][rowb.num].lootWon
-	a = addon:GetItemNameFromLink(a)
-	b = addon:GetItemNameFromLink(b)
+	a = addon.Utils:GetItemNameFromLink(a)
+	b = addon.Utils:GetItemNameFromLink(b)
 	if a == b then
 		if column.sortnext then
 			local nextcol = table.cols[column.sortnext];
@@ -1218,7 +1218,7 @@ function LootHistory.FilterMenu(menu, level)
 
 		for k in ipairs(data) do -- Make sure normal responses are on top
 			info.text = addon:GetResponse("default",k).text
-			info.colorCode = "|cff"..addon:RGBToHex(addon:GetResponseColor(nil, k))
+			info.colorCode = "|cff"..addon.Utils:RGBToHex(addon:GetResponseColor(nil, k))
 			info.func = function()
 				addon.Log:D("Update Filter")
 				db.modules["RCLootHistory"].filters[k] = not db.modules["RCLootHistory"].filters[k]
@@ -1234,7 +1234,7 @@ function LootHistory.FilterMenu(menu, level)
 					info.colorCode = "|cffde34e2" -- purpleish
 				else
 					info.text = addon:GetResponse("default",k).text
-					info.colorCode = "|cff"..addon:RGBToHex(addon:GetResponseColor(nil, k))
+					info.colorCode = "|cff"..addon.Utils:RGBToHex(addon:GetResponseColor(nil, k))
 				end
 				info.func = function()
 					addon.Log:D("Update Filter")
@@ -1250,7 +1250,7 @@ function LootHistory.FilterMenu(menu, level)
 			for id, name in pairs(addon.classIDToDisplayName) do
 				local col = addon:GetClassColor(addon.classIDToFileName[id])
 				info.text = name
-				info.colorCode = "|cff"..addon:RGBToHex(col.r,col.g,col.b)
+				info.colorCode = "|cff"..addon.Utils:RGBToHex(col.r,col.g,col.b)
 				info.func = function()
 					addon.Log:D("Update class filter")
 					db.modules["RCLootHistory"].filters.class[id] = not db.modules["RCLootHistory"].filters.class[id]
@@ -1399,7 +1399,7 @@ function LootHistory.RightClickMenu(menu, level)
 				local v = LootHistory.frame.name.data[i]
 				info.text = v[2].value
 				local c = addon:GetClassColor(v[1].args[1])
-				info.colorCode = "|cff"..addon:RGBToHex(c.r,c.g,c.b)
+				info.colorCode = "|cff"..addon.Utils:RGBToHex(c.r,c.g,c.b)
 				info.notCheckable = true
 				info.hasArrow = false
 				info.func = function()
@@ -1424,7 +1424,7 @@ function LootHistory.RightClickMenu(menu, level)
 			for i = 1, db.buttons.default.numButtons do --luacheck: ignore
 				v = db.responses.default[i]
 				info.text = v.text
-				info.colorCode = "|cff"..addon:RGBToHex(unpack(v.color))
+				info.colorCode = "|cff"..addon.Utils:RGBToHex(unpack(v.color))
 				info.notCheckable = true
 				info.func = function()
 					addon.Log:D("Changing response id @", data.name, "from", data.response, "to", i)
@@ -1455,7 +1455,7 @@ function LootHistory.RightClickMenu(menu, level)
 					for i, v in ipairs(responses) do --luacheck: ignore
 						addon.Log:D("responses:", i)
 						info.text = v.text
-						info.colorCode = "|cff"..addon:RGBToHex(unpack(v.color))
+						info.colorCode = "|cff"..addon.Utils:RGBToHex(unpack(v.color))
 						info.isTitle = false
 						info.disabled = false
 						info.notCheckable = true
@@ -1482,7 +1482,7 @@ function LootHistory.RightClickMenu(menu, level)
 				for k,v in pairs(db.responses.default) do --luacheck: ignore
 					if type(k) ~= "number" and k ~= "tier" and k ~= "relic" then
 						info.text = v.text
-						info.colorCode = "|cff"..addon:RGBToHex(unpack(v.color))
+						info.colorCode = "|cff"..addon.Utils:RGBToHex(unpack(v.color))
 						info.notCheckable = true
 						info.func = function()
 							addon.Log:D("Changing response id @", data.name, "from", data.response, "to", i)
@@ -1504,7 +1504,7 @@ function LootHistory.RightClickMenu(menu, level)
 			for k,v in ipairs(db.awardReasons) do
 				if k > db.numAwardReasons then break end
 				info.text = v.text
-				info.colorCode = "|cff"..addon:RGBToHex(unpack(v.color))
+				info.colorCode = "|cff"..addon.Utils:RGBToHex(unpack(v.color))
 				info.notCheckable = true
 				info.func = function()
 					addon.Log:D("Changing award reason id @", data.name, "from", data.response, "to", k)
@@ -1568,8 +1568,8 @@ do
 				tinsert(export, tostring(d.time))
 				tinsert(export, tostring(d.id))
 				tinsert(export, CSVEscape(d.lootWon))
-				tinsert(export, addon:GetItemIDFromLink(d.lootWon))
-				tinsert(export, addon:GetItemStringFromLink(d.lootWon))
+				tinsert(export, addon.Utils:GetItemIDFromLink(d.lootWon))
+				tinsert(export, addon.Utils:GetItemStringFromLink(d.lootWon))
 				tinsert(export, CSVEscape(d.response))
 				tinsert(export, tostring(d.votes))
 				tinsert(export, tostring(d.class))
@@ -1611,8 +1611,8 @@ do
 				tinsert(export, tostring(self:GetLocalizedDate(d.date)))
 				tinsert(export, tostring(d.time))
 				tinsert(export, "=HYPERLINK(\""..self:GetWowheadLinkFromItemLink(d.lootWon).."\";\""..tostring(d.lootWon).."\")")
-				tinsert(export, addon:GetItemIDFromLink(d.lootWon))
-				tinsert(export, addon:GetItemStringFromLink(d.lootWon))
+				tinsert(export, addon.Utils:GetItemIDFromLink(d.lootWon))
+				tinsert(export, addon.Utils:GetItemStringFromLink(d.lootWon))
 				tinsert(export, tostring(d.response))
 				tinsert(export, tostring(d.votes))
 				tinsert(export, tostring(d.class))
@@ -1657,8 +1657,8 @@ do
 				tinsert(export, string.format("\"%s\":\"%s\"", "player", tostring(player)))
 				tinsert(export, string.format("\"%s\":\"%s\"", "date", tostring(self:GetLocalizedDate(d.date))))
 				tinsert(export, string.format("\"%s\":\"%s\"", "time", tostring(d.time)))
-				tinsert(export, string.format("\"%s\":%s", "itemID", addon:GetItemIDFromLink(d.lootWon)))
-				tinsert(export, string.format("\"%s\":\"%s\"", "itemString", addon:GetItemStringFromLink(d.lootWon)))
+				tinsert(export, string.format("\"%s\":%s", "itemID", addon.Utils:GetItemIDFromLink(d.lootWon)))
+				tinsert(export, string.format("\"%s\":\"%s\"", "itemString", addon.Utils:GetItemStringFromLink(d.lootWon)))
 				tinsert(export, string.format("\"%s\":\"%s\"", "response", QuotesEscape(d.response)))
 				tinsert(export, string.format("\"%s\":%s", "votes", tostring(d.votes or 0)))
 				tinsert(export, string.format("\"%s\":\"%s\"", "class", tostring(d.class)))
@@ -1745,8 +1745,8 @@ do
 				local hour,minute,second = strsplit(":",d.time,3)
 				local sinceEpoch = time({year = "20"..year, month = month, day = day,hour = hour,min = minute,sec=second})
 				itemsData = itemsData.."\t\t<item>\r\n"
-				.."\t\t\t<itemid>" .. addon:GetItemStringClean(d.lootWon) .. "</itemid>\r\n"
-				.."\t\t\t<name>" .. addon:GetItemNameFromLink(d.lootWon) .. "</name>\r\n"
+				.."\t\t\t<itemid>" .. addon.Utils:GetItemStringClean(d.lootWon) .. "</itemid>\r\n"
+				.."\t\t\t<name>" .. addon.Utils:GetItemNameFromLink(d.lootWon) .. "</name>\r\n"
 				.."\t\t\t<member>" .. addon.Ambiguate(player) .. "</member>\r\n"
 				.."\t\t\t<time>" .. sinceEpoch .. "</time>\r\n"
 				.."\t\t\t<count>1</count>\r\n"

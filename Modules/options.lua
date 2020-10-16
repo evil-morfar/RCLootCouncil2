@@ -405,7 +405,7 @@ function addon:OptionsTable()
 											local nameData = self:GetActiveModule("history"):GetAllRegisteredCandidates()
 											local t = {}
 											for name, v in pairs(nameData) do
-												t[name] = "|cff"..self:RGBToHex(v.color.r,v.color.g,v.color.b)..v.name
+												t[name] = "|cff"..self.Utils:RGBToHex(v.color.r,v.color.g,v.color.b)..v.name
 											end
 											return t
 										end,

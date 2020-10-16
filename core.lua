@@ -2256,10 +2256,10 @@ function RCLootCouncil.Ambiguate(name)
 end
 
 --- Fetches a response of a given type, based on the group leader's settings if possible
--- @param type The type of response. Defaults to "default".
--- @param name The name of the response.
--- @see RCLootCouncil.db.responses
--- @return A table from db.responses containing the response info
+--- @param type string @The type of response. Defaults to "default".
+--- @param name string @The name of the response.
+--- @see RCLootCouncil.db.responses
+--- @return table @A table from db.responses containing the response info
 function RCLootCouncil:GetResponse(type, name)
 	-- REVIEW With proper inheritance, most of this should be redundant
 	-- Check if the type should be translated to something else
