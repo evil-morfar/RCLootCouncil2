@@ -123,7 +123,7 @@ function RCVotingFrame:RegisterComms ()
 	subscriptions = Comms:BulkSubscribe(PREFIX, {
 		vote = function (data, sender)
 			if Council:Contains(Player:Get(sender)) then
-				self:HandleVote(unpack(data), sender)
+				self:HandleVote(sender, unpack(data))
 			else
 				addon.Log:W("Non-council member (".. tostring(sender) .. ") sent a vote!")
 			end
@@ -175,10 +175,10 @@ function RCVotingFrame:RegisterComms ()
 			end
 		end,
 		n_t = function (data, sender, command)
-			self:AddNonTradeable(unpack(data), addon:UnitName(sender), command)
+			self:AddNonTradeable(addon:UnitName(sender), command, unpack(data))
 		end,
 		r_t = function (data, sender, command)
-			self:AddNonTradeable(unpack(data), addon:UnitName(sender), command)
+			self:AddNonTradeable(addon:UnitName(sender), command, unpack(data))
 		end,
 	})
 end
@@ -210,7 +210,7 @@ function RCVotingFrame:ReceiveLootTable(lt)
 	self:HideNonTradeables()
 	self.numNonTradeables = 0
 	for _,v in ipairs(addon.nonTradeables) do -- We might have received some before getting the lootTable
-		self:AddNonTradeable(v.link, v.owner, v.reason)
+		self:AddNonTradeable(v.owner, v.reason, v.link)
 	end
 	active = true
 	lootTable = CopyTable(lt)
@@ -361,7 +361,7 @@ function RCVotingFrame:Setup(table)
 	end
 end
 
-function RCVotingFrame:HandleVote(session, name, vote, voter)
+function RCVotingFrame:HandleVote(voter, session, name, vote)
 	if not (lootTable[session] and lootTable[session].candidates[name]) then return end
 	voter = addon:UnitName(voter)
 	-- Do the vote
@@ -1114,7 +1114,7 @@ function RCVotingFrame:UpdateSessionButton(i, texture, link, awarded)
 	return btn
 end
 
-function RCVotingFrame:AddNonTradeable(link, owner, reason)
+function RCVotingFrame:AddNonTradeable(owner, reason, link)
 	self.numNonTradeables = self.numNonTradeables + 1
 	local texture = select(5, GetItemInfoInstant(link))
 	local b = addon.UI:New("IconBordered", self.frame.content, texture)
