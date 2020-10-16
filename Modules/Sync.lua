@@ -178,7 +178,7 @@ end
 local function addNameToList(list, name, class)
    addon.Log:D("Sync:addNameToList()", name, class)
    local c = addon:GetClassColor(class)
-   list[name] = "|cff"..addon:RGBToHex(c.r,c.g,c.b) .. tostring(name) .."|r"
+   list[name] = "|cff"..addon.Utils:RGBToHex(c.r,c.g,c.b) .. tostring(name) .."|r"
 end
 
 local function titleCaseName(name)
