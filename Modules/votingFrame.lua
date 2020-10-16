@@ -1371,7 +1371,7 @@ local function CorruptionCellOnEnter (player)
 	local totalCorruption = RCVotingFrame:GetCandidateData(session, player, "totalCorruption")
 
 	-- Setup corruption tooltip
-	GameTooltip_SetBackdropStyle(GameTooltip, _G.GAME_TOOLTIP_BACKDROP_STYLE_CORRUPTED_ITEM);
+	GameTooltip:SetBackdropStyle(GameTooltip, _G.GAME_TOOLTIP_BACKDROP_STYLE_CORRUPTED_ITEM);
 	GameTooltip:SetOwner(RCVotingFrame.frame.content, "ANCHOR_RIGHT");
 	GameTooltip:SetMinimumWidth(250);
 	GameTooltip:AddLine(addon:GetUnitClassColoredName(player))

@@ -973,7 +973,7 @@ function RCLootCouncil:Timer(type, ...)
 end
 
 function RCLootCouncil:SendGuildVerTest ()
-	Comms:Send{prefix = addon.PREFIXES.VERSION,
+	Comms:Send{prefix = self.PREFIXES.VERSION,
 		target = "guild",
 		command = "v",
 		data = {self.version, self.tVersion}
@@ -1304,7 +1304,7 @@ end
 -- @return table ["GuildRankName"] = rankIndex
 function RCLootCouncil:GetGuildRanks()
 	if not IsInGuild() then return {} end
-	self.Log:dLog("GetGuildRankNum()")
+	self.Log:d("GetGuildRankNum()")
 	self.Utils:GuildRoster()
 	local t = {}
 	for i = 1, GuildControlGetNumRanks() do
