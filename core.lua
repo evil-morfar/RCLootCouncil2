@@ -2010,6 +2010,14 @@ end
 
 --#end Module support -----------------------------------------------------
 
+function RCLootCouncil:DumpDebugVariables()
+	self.Log:D("MasterLooter", self.masterLooter)
+	self.Log:D("LootMethod", self.lootMethod)
+	self.Log:D("HandleLoot", self.handleLoot)
+	self.Log:D("IsCouncil", self.isCouncil)
+	self.Log:D("CurrentInstanceName", self.currentInstanceName)
+end
+
 
 ---------------------------------------------------------------------------
 -- UI Functions used throughout the addon.
@@ -2349,7 +2357,7 @@ end
 --@end-debug@
 
 
---- These comms should lives all the time
+--- These comms should live all the time
 function RCLootCouncil:SubscribeToPermanentComms ()
 	Comms:BulkSubscribe(self.PREFIXES.MAIN, {
 		--

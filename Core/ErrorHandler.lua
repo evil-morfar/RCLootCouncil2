@@ -72,6 +72,7 @@ function private:NewError (err)
       count = 1,
       time = GetServerTime()
    }
+   addon:DumpDebugVariables() -- REVIEW: Consider make new errors subscribable to avoid this binding.
 end
 
 function private:IncrementErrorCount (errObj)
