@@ -41,7 +41,7 @@ function Object:New (parent, name, title, width, height)
    end
 
 	f.Update = function(self)
-		addon:Debug("UpdateFrame", self:GetName())
+		addon.Log:D("UpdateFrame", self:GetName())
       self.content:Update()
 		self.title:Update()
 	end
@@ -148,14 +148,14 @@ Object.Minimie_Prototype = {
       return frame.minimized
    end,
 	Minimize = function(frame)
-		addon:Debug("Minimize()")
+		addon.Log:D("Minimize()")
 		if not frame.minimized then
 			frame.content:Hide()
 			frame.minimized = true
 		end
 	end,
 	Maximize = function(frame)
-		addon:Debug("Maximize()")
+		addon.Log:D("Maximize()")
 		if frame.minimized then
 			frame.content:Show()
 			frame.minimized = false
