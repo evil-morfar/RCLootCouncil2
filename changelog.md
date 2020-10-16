@@ -1,3 +1,31 @@
+# v3.0.0-Alpha.1
+
+*Note: v3.0 is not backwards compatible, and v2.x will not be updated to patch 9.0*
+
+## Changes
+
+I've been planning v3.0 for more than 2 years.
+It consists of more than 10k line changes, most of which are background stuff you won't be seeing.
+Despite being in development for that long, not everything is completely ready for this release, but I expect 
+the rest to be implemented in v3.1 in the future.  
+Below is a list of the most relevant changes.
+
+### Updated for Shadowlands
+
+Deprecated API calls have been removed, and all addon code updated for the changes introduced in Shadowlands.
+
+### Comms overhaul
+
+All comms have been updated with a new system compressing all messages sent.  
+Most comms have been optimized resulting in up to an 90% decrease in comms usage, i.e. everything is faster.  
+This change breaks backwards compatiblity with 2.x versions.
+
+### Testing
+
+v3.0 is developed with a philosophy of writing automated tests for all new code.  
+This should result in a lot fewer bugs in new releases.  
+The internal log has also been updated for better identifying issues.
+
 # v2.19.3
 ## Changes
 
