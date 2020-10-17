@@ -63,7 +63,7 @@ function RCVersionCheck:OnDisable()
 end
 
 function RCVersionCheck:Show()
-	self:AddEntry(addon.playerName:GetName(), addon.playerClass, addon.guildRank, addon.version, addon.tVersion,addon:GetInstalledModulesFormattedData()) -- add ourself
+	self:AddEntry(addon.player:GetName(), addon.playerClass, addon.guildRank, addon.version, addon.tVersion,addon:GetInstalledModulesFormattedData()) -- add ourself
 	self.frame:Show()
 	self.frame.st:SetData(self.frame.rows)
 end
@@ -96,7 +96,7 @@ function RCVersionCheck:Query(target)
 		target = target,
 		command = "fr"
 	}
-	self:AddEntry(addon.playerName:GetName(), addon.playerClass, addon.guildRank, addon.version, addon.tVersion, addon:GetInstalledModulesFormattedData()) -- add ourself
+	self:AddEntry(addon.player:GetName(), addon.playerClass, addon.guildRank, addon.version, addon.tVersion, addon:GetInstalledModulesFormattedData()) -- add ourself
 	self:ScheduleTimer("QueryTimer", 5)
 end
 

@@ -145,7 +145,7 @@ function private.ReceiveComm(prefix, encodedMsg, distri, sender)
    end
    if command == "xrealm" then
       local target = tremove(data, 1)
-      if target == addon.playerName:GetName() then
+      if target == addon.player:GetName() then
          command = tremove(data, 1)
          self:FireCmd(prefix, distri, sender, command, data)
       end
@@ -166,7 +166,7 @@ function private:GetGroupChannel()
    elseif IsInGroup() then
       return "PARTY"
    else
-      return "WHISPER", addon.playerName:GetName() -- Fallback
+      return "WHISPER", addon.player:GetName() -- Fallback
    end
 end
 

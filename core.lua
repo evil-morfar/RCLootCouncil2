@@ -251,7 +251,7 @@ function RCLootCouncil:OnEnable()
 
 	-- Register the player's name
 	self.realmName = select(2, UnitFullName("player")) -- TODO Remove
-	self.playerName = Player:Get("player") -- TODO Remove
+	self.playerName = Player:Get("player"):GetName() -- TODO Remove
 	self.player = Player:Get("player")
 	self.Log(self.playerName, self.version, self.tVersion)
 
@@ -610,7 +610,7 @@ function RCLootCouncil:ChatCmdAdd(args)
 		links = self:SplitItemLinks(args) -- Split item links to allow user to enter links without space
 	end
 	for _,v in ipairs(links) do
-		self:GetActiveModule("masterlooter"):AddUserItem(v, owner or self.playerName:GetName())
+		self:GetActiveModule("masterlooter"):AddUserItem(v, owner or self.player:GetName())
 	end
 end
 
@@ -851,7 +851,7 @@ function RCLootCouncil:SendResponse(target, session, response, isTier, isRelic, 
 
 	self:Send(target, "response",
 		session,
-		self.playerName:GetName(),
+		self.player:GetName(),
 		{	gear1 = g1 and self.Utils:GetItemStringFromLink(g1) or nil,
 			gear2 = g2 and self.Utils:GetItemStringFromLink(g2) or nil,
 			ilvl = sendAvgIlvl and playersData.ilvl or nil,
@@ -1024,7 +1024,7 @@ function RCLootCouncil:SendLootAck(table, skip)
 		end
 	end
 	if hasData then
-		self:Send("group", "lootAck", self.playerName:GetName(), playersData.specID, playersData.ilvl, toSend)
+		self:Send("group", "lootAck", self.player:GetName(), playersData.specID, playersData.ilvl, toSend)
 	end
 end
 
@@ -1286,7 +1286,7 @@ function RCLootCouncil:GetPlayerInfo()
 		end
 	end
 	local ilvl = select(2,GetAverageItemLevel())
-	return self.playerName:GetName(), self.playerClass, self.Utils:GetPlayerRole(), self.guildRank, enchant, lvl, ilvl, playersData.specID
+	return self.player:GetName(), self.playerClass, self.Utils:GetPlayerRole(), self.guildRank, enchant, lvl, ilvl, playersData.specID
 end
 
 --- Returns a lookup table containing GuildRankNames and their index.
@@ -1497,7 +1497,7 @@ function RCLootCouncil:OnBonusRoll (_, type, link, ...)
 	self.Log:d("BONUS_ROLL", type, link, ...)
 	if type == "item" or type == "artifact_power" then
 		-- Only handle items and artifact power
-		self:Send("group", "bonus_roll", self.playerName:GetName(), type, link)
+		self:Send("group", "bonus_roll", self.player:GetName(), type, link)
 	end
 	--[[
 		Tests:
@@ -1610,7 +1610,7 @@ function RCLootCouncil:GetML()
 	self.Log:d("GetML()")
 	if self.Utils.IsPartyLFG() then return false, nil	end -- Never use in LFG
 	if GetNumGroupMembers() == 0 and (self.testMode or self.nnp) then -- always the player when testing alone
-		return true, self.playerName
+		return true, self.player:GetName()
 	end
 	-- Set the Group leader as the ML
 	local name

@@ -23,7 +23,7 @@ addon:InitLogging()
 local Player = addon.Require "Data.Player"
 
 describe("#Services #Comms (basics)", function()
-   addon.playerName = Player:Get("Player1")
+   addon.player = Player:Get("Player1")
    local Comms = addon.Require("Services.Comms")
    local Subscription = addon.Require("rx.Subscription")
 
