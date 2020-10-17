@@ -64,10 +64,10 @@ local PLAYER_MT = {
 function Player:Get (input)
    -- Decide if input is a name or guid
    local guid
-   if input and not strmatch(input, "Player%-") and strmatch(input, "%x%x%x%-%x%x%x%x%x%x%x%x") then
+   if input and not strmatch(input, "Player%-") and strmatch(unit, "%d?%d?%d?%d%-%x%x%x%x%x%x%x%x") then
       -- GUID without "Player-"
       guid = "Player-"..input
-   elseif input and strmatch(input, "%x%x%x%-%x%x%x%x%x%x%x%x") then
+   elseif input and strmatch(input, "Player%-%d?%d?%d?%d%-%x%x%x%x%x%x%x%x") then
       -- GUID with player
       guid = input
    elseif type(input) == "string" then
