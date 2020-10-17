@@ -53,7 +53,7 @@ describe("#Council", function()
 
       it("should create transmitable table", function()
          local expected = {
-            ["AAA-00000001"] = true
+            ["1-00000001"] = true
          }
          assert.are.same(expected, Council:GetForTransmit())
       end)

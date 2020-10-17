@@ -642,19 +642,19 @@ end
 
 local playerNameToGUID = {
    Player1 = {
-      guid = "Player-AAA-00000001",
+      guid = "Player-1-00000001",
       name = "Player1-Realm1",
       realm = "Realm1",
       class = "WARRIOR"
    },
    Player2 = {
-      guid = "Player-AAA-00000002",
+      guid = "Player-1-00000002",
       name = "Player2-Realm1",
       realm = "Realm1",
       class = "WARRIOR"
    },
    Player3 = {
-      guid = "Player-AAB-00000003",
+      guid = "Player-1122-00000003",
       name = "Player3-Realm2",
       realm = "Realm2",
       class = "WARRIOR"
