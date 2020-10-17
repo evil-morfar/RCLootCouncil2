@@ -1,4 +1,4 @@
-# v3.0.0-Alpha.1
+# v3.0.0-Alpha.2
 
 *Note: v3.0 is not backwards compatible, and v2.x will not be updated to patch 9.0*
 
@@ -25,6 +25,10 @@ This change breaks backwards compatiblity with 2.x versions.
 v3.0 is developed with a philosophy of writing automated tests for all new code.  
 This should result in a lot fewer bugs in new releases.  
 The internal log has also been updated for better identifying issues.
+
+### Removed
+
+Corruption column.
 
 # v2.19.3
 ## Changes
