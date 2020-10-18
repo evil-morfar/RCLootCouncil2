@@ -25,3 +25,4 @@ Below is my collection of useful tools for the testing environment and developme
 * [Lua](https://marketplace.visualstudio.com/items?itemName=sumneko.lua) - general lua IDE.
 * [Lua Debug](https://marketplace.visualstudio.com/items?itemName=actboy168.lua-debug) - lua debugger.
 * [vscode-lua](https://marketplace.visualstudio.com/items?itemName=trixnz.vscode-lua) - lua linting.
+* [emmylua](https://marketplace.visualstudio.com/items?itemName=tangzx.emmylua)
