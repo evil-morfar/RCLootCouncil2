@@ -14,3 +14,9 @@ test(2)
 test(3)
 
 print(sub.unsubscribed)
+
+local sub2 = test:subscribe(print)
+test(1)
+test(2)
+sub2:unsubscribe()
+test(3)

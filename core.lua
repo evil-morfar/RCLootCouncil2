@@ -242,6 +242,8 @@ function RCLootCouncil:OnInitialize()
 	Comms:Register(self.PREFIXES.VERSION)
 	self.Send = Comms:GetSender(self.PREFIXES.MAIN)
 
+	self:SubscribeToPermanentComms()
+
 	-- Add logged in message in the log
 	self.Log("Logged In")
 end
@@ -308,7 +310,6 @@ function RCLootCouncil:OnEnable()
 	end
 	ChatFrame_AddMessageEventFilter("CHAT_MSG_WHISPER_INFORM", filterFunc)
 	self:CouncilChanged() -- Call to initialize council
-	self:SubscribeToPermanentComms()
 end
 
 function RCLootCouncil:OnDisable()
