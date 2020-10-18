@@ -86,8 +86,9 @@ local defaultModules = {
 	version =		"VersionCheck",
 	sessionframe =	"RCSessionFrame",
 	votingframe =	"RCVotingFrame",
-	tradeui =		"RCTradeUI",
+	tradeui =		"TradeUI",
 	errorhandler = "ErrorHandler",
+	sync = "Sync"
 }
 local userModules = {
 	masterlooter = nil,
