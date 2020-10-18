@@ -42,8 +42,10 @@ local CANDIDATE_SEND_COOLDOWN = 10
 local COUNCIL_COMMS_THROTTLE = 5
 
 local Player = addon.Require "Data.Player"
+---@type Council
 local Council = addon.Require "Data.Council"
 local Comms = addon.Require "Services.Comms"
+---@type TempTable
 local TempTable = addon.Require "Utils.TempTable"
 local subscriptions
 
@@ -263,7 +265,7 @@ function RCLootCouncilML:UpdateGroup(ask)
 		if councilUpdated then
 			self:SendCouncil()
 		end
-		oldCouncil:Release()
+		TempTable:Release(oldCouncil)
 	end
 end
 
