@@ -194,7 +194,7 @@ function RCVersionCheck:InitCoreVersionComms ()
 	Comms:Subscribe(addon.PREFIXES.VERSION, "v", function(data,sender,_, dist)
 		if addon:UnitIsUnit(sender, "player") then return end -- Don't repond to our own
 		local otherVersion, tVersion = unpack(data)
-		addon:GetActiveModule("version"):LogVersion(addon:UnitName(sender), otherVersion, tVersion)
+		self:LogVersion(addon:UnitName(sender), otherVersion, tVersion)
 
 		local verCheck = addon.Utils:CheckOutdatedVersion(addon.version, otherVersion, addon.tVersion, tVersion)
 
@@ -214,7 +214,7 @@ function RCVersionCheck:InitCoreVersionComms ()
 	Comms:Subscribe(addon.PREFIXES.VERSION, "r", function(data, sender)
 		if addon:UnitIsUnit(sender, "player") then return end -- Don't repond to our own
 		local otherVersion, tVersion, moduleData = unpack(data)
-		addon:GetActiveModule("version"):LogVersion(addon:UnitName(sender), otherVersion, tVersion)
+		self:LogVersion(addon:UnitName(sender), otherVersion, tVersion)
 
 		self:VerCheckDisplay(otherVersion, tVersion, moduleData)
 	end)

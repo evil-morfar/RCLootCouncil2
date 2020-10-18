@@ -1404,7 +1404,7 @@ function RCLootCouncil:OnEvent(event, ...)
 			--self:GetGuildOptions() -- get the guild data to the options table now that it's ready
 		end
 	elseif event == "ENCOUNTER_END" then
-		self.Log:dLog("Event:", event, ...)
+		self.Log:d("Event:", event, ...)
 		self.lastEncounterID, self.bossName = ... -- Extract encounter name and ID
 		wipe(self.nonTradeables)
 
