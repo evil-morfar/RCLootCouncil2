@@ -6,6 +6,7 @@
 local _,addon = ...
 local db = addon:Getdb()
 local Storage = {}
+local TT = addon.Require "Utils.TempTable"
 addon.ItemStorage = Storage
 
 local StoredItems = {}
@@ -65,13 +66,23 @@ local error, table, tostring, tinsert, tremove, type, select, FindInTableIf, tim
 function addon:InitItemStorage()-- Extract items from our SV. Could be more elegant
    db = self:Getdb()
    local Item;
-   for _, v in ipairs(db.itemStorage) do
-      Item = Storage:New(v.link, v.type, "restored", v)
-      if not Item.inBags and Storage.AcceptedTypes[Item.type] then -- Item probably no longer exists?
-         addon.Log:W("ItemStorage, db item no longer in bags", v.link)
-         Storage:RemoveItem(Item)
+   local toBeRemoved = TT:Acquire()
+   for i, v in ipairs(db.itemStorage) do
+      -- v3.0: Noticed some items didn't have a link - check for that.
+      if not v.link then 
+         tinsert(toBeRemoved, i)
+      else 
+         Item = Storage:New(v.link, v.type, "restored", v)
+         if not Item.inBags and Storage.AcceptedTypes[Item.type] then -- Item probably no longer exists?
+            addon.Log:W("ItemStorage, db item no longer in bags", v.link)
+            Storage:RemoveItem(Item)
+         end
       end
    end
+   for _, num in ipairs(toBeRemoved) do
+      tremove(db.itemStorage, num)
+   end
+   TT:Release(toBeRemoved)
 end
 
 --- Initiates a new item of item_class
