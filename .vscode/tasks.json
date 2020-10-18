@@ -7,7 +7,10 @@
             "label": "Deploy-Local",
             "type": "shell",
             "command": "sh .scripts/deploy.sh",
-            "group": "build",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
         },
         {
             "label": "Deploy-Local-PTR",
@@ -17,6 +20,15 @@
                 "-p"
             ],
             "group": "build"
+        },
+        {
+            "label": "Busted All",
+            "type": "shell",
+            "command": "busted",
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            },
         }
     ]
 }
