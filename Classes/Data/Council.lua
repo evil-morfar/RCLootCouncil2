@@ -3,6 +3,7 @@
 -- Create Date: 15/04/2020
 
 local _, addon = ...
+---@class Council
 local Council = addon.Init("Data.Council")
 local Player = addon.Require "Data.Player"
 local TT = addon.Require "Utils.TempTable"
@@ -12,7 +13,7 @@ local private = {
 }
 
 --- Returns the current council
--- Council is Player = true
+---@return Council
 function Council:Get ()
    return private.council
 end
@@ -31,8 +32,8 @@ function Council:GetNum ()
 end
 
 --- Adds a Player to the council.
--- @args player A 'Data.Player' object
--- @return The new council lenght
+--- @param player Player @A 'Data.Player' object
+--- @return number @The new council lenght
 function Council:Add (player)
    if type(player) ~= "table" or not (player.name and player.guid) then
       error("Not a valid 'Player' object",2)

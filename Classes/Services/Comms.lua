@@ -56,12 +56,16 @@ end
 --- Get a Sender function to send commands on the prefix.
 --- The returned function can handle implied selfs.
 --- @param prefix string @The prefix to send to. This will be registered autmatically if it isn't.
---- @return fun(mod:table, target:string, command:string, vararg:any):void @When called with (target, command[, ...]):
+--- @return function @When called with (target, command[, ...]):
    -- Sends a ace comm to `target`, with `command` and `...` as command arguments.
    -- The command is send using "NORMAL" priority.
 function Comms:GetSender (prefix)
    assert(prefix and prefix~= "", "Prefix must be supplied")
    private:RegisterComm(prefix)
+   ---@param mod table
+   ---@param target string
+   ---@param command string
+   ---@vararg any
    return function(mod, target, command, ...)
       if type(mod) == "string" then
          -- Left shift all args

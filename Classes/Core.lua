@@ -1,6 +1,6 @@
 --- Core.lua Setups module system.
 -- Heavily inspired by TSM!
-
+---@type RCLootCouncil
 local _, addon = ...
 
 local private = {
@@ -13,6 +13,9 @@ local MODULE_MT = {
 }
 
 --- Initializes a shareable module
+---@generic T : string
+---@param path string
+---@return T
 function addon.Init (path)
    assert(type(path) == "string")
    if private.modules[path] then
@@ -28,6 +31,9 @@ function addon.Init (path)
 end
 
 --- Returns a module created with .Init
+---@generic T
+---@param path string
+---@return table<T>
 function addon.Require (path)
    local Module = private.modules[path]
    if not Module then
