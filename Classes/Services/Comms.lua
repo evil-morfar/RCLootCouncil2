@@ -6,9 +6,11 @@
 -- GLOBALS: error, IsPartyLFG, IsInRaid, IsInGroup, assert
 local tostring, pairs, tremove, format, type = tostring, pairs, tremove, format, type
 local _, addon = ...
+---@class Services.Comms
 local Comms = addon.Init("Services.Comms")
 local Subject = addon.Require("rx.Subject")
 local Log = addon.Require("Log"):Get()
+---@type Utils.TempTable
 local TempTable = addon.Require("Utils.TempTable")
 local ld = LibStub("LibDeflate")
 
@@ -63,7 +65,7 @@ function Comms:GetSender (prefix)
    assert(prefix and prefix~= "", "Prefix must be supplied")
    private:RegisterComm(prefix)
    ---@param mod table
-   ---@param target string
+   ---@param target Player
    ---@param command string
    ---@vararg any
    return function(mod, target, command, ...)

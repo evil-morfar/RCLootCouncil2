@@ -4,7 +4,7 @@
 -- Create date: 14/04/2020
 
 local _, addon = ...
----@class TempTable
+---@class Utils.TempTable
 local TempTable = addon.Init("Utils.TempTable")
 
 local private = {

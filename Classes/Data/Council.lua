@@ -3,7 +3,7 @@
 -- Create Date: 15/04/2020
 
 local _, addon = ...
----@class Council
+---@class Data.Council
 local Council = addon.Init("Data.Council")
 local Player = addon.Require "Data.Player"
 local TT = addon.Require "Utils.TempTable"

@@ -3,6 +3,7 @@
 -- Create Date: 15/04/2020
 
 local _, addon = ...
+---@class Data.Player
 local Player = addon.Init("Data.Player")
 local Log = addon.Require("Log"):Get()
 
@@ -59,8 +60,8 @@ local PLAYER_MT = {
 }
 
 --- Fetches a player
--- @tparam input string A player name or GUID
--- @return Player
+--- @param input string A player name or GUID
+--- @return Player
 function Player:Get (input)
    -- Decide if input is a name or guid
    local guid
@@ -88,6 +89,7 @@ function private:CreatePlayer (guid)
    if not guid then return {} end
    local _, class, _, _, _, name, realm = GetPlayerInfoByGUID(guid)
    realm = realm == "" and select(2, UnitFullName("player")) or realm
+   ---@class Player
    local player = setmetatable({
       name = name,
       guid = guid,

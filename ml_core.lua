@@ -40,12 +40,13 @@ local LOOT_TIMEOUT = 5 -- If we give loot to someone, but loot slot is not clear
 						-- v2.17: There's reports of increased latency, especially in Classic - bump to 3 seconds.
 local CANDIDATE_SEND_COOLDOWN = 10
 local COUNCIL_COMMS_THROTTLE = 5
-
+---@type Data.Player
 local Player = addon.Require "Data.Player"
----@type Council
+---@type Data.Council
 local Council = addon.Require "Data.Council"
+---@type Services.Comms
 local Comms = addon.Require "Services.Comms"
----@type TempTable
+---@type Utils.TempTable
 local TempTable = addon.Require "Utils.TempTable"
 local subscriptions
 
@@ -227,7 +228,7 @@ function RCLootCouncilML:UpdateGroup(ask)
 				group_copy[name] = nil -- Remove them, as they're still in the group
 			else -- add them
 				if not ask then -- ask for playerInfo?
-					self:Send(name, "playerInfoRequest")
+					self:Send(Player:Get(name), "playerInfoRequest")
 				end
 				self:AddCandidate(name, class, role) -- Add them in case they haven't installed the adoon
 				updates = true

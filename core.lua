@@ -69,8 +69,11 @@ tooltipForParsing:UnregisterAllEvents() -- Don't use GameTooltip for parsing, be
 
 RCLootCouncil:SetDefaultModuleState(false)
 
+---@type Services.Comms
 local Comms = RCLootCouncil.Require "Services.Comms"
+---@type Data.Council
 local Council = RCLootCouncil.Require "Data.Council"
+---@type Data.Player
 local Player = RCLootCouncil.Require "Data.Player"
 
 -- Init shorthands
