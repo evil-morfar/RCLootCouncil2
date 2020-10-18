@@ -73,7 +73,7 @@ function Player:Get (input)
       guid = input
    elseif type(input) == "string" then
       -- Assume UnitName
-      guid = UnitGUID(input)
+      guid = UnitGUID(Ambiguate(input, "short"))
    else
       error(format("%s invalid player", tostring(input)), 2)
    end

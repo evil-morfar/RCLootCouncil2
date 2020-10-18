@@ -16,6 +16,8 @@ local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 local AG = LibStub("AceGUI-3.0")
 local Comms = addon.Require "Services.Comms"
 local PREFIX = addon.PREFIXES.SYNC
+---@type Data.Player
+local Player = addon.Require "Data.Player"
 addon.Sync = sync
 
 local sync_table = {}
@@ -27,7 +29,7 @@ function sync:OnInitialize ()
    self.Send = function(self, target, command, ...)
       Comms:Send{
          prefix = PREFIX,
-         target = target,
+         target = Player:Get(target),
          command = command,
          data = {...},
          prio = "BULK",
