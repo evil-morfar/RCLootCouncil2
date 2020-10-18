@@ -323,8 +323,8 @@ end
 function RCLootCouncil:CouncilChanged()
 	local council = {}
 	for _, name in ipairs(self.db.profile.council) do
-		local player = Player:Get(name)
-		if player then
+		local player = Player:Get(Ambiguate(name, "short"))
+		if player and player.guid then
 			council[player.guid] = player
 		end
 	end
