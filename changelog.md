@@ -1,4 +1,4 @@
-# v3.0.0-Alpha.5
+# v3.0.0-Alpha.6
 
 *Note: v3.0 is not backwards compatible, and v2.x will not be updated to patch 9.0*
 
