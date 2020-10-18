@@ -955,11 +955,11 @@ function RCLootCouncil:Timer(type, ...)
 		if self.masterLooter then
 			-- But haven't received the mldb, then request it
 			if not self.mldb.buttons then
-				self:Send(self.masterLooter, "MLdb_request")
+				self:Send(Player:Get(self.masterLooter), "MLdb_request")
 			end
 			-- and if we haven't received a council, request it
 			if Council:GetNum() == 0 then
-				self:Send(self.masterLooter, "council_request")
+				self:Send(Player:Get(self.masterLooter), "council_request")
 			end
 		end
 	end

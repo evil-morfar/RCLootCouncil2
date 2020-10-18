@@ -1,4 +1,4 @@
---- autopass.lua	Contains everything related to autopassing
+--- autopass.lua Contains everything related to autopassing
 -- @author	Potdisc
 -- Create Date : 23/9/2016
 

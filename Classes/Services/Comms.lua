@@ -58,16 +58,16 @@ end
 --- Get a Sender function to send commands on the prefix.
 --- The returned function can handle implied selfs.
 --- @param prefix string @The prefix to send to. This will be registered autmatically if it isn't.
---- @return function @When called with (target, command[, ...]):
-   -- Sends a ace comm to `target`, with `command` and `...` as command arguments.
-   -- The command is send using "NORMAL" priority.
 function Comms:GetSender (prefix)
    assert(prefix and prefix~= "", "Prefix must be supplied")
    private:RegisterComm(prefix)
+   --- Sends a ace comm to `target`, with `command` and `...` as command arguments.
+   --- The command is send using "NORMAL" priority.
    ---@param mod table
-   ---@param target Player
+   ---@param target Player | "group" | "guild"
    ---@param command string
-   ---@vararg any
+   ---@param ... any @the data to send
+   ---@return void
    return function(mod, target, command, ...)
       if type(mod) == "string" then
          -- Left shift all args
@@ -89,18 +89,17 @@ end
 Comms.Register = Comms.RegisterPrefix
 
 --- A customizeable sender function.
--- @param args A Table with the following fields ():
---[[
+--- @param args table @A Table with the following fields:
+---
 -- Required:
-    command
+   --  command
 -- Optional:
-    data    - must be an array or a single value
-    prefix  - defaults to Prefixes.MAIN
-    target  - defaults to "group"
-    prio    - default to "NORMAL"
-    callback
-    callbackarg
-]]
+   --  data    - must be an array or a single value
+   --  prefix  - defaults to Prefixes.MAIN
+   --  target  - defaults to "group"
+   --  prio    - default to "NORMAL"
+   --  callback
+   --  callbackarg
 function Comms:Send (args)
    assert(type(args)=="table", "Must supply a table")
    assert(args.command, "Command must be set")

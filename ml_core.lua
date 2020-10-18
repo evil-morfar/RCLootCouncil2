@@ -1368,7 +1368,7 @@ function RCLootCouncilML:TrackAndLogLoot(winner, link, responseID, boss, reason,
 	if db.sendHistory then -- Send it, and let comms handle the logging
 		self:Send(db.sendHistoryToGuildChannel and "guild" or "group", "history", winner, history_table)
 	elseif db.enableHistory then -- Just log it
-		self:Send("player", "history", winner, history_table)
+		self:Send(addon.player, "history", winner, history_table)
 	end
 	local toRet = history_table
 	history_table = {} -- wipe to ensure integrety
@@ -1382,7 +1382,7 @@ function RCLootCouncilML:UnTrackAndLogLoot(id)
 	if db.sendHistory then -- Send it, and let comms handle the logging
 		self:Send(db.sendHistoryToGuildChannel and "guild" or "group", "delete_history", id)
 	elseif db.enableHistory then -- Just log it
-		self:Send("player", "delete_history", id)
+		self:Send(addon.player, "delete_history", id)
 	end
 end
 
@@ -1770,8 +1770,8 @@ end
 
 function RCLootCouncilML:OnReconnectReceived (sender)
 	-- Someone asks for mldb, council and candidates
-	self:Send(sender, "MLdb", addon.mldb)
-	self:Send(sender, "council", self.council:GetForTransmit())
+	self:Send(Player:Get(sender), "MLdb", addon.mldb)
+	self:Send(Player:Get(sender), "council", self.council:GetForTransmit())
 
 	--[[NOTE:
 	v2.0.1: 	With huge candidates/lootTable we get AceComm lostdatawarning "First", presumeably due to the 4kb ChatThrottleLib limit.
@@ -1779,9 +1779,9 @@ function RCLootCouncilML:OnReconnectReceived (sender)
 	v2.2.3: 	Got a ticket where candidates wasn't received. Bumped to 2 sec and added extra checks for candidates.
 	v3.0.0: REVIEW Check if this is still an issue with the rewamped comms.]]
 
-	self:ScheduleTimer("Send", 2, sender, "candidates", self.candidates)
+	self:ScheduleTimer("Send", 2, Player:Get(sender), "candidates", self.candidates)
 	if self.running then -- Resend lootTable
-		self:ScheduleTimer("Send", 4, sender, "lootTable", self:GetLootTableForTransmit())
+		self:ScheduleTimer("Send", 4, Player:Get(sender), "lootTable", self:GetLootTableForTransmit())
 		-- v2.2.6 REVIEW For backwards compability we're just sending votingFrame's lootTable
 		-- This is quite redundant and should be removed in the future
 		if db.observe or Council:Contains(Player:Get(sender)) then -- Only send all data to councilmen
@@ -1793,7 +1793,7 @@ function RCLootCouncilML:OnReconnectReceived (sender)
 					d.haveVoted = false
 				end
 			end
-			self:ScheduleTimer("Send", 5, sender, "reconnectData", table)
+			self:ScheduleTimer("Send", 5, Player:Get(sender), "reconnectData", table)
 		end
 	end
 	self.Log("Responded to reconnect from", sender)
