@@ -137,7 +137,6 @@ L["chat_commands_test"]    = "Emulate a loot session with # items, 1 if omitted"
 L["chat_commands_whisper"] = "Displays help to whisper commands"
 L["chat_commands_add"]     = "Add an item to the session frame"
 L["chat_commands_award"]   = "Start a session with items looted to your inventory"
-L["chat_commands_winners"] = "Display the winners of awarded items looted to your inventory"
 L["chat_commands_sync"]    = "Open the synchronizer view"
 L["Chat print"] = true
 L["Check this to loot the items and distribute them later."] = true

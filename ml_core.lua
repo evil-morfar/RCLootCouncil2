@@ -319,29 +319,6 @@ function RCLootCouncilML:PrintItemsInBags()
 	end
 end
 
--- Print awarded items in bags, in the order of awardee's name.
--- CHANGED: This functionality is now handled by TradeUI, but is updated to still work
-function RCLootCouncilML:PrintAwardedInBags()
-	local Items = addon.ItemStorage:GetAllItemsOfType("to_trade")
-	if #Items == 0 then
-		return addon:Print(L["No winners registered"])
-	end
-	addon:Print(L["Following winners was registered:"])
-	local sortedByWinner = tFilter(Items, function(v) return v.args.recipient end)
-	table.sort(sortedByWinner, function(a, b)
-		if a.args.recipient == b.args.recipient then
-			return a.time_added < b.time_added
-		else
-			return a.args.recipient < b.args.recipient
-		end
-	end)
-
-	for _, v in ipairs(sortedByWinner) do -- difference with :PrintItemsInBags is that the index is not printed.
-		addon:Print(v.link, "-->", v.args.recipient and addon:GetUnitClassColoredName(v.args.recipient) or L["Unawarded"],
-			format(GUILD_BANK_LOG_TIME, SecondsToTime(time(date("!*t"))-v.time_added)) )
-	end
-end
-
 -- @param ... indexes
 -- Remove entries in the award later list with the those index
 -- Accept number or strings that can be converted into number as input

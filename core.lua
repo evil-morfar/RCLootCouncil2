@@ -162,7 +162,6 @@ function RCLootCouncil:OnInitialize()
 		{cmd = "whisper", desc = L["chat_commands_whisper"]},
 		{cmd = "add [item]", desc = L["chat_commands_add"]},
 		{cmd = "award", desc = L["chat_commands_award"]},
-		{cmd = "winners", desc = L["chat_commands_winners"]},
 		{cmd = "sync", desc = L["chat_commands_sync"]},
 	}
 
@@ -463,13 +462,6 @@ function RCLootCouncil:ChatCommand(msg)
 	elseif input == "award" or input == L["award"] then
 		if self.isMasterLooter then
 			self:GetActiveModule("masterlooter"):SessionFromBags()
-		else
-			self:Print(L["You cannot use this command without being the Master Looter"])
-		end
-
-	elseif input == "winners" or input == L["winners"] then
-		if self.isMasterLooter then
-			self:GetActiveModule("masterlooter"):PrintAwardedInBags()
 		else
 			self:Print(L["You cannot use this command without being the Master Looter"])
 		end

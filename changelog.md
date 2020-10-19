@@ -49,6 +49,7 @@ The internal log has also been updated for better identifying issues.
 ### Removed
 
 Corruption column.
+`winners` command - has been handled by the TradeUI for a long time.
 
 ### Dev
 
