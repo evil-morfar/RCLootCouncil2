@@ -195,24 +195,7 @@ function addon:OptionsTable()
 										end,
 										get = function() return addon.enabled end,
 									},
-									autoOpen = {
-										order = 2,
-										name = L["Auto Open"],
-										desc = L["auto_open_desc"],
-										type = "toggle",
-									},
-									autoClose = {
-										order = 3,
-										name = L["Auto Close"],
-										desc = L["auto_close_desc"],
-										type = "toggle",
-									},
-									minimizeInCombat = {
-										order = 4,
-										name = L["Minimize in combat"],
-										desc = L["Check to have all frames minimize when entering combat"],
-										type = "toggle",
-									},
+									
 									ambiguate = {
 										order = 5,
 										name = L["Append realm names"],
@@ -303,21 +286,39 @@ function addon:OptionsTable()
 								name = L["Frame options"],
 								inline = true,
 								args = {
-									autoTrade = {
+									autoOpen = {
 										order = 1,
+										name = L["Auto Open"],
+										desc = L["auto_open_desc"],
+										type = "toggle",
+									},
+									autoClose = {
+										order = 2,
+										name = L["Auto Close"],
+										desc = L["auto_close_desc"],
+										type = "toggle",
+									},
+									minimizeInCombat = {
+										order = 3,
+										name = L["Minimize in combat"],
+										desc = L["Check to have all frames minimize when entering combat"],
+										type = "toggle",
+									},
+									autoTrade = {
+										order = 4,
 										name = L["Auto Trade"],
 										desc = L["opt_autoTrade_desc"],
 										type = "toggle",
 									},
 									showSpecIcon = {
-										order = 2,
+										order = 5,
 										name = L["Show Spec Icon"],
 										desc = L["show_spec_icon_desc"],
 										type = "toggle",
 									},
 									chatFrameName = {
-										order = 3,
-										name = _G.CHAT,
+										order = 6,
+										name = L["opt_chatFrameName_name"],
 										desc = L["opt_chatFrameName_desc"],
 										type = "select",
 										values = function ()
@@ -832,18 +833,12 @@ function addon:OptionsTable()
 								args = {
 									autoStart = {
 										order = 1,
-										name = L["Auto Start"],
-										desc = L["auto_start_desc"],
-										type = "toggle",
-									},
-									altClickLooting = {
-										order = 2,
-										name = L["Alt click Looting"],
-										desc = L["alt_click_looting_desc"],
+										name = L["opt_skipSessionFrame_name"],
+										desc = L["opt_skipSessionFrame_desc"],
 										type = "toggle",
 									},
 									sortItems = {
-										order = 3,
+										order = 2,
 										name = L["Sort Items"],
 										desc = L["sort_items_desc"],
 										type = "toggle",
@@ -855,54 +850,35 @@ function addon:OptionsTable()
 									},
 									autoLoot = {
 										order = 5,
-										name = _G.AUTO_LOOT_DEFAULT_TEXT,
-										desc = L["auto_loot_desc"],
+										name = L["opt_autoAddItems_name"],
+										desc = L["opt_autoAddItems_desc"],
 										type = "toggle",
-									},
-									autolootEverything = {
-										order = 6,
-										name = L["Loot Everything"],
-										desc = L["loot_everything_desc"],
-										type = "toggle",
-										disabled = function() return not self.db.profile.autoLoot end,
 									},
 									autolootBoE = {
-										order = 7,
-										name = L["Autoloot BoE"],
-										desc = L["autoloot_BoE_desc"],
+										order = 6,
+										name = L["opt_autoAddBoEs_name"],
+										desc = L["opt_autoAddBoEs_desc"],
 										type = "toggle",
 										disabled = function() return not self.db.profile.autoLoot end,
 									},
-									autolootOthersBoE = {
-										order = 8,
-										name = L["Autoloot all BoE"],
-										desc = L["autoloot_others_BoE_desc"],
-										type = "toggle",
-									},
 									printCompletedTrades = {
-										order = 9,
+										order = 7,
 										name = L["opt_printCompletedTrade_Name"],
 										desc = L["opt_printCompletedTrade_Desc"],
 										type = "toggle",
 									},
 									rejectTrade = {
-										order = 10,
+										order = 8,
 										name = L["opt_rejectTrade_Name"],
 										desc = L["opt_rejectTrade_Desc"],
 										type = "toggle",
 									},
 									awardLater = {
-										order = 11,
+										order = 9,
 										name = L["Award later"],
 										desc = L["opt_award_later_desc"],
 										type = "toggle"
 									},
-									saveBonusRolls = {
-										order = 12,
-										name = L["opt_saveBonusRolls_Name"],
-										desc = L["opt_saveBonusRolls_Desc"],
-										type = "toggle"
-									}
 								},
 							},
 							voteOptions = {
@@ -921,12 +897,6 @@ function addon:OptionsTable()
 										order = 2,
 										name = L["Multi Vote"],
 										desc = L["multi_vote_desc"],
-										type = "toggle",
-									},
-									allowNotes = {
-										order = 3,
-										name = L["Notes"],
-										desc = L["notes_desc"],
 										type = "toggle",
 									},
 									anonymousVoting = {
@@ -965,7 +935,6 @@ function addon:OptionsTable()
 										name = L["Require Notes"],
 										desc = L["options_requireNotes_desc"],
 										type = "toggle",
-										disabled = function() return not self.db.profile.allowNotes end ,
 									},
 								},
 							},

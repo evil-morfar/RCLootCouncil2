@@ -459,7 +459,6 @@ function RCLootCouncilML:BuildMLdb()
 		selfVote			= db.selfVote or nil,
 		multiVote		= db.multiVote or nil,
 		anonymousVoting= db.anonymousVoting or nil,
-		allowNotes		= db.allowNotes or nil,
 		numButtons		= db.buttons.default.numButtons, -- v2.9: Kept as to not break backwards compability on mldb comms. Not used any more
 		hideVotes		= db.hideVotes or nil,
 		observe			= db.observe or nil,
@@ -506,9 +505,7 @@ end
 
 
 function RCLootCouncilML:OnBonusRoll (winner, type, link)
-	if db.saveBonusRolls then
-		self:TrackAndLogLoot(winner, link, "BONUSROLL", addon.bossName)
-	end
+	self:TrackAndLogLoot(winner, link, "BONUSROLL", addon.bossName)
 end
 
 function RCLootCouncilML:OnTradeComplete(link, recipient, trader)
@@ -535,8 +532,7 @@ function RCLootCouncilML:HandleReceivedTradeable (item, sender)
 			return
 		end
 		local boe = addon:IsItemBoE(item)
-		if	(not boe or (db.autolootOthersBoE and boe)) and -- BoE
-			(IsEquippableItem(item) or db.autolootEverything) and -- Safetee: I don't want to check db.autoloot here, because this is actually not a loot.
+		if	(not boe or (db.autolootBoE and boe)) and -- BoE
 			not self:IsItemIgnored(item) and -- Item mustn't be ignored
 			(quality and quality >= (GetLootThreshold() or 1))  then
 				if InCombatLockdown() and not db.skipCombatLockdown then
@@ -619,8 +615,7 @@ end
 
 function RCLootCouncilML:CanWeLootItem(item, quality)
 	local ret = false
-	if item and db.autoLoot and (IsEquippableItem(item) or db.autolootEverything) and
-		(quality and quality >= GetLootThreshold())
+	if item and db.autoLoot and (quality and quality >= GetLootThreshold())
 		and not self:IsItemIgnored(item) then -- it's something we're allowed to loot
 		-- Let's check if it's BoE
 		ret = db.autolootBoE or not addon:IsItemBoE(item) -- Don't bother checking if we know we want to loot it

@@ -20,6 +20,26 @@ All comms have been updated with a new system compressing all messages sent.
 Most comms have been optimized resulting in up to an 90% decrease in comms usage, i.e. everything is faster.  
 This change breaks backwards compatiblity with 2.x versions.
 
+### Options Menu
+
+The options menu have been slimmed down, some toggles have had a name switch and some options moved around.
+
+#### Removed
+
+The following have been removed and are now always enabled:
+* Alt-click looting
+* Loot Everything
+* Notes
+* Save Bonus Rolls
+* Autoloot All BoE (merged with `Auto Add BoEs`)
+
+#### Renamed
+
+The following have had a name and description update to better explain what they do:
+* Auto Start > Skip Session Frame
+* Auto Loot > Auto Add Items
+* Autoloot BoE > Auto Add BoE's
+
 ### Testing
 
 v3.0 is developed with a philosophy of writing automated tests for all new code.  

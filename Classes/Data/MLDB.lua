@@ -18,7 +18,6 @@ local replacements = {
     [magicKey .. "1"] = "selfVote",
     [magicKey .. "2"] = "multiVote",
     [magicKey .. "3"] = "anonymousVoting",
-    [magicKey .. "4"] = "allowNotes",
     [magicKey .. "5"] = "numButtons",
     [magicKey .. "6"] = "hideVotes",
     [magicKey .. "7"] = "observe",
