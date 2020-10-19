@@ -159,6 +159,8 @@ function RCLootCouncilML:GetLootTableForTransmit()
 			copy[k] = nil
 		else
 			v["bagged"] = nil
+			v.awarded = nil
+			v.classes = nil
 			v.isSent = nil
 			v.lootSlot = nil
 			v.link = nil

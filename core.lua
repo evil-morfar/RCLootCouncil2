@@ -990,17 +990,7 @@ function RCLootCouncil:PrepareLootTable(lootTable)
 		v.typeID 	= typeID
 		v.subTypeID = subTypeID
 		v.session 	= v.session or ses
-
-		if not v.classes then -- We didn't receive "classes", because ML is using an old version. Generate it from token data.
-			if RCTokenClasses and RCTokenClasses[itemID] then
-				v.classes = 0
-				for _, class in ipairs(RCTokenClasses[itemID]) do
-					v.classes = v.classes + bit.lshift(1, self.classTagNameToID[class]-1)
-				end
-			else
-				v.classes = self:GetItemClassesAllowedFlag(v.link) -- will return 0xffffffff(usable by all classes) if the item is not cached, but that's fine.
-			end
-		end
+		v.classes 	= self:GetItemClassesAllowedFlag(link)
 	end
 end
 
