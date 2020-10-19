@@ -1308,6 +1308,8 @@ function RCLootCouncil:UpdateCandidatesInGroup()
 	for i = 1, GetNumGroupMembers() do
 		self.candidatesInGroup[(GetRaidRosterInfo(i))] = true
 	end
+	-- Ensure we're there
+	self.candidatesInGroup[self.player.name] = true
 	return self.candidatesInGroup
 end
 
