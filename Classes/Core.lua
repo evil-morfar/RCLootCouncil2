@@ -21,6 +21,7 @@ function addon.Init (path)
    if private.modules[path] then
       error("Module already exists for path: "..tostring(path))
    end
+   ---@type T
    local Module = setmetatable({}, MODULE_MT)
    private.modules[path] = {
       path = path,
@@ -31,9 +32,7 @@ function addon.Init (path)
 end
 
 --- Returns a module created with .Init
----@generic T
 ---@param path string
----@return table<T>
 function addon.Require (path)
    local Module = private.modules[path]
    if not Module then

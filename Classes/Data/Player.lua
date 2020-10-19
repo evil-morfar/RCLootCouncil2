@@ -22,26 +22,27 @@ local private = {
 
 local PLAYER_MT = {
    __index = {
+      ---@return string
       GetName = function (self)
          return self.name
       end,
-
+      ---@return string
       GetClass = function(self)
          return self.class
       end,
-
+      ---@return string
       GetShortName = function (self)
          return Ambiguate(self.name, "short")
       end,
-
+      ---@return string
       GetRealm = function (self)
          return self.realm
       end,
-
+      ---@return string
       GetGUID = function (self)
          return self.guid
       end,
-
+      ---@return string
       GetForTransmit = function (self)
          return (gsub(self.guid, "Player%-", ""))
       end,
@@ -91,7 +92,8 @@ function private:CreatePlayer (guid)
    realm = realm == "" and select(2, UnitFullName("player")) or realm
    ---@class Player
    local player = setmetatable({
-      name = name,
+      ---@field name string
+      name = addon:UnitName(name),
       guid = guid,
       class = class,
       realm = realm

@@ -30,9 +30,9 @@ local RELEASED_TEMP_TABLE_MT = {
 --- Temporary tables are recycled instead of creating new ones.
 --- Should be used for tables with a short and defined life cycle.
 --- @vararg any @Any number of values to insert into the table (numerically).
---- @return TempTableObj @The temporary table.
+--- @return TempTable @The temporary table.
 function TempTable:Acquire (...)
-   ---@class TempTableObj
+   ---@class TempTable : table
    local t = private:GetTable()
    for i = 1, select("#", ...) do
       t[i] = select(i, ...)
@@ -42,13 +42,13 @@ end
 
 --- Releases a temporary table for recycling.
 --- Don't access the table after calling this.
---- @param tbl TempTableObj The temorary table to release.
+--- @param tbl TempTable The temorary table to release.
 function TempTable:Release (tbl)
    private:Release(tbl)
 end
 
 --- Releases a TempTable and returns it's content.
---- @param tbl TempTableObj @The temporary table.
+--- @param tbl TempTable @The temporary table.
 --- @return List<any> @The tables' contents.
 function TempTable:UnpackAndRelease (tbl)
    return private:Release(tbl, unpack(tbl))
