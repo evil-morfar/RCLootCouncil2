@@ -7,9 +7,10 @@
 		history				P - history received from ML on awards.
 		delete_history		P - ML tells us to delete specific history entry.
 ]]
-
+---@type RCLootCouncil
 local _,addon = ...
-local LootHistory = addon:NewModule("RCLootHistory")
+---@class LootHistory
+local LootHistory = addon:NewModule("RCLootHistory", "AceSerializer-3.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 local AG = LibStub("AceGUI-3.0")
 local Comms = addon.Require "Services.Comms"
@@ -748,7 +749,7 @@ function LootHistory:ImportPlayerExport (import)
 	-- Start with validating the import:
 	if type(import) ~= "string" then addon:Print("The imported text wasn't a string"); return addon.Log:D("No string") end
 	import = gsub(import, "\124\124", "\124") -- De escape itemslinks
-	local test, import = addon:Deserialize(import)
+	local test, import = self:Deserialize(import)
 	if not test then addon:Print("Deserialization failed - maybe wrong import type?"); return addon.Log:D("Deserialization failed") end
 	addon.Log:D("Validation completed", #lootDB == 0, #lootDB)
 	-- Now import should be a copy of the orignal exporter's lootDB, so insert any changes
@@ -1830,6 +1831,6 @@ do
 	--- Generates a serialized string containing the entire DB.
 	-- For now it needs to be copied and pasted in another player's import field.
 	function LootHistory:PlayerExport()
-		return self:EscapeItemLink(addon:Serialize(lootDB))
+		return self:EscapeItemLink(self:Serialize(lootDB))
 	end
 end

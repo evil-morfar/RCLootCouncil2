@@ -30,6 +30,15 @@ The internal log has also been updated for better identifying issues.
 
 Corruption column.
 
+### Dev
+
+* All comms have updated prefixes and commands. Refer to `Comms.lua`.
+* Removed all references to `candidates`. It's now based on `Player` class, and group members can be found with `RCLootCouncil.candidatesInGroup` and `RCLootCouncil:GroupIterator()`.
+
+## Bugfixes 
+
+* *The completion indicator in the Synchronizer no longer disappears.*
+
 # v2.19.3
 ## Changes
 

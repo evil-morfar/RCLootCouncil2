@@ -36,7 +36,7 @@ LibDialog:Register("RCLOOTCOUNCIL_SYNC_REQUEST", {
    text = "Incoming sync request",
    on_show = function(self, data)
       local sender,_, text = unpack(data)
-      self.text:SetText(format("Receive %s data from %s", text, sender))
+      self.text:SetText(format("Receive %s data from %s", text, sender:GetName()))
    end,
    buttons = {
       {  text = _G.YES,

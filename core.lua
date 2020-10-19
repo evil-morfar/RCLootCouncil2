@@ -60,7 +60,7 @@
 
 local addonname, addontable = ...
 ---@class RCLootCouncil
-_G.RCLootCouncil = LibStub("AceAddon-3.0"):NewAddon(addontable,addonname, "AceConsole-3.0", "AceEvent-3.0", "AceSerializer-3.0", "AceHook-3.0", "AceTimer-3.0", "AceBucket-3.0");
+_G.RCLootCouncil = LibStub("AceAddon-3.0"):NewAddon(addontable,addonname, "AceConsole-3.0", "AceEvent-3.0", "AceHook-3.0", "AceTimer-3.0", "AceBucket-3.0");
 local LibDialog = LibStub("LibDialog-1.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 local lwin = LibStub("LibWindow-1.1")
