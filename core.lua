@@ -60,6 +60,7 @@
 -- GLOBALS: GetLootMethod, GetAddOnMetadata, UnitClass
 
 local addonname, addontable = ...
+---@class RCLootCouncil
 _G.RCLootCouncil = LibStub("AceAddon-3.0"):NewAddon(addontable,addonname, "AceConsole-3.0", "AceEvent-3.0", "AceSerializer-3.0", "AceHook-3.0", "AceTimer-3.0");
 local LibDialog = LibStub("LibDialog-1.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
@@ -75,6 +76,7 @@ local Comms = RCLootCouncil.Require "Services.Comms"
 local Council = RCLootCouncil.Require "Data.Council"
 ---@type Data.Player
 local Player = RCLootCouncil.Require "Data.Player"
+local TT = RCLootCouncil.Require "Utils.TempTable"
 
 -- Init shorthands
 local db, historyDB, debugLog;-- = self.db.profile, self.lootDB.factionrealm, self.db.global.log
@@ -125,7 +127,8 @@ function RCLootCouncil:OnInitialize()
 	self.playerClass = select(2, UnitClass("player")) -- TODO: Remove - contained in self.player
 	self.guildRank = L["Unguilded"]
 	self.isMasterLooter = false -- Are we the ML?
-	self.masterLooter = ""  -- Name of the ML
+	---@type Player
+	self.masterLooter = nil  -- Masterlooter
 	self.lootMethod = GetLootMethod() or "personalloot"
 	self.handleLoot = false -- Does RC handle loot(Start session from loot window)?
 	self.isCouncil = false -- Are we in the Council?
@@ -1387,7 +1390,7 @@ function RCLootCouncil:OnEvent(event, ...)
 			-- Ask for data when we have done a /rl and have a ML
 			if not self.isMasterLooter and self.masterLooter and self.masterLooter ~= "" and player_relogged then
 				self.Log("Player relog...")
-				self:ScheduleTimer("SendCommand", 2, self.masterLooter, "reconnect")
+				self:ScheduleTimer("Send", 2, self.masterLooter, "reconnect")
 				self:Send(self.masterLooter, "playerInfo", self:GetPlayerInfo()) -- Also send out info, just in case
 			end
 			self:UpdatePlayersData()
@@ -1519,7 +1522,7 @@ function RCLootCouncil:NewMLCheck()
 	self.lootMethod = GetLootMethod()
 	local instance_type = select(2, IsInInstance())
 	if instance_type == "pvp" or instance_type == "arena" then return end -- Don't do anything here
-	if self.masterLooter and self.masterLooter ~= "" and (self.masterLooter == "Unknown" or Ambiguate(self.masterLooter, "short"):lower() == _G.UNKNOWNOBJECT:lower()) then
+	if self.masterLooter and type(self.masterLooter) == "string" and (self.masterLooter == "Unknown" or Ambiguate(self.masterLooter, "short"):lower() == _G.UNKNOWNOBJECT:lower()) then
 		-- ML might be unknown for some reason
 		self.Log:d("Unknown ML")
 		return self:ScheduleTimer("NewMLCheck", 0.5)
@@ -1615,7 +1618,7 @@ function RCLootCouncil:GetML()
 	self.Log:d("GetML()")
 	if self.Utils.IsPartyLFG() then return false, nil	end -- Never use in LFG
 	if GetNumGroupMembers() == 0 and (self.testMode or self.nnp) then -- always the player when testing alone
-		return true, self.player:GetName()
+		return true, self.player
 	end
 	-- Set the Group leader as the ML
 	local name
@@ -1629,7 +1632,7 @@ function RCLootCouncil:GetML()
 		end
 	end
 	if name then
-		return UnitIsGroupLeader("player"), name
+		return UnitIsGroupLeader("player"), Player:Get(name)
 	end
 	return false, nil;
 end
@@ -1899,6 +1902,8 @@ end
 --- Custom, better UnitIsUnit() function.
 -- Blizz UnitIsUnit() doesn't know how to compare unit-realm with unit.
 -- Seems to be because unit-realm isn't a valid unitid.
+---@param unit1 string | Player 
+---@param unit2 string | Player 
 function RCLootCouncil:UnitIsUnit(unit1, unit2)
 	if not unit1 or not unit2 then return false end
 	if unit1.name then unit1 = unit1.name end
@@ -2479,7 +2484,7 @@ end
 function RCLootCouncil:OnSessionEndReceived(sender)
 	if not self.enabled then return end
 	if self:UnitIsUnit(sender, self.masterLooter) then
-		self:Print(format(L["'player' has ended the session"], self.Ambiguate(self.masterLooter)))
+		self:Print(format(L["'player' has ended the session"], self.Ambiguate(self.masterLooter:GetName())))
 		self:GetActiveModule("lootframe"):Disable()
 		lootTable = {}
 		if self.isCouncil or self.mldb.observe then -- Don't call the voting frame if it wasn't used
@@ -2598,6 +2603,7 @@ function RCLootCouncil:OnMLDBReceived(mldb)
 end
 
 function RCLootCouncil:OnCandidatesReceived(candidates)
+	self.Log:D("OnCandidatesReceived", candidates)
 	self.candidates = candidates
 end
 

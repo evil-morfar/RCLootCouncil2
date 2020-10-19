@@ -44,6 +44,7 @@ local COUNCIL_COMMS_THROTTLE = 5
 local Player = addon.Require "Data.Player"
 ---@type Data.Council
 local Council = addon.Require "Data.Council"
+
 ---@type Services.Comms
 local Comms = addon.Require "Services.Comms"
 ---@type Utils.TempTable
@@ -256,7 +257,7 @@ function RCLootCouncilML:UpdateGroup(ask)
 		if Council:GetNum() ~= oldCouncilNum then
 			councilUpdated = true
 		else
-			for guid in pairs(self.council) do
+			for guid in pairs(Council:Get()) do
 				if not oldCouncil[guid] then
 					councilUpdated = true
 					break
@@ -591,9 +592,11 @@ function RCLootCouncilML:BuildMLdb()
 	return MLdb
 end
 
+--- Setup RCLootCouncilML for a new ML
+---@param newML Player
 function RCLootCouncilML:NewML(newML)
 	self.Log:d("NewML", newML)
-	if addon:UnitIsUnit(newML, addon.playerName) then -- we are the the ML
+	if newML == addon.player then -- we are the the ML
 		self:Send("group", "playerInfoRequest")
 		self:UpdateMLdb() -- Will build and send mldb
 		self:UpdateGroup(true)
@@ -1448,13 +1451,7 @@ function RCLootCouncilML:UpdateGroupCouncil()
 	 -- Ensure ML (us) are included
 	Council:Add(addon.player)
 
-	self.council = Council:Get()
-	local council = TempTable:Acquire()
-	for _, v in pairs(self.council)do
-		tinsert(council, v.name)
-	end
-	self.Log:d("UpdateGroupCouncil", table.concat(council, ","))
-	TempTable:Release(council)
+	self.Log:d("UpdateGroupCouncil", Council:GetForPrint())
 end
 
 -- @param retryCount: How many times we have retried to execute this function.
@@ -1771,7 +1768,7 @@ end
 function RCLootCouncilML:OnReconnectReceived (sender)
 	-- Someone asks for mldb, council and candidates
 	self:Send(Player:Get(sender), "MLdb", addon.mldb)
-	self:Send(Player:Get(sender), "council", self.council:GetForTransmit())
+	self:Send(Player:Get(sender), "council", Council:GetForTransmit())
 
 	--[[NOTE:
 	v2.0.1: 	With huge candidates/lootTable we get AceComm lostdatawarning "First", presumeably due to the 4kb ChatThrottleLib limit.

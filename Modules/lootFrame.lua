@@ -164,7 +164,7 @@ function LootFrame:OnRoll(entry, button)
 	if not item.isRoll then
 		if addon.mldb and addon.mldb.requireNotes and button ~= "PASS" then
 			if not item.note or #item.note == 0 then
-				addon:Print(format(L["lootFrame_error_note_required"], addon.Ambiguate(addon.masterLooter)))
+				addon:Print(format(L["lootFrame_error_note_required"], addon.Ambiguate(addon.masterLooter:GetName())))
 				return
 			end
 		end
