@@ -88,18 +88,11 @@ function RCLootCouncilML:GetItemInfo(item)
 	if name then
 		-- Most of these are kept for use in SessionFrame
 		return {
-			string = addon.Utils:GetTransmittableItemString(link),
-			["link"]			= link,
-			-- ["quality"]		= rarity,
-			["ilvl"]			= addon:GetTokenIlvl(link) or ilvl, -- if the item is a token, ilvl is the min ilvl of the item it creates.
-			-- ["equipLoc"]	= RCTokenTable[itemID] and addon:GetTokenEquipLoc(RCTokenTable[itemID]) or equipLoc,
-			-- ["subType"]		= subType,
+			string 			= addon.Utils:GetTransmittableItemString(link),
+			["link"]		= link,
+			["ilvl"]		= addon:GetTokenIlvl(link) or ilvl, -- if the item is a token, ilvl is the min ilvl of the item it creates.
 			["texture"]		= texture,
-			-- ["boe"]			= bindType == LE_ITEM_BIND_ON_EQUIP,
-			--["relic"]		= itemID and IsArtifactRelicItem(itemID) and select(3, C_ArtifactUI.GetRelicInfoByItemID(itemID)),
 			["token"]		= itemID and RCTokenTable[itemID],
-			-- ["typeID"]		= typeID,
-			-- ["subTypeID"]	= subTypeID,
 			["classes"]		= addon:GetItemClassesAllowedFlag(link)
 		}
 	else
