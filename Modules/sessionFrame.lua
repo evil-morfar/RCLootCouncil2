@@ -154,7 +154,7 @@ function RCSessionFrame.SetCellText(rowFrame, frame, data, cols, row, realrow, c
 			RCSessionFrame:ScheduleTimer("Show", 0, ml.lootTable) -- Try again next frame
 		end
 	else
-		frame.text:SetText(data[realrow].link..(data[realrow].owner and addon.candidates[data[realrow].owner] and "\n"..addon:GetUnitClassColoredName(data[realrow].owner) or ""))
+		frame.text:SetText(data[realrow].link..(data[realrow].owner and "\n"..addon:GetUnitClassColoredName(data[realrow].owner) or ""))
 	end
 end
 
@@ -215,9 +215,9 @@ function RCSessionFrame:GetFrame()
 				end)
 			end
 		else
-			if not addon.candidates[addon.player:GetName()] or Council:GetNum() == 0 then
+			if Council:GetNum() == 0 then
 				addon:Print(L["Please wait a few seconds until all data has been synchronized."])
-				return addon.Log:D("Data wasn't ready", addon.candidates[addon.playerName], Council:GetNum())
+				return addon.Log:D("Data wasn't ready", Council:GetNum())
 			elseif InCombatLockdown() and not addon.db.profile.skipCombatLockdown then
 				return addon:Print(L["You can't start a loot session while in combat."])
 			--elseif ml.running then

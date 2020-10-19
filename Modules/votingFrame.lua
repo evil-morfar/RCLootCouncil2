@@ -19,7 +19,7 @@
 		n_t					T - Candidate received "non-tradeable" loot.
 		r_t					T - Candidate "rejected_trade" of loot.
 ]]
-
+---@type RCLootCouncil
 local _,addon = ...
 local RCVotingFrame = addon:NewModule("RCVotingFrame", "AceTimer-3.0", "AceEvent-3.0", "AceBucket-3.0")
 local LibDialog = LibStub("LibDialog-1.0")
@@ -93,7 +93,6 @@ function RCVotingFrame:OnEnable()
 	moreInfo = db.modules["RCVotingFrame"].moreInfo
 	moreInfoData = addon:GetLootDBStatistics()
 	self.frame = self:GetFrame()
-	self:ScheduleTimer("CandidateCheck", 20)
 	guildRanks = addon:GetGuildRanks()
 	addon.Log("RCVotingFrame", "enabled")
 	updateFrame:Show()
@@ -232,14 +231,6 @@ function RCVotingFrame:EndSession(hide)
 	end
 end
 
-function RCVotingFrame:CandidateCheck()
-	if not addon.candidates[addon.player:GetName()] and addon.masterLooter then -- If our own name isn't there, we assume it's not received
-		addon.Log:D("CandidateCheck", "failed")
-		addon:Send(addon.masterLooter, "candidates_request")
-		self:ScheduleTimer("CandidateCheck", 20) -- check again in 20
-	end
-end
-
 --- Removes a specific entry from the voting frame's columns
 -- Takes either index or colName as the identifier, and returns the removed rows
 -- if succesful, or nil if not. Should be called before any session begins.
@@ -292,12 +283,6 @@ function RCVotingFrame:GetCandidateData(session, candidate, data)
 	else return arg end
 end
 
--- TODO: DEPRECATED - use RCLootCouncil:GetLootTable()
--- REVIEW: This is not in sync with the replacement.
-function RCVotingFrame:GetLootTable()
-	return lootTable
-end
-
 --- Returns the session the user is currently viewing
 -- If you want to get the session when it changes, these AceEvent messages are available:
 -- "RCSessionChangedPre"	- Delivered before :SwitchSession() is executed, i.e before :GetCurrentSession() is updated.
@@ -320,11 +305,12 @@ function RCVotingFrame:SetupSession(session, t)
 	t.added = true -- This entry has been initiated
 	t.haveVoted = false -- Have we voted for ANY candidate in this session?
 	t.candidates = {}
-	for name, v in pairs(addon.candidates) do
-		t.candidates[name] = {
-			class = v.class,
-			rank = v.rank,
-			role = v.role,
+	for name in addon:GroupIterator() do
+		local player = Player:Get(name)
+		t.candidates[player.name] = {
+			class = player.class,
+			rank = player.rank,
+			role = player.role,
 			response = "ANNOUNCED",
 			ilvl = "",
 			diff = "",
@@ -647,7 +633,7 @@ function RCVotingFrame:SwitchSession(s)
 	self.frame.bonuses:SetText(bonusText)
 
 	-- Owner
-	if t.owner and addon.candidates[t.owner] then -- We have a owner, that's a player in our group
+	if t.owner then
 		-- Hack-reuse the SetCellClassIcon function
 		addon.SetCellClassIcon(nil,self.frame.ownerString.icon,nil,nil,nil,nil,nil,nil,nil, t.candidates[t.owner].class)
 		self.frame.ownerString.icon:Show()
@@ -685,7 +671,7 @@ function RCVotingFrame:BuildST()
 	local i = 1
 	-- We need to build the columns from the data in self.scrollCols
 	-- We only really need the colName and value to get added
-	for name in pairs(addon.candidates) do
+	for name in addon:GroupIterator() do
 		local data = {}
 		for num, col in ipairs(self.scrollCols) do
 			data[num] = {value = "", colName = col.colName}
@@ -1944,10 +1930,11 @@ do
 			if not db.disenchant then
 				return addon:Print(L["You haven't selected an award reason to use for disenchanting!"])
 			end
-			for name, v in pairs(addon.candidates) do
-				if v.enchanter then
-					local c = addon:GetClassColor(v.class)
-					info.text = "|cff"..addon.Utils:RGBToHex(c.r, c.g, c.b)..addon.Ambiguate(name).."|r "..tostring(v.enchant_lvl)
+			for name in addon:GroupIterator() do
+				local player = Player:Get(name)
+				if player.enchanter then
+					local c = addon:GetClassColor(player.class)
+					info.text = "|cff"..addon.Utils:RGBToHex(c.r, c.g, c.b)..addon.Ambiguate(name).."|r "..tostring(player.enchant_lvl)
 					info.notCheckable = true
 					info.func = function()
 						for _,v1 in ipairs(db.awardReasons) do

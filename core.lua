@@ -51,7 +51,6 @@
 			lootTable			P - LootTable sent from ML.
 			lt_add 				P - Partial lootTable (additions) sent from ML.
 			MLdb 					P - MLdb sent from ML.
-			candidates			P - Candidates sent from ML.
 			reroll 				P - (Partial) lootTable with items we should reroll on.
 			lootAck 				P - LootAck received from another player. Used for checking if have received the required data.
 
@@ -61,7 +60,7 @@
 
 local addonname, addontable = ...
 ---@class RCLootCouncil
-_G.RCLootCouncil = LibStub("AceAddon-3.0"):NewAddon(addontable,addonname, "AceConsole-3.0", "AceEvent-3.0", "AceSerializer-3.0", "AceHook-3.0", "AceTimer-3.0");
+_G.RCLootCouncil = LibStub("AceAddon-3.0"):NewAddon(addontable,addonname, "AceConsole-3.0", "AceEvent-3.0", "AceSerializer-3.0", "AceHook-3.0", "AceTimer-3.0", "AceBucket-3.0");
 local LibDialog = LibStub("LibDialog-1.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 local lwin = LibStub("LibWindow-1.1")
@@ -149,7 +148,8 @@ function RCLootCouncil:OnInitialize()
 									-- HOWTO get this number: Open the instance we want in the Adventure Journal. Use command '/dump EJ_GetInstanceInfo()'
 									-- The 8th return value is sth like "|cff66bbff|Hjournal:0:946:14|h[Antorus, the Burning Throne]|h|r"
 									-- The number at the position of the above 946 is what we want.
-	self.candidates = {}
+	---@type table<string,boolean>
+	self.candidatesInGroup = {}
 	self.mldb = {} -- db recived from ML
 	self.chatCmdHelp = {
 		{cmd = "config",	desc = L["chat_commands_config"]},
@@ -280,6 +280,7 @@ function RCLootCouncil:OnEnable()
 	for event, method in pairs(self.coreEvents) do
 		self:RegisterEvent(event, method)
 	end
+	self:RegisterBucketEvent("GROUP_ROSTER_UPDATE", 5, "UpdateCandidatesInGroup")
 
 	-- For some reasons all frames are blank until ActivateSkin() is called, even though the values used
 	-- in the :CreateFrame() all :Prints as expected :o
@@ -606,7 +607,7 @@ function RCLootCouncil:ChatCmdAdd(args)
 	if not args[1]:find("|") and type(tonumber(args[1])) ~= "number" then
 		-- First arg is neither an item or a item id, see if it's someone in our group
 		owner = self:UnitName(args[1])
-		if not (owner and owner ~= "" and self.candidates[owner]) then
+		if not (owner and owner ~= "" and self.candidatesInGroup[owner]) then
 			self:Print(format(L["chat_cmd_add_invalid_owner"], owner))
 			return
 		end
@@ -960,11 +961,11 @@ function RCLootCouncil:Timer(type, ...)
 		if self.masterLooter then
 			-- But haven't received the mldb, then request it
 			if not self.mldb.buttons then
-				self:Send(Player:Get(self.masterLooter), "MLdb_request")
+				self:Send(self.masterLooter, "MLdb_request")
 			end
 			-- and if we haven't received a council, request it
 			if Council:GetNum() == 0 then
-				self:Send(Player:Get(self.masterLooter), "council_request")
+				self:Send(self.masterLooter, "council_request")
 			end
 		end
 	end
@@ -1294,7 +1295,7 @@ function RCLootCouncil:GetPlayerInfo()
 		end
 	end
 	local ilvl = select(2,GetAverageItemLevel())
-	return self.player:GetName(), self.playerClass, self.Utils:GetPlayerRole(), self.guildRank, enchant, lvl, ilvl, playersData.specID
+	return self.Utils:GetPlayerRole(), self.guildRank, enchant, lvl, ilvl, playersData.specID
 end
 
 --- Returns a lookup table containing GuildRankNames and their index.
@@ -1309,6 +1310,32 @@ function RCLootCouncil:GetGuildRanks()
 		t[name] = i
 	end
 	return t;
+end
+
+function RCLootCouncil:UpdateCandidatesInGroup()
+	for i = 1, GetNumGroupMembers() do
+		self.candidatesInGroup[(GetRaidRosterInfo(i))] = true
+	end
+	return self.candidatesInGroup
+end
+
+--- Iterates over all group members
+---@return fun():string
+function RCLootCouncil:GroupIterator()
+	-- Get group members
+	local groupMembers = {}
+	local i = 1
+	for name in pairs(self:UpdateCandidatesInGroup()) do
+		groupMembers[i] = name
+		i = i + 1
+	end
+
+	i = 0
+	local n = #groupMembers
+	return function()
+		i = i + 1
+		if i <= n then return groupMembers[i] end
+	end
 end
 
 function RCLootCouncil:GetNumberOfDaysFromNow(oldDate)
@@ -1334,7 +1361,7 @@ function RCLootCouncil:GetLootStatusData ()
 	local looted, unlooted, fake = 0,0,0
 	local list = {} -- [i] = name, text="status"
 	local i = 0
-	for name in pairs(self.candidates) do
+	for name in pairs(self.candidatesInGroup) do
 		i = i + 1
 		if not self.lootStatus[id].candidates[name] then -- Unlooted
 			-- Check if they got loot, but just haven't responded yet
@@ -1391,7 +1418,7 @@ function RCLootCouncil:OnEvent(event, ...)
 			if not self.isMasterLooter and self.masterLooter and self.masterLooter ~= "" and player_relogged then
 				self.Log("Player relog...")
 				self:ScheduleTimer("Send", 2, self.masterLooter, "reconnect")
-				self:Send(self.masterLooter, "playerInfo", self:GetPlayerInfo()) -- Also send out info, just in case
+				self:Send("group", "pI", self:GetPlayerInfo()) -- Also send out info, just in case
 			end
 			self:UpdatePlayersData()
 			player_relogged = false
@@ -2061,8 +2088,9 @@ function RCLootCouncil:GetClassColor(class)
 end
 
 function RCLootCouncil:GetUnitClassColoredName(name)
-	if self.candidates[name] and self.candidates[name].class then
-		local c = self:GetClassColor(self.candidates[name].class)
+	local player = Player:Get(name)
+	if player then
+		local c = self:GetClassColor(player:GetClass() or "")
 		return "|cff"..self.Utils:RGBToHex(c.r,c.g,c.b)..self.Ambiguate(name).."|r"
 	else
 		local englishClass = select(2, UnitClass(Ambiguate(name, "short")))
@@ -2383,6 +2411,10 @@ function RCLootCouncil:SubscribeToPermanentComms ()
 			}
 		end,
 
+		pI = function (data,sender)
+			self:OnPlayerInfoReceived(sender, unpack(data))
+		end,
+
 		looted = function (data, sender)
 			self:OnLootStatusReceived(sender, "looted", nil, unpack(data))
 		end,
@@ -2429,14 +2461,6 @@ function RCLootCouncil:SubscribeToPermanentComms ()
 			end
 		end,
 
-		candidates = function (data, sender)
-			if self:UnitIsUnit(sender, self.masterLooter) then
-				self:OnCandidatesReceived(unpack(data))
-			else
-				self.Log:W("Non ML:", sender, "sent candidates")
-			end
-		end,
-
 		reroll = function (data, sender)
 			if self:UnitIsUnit(sender, self.masterLooter) and self.enabled then
 				self:OnReRollReceived(sender, unpack(data))
@@ -2466,6 +2490,17 @@ function RCLootCouncil:OnCouncilReceived (sender, council)
 	else
 		self:GetActiveModule("votingframe"):Disable()
 	end
+end
+
+function RCLootCouncil:OnPlayerInfoReceived(sender, role, rank, enchanter, lvl, ilvl, specID)
+	Player:Get(sender):UpdateFields{
+		role = role,
+		rank = rank,
+		enchanter = enchanter,
+		enchantingLvl = lvl,
+		ilvl = ilvl,
+		specID = specID
+	}
 end
 
 function RCLootCouncil:OnLootStatusReceived (sender, command, link, guid)
@@ -2600,11 +2635,6 @@ function RCLootCouncil:OnMLDBReceived(mldb)
 	if not self.mldb.buttons.default then self.mldb.buttons.default = {} end
 	setmetatable(self.mldb.buttons.default, { __index = self.defaults.profile.buttons.default,})
 	-- self.mldb = mldb
-end
-
-function RCLootCouncil:OnCandidatesReceived(candidates)
-	self.Log:D("OnCandidatesReceived", candidates)
-	self.candidates = candidates
 end
 
 function RCLootCouncil:OnReRollReceived (sender, lt)

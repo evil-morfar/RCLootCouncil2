@@ -8,7 +8,6 @@
 		pI 						T - PlayerInfo sent from candidate.
 		MLdb_request			T - Candidate request for "Mldb".
 		council_request 		T - Candidate requests council.
-		candidates_request	T - Candidate requests candidates.
 		reconnect 				T - Candidate has reconnect - needs all data.
 		lootTable 				T - We've received the LootTable we sent out.
 		tradeable				T - Candidate has looted a tradeable item.
@@ -68,7 +67,6 @@ end
 
 function RCLootCouncilML:OnEnable()
 	db = addon:Getdb()
-	self.candidates = {} 	-- candidateName = { class, role, rank }
 	self.lootTable = {} 		-- The MLs operating lootTable, see ML:AddItem()
 	self.oldLootTable = {}
 	self.lootQueue = {}     -- Items ML have attempted to give out that waiting for LOOT_SLOT_CLEARED
@@ -79,7 +77,6 @@ function RCLootCouncilML:OnEnable()
 
 	self:RegisterEvent("CHAT_MSG_WHISPER",	"OnEvent")
 	self:RegisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
-	self:RegisterBucketEvent("GROUP_ROSTER_UPDATE", 10, "UpdateGroup") -- Bursts in group creation, and we should have plenty of time to handle it
 	self:RegisterBucketMessage("RCConfigTableChanged", 5, "ConfigTableChanged") -- The messages can burst
 	self:RegisterMessage("RCCouncilChanged", "CouncilChanged")
 	self:RegisterComms()
@@ -194,116 +191,6 @@ function RCLootCouncilML:GetTypeCodeForItem (item)
 	 return db.enabledButtons[itemEquipLoc] and itemEquipLoc or "default"
 end
 
-function RCLootCouncilML:AddCandidate(name, class, role, rank, enchant, lvl, ilvl, specID)
-	self.Log:d("ML:AddCandidate",name, class, role, rank, enchant, lvl, ilvl, specID)
-	self.candidates[name] = {
-		["class"]		= class,
-		["role"]			= role,
-		["rank"]			= rank or "", -- Rank cannot be nil for votingFrame
-		["enchanter"] 	= enchant,
-		["enchant_lvl"]= lvl,
-		["specID"]		= specID,
-	}
-end
-
-function RCLootCouncilML:RemoveCandidate(name)
-	self.Log:d("ML:RemoveCandidate", name)
-	self.candidates[name] = nil
-end
-
-function RCLootCouncilML:UpdateGroup(ask)
-	self.Log:d("UpdateGroup", ask)
-	if type(ask) ~= "boolean" then ask = false end
-	local group_copy = {}
-	local updates = false
-	for name, v in pairs(self.candidates) do	group_copy[name] = v.role end
-	for i = 1, GetNumGroupMembers() do
-		local name, _, _, _, _, class, _, _, _, _, _, role  = GetRaidRosterInfo(i)
-		if name then -- Apparantly name can be nil (ticket #223)
-			name = addon:UnitName(name) -- Get their unambiguated name
-			if group_copy[name] then -- If they're already registered
-				if group_copy[name] ~= role then	-- They have changed their role
-					self:AddCandidate(name, class, role, self.candidates[name].rank, self.candidates[name].enchanter, self.candidates[name].enchant_lvl, nil, self.candidates[name].specID)
-					updates = true
-				end
-				group_copy[name] = nil -- Remove them, as they're still in the group
-			else -- add them
-				if not ask then -- ask for playerInfo?
-					self:Send(Player:Get(name), "playerInfoRequest")
-				end
-				self:AddCandidate(name, class, role) -- Add them in case they haven't installed the adoon
-				updates = true
-			end
-		else
-			self.Log:d("ML:UpdateGroup", "GetRaidRosterInfo returns nil. Abort and retry after 1s.")
-			return self:ScheduleTimer("UpdateGroup", 1, ask) -- Group info is not ready. Abort and retry.
-		end
-	end
-	if GetNumGroupMembers() == 0 then
-		self:AddCandidate(addon.player:GetName(), addon.player:GetClass(), addon.Utils:GetPlayerRole(), addon.guildRank)
-	end
-	-- If anything's left in group_copy it means they left the raid, so lets remove them
-	for name, v in pairs(group_copy) do
-		if v then self:RemoveCandidate(name); updates = true end
-	end
-	if updates then
-		self:Send("group", "MLdb", addon.mldb)
-		self:SendCandidates()
-
-		local oldCouncilNum = Council:GetNum()
-		local oldCouncil = TempTable:Acquire(Council:Get())
-		self:UpdateGroupCouncil()
-		local councilUpdated = false
-		if Council:GetNum() ~= oldCouncilNum then
-			councilUpdated = true
-		else
-			for guid in pairs(Council:Get()) do
-				if not oldCouncil[guid] then
-					councilUpdated = true
-					break
-				end
-			end
-		end
-		if councilUpdated then
-			self:SendCouncil()
-		end
-		TempTable:Release(oldCouncil)
-	end
-end
-
--- Helpers for ML:SendCandidates
-local function SendCandidates()
-	RCLootCouncilML:Send("group", "candidates", RCLootCouncilML.candidates)
-	RCLootCouncilML.timers.candidate_send = nil
-end
-local function OnCandidatesCooldown()
-	RCLootCouncilML.timers.candidates_cooldown = nil
-end
-
---- Sends candidates to the group no more than every CANDIDATE_SEND_COOLDOWN seconds.
--- Use this for all candidate sends!
-function RCLootCouncilML:SendCandidates ()
-	self.Log("SendCandidates()")
-	if self.timers.candidates_cooldown then -- Recently sent one
-		self.Log:d("candidates_cooldown == true")
-		if self.timers.candidate_send then -- And we've queued a new one
-			self.Log:d("candidate_send == true")
-			return -- Do nothing, it'll be sent once the current timer ends
-		else
-			self.Log:d("candidate_send == false")
-			-- Send the candidates when the grace period is done
-			local timeRemaining = self:TimeLeft(self.timers.candidates_cooldown)
-			self.timers.candidate_send = self:ScheduleTimer(SendCandidates, timeRemaining)
-			return
-		end
-	else
-		self.Log:d("candidates_cooldown == false")
-		-- No cooldown, send immediately and start the cooldown
-		self.timers.candidates_cooldown = self:ScheduleTimer(OnCandidatesCooldown, CANDIDATE_SEND_COOLDOWN)
-		self:Send("group", "candidates", self.candidates)
-	end
-end
-
 local function SendCouncil ()
 	local council = Council:GetForTransmit()
 	RCLootCouncilML:Send("group", "council", council)
@@ -320,7 +207,6 @@ end
 -- if changing from ML to GL (as the ML hasn't changed).
 -- We will receive numurous `council_request`, but only need to reply once.
 -- Same goes for a few detected edge cases in ML where council isn't properly sent (reason unknown).
--- Basically a copy of `SendCandidates`
 function RCLootCouncilML:SendCouncil ()
 	if self.timers.council_cooldown then
 		if self.timers.council_send then
@@ -339,10 +225,9 @@ end
 function RCLootCouncilML:StartSession()
 	self.Log("StartSession")
 	-- Make sure we haven't started the session too fast
-	if not addon.candidates[addon.player:GetName()] or Council:GetNum() == 0 then
+	if Council:GetNum() == 0 then
 		addon:Print(L["Please wait a few seconds until all data has been synchronized."])
-		self:SendCandidates() -- Ensure they get sent.
-		return self.Log:d("Data wasn't ready", addon.candidates[addon.playerName], Council:GetNum())
+		return self.Log:d("Data wasn't ready", Council:GetNum())
 	end
 
 
@@ -534,8 +419,6 @@ function RCLootCouncilML:CouncilChanged()
 	-- The council was changed, so send out the council
 	self:UpdateGroupCouncil()
 	self:SendCouncil()
-	-- Send candidates so new council members can register it
-	self:SendCandidates()
 end
 
 function RCLootCouncilML:UpdateMLdb()
@@ -599,7 +482,6 @@ function RCLootCouncilML:NewML(newML)
 	if newML == addon.player then -- we are the the ML
 		self:Send("group", "playerInfoRequest")
 		self:UpdateMLdb() -- Will build and send mldb
-		self:UpdateGroup(true)
 		self:UpdateGroupCouncil()
 		self:SendCouncil()
 		self:ClearOldItemsInBags()
@@ -1249,7 +1131,7 @@ function RCLootCouncilML:ShouldAutoAward(item, quality)
 
 	local boe = addon:IsItemBoE(item)
 	if boe and db.autoAwardBoE and quality == 4 and IsEquippableItem(item) then -- Epic Equippable BoE
-		for name in pairs(self.candidates) do
+		for name in addon:GroupIterator() do
 			if addon:UnitIsUnit(name, db.autoAwardBoETo) then
 				return true, "boe", db.autoAwardBoETo
 			end
@@ -1351,7 +1233,7 @@ function RCLootCouncilML:TrackAndLogLoot(winner, link, responseID, boss, reason,
 	history_table["response"] 		= reason and reason.text or response.text
 	history_table["responseID"] 	= reason and reason.sort - 400 or responseID 										-- Changed in v2.0 (reason responseID was 0 pre v2.0)
 	history_table["color"]			= reason and reason.color or response.color											-- New in v2.0
-	history_table["class"]			= self.candidates[winner].class															-- New in v2.0
+	history_table["class"]			= Player:Get(winner):GetClass()															-- New in v2.0
 	history_table["isAwardReason"]= reason and true or false																	-- New in v2.0
 	history_table["difficultyID"]	= difficultyID																					-- New in v2.3+
 	history_table["mapID"]			= mapID																							-- New in v2.3+
@@ -1415,8 +1297,6 @@ end
 
 -- Initiates a session with the items handed
 function RCLootCouncilML:Test(items)
-	-- We must send candidates now, since we can't wait the normal 10 secs
-	self:Send("group", "candidates", self.candidates)
 	-- Add the items
 	for _, iName in ipairs(items) do
 		self:AddItem(iName)
@@ -1436,12 +1316,10 @@ end
 
 --- Fetches the council members from the current group.
 -- Used by the ML to only send out a council consisting of actual group members.
--- REVIEW Update for new candidates structure.
 function RCLootCouncilML:UpdateGroupCouncil()
 	Council:Set{} -- Set empty
 	for _, name in ipairs(addon.db.profile.council) do
-		-- self.candidates suffers from the problem mentioned in :UnitName, so safely (slowly) compare them
-		for cand in pairs(self.candidates) do
+		for cand in addon:GroupIterator() do
 			if addon:UnitIsUnit(name, cand ) then
 				Council:Add(Player:Get(cand))
 				break
@@ -1706,19 +1584,12 @@ end
 -------------------------------------------------------------
 function RCLootCouncilML:RegisterComms ()
 	subscriptions = Comms:BulkSubscribe(addon.PREFIXES.MAIN, {
-		pI = function (data)
-			self:OnPlayerInfoReceived(unpack(data))
-		end,
 		MLdb_request = function(data)
 			self:Send("group", "Mldb", addon.mldb)
 		end,
 
 		council_request = function ()
 			self:SendCouncil()
-		end,
-
-		candidates_request = function()
-			self:SendCandidates()
 		end,
 
 		reconnect = function (_, sender)
@@ -1760,23 +1631,11 @@ function RCLootCouncilML:RegisterComms ()
 	})
 end
 
-function RCLootCouncilML:OnPlayerInfoReceived(...)
-	self:AddCandidate(...)
-	self:SendCandidates()
-end
-
 function RCLootCouncilML:OnReconnectReceived (sender)
-	-- Someone asks for mldb, council and candidates
+	-- Someone asks for mldb and council
 	self:Send(Player:Get(sender), "MLdb", addon.mldb)
 	self:Send(Player:Get(sender), "council", Council:GetForTransmit())
 
-	--[[NOTE:
-	v2.0.1: 	With huge candidates/lootTable we get AceComm lostdatawarning "First", presumeably due to the 4kb ChatThrottleLib limit.
-				Bumping loottable to 4 secs is tested to work with 27 candidates + 10 items.
-	v2.2.3: 	Got a ticket where candidates wasn't received. Bumped to 2 sec and added extra checks for candidates.
-	v3.0.0: REVIEW Check if this is still an issue with the rewamped comms.]]
-
-	self:ScheduleTimer("Send", 2, Player:Get(sender), "candidates", self.candidates)
 	if self.running then -- Resend lootTable
 		self:ScheduleTimer("Send", 4, Player:Get(sender), "lootTable", self:GetLootTableForTransmit())
 		-- v2.2.6 REVIEW For backwards compability we're just sending votingFrame's lootTable

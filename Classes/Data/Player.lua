@@ -46,10 +46,18 @@ local PLAYER_MT = {
       GetForTransmit = function (self)
          return (gsub(self.guid, "Player%-", ""))
       end,
-
       --- Lazy call to GetPlayerInfoByGUID
       GetInfo = function (self)
          return GetPlayerInfoByGUID(self.guid)
+      end,
+      --- Update fields in the Player object
+      --- @param self Player
+      --- @param data table<string,any>
+      UpdateFields = function(self,data) 
+         for k,v in pairs(data) do 
+            self[k] = v
+         end
+         private:CachePlayer(self)
       end
    },
    __tostring = function(self)
