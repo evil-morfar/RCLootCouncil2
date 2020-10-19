@@ -9,6 +9,7 @@
             "request": "launch",
             "name": "Run",
             "cwd": "${workspaceFolder}",
+            "path": "${env:LUA_PATH}",
             // "luaexe": "${env:LUA_DEV}",
             "program": "${file}",
             "cpath": "${env:LUA_CPATH}",
