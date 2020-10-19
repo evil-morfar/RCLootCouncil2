@@ -41,18 +41,18 @@
 		MAIN:
 			council				P - Council received from ML
 			session_end 		P - ML has ended the session.
-			playerInfoRequest P - Request for playerInfo
+			playerInfoRequest 	P - Request for playerInfo
 			pI 					P - Player Info
-			looted 				P - Received 'looted' from a candidated.
-			fakeLoot				P - Candidate left an item on a boss.
-			fullbags				P - Candidate couldn't loot boss because of full bags.
+			l	 				P - Received 'looted' from a candidated.
+			fakeLoot			P - Candidate left an item on a boss.
+			fullbags			P - Candidate couldn't loot boss because of full bags.
 			n_t					P - Candidate received "non-tradeable" loot.
 			r_t					P - Candidate "rejected_trade" of loot.
 			lootTable			P - LootTable sent from ML.
 			lt_add 				P - Partial lootTable (additions) sent from ML.
-			MLdb 					P - MLdb sent from ML.
+			MLdb 				P - MLdb sent from ML.
 			reroll 				P - (Partial) lootTable with items we should reroll on.
-			lootAck 				P - LootAck received from another player. Used for checking if have received the required data.
+			lootAck 			P - LootAck received from another player. Used for checking if have received the required data.
 
 ]]
 
@@ -725,7 +725,7 @@ function RCLootCouncil:Test(num, fullTest, trinketTest)
 	self:GetActiveModule("masterlooter"):Test(items)
 
 	self:ScheduleTimer(function()
-		self:Send("group", "looted", 1234)
+		self:Send("group", "l", 1234)
 	end, 5)
 end
 
@@ -1452,7 +1452,7 @@ function RCLootCouncil:OnEvent(event, ...)
 		end
 		-- Otherwise they've looted everything, so send ack
 		if i ~= 0 then -- We're not guaranteed to have something stored
-			self:Send("group", "looted", self.lootSlotInfo[i].guid)
+			self:Send("group", "l", self.lootSlotInfo[i].guid)
 		end
 		self.lootOpen = false
 	elseif event == "LOOT_SLOT_CLEARED" then
@@ -2407,7 +2407,7 @@ function RCLootCouncil:SubscribeToPermanentComms ()
 			self:OnPlayerInfoReceived(sender, unpack(data))
 		end,
 
-		looted = function (data, sender)
+		l = function (data, sender)
 			self:OnLootStatusReceived(sender, "looted", nil, unpack(data))
 		end,
 
