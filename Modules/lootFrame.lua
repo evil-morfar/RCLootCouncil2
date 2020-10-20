@@ -2,7 +2,7 @@
 -- DefaultModule.
 -- @author	Potdisc
 -- Create Date : 12/16/2014 8:24:04 PM
-
+---@type RCLootCouncil
 local _,addon = ...
 local LootFrame = addon:NewModule("RCLootFrame", "AceTimer-3.0", "AceEvent-3.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
@@ -175,7 +175,7 @@ function LootFrame:OnRoll(entry, button)
 			addon:SendResponse("group", session, button, nil, nil, item.note)
 		end
 		if addon:Getdb().printResponse then
-			addon:Print(string.format(L["Response to 'item'"], addon:GetItemTextWithCount(item.link, #item.sessions))..
+			addon:Print(string.format(L["Response to 'item'"], addon.Utils:GetItemTextWithCount(item.link, #item.sessions))..
 				": "..addon:GetResponse(item.typeCode or item.equipLoc, button).text)
 		end
 		item.rolled = true
