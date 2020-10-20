@@ -1,4 +1,4 @@
-# v3.0.0-Beta.1
+# v3.0.0-Beta.2
 
 *This version is not compatible with previous Alpha versions!*
 *Note: v3.0 is not backwards compatible, and v2.x will not be updated to patch 9.0*
