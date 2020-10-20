@@ -122,7 +122,7 @@ function RCVotingFrame:RegisterComms ()
 	subscriptions = Comms:BulkSubscribe(PREFIX, {
 		vote = function (data, sender)
 			if Council:Contains(Player:Get(sender)) then
-				self:HandleVote(sender, unpack(data))
+				self:HandleVote(addon:UnitName(sender), unpack(data))
 			else
 				addon.Log:W("Non-council member (".. tostring(sender) .. ") sent a vote!")
 			end
@@ -683,7 +683,7 @@ function RCVotingFrame:BuildST()
 			data[num] = {value = "", colName = col.colName}
 		end
 		rows[i] = {
-			name = name,
+			name = addon:UnitName(name),
 			cols = data,
 		}
 		i = i + 1
