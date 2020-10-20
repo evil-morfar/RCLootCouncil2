@@ -165,7 +165,7 @@ function RCVotingFrame:RegisterComms ()
 		end,
 		reconnectData = function (data, sender)
 			if addon:IsMasterLooter(sender) then
-				self:OnReconnectDataReceived(unpack(data))
+				self:OnReconnectReceived(unpack(data))
 			end
 		end,
 		lt_add = function (data, sender)
