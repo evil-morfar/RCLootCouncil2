@@ -50,7 +50,7 @@
 			r_t					P - Candidate "rejected_trade" of loot.
 			lootTable			P - LootTable sent from ML.
 			lt_add 				P - Partial lootTable (additions) sent from ML.
-			MLdb 				P - MLdb sent from ML.
+			mldb 				P - MLDB sent from ML.
 			reroll 				P - (Partial) lootTable with items we should reroll on.
 			lootAck 			P - LootAck received from another player. Used for checking if have received the required data.
 
@@ -75,6 +75,9 @@ local Comms = RCLootCouncil.Require "Services.Comms"
 local Council = RCLootCouncil.Require "Data.Council"
 ---@type Data.Player
 local Player = RCLootCouncil.Require "Data.Player"
+---@type Data.MLDB
+local MLDB = RCLootCouncil.Require "Data.MLDB"
+---@type Utils.TempTable
 local TT = RCLootCouncil.Require "Utils.TempTable"
 
 -- Init shorthands
@@ -2435,7 +2438,7 @@ function RCLootCouncil:SubscribeToPermanentComms ()
 			self:OnLootTableAdditionsReceived(unpack(data))
 		end,
 
-		MLdb = function(data, sender)
+		mldb = function(data, sender)
 			if self.isMasterLooter then
 				return
 			elseif self:UnitIsUnit(sender, self.masterLooter) then
@@ -2600,11 +2603,11 @@ function RCLootCouncil:OnLootTableAdditionsReceived (lt)
 	-- VotingFrame handles this by itself.
 end
 
-function RCLootCouncil:OnMLDBReceived(mldb)
+function RCLootCouncil:OnMLDBReceived(input)
 	self.Log("OnMLDBReceived")
 	-- mldb inheritance from db
-	self.mldb = mldb
-	for type, responses in pairs(mldb.responses) do
+	self.mldb = MLDB:RestoreFromTransmit(input)
+	for type, responses in pairs(self.mldb.responses) do
 	   for _ in pairs(responses) do
 	      if not self.defaults.profile.responses[type] then
 				--if not self.mldb.responses[type] then self.mldb.responses[type] = {} end
@@ -2624,8 +2627,8 @@ end
 function RCLootCouncil:OnReRollReceived (sender, lt)
 	self:Print(format(L["'player' has asked you to reroll"], self.Ambiguate(sender)))
 	self:PrepareLootTable(lt)
-	-- REVIEW Are these needed?
 	self:DoAutoPasses(lt)
+	-- REVIEW Are these needed?
 	self:SendLootAck(lt)
 
 	self:CallModule("lootframe")

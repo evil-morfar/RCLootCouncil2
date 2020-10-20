@@ -48,6 +48,8 @@ local Council = addon.Require "Data.Council"
 local Comms = addon.Require "Services.Comms"
 ---@type Utils.TempTable
 local TempTable = addon.Require "Utils.TempTable"
+---@type Data.MLDB
+local MLDB = addon.Require "Data.MLDB"
 local subscriptions
 
 function RCLootCouncilML:OnInitialize()
@@ -397,51 +399,11 @@ function RCLootCouncilML:UpdateMLdb()
 	-- The db has changed, so update the mldb and send the changes
 	self.Log:d("UpdateMLdb")
 	addon:OnMLDBReceived(self:BuildMLdb())
-	self:Send("group", "MLdb", addon.mldb)
+	MLDB:Send("group")
 end
 
 function RCLootCouncilML:BuildMLdb()
-	-- Extract changes to responses/buttons
-	local changedResponses = {};
-	for type, responses in pairs(db.responses) do
-		for i in ipairs(responses) do
-			if i > db.buttons[type].numButtons then break end
-			if not addon.defaults.profile.responses[type]
-			or db.responses[type][i].text ~= addon.defaults.profile.responses[type][i].text
-			or unpack(db.responses[type][i].color) ~= unpack(addon.defaults.profile.responses[type][i].color) then
-				if not changedResponses[type] then changedResponses[type] = {} end
-				changedResponses[type][i] = db.responses[type][i]
-			end
-		end
-	end
-	local changedButtons = {default = {}};
-	for type, buttons in pairs(db.buttons) do
-		for i in ipairs(buttons) do
-			if i > db.buttons[type].numButtons then break end
-			if not addon.defaults.profile.buttons[type]
-			or db.buttons[type][i].text ~= addon.defaults.profile.buttons[type][i].text then
-				if not changedButtons[type] then changedButtons[type] = {} end
-				changedButtons[type][i] = {text = db.buttons[type][i].text}
-			end
-		end
-	end
-	changedButtons.default.numButtons = db.buttons.default.numButtons -- Always include this
-
-	local MLdb = {
-		selfVote			= db.selfVote or nil,
-		multiVote		= db.multiVote or nil,
-		anonymousVoting= db.anonymousVoting or nil,
-		numButtons		= db.buttons.default.numButtons, -- v2.9: Kept as to not break backwards compability on mldb comms. Not used any more
-		hideVotes		= db.hideVotes or nil,
-		observe			= db.observe or nil,
-		buttons			= changedButtons,	-- REVIEW I'm not sure if it's feasible to nil out empty tables
-		responses		= changedResponses,
-		timeout			= db.timeout,
-		rejectTrade 	= db.rejectTrade or nil,
-		requireNotes  	= db.requireNotes or nil,
-		outOfRaid 		= db.outOfRaid or nil,
-	}
-
+	local MLdb = MLDB:Update()
 	addon:SendMessage("RCMLBuildMLdb", MLdb)
 	return MLdb
 end
@@ -1008,11 +970,13 @@ function RCLootCouncilML:AnnounceItems(table)
 	if not db.announceItems then return end
 	self.Log:d("ML:AnnounceItems()")
 	addon:SendAnnouncement(db.announceText, db.announceChannel)
+	local link
 	for k,v in ipairs(table) do
+		link = v.link and v.link or select(2, GetItemInfo("item:"..v.string))
 		local msg = db.announceItemString
 		for text, func in pairs(self.announceItemStrings) do
 			-- escapePatternSymbols is defined in FrameXML/ChatFrame.lua that escapes special characters.
-			msg = gsub(msg, text, escapePatternSymbols(tostring(func(v.session or k, v.link, v))))
+			msg = gsub(msg, text, escapePatternSymbols(tostring(func(v.session or k, link, v))))
 		end
 		if v.isRoll then
 			msg = _G.ROLL..": "..msg
@@ -1552,7 +1516,7 @@ end
 function RCLootCouncilML:RegisterComms ()
 	subscriptions = Comms:BulkSubscribe(addon.PREFIXES.MAIN, {
 		MLdb_request = function(data)
-			self:Send("group", "Mldb", addon.mldb)
+			MLDB:Send("group")
 		end,
 
 		council_request = function ()
@@ -1600,7 +1564,7 @@ end
 
 function RCLootCouncilML:OnReconnectReceived (sender)
 	-- Someone asks for mldb and council
-	self:Send(Player:Get(sender), "MLdb", addon.mldb)
+	MLDB:Send(Player:Get(sender))
 	self:Send(Player:Get(sender), "council", Council:GetForTransmit())
 
 	if self.running then -- Resend lootTable

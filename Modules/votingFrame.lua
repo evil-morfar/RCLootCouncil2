@@ -1437,19 +1437,10 @@ end
 function RCVotingFrame:GetRerollData(session, isRoll, noAutopass)
 	local v = lootTable[session]
 	return {
-		name = v.name,
-		link = v.link,
-		ilvl = v.ilvl,
-		texture = v.texture,
-		session = session,
-		equipLoc = v.equipLoc,
-		token = v.token,
-		relic = v.relic,
-		classes = v.classes,
-		isRoll = isRoll,
+		string 		= addon.Utils:GetTransmittableItemString(v.link),
 		noAutopass = noAutopass,
-		owner = v.owner,
 		typeCode 	= lootTable[session].typeCode,
+		isRoll 		= isRoll
 	}
 end
 
@@ -1494,7 +1485,7 @@ function RCVotingFrame:ReannounceOrRequestRoll(namePred, sesPred, isRoll, noAuto
 		else
 			for name, _ in pairs(lootTable[session].candidates) do
 				if (type(namePred)=="string" and name == namePred) or (type(namePred)=="function" and namePred(name)) then
-					addon:Send(name, "reroll", rerollTable)
+					addon:Send(Player:Get(name), "reroll", rerollTable)
 				end
 			end
 		end
