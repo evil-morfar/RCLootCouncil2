@@ -22,6 +22,24 @@ loadfile(".specs/AddonLoader.lua")(nil,nil, addon).LoadArray{
 addon:InitLogging()
 local Player = addon.Require "Data.Player"
 
+function addon:UnitName(unit)
+	unit = gsub(unit, " ", "")
+	local find = strfind(unit, "-", nil, true)
+	if find and find < #unit then -- "-" isn't the last character
+		local name, realm = strsplit("-", unit, 2)
+		name = name:lower():gsub("^%l", string.upper)
+		return name.."-"..realm
+	end
+	unit = unit:lower()
+	local name, realm = UnitName(unit)
+	if not realm or realm == "" then realm = self.realmName or "" end -- Extract our own realm
+	if not name then -- if the name isn't set then UnitName couldn't parse unit, most likely because we're not grouped.
+		name = unit
+	end -- Below won't work without name
+	name = name:lower():gsub("^%l", string.upper)
+	return name and name.."-"..realm
+end
+
 describe("#Services #Comms (basics)", function()
    addon.player = Player:Get("Player1")
    local Comms = addon.Require("Services.Comms")

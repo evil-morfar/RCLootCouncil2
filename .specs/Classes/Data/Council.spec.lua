@@ -13,6 +13,23 @@ loadfile(".specs/AddonLoader.lua")(nil, addonName, addon).LoadArray{
 }
 
 addon:InitLogging()
+function addon:UnitName(unit)
+	unit = gsub(unit, " ", "")
+	local find = strfind(unit, "-", nil, true)
+	if find and find < #unit then -- "-" isn't the last character
+		local name, realm = strsplit("-", unit, 2)
+		name = name:lower():gsub("^%l", string.upper)
+		return name.."-"..realm
+	end
+	unit = unit:lower()
+	local name, realm = UnitName(unit)
+	if not realm or realm == "" then realm = self.realmName or "" end -- Extract our own realm
+	if not name then -- if the name isn't set then UnitName couldn't parse unit, most likely because we're not grouped.
+		name = unit
+	end -- Below won't work without name
+	name = name:lower():gsub("^%l", string.upper)
+	return name and name.."-"..realm
+end
 
 describe("#Council", function()
    local Council
@@ -55,12 +72,13 @@ describe("#Council", function()
          local expected = {
             ["1-00000001"] = true
          }
+         Council:Add(Player:Get("Player1"))
          assert.are.same(expected, Council:GetForTransmit())
       end)
 
       it("transmitted table should be restoreable", function()
-         local council = Council:Get()
          local transmit = Council:GetForTransmit()
+         Council:Add(Player:Get("Player1"))
          Council:Set{} -- set empty
          assert.are.equal(1, Council:RestoreFromTransmit(transmit))
       end)
