@@ -283,6 +283,12 @@ function RCVotingFrame:GetCandidateData(session, candidate, data)
 	else return arg end
 end
 
+-- TODO: DEPRECATED - use RCLootCouncil:GetLootTable()
+-- REVIEW: This is not in sync with the replacement.
+function RCVotingFrame:GetLootTable()
+	return lootTable
+end
+
 --- Returns the session the user is currently viewing
 -- If you want to get the session when it changes, these AceEvent messages are available:
 -- "RCSessionChangedPre"	- Delivered before :SwitchSession() is executed, i.e before :GetCurrentSession() is updated.
@@ -308,9 +314,9 @@ function RCVotingFrame:SetupSession(session, t)
 	for name in addon:GroupIterator() do
 		local player = Player:Get(name)
 		t.candidates[player.name] = {
-			class = player.class,
-			rank = player.rank,
-			role = player.role,
+			class = player.class or "Unknown",
+			rank = player.rank or "Unknown",
+			role = player.role or "NONE",
 			response = "ANNOUNCED",
 			ilvl = "",
 			diff = "",
