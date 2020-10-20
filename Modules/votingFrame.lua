@@ -173,11 +173,11 @@ function RCVotingFrame:RegisterComms ()
 				self:OnLootTableAdditionsReceived(unpack(data))
 			end
 		end,
-		n_t = function (data, sender, command)
-			self:AddNonTradeable(addon:UnitName(sender), command, unpack(data))
+		n_t = function (data, sender)
+			self:AddNonTradeable(addon:UnitName(sender), "not_tradeable", unpack(data))
 		end,
-		r_t = function (data, sender, command)
-			self:AddNonTradeable(addon:UnitName(sender), command, unpack(data))
+		r_t = function (data, sender)
+			self:AddNonTradeable(addon:UnitName(sender), "rejected_trade", unpack(data))
 		end,
 	})
 end

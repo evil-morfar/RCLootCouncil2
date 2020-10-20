@@ -2495,7 +2495,7 @@ function RCLootCouncil:OnLootStatusReceived (sender, command, link, guid)
 	if self.lootGUIDToIgnore[guid] then return end
 	if not self.lootStatus[guid] then self.lootStatus[guid] = {candidates = {}, num = 0} end
 	self.lootStatus[guid].num = self.lootStatus[guid].num + 1
-	self.lootStatus[guid].candidates[self:UnitName(sender)] = {status = command, item = link}
+	self.lootStatus[guid].candidates[sender] = {status = command, item = link}
 	self:SendMessage("RCLootStatusReceived")
 end
 
