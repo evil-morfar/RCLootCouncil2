@@ -1,5 +1,6 @@
-# v3.0.0-Alpha.6
+# v3.0.0-Beta.1
 
+*This version is not compatible with previous Alpha versions!*
 *Note: v3.0 is not backwards compatible, and v2.x will not be updated to patch 9.0*
 
 ## Changes
@@ -53,10 +54,13 @@ Corruption column.
 
 ### Dev
 
-* All comms have updated prefixes and commands. Refer to `Comms.lua`.
+* All comms have updated prefixes, commands, and handlers. Refer to `/Classes/Services/Comms.lua`.
+* Old way of logging is removed - see `/Classes/Utils/Log.lua` for new implementation.
+* Many structures now have their own files and classes. See `/Classes`.
+* Classes are loaded with `RCLootCouncil.Require`. See `/Classes/Core.lua` for details.
 * Removed all references to `candidates`. It's now based on `Player` class, and group members can be found with `RCLootCouncil.candidatesInGroup` and `RCLootCouncil:GroupIterator()`.
 
-## Bugfixes 
+## Bugfixes
 
 * *The completion indicator in the Synchronizer no longer disappears.*
 
