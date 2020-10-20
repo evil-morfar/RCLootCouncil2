@@ -78,5 +78,13 @@ Compat.list = {
 
             addon:ScheduleTimer("Print", 5, "Your Council has been reset as part of upgrading to v3.0")
         end
+    },
+    {
+        name = "Clear player cache",
+        version = "always",
+        func = function()
+            local db = addon:Getdb()
+            db.cache.players = {}
+        end
     }
 }
