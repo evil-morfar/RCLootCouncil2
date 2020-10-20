@@ -528,4 +528,3 @@ L["opt_skipSessionFrame_desc"] = "Skips the Session Frame. NOTE: This causes the
 L["non_tradeable_reason_not_tradeable"] = "Not Tradeable"
 L["non_tradeable_reason_rejected_trade"] = "Wanted to keep item"
 L["non_tradeable_reason_nil"] = "Unknown"
-
