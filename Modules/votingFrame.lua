@@ -15,7 +15,6 @@
 		rolls 				T - ML sends random rolls info.
 		roll 					T - Candidate sends roll info.
 		reconnectData 		T - ML sends reconnectData.
-		lt_add 				T - ML sends lootTable additions.
 		n_t					T - Candidate received "non-tradeable" loot.
 		r_t					T - Candidate "rejected_trade" of loot.
 ]]
@@ -88,6 +87,7 @@ function RCVotingFrame:OnEnable()
 	self:RegisterComms()
 	self:RegisterBucketEvent({"UNIT_PHASE", "ZONE_CHANGED_NEW_AREA"}, 1, "Update") -- Update "Out of instance" text when any raid members change zone
 	self:RegisterMessage("RCLootStatusReceived", "UpdateLootStatus")
+	self:RegisterMessage("RCLootTableAdditionsReceived", "OnLootTableAdditionsReceived")
 	db = addon:Getdb()
 	--active = true
 	moreInfo = db.modules["RCVotingFrame"].moreInfo
@@ -166,11 +166,6 @@ function RCVotingFrame:RegisterComms ()
 		reconnectData = function (data, sender)
 			if addon:IsMasterLooter(sender) then
 				self:OnReconnectReceived(unpack(data))
-			end
-		end,
-		lt_add = function (data, sender)
-			if addon:IsMasterLooter(sender) then
-				self:OnLootTableAdditionsReceived(unpack(data))
 			end
 		end,
 		n_t = function (data, sender)
@@ -530,7 +525,7 @@ function RCVotingFrame:OnReconnectReceived (lootTable)
 	self:UpdatePeopleToVote()
 end
 
-function RCVotingFrame:OnLootTableAdditionsReceived (lt)
+function RCVotingFrame:OnLootTableAdditionsReceived (_, lt)
 	local oldLenght = #lootTable
 	for k,v in pairs(lt) do
 		lootTable[k] = v

@@ -19,6 +19,7 @@
 		RCConfigTableChanged	-	fires when the user changes a settings. args: [val]; a few settings supplies their name.
 		RCUpdateDB				-	fires when the user receives sync data from another player.
 		RCLootStatusReceived - 	fires when new loot status is received, i.e. when it's safe to call :GetLootStatusData.
+		RCLootTableAdditionsReceived - fires when additional lootTable data has been received and processed.
 	ml_core:
 		RCMLAddItem				- 	fires when an item is added to the loot table. args: item, loottable entry
 		RCMLAwardSuccess		- 	fires when an item is successfully awarded. args: session, winner, status.
@@ -2600,7 +2601,7 @@ function RCLootCouncil:OnLootTableAdditionsReceived (lt)
 	for i = oldLenght, #lootTable do
 		self:GetActiveModule("lootframe"):AddSingleItem(lootTable[i])
 	end
-	-- VotingFrame handles this by itself.
+	self:SendMessage("RCLootTableAdditionsReceived", lt)
 end
 
 function RCLootCouncil:OnMLDBReceived(input)
