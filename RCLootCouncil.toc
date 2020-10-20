@@ -26,6 +26,7 @@ Classes\Lib\RxLua\embeds.xml
 
 Classes\Services\Comms.lua
 Classes\Services\SlashCommands.lua
+Classes\Data\MLDB.lua
 
 core.lua
 Core\ErrorHandler.lua
