@@ -147,13 +147,15 @@ function RCLootCouncilML:AddItem(item, bagged, slotIndex, owner, entry)
 end
 
 --- Removes everything that doesn't need to be sent in the lootTable
-function RCLootCouncilML:GetLootTableForTransmit()
+---@param overrideIsSent boolean @Ignores .isSent status and adds the item anyway.
+---@return table LootTable
+function RCLootCouncilML:GetLootTableForTransmit(overrideIsSent)
 	local copy = CopyTable(self.lootTable)
 	for k, v in pairs(copy) do
-		if v.isSent then -- Don't retransmit already sent items
+		if not overrideIsSent and v.isSent then -- Don't retransmit already sent items
 			copy[k] = nil
 		else
-			v["bagged"] = nil
+			v.bagged = nil
 			v.awarded = nil
 			v.classes = nil
 			v.isSent = nil
@@ -1571,8 +1573,8 @@ function RCLootCouncilML:OnReconnectReceived (sender)
 	self:Send(Player:Get(sender), "council", Council:GetForTransmit())
 
 	if self.running then -- Resend lootTable
-		self:ScheduleTimer("Send", 4, Player:Get(sender), "lootTable", self:GetLootTableForTransmit())
-		-- v2.2.6 REVIEW For backwards compability we're just sending votingFrame's lootTable
+		self:ScheduleTimer("Send", 4, Player:Get(sender), "lootTable", self:GetLootTableForTransmit(true))
+		-- REVIEW v2.2.6 For backwards compability we're just sending votingFrame's lootTable
 		-- This is quite redundant and should be removed in the future
 		if db.observe or Council:Contains(Player:Get(sender)) then -- Only send all data to councilmen
 			local table = addon:GetActiveModule("votingframe"):GetLootTable()
