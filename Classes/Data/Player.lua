@@ -7,7 +7,7 @@ local _, addon = ...
 local Player = addon.Init("Data.Player")
 local Log = addon.Require("Log"):Get()
 
-local MAX_CACHE_TIME = 1 -- 60 * 60 * 24 * 2 -- 2 days
+local MAX_CACHE_TIME = 60 * 60 * 24 * 2 -- 2 days
 
 local private = {
    cache = setmetatable({}, {

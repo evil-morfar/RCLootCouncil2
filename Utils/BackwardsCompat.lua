@@ -48,7 +48,7 @@ Compat.list = {
     {
         name = "v3.0 Update",
         version = "3.0.0",
-        tVersion = "Beta.1",
+        tVersion = "Beta.2",
         func = function()
             local db = addon:Getdb()
             db.itemStorage = {} -- Just in case
