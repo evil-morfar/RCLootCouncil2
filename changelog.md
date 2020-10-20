@@ -59,6 +59,7 @@ Corruption column.
 * Many structures now have their own files and classes. See `/Classes`.
 * Classes are loaded with `RCLootCouncil.Require`. See `/Classes/Core.lua` for details.
 * Removed all references to `candidates`. It's now based on `Player` class, and group members can be found with `RCLootCouncil.candidatesInGroup` and `RCLootCouncil:GroupIterator()`.
+* `RCLootCouncil.council` removed. `db.profile.council` now stores GUIDs, which combined with `Data.Player` and `Data.Council` now makes up a council.
 
 ## Bugfixes
 

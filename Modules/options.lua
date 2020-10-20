@@ -1,9 +1,11 @@
 --- options.lua - option frame in BlizzardOptions for RCLootCouncil
 -- @author Potdisc
 -- Create Date : 5/24/2012 6:24:55 PM
-
+---@type RCLootCouncil
 local _,addon = ...
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
+---@type Data.Player
+local Player = addon.Require "Data.Player"
 ------ Options ------
 local function DBGet(info)
 	return addon.db.profile[info[#info]]
@@ -1491,7 +1493,7 @@ function addon:OptionsTable()
 										name = "",
 										values = function()
 											local t = {}
-											for _,v in ipairs(self.db.profile.council) do t[v] = self.Ambiguate(v) end
+											for _,v in ipairs(self.db.profile.council) do t[v] = addon.Ambiguate(Player:Get(v):GetName()) end
 											table.sort(t)
 											return t;
 										end,
@@ -1545,9 +1547,9 @@ function addon:OptionsTable()
 												set = function(_, val)
 													self.db.profile.minRank = val
 													for i = 1, GetNumGuildMembers() do
-														local name, _, rankIndex = GetGuildRosterInfo(i) -- get info from all guild members
+														local _, _, rankIndex,_, _, _, _, _, _, _, _, _, _, _, _, _, guid = GetGuildRosterInfo(i)
 														if rankIndex + 1 <= val then -- if the member is the required rank, or above
-															tinsert(self.db.profile.council, name) -- then insert them to the council
+															tinsert(self.db.profile.council, guid) -- then insert them to the council
 														end
 													end
 													addon:CouncilChanged()
@@ -1595,29 +1597,24 @@ function addon:OptionsTable()
 											local t = {}
 											for i = 1, GetNumGroupMembers() do
 												local name = select(1,GetRaidRosterInfo(i))
-												t[self:UnitName(name)] = self.Ambiguate(name)
+												local guid = UnitGUID(name)
+												t[guid] = self.Ambiguate(name)
 											end
-											if #t == 0 then t[self.player:GetName()] = self.player:GetShortName() end -- Insert ourself
+											if #t == 0 then t[self.player:GetGUID()] = self.player:GetShortName() end -- Insert ourself
 											table.sort(t, function(v1, v2)
 												return v1 and v1 < v2
 											end)
 											return t
 										end,
 										set = function(info,key,tag)
-											--local values = self.options.args.mlSettings.args.councilTab.args.addGroupCouncil.args.list.values()
 											if tag then -- add
 												tinsert(self.db.profile.council, key)
 											else -- remove
-												for k,v in ipairs(self.db.profile.council) do
-													if v == key then
-														tremove(self.db.profile.council, k)
-													end
-												end
+												tDeleteItem(self.db.profile.council, key)
 											end
 											addon:CouncilChanged()
 										end,
 										get = function(info, key)
-											--local values = self.options.args.mlSettings.args.councilTab.args.addGroupCouncil.args.list.values()
 											return tContains(self.db.profile.council, key)
 										end,
 									},
@@ -1863,8 +1860,8 @@ function addon:GetGuildOptions()
 					values = function()
 						wipe(names)
 						for ci = 1, GetNumGuildMembers() do
-							local name, _, rankIndex = GetGuildRosterInfo(ci); -- NOTE I assume the realm part of name is without spaces.
-							if (rankIndex + 1) == i then names[name] = Ambiguate(name, "short") end -- Ambiguate to show realmname for players from another realm
+							local name, _, rankIndex,_, _, _, _, _, _, _, _, _, _, _, _, _, guid = GetGuildRosterInfo(ci); -- NOTE I assume the realm part of name is without spaces.
+							if (rankIndex + 1) == i then names[guid] = addon.Ambiguate(name) end -- Ambiguate to show realmname for players from another realm
 						end
 						table.sort(names, function(v1, v2)
 							return v1 and v1 < v2
@@ -1878,11 +1875,7 @@ function addon:GetGuildOptions()
 						if tag then
 							tinsert(self.db.profile.council, key)
 						else
-							for k,v in ipairs(self.db.profile.council) do
-								if v == key then
-									tremove(self.db.profile.council, k)
-								end
-							end
+							tDeleteItem(self.db.profile.council, key)
 						end
 						addon:CouncilChanged()
 					end,

@@ -334,8 +334,8 @@ end
 
 function RCLootCouncil:CouncilChanged()
 	local council = {}
-	for _, name in ipairs(self.db.profile.council) do
-		local player = Player:Get(Ambiguate(name, "short"))
+	for _, guid in ipairs(self.db.profile.council) do
+		local player = Player:Get(guid)
 		if player and player.guid then
 			council[player.guid] = player
 		end
@@ -1558,8 +1558,6 @@ function RCLootCouncil:NewMLCheck()
 	else
 		-- At this point we know the ML has changed, so we can wipe the council
 		self.Log:d("Resetting council as we have a new ML!")
-		self.council = {}
-	--	self.mldb = {}
 		self.isCouncil = false
 		self.Log("MasterLooter = ", self.masterLooter)
 		-- Check to see if we have recieved mldb within 15 secs, otherwise request it

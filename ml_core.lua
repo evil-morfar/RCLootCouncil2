@@ -1249,10 +1249,13 @@ end
 -- Used by the ML to only send out a council consisting of actual group members.
 function RCLootCouncilML:UpdateGroupCouncil()
 	Council:Set{} -- Set empty
-	for _, name in ipairs(addon.db.profile.council) do
+	for _, guid in ipairs(addon.db.profile.council) do
+		-- REVIEW: Is all this Player:Get() really efficient?
+		local player1 = Player:Get(guid)
 		for cand in addon:GroupIterator() do
-			if addon:UnitIsUnit(name, cand ) then
-				Council:Add(Player:Get(cand))
+			local player2 = Player:Get(cand)
+			if player1 == player2 then
+				Council:Add(player1)
 				break
 			end
 		end
