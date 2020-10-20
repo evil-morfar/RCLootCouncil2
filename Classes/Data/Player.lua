@@ -7,6 +7,8 @@ local _, addon = ...
 local Player = addon.Init("Data.Player")
 local Log = addon.Require("Log"):Get()
 
+local MAX_CACHE_TIME = 1 -- 60 * 60 * 24 * 2 -- 2 days
+
 local private = {
    cache = setmetatable({}, {
       __index = function(_, id)
@@ -112,7 +114,9 @@ end
 
 function private:GetFromCache (guid)
    if self.cache[guid] then
-      return setmetatable(CopyTable(self.cache[guid]), PLAYER_MT)
+      if GetServerTime() - self.cache[guid].cache_time > MAX_CACHE_TIME then
+         return setmetatable(CopyTable(self.cache[guid]), PLAYER_MT)
+      end
    end
 end
 
