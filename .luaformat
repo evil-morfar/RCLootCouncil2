@@ -1,0 +1,5 @@
+use_tab: true
+indent_width: 1
+keep_simple_function_one_line: false
+break_before_functioncall_rp: true
+break_after_operator: false
