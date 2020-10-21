@@ -10,7 +10,7 @@
 		council_request 		T - Candidate requests council.
 		reconnect 				T - Candidate has reconnect - needs all data.
 		lootTable 				T - We've received the LootTable we sent out.
-		tradeable				T - Candidate has looted a tradeable item.
+		tradable				T - Candidate has looted a tradeable item.
 		n_t						T - Candidate received "non-tradeable" loot.
 		trade_complete 		T - Candidate completed a trade.
 		trade_WrongWinner 	T - Candidate traded an item to the wrong person.
@@ -449,8 +449,8 @@ function RCLootCouncilML:OnTradeComplete(link, recipient, trader)
 	end
 end
 
-function RCLootCouncilML:HandleReceivedTradeable (item, sender)
-	if not (addon.handleLoot and item and item ~= "") then return end -- Auto fail criterias
+function RCLootCouncilML:HandleReceivedTradeable (sender, item)
+	if not (addon.handleLoot and item and item ~= "") then return self.Log:E("HandleReceivedTradeable", sender, item) end -- Auto fail criterias
 	if not GetItemInfo(item) then
 		self.Log:d("Tradable item uncached: ", item, sender)
 		return self:ScheduleTimer("HandleReceivedTradeable", 1, item, sender)
@@ -1539,8 +1539,8 @@ function RCLootCouncilML:RegisterComms ()
 			end
 		end,
 
-		tradeable = function (data, sender)
-			self:HandleReceivedTradeable(unpack(data), sender)
+		tradable = function (data, sender)
+			self:HandleReceivedTradeable(sender, unpack(data))
 		end,
 
 		trade_complete = function (data)
