@@ -21,7 +21,7 @@ end
 
 -- Temporaryly just print it to log
 function ErrorHandler:OnEvent (...)
-   addon.Log:d(...)
+   -- addon.Log:d(...)
 end
 
 function ErrorHandler:LogError (msg)
