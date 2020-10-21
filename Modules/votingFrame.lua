@@ -412,12 +412,14 @@ end
 -- Comm Handlers
 -----------------------------------------------------------------
 function RCVotingFrame:OnChangeResponseReceived(ses, name, response, isTier)
+	name = addon:UnitName(name) -- REVIEW
 	self:SetCandidateData(ses, name, "isTier", isTier)
 	self:SetCandidateData(ses, name, "response", response)
 	self:Update()
 end
 
 function RCVotingFrame:OnLootAckReceived (name, specID, ilvl, sessionData)
+	name = addon:UnitName(name) -- REVIEW
 	for k,d in pairs(sessionData) do
 		for ses, v in pairs(d) do
 			self:SetCandidateData(ses, name, k, v)
