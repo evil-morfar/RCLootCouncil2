@@ -1,13 +1,10 @@
---- 	core.lua	Contains core elements of the addon
+--- core.lua Contains core elements of the addon
 -- @author Potdisc
 
 --[[ TODOs/Notes
 	Things marked with "todo"
 		- IDEA Change popups so they only hide on award/probably add the error message to it.
 		- Trade status in TradeUI
-		- Changeable chatwindow output.
-
-		- Coms comparison: /rc add 173944 173943 174060 174168 (704 bytes on PTR, ~4kb on live)
 -------------------------------- ]]
 
 --[[CHANGELOG
@@ -33,13 +30,12 @@
 		RCHistory_ResponseEdit - fires when the user edits the response of a history entry. args: data (see LootHistory:BuildData())
 		RCHistory_NameEdit	-	fires when the user edits the receiver of a history entry. args: data.
 ]]
---[[ Notable AceComm-3.0 messages: (See RCLootCouncil:OnCommReceived() for receiving comms)
-	Comm prefix: "RCLootCouncil"
-		StartHandleLoot 			- Sent whenever RCLootCouncil starts handling loot.
-		StopHandleLoot				- Sent whenever RCLootCouncil stops handling loot.
-
+--[[ Notable Comm messages: (See Classes/Services/Comms.lua for subscribing to comms)
 	Comms:
+	P: Permanent, T: Temporary
 		MAIN:
+			StartHandleLoot 	P - Sent whenever RCLootCouncil starts handling loot.
+			StopHandleLoot		P - Sent whenever RCLootCouncil stops handling loot.
 			council				P - Council received from ML
 			session_end 		P - ML has ended the session.
 			playerInfoRequest 	P - Request for playerInfo
@@ -54,7 +50,6 @@
 			mldb 				P - MLDB sent from ML.
 			reroll 				P - (Partial) lootTable with items we should reroll on.
 			lootAck 			P - LootAck received from another player. Used for checking if have received the required data.
-
 ]]
 
 -- GLOBALS: GetLootMethod, GetAddOnMetadata, UnitClass
@@ -64,7 +59,6 @@ local addonname, addontable = ...
 _G.RCLootCouncil = LibStub("AceAddon-3.0"):NewAddon(addontable,addonname, "AceConsole-3.0", "AceEvent-3.0", "AceHook-3.0", "AceTimer-3.0", "AceBucket-3.0");
 local LibDialog = LibStub("LibDialog-1.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
-local lwin = LibStub("LibWindow-1.1")
 local tooltipForParsing = CreateFrame("GameTooltip", "RCLootCouncil_Tooltip_Parse", nil, "GameTooltipTemplate")
 tooltipForParsing:UnregisterAllEvents() -- Don't use GameTooltip for parsing, because GameTooltip can be hooked by other addons.
 
@@ -78,11 +72,9 @@ local Council = RCLootCouncil.Require "Data.Council"
 local Player = RCLootCouncil.Require "Data.Player"
 ---@type Data.MLDB
 local MLDB = RCLootCouncil.Require "Data.MLDB"
----@type Utils.TempTable
-local TT = RCLootCouncil.Require "Utils.TempTable"
 
 -- Init shorthands
-local db, historyDB, debugLog;-- = self.db.profile, self.lootDB.factionrealm, self.db.global.log
+local db, debugLog;-- = self.db.profile, self.db.global.log
 -- init modules
 local defaultModules = {
 	masterlooter =	"RCLootCouncilML",
@@ -111,8 +103,8 @@ local player_relogged = true -- Determines if we potentially need data from the 
 local lootTable = {}
 
 -- Lua
-local time, date, tonumber, unpack, select, wipe, pairs, ipairs, format, table, tinsert, tremove, bit, tostring, type
-	 = time, date, tonumber, unpack, select, wipe, pairs, ipairs, format, table, tinsert, tremove, bit, tostring, type
+local time, tonumber, unpack, select, wipe, pairs, ipairs, format, table, tinsert, tremove, bit, tostring, type
+	 = time, tonumber, unpack, select, wipe, pairs, ipairs, format, table, tinsert, tremove, bit, tostring, type
 
 local playersData = {-- Update on login/encounter starts. it stores the information of the player at that moment.
 	gears = {}, -- Gears key: slot number(1-19), value: item link
@@ -240,7 +232,6 @@ function RCLootCouncil:OnInitialize()
 
 	-- add shortcuts
 	db = self.db.profile
-	historyDB = self.lootDB.factionrealm
 	debugLog = self.db.global.log
 
 	-- Register Core Comms
@@ -1792,9 +1783,6 @@ function RCLootCouncil:UpdateDB()
 	self.db:RegisterDefaults(self.defaults)
 	self:SendMessage("RCUpdateDB")
 end
-function RCLootCouncil:UpdateHistoryDB()
-	historyDB = self:GetHistoryDB()
-end
 
 function RCLootCouncil:IsCorrectVersion ()
 	return WOW_PROJECT_MAINLINE == WOW_PROJECT_ID
@@ -1915,8 +1903,8 @@ end
 --- Custom, better UnitIsUnit() function.
 -- Blizz UnitIsUnit() doesn't know how to compare unit-realm with unit.
 -- Seems to be because unit-realm isn't a valid unitid.
----@param unit1 string | Player 
----@param unit2 string | Player 
+---@param unit1 string | Player
+---@param unit2 string | Player
 function RCLootCouncil:UnitIsUnit(unit1, unit2)
 	if not unit1 or not unit2 then return false end
 	if unit1.name then unit1 = unit1.name end

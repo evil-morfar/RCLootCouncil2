@@ -26,18 +26,17 @@ _G.RCLootCouncilML = addon:NewModule("RCLootCouncilML", "AceEvent-3.0", "AceBuck
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 
 -- WoW API
-local GetItemInfo, GetItemInfoInstant, GetRaidRosterInfo
-	 = GetItemInfo, GetItemInfoInstant, GetRaidRosterInfo
+local GetItemInfo, GetItemInfoInstant
+	 = GetItemInfo, GetItemInfoInstant
 -- Lua
-local time, date, tonumber, unpack, select, wipe, pairs, ipairs, format, table, tinsert, tremove, bit, tostring, type, tFilter
-	 = time, date, tonumber, unpack, select, wipe, pairs, ipairs, format, table, tinsert, tremove, bit, tostring, type, tFilter
+local time, date, tonumber, unpack, select, wipe, pairs, ipairs, format, table, tinsert, tremove, bit, tostring, type
+	 = time, date, tonumber, unpack, select, wipe, pairs, ipairs, format, table, tinsert, tremove, bit, tostring, type
 
 local db;
 
 local LOOT_TIMEOUT = 5 -- If we give loot to someone, but loot slot is not cleared after this time period, consider this loot distribute as failed.
 						-- The real time needed is the sum of two players'(ML and the awardee) latency, so 1 second timeout should be enough.
 						-- v2.17: There's reports of increased latency, especially in Classic - bump to 3 seconds.
-local CANDIDATE_SEND_COOLDOWN = 10
 local COUNCIL_COMMS_THROTTLE = 5
 ---@type Data.Player
 local Player = addon.Require "Data.Player"

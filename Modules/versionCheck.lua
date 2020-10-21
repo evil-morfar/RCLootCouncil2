@@ -1,4 +1,4 @@
---- versionCheck.lua	Adds a Version Checker to check versions of either people in current raidgroup or guild.
+--- versionCheck.lua Adds a Version Checker to check versions of either people in current raidgroup or guild.
 -- DefaultModule.
 -- @author Potdisc
 -- Create Date : 12/15/2014 8:55:10 PM

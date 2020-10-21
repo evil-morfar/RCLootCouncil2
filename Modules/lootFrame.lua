@@ -1,4 +1,4 @@
---- lootFrame.lua	Adds the interface for selecting a response to a session.
+--- lootFrame.lua Adds the interface for selecting a response to a session.
 -- DefaultModule.
 -- @author	Potdisc
 -- Create Date : 12/16/2014 8:24:04 PM

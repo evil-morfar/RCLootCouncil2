@@ -197,7 +197,6 @@ function addon:OptionsTable()
 										end,
 										get = function() return addon.enabled end,
 									},
-									
 									ambiguate = {
 										order = 5,
 										name = L["Append realm names"],
@@ -385,7 +384,7 @@ function addon:OptionsTable()
 										name = L["Clear Loot History"],
 										desc = L["clear_loot_history_desc"],
 										type = "execute",
-										func = function() self.lootDB:ResetDB(); self:UpdateHistoryDB() end,
+										func = function() self.lootDB:ResetDB() end,
 										confirm = true,
 									},
 									spacer = {

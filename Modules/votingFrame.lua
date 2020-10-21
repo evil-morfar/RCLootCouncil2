@@ -1,4 +1,4 @@
----	votingFrame.lua	Displays everything related to handling loot for all members.
+---	votingFrame.lua Displays everything related to handling loot for all members.
 --	Will only show certain aspects depending on addon.isMasterLooter, addon.isCouncil and addon.mldb.observe.
 -- DefaultModule
 -- @author	Potdisc
@@ -634,6 +634,7 @@ function RCVotingFrame:SwitchSession(s)
 	self.frame.bonuses:SetText(bonusText)
 
 	-- Owner
+	-- FIXME: First condition should check if the owner is a group member
 	if t.owner then
 		-- Hack-reuse the SetCellClassIcon function
 		addon.SetCellClassIcon(nil,self.frame.ownerString.icon,nil,nil,nil,nil,nil,nil,nil, t.candidates[t.owner].class)

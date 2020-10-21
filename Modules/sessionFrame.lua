@@ -1,4 +1,4 @@
---- sessionFrame.lua	Adds a frame listing the items to start a session with.
+--- sessionFrame.lua Adds a frame listing the items to start a session with.
 -- DefaultModule - Requires ml_core.lua or similary functionality.
 -- @author Potdisc
 -- Create Date : 1/20/2015 3:48:38 AM

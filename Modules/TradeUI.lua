@@ -1,4 +1,4 @@
---- TradeUI.lua	Handles and displays items to be traded
+--- TradeUI.lua Handles and displays items to be traded
 -- DefaultModule
 -- @author Potdisc
 -- Create Date : 28/5/2018 16:48:38
