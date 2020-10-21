@@ -2584,7 +2584,7 @@ function RCLootCouncil:OnLootTableAdditionsReceived (lt)
 		lootTable[k] = v
 	end
 
-	for i = oldLenght, #lootTable do
+	for i = oldLenght + 1, #lootTable do
 		self:GetActiveModule("lootframe"):AddSingleItem(lootTable[i])
 	end
 	self:SendMessage("RCLootTableAdditionsReceived", lt)
