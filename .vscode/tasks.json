@@ -33,6 +33,24 @@
                 "kind": "test",
                 "isDefault": true
             },
+        },
+        {
+            "label": "Busted this file",
+            "type": "shell",
+            "command": "busted",
+            "args": [
+                "${file}"
+            ],
+            "group": "test"
+        },
+        {
+            "label": "Busted List Tests",
+            "type": "shell",
+            "command": "busted",
+            "args": [
+                "-l"
+            ],
+            "group": "test"
         }
     ]
 }
