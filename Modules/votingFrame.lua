@@ -1442,6 +1442,7 @@ end
 function RCVotingFrame:GetRerollData(session, isRoll, noAutopass)
 	local v = lootTable[session]
 	return {
+		session 	= session,
 		string 		= addon.Utils:GetTransmittableItemString(v.link),
 		noAutopass = noAutopass,
 		typeCode 	= lootTable[session].typeCode,
