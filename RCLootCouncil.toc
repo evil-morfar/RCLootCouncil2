@@ -26,7 +26,7 @@ Classes\Data\Council.lua
 Classes\Lib\RxLua\embeds.xml
 
 Classes\Services\Comms.lua
-Classes\Services\SlashCommands.lua
+# Classes\Services\SlashCommands.lua # NYI
 Classes\Data\MLDB.lua
 
 core.lua

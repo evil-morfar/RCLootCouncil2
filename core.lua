@@ -505,8 +505,10 @@ function RCLootCouncil:ChatCommand(msg)
 		wipe(debugLog)
 		self:Print("Debug Log cleared.")
 
-	elseif input == "updatehistory" or (input == "update" and args[1] == "history") then
-		self:UpdateLootHistory()
+	elseif input == "clearcache" then
+		self.db.global.cache = {}
+		self:Print("Cache cleared")
+
 	elseif input == "sync" then
 		self.Sync:Enable()
 
