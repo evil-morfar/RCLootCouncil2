@@ -123,7 +123,7 @@ function RCVotingFrame:RegisterComms ()
 	subscriptions = Comms:BulkSubscribe(PREFIX, {
 		vote = function (data, sender)
 			if Council:Contains(Player:Get(sender)) then
-				self:HandleVote(addon:UnitName(sender), unpack(data))
+				self:HandleVote(sender, unpack(data))
 			else
 				addon.Log:W("Non-council member (".. tostring(sender) .. ") sent a vote!")
 			end
@@ -133,8 +133,8 @@ function RCVotingFrame:RegisterComms ()
 				self:OnChangeResponseReceived(unpack(data))
 			end
 		end,
-		lootAck = function (data)
-			self:OnLootAckReceived(unpack(data))
+		lootAck = function (data, sender)
+			self:OnLootAckReceived(sender, unpack(data))
 		end,
 		awarded = function (data, sender)
 			if addon:IsMasterLooter(sender) then
@@ -152,7 +152,7 @@ function RCVotingFrame:RegisterComms ()
 			end
 		end,
 		response = function (data, sender)
-			self:OnResponseReceived(unpack(data))
+			self:OnResponseReceived(sender, unpack(data))
 		end,
 		rolls = function (data, sender)
 			if addon:IsMasterLooter(sender) then
@@ -170,10 +170,10 @@ function RCVotingFrame:RegisterComms ()
 			end
 		end,
 		n_t = function (data, sender)
-			self:AddNonTradeable(addon:UnitName(sender), "not_tradeable", unpack(data))
+			self:AddNonTradeable(sender, "not_tradeable", unpack(data))
 		end,
 		r_t = function (data, sender)
-			self:AddNonTradeable(addon:UnitName(sender), "rejected_trade", unpack(data))
+			self:AddNonTradeable(sender, "rejected_trade", unpack(data))
 		end,
 	})
 end
@@ -413,14 +413,12 @@ end
 -- Comm Handlers
 -----------------------------------------------------------------
 function RCVotingFrame:OnChangeResponseReceived(ses, name, response, isTier)
-	name = addon:UnitName(name) -- REVIEW
 	self:SetCandidateData(ses, name, "isTier", isTier)
 	self:SetCandidateData(ses, name, "response", response)
 	self:Update()
 end
 
 function RCVotingFrame:OnLootAckReceived (name, specID, ilvl, sessionData)
-	name = addon:UnitName(name) -- REVIEW
 	for k,d in pairs(sessionData) do
 		for ses, v in pairs(d) do
 			self:SetCandidateData(ses, name, k, v)
@@ -492,7 +490,7 @@ function RCVotingFrame:OnOfflineTimerReceived ()
 	self:Update()
 end
 
-function RCVotingFrame:OnResponseReceived (session, name, data)
+function RCVotingFrame:OnResponseReceived (name, session, data)
 	for k,v in pairs(data) do
 		self:SetCandidateData(session, name, k, v)
 	end
@@ -682,7 +680,7 @@ function RCVotingFrame:BuildST()
 			data[num] = {value = "", colName = col.colName}
 		end
 		rows[i] = {
-			name = addon:UnitName(name),
+			name = name,
 			cols = data,
 		}
 		i = i + 1
@@ -1105,7 +1103,7 @@ function RCVotingFrame:AddNonTradeable(owner, reason, link)
 		GameTooltip:AddDoubleLine(L["Non-tradeable reason:"], L["non_tradeable_reason_"..tostring(reason)], nil, nil, nil,1,1,1)
 		GameTooltip:Show()
 	end)
-	if reason == "r_t" then
+	if reason == "rejected_trade" then
 		b:SetBorderColor("purple")
 	else
 		b:SetBorderColor("grey")

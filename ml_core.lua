@@ -1555,15 +1555,15 @@ function RCLootCouncilML:RegisterComms ()
 		end,
 
 		n_t = function (data, sender, command)
-			self:HandleNonTradeable(unpack(data), addon:UnitName(sender), command)
+			self:HandleNonTradeable(unpack(data), sender, command)
 		end,
 
 		r_t = function (data, sender, command)
-			self:HandleNonTradeable(unpack(data), addon:UnitName(sender), command)
+			self:HandleNonTradeable(unpack(data), sender, command)
 		end,
 
-		bonus_roll = function (data)
-			self:OnBonusRoll(unpack(data))
+		bonus_roll = function (data, sender)
+			self:OnBonusRoll(sender, unpack(data))
 		end
 	})
 end

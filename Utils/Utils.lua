@@ -194,14 +194,17 @@ function Utils:GetNumSpecializationsForClassID (classID)
    return _G.GetNumSpecializationsForClassID and _G.GetNumSpecializationsForClassID(classID) or 3
 end
 
+Utils.unitNameLookup = {}
+
 --- Gets a unit's name formatted with realmName.
 --- If the unit contains a '-' it's assumed it belongs to the realmName part.
 --- Note: If 'unit' is a playername, that player must be in our raid or party!
---- @param unit string @Any unit, except those that include '-' like "name-target".
+--- @param input_unit string @Any unit, except those that include '-' like "name-target".
 --- @return string @Titlecased "unitName-realmName"
-function Utils:UnitName(unit)
--- First strip any spaces
-	unit = gsub(unit, " ", "")
+function Utils:UnitName(input_unit)
+   if self.unitNameLookup[input_unit] then return self.unitNameLookup[input_unit] end
+   -- First strip any spaces
+	local unit = gsub(input_unit, " ", "")
 	-- Then see if we already have a realm name appended
 	local find = strfind(unit, "-", nil, true)
 	if find and find < #unit then -- "-" isn't the last character
@@ -215,13 +218,15 @@ function Utils:UnitName(unit)
 	unit = unit:lower()
 	-- Proceed with UnitName()
 	local name, realm = UnitName(unit)
-	if not realm or realm == "" then realm = self.realmName or "" end -- Extract our own realm
+	if not realm or realm == "" then realm = addon.realmName or "" end -- Extract our own realm
 	if not name then -- if the name isn't set then UnitName couldn't parse unit, most likely because we're not grouped.
 		name = unit
 	end -- Below won't work without name
 	-- We also want to make sure the returned name is always title cased (it might not always be! ty Blizzard)
-	name = name:lower():gsub("^%l", string.upper)
-	return name and name.."-"..realm
+   name = name:lower():gsub("^%l", string.upper)
+   local ret = name and name.."-"..realm
+   self.unitNameLookup[input_unit] = ret
+	return ret
 end
 
 --- Custom, better UnitIsUnit() function.

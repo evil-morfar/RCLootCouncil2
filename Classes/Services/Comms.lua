@@ -138,6 +138,7 @@ end
 
 function private.ReceiveComm(prefix, encodedMsg, distri, sender)
    local self = private
+   local senderName = addon.Utils:UnitName(sender)
    -- Unpack message
    local decoded = ld:DecodeForWoWAddonChannel(encodedMsg)
    local decompressed = ld:DecompressDeflate(decoded)
@@ -152,10 +153,10 @@ function private.ReceiveComm(prefix, encodedMsg, distri, sender)
       local target = tremove(data, 1)
       if target == addon.player:GetName() then
          command = tremove(data, 1)
-         self:FireCmd(prefix, distri, sender, command, data)
+         self:FireCmd(prefix, distri, senderName, command, data)
       end
    else
-      self:FireCmd(prefix, distri, sender, command, data)
+      self:FireCmd(prefix, distri, senderName, command, data)
    end
 end
 

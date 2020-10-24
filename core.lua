@@ -846,7 +846,6 @@ function RCLootCouncil:SendResponse(target, session, response, isTier, isRelic, 
 
 	self:Send(target, "response",
 		session,
-		self.player:GetName(),
 		{	gear1 = g1 and self.Utils:GetItemStringFromLink(g1) or nil,
 			gear2 = g2 and self.Utils:GetItemStringFromLink(g2) or nil,
 			ilvl = sendAvgIlvl and playersData.ilvl or nil,
@@ -1009,7 +1008,7 @@ function RCLootCouncil:SendLootAck(table, skip)
 		end
 	end
 	if hasData then
-		self:Send("group", "lootAck", self.player:GetName(), playersData.specID, playersData.ilvl, toSend)
+		self:Send("group", "lootAck", playersData.specID, playersData.ilvl, toSend)
 	end
 end
 
@@ -1510,7 +1509,7 @@ function RCLootCouncil:OnBonusRoll (_, type, link, ...)
 	self.Log:d("BONUS_ROLL", type, link, ...)
 	if type == "item" or type == "artifact_power" then
 		-- Only handle items and artifact power
-		self:Send("group", "bonus_roll", self.player:GetName(), type, link)
+		self:Send("group", "bonus_roll", type, link)
 	end
 	--[[
 		Tests:
@@ -2363,14 +2362,14 @@ function RCLootCouncil:SubscribeToPermanentComms ()
 		end,
 
 		lootTable = function (data, sender)
-			if not self:UnitIsUnit(sender, self.masterLooter) then
+			if not self.Utils:UnitIsUnit(sender, self.masterLooter) then
 				return self.Log:d(tostring(sender).." is not ML, but sent lootTable!")
 			end
 			self:OnLootTableReceived(unpack(data))
 		end,
 
 		lt_add = function(data, sender)
-			if not self:UnitIsUnit(sender, self.masterLooter) then
+			if not self.Utils:UnitIsUnit(sender, self.masterLooter) then
 				return self.Log.E(tostring(sender), "sent 'lt_add' but was not ML!")
 			end
 			self:OnLootTableAdditionsReceived(unpack(data))
@@ -2379,7 +2378,7 @@ function RCLootCouncil:SubscribeToPermanentComms ()
 		mldb = function(data, sender)
 			if self.isMasterLooter then
 				return
-			elseif self:UnitIsUnit(sender, self.masterLooter) then
+			elseif self.Utils:UnitIsUnit(sender, self.masterLooter) then
 				self:OnMLDBReceived(unpack(data))
 			else
 				self.Log:w("Non-ML:", sender, "sent Mldb!")
@@ -2387,7 +2386,7 @@ function RCLootCouncil:SubscribeToPermanentComms ()
 		end,
 
 		reroll = function (data, sender)
-			if self:UnitIsUnit(sender, self.masterLooter) and self.enabled then
+			if self.Utils:UnitIsUnit(sender, self.masterLooter) and self.enabled then
 				self:OnReRollReceived(sender, unpack(data))
 			end
 		end,
@@ -2433,12 +2432,12 @@ function RCLootCouncil:OnLootStatusReceived (sender, command, link, guid)
 	if self.lootGUIDToIgnore[guid] then return end
 	if not self.lootStatus[guid] then self.lootStatus[guid] = {candidates = {}, num = 0} end
 	self.lootStatus[guid].num = self.lootStatus[guid].num + 1
-	self.lootStatus[guid].candidates[self:UnitName(sender)] = {status = command, item = link}
+	self.lootStatus[guid].candidates[sender] = {status = command, item = link}
 	self:SendMessage("RCLootStatusReceived")
 end
 
 function RCLootCouncil:OnTradeableStatusReceived (sender, reason, link)
-	tinsert(self.nonTradeables, {link = link, reason = reason, owner = self:UnitName(sender)})
+	tinsert(self.nonTradeables, {link = link, reason = reason, owner = sender})
 end
 
 function RCLootCouncil:OnSessionEndReceived(sender)
