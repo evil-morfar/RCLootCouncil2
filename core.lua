@@ -241,6 +241,7 @@ function RCLootCouncil:OnInitialize()
 
 	-- Add logged in message in the log
 	self.Log("Logged In")
+	self:ModulesOnInitialize()
 end
 
 function RCLootCouncil:OnEnable()
