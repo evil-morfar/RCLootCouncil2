@@ -1,10 +1,13 @@
 --- Player.lua Class for holding player related data.
 -- @author Potdisc
 -- Create Date: 15/04/2020
+---@type RCLootCouncil
 local _, addon = ...
 ---@class Data.Player
 local Player = addon.Init("Data.Player")
 local Log = addon.Require("Log"):Get()
+---@type Services.ErrorHandler
+local ErrorHandler = addon.Require "Services.ErrorHandler"
 
 local MAX_CACHE_TIME = 60 * 60 * 24 * 2 -- 2 days
 
@@ -82,6 +85,20 @@ function Player:Get(input)
 	elseif type(input) == "string" then
 		-- Assume UnitName
 		guid = UnitGUID(Ambiguate(input, "short"))
+		-- We can only extract GUID's from people we're grouped with.
+		if not guid then
+			guid = private:GetGUIDFromPlayerName(input)
+			-- It's not in our cache, try the guild.
+			if not guid then
+				guid = private:GetGUIDFromPlayerNameByGuild(input)
+				if not guid then
+					-- Not much we can do at this point, so log an error
+					ErrorHandler:ThrowSilentError("Couldn't produce GUID for "
+                              									.. tostring(input))
+				end
+			end
+		end
+
 	else
 		error(format("%s invalid player", tostring(input)), 2)
 	end
@@ -109,12 +126,26 @@ function private:GetFromCache(guid)
 	if self.cache[guid] then
 		if GetServerTime() - self.cache[guid].cache_time <= MAX_CACHE_TIME then
 			return setmetatable(CopyTable(self.cache[guid]), PLAYER_MT)
-        end
-        -- No need to delete the cache as it will be overwritten shortly
+		end
+		-- No need to delete the cache as it will be overwritten shortly
 	end
 end
 
 function private:CachePlayer(player)
 	self.cache[player.guid] = CopyTable(player)
 	self.cache[player.guid].cache_time = GetServerTime()
+end
+
+function private:GetGUIDFromPlayerName(name)
+	for guid, player in pairs(addon.db.global.cache.player) do
+		if Ambiguate(player.name, "short") == name then return guid end
+	end
+end
+
+function private:GetGUIDFromPlayerNameByGuild(name)
+	for i = 1, GetNumGuildMembers() do
+		local name2, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, guid =
+						GetGuildRosterInfo(i)
+		if name2 == name then return guid end
+	end
 end

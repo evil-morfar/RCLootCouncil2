@@ -16,6 +16,7 @@ Core\Defaults.lua
 Core\CoreEvents.lua
 
 Classes\Core.lua
+Classes\Services\ErrorHandler.lua
 Classes\Utils\Log.lua
 Classes\Utils\TempTable.lua
 
@@ -24,7 +25,6 @@ Classes\Data\Council.lua
 
 Classes\Lib\RxLua\embeds.xml
 
-Classes\Services\ErrorHandler.lua
 Classes\Services\Comms.lua
 Classes\Services\SlashCommands.lua
 Classes\Data\MLDB.lua
