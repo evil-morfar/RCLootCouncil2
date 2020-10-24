@@ -26,6 +26,7 @@ local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 
 local Comms = addon.Require "Services.Comms"
 local Council = addon.Require "Data.Council"
+---@type Data.Player
 local Player = addon.Require "Data.Player"
 local TempTable = addon.Require "Utils.TempTable"
 

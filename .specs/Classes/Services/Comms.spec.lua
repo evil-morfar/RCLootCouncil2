@@ -11,6 +11,7 @@ loadfile(".specs/AddonLoader.lua")(nil,nil, addon).LoadArray{
    [[Libs\AceComm-3.0\AceComm-3.0.xml]],
    [[Libs\AceSerializer-3.0\AceSerializer-3.0.xml]],
    [[Libs\AceEvent-3.0\AceEvent-3.0.xml]],
+   [[Libs\AceLocale-3.0\AceLocale-3.0.xml]],
    [[Core\Constants.lua]],
    [[Classes\Core.lua]],
    [[Classes\Lib\RxLua\embeds.xml]],
@@ -18,29 +19,13 @@ loadfile(".specs/AddonLoader.lua")(nil,nil, addon).LoadArray{
    [[Classes\Utils\Log.lua]],
    [[Classes\Utils\TempTable.lua]],
    [[Classes\Services\ErrorHandler.lua]],
+   [[Locale\enUS.lua]],
+   [[Utils\Utils.lua]],
    [[Classes\Data\Player.lua]],
    [[Classes\Services\Comms.lua]]
 }
 addon:InitLogging()
 local Player = addon.Require "Data.Player"
-
-function addon:UnitName(unit)
-	unit = gsub(unit, " ", "")
-	local find = strfind(unit, "-", nil, true)
-	if find and find < #unit then -- "-" isn't the last character
-		local name, realm = strsplit("-", unit, 2)
-		name = name:lower():gsub("^%l", string.upper)
-		return name.."-"..realm
-	end
-	unit = unit:lower()
-	local name, realm = UnitName(unit)
-	if not realm or realm == "" then realm = self.realmName or "" end -- Extract our own realm
-	if not name then -- if the name isn't set then UnitName couldn't parse unit, most likely because we're not grouped.
-		name = unit
-	end -- Below won't work without name
-	name = name:lower():gsub("^%l", string.upper)
-	return name and name.."-"..realm
-end
 
 describe("#Services #Comms (basics)", function()
    addon.player = Player:Get("Player1")

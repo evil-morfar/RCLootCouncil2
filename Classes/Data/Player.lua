@@ -113,7 +113,7 @@ function private:CreatePlayer(guid)
 	---@class Player
 	local player = setmetatable({
 		---@field name string
-		name = addon:UnitName(name),
+		name = addon.Utils:UnitName(name),
 		guid = guid,
 		class = class,
 		realm = realm

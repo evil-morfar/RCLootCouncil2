@@ -20,6 +20,8 @@ loadfile(".specs/AddonLoader.lua")(nil, nil, addon).LoadArray {
     [[Classes\Utils\Log.lua]],
     [[Classes\Utils\TempTable.lua]],
     [[Classes\Services\ErrorHandler.lua]],
+    [[Locale\enUS.lua]],
+    [[Utils\Utils.lua]],
     [[Classes\Data\Player.lua]],
     [[Classes\Services\Comms.lua]],
     [[Classes\Data\MLDB.lua]]

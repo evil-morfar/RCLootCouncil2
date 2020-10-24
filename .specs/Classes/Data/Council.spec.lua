@@ -8,8 +8,11 @@ loadfile(".specs/AddonLoader.lua")(nil, addonName, addon).LoadArray{
    [[Libs\LibStub\LibStub.lua]],
    [[Libs\CallbackHandler-1.0\CallbackHandler-1.0.xml]],
    [[Libs\AceEvent-3.0\AceEvent-3.0.xml]],
+   [[Libs\AceLocale-3.0\AceLocale-3.0.xml]],
    [[Classes/Core.lua]],
    [[Classes/Utils/Log.lua]],
+   [[Locale\enUS.lua]],
+   [[Utils\Utils.lua]],
    [[Classes/Services/ErrorHandler.lua]],
    [[Classes/Data/Player.lua]],
    [[Classes/Utils/TempTable.lua]],
@@ -17,24 +20,6 @@ loadfile(".specs/AddonLoader.lua")(nil, addonName, addon).LoadArray{
 }
 
 addon:InitLogging()
-function addon:UnitName(unit)
-	unit = gsub(unit, " ", "")
-	local find = strfind(unit, "-", nil, true)
-	if find and find < #unit then -- "-" isn't the last character
-		local name, realm = strsplit("-", unit, 2)
-		name = name:lower():gsub("^%l", string.upper)
-		return name.."-"..realm
-	end
-	unit = unit:lower()
-	local name, realm = UnitName(unit)
-	if not realm or realm == "" then realm = self.realmName or "" end -- Extract our own realm
-	if not name then -- if the name isn't set then UnitName couldn't parse unit, most likely because we're not grouped.
-		name = unit
-	end -- Below won't work without name
-	name = name:lower():gsub("^%l", string.upper)
-	return name and name.."-"..realm
-end
-
 describe("#Council", function()
    local Council
    before_each(function()
