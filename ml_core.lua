@@ -49,6 +49,8 @@ local Comms = addon.Require "Services.Comms"
 local TempTable = addon.Require "Utils.TempTable"
 ---@type Data.MLDB
 local MLDB = addon.Require "Data.MLDB"
+---@type Services.ErrorHandler
+local ErrorHandler = addon.Require "Services.ErrorHandler"
 local subscriptions
 
 function RCLootCouncilML:OnInitialize()
@@ -518,7 +520,7 @@ function RCLootCouncilML:OnLootSlotCleared(slot, link)
 	-- Not sure the exact cause - maybe due to looting between :GetML() registers player as ML and ML module being initialized.
 	-- For now silently log an error and stack trace and hopefully find the issue in some SV.
 	if not self.lootQueue then
-		return addon:GetModule("ErrorHandler"):ThrowSilentError("ML.lootQueue nil")
+		return ErrorHandler:ThrowSilentError("ML.lootQueue nil")
 	end
 
 	for i = #self.lootQueue, 1, -1 do -- Check latest loot attempt first

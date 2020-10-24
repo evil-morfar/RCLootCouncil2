@@ -1,10 +1,12 @@
 --- ErrorHandler.lua Class for logging errors to the log.
 -- @author Potdisc
 -- Create Date: 16/04/2020
-
+---@type RCLootCouncil
 local _, addon = ...
+---@class Services.ErrorHandler
+local ErrorHandler = addon.Init "Services.ErrorHandler"
+LibStub("AceEvent-3.0"):Embed(ErrorHandler)
 
-local ErrorHandler = addon:NewModule("ErrorHandler", "AceEvent-3.0")
 local private = {
    MAX_STACK_DEPTH = 10,
 }

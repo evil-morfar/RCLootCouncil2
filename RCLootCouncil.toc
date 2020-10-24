@@ -24,12 +24,12 @@ Classes\Data\Council.lua
 
 Classes\Lib\RxLua\embeds.xml
 
+Classes\Services\ErrorHandler.lua
 Classes\Services\Comms.lua
 Classes\Services\SlashCommands.lua
 Classes\Data\MLDB.lua
 
 core.lua
-Core\ErrorHandler.lua
 ml_core.lua
 
 UI\UI.lua

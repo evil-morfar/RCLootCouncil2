@@ -84,7 +84,6 @@ local defaultModules = {
 	sessionframe =	"RCSessionFrame",
 	votingframe =	"RCVotingFrame",
 	tradeui =		"TradeUI",
-	errorhandler = "ErrorHandler",
 	sync = "Sync"
 }
 local userModules = {
@@ -95,7 +94,6 @@ local userModules = {
 	sessionframe = nil,
 	votingframe = nil,
 	tradeui = nil,
-	errorhandler = nil
 }
 
 local unregisterGuildEvent = false
