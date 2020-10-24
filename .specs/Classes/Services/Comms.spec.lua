@@ -10,12 +10,14 @@ loadfile(".specs/AddonLoader.lua")(nil,nil, addon).LoadArray{
    [[Libs\CallbackHandler-1.0\CallbackHandler-1.0.xml]],
    [[Libs\AceComm-3.0\AceComm-3.0.xml]],
    [[Libs\AceSerializer-3.0\AceSerializer-3.0.xml]],
+   [[Libs\AceEvent-3.0\AceEvent-3.0.xml]],
    [[Core\Constants.lua]],
    [[Classes\Core.lua]],
    [[Classes\Lib\RxLua\embeds.xml]],
    [[Libs\LibDeflate\LibDeflate.lua]],
    [[Classes\Utils\Log.lua]],
    [[Classes\Utils\TempTable.lua]],
+   [[Classes\Services\ErrorHandler.lua]],
    [[Classes\Data\Player.lua]],
    [[Classes\Services\Comms.lua]]
 }

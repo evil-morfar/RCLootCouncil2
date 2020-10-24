@@ -4,8 +4,12 @@ local addonName, addon = "RCLootCouncil_Test", {
    defaults = { global = {logMaxEntries = 2000}}
 }
 loadfile(".specs/AddonLoader.lua")(nil, addonName, addon).LoadArray{
+   [[Libs\LibStub\LibStub.lua]],
+   [[Libs\CallbackHandler-1.0\CallbackHandler-1.0.xml]],
+   [[Libs\AceEvent-3.0\AceEvent-3.0.xml]],
    [[Classes/Core.lua]],
    [[Classes/Utils/Log.lua]],
+   [[Classes/Services/ErrorHandler.lua]],
    [[Classes/Data/Player.lua]]
 }
 addon:InitLogging()

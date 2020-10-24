@@ -10,6 +10,7 @@ loadfile(".specs/AddonLoader.lua")(nil, nil, addon).LoadArray {
     [[Libs\AceComm-3.0\AceComm-3.0.xml]],
     [[Libs\AceLocale-3.0\AceLocale-3.0.xml]],
     [[Libs\AceSerializer-3.0\AceSerializer-3.0.xml]],
+    [[Libs\AceEvent-3.0\AceEvent-3.0.xml]],
     [[Locale\enUS.lua]],
     [[Core\Constants.lua]],
     [[Core\Defaults.lua]],
@@ -18,6 +19,7 @@ loadfile(".specs/AddonLoader.lua")(nil, nil, addon).LoadArray {
     [[Libs\LibDeflate\LibDeflate.lua]],
     [[Classes\Utils\Log.lua]],
     [[Classes\Utils\TempTable.lua]],
+    [[Classes\Services\ErrorHandler.lua]],
     [[Classes\Data\Player.lua]],
     [[Classes\Services\Comms.lua]],
     [[Classes\Data\MLDB.lua]]

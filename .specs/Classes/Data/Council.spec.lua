@@ -5,8 +5,12 @@ local addonName, addon = "RCLootCouncil_Test", {
 }
 
 loadfile(".specs/AddonLoader.lua")(nil, addonName, addon).LoadArray{
+   [[Libs\LibStub\LibStub.lua]],
+   [[Libs\CallbackHandler-1.0\CallbackHandler-1.0.xml]],
+   [[Libs\AceEvent-3.0\AceEvent-3.0.xml]],
    [[Classes/Core.lua]],
    [[Classes/Utils/Log.lua]],
+   [[Classes/Services/ErrorHandler.lua]],
    [[Classes/Data/Player.lua]],
    [[Classes/Utils/TempTable.lua]],
    [[Classes/Data/Council.lua]],
