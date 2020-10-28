@@ -124,7 +124,7 @@ describe("#Services #Comms", function()
       local _ = match._
       local onReceiveSpy, _sub
       local t = {receiver = function(data, sender, ...)
-         print("RECEIVER:", dist, sender, unpack(data),...);
+         -- print("RECEIVER:", dist, sender, unpack(data),...);
          return unpack(data)
       end}
       setup(function()
