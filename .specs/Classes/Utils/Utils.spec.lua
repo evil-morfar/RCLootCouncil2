@@ -57,12 +57,17 @@ describe("#Utils :CheckOutdatedVersion", function()
 
    it("should handle non-outdated test versions", function()
       assert.are.equal(Utils:CheckOutdatedVersion("2.0.0", "2.0.0", "Alpha.2", "Alpha.1"), RCLootCouncil.VER_CHECK_CODES[1])
+      assert.are.equal(Utils:CheckOutdatedVersion("2.0.0", "2.0.0", "Beta.1", "Alpha.1"), RCLootCouncil.VER_CHECK_CODES[1])
    end)
 
    it("should handle equal test versions", function()
       assert.are.equal(Utils:CheckOutdatedVersion("2.0.0", "2.0.0", "Alpha.1", "Alpha.1"), RCLootCouncil.VER_CHECK_CODES[1])
       assert.are.equal(Utils:CheckOutdatedVersion("2.15.0", "2.15.0", "Alpha.1", "Alpha.1"), RCLootCouncil.VER_CHECK_CODES[1])
       assert.are.equal(Utils:CheckOutdatedVersion("2.15.0", "2.15.0", "Alpha.10", "Alpha.10"), RCLootCouncil.VER_CHECK_CODES[1])
+   end)
+
+   it("should handle outdated main versions despite of test versions", function()
+      assert.are.equal(Utils:CheckOutdatedVersion("2.19.3", "3.0.0", nil, "Beta.1"), RCLootCouncil.VER_CHECK_CODES[2])
    end)
 end)
 
