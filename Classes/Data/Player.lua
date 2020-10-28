@@ -84,13 +84,14 @@ function Player:Get(input)
 		guid = input
 	elseif type(input) == "string" then
 		-- Assume UnitName
-		guid = UnitGUID(Ambiguate(input, "short"))
+		local name = Ambiguate(input, "short")
+		guid = UnitGUID(name)
 		-- We can only extract GUID's from people we're grouped with.
 		if not guid then
-			guid = private:GetGUIDFromPlayerName(input)
+			guid = private:GetGUIDFromPlayerName(name)
 			-- It's not in our cache, try the guild.
 			if not guid then
-				guid = private:GetGUIDFromPlayerNameByGuild(input)
+				guid = private:GetGUIDFromPlayerNameByGuild(name)
 				if not guid then
 					-- Not much we can do at this point, so log an error
 					ErrorHandler:ThrowSilentError("Couldn't produce GUID for "
@@ -107,7 +108,7 @@ end
 
 function private:CreatePlayer(guid)
 	Log:f("<Data.Player>", "CreatePlayer", guid)
-	if not guid then return {} end
+	if not guid then return {name = "Unknown"} end
 	local _, class, _, _, _, name, realm = GetPlayerInfoByGUID(guid)
 	realm = realm == "" and select(2, UnitFullName("player")) or realm
 	---@class Player
@@ -146,6 +147,6 @@ function private:GetGUIDFromPlayerNameByGuild(name)
 	for i = 1, GetNumGuildMembers() do
 		local name2, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, guid =
 						GetGuildRosterInfo(i)
-		if name2 == name then return guid end
+		if Ambiguate(name2, "short") == name then return guid end
 	end
 end
