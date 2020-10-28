@@ -128,7 +128,7 @@ function RCLootCouncilML:AddItem(item, bagged, slotIndex, owner, entry)
 	entry.owner = owner or addon.bossName
 	entry.boss = addon.bossName
 	entry.isSent = false
-	entry.typeCode = self:GetTypeCodeForItem(item)
+	entry.typeCode = addon:GetTypeCodeForItem(item)
 
 	local itemInfo = self:GetItemInfo(item)
 
@@ -174,21 +174,6 @@ end
 -- @param session The session (index) in lootTable to remove
 function RCLootCouncilML:RemoveItem(session)
 	tremove(self.lootTable, session)
-end
-
---- Generates a "type code" used to determine which set of buttons to use for the item.
--- The returned code can be used directly in `mldb.responses[code]` and `mldb.buttons[code]`.
--- @See Constants.lua > RESPONSE_CODE_GENERATORS for more.
-function RCLootCouncilML:GetTypeCodeForItem (item)
-	local itemID, _, _, itemEquipLoc, _, itemClassID, itemSubClassID = GetItemInfoInstant(item)
-	if not itemID then return "default" end -- We can't handle uncached items!
-
-	for _,func in ipairs(addon.RESPONSE_CODE_GENERATORS) do
-		local val = func(item, db, itemID, itemEquipLoc,itemClassID, itemSubClassID)
-		if val then return val end
-	end
-	 -- Remaining is simply their equipLoc, if set
-	 return db.enabledButtons[itemEquipLoc] and itemEquipLoc or "default"
 end
 
 local function SendCouncil ()

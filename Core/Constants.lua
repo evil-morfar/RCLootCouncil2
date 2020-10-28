@@ -11,10 +11,10 @@ addon.PREFIXES = {
 }
 
 addon.BTN_SLOTS = {
-   INVTYPE_HEAD = "AZERITE",
-   INVTYPE_CHEST = "AZERITE",
-   INVTYPE_ROBE = "AZERITE",
-   INVTYPE_SHOULDER = "AZERITE",
+   -- INVTYPE_HEAD = "AZERITE",
+   -- INVTYPE_CHEST = "AZERITE",
+   -- INVTYPE_ROBE = "AZERITE",
+   -- INVTYPE_SHOULDER = "AZERITE",
    INVTYPE_2HWEAPON = "WEAPON",
    INVTYPE_WEAPONMAINHAND = "WEAPON",
    INVTYPE_WEAPONOFFHAND = "WEAPON",
@@ -26,7 +26,6 @@ addon.BTN_SLOTS = {
 }
 
 addon.OPT_MORE_BUTTONS_VALUES = {
-   -- AZERITE = L["Azerite Armor"],
    INVTYPE_HEAD = _G.INVTYPE_HEAD,
    INVTYPE_NECK = _G.INVTYPE_NECK,
    INVTYPE_SHOULDER = _G.INVTYPE_SHOULDER,
@@ -40,12 +39,16 @@ addon.OPT_MORE_BUTTONS_VALUES = {
    INVTYPE_FINGER = _G.INVTYPE_FINGER,
    INVTYPE_TRINKET = _G.INVTYPE_TRINKET,
    WEAPON = _G.WEAPON,
-   CORRUPTED = _G.CORRUPTION_TOOLTIP_TITLE,
+   -- AZERITE = L["Azerite Armor"],
+   -- TOKEN = L["Armor Token"],
+   -- CORRUPTED = _G.CORRUPTION_TOOLTIP_TITLE,
+   CONTEXT_TOKEN = "Beads and Spherules"
 }
 
 --[[
 	Used by getCurrentGear to determine slot types
-	Inspired by EPGPLootMaster
+   Inspired by EPGPLootMaster
+   --v3.0: Now also used for custum "INVTYPEs"
 --]]
 addon.INVTYPE_Slots = {
    INVTYPE_HEAD = "HeadSlot",
@@ -69,7 +72,10 @@ addon.INVTYPE_Slots = {
    INVTYPE_RANGEDRIGHT = {"MainHandSlot", ["or"] = "SecondaryHandSlot"},
    INVTYPE_FINGER = {"Finger0Slot", "Finger1Slot"},
    INVTYPE_HOLDABLE = {"SecondaryHandSlot", ["or"] = "MainHandSlot"},
-   INVTYPE_TRINKET = {"TRINKET0SLOT", "TRINKET1SLOT"}
+   INVTYPE_TRINKET = {"TRINKET0SLOT", "TRINKET1SLOT"},
+
+   -- Custom
+   CONTEXT_TOKEN = {"MainHandSlot", "SecondaryHandSlot"},
 }
 
 --- Functions used for generating response codes
@@ -78,10 +84,15 @@ addon.INVTYPE_Slots = {
 -- Each function receives the following parameters:
 -- item, db (addon:Getdb()), itemID, itemEquipLoc,itemClassID, itemSubClassID
 addon.RESPONSE_CODE_GENERATORS = {
-   -- Corrupted Items
-   function (item, db, itemEquipLoc)
-      return db.enabledButtons.CORRUPTED and GetCorruption and IsCorruptedItem(item) and "CORRUPTED" or nil
+   -- Beads and Spherules
+   function(_, db, _, _,itemClassID, itemSubClassID)
+      return db.enabledButtons.CONTEXT_TOKEN and itemClassID == 5 and itemSubClassID == 2 and "CONTEXT_TOKEN" or nil
    end,
+
+   -- -- Corrupted Items
+   -- function (item, db, itemEquipLoc)
+   --    return db.enabledButtons.CORRUPTED and GetCorruption and IsCorruptedItem(item) and "CORRUPTED" or nil
+   -- end,
 
    -- Check for token
    function (_, db, itemID)
@@ -98,14 +109,14 @@ addon.RESPONSE_CODE_GENERATORS = {
    end,
 
    -- Check for Azerite Gear
-   function (_, db, _, itemEquipLoc)
-     -- To use Azerite Buttons, the item must be one of the 3 azerite items, and no other button group must be set for those equipLocs
-     if db.enabledButtons.AZERITE and not db.enabledButtons[itemEquipLoc] then
-        if addon.BTN_SLOTS[itemEquipLoc] == "AZERITE" then
-           return "AZERITE"
-        end
-     end
-   end,
+   -- function (_, db, _, itemEquipLoc)
+   --   -- To use Azerite Buttons, the item must be one of the 3 azerite items, and no other button group must be set for those equipLocs
+   --   if db.enabledButtons.AZERITE and not db.enabledButtons[itemEquipLoc] then
+   --      if addon.BTN_SLOTS[itemEquipLoc] == "AZERITE" then
+   --         return "AZERITE"
+   --      end
+   --   end
+   -- end,
 }
 
 

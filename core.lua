@@ -114,7 +114,7 @@ function RCLootCouncil:OnInitialize()
 	--IDEA Consider if we want everything on self, or just whatever modules could need.
 	self.version = GetAddOnMetadata("RCLootCouncil", "Version")
 	self.nnp = false
-	self.debug = false
+	self.debug = true
 	self.tVersion = "Beta.3" -- String or nil. Indicates test version, which alters stuff like version check. Is appended to 'version', i.e. "version-tVersion" (max 10 letters for stupid security)
 
 	self.playerClass = select(2, UnitClass("player")) -- TODO: Remove - contained in self.player
@@ -202,10 +202,6 @@ function RCLootCouncil:OnInitialize()
 	for i = #self.defaults.profile.awardReasons+1, self.defaults.profile.maxAwardReasons do
 		tinsert(self.defaults.profile.awardReasons, {color = {1, 1, 1, 1}, disenchant = false, log = true, sort = 400+i, text = "Reason "..i,})
 	end
-
-	-- add missing constants
-	self.OPT_MORE_BUTTONS_VALUES.AZERITE = L["Azerite Armor"]
-	self.OPT_MORE_BUTTONS_VALUES.TOKEN = L["Armor Token"]
 
 	-- register chat and comms
 	self:RegisterChatCommand("rc", "ChatCommand")
@@ -810,7 +806,11 @@ function RCLootCouncil:GetPlayersGear(link, equipLoc, gearsTable)
 		return item1, item2
 	end
 	local slot = self.INVTYPE_Slots[equipLoc]
-	if not slot then return nil, nil; end;
+	if not slot then
+		-- Check if we have a typecode for it
+		slot = self.INVTYPE_Slots[self:GetTypeCodeForItem(link)]
+	end
+	if not slot then return nil, nil end
 	item1 = GetInventoryItemLink("player", GetInventorySlotInfo(slot[1] or slot))
 	if not item1 and slot['or'] then
 		item1 = GetInventoryItemLink("player", GetInventorySlotInfo(slot['or']))
@@ -819,6 +819,23 @@ function RCLootCouncil:GetPlayersGear(link, equipLoc, gearsTable)
 		item2 = GetInventoryItemLink("player", GetInventorySlotInfo(slot[2]))
 	end
 	return item1, item2;
+end
+
+--- Generates a "type code" used to determine which set of buttons to use for the item.
+--- The returned code can be used directly in `mldb.responses[code]` and `mldb.buttons[code]`.
+--- @see Constants.lua#RESPONSE_CODE_GENERATORS.
+--- @param item Item @Any valid input for GetItemInfoInstant
+--- @return typecode
+function RCLootCouncil:GetTypeCodeForItem (item)
+	local itemID, _, _, itemEquipLoc, _, itemClassID, itemSubClassID = GetItemInfoInstant(item)
+	if not itemID then return "default" end -- We can't handle uncached items!
+
+	for _,func in ipairs(self.RESPONSE_CODE_GENERATORS) do
+		local val = func(item, db, itemID, itemEquipLoc,itemClassID, itemSubClassID)
+		if val then return val end
+	end
+	 -- Remaining is simply their equipLoc, if set
+	 return db.enabledButtons[itemEquipLoc] and itemEquipLoc or "default"
 end
 
 -- Sends a response. Uses the gear equipped at the start of most recent encounter or login.

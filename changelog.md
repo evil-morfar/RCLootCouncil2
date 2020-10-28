@@ -7,13 +7,19 @@
 
 I've been planning v3.0 for more than 2 years.
 It consists of more than 10k line changes, most of which are background stuff you won't be seeing.
-Despite being in development for that long, not everything is completely ready for this release, but I expect 
+Despite being in development for that long, not everything is completely ready for this release, but I expect
 the rest to be implemented in v3.1 in the future.  
 Below is a list of the most relevant changes.
 
 ### Updated for Shadowlands
 
 Deprecated API calls have been removed, and all addon code updated for the changes introduced in Shadowlands.
+
+#### Button Groups
+
+Added a new response group for Anima Beads and Spherules - a new Main/Off-hand token in Shadowlands.  
+Removed the groups for Azerite weapons and Corruption.
+
 
 ### Comms overhaul
 
