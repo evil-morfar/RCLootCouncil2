@@ -76,7 +76,7 @@ describe("#Utils functions", function()
       it("should produce clean item strings", function()
          local item = "|cffa335ee|Hitem:172200::::::::120:104::5:7:4823:6572:6578:6579:1502:4786:6513:::|h[Sk'shuul~`Vaz]|h|r"
          local cleaned = Utils:GetTransmittableItemString(item)
-         assert.are.equal("172200::::::::::5::4823:6572:6578:6579:1502:4786:6513", cleaned)
+         assert.are.equal("172200:::::::::::5:7:4823:6572:6578:6579:1502:4786:6513", cleaned)
       end)
    end)
    describe("DiscardWeaponCorruption", function()
@@ -84,12 +84,6 @@ describe("#Utils functions", function()
          local itemWith = "|cffa335ee|Hitem:172200::::::::120:104::5:7:4823:6572:6578:6579:1502:4786:6513:::|h[Sk'shuul~`Vaz]|h|r"
          local itemWithout = "|cffa335ee|Hitem:172200::::::::120:104::5:7:4823:6572:6578:6579:1502:4786:::|h[Sk'shuul~`Vaz]|h|r"
          assert.are.equal(itemWithout, Utils:DiscardWeaponCorruption(itemWith))
-      end)
-
-      it("should compare without numBonuses", function()
-         local itemWith = "|cffa335ee|Hitem:172200::::::::120:104::5:7:4823:6572:6578:6579:1502:4786:6513:::|h[Sk'shuul~`Vaz]|h|r"
-         local itemWithout = "|cffa335ee|Hitem:172200::::::::120:104::5:6:4823:6572:6578:6579:1502:4786:::|h[Sk'shuul~`Vaz]|h|r"
-         assert.is_true(RCLootCouncil:ItemIsItem(itemWith, itemWithout))
       end)
 
       it("shouldn't touch others", function()
