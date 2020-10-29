@@ -38,6 +38,10 @@ function Utils:GetItemStringClean(link)
 	return gsub(self:GetItemStringFromLink(link), "item:", "")
 end
 
+function Utils:UncleanItemString(itemString)
+	return "item:"..itemString or "0"
+end
+
 function Utils:GetItemNameFromLink(link)
 	return strmatch(link or "", "%[(.+)%]")
 end

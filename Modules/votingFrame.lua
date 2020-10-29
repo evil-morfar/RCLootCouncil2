@@ -421,7 +421,11 @@ end
 function RCVotingFrame:OnLootAckReceived (name, specID, ilvl, sessionData)
 	for k,d in pairs(sessionData) do
 		for ses, v in pairs(d) do
-			self:SetCandidateData(ses, name, k, v)
+			if k == "gear1" or k == "gear2" then
+				self:SetCandidateData(ses, name, k, addon.Utils:UncleanItemString(v))
+			else
+				self:SetCandidateData(ses, name, k, v)
+			end
 		end
 	end
 	for i = 1, #lootTable do
