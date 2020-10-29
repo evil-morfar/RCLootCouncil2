@@ -50,6 +50,7 @@
 			mldb 				P - MLDB sent from ML.
 			reroll 				P - (Partial) lootTable with items we should reroll on.
 			lootAck 			P - LootAck received from another player. Used for checking if have received the required data.
+			Rgear				P - Anyone requests our currently equipped gear.
 ]]
 
 -- GLOBALS: GetLootMethod, GetAddOnMetadata, UnitClass
@@ -72,6 +73,8 @@ local Council = RCLootCouncil.Require "Data.Council"
 local Player = RCLootCouncil.Require "Data.Player"
 ---@type Data.MLDB
 local MLDB = RCLootCouncil.Require "Data.MLDB"
+---@type Utils.TempTable
+local TT = RCLootCouncil.Require "Utils.TempTable"
 
 -- Init shorthands
 local db, debugLog;-- = self.db.profile, self.db.global.log
@@ -2414,6 +2417,10 @@ function RCLootCouncil:SubscribeToPermanentComms ()
 			if self.enabled then
 				self:OnLootAckReceived()
 			end
+		end,
+
+		Rgear = function(sender)
+			self:OnGearRequestReceived(sender)
 		end
 
 	})
@@ -2605,4 +2612,20 @@ function RCLootCouncil:OnLootAckReceived ()
 			self:ScheduleTimer("ResetReconnectRequest", 5) -- 5 sec break between each try
 		end
 	end
+end
+
+function RCLootCouncil:OnGearRequestReceived(sender)
+	local data = TT:Acquire()
+	self:UpdatePlayersData()
+	for i,link in pairs(playersData.gears) do
+		data[i] = self.Utils:GetTransmittableItemString(link)
+	end
+	Comms:Send{
+		prefix = self.PREFIXES.MAIN,
+		target = Player:Get("sender"),
+		command = "gear",
+		data = data,
+		prio = "BULK"
+	}
+	TT:Release(data)
 end
