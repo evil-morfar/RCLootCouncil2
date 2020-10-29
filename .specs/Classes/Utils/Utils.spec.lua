@@ -69,6 +69,10 @@ describe("#Utils :CheckOutdatedVersion", function()
    it("should handle outdated main versions despite of test versions", function()
       assert.are.equal(Utils:CheckOutdatedVersion("2.19.3", "3.0.0", nil, "Beta.1"), RCLootCouncil.VER_CHECK_CODES[2])
    end)
+
+   it("should handle releases of former test versions", function()
+      assert.are.equal(Utils:CheckOutdatedVersion("3.0.0", "3.0.0", "Beta.1", nil), RCLootCouncil.VER_CHECK_CODES[2])
+   end)
 end)
 
 describe("#Utils functions", function()

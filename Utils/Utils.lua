@@ -171,7 +171,11 @@ function Utils:CheckOutdatedVersion (baseVersion, newVersion, basetVersion, newt
 	elseif basetVersion and newtVersion and basetVersion < newtVersion then
 		return addon.VER_CHECK_CODES[3] -- tVersion outdated
 
-   else
+	elseif basetVersion and not newtVersion then
+		return addon.VER_CHECK_CODES[2] -- Test version got released
+
+	else
+
       return addon.VER_CHECK_CODES[1] -- All fine
 	end
 end
