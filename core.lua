@@ -1023,8 +1023,8 @@ function RCLootCouncil:SendLootAck(table, skip)
 			hasData = true
 			local g1,g2 = self:GetGear(v.link, v.equipLoc, v.relic)
 			local diff = self:GetIlvlDifference(v.link, g1, g2)
-			toSend.gear1[session] = self.Utils:GetItemStringClean(g1)
-			toSend.gear2[session] = self.Utils:GetItemStringClean(g2)
+			toSend.gear1[session] = g1 and self.Utils:GetItemStringClean(g1) or nil
+			toSend.gear2[session] = g2 and self.Utils:GetItemStringClean(g2) or nil
 			toSend.diff[session] = diff
 			toSend.response[session] = v.autopass
 		end
