@@ -2413,13 +2413,13 @@ function RCLootCouncil:SubscribeToPermanentComms ()
 			end
 		end,
 
-		lootAck = function (sender)
+		lootAck = function ()
 			if self.enabled then
 				self:OnLootAckReceived()
 			end
 		end,
 
-		Rgear = function(sender)
+		Rgear = function(_, sender)
 			self:OnGearRequestReceived(sender)
 		end
 
@@ -2622,9 +2622,9 @@ function RCLootCouncil:OnGearRequestReceived(sender)
 	end
 	Comms:Send{
 		prefix = self.PREFIXES.MAIN,
-		target = Player:Get("sender"),
+		target = Player:Get(sender),
 		command = "gear",
-		data = data,
+		data = {data},
 		prio = "BULK"
 	}
 	TT:Release(data)
