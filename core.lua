@@ -2373,10 +2373,10 @@ function RCLootCouncil:SubscribeToPermanentComms ()
 		end,
 
 		n_t = function (data, sender, command)
-			self:OnTradeableStatusReceived(sender, command, unpack(data))
+			self:OnTradeableStatusReceived(sender, "not_tradeable", unpack(data))
 		end,
 		r_t = function (data, sender, command)
-			self:OnTradeableStatusReceived(sender, command, unpack(data))
+			self:OnTradeableStatusReceived(sender, "rejected_trade", unpack(data))
 		end,
 
 		session_end = function (_,sender)
