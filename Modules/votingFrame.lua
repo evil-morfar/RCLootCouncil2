@@ -412,8 +412,7 @@ end
 -----------------------------------------------------------------
 -- Comm Handlers
 -----------------------------------------------------------------
-function RCVotingFrame:OnChangeResponseReceived(ses, name, response, isTier)
-	self:SetCandidateData(ses, name, "isTier", isTier)
+function RCVotingFrame:OnChangeResponseReceived(ses, name, response)
 	self:SetCandidateData(ses, name, "response", response)
 	self:Update()
 end
