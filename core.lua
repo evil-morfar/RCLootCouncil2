@@ -992,7 +992,7 @@ end
 function RCLootCouncil:PrepareLootTable(lootTable)
 	for ses, v in pairs(lootTable) do
 		local _, link, rarity, ilvl, _, _, subType, _, equipLoc, texture,
-		_, typeID, subTypeID, bindType, _, _, _ = GetItemInfo("item:"..v.string)
+		_, typeID, subTypeID, bindType, _, _, _ = GetItemInfo(self.Utils:UncleanItemString(v.string))
 		local itemID = GetItemInfoInstant(link)
 		v.link		= link
 		v.quality 	= rarity

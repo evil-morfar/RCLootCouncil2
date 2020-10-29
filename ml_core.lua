@@ -960,7 +960,7 @@ function RCLootCouncilML:AnnounceItems(table)
 	addon:SendAnnouncement(db.announceText, db.announceChannel)
 	local link
 	for k,v in ipairs(table) do
-		link = v.link and v.link or select(2, GetItemInfo("item:"..v.string))
+		link = v.link and v.link or select(2, GetItemInfo(addon.Utils:UncleanItemString(v.string)))
 		local msg = db.announceItemString
 		for text, func in pairs(self.announceItemStrings) do
 			-- escapePatternSymbols is defined in FrameXML/ChatFrame.lua that escapes special characters.
