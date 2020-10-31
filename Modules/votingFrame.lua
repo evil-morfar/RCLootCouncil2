@@ -638,8 +638,7 @@ function RCVotingFrame:SwitchSession(s)
 	self.frame.bonuses:SetText(bonusText)
 
 	-- Owner
-	-- FIXME: First condition should check if the owner is a group member
-	if t.owner then
+	if t.owner and t.candidates[t.owner]then
 		-- Hack-reuse the SetCellClassIcon function
 		addon.SetCellClassIcon(nil,self.frame.ownerString.icon,nil,nil,nil,nil,nil,nil,nil, t.candidates[t.owner].class)
 		self.frame.ownerString.icon:Show()
