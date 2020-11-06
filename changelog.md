@@ -11,7 +11,8 @@ Below is a list of the most relevant changes.
 
 ### Updated for Shadowlands
 
-Deprecated API calls have been removed, and all addon code updated for the changes introduced in Shadowlands.
+* Deprecated API calls have been removed, and all addon code updated for the changes introduced in Shadowlands.
+* Shadowlands related dates have been added to the History Patch Mass delete tool.
 
 #### Button Groups
 
