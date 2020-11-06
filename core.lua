@@ -545,8 +545,8 @@ function RCLootCouncil:UpdateAndSendRecentTradableItem(info, count)
 	local Item = self.ItemStorage:New(info.link, "temp")
 	self.ItemStorage:WatchForItemInBags(Item,
 	function() -- onFound
-		Item:Store()
 		if Item.time_remaining > 0 then
+			Item:Store()
 			if self.mldb.rejectTrade and IsInRaid() then
 				LibDialog:Spawn("RCLOOTCOUNCIL_KEEP_ITEM", info.link)
 				return
