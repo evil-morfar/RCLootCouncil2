@@ -14,10 +14,10 @@ function Compat:Run()
 	for k, v in ipairs(self.list) do
 		if v.version == "always" or ((v.tVersion
 						and addon.Utils:CheckOutdatedVersion(addon.db.global.version, v.version,
-                                                            addon.db.global.tVersion, v.tVersion)
+                                     						addon.db.global.tVersion, v.tVersion)
 						== addon.VER_CHECK_CODES[3])
 						or (addon.Utils:CheckOutdatedVersion(addon.db.global.version, v.version,
-                                                            addon.db.global.tVersion, v.tVersion)
+                                     						addon.db.global.tVersion, v.tVersion)
 										== addon.VER_CHECK_CODES[2] or not addon.db.global.version))
 						and not v.executed then
 			addon.Log("<Compat>", "Executing:", k, v.name or "no_name")
@@ -42,21 +42,22 @@ Compat.list = {
 	{
 		name = "v3.0 Update",
 		version = "3.0.0",
-		tVersion = "Beta.2",
 		func = function()
-			local db = addon:Getdb()
-			db.itemStorage = {} -- Just in case
-			db.council = {} -- Needs reset
-			-- All enabled by default, just removed for cleanup
-			db.altClickLooting = nil
-			db.autolootEverything = nil
-			db.autoLootOthersBoE = nil
-			db.saveBonusRolls = nil
-			db.allowNotes = nil
+			for _, db in pairs(addon.db.profiles) do -- Needs to be cleared on all profiles
+				db.itemStorage = {} -- Just in case
+				db.council = {} -- Needs reset
+				db.minRank = -1
+				-- All enabled by default, just removed for cleanup
+				db.altClickLooting = nil
+				db.autolootEverything = nil
+				db.autoLootOthersBoE = nil
+				db.saveBonusRolls = nil
+				db.allowNotes = nil
 
-			db.enabledButtons.CORRUPTED = nil
-			db.buttons.CORRUPTED = nil
-			db.responses.CORRUPTED = nil
+				db.enabledButtons.CORRUPTED = nil
+				db.buttons.CORRUPTED = nil
+				db.responses.CORRUPTED = nil
+			end
 
 			local global = addon.db.global
 			global.errors = {} -- just reset
@@ -70,22 +71,13 @@ Compat.list = {
 			global["2.13.1"] = nil
 			global["2.16.0"] = nil
 
+			if addon.db.global.cache then
+				addon.db.global.cache.player = {}
+				addon.db.global.cache.players = nil -- Spelling mistake in one of the betas.
+			end
+
 			addon:ScheduleTimer("Print", 5,
                     			"Your Council has been reset as part of upgrading to v3.0")
 		end
-	}, {
-		name = "v3.0 Beta.3 Clear cache",
-		version = "3.0.0",
-		tVersion = "Beta.3",
-		func = function()
-			addon.db.global.cache.players = {}
-		end
 	}
-	-- {
-	--     name = "Clear player cache",
-	--     version = "always",
-	--     func = function()
-	--         addon.db.global.cache.players = {}
-	--     end
-	-- }
 }
