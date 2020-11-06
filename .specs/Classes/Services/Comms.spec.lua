@@ -1,6 +1,7 @@
 require "busted.runner"{}
 dofile ".specs/.matchers/isa.lua"
 local addon = {
+Getdb = function(self) return self.db end,
    realmName = "Realm1",
    db = {global = { log = {}, cache={}}},
    defaults = { global = {logMaxEntries = 2000}}
@@ -22,7 +23,7 @@ loadfile(".specs/AddonLoader.lua")(nil,nil, addon).LoadArray{
    [[Locale\enUS.lua]],
    [[Utils\Utils.lua]],
    [[Classes\Data\Player.lua]],
-   [[Classes\Services\Comms.lua]]
+   [[Classes\Services\Comms.lua]],
 }
 addon:InitLogging()
 local Player = addon.Require "Data.Player"
