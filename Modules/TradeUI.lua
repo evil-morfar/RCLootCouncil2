@@ -239,6 +239,11 @@ function TradeUI:OnEvent_UI_INFO_MESSAGE (event, ...)
             elseif Item.args.recipient and not addon:UnitIsUnit(self.tradeTarget, Item.args.recipient) then
                -- Player trades the item to someone else than the winner
                addon:Send("group", "trade_WrongWinner", link, self.tradeTarget, addon.playerName, Item.args.recipient)
+
+               -- REVIEW: Temporary debugging
+               addon.Log:D("WrongWinner", self.tradeTarget, Item.args.recipient)
+               addon.Log:D("Target:", UnitName("target"))
+               addon.Log:D("NPC:", UnitName("NPC"))
             end
          end
          addon.ItemStorage:RemoveItem(link)

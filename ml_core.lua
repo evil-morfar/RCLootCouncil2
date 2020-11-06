@@ -1536,7 +1536,8 @@ function RCLootCouncilML:RegisterComms ()
 
 		trade_WrongWinner = function (data)
 			local link, recipient, trader, winner = unpack(data)
-			addon:Print(format(L["trade_wrongwinner_message"], addon.Ambiguate(trader), link, addon.Ambiguate(recipient), addon.Ambiguate(winner)))
+			self.Log:E("WrongWinner", addon.Ambiguate(trader), link, addon.Ambiguate(recipient), addon.Ambiguate(winner))
+			-- addon:Print(format(L["trade_wrongwinner_message"], addon.Ambiguate(trader), link, addon.Ambiguate(recipient), addon.Ambiguate(winner)))
 		end,
 
 		n_t = function (data, sender, command)
