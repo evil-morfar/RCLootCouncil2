@@ -513,6 +513,10 @@ function RCLootCouncil:ChatCommand(msg)
 
 	elseif input == "trade" then
 		self.TradeUI:Show(true)
+
+	elseif input == "safemode" then
+		db.safemode = not db.safemode
+		self:Print("SafeMode " .. (db.safemode and "On" or "Off"))
 --@debug@
 	elseif input == 't' then -- Tester cmd
 		-- Test items with several modifiers. Should probably be added to the regular test func

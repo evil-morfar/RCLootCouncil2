@@ -12,6 +12,8 @@ local Subject = addon.Require("rx.Subject")
 local Log = addon.Require("Log"):Get()
 ---@type Utils.TempTable
 local TempTable = addon.Require("Utils.TempTable")
+---@type Services.ErrorHandler
+local ErrorHandler = addon.Require "Services.ErrorHandler"
 local ld = LibStub("LibDeflate")
 
 local private = {
@@ -161,7 +163,15 @@ function private.ReceiveComm(prefix, encodedMsg, distri, sender)
 end
 
 function private:FireCmd (prefix, distri, sender, command, data)
-   self:SubjectHelper(prefix, command):next(data, sender, command, distri)
+   if addon:Getdb().safemode then
+      local subject = self:SubjectHelper(prefix, command)
+      local ok, err = pcall(subject.next, subject, data, sender, command, distri)
+      if not ok then
+         ErrorHandler:ThrowSilentError(err)
+      end
+   else
+      self:SubjectHelper(prefix, command):next(data, sender, command, distri)
+   end
 end
 
 function private:GetGroupChannel()
