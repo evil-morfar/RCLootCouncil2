@@ -1,3 +1,75 @@
+# v3.0.0
+
+*v3.0 is not backwards compatible with any older versions, including most of its beta versions.*
+
+## Changes
+
+v3.0 marks a development landmark more than 2 years in the making.  
+It consists of more than 10k line changes, most of which are background stuff you won't be seeing, with the goal of providing a solid foundation for the future.
+Ideally you shouldn't *see* any major changes, but everything should *feel* faster and more responsive.  
+Below is a list of the most relevant changes.
+
+### Updated for Shadowlands
+
+* Deprecated API calls have been removed, and all addon code updated for the changes introduced in Shadowlands.
+* Shadowlands related dates have been added to the History Patch Mass delete tool.
+
+#### Button Groups
+
+* Added a new response group for Anima Beads and Spherules - a new Main/Off-hand token in Shadowlands.  
+* Removed the groups for Corruption.
+
+
+### Comms overhaul
+
+All comms have been updated with a new system compressing all messages sent.  
+Most comms have been optimized resulting in up to an 90% decrease in comms usage, i.e. everything is faster.  
+This change breaks backwards compatiblity with 2.x versions.
+
+### Options Menu
+
+The options menu have been slimmed down, some toggles have had a name switch and some options moved around.
+
+#### Removed
+
+The following have been removed and are now always enabled:
+* Alt-click looting
+* Loot Everything
+* Notes
+* Save Bonus Rolls
+* Autoloot All BoE (merged with `Auto Add BoEs`)
+
+#### Renamed
+
+The following have had a name and description update to better explain what they do:
+* Auto Start > Skip Session Frame
+* Auto Loot > Auto Add Items
+* Autoloot BoE > Auto Add BoE's
+
+### Testing
+
+v3.0 is developed with a philosophy of writing automated tests for all new code.  
+This should result in a lot fewer bugs in new releases.  
+The internal log has also been updated for better identifying issues.
+
+### Removed
+
+* Corruption column.  
+* `winners` command - has been handled by the TradeUI for a long time.
+
+### Dev
+
+* All comms have updated prefixes, commands, and handlers. Refer to `/Classes/Services/Comms.lua`.
+* Old way of logging is removed - see `/Classes/Utils/Log.lua` for new implementation.
+* Many structures now have their own files and classes. See `/Classes`.
+* Classes are loaded with `RCLootCouncil.Require`. See `/Classes/Core.lua` for details.
+* Removed all references to `candidates`. It's now based on `Player` class, and group members can be found with `RCLootCouncil.candidatesInGroup` and `RCLootCouncil:GroupIterator()`.
+* `RCLootCouncil.council` removed. `db.profile.council` now stores GUIDs, which combined with `Data.Player` and `Data.Council` now makes up a council.
+
+## Bugfixes
+
+* *The completion indicator in the Synchronizer no longer disappears.*
+
 # v2.19.3
 ## Changes
 

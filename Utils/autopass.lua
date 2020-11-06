@@ -1,4 +1,4 @@
---- autopass.lua	Contains everything related to autopassing
+--- autopass.lua Contains everything related to autopassing
 -- @author	Potdisc
 -- Create Date : 23/9/2016
 
@@ -84,7 +84,7 @@ function RCLootCouncil:AutoPassCheck(link, equipLoc, typeID, subTypeID, classesF
 	if bit.band(classesFlag, bit.lshift(1, classID-1)) == 0 then -- The item tooltip writes the allowed clases, but our class is not in it.
 		return true
 	end
-	local id = type(link) == "number" and link or self:GetItemIDFromLink(link) -- Convert to id if needed
+	local id = type(link) == "number" and link or self.Utils:GetItemIDFromLink(link) -- Convert to id if needed
 	if equipLoc == "INVTYPE_TRINKET" then
 		if self:Getdb().autoPassTrinket then
 			if _G.RCTrinketSpecs and _G.RCTrinketSpecs[id] and _G.RCTrinketSpecs[id]:sub(-classID, -classID)=="0" then
@@ -93,19 +93,7 @@ function RCLootCouncil:AutoPassCheck(link, equipLoc, typeID, subTypeID, classesF
 		end
 	end
 	if not tContains(autopassOverride, equipLoc) then
-		if self:IsRelicTypeID(typeID, subTypeID) then
-			if isRelic then -- New in v2.3+
-				self:DebugLog("NewRelicAutopassCheck", link, isRelic)
-				return not tContains(relics[class], isRelic)
-			else
-				id = self:GetItemIDFromLink(link)
-	         local type = select(3, C_ArtifactUI.GetRelicInfoByItemID(id))
-				self:DebugLog("RelicAutopassCheck", type, id)
-	         -- If the type exists in the table, then the player can use it, so we need to negate it
-	         return not tContains(relics[class], type)
-			end
-
-		elseif autopassTable[typeID] and autopassTable[typeID][subTypeID] then
+		if autopassTable[typeID] and autopassTable[typeID][subTypeID] then
 			return tContains(autopassTable[typeID][subTypeID], class)
 		end
 	end

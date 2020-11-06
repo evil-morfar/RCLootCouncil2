@@ -1,9 +1,14 @@
 --- Constants.lua
 -- Objects which are intended to be set once (i.e. modules or addons can change them on init)
 local _, addon = ...
-local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 
 addon.LOGO_LOCATION = "Interface\\AddOns\\RCLootCouncil\\Media\\rc_logo"
+
+addon.PREFIXES = {
+   MAIN     = "RCLC",
+   VERSION  = "RCLCv",
+   SYNC     = "RCLCs"
+}
 
 addon.BTN_SLOTS = {
    INVTYPE_HEAD = "AZERITE",
@@ -21,7 +26,6 @@ addon.BTN_SLOTS = {
 }
 
 addon.OPT_MORE_BUTTONS_VALUES = {
-   AZERITE = L["Azerite Armor"],
    INVTYPE_HEAD = _G.INVTYPE_HEAD,
    INVTYPE_NECK = _G.INVTYPE_NECK,
    INVTYPE_SHOULDER = _G.INVTYPE_SHOULDER,
@@ -35,13 +39,16 @@ addon.OPT_MORE_BUTTONS_VALUES = {
    INVTYPE_FINGER = _G.INVTYPE_FINGER,
    INVTYPE_TRINKET = _G.INVTYPE_TRINKET,
    WEAPON = _G.WEAPON,
-   TOKEN = L["Armor Token"],
-   CORRUPTED = _G.CORRUPTION_TOOLTIP_TITLE,
+   AZERITE = "Azerite Armor",
+   -- TOKEN = L["Armor Token"],
+   -- CORRUPTED = _G.CORRUPTION_TOOLTIP_TITLE,
+   CONTEXT_TOKEN = "Beads and Spherules"
 }
 
 --[[
 	Used by getCurrentGear to determine slot types
-	Inspired by EPGPLootMaster
+   Inspired by EPGPLootMaster
+   --v3.0: Now also used for custum "INVTYPEs"
 --]]
 addon.INVTYPE_Slots = {
    INVTYPE_HEAD = "HeadSlot",
@@ -65,7 +72,10 @@ addon.INVTYPE_Slots = {
    INVTYPE_RANGEDRIGHT = {"MainHandSlot", ["or"] = "SecondaryHandSlot"},
    INVTYPE_FINGER = {"Finger0Slot", "Finger1Slot"},
    INVTYPE_HOLDABLE = {"SecondaryHandSlot", ["or"] = "MainHandSlot"},
-   INVTYPE_TRINKET = {"TRINKET0SLOT", "TRINKET1SLOT"}
+   INVTYPE_TRINKET = {"TRINKET0SLOT", "TRINKET1SLOT"},
+
+   -- Custom
+   CONTEXT_TOKEN = {"MainHandSlot", "SecondaryHandSlot"},
 }
 
 --- Functions used for generating response codes
@@ -74,16 +84,9 @@ addon.INVTYPE_Slots = {
 -- Each function receives the following parameters:
 -- item, db (addon:Getdb()), itemID, itemEquipLoc,itemClassID, itemSubClassID
 addon.RESPONSE_CODE_GENERATORS = {
-   -- Corrupted Items
-   function (item, db, itemEquipLoc)
-      return db.enabledButtons.CORRUPTED and GetCorruption and IsCorruptedItem(item) and "CORRUPTED" or nil
-   end,
-
-   -- Check for token
-   function (_, db, itemID)
-      if RCTokenTable[itemID] and db.enabledButtons["TOKEN"] then
-         return "TOKEN"
-      end
+   -- Beads and Spherules
+   function(_, db, _, _,itemClassID, itemSubClassID)
+      return db.enabledButtons.CONTEXT_TOKEN and itemClassID == 5 and itemSubClassID == 2 and "CONTEXT_TOKEN" or nil
    end,
 
    -- Check for Weapon

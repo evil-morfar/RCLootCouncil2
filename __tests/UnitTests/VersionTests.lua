@@ -2,9 +2,11 @@ local lu = require("luaunit")
 require "lfs"
 print(lfs.currentdir())
 print("PATH:", arg[0],debug.getinfo(2, "S").source)
-require("__tests/wow_api")
-require("__tests/__load_libs")
-require("__tests/AddonLoader")
+local addon= {
+   db = {}
+}
+
+loadfile(".specs/AddonLoader.lua")(nil,nil,addon).LoadToc("RCLootCouncil.toc")
 local isLocalRun = not ...
 
 local Utils = RCLootCouncil.Utils
@@ -57,7 +59,7 @@ TestVersionBasics = {
 
    TesttVersionMainOutdated = function (args)
       local a = Utils:CheckOutdatedVersion("2.0.0", "2.1.0", "Alpha.1", "Alpha.1")
-      lu.assertEquals(a, RCLootCouncil.VER_CHECK_CODES[1])
+      lu.assertEquals(a, RCLootCouncil.VER_CHECK_CODES[2])
    end,
 
    TesttVersionEqual = function (args)
@@ -67,6 +69,14 @@ TestVersionBasics = {
    TesttVersionOtherOutdated = function (args)
       local a = Utils:CheckOutdatedVersion("2.0.0", "2.0.0", "Alpha.2", "Alpha.1")
       lu.assertEquals(a, RCLootCouncil.VER_CHECK_CODES[1])
+   end,
+   TesttVersionBetas = function (args)
+      local a = Utils:CheckOutdatedVersion("2.0.0", "2.0.0", "Alpha.1", "Beta.1")
+      lu.assertEquals(a, RCLootCouncil.VER_CHECK_CODES[3])
+   end,
+   TesttVersionBetas2 = function (args)
+      local a = Utils:CheckOutdatedVersion("2.0.0", "2.0.0", "Alpha.3", "Beta.1")
+      lu.assertEquals(a, RCLootCouncil.VER_CHECK_CODES[3])
    end,
 }
 

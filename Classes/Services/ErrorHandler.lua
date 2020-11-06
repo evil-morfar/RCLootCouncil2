@@ -1,10 +1,12 @@
 --- ErrorHandler.lua Class for logging errors to the log.
 -- @author Potdisc
 -- Create Date: 16/04/2020
-
+---@type RCLootCouncil
 local _, addon = ...
+---@class Services.ErrorHandler
+local ErrorHandler = addon.Init "Services.ErrorHandler"
+LibStub("AceEvent-3.0"):Embed(ErrorHandler)
 
-local ErrorHandler = addon:NewModule("ErrorHandler", "AceEvent-3.0")
 local private = {
    MAX_STACK_DEPTH = 10,
 }
@@ -21,12 +23,12 @@ end
 
 -- Temporaryly just print it to log
 function ErrorHandler:OnEvent (...)
-   addon:DebugLog(...)
+   -- addon.Log:d(...)
 end
 
 function ErrorHandler:LogError (msg)
    msg = private:SanitizeLine(msg)
-   addon:Debug("<ERROR>", msg)
+   addon.Log:e(msg)
    local errObj = private:DoesErrorExist(msg)
    if errObj then -- This is not the first
       private:IncrementErrorCount(errObj)
@@ -72,6 +74,7 @@ function private:NewError (err)
       count = 1,
       time = GetServerTime()
    }
+   addon:DumpDebugVariables() -- REVIEW: Consider make new errors subscribable to avoid this binding.
 end
 
 function private:IncrementErrorCount (errObj)

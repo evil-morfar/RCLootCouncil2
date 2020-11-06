@@ -1,8 +1,8 @@
---- lootFrame.lua	Adds the interface for selecting a response to a session.
+--- lootFrame.lua Adds the interface for selecting a response to a session.
 -- DefaultModule.
 -- @author	Potdisc
 -- Create Date : 12/16/2014 8:24:04 PM
-
+---@type RCLootCouncil
 local _,addon = ...
 local LootFrame = addon:NewModule("RCLootFrame", "AceTimer-3.0", "AceEvent-3.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
@@ -57,7 +57,7 @@ function LootFrame:CheckDuplicates (lenght, offset)
 		if not self.items[k].rolled then
 			for j = offset+1, offset + lenght do
 				if j ~= k and addon:ItemIsItem(self.items[k].link, self.items[j].link) and not self.items[j].rolled then
-					addon:Debug("LootFrame:", self.items[k].link, "is a dublicate of", self.items[j].link)
+					addon.Log:D("LootFrame:", self.items[k].link, "is a dublicate of", self.items[j].link)
 					tinsert(self.items[k].sessions, self.items[j].sessions[1])
 					self.items[j].rolled = true -- Pretend we have rolled it.
 				end
@@ -67,7 +67,7 @@ function LootFrame:CheckDuplicates (lenght, offset)
 end
 
 function LootFrame:Start(table, reRoll)
-	addon:DebugLog("LootFrame:Start", #table, reRoll)
+	addon.Log("LootFrame:Start", #table, reRoll)
 
 	local offset = 0
 	if reRoll then
@@ -91,7 +91,7 @@ end
 
 function LootFrame:AddSingleItem(item)
 	if not self:IsEnabled() then self:Enable() end
-	addon:DebugLog("LootFrame:AddSingleItem", item.link, #self.items)
+	addon.Log:D("LootFrame:AddSingleItem", item.link, #self.items)
 	if item.autopass then
 		self.items[#self.items+1] = { rolled = true}
 	else
@@ -102,7 +102,7 @@ function LootFrame:AddSingleItem(item)
 end
 
 function LootFrame:ReRoll(table)
-	addon:DebugLog("LootFrame:ReRoll(#table)", #table)
+	addon.Log:D("LootFrame:ReRoll(#table)", #table)
 	self:Start(table, true)
 end
 
@@ -146,7 +146,7 @@ function LootFrame:Update()
 		return self:Disable()
 	end
 	self.EntryManager:Update()
-	self.frame.content:SetHeight(numEntries * ENTRY_HEIGHT + 7)
+	self.frame:SetHeight(numEntries * ENTRY_HEIGHT + 7)
 
 	local firstEntry = self.EntryManager.entries[1]
 	if firstEntry and addon:Getdb().modules["RCLootFrame"].alwaysShowTooltip then
@@ -162,20 +162,20 @@ end
 function LootFrame:OnRoll(entry, button)
 	local item = entry.item
 	if not item.isRoll then
-		if addon.mldb and addon.mldb.requireNotes and button ~= "PASS" then
+		if addon.mldb and addon.mldb.requireNotes and button ~= "PASS" and button ~= "TIMEOUT" then
 			if not item.note or #item.note == 0 then
-				addon:Print(format(L["lootFrame_error_note_required"], addon.Ambiguate(addon.masterLooter)))
+				addon:Print(format(L["lootFrame_error_note_required"], addon.Ambiguate(addon.masterLooter:GetName())))
 				return
 			end
 		end
 		-- Only send minimum neccessary data, because the information of current equipped gear has been sent when we receive the loot table.
 		-- target, session, response, isTier, isRelic, note, link, ilvl, equipLoc, relicType, sendAvgIlvl, sendSpecID
-		addon:Debug("LootFrame:Response", button, "Response:", addon:GetResponse(item.typeCode or item.equipLoc, button).text)
+		addon.Log:D("LootFrame:Response", button, "Response:", addon:GetResponse(item.typeCode or item.equipLoc, button).text)
 		for _, session in ipairs(item.sessions) do
 			addon:SendResponse("group", session, button, nil, nil, item.note)
 		end
 		if addon:Getdb().printResponse then
-			addon:Print(string.format(L["Response to 'item'"], addon:GetItemTextWithCount(item.link, #item.sessions))..
+			addon:Print(string.format(L["Response to 'item'"], addon.Utils:GetItemTextWithCount(item.link, #item.sessions))..
 				": "..addon:GetResponse(item.typeCode or item.equipLoc, button).text)
 		end
 		item.rolled = true
@@ -196,7 +196,7 @@ function LootFrame:OnRoll(entry, button)
 			item.rolled = true
 			self.EntryManager:Trash(entry)
 			self:Update()
-			addon:SendCommand("group", "roll", addon.playerName, "-", item.sessions)
+			addon:Send("group", "roll", addon.playerName, "-", item.sessions)
 		end
 	end
 
@@ -210,8 +210,8 @@ end
 
 function LootFrame:GetFrame()
 	if self.frame then return self.frame end
-	addon:DebugLog("LootFrame","GetFrame()")
-	self.frame = addon:CreateFrame("DefaultRCLootFrame", "lootframe", L["RCLootCouncil Loot Frame"], 250, 375)
+	addon.Log:D("LootFrame","GetFrame()")
+	self.frame = addon.UI:NewNamed("Frame", UIParent, "DefaultRCLootFrame", L["RCLootCouncil Loot Frame"], 250, 375)
 	self.frame.title:SetPoint("BOTTOM", self.frame, "TOP", 0 ,-5)
 	self.frame.itemTooltip = addon:CreateGameTooltip("lootframe", self.frame.content)
 	return self.frame
@@ -222,7 +222,7 @@ do
 		type = "normal",
 		Update = function(entry, item)
 			if not item then
-				return addon:Debug("Entry update error @ item:", item)
+				return addon.Log:E("Entry update error @ item:", item)
 			end
 			if item ~= entry.item then
 				entry.noteEditbox:Hide()
@@ -236,16 +236,16 @@ do
 			if IsCorruptedItem and IsCorruptedItem(item.link) then
 				entry.icon:SetBorderColor("purple")
 			else
-				entry.icon:SetBorderColor()
+				entry.icon:SetBorderColor("grey")
 			end
 			entry.item = item
-			entry.itemText:SetText((item.isRoll and (_G.ROLL..": ") or "")..addon:GetItemTextWithCount(entry.item.link or "error", #entry.item.sessions))
+			entry.itemText:SetText((item.isRoll and (_G.ROLL..": ") or "")..addon.Utils:GetItemTextWithCount(entry.item.link or "error", #entry.item.sessions))
 			entry.icon:SetNormalTexture(entry.item.texture or "Interface\\InventoryItems\\WoWUnknownItem01")
 			entry.itemCount:SetText(#entry.item.sessions > 1 and #entry.item.sessions or "")
 			local typeText = addon:GetItemTypeText(item.link, item.subType, item.equipLoc, item.typeID, item.subTypeID, item.classes, item.isTier, item.isRelic)
 			local bonusText = addon:GetItemBonusText(item.link, "/")
 			if bonusText ~= "" then bonusText = "+ "..bonusText end
-			entry.itemLvl:SetText(addon:GetItemLevelText(entry.item.ilvl, entry.item.isTier).." |cff7fffff"..typeText.."|r")
+			entry.itemLvl:SetText(addon.Utils:GetItemLevelText(entry.item.ilvl, entry.item.isTier).." |cff7fffff"..typeText.."|r")
 			entry.bonuses:SetText(bonusText)
 			if entry.item.note then
 				entry.noteButton:SetNormalTexture("Interface\\Buttons\\UI-GuildButton-PublicNote-Up")
@@ -278,7 +278,7 @@ do
 		-- Expects caller to setup buttons and position.
 		Create = function(entry, parent)
 			entry.width = parent:GetWidth()
-			entry.frame = CreateFrame("Frame", "DefaultRCLootFrameEntry("..LootFrame.EntryManager.numEntries..")", parent)
+			entry.frame = CreateFrame("Frame", "DefaultRCLootFrameEntry("..LootFrame.EntryManager.numEntries..")", parent, "BackdropTemplate")
 			entry.frame:SetWidth(entry.width)
 			entry.frame:SetHeight(ENTRY_HEIGHT)
 			-- We expect entry constructors to place the frame correctly:
@@ -286,7 +286,7 @@ do
 
 			-------- Item Icon -------------
 			entry.icon = addon.UI:New("IconBordered", entry.frame)
-			entry.icon:SetBorderColor() -- white
+			entry.icon:SetBorderColor("grey") -- white
 			entry.icon:SetSize(ENTRY_HEIGHT*0.78, ENTRY_HEIGHT*0.78)
 			entry.icon:SetPoint("TOPLEFT", entry.frame, "TOPLEFT", 9, -5)
 			entry.icon:SetMultipleScripts({
@@ -380,7 +380,7 @@ do
 				end
 			end)
 
-			entry.noteEditbox = CreateFrame("EditBox", nil, entry.frame, "AutoCompleteEditBoxTemplate")
+			entry.noteEditbox = CreateFrame("EditBox", nil, entry.frame, "AutoCompleteEditBoxTemplate, BackdropTemplate")
 			entry.noteEditbox:SetMaxLetters(64)
 			entry.noteEditbox:SetBackdrop(LootFrame.frame.title:GetBackdrop())
 			entry.noteEditbox:SetBackdropColor(LootFrame.frame.title:GetBackdropColor())
@@ -464,7 +464,7 @@ do
 
 	-- Hides and stores entries for reuse later
 	function LootFrame.EntryManager:Trash(entry)
-		addon:DebugLog("Trashing entry:", entry.position or 0, entry.item.link)
+		addon.Log:D("Trashing entry:", entry.position or 0, entry.item.link)
 		entry:Hide()
 		if not self.trashPool[entry.type] then self.trashPool[entry.type] = {} end
 		self.trashPool[entry.type][entry] = true
@@ -478,7 +478,7 @@ do
 		if not self.trashPool[type] then return nil end
 		local t = next(self.trashPool[type])
 		if t then
-			addon:DebugLog("Restoring entry:", type, t.position or 0)
+			addon.Log:D("Restoring entry:", type, t.position or 0)
 			self.trashPool[type][t] = nil
 			return t
 		end
@@ -496,7 +496,7 @@ do
 			end
 			entry.position = i
 		end
-	--	addon:DebugLog("EntryManager:Update(), width = ", max)
+	--	addon.Log:D("EntryManager:Update(), width = ", max)
 		LootFrame.frame:SetWidth(max)
 		-- Update the width of all entries after we've found the max width
 		for _, entry in ipairs(self.entries) do
@@ -535,7 +535,7 @@ do
 	end
 
 	function LootFrame.EntryManager:GetNewEntry(item)
-		--addon:DebugLog("Creating Entry:", "normal", item.link)
+		--addon.Log:D("Creating Entry:", "normal", item.link)
 		local Entry = setmetatable({}, mt)
 		Entry.type = item.typeCode or item.equipLoc
 		Entry:Create(LootFrame.frame.content)
@@ -602,7 +602,7 @@ function LootFrame:CHAT_MSG_SYSTEM(event, msg)
 		self:CancelTimer(entryInQueue.timer)
 		local entry = entryInQueue.entry
 		local item = entry.item
-		addon:SendCommand("group", "roll", addon.playerName, roll, item.sessions)
+		addon:Send("group", "roll", addon.playerName, roll, item.sessions)
 		addon:SendAnnouncement(format(L["'player' has rolled 'roll' for: 'item'"], addon.Ambiguate(addon.playerName), roll, item.link), "group")
 		entry.rollResult:SetText(roll)
 		entry.rollResult:Show()
