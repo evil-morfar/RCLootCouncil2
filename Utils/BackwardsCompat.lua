@@ -54,9 +54,15 @@ Compat.list = {
 				db.saveBonusRolls = nil
 				db.allowNotes = nil
 
-				db.enabledButtons.CORRUPTED = nil
-				db.buttons.CORRUPTED = nil
-				db.responses.CORRUPTED = nil
+				if db.enabledButtons then
+					db.enabledButtons.CORRUPTED = nil
+				end
+				if db.buttons then
+					db.buttons.CORRUPTED = nil
+				end
+				if db.responses then
+					db.responses.CORRUPTED = nil
+				end
 			end
 
 			local global = addon.db.global
