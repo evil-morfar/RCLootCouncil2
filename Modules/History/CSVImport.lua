@@ -19,14 +19,14 @@ function His:ImportTSV_CSV (import)
 end
 
 function His:ImportNew (import, delimiter)
-   addon:Debug("His:ImportNew", #import, delimiter)
+   addon.Log.D("His:ImportNew", #import, delimiter)
    wipe(private.errorList)
    local data = {strsplit("\n", import)}
-   addon:Debug("Data lines:", #data)
+   addon.Log.D("Data lines:", #data)
    -- Validate the input
    if not private:ValidateHeader(data[1], delimiter) then
       addon:Print(L["import_malformed_header"])
-      addon:DebugLog("<ERROR>", "Malformed Header:", data[1])
+      addon.Log:E("Malformed Header:", data[1])
       return
    end
    local lines = {}
@@ -43,24 +43,24 @@ function His:ImportNew (import, delimiter)
       end
    end
 
-   if self:DoErrorCheck() then return addon:DebugLog("<WARNING>", "Import error'd out at first check") end
+   if self:DoErrorCheck() then return addon.Log:W("Import error'd out at first check") end
 
    -- Time to rebuild
    -- Clear errors and make it ready to be used again
    wipe(private.errorList)
    local rebuilt = self:RebuildData(lines)
-   if self:DoErrorCheck() then return addon:DebugLog("<WARNING>", "Import error'd out at second check") end
+   if self:DoErrorCheck() then return addon.Log:W("Import error'd out at second check") end
    data = self:ConvertRebuiltDataToLootDBFormat(rebuilt)
 
    local overwrites = self:CheckForOverwrites(data)
    if #overwrites > 0 then
-      addon:Debug("Import contained ", #overwrites, "overwrites")
+      addon.Log.D("Import contained ", #overwrites, "overwrites")
       local OnYesCallback = function()
-         addon:Debug("Accepted import overwrite")
+         addon.Log.D("Accepted import overwrite")
          self:ExecuteImport(data)
       end
       local OnNoCallback = function()
-         addon:Debug("Declined import overwrite")
+         addon.Log.D("Declined import overwrite")
          addon:Print(L["Import aborted"])
       end
       LibDialog:Spawn("RCLOOTCOUNCIL_IMPORT_OVERWRITE", {count = #overwrites, OnYesCallback = OnYesCallback, OnNoCallback = OnNoCallback})

@@ -1,8 +1,8 @@
---- sessionFrame.lua	Adds a frame listing the items to start a session with.
+--- sessionFrame.lua Adds a frame listing the items to start a session with.
 -- DefaultModule - Requires ml_core.lua or similary functionality.
 -- @author Potdisc
 -- Create Date : 1/20/2015 3:48:38 AM
-
+---@type RCLootCouncil
 local _,addon = ...
 local RCSessionFrame = addon:NewModule("RCSessionFrame", "AceTimer-3.0", "AceEvent-3.0")
 local ST = LibStub("ScrollingTable")
@@ -15,6 +15,8 @@ local loadingItems = false
 local waitingToEndSessions = false  -- need some time to confirm the result of award later and the session cant be ended until then.
 									-- When user chooses to award later then quickly reopens the loot window when this variable is still true, dont show session frame.
 local scheduledToShowAgain = false       -- Have we scheduled to reshow the frame, due to a uncached item?
+
+local Council = addon.Require "Data.Council"
 
 --- Lua
 local getglobal, ipairs, tinsert =
@@ -32,7 +34,7 @@ function RCSessionFrame:OnInitialize()
 end
 
 function RCSessionFrame:OnEnable()
-	addon:Debug("RCSessionFrame", "enabled")
+	addon.Log("RCSessionFrame enabled")
 	self:RegisterMessage("RCLootStatusReceived", "UpdateLootStatus")
 	ml = addon:GetActiveModule("masterlooter")
 end
@@ -42,7 +44,7 @@ function RCSessionFrame:OnDisable()
 	self.frame.rows = {}
 	self:UnregisterMessage("RCLootStatusReceived")
 	awardLater = false
-	addon:DebugLog("RCSessionFrame", "disabled")
+	addon.Log("RCSessionFrame disabled")
 end
 
 function RCSessionFrame:Show(data, disableAwardLater)
@@ -103,7 +105,7 @@ function RCSessionFrame:ExtractData(data)
 				cols = {
 					{ DoCellUpdate = self.SetCellDeleteBtn, },
 					{ DoCellUpdate = self.SetCellItemIcon},
-					{ value = " "..(addon:GetItemLevelText(v.ilvl, v.token) or "")..bonusText},
+					{ value = " "..(addon.Utils:GetItemLevelText(v.ilvl, v.token) or "")..bonusText},
 					{ DoCellUpdate = self.SetCellText },
 				},
 			})
@@ -135,7 +137,7 @@ function RCSessionFrame:UpdateLootStatus ()
 end
 
 function RCSessionFrame:DeleteItem(session, row)
-	addon:Debug("Delete row:", row, "Sesison:", session)
+	addon.Log:D("Delete row:", row, "Sesison:", session)
 	ml:RemoveItem(session) -- remove the item from MLs lootTable
 	self:Show(ml.lootTable)
 end
@@ -152,7 +154,7 @@ function RCSessionFrame.SetCellText(rowFrame, frame, data, cols, row, realrow, c
 			RCSessionFrame:ScheduleTimer("Show", 0, ml.lootTable) -- Try again next frame
 		end
 	else
-		frame.text:SetText(data[realrow].link..(data[realrow].owner and addon.candidates[data[realrow].owner] and "\n"..addon:GetUnitClassColoredName(data[realrow].owner) or ""))
+		frame.text:SetText(data[realrow].link..(data[realrow].owner and "\n"..addon:GetUnitClassColoredName(data[realrow].owner) or ""))
 	end
 end
 
@@ -178,7 +180,7 @@ end
 function RCSessionFrame:GetFrame()
 	if self.frame then return self.frame end
 
-	local f = addon:CreateFrame("DefaultRCSessionSetupFrame", "sessionframe", L["RCLootCouncil Session Setup"], 260)
+	local f = addon.UI:NewNamed("Frame", UIParent, "DefaultRCSessionSetupFrame", L["RCLootCouncil Session Setup"], 260)
 
 	local tgl = CreateFrame("CheckButton", f:GetName().."Toggle", f.content, "ChatConfigCheckButtonTemplate")
 	getglobal(tgl:GetName().."Text"):SetText(L["Award later?"])
@@ -197,7 +199,7 @@ function RCSessionFrame:GetFrame()
 		end
 		if not ml.lootTable or #ml.lootTable == 0 then
 			addon:Print(L["You cannot start an empty session."])
-			addon:DebugLog("Player tried to start empty session.")
+			addon.Log:D("Player tried to start empty session.")
 			return
 		end
 		if awardLater then
@@ -213,9 +215,9 @@ function RCSessionFrame:GetFrame()
 				end)
 			end
 		else
-			if not addon.candidates[addon.playerName] or #addon.council == 0 then
+			if Council:GetNum() == 0 then
 				addon:Print(L["Please wait a few seconds until all data has been synchronized."])
-				return addon:Debug("Data wasn't ready", addon.candidates[addon.playerName], #addon.council)
+				return addon.Log:D("Data wasn't ready", Council:GetNum())
 			elseif InCombatLockdown() and not addon.db.profile.skipCombatLockdown then
 				return addon:Print(L["You can't start a loot session while in combat."])
 			--elseif ml.running then

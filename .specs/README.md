@@ -20,3 +20,9 @@ Below is my collection of useful tools for the testing environment and developme
 * [atom-build-busted](https://github.com/xpol/atom-build-busted) - parses `.busted` config for `atom-build`.
 * [atom-script](https://github.com/rgbkrk/atom-script) - for running lua scripts within atom.
 * [language-lua](https://github.com/FireZenk/language-lua) - lua language support and snippets.
+
+### VS Code
+* [Lua](https://marketplace.visualstudio.com/items?itemName=sumneko.lua) - general lua IDE.
+* [Lua Debug](https://marketplace.visualstudio.com/items?itemName=actboy168.lua-debug) - lua debugger.
+* [vscode-lua](https://marketplace.visualstudio.com/items?itemName=trixnz.vscode-lua) - lua linting.
+* [emmylua](https://marketplace.visualstudio.com/items?itemName=tangzx.emmylua)

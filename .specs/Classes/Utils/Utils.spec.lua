@@ -1,6 +1,6 @@
 require "busted.runner"({["output"] = "gtest"})
 
-dofile(".specs/AddonLoader.lua")
+dofile(".specs/AddonLoader.lua").LoadToc("RCLootCouncil.toc")
 
 local Utils
 
@@ -57,6 +57,7 @@ describe("#Utils :CheckOutdatedVersion", function()
 
    it("should handle non-outdated test versions", function()
       assert.are.equal(Utils:CheckOutdatedVersion("2.0.0", "2.0.0", "Alpha.2", "Alpha.1"), RCLootCouncil.VER_CHECK_CODES[1])
+      assert.are.equal(Utils:CheckOutdatedVersion("2.0.0", "2.0.0", "Beta.1", "Alpha.1"), RCLootCouncil.VER_CHECK_CODES[1])
    end)
 
    it("should handle equal test versions", function()
@@ -64,20 +65,29 @@ describe("#Utils :CheckOutdatedVersion", function()
       assert.are.equal(Utils:CheckOutdatedVersion("2.15.0", "2.15.0", "Alpha.1", "Alpha.1"), RCLootCouncil.VER_CHECK_CODES[1])
       assert.are.equal(Utils:CheckOutdatedVersion("2.15.0", "2.15.0", "Alpha.10", "Alpha.10"), RCLootCouncil.VER_CHECK_CODES[1])
    end)
+
+   it("should handle outdated main versions despite of test versions", function()
+      assert.are.equal(Utils:CheckOutdatedVersion("2.19.3", "3.0.0", nil, "Beta.1"), RCLootCouncil.VER_CHECK_CODES[2])
+   end)
+
+   it("should handle releases of former test versions", function()
+      assert.are.equal(Utils:CheckOutdatedVersion("3.0.0", "3.0.0", "Beta.1", nil), RCLootCouncil.VER_CHECK_CODES[2])
+   end)
 end)
 
 describe("#Utils functions", function()
+   describe("ItemLink", function()
+      it("should produce clean item strings", function()
+         local item = "|cffa335ee|Hitem:172200::::::::120:104::5:7:4823:6572:6578:6579:1502:4786:6513:::|h[Sk'shuul~`Vaz]|h|r"
+         local cleaned = Utils:GetTransmittableItemString(item)
+         assert.are.equal("172200:::::::::::5:7:4823:6572:6578:6579:1502:4786:6513", cleaned)
+      end)
+   end)
    describe("DiscardWeaponCorruption", function()
       it("should remove correct bonusID", function()
          local itemWith = "|cffa335ee|Hitem:172200::::::::120:104::5:7:4823:6572:6578:6579:1502:4786:6513:::|h[Sk'shuul~`Vaz]|h|r"
          local itemWithout = "|cffa335ee|Hitem:172200::::::::120:104::5:7:4823:6572:6578:6579:1502:4786:::|h[Sk'shuul~`Vaz]|h|r"
          assert.are.equal(itemWithout, Utils:DiscardWeaponCorruption(itemWith))
-      end)
-
-      it("should compare without numBonuses", function()
-         local itemWith = "|cffa335ee|Hitem:172200::::::::120:104::5:7:4823:6572:6578:6579:1502:4786:6513:::|h[Sk'shuul~`Vaz]|h|r"
-         local itemWithout = "|cffa335ee|Hitem:172200::::::::120:104::5:6:4823:6572:6578:6579:1502:4786:::|h[Sk'shuul~`Vaz]|h|r"
-         assert.is_true(RCLootCouncil:ItemIsItem(itemWith, itemWithout))
       end)
 
       it("shouldn't touch others", function()

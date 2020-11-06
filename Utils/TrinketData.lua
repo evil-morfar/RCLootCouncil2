@@ -190,7 +190,7 @@ function RCLootCouncil:ExportTrinketDataSingleInstance(instanceID, diffID, timeL
       self:Print("--------------------")
       self:Print(format("Instance %d. %s %s. Processed %d trinkets", instanceID, EJ_GetInstanceInfo(instanceID), diffText, count))
       for _, link in ipairs(trinketlinksInThisInstances) do
-         local id = self:GetItemIDFromLink(link)
+         local id = self.Utils:GetItemIDFromLink(link)
          self:Print(format("%s(%d): %s", link, id, trinketData[trinketIdToIndex[id]][2]))
       end
       self:Print("--------------------")

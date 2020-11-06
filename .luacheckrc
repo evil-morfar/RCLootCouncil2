@@ -110,6 +110,7 @@ globals = {
 	"UIParent",
 	"WorldFrame",
 	"WorldMapFrame",
+   "BackdropTemplateMixin",
 
 	-- FrameXML globals
 	"ChatFontNormal",
@@ -130,6 +131,17 @@ globals = {
 	"LOWER_RIGHT_VERTEX",
 	"UPPER_LEFT_VERTEX",
 	"UPPER_RIGHT_VERTEX",
+
+   -- Namespaces
+   "C_EncounterJournal",
+   "C_DateAndTime",
+   "C_CurrencyInfo",
+   "C_Item",
+   "C_Map",
+   "C_PartyInfo",
+   "C_PlayerInfo",
+   "C_System",
+   "C_Unit",
 
 	-- API functions
 	"AbandonQuest",

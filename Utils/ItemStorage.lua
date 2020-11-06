@@ -6,6 +6,7 @@
 local _,addon = ...
 local db = addon:Getdb()
 local Storage = {}
+local TT = addon.Require "Utils.TempTable"
 addon.ItemStorage = Storage
 
 local StoredItems = {}
@@ -65,13 +66,23 @@ local error, table, tostring, tinsert, tremove, type, select, FindInTableIf, tim
 function addon:InitItemStorage()-- Extract items from our SV. Could be more elegant
    db = self:Getdb()
    local Item;
-   for _, v in ipairs(db.itemStorage) do
-      Item = Storage:New(v.link, v.type, "restored", v)
-      if not Item.inBags and Storage.AcceptedTypes[Item.type] then -- Item probably no longer exists?
-         addon:Debug("Error - ItemStorage, db item no longer in bags", v.link)
-         Storage:RemoveItem(Item)
+   local toBeRemoved = TT:Acquire()
+   for i, v in ipairs(db.itemStorage) do
+      -- v3.0: Noticed some items didn't have a link - check for that.
+      if not v.link then 
+         tinsert(toBeRemoved, i)
+      else 
+         Item = Storage:New(v.link, v.type, "restored", v)
+         if not Item.inBags and Storage.AcceptedTypes[Item.type] then -- Item probably no longer exists?
+            addon.Log:W("ItemStorage, db item no longer in bags", v.link)
+            Storage:RemoveItem(Item)
+         end
       end
    end
+   for _, num in ipairs(toBeRemoved) do
+      tremove(db.itemStorage, num)
+   end
+   TT:Release(toBeRemoved)
 end
 
 --- Initiates a new item of item_class
@@ -82,7 +93,7 @@ end
 function Storage:New(item, typex, ...)
    if not typex then typex = "other" end
    if not self.AcceptedTypes[typex] then error("Type: " .. tostring(typex) .. " is not accepted. Accepted types are: " .. table.concat(self.AcceptedTypes, ", "),2) end
-   addon:Debug("Storage:New",item,typex,...)
+   addon.Log:D("Storage:New",item,typex,...)
    local c,s,time_remaining = private:findItemInBags(item)
    local Item
    if not (c and s) then
@@ -107,7 +118,7 @@ end
 -- @param item Either an itemlink (@see GetItemInfo) or the Item object returned by :New
 -- @return True if successful
 function Storage:RemoveItem(item)
-   addon:Debug("Storage:RemoveItem", item)
+   addon.Log:D("Storage:RemoveItem", item)
    local item_link
    if type(item) == "table" then -- Maybe our Item object
       if not (item.type and item.link) then -- Nope
@@ -126,7 +137,7 @@ function Storage:RemoveItem(item)
    if key2 then tremove(StoredItems, key2) end
 
    if not (key1 and key2) then
-      addon:Debug("Error - Couldn't remove item", key1, key2)
+      addon.Log:E("Couldn't remove item", key1, key2)
       return false
    else
       return true
@@ -238,13 +249,13 @@ function private:FindItemInTable(table, item1, type)
 end
 
 function private:findItemInBags(link)
-   addon:DebugLog("Storage: searching for item:",gsub(link or "", "\124", "\124\124"))
+   addon.Log:D("Storage: searching for item:",gsub(link or "", "\124", "\124\124"))
    if link and link ~= "" then
       local c,s,t
       for container=0, _G.NUM_BAG_SLOTS do
          for slot=1, GetContainerNumSlots(container) or 0 do
             if addon:ItemIsItem(link, GetContainerItemLink(container, slot)) then -- We found it
-               addon:DebugLog("Found item at",container, slot)
+               addon.Log:D("Found item at",container, slot)
                c, s = container, slot
                -- Now we need to ensure we don't have multiple of it
                t = addon:GetContainerItemTradeTimeRemaining(c,s)
@@ -255,7 +266,7 @@ function private:findItemInBags(link)
             end
          end
       end
-      addon:DebugLog("Found:", c,s,t)
+      addon.Log:D("Found:", c,s,t)
       return c,s,t
    end
 end

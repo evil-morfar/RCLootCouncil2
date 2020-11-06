@@ -38,6 +38,7 @@ addon.defaults = {
       log = {}, -- debug log
       verTestCandidates = {}, -- Stores received verTests
       errors = {},
+      cache = {},
    },
    profile = {
       skipCombatLockdown = false,
@@ -59,22 +60,18 @@ addon.defaults = {
       autoAddRolls = false,
       autoStart = false, -- start a session with all eligible items
       autoLoot = true, -- Auto loot equippable items
-      autolootEverything = true,
       autolootBoE = true,
-      autolootOthersBoE = false, -- Auto add BoE looted by others to the session frame
       autoOpen = true, -- auto open the voting frame
       autoClose = false, -- Auto close voting frame on session end
       autoPassBoE = true,
       autoPass = true,
       autoPassTrinket = true,
-      altClickLooting = true,
       acceptWhispers = true,
       selfVote = true,
       multiVote = true,
       anonymousVoting = false,
       showForML = false,
       hideVotes = false, -- Hide the # votes until one have voted
-      allowNotes = true,
       autoAward = false,
       autoAwardLowerThreshold = 2,
       autoAwardUpperThreshold = 3,
@@ -97,7 +94,6 @@ addon.defaults = {
       awardLater = false, -- Auto check award later
       requireNotes = false,
       outOfRaid = false,
-      saveBonusRolls = true,
 
       chatFrameName = "DEFAULT_CHAT_FRAME", -- The chat frame to use for :Print()s
 
@@ -237,3 +233,5 @@ addon.defaults = {
       },
    },
 } -- defaults end
+
+-- addon.db = setmetatable({}, {__index = addon.defaults})

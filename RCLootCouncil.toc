@@ -1,8 +1,8 @@
 ## Author: Potdisc
-## Interface: 80300
-## Notes: Interface for running a Loot Council v2.19.3
+## Interface: 90001
+## Notes: Interface for running a Loot Council v3.0.0
 ## Title: RCLootCouncil
-## Version: 2.19.3
+## Version: 3.0.0
 ## SavedVariables: RCLootCouncilDB, RCLootCouncilLootDB
 ## OptionalDeps: LibStub, CallbackHandler-1.0, Ace3, lib-st, LibWindow-1.1, LibDialog-1.0
 
@@ -15,8 +15,21 @@ Core\Constants.lua
 Core\Defaults.lua
 Core\CoreEvents.lua
 
+Classes\Core.lua
+Classes\Services\ErrorHandler.lua
+Classes\Utils\Log.lua
+Classes\Utils\TempTable.lua
+
+Classes\Data\Player.lua
+Classes\Data\Council.lua
+
+Classes\Lib\RxLua\embeds.xml
+
+Classes\Services\Comms.lua
+# Classes\Services\SlashCommands.lua # NYI
+Classes\Data\MLDB.lua
+
 core.lua
-Core\ErrorHandler.lua
 ml_core.lua
 
 UI\UI.lua
@@ -30,5 +43,4 @@ Utils\trinketData.lua
 Utils\tokenData.lua
 Utils\ItemStorage.lua
 Utils\autopass.lua
-Utils\sync.lua
 Utils\popups.lua
