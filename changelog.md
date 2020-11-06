@@ -1,14 +1,12 @@
-# v3.0.0-Beta.3
+# v3.0.0
 
-*This version is not compatible with previous Alpha or Beta versions!*
-*Note: v3.0 is not backwards compatible, and v2.x will not be updated to patch 9.0*
+*v3.0 is not backwards compatible with any older versions, including most of its beta versions.*
 
 ## Changes
 
-I've been planning v3.0 for more than 2 years.
-It consists of more than 10k line changes, most of which are background stuff you won't be seeing.
-Despite being in development for that long, not everything is completely ready for this release, but I expect
-the rest to be implemented in v3.1 in the future.  
+v3.0 marks a development landmark more than 2 years in the making.  
+It consists of more than 10k line changes, most of which are background stuff you won't be seeing, with the goal of providing a solid foundation for the future.
+Ideally you shouldn't *see* any major changes, but everything should *feel* faster and more responsive.  
 Below is a list of the most relevant changes.
 
 ### Updated for Shadowlands
@@ -17,8 +15,8 @@ Deprecated API calls have been removed, and all addon code updated for the chang
 
 #### Button Groups
 
-Added a new response group for Anima Beads and Spherules - a new Main/Off-hand token in Shadowlands.  
-Removed the groups for Azerite weapons and Corruption.
+* Added a new response group for Anima Beads and Spherules - a new Main/Off-hand token in Shadowlands.  
+* Removed the groups for Corruption.
 
 
 ### Comms overhaul
@@ -55,8 +53,8 @@ The internal log has also been updated for better identifying issues.
 
 ### Removed
 
-Corruption column.
-`winners` command - has been handled by the TradeUI for a long time.
+* Corruption column.  
+* `winners` command - has been handled by the TradeUI for a long time.
 
 ### Dev
 
