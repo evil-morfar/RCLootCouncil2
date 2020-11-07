@@ -51,6 +51,7 @@
 			reroll 				P - (Partial) lootTable with items we should reroll on.
 			lootAck 			P - LootAck received from another player. Used for checking if have received the required data.
 			Rgear				P - Anyone requests our currently equipped gear.
+			bonus_roll 			P - Sent whenever we do a bonus roll. 
 ]]
 
 -- GLOBALS: GetLootMethod, GetAddOnMetadata, UnitClass
