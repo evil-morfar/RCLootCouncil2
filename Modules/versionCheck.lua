@@ -11,18 +11,27 @@
 ]]
 --- @type RCLootCouncil
 local _, addon = ...
-local RCVersionCheck = addon:NewModule("VersionCheck", "AceTimer-3.0", "AceHook-3.0")
+local RCVersionCheck = addon:NewModule("VersionCheck", "AceTimer-3.0", "AceHook-3.0", "AceEvent-3.0", "AceBucket-3.0")
 local ST = LibStub("ScrollingTable")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 
+--- @type Services.Comms
 local Comms = addon.Require "Services.Comms"
 --- @type Data.Player
 local Player = addon.Require "Data.Player"
+--- @type Utils.TempTable
+local TT = addon.Require "Utils.TempTable"
 
 local GuildRankSort
 local guildRanks = {}
 local highestVersion = "0.0.0"
 local listOfNames = {}
+local colors = {
+    green = CreateColor(0,1,0,1),
+    yellow = CreateColor(1,1,0,1),
+    red = CreateColor(1,0,0,1),
+    grey = CreateColor(0.75,0.75,0.75,1)
+}
 
 function RCVersionCheck:OnInitialize()
     self.verCheckDisplayed = false -- Have we shown a "out-of-date"?
@@ -70,6 +79,7 @@ function RCVersionCheck:OnEnable()
             end
         )
     )
+    self:RegisterBucketMessage("RCVersionCheckUpdate", 0.5, "UpdateTotals")
 end
 
 function RCVersionCheck:OnDisable()
@@ -79,7 +89,8 @@ function RCVersionCheck:OnDisable()
     for _, sub in ipairs(self.subscriptions) do
         sub:unsubscribe()
 	end
-	wipe(self.subscriptions)
+    wipe(self.subscriptions)
+    self:UnregisterAllBuckets()
 end
 
 function RCVersionCheck:Show()
@@ -93,6 +104,7 @@ function RCVersionCheck:Show()
     ) -- add ourself
     self.frame:Show()
     self.frame.st:SetData(self.frame.rows)
+    self:UpdateTotals()
 end
 
 function RCVersionCheck:Hide()
@@ -208,6 +220,7 @@ function RCVersionCheck:AddEntry(name, class, guildRank, version, tVersion, modu
             }
             v.rank = guildRank
             v.version = version
+            v.tVersion = tVersion
             return self:Update()
         end
     end
@@ -218,6 +231,7 @@ function RCVersionCheck:AddEntry(name, class, guildRank, version, tVersion, modu
             name = name,
             rank = guildRank,
             version = version,
+            tVersion = tVersion,
             cols = {
                 {value = "", DoCellUpdate = addon.SetCellClassIcon, args = {class}},
                 {value = addon.Ambiguate(name), color = addon:GetClassColor(class)},
@@ -238,6 +252,28 @@ end
 
 function RCVersionCheck:Update()
     self.frame.st:SortData()
+    self:SendMessage("RCVersionCheckUpdate")
+end
+
+function RCVersionCheck:UpdateTotals()
+    local total = #self.frame.rows
+    local tVersions = AccumulateIf(self.frame.rows, function(row)
+        return row.tVersion
+    end)
+    local outdated = AccumulateIf(self.frame.rows, function(row)
+        return addon:VersionCompare(row.version, highestVersion)
+    end)
+    local normal = AccumulateIf(self.frame.rows, function(row)
+        return row.version == highestVersion
+    end)
+    local text = TT:Acquire(
+        colors.yellow:WrapTextInColorCode(tVersions),
+        colors.red:WrapTextInColorCode(outdated),
+        colors.green:WrapTextInColorCode(normal),
+        total
+    )
+    self.frame.totals:SetText(table.concat(text, "/"))
+    TT:Release(text)
 end
 
 -- Permanent comms
@@ -393,20 +429,16 @@ end
 ---------------------------------------------
 
 function RCVersionCheck:GetVersionColor(ver, tVer)
-    local green, yellow, red, grey = {r = 0, g = 1, b = 0, a = 1},
-        {r = 1, g = 1, b = 0, a = 1},
-        {r = 1, g = 0, b = 0, a = 1},
-        {r = 0.75, g = 0.75, b = 0.75, a = 1}
     if tVer then
-        return yellow
+        return colors.yellow
     end
     if ver == highestVersion then
-        return green
+        return colors.green
     end
     if addon:VersionCompare(ver, highestVersion) then
-        return red
+        return colors.red
     end
-    return grey
+    return colors.grey
 end
 
 function RCVersionCheck:GetFrame()
@@ -445,6 +477,27 @@ function RCVersionCheck:GetFrame()
         end
     )
     f.closeBtn = b3
+
+    local totals = addon.UI:New("Text", f.content, "Unknown")
+    totals:SetHeight(25)
+    totals:SetTextColor(1,1,1,1)
+    totals:SetPoint("LEFT", b2, "RIGHT", 15, 0)
+    totals:SetPoint("RIGHT", b3, "LEFT", -15, 0)
+    local temp = TT:Acquire(
+        colors.yellow:WrapTextInColorCode("Test Versions"),
+        colors.red:WrapTextInColorCode("Outdated"),
+        colors.green:WrapTextInColorCode("Up-to-date"),
+        "Total"
+    )
+    local totalsTooltipText = table.concat(temp, " / ")
+    TT:Release(temp)
+    totals:SetMultipleScripts{
+        OnEnter = function()
+            addon:CreateTooltip("Overview", totalsTooltipText)
+        end,
+        OnLeave = addon.UI.HideTooltip
+    }
+    f.totals = totals
 
     local st = ST:CreateST(self.scrollCols, 12, 20, nil, f.content)
     st.frame:SetPoint("TOPLEFT", f, "TOPLEFT", 10, -35)
