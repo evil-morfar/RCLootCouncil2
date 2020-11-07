@@ -59,7 +59,7 @@ function RCVersionCheck:OnEnable()
             addon.PREFIXES.VERSION,
             "f",
             function(data, sender)
-                self:AddEntry(sender, unpack(data))
+                self:AddEntry(sender, data[1], data[2], data[3], data[4], data[5])
             end
         )
     )

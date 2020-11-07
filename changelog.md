@@ -1,3 +1,7 @@
+## Bugfixes 
+
+* *The version checker wouldn't always show installed modules.*
+
 # v3.0.0
 
 *v3.0 is not backwards compatible with any older versions, including most of its beta versions.*
