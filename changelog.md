@@ -1,3 +1,6 @@
+## Changes
+Updated for patch 9.0.2.
+
 ## Bugfixes 
 
 * *The version checker wouldn't always show installed modules.*
