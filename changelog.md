@@ -1,6 +1,7 @@
 ## Bugfixes 
 
 * *The version checker wouldn't always show installed modules.*
+* *Fixed issues with adding cross realm council members leading to the entire addon to break.*
 
 # v3.0.0
 

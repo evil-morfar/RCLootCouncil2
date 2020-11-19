@@ -84,7 +84,7 @@ function Player:Get(input)
 		guid = input
 	elseif type(input) == "string" then
 		-- Assume UnitName
-		local name = Ambiguate(input, "short")
+		local name = Ambiguate(input, "none")
 		guid = UnitGUID(name)
 		-- We can only extract GUID's from people we're grouped with.
 		if not guid then
@@ -110,11 +110,11 @@ function private:CreatePlayer(guid)
 	Log:f("<Data.Player>", "CreatePlayer", guid)
 	if not guid then return {name = "Unknown"} end
 	local _, class, _, _, _, name, realm = GetPlayerInfoByGUID(guid)
-	realm = realm == "" and select(2, UnitFullName("player")) or realm
+	realm = (not realm or realm == "") and select(2, UnitFullName("player")) or realm
 	---@class Player
 	local player = setmetatable({
 		---@field name string
-		name = addon.Utils:UnitName(name),
+		name = addon.Utils:UnitName(name.."-"..realm),
 		guid = guid,
 		class = class,
 		realm = realm

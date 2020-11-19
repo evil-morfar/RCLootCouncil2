@@ -5361,11 +5361,48 @@ function addon:StripRedundantItemString(item)
 	return item:gsub(pattern, replacement)
 end
 
-for k,v in ipairs(textToDecode) do
-	print("DeSerializing:\n")
-   local test, command, data = Deserialize(v or "")
-	print(command, "(#"..#v..")",":")
-  printtable(data)
-  print(type(k))
-   print("_____________________________________________________")
+local function DecodeMLDB(mldb)
+	local addon = {
+		realmName = "Realm1",
+		db = {global = {log = {}, cache = {}}, profile = {}},
+		defaults = {global = {logMaxEntries = 2000}}
+	}
+	if not addon.Require then
+		loadfile(".specs/AddonLoader.lua")(nil, nil, addon).LoadArray {
+			[[Libs\LibStub\LibStub.lua]],
+			[[Libs\CallbackHandler-1.0\CallbackHandler-1.0.xml]],
+			[[Libs\AceComm-3.0\AceComm-3.0.xml]],
+			[[Libs\AceLocale-3.0\AceLocale-3.0.xml]],
+			[[Libs\AceSerializer-3.0\AceSerializer-3.0.xml]],
+			[[Libs\AceEvent-3.0\AceEvent-3.0.xml]],
+			[[Locale\enUS.lua]],
+			[[Core\Constants.lua]],
+			[[Core\Defaults.lua]],
+			[[Classes\Core.lua]],
+			[[Classes\Lib\RxLua\embeds.xml]],
+			[[Libs\LibDeflate\LibDeflate.lua]],
+			[[Classes\Utils\Log.lua]],
+			[[Classes\Utils\TempTable.lua]],
+			[[Classes\Services\ErrorHandler.lua]],
+			[[Locale\enUS.lua]],
+			[[Utils\Utils.lua]],
+			[[Classes\Data\Player.lua]],
+			[[Classes\Services\Comms.lua]],
+			[[Classes\Data\MLDB.lua]]
+		}
+	end
+	return addon.Require("Data.MLDB"):RestoreFromTransmit(mldb)
 end
+
+-- for k,v in ipairs(textToDecode) do
+-- 	print("DeSerializing:\n")
+--    local test, command, data = Deserialize(v or "")
+-- 	print(command, "(#"..#v..")",":")
+--   printtable(data)
+--   print(type(k))
+--    print("_____________________________________________________")
+-- end
+local serializedMldb = "^1^Smldb^T^N1^T^S|8^T^S|14^T^N3^T^S|15^STransmog^t^N2^T^S|15^SOff~`Spec^t^S|5^N3^t^t^S|12^N200^S|11^T^S|14^T^N2^T^S|15^Soffspec^S|4^N2^S|16^T^N1^N1^N2^N0.5^N3^N0^N4^N1^t^t^N3^T^S|15^STransmog^S|4^N3^S|16^T^N1^N0^N2^N0.7^N3^N0.7^N4^N1^t^t^t^t^S|1^B^S|7^B^S|9^B^S|5^N3^S|2^B^t^t^^"
+local _, _,mldb = Deserialize(serializedMldb)
+print(mldb)
+printtable(DecodeMLDB(mldb))
