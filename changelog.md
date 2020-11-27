@@ -13,6 +13,7 @@ Players using older versions will have unexpected entries added if someone with 
 
 * *The version checker wouldn't always show installed modules.*
 * *Fixed issues with adding cross realm council members leading to the entire addon to break.*
+* *Having an outdated version will no longer produce an error and correctly show a message prompting you to upgrade.*
 
 ### Dev
 

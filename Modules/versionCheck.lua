@@ -362,12 +362,12 @@ function RCVersionCheck:DoModulesVersionCheck(moduleData)
     end
 end
 
-function RCLootCouncil:PrintOutdatedVersionWarning(newVersion, ourVersion)
+function RCVersionCheck:PrintOutdatedVersionWarning(newVersion, ourVersion)
     addon:Print(format(L["version_outdated_msg"], ourVersion or addon.version, newVersion))
     self.verCheckDisplayed = true
 end
 
-function RCLootCouncil:PrintOutdatedTestVersionWarning(tVersion)
+function RCVersionCheck:PrintOutdatedTestVersionWarning(tVersion)
     if #tVersion >= 10 then
         return addon.Log:W("tVersion tampering", tVersion)
     end
@@ -375,12 +375,12 @@ function RCLootCouncil:PrintOutdatedTestVersionWarning(tVersion)
     self.verCheckDisplayed = true
 end
 
-function RCLootCouncil:PrintOutdatedModuleVersion(name, version, newVersion)
+function RCVersionCheck:PrintOutdatedModuleVersion(name, version, newVersion)
     addon:Print(format(L["module_version_outdated_msg"], name, version, newVersion))
     self.moduleVerCheckDisplayed[name] = true
 end
 
-function RCLootCouncil:PrintOutdatedModuleTestVersion(name, tVersion)
+function RCVersionCheck:PrintOutdatedModuleTestVersion(name, tVersion)
     if #tVersion >= 10 then
         addon.Log:d("Someone's tampering with tVersion in the module?", name, tVersion)
     end
