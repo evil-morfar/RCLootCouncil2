@@ -142,6 +142,7 @@ globals = {
    "C_PlayerInfo",
    "C_System",
    "C_Unit",
+	"C_Covenants",
 
 	-- API functions
 	"AbandonQuest",

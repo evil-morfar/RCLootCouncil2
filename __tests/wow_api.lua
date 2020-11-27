@@ -673,7 +673,7 @@ end
 function GetPlayerInfoByGUID (guid)
    local player = playerGUIDInfo[guid]
    if player then
-      return nil,player.class, nil,nil,nil, player.name, player.realm
+      return nil,player.class, nil,nil,nil, Ambiguate(player.name, "short"), player.realm
    else
       return nil, "HUNTER", nil,nil,nil, "Unknown", "Unknown"
    end

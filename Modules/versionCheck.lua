@@ -9,12 +9,14 @@
 		fr 	P - Full version checkc request.
 		f 		T - Full version check reply. Only when open.
 ]]
+--- @type RCLootCouncil
 local _, addon = ...
 local RCVersionCheck = addon:NewModule("VersionCheck", "AceTimer-3.0", "AceHook-3.0")
 local ST = LibStub("ScrollingTable")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 
 local Comms = addon.Require "Services.Comms"
+--- @type Data.Player
 local Player = addon.Require "Data.Player"
 
 local GuildRankSort
@@ -59,7 +61,12 @@ function RCVersionCheck:OnEnable()
             addon.PREFIXES.VERSION,
             "f",
             function(data, sender)
-                self:AddEntry(sender, unpack(data))
+                -- Check for recipient (x-realm support)
+                if data[6] then
+                    local senderPlayer = Player:Get(data[6])
+                    if senderPlayer ~= addon.player then return end
+                end
+                self:AddEntry(sender, data[1], data[2], data[3], data[4], data[5])
             end
         )
     )
@@ -281,17 +288,26 @@ function RCVersionCheck:InitCoreVersionComms()
     Comms:Subscribe(
         addon.PREFIXES.VERSION,
         "fr",
-        function(data, sender)
+        function(data, sender, _, dist)
+            local senderPlayer = Player:Get(sender)
+            local target
+            if dist == "RAID" or dist == "PARTY" or dist == "GUILD" then
+                target = dist:lower()
+            else
+                target = senderPlayer
+            end
+
             Comms:Send {
                 prefix = addon.PREFIXES.VERSION,
-                target = Player:Get(sender),
+                target = target,
                 command = "f",
                 data = {
                     addon.playerClass,
                     addon.guildRank,
                     addon.version,
                     addon.tVersion,
-                    addon:GetInstalledModulesFormattedData()
+                    addon:GetInstalledModulesFormattedData(),
+                    senderPlayer:GetForTransmit()
                 }
             }
         end
@@ -346,12 +362,12 @@ function RCVersionCheck:DoModulesVersionCheck(moduleData)
     end
 end
 
-function RCLootCouncil:PrintOutdatedVersionWarning(newVersion, ourVersion)
+function RCVersionCheck:PrintOutdatedVersionWarning(newVersion, ourVersion)
     addon:Print(format(L["version_outdated_msg"], ourVersion or addon.version, newVersion))
     self.verCheckDisplayed = true
 end
 
-function RCLootCouncil:PrintOutdatedTestVersionWarning(tVersion)
+function RCVersionCheck:PrintOutdatedTestVersionWarning(tVersion)
     if #tVersion >= 10 then
         return addon.Log:W("tVersion tampering", tVersion)
     end
@@ -359,12 +375,12 @@ function RCLootCouncil:PrintOutdatedTestVersionWarning(tVersion)
     self.verCheckDisplayed = true
 end
 
-function RCLootCouncil:PrintOutdatedModuleVersion(name, version, newVersion)
+function RCVersionCheck:PrintOutdatedModuleVersion(name, version, newVersion)
     addon:Print(format(L["module_version_outdated_msg"], name, version, newVersion))
     self.moduleVerCheckDisplayed[name] = true
 end
 
-function RCLootCouncil:PrintOutdatedModuleTestVersion(name, tVersion)
+function RCVersionCheck:PrintOutdatedModuleTestVersion(name, tVersion)
     if #tVersion >= 10 then
         addon.Log:d("Someone's tampering with tVersion in the module?", name, tVersion)
     end

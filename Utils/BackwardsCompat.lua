@@ -54,15 +54,9 @@ Compat.list = {
 				db.saveBonusRolls = nil
 				db.allowNotes = nil
 
-				if db.enabledButtons then
-					db.enabledButtons.CORRUPTED = nil
-				end
-				if db.buttons then
-					db.buttons.CORRUPTED = nil
-				end
-				if db.responses then
-					db.responses.CORRUPTED = nil
-				end
+				if db.enabledButtons then db.enabledButtons.CORRUPTED = nil end
+				if db.buttons then db.buttons.CORRUPTED = nil end
+				if db.responses then db.responses.CORRUPTED = nil end
 			end
 
 			local global = addon.db.global
@@ -84,6 +78,27 @@ Compat.list = {
 
 			addon:ScheduleTimer("Print", 5,
                     			"Your Council has been reset as part of upgrading to v3.0")
+		end
+	}, {
+		name = "Token button fix",
+		version = "3.0.1",
+		func = function()
+			for _, db in pairs(addon.db.profiles) do
+				if db.enabledButtons then db.enabledButtons.TOKEN = nil end
+				if db.buttons then db.buttons.TOKEN = nil end
+				if db.responses then db.responses.TOKEN = nil end
+			end
+		end
+	}, 
+	{
+		name = "Cached players realm fix",
+		version = "3.0.1",
+		func = function()
+			for _, data in pairs(addon.db.global.cache.player) do
+				if data.realm then -- Should always be there
+					data.name = string.gsub(data.name, "%-.+", "-"..data.realm, 1)
+				end
+			end
 		end
 	}
 }

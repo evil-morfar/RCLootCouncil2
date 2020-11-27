@@ -51,6 +51,8 @@
 			reroll 				P - (Partial) lootTable with items we should reroll on.
 			lootAck 			P - LootAck received from another player. Used for checking if have received the required data.
 			Rgear				P - Anyone requests our currently equipped gear.
+			bonus_roll 			P - Sent whenever we do a bonus roll.
+			getCov 				P - Anyone request or covenant ID.
 ]]
 
 -- GLOBALS: GetLootMethod, GetAddOnMetadata, UnitClass
@@ -2425,6 +2427,10 @@ function RCLootCouncil:SubscribeToPermanentComms ()
 
 		Rgear = function(_, sender)
 			self:OnGearRequestReceived(sender)
+		end,
+
+		getCov = function(_, sender)
+			self:OnCovenantRequest(sender)
 		end
 
 	})
@@ -2632,4 +2638,13 @@ function RCLootCouncil:OnGearRequestReceived(sender)
 		prio = "BULK"
 	}
 	TT:Release(data)
+end
+
+function RCLootCouncil:OnCovenantRequest(sender)
+	Comms:Send {
+		prefix = self.PREFIXES.MAIN,
+		target = Player:Get(sender),
+		command = "cov",
+		data = C_Covenants.GetActiveCovenantID()
+	}
 end
