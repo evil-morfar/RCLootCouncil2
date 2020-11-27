@@ -292,7 +292,7 @@ function RCVersionCheck:InitCoreVersionComms()
             local senderPlayer = Player:Get(sender)
             local target
             if dist == "RAID" or dist == "PARTY" or dist == "GUILD" then
-                target = dist
+                target = dist:lower()
             else
                 target = senderPlayer
             end
