@@ -1,10 +1,20 @@
 ## Changes
+
 Updated for patch 9.0.2.
 
-## Bugfixes 
+### Version Check
+
+Version check now again works cross realm.  
+Players using older versions will have unexpected entries added if someone with this version performs a version check - that was unavoidable to make this work, but doesn't happen once you've upgraded.
+
+## Bugfixes
 
 * *The version checker wouldn't always show installed modules.*
 * *Fixed issues with adding cross realm council members leading to the entire addon to break.*
+
+### Dev
+
+* *Added recipient at index 6 for `VERSION.fr` comms.*
 
 # v3.0.0
 
