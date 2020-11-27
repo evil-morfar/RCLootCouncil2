@@ -81,12 +81,23 @@ Compat.list = {
 		end
 	}, {
 		name = "Token button fix",
-		version = "3.0.1", -- TODO NEXT RELEASE!!
+		version = "3.0.1",
 		func = function()
 			for _, db in pairs(addon.db.profiles) do
 				if db.enabledButtons then db.enabledButtons.TOKEN = nil end
 				if db.buttons then db.buttons.TOKEN = nil end
 				if db.responses then db.responses.TOKEN = nil end
+			end
+		end
+	}, 
+	{
+		name = "Cached players realm fix",
+		version = "3.0.1",
+		func = function()
+			for _, data in pairs(addon.db.global.cache.player) do
+				if data.realm then -- Should always be there
+					data.name = string.gsub(data.name, "%-.+", "-"..data.realm, 1)
+				end
 			end
 		end
 	}
