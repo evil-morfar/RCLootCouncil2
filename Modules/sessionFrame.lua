@@ -232,7 +232,9 @@ function RCSessionFrame:GetFrame()
 	local b2 = addon:CreateButton(_G.CANCEL, f.content)
 	b2:SetPoint("LEFT", b1, "RIGHT", 15, 0)
 	b2:SetScript("OnClick", function()
-		ml.lootTable = {}
+		if not ml.running then -- Don't clear the lootTable on a running session!
+			ml.lootTable = {}
+		end
 		self:Disable()
 	end)
 	f.closeBtn = b2
