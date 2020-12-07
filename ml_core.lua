@@ -1230,7 +1230,7 @@ end
 -- Returns true if we are ignoring the item
 function RCLootCouncilML:IsItemIgnored(link)
 	local itemID = addon.Utils:GetItemIDFromLink(link) -- extract itemID
-	return itemID and db.ignoredItems[itemID]
+	return addon.Utils:IsItemBlacklisted(itemID) or itemID and db.ignoredItems[itemID]
 end
 
 --- Fetches the council members from the current group.

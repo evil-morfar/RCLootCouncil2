@@ -1,14 +1,15 @@
 # v3.1.0
 
-## Changes 
+## Changes
 
 ### Version Check
 
 The version checks now shows the totals of installed versions.
 
-### Button Groups 
+### Companion Pets
 
-Added button group for pets.
+Added button group for pets.  
+Added option to ignore all pets when looting.
 
 # v3.0.1
 

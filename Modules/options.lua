@@ -865,6 +865,18 @@ function addon:OptionsTable()
 										type = "toggle",
 										disabled = function() return not self.db.profile.autoLoot end,
 									},
+									lootPets = {
+										order = 6.5,
+										name = L["opt_autoAddPets_name"],
+										desc = L["opt_autoAddPets_desc"],
+										type = "toggle",
+										get = function()
+											return not addon.blacklistedItemClasses[LE_ITEM_CLASS_MISCELLANEOUS][LE_ITEM_MISCELLANEOUS_COMPANION_PET]
+										end,
+										set = function(_, val)
+											addon.blacklistedItemClasses[LE_ITEM_CLASS_MISCELLANEOUS][LE_ITEM_MISCELLANEOUS_COMPANION_PET] = not val
+										end
+									},
 									printCompletedTrades = {
 										order = 7,
 										name = L["opt_printCompletedTrade_Name"],
