@@ -11,6 +11,10 @@ The version checks now shows the totals of installed versions.
 Added button group for pets.  
 Added option to ignore all pets when looting.
 
+## Bugfixes
+
+* *Players' enchating level again shows up in the disenchant menu in the voting frame.*
+
 # v3.0.1
 
 ## Changes

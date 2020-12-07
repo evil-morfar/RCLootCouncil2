@@ -1931,7 +1931,7 @@ do
 				local player = Player:Get(name)
 				if player.enchanter then
 					local c = addon:GetClassColor(player.class)
-					info.text = "|cff"..addon.Utils:RGBToHex(c.r, c.g, c.b)..addon.Ambiguate(name).."|r "..tostring(player.enchant_lvl)
+					info.text = "|cff"..addon.Utils:RGBToHex(c.r, c.g, c.b)..addon.Ambiguate(name).."|r "..tostring(player.enchantingLvl)
 					info.notCheckable = true
 					info.func = function()
 						for _,v1 in ipairs(db.awardReasons) do
