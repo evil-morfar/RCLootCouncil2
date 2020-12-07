@@ -1,3 +1,11 @@
+# v3.1.0
+
+## Changes 
+
+### Version Check
+
+The version checks now shows the totals of installed versions.
+
 # v3.0.1
 
 ## Changes
