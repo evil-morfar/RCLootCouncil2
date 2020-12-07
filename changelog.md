@@ -6,6 +6,10 @@
 
 The version checks now shows the totals of installed versions.
 
+### Button Groups 
+
+Added button group for pets.
+
 # v3.0.1
 
 ## Changes
