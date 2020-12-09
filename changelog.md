@@ -28,6 +28,7 @@ The version checks now shows the totals of installed versions.
 ## Bugfixes
 
 * *Players' enchating level again shows up in the disenchant menu in the voting frame.*
+* *The list of candidates now updates much more frequently to avoid listing candidates that have left the group.*
 
 # v3.0.1
 
