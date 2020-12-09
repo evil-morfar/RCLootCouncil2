@@ -1048,32 +1048,38 @@ function RCLootCouncilML:ShouldAutoAward(item, quality)
 	local _, _, _, _, _, itemClassID = GetItemInfoInstant(item)
 	if itemClassID == 1 then return false end -- Ignore containers
 
+	if not next(addon.candidatesInGroup) then addon:UpdateCandidatesInGroup() end
+
 	local boe = addon:IsItemBoE(item)
 	if boe and db.autoAwardBoE and quality == 4 and IsEquippableItem(item) then -- Epic Equippable BoE
-		for name in addon:GroupIterator() do
-			if addon:UnitIsUnit(name, db.autoAwardBoETo) then
-				return true, "boe", db.autoAwardBoETo
+		for _,name in ipairs(db.autoAwardBoETo) do
+			if addon.candidatesInGroup[addon:UnitName(name)] then
+				return true, "boe", addon:UnitName(name)
 			end
 		end
-		-- Unit not in group
-		addon:Print(L["Cannot autoaward:"])
-		addon:Print(format(L["Could not find 'player' in the group."], db.autoAwardBoETo))
+		self:PrintAutoAwardErrorWithPlayer(db.autoAwardBoETo[1])
 		return false
 	end
 	if db.autoAward and quality >= db.autoAwardLowerThreshold and quality <= db.autoAwardUpperThreshold
 		and IsEquippableItem(item) then
 		if db.autoAwardLowerThreshold >= GetLootThreshold() or db.autoAwardLowerThreshold < 2 then
-			if UnitInRaid(db.autoAwardTo) or UnitInParty(db.autoAwardTo) then -- TEST perhaps use self.group?
-				return true, "normal", db.autoAwardTo
-			else
-				addon:Print(L["Cannot autoaward:"])
-				addon:Print(format(L["Could not find 'player' in the group."], db.autoAwardTo))
+			for _, name in ipairs(db.autoAwardTo) do
+				if addon.candidatesInGroup[addon:UnitName(name)] then
+					return true, "normal", addon:UnitName(name)
+				end
 			end
+			self:PrintAutoAwardErrorWithPlayer(db.autoAwardTo[1])
 		else
 			addon:Print(format(L["Could not Auto Award i because the Loot Threshold is too high!"], item))
 		end
 	end
 	return false
+end
+
+function RCLootCouncilML:PrintAutoAwardErrorWithPlayer(name)
+	name = name or "Missing Candidate"
+	addon:Print(L["Cannot autoaward:"])
+	addon:Print(format(L["Could not find 'player' in the group."], name))
 end
 
 --- Auto award an item to a player.

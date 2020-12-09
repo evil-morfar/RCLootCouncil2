@@ -120,7 +120,7 @@ function RCLootCouncil:OnInitialize()
 	self.version = GetAddOnMetadata("RCLootCouncil", "Version")
 	self.nnp = false
 	self.debug = false
-	self.tVersion = nil -- String or nil. Indicates test version, which alters stuff like version check. Is appended to 'version', i.e. "version-tVersion" (max 10 letters for stupid security)
+	self.tVersion = "Beta.1" -- String or nil. Indicates test version, which alters stuff like version check. Is appended to 'version', i.e. "version-tVersion" (max 10 letters for stupid security)
 
 	self.playerClass = select(2, UnitClass("player")) -- TODO: Remove - contained in self.player
 	self.guildRank = L["Unguilded"]
@@ -2039,6 +2039,7 @@ function RCLootCouncil:GetClassColor(class)
 	end
 end
 
+-- REVIEW: Blizzard has functions for this in ColorUtil.lua 
 function RCLootCouncil:GetUnitClassColoredName(name)
 	local player = Player:Get(name)
 	if player then

@@ -100,5 +100,18 @@ Compat.list = {
 				end
 			end
 		end
+	},
+
+	{
+		name = "Changes to auto awards",
+		version = "3.1.0",
+		tVersion = "Beta.1",
+		func = function()
+			for _,db in pairs(addon.db.profiles) do
+				db.autoAwardTo = {}
+				db.autoAwardBoETo = {}
+			end
+			addon:ScheduleTimer("Print", 5, "Auto Award options has been reset as part of upgrading to v3.1")
+		end,
 	}
 }

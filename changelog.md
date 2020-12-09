@@ -2,14 +2,28 @@
 
 ## Changes
 
-### Version Check
+### Auto Awards
 
-The version checks now shows the totals of installed versions.
+Auto Awards now works on a priority based list, so that you can have fallbacks in case your usual recipient is on an alt etc.
+
+The input field is updated to handle multiple entries at once (seperated by commas and/or spaces) when ungrouped, while still listing group members when grouped.
+
+Candidates in the list have class icons and colors added if you've seen them recently. If they're in your group but don't have the class infomation, then you probably have misspelled their name.
+
+All stored Auto Award settings has been reset as part of the update.
+
+
+## Added
 
 ### Companion Pets
 
-Added button group for pets.  
+Pets now have a button group.
+
 Added option to ignore all pets when looting.
+
+### Version Check
+
+The version checks now shows the totals of installed versions.
 
 ## Bugfixes
 
