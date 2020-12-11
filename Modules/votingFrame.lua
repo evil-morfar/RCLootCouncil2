@@ -28,7 +28,10 @@ local Comms = addon.Require "Services.Comms"
 local Council = addon.Require "Data.Council"
 ---@type Data.Player
 local Player = addon.Require "Data.Player"
+---@type Utils.TempTable
 local TempTable = addon.Require "Utils.TempTable"
+---@type Services.ErrorHandler
+local ErrorHandler = addon.Require "Services.ErrorHandler"
 
 local ROW_HEIGHT = 20;
 local NUM_ROWS = 15;
@@ -1330,6 +1333,11 @@ end
 function RCVotingFrame.filterFunc(table, row)
 	if not db.modules["RCVotingFrame"].filters then return true end -- db hasn't been initialized, so just show it
 	local name = row.name
+	if not (lootTable[session] and lootTable[session].candidates[name]) then
+		ErrorHandler:ThrowSilentError(string.format("Couldn't get rank at session %d for candidate %s", session, tostring(name)))
+		return true
+	end
+	local rank = lootTable[session].candidates[name].rank
 	local rank = lootTable[session].candidates[name] and lootTable[session].candidates[name].rank
 
 	if db.modules["RCVotingFrame"].filters.alwaysShowOwner then
