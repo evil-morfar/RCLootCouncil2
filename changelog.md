@@ -36,6 +36,7 @@ The version checks now shows the totals of installed versions.
 
 * *Group version checks could break the addon.*
 * *Cancelling the session frame while a session was running led to unexpected behaviors.*
+* *Fixed issue with guild ranks that could break the voting frame.*
 
 # v3.0.1
 
