@@ -108,8 +108,12 @@ end
 
 function private:CreatePlayer(guid)
 	Log:f("<Data.Player>", "CreatePlayer", guid)
-	if not guid then return {name = "Unknown"} end
+	if not guid then return private:GetNilPlayer() end -- TODO Ensure code can handle nil player objects
 	local _, class, _, _, _, name, realm = GetPlayerInfoByGUID(guid)
+	if not name then -- Cache might have expired, and the GUID is not one we can immidiately get
+		name = private:GetCachedPlayerNameFromGUID(guid)
+		if not name then return private:GetNilPlayer() end
+	end
 	realm = (not realm or realm == "") and select(2, UnitFullName("player")) or realm
 	---@class Player
 	local player = setmetatable({
@@ -149,4 +153,12 @@ function private:GetGUIDFromPlayerNameByGuild(name)
 						GetGuildRosterInfo(i)
 		if Ambiguate(name2, "short") == name then return guid end
 	end
+end
+
+function private:GetCachedPlayerNameFromGUID(guid)
+	return self.cache[guid] and self.cache[guid].name
+end
+
+function private:GetNilPlayer()
+	return {name = "Unknown"}
 end
