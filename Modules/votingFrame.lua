@@ -1330,7 +1330,7 @@ end
 function RCVotingFrame.filterFunc(table, row)
 	if not db.modules["RCVotingFrame"].filters then return true end -- db hasn't been initialized, so just show it
 	local name = row.name
-	local rank = lootTable[session].candidates[name].rank
+	local rank = lootTable[session].candidates[name] and lootTable[session].candidates[name].rank
 
 	if db.modules["RCVotingFrame"].filters.alwaysShowOwner then
 		if addon:UnitIsUnit(name, lootTable[session].owner) then
