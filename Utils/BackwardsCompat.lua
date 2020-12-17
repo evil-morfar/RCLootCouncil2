@@ -113,5 +113,19 @@ Compat.list = {
 			end
 			addon:ScheduleTimer("Print", 5, "Auto Award options has been reset as part of upgrading to v3.1")
 		end,
+	},
+
+	{
+		name = "Corrupted cache fix",
+		version = "3.1.0",
+		func = function()
+			local s,e
+			for _, data in pairs(addon.db.global.cache.player) do
+				s, e  = string.find(data.name, ".-%-.-%-")
+				if s and e then
+					data.name = string.sub(data.name, s, e - 1)
+				end
+			end
+		end,
 	}
 }
