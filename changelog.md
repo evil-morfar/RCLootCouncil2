@@ -1,8 +1,5 @@
 # v3.1.0
 
-## Beta.2
-
-Updated with fixes from v3.0.2.
 ## Changes
 
 ### Auto Awards
