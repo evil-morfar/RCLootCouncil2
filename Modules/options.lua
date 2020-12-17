@@ -136,6 +136,84 @@ local function createNewButtonSet(path, name, order)
 	end
 end
 
+
+local function createAutoAwardPrioList(list)
+	local ret = {}
+	local num = 4
+	for i, name in ipairs(list) do
+		local player, class, color
+		player = Player:Get(name)
+		class = player.name ~= "Unknown" and player:GetClass()
+		ret.desc = {
+			order = 0,
+			type = "description",
+			name = L["opt_autoAwardPrioList_desc"],
+		}
+		ret["name"..i] = {
+			order = (i - 1) * num + 1,
+			type = "description",
+			width = 2.3,
+			fontSize = "medium",
+			name = function()
+				color = _G.RAID_CLASS_COLORS[class or "PRIEST"] -- fallback to PRIEST as it's white
+				return  i..". "..color:WrapTextInColorCode(addon.Ambiguate(name))
+			end,
+			image = function() return class and "Interface\\GLUES\\CHARACTERCREATE\\UI-CHARACTERCREATE-CLASSES" or "Interface/ICONS/INV_Sigil_Thorim.png" end,
+			imageCoords = class and CLASS_ICON_TCOORDS[class] or {},
+			imageWidth = 20,
+			imageHeight = 20,
+		}
+		ret["remove"..i] = {
+			order = (i - 1) * num + 2,
+			name = _G.REMOVE,
+			width = 0.5,
+			type = "execute",
+			func = function()
+				table.remove(list, i)
+			end
+		}
+		ret["moveUp"..i] = {
+			order = (i - 1) * num + 3,
+			name = "",
+			type = "execute",
+			width = 0.1,
+			image = "Interface\\Buttons\\UI-ScrollBar-ScrollUpButton-Up",
+			disabled = function() return i == 1 end,
+			func = function()
+				local tmp = list[i]
+				list[i] = list[i - 1]
+				list[i - 1] = tmp
+			end,
+		}
+		ret["moveDown"..i] = {
+			order = (i - 1) * num + 4,
+			name = "",
+			type = "execute",
+			width = 0.1,
+			image = "Interface\\Buttons\\UI-ScrollBar-ScrollDownButton-Up",
+			disabled = function() return i == #list end,
+			func = function()
+				local tmp = list[i]
+				list[i] = list[i + 1]
+				list[i + 1] = tmp
+			end,
+		}
+	end
+	return ret
+end
+
+--- Creates a function used as the `set` value in auto award candidate input fields.
+--- Takes input text (split by commas and spaces) and adds them to the provided list.
+local function autoAwardFieldProcessor(list)
+	return function(_, v)
+		for name in string.gmatch(v, "[^, ]+") do
+			if not tContains(list, name) then
+				tinsert(list, name)
+			end
+		end
+	end
+end
+
 local selections = {}
 function addon:OptionsTable()
 	local db = self:Getdb()
@@ -865,6 +943,18 @@ function addon:OptionsTable()
 										type = "toggle",
 										disabled = function() return not self.db.profile.autoLoot end,
 									},
+									lootPets = {
+										order = 6.5,
+										name = L["opt_autoAddPets_name"],
+										desc = L["opt_autoAddPets_desc"],
+										type = "toggle",
+										get = function()
+											return not addon.blacklistedItemClasses[LE_ITEM_CLASS_MISCELLANEOUS][LE_ITEM_MISCELLANEOUS_COMPANION_PET]
+										end,
+										set = function(_, val)
+											addon.blacklistedItemClasses[LE_ITEM_CLASS_MISCELLANEOUS][LE_ITEM_MISCELLANEOUS_COMPANION_PET] = not val
+										end
+									},
 									printCompletedTrades = {
 										order = 7,
 										name = L["opt_printCompletedTrade_Name"],
@@ -1055,17 +1145,17 @@ function addon:OptionsTable()
 									},
 									autoAwardTo2 = {
 										order = 2,
-										name = L["Auto Award to"],
+										name = L["add_candidate"],
 										desc = L["auto_award_to_desc"],
 										width = "double",
 										type = "input",
 										hidden = function() return GetNumGroupMembers() > 0 end,
-										get = function() return self.db.profile.autoAwardTo; end,
-										set = function(i,v) self.db.profile.autoAwardTo = v; end,
+										get = function() return "" end,
+										set = autoAwardFieldProcessor(db.autoAwardTo),
 									},
 									autoAwardTo = {
 										order = 2,
-										name = L["Auto Award to"],
+										name = L["add_candidate"],
 										desc = L["auto_award_to_desc"],
 										width = "double",
 										type = "select",
@@ -1077,6 +1167,12 @@ function addon:OptionsTable()
 												t[name] = name
 											end
 											return t;
+										end,
+										get = function() return "" end,
+										set = function(_, val)
+											if not tContains(db.autoAwardTo, val) then
+												tinsert(db.autoAwardTo, val)
+											end
 										end,
 										hidden = function() return GetNumGroupMembers() == 0 end,
 									},
@@ -1093,6 +1189,15 @@ function addon:OptionsTable()
 											end
 											return t
 										end,
+									},
+
+									autoAwardMembers = {
+										order = 10,
+										name = L["Auto Award to"],
+										type = "group",
+										inline = true,
+										hidden = function() return not db.autoAward end,
+										args = createAutoAwardPrioList(db.autoAwardTo)
 									},
 								},
 							},
@@ -1113,17 +1218,17 @@ function addon:OptionsTable()
 									},
 									autoAwardBoETo2 = {
 										order = 2,
-										name = L["Auto Award to"],
+										name = L["add_candidate"],
 										desc = L["auto_award_to_desc"],
 										width = "double",
 										type = "input",
 										hidden = function() return GetNumGroupMembers() > 0 end,
-										get = function() return self.db.profile.autoAwardBoETo; end,
-										set = function(i,v) self.db.profile.autoAwardBoETo = v; end,
+										get = function() return "" end,
+										set = autoAwardFieldProcessor(db.autoAwardBoETo),
 									},
 									autoAwardBoETo = {
 										order = 2,
-										name = L["Auto Award to"],
+										name = L["add_candidate"],
 										desc = L["auto_award_to_desc"],
 										width = "double",
 										type = "select",
@@ -1135,6 +1240,12 @@ function addon:OptionsTable()
 												t[name] = name
 											end
 											return t;
+										end,
+										get = function() return "" end,
+										set = function(_,val)
+											if not tContains(db.autoAwardBoETo, val) then
+												tinsert(db.autoAwardBoETo, val)
+											end
 										end,
 										hidden = function() return GetNumGroupMembers() == 0 end,
 									},
@@ -1151,6 +1262,14 @@ function addon:OptionsTable()
 											end
 											return t
 										end,
+									},
+									autoAwardBoEMembers = {
+										order = 10,
+										name = L["Auto Award to"],
+										type = "group",
+										inline = true,
+										hidden = function() return not db.autoAwardBoE end,
+										args = createAutoAwardPrioList(db.autoAwardBoETo)
 									},
 								}
 							},
