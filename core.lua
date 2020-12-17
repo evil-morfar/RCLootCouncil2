@@ -185,6 +185,7 @@ function RCLootCouncil:OnInitialize()
 		},
 		[15] = { -- Misc
 			[1] = true, -- Reagent
+			[4] = true, -- Other (Anima)
 		}
 	}
 
@@ -1316,6 +1317,7 @@ function RCLootCouncil:GetGuildRanks()
 end
 
 function RCLootCouncil:UpdateCandidatesInGroup()
+	wipe(self.candidatesInGroup)
 	for i = 1, GetNumGroupMembers() do
 		self.candidatesInGroup[self:UnitName((GetRaidRosterInfo(i)))] = true
 	end
@@ -1400,9 +1402,11 @@ function RCLootCouncil:OnEvent(event, ...)
 		self:NewMLCheck()
 	elseif event == "PARTY_LEADER_CHANGED" then
 		self.Log:d("Event:", event, ...)
+		self:UpdateCandidatesInGroup()
 		self:NewMLCheck()
 	elseif event == "GROUP_LEFT" then
 		self.Log:d("Event:", event, ...)
+		self:UpdateCandidatesInGroup()
 		self:NewMLCheck()
 
 	elseif event == "RAID_INSTANCE_WELCOME" then
@@ -1413,6 +1417,7 @@ function RCLootCouncil:OnEvent(event, ...)
 
 	elseif event == "PLAYER_ENTERING_WORLD" then
 		self.Log:d("Event:", event, ...)
+		self:UpdateCandidatesInGroup()
 		self:NewMLCheck()
 		self:ScheduleTimer(function() -- This needs some time to be ready
 			local instanceName, _, _, difficultyName = GetInstanceInfo()
@@ -2039,6 +2044,7 @@ function RCLootCouncil:GetClassColor(class)
 	end
 end
 
+-- REVIEW: Blizzard has functions for this in ColorUtil.lua 
 function RCLootCouncil:GetUnitClassColoredName(name)
 	local player = Player:Get(name)
 	if player then

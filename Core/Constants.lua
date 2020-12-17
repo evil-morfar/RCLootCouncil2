@@ -42,7 +42,8 @@ addon.OPT_MORE_BUTTONS_VALUES = {
    AZERITE = "Azerite Armor",
    -- TOKEN = L["Armor Token"],
    -- CORRUPTED = _G.CORRUPTION_TOOLTIP_TITLE,
-   CONTEXT_TOKEN = "Beads and Spherules"
+   CONTEXT_TOKEN = "Beads and Spherules",
+   PETS = _G.PETS
 }
 
 --[[
@@ -84,6 +85,11 @@ addon.INVTYPE_Slots = {
 -- Each function receives the following parameters:
 -- item, db (addon:Getdb()), itemID, itemEquipLoc,itemClassID, itemSubClassID
 addon.RESPONSE_CODE_GENERATORS = {
+   -- Pets 
+   function(_, db, _, _,itemClassID, itemSubClassID)
+      return db.enabledButtons.PETS and itemClassID == LE_ITEM_CLASS_MISCELLANEOUS and itemSubClassID == LE_ITEM_MISCELLANEOUS_COMPANION_PET and "PETS" or nil
+   end,
+
    -- Beads and Spherules
    function(_, db, _, _,itemClassID, itemSubClassID)
       return db.enabledButtons.CONTEXT_TOKEN and itemClassID == 5 and itemSubClassID == 2 and "CONTEXT_TOKEN" or nil

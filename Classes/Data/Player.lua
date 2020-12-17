@@ -113,12 +113,14 @@ function private:CreatePlayer(guid)
 	if not name then -- Cache might have expired, and the GUID is not one we can immidiately get
 		name = private:GetCachedPlayerNameFromGUID(guid)
 		if not name then return private:GetNilPlayer() end
+	else -- Cached name comes with realm included, others don't
+		realm = (not realm or realm == "") and select(2, UnitFullName("player")) or realm
+		name = name .. "-" .. realm
 	end
-	realm = (not realm or realm == "") and select(2, UnitFullName("player")) or realm
 	---@class Player
 	local player = setmetatable({
 		---@field name string
-		name = addon.Utils:UnitName(name.."-"..realm),
+		name = addon.Utils:UnitName(name),
 		guid = guid,
 		class = class,
 		realm = realm
