@@ -15,6 +15,9 @@ Candidates in the list have class icons and colors added if you've seen them rec
 
 All stored Auto Award settings has been reset as part of the update.
 
+### Anima
+
+Anima is no longer registered in the voting frame or history, and any anima in the history has been removed.
 
 ## Added
 

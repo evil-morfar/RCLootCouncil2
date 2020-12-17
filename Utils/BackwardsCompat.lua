@@ -127,5 +127,27 @@ Compat.list = {
 				end
 			end
 		end,
+	},
+
+	{
+		name = "Clear anima from history",
+		version = "3.1.0",
+		func = function()
+			local count = 0
+			for _, factionrealm in pairs(addon.lootDB.sv.factionrealm) do
+				for _, data in pairs(factionrealm) do
+					for i = #data, 1, -1 do
+						if string.find(data[i].lootWon, "184286") then -- Extinguished Soul Anima
+							tremove(data, i)
+							count = count + 1
+						end
+					end
+				end
+			end
+			if count > 0 then
+				addon.Log:D(format("Cleaned %d occurances of anima in your history", count))
+				addon:ScheduleTimer("Print", 10, format("Cleaned %d occurances of anima in your history", count))
+			end
+		end,
 	}
 }
