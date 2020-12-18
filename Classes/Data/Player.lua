@@ -110,13 +110,11 @@ function private:CreatePlayer(guid)
 	Log:f("<Data.Player>", "CreatePlayer", guid)
 	if not guid then return private:GetNilPlayer() end -- TODO Ensure code can handle nil player objects
 	local _, class, _, _, _, name, realm = GetPlayerInfoByGUID(guid)
-	if not name then -- Cache might have expired, and the GUID is not one we can immidiately get
-		name = private:GetCachedPlayerNameFromGUID(guid)
-		if not name then return private:GetNilPlayer() end
-	else -- Cached name comes with realm included, others don't
-		realm = (not realm or realm == "") and select(2, UnitFullName("player")) or realm
-		name = name .. "-" .. realm
+	if not name then
+		return private:GetNilPlayer()
 	end
+	realm = (not realm or realm == "") and select(2, UnitFullName("player")) or realm
+	name = name .. "-" .. realm
 	---@class Player
 	local player = setmetatable({
 		---@field name string
@@ -131,10 +129,7 @@ end
 
 function private:GetFromCache(guid)
 	if self.cache[guid] then
-		if GetServerTime() - self.cache[guid].cache_time <= MAX_CACHE_TIME then
-			return setmetatable(CopyTable(self.cache[guid]), PLAYER_MT)
-		end
-		-- No need to delete the cache as it will be overwritten shortly
+		return setmetatable(CopyTable(self.cache[guid]), PLAYER_MT)
 	end
 end
 

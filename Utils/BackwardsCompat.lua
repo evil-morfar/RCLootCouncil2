@@ -149,5 +149,28 @@ Compat.list = {
 				addon:ScheduleTimer("Print", 10, format("Cleaned %d occurances of anima in your history", count))
 			end
 		end,
+	},
+
+	{
+		name = "Missing class from player cache",
+		version = "3.1.1",
+		func = function()
+			local count = 0
+			for guid, data in pairs(addon.db.global.cache.player) do
+				if not data.class then
+					addon.db.global.cache.player[guid] = nil
+					count = count + 1
+				end
+			end
+			addon.Log:D(format("Fixed %d instances of missing cache class", count))
+		end
+	},
+
+	{
+		name = "Clear Errors",
+		version = "3.1.1",
+		func = function()
+			addon.db.global.errors = {}
+		end
 	}
 }
