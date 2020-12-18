@@ -3,6 +3,7 @@
 ## Bugfixes
 
 * *Fixed issue with Blizzard functions occasionally returning nil upon entering a group (Curse#452).*
+* *Fixed issue related to player classes (Curse#449).*
 
 # v3.1.0
 
