@@ -164,5 +164,13 @@ Compat.list = {
 			end
 			addon.Log:D(format("Fixed %d instances of missing cache class", count))
 		end
+	},
+
+	{
+		name = "Clear Errors",
+		version = "3.1.1",
+		func = function()
+			addon.db.global.errors = {}
+		end
 	}
 }
