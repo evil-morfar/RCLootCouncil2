@@ -1,3 +1,7 @@
+## Bugfixes 
+
+* *Context tokens were unintentionally ignored.*
+
 # v3.1.1
 
 ## Bugfixes

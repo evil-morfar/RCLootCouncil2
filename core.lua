@@ -175,7 +175,8 @@ function RCLootCouncil:OnInitialize()
 			all = true
 		},
 		[5] = { -- Reagents
-			all = true
+			[0] = true, -- Reagent
+			[1] = true -- Keystone
 		},
 		[7] = { -- Tradeskills
 			all = true
