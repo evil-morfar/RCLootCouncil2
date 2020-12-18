@@ -1318,8 +1318,15 @@ end
 
 function RCLootCouncil:UpdateCandidatesInGroup()
 	wipe(self.candidatesInGroup)
+	local name;
 	for i = 1, GetNumGroupMembers() do
-		self.candidatesInGroup[self:UnitName((GetRaidRosterInfo(i)))] = true
+		name = GetRaidRosterInfo(i)
+		if not name then -- Not ready yet, delay a bit
+			self.Log.D("GetRaidRosterInfo returned nil in UpdateCandidatesInGroup")
+			self:ScheduleTimer("UpdateCandidatesInGroup", 1)
+			return
+		end
+		self.candidatesInGroup[self:UnitName(name)] = true
 	end
 	-- Ensure we're there
 	self.candidatesInGroup[self.player.name] = true
