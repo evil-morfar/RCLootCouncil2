@@ -175,7 +175,8 @@ function RCLootCouncil:OnInitialize()
 			all = true
 		},
 		[5] = { -- Reagents
-			all = true
+			[0] = true, -- Reagent
+			[1] = true -- Keystone
 		},
 		[7] = { -- Tradeskills
 			all = true
@@ -1322,7 +1323,7 @@ function RCLootCouncil:UpdateCandidatesInGroup()
 	for i = 1, GetNumGroupMembers() do
 		name = GetRaidRosterInfo(i)
 		if not name then -- Not ready yet, delay a bit
-			self.Log.D("GetRaidRosterInfo returned nil in UpdateCandidatesInGroup")
+			self.Log:D("GetRaidRosterInfo returned nil in UpdateCandidatesInGroup")
 			self:ScheduleTimer("UpdateCandidatesInGroup", 1)
 			return
 		end

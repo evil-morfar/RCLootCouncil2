@@ -1,3 +1,12 @@
+# v3.1.2
+
+## Bugfixes
+
+* *Context tokens were unintentionally ignored.*
+* *Fixed errors from missing functions (Curse#453).*
+* *Council should now be more reliably sent before first kill to avoid non showing voting frame for council members (Curse#456, #202).*
+* *Sorting of the default buttons in the voting frame now works again. Note you may need to move buttons up/down to properly register. (#203).*
+
 # v3.1.1
 
 ## Bugfixes

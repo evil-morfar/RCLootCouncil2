@@ -19,10 +19,10 @@ function His:ImportTSV_CSV (import)
 end
 
 function His:ImportNew (import, delimiter)
-   addon.Log.D("His:ImportNew", #import, delimiter)
+   addon.Log:D("His:ImportNew", #import, delimiter)
    wipe(private.errorList)
    local data = {strsplit("\n", import)}
-   addon.Log.D("Data lines:", #data)
+   addon.Log:D("Data lines:", #data)
    -- Validate the input
    if not private:ValidateHeader(data[1], delimiter) then
       addon:Print(L["import_malformed_header"])
@@ -54,13 +54,13 @@ function His:ImportNew (import, delimiter)
 
    local overwrites = self:CheckForOverwrites(data)
    if #overwrites > 0 then
-      addon.Log.D("Import contained ", #overwrites, "overwrites")
+      addon.Log:D("Import contained ", #overwrites, "overwrites")
       local OnYesCallback = function()
-         addon.Log.D("Accepted import overwrite")
+         addon.Log:D("Accepted import overwrite")
          self:ExecuteImport(data)
       end
       local OnNoCallback = function()
-         addon.Log.D("Declined import overwrite")
+         addon.Log:D("Declined import overwrite")
          addon:Print(L["Import aborted"])
       end
       LibDialog:Spawn("RCLOOTCOUNCIL_IMPORT_OVERWRITE", {count = #overwrites, OnYesCallback = OnYesCallback, OnNoCallback = OnNoCallback})

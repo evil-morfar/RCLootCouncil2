@@ -403,8 +403,11 @@ function RCLootCouncilML:NewML(newML)
 	if newML == addon.player then -- we are the the ML
 		self:Send("group", "playerInfoRequest")
 		self:UpdateMLdb() -- Will build and send mldb
-		self:UpdateGroupCouncil()
-		self:SendCouncil()
+		-- Delay council a bit, as GetRaidRosterInfo may not be quite ready yet
+		self:ScheduleTimer(function()
+			self:UpdateGroupCouncil()
+			self:SendCouncil()
+		end, 2)
 		self:ClearOldItemsInBags()
 
 		if #addon.ItemStorage:GetAllItemsOfType("award_later") > 0 then
@@ -1517,6 +1520,7 @@ function RCLootCouncilML:RegisterComms ()
 		end,
 
 		council_request = function ()
+			self:UpdateGroupCouncil()
 			self:SendCouncil()
 		end,
 
