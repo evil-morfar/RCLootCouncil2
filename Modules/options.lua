@@ -1802,6 +1802,10 @@ function addon:OptionsTable()
 				-- And move the temp up
 				self.db.profile.buttons.default[i - 1] = tempBtn
 				self.db.profile.responses.default[i - 1] = tempResponse
+
+				self.db.profile.responses.default[i].sort = i
+				self.db.profile.responses.default[i - 1].sort = i - 1
+
 			end,
 		}
 		options.args.mlSettings.args.buttonsTab.args.buttonOptions.args["move_down"..i] = {
@@ -1818,6 +1822,9 @@ function addon:OptionsTable()
 				self.db.profile.responses.default[i] = self.db.profile.responses.default[i + 1]
 				self.db.profile.buttons.default[i + 1] = tempBtn
 				self.db.profile.responses.default[i + 1] = tempResponse
+
+				self.db.profile.responses.default[i].sort = i
+				self.db.profile.responses.default[i + 1].sort = i + 1
 			end,
 		}
 
