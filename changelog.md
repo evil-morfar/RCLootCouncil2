@@ -2,6 +2,7 @@
 
 * *Context tokens were unintentionally ignored.*
 * *Fixed errors from missing functions (Curse#453).*
+* *Council should now be more reliably sent before first kill to avoid non showing voting frame for council members (Curse#456, #202).*
 
 # v3.1.1
 
