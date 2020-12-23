@@ -43,6 +43,8 @@ local function createNewButtonSet(path, name, order)
 					addon.db.profile.enabledButtons[info[#info - 1]] = nil
 					addon.db.profile.responses[info[#info - 1]] = nil
 					addon.db.profile.buttons[info[#info - 1]] = nil
+
+					addon:ConfigTableChanged("responses")
 				end,
 			},
 			numButtons = {
@@ -55,7 +57,10 @@ local function createNewButtonSet(path, name, order)
 				max = addon.db.profile.maxButtons,
 				step = 1,
 				get = function() return addon.db.profile.buttons[name].numButtons or 3 end,
-				set = function(_,v) addon.db.profile.buttons[name].numButtons = v end,
+				set = function(_,v) 
+					addon.db.profile.buttons[name].numButtons = v
+					addon:ConfigTableChanged("responses")
+				end,
 			},
 		}
 	}
@@ -113,6 +118,8 @@ local function createNewButtonSet(path, name, order)
 				-- Now update the sort values
 				addon.db.profile.responses[name][i].sort = i
 				addon.db.profile.responses[name][i - 1].sort = i - 1
+
+				addon:ConfigTableChanged("responses")
 			end,
 		}
 		path[name].args["move_down"..i] = {
@@ -131,6 +138,8 @@ local function createNewButtonSet(path, name, order)
 				addon.db.profile.responses[name][i + 1] = tempResponse
 				addon.db.profile.responses[name][i].sort = i
 				addon.db.profile.responses[name][i + 1].sort = i + 1
+
+				addon:ConfigTableChanged("responses")
 			end,
 		}
 	end
@@ -1805,7 +1814,7 @@ function addon:OptionsTable()
 
 				self.db.profile.responses.default[i].sort = i
 				self.db.profile.responses.default[i - 1].sort = i - 1
-
+				addon:ConfigTableChanged("responses")
 			end,
 		}
 		options.args.mlSettings.args.buttonsTab.args.buttonOptions.args["move_down"..i] = {
@@ -1825,6 +1834,8 @@ function addon:OptionsTable()
 
 				self.db.profile.responses.default[i].sort = i
 				self.db.profile.responses.default[i + 1].sort = i + 1
+
+				addon:ConfigTableChanged("responses")
 			end,
 		}
 
