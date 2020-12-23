@@ -1,4 +1,6 @@
-## Bugfixes 
+# v3.1.2
+
+## Bugfixes
 
 * *Context tokens were unintentionally ignored.*
 * *Fixed errors from missing functions (Curse#453).*
