@@ -1,6 +1,7 @@
 ## Bugfixes 
 
 * *Context tokens were unintentionally ignored.*
+* *Fixed errors from missing functions (Curse#453).*
 
 # v3.1.1
 
