@@ -295,7 +295,7 @@ end
 
 function LootHistory:DeleteAllEntriesByName(name)
 	addon.Log:D("Deleting all loot history entries for ", name)
-	if not lootDB[name] then return addon.Log.E(name, "wasn't registered in the lootDB!") end
+	if not lootDB[name] then return addon.Log:E(name, "wasn't registered in the lootDB!") end
 	addon:Print(format(L["Succesfully deleted %d entries from %s"], #lootDB[name], name))
 	lootDB[name] = nil
 	if self.frame and self.frame:IsVisible() then -- Only update if we're viewing it
