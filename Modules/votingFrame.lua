@@ -1137,6 +1137,10 @@ end
 
 function RCVotingFrame.SetCellClass(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
 	local name = data[realrow].name
+	if not (lootTable[session] and lootTable[session].candidates[name] and lootTable[session].candidates[name].specID) then
+		addon.Log:E("Missing data for 'SetCellClass'", session, name)
+		return
+	end
 	local specID = lootTable[session].candidates[name].specID
 	local specIcon = specID and select(4, GetSpecializationInfoByID(specID))
 	if specIcon and db.showSpecIcon then
