@@ -312,7 +312,11 @@ function RCVotingFrame:SetupSession(session, t)
 	t.candidates = {}
 	for name in addon:GroupIterator() do
 		local player = Player:Get(name)
-		t.candidates[player.name] = {
+		-- REVIEW Seems like we occasionally get wrong/invalid names here.
+		-- but we still need to create the candidate, so use the name provided by 
+		-- GroupIterator, which should be the same as the one from `Player`.
+		name = player and player.name or name
+		t.candidates[name] = {
 			class = player.class or "Unknown",
 			rank = player.rank or "Unknown",
 			role = player.role or "NONE",
