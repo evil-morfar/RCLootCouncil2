@@ -1424,6 +1424,9 @@ end
 function ResponseSort(table, rowa, rowb, sortbycol)
 	local column = table.cols[sortbycol]
 	local a, b = table:GetRow(rowa), table:GetRow(rowb);
+	if not (lootTable[session].candidates[a.name] and lootTable[session].candidates[a.name].response) or not (lootTable[session].candidates[b.name] and lootTable[session].candidates[b.name].response) then
+		return true
+	end
 	a, b = addon:GetResponse(lootTable[session].typeCode or lootTable[session].equipLoc, lootTable[session].candidates[a.name].response).sort,
 			 addon:GetResponse(lootTable[session].typeCode or lootTable[session].equipLoc, lootTable[session].candidates[b.name].response).sort
 	if a == b then
