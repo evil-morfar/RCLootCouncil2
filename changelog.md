@@ -1,3 +1,9 @@
+# v3.1.3
+
+## Bugfixes
+
+* *Suppressed errors in Voting Frame. Exact cause is still unknown, and this fix while supressing errors can still lead to blank spaces in voting frame. Please report back if you're experiencing any of this. (Curse#457-465)*
+
 # v3.1.2
 
 ## Bugfixes

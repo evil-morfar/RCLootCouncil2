@@ -2412,7 +2412,7 @@ function RCLootCouncil:SubscribeToPermanentComms ()
 
 		lt_add = function(data, sender)
 			if not self.Utils:UnitIsUnit(sender, self.masterLooter) then
-				return self.Log.E(tostring(sender), "sent 'lt_add' but was not ML!")
+				return self.Log:E(tostring(sender), "sent 'lt_add' but was not ML!")
 			end
 			self:OnLootTableAdditionsReceived(unpack(data))
 		end,

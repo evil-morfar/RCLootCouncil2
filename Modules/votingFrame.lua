@@ -312,7 +312,11 @@ function RCVotingFrame:SetupSession(session, t)
 	t.candidates = {}
 	for name in addon:GroupIterator() do
 		local player = Player:Get(name)
-		t.candidates[player.name] = {
+		-- REVIEW Seems like we occasionally get wrong/invalid names here.
+		-- but we still need to create the candidate, so use the name provided by 
+		-- GroupIterator, which should be the same as the one from `Player`.
+		name = player and player.name or name
+		t.candidates[name] = {
 			class = player.class or "Unknown",
 			rank = player.rank or "Unknown",
 			role = player.role or "NONE",
@@ -1122,6 +1126,13 @@ function RCVotingFrame:HideNonTradeables()
 	for _,v in ipairs(self.nonTradeablesButtons) do v:Hide() end
 end
 
+function RCVotingFrame:DumpCandidateTablesFromSession(ses)
+	addon.Log:D(format("loottable[%d].candidates = ", ses))
+	for name, data in pairs(lootTable[ses].candidates) do
+		addon.Log:D(name, data.rank, data.class, data.response)
+	end
+end
+
 
 ----------------------------------------------------------
 --	Lib-st data functions (not particular pretty, I know)
@@ -1137,6 +1148,11 @@ end
 
 function RCVotingFrame.SetCellClass(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
 	local name = data[realrow].name
+	if not (lootTable[session] and lootTable[session].candidates[name] and lootTable[session].candidates[name].specID) then
+		addon.Log:E("Missing data for 'SetCellClass'", session, name)
+		RCVotingFrame:DumpCandidateTablesFromSession(session)
+		return
+	end
 	local specID = lootTable[session].candidates[name].specID
 	local specIcon = specID and select(4, GetSpecializationInfoByID(specID))
 	if specIcon and db.showSpecIcon then
@@ -1155,6 +1171,10 @@ function RCVotingFrame.SetCellName(rowFrame, frame, data, cols, row, realrow, co
 	else
 		frame.text:SetText(addon.Ambiguate(name))
 	end
+	if not (lootTable[session] and lootTable[session].candidates[name] and lootTable[session].candidates[name].class) then
+		addon.Log:E("Missing data for 'SetCellName'", session, name)
+		return
+	end
 	local c = addon:GetClassColor(lootTable[session].candidates[name].class)
 	frame.text:SetTextColor(c.r, c.g, c.b, c.a)
 	data[realrow].cols[column].value = name or ""
@@ -1162,6 +1182,10 @@ end
 
 function RCVotingFrame.SetCellRank(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
 	local name = data[realrow].name
+	if not (lootTable[session] and lootTable[session].candidates[name] and lootTable[session].candidates[name].rank) then
+		addon.Log:E("Missing data for 'SetCellRank'", session, name)
+		return
+	end
 	frame.text:SetText(lootTable[session].candidates[name].rank)
 	frame.text:SetTextColor(addon:GetResponseColor(lootTable[session].typeCode or lootTable[session].equipLoc, lootTable[session].candidates[name].response))
 	data[realrow].cols[column].value = lootTable[session].candidates[name].rank or ""
@@ -1169,6 +1193,10 @@ end
 
 function RCVotingFrame.SetCellRole(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
 	local name = data[realrow].name
+	if not (lootTable[session] and lootTable[session].candidates[name] and lootTable[session].candidates[name].role) then
+		addon.Log:E("Missing data for 'SetCellRole'", session, name)
+		return
+	end
 	local role = addon.Utils:TranslateRole(lootTable[session].candidates[name].role)
 	frame.text:SetText(role)
 	frame.text:SetTextColor(addon:GetResponseColor(lootTable[session].typeCode or lootTable[session].equipLoc, lootTable[session].candidates[name].response))
@@ -1177,6 +1205,10 @@ end
 
 function RCVotingFrame.SetCellResponse(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
 	local name = data[realrow].name
+	if not (lootTable[session] and lootTable[session].candidates[name] and lootTable[session].candidates[name].response) then
+		addon.Log:E("Missing data for 'SetCellResponse'", session, name)
+		return
+	end
 	local response = addon:GetResponse(lootTable[session].typeCode or lootTable[session].equipLoc, lootTable[session].candidates[name].response)
 	local text = response.text
 	if (IsInInstance() and select(4, UnitPosition("player")) ~= select(4, UnitPosition(Ambiguate(name, "short"))))
@@ -1192,12 +1224,20 @@ end
 
 function RCVotingFrame.SetCellIlvl(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
 	local name = data[realrow].name
+	if not (lootTable[session] and lootTable[session].candidates[name] and lootTable[session].candidates[name].ilvl) then
+		addon.Log:E("Missing data for 'SetCellIlvl'", session, name)
+		return
+	end
 	frame.text:SetText(db.iLvlDecimal and addon.round(lootTable[session].candidates[name].ilvl,2) or addon.round(lootTable[session].candidates[name].ilvl))
 	data[realrow].cols[column].value = lootTable[session].candidates[name].ilvl or ""
 end
 
 function RCVotingFrame.SetCellDiff(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
 	local name = data[realrow].name
+	if not (lootTable[session] and lootTable[session].candidates[name] and lootTable[session].candidates[name].diff) then
+		addon.Log:E("Missing data for 'SetCellDiff'", session, name)
+		return
+	end
 	frame.text:SetText(lootTable[session].candidates[name].diff)
 	frame.text:SetTextColor(unpack(RCVotingFrame:GetDiffColor(lootTable[session].candidates[name].diff)))
 	data[realrow].cols[column].value = lootTable[session].candidates[name].diff or ""
@@ -1206,6 +1246,10 @@ end
 function RCVotingFrame.SetCellGear(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
 	local gear = data[realrow].cols[column].colName -- gear1 or gear2
 	local name = data[realrow].name
+	if not (lootTable[session] and lootTable[session].candidates[name] and lootTable[session].candidates[name][gear]) then
+		addon.Log:E("Missing data for 'SetCellGear'", session, name)
+		return
+	end
 	gear = lootTable[session].candidates[name][gear] -- Get the actual gear
 	if gear then
 		local texture = select(5, GetItemInfoInstant(gear))
@@ -1307,6 +1351,10 @@ end
 
 function RCVotingFrame.SetCellNote(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
 	local name = data[realrow].name
+	if not (lootTable[session] and lootTable[session].candidates[name] and lootTable[session].candidates[name].note) then
+		addon.Log:E("Missing data for 'SetCellNote'", session, name)
+		return
+	end
 	local note = lootTable[session].candidates[name].note
 	local f = frame.noteBtn or CreateFrame("Button", nil, frame)
 	f:SetSize(ROW_HEIGHT, ROW_HEIGHT)
@@ -1326,6 +1374,10 @@ end
 
 function RCVotingFrame.SetCellRoll(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
 	local name = data[realrow].name
+	if not (lootTable[session] and lootTable[session].candidates[name] and lootTable[session].candidates[name].roll) then
+		addon.Log:E("Missing data for 'SetCellRoll'", session, name)
+		return
+	end
 	frame.text:SetText(lootTable[session].candidates[name].roll or "")
 	data[realrow].cols[column].value = lootTable[session].candidates[name].roll or ""
 end
@@ -1372,6 +1424,9 @@ end
 function ResponseSort(table, rowa, rowb, sortbycol)
 	local column = table.cols[sortbycol]
 	local a, b = table:GetRow(rowa), table:GetRow(rowb);
+	if not (lootTable[session].candidates[a.name] and lootTable[session].candidates[a.name].response) or not (lootTable[session].candidates[b.name] and lootTable[session].candidates[b.name].response) then
+		return true
+	end
 	a, b = addon:GetResponse(lootTable[session].typeCode or lootTable[session].equipLoc, lootTable[session].candidates[a.name].response).sort,
 			 addon:GetResponse(lootTable[session].typeCode or lootTable[session].equipLoc, lootTable[session].candidates[b.name].response).sort
 	if a == b then
