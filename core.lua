@@ -820,6 +820,12 @@ function RCLootCouncil:GetPlayersGear(link, equipLoc, gearsTable)
 	if not slot then
 		-- Check if we have a typecode for it
 		slot = self.INVTYPE_Slots[self:GetTypeCodeForItem(link)]
+
+		-- TODO Dirty hack for context tokens. Could do with a better system for both determining typecode and equiploc overrides
+		local _, _, _, _, _, itemClassID, itemSubClassID = GetItemInfoInstant(link)
+		if itemClassID == 5 and itemSubClassID == 2 then
+			slot = self.INVTYPE_Slots.CONTEXT_TOKEN
+		end
 	end
 	if not slot then return nil, nil end
 	item1 = GetInventoryItemLink("player", GetInventorySlotInfo(slot[1] or slot))

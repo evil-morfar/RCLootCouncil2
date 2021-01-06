@@ -1,3 +1,9 @@
+# v3.1.4
+
+## Bugfixes
+
+* *A candidates mainhand/offhand is now always shown in the voting frame when dealing with context tokens. (Curse#470)*
+
 # v3.1.3
 
 ## Bugfixes
