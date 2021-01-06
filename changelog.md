@@ -3,6 +3,7 @@
 ## Bugfixes
 
 * *A candidates mainhand/offhand is now always shown in the voting frame when dealing with context tokens. (Curse#470)*
+* *Hopefully fixed the remaining issues plaguing the addon the last couple of weeks. (Curse#457-472)*
 
 # v3.1.3
 
