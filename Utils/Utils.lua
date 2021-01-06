@@ -236,6 +236,19 @@ function Utils:UnitName(input_unit)
 	return ret
 end
 
+--- Creates Name-Realm based off seperate name and realm.
+--- @param name string name
+--- @param realm string realm
+--- @return string @The combined name-realm passed straight to `Utils:UnitName`
+function Utils:UnitNameFromNameRealm(name, realm)
+	if strfind(name, "-", nil, true) then
+		-- Realm name's probably attached, pass it on
+		return self:UnitName(name)
+	end
+	realm = (not realm or realm == "") and select(2, UnitFullName("player")) or realm
+	return self:UnitName(name .. "-" .. realm)
+end
+
 --- Custom, better UnitIsUnit() function.
 -- Blizz UnitIsUnit() doesn't know how to compare unit-realm with unit.
 -- Seems to be because unit-realm isn't a valid unitid.
