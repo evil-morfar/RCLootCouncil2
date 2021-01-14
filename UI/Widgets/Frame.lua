@@ -33,6 +33,7 @@ function Object:New (parent, name, title, width, height)
 	f:RestorePosition() -- might need to move this to after whereever GetFrame() is called
 	f:MakeDraggable()
 	f:SetScript("OnMouseWheel", function(f,delta) if IsControlKeyDown() then lwin.OnMouseWheel(f,delta) end end)
+	f:SetToplevel(true)
 
 	self:CreateTitleFrame(f, name, title, width)
    self:CreateContentFrame (f, name, height)
@@ -51,7 +52,8 @@ end
 
 function Object:CreateContentFrame (parent, name, height)
    local c = CreateFrame("Frame", "RC_UI_"..name.."_Content", parent, BackdropTemplateMixin and "BackdropTemplate") -- frame that contains the actual content
-	c:SetBackdrop({
+	 c:SetFrameLevel(1)
+	 c:SetBackdrop({
 		bgFile = AceGUIWidgetLSMlists.background[db.skins[db.currentSkin].background],
 		edgeFile = AceGUIWidgetLSMlists.border[db.skins[db.currentSkin].border],
 	   tile = true, tileSize = 255, edgeSize = 16,
@@ -94,7 +96,7 @@ end
 
 function Object:CreateTitleFrame (parent, name, title, width)
    local tf = CreateFrame("Frame", "RC_UI_"..name.."_Title", parent, BackdropTemplateMixin and "BackdropTemplate")
-	tf:SetToplevel(true)
+	tf:SetFrameLevel(2)
 	tf:SetBackdrop({
 		bgFile = AceGUIWidgetLSMlists.background[db.skins[db.currentSkin].background],
 		edgeFile = AceGUIWidgetLSMlists.border[db.skins[db.currentSkin].border],
