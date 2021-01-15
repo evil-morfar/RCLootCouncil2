@@ -110,7 +110,7 @@ function Object:CreateTitleFrame (parent, name, title, width)
 	tf:SetMovable(true)
 	tf:SetWidth(width or 250)
 	tf:SetPoint("CENTER",parent,"TOP",0,-1)
-	tf:SetScript("OnMouseDown", function(self) self:GetParent():StartMoving() end)
+	tf:SetScript("OnMouseDown", function(self) self:GetParent():StartMoving() self:GetParent():SetToplevel(true) end)
 	tf:SetScript("OnMouseUp", function(self) -- Get double click by trapping time betweem mouse up
 		local frame = self:GetParent()
 		frame:StopMovingOrSizing()
