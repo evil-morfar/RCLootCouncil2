@@ -141,12 +141,8 @@ function RCLootCouncil:OnInitialize()
 	self.lastEncounterID = nil
 
 	self.lootStatus = {}
-	self.EJLastestInstanceID = 1180 -- UPDATE this whenever we change test data.
-									-- The lastest raid instance Enouncter Journal id.
-									-- Ny'alotha, the Waking City
-									-- HOWTO get this number: Open the instance we want in the Adventure Journal. Use command '/dump EJ_GetInstanceInfo()'
-									-- The 8th return value is sth like "|cff66bbff|Hjournal:0:946:14|h[Antorus, the Burning Throne]|h|r"
-									-- The number at the position of the above 946 is what we want.
+	self.EJLastestInstanceID = RCLootCouncil:GetEJLatestInstanceID()
+	
 	---@type table<string,boolean>
 	self.candidatesInGroup = {}
 	self.mldb = {} -- db recived from ML
@@ -2670,4 +2666,23 @@ function RCLootCouncil:OnCovenantRequest(sender)
 		command = "cov",
 		data = C_Covenants.GetActiveCovenantID()
 	}
+end
+		
+function RCLootCouncil:GetEJLatestInstanceID()
+	local serverExpansionLevel = GetServerExpansionLevel()
+   	EJ_SelectTier(serverExpansionLevel+1)
+   	local index = 1
+   	local instanceId, name = EJ_GetInstanceByIndex(index, true)
+   
+   	while index do
+      		local id = EJ_GetInstanceByIndex(index+1, true)
+      		if id then 
+         		instanceId = id 
+         		index = index+1
+     		end
+      		index = nil
+   	end
+   
+   	if not instanceId then instanceId = 1190 end --default to Castle Nathria if no ID is found
+   	return instanceId
 end
