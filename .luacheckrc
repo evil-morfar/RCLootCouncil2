@@ -103,6 +103,23 @@ globals = {
 	"UISpecialFrames",
 	"CreateColor",
 
+	-- Enums 
+	"Enum.FollowerAbilityCastResult",
+	"Enum.GarrFollowerQuality",
+	"Enum.GarrisonFollowerType",
+	"Enum.GarrisonTalentAvailability",
+	"Enum.GarrisonType",
+	"Enum.InventoryType",
+	"Enum.ItemQuality",
+	"Enum.ItemSlotFilterType",
+	"Enum.MapOverlayDisplayLocation",
+	"Enum.QuestFrequency",
+	"Enum.QuestTag",
+	"Enum.TransmogCollectionType",
+	"Enum.TransmogType",
+	"Enum.WorldQuestQuality",
+
+
 	-- FrameXML frames
 	"GameTooltip",
    "InterfaceOptionsFrame",
