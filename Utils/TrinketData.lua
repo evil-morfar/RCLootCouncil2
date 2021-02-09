@@ -70,17 +70,17 @@ function RCLootCouncil:ExportTrinketData(nextTier, nextIsRaid, nextIndex, nextDi
             local instanceID = EJ_GetInstanceByIndex(instanceIndex, (i == 1))
             EJ_SelectInstance(instanceID)
             for diffID = nextDiffID, 99 do -- Should be enough to include all difficulties
-               if EJ_IsValidInstanceDifficulty(diffID) then
+               	if EJ_IsValidInstanceDifficulty(diffID) then
                   self:ExportTrinketDataSingleInstance(instanceID, diffID, TIME_FOR_EACH_INSTANCE_DIFF)
                   return self:ScheduleTimer("ExportTrinketData", TIME_FOR_EACH_INSTANCE_DIFF, h, i, instanceIndex, diffID + 1, maxTier)
-					elseif nextTier == 1 and i == 1 and diffID == 9 then
-						-- Classic raids has EJ_GetDifficulty() == 9, but EJ_IsValidInstanceDifficulty(9) == false
-						-- and EJ_SetDifficulty(9) works as intended...
-						-- Except for Ruins of Ahn'Qiraj (10-player) which correctly registers diffID 3.
-						-- #GoodJobBlizzard
-						self:ExportTrinketDataSingleInstance(instanceID, 9, TIME_FOR_EACH_INSTANCE_DIFF)
-                  return self:ScheduleTimer("ExportTrinketData", TIME_FOR_EACH_INSTANCE_DIFF, h, i, instanceIndex + 1, 1, maxTier)
-					end
+				elseif nextTier == 1 and i == 1 and diffID == 9 then
+					-- Classic raids has EJ_GetDifficulty() == 9, but EJ_IsValidInstanceDifficulty(9) == false
+					-- and EJ_SetDifficulty(9) works as intended...
+					-- Except for Ruins of Ahn'Qiraj (10-player) which correctly registers diffID 3.
+					-- #GoodJobBlizzard
+					self:ExportTrinketDataSingleInstance(instanceID, 9, TIME_FOR_EACH_INSTANCE_DIFF)
+                	return self:ScheduleTimer("ExportTrinketData", TIME_FOR_EACH_INSTANCE_DIFF, h, i, instanceIndex + 1, 1, maxTier)
+				end
             end
             nextDiffID = 1
             instanceIndex = instanceIndex + 1
@@ -151,20 +151,20 @@ function RCLootCouncil:ExportTrinketDataSingleInstance(instanceID, diffID, timeL
 
    EJ_SetLootFilter(0, 0)
    for j = 1, EJ_GetNumLoot() do -- EJ_GetNumLoot() can be 0 if EJ items are not cached.
-      local id, _, _, _, _, _, link = C_EncounterJournal.GetLootInfoByIndex(j)
-      if link then
-			if not trinketIdToIndex[id] then
-				tinsert(trinketData, {id, ZERO})
-				trinketIdToIndex[id] = #trinketData
+      local info = C_EncounterJournal.GetLootInfoByIndex(j)
+      if info.link then
+			if not trinketIdToIndex[info.itemID] then
+				tinsert(trinketData, {info.itemID, ZERO})
+				trinketIdToIndex[info.itemID] = #trinketData
 			else
-				trinketData[trinketIdToIndex[id]][2] = ZERO
+				trinketData[trinketIdToIndex[info.itemID]][2] = ZERO
 			end
-         trinketNames[id] = self:GetItemNameFromLink(link)
-         GetItemInfo(id)
+         trinketNames[info.itemID] = self.Utils:GetItemNameFromLink(info.link)
+         GetItemInfo(info.itemID)
          count = count + 1
-         tinsert(trinketlinksInThisInstances, link)
+         tinsert(trinketlinksInThisInstances, info.link)
       else
-         self.Log:D("Uncached item @", instanceID, diffID, j, id)
+         self.Log:D("Uncached item @", instanceID, diffID, j, info.itemID)
       end
    end
 
@@ -172,13 +172,13 @@ function RCLootCouncil:ExportTrinketDataSingleInstance(instanceID, diffID, timeL
       for specIndex = 1, GetNumSpecializationsForClassID(classID) do
          EJ_SetLootFilter(classID, GetSpecializationInfoForClassID(classID, specIndex))
          for j = 1, EJ_GetNumLoot() do -- EJ_GetNumLoot() can be 0 if EJ items are not cached.
-            local id, _, _, _, _, _, link = C_EncounterJournal.GetLootInfoByIndex(j)
-            if link then
-					local index = trinketIdToIndex[id]
-					local specCode = trinketData[index][2]
-               local digit = tonumber(specCode:sub(-classID, - classID), 16)
-               digit = digit + 2^(specIndex - 1)
-               trinketData[index][2] = specCode:sub(1, numClasses - classID)..format("%X", digit)..specCode:sub(numClasses - classID + 2, numClasses)
+            local info = C_EncounterJournal.GetLootInfoByIndex(j)
+            if info.link then
+				local index = trinketIdToIndex[info.itemID]
+				local specCode = trinketData[index][2]
+				local digit = tonumber(specCode:sub(-classID, - classID), 16)
+				digit = digit + 2^(specIndex - 1)
+				trinketData[index][2] = specCode:sub(1, numClasses - classID)..format("%X", digit)..specCode:sub(numClasses - classID + 2, numClasses)
             end
          end
       end
