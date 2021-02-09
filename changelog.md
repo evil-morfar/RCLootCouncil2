@@ -6,6 +6,8 @@
 
 Frame z-level issues are no longer a thing. Credits to enajork (#206).
 
+Added trinkets from all Shadowlands dungeons and raids to the auto pass list.
+
 
 # v3.1.4
 
