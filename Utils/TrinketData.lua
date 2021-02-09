@@ -44,7 +44,7 @@ function RCLootCouncil:ExportTrinketData(nextTier, nextIsRaid, nextIndex, nextDi
    local TIME_FOR_EACH_INSTANCE_DIFF = 5
 
    if not nextTier then
-      nextTier = 1 -- 8 -- BFA
+      nextTier = 9 -- 8 -- BFA
       nextIsRaid = 0
       nextIndex = 1 -- 5 -- Eternal Palace
       nextDiffID = 1
@@ -140,7 +140,7 @@ function RCLootCouncil:ExportTrinketDataSingleInstance(instanceID, diffID, timeL
    local trinketlinksInThisInstances = {}
    EJ_SelectInstance(instanceID)
    EJ_SetDifficulty(diffID)
-   EJ_SetSlotFilter(LE_ITEM_FILTER_TYPE_TRINKET)
+   C_EncounterJournal.SetSlotFilter(Enum.ItemSlotFilterType.Trinket)
 
 	local diffText = GetDifficultyInfo(diffID) or "Unknown difficulty"
 	local instanceText = format("%s %s (id: %d).", EJ_GetInstanceInfo(instanceID), diffText,instanceID)
@@ -151,7 +151,7 @@ function RCLootCouncil:ExportTrinketDataSingleInstance(instanceID, diffID, timeL
 
    EJ_SetLootFilter(0, 0)
    for j = 1, EJ_GetNumLoot() do -- EJ_GetNumLoot() can be 0 if EJ items are not cached.
-      local id, _, _, _, _, _, link = EJ_GetLootInfoByIndex(j)
+      local id, _, _, _, _, _, link = C_EncounterJournal.GetLootInfoByIndex(j)
       if link then
 			if not trinketIdToIndex[id] then
 				tinsert(trinketData, {id, ZERO})
@@ -164,7 +164,7 @@ function RCLootCouncil:ExportTrinketDataSingleInstance(instanceID, diffID, timeL
          count = count + 1
          tinsert(trinketlinksInThisInstances, link)
       else
-         self:Debug("Uncached item @", instanceID, diffID, j, id)
+         self.Log:D("Uncached item @", instanceID, diffID, j, id)
       end
    end
 
@@ -172,7 +172,7 @@ function RCLootCouncil:ExportTrinketDataSingleInstance(instanceID, diffID, timeL
       for specIndex = 1, GetNumSpecializationsForClassID(classID) do
          EJ_SetLootFilter(classID, GetSpecializationInfoForClassID(classID, specIndex))
          for j = 1, EJ_GetNumLoot() do -- EJ_GetNumLoot() can be 0 if EJ items are not cached.
-            local id, _, _, _, _, _, link = EJ_GetLootInfoByIndex(j)
+            local id, _, _, _, _, _, link = C_EncounterJournal.GetLootInfoByIndex(j)
             if link then
 					local index = trinketIdToIndex[id]
 					local specCode = trinketData[index][2]
