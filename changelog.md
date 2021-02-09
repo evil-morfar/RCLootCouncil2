@@ -1,3 +1,12 @@
+# v3.2.0
+
+## Changes
+
+`/rc fulltest` now always uses items from the latest raid. Credits to jjholleman (#204).
+
+Frame z-level issues are no longer a thing. Credits to enajork (#206).
+
+
 # v3.1.4
 
 ## Bugfixes
