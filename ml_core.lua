@@ -1566,14 +1566,15 @@ end
 
 function RCLootCouncilML:OnReconnectReceived (sender)
 	-- Someone asks for mldb and council
-	MLDB:Send(Player:Get(sender))
-	self:Send(Player:Get(sender), "council", Council:GetForTransmit())
+	local requestPlayer = Player:Get(sender)
+	MLDB:Send(requestPlayer)
+	self:Send(requestPlayer, "council", Council:GetForTransmit())
 
 	if self.running then -- Resend lootTable
-		self:ScheduleTimer("Send", 4, Player:Get(sender), "lootTable", self:GetLootTableForTransmit(true))
+		self:ScheduleTimer("Send", 4, requestPlayer, "lootTable", self:GetLootTableForTransmit(true))
 		-- REVIEW v2.2.6 For backwards compability we're just sending votingFrame's lootTable
 		-- This is quite redundant and should be removed in the future
-		if db.observe or Council:Contains(Player:Get(sender)) then -- Only send all data to councilmen
+		if db.observe or Council:Contains(requestPlayer) then -- Only send all data to councilmen
 			local table = addon:GetActiveModule("votingframe"):GetLootTable()
 			-- Remove our own voting data if any
 			for _, v in ipairs(table) do
@@ -1582,7 +1583,7 @@ function RCLootCouncilML:OnReconnectReceived (sender)
 					d.haveVoted = false
 				end
 			end
-			self:ScheduleTimer("Send", 5, Player:Get(sender), "reconnectData", table)
+			self:ScheduleTimer("Send", 5, requestPlayer, "reconnectData", table)
 		end
 	end
 	self.Log("Responded to reconnect from", sender)

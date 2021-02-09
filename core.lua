@@ -252,6 +252,13 @@ function RCLootCouncil:OnEnable()
 
 	-- Register the player's name
 	self.realmName = select(2, UnitFullName("player")) -- TODO Remove
+	if self.realmName == "" then -- Noticed this happening with starter accounts. Not sure if it's a real problem.
+		self:ScheduleTimer(
+			function()
+			self.realmName = select(2, UnitFullName("player"))
+			end
+		, 2)
+	end
 	self.playerName = Player:Get("player"):GetName() -- TODO Remove
 	self.player = Player:Get("player")
 	self.Log(self.playerName, self.version, self.tVersion)
@@ -1431,19 +1438,22 @@ function RCLootCouncil:OnEvent(event, ...)
 
 	elseif event == "PLAYER_ENTERING_WORLD" then
 		self.Log:d("Event:", event, ...)
+		self:UpdatePlayersData()
 		self:ScheduleTimer(CandidateAndNewMLCheck, 2)
 		self:ScheduleTimer(function() -- This needs some time to be ready
 			local instanceName, _, _, difficultyName = GetInstanceInfo()
 			self.currentInstanceName = instanceName..(difficultyName ~= "" and "-"..difficultyName or "")
 		end, 5)
+
 		if player_relogged then
-			-- Ask for data when we have done a /rl and have a ML
-			if not self.isMasterLooter and self.masterLooter and self.masterLooter ~= "" and player_relogged then
-				self.Log("Player relog...")
-				self:ScheduleTimer("Send", 2, self.masterLooter, "reconnect")
-				self:Send("group", "pI", self:GetPlayerInfo()) -- Also send out info, just in case
-			end
-			self:UpdatePlayersData()
+		-- Ask for data when we have done a /rl and have a ML, but delay it until we've updated ML
+		self.Log("Player relog...")
+			self:ScheduleTimer(function()
+				if not self.isMasterLooter and self.masterLooter and self.masterLooter ~= "" then
+					self:Send("group", "pI", self:GetPlayerInfo()) -- Also send out info, just in case
+					self:Send(self.masterLooter, "reconnect")
+				end
+			end, 2.1)
 			player_relogged = false
 		end
 	elseif event == "ENCOUNTER_START" then

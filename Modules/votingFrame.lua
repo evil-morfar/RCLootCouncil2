@@ -521,8 +521,9 @@ function RCVotingFrame:OnRollReceived (name, roll, sessions)
 	self:Update()
 end
 
-function RCVotingFrame:OnReconnectReceived (lootTable)
-	for _, data in ipairs(lootTable) do
+function RCVotingFrame:OnReconnectReceived (rlootTable)
+	lootTable = rlootTable
+	for _, data in ipairs(rlootTable) do
 		for _, cand in pairs(data.candidates) do
 			for _, voter in ipairs(cand.voters) do
 				if addon:UnitIsUnit(voter, "player") then -- WE've voted

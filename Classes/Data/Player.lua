@@ -140,13 +140,16 @@ end
 --- Attempts to update the cached player with available data
 ---@param player Player
 function private:UpdateCachedPlayer(player)
-	if not player and player.guid then return end
+	if not player and player.guid then return Log:f("<Data.Player>", "UpdateCachedPlayer - no player or player guid", player.name, player.guid) end
 
 	local name, realm, class = self:GetPlayerInfoByGUID(player.guid)
-	if not name then return end -- Might not be available
+	if not name then return Log:f("<Data.Player>", "UpdateCachedPlayer - couldn't get PlayerInfoByGUID", player.name, player.guid) end -- Might not be available
 
 	player.name = addon.Utils:UnitNameFromNameRealm(name, realm)
 	player.class = class
+	if realm == "" then -- Our realm isn't returned
+		realm = GetRealmName()
+	end
 	player.realm = realm
 	self:CachePlayer(player)
 end
