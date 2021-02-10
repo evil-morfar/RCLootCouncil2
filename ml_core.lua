@@ -246,9 +246,13 @@ function RCLootCouncilML:StartSession()
 end
 
 function RCLootCouncilML:AddUserItem(item, username)
-	self:AddItem(item, false, nil, username) -- The item is neither bagged nor in the loot slot.
-	addon:CallModule("sessionframe")
-	addon:GetActiveModule("sessionframe"):Show(self.lootTable)
+	if type(tonumber(item)) == "number" or string.find(item, "item:") then -- Ensure we can handle it
+		self:AddItem(item, false, nil, username) -- The item is neither bagged nor in the loot slot.
+		addon:CallModule("sessionframe")
+		addon:GetActiveModule("sessionframe"):Show(self.lootTable)
+	else
+		addon:Print("Invalid itemLink or itemID:", item)
+	end
 end
 
 function RCLootCouncilML:SessionFromBags()
@@ -1572,7 +1576,7 @@ function RCLootCouncilML:OnReconnectReceived (sender)
 
 	if self.running then -- Resend lootTable
 		self:ScheduleTimer("Send", 4, requestPlayer, "lootTable", self:GetLootTableForTransmit(true))
-		-- REVIEW v2.2.6 For backwards compability we're just sending votingFrame's lootTable
+		-- REVIEW v2.2.6 For backwards compability we're just sending avotingFrame's lootTable
 		-- This is quite redundant and should be removed in the future
 		if db.observe or Council:Contains(requestPlayer) then -- Only send all data to councilmen
 			local table = addon:GetActiveModule("votingframe"):GetLootTable()

@@ -8,6 +8,8 @@ Frame z-level issues are no longer a thing. Credits to enajork (#206).
 
 Added trinkets from all Shadowlands dungeons and raids to the auto pass list.
 
+`/rc add` can now only be used supported inputs (itemLinks and itemIDs).
+
 ## Bugfixes
 * *Session data didn't transmit properly after a disconnect/reload during a session (Curse#475).*
 
