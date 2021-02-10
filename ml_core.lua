@@ -118,8 +118,11 @@ function RCLootCouncilML:AddItem(item, bagged, slotIndex, owner, entry)
 	if not entry then
 		entry = {}
 		self.lootTable[#self.lootTable + 1] = entry
+		entry.attempts = 0
 	else
+		local attempts = entry.attempts -- Attempts should persist
 		wipe(entry) -- Clear the entry. Don't use 'entry = {}' here to preserve table pointer.
+		entry.attempts = attempts
 	end
 
 	entry.bagged = bagged
@@ -140,9 +143,20 @@ function RCLootCouncilML:AddItem(item, bagged, slotIndex, owner, entry)
 
 	-- Item isn't properly loaded, so update the data next frame (Should only happen with /rc test)
 	if not itemInfo then
-		self:ScheduleTimer("Timer", 0, "AddItem", item, bagged, slotIndex, owner, entry)
+		entry.attempts = entry.attempts + 1
+		-- Give it 20 attempts to find the item (roughly 1 second)
+		if entry.attempts >= 20 then
+			tDeleteItem(self.lootTable, entry)
+			wipe(entry)
+			self.Log:D("Couldn't find item info for ", item)
+			addon:Print(format("Couldn't fetch item info for %s - probably not a real item.", tostring(item)))
+			addon:GetActiveModule("sessionframe"):Show(self.lootTable)
+			return
+		end
+		self:ScheduleTimer("Timer", 0.05, "AddItem", item, bagged, slotIndex, owner, entry)
 		self.Log:d("Started timer:", "AddItem", "for", item)
 	else
+		entry.attempts = nil
 		addon:SendMessage("RCMLAddItem", item, entry)
 	end
 end

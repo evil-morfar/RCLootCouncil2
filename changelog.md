@@ -10,6 +10,8 @@ Added trinkets from all Shadowlands dungeons and raids to the auto pass list.
 
 `/rc add` can now only be used supported inputs (itemLinks and itemIDs).
 
+Session frame no longer has items infitely stuck on "Waiting for item info". Items are removed if the item info isn't found.
+
 ## Bugfixes
 * *Session data didn't transmit properly after a disconnect/reload during a session (Curse#475).*
 

@@ -74,10 +74,10 @@ function RCSessionFrame:Show(data, disableAwardLater)
 			-- that's already in a running session.
 			ml:SortLootTable(data)
 		end
-		self:ExtractData(data)
-		self.frame.st:SetData(self.frame.rows)
-		self:Update()
 	end
+	self:ExtractData(data)
+	self.frame.st:SetData(self.frame.rows)
+	self:Update()
 end
 
 function RCSessionFrame:Hide()
