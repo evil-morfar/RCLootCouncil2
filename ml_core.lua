@@ -149,7 +149,7 @@ function RCLootCouncilML:AddItem(item, bagged, slotIndex, owner, entry)
 			tDeleteItem(self.lootTable, entry)
 			wipe(entry)
 			self.Log:D("Couldn't find item info for ", item)
-			addon:Print(format("Couldn't fetch item info for %s - probably not a real item.", tostring(item)))
+			addon:Print(format(L["ML_ADD_ITEM_MAX_ATTEMPTS"], tostring(item)))
 			addon:GetActiveModule("sessionframe"):Show(self.lootTable)
 			return
 		end
@@ -265,7 +265,7 @@ function RCLootCouncilML:AddUserItem(item, username)
 		addon:CallModule("sessionframe")
 		addon:GetActiveModule("sessionframe"):Show(self.lootTable)
 	else
-		addon:Print("Invalid itemLink or itemID:", item)
+		addon:Print(format(L["ML_ADD_INVALID_ITEM"], tostring(item)))
 	end
 end
 
