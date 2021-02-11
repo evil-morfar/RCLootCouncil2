@@ -745,10 +745,9 @@ function RCLootCouncil:EnterCombat()
 	self.inCombat = true
 	if not db.minimizeInCombat then return end
 	for _,frame in ipairs(self.UI.minimizeableFrames) do
-		if frame:IsVisible() and not frame.combatMinimized then -- only minimize for combat if it isn't already minimized
+		if frame:IsVisible() and not frame:IsMinimized() then -- only minimize for combat if it isn't already minimized
 			self.Log("Minimizing for combat")
-			frame.combatMinimized = true -- flag it as being minimized for combat
-			frame:Minimize()
+			frame:Minimize(true)
 		end
 	end
 end
@@ -759,9 +758,8 @@ function RCLootCouncil:LeaveCombat()
 	self.inCombat = false
 	if not db.minimizeInCombat then return end
 	for _,frame in ipairs(self.UI.minimizeableFrames) do
-		if frame.combatMinimized then -- Reshow it
+		if frame:IsMinimized() and frame.autoMinimized then -- Reshow it
 			self.Log("Reshowing frame")
-			frame.combatMinimized = false
 			frame:Maximize()
 		end
 	end

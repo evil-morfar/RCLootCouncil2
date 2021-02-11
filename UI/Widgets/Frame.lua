@@ -145,21 +145,22 @@ function Object:CreateTitleFrame (parent, name, title, width)
 end
 
 Object.Minimie_Prototype = {
-   minimized = false,
+	minimized = false,
+	autoMinimized = false,
 	IsMinimized = function(frame)
-      return frame.minimized
-   end,
-	Minimize = function(frame)
-		addon.Log:D("Minimize()")
+		return frame.minimized
+	end,
+	Minimize = function(frame, auto)
 		if not frame.minimized then
 			frame.content:Hide()
+			frame.autoMinimized = auto
 			frame.minimized = true
 		end
 	end,
 	Maximize = function(frame)
-		addon.Log:D("Maximize()")
 		if frame.minimized then
 			frame.content:Show()
+			frame.autoMinimized = false
 			frame.minimized = false
 		end
 	end
