@@ -1236,7 +1236,7 @@ function RCLootCouncilML:EndSession()
 	self:CancelAllTimers()
 	if addon.testMode then -- We need to undo our ML status
 		addon.testMode = false
-		addon:ScheduleTimer("NewMLCheck", 1) -- Delay it a bit
+		addon:ScheduleTimer("NewMLCheck", 1.2) -- Delay it a bit
 	end
 	addon.testMode = false
 end
