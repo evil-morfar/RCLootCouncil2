@@ -183,5 +183,5 @@ function private:GetGUIDFromPlayerNameByGuild(name)
 end
 
 function private:GetNilPlayer()
-	return {name = "Unknown"}
+	return setmetatable({name = "Unknown"}, PLAYER_MT)
 end
