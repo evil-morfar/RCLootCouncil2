@@ -593,8 +593,8 @@ local function cacheMultipleItemAwardHistory(items)
 	end
 
 	local his = addon:GetHistoryDB()
-	for name, data in pairs(his) do
-		for _, loot in ipairs(data) do
+	for name in addon:GroupIterator() do
+		for _, loot in ipairs(his[name]) do
 			local id = addon.Utils:GetItemIDFromLink(loot.lootWon)
 			if itemIDs[id] then
 				addon.Log:D("Found winner of ", loot.lootWon, name)
