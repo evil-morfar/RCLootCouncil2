@@ -594,12 +594,14 @@ local function cacheMultipleItemAwardHistory(items)
 
 	local his = addon:GetHistoryDB()
 	for name in addon:GroupIterator() do
-		for _, loot in ipairs(his[name]) do
-			local id = addon.Utils:GetItemIDFromLink(loot.lootWon)
-			if itemIDs[id] then
-				addon.Log:D("Found winner of ", loot.lootWon, name)
-				if not ret[itemIDs[id]][name] then ret[itemIDs[id]][name] = {} end
-				tinsert(ret[itemIDs[id]][name], loot)
+		if his[name] then -- might not have a history
+			for _, loot in ipairs(his[name]) do
+				local id = addon.Utils:GetItemIDFromLink(loot.lootWon)
+				if itemIDs[id] then
+					addon.Log:D("Found winner of ", loot.lootWon, name)
+					if not ret[itemIDs[id]][name] then ret[itemIDs[id]][name] = {} end
+					tinsert(ret[itemIDs[id]][name], loot)
+				end
 			end
 		end
 	end
@@ -1246,10 +1248,20 @@ function RCVotingFrame:GetDiffColor(num)
 	return grey
 end
 
+local doOnceChecker = false
+
 function RCVotingFrame.SetCellClass(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
 	local name = data[realrow].name
 	if not (lootTable[session] and lootTable[session].candidates[name] and lootTable[session].candidates[name].specID) then
 		addon.Log:E("Missing data for 'SetCellClass'", session, name)
+		ErrorHandler:ThrowSilentError(format("SetCellClass: Session: %d Name: %s SpecID: %s", session, name, tostring(lootTable[session].candidates[name] and lootTable[session].candidates[name].specID)))
+		if not doOnceChecker then
+			doOnceChecker = true
+			addon.Log:E("lootTable[1].candidates:")
+			for name in pairs(lootTable[1].candidates) do
+				addon.Log:E(name)
+			end
+		end
 		return
 	end
 	local specID = lootTable[session].candidates[name].specID
