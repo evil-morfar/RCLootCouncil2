@@ -1,5 +1,5 @@
 ## Author: Potdisc
-## Interface: 90002
+## Interface: 90005
 ## Notes: Interface for running a Loot Council v3.2.0
 ## Title: RCLootCouncil
 ## Version: 3.2.0
