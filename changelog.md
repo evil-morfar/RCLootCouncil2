@@ -1,3 +1,9 @@
+# 3.1.5
+
+## Changes
+
+Updated toc for patch 9.0.5.
+
 # v3.1.4
 
 ## Bugfixes
