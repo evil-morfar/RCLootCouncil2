@@ -29,6 +29,12 @@ Added trinkets from all Shadowlands dungeons and raids to the auto pass list.
 
 * *Session data didn't transmit properly after a disconnect/reload during a session (Curse#475).*
 
+# 3.1.5
+
+## Changes
+
+Updated toc for patch 9.0.5.
+
 # v3.1.4
 
 ## Bugfixes
