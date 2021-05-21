@@ -1,4 +1,19 @@
-local MAJOR, MINOR = "ScrollingTable", tonumber("15415439531");
+-- Copyright 2008-2020 Dan Dumont
+--
+-- This program is free software: you can redistribute it and/or modify
+-- it under the terms of the GNU General Public License as published by
+-- the Free Software Foundation, either version 3 of the License, or
+-- (at your option) any later version.
+
+-- This program is distributed in the hope that it will be useful,
+-- but WITHOUT ANY WARRANTY; without even the implied warranty of
+-- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-- GNU General Public License for more details.
+
+-- You should have received a copy of the GNU General Public License
+-- along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+local MAJOR, MINOR = "ScrollingTable", tonumber("@project-timestamp@") or 40300;
 local lib, oldminor = LibStub:NewLibrary(MAJOR, MINOR);
 if not lib then
 	return; -- Already loaded and no upgrade necessary.
@@ -483,7 +498,18 @@ do
 	-- @description Sets the currently selected row to 'realrow'.  Realrow is the unaltered index of the data row in your table. You should not need to refresh the table.
 	-- @usage st:SetSelection(12)
 	local function SetSelection(self, realrow)
-		self.selected = realrow;
+    if self.multiselection then
+      if realrow then
+        local selected = self:GetRow(realrow)
+        if selected and selected.cols then -- Handle column titles click
+          self.selected:Set(realrow);
+        end
+      else
+        self.selected:Clear();
+      end
+    else
+		  self.selected = realrow;
+    end
 		self:Refresh();
 	end
 
@@ -492,7 +518,11 @@ do
 	-- @description Gets the currently selected to row.  Return will be the unaltered index of the data row that is selected.
 	-- @usage st:GetSelection()
 	local function GetSelection(self)
-		return self.selected;
+		if self.multiselection then
+			return self.selected:Get()
+		else
+			return self.selected;
+		end
 	end
 
 	--- API for a ScrollingTable table
@@ -555,7 +585,13 @@ do
 			end
 
 			if table.fSelect then
-				if table.selected == realrow then
+        local selected = false
+        if table.multiselection then
+          selected = (table.selected and table.selected:IsSelected(realrow))
+        else
+				  selected = (table.selected == realrow)
+        end
+        if selected then
 					table:SetHighLightColor(rowFrame, highlight or cols[column].highlight or rowdata.highlight or table:GetDefaultHighlight());
 				else
 					table:SetHighLightColor(rowFrame, table:GetDefaultHighlightBlank());
@@ -618,14 +654,14 @@ do
 		return false;
 	end
 
-	function lib:CreateST(cols, numRows, rowHeight, highlight, parent)
+	function lib:CreateST(cols, numRows, rowHeight, highlight, parent, multiselection)
 		local st = {};
 		self.framecount = self.framecount or 1;
-		local f = CreateFrame("Frame", "ScrollTable" .. self.framecount, parent or UIParent);
+		local f = CreateFrame("Frame", "ScrollTable" .. self.framecount, parent or UIParent, BackdropTemplateMixin and "BackdropTemplate");
 		self.framecount = self.framecount + 1;
 		st.showing = true;
 		st.frame = f;
-
+    st.multiselection = multiselection or false
 		st.Show = Show;
 		st.Hide = Hide;
 		st.SetDisplayRows = SetDisplayRows;
@@ -680,7 +716,13 @@ do
 				if row and realrow then
 					local rowdata = table:GetRow(realrow);
 					local celldata = table:GetCell(rowdata, column);
-					if realrow ~= table.selected or not table.fSelect then
+          local emptySelection
+          if table.multiselection then
+            emptySelection = (not table.selected or not table.selected:IsSelected(realrow) or not table.fSelect)
+          else
+            emptySelection = (realrow ~= table.selected or not table.fSelect)
+          end
+					if emptySelection then
 						table:SetHighLightColor(rowFrame, table:GetDefaultHighlightBlank());
 					end
 				end
@@ -704,8 +746,14 @@ do
 						table:SortData();
 
 					else
-						if table:GetSelection() == realrow then
-							table:ClearSelection();
+						local selected
+						if table.multiselection then
+							selected = (table.selected and table.selected:IsSelected(realrow))
+						else
+							selected = (table:GetSelection() == realrow)
+						end
+						if selected then
+							table:ClearSelection(realrow);
 						else
 							table:SetSelection(realrow);
 						end
@@ -718,9 +766,31 @@ do
 
 		f:SetBackdrop(ScrollPaneBackdrop);
 		f:SetBackdropColor(0.1,0.1,0.1);
-		-- PATCH 8.2: This cannot be linked to UIParent
-		f:SetPoint("CENTER", parent or UIParent,"CENTER",0,0);
+		f:SetPoint("CENTER",parent or UIParent,"CENTER",0,0);
+    if multiselection then
+      local multiselector = { _storage =  {} }
+      multiselector.Set = (function(self, realrow)
+          self._storage[realrow] = true
+      end)
+      multiselector.Get = (function(self)
+        local keyList = {}
+        local n = 0
 
+        for k,_ in pairs(self._storage) do
+          n = n + 1
+          keyList[n] = k
+        end
+        return keyList
+      end)
+      multiselector.Clear = (function(self)
+        self._storage = {}
+      end)
+      multiselector.IsSelected = (function(self, realrow)
+        return self._storage[realrow]
+      end)
+
+      st.selected = multiselector
+    end
 		-- build scroll frame
 		local scrollframe = CreateFrame("ScrollFrame", f:GetName().."ScrollFrame", f, "FauxScrollFrameTemplate");
 		st.scrollframe = scrollframe;
