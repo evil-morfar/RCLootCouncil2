@@ -5,7 +5,7 @@ local Object = {}
 
 -- varargs: texture
 function Object:New(parent, name, texture)
-   local b = addon.UI.CreateFrame("Button", name, parent)
+   local b = addon.UI.CreateFrame("Button", name, parent, BackdropTemplateMixin and "BackdropTemplate")
    b:SetSize(40,40)
    b:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square")
    b:GetHighlightTexture():SetBlendMode("ADD")
