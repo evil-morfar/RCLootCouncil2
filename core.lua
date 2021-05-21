@@ -2566,7 +2566,7 @@ end
 -- @param height Height of the frame, defaults to 325.
 -- @return The frame object.
 function RCLootCouncil:CreateFrame(name, cName, title, width, height)
-	local f = CreateFrame("Frame", name, UIParent) -- LibWindow seems to work better with nil parent
+	local f = CreateFrame("Frame", name, UIParent, BackdropTemplateMixin and "BackdropTemplate") -- LibWindow seems to work better with nil parent
 	f:Hide()
 	f:SetFrameStrata("DIALOG")
 	f:SetWidth(450)
