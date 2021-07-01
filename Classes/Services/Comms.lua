@@ -9,7 +9,7 @@ local _, addon = ...
 ---@class Services.Comms
 local Comms = addon.Init("Services.Comms")
 local Subject = addon.Require("rx.Subject")
-local Log = addon.Require("Log"):Get()
+local Log = addon.Require("Utils.Log"):Get()
 ---@type Utils.TempTable
 local TempTable = addon.Require("Utils.TempTable")
 ---@type Services.ErrorHandler
@@ -62,7 +62,6 @@ end
 --- The returned function can handle implied selfs.
 --- @param prefix string The prefix to send to. This will be registered autmatically if it isn't.
 function Comms:GetSender (prefix)
-   self:BulkSubscribe("test", "test")
    assert(prefix and prefix~= "", "Prefix must be supplied")
    private:RegisterComm(prefix)
    --- Sends a ace comm to `target`, with `command` and `...` as command arguments.

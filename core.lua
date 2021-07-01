@@ -110,7 +110,7 @@ local playersData = {-- Update on login/encounter starts. it stores the informat
 } -- player's data that can be changed by the player (spec, equipped ilvl, gaers, relics etc)
 
 function RCLootCouncil:OnInitialize()
-	self.Log = self.Require "Log":New()
+	self.Log = self.Require "Utils.Log":New()
 	--IDEA Consider if we want everything on self, or just whatever modules could need.
 	self.version = GetAddOnMetadata("RCLootCouncil", "Version")
 	self.nnp = false

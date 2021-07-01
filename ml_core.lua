@@ -54,7 +54,7 @@ local ErrorHandler = addon.Require "Services.ErrorHandler"
 local subscriptions
 
 function RCLootCouncilML:OnInitialize()
-	self.Log = addon.Require "Log":New("ML")
+	self.Log = addon.Require "Utils.Log":New("ML")
 	self.Log("Init")
 	self.Send = Comms:GetSender(addon.PREFIXES.MAIN)
 end
