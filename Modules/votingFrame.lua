@@ -827,18 +827,20 @@ function RCVotingFrame:UpdateMoreInfo(row, data)
 		tip:AddDoubleLine(L["Number of raids received loot from:"], moreInfoData[name].totals.raids.num, 1,1,1, 1,1,1)
 		tip:AddDoubleLine(L["Total items received:"], moreInfoData[name].totals.total, 0,1,1, 0,1,1)
 
-		tip:AddLine(" ")
-		tip:AddDoubleLine("Winners of:", lootTable[session].link)
-		if #sortedAwardHistory == 0 then
-			tip:AddLine(_G.NONE)
-		end
-		for _, wname in ipairs(sortedAwardHistory) do
-			for _, entry in ipairs(awardHistory[wname]) do
-				local ilvl = select(4, GetItemInfo(entry.lootWon))
-				local player = Player:Get(wname)
-				local class = player and player:GetClass()
-				local c = addon:GetClassColor(class)
-				tip:AddDoubleLine(addon.Ambiguate(wname), entry.response .." |cffffffffilvl: "..ilvl, c.r, c.g,c.b,unpack(entry.color, 1,3))
+		if addon.nnp then
+			tip:AddLine(" ")
+			tip:AddDoubleLine("Winners of:", lootTable[session].link)
+			if #sortedAwardHistory == 0 then
+				tip:AddLine(_G.NONE)
+			end
+			for _, wname in ipairs(sortedAwardHistory) do
+				for _, entry in ipairs(awardHistory[wname]) do
+					local ilvl = select(4, GetItemInfo(entry.lootWon))
+					local player = Player:Get(wname)
+					local class = player and player:GetClass()
+					local c = addon:GetClassColor(class)
+					tip:AddDoubleLine(addon.Ambiguate(wname), entry.response .." |cffffffffilvl: "..ilvl, c.r, c.g,c.b,unpack(entry.color, 1,3))
+				end
 			end
 		end
 	else
