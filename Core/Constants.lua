@@ -4,6 +4,7 @@ local _, addon = ...
 
 addon.LOGO_LOCATION = "Interface\\AddOns\\RCLootCouncil\\Media\\rc_logo"
 
+--- @alias Prefixes
 addon.PREFIXES = {
    MAIN     = "RCLC",
    VERSION  = "RCLCv",

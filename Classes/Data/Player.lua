@@ -1,12 +1,12 @@
 --- Player.lua Class for holding player related data.
 -- @author Potdisc
 -- Create Date: 15/04/2020
+
 ---@type RCLootCouncil
 local _, addon = ...
----@class Data.Player
+--- @class Data.Player
 local Player = addon.Init("Data.Player")
-local Log = addon.Require("Log"):Get()
----@type Services.ErrorHandler
+local Log = addon.Require("Utils.Log"):Get()
 local ErrorHandler = addon.Require "Services.ErrorHandler"
 
 local MAX_CACHE_TIME = 60 * 60 * 24 * 2 -- 2 days
@@ -121,7 +121,6 @@ function private:CreatePlayer(guid)
 	if not name then return private:GetNilPlayer() end
 	---@class Player
 	local player = setmetatable({
-		---@field name string
 		name = addon.Utils:UnitNameFromNameRealm(name, realm),
 		guid = guid,
 		class = class,
@@ -140,13 +139,16 @@ end
 --- Attempts to update the cached player with available data
 ---@param player Player
 function private:UpdateCachedPlayer(player)
-	if not player and player.guid then return end
+	if not player and player.guid then return Log:f("<Data.Player>", "UpdateCachedPlayer - no player or player guid", player.name, player.guid) end
 
 	local name, realm, class = self:GetPlayerInfoByGUID(player.guid)
-	if not name then return end -- Might not be available
+	if not name then return Log:f("<Data.Player>", "UpdateCachedPlayer - couldn't get PlayerInfoByGUID", player.name, player.guid) end -- Might not be available
 
 	player.name = addon.Utils:UnitNameFromNameRealm(name, realm)
 	player.class = class
+	if realm == "" then -- Our realm isn't returned
+		realm = GetRealmName()
+	end
 	player.realm = realm
 	self:CachePlayer(player)
 end
@@ -180,5 +182,5 @@ function private:GetGUIDFromPlayerNameByGuild(name)
 end
 
 function private:GetNilPlayer()
-	return {name = "Unknown"}
+	return setmetatable({name = "Unknown"}, PLAYER_MT)
 end

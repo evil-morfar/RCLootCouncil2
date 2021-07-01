@@ -54,7 +54,7 @@ local ErrorHandler = addon.Require "Services.ErrorHandler"
 local subscriptions
 
 function RCLootCouncilML:OnInitialize()
-	self.Log = addon.Require "Log":New("ML")
+	self.Log = addon.Require "Utils.Log":New("ML")
 	self.Log("Init")
 	self.Send = Comms:GetSender(addon.PREFIXES.MAIN)
 end
@@ -118,8 +118,11 @@ function RCLootCouncilML:AddItem(item, bagged, slotIndex, owner, entry)
 	if not entry then
 		entry = {}
 		self.lootTable[#self.lootTable + 1] = entry
+		entry.attempts = 0
 	else
+		local attempts = entry.attempts -- Attempts should persist
 		wipe(entry) -- Clear the entry. Don't use 'entry = {}' here to preserve table pointer.
+		entry.attempts = attempts
 	end
 
 	entry.bagged = bagged
@@ -140,9 +143,20 @@ function RCLootCouncilML:AddItem(item, bagged, slotIndex, owner, entry)
 
 	-- Item isn't properly loaded, so update the data next frame (Should only happen with /rc test)
 	if not itemInfo then
-		self:ScheduleTimer("Timer", 0, "AddItem", item, bagged, slotIndex, owner, entry)
+		entry.attempts = entry.attempts + 1
+		-- Give it 20 attempts to find the item (roughly 1 second)
+		if entry.attempts >= 20 then
+			tDeleteItem(self.lootTable, entry)
+			wipe(entry)
+			self.Log:D("Couldn't find item info for ", item)
+			addon:Print(format(L["ML_ADD_ITEM_MAX_ATTEMPTS"], tostring(item)))
+			addon:GetActiveModule("sessionframe"):Show(self.lootTable)
+			return
+		end
+		self:ScheduleTimer("Timer", 0.05, "AddItem", item, bagged, slotIndex, owner, entry)
 		self.Log:d("Started timer:", "AddItem", "for", item)
 	else
+		entry.attempts = nil
 		addon:SendMessage("RCMLAddItem", item, entry)
 	end
 end
@@ -246,9 +260,13 @@ function RCLootCouncilML:StartSession()
 end
 
 function RCLootCouncilML:AddUserItem(item, username)
-	self:AddItem(item, false, nil, username) -- The item is neither bagged nor in the loot slot.
-	addon:CallModule("sessionframe")
-	addon:GetActiveModule("sessionframe"):Show(self.lootTable)
+	if type(tonumber(item)) == "number" or string.find(item, "item:") then -- Ensure we can handle it
+		self:AddItem(item, false, nil, username) -- The item is neither bagged nor in the loot slot.
+		addon:CallModule("sessionframe")
+		addon:GetActiveModule("sessionframe"):Show(self.lootTable)
+	else
+		addon:Print(format(L["ML_ADD_INVALID_ITEM"], tostring(item)))
+	end
 end
 
 function RCLootCouncilML:SessionFromBags()
@@ -1218,7 +1236,7 @@ function RCLootCouncilML:EndSession()
 	self:CancelAllTimers()
 	if addon.testMode then -- We need to undo our ML status
 		addon.testMode = false
-		addon:ScheduleTimer("NewMLCheck", 1) -- Delay it a bit
+		addon:ScheduleTimer("NewMLCheck", 1.2) -- Delay it a bit
 	end
 	addon.testMode = false
 end
@@ -1566,14 +1584,15 @@ end
 
 function RCLootCouncilML:OnReconnectReceived (sender)
 	-- Someone asks for mldb and council
-	MLDB:Send(Player:Get(sender))
-	self:Send(Player:Get(sender), "council", Council:GetForTransmit())
+	local requestPlayer = Player:Get(sender)
+	MLDB:Send(requestPlayer)
+	self:Send(requestPlayer, "council", Council:GetForTransmit())
 
 	if self.running then -- Resend lootTable
-		self:ScheduleTimer("Send", 4, Player:Get(sender), "lootTable", self:GetLootTableForTransmit(true))
-		-- REVIEW v2.2.6 For backwards compability we're just sending votingFrame's lootTable
+		self:ScheduleTimer("Send", 4, requestPlayer, "lootTable", self:GetLootTableForTransmit(true))
+		-- REVIEW v2.2.6 For backwards compability we're just sending avotingFrame's lootTable
 		-- This is quite redundant and should be removed in the future
-		if db.observe or Council:Contains(Player:Get(sender)) then -- Only send all data to councilmen
+		if db.observe or Council:Contains(requestPlayer) then -- Only send all data to councilmen
 			local table = addon:GetActiveModule("votingframe"):GetLootTable()
 			-- Remove our own voting data if any
 			for _, v in ipairs(table) do
@@ -1582,7 +1601,7 @@ function RCLootCouncilML:OnReconnectReceived (sender)
 					d.haveVoted = false
 				end
 			end
-			self:ScheduleTimer("Send", 5, Player:Get(sender), "reconnectData", table)
+			self:ScheduleTimer("Send", 5, requestPlayer, "reconnectData", table)
 		end
 	end
 	self.Log("Responded to reconnect from", sender)

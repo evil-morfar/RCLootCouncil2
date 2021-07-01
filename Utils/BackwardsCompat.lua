@@ -105,7 +105,6 @@ Compat.list = {
 	{
 		name = "Changes to auto awards",
 		version = "3.1.0",
-		tVersion = "Beta.2",
 		func = function()
 			for _,db in pairs(addon.db.profiles) do
 				db.autoAwardTo = {}

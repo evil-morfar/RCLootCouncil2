@@ -1,3 +1,9 @@
+### v1.0.2-release
+
+* Change the license to the zlib license (Formerly LGPLv3). This license is more permissive than LGPLv3.
+* Increase compression speed by up to 25% on high compression level on non-JIT lua interpreter.
+* Bump the World of Warcraft toc version to 80300
+
 ### v1.0.1-release
 
 * 2019/11/18
@@ -5,7 +11,6 @@
 * Bump the World of Warcraft toc version to 80205
 * No longer "Load on Demand" in Warcraft toc, because this library does not consume much memory. This makes easier to load and test this library.
 * Change the license to LGPLv3 (Formerly GPLv3)
-
 
 ### v1.0.0-release
 

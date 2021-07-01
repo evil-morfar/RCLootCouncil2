@@ -67,15 +67,10 @@ tooltipForParsing:UnregisterAllEvents() -- Don't use GameTooltip for parsing, be
 
 RCLootCouncil:SetDefaultModuleState(false)
 
----@type Services.Comms
 local Comms = RCLootCouncil.Require "Services.Comms"
----@type Data.Council
 local Council = RCLootCouncil.Require "Data.Council"
----@type Data.Player
 local Player = RCLootCouncil.Require "Data.Player"
----@type Data.MLDB
 local MLDB = RCLootCouncil.Require "Data.MLDB"
----@type Utils.TempTable
 local TT = RCLootCouncil.Require "Utils.TempTable"
 
 -- Init shorthands
@@ -115,7 +110,7 @@ local playersData = {-- Update on login/encounter starts. it stores the informat
 } -- player's data that can be changed by the player (spec, equipped ilvl, gaers, relics etc)
 
 function RCLootCouncil:OnInitialize()
-	self.Log = self.Require "Log":New()
+	self.Log = self.Require "Utils.Log":New()
 	--IDEA Consider if we want everything on self, or just whatever modules could need.
 	self.version = GetAddOnMetadata("RCLootCouncil", "Version")
 	self.nnp = false
@@ -141,12 +136,8 @@ function RCLootCouncil:OnInitialize()
 	self.lastEncounterID = nil
 
 	self.lootStatus = {}
-	self.EJLastestInstanceID = 1180 -- UPDATE this whenever we change test data.
-									-- The lastest raid instance Enouncter Journal id.
-									-- Ny'alotha, the Waking City
-									-- HOWTO get this number: Open the instance we want in the Adventure Journal. Use command '/dump EJ_GetInstanceInfo()'
-									-- The 8th return value is sth like "|cff66bbff|Hjournal:0:946:14|h[Antorus, the Burning Throne]|h|r"
-									-- The number at the position of the above 946 is what we want.
+	self.EJLastestInstanceID = RCLootCouncil:GetEJLatestInstanceID()
+	
 	---@type table<string,boolean>
 	self.candidatesInGroup = {}
 	self.mldb = {} -- db recived from ML
@@ -256,6 +247,13 @@ function RCLootCouncil:OnEnable()
 
 	-- Register the player's name
 	self.realmName = select(2, UnitFullName("player")) -- TODO Remove
+	if self.realmName == "" then -- Noticed this happening with starter accounts. Not sure if it's a real problem.
+		self:ScheduleTimer(
+			function()
+			self.realmName = select(2, UnitFullName("player"))
+			end
+		, 2)
+	end
 	self.playerName = Player:Get("player"):GetName() -- TODO Remove
 	self.player = Player:Get("player")
 	self.Log(self.playerName, self.version, self.tVersion)
@@ -742,10 +740,9 @@ function RCLootCouncil:EnterCombat()
 	self.inCombat = true
 	if not db.minimizeInCombat then return end
 	for _,frame in ipairs(self.UI.minimizeableFrames) do
-		if frame:IsVisible() and not frame.combatMinimized then -- only minimize for combat if it isn't already minimized
+		if frame:IsVisible() and not frame:IsMinimized() then -- only minimize for combat if it isn't already minimized
 			self.Log("Minimizing for combat")
-			frame.combatMinimized = true -- flag it as being minimized for combat
-			frame:Minimize()
+			frame:Minimize(true)
 		end
 	end
 end
@@ -756,9 +753,8 @@ function RCLootCouncil:LeaveCombat()
 	self.inCombat = false
 	if not db.minimizeInCombat then return end
 	for _,frame in ipairs(self.UI.minimizeableFrames) do
-		if frame.combatMinimized then -- Reshow it
+		if frame:IsMinimized() and frame.autoMinimized then -- Reshow it
 			self.Log("Reshowing frame")
-			frame.combatMinimized = false
 			frame:Maximize()
 		end
 	end
@@ -1435,19 +1431,22 @@ function RCLootCouncil:OnEvent(event, ...)
 
 	elseif event == "PLAYER_ENTERING_WORLD" then
 		self.Log:d("Event:", event, ...)
+		self:UpdatePlayersData()
 		self:ScheduleTimer(CandidateAndNewMLCheck, 2)
 		self:ScheduleTimer(function() -- This needs some time to be ready
 			local instanceName, _, _, difficultyName = GetInstanceInfo()
 			self.currentInstanceName = instanceName..(difficultyName ~= "" and "-"..difficultyName or "")
 		end, 5)
+
 		if player_relogged then
-			-- Ask for data when we have done a /rl and have a ML
-			if not self.isMasterLooter and self.masterLooter and self.masterLooter ~= "" and player_relogged then
-				self.Log("Player relog...")
-				self:ScheduleTimer("Send", 2, self.masterLooter, "reconnect")
-				self:Send("group", "pI", self:GetPlayerInfo()) -- Also send out info, just in case
-			end
-			self:UpdatePlayersData()
+		-- Ask for data when we have done a /rl and have a ML, but delay it until we've updated ML
+		self.Log("Player relog...")
+			self:ScheduleTimer(function()
+				if not self.isMasterLooter and self.masterLooter and self.masterLooter ~= "" then
+					self:Send("group", "pI", self:GetPlayerInfo()) -- Also send out info, just in case
+					self:Send(self.masterLooter, "reconnect")
+				end
+			end, 2.1)
 			player_relogged = false
 		end
 	elseif event == "ENCOUNTER_START" then
@@ -2670,4 +2669,23 @@ function RCLootCouncil:OnCovenantRequest(sender)
 		command = "cov",
 		data = C_Covenants.GetActiveCovenantID()
 	}
+end
+		
+function RCLootCouncil:GetEJLatestInstanceID()
+	local serverExpansionLevel = GetServerExpansionLevel()
+   	EJ_SelectTier(serverExpansionLevel+1)
+   	local index = 1
+   	local instanceId, name = EJ_GetInstanceByIndex(index, true)
+   
+   	while index do
+      		local id = EJ_GetInstanceByIndex(index+1, true)
+      		if id then 
+         		instanceId = id 
+         		index = index+1
+     		end
+      		index = nil
+   	end
+   
+   	if not instanceId then instanceId = 1190 end --default to Castle Nathria if no ID is found
+   	return instanceId
 end

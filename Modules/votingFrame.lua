@@ -96,6 +96,7 @@ function RCVotingFrame:OnEnable()
 	--active = true
 	moreInfo = db.modules["RCVotingFrame"].moreInfo
 	moreInfoData = addon:GetLootDBStatistics()
+	self:UpdateItemAwardHistory()
 	self.frame = self:GetFrame()
 	guildRanks = addon:GetGuildRanks()
 	addon.Log("RCVotingFrame", "enabled")
@@ -213,6 +214,7 @@ function RCVotingFrame:ReceiveLootTable(lt)
 	active = true
 	lootTable = CopyTable(lt)
 	self:Setup(lootTable)
+	self:UpdateItemAwardHistory()
 	if not addon.enabled then return end -- We just want things ready
 	if db.autoOpen then
 		self:Show()
@@ -453,6 +455,7 @@ end
 function RCVotingFrame:OnAwardedReceived (s, winner)
 	self:ScheduleTimer(function()
 		moreInfoData = addon:GetLootDBStatistics() -- Just update it on every award
+		self:UpdateItemAwardHistory()
 	end, 1) -- Make sure we've received the history data before updating
 	if not lootTable[s] then return end -- We might not have lootTable - e.g. if we just reloaded
 	local oldWinner = lootTable[s].awarded
@@ -477,6 +480,7 @@ end
 function RCVotingFrame:OnBaggedReceived (s)
 	self:ScheduleTimer(function()
 		moreInfoData = addon:GetLootDBStatistics() -- Just update it on every award
+		self:UpdateItemAwardHistory()
 	end, 1) -- Make sure we've received the history data before updating
 	if not lootTable[s] then return end -- We might not have lootTable - e.g. if we just reloaded
 	lootTable[s].bagged = true
@@ -521,8 +525,9 @@ function RCVotingFrame:OnRollReceived (name, roll, sessions)
 	self:Update()
 end
 
-function RCVotingFrame:OnReconnectReceived (lootTable)
-	for _, data in ipairs(lootTable) do
+function RCVotingFrame:OnReconnectReceived (rlootTable)
+	lootTable = rlootTable
+	for _, data in ipairs(rlootTable) do
 		for _, cand in pairs(data.candidates) do
 			for _, voter in ipairs(cand.voters) do
 				if addon:UnitIsUnit(voter, "player") then -- WE've voted
@@ -551,7 +556,85 @@ function RCVotingFrame:OnLootTableAdditionsReceived (_, lt)
 	self:SwitchSession(session)
 end
 
+local itemAwardHistoryCache = {}
+local function cacheItemAwardHistory(item)
+	local itemID = addon.Utils:GetItemIDFromLink(item)
+	if not itemID then return end
 
+	local his = addon:GetHistoryDB()
+	local ret = TempTable:Acquire()
+	for name, data in pairs(his) do
+		for _, loot in ipairs(data) do
+			if itemID == addon.Utils:GetItemIDFromLink(loot.lootWon) then
+				addon.Log:D("Found single winner of ", loot.lootWon, name)
+				if not ret[name] then ret[name] = {} end
+				tinsert(ret[name], loot)
+			end
+		end
+	end
+
+	itemAwardHistoryCache[item] = {}
+	for wname, data in pairs(ret) do
+		itemAwardHistoryCache[item][wname] = data
+	end
+
+	TempTable:Release(ret)
+end
+
+--- items are expected to be a table of from [i] = itemLink
+local function cacheMultipleItemAwardHistory(items)
+	if not items or #items == 0 then return end
+
+	local itemIDs = TempTable:Acquire()
+	local ret = TempTable:Acquire()
+	for _, item in ipairs(items) do
+		ret[item] = {}
+		itemIDs[addon.Utils:GetItemIDFromLink(item)] = item
+	end
+
+	local his = addon:GetHistoryDB()
+	for name in addon:GroupIterator() do
+		if his[name] then -- might not have a history
+			for _, loot in ipairs(his[name]) do
+				local id = addon.Utils:GetItemIDFromLink(loot.lootWon)
+				if itemIDs[id] then
+					addon.Log:D("Found winner of ", loot.lootWon, name)
+					if not ret[itemIDs[id]][name] then ret[itemIDs[id]][name] = {} end
+					tinsert(ret[itemIDs[id]][name], loot)
+				end
+			end
+		end
+	end
+
+	for item, data in pairs(ret) do
+		itemAwardHistoryCache[item] = data
+	end
+
+	TempTable:Release(ret)
+	TempTable:Release(itemIDs)
+end
+
+--- Fetches recipients of the input item
+--- @param item ItemLink|ItemID
+--- @return table<name,table<i,HistoryEntry>>
+function RCVotingFrame:GetItemAwardHistory(item)
+	if not item then return end
+	if not itemAwardHistoryCache[item] then -- Not cached, do so
+		cacheItemAwardHistory(item)
+	end
+	return itemAwardHistoryCache[item]
+end
+
+--- Fetches item award info for all items in session.
+--- Items can be fetched with `GetItemAwardHistory`.
+function RCVotingFrame:UpdateItemAwardHistory()
+	local items = TempTable:Acquire()
+	for i, data in pairs(lootTable) do
+		items[i] = data.link
+	end
+	cacheMultipleItemAwardHistory(items)
+	TempTable:Release(items)
+end
 
 ------------------------------------------------------------------
 --	Visuals
@@ -709,6 +792,16 @@ function RCVotingFrame:UpdateMoreInfo(row, data)
 		return self.frame.moreInfo:Hide()
 	end
 
+	local awardHistory = self:GetItemAwardHistory(lootTable[session].link)
+	-- The names needs sorting
+	local sortedAwardHistory = TempTable:Acquire()
+	local i = 1
+	for cName in pairs(awardHistory) do
+		sortedAwardHistory[i] = cName
+		i = i + 1
+	end
+	table.sort(sortedAwardHistory)
+
 	local color = addon:GetClassColor(self:GetCandidateData(session, name, "class"))
 	local tip = self.frame.moreInfo -- shortening
 	tip:SetOwner(self.frame, "ANCHOR_RIGHT")
@@ -733,9 +826,27 @@ function RCVotingFrame:UpdateMoreInfo(row, data)
 		end
 		tip:AddDoubleLine(L["Number of raids received loot from:"], moreInfoData[name].totals.raids.num, 1,1,1, 1,1,1)
 		tip:AddDoubleLine(L["Total items received:"], moreInfoData[name].totals.total, 0,1,1, 0,1,1)
+
+		if addon.nnp then
+			tip:AddLine(" ")
+			tip:AddDoubleLine("Winners of:", lootTable[session].link)
+			if #sortedAwardHistory == 0 then
+				tip:AddLine(_G.NONE)
+			end
+			for _, wname in ipairs(sortedAwardHistory) do
+				for _, entry in ipairs(awardHistory[wname]) do
+					local ilvl = select(4, GetItemInfo(entry.lootWon))
+					local player = Player:Get(wname)
+					local class = player and player:GetClass()
+					local c = addon:GetClassColor(class)
+					tip:AddDoubleLine(addon.Ambiguate(wname), entry.response .." |cffffffffilvl: "..ilvl, c.r, c.g,c.b,unpack(entry.color, 1,3))
+				end
+			end
+		end
 	else
 		tip:AddLine(L["No entries in the Loot History"])
 	end
+	TempTable:Release(sortedAwardHistory)
 	tip:Show()
 	tip:SetAnchorType("ANCHOR_RIGHT", 0, -tip:GetHeight())
 end
@@ -1139,10 +1250,20 @@ function RCVotingFrame:GetDiffColor(num)
 	return grey
 end
 
+local doOnceChecker = false
+
 function RCVotingFrame.SetCellClass(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
 	local name = data[realrow].name
 	if not (lootTable[session] and lootTable[session].candidates[name] and lootTable[session].candidates[name].specID) then
 		addon.Log:E("Missing data for 'SetCellClass'", session, name)
+		ErrorHandler:ThrowSilentError(format("SetCellClass: Session: %d Name: %s SpecID: %s", session, name, tostring(lootTable[session].candidates[name] and lootTable[session].candidates[name].specID)))
+		if not doOnceChecker then
+			doOnceChecker = true
+			addon.Log:E("lootTable[1].candidates:")
+			for name in pairs(lootTable[1].candidates) do
+				addon.Log:E(name)
+			end
+		end
 		return
 	end
 	local specID = lootTable[session].candidates[name].specID

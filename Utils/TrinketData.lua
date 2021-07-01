@@ -44,7 +44,7 @@ function RCLootCouncil:ExportTrinketData(nextTier, nextIsRaid, nextIndex, nextDi
    local TIME_FOR_EACH_INSTANCE_DIFF = 5
 
    if not nextTier then
-      nextTier = 1 -- 8 -- BFA
+      nextTier = 9 -- 8 -- BFA
       nextIsRaid = 0
       nextIndex = 1 -- 5 -- Eternal Palace
       nextDiffID = 1
@@ -70,17 +70,17 @@ function RCLootCouncil:ExportTrinketData(nextTier, nextIsRaid, nextIndex, nextDi
             local instanceID = EJ_GetInstanceByIndex(instanceIndex, (i == 1))
             EJ_SelectInstance(instanceID)
             for diffID = nextDiffID, 99 do -- Should be enough to include all difficulties
-               if EJ_IsValidInstanceDifficulty(diffID) then
+               	if EJ_IsValidInstanceDifficulty(diffID) then
                   self:ExportTrinketDataSingleInstance(instanceID, diffID, TIME_FOR_EACH_INSTANCE_DIFF)
                   return self:ScheduleTimer("ExportTrinketData", TIME_FOR_EACH_INSTANCE_DIFF, h, i, instanceIndex, diffID + 1, maxTier)
-					elseif nextTier == 1 and i == 1 and diffID == 9 then
-						-- Classic raids has EJ_GetDifficulty() == 9, but EJ_IsValidInstanceDifficulty(9) == false
-						-- and EJ_SetDifficulty(9) works as intended...
-						-- Except for Ruins of Ahn'Qiraj (10-player) which correctly registers diffID 3.
-						-- #GoodJobBlizzard
-						self:ExportTrinketDataSingleInstance(instanceID, 9, TIME_FOR_EACH_INSTANCE_DIFF)
-                  return self:ScheduleTimer("ExportTrinketData", TIME_FOR_EACH_INSTANCE_DIFF, h, i, instanceIndex + 1, 1, maxTier)
-					end
+				elseif nextTier == 1 and i == 1 and diffID == 9 then
+					-- Classic raids has EJ_GetDifficulty() == 9, but EJ_IsValidInstanceDifficulty(9) == false
+					-- and EJ_SetDifficulty(9) works as intended...
+					-- Except for Ruins of Ahn'Qiraj (10-player) which correctly registers diffID 3.
+					-- #GoodJobBlizzard
+					self:ExportTrinketDataSingleInstance(instanceID, 9, TIME_FOR_EACH_INSTANCE_DIFF)
+                	return self:ScheduleTimer("ExportTrinketData", TIME_FOR_EACH_INSTANCE_DIFF, h, i, instanceIndex + 1, 1, maxTier)
+				end
             end
             nextDiffID = 1
             instanceIndex = instanceIndex + 1
@@ -140,7 +140,7 @@ function RCLootCouncil:ExportTrinketDataSingleInstance(instanceID, diffID, timeL
    local trinketlinksInThisInstances = {}
    EJ_SelectInstance(instanceID)
    EJ_SetDifficulty(diffID)
-   EJ_SetSlotFilter(LE_ITEM_FILTER_TYPE_TRINKET)
+   C_EncounterJournal.SetSlotFilter(Enum.ItemSlotFilterType.Trinket)
 
 	local diffText = GetDifficultyInfo(diffID) or "Unknown difficulty"
 	local instanceText = format("%s %s (id: %d).", EJ_GetInstanceInfo(instanceID), diffText,instanceID)
@@ -151,20 +151,20 @@ function RCLootCouncil:ExportTrinketDataSingleInstance(instanceID, diffID, timeL
 
    EJ_SetLootFilter(0, 0)
    for j = 1, EJ_GetNumLoot() do -- EJ_GetNumLoot() can be 0 if EJ items are not cached.
-      local id, _, _, _, _, _, link = EJ_GetLootInfoByIndex(j)
-      if link then
-			if not trinketIdToIndex[id] then
-				tinsert(trinketData, {id, ZERO})
-				trinketIdToIndex[id] = #trinketData
+      local info = C_EncounterJournal.GetLootInfoByIndex(j)
+      if info.link then
+			if not trinketIdToIndex[info.itemID] then
+				tinsert(trinketData, {info.itemID, ZERO})
+				trinketIdToIndex[info.itemID] = #trinketData
 			else
-				trinketData[trinketIdToIndex[id]][2] = ZERO
+				trinketData[trinketIdToIndex[info.itemID]][2] = ZERO
 			end
-         trinketNames[id] = self:GetItemNameFromLink(link)
-         GetItemInfo(id)
+         trinketNames[info.itemID] = self.Utils:GetItemNameFromLink(info.link)
+         GetItemInfo(info.itemID)
          count = count + 1
-         tinsert(trinketlinksInThisInstances, link)
+         tinsert(trinketlinksInThisInstances, info.link)
       else
-         self:Debug("Uncached item @", instanceID, diffID, j, id)
+         self.Log:D("Uncached item @", instanceID, diffID, j, info.itemID)
       end
    end
 
@@ -172,13 +172,13 @@ function RCLootCouncil:ExportTrinketDataSingleInstance(instanceID, diffID, timeL
       for specIndex = 1, GetNumSpecializationsForClassID(classID) do
          EJ_SetLootFilter(classID, GetSpecializationInfoForClassID(classID, specIndex))
          for j = 1, EJ_GetNumLoot() do -- EJ_GetNumLoot() can be 0 if EJ items are not cached.
-            local id, _, _, _, _, _, link = EJ_GetLootInfoByIndex(j)
-            if link then
-					local index = trinketIdToIndex[id]
-					local specCode = trinketData[index][2]
-               local digit = tonumber(specCode:sub(-classID, - classID), 16)
-               digit = digit + 2^(specIndex - 1)
-               trinketData[index][2] = specCode:sub(1, numClasses - classID)..format("%X", digit)..specCode:sub(numClasses - classID + 2, numClasses)
+            local info = C_EncounterJournal.GetLootInfoByIndex(j)
+            if info.link then
+				local index = trinketIdToIndex[info.itemID]
+				local specCode = trinketData[index][2]
+				local digit = tonumber(specCode:sub(-classID, - classID), 16)
+				digit = digit + 2^(specIndex - 1)
+				trinketData[index][2] = specCode:sub(1, numClasses - classID)..format("%X", digit)..specCode:sub(numClasses - classID + 2, numClasses)
             end
          end
       end
@@ -206,6 +206,7 @@ _G.RCTrinketCategories = {
    ["000000700067"] = ITEM_MOD_STRENGTH_SHORT, -- Strength
    ["365002707467"] = MELEE, -- Melee
    ["3F7777077710"] = ITEM_MOD_AGILITY_SHORT.."/"..ITEM_MOD_INTELLECT_SHORT, -- Agility/Intellect
+   ["375773047700"] = DAMAGER..", "..ITEM_MOD_AGILITY_SHORT.."/"..ITEM_MOD_INTELLECT_SHORT, -- Damage, Agility/Intellect
    ["365002007700"] = ITEM_MOD_AGILITY_SHORT, -- Agility
    ["092775070010"] = ITEM_MOD_INTELLECT_SHORT, -- Intellect
    ["241000100024"] = TANK, -- Tank
@@ -219,10 +220,13 @@ _G.RCTrinketCategories = {
    ["124002007700"] = DAMAGER..", "..ITEM_MOD_AGILITY_SHORT, -- Damage, Agility
    ["124002607443"] = DAMAGER..", "..MELEE, -- Damage, Melee
    ["124002007400"] = DAMAGER..", "..MELEE..", "..ITEM_MOD_AGILITY_SHORT, -- Damage, Melee, Agility
-   ["010771050300"] = DAMAGER..", "..RANGED, -- Damage, Ranged
+   ["010771050300"] = DAMAGER..", "..RANGED, -- Damage, Ranged (+ discipline)
+   ["010771040300"] = DAMAGER..", "..RANGED, -- Damage, Ranged
    ["010771050000"] = DAMAGER..", "..ITEM_MOD_INTELLECT_SHORT, -- Damage, Intellect
+   ["092776070010"] = DAMAGER..", "..ITEM_MOD_INTELLECT_SHORT, -- Damage + Healers, Intellect
    ["010671040000"] = DAMAGER..", "..ITEM_MOD_INTELLECT_SHORT, -- Damage, Intellect (direct damage, no affliction warlock and shadow priest)
    ["010771040000"] = DAMAGER..", "..ITEM_MOD_INTELLECT_SHORT, -- Damage, Intellect (no discipline)
+   ["134773647743"] = DAMAGER, -- Damage
 
    -- The following categories does not make sense. Most likely a Blizzard error in the Encounter Journal for several old trinkets.
    -- Add "?" as a suffix to the description as the result
@@ -1556,4 +1560,113 @@ _G.RCTrinketSpecs = {
 -- Ny'alotha, the Waking City Heroic (id: 1180).
 -- Ny'alotha, the Waking City Mythic (id: 1180).
 -- Ny'alotha, the Waking City Looking For Raid (id: 1180).
+
+--- Shadowlands ---------------------------------------
+	-- De Other Side Normal (id: 1188).
+	[179331] = "241000100024",	-- Blood-Spattered Scale,          	Tank
+	[179350] = "3F7777777777",	-- Inscrutable Quantum Device,     	All Classes
+	[179342] = "000000700067",	-- Overwhelming Power Crystal,     	Strength
+	[179356] = "365002007700",	-- Shadowgrasp Totem,              	Agility
+-- De Other Side Heroic (id: 1188).
+-- De Other Side Mythic (id: 1188).
+-- Halls of Atonement Normal (id: 1185).
+	[178825] = "241000100024",	-- Pulsating Stoneheart,           	Tank
+	[178826] = "092775070010",	-- Sunblood Amethyst,              	Intellect
+-- Halls of Atonement Heroic (id: 1185).
+-- Halls of Atonement Mythic (id: 1185).
+-- Mists of Tirna Scithe Normal (id: 1184).
+	[178715] = "365002007700",	-- Mistcaller Ocarina,             	Agility
+	[178708] = "092775070010",	-- Unbound Changeling,             	Intellect
+-- Mists of Tirna Scithe Heroic (id: 1184).
+-- Mists of Tirna Scithe Mythic (id: 1184).
+-- Plaguefall Normal (id: 1183).
+	[178769] = "375773047700",	-- Infinitely Divisible Ooze,      	Damage, Agility/Intellect
+	[178771] = "124002607443",	-- Phial of Putrefaction,          	Damage, Melee
+	[178770] = "241000100024",	-- Slimy Consumptive Organ,        	Tank
+-- Plaguefall Heroic (id: 1183).
+-- Plaguefall Mythic (id: 1183).
+-- Sanguine Depths Normal (id: 1189).
+	[178862] = "241000100024",	-- Bladedancer's Armor Kit,        	Tank
+	[178861] = "365002707467",	-- Decanter of Anima-Charged Winds,	Melee
+	[178850] = "082004030010",	-- Lingering Sunmote,              	Healer
+	[178849] = "092775070010",	-- Overflowing Anima Cage,         	Intellect
+-- Sanguine Depths Heroic (id: 1189).
+-- Sanguine Depths Mythic (id: 1189).
+-- Spires of Ascension Normal (id: 1186).
+	[180118] = "000000700067",	-- Anima Field Emitter,            	Strength
+	[180119] = "082004030010",	-- Boon of the Archon,             	Healer
+	[180117] = "010771040000",	-- Empyreal Ordnance,              	Damage, Intellect
+	[180116] = "365002007700",	-- Overcharged Anima Battery,      	Agility
+-- Spires of Ascension Heroic (id: 1186).
+-- Spires of Ascension Mythic (id: 1186).
+-- The Necrotic Wake Normal (id: 1182).
+	[178742] = "365002007700",	-- Bottled Flayedwing Toxin,       	Agility
+	[178772] = "010771040000",	-- Satchel of Misbegotten Minions, 	Damage, Intellect
+	[178783] = "082004030010",	-- Siphoning Phylactery Shard,     	Healer
+	[178751] = "000000700067",	-- Spare Meat Hook,                	Strength
+-- The Necrotic Wake Heroic (id: 1182).
+-- The Necrotic Wake Mythic (id: 1182).
+-- Theater of Pain Normal (id: 1187).
+	[178811] = "124002607443",	-- Grim Codex,                     	Damage, Melee
+	[178809] = "092775070010",	-- Soulletting Ruby,               	Intellect
+	[178810] = "082004030010",	-- Vial of Spectral Essence,       	Healer
+	[178808] = "000000700067",	-- Viscera of Coalesced Hatred,    	Strength
+-- Theater of Pain Heroic (id: 1187).
+-- Theater of Pain Mythic (id: 1187).
+-- Shadowlands Normal (id: 1192).
+-- Shadowlands Heroic (id: 1192).
+-- Shadowlands Mythic (id: 1192).
+-- Shadowlands Looking For Raid (id: 1192).
+-- Castle Nathria Normal (id: 1190).
+	[184017] = "241000100024",	-- Bargast's Leash,                	Tank
+	[184028] = "092775070010",	-- Cabalist's Hymnal,              	Intellect
+	[184022] = "082004030010",	-- Consumptive Infusion,           	Healer
+	[184030] = "134773647743",	-- Dreadfire Vessel,               	Damage
+	[184023] = "000000700067",	-- Gluttonous Spike,               	Strength
+	[184021] = "010771040000",	-- Glyph of Assimilation,          	Damage, Intellect
+	[184026] = "365002007700",	-- Hateful Chain,                  	Agility
+	[184024] = "3F7777777777",	-- Macabre Sheet Music,            	All Classes
+	[184029] = "082004030010",	-- Manabound Mirror,               	Healer
+	[184025] = "124002607743",	-- Memory of Past Sins,            	Damage, Strength/Agility
+	[184031] = "241000100024",	-- Sanguine Vintage,               	Tank
+	[184016] = "124002607443",	-- Skulker's Wing,                 	Damage, Melee
+	[184019] = "010771040000",	-- Soul Igniter,                   	Damage, Intellect
+	[184018] = "241000100024",	-- Splintered Heart of Al'ar,      	Tank
+	[184027] = "365002707767",	-- Stone Legion Heraldry,          	Strength/Agility
+	[184020] = "082004030010",	-- Tuft of Smoldering Plumage,     	Healer
+-- Castle Nathria Heroic (id: 1190).
+-- Castle Nathria Mythic (id: 1190).
+-- Castle Nathria Looking For Raid (id: 1190).
+-----------------------------------------------
+-- 9.1
+-----------------------------------------------
+-- Tazavesh, the Veiled Market Mythic (id: 1194).
+	[185836] = "241000100024",	-- Codex of the First Technique,        	Tank
+	[185845] = "082004030010",	-- First Class Healing Distributor,     	Healer
+	[185846] = "010771040300",	-- Miniscule Mailemental in an Envelope,	Damage, Ranged
+	[185818] = "3F7777777777",	-- So'leah's Secret Technique,          	All Classes
+	[185844] = "124002607443",	-- Ticking Sack of Terror,              	Damage, Melee
+-- Shadowlands Normal (id: 1192).
+	[187447] = "3F7777777777",	-- Soul Cage Fragment,                  	All Classes
+-- Sanctum of Domination Normal (id: 1193).
+	[186435] = "082004030010",	-- Carved Ivory Keepsake,               	Healer
+	[186429] = "365002707767",	-- Decanter of Endless Howling,         	Strength/Agility
+	[186431] = "010771040000",	-- Ebonsoul Vise,                       	Damage, Intellect
+	[186421] = "010771040000",	-- Forbidden Necromantic Tome,          	Damage, Intellect
+	[186438] = "000000700067",	-- Old Warrior's Soul,                  	Strength
+	[186433] = "241000100024",	-- Reactive Defense Matrix,             	Tank
+	[186437] = "124002007700",	-- Relic of the Frozen Wastes,          	Damage, Agility
+	[186436] = "082004030010",	-- Resonant Silver Bell,                	Healer
+	[186432] = "124002607443",	-- Salvaged Fusion Amplifier,           	Damage, Melee
+	[186425] = "082004030010",	-- Scrawled Word of Recall,             	Healer
+	[186428] = "092776070010",	-- Shadowed Orb of Torment,             	Damage + Healers, Intellect
+	[186424] = "241000100024",	-- Shard of Annhylde's Aegis,           	Tank
+	[186423] = "3F7777777777",	-- Titanic Ocular Gland,                	All Classes
+	[186422] = "010771040000",	-- Tome of Monstrous Constructions,     	Damage, Intellect
+	[186430] = "124002607743",	-- Tormented Rack Fragment,             	Damage, Strength/Agility
+	[186434] = "241000100024",	-- Weave of Warped Fates,               	Tank
+	[186427] = "000000600043",	-- Whispering Shard of Power,           	Damage, Strength
+-- Sanctum of Domination Heroic (id: 1193).
+-- Sanctum of Domination Mythic (id: 1193).
+-- Sanctum of Domination Looking For Raid (id: 1193).
 }

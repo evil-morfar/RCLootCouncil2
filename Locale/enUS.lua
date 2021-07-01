@@ -488,6 +488,9 @@ L["Your note:"] = true
 
 L["chat_cmd_add_invalid_owner"] = "The player %s was either invalid or not a candidate."
 
+L["ML_ADD_INVALID_ITEM"] = "Invalid itemLink or itemID: %s"
+L["ML_ADD_ITEM_MAX_ATTEMPTS"] = "Couldn't fetch item info for %s - probably not a real item."
+
 L["error_test_as_non_leader"] = "You cannot initiate a test while in a group without being the group leader."
 L["lootFrame_error_note_required"] = "You must add a note before submitting your repsonse - %s"
 L["lootHistory_moreInfo_winnersOfItem"] = "Winners of %s:"

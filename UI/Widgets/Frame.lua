@@ -14,12 +14,12 @@ local db = {}
 --		SetWidth/SetHeight called on frame will also be called on frame.content.
 --		Minimizing is done by double clicking the title. The returned frame and frame.title is NOT hidden.
 -- 	Only frame.content is minimized, so put children there for minimize support.
--- @paramsig parent, name, title[, width, height]
--- @param name Global name of the frame.
--- @param title The title text.
--- @param width The width of the titleframe, defaults to 250.
--- @param height Height of the frame, defaults to 325.
--- @return The frame object.
+--- @param parent Frame | UIParent @Parent of the new frame
+--- @param name string @Global name of the frame.
+--- @param title string @The title text.
+--- @param width? integer @The width of the titleframe, defaults to 250.
+--- @param height? integer @Height of the frame, defaults to 325.
+--- @return table frame @The frame object.
 function Object:New (parent, name, title, width, height)
    db = addon:Getdb()
    local f = CreateFrame("Frame", name, parent) -- LibWindow seems to work better with nil parent
@@ -33,6 +33,7 @@ function Object:New (parent, name, title, width, height)
 	f:RestorePosition() -- might need to move this to after whereever GetFrame() is called
 	f:MakeDraggable()
 	f:SetScript("OnMouseWheel", function(f,delta) if IsControlKeyDown() then lwin.OnMouseWheel(f,delta) end end)
+	f:SetToplevel(true)
 
 	self:CreateTitleFrame(f, name, title, width)
    self:CreateContentFrame (f, name, height)
@@ -51,7 +52,8 @@ end
 
 function Object:CreateContentFrame (parent, name, height)
    local c = CreateFrame("Frame", "RC_UI_"..name.."_Content", parent, BackdropTemplateMixin and "BackdropTemplate") -- frame that contains the actual content
-	c:SetBackdrop({
+	 c:SetFrameLevel(1)
+	 c:SetBackdrop({
 		bgFile = AceGUIWidgetLSMlists.background[db.skins[db.currentSkin].background],
 		edgeFile = AceGUIWidgetLSMlists.border[db.skins[db.currentSkin].border],
 	   tile = true, tileSize = 255, edgeSize = 16,
@@ -94,7 +96,7 @@ end
 
 function Object:CreateTitleFrame (parent, name, title, width)
    local tf = CreateFrame("Frame", "RC_UI_"..name.."_Title", parent, BackdropTemplateMixin and "BackdropTemplate")
-	tf:SetToplevel(true)
+	tf:SetFrameLevel(2)
 	tf:SetBackdrop({
 		bgFile = AceGUIWidgetLSMlists.background[db.skins[db.currentSkin].background],
 		edgeFile = AceGUIWidgetLSMlists.border[db.skins[db.currentSkin].border],
@@ -108,7 +110,7 @@ function Object:CreateTitleFrame (parent, name, title, width)
 	tf:SetMovable(true)
 	tf:SetWidth(width or 250)
 	tf:SetPoint("CENTER",parent,"TOP",0,-1)
-	tf:SetScript("OnMouseDown", function(self) self:GetParent():StartMoving() end)
+	tf:SetScript("OnMouseDown", function(self) self:GetParent():StartMoving() self:GetParent():SetToplevel(true) end)
 	tf:SetScript("OnMouseUp", function(self) -- Get double click by trapping time betweem mouse up
 		local frame = self:GetParent()
 		frame:StopMovingOrSizing()
@@ -143,21 +145,22 @@ function Object:CreateTitleFrame (parent, name, title, width)
 end
 
 Object.Minimie_Prototype = {
-   minimized = false,
+	minimized = false,
+	autoMinimized = false,
 	IsMinimized = function(frame)
-      return frame.minimized
-   end,
-	Minimize = function(frame)
-		addon.Log:D("Minimize()")
+		return frame.minimized
+	end,
+	Minimize = function(frame, auto)
 		if not frame.minimized then
 			frame.content:Hide()
+			frame.autoMinimized = auto
 			frame.minimized = true
 		end
 	end,
 	Maximize = function(frame)
-		addon.Log:D("Maximize()")
 		if frame.minimized then
 			frame.content:Show()
+			frame.autoMinimized = false
 			frame.minimized = false
 		end
 	end

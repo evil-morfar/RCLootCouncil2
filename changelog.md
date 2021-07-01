@@ -1,3 +1,33 @@
+# v3.2.0
+
+## Changes
+
+### Patch 9.1
+
+Updated for patch 9.1.
+
+Added new trinkets to the auto pass list.
+
+### Quality of life
+
+Frames that have been manually minimized will no longer maximize when leaving combat.
+
+Frame z-level issues are no longer a thing. Credits to enajork (#206).
+
+Session frame no longer has items infinitely stuck on "Waiting for item info". Items are removed if the item info isn't found.
+
+Added trinkets from all Shadowlands dungeons and raids to the auto pass list.
+
+### Misc
+
+`/rc fulltest` now always uses items from the latest raid. Credits to jjholleman (#204).
+
+`/rc add` can now only be used supported inputs (itemLinks and itemIDs).
+
+## Bugfixes
+
+* *Session data didn't transmit properly after a disconnect/reload during a session (Curse#475).*
+
 # 3.1.5
 
 ## Changes

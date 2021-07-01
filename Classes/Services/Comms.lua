@@ -9,7 +9,7 @@ local _, addon = ...
 ---@class Services.Comms
 local Comms = addon.Init("Services.Comms")
 local Subject = addon.Require("rx.Subject")
-local Log = addon.Require("Log"):Get()
+local Log = addon.Require("Utils.Log"):Get()
 ---@type Utils.TempTable
 local TempTable = addon.Require("Utils.TempTable")
 ---@type Services.ErrorHandler
@@ -26,16 +26,16 @@ local private = {
 LibStub("AceComm-3.0"):Embed(private.AceComm)
 LibStub("AceSerializer-3.0"):Embed(private)
 
---- Subscribe to a comm
+--- Subscribe to a comm  
 -- TODO Handle order
--- @param prefix The prefix to subscribe to.
--- @param command The command to subscribe to.
--- @param func The function that will be called when the command is received. Receives 4 args:
---    data:   An array of the data sent with the command.
---    sender: The sender of the command.
---    command: The command
---    distri: The command's distribution channel.
--- @return Subscription @A subscription to the Comm
+--- @param prefix Prefixes The prefix to subscribe to.
+--- @param command string The command to subscribe to.
+--- @param func fun(data: table, sender: string, command: string, distri: string): void The function that will be called when the command is received. Receives 4 args:
+--    data   -- An array of the data sent with the command.
+--    sender -- The sender of the command.
+--    command -- The command
+--    distri -- The command's distribution channel.
+--- @return Subscription #A subscription to the Comm
 function Comms:Subscribe (prefix, command, func, order)
    assert(prefix, "Prefix must be supplied")
    assert(tInvert(addon.PREFIXES)[prefix], format("%s is not a registered prefix!", tostring(prefix)))
@@ -44,7 +44,8 @@ end
 
 --- Register multiple Comms at once
 --- @param prefix string @The prefix to register
---- @param data table<string,function> @A table of structure ["command"] = function, @see Comms:Subscribe
+--- @param data table<string,function> @A table of structure ["command"] = function, 
+--- @see Comms#Subscribe
 --- @return table<number,Subscription> @An array of the created subscriptions
 function Comms:BulkSubscribe (prefix, data)
    if type(data) ~= "table" then return error("Error - wrong data supplied.",2) end
@@ -59,16 +60,16 @@ end
 
 --- Get a Sender function to send commands on the prefix.
 --- The returned function can handle implied selfs.
---- @param prefix string @The prefix to send to. This will be registered autmatically if it isn't.
+--- @param prefix string The prefix to send to. This will be registered autmatically if it isn't.
 function Comms:GetSender (prefix)
    assert(prefix and prefix~= "", "Prefix must be supplied")
    private:RegisterComm(prefix)
    --- Sends a ace comm to `target`, with `command` and `...` as command arguments.
    --- The command is send using "NORMAL" priority.
    ---@param mod table
-   ---@param target Player | "group" | "guild"
+   ---@param target Player | '"group"' | '"guild"'
    ---@param command string
-   ---@param ... any @the data to send
+   ---@vararg any the data to send
    ---@return void
    return function(mod, target, command, ...)
       if type(mod) == "string" then
@@ -91,17 +92,17 @@ end
 Comms.Register = Comms.RegisterPrefix
 
 --- A customizeable sender function.
---- @param args table @A Table with the following fields:
+--- @param args table A Table with the following fields:
 ---
--- Required:
-   --  command
--- Optional:
-   --  data    - must be an array or a single value
-   --  prefix  - defaults to Prefixes.MAIN
-   --  target  - defaults to "group"
-   --  prio    - default to "NORMAL"
-   --  callback
-   --  callbackarg
+--- - Required:
+---   - command
+--- - Optional:
+---   - data    - must be an array or a single value
+---   - prefix  - defaults to `Prefixes.MAIN`
+---   - target  - defaults to `"group"`
+---   - prio    - default to `"NORMAL"`
+---   - callback
+---   - callbackarg
 function Comms:Send (args)
    assert(type(args)=="table", "Must supply a table")
    assert(args.command, "Command must be set")
