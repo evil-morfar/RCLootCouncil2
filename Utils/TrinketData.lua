@@ -220,8 +220,10 @@ _G.RCTrinketCategories = {
    ["124002007700"] = DAMAGER..", "..ITEM_MOD_AGILITY_SHORT, -- Damage, Agility
    ["124002607443"] = DAMAGER..", "..MELEE, -- Damage, Melee
    ["124002007400"] = DAMAGER..", "..MELEE..", "..ITEM_MOD_AGILITY_SHORT, -- Damage, Melee, Agility
-   ["010771050300"] = DAMAGER..", "..RANGED, -- Damage, Ranged
+   ["010771050300"] = DAMAGER..", "..RANGED, -- Damage, Ranged (+ discipline)
+   ["010771040300"] = DAMAGER..", "..RANGED, -- Damage, Ranged
    ["010771050000"] = DAMAGER..", "..ITEM_MOD_INTELLECT_SHORT, -- Damage, Intellect
+   ["092776070010"] = DAMAGER..", "..ITEM_MOD_INTELLECT_SHORT, -- Damage + Healers, Intellect
    ["010671040000"] = DAMAGER..", "..ITEM_MOD_INTELLECT_SHORT, -- Damage, Intellect (direct damage, no affliction warlock and shadow priest)
    ["010771040000"] = DAMAGER..", "..ITEM_MOD_INTELLECT_SHORT, -- Damage, Intellect (no discipline)
    ["134773647743"] = DAMAGER, -- Damage
@@ -1635,4 +1637,36 @@ _G.RCTrinketSpecs = {
 -- Castle Nathria Heroic (id: 1190).
 -- Castle Nathria Mythic (id: 1190).
 -- Castle Nathria Looking For Raid (id: 1190).
+-----------------------------------------------
+-- 9.1
+-----------------------------------------------
+-- Tazavesh, the Veiled Market Mythic (id: 1194).
+	[185836] = "241000100024",	-- Codex of the First Technique,        	Tank
+	[185845] = "082004030010",	-- First Class Healing Distributor,     	Healer
+	[185846] = "010771040300",	-- Miniscule Mailemental in an Envelope,	Damage, Ranged
+	[185818] = "3F7777777777",	-- So'leah's Secret Technique,          	All Classes
+	[185844] = "124002607443",	-- Ticking Sack of Terror,              	Damage, Melee
+-- Shadowlands Normal (id: 1192).
+	[187447] = "3F7777777777",	-- Soul Cage Fragment,                  	All Classes
+-- Sanctum of Domination Normal (id: 1193).
+	[186435] = "082004030010",	-- Carved Ivory Keepsake,               	Healer
+	[186429] = "365002707767",	-- Decanter of Endless Howling,         	Strength/Agility
+	[186431] = "010771040000",	-- Ebonsoul Vise,                       	Damage, Intellect
+	[186421] = "010771040000",	-- Forbidden Necromantic Tome,          	Damage, Intellect
+	[186438] = "000000700067",	-- Old Warrior's Soul,                  	Strength
+	[186433] = "241000100024",	-- Reactive Defense Matrix,             	Tank
+	[186437] = "124002007700",	-- Relic of the Frozen Wastes,          	Damage, Agility
+	[186436] = "082004030010",	-- Resonant Silver Bell,                	Healer
+	[186432] = "124002607443",	-- Salvaged Fusion Amplifier,           	Damage, Melee
+	[186425] = "082004030010",	-- Scrawled Word of Recall,             	Healer
+	[186428] = "092776070010",	-- Shadowed Orb of Torment,             	Damage + Healers, Intellect
+	[186424] = "241000100024",	-- Shard of Annhylde's Aegis,           	Tank
+	[186423] = "3F7777777777",	-- Titanic Ocular Gland,                	All Classes
+	[186422] = "010771040000",	-- Tome of Monstrous Constructions,     	Damage, Intellect
+	[186430] = "124002607743",	-- Tormented Rack Fragment,             	Damage, Strength/Agility
+	[186434] = "241000100024",	-- Weave of Warped Fates,               	Tank
+	[186427] = "000000600043",	-- Whispering Shard of Power,           	Damage, Strength
+-- Sanctum of Domination Heroic (id: 1193).
+-- Sanctum of Domination Mythic (id: 1193).
+-- Sanctum of Domination Looking For Raid (id: 1193).
 }
