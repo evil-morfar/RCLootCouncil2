@@ -14,12 +14,12 @@ local db = {}
 --		SetWidth/SetHeight called on frame will also be called on frame.content.
 --		Minimizing is done by double clicking the title. The returned frame and frame.title is NOT hidden.
 -- 	Only frame.content is minimized, so put children there for minimize support.
--- @paramsig parent, name, title[, width, height]
--- @param name Global name of the frame.
--- @param title The title text.
--- @param width The width of the titleframe, defaults to 250.
--- @param height Height of the frame, defaults to 325.
--- @return The frame object.
+--- @param parent Frame | UIParent @Parent of the new frame
+--- @param name string @Global name of the frame.
+--- @param title string @The title text.
+--- @param width? integer @The width of the titleframe, defaults to 250.
+--- @param height? integer @Height of the frame, defaults to 325.
+--- @return table frame @The frame object.
 function Object:New (parent, name, title, width, height)
    db = addon:Getdb()
    local f = CreateFrame("Frame", name, parent) -- LibWindow seems to work better with nil parent

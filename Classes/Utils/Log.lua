@@ -3,7 +3,8 @@
 -- @author Potdisc
 -- Create Date : 30/01/2019 18:56:31
 local _, addon = ...
-local Log = addon.Init("Log")
+--- @class Utils.Log
+local Log = addon.Init("Utils.Log")
 local private = {
    date_to_debug_log = true,
    debugLog = {},
@@ -14,7 +15,7 @@ local private = {
 -----------------------------------------------------------
 -- Log Class Methods
 local LOG_METHODS = {
-   -- Message
+   --- Message
    m = function(self, ...) self(...) end,
 
    -- Debug logging
@@ -55,8 +56,9 @@ local LOG_MT = {
 
 --- Create a new Log class
 -- @param prefix An optional prefix to all messages
--- @return Log object.
+--- @return Log
 function Log:New(prefix)
+   --- @class Log
    local object = {
       prefix = prefix and "["..prefix.."]" or ""
    }
@@ -72,7 +74,7 @@ end
 --- Get static Log
 -- This will return a static Log object that can be shared with multiple modules.
 -- Useful for not creating too many Log Classes.
--- @return Log Object.
+--- @return Log Log
 function Log:Get ()
    if not private.staticLog then private.staticLog = self:New() end
    return private.staticLog
