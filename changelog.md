@@ -2,6 +2,12 @@
 
 ## Changes
 
+### Patch 9.1
+
+Updated for patch 9.1.
+
+Added new trinkets to the auto pass list.
+
 ### Quality of life
 
 Frames that have been manually minimized will no longer maximize when leaving combat.
