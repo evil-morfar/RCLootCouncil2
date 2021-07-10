@@ -169,7 +169,7 @@ end
 
 function private:GetGUIDFromPlayerName(name)
 	for guid, player in pairs(addon.db.global.cache.player) do
-		if Ambiguate(player.name, "short") == name then return guid end
+		if Ambiguate(player.name, "none") == name then return guid end
 	end
 end
 
@@ -177,7 +177,7 @@ function private:GetGUIDFromPlayerNameByGuild(name)
 	for i = 1, GetNumGuildMembers() do
 		local name2, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, guid =
 						GetGuildRosterInfo(i)
-		if Ambiguate(name2, "short") == name then return guid end
+		if Ambiguate(name2, "none") ==  name then return guid end
 	end
 end
 

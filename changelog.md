@@ -1,3 +1,7 @@
+## Bugfixes
+
+* *Fixed issue with non ascii name comparisons for never seen before players.*
+
 # v3.2.0
 
 ## Changes
