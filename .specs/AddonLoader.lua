@@ -130,8 +130,8 @@ function Loader.XmlHandler (path, level)
 end
 
 function Loader.LoadFiles (files)
-   require("__tests/wow_api")
-   require("__tests/wow_item_api")
+   dofile("./__tests/wow_api.lua")
+   dofile("./__tests/wow_item_api.lua")
    require "bit"
    Loader.Log "Loading files..."
    for _, file in ipairs(files) do
