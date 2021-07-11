@@ -1,10 +1,11 @@
 require "busted.runner"()
 
 describe("#Core", function()
-   require "__tests/wow_api"
    local addon = {}
    before_each(function()
-      loadfile("Classes/Core.lua")("addon", addon)
+      loadfile(".specs/AddonLoader.lua")(nil, "addon", addon).LoadArray{
+         "Classes/Core.lua"
+      }
    end)
 
    describe("Init", function()

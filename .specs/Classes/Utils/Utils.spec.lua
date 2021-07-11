@@ -1,4 +1,4 @@
-require "busted.runner"({["output"] = "gtest"})
+require "busted.runner"()
 
 dofile(".specs/AddonLoader.lua").LoadToc("RCLootCouncil.toc")
 

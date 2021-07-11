@@ -1,6 +1,8 @@
 local addon = {}
-loadfile("Classes/Core.lua")("", addon)
-loadfile(".specs/AddonLoader.lua")(nil,nil, addon).LoadXML([[Classes\Lib\RxLua\embeds.xml]])
+loadfile(".specs/AddonLoader.lua")(nil,nil, addon).LoadArray{
+    "Classes/Core.lua",
+    [[Classes\Lib\RxLua\embeds.xml]]
+}
 
 
 local Subject = addon.Require("rx.Subject")

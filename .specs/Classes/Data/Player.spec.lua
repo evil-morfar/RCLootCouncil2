@@ -1,7 +1,7 @@
 require "busted.runner"()
 local addonName, addon = "RCLootCouncil_Test", {
 	db = {global = {log = {}, cache = {}, errors = {}}},
-	defaults = {global = {logMaxEntries = 2000}},
+	defaults = {global = {logMaxEntries = 2000}}
 }
 loadfile(".specs/AddonLoader.lua")(nil, addonName, addon).LoadArray {
 	[[Libs\LibStub\LibStub.lua]],

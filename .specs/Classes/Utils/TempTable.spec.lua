@@ -1,11 +1,12 @@
 require "busted.runner"()
-require "__tests/wow_api"
 -----------------------------------------------------------
 -- Setup
 -----------------------------------------------------------
 local addon_name, addon = "RCLootCouncil", {}
-loadfile("Classes/Core.lua")(addon_name, addon)
-loadfile("Classes/Utils/TempTable.lua")(addon_name, addon)
+loadfile(".specs/AddonLoader.lua")(nil,addon_name, addon).LoadArray{
+   "Classes/Core.lua",
+   "Classes/Utils/TempTable.lua"
+}
 
 -----------------------------------------------------------
 -- Tests
