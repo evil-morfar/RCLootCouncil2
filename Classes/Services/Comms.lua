@@ -34,7 +34,7 @@ LibStub("AceSerializer-3.0"):Embed(private)
 --    sender -- The sender of the command.
 --    command -- The command
 --    distri -- The command's distribution channel.
---- @return Subscription #A subscription to the Comm
+--- @return rx.Subscription #A subscription to the Comm
 function Comms:Subscribe (prefix, command, func, order)
    assert(prefix, "Prefix must be supplied")
    assert(tInvert(addon.PREFIXES)[prefix], format("%s is not a registered prefix!", tostring(prefix)))
