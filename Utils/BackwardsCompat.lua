@@ -2,7 +2,8 @@
 -- Creates 'RCLootCouncil.Compat' as a namespace for compatibility functions.
 -- @author Potdisc
 -- Create Date : 31/5-2019 05:21:28
-local _, addon = ...
+--- @type RCLootCouncil
+local addon = select(2, ...)
 local Compat = {}
 addon.Compat = Compat
 

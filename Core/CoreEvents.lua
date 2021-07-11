@@ -1,6 +1,7 @@
 --- File containing events registered by Core.lua
 -- Implementing this in a seperate file allows modifications before subscribing #Classic.
-local _, addon = ...
+--- @type RCLootCouncil
+local addon = select(2, ...)
 
 addon.coreEvents = {
    ["PARTY_LOOT_METHOD_CHANGED"] = "OnEvent",

@@ -20,8 +20,9 @@
 
 --[[TODOs/NOTES:
 ]]
----@type RCLootCouncil
-local _,addon = ...
+--- @type RCLootCouncil
+local addon = select(2, ...)
+--- @class RCLootCouncilML
 _G.RCLootCouncilML = addon:NewModule("RCLootCouncilML", "AceEvent-3.0", "AceBucket-3.0", "AceTimer-3.0", "AceHook-3.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 
@@ -38,18 +39,11 @@ local LOOT_TIMEOUT = 5 -- If we give loot to someone, but loot slot is not clear
 						-- The real time needed is the sum of two players'(ML and the awardee) latency, so 1 second timeout should be enough.
 						-- v2.17: There's reports of increased latency, especially in Classic - bump to 3 seconds.
 local COUNCIL_COMMS_THROTTLE = 5
----@type Data.Player
 local Player = addon.Require "Data.Player"
----@type Data.Council
 local Council = addon.Require "Data.Council"
-
----@type Services.Comms
 local Comms = addon.Require "Services.Comms"
----@type Utils.TempTable
 local TempTable = addon.Require "Utils.TempTable"
----@type Data.MLDB
 local MLDB = addon.Require "Data.MLDB"
----@type Services.ErrorHandler
 local ErrorHandler = addon.Require "Services.ErrorHandler"
 local subscriptions
 

@@ -1,11 +1,10 @@
 --- MLDB.lua Class for mldb handling.
 -- @author Potdisc
 -- Create Date: 15/10/2020
----@type RCLootCouncil
-local _, addon = ...
----@class Data.MLDB
+--- @type RCLootCouncil
+local addon = select(2, ...)
+--- @class Data.MLDB
 local MLDB = addon.Init "Data.MLDB"
----@type Services.Comms
 local Comms = addon.Require "Services.Comms"
 
 local private = {

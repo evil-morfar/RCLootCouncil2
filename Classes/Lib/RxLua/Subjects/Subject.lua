@@ -1,10 +1,11 @@
-local _, addon = ...
+--- @type RCLootCouncil
+local addon = select(2, ...)
 local Observable = addon.Require("rx.Observable")
 local Observer = addon.Require("rx.Observer")
 local Subscription = addon.Require("rx.Subscription")
 local util = addon.Require("rx.Util")
 
---- @class Subject
+--- @class rx.Subject
 -- @description Subjects function both as an Observer and as an Observable. Subjects inherit all
 -- Observable functions, including subscribe. Values can also be pushed to the Subject, which will
 -- be broadcasted to any subscribed Observers.

@@ -1,4 +1,5 @@
-local _, addon = ...
+--- @type RCLootCouncil
+local addon = select(2, ...)
 local Observable = addon.Require("rx.Observable")
 local Subscription = addon.Require("rx.Subscription")
 

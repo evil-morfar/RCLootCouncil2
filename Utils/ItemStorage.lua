@@ -3,7 +3,8 @@
 -- @author Potdisc
 -- Create Date : 29/5/2018 18:28:51
 
-local _,addon = ...
+--- @type RCLootCouncil
+local addon = select(2, ...)
 local db = addon:Getdb()
 local Storage = {}
 local TT = addon.Require "Utils.TempTable"

@@ -3,7 +3,8 @@
 -- @author Potdisc
 -- Create date: 14/04/2020
 
-local _, addon = ...
+--- @type RCLootCouncil
+local addon = select(2, ...)
 ---@class Utils.TempTable
 local TempTable = addon.Init("Utils.TempTable")
 

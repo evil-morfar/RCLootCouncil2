@@ -4,7 +4,8 @@
 
 -- REVIEW Not finished!
 
-local _, addon = ...
+--- @type RCLootCouncil
+local addon = select(2, ...)
 local SlashCommands = addon.Init("Services.SlashCommands")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 local Subject = addon.Require("rx.Subject")

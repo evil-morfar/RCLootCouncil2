@@ -1,9 +1,10 @@
-local _, addon = ...
+--- @type RCLootCouncil
+local addon = select(2, ...)
 local Subject = addon.Require("rx.Subject")
 local Observer = addon.Require("rx.Observer")
 local util = addon.Require("rx.Util")
 
---- @class BehaviorSubject
+--- @class rx.BehaviorSubject
 -- @description A Subject that tracks its current value. Provides an accessor to retrieve the most
 -- recent pushed value, and all subscribers immediately receive the latest value.
 local BehaviorSubject = setmetatable(addon.Init("rx.BehaviorSubject"), Subject)

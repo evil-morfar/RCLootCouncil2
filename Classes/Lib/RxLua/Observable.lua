@@ -1,8 +1,9 @@
-local _, addon = ...
+--- @type RCLootCouncil
+local addon = select(2, ...)
 local util = addon.Require("rx.Util")
 local Observer = addon.Require("rx.Observer")
 
---- @class Observable
+--- @class rx.Observable
 -- @description Observables push values to Observers.
 local Observable = addon.Init("rx.Observable")
 Observable.__index = Observable

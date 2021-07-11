@@ -19,7 +19,8 @@
 		r_t					T - Candidate "rejected_trade" of loot.
 ]]
 ---@type RCLootCouncil
-local _,addon = ...
+--- @type RCLootCouncil
+local addon = select(2, ...)
 local RCVotingFrame = addon:NewModule("RCVotingFrame", "AceTimer-3.0", "AceEvent-3.0", "AceBucket-3.0")
 local LibDialog = LibStub("LibDialog-1.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")

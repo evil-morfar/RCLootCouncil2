@@ -1,4 +1,5 @@
-local _, addon = ...
+--- @type RCLootCouncil
+local addon = select(2, ...)
 
 local name = "Icon"
 local Object = {}

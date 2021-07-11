@@ -1,8 +1,8 @@
 --- Core.lua Setups module system.
 -- Heavily inspired by TSM!
 
----@type RCLootCouncil
-local _, addon = ...
+--- @type RCLootCouncil
+local addon = select(2, ...)
 
 local private = {modules = {}, initOrder = {}}
 addon.ModuleData = {}
@@ -22,7 +22,6 @@ function addon.Init(path)
 	if private.modules[path] then
 		error("Module already exists for path: " .. tostring(path))
 	end
-	--@type T
 	local Module = setmetatable({}, MODULE_MT)
 	private.modules[path] = Module
    tinsert(private.initOrder, path)
@@ -31,7 +30,7 @@ function addon.Init(path)
 end
 
 --- Returns a module created with .Init
---- @see addon#Init
+--- @see addon.Init
 ---@generic T
 ---@param path `T`
 ---@return T

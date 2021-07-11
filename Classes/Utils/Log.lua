@@ -2,7 +2,8 @@
 -- Creates `RCLootCouncil.LogClass` for registering new Logs, and adds a default Log object in `RCLootCouncil.Log`.
 -- @author Potdisc
 -- Create Date : 30/01/2019 18:56:31
-local _, addon = ...
+--- @type RCLootCouncil
+local addon = select(2, ...)
 --- @class Utils.Log
 local Log = addon.Init("Utils.Log")
 local private = {

@@ -1,6 +1,7 @@
 -- TODO: Support combat autohide
 
-local _, addon = ...
+--- @type RCLootCouncil
+local addon = select(2, ...)
 local lwin = LibStub("LibWindow-1.1")
 
 local name = "Frame"

@@ -16,6 +16,7 @@ addon:InitLogging()
 describe("#Player", function()
 	local Player
 	before_each(function()
+		---@type Data.Player
 		Player = addon.Require("Data.Player")
 	end)
 
