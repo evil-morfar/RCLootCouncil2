@@ -31,4 +31,4 @@ Below is my collection of useful tools for the testing environment and developme
 
 ### VS Code
 
-See [extensions.json](.vscode/extensions.json)
+See [extensions.json](../.vscode/extensions.json)
