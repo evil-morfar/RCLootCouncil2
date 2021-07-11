@@ -5,15 +5,24 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "type": "lua",
+            "type": "lua-local",
             "request": "launch",
-            "name": "Run",
-            "cwd": "${workspaceFolder}",
-            "path": "${env:LUA_PATH}",
-            // "luaexe": "${env:LUA_DEV}",
-            "program": "${file}",
-            "cpath": "${env:LUA_CPATH}",
-            "stopOnEntry": false
+            "name": "Run file",
+            "program": {
+                "file": "${file}"
+            },
+        },
+        {
+            "name": "Busted file",
+            "type": "lua-local",
+            "request": "launch",
+            "program": {
+                "command": "busted",
+            },
+            "args": [
+                "-e require('lldebugger').start()",
+                "${file}"
+            ],
         }
     ]
 }
