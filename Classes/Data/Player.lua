@@ -35,9 +35,8 @@ function playerClass:GetGUID() return self.guid end
 function playerClass:GetForTransmit() return (gsub(self.guid, "Player%-", "")) end
 function playerClass:GetInfo() return GetPlayerInfoByGUID(self.guid) end
 --- Update fields in the Player object
---- @param self Player
 --- @param data table<string,any>
-function playerClass:UpdateFields(self, data)
+function playerClass:UpdateFields(data)
 	for k, v in pairs(data) do self[k] = v end
 	private:CachePlayer(self)
 end
