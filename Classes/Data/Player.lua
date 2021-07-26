@@ -15,7 +15,8 @@ local private = {
 	cache = setmetatable({}, {
 		__index = function(_, id)
 			if not addon.db.global.cache.player then addon.db.global.cache.player = {} end
-			return addon.db.global.cache.player[id]
+			if id and id ~= "player" then return addon.db.global.cache.player[id] end
+			return addon.db.global.cache.player
 		end,
 		__newindex = function(_, k, v) addon.db.global.cache.player[k] = v end,
 	}),
@@ -153,7 +154,7 @@ end
 --- @param name string
 --- @return string|nil guid #GUID of Player if found otherwise nil
 function private:GetGUIDFromPlayerName(name)
-	for guid, player in pairs(addon.db.global.cache.player) do
+	for guid, player in pairs(self.cache.player) do
 		if Ambiguate(player.name, "none") == name then return guid end
 	end
 end
