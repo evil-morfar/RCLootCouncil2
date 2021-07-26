@@ -17,30 +17,38 @@ local private = {
 -- Log Class Methods
 local LOG_METHODS = {
    --- Message
+   --- @param self Log
    m = function(self, ...) self(...) end,
 
-   -- Debug logging
+   --- Debug logging
+   --- @param self Log
    d = function(self, ...) private:Log(self,"<DEBUG>", ...) end,
 
-   -- Error Logging
+   --- Error Logging
+   --- @param self Log
    e = function(self, ...) private:Log(self,"<ERROR>", ...) end,
 
-   -- Warnings
+   --- Warnings
+   --- @param self Log
    w = function(self, ...) private:Log(self,"<WARNING>", ...) end,
 
-   -- Print
+   --- Print
+   --- @param self Log
    p = function(self, ...) private:Print(self.prefix or "",...) end,
 
-   -- Custom prefix
+   --- Custom prefix
+   --- @param self Log
+   --- @param prefix string
    f = function(self, prefix, ...) private:Log(self,prefix, ...) end,
-
-   D = function(self, ...) self:d(...) end,
-   E = function(self, ...) self:e(...) end,
-   W = function(self, ...) self:w(...) end,
-   M = function(self, ...) self:m(...) end,
-   P = function(self, ...) self:p(...) end,
-   F = function(self, ...) self:f(...) end,
 }
+-- Uppercase variants
+-- Manually defined for EmmyLua
+LOG_METHODS.M = LOG_METHODS.m
+LOG_METHODS.D = LOG_METHODS.d
+LOG_METHODS.E = LOG_METHODS.e
+LOG_METHODS.W = LOG_METHODS.w
+LOG_METHODS.P = LOG_METHODS.p
+LOG_METHODS.F = LOG_METHODS.f
 
 local LOG_MT = {
    __index = LOG_METHODS,
@@ -56,7 +64,7 @@ local LOG_MT = {
 -----------------------------------------------------------
 
 --- Create a new Log class
--- @param prefix An optional prefix to all messages
+--- @param prefix An optional prefix to all messages
 --- @return Log
 function Log:New(prefix)
    --- @class Log
@@ -86,7 +94,9 @@ end
 -- Private Functions
 -----------------------------------------------------------
 
--- Private functions that does the real work
+--- Private functions that does the real work
+--- @param Log Log
+--- @param prefix string
 function private:Log(Log,prefix, ...)
    self:Print((Log.prefix or "") .. prefix, ...)
    if self.date_to_debug_log then tinsert(self.debugLog, date("%x")); self.date_to_debug_log = false; end
