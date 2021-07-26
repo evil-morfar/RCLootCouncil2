@@ -42,12 +42,16 @@
                 "kind": "test",
                 "isDefault": true
             },
+            "args": [
+                "--lpath=${workspaceFolder}\\__tests\\?.lua",
+            ]
         },
         {
             "label": "Busted this file",
             "type": "shell",
             "command": "busted",
             "args": [
+                "--lpath=${workspaceFolder}\\__tests\\?.lua",
                 "${file}"
             ],
             "group": "test"

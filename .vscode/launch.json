@@ -10,7 +10,9 @@
             "name": "Run file",
             "program": {
                 "file": "${file}"
+                
             },
+            "env": { "LUA_PATH": "${env:LUA_PATH};${workspaceFolder}/__tests/?.lua",}
         },
         {
             "name": "Busted file",
@@ -21,8 +23,12 @@
             },
             "args": [
                 "-e require('lldebugger').start()",
+                // "--lpath=${workspaceFolder}\\__tests\\?.lua",
                 "${file}"
             ],
+            "env": {
+                "LUA_PATH": "${env:LUA_PATH};${workspaceFolder}/__tests/?.lua",
+            }
         }
     ]
 }

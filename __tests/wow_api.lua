@@ -641,6 +641,7 @@ function GetStoredPlayerNameToGUID(name)
 end
 
 function UnitGUID (name)
+   if name == "player" then return playerNameToGUID.Player1.guid end
    return playerNameToGUID[name] and playerNameToGUID[name].guid or nil
 end
 
@@ -1198,6 +1199,6 @@ HEALER = "Healer"
 MELEE = "Melee"
 RANGED = "Ranged"
 
-dofile "__tests/wow_api/Mixin.lua"
-dofile "__tests/wow_api/Color.lua"
-dofile "__tests/wow_api/TableUtil.lua"
+require "/wow_api/Mixin"
+require "/wow_api/Color"
+require "/wow_api/TableUtil"
