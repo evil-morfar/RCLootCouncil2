@@ -3,7 +3,8 @@
 -- @author Potdisc
 -- Create Date : 1/20/2015 3:48:38 AM
 ---@type RCLootCouncil
-local _,addon = ...
+--- @type RCLootCouncil
+local addon = select(2, ...)
 local RCSessionFrame = addon:NewModule("RCSessionFrame", "AceTimer-3.0", "AceEvent-3.0")
 local ST = LibStub("ScrollingTable")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")

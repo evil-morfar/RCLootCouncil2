@@ -100,9 +100,16 @@ function Loader.ReplaceXmlPathWith (xml, path)
    return xml:gsub("[^\\]+$", path)
 end
 
+--- @param path string
+function Loader.ExtractBasePath(path)
+   local base = path:match("^%w+[\\/]?")
+   return base or ""
+end
+
 function Loader.XmlHandler (path, level)
    level = level or 0
    local xmllines = Loader.lines_from(path)
+   local basePath = Loader.ExtractBasePath(path)
    local ret = {}
    Loader.Log(string.rep("\t", level),"XmlHandler", path,level)
    for x, y in pairs(xmllines) do
@@ -112,7 +119,7 @@ function Loader.XmlHandler (path, level)
          Loader.Log(string.rep("\t", level+1),x,y, ext)
          if ext == ".xml" then
             Loader.Log(string.rep("\t", level),"Found xml", string.rep("-", level*2 ).."->")
-            if level > 0 then
+            if level > 0 or basePath ~= "" then
                y = Loader.ReplaceXmlPathWith(path, y)
             end
                Loader.AddTableToTable(Loader.XmlHandler(y, level + 1), ret)
@@ -130,8 +137,8 @@ function Loader.XmlHandler (path, level)
 end
 
 function Loader.LoadFiles (files)
-   require("__tests/wow_api")
-   require("__tests/wow_item_api")
+   require("wow_api")
+   require("wow_item_api")
    require "bit"
    Loader.Log "Loading files..."
    for _, file in ipairs(files) do

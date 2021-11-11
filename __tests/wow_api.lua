@@ -6,7 +6,7 @@ local donothing = function() end
 local frames = {} -- Stores globally created frames, and their internal properties.
 
 local FrameClass = {} -- A class for creating frames.
-FrameClass.methods = { "SetScript", "GetScript", "RegisterEvent", "UnregisterEvent", "UnregisterAllEvents", "Show", "Hide", "IsShown", "ClearAllPoints", "SetParent","SetPoint","SetFrameStrata","SetAllPoints", "SetBackdrop","EnableMouse","SetBackdropColor", "SetBackdropBorderColor", "CreateFontString", "SetWidth","SetHeight","SetSize", "GetParent", "SetFrameLevel", "GetFrameLevel", "SetNormalTexture","GetNormalTexture","SetPushedTexture","GetPushedTexture","SetHighlightTexture","GetHighlightTexture", "CreateTexture", "SetFontString","SetNormalFontObject","SetHighlightFontObject","SetDisabledFontObject", "SetID","SetText", "SetToplevel" }
+FrameClass.methods = { "GetName", "SetAttribute", "SetScript", "GetScript", "RegisterEvent", "UnregisterEvent", "UnregisterAllEvents", "Show", "Hide", "IsShown", "ClearAllPoints", "SetParent","SetPoint","SetFrameStrata","SetAllPoints", "SetBackdrop","EnableMouse","SetBackdropColor", "SetBackdropBorderColor", "CreateFontString", "SetWidth","SetHeight","SetSize", "GetParent", "SetFrameLevel", "GetFrameLevel", "SetNormalTexture","GetNormalTexture","SetPushedTexture","GetPushedTexture","SetHighlightTexture","GetHighlightTexture", "CreateTexture", "SetFontString","SetNormalFontObject","SetHighlightFontObject","SetDisabledFontObject", "SetID","SetText", "SetToplevel" }
 function FrameClass:New()
    local frame = {}
    for i, method in ipairs(self.methods) do
@@ -21,6 +21,9 @@ function FrameClass:New()
       parent = nil,
    }
    return frame, frameProps
+end
+function FrameClass:GetName()
+   return frames[self].name
 end
 function FrameClass:SetScript(script, handler)
    frames[self].scripts[script] = handler
@@ -111,6 +114,7 @@ function FrameClass:SetDisabledFontObject (...)end
 function FrameClass:SetID (...)end
 function FrameClass:SetText (...)end
 function FrameClass:SetToplevel (...)end
+function FrameClass:SetAttribute (...)end
 function FrameClass:GetParent (...)
    return frames[self].parent
 end
@@ -122,49 +126,72 @@ function FrameClass:GetFrameLevel (...)
 end
 
 
-
-function FrameClass:CreateFontString () -- Very much a mock
-   return {
+local sharedFrameMeta = {
+   __index = {
+      SetTexture = function (args)
+         -- body...
+      end,
+      SetTexCoord = function (args)
+         -- body...
+      end,
+      SetBlendMode = function (args)
+         -- body...
+      end,
+      SetVertexColor = function (args)
+         -- body...
+      end,
+      SetNormalTexture = function (args)
+         -- body...
+      end,
+      SetDisabledTexture = function() end,
+      SetWidth = function() end,
+      SetHeight = function() end,
+      SetSize = function(self, w, h)
+         self:SetHeight(h)
+         self:SetWidth(w)
+      end,
       SetPoint = function (args)
          -- body...
       end,
-      SetJustifyH = function (args)
-         -- body...
-      end,
-      SetJustifyV = function (args)
-         -- body...
-      end,
-      SetText = function (args)
-         -- body...
-      end,
-      SetSize = function()
-
-      end,
    }
+}
+
+function FrameClass:CreateFontString () -- Very much a mock
+   return setmetatable(
+      {
+         SetJustifyH = function (args)
+            -- body...
+         end,
+         SetJustifyV = function (args)
+            -- body...
+         end,
+         SetText = function (args)
+            -- body...
+         end,
+
+         SetWordWrap = function() end,
+      }, 
+      sharedFrameMeta)
 end
 
 function FrameClass:CreateTexture (name, strata)
+   local texture = CreateFrame("Texture", name, self)
+   return setmetatable(texture, sharedFrameMeta)
+end
+
+local function CreateButton(frame)
    local mt = {
       __index = {
-         SetTexture = function (args)
-            -- body...
-         end,
-         SetTexCoord = function (args)
-            -- body...
-         end,
-         SetBlendMode = function (args)
-            -- body...
-         end,
-         SetVertexColor = function (args)
-            -- body...
-         end,
-         SetNormalTexture = function (args)
-            -- body...
-         end
+         OnClick = function() end,
+         Enable = function() end,
+         Disable = function() end,
+         SetMotionScriptsWhileDisabled = function() end,
+
       }
    }
-   local texture = CreateFrame("Texture", name, self)
-   return setmetatable(texture, mt)
+   -- Inherit from sharedFrameMeta
+   MergeTable(mt.__index, sharedFrameMeta.__index)
+   return setmetatable(frame, mt)
 end
 
 -- Extra hack as I didn't want to implement logic for all the UI functions
@@ -202,11 +229,16 @@ end
 function CreateFrame(kind, name, parent)
    local frame, internal = FrameClass:New()
    internal.parent = parent
+   internal.name = name
    frames[frame] = internal
    if name then
       _G[name] = frame
    end
-   return frame
+   if kind == "Button" then
+      return CreateButton(frame)
+   else
+      return frame
+   end
 end
 
 function UnitName(unit)
@@ -246,6 +278,10 @@ function GetNumRaidMembers()
 end
 
 function GetNumPartyMembers()
+   return 1
+end
+
+function GetNumGuildMembers()
    return 1
 end
 
@@ -385,7 +421,7 @@ function setglobal(k, v)
 end
 
 function _errorhandler(msg)
-   error(msg,2)--print("--------- geterrorhandler error -------\n"..msg.."\n-----end error-----\n")
+   error(msg)--print("--------- geterrorhandler error -------\n"..msg.."\n-----end error-----\n")
 end
 
 function geterrorhandler()
@@ -411,6 +447,14 @@ end
 function GetCVar(var)
    return "test"
 end
+
+function GetServerExpansionLevel() return 8 end
+
+function EJ_SelectTier(num) end
+
+function EJ_GetInstanceByIndex() end
+
+function ReloadUI() end
 
 time = os.time
 
@@ -591,8 +635,14 @@ for _, info in pairs(playerNameToGUID) do
    playerGUIDInfo[info.guid] = info
 end
 
+-- Not WoW lua
+function GetStoredPlayerNameToGUID(name)
+   return name and playerNameToGUID[name] or playerNameToGUID.Player1
+end
+
 function UnitGUID (name)
-   return playerNameToGUID[name] and playerNameToGUID[name].guid or "Player-FFF-ABCDF012"
+   if name == "player" then return playerNameToGUID.Player1.guid end
+   return playerNameToGUID[name] and playerNameToGUID[name].guid or nil
 end
 
 function GetPlayerInfoByGUID (guid)
@@ -614,6 +664,12 @@ _G.strrep = string.rep
 _G.tinsert = table.insert
 _G.format = string.format
 
+-- local utf8 = require "lua-utf8"
+strcmputf8i = function(a,b)
+   print("Compare: ", a,b)
+   return a == b-- ~= nil
+end
+
 -- Not part of the WoWAPI, but added to emulate the ingame /dump cmd
 printtable = function( data, level )
    if not data then return end
@@ -632,7 +688,7 @@ printtable = function( data, level )
    until true end
 end
 
-C_Timer = {After = function(delay, callback) callback() end}
+C_Timer = {After = function(delay, callback) end}
 
 -- Classes
 CLASS_SORT_ORDER = {
@@ -1143,6 +1199,6 @@ HEALER = "Healer"
 MELEE = "Melee"
 RANGED = "Ranged"
 
-dofile "__tests/wow_api/Mixin.lua"
-dofile "__tests/wow_api/Color.lua"
-dofile "__tests/wow_api/TableUtil.lua"
+require "/wow_api/Mixin"
+require "/wow_api/Color"
+require "/wow_api/TableUtil"

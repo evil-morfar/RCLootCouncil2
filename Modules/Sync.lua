@@ -9,7 +9,8 @@
       syncAck        T - Sync ack received.
 ]]
 ---@type RCLootCouncil
-local _, addon = ...
+--- @type RCLootCouncil
+local addon = select(2, ...)
 ---@class Sync
 local sync = addon:NewModule("Sync", "AceSerializer-3.0")
 local LibDialog = LibStub("LibDialog-1.0")

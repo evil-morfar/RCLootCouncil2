@@ -8,7 +8,8 @@
       do_trade       P - ML tells us to perfom a trade.
 ]]
 
-local _,addon = ...
+--- @type RCLootCouncil
+local addon = select(2, ...)
 local TradeUI = addon:NewModule("TradeUI", "AceEvent-3.0", "AceTimer-3.0")
 addon.TradeUI = TradeUI -- Shorthand for easier access
 local ST = LibStub("ScrollingTable")

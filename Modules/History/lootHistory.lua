@@ -8,7 +8,8 @@
 		delete_history		P - ML tells us to delete specific history entry.
 ]]
 ---@type RCLootCouncil
-local _,addon = ...
+--- @type RCLootCouncil
+local addon = select(2, ...)
 ---@class LootHistory
 local LootHistory = addon:NewModule("RCLootHistory", "AceSerializer-3.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")

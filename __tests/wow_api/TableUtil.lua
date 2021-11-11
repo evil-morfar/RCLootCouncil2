@@ -1,21 +1,22 @@
-local function ripairsiter(table, index)
+local function ipairs_reverse_iter(table, index)
 	index = index - 1;
 	if index > 0 then
 		return index, table[index];
 	end
 end
-function ripairs(table)
-	return ripairsiter, table, #table + 1;
+function ipairs_reverse(table)
+	return ipairs_reverse_iter, table, #table + 1;
 end
 function tDeleteItem(tbl, item)
-	local index = 1;
-	while tbl[index] do
-		if ( item == tbl[index] ) then
+	local size = #tbl;
+	local index = size;
+	while index > 0 do
+		if item == tbl[index] then
 			tremove(tbl, index);
-		else
-			index = index + 1;
 		end
+		index = index - 1;
 	end
+	return size - #tbl;
 end
 function tIndexOf(tbl, item)
 	for i, v in ipairs(tbl) do
@@ -91,16 +92,21 @@ function tUnorderedRemove(tbl, index)
 	end
 	table.remove(tbl);
 end
-function CopyTable(settings)
+function CopyTable(settings, shallow)
 	local copy = {};
 	for k, v in pairs(settings) do
-		if ( type(v) == "table" ) then
+		if type(v) == "table" and not shallow then
 			copy[k] = CopyTable(v);
 		else
 			copy[k] = v;
 		end
 	end
 	return copy;
+end
+function MergeTable(destination, source)
+	for k, v in pairs(source) do
+		destination[k] = v;
+	end
 end
 function AccumulateIf(tbl, pred)
 	local count = 0;
@@ -126,6 +132,13 @@ function FindInTableIf(tbl, pred)
 		end
 	end
 	return nil;
+end
+function CopyValuesAsKeys(tbl)
+	local output = {};
+	for k, v in ipairs(tbl) do
+		output[v] = v;
+	end
+	return output;
 end
 function SafePack(...)
 	local tbl = { ... };

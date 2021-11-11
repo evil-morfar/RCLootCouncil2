@@ -10,7 +10,8 @@
 		f 		T - Full version check reply. Only when open.
 ]]
 --- @type RCLootCouncil
-local _, addon = ...
+--- @type RCLootCouncil
+local addon = select(2, ...)
 local RCVersionCheck = addon:NewModule("VersionCheck", "AceTimer-3.0", "AceHook-3.0", "AceEvent-3.0", "AceBucket-3.0")
 local ST = LibStub("ScrollingTable")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")

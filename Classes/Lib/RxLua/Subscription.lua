@@ -1,7 +1,8 @@
-local _, addon = ...
+--- @type RCLootCouncil
+local addon = select(2, ...)
 local util = addon.Require("rx.Util")
 
---- @class Subscription
+--- @class rx.Subscription
 -- @description A handle representing the link between an Observer and an Observable, as well as any
 -- work required to clean up after the Observable completes or the Observer unsubscribes.
 local Subscription = addon.Init("rx.Subscription")

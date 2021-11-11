@@ -119,6 +119,7 @@ describe("#Services #Comms (basics)", function()
 end)
 
 describe("#Services #Comms", function()
+   ---@type Services.Comms
    local Comms = addon.Require("Services.Comms")
    local match = require "luassert.match"
    describe("sends", function()
@@ -442,5 +443,45 @@ describe("#Services #Comms", function()
       WoWAPI_FireUpdate(GetTime()+10)
       assert.spy(s).was_called(1)
       assert.spy(s).returned_with(data)
+   end)
+
+   describe("safemode", function()
+      local receiverSpy
+      local EHstub
+      setup(function()
+         receiverSpy = spy.new(function() error("from spy") end)
+         local EH = addon.Require "Services.ErrorHandler"
+         EHstub = stub(EH, "ThrowSilentError")
+         addon.Getdb = spy.new(function() return { safemode = true} end)
+      end)
+
+      teardown(function()
+         -- just to be sure
+         receiverSpy:revert()
+         EHstub:revert()
+         addon.Getdb:revert()
+      end)
+      it("works with no errors", function()
+         stub(addon, "Log")
+         Comms:Subscribe(addon.PREFIXES.MAIN, "test", receiverSpy)
+         Comms:Send{command = "test"}
+         WoWAPI_FireUpdate(GetTime()+10)
+         -- Msg succesfully received
+         assert.spy(receiverSpy).was_called(1)
+         assert.spy(receiverSpy).was_called_with({},"Sender-Realm1","test", "RAID")
+         -- even though receiver threw error
+         assert.stub(EHstub).was_called(1)
+         -- which doesn't break execution
+          Comms:Send{command = "test"}
+         WoWAPI_FireUpdate(GetTime()+10)
+          assert.spy(receiverSpy).was_called(2)
+         assert.spy(receiverSpy).was_called_with({},"Sender-Realm1","test", "RAID")
+         assert.stub(EHstub).was_called(2)
+      end)
+   
+      it("catches errors in receiver", function()
+         
+      end)
+      
    end)
 end)
