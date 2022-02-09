@@ -332,7 +332,7 @@ function RCLootCouncilML:RemoveItemsInBags(...)
 	for i=#indexes, 1, -1 do
 		local index = tonumber(indexes[i])
 		if index and Items[index] then
-			addon.ItemStorage:RemvoveItem(Items[index])
+			addon.ItemStorage:RemoveItem(Items[index])
 			tinsert(removedEntries, 1, Items[index])
 		end
 	end

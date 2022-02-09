@@ -1,3 +1,7 @@
+## Bugfixes
+
+- *Fixed issue with `/rc remove` command.*
+
 # v3.2.1
 
 ## Changes
