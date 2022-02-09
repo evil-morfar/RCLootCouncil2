@@ -1,3 +1,6 @@
 {
-    "todo-tree.tree.showCountsInTree": false
+    "todo-tree.tree.showCountsInTree": false,
+    "Lua.runtime.path": [
+        "${workspace}/__tests/?.lua"
+    ]
 }
