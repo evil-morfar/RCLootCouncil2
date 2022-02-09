@@ -259,8 +259,8 @@ function RCLootCouncil:OnEnable()
 			end
 		, 2)
 	end
-	self.playerName = Player:Get("player"):GetName() -- TODO Remove
 	self.player = Player:Get("player")
+	self.playerName = self.player:GetName() -- TODO Remove
 	self.Log(self.playerName, self.version, self.tVersion)
 
 	self:DoChatHook()
