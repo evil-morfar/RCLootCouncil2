@@ -281,7 +281,8 @@ function private:newItem(link, type, time_remaining)
    })
    Item.link = link
    Item.type = type or Item.type
-   Item.time_remaining = time_remaining or Item.time_remaining or 0
+   -- If item isn't in our bags, lets store it for 6 hours
+   Item.time_remaining = time_remaining or Item.time_remaining or  60 * 60 * 6
    Item.time_added = time()
    return Item
 end
