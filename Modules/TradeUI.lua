@@ -127,6 +127,14 @@ function TradeUI:OnDoTrade (trader, item, winner)
    end
 end
 
+local function getToTradeItemWithNoRecipient(item)
+   for _, v in ipairs(addon.ItemStorage:GetAllItemsOfType("to_trade")) do
+      if addon:ItemIsItem(v.link, item) and not v.args.recipient then
+         return v
+      end
+   end
+end
+
 function TradeUI:OnAwardReceived (session, winner, trader)
    if addon:UnitIsUnit(trader, "player") then
       -- We should give our item to 'winner'
@@ -136,10 +144,11 @@ function TradeUI:OnAwardReceived (session, winner, trader)
       addon.Log:d("OnAwardReceived", lootSession, session, winner, trader)
       if lootSession then
          Item = addon.ItemStorage:GetItem(lootSession.link, "temp") -- Update our temp item
-         addon.Log:d("Found item as temp")
-         if not Item then -- No temp item - maybe a changed award?
+         if Item then
+            addon.Log:d("Found item as temp")
+         else -- No temp item - maybe a changed award?
             -- In that case we should have the item registered as "to_trade"
-            Item = addon.ItemStorage:GetItem(lootSession.link, "to_trade")
+            Item = getToTradeItemWithNoRecipient(lootSession.link)
             if not Item then
                -- If we still don't have, then create a new
                Item = addon.ItemStorage:New(lootSession.link, "to_trade", {recipient = winner, session = session}):Store()

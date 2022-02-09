@@ -1,6 +1,7 @@
 ## Bugfixes
 
 - *Fixed issue with `/rc remove` command.*
+- *TradeUI can now handle duplicate items.*
 
 # v3.2.1
 
