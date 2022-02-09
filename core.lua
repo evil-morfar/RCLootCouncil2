@@ -181,6 +181,11 @@ function RCLootCouncil:OnInitialize()
 		}
 	}
 
+	-- List of itemIds that should not be blacklisted
+	self.blackListOverride = {
+		-- [itemId] = true
+	}
+
 	self.testMode = false;
 	-- create the other buttons/responses
 	for i = 1, self.defaults.profile.maxButtons do
