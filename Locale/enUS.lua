@@ -354,6 +354,7 @@ L["Response options"] = true
 L["Response to 'item'"] = "Response to %s"
 L["Save Skin"] = true
 L["save_skin_desc"] = "Enter a name for your skin and hit 'okay' to save it. Note you can overwrite any non default skin."
+L["Scale"] = "Scale"
 L["Self Vote"] = true
 L["self_vote_desc"] = "Enables voters to vote for themselves."
 L["Send History"] = true
