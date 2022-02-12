@@ -106,8 +106,12 @@ function Storage:New(item, typex, ...)
    end
    if select(1, ...) == "restored" then -- Special case, gets stored
       local OldItem = select(2, ...)
-      Item.time_added = OldItem.time_added -- Restore original time added
       Item.args = OldItem.args
+      -- We should restore timestamps if we're dealing with an item that's always tradeable:
+      if time_remaining == math.huge then
+         Item.time_added = OldItem.time_added
+         Item.time_remaining = OldItem.time_remaining
+      end
    else
       Item.args = ... and type(...) == "table" and ... or {...}
    end
