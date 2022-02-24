@@ -1,7 +1,7 @@
 --- Core.lua Setups module system.
 -- Heavily inspired by TSM!
 
---- @type RCLootCouncil
+---@class RCLootCouncil
 local addon = select(2, ...)
 
 local private = {modules = {}, initOrder = {}}

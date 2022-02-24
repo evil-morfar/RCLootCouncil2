@@ -6,8 +6,8 @@
 local addon = select(2, ...)
 --- @class Utils.Log
 local Log = addon.Init("Utils.Log")
+local TempTable = addon.Require("Utils.TempTable")
 local private = {
-   date_to_debug_log = true,
    debugLog = {},
    lenght = 0,
 }
@@ -99,10 +99,19 @@ end
 --- @param prefix string
 function private:Log(Log,prefix, ...)
    self:Print((Log.prefix or "") .. prefix, ...)
-   if self.date_to_debug_log then tinsert(self.debugLog, date("%x")); self.date_to_debug_log = false; end
-	local time = date("%X", time())
-	local msg = "<"..time..">"..(Log.prefix or "")..prefix.."\t"
-	for i = 1, select("#", ...) do msg = msg.." "..tostring(select(i,...)) end
+   local t = TempTable:Acquire()
+   t[1] = "<"
+   t[2] =  date("%X", time())
+   t[3] = "> "
+   t[4] = (Log.prefix or "")
+   t[5] = prefix
+   t[6] = "\t"
+   for i = 1, select("#", ...) do
+      t[(i - 1) * 2 + 7] = "\t"
+      t[(i - 1) * 2 + 8] = tostring(select(i, ...))
+   end
+   local msg = table.concat(t, "")
+   TempTable:Release(t)
 	if self.lenght >= addon.db.global.logMaxEntries then
 		tremove(self.debugLog, 1) -- We really want to preserve indicies
       self.lenght = self.lenght - 1
@@ -125,6 +134,7 @@ end
 
 function addon:InitLogging()
    private.debugLog = addon.db.global.log
+   tinsert(private.debugLog, date("%x"))
    private.lenght = #private.debugLog -- Use direct table access for better performance.
    addon.db.global.logMaxEntries = addon.defaults.global.logMaxEntries -- reset it now for zzz
    if addon.tVersion then

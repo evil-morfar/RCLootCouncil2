@@ -1,3 +1,19 @@
+# v3.3.0
+
+## Changes 
+
+### Patch 9.2
+
+Updated for patch 9.2.0.
+
+Re-added Armor Token button/response group option.
+Added item data for Sepulcher of the First Ones.
+
+## Bugfixes
+
+- *Fixed issue with `/rc remove` command.*
+- *TradeUI can now handle duplicate items.*
+
 # v3.2.1
 
 ## Changes

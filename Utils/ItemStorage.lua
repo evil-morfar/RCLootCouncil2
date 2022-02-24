@@ -106,8 +106,12 @@ function Storage:New(item, typex, ...)
    end
    if select(1, ...) == "restored" then -- Special case, gets stored
       local OldItem = select(2, ...)
-      Item.time_added = OldItem.time_added -- Restore original time added
       Item.args = OldItem.args
+      -- We should restore timestamps if we're dealing with an item that's always tradeable:
+      if time_remaining == math.huge then
+         Item.time_added = OldItem.time_added
+         Item.time_remaining = OldItem.time_remaining
+      end
    else
       Item.args = ... and type(...) == "table" and ... or {...}
    end
@@ -281,7 +285,8 @@ function private:newItem(link, type, time_remaining)
    })
    Item.link = link
    Item.type = type or Item.type
-   Item.time_remaining = time_remaining or Item.time_remaining or 0
+   -- If item isn't in our bags, lets store it for 6 hours
+   Item.time_remaining = time_remaining or Item.time_remaining or  60 * 60 * 6
    Item.time_added = time()
    return Item
 end

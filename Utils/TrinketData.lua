@@ -239,6 +239,7 @@ _G.RCTrinketCategories = {
    ["092775070310"] = ITEM_MOD_AGILITY_SHORT.."/"..ITEM_MOD_INTELLECT_SHORT.."?", -- Agility/Intellect?
    ["092075070010"] = ITEM_MOD_INTELLECT_SHORT.."?", -- Intellect? (Missing Warlock)
    ["010773050000"] = DAMAGER..", "..ITEM_MOD_INTELLECT_SHORT.."?", -- Damage, Intellect? (+Enhancement Shaman)
+   ["124002607447"] = MELEE, -- All melee + protection warrior?
 }
 
 function RCLootCouncil:InitTrinketData ()
@@ -1669,4 +1670,28 @@ _G.RCTrinketSpecs = {
 -- Sanctum of Domination Heroic (id: 1193).
 -- Sanctum of Domination Mythic (id: 1193).
 -- Sanctum of Domination Looking For Raid (id: 1193).
+-----------------------------------------------
+-- 9.2
+-----------------------------------------------
+-- Sepulcher of the First Ones Normal (id: 1195).
+	[188268] = "010771040000",	-- Architect's Ingenuity Core,          	Damage, Intellect
+	[188273] = "082004030010",	-- Auxillary Attendant Chime,           	Healer
+	[188267] = "365002707767",	-- Bells of the Endless Feast,          	Strength/Agility
+	[188265] = "124002007700",	-- Cache of Acquired Treasures,         	Damage, Agility
+	[188252] = "124002607447",	-- Chains of Domination,                	All melee + protection warrior?
+	[188264] = "365002707467",	-- Earthbreaker's Impact,               	Melee
+	[188270] = "3F7777777777",	-- Elegy of the Eternals,               	All Classes
+	[188254] = "092775070010",	-- Grim Eclipse,                        	Intellect
+	[188255] = "000000700067",	-- Heart of the Swarm,                  	Strength
+	[188261] = "241000100024",	-- Intrusive Thoughtcage,               	Tank
+	[188269] = "241000100024",	-- Pocket Protoforge,                   	Tank
+	[188266] = "241000100024",	-- Pulsating Riftshard,                 	Tank
+	[188263] = "082004030010",	-- Reclaimer's Intensity Core,          	Healer
+	[188272] = "010771040000",	-- Resonant Reservoir,                  	Damage, Intellect
+	[188253] = "3F7777777777",	-- Scars of Fraternal Strife,           	All Classes
+	[188271] = "3F7777777777",	-- The First Sigil,                     	All Classes
+	[188262] = "082004030010",	-- The Lion's Roar,                     	Healer
+-- Sepulcher of the First Ones Heroic (id: 1195).
+-- Sepulcher of the First Ones Mythic (id: 1195).
+-- Sepulcher of the First Ones Looking For Raid (id: 1195).
 }

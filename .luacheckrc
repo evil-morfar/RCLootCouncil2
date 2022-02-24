@@ -61,7 +61,7 @@ globals = {
    "MSA_ToggleDropDownMenu",
 
 	-- FrameXML misc
-	"AccumulateIf",
+	"AccumulateOp",
 	"C_Timer",
 	"ChatFrame_AddMessageEventFilter",
 	"COMBAT_TEXT_SCROLL_FUNCTION",

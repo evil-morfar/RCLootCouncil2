@@ -181,6 +181,11 @@ function RCLootCouncil:OnInitialize()
 		}
 	}
 
+	-- List of itemIds that should not be blacklisted
+	self.blackListOverride = {
+		-- [itemId] = true
+	}
+
 	self.testMode = false;
 	-- create the other buttons/responses
 	for i = 1, self.defaults.profile.maxButtons do
@@ -254,8 +259,8 @@ function RCLootCouncil:OnEnable()
 			end
 		, 2)
 	end
-	self.playerName = Player:Get("player"):GetName() -- TODO Remove
 	self.player = Player:Get("player")
+	self.playerName = self.player:GetName() -- TODO Remove
 	self.Log(self.playerName, self.version, self.tVersion)
 
 	self:DoChatHook()
@@ -1151,6 +1156,31 @@ function RCLootCouncil:GetItemClassesAllowedFlag(item)
 	end
 	tooltipForParsing:Hide()
 	return 0xffffffff -- The item works for all classes
+end
+
+local classNamesFromFlagCache = {}
+
+--- Gets class names from classes flag.
+---@param classesFlag string bitwise flag from GetItemClassesAllowedFlag.
+---@return string #Colored class names extracted from flag, seperated by comma.
+function RCLootCouncil:GetClassNamesFromFlag(classesFlag)
+	if classNamesFromFlagCache[classesFlag] then return classNamesFromFlagCache[classesFlag] end
+	local result = TT.Acquire("")
+	local j = 1
+	for i = 1, self.Utils.GetNumClasses() do
+		if bit.band(classesFlag, bit.lshift(1, i-1)) > 0 then
+			local class = self.classIDToFileName[i]
+			local classText = self.classIDToDisplayName[i]
+			result[(j - 1) * 2 + 1] = _G.GetClassColorObj(class):WrapTextInColorCode(classText)
+			result[(j - 1) * 2 + 2] = ", "
+			j = j + 1
+		end
+	end
+	result[#result] = nil -- Remove last ", "
+	local text = table.concat(result,"")
+	TT:Release(result)
+	classNamesFromFlagCache[classesFlag] = text
+	return text
 end
 
 --- Parses an item tooltip looking for corruption stat
@@ -2060,21 +2090,15 @@ function RCLootCouncil:GetClassColor(class)
 	end
 end
 
--- REVIEW: Blizzard has functions for this in ColorUtil.lua 
+--- Gets a class color wrapped string of the name
+---@param name string Name of the player.
 function RCLootCouncil:GetUnitClassColoredName(name)
 	local player = Player:Get(name)
 	if player then
-		local c = self:GetClassColor(player:GetClass() or "")
-		return "|cff"..self.Utils:RGBToHex(c.r,c.g,c.b)..self.Ambiguate(name).."|r"
+		return _G.GetClassColoredTextForUnit("player", self.Ambiguate(name))
 	else
 		local englishClass = select(2, UnitClass(Ambiguate(name, "short")))
-		name = self:UnitName(name)
-		if not englishClass or not name then
-			return self.Ambiguate(name)
-		else
-			local color = RAID_CLASS_COLORS[englishClass].colorStr
-			return "|c"..color..self.Ambiguate(name).."|r"
-		end
+		return _G.GetClassColoredTextForUnit(englishClass, self.Ambiguate(name))
 	end
 end
 
@@ -2211,13 +2235,15 @@ function RCLootCouncil:GetItemTypeText(link, subType, equipLoc, typeID, subTypeI
 	local id = self.Utils:GetItemIDFromLink(link)
 
 	if tokenSlot then -- It's a token
-		local tokenText = L["Armor Token"]
+		local tokenText
 		if bit.band(classesFlag, 0x112) == 0x112 then
 			tokenText = L["Conqueror Token"]
 		elseif bit.band(classesFlag, 0x45) == 0x45 then
 			tokenText = L["Protector Token"]
 		elseif bit.band(classesFlag, 0x488) == 0x488 then
 			tokenText = L["Vanquisher Token"]
+		else
+			tokenText = self:GetClassNamesFromFlag(classesFlag)
 		end
 
 		if equipLoc == "" then

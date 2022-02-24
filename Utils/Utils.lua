@@ -2,7 +2,7 @@
 -- Creates RCLootCouncil.Utils namespace for utility functions
 -- @Author Potdisc
 -- Create Date : 27/7/2018 20:49:10
----@type RCLootCouncil
+---@class RCLootCouncil
 local _,addon = ...
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 local Utils = {}
@@ -151,11 +151,12 @@ end
 --- @return boolean #True if the item is blacklisted
 function Utils:IsItemBlacklisted(item)
    if not item then return false end
-   local _,_,_,_,_,itemClassID, itemsubClassID = GetItemInfoInstant(item)
+   local itemId,_,_,_,_,itemClassID, itemsubClassID = GetItemInfoInstant(item)
    if not (itemClassID and itemsubClassID) then return false end
    if addon.blacklistedItemClasses[itemClassID] then
       if addon.blacklistedItemClasses[itemClassID].all or addon.blacklistedItemClasses[itemClassID][itemsubClassID] then
-         return true
+        if addon.blackListOverride[itemId] then return false end
+		return true
       end
    end
    return false

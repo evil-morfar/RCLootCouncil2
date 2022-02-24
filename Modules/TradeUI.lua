@@ -127,6 +127,51 @@ function TradeUI:OnDoTrade (trader, item, winner)
    end
 end
 
+local function getToTradeItemWithNoRecipient(item)
+   for _, v in ipairs(addon.ItemStorage:GetAllItemsOfType("to_trade")) do
+      if addon:ItemIsItem(v.link, item) and not v.args.recipient then
+         return v
+      end
+   end
+end
+
+local function getToTradeItemWithSession(item, session)
+   for _, v in ipairs(addon.ItemStorage:GetAllItemsOfType("to_trade")) do
+      if addon:ItemIsItem(v.link, item) and v.args.session and v.args.session == session then
+         return v
+      end
+   end
+end
+
+---@param item ItemString Item to find.
+---@param session number Session.
+---@param winner string Name of the winner.
+local function getItemFromLootSession(item, session, winner)
+   -- If we have a 'temp' item, then use that.
+   local Item = addon.ItemStorage:GetItem(item, "temp")
+   if Item then
+      addon.Log:d("Found item as temp")
+      return Item
+   end
+
+   -- Changed award?
+   Item = getToTradeItemWithSession(item, session)
+   if Item then
+      addon.Log:d("Reaward - changing winner from ", Item.args.recipient, " to ", winner)
+      return Item
+   end
+
+   -- Maybe the item is registered as "to_trade"
+   Item = getToTradeItemWithNoRecipient(item)
+   if Item then
+      addon.Log:d("Found as 'to_trade'")
+      return Item
+   end
+
+   -- If we still haven't found it, then create a new
+   return addon.ItemStorage:New(item, "to_trade", {recipient = winner, session = session}):Store()
+end
+
 function TradeUI:OnAwardReceived (session, winner, trader)
    if addon:UnitIsUnit(trader, "player") then
       -- We should give our item to 'winner'
@@ -135,16 +180,7 @@ function TradeUI:OnAwardReceived (session, winner, trader)
       local lootSession = addon:GetLootTable()[session]
       addon.Log:d("OnAwardReceived", lootSession, session, winner, trader)
       if lootSession then
-         Item = addon.ItemStorage:GetItem(lootSession.link, "temp") -- Update our temp item
-         addon.Log:d("Found item as temp")
-         if not Item then -- No temp item - maybe a changed award?
-            -- In that case we should have the item registered as "to_trade"
-            Item = addon.ItemStorage:GetItem(lootSession.link, "to_trade")
-            if not Item then
-               -- If we still don't have, then create a new
-               Item = addon.ItemStorage:New(lootSession.link, "to_trade", {recipient = winner, session = session}):Store()
-            end
-         end
+         Item = getItemFromLootSession(lootSession.link, session, winner)
          Item.type = "to_trade"
          Item.args.recipient = winner
          Item.args.session = session
