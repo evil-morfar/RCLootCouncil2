@@ -1158,6 +1158,31 @@ function RCLootCouncil:GetItemClassesAllowedFlag(item)
 	return 0xffffffff -- The item works for all classes
 end
 
+local classNamesFromFlagCache = {}
+
+--- Gets class names from classes flag.
+---@param classesFlag String bitwise flag from GetItemClassesAllowedFlag.
+---@return String #Colored class names extracted from flag, seperated by comma.
+function RCLootCouncil:GetClassNamesFromFlag(classesFlag)
+	if classNamesFromFlagCache[classesFlag] then return classNamesFromFlagCache[classesFlag] end
+	local result = TT.Acquire("")
+	local j = 1
+	for i = 1, self.Utils.GetNumClasses() do
+		if bit.band(classesFlag, bit.lshift(1, i-1)) > 0 then
+			local class = self.classIDToFileName[i]
+			local classText = self.classIDToDisplayName[i]
+			result[(j - 1) * 2 + 1] = _G.GetClassColorObj(class):WrapTextInColorCode(classText)
+			result[(j - 1) * 2 + 2] = ", "
+			j = j + 1
+		end
+	end
+	result[#result] = nil -- Remove last ", "
+	local text = table.concat(result,"")
+	TT:Release(result)
+	classNamesFromFlagCache[classesFlag] = text
+	return text
+end
+
 --- Parses an item tooltip looking for corruption stat
 -- @param item The item to find corruption for
 -- @return 0 or the amount of corruption on the item.
@@ -2216,13 +2241,15 @@ function RCLootCouncil:GetItemTypeText(link, subType, equipLoc, typeID, subTypeI
 	local id = self.Utils:GetItemIDFromLink(link)
 
 	if tokenSlot then -- It's a token
-		local tokenText = L["Armor Token"]
+		local tokenText
 		if bit.band(classesFlag, 0x112) == 0x112 then
 			tokenText = L["Conqueror Token"]
 		elseif bit.band(classesFlag, 0x45) == 0x45 then
 			tokenText = L["Protector Token"]
 		elseif bit.band(classesFlag, 0x488) == 0x488 then
 			tokenText = L["Vanquisher Token"]
+		else
+			tokenText = self:GetClassNamesFromFlag(classesFlag)
 		end
 
 		if equipLoc == "" then
