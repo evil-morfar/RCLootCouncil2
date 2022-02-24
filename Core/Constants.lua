@@ -2,6 +2,7 @@
 -- Objects which are intended to be set once (i.e. modules or addons can change them on init)
 --- @type RCLootCouncil
 local addon = select(2, ...)
+local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 
 addon.LOGO_LOCATION = "Interface\\AddOns\\RCLootCouncil\\Media\\rc_logo"
 
@@ -38,7 +39,7 @@ addon.OPT_MORE_BUTTONS_VALUES = {
 	INVTYPE_TRINKET = _G.INVTYPE_TRINKET,
 	WEAPON = _G.WEAPON,
 	AZERITE = "Azerite Armor",
-	-- TOKEN = L["Armor Token"],
+	TOKEN = L["Armor Token"],
 	-- CORRUPTED = _G.CORRUPTION_TOOLTIP_TITLE,
 	CONTEXT_TOKEN = "Beads and Spherules",
 	PETS = _G.PETS,
@@ -93,6 +94,13 @@ addon.RESPONSE_CODE_GENERATORS = {
 	function(_, db, _, _, itemClassID, itemSubClassID)
 		return db.enabledButtons.CONTEXT_TOKEN and itemClassID == 5 and itemSubClassID == 2 and "CONTEXT_TOKEN" or nil
 	end,
+
+	-- Armor tokens
+   function (_, db, itemID)
+      if RCTokenTable[itemID] and db.enabledButtons["TOKEN"] then
+         return "TOKEN"
+      end
+   end,
 
 	-- Check for Weapon
 	function(_, db, _, itemEquipLoc)
