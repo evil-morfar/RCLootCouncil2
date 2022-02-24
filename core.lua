@@ -1161,8 +1161,8 @@ end
 local classNamesFromFlagCache = {}
 
 --- Gets class names from classes flag.
----@param classesFlag String bitwise flag from GetItemClassesAllowedFlag.
----@return String #Colored class names extracted from flag, seperated by comma.
+---@param classesFlag string bitwise flag from GetItemClassesAllowedFlag.
+---@return string #Colored class names extracted from flag, seperated by comma.
 function RCLootCouncil:GetClassNamesFromFlag(classesFlag)
 	if classNamesFromFlagCache[classesFlag] then return classNamesFromFlagCache[classesFlag] end
 	local result = TT.Acquire("")
@@ -2090,21 +2090,15 @@ function RCLootCouncil:GetClassColor(class)
 	end
 end
 
--- REVIEW: Blizzard has functions for this in ColorUtil.lua 
+--- Gets a class color wrapped string of the name
+---@param name string Name of the player.
 function RCLootCouncil:GetUnitClassColoredName(name)
 	local player = Player:Get(name)
 	if player then
-		local c = self:GetClassColor(player:GetClass() or "")
-		return "|cff"..self.Utils:RGBToHex(c.r,c.g,c.b)..self.Ambiguate(name).."|r"
+		return _G.GetClassColoredTextForUnit("player", self.Ambiguate(name))
 	else
 		local englishClass = select(2, UnitClass(Ambiguate(name, "short")))
-		name = self:UnitName(name)
-		if not englishClass or not name then
-			return self.Ambiguate(name)
-		else
-			local color = RAID_CLASS_COLORS[englishClass].colorStr
-			return "|c"..color..self.Ambiguate(name).."|r"
-		end
+		return _G.GetClassColoredTextForUnit(englishClass, self.Ambiguate(name))
 	end
 end
 
