@@ -1,38 +1,26 @@
 require "busted.runner"()
 
 -- Init some variables
-local logTable = {
-	a = function(self, key, value)
-		rawset(self, key, value)
-	end
-}
+local logTable = {a = function(self, key, value) rawset(self, key, value) end}
 
 local addon_name, addon = "RCLootCouncil", {
 	-- Mock db object
-	db = {
-		global = {
-			log = setmetatable({}, {
-				__newindex = function(self, k, v)
-					logTable.a(self, k, v)
-				end
-			})
-		}
-	},
+	db = {global = {log = setmetatable({}, {__newindex = function(self, k, v) logTable.a(self, k, v) end})}},
 	-- Mock defaults
-	defaults = {global = {logMaxEntries = 4000}}
+	defaults = {global = {logMaxEntries = 2000}},
 }
 
 loadfile(".specs/AddonLoader.lua")(nil, addon_name, addon).LoadArray {
-	"Classes/Core.lua", "Classes/Utils/Log.lua"
+	"Classes/Core.lua",
+	"Classes/Utils/TempTable.lua",
+	"Classes/Utils/Log.lua",
 }
 
 addon:InitLogging()
 
 describe("#Utils #Log initilizing", function()
 	it("should create Log module", function()
-		assert.has_no.errors(function()
-			addon.Require("Utils.Log")
-		end)
+		assert.has_no.errors(function() addon.Require("Utils.Log") end)
 		assert.is_table(addon.Require("Utils.Log"))
 	end)
 
@@ -50,10 +38,7 @@ describe("#Utils #Log", function()
 	describe("addon.Log", function()
 		it("when called should print", function()
 			local s = spy.on(logTable, "a")
-			addon.Log:d("Debug test") -- Needs one call to init
-			assert.has_no.errors(function()
-				addon.Log("addon.Log Test")
-			end)
+			assert.has_no.errors(function() addon.Log("addon.Log Test") end)
 			assert.spy(s).was_called(1)
 			addon.Log("addon.Log Test2")
 			assert.spy(s).was_called(2)
@@ -63,9 +48,7 @@ describe("#Utils #Log", function()
 	describe("Class", function()
 		it("is protected", function()
 			local log = addon.Require("Utils.Log"):New()
-			assert.has.errors(function()
-				log.newValue = 1
-			end, "Log cannot be modified")
+			assert.has.errors(function() log.newValue = 1 end, "Log cannot be modified")
 		end)
 
 		it("should create", function()
@@ -96,8 +79,7 @@ describe("#Utils #Log", function()
 			local log = addon.Require("Utils.Log"):New("Test")
 			log("print Test 1")
 			assert.spy(logTable.a).was_called(1)
-			assert.spy(s).was_called_with(match.is_table(), match.is_number(),
-			                              match.is_string())
+			assert.spy(s).was_called_with(match.is_table(), match.is_number(), match.is_string())
 			log:m("print Test 2")
 			assert.spy(s).was_called(2)
 		end)
@@ -151,7 +133,9 @@ describe("#Utils #Log", function()
 		it("should bump logMaxEntries", function()
 			-- Reload files
 			loadfile("Classes/Core.lua")(addon_name, addon)
+			loadfile("Classes/Utils/TempTable.lua")(addon_name, addon)
 			loadfile("Classes/Utils/Log.lua")(addon_name, addon)
+			addon:InitLogging()
 			assert.is.equal(4000, addon.db.global.logMaxEntries)
 		end)
 	end)

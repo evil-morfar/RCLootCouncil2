@@ -1,15 +1,20 @@
 require "busted.runner"()
 local addonName, addon = "RCLootCouncil_Test", {
 	db = {global = {log = {}, cache = {}, errors = {}}},
-	defaults = {global = {logMaxEntries = 2000}}
+	defaults = {global = {logMaxEntries = 2000}},
 }
 loadfile(".specs/AddonLoader.lua")(nil, addonName, addon).LoadArray {
 	[[Libs\LibStub\LibStub.lua]],
- [[Libs\CallbackHandler-1.0\CallbackHandler-1.0.xml]],
- [[Libs\AceLocale-3.0\AceLocale-3.0.xml]],
- [[Libs\AceEvent-3.0\AceEvent-3.0.xml]], [[Classes/Core.lua]],
- [[Classes/Utils/Log.lua]], [[Classes/Services/ErrorHandler.lua]],
- [[Classes/Data/Player.lua]], [[Locale\enUS.lua]], [[Utils\Utils.lua]]
+	[[Libs\CallbackHandler-1.0\CallbackHandler-1.0.xml]],
+	[[Libs\AceLocale-3.0\AceLocale-3.0.xml]],
+	[[Libs\AceEvent-3.0\AceEvent-3.0.xml]],
+	[[Classes/Core.lua]],
+	[[Classes\Utils\TempTable.lua]],
+	[[Classes/Utils/Log.lua]],
+	[[Classes/Services/ErrorHandler.lua]],
+	[[Classes/Data/Player.lua]],
+	[[Locale\enUS.lua]],
+	[[Utils\Utils.lua]],
 }
 addon:InitLogging()
 
@@ -26,9 +31,7 @@ describe("#Player", function()
 			assert.is.table(Player)
 		end)
 
-		it("should have certain functions", function()
-			assert.is.Function(Player.Get)
-		end)
+		it("should have certain functions", function() assert.is.Function(Player.Get) end)
 
 		it("'Player' object should have certain functions", function()
 			local player = Player:Get("Player1")
@@ -45,9 +48,7 @@ describe("#Player", function()
 	end)
 
 	describe("class", function()
-		before_each(function()
-			addon.db.global.cache = {}
-		end)
+		before_each(function() addon.db.global.cache = {} end)
 
 		it("stores correct info", function()
 			local p = Player:Get("Player2")
@@ -61,12 +62,8 @@ describe("#Player", function()
 		end)
 
 		it("handles invalid input", function()
-			assert.has.errors(function()
-				Player:Get()
-			end, "nil invalid player")
-			assert.has.errors(function()
-				Player:Get(1)
-			end, "1 invalid player")
+			assert.has.errors(function() Player:Get() end, "nil invalid player")
+			assert.has.errors(function() Player:Get(1) end, "1 invalid player")
 		end)
 
 		it("is printable", function()
@@ -103,9 +100,7 @@ describe("#Player", function()
 	describe("edge cases", function()
 		setup(function()
 
-			_G.GetNumGuildMembers = spy.new(function()
-				return 3
-			end)
+			_G.GetNumGuildMembers = spy.new(function() return 3 end)
 			_G.GetGuildRosterInfo = spy.new(function(i)
 				local _ = nil
 				if i <= 2 then
@@ -113,8 +108,7 @@ describe("#Player", function()
 					return p.name, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, p.guid
 				else
 					-- Unique non-ascii name
-					return "Pláÿer-Realm", _, _, _, _, _, _, _, _, _, _, _, _, _, _, _,
-					       "Player-5555-00000001"
+					return "Pláÿer-Realm", _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, "Player-5555-00000001"
 				end
 			end)
 		end)

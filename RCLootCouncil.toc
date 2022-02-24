@@ -17,8 +17,8 @@ Core\CoreEvents.lua
 
 Classes\Core.lua
 Classes\Services\ErrorHandler.lua
-Classes\Utils\Log.lua
 Classes\Utils\TempTable.lua
+Classes\Utils\Log.lua
 
 Classes\Data\Player.lua
 Classes\Data\Council.lua
