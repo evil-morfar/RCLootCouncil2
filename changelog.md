@@ -1,3 +1,9 @@
+## Changes
+
+## Bugfixes
+
+- *Fixed issue with Auto Award BoE list. (curse#500)*
+
 # v3.3.0
 
 ## Changes 

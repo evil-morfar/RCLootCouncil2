@@ -1278,7 +1278,7 @@ function addon:OptionsTable()
 										name = L["Auto Award to"],
 										type = "group",
 										inline = true,
-										hidden = function() return not db.autoAwardBoE or #db.autoAwardTo == 0 end,
+										hidden = function() return not db.autoAwardBoE or #db.autoAwardBoETo == 0 end,
 										args = createAutoAwardPrioList(db.autoAwardBoETo)
 									},
 								}
