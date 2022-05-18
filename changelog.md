@@ -3,6 +3,7 @@
 ## Bugfixes
 
 - *Fixed issue with Auto Award BoE list. (curse#500)*
+- *Fixed occasional missing data error. (curse#503)*
 
 # v3.3.0
 
