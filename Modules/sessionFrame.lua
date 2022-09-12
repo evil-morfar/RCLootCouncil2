@@ -2,11 +2,13 @@
 -- DefaultModule - Requires ml_core.lua or similary functionality.
 -- @author Potdisc
 -- Create Date : 1/20/2015 3:48:38 AM
----@type RCLootCouncil
+
 --- @type RCLootCouncil
 local addon = select(2, ...)
+--- @class RCSessionFrame : AceTimer-3.0, AceEvent-3.0
 local RCSessionFrame = addon:NewModule("RCSessionFrame", "AceTimer-3.0", "AceEvent-3.0")
 local ST = LibStub("ScrollingTable")
+--- @type RCLootCouncilLocale
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 
 local ml;

@@ -1,6 +1,7 @@
 --- File containing events registered by Core.lua
 -- Implementing this in a seperate file allows modifications before subscribing #Classic.
---- @type RCLootCouncil
+
+--- @class RCLootCouncil
 local addon = select(2, ...)
 
 addon.coreEvents = {

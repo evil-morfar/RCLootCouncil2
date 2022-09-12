@@ -18,11 +18,13 @@
 		n_t					T - Candidate received "non-tradeable" loot.
 		r_t					T - Candidate "rejected_trade" of loot.
 ]]
----@type RCLootCouncil
+
 --- @type RCLootCouncil
 local addon = select(2, ...)
+--- @class RCVotingFrame : AceTimer-3.0, AceEvent-3.0, AceBucket-3.0
 local RCVotingFrame = addon:NewModule("RCVotingFrame", "AceTimer-3.0", "AceEvent-3.0", "AceBucket-3.0")
 local LibDialog = LibStub("LibDialog-1.0")
+--- @type RCLootCouncilLocale
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 
 local Comms = addon.Require "Services.Comms"

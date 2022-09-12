@@ -6,7 +6,8 @@ local debug = false
 debug = false
 --@end-debug@
 
--- Default english translation
+--- Default english translation
+--- @class RCLootCouncilLocale
 local L = LibStub("AceLocale-3.0"):NewLocale("RCLootCouncil", "enUS", true, debug)
 if not L then return end
 

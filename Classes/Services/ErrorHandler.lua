@@ -3,7 +3,7 @@
 -- Create Date: 16/04/2020
 --- @type RCLootCouncil
 local addon = select(2, ...)
----@class Services.ErrorHandler
+---@class Services.ErrorHandler : AceEvent-3.0
 local ErrorHandler = addon.Init "Services.ErrorHandler"
 LibStub("AceEvent-3.0"):Embed(ErrorHandler)
 

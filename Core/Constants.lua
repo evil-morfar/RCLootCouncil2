@@ -1,6 +1,7 @@
 --- Constants.lua
 -- Objects which are intended to be set once (i.e. modules or addons can change them on init)
---- @type RCLootCouncil
+
+--- @class RCLootCouncil
 local addon = select(2, ...)
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 

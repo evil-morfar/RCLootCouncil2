@@ -1,11 +1,11 @@
 --- options.lua - option frame in BlizzardOptions for RCLootCouncil
 -- @author Potdisc
 -- Create Date : 5/24/2012 6:24:55 PM
----@type RCLootCouncil
---- @type RCLootCouncil
+
+--- @class RCLootCouncil
 local addon = select(2, ...)
+--- @type RCLootCouncilLocale
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
----@type Data.Player
 local Player = addon.Require "Data.Player"
 ------ Options ------
 local function DBGet(info)
@@ -227,6 +227,7 @@ end
 local selections = {}
 function addon:OptionsTable()
 	local db = self:Getdb()
+	---@type AceConfigOptionsTable
 	local options = {
 		name = "RCLootCouncil",
 		type = "group",

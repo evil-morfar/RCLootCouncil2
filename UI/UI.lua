@@ -5,9 +5,10 @@
 -- @author Potdisc
 -- Create Date : 31/7/2018 03:42:37
 
---- @type RCLootCouncil
+--- @class RCLootCouncil
 local addon = select(2, ...)
 local private = { elements = {}, num = {}, embeds = {}, }
+--- @class RCLootCouncilUI
 addon.UI = {CreateFrame = _G.CreateFrame, private = private, minimizeableFrames = {}} -- Embed CreateFrame into UI as it's used by all elements
 
 -- GLOBALS: _G
