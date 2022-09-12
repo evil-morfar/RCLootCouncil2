@@ -6,7 +6,7 @@ local donothing = function() end
 local frames = {} -- Stores globally created frames, and their internal properties.
 
 local FrameClass = {} -- A class for creating frames.
-FrameClass.methods = { "GetName", "SetAttribute", "SetScript", "GetScript", "RegisterEvent", "UnregisterEvent", "UnregisterAllEvents", "Show", "Hide", "IsShown", "ClearAllPoints", "SetParent","SetPoint","SetFrameStrata","SetAllPoints", "SetBackdrop","EnableMouse","SetBackdropColor", "SetBackdropBorderColor", "CreateFontString", "SetWidth","SetHeight","SetSize", "GetParent", "SetFrameLevel", "GetFrameLevel", "SetNormalTexture","GetNormalTexture","SetPushedTexture","GetPushedTexture","SetHighlightTexture","GetHighlightTexture", "CreateTexture", "SetFontString","SetNormalFontObject","SetHighlightFontObject","SetDisabledFontObject", "SetID","SetText", "SetToplevel" }
+FrameClass.methods = { "GetName", "SetAttribute", "SetScript", "GetScript", "RegisterEvent", "UnregisterEvent", "UnregisterAllEvents", "Show", "Hide", "IsShown", "ClearAllPoints", "SetParent","SetPoint","SetFrameStrata","SetAllPoints", "SetBackdrop","EnableMouse","SetBackdropColor", "SetBackdropBorderColor", "CreateFontString", "SetWidth","SetHeight","SetSize", "GetParent", "SetFrameLevel", "GetFrameLevel", "SetNormalTexture","GetNormalTexture","SetPushedTexture","GetPushedTexture","SetHighlightTexture","GetHighlightTexture", "CreateTexture", "SetFontString","SetNormalFontObject","SetHighlightFontObject","SetDisabledFontObject", "SetID","SetText", "SetToplevel", "SetFixedFrameStrata", "SetFixedFrameLevel" }
 function FrameClass:New()
    local frame = {}
    for i, method in ipairs(self.methods) do
@@ -115,6 +115,8 @@ function FrameClass:SetID (...)end
 function FrameClass:SetText (...)end
 function FrameClass:SetToplevel (...)end
 function FrameClass:SetAttribute (...)end
+function FrameClass:SetFixedFrameStrata (...)end
+function FrameClass:SetFixedFrameLevel (...)end
 function FrameClass:GetParent (...)
    return frames[self].parent
 end
