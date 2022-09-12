@@ -134,6 +134,7 @@ globals = {
 	"WorldFrame",
 	"WorldMapFrame",
    "BackdropTemplateMixin",
+   "SettingsPanel",
 
 	-- FrameXML globals
 	"ChatFontNormal",
@@ -166,6 +167,7 @@ globals = {
    "C_System",
    "C_Unit",
 	"C_Covenants",
+	"Settings",
 
 	-- API functions
 	"AbandonSkill",

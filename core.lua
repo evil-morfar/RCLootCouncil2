@@ -384,9 +384,7 @@ function RCLootCouncil:ChatCommand(msg)
 		self.Log:d("- clearLog - clear the debug log")
 
 	elseif input == 'config' or input == L["config"] or input == "c" or input == "opt" or input == "options" then
-		-- Call it twice, because reasons..
-		InterfaceOptionsFrame_OpenToCategory(self.optionsFrame)
-		InterfaceOptionsFrame_OpenToCategory(self.optionsFrame)
+		Settings.OpenToCategory(self.optionsFrame.name)
 		-- LibStub("AceConfigDialog-3.0"):Open("RCLootCouncil")
 
 	elseif input == 'debug' or input == 'd' then
@@ -403,8 +401,7 @@ function RCLootCouncil:ChatCommand(msg)
 		end
 
 	elseif input == 'council' or input == L["council"] then
-		InterfaceOptionsFrame_OpenToCategory(self.optionsFrame.ml)
-		InterfaceOptionsFrame_OpenToCategory(self.optionsFrame.ml)
+		Settings.OpenToCategory(self.optionsFrame.ml.name)
 		LibStub("AceConfigDialog-3.0"):SelectGroup("RCLootCouncil", "mlSettings", "councilTab")
 
 	elseif input == 'test' or input == L["test"] then
@@ -777,11 +774,7 @@ function RCLootCouncil:Test(num, fullTest, trinketTest)
 	self:ScheduleTimer(function() self:Send("group", "l", 1234) end, 5)
 end
 
-local interface_options_old_cancel = InterfaceOptionsFrameCancel:GetScript("OnClick")
 function RCLootCouncil:EnterCombat()
-	-- Hack to remove CompactRaidGroup taint
-	-- Make clicking cancel the same as clicking okay
-	InterfaceOptionsFrameCancel:SetScript("OnClick", function() InterfaceOptionsFrameOkay:Click() end)
 	self.inCombat = true
 	if not db.minimizeInCombat then return end
 	for _, frame in ipairs(self.UI.minimizeableFrames) do
@@ -793,8 +786,6 @@ function RCLootCouncil:EnterCombat()
 end
 
 function RCLootCouncil:LeaveCombat()
-	-- Revert
-	InterfaceOptionsFrameCancel:SetScript("OnClick", interface_options_old_cancel)
 	self.inCombat = false
 	if not db.minimizeInCombat then return end
 	for _, frame in ipairs(self.UI.minimizeableFrames) do
