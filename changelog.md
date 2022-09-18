@@ -1,5 +1,7 @@
 ## Changes
 
+Non-tradeable items that's ignored or blacklisted are no longer recorded in the loot history (#210).
+
 ## Bugfixes
 
 - *Fixed issue with Auto Award BoE list. (curse#500)*

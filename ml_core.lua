@@ -487,6 +487,8 @@ function RCLootCouncilML:HandleNonTradeable(link, owner, reason)
 	local responseID
 	if reason == "n_t" then
 		responseID = "PL"
+		-- We don't want to log it if the non-tradeable is on the ignore/black list
+		if self:IsItemIgnored(link) then return end
 	elseif reason == "r_t" then
 		responseID = "PL_REJECT"
 	else
