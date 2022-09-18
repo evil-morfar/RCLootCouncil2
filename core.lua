@@ -190,11 +190,7 @@ function RCLootCouncil:OnInitialize()
 		tinsert(self.defaults.profile.awardReasons, {color = {1, 1, 1, 1}, disenchant = false, log = true, sort = 400+i, text = "Reason "..i,})
 	end
 
-	-- register chat and comms
-	self:RegisterChatCommand("rc", "ChatCommand")
-	self:RegisterChatCommand("rclc", "ChatCommand")
-	self.customChatCmd = {} -- Modules that wants their cmds used with "/rc"
-	self:RegisterComms()
+	-- init db
 	self.db = LibStub("AceDB-3.0"):New("RCLootCouncilDB", self.defaults, true)
 	self.lootDB = LibStub("AceDB-3.0"):New("RCLootCouncilLootDB")
 	--[[ Format:
@@ -215,6 +211,16 @@ function RCLootCouncil:OnInitialize()
 	db = self.db.profile
 	historyDB = self.lootDB.factionrealm
 	debugLog = self.db.global.log
+
+	-- Slash setup
+	if db.useSlashRC then -- Allow presevation of readycheck shortcut.
+		self:RegisterChatCommand("rc", "ChatCommand")
+	end
+	self:RegisterChatCommand("rclc", "ChatCommand")
+	self.customChatCmd = {} -- Modules that wants their cmds used with "/rc"
+
+	-- Comms
+	self:RegisterComms()
 
 	-- Add logged in message in the log
 	self:DebugLog("Logged In")

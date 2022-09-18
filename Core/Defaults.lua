@@ -97,6 +97,7 @@ addon.defaults = {
       awardLater = false, -- Auto check award later
       requireNotes = false,
       outOfRaid = false,
+      useSlashRC = true, -- Register "/rc" slash command.
       saveBonusRolls = true,
 
       chatFrameName = "DEFAULT_CHAT_FRAME", -- The chat frame to use for :Print()s
