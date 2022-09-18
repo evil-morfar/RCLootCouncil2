@@ -970,7 +970,7 @@ end
 -- See :Award() for the different scenarios
 local function awardSuccess(session, winner, status, callback, ...)
 	addon:DebugLog("ML:awardSuccess", session, winner, status, callback, ...)
-	addon:SendMessage("RCMLAwardSuccess", session, winner, status)
+	addon:SendMessage("RCMLAwardSuccess", session, winner, status, RCLootCouncilML.lootTable[session].link)
 	if callback then
 		callback(true, session, winner, status, ...)
 	end
@@ -985,7 +985,7 @@ end
 -- See :Award() and :CanGiveLoot() for the different scenarios and to get their meanings
 local function awardFailed(session, winner, status, callback, ...)
 	addon:DebugLog("ML:awardFailed", session, winner, status, callback, ...)
-	addon:SendMessage("RCMLAwardFailed", session, winner, status)
+	addon:SendMessage("RCMLAwardFailed", session, winner, status, RCLootCouncilML.lootTable[session].link)
 	if callback then
 		callback(false, session, winner, status, ...)
 	end
