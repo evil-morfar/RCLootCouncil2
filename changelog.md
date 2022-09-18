@@ -1,4 +1,8 @@
+# v3.4.0
+
 ## Changes
+
+Updated for patch 9.2.7.
 
 Non-tradeable items that's ignored or blacklisted are no longer recorded in the loot history (#210).
 
