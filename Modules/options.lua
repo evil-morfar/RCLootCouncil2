@@ -292,6 +292,12 @@ function addon:OptionsTable()
 										desc = L["Check to append the realmname of a player from another realm"],
 										type = "toggle",
 									},
+									useSlashRC = {
+										order = 6,
+										name = L.opt_useSlashRC_name,
+										desc = L.opt_useSlashRC_desc,
+										type = "toggle",
+									},
 									header = {
 										order = 7,
 										type = "header",

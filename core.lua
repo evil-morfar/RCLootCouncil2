@@ -205,10 +205,7 @@ function RCLootCouncil:OnInitialize()
 		        {color = {1, 1, 1, 1}, disenchant = false, log = true, sort = 400 + i, text = "Reason " .. i})
 	end
 
-	-- register chat and comms
-	self:RegisterChatCommand("rc", "ChatCommand")
-	self:RegisterChatCommand("rclc", "ChatCommand")
-	self.customChatCmd = {} -- Modules that wants their cmds used with "/rc"
+	-- init db
 	self.db = LibStub("AceDB-3.0"):New("RCLootCouncilDB", self.defaults, true)
 	self:InitLogging()
 	self.lootDB = LibStub("AceDB-3.0"):New("RCLootCouncilLootDB")
@@ -229,6 +226,13 @@ function RCLootCouncil:OnInitialize()
 	-- add shortcuts
 	db = self.db.profile
 	debugLog = self.db.global.log
+
+	-- Slash setup
+	if db.useSlashRC then -- Allow presevation of readycheck shortcut.
+		self:RegisterChatCommand("rc", "ChatCommand")
+	end
+	self:RegisterChatCommand("rclc", "ChatCommand")
+	self.customChatCmd = {} -- Modules that wants their cmds used with "/rc"
 
 	-- Register Core Comms
 	Comms:Register(self.PREFIXES.MAIN)

@@ -2,6 +2,8 @@
 
 Non-tradeable items that's ignored or blacklisted are no longer recorded in the loot history (#210).
 
+Added option for restoring `/rc` to its ready check functionality (#215, Curse#495).
+
 ### Dev
 
 - *Added itemLink to `RCMLAwardSuccess` and `RCMLAwardFailed` AceEvents.*
