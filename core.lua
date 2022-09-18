@@ -14,8 +14,8 @@
 		RCLootTableAdditionsReceived - fires when additional lootTable data has been received and processed.
 	ml_core:
 		RCMLAddItem				- 	fires when an item is added to the loot table. args: item, loottable entry
-		RCMLAwardSuccess		- 	fires when an item is successfully awarded. args: session, winner, status.
-		RCMLAwardFailed		-	fires when an item is unsuccessfully awarded. args: session, winner, status.
+		RCMLAwardSuccess		- 	fires when an item is successfully awarded. args: session, winner, status, link.
+		RCMLAwardFailed		-	fires when an item is unsuccessfully awarded. args: session, winner, status, link.
 		RCMLBuildMLdb       -   fires just before the MLdb is built. arg: MLdb, the master looter db table.
 		RCMLLootHistorySend	- 	fires just before loot history is sent out. args: loot_history table (the table sent to users), all arguments from ML:TrackAndLogLoot()
 	votingFrame:
