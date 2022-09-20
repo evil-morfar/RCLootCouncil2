@@ -17,6 +17,7 @@ Added option for restoring `/rc` to its ready check functionality (#215, Curse#4
 - *Fixed issue with Auto Award BoE list. (Curse#500)*
 - *Fixed occasional missing data error. (Curse#503)*
 - *Fixed hyperlink formats in TSV exports - thanks to Yttrium-tYcLief (#214).*
+- *Added `id` to json export (Classic#43).*
 
 
 # v3.3.0
