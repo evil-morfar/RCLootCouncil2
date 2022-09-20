@@ -98,15 +98,16 @@ function RCLootCouncilML:GetItemInfo(item)
 end
 
 --- Add an item to the lootTable
--- You CAN sort or delete entries in the lootTable while an item is being added.
--- @paramsig item[, bagged, slotIndex, index]
--- @param item Any: ItemID|itemString|itemLink
--- @param bagged: The Item as stored in ItemStorage. Item is bagged if not nil.
--- @param slotIndex Index of the lootSlot, or nil if none - either this or 'bagged' needs to be supplied
--- @param owner The owner of the item (if any). Defaults to 'BossName'.
--- @param entry Used to set data in a specific lootTable entry.
-function RCLootCouncilML:AddItem(item, bagged, slotIndex, owner, entry)
-	self.Log:d("AddItem", item, bagged, slotIndex, owner, entry)
+--- You CAN sort or delete entries in the lootTable while an item is being added.
+--- @paramsig item[, bagged, slotIndex, index]
+--- @param item ItemID|itemString|itemLink
+--- @param bagged Item? The Item as stored in ItemStorage. Item is bagged if not nil.
+--- @param slotIndex integer? Index of the lootSlot, or nil if none - either this or 'bagged' needs to be supplied
+--- @param owner? string The owner of the item (if any). Defaults to 'BossName'.
+--- @param entry? table Used to set data in a specific lootTable entry.
+--- @param boss? string Set to override boss name. Defaults to `RCLootCouncil.bossName`.
+function RCLootCouncilML:AddItem(item, bagged, slotIndex, owner, entry, boss)
+	self.Log:d("AddItem", item, bagged, slotIndex, owner, entry, boss)
 	if type(item) == "string" and item:find("|Hcurrency") then return end -- Ignore "Currency" item links
 
 	if not entry then
@@ -123,7 +124,7 @@ function RCLootCouncilML:AddItem(item, bagged, slotIndex, owner, entry)
 	entry.lootSlot = slotIndex
 	entry.awarded = false
 	entry.owner = owner or addon.bossName
-	entry.boss = addon.bossName
+	entry.boss = boss or addon.bossName
 	entry.isSent = false
 	entry.typeCode = addon:GetTypeCodeForItem(item)
 
@@ -147,7 +148,7 @@ function RCLootCouncilML:AddItem(item, bagged, slotIndex, owner, entry)
 			addon:GetActiveModule("sessionframe"):Show(self.lootTable)
 			return
 		end
-		self:ScheduleTimer("Timer", 0.05, "AddItem", item, bagged, slotIndex, owner, entry)
+		self:ScheduleTimer("Timer", 0.05, "AddItem", item, bagged, slotIndex, owner, entry, boss)
 		self.Log:d("Started timer:", "AddItem", "for", item)
 	else
 		entry.attempts = nil
@@ -268,7 +269,7 @@ function RCLootCouncilML:SessionFromBags()
 	local Items = addon.ItemStorage:GetAllItemsOfType("award_later")
 	if #Items == 0 then return addon:Print(L["No items to award later registered"]) end
 	for _, v in ipairs(Items) do
-		self:AddItem(v.link, v, nil, addon.playerName)
+		self:AddItem(v.link, v, nil, addon.playerName, nil, v.args.boss)
 	end
 	if db.autoStart then
 		self:StartSession()
