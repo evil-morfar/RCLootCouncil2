@@ -6,7 +6,8 @@ local debug = false
 debug = false
 --@end-debug@
 
--- Default english translation
+--- Default english translation
+--- @class RCLootCouncilLocale
 local L = LibStub("AceLocale-3.0"):NewLocale("RCLootCouncil", "enUS", true, debug)
 if not L then return end
 
@@ -535,3 +536,5 @@ L["opt_skipSessionFrame_desc"] = "Skips the Session Frame. NOTE: This causes the
 L["non_tradeable_reason_not_tradeable"] = "Not Tradeable"
 L["non_tradeable_reason_rejected_trade"] = "Wanted to keep item"
 L["non_tradeable_reason_nil"] = "Unknown"
+L.opt_useSlashRC_name = "Use /rc"
+L.opt_useSlashRC_desc = "Disable this if you want to restore '/rc' to ready check. RCLootCouncil commands are still available with '/rclc'. A '/reload' is required for this to take effect."

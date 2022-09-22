@@ -9,18 +9,17 @@
 		fr 	P - Full version checkc request.
 		f 		T - Full version check reply. Only when open.
 ]]
---- @type RCLootCouncil
+
 --- @type RCLootCouncil
 local addon = select(2, ...)
+--- @class VersionCheck : AceTimer-3.0, AceHook-3.0, AceEvent-3.0, AceBucket-3.0
 local RCVersionCheck = addon:NewModule("VersionCheck", "AceTimer-3.0", "AceHook-3.0", "AceEvent-3.0", "AceBucket-3.0")
 local ST = LibStub("ScrollingTable")
+--- @type RCLootCouncilLocale
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 
---- @type Services.Comms
 local Comms = addon.Require "Services.Comms"
---- @type Data.Player
 local Player = addon.Require "Data.Player"
---- @type Utils.TempTable
 local TT = addon.Require "Utils.TempTable"
 
 local GuildRankSort

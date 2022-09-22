@@ -2,8 +2,10 @@
 -- Creates RCLootCouncil.Utils namespace for utility functions
 -- @Author Potdisc
 -- Create Date : 27/7/2018 20:49:10
+
 ---@class RCLootCouncil
-local _,addon = ...
+local addon = select(2, ...)
+--- @type RCLootCouncilLocale
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 local Utils = {}
 addon.Utils = Utils

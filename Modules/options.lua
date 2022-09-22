@@ -1,11 +1,11 @@
 --- options.lua - option frame in BlizzardOptions for RCLootCouncil
 -- @author Potdisc
 -- Create Date : 5/24/2012 6:24:55 PM
----@type RCLootCouncil
---- @type RCLootCouncil
+
+--- @class RCLootCouncil
 local addon = select(2, ...)
+--- @type RCLootCouncilLocale
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
----@type Data.Player
 local Player = addon.Require "Data.Player"
 ------ Options ------
 local function DBGet(info)
@@ -227,6 +227,7 @@ end
 local selections = {}
 function addon:OptionsTable()
 	local db = self:Getdb()
+	---@type AceConfigOptionsTable
 	local options = {
 		name = "RCLootCouncil",
 		type = "group",
@@ -289,6 +290,12 @@ function addon:OptionsTable()
 										order = 5,
 										name = L["Append realm names"],
 										desc = L["Check to append the realmname of a player from another realm"],
+										type = "toggle",
+									},
+									useSlashRC = {
+										order = 6,
+										name = L.opt_useSlashRC_name,
+										desc = L.opt_useSlashRC_desc,
 										type = "toggle",
 									},
 									header = {
@@ -1278,7 +1285,7 @@ function addon:OptionsTable()
 										name = L["Auto Award to"],
 										type = "group",
 										inline = true,
-										hidden = function() return not db.autoAwardBoE or #db.autoAwardTo == 0 end,
+										hidden = function() return not db.autoAwardBoE or #db.autoAwardBoETo == 0 end,
 										args = createAutoAwardPrioList(db.autoAwardBoETo)
 									},
 								}

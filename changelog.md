@@ -1,3 +1,26 @@
+# v3.4.0
+
+## Changes
+
+Updated for patch 9.2.7.
+
+Non-tradeable items that's ignored or blacklisted are no longer recorded in the loot history (#210).
+
+Added option for restoring `/rc` to its ready check functionality (#215, Curse#495).
+
+### Dev
+
+- *Added itemLink to `RCMLAwardSuccess` and `RCMLAwardFailed` AceEvents.*
+
+## Bugfixes
+
+- *Fixed issue with Auto Award BoE list. (Curse#500)*
+- *Fixed occasional missing data error. (Curse#503)*
+- *Fixed hyperlink formats in TSV exports - thanks to Yttrium-tYcLief (#214).*
+- *Added `id` to json export (Classic#43).*
+- *Award Later items now remembers which boss they where dropped by (Classic#43).*
+
+
 # v3.3.0
 
 ## Changes 

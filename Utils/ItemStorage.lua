@@ -3,13 +3,15 @@
 -- @author Potdisc
 -- Create Date : 29/5/2018 18:28:51
 
---- @type RCLootCouncil
+--- @class RCLootCouncil
 local addon = select(2, ...)
 local db = addon:Getdb()
+--- @class ItemStorage
 local Storage = {}
 local TT = addon.Require "Utils.TempTable"
 addon.ItemStorage = Storage
 
+--- @type Item[]
 local StoredItems = {}
 local private = {
    ITEM_WATCH_DELAY = 1
@@ -35,6 +37,7 @@ Storage.AcceptedTypes = {
 }
 
 -- Item Class:
+--- @class Item
 local item_class = {
    type = "other", -- Default to unspecified
    time_remaining = 0, -- NOTE For now I rely on this not being updated for timeout checks. It should be precise enough, but needs testing
@@ -181,7 +184,7 @@ end
 
 --- Returns all stored Items of a specific type
 -- @param type The item type, @see Storage.AcceptedTypes. Defaults to "other".
--- @return An Item table
+--- @return Item[] # An Item table
 function Storage:GetAllItemsOfType(type)
    type = type or "other"
    return tFilter(StoredItems,

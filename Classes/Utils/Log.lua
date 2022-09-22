@@ -2,7 +2,8 @@
 -- Creates `RCLootCouncil.LogClass` for registering new Logs, and adds a default Log object in `RCLootCouncil.Log`.
 -- @author Potdisc
 -- Create Date : 30/01/2019 18:56:31
---- @type RCLootCouncil
+
+--- @class RCLootCouncil
 local addon = select(2, ...)
 --- @class Utils.Log
 local Log = addon.Init("Utils.Log")
@@ -50,6 +51,7 @@ LOG_METHODS.W = LOG_METHODS.w
 LOG_METHODS.P = LOG_METHODS.p
 LOG_METHODS.F = LOG_METHODS.f
 
+
 local LOG_MT = {
    __index = LOG_METHODS,
    __newindex = function() error("Log cannot be modified", 2) end,
@@ -64,10 +66,10 @@ local LOG_MT = {
 -----------------------------------------------------------
 
 --- Create a new Log class
---- @param prefix An optional prefix to all messages
---- @return Log
+--- @param prefix string An optional prefix to all messages
 function Log:New(prefix)
-   --- @class Log
+   ---@class Log: LOG_METHODS
+   ---@overload fun(self:Log, ...)
    local object = {
       prefix = prefix and "["..prefix.."]" or ""
    }

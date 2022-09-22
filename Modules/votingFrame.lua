@@ -18,11 +18,13 @@
 		n_t					T - Candidate received "non-tradeable" loot.
 		r_t					T - Candidate "rejected_trade" of loot.
 ]]
----@type RCLootCouncil
+
 --- @type RCLootCouncil
 local addon = select(2, ...)
+--- @class RCVotingFrame : AceTimer-3.0, AceEvent-3.0, AceBucket-3.0
 local RCVotingFrame = addon:NewModule("RCVotingFrame", "AceTimer-3.0", "AceEvent-3.0", "AceBucket-3.0")
 local LibDialog = LibStub("LibDialog-1.0")
+--- @type RCLootCouncilLocale
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 
 local Comms = addon.Require "Services.Comms"
@@ -1255,9 +1257,9 @@ local doOnceChecker = false
 
 function RCVotingFrame.SetCellClass(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
 	local name = data[realrow].name
-	if not (lootTable[session] and lootTable[session].candidates[name] and lootTable[session].candidates[name].specID) then
+	if not (lootTable[session] and lootTable[session].candidates[name] and lootTable[session].candidates[name].class) then
 		addon.Log:E("Missing data for 'SetCellClass'", session, name)
-		ErrorHandler:ThrowSilentError(format("SetCellClass: Session: %d Name: %s SpecID: %s", session, name, tostring(lootTable[session].candidates[name] and lootTable[session].candidates[name].specID)))
+		ErrorHandler:ThrowSilentError(format("SetCellClass: Session: %d Name: %s Class: %s", session, name, tostring(lootTable[session].candidates[name] and lootTable[session].candidates[name].class)))
 		if not doOnceChecker then
 			doOnceChecker = true
 			addon.Log:E("lootTable[1].candidates:")
@@ -1270,8 +1272,8 @@ function RCVotingFrame.SetCellClass(rowFrame, frame, data, cols, row, realrow, c
 	local specID = lootTable[session].candidates[name].specID
 	local specIcon = specID and select(4, GetSpecializationInfoByID(specID))
 	if specIcon and db.showSpecIcon then
-	frame:SetNormalTexture(specIcon);
-	frame:GetNormalTexture():SetTexCoord(0, 1, 0, 1);
+		frame:SetNormalTexture(specIcon);
+		frame:GetNormalTexture():SetTexCoord(0, 1, 0, 1);
 	else
 		addon.SetCellClassIcon(rowFrame, frame, data, cols, row, realrow, column, fShow, table, lootTable[session].candidates[name].class)
 	end

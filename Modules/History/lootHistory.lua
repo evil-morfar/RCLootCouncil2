@@ -7,11 +7,12 @@
 		history				P - history received from ML on awards.
 		delete_history		P - ML tells us to delete specific history entry.
 ]]
----@type RCLootCouncil
+
 --- @type RCLootCouncil
 local addon = select(2, ...)
----@class LootHistory
+---@class RCLootHistory : AceSerializer-3.0
 local LootHistory = addon:NewModule("RCLootHistory", "AceSerializer-3.0")
+--- @type RCLootCouncilLocale
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 local AG = LibStub("AceGUI-3.0")
 local Comms = addon.Require "Services.Comms"
@@ -1612,7 +1613,7 @@ do
 				tinsert(export, tostring(player))
 				tinsert(export, tostring(self:GetLocalizedDate(d.date)))
 				tinsert(export, tostring(d.time))
-				tinsert(export, "=HYPERLINK(\""..self:GetWowheadLinkFromItemLink(d.lootWon).."\";\""..tostring(d.lootWon).."\")")
+				tinsert(export, "=HYPERLINK(\""..self:GetWowheadLinkFromItemLink(d.lootWon).."\",\""..tostring(d.lootWon).."\")")
 				tinsert(export, addon.Utils:GetItemIDFromLink(d.lootWon))
 				tinsert(export, addon.Utils:GetItemStringFromLink(d.lootWon))
 				tinsert(export, tostring(d.response))
@@ -1620,8 +1621,8 @@ do
 				tinsert(export, tostring(d.class))
 				tinsert(export, tostring(d.instance))
 				tinsert(export, tostring(d.boss))
-				tinsert(export, d.itemReplaced1 and "=HYPERLINK(\""..self:GetWowheadLinkFromItemLink(tostring(d.itemReplaced1)).."\";\""..tostring(d.itemReplaced1).."\")" or "")
-				tinsert(export, d.itemReplaced2 and "=HYPERLINK(\""..self:GetWowheadLinkFromItemLink(tostring(d.itemReplaced2)).."\";\""..tostring(d.itemReplaced2).."\")" or "")
+				tinsert(export, d.itemReplaced1 and "=HYPERLINK(\""..self:GetWowheadLinkFromItemLink(tostring(d.itemReplaced1)).."\",\""..tostring(d.itemReplaced1).."\")" or "")
+				tinsert(export, d.itemReplaced2 and "=HYPERLINK(\""..self:GetWowheadLinkFromItemLink(tostring(d.itemReplaced2)).."\",\""..tostring(d.itemReplaced2).."\")" or "")
 				tinsert(export, tostring(d.responseID))
 				tinsert(export, tostring(d.isAwardReason or false))
 				tinsert(export, rollType)
@@ -1659,6 +1660,7 @@ do
 				tinsert(export, string.format("\"%s\":\"%s\"", "player", tostring(player)))
 				tinsert(export, string.format("\"%s\":\"%s\"", "date", tostring(self:GetLocalizedDate(d.date))))
 				tinsert(export, string.format("\"%s\":\"%s\"", "time", tostring(d.time)))
+				tinsert(export, string.format("\"%s\":\"%s\"", "id", tostring(d.id)))
 				tinsert(export, string.format("\"%s\":%s", "itemID", addon.Utils:GetItemIDFromLink(d.lootWon)))
 				tinsert(export, string.format("\"%s\":\"%s\"", "itemString", addon.Utils:GetItemStringFromLink(d.lootWon)))
 				tinsert(export, string.format("\"%s\":\"%s\"", "response", QuotesEscape(d.response)))

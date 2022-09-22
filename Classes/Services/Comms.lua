@@ -16,7 +16,8 @@ local ErrorHandler = addon.Require "Services.ErrorHandler"
 local ld = LibStub("LibDeflate")
 
 local private = {
-   AceComm = {},
+   ---@type AceComm-3.0
+   AceComm = {} ,
    subjects = {},
    compresslevel = {level = 3},
    registered = {}

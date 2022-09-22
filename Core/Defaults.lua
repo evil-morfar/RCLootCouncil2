@@ -1,5 +1,6 @@
---- @type RCLootCouncil
+--- @class RCLootCouncil
 local addon = select(2, ...)
+--- @type RCLootCouncilLocale
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 
 -- Default responses
@@ -95,6 +96,7 @@ addon.defaults = {
       awardLater = false, -- Auto check award later
       requireNotes = false,
       outOfRaid = false,
+      useSlashRC = true, -- Register "/rc" slash command.
 
       chatFrameName = "DEFAULT_CHAT_FRAME", -- The chat frame to use for :Print()s
 
