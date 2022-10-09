@@ -280,6 +280,11 @@ function RCLootCouncil:OnEnable()
 	for event, method in pairs(self.coreEvents) do self:RegisterEvent(event, method) end
 	self:RegisterBucketEvent("GROUP_ROSTER_UPDATE", 5, "UpdateCandidatesInGroup")
 
+	if IsInGuild() then
+        self.guildRank = select(2, GetGuildInfo("player"))
+        self:ScheduleTimer("SendGuildVerTest", 2) -- send out a version check after a delay
+	end
+
 	-- For some reasons all frames are blank until ActivateSkin() is called, even though the values used
 	-- in the :CreateFrame() all :Prints as expected :o
 	self:ActivateSkin(db.currentSkin)
@@ -311,10 +316,11 @@ function RCLootCouncil:OnEnable()
 end
 
 function RCLootCouncil:OnDisable()
-	self.Log:Info("OnDisable()")
+	self.Log("OnDisable()")
 	self:UnregisterChatCommand("rc")
 	self:UnregisterChatCommand("rclc")
 	self:UnregisterAllEvents()
+	Comms:OnDisable()
 end
 
 function RCLootCouncil:ConfigTableChanged(val)

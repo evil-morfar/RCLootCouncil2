@@ -18,6 +18,7 @@ local ld = LibStub("LibDeflate")
 local private = {
    ---@type AceComm-3.0
    AceComm = {} ,
+   --- @type table<string, rx.Subject>
    subjects = {},
    compresslevel = {level = 3},
    registered = {}
@@ -110,7 +111,21 @@ function Comms:Send (args)
    private:SendComm(args.prefix or addon.PREFIXES.MAIN, args.target or "group", args.prio, args.callback, args.callbackarg, args.command, unpack(args.data))
 end
 
+--- Ends all subscriptions and kills all registered comms.
+function Comms:OnDisable()
+   -- Complete all Subjects
+   for _, subject in pairs(private.subjects) do
+      subject:onCompleted()
+   end
+   -- Clean registries
+   wipe(private.subjects)
+   wipe(private.registered)
+   -- Clear AceComm
+   private.AceComm:UnregisterAllComm()
+end
+
 function private:SendComm(prefix, target, prio, callback, callbackarg, command, ...)
+   if addon.IsEnabled and not addon:IsEnabled() then return end
    local data = TempTable:Acquire(...)
    local serialized = self:Serialize(command, data)
    local compressed = ld:CompressDeflate(serialized, self.compresslevel)

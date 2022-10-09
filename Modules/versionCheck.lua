@@ -50,11 +50,6 @@ function RCVersionCheck:OnInitialize()
             sortnext = 2
         }
     }
-
-    if IsInGuild() then
-        addon.guildRank = select(2, GetGuildInfo("player"))
-        addon:ScheduleTimer("SendGuildVerTest", 2) -- send out a version check after a delay
-	end
 	self:InitCoreVersionComms()
     self.subscriptions = {}
 end
@@ -284,7 +279,7 @@ function RCVersionCheck:InitCoreVersionComms()
         "v",
         function(data, sender, _, dist)
             if addon:UnitIsUnit(sender, "player") then
-                return
+                return print("Got message", unpack(data))
             end -- Don't repond to our own
             local otherVersion, tVersion = unpack(data)
             self:LogVersion(addon:UnitName(sender), otherVersion, tVersion)

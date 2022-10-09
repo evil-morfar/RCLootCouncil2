@@ -89,7 +89,9 @@ end
 function TradeUI:Hide()
    addon.Log:d("TradeUI:Hide()")
    self:CancelTimer(update_targets_timer)
-   self.frame:Hide()
+   if self.frame then
+      self.frame:Hide()
+   end
 end
 
 function TradeUI:Update(forceShow)
