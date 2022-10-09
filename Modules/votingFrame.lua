@@ -66,6 +66,7 @@ function RCVotingFrame:OnEnable()
 	self:RegisterComm("RCLootCouncil")
 	self:RegisterBucketEvent({"UNIT_PHASE", "ZONE_CHANGED_NEW_AREA"}, 1, "Update") -- Update "Out of instance" text when any raid members change zone
 	self:RegisterMessage("RCLootStatusReceived", "UpdateLootStatus")
+	self:RegisterMessage("RCLootTableAdditionsReceived", "OnLootTableAdditionsReceived")
 	db = addon:Getdb()
 	--active = true
 	moreInfo = db.modules["RCVotingFrame"].moreInfo
@@ -336,26 +337,28 @@ function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
 				self:Update()
 				self:UpdatePeopleToVote()
 
-			elseif command == "lt_add" and addon:UnitIsUnit(sender, addon.masterLooter) then
-				local oldLenght = #lootTable
-				for k,v in pairs(unpack(data)) do
-					lootTable[k] = v
-				end
-				-- Add the sessions in order to avoid messing with SessionButtons
-				for i = oldLenght + 1, #lootTable do
-					self:SetupSession(i, lootTable[i])
-					if addon.isMasterLooter and db.autoAddRolls then
-						self:DoRandomRolls(i)
-					end
-				end
-				self:SwitchSession(session)
-
 			elseif command == "not_tradeable" or command == "rejected_trade" then
 				self:AddNonTradeable(unpack(data), addon:UnitName(sender), command)
 
 			end
 		end
 	end
+end
+
+function RCVotingFrame:OnLootTableAdditionsReceived (_, lt)
+	addon:Print("lt_additions")
+	local oldLenght = #lootTable
+	for k,v in pairs(lt) do
+		lootTable[k] = v
+	end
+	-- Add the sessions in order to avoid messing with SessionButtons
+	for i = oldLenght + 1, #lootTable do
+		self:SetupSession(i, lootTable[i])
+		if addon.isMasterLooter and db.autoAddRolls then
+			self:DoRandomRolls(i)
+		end
+	end
+	self:SwitchSession(session)
 end
 
 -- Getter/Setter for candidate data

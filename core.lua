@@ -20,6 +20,7 @@
 		RCConfigTableChanged	-	fires when the user changes a settings. args: [val]; a few settings supplies their name.
 		RCUpdateDB				-	fires when the user receives sync data from another player.
 		RCLootStatusReceived - 	fires when new loot status is received, i.e. when it's safe to call :GetLootStatusData.
+		RCLootTableAdditionsReceived - fires when additional lootTable data has been received and processed.
 	ml_core:
 		RCMLAddItem				- 	fires when an item is added to the loot table. args: item, loottable entry
 		RCMLAwardSuccess		- 	fires when an item is successfully awarded. args: session, winner, status, link, responseText.
@@ -652,21 +653,7 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 				end
 
 			elseif command == "lt_add" and self:UnitIsUnit(sender, self.masterLooter) then
-				-- We can skip most of the normal lootTable checks since a session should running
-				local oldLenght = #lootTable
-				for k,v in pairs(unpack(data)) do
-					lootTable[k] = v
-				end
-				-- REVIEW This runs over the entire lootTable again, but will probably need changing anyway in v3.0
-				self:PrepareLootTable(lootTable)
-				self:DoAutoPasses(lootTable, oldLenght)
-				self:SendLootAck(lootTable, oldLenght)
-				for k,v in ipairs(lootTable) do
-					if k > oldLenght then
-						self:GetActiveModule("lootframe"):AddSingleItem(v)
-					end
-				end
-				-- VotingFrame handles this by itself.
+				self:OnLootTableAdditionsReceived(unpack(data))
 
 			elseif command == "candidates" and self:UnitIsUnit(sender, self.masterLooter) then
 				self.candidates = unpack(data)
@@ -1471,7 +1458,7 @@ end
 -- Should only be called once when the loot table is received (RCLootCouncil:OnCommReceived).
 -- v2.15 The current implementation ensures this only gets called when all items are cached - this function relies on that!
 function RCLootCouncil:PrepareLootTable(lootTable)
-	for ses, v in ipairs(lootTable) do
+	for ses, v in pairs(lootTable) do
 		local _, _, rarity, ilvl, _, _, subType, _, equipLoc, texture,
 		_, typeID, subTypeID, bindType, _, _, _ = GetItemInfo(v.link)
 		local itemID = GetItemInfoInstant(v.link)
@@ -1484,6 +1471,7 @@ function RCLootCouncil:PrepareLootTable(lootTable)
 		v.typeID 	= typeID
 		v.subTypeID = subTypeID
 		v.session 	= v.session or ses
+		v.token = itemID and RCTokenTable[itemID]
 
 		if not v.classes then -- We didn't receive "classes", because ML is using an old version. Generate it from token data.
 			if RCTokenClasses and RCTokenClasses[itemID] then
@@ -1507,7 +1495,7 @@ end
 function RCLootCouncil:SendLootAck(table, skip)
 	local toSend = {gear1 = {}, gear2 = {}, diff = {}, response = {}}
 	local hasData = false
-	for k, v in ipairs(table) do
+	for k, v in pairs(table) do
 		local session = v.session or k
 		if session > (skip or 0) then
 			hasData = true
@@ -1527,7 +1515,7 @@ end
 -- Sets lootTable[session].autopass = true if an autopass occurs, and informs the user of the change
 -- @param skip Will only auto pass sessions > skip or 0
 function RCLootCouncil:DoAutoPasses(table, skip)
-	for k,v in ipairs(table) do
+	for k,v in pairs(table) do
 		local session = v.session or k
 		if session > (skip or 0) then
 			if db.autoPass and not v.noAutopass then
@@ -3118,3 +3106,24 @@ end
 	-- Fix for response object in response color:
 	/run local c=0;for _,r in pairs(RCLootCouncil.db.profile.responses.default)do if r.color then r.color.color = nil;r.color.text = nil;c=c+1;end;end;print("Fixed",c,"buttons")
 ]]
+
+local function CheckCachedLootTable(lootTable)
+	local cached = true
+	for _, v in pairs(lootTable) do if not GetItemInfo(v.link) then cached = false end end
+	return cached
+end
+
+function RCLootCouncil:OnLootTableAdditionsReceived(lt)
+	-- Ensure items are cached
+	if not CheckCachedLootTable(lt) then return self:ScheduleTimer("OnLootTableAdditionsReceived", 0, lt) end
+	-- Setup the additions
+	self:PrepareLootTable(lt)
+	self:DoAutoPasses(lt)
+	self:SendLootAck(lt)
+	-- Inject into lootTable
+	local oldLenght = #lootTable
+	for k, v in pairs(lt) do lootTable[k] = v end
+
+	for i = oldLenght + 1, #lootTable do self:GetActiveModule("lootframe"):AddSingleItem(lootTable[i]) end
+	self:SendMessage("RCLootTableAdditionsReceived", lt)
+end
