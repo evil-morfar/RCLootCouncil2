@@ -623,7 +623,6 @@ function RCLootCouncil:SendCommandModified (prefix, serializedMsg, channel, targ
 	self:SendCommMessage(prefix, serializedMsg, channel, target, prio, ...)
 end
 
-local v3VersionWarningCount = 0
 --- Receives RCLootCouncil commands.
 -- Params are delivered by AceComm-3.0, but we need to extract our data created with the
 -- RCLootCouncil:SendCommand function.
@@ -828,12 +827,6 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 				return
 			end
 			self:Debug("Error in deserializing comm:", command, data);
-		end
-
-	elseif prefix == "RCLCv" then
-		-- v3.0 has been released!
-		if v3VersionWarningCount <= 5 then
-			self:Print("RCLootCouncil v3.0 has been released. This version is no longer compatible, please upgrade!")
 		end
 	end
 end
