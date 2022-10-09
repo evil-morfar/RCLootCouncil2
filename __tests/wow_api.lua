@@ -206,9 +206,11 @@ MSA_DropDownList1Button1NormalText = {
 -- Try to recreate that here.
 local orig_xpcall = xpcall
 function xpcall (f, err, ...)
+   -- Need to handle 5.1 case
+   if select("#", ...) == 0 then return orig_xpcall(f, err) end
    local status, code = pcall(f, ...)
    if not status then
-      return err(code)
+      return status, err(code)
    else
       return status, code
    end

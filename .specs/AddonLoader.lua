@@ -13,6 +13,10 @@ local ADDON_OBJECT = select(3, ...) or {}
 
 local Loader = {}
 
+if os.getenv("LOCAL_LUA_DEBUGGER_VSCODE") == "1" then
+  require("lldebugger").start()
+end
+
 function Loader.LoadToc (file)
    local lines = Loader.lines_from(file)
    local files = {}

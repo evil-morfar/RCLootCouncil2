@@ -52,7 +52,8 @@
             "command": "busted",
             "args": [
                 "--lpath=${workspaceFolder}\\__tests\\?.lua",
-                "${file}"
+                "-v",
+                "${file}",
             ],
             "group": "test"
         },
