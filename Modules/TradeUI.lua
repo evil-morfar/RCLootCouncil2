@@ -273,8 +273,8 @@ function TradeUI:OnEvent_UI_INFO_MESSAGE (event, ...)
                -- Player trades the item to someone else than the winner
                addon:SendCommand("group", "trade_WrongWinner", link, self.tradeTarget, addon.playerName, Item.args.recipient)
             end
+            addon.ItemStorage:RemoveItem(Item)
          end
-         addon.ItemStorage:RemoveItem(link)
       end
       self:Update()
    end
