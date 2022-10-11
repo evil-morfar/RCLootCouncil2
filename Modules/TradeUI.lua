@@ -286,8 +286,8 @@ function TradeUI:OnEvent_UI_INFO_MESSAGE (event, ...)
                addon.Log:D("Target:", UnitName("target"))
                addon.Log:D("NPC:", UnitName("NPC"))
             end
+            addon.ItemStorage:RemoveItem(Item)
          end
-         addon.ItemStorage:RemoveItem(link)
       end
       self:Update()
    end
