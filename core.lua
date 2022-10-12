@@ -587,6 +587,17 @@ end
 
 function RCLootCouncil:ChatCmdAdd(args)
 	if not args[1] or args[1] == "" then return end -- We need at least 1 arg
+
+	-- Add all items in bags with trade timers
+	if args[1] == "bags" or args[1] == "all" then
+		local items = self:GetAllItemsInBagsWithTradeTimer()
+		self:Print(format(L["chat_cmd_add_found_items"], #items))
+		local player = self.player:GetName() -- Save the extra calls
+		for _, v in ipairs(items) do self:GetActiveModule("masterlooter"):AddUserItem(v, player) end
+		return
+	end
+
+	-- Add linked items
 	local owner
 	-- See if one of the args is a owner
 	if not args[1]:find("|") and type(tonumber(args[1])) ~= "number" then
@@ -1295,6 +1306,21 @@ function RCLootCouncil:GetContainerItemTradeTimeRemaining(container, slot)
 	else
 		return math.huge
 	end
+end
+
+--- Finds all items in players bags that has a trade timer.
+---@return itemLink[] items
+function RCLootCouncil:GetAllItemsInBagsWithTradeTimer()
+	local items = {}
+	for container=0, _G.NUM_BAG_SLOTS do
+         for slot=1, GetContainerNumSlots(container) or 0 do
+			local time =self:GetContainerItemTradeTimeRemaining(container, slot)
+			if  time > 0 and time < math.huge then
+				tinsert(items, GetContainerItemLink(container, slot))
+			end
+		 end
+	end
+	return items
 end
 
 function RCLootCouncil:IsItemBoE(item)
