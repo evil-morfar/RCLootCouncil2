@@ -8,6 +8,10 @@ local objectMethods = {
 	Show = function(self) self.isShown = true end,
 	Hide = function(self) self.isShown = false end,
 	IsShown = function(self) return self.isShown end,
+	SetHeight = function(self, val) self.height = val end,
+	GetHeight = function(self) return self.height end,
+	SetWidth = function(self, val) self.width = val end,
+	GetWidth = function(self) return self.width end,
 
 }
 
@@ -70,7 +74,7 @@ for _, v in ipairs(noopMethods) do if not objectMethods[v] then objectMethods[v]
 ScriptRegion = {
 	New = function(name)
 		local parent = _G.FrameScriptObject.New(name)
-		local object = {scripts = {}, isShown = false, timer = GetTime()}
+		local object = {scripts = {}, isShown = false, timer = GetTime(), height = 0, width = 0, scale = 1}
 		return setmetatable(object, {
 			__index = function(self, v)
 				local k = objectMethods[v] or parent[v]

@@ -9,6 +9,12 @@ Added `itemName` to JSON export (CurseClassic#137).
 It's now possible to add all items from your bags with a trade timer on them to a session at once.
 Simply use `/rc add bags` or `/rc add all` to do so. You must obviously still be ML/group leader to do so, and have the addon active.
 
+### TradeUI
+
+Updated logic being ItemStorage when trading items. It should now properly account for whom you're trading items to, which resolves issues with the "wrong" item being removed after trading with someone.
+
+Last I checked there were still some issues with detecting the trade target (not sure I can do anything about it). The above will only work if trade target is detected properly, i.e. if the addon can add items to the trade window automatically.
+
 ### Dev
 
 ## Bugfixes

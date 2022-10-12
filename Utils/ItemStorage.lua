@@ -123,24 +123,20 @@ function Storage:New(item, typex, ...)
 end
 
 --- Remove an item from storage
--- @param item Either an itemlink (@see GetItemInfo) or the Item object returned by :New
--- @return True if successful
-function Storage:RemoveItem(item)
-   addon.Log:D("Storage:RemoveItem", item)
-   local item_link
-   if type(item) == "table" then -- Maybe our Item object
-      if not (item.type and item.link) then -- Nope
+--- @param itemOrItemLink Item|ItemLink Either an itemlink (@see GetItemInfo) or the Item object returned by :New
+--- @return boolean #True if successful
+function Storage:RemoveItem(itemOrItemLink)
+   addon.Log:D("Storage:RemoveItem", itemOrItemLink)
+   if type(itemOrItemLink) == "table" then -- Maybe our Item object
+      if not (itemOrItemLink.type and itemOrItemLink.link) then -- Nope
          return error("Item `item` is not the correct class", 2)
       end
-      item_link = item.link
-   elseif type(item) == "string" then -- item link (hopefully)
-      item_link = item
-   else
+   elseif type(itemOrItemLink) ~= "string" then -- string == item link (hopefully)
       return error("Unknown item")
    end
    -- Find and delete the item
-   local key1 = private:FindItemInTable(db.itemStorage, item_link)
-   local key2 = private:FindItemInTable(StoredItems, item_link)
+   local key1 = private:FindItemInTable(db.itemStorage, itemOrItemLink)
+   local key2 = private:FindItemInTable(StoredItems, itemOrItemLink)
    if key1 then tremove(db.itemStorage, key1) end
    if key2 then tremove(StoredItems, key2) end
 
@@ -251,7 +247,12 @@ end
 function private:FindItemInTable(table, item1, type)
    if type then
       return FindInTableIf(table, function(item2) return type == item2.type and addon:ItemIsItem(item1, item2.link) end)
+   end
+   if item1.type then
+      -- Our item class
+      return FindInTableIf(table, function(item2) return item1 == item2 end)
    else
+      -- Generic itemString
       return FindInTableIf(table, function(item2) return addon:ItemIsItem(item1, item2.link) end)
    end
 end

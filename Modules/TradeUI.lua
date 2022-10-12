@@ -30,8 +30,8 @@ local UPDATE_TIME_INTERVAL = 1 -- 1 sec
 local TRADE_ADD_DELAY = 0.100 -- sec
 
 -- lua
-local select, GetItemInfoInstant, pairs, ipairs,  unpack, tinsert, wipe, format, GetTime, CheckInteractDistance, InitiateTrade
-    = select, GetItemInfoInstant, pairs, ipairs,  unpack, tinsert, wipe, format, GetTime, CheckInteractDistance, InitiateTrade
+local select, GetItemInfoInstant, pairs, ipairs,  unpack, tinsert, wipe, format, GetTime, InitiateTrade
+    = select, GetItemInfoInstant, pairs, ipairs,  unpack, tinsert, wipe, format, GetTime, InitiateTrade
 -- GLOBALS: GetContainerNumSlots, ClickTradeButton, PickupContainerItem, ClearCursor, GetContainerItemInfo, GetContainerItemLink, GetTradePlayerItemInfo,
 -- GLOBALS: IsModifiedClick, HandleModifiedItemClick, GetTradePlayerItemLink, Ambiguate
 

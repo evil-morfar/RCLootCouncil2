@@ -13,4 +13,6 @@ local mt = {
 	},
 }
 
-function Object:New() return setmetatable({}, mt) end
+function Object:New() return setmetatable({
+	[0] = {} -- Userdata 
+}, mt) end

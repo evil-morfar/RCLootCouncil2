@@ -897,10 +897,17 @@ function escapePatternSymbols(text)
 	return text
 end
 
+function FauxScrollFrame_Update() end
+
+function FauxScrollFrame_GetOffset() return 0 end
+
 ------------------------------------------
 -- Constants from various places
 ------------------------------------------
 NUM_BAG_SLOTS = 10
+
+RAID_CLASS_COLORS = {}
+MAX_TRADE_ITEMS = 6 -- don't remember
 
 TOOLTIP_DEFAULT_COLOR = { r = 1, g = 1, b = 1 };
 TOOLTIP_DEFAULT_BACKGROUND_COLOR = { r = 0.09, g = 0.09, b = 0.19 };
