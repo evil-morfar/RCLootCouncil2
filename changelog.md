@@ -1,3 +1,14 @@
+# v3
+
+## Changes
+
+Added `itemName` to JSON export (CurseClassic#137).
+
+### Dev
+
+## Bugfixes
+
+
 # v3.4.0
 
 ## Changes
