@@ -1,197 +1,31 @@
 local _G = getfenv(0)
+require "/wow_api/API/Mixin"
+require "/wow_api/API/Color"
+require "/wow_api/API/TableUtil"
+require "/wow_api/FrameAPI/Frames/Frame"
+require "/wow_api/FrameAPI/Frames/Button"
+require "/wow_api/FrameAPI/Frames/GameTooltip"
 local strbyte, strchar, gsub, gmatch, format, tinsert = string.byte, string.char, string.gsub, string.gmatch, string.format, table.insert
 
 local donothing = function() end
 
-local frames = {} -- Stores globally created frames, and their internal properties.
+local frames = {}
 
-local FrameClass = {} -- A class for creating frames.
-FrameClass.methods = { "GetName", "SetAttribute", "SetScript", "GetScript", "RegisterEvent", "UnregisterEvent", "UnregisterAllEvents", "Show", "Hide", "IsShown", "ClearAllPoints", "SetParent","SetPoint","SetFrameStrata","SetAllPoints", "SetBackdrop","EnableMouse","SetBackdropColor", "SetBackdropBorderColor", "CreateFontString", "SetWidth","SetHeight","SetSize", "GetParent", "SetFrameLevel", "GetFrameLevel", "SetNormalTexture","GetNormalTexture","SetPushedTexture","GetPushedTexture","SetHighlightTexture","GetHighlightTexture", "CreateTexture", "SetFontString","SetNormalFontObject","SetHighlightFontObject","SetDisabledFontObject", "SetID","SetText", "SetToplevel" }
-function FrameClass:New()
-   local frame = {}
-   for i, method in ipairs(self.methods) do
-      frame[method] = self[method]
+function CreateFrame(kind, name, parent)
+   local frame
+   if kind == "Frame" then
+      frame = _G.Frame.New(name, parent)
+   elseif kind == "Button" then
+      frame = _G.Button.New(name, parent)
+   elseif kind == "GameTooltip" then
+      frame = _G.GameTooltip.New(name, parent)
+   else
+      -- Default to frame (for handling kinds we haven't implemented)
+      frame = _G.Frame.New(name, parent)
    end
-   local frameProps = {
-      events = {},
-      scripts = {},
-      values = {},
-      timer = GetTime(),
-      isShow = true,
-      parent = nil,
-   }
-   return frame, frameProps
-end
-function FrameClass:GetName()
-   return frames[self].name
-end
-function FrameClass:SetScript(script, handler)
-   frames[self].scripts[script] = handler
-end
-function FrameClass:GetScript (script)
-   return frames[self].scripts[script]
-end
-function FrameClass:RegisterEvent(event)
-   frames[self].events[event] = true
-end
-function FrameClass:UnregisterEvent(event)
-   frames[self].events[event] = nil
-end
-function FrameClass:UnregisterAllEvents(frame)
-   for event in pairs(frames[self].events) do
-      frames[self].events[event] = nil
-   end
-end
-function FrameClass:Show()
-   frames[self].isShow = true
-end
-function FrameClass:Hide()
-   frames[self].isShow = false
-end
-function FrameClass:IsShown()
-   return frames[self].isShow
-end
-function FrameClass:ClearAllPoints()
-end
-function FrameClass:SetParent(parent)
-   frames[self].parent = parent
-end
-function FrameClass:SetPoint (...)
-   -- body...
-end
-function FrameClass:SetFrameStrata (...)
-   -- body...
-end
-function FrameClass:EnableMouse (...)
-   -- body...
-end
-function FrameClass:SetAllPoints (...)
-   -- body...
-end
-function FrameClass:SetBackdrop (...)
-   -- body...
-end
-function FrameClass:SetBackdropColor (...)
-   -- body...
-end
-function FrameClass:SetBackdropBorderColor (...)
-   -- body...
-end
-function FrameClass:SetWidth (...)
-   -- body...
-end
-function FrameClass:SetHeight (...)
-   -- body...
-end
-function FrameClass:SetSize (h,w)
-   self:SetHeight(h)
-   self:SetWidth(w)
-end
-function FrameClass:SetNormalTexture (...)
-
-end
-function FrameClass:GetNormalTexture (...)
-   return self:CreateTexture()
-end
-function FrameClass:SetPushedTexture (...)
-
-end
-function FrameClass:GetPushedTexture (...)
-   return self:CreateTexture()
-end
-function FrameClass:SetHighlightTexture (...)
-
-end
-function FrameClass:GetHighlightTexture (...)
-   return self:CreateTexture()
-end
-function FrameClass:SetFontString (...)
-   -- body...
-end
-function FrameClass:SetNormalFontObject (...)end
-function FrameClass:SetHighlightFontObject (...)end
-function FrameClass:SetDisabledFontObject (...)end
-function FrameClass:SetID (...)end
-function FrameClass:SetText (...)end
-function FrameClass:SetToplevel (...)end
-function FrameClass:SetAttribute (...)end
-function FrameClass:GetParent (...)
-   return frames[self].parent
-end
-function FrameClass:SetFrameLevel (lvl)
-   frames[self].values.FrameLevel = lvl
-end
-function FrameClass:GetFrameLevel (...)
-   return frames[self].values.FrameLevel or 0
-end
-
-
-local sharedFrameMeta = {
-   __index = {
-      SetTexture = function (args)
-         -- body...
-      end,
-      SetTexCoord = function (args)
-         -- body...
-      end,
-      SetBlendMode = function (args)
-         -- body...
-      end,
-      SetVertexColor = function (args)
-         -- body...
-      end,
-      SetNormalTexture = function (args)
-         -- body...
-      end,
-      SetDisabledTexture = function() end,
-      SetWidth = function() end,
-      SetHeight = function() end,
-      SetSize = function(self, w, h)
-         self:SetHeight(h)
-         self:SetWidth(w)
-      end,
-      SetPoint = function (args)
-         -- body...
-      end,
-   }
-}
-
-function FrameClass:CreateFontString () -- Very much a mock
-   return setmetatable(
-      {
-         SetJustifyH = function (args)
-            -- body...
-         end,
-         SetJustifyV = function (args)
-            -- body...
-         end,
-         SetText = function (args)
-            -- body...
-         end,
-
-         SetWordWrap = function() end,
-      }, 
-      sharedFrameMeta)
-end
-
-function FrameClass:CreateTexture (name, strata)
-   local texture = CreateFrame("Texture", name, self)
-   return setmetatable(texture, sharedFrameMeta)
-end
-
-local function CreateButton(frame)
-   local mt = {
-      __index = {
-         OnClick = function() end,
-         Enable = function() end,
-         Disable = function() end,
-         SetMotionScriptsWhileDisabled = function() end,
-
-      }
-   }
-   -- Inherit from sharedFrameMeta
-   MergeTable(mt.__index, sharedFrameMeta.__index)
-   return setmetatable(frame, mt)
+   frames[frame] = true
+   if name then _G[name] = frame end
+   return frame
 end
 
 -- Extra hack as I didn't want to implement logic for all the UI functions
@@ -226,21 +60,6 @@ end
 
 function LoadAddOn (args)
    return "Not implemented!"
-end
-
-function CreateFrame(kind, name, parent)
-   local frame, internal = FrameClass:New()
-   internal.parent = parent
-   internal.name = name
-   frames[frame] = internal
-   if name then
-      _G[name] = frame
-   end
-   if kind == "Button" then
-      return CreateButton(frame)
-   else
-      return frame
-   end
 end
 
 function UnitName(unit)
@@ -538,14 +357,14 @@ GREEN_FONT_COLOR_CODE = ""
 StaticPopupDialogs = {}
 
 function WoWAPI_FireEvent(event, ...)
-   for frame, props in pairs(frames) do
-      if props.events[event] then
-         if props.scripts["OnEvent"] then
+   for frame in pairs(frames) do
+      if frame.events[event] then
+         if frame.scripts["OnEvent"] then
             for i = 1, select('#', ...) do
                _G["arg"..i] = select(i, ...)
             end
             _G.event = event
-            props.scripts["OnEvent"](frame, event, ...)
+            frame.scripts["OnEvent"](frame, event, ...)
          end
       end
    end
@@ -556,14 +375,14 @@ function WoWAPI_FireUpdate(forceNow)
       _time = forceNow
    end
    local now = GetTime()
-   for frame, props in pairs(frames) do
-      if props.isShow and props.scripts.OnUpdate then
+   for frame in pairs(frames) do
+      if frame.isShown and frame.scripts.OnUpdate then
          if now == 0 then
-            props.timer = 0 -- reset back in case we reset the clock for more testing
+            frame.timer = 0 -- reset back in case we reset the clock for more testing
          end
-         _G.arg1 = now - props.timer
-         props.scripts.OnUpdate(frame, now - props.timer)
-         props.timer = now
+         _G.arg1 = now - frame.timer
+         frame.scripts.OnUpdate(frame, now - frame.timer)
+         frame.timer = now
       end
    end
 end
@@ -642,8 +461,18 @@ function GetStoredPlayerNameToGUID(name)
    return name and playerNameToGUID[name] or playerNameToGUID.Player1
 end
 
+function UnitIsUnit(u1, u2)
+   if u1 == "player" then
+      return "player1" == u2
+   elseif u2 == "player" then 
+      return u1 == "player1"
+   end
+   return u1 == u2
+end
+
 function UnitGUID (name)
    if name == "player" then return playerNameToGUID.Player1.guid end
+   name = Ambiguate(name, "short")
    return playerNameToGUID[name] and playerNameToGUID[name].guid or nil
 end
 
@@ -1058,9 +887,21 @@ function GetSpecializationInfoForClassID (classID, specNum)
    return spec.specID, spec.name, "NOT_IMPLEMENTED", spec.iconID, spec.role, "NOT_IMPLEMENTED","NOT_IMPLEMENTED"
 end
 
+local symbols = {"%%", "%*", "%+", "%-", "%?", "%(", "%)", "%[", "%]", "%$", "%^"} --% has to be escaped first or everything is ruined
+local replacements = {"%%%%", "%%%*", "%%%+", "%%%-", "%%%?", "%%%(", "%%%)", "%%%[", "%%%]", "%%%$", "%%%^"}
+-- Defined in FrameXML/ChatFrame.lua
+function escapePatternSymbols(text)
+	for i=1, #symbols do
+		text = text:gsub(symbols[i], replacements[i])
+	end
+	return text
+end
+
 ------------------------------------------
 -- Constants from various places
 ------------------------------------------
+NUM_BAG_SLOTS = 10
+
 TOOLTIP_DEFAULT_COLOR = { r = 1, g = 1, b = 1 };
 TOOLTIP_DEFAULT_BACKGROUND_COLOR = { r = 0.09, g = 0.09, b = 0.19 };
 NUM_LE_ITEM_ARMORS = 12
@@ -1136,6 +977,7 @@ LE_ITEM_WEAPON_FISHINGPOLE = 20
 ------------------------------------------
 -- Global Strings
 ------------------------------------------
+BIND_TRADE_TIME_REMAINING = "You may trade this item with players that were also eligible to loot this item for the next %s."
 LOOT_ITEM = "%s receives loot: %s."
 RANDOM_ROLL_RESULT = "%s rolls %d (%d-%d)"
 REQUEST_ROLL = "Request Roll"
@@ -1201,6 +1043,3 @@ HEALER = "Healer"
 MELEE = "Melee"
 RANGED = "Ranged"
 
-require "/wow_api/Mixin"
-require "/wow_api/Color"
-require "/wow_api/TableUtil"

@@ -487,6 +487,7 @@ L["You must select a target"] = true
 L["You're already running a session."] = true
 L["Your note:"] = true
 
+L["chat_cmd_add_found_items"] = "Found %d items with trade timers in your bags."
 L["chat_cmd_add_invalid_owner"] = "The player %s was either invalid or not a candidate."
 
 L["ML_ADD_INVALID_ITEM"] = "Invalid itemLink or itemID: %s"

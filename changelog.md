@@ -4,6 +4,11 @@
 
 Added `itemName` to JSON export (CurseClassic#137).
 
+### Add all tradeable items to session
+
+It's now possible to add all items from your bags with a trade timer on them to a session at once.
+Simply use `/rc add bags` or `/rc add all` to do so. You must obviously still be ML/group leader to do so, and have the addon active.
+
 ### Dev
 
 ## Bugfixes
