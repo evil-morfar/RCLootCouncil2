@@ -1677,6 +1677,7 @@ do
 				tinsert(export, string.format("\"%s\":\"%s\"", "equipLoc", tostring(getglobal(equipLoc) or "")))
 				tinsert(export, string.format("\"%s\":\"%s\"", "note", QuotesEscape(d.note)))
 				tinsert(export, string.format("\"%s\":\"%s\"", "owner", tostring(d.owner or "Unknown")))
+				tinsert(export, string.format("\"%s\":\"%s\"", "itemName", addon.Utils:GetItemNameFromLink(d.lootWon)))
 
 				processedEntries = processedEntries + 1;
 
