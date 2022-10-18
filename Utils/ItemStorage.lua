@@ -2,7 +2,6 @@
 -- Creates 'RCLootCouncil.ItemStorage' as a namespace for storage functions.
 -- @author Potdisc
 -- Create Date : 29/5/2018 18:28:51
-
 --- @class RCLootCouncil
 local addon = select(2, ...)
 local db = addon:Getdb()
@@ -12,26 +11,24 @@ addon.ItemStorage = Storage
 
 --- @type Item[]
 local StoredItems = {}
-local private = {
-   ITEM_WATCH_DELAY = 1
-}
+local private = {ITEM_WATCH_DELAY = 1}
 
 --[[
    Each entry index marks the type of item, and can have following fields:
       'bagged' - Must be in player's bags to be initialized on login?
 ]]
 Storage.AcceptedTypes = {
-   ["to_trade"]    = { -- Items that should be traded to another player
+	["to_trade"] = { -- Items that should be traded to another player
       bagged = true,
    },
    ["award_later"] = { -- Items that should be used in a later session
       bagged = false,
    },
-   ["temp"]        = { -- Items we're temporarily storing
-      bagged = true
+	["temp"] = { -- Items we're temporarily storing
+		bagged = true,
    },
-   ["other"]       = { -- Unspecified
-      bagged = false
+	["other"] = { -- Unspecified
+		bagged = false,
    },
 }
 
@@ -55,14 +52,13 @@ local item_class = {
    end,
    -- Items shouldn't be removed whilst itemWatch is working it.
    -- This functions checks that.
-   SafeToRemove = function(self)
-      return self.args.itemWatch == nil
-   end
+	SafeToRemove = function(self) return self.args.itemWatch == nil end,
 }
 
 -- lua
-local error, table, tostring, tinsert, tremove, type, select, FindInTableIf, time, tFilter, setmetatable, CopyTable, ipairs
-    = error, table, tostring, tinsert, tremove, type, select, FindInTableIf, time, tFilter, setmetatable, CopyTable, ipairs
+local error, table, tostring, tinsert, tremove, type, select, FindInTableIf, time, tFilter, setmetatable, CopyTable,
+      ipairs = error, table, tostring, tinsert, tremove, type, select, FindInTableIf, time, tFilter, setmetatable,
+               CopyTable, ipairs
 
 -- GLOBALS: GetContainerNumSlots, GetContainerItemLink, _G
 
@@ -79,10 +75,10 @@ function addon:InitItemStorage()-- Extract items from our SV. Could be more eleg
 end
 
 --- Initiates a new item of item_class
--- @param item ItemLink|ItemString|ItemID of the item
--- @param type Optional type for used in various functions, @see Storage.AcceptedTypes
--- @param ... Userdata stored in the returned 'Item.args'. Directly stored if provided as table, otherwise as '{...}'.
--- @returns Item @see 'item_class' when the item is stored succesfully. Has flag Item.inBags if present in bags.
+--- @param item ItemLink|ItemString|ItemID of the item
+--- @param typex string Optional type for used in various functions, @see Storage.AcceptedTypes
+--- @param ... any Userdata stored in the returned 'Item.args'. Directly stored if provided as table, otherwise as '{...}'.
+--- @return Item #See 'item_class' when the item is stored succesfully. Has flag Item.inBags if present in bags.
 function Storage:New(item, typex, ...)
    if not typex then typex = "other" end
    if not self.AcceptedTypes[typex] then error("Type: " .. tostring(typex) .. " is not accepted. Accepted types are: " .. table.concat(self.AcceptedTypes, ", "),2) end
@@ -137,24 +133,23 @@ function Storage:RemoveItem(itemOrItemLink)
    end
 end
 
+function Storage:RemoveAllItems()
+	db.itemStorage = {}
+	StoredItems = {}
+end
+
 --- Removes all items of a specific type
 -- @param type The type to remove - @see Storage.AcceptedTypes
 function Storage:RemoveAllItemsOfType(type)
    type = type or "other"
    -- Do it in reverse for speed
-   for i = #StoredItems, 1, -1 do
-      if StoredItems[i].type == type then
-         self:RemoveItem(StoredItems[i])
-      end
-   end
+	for i = #StoredItems, 1, -1 do if StoredItems[i].type == type then self:RemoveItem(StoredItems[i]) end end
 end
 
 --- Returns a numerical indexed table of all the stored items
--- Note: Each value in this table is the item object itself.
--- @return A copy of all stored items
-function Storage:GetAllItems()
-   return CopyTable(StoredItems)
-end
+--- Note: Each value in this table is the item object itself.
+--- @return Item[] #All stored items
+function Storage:GetAllItems() return StoredItems end
 
 --- Returns a specific item object.
 -- Without type, returns the first found Item that matches the item link.
@@ -172,10 +167,7 @@ end
 --- @return Item[] # An Item table
 function Storage:GetAllItemsOfType(type)
    type = type or "other"
-   return tFilter(StoredItems,
-      function(v)
-         return v.type == type
-      end, true)
+	return tFilter(StoredItems, function(v) return v.type == type end, true)
 end
 
 --- Returns all stored Items with less/equal time remaining
@@ -183,22 +175,16 @@ end
 -- @return An Item table consisting of items with less or equal, time remaining than 'time'.
 function Storage:GetAllItemsLessTimeRemaining(time)
    time = time or 0
-   return tFilter(StoredItems,
-      function(v)
-         return v.time_remaining <= time
-      end, true)
+	return tFilter(StoredItems, function(v) return v.time_remaining <= time end, true)
 end
 
 --- Returns all stored Items based on multiple predicates
 -- @param ... Predicate functions.
 -- @return The filtered list of times.
 function Storage:GetAllItemsMultiPred(...)
-   local vararg = ...
-   return tFilter(StoredItems,
-      function(v)
-         for i = 1, select("#", vararg) do
-            if not select(i, vararg)(v) then return false end
-         end
+	local args = {...}
+	return tFilter(StoredItems, function(v)
+		for _, func in ipairs(args) do if not func(v) then return false end end
          return true
       end, true)
 end
@@ -206,7 +192,7 @@ end
 --- Returns Container and Slot ids of an item.
 -- @param item The item to find slots for, either 'Item' object or ItemLink.
 -- @return container,slot,time_remaining The position of the item in the player's bags and it's remaining trade time (if present).
-function Storage:GetItemContainerSlot (item)
+function Storage:GetItemContainerSlot(item)
    if type(item) == "table" then -- Our Item object
       return private:findItemInBags(item.link)
    elseif type(item) == "string" then
@@ -221,7 +207,7 @@ end
 -- @param onFound (Optional) Function - called when the item is found. Params: Item, containerID, slotID, time_remaining
 -- @param onFail (Optional) Function - called when the item isn't found after max_attempts. Params: Item.
 -- @param max_attempts (Optional) number - maximum number of attempts to find the item. Defaults to 3.
-function Storage:WatchForItemInBags (input, onFound, onFail, max_attempts)
+function Storage:WatchForItemInBags(input, onFound, onFail, max_attempts)
    local Item
    if type(input) == "table" then
       Item = input
@@ -249,17 +235,17 @@ end
 function private:findItemInBags(link)
    addon:DebugLog("Storage: searching for item:",gsub(link or "", "\124", "\124\124"))
    if link and link ~= "" then
-      local c,s,t
-      for container=0, _G.NUM_BAG_SLOTS do
-         for slot=1, GetContainerNumSlots(container) or 0 do
+		local c, s, t
+		for container = 0, _G.NUM_BAG_SLOTS do
+			for slot = 1, GetContainerNumSlots(container) or 0 do
             if addon:ItemIsItem(link, GetContainerItemLink(container, slot)) then -- We found it
                addon:DebugLog("Found item at",container, slot)
                c, s = container, slot
                -- Now we need to ensure we don't have multiple of it
-               t = addon:GetContainerItemTradeTimeRemaining(c,s)
+					t = addon:GetContainerItemTradeTimeRemaining(c, s)
                if t > 0 then
                   -- if the item is tradeable, then we've most likely just received it, and can safely return
-                  return c,s,t
+						return c, s, t
                end
             end
          end
@@ -269,27 +255,29 @@ function private:findItemInBags(link)
    end
 end
 
+local mt = {
+	__index = item_class,
+	__tostring = function(self) return self.link end,
+	__eq = function(a, b) return tCompare(a, b, 2) end,
+}
+
 function private:newItem(link, type, time_remaining)
-   local Item = setmetatable({}, {
-      __index = item_class,
-      __tostring = function(self)
-         return self.link
-      end,
-   })
+	local Item = setmetatable({}, mt)
    Item.link = link
    Item.type = type or Item.type
-   Item.time_remaining = time_remaining or Item.time_remaining or 0
+	-- If item isn't in our bags, lets store it for 6 hours
+	Item.time_remaining = time_remaining or Item.time_remaining or 60 * 60 * 6
    Item.time_added = time()
    return Item
 end
 
-function private:itemWatcherScheduler (Item)
-   local c,s,t = self:findItemInBags(Item.link)
+function private:itemWatcherScheduler(Item)
+	local c, s, t = self:findItemInBags(Item.link)
    if c and s then
       Item.time_remaining = t
       Item.time_added = time() -- Needs updating now that we updated remaining time
       Item.inBags = true
-      Item.args.itemWatch.onFound(Item,c,s,t)
+		Item.args.itemWatch.onFound(Item, c, s, t)
    else
       Item.args.itemWatch.currentAttempt = Item.args.itemWatch.currentAttempt + 1
       if Item.args.itemWatch.currentAttempt > Item.args.itemWatch.max_attempts then
@@ -307,7 +295,7 @@ function private:InitWatchForItemInBags(Item, max_attempts, onFound, onFail)
       max_attempts = max_attempts or 3,
       currentAttempt = 1,
       onFound = onFound or addon.noop,
-      onFail = onFail or addon.noop
+		onFail = onFail or addon.noop,
    }
    addon:ScheduleTimer(self.itemWatcherScheduler, self.ITEM_WATCH_DELAY, self, Item)
 end
