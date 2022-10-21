@@ -2594,7 +2594,8 @@ function RCLootCouncil:CreateFrame(name, cName, title, width, height)
 	f:RegisterConfig(db.UI[cName])
 	f:RestorePosition() -- might need to move this to after whereever GetFrame() is called
 	f:MakeDraggable()
-	f:SetScript("OnMouseWheel", function(f,delta) if IsControlKeyDown() then lwin.OnMouseWheel(f,delta) end end)
+	local scrollScriptHandler = function(f,delta) if IsControlKeyDown() then lwin.OnMouseWheel(f,delta) end end
+	f:SetScript("OnMouseWheel",  scrollScriptHandler)
 	f:SetToplevel(true)
 
 	local tf = CreateFrame("Frame", "RC_UI_"..cName.."_Title", f, BackdropTemplateMixin and "BackdropTemplate")
@@ -2670,6 +2671,7 @@ function RCLootCouncil:CreateFrame(name, cName, title, width, height)
 		if not frame.minimized then
 			frame.content:Hide()
 			frame.minimized = true
+			f:SetScript("OnMouseWheel", nil)
 		end
 	end
 	f.Maximize = function(frame)
@@ -2677,6 +2679,7 @@ function RCLootCouncil:CreateFrame(name, cName, title, width, height)
 		if frame.minimized then
 			frame.content:Show()
 			frame.minimized = false
+			f:SetScript("OnMouseWheel",  scrollScriptHandler)
 		end
 	end
 	-- Support for auto hide in combat:
