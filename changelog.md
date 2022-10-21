@@ -19,6 +19,8 @@ Last I checked there were still some issues with detecting the trade target (not
 
 ## Bugfixes
 
+- *Frames will no longer intercept mouse scrolls when hidden (CurseClassic#181).*
+
 
 # v3.4.0
 
