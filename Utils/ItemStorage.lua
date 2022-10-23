@@ -65,13 +65,17 @@ local error, table, tostring, tinsert, tremove, type, select, FindInTableIf, tim
 function addon:InitItemStorage()-- Extract items from our SV. Could be more elegant
    db = self:Getdb()
    local Item;
-   for _, v in ipairs(db.itemStorage) do
+   local toBeRemoved = {}
+   for i, v in ipairs(db.itemStorage) do
       Item = Storage:New(v.link, v.type, "restored", v)
       if not Item.inBags and Storage.AcceptedTypes[Item.type] then -- Item probably no longer exists?
          addon:Debug("Error - ItemStorage, db item no longer in bags", v.link)
          Storage:RemoveItem(Item)
+         tinsert(toBeRemoved, i)
       end
    end
+   table.sort(toBeRemoved)
+	for i = #toBeRemoved, 1, -1 do tremove(db.itemStorage, toBeRemoved[i]) end
 end
 
 --- Initiates a new item of item_class
@@ -125,7 +129,8 @@ function Storage:RemoveItem(itemOrItemLink)
    if key1 then tremove(db.itemStorage, key1) end
    if key2 then tremove(StoredItems, key2) end
 
-   if not (key1 and key2) then
+   -- key1 might not be there if we haven't stored it
+	if not key2 then
       addon:Debug("Error - Couldn't remove item", key1, key2)
       return false
    else
