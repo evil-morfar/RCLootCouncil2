@@ -76,10 +76,12 @@ function addon:InitItemStorage() -- Extract items from our SV. Could be more ele
 			if not Item.inBags and Storage.AcceptedTypes[Item.type] then -- Item probably no longer exists?
 				addon.Log:W("ItemStorage, db item no longer in bags", v.link)
 				Storage:RemoveItem(Item)
+				tinsert(toBeRemoved, i)
 			end
 		end
 	end
-	for _, num in ipairs(toBeRemoved) do tremove(db.itemStorage, num) end
+	table.sort(toBeRemoved)
+	for i = #toBeRemoved, 1, -1 do tremove(db.itemStorage, toBeRemoved[i]) end
 	TT:Release(toBeRemoved)
 end
 
@@ -138,7 +140,8 @@ function Storage:RemoveItem(itemOrItemLink)
 	if key1 then tremove(db.itemStorage, key1) end
 	if key2 then tremove(StoredItems, key2) end
 
-	if not (key1 and key2) then
+	-- key1 might not be there if we haven't stored it
+	if not key2 then
 		addon.Log:E("Couldn't remove item", key1, key2)
 		return false
 	else
