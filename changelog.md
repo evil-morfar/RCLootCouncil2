@@ -2,9 +2,11 @@
 
 ## Changes
 
+### Dragonflight
+
 Updated for Dragonflight prepatch.
 
-Added `itemName` to JSON export (CurseClassic#137).
+Added token data.
 
 ### Add all tradeable items to session
 
@@ -21,7 +23,10 @@ Last I checked there were still some issues with detecting the trade target (not
 
 Addon now fully supports group loot. In this first iteration it more or less works similar to personal loot - although you may come across needing to manually add items (`/rc add [item]`). This will be expanding upon and more fletched out in the coming weeks.
 
-### Dev
+### Other
+
+Added `itemName` to JSON export (CurseClassic#137).
+
 
 ## Bugfixes
 

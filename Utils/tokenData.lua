@@ -59,17 +59,17 @@ function RCLootCouncil:ExportTokenData(nextID)
 		local slot = ""
 		local name = entry[2]
 		local l = name:lower()
-		if l:find("helm") or l:find("head") or l:find("crown") or l:find("circlet") then
+		if l:find("helm") or l:find("head") or l:find("crown") or l:find("circlet") or l:find("topaz") then
 			slot = "HeadSlot"
-		elseif l:find("shoulder") or l:find("pauldron") or l:find("mantle") or l:find("spaulder") then
+		elseif l:find("shoulder") or l:find("pauldron") or l:find("mantle") or l:find("spaulder") or l:find("lapis") then
 			slot = "ShoulderSlot"
 		elseif l:find("cloak") then
 			slot = "BackSlot"
-		elseif l:find("breastplate") or l:find("tunic") or l:find("robe") or l:find("chest") then
+		elseif l:find("breastplate") or l:find("tunic") or l:find("robe") or l:find("chest") or l:find("amethyst") then
 			slot = "ChestSlot"
-		elseif l:find("hand") or l:find("glove") or l:find("gauntlets") then
+		elseif l:find("hand") or l:find("glove") or l:find("gauntlets") or l:find("garnet") then
 			slot = "HandsSlot"
-		elseif l:find("leg") then
+		elseif l:find("leg") or l:find("jade") then
 			slot = "LegsSlot"
 		elseif l:find("badge") then
 			slot = "Trinket"
@@ -716,6 +716,26 @@ _G.RCTokenTable = {
 	[191019] = "LegsSlot"    ,	-- Mystic Leg Module,
 	[191020] = "LegsSlot"    ,	-- Venerated Leg Module,
 	[191021] = "LegsSlot"    ,	-- Zenith Leg Module,
+	[196586] = "ChestSlot"   ,	-- Dreadful Amethyst Forgestone,
+	[196587] = "HandsSlot"   ,	-- Dreadful Garnet Forgestone,
+	[196588] = "LegsSlot"    ,	-- Dreadful Jade Forgestone,
+	[196589] = "ShoulderSlot",	-- Dreadful Lapis Forgestone,
+	[196590] = "HeadSlot"    ,	-- Dreadful Topaz Forgestone,
+	[196591] = "ChestSlot"   ,	-- Zenith Amethyst Forgestone,
+	[196592] = "HandsSlot"   ,	-- Zenith Garnet Forgestone,
+	[196593] = "LegsSlot"    ,	-- Zenith Jade Forgestone,
+	[196594] = "ShoulderSlot",	-- Zenith Lapis Forgestone,
+	[196595] = "HeadSlot"    ,	-- Zenith Topaz Forgestone,
+	[196596] = "ChestSlot"   ,	-- Mystic Amethyst Forgestone,
+	[196597] = "HandsSlot"   ,	-- Mystic Garnet Forgestone,
+	[196598] = "LegsSlot"    ,	-- Mystic Jade Forgestone,
+	[196599] = "ShoulderSlot",	-- Mystic Lapis Forgestone,
+	[196600] = "HeadSlot"    ,	-- Mystic Topaz Forgestone,
+	[196601] = "ChestSlot"   ,	-- Venerated Amethyst Forgestone,
+	[196602] = "HandsSlot"   ,	-- Venerated Garnet Forgestone,
+	[196603] = "LegsSlot"    ,	-- Venerated Jade Forgestone,
+	[196604] = "ShoulderSlot",	-- Venerated Lapis Forgestone,
+	[196605] = "HeadSlot"    ,	-- Venerated Topaz Forgestone,
 }
 
 -- The base item level for the token on normal difficulty
