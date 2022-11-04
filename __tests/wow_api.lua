@@ -931,26 +931,7 @@ MAX_TRADE_ITEMS = 6 -- don't remember
 
 TOOLTIP_DEFAULT_COLOR = { r = 1, g = 1, b = 1 };
 TOOLTIP_DEFAULT_BACKGROUND_COLOR = { r = 0.09, g = 0.09, b = 0.19 };
-NUM_LE_ITEM_ARMORS = 12
-LE_ITEM_ARMOR_GENERIC = 0
-LE_ITEM_ARMOR_CLOTH = 1
-LE_ITEM_ARMOR_LEATHER = 2
-LE_ITEM_ARMOR_MAIL = 3
-LE_ITEM_ARMOR_PLATE = 4
-LE_ITEM_ARMOR_COSMETIC = 5
-LE_ITEM_ARMOR_SHIELD = 6
-LE_ITEM_ARMOR_LIBRAM = 7
-LE_ITEM_ARMOR_IDOL = 8
-LE_ITEM_ARMOR_TOTEM = 9
-LE_ITEM_ARMOR_SIGIL = 10
-LE_ITEM_ARMOR_RELIC = 11
 
-NUM_LE_ITEM_BIND_TYPES = 5
-LE_ITEM_BIND_NONE = 0
-LE_ITEM_BIND_ON_ACQUIRE = 1
-LE_ITEM_BIND_ON_EQUIP = 2
-LE_ITEM_BIND_ON_USE = 3
-LE_ITEM_BIND_QUEST = 4
 NUM_LE_ITEM_QUALITYS = 9
 LE_ITEM_QUALITY_POOR = 0
 LE_ITEM_QUALITY_COMMON = 1
@@ -961,45 +942,7 @@ LE_ITEM_QUALITY_LEGENDARY = 5
 LE_ITEM_QUALITY_ARTIFACT = 6
 LE_ITEM_QUALITY_HEIRLOOM = 7
 LE_ITEM_QUALITY_WOW_TOKEN = 8
-NUM_LE_ITEM_CLASSS = 19
-LE_ITEM_CLASS_CONSUMABLE = 0
-LE_ITEM_CLASS_CONTAINER = 1
-LE_ITEM_CLASS_WEAPON = 2
-LE_ITEM_CLASS_GEM = 3
-LE_ITEM_CLASS_ARMOR = 4
-LE_ITEM_CLASS_REAGENT = 5
-LE_ITEM_CLASS_PROJECTILE = 6
-LE_ITEM_CLASS_TRADEGOODS = 7
-LE_ITEM_CLASS_ITEM_ENHANCEMENT = 8
-LE_ITEM_CLASS_RECIPE = 9
-LE_ITEM_CLASS_QUIVER = 11
-LE_ITEM_CLASS_QUESTITEM = 12
-LE_ITEM_CLASS_KEY = 13
-LE_ITEM_CLASS_MISCELLANEOUS = 15
-LE_ITEM_CLASS_GLYPH = 16
-LE_ITEM_CLASS_BATTLEPET = 17
-LE_ITEM_CLASS_WOW_TOKEN = 18
-NUM_LE_ITEM_WEAPONS = 21
-LE_ITEM_WEAPON_AXE1H = 0
-LE_ITEM_WEAPON_AXE2H = 1
-LE_ITEM_WEAPON_BOWS = 2
-LE_ITEM_WEAPON_GUNS = 3
-LE_ITEM_WEAPON_MACE1H = 4
-LE_ITEM_WEAPON_MACE2H = 5
-LE_ITEM_WEAPON_POLEARM = 6
-LE_ITEM_WEAPON_SWORD1H = 7
-LE_ITEM_WEAPON_SWORD2H = 8
-LE_ITEM_WEAPON_WARGLAIVE = 9
-LE_ITEM_WEAPON_STAFF = 10
-LE_ITEM_WEAPON_BEARCLAW = 11
-LE_ITEM_WEAPON_CATCLAW = 12
-LE_ITEM_WEAPON_UNARMED = 13
-LE_ITEM_WEAPON_GENERIC = 14
-LE_ITEM_WEAPON_DAGGER = 15
-LE_ITEM_WEAPON_THROWN = 16
-LE_ITEM_WEAPON_CROSSBOW = 18
-LE_ITEM_WEAPON_WAND = 19
-LE_ITEM_WEAPON_FISHINGPOLE = 20
+
 
 ------------------------------------------
 -- Global Strings
@@ -1070,3 +1013,76 @@ HEALER = "Healer"
 MELEE = "Melee"
 RANGED = "Ranged"
 
+-- Enums
+
+Enum = {
+   ItemWeaponSubclass = {
+      Axe1H = 0,
+      Axe2H = 1,
+      Bows = 2,
+      Guns = 3,
+      Mace1H = 4,
+      Mace2H = 5,
+      Polearm = 6,
+      Sword1H = 7,
+      Sword2H = 8,
+      Warglaive = 9,
+      Staff = 10,
+      Bearclaw = 11,
+      Catclaw = 12,
+      Unarmed = 13,
+      Generic = 14,
+      Dagger = 15,
+      Thrown = 16,
+      Obsolete3 = 17,
+      Crossbow = 18,
+      Wand = 19,
+      Fishingpole = 20,
+   },
+   ItemMiscellaneousSubclass = {
+      Junk = 0,
+      Reagent = 1,
+      CompanionPet = 2,
+      Holiday = 3,
+      Other = 4,
+      Mount = 5,
+      MountEquipment = 6,
+   },
+   ItemClass = {
+      Consumable = 0,
+      Container = 1,
+      Weapon = 2,
+      Gem = 3,
+      Armor = 4,
+      Reagent = 5,
+      Projectile = 6,
+      Tradegoods = 7,
+      ItemEnhancement = 8,
+      Recipe = 9,
+      CurrencyTokenObsolete = 10,
+      Quiver = 11,
+      Questitem = 12,
+      Key = 13,
+      PermanentObsolete = 14,
+      Miscellaneous = 15,
+      Glyph = 16,
+      Battlepet = 17,
+      WoWToken = 18,
+   },
+   ItemArmorSubclass = {
+      Generic = 0,
+      Cloth = 1,
+      Leather = 2,
+      Mail = 3,
+      Plate = 4,
+      Cosmetic = 5,
+      Shield = 6,
+      Libram = 7,
+      Idol = 8,
+      Totem = 9,
+      Sigil = 10,
+      Relic = 11,
+   },
+
+
+}

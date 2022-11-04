@@ -11,52 +11,73 @@ local autopassOverride = {
 --- Classes that should autopass a subtype.
 -- @table autopassTable
 local autopassTable = {
-	[LE_ITEM_CLASS_ARMOR] = {
-		[LE_ITEM_ARMOR_CLOTH]   = { "WARRIOR", "DEATHKNIGHT", "PALADIN", "DRUID", "MONK", "ROGUE", "HUNTER", "SHAMAN",
+	[Enum.ItemClass.Armor] = {
+
+		[Enum.ItemArmorSubclass.Cloth] = { "WARRIOR", "DEATHKNIGHT", "PALADIN", "DRUID", "MONK", "ROGUE", "HUNTER", "SHAMAN",
+
 			"DEMONHUNTER", "EVOKER" },
-		[LE_ITEM_ARMOR_LEATHER] = { "WARRIOR", "DEATHKNIGHT", "PALADIN", "HUNTER", "SHAMAN", "PRIEST", "MAGE", "WARLOCK",
+		[Enum.ItemArmorSubclass.Leather] = { "WARRIOR", "DEATHKNIGHT", "PALADIN", "HUNTER", "SHAMAN", "PRIEST", "MAGE", "WARLOCK",
+
 			"EVOKER" },
 
-		[LE_ITEM_ARMOR_MAIL] = { "WARRIOR", "DEATHKNIGHT", "PALADIN", "DRUID", "MONK", "ROGUE", "PRIEST", "MAGE", "WARLOCK",
+		[Enum.ItemArmorSubclass.Mail] = { "WARRIOR", "DEATHKNIGHT", "PALADIN", "DRUID", "MONK", "ROGUE", "PRIEST",
+			"MAGE", "WARLOCK",
+
 			"DEMONHUNTER" },
 
-		[LE_ITEM_ARMOR_PLATE] = { "DRUID", "MONK", "ROGUE", "HUNTER", "SHAMAN", "PRIEST", "MAGE", "WARLOCK", "DEMONHUNTER",
+		[Enum.ItemArmorSubclass.Plate] = { "DRUID", "MONK", "ROGUE", "HUNTER", "SHAMAN", "PRIEST", "MAGE", "WARLOCK", "DEMONHUNTER",
+
 			"EVOKER" },
 
-		[LE_ITEM_ARMOR_SHIELD] = { "DEATHKNIGHT", "DRUID", "MONK", "ROGUE", "HUNTER", "PRIEST", "MAGE", "WARLOCK",
+		[Enum.ItemArmorSubclass.Shield] = { "DEATHKNIGHT", "DRUID", "MONK", "ROGUE", "HUNTER", "PRIEST", "MAGE", "WARLOCK",
+
 			"DEMONHUNTER", "EVOKER" },
 
 	},
-	[LE_ITEM_CLASS_WEAPON] = {
-		[LE_ITEM_WEAPON_AXE1H] = { "DRUID", "PRIEST", "MAGE", "WARLOCK" },
-		[LE_ITEM_WEAPON_AXE2H] = { "DRUID", "ROGUE", "MONK", "PRIEST", "MAGE", "WARLOCK", "DEMONHUNTER", "EVOKER" },
+	[Enum.ItemClass.Weapon] = {
+		[Enum.ItemWeaponSubclass.Axe1H] = { "DRUID", "PRIEST", "MAGE", "WARLOCK" },
 
-		[LE_ITEM_WEAPON_BOWS] = { "DEATHKNIGHT", "PALADIN", "DRUID", "MONK", "SHAMAN", "PRIEST", "MAGE", "WARLOCK",
+		[Enum.ItemWeaponSubclass.Axe2H] = { "DRUID", "ROGUE", "MONK", "PRIEST", "MAGE", "WARLOCK", "DEMONHUNTER", "EVOKER" },
+
+
+		[Enum.ItemWeaponSubclass.Bows] = { "DEATHKNIGHT", "PALADIN", "DRUID", "MONK", "SHAMAN", "PRIEST", "MAGE", "WARLOCK",
 			"DEMONHUNTER", "WARRIOR", "EVOKER" },
 
-		[LE_ITEM_WEAPON_CROSSBOW] = { "DEATHKNIGHT", "PALADIN", "DRUID", "MONK", "SHAMAN", "PRIEST", "MAGE", "WARLOCK",
+		[Enum.ItemWeaponSubclass.Crossbow] = { "DEATHKNIGHT", "PALADIN", "DRUID", "MONK", "SHAMAN", "PRIEST", "MAGE", "WARLOCK",
+
 			"DEMONHUNTER", "WARRIOR", "EVOKER" },
 
-		[LE_ITEM_WEAPON_DAGGER] = { "DEATHKNIGHT", "PALADIN", "MONK", "DEMONHUNTER" },
-		[LE_ITEM_WEAPON_GUNS]   = { "DEATHKNIGHT", "PALADIN", "DRUID", "MONK", "SHAMAN", "PRIEST", "MAGE", "WARLOCK",
+		[Enum.ItemWeaponSubclass.Dagger] = { "DEATHKNIGHT", "PALADIN", "MONK", "DEMONHUNTER" },
+
+		[Enum.ItemWeaponSubclass.Guns] = { "DEATHKNIGHT", "PALADIN", "DRUID", "MONK", "SHAMAN", "PRIEST", "MAGE", "WARLOCK",
+
 			"DEMONHUNTER", "WARRIOR", "EVOKER" },
 
-		[LE_ITEM_WEAPON_MACE1H] = { "HUNTER", "MAGE", "WARLOCK", "DEMONHUNTER" },
-		[LE_ITEM_WEAPON_MACE2H] = { "MONK", "ROGUE", "HUNTER", "PRIEST", "MAGE", "WARLOCK", "DEMONHUNTER", "EVOKER" },
+		[Enum.ItemWeaponSubclass.Mace1H] = { "HUNTER", "MAGE", "WARLOCK", "DEMONHUNTER" },
 
-		[LE_ITEM_WEAPON_POLEARM] = { "ROGUE", "SHAMAN", "PRIEST", "MAGE", "WARLOCK", "DEMONHUNTER", "EVOKER" },
+		[Enum.ItemWeaponSubclass.Mace2H] = { "MONK", "ROGUE", "HUNTER", "PRIEST", "MAGE", "WARLOCK", "DEMONHUNTER", "EVOKER" },
 
-		[LE_ITEM_WEAPON_SWORD1H] = { "DRUID", "SHAMAN", "PRIEST", },
-		[LE_ITEM_WEAPON_SWORD2H] = { "DRUID", "MONK", "ROGUE", "SHAMAN", "PRIEST", "MAGE", "WARLOCK", "DEMONHUNTER", "EVOKER" },
 
-		[LE_ITEM_WEAPON_STAFF] = { "DEATHKNIGHT", "PALADIN", "ROGUE", "DEMONHUNTER" },
-		[LE_ITEM_WEAPON_WAND]  = { "WARRIOR", "DEATHKNIGHT", "PALADIN", "DRUID", "MONK", "ROGUE", "HUNTER", "SHAMAN",
+		[Enum.ItemWeaponSubclass.Polearm] = { "ROGUE", "SHAMAN", "PRIEST", "MAGE", "WARLOCK", "DEMONHUNTER", "EVOKER" },
+
+
+		[Enum.ItemWeaponSubclass.Sword1H] = { "DRUID", "SHAMAN", "PRIEST", },
+
+		[Enum.ItemWeaponSubclass.Sword2H] = { "DRUID", "MONK", "ROGUE", "SHAMAN", "PRIEST", "MAGE", "WARLOCK", "DEMONHUNTER", "EVOKER" },
+
+
+		[Enum.ItemWeaponSubclass.Staff] = { "DEATHKNIGHT", "PALADIN", "ROGUE", "DEMONHUNTER" },
+
+		[Enum.ItemWeaponSubclass.Wand] = { "WARRIOR", "DEATHKNIGHT", "PALADIN", "DRUID", "MONK", "ROGUE", "HUNTER", "SHAMAN",
+
 			"DEMONHUNTER", "EVOKER" },
 
-		[LE_ITEM_WEAPON_WARGLAIVE] = { "WARRIOR", "DEATHKNIGHT", "PALADIN", "DRUID", "MONK", "ROGUE", "PRIEST", "MAGE",
+		[Enum.ItemWeaponSubclass.Warglaive] = { "WARRIOR", "DEATHKNIGHT", "PALADIN", "DRUID", "MONK", "ROGUE", "PRIEST", "MAGE",
+
 			"WARLOCK", "HUNTER", "SHAMAN", "EVOKER" },
 
-		[LE_ITEM_WEAPON_UNARMED] = { "DEATHKNIGHT", "PALADIN", "PRIEST", "MAGE", "WARLOCK" }, -- Fist weapons
+		[Enum.ItemWeaponSubclass.Unarmed] = { "DEATHKNIGHT", "PALADIN", "PRIEST", "MAGE", "WARLOCK" }, -- Fist weapons
+
 	},
 }
 

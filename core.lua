@@ -1326,10 +1326,6 @@ function RCLootCouncil:IsItemBoP(item)
 	return select(14, GetItemInfo(item)) == LE_ITEM_BIND_ON_ACQUIRE
 end
 
-function RCLootCouncil:IsRelicTypeID(typeID, subTypeID)
-	return typeID == LE_ITEM_CLASS_GEM and subTypeID == LE_ITEM_GEM_ARTIFACTRELIC
-end
-
 function RCLootCouncil:GetPlayersGuildRank()
 	self.Log:D("GetPlayersGuildRank()")
 	self.Utils:GuildRoster() -- let the event trigger this func
@@ -2258,11 +2254,6 @@ function RCLootCouncil:GetItemTypeText(link, subType, equipLoc, typeID, subTypeI
 		else
 			return tokenText
 		end
-	elseif self:IsRelicTypeID(typeID, subTypeID) then
-		relicType = relicType or select(3, C_ArtifactUI.GetRelicInfoByItemID(id)) or ""
-		local localizedRelicType = getglobal("RELIC_SLOT_TYPE_" .. relicType:upper()) or ""
-		local relicTooltipName = format(RELIC_TOOLTIP_TYPE, localizedRelicType)
-		return relicTooltipName
 	elseif equipLoc ~= "" and getglobal(equipLoc) then
 		if equipLoc == "INVTYPE_TRINKET" then
 			local lootSpec = _G.RCTrinketSpecs[id]
@@ -2273,9 +2264,18 @@ function RCLootCouncil:GetItemTypeText(link, subType, equipLoc, typeID, subTypeI
 				return getglobal(equipLoc)
 			end
 		elseif equipLoc ~= "INVTYPE_CLOAK"
-						and ((not (typeID == LE_ITEM_CLASS_MISCELLANEOUS and subTypeID == LE_ITEM_MISCELLANEOUS_JUNK)) -- subType: "Junk"
-										and (not (typeID == LE_ITEM_CLASS_ARMOR and subTypeID == LE_ITEM_ARMOR_GENERIC)) -- subType: "Miscellaneous"
-										and (not (typeID == LE_ITEM_CLASS_WEAPON and subTypeID == LE_ITEM_WEAPON_GENERIC))) then -- subType: "Miscellaneous"
+			and
+			(
+			(not (typeID == Enum.ItemClass.Miscellaneous and subTypeID == Enum.ItemMiscellaneousSubclass.Junk)) -- subType: "Junk"
+
+
+				and (not (typeID == Enum.ItemClass.Armor and subTypeID == Enum.ItemArmorSubclass.Generic))
+				-- subType: "Miscellaneous"
+
+
+				and (not (typeID == Enum.ItemClass.Weapon and subTypeID == Enum.ItemWeaponSubclass.Generic))) then -- subType: "Miscellaneous"
+
+
 			return getglobal(equipLoc) .. ", " .. (subType or "") -- getGlobal to translate from global constant to localized name
 		else
 			return getglobal(equipLoc)
