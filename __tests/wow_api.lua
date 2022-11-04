@@ -535,310 +535,330 @@ CLASS_SORT_ORDER = {
 	"WARLOCK",
 	"HUNTER",
 	"DEMONHUNTER",
+   "EVOKER"
 };
 MAX_CLASSES = #CLASS_SORT_ORDER;
 
 local CLASS_INFO = {
-   [1] = {
-      className = "Warrior",
-      classFile = "WARRIOR",
-      classID = 1,
-      specs = {
-         [1] = {
-            specID = 71,
-            name = "Arms",
-            iconID = 132355,
-            role = "DAMAGER",
-         },
-         [2] = {
-            specID = 72,
-            name = "Fury",
-            iconID = 132347,
-            role = "DAMAGER",
-         },
-         [3] = {
-            specID = 73,
-            name = "Protection",
-            iconID = 132341,
-            role = "TANK",
-         },
-      },
-   },
-   [2] = {
-      className = "Paladin",
-      classFile = "PALADIN",
-      classID = 2,
-      specs = {
-         [1] = {
-            specID = 65,
-            name = "Holy",
-            iconID = 135920,
-            role = "HEALER",
-         },
-         [2] = {
-            specID = 66,
-            name = "Protection",
-            iconID = 236264,
-            role = "TANK",
-         },
-         [3] = {
-            specID = 70,
-            name = "Retribution",
-            iconID = 135873,
-            role = "DAMAGER",
-         },
-      },
-   },
-   [3] = {
-      className = "Hunter",
-      classFile = "HUNTER",
-      classID = 3,
-      specs = {
-         [1] = {
-            specID = 253,
-            name = "Beast Mastery",
-            iconID = 461112,
-            role = "DAMAGER",
-         },
-         [2] = {
-            specID = 254,
-            name = "Marksmanship",
-            iconID = 236179,
-            role = "DAMAGER",
-         },
-         [3] = {
-            specID = 255,
-            name = "Survival",
-            iconID = 461113,
-            role = "DAMAGER",
-         },
-      },
-   },
-   [4] = {
-      className = "Rogue",
-      classFile = "ROGUE",
-      classID = 4,
-      specs = {
-         [1] = {
-            specID = 259,
-            name = "Assassination",
-            iconID = 236270,
-            role = "DAMAGER",
-         },
-         [2] = {
-            specID = 260,
-            name = "Outlaw",
-            iconID = 236286,
-            role = "DAMAGER",
-         },
-         [3] = {
-            specID = 261,
-            name = "Subtlety",
-            iconID = 132320,
-            role = "DAMAGER",
-         },
-      },
-   },
-   [5] = {
-      className = "Priest",
-      classFile = "PRIEST",
-      classID = 5,
-      specs = {
-         [1] = {
-            specID = 256,
-            name = "Discipline",
-            iconID = 135940,
-            role = "HEALER",
-         },
-         [2] = {
-            specID = 257,
-            name = "Holy",
-            iconID = 237542,
-            role = "HEALER",
-         },
-         [3] = {
-            specID = 258,
-            name = "Shadow",
-            iconID = 136207,
-            role = "DAMAGER",
-         },
-      },
-   },
-   [6] = {
-      className = "Death Knight",
-      classFile = "DEATHKNIGHT",
-      classID = 6,
-      specs = {
-         [1] = {
-            specID = 250,
-            name = "Blood",
-            iconID = 135770,
-            role = "TANK",
-         },
-         [2] = {
-            specID = 251,
-            name = "Frost",
-            iconID = 135773,
-            role = "DAMAGER",
-         },
-         [3] = {
-            specID = 252,
-            name = "Unholy",
-            iconID = 135775,
-            role = "DAMAGER",
-         },
-      },
-   },
-   [7] = {
-      className = "Shaman",
-      classFile = "SHAMAN",
-      classID = 7,
-      specs = {
-         [1] = {
-            specID = 262,
-            name = "Elemental",
-            iconID = 136048,
-            role = "DAMAGER",
-         },
-         [2] = {
-            specID = 263,
-            name = "Enhancement",
-            iconID = 237581,
-            role = "DAMAGER",
-         },
-         [3] = {
-            specID = 264,
-            name = "Restoration",
-            iconID = 136052,
-            role = "HEALER",
-         },
-      },
-   },
-   [8] = {
-      className = "Mage",
-      classFile = "MAGE",
-      classID = 8,
-      specs = {
-         [1] = {
-            specID = 62,
-            name = "Arcane",
-            iconID = 135932,
-            role = "DAMAGER",
-         },
-         [2] = {
-            specID = 63,
-            name = "Fire",
-            iconID = 135810,
-            role = "DAMAGER",
-         },
-         [3] = {
-            specID = 64,
-            name = "Frost",
-            iconID = 135846,
-            role = "DAMAGER",
-         },
-      },
-   },
-   [9] = {
-      className = "Warlock",
-      classFile = "WARLOCK",
-      classID = 9,
-      specs = {
-         [1] = {
-            specID = 265,
-            name = "Affliction",
-            iconID = 136145,
-            role = "DAMAGER",
-         },
-         [2] = {
-            specID = 266,
-            name = "Demonology",
-            iconID = 136172,
-            role = "DAMAGER",
-         },
-         [3] = {
-            specID = 267,
-            name = "Destruction",
-            iconID = 136186,
-            role = "DAMAGER",
-         },
-      },
-   },
-   [10] = {
-      className = "Monk",
-      classFile = "MONK",
-      classID = 10,
-      specs = {
-         [1] = {
-            specID = 268,
-            name = "Brewmaster",
-            iconID = 608951,
-            role = "TANK",
-         },
-         [2] = {
-            specID = 270,
-            name = "Mistweaver",
-            iconID = 608952,
-            role = "HEALER",
-         },
-         [3] = {
-            specID = 269,
-            name = "Windwalker",
-            iconID = 608953,
-            role = "DAMAGER",
-         },
-      },
-   },
-   [11] = {
-      className = "Druid",
-      classFile = "DRUID",
-      classID = 11,
-      specs = {
-         [1] = {
-            specID = 102,
-            name = "Balance",
-            iconID = 136096,
-            role = "DAMAGER",
-         },
-         [2] = {
-            specID = 103,
-            name = "Feral",
-            iconID = 132115,
-            role = "DAMAGER",
-         },
-         [3] = {
-            specID = 104,
-            name = "Guardian",
-            iconID = 132276,
-            role = "TANK",
-         },
-         [4] = {
-            specID = 105,
-            name = "Restoration",
-            iconID = 136041,
-            role = "HEALER",
-         },
-      },
-   },
-   [12] = {
-      className = "Demon Hunter",
-      classFile = "DEMONHUNTER",
-      classID = 12,
-      specs = {
-         [1] = {
-            specID = 577,
-            name = "Havoc",
-            iconID = 1247264,
-            role = "DAMAGER",
-         },
-         [2] = {
-            specID = 581,
-            name = "Vengeance",
-            iconID = 1247265,
-            role = "TANK",
-         },
-      },
-   },
+	[1] = {
+		className = "Warrior",
+		classFile = "WARRIOR",
+		classID = 1,
+		specs = {
+		[1] = {
+			specID = 71,
+			name = "Arms",
+			iconID = 132355,
+			role = "DAMAGER",
+		},
+		[2] = {
+			specID = 72,
+			name = "Fury",
+			iconID = 132347,
+			role = "DAMAGER",
+		},
+		[3] = {
+			specID = 73,
+			name = "Protection",
+			iconID = 132341,
+			role = "TANK",
+		},
+		},
+},
+	[2] = {
+		className = "Paladin",
+		classFile = "PALADIN",
+		classID = 2,
+		specs = {
+		[1] = {
+			specID = 65,
+			name = "Holy",
+			iconID = 135920,
+			role = "HEALER",
+		},
+		[2] = {
+			specID = 66,
+			name = "Protection",
+			iconID = 236264,
+			role = "TANK",
+		},
+		[3] = {
+			specID = 70,
+			name = "Retribution",
+			iconID = 135873,
+			role = "DAMAGER",
+		},
+		},
+},
+	[3] = {
+		className = "Hunter",
+		classFile = "HUNTER",
+		classID = 3,
+		specs = {
+		[1] = {
+			specID = 253,
+			name = "Beast Mastery",
+			iconID = 461112,
+			role = "DAMAGER",
+		},
+		[2] = {
+			specID = 254,
+			name = "Marksmanship",
+			iconID = 236179,
+			role = "DAMAGER",
+		},
+		[3] = {
+			specID = 255,
+			name = "Survival",
+			iconID = 461113,
+			role = "DAMAGER",
+		},
+		},
+},
+	[4] = {
+		className = "Rogue",
+		classFile = "ROGUE",
+		classID = 4,
+		specs = {
+		[1] = {
+			specID = 259,
+			name = "Assassination",
+			iconID = 236270,
+			role = "DAMAGER",
+		},
+		[2] = {
+			specID = 260,
+			name = "Outlaw",
+			iconID = 236286,
+			role = "DAMAGER",
+		},
+		[3] = {
+			specID = 261,
+			name = "Subtlety",
+			iconID = 132320,
+			role = "DAMAGER",
+		},
+		},
+},
+	[5] = {
+		className = "Priest",
+		classFile = "PRIEST",
+		classID = 5,
+		specs = {
+		[1] = {
+			specID = 256,
+			name = "Discipline",
+			iconID = 135940,
+			role = "HEALER",
+		},
+		[2] = {
+			specID = 257,
+			name = "Holy",
+			iconID = 237542,
+			role = "HEALER",
+		},
+		[3] = {
+			specID = 258,
+			name = "Shadow",
+			iconID = 136207,
+			role = "DAMAGER",
+		},
+		},
+},
+	[6] = {
+		className = "Death Knight",
+		classFile = "DEATHKNIGHT",
+		classID = 6,
+		specs = {
+		[1] = {
+			specID = 250,
+			name = "Blood",
+			iconID = 135770,
+			role = "TANK",
+		},
+		[2] = {
+			specID = 251,
+			name = "Frost",
+			iconID = 135773,
+			role = "DAMAGER",
+		},
+		[3] = {
+			specID = 252,
+			name = "Unholy",
+			iconID = 135775,
+			role = "DAMAGER",
+		},
+		},
+},
+	[7] = {
+		className = "Shaman",
+		classFile = "SHAMAN",
+		classID = 7,
+		specs = {
+		[1] = {
+			specID = 262,
+			name = "Elemental",
+			iconID = 136048,
+			role = "DAMAGER",
+		},
+		[2] = {
+			specID = 263,
+			name = "Enhancement",
+			iconID = 237581,
+			role = "DAMAGER",
+		},
+		[3] = {
+			specID = 264,
+			name = "Restoration",
+			iconID = 136052,
+			role = "HEALER",
+		},
+		},
+},
+	[8] = {
+		className = "Mage",
+		classFile = "MAGE",
+		classID = 8,
+		specs = {
+		[1] = {
+			specID = 62,
+			name = "Arcane",
+			iconID = 135932,
+			role = "DAMAGER",
+		},
+		[2] = {
+			specID = 63,
+			name = "Fire",
+			iconID = 135810,
+			role = "DAMAGER",
+		},
+		[3] = {
+			specID = 64,
+			name = "Frost",
+			iconID = 135846,
+			role = "DAMAGER",
+		},
+		},
+},
+	[9] = {
+		className = "Warlock",
+		classFile = "WARLOCK",
+		classID = 9,
+		specs = {
+		[1] = {
+			specID = 265,
+			name = "Affliction",
+			iconID = 136145,
+			role = "DAMAGER",
+		},
+		[2] = {
+			specID = 266,
+			name = "Demonology",
+			iconID = 136172,
+			role = "DAMAGER",
+		},
+		[3] = {
+			specID = 267,
+			name = "Destruction",
+			iconID = 136186,
+			role = "DAMAGER",
+		},
+		},
+},
+	[10] = {
+		className = "Monk",
+		classFile = "MONK",
+		classID = 10,
+		specs = {
+		[1] = {
+			specID = 268,
+			name = "Brewmaster",
+			iconID = 608951,
+			role = "TANK",
+		},
+		[2] = {
+			specID = 270,
+			name = "Mistweaver",
+			iconID = 608952,
+			role = "HEALER",
+		},
+		[3] = {
+			specID = 269,
+			name = "Windwalker",
+			iconID = 608953,
+			role = "DAMAGER",
+		},
+		},
+},
+	[11] = {
+		className = "Druid",
+		classFile = "DRUID",
+		classID = 11,
+		specs = {
+		[1] = {
+			specID = 102,
+			name = "Balance",
+			iconID = 136096,
+			role = "DAMAGER",
+		},
+		[2] = {
+			specID = 103,
+			name = "Feral",
+			iconID = 132115,
+			role = "DAMAGER",
+		},
+		[3] = {
+			specID = 104,
+			name = "Guardian",
+			iconID = 132276,
+			role = "TANK",
+		},
+		[4] = {
+			specID = 105,
+			name = "Restoration",
+			iconID = 136041,
+			role = "HEALER",
+		},
+		},
+},
+	[12] = {
+		className = "Demon Hunter",
+		classFile = "DEMONHUNTER",
+		classID = 12,
+		specs = {
+		[1] = {
+			specID = 577,
+			name = "Havoc",
+			iconID = 1247264,
+			role = "DAMAGER",
+		},
+		[2] = {
+			specID = 581,
+			name = "Vengeance",
+			iconID = 1247265,
+			role = "TANK",
+		},
+		},
+},
+	[13] = {
+		className = "Evoker",
+		classFile = "EVOKER",
+		classID = 13,
+		specs = {
+		[1] = {
+			specID = 1467,
+			name = "Devastation",
+			iconID = 4511811,
+			role = "DAMAGER",
+		},
+		[2] = {
+			specID = 1468,
+			name = "Preservation",
+			iconID = 4511812,
+			role = "HEALER",
+		},
+		},
+},
 }
 
 -- Above was exported with
@@ -871,7 +891,7 @@ local CLASS_INFO = {
 -- frame.exportFrame.edit:SetText(export)
 
 function GetNumClasses ()
-   return 12
+   return 13
 end
 
 function GetNumSpecializationsForClassID (classID)
