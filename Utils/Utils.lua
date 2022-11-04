@@ -123,7 +123,8 @@ end
 function Utils:GetNumFreeBagSlots()
    local result = 0
    for i = 1, _G.NUM_BAG_SLOTS do
-      result = result + (GetContainerNumFreeSlots(i))
+		result = result + (C_Container.GetContainerNumFreeSlots(i))
+
    end
    return result
 end

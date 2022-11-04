@@ -1304,10 +1304,11 @@ end
 function RCLootCouncil:GetAllItemsInBagsWithTradeTimer()
 	local items = {}
 	for container=0, _G.NUM_BAG_SLOTS do
-         for slot=1, GetContainerNumSlots(container) or 0 do
+         for slot=1, C_Container.GetContainerNumSlots(container) or 0 do
 			local time =self:GetContainerItemTradeTimeRemaining(container, slot)
 			if  time > 0 and time < math.huge then
-				tinsert(items, GetContainerItemLink(container, slot))
+				tinsert(items, C_Container.GetContainerItemLink(container, slot))
+
 			end
 		 end
 	end

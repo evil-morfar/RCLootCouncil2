@@ -32,7 +32,7 @@ local TRADE_ADD_DELAY = 0.100 -- sec
 -- lua
 local select, GetItemInfoInstant, pairs, ipairs,  unpack, tinsert, wipe, format, GetTime, InitiateTrade
     = select, GetItemInfoInstant, pairs, ipairs,  unpack, tinsert, wipe, format, GetTime, InitiateTrade
--- GLOBALS: GetContainerNumSlots, ClickTradeButton, PickupContainerItem, ClearCursor, GetContainerItemInfo, GetContainerItemLink, GetTradePlayerItemInfo,
+-- GLOBALS: ClickTradeButton, PickupContainerItem, ClearCursor, GetTradePlayerItemInfo,
 -- GLOBALS: IsModifiedClick, HandleModifiedItemClick, GetTradePlayerItemLink, Ambiguate
 
 function TradeUI:OnInitialize()
@@ -332,7 +332,8 @@ local function addItemToTradeWindow (tradeBtn, Item)
       addon:Print(L["trade_item_to_trade_not_found"])
       return addon.Log:E("TradeUI", "Item missing when attempting to trade", Item.link, TradeUI.tradeTarget)
    end
-   local _, _, _, _, _, _, link = GetContainerItemInfo(c, s)
+   local _, _, _, _, _, _, link = C_Container.GetContainerItemInfo(c, s)
+
    if addon:ItemIsItem(link, Item.link) then -- Extra check, probably also redundant
       addon.Log:d("Trading", link, c,s)
       ClearCursor()

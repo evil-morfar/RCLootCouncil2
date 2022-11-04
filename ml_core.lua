@@ -574,7 +574,8 @@ function RCLootCouncilML:HaveFreeSpaceForItem(item)
 	end
 	-- Get the bag's family
 	for bag = BACKPACK_CONTAINER, NUM_BAG_SLOTS do
-		local freeSlots, bagFamily = GetContainerNumFreeSlots(bag)
+		local freeSlots, bagFamily = C_Container.GetContainerNumFreeSlots(bag)
+
 		if freeSlots and freeSlots > 0 and (bagFamily == 0 or bit.band(itemFamily, bagFamily) > 0) then
 			return true
 		end
