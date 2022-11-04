@@ -966,10 +966,16 @@ function addon:OptionsTable()
 										desc = L["opt_autoAddPets_desc"],
 										type = "toggle",
 										get = function()
-											return not addon.blacklistedItemClasses[LE_ITEM_CLASS_MISCELLANEOUS][LE_ITEM_MISCELLANEOUS_COMPANION_PET]
+											return not
+												addon.blacklistedItemClasses[Enum.ItemClass.Miscellaneous][Enum.ItemMiscellaneousSubclass.CompanionPet]
+
+
 										end,
 										set = function(_, val)
-											addon.blacklistedItemClasses[LE_ITEM_CLASS_MISCELLANEOUS][LE_ITEM_MISCELLANEOUS_COMPANION_PET] = not val
+											addon.blacklistedItemClasses[Enum.ItemClass.Miscellaneous][Enum.ItemMiscellaneousSubclass.CompanionPet] = not
+
+												val
+
 										end
 									},
 									printCompletedTrades = {

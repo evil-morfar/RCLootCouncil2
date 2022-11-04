@@ -6,7 +6,9 @@
 
 Updated for Dragonflight prepatch.
 
-Added token data.
+Added token and trinket data.
+
+Added auto pass for Evokers.
 
 ### Add all tradeable items to session
 

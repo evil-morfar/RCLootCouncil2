@@ -119,6 +119,10 @@ globals = {
 	"Enum.TransmogCollectionType",
 	"Enum.TransmogType",
 	"Enum.WorldQuestQuality",
+	"Enum.ItemClass",
+	"Enum.ItemArmorSubclass",
+	"Enum.ItemWeaponSubclass",
+	"Enum.ItemMiscellaneousSubclass",
 
 
 	-- FrameXML frames
