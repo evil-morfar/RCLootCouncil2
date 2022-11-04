@@ -1671,9 +1671,9 @@ function RCLootCouncil:NewMLCheck()
 	local _, type = IsInInstance()
 	if type == "arena" or type == "pvp" then return end
 
-	if self.lootMethod == "personalloot" and db.usage.pl then -- auto start PL
+	if (self.lootMethod == "group" or self.lootMethod == "personalloot") and db.usage.pl then -- auto start PL
 		self:StartHandleLoot()
-	elseif self.lootMethod == "personalloot" and db.usage.ask_pl then
+	elseif (self.lootMethod == "group" or self.lootMethod == "personalloot") and db.usage.ask_pl then
 		return LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_USAGE")
 	end
 end
@@ -1681,8 +1681,8 @@ end
 --- Enables the addon to automatically handle looting
 function RCLootCouncil:StartHandleLoot()
 	local lootMethod = GetLootMethod()
-	if lootMethod ~= "personalloot" then -- Set it
-		SetLootMethod("personalloot")
+	if lootMethod ~= "group" and self.lootMethod ~= "personalloot" then -- Set it
+		SetLootMethod("group")
 	end
 	self:Print(L["Now handles looting"])
 	self.Log("Start handling loot")
