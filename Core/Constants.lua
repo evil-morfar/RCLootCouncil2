@@ -87,8 +87,10 @@ addon.INVTYPE_Slots = {
 addon.RESPONSE_CODE_GENERATORS = {
 	-- Pets 
 	function(_, db, _, _, itemClassID, itemSubClassID)
-		return db.enabledButtons.PETS and itemClassID == LE_ITEM_CLASS_MISCELLANEOUS and itemSubClassID
-						       == LE_ITEM_MISCELLANEOUS_COMPANION_PET and "PETS" or nil
+		return db.enabledButtons.PETS and itemClassID == Enum.ItemClass.Miscellaneous and itemSubClassID
+
+			== Enum.ItemMiscellaneousSubclass.CompanionPet and "PETS" or nil
+
 	end,
 
 	-- Beads and Spherules

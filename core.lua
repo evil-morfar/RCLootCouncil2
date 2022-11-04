@@ -280,6 +280,11 @@ function RCLootCouncil:OnEnable()
 	for event, method in pairs(self.coreEvents) do self:RegisterEvent(event, method) end
 	self:RegisterBucketEvent("GROUP_ROSTER_UPDATE", 5, "UpdateCandidatesInGroup")
 
+	if IsInGuild() then
+        self.guildRank = select(2, GetGuildInfo("player"))
+        self:ScheduleTimer("SendGuildVerTest", 2) -- send out a version check after a delay
+	end
+
 	-- For some reasons all frames are blank until ActivateSkin() is called, even though the values used
 	-- in the :CreateFrame() all :Prints as expected :o
 	self:ActivateSkin(db.currentSkin)
@@ -311,10 +316,11 @@ function RCLootCouncil:OnEnable()
 end
 
 function RCLootCouncil:OnDisable()
-	self.Log:Info("OnDisable()")
+	self.Log("OnDisable()")
 	self:UnregisterChatCommand("rc")
 	self:UnregisterChatCommand("rclc")
 	self:UnregisterAllEvents()
+	Comms:OnDisable()
 end
 
 function RCLootCouncil:ConfigTableChanged(val)
@@ -388,9 +394,7 @@ function RCLootCouncil:ChatCommand(msg)
 		self.Log:d("- clearLog - clear the debug log")
 
 	elseif input == 'config' or input == L["config"] or input == "c" or input == "opt" or input == "options" then
-		-- Call it twice, because reasons..
-		InterfaceOptionsFrame_OpenToCategory(self.optionsFrame)
-		InterfaceOptionsFrame_OpenToCategory(self.optionsFrame)
+		Settings.OpenToCategory(self.optionsFrame.name)
 		-- LibStub("AceConfigDialog-3.0"):Open("RCLootCouncil")
 
 	elseif input == 'debug' or input == 'd' then
@@ -407,8 +411,7 @@ function RCLootCouncil:ChatCommand(msg)
 		end
 
 	elseif input == 'council' or input == L["council"] then
-		InterfaceOptionsFrame_OpenToCategory(self.optionsFrame.ml)
-		InterfaceOptionsFrame_OpenToCategory(self.optionsFrame.ml)
+		Settings.OpenToCategory(self.optionsFrame.ml.name)
 		LibStub("AceConfigDialog-3.0"):SelectGroup("RCLootCouncil", "mlSettings", "councilTab")
 
 	elseif input == 'test' or input == L["test"] then
@@ -581,6 +584,17 @@ end
 
 function RCLootCouncil:ChatCmdAdd(args)
 	if not args[1] or args[1] == "" then return end -- We need at least 1 arg
+
+	-- Add all items in bags with trade timers
+	if args[1] == "bags" or args[1] == "all" then
+		local items = self:GetAllItemsInBagsWithTradeTimer()
+		self:Print(format(L["chat_cmd_add_found_items"], #items))
+		local player = self.player:GetName() -- Save the extra calls
+		for _, v in ipairs(items) do self:GetActiveModule("masterlooter"):AddUserItem(v, player) end
+		return
+	end
+
+	-- Add linked items
 	local owner
 	-- See if one of the args is a owner
 	if not args[1]:find("|") and type(tonumber(args[1])) ~= "number" then
@@ -781,11 +795,7 @@ function RCLootCouncil:Test(num, fullTest, trinketTest)
 	self:ScheduleTimer(function() self:Send("group", "l", 1234) end, 5)
 end
 
-local interface_options_old_cancel = InterfaceOptionsFrameCancel:GetScript("OnClick")
 function RCLootCouncil:EnterCombat()
-	-- Hack to remove CompactRaidGroup taint
-	-- Make clicking cancel the same as clicking okay
-	InterfaceOptionsFrameCancel:SetScript("OnClick", function() InterfaceOptionsFrameOkay:Click() end)
 	self.inCombat = true
 	if not db.minimizeInCombat then return end
 	for _, frame in ipairs(self.UI.minimizeableFrames) do
@@ -797,8 +807,6 @@ function RCLootCouncil:EnterCombat()
 end
 
 function RCLootCouncil:LeaveCombat()
-	-- Revert
-	InterfaceOptionsFrameCancel:SetScript("OnClick", interface_options_old_cancel)
 	self.inCombat = false
 	if not db.minimizeInCombat then return end
 	for _, frame in ipairs(self.UI.minimizeableFrames) do
@@ -1291,6 +1299,21 @@ function RCLootCouncil:GetContainerItemTradeTimeRemaining(container, slot)
 	end
 end
 
+--- Finds all items in players bags that has a trade timer.
+---@return itemLink[] items
+function RCLootCouncil:GetAllItemsInBagsWithTradeTimer()
+	local items = {}
+	for container=0, _G.NUM_BAG_SLOTS do
+         for slot=1, GetContainerNumSlots(container) or 0 do
+			local time =self:GetContainerItemTradeTimeRemaining(container, slot)
+			if  time > 0 and time < math.huge then
+				tinsert(items, GetContainerItemLink(container, slot))
+			end
+		 end
+	end
+	return items
+end
+
 function RCLootCouncil:IsItemBoE(item)
 	if not item then return false end
 	-- Item binding type: 0 - none; 1 - on pickup; 2 - on equip; 3 - on use; 4 - quest.
@@ -1301,10 +1324,6 @@ function RCLootCouncil:IsItemBoP(item)
 	if not item then return false end
 	-- Item binding type: 0 - none; 1 - on pickup; 2 - on equip; 3 - on use; 4 - quest.
 	return select(14, GetItemInfo(item)) == LE_ITEM_BIND_ON_ACQUIRE
-end
-
-function RCLootCouncil:IsRelicTypeID(typeID, subTypeID)
-	return typeID == LE_ITEM_CLASS_GEM and subTypeID == LE_ITEM_GEM_ARTIFACTRELIC
 end
 
 function RCLootCouncil:GetPlayersGuildRank()
@@ -1556,7 +1575,7 @@ function RCLootCouncil:OnEvent(event, ...)
 				if guid and self.lootGUIDToIgnore[guid] then return self.Log:d("Ignoring loot from ignored source", guid) end
 				if texture then
 					local link = GetLootSlotLink(i)
-					if currencyID then
+					if currencyID or quantity == 0 then
 						self.Log:d("Ignoring", link, "as it's a currency")
 					elseif not self.Utils:IsItemBlacklisted(link) then
 						self.Log:d("Adding to self.lootSlotInfo", i, link, quality, quantity, GetLootSourceInfo(i))
@@ -1648,9 +1667,9 @@ function RCLootCouncil:NewMLCheck()
 	local _, type = IsInInstance()
 	if type == "arena" or type == "pvp" then return end
 
-	if self.lootMethod == "personalloot" and db.usage.pl then -- auto start PL
+	if (self.lootMethod == "group" or self.lootMethod == "personalloot") and db.usage.pl then -- auto start PL
 		self:StartHandleLoot()
-	elseif self.lootMethod == "personalloot" and db.usage.ask_pl then
+	elseif (self.lootMethod == "group" or self.lootMethod == "personalloot") and db.usage.ask_pl then
 		return LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_USAGE")
 	end
 end
@@ -1658,8 +1677,8 @@ end
 --- Enables the addon to automatically handle looting
 function RCLootCouncil:StartHandleLoot()
 	local lootMethod = GetLootMethod()
-	if lootMethod ~= "personalloot" then -- Set it
-		SetLootMethod("personalloot")
+	if lootMethod ~= "group" and self.lootMethod ~= "personalloot" then -- Set it
+		SetLootMethod("group")
 	end
 	self:Print(L["Now handles looting"])
 	self.Log("Start handling loot")
@@ -2235,11 +2254,6 @@ function RCLootCouncil:GetItemTypeText(link, subType, equipLoc, typeID, subTypeI
 		else
 			return tokenText
 		end
-	elseif self:IsRelicTypeID(typeID, subTypeID) then
-		relicType = relicType or select(3, C_ArtifactUI.GetRelicInfoByItemID(id)) or ""
-		local localizedRelicType = getglobal("RELIC_SLOT_TYPE_" .. relicType:upper()) or ""
-		local relicTooltipName = format(RELIC_TOOLTIP_TYPE, localizedRelicType)
-		return relicTooltipName
 	elseif equipLoc ~= "" and getglobal(equipLoc) then
 		if equipLoc == "INVTYPE_TRINKET" then
 			local lootSpec = _G.RCTrinketSpecs[id]
@@ -2250,9 +2264,18 @@ function RCLootCouncil:GetItemTypeText(link, subType, equipLoc, typeID, subTypeI
 				return getglobal(equipLoc)
 			end
 		elseif equipLoc ~= "INVTYPE_CLOAK"
-						and ((not (typeID == LE_ITEM_CLASS_MISCELLANEOUS and subTypeID == LE_ITEM_MISCELLANEOUS_JUNK)) -- subType: "Junk"
-										and (not (typeID == LE_ITEM_CLASS_ARMOR and subTypeID == LE_ITEM_ARMOR_GENERIC)) -- subType: "Miscellaneous"
-										and (not (typeID == LE_ITEM_CLASS_WEAPON and subTypeID == LE_ITEM_WEAPON_GENERIC))) then -- subType: "Miscellaneous"
+			and
+			(
+			(not (typeID == Enum.ItemClass.Miscellaneous and subTypeID == Enum.ItemMiscellaneousSubclass.Junk)) -- subType: "Junk"
+
+
+				and (not (typeID == Enum.ItemClass.Armor and subTypeID == Enum.ItemArmorSubclass.Generic))
+				-- subType: "Miscellaneous"
+
+
+				and (not (typeID == Enum.ItemClass.Weapon and subTypeID == Enum.ItemWeaponSubclass.Generic))) then -- subType: "Miscellaneous"
+
+
 			return getglobal(equipLoc) .. ", " .. (subType or "") -- getGlobal to translate from global constant to localized name
 		else
 			return getglobal(equipLoc)

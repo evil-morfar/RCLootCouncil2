@@ -10,7 +10,7 @@
 
 --- @class RCLootCouncil
 local addon = select(2, ...)
---- @class TradeUI : AceEvent-3.0, ceTimer-3.0
+--- @class TradeUI : AceEvent-3.0, AceTimer-3.0
 local TradeUI = addon:NewModule("TradeUI", "AceEvent-3.0", "AceTimer-3.0")
 addon.TradeUI = TradeUI -- Shorthand for easier access
 local ST = LibStub("ScrollingTable")
@@ -30,8 +30,8 @@ local UPDATE_TIME_INTERVAL = 1 -- 1 sec
 local TRADE_ADD_DELAY = 0.100 -- sec
 
 -- lua
-local select, GetItemInfoInstant, pairs, ipairs,  unpack, tinsert, wipe, format, GetTime, CheckInteractDistance, InitiateTrade
-    = select, GetItemInfoInstant, pairs, ipairs,  unpack, tinsert, wipe, format, GetTime, CheckInteractDistance, InitiateTrade
+local select, GetItemInfoInstant, pairs, ipairs,  unpack, tinsert, wipe, format, GetTime, InitiateTrade
+    = select, GetItemInfoInstant, pairs, ipairs,  unpack, tinsert, wipe, format, GetTime, InitiateTrade
 -- GLOBALS: GetContainerNumSlots, ClickTradeButton, PickupContainerItem, ClearCursor, GetContainerItemInfo, GetContainerItemLink, GetTradePlayerItemInfo,
 -- GLOBALS: IsModifiedClick, HandleModifiedItemClick, GetTradePlayerItemLink, Ambiguate
 
@@ -89,7 +89,9 @@ end
 function TradeUI:Hide()
    addon.Log:d("TradeUI:Hide()")
    self:CancelTimer(update_targets_timer)
-   self.frame:Hide()
+   if self.frame then
+      self.frame:Hide()
+   end
 end
 
 function TradeUI:Update(forceShow)
@@ -173,6 +175,12 @@ local function getItemFromLootSession(item, session, winner)
    -- If we still haven't found it, then create a new
    return addon.ItemStorage:New(item, "to_trade", {recipient = winner, session = session}):Store()
 end
+
+-- These functions will be used multiple times, so make them static
+local funcTradeTargetIsRecipient = function(v) return addon:UnitIsUnit(TradeUI.tradeTarget, v.args.recipient) end  -- Our trade target is the winner
+local funcItemHasMoreTimeLeft    = function(v) return GetTime() < (v.time_added + v.time_remaining) end            -- There's still time remaining
+local funcStorageTypeIsToTrade   = function(v) return v.type == "to_trade" end                                     -- The stored item type is "to_trade"
+
 
 function TradeUI:OnAwardReceived (session, winner, trader)
    if addon:UnitIsUnit(trader, "player") then
@@ -271,8 +279,21 @@ function TradeUI:OnEvent_UI_INFO_MESSAGE (event, ...)
    if select(1, ...) == _G.LE_GAME_ERR_TRADE_COMPLETE then -- Trade complete. Remove items from db.baggedItems if traded to winners
       addon.Log:d("TradeUI: Traded item(s) to", self.tradeTarget)
       for _, link in ipairs(self.tradeItems) do
-         local Item = addon.ItemStorage:GetItem(link)
-         if Item and Item.type and Item.type == "to_trade" then
+         -- At this point we know we've traded a certain item to a certain player.
+         -- We now need to find that item in our storage. There might be several such items,
+         -- so we should select the one belonging to our trade target (if possible!),
+         -- otherwise just the first we find.
+         local Items = addon.ItemStorage:GetAllItemsMultiPred(funcStorageTypeIsToTrade,
+            function(v) return addon:ItemIsItem(v.link, link) end)
+         local Item
+         if #Items > 0 then
+            -- Try get the first item belonging to our trade target
+            Item = select(2, FindInTableIf(Items, funcTradeTargetIsRecipient))
+            if not Item then
+               Item = Items[1]
+            end
+         end
+         if Item then
             if addon:UnitIsUnit(self.tradeTarget, Item.args.recipient) then
                addon:Send("group", "trade_complete", link, self.tradeTarget, addon.playerName)
             elseif Item.args.recipient and not addon:UnitIsUnit(self.tradeTarget, Item.args.recipient) then
@@ -284,17 +305,12 @@ function TradeUI:OnEvent_UI_INFO_MESSAGE (event, ...)
                addon.Log:D("Target:", UnitName("target"))
                addon.Log:D("NPC:", UnitName("NPC"))
             end
+            addon.ItemStorage:RemoveItem(Item)
          end
-         addon.ItemStorage:RemoveItem(link)
       end
       self:Update()
    end
 end
-
--- These functions will be used multiple times, so make them static
-local funcTradeTargetIsRecipient = function(v) return addon:UnitIsUnit(TradeUI.tradeTarget, v.args.recipient) end  -- Our trade target is the winner
-local funcItemHasMoreTimeLeft    = function(v) return GetTime() < (v.time_added + v.time_remaining) end            -- There's still time remaining
-local funcStorageTypeIsToTrade   = function(v) return v.type == "to_trade" end                                     -- The stored item type is "to_trade"
 
 function TradeUI:GetNumAwardedInBagsToTradeWindow()
    return #addon.ItemStorage:GetAllItemsMultiPred(

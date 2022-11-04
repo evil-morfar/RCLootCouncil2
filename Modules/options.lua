@@ -310,7 +310,7 @@ function addon:OptionsTable()
 										desc = L["test_desc"],
 										type = "execute",
 										func = function()
-											InterfaceOptionsFrame:Hide(); -- close all option frames before testing
+											SettingsPanel:ExitWithoutCommit() -- close all option frames before testing
 											self:Test(3)
 										end,
 									},
@@ -320,7 +320,7 @@ function addon:OptionsTable()
 										type = "execute",
 										order = 9,
 										func = function()
-											InterfaceOptionsFrame:Hide()
+											SettingsPanel:ExitWithoutCommit()
 											LibStub("AceConfigDialog-3.0"):CloseAll()
 											addon:CallModule("version")
 										end,
@@ -331,7 +331,7 @@ function addon:OptionsTable()
 										desc = L["Opens the synchronizer"],
 										type = "execute",
 										func = function()
-											InterfaceOptionsFrame:Hide()
+											SettingsPanel:ExitWithoutCommit()
 											LibStub("AceConfigDialog-3.0"):CloseAll()
 											self.Sync:Enable()
 										end,
@@ -472,7 +472,7 @@ function addon:OptionsTable()
 										name = L["Open the Loot History"],
 										desc = L["open_the_loot_history_desc"],
 										type = "execute",
-										func = function() self:CallModule("history");	_G.InterfaceOptionsFrame:Hide();end,
+										func = function() self:CallModule("history");	SettingsPanel:ExitWithoutCommit();end,
 									},
 									clearLootDB = {
 										order = 6,
@@ -966,10 +966,16 @@ function addon:OptionsTable()
 										desc = L["opt_autoAddPets_desc"],
 										type = "toggle",
 										get = function()
-											return not addon.blacklistedItemClasses[LE_ITEM_CLASS_MISCELLANEOUS][LE_ITEM_MISCELLANEOUS_COMPANION_PET]
+											return not
+												addon.blacklistedItemClasses[Enum.ItemClass.Miscellaneous][Enum.ItemMiscellaneousSubclass.CompanionPet]
+
+
 										end,
 										set = function(_, val)
-											addon.blacklistedItemClasses[LE_ITEM_CLASS_MISCELLANEOUS][LE_ITEM_MISCELLANEOUS_COMPANION_PET] = not val
+											addon.blacklistedItemClasses[Enum.ItemClass.Miscellaneous][Enum.ItemMiscellaneousSubclass.CompanionPet] = not
+
+												val
+
 										end
 									},
 									printCompletedTrades = {

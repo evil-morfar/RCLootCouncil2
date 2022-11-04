@@ -1,197 +1,31 @@
 local _G = getfenv(0)
+require "/wow_api/API/Mixin"
+require "/wow_api/API/Color"
+require "/wow_api/API/TableUtil"
+require "/wow_api/FrameAPI/Frames/Frame"
+require "/wow_api/FrameAPI/Frames/Button"
+require "/wow_api/FrameAPI/Frames/GameTooltip"
 local strbyte, strchar, gsub, gmatch, format, tinsert = string.byte, string.char, string.gsub, string.gmatch, string.format, table.insert
 
 local donothing = function() end
 
-local frames = {} -- Stores globally created frames, and their internal properties.
+local frames = {}
 
-local FrameClass = {} -- A class for creating frames.
-FrameClass.methods = { "GetName", "SetAttribute", "SetScript", "GetScript", "RegisterEvent", "UnregisterEvent", "UnregisterAllEvents", "Show", "Hide", "IsShown", "ClearAllPoints", "SetParent","SetPoint","SetFrameStrata","SetAllPoints", "SetBackdrop","EnableMouse","SetBackdropColor", "SetBackdropBorderColor", "CreateFontString", "SetWidth","SetHeight","SetSize", "GetParent", "SetFrameLevel", "GetFrameLevel", "SetNormalTexture","GetNormalTexture","SetPushedTexture","GetPushedTexture","SetHighlightTexture","GetHighlightTexture", "CreateTexture", "SetFontString","SetNormalFontObject","SetHighlightFontObject","SetDisabledFontObject", "SetID","SetText", "SetToplevel" }
-function FrameClass:New()
-   local frame = {}
-   for i, method in ipairs(self.methods) do
-      frame[method] = self[method]
+function CreateFrame(kind, name, parent)
+   local frame
+   if kind == "Frame" then
+      frame = _G.Frame.New(name, parent)
+   elseif kind == "Button" then
+      frame = _G.Button.New(name, parent)
+   elseif kind == "GameTooltip" then
+      frame = _G.GameTooltip.New(name, parent)
+   else
+      -- Default to frame (for handling kinds we haven't implemented)
+      frame = _G.Frame.New(name, parent)
    end
-   local frameProps = {
-      events = {},
-      scripts = {},
-      values = {},
-      timer = GetTime(),
-      isShow = true,
-      parent = nil,
-   }
-   return frame, frameProps
-end
-function FrameClass:GetName()
-   return frames[self].name
-end
-function FrameClass:SetScript(script, handler)
-   frames[self].scripts[script] = handler
-end
-function FrameClass:GetScript (script)
-   return frames[self].scripts[script]
-end
-function FrameClass:RegisterEvent(event)
-   frames[self].events[event] = true
-end
-function FrameClass:UnregisterEvent(event)
-   frames[self].events[event] = nil
-end
-function FrameClass:UnregisterAllEvents(frame)
-   for event in pairs(frames[self].events) do
-      frames[self].events[event] = nil
-   end
-end
-function FrameClass:Show()
-   frames[self].isShow = true
-end
-function FrameClass:Hide()
-   frames[self].isShow = false
-end
-function FrameClass:IsShown()
-   return frames[self].isShow
-end
-function FrameClass:ClearAllPoints()
-end
-function FrameClass:SetParent(parent)
-   frames[self].parent = parent
-end
-function FrameClass:SetPoint (...)
-   -- body...
-end
-function FrameClass:SetFrameStrata (...)
-   -- body...
-end
-function FrameClass:EnableMouse (...)
-   -- body...
-end
-function FrameClass:SetAllPoints (...)
-   -- body...
-end
-function FrameClass:SetBackdrop (...)
-   -- body...
-end
-function FrameClass:SetBackdropColor (...)
-   -- body...
-end
-function FrameClass:SetBackdropBorderColor (...)
-   -- body...
-end
-function FrameClass:SetWidth (...)
-   -- body...
-end
-function FrameClass:SetHeight (...)
-   -- body...
-end
-function FrameClass:SetSize (h,w)
-   self:SetHeight(h)
-   self:SetWidth(w)
-end
-function FrameClass:SetNormalTexture (...)
-
-end
-function FrameClass:GetNormalTexture (...)
-   return self:CreateTexture()
-end
-function FrameClass:SetPushedTexture (...)
-
-end
-function FrameClass:GetPushedTexture (...)
-   return self:CreateTexture()
-end
-function FrameClass:SetHighlightTexture (...)
-
-end
-function FrameClass:GetHighlightTexture (...)
-   return self:CreateTexture()
-end
-function FrameClass:SetFontString (...)
-   -- body...
-end
-function FrameClass:SetNormalFontObject (...)end
-function FrameClass:SetHighlightFontObject (...)end
-function FrameClass:SetDisabledFontObject (...)end
-function FrameClass:SetID (...)end
-function FrameClass:SetText (...)end
-function FrameClass:SetToplevel (...)end
-function FrameClass:SetAttribute (...)end
-function FrameClass:GetParent (...)
-   return frames[self].parent
-end
-function FrameClass:SetFrameLevel (lvl)
-   frames[self].values.FrameLevel = lvl
-end
-function FrameClass:GetFrameLevel (...)
-   return frames[self].values.FrameLevel or 0
-end
-
-
-local sharedFrameMeta = {
-   __index = {
-      SetTexture = function (args)
-         -- body...
-      end,
-      SetTexCoord = function (args)
-         -- body...
-      end,
-      SetBlendMode = function (args)
-         -- body...
-      end,
-      SetVertexColor = function (args)
-         -- body...
-      end,
-      SetNormalTexture = function (args)
-         -- body...
-      end,
-      SetDisabledTexture = function() end,
-      SetWidth = function() end,
-      SetHeight = function() end,
-      SetSize = function(self, w, h)
-         self:SetHeight(h)
-         self:SetWidth(w)
-      end,
-      SetPoint = function (args)
-         -- body...
-      end,
-   }
-}
-
-function FrameClass:CreateFontString () -- Very much a mock
-   return setmetatable(
-      {
-         SetJustifyH = function (args)
-            -- body...
-         end,
-         SetJustifyV = function (args)
-            -- body...
-         end,
-         SetText = function (args)
-            -- body...
-         end,
-
-         SetWordWrap = function() end,
-      }, 
-      sharedFrameMeta)
-end
-
-function FrameClass:CreateTexture (name, strata)
-   local texture = CreateFrame("Texture", name, self)
-   return setmetatable(texture, sharedFrameMeta)
-end
-
-local function CreateButton(frame)
-   local mt = {
-      __index = {
-         OnClick = function() end,
-         Enable = function() end,
-         Disable = function() end,
-         SetMotionScriptsWhileDisabled = function() end,
-
-      }
-   }
-   -- Inherit from sharedFrameMeta
-   MergeTable(mt.__index, sharedFrameMeta.__index)
-   return setmetatable(frame, mt)
+   frames[frame] = true
+   if name then _G[name] = frame end
+   return frame
 end
 
 -- Extra hack as I didn't want to implement logic for all the UI functions
@@ -206,9 +40,11 @@ MSA_DropDownList1Button1NormalText = {
 -- Try to recreate that here.
 local orig_xpcall = xpcall
 function xpcall (f, err, ...)
+   -- Need to handle 5.1 case
+   if select("#", ...) == 0 then return orig_xpcall(f, err) end
    local status, code = pcall(f, ...)
    if not status then
-      return err(code)
+      return status, err(code)
    else
       return status, code
    end
@@ -224,21 +60,6 @@ end
 
 function LoadAddOn (args)
    return "Not implemented!"
-end
-
-function CreateFrame(kind, name, parent)
-   local frame, internal = FrameClass:New()
-   internal.parent = parent
-   internal.name = name
-   frames[frame] = internal
-   if name then
-      _G[name] = frame
-   end
-   if kind == "Button" then
-      return CreateButton(frame)
-   else
-      return frame
-   end
 end
 
 function UnitName(unit)
@@ -536,14 +357,14 @@ GREEN_FONT_COLOR_CODE = ""
 StaticPopupDialogs = {}
 
 function WoWAPI_FireEvent(event, ...)
-   for frame, props in pairs(frames) do
-      if props.events[event] then
-         if props.scripts["OnEvent"] then
+   for frame in pairs(frames) do
+      if frame.events[event] then
+         if frame.scripts["OnEvent"] then
             for i = 1, select('#', ...) do
                _G["arg"..i] = select(i, ...)
             end
             _G.event = event
-            props.scripts["OnEvent"](frame, event, ...)
+            frame.scripts["OnEvent"](frame, event, ...)
          end
       end
    end
@@ -554,14 +375,14 @@ function WoWAPI_FireUpdate(forceNow)
       _time = forceNow
    end
    local now = GetTime()
-   for frame, props in pairs(frames) do
-      if props.isShow and props.scripts.OnUpdate then
+   for frame in pairs(frames) do
+      if frame.isShown and frame.scripts.OnUpdate then
          if now == 0 then
-            props.timer = 0 -- reset back in case we reset the clock for more testing
+            frame.timer = 0 -- reset back in case we reset the clock for more testing
          end
-         _G.arg1 = now - props.timer
-         props.scripts.OnUpdate(frame, now - props.timer)
-         props.timer = now
+         _G.arg1 = now - frame.timer
+         frame.scripts.OnUpdate(frame, now - frame.timer)
+         frame.timer = now
       end
    end
 end
@@ -640,8 +461,18 @@ function GetStoredPlayerNameToGUID(name)
    return name and playerNameToGUID[name] or playerNameToGUID.Player1
 end
 
+function UnitIsUnit(u1, u2)
+   if u1 == "player" then
+      return "player1" == u2
+   elseif u2 == "player" then 
+      return u1 == "player1"
+   end
+   return u1 == u2
+end
+
 function UnitGUID (name)
    if name == "player" then return playerNameToGUID.Player1.guid end
+   name = Ambiguate(name, "short")
    return playerNameToGUID[name] and playerNameToGUID[name].guid or nil
 end
 
@@ -704,310 +535,330 @@ CLASS_SORT_ORDER = {
 	"WARLOCK",
 	"HUNTER",
 	"DEMONHUNTER",
+   "EVOKER"
 };
 MAX_CLASSES = #CLASS_SORT_ORDER;
 
 local CLASS_INFO = {
-   [1] = {
-      className = "Warrior",
-      classFile = "WARRIOR",
-      classID = 1,
-      specs = {
-         [1] = {
-            specID = 71,
-            name = "Arms",
-            iconID = 132355,
-            role = "DAMAGER",
-         },
-         [2] = {
-            specID = 72,
-            name = "Fury",
-            iconID = 132347,
-            role = "DAMAGER",
-         },
-         [3] = {
-            specID = 73,
-            name = "Protection",
-            iconID = 132341,
-            role = "TANK",
-         },
-      },
-   },
-   [2] = {
-      className = "Paladin",
-      classFile = "PALADIN",
-      classID = 2,
-      specs = {
-         [1] = {
-            specID = 65,
-            name = "Holy",
-            iconID = 135920,
-            role = "HEALER",
-         },
-         [2] = {
-            specID = 66,
-            name = "Protection",
-            iconID = 236264,
-            role = "TANK",
-         },
-         [3] = {
-            specID = 70,
-            name = "Retribution",
-            iconID = 135873,
-            role = "DAMAGER",
-         },
-      },
-   },
-   [3] = {
-      className = "Hunter",
-      classFile = "HUNTER",
-      classID = 3,
-      specs = {
-         [1] = {
-            specID = 253,
-            name = "Beast Mastery",
-            iconID = 461112,
-            role = "DAMAGER",
-         },
-         [2] = {
-            specID = 254,
-            name = "Marksmanship",
-            iconID = 236179,
-            role = "DAMAGER",
-         },
-         [3] = {
-            specID = 255,
-            name = "Survival",
-            iconID = 461113,
-            role = "DAMAGER",
-         },
-      },
-   },
-   [4] = {
-      className = "Rogue",
-      classFile = "ROGUE",
-      classID = 4,
-      specs = {
-         [1] = {
-            specID = 259,
-            name = "Assassination",
-            iconID = 236270,
-            role = "DAMAGER",
-         },
-         [2] = {
-            specID = 260,
-            name = "Outlaw",
-            iconID = 236286,
-            role = "DAMAGER",
-         },
-         [3] = {
-            specID = 261,
-            name = "Subtlety",
-            iconID = 132320,
-            role = "DAMAGER",
-         },
-      },
-   },
-   [5] = {
-      className = "Priest",
-      classFile = "PRIEST",
-      classID = 5,
-      specs = {
-         [1] = {
-            specID = 256,
-            name = "Discipline",
-            iconID = 135940,
-            role = "HEALER",
-         },
-         [2] = {
-            specID = 257,
-            name = "Holy",
-            iconID = 237542,
-            role = "HEALER",
-         },
-         [3] = {
-            specID = 258,
-            name = "Shadow",
-            iconID = 136207,
-            role = "DAMAGER",
-         },
-      },
-   },
-   [6] = {
-      className = "Death Knight",
-      classFile = "DEATHKNIGHT",
-      classID = 6,
-      specs = {
-         [1] = {
-            specID = 250,
-            name = "Blood",
-            iconID = 135770,
-            role = "TANK",
-         },
-         [2] = {
-            specID = 251,
-            name = "Frost",
-            iconID = 135773,
-            role = "DAMAGER",
-         },
-         [3] = {
-            specID = 252,
-            name = "Unholy",
-            iconID = 135775,
-            role = "DAMAGER",
-         },
-      },
-   },
-   [7] = {
-      className = "Shaman",
-      classFile = "SHAMAN",
-      classID = 7,
-      specs = {
-         [1] = {
-            specID = 262,
-            name = "Elemental",
-            iconID = 136048,
-            role = "DAMAGER",
-         },
-         [2] = {
-            specID = 263,
-            name = "Enhancement",
-            iconID = 237581,
-            role = "DAMAGER",
-         },
-         [3] = {
-            specID = 264,
-            name = "Restoration",
-            iconID = 136052,
-            role = "HEALER",
-         },
-      },
-   },
-   [8] = {
-      className = "Mage",
-      classFile = "MAGE",
-      classID = 8,
-      specs = {
-         [1] = {
-            specID = 62,
-            name = "Arcane",
-            iconID = 135932,
-            role = "DAMAGER",
-         },
-         [2] = {
-            specID = 63,
-            name = "Fire",
-            iconID = 135810,
-            role = "DAMAGER",
-         },
-         [3] = {
-            specID = 64,
-            name = "Frost",
-            iconID = 135846,
-            role = "DAMAGER",
-         },
-      },
-   },
-   [9] = {
-      className = "Warlock",
-      classFile = "WARLOCK",
-      classID = 9,
-      specs = {
-         [1] = {
-            specID = 265,
-            name = "Affliction",
-            iconID = 136145,
-            role = "DAMAGER",
-         },
-         [2] = {
-            specID = 266,
-            name = "Demonology",
-            iconID = 136172,
-            role = "DAMAGER",
-         },
-         [3] = {
-            specID = 267,
-            name = "Destruction",
-            iconID = 136186,
-            role = "DAMAGER",
-         },
-      },
-   },
-   [10] = {
-      className = "Monk",
-      classFile = "MONK",
-      classID = 10,
-      specs = {
-         [1] = {
-            specID = 268,
-            name = "Brewmaster",
-            iconID = 608951,
-            role = "TANK",
-         },
-         [2] = {
-            specID = 270,
-            name = "Mistweaver",
-            iconID = 608952,
-            role = "HEALER",
-         },
-         [3] = {
-            specID = 269,
-            name = "Windwalker",
-            iconID = 608953,
-            role = "DAMAGER",
-         },
-      },
-   },
-   [11] = {
-      className = "Druid",
-      classFile = "DRUID",
-      classID = 11,
-      specs = {
-         [1] = {
-            specID = 102,
-            name = "Balance",
-            iconID = 136096,
-            role = "DAMAGER",
-         },
-         [2] = {
-            specID = 103,
-            name = "Feral",
-            iconID = 132115,
-            role = "DAMAGER",
-         },
-         [3] = {
-            specID = 104,
-            name = "Guardian",
-            iconID = 132276,
-            role = "TANK",
-         },
-         [4] = {
-            specID = 105,
-            name = "Restoration",
-            iconID = 136041,
-            role = "HEALER",
-         },
-      },
-   },
-   [12] = {
-      className = "Demon Hunter",
-      classFile = "DEMONHUNTER",
-      classID = 12,
-      specs = {
-         [1] = {
-            specID = 577,
-            name = "Havoc",
-            iconID = 1247264,
-            role = "DAMAGER",
-         },
-         [2] = {
-            specID = 581,
-            name = "Vengeance",
-            iconID = 1247265,
-            role = "TANK",
-         },
-      },
-   },
+	[1] = {
+		className = "Warrior",
+		classFile = "WARRIOR",
+		classID = 1,
+		specs = {
+		[1] = {
+			specID = 71,
+			name = "Arms",
+			iconID = 132355,
+			role = "DAMAGER",
+		},
+		[2] = {
+			specID = 72,
+			name = "Fury",
+			iconID = 132347,
+			role = "DAMAGER",
+		},
+		[3] = {
+			specID = 73,
+			name = "Protection",
+			iconID = 132341,
+			role = "TANK",
+		},
+		},
+},
+	[2] = {
+		className = "Paladin",
+		classFile = "PALADIN",
+		classID = 2,
+		specs = {
+		[1] = {
+			specID = 65,
+			name = "Holy",
+			iconID = 135920,
+			role = "HEALER",
+		},
+		[2] = {
+			specID = 66,
+			name = "Protection",
+			iconID = 236264,
+			role = "TANK",
+		},
+		[3] = {
+			specID = 70,
+			name = "Retribution",
+			iconID = 135873,
+			role = "DAMAGER",
+		},
+		},
+},
+	[3] = {
+		className = "Hunter",
+		classFile = "HUNTER",
+		classID = 3,
+		specs = {
+		[1] = {
+			specID = 253,
+			name = "Beast Mastery",
+			iconID = 461112,
+			role = "DAMAGER",
+		},
+		[2] = {
+			specID = 254,
+			name = "Marksmanship",
+			iconID = 236179,
+			role = "DAMAGER",
+		},
+		[3] = {
+			specID = 255,
+			name = "Survival",
+			iconID = 461113,
+			role = "DAMAGER",
+		},
+		},
+},
+	[4] = {
+		className = "Rogue",
+		classFile = "ROGUE",
+		classID = 4,
+		specs = {
+		[1] = {
+			specID = 259,
+			name = "Assassination",
+			iconID = 236270,
+			role = "DAMAGER",
+		},
+		[2] = {
+			specID = 260,
+			name = "Outlaw",
+			iconID = 236286,
+			role = "DAMAGER",
+		},
+		[3] = {
+			specID = 261,
+			name = "Subtlety",
+			iconID = 132320,
+			role = "DAMAGER",
+		},
+		},
+},
+	[5] = {
+		className = "Priest",
+		classFile = "PRIEST",
+		classID = 5,
+		specs = {
+		[1] = {
+			specID = 256,
+			name = "Discipline",
+			iconID = 135940,
+			role = "HEALER",
+		},
+		[2] = {
+			specID = 257,
+			name = "Holy",
+			iconID = 237542,
+			role = "HEALER",
+		},
+		[3] = {
+			specID = 258,
+			name = "Shadow",
+			iconID = 136207,
+			role = "DAMAGER",
+		},
+		},
+},
+	[6] = {
+		className = "Death Knight",
+		classFile = "DEATHKNIGHT",
+		classID = 6,
+		specs = {
+		[1] = {
+			specID = 250,
+			name = "Blood",
+			iconID = 135770,
+			role = "TANK",
+		},
+		[2] = {
+			specID = 251,
+			name = "Frost",
+			iconID = 135773,
+			role = "DAMAGER",
+		},
+		[3] = {
+			specID = 252,
+			name = "Unholy",
+			iconID = 135775,
+			role = "DAMAGER",
+		},
+		},
+},
+	[7] = {
+		className = "Shaman",
+		classFile = "SHAMAN",
+		classID = 7,
+		specs = {
+		[1] = {
+			specID = 262,
+			name = "Elemental",
+			iconID = 136048,
+			role = "DAMAGER",
+		},
+		[2] = {
+			specID = 263,
+			name = "Enhancement",
+			iconID = 237581,
+			role = "DAMAGER",
+		},
+		[3] = {
+			specID = 264,
+			name = "Restoration",
+			iconID = 136052,
+			role = "HEALER",
+		},
+		},
+},
+	[8] = {
+		className = "Mage",
+		classFile = "MAGE",
+		classID = 8,
+		specs = {
+		[1] = {
+			specID = 62,
+			name = "Arcane",
+			iconID = 135932,
+			role = "DAMAGER",
+		},
+		[2] = {
+			specID = 63,
+			name = "Fire",
+			iconID = 135810,
+			role = "DAMAGER",
+		},
+		[3] = {
+			specID = 64,
+			name = "Frost",
+			iconID = 135846,
+			role = "DAMAGER",
+		},
+		},
+},
+	[9] = {
+		className = "Warlock",
+		classFile = "WARLOCK",
+		classID = 9,
+		specs = {
+		[1] = {
+			specID = 265,
+			name = "Affliction",
+			iconID = 136145,
+			role = "DAMAGER",
+		},
+		[2] = {
+			specID = 266,
+			name = "Demonology",
+			iconID = 136172,
+			role = "DAMAGER",
+		},
+		[3] = {
+			specID = 267,
+			name = "Destruction",
+			iconID = 136186,
+			role = "DAMAGER",
+		},
+		},
+},
+	[10] = {
+		className = "Monk",
+		classFile = "MONK",
+		classID = 10,
+		specs = {
+		[1] = {
+			specID = 268,
+			name = "Brewmaster",
+			iconID = 608951,
+			role = "TANK",
+		},
+		[2] = {
+			specID = 270,
+			name = "Mistweaver",
+			iconID = 608952,
+			role = "HEALER",
+		},
+		[3] = {
+			specID = 269,
+			name = "Windwalker",
+			iconID = 608953,
+			role = "DAMAGER",
+		},
+		},
+},
+	[11] = {
+		className = "Druid",
+		classFile = "DRUID",
+		classID = 11,
+		specs = {
+		[1] = {
+			specID = 102,
+			name = "Balance",
+			iconID = 136096,
+			role = "DAMAGER",
+		},
+		[2] = {
+			specID = 103,
+			name = "Feral",
+			iconID = 132115,
+			role = "DAMAGER",
+		},
+		[3] = {
+			specID = 104,
+			name = "Guardian",
+			iconID = 132276,
+			role = "TANK",
+		},
+		[4] = {
+			specID = 105,
+			name = "Restoration",
+			iconID = 136041,
+			role = "HEALER",
+		},
+		},
+},
+	[12] = {
+		className = "Demon Hunter",
+		classFile = "DEMONHUNTER",
+		classID = 12,
+		specs = {
+		[1] = {
+			specID = 577,
+			name = "Havoc",
+			iconID = 1247264,
+			role = "DAMAGER",
+		},
+		[2] = {
+			specID = 581,
+			name = "Vengeance",
+			iconID = 1247265,
+			role = "TANK",
+		},
+		},
+},
+	[13] = {
+		className = "Evoker",
+		classFile = "EVOKER",
+		classID = 13,
+		specs = {
+		[1] = {
+			specID = 1467,
+			name = "Devastation",
+			iconID = 4511811,
+			role = "DAMAGER",
+		},
+		[2] = {
+			specID = 1468,
+			name = "Preservation",
+			iconID = 4511812,
+			role = "HEALER",
+		},
+		},
+},
 }
 
 -- Above was exported with
@@ -1040,7 +891,7 @@ local CLASS_INFO = {
 -- frame.exportFrame.edit:SetText(export)
 
 function GetNumClasses ()
-   return 12
+   return 13
 end
 
 function GetNumSpecializationsForClassID (classID)
@@ -1056,31 +907,31 @@ function GetSpecializationInfoForClassID (classID, specNum)
    return spec.specID, spec.name, "NOT_IMPLEMENTED", spec.iconID, spec.role, "NOT_IMPLEMENTED","NOT_IMPLEMENTED"
 end
 
+local symbols = {"%%", "%*", "%+", "%-", "%?", "%(", "%)", "%[", "%]", "%$", "%^"} --% has to be escaped first or everything is ruined
+local replacements = {"%%%%", "%%%*", "%%%+", "%%%-", "%%%?", "%%%(", "%%%)", "%%%[", "%%%]", "%%%$", "%%%^"}
+-- Defined in FrameXML/ChatFrame.lua
+function escapePatternSymbols(text)
+	for i=1, #symbols do
+		text = text:gsub(symbols[i], replacements[i])
+	end
+	return text
+end
+
+function FauxScrollFrame_Update() end
+
+function FauxScrollFrame_GetOffset() return 0 end
+
 ------------------------------------------
 -- Constants from various places
 ------------------------------------------
+NUM_BAG_SLOTS = 10
+
+RAID_CLASS_COLORS = {}
+MAX_TRADE_ITEMS = 6 -- don't remember
+
 TOOLTIP_DEFAULT_COLOR = { r = 1, g = 1, b = 1 };
 TOOLTIP_DEFAULT_BACKGROUND_COLOR = { r = 0.09, g = 0.09, b = 0.19 };
-NUM_LE_ITEM_ARMORS = 12
-LE_ITEM_ARMOR_GENERIC = 0
-LE_ITEM_ARMOR_CLOTH = 1
-LE_ITEM_ARMOR_LEATHER = 2
-LE_ITEM_ARMOR_MAIL = 3
-LE_ITEM_ARMOR_PLATE = 4
-LE_ITEM_ARMOR_COSMETIC = 5
-LE_ITEM_ARMOR_SHIELD = 6
-LE_ITEM_ARMOR_LIBRAM = 7
-LE_ITEM_ARMOR_IDOL = 8
-LE_ITEM_ARMOR_TOTEM = 9
-LE_ITEM_ARMOR_SIGIL = 10
-LE_ITEM_ARMOR_RELIC = 11
 
-NUM_LE_ITEM_BIND_TYPES = 5
-LE_ITEM_BIND_NONE = 0
-LE_ITEM_BIND_ON_ACQUIRE = 1
-LE_ITEM_BIND_ON_EQUIP = 2
-LE_ITEM_BIND_ON_USE = 3
-LE_ITEM_BIND_QUEST = 4
 NUM_LE_ITEM_QUALITYS = 9
 LE_ITEM_QUALITY_POOR = 0
 LE_ITEM_QUALITY_COMMON = 1
@@ -1091,49 +942,12 @@ LE_ITEM_QUALITY_LEGENDARY = 5
 LE_ITEM_QUALITY_ARTIFACT = 6
 LE_ITEM_QUALITY_HEIRLOOM = 7
 LE_ITEM_QUALITY_WOW_TOKEN = 8
-NUM_LE_ITEM_CLASSS = 19
-LE_ITEM_CLASS_CONSUMABLE = 0
-LE_ITEM_CLASS_CONTAINER = 1
-LE_ITEM_CLASS_WEAPON = 2
-LE_ITEM_CLASS_GEM = 3
-LE_ITEM_CLASS_ARMOR = 4
-LE_ITEM_CLASS_REAGENT = 5
-LE_ITEM_CLASS_PROJECTILE = 6
-LE_ITEM_CLASS_TRADEGOODS = 7
-LE_ITEM_CLASS_ITEM_ENHANCEMENT = 8
-LE_ITEM_CLASS_RECIPE = 9
-LE_ITEM_CLASS_QUIVER = 11
-LE_ITEM_CLASS_QUESTITEM = 12
-LE_ITEM_CLASS_KEY = 13
-LE_ITEM_CLASS_MISCELLANEOUS = 15
-LE_ITEM_CLASS_GLYPH = 16
-LE_ITEM_CLASS_BATTLEPET = 17
-LE_ITEM_CLASS_WOW_TOKEN = 18
-NUM_LE_ITEM_WEAPONS = 21
-LE_ITEM_WEAPON_AXE1H = 0
-LE_ITEM_WEAPON_AXE2H = 1
-LE_ITEM_WEAPON_BOWS = 2
-LE_ITEM_WEAPON_GUNS = 3
-LE_ITEM_WEAPON_MACE1H = 4
-LE_ITEM_WEAPON_MACE2H = 5
-LE_ITEM_WEAPON_POLEARM = 6
-LE_ITEM_WEAPON_SWORD1H = 7
-LE_ITEM_WEAPON_SWORD2H = 8
-LE_ITEM_WEAPON_WARGLAIVE = 9
-LE_ITEM_WEAPON_STAFF = 10
-LE_ITEM_WEAPON_BEARCLAW = 11
-LE_ITEM_WEAPON_CATCLAW = 12
-LE_ITEM_WEAPON_UNARMED = 13
-LE_ITEM_WEAPON_GENERIC = 14
-LE_ITEM_WEAPON_DAGGER = 15
-LE_ITEM_WEAPON_THROWN = 16
-LE_ITEM_WEAPON_CROSSBOW = 18
-LE_ITEM_WEAPON_WAND = 19
-LE_ITEM_WEAPON_FISHINGPOLE = 20
+
 
 ------------------------------------------
 -- Global Strings
 ------------------------------------------
+BIND_TRADE_TIME_REMAINING = "You may trade this item with players that were also eligible to loot this item for the next %s."
 LOOT_ITEM = "%s receives loot: %s."
 RANDOM_ROLL_RESULT = "%s rolls %d (%d-%d)"
 REQUEST_ROLL = "Request Roll"
@@ -1199,6 +1013,76 @@ HEALER = "Healer"
 MELEE = "Melee"
 RANGED = "Ranged"
 
-require "/wow_api/Mixin"
-require "/wow_api/Color"
-require "/wow_api/TableUtil"
+-- Enums
+
+Enum = {
+   ItemWeaponSubclass = {
+      Axe1H = 0,
+      Axe2H = 1,
+      Bows = 2,
+      Guns = 3,
+      Mace1H = 4,
+      Mace2H = 5,
+      Polearm = 6,
+      Sword1H = 7,
+      Sword2H = 8,
+      Warglaive = 9,
+      Staff = 10,
+      Bearclaw = 11,
+      Catclaw = 12,
+      Unarmed = 13,
+      Generic = 14,
+      Dagger = 15,
+      Thrown = 16,
+      Obsolete3 = 17,
+      Crossbow = 18,
+      Wand = 19,
+      Fishingpole = 20,
+   },
+   ItemMiscellaneousSubclass = {
+      Junk = 0,
+      Reagent = 1,
+      CompanionPet = 2,
+      Holiday = 3,
+      Other = 4,
+      Mount = 5,
+      MountEquipment = 6,
+   },
+   ItemClass = {
+      Consumable = 0,
+      Container = 1,
+      Weapon = 2,
+      Gem = 3,
+      Armor = 4,
+      Reagent = 5,
+      Projectile = 6,
+      Tradegoods = 7,
+      ItemEnhancement = 8,
+      Recipe = 9,
+      CurrencyTokenObsolete = 10,
+      Quiver = 11,
+      Questitem = 12,
+      Key = 13,
+      PermanentObsolete = 14,
+      Miscellaneous = 15,
+      Glyph = 16,
+      Battlepet = 17,
+      WoWToken = 18,
+   },
+   ItemArmorSubclass = {
+      Generic = 0,
+      Cloth = 1,
+      Leather = 2,
+      Mail = 3,
+      Plate = 4,
+      Cosmetic = 5,
+      Shield = 6,
+      Libram = 7,
+      Idol = 8,
+      Totem = 9,
+      Sigil = 10,
+      Relic = 11,
+   },
+
+
+}

@@ -50,11 +50,6 @@ function RCVersionCheck:OnInitialize()
             sortnext = 2
         }
     }
-
-    if IsInGuild() then
-        addon.guildRank = select(2, GetGuildInfo("player"))
-        addon:ScheduleTimer("SendGuildVerTest", 2) -- send out a version check after a delay
-	end
 	self:InitCoreVersionComms()
     self.subscriptions = {}
 end

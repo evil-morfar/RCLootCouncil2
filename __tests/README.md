@@ -40,4 +40,4 @@ This file attempts to recreate the `GetItemInfo` and `GetItemInfoInstant` functi
 
 This allows one to call both item functions with either the `itemString`, `itemLink`,`itemID` or `itemName` of any of these items.
 
-All the item data is exposed through the `_G.Items` table. Additionally a `_G.Items_Array` table is created, which is an array of all `itemString`s. This allows you to fetch a random item with `local itemString = Items_Array[math.random(#Items_Array)]`, which is then guaranteed to be a valid input for `GetItemInfo/Instant`.
+All the item data is exposed through the `_G.Items` table. Additionally a `_G.Items_Array` table is created, which is an array of all `itemString`s. This allows you to fetch a random item with `local itemString = _G.Items_Array[math.random(#_G.Items_Array)]`, which is then guaranteed to be a valid input for `GetItemInfo/Instant`.

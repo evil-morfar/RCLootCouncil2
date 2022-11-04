@@ -1,14 +1,12 @@
 -- TODO: Support combat autohide
-
 --- @type RCLootCouncil
 local addon = select(2, ...)
 local lwin = LibStub("LibWindow-1.1")
 
 local name = "Frame"
-local Object = {
-   frames = {}
-}
+local Object = {frames = {}}
 local db = {}
+local scrollHandler = function(f, delta) if IsControlKeyDown() then lwin.OnMouseWheel(f, delta) end end
 
 --- Creates a standard frame for addon with title, minimizing, positioning and scaling supported.
 --		Adds Minimize(), Maximize() and IsMinimized() functions on the frame, and registers it for hide on combat.
@@ -21,9 +19,9 @@ local db = {}
 --- @param width? integer @The width of the titleframe, defaults to 250.
 --- @param height? integer @Height of the frame, defaults to 325.
 --- @return table frame @The frame object.
-function Object:New (parent, name, title, width, height)
-   db = addon:Getdb()
-   local f = CreateFrame("Frame", name, parent) -- LibWindow seems to work better with nil parent
+function Object:New(parent, name, title, width, height)
+	db = addon:Getdb()
+	local f = CreateFrame("Frame", name, parent) -- LibWindow seems to work better with nil parent
 	f:Hide()
 	f:SetFrameStrata("DIALOG")
 	f:SetWidth(450)
@@ -33,32 +31,32 @@ function Object:New (parent, name, title, width, height)
 	f:RegisterConfig(db.UI[name])
 	f:RestorePosition() -- might need to move this to after whereever GetFrame() is called
 	f:MakeDraggable()
-	f:SetScript("OnMouseWheel", function(f,delta) if IsControlKeyDown() then lwin.OnMouseWheel(f,delta) end end)
+	f:SetScript("OnMouseWheel", scrollHandler)
 	f:SetToplevel(true)
 
 	self:CreateTitleFrame(f, name, title, width)
-   self:CreateContentFrame (f, name, height)
-   for field, obj in pairs(self.Minimie_Prototype) do
-      f[field] = obj
-   end
+	self:CreateContentFrame(f, name, height)
+	for field, obj in pairs(self.Minimize_Prototype) do f[field] = obj end
 
 	f.Update = function(self)
 		addon.Log:D("UpdateFrame", self:GetName())
-      self.content:Update()
+		self.content:Update()
 		self.title:Update()
 	end
-   addon.UI:RegisterForCombatMinimize (f)
+	addon.UI:RegisterForCombatMinimize(f)
 	return f
 end
 
-function Object:CreateContentFrame (parent, name, height)
-   local c = CreateFrame("Frame", "RC_UI_"..name.."_Content", parent, BackdropTemplateMixin and "BackdropTemplate") -- frame that contains the actual content
-	 c:SetFrameLevel(1)
-	 c:SetBackdrop({
+function Object:CreateContentFrame(parent, name, height)
+	local c = CreateFrame("Frame", "RC_UI_" .. name .. "_Content", parent, BackdropTemplateMixin and "BackdropTemplate") -- frame that contains the actual content
+	c:SetFrameLevel(1)
+	c:SetBackdrop({
 		bgFile = AceGUIWidgetLSMlists.background[db.skins[db.currentSkin].background],
 		edgeFile = AceGUIWidgetLSMlists.border[db.skins[db.currentSkin].border],
-	   tile = true, tileSize = 255, edgeSize = 16,
-	   insets = { left = 2, right = 2, top = 2, bottom = 2 }
+		tile = true,
+		tileSize = 255,
+		edgeSize = 16,
+		insets = {left = 2, right = 2, top = 2, bottom = 2},
 	})
 	c:EnableMouse(true)
 	c:SetWidth(450)
@@ -75,34 +73,38 @@ function Object:CreateContentFrame (parent, name, height)
 		end
 	end)
 
-   -- Hook updates to parent :SetWidth, :SetHeight
-   parent:HookScript("OnSizeChanged", function(self, w, h)
-      self.content:SetWidth(w)
-      self.content:SetHeight(h)
-   end)
+	-- Hook updates to parent :SetWidth, :SetHeight
+	parent:HookScript("OnSizeChanged", function(self, w, h)
+		self.content:SetWidth(w)
+		self.content:SetHeight(h)
+	end)
 
-   c.Update = function()
-      c:SetBackdrop({
+	c.Update = function()
+		c:SetBackdrop({
 			bgFile = AceGUIWidgetLSMlists.background[db.UI[name].background],
 			edgeFile = AceGUIWidgetLSMlists.border[db.UI[name].border],
-			tile = false, tileSize = 64, edgeSize = 12,
-			insets = { left = 2, right = 2, top = 2, bottom = 2 }
+			tile = false,
+			tileSize = 64,
+			edgeSize = 12,
+			insets = {left = 2, right = 2, top = 2, bottom = 2},
 		})
-      c:SetBackdropColor(unpack(db.UI[name].bgColor))
+		c:SetBackdropColor(unpack(db.UI[name].bgColor))
 		c:SetBackdropBorderColor(unpack(db.UI[name].borderColor))
-   end
+	end
 
 	parent.content = c
 end
 
-function Object:CreateTitleFrame (parent, name, title, width)
-   local tf = CreateFrame("Frame", "RC_UI_"..name.."_Title", parent, BackdropTemplateMixin and "BackdropTemplate")
+function Object:CreateTitleFrame(parent, name, title, width)
+	local tf = CreateFrame("Frame", "RC_UI_" .. name .. "_Title", parent, BackdropTemplateMixin and "BackdropTemplate")
 	tf:SetFrameLevel(2)
 	tf:SetBackdrop({
 		bgFile = AceGUIWidgetLSMlists.background[db.skins[db.currentSkin].background],
 		edgeFile = AceGUIWidgetLSMlists.border[db.skins[db.currentSkin].border],
-     tile = true, tileSize = 16, edgeSize = 12,
-      insets = { left = 2, right = 2, top = 2, bottom = 2 }
+		tile = true,
+		tileSize = 16,
+		edgeSize = 12,
+		insets = {left = 2, right = 2, top = 2, bottom = 2},
 	})
 	tf:SetBackdropColor(unpack(db.skins[db.currentSkin].bgColor))
 	tf:SetBackdropBorderColor(unpack(db.skins[db.currentSkin].borderColor))
@@ -110,8 +112,11 @@ function Object:CreateTitleFrame (parent, name, title, width)
 	tf:EnableMouse()
 	tf:SetMovable(true)
 	tf:SetWidth(width or 250)
-	tf:SetPoint("CENTER",parent,"TOP",0,-1)
-	tf:SetScript("OnMouseDown", function(self) self:GetParent():StartMoving() self:GetParent():SetToplevel(true) end)
+	tf:SetPoint("CENTER", parent, "TOP", 0, -1)
+	tf:SetScript("OnMouseDown", function(self)
+		self:GetParent():StartMoving()
+		self:GetParent():SetToplevel(true)
+	end)
 	tf:SetScript("OnMouseUp", function(self) -- Get double click by trapping time betweem mouse up
 		local frame = self:GetParent()
 		frame:StopMovingOrSizing()
@@ -120,42 +125,47 @@ function Object:CreateTitleFrame (parent, name, title, width)
 		end
 		if self.lastClick and GetTime() - self.lastClick <= 0.5 then
 			self.lastClick = nil
-			if frame.minimized then frame:Maximize() else frame:Minimize() end
+			if frame.minimized then
+				frame:Maximize()
+			else
+				frame:Minimize()
+			end
 		else
 			self.lastClick = GetTime()
 		end
 	end)
 
-	local text = tf:CreateFontString(nil,"OVERLAY","GameFontNormal")
-	text:SetPoint("CENTER",tf,"CENTER")
-	text:SetTextColor(1,1,1,1)
+	local text = tf:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+	text:SetPoint("CENTER", tf, "CENTER")
+	text:SetTextColor(1, 1, 1, 1)
 	text:SetText(title)
 	tf.text = text
 
-   tf.Update = function(self)
-      self:SetBackdrop({
+	tf.Update = function(self)
+		self:SetBackdrop({
 			bgFile = AceGUIWidgetLSMlists.background[db.UI[name].background],
 			edgeFile = AceGUIWidgetLSMlists.border[db.UI[name].border],
-			tile = false, tileSize = 64, edgeSize = 12,
-			insets = { left = 2, right = 2, top = 2, bottom = 2 }
+			tile = false,
+			tileSize = 64,
+			edgeSize = 12,
+			insets = {left = 2, right = 2, top = 2, bottom = 2},
 		})
 		self:SetBackdropColor(unpack(db.UI[name].bgColor))
 		self:SetBackdropBorderColor(unpack(db.UI[name].borderColor))
-   end
-   parent.title = tf
+	end
+	parent.title = tf
 end
 
-Object.Minimie_Prototype = {
+Object.Minimize_Prototype = {
 	minimized = false,
 	autoMinimized = false,
-	IsMinimized = function(frame)
-		return frame.minimized
-	end,
+	IsMinimized = function(frame) return frame.minimized end,
 	Minimize = function(frame, auto)
 		if not frame.minimized then
 			frame.content:Hide()
 			frame.autoMinimized = auto
 			frame.minimized = true
+			frame:SetScript("OnMouseWheel", nil)
 		end
 	end,
 	Maximize = function(frame)
@@ -163,8 +173,9 @@ Object.Minimie_Prototype = {
 			frame.content:Show()
 			frame.autoMinimized = false
 			frame.minimized = false
+			frame:SetScript("OnMouseWheel", scrollHandler)
 		end
-	end
+	end,
 }
 
 addon.UI:RegisterElement(Object, name)
