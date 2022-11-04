@@ -279,7 +279,7 @@ function RCVersionCheck:InitCoreVersionComms()
         "v",
         function(data, sender, _, dist)
             if addon:UnitIsUnit(sender, "player") then
-                return print("Got message", unpack(data))
+                return
             end -- Don't repond to our own
             local otherVersion, tVersion = unpack(data)
             self:LogVersion(addon:UnitName(sender), otherVersion, tVersion)
