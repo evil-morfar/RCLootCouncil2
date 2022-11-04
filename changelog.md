@@ -1,6 +1,8 @@
-# v3
+# v3.5.0
 
 ## Changes
+
+Updated for Dragonflight prepatch.
 
 Added `itemName` to JSON export (CurseClassic#137).
 
@@ -14,6 +16,10 @@ Simply use `/rc add bags` or `/rc add all` to do so. You must obviously still be
 Updated logic being ItemStorage when trading items. It should now properly account for whom you're trading items to, which resolves issues with the "wrong" item being removed after trading with someone.
 
 Last I checked there were still some issues with detecting the trade target (not sure I can do anything about it). The above will only work if trade target is detected properly, i.e. if the addon can add items to the trade window automatically.
+
+### Group Loot
+
+Addon now fully supports group loot. In this first iteration it more or less works similar to personal loot - although you may come across needing to manually add items (`/rc add [item]`). This will be expanding upon and more fletched out in the coming weeks.
 
 ### Dev
 
