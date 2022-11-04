@@ -1579,7 +1579,7 @@ function RCLootCouncil:OnEvent(event, ...)
 				if guid and self.lootGUIDToIgnore[guid] then return self.Log:d("Ignoring loot from ignored source", guid) end
 				if texture then
 					local link = GetLootSlotLink(i)
-					if currencyID then
+					if currencyID or quantity == 0 then
 						self.Log:d("Ignoring", link, "as it's a currency")
 					elseif not self.Utils:IsItemBlacklisted(link) then
 						self.Log:d("Adding to self.lootSlotInfo", i, link, quality, quantity, GetLootSourceInfo(i))
