@@ -31,7 +31,8 @@ local replacements = {
     [magicKey .. "13"] = "outOfRaid",
     [magicKey .. "14"] = "default",
     [magicKey .. "15"] = "text",
-    [magicKey .. "16"] = "color"
+    [magicKey .. "16"] = "color",
+    [magicKey .. "17"] = "autoGroupLoot"
 }
 
 local replacements_inv = tInvert(replacements)
@@ -137,7 +138,8 @@ function private:BuildMLDB()
         timeout = db.timeout,
         rejectTrade = db.rejectTrade or nil,
         requireNotes = db.requireNotes or nil,
-        outOfRaid = db.outOfRaid or nil
+        outOfRaid = db.outOfRaid or nil,
+        autoGroupLoot = db.autoGroupLoot or nil
     }
     self.isBuilt = true
     return self.mldb

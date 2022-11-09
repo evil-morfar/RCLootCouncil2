@@ -19,6 +19,7 @@ Classes\Core.lua
 Classes\Services\ErrorHandler.lua
 Classes\Utils\TempTable.lua
 Classes\Utils\Log.lua
+Classes\Utils\GroupLoot.lua
 
 Classes\Data\Player.lua
 Classes\Data\Council.lua

@@ -97,6 +97,7 @@ addon.defaults = {
       requireNotes = false,
       outOfRaid = false,
       useSlashRC = true, -- Register "/rc" slash command.
+      autoGroupLoot = true,
 
       chatFrameName = "DEFAULT_CHAT_FRAME", -- The chat frame to use for :Print()s
 
