@@ -71,6 +71,12 @@ function MLDB:Update()
     return private:BuildMLDB()
 end
 
+--- Checks if a given value is part of the mldb
+---@param val string Value to check
+function MLDB:IsKey(val)
+    return replacements_inv[val] and true or false
+end
+
 function private:ReplaceMLDB(mldb, replacement_table)
     local ret = {}
     for k, v in pairs(mldb) do

@@ -8,6 +8,8 @@ All RCLootCouncil frames except `Loot-` and `Voting Frame` can now be closed by 
 
 ## Bugfixes
 
+- *Enabling settings that should be synced with the group wouldn't always be synced immediately.*
+
 
 
 # v3.5.1
