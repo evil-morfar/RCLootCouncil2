@@ -2,6 +2,8 @@
 
 ## Changes
 
+Updated for prepatch phase 2.
+
 ### Checkmark
 
 Awarded items now also has a checkmark overlay on their session button.
