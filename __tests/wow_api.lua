@@ -922,6 +922,8 @@ function FauxScrollFrame_Update() end
 function FauxScrollFrame_GetOffset() return 0 end
 
 C_Container = {}
+
+UISpecialFrames = {}
 ------------------------------------------
 -- Constants from various places
 ------------------------------------------

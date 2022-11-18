@@ -2,10 +2,12 @@
 local addon = select(2, ...)
 
 local name = "Text"
+--- @class Text : BackdropTemplate, Frame, UI.embeds
+--- @field text FontString
 local Object = {}
 
 function Object:New(parent, name, text)
-   local f = addon.UI.CreateFrame("frame", name, parent)
+   local f = addon.UI.CreateFrame("Frame", name, parent)
    local t = f:CreateFontString(parent:GetName().."_Text", "OVERLAY", "GameFontNormal")
    f.text = t
    t:SetPoint("CENTER")

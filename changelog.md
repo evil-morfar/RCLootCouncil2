@@ -1,3 +1,15 @@
+# v3.x
+
+## Changes
+
+### Esc closing frames
+
+All RCLootCouncil frames except `Loot-` and `Voting Frame` can now be closed by pressing `Escape`.
+
+## Bugfixes
+
+
+
 # v3.5.1
 
 ## Changes

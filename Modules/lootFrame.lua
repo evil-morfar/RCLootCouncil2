@@ -213,7 +213,7 @@ end
 function LootFrame:GetFrame()
 	if self.frame then return self.frame end
 	addon.Log:D("LootFrame","GetFrame()")
-	self.frame = addon.UI:NewNamed("Frame", UIParent, "DefaultRCLootFrame", L["RCLootCouncil Loot Frame"], 250, 375)
+	self.frame = addon.UI:NewNamed("RCFrame", UIParent, "DefaultRCLootFrame", L["RCLootCouncil Loot Frame"], 250, 375)
 	self.frame.title:SetPoint("BOTTOM", self.frame, "TOP", 0 ,-5)
 	self.frame.itemTooltip = addon:CreateGameTooltip("lootframe", self.frame.content)
 	return self.frame

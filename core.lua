@@ -2150,7 +2150,7 @@ end
 -- @param parent The frame that should hold the button.
 -- @return The button object.
 function RCLootCouncil:CreateButton(text, parent)
-	local b = self.UI:New("Button", parent)
+	local b = self.UI:New("RCButton", parent)
 	b:SetText(text)
 	return b
 end
