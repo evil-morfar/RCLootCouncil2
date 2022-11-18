@@ -1,3 +1,22 @@
+# v3.6.0-Beta.1
+
+## Changes
+
+### Group Loot
+
+Added new option `Auto Group Loot` (enabled by default).
+When enabled, this will cause all group members (with RCLootCouncil installed, of course) to automatically pass on group loot, and have you (the group leader) greed on it. This will cause all items to end up in your bags, and start a session (depending on your settings) with said items.
+
+### Esc closing frames
+
+All RCLootCouncil frames except `Loot-` and `Voting Frame` can now be closed by pressing `Escape`.
+
+## Bugfixes
+
+- *Enabling settings that should be synced with the group wouldn't always be synced immediately.*
+
+
+
 # v3.5.1
 
 ## Changes

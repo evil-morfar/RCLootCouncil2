@@ -996,6 +996,12 @@ function addon:OptionsTable()
 										desc = L["opt_award_later_desc"],
 										type = "toggle"
 									},
+									autoGroupLoot = {
+										order = 10,
+										name = "Auto Group Loot",
+										desc = "When enabled, RCLootCouncil will automatically click the pass and greed buttons so that all items lands in your inventory.",
+										type = "toggle"
+									}
 								},
 							},
 							voteOptions = {
