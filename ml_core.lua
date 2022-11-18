@@ -1588,6 +1588,7 @@ function RCLootCouncilML:OnReconnectReceived (sender)
 	local requestPlayer = Player:Get(sender)
 	MLDB:Send(requestPlayer)
 	self:Send(requestPlayer, "council", Council:GetForTransmit())
+	self:Send(requestPlayer, "StartHandleLoot")
 
 	if self.running then -- Resend lootTable
 		self:ScheduleTimer("Send", 4, requestPlayer, "lootTable", self:GetLootTableForTransmit(true))

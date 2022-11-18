@@ -40,12 +40,12 @@ function GroupLoot:RollOnAllLoot(rollType)
 end
 
 function GroupLoot:ShouldPassOnLoot()
-    return addon.mldb and addon.mldb.autoGroupLoot and
+    return addon.mldb and addon.mldb.autoGroupLoot and addon.handleLoot and
         addon.masterLooter and not addon.isMasterLooter and GetNumGroupMembers() > 1
 
 end
 
 function GroupLoot:ShouldGreedOnLoot()
-    return addon.mldb and addon.mldb.autoGroupLoot and
+    return addon.mldb and addon.mldb.autoGroupLoot and addon.handleLoot and
         addon.masterLooter and addon.isMasterLooter and GetNumGroupMembers() > 1
 end

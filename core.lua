@@ -2454,6 +2454,9 @@ function RCLootCouncil:SubscribeToPermanentComms()
 
 		getCov = function(_, sender) self:OnCovenantRequest(sender) end,
 
+		StartHandleLoot = function() self.handleLoot = true end,
+
+		StopHandleLoot = function() self.handleLoot = false end,
 	})
 end
 
