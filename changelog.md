@@ -2,6 +2,14 @@
 
 ## Changes
 
+### Checkmark
+
+Awarded items now also has a checkmark overlay on their session button.
+
+# v3.5.0
+
+## Changes
+
 ### Dragonflight
 
 Updated for Dragonflight prepatch.
