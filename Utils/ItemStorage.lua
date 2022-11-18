@@ -14,21 +14,27 @@ addon.ItemStorage = Storage
 local StoredItems = {}
 local private = {ITEM_WATCH_DELAY = 1}
 
+
+--- @alias AcceptedTypes
+--- | "to_trade" 		Items that should be traded to another player
+--- | "award_later"		Items that should be used in a later session
+--- | "temp"			Items we're temporarily storing
+--- | "other"			Unspecified
 --[[
    Each entry index marks the type of item, and can have following fields:
       'bagged' - Must be in player's bags to be initialized on login?
 ]]
 Storage.AcceptedTypes = {
-	["to_trade"] = { -- Items that should be traded to another player
+	["to_trade"] = {
 		bagged = true,
 	},
-	["award_later"] = { -- Items that should be used in a later session
+	["award_later"] = {
 		bagged = false,
 	},
-	["temp"] = { -- Items we're temporarily storing
+	["temp"] = {
 		bagged = true,
 	},
-	["other"] = { -- Unspecified
+	["other"] = {
 		bagged = false,
 	},
 }
@@ -67,7 +73,7 @@ function addon:InitItemStorage() -- Extract items from our SV. Could be more ele
 	local toBeRemoved = TT:Acquire()
 	for i, v in ipairs(db.itemStorage) do
 		-- v3.0: Noticed some items didn't have a link - check for that.
-		if not v.link then
+		if not v.link or v.time_remaining == 0 then
 			tinsert(toBeRemoved, i)
 		else
 			Item = Storage:New(v.link, v.type, "restored", v)
@@ -135,8 +141,8 @@ function Storage:RemoveItem(itemOrItemLink)
 	-- Find and delete the item
 	local key1 = private:FindItemInTable(db.itemStorage, itemOrItemLink)
 	local key2 = private:FindItemInTable(StoredItems, itemOrItemLink)
-	if key1 then tremove(db.itemStorage, key1) end
-	if key2 then tremove(StoredItems, key2) end
+	if key1 then addon.Log:D("Removed1:",tremove(db.itemStorage, key1).link) end
+	if key2 then addon.Log:D("Removed2:",tremove(StoredItems, key2)) end
 
 	-- key1 might not be there if we haven't stored it
 	if not key2 then
@@ -152,8 +158,8 @@ function Storage:RemoveAllItems()
 	StoredItems = {}
 end
 
---- Removes all items of a specific type
--- @param type The type to remove - @see Storage.AcceptedTypes
+--- Removes all items of a specific type.
+--- @param type AcceptedTypes The type to remove.
 function Storage:RemoveAllItemsOfType(type)
 	type = type or "other"
 	-- Do it in reverse for speed
@@ -166,11 +172,11 @@ end
 function Storage:GetAllItems() return StoredItems end
 
 --- Returns a specific item object.
--- Without type, returns the first found Item that matches the item link.
--- With type, returns the the first found item that matches both the item link and the type.
--- @param item ItemLink (@see GetItemInfo)
--- @tparam itemType string (Optional) The type of the item we want to find
--- @return The Item object, or nil if not found
+--- Without type, returns the first found Item that matches the item link.
+--- With type, returns the the first found item that matches both the item link and the type.
+--- @param item ItemLink @see `GetItemInfo`
+--- @param itemType? AcceptedTypes The type of the item we want to find
+--- @return Item? Item The Item object, or nil if not found
 function Storage:GetItem(item, itemType)
 	if type(item) ~= "string" then return error("'item' is not a string/ItemLink", 2) end
 	return select(2, private:FindItemInTable(StoredItems, item, itemType))
@@ -233,13 +239,27 @@ function Storage:WatchForItemInBags(input, onFound, onFail, max_attempts)
 	private:InitWatchForItemInBags(Item, max_attempts or 3, onFound, onFail)
 end
 
+--- Compares two of our items.
+--- Compares all fields expect `time_added` and `time_remaining`.
+---@param a Item
+---@param b Item
+function Storage:Compare(a,b)
+	if type(a) ~= "table" or not a.type then error(format("%s is not a valid input.", tostring(a))) end
+	if type(b) ~= "table" or not b.type then error(format("%s is not a valid input.", tostring(b))) end
+	return
+		a.type == b.type and
+		a.inBags == b.inBags and
+		a.link == b.link and
+		tCompare(a.args, b.args, 1)
+end
+
 function private:FindItemInTable(table, item1, type)
 	if type then
 		return FindInTableIf(table, function(item2) return type == item2.type and addon:ItemIsItem(item1, item2.link) end)
 	end
 	if item1.type then
 		-- Our item class
-		return FindInTableIf(table, function(item2) return item1 == item2 end)
+		return FindInTableIf(table, function(item2) return Storage:Compare(item1,item2) end)
 	else
 		-- Generic itemString
 		return FindInTableIf(table, function(item2) return addon:ItemIsItem(item1, item2.link) end)
@@ -274,7 +294,6 @@ end
 local mt = {
 	__index = item_class,
 	__tostring = function(self) return self.link end,
-	__eq = function(a, b) return tCompare(a, b, 2) end,
 }
 
 function private:newItem(link, type, time_remaining)
