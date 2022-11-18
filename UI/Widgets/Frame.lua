@@ -3,8 +3,11 @@
 local addon = select(2, ...)
 local lwin = LibStub("LibWindow-1.1")
 
-local name = "Frame"
-local Object = {frames = {}}
+local name = "RCFrame"
+--- @class RCFrame : Object.Minimize_Prototype, Frame, UI.embeds
+--- @field content BackdropTemplate | Frame
+--- @field title BackdropTemplate | Frame
+local Object = {}
 local db = {}
 local scrollHandler = function(f, delta) if IsControlKeyDown() then lwin.OnMouseWheel(f, delta) end end
 
@@ -18,9 +21,10 @@ local scrollHandler = function(f, delta) if IsControlKeyDown() then lwin.OnMouse
 --- @param title string @The title text.
 --- @param width? integer @The width of the titleframe, defaults to 250.
 --- @param height? integer @Height of the frame, defaults to 325.
---- @return table frame @The frame object.
+--- @return RCFrame frame @The frame object.
 function Object:New(parent, name, title, width, height)
 	db = addon:Getdb()
+	--- @type Frame
 	local f = CreateFrame("Frame", name, parent) -- LibWindow seems to work better with nil parent
 	f:Hide()
 	f:SetFrameStrata("DIALOG")
@@ -47,6 +51,9 @@ function Object:New(parent, name, title, width, height)
 	return f
 end
 
+---@param parent RCFrame
+---@param name string
+---@param height integer
 function Object:CreateContentFrame(parent, name, height)
 	local c = CreateFrame("Frame", "RC_UI_" .. name .. "_Content", parent, BackdropTemplateMixin and "BackdropTemplate") -- frame that contains the actual content
 	c:SetFrameLevel(1)

@@ -183,8 +183,8 @@ end
 function RCSessionFrame:GetFrame()
 	if self.frame then return self.frame end
 
-	local f = addon.UI:NewNamed("Frame", UIParent, "DefaultRCSessionSetupFrame", L["RCLootCouncil Session Setup"], 260)
-
+	local f = addon.UI:NewNamed("RCFrame", UIParent, "DefaultRCSessionSetupFrame", L["RCLootCouncil Session Setup"], 260)
+	addon.UI:RegisterForEscapeClose(f, function() if self:IsEnabled() then self:Disable() end end)
 	local tgl = CreateFrame("CheckButton", f:GetName().."Toggle", f.content, "ChatConfigCheckButtonTemplate")
 	getglobal(tgl:GetName().."Text"):SetText(L["Award later?"])
 	tgl:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", 10, 40)

@@ -443,8 +443,9 @@ function RCVersionCheck:GetFrame()
         return self.frame
     end
     local f =
-        addon.UI:NewNamed("Frame", UIParent, "DefaultRCVersionCheckFrame", L["RCLootCouncil Version Checker"], 250)
+        addon.UI:NewNamed("RCFrame", UIParent, "DefaultRCVersionCheckFrame", L["RCLootCouncil Version Checker"], 250)
 
+    addon.UI:RegisterForEscapeClose(f, function() if self:IsEnabled() then self:Disable() end end )
     local b1 = addon:CreateButton(_G.GUILD, f.content)
     b1:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", 10, 10)
     b1:SetScript(

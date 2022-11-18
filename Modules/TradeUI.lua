@@ -382,7 +382,8 @@ end
 function TradeUI:GetFrame()
    if self.frame then return self.frame end
 
-   local f = addon.UI:NewNamed("Frame", UIParent, "RCDefaultTradeUIFrame", "RCLootCouncil Trade UI", nil, 220)
+   local f = addon.UI:NewNamed("RCFrame", UIParent, "RCDefaultTradeUIFrame", "RCLootCouncil Trade UI", nil, 220)
+   addon.UI:RegisterForEscapeClose(f, function() if self:IsEnabled() then self:Disable() end end)
    f.st = ST:CreateST(self.scrollCols, 5, ROW_HEIGHT, nil, f.content)
    f.st.frame:SetPoint("TOPLEFT",f,"TOPLEFT",10,-20)
    f.st:RegisterEvents({

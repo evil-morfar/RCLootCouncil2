@@ -858,7 +858,7 @@ function RCVotingFrame:GetFrame()
 	if self.frame then return self.frame end
 
 	-- Container and title
-	local f = addon.UI:NewNamed("Frame", UIParent, "DefaultRCLootCouncilFrame", L["RCLootCouncil Voting Frame"], 250, 420)
+	local f = addon.UI:NewNamed("RCFrame", UIParent, "DefaultRCLootCouncilFrame", L["RCLootCouncil Voting Frame"], 250, 420)
 	-- Scrolling table
 	function f.UpdateSt()
 		if f.st then -- It might already be created, so just update the cols
@@ -1193,14 +1193,21 @@ function RCVotingFrame:UpdateSessionButton(i, texture, link, awarded)
 			btn:SetPoint("TOP", sessionButtons[i-1], "BOTTOM", 0, -2)
 		end
 		btn:SetScript("Onclick", function() RCVotingFrame:SwitchSession(i); end)
+		btn.check = btn:CreateTexture("RCSessionButton"..i.."CheckMark", "OVERLAY")
+		btn.check:SetTexture("interface/raidframe/readycheck-ready")
+		btn.check:SetAllPoints()
+		btn.check:Hide()
 	end
 	-- then update it
 	btn:SetNormalTexture(texture or "Interface\\InventoryItems\\WoWUnknownItem01")
+	btn:GetNormalTexture():SetDrawLayer("BACKGROUND")
+	btn.check:Hide()
 	local lines = { format(L["Click to switch to 'item'"], link) }
 	if i == session then
 		btn:SetBorderColor("yellow")
 	elseif awarded then
 		btn:SetBorderColor("green")
+		btn.check:Show()
 		tinsert(lines, L["This item has been awarded"])
 	else
 		btn:SetBorderColor("white") -- white
