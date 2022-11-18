@@ -86,9 +86,11 @@ end)
 
 
 -- Global helpers
-function _G.GetContainerNumSlots(bagID) return 10 end
+function _G.C_Container.GetContainerNumSlots(bagID) return 10 end
 
-function _G.GetContainerItemLink(bagID, slotIndex)
+
+function _G.C_Container.GetContainerItemLink(bagID, slotIndex)
+
 	if bagID ~= 2 or (bagID == 2 and slotIndex ~= 3) then return _G.Items_Array[math.random(100, #_G.Items_Array)] end
 	-- bag 2, slot 3
 	return "|cff1eff00|Hitem:55555::::::::80:::::::::|h[Book of Glyph Mastery]|h|r"

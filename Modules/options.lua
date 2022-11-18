@@ -310,7 +310,7 @@ function addon:OptionsTable()
 										desc = L["test_desc"],
 										type = "execute",
 										func = function()
-											SettingsPanel:ExitWithoutCommit() -- close all option frames before testing
+											HideUIPanel(SettingsPanel) -- close all option frames before testing
 											self:Test(3)
 										end,
 									},
@@ -320,7 +320,7 @@ function addon:OptionsTable()
 										type = "execute",
 										order = 9,
 										func = function()
-											SettingsPanel:ExitWithoutCommit()
+											HideUIPanel(SettingsPanel)
 											LibStub("AceConfigDialog-3.0"):CloseAll()
 											addon:CallModule("version")
 										end,
@@ -331,7 +331,7 @@ function addon:OptionsTable()
 										desc = L["Opens the synchronizer"],
 										type = "execute",
 										func = function()
-											SettingsPanel:ExitWithoutCommit()
+											HideUIPanel(SettingsPanel)
 											LibStub("AceConfigDialog-3.0"):CloseAll()
 											self.Sync:Enable()
 										end,
@@ -472,7 +472,7 @@ function addon:OptionsTable()
 										name = L["Open the Loot History"],
 										desc = L["open_the_loot_history_desc"],
 										type = "execute",
-										func = function() self:CallModule("history");	SettingsPanel:ExitWithoutCommit();end,
+										func = function() self:CallModule("history");	HideUIPanel(SettingsPanel);end,
 									},
 									clearLootDB = {
 										order = 6,

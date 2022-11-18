@@ -1,3 +1,17 @@
+# v3.5.1
+
+## Changes
+
+Updated for prepatch phase 2.
+
+### Checkmark
+
+Awarded items now also has a checkmark overlay on their session button.
+
+## Bugfixes
+
+- *Fixed error when clicking buttons in the options menu.*
+
 # v3.5.0
 
 ## Changes

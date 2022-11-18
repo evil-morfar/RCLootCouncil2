@@ -8,9 +8,11 @@ local private = {modules = {}, initOrder = {}}
 addon.ModuleData = {}
 local MODULE_MT = {
    __index = {
+      _name = "Unknown",
       OnInitialize = addon.noop,
       OnEnable = addon.noop
-   }
+   },
+   __tostring = function(self) return self._name end
 }
 
 --- Initializes a shareable module
@@ -22,7 +24,7 @@ function addon.Init(path)
 	if private.modules[path] then
 		error("Module already exists for path: " .. tostring(path))
 	end
-	local Module = setmetatable({}, MODULE_MT)
+	local Module = setmetatable({_name = path}, MODULE_MT)
 	private.modules[path] = Module
    tinsert(private.initOrder, path)
    tinsert(addon.ModuleData, Module)
