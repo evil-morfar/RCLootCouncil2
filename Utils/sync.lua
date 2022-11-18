@@ -210,6 +210,7 @@ function sync:Spawn()
    if self.frame then return self.frame:Open() end
    self.syncType = "settings"
    local f = addon:CreateFrame("DefaultRCLootCouncilSyncFrame", "sync", L["RCLootCouncil - Synchronizer"], nil, 140)
+   addon.UI:RegisterForEscapeClose(f, function() end)
    f:SetWidth(350)
    local sel = AG:Create("Dropdown")
    sel:SetWidth(f.content:GetWidth()*0.4 - 20)

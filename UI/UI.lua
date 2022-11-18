@@ -39,6 +39,12 @@ function addon.UI:RegisterElement(object, etype)
    if type(etype) ~= "string" then error("RCLootCouncil.UI:RegisterElement() - 'type' isn't a string.") end
    private.elements[etype] = object
 end
+
+function addon.UI:RegisterForEscapeClose(frame, OnHide)
+   tinsert(UISpecialFrames, frame:GetName())
+   frame:SetScript("OnHide", OnHide)
+end
+
 ---------------------------------------------
 -- Internal functions
 ---------------------------------------------
