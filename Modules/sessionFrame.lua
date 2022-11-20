@@ -218,7 +218,7 @@ function RCSessionFrame:GetFrame()
 				end)
 			end
 		else
-			if Council:GetNum() == 0 then
+			if not addon.hasReceivedCouncil then
 				addon:Print(L["Please wait a few seconds until all data has been synchronized."])
 				return addon.Log:D("Data wasn't ready", Council:GetNum())
 			elseif InCombatLockdown() and not addon.db.profile.skipCombatLockdown then

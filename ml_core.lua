@@ -418,9 +418,8 @@ function RCLootCouncilML:NewML(newML)
 		self:ScheduleTimer(function()
 			self:UpdateGroupCouncil()
 			self:SendCouncil()
-		end, 2)
+		end, addon.testMode and 0 or 2)
 		self:ClearOldItemsInBags()
-
 		if #addon.ItemStorage:GetAllItemsOfType("award_later") > 0 then
 			addon:Print(L["new_ml_bagged_items_reminder"])
 		end
