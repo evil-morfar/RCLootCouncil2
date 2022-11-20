@@ -311,7 +311,7 @@ function RCLootCouncilML:PrintItemsInBags()
 	end
 	addon:Print(L["Following items were registered in the award later list:"])
 	for i, v in ipairs(Items) do
-		addon:Print(i..". "..v.link, format(GUILD_BANK_LOG_TIME, SecondsToTime(time(date("!*t"))-v.time_added, true)) )
+		addon:Print(i..". "..v.link, format(GUILD_BANK_LOG_TIME, SecondsToTime(time()-v.time_added, true)) )
 		-- GUILD_BANK_LOG_TIME == "( %s ago )", although the constant name does not make sense here, this constant expresses we intend to do.
 		-- SecondsToTime is defined in SharedXML/util.lua
 	end
@@ -343,7 +343,7 @@ function RCLootCouncilML:RemoveItemsInBags(...)
 		addon:Print(L["The following entries are removed from the award later list:"])
 		for k, v in ipairs(removedEntries) do
 			addon:Print(k..". "..v.link, "-->", v.args.recipient and addon:GetUnitClassColoredName(v.args.recipient) or L["Unawarded"],
-				format(GUILD_BANK_LOG_TIME, SecondsToTime(time(date("!*t"))-v.time_added)) )
+				format(GUILD_BANK_LOG_TIME, SecondsToTime(time()-v.time_added)) )
 		end
 	end
 end
