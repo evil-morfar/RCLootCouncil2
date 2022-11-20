@@ -2462,6 +2462,7 @@ end
 -------------------------------------------------------------
 function RCLootCouncil:OnCouncilReceived(sender, council)
 	if not self:UnitIsUnit(sender, self.masterLooter) then return self.Log:W("Non ML sent council") end
+	self.hasReceivedCouncil = true
 	Council:RestoreFromTransmit(council)
 	self.isCouncil = Council:Contains(self.player)
 	self.Log:D("isCouncil", self.isCouncil)
