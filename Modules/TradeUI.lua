@@ -337,7 +337,7 @@ local function addItemToTradeWindow (tradeBtn, Item)
    if addon:ItemIsItem(link, Item.link) then -- Extra check, probably also redundant
       addon.Log:d("Trading", link, c,s)
       ClearCursor()
-      PickupContainerItem(c, s)
+      C_Container.PickupContainerItem(c, s)
       ClickTradeButton(tradeBtn)
    else -- Shouldn't happen
       return addon.Log:E("TradeUI", "Item link mismatch", link, Item.link)
