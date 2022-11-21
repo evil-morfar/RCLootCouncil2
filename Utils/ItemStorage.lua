@@ -53,31 +53,51 @@ local item_class = {
 	link = "",
 	args = {}, -- User args
 
+	--- Stores Item in persistant db.
+	--- @param self Item
 	Store = function(self)
 		tinsert(db.itemStorage, self)
 		return self
 	end,
+
+	--- Removes Item from persistant db.
+	--- @param self Item
 	Unstore = function(self)
 		tDeleteItem(db.itemStorage, self)
 		return self
 	end,
-	-- Items shouldn't be removed whilst itemWatch is working it.
-	-- This functions checks that.
+
+	--- Items shouldn't be removed whilst itemWatch is working it.
+	--- This functions checks that.
+	--- @param self Item
 	SafeToRemove = function(self) return self.args.itemWatch == nil end,
 
 	--- Updates time_remaining
+	---@param self Item
 	UpdateTime = function (self)
 		if not self.inBags then return end -- Don't do anything if we know we haven't stored it.
 		local _,_, t = private:findItemInBags(self.link)
-		self.time_remaining = t
-		self.time_updated = time()
+		self:SetUpdateTime(t)
 	end,
 
 	--- Actual time remaining.
 	--- `self.time_remaining` is only acurate immediately after calling `self:UpdateTime()`.
 	--- This always represents the accurate remaining time.
+	--- @param self Item
 	TimeRemaining = function (self)
 		return self.time_remaining + self.time_updated - time()
+	end,
+
+	--- Utility function for consistantly updating time.
+	--- @param self Item Item to set time for.
+	--- @param timeRemaining? integer Remaining time
+	--- @param fallbackTime? integer Used as `timeRemaining` if that's nil. Defaults to 0.
+	SetUpdateTime = function (self, timeRemaining, fallbackTime)
+		timeRemaining = timeRemaining or fallbackTime or 0
+		-- Store BoEs (math.huge) as 24 hrs so we don't run into issues when displaying time.
+		self.time_remaining = timeRemaining == math.huge and 86400 or timeRemaining
+		self.time_updated = time()
+		return self
 	end
 }
 
@@ -93,6 +113,7 @@ function addon:InitItemStorage() -- Extract items from our SV. Could be more ele
 	for i, v in ipairs(db.itemStorage) do
 		-- v3.0: Noticed some items didn't have a link - check for that.
 		if not v.link or (v.time_remaining and v.time_updated and (v.time_remaining + v.time_updated - time() <= 0)) then
+			addon.Log:W("ItemStorage, db item no link or timeout", v.link)
 			tinsert(toBeRemoved, i)
 		else
 			Item = Storage:New(v.link, v.type, "restored", v)
@@ -315,10 +336,9 @@ function private:newItem(link, type, time_remaining)
 	local Item = setmetatable({}, mt)
 	Item.link = link
 	Item.type = type or Item.type
-	-- If item isn't in our bags, lets store it for 6 hours
-	Item.time_remaining = time_remaining or 60 * 60 * 6
+	-- If item isn't in our bags, lets store it for 6 hours (21600 seconds)
+	Item:SetUpdateTime(time_remaining, 21600)
 	Item.time_added = time()
-	Item.time_updated = Item.time_added
 	return Item
 end
 
