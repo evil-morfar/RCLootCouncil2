@@ -43,8 +43,12 @@ Storage.AcceptedTypes = {
 --- @class Item
 local item_class = {
 	type = "other", -- Default to unspecified
-	time_remaining = 0, -- NOTE For now I rely on this not being updated for timeout checks. It should be precise enough, but needs testing
+	--- When was this registered (in seconds)
 	time_added = 0,
+	--- When did we last update `time_remaining`
+	time_updated = 0,
+	--- How many seconds left to trade when we last updated it.
+	time_remaining = 0,
 	inBags = false,
 	link = "",
 	args = {}, -- User args
@@ -60,6 +64,21 @@ local item_class = {
 	-- Items shouldn't be removed whilst itemWatch is working it.
 	-- This functions checks that.
 	SafeToRemove = function(self) return self.args.itemWatch == nil end,
+
+	--- Updates time_remaining
+	UpdateTime = function (self)
+		if not self.inBags then return end -- Don't do anything if we know we haven't stored it.
+		local _,_, t = private:findItemInBags(self.link)
+		self.time_remaining = t
+		self.time_updated = time()
+	end,
+
+	--- Actual time remaining.
+	--- `self.time_remaining` is only acurate immediately after calling `self:UpdateTime()`.
+	--- This always represents the accurate remaining time.
+	TimeRemaining = function (self)
+		return self.time_remaining + self.time_updated - time()
+	end
 }
 
 -- lua
@@ -73,7 +92,7 @@ function addon:InitItemStorage() -- Extract items from our SV. Could be more ele
 	local toBeRemoved = TT:Acquire()
 	for i, v in ipairs(db.itemStorage) do
 		-- v3.0: Noticed some items didn't have a link - check for that.
-		if not v.link or v.time_remaining == 0 then
+		if not v.link or (v.time_remaining and v.time_updated and (v.time_remaining + v.time_updated - time() <= 0)) then
 			tinsert(toBeRemoved, i)
 		else
 			Item = Storage:New(v.link, v.type, "restored", v)
@@ -114,11 +133,7 @@ function Storage:New(item, typex, ...)
 	if select(1, ...) == "restored" then -- Special case, gets stored
 		local OldItem = select(2, ...)
 		Item.args = OldItem.args
-		-- We should restore timestamps if we're dealing with an item that's always tradeable:
-		if time_remaining == math.huge then
-			Item.time_added = OldItem.time_added
-			Item.time_remaining = OldItem.time_remaining
-		end
+		Item.time_added = OldItem.time_added
 	else
 		Item.args = ... and type(...) == "table" and ... or {...}
 	end
@@ -191,11 +206,11 @@ function Storage:GetAllItemsOfType(type)
 end
 
 --- Returns all stored Items with less/equal time remaining
--- @param time Seconds to check for (defaults to 0)
--- @return An Item table consisting of items with less or equal, time remaining than 'time'.
+--- @param time integer Seconds to check for (defaults to 0)
+--- @return Item[] #A table consisting of items with less or equal, time remaining than 'time'.
 function Storage:GetAllItemsLessTimeRemaining(time)
 	time = time or 0
-	return tFilter(StoredItems, function(v) return v.time_remaining <= time end, true)
+	return tFilter(StoredItems, function(v) return v:TimeRemaining() <= time end, true)
 end
 
 --- Returns all stored Items based on multiple predicates
@@ -301,8 +316,9 @@ function private:newItem(link, type, time_remaining)
 	Item.link = link
 	Item.type = type or Item.type
 	-- If item isn't in our bags, lets store it for 6 hours
-	Item.time_remaining = time_remaining or Item.time_remaining or 60 * 60 * 6
+	Item.time_remaining = time_remaining or 60 * 60 * 6
 	Item.time_added = time()
+	Item.time_updated = Item.time_added
 	return Item
 end
 

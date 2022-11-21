@@ -281,18 +281,12 @@ end
 
 function RCLootCouncilML:ClearOldItemsInBags()
 	local Items = addon.ItemStorage:GetAllItemsOfType("award_later")
-	for _,v in ipairs(Items) do
-		-- Expire BOP items after 2h, Because Blizzard only gives a 2h window to trade soulbound items.
-		-- Expire items non BoP after 6h, in case some guild distribute boe items at the end of raid.
-		-- if v.addedTime is not recorded, then something is wrong, just remove it.
-		-- NOTE: This is the old. It seems overly complicated... Also doesn't work with the new item storage. Kept for reference.
-		-- if (not v.time_added) or (v.args.bop and time(date("!*t")) - v.time_added > 3600*2) or (time(date("!*t")) - v.time_added > 3600*6) then -- time(date("!*t")) is UTC epoch.
-		-- 	tremove(db.baggedItems, i)
-		-- end
-		if (v.args.bop and (v.time_remaining <= 0 or v.time_remaining + v.time_added < time())) or -- BoP item, 2 hrs
-			time() - v.time_added > 3600 * 6 then -- Non BoP, timeout after 6 hrs
-				self.Log:d("Removed Item", v.link, "due to timeout.")
-				addon.ItemStorage:RemoveItem(v)
+	for _,Item in ipairs(Items) do
+		Item:UpdateTime()
+		if (Item.args.bop and Item:TimeRemaining() < 0) or -- BoP item, 2 hrs
+			time() - Item.time_added > 3600 * 6 then -- Non BoP, timeout after 6 hrs
+				self.Log:d("Removed Item", Item.link, "due to timeout.")
+				addon.ItemStorage:RemoveItem(Item)
 				-- REVIEW Notify the user?
 		end
 	end
@@ -310,8 +304,9 @@ function RCLootCouncilML:PrintItemsInBags()
 		return addon:Print(L["The award later list is empty."])
 	end
 	addon:Print(L["Following items were registered in the award later list:"])
-	for i, v in ipairs(Items) do
-		addon:Print(i..". "..v.link, format(GUILD_BANK_LOG_TIME, SecondsToTime(time()-v.time_added, true)) )
+	for i, Item in ipairs(Items) do
+		Item:UpdateTime()
+		addon:Print(i..". "..Item.link, format(GUILD_BANK_LOG_TIME, SecondsToTime(Item.time_remaining, true)) )
 		-- GUILD_BANK_LOG_TIME == "( %s ago )", although the constant name does not make sense here, this constant expresses we intend to do.
 		-- SecondsToTime is defined in SharedXML/util.lua
 	end
@@ -355,27 +350,25 @@ function RCLootCouncilML:ItemsInBagsLowTradeTimeRemainingReminder()
 	if GetTime() - lastCheckItemsInBagsLowTradeTimeRemainingReminder < 120 then -- Dont spam
 		return
 	end
-	local entriesToRemind = {}
+	local entriesToRemind = TempTable:Acquire()
 	local remindThreshold = 1200 -- 20min
 	local Items = addon.ItemStorage:GetAllItemsOfType("award_later")
 	local remainingTime
-	for k, v in ipairs(Items) do
-		-- It should be precise enough to just check time_added + time_remaining
-		remainingTime = time() - v.time_added + v.time_remaining
+	for k, Item in ipairs(Items) do
+		remainingTime = Item:TimeRemaining()
 		if remainingTime > 0 and remainingTime < remindThreshold then
-			v.remainingTime = remainingTime
-			v.index = k
-			tinsert(entriesToRemind, v)
+			tinsert(entriesToRemind, { index = k, Item = Item, remainingTime = remainingTime})
 		end
 	end
 
 	if #entriesToRemind > 0 then
 		addon:Print(format(L["item_in_bags_low_trade_time_remaining_reminder"], "|cffff0000"..SecondsToTime(remindThreshold).."|r"))
 		for _, v in ipairs(entriesToRemind) do
-			addon:Print(v.index..". "..v.link, "-->", v.args.recipient and addon:GetUnitClassColoredName(v.args.recipient) or L["Unawarded"],
+			addon:Print(v.index..". "..v.Item.link, "-->", v.args.recipient and addon:GetUnitClassColoredName(v.args.recipient) or L["Unawarded"],
 				"(", _G.CLOSES_IN..":", SecondsToTime(v.remainingTime), ")")
 		end
 	end
+	TempTable:Release(entriesToRemind)
 	lastCheckItemsInBagsLowTradeTimeRemainingReminder = GetTime()
 end
 
