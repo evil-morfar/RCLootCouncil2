@@ -10,7 +10,7 @@ All RCLootCouncil frames except `Loot-` and `Voting Frame` can now be closed by 
 
 - *Starting a test session too quickly now prints a message starting to wait a bit rather than causing errors (Curse#510).*
 - *Test versions will no longer be listed as newer if you're not running a test version yourself.*
-
+- *Updated libraries - fixes error when opening options menu.* 
 
 # v3.5.1
 
