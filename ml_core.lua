@@ -306,7 +306,7 @@ function RCLootCouncilML:PrintItemsInBags()
 	addon:Print(L["Following items were registered in the award later list:"])
 	for i, Item in ipairs(Items) do
 		Item:UpdateTime()
-		addon:Print(i..". "..Item.link, format(GUILD_BANK_LOG_TIME, SecondsToTime(Item.time_remaining, true)) )
+		addon:Print(i..". "..Item.link, format(GUILD_BANK_LOG_TIME, SecondsToTime(time() - Item.time_added, true)) )
 		-- GUILD_BANK_LOG_TIME == "( %s ago )", although the constant name does not make sense here, this constant expresses we intend to do.
 		-- SecondsToTime is defined in SharedXML/util.lua
 	end
