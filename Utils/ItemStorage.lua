@@ -116,16 +116,21 @@ function addon:InitItemStorage() -- Extract items from our SV. Could be more ele
 			addon.Log:W("ItemStorage, db item no link or timeout", v.link, v.time_remaining, v.time_updated)
 			tinsert(toBeRemoved, i)
 		else
-			Item = Storage:New(v.link, v.type, "restored", v)
-			if not Item.inBags and Storage.AcceptedTypes[Item.type] then -- Item probably no longer exists?
+			local c, s = private:findItemInBags(v.link)
+			if c and s and Storage.AcceptedTypes[v.type] then
+				-- Reuse item table from db to restore the reference
+				Item = private:newItem(v, v.link, v.type)
+				-- Restore old time added
+				Item.time_added = v.time_added
+			else
 				addon.Log:W("ItemStorage, db item no longer in bags", v.link)
-				Storage:RemoveItem(Item)
 				tinsert(toBeRemoved, i)
 			end
 		end
 	end
-	table.sort(toBeRemoved)
-	for i = #toBeRemoved, 1, -1 do tremove(db.itemStorage, toBeRemoved[i]) end
+	for i = #toBeRemoved, 1, -1 do
+		tremove(db.itemStorage, toBeRemoved[i])
+	end
 	TT:Release(toBeRemoved)
 end
 
@@ -142,23 +147,8 @@ function Storage:New(item, typex, ...)
 			2)
 	end
 	addon.Log:D("Storage:New", item, typex, ...)
-	local c, s, time_remaining = private:findItemInBags(item)
-	local Item
-	if not (c and s) then
-		-- The Item is not in our bags
-		Item = private:newItem(item, typex)
-	else
-		Item = private:newItem(item, typex, time_remaining)
-		Item.inBags = true -- The item is in our bags
-	end
-	if select(1, ...) == "restored" then -- Special case, gets stored
-		local OldItem = select(2, ...)
-		Item.args = OldItem.args
-		Item.time_added = OldItem.time_added
-	else
-		Item.args = ... and type(...) == "table" and ... or { ... }
-	end
-	tinsert(StoredItems, Item)
+	local Item = private:newItem({}, item, typex)
+	Item.args = ... and type(...) == "table" and ... or { ... }
 	return Item
 end
 
@@ -331,13 +321,21 @@ local mt = {
 	__tostring = function(self) return self.link end,
 }
 
-function private:newItem(link, type, time_remaining)
-	local Item = setmetatable({}, mt)
+--- Creates a new item
+--- @param base? table Used as the base table for the class. Defaults to new table.
+--- @param link ItemLink
+--- @param type AcceptedTypes
+--- @return Item
+function private:newItem(base, link, type)
+	local c, s, time_remaining = self:findItemInBags(link)
+	local Item = setmetatable(base or {}, mt)
 	Item.link = link
-	Item.type = type or Item.type
+	Item.type = type
 	-- If item isn't in our bags, lets store it for 6 hours (21600 seconds)
 	Item:SetUpdateTime(time_remaining, 21600)
 	Item.time_added = time()
+	Item.inBags = c and s
+	tinsert(StoredItems, Item)
 	return Item
 end
 
