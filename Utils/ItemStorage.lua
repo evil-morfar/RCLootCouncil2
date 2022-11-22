@@ -12,7 +12,7 @@ addon.ItemStorage = Storage
 
 --- @type Item[]
 local StoredItems = {}
-local private = {ITEM_WATCH_DELAY = 1}
+local private = { ITEM_WATCH_DELAY = 1 }
 
 
 --- @alias AcceptedTypes
@@ -74,9 +74,9 @@ local item_class = {
 
 	--- Updates time_remaining
 	---@param self Item
-	UpdateTime = function (self)
+	UpdateTime = function(self)
 		if not self.inBags then return end -- Don't do anything if we know we haven't stored it.
-		local _,_, t = private:findItemInBags(self.link)
+		local _, _, t = private:findItemInBags(self.link)
 		self:SetUpdateTime(t)
 	end,
 
@@ -84,7 +84,7 @@ local item_class = {
 	--- `self.time_remaining` is only acurate immediately after calling `self:UpdateTime()`.
 	--- This always represents the accurate remaining time.
 	--- @param self Item
-	TimeRemaining = function (self)
+	TimeRemaining = function(self)
 		return self.time_remaining + self.time_updated - time()
 	end,
 
@@ -92,7 +92,7 @@ local item_class = {
 	--- @param self Item Item to set time for.
 	--- @param timeRemaining? integer Remaining time
 	--- @param fallbackTime? integer Used as `timeRemaining` if that's nil. Defaults to 0.
-	SetUpdateTime = function (self, timeRemaining, fallbackTime)
+	SetUpdateTime = function(self, timeRemaining, fallbackTime)
 		timeRemaining = timeRemaining or fallbackTime or 0
 		-- Store BoEs (math.huge) as 24 hrs so we don't run into issues when displaying time.
 		self.time_remaining = timeRemaining == math.huge and 86400 or timeRemaining
@@ -103,8 +103,8 @@ local item_class = {
 
 -- lua
 local error, table, tostring, tinsert, tremove, type, select, FindInTableIf, time, tFilter, setmetatable, CopyTable,
-      ipairs = error, table, tostring, tinsert, tremove, type, select, FindInTableIf, time, tFilter, setmetatable,
-               CopyTable, ipairs
+ipairs = error, table, tostring, tinsert, tremove, type, select, FindInTableIf, time, tFilter, setmetatable,
+	CopyTable, ipairs
 
 function addon:InitItemStorage() -- Extract items from our SV. Could be more elegant
 	db = self:Getdb()
@@ -138,8 +138,8 @@ function Storage:New(item, typex, ...)
 	if not typex then typex = "other" end
 	if not self.AcceptedTypes[typex] then
 		error(
-						"Type: " .. tostring(typex) .. " is not accepted. Accepted types are: " .. table.concat(self.AcceptedTypes, ", "),
-						2)
+			"Type: " .. tostring(typex) .. " is not accepted. Accepted types are: " .. table.concat(self.AcceptedTypes, ", "),
+			2)
 	end
 	addon.Log:D("Storage:New", item, typex, ...)
 	local c, s, time_remaining = private:findItemInBags(item)
@@ -156,7 +156,7 @@ function Storage:New(item, typex, ...)
 		Item.args = OldItem.args
 		Item.time_added = OldItem.time_added
 	else
-		Item.args = ... and type(...) == "table" and ... or {...}
+		Item.args = ... and type(...) == "table" and ... or { ... }
 	end
 	tinsert(StoredItems, Item)
 	return Item
@@ -177,8 +177,8 @@ function Storage:RemoveItem(itemOrItemLink)
 	-- Find and delete the item
 	local key1 = private:FindItemInTable(db.itemStorage, itemOrItemLink)
 	local key2 = private:FindItemInTable(StoredItems, itemOrItemLink)
-	if key1 then addon.Log:D("Removed1:",tremove(db.itemStorage, key1).link) end
-	if key2 then addon.Log:D("Removed2:",tremove(StoredItems, key2)) end
+	if key1 then addon.Log:D("Removed1:", tremove(db.itemStorage, key1).link) end
+	if key2 then addon.Log:D("Removed2:", tremove(StoredItems, key2)) end
 
 	-- key1 might not be there if we haven't stored it
 	if not key2 then
@@ -238,7 +238,7 @@ end
 -- @param ... Predicate functions.
 -- @return The filtered list of times.
 function Storage:GetAllItemsMultiPred(...)
-	local args = {...}
+	local args = { ... }
 	return tFilter(StoredItems, function(v)
 		for _, func in ipairs(args) do if not func(v) then return false end end
 		return true
@@ -279,11 +279,10 @@ end
 --- Compares all fields expect `time_added` and `time_remaining`.
 ---@param a Item
 ---@param b Item
-function Storage:Compare(a,b)
+function Storage:Compare(a, b)
 	if type(a) ~= "table" or not a.type then error(format("%s is not a valid input.", tostring(a))) end
 	if type(b) ~= "table" or not b.type then error(format("%s is not a valid input.", tostring(b))) end
-	return
-		a.type == b.type and
+	return a.type == b.type and
 		a.inBags == b.inBags and
 		a.link == b.link and
 		tCompare(a.args, b.args, 1)
@@ -295,7 +294,7 @@ function private:FindItemInTable(table, item1, type)
 	end
 	if item1.type then
 		-- Our item class
-		return FindInTableIf(table, function(item2) return Storage:Compare(item1,item2) end)
+		return FindInTableIf(table, function(item2) return Storage:Compare(item1, item2) end)
 	else
 		-- Generic itemString
 		return FindInTableIf(table, function(item2) return addon:ItemIsItem(item1, item2.link) end)
