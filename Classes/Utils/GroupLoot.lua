@@ -13,6 +13,7 @@ function GroupLoot:OnInitialize()
 end
 
 function GroupLoot:OnStartLootRoll()
+    if not addon.enabled then return self.Log:d("Addon disabled, ignoring group loot") end
     if self:ShouldPassOnLoot() then
         self.Log:d("Passing on loot")
         self:RollOnAllLoot(0)
