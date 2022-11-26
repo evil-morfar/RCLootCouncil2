@@ -279,7 +279,7 @@ function addon:OptionsTable()
 											if not self.enabled and self.isMasterLooter then -- If we disable while being ML
 												self.isMasterLooter = false
 												self.masterLooter = nil
-												self:GetActiveModule("masterlooter"):Disable()
+												self:StopHandleLoot()
 											else
 												self:NewMLCheck()
 											end
