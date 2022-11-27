@@ -1669,9 +1669,9 @@ function RCLootCouncil:NewMLCheck()
 	local _, type = IsInInstance()
 	if type == "arena" or type == "pvp" then return end
 
-	if (self.lootMethod == "group" or self.lootMethod == "personalloot") and db.usage.pl then -- auto start PL
+	if (self.lootMethod == "group" and db.usage.gl) or (self.lootMethod == "personalloot" and db.usage.pl) then -- auto start
 		self:StartHandleLoot()
-	elseif (self.lootMethod == "group" or self.lootMethod == "personalloot") and db.usage.ask_pl then
+	elseif (self.lootMethod == "group" and db.usage.ask_gl) or (self.lootMethod == "personalloot" and db.usage.ask_pl) then
 		return LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_USAGE")
 	end
 end
@@ -1705,10 +1705,10 @@ function RCLootCouncil:OnRaidEnter(arg)
 	-- Check if we can use in party
 	if not IsInRaid() and db.onlyUseInRaids then return end
 	if UnitIsGroupLeader("player") then
-		if db.usage.pl then
+		if db.usage.gl then
 			self:StartHandleLoot()
 			-- We must ask the player for usage
-		elseif db.usage.ask_pl then
+		elseif db.usage.ask_gl then
 			return LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_USAGE")
 		end
 	end

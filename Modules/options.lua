@@ -889,9 +889,11 @@ function addon:OptionsTable()
 										--	ask_ml		= L["Ask me every time I become Master Looter"],
 										--	leader 		= "Always use RCLootCouncil when I'm the group leader and enter a raid",
 										--	ask_leader	= "Ask me every time I'm the group leader and enter a raid",
-											pl				= L["Always use RCLootCouncil with Personal Loot"],
-											ask_pl		= L["Ask me every time Personal Loot is enabled"],
+											-- pl				= L["Always use RCLootCouncil with Personal Loot"],
+											-- ask_pl		= L["Ask me every time Personal Loot is enabled"],
 											never			= L["Never use RCLootCouncil"],
+											gl     = L.opt_usage_GroupLoot,
+											ask_gl = L.opt_usage_AskGroupLoot,
 										},
 										set = function(_, key)
 											for k in pairs(self.db.profile.usage) do
