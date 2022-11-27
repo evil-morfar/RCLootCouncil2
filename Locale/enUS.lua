@@ -540,3 +540,6 @@ L["non_tradeable_reason_rejected_trade"] = "Wanted to keep item"
 L["non_tradeable_reason_nil"] = "Unknown"
 L.opt_useSlashRC_name = "Use /rc"
 L.opt_useSlashRC_desc = "Disable this if you want to restore '/rc' to ready check. RCLootCouncil commands are still available with '/rclc'. A '/reload' is required for this to take effect."
+
+L.opt_autoGroupLoot_name = "Auto Group Loot"
+L.opt_autoGroupLoot_desc = "When enabled, RCLootCouncil will automatically click the pass and greed buttons so that all items lands in your inventory."

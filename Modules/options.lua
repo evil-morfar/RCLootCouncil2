@@ -998,8 +998,8 @@ function addon:OptionsTable()
 									},
 									autoGroupLoot = {
 										order = 10,
-										name = "Auto Group Loot",
-										desc = "When enabled, RCLootCouncil will automatically click the pass and greed buttons so that all items lands in your inventory.",
+										name = L.opt_autoGroupLoot_name,
+										desc = L.opt_autoGroupLoot_desc,
 										type = "toggle"
 									}
 								},
