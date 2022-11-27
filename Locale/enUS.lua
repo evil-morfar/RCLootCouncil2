@@ -506,6 +506,7 @@ L["options_ml_outOfRaid_desc"] = "When enabled, while in a group of 8 or more me
 L["options_ml_outOfRaid_name"] = "Out of Raid Support"
 L["options_requireNotes_desc"] = "If enabled, candidates cannot submit their response without having entered a note."
 
+L.autoGroupLoot_warning = "Note: Group Leader's settings will cause RCLootCouncil to automatically control group loot."
 L["opt_addButton_desc"] = "Add a new button group for the selected slot."
 L["opt_autoAddBoEs_name"] = "Auto Add BoEs"
 L["opt_autoAddBoEs_desc"] = "Automatically add all BoE (Bind on Equip) items to a session."

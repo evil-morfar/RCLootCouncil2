@@ -98,6 +98,7 @@ addon.defaults = {
       outOfRaid = false,
       useSlashRC = true, -- Register "/rc" slash command.
       autoGroupLoot = true,
+      showAutoGroupLootWarning = true, -- Show warning OnMLDBReceived if autoGroupLoot is on.
 
       chatFrameName = "DEFAULT_CHAT_FRAME", -- The chat frame to use for :Print()s
 
