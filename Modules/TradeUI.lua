@@ -42,6 +42,7 @@ function TradeUI:OnInitialize()
       { name = "", width = ROW_HEIGHT - 5},-- Arrow
       { name = "", width = 100,},          -- Recipient
       { name = "", width = 40,},           -- Trade
+      { name = "", width = ROW_HEIGHT/2},            -- Delete
    }
    self:Enable()
 end
@@ -107,6 +108,7 @@ function TradeUI:Update(forceShow)
             {value = "-->"},
             {value = v.args.recipient and addon.Ambiguate(v.args.recipient) or "Unknown", color = addon:GetClassColor(v.args.recipient.class or "nothing")},
             {value = _G.TRADE, color = self.GetTradeLabelColor, colorargs = {self, v.args.recipient},},
+            {DoCellUpdate = self.SetCellDelete },
          }
       }
    end
@@ -247,7 +249,14 @@ end
 function TradeUI:OnEvent_TRADE_SHOW (event, ...)
    self.isTrading = true
    wipe(self.tradeItems)
-   self.tradeTarget = addon:UnitName("NPC")
+
+   -- Try to grab the trader from Blizzard UI
+   local target = _G.TradeFrameRecipientNameText:GetText()
+   if not target or target == "" then
+      target = "NPC" -- Otherwise fallback to `UnitName("NPC")`
+   end
+   self.tradeTarget = addon:UnitName(target)
+
    local count = self:GetNumAwardedInBagsToTradeWindow()
 
    if count > 0 then
@@ -412,4 +421,30 @@ end
 
 function TradeUI:GetTradeLabelColor(target)
    return CheckInteractDistance(Ambiguate(target, "short"), 2) and {r=0,g=1,b=0,a=1} or {r=1,g=0,b=0,a=1}
+end
+
+function TradeUI.SetCellDelete(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
+	if not frame.created then
+      frame:SetHeight(ROW_HEIGHT / 2)
+		frame:SetNormalTexture("Interface\\Buttons\\UI-GroupLoot-Pass-Up")
+		frame:SetScript("OnEnter", function()
+			addon:CreateTooltip(L["Double click to delete this entry."])
+		end)
+		frame:SetScript("OnLeave", function() addon:HideTooltip() end)
+		frame.created = true
+	end
+	frame:SetScript("OnClick", function()
+		local link = data[realrow].link
+		if frame.lastClick and GetTime() - frame.lastClick <= 0.5 then
+			frame.lastClick = nil
+			-- Do deleting
+			addon.Log:D("Deleting:", link)
+			tremove(data, realrow)
+
+         local Item = addon.ItemStorage:GetItem(link, "to_trade")
+         addon.ItemStorage:RemoveItem(Item)
+		else
+			frame.lastClick = GetTime()
+		end
+	end)
 end
