@@ -53,9 +53,9 @@ addon.defaults = {
          --ml = false,				-- Enable when ML
          --ask_ml = true,			-- Ask before enabling when ML
          never = false,			-- Never enable
-         pl = false,				-- Always enable with PL
-         ask_pl = true,			-- Ask before enabling when PL
-         state = "ask_pl", 	-- Current state
+         gl = false,				-- Always enable with group loot
+         ask_gl = true,			-- Ask before enabling when group loot
+         state = "ask_gl", 	-- Current state
       },
       onlyUseInRaids = true,
       ambiguate = false, -- Append realm names to players
@@ -98,6 +98,7 @@ addon.defaults = {
       outOfRaid = false,
       useSlashRC = true, -- Register "/rc" slash command.
       autoGroupLoot = true,
+      showAutoGroupLootWarning = true, -- Show warning OnMLDBReceived if autoGroupLoot is on.
 
       chatFrameName = "DEFAULT_CHAT_FRAME", -- The chat frame to use for :Print()s
 

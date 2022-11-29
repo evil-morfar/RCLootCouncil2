@@ -279,7 +279,7 @@ function addon:OptionsTable()
 											if not self.enabled and self.isMasterLooter then -- If we disable while being ML
 												self.isMasterLooter = false
 												self.masterLooter = nil
-												self:GetActiveModule("masterlooter"):Disable()
+												self:StopHandleLoot()
 											else
 												self:NewMLCheck()
 											end
@@ -889,9 +889,11 @@ function addon:OptionsTable()
 										--	ask_ml		= L["Ask me every time I become Master Looter"],
 										--	leader 		= "Always use RCLootCouncil when I'm the group leader and enter a raid",
 										--	ask_leader	= "Ask me every time I'm the group leader and enter a raid",
-											pl				= L["Always use RCLootCouncil with Personal Loot"],
-											ask_pl		= L["Ask me every time Personal Loot is enabled"],
+											-- pl				= L["Always use RCLootCouncil with Personal Loot"],
+											-- ask_pl		= L["Ask me every time Personal Loot is enabled"],
 											never			= L["Never use RCLootCouncil"],
+											gl     = L.opt_usage_GroupLoot,
+											ask_gl = L.opt_usage_AskGroupLoot,
 										},
 										set = function(_, key)
 											for k in pairs(self.db.profile.usage) do
@@ -998,8 +1000,8 @@ function addon:OptionsTable()
 									},
 									autoGroupLoot = {
 										order = 10,
-										name = "Auto Group Loot",
-										desc = "When enabled, RCLootCouncil will automatically click the pass and greed buttons so that all items lands in your inventory.",
+										name = L.opt_autoGroupLoot_name,
+										desc = L.opt_autoGroupLoot_desc,
 										type = "toggle"
 									}
 								},

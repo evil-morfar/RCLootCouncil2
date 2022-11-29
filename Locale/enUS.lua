@@ -506,6 +506,7 @@ L["options_ml_outOfRaid_desc"] = "When enabled, while in a group of 8 or more me
 L["options_ml_outOfRaid_name"] = "Out of Raid Support"
 L["options_requireNotes_desc"] = "If enabled, candidates cannot submit their response without having entered a note."
 
+L.autoGroupLoot_warning = "Note: Group Leader's settings will cause RCLootCouncil to automatically control group loot."
 L["opt_addButton_desc"] = "Add a new button group for the selected slot."
 L["opt_autoAddBoEs_name"] = "Auto Add BoEs"
 L["opt_autoAddBoEs_desc"] = "Automatically add all BoE (Bind on Equip) items to a session."
@@ -537,5 +538,11 @@ L["opt_skipSessionFrame_desc"] = "Skips the Session Frame. NOTE: This causes the
 L["non_tradeable_reason_not_tradeable"] = "Not Tradeable"
 L["non_tradeable_reason_rejected_trade"] = "Wanted to keep item"
 L["non_tradeable_reason_nil"] = "Unknown"
+L.opt_usage_GroupLoot = "Always use RCLootCouncil with Group Loot"
+L.opt_usage_AskGroupLoot = "Ask me every time Group Loot is enabled"
 L.opt_useSlashRC_name = "Use /rc"
 L.opt_useSlashRC_desc = "Disable this if you want to restore '/rc' to ready check. RCLootCouncil commands are still available with '/rclc'. A '/reload' is required for this to take effect."
+
+L.opt_autoGroupLoot_name = "Auto Group Loot"
+L.opt_autoGroupLoot_desc = "When enabled, RCLootCouncil will automatically click the pass and greed buttons so that all items lands in your inventory."
+

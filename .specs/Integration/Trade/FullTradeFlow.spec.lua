@@ -158,3 +158,7 @@ function _G.C_Container.GetContainerItemLink(bagID, slotIndex)
 end
 
 function _G.CheckInteractDistance(unit, distIndex) return false end
+
+_G.TradeFrameRecipientNameText = {
+	GetText = function() return "" end
+}

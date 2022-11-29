@@ -172,5 +172,17 @@ Compat.list = {
 		func = function()
 			addon.db.global.errors = {}
 		end
+	},
+	{
+		name = "Group Loot",
+		version = "3.6.0",
+		func = function()
+			for _,db in pairs(addon.db.profiles) do
+				for i in pairs(db.usage) do
+					-- Just remove everything, which will reset it to the new defaults
+					db.usage[i] = nil
+				end
+			end
+		end
 	}
 }
