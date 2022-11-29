@@ -1,3 +1,7 @@
+## Bugfixes
+
+- *Fixed potential nil error (Classic#46, CurseClassic#170).*
+
 # v3.6.0
 
 ## Changes
