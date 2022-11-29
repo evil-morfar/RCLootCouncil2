@@ -249,7 +249,14 @@ end
 function TradeUI:OnEvent_TRADE_SHOW (event, ...)
    self.isTrading = true
    wipe(self.tradeItems)
-   self.tradeTarget = addon:UnitName("NPC")
+
+   -- Try to grab the trader from Blizzard UI
+   local target = _G.TradeFrameRecipientNameText:GetText()
+   if not target or target == "" then
+      target = "NPC" -- Otherwise fallback to `UnitName("NPC")`
+   end
+   self.tradeTarget = addon:UnitName(target)
+
    local count = self:GetNumAwardedInBagsToTradeWindow()
 
    if count > 0 then
