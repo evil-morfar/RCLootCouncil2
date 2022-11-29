@@ -31,7 +31,8 @@ local replacements = {
     [magicKey .. "13"] = "outOfRaid",
     [magicKey .. "14"] = "default",
     [magicKey .. "15"] = "text",
-    [magicKey .. "16"] = "color"
+    [magicKey .. "16"] = "color",
+    [magicKey .. "17"] = "autoGroupLoot"
 }
 
 local replacements_inv = tInvert(replacements)
@@ -68,6 +69,12 @@ end
 
 function MLDB:Update()
     return private:BuildMLDB()
+end
+
+--- Checks if a given value is part of the mldb
+---@param val string Value to check
+function MLDB:IsKey(val)
+    return replacements_inv[val] and true or false
 end
 
 function private:ReplaceMLDB(mldb, replacement_table)
@@ -137,7 +144,8 @@ function private:BuildMLDB()
         timeout = db.timeout,
         rejectTrade = db.rejectTrade or nil,
         requireNotes = db.requireNotes or nil,
-        outOfRaid = db.outOfRaid or nil
+        outOfRaid = db.outOfRaid or nil,
+        autoGroupLoot = db.autoGroupLoot or nil
     }
     self.isBuilt = true
     return self.mldb

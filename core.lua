@@ -120,7 +120,7 @@ function RCLootCouncil:OnInitialize()
 	self.version = GetAddOnMetadata("RCLootCouncil", "Version")
 	self.nnp = false
 	self.debug = false
-	self.tVersion = nil -- String or nil. Indicates test version, which alters stuff like version check. Is appended to 'version', i.e. "version-tVersion" (max 10 letters for stupid security)
+	self.tVersion = "Beta.1" -- String or nil. Indicates test version, which alters stuff like version check. Is appended to 'version', i.e. "version-tVersion" (max 10 letters for stupid security)
 
 	self.playerClass = select(2, UnitClass("player")) -- TODO: Remove - contained in self.player
 	self.guildRank = L["Unguilded"]
@@ -139,6 +139,7 @@ function RCLootCouncil:OnInitialize()
 	self.lootSlotInfo = {} -- Items' data currently in the loot slot. Need this because inside LOOT_SLOT_CLEARED handler, GetLootSlotLink() returns invalid link.
 	self.nonTradeables = {} -- List of non tradeable items received since the last ENCOUNTER_END
 	self.lastEncounterID = nil
+	self.autoGroupLootWarningShown = false
 
 	self.lootStatus = {}
 	self.EJLastestInstanceID = RCLootCouncil:GetEJLatestInstanceID()
@@ -1668,9 +1669,9 @@ function RCLootCouncil:NewMLCheck()
 	local _, type = IsInInstance()
 	if type == "arena" or type == "pvp" then return end
 
-	if (self.lootMethod == "group" or self.lootMethod == "personalloot") and db.usage.pl then -- auto start PL
+	if (self.lootMethod == "group" and db.usage.gl) or (self.lootMethod == "personalloot" and db.usage.pl) then -- auto start
 		self:StartHandleLoot()
-	elseif (self.lootMethod == "group" or self.lootMethod == "personalloot") and db.usage.ask_pl then
+	elseif (self.lootMethod == "group" and db.usage.ask_gl) or (self.lootMethod == "personalloot" and db.usage.ask_pl) then
 		return LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_USAGE")
 	end
 end
@@ -1704,10 +1705,10 @@ function RCLootCouncil:OnRaidEnter(arg)
 	-- Check if we can use in party
 	if not IsInRaid() and db.onlyUseInRaids then return end
 	if UnitIsGroupLeader("player") then
-		if db.usage.pl then
+		if db.usage.gl then
 			self:StartHandleLoot()
 			-- We must ask the player for usage
-		elseif db.usage.ask_pl then
+		elseif db.usage.ask_gl then
 			return LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_USAGE")
 		end
 	end
@@ -2454,6 +2455,9 @@ function RCLootCouncil:SubscribeToPermanentComms()
 
 		getCov = function(_, sender) self:OnCovenantRequest(sender) end,
 
+		StartHandleLoot = function() self.handleLoot = true end,
+
+		StopHandleLoot = function() self.handleLoot = false end,
 	})
 end
 
@@ -2595,18 +2599,20 @@ function RCLootCouncil:OnMLDBReceived(input)
 	for type, responses in pairs(self.mldb.responses) do
 		for _ in pairs(responses) do
 			if not self.defaults.profile.responses[type] then
-				-- if not self.mldb.responses[type] then self.mldb.responses[type] = {} end
-				-- if not self.mldb.responses[type][response] then self.mldb.responses[type][response] = {} end
 				setmetatable(self.mldb.responses[type], {__index = self.defaults.profile.responses.default})
 			end
 		end
 	end
 	if not self.mldb.responses.default then self.mldb.responses.default = {} end
 	setmetatable(self.mldb.responses.default, {__index = self.defaults.profile.responses.default})
-	-- setmetatable(self.mldb.buttons, {__index = function() return self.defaults.profile.buttons.default end})
+
 	if not self.mldb.buttons.default then self.mldb.buttons.default = {} end
 	setmetatable(self.mldb.buttons.default, {__index = self.defaults.profile.buttons.default})
-	-- self.mldb = mldb
+
+	if self.mldb.autoGroupLoot and not self.autoGroupLootWarningShown and db.showAutoGroupLootWarning then
+		self.autoGroupLootWarningShown = true
+		self:Print(L.autoGroupLoot_warning)
+	end
 end
 
 function RCLootCouncil:OnReRollReceived(sender, lt)
