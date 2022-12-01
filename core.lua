@@ -1108,13 +1108,7 @@ function RCLootCouncil:Test(num, fullTest, trinketTest)
 	end, 5)
 end
 
-local interface_options_old_cancel = InterfaceOptionsFrameCancel:GetScript("OnClick")
 function RCLootCouncil:EnterCombat()
-	-- Hack to remove CompactRaidGroup taint
-	-- Make clicking cancel the same as clicking okay
-	InterfaceOptionsFrameCancel:SetScript("OnClick", function()
-	 InterfaceOptionsFrameOkay:Click()
-	end)
 	self.inCombat = true
 	if not db.minimizeInCombat then return end
 	for _,frame in ipairs(frames) do
@@ -1127,8 +1121,6 @@ function RCLootCouncil:EnterCombat()
 end
 
 function RCLootCouncil:LeaveCombat()
-	-- Revert
-	InterfaceOptionsFrameCancel:SetScript("OnClick", interface_options_old_cancel)
 	self.inCombat = false
 	if not db.minimizeInCombat then return end
 	for _,frame in ipairs(frames) do
