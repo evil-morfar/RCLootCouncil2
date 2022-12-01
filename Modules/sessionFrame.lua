@@ -208,7 +208,8 @@ function RCSessionFrame:GetFrame()
 					sessionAwardDoneCount = sessionAwardDoneCount + 1
 					if sessionAwardDoneCount >= #ml.lootTable then
 						waitingToEndSessions = false
-						ml:EndSession()
+						-- Run next frame so lootTable data is still available in current execution
+						ml:ScheduleTimer("EndSession", 0)
 					end
 				end)
 			end
