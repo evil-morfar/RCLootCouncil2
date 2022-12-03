@@ -1,3 +1,7 @@
+## Changes
+
+Add `/rc start` command which either shows the usage pop-up or starts the addon depending on your usage settings.
+
 ## Bugfixes
 
 - *Fixed potential nil error (Classic#46, CurseClassic#170).*

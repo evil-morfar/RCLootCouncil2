@@ -495,6 +495,10 @@ function RCLootCouncil:ChatCommand(msg)
 		db.chatFrameName = self.defaults.profile.chatFrameName
 		self:Print(L["Windows reset"])
 
+	elseif input == "start" or input == string.lower(_G.START) then
+		-- Simply emulate player entering raid.
+		self:OnRaidEnter()
+
 	elseif input == "debuglog" or input == "log" then
 		for k, v in ipairs(debugLog) do print(k, v); end
 
