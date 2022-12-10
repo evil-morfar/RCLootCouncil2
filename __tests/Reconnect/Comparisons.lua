@@ -139,6 +139,7 @@ end
 
 local function ReplaceKeyWords(data)
     local key = "|"
+    -- Yes this is more efficient than an array
     local replacements = {
         [key .. "1"] = "lookup",
         [key .. "2"] = "ilvl",
@@ -147,7 +148,7 @@ local function ReplaceKeyWords(data)
         [key .. "5"] = "voters",
         [key .. "6"] = "haveVoted",
         [key .. "7"] = "response",
-    }
+    } 
     local replacements_inv = tInvert(replacements)
     local ret = {}
     for name, d in pairs(data) do
@@ -159,7 +160,14 @@ local function ReplaceKeyWords(data)
                 ret[name][replacements_inv[k]] = v
             end
         end
-
+    end
+    -- Remove empty tables 
+    for _, d in pairs(ret) do
+        for k,v in pairs(d) do
+            if type(v) == "table" and (#v == 0 or (#v == 1 and #v[1] == 0)) then
+                d[k] = nil
+            end
+        end
     end
     return ret
 end
@@ -179,12 +187,22 @@ local function ReplacePlayerNames(data)
         return str
     end
 
+    -- TODO Only remove realm part on people from our realm
     for name, d in pairs(data) do
         ret[GenerateRandomID()] = d
     end
     return ret
 end
 
+local function ReplaceSemiColons(data)
+    local empty = {}
+    for name, d in pairs(data) do
+        for i, item in ipairs(d["|3"] or empty) do
+            d["|3"][i] = item:gsub(":::::::::::", "ø")
+        end
+    end
+    return data    
+end
 local function RunTests(name, data)
     print("Test: " .. name)
     print "Size of reconnect"
@@ -225,7 +243,12 @@ local function RunTests(name, data)
     local nameReplaced2 = ReplacePlayerNames(replaced2)
     print("NameReplaced:\t\t", #Encode("reconnect", nameReplaced2) / 1000 .. " kb")
 
+    local colonsRemoved = ReplaceSemiColons(nameReplaced2)
+    print("ColonsRemoved:\t\t", #Encode("reconnect", colonsRemoved) / 1000 .. " kb")
+
     print "---------------------------------------------------------------------\n"
+    -- printtable(colonsRemoved)
+    -- print (Serialize("reconnect", colonsRemoved))
 end
 
 local data1 = dofile "__tests/Reconnect/data1.lua"
@@ -243,32 +266,35 @@ RunTests("Data 3", data3)
 --[[
 Test: Data 1
 Size of reconnect
-Current:                        9.651 kb
-Remove Unneeded data:           7.839 kb
-Optimize itemLinks:             4.072 kb
-Restructured:                   3.191 kb
-Replaced:                       3.17 kb
-NameReplaced:                   2.933 kb
+Current:			    9.651 kb
+Remove Unneeded data:	7.839 kb
+Optimize itemLinks:		4.072 kb
+Restructured:			3.191 kb
+Replaced:			    2.374 kb
+NameReplaced:			2.162 kb
+ColonsRemoved:			2.164 kb
 ---------------------------------------------------------------------
 
 Test: Data 2
 Size of reconnect
-Current:                        5.127 kb
-Remove Unneeded data:           3.936 kb
-Optimize itemLinks:             2.603 kb
-Restructured:                   1.816 kb
-Replaced:                       1.792 kb
-NameReplaced:                   1.669 kb
+Current:			    5.127 kb
+Remove Unneeded data:	3.936 kb
+Optimize itemLinks:		2.603 kb
+Restructured:			1.816 kb
+Replaced:			    1.728 kb
+NameReplaced:			1.619 kb
+ColonsRemoved:			1.581 kb
 ---------------------------------------------------------------------
 
 Test: Data 3
 Size of reconnect
-Current:                        27.049 kb
-Remove Unneeded data:           18.979 kb
-Optimize itemLinks:             17.56 kb
-Restructured:                   12.023 kb
-Replaced:                       11.899 kb
-NameReplaced:                   11.881 kb
+Current:			    27.049 kb
+Remove Unneeded data:	18.979 kb
+Optimize itemLinks:		17.56 kb
+Restructured:			12.023 kb
+Replaced:			    10.782 kb
+NameReplaced:			10.721 kb
+ColonsRemoved:			10.721 kb
 ---------------------------------------------------------------------
 
 ]]
