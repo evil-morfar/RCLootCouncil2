@@ -84,7 +84,7 @@ local function RemoveUnneededCanidateData(data)
 
     for session, d in ipairs(ret) do
         for name, candData in pairs(d.candidates) do
-            candData.haveVoted = processField(candData.haveVoted)
+            candData.haveVoted = nil
             candData.class = nil
             candData.role = nil
             candData.diff = nil
@@ -100,6 +100,16 @@ local function RemoveUnneededCanidateData(data)
 end
 
 local function RestructureData(data)
+    local convertResponse = function(response)
+        -- return response
+        if response == "AUTOPASS" then
+            return true
+        elseif response == "PASS" then
+            return false
+        else
+            return response
+        end
+    end
     local ret = {}
     for session, d in ipairs(data) do
         for name, candData in pairs(d.candidates) do
@@ -107,29 +117,19 @@ local function RestructureData(data)
                 ret[name] = {
                     ilvl = candData.ilvl,
                     gear1 = {
-                        [session] = candData.gear1
                     },
                     gear2 = {
-                        [session] = candData.gear2
                     },
                     voters = {
-                        [session] = candData.voters
-                    },
-                    haveVoted = {
-                        [session] = candData.haveVoted
                     },
                     response = {
-                        [session] = candData.response == "AUTOPASS" or candData.response
-
                     }
                 }
-            else
-                ret[name].gear1[session] = candData.gear1
-                ret[name].gear2[session] = candData.gear2
-                ret[name].voters[session] = #candData.voters > 0 and candData.voters or nil
-                ret[name].haveVoted[session] = candData.haveVoted
-                ret[name].response[session] = candData.response == "AUTOPASS" or candData.response
             end
+            ret[name].gear1[session] = candData.gear1
+            ret[name].gear2[session] = candData.gear2
+            ret[name].voters[session] = #candData.voters > 0 and candData.voters or nil
+            ret[name].response[session] = convertResponse(candData.response)
 
         end
     end
@@ -141,14 +141,13 @@ local function ReplaceKeyWords(data)
     local key = "|"
     -- Yes this is more efficient than an array
     local replacements = {
-        [key .. "1"] = "lookup",
-        [key .. "2"] = "ilvl",
-        [key .. "3"] = "gear1",
-        [key .. "4"] = "gear2",
-        [key .. "5"] = "voters",
-        [key .. "6"] = "haveVoted",
-        [key .. "7"] = "response",
-    } 
+        [key .. "1"] = "ilvl",
+        [key .. "2"] = "gear1",
+        [key .. "3"] = "gear2",
+        [key .. "4"] = "voters",
+        [key .. "5"] = "haveVoted",
+        [key .. "6"] = "response",
+    }
     local replacements_inv = tInvert(replacements)
     local ret = {}
     for name, d in pairs(data) do
@@ -161,10 +160,10 @@ local function ReplaceKeyWords(data)
             end
         end
     end
-    -- Remove empty tables 
+    -- Remove empty tables
     for _, d in pairs(ret) do
-        for k,v in pairs(d) do
-            if type(v) == "table" and (#v == 0 or (#v == 1 and #v[1] == 0)) then
+        for k, v in pairs(d) do
+            if type(v) == "table" and #v == 0 then
                 d[k] = nil
             end
         end
@@ -201,8 +200,9 @@ local function ReplaceSemiColons(data)
             d["|3"][i] = item:gsub(":::::::::::", "ø")
         end
     end
-    return data    
+    return data
 end
+
 local function RunTests(name, data)
     print("Test: " .. name)
     print "Size of reconnect"
@@ -259,6 +259,8 @@ RunTests("Data 2", data2)
 
 local data3 = Deserialize(dofile "__tests/Reconnect/data3.lua")
 RunTests("Data 3", data3)
+
+
 
 -------------------------------------------------------------
 -- Results
