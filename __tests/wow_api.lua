@@ -470,10 +470,18 @@ function UnitIsUnit(u1, u2)
    return u1 == u2
 end
 
+local function getRandomPlayer()
+	local players = {}
+	for name in pairs(playerNameToGUID) do
+		tinsert(players,name)
+	end
+	return playerNameToGUID[players[math.random(#players)]]
+end
+
 function UnitGUID (name)
    if name == "player" then return playerNameToGUID.Player1.guid end
    name = Ambiguate(name, "short")
-   return playerNameToGUID[name] and playerNameToGUID[name].guid or nil
+   return playerNameToGUID[name] and playerNameToGUID[name].guid or getRandomPlayer().guid
 end
 
 function GetPlayerInfoByGUID (guid)
