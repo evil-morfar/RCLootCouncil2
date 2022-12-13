@@ -101,7 +101,7 @@ end
 function Loader.ReplaceXmlPathWith (xml, path)
    -- xml will look like Something\foo\bar.xml
    -- result should be: Something\foo\path
-   return xml:gsub("[^\\]+$", path)
+   return xml:gsub("[^\\/]+$", path)
 end
 
 --- @param path string
