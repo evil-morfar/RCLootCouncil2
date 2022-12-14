@@ -1,7 +1,0 @@
-use_tab: true
-indent_width: 1
-break_before_functioncall_rp: true
-break_after_operator: false
-column_limit: 120
-chop_down_table: true
-extra_sep_at_table_end: true

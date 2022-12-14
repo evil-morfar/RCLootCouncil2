@@ -495,6 +495,10 @@ function RCLootCouncil:ChatCommand(msg)
 		db.chatFrameName = self.defaults.profile.chatFrameName
 		self:Print(L["Windows reset"])
 
+	elseif input == "start" or input == string.lower(_G.START) then
+		-- Simply emulate player entering raid.
+		self:OnRaidEnter()
+
 	elseif input == "debuglog" or input == "log" then
 		for k, v in ipairs(debugLog) do print(k, v); end
 
@@ -958,6 +962,11 @@ end
 function RCLootCouncil:GetIlvlDifference(item, g1, g2)
 	if not g1 and g2 then error("You can't provide g2 without g1 in :GetIlvlDifference()") end
 	local _, link, _, ilvl, _, _, _, _, equipLoc = GetItemInfo(item)
+
+	if not ilvl then
+		self.Log:E(format("GetIlvlDifference: item: %s had ilvl %s", tostring(item), tostring(ilvl)))
+		return -1
+	end
 	if not g1 then g1, g2 = self:GetPlayersGear(link, equipLoc, playersData.gears) end
 
 	-- Check if it's a ring or trinket

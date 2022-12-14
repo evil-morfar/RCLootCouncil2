@@ -12,14 +12,15 @@ function GroupLoot:OnInitialize()
     addon:RegisterEvent("START_LOOT_ROLL", self.OnStartLootRoll, self)
 end
 
-function GroupLoot:OnStartLootRoll()
+function GroupLoot:OnStartLootRoll(_, rollID)
     if not addon.enabled then return self.Log:d("Addon disabled, ignoring group loot") end
-    if self:ShouldPassOnLoot() then
-        self.Log:d("Passing on loot")
+	local link = GetLootRollItemLink(rollID)
+	if self:ShouldPassOnLoot() then
+        self.Log:d("Passing on loot", link)
         self:RollOnAllLoot(0)
 
     elseif self:ShouldGreedOnLoot() then
-        self.Log:d("Greeding on loot")
+        self.Log:d("Greeding on loot", link)
         self:RollOnAllLoot(2)
     end
 end

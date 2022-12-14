@@ -74,6 +74,7 @@ function RCLootCouncilML:OnEnable()
 
 	self:RegisterEvent("CHAT_MSG_WHISPER",	"OnEvent")
 	self:RegisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
+	self:RegisterEvent("ENCOUNTER_START", "OnEvent")
 	self:RegisterBucketMessage("RCConfigTableChanged", 5, "ConfigTableChanged") -- The messages can burst
 	self:RegisterMessage("RCCouncilChanged", "CouncilChanged")
 	self:RegisterComms()
@@ -504,6 +505,12 @@ function RCLootCouncilML:OnEvent(event, ...)
 			entry[1](select(2, unpack(entry)))
 		end
 		wipe(self.combatQueue)
+
+	elseif event == "ENCOUNTER_START" then
+		-- FIXME: People joining after "StartHandleLoot" is sent naturally won't have it,
+		-- but they still need it for group loot auto pass to work. For now just send it everytime
+		-- we start an encounter.
+		self:Send("group", "StartHandleLoot")
 	end
 end
 
