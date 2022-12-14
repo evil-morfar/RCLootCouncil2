@@ -1,11 +1,13 @@
+# v3.6.1
+
 ## Changes
 
-Add `/rc start` command which either shows the usage pop-up or starts the addon depending on your usage settings.
+Added `/rc start` command which either shows the usage pop-up or starts the addon depending on your usage settings.
 
 ## Bugfixes
 
 - *Fixed potential nil error (Classic#46, CurseClassic#170).*
-- *Fixed issue preventing the addon from addon items to the trade window.*
+- *Fixed issue preventing the addon from adding items to the trade window.*
 - *Fixed issue with players joining after the group leader wouldn't auto pass on group loot.*
 
 # v3.6.0
