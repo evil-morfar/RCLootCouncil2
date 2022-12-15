@@ -80,7 +80,7 @@ function RCLootCouncilML:OnEnable()
 	self:RegisterComms()
 
 	-- Subscribe after comms, as that will override the table
-	tinsert(self.subscriptions, addon.Require "Utils.GroupLoot".OnLootRoll:subscribe(
+	tinsert(subscriptions, addon.Require "Utils.GroupLoot".OnLootRoll:subscribe(
 		function (...)
 		self:OnGroupLootRoll(...)
 	end))

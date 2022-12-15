@@ -547,7 +547,7 @@ end
 -- Items in here should not be handled by `UpdateAndSendRecentTradableItem`.
 local itemsBeingGroupLooted = {}
 RCLootCouncil.Require ("Utils.GroupLoot").OnLootRoll:subscribe(function (link)
-	tinsert(itemsBeingGroupLooted)
+	tinsert(itemsBeingGroupLooted, link)
 end)
 
 -- Update the recentTradableItem by link, if it is in bag and tradable.
