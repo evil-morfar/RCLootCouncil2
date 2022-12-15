@@ -1,3 +1,9 @@
+## Changes
+
+### Group Loot
+
+Changed logic behind automatically adding loot to a session. Should result in a more reliable experience.
+
 # v3.6.1
 
 ## Changes

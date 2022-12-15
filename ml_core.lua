@@ -78,6 +78,12 @@ function RCLootCouncilML:OnEnable()
 	self:RegisterBucketMessage("RCConfigTableChanged", 5, "ConfigTableChanged") -- The messages can burst
 	self:RegisterMessage("RCCouncilChanged", "CouncilChanged")
 	self:RegisterComms()
+
+	-- Subscribe after comms, as that will override the table
+	tinsert(self.subscriptions, addon.Require "Utils.GroupLoot".OnLootRoll:subscribe(
+		function (...)
+		self:OnGroupLootRoll(...)
+	end))
 end
 
 function RCLootCouncilML:GetItemInfo(item)
@@ -487,6 +493,17 @@ function RCLootCouncilML:HandleNonTradeable(link, owner, reason)
 		return self.Log:W("Non handled reason in ML:HandleNonTradeable()",link,owner,reason)
 	end
 	self:TrackAndLogLoot(owner, link, responseID, addon.bossName)
+end
+
+--- Subscriber for `Utils.GroupLoot`.OnLootRoll
+--- @param link Itemlink
+--- @param rollID integer
+--- @param rollType RollType
+function RCLootCouncilML:OnGroupLootRoll(link, rollID, rollType)
+	-- Only add items we've needed/greeded
+	if rollType == 0 or rollType == 3 then return end
+	-- Since there's no difference between PL and GL once we have the loot, just treat it like PL:
+	self:HandleReceivedTradeable(addon.player:GetName(), link)
 end
 
 function RCLootCouncilML:OnEvent(event, ...)

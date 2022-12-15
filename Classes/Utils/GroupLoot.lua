@@ -6,6 +6,13 @@
 local addon = select(2, ...)
 --- @class Utils.GroupLoot
 local GroupLoot = addon.Init "Utils.GroupLoot"
+local Subject = addon.Require("rx.Subject")
+
+--- @class OnLootRoll
+--- Called everytime we're auto rolling for loot.
+--- Subscriber functions are called with args: `itemLink` ,`rollID`, `rollType`
+--- @field subscribe fun(onNext: fun(link:ItemLink, rollID:integer, rollType:RollType), onError:fun(message:string), onComplete:fun()): rx.Subscription
+GroupLoot.OnLootRoll = Subject.create()
 
 function GroupLoot:OnInitialize()
 	self.Log = addon.Require "Utils.Log":New "GroupLoot"
@@ -18,10 +25,12 @@ function GroupLoot:OnStartLootRoll(_, rollID)
 	if self:ShouldPassOnLoot() then
 		self.Log:d("Passing on loot", link)
 		self:RollOnLoot(rollID, 0)
+		self.OnLootRoll(link, rollID, 0)
 
 	elseif self:ShouldGreedOnLoot() then
 		self.Log:d("Greeding on loot", link)
 		self:RollOnLoot(rollID, 2)
+		self.OnLootRoll(link, rollID, 2)
 	end
 end
 
