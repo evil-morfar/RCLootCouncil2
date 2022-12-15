@@ -17,6 +17,7 @@ local objectMethods = {
 local noopMethods = {
 	-- Too many functions, didn't bother
 	"SetBagItem",
+	"SetHyperlink",
 }
 
 for _, v in ipairs(noopMethods) do if not objectMethods[v] then objectMethods[v] = noop end end
