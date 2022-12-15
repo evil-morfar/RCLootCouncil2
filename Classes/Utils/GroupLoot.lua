@@ -17,11 +17,11 @@ function GroupLoot:OnStartLootRoll(_, rollID)
 	local link = GetLootRollItemLink(rollID)
 	if self:ShouldPassOnLoot() then
 		self.Log:d("Passing on loot", link)
-		self:RollOnAllLoot(rollID, 0)
+		self:RollOnLoot(rollID, 0)
 
 	elseif self:ShouldGreedOnLoot() then
 		self.Log:d("Greeding on loot", link)
-		self:RollOnAllLoot(rollID, 2)
+		self:RollOnLoot(rollID, 2)
 	end
 end
 
@@ -35,7 +35,7 @@ end
 --- Note this function doesn't check if the chosen type is valid
 --- @param rollID integer Id of the loot roll.
 --- @param rollType? RollType Type to roll
-function GroupLoot:RollOnAllLoot(rollID, rollType)
+function GroupLoot:RollOnLoot(rollID, rollType)
 	RollOnLoot(rollID, rollType)
 	--ConfirmLootRoll(rollID, rollType)
 end
