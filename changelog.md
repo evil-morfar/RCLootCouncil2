@@ -1,3 +1,5 @@
+# v3.6.2
+
 ## Changes
 
 ### Group Loot
