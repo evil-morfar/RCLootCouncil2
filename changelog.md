@@ -7,6 +7,7 @@ Changed logic behind automatically adding loot to a session. Should result in a 
 ## Bugfixes
 
 - *Warning about Auto Group Loot will now only be displayed when actually using group loot.*
+- *Fixed issue with auto trade. (#223)*
 
 # v3.6.1
 
