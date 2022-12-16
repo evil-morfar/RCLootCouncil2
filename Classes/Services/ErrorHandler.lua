@@ -7,6 +7,8 @@ local addon = select(2, ...)
 local ErrorHandler = addon.Init "Services.ErrorHandler"
 LibStub("AceEvent-3.0"):Embed(ErrorHandler)
 
+local Log = addon.Require("Utils.Log"):Get()
+
 local private = {
    MAX_STACK_DEPTH = 10,
 }
@@ -17,7 +19,7 @@ function ErrorHandler:OnInitialize ()
    self:RegisterEvent("ADDON_ACTION_BLOCKED", "OnEvent")
    self:RegisterEvent("ADDON_ACTION_FORBIDDEN", "OnEvent")
    self:RegisterEvent("LUA_WARNING", "OnEvent")
-   private.log = addon.db.global.errors
+   private.log = addon.db.global.errors or {}
    private:ClearOldErrors()
 end
 
@@ -28,7 +30,7 @@ end
 
 function ErrorHandler:LogError (msg)
    msg = private:SanitizeLine(msg)
-   addon.Log:e(msg)
+   Log:e(msg)
    local errObj = private:DoesErrorExist(msg)
    if errObj then -- This is not the first
       private:IncrementErrorCount(errObj)

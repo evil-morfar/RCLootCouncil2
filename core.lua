@@ -544,8 +544,20 @@ function RCLootCouncil:ChatCommand(msg)
 	end
 end
 
+-- Items in here should not be handled by `UpdateAndSendRecentTradableItem`.
+local itemsBeingGroupLooted = {}
+RCLootCouncil.Require ("Utils.GroupLoot").OnLootRoll:subscribe(function (link)
+	tinsert(itemsBeingGroupLooted, link)
+end)
+
 -- Update the recentTradableItem by link, if it is in bag and tradable.
+-- Except when the item has been auto group looted.
 function RCLootCouncil:UpdateAndSendRecentTradableItem(info, count)
+	if tContains(itemsBeingGroupLooted, info.link) then
+		-- Remove from list in case we get future similar items.
+		tDeleteItem(itemsBeingGroupLooted, info.link)
+		return
+	end
 	local Item = self.ItemStorage:New(info.link, "temp")
 	self.ItemStorage:WatchForItemInBags(Item, function() -- onFound
 		if Item.time_remaining > 0 then
@@ -1535,6 +1547,10 @@ function RCLootCouncil:OnEvent(event, ...)
 		local i = 0
 		for k, info in pairs(self.lootSlotInfo) do
 			if not info.isLooted and info.guid and info.link then
+				if tContains(itemsBeingGroupLooted, info.link) then
+					-- Don't bother with group looted items
+					return
+				end
 				if info.autoloot then -- We've looted the item without getting LOOT_SLOT_CLEARED, properly due to FastLoot addons
 					return self:OnEvent("LOOT_SLOT_CLEARED", k), self:OnEvent("LOOT_CLOSED")
 				end
@@ -2618,7 +2634,8 @@ function RCLootCouncil:OnMLDBReceived(input)
 	if not self.mldb.buttons.default then self.mldb.buttons.default = {} end
 	setmetatable(self.mldb.buttons.default, {__index = self.defaults.profile.buttons.default})
 
-	if self.mldb.autoGroupLoot and not self.autoGroupLootWarningShown and db.showAutoGroupLootWarning then
+	local lootMethod = GetLootMethod()
+	if self.mldb.autoGroupLoot and not self.autoGroupLootWarningShown and db.showAutoGroupLootWarning and lootMethod == "group" then
 		self.autoGroupLootWarningShown = true
 		self:Print(L.autoGroupLoot_warning)
 	end

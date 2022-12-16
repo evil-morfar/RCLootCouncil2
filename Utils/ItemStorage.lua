@@ -113,7 +113,7 @@ function addon:InitItemStorage() -- Extract items from our SV. Could be more ele
 	for i, v in ipairs(db.itemStorage) do
 		-- v3.0: Noticed some items didn't have a link - check for that.
 		if not v.link or (v.time_remaining and v.time_updated and (v.time_remaining + v.time_updated - time() <= 0)) then
-			addon.Log:W("ItemStorage, db item no link or timeout", v.link, v.time_remaining, v.time_updated)
+			addon.Log:W("ItemStorage, db item no link or timeout", v.link, v.time_remaining, v.time_updated, v.type)
 			tinsert(toBeRemoved, i)
 		else
 			local c, s = private:findItemInBags(v.link)

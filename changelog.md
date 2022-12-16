@@ -1,3 +1,17 @@
+# v3.6.2
+
+## Changes
+
+### Group Loot
+
+Changed logic behind automatically adding loot to a session. Should result in a more reliable experience.
+
+## Bugfixes
+
+- *Warning about Auto Group Loot will now only be displayed when actually using group loot.*
+- *Fixed issue with auto trade. (#223)*
+- *Fixed realm name issue related to playing cross realm on realms containing '-'.(Curse#512).*
+
 # v3.6.1
 
 ## Changes
