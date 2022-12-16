@@ -4,6 +4,10 @@
 
 Changed logic behind automatically adding loot to a session. Should result in a more reliable experience.
 
+## Bugfixes
+
+- *Warning about Auto Group Loot will now only be displayed when actually using group loot.*
+
 # v3.6.1
 
 ## Changes

@@ -2634,7 +2634,8 @@ function RCLootCouncil:OnMLDBReceived(input)
 	if not self.mldb.buttons.default then self.mldb.buttons.default = {} end
 	setmetatable(self.mldb.buttons.default, {__index = self.defaults.profile.buttons.default})
 
-	if self.mldb.autoGroupLoot and not self.autoGroupLootWarningShown and db.showAutoGroupLootWarning then
+	local lootMethod = GetLootMethod()
+	if self.mldb.autoGroupLoot and not self.autoGroupLootWarningShown and db.showAutoGroupLootWarning and lootMethod == "group" then
 		self.autoGroupLootWarningShown = true
 		self:Print(L.autoGroupLoot_warning)
 	end
