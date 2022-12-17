@@ -50,6 +50,7 @@ end
 
 
 function addon.UI:RegisterForEscapeClose(frame, OnHide)
+	if not addon:Getdb().closeWithEscape then return end
    tinsert(UISpecialFrames, frame:GetName())
    frame:SetScript("OnHide", OnHide)
 end

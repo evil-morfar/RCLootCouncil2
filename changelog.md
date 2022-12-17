@@ -1,5 +1,9 @@
 # v3.6.3
 
+## Changes
+
+Added option for toggling 'Escape' closing frames.
+
 ## Bugfixes
 
 - *Fixed issue with realm name not available upon login, affecting specifc comms.*
