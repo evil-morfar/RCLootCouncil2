@@ -1,3 +1,9 @@
+# v3.6.3
+
+## Bugfixes
+
+- *Fixed issue with realm name not available upon login, affecting specifc comms.*
+
 # v3.6.2
 
 ## Changes

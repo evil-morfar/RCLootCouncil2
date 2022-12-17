@@ -20,7 +20,7 @@ local private = {
 		end,
 		__newindex = function(_, k, v) addon.db.global.cache.player[k] = v end,
 	}),
-	realmName = select(2, UnitFullName("player")),
+	realmName = nil, -- Not ready here, will be initialized later
 }
 
 ---@class Player
@@ -131,9 +131,6 @@ function private:UpdateCachedPlayer(player)
 
 	player.name = addon.Utils:UnitNameFromNameRealm(name, realm)
 	player.class = class
-	if realm == "" then -- Our realm isn't returned
-		realm = self.realmName
-	end
 	player.realm = realm
 	self:CachePlayer(player)
 end
@@ -147,7 +144,12 @@ function private:GetPlayerInfoByGUID(guid)
 		if found then name = name:sub(0, found - 1) end
 	end
 
-	if realm == "" then realm = self.realmName end
+	if realm == "" then
+		if not self.realmName then
+			self.realmName = select(2, UnitFullName("player"))
+		end
+		realm = self.realmName
+	end
 	return name, realm, class
 end
 
