@@ -59,6 +59,7 @@ addon.defaults = {
 		silentAutoPass = false, -- Show autopass message
 		autoPassBoE = true,
 		printResponse = false, -- Print response in chat
+		autoGroupLootGuildGroupOnly = true,
 		-- General - Frame
 		autoOpen = true, -- auto open the voting frame
 		autoClose = false, -- Auto close voting frame on session end

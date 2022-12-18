@@ -374,6 +374,12 @@ function addon:OptionsTable()
 										desc = L["print_response_desc"],
 										type = "toggle",
 									},
+									autoGroupLootGuildGroupOnly = {
+										order = 6,
+										name = L.opt_autoGroupLootGuildGroupOnly_name,
+										desc = L.opt_autoGroupLootGuildGroupOnly_name,
+									    type = "toggle"
+									}
 								},
 							},
 							frameOptions = {

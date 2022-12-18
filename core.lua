@@ -124,6 +124,7 @@ function RCLootCouncil:OnInitialize()
 
 	self.playerClass = select(2, UnitClass("player")) -- TODO: Remove - contained in self.player
 	self.guildRank = L["Unguilded"]
+	self.guildName = nil
 	self.isMasterLooter = false -- Are we the ML?
 	---@type Player
 	self.masterLooter = nil -- Masterlooter
@@ -140,6 +141,7 @@ function RCLootCouncil:OnInitialize()
 	self.nonTradeables = {} -- List of non tradeable items received since the last ENCOUNTER_END
 	self.lastEncounterID = nil
 	self.autoGroupLootWarningShown = false
+	self.leaderIsFromGuild = false -- Is the group leader a member of our guild?
 
 	self.lootStatus = {}
 	self.EJLastestInstanceID = RCLootCouncil:GetEJLatestInstanceID()
@@ -282,7 +284,7 @@ function RCLootCouncil:OnEnable()
 	self:RegisterBucketEvent("GROUP_ROSTER_UPDATE", 5, "UpdateCandidatesInGroup")
 
 	if IsInGuild() then
-        self.guildRank = select(2, GetGuildInfo("player"))
+        self.guildName, self.guildRank = GetGuildInfo("player")
         self:ScheduleTimer("SendGuildVerTest", 2) -- send out a version check after a delay
 	end
 
@@ -1643,6 +1645,21 @@ function RCLootCouncil:OnBonusRoll(_, type, link, ...)
 	]]
 end
 
+---Checks if the given unit is a member of our guild.
+---@param target string|unit Anything that goes into `UnitName`
+---@return boolean #True if the target is in our guild.
+function RCLootCouncil:IsUnitInOurGuild(target)
+	assert(target, "'target' must be supplied")
+	if not self.guildName then return false end -- we're not in a guild
+	local name = UnitName(target)
+	if not name then
+		self.Log:d("IsUnitInOurGuild: Couldn't get UnitName for target:",target)
+		return false
+	end
+	local targetGuild = GetGuildInfo(name)
+	return targetGuild == self.guildName
+end
+
 function RCLootCouncil:NewMLCheck()
 	local old_ml = self.masterLooter
 	local old_lm = self.lootMethod
@@ -1676,6 +1693,7 @@ function RCLootCouncil:NewMLCheck()
 		self.Log("MasterLooter = ", self.masterLooter)
 		-- Check to see if we have recieved mldb within 15 secs, otherwise request it
 		self:ScheduleTimer("Timer", 15, "MLdb_check")
+		self.leaderIsFromGuild = self:IsUnitInOurGuild(self.masterLooter)
 	end
 
 	if not self.isMasterLooter then -- Someone else has become ML
