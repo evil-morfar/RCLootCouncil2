@@ -1649,16 +1649,17 @@ end
 ---@param target string|unit Anything that goes into `UnitName`
 ---@return boolean #True if the target is in our guild.
 function RCLootCouncil:IsUnitInOurGuild(target)
-	assert(target, "'target' must be supplied")
-	if not self.guildName then return false end -- we're not in a guild
-	self.Log:d("IsUnitInGuild", target)
-	local name = UnitName(target)
-	if not name then
-		self.Log:d("IsUnitInOurGuild: Couldn't get UnitName for target:",target)
-		return false
-	end
-	local targetGuild = GetGuildInfo(name)
-	return targetGuild == self.guildName
+	return true -- FIXME: We're not guaranteed to get the leader's guild name
+	-- assert(target, "'target' must be supplied")
+	-- if not self.guildName then return false end -- we're not in a guild
+	-- self.Log:d("IsUnitInGuild", target)
+	-- local name = UnitName(target)
+	-- if not name then
+	-- 	self.Log:d("IsUnitInOurGuild: Couldn't get UnitName for target:",target)
+	-- 	return false
+	-- end
+	-- local targetGuild = GetGuildInfo(name)
+	-- return targetGuild == self.guildName
 end
 
 function RCLootCouncil:NewMLCheck()
@@ -1694,7 +1695,7 @@ function RCLootCouncil:NewMLCheck()
 		self.Log("MasterLooter = ", self.masterLooter)
 		-- Check to see if we have recieved mldb within 15 secs, otherwise request it
 		self:ScheduleTimer("Timer", 15, "MLdb_check")
-		self.leaderIsFromGuild = self:IsUnitInOurGuild(self.masterLooter:GetName())
+		self.leaderIsFromGuild = self:IsUnitInOurGuild(self.masterLooter:GetShortName())
 	end
 
 	if not self.isMasterLooter then -- Someone else has become ML
