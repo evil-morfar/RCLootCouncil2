@@ -11,7 +11,7 @@ local addon = RCLootCouncil
 local GroupLoot = addon.Require "Utils.GroupLoot"
 
 addon:InitLogging()
-
+addon.Print = function() end --noop
 describe("#GroupLoot", function()
 	describe("#Basic", function()
 		it("should greed on loot when we're ML", function()
@@ -21,17 +21,14 @@ describe("#GroupLoot", function()
 			assert.spy(s).was_called(1)
 			assert.spy(s).was_called_with(GroupLoot, 1, 2)
 		end)
-
-		it("should pass on loot when we're not ML, but Auto Group Loot is enabled", function()
+		it("should pass on loot by default", function()
 			local s = spy.on(GroupLoot, "RollOnLoot")
-			-- reuse this to make everything happen, but change isMasterLooter
 			SetupML()
 			addon.isMasterLooter = false
+			addon.leaderIsFromGuild = false
 			GroupLoot:OnStartLootRoll(nil, 1)
 			GroupLoot:OnStartLootRoll(nil, 2)
-			assert.spy(s).was_called(2)
-			assert.spy(s).was_called_with(GroupLoot, 1, 0)
-			assert.spy(s).was_called_with(GroupLoot, 2, 0)
+			assert.spy(s).was_called(0)
 		end)
 
 		it("should not do anything when addon isn't in use", function()
@@ -47,6 +44,55 @@ describe("#GroupLoot", function()
 			GroupLoot:OnStartLootRoll(nil, 3)
 			assert.spy(s).was_called(0)
 		end)
+	end)
+
+	describe("#autoGroupLootGuildGroupOnly ", function()
+		local s
+		before_each(function()
+			s = spy.on(GroupLoot, "RollOnLoot")
+			addon.enabled = true
+			SetupML()
+			addon.isMasterLooter = false
+		end)
+		describe("enabled", function()
+			it("should pass on loot if leader is from our guild", function()
+				addon.leaderIsFromGuild = true
+				GroupLoot:OnStartLootRoll(nil, 1)
+				GroupLoot:OnStartLootRoll(nil, 2)
+				assert.spy(s).was_called(2)
+				assert.spy(s).was_called_with(GroupLoot, 1, 0)
+				assert.spy(s).was_called_with(GroupLoot, 2, 0)
+			end)
+
+			it("should not pass on loot if leader is not from our guild", function()
+				addon.leaderIsFromGuild = false
+				GroupLoot:OnStartLootRoll(nil, 1)
+				GroupLoot:OnStartLootRoll(nil, 2)
+				assert.spy(s).was_called(0)
+			end)
+		end)
+
+		describe("disabled", function()
+			addon.db.profile.autoGroupLootGuildGroupOnly = false
+		   it("should pass on loot if leader is from our guild", function()
+				addon.leaderIsFromGuild = true
+				GroupLoot:OnStartLootRoll(nil, 1)
+				GroupLoot:OnStartLootRoll(nil, 2)
+				assert.spy(s).was_called(2)
+				assert.spy(s).was_called_with(GroupLoot, 1, 0)
+				assert.spy(s).was_called_with(GroupLoot, 2, 0)
+		   end)
+
+		   it("should pass on loot if leader is not from our guild", function()
+				addon.leaderIsFromGuild = false
+				GroupLoot:OnStartLootRoll(nil, 1)
+				GroupLoot:OnStartLootRoll(nil, 2)
+				assert.spy(s).was_called(2)
+				assert.spy(s).was_called_with(GroupLoot, 1, 0)
+				assert.spy(s).was_called_with(GroupLoot, 2, 0)
+		   end)
+		end)
+
 	end)
 end)
 

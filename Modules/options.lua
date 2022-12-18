@@ -374,6 +374,12 @@ function addon:OptionsTable()
 										desc = L["print_response_desc"],
 										type = "toggle",
 									},
+									autoGroupLootGuildGroupOnly = {
+										order = 6,
+										name = L.opt_autoGroupLootGuildGroupOnly_name,
+										desc = L.opt_autoGroupLootGuildGroupOnly_name,
+									    type = "toggle"
+									}
 								},
 							},
 							frameOptions = {
@@ -412,8 +418,14 @@ function addon:OptionsTable()
 										desc = L["show_spec_icon_desc"],
 										type = "toggle",
 									},
-									chatFrameName = {
+									closeWithEscape = {
 										order = 6,
+										name = L.opt_closeWithEscape_name,
+										desc = L.opt_closeWithEscape_desc,
+										type = "toggle"
+									},
+									chatFrameName = {
+										order = 7,
 										name = L["opt_chatFrameName_name"],
 										desc = L["opt_chatFrameName_desc"],
 										type = "select",
