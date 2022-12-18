@@ -1,3 +1,9 @@
+# 3.6.4
+
+## Bugfixes
+
+- *Fixed issue with "Guild Groups Only".*
+
 # v3.6.3
 
 ## Changes
