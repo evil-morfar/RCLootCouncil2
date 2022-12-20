@@ -1,3 +1,7 @@
+## Bugfixes 
+
+- *Date selection in delete history options now again shows the chosen value.*
+
 # 3.6.4
 
 ## Changes
