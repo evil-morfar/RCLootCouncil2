@@ -141,7 +141,7 @@ function RCLootCouncil:OnInitialize()
 	self.nonTradeables = {} -- List of non tradeable items received since the last ENCOUNTER_END
 	self.lastEncounterID = nil
 	self.autoGroupLootWarningShown = false
-	self.leaderIsFromGuild = false -- Is the group leader a member of our guild?
+	self.isInGuildGroup = false -- Is the group leader a member of our guild?
 
 	self.lootStatus = {}
 	self.EJLastestInstanceID = RCLootCouncil:GetEJLatestInstanceID()
@@ -524,20 +524,14 @@ function RCLootCouncil:ChatCommand(msg)
 		-- @debug@
 	elseif input == 't' then -- Tester cmd
 		-- Test items with several modifiers. Should probably be added to the regular test func
-		local items = {
-			"item:152159:5442:151583::::::110:256::4:5:3613:42:1808:1472:3337",
-			"item:147167::::::::110:256::4:4:3564:41:1487:3337",
-			"item:151941::::::::110:256::3:5:3610:42:43:1487:3337",
-			"item:134396::::::::110:256::16:4:3418:42:1582:3336",
-			"item:147017::::::::110:256::5:4:41:3562:1497:3528",
-			"item:151955::::::::110:256::3:4:43:3610:1472:3528",
-		}
-		self.testMode = true;
-		self.isMasterLooter, self.masterLooter = self:GetML()
-		-- Call ML module and let it handle the rest
-		self:CallModule("masterlooter")
-		self:GetActiveModule("masterlooter"):NewML(self.masterLooter)
-		self:GetActiveModule("masterlooter"):Test(items)
+		for i = 1, GetNumGuildMembers() do
+			local info = {GetGuildRosterInfo(i)}
+			if (info[9]) then
+				local guid = info[17]
+				local inGuild = IsInGuild(guid)
+				print(Player:Get(guid), "in guild = ", inGuild)
+			end
+		end
 		-- @end-debug@
 	else
 		-- Check if the input matches anything
@@ -1645,21 +1639,21 @@ function RCLootCouncil:OnBonusRoll(_, type, link, ...)
 	]]
 end
 
----Checks if the given unit is a member of our guild.
----@param target string|unit Anything that goes into `UnitName`
----@return boolean #True if the target is in our guild.
-function RCLootCouncil:IsUnitInOurGuild(target)
-	return true -- FIXME: We're not guaranteed to get the leader's guild name
-	-- assert(target, "'target' must be supplied")
-	-- if not self.guildName then return false end -- we're not in a guild
-	-- self.Log:d("IsUnitInGuild", target)
-	-- local name = UnitName(target)
-	-- if not name then
-	-- 	self.Log:d("IsUnitInOurGuild: Couldn't get UnitName for target:",target)
-	-- 	return false
-	-- end
-	-- local targetGuild = GetGuildInfo(name)
-	-- return targetGuild == self.guildName
+---@return boolean #True if the player is in a guild group or alone.
+function RCLootCouncil:IsInGuildGroup()
+	local numGroupMembers = GetNumGroupMembers()
+	if numGroupMembers == 1 then return true end -- Always when alone
+	local guildMembers = 0
+	local isInGuild
+	for name in self:GroupIterator() do
+		isInGuild = IsGuildMember(Player:Get(name):GetGUID())
+		guildMembers = guildMembers + (isInGuild and 1 or 0)
+	end
+	if numGroupMembers <= 5 then -- party
+		return guildMembers >= (numGroupMembers * 0.6)
+	else -- raid
+		return guildMembers >= (numGroupMembers * 0.8)
+	end
 end
 
 function RCLootCouncil:NewMLCheck()
@@ -1695,7 +1689,7 @@ function RCLootCouncil:NewMLCheck()
 		self.Log("MasterLooter = ", self.masterLooter)
 		-- Check to see if we have recieved mldb within 15 secs, otherwise request it
 		self:ScheduleTimer("Timer", 15, "MLdb_check")
-		self.leaderIsFromGuild = self:IsUnitInOurGuild(self.masterLooter:GetShortName())
+		self.isInGuildGroup = self:IsInGuildGroup()
 	end
 
 	if not self.isMasterLooter then -- Someone else has become ML
