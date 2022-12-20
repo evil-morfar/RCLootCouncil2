@@ -55,7 +55,7 @@ describe("#GroupLoot", function()
 			addon.isMasterLooter = false
 		end)
 		describe("enabled", function()
-			it("should pass on loot if leader is from our guild", function()
+			it("should pass on loot if in guild group", function()
 				addon.isInGuildGroup = true
 				GroupLoot:OnStartLootRoll(nil, 1)
 				GroupLoot:OnStartLootRoll(nil, 2)
@@ -64,7 +64,7 @@ describe("#GroupLoot", function()
 				assert.spy(s).was_called_with(GroupLoot, 2, 0)
 			end)
 
-			it("should not pass on loot if leader is not from our guild", function()
+			it("should not pass on loot if not in guild group", function()
 				addon.isInGuildGroup = false
 				GroupLoot:OnStartLootRoll(nil, 1)
 				GroupLoot:OnStartLootRoll(nil, 2)
@@ -74,7 +74,7 @@ describe("#GroupLoot", function()
 
 		describe("disabled", function()
 			addon.db.profile.autoGroupLootGuildGroupOnly = false
-		   it("should pass on loot if leader is from our guild", function()
+			it("should pass on loot if in guild group", function()
 				addon.isInGuildGroup = true
 				GroupLoot:OnStartLootRoll(nil, 1)
 				GroupLoot:OnStartLootRoll(nil, 2)
@@ -83,7 +83,7 @@ describe("#GroupLoot", function()
 				assert.spy(s).was_called_with(GroupLoot, 2, 0)
 		   end)
 
-		   it("should pass on loot if leader is not from our guild", function()
+			it("should pass on loot if not in guild group", function()
 				addon.isInGuildGroup = false
 				GroupLoot:OnStartLootRoll(nil, 1)
 				GroupLoot:OnStartLootRoll(nil, 2)
