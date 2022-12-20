@@ -255,7 +255,8 @@ function RCSessionFrame:GetFrame()
 	f.lootStatus.text:SetJustifyH("LEFT")
 
 	local st = ST:CreateST(self.scrollCols, 5, ROW_HEIGHT, nil, f.content)
-	st.frame:SetPoint("TOPLEFT",f,"TOPLEFT",10,-ROW_HEIGHT-10)
+	st.head:SetHeight(0)
+	st.frame:SetPoint("TOPLEFT",f,"TOPLEFT",10,-20)
 	st:RegisterEvents({
 		["OnClick"] = function(_, _, _, _, row, realrow)
 			if not (row or realrow) then
@@ -264,7 +265,7 @@ function RCSessionFrame:GetFrame()
 		end
 	})
 	f:SetWidth(st.frame:GetWidth()+20)
-	f:SetHeight(325)
+	f:SetHeight(305)
 	f.rows = {} -- the row data
 	f.st = st
 	return f
