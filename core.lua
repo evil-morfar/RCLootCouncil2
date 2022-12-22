@@ -1675,6 +1675,7 @@ function RCLootCouncil:NewMLCheck()
 	end
 	if self.Utils.IsPartyLFG() then return end -- We can't use in lfg/lfd so don't bother
 	if not self.masterLooter then return end -- Didn't find a leader or ML.
+	self.isInGuildGroup = self:IsInGuildGroup()
 	if self:UnitIsUnit(old_ml, self.masterLooter) then
 		if old_lm == self.lootMethod then
 			if self.isMasterLooter and not IsInRaid() and db.onlyUseInRaids then -- We might have switched to party
@@ -1689,7 +1690,6 @@ function RCLootCouncil:NewMLCheck()
 		self.Log("MasterLooter = ", self.masterLooter)
 		-- Check to see if we have recieved mldb within 15 secs, otherwise request it
 		self:ScheduleTimer("Timer", 15, "MLdb_check")
-		self.isInGuildGroup = self:IsInGuildGroup()
 	end
 
 	if not self.isMasterLooter then -- Someone else has become ML
