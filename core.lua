@@ -1694,7 +1694,7 @@ function RCLootCouncil:NewMLCheck()
 
 	if not self.isMasterLooter then -- Someone else has become ML
 		return
-	else
+	else -- REVIEW: Ideally this should only be calle when we've activated addon.
 		self:CallModule("masterlooter")
 		self:GetActiveModule("masterlooter"):NewML(self.masterLooter)
 	end

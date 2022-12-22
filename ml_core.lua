@@ -527,7 +527,9 @@ function RCLootCouncilML:OnEvent(event, ...)
 		-- FIXME: People joining after "StartHandleLoot" is sent naturally won't have it,
 		-- but they still need it for group loot auto pass to work. For now just send it everytime
 		-- we start an encounter.
-		self:Send("group", "StartHandleLoot")
+		if addon.handleLoot then
+			self:Send("group", "StartHandleLoot")
+		end
 	end
 end
 
@@ -1602,7 +1604,9 @@ function RCLootCouncilML:OnReconnectReceived (sender)
 	local requestPlayer = Player:Get(sender)
 	MLDB:Send(requestPlayer)
 	self:Send(requestPlayer, "council", Council:GetForTransmit())
-	self:Send(requestPlayer, "StartHandleLoot")
+	if addon.handleLoot then
+		self:Send(requestPlayer, "StartHandleLoot")
+	end
 
 	if self.running then -- Resend lootTable
 		self:ScheduleTimer("Send", 4, requestPlayer, "lootTable", self:GetLootTableForTransmit(true))
