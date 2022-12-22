@@ -394,6 +394,7 @@ function TradeUI:GetFrame()
    local f = addon.UI:NewNamed("RCFrame", UIParent, "RCDefaultTradeUIFrame", "RCLootCouncil Trade UI", nil, 220)
    addon.UI:RegisterForEscapeClose(f, function() if self:IsEnabled() then self:Hide() end end)
    f.st = ST:CreateST(self.scrollCols, 5, ROW_HEIGHT, nil, f.content)
+   f.st.head:SetHeight(0) -- we don't need it, but it will cover the title frame
    f.st.frame:SetPoint("TOPLEFT",f,"TOPLEFT",10,-20)
    f.st:RegisterEvents({
       ["OnClick"] = function(rowFrame, cellFrame, data, cols, row, realrow, column, table, button, ...)

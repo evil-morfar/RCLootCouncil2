@@ -3469,6 +3469,7 @@ globals = {
 	"IsGraphicsCVarValueSupported",
 	"IsGraphicsSettingValueSupported",
 	"IsGuildLeader",
+	"IsGuildMember",
 	"IsGuildRankAssignmentAllowed",
 	"IsHarmfulItem",
 	"IsHarmfulSpell",

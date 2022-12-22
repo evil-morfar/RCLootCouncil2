@@ -1,3 +1,18 @@
+
+# 3.6.5
+
+## Changes
+
+### Group Loot
+
+`Guild Groups Only` option reenabled. When enabled (default) RCLootCouncil will only automatically pass on group loot when you're in a "Guild Group", i.e. group has at least 80% guild members in raids or 60% in parties.
+
+## Bugfixes
+
+- *Date selection in delete history options now again shows the chosen value.*
+- *Fixed invisible header on TradeUI obstructing the title frame, making it unclickable.*
+- *ML module could potentially enable itself even after clicking "no" to usage pop-up. (#224)*
+
 # 3.6.4
 
 ## Changes

@@ -552,14 +552,14 @@ function addon:OptionsTable()
 										type = "select",
 										width = "double",
 										values = {
-											[time() - 604800] = format(L["x days"], 7),
-											[time() - 1209600] = format(L["x days"], 14),
-											[time() -2592000] = format(L["x days"], 30),
-											[time() -5184000] = format(L["x days"], 60),
-											[time() -7776000] = format(L["x days"], 90),
-											[time() -10368000] = format(L["x days"], 120),
-											[time() -15552000] = format(L["x days"], 180),
-											[time() -31536000] = format(L["x days"], 365),
+											[7] = format(L["x days"], 7),
+											[14] = format(L["x days"], 14),
+											[30] = format(L["x days"], 30),
+											[60] = format(L["x days"], 60),
+											[90] = format(L["x days"], 90),
+											[120] = format(L["x days"], 120),
+											[180] = format(L["x days"], 180),
+											[365] = format(L["x days"], 365),
 										},
 										get = function(info)
 											return selections[info[#info]] or ""
@@ -578,7 +578,12 @@ function addon:OptionsTable()
 												addon:Print(L["Invalid selection"])
 												return
 											end
-											self:GetActiveModule("history"):DeleteEntriesOlderThanEpoch(selections.deleteDate)
+											local DaysToSeconds = function (days)
+												return tonumber(days or 0)  * 86400
+											end
+
+											local deleteOlderThan = time() - DaysToSeconds(selections.deleteDate)
+											self:GetActiveModule("history"):DeleteEntriesOlderThanEpoch(deleteOlderThan)
 											selections.deleteDate = "" -- Barrow: Needs to be reset.
 										end,
 									},

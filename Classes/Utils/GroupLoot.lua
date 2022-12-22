@@ -53,7 +53,7 @@ function GroupLoot:ShouldPassOnLoot()
 	local db = addon:Getdb()
 	return addon.mldb and addon.mldb.autoGroupLoot and addon.handleLoot and
 		addon.masterLooter and not addon.isMasterLooter and GetNumGroupMembers() > 1
-		and (db.autoGroupLootGuildGroupOnly and addon.leaderIsFromGuild or not db.autoGroupLootGuildGroupOnly)
+		and (db.autoGroupLootGuildGroupOnly and addon.isInGuildGroup or not db.autoGroupLootGuildGroupOnly)
 end
 
 function GroupLoot:ShouldGreedOnLoot()
