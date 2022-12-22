@@ -2,6 +2,7 @@
 
 - *Date selection in delete history options now again shows the chosen value.*
 - *Fixed invisible header on TradeUI obstructing the title frame, making it unclickable.*
+- *ML module could potentially enable itself even after clicking "no" to usage pop-up. (#224)*
 
 # 3.6.4
 
