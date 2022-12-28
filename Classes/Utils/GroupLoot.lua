@@ -20,6 +20,7 @@ function GroupLoot:OnInitialize()
 end
 
 function GroupLoot:OnStartLootRoll(_, rollID)
+	self.Log:d("START_LOOT_ROLL", rollID)
 	if not addon.enabled then return self.Log:d("Addon disabled, ignoring group loot") end
 	local link = GetLootRollItemLink(rollID)
 	if self:ShouldPassOnLoot() then
