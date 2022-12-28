@@ -157,6 +157,9 @@ function private:IsCached(guid) return self.cache[guid] ~= nil end
 
 --- @param player Player
 function private:CachePlayer(player)
+	if not player.guid then
+		return Log:f("<Data.Player>", "CachePlayer", "No guid for", player)
+	end
 	self.cache[player.guid] = CopyTable(player)
 	self.cache[player.guid].cache_time = GetServerTime()
 end
