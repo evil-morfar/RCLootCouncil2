@@ -17,6 +17,7 @@ GroupLoot.OnLootRoll = Subject.create()
 function GroupLoot:OnInitialize()
 	self.Log = addon.Require "Utils.Log":New "GroupLoot"
 	addon:RegisterEvent("START_LOOT_ROLL", self.OnStartLootRoll, self)
+	addon:RegisterEvent("LOOT_HISTORY_ROLL_CHANGED", self.OnLootHistoryRollChanged, self)
 end
 
 function GroupLoot:OnStartLootRoll(_, rollID)
@@ -62,4 +63,10 @@ end
 function GroupLoot:ShouldRollOnLoot()
 	return addon.mldb and addon.mldb.autoGroupLoot and addon.handleLoot and
 		addon.masterLooter and addon.isMasterLooter and GetNumGroupMembers() > 1
+end
+
+function GroupLoot:OnLootHistoryRollChanged(event, itemId, playerId)
+	self.Log:d(event)
+	self.Log:d("GetItem:", C_LootHistory.GetItem(itemId))
+	self.Log:d("GetPlayerInfo:", C_LootHistory.GetPlayerInfo(itemId, playerId))
 end
