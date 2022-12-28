@@ -1,4 +1,14 @@
 
+## Changes
+
+### Group Loot
+
+When being the Group Leader, RCLootCouncil will now need on items that can be needed instead of always greeding.
+
+## Bugfixes
+
+- *Various cleanup of minor errors and more logging for future ones.*
+
 # 3.6.5
 
 ## Changes

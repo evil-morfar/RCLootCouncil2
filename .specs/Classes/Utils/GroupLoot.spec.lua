@@ -14,6 +14,17 @@ addon:InitLogging()
 addon.Print = function() end --noop
 describe("#GroupLoot", function()
 	describe("#Basic", function()
+		it("should need on items when we're ML and item can be needed", function()
+			stub(_G, "GetLootRollItemInfo", function()
+				return nil,nil,nil,nil,nil,1 -- canNeed = true
+			end)
+			local s = spy.on(GroupLoot, "RollOnLoot")
+			SetupML()
+			GroupLoot:OnStartLootRoll(nil, 1)
+			assert.spy(s).was_called(1)
+			assert.spy(s).was_called_with(GroupLoot, 1, 1)
+			_G.GetLootRollItemInfo:revert()
+		end)
 		it("should greed on loot when we're ML", function()
 			local s = spy.on(GroupLoot, "RollOnLoot")
 			SetupML()
@@ -112,6 +123,10 @@ end
 
 function _G.GetLootThreshold()
 	return 1
+end
+
+function _G.GetLootRollItemInfo(rollID)
+	
 end
 
 function SetupML()
