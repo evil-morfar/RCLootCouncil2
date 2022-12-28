@@ -8,6 +8,7 @@ When being the Group Leader, RCLootCouncil will now need on items that can be ne
 ## Bugfixes
 
 - *Various cleanup of minor errors and more logging for future ones.*
+- *Closing "Keep/Trade" pop-up with escape would cause an error (#227).*
 
 # 3.6.5
 
