@@ -1645,9 +1645,15 @@ function RCLootCouncil:IsInGuildGroup()
 	if numGroupMembers == 1 then return true end -- Always when alone
 	local guildMembers = 0
 	local isInGuild
+	local guid
 	for name in self:GroupIterator() do
-		isInGuild = IsGuildMember(Player:Get(name):GetGUID())
-		guildMembers = guildMembers + (isInGuild and 1 or 0)
+		guid = Player:Get(name):GetGUID()
+		if guid and guid ~= "" then
+			isInGuild = IsGuildMember(guid)
+			guildMembers = guildMembers + (isInGuild and 1 or 0)
+		else
+			self.Log:e("IsInGuildGroup: No GUID for player", name)
+		end
 	end
 	if numGroupMembers <= 5 then -- party
 		return guildMembers >= (numGroupMembers * 0.6)
