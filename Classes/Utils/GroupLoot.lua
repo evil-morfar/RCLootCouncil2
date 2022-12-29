@@ -17,7 +17,7 @@ GroupLoot.OnLootRoll = Subject.create()
 function GroupLoot:OnInitialize()
 	self.Log = addon.Require "Utils.Log":New "GroupLoot"
 	addon:RegisterEvent("START_LOOT_ROLL", self.OnStartLootRoll, self)
-	addon:RegisterEvent("LOOT_HISTORY_ROLL_CHANGED", self.OnLootHistoryRollChanged, self)
+	-- addon:RegisterEvent("LOOT_HISTORY_ROLL_CHANGED", self.OnLootHistoryRollChanged, self)
 end
 
 function GroupLoot:OnStartLootRoll(_, rollID)
