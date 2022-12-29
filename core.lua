@@ -2501,7 +2501,7 @@ function RCLootCouncil:SubscribeToPermanentComms()
 
 		getCov = function(_, sender) self:OnCovenantRequest(sender) end,
 
-		StartHandleLoot = function() self.handleLoot = true end,
+		StartHandleLoot = function() self:OnStartHandleLoot(sender) end,
 
 		StopHandleLoot = function() self.handleLoot = false end,
 	})
@@ -2654,12 +2654,6 @@ function RCLootCouncil:OnMLDBReceived(input)
 
 	if not self.mldb.buttons.default then self.mldb.buttons.default = {} end
 	setmetatable(self.mldb.buttons.default, {__index = self.defaults.profile.buttons.default})
-
-	local lootMethod = GetLootMethod()
-	if self.mldb.autoGroupLoot and not self.autoGroupLootWarningShown and db.showAutoGroupLootWarning and lootMethod == "group" then
-		self.autoGroupLootWarningShown = true
-		self:Print(L.autoGroupLoot_warning)
-	end
 end
 
 function RCLootCouncil:OnReRollReceived(sender, lt)
@@ -2704,6 +2698,15 @@ function RCLootCouncil:OnCovenantRequest(sender)
 		command = "cov",
 		data = C_Covenants.GetActiveCovenantID(),
 	}
+end
+
+function RCLootCouncil:OnStartHandleLoot(sender)
+	self.handleLoot = true
+
+	if not self.autoGroupLootWarningShown and db.showAutoGroupLootWarning and self.Require "Utils.GroupLoot":ShouldPassOnLoot() then
+		self.autoGroupLootWarningShown = true
+		self:Print(L.autoGroupLoot_warning)
+	end
 end
 
 function RCLootCouncil:GetEJLatestInstanceID()

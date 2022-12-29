@@ -10,6 +10,7 @@ When being the Group Leader, RCLootCouncil will now need on items that can be ne
 - *Various cleanup of minor errors and more logging for future ones.*
 - *Closing "Keep/Trade" pop-up with escape would cause an error (#227).*
 - *Fixed issue with the new group loot being reported as "personalloot" disabling the addon if the ML reloads (#227).*
+- *Automatic group loot warning didn't show due to the above.*
 
 # 3.6.5
 
