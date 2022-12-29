@@ -1645,9 +1645,15 @@ function RCLootCouncil:IsInGuildGroup()
 	if numGroupMembers == 1 then return true end -- Always when alone
 	local guildMembers = 0
 	local isInGuild
+	local guid
 	for name in self:GroupIterator() do
-		isInGuild = IsGuildMember(Player:Get(name):GetGUID())
-		guildMembers = guildMembers + (isInGuild and 1 or 0)
+		guid = Player:Get(name):GetGUID()
+		if guid and guid ~= "" then
+			isInGuild = IsGuildMember(guid)
+			guildMembers = guildMembers + (isInGuild and 1 or 0)
+		else
+			self.Log:e("IsInGuildGroup: No GUID for player", name)
+		end
 	end
 	if numGroupMembers <= 5 then -- party
 		return guildMembers >= (numGroupMembers * 0.6)
@@ -1687,7 +1693,7 @@ function RCLootCouncil:NewMLCheck()
 		-- At this point we know the ML has changed, so we can wipe the council
 		self.Log:d("Resetting council as we have a new ML!")
 		self.isCouncil = false
-		self.Log("MasterLooter = ", self.masterLooter)
+		self.Log("MasterLooter", self.masterLooter, "LootMethod", self.lootMethod)
 		-- Check to see if we have recieved mldb within 15 secs, otherwise request it
 		self:ScheduleTimer("Timer", 15, "MLdb_check")
 	end
@@ -1708,19 +1714,20 @@ function RCLootCouncil:NewMLCheck()
 	local _, type = IsInInstance()
 	if type == "arena" or type == "pvp" then return end
 
-	if (self.lootMethod == "group" and db.usage.gl) or (self.lootMethod == "personalloot" and db.usage.pl) then -- auto start
+	-- New group loot is reported as "personalloot" -.-
+	if (self.lootMethod == "group" and db.usage.gl) or (self.lootMethod == "personalloot" and db.usage.gl) then -- auto start
 		self:StartHandleLoot()
-	elseif (self.lootMethod == "group" and db.usage.ask_gl) or (self.lootMethod == "personalloot" and db.usage.ask_pl) then
+	elseif (self.lootMethod == "group" and db.usage.ask_gl) or (self.lootMethod == "personalloot" and db.usage.ask_gl) then
 		return LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_USAGE")
 	end
 end
 
 --- Enables the addon to automatically handle looting
 function RCLootCouncil:StartHandleLoot()
-	local lootMethod = GetLootMethod()
-	if lootMethod ~= "group" and self.lootMethod ~= "personalloot" then -- Set it
-		SetLootMethod("group")
-	end
+	-- local lootMethod = GetLootMethod()
+	-- if lootMethod ~= "group" and self.lootMethod ~= "personalloot" then -- Set it
+	-- 	SetLootMethod("group")
+	-- end
 	self:Print(L["Now handles looting"])
 	self.Log("Start handling loot")
 	self.handleLoot = true
@@ -2494,7 +2501,7 @@ function RCLootCouncil:SubscribeToPermanentComms()
 
 		getCov = function(_, sender) self:OnCovenantRequest(sender) end,
 
-		StartHandleLoot = function() self.handleLoot = true end,
+		StartHandleLoot = function() self:OnStartHandleLoot(sender) end,
 
 		StopHandleLoot = function() self.handleLoot = false end,
 	})
@@ -2647,12 +2654,6 @@ function RCLootCouncil:OnMLDBReceived(input)
 
 	if not self.mldb.buttons.default then self.mldb.buttons.default = {} end
 	setmetatable(self.mldb.buttons.default, {__index = self.defaults.profile.buttons.default})
-
-	local lootMethod = GetLootMethod()
-	if self.mldb.autoGroupLoot and not self.autoGroupLootWarningShown and db.showAutoGroupLootWarning and lootMethod == "group" then
-		self.autoGroupLootWarningShown = true
-		self:Print(L.autoGroupLoot_warning)
-	end
 end
 
 function RCLootCouncil:OnReRollReceived(sender, lt)
@@ -2697,6 +2698,15 @@ function RCLootCouncil:OnCovenantRequest(sender)
 		command = "cov",
 		data = C_Covenants.GetActiveCovenantID(),
 	}
+end
+
+function RCLootCouncil:OnStartHandleLoot(sender)
+	self.handleLoot = true
+
+	if not self.autoGroupLootWarningShown and db.showAutoGroupLootWarning and self.Require "Utils.GroupLoot":ShouldPassOnLoot() then
+		self.autoGroupLootWarningShown = true
+		self:Print(L.autoGroupLoot_warning)
+	end
 end
 
 function RCLootCouncil:GetEJLatestInstanceID()

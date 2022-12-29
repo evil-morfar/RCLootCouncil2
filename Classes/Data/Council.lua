@@ -58,6 +58,7 @@ end
 --- @param player Player A 'Data.Player' object
 --- @return boolean
 function Council:Contains(player)
+	if not player.guid then return false end
 	local result = private.council[player.guid] ~= nil
 	if addon.isMasterLooter or addon.nnp then result = true end
 	return result
