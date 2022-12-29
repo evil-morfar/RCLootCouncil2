@@ -32,7 +32,7 @@ function GroupLoot:OnStartLootRoll(_, rollID)
 
 	elseif self:ShouldRollOnLoot() then
 		self.Log:d("Rolling on loot", link, canNeed)
-		local needGreed = canNeed or 2
+		local needGreed = canNeed and 1 or 2
 		self:RollOnLoot(rollID, needGreed)
 		self.OnLootRoll(link, rollID, needGreed)
 	end
