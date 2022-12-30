@@ -1,3 +1,7 @@
+## Bugfixes
+
+- *Fixed error when changing a response in the history to a non default category response.*
+
 # 3.6.6
 
 ## Changes
