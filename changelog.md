@@ -1,6 +1,7 @@
 ## Bugfixes
 
 - *Fixed error when changing a response in the history to a non default category response.*
+- *Added potential fix for ElvUI loot frame issues.*
 
 # 3.6.6
 

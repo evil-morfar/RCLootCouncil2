@@ -49,7 +49,9 @@ end
 --- @param rollID integer Id of the loot roll.
 --- @param rollType? RollType Type to roll
 function GroupLoot:RollOnLoot(rollID, rollType)
-	RollOnLoot(rollID, rollType)
+	-- Delay execution in case other addons have modified the loot frame
+	-- and haven't had a change to fully load.
+	addon:ScheduleTimer(RollOnLoot, 0, rollID, rollType)
 	--ConfirmLootRoll(rollID, rollType)
 end
 
