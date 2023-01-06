@@ -2347,11 +2347,11 @@ function RCLootCouncil.Ambiguate(name) return db.ambiguate and Ambiguate(name, "
 function RCLootCouncil:GetResponse(type, name)
 	-- REVIEW With proper inheritance, most of this should be redundant
 	-- Check if the type should be translated to something else
-	type = type and type or "default"
+	type = type or "default"
 	if self.mldb.responses and not self.mldb.responses[type] and self.BTN_SLOTS[type]
 					and self.mldb.responses[self.BTN_SLOTS[type]] then type = self.BTN_SLOTS[type] end
-	-- FIXME If we use non default button without mldb (i.e. changing responses in loot history), this will fail.
-	if type == "default" or (self.mldb and not self.mldb.responses[type]) then -- We have a value if mldb is blank
+
+	if type == "default" or (self.mldb and self.mldb.responses and not self.mldb.responses[type]) then -- We have a value if mldb is blank
 		if db.responses.default[name] or self.mldb.responses.default[name] then
 			return (self.mldb.responses and self.mldb.responses.default and self.mldb.responses.default[name])
 							       or db.responses.default[name]
@@ -2359,7 +2359,7 @@ function RCLootCouncil:GetResponse(type, name)
 			self.Log:d("No db.responses.default entry for response:", name)
 			return self.defaults.profile.responses.default.DEFAULT -- Use default
 		end
-	else -- This must be supplied by the ml
+	else
 		if next(self.mldb) then
 			if self.mldb.responses[type] then
 				if self.mldb.responses[type][name] then
@@ -2376,8 +2376,11 @@ function RCLootCouncil:GetResponse(type, name)
 					return db.responses.default.DEFAULT -- Use default
 				end
 			end
+			-- See if we have local settings
+		elseif db.responses[type] and db.responses[type][name] then
+			return db.responses[type][name]
 		else
-			self.Log:d("No mldb for GetReponse: " .. tostring(type) .. ", " .. tostring(name))
+			self.Log:d("No db or mldb for GetReponse", type, name)
 		end
 	end
 	return {} -- Fallback
