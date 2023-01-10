@@ -74,9 +74,16 @@ function RCLootCouncilML:OnEnable()
 
 	self:RegisterEvent("CHAT_MSG_WHISPER",	"OnEvent")
 	self:RegisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
+	self:RegisterEvent("ENCOUNTER_START", "OnEvent")
 	self:RegisterBucketMessage("RCConfigTableChanged", 5, "ConfigTableChanged") -- The messages can burst
 	self:RegisterMessage("RCCouncilChanged", "CouncilChanged")
 	self:RegisterComms()
+
+	-- Subscribe after comms, as that will override the table
+	tinsert(subscriptions, addon.Require "Utils.GroupLoot".OnLootRoll:subscribe(
+		function (...)
+		self:OnGroupLootRoll(...)
+	end))
 end
 
 function RCLootCouncilML:GetItemInfo(item)
@@ -488,6 +495,17 @@ function RCLootCouncilML:HandleNonTradeable(link, owner, reason)
 	self:TrackAndLogLoot(owner, link, responseID, addon.bossName)
 end
 
+--- Subscriber for `Utils.GroupLoot`.OnLootRoll
+--- @param link Itemlink
+--- @param rollID integer
+--- @param rollType RollType
+function RCLootCouncilML:OnGroupLootRoll(link, rollID, rollType)
+	-- Only add items we've needed/greeded
+	if rollType == 0 or rollType == 3 then return end
+	-- Since there's no difference between PL and GL once we have the loot, just treat it like PL:
+	self:HandleReceivedTradeable(addon.player:GetName(), link)
+end
+
 function RCLootCouncilML:OnEvent(event, ...)
 	self.Log:d("ML event", event, ...)
 	if event == "CHAT_MSG_WHISPER" and addon.isMasterLooter and db.acceptWhispers then
@@ -504,6 +522,14 @@ function RCLootCouncilML:OnEvent(event, ...)
 			entry[1](select(2, unpack(entry)))
 		end
 		wipe(self.combatQueue)
+
+	elseif event == "ENCOUNTER_START" then
+		-- FIXME: People joining after "StartHandleLoot" is sent naturally won't have it,
+		-- but they still need it for group loot auto pass to work. For now just send it everytime
+		-- we start an encounter.
+		if addon.handleLoot then
+			self:Send("group", "StartHandleLoot")
+		end
 	end
 end
 
@@ -1578,7 +1604,9 @@ function RCLootCouncilML:OnReconnectReceived (sender)
 	local requestPlayer = Player:Get(sender)
 	MLDB:Send(requestPlayer)
 	self:Send(requestPlayer, "council", Council:GetForTransmit())
-	self:Send(requestPlayer, "StartHandleLoot")
+	if addon.handleLoot then
+		self:Send(requestPlayer, "StartHandleLoot")
+	end
 
 	if self.running then -- Resend lootTable
 		self:ScheduleTimer("Send", 4, requestPlayer, "lootTable", self:GetLootTableForTransmit(true))

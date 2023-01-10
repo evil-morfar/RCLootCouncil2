@@ -105,8 +105,8 @@ function private:Log(Log,prefix, ...)
    t[1] = "<"
    t[2] =  date("%X", time())
    t[3] = "> "
-   t[4] = (Log.prefix or "")
-   t[5] = prefix
+   t[4] = prefix
+   t[5] = (Log.prefix or "")
    t[6] = "\t"
    for i = 1, select("#", ...) do
       t[(i - 1) * 2 + 7] = "\t"

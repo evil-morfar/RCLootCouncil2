@@ -139,6 +139,10 @@ function private:SendComm(prefix, target, prio, callback, callbackarg, command, 
    elseif target == "guild" then
       self.AceComm:SendCommMessage(prefix, encoded, "GUILD", nil, prio, callback, callbackarg)
    else
+		-- This might happen if we send a message to a specific player that hasn't been loaded.
+		-- Just Log and return
+		if not target.GetRealm then return Log:e("Invalid target:", target, serialized) end
+		if not target:GetRealm() then return Log:e("Couldn't get realm for target:", target, serialized) end
       if target:GetRealm() == addon.realmName then -- Our realm
          self.AceComm:SendCommMessage(prefix, encoded, "WHISPER", target:GetName(), prio, callback, callbackarg)
       else

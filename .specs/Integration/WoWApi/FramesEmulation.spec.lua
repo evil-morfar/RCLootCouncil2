@@ -19,7 +19,6 @@ describe("#WoWApi #Frames", function()
 
 		it("can create GameTooltips", function()
 			local tip = CreateFrame("GameTooltip")
-			assert.is_nil(tip:GetName()) -- Not sure if name can be nil in WoW
 			assert.are.equal("UIParent", tip:GetParent())
 		end)
 	end)

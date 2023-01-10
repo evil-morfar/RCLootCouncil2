@@ -1,10 +1,84 @@
+# 3.6.7
+
+## Bugfixes
+
+- *Fixed error when changing a response in the history to a non default category response.*
+- *Added potential fix for ElvUI loot frame issues.*
+
+# 3.6.6
+
 ## Changes
 
-Add `/rc start` command which either shows the usage pop-up or starts the addon depending on your usage settings.
+### Group Loot
+
+When being the Group Leader, RCLootCouncil will now need on items that can be needed instead of always greeding.
+
+## Bugfixes
+
+- *Various cleanup of minor errors and more logging for future ones.*
+- *Closing "Keep/Trade" pop-up with escape would cause an error (#227).*
+- *Fixed issue with the new group loot being reported as "personalloot" disabling the addon if the ML reloads (#227).*
+- *Automatic group loot warning didn't show due to the above.*
+
+# 3.6.5
+
+## Changes
+
+### Group Loot
+
+`Guild Groups Only` option reenabled. When enabled (default) RCLootCouncil will only automatically pass on group loot when you're in a "Guild Group", i.e. group has at least 80% guild members in raids or 60% in parties.
+
+## Bugfixes
+
+- *Date selection in delete history options now again shows the chosen value.*
+- *Fixed invisible header on TradeUI obstructing the title frame, making it unclickable.*
+- *ML module could potentially enable itself even after clicking "no" to usage pop-up. (#224)*
+
+# 3.6.4
+
+## Changes
+
+- *Reverted "Guild Groups Only" addition as it had potential to break horribly.*
+
+# v3.6.3
+
+## Changes
+
+Added option for toggling 'Escape' closing frames.
+
+### Group Loot
+
+By default, RCLootCouncil will now no longer auto pass group loot if the group leader is not a member of your guild. You can override this behavior with the "Guild Groups Only" option.
+
+## Bugfixes
+
+- *Fixed issue with realm name not available upon login, affecting specifc comms.*
+
+# v3.6.2
+
+## Changes
+
+### Group Loot
+
+Changed logic behind automatically adding loot to a session. Should result in a more reliable experience.
+
+## Bugfixes
+
+- *Warning about Auto Group Loot will now only be displayed when actually using group loot.*
+- *Fixed issue with auto trade. (#223)*
+- *Fixed realm name issue related to playing cross realm on realms containing '-'.(Curse#512).*
+
+# v3.6.1
+
+## Changes
+
+Added `/rc start` command which either shows the usage pop-up or starts the addon depending on your usage settings.
 
 ## Bugfixes
 
 - *Fixed potential nil error (Classic#46, CurseClassic#170).*
+- *Fixed issue preventing the addon from adding items to the trade window.*
+- *Fixed issue with players joining after the group leader wouldn't auto pass on group loot.*
 
 # v3.6.0
 

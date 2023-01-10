@@ -73,12 +73,15 @@ Button = {
 	New = function(name, parent)
 		local super = _G.Frame.New(name or "", parent)
 		local object = {normalTexture = nil, highlightTexture = nil}
-		return setmetatable(object, {
+		local button = setmetatable(object, {
 			__index = function(self, v)
 				local k = objectMethods[v] or super[v]
 				self[v] = k -- Store for easy future lookup
 				return k
 			end,
 		})
+		-- Button also has a text child, which is also put in the global table
+		_G[name .. "Text"] = button:CreateFontString(name .. "Text")
+		return button
 	end,
 }

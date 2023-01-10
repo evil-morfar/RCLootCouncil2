@@ -341,15 +341,15 @@ local function addItemToTradeWindow (tradeBtn, Item)
       addon:Print(L["trade_item_to_trade_not_found"])
       return addon.Log:E("TradeUI", "Item missing when attempting to trade", Item.link, TradeUI.tradeTarget)
    end
-   local _, _, _, _, _, _, link = C_Container.GetContainerItemInfo(c, s)
+   local containerInfo = C_Container.GetContainerItemInfo(c, s)
 
-   if addon:ItemIsItem(link, Item.link) then -- Extra check, probably also redundant
-      addon.Log:d("Trading", link, c,s)
+   if addon:ItemIsItem(containerInfo.hyperlink, Item.link) then -- Extra check, probably also redundant
+      addon.Log:d("Trading", Item.link, c,s)
       ClearCursor()
       C_Container.PickupContainerItem(c, s)
       ClickTradeButton(tradeBtn)
    else -- Shouldn't happen
-      return addon.Log:E("TradeUI", "Item link mismatch", link, Item.link)
+		return addon.Log:E("TradeUI", "Item link mismatch", containerInfo.hyperlink, Item.link)
    end
 end
 
@@ -392,8 +392,9 @@ function TradeUI:GetFrame()
    if self.frame then return self.frame end
 
    local f = addon.UI:NewNamed("RCFrame", UIParent, "RCDefaultTradeUIFrame", "RCLootCouncil Trade UI", nil, 220)
-   addon.UI:RegisterForEscapeClose(f, function() if self:IsEnabled() then self:Disable() end end)
+   addon.UI:RegisterForEscapeClose(f, function() if self:IsEnabled() then self:Hide() end end)
    f.st = ST:CreateST(self.scrollCols, 5, ROW_HEIGHT, nil, f.content)
+   f.st.head:SetHeight(0) -- we don't need it, but it will cover the title frame
    f.st.frame:SetPoint("TOPLEFT",f,"TOPLEFT",10,-20)
    f.st:RegisterEvents({
       ["OnClick"] = function(rowFrame, cellFrame, data, cols, row, realrow, column, table, button, ...)

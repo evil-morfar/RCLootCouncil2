@@ -4,6 +4,7 @@ require "/wow_api/API/Color"
 require "/wow_api/API/TableUtil"
 require "/wow_api/FrameAPI/Frames/Frame"
 require "/wow_api/FrameAPI/Frames/Button"
+require "/wow_api/FrameAPI/Frames/CheckButton"
 require "/wow_api/FrameAPI/Frames/GameTooltip"
 local strbyte, strchar, gsub, gmatch, format, tinsert = string.byte, string.char, string.gsub, string.gmatch, string.format, table.insert
 
@@ -11,21 +12,33 @@ local donothing = function() end
 
 local frames = {}
 
+local function uuid()
+	local template = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx"
+	return string.gsub(template, "[xy]", function(c)
+		local v = (c == "x") and math.random(0, 0xf) or math.random(8, 0xb)
+		return string.format("%x", v)
+	end)
+end
+
 function CreateFrame(kind, name, parent)
-   local frame
-   if kind == "Frame" then
-      frame = _G.Frame.New(name, parent)
-   elseif kind == "Button" then
-      frame = _G.Button.New(name, parent)
-   elseif kind == "GameTooltip" then
-      frame = _G.GameTooltip.New(name, parent)
-   else
-      -- Default to frame (for handling kinds we haven't implemented)
-      frame = _G.Frame.New(name, parent)
-   end
-   frames[frame] = true
-   if name then _G[name] = frame end
-   return frame
+	local frame
+	name = name or kind..uuid()
+	if kind == "Frame" then
+		frame = _G.Frame.New(name, parent)
+	elseif kind == "Button" then 
+		frame = _G.Button.New(name, parent)
+	elseif kind == "CheckButton" then
+		frame = _G.CheckButton.New(name, parent)
+	elseif kind == "GameTooltip" then
+		frame = _G.GameTooltip.New(name, parent)
+	else
+		-- Default to frame (for handling kinds we haven't implemented)
+		frame = _G.Frame.New(name, parent)
+	end
+	_G[name] = frame
+	frames[frame] = true
+	if name then _G[name] = frame end
+	return frame
 end
 
 -- Extra hack as I didn't want to implement logic for all the UI functions
@@ -921,6 +934,9 @@ function FauxScrollFrame_Update() end
 
 function FauxScrollFrame_GetOffset() return 0 end
 
+function GetItemStats() end
+function GetClassColoredTextForUnit (unit, text) return text end
+
 C_Container = {}
 
 UISpecialFrames = {}
@@ -954,6 +970,7 @@ BIND_TRADE_TIME_REMAINING = "You may trade this item with players that were also
 LOOT_ITEM = "%s receives loot: %s."
 RANDOM_ROLL_RESULT = "%s rolls %d (%d-%d)"
 REQUEST_ROLL = "Request Roll"
+ITEM_CLASSES_ALLOWED = "Classes: %s"
 ITEM_MOD_AGILITY = "%c%s Agility";
 ITEM_MOD_AGILITY_OR_INTELLECT_SHORT = "Agility or Intellect";
 ITEM_MOD_AGILITY_OR_STRENGTH_OR_INTELLECT_SHORT = "Agility or Strength or Intellect";

@@ -124,6 +124,7 @@ function RCLootCouncil:OnInitialize()
 
 	self.playerClass = select(2, UnitClass("player")) -- TODO: Remove - contained in self.player
 	self.guildRank = L["Unguilded"]
+	self.guildName = nil
 	self.isMasterLooter = false -- Are we the ML?
 	---@type Player
 	self.masterLooter = nil -- Masterlooter
@@ -140,6 +141,7 @@ function RCLootCouncil:OnInitialize()
 	self.nonTradeables = {} -- List of non tradeable items received since the last ENCOUNTER_END
 	self.lastEncounterID = nil
 	self.autoGroupLootWarningShown = false
+	self.isInGuildGroup = false -- Is the group leader a member of our guild?
 
 	self.lootStatus = {}
 	self.EJLastestInstanceID = RCLootCouncil:GetEJLatestInstanceID()
@@ -282,7 +284,7 @@ function RCLootCouncil:OnEnable()
 	self:RegisterBucketEvent("GROUP_ROSTER_UPDATE", 5, "UpdateCandidatesInGroup")
 
 	if IsInGuild() then
-        self.guildRank = select(2, GetGuildInfo("player"))
+        self.guildName, self.guildRank = GetGuildInfo("player")
         self:ScheduleTimer("SendGuildVerTest", 2) -- send out a version check after a delay
 	end
 
@@ -522,20 +524,14 @@ function RCLootCouncil:ChatCommand(msg)
 		-- @debug@
 	elseif input == 't' then -- Tester cmd
 		-- Test items with several modifiers. Should probably be added to the regular test func
-		local items = {
-			"item:152159:5442:151583::::::110:256::4:5:3613:42:1808:1472:3337",
-			"item:147167::::::::110:256::4:4:3564:41:1487:3337",
-			"item:151941::::::::110:256::3:5:3610:42:43:1487:3337",
-			"item:134396::::::::110:256::16:4:3418:42:1582:3336",
-			"item:147017::::::::110:256::5:4:41:3562:1497:3528",
-			"item:151955::::::::110:256::3:4:43:3610:1472:3528",
-		}
-		self.testMode = true;
-		self.isMasterLooter, self.masterLooter = self:GetML()
-		-- Call ML module and let it handle the rest
-		self:CallModule("masterlooter")
-		self:GetActiveModule("masterlooter"):NewML(self.masterLooter)
-		self:GetActiveModule("masterlooter"):Test(items)
+		for i = 1, GetNumGuildMembers() do
+			local info = {GetGuildRosterInfo(i)}
+			if (info[9]) then
+				local guid = info[17]
+				local inGuild = IsInGuild(guid)
+				print(Player:Get(guid), "in guild = ", inGuild)
+			end
+		end
 		-- @end-debug@
 	else
 		-- Check if the input matches anything
@@ -544,8 +540,20 @@ function RCLootCouncil:ChatCommand(msg)
 	end
 end
 
+-- Items in here should not be handled by `UpdateAndSendRecentTradableItem`.
+local itemsBeingGroupLooted = {}
+RCLootCouncil.Require ("Utils.GroupLoot").OnLootRoll:subscribe(function (link)
+	tinsert(itemsBeingGroupLooted, link)
+end)
+
 -- Update the recentTradableItem by link, if it is in bag and tradable.
+-- Except when the item has been auto group looted.
 function RCLootCouncil:UpdateAndSendRecentTradableItem(info, count)
+	if tContains(itemsBeingGroupLooted, info.link) then
+		-- Remove from list in case we get future similar items.
+		tDeleteItem(itemsBeingGroupLooted, info.link)
+		return
+	end
 	local Item = self.ItemStorage:New(info.link, "temp")
 	self.ItemStorage:WatchForItemInBags(Item, function() -- onFound
 		if Item.time_remaining > 0 then
@@ -1535,6 +1543,10 @@ function RCLootCouncil:OnEvent(event, ...)
 		local i = 0
 		for k, info in pairs(self.lootSlotInfo) do
 			if not info.isLooted and info.guid and info.link then
+				if tContains(itemsBeingGroupLooted, info.link) then
+					-- Don't bother with group looted items
+					return
+				end
 				if info.autoloot then -- We've looted the item without getting LOOT_SLOT_CLEARED, properly due to FastLoot addons
 					return self:OnEvent("LOOT_SLOT_CLEARED", k), self:OnEvent("LOOT_CLOSED")
 				end
@@ -1627,6 +1639,29 @@ function RCLootCouncil:OnBonusRoll(_, type, link, ...)
 	]]
 end
 
+---@return boolean #True if the player is in a guild group or alone.
+function RCLootCouncil:IsInGuildGroup()
+	local numGroupMembers = GetNumGroupMembers()
+	if numGroupMembers == 1 then return true end -- Always when alone
+	local guildMembers = 0
+	local isInGuild
+	local guid
+	for name in self:GroupIterator() do
+		guid = Player:Get(name):GetGUID()
+		if guid and guid ~= "" then
+			isInGuild = IsGuildMember(guid)
+			guildMembers = guildMembers + (isInGuild and 1 or 0)
+		else
+			self.Log:e("IsInGuildGroup: No GUID for player", name)
+		end
+	end
+	if numGroupMembers <= 5 then -- party
+		return guildMembers >= (numGroupMembers * 0.6)
+	else -- raid
+		return guildMembers >= (numGroupMembers * 0.8)
+	end
+end
+
 function RCLootCouncil:NewMLCheck()
 	local old_ml = self.masterLooter
 	local old_lm = self.lootMethod
@@ -1646,6 +1681,7 @@ function RCLootCouncil:NewMLCheck()
 	end
 	if self.Utils.IsPartyLFG() then return end -- We can't use in lfg/lfd so don't bother
 	if not self.masterLooter then return end -- Didn't find a leader or ML.
+	self.isInGuildGroup = self:IsInGuildGroup()
 	if self:UnitIsUnit(old_ml, self.masterLooter) then
 		if old_lm == self.lootMethod then
 			if self.isMasterLooter and not IsInRaid() and db.onlyUseInRaids then -- We might have switched to party
@@ -1657,14 +1693,14 @@ function RCLootCouncil:NewMLCheck()
 		-- At this point we know the ML has changed, so we can wipe the council
 		self.Log:d("Resetting council as we have a new ML!")
 		self.isCouncil = false
-		self.Log("MasterLooter = ", self.masterLooter)
+		self.Log("MasterLooter", self.masterLooter, "LootMethod", self.lootMethod)
 		-- Check to see if we have recieved mldb within 15 secs, otherwise request it
 		self:ScheduleTimer("Timer", 15, "MLdb_check")
 	end
 
 	if not self.isMasterLooter then -- Someone else has become ML
 		return
-	else
+	else -- REVIEW: Ideally this should only be calle when we've activated addon.
 		self:CallModule("masterlooter")
 		self:GetActiveModule("masterlooter"):NewML(self.masterLooter)
 	end
@@ -1678,19 +1714,20 @@ function RCLootCouncil:NewMLCheck()
 	local _, type = IsInInstance()
 	if type == "arena" or type == "pvp" then return end
 
-	if (self.lootMethod == "group" and db.usage.gl) or (self.lootMethod == "personalloot" and db.usage.pl) then -- auto start
+	-- New group loot is reported as "personalloot" -.-
+	if (self.lootMethod == "group" and db.usage.gl) or (self.lootMethod == "personalloot" and db.usage.gl) then -- auto start
 		self:StartHandleLoot()
-	elseif (self.lootMethod == "group" and db.usage.ask_gl) or (self.lootMethod == "personalloot" and db.usage.ask_pl) then
+	elseif (self.lootMethod == "group" and db.usage.ask_gl) or (self.lootMethod == "personalloot" and db.usage.ask_gl) then
 		return LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_USAGE")
 	end
 end
 
 --- Enables the addon to automatically handle looting
 function RCLootCouncil:StartHandleLoot()
-	local lootMethod = GetLootMethod()
-	if lootMethod ~= "group" and self.lootMethod ~= "personalloot" then -- Set it
-		SetLootMethod("group")
-	end
+	-- local lootMethod = GetLootMethod()
+	-- if lootMethod ~= "group" and self.lootMethod ~= "personalloot" then -- Set it
+	-- 	SetLootMethod("group")
+	-- end
 	self:Print(L["Now handles looting"])
 	self.Log("Start handling loot")
 	self.handleLoot = true
@@ -2310,11 +2347,11 @@ function RCLootCouncil.Ambiguate(name) return db.ambiguate and Ambiguate(name, "
 function RCLootCouncil:GetResponse(type, name)
 	-- REVIEW With proper inheritance, most of this should be redundant
 	-- Check if the type should be translated to something else
-	type = type and type or "default"
+	type = type or "default"
 	if self.mldb.responses and not self.mldb.responses[type] and self.BTN_SLOTS[type]
 					and self.mldb.responses[self.BTN_SLOTS[type]] then type = self.BTN_SLOTS[type] end
-	-- FIXME If we use non default button without mldb (i.e. changing responses in loot history), this will fail.
-	if type == "default" or (self.mldb and not self.mldb.responses[type]) then -- We have a value if mldb is blank
+
+	if type == "default" or (self.mldb and self.mldb.responses and not self.mldb.responses[type]) then -- We have a value if mldb is blank
 		if db.responses.default[name] or self.mldb.responses.default[name] then
 			return (self.mldb.responses and self.mldb.responses.default and self.mldb.responses.default[name])
 							       or db.responses.default[name]
@@ -2322,7 +2359,7 @@ function RCLootCouncil:GetResponse(type, name)
 			self.Log:d("No db.responses.default entry for response:", name)
 			return self.defaults.profile.responses.default.DEFAULT -- Use default
 		end
-	else -- This must be supplied by the ml
+	else
 		if next(self.mldb) then
 			if self.mldb.responses[type] then
 				if self.mldb.responses[type][name] then
@@ -2339,8 +2376,11 @@ function RCLootCouncil:GetResponse(type, name)
 					return db.responses.default.DEFAULT -- Use default
 				end
 			end
+			-- See if we have local settings
+		elseif db.responses[type] and db.responses[type][name] then
+			return db.responses[type][name]
 		else
-			self.Log:d("No mldb for GetReponse: " .. tostring(type) .. ", " .. tostring(name))
+			self.Log:d("No db or mldb for GetReponse", type, name)
 		end
 	end
 	return {} -- Fallback
@@ -2464,7 +2504,7 @@ function RCLootCouncil:SubscribeToPermanentComms()
 
 		getCov = function(_, sender) self:OnCovenantRequest(sender) end,
 
-		StartHandleLoot = function() self.handleLoot = true end,
+		StartHandleLoot = function() self:OnStartHandleLoot(sender) end,
 
 		StopHandleLoot = function() self.handleLoot = false end,
 	})
@@ -2617,11 +2657,6 @@ function RCLootCouncil:OnMLDBReceived(input)
 
 	if not self.mldb.buttons.default then self.mldb.buttons.default = {} end
 	setmetatable(self.mldb.buttons.default, {__index = self.defaults.profile.buttons.default})
-
-	if self.mldb.autoGroupLoot and not self.autoGroupLootWarningShown and db.showAutoGroupLootWarning then
-		self.autoGroupLootWarningShown = true
-		self:Print(L.autoGroupLoot_warning)
-	end
 end
 
 function RCLootCouncil:OnReRollReceived(sender, lt)
@@ -2666,6 +2701,15 @@ function RCLootCouncil:OnCovenantRequest(sender)
 		command = "cov",
 		data = C_Covenants.GetActiveCovenantID(),
 	}
+end
+
+function RCLootCouncil:OnStartHandleLoot(sender)
+	self.handleLoot = true
+
+	if not self.autoGroupLootWarningShown and db.showAutoGroupLootWarning and self.Require "Utils.GroupLoot":ShouldPassOnLoot() then
+		self.autoGroupLootWarningShown = true
+		self:Print(L.autoGroupLoot_warning)
+	end
 end
 
 function RCLootCouncil:GetEJLatestInstanceID()
