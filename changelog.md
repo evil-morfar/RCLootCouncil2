@@ -1,3 +1,9 @@
+## Changes
+
+### Voting Frame More Info
+
+Now shows the equip location of recently awarded items.
+
 # 3.6.7
 
 ## Bugfixes
