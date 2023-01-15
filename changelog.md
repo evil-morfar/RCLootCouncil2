@@ -4,6 +4,10 @@
 
 Now shows the equip location of recently awarded items.
 
+### Export items in session
+
+Added new chat command `/rc export` which will export a csv formatted list of the items currently in session.
+
 # 3.6.7
 
 ## Bugfixes
