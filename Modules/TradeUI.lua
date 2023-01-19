@@ -333,14 +333,14 @@ local function addItemToTradeWindow (tradeBtn, Item)
       addon:Print(L["trade_item_to_trade_not_found"])
       return addon:Debug("Error TradeUI:", "Item missing when attempting to trade", Item.link, TradeUI.tradeTarget)
    end
-   local _, _, _, _, _, _, link = C_Container.GetContainerItemInfo(c, s)
-   if addon:ItemIsItem(link, Item.link) then -- Extra check, probably also redundant
-      addon:Debug("Trading", link, c,s)
+   local containerInfo = C_Container.GetContainerItemInfo(c, s)
+   if addon:ItemIsItem(containerInfo.hyperlink, Item.link) then -- Extra check, probably also redundant
+      addon:Debug("Trading", Item.link, c,s)
       ClearCursor()
       C_Container.PickupContainerItem(c, s)
       ClickTradeButton(tradeBtn)
    else -- Shouldn't happen
-      return addon:Debug("<ERROR><TradeUI> Item link mismatch", link, Item.link)
+      return addon:Debug("<ERROR><TradeUI> Item link mismatch", containerInfo.hyperlink, Item.link)
    end
 end
 
