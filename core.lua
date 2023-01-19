@@ -502,6 +502,10 @@ function RCLootCouncil:ChatCommand(msg)
 
 	elseif input == "trade" then
 		self.TradeUI:Show(true)
+
+	elseif input == "export" then
+		self:ExportCurrentSession()
+
 --@debug@
 	elseif input == 't' then -- Tester cmd
 		-- Test items with several modifiers. Should probably be added to the regular test func
@@ -1461,6 +1465,7 @@ function RCLootCouncil:PrepareLootTable(lootTable)
 		local _, _, rarity, ilvl, _, _, subType, _, equipLoc, texture,
 		_, typeID, subTypeID, bindType, _, _, _ = GetItemInfo(v.link)
 		local itemID = GetItemInfoInstant(v.link)
+		v.itemID	= itemID
 		v.quality 	= rarity
 		v.ilvl 		= self:GetTokenIlvl(v.link) or ilvl
 		v.equipLoc 	= RCTokenTable[itemID] and self:GetTokenEquipLoc(RCTokenTable[itemID]) or equipLoc
@@ -3146,4 +3151,16 @@ function RCLootCouncil:OnLootTableAdditionsReceived(lt)
 
 	for i = oldLenght + 1, #lootTable do self:GetActiveModule("lootframe"):AddSingleItem(lootTable[i]) end
 	self:SendMessage("RCLootTableAdditionsReceived", lt)
+end
+
+function RCLootCouncil:ExportCurrentSession()
+	if not lootTable or #lootTable == 0 then return self:Print(L["No session running"]) end
+	local exportData = { "session,item,itemID,ilvl" }
+	for session, data in ipairs(lootTable) do
+		exportData[session + 1] = table.concat({ session, data.link:gsub("|", "||"), data.itemID, data.ilvl }, ",")
+	end
+	local csv = table.concat(exportData, "\n")
+	local frame = RCLootCouncil:GetActiveModule("history"):GetFrame()
+	frame.exportFrame.edit:SetText(csv)
+	frame.exportFrame:Show()
 end
