@@ -295,9 +295,9 @@ function private:findItemInBags(link)
    if link and link ~= "" then
       local c, s, t
       for container = 0, _G.NUM_BAG_SLOTS do
-         for slot = 1, GetContainerNumSlots(container) or 0 do
+         for slot = 1, C_Container.GetContainerNumSlots(container) or 0 do
 
-            if addon:ItemIsItem(link, GetContainerItemLink(container, slot)) then -- We found it
+            if addon:ItemIsItem(link, C_Container.GetContainerItemLink(container, slot)) then -- We found it
 
                addon:DebugLog("Found item at", container, slot)
                c, s = container, slot
