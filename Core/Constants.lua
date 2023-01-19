@@ -37,6 +37,8 @@ addon.OPT_MORE_BUTTONS_VALUES = {
    WEAPON = _G.WEAPON,
    TOKEN = L["Armor Token"],
    CORRUPTED = _G.CORRUPTION_TOOLTIP_TITLE,
+   MOUNTS = _G.MOUNTS,
+   BAGSLOT = _G.BAGSLOT
 }
 
 --[[
@@ -101,6 +103,20 @@ addon.RESPONSE_CODE_GENERATORS = {
            return "AZERITE"
         end
      end
+   end,
+
+   -- Mounts
+   function (_, db, _, _, classID, subClassID)
+      if db.enabledButtons.MOUNTS and classID == 15 and subClassID == 5 then
+         return "MOUNTS"
+      end
+   end,
+
+   -- Bags
+   function(_, db, _, _, classID)
+      if db.enabledButtons.BAGSLOT and classID == 1 then
+         return "BAGSLOT"
+      end
    end,
 }
 
