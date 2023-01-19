@@ -162,7 +162,7 @@ LibDialog:Register("RCLOOTCOUNCIL_KEEP_ITEM", {
       self.icon2 = icon
    end,
    on_cancel = function(self, link)
-      self.buttons[2]:Click(self, link)
+      self.delegate.buttons[2].on_click(self, self.data)
       self.icon2:Hide()
    end,
    buttons = {
