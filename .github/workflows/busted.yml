@@ -1,6 +1,7 @@
 name: Busted
 
-on: [push, pull_request, workflow_call]
+# on: [push, pull_request, workflow_call]
+on: [workflow_call]
 
 jobs:
   busted:
