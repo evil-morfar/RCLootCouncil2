@@ -9,28 +9,20 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Setup lua
-        uses: leafo/gh-actions-lua@v9
-        with:
-          luaVersion: 5.1
+      # - name: Setup lua
+      #   uses: leafo/gh-actions-lua@v9
+      #   with:
+      #     luaVersion: 5.1
 
-      - name: Setup luarocks
-        uses: leafo/gh-actions-luarocks@v4
+      # - name: Setup luarocks
+      #   uses: leafo/gh-actions-luarocks@v4
 
-      - name: Setup dependencies
-        run: |
-          luarocks install luacov
-          luarocks install rxlua
-
-      - name: show luacov
-        run: luarocks show luacov
-
-      - name: luarocks path
-        run: luarocks path
-      - name: eval
-        run: eval $(luarocks path) & lua -e 'print(package.path)'
+      # - name: Setup dependencies
+      #   run: |
+      #     luarocks install luacov
+      #     luarocks install rxlua
 
       - name: Run Busted
         uses: lunarmodules/busted@v2.1.1
         with:
-          args: --lpath="__tests/?.lua;/home/runner/work/RCLootCouncil2/RCLootCouncil2/.luarocks/bin/luacov" --cpath="" -o TAP -Xoutput --color
+          args: --no-coverage --lpath="__tests/?.lua;" --cpath="" -o TAP -Xoutput --color
