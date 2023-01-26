@@ -19,8 +19,8 @@ jobs:
 
       - name: Setup dependencies
         run: |
-          luarocks install luacov
-          luarocks install rxlua
+          luarocks install luacov --local
+          luarocks install rxlua --local
 
       - name: Run Busted
         uses: lunarmodules/busted@v2.1.1
