@@ -255,6 +255,12 @@ function TradeUI:OnEvent_TRADE_SHOW (event, ...)
    if not target or target == "" then
       target = "NPC" -- Otherwise fallback to `UnitName("NPC")`
    end
+
+   -- If target is from another realm, the name in the trade frame will be "Name(*)"
+   if target:find("(*)") then
+		-- Remove the "(*)" so `UnitName` can attach realm.
+		target = string.sub(target, 1, -4)
+   end
    self.tradeTarget = addon:UnitName(target)
 
    local count = self:GetNumAwardedInBagsToTradeWindow()

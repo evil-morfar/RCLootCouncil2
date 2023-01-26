@@ -522,6 +522,10 @@ function RCLootCouncil:ChatCommand(msg)
 		db.safemode = not db.safemode
 		self:Print("SafeMode " .. (db.safemode and "On" or "Off"))
 		-- @debug@
+
+	elseif input == "export" then
+		self:ExportCurrentSession()
+
 	elseif input == 't' then -- Tester cmd
 		-- Test items with several modifiers. Should probably be added to the regular test func
 		for i = 1, GetNumGuildMembers() do
@@ -549,9 +553,10 @@ end)
 -- Update the recentTradableItem by link, if it is in bag and tradable.
 -- Except when the item has been auto group looted.
 function RCLootCouncil:UpdateAndSendRecentTradableItem(info, count)
-	if tContains(itemsBeingGroupLooted, info.link) then
+	local index = tIndexOf(itemsBeingGroupLooted, info.link)
+	if index then
 		-- Remove from list in case we get future similar items.
-		tDeleteItem(itemsBeingGroupLooted, info.link)
+		tremove(itemsBeingGroupLooted, index)
 		return
 	end
 	local Item = self.ItemStorage:New(info.link, "temp")
@@ -1061,6 +1066,7 @@ function RCLootCouncil:PrepareLootTable(lootTable)
 						GetItemInfo(self.Utils:UncleanItemString(v.string))
 		local itemID = GetItemInfoInstant(link)
 		v.link = link
+		v.itemID = itemID
 		v.quality = rarity
 		v.ilvl = self:GetTokenIlvl(v.link) or ilvl
 		v.equipLoc = RCTokenTable[itemID] and self:GetTokenEquipLoc(RCTokenTable[itemID]) or equipLoc
@@ -2445,6 +2451,18 @@ _G.printtable = function(data, level)
 	end
 end
 -- @end-debug@
+
+function RCLootCouncil:ExportCurrentSession()
+	if not lootTable or #lootTable == 0 then return self:Print(L["No session running"]) end
+	local exportData = {"session,item,itemID,ilvl"}
+	for session, data in ipairs(lootTable) do
+		exportData[session + 1] = table.concat({session, data.link:gsub("|", "||"), data.itemID, data.ilvl}, ",")
+	end
+	local csv = table.concat(exportData, "\n")
+	local frame = RCLootCouncil:GetActiveModule("history"):GetFrame()
+	frame.exportFrame.edit:SetText(csv)
+	frame.exportFrame:Show()
+end
 
 --- These comms should live all the time
 function RCLootCouncil:SubscribeToPermanentComms()
