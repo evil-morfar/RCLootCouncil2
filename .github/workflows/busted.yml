@@ -22,6 +22,14 @@ jobs:
           luarocks install luacov
           luarocks install rxlua
 
+      - name: show luacov
+        run: luarocks show luacov
+
+      - name: luarocks path
+        run: luarocks path
+      - name: eval
+        run: eval $(luarocks path) & lua -e 'print(package.path)'
+
       - name: Run Busted
         uses: lunarmodules/busted@v2.1.1
         with:
