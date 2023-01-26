@@ -8,7 +8,21 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+
+      - name: Setup lua
+        uses: leafo/gh-actions-lua@v9
+        with:
+          luaVersion: 5.1
+
+      - name: Setup luarocks
+        uses: leafo/gh-actions-luarocks@v4
+
+      - name: Setup dependencies
+        run: |
+          luarocks install luacov
+          luarocks install rxlua
+
       - name: Run Busted
         uses: lunarmodules/busted@v2.1.1
         with:
-          args: --no-coverage -m __tests/?.lua -o tap
+          args: -m __tests/?.lua -o TAP
