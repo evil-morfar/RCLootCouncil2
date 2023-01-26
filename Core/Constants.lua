@@ -45,7 +45,8 @@ addon.OPT_MORE_BUTTONS_VALUES = {
 	CONTEXT_TOKEN = "Beads and Spherules",
 	PETS = _G.PETS,
 	MOUNTS = _G.MOUNTS,
-	BAGSLOT = _G.BAGSLOT
+	BAGSLOT = _G.BAGSLOT,
+	RECIPE = _G.RECIPE
 }
 
 --[[
@@ -133,6 +134,13 @@ addon.RESPONSE_CODE_GENERATORS = {
          return "BAGSLOT"
       end
    end,
+
+   -- Recipies
+	function(_, db, _, _, classID)
+		if db.enabledButtons.RECIPE and classID == Enum.ItemClass.Recipe then
+			return "RECIPE"
+		end
+   end
 }
 
 --- @alias VersionCodes
