@@ -19,13 +19,18 @@ jobs:
 
       - name: Setup dependencies
         run: |
-          luarocks install luacov --local
-          luarocks install rxlua --local
+          luarocks install luacov
+          luarocks install rxlua
+          luarocks install busted
 
-      - name: Fix env
-        run: eval $(luarocks path)
-        
+
+      # - name: Fix env
+      #   run: eval $(luarocks path)
+
+      # - name: Run Busted
+      #   uses: lunarmodules/busted@v2.1.1
+      #   with:
+      #     args: --no-coverage --lpath="__tests/?.lua;" --cpath="" -o TAP -Xoutput --color
+
       - name: Run Busted
-        uses: lunarmodules/busted@v2.1.1
-        with:
-          args: --no-coverage --lpath="__tests/?.lua;" --cpath="" -o TAP -Xoutput --color
+        run: busted --lpath="__tests/?.lua;" --cpath="" -o TAP -Xoutput --color
