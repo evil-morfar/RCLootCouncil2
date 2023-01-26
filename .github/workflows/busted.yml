@@ -21,6 +21,7 @@ jobs:
         run: |
           luarocks install luacov
           luarocks install rxlua
+          luarocks install luabitop
           luarocks install busted
 
 
