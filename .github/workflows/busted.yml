@@ -22,7 +22,10 @@ jobs:
           luarocks install luacov
           luarocks install rxlua
 
+      - name: Print dir
+        run: pwd
+
       - name: Run Busted
         uses: lunarmodules/busted@v2.1.1
         with:
-          args: --lpath="__tests/?.lua" --cpath="" -o TAP -Xoutput --color
+          args: --lpath="__tests/?.lua;RCLootCouncil2/.luarocks" --cpath="" -o TAP -Xoutput --color
