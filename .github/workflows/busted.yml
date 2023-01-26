@@ -33,5 +33,8 @@ jobs:
       #   with:
       #     args: --no-coverage --lpath="__tests/?.lua;" --cpath="" -o TAP -Xoutput --color
 
+      - name: ls
+        run: ls
+
       - name: Run Busted
-        run: busted --lpath="__tests/?.lua;" --cpath="" -o TAP -Xoutput --color
+        run: busted --lpath="__tests/?.lua;" -Xoutput --color
