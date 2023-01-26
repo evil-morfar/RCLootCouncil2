@@ -33,4 +33,4 @@ jobs:
       - name: Run Busted
         uses: lunarmodules/busted@v2.1.1
         with:
-          args: --lpath="" --cpath="" -o TAP -Xoutput --color
+          args: --lpath="__tests/?.lua;.luarocks/bin/luacov" --cpath="" -o TAP -Xoutput --color
