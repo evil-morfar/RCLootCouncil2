@@ -18,13 +18,11 @@ jobs:
         uses: leafo/gh-actions-luarocks@v4
 
       - name: Setup dependencies
-        needs: "Setup lua"
         run: |
           luarocks install luacov
           luarocks install rxlua
 
       - name: Run Busted
-        needs: "Setup dependencies"
         uses: lunarmodules/busted@v2.1.1
         with:
-          args: --lpath="__tests/?.lua" -o TAP 
+          args: --lpath="__tests/?.lua;/home/runner/work/RCLootCouncil2/RCLootCouncil2/" -o TAP 
