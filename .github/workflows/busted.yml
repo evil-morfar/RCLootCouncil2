@@ -11,4 +11,4 @@ jobs:
       - name: Run Busted
         uses: lunarmodules/busted@v2.1.1
         with:
-          args: --no-coverage
+          args: --no-coverage -m __tests/?.lua -o tap
