@@ -25,4 +25,4 @@ jobs:
       - name: Run Busted
         uses: lunarmodules/busted@v2.1.1
         with:
-          args: --lpath="__tests/?.lua;/home/runner/work/RCLootCouncil2/RCLootCouncil2/" -o TAP 
+          args: --lpath="__tests/?.lua;/home/runner/work/RCLootCouncil2/RCLootCouncil2/.luarocks" -o TAP 
