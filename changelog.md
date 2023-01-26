@@ -10,7 +10,8 @@ Added new chat command `/rc export` which will export a csv formatted list of th
 
 ## Bugfixes
 
-- *Items can now again be automatically added to a trade with player from another realm.*
+- *Items can now again be automatically added to a trade with a player from another realm.*
+- *Fixed issue with items some times being added twice.*
 
 # 3.6.7
 

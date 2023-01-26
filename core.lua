@@ -553,9 +553,10 @@ end)
 -- Update the recentTradableItem by link, if it is in bag and tradable.
 -- Except when the item has been auto group looted.
 function RCLootCouncil:UpdateAndSendRecentTradableItem(info, count)
-	if tContains(itemsBeingGroupLooted, info.link) then
+	local index = tIndexOf(itemsBeingGroupLooted, info.link)
+	if index then
 		-- Remove from list in case we get future similar items.
-		tDeleteItem(itemsBeingGroupLooted, info.link)
+		tremove(itemsBeingGroupLooted, index)
 		return
 	end
 	local Item = self.ItemStorage:New(info.link, "temp")
