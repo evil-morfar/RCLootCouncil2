@@ -1,4 +1,8 @@
+# 3.7.0 Alpha.1
+
 ## Changes
+
+Updated for patch 10.0.5
 
 ### Voting Frame More Info
 
