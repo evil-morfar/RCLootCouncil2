@@ -8,7 +8,7 @@ end)
 
 insulate("AddonLoader", function()
 	it("should load RCLootCouncil", function()
-		loadfile(".specs/AddonLoader.lua")().LoadToc("RCLootCouncil.toc")
+		loadfile("./.specs/AddonLoader.lua")().LoadToc("RCLootCouncil.toc")
 		assert.truthy(_G.RCLootCouncil)
 	end)
 end)
