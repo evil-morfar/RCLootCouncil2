@@ -21,6 +21,10 @@ jobs:
       - name: Clone project
         uses: actions/checkout@v3
 
+      - name: Create changelog
+        # Grabs everything under the top level # header and outputs to a new file
+        run: sed -n "1p; 2,/^# / {/^# /d; p}" changelog.md > changes.md
+
       - name: Package and release
         uses: BigWigsMods/packager@v2
         with:
