@@ -73,12 +73,13 @@ describe("#Data #MLDB", function()
 
 		it("should update mldb", function()
 			local mldb1 = MLDB:Get()
-			addon.db.profile.buttons.NEW = {numButtons = 1, {text = "Test"}}
+			addon.db.profile.buttons.NEW = {numButtons = 1, {text = "Test", requireNotes = true}}
 			addon.db.profile.responses.NEW = {{text = "Tester"}}
 			local mldb2 = MLDB:Update()
 			assert.are_not.same(mldb1, mldb2)
 			assert.are.equal(1, #mldb2.buttons.NEW)
 			assert.are.equal("Test", mldb2.buttons.NEW[1].text)
+			assert.is.True(mldb2.buttons.NEW[1].requireNotes)
 		end)
 		it("should handle random added values", function()
 			assert.has_no.errors(function()
