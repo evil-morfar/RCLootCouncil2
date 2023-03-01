@@ -164,7 +164,7 @@ end
 function LootFrame:OnRoll(entry, button)
 	local item = entry.item
 	if not item.isRoll then
-		if entry.buttons[button].requireNotes and button ~= "PASS" and button ~= "TIMEOUT" then
+		if button ~= "PASS" and button ~= "TIMEOUT" and entry.buttons[button].requireNotes then
 			if not item.note or #item.note == 0 then
 				addon:Print(format(L["lootFrame_error_note_required"], addon.Ambiguate(addon.masterLooter:GetName())))
 				return

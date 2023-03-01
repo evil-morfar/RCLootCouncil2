@@ -7,6 +7,8 @@
 It's now possible to require notes per specific response - check `Buttons and Response` options and check `Require Notes` for each response you want raiders to submit a note with.  
 Old require notes option has been removed as part of this change.
 
+Note: This will not work for people with older versions.
+
 # 3.7.0
 
 ## Changes
