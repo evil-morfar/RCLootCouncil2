@@ -1,3 +1,9 @@
+# 3.7.1
+
+## Bugfixes
+
+- *Fixed wrong text used for "Guild Groups Only" setting.*
+
 # 3.7.0
 
 ## Changes
