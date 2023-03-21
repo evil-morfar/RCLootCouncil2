@@ -1,3 +1,7 @@
+## Bugfixes
+
+- *Fixed occasional inability to trade multiple identical items.*
+
 # 3.7.1
 
 Updated for patch 10.0.7.
