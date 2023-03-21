@@ -235,14 +235,20 @@ function Storage:GetAllItemsMultiPred(...)
 	end, true)
 end
 
---- Returns Container and Slot ids of an item.
--- @param item The item to find slots for, either 'Item' object or ItemLink.
--- @return container,slot,time_remaining The position of the item in the player's bags and it's remaining trade time (if present).
-function Storage:GetItemContainerSlot(item)
+---@class SkipInventoryItem
+---@field container integer
+---@field slot integer
+
+
+--- Finds Container, Slot ids, and trade time remaining of an item.
+--- @param item Item|ItemLink The item to find slots for, either `Item` object or `ItemLink`.
+--- @param skip SkipInventoryItem[]? Item positions to skip if encountered.
+--- @return integer? container,integer? slot, integer? time_remaining The position of the item in the player's bags and it's remaining trade time (if present), or `nil` if not found.
+function Storage:GetItemContainerSlot(item, skip)
 	if type(item) == "table" then -- Our Item object
-		return private:findItemInBags(item.link)
+		return private:findItemInBags(item.link, skip)
 	elseif type(item) == "string" then
-		return private:findItemInBags(item)
+		return private:findItemInBags(item, skip)
 	end
 end
 
@@ -278,6 +284,18 @@ function Storage:Compare(a, b)
 		tCompare(a.args, b.args, 1)
 end
 
+--- Checks if container and slot is present in a array.
+--- Everything's optional, but will result in `false` if omitted.
+---@param list? SkipInventoryItem[]
+---@param container? integer
+---@param slot? integer
+function Storage:ItemLocationInArray(list, container, slot)
+	return list and #list > 0 and ContainsIf(list, function(v)
+		return v.container == container and v.slot == slot
+	end)
+end
+
+
 function private:FindItemInTable(table, item1, type)
 	if type then
 		return FindInTableIf(table, function(item2) return type == item2.type and addon:ItemIsItem(item1, item2.link) end)
@@ -291,22 +309,27 @@ function private:FindItemInTable(table, item1, type)
 	end
 end
 
-function private:findItemInBags(link)
+--- Finds Container, Slot ids, and trade time remaining of an item.
+--- @param link ItemLink The item to find slots for.
+--- @param skip SkipInventoryItem[]? Item positions to skip if encountered.
+--- @return integer? container,integer? slot, integer? time_remaining The position of the item in the player's bags and it's remaining trade time (if present), or `nil` if not found.
+function private:findItemInBags(link, skip)
 	addon.Log:D("Storage: searching for item:", gsub(link or "", "\124", "\124\124"))
 	if link and link ~= "" then
 		local c, s, t
 		for container = 0, _G.NUM_BAG_SLOTS do
 			for slot = 1, C_Container.GetContainerNumSlots(container) or 0 do
-
 				if addon:ItemIsItem(link, C_Container.GetContainerItemLink(container, slot)) then -- We found it
-
-					addon.Log:D("Found item at", container, slot)
-					c, s = container, slot
-					-- Now we need to ensure we don't have multiple of it
-					t = addon:GetContainerItemTradeTimeRemaining(c, s)
-					if t > 0 then
-						-- if the item is tradeable, then we've most likely just received it, and can safely return
-						return c, s, t
+					-- Check if we should skip this slot
+					if not Storage:ItemLocationInArray(skip, container, slot) then
+						addon.Log:D("Found item at", container, slot)
+						c, s = container, slot
+						-- Now we need to ensure we don't have multiple of it
+						t = addon:GetContainerItemTradeTimeRemaining(c, s)
+						if t > 0 then
+							-- if the item is tradeable, then we've most likely just received it, and can safely return
+							return c, s, t
+						end
 					end
 				end
 			end
@@ -321,7 +344,8 @@ local mt = {
 	__tostring = function(self) return self.link end,
 }
 
---- Creates a new item
+--- Creates a new item.
+--- Note the location might be shared with other items.
 --- @param base? table Used as the base table for the class. Defaults to new table.
 --- @param link ItemLink
 --- @param type AcceptedTypes

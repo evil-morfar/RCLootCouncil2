@@ -21,6 +21,8 @@ describe("#Integration #Trade #FullTradeFlow", function()
 	after_each(function()
 		Comms:OnDisable()
 		addon.ItemStorage:RemoveAllItems()
+		wipe(addon.Utils.unitNameLookup)
+		WoWAPI_FireEvent("TRADE_CLOSED")
 	end)
 
 	it("should perform a full trade flow", function()
@@ -111,8 +113,6 @@ describe("#Integration #Trade #FullTradeFlow", function()
 	end)
 
 	it("trading duplicate items removes the proper one", function()
-		printtable(addon.db.profile.itemStorage)
-		print(addon.db.profile.itemStorage[1])
 		-- Get an item
 		local itemString = _G.Items_Array[1]
 
@@ -142,6 +142,62 @@ describe("#Integration #Trade #FullTradeFlow", function()
 		assert.spy(spyTradeWrongWinner).was_not_called()
 		assert.spy(spyTradeComplete).was_called(1)
 	end)
+
+	it("should be able to trade multiple identical items to the same person", function()
+		addon.Log:d "New"
+		local itemString = _G.Items_Array[1]
+		stub(_G.C_Container, "GetContainerItemLink", function(bagID, slotIndex)
+			if (bagID == 2) then
+				if slotIndex == 2 or slotIndex == 3 or slotIndex == 4 then
+					return itemString
+				end
+			end
+
+			return _G.Items_Array[math.random(100, #_G.Items_Array)]
+		end)
+		local winner = GetStoredPlayerNameToGUID("Player1").name
+		-- Setup some items as if they've been awarded
+		local item1 = addon.ItemStorage:New(itemString, "to_trade"):Store()
+		item1.time_remaining = 3600
+		item1.args = { recipient = winner, session = 1, }
+		local item2 = addon.ItemStorage:New(itemString, "to_trade"):Store()
+		item2.time_remaining = 3600
+		item2.args = { recipient = winner, session = 2, }
+		local item3 = addon.ItemStorage:New(itemString, "to_trade"):Store()
+		item3.time_remaining = 3600
+		item3.args = { recipient = winner, session = 2, }
+
+		assert.are.equal(3, #addon.ItemStorage:GetAllItems())
+		-- Pretend to trade
+		-- Turn on autoTrade to avoid popups
+		addon.db.profile.autoTrade = true
+		stub(_G, "UnitName", function(unit)
+			addon.Log:d("UnitName", unit)
+			if unit == "npc" then return winner end
+			return unit
+		end)
+
+		WoWAPI_FireEvent("TRADE_SHOW")
+		-- accept trade
+		stub(_G, "GetTradePlayerItemLink", function(i)
+			if i == 1 or i == 2 then
+				return itemString
+			else
+				return nil
+			end
+		end)
+
+		WoWAPI_FireUpdate(0)
+		WoWAPI_FireUpdate(GetTime() + 0.1)
+		assert.are.equal(1, #addon.TradeUI.itemsInTradeWindow)
+		assert.are.same({container= 2, slot = 2}, addon.TradeUI.itemsInTradeWindow[1])
+		WoWAPI_FireUpdate(GetTime() + 0.1)
+		assert.are.equal(2, #addon.TradeUI.itemsInTradeWindow)
+		assert.are.same({container= 2, slot = 3}, addon.TradeUI.itemsInTradeWindow[2])
+		WoWAPI_FireUpdate(GetTime() + 0.1)
+		assert.are.equal(3, #addon.TradeUI.itemsInTradeWindow)
+		assert.are.same({ container = 2, slot = 4, }, addon.TradeUI.itemsInTradeWindow[3])
+	end)
 end)
 
 -- Global helpers
@@ -155,6 +211,8 @@ function _G.C_Container.GetContainerItemLink(bagID, slotIndex)
 end
 
 function _G.CheckInteractDistance(unit, distIndex) return false end
+
+
 
 _G.TradeFrameRecipientNameText = {
 	GetText = function() return "" end,
