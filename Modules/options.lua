@@ -377,7 +377,7 @@ function addon:OptionsTable()
 									autoGroupLootGuildGroupOnly = {
 										order = 6,
 										name = L.opt_autoGroupLootGuildGroupOnly_name,
-										desc = L.opt_autoGroupLootGuildGroupOnly_name,
+										desc = L.opt_autoGroupLootGuildGroupOnly_desc,
 									    type = "toggle"
 									}
 								},
