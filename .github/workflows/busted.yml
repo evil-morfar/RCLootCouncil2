@@ -25,6 +25,4 @@ jobs:
           luarocks install busted
 
       - name: Run Busted
-        uses: lunarmodules/busted@v0
-        with:
-          args: --lpath="__tests/?.lua" -Xoutput --color
+        run: busted -f .busted --lpath="__tests/?.lua" -Xoutput --color
