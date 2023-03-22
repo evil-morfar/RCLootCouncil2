@@ -26,5 +26,5 @@ jobs:
 
       - name: Run Busted
         uses: lunarmodules/busted@v0
-          with:
-            args: --lpath="__tests/?.lua" -Xoutput --color
+        with:
+          args: --lpath="__tests/?.lua" -Xoutput --color
