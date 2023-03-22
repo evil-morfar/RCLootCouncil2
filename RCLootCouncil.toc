@@ -40,7 +40,7 @@ Modules\Modules.xml
 
 Utils\BackwardsCompat.lua
 Utils\Utils.lua
-Utils\trinketData.lua
+Utils\TrinketData.lua
 Utils\tokenData.lua
 Utils\ItemStorage.lua
 Utils\autopass.lua

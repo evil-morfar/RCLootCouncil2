@@ -49,7 +49,7 @@ describe("#Data #MLDB", function()
 	describe("functions", function()
 		before_each(function()
 			-- Always use a fresh copy
-			loadfile([[Core\Defaults.lua]])(nil, addon)
+			loadfile("Core/Defaults.lua")(nil, addon)
 		end)
 
 		it("should get MLDB", function()
