@@ -9,6 +9,7 @@ Added token and trinket data from Aberrus the Shadowed Crucible
 ## Bugfixes
 
 - *Fixed occasional inability to trade multiple identical items.*
+- *`/rc fulltest` should once again pull items from the latest raid.*
 
 # 3.7.1
 

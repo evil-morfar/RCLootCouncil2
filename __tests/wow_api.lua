@@ -295,6 +295,8 @@ end
 function EJ_GetInstanceByIndex()
 end
 
+function EJ_GetNumTiers() return 11 end
+
 function ReloadUI()
 end
 

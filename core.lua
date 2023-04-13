@@ -144,7 +144,6 @@ function RCLootCouncil:OnInitialize()
 	self.isInGuildGroup = false -- Is the group leader a member of our guild?
 
 	self.lootStatus = {}
-	self.EJLastestInstanceID = RCLootCouncil:GetEJLatestInstanceID()
 
 	---@type table<string,boolean>
 	self.candidatesInGroup = {}
@@ -266,6 +265,7 @@ function RCLootCouncil:OnEnable()
 	self.playerName = self.player:GetName() -- TODO Remove
 	self.Log(self.playerName, self.version, self.tVersion)
 
+	self.EJLatestInstanceID = self:GetEJLatestInstanceID()
 	self:DoChatHook()
 
 	-- register the optionstable
@@ -763,7 +763,7 @@ function RCLootCouncil:Test(num, fullTest, trinketTest)
 		local cached = true
 		local difficulties = {14, 15, 16} -- Normal, Heroic, Mythic
 
-		EJ_SelectInstance(self.EJLastestInstanceID)
+		EJ_SelectInstance(self.EJLatestInstanceID)
 		EJ_ResetLootFilter()
 		for _, difficulty in pairs(difficulties) do
 			EJ_SetDifficulty(difficulty)
@@ -2756,18 +2756,18 @@ function RCLootCouncil:OnStartHandleLoot(sender)
 end
 
 function RCLootCouncil:GetEJLatestInstanceID()
-	local serverExpansionLevel = GetServerExpansionLevel()
-	EJ_SelectTier(serverExpansionLevel + 1)
+	EJ_SelectTier(EJ_GetNumTiers() - 1) -- Last tier is Mythic+
 	local index = 1
-	local instanceId, name = EJ_GetInstanceByIndex(index, true)
+	local instanceId = EJ_GetInstanceByIndex(index, true)
 
 	while index do
 		local id = EJ_GetInstanceByIndex(index + 1, true)
 		if id then
 			instanceId = id
 			index = index + 1
+		else
+			index = nil
 		end
-		index = nil
 	end
 
 	if not instanceId then instanceId = 1190 end -- default to Castle Nathria if no ID is found
