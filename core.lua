@@ -441,7 +441,7 @@ function RCLootCouncil:ChatCommand(msg)
 		self.playerClass = string.upper(args[1])
 		self:Test(1, false, true)
 	elseif input == "exporttokendata" then
-		self:ExportTokenData()
+		self:ExportTokenData(tonumber(args[1]))
 		-- @end-debug@
 	elseif input == "whisper" or input == string.lower(_G.WHISPER) then
 		self:Print(L["whisper_help"])
@@ -1209,6 +1209,29 @@ function RCLootCouncil:GetItemClassesAllowedFlag(item)
 	end
 	tooltipForParsing:Hide()
 	return 0xffffffff -- The item works for all classes
+end
+
+
+--- Extracts all lines from item's tooltip.
+--- @param item ItemID|ItemLink|ItemString Item to extract tooltip for.
+--- @return string[] #All lines in the tooltip.
+function RCLootCouncil:GetTooltipLines(item)
+	if not item then return {} end
+	if type(item) == "number" then
+		item = "item:" .. item
+	end
+	tooltipForParsing:SetOwner(UIParent, "ANCHOR_NONE") -- This lines clear the current content of tooltip and set its position off-screen
+	tooltipForParsing:SetHyperlink(item)             -- Set the tooltip content and show it, should hide the tooltip before function ends
+	local ret = {}
+	for i = 1, tooltipForParsing:NumLines() or 0 do
+		local line = getglobal(tooltipForParsing:GetName() .. "TextLeft" .. i)
+		if line and line.GetText then
+			local text = line:GetText() or ""
+			ret[i] = text
+		end
+	end
+	tooltipForParsing:Hide()
+	return ret
 end
 
 local classNamesFromFlagCache = {}

@@ -173,6 +173,7 @@ globals = {
    "C_Unit",
 	"C_Covenants",
 	"Settings",
+	"C_TooltipInfo",
 
 	-- API functions
 	"AbandonSkill",
