@@ -2309,7 +2309,9 @@ function RCLootCouncil:GetItemTypeText(link, subType, equipLoc, typeID, subTypeI
 			return tokenText
 		end
 	elseif equipLoc ~= "" and getglobal(equipLoc) then
-		if equipLoc == "INVTYPE_TRINKET" then
+		if classesFlag and classesFlag ~= 0xffffffff then
+			return getglobal(equipLoc) .. ", " .. self:GetClassNamesFromFlag(classesFlag)
+		elseif equipLoc == "INVTYPE_TRINKET" then
 			local lootSpec = _G.RCTrinketSpecs[id]
 			local category = lootSpec and _G.RCTrinketCategories[lootSpec]
 			if category then
