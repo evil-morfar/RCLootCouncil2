@@ -15,7 +15,7 @@ Reconnect.private = {}
 --- transmitted through comms.
 --- @return TransmittableReconnectData
 function Reconnect:GetForTransmit(data)
-    self.private.data = data or {}
+    self.private.data = CopyTable(data) or {}
     return self.private
         :OptimizeItemLinks()
         :RestructureData()
@@ -29,7 +29,7 @@ end
 --- @param data TransmittableReconnectData
 --- @return ReconnectTable
 function Reconnect:RestoreFromTransmit(data)
-    self.private.restore = data or {}
+    self.private.restore = CopyTable(data) or {}
     return self.private
         :UndoReplacePlayerNames()
         :UndoReplaceKeys()
@@ -155,10 +155,10 @@ function Reconnect.private:ReplacePlayerNames()
         local id = ""
         if player:GetRealm() == ourRealm then
             -- Skip realm part of GUID
-            id = player:GetGUID():match("\-([%x]+)$")
+            id = player:GetGUID():match("%-([%x]+)$")
         else
             -- Keep realm part
-            id = player:GetGUID():match("\-([%d\-%x]+)$")
+            id = player:GetGUID():match("%-([%d%-%x]+)$")
         end
         self.data[name] = nil
         self.data[id] = data
@@ -216,7 +216,7 @@ end
 
 --- Converts shortened player guid's to their names.
 function Reconnect.private:UndoReplacePlayerNames()
-    local ourRealmId = addon.player:GetGUID():match("\-([%x]+\-)")
+    local ourRealmId = addon.player:GetGUID():match("%-([%x]+%-)")
     for id, data in pairs(CopyTable(self.restore)) do
         local guid = ""
         if id:find("-") then
@@ -236,7 +236,7 @@ end
 --- This function restores it based on voters.
 function Reconnect.private:ExtractHaveVoted()
     for name, data in pairs(self.restore) do
-        for session, voter in pairs(data.voters) do
+        for session, voter in pairs(data.voters or {}) do
             if addon:UnitIsUnit("player", voter) then
                 if not data.haveVoted then
                     data.haveVoted = {}
@@ -245,4 +245,5 @@ function Reconnect.private:ExtractHaveVoted()
             end
         end
     end
+    return self
 end

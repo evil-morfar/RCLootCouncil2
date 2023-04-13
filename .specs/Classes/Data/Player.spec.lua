@@ -1,7 +1,8 @@
-require "busted.runner"()
+require "busted.runner" ()
+
 local addonName, addon = "RCLootCouncil_Test", {
-	db = {global = {log = {}, cache = {}, errors = {}}},
-	defaults = {global = {logMaxEntries = 2000}},
+	db = { global = { log = {}, cache = {}, errors = {}, }, },
+	defaults = { global = { logMaxEntries = 2000, }, },
 }
 loadfile(".specs/AddonLoader.lua")(nil, addonName, addon).LoadArray {
 	[[Libs\LibStub\LibStub.lua]],
@@ -99,7 +100,6 @@ describe("#Player", function()
 
 	describe("edge cases", function()
 		setup(function()
-
 			_G.GetNumGuildMembers = spy.new(function() return 3 end)
 			_G.GetGuildRosterInfo = spy.new(function(i)
 				local _ = nil
@@ -113,7 +113,12 @@ describe("#Player", function()
 			end)
 		end)
 
-		it("asdasd", function()
+		it("should handle special player names", function()
+			-- return nil to force use GetGuildRosterInfo
+			function _G.UnitGUID()
+				return nil
+			end
+
 			local p1 = Player:Get("Pláÿer-Realm")
 			assert.are.equal("Player-5555-00000001", p1:GetGUID())
 		end)
