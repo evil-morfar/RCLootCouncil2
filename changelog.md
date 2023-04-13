@@ -1,3 +1,11 @@
+# 3.8.0
+
+## Changes
+
+Updated for patch 10.1.0.
+
+Added token and trinket data from Aberrus the Shadowed Crucible
+
 ## Bugfixes
 
 - *Fixed occasional inability to trade multiple identical items.*
