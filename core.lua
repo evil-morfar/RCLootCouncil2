@@ -191,6 +191,7 @@ function RCLootCouncil:OnInitialize()
 	-- List of itemIds that should not be blacklisted
 	self.blackListOverride = {
 		-- [itemId] = true
+		[206046] = true, -- Void-Touched Curio
 	}
 
 	self.testMode = false;

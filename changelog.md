@@ -13,6 +13,10 @@ Old require notes option has been removed as part of this change.
 
 Note: This will not work for people with older versions.
 
+### Void-Touched Curio
+
+Removed from blacklist.
+
 ## Bugfixes
 
 - *Fixed occasional inability to trade multiple identical items.*
