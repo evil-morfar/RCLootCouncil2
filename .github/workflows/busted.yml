@@ -1,7 +1,6 @@
 name: Busted
 
-# on: [push, pull_request, workflow_call]
-on: [workflow_call]
+on: [push, pull_request, workflow_call]
 
 jobs:
   busted:
@@ -25,17 +24,5 @@ jobs:
           luarocks install luabitop
           luarocks install busted
 
-
-      # - name: Fix env
-      #   run: eval $(luarocks path)
-
-      # - name: Run Busted
-      #   uses: lunarmodules/busted@v2.1.1
-      #   with:
-      #     args: --no-coverage --lpath="__tests/?.lua;" --cpath="" -o TAP -Xoutput --color
-
-      - name: ls
-        run: ls -a
-
       - name: Run Busted
-        run: busted -f .busted --lpath="__tests/?.lua;" -Xoutput --color
+        run: busted -f .busted --lpath="__tests/?.lua" -Xoutput --color
