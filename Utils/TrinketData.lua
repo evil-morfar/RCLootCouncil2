@@ -110,6 +110,11 @@ function RCLootCouncil:ExportTrinketData(nextTier, nextIsRaid, nextIndex, nextDi
    for _, entry in ipairs(trinketData) do
 		if entry[1] == "name" then
 			exports = exports.."-- "..entry[2].."\n"
+
+		elseif entry[3] ~= 0xffffffff then
+			exports = exports .. "\t-- [" .. entry[1] .. "] = " .. format("%q", entry[2])
+				.. ",\t-- " ..
+				format(exp, trinketNames[entry[1]] .. ",") .. "\t" .. (self:ClassesFlagToStr(entry[3]) or "") .. "\n"
 		else
 	      exports = exports.."\t["..entry[1].."] = "..format("%q", entry[2])
 	      ..",\t-- "..format(exp, trinketNames[entry[1]]..",").."\t"..(_G.RCTrinketCategories[entry[2]] or "").."\n"
@@ -154,7 +159,7 @@ function RCLootCouncil:ExportTrinketDataSingleInstance(instanceID, diffID, timeL
       local info = C_EncounterJournal.GetLootInfoByIndex(j)
       if info.link then
 			if not trinketIdToIndex[info.itemID] then
-				tinsert(trinketData, {info.itemID, ZERO})
+				tinsert(trinketData, { info.itemID, ZERO, self:GetItemClassesAllowedFlag(info.link) })
 				trinketIdToIndex[info.itemID] = #trinketData
 			else
 				trinketData[trinketIdToIndex[info.itemID]][2] = ZERO
@@ -191,9 +196,10 @@ function RCLootCouncil:ExportTrinketDataSingleInstance(instanceID, diffID, timeL
       self:Print(format("Instance %d. %s %s. Processed %d trinkets", instanceID, EJ_GetInstanceInfo(instanceID), diffText, count))
       for _, link in ipairs(trinketlinksInThisInstances) do
          local id = self.Utils:GetItemIDFromLink(link)
-         self:Print(format("%s(%d): %s", link, id, trinketData[trinketIdToIndex[id]][2]))
-		 if not RCTrinketCategories[trinketData[trinketIdToIndex[id]][2]] then 
-			print ("Missing category for " .. trinketData[trinketIdToIndex[id]][2])
+		 local data = trinketData[trinketIdToIndex[id]]
+         self:Print(format("%s(%d): %s (%s)", link, id, data[2], data[3]))
+			if not RCTrinketCategories[data[2]] and data[3] ~= 0xffffffff then
+			print ("Missing category for " .. data[2] .. " " .. data[3])
 		 end
       end
       self:Print("--------------------")
@@ -219,18 +225,22 @@ _G.RCTrinketCategories = {
 	["2082004030010"] = HEALER, -- Healer
 	["0092005070010"] = HEALER, -- Healer (EJ includes some DPS specs) FORMER: Intellect? (Missing Mage, Warlock)
 	["0082004030010"] = HEALER, -- Healer, - Evoker
+	["22C3004130034"] = TANK .. ", ".. HEALER, -- Tank & Healer
 	["0124002607743"] = DAMAGER .. ", " .. ITEM_MOD_STRENGTH_SHORT .. "/" .. ITEM_MOD_AGILITY_SHORT, -- Damage, Strength/Agility
 	["0000000600043"] = DAMAGER .. ", " .. ITEM_MOD_STRENGTH_SHORT, -- Damage, Strength
 	["0124002007700"] = DAMAGER .. ", " .. ITEM_MOD_AGILITY_SHORT, -- Damage, Agility
 	["0124002607443"] = DAMAGER .. ", " .. MELEE, -- Damage, Melee
 	["0124002007400"] = DAMAGER .. ", " .. MELEE .. ", " .. ITEM_MOD_AGILITY_SHORT, -- Damage, Melee, Agility
 	["0010771050300"] = DAMAGER .. ", " .. RANGED, -- Damage, Ranged (+ discipline)
+	["1010771050300"] = DAMAGER .. ", " .. RANGED, -- Damage, Ranged (+ discipline & devastation)
 	["0010771040300"] = DAMAGER .. ", " .. RANGED, -- Damage, Ranged
+	["1010771040300"] = DAMAGER .. ", " .. RANGED, -- Damage, Ranged (+ Devastation)
 	["1010771050000"] = DAMAGER .. ", " .. ITEM_MOD_INTELLECT_SHORT, -- Damage, Intellect
 	["3092776070010"] = DAMAGER .. ", " .. ITEM_MOD_INTELLECT_SHORT, -- Damage + Healers, Intellect
 	["1010671040000"] = DAMAGER .. ", " .. ITEM_MOD_INTELLECT_SHORT, -- Damage, Intellect (direct damage, no affliction warlock and shadow priest)
 	["1010771040000"] = DAMAGER .. ", " .. ITEM_MOD_INTELLECT_SHORT, -- Damage, Intellect (no discipline)
 	["1134773647743"] = DAMAGER, -- Damage
+	["0325002007700"] = ITEM_MOD_AGILITY_SHORT, -- Agility (DPS + vengance and brewmaster)??
 
 	-- The following categories does not make sense. Most likely a Blizzard error in the Encounter Journal for several old trinkets.
 	-- Add "?" as a suffix to the description as the result
@@ -248,7 +258,9 @@ _G.RCTrinketCategories = {
 	["03F7777777777"] = ALL_CLASSES, -- All Classes except Evoker
 	["0010771040000"] = DAMAGER .. ", " .. ITEM_MOD_INTELLECT_SHORT, -- Damage, Intellect (no discipline or evoker)
 	["0010771050000"] = DAMAGER .. ", " .. ITEM_MOD_INTELLECT_SHORT, -- Damage, Intellect (no Evoker)
-
+	["3300070000077"] = "", -- Class specific (Evoker, Demonhunter, Mage, Paladin, Warrior)
+	["0007707000700"] = "", -- Class specific (Monk, Warlock, Shaman, Hunter)
+	["00F0000777000"] = "", -- Class specific (Druid, Death Knight, Priest, Rogue)
 }
 
 
@@ -1701,75 +1713,127 @@ _G.RCTrinketSpecs = {
 	-- Sepulcher of the First Ones Heroic (id: 1195).
 	-- Sepulcher of the First Ones Mythic (id: 1195).
 	-- Sepulcher of the First Ones Looking For Raid (id: 1195).
+
+	-- Dragonflight
 	-- Algeth'ar Academy Normal (id: 1201).
-	[193701] = "0365002707767", -- Algeth'ar Puzzle Box,                           	Strength/Agility
-	[193719] = "0000000700067", -- Dragon Games Equipment,                         	Strength
-	[193718] = "3092775070010", -- Emerald Coach's Whistle,                        	Intellect
+	[193701] = "0365002707767", -- Algeth'ar Puzzle Box,          	Strength/Agility
+	[193719] = "0000000700067", -- Dragon Games Equipment,        	Strength
+	[193718] = "2082004030010", -- Emerald Coach's Whistle,       	Healer
 	-- Algeth'ar Academy Heroic (id: 1201).
+	-- Algeth'ar Academy Mythic Keystone (id: 1201).
 	-- Algeth'ar Academy Mythic (id: 1201).
 	-- Brackenhide Hollow Normal (id: 1196).
-	[193672] = "0365002707767", -- Frenzying Signoll Flare,                        	Strength/Agility
-	[193660] = "33F7777077710", -- Idol of Pure Decay,                             	Agility/Intellect
-	[193652] = "0000000700067", -- Treemouth's Festering Splinter,                 	Strength
+	[193660] = "1010771050300", -- Idol of Pure Decay,            	Damage, Ranged
+	[193672] = "0124002607443", -- Frenzying Signoll Flare,       	Damage, Melee
+	[193652] = "0241000100024", -- Treemouth's Festering Splinter,	Tank
 	-- Brackenhide Hollow Heroic (id: 1196).
 	-- Brackenhide Hollow Mythic (id: 1196).
 	-- Halls of Infusion Normal (id: 1204).
-	[193732] = "0365002007700", -- Globe of Jagged Ice,                            	Agility
-	[193743] = "33F7777777777", -- Irideus Fragment,                               	All Classes
-	[193736] = "3092775070010", -- Water's Beating Heart,                          	Intellect
+	[193736] = "2082004030010", -- Water's Beating Heart,         	Healer
+	[193732] = "0124002007700", -- Globe of Jagged Ice,           	Damage, Agility
+	[193743] = "33F7777777777", -- Irideus Fragment,              	All Classes
 	-- Halls of Infusion Heroic (id: 1204).
 	-- Halls of Infusion Mythic (id: 1204).
 	-- Neltharus Normal (id: 1199).
-	[193769] = "33F7777077710", -- Erupting Spear Fragment,                        	Agility/Intellect
-	[193786] = "0365002707767", -- Mutated Magmammoth Scale,                       	Strength/Agility
-	[193773] = "3092775070010", -- Spoils of Neltharus,                            	Intellect
+	[193769] = "1010771050300", -- Erupting Spear Fragment,       	Damage, Ranged
+	[193786] = "0124002607443", -- Mutated Magmammoth Scale,      	Damage, Melee
+	[193773] = "3092775070010", -- Spoils of Neltharus,           	Intellect
 	-- Neltharus Heroic (id: 1199).
 	-- Neltharus Mythic (id: 1199).
 	-- Ruby Life Pools Normal (id: 1202).
-	[193762] = "0000000700067", -- Blazebinder's Hoof,                             	Strength
-	[193748] = "3092775070010", -- Kyrakka's Searing Embers,                       	Intellect
-	[193757] = "33F7777777777", -- Ruby Whelp Shell,                               	All Classes
+	[193748] = "2082004030010", -- Kyrakka's Searing Embers,      	Healer
+	[193762] = "0000000700067", -- Blazebinder's Hoof,            	Strength
+	[193757] = "33F7777777777", -- Ruby Whelp Shell,              	All Classes
 	-- Ruby Life Pools Heroic (id: 1202).
+	-- Ruby Life Pools Mythic Keystone (id: 1202).
 	-- Ruby Life Pools Mythic (id: 1202).
 	-- The Azure Vault Normal (id: 1203).
-	[193634] = "0000000700067", -- Burgeoning Seed,                                	Strength
-	[193628] = "3092775070010", -- Tome of Unstable Power,                         	Intellect
-	[193639] = "3092775070010", -- Umbrelskul's Fractured Heart,                   	Intellect
+	[193639] = "1010771040000", -- Umbrelskul's Fractured Heart,  	Damage, Intellect
+	[193634] = "0241000100024", -- Burgeoning Seed,               	Tank
+	[193628] = "3092775070010", -- Tome of Unstable Power,        	Intellect
 	-- The Azure Vault Heroic (id: 1203).
+	-- The Azure Vault Mythic Keystone (id: 1203).
 	-- The Azure Vault Mythic (id: 1203).
 	-- The Nokhud Offensive Normal (id: 1198).
-	[193697] = "0365002007700", -- Bottle of Spiraling Winds,                      	Agility
-	[193677] = "3092775070010", -- Furious Ragefeather,                            	Intellect
-	[193689] = "0241000100024", -- Granyth's Enduring Scale,                       	Tank
-	[193679] = "0000000700067", -- Idol of Trampling Hooves,                       	Strength
-	[193678] = "3092775070010", -- Miniature Singing Stone,                        	Intellect
+	[193677] = "1010771050000", -- Furious Ragefeather,           	Damage, Intellect
+	[193678] = "2082004030010", -- Miniature Singing Stone,       	Healer
+	[193697] = "0325002007700", -- Bottle of Spiraling Winds,     	Agility
+	[193689] = "0241000100024", -- Granyth's Enduring Scale,      	Tank
+	[193679] = "0000000600043", -- Idol of Trampling Hooves,      	Damage, Strength
 	-- The Nokhud Offensive Heroic (id: 1198).
+	-- The Nokhud Offensive Mythic Keystone (id: 1198).
 	-- The Nokhud Offensive Mythic (id: 1198).
 	-- Uldaman: Legacy of Tyr Normal (id: 1197).
-	[193815] = "0365002707767", -- Homeland Raid Horn,                             	Strength/Agility
-	[193805] = "0000000700067", -- Inexorable Resonator,                           	Strength
-	[193791] = "3092775070010", -- Time-Breaching Talon,                           	Intellect
+	[193815] = "0124002607443", -- Homeland Raid Horn,            	Damage, Melee
+	[193805] = "0241000100024", -- Inexorable Resonator,          	Tank
+	[193791] = "3092775070010", -- Time-Breaching Talon,          	Intellect
 	-- Uldaman: Legacy of Tyr Heroic (id: 1197).
 	-- Uldaman: Legacy of Tyr Mythic (id: 1197).
 	-- Dragon Isles Normal (id: 1205).
-	[200676] = "33F7777777777", -- Static-Charged Scale,                           	All Classes
+	[200676] = "33F7777777777", -- Static-Charged Scale,          	All Classes
 	-- Dragon Isles Heroic (id: 1205).
 	-- Dragon Isles Mythic (id: 1205).
 	-- Dragon Isles Looking For Raid (id: 1205).
 	-- Vault of the Incarnates Normal (id: 1200).
-	[194306] = "0365002707767", -- All-Totem of the Master,                        	Strength/Agility
-	[194307] = "3092775070010", -- Broodkeeper's Promise,                          	Intellect
-	[194300] = "3092775070010", -- Conjured Chillglobe,                            	Intellect
-	[194305] = "0365002007700", -- Controlled Current Technique,                   	Agility
-	[194299] = "0365002707767", -- Decoration of Flame,                            	Strength/Agility
-	[194310] = "3092775070010", -- Desperate Invoker's Codex,                      	Intellect
-	[194304] = "3092775070010", -- Iceblood Deathsnare,                            	Intellect
-	[194308] = "0365002707767", -- Manic Grieftorch,                               	Strength/Agility
-	[194303] = "0000000700067", -- Rumbling Ruby,                                  	Strength
-	[194309] = "33F7777777777", -- Spiteful Storm,                                 	All Classes
-	[194302] = "0365002707767", -- Storm-Eater's Boon,                             	Strength/Agility
-	[194301] = "33F7777777777", -- Whispering Incarnate Icon,                      	All Classes
+	[194306] = "0241000100024", -- All-Totem of the Master,       	Tank
+	[194307] = "2082004030010", -- Broodkeeper's Promise,         	Healer
+	[194300] = "2082004030010", -- Conjured Chillglobe,           	Healer
+	[194305] = "0365002007700", -- Controlled Current Technique,  	Agility
+	[194299] = "0241000100024", -- Decoration of Flame,           	Tank
+	[194304] = "3092775070010", -- Iceblood Deathsnare,           	Intellect
+	[194308] = "0124002607743", -- Manic Grieftorch,              	Damage, Strength/Agility
+	[194303] = "0000000700067", -- Rumbling Ruby,                 	Strength
+	[194309] = "33F7777777777", -- Spiteful Storm,                	All Classes
+	[194302] = "0124002607443", -- Storm-Eater's Boon,            	Damage, Melee
+	[194310] = "1010771040000", -- Desperate Invoker's Codex,     	Damage, Intellect
+	[194301] = "33F7777777777", -- Whispering Incarnate Icon,     	All Classes
 	-- Vault of the Incarnates Heroic (id: 1200).
 	-- Vault of the Incarnates Mythic (id: 1200).
 	-- Vault of the Incarnates Looking For Raid (id: 1200).
+	-- Aberrus, the Shadowed Crucible Normal (id: 1208).
+	[203963] = "33F7777777777", -- Beacon to the Beyond,          	All Classes
+	[202610] = "0365002007700", -- Dragonfire Bomb Dispenser,     	Agility
+	[202617] = "0124002607443", -- Elementium Pocket Anvil,       	Damage, Melee
+	[202616] = "0241000100024", -- Enduring Dreadplate,           	Tank
+	[203996] = "1010771040300", -- Igneous Flowstone,             	Damage, Ranged
+	-- [204201] = "3300070000077",	-- Neltharion's Call to Chaos,    	Warrior, Paladin, Mage, Demon Hunter, Evoker
+	-- [204202] = "0007707000700",	-- Neltharion's Call to Dominance,	Hunter, Shaman, Warlock, Monk
+	-- [204211] = "00F0000777000",	-- Neltharion's Call to Suffering,	Rogue, Priest, Death Knight, Druid
+	[203729] = "33F7777777777", -- Ominous Chromatic Essence,     	All Classes
+	[202614] = "2082004030010", -- Rashok's Molten Heart,         	Healer
+	[202612] = "33F7777777777", -- Screaming Black Dragonscale,   	All Classes
+	[202615] = "1010771040000", -- Vessel of Searing Shadow,      	Damage, Intellect
+	[203714] = "22C3004130034", -- Ward of Faceless Ire,          	Tank, Healer
+	[202613] = "0000000700067", -- Zaqali Chaos Grapnel,          	Strength
+	-- Aberrus, the Shadowed Crucible Heroic (id: 1208).
+	-- Aberrus, the Shadowed Crucible Mythic (id: 1208).
+	-- Aberrus, the Shadowed Crucible Looking For Raid (id: 1208).
+	-- Court of Stars Heroic (id: 800).
+	[137484] = "2082004030010", -- Flask of the Solemn Night,     	Healer
+	[137485] = "1010771050000", -- Infernal Writ,                 	Damage, Intellect
+	[137486] = "0124002607443", -- Windscar Whetstone,            	Damage, Melee
+	-- Court of Stars Mythic Keystone (id: 800).
+	-- Court of Stars Mythic (id: 800).
+	-- Court of Stars Timewalking (id: 800).
+	-- Halls of Valor Normal (id: 721).
+	[133641] = "1010771050300", -- Eye of Skovald,                	Damage, Ranged
+	[133647] = "0241000100024", -- Gift of Radiance,              	Tank
+	[133642] = "33F7777777777", -- Horn of Valor,                 	All Classes
+	[136975] = "0365002707767", -- Hunger of the Pack,            	Strength/Agility
+	[133646] = "2082004030010", -- Mote of Sanctification,        	Healer
+	-- Halls of Valor Heroic (id: 721).
+	-- Halls of Valor Mythic Keystone (id: 721).
+	-- Halls of Valor Mythic (id: 721).
+	-- Shadowmoon Burial Grounds Normal (id: 537).
+	[110007] = "3092775070010", -- Voidmender's Shadowgem,        	Intellect
+	[110012] = "0000000600043", -- Bonemaw's Big Toe,             	Damage, Strength
+	-- Shadowmoon Burial Grounds Heroic (id: 537).
+	-- Shadowmoon Burial Grounds Mythic Keystone (id: 537).
+	-- Shadowmoon Burial Grounds Mythic (id: 537).
+	-- Shadowmoon Burial Grounds Timewalking (id: 537).
+	-- Temple of the Jade Serpent Normal (id: 313).
+	[144113] = "0365002007700", -- Windswept Pages,               	Agility
+	-- Temple of the Jade Serpent Heroic (id: 313).
+	-- Temple of the Jade Serpent Mythic Keystone (id: 313).
+	-- Temple of the Jade Serpent Timewalking (id: 313).
 }

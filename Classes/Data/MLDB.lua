@@ -32,7 +32,8 @@ local replacements = {
     [magicKey .. "14"] = "default",
     [magicKey .. "15"] = "text",
     [magicKey .. "16"] = "color",
-    [magicKey .. "17"] = "autoGroupLoot"
+    [magicKey .. "17"] = "autoGroupLoot",
+    [magicKey .. "18"] = "requireNotes",
 }
 
 local replacements_inv = tInvert(replacements)
@@ -126,7 +127,7 @@ function private:BuildMLDB()
                 if not changedButtons[type] then
                     changedButtons[type] = {}
                 end
-                changedButtons[type][i] = {text = db.buttons[type][i].text}
+				changedButtons[type][i] = { text = db.buttons[type][i].text, requireNotes = db.buttons[type][i].requireNotes, }
             end
         end
     end

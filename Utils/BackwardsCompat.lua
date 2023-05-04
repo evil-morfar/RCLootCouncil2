@@ -184,5 +184,13 @@ Compat.list = {
 				end
 			end
 		end
+	},
+
+	{
+		name = "Removed 'Require Notes' option", -- now handled per response
+		version = "3.8.0",
+		func = function()
+		   addon.db.profile.requireNotes = nil
+		end
 	}
 }
