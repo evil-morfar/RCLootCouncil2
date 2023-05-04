@@ -34,6 +34,11 @@ function GetItemInfoInstant (item)
    return i.itemID, i.itemType, i.itemSubType, i.itemEquipLoc, i.icon, i.itemClassID, i.itemSubClassID
 end
 
+--- Not implemented
+function GetItemStats(itemLink, statTable)
+	return {}
+end
+
 ----------------------------------------------------------------
 -- List of items exported from the game
 -- 22/11-19: Exported 2.391 items from my history.

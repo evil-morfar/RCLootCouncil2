@@ -1,10 +1,13 @@
 local _G = getfenv(0)
+require "/wow_api/API/C_functions"
 require "/wow_api/API/Mixin"
 require "/wow_api/API/Color"
+require "/wow_api/API/ColorUtil"
 require "/wow_api/API/TableUtil"
 require "/wow_api/FrameAPI/Frames/Frame"
 require "/wow_api/FrameAPI/Frames/Button"
 require "/wow_api/FrameAPI/Frames/GameTooltip"
+require "/wow_api/FrameAPI/Frames/CheckButton"
 local strbyte, strchar, gsub, gmatch, format, tinsert = string.byte, string.char, string.gsub, string.gmatch, string.format, table.insert
 
 local donothing = function() end
@@ -19,6 +22,8 @@ function CreateFrame(kind, name, parent)
       frame = _G.Button.New(name, parent)
    elseif kind == "GameTooltip" then
       frame = _G.GameTooltip.New(name, parent)
+   elseif kind == "CheckButton" then
+	  frame = _G.CheckButton.New(name, parent)
    else
       -- Default to frame (for handling kinds we haven't implemented)
       frame = _G.Frame.New(name, parent)
@@ -332,9 +337,6 @@ end
 InterfaceOptionsFrameCancel = {
    GetScript = function(input) return input end
 }
-C_CreatureInfo = {
-   GetClassInfo = function(classIndex) return end
-}
 
 function UIDropDownMenu_InitializeHelper (args)
    -- body...
@@ -493,6 +495,12 @@ function GetPlayerInfoByGUID (guid)
    end
 end
 
+function GetProfessions() return end
+
+function GetAverageItemLevel() return 0 end
+
+function UnitGroupRolesAssigned(unit) return end
+
 -- Enable some globals
 _G.gsub = string.gsub
 _G.strfind = string.find
@@ -527,7 +535,6 @@ printtable = function( data, level )
    until true end
 end
 
-C_Timer = {After = function(delay, callback) end}
 
 -- Classes
 CLASS_SORT_ORDER = {
@@ -929,13 +936,11 @@ function FauxScrollFrame_Update() end
 
 function FauxScrollFrame_GetOffset() return 0 end
 
-C_Container = {}
 ------------------------------------------
 -- Constants from various places
 ------------------------------------------
 NUM_BAG_SLOTS = 10
 
-RAID_CLASS_COLORS = {}
 MAX_TRADE_ITEMS = 6 -- don't remember
 
 TOOLTIP_DEFAULT_COLOR = { r = 1, g = 1, b = 1 };
@@ -960,6 +965,7 @@ BIND_TRADE_TIME_REMAINING = "You may trade this item with players that were also
 LOOT_ITEM = "%s receives loot: %s."
 RANDOM_ROLL_RESULT = "%s rolls %d (%d-%d)"
 REQUEST_ROLL = "Request Roll"
+ITEM_CLASSES_ALLOWED = "Classes: %s"
 ITEM_MOD_AGILITY = "%c%s Agility";
 ITEM_MOD_AGILITY_OR_INTELLECT_SHORT = "Agility or Intellect";
 ITEM_MOD_AGILITY_OR_STRENGTH_OR_INTELLECT_SHORT = "Agility or Strength or Intellect";
@@ -1013,6 +1019,7 @@ ITEM_MOD_STAMINA_SHORT = "Stamina";
 ITEM_MOD_STRENGTH_OR_INTELLECT_SHORT = "Strength or Intellect";
 ITEM_MOD_STRENGTH_SHORT = "Strength";
 ITEM_MOD_VERSATILITY = "Versatility";
+UNKNOWNOBJECT = "Unknown"
 
 BLOCK = "Block"
 PARRY = "Parry"

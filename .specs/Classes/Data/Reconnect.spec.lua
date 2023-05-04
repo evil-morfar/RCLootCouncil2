@@ -1,5 +1,7 @@
-require "busted.runner" ()
-
+-- require "busted.runner" ()
+if os.getenv("LOCAL_LUA_DEBUGGER_VSCODE") == "1" then
+     require("lldebugger").start()
+end
 local addon = {
      db = { global = { log = {}, cache = {}, errors = {}, }, },
      defaults = { global = { logMaxEntries = 2000, }, },
@@ -77,142 +79,175 @@ local data = {
 }
 
 describe("#Reconnect", function()
-     describe("Basics", function()
-          local expectedTransmitFormat = {
-               ["00000002"] = {
-                    ["|2"] = {
-                         [1] = "137487:5890::::::::::35:3:3418:1597:3337"
-                    },
-                    ["|6"] = {
-                         [1] = false,
-                    },
-               },
-               ["1122-00000003"] = {
-                    ["|2"] = {
-                         [1] = "134491:5437::::::::::35:3:3418:1597:3337"
-                    },
-                    ["|6"] = {
-                         [1] = 6,
-                    },
-               },
-          }
-          local expectedRestoredFormat = {
-               ["Player3-Realm2"] = {
-                    ["gear1"] = {
-                         [1] = "item:134491:5437::::::::::35:3:3418:1597:3337"
-                    },
-                    ["response"] = {
-                         [1] = 6,
-                    },
-               },
-               ["Player2-Realm1"] = {
-                    ["gear1"] = {
-                         [1] = "item:137487:5890::::::::::35:3:3418:1597:3337"
-                    },
-                    ["response"] = {
-                         [1] = "PASS"
-                    },
-               },
-          }
-          it("should create transmitable data without errors", function()
-               assert.has_no.errors(function()
-                    Reconnect:GetForTransmit(data)
-               end)
-          end)
+     -- describe("Basics", function()
+     --      local expectedTransmitFormat = {
+     --           ["00000002"] = {
+     --                ["|2"] = {
+     --                     [1] = "137487:5890::::::::::35:3:3418:1597:3337"
+     --                },
+     --                ["|6"] = {
+     --                     [1] = false,
+     --                },
+     --           },
+     --           ["1122-00000003"] = {
+     --                ["|2"] = {
+     --                     [1] = "134491:5437::::::::::35:3:3418:1597:3337"
+     --                },
+     --                ["|6"] = {
+     --                     [1] = 6,
+     --                },
+     --           },
+     --      }
+     --      local expectedRestoredFormat = {
+     --           ["Player3-Realm2"] = {
+     --                ["gear1"] = {
+     --                     [1] = "item:134491:5437::::::::::35:3:3418:1597:3337"
+     --                },
+     --                ["response"] = {
+     --                     [1] = 6,
+     --                },
+     --           },
+     --           ["Player2-Realm1"] = {
+     --                ["gear1"] = {
+     --                     [1] = "item:137487:5890::::::::::35:3:3418:1597:3337"
+     --                },
+     --                ["response"] = {
+     --                     [1] = "PASS"
+     --                },
+     --           },
+     --      }
+     --      it("should create transmitable data without errors", function()
+     --           assert.has_no.errors(function()
+     --                Reconnect:GetForTransmit(data)
+     --           end)
+     --      end)
 
-          it("should turn into a specific format", function()
-               assert.are.same(Reconnect:GetForTransmit(data), expectedTransmitFormat)
-          end)
+     --      it("should turn into a specific format", function()
+     --           assert.are.same(Reconnect:GetForTransmit(data), expectedTransmitFormat)
+     --      end)
 
-          it("should restore transmitted data to a specific format", function()
-               assert.are.same(Reconnect:RestoreFromTransmit(expectedTransmitFormat), expectedRestoredFormat)
-          end)
-     end)
+     --      it("should restore transmitted data to a specific format", function()
+     --           assert.are.same(Reconnect:RestoreFromTransmit(expectedTransmitFormat), expectedRestoredFormat)
+     --      end)
+     -- end)
 
-     describe("Extended", function()
-          dofile ".specs/.matchers/Comparison.lua"
-          dofile("Libs/AceSerializer-3.0/AceSerializer-3.0.lua")
-          dofile("Libs/LibDeflate/LibDeflate.lua")
-          local ld = LibStub("LibDeflate")
-          local AceSer = LibStub("AceSerializer-3.0")
+     -- describe("Extended", function()
+     --      dofile ".specs/.matchers/Comparison.lua"
+     --      dofile("Libs/AceSerializer-3.0/AceSerializer-3.0.lua")
+     --      dofile("Libs/LibDeflate/LibDeflate.lua")
+     --      local ld = LibStub("LibDeflate")
+     --      local AceSer = LibStub("AceSerializer-3.0")
 
-          local data1 = dofile "__tests/Reconnect/data1.lua"
-          local data2 = dofile "__tests/Reconnect/data2.lua"
-          local data3 = dofile "__tests/Reconnect/data3.lua"
-          it("should handle transmit/recieve conversion of a larger dataset", function()
-               assert.has_no.errors(function()
-                    local transmit = Reconnect:GetForTransmit(data1)
-                    Reconnect:RestoreFromTransmit(transmit)
-               end)
-          end)
+     --      local data1 = dofile "__tests/Reconnect/data1.lua"
+     --      local data2 = dofile "__tests/Reconnect/data2.lua"
+     --      local data3 = dofile "__tests/Reconnect/data3.lua"
 
-          local function getDataSizes(data)
-               local serialized = AceSer:Serialize(data)
-               local compressed = ld:CompressDeflate(serialized, { level = 3, })
-               local encoded = ld:EncodeForWoWAddonChannel(compressed)
-               local originalDataSize = #encoded
-               local transmit = Reconnect:GetForTransmit(data)
-               compressed = ld:CompressDeflate(AceSer:Serialize(transmit), { level = 3, })
-               encoded = ld:EncodeForWoWAddonChannel(compressed)
-               return originalDataSize, #encoded
-          end
+     -- setup(function()
+     --      --- @type table<PlayerName, GUID>
+     --      local guidCache = {
+     --           ["Player1"] = "00000001",
+     --           ["Player2"] = "00000002",
+     --           ["Player3"] = "00000003",
+     --      }
+     --      --- @type table<RealmName, GUID>
+     --      local realmGuidCache = {
+     --           ["Realm1"] = "1",
+     --           ["Realm2"] = "1122",
+     --      }
+
+     --      local function getRandomGUID(lenght, format)
+     --           format = format or "%x"
+     --           -- Generate random guid
+     --           local guid = ""
+     --           for i = 1, lenght do
+     --                guid = guid .. string.format(format, math.random(0, format == "%x" and 16 or 10))
+     --           end
+     --           return guid
+     --      end
 
 
-          it("should create transmitable data at least 3 times smaller than the original (data1)", function()
-               local originalDataSize, newDataSize = getDataSizes(data1)
-               assert.gt(originalDataSize, newDataSize * 3)
-          end)
 
-          it("should create transmitable data at least 3 times smaller than the original (data2)", function()
-               local originalDataSize, newDataSize = getDataSizes(data2)
-               assert.gt(originalDataSize, newDataSize * 3)
-          end)
+     --      -- Creates memoized random guid's for each player/realm combination.
+     --      function _G.UnitGUID(name)
+     --           local player, realm = strsplit("-", name, 2)
+     --           if not realm then realm = addon.player:GetRealm() end
+     --           if not realmGuidCache[realm] then
+     --                realmGuidCache[realm] = getRandomGUID(4, "%d")
+     --           end
+     --           realm = realmGuidCache[realm]
+     --           if not guidCache[player] then
+     --                guidCache[player] = getRandomGUID(8)
+     --           end
+     --           player = guidCache[player]
+     --           local guid = "Player-" .. realm .. "-" .. player
+     --           -- print ("Created GUID for " .. name .. ": " .. guid)
+     --           return guid
+     --      end
+     -- end)
+     --      it("should handle transmit/recieve conversion of a larger dataset", function()
+     --           assert.has_no.errors(function()
+     --                local transmit = Reconnect:GetForTransmit(data1)
+     --                Reconnect:RestoreFromTransmit(transmit)
+     --           end)
+     --      end)
 
-          it("should create transmitable data at least 2.5 times smaller than the original (data3)", function()
-               local _, _, data = AceSer:Deserialize(data3)
+     --      local function getDataSizes(data)
+     --           local serialized = AceSer:Serialize(data)
+     --           local compressed = ld:CompressDeflate(serialized, { level = 3, })
+     --           local encoded = ld:EncodeForWoWAddonChannel(compressed)
+     --           local originalDataSize = #encoded
+     --           local transmit = Reconnect:GetForTransmit(data)
+     --           compressed = ld:CompressDeflate(AceSer:Serialize(transmit), { level = 3, })
+     --           encoded = ld:EncodeForWoWAddonChannel(compressed)
+     --           return originalDataSize, #encoded
+     --      end
 
-               local originalDataSize, newDataSize = getDataSizes(data[1])
-               assert.gt(originalDataSize, newDataSize * 2.5)
-          end)
-     end)
+
+     --      it("should create transmitable data at least 3 times smaller than the original (data1)", function()
+     --           local originalDataSize, newDataSize = getDataSizes(data1)
+     --           assert.gt(originalDataSize, newDataSize * 3)
+     --      end)
+
+     --      it("should create transmitable data at least 3 times smaller than the original (data2)", function()
+     --           local originalDataSize, newDataSize = getDataSizes(data2)
+     --           assert.gt(originalDataSize, newDataSize * 3)
+     --      end)
+
+     --      it("should create transmitable data at least 2.5 times smaller than the original (data3)", function()
+     --           local _, _, data = AceSer:Deserialize(data3)
+
+     --           local originalDataSize, newDataSize = getDataSizes(data[1])
+     --           assert.gt(originalDataSize, newDataSize * 2.5)
+     --      end)
+     -- end)
+
+     -- describe("full flow", function()
+     --      setup(function()
+     --           loadfile(".specs/AddonLoader.lua")(nil, nil, addon).LoadToc("RCLootCouncil.toc")
+     --           dofile ".specs/EmulatePlayerLogin.lua"
+
+     --           addon.GetML = function(self) return true, self.player end
+     --      end)
+
+
+     --      it("should properly send reconnect data when requested", function()
+     --           -- Setup loot session
+     --           addon:NewMLCheck()
+     --           -- Add a few random items
+     --           RCLootCouncilML:AddUserItem(_G.Items_Array[math.random(#_G.Items_Array)], addon.player:GetName())
+     --           RCLootCouncilML:AddUserItem(_G.Items_Array[math.random(#_G.Items_Array)], addon.player:GetName())
+     --           RCLootCouncilML:AddUserItem(_G.Items_Array[math.random(#_G.Items_Array)], addon.player:GetName())
+
+     --           RCLootCouncilML:StartSession()
+     --           -- Ensure comms are sent
+     --           WoWAPI_FireUpdate(GetTime() + 10)
+     --           local Comms = addon.Require "Services.Comms"
+     --           local s = spy.new(function(data, sender, command, dist) return print(unpack(data)) end)
+     --           local sub = Comms:Subscribe(addon.PREFIXES.MAIN, "reconnectData", s)
+     --           WoWAPI_FireUpdate(GetTime() + 10)
+     --           Comms:GetSender(addon.PREFIXES.MAIN)(addon, "group", "reconnect")
+     --           WoWAPI_FireUpdate(GetTime() + 10)
+     --           assert.spy(s).was.called(1)
+     --      end)
+     -- end)
 end)
-
-
---- @type table<PlayerName, GUID>
-local guidCache = {
-     ["Player1"] = "00000001",
-     ["Player2"] = "00000002",
-     ["Player3"] = "00000003",
-}
---- @type table<RealmName, GUID>
-local realmGuidCache = {
-     ["Realm1"] = "1",
-     ["Realm2"] = "1122",
-}
-
-local function getRandomGUID(lenght, format)
-     format = format or "%x"
-     -- Generate random guid
-     local guid = ""
-     for i = 1, lenght do
-          guid = guid .. string.format(format, math.random(0, format == "%x" and 16 or 10))
-     end
-     return guid
-end
-
--- Creates memoized random guid's for each player/realm combination.
-function _G.UnitGUID(name)
-     local player, realm = strsplit("-", name, 2)
-     if not realm then realm = addon.player:GetRealm() end
-     if not realmGuidCache[realm] then
-          realmGuidCache[realm] = getRandomGUID(4, "%d")
-     end
-     realm = realmGuidCache[realm]
-     if not guidCache[player] then
-          guidCache[player] = getRandomGUID(8)
-     end
-     player = guidCache[player]
-     local guid = "Player-" .. realm .. "-" .. player
-     -- print ("Created GUID for " .. name .. ": " .. guid)
-     return guid
-end

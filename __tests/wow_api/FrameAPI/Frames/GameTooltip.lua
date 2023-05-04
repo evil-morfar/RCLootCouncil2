@@ -12,6 +12,7 @@ local objectMethods = {
 	AddLine = function(self, text, ...) tinsert(self.lines, text) end,
 	AddDoubleLine = function(self, textL, textR, ...) tinsert(self.lines, textL .. textR) end,
 	ClearLines = function(self) wipe(self.lines) end,
+	SetHyperlink = function(self, link) self.link = link end,
 }
 
 local noopMethods = {

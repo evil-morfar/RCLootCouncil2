@@ -1,3 +1,5 @@
+require "wow_api/API/Mixin"
+
 ColorMixin = {};
 function CreateColor(r, g, b, a)
 	local color = CreateFromMixins(ColorMixin);
