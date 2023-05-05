@@ -12,6 +12,7 @@ Patches\UiDropDownMenuTaintCommunities.lua
 embeds.xml
 Locale\Locales.xml
 
+Core\GlobalUpdates.lua
 Core\Constants.lua
 Core\Defaults.lua
 Core\CoreEvents.lua
