@@ -8,5 +8,4 @@ addon.C_Container = C_Container or {
     GetContainerNumFreeSlots = GetContainerNumFreeSlots,
     GetContainerItemInfo = GetContainerItemInfo,
     PickupContainerItem = PickupContainerItem,
-    GetBagSlotFlag = GetBagSlotFlag
 }
