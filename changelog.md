@@ -1,3 +1,9 @@
+# 3.8.1
+
+## Changes
+
+Uncommon quality (greens) items are now ignored.
+
 # 3.8.0
 
 ## Changes

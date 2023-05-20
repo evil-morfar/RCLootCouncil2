@@ -350,12 +350,12 @@ local function addItemToTradeWindow (tradeBtn, Item)
 		return addon.Log:E("TradeUI", "Item missing when attempting to trade", Item.link, TradeUI.tradeTarget)
 	end
 
-	local containerInfo = C_Container.GetContainerItemInfo(c, s)
+	local containerInfo = addon.C_Container.GetContainerItemInfo(c, s)
 
 	if containerInfo and addon:ItemIsItem(containerInfo.hyperlink, Item.link) then -- Extra check, probably also redundant
 		addon.Log:d("Trading", Item.link, c,s)
 		ClearCursor()
-		C_Container.PickupContainerItem(c, s)
+		addon.C_Container.PickupContainerItem(c, s)
 		ClickTradeButton(tradeBtn)
 		tinsert(TradeUI.itemsInTradeWindow, {container = c, slot = s})
 	else -- Shouldn't happen

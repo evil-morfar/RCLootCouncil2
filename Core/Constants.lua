@@ -10,6 +10,8 @@ addon.LOGO_LOCATION = "Interface\\AddOns\\RCLootCouncil\\Media\\rc_logo"
 --- @class Prefixes
 addon.PREFIXES = {MAIN = "RCLC", VERSION = "RCLCv", SYNC = "RCLCs"}
 
+addon.MIN_LOOT_THRESHOLD = 3 -- Only loot rares or better
+
 addon.BTN_SLOTS = {
 	INVTYPE_HEAD = "AZERITE",
 	INVTYPE_CHEST = "AZERITE",

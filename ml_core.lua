@@ -469,7 +469,7 @@ function RCLootCouncilML:HandleReceivedTradeable (sender, item)
 		local boe = addon:IsItemBoE(item)
 		if	(not boe or (db.autolootBoE and boe)) and -- BoE
 			not self:IsItemIgnored(item) and -- Item mustn't be ignored
-			(quality and quality >= (GetLootThreshold() or 1))  then
+			(quality and quality >= addon.Utils:GetLootThreshold()) then
 				if InCombatLockdown() and not db.skipCombatLockdown then
 					addon:Print(format(L["autoloot_others_item_combat"], addon:GetUnitClassColoredName(sender), item))
 					tinsert(self.combatQueue, {self.AddUserItem, self, item, sender}) -- Run the function when combat ends
@@ -571,7 +571,7 @@ end
 
 function RCLootCouncilML:CanWeLootItem(item, quality)
 	local ret = false
-	if item and db.autoLoot and (quality and quality >= GetLootThreshold())
+	if item and db.autoLoot and (quality and quality >= addon.Utils:GetLootThreshold())
 		and not self:IsItemIgnored(item) then -- it's something we're allowed to loot
 		-- Let's check if it's BoE
 		ret = db.autolootBoE or not addon:IsItemBoE(item) -- Don't bother checking if we know we want to loot it
@@ -590,7 +590,7 @@ function RCLootCouncilML:HaveFreeSpaceForItem(item)
 	end
 	-- Get the bag's family
 	for bag = BACKPACK_CONTAINER, NUM_BAG_SLOTS do
-		local freeSlots, bagFamily = C_Container.GetContainerNumFreeSlots(bag)
+		local freeSlots, bagFamily = addon.C_Container.GetContainerNumFreeSlots(bag)
 
 		if freeSlots and freeSlots > 0 and (bagFamily == 0 or bit.band(itemFamily, bagFamily) > 0) then
 			return true
@@ -625,7 +625,7 @@ function RCLootCouncilML:CanGiveLoot(slot, item, winner)
 	elseif addon:UnitIsUnit(winner, "player") and not self:HaveFreeSpaceForItem(addon.lootSlotInfo[slot].link) then
 		return false, "ml_inventory_full"
 	elseif not addon:UnitIsUnit(winner, "player") then
-		if addon.lootSlotInfo[slot].quality < GetLootThreshold() then
+		if addon.lootSlotInfo[slot].quality < addon.Utils:GetLootThreshold() then
 			return false, "quality_below_threshold"
 		end
 

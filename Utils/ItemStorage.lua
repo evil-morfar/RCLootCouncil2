@@ -318,8 +318,8 @@ function private:findItemInBags(link, skip)
 	if link and link ~= "" then
 		local c, s, t
 		for container = 0, _G.NUM_BAG_SLOTS do
-			for slot = 1, C_Container.GetContainerNumSlots(container) or 0 do
-				if addon:ItemIsItem(link, C_Container.GetContainerItemLink(container, slot)) then -- We found it
+			for slot = 1, addon.C_Container.GetContainerNumSlots(container) or 0 do
+				if addon:ItemIsItem(link, addon.C_Container.GetContainerItemLink(container, slot)) then -- We found it
 					-- Check if we should skip this slot
 					if not Storage:ItemLocationInArray(skip, container, slot) then
 						addon.Log:D("Found item at", container, slot)

@@ -1352,10 +1352,10 @@ end
 function RCLootCouncil:GetAllItemsInBagsWithTradeTimer()
 	local items = {}
 	for container=0, _G.NUM_BAG_SLOTS do
-         for slot=1, C_Container.GetContainerNumSlots(container) or 0 do
+         for slot=1, self.C_Container.GetContainerNumSlots(container) or 0 do
 			local time =self:GetContainerItemTradeTimeRemaining(container, slot)
 			if  time > 0 and time < math.huge then
-				tinsert(items, C_Container.GetContainerItemLink(container, slot))
+				tinsert(items, self.C_Container.GetContainerItemLink(container, slot))
 
 			end
 		 end
@@ -1599,7 +1599,7 @@ function RCLootCouncil:OnEvent(event, ...)
 			local link = self.lootSlotInfo[slot].link
 			local quality = self.lootSlotInfo[slot].quality
 			self.Log:d("OnLootSlotCleared()", slot, link, quality)
-			if quality and quality >= GetLootThreshold() and IsInInstance() then -- Only send when in instance
+			if quality and quality >= self.Utils:GetLootThreshold() and IsInInstance() then -- Only send when in instance
 				-- Note that we don't check if this is master looted or not. We only know this is looted by ourselves.
 				self:ScheduleTimer("UpdateAndSendRecentTradableItem", 2, self.lootSlotInfo[slot]) -- Delay a bit, need some time to between item removed from loot slot and moved to the bag.
 			end
