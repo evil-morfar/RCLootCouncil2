@@ -201,7 +201,7 @@ Compat.list = {
 			for _, factionrealm in pairs(addon.lootDB.sv.factionrealm) do
 				for _, data in pairs(factionrealm) do
 					for i = #data, 1, -1 do
-						if data.mapID == 2569 and data.responseID == "PL" then -- Azerite
+						if data[i].mapID == 2569 and data[i].responseID == "PL" then -- Azerite
 							tremove(data, i)
 							count = count + 1
 						end
