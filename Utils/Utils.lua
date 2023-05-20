@@ -283,3 +283,15 @@ function Utils:UnitIsUnit(unit1, unit2)
 	-- Since I can't find a way to ensure consistant returns from UnitName(), just lowercase units here before passing them.
    return UnitIsUnit(unit1:lower(), unit2:lower())
 end
+
+--- Returns the current loot threshold.
+--- @return integer @The current loot threshold.
+function Utils:GetLootThreshold()
+	-- Retail
+	if WOW_PROJECT_MAINLINE == WOW_PROJECT_ID then
+		return addon.MIN_LOOT_THRESHOLD -- Consider making this an option
+
+	else
+		return GetLootThreshold() or 1
+	end
+end
