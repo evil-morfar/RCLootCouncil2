@@ -114,6 +114,33 @@ local relics = {
 	WARRIOR     = { relicTypes.IRON, relicTypes.BLOOD, relicTypes.SHADOW, relicTypes.FIRE, relicTypes.STORM },
 }
 
+function RCLootCouncil:PlayerKnowsItemAppearance(link, checkItemModifiedAppearance)
+	local itemAppearanceID, itemModifiedAppearanceID = C_TransmogCollection.GetItemInfo(link)
+
+	local sourceIDs = C_TransmogCollection.GetAllAppearanceSources(itemAppearanceID)
+	if sourceIDs then
+	   for _, sourceID in ipairs(sourceIDs) do
+		  local playerKnowsTransmog = select(5,C_TransmogCollection.GetAppearanceSourceInfo(sourceID))
+		  if playerKnowsTransmog and (not checkItemModifiedAppearance or itemModifiedAppearanceID == sourceID) then return true end
+	   end
+	end
+
+	return false
+end
+
+function RCLootCouncil:PlayerKnowsItemModifiedAppearance(link)
+	return self:PlayerKnowsItemAppearance(link, true)
+end
+
+function RCLootCouncil:ItemIsTransmoggable(link)
+	return C_TransmogCollection.GetItemInfo(link)
+end
+
+function RCLootCouncil:CharacterCanLearnTransmog(link)
+	local sourceID = select(2, C_TransmogCollection.GetItemInfo(link))
+	return select(2, C_TransmogCollection.PlayerCanCollectSource(sourceID))
+end
+
 --- Checks if the player should autopass on a given item.
 -- All params are supplied by the lootTable from the ML.
 -- Checks for a specific class if 'class' arg is provided, otherwise the player's class.
@@ -123,6 +150,22 @@ local relics = {
 -- local boolean = RCLootCouncil:AutoPassCheck(dat.link, dat.equipLoc, dat.typeID, dat.subTypeID, dat.classesFlag, dat.isToken, dat.isRelic)
 --@return true if the player should autopass the given item.
 function RCLootCouncil:AutoPassCheck(link, equipLoc, typeID, subTypeID, classesFlag, isToken, isRelic, class)
+	local optionDontPassTransmog = true
+	local optionDontPassUnknownSource = true
+
+	if (optionDontPassTransmog and self:ItemIsTransmoggable(link))  then
+		local playerKnowsTransmog
+
+		if optionDontPassUnknownSource then
+			playerKnowsTransmog = self:PlayerKnowsItemModifiedAppearance(link)
+		else 
+			playerKnowsTransmog = self:PlayerKnowsItemAppearance(link)
+		end
+
+		if not playerKnowsTransmog and (self:CharacterCanLearnTransmog(link) or self:IsItemBoE(link)) then return false end
+	end
+
+
 	local class = class or self.playerClass
 	local classID = self.classTagNameToID[class]
 	if bit.band(classesFlag, bit.lshift(1, classID - 1)) == 0 then -- The item tooltip writes the allowed clases, but our class is not in it.
