@@ -60,9 +60,9 @@ local function checkSV()
    local function numComms()
       local num =0
       for k,v in pairs(RCLootCouncilDB.global.log) do
-         if v:find("Comm received:") then num = num + 1 end
+         if v:find("<Comm>") then num = num + 1 end
       end
-      print(string.format("Comms: %d of %d = %.2f%%",num, #RCLootCouncilDB.global.log,num/#RCLootCouncilDB.global.log*100))
+      print(string.format("Comms: %d of %d = %.2f%%\n",num, #RCLootCouncilDB.global.log,num/#RCLootCouncilDB.global.log*100))
    end
    local function log()
       print "Checking log"
