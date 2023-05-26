@@ -381,14 +381,27 @@ function addon:OptionsTable()
 										desc = L["auto_pass_boe_desc"],
 										type = "toggle",
 									},
-									printResponse = {
+									autoPassTransmog = {
 										order = 5,
+										name = L["Auto Pass Transmog"],
+										desc = L["auto_pass_transmog_desc"],
+										type = "toggle",
+									},
+									autoPassTransmogSource = {
+										order = 6,
+										name = L["Auto Pass Transmog Source"],
+										desc = L["auto_pass_transmog_source_desc"],
+										type = "toggle",
+										disabled = function() return self.db.profile.autoPassTransmog end
+									},
+									printResponse = {
+										order = 7,
 										name = L["Print Responses"],
 										desc = L["print_response_desc"],
 										type = "toggle",
 									},
 									autoGroupLootGuildGroupOnly = {
-										order = 6,
+										order = 8,
 										name = L.opt_autoGroupLootGuildGroupOnly_name,
 										desc = L.opt_autoGroupLootGuildGroupOnly_desc,
 									    type = "toggle"
