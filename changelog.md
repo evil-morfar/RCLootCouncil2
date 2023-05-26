@@ -1,3 +1,13 @@
+## Changes
+
+### Transmog autopass
+
+Added a new option that allows you to not auto pass on items that's transmogable for you - 
+just uncheck "Auto Pass Transmog".
+The accompanying option "Auto Pass Transmog Source" further refines it by allowing auto passes if you've already collected the transmog.
+
+Credits to [Utgard](https://github.com/Urtgard) for creating this.
+
 # 3.8.1
 
 ## Changes
