@@ -58,6 +58,8 @@ addon.defaults = {
 		autoPassTrinket = true,
 		silentAutoPass = false, -- Show autopass message
 		autoPassBoE = true,
+		autoPassKnownAppearance = false,
+		autoPassKnownSource = true,
 		printResponse = false, -- Print response in chat
 		autoGroupLootGuildGroupOnly = true,
 		-- General - Frame

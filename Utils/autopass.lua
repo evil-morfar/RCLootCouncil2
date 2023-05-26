@@ -123,16 +123,13 @@ local relics = {
 -- local boolean = RCLootCouncil:AutoPassCheck(dat.link, dat.equipLoc, dat.typeID, dat.subTypeID, dat.classesFlag, dat.isToken, dat.isRelic)
 --@return true if the player should autopass the given item.
 function RCLootCouncil:AutoPassCheck(link, equipLoc, typeID, subTypeID, classesFlag, isToken, isRelic, class)
-	local optionDontPassTransmog = true
-	local optionDontPassUnknownSource = true
-
-	if (optionDontPassTransmog and self:IsTransmogable(link))  then
+	if (not self:Getdb().autoPassKnownAppearance and self:IsTransmogable(link)) then
 		local playerKnowsTransmog
 
-		if optionDontPassUnknownSource then
-			playerKnowsTransmog = self:PlayerKnowsTransmogFromItem(link)
-		else 
+		if self:Getdb().autoPassKnownSource then
 			playerKnowsTransmog = self:PlayerKnowsTransmog(link)
+		else
+			playerKnowsTransmog = self:PlayerKnowsTransmogFromItem(link)
 		end
 
 		if not playerKnowsTransmog and (self:CharacterCanLearnTransmog(link) or self:IsItemBoE(link)) then return false end

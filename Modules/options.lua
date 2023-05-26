@@ -381,14 +381,26 @@ function addon:OptionsTable()
 										desc = L["auto_pass_boe_desc"],
 										type = "toggle",
 									},
-									printResponse = {
+									autoPassKnownAppearance = {
 										order = 5,
+										name = L["Auto pass known appearance"],
+										desc = L["auto_pass_known_appearance_desc"],
+										type = "toggle",
+									},
+									autoPassKnownSource = {
+										order = 6,
+										name = L["Auto pass known source"],
+										desc = L["auto_pass_known_source_desc"],
+										type = "toggle",
+									},
+									printResponse = {
+										order = 7,
 										name = L["Print Responses"],
 										desc = L["print_response_desc"],
 										type = "toggle",
 									},
 									autoGroupLootGuildGroupOnly = {
-										order = 6,
+										order = 8,
 										name = L.opt_autoGroupLootGuildGroupOnly_name,
 										desc = L.opt_autoGroupLootGuildGroupOnly_desc,
 									    type = "toggle"
