@@ -2,7 +2,8 @@
 -- @author	Urtgard
 -- Create Date : 26/5/2023
 
-function RCLootCouncil:IsTransmogable(link)
+-- Returns whether the item is transmoggable or not.
+function RCLootCouncil:IsTransmoggable(link)
     if CanIMogIt then
         return CanIMogIt:IsTransmogable(link)
     end
@@ -10,6 +11,7 @@ function RCLootCouncil:IsTransmogable(link)
     return C_TransmogCollection.GetItemInfo(link)
 end
 
+-- Returns whether this item's appearance is already known by the player.
 function RCLootCouncil:PlayerKnowsTransmog(link, checkSource)
     if CanIMogIt then
         if checkSource then
@@ -34,10 +36,12 @@ function RCLootCouncil:PlayerKnowsTransmog(link, checkSource)
     return false
 end
 
+-- Returns whether the transmog is known from this item specifically.
 function RCLootCouncil:PlayerKnowsTransmogFromItem(link)
     return self:PlayerKnowsTransmog(link, true)
 end
 
+-- Returns whether the player can learn the item or not.
 function RCLootCouncil:CharacterCanLearnTransmog(link)
     if CanIMogIt then
         return CanIMogIt:CharacterCanLearnTransmog(link)

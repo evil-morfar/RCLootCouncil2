@@ -381,16 +381,16 @@ function addon:OptionsTable()
 										desc = L["auto_pass_boe_desc"],
 										type = "toggle",
 									},
-									autoPassKnownAppearance = {
+									autoPassTransmog = {
 										order = 5,
-										name = L["Auto pass known appearance"],
-										desc = L["auto_pass_known_appearance_desc"],
+										name = L["Auto Pass Transmog"],
+										desc = L["auto_pass_transmog_desc"],
 										type = "toggle",
 									},
-									autoPassKnownSource = {
+									autoPassTransmogSource = {
 										order = 6,
-										name = L["Auto pass known source"],
-										desc = L["auto_pass_known_source_desc"],
+										name = L["Auto Pass Transmog Source"],
+										desc = L["auto_pass_transmog_source_desc"],
 										type = "toggle",
 									},
 									printResponse = {
