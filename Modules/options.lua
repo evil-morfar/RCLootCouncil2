@@ -392,6 +392,7 @@ function addon:OptionsTable()
 										name = L["Auto Pass Transmog Source"],
 										desc = L["auto_pass_transmog_source_desc"],
 										type = "toggle",
+										disabled = function() return self.db.profile.autoPassTransmog end
 									},
 									printResponse = {
 										order = 7,
