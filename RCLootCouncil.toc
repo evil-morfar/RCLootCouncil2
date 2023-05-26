@@ -44,5 +44,6 @@ Utils\Utils.lua
 Utils\TrinketData.lua
 Utils\tokenData.lua
 Utils\ItemStorage.lua
+Utils\transmog.lua
 Utils\autopass.lua
 Utils\popups.lua
