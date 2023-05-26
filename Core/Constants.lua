@@ -5,7 +5,7 @@
 local addon = select(2, ...)
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 
-addon.LOGO_LOCATION = "Interface\\AddOns\\RCLootCouncil\\Media\\rc_logo"
+addon.LOGO_LOCATION = "Interface\\AddOns\\RCLootCouncil\\Media\\rc_banner"
 
 --- @class Prefixes
 addon.PREFIXES = {MAIN = "RCLC", VERSION = "RCLCv", SYNC = "RCLCs"}
