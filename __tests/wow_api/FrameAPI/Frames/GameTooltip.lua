@@ -22,7 +22,7 @@ local noopMethods = {
 
 for _, v in ipairs(noopMethods) do if not objectMethods[v] then objectMethods[v] = noop end end
 
-GameTooltip = {
+GameTooltipFrame = {
 	New = function(name, parent)
 		local super = _G.Frame.New(name, parent)
 		local object = {lines = {}, owner = nil, anchor = nil}
