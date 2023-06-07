@@ -8,6 +8,10 @@ The accompanying option "Auto Pass Transmog Source" further refines it by allowi
 
 Credits to [Utgard](https://github.com/Urtgard) for creating this.
 
+### Group Loot
+
+Now rolls transmog when that's the only option for the group leader.
+
 # 3.8.1
 
 ## Changes
