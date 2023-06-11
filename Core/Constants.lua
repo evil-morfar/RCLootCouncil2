@@ -81,7 +81,7 @@ addon.INVTYPE_Slots = {
 	INVTYPE_TRINKET = { "TRINKET0SLOT", "TRINKET1SLOT", },
 
 	-- Custom
-	CONTEXT_TOKEN = { "MainHandSlot", "SecondaryHandSlot", },
+	CONTEXT_TOKEN = { "HeadSlot", "ChestSlot", },
 }
 
 --- Functions used for generating response codes
