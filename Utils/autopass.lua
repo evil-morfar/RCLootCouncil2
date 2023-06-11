@@ -123,6 +123,19 @@ local relics = {
 -- local boolean = RCLootCouncil:AutoPassCheck(dat.link, dat.equipLoc, dat.typeID, dat.subTypeID, dat.classesFlag, dat.isToken, dat.isRelic)
 --@return true if the player should autopass the given item.
 function RCLootCouncil:AutoPassCheck(link, equipLoc, typeID, subTypeID, classesFlag, isToken, isRelic, class)
+	if (not self:Getdb().autoPassTransmog and self:IsTransmoggable(link)) then
+		local playerKnowsTransmog
+
+		if self:Getdb().autoPassTransmogSource then
+			playerKnowsTransmog = self:PlayerKnowsTransmog(link)
+		else
+			playerKnowsTransmog = self:PlayerKnowsTransmogFromItem(link)
+		end
+
+		if not playerKnowsTransmog and (self:CharacterCanLearnTransmog(link) or self:IsItemBoE(link)) then return false end
+	end
+
+
 	local class = class or self.playerClass
 	local classID = self.classTagNameToID[class]
 	if bit.band(classesFlag, bit.lshift(1, classID - 1)) == 0 then -- The item tooltip writes the allowed clases, but our class is not in it.

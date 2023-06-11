@@ -1145,4 +1145,9 @@ Enum = {
 		Sigil = 10,
 		Relic = 11,
 	},
+	ItemReagentSubclass = {
+		Reagent = 0,
+		Keystone = 1,
+		ContextToken = 2,
+	},
 }
