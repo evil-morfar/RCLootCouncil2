@@ -1,3 +1,5 @@
+# 3.8.2
+
 ## Changes
 
 ### Group Loot
