@@ -8,7 +8,7 @@ local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 addon.LOGO_LOCATION = "Interface\\AddOns\\RCLootCouncil\\Media\\rc_banner"
 
 --- @class Prefixes
-addon.PREFIXES = {MAIN = "RCLC", VERSION = "RCLCv", SYNC = "RCLCs"}
+addon.PREFIXES = { MAIN = "RCLC", VERSION = "RCLCv", SYNC = "RCLCs", }
 
 addon.MIN_LOOT_THRESHOLD = 3 -- Only loot rares or better
 
@@ -69,19 +69,19 @@ addon.INVTYPE_Slots = {
 	INVTYPE_FEET = "FeetSlot",
 	INVTYPE_SHIELD = "SecondaryHandSlot",
 	INVTYPE_ROBE = "ChestSlot",
-	INVTYPE_2HWEAPON = {"MainHandSlot", "SecondaryHandSlot"},
+	INVTYPE_2HWEAPON = { "MainHandSlot", "SecondaryHandSlot", },
 	INVTYPE_WEAPONMAINHAND = "MainHandSlot",
-	INVTYPE_WEAPONOFFHAND = {"SecondaryHandSlot", ["or"] = "MainHandSlot"},
-	INVTYPE_WEAPON = {"MainHandSlot", "SecondaryHandSlot"},
-	INVTYPE_THROWN = {"MainHandSlot", ["or"] = "SecondaryHandSlot"},
-	INVTYPE_RANGED = {"MainHandSlot", ["or"] = "SecondaryHandSlot"},
-	INVTYPE_RANGEDRIGHT = {"MainHandSlot", ["or"] = "SecondaryHandSlot"},
-	INVTYPE_FINGER = {"Finger0Slot", "Finger1Slot"},
-	INVTYPE_HOLDABLE = {"SecondaryHandSlot", ["or"] = "MainHandSlot"},
-	INVTYPE_TRINKET = {"TRINKET0SLOT", "TRINKET1SLOT"},
+	INVTYPE_WEAPONOFFHAND = { "SecondaryHandSlot", ["or"] = "MainHandSlot", },
+	INVTYPE_WEAPON = { "MainHandSlot", "SecondaryHandSlot", },
+	INVTYPE_THROWN = { "MainHandSlot", ["or"] = "SecondaryHandSlot", },
+	INVTYPE_RANGED = { "MainHandSlot", ["or"] = "SecondaryHandSlot", },
+	INVTYPE_RANGEDRIGHT = { "MainHandSlot", ["or"] = "SecondaryHandSlot", },
+	INVTYPE_FINGER = { "Finger0Slot", "Finger1Slot", },
+	INVTYPE_HOLDABLE = { "SecondaryHandSlot", ["or"] = "MainHandSlot", },
+	INVTYPE_TRINKET = { "TRINKET0SLOT", "TRINKET1SLOT", },
 
 	-- Custom
-	CONTEXT_TOKEN = {"MainHandSlot", "SecondaryHandSlot"},
+	CONTEXT_TOKEN = { "HeadSlot", "ChestSlot", },
 }
 
 --- Functions used for generating response codes
@@ -90,25 +90,28 @@ addon.INVTYPE_Slots = {
 -- Each function receives the following parameters:
 -- item, db (addon:Getdb()), itemID, itemEquipLoc,itemClassID, itemSubClassID
 addon.RESPONSE_CODE_GENERATORS = {
-	-- Pets 
+	-- Pets
 	function(_, db, _, _, itemClassID, itemSubClassID)
 		return db.enabledButtons.PETS and itemClassID == Enum.ItemClass.Miscellaneous and itemSubClassID
 
 			== Enum.ItemMiscellaneousSubclass.CompanionPet and "PETS" or nil
-
 	end,
 
 	-- Beads and Spherules
-	function(_, db, _, _, itemClassID, itemSubClassID)
-		return db.enabledButtons.CONTEXT_TOKEN and itemClassID == 5 and itemSubClassID == 2 and "CONTEXT_TOKEN" or nil
-	end,
+	-- function(_, db, _, _, itemClassID, itemSubClassID)
+	-- 	return db.enabledButtons.CONTEXT_TOKEN and itemClassID == 5 and itemSubClassID == 2 and "CONTEXT_TOKEN" or nil
+	-- end,
 
 	-- Armor tokens
-   function (_, db, itemID)
-      if RCTokenTable[itemID] and db.enabledButtons["TOKEN"] then
-         return "TOKEN"
-      end
-   end,
+	function(_, db, itemID)
+		local _, _, _, _, _, itemClassID, itemSubClassID = GetItemInfoInstant(itemID)
+		if db.enabledButtons["TOKEN"] and (RCTokenTable[itemID] or
+				-- context token is armor token in DF
+				itemClassID == Enum.ItemClass.Reagent and itemSubClassID == Enum.ItemReagentSubclass.ContextToken)
+		then
+			return "TOKEN"
+		end
+	end,
 
 	-- Check for Weapon
 	function(_, db, _, itemEquipLoc)
@@ -123,30 +126,30 @@ addon.RESPONSE_CODE_GENERATORS = {
 		end
 	end,
 
-	   -- Mounts
-   function (_, db, _, _, classID, subClassID)
-      if db.enabledButtons.MOUNTS and classID == Enum.ItemClass.Miscellaneous and subClassID == Enum.ItemMiscellaneousSubclass.Mount then
-         return "MOUNTS"
-      end
-   end,
+	-- Mounts
+	function(_, db, _, _, classID, subClassID)
+		if db.enabledButtons.MOUNTS and classID == Enum.ItemClass.Miscellaneous and subClassID == Enum.ItemMiscellaneousSubclass.Mount then
+			return "MOUNTS"
+		end
+	end,
 
-   -- Bags
-   function(_, db, _, _, classID)
-      if db.enabledButtons.BAGSLOT and classID == Enum.ItemClass.Container then
-         return "BAGSLOT"
-      end
-   end,
+	-- Bags
+	function(_, db, _, _, classID)
+		if db.enabledButtons.BAGSLOT and classID == Enum.ItemClass.Container then
+			return "BAGSLOT"
+		end
+	end,
 
-   -- Recipies
+	-- Recipies
 	function(_, db, _, _, classID)
 		if db.enabledButtons.RECIPE and classID == Enum.ItemClass.Recipe then
 			return "RECIPE"
 		end
-   end
+	end,
 }
 
 --- @alias VersionCodes
 ---| '"current"'  #  Up to date
 ---| '"outdated"' # Outdated
 ---| '"tVersion"' # Running with test version
-addon.VER_CHECK_CODES = {[1] = "current", [2] = "outdated", [3] = "tVersion"}
+addon.VER_CHECK_CODES = { [1] = "current", [2] = "outdated", [3] = "tVersion", }
