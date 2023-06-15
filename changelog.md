@@ -12,7 +12,7 @@ Added a new option that allows you to not auto pass on items that's transmogable
 just uncheck "Auto Pass Transmog".
 The accompanying option "Auto Pass Transmog Source" further refines it by allowing auto passes if you've already collected the transmog.
 
-Credits to [Utgard](https://github.com/Urtgard) for creating this.
+Credits to [Urtgard](https://github.com/Urtgard) for creating this.
 
 ### Void-Touched Curio
 
