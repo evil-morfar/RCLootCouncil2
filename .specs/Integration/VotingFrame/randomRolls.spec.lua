@@ -32,16 +32,7 @@ describe("#VotingFrame #RandomRolls", function()
 		dofile(".specs/Helpers/SetupRaid.lua")(20)
 		addon.Require "Utils.Log":Clear()
 		addon.player = addon.Require "Data.Player":Get("player")
-		local origWowApi = WoWAPI_FireEvent
-
-		-- Override msg events to add the player name
-		function _G.WoWAPI_FireEvent(event, ...)
-			if event == "CHAT_MSG_ADDON" then
-				local prefix, message, distribution = ...
-				return origWowApi(event, prefix, message, distribution, addon.player:GetName())
-			end
-			return origWowApi(event, ...)
-		end
+		_G.ADDON_MSG_SENDER_OVERRIDE = addon.player:GetName()
 
 		addon:Test(1, true)
 		WoWAPI_FireUpdate(GetTime() + 1)
