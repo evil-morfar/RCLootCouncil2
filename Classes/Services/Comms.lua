@@ -147,14 +147,8 @@ function private:SendComm(prefix, target, prio, callback, callbackarg, command, 
 		if target:GetRealm() == addon.realmName then -- Our realm
 			self.AceComm:SendCommMessage(prefix, encoded, "WHISPER", target:GetName(), prio, callback, callbackarg)
 		else
-			-- Remake command to be "xrealm" and put target and command in the table
-			data                = TempTable:Acquire(target:GetName(), command, ...)
-			serialized          = self:Serialize("xrealm", data)
-			compressed          = ld:CompressDeflate(serialized, self.compresslevel)
-			encoded             = ld:EncodeForWoWAddonChannel(compressed)
-			local channel, name = self:GetGroupChannel()
-			self.AceComm:SendCommMessage(prefix, encoded, channel, name, prio, callback, callbackarg)
-			TempTable:Release(data)
+			-- Remake command to be "xrealm" and send to group
+			return self:SendComm(prefix, "group", prio, callback, callbackarg, "xrealm", target:GetName(), command, ...)
 		end
 	end
 end
