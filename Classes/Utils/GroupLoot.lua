@@ -24,17 +24,24 @@ function GroupLoot:OnStartLootRoll(_, rollID)
 	self.Log:d("START_LOOT_ROLL", rollID)
 	if not addon.enabled then return self.Log:d("Addon disabled, ignoring group loot") end
 	local link = GetLootRollItemLink(rollID)
-	local canNeed = select(6, GetLootRollItemInfo(rollID))
+	local _, _, _, _, _, canNeed, _, _, _, _, _, _, canTransmog = GetLootRollItemInfo(rollID)
 	if self:ShouldPassOnLoot() then
 		self.Log:d("Passing on loot", link)
 		self:RollOnLoot(rollID, 0)
 		self.OnLootRoll(link, rollID, 0)
-
 	elseif self:ShouldRollOnLoot() then
-		self.Log:d("Rolling on loot", link, canNeed)
-		local needGreed = canNeed and 1 or 2
-		self:RollOnLoot(rollID, needGreed)
-		self.OnLootRoll(link, rollID, needGreed)
+		local roll
+		if canNeed then
+			roll = 1
+		-- Blizzard says transmog is more important than greed..
+		elseif canTransmog then
+			roll = 4
+		else
+			roll = 2
+		end
+		self.Log:d("Rolling on loot", link, roll)
+		self:RollOnLoot(rollID, roll)
+		self.OnLootRoll(link, rollID, roll)
 	end
 end
 
@@ -43,6 +50,7 @@ end
 --- | 1 #Need
 --- | 2 Greed
 --- | 3 Disenchant
+--- | 4 Transmog
 
 --- Rolls on all items in group loot frame.
 --- Note this function doesn't check if the chosen type is valid

@@ -1,4 +1,10 @@
+# 3.8.2
+
 ## Changes
+
+### Group Loot
+
+Now rolls transmog when that's the only option for the group leader.
 
 ### Transmog autopass
 
@@ -6,7 +12,12 @@ Added a new option that allows you to not auto pass on items that's transmogable
 just uncheck "Auto Pass Transmog".
 The accompanying option "Auto Pass Transmog Source" further refines it by allowing auto passes if you've already collected the transmog.
 
-Credits to [Utgard](https://github.com/Urtgard) for creating this.
+Credits to [Urtgard](https://github.com/Urtgard) for creating this.
+
+### Void-Touched Curio
+
+Context tokens are now counted as being part of the armor token group.
+
 
 # 3.8.1
 
