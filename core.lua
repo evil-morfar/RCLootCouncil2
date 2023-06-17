@@ -1811,6 +1811,7 @@ function RCLootCouncil:GetML()
 		end
 		if rank == 2 then -- Group leader. Btw, name2 can be nil when rank is 2.
 			name = self:UnitName(name2)
+			break
 		end
 	end
 	if name then return UnitIsGroupLeader("player"), Player:Get(name) end
