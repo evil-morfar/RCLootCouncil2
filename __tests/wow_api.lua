@@ -95,6 +95,10 @@ function UnitHealth()
 	return 50
 end
 
+function UnitIsGroupLeader(unit)
+	return false
+end
+
 function GetNumRaidMembers()
 	return 1
 end
@@ -140,6 +144,7 @@ end
 function IsAddOnLoaded() return nil end
 
 SlashCmdList = {}
+hash_SlashCmdList = {}
 
 function __WOW_Input(text)
 	local a, b = string.find(text, "^/%w+")
