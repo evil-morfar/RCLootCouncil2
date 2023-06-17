@@ -3,7 +3,7 @@
 -- DefaultModule
 -- @author	Potdisc
 -- Create Date : 12/15/2014 8:54:35 PM
---[[ Comms: 
+--[[ Comms:
 	P: Permanent, T: Temporary
 	MAIN:
 		vote				T - Councilmember sends vote.
@@ -13,9 +13,9 @@
 		bagged 				T - ML has bagged an item (award later).
 		offline_timer 		T - ML sends offline timer.
 		response 			T - Candidate sends a response.
-		rolls 				T - ML sends random rolls info.
-		roll 				T - **DEPRECATED** - replaced with 'rroll'.
-		rroll 				T - ML sends roll info.
+		rolls 				T - **DEPRECATED** - replaced with 'rroll'.
+		rrolls 				T - ML sends random rolls info.
+		roll 				T - Candidate sends roll info (interactive random roll).
 		reconnectData 		T - ML sends reconnectData.
 		n_t					T - Candidate received "non-tradeable" loot.
 		r_t					T - Candidate "rejected_trade" of loot.
@@ -163,7 +163,7 @@ function RCVotingFrame:RegisterComms ()
 		response = function (data, sender)
 			self:OnResponseReceived(sender, unpack(data))
 		end,
-		-- Deprecated, replaced with 'rroll'. Kept for backwards compatibility.
+		-- Deprecated, replaced with 'rrolls'. Kept for backwards compatibility.
 		rolls = function (data, sender)
 			if addon:IsMasterLooter(sender) then
 				self:OnRollsReceived(unpack(data))
@@ -399,7 +399,6 @@ function RCVotingFrame:GenerateNoRepeatRollTable(numberToGenerate)
 	local t = TempTable:Acquire()
 	for i = 1, numberToGenerate do
 		if #rolls > 0 then
-			addon.Log:d("Rolls left:", #rolls)
 			-- Pick a random roll from the list and remove it
 			local roll = tremove(rolls, math.random(#rolls))
 			t[i] = roll
