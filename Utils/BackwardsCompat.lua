@@ -172,5 +172,46 @@ Compat.list = {
 		func = function()
 			addon.db.global.errors = {}
 		end
+	},
+	{
+		name = "Group Loot",
+		version = "3.6.0",
+		func = function()
+			for _,db in pairs(addon.db.profiles) do
+				for i in pairs(db.usage) do
+					-- Just remove everything, which will reset it to the new defaults
+					db.usage[i] = nil
+				end
+			end
+		end
+	},
+
+	{
+		name = "Removed 'Require Notes' option", -- now handled per response
+		version = "3.8.0",
+		func = function()
+		   addon.db.profile.requireNotes = nil
+		end
+	},
+	{
+		name = "Remove green items from history (Aberrus)",
+		version = "3.8.1",
+		func = function ()
+			local count = 0
+			for _, factionrealm in pairs(addon.lootDB.sv.factionrealm) do
+				for _, data in pairs(factionrealm) do
+					for i = #data, 1, -1 do
+						if data[i].mapID == 2569 and data[i].responseID == "PL" then -- Azerite
+							tremove(data, i)
+							count = count + 1
+						end
+					end
+				end
+			end
+			if count > 0 then
+				addon.Log:D(format("Cleaned %d occurances of Uncommon items in your history", count))
+				addon:ScheduleTimer("Print", 10, format("Cleaned %d occurances of Uncommon items in your history", count))
+			end
+		end
 	}
 }

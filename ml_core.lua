@@ -74,9 +74,16 @@ function RCLootCouncilML:OnEnable()
 
 	self:RegisterEvent("CHAT_MSG_WHISPER",	"OnEvent")
 	self:RegisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
+	self:RegisterEvent("ENCOUNTER_START", "OnEvent")
 	self:RegisterBucketMessage("RCConfigTableChanged", 5, "ConfigTableChanged") -- The messages can burst
 	self:RegisterMessage("RCCouncilChanged", "CouncilChanged")
 	self:RegisterComms()
+
+	-- Subscribe after comms, as that will override the table
+	tinsert(subscriptions, addon.Require "Utils.GroupLoot".OnLootRoll:subscribe(
+		function (...)
+		self:OnGroupLootRoll(...)
+	end))
 end
 
 function RCLootCouncilML:GetItemInfo(item)
@@ -281,18 +288,12 @@ end
 
 function RCLootCouncilML:ClearOldItemsInBags()
 	local Items = addon.ItemStorage:GetAllItemsOfType("award_later")
-	for _,v in ipairs(Items) do
-		-- Expire BOP items after 2h, Because Blizzard only gives a 2h window to trade soulbound items.
-		-- Expire items non BoP after 6h, in case some guild distribute boe items at the end of raid.
-		-- if v.addedTime is not recorded, then something is wrong, just remove it.
-		-- NOTE: This is the old. It seems overly complicated... Also doesn't work with the new item storage. Kept for reference.
-		-- if (not v.time_added) or (v.args.bop and time(date("!*t")) - v.time_added > 3600*2) or (time(date("!*t")) - v.time_added > 3600*6) then -- time(date("!*t")) is UTC epoch.
-		-- 	tremove(db.baggedItems, i)
-		-- end
-		if (v.args.bop and (v.time_remaining <= 0 or v.time_remaining + v.time_added < time())) or -- BoP item, 2 hrs
-			time() - v.time_added > 3600 * 6 then -- Non BoP, timeout after 6 hrs
-				self.Log:d("Removed Item", v.link, "due to timeout.")
-				addon.ItemStorage:RemoveItem(v)
+	for _,Item in ipairs(Items) do
+		Item:UpdateTime()
+		if (Item.args.bop and Item:TimeRemaining() < 0) or -- BoP item, 2 hrs
+			time() - Item.time_added > 3600 * 6 then -- Non BoP, timeout after 6 hrs
+				self.Log:d("Removed Item", Item.link, "due to timeout.")
+				addon.ItemStorage:RemoveItem(Item)
 				-- REVIEW Notify the user?
 		end
 	end
@@ -310,8 +311,9 @@ function RCLootCouncilML:PrintItemsInBags()
 		return addon:Print(L["The award later list is empty."])
 	end
 	addon:Print(L["Following items were registered in the award later list:"])
-	for i, v in ipairs(Items) do
-		addon:Print(i..". "..v.link, format(GUILD_BANK_LOG_TIME, SecondsToTime(time(date("!*t"))-v.time_added, true)) )
+	for i, Item in ipairs(Items) do
+		Item:UpdateTime()
+		addon:Print(i..". "..Item.link, format(GUILD_BANK_LOG_TIME, SecondsToTime(time() - Item.time_added, true)) )
 		-- GUILD_BANK_LOG_TIME == "( %s ago )", although the constant name does not make sense here, this constant expresses we intend to do.
 		-- SecondsToTime is defined in SharedXML/util.lua
 	end
@@ -343,7 +345,7 @@ function RCLootCouncilML:RemoveItemsInBags(...)
 		addon:Print(L["The following entries are removed from the award later list:"])
 		for k, v in ipairs(removedEntries) do
 			addon:Print(k..". "..v.link, "-->", v.args.recipient and addon:GetUnitClassColoredName(v.args.recipient) or L["Unawarded"],
-				format(GUILD_BANK_LOG_TIME, SecondsToTime(time(date("!*t"))-v.time_added)) )
+				format(GUILD_BANK_LOG_TIME, SecondsToTime(time()-v.time_added)) )
 		end
 	end
 end
@@ -355,27 +357,25 @@ function RCLootCouncilML:ItemsInBagsLowTradeTimeRemainingReminder()
 	if GetTime() - lastCheckItemsInBagsLowTradeTimeRemainingReminder < 120 then -- Dont spam
 		return
 	end
-	local entriesToRemind = {}
+	local entriesToRemind = TempTable:Acquire()
 	local remindThreshold = 1200 -- 20min
 	local Items = addon.ItemStorage:GetAllItemsOfType("award_later")
 	local remainingTime
-	for k, v in ipairs(Items) do
-		-- It should be precise enough to just check time_added + time_remaining
-		remainingTime = time() - v.time_added + v.time_remaining
+	for k, Item in ipairs(Items) do
+		remainingTime = Item:TimeRemaining()
 		if remainingTime > 0 and remainingTime < remindThreshold then
-			v.remainingTime = remainingTime
-			v.index = k
-			tinsert(entriesToRemind, v)
+			tinsert(entriesToRemind, { index = k, Item = Item, remainingTime = remainingTime})
 		end
 	end
 
 	if #entriesToRemind > 0 then
 		addon:Print(format(L["item_in_bags_low_trade_time_remaining_reminder"], "|cffff0000"..SecondsToTime(remindThreshold).."|r"))
 		for _, v in ipairs(entriesToRemind) do
-			addon:Print(v.index..". "..v.link, "-->", v.args.recipient and addon:GetUnitClassColoredName(v.args.recipient) or L["Unawarded"],
+			addon:Print(v.index..". "..v.Item.link, "-->", v.args.recipient and addon:GetUnitClassColoredName(v.args.recipient) or L["Unawarded"],
 				"(", _G.CLOSES_IN..":", SecondsToTime(v.remainingTime), ")")
 		end
 	end
+	TempTable:Release(entriesToRemind)
 	lastCheckItemsInBagsLowTradeTimeRemainingReminder = GetTime()
 end
 
@@ -384,9 +384,7 @@ function RCLootCouncilML:ConfigTableChanged(value)
 	-- We can do this by checking if the changed value is a key in mldb
 	if not addon.mldb then return self:UpdateMLdb() end -- mldb isn't made, so just make it
 	for val in pairs(value) do
-		for key in pairs(addon.mldb) do
-			if key == val then return self:UpdateMLdb() end
-		end
+		if MLDB:IsKey(val) then return self:UpdateMLdb() end
 	end
 end
 
@@ -420,9 +418,8 @@ function RCLootCouncilML:NewML(newML)
 		self:ScheduleTimer(function()
 			self:UpdateGroupCouncil()
 			self:SendCouncil()
-		end, 2)
+		end, addon.testMode and 0 or 2)
 		self:ClearOldItemsInBags()
-
 		if #addon.ItemStorage:GetAllItemsOfType("award_later") > 0 then
 			addon:Print(L["new_ml_bagged_items_reminder"])
 		end
@@ -472,7 +469,7 @@ function RCLootCouncilML:HandleReceivedTradeable (sender, item)
 		local boe = addon:IsItemBoE(item)
 		if	(not boe or (db.autolootBoE and boe)) and -- BoE
 			not self:IsItemIgnored(item) and -- Item mustn't be ignored
-			(quality and quality >= (GetLootThreshold() or 1))  then
+			(quality and quality >= addon.Utils:GetLootThreshold()) then
 				if InCombatLockdown() and not db.skipCombatLockdown then
 					addon:Print(format(L["autoloot_others_item_combat"], addon:GetUnitClassColoredName(sender), item))
 					tinsert(self.combatQueue, {self.AddUserItem, self, item, sender}) -- Run the function when combat ends
@@ -498,6 +495,17 @@ function RCLootCouncilML:HandleNonTradeable(link, owner, reason)
 	self:TrackAndLogLoot(owner, link, responseID, addon.bossName)
 end
 
+--- Subscriber for `Utils.GroupLoot`.OnLootRoll
+--- @param link Itemlink
+--- @param rollID integer
+--- @param rollType RollType
+function RCLootCouncilML:OnGroupLootRoll(link, rollID, rollType)
+	-- Only add items we've needed/greeded
+	if rollType == 0 or rollType == 3 then return end
+	-- Since there's no difference between PL and GL once we have the loot, just treat it like PL:
+	self:HandleReceivedTradeable(addon.player:GetName(), link)
+end
+
 function RCLootCouncilML:OnEvent(event, ...)
 	self.Log:d("ML event", event, ...)
 	if event == "CHAT_MSG_WHISPER" and addon.isMasterLooter and db.acceptWhispers then
@@ -514,6 +522,14 @@ function RCLootCouncilML:OnEvent(event, ...)
 			entry[1](select(2, unpack(entry)))
 		end
 		wipe(self.combatQueue)
+
+	elseif event == "ENCOUNTER_START" then
+		-- FIXME: People joining after "StartHandleLoot" is sent naturally won't have it,
+		-- but they still need it for group loot auto pass to work. For now just send it everytime
+		-- we start an encounter.
+		if addon.handleLoot then
+			self:Send("group", "StartHandleLoot")
+		end
 	end
 end
 
@@ -555,7 +571,7 @@ end
 
 function RCLootCouncilML:CanWeLootItem(item, quality)
 	local ret = false
-	if item and db.autoLoot and (quality and quality >= GetLootThreshold())
+	if item and db.autoLoot and (quality and quality >= addon.Utils:GetLootThreshold())
 		and not self:IsItemIgnored(item) then -- it's something we're allowed to loot
 		-- Let's check if it's BoE
 		ret = db.autolootBoE or not addon:IsItemBoE(item) -- Don't bother checking if we know we want to loot it
@@ -574,7 +590,7 @@ function RCLootCouncilML:HaveFreeSpaceForItem(item)
 	end
 	-- Get the bag's family
 	for bag = BACKPACK_CONTAINER, NUM_BAG_SLOTS do
-		local freeSlots, bagFamily = C_Container.GetContainerNumFreeSlots(bag)
+		local freeSlots, bagFamily = addon.C_Container.GetContainerNumFreeSlots(bag)
 
 		if freeSlots and freeSlots > 0 and (bagFamily == 0 or bit.band(itemFamily, bagFamily) > 0) then
 			return true
@@ -609,7 +625,7 @@ function RCLootCouncilML:CanGiveLoot(slot, item, winner)
 	elseif addon:UnitIsUnit(winner, "player") and not self:HaveFreeSpaceForItem(addon.lootSlotInfo[slot].link) then
 		return false, "ml_inventory_full"
 	elseif not addon:UnitIsUnit(winner, "player") then
-		if addon.lootSlotInfo[slot].quality < GetLootThreshold() then
+		if addon.lootSlotInfo[slot].quality < addon.Utils:GetLootThreshold() then
 			return false, "quality_below_threshold"
 		end
 
@@ -1588,6 +1604,9 @@ function RCLootCouncilML:OnReconnectReceived (sender)
 	local requestPlayer = Player:Get(sender)
 	MLDB:Send(requestPlayer)
 	self:Send(requestPlayer, "council", Council:GetForTransmit())
+	if addon.handleLoot then
+		self:Send(requestPlayer, "StartHandleLoot")
+	end
 
 	if self.running then -- Resend lootTable
 		self:ScheduleTimer("Send", 4, requestPlayer, "lootTable", self:GetLootTableForTransmit(true))

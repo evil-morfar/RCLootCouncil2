@@ -173,6 +173,7 @@ globals = {
    "C_Unit",
 	"C_Covenants",
 	"Settings",
+	"C_TooltipInfo",
 
 	-- API functions
 	"AbandonSkill",
@@ -3469,6 +3470,7 @@ globals = {
 	"IsGraphicsCVarValueSupported",
 	"IsGraphicsSettingValueSupported",
 	"IsGuildLeader",
+	"IsGuildMember",
 	"IsGuildRankAssignmentAllowed",
 	"IsHarmfulItem",
 	"IsHarmfulSpell",

@@ -42,6 +42,7 @@ function TradeUI:OnInitialize()
       { name = "", width = ROW_HEIGHT - 5},-- Arrow
       { name = "", width = 100,},          -- Recipient
       { name = "", width = 40,},           -- Trade
+      { name = "", width = ROW_HEIGHT/2},            -- Delete
    }
    self:Enable()
 end
@@ -52,6 +53,7 @@ function TradeUI:OnEnable()
    self.isTrading = false  -- Are we currently trading
    self.tradeItems = {}    -- Items we are currently trading
    self.tradeTarget = nil  -- Name of our last trade target
+   self.itemsInTradeWindow = {} --- @type SkipInventoryItem[]
 
    self:RegisterComms()
    self:RegisterEvent("TRADE_SHOW", "OnEvent_TRADE_SHOW")
@@ -107,6 +109,7 @@ function TradeUI:Update(forceShow)
             {value = "-->"},
             {value = v.args.recipient and addon.Ambiguate(v.args.recipient) or "Unknown", color = addon:GetClassColor(v.args.recipient.class or "nothing")},
             {value = _G.TRADE, color = self.GetTradeLabelColor, colorargs = {self, v.args.recipient},},
+            {DoCellUpdate = self.SetCellDelete },
          }
       }
    end
@@ -247,7 +250,20 @@ end
 function TradeUI:OnEvent_TRADE_SHOW (event, ...)
    self.isTrading = true
    wipe(self.tradeItems)
-   self.tradeTarget = addon:UnitName("NPC")
+
+   -- Try to grab the trader from Blizzard UI
+   local target = _G.TradeFrameRecipientNameText:GetText()
+   if not target or target == "" then
+      target = "NPC" -- Otherwise fallback to `UnitName("NPC")`
+   end
+
+   -- If target is from another realm, the name in the trade frame will be "Name(*)"
+   if target:find("(*)") then
+		-- Remove the "(*)" so `UnitName` can attach realm.
+		target = string.sub(target, 1, -4)
+   end
+   self.tradeTarget = addon:UnitName(target)
+
    local count = self:GetNumAwardedInBagsToTradeWindow()
 
    if count > 0 then
@@ -261,6 +277,7 @@ end
 
 function TradeUI:OnEvent_TRADE_CLOSED (event, ...)
    self.isTrading = false
+   wipe(self.itemsInTradeWindow)
 end
 
 function TradeUI:OnEvent_TRADE_ACCEPT_UPDATE (event, ...) -- Record the item traded
@@ -326,22 +343,24 @@ function TradeUI:GetStoredItemBySession (session)
 end
 
 local function addItemToTradeWindow (tradeBtn, Item)
-   addon.Log:d("addItemToTradeWindow", tradeBtn, Item)
-   local c,s = addon.ItemStorage:GetItemContainerSlot(Item)
-   if not c then -- Item is gone?!
-      addon:Print(L["trade_item_to_trade_not_found"])
-      return addon.Log:E("TradeUI", "Item missing when attempting to trade", Item.link, TradeUI.tradeTarget)
-   end
-   local _, _, _, _, _, _, link = C_Container.GetContainerItemInfo(c, s)
+	local c,s = addon.ItemStorage:GetItemContainerSlot(Item, TradeUI.itemsInTradeWindow)
 
-   if addon:ItemIsItem(link, Item.link) then -- Extra check, probably also redundant
-      addon.Log:d("Trading", link, c,s)
-      ClearCursor()
-      PickupContainerItem(c, s)
-      ClickTradeButton(tradeBtn)
-   else -- Shouldn't happen
-      return addon.Log:E("TradeUI", "Item link mismatch", link, Item.link)
-   end
+	if not c or not s then -- Item is gone?!
+		addon:Print(L["trade_item_to_trade_not_found"])
+		return addon.Log:E("TradeUI", "Item missing when attempting to trade", Item.link, TradeUI.tradeTarget)
+	end
+
+	local containerInfo = addon.C_Container.GetContainerItemInfo(c, s)
+
+	if containerInfo and addon:ItemIsItem(containerInfo.hyperlink, Item.link) then -- Extra check, probably also redundant
+		addon.Log:d("Trading", Item.link, c,s)
+		ClearCursor()
+		addon.C_Container.PickupContainerItem(c, s)
+		ClickTradeButton(tradeBtn)
+		tinsert(TradeUI.itemsInTradeWindow, {container = c, slot = s})
+	else -- Shouldn't happen
+		return addon.Log:E("TradeUI", "Item link mismatch", containerInfo.hyperlink, Item.link)
+	end
 end
 
 function TradeUI:AddAwardedInBagsToTradeWindow()
@@ -382,8 +401,10 @@ end
 function TradeUI:GetFrame()
    if self.frame then return self.frame end
 
-   local f = addon.UI:NewNamed("Frame", UIParent, "RCDefaultTradeUIFrame", "RCLootCouncil Trade UI", nil, 220)
+   local f = addon.UI:NewNamed("RCFrame", UIParent, "RCDefaultTradeUIFrame", "RCLootCouncil Trade UI", nil, 220)
+   addon.UI:RegisterForEscapeClose(f, function() if self:IsEnabled() then self:Hide() end end)
    f.st = ST:CreateST(self.scrollCols, 5, ROW_HEIGHT, nil, f.content)
+   f.st.head:SetHeight(0) -- we don't need it, but it will cover the title frame
    f.st.frame:SetPoint("TOPLEFT",f,"TOPLEFT",10,-20)
    f.st:RegisterEvents({
       ["OnClick"] = function(rowFrame, cellFrame, data, cols, row, realrow, column, table, button, ...)
@@ -411,4 +432,30 @@ end
 
 function TradeUI:GetTradeLabelColor(target)
    return CheckInteractDistance(Ambiguate(target, "short"), 2) and {r=0,g=1,b=0,a=1} or {r=1,g=0,b=0,a=1}
+end
+
+function TradeUI.SetCellDelete(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
+	if not frame.created then
+      frame:SetHeight(ROW_HEIGHT / 2)
+		frame:SetNormalTexture("Interface\\Buttons\\UI-GroupLoot-Pass-Up")
+		frame:SetScript("OnEnter", function()
+			addon:CreateTooltip(L["Double click to delete this entry."])
+		end)
+		frame:SetScript("OnLeave", function() addon:HideTooltip() end)
+		frame.created = true
+	end
+	frame:SetScript("OnClick", function()
+		local link = data[realrow].link
+		if frame.lastClick and GetTime() - frame.lastClick <= 0.5 then
+			frame.lastClick = nil
+			-- Do deleting
+			addon.Log:D("Deleting:", link)
+			tremove(data, realrow)
+
+         local Item = addon.ItemStorage:GetItem(link, "to_trade")
+         addon.ItemStorage:RemoveItem(Item)
+		else
+			frame.lastClick = GetTime()
+		end
+	end)
 end

@@ -23,7 +23,8 @@ Item = {
 
 function GetItemInfo (item)
    if string.match(item,"^%d+$") then item = tonumber(item) end -- Support for itemID
-   local i = assert(_G.Items[item], "item "..tostring(item) .." isn't registered for GetItemInfo")
+   local Item = _G.Items[item] or _G.Items[tonumber(strmatch(item or "", "item:(%d+):"))]
+   local i = assert(Item, "item "..tostring(item) .." isn't registered for GetItemInfo")
    return i.itemName, i.itemLink, i.itemRarity, i.itemLevel, i.itemMinLevel, i.itemType, i.itemSubType, i.itemStackCount, i.itemEquipLoc, i.itemIcon, i.itemSellPrice, i.itemClassID, i.itemSubClassID, i.bindType, i.expacID, i.itemSetID,
 i.isCraftingReagent
 end

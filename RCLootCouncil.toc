@@ -1,29 +1,32 @@
 ## Author: Potdisc
-## Interface: 100000
-## Notes: Interface for running a Loot Council v3.5.1
+## Interface: 100100
+## Notes: Interface for running a Loot Council v3.8.2
 ## Title: RCLootCouncil
-## Version: 3.5.1
+## Version: 3.8.2
 ## SavedVariables: RCLootCouncilDB, RCLootCouncilLootDB
 ## OptionalDeps: LibStub, CallbackHandler-1.0, Ace3, lib-st, LibWindow-1.1, LibDialog-1.0
+## X-Curse-Project-ID: 39928
+## IconTexture: Interface\AddOns\RCLootCouncil\Media\logo
 
 Patches\UiDropDownMenuTaintCommunities.lua
 
 embeds.xml
 Locale\Locales.xml
 
+Core\GlobalUpdates.lua
 Core\Constants.lua
 Core\Defaults.lua
 Core\CoreEvents.lua
 
 Classes\Core.lua
-Classes\Services\ErrorHandler.lua
+Classes\Lib\RxLua\embeds.xml
 Classes\Utils\TempTable.lua
 Classes\Utils\Log.lua
+Classes\Services\ErrorHandler.lua
+Classes\Utils\GroupLoot.lua
 
 Classes\Data\Player.lua
 Classes\Data\Council.lua
-
-Classes\Lib\RxLua\embeds.xml
 
 Classes\Services\Comms.lua
 # Classes\Services\SlashCommands.lua # NYI
@@ -39,8 +42,9 @@ Modules\Modules.xml
 
 Utils\BackwardsCompat.lua
 Utils\Utils.lua
-Utils\trinketData.lua
+Utils\TrinketData.lua
 Utils\tokenData.lua
 Utils\ItemStorage.lua
+Utils\transmog.lua
 Utils\autopass.lua
 Utils\popups.lua

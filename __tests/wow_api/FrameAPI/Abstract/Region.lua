@@ -2,12 +2,19 @@ require "/wow_api/FrameAPI/Abstract/ScriptRegion"
 
 local function noop() end
 
-local objectMethods = {GetDrawLayer = function(self) return self.values.drawLayer end}
+local objectMethods = {
+	GetDrawLayer = function(self) return self.values.drawLayer end,
+	GetScale = function(self)
+		return self.scale
+	end,
+	SetScale = function(self, scale)
+		self.scale = scale
+	end,
+}
 
 local noopMethods = {
 	"GetAlpha",
 	"GetEffectiveScale",
-	"GetScale",
 	"GetVertexColor",
 	"IsIgnoringParentAlpha",
 	"IsIgnoringParentScale",
@@ -16,7 +23,6 @@ local noopMethods = {
 	"SetDrawLayer",
 	"SetIgnoreParentAlpha",
 	"SetIgnoreParentScale",
-	"SetScale",
 	"SetVertexColor",
 }
 

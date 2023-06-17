@@ -11,7 +11,7 @@ loadfile(".specs/AddonLoader.lua")(nil, nil, addon).LoadArray {
      "Libs/LibStub/Libstub.lua",
      [[Libs\CallbackHandler-1.0\CallbackHandler-1.0.xml]],
      [[Libs\AceLocale-3.0\AceLocale-3.0.xml]],
-     "Libs/AceEvent-3.0/AceEvent-3.0.xml",
+	[[Libs\AceEvent-3.0\AceEvent-3.0.xml]],
      [[Classes/Core.lua]],
      "Classes/Utils/TempTable.lua",
      [[Classes/Utils/Log.lua]],

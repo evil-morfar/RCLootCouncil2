@@ -183,8 +183,8 @@ end
 function RCSessionFrame:GetFrame()
 	if self.frame then return self.frame end
 
-	local f = addon.UI:NewNamed("Frame", UIParent, "DefaultRCSessionSetupFrame", L["RCLootCouncil Session Setup"], 260)
-
+	local f = addon.UI:NewNamed("RCFrame", UIParent, "DefaultRCSessionSetupFrame", L["RCLootCouncil Session Setup"], 260)
+	addon.UI:RegisterForEscapeClose(f, function() if self:IsEnabled() then self:Disable() end end)
 	local tgl = CreateFrame("CheckButton", f:GetName().."Toggle", f.content, "ChatConfigCheckButtonTemplate")
 	getglobal(tgl:GetName().."Text"):SetText(L["Award later?"])
 	tgl:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", 10, 40)
@@ -218,7 +218,7 @@ function RCSessionFrame:GetFrame()
 				end)
 			end
 		else
-			if Council:GetNum() == 0 then
+			if not addon.hasReceivedCouncil then
 				addon:Print(L["Please wait a few seconds until all data has been synchronized."])
 				return addon.Log:D("Data wasn't ready", Council:GetNum())
 			elseif InCombatLockdown() and not addon.db.profile.skipCombatLockdown then
@@ -255,7 +255,8 @@ function RCSessionFrame:GetFrame()
 	f.lootStatus.text:SetJustifyH("LEFT")
 
 	local st = ST:CreateST(self.scrollCols, 5, ROW_HEIGHT, nil, f.content)
-	st.frame:SetPoint("TOPLEFT",f,"TOPLEFT",10,-ROW_HEIGHT-10)
+	st.head:SetHeight(0)
+	st.frame:SetPoint("TOPLEFT",f,"TOPLEFT",10,-20)
 	st:RegisterEvents({
 		["OnClick"] = function(_, _, _, _, row, realrow)
 			if not (row or realrow) then
@@ -264,7 +265,7 @@ function RCSessionFrame:GetFrame()
 		end
 	})
 	f:SetWidth(st.frame:GetWidth()+20)
-	f:SetHeight(325)
+	f:SetHeight(305)
 	f.rows = {} -- the row data
 	f.st = st
 	return f

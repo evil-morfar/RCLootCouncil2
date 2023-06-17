@@ -7,8 +7,18 @@ end
 local objectMethods = {
     SetChecked = function(self, checked) self.checked = checked end,
     GetChecked = function(self) return self.checked end,
-    -- TODO Not complete
 }
+
+local noopMethods = {
+	"GetChecked",
+	"GetCheckedTexture",
+	"GetDisabledCheckedTexture",
+	"SetChecked",
+	"SetCheckedTexture",
+	"SetDisabledCheckedTexture",
+}
+
+for _, v in ipairs(noopMethods) do if not objectMethods[v] then objectMethods[v] = noop end end
 
 CheckButton = {
     New = function(name, parent)

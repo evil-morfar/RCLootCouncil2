@@ -16,6 +16,7 @@ local objectMethods = {
 	SetPushedTexture = function(self, texture) self.pushedTexture = _G.Texture.New(self.name .. "PushedTexture", self) end,
 
 	GetPushedTexture = function(self) return self.pushedTexture end,
+	GetTextWidth = function(self) return self.Text:GetWidth() end,
 
 }
 
@@ -40,7 +41,6 @@ local noopMethods = {
 	"GetPushedTexture",
 	"GetText",
 	"GetTextHeight",
-	"GetTextWidth",
 	"IsEnabled",
 	"LockHighlight",
 	"RegisterForClicks",
@@ -72,13 +72,17 @@ for _, v in ipairs(noopMethods) do if not objectMethods[v] then objectMethods[v]
 Button = {
 	New = function(name, parent)
 		local super = _G.Frame.New(name or "", parent)
-		local object = {normalTexture = nil, highlightTexture = nil}
-		return setmetatable(object, {
+		local text = super:CreateFontString(name .. "Text")
+		local object = {normalTexture = nil, highlightTexture = nil, Text = text}
+		local button = setmetatable(object, {
 			__index = function(self, v)
 				local k = objectMethods[v] or super[v]
 				self[v] = k -- Store for easy future lookup
 				return k
 			end,
 		})
+		-- Button also has a text child, which is also put in the global table
+		_G[name .. "Text"] = text
+		return button
 	end,
 }

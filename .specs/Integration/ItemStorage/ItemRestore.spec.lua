@@ -41,6 +41,7 @@ describe("#Integration #ItemStorage #ItemRestore", function()
         addon:InitItemStorage()
         -- All items should have been removed from storage since we didn't find them in our bags
         assert.are.equal(0, #addon.db.profile.itemStorage)
+        assert.are.equal(0, #addon.ItemStorage:GetAllItems())
 	end)
 
     it("should restore items still in our bags", function()
@@ -69,6 +70,14 @@ describe("#Integration #ItemStorage #ItemRestore", function()
 				["args"] = {["bop"] = true, ["boss"] = "Anub'Rekhan"},
 			}, -- [3]
 			{
+			["inBags"] = true,
+				["type"] = "award_later",
+				["link"] = "|cff1eff00|Hitem:55555::::::::80:::::::::|h[Book of Glyph Mastery]|h|r",
+				["time_remaining"] = 7140,
+				["time_added"] = 1666292961,
+				["args"] = {["bop"] = true, ["boss"] = "Anub'Rekhan"},
+			},
+			{
 				["inBags"] = true,
 				["type"] = "award_later",
 				["link"] = "|cffa335ee|Hitem:40080::::::::80:::::::::|h[Lost Jewel]|h|r",
@@ -79,8 +88,12 @@ describe("#Integration #ItemStorage #ItemRestore", function()
 		}
         addon:InitItemStorage()
         -- All items should have been removed from storage since we didn't find them in our bags
-        assert.are.equal(1, #addon.db.profile.itemStorage)
+        assert.are.equal(2, #addon.db.profile.itemStorage)
+        assert.are.equal(2, #addon.ItemStorage:GetAllItems())
         assert.are.equal("|cff1eff00|Hitem:55555::::::::80:::::::::|h[Book of Glyph Mastery]|h|r", addon.db.profile.itemStorage[1].link)
+        assert.are.equal("|cff1eff00|Hitem:55555::::::::80:::::::::|h[Book of Glyph Mastery]|h|r", addon.db.profile.itemStorage[2].link)
+        assert.are.equal("|cff1eff00|Hitem:55555::::::::80:::::::::|h[Book of Glyph Mastery]|h|r", addon.ItemStorage:GetAllItems()[1].link)
+        assert.are.equal("|cff1eff00|Hitem:55555::::::::80:::::::::|h[Book of Glyph Mastery]|h|r", addon.ItemStorage:GetAllItems()[2].link)
     end)
 end)
 

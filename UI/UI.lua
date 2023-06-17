@@ -15,18 +15,20 @@ addon.UI = {CreateFrame = _G.CreateFrame, private = private, minimizeableFrames 
 local error, format, type, pairs = error, format, type, pairs
 
 --- Exposed function for creating new UI elements
--- @param type The type of the element.
--- @param parent The element's UI parant. Defaults to UIParent
--- @return The newly created UI element
+--- @generic T
+--- @param type `T` The type of the element.
+--- @param parent UIObject The element's UI parant. Defaults to UIParent
+--- @return T UIObject The newly created UI element
 function addon.UI:New(type, parent, ...)
    return private:New(type, parent, nil, ...)
 end
 
 --- Exposed function for creating new named UI elements
--- @param type The type of the element.
--- @param parent The element's UI parant. Defaults to UIParent
--- @param name The global name of the element.
--- @return The newly created UI element
+--- @generic T
+--- @param type `T` The type of the element.
+--- @param parent UIObject The element's UI parant. Defaults to UIParent
+--- @param name string  The global name of the element.
+--- @return T UIObject The newly created UI element
 function addon.UI:NewNamed(type, parent, name, ...)
    return private:New(type, parent, name, ...)
 end
@@ -45,6 +47,14 @@ end
 function addon.UI:RegisterForCombatMinimize (frame)
    tinsert(self.minimizeableFrames, frame)
 end
+
+
+function addon.UI:RegisterForEscapeClose(frame, OnHide)
+	if not addon:Getdb().closeWithEscape then return end
+   tinsert(UISpecialFrames, frame:GetName())
+   frame:SetScript("OnHide", OnHide)
+end
+
 ---------------------------------------------
 -- Internal functions
 ---------------------------------------------
@@ -60,11 +70,14 @@ function private:New(type, parent, name, ...)
          return self:Embed(self.elements[type]:New(parent, "RC_UI_"..type..self.num[type], ...))
       end
    else
-      addon:Debug("UI Error in :New(): No such element", type, name)
+      addon.Log:e("UI Error in :New(): No such element", type, name)
       error(format("UI Error in :New(): No such element: %s %s", type, name))
    end
 end
 
+--- @generic T
+--- @param object `T`
+--- @return T
 function private:Embed(object)
    for k,v in pairs(self.embeds) do
       object[k] = v
@@ -72,8 +85,14 @@ function private:Embed(object)
    return object
 end
 
-private.embeds["SetMultipleScripts"] = function(object, scripts)
-   for k,v in pairs(scripts) do
-      object:SetScript(k,v)
+
+--- @class UI.embeds
+private.embeds = {
+   ---@param object T self
+   ---@param scripts table<string,fun(self: T): void>
+   SetMultipleScripts = function(object, scripts)
+      for k,v in pairs(scripts) do
+         object:SetScript(k,v)
+      end
    end
-end
+}

@@ -20,6 +20,7 @@ local private = {
 		end,
 		__newindex = function(_, k, v) addon.db.global.cache.player[k] = v end,
 	}),
+	realmName = nil, -- Not ready here, will be initialized later
 }
 
 ---@class Player
@@ -46,9 +47,14 @@ local PLAYER_MT = {
 	__index = playerClass,
 	--- @param self Player
 	__tostring = function(self) return self.name end,
-	--- @param a Player
-	--- @param b Player
-	__eq = function(a, b) return a.guid == b.guid end,
+	--- @param a Player|string
+	--- @param b Player|string
+	__eq = function(a, b) 
+		if a.guid and b.guid then return a.guid == b.guid end
+		if a.guid then return addon:UnitIsUnit(a.name, b) end
+		if b.guid then return addon:UnitIsUnit(b.name, a) end
+		Log:w("Attempt to compare 'Player' to non-'Player'", a, b)
+		return a == b end,
 }
 
 --- Fetches a player
@@ -130,9 +136,6 @@ function private:UpdateCachedPlayer(player)
 
 	player.name = addon.Utils:UnitNameFromNameRealm(name, realm)
 	player.class = class
-	if realm == "" then -- Our realm isn't returned
-		realm = GetRealmName()
-	end
 	player.realm = realm
 	self:CachePlayer(player)
 end
@@ -146,7 +149,12 @@ function private:GetPlayerInfoByGUID(guid)
 		if found then name = name:sub(0, found - 1) end
 	end
 
-	if realm == "" then realm = GetRealmName() end
+	if realm == "" then
+		if not self.realmName then
+			self.realmName = select(2, UnitFullName("player"))
+		end
+		realm = self.realmName
+	end
 	return name, realm, class
 end
 
@@ -154,6 +162,9 @@ function private:IsCached(guid) return self.cache[guid] ~= nil end
 
 --- @param player Player
 function private:CachePlayer(player)
+	if not player.guid then
+		return Log:f("<Data.Player>", "CachePlayer", "No guid for", player)
+	end
 	self.cache[player.guid] = CopyTable(player)
 	self.cache[player.guid].cache_time = GetServerTime()
 end

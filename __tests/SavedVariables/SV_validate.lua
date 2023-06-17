@@ -60,9 +60,9 @@ local function checkSV()
    local function numComms()
       local num =0
       for k,v in pairs(RCLootCouncilDB.global.log) do
-         if v:find("Comm received:") then num = num + 1 end
+         if v:find("<Comm>") then num = num + 1 end
       end
-      print(string.format("Comms: %d of %d = %.2f%%",num, #RCLootCouncilDB.global.log,num/#RCLootCouncilDB.global.log*100))
+      print(string.format("Comms: %d of %d = %.2f%%\n",num, #RCLootCouncilDB.global.log,num/#RCLootCouncilDB.global.log*100))
    end
    local function log()
       print "Checking log"
@@ -84,17 +84,18 @@ local function checkSV()
       for k,v in ipairs(RCLootCouncilDB.global.log) do
          if v:find("(ENCOUNTER_END)") then
             local enc = {}
-            for s in v:gmatch("%(([%w%d%s',-]+)%)") do table.insert(enc, s) end
-            if not encounters[enc[2]] then
-               encounters[enc[2]] = {}
+			local usefull = v:match("END\t(.*)")
+            for s in usefull:gmatch("[- %w]+") do table.insert(enc, s) end
+            if not encounters[enc[1]] then
+               encounters[enc[1]] = {}
             end
-            if not encounters[enc[2]][enc[3]] then
-               encounters[enc[2]][enc[3]] = {trys = 0, kills = 0}
+            if not encounters[enc[1]][enc[2]] then
+               encounters[enc[1]][enc[2]] = {trys = 0, kills = 0}
             end
-            if enc[5] == "0" then
-               encounters[enc[2]][enc[3]].trys = encounters[enc[2]][enc[3]].trys + 1
+            if enc[4] == "0" then
+               encounters[enc[1]][enc[2]].trys = encounters[enc[1]][enc[2]].trys + 1
             else
-               encounters[enc[2]][enc[3]].kills = encounters[enc[2]][enc[3]].kills + 1
+               encounters[enc[1]][enc[2]].kills = encounters[enc[1]][enc[2]].kills + 1
             end
          end
       end
@@ -180,11 +181,14 @@ local function checkSV()
 
          elseif (entry:find("SlootTable") or entry:find("Slt_add")) and not entry:find("xrealm") then
 
-            --"20:08:43 - Event: (ENCOUNTER_END) (2076) (Garothi Worldbreaker) (16) (20) (0)", -- [803]
+				-- "<20:22:01> <DEBUG>		Event:	ENCOUNTER_END	2587	Eranog	14	19	1"
             if not entry:find("Slt_add") then
-               if lastEncounter then print("\nSession ", num, lastEncounter:match("%b() %b() (%b() %b())"):gsub("%(%d+%)", encounter_diff), "ML: " .. entry:match(":%) %((%w+)%)",-35)) end
+               if lastEncounter then print("\nSession ", num, 
+				lastEncounter:sub(-7, -6):gsub("(%d+)", encounter_diff),
+				"ML: " .. entry:match("[-%w]+$"))
+			 end
                -- Extract time
-               print("Time:",entry:sub(1,9), "Index:", i)
+					print("Time:", entry:match("<([%d:]+)>"), "Index:", i)
             else
                print "add:"
             end
@@ -192,8 +196,8 @@ local function checkSV()
             local msg = entry:match("(%^1.+%^%^)")
             local l1,l2,lt = AceSer:Deserialize(msg)
             for k,v in pairs(unpack(lt)) do
-               print("|  "..k,v.ilvl, v.link)
-               print("|  "..v.equipLoc, v.subType, v.owner)
+               print("|  "..k,v.string)
+				print("", v.typeCode, v.owner)
                --print("Classes:", v.classes)
             end
             num = num + 1
