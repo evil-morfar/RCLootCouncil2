@@ -203,6 +203,7 @@ function private:GetGroupChannel()
 	elseif IsInGroup() then
 		return "PARTY"
 	else
+		Log:w("No group channel found.")
 		return "WHISPER", addon.player:GetName() -- Fallback
 	end
 end
