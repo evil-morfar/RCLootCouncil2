@@ -564,18 +564,26 @@ function RCVotingFrame:OnRollReceived (name, roll, sessions)
 	self:Update()
 end
 
-function RCVotingFrame:OnReconnectReceived (rlootTable)
-	lootTable = rlootTable
-	for _, data in ipairs(rlootTable) do
-		for _, cand in pairs(data.candidates) do
-			for _, voter in ipairs(cand.voters) do
-				if addon:UnitIsUnit(voter, "player") then -- WE've voted
-					data.haveVoted = true
-					cand.haveVoted = true
-				end
-			end
-		end
-	end
+function RCVotingFrame:OnReconnectReceived (reconnectData)
+	-- lootTable = rlootTable
+	-- for _, data in ipairs(rlootTable) do
+	-- 	for _, cand in pairs(data.candidates) do
+	-- 		for _, voter in ipairs(cand.voters) do
+	-- 			if addon:UnitIsUnit(voter, "player") then -- WE've voted
+	-- 				data.haveVoted = true
+	-- 				cand.haveVoted = true
+	-- 			end
+	-- 		end
+	-- 	end
+	-- end
+	local Reconnect = addon.Require "Data.Reconnect"
+	local data = Reconnect:RestoreFromTransmit(reconnectData)
+	print "VF"
+	printtable(data)
+	print "LootTable"
+	printtable(lootTable)
+
+
 	self:Update()
 	self:UpdatePeopleToVote()
 end

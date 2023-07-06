@@ -1609,7 +1609,7 @@ function RCLootCouncilML:OnReconnectReceived (sender)
 	end
 
 	if self.running then -- Resend lootTable
-		self:ScheduleTimer("Send", 4, requestPlayer, "lootTable", self:GetLootTableForTransmit(true))
+		self:ScheduleTimer("Send", 0, requestPlayer, "lootTable", self:GetLootTableForTransmit(true))
 		-- REVIEW v2.2.6 For backwards compability we're just sending avotingFrame's lootTable
 		-- This is quite redundant and should be removed in the future
 		if db.observe or Council:Contains(requestPlayer) then -- Only send all data to councilmen
@@ -1621,7 +1621,8 @@ function RCLootCouncilML:OnReconnectReceived (sender)
 					d.haveVoted = false
 				end
 			end
-			self:ScheduleTimer("Send", 5, requestPlayer, "reconnectData", table)
+			local Reconnect = addon.Require "Data.Reconnect"
+			self:ScheduleTimer("Send", 1, requestPlayer, "reconnectData", Reconnect:GetForTransmit(table))
 		end
 	end
 	self.Log("Responded to reconnect from", sender)

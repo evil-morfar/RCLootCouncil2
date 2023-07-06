@@ -1017,6 +1017,7 @@ end
 
 function GetClassColoredTextForUnit(unit, text) return text end
 ceil = math.ceil
+mod = math.mod
 C_Container = {
 	GetContainerItemInfo = function(c, s)
 		return {

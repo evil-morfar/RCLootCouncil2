@@ -1314,7 +1314,7 @@ function RCLootCouncil:GetContainerItemTradeTimeRemaining(container, slot)
 			if timeText then -- Within 2h trade window, parse the time text
 				tooltipForParsing:Hide()
 
-				for hour = 1, 0, -1 do -- time>=60s, format: "1 hour", "1 hour 59 min", "59 min", "1 min"
+				for hour = 6, 0, -1 do -- time>=60s, format: "1 hour", "1 hour 59 min", "59 min", "1 min"
 					local hourText = ""
 					if hour > 0 then hourText = self:CompleteFormatSimpleStringWithPluralRule(INT_SPELL_DURATION_HOURS, hour) end
 					for min = 59, 0, -1 do

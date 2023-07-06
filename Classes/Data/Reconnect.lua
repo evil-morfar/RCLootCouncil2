@@ -11,8 +11,9 @@ local Player = addon.Require "Data.Player"
 -- Pseudo private functions - not meant for use
 Reconnect.private = {}
 
---- Fetches reconnect data and modifies it so that it may be
+--- Modifies reconnect data (lootTable) so that it may be
 --- transmitted through comms.
+--- @param data LootTable LootTable as fetched from VotingFrame:GetLootTable
 --- @return TransmittableReconnectData
 function Reconnect:GetForTransmit(data)
     self.private.data = CopyTable(data) or {}
@@ -39,9 +40,30 @@ function Reconnect:RestoreFromTransmit(data)
         :GetResult("undo")
 end
 
+function Reconnect:MergeWithLootTable(reconnectData, lootTable)
+	for name, data in pairs(reconnectData) do
+		for session, sessionData in ipairs(lootTable) do
+			if sessionData.candidates[name] then -- Should always be there
+				sessionData.candidates[name].ilvl = data.ilvl and data.ilvl[session] or 0
+				sessionData.candidates[name].gear1 = data.gear1 and data.gear1[session]
+				sessionData.candidates[name].gear2 = data.gear2 and data.gear2[session]
+				sessionData.candidates[name].voters = data.voters and data.voters[session]
+				sessionData.candidates[name].haveVoted = data.haveVoted and data.haveVoted[session]
+				sessionData.candidates[name].response = data.response and data.response[session] or "NOTANNOUNCED"
+			end
+		end
+		if UnitIsUnit("player", name) then
+			for session, val in pairs(data.haveVoted) do
+				lootTable[session].haveVoted = val
+			end
+		end
+	end
+	return lootTable
+end
+
 ---------------------------------------------------------
 -- "Private" functions doing the actual work
--- These are made chain able for seperatin purposes, and must be called 
+-- These are made chain able for seperation purposes, and must be called
 -- in a specifc order, as they rely on previous conversions.
 -- They're also not *pure* as they rely on either `data` or `restore`
 -- being set on the object.
@@ -169,6 +191,7 @@ end
 --- Reverts itemlink shortening, making them useable again.
 function Reconnect.private:UndoOptimizeItemLinks()
     local uncleanItems = function(items)
+		if not items then return end
         -- items in "gear2" might not be an array, so use pairs
         for k, v in pairs(items) do
             items[k] = addon.Utils:UncleanItemString(v)

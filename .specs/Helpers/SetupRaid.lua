@@ -8,7 +8,7 @@ local function GetRandomGUID(size)
 	return guid
 end
 
---- @type Player
+--- @class Player
 --- @field guid string
 --- @field name string
 --- @field class string
@@ -64,6 +64,18 @@ local function HookGlobals(players, size)
 			end
 		end
 	end
+
+	function _G.UnitFullName(unit)
+		if unit == "player" then
+			return players[1].name, players[1].realm
+		end
+		for _, v in ipairs(players) do
+			if v.name == unit then
+				return v.name, v.realm
+			end
+		end
+		return unit, "UnknownRealm"
+	end
 end
 
 --- Setup a raid with a number of players.
@@ -78,6 +90,8 @@ local function SetupRaid(size)
 		players[i] = CreatePlayer(i)
 	end
 	HookGlobals(players, size)
+	_G.IsInGroupVal = true
+	_G.IsInRaidVal = true
 end
 
 return SetupRaid

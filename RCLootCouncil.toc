@@ -31,6 +31,7 @@ Classes\Data\Council.lua
 Classes\Services\Comms.lua
 # Classes\Services\SlashCommands.lua # NYI
 Classes\Data\MLDB.lua
+Classes\Data\Reconnect.lua
 
 core.lua
 ml_core.lua
