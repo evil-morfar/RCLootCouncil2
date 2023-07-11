@@ -2,6 +2,11 @@
 
 ## Changes
 
+### Roll column
+
+Switched to a new system that's much lighter on comms for propergating the automatic random rolls. This should fix the issues some people have with the last few sessions not receiving random rolls.
+
+This change is not backwards compatible, once the ML upgrades, everyone will have to in order to see the random rolls.
 
 ## Bugfixes
 
@@ -19,8 +24,7 @@ Now rolls transmog when that's the only option for the group leader.
 
 ### Transmog autopass
 
-Added a new option that allows you to not auto pass on items that's transmogable for you - 
-just uncheck "Auto Pass Transmog".
+Added a new option that allows you to not auto pass on items that's transmogable for you - just uncheck "Auto Pass Transmog".
 The accompanying option "Auto Pass Transmog Source" further refines it by allowing auto passes if you've already collected the transmog.
 
 Credits to [Urtgard](https://github.com/Urtgard) for creating this.
