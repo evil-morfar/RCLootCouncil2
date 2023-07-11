@@ -9,9 +9,25 @@ local objectMethods = {
 	end,
 	GetOwner = function(self) return self.owner, self.anchor end,
 	NumLines = function(self) return #self.lines end,
-	AddLine = function(self, text, ...) tinsert(self.lines, text) end,
-	AddDoubleLine = function(self, textL, textR, ...) tinsert(self.lines, textL .. textR) end,
-	ClearLines = function(self) wipe(self.lines) end,
+	AddLine = function(self, text, ...)
+		local index = #self.lines + 1
+		local lineName = self:GetName() .. "TextLeft" .. index
+
+		if _G[lineName] then
+			_G[lineName]:SetText(text)
+			tinsert(self.lines, _G[lineName])
+		else
+			local frame = self:CreateFontString(lineName, "OVERLAY", "GameFontNormal")
+			frame:SetText(text)
+			_G[lineName] = frame
+			tinsert(self.lines, frame)
+		end
+	end,
+	AddDoubleLine = function(self, textL, textR, ...) self:AddLine(self.lines, textL .. textR) end,
+	ClearLines = function(self)
+		for i = 1, #self.lines do _G[self:GetName() .. "TextLeft" .. i] = nil end
+		wipe(self.lines)
+	end,
 }
 
 local noopMethods = {
@@ -25,7 +41,7 @@ for _, v in ipairs(noopMethods) do if not objectMethods[v] then objectMethods[v]
 GameTooltipFrame = {
 	New = function(name, parent)
 		local super = _G.Frame.New(name, parent)
-		local object = {lines = {}, owner = nil, anchor = nil}
+		local object = { lines = {}, owner = nil, anchor = nil, }
 		return setmetatable(object, {
 			__index = function(self, v)
 				local k = objectMethods[v] or super[v]

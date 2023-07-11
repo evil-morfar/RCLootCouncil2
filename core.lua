@@ -1301,7 +1301,9 @@ function RCLootCouncil:GetContainerItemTradeTimeRemaining(container, slot)
 	tooltipForParsing:SetBagItem(container, slot) -- Set the tooltip content and show it, should hide the tooltip before function ends
 	if not tooltipForParsing:NumLines() or tooltipForParsing:NumLines() == 0 then return 0 end
 
-	local bindTradeTimeRemainingPattern = escapePatternSymbols(BIND_TRADE_TIME_REMAINING):gsub("%%%%s", "%(%.%+%)") -- PT locale contains "-", must escape that.
+	local bindTradeTimeRemainingPattern = escapePatternSymbols(BIND_TRADE_TIME_REMAINING) -- Escape special characters in translations
+		:gsub("1%%%$", "") -- Remove weird insertion in RU '%1$s'
+		:gsub("%%%%s", "%(%.%+%)") -- Create capture group for the time string
 	local bounded = false
 
 	for i = 1, tooltipForParsing:NumLines() or 0 do
@@ -1314,7 +1316,7 @@ function RCLootCouncil:GetContainerItemTradeTimeRemaining(container, slot)
 			if timeText then -- Within 2h trade window, parse the time text
 				tooltipForParsing:Hide()
 
-				for hour = 1, 0, -1 do -- time>=60s, format: "1 hour", "1 hour 59 min", "59 min", "1 min"
+				for hour = 4, 0, -1 do -- time>=60s, format: "1 hour", "1 hour 59 min", "59 min", "1 min"
 					local hourText = ""
 					if hour > 0 then hourText = self:CompleteFormatSimpleStringWithPluralRule(INT_SPELL_DURATION_HOURS, hour) end
 					for min = 59, 0, -1 do

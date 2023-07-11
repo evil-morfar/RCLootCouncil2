@@ -1,3 +1,13 @@
+# 3.8.3
+
+## Changes
+
+
+## Bugfixes
+
+- *Fixed issues with detecting remaining trade time on clients with russian locale.*
+
+
 # 3.8.2
 
 ## Changes

@@ -1118,6 +1118,7 @@ ITEM_MOD_STAMINA_SHORT = "Stamina";
 ITEM_MOD_STRENGTH_OR_INTELLECT_SHORT = "Strength or Intellect";
 ITEM_MOD_STRENGTH_SHORT = "Strength";
 ITEM_MOD_VERSATILITY = "Versatility";
+ITEM_SOULBOUND = "Soulbound";
 
 BLOCK = "Block"
 PARRY = "Parry"
