@@ -2,10 +2,7 @@ local _G = getfenv(0)
 require "/wow_api/API/Mixin"
 require "/wow_api/API/Color"
 require "/wow_api/API/TableUtil"
-require "/wow_api/FrameAPI/Frames/Frame"
-require "/wow_api/FrameAPI/Frames/Button"
-require "/wow_api/FrameAPI/Frames/CheckButton"
-require "/wow_api/FrameAPI/Frames/GameTooltip"
+require "wow_api/FrameAPI/Constructor"
 local strbyte, strchar, gsub, gmatch, format, tinsert = string.byte, string.char, string.gsub, string.gmatch,
 	string.format, table.insert
 
@@ -23,22 +20,11 @@ local function uuid()
 end
 
 function CreateFrame(kind, name, parent)
-	local frame
 	name = name or kind .. uuid()
-	if kind == "Frame" then
-		frame = _G.Frame.New(name, parent)
-	elseif kind == "Button" then
-		frame = _G.Button.New(name, parent)
-	elseif kind == "CheckButton" then
-		frame = _G.CheckButton.New(name, parent)
-	elseif kind == "GameTooltip" then
-		frame = _G.GameTooltip.New(name, parent)
-	else
-		-- Default to frame (for handling kinds we haven't implemented)
-		frame = _G.Frame.New(name, parent)
-	end
-	_G[name] = frame
-	frames[frame] = true
+	local frame = _G.FrameConstructor(kind, name, parent)
+	frame.name = name
+	_G[name] = true
+	frames[frame] = name
 	if name then _G[name] = frame end
 	return frame
 end
@@ -109,6 +95,10 @@ function UnitHealth()
 	return 50
 end
 
+function UnitIsGroupLeader(unit)
+	return false
+end
+
 function GetNumRaidMembers()
 	return 1
 end
@@ -117,9 +107,15 @@ function GetNumPartyMembers()
 	return 1
 end
 
+function GetNumGroupMembers()
+	return IsInRaid() and GetNumRaidMembers() or (IsInGroup() and GetNumPartyMembers() or 0)
+end
+
 function GetNumGuildMembers()
 	return 1
 end
+
+function GetRaidRosterInfo(i) return "Unit"..i end
 
 function issecurevariable(obj, method)
 	return false
@@ -148,6 +144,7 @@ end
 function IsAddOnLoaded() return nil end
 
 SlashCmdList = {}
+hash_SlashCmdList = {}
 
 function __WOW_Input(text)
 	local a, b = string.find(text, "^/%w+")
@@ -206,6 +203,11 @@ function GetNumAddOns()
 	return 0
 end
 
+function _G.GetProfessions() end
+function _G.GetProfessionInfo() end
+
+function _G.GetAverageItemLevel() return 100,100 end
+
 function IsPartyLFG()
 	return _G.IsPartyLFGVal
 end
@@ -222,6 +224,15 @@ function UnitInParty()
 	return _G.IsInGroupVal
 end
 
+function _G.UnitPosition(unit) end
+
+function _G.UnitGroupRolesAssigned(unit) return "DAMAGER" end
+
+_G.CLASS_ICON_TCOORDS = setmetatable({}, {
+	__index = function(self, key)
+		return {0, 1, 0, 1}
+	end,
+})
 function IsInGroup()
 	return _G.IsInGroupVal
 end
@@ -244,9 +255,13 @@ function IsInGuild()
 	return false
 end
 
+function IsGuildMember(guid) return true end
+
 function GuildRoster()
 	-- body...
 end
+
+function GetGuildRosterInfo() end
 
 function getglobal(k)
 	return _G[k]
@@ -296,6 +311,26 @@ function EJ_GetInstanceByIndex()
 end
 
 function EJ_GetNumTiers() return 11 end
+
+function EJ_SelectInstance(journalInstanceID) end
+function EJ_ResetLootFilter() end
+function EJ_SetDifficulty(difficultyID) end
+function EJ_GetNumLoot() return 1 end
+
+_G.C_EncounterJournal = {
+	GetLootInfoByIndex = function(index)
+		local Item = _G.Items[_G.Items_Array[math.random(#_G.Items_Array)]]
+		return {
+			itemID = Item.itemID,
+			name = Item.name,
+			itemQuality = Item.itemRarity,
+			icon = Item.icon,
+			slot = Item.itemEquipLoc,
+			armorType = Item.itemType,
+			link = Item.itemLink,
+		}
+	end
+}
 
 function ReloadUI()
 end
@@ -355,9 +390,6 @@ end
 
 InterfaceOptionsFrameCancel = {
 	GetScript = function(input) return input end,
-}
-C_CreatureInfo = {
-	GetClassInfo = function(classIndex) return end,
 }
 
 function UIDropDownMenu_InitializeHelper(args)
@@ -514,7 +546,7 @@ function UnitIsUnit(u1, u2)
 end
 
 function UnitGUID(name)
-	if name == "player" then return playerNameToGUID.Player1.guid end
+	if name == "player" or name == "Sender-Realm Name" then return playerNameToGUID.Player1.guid end
 	name = Ambiguate(name, "short")
 	return playerNameToGUID[name] and playerNameToGUID[name].guid or nil
 end
@@ -950,6 +982,13 @@ function GetSpecializationInfoForClassID(classID, specNum)
 	local spec = CLASS_INFO[classID].specs[specNum]
 	return spec.specID, spec.name, "NOT_IMPLEMENTED", spec.iconID, spec.role, "NOT_IMPLEMENTED", "NOT_IMPLEMENTED"
 end
+function GetSpecialization() return 71 end
+function GetSpecializationInfo() return GetSpecializationInfoForClassID(1,1) end
+function GetSpecializationInfoByID() return GetSpecializationInfoForClassID(1, 1) end
+
+function _G.GetInventorySlotInfo(slot) end
+-- Mocked with random item
+function GetInventoryItemLink(unit, slot) return _G.Items_Array[math.random(#_G.Items_Array)] end
 
 local symbols = { "%%", "%*", "%+", "%-", "%?", "%(", "%)", "%[", "%]", "%$", "%^" } --% has to be escaped first or everything is ruined
 local replacements = { "%%%%", "%%%*", "%%%+", "%%%-", "%%%?", "%%%(", "%%%)", "%%%[", "%%%]", "%%%$", "%%%^" }
@@ -966,11 +1005,13 @@ end
 
 function FauxScrollFrame_GetOffset() return 0 end
 
+function _G.FauxScrollFrame_OnVerticalScroll() end
+
 function GetItemStats()
 end
 
 function GetClassColoredTextForUnit(unit, text) return text end
-
+ceil = math.ceil
 C_Container = {
 	GetContainerItemInfo = function(c, s)
 		return {
@@ -980,7 +1021,14 @@ C_Container = {
 	PickupContainerItem = donothing,
 }
 
+C_CreatureInfo = {
+	GetClassInfo = function(classID)
+		return CLASS_INFO[classID]
+	end,
+}
+
 UISpecialFrames = {}
+_G.GameTooltip = CreateFrame("GameTooltip", "GameTooltip", UIParent)
 ------------------------------------------
 -- Constants from various places
 ------------------------------------------
@@ -991,7 +1039,9 @@ MAX_TRADE_ITEMS = 6 -- don't remember
 
 TOOLTIP_DEFAULT_COLOR = { r = 1, g = 1, b = 1, };
 TOOLTIP_DEFAULT_BACKGROUND_COLOR = { r = 0.09, g = 0.09, b = 0.19, };
-
+_G.INVSLOT_FIRST_EQUIPPED = 1
+_G.INVSLOT_LAST_EQUIPPED = 18
+NORMAL_FONT_COLOR = CreateColor(255, 209, 0, 255) --ffd100
 NUM_LE_ITEM_QUALITYS = 9
 LE_ITEM_QUALITY_POOR = 0
 LE_ITEM_QUALITY_COMMON = 1
@@ -1009,10 +1059,12 @@ LE_ITEM_QUALITY_WOW_TOKEN = 8
 ------------------------------------------
 BIND_TRADE_TIME_REMAINING =
 "You may trade this item with players that were also eligible to loot this item for the next %s."
+CLOSES_IN = "Time Left";
 LOOT_ITEM = "%s receives loot: %s."
 RANDOM_ROLL_RESULT = "%s rolls %d (%d-%d)"
 REQUEST_ROLL = "Request Roll"
 ITEM_CLASSES_ALLOWED = "Classes: %s"
+ITEM_LEVEL_ABBR = "ilvl"
 ITEM_MOD_AGILITY = "%c%s Agility";
 ITEM_MOD_AGILITY_OR_INTELLECT_SHORT = "Agility or Intellect";
 ITEM_MOD_AGILITY_OR_STRENGTH_OR_INTELLECT_SHORT = "Agility or Strength or Intellect";
@@ -1066,6 +1118,7 @@ ITEM_MOD_STAMINA_SHORT = "Stamina";
 ITEM_MOD_STRENGTH_OR_INTELLECT_SHORT = "Strength or Intellect";
 ITEM_MOD_STRENGTH_SHORT = "Strength";
 ITEM_MOD_VERSATILITY = "Versatility";
+ITEM_SOULBOUND = "Soulbound";
 
 BLOCK = "Block"
 PARRY = "Parry"

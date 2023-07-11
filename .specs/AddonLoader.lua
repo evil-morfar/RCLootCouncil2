@@ -9,6 +9,7 @@
 -- Defaults to the values below:
 local debug = select(1, ...) or false
 local ADDON_NAME = select(2, ...) or "RCLootCouncil"
+--- @class AddonObject User provided table or empty table
 local ADDON_OBJECT = select(3, ...) or {}
 
 local Loader = {}
@@ -17,6 +18,9 @@ if os.getenv("LOCAL_LUA_DEBUGGER_VSCODE") == "1" then
 	require("lldebugger").start()
 end
 
+
+--- Loads all files specified in a .toc file.
+---@param file File path to the .toc file
 function Loader.LoadToc(file)
 	local lines = Loader.lines_from(file)
 	local files = {}
@@ -35,12 +39,18 @@ function Loader.LoadToc(file)
 	end
 	-- Actually load the files:
 	Loader.LoadFiles(files)
+	return ADDON_OBJECT
 end
 
+--- Load all files specified in an .xml file.
+---@param file File path to the .xml file
 function Loader.LoadXML(file)
 	Loader.LoadFiles(Loader.XmlHandler(file, 0))
+	return ADDON_OBJECT
 end
 
+--- Load all files specified in an array.
+---@param list File[] Array of files to load
 function Loader.LoadArray(list)
 	local files = {}
 	for _, file in ipairs(list) do
@@ -52,6 +62,7 @@ function Loader.LoadArray(list)
 		end
 	end
 	Loader.LoadFiles(files)
+	return ADDON_OBJECT
 end
 
 function Loader.file_exists(file)

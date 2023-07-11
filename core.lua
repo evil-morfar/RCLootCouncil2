@@ -1,11 +1,7 @@
 --- core.lua Contains core elements of the addon
 -- @author Potdisc
---[[ TODOs/Notes
-	Things marked with "todo"
-		- IDEA Change popups so they only hide on award/probably add the error message to it.
-		- Trade status in TradeUI
--------------------------------- ]] --[[CHANGELOG
-	-- SEE CHANGELOG.TXT]] --[[AceEvent-3.0 Messages:
+
+--[[AceEvent-3.0 Messages:
 	core:
 		RCCouncilChanged		-	fires when the council changes.
 		RCConfigTableChanged	-	fires when the user changes a settings. args: [val]; a few settings supplies their name.
@@ -24,7 +20,8 @@
 	lootHistory:
 		RCHistory_ResponseEdit - fires when the user edits the response of a history entry. args: data (see LootHistory:BuildData())
 		RCHistory_NameEdit	-	fires when the user edits the receiver of a history entry. args: data.
-]] --[[ Notable Comm messages: (See Classes/Services/Comms.lua for subscribing to comms)
+]] 
+--[[ Notable Comm messages: (See Classes/Services/Comms.lua for subscribing to comms)
 	Comms:
 	P: Permanent, T: Temporary
 		MAIN:
@@ -47,7 +44,8 @@
 			Rgear				P - Anyone requests our currently equipped gear.
 			bonus_roll 			P - Sent whenever we do a bonus roll.
 			getCov 				P - Anyone request or covenant ID.
-]] -- GLOBALS: GetLootMethod, GetAddOnMetadata, UnitClass
+]]
+-- GLOBALS: GetLootMethod, GetAddOnMetadata, UnitClass
 local addonname, addontable = ...
 --- @class RCLootCouncil : AceAddon-3.0, AceConsole-3.0, AceEvent-3.0, AceHook-3.0, AceTimer-3.0, AceBucket-3.0
 _G.RCLootCouncil = LibStub("AceAddon-3.0"):NewAddon(addontable, addonname, "AceConsole-3.0", "AceEvent-3.0",
@@ -869,7 +867,7 @@ end
 function RCLootCouncil:GetPlayersGear(link, equipLoc, gearsTable)
 	self.Log("GetPlayersGear", link, equipLoc)
 	local GetInventoryItemLink = GetInventoryItemLink
-	if gearsTable then -- lazy code
+	if gearsTable and #gearsTable > 0 then -- lazy code
 		GetInventoryItemLink = function(_, slotNum) return gearsTable[slotNum] end
 	end
 
@@ -1303,7 +1301,9 @@ function RCLootCouncil:GetContainerItemTradeTimeRemaining(container, slot)
 	tooltipForParsing:SetBagItem(container, slot) -- Set the tooltip content and show it, should hide the tooltip before function ends
 	if not tooltipForParsing:NumLines() or tooltipForParsing:NumLines() == 0 then return 0 end
 
-	local bindTradeTimeRemainingPattern = escapePatternSymbols(BIND_TRADE_TIME_REMAINING):gsub("%%%%s", "%(%.%+%)") -- PT locale contains "-", must escape that.
+	local bindTradeTimeRemainingPattern = escapePatternSymbols(BIND_TRADE_TIME_REMAINING) -- Escape special characters in translations
+		:gsub("1%%%$", "") -- Remove weird insertion in RU '%1$s'
+		:gsub("%%%%s", "%(%.%+%)") -- Create capture group for the time string
 	local bounded = false
 
 	for i = 1, tooltipForParsing:NumLines() or 0 do
@@ -1316,7 +1316,7 @@ function RCLootCouncil:GetContainerItemTradeTimeRemaining(container, slot)
 			if timeText then -- Within 2h trade window, parse the time text
 				tooltipForParsing:Hide()
 
-				for hour = 1, 0, -1 do -- time>=60s, format: "1 hour", "1 hour 59 min", "59 min", "1 min"
+				for hour = 4, 0, -1 do -- time>=60s, format: "1 hour", "1 hour 59 min", "59 min", "1 min"
 					local hourText = ""
 					if hour > 0 then hourText = self:CompleteFormatSimpleStringWithPluralRule(INT_SPELL_DURATION_HOURS, hour) end
 					for min = 59, 0, -1 do
@@ -1460,6 +1460,12 @@ function RCLootCouncil:GroupIterator()
 		i = i + 1
 		if i <= n then return groupMembers[i] end
 	end
+end
+
+--- Returns the number of group members, the player included (i.e. min 1).
+function RCLootCouncil:GetNumGroupMembers()
+	local num = GetNumGroupMembers()
+	return num > 0 and num or 1
 end
 
 function RCLootCouncil:GetNumberOfDaysFromNow(oldDate) return self.Utils:GetNumberOfDaysFromNow(oldDate) end
@@ -1807,6 +1813,7 @@ function RCLootCouncil:GetML()
 		end
 		if rank == 2 then -- Group leader. Btw, name2 can be nil when rank is 2.
 			name = self:UnitName(name2)
+			break
 		end
 	end
 	if name then return UnitIsGroupLeader("player"), Player:Get(name) end

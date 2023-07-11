@@ -1,3 +1,21 @@
+# 3.9.0
+
+## Changes
+
+Updated for patch 10.1.5
+
+### Roll column
+
+Switched to a new system that's much lighter on comms for propergating the automatic random rolls. This should fix the issues some people have with the last few sessions not receiving random rolls.
+
+This change is not backwards compatible, once the ML upgrades, everyone will have to in order to see the random rolls.
+
+## Bugfixes
+
+- *Fixed issues with detecting remaining trade time on clients with russian locale.*
+- *Fixed issue preventing the list of council members that has/still has to vote from showing.*
+
+
 # 3.8.2
 
 ## Changes
@@ -8,11 +26,10 @@ Now rolls transmog when that's the only option for the group leader.
 
 ### Transmog autopass
 
-Added a new option that allows you to not auto pass on items that's transmogable for you - 
-just uncheck "Auto Pass Transmog".
+Added a new option that allows you to not auto pass on items that's transmogable for you - just uncheck "Auto Pass Transmog".
 The accompanying option "Auto Pass Transmog Source" further refines it by allowing auto passes if you've already collected the transmog.
 
-Credits to [Utgard](https://github.com/Urtgard) for creating this.
+Credits to [Urtgard](https://github.com/Urtgard) for creating this.
 
 ### Void-Touched Curio
 

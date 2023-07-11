@@ -20,6 +20,8 @@ local objectMethods = {
 	end,
 	SetFrameLevel = function(self, level) self.values.frameLevel = level end,
 	GetFrameLevel = function(self) return self.values.frameLevel or 0 end,
+	GetScale = function(self) return self.scale end,
+	SetScale = function(self, scale) self.scale = scale end,
 }
 
 local noopMethods = {
@@ -118,7 +120,7 @@ for _, v in ipairs(noopMethods) do if not objectMethods[v] then objectMethods[v]
 Frame = {
 	New = function(name, parent)
 		local super = _G.ScriptRegion.New(name)
-		local object = {parent = parent, events = {}, values = {}}
+		local object = { parent = parent, events = {}, values = {}, }
 		return setmetatable(object, {
 			__index = function(self, v)
 				local k = objectMethods[v] or super[v]

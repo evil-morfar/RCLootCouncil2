@@ -5,6 +5,7 @@ local function noop() end
 local objectMethods = {
 	SetText = function(self, text) self.text = text end,
 	GetText = function(self) return self.text end,
+	GetStringWidth = function (self) return self.text:len() * 10 end,
 }
 
 local noopMethods = {
@@ -26,7 +27,6 @@ local noopMethods = {
 	"GetShadowOffset",
 	"GetSpacing",
 	"GetStringHeight",
-	"GetStringWidth",
 	"GetTextColor",
 	"GetTextScale",
 	"GetUnboundedStringWidth",
