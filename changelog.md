@@ -6,6 +6,7 @@
 ## Bugfixes
 
 - *Fixed issues with detecting remaining trade time on clients with russian locale.*
+- *Fixed issue preventing the list of council members that has/still has to vote from showing.*
 
 
 # 3.8.2

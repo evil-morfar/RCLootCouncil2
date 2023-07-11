@@ -1163,8 +1163,8 @@ function RCVotingFrame:UpdateLootStatus()
 end
 
 function RCVotingFrame:UpdatePeopleToVote()
-	local hasVoted = TempTable:Acquire()
-	local shouldVote = TempTable:Acquire()
+	local hasVoted = {}
+	local shouldVote = {}
 	for _, player in pairs(Council:Get()) do
 		tinsert(shouldVote, player.name)
 	end
@@ -1209,8 +1209,6 @@ function RCVotingFrame:UpdatePeopleToVote()
 		GameTooltip:Show()
 	end)
 	self.frame.rollResult:SetWidth(self.frame.rollResult.text:GetStringWidth())
-	TempTable:Release(hasVoted)
-	TempTable:Release(shouldVote)
 end
 
 function RCVotingFrame:UpdateSessionButtons()
