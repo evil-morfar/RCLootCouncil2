@@ -354,19 +354,25 @@ end
 
 
 ADDON_MSG_SENDER_OVERRIDE = nil
+--- Set to override the sender of the next addon message
+ADDON_MSG_SENDER_OVERRIDE_ONCE = nil
 function SendAddonMessage(prefix, message, distribution, target)
+	local sender = ADDON_MSG_SENDER_OVERRIDE_ONCE or ADDON_MSG_SENDER_OVERRIDE or "Sender"
 	if RegisterAddonMessagePrefix then --4.1+
 		assert(#message <= 255,
 			string.format("SendAddonMessage: message too long (%d bytes > 255)",
 				#message))
 		-- CHAT_MSG_ADDON(prefix, message, distribution, sender)
-		WoWAPI_FireEvent("CHAT_MSG_ADDON", prefix, message, distribution, ADDON_MSG_SENDER_OVERRIDE or "Sender")
+		WoWAPI_FireEvent("CHAT_MSG_ADDON", prefix, message, distribution, sender)
 	else -- allow RegisterAddonMessagePrefix to be nilled out to emulate pre-4.1
 		assert(#prefix + #message < 255,
 			string.format("SendAddonMessage: message too long (%d bytes)",
 				#prefix + #message))
 		-- CHAT_MSG_ADDON(prefix, message, distribution, sender)
-		WoWAPI_FireEvent("CHAT_MSG_ADDON", prefix, message, distribution, ADDON_MSG_SENDER_OVERRIDE or "Sender")
+		WoWAPI_FireEvent("CHAT_MSG_ADDON", prefix, message, distribution, sender)
+	end
+	if ADDON_MSG_SENDER_OVERRIDE_ONCE then
+		ADDON_MSG_SENDER_OVERRIDE_ONCE = nil
 	end
 end
 

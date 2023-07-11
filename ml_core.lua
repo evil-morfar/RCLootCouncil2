@@ -1613,7 +1613,7 @@ function RCLootCouncilML:OnReconnectReceived (sender)
 		-- REVIEW v2.2.6 For backwards compability we're just sending avotingFrame's lootTable
 		-- This is quite redundant and should be removed in the future
 		if db.observe or Council:Contains(requestPlayer) then -- Only send all data to councilmen
-			local table = addon:GetActiveModule("votingframe"):GetLootTable()
+			local table = CopyTable(addon:GetActiveModule("votingframe"):GetLootTable())
 			-- Remove our own voting data if any
 			for _, v in ipairs(table) do
 				v.haveVoted = false

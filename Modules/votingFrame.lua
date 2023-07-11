@@ -578,9 +578,11 @@ function RCVotingFrame:OnReconnectReceived (reconnectData)
 	-- end
 	local Reconnect = addon.Require "Data.Reconnect"
 	local data = Reconnect:RestoreFromTransmit(reconnectData)
+	local newLt = Reconnect:MergeWithLootTable(data, lootTable)
 	print "VF"
-	printtable(data)
+	-- printtable(data)
 	print "LootTable"
+	lootTable = newLt
 	printtable(lootTable)
 
 

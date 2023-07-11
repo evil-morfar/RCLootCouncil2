@@ -3,7 +3,7 @@ if os.getenv("LOCAL_LUA_DEBUGGER_VSCODE") == "1" then
 	require("lldebugger").start()
 end
 local addon = {
-	db = {global = { log = {}, cache = {}, errors = {}, }, },
+	db = { global = { log = {}, cache = {}, errors = {}, }, },
 	defaults = { global = { logMaxEntries = 2000, }, },
 }
 
@@ -256,19 +256,16 @@ describe("#Reconnect", function()
 			WoWAPI_FireUpdate(GetTime() + 10)
 			local firstLT = addon:GetActiveModule("votingframe"):GetLootTable()
 			-- Other Player sends reconnect (we don't respond to our own)
-			_G.ADDON_MSG_SENDER_OVERRIDE = player2
+			_G.ADDON_MSG_SENDER_OVERRIDE_ONCE = player2
 			Comms:GetSender(addon.PREFIXES.MAIN)(addon, "group", "reconnect")
-			-- wipe(addon:GetActiveModule("votingframe"):GetLootTable())
-			WoWAPI_FireUpdate(GetTime())
-			_G.ADDON_MSG_SENDER_OVERRIDE = player1
-			WoWAPI_FireUpdate(GetTime() + 0.02)
-			-- WoWAPI_FireUpdate(GetTime() + 1)
+			WoWAPI_FireUpdate(GetTime() + 0.081)
+			WoWAPI_FireUpdate(GetTime() + 10)
+			WoWAPI_FireUpdate(GetTime() + 10)
 			printtable(addon.db.global.log)
 			local newLt = addon:GetActiveModule("votingframe"):GetLootTable()
-			-- assert.spy(s).was.called(1)
-			printtable(firstLT[1].candidates["Player2-Realm1"])
-			printtable(newLt[1].candidates["Player2-Realm1"])
-			assert.are.equal(firstLT, newLt)
+			printtable(firstLT) --[1].candidates["Player2-Realm1"])
+			-- printtable(newLt[1].candidates["Player2-Realm1"])
+			assert.are.same(firstLT, newLt)
 		end)
 	end)
 end)
