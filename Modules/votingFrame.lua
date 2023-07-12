@@ -552,7 +552,7 @@ function RCVotingFrame:OnRRollsReceived(session, rolls)
 	table.sort(candidates, reversedSort)
 	for roll in rolls:gmatch("%d+") do
 		local candidate = tremove(candidates)
-		self:SetCandidateData(session, candidate, "roll", roll)
+		self:SetCandidateData(session, candidate, "roll", tonumber(roll))
 	end
 	self:Update()
 end

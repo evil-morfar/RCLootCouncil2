@@ -1,3 +1,9 @@
+## Changes
+
+## Bugfixes
+
+- *Fixed issue with random rolls not sorting properly (#240).*
+
 # 3.9.0
 
 ## Changes
