@@ -312,6 +312,7 @@ function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
 				end
 				self:Update()
 
+			-- Deprecated, replaced with 'rrolls'. Kept for backwards compatibility.
 			elseif command == "rolls" then
 				if addon:UnitIsUnit(sender, addon.masterLooter) then
 					local session, table = unpack(data)
@@ -319,6 +320,13 @@ function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
 						self:SetCandidateData(session, name, "roll", roll)
 					end
 					self:Update()
+				else
+					addon:Debug("Non-ML", sender, "sent rolls!")
+				end
+
+			elseif command == "rrolls" then
+				if addon:UnitIsUnit(sender, addon.masterLooter) then
+					self:OnRRollsReceived(unpack(data))
 				else
 					addon:Debug("Non-ML", sender, "sent rolls!")
 				end
@@ -474,31 +482,33 @@ function RCVotingFrame:HandleVote(session, name, vote, voter)
 	self:UpdatePeopleToVote()
 end
 
--- Get rolls ranged from 1 to 100 for all candidates, and guarantee everyone's roll is different.
-function RCVotingFrame:GenerateNoRepeatRollTable(ses)
+--- Get a number of rolls ranged from 1 to 100 that's guaranteed to be unique.
+--- @param numberToGenerate integer # The number of rolls to generate (max 100).
+--- @return string # Comma seperated list of rolls.
+function RCVotingFrame:GenerateNoRepeatRollTable(numberToGenerate)
+	assert(numberToGenerate <= 100, "Can't generate more than 100 rolls at a time.")
 	local rolls = {}
 	for i = 1, 100 do
 		rolls[i] = i
 	end
 
 	local t = {}
-	for name, _ in pairs(lootTable[ses].candidates) do
+	for i = 1, numberToGenerate do
 		if #rolls > 0 then
-			local i = math.random(#rolls)
-			t[name] = rolls[i]
-			tremove(rolls, i)
-		else -- We have more than 100 candidates !?!?
-			t[name] = 0
+			-- Pick a random roll from the list and remove it
+			local roll = tremove(rolls, math.random(#rolls))
+			t[i] = roll
 		end
 	end
-	return t
+	local result = table.concat(t, ",")
+	return result
 end
 
-function RCVotingFrame:DoRandomRolls(ses)
-	local table = self:GenerateNoRepeatRollTable(ses)
+function RCVotingFrame:DoRandomRolls(session)
+	local rolls = self:GenerateNoRepeatRollTable(addon:GetNumGroupMembers())
 	for k, v in ipairs(lootTable) do
-		if addon:ItemIsItem(lootTable[ses].link, v.link) then
-			addon:SendCommand("group", "rolls", k, table)
+		if addon:ItemIsItem(lootTable[session].link, v.link) then
+			addon:SendCommand("group", "rrolls", k, rolls)
 		end
 	end
 end
@@ -508,16 +518,37 @@ function RCVotingFrame:DoAllRandomRolls()
 
 	for ses, t in ipairs(lootTable) do
 		if not sessionsDone[ses] and not t.isRoll then -- Don't use auto rolls on session that requesting rolls from raid members.
-			local table = self:GenerateNoRepeatRollTable(ses)
+			local rolls = self:GenerateNoRepeatRollTable(addon:GetNumGroupMembers())
 			for k, v in ipairs(lootTable) do
 				if addon:ItemIsItem(t.link, v.link) then
 					sessionsDone[k] = true
-					addon:SendCommand("group", "rolls", k, table)
+					addon:SendCommand("group", "rrolls", k, rolls)
 				end
 			end
 		end
 	end
+end
 
+
+local function reversedSort(a,b) return a > b end
+
+---@param session integer The Session the rolls belongs to.
+---@param rolls string Comma seperated list of rolls.
+function RCVotingFrame:OnRRollsReceived(session, rolls)
+	-- Create and sort candidates
+	local candidates = {}
+	for name in pairs(lootTable[session].candidates) do
+		tinsert(candidates, name)
+	end
+
+	-- The rolls received corrosponds to our candidates in alphabetical order.
+	-- By reverse sorting, we can pop the last element and assign it as we go.
+	table.sort(candidates, reversedSort)
+	for roll in rolls:gmatch("%d+") do
+		local candidate = tremove(candidates)
+		self:SetCandidateData(session, candidate, "roll", tonumber(roll))
+	end
+	self:Update()
 end
 
 ------------------------------------------------------------------

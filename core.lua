@@ -1810,6 +1810,11 @@ function RCLootCouncil:GetGuildRanks()
 	return t;
 end
 
+--- Returns the number of group members, the player included (i.e. min 1).
+function RCLootCouncil:GetNumGroupMembers()
+	local num = GetNumGroupMembers()
+	return num > 0 and num or 1
+end
 
 function RCLootCouncil:GetNumberOfDaysFromNow(oldDate)
 	return self.Utils:GetNumberOfDaysFromNow(oldDate)
