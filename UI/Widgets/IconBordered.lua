@@ -5,12 +5,13 @@ local Object = {}
 
 -- varargs: texture
 function Object:New(parent, name, texture)
-   local b = addon.UI.CreateFrame("Button", name, parent, BackdropTemplateMixin and "BackdropTemplate")
-   b:SetSize(40,40)
+   local b = addon.UI.CreateFrame("Button", name, parent, "BackdropTemplate")
+   b:SetSize(40, 40)
    b:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square")
    b:GetHighlightTexture():SetBlendMode("ADD")
    b:SetNormalTexture(texture or "Interface\\InventoryItems\\WoWUnknownItem01")
    b:GetNormalTexture():SetDrawLayer("BACKGROUND")
+   b:GetNormalTexture():SetVertexColor(1, 1, 1)
    b:SetBackdrop({
       bgFile = "",
       edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
@@ -21,7 +22,7 @@ function Object:New(parent, name, texture)
    b:RegisterForClicks("AnyUp")
    b.SetBorderColor = self.SetBorderColor
    b.Desaturate = self.Desaturate
-	return b
+   return b
 end
 
 function Object:SetBorderColor(color)

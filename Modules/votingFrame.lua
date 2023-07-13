@@ -1083,10 +1083,11 @@ function RCVotingFrame:UpdateSessionButton(i, texture, link, awarded)
 			btn:SetPoint("TOP", sessionButtons[i-1], "BOTTOM", 0, -2)
 		end
 		btn:SetScript("Onclick", function() RCVotingFrame:SwitchSession(i); end)
-		btn:SetScript("Onclick", function() RCVotingFrame:SwitchSession(i); end)
 		btn.check = btn:CreateTexture("RCSessionButton" .. i .. "CheckMark", "OVERLAY")
 		btn.check:SetTexture("interface/raidframe/readycheck-ready")
+		btn.check:SetDesaturated(true)
 		btn.check:SetAllPoints()
+		btn.check:Hide()
 	end
 	-- then update it
 	btn:SetNormalTexture(texture or "Interface\\InventoryItems\\WoWUnknownItem01")
@@ -1094,8 +1095,13 @@ function RCVotingFrame:UpdateSessionButton(i, texture, link, awarded)
 	local lines = { format(L["Click to switch to 'item'"], link) }
 	if i == session then
 		btn:SetBorderColor("yellow")
+		btn.check:SetVertexColor(1, 1, 0, 1)
+		if awarded then
+			btn.check:Show()
+		end
 	elseif awarded then
 		btn:SetBorderColor("green")
+		btn.check:SetVertexColor(0, 1, 0, 1)
 		btn.check:Show()
 		tinsert(lines, L["This item has been awarded"])
 	else
