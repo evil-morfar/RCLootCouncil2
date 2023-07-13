@@ -3,6 +3,7 @@
 ## Bugfixes
 
 - *Fixed issue with random rolls not sorting properly (#240).*
+- *History now records the correct response instead of "Awarded" when awarding multiple copies of the same item to a player.*
 
 # 3.9.0
 

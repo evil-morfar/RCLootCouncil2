@@ -481,7 +481,17 @@ function RCVotingFrame:OnAwardedReceived (s, winner)
 			if oldWinner and not addon:UnitIsUnit(oldWinner,winner) then -- reawarded
 				self:SetCandidateData(k, oldWinner, "response", self:GetCandidateData(k, oldWinner, "real_response"))
 			end
-			self:SetCandidateData(k, winner, "real_response", self:GetCandidateData(k, winner, "response"))
+			local oldResponse = self:GetCandidateData(k, winner, "response")
+			if oldResponse == "AWARDED" then
+				-- We never want to record "Awarded" as the real response.
+				-- If we haven't already set "real_response" then somethings broken :(
+				if not self:GetCandidateData(k, winner, "real_response") then
+					ErrorHandler:LogError("Response is 'AWARDED' without a recorded 'real_response'")
+					addon.Log:D(k, v.link)
+				end
+			else
+				self:SetCandidateData(k, winner, "real_response", oldResponse)
+			end
 			self:SetCandidateData(k, winner, "response", "AWARDED")
 		end
 	end
@@ -1608,7 +1618,7 @@ function RCVotingFrame:GetAwardPopupData(session, name, data, reason)
 	return {
 		session 		= session,
 		winner		= name,
-		responseID	= data.response,
+		responseID	= data.real_response or data.response,
 		reason		= reason,
 		votes			= data.votes,
 		gear1 		= data.gear1,
