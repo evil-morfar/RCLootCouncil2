@@ -696,6 +696,9 @@ _G.RCTokenTable = {
 	[152530] = "ShoulderSlot",	-- Shoulders of the Antoran Vanquisher,
 	[152531] = "ShoulderSlot",	-- Shoulders of the Antoran Conqueror,
 	[152532] = "ShoulderSlot",	-- Shoulders of the Antoran Protector,
+
+	-- Manually added
+	[47242] = "MultiSlots"  ,	-- Trophy of the Crusade
 }
 
 -- The base item level for the token on normal difficulty
@@ -857,6 +860,7 @@ _G.RCTokenIlvl = {
 	[47557] = 258,	-- Regalia of the Grand Conqueror,
 	[47558] = 258,	-- Regalia of the Grand Protector,
 	[47559] = 258,	-- Regalia of the Grand Vanquisher,
+	[47242] = 245,  -- Trophy of the Crusade
 
 	-- Tier 10
 	[52025] = 264,	-- Vanquisher's Mark of Sanctification,
