@@ -1,5 +1,9 @@
 ## Changes
 
+### Voting Frame session buttons
+
+Selecting an awarded session now shows a yellow checkmark instead of nothing on the session button.
+
 ## Bugfixes
 
 - *Fixed issue with random rolls not sorting properly (#240).*
