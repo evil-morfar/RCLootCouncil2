@@ -207,7 +207,7 @@ function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
 				self:SetCandidateData(ses, name, "isTier", isTier)
 				self:SetCandidateData(ses, name, "isRelic", isRelic)
 				self:SetCandidateData(ses, name, "response", response)
-				self:Update()
+				self:UpdateSession(ses)
 
 			elseif command == "lootAck" then
 				-- v2.7.4: Extended to contain playerName, specID, ilvl, data
@@ -217,6 +217,7 @@ function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
 				if not specID then -- Old lootAck
 					for i = 1, #lootTable do
 						self:SetCandidateData(i, name, "response", "WAIT")
+						self:UpdateSession(i)
 					end
 				else
 					for k,d in pairs(sessionData) do
@@ -243,9 +244,9 @@ function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
 						elseif sessionData.response[i] == true then
 							self:SetCandidateData(i, name, "response", "AUTOPASS")
 						end
+						self:UpdateSession(i)
 					end
 				end
-				self:Update()
 
 			elseif command == "awarded" and addon:UnitIsUnit(sender, addon.masterLooter) then
 				self:ScheduleTimer(function()
@@ -302,15 +303,15 @@ function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
 							self:SetCandidateData(i, name, "response", "NOTHING")
 						end
 					end
+					self:UpdateSession(i)
 				end
-				self:Update()
 
 			elseif command == "response" then
 				local session, name, t = unpack(data)
 				for k,v in pairs(t) do
 					self:SetCandidateData(session, name, k, v)
 				end
-				self:Update()
+				self:UpdateSession(session)
 
 			-- Deprecated, replaced with 'rrolls'. Kept for backwards compatibility.
 			elseif command == "rolls" then
@@ -319,7 +320,7 @@ function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
 					for name, roll in pairs(table) do
 						self:SetCandidateData(session, name, "roll", roll)
 					end
-					self:Update()
+					self:UpdateSession(session)
 				else
 					addon:Debug("Non-ML", sender, "sent rolls!")
 				end
@@ -335,8 +336,8 @@ function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
 				local name, roll, sessions = unpack(data)
 				for _,ses in ipairs(sessions) do
 					self:SetCandidateData(ses, name, "roll", roll)
+					self:UpdateSession(ses)
 				end
-				self:Update()
 
 			elseif command == "reconnectData" and addon:UnitIsUnit(sender, addon.masterLooter) then
 				-- We assume we always receive a regular lootTable command first
@@ -548,13 +549,20 @@ function RCVotingFrame:OnRRollsReceived(session, rolls)
 		local candidate = tremove(candidates)
 		self:SetCandidateData(session, candidate, "roll", tonumber(roll))
 	end
-	self:Update()
+	self:UpdateSession(session)
 end
 
 ------------------------------------------------------------------
 --	Visuals
 -- @section Visuals
 ------------------------------------------------------------------
+
+--- Updates a particular session, but only if we're currently viewing it.
+--- Used to avoid updating sessions we can't see, which can cause resorts on our current session.
+function RCVotingFrame:UpdateSession(sessionToUpdate)
+	if session == sessionToUpdate then self:Update() end
+end
+
 --@param forceUpdate If false/nil, updates will be delayed to only happen once every MIN_UPDATE_INTERVAL
 function RCVotingFrame:Update(forceUpdate)
 	needUpdate = false
