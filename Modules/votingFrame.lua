@@ -481,7 +481,17 @@ function RCVotingFrame:OnAwardedReceived (s, winner)
 			if oldWinner and not addon:UnitIsUnit(oldWinner,winner) then -- reawarded
 				self:SetCandidateData(k, oldWinner, "response", self:GetCandidateData(k, oldWinner, "real_response"))
 			end
-			self:SetCandidateData(k, winner, "real_response", self:GetCandidateData(k, winner, "response"))
+			local oldResponse = self:GetCandidateData(k, winner, "response")
+			if oldResponse == "AWARDED" then
+				-- We never want to record "Awarded" as the real response.
+				-- If we haven't already set "real_response" then somethings broken :(
+				if not self:GetCandidateData(k, winner, "real_response") then
+					ErrorHandler:LogError("Response is 'AWARDED' without a recorded 'real_response'")
+					addon.Log:D(k, v.link)
+				end
+			else
+				self:SetCandidateData(k, winner, "real_response", oldResponse)
+			end
 			self:SetCandidateData(k, winner, "response", "AWARDED")
 		end
 	end
@@ -552,7 +562,7 @@ function RCVotingFrame:OnRRollsReceived(session, rolls)
 	table.sort(candidates, reversedSort)
 	for roll in rolls:gmatch("%d+") do
 		local candidate = tremove(candidates)
-		self:SetCandidateData(session, candidate, "roll", roll)
+		self:SetCandidateData(session, candidate, "roll", tonumber(roll))
 	end
 	self:Update()
 end
@@ -1231,6 +1241,7 @@ function RCVotingFrame:UpdateSessionButton(i, texture, link, awarded)
 		btn:SetScript("Onclick", function() RCVotingFrame:SwitchSession(i); end)
 		btn.check = btn:CreateTexture("RCSessionButton"..i.."CheckMark", "OVERLAY")
 		btn.check:SetTexture("interface/raidframe/readycheck-ready")
+		btn.check:SetDesaturated(true)
 		btn.check:SetAllPoints()
 		btn.check:Hide()
 	end
@@ -1241,8 +1252,13 @@ function RCVotingFrame:UpdateSessionButton(i, texture, link, awarded)
 	local lines = { format(L["Click to switch to 'item'"], link) }
 	if i == session then
 		btn:SetBorderColor("yellow")
+		btn.check:SetVertexColor(1, 1, 0, 1)
+		if awarded then
+			btn.check:Show()
+		end
 	elseif awarded then
 		btn:SetBorderColor("green")
+		btn.check:SetVertexColor(0, 1, 0, 1)
 		btn.check:Show()
 		tinsert(lines, L["This item has been awarded"])
 	else
@@ -1608,7 +1624,7 @@ function RCVotingFrame:GetAwardPopupData(session, name, data, reason)
 	return {
 		session 		= session,
 		winner		= name,
-		responseID	= data.response,
+		responseID	= data.real_response or data.response,
 		reason		= reason,
 		votes			= data.votes,
 		gear1 		= data.gear1,
