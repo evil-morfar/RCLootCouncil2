@@ -730,7 +730,7 @@ function LootHistory:ImportHistory(import)
 	import = import:gsub("    ", "\t")
 	local type = self:DetermineImportType(import)
 
-	if not type or type == "Unknown" then
+	if not type or type == "Unknown" or type == "tsv" then
 		addon:Print(L["import_not_supported"])
 		addon:Print(L["Accepted imports: 'Player Export' and 'CSV'"])
 		return

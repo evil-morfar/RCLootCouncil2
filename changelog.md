@@ -1,3 +1,9 @@
+## Changes
+
+## Bugfixes
+
+- *Trying to import tsv data will now show the correct error message instead of throwing an error.*
+
 # 3.9.2
 
 ## Changes
