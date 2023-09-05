@@ -1,3 +1,9 @@
+# 3.9.2
+
+## Changes
+
+Updated for patch 10.1.7
+
 # 3.9.1
 
 ## Changes
