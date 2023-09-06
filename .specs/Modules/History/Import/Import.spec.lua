@@ -18,7 +18,7 @@ describe("#Import", function()
 
 	describe("Basics", function()
 		it("should be able to determine import types", function()
-			assert.is.equal("tsv-csv", History:DetermineImportType(testCSVData))
+			assert.is.equal("csv", History:DetermineImportType(testCSVData))
 			assert.is.equal("playerexport", History:DetermineImportType(testPEData))
 			assert.is.equal("tsv-csv", History:DetermineImportType(private.testData[1]))
 			assert.is.equal("csv", History:DetermineImportType(private.testData[3]))
@@ -39,7 +39,7 @@ describe("#Import", function()
 			assert.is.equal("21:08:07", entry.time)
 			assert.is.equal("1558552087-9", entry.id)
 			assert.is.equal(
-				"|cffa335ee|Hitem:165514::::::::120:257::5:4:4799:43:1522:4786:::|h[Gloves of Spiritual Grace]|h|r",
+				"|cffa335ee|Hitem:165514:::::::::::5:4:4799:42:1522:4786::::::|h[Gloves of Spiritual Grace]|h|r",
 				entry.lootWon)
 			assert.is.equal("Mainspec/Need", entry.response)
 			assert.is.equal(0, entry.votes)
@@ -50,7 +50,7 @@ describe("#Import", function()
 			assert.is.equal(2070, entry.mapID)
 			assert.is.equal(13, entry.groupSize)
 			assert.is.equal(
-				"|cffa335ee|Hitem:162544:5939:::::::120:257::23:3:4779:1517:4783:::|h[Jade Ophidian Band]|h|r",
+				"|cffa335ee|Hitem:162544:5942:153709:::::::::16:4:5010:4802:1542:4786::::::|h[Jade Ophidian Band]|h|r",
 				entry.itemReplaced1)
 			assert.is.equal(nil, entry.itemReplaced2)
 			assert.is.equal(1, entry.responseID)
@@ -119,26 +119,98 @@ describe("#Import", function()
 	end)
 
 	describe("Imports large data sets", function()
-		pending("should import large tsv-csv", function()
+		it("should import large tsv-csv", function()
 			local s = stub(addon, "Print")
-			History:ImportTSV_CSV(testCSVData)
+			History:ImportCSV(testCSVData)
 			assert.stub(s).was_called_with(match.is_ref(addon),
-				string.format(L["Successfully imported 'number' entries."], 2191))
+				string.format(L["Successfully imported 'number' entries."], 2403))
 		end)
 
 		it("should import large player export", function()
 			local s = stub(addon, "Print")
 			History:ImportPlayerExport(testPEData)
 			assert.stub(s).was_called_with(match.is_ref(addon),
-				string.format(L["Successfully imported 'number' entries."], 2064))
+				string.format(L["Successfully imported 'number' entries."], 2378))
+		end)
+	end)
+
+	describe("worst case", function()
+		it("should import with minimally required fields", function()
+			local s = stub(addon, "Print")
+			local data =
+			[[player	date	time	id	item	itemID	itemString	response	votes	class	instance	boss	difficultyID	mapID	groupSize	gear1	gear2	responseID	isAwardReason	subType	equipLoc	note	owner
+Gemenim					165524												1					]]
+
+			History:ImportHistory(data)
+			assert.stub(s).was_called_with(match.is_ref(addon),
+				string.format(L["Successfully imported 'number' entries."], 1))
+			local entry = addon:GetHistoryDB()["Gemenim-Realm Name"][1]
+			assert.are.equal(
+				"|cffa335ee|Hitem:165524:::::::::::5:3:4799:1522:4786::::::|h[Amethyst-Studded Bindings]|h|r",
+				entry.lootWon)
+			assert.are.equal(1, entry.responseID)
+		end)
+		it("should fail when missing 'player'", function()
+			local s = stub(addon, "Print")
+			local data =
+			[[player	date	time	id	item	itemID	itemString	response	votes	class	instance	boss	difficultyID	mapID	groupSize	gear1	gear2	responseID	isAwardReason	subType	equipLoc	note	owner
+					165524				ROGUE								1					]]
+
+			History:ImportHistory(data)
+			assert.stub(s).was_called_with(match.is_ref(addon),
+				match.Matches("Malformed Name", 0, true))
+		end)
+		it("should fail when missing 'itemID' or 'itemString'", function()
+			local s = stub(addon, "Print")
+			local data =
+			[[player	date	time	id	item	itemID	itemString	response	votes	class	instance	boss	difficultyID	mapID	groupSize	gear1	gear2	responseID	isAwardReason	subType	equipLoc	note	owner
+Gemenim									ROGUE								1					]]
+			History:ImportHistory(data)
+			assert.stub(s).was_called_with(match.is_ref(addon),
+				match.Matches("Must have either 'itemID' or 'itemString'", 0, true))
+		end)
+
+		it("should fail when missing 'responseID'", function()
+			local s = stub(addon, "Print")
+			local data =
+			[[player	date	time	id	item	itemID	itemString	response	votes	class	instance	boss	difficultyID	mapID	groupSize	gear1	gear2	responseID	isAwardReason	subType	equipLoc	note	owner
+Gemenim					165524				ROGUE													]]
+
+			History:ImportHistory(data)
+			assert.stub(s).was_called_with(match.is_ref(addon),
+				match.Matches("Malformed responseID (string or numbers only)", 0, true))
+		end)
+
+		it("should fail if header is malformed", function()
+			local s = stub(addon, "Print")
+			-- 'player' is required for determining import type
+			History:ImportHistory(
+				[[plater	date	time	id	item	itemID	itemString	response	votes	class	instance	boss	difficultyID	mapID	groupSize	gear1	gear2	responseID	isAwardReason	subType	equipLoc	note	owner
+Gemenim					165524												1					]])
+			assert.stub(s).was_called_with(match.is_ref(addon), L["import_not_supported"])
+			assert.stub(s).was_called_with(match.is_ref(addon), L["Accepted imports: 'Player Export' and 'CSV'"])
+
+			s:clear()
+			-- date = dat => malformed header
+			History:ImportHistory(
+				[[player	dat	time	id	item	itemID	itemString	response	votes	class	instance	boss	difficultyID	mapID	groupSize	gear1	gear2	responseID	isAwardReason	subType	equipLoc	note	owner
+Gemenim					165524												1					]])
+			assert.stub(s).was_called_with(match.is_ref(addon), L["import_malformed_header"])
+
+			s:clear()
+
+			-- tsv
+			History:ImportHistory(private.testData[4])
+			assert.stub(s).was_called_with(match.is_ref(addon), L["import_not_supported"])
+			assert.stub(s).was_called_with(match.is_ref(addon), L["Accepted imports: 'Player Export' and 'CSV'"])
 		end)
 	end)
 end)
 
 
 private.testData = {
-	[1] = [[player	date	time	id	item	itemID	itemString	response	votes	class	instance	boss	difficultyID	mapID	groupSize	gear1	gear2	responseID	isAwardReason	subType	equipLoc	note	owner
-   Cindermuff-Ravencrest	22/5/19	20:08:07	1558552087-9	[Gloves of Spiritual Grace]	165514	item:165514::::::::120:104::5:4:4799:43:1522:4786	Stat & iLvl upgrade	0	ROGUE	"Battle of Dazar'alor-Heroic"	"Champion of the Light"	15	2070	13	162544		1	false	Leather	Hands		Cindermuff-Ravencrest]], -- Google Sheet copy
+	[1] = [[player	date	time	id	item	itemID	itemString	response	votes	class	instance	boss	difficultyID	mapID	groupSize	gear1	gear2	responseID	isAwardReason	subType	equipLoc	note	owner		
+   Cindermuff-Ravencrest	22/5/19	20:08:07	1558552087-9	[Gloves of Spiritual Grace]	165514	item:165514::::::::120:104::5:4:4799:43:1522:4786	Stat & iLvl upgrade	0	ROGUE	"Battle of Dazar'alor-Heroic"	"Champion of the Light"	15	2070	13	162544		1	false	Leather	Hands		Cindermuff-Ravencrest		]], -- Google Sheet copy
 	[2] = [[player	date	time	id	item	itemID	itemString	response	votes	class	instance	boss	difficultyID	mapID	groupSize	gear1	gear2	responseID	isAwardReason	subType	equipLoc	note	owner
    Cindermuff-Ravencrest	22/5/19	20:08:07	1558552087-10	162544	165514	item:165514::::::::120:104::5:4:4799:43:1522:4786	Stat & iLvl upgrade	0	ROGUE	Battle of Dazar'alor-Heroic	Champion of the Light	15	2070	13	162544		1	false	Leather	Hands		Cindermuff-Ravencrest
    Stryx-Ravencrest	23/9/18	19:57:50	1537729070-13	[Twitching Tentacle of Xalzaix]	160656	item:160656::::::::120:104::3:3:4798:1477:4786	Best in Slot	0	PALADIN	Uldir-Normal	Mythrax	14	1861	21	162544	162544	1	false	Miscellaneous	Trinket		Unknown]], -- Google Sheet copy

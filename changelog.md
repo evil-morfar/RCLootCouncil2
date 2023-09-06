@@ -1,5 +1,14 @@
 ## Changes
 
+### CSV import
+
+Smoothened the whole experience, along with some quality of life changes:
+
+- `owner` no longer needs to be set when importing csv data.
+- trailing spaces and/or tabs in both header and data are now ignored.
+- fixed issue in line validation making error messages more useful.
+
+
 ## Bugfixes
 
 - *Trying to import tsv data will now show the correct error message instead of throwing an error.*
