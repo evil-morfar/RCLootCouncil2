@@ -1,3 +1,9 @@
+# 3.9.3
+
+## Bugfixes
+
+- *Fixed `nil` errors causing error handler to throw errors.*
+
 # 3.9.2
 
 ## Changes
