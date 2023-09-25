@@ -8,10 +8,13 @@
       do_trade       P - ML tells us to perfom a trade.
 ]]
 
-local _,addon = ...
+--- @class RCLootCouncil
+local addon = select(2, ...)
+--- @class TradeUI : AceEvent-3.0, AceTimer-3.0
 local TradeUI = addon:NewModule("TradeUI", "AceEvent-3.0", "AceTimer-3.0")
 addon.TradeUI = TradeUI -- Shorthand for easier access
 local ST = LibStub("ScrollingTable")
+--- @type RCLootCouncilLocale
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 local LibDialog = LibStub("LibDialog-1.0")
 local _G = _G
@@ -27,9 +30,9 @@ local UPDATE_TIME_INTERVAL = 1 -- 1 sec
 local TRADE_ADD_DELAY = 0.100 -- sec
 
 -- lua
-local select, GetItemInfoInstant, pairs, ipairs,  unpack, tinsert, wipe, format, GetTime, CheckInteractDistance, InitiateTrade
-    = select, GetItemInfoInstant, pairs, ipairs,  unpack, tinsert, wipe, format, GetTime, CheckInteractDistance, InitiateTrade
--- GLOBALS: GetContainerNumSlots, ClickTradeButton, PickupContainerItem, ClearCursor, GetContainerItemInfo, GetContainerItemLink, GetTradePlayerItemInfo,
+local select, GetItemInfoInstant, pairs, ipairs,  unpack, tinsert, wipe, format, GetTime, InitiateTrade
+    = select, GetItemInfoInstant, pairs, ipairs,  unpack, tinsert, wipe, format, GetTime, InitiateTrade
+-- GLOBALS: ClickTradeButton, PickupContainerItem, ClearCursor, GetTradePlayerItemInfo,
 -- GLOBALS: IsModifiedClick, HandleModifiedItemClick, GetTradePlayerItemLink, Ambiguate
 
 function TradeUI:OnInitialize()
@@ -39,6 +42,7 @@ function TradeUI:OnInitialize()
       { name = "", width = ROW_HEIGHT - 5},-- Arrow
       { name = "", width = 100,},          -- Recipient
       { name = "", width = 40,},           -- Trade
+      { name = "", width = ROW_HEIGHT/2},            -- Delete
    }
    self:Enable()
 end
@@ -49,6 +53,7 @@ function TradeUI:OnEnable()
    self.isTrading = false  -- Are we currently trading
    self.tradeItems = {}    -- Items we are currently trading
    self.tradeTarget = nil  -- Name of our last trade target
+   self.itemsInTradeWindow = {} --- @type SkipInventoryItem[]
 
    self:RegisterComms()
    self:RegisterEvent("TRADE_SHOW", "OnEvent_TRADE_SHOW")
@@ -86,7 +91,9 @@ end
 function TradeUI:Hide()
    addon.Log:d("TradeUI:Hide()")
    self:CancelTimer(update_targets_timer)
-   self.frame:Hide()
+   if self.frame then
+      self.frame:Hide()
+   end
 end
 
 function TradeUI:Update(forceShow)
@@ -102,6 +109,7 @@ function TradeUI:Update(forceShow)
             {value = "-->"},
             {value = v.args.recipient and addon.Ambiguate(v.args.recipient) or "Unknown", color = addon:GetClassColor(v.args.recipient.class or "nothing")},
             {value = _G.TRADE, color = self.GetTradeLabelColor, colorargs = {self, v.args.recipient},},
+            {DoCellUpdate = self.SetCellDelete },
          }
       }
    end
@@ -126,6 +134,57 @@ function TradeUI:OnDoTrade (trader, item, winner)
    end
 end
 
+local function getToTradeItemWithNoRecipient(item)
+   for _, v in ipairs(addon.ItemStorage:GetAllItemsOfType("to_trade")) do
+      if addon:ItemIsItem(v.link, item) and not v.args.recipient then
+         return v
+      end
+   end
+end
+
+local function getToTradeItemWithSession(item, session)
+   for _, v in ipairs(addon.ItemStorage:GetAllItemsOfType("to_trade")) do
+      if addon:ItemIsItem(v.link, item) and v.args.session and v.args.session == session then
+         return v
+      end
+   end
+end
+
+---@param item ItemString Item to find.
+---@param session number Session.
+---@param winner string Name of the winner.
+local function getItemFromLootSession(item, session, winner)
+   -- If we have a 'temp' item, then use that.
+   local Item = addon.ItemStorage:GetItem(item, "temp")
+   if Item then
+      addon.Log:d("Found item as temp")
+      return Item
+   end
+
+   -- Changed award?
+   Item = getToTradeItemWithSession(item, session)
+   if Item then
+      addon.Log:d("Reaward - changing winner from ", Item.args.recipient, " to ", winner)
+      return Item
+   end
+
+   -- Maybe the item is registered as "to_trade"
+   Item = getToTradeItemWithNoRecipient(item)
+   if Item then
+      addon.Log:d("Found as 'to_trade'")
+      return Item
+   end
+
+   -- If we still haven't found it, then create a new
+   return addon.ItemStorage:New(item, "to_trade", {recipient = winner, session = session}):Store()
+end
+
+-- These functions will be used multiple times, so make them static
+local funcTradeTargetIsRecipient = function(v) return addon:UnitIsUnit(TradeUI.tradeTarget, v.args.recipient) end  -- Our trade target is the winner
+local funcItemHasMoreTimeLeft    = function(v) return GetTime() < (v.time_added + v.time_remaining) end            -- There's still time remaining
+local funcStorageTypeIsToTrade   = function(v) return v.type == "to_trade" end                                     -- The stored item type is "to_trade"
+
+
 function TradeUI:OnAwardReceived (session, winner, trader)
    if addon:UnitIsUnit(trader, "player") then
       -- We should give our item to 'winner'
@@ -134,16 +193,7 @@ function TradeUI:OnAwardReceived (session, winner, trader)
       local lootSession = addon:GetLootTable()[session]
       addon.Log:d("OnAwardReceived", lootSession, session, winner, trader)
       if lootSession then
-         Item = addon.ItemStorage:GetItem(lootSession.link, "temp") -- Update our temp item
-         addon.Log:d("Found item as temp")
-         if not Item then -- No temp item - maybe a changed award?
-            -- In that case we should have the item registered as "to_trade"
-            Item = addon.ItemStorage:GetItem(lootSession.link, "to_trade")
-            if not Item then
-               -- If we still don't have, then create a new
-               Item = addon.ItemStorage:New(lootSession.link, "to_trade", {recipient = winner, session = session}):Store()
-            end
-         end
+         Item = getItemFromLootSession(lootSession.link, session, winner)
          Item.type = "to_trade"
          Item.args.recipient = winner
          Item.args.session = session
@@ -200,7 +250,20 @@ end
 function TradeUI:OnEvent_TRADE_SHOW (event, ...)
    self.isTrading = true
    wipe(self.tradeItems)
-   self.tradeTarget = addon:UnitName("NPC")
+
+   -- Try to grab the trader from Blizzard UI
+   local target = _G.TradeFrameRecipientNameText:GetText()
+   if not target or target == "" then
+      target = "NPC" -- Otherwise fallback to `UnitName("NPC")`
+   end
+
+   -- If target is from another realm, the name in the trade frame will be "Name(*)"
+   if target:find("(*)") then
+		-- Remove the "(*)" so `UnitName` can attach realm.
+		target = string.sub(target, 1, -4)
+   end
+   self.tradeTarget = addon:UnitName(target)
+
    local count = self:GetNumAwardedInBagsToTradeWindow()
 
    if count > 0 then
@@ -214,6 +277,7 @@ end
 
 function TradeUI:OnEvent_TRADE_CLOSED (event, ...)
    self.isTrading = false
+   wipe(self.itemsInTradeWindow)
 end
 
 function TradeUI:OnEvent_TRADE_ACCEPT_UPDATE (event, ...) -- Record the item traded
@@ -232,8 +296,21 @@ function TradeUI:OnEvent_UI_INFO_MESSAGE (event, ...)
    if select(1, ...) == _G.LE_GAME_ERR_TRADE_COMPLETE then -- Trade complete. Remove items from db.baggedItems if traded to winners
       addon.Log:d("TradeUI: Traded item(s) to", self.tradeTarget)
       for _, link in ipairs(self.tradeItems) do
-         local Item = addon.ItemStorage:GetItem(link)
-         if Item and Item.type and Item.type == "to_trade" then
+         -- At this point we know we've traded a certain item to a certain player.
+         -- We now need to find that item in our storage. There might be several such items,
+         -- so we should select the one belonging to our trade target (if possible!),
+         -- otherwise just the first we find.
+         local Items = addon.ItemStorage:GetAllItemsMultiPred(funcStorageTypeIsToTrade,
+            function(v) return addon:ItemIsItem(v.link, link) end)
+         local Item
+         if #Items > 0 then
+            -- Try get the first item belonging to our trade target
+            Item = select(2, FindInTableIf(Items, funcTradeTargetIsRecipient))
+            if not Item then
+               Item = Items[1]
+            end
+         end
+         if Item then
             if addon:UnitIsUnit(self.tradeTarget, Item.args.recipient) then
                addon:Send("group", "trade_complete", link, self.tradeTarget, addon.playerName)
             elseif Item.args.recipient and not addon:UnitIsUnit(self.tradeTarget, Item.args.recipient) then
@@ -245,17 +322,12 @@ function TradeUI:OnEvent_UI_INFO_MESSAGE (event, ...)
                addon.Log:D("Target:", UnitName("target"))
                addon.Log:D("NPC:", UnitName("NPC"))
             end
+            addon.ItemStorage:RemoveItem(Item)
          end
-         addon.ItemStorage:RemoveItem(link)
       end
       self:Update()
    end
 end
-
--- These functions will be used multiple times, so make them static
-local funcTradeTargetIsRecipient = function(v) return addon:UnitIsUnit(TradeUI.tradeTarget, v.args.recipient) end  -- Our trade target is the winner
-local funcItemHasMoreTimeLeft    = function(v) return GetTime() < (v.time_added + v.time_remaining) end            -- There's still time remaining
-local funcStorageTypeIsToTrade   = function(v) return v.type == "to_trade" end                                     -- The stored item type is "to_trade"
 
 function TradeUI:GetNumAwardedInBagsToTradeWindow()
    return #addon.ItemStorage:GetAllItemsMultiPred(
@@ -271,21 +343,24 @@ function TradeUI:GetStoredItemBySession (session)
 end
 
 local function addItemToTradeWindow (tradeBtn, Item)
-   addon.Log:d("addItemToTradeWindow", tradeBtn, Item)
-   local c,s = addon.ItemStorage:GetItemContainerSlot(Item)
-   if not c then -- Item is gone?!
-      addon:Print(L["trade_item_to_trade_not_found"])
-      return addon.Log:E("TradeUI", "Item missing when attempting to trade", Item.link, TradeUI.tradeTarget)
-   end
-   local _, _, _, _, _, _, link = GetContainerItemInfo(c, s)
-   if addon:ItemIsItem(link, Item.link) then -- Extra check, probably also redundant
-      addon.Log:d("Trading", link, c,s)
-      ClearCursor()
-      PickupContainerItem(c, s)
-      ClickTradeButton(tradeBtn)
-   else -- Shouldn't happen
-      return addon.Log:E("TradeUI", "Item link mismatch", link, Item.link)
-   end
+	local c,s = addon.ItemStorage:GetItemContainerSlot(Item, TradeUI.itemsInTradeWindow)
+
+	if not c or not s then -- Item is gone?!
+		addon:Print(L["trade_item_to_trade_not_found"])
+		return addon.Log:E("TradeUI", "Item missing when attempting to trade", Item.link, TradeUI.tradeTarget)
+	end
+
+	local containerInfo = addon.C_Container.GetContainerItemInfo(c, s)
+
+	if containerInfo and addon:ItemIsItem(containerInfo.hyperlink, Item.link) then -- Extra check, probably also redundant
+		addon.Log:d("Trading", Item.link, c,s)
+		ClearCursor()
+		addon.C_Container.PickupContainerItem(c, s)
+		ClickTradeButton(tradeBtn)
+		tinsert(TradeUI.itemsInTradeWindow, {container = c, slot = s})
+	else -- Shouldn't happen
+		return addon.Log:E("TradeUI", "Item link mismatch", containerInfo.hyperlink, Item.link)
+	end
 end
 
 function TradeUI:AddAwardedInBagsToTradeWindow()
@@ -326,8 +401,10 @@ end
 function TradeUI:GetFrame()
    if self.frame then return self.frame end
 
-   local f = addon.UI:NewNamed("Frame", UIParent, "RCDefaultTradeUIFrame", "RCLootCouncil Trade UI", nil, 220)
+   local f = addon.UI:NewNamed("RCFrame", UIParent, "RCDefaultTradeUIFrame", "RCLootCouncil Trade UI", nil, 220)
+   addon.UI:RegisterForEscapeClose(f, function() if self:IsEnabled() then self:Hide() end end)
    f.st = ST:CreateST(self.scrollCols, 5, ROW_HEIGHT, nil, f.content)
+   f.st.head:SetHeight(0) -- we don't need it, but it will cover the title frame
    f.st.frame:SetPoint("TOPLEFT",f,"TOPLEFT",10,-20)
    f.st:RegisterEvents({
       ["OnClick"] = function(rowFrame, cellFrame, data, cols, row, realrow, column, table, button, ...)
@@ -355,4 +432,30 @@ end
 
 function TradeUI:GetTradeLabelColor(target)
    return CheckInteractDistance(Ambiguate(target, "short"), 2) and {r=0,g=1,b=0,a=1} or {r=1,g=0,b=0,a=1}
+end
+
+function TradeUI.SetCellDelete(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
+	if not frame.created then
+      frame:SetHeight(ROW_HEIGHT / 2)
+		frame:SetNormalTexture("Interface\\Buttons\\UI-GroupLoot-Pass-Up")
+		frame:SetScript("OnEnter", function()
+			addon:CreateTooltip(L["Double click to delete this entry."])
+		end)
+		frame:SetScript("OnLeave", function() addon:HideTooltip() end)
+		frame.created = true
+	end
+	frame:SetScript("OnClick", function()
+		local link = data[realrow].link
+		if frame.lastClick and GetTime() - frame.lastClick <= 0.5 then
+			frame.lastClick = nil
+			-- Do deleting
+			addon.Log:D("Deleting:", link)
+			tremove(data, realrow)
+
+         local Item = addon.ItemStorage:GetItem(link, "to_trade")
+         addon.ItemStorage:RemoveItem(Item)
+		else
+			frame.lastClick = GetTime()
+		end
+	end)
 end

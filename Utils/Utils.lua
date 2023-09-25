@@ -2,8 +2,10 @@
 -- Creates RCLootCouncil.Utils namespace for utility functions
 -- @Author Potdisc
 -- Create Date : 27/7/2018 20:49:10
----@type RCLootCouncil
-local _,addon = ...
+
+---@class RCLootCouncil
+local addon = select(2, ...)
+--- @type RCLootCouncilLocale
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 local Utils = {}
 addon.Utils = Utils
@@ -66,8 +68,8 @@ local NEUTRALIZE_ITEM_PATTERN = "item:(%d*):(%d*):(%d*):(%d*):(%d*):(%d*):(%d*):
 local NEUTRALIZE_ITEM_REPLACEMENT = "item:%1:%2:%3:%4:%5:%6:%7::::"
 
 --- Removes any character specific data from an item
--- @param item Any itemlink, itemstring etc.
--- @return The same item with level, specID, uniqueID removed
+--- @param item string Any itemlink, itemstring etc.
+--- @return string #The same item with level, specID, uniqueID removed
 function Utils:NeutralizeItem (item)
 	return item:gsub(NEUTRALIZE_ITEM_PATTERN, NEUTRALIZE_ITEM_REPLACEMENT)
 end
@@ -92,8 +94,7 @@ end
 -- REVIEW FrameXML/Utils have something like this
 --- Calculates how long ago a given date was.
 -- Assumes the date is of year 2000+.
--- @param oldDate A string specifying the date, formatted as "dd/mm/yy".
--- @return day, month, year.
+--- @param oldDate string A string specifying the date, formatted as "dd/mm/yy".
 function Utils:GetNumberOfDaysFromNow(oldDate)
 	local d, m, y = strsplit("/", oldDate, 3)
 	local sinceEpoch = time({year = "20"..y, month = m, day = d, hour = 0}) -- convert from string to seconds since epoch
@@ -103,8 +104,11 @@ function Utils:GetNumberOfDaysFromNow(oldDate)
 end
 
 --- Takes the return value from :GetNumberOfDaysFromNow() and converts it to text.
--- @see RCLootCouncil:GetNumberOfDaysFromNow
--- @return A formatted string.
+--- @see Utils:GetNumberOfDaysFromNow
+--- @param day number
+--- @param month number
+--- @param year number
+--- @return string #A formatted string.
 function Utils:ConvertDateToString(day, month, year)
 	local text = format(L["x days"], day)
 	if year > 0 then
@@ -119,7 +123,8 @@ end
 function Utils:GetNumFreeBagSlots()
    local result = 0
    for i = 1, _G.NUM_BAG_SLOTS do
-      result = result + (GetContainerNumFreeSlots(i))
+		result = result + (addon.C_Container.GetContainerNumFreeSlots(i))
+
    end
    return result
 end
@@ -144,28 +149,37 @@ end
 
 
 --- Checks if the item is in our blacklist
--- COMBAK Should be moved to it's own class in the future
--- @param item Any valid input for `GetItemInfoInstant`
--- @return boolean True if the item is blacklisted
+-- TODO Should be moved to it's own class in the future
+--- @param item string Any valid input for *GetItemInfoInstant()*
+--- @return boolean #True if the item is blacklisted
 function Utils:IsItemBlacklisted(item)
    if not item then return false end
-   local _,_,_,_,_,itemClassID, itemsubClassID = GetItemInfoInstant(item)
+   local itemId,_,_,_,_,itemClassID, itemsubClassID = GetItemInfoInstant(item)
    if not (itemClassID and itemsubClassID) then return false end
    if addon.blacklistedItemClasses[itemClassID] then
       if addon.blacklistedItemClasses[itemClassID].all or addon.blacklistedItemClasses[itemClassID][itemsubClassID] then
-         return true
+        if addon.blackListOverride[itemId] then return false end
+		return true
       end
    end
    return false
 end
 
 --- Checks for outdated versions.
+---@param baseVersion string
+---@param newVersion string
+---@param basetVersion string
+---@param newtVersion string
+---@return VersionCodes
 function Utils:CheckOutdatedVersion (baseVersion, newVersion, basetVersion, newtVersion)
    baseVersion = baseVersion or addon.version
 
    if strfind(newVersion, "%a+") then return self:Debug("Someone's tampering with version?", newVersion) end
 
-   if addon:VersionCompare(baseVersion,newVersion) then
+	if newtVersion and not basetVersion then
+		return addon.VER_CHECK_CODES[1] -- Don't treat test versions as the latest
+
+	elseif addon:VersionCompare(baseVersion,newVersion) then
 		return addon.VER_CHECK_CODES[2] -- Outdated
 
 	elseif basetVersion and newtVersion and basetVersion < newtVersion then
@@ -175,7 +189,6 @@ function Utils:CheckOutdatedVersion (baseVersion, newVersion, basetVersion, newt
 		return addon.VER_CHECK_CODES[2] -- Test version got released
 
 	else
-
       return addon.VER_CHECK_CODES[1] -- All fine
 	end
 end
@@ -269,4 +282,16 @@ function Utils:UnitIsUnit(unit1, unit2)
 	-- I.e. UnitIsUnit("Potdisc", "potdisc") works, but UnitIsUnit("Æver", "æver") doesn't.
 	-- Since I can't find a way to ensure consistant returns from UnitName(), just lowercase units here before passing them.
    return UnitIsUnit(unit1:lower(), unit2:lower())
+end
+
+--- Returns the current loot threshold.
+--- @return integer @The current loot threshold.
+function Utils:GetLootThreshold()
+	-- Retail
+	if WOW_PROJECT_MAINLINE == WOW_PROJECT_ID then
+		return addon.MIN_LOOT_THRESHOLD -- Consider making this an option
+
+	else
+		return GetLootThreshold() or 1
+	end
 end

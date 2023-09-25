@@ -1,6 +1,8 @@
-local _, addon = ...
+--- @type RCLootCouncil
+local addon = select(2, ...)
 
-local name = "Button"
+local name = "RCButton"
+--- @class RCButton  : BackdropTemplate, Button, UI.embeds
 local Object = {}
 
 function Object:New(parent, name)

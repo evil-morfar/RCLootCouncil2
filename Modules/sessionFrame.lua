@@ -2,10 +2,13 @@
 -- DefaultModule - Requires ml_core.lua or similary functionality.
 -- @author Potdisc
 -- Create Date : 1/20/2015 3:48:38 AM
----@type RCLootCouncil
-local _,addon = ...
+
+--- @type RCLootCouncil
+local addon = select(2, ...)
+--- @class RCSessionFrame : AceTimer-3.0, AceEvent-3.0
 local RCSessionFrame = addon:NewModule("RCSessionFrame", "AceTimer-3.0", "AceEvent-3.0")
 local ST = LibStub("ScrollingTable")
+--- @type RCLootCouncilLocale
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 
 local ml;
@@ -74,10 +77,10 @@ function RCSessionFrame:Show(data, disableAwardLater)
 			-- that's already in a running session.
 			ml:SortLootTable(data)
 		end
-		self:ExtractData(data)
-		self.frame.st:SetData(self.frame.rows)
-		self:Update()
 	end
+	self:ExtractData(data)
+	self.frame.st:SetData(self.frame.rows)
+	self:Update()
 end
 
 function RCSessionFrame:Hide()
@@ -180,8 +183,8 @@ end
 function RCSessionFrame:GetFrame()
 	if self.frame then return self.frame end
 
-	local f = addon.UI:NewNamed("Frame", UIParent, "DefaultRCSessionSetupFrame", L["RCLootCouncil Session Setup"], 260)
-
+	local f = addon.UI:NewNamed("RCFrame", UIParent, "DefaultRCSessionSetupFrame", L["RCLootCouncil Session Setup"], 260)
+	addon.UI:RegisterForEscapeClose(f, function() if self:IsEnabled() then self:Disable() end end)
 	local tgl = CreateFrame("CheckButton", f:GetName().."Toggle", f.content, "ChatConfigCheckButtonTemplate")
 	getglobal(tgl:GetName().."Text"):SetText(L["Award later?"])
 	tgl:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", 10, 40)
@@ -215,7 +218,7 @@ function RCSessionFrame:GetFrame()
 				end)
 			end
 		else
-			if Council:GetNum() == 0 then
+			if not addon.hasReceivedCouncil then
 				addon:Print(L["Please wait a few seconds until all data has been synchronized."])
 				return addon.Log:D("Data wasn't ready", Council:GetNum())
 			elseif InCombatLockdown() and not addon.db.profile.skipCombatLockdown then
@@ -252,6 +255,7 @@ function RCSessionFrame:GetFrame()
 	f.lootStatus.text:SetJustifyH("LEFT")
 
 	local st = ST:CreateST(self.scrollCols, 5, ROW_HEIGHT, nil, f.content)
+	st.head:SetHeight(0)
 	st.frame:SetPoint("TOPLEFT",f,"TOPLEFT",10,-20)
 	st:RegisterEvents({
 		["OnClick"] = function(_, _, _, _, row, realrow)

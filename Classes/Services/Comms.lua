@@ -5,19 +5,20 @@
 
 -- GLOBALS: error, IsPartyLFG, IsInRaid, IsInGroup, assert
 local tostring, pairs, tremove, format, type = tostring, pairs, tremove, format, type
-local _, addon = ...
+--- @type RCLootCouncil
+local addon = select(2, ...)
 ---@class Services.Comms
 local Comms = addon.Init("Services.Comms")
 local Subject = addon.Require("rx.Subject")
-local Log = addon.Require("Log"):Get()
----@type Utils.TempTable
+local Log = addon.Require("Utils.Log"):Get()
 local TempTable = addon.Require("Utils.TempTable")
----@type Services.ErrorHandler
 local ErrorHandler = addon.Require "Services.ErrorHandler"
 local ld = LibStub("LibDeflate")
 
 local private = {
-   AceComm = {},
+   ---@type AceComm-3.0
+   AceComm = {} ,
+   --- @type table<string, rx.Subject>
    subjects = {},
    compresslevel = {level = 3},
    registered = {}
@@ -26,16 +27,16 @@ local private = {
 LibStub("AceComm-3.0"):Embed(private.AceComm)
 LibStub("AceSerializer-3.0"):Embed(private)
 
---- Subscribe to a comm
+--- Subscribe to a comm  
 -- TODO Handle order
--- @param prefix The prefix to subscribe to.
--- @param command The command to subscribe to.
--- @param func The function that will be called when the command is received. Receives 4 args:
---    data:   An array of the data sent with the command.
---    sender: The sender of the command.
---    command: The command
---    distri: The command's distribution channel.
--- @return Subscription @A subscription to the Comm
+--- @param prefix Prefixes The prefix to subscribe to.
+--- @param command string The command to subscribe to.
+--- @param func fun(data: table, sender: string, command: string, distri: string): void The function that will be called when the command is received. Receives 4 args:
+--    data   -- An array of the data sent with the command.
+--    sender -- The sender of the command.
+--    command -- The command
+--    distri -- The command's distribution channel.
+--- @return rx.Subscription #A subscription to the Comm
 function Comms:Subscribe (prefix, command, func, order)
    assert(prefix, "Prefix must be supplied")
    assert(tInvert(addon.PREFIXES)[prefix], format("%s is not a registered prefix!", tostring(prefix)))
@@ -44,7 +45,8 @@ end
 
 --- Register multiple Comms at once
 --- @param prefix string @The prefix to register
---- @param data table<string,function> @A table of structure ["command"] = function, @see Comms:Subscribe
+--- @param data table<string,function> @A table of structure ["command"] = function, 
+--- @see Comms#Subscribe
 --- @return table<number,Subscription> @An array of the created subscriptions
 function Comms:BulkSubscribe (prefix, data)
    if type(data) ~= "table" then return error("Error - wrong data supplied.",2) end
@@ -57,19 +59,20 @@ function Comms:BulkSubscribe (prefix, data)
    return subs
 end
 
+---@alias CommTarget '"group"' |'"guild"' | "Player"
+
 --- Get a Sender function to send commands on the prefix.
 --- The returned function can handle implied selfs.
---- @param prefix string @The prefix to send to. This will be registered autmatically if it isn't.
+--- @param prefix string The prefix to send to. This will be registered autmatically if it isn't.
 function Comms:GetSender (prefix)
    assert(prefix and prefix~= "", "Prefix must be supplied")
    private:RegisterComm(prefix)
    --- Sends a ace comm to `target`, with `command` and `...` as command arguments.
    --- The command is send using "NORMAL" priority.
    ---@param mod table
-   ---@param target Player | "group" | "guild"
+   ---@param target CommTarget
    ---@param command string
-   ---@param ... any @the data to send
-   ---@return void
+   ---@vararg any the data to send
    return function(mod, target, command, ...)
       if type(mod) == "string" then
          -- Left shift all args
@@ -90,18 +93,17 @@ end
 
 Comms.Register = Comms.RegisterPrefix
 
+--- @class CommsArgs
+--- @field command string #The command to send
+--- @field data? string | number | table | boolean Data to send
+--- @field prefix? Prefixes Defaults to `Prefixes.MAIN`
+--- @field target? CommTarget Target - defaults to `"group"`
+--- @field prio? string Defaults to `"NORMAL"`
+--- @field callback? fun(callbackarg?: any, bytesSent: number, bytesTotal: number) Function to call as once chunk is sent
+--- @field callbackarg? any Supplied to `callback` function
+
 --- A customizeable sender function.
---- @param args table @A Table with the following fields:
----
--- Required:
-   --  command
--- Optional:
-   --  data    - must be an array or a single value
-   --  prefix  - defaults to Prefixes.MAIN
-   --  target  - defaults to "group"
-   --  prio    - default to "NORMAL"
-   --  callback
-   --  callbackarg
+--- @param args CommsArgs
 function Comms:Send (args)
    assert(type(args)=="table", "Must supply a table")
    assert(args.command, "Command must be set")
@@ -109,7 +111,21 @@ function Comms:Send (args)
    private:SendComm(args.prefix or addon.PREFIXES.MAIN, args.target or "group", args.prio, args.callback, args.callbackarg, args.command, unpack(args.data))
 end
 
+--- Ends all subscriptions and kills all registered comms.
+function Comms:OnDisable()
+   -- Complete all Subjects
+   for _, subject in pairs(private.subjects) do
+      subject:onCompleted()
+   end
+   -- Clean registries
+   wipe(private.subjects)
+   wipe(private.registered)
+   -- Clear AceComm
+   private.AceComm:UnregisterAllComm()
+end
+
 function private:SendComm(prefix, target, prio, callback, callbackarg, command, ...)
+   if addon.IsEnabled and not addon:IsEnabled() then return end
    local data = TempTable:Acquire(...)
    local serialized = self:Serialize(command, data)
    local compressed = ld:CompressDeflate(serialized, self.compresslevel)
@@ -123,6 +139,10 @@ function private:SendComm(prefix, target, prio, callback, callbackarg, command, 
    elseif target == "guild" then
       self.AceComm:SendCommMessage(prefix, encoded, "GUILD", nil, prio, callback, callbackarg)
    else
+		-- This might happen if we send a message to a specific player that hasn't been loaded.
+		-- Just Log and return
+		if not target.GetRealm then return Log:e("Invalid target:", target, serialized) end
+		if not target:GetRealm() then return Log:e("Couldn't get realm for target:", target, serialized) end
       if target:GetRealm() == addon.realmName then -- Our realm
          self.AceComm:SendCommMessage(prefix, encoded, "WHISPER", target:GetName(), prio, callback, callbackarg)
       else

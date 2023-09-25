@@ -1,10 +1,11 @@
 --- options.lua - option frame in BlizzardOptions for RCLootCouncil
 -- @author Potdisc
 -- Create Date : 5/24/2012 6:24:55 PM
----@type RCLootCouncil
-local _,addon = ...
+
+--- @class RCLootCouncil
+local addon = select(2, ...)
+--- @type RCLootCouncilLocale
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
----@type Data.Player
 local Player = addon.Require "Data.Player"
 ------ Options ------
 local function DBGet(info)
@@ -78,9 +79,9 @@ local function createNewButtonSet(path, name, order)
 		}
 		path[name].args["picker"..i] = {
 			order = i * 5 + 2,
-			name = L["Response color"],
+			name = _G.COLOR,
 			desc = L["response_color_desc"],
-			width = 0.8,
+			width = 0.4,
 			type = "color",
 			get = function() return unpack(addon.db.profile.responses[name][i].color or {1,1,1,1})	end,
 			set = function(info,r,g,b,a) addon:ConfigTableChanged("responses"); addon.db.profile.responses[name][i].color = {roundColors(r,g,b,a)} end,
@@ -95,9 +96,22 @@ local function createNewButtonSet(path, name, order)
 			set = function(info, value) addon:ConfigTableChanged("responses"); addon.db.profile.responses[name][i].text = tostring(value) end,
 			hidden = function() return addon.db.profile.buttons[name].numButtons < i end,
 		}
+		path[name].args["requireNotes"..i] = {
+			order = i * 5 + 4,
+			name = L["Require Notes"],
+			desc = L["options_requireNotes_desc"],
+			type = "toggle",
+			width = 0.8,
+			get = function() return addon.db.profile.buttons[name][i].requireNotes end,
+			set = function(info, value)
+				addon:ConfigTableChanged("responses");
+				addon.db.profile.buttons[name][i].requireNotes = value
+			end,
+			hidden = function() return addon.db.profile.buttons[name].numButtons < i end,
+		}
 		-- Move Up/Down buttons
 		path[name].args["move_up"..i] = {
-			order = i * 5 + 4,
+			order = i * 5 + 5,
 			name = "",
 			type = "execute",
 			width = 0.1,
@@ -123,7 +137,7 @@ local function createNewButtonSet(path, name, order)
 			end,
 		}
 		path[name].args["move_down"..i] = {
-			order = i * 5 + 4.1,
+			order = i * 5 + 5.1,
 			name = "", --L["Move Down"],
 			type = "execute",
 			width = 0.1,
@@ -226,6 +240,7 @@ end
 local selections = {}
 function addon:OptionsTable()
 	local db = self:Getdb()
+	---@type AceConfigOptionsTable
 	local options = {
 		name = "RCLootCouncil",
 		type = "group",
@@ -277,7 +292,7 @@ function addon:OptionsTable()
 											if not self.enabled and self.isMasterLooter then -- If we disable while being ML
 												self.isMasterLooter = false
 												self.masterLooter = nil
-												self:GetActiveModule("masterlooter"):Disable()
+												self:StopHandleLoot()
 											else
 												self:NewMLCheck()
 											end
@@ -288,6 +303,12 @@ function addon:OptionsTable()
 										order = 5,
 										name = L["Append realm names"],
 										desc = L["Check to append the realmname of a player from another realm"],
+										type = "toggle",
+									},
+									useSlashRC = {
+										order = 6,
+										name = L.opt_useSlashRC_name,
+										desc = L.opt_useSlashRC_desc,
 										type = "toggle",
 									},
 									header = {
@@ -302,7 +323,7 @@ function addon:OptionsTable()
 										desc = L["test_desc"],
 										type = "execute",
 										func = function()
-											InterfaceOptionsFrame:Hide(); -- close all option frames before testing
+											HideUIPanel(SettingsPanel) -- close all option frames before testing
 											self:Test(3)
 										end,
 									},
@@ -312,7 +333,7 @@ function addon:OptionsTable()
 										type = "execute",
 										order = 9,
 										func = function()
-											InterfaceOptionsFrame:Hide()
+											HideUIPanel(SettingsPanel)
 											LibStub("AceConfigDialog-3.0"):CloseAll()
 											addon:CallModule("version")
 										end,
@@ -323,7 +344,7 @@ function addon:OptionsTable()
 										desc = L["Opens the synchronizer"],
 										type = "execute",
 										func = function()
-											InterfaceOptionsFrame:Hide()
+											HideUIPanel(SettingsPanel)
 											LibStub("AceConfigDialog-3.0"):CloseAll()
 											self.Sync:Enable()
 										end,
@@ -360,12 +381,31 @@ function addon:OptionsTable()
 										desc = L["auto_pass_boe_desc"],
 										type = "toggle",
 									},
-									printResponse = {
+									autoPassTransmog = {
 										order = 5,
+										name = L["Auto Pass Transmog"],
+										desc = L["auto_pass_transmog_desc"],
+										type = "toggle",
+									},
+									autoPassTransmogSource = {
+										order = 6,
+										name = L["Auto Pass Transmog Source"],
+										desc = L["auto_pass_transmog_source_desc"],
+										type = "toggle",
+										disabled = function() return self.db.profile.autoPassTransmog end
+									},
+									printResponse = {
+										order = 7,
 										name = L["Print Responses"],
 										desc = L["print_response_desc"],
 										type = "toggle",
 									},
+									autoGroupLootGuildGroupOnly = {
+										order = 8,
+										name = L.opt_autoGroupLootGuildGroupOnly_name,
+										desc = L.opt_autoGroupLootGuildGroupOnly_desc,
+									    type = "toggle"
+									}
 								},
 							},
 							frameOptions = {
@@ -404,8 +444,14 @@ function addon:OptionsTable()
 										desc = L["show_spec_icon_desc"],
 										type = "toggle",
 									},
-									chatFrameName = {
+									closeWithEscape = {
 										order = 6,
+										name = L.opt_closeWithEscape_name,
+										desc = L.opt_closeWithEscape_desc,
+										type = "toggle"
+									},
+									chatFrameName = {
+										order = 7,
 										name = L["opt_chatFrameName_name"],
 										desc = L["opt_chatFrameName_desc"],
 										type = "select",
@@ -464,7 +510,7 @@ function addon:OptionsTable()
 										name = L["Open the Loot History"],
 										desc = L["open_the_loot_history_desc"],
 										type = "execute",
-										func = function() self:CallModule("history");	_G.InterfaceOptionsFrame:Hide();end,
+										func = function() self:CallModule("history");	HideUIPanel(SettingsPanel);end,
 									},
 									clearLootDB = {
 										order = 6,
@@ -532,14 +578,14 @@ function addon:OptionsTable()
 										type = "select",
 										width = "double",
 										values = {
-											[time() - 604800] = format(L["x days"], 7),
-											[time() - 1209600] = format(L["x days"], 14),
-											[time() -2592000] = format(L["x days"], 30),
-											[time() -5184000] = format(L["x days"], 60),
-											[time() -7776000] = format(L["x days"], 90),
-											[time() -10368000] = format(L["x days"], 120),
-											[time() -15552000] = format(L["x days"], 180),
-											[time() -31536000] = format(L["x days"], 365),
+											[7] = format(L["x days"], 7),
+											[14] = format(L["x days"], 14),
+											[30] = format(L["x days"], 30),
+											[60] = format(L["x days"], 60),
+											[90] = format(L["x days"], 90),
+											[120] = format(L["x days"], 120),
+											[180] = format(L["x days"], 180),
+											[365] = format(L["x days"], 365),
 										},
 										get = function(info)
 											return selections[info[#info]] or ""
@@ -558,7 +604,12 @@ function addon:OptionsTable()
 												addon:Print(L["Invalid selection"])
 												return
 											end
-											self:GetActiveModule("history"):DeleteEntriesOlderThanEpoch(selections.deleteDate)
+											local DaysToSeconds = function (days)
+												return tonumber(days or 0)  * 86400
+											end
+
+											local deleteOlderThan = time() - DaysToSeconds(selections.deleteDate)
+											self:GetActiveModule("history"):DeleteEntriesOlderThanEpoch(deleteOlderThan)
 											selections.deleteDate = "" -- Barrow: Needs to be reset.
 										end,
 									},
@@ -881,9 +932,11 @@ function addon:OptionsTable()
 										--	ask_ml		= L["Ask me every time I become Master Looter"],
 										--	leader 		= "Always use RCLootCouncil when I'm the group leader and enter a raid",
 										--	ask_leader	= "Ask me every time I'm the group leader and enter a raid",
-											pl				= L["Always use RCLootCouncil with Personal Loot"],
-											ask_pl		= L["Ask me every time Personal Loot is enabled"],
+											-- pl				= L["Always use RCLootCouncil with Personal Loot"],
+											-- ask_pl		= L["Ask me every time Personal Loot is enabled"],
 											never			= L["Never use RCLootCouncil"],
+											gl     = L.opt_usage_GroupLoot,
+											ask_gl = L.opt_usage_AskGroupLoot,
 										},
 										set = function(_, key)
 											for k in pairs(self.db.profile.usage) do
@@ -958,10 +1011,16 @@ function addon:OptionsTable()
 										desc = L["opt_autoAddPets_desc"],
 										type = "toggle",
 										get = function()
-											return not addon.blacklistedItemClasses[LE_ITEM_CLASS_MISCELLANEOUS][LE_ITEM_MISCELLANEOUS_COMPANION_PET]
+											return not
+												addon.blacklistedItemClasses[Enum.ItemClass.Miscellaneous][Enum.ItemMiscellaneousSubclass.CompanionPet]
+
+
 										end,
 										set = function(_, val)
-											addon.blacklistedItemClasses[LE_ITEM_CLASS_MISCELLANEOUS][LE_ITEM_MISCELLANEOUS_COMPANION_PET] = not val
+											addon.blacklistedItemClasses[Enum.ItemClass.Miscellaneous][Enum.ItemMiscellaneousSubclass.CompanionPet] = not
+
+												val
+
 										end
 									},
 									printCompletedTrades = {
@@ -982,6 +1041,12 @@ function addon:OptionsTable()
 										desc = L["opt_award_later_desc"],
 										type = "toggle"
 									},
+									autoGroupLoot = {
+										order = 10,
+										name = L.opt_autoGroupLoot_name,
+										desc = L.opt_autoGroupLoot_desc,
+										type = "toggle"
+									}
 								},
 							},
 							voteOptions = {
@@ -1032,13 +1097,7 @@ function addon:OptionsTable()
 										name = L["Add Rolls"],
 										desc = L["add_rolls_desc"],
 										type = "toggle",
-									},
-									requireNotes = {
-										order = 9,
-										name = L["Require Notes"],
-										desc = L["options_requireNotes_desc"],
-										type = "toggle",
-									},
+									}
 								},
 							},
 							ignoreOptions = {
@@ -1205,7 +1264,7 @@ function addon:OptionsTable()
 										name = L["Auto Award to"],
 										type = "group",
 										inline = true,
-										hidden = function() return not db.autoAward end,
+										hidden = function() return not db.autoAward or #db.autoAwardTo == 0 end,
 										args = createAutoAwardPrioList(db.autoAwardTo)
 									},
 								},
@@ -1277,7 +1336,7 @@ function addon:OptionsTable()
 										name = L["Auto Award to"],
 										type = "group",
 										inline = true,
-										hidden = function() return not db.autoAwardBoE end,
+										hidden = function() return not db.autoAwardBoE or #db.autoAwardBoETo == 0 end,
 										args = createAutoAwardPrioList(db.autoAwardBoETo)
 									},
 								}
@@ -1773,9 +1832,9 @@ function addon:OptionsTable()
 		options.args.mlSettings.args.buttonsTab.args.buttonOptions.args["button"..i] = button;
 		picker = {
 			order = i * 5 + 2,
-			name = L["Response color"],
+			name = _G.COLOR,
 			desc = L["response_color_desc"],
-			width = 0.8,
+			width = 0.4,
 			type = "color",
 			get = function() return unpack(self.db.profile.responses.default[i].color)	end,
 			set = function(info,r,g,b,a) addon:ConfigTableChanged("responses"); self.db.profile.responses.default[i].color = {roundColors(r,g,b,a)} end,
@@ -1792,8 +1851,20 @@ function addon:OptionsTable()
 			hidden = function() return self.db.profile.buttons.default.numButtons < i end,
 		}
 		options.args.mlSettings.args.buttonsTab.args.buttonOptions.args["text"..i] = text;
-		options.args.mlSettings.args.buttonsTab.args.buttonOptions.args["move_up"..i] = {
+		options.args.mlSettings.args.buttonsTab.args.buttonOptions.args["requireNotes"..i] = {
 			order = i * 5 + 4,
+			name = L["Require Notes"],
+			desc = L["options_requireNotes_desc"],
+			type = "toggle",
+			width = 0.8,
+			get = function() return self.db.profile.buttons.default[i].requireNotes end,
+			set = function(info, value)
+				addon:ConfigTableChanged("responses");
+				self.db.profile.buttons.default[i].requireNotes = value
+			end,
+		}
+		options.args.mlSettings.args.buttonsTab.args.buttonOptions.args["move_up"..i] = {
+			order = i * 5 + 5,
 			name = "",
 			type = "execute",
 			width = 0.1,
@@ -1818,7 +1889,7 @@ function addon:OptionsTable()
 			end,
 		}
 		options.args.mlSettings.args.buttonsTab.args.buttonOptions.args["move_down"..i] = {
-			order = i * 5 + 4.1,
+			order = i * 5 + 5.1,
 			name = "",
 			type = "execute",
 			width = 0.1,

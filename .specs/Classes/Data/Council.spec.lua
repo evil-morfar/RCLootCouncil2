@@ -10,12 +10,12 @@ loadfile(".specs/AddonLoader.lua")(nil, addonName, addon).LoadArray{
    [[Libs\AceEvent-3.0\AceEvent-3.0.xml]],
    [[Libs\AceLocale-3.0\AceLocale-3.0.xml]],
    [[Classes/Core.lua]],
+   [[Classes/Utils/TempTable.lua]],
    [[Classes/Utils/Log.lua]],
    [[Locale\enUS.lua]],
    [[Utils\Utils.lua]],
    [[Classes/Services/ErrorHandler.lua]],
    [[Classes/Data/Player.lua]],
-   [[Classes/Utils/TempTable.lua]],
    [[Classes/Data/Council.lua]],
 }
 

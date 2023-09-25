@@ -3,7 +3,8 @@
 -- @author Potdisc
 -- Create date: 14/04/2020
 
-local _, addon = ...
+--- @type RCLootCouncil
+local addon = select(2, ...)
 ---@class Utils.TempTable
 local TempTable = addon.Init("Utils.TempTable")
 
@@ -54,6 +55,10 @@ function TempTable:UnpackAndRelease (tbl)
    return private:Release(tbl, unpack(tbl))
 end
 
+function TempTable:DumpAvailableTablesCount()
+   local count = private:CountAvailableTables()
+   addon.Log:F("<TempTable>", "Available tables:", count)
+end
 -----------------------------------------------------------
 -- Private Functions
 -----------------------------------------------------------
@@ -75,6 +80,14 @@ function private:Release (tbl, ...)
    setmetatable(tbl, RELEASED_TEMP_TABLE_MT)
    self.availableTables[head] = tbl
    return ...
+end
+
+function private:CountAvailableTables()
+   local count = 0
+   for _ in pairs(self.availableTables) do
+      count = count + 1
+   end
+   return count
 end
 
 

@@ -42,14 +42,31 @@
                 "kind": "test",
                 "isDefault": true
             },
+            "windows": {
+                "args": [
+                    "--lpath=${workspaceFolder}\\__tests\\?.lua",
+                ]
+            },
+            "args": [
+                "--lpath=${workspaceFolder}/__tests/?.lua",
+            ]
         },
         {
             "label": "Busted this file",
             "type": "shell",
             "command": "busted",
             "args": [
-                "${file}"
+                "--lpath=${workspaceFolder}/__tests/?.lua",
+                "-v",
+                "${file}",
             ],
+            "windows": {
+                "args": [
+                    "--lpath=${workspaceFolder}\\__tests\\?.lua",
+                    "-v",
+                    "${file}",
+                ],
+            },
             "group": "test"
         },
         {

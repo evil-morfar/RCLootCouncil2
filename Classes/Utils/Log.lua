@@ -2,10 +2,13 @@
 -- Creates `RCLootCouncil.LogClass` for registering new Logs, and adds a default Log object in `RCLootCouncil.Log`.
 -- @author Potdisc
 -- Create Date : 30/01/2019 18:56:31
-local _, addon = ...
-local Log = addon.Init("Log")
+
+--- @class RCLootCouncil
+local addon = select(2, ...)
+--- @class Utils.Log
+local Log = addon.Init("Utils.Log")
+local TempTable = addon.Require("Utils.TempTable")
 local private = {
-   date_to_debug_log = true,
    debugLog = {},
    lenght = 0,
 }
@@ -14,31 +17,40 @@ local private = {
 -----------------------------------------------------------
 -- Log Class Methods
 local LOG_METHODS = {
-   -- Message
+   --- Message
+   --- @param self Log
    m = function(self, ...) self(...) end,
 
-   -- Debug logging
+   --- Debug logging
+   --- @param self Log
    d = function(self, ...) private:Log(self,"<DEBUG>", ...) end,
 
-   -- Error Logging
+   --- Error Logging
+   --- @param self Log
    e = function(self, ...) private:Log(self,"<ERROR>", ...) end,
 
-   -- Warnings
+   --- Warnings
+   --- @param self Log
    w = function(self, ...) private:Log(self,"<WARNING>", ...) end,
 
-   -- Print
+   --- Print
+   --- @param self Log
    p = function(self, ...) private:Print(self.prefix or "",...) end,
 
-   -- Custom prefix
+   --- Custom prefix
+   --- @param self Log
+   --- @param prefix string
    f = function(self, prefix, ...) private:Log(self,prefix, ...) end,
-
-   D = function(self, ...) self:d(...) end,
-   E = function(self, ...) self:e(...) end,
-   W = function(self, ...) self:w(...) end,
-   M = function(self, ...) self:m(...) end,
-   P = function(self, ...) self:p(...) end,
-   F = function(self, ...) self:f(...) end,
 }
+-- Uppercase variants
+-- Manually defined for EmmyLua
+LOG_METHODS.M = LOG_METHODS.m
+LOG_METHODS.D = LOG_METHODS.d
+LOG_METHODS.E = LOG_METHODS.e
+LOG_METHODS.W = LOG_METHODS.w
+LOG_METHODS.P = LOG_METHODS.p
+LOG_METHODS.F = LOG_METHODS.f
+
 
 local LOG_MT = {
    __index = LOG_METHODS,
@@ -54,9 +66,10 @@ local LOG_MT = {
 -----------------------------------------------------------
 
 --- Create a new Log class
--- @param prefix An optional prefix to all messages
--- @return Log object.
+--- @param prefix string An optional prefix to all messages
 function Log:New(prefix)
+   ---@class Log: LOG_METHODS
+   ---@overload fun(self:Log, ...)
    local object = {
       prefix = prefix and "["..prefix.."]" or ""
    }
@@ -72,7 +85,7 @@ end
 --- Get static Log
 -- This will return a static Log object that can be shared with multiple modules.
 -- Useful for not creating too many Log Classes.
--- @return Log Object.
+--- @return Log Log
 function Log:Get ()
    if not private.staticLog then private.staticLog = self:New() end
    return private.staticLog
@@ -83,13 +96,24 @@ end
 -- Private Functions
 -----------------------------------------------------------
 
--- Private functions that does the real work
+--- Private functions that does the real work
+--- @param Log Log
+--- @param prefix string
 function private:Log(Log,prefix, ...)
    self:Print((Log.prefix or "") .. prefix, ...)
-   if self.date_to_debug_log then tinsert(self.debugLog, date("%x")); self.date_to_debug_log = false; end
-	local time = date("%X", time())
-	local msg = "<"..time..">"..(Log.prefix or "")..prefix.."\t"
-	for i = 1, select("#", ...) do msg = msg.." "..tostring(select(i,...)) end
+   local t = TempTable:Acquire()
+   t[1] = "<"
+   t[2] =  date("%X", time())
+   t[3] = "> "
+   t[4] = prefix
+   t[5] = (Log.prefix or "")
+   t[6] = "\t"
+   for i = 1, select("#", ...) do
+      t[(i - 1) * 2 + 7] = "\t"
+      t[(i - 1) * 2 + 8] = tostring(select(i, ...))
+   end
+   local msg = table.concat(t, "")
+   TempTable:Release(t)
 	if self.lenght >= addon.db.global.logMaxEntries then
 		tremove(self.debugLog, 1) -- We really want to preserve indicies
       self.lenght = self.lenght - 1
@@ -112,6 +136,7 @@ end
 
 function addon:InitLogging()
    private.debugLog = addon.db.global.log
+   tinsert(private.debugLog, date("%x"))
    private.lenght = #private.debugLog -- Use direct table access for better performance.
    addon.db.global.logMaxEntries = addon.defaults.global.logMaxEntries -- reset it now for zzz
    if addon.tVersion then

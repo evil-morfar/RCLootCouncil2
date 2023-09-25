@@ -3,3 +3,4 @@ wip
 sv_to_process.lua
 luacov.report.out
 .env
+.VSCodeCounter

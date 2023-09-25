@@ -1,11 +1,10 @@
 --- MLDB.lua Class for mldb handling.
 -- @author Potdisc
 -- Create Date: 15/10/2020
----@type RCLootCouncil
-local _, addon = ...
----@class Data.MLDB
+--- @type RCLootCouncil
+local addon = select(2, ...)
+--- @class Data.MLDB
 local MLDB = addon.Init "Data.MLDB"
----@type Services.Comms
 local Comms = addon.Require "Services.Comms"
 
 local private = {
@@ -32,7 +31,9 @@ local replacements = {
     [magicKey .. "13"] = "outOfRaid",
     [magicKey .. "14"] = "default",
     [magicKey .. "15"] = "text",
-    [magicKey .. "16"] = "color"
+    [magicKey .. "16"] = "color",
+    [magicKey .. "17"] = "autoGroupLoot",
+    [magicKey .. "18"] = "requireNotes",
 }
 
 local replacements_inv = tInvert(replacements)
@@ -69,6 +70,12 @@ end
 
 function MLDB:Update()
     return private:BuildMLDB()
+end
+
+--- Checks if a given value is part of the mldb
+---@param val string Value to check
+function MLDB:IsKey(val)
+    return replacements_inv[val] and true or false
 end
 
 function private:ReplaceMLDB(mldb, replacement_table)
@@ -120,7 +127,7 @@ function private:BuildMLDB()
                 if not changedButtons[type] then
                     changedButtons[type] = {}
                 end
-                changedButtons[type][i] = {text = db.buttons[type][i].text}
+				changedButtons[type][i] = { text = db.buttons[type][i].text, requireNotes = db.buttons[type][i].requireNotes, }
             end
         end
     end
@@ -138,7 +145,8 @@ function private:BuildMLDB()
         timeout = db.timeout,
         rejectTrade = db.rejectTrade or nil,
         requireNotes = db.requireNotes or nil,
-        outOfRaid = db.outOfRaid or nil
+        outOfRaid = db.outOfRaid or nil,
+        autoGroupLoot = db.autoGroupLoot or nil
     }
     self.isBuilt = true
     return self.mldb

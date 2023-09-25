@@ -9,17 +9,17 @@
 		fr 	P - Full version checkc request.
 		f 		T - Full version check reply. Only when open.
 ]]
+
 --- @type RCLootCouncil
-local _, addon = ...
+local addon = select(2, ...)
+--- @class VersionCheck : AceTimer-3.0, AceHook-3.0, AceEvent-3.0, AceBucket-3.0
 local RCVersionCheck = addon:NewModule("VersionCheck", "AceTimer-3.0", "AceHook-3.0", "AceEvent-3.0", "AceBucket-3.0")
 local ST = LibStub("ScrollingTable")
+--- @type RCLootCouncilLocale
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 
---- @type Services.Comms
 local Comms = addon.Require "Services.Comms"
---- @type Data.Player
 local Player = addon.Require "Data.Player"
---- @type Utils.TempTable
 local TT = addon.Require "Utils.TempTable"
 
 local GuildRankSort
@@ -50,11 +50,6 @@ function RCVersionCheck:OnInitialize()
             sortnext = 2
         }
     }
-
-    if IsInGuild() then
-        addon.guildRank = select(2, GetGuildInfo("player"))
-        addon:ScheduleTimer("SendGuildVerTest", 2) -- send out a version check after a delay
-	end
 	self:InitCoreVersionComms()
     self.subscriptions = {}
 end
@@ -257,14 +252,14 @@ end
 
 function RCVersionCheck:UpdateTotals()
     local total = #self.frame.rows
-    local tVersions = AccumulateIf(self.frame.rows, function(row)
-        return row.tVersion
+    local tVersions = AccumulateOp(self.frame.rows, function(row)
+        return row.tVersion and 1 or 0
     end)
-    local outdated = AccumulateIf(self.frame.rows, function(row)
-        return addon:VersionCompare(row.version, highestVersion)
+    local outdated = AccumulateOp(self.frame.rows, function(row)
+        return addon:VersionCompare(row.version, highestVersion) and 1 or 0
     end)
-    local normal = AccumulateIf(self.frame.rows, function(row)
-        return row.version == highestVersion
+    local normal = AccumulateOp(self.frame.rows, function(row)
+        return row.version == highestVersion and 1 or 0
     end)
     local text = TT:Acquire(
         colors.yellow:WrapTextInColorCode(tVersions),
@@ -448,8 +443,9 @@ function RCVersionCheck:GetFrame()
         return self.frame
     end
     local f =
-        addon.UI:NewNamed("Frame", UIParent, "DefaultRCVersionCheckFrame", L["RCLootCouncil Version Checker"], 250)
+        addon.UI:NewNamed("RCFrame", UIParent, "DefaultRCVersionCheckFrame", L["RCLootCouncil Version Checker"], 250)
 
+    addon.UI:RegisterForEscapeClose(f, function() if self:IsEnabled() then self:Disable() end end )
     local b1 = addon:CreateButton(_G.GUILD, f.content)
     b1:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", 10, 10)
     b1:SetScript(

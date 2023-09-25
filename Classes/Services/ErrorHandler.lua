@@ -1,11 +1,13 @@
 --- ErrorHandler.lua Class for logging errors to the log.
 -- @author Potdisc
 -- Create Date: 16/04/2020
----@type RCLootCouncil
-local _, addon = ...
----@class Services.ErrorHandler
+--- @type RCLootCouncil
+local addon = select(2, ...)
+---@class Services.ErrorHandler : AceEvent-3.0
 local ErrorHandler = addon.Init "Services.ErrorHandler"
 LibStub("AceEvent-3.0"):Embed(ErrorHandler)
+
+local Log = addon.Require("Utils.Log"):Get()
 
 local private = {
    MAX_STACK_DEPTH = 10,
@@ -17,7 +19,7 @@ function ErrorHandler:OnInitialize ()
    self:RegisterEvent("ADDON_ACTION_BLOCKED", "OnEvent")
    self:RegisterEvent("ADDON_ACTION_FORBIDDEN", "OnEvent")
    self:RegisterEvent("LUA_WARNING", "OnEvent")
-   private.log = addon.db.global.errors
+   private.log = addon.db.global.errors or {}
    private:ClearOldErrors()
 end
 
@@ -28,7 +30,7 @@ end
 
 function ErrorHandler:LogError (msg)
    msg = private:SanitizeLine(msg)
-   addon.Log:e(msg)
+   Log:e(msg)
    local errObj = private:DoesErrorExist(msg)
    if errObj then -- This is not the first
       private:IncrementErrorCount(errObj)
@@ -84,7 +86,7 @@ function private:IncrementErrorCount (errObj)
 end
 
 function private:SanitizeLine (line)
-   return line:gsub("Interface\\AddOns\\", "")
+   return line and line:gsub("Interface\\AddOns\\", "") or ""
 end
 
 function private:DoesErrorExist (err)
@@ -95,6 +97,7 @@ function private:DoesErrorExist (err)
 end
 
 function private:IsRCLootCouncilError (line)
+   if not line then return false end
    -- Don't track lines related to the error handler
    if strfind(line, "ErrorHandler.lua") then
       return false
@@ -117,7 +120,7 @@ function private:IsRCLootCouncilError (line)
    end
 
    function private:ErrorHandler (msg)
-      local msg = strtrim(tostring(msg))
+      local msg = strtrim(tostring(msg or ""))
       -- Determine if it's an RCLootCouncil related error
       if not self:IsRCLootCouncilError(msg) then
          local found = false

@@ -8,18 +8,18 @@
       sync           T - Actual sync data.
       syncAck        T - Sync ack received.
 ]]
----@type RCLootCouncil
-local _, addon = ...
----@class Sync
+
+--- @type RCLootCouncil
+local addon = select(2, ...)
+---@class Sync : AceSerializer-3.0
 local sync = addon:NewModule("Sync", "AceSerializer-3.0")
 local LibDialog = LibStub("LibDialog-1.0")
 local LD = LibStub("LibDeflate")
+--- @type RCLootCouncilLocale
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 local AG = LibStub("AceGUI-3.0")
 local PREFIX = addon.PREFIXES.SYNC
----@type Services.Comms
 local Comms = addon.Require "Services.Comms"
----@type Data.Player
 local Player = addon.Require "Data.Player"
 addon.Sync = sync
 
@@ -303,13 +303,14 @@ function sync:Spawn()
     self.syncType = "settings"
     local f =
         addon.UI:NewNamed(
-        "Frame",
+        "RCFrame",
         UIParent,
         "DefaultRCLootCouncilSyncFrame",
         L["RCLootCouncil - Synchronizer"],
         nil,
         140
     )
+    addon.UI:RegisterForEscapeClose(f, function() if self:IsEnabled() then self:Disable() end end)
     f:SetWidth(350)
     local sel = AG:Create("Dropdown")
     sel:SetWidth(f.content:GetWidth() * 0.4 - 20)

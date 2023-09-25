@@ -7,10 +7,12 @@
 		history				P - history received from ML on awards.
 		delete_history		P - ML tells us to delete specific history entry.
 ]]
----@type RCLootCouncil
-local _,addon = ...
----@class LootHistory
+
+--- @type RCLootCouncil
+local addon = select(2, ...)
+---@class RCLootHistory : AceSerializer-3.0
 local LootHistory = addon:NewModule("RCLootHistory", "AceSerializer-3.0")
+--- @type RCLootCouncilLocale
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 local AG = LibStub("AceGUI-3.0")
 local Comms = addon.Require "Services.Comms"
@@ -99,8 +101,8 @@ end
 
 function LootHistory:OnDisable()
 	self:Hide()
-	self.frame:SetParent(nil)
-	self.frame = nil
+	-- self.frame:SetParent(nil)
+	-- self.frame = nil
 	data = {}
 end
 
@@ -827,7 +829,8 @@ end
 
 function LootHistory:GetFrame()
 	if self.frame then return self.frame end
-	local f = addon.UI:NewNamed("Frame", UIParent, "DefaultRCLootHistoryFrame", L["RCLootCouncil Loot History"], 250, 480)
+	local f = addon.UI:NewNamed("RCFrame", UIParent, "DefaultRCLootHistoryFrame", L["RCLootCouncil Loot History"], 250, 480)
+	addon.UI:RegisterForEscapeClose(f, function() if self:IsEnabled() then self:Disable() end end)
 	local st = LibStub("ScrollingTable"):CreateST(self.scrollCols, NUM_ROWS, ROW_HEIGHT, { ["r"] = 1.0, ["g"] = 0.9, ["b"] = 0.0, ["a"] = 0.5 }, f.content)
 	st.frame:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", 10, 10)
 	st:SetFilter(self.FilterFunc)
@@ -1611,7 +1614,7 @@ do
 				tinsert(export, tostring(player))
 				tinsert(export, tostring(self:GetLocalizedDate(d.date)))
 				tinsert(export, tostring(d.time))
-				tinsert(export, "=HYPERLINK(\""..self:GetWowheadLinkFromItemLink(d.lootWon).."\";\""..tostring(d.lootWon).."\")")
+				tinsert(export, "=HYPERLINK(\""..self:GetWowheadLinkFromItemLink(d.lootWon).."\",\""..tostring(d.lootWon).."\")")
 				tinsert(export, addon.Utils:GetItemIDFromLink(d.lootWon))
 				tinsert(export, addon.Utils:GetItemStringFromLink(d.lootWon))
 				tinsert(export, tostring(d.response))
@@ -1619,8 +1622,8 @@ do
 				tinsert(export, tostring(d.class))
 				tinsert(export, tostring(d.instance))
 				tinsert(export, tostring(d.boss))
-				tinsert(export, d.itemReplaced1 and "=HYPERLINK(\""..self:GetWowheadLinkFromItemLink(tostring(d.itemReplaced1)).."\";\""..tostring(d.itemReplaced1).."\")" or "")
-				tinsert(export, d.itemReplaced2 and "=HYPERLINK(\""..self:GetWowheadLinkFromItemLink(tostring(d.itemReplaced2)).."\";\""..tostring(d.itemReplaced2).."\")" or "")
+				tinsert(export, d.itemReplaced1 and "=HYPERLINK(\""..self:GetWowheadLinkFromItemLink(tostring(d.itemReplaced1)).."\",\""..tostring(d.itemReplaced1).."\")" or "")
+				tinsert(export, d.itemReplaced2 and "=HYPERLINK(\""..self:GetWowheadLinkFromItemLink(tostring(d.itemReplaced2)).."\",\""..tostring(d.itemReplaced2).."\")" or "")
 				tinsert(export, tostring(d.responseID))
 				tinsert(export, tostring(d.isAwardReason or false))
 				tinsert(export, rollType)
@@ -1658,6 +1661,7 @@ do
 				tinsert(export, string.format("\"%s\":\"%s\"", "player", tostring(player)))
 				tinsert(export, string.format("\"%s\":\"%s\"", "date", tostring(self:GetLocalizedDate(d.date))))
 				tinsert(export, string.format("\"%s\":\"%s\"", "time", tostring(d.time)))
+				tinsert(export, string.format("\"%s\":\"%s\"", "id", tostring(d.id)))
 				tinsert(export, string.format("\"%s\":%s", "itemID", addon.Utils:GetItemIDFromLink(d.lootWon)))
 				tinsert(export, string.format("\"%s\":\"%s\"", "itemString", addon.Utils:GetItemStringFromLink(d.lootWon)))
 				tinsert(export, string.format("\"%s\":\"%s\"", "response", QuotesEscape(d.response)))
@@ -1674,6 +1678,7 @@ do
 				tinsert(export, string.format("\"%s\":\"%s\"", "equipLoc", tostring(getglobal(equipLoc) or "")))
 				tinsert(export, string.format("\"%s\":\"%s\"", "note", QuotesEscape(d.note)))
 				tinsert(export, string.format("\"%s\":\"%s\"", "owner", tostring(d.owner or "Unknown")))
+				tinsert(export, string.format("\"%s\":\"%s\"", "itemName", addon.Utils:GetItemNameFromLink(d.lootWon)))
 
 				processedEntries = processedEntries + 1;
 

@@ -1,7 +1,8 @@
-local _, addon = ...
+--- @type RCLootCouncil
+local addon = select(2, ...)
 local util = addon.Require("rx.Util")
 
---- @class Observer
+--- @class rx.Observer
 -- @description Observers are simple objects that receive values from Observables.
 local Observer = addon.Init("rx.Observer")
 Observer.__index = Observer

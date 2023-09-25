@@ -1,4 +1,4 @@
-require "busted.runner"({["output"] = "gtest"})
+require "busted.runner"()
 
 dofile(".specs/AddonLoader.lua").LoadToc("RCLootCouncil.toc")
 
@@ -66,8 +66,9 @@ describe("#Utils :CheckOutdatedVersion", function()
       assert.are.equal(Utils:CheckOutdatedVersion("2.15.0", "2.15.0", "Alpha.10", "Alpha.10"), RCLootCouncil.VER_CHECK_CODES[1])
    end)
 
-   it("should handle outdated main versions despite of test versions", function()
-      assert.are.equal(Utils:CheckOutdatedVersion("2.19.3", "3.0.0", nil, "Beta.1"), RCLootCouncil.VER_CHECK_CODES[2])
+   it("should not treat test versions as newer despite of main version", function()
+      assert.are.equal(Utils:CheckOutdatedVersion("2.19.3", "3.0.0", nil, "Beta.1"), RCLootCouncil.VER_CHECK_CODES[1])
+      assert.are.equal(Utils:CheckOutdatedVersion("3.0.0", "3.0.0", nil, "Beta.1"), RCLootCouncil.VER_CHECK_CODES[1])
    end)
 
    it("should handle releases of former test versions", function()

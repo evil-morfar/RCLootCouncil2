@@ -77,6 +77,10 @@ TestVersionBasics = {
    TesttVersionBetas2 = function (args)
       local a = Utils:CheckOutdatedVersion("2.0.0", "2.0.0", "Alpha.3", "Beta.1")
       lu.assertEquals(a, RCLootCouncil.VER_CHECK_CODES[3])
+   end,  
+   TesttVersionBetas3 = function (args)
+      local a = Utils:CheckOutdatedVersion("3.1.3", "3.2.0", nil, "Beta.2")
+      lu.assertEquals(a, RCLootCouncil.VER_CHECK_CODES[1])
    end,
 }
 
