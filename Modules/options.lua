@@ -161,6 +161,7 @@ end
 
 
 local function createAutoAwardPrioList(list)
+	if not list then return end
 	local ret = {}
 	local num = 4
 	for i, name in ipairs(list) do
