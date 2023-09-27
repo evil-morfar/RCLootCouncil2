@@ -13,6 +13,12 @@ Smoothened the whole experience, along with some quality of life changes:
 
 - *Trying to import tsv data will now show the correct error message instead of throwing an error.*
 
+# 3.9.3
+
+## Bugfixes
+
+- *Fixed `nil` errors causing error handler to throw errors.*
+
 # 3.9.2
 
 ## Changes

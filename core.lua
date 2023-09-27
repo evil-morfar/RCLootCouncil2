@@ -1434,7 +1434,7 @@ function RCLootCouncil:UpdateCandidatesInGroup()
 		if not name then -- Not ready yet, delay a bit
 			self.Log:D("GetRaidRosterInfo returned nil in UpdateCandidatesInGroup")
 			self:ScheduleTimer("UpdateCandidatesInGroup", 1)
-			return
+			return {}
 		end
 		self.candidatesInGroup[self:UnitName(name)] = true
 	end
