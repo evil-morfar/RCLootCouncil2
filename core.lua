@@ -63,6 +63,7 @@ local Council = RCLootCouncil.Require "Data.Council"
 local Player = RCLootCouncil.Require "Data.Player"
 local MLDB = RCLootCouncil.Require "Data.MLDB"
 local TT = RCLootCouncil.Require "Utils.TempTable"
+local ItemUtils = RCLootCouncil.Require "Utils.Item"
 
 -- Init shorthands
 local db, debugLog; -- = self.db.profile, self.db.global.log
@@ -871,7 +872,7 @@ function RCLootCouncil:GetPlayersGear(link, equipLoc, gearsTable)
 		GetInventoryItemLink = function(_, slotNum) return gearsTable[slotNum] end
 	end
 
-	local itemID = self.Utils:GetItemIDFromLink(link) -- Convert to itemID
+	local itemID = ItemUtils:GetItemIDFromLink(link) -- Convert to itemID
 	if not itemID then return nil, nil; end
 	local item1, item2;
 	-- check if the item is a token, and if it is, return the matching current gear
@@ -947,8 +948,8 @@ function RCLootCouncil:SendResponse(target, session, response, isTier, isRelic, 
 	end
 
 	self:Send(target, "response", session, {
-		gear1 = g1 and self.Utils:GetItemStringFromLink(g1) or nil,
-		gear2 = g2 and self.Utils:GetItemStringFromLink(g2) or nil,
+		gear1 = g1 and ItemUtils:GetItemStringFromLink(g1) or nil,
+		gear2 = g2 and ItemUtils:GetItemStringFromLink(g2) or nil,
 		ilvl = sendAvgIlvl and playersData.ilvl or nil,
 		diff = diff,
 		note = note,
@@ -983,12 +984,12 @@ function RCLootCouncil:GetIlvlDifference(item, g1, g2)
 
 	-- Check if it's a ring or trinket
 	if equipLoc == "INVTYPE_TRINKET" or equipLoc == "INVTYPE_FINGER" then
-		local id = self.Utils:GetItemIDFromLink(link)
-		if id == self.Utils:GetItemIDFromLink(g1) then -- compare with it
+		local id = ItemUtils:GetItemIDFromLink(link)
+		if id == ItemUtils:GetItemIDFromLink(g1) then -- compare with it
 			local ilvl2 = select(4, GetItemInfo(g1))
 			return ilvl - ilvl2
 
-		elseif g2 and id == self.Utils:GetItemIDFromLink(g2) then
+		elseif g2 and id == ItemUtils:GetItemIDFromLink(g2) then
 			local ilvl2 = select(4, GetItemInfo(g2))
 			return ilvl - ilvl2
 		end
@@ -1007,7 +1008,7 @@ end
 -- @param link The itemLink of the item.
 -- @return If the item level data is not available, return nil. Otherwise, return the minimum item level of the gear created by the token.
 function RCLootCouncil:GetTokenIlvl(link)
-	local id = self.Utils:GetItemIDFromLink(link)
+	local id = ItemUtils:GetItemIDFromLink(link)
 	if not id then return end
 	local baseIlvl = _G.RCTokenIlvl[id] -- ilvl in normal difficulty
 	if not baseIlvl then return end
@@ -1062,7 +1063,7 @@ end
 function RCLootCouncil:PrepareLootTable(lootTable)
 	for ses, v in pairs(lootTable) do
 		local _, link, rarity, ilvl, _, _, subType, _, equipLoc, texture, _, typeID, subTypeID, bindType, _, _, _ =
-						GetItemInfo(self.Utils:UncleanItemString(v.string))
+						GetItemInfo(ItemUtils:UncleanItemString(v.string))
 		local itemID = GetItemInfoInstant(link)
 		v.link = link
 		v.itemID = itemID
@@ -1094,8 +1095,8 @@ function RCLootCouncil:SendLootAck(table, skip)
 			hasData = true
 			local g1, g2 = self:GetGear(v.link, v.equipLoc, v.relic)
 			local diff = self:GetIlvlDifference(v.link, g1, g2)
-			toSend.gear1[session] = g1 and self.Utils:GetItemStringClean(g1) or nil
-			toSend.gear2[session] = g2 and self.Utils:GetItemStringClean(g2) or nil
+			toSend.gear1[session] = g1 and ItemUtils:GetItemStringClean(g1) or nil
+			toSend.gear2[session] = g2 and ItemUtils:GetItemStringClean(g2) or nil
 			toSend.diff[session] = diff
 			toSend.response[session] = v.autopass
 		end
@@ -1970,13 +1971,13 @@ function RCLootCouncil:ItemIsItem(item1, item2)
 	if type(item1) ~= "string" or type(item2) ~= "string" then return item1 == item2 end
 	item1 = self.Utils:DiscardWeaponCorruption(item1)
 	item2 = self.Utils:DiscardWeaponCorruption(item2)
-	item1 = self.Utils:GetItemStringFromLink(item1)
-	item2 = self.Utils:GetItemStringFromLink(item2)
+	item1 = ItemUtils:GetItemStringFromLink(item1)
+	item2 = ItemUtils:GetItemStringFromLink(item2)
 	if not (item1 and item2) then return false end -- KeyStones will fail the GetItemStringFromLink
 	--[[ REVIEW Doesn't take upgradeValues into account.
 		Doing that would require a parsing of the bonusIDs to check the correct positionings.
 	]]
-	return self.Utils:NeutralizeItem(item1) == self.Utils:NeutralizeItem(item2)
+	return ItemUtils:NeutralizeItem(item1) == ItemUtils:NeutralizeItem(item2)
 end
 
 -- @param links. Table of strings. Any link in the table can contain connected links (links without space in between)
@@ -2318,7 +2319,7 @@ end
 
 -- @return a text of the link explaining its type. For example, "Fel Artifact Relic", "Chest, Mail"
 function RCLootCouncil:GetItemTypeText(link, subType, equipLoc, typeID, subTypeID, classesFlag, tokenSlot, relicType)
-	local id = self.Utils:GetItemIDFromLink(link)
+	local id = ItemUtils:GetItemIDFromLink(link)
 
 	if tokenSlot then -- It's a token
 		local tokenText
@@ -2740,7 +2741,7 @@ end
 function RCLootCouncil:OnGearRequestReceived(sender)
 	local data = TT:Acquire()
 	self:UpdatePlayersData()
-	for i, link in pairs(playersData.gears) do data[i] = self.Utils:GetTransmittableItemString(link) end
+	for i, link in pairs(playersData.gears) do data[i] = ItemUtils:GetTransmittableItemString(link) end
 	Comms:Send{prefix = self.PREFIXES.MAIN, target = Player:Get(sender), command = "gear", data = {data}, prio = "BULK"}
 	TT:Release(data)
 end

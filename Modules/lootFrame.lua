@@ -8,6 +8,7 @@ local addon = select(2, ...)
 local LootFrame = addon:NewModule("RCLootFrame", "AceTimer-3.0", "AceEvent-3.0")
 --- @type RCLootCouncilLocale
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
+local ItemUtils = addon.Require "Utils.Item"
 
 local entries = {}
 local ENTRY_HEIGHT = 80
@@ -178,7 +179,7 @@ function LootFrame:OnRoll(entry, button)
 			addon:SendResponse("group", session, button, nil, nil, item.note)
 		end
 		if addon:Getdb().printResponse then
-			addon:Print(string.format(L["Response to 'item'"], addon.Utils:GetItemTextWithCount(item.link, #item.sessions))..
+			addon:Print(string.format(L["Response to 'item'"], ItemUtils:GetItemTextWithCount(item.link, #item.sessions))..
 				": "..addon:GetResponse(item.typeCode or item.equipLoc, button).text)
 		end
 		item.rolled = true
@@ -242,7 +243,7 @@ do
 				entry.icon:SetBorderColor("grey")
 			end
 			entry.item = item
-			entry.itemText:SetText((item.isRoll and (_G.ROLL..": ") or "")..addon.Utils:GetItemTextWithCount(entry.item.link or "error", #entry.item.sessions))
+			entry.itemText:SetText((item.isRoll and (_G.ROLL..": ") or "")..ItemUtils:GetItemTextWithCount(entry.item.link or "error", #entry.item.sessions))
 			entry.icon:SetNormalTexture(entry.item.texture or "Interface\\InventoryItems\\WoWUnknownItem01")
 			entry.itemCount:SetText(#entry.item.sessions > 1 and #entry.item.sessions or "")
 			local typeText = addon:GetItemTypeText(item.link, item.subType, item.equipLoc, item.typeID, item.subTypeID, item.classes, item.isTier, item.isRelic)
