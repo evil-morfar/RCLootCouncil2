@@ -13,6 +13,7 @@ loadfile(".specs/AddonLoader.lua")(nil, addonName, addon).LoadArray{
    [[Classes/Utils/TempTable.lua]],
    [[Classes/Utils/Log.lua]],
    [[Locale\enUS.lua]],
+   "Classes/Utils/Item.lua",
    [[Utils\Utils.lua]],
    [[Classes/Services/ErrorHandler.lua]],
    [[Classes/Data/Player.lua]],

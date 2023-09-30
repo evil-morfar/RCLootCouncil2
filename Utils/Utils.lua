@@ -7,77 +7,42 @@
 local addon = select(2, ...)
 --- @type RCLootCouncilLocale
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
+local ItemUtils = addon.Require "Utils.Item"
+
 local Utils = {}
 addon.Utils = Utils
 
-local string, gsub, strmatch, tonumber, format, date, time, strsplit = string, gsub, strmatch, tonumber, format, date, time, strsplit
+local string, gsub, strmatch, tonumber, format, date, time, strsplit = string, gsub, strmatch, tonumber, format, date,
+	time, strsplit
 -- GLOBALS: IsInRaid, UnitGroupRolesAssigned
 
 --- Extracts the creature id from a guid
 -- @param unitguid The UnitGUID
 -- @return creatureID (string) or nil if nonexistant
-function Utils:ExtractCreatureID (unitguid)
-   if not unitguid then return nil end
-   local id = unitguid:match(".+(%b--)")
-   return id and (id:gsub("-", "")) or nil
+function Utils:ExtractCreatureID(unitguid)
+	if not unitguid then return nil end
+	local id = unitguid:match(".+(%b--)")
+	return id and (id:gsub("-", "")) or nil
 end
 
 --- Shorthand for RCLootCouncil:HideTooltip()
 -- This way we can use the function as a table reference
 function Utils.HideTooltip()
-   addon:HideTooltip()
+	addon:HideTooltip()
 end
 
-function Utils:RGBToHex(r,g,b)
-	return string.format("%02x%02x%02x",255*r, 255*g, 255*b)
-end
-
-function Utils:GetTransmittableItemString (link)
-   return self:GetItemStringClean(self:NeutralizeItem(link))
-end
-
-function Utils:GetItemStringClean(link)
-	return gsub(self:GetItemStringFromLink(link), "item:", "")
-end
-
-function Utils:UncleanItemString(itemString)
-	return "item:"..itemString or "0"
-end
-
-function Utils:GetItemNameFromLink(link)
-	return strmatch(link or "", "%[(.+)%]")
+function Utils:RGBToHex(r, g, b)
+	return string.format("%02x%02x%02x", 255 * r, 255 * g, 255 * b)
 end
 
 function Utils:GetAnnounceChannel(channel)
 	return channel == "group" and (IsInRaid() and "RAID" or "PARTY") or channel
 end
 
-function Utils:GetItemIDFromLink(link)
-	return tonumber(strmatch(link or "", "item:(%d+):"))
-end
-
-function Utils:GetItemStringFromLink(link)
-	return strmatch(strmatch(link or "", "item:[%d:-]+") or "", "(item:.-):*$")
-end
-
-function Utils:GetItemTextWithCount(link, count)
-	return link..(count and count > 1 and (" x"..count) or "")
-end
-
-local NEUTRALIZE_ITEM_PATTERN = "item:(%d*):(%d*):(%d*):(%d*):(%d*):(%d*):(%d*):%d*:%d*:%d*:"
-local NEUTRALIZE_ITEM_REPLACEMENT = "item:%1:%2:%3:%4:%5:%6:%7::::"
-
---- Removes any character specific data from an item
---- @param item string Any itemlink, itemstring etc.
---- @return string #The same item with level, specID, uniqueID removed
-function Utils:NeutralizeItem (item)
-	return item:gsub(NEUTRALIZE_ITEM_PATTERN, NEUTRALIZE_ITEM_REPLACEMENT)
-end
-
 function Utils:GetItemLevelText(ilvl, token)
 	if not ilvl then return "" end
 	if token and ilvl > 600 then -- Armor token warforged is introduced since WoD
-		return ilvl.."+"
+		return ilvl .. "+"
 	else
 		return ilvl
 	end
@@ -97,8 +62,8 @@ end
 --- @param oldDate string A string specifying the date, formatted as "dd/mm/yy".
 function Utils:GetNumberOfDaysFromNow(oldDate)
 	local d, m, y = strsplit("/", oldDate, 3)
-	local sinceEpoch = time({year = "20"..y, month = m, day = d, hour = 0}) -- convert from string to seconds since epoch
-	local diff = date("*t", math.abs(time() - sinceEpoch)) -- get the difference as a table
+	local sinceEpoch = time({ year = "20" .. y, month = m, day = d, hour = 0, }) -- convert from string to seconds since epoch
+	local diff = date("*t", math.abs(time() - sinceEpoch))               -- get the difference as a table
 	-- Convert to number of d/m/y
 	return diff.day - 1, diff.month - 1, diff.year - 1970
 end
@@ -121,21 +86,20 @@ end
 
 --- Returns the number of available spaces in the players bags
 function Utils:GetNumFreeBagSlots()
-   local result = 0
-   for i = 1, _G.NUM_BAG_SLOTS do
+	local result = 0
+	for i = 1, _G.NUM_BAG_SLOTS do
 		result = result + (addon.C_Container.GetContainerNumFreeSlots(i))
-
-   end
-   return result
+	end
+	return result
 end
 
 function Utils:IsInNonInstance()
-   local instance_type = select(2, IsInInstance())
-   if self.IsPartyLFG() or instance_type == "pvp" or instance_type == "arena" then
-      return true
-   else
-      return false
-   end
+	local instance_type = select(2, IsInInstance())
+	if self.IsPartyLFG() or instance_type == "pvp" or instance_type == "arena" then
+		return true
+	else
+		return false
+	end
 end
 
 --- Removes corruption ID from a weapon.
@@ -143,26 +107,25 @@ end
 -- which causes :ItemIsItem to fail.
 -- This function removes this id, but doesn't alter the numBonuses value.
 -- Note: This will remove all occurances of ":6513:", but it shouldn't really matter afaik.
-function Utils:DiscardWeaponCorruption (itemLink)
-   return itemLink and gsub(itemLink, ":6513:", ":") or itemLink
+function Utils:DiscardWeaponCorruption(itemLink)
+	return itemLink and gsub(itemLink, ":6513:", ":") or itemLink
 end
-
 
 --- Checks if the item is in our blacklist
 -- TODO Should be moved to it's own class in the future
 --- @param item string Any valid input for *GetItemInfoInstant()*
 --- @return boolean #True if the item is blacklisted
 function Utils:IsItemBlacklisted(item)
-   if not item then return false end
-   local itemId,_,_,_,_,itemClassID, itemsubClassID = GetItemInfoInstant(item)
-   if not (itemClassID and itemsubClassID) then return false end
-   if addon.blacklistedItemClasses[itemClassID] then
-      if addon.blacklistedItemClasses[itemClassID].all or addon.blacklistedItemClasses[itemClassID][itemsubClassID] then
-        if addon.blackListOverride[itemId] then return false end
-		return true
-      end
-   end
-   return false
+	if not item then return false end
+	local itemId, _, _, _, _, itemClassID, itemsubClassID = GetItemInfoInstant(item)
+	if not (itemClassID and itemsubClassID) then return false end
+	if addon.blacklistedItemClasses[itemClassID] then
+		if addon.blacklistedItemClasses[itemClassID].all or addon.blacklistedItemClasses[itemClassID][itemsubClassID] then
+			if addon.blackListOverride[itemId] then return false end
+			return true
+		end
+	end
+	return false
 end
 
 --- Checks for outdated versions.
@@ -171,47 +134,43 @@ end
 ---@param basetVersion string
 ---@param newtVersion string
 ---@return VersionCodes
-function Utils:CheckOutdatedVersion (baseVersion, newVersion, basetVersion, newtVersion)
-   baseVersion = baseVersion or addon.version
+function Utils:CheckOutdatedVersion(baseVersion, newVersion, basetVersion, newtVersion)
+	baseVersion = baseVersion or addon.version
 
-   if strfind(newVersion, "%a+") then return self:Debug("Someone's tampering with version?", newVersion) end
+	if strfind(newVersion, "%a+") then return self:Debug("Someone's tampering with version?", newVersion) end
 
 	if newtVersion and not basetVersion then
 		return addon.VER_CHECK_CODES[1] -- Don't treat test versions as the latest
-
-	elseif addon:VersionCompare(baseVersion,newVersion) then
+	elseif addon:VersionCompare(baseVersion, newVersion) then
 		return addon.VER_CHECK_CODES[2] -- Outdated
-
 	elseif basetVersion and newtVersion and basetVersion < newtVersion then
 		return addon.VER_CHECK_CODES[3] -- tVersion outdated
-
 	elseif basetVersion and not newtVersion and baseVersion == newVersion then
 		return addon.VER_CHECK_CODES[2] -- Test version got released
-
 	else
-      return addon.VER_CHECK_CODES[1] -- All fine
+		return addon.VER_CHECK_CODES[1] -- All fine
 	end
 end
 
 function Utils:GuildRoster()
-   if _G.GuildRoster then
-      return _G.GuildRoster()
-   else
-      return C_GuildInfo.GuildRoster()
-   end
+	if _G.GuildRoster then
+		return _G.GuildRoster()
+	else
+		return C_GuildInfo.GuildRoster()
+	end
 end
 
 --- Upvalued for Classic overwrite
-function Utils:GetNumClasses ()
-   return _G.GetNumClasses and GetNumClasses() or _G.MAX_CLASSES
+function Utils:GetNumClasses()
+	return _G.GetNumClasses and GetNumClasses() or _G.MAX_CLASSES
 end
 
-function Utils:IsPartyLFG ()
-   return IsPartyLFG and IsPartyLFG()
+function Utils:IsPartyLFG()
+	return IsPartyLFG and IsPartyLFG()
 end
 
-function Utils:GetNumSpecializationsForClassID (classID)
-   return _G.GetNumSpecializationsForClassID and _G.GetNumSpecializationsForClassID(classID) or 3
+function Utils:GetNumSpecializationsForClassID(classID)
+	return _G.GetNumSpecializationsForClassID and _G.GetNumSpecializationsForClassID(classID) or 3
 end
 
 Utils.unitNameLookup = {}
@@ -222,8 +181,8 @@ Utils.unitNameLookup = {}
 --- @param input_unit string @Any unit, except those that include '-' like "name-target".
 --- @return string @Titlecased "unitName-realmName"
 function Utils:UnitName(input_unit)
-   if self.unitNameLookup[input_unit] then return self.unitNameLookup[input_unit] end
-   -- First strip any spaces
+	if self.unitNameLookup[input_unit] then return self.unitNameLookup[input_unit] end
+	-- First strip any spaces
 	local unit = gsub(input_unit, " ", "")
 	-- Then see if we already have a realm name appended
 	local find = strfind(unit, "-", nil, true)
@@ -231,7 +190,7 @@ function Utils:UnitName(input_unit)
 		-- Let's give it same treatment as below so we're sure it's the same
 		local name, realm = strsplit("-", unit, 2)
 		name = name:lower():gsub("^%l", string.upper)
-		return name.."-"..realm
+		return name .. "-" .. realm
 	end
 	-- Apparently functions like GetRaidRosterInfo() will return "real" name, while UnitName() won't
 	-- always work with that (see ticket #145). We need this to be consistant, so just lowercase the unit:
@@ -239,13 +198,13 @@ function Utils:UnitName(input_unit)
 	-- Proceed with UnitName()
 	local name, realm = UnitName(unit)
 	if not realm or realm == "" then realm = addon.realmName or "" end -- Extract our own realm
-	if not name then -- if the name isn't set then UnitName couldn't parse unit, most likely because we're not grouped.
+	if not name then                                                -- if the name isn't set then UnitName couldn't parse unit, most likely because we're not grouped.
 		name = unit
-	end -- Below won't work without name
+	end                                                             -- Below won't work without name
 	-- We also want to make sure the returned name is always title cased (it might not always be! ty Blizzard)
-   name = name:lower():gsub("^%l", string.upper)
-   local ret = name and name.."-"..realm
-   self.unitNameLookup[input_unit] = ret
+	name = name:lower():gsub("^%l", string.upper)
+	local ret = name and name .. "-" .. realm
+	self.unitNameLookup[input_unit] = ret
 	return ret
 end
 
@@ -268,7 +227,7 @@ end
 ---@param unit1 string | Player
 ---@param unit2 string | Player
 function Utils:UnitIsUnit(unit1, unit2)
-   if not unit1 or not unit2 then return false end
+	if not unit1 or not unit2 then return false end
 	if unit1.name then unit1 = unit1.name end
 	if unit2.name then unit2 = unit2.name end
 	-- Remove realm names, if any
@@ -281,7 +240,7 @@ function Utils:UnitIsUnit(unit1, unit2)
 	-- v2.3.3 There's problems comparing non-ascii characters of different cases using UnitIsUnit()
 	-- I.e. UnitIsUnit("Potdisc", "potdisc") works, but UnitIsUnit("Æver", "æver") doesn't.
 	-- Since I can't find a way to ensure consistant returns from UnitName(), just lowercase units here before passing them.
-   return UnitIsUnit(unit1:lower(), unit2:lower())
+	return UnitIsUnit(unit1:lower(), unit2:lower())
 end
 
 --- Returns the current loot threshold.
@@ -290,8 +249,58 @@ function Utils:GetLootThreshold()
 	-- Retail
 	if WOW_PROJECT_MAINLINE == WOW_PROJECT_ID then
 		return addon.MIN_LOOT_THRESHOLD -- Consider making this an option
-
 	else
 		return GetLootThreshold() or 1
 	end
+end
+
+---@deprecated
+---@see Utils.Item.GetTransmittableItemString
+function Utils:GetTransmittableItemString(link)
+	return ItemUtils:GetTransmittableItemString(link)
+end
+
+---@deprecated
+---@see Utils.Item.GetItemStringClean
+function Utils:GetItemStringClean(link)
+	return ItemUtils:GetItemStringClean(link)
+end
+
+---@deprecated
+---@see Utils.Item.UncleanItemString
+function Utils:UncleanItemString(itemString)
+	return ItemUtils:UncleanItemString(itemString)
+end
+
+---@deprecated
+---@see Utils.Item.GetItemNameFromLink
+function Utils:GetItemNameFromLink(link)
+	return ItemUtils:GetItemNameFromLink(link)
+end
+
+---@deprecated
+---@see Utils.Item.GetItemIDFromLink
+function Utils:GetItemIDFromLink(link)
+	return ItemUtils:GetItemIDFromLink(link)
+end
+
+---@deprecated
+---@see Utils.Item.GetItemStringFromLink
+function Utils:GetItemStringFromLink(link)
+	return ItemUtils:GetItemStringFromLink(link)
+end
+
+---@deprecated
+---@see Utils.Item.GetItemTextWithCount
+function Utils:GetItemTextWithCount(link, count)
+	return ItemUtils:GetItemTextWithCount(link, count)
+end
+
+--- Removes any character specific data from an item
+--- @param item string Any itemlink, itemstring etc.
+--- @return string #The same item with level, specID, uniqueID removed
+---@deprecated
+---@see Utils.Item.NeutralizeItem
+function Utils:NeutralizeItem(item)
+	return ItemUtils:NeutralizeItem(item)
 end
