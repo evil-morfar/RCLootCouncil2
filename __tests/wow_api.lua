@@ -51,6 +51,10 @@ function xpcall(f, err, ...)
 	end
 end
 
+function securecallfunction(...)
+	return pcall(...)
+end
+
 function InterfaceOptions_AddCategory()
 	-- body...
 end
