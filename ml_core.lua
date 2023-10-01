@@ -1603,7 +1603,9 @@ function RCLootCouncilML:OnReconnectReceived (sender)
 	-- Someone asks for mldb and council
 	local requestPlayer = Player:Get(sender)
 	MLDB:Send(requestPlayer)
-	self:Send(requestPlayer, "council", Council:GetForTransmit())
+	local council = Council:GetForTransmit()
+	self:Send(requestPlayer, "council", council)
+	TempTable:Release(council)
 	if addon.handleLoot then
 		self:Send(requestPlayer, "StartHandleLoot")
 	end
