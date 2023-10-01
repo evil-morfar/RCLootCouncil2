@@ -81,13 +81,6 @@ describe("#Utils :CheckOutdatedVersion", function()
 end)
 
 describe("#Utils functions", function()
-   describe("ItemLink", function()
-      it("should produce clean item strings", function()
-         local item = "|cffa335ee|Hitem:172200::::::::120:104::5:7:4823:6572:6578:6579:1502:4786:6513:::|h[Sk'shuul~`Vaz]|h|r"
-         local cleaned = Utils:GetTransmittableItemString(item)
-         assert.are.equal("172200:::::::::::5:7:4823:6572:6578:6579:1502:4786:6513", cleaned)
-      end)
-   end)
    describe("DiscardWeaponCorruption", function()
       it("should remove correct bonusID", function()
          local itemWith = "|cffa335ee|Hitem:172200::::::::120:104::5:7:4823:6572:6578:6579:1502:4786:6513:::|h[Sk'shuul~`Vaz]|h|r"

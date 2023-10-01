@@ -14,6 +14,7 @@ loadfile(".specs/AddonLoader.lua")(nil, addonName, addon).LoadArray {
 	[[Classes/Services/ErrorHandler.lua]],
 	[[Classes/Data/Player.lua]],
 	[[Locale\enUS.lua]],
+	"Classes/Utils/Item.lua",
 	[[Utils\Utils.lua]],
 }
 addon:InitLogging()

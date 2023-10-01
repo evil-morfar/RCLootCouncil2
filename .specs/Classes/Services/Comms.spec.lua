@@ -21,6 +21,7 @@ loadfile(".specs/AddonLoader.lua")(nil, nil, addon).LoadArray {
 	[[Classes\Utils\TempTable.lua]],
 	[[Classes\Utils\Log.lua]],
 	[[Classes\Services\ErrorHandler.lua]],
+	"Classes/Utils/Item.lua",
 	[[Utils\Utils.lua]],
 	[[Classes\Data\Player.lua]],
 	[[Classes\Services\Comms.lua]],

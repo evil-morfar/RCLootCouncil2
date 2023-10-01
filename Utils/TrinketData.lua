@@ -4,8 +4,11 @@
 -- Create Date : 12/03/2017
 -- Update Date : 12/1/2020 (8.3.0 Build 32976)
 
+---@type RCLootCouncil
+local addon = select(2, ...)
 local numClasses = 13 -- Hardcode for classic support
 local ZERO = ("0"):rep(numClasses)
+local ItemUtils = addon.Require "Utils.Item"
 --@debug@
 --[[
 This function is used for developer.
@@ -164,7 +167,7 @@ function RCLootCouncil:ExportTrinketDataSingleInstance(instanceID, diffID, timeL
 			else
 				trinketData[trinketIdToIndex[info.itemID]][2] = ZERO
 			end
-         trinketNames[info.itemID] = self.Utils:GetItemNameFromLink(info.link)
+         trinketNames[info.itemID] = ItemUtils:GetItemNameFromLink(info.link)
          GetItemInfo(info.itemID)
          count = count + 1
          tinsert(trinketlinksInThisInstances, info.link)
@@ -195,7 +198,7 @@ function RCLootCouncil:ExportTrinketDataSingleInstance(instanceID, diffID, timeL
       self:Print("--------------------")
       self:Print(format("Instance %d. %s %s. Processed %d trinkets", instanceID, EJ_GetInstanceInfo(instanceID), diffText, count))
       for _, link in ipairs(trinketlinksInThisInstances) do
-         local id = self.Utils:GetItemIDFromLink(link)
+         local id = ItemUtils:GetItemIDFromLink(link)
 		 local data = trinketData[trinketIdToIndex[id]]
          self:Print(format("%s(%d): %s (%s)", link, id, data[2], data[3]))
 			if not RCTrinketCategories[data[2]] and data[3] ~= 0xffffffff then

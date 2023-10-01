@@ -5385,6 +5385,7 @@ local function DecodeMLDB(mldb)
 			[[Classes\Utils\Log.lua]],
 			[[Classes\Services\ErrorHandler.lua]],
 			[[Locale\enUS.lua]],
+			"Classes/Utils/Item.lua",
 			[[Utils\Utils.lua]],
 			[[Classes\Data\Player.lua]],
 			[[Classes\Services\Comms.lua]],

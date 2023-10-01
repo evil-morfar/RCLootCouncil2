@@ -2,6 +2,7 @@
 -- Creates 'RCLootCouncil.ItemStorage' as a namespace for storage functions.
 -- @author Potdisc
 -- Create Date : 29/5/2018 18:28:51
+
 --- @class RCLootCouncil
 local addon = select(2, ...)
 local db = addon:Getdb()
