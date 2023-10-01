@@ -2555,7 +2555,7 @@ function RCLootCouncil:SubscribeToPermanentComms()
 
 		getCov = function(_, sender) self:OnCovenantRequest(sender) end,
 
-		StartHandleLoot = function() self:OnStartHandleLoot(sender) end,
+		StartHandleLoot = function() self:OnStartHandleLoot() end,
 
 		StopHandleLoot = function() self.handleLoot = false end,
 	})
@@ -2754,7 +2754,7 @@ function RCLootCouncil:OnCovenantRequest(sender)
 	}
 end
 
-function RCLootCouncil:OnStartHandleLoot(sender)
+function RCLootCouncil:OnStartHandleLoot()
 	self.handleLoot = true
 
 	if not self.autoGroupLootWarningShown and db.showAutoGroupLootWarning and self.Require "Utils.GroupLoot":ShouldPassOnLoot() then
