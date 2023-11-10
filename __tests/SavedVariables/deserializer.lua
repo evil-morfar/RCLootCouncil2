@@ -39,9 +39,11 @@ local classIdToString = {
 	"Monk",
 	"Druid",
 	"Demon Hunter",
+	"Evoker"
 }
 
 local function ClassesFlagToStr(flag)
+	require "bit"
 	local text = ""
 	for i=1, MAX_CLASSES do
 		if bit.band(flag, bit.lshift(1, i-1)) > 0 then
@@ -5403,7 +5405,9 @@ end
 --   print(type(k))
 --    print("_____________________________________________________")
 -- end
-local serializedMldb = "^1^Smldb^T^N1^T^S|8^T^S|14^T^N3^T^S|15^STransmog^t^N2^T^S|15^SOff~`Spec^t^S|5^N3^t^t^S|12^N200^S|11^T^S|14^T^N2^T^S|15^Soffspec^S|4^N2^S|16^T^N1^N1^N2^N0.5^N3^N0^N4^N1^t^t^N3^T^S|15^STransmog^S|4^N3^S|16^T^N1^N0^N2^N0.7^N3^N0.7^N4^N1^t^t^t^t^S|1^B^S|7^B^S|9^B^S|5^N3^S|2^B^t^t^^"
-local _, _,mldb = Deserialize(serializedMldb)
-print(mldb)
-printtable(DecodeMLDB(mldb))
+-- local serializedMldb = "^1^Smldb^T^N1^T^S|8^T^S|14^T^N3^T^S|15^STransmog^t^N2^T^S|15^SOff~`Spec^t^S|5^N3^t^t^S|12^N200^S|11^T^S|14^T^N2^T^S|15^Soffspec^S|4^N2^S|16^T^N1^N1^N2^N0.5^N3^N0^N4^N1^t^t^N3^T^S|15^STransmog^S|4^N3^S|16^T^N1^N0^N2^N0.7^N3^N0.7^N4^N1^t^t^t^t^S|1^B^S|7^B^S|9^B^S|5^N3^S|2^B^t^t^^"
+-- local _, _,mldb = Deserialize(serializedMldb)
+-- print(mldb)
+-- printtable(DecodeMLDB(mldb))
+
+print(ClassesFlagToStr("7300070000077"))

@@ -1,4 +1,11 @@
+# 3.10.0
+
 ## Changes
+
+### Patch 10.2
+
+Updated for patch 10.2.
+Added trinkets and tokens for the new raid.
 
 ### CSV import
 
@@ -7,7 +14,6 @@ Smoothened the whole experience, along with some quality of life changes:
 - `owner` no longer needs to be set when importing csv data.
 - trailing spaces and/or tabs in both header and data are now ignored.
 - fixed issue in line validation making error messages more useful.
-
 
 ## Bugfixes
 

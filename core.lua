@@ -191,6 +191,7 @@ function RCLootCouncil:OnInitialize()
 	self.blackListOverride = {
 		-- [itemId] = true
 		[206046] = true, -- Void-Touched Curio
+		[210947] = true, -- Flame-Warped Curio
 	}
 
 	self.testMode = false;

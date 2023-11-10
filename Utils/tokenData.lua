@@ -17,12 +17,12 @@ local tokenIlvls = {}
 -- temporarily added patch 10/10.1 token unique names
 --- List of keywords matching each slot
 local keyWords = {
-	["HeadSlot"] = { "helm", "head", "crown", "circlet", "topaz", "melting", },
-	["ShoulderSlot"] = { "shoulder", "pauldron", "mantle", "spaulder", "lapis", "corrupting", },
+	["HeadSlot"] = { "helm", "head", "crown", "circlet", "topaz", "melting", "blazing" },
+	["ShoulderSlot"] = { "shoulder", "pauldron", "mantle", "spaulder", "lapis", "corrupting", "smoldering"},
 	["BackSlot"] = { "cloak" },
-	["ChestSlot"] = { "breastplate", "tunic", "robe", "chest", "amethyst", "ventilation"},
-	["HandsSlot"] = { "hand", "glove", "gauntlets", "garnet", "mixing", },
-	["LegsSlot"] = { "leg", "legs", "jade", "cooling" },
+	["ChestSlot"] = { "breastplate", "tunic", "robe", "chest", "amethyst", "ventilation", "verdurous"},
+	["HandsSlot"] = { "hand", "glove", "gauntlets", "garnet", "mixing", "tormented" },
+	["LegsSlot"] = { "leg", "legs", "jade", "cooling", "ashen" },
 	["Trinket"] = { "badge" },
 	["MultiSlots"] = { "essence", "regalia", "sanctification" },
 	["WristSlot"] = { "wrist", "bracer", "bindings" },
@@ -120,6 +120,7 @@ end
 function RCLootCouncil:GetTokenSlotFromTooltip(id)
 	local lines = self:GetTooltipLines(id)
 	for _, text in ipairs(lines) do
+		print("Text:", text)
 		if text and text:sub(0, 4) == "Use:" then
 			self.Log:d("Found text", text)
 			for invSlot, keywords in pairs(keyWords) do
@@ -788,6 +789,26 @@ _G.RCTokenTable = {
 	[202638] = "HandsSlot",  -- Zenith Mixing Fluid,
 	[202639] = "ChestSlot",  -- Zenith Ventilation Fluid,
 	[202640] = "LegsSlot",   -- Zenith Cooling Fluid,
+	[207462] = "ChestSlot",  -- Dreadful Verdurous Dreamheart,
+	[207463] = "ChestSlot",  -- Mystic Verdurous Dreamheart,
+	[207464] = "ChestSlot",  -- Venerated Verdurous Dreamheart,
+	[207465] = "ChestSlot",  -- Zenith Verdurous Dreamheart,
+	[207466] = "HandsSlot",  -- Dreadful Tormented Dreamheart,
+	[207467] = "HandsSlot",  -- Mystic Tormented Dreamheart,
+	[207468] = "HandsSlot",  -- Venerated Tormented Dreamheart,
+	[207469] = "HandsSlot",  -- Zenith Tormented Dreamheart,
+	[207470] = "HeadSlot",   -- Dreadful Blazing Dreamheart,
+	[207471] = "HeadSlot",   -- Mystic Blazing Dreamheart,
+	[207472] = "HeadSlot",   -- Venerated Blazing Dreamheart,
+	[207473] = "HeadSlot",   -- Zenith Blazing Dreamheart,
+	[207474] = "LegsSlot",   -- Dreadful Ashen Dreamheart,
+	[207475] = "LegsSlot",   -- Mystic Ashen Dreamheart,
+	[207476] = "LegsSlot",   -- Venerated Ashen Dreamheart,
+	[207477] = "LegsSlot",   -- Zenith Ashen Dreamheart,
+	[207478] = "ShoulderSlot", -- Dreadful Smoldering Dreamheart,
+	[207479] = "ShoulderSlot", -- Mystic Smoldering Dreamheart,
+	[207480] = "ShoulderSlot", -- Venerated Smoldering Dreamheart,
+	[207481] = "ShoulderSlot", -- Zenith Smoldering Dreamheart,
 }
 
 -- The base item level for the token on normal difficulty

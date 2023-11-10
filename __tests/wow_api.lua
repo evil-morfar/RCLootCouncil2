@@ -937,6 +937,12 @@ local CLASS_INFO = {
 				iconID = 4511812,
 				role = "HEALER",
 			},
+			[3] = {
+				specID = 1473,
+				name = "Augmentation",
+				iconID = 5198700,
+				role = "DAMAGER",
+			}
 		},
 	},
 }
