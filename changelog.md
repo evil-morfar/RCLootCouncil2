@@ -1,3 +1,28 @@
+# 3.10.0
+
+## Changes
+
+### Patch 10.2
+
+Updated for patch 10.2.
+Added trinkets and tokens for the new raid.
+
+### CSV import
+
+Smoothened the whole experience, along with some quality of life changes:
+
+- `owner` no longer needs to be set when importing csv data.
+- trailing spaces and/or tabs in both header and data are now ignored.
+- fixed issue in line validation making error messages more useful.
+
+### Observe mode
+
+When using observe mode and having hide votes enabled, non-council members can now see votes, instead of hide votes requiering a vote to be cast before showing votes.
+
+## Bugfixes
+
+- *Trying to import tsv data will now show the correct error message instead of throwing an error.*
+
 # 3.9.3
 
 ## Bugfixes

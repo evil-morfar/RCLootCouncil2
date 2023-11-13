@@ -51,6 +51,10 @@ function xpcall(f, err, ...)
 	end
 end
 
+function securecallfunction(...)
+	return pcall(...)
+end
+
 function InterfaceOptions_AddCategory()
 	-- body...
 end
@@ -933,6 +937,12 @@ local CLASS_INFO = {
 				iconID = 4511812,
 				role = "HEALER",
 			},
+			[3] = {
+				specID = 1473,
+				name = "Augmentation",
+				iconID = 5198700,
+				role = "DAMAGER",
+			}
 		},
 	},
 }

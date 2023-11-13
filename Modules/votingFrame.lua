@@ -31,12 +31,10 @@ local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 
 local Comms = addon.Require "Services.Comms"
 local Council = addon.Require "Data.Council"
----@type Data.Player
 local Player = addon.Require "Data.Player"
----@type Utils.TempTable
 local TempTable = addon.Require "Utils.TempTable"
----@type Services.ErrorHandler
 local ErrorHandler = addon.Require "Services.ErrorHandler"
+local ItemUtils = addon.Require "Utils.Item"
 
 local ROW_HEIGHT = 20;
 local NUM_ROWS = 15;
@@ -447,7 +445,7 @@ function RCVotingFrame:OnLootAckReceived (name, specID, ilvl, sessionData)
 	for k,d in pairs(sessionData) do
 		for ses, v in pairs(d) do
 			if k == "gear1" or k == "gear2" then
-				self:SetCandidateData(ses, name, k, addon.Utils:UncleanItemString(v))
+				self:SetCandidateData(ses, name, k, ItemUtils:UncleanItemString(v))
 			else
 				self:SetCandidateData(ses, name, k, v)
 			end
@@ -607,14 +605,14 @@ end
 
 local itemAwardHistoryCache = {}
 local function cacheItemAwardHistory(item)
-	local itemID = addon.Utils:GetItemIDFromLink(item)
+	local itemID = ItemUtils:GetItemIDFromLink(item)
 	if not itemID then return end
 
 	local his = addon:GetHistoryDB()
 	local ret = TempTable:Acquire()
 	for name, data in pairs(his) do
 		for _, loot in ipairs(data) do
-			if itemID == addon.Utils:GetItemIDFromLink(loot.lootWon) then
+			if itemID == ItemUtils:GetItemIDFromLink(loot.lootWon) then
 				addon.Log:D("Found single winner of ", loot.lootWon, name)
 				if not ret[name] then ret[name] = {} end
 				tinsert(ret[name], loot)
@@ -638,14 +636,14 @@ local function cacheMultipleItemAwardHistory(items)
 	local ret = TempTable:Acquire()
 	for _, item in ipairs(items) do
 		ret[item] = {}
-		itemIDs[addon.Utils:GetItemIDFromLink(item)] = item
+		itemIDs[ItemUtils:GetItemIDFromLink(item)] = item
 	end
 
 	local his = addon:GetHistoryDB()
 	for name in addon:GroupIterator() do
 		if his[name] then -- might not have a history
 			for _, loot in ipairs(his[name]) do
-				local id = addon.Utils:GetItemIDFromLink(loot.lootWon)
+				local id = ItemUtils:GetItemIDFromLink(loot.lootWon)
 				if itemIDs[id] then
 					addon.Log:D("Found winner of ", loot.lootWon, name)
 					if not ret[itemIDs[id]][name] then ret[itemIDs[id]][name] = {} end
@@ -1418,7 +1416,7 @@ function RCVotingFrame.SetCellVotes(rowFrame, frame, data, cols, row, realrow, c
 	local name = data[realrow].name
 	frame:SetScript("OnEnter", function()
 		if not addon.mldb.anonymousVoting or (db.showForML and addon.isMasterLooter) then
-			if not addon.mldb.hideVotes or (addon.mldb.hideVotes and lootTable[session].haveVoted) then
+			if not addon.mldb.hideVotes or (addon.mldb.hideVotes and (lootTable[session].haveVoted or (addon.mldb.observe and not addon.isCouncil))) then
 				addon:CreateTooltip(L["Voters"], unpack((function ()
 					local ret = {}
 					for i,name in ipairs(lootTable[session].candidates[name].voters) do
@@ -1436,7 +1434,7 @@ function RCVotingFrame.SetCellVotes(rowFrame, frame, data, cols, row, realrow, c
 	frame.text:SetText(val)
 
 	if addon.mldb.hideVotes then
-		if not lootTable[session].haveVoted then
+		if not lootTable[session].haveVoted and addon.isCouncil then
 			frame.text:SetText(0)
 			data[realrow].cols[column].value = 0 -- Don't background sort when we can't see the votes
 		end
@@ -1645,7 +1643,7 @@ function RCVotingFrame:GetRerollData(session, isRoll, noAutopass)
 	local v = lootTable[session]
 	return {
 		session 	= session,
-		string 		= addon.Utils:GetTransmittableItemString(v.link),
+		string 		= ItemUtils:GetTransmittableItemString(v.link),
 		noAutopass = noAutopass,
 		typeCode 	= lootTable[session].typeCode,
 		isRoll 		= isRoll

@@ -16,6 +16,8 @@ local LootHistory = addon:NewModule("RCLootHistory", "AceSerializer-3.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 local AG = LibStub("AceGUI-3.0")
 local Comms = addon.Require "Services.Comms"
+local ItemUtils = addon.Require "Utils.Item"
+
 local COMMS_PREFIX = addon.PREFIXES.MAIN
 local lootDB, data, db
 --[[ data structure:
@@ -639,8 +641,8 @@ function LootHistory.ItemSort(table, rowa, rowb, sortbycol)
 	local column = table.cols[sortbycol]
 	rowa, rowb = table:GetRow(rowa), table:GetRow(rowb);
 	local a,b = lootDB[rowa.name][rowa.num].lootWon, lootDB[rowb.name][rowb.num].lootWon
-	a = addon.Utils:GetItemNameFromLink(a)
-	b = addon.Utils:GetItemNameFromLink(b)
+	a = ItemUtils:GetItemNameFromLink(a)
+	b = ItemUtils:GetItemNameFromLink(b)
 	if a == b then
 		if column.sortnext then
 			local nextcol = table.cols[column.sortnext];
@@ -730,7 +732,7 @@ function LootHistory:ImportHistory(import)
 	import = import:gsub("    ", "\t")
 	local type = self:DetermineImportType(import)
 
-	if not type or type == "Unknown" then
+	if not type or type == "Unknown" or type == "tsv" then
 		addon:Print(L["import_not_supported"])
 		addon:Print(L["Accepted imports: 'Player Export' and 'CSV'"])
 		return
@@ -1572,8 +1574,8 @@ do
 				tinsert(export, tostring(d.time))
 				tinsert(export, tostring(d.id))
 				tinsert(export, CSVEscape(d.lootWon))
-				tinsert(export, addon.Utils:GetItemIDFromLink(d.lootWon))
-				tinsert(export, addon.Utils:GetItemStringFromLink(d.lootWon))
+				tinsert(export, ItemUtils:GetItemIDFromLink(d.lootWon))
+				tinsert(export, ItemUtils:GetItemStringFromLink(d.lootWon))
 				tinsert(export, CSVEscape(d.response))
 				tinsert(export, tostring(d.votes))
 				tinsert(export, tostring(d.class))
@@ -1615,8 +1617,8 @@ do
 				tinsert(export, tostring(self:GetLocalizedDate(d.date)))
 				tinsert(export, tostring(d.time))
 				tinsert(export, "=HYPERLINK(\""..self:GetWowheadLinkFromItemLink(d.lootWon).."\",\""..tostring(d.lootWon).."\")")
-				tinsert(export, addon.Utils:GetItemIDFromLink(d.lootWon))
-				tinsert(export, addon.Utils:GetItemStringFromLink(d.lootWon))
+				tinsert(export, ItemUtils:GetItemIDFromLink(d.lootWon))
+				tinsert(export, ItemUtils:GetItemStringFromLink(d.lootWon))
 				tinsert(export, tostring(d.response))
 				tinsert(export, tostring(d.votes))
 				tinsert(export, tostring(d.class))
@@ -1662,8 +1664,8 @@ do
 				tinsert(export, string.format("\"%s\":\"%s\"", "date", tostring(self:GetLocalizedDate(d.date))))
 				tinsert(export, string.format("\"%s\":\"%s\"", "time", tostring(d.time)))
 				tinsert(export, string.format("\"%s\":\"%s\"", "id", tostring(d.id)))
-				tinsert(export, string.format("\"%s\":%s", "itemID", addon.Utils:GetItemIDFromLink(d.lootWon)))
-				tinsert(export, string.format("\"%s\":\"%s\"", "itemString", addon.Utils:GetItemStringFromLink(d.lootWon)))
+				tinsert(export, string.format("\"%s\":%s", "itemID", ItemUtils:GetItemIDFromLink(d.lootWon)))
+				tinsert(export, string.format("\"%s\":\"%s\"", "itemString", ItemUtils:GetItemStringFromLink(d.lootWon)))
 				tinsert(export, string.format("\"%s\":\"%s\"", "response", QuotesEscape(d.response)))
 				tinsert(export, string.format("\"%s\":%s", "votes", tostring(d.votes or 0)))
 				tinsert(export, string.format("\"%s\":\"%s\"", "class", tostring(d.class)))
@@ -1678,7 +1680,7 @@ do
 				tinsert(export, string.format("\"%s\":\"%s\"", "equipLoc", tostring(getglobal(equipLoc) or "")))
 				tinsert(export, string.format("\"%s\":\"%s\"", "note", QuotesEscape(d.note)))
 				tinsert(export, string.format("\"%s\":\"%s\"", "owner", tostring(d.owner or "Unknown")))
-				tinsert(export, string.format("\"%s\":\"%s\"", "itemName", addon.Utils:GetItemNameFromLink(d.lootWon)))
+				tinsert(export, string.format("\"%s\":\"%s\"", "itemName", ItemUtils:GetItemNameFromLink(d.lootWon)))
 
 				processedEntries = processedEntries + 1;
 
@@ -1751,8 +1753,8 @@ do
 				local hour,minute,second = strsplit(":",d.time,3)
 				local sinceEpoch = time({year = "20"..year, month = month, day = day,hour = hour,min = minute,sec=second})
 				itemsData = itemsData.."\t\t<item>\r\n"
-				.."\t\t\t<itemid>" .. addon.Utils:GetItemStringClean(d.lootWon) .. "</itemid>\r\n"
-				.."\t\t\t<name>" .. addon.Utils:GetItemNameFromLink(d.lootWon) .. "</name>\r\n"
+				.."\t\t\t<itemid>" .. ItemUtils:GetItemStringClean(d.lootWon) .. "</itemid>\r\n"
+				.."\t\t\t<name>" .. ItemUtils:GetItemNameFromLink(d.lootWon) .. "</name>\r\n"
 				.."\t\t\t<member>" .. addon.Ambiguate(player) .. "</member>\r\n"
 				.."\t\t\t<time>" .. sinceEpoch .. "</time>\r\n"
 				.."\t\t\t<count>1</count>\r\n"
