@@ -1416,7 +1416,7 @@ function RCVotingFrame.SetCellVotes(rowFrame, frame, data, cols, row, realrow, c
 	local name = data[realrow].name
 	frame:SetScript("OnEnter", function()
 		if not addon.mldb.anonymousVoting or (db.showForML and addon.isMasterLooter) then
-			if not addon.mldb.hideVotes or (addon.mldb.hideVotes and lootTable[session].haveVoted) then
+			if not addon.mldb.hideVotes or (addon.mldb.hideVotes and (lootTable[session].haveVoted or (addon.mldb.observe and not addon.isCouncil))) then
 				addon:CreateTooltip(L["Voters"], unpack((function ()
 					local ret = {}
 					for i,name in ipairs(lootTable[session].candidates[name].voters) do
@@ -1434,7 +1434,7 @@ function RCVotingFrame.SetCellVotes(rowFrame, frame, data, cols, row, realrow, c
 	frame.text:SetText(val)
 
 	if addon.mldb.hideVotes then
-		if not lootTable[session].haveVoted then
+		if not lootTable[session].haveVoted and addon.isCouncil then
 			frame.text:SetText(0)
 			data[realrow].cols[column].value = 0 -- Don't background sort when we can't see the votes
 		end
