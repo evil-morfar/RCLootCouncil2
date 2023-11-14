@@ -552,6 +552,21 @@ function RCVotingFrame:OnRRollsReceived(session, rolls)
 	self:UpdateSession(session)
 end
 
+---Fecthes info about a candidate in the lootTable
+---@param session integer Session to fetch data from.
+---@param candidate string Name of the candidate
+---@param attribute string Attribute tot fetch.
+---@return boolean|string|number|array|nil
+function RCVotingFrame:GetCandidateAttribute(session, candidate, attribute)
+	if lootTable[session] then
+		if lootTable[session].candidates[candidate] then
+			return lootTable[session].candidates[candidate][attribute]
+		end
+	end
+	addon:Debug("Unable to fetch candidate attribute", session, candidate, attribute)
+	return
+end
+
 ------------------------------------------------------------------
 --	Visuals
 -- @section Visuals
@@ -578,11 +593,12 @@ function RCVotingFrame:Update(forceUpdate)
 		self.frame.awardString:Show()
 		local name = lootTable[session].awarded
 		self.frame.awardStringPlayer:SetText(addon.Ambiguate(name))
-		local c = addon:GetClassColor(lootTable[session].candidates[name].class)
+		local c = addon:GetClassColor(self:GetCandidateAttribute(session, name, "class"))
 		self.frame.awardStringPlayer:SetTextColor(c.r,c.g,c.b,c.a)
 		self.frame.awardStringPlayer:Show()
 		-- Hack-reuse the SetCellClassIcon function
-		addon.SetCellClassIcon(nil,self.frame.awardStringPlayer.classIcon,nil,nil,nil,nil,nil,nil,nil, lootTable[session].candidates[name].class)
+		addon.SetCellClassIcon(nil, self.frame.awardStringPlayer.classIcon, nil, nil, nil, nil, nil, nil, nil,
+			self:GetCandidateAttribute(session, name, "class"))
 		self.frame.awardStringPlayer.classIcon:Show()
 	elseif lootTable[session] and lootTable[session].baggedInSession then
 		self.frame.awardString:SetText(L["The item will be awarded later"])
@@ -1171,7 +1187,8 @@ function RCVotingFrame.SetCellClass(rowFrame, frame, data, cols, row, realrow, c
 	frame:SetNormalTexture(specIcon);
 	frame:GetNormalTexture():SetTexCoord(0, 1, 0, 1);
 	else
-		addon.SetCellClassIcon(rowFrame, frame, data, cols, row, realrow, column, fShow, table, lootTable[session].candidates[name].class)
+		addon.SetCellClassIcon(rowFrame, frame, data, cols, row, realrow, column, fShow, table,
+			RCVotingFrame:GetCandidateAttribute(session, name, "class"))
 	end
 	data[realrow].cols[column].value = lootTable[session].candidates[name].class or ""
 end
@@ -1183,7 +1200,7 @@ function RCVotingFrame.SetCellName(rowFrame, frame, data, cols, row, realrow, co
 	else
 		frame.text:SetText(addon.Ambiguate(name))
 	end
-	local c = addon:GetClassColor(lootTable[session].candidates[name].class)
+	local c = addon:GetClassColor(RCVotingFrame:GetCandidateAttribute(session, name, "class"))
 	frame.text:SetTextColor(c.r, c.g, c.b, c.a)
 	data[realrow].cols[column].value = name or ""
 end
