@@ -2,6 +2,7 @@ return {
    _all = {
       ["pattern"] = ".spec",
       ["coverage"] = true,
+      ["lpath"] = "./__tests/?.lua"
    },
    default = {
       ["ROOT"] = { ".specs"},

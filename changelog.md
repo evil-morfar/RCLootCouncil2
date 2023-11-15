@@ -1,3 +1,11 @@
+# 3.10.1
+
+## Changes
+
+### Hearthstone of the Flame
+
+Hearthstone of the Flame (bonus loot from Larodar) is now ignored by RCLootCouncil as it cannot be traded.
+
 # 3.10.0
 
 ## Changes

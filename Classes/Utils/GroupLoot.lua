@@ -7,12 +7,19 @@ local addon = select(2, ...)
 --- @class Utils.GroupLoot
 local GroupLoot = addon.Init "Utils.GroupLoot"
 local Subject = addon.Require("rx.Subject")
+local ItemUtils = addon.Require "Utils.Item"
 
 --- @class OnLootRoll
 --- Called everytime we're auto rolling for loot.
 --- Subscriber functions are called with args: `itemLink` ,`rollID`, `rollType`
 --- @field subscribe fun(onNext: fun(link:ItemLink, rollID:integer, rollType:RollType), onError:fun(message:string), onComplete:fun()): rx.Subscription
 GroupLoot.OnLootRoll = Subject.create()
+
+--- @type table<integer, boolean>
+--- These item ids will not be processed by this code due to them not being tradeable.
+GroupLoot.IgnoreList = {
+	[209035] = true, -- Hearthstone of the Flame, Larodar, Amirdrassil
+}
 
 function GroupLoot:OnInitialize()
 	self.Log = addon.Require "Utils.Log":New "GroupLoot"
@@ -25,6 +32,12 @@ function GroupLoot:OnStartLootRoll(_, rollID)
 	if not addon.enabled then return self.Log:d("Addon disabled, ignoring group loot") end
 	local link = GetLootRollItemLink(rollID)
 	local _, _, _, _, _, canNeed, _, _, _, _, _, _, canTransmog = GetLootRollItemInfo(rollID)
+	if not link then return end -- Sanity check
+	local id = ItemUtils:GetItemIDFromLink(link)
+	if self.IgnoreList[id] then
+		self.Log:d(link, "is ignored, bailing.")
+		return
+	end
 	if self:ShouldPassOnLoot() then
 		self.Log:d("Passing on loot", link)
 		self:RollOnLoot(rollID, 0)
