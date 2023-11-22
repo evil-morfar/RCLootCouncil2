@@ -430,7 +430,7 @@ function RCLootCouncil:ChatCommand(msg)
 			self:CallModule("version")
 		end
 
-	elseif input == "history" or input == string.lower(_G.HISTORY) or input == "h" or input == "his" then
+	elseif input == "history" or input == string.lower(_G.HISTORY) or input == "h" or input == "his" or input == "hist" then
 		self:CallModule("history")
 		-- @debug@
 	elseif input == "nnp" then
