@@ -72,7 +72,7 @@ end
 function GroupLoot:RollOnLoot(rollID, rollType)
 	-- Delay execution in case other addons have modified the loot frame
 	-- and haven't had a change to fully load.
-	addon:ScheduleTimer(RollOnLoot, 0, rollID, rollType)
+	addon:ScheduleTimer(RollOnLoot, 0.05, rollID, rollType)
 	--ConfirmLootRoll(rollID, rollType)
 end
 
