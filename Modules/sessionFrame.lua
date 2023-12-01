@@ -39,6 +39,9 @@ end
 function RCSessionFrame:OnEnable()
 	addon.Log("RCSessionFrame enabled")
 	self:RegisterMessage("RCLootStatusReceived", "UpdateLootStatus")
+	addon:RegisterEvent("CINEMATIC_START", self.OnCinematicStart, self)
+	addon:RegisterEvent("CINEMATIC_STOP", self.OnCinematicStop, self)
+	self.showAfterCinematic = false
 	ml = addon:GetActiveModule("masterlooter")
 end
 
@@ -47,6 +50,7 @@ function RCSessionFrame:OnDisable()
 	self.frame.rows = {}
 	self:UnregisterMessage("RCLootStatusReceived")
 	awardLater = false
+	self.showAfterCinematic = false
 	addon.Log("RCSessionFrame disabled")
 end
 
@@ -89,6 +93,17 @@ end
 
 function RCSessionFrame:IsRunning()
 	return self.frame and self.frame:IsVisible()
+end
+
+function RCSessionFrame:OnCinematicStart()
+	self.showAfterCinematic = self.frame:IsVisible()
+end
+
+function RCSessionFrame:OnCinematicStop()
+	if self.showAfterCinematic then
+		self.frame:Show()
+		self.showAfterCinematic = false
+	end
 end
 
 -- Data should be unmodified lootTable from ml_core

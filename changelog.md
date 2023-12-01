@@ -6,6 +6,11 @@
 
 Added a column for notes.
 
+### Session frame
+
+Will now be shown automatically after a cinematic if it was hidden because of it.
+
+
 ### TradeUI
 
 Addons can no longer check whether people are in trade range during combat, so now the labels are yellow in combat. Clicking the yellow label will attempt to open trade.
