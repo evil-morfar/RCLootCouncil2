@@ -174,6 +174,15 @@ function Utils:GetNumSpecializationsForClassID(classID)
 end
 
 Utils.unitNameLookup = {}
+---@param key string
+---@param name string
+local function cacheUnitName(key, name)
+	local find = strfind(name, "-", nil, true)
+	if find and find < #name then
+		Utils.unitNameLookup[key] = name
+	end
+	return name
+end
 
 --- Gets a unit's name formatted with realmName.
 --- If the unit contains a '-' it's assumed it belongs to the realmName part.
@@ -182,6 +191,7 @@ Utils.unitNameLookup = {}
 --- @return string @Titlecased "unitName-realmName"
 function Utils:UnitName(input_unit)
 	if self.unitNameLookup[input_unit] then return self.unitNameLookup[input_unit] end
+	if not input_unit or input_unit == "" then return "" end
 	-- First strip any spaces
 	local unit = gsub(input_unit, " ", "")
 	-- Then see if we already have a realm name appended
@@ -190,7 +200,9 @@ function Utils:UnitName(input_unit)
 		-- Let's give it same treatment as below so we're sure it's the same
 		local name, realm = strsplit("-", unit, 2)
 		name = name:lower():gsub("^%l", string.upper)
-		return name .. "-" .. realm
+		return cacheUnitName(input_unit, name .. "-" .. realm)
+	elseif find and find == #unit then -- trailing '-'
+		unit = string.sub(unit,1,-2)
 	end
 	-- Apparently functions like GetRaidRosterInfo() will return "real" name, while UnitName() won't
 	-- always work with that (see ticket #145). We need this to be consistant, so just lowercase the unit:
@@ -203,9 +215,7 @@ function Utils:UnitName(input_unit)
 	end                                                             -- Below won't work without name
 	-- We also want to make sure the returned name is always title cased (it might not always be! ty Blizzard)
 	name = name:lower():gsub("^%l", string.upper)
-	local ret = name and name .. "-" .. realm
-	self.unitNameLookup[input_unit] = ret
-	return ret
+	return cacheUnitName(input_unit, name and name .. "-" .. realm)
 end
 
 --- Creates Name-Realm based off seperate name and realm.

@@ -61,6 +61,7 @@ function LootHistory:OnInitialize()
 		{name = "",				width = ROW_HEIGHT, },																				-- Item icon
 		{name = L["Item"],	width = 250, comparesort = self.ItemSort, defaultsort = 1, sortnext = 2},			-- Item string
 		{name = L["Reason"],	width = 220, comparesort = self.ResponseSort,  defaultsort = 1, sortnext = 2},	-- Response aka the text supplied to lootDB...response
+		{ name = L["Notes"],  width = 40, },
 		{name = "",				width = ROW_HEIGHT},																					-- Delete button
 	}
 	filterMenu = _G.MSA_DropDownMenu_Create("RCLootCouncil_LootHistory_FilterMenu", UIParent)
@@ -229,6 +230,7 @@ function LootHistory:BuildData()
 							{DoCellUpdate = self.SetCellGear, args={i.lootWon}},
 							{value = i.lootWon},
 							{DoCellUpdate = self.SetCellResponse, args = {color = i.color, response = i.response, responseID = i.responseID or 0, isAwardReason = i.isAwardReason}},
+							{ DoCellUpdate = self.SetCellNote },
 							{DoCellUpdate = self.SetCellDelete},
 						}
 					}
@@ -490,6 +492,26 @@ function LootHistory.SetCellResponse(rowFrame, frame, data, cols, row, realrow, 
 	else -- default to white
 		frame.text:SetTextColor(1,1,1,1)
 	end
+end
+
+function LootHistory.SetCellNote(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
+	if not data then return end
+	local row = data[realrow]
+	local note = lootDB[row.name][row.num].note
+	local f = frame.noteBtn or CreateFrame("Button", nil, frame)
+	f:SetSize(ROW_HEIGHT, ROW_HEIGHT)
+	f:SetPoint("CENTER", frame, "CENTER")
+	if note then
+		f:SetNormalTexture("Interface/BUTTONS/UI-GuildButton-PublicNote-Up.png")
+		f:SetScript("OnEnter", function() addon:CreateTooltip(_G.LABEL_NOTE, note) end) -- _G.LABEL_NOTE == "Note" in English
+		f:SetScript("OnLeave", function() addon:HideTooltip() end)
+		data[realrow].cols[column].value = 1                                      -- Set value for sorting compability
+	else
+		f:SetScript("OnEnter", nil)
+		f:SetNormalTexture("Interface/BUTTONS/UI-GuildButton-PublicNote-Disabled.png")
+		data[realrow].cols[column].value = 0
+	end
+	frame.noteBtn = f
 end
 
 function LootHistory.SetCellDelete(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)

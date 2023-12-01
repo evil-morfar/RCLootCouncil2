@@ -430,7 +430,7 @@ function RCLootCouncil:ChatCommand(msg)
 			self:CallModule("version")
 		end
 
-	elseif input == "history" or input == string.lower(_G.HISTORY) or input == "h" or input == "his" then
+	elseif input == "history" or input == string.lower(_G.HISTORY) or input == "h" or input == "his" or input == "hist" then
 		self:CallModule("history")
 		-- @debug@
 	elseif input == "nnp" then
@@ -482,6 +482,9 @@ function RCLootCouncil:ChatCommand(msg)
 		else
 			self:Print(L["You cannot use this command without being the Master Looter"])
 		end
+
+	elseif input == "hidelootframe" or input == "hidelootframes" then
+		self.Require "Utils.GroupLoot":HideGroupLootFrames()
 
 	elseif input == "reset" or input == string.lower(_G.RESET) then
 		for k, v in pairs(db.UI) do -- We can't easily reset due to the wildcard in defaults

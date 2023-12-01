@@ -90,7 +90,7 @@ function private:SanitizeLine (line)
 end
 
 function private:DoesErrorExist (err)
-   for _, v in ipairs(self.log) do
+   for _, v in ipairs(self.log or {}) do
       if v.msg == err then return v end
    end
    return false
