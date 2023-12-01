@@ -2,6 +2,10 @@
 
 ## Changes
 
+### Group Loot
+
+Default WoW group loot frames is now forced hidden after being rolled on by RCLootCouncil.
+
 ### Loot History
 
 Added a column for notes.
@@ -9,7 +13,6 @@ Added a column for notes.
 ### Session frame
 
 Will now be shown automatically after a cinematic if it was hidden because of it.
-
 
 ### TradeUI
 

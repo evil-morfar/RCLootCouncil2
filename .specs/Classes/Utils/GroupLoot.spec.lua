@@ -120,14 +120,14 @@ describe("#GroupLoot", function()
 			assert.spy(s).was_not_called()
 		end)
 	end)
-end)
 
-function _G.GetLootRollItemLink(rollID)
-	if GroupLoot.IgnoreList[rollID] then
-		return "item:"..rollID..":"
+	function _G.GetLootRollItemLink(rollID)
+		if GroupLoot.IgnoreList[rollID] then
+			return "item:" .. rollID .. ":"
+		end
+		return _G.Items_Array[math.random(#_G.Items_Array)]
 	end
-	return _G.Items_Array[math.random(#_G.Items_Array)]
-end
+end)
 
 function _G.GetNumGroupMembers()
 	return 10
@@ -144,7 +144,7 @@ function _G.GetLootThreshold()
 end
 
 function _G.GetLootRollItemInfo(rollID)
-	
+
 end
 
 function SetupML()

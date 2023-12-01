@@ -24,6 +24,9 @@ GroupLoot.IgnoreList = {
 function GroupLoot:OnInitialize()
 	self.Log = addon.Require "Utils.Log":New "GroupLoot"
 	addon:RegisterEvent("START_LOOT_ROLL", self.OnStartLootRoll, self)
+	self.OnLootRoll:subscribe(function (_, rollID)
+		pcall(self.HideGroupLootFrameWithRollID, self, rollID) -- REVIEW: pcall because I haven't actually tested it in game.
+	end)
 	-- addon:RegisterEvent("LOOT_HISTORY_ROLL_CHANGED", self.OnLootHistoryRollChanged, self)
 end
 
@@ -92,4 +95,33 @@ function GroupLoot:OnLootHistoryRollChanged(event, itemId, playerId)
 	self.Log:d(event)
 	self.Log:d("GetItem:", C_LootHistory.GetItem(itemId))
 	self.Log:d("GetPlayerInfo:", C_LootHistory.GetPlayerInfo(itemId, playerId))
+end
+
+local NUM_LOOT_FRAMES = 4
+--- Hides any visible default group loot frames
+function GroupLoot:HideGroupLootFrames()
+	local hidden = false
+	for i = 1, NUM_LOOT_FRAMES do
+		local frame = _G["GroupLootFrame" .. i]
+		if frame and frame:IsShown() then
+			frame:Hide()
+			hidden = true
+		end
+	end
+	if hidden then
+		self.Log:D("Hided default group loot frames")
+	end
+end
+
+---Hides a visiable default group loot frame with a particular rollID
+---@param rollID integer RollID of the frame to hide.
+function GroupLoot:HideGroupLootFrameWithRollID(rollID)
+	if not rollID then return end
+	for i = 1, NUM_LOOT_FRAMES do
+		local frame = _G["GroupLootFrame" .. i]
+		if frame and frame:IsShown() and frame.rollID == rollID then
+			frame:Hide()
+			self.Log:D("Hide group loot frame with rollID", i, rollID)
+		end
+	end
 end
