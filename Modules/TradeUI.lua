@@ -438,7 +438,7 @@ local colors = {
 
 function TradeUI:GetTradeLabelColor(target)
 	if addon.inCombat then
-		return {colors.yellow:GetRGBA()}
+		return colors.yellow
 	end
    return CheckInteractDistance(Ambiguate(target, "short"), 2) and colors.green or colors.red
 end
