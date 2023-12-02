@@ -1,3 +1,11 @@
+# 3.10.3
+
+## Changes
+
+### TradeUI
+
+Fixed error when TradeUI being opened in combat.
+
 # 3.10.2
 
 ## Changes
