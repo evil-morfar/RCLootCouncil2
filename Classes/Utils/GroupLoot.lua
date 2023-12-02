@@ -104,7 +104,7 @@ function GroupLoot:HideGroupLootFrames()
 	for i = 1, NUM_LOOT_FRAMES do
 		local frame = _G["GroupLootFrame" .. i]
 		if frame and frame:IsShown() then
-			frame:Hide()
+			_G.GroupLootContainer_RemoveFrame(_G.GroupLootContainer, frame)
 			hidden = true
 		end
 	end
@@ -120,7 +120,7 @@ function GroupLoot:HideGroupLootFrameWithRollID(rollID)
 	for i = 1, NUM_LOOT_FRAMES do
 		local frame = _G["GroupLootFrame" .. i]
 		if frame and frame:IsShown() and frame.rollID == rollID then
-			frame:Hide()
+			_G.GroupLootContainer_RemoveFrame(_G.GroupLootContainer, frame)
 			self.Log:D("Hide group loot frame with rollID", i, rollID)
 		end
 	end
