@@ -16,7 +16,7 @@ local flagsToDecode = {
    -- "010773050000",
    -- "4294967295",
 
-   "092776070010",
+	"5010771040000",
    -- tostring(0xffffffffff)
 }
 
@@ -102,15 +102,19 @@ end
 
 Main()
 
--- Set WARRIOR (1) to spec 2
-local flag = SpecFlag:SetClassSpecFlag(nil, 1, 2)
-print(flag)
--- Add spec 3 as well
-flag = SpecFlag:SetClassSpecFlag(flag, 1, 3)
-print(flag)
--- and spec 1
-flag = SpecFlag:SetClassSpecFlag(flag, 1, 1)
-print(flag)
--- Now add priest spec 3
-flag = SpecFlag:SetClassSpecFlag(flag, 5, 3)
-print(flag)
+-- -- Set WARRIOR (1) to spec 2
+-- local flag = SpecFlag:SetClassSpecFlag(nil, 1, 2)
+-- print(flag)
+-- -- Add spec 3 as well
+-- flag = SpecFlag:SetClassSpecFlag(flag, 1, 3)
+-- print(flag)
+-- -- and spec 1
+-- flag = SpecFlag:SetClassSpecFlag(flag, 1, 1)
+-- print(flag)
+-- -- Now add priest spec 3
+-- flag = SpecFlag:SetClassSpecFlag(flag, 5, 3)
+-- print(flag)
+
+local flag = SpecFlag:SetClassSpecFlag("5010771040000", 2, 1)
+local flag = SpecFlag:SetClassSpecFlag(flag, 10, 2)
+SpecFlag:DecodeFlag(flag)

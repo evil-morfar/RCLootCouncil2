@@ -1,3 +1,7 @@
+## Changes
+
+Holy Paladins and Mistweavers no longer autopass on Belor'relos, the Suncaller.
+
 # 3.10.3
 
 ## Changes
