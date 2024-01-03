@@ -49,3 +49,4 @@ Utils\ItemStorage.lua
 Utils\transmog.lua
 Utils\autopass.lua
 Utils\popups.lua
+Utils\dump.lua
