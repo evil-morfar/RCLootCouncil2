@@ -2,6 +2,8 @@
 
 Holy Paladins and Mistweavers no longer autopass on Belor'relos, the Suncaller.
 
+RCLootCouncil will no longer group loot legendary items automatically.
+
 # 3.10.3
 
 ## Changes

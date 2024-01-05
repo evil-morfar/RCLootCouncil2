@@ -24,7 +24,7 @@ GroupLoot.IgnoreList = {
 function GroupLoot:OnInitialize()
 	self.Log = addon.Require "Utils.Log":New "GroupLoot"
 	addon:RegisterEvent("START_LOOT_ROLL", self.OnStartLootRoll, self)
-	self.OnLootRoll:subscribe(function (_, rollID)
+	self.OnLootRoll:subscribe(function(_, rollID)
 		pcall(self.HideGroupLootFrameWithRollID, self, rollID) -- REVIEW: pcall because I haven't actually tested it in game.
 	end)
 	-- addon:RegisterEvent("LOOT_HISTORY_ROLL_CHANGED", self.OnLootHistoryRollChanged, self)
@@ -34,8 +34,12 @@ function GroupLoot:OnStartLootRoll(_, rollID)
 	self.Log:d("START_LOOT_ROLL", rollID)
 	if not addon.enabled then return self.Log:d("Addon disabled, ignoring group loot") end
 	local link = GetLootRollItemLink(rollID)
-	local _, _, _, _, _, canNeed, _, _, _, _, _, _, canTransmog = GetLootRollItemInfo(rollID)
+	local _, _, _, quality, _, canNeed, _, _, _, _, _, _, canTransmog = GetLootRollItemInfo(rollID)
 	if not link then return end -- Sanity check
+	if quality and quality >= Enum.ItemQuality.Legendary then
+		self.Log:d("Ignoring legendary quality:", quality)
+		return
+	end
 	local id = ItemUtils:GetItemIDFromLink(link)
 	if self.IgnoreList[id] then
 		self.Log:d(link, "is ignored, bailing.")
@@ -49,7 +53,7 @@ function GroupLoot:OnStartLootRoll(_, rollID)
 		local roll
 		if canNeed then
 			roll = 1
-		-- Blizzard says transmog is more important than greed..
+			-- Blizzard says transmog is more important than greed..
 		elseif canTransmog then
 			roll = 4
 		else
