@@ -89,7 +89,14 @@ addon.INVTYPE_Slots = {
 -- To add a new a button group, simply add it to the options menu (easily done by adding an entry to OPT_MORE_BUTTONS_VALUES), and add a function here to determine if that group should be used for the item.
 -- Each function receives the following parameters:
 -- item, db (addon:Getdb()), itemID, itemEquipLoc,itemClassID, itemSubClassID
+---@type (fun(item: Item, db: RCLootCouncil.db, itemID: integer, itemEquipLoc: string, itemClassID: Enum.ItemClass): string|nil) []
 addon.RESPONSE_CODE_GENERATORS = {
+	-- Chest/Robe
+	function(_, db, _, equipLoc)
+		return db.enabledButtons.INVTYPE_CHEST and
+			(addon.INVTYPE_Slots[equipLoc] == addon.INVTYPE_Slots.INVTYPE_CHEST)
+		and "INVTYPE_CHEST" or nil
+	end,
 	-- Pets
 	function(_, db, _, _, itemClassID, itemSubClassID)
 		return db.enabledButtons.PETS and itemClassID == Enum.ItemClass.Miscellaneous and itemSubClassID
@@ -103,8 +110,7 @@ addon.RESPONSE_CODE_GENERATORS = {
 	-- end,
 
 	-- Armor tokens
-	function(_, db, itemID)
-		local _, _, _, _, _, itemClassID, itemSubClassID = GetItemInfoInstant(itemID)
+	function(_, db, itemID, _, itemClassID, itemSubClassID)
 		if db.enabledButtons["TOKEN"] and (RCTokenTable[itemID] or
 				-- context token is armor token in DF
 				itemClassID == Enum.ItemClass.Reagent and itemSubClassID == Enum.ItemReagentSubclass.ContextToken)
