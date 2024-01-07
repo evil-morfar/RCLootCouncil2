@@ -93,8 +93,9 @@ addon.INVTYPE_Slots = {
 addon.RESPONSE_CODE_GENERATORS = {
 	-- Chest/Robe
 	function(_, db, _, equipLoc)
-		return db.enabledButtons.INVTYPE_CHEST and (equipLoc == INVTYPE_CHEST or equipLoc == INVTYPE_ROBE)
-		and INVTYPE_CHEST or nil
+		return db.enabledButtons.INVTYPE_CHEST and
+			(addon.INVTYPE_Slots[equipLoc] == addon.INVTYPE_Slots.INVTYPE_CHEST)
+		and "INVTYPE_CHEST" or nil
 	end,
 	-- Pets
 	function(_, db, _, _, itemClassID, itemSubClassID)
