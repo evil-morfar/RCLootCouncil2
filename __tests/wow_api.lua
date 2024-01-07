@@ -1073,6 +1073,7 @@ CLOSES_IN = "Time Left";
 LOOT_ITEM = "%s receives loot: %s."
 RANDOM_ROLL_RESULT = "%s rolls %d (%d-%d)"
 REQUEST_ROLL = "Request Roll"
+INVTYPE_CHEST = "Chest"
 ITEM_CLASSES_ALLOWED = "Classes: %s"
 ITEM_LEVEL_ABBR = "ilvl"
 ITEM_MOD_AGILITY = "%c%s Agility";
