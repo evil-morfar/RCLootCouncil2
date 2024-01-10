@@ -165,7 +165,7 @@ function private.ReceiveComm(prefix, encodedMsg, distri, sender)
    local decoded = ld:DecodeForWoWAddonChannel(encodedMsg)
    local decompressed = ld:DecompressDeflate(decoded)
    Log:f("<Comm>", decompressed, distri, senderName)
-   local test, command, data = self:Deserialize(decompressed)
+   local test, command, data = self:Deserialize(decompressed or "")
    if not test then
       -- luacov: disable
       return Log:e("<Comm>", "Deserialization failed with:", decompressed)
