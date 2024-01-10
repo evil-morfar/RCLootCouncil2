@@ -1,3 +1,11 @@
+## Bugfixes
+
+Fixed an issue with council related comms that could end up spamming the group leader.
+
+
+
+# 3.10.4
+
 ## Changes
 
 Holy Paladins and Mistweavers no longer autopass on Belor'relos, the Suncaller.
