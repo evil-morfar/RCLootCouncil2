@@ -1769,6 +1769,11 @@ function RCLootCouncil:StartHandleLoot()
 	-- if lootMethod ~= "group" and self.lootMethod ~= "personalloot" then -- Set it
 	-- 	SetLootMethod("group")
 	-- end
+	-- We might call StartHandleLoot() without ML being initialized, e.g. with `/rc start`.
+	if not self:GetActiveModule("masterlooter"):IsEnabled() then
+		self:CallModule("masterlooter")
+		self:GetActiveModule("masterlooter"):NewML(self.masterLooter)
+	end
 	self:Print(L["Now handles looting"])
 	self.Log("Start handling loot")
 	self.handleLoot = true

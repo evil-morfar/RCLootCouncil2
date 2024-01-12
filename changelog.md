@@ -1,8 +1,7 @@
 ## Bugfixes
 
-Fixed an issue with council related comms that could end up spamming the group leader.
-
-
+- *Fixed an issue with council related comms that could end up spamming the group leader.*
+- *Fixed issue with `/rc start` not always working as intended.*
 
 # 3.10.4
 
