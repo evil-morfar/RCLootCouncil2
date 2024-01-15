@@ -143,7 +143,7 @@ function private:SendComm(prefix, target, prio, callback, callbackarg, command, 
 		-- Just Log and return
 		if not target.GetRealm then return Log:e("Invalid target:", target, serialized) end
 		if not target:GetRealm() then return Log:e("Couldn't get realm for target:", target, serialized) end
-      if target:GetRealm() == addon.realmName then -- Our realm
+      if addon.Utils:IsWhisperTarget(target) then
          self.AceComm:SendCommMessage(prefix, encoded, "WHISPER", target:GetName(), prio, callback, callbackarg)
       else
          -- Remake command to be "xrealm" and put target and command in the table

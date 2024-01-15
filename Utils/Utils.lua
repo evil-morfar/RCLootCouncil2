@@ -264,6 +264,13 @@ function Utils:GetLootThreshold()
 	end
 end
 
+--- Returns true if the target can receive addon messages from the whisper channel.
+---@param target Player
+function Utils:IsWhisperTarget(target)
+	if not target:GetGUID() then return false end
+	return C_PlayerInfo.UnitIsSameServer(_G.PlayerLocation:CreateFromGUID(target:GetGUID()))
+end
+
 ---@deprecated
 ---@see Utils.Item.GetTransmittableItemString
 function Utils:GetTransmittableItemString(link)

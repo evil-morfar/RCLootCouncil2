@@ -2,6 +2,7 @@ local _G = getfenv(0)
 require "/wow_api/API/Mixin"
 require "/wow_api/API/Color"
 require "/wow_api/API/TableUtil"
+require "wow_api/API/PlayerLocation"
 require "wow_api/FrameAPI/Constructor"
 local strbyte, strchar, gsub, gmatch, format, tinsert = string.byte, string.char, string.gsub, string.gmatch,
 	string.format, table.insert
@@ -1035,6 +1036,12 @@ C_CreatureInfo = {
 	GetClassInfo = function(classID)
 		return CLASS_INFO[classID]
 	end,
+}
+
+C_PlayerInfo = {
+	UnitIsSameServer = function (target)
+		return false
+	end
 }
 
 UISpecialFrames = {}
