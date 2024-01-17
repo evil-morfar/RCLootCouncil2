@@ -35,7 +35,10 @@ function GroupLoot:OnStartLootRoll(_, rollID)
 	if not addon.enabled then return self.Log:d("Addon disabled, ignoring group loot") end
 	local link = GetLootRollItemLink(rollID)
 	local _, _, _, quality, _, canNeed, _, _, _, _, _, _, canTransmog = GetLootRollItemInfo(rollID)
-	if not link then return end -- Sanity check
+	if not link then -- Sanity check
+		self.Log:d("No link!", rollID)
+		return
+	end
 	if quality and quality >= Enum.ItemQuality.Legendary then
 		self.Log:d("Ignoring legendary quality:", quality)
 		return

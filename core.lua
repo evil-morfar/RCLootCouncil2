@@ -1769,6 +1769,11 @@ function RCLootCouncil:StartHandleLoot()
 	-- if lootMethod ~= "group" and self.lootMethod ~= "personalloot" then -- Set it
 	-- 	SetLootMethod("group")
 	-- end
+	-- We might call StartHandleLoot() without ML being initialized, e.g. with `/rc start`.
+	if not self:GetActiveModule("masterlooter"):IsEnabled() then
+		self:CallModule("masterlooter")
+		self:GetActiveModule("masterlooter"):NewML(self.masterLooter)
+	end
 	self:Print(L["Now handles looting"])
 	self.Log("Start handling loot")
 	self.handleLoot = true
@@ -2650,14 +2655,13 @@ function RCLootCouncil:OnLootTableReceived(lt)
 	if not self.mldb then -- Really shouldn't happen, but I'm tired of people somehow not receiving it...
 		self.Log:w("Received loot table without having mldb :(", self.masterLooter)
 		self:Send(self.masterLooter, "MLdb_request")
-		return self:ScheduleTimer("OnLootTableReceived", 0, lt)
+		return self:ScheduleTimer("OnLootTableReceived", 1, lt)
 	end
 
 	-- Check if council is received
 	if not Council:Contains(self.masterLooter) then
 		self.Log:d("Received loot table without ML in the council", self.masterLooter)
 		self:Send(self.masterLooter, "council_request")
-		return self:ScheduleTimer("OnLootTableReceived", 0, lt)
 	end
 
 	-- Hand the lootTable to the votingFrame

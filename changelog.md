@@ -1,3 +1,16 @@
+# 3.10.5
+
+## Changes
+
+Updated for patch 10.2.5.
+
+## Bugfixes
+
+- *Fixed an issue with council related comms that could end up spamming the group leader.*
+- *Fixed issue with `/rc start` not always working as intended.*
+
+# 3.10.4
+
 ## Changes
 
 Holy Paladins and Mistweavers no longer autopass on Belor'relos, the Suncaller.
