@@ -1,3 +1,9 @@
+# 3.10.5
+
+## Changes
+
+Updated for patch 10.2.5.
+
 ## Bugfixes
 
 - *Fixed an issue with council related comms that could end up spamming the group leader.*
