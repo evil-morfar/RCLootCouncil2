@@ -44,6 +44,31 @@ function addon.UI:RegisterElement(object, etype)
    private.elements[etype] = object
 end
 
+function addon.UI:MinimizeFrames()
+	if not addon:Getdb().minimizeInCombat then return end
+	addon.Log("Minimizing frames")
+	for _, frame in ipairs(self.minimizeableFrames) do
+		if frame:IsVisible() and not frame:IsMinimized() then -- only minimize for combat if it isn't already minimized
+			frame:Minimize(true)
+		end
+	end
+end
+
+function addon.UI:MaximizeFrames()
+	if not addon:Getdb().minimizeInCombat then return end
+	addon.Log("Maximizing frames")
+	for _, frame in ipairs(self.minimizeableFrames) do
+		if frame:IsMinimized() and frame.autoMinimized then -- Reshow it
+			frame:Maximize()
+		end
+	end
+end
+
+--- Will run `UI:MinimizeFrames()` in a few frames
+function addon.UI:DelayedMinimize()
+	addon:ScheduleTimer(self.MinimizeFrames, 0.1, self)
+end
+
 function addon.UI:RegisterForCombatMinimize (frame)
    tinsert(self.minimizeableFrames, frame)
 end

@@ -819,24 +819,12 @@ end
 
 function RCLootCouncil:EnterCombat()
 	self.inCombat = true
-	if not db.minimizeInCombat then return end
-	for _, frame in ipairs(self.UI.minimizeableFrames) do
-		if frame:IsVisible() and not frame:IsMinimized() then -- only minimize for combat if it isn't already minimized
-			self.Log("Minimizing for combat")
-			frame:Minimize(true)
-		end
-	end
+	self.UI:MinimizeFrames()
 end
 
 function RCLootCouncil:LeaveCombat()
 	self.inCombat = false
-	if not db.minimizeInCombat then return end
-	for _, frame in ipairs(self.UI.minimizeableFrames) do
-		if frame:IsMinimized() and frame.autoMinimized then -- Reshow it
-			self.Log("Reshowing frame")
-			frame:Maximize()
-		end
-	end
+	self.UI:MaximizeFrames()
 end
 
 function RCLootCouncil:UpdatePlayersGears(startSlot, endSlot)
@@ -2684,6 +2672,11 @@ function RCLootCouncil:OnLootTableReceived(lt)
 	-- Show  the LootFrame
 	self:CallModule("lootframe")
 	self:GetActiveModule("lootframe"):Start(lootTable)
+
+	-- Hide frames if in combat
+	if self.inCombat then
+		self.UI:DelayedMinimize()
+	end
 end
 
 function RCLootCouncil:OnLootTableAdditionsReceived(lt)
@@ -2699,6 +2692,11 @@ function RCLootCouncil:OnLootTableAdditionsReceived(lt)
 
 	for i = oldLenght + 1, #lootTable do self:GetActiveModule("lootframe"):AddSingleItem(lootTable[i]) end
 	self:SendMessage("RCLootTableAdditionsReceived", lt)
+
+	-- Hide frames if in combat
+	if self.inCombat then
+		self.UI:DelayedMinimize()
+	end
 end
 
 function RCLootCouncil:OnMLDBReceived(input)
@@ -2728,6 +2726,11 @@ function RCLootCouncil:OnReRollReceived(sender, lt)
 
 	self:CallModule("lootframe")
 	self:GetActiveModule("lootframe"):ReRoll(lt)
+
+	-- Hide frames if in combat
+	if self.inCombat then
+		self.UI:DelayedMinimize()
+	end
 end
 
 function RCLootCouncil:OnLootAckReceived()
