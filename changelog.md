@@ -1,3 +1,9 @@
+## Changes
+
+#### Group updates
+
+People joining late, or just before a pull now has a much higher chance of receiving required data from the group leader, which should fix most instances of those people not autopassing group loot.
+
 # 3.10.5
 
 ## Changes

@@ -72,10 +72,12 @@ function RCLootCouncilML:OnEnable()
 	self:UpdateGroupCouncil()
 	self.combatQueue = {}	-- The functions that will be executed when combat ends. format: [num] = {func, arg1, arg2, ...}
 	self.timers = {}			-- Table to hold timer references. Each value is the name of a timer, whose value is the timer id.
+	self.groupSize = 0
 
 	self:RegisterEvent("CHAT_MSG_WHISPER",	"OnEvent")
 	self:RegisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
 	self:RegisterEvent("ENCOUNTER_START", "OnEvent")
+	self:RegisterBucketEvent("GROUP_ROSTER_UPDATE", 5, "OnGroupRosterUpdate")
 	self:RegisterBucketMessage("RCConfigTableChanged", 5, "ConfigTableChanged") -- The messages can burst
 	self:RegisterMessage("RCCouncilChanged", "CouncilChanged")
 	self:RegisterComms()
@@ -393,6 +395,16 @@ function RCLootCouncilML:CouncilChanged()
 	-- The council was changed, so send out the council
 	self:UpdateGroupCouncil()
 	self:SendCouncil()
+end
+
+function RCLootCouncilML:OnGroupRosterUpdate()
+	-- Push MLDB if new people has joined.
+	local newGroupSize = GetNumGroupMembers() or 0
+	if newGroupSize > self.groupSize then
+		self.Log:d("Group size changed to "..newGroupSize)
+		MLDB:Send("group")
+	end
+	self.groupSize = newGroupSize
 end
 
 function RCLootCouncilML:UpdateMLdb()
