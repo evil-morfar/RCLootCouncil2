@@ -403,6 +403,7 @@ function RCLootCouncilML:OnGroupRosterUpdate()
 	if newGroupSize > self.groupSize then
 		self.Log:d("Group size changed to "..newGroupSize)
 		MLDB:Send("group")
+		self:SendCouncil()
 	end
 	self.groupSize = newGroupSize
 end
