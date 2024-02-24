@@ -2860,12 +2860,14 @@ function RCLootCouncil:GetItemTypeText(link, subType, equipLoc, typeID, subTypeI
 
 	if tokenSlot then -- It's a token
 		local tokenText = L["Armor Token"]
-		if bit.band(classesFlag, 0x112) == 0x112 then
-			tokenText = L["Conqueror Token"]
-		elseif bit.band(classesFlag, 0x45) == 0x45 then
-			tokenText = L["Protector Token"]
-		elseif bit.band(classesFlag, 0x488) == 0x488 then
-			tokenText = L["Vanquisher Token"]
+		if classesFlag ~= 0xffffffff then
+			if bit.band(classesFlag, 0x112) == 0x112 then
+				tokenText = L["Conqueror Token"]
+			elseif bit.band(classesFlag, 0x45) == 0x45 then
+				tokenText = L["Protector Token"]
+			elseif bit.band(classesFlag, 0x488) == 0x488 then
+				tokenText = L["Vanquisher Token"]
+			end
 		end
 
 		if equipLoc == "" then
