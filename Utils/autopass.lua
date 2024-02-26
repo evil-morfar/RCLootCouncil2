@@ -127,7 +127,7 @@ local relics = {
 	WARRIOR     = { relicTypes.IRON, relicTypes.BLOOD, relicTypes.SHADOW, relicTypes.FIRE, relicTypes.STORM, },
 }
 
---- The stat(s) a weapon must have to be usable by a class.
+--- The stat(s) a weapon must have one of to be usable by a class.
 local requiredWeaponStatsForClass = {
 	WARRIOR = { "ITEM_MOD_STRENGTH_SHORT", },
 	PALADIN = { "ITEM_MOD_STRENGTH_SHORT", "ITEM_MOD_INTELLECT_SHORT", },
@@ -179,14 +179,24 @@ local function ShouldAutoPassWeapon(itemLink, class)
 	return true
 end
 
+
 --- Checks if the player should autopass on a given item.
--- All params are supplied by the lootTable from the ML.
--- Checks for a specific class if 'class' arg is provided, otherwise the player's class.
--- @usage
--- -- Check if the item in session 1 should be auto passed:
--- local dat = lootTable[1] -- Shortening
--- local boolean = RCLootCouncil:AutoPassCheck(dat.link, dat.equipLoc, dat.typeID, dat.subTypeID, dat.classesFlag, dat.isToken, dat.isRelic)
---@return true if the player should autopass the given item.
+--- All params are supplied by the lootTable from the ML.
+--- Checks for a specific class if `class` arg is provided, otherwise the player's class.
+---@param link ItemLink Item to check.
+---@param equipLoc string Equipable location.
+---@param typeID Enum.ItemClass ItemTypeID
+---@param subTypeID Enum.ItemWeaponSubclass | Enum.ItemArmorSubclass ItemSubTypeID
+---@param classesFlag string As returned by `RCLootCouncil:GetItemClassesAllowedFlag()`.
+---@param isToken? string Non-nil if item is a token.
+---@param isRelic? any @deprecated
+---@param class? string Class file, e.g. 'WARRIOR'. Used as the base class if provided, defaults to player's class.
+---@return boolean #True if the player should autopass.
+--- ```
+--- -- Check if the item in session 1 should be auto passed:
+--- local dat = lootTable[1] -- Shortening
+--- local shouldAutoPass = RCLootCouncil:AutoPassCheck(dat.link, dat.equipLoc, dat.typeID, dat.subTypeID, dat.classesFlag, dat.isToken, dat.isRelic)
+--- ``` 
 function RCLootCouncil:AutoPassCheck(link, equipLoc, typeID, subTypeID, classesFlag, isToken, isRelic, class)
 	if (not self:Getdb().autoPassTransmog and self:IsTransmoggable(link)) then
 		local playerKnowsTransmog
@@ -225,6 +235,7 @@ function RCLootCouncil:AutoPassCheck(link, equipLoc, typeID, subTypeID, classesF
 	if typeID == Enum.ItemClass.Weapon then
 		-- TODO: Check weapon autopass settings
 		if ShouldAutoPassWeapon(link, class) then
+			self.Log:D("Weapon auto pass on ", link)
 			return true
 		end
 	end
