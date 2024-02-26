@@ -1018,8 +1018,7 @@ function FauxScrollFrame_GetOffset() return 0 end
 
 function _G.FauxScrollFrame_OnVerticalScroll() end
 
-function GetItemStats()
-end
+
 
 function GetClassColoredTextForUnit(unit, text) return text end
 ceil = math.ceil

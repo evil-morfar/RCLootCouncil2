@@ -155,7 +155,7 @@ local function ShouldAutoPassWeapon(itemLink, class)
 		return false
 	end
 	
-	local stats = GetItemStats(itemLink)
+	local stats = C_Item.GetItemStats(itemLink or "")
 
 	-- Ensure item is loaded
 	if not stats then
@@ -183,6 +183,8 @@ end
 --- Checks if the player should autopass on a given item.
 --- All params are supplied by the lootTable from the ML.
 --- Checks for a specific class if `class` arg is provided, otherwise the player's class.
+--- This method does not consider the "global" `db.autoPass` flag, but does consider granular
+--- ones like `db.autoPassTrinket`.
 ---@param link ItemLink Item to check.
 ---@param equipLoc string Equipable location.
 ---@param typeID Enum.ItemClass ItemTypeID
@@ -198,6 +200,7 @@ end
 --- local shouldAutoPass = RCLootCouncil:AutoPassCheck(dat.link, dat.equipLoc, dat.typeID, dat.subTypeID, dat.classesFlag, dat.isToken, dat.isRelic)
 --- ``` 
 function RCLootCouncil:AutoPassCheck(link, equipLoc, typeID, subTypeID, classesFlag, isToken, isRelic, class)
+	link = link or "" -- Just to avoid errors in case someone passes a nil value
 	if (not self:Getdb().autoPassTransmog and self:IsTransmoggable(link)) then
 		local playerKnowsTransmog
 
@@ -212,7 +215,7 @@ function RCLootCouncil:AutoPassCheck(link, equipLoc, typeID, subTypeID, classesF
 
 
 	local class = class or self.playerClass
-	local classID = self.classTagNameToID[class]
+	local classID = self.classTagNameToID[class] or 0
 	if bit.band(classesFlag, bit.lshift(1, classID - 1)) == 0 then -- The item tooltip writes the allowed clases, but our class is not in it.
 		return true
 	end
