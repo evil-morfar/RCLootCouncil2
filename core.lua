@@ -2281,7 +2281,7 @@ local itemStatsRet = {}
 function RCLootCouncil:GetItemBonusText(link, delimiter)
 	if not delimiter then delimiter = "/" end
 	wipe(itemStatsRet)
-	GetItemStats(link, itemStatsRet)
+	C_Item.GetItemStats(link, itemStatsRet)
 	local text = ""
 	for k, _ in pairs(itemStatsRet) do
 		if k:find("SOCKET") then

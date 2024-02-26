@@ -2700,7 +2700,6 @@ globals = {
 	"GetItemSpecInfo",
 	"GetItemSpell",
 	"GetItemStatDelta",
-	"GetItemStats",
 	"GetItemSubClassInfo",
 	"GetItemUniqueness",
 	"GetItemUpdateLevel",
