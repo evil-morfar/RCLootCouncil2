@@ -8,6 +8,10 @@ Loot/Voting frames triggered while in combat will now automatically be minimized
 
 People joining late, or just before a pull now has a much higher chance of receiving required data from the group leader, which should fix most instances of those people not autopassing group loot.
 
+## Bugfixes
+
+- *Fixed issue with importing corrupt history data.*
+
 # 3.10.5
 
 ## Changes
