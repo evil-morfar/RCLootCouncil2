@@ -236,8 +236,7 @@ function RCLootCouncil:AutoPassCheck(link, equipLoc, typeID, subTypeID, classesF
 	end
 
 	if typeID == Enum.ItemClass.Weapon then
-		-- TODO: Check weapon autopass settings
-		if ShouldAutoPassWeapon(link, class) then
+		if self:Getdb().autoPassWeapons and ShouldAutoPassWeapon(link, class) then
 			self.Log:D("Weapon auto pass on ", link)
 			return true
 		end

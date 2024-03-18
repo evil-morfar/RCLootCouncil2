@@ -60,6 +60,7 @@ addon.defaults = {
 		autoPassBoE = true,
 		autoPassTransmog = true,
 		autoPassTransmogSource = true,
+		autoPassWeapons = true, -- Auto pass on weapons that can't be used for your class.
 		printResponse = false, -- Print response in chat
 		autoGroupLootGuildGroupOnly = true,
 		-- General - Frame

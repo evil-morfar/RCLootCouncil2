@@ -395,14 +395,20 @@ function addon:OptionsTable()
 										type = "toggle",
 										disabled = function() return self.db.profile.autoPassTransmog end
 									},
-									printResponse = {
+									autoPassWeapons = {
 										order = 7,
+										name = L.opt_autoPassWeapons_name,
+										desc = L.opt_autoPassWeapons_desc,
+										type = "toggle",
+									},
+									printResponse = {
+										order = 8,
 										name = L["Print Responses"],
 										desc = L["print_response_desc"],
 										type = "toggle",
 									},
 									autoGroupLootGuildGroupOnly = {
-										order = 8,
+										order = 9,
 										name = L.opt_autoGroupLootGuildGroupOnly_name,
 										desc = L.opt_autoGroupLootGuildGroupOnly_desc,
 									    type = "toggle"
