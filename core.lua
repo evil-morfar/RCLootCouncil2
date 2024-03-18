@@ -6,7 +6,6 @@
 		RCCouncilChanged		-	fires when the council changes.
 		RCConfigTableChanged	-	fires when the user changes a settings. args: [val]; a few settings supplies their name.
 		RCUpdateDB				-	fires when the user receives sync data from another player.
-		RCLootStatusReceived - 	fires when new loot status is received, i.e. when it's safe to call :GetLootStatusData.
 		RCLootTableAdditionsReceived - fires when additional lootTable data has been received and processed.
 	ml_core:
 		RCMLAddItem				- 	fires when an item is added to the loot table. args: item, loottable entry
@@ -31,9 +30,6 @@
 			session_end 		P - ML has ended the session.
 			playerInfoRequest 	P - Request for playerInfo
 			pI 					P - Player Info
-			l	 				P - Received 'looted' from a candidated.
-			fakeLoot			P - Candidate left an item on a boss.
-			fullbags			P - Candidate couldn't loot boss because of full bags.
 			n_t					P - Candidate received "non-tradeable" loot.
 			r_t					P - Candidate "rejected_trade" of loot.
 			lootTable			P - LootTable sent from ML.
@@ -141,8 +137,6 @@ function RCLootCouncil:OnInitialize()
 	self.lastEncounterID = nil
 	self.autoGroupLootWarningShown = false
 	self.isInGuildGroup = false -- Is the group leader a member of our guild?
-
-	self.lootStatus = {}
 
 	---@type table<string,boolean>
 	self.candidatesInGroup = {}
@@ -813,8 +807,6 @@ function RCLootCouncil:Test(num, fullTest, trinketTest)
 	self:CallModule("masterlooter")
 	self:GetActiveModule("masterlooter"):NewML(self.masterLooter)
 	self:GetActiveModule("masterlooter"):Test(items)
-
-	self:ScheduleTimer(function() self:Send("group", "l", 1234) end, 5)
 end
 
 function RCLootCouncil:EnterCombat()
@@ -1465,48 +1457,6 @@ function RCLootCouncil:GetNumberOfDaysFromNow(oldDate) return self.Utils:GetNumb
 
 function RCLootCouncil:ConvertDateToString(day, month, year) return self.Utils:ConvertDateToString(day, month, year) end
 
---- Checks the current loot status data and returns it in a formatted data
--- @return Overview, List. Overview string for display, and a list of names/items and their status (for use in tooltips)
-function RCLootCouncil:GetLootStatusData()
-	if not next(self.lootStatus) then return "None", {} end -- Might not have any data
-	-- Find out which guid we're working with
-	local id, max = 0, 0
-	for k, v in pairs(self.lootStatus) do
-		if v.num and v.num > max then
-			id = k
-			max = v.num
-		end
-	end
-	local looted, unlooted, fake = 0, 0, 0
-	local list = {} -- [i] = name, text="status"
-	local i = 0
-	for name in pairs(self.candidatesInGroup) do
-		i = i + 1
-		if not self.lootStatus[id].candidates[name] then -- Unlooted
-			-- Check if they got loot, but just haven't responded yet
-			if self.lastEncounterID and self.lootStatus[self.lastEncounterID] and self.lootStatus[self.lastEncounterID][name] then
-				list[i] = {name = name, text = self.lootStatus[self.lastEncounterID][name] .. "|cffffff00" .. L["Not Found"]}
-			else
-				list[i] = {name = name, text = "|cffffff00" .. L["Unlooted"]}
-			end
-			unlooted = unlooted + 1
-		elseif self.lootStatus[id].candidates[name].status == "looted" then -- They have looted
-			list[i] = {name = name, text = "|cff00ff00 " .. L["Looted"]}
-			looted = looted + 1
-		elseif self.lootStatus[id].candidates[name].status == "fakeLoot" then -- fake loot
-			list[i] = {name = name, text = self.lootStatus[id].candidates[name].item .. "|cffff0000 " .. L["Fake Loot"] .. "|r"}
-			fake = fake + 1
-		elseif self.lootStatus[id].candidates[name].status == "fullbags" then
-			list[i] = {name = name, text = self.lootStatus[id].candidates[name].item .. "|cffff0000 " .. L["Full Bags"] .. "|r"}
-			fake = fake + 1 -- This counts as a fake loot
-		end
-	end
-	local status = format("|cffff0000%d|cffffffff/|cffffff00%d|cffffffff/|cff00ff00%d|cffffffff/%d|r", fake, unlooted,
-	                      looted, i)
-	table.sort(list, function(a, b) return a.name < b.name end)
-	return status, list
-end
-
 local function CandidateAndNewMLCheck()
 	RCLootCouncil:UpdateCandidatesInGroup()
 	RCLootCouncil:NewMLCheck()
@@ -1552,7 +1502,6 @@ function RCLootCouncil:OnEvent(event, ...)
 		end
 	elseif event == "ENCOUNTER_START" then
 		self.Log:d("Event:", event, ...)
-		wipe(self.lootStatus)
 		self:UpdatePlayersData()
 	elseif event == "GUILD_ROSTER_UPDATE" then
 		self.guildRank = self:GetPlayersGuildRank();
@@ -1579,19 +1528,13 @@ function RCLootCouncil:OnEvent(event, ...)
 				if info.autoloot then -- We've looted the item without getting LOOT_SLOT_CLEARED, properly due to FastLoot addons
 					return self:OnEvent("LOOT_SLOT_CLEARED", k), self:OnEvent("LOOT_CLOSED")
 				end
-				-- Check if we have room in bags
-				if self.Utils:GetNumFreeBagSlots() == 0 then return self:Send("group", "fullbags", info.link, info.guid) end
-				self:Send("group", "fakeLoot", info.link, info.guid)
 
 				return
 			end
 			i = k -- Only update if we have items
 		end
-		-- Otherwise they've looted everything, so send ack
-		if i ~= 0 then -- We're not guaranteed to have something stored
-			self:Send("group", "l", self.lootSlotInfo[i].guid)
-		end
 		self.lootOpen = false
+
 	elseif event == "LOOT_SLOT_CLEARED" then
 		local slot = ...
 		if self.lootSlotInfo[slot] and not self.lootSlotInfo[slot].isLooted then -- If not, this is the 2nd LOOT_CLEARED event for the same thing. -_-
@@ -1608,11 +1551,6 @@ function RCLootCouncil:OnEvent(event, ...)
 		end
 	elseif event == "ENCOUNTER_LOOT_RECEIVED" then
 		self.Log:d("Event:", event, ...)
-		local encounterID, _, itemLink, _, playerName, _ = ...
-		if not self.lootStatus[encounterID] then self.lootStatus[encounterID] = {} end
-		local name = self:UnitName(playerName)
-		playerName = name or playerName -- Expect us to get something back from UnitName
-		self.lootStatus[encounterID][playerName] = itemLink
 
 	elseif event == "LOOT_READY" then
 		self.Log:d("Event:", event, ...)
@@ -2507,11 +2445,6 @@ function RCLootCouncil:SubscribeToPermanentComms()
 
 		pI = function(data, sender) self:OnPlayerInfoReceived(sender, unpack(data)) end,
 
-		l = function(data, sender) self:OnLootStatusReceived(sender, "looted", nil, unpack(data)) end,
-
-		fakeLoot = function(data, sender) self:OnLootStatusReceived(sender, "fakeLoot", unpack(data)) end,
-		fullbags = function(data, sender) self:OnLootStatusReceived(sender, "fullbags", unpack(data)) end,
-
 		n_t = function(data, sender, command) self:OnTradeableStatusReceived(sender, "not_tradeable", unpack(data)) end,
 		r_t = function(data, sender, command) self:OnTradeableStatusReceived(sender, "rejected_trade", unpack(data)) end,
 
@@ -2585,15 +2518,6 @@ function RCLootCouncil:OnPlayerInfoReceived(sender, role, rank, enchanter, lvl, 
 		ilvl = ilvl,
 		specID = specID,
 	}
-end
-
-function RCLootCouncil:OnLootStatusReceived(sender, command, link, guid)
-	if not guid then return self.Log:d(format("no guid in %s comm", command), guid, sender) end
-	if self.lootGUIDToIgnore[guid] then return end
-	if not self.lootStatus[guid] then self.lootStatus[guid] = {candidates = {}, num = 0} end
-	self.lootStatus[guid].num = self.lootStatus[guid].num + 1
-	self.lootStatus[guid].candidates[sender] = {status = command, item = link}
-	self:SendMessage("RCLootStatusReceived")
 end
 
 function RCLootCouncil:OnTradeableStatusReceived(sender, reason, link)
