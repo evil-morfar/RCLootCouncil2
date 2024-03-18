@@ -996,6 +996,7 @@ function RCVotingFrame:GetFrame()
 	iState:SetPoint("LEFT", ilvl, "RIGHT", 5, 0)
 	iState:SetTextColor(0,1,0,1) -- Green
 	iState:SetText("")
+	iState:SetJustifyH("LEFT")
 	f.iState = iState
 
 	local iType = f.content:CreateFontString(nil, "OVERLAY", "GameFontNormal")

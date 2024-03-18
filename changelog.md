@@ -21,6 +21,7 @@ By default, RCLootCouncil will now auto pass weapons that you either can't use, 
 ## Bugfixes
 
 - *Fixed issue with importing corrupt history data.*
+- *Fixed formatting of item status string for items with extended info such as 'Shadowflame Suffused'.*
 
 # 3.10.5
 
