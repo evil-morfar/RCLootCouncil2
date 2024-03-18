@@ -2,6 +2,8 @@
 
 ## Changes
 
+Updated for patch 10.2.6.
+
 ### Minimize in combat
 
 Loot/Voting frames triggered while in combat will now automatically be minimized if `Minimize in combat` is enabled.
