@@ -1497,7 +1497,7 @@ function RCLootCouncilML:SortLootTable(lootTable)
 end
 
 local function GetItemStatsSum(link)
-	local stats = GetItemStats(link)
+	local stats = C_Item.GetItemStats(link)
 	local sum = 0
 	for _, value in pairs(stats or {}) do
 		sum = sum + value

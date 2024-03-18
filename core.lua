@@ -1115,15 +1115,16 @@ function RCLootCouncil:GetLootTable() return lootTable end
 1	Warrior			WARRIOR
 2	Paladin			PALADIN
 3	Hunter			HUNTER
-4	Rogue				ROGUE
+4	Rogue			ROGUE
 5	Priest			PRIEST
 6	Death Knight	DEATHKNIGHT
 7	Shaman			SHAMAN
-8	Mage				MAGE
+8	Mage			MAGE
 9	Warlock			WARLOCK
-10	Monk				MONK
-11	Druid				DRUID
+10	Monk			MONK
+11	Druid			DRUID
 12	Demon Hunter	DEMONHUNTER
+13	Evoker 			EVOKER
 --]]
 function RCLootCouncil:InitClassIDs()
 	self.classDisplayNameToID = {} -- Key: localized class display name. value: class id(number)
@@ -2219,7 +2220,7 @@ local itemStatsRet = {}
 function RCLootCouncil:GetItemBonusText(link, delimiter)
 	if not delimiter then delimiter = "/" end
 	wipe(itemStatsRet)
-	GetItemStats(link, itemStatsRet)
+	C_Item.GetItemStats(link, itemStatsRet)
 	local text = ""
 	for k, _ in pairs(itemStatsRet) do
 		if k:find("SOCKET") then

@@ -35,6 +35,36 @@ function GetItemInfoInstant (item)
    return i.itemID, i.itemType, i.itemSubType, i.itemEquipLoc, i.icon, i.itemClassID, i.itemSubClassID
 end
 
+local function GetItemStats(item, stattable)
+	assert(item, "Usage: local statTable = C_Item.GetItemStats(itemLink)")
+	if string.match(item,"^%d+$") then item = tonumber(item) end -- Support for itemID
+	if not _G.ItemStats[item] then return end
+	local ret = stattable or {}
+	for k,v in pairs(_G.ItemStats[item]) do
+		ret[k] = v
+	end
+	return ret
+end
+
+C_Item = {GetItemStats = GetItemStats}
+
+-- These are very roughly recreated
+C_TransmogCollection = {
+	GetItemInfo = function(link)
+		assert(link, "Usage: local itemAppearanceID, itemModifiedAppearanceID = C_TransmogCollection.GetItemInfo(itemInfo)")
+		link = tonumber(strmatch(link or "", "item:(%d+):"))
+		return unpack(_G.TransmogItems[link] or {})
+	end,
+	GetAllAppearanceSources = function(itemAppearanceID)
+		return _G.TransmogItems[itemAppearanceID]
+	end,
+	GetAppearanceSourceInfo = function(sourceID)
+		return nil,nil,nil,nil,true
+	end,
+	PlayerCanCollectSource = function(sourceID)
+		return true,true
+	end,
+}
 ----------------------------------------------------------------
 -- List of items exported from the game
 -- 22/11-19: Exported 2.391 items from my history.
@@ -43117,3 +43147,54 @@ do
       _G.Items[a] = b
    end
 end
+
+----------------------------------------------------------------
+-- List of items stats exported from the game
+----------------------------------------------------------------
+_G.ItemStats = {
+ 	[207781] = {
+		ITEM_MOD_HASTE_RATING_SHORT=147,
+		ITEM_MOD_CRIT_RATING_SHORT=320,
+		ITEM_MOD_STAMINA_SHORT=1452,
+		ITEM_MOD_DAMAGE_PER_SECOND_SHORT=418.61111450195,
+		ITEM_MOD_AGILITY_SHORT=368
+	},
+	[207786] = {
+	  	ITEM_MOD_STRENGTH_SHORT=368,
+	  	ITEM_MOD_CRIT_RATING_SHORT=319,
+	  	ITEM_MOD_STAMINA_SHORT=1452,
+	  	ITEM_MOD_DAMAGE_PER_SECOND_SHORT=418.46154785156,
+	  	ITEM_MOD_MASTERY_RATING_SHORT=148
+	},
+	[207788] = {
+	  	ITEM_MOD_INTELLECT_SHORT=2145,
+	  	ITEM_MOD_HASTE_RATING_SHORT=141,
+	  	ITEM_MOD_MASTERY_RATING_SHORT=326,
+	  	ITEM_MOD_STAMINA_SHORT=1452,
+	  	ITEM_MOD_DAMAGE_PER_SECOND_SHORT=209.23077392578
+	},
+	[210214] = {
+	  	ITEM_MOD_VERSATILITY=1256,
+	  	ITEM_MOD_CRIT_RATING_SHORT=314,
+	  	ITEM_MOD_STAMINA_SHORT=1634
+	},
+}
+
+_G.TransmogItems = {
+	[207781] = {
+		82185,
+		188883
+	},
+	[207786] = {
+		82319,
+		188888
+	},
+	[207788] = {
+		82215,
+		188890
+	},
+	[165597] = {
+		39240,
+		102041
+	}
+}
