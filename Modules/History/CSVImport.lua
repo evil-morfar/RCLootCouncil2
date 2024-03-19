@@ -427,6 +427,12 @@ local mapIDsToText = {
    [2070] = "Battle of Dazar'alor",
    [2096] = "Crucible of Storms",
    [2164] = "The Eternal Palace",
+	[2217] = "Ny'alotha",
+	[2296] = "Castle Nathria",
+	[2450] = "Sanctum of Domination",
+	[2481] = "Sepulcher of the First Ones",
+	[2522] = "Vault of the Incarnates",
+	[2569] = "Aberrus, the Shadowed Crucible",
 }
 
 local diffIDToText = {
@@ -464,34 +470,41 @@ local diffIDToText = {
    [149] = "Heroic",
 }
 
+local function instanceNameFromMapID(mapID)
+	if not (C_EncounterJournal.GetInstanceForGameMap and EJ_GetInstanceInfo) then return "" end
+	return select(1,EJ_GetInstanceInfo(C_EncounterJournal.GetInstanceForGameMap(mapID)))
+end
+
 function private:RebuildInstance(data, t, line)
-   local instance, diffID, mapID = data[11], data[13], data[14]
-   if mapID and diffID then
-      mapID = tonumber(mapID)
-      diffID = tonumber(diffID)
-      if mapIDsToText[mapID] and diffIDToText[diffID] then
-         t.instance = mapIDsToText[mapID] .."-".. diffIDToText[diffID]
-         t.mapID = mapID
-         t.difficultyID = diffID
-      end
-   elseif mapID and not diffID and not instance then
-      mapID = tonumber(mapID)
-      t.instance = mapIDsToText[mapID]
-      t.mapID = mapID
-      t.difficultyID = nil
-   elseif instance then
-      if string.find(instance, "-") then
-         mapID = mapID or tInvert(mapIDsToText)[(string.split("-",instance))]
-         diffID = diffID or tInvert(diffIDToText)[select(2,string.split("-",instance))]
-      else
-         mapID = mapID or tInvert(mapIDsToText)[instance]
-      end
-      t.instance = instance
-      t.mapID = mapID
-      t.difficultyID = diffID
-   -- else
-      -- self:AddError(line, string.format("%s|%s|%s", tostring(instance), tostring(diffID), tostring(mapID)), "Could not recreate instance info.")
-   end
+	local instance, diffID, mapID = data[11], tonumber(data[13] or 0), tonumber(data[14] or 0)
+	if mapID and mapID > 0 then
+		if diffID > 0 then
+			local instanceNameFromMapID = instanceNameFromMapID(mapID)
+			if instanceNameFromMapID == "" and mapIDsToText[mapID] and diffIDToText[diffID] then
+				t.instance = mapIDsToText[mapID] .."-".. diffIDToText[diffID]
+			else
+				t.instance = instanceNameFromMapID .. "-" .. diffIDToText[diffID]
+			end
+			t.mapID = mapID
+			t.difficultyID = diffID
+		elseif not instance then
+			t.instance = mapIDsToText[mapID] or ""
+			t.mapID = mapID
+			t.difficultyID = nil
+		end
+	elseif instance then
+		if string.find(instance, "-") then
+			mapID = mapID > 0 and mapID or tInvert(mapIDsToText)[(string.split("-",instance))]
+			diffID = diffID > 0 and diffID or tInvert(diffIDToText)[select(2,string.split("-",instance))]
+		else
+			mapID = mapID or tInvert(mapIDsToText)[instance]
+		end
+		t.instance = instance
+		t.mapID = mapID
+		t.difficultyID = diffID
+	-- else
+		-- self:AddError(line, string.format("%s|%s|%s", tostring(instance), tostring(diffID), tostring(mapID)), "Could not recreate instance info.")
+	end
 end
 
 function private:AddError (lineNum, value, desc)

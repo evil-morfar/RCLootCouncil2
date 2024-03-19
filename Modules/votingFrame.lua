@@ -93,7 +93,6 @@ end
 function RCVotingFrame:OnEnable()
 	self:RegisterComms()
 	self:RegisterBucketEvent({"UNIT_PHASE", "ZONE_CHANGED_NEW_AREA"}, 1, "Update") -- Update "Out of instance" text when any raid members change zone
-	self:RegisterMessage("RCLootStatusReceived", "UpdateLootStatus")
 	self:RegisterMessage("RCLootTableAdditionsReceived", "OnLootTableAdditionsReceived")
 	db = addon:Getdb()
 	--active = true
@@ -113,7 +112,6 @@ function RCVotingFrame:OnDisable() -- We never really call this
 	self:Hide()
 	self.frame:SetParent(nil)
 	self.frame = nil
-	wipe(addon.lootStatus)
 	wipe(lootTable)
 	active = false
 	session = 1
@@ -998,6 +996,7 @@ function RCVotingFrame:GetFrame()
 	iState:SetPoint("LEFT", ilvl, "RIGHT", 5, 0)
 	iState:SetTextColor(0,1,0,1) -- Green
 	iState:SetText("")
+	iState:SetJustifyH("LEFT")
 	f.iState = iState
 
 	local iType = f.content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
@@ -1085,15 +1084,6 @@ function RCVotingFrame:GetFrame()
 	rf:SetWidth(rft:GetStringWidth())
 	f.rollResult = rf
 
-	-- Loot Status
-	f.lootStatus = addon.UI:New("Text", f.content, " ")
-	f.lootStatus:SetTextColor(1,1,1,1) -- White for now
-	f.lootStatus:SetHeight(20)
-	f.lootStatus:SetWidth(150)
-	f.lootStatus:SetPoint("RIGHT", rf, "LEFT", -10, 0)
-	f.lootStatus:SetScript("OnLeave", addon.Utils.HideTooltip)
-	f.lootStatus.text:SetJustifyH("RIGHT")
-
 	-- Owner
 	f.ownerString = {}
 	f.ownerString.icon = addon.UI:New("Icon", f.content)
@@ -1138,36 +1128,6 @@ function RCVotingFrame:GetFrame()
 	-- Set a proper width
 	f:SetWidth(f.st.frame:GetWidth() + 20)
 	return f;
-end
-
-function RCVotingFrame:UpdateLootStatus()
-	if not self.frame then return end -- Might not be created yet
-	if not addon.isCouncil then return end
-
-	local status, list = addon:GetLootStatusData()
-	self.frame.lootStatus:SetText(L["Loot Status"] .. ": " .. status)
-	self.frame.lootStatus:SetScript("OnEnter", function()
-		GameTooltip:SetOwner(UIParent, "ANCHOR_CURSOR")
-		GameTooltip:AddLine(L["Loot Status"])
-		if addon.debug then
-			GameTooltip:AddLine("Debug")
-			for id, v in pairs(addon.lootStatus) do
-				if id ~= addon.lastEncounterID then
-					GameTooltip:AddDoubleLine(id, v.num,1,1,1,1,1,1)
-				else
-					GameTooltip:AddLine("EncounterID: " .. addon.lastEncounterID)
-					for player, item in pairs(v) do
-						GameTooltip:AddDoubleLine(player, item)
-					end
-				end
-			end
-			GameTooltip:AddLine(" ")
-		end
-		for _, v in ipairs(list) do
-			GameTooltip:AddDoubleLine(addon:GetUnitClassColoredName(v.name), v.text)
-		end
-		GameTooltip:Show()
-	end)
 end
 
 function RCVotingFrame:UpdatePeopleToVote()

@@ -38,7 +38,6 @@ end
 
 function RCSessionFrame:OnEnable()
 	addon.Log("RCSessionFrame enabled")
-	self:RegisterMessage("RCLootStatusReceived", "UpdateLootStatus")
 	addon:RegisterEvent("CINEMATIC_START", self.OnCinematicStart, self)
 	addon:RegisterEvent("CINEMATIC_STOP", self.OnCinematicStop, self)
 	self.showAfterCinematic = false
@@ -48,7 +47,6 @@ end
 function RCSessionFrame:OnDisable()
 	self.frame:Hide()
 	self.frame.rows = {}
-	self:UnregisterMessage("RCLootStatusReceived")
 	awardLater = false
 	self.showAfterCinematic = false
 	addon.Log("RCSessionFrame disabled")
@@ -138,20 +136,6 @@ function RCSessionFrame:Update()
 	else
 		self.frame.startBtn:SetText(_G.START)
 	end
-end
-
-function RCSessionFrame:UpdateLootStatus ()
-	if not self.frame then return end
-	local status, list = addon:GetLootStatusData()
-	self.frame.lootStatus:SetText(status)
-	self.frame.lootStatus:SetScript("OnEnter", function()
-		GameTooltip:SetOwner(self.frame.lootStatus, "ANCHOR_RIGHT")
-		GameTooltip:AddLine(L["Loot Status"])
-		for _, v in ipairs(list) do
-			GameTooltip:AddDoubleLine(addon:GetUnitClassColoredName(v.name), v.text)
-		end
-		GameTooltip:Show()
-	end)
 end
 
 function RCSessionFrame:DeleteItem(session, row)
@@ -258,16 +242,6 @@ function RCSessionFrame:GetFrame()
 		self:Disable()
 	end)
 	f.closeBtn = b2
-
-	-- Loot Status
-	f.lootStatus = addon.UI:New("Text", f.content, " ")
-	f.lootStatus:SetTextColor(1,1,1,1) -- White for now
-	f.lootStatus:SetHeight(20)
-	f.lootStatus:SetWidth(75)
-	-- f.lootStatus:SetPoint("BOTTOMRIGHT", f, "BOTTOMRIGHT", -10, 14)
-	f.lootStatus:SetPoint("LEFT", f.closeBtn, "RIGHT", 13, 1)
-	f.lootStatus:SetScript("OnLeave", addon.Utils.HideTooltip)
-	f.lootStatus.text:SetJustifyH("LEFT")
 
 	local st = ST:CreateST(self.scrollCols, 5, ROW_HEIGHT, nil, f.content)
 	st.head:SetHeight(0)
