@@ -112,7 +112,6 @@ function RCLootCouncil:ExportTokenData(nextID)
 	frame.exportFrame.edit:SetText(exports)
 end
 
--- REVIEW: Doesn't work. Neither does the new C_TooltipInfo system.
 --- Fetches the slot of a token from its tooltip by
 --- searching the `leftText` of each line for keywords.
 --- @param id ItemID The itemID of the item to scan.
@@ -120,9 +119,7 @@ end
 function RCLootCouncil:GetTokenSlotFromTooltip(id)
 	local lines = self:GetTooltipLines(id)
 	for _, text in ipairs(lines) do
-		print("Text:", text)
 		if text and text:sub(0, 4) == "Use:" then
-			self.Log:d("Found text", text)
 			for invSlot, keywords in pairs(keyWords) do
 				for _, keyword in pairs(keywords) do
 					if text:lower():find(keyword) then
@@ -809,6 +806,26 @@ _G.RCTokenTable = {
 	[207479] = "ShoulderSlot", -- Mystic Smoldering Dreamheart,
 	[207480] = "ShoulderSlot", -- Venerated Smoldering Dreamheart,
 	[207481] = "ShoulderSlot", -- Zenith Smoldering Dreamheart,
+	[217316] = "ChestSlot",  -- Dreadful Fleeting Hourglass,
+	[217317] = "ChestSlot",  -- Mystic Fleeting Hourglass,
+	[217318] = "ChestSlot",  -- Venerated Fleeting Hourglass,
+	[217319] = "ChestSlot",  -- Zenith Fleeting Hourglass,
+	[217320] = "HandsSlot",  -- Dreadful Quickened Bronzestone,
+	[217321] = "HandsSlot",  -- Mystic Quickened Bronzestone,
+	[217322] = "HandsSlot",  -- Venerated Quickened Bronzestone,
+	[217323] = "HandsSlot",  -- Zenith Quickened Bronzestone,
+	[217324] = "HeadSlot",   -- Dreadful Decelerating Chronograph,
+	[217325] = "HeadSlot",   -- Mystic Decelerating Chronograph,
+	[217326] = "HeadSlot",   -- Venerated Decelerating Chronograph,
+	[217327] = "HeadSlot",   -- Zenith Decelerating Chronograph,
+	[217328] = "LegsSlot",   -- Dreadful Ephemeral Hypersphere,
+	[217329] = "LegsSlot",   -- Mystic Ephemeral Hypersphere,
+	[217330] = "LegsSlot",   -- Venerated Ephemeral Hypersphere,
+	[217331] = "LegsSlot",   -- Zenith Ephemeral Hypersphere,
+	[217332] = "ShoulderSlot", -- Dreadful Synchronous Timestrand,
+	[217333] = "ShoulderSlot", -- Mystic Synchronous Timestrand,
+	[217334] = "ShoulderSlot", -- Venerated Synchronous Timestrand,
+	[217335] = "ShoulderSlot", -- Zenith Synchronous Timestrand,
 }
 
 -- The base item level for the token on normal difficulty
