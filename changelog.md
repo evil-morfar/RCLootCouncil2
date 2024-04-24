@@ -1,3 +1,11 @@
+# 3.11.1
+
+## Changes
+
+Added support for tier tokens from Awakened Raids.
+
+Added Antique Bronze Bullion to the ignore list.
+
 # 3.11.0
 
 ## Changes

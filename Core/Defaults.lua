@@ -254,6 +254,7 @@ addon.defaults = {
 			[152902] = true, [152906] = true, [152907] = true, [155831] = true, -- Rune of Passage (Antorus shortcut item), Pantheon's Blessing
 			[152908] = true, [152909] = true, [152910] = true, -- Sigil of the Dark Titan (Another Antorus shortcut item)
 			[162461] = true, -- Sanguicell (BfA crafting)
+			[213089] = true, -- Antique Bronze Bullion (DF S4 Weapon/Trinket currency)
 		},
 	},
 } -- defaults end
