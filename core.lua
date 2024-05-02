@@ -1501,6 +1501,7 @@ function RCLootCouncil:OnEvent(event, ...)
 				if not self.isMasterLooter and self.masterLooter and self.masterLooter ~= "" then
 					self:Send("group", "pI", self:GetPlayerInfo()) -- Also send out info, just in case
 					self:Send(self.masterLooter, "reconnect")
+					self.Log:d("Sent Reconnect Request")
 				end
 			end, 2.1)
 			player_relogged = false
@@ -2674,6 +2675,7 @@ function RCLootCouncil:OnLootAckReceived()
 			self:Send(self.masterLooter, "reconnect")
 			self.recentReconnectRequest = true
 			self:ScheduleTimer("ResetReconnectRequest", 5) -- 5 sec break between each try
+			self.Log:d("Sent Reconnect Request")
 		end
 	end
 end
