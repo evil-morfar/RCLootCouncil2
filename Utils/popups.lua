@@ -3,7 +3,7 @@
 -- 14/07/2017
 
 local _,addon = ...
-local LibDialog = LibStub("LibDialog-1.0")
+local LibDialog = LibStub("LibDialog-1.1")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 
 -- Confirm usage (core)

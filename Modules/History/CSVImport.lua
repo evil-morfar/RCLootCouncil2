@@ -1,7 +1,7 @@
 local _, addon = ...
 local His = addon:GetModule("RCLootHistory")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
-local LibDialog = LibStub("LibDialog-1.0")
+local LibDialog = LibStub("LibDialog-1.1")
 local private = {
    errorList = {
       -- [i] = {line, cause}
