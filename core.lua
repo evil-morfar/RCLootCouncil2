@@ -1317,14 +1317,15 @@ end
 -- @param g2 Same as g1, but for multislot items.
 -- @return Integer - the difference between the comparison item and the equipped gear.
 function RCLootCouncil:GetIlvlDifference(item, g1, g2)
-	if not g1 and g2 then error("You can't provide g2 without g1 in :GetIlvlDifference()") end
+	if not (g1 or g2) then
+		self:Debug("GetIlvlDifference: no gear for item:", item)
+		return 0 -- Fallback value incase no gear is provided
+	end
+
 	local _, link, _, ilvl, _, _, _, _, equipLoc = GetItemInfo(item)
 	if not ilvl then
 		self:Debug(format("GetIlvlDifference: item: %s had ilvl %s", tostring(item), tostring(ilvl)))
 		return -1
-	end
-	if not g1 then
-		g1, g2 = self:GetPlayersGear(link, equipLoc, playersData.gears)
 	end
 
 	-- Check if it's a ring or trinket
@@ -1340,12 +1341,15 @@ function RCLootCouncil:GetIlvlDifference(item, g1, g2)
 		end
 		-- We haven't equipped this item, do it normally
 	end
+
 	local diff = 0
 	local g1diff, g2diff = g1 and select(4, GetItemInfo(g1)), g2 and select(4, GetItemInfo(g2))
 	if g1diff and g2diff then
 		diff = g1diff >= g2diff and ilvl - g2diff or ilvl - g1diff
 	elseif g1diff then
 		diff = ilvl - g1diff
+	elseif g2diff then
+		diff = ilvl - g2diff
 	end
 	return diff
 end
