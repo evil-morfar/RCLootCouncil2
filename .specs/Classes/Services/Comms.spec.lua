@@ -305,7 +305,7 @@ describe("#Services #Comms", function()
 				assert.spy(onReceiveSpy).was_called_with(match.is_table(), "Sender-Realm1", "test", "RAID")
 
 				assert.spy(s).was_called(1)
-				assert.spy(s).was_called_with(nil, match.is_number(), match.is_number())
+				assert.spy(s).was_called_with(nil, match.is_number(), match.is_number(), false)
 			end)
 
 			it("with callback func multiple messages", function()
@@ -327,7 +327,7 @@ describe("#Services #Comms", function()
 				assert.spy(onReceiveSpy).was_called_with(match.is_table(), "Sender-Realm1", "test", "RAID")
 
 				assert.spy(s).was_called(2)
-				assert.spy(s).was_called_with(nil, match.is_number(), match.is_number())
+				assert.spy(s).was_called_with(nil, match.is_number(), match.is_number(), false)
 			end)
 
 			it("with callback func and arg", function()
@@ -347,7 +347,7 @@ describe("#Services #Comms", function()
 				assert.spy(onReceiveSpy).was_called_with(match.is_table(), "Sender-Realm1", "test", "RAID")
 
 				assert.spy(s).was_called(1)
-				assert.spy(s).was_called_with(arg, match.is_number(), match.is_number())
+				assert.spy(s).was_called_with(arg, match.is_number(), match.is_number(), false)
 			end)
 
 		end)
