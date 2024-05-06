@@ -409,7 +409,15 @@ function RCLootCouncil:ChatCommand(msg)
 		end
 
 	elseif input == 'council' or input == L["council"] then
-		Settings.OpenToCategory(self.optionsFrame.ml.name)
+		local category = FindValueInTableIf(
+			SettingsPanel:GetCategory(self.optionsFrame.name):GetSubcategories(),
+			function(v)
+				return v and v:GetID() == self.optionsFrame.ml.name
+			end)
+
+		if not category then return self.Log:e("Couldn't find category in '/rc council'", category) end
+		Settings.OpenToCategory(self.optionsFrame.name)
+		SettingsPanel:SelectCategory(category)
 		LibStub("AceConfigDialog-3.0"):SelectGroup("RCLootCouncil", "mlSettings", "councilTab")
 
 	elseif input == 'test' or input == L["test"] then
