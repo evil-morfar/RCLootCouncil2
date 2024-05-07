@@ -46,7 +46,7 @@ local addonname, addontable = ...
 --- @class RCLootCouncil : AceAddon-3.0, AceConsole-3.0, AceEvent-3.0, AceHook-3.0, AceTimer-3.0, AceBucket-3.0
 _G.RCLootCouncil = LibStub("AceAddon-3.0"):NewAddon(addontable, addonname, "AceConsole-3.0", "AceEvent-3.0",
                                                     "AceHook-3.0", "AceTimer-3.0", "AceBucket-3.0");
-local LibDialog = LibStub("LibDialog-1.0")
+local LibDialog = LibStub("LibDialog-1.1")
 --- @type RCLootCouncilLocale
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 local tooltipForParsing = CreateFrame("GameTooltip", "RCLootCouncil_Tooltip_Parse", nil, "GameTooltipTemplate")
@@ -85,7 +85,6 @@ local userModules = {
 }
 
 local unregisterGuildEvent = false
-local player_relogged = true -- Determines if we potentially need data from the ML due to /rl
 local lootTable = {}
 
 -- Lua
@@ -409,7 +408,15 @@ function RCLootCouncil:ChatCommand(msg)
 		end
 
 	elseif input == 'council' or input == L["council"] then
-		Settings.OpenToCategory(self.optionsFrame.ml.name)
+		local category = FindValueInTableIf(
+			SettingsPanel:GetCategory(self.optionsFrame.name):GetSubcategories(),
+			function(v)
+				return v and v:GetID() == self.optionsFrame.ml.name
+			end)
+
+		if not category then return self.Log:e("Couldn't find category in '/rc council'", category) end
+		Settings.OpenToCategory(self.optionsFrame.name)
+		SettingsPanel:SelectCategory(category)
 		LibStub("AceConfigDialog-3.0"):SelectGroup("RCLootCouncil", "mlSettings", "councilTab")
 
 	elseif input == 'test' or input == L["test"] then
@@ -957,14 +964,16 @@ end
 -- @param g2 Same as g1, but for multislot items.
 -- @return Integer - the difference between the comparison item and the equipped gear.
 function RCLootCouncil:GetIlvlDifference(item, g1, g2)
-	if not g1 and g2 then error("You can't provide g2 without g1 in :GetIlvlDifference()") end
+	if not (g1 or g2) then
+		self.Log:E("GetIlvlDifference: no gear for item:", item)
+		return 0 -- Fallback value incase no gear is provided
+	end
 	local _, link, _, ilvl, _, _, _, _, equipLoc = GetItemInfo(item)
 
 	if not ilvl then
 		self.Log:E(format("GetIlvlDifference: item: %s had ilvl %s", tostring(item), tostring(ilvl)))
 		return -1
 	end
-	if not g1 then g1, g2 = self:GetPlayersGear(link, equipLoc, playersData.gears) end
 
 	-- Check if it's a ring or trinket
 	if equipLoc == "INVTYPE_TRINKET" or equipLoc == "INVTYPE_FINGER" then
@@ -985,6 +994,8 @@ function RCLootCouncil:GetIlvlDifference(item, g1, g2)
 		diff = g1diff >= g2diff and ilvl - g2diff or ilvl - g1diff
 	elseif g1diff then
 		diff = ilvl - g1diff
+	elseif g2diff then
+		diff = ilvl - g2diff
 	end
 	return diff
 end
@@ -1490,17 +1501,41 @@ function RCLootCouncil:OnEvent(event, ...)
 			self.currentInstanceName = instanceName .. (difficultyName ~= "" and "-" .. difficultyName or "")
 		end, 5)
 
-		if player_relogged then
-			-- Ask for data when we have done a /rl and have a ML, but delay it until we've updated ML
+		-- Check if we reloaded
+		if select(2, ...) then
 			self.Log("Player relog...")
+
+			-- Restore masterlooter from cache, but only if not already set.
+			if not self.masterLooter and self.db.global.cache.masterlooter then
+				self.masterLooter = Player:Get(self.db.global.cache.masterlooter)
+			end
+			self.Log:d("ML:", self.masterLooter)
+
+			-- Restore mldb and council
+			if self.db.global.cache.mldb then
+				self:OnMLDBReceived(self.db.global.cache.mldb)
+			end
+			if self.masterLooter and self.db.global.cache.council then
+				self:OnCouncilReceived(self.masterLooter, self.db.global.cache.council)
+			end
+
+			-- If we still haven't set masterLooter, try delaying a bit.
+			-- but we don't have to wait if we got it from cache.
 			self:ScheduleTimer(function()
 				if not self.isMasterLooter and self.masterLooter and self.masterLooter ~= "" then
 					self:Send("group", "pI", self:GetPlayerInfo()) -- Also send out info, just in case
 					self:Send(self.masterLooter, "reconnect")
+					self.Log:d("Sent Reconnect Request")
 				end
-			end, 2.1)
-			player_relogged = false
+			end, self.masterLooter and 0 or 2.1)
 		end
+	elseif event == "PLAYER_LOGOUT" then
+		self.Log:d("Event:", event, ...)
+		if not self.db.global.cache then self.db.global.cache = {} end
+		self.db.global.cache.mldb = next(self.mldb) and MLDB:GetForTransmit(self.mldb) or nil
+		self.db.global.cache.council = Council:GetNum() > 0 and Council:GetForTransmit() or nil
+		self.db.global.cache.masterLooter = self.masterLooter and self.masterLooter:GetGUID()
+
 	elseif event == "ENCOUNTER_START" then
 		self.Log:d("Event:", event, ...)
 		self:UpdatePlayersData()
@@ -2670,6 +2705,7 @@ function RCLootCouncil:OnLootAckReceived()
 			self:Send(self.masterLooter, "reconnect")
 			self.recentReconnectRequest = true
 			self:ScheduleTimer("ResetReconnectRequest", 5) -- 5 sec break between each try
+			self.Log:d("Sent Reconnect Request")
 		end
 	end
 end

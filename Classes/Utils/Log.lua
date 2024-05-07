@@ -114,7 +114,7 @@ function private:Log(Log,prefix, ...)
    end
    local msg = table.concat(t, "")
    TempTable:Release(t)
-	if self.lenght >= addon.db.global.logMaxEntries then
+	if self.lenght >= (addon.db.global.logMaxEntries or 2000) then
 		tremove(self.debugLog, 1) -- We really want to preserve indicies
       self.lenght = self.lenght - 1
 	end

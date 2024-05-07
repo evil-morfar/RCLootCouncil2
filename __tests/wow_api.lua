@@ -350,26 +350,30 @@ function SendChatMessage(text, chattype, language, destination)
 end
 
 local registeredPrefixes = {}
-function RegisterAddonMessagePrefix(prefix)
-	assert(#prefix <= 16) -- tested, 16 works /mikk, 20110327
-	registeredPrefixes[prefix] = true
-end
 
-function SendAddonMessage(prefix, message, distribution, target)
-	if RegisterAddonMessagePrefix then --4.1+
-		assert(#message <= 255,
-			string.format("SendAddonMessage: message too long (%d bytes > 255)",
-				#message))
-		-- CHAT_MSG_ADDON(prefix, message, distribution, sender)
-		WoWAPI_FireEvent("CHAT_MSG_ADDON", prefix, message, distribution, "Sender")
-	else -- allow RegisterAddonMessagePrefix to be nilled out to emulate pre-4.1
-		assert(#prefix + #message < 255,
-			string.format("SendAddonMessage: message too long (%d bytes)",
-				#prefix + #message))
-		-- CHAT_MSG_ADDON(prefix, message, distribution, sender)
-		WoWAPI_FireEvent("CHAT_MSG_ADDON", prefix, message, distribution, "Sender")
-	end
-end
+C_ChatInfo = {
+	RegisterAddonMessagePrefix = function (prefix)
+		assert(#prefix <= 16) -- tested, 16 works /mikk, 20110327
+		registeredPrefixes[prefix] = true
+	end,
+
+	SendAddonMessage = function (prefix, message, distribution, target)
+		if C_ChatInfo.RegisterAddonMessagePrefix then --4.1+
+			assert(#message <= 255,
+				string.format("SendAddonMessage: message too long (%d bytes > 255)",
+					#message))
+			-- CHAT_MSG_ADDON(prefix, message, distribution, sender)
+			WoWAPI_FireEvent("CHAT_MSG_ADDON", prefix, message, distribution, "Sender")
+		else -- allow RegisterAddonMessagePrefix to be nilled out to emulate pre-4.1
+			assert(#prefix + #message < 255,
+				string.format("SendAddonMessage: message too long (%d bytes)",
+					#prefix + #message))
+			-- CHAT_MSG_ADDON(prefix, message, distribution, sender)
+			WoWAPI_FireEvent("CHAT_MSG_ADDON", prefix, message, distribution, "Sender")
+		end
+	end,
+}
+C_ChatInfo.SendAddonMessageLogged = C_ChatInfo.SendAddonMessage
 
 if not wipe then
 	function wipe(tbl)
@@ -401,11 +405,16 @@ function UIDropDownMenu_InitializeHelper(args)
 	-- body...
 end
 
-function hooksecurefunc(func_name, post_hook_func)
-	local orig_func = _G[func_name]
+function hooksecurefunc(tbl,func_name, post_hook_func)
+	if type(tbl) == "string" then
+		post_hook_func = func_name
+		func_name = tbl
+		tbl = _G
+	end
+	local orig_func = tbl[func_name]
 	assert(type(orig_func) == "function")
 
-	_G[func_name] = function(...)
+	tbl[func_name] = function(...)
 		local ret = { orig_func(...), } -- yeahyeah wasteful, see if i care, it's a test framework
 		post_hook_func(...)
 		return unpack(ret)

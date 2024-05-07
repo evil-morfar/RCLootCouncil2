@@ -213,5 +213,16 @@ Compat.list = {
 				addon:ScheduleTimer("Print", 10, format("Cleaned %d occurances of Uncommon items in your history", count))
 			end
 		end
+	},
+
+	{
+		name = "Reset auto add rolls",
+		version = "3.12.0",
+		func = function()
+			for _,db in pairs(addon.db.profiles) do
+				db.autoAddRolls = false
+			end
+			addon.db.global.errors = {}
+		end
 	}
 }

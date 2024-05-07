@@ -1629,15 +1629,16 @@ function RCLootCouncilML:OnReconnectReceived (sender)
 		-- REVIEW v2.2.6 For backwards compability we're just sending avotingFrame's lootTable
 		-- This is quite redundant and should be removed in the future
 		if db.observe or Council:Contains(requestPlayer) then -- Only send all data to councilmen
-			local table = addon:GetActiveModule("votingframe"):GetLootTable()
-			-- Remove our own voting data if any
-			for _, v in ipairs(table) do
-				v.haveVoted = false
-				for _, d in pairs(v.candidates) do
-					d.haveVoted = false
-				end
-			end
-			self:ScheduleTimer("Send", 5, requestPlayer, "reconnectData", table)
+			-- Patch 10.2.7: New comms throttles doesn't allow us to send this...
+			-- local table = addon:GetActiveModule("votingframe"):GetLootTable()
+			-- -- Remove our own voting data if any
+			-- for _, v in ipairs(table) do
+			-- 	v.haveVoted = false
+			-- 	for _, d in pairs(v.candidates) do
+			-- 		d.haveVoted = false
+			-- 	end
+			-- end
+			-- self:ScheduleTimer("Send", 5, requestPlayer, "reconnectData", table)
 		end
 	end
 	self.Log("Responded to reconnect from", sender)
