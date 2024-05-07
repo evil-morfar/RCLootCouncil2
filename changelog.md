@@ -1,3 +1,14 @@
+# 3.12.0
+
+## Changes
+
+Updated for patch 10.2.7.
+
+### Comms throttle
+
+Voting Frame data is no longer being sent when reloading/reconnecting.
+
+
 # 3.11.1
 
 ## Changes
