@@ -85,7 +85,6 @@ local userModules = {
 }
 
 local unregisterGuildEvent = false
-local player_relogged = true -- Determines if we potentially need data from the ML due to /rl
 local lootTable = {}
 
 -- Lua
@@ -1502,18 +1501,41 @@ function RCLootCouncil:OnEvent(event, ...)
 			self.currentInstanceName = instanceName .. (difficultyName ~= "" and "-" .. difficultyName or "")
 		end, 5)
 
-		if player_relogged then
-			-- Ask for data when we have done a /rl and have a ML, but delay it until we've updated ML
+		-- Check if we reloaded
+		if select(2, ...) then
 			self.Log("Player relog...")
+
+			-- Restore masterlooter from cache, but only if not already set.
+			if not self.masterLooter and self.db.global.cache.masterlooter then
+				self.masterLooter = Player:Get(self.db.global.cache.masterlooter)
+			end
+			self.Log:d("ML:", self.masterLooter)
+
+			-- Restore mldb and council
+			if self.db.global.cache.mldb then
+				self:OnMLDBReceived(self.db.global.cache.mldb)
+			end
+			if self.masterLooter and self.db.global.cache.council then
+				self:OnCouncilReceived(self.masterLooter, self.db.global.cache.council)
+			end
+
+			-- If we still haven't set masterLooter, try delaying a bit.
+			-- but we don't have to wait if we got it from cache.
 			self:ScheduleTimer(function()
 				if not self.isMasterLooter and self.masterLooter and self.masterLooter ~= "" then
 					self:Send("group", "pI", self:GetPlayerInfo()) -- Also send out info, just in case
 					self:Send(self.masterLooter, "reconnect")
 					self.Log:d("Sent Reconnect Request")
 				end
-			end, 2.1)
-			player_relogged = false
+			end, self.masterLooter and 0 or 2.1)
 		end
+	elseif event == "PLAYER_LOGOUT" then
+		self.Log:d("Event:", event, ...)
+		if not self.db.global.cache then self.db.global.cache = {} end
+		self.db.global.cache.mldb = next(self.mldb) and MLDB:GetForTransmit(self.mldb) or nil
+		self.db.global.cache.council = Council:GetNum() > 0 and Council:GetForTransmit() or nil
+		self.db.global.cache.masterLooter = self.masterLooter and self.masterLooter:GetGUID()
+
 	elseif event == "ENCOUNTER_START" then
 		self.Log:d("Event:", event, ...)
 		self:UpdatePlayersData()
