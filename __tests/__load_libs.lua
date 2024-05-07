@@ -23,7 +23,7 @@ dofile "Libs/AceComm-3.0/ChatThrottleLib.lua"
 dofile "Libs/AceComm-3.0/AceComm-3.0.lua"
 dofile "Libs/AceSerializer-3.0/AceSerializer-3.0.lua"
 
-dofile "Libs/LibDialog-1.0/LibDialog-1.0.lua"
+dofile "Libs/LibDialog-1.0/LibDialog-1.1.lua"
 dofile "Libs/LibWindow-1.1/LibWindow-1.1.lua"
 dofile "Libs/lib-st/Core.lua"
 dofile "Libs/MSA-DropDownMenu-1.0/MSA-DropDownMenu-1.0.lua"

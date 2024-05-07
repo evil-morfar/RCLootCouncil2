@@ -13,7 +13,7 @@
 local addon = select(2, ...)
 ---@class Sync : AceSerializer-3.0
 local sync = addon:NewModule("Sync", "AceSerializer-3.0")
-local LibDialog = LibStub("LibDialog-1.0")
+local LibDialog = LibStub("LibDialog-1.1")
 local LD = LibStub("LibDeflate")
 --- @type RCLootCouncilLocale
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")

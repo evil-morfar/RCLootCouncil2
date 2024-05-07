@@ -16,7 +16,7 @@ addon.TradeUI = TradeUI -- Shorthand for easier access
 local ST = LibStub("ScrollingTable")
 --- @type RCLootCouncilLocale
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
-local LibDialog = LibStub("LibDialog-1.0")
+local LibDialog = LibStub("LibDialog-1.1")
 local _G = _G
 local Comms = addon.Require "Services.Comms"
 local PREFIX = addon.PREFIXES.MAIN
