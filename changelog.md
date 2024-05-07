@@ -8,6 +8,9 @@ Updated for patch 10.2.7.
 
 Voting Frame data is no longer being sent when reloading/reconnecting.
 
+## Bugfixes
+- *Fixed `/rc council` not properly opening council menu.*
+
 
 # 3.11.1
 
