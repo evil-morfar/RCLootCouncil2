@@ -237,7 +237,7 @@ do
 			else
 				entry.noteButton:Show()
 			end
-			if IsCorruptedItem and IsCorruptedItem(item.link) then
+			if C_Item.IsCorruptedItem and C_Item.IsCorruptedItem(item.link) then
 				entry.icon:SetBorderColor("purple")
 			else
 				entry.icon:SetBorderColor("grey")

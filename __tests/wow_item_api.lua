@@ -5,55 +5,61 @@ local _G = getfenv(0)
 _G.Items = {}
 
 local item_mt = {
-   ContinueOnItemLoad = function(self,callback)
-      callback()
-   end,
-   GetItemLink = function(self)
-      return select(2, GetItemInfo(self.itemLink or self.itemID))
-   end
+	ContinueOnItemLoad = function(self, callback)
+		callback()
+	end,
+	GetItemLink = function(self)
+		return select(2, C_Item.GetItemInfo(self.itemLink or self.itemID))
+	end,
 }
 Item = {
-   CreateFromItemLink = function (self,link)
-      return setmetatable({itemLink = link}, {__index = item_mt })
-   end,
-   CreateFromItemID = function(self, id)
-      return setmetatable({itemID = id}, {__index = item_mt })
-   end
+	CreateFromItemLink = function(self, link)
+		return setmetatable({ itemLink = link, }, { __index = item_mt, })
+	end,
+	CreateFromItemID = function(self, id)
+		return setmetatable({ itemID = id, }, { __index = item_mt, })
+	end,
 }
 
-C_Item = {}
+C_Item = {
+	GetItemInfo = function(item)
+		if string.match(item, "^%d+$") then item = tonumber(item) end -- Support for itemID
+		local Item = _G.Items[item] or _G.Items[tonumber(strmatch(item or "", "item:(%d+):"))]
+		local i = assert(Item, "item " .. tostring(item) .. " isn't registered for GetItemInfo")
+		return i.itemName, i.itemLink, i.itemRarity, i.itemLevel, i.itemMinLevel, i.itemType, i.itemSubType,
+			i.itemStackCount, i.itemEquipLoc, i.itemIcon, i.itemSellPrice, i.itemClassID, i.itemSubClassID, i.bindType,
+			i.expacID, i.itemSetID,
+			i.isCraftingReagent
+	end,
 
-function GetItemInfo (item)
-   if string.match(item,"^%d+$") then item = tonumber(item) end -- Support for itemID
-   local Item = _G.Items[item] or _G.Items[tonumber(strmatch(item or "", "item:(%d+):"))]
-   local i = assert(Item, "item "..tostring(item) .." isn't registered for GetItemInfo")
-   return i.itemName, i.itemLink, i.itemRarity, i.itemLevel, i.itemMinLevel, i.itemType, i.itemSubType, i.itemStackCount, i.itemEquipLoc, i.itemIcon, i.itemSellPrice, i.itemClassID, i.itemSubClassID, i.bindType, i.expacID, i.itemSetID,
-i.isCraftingReagent
-end
+	GetItemInfoInstant = function(item)
+		if string.match(item, "^%d+$") then item = tonumber(item) end -- Support for itemID
+		local i = assert(_G.Items[item], "item " .. tostring(item) .. " isn't registered for C_Item.GetItemInfoInstant")
+		return i.itemID, i.itemType, i.itemSubType, i.itemEquipLoc, i.icon, i.itemClassID, i.itemSubClassID
+	end,
 
-function C_Item.GetItemInfoInstant (item)
-   if string.match(item,"^%d+$") then item = tonumber(item) end -- Support for itemID
-   local i = assert(_G.Items[item], "item "..tostring(item) .." isn't registered for C_Item.GetItemInfoInstant")
-   return i.itemID, i.itemType, i.itemSubType, i.itemEquipLoc, i.icon, i.itemClassID, i.itemSubClassID
-end
+	GetItemStats = function(item, stattable)
+		assert(item, "Usage: local statTable = C_Item.GetItemStats(itemLink)")
+		if string.match(item, "^%d+$") then item = tonumber(item) end -- Support for itemID
+		if not _G.ItemStats[item] then return end
+		local ret = stattable or {}
+		for k, v in pairs(_G.ItemStats[item]) do
+			ret[k] = v
+		end
+		return ret
+	end,
+}
 
-function C_Item.GetItemStats(item, stattable)
-	assert(item, "Usage: local statTable = C_Item.GetItemStats(itemLink)")
-	if string.match(item,"^%d+$") then item = tonumber(item) end -- Support for itemID
-	if not _G.ItemStats[item] then return end
-	local ret = stattable or {}
-	for k,v in pairs(_G.ItemStats[item]) do
-		ret[k] = v
-	end
-	return ret
-end
+
+
 
 
 
 -- These are very roughly recreated
 C_TransmogCollection = {
 	GetItemInfo = function(link)
-		assert(link, "Usage: local itemAppearanceID, itemModifiedAppearanceID = C_TransmogCollection.GetItemInfo(itemInfo)")
+		assert(link,
+			"Usage: local itemAppearanceID, itemModifiedAppearanceID = C_TransmogCollection.GetItemInfo(itemInfo)")
 		link = tonumber(strmatch(link or "", "item:(%d+):"))
 		return unpack(_G.TransmogItems[link] or {})
 	end,
@@ -61,10 +67,10 @@ C_TransmogCollection = {
 		return _G.TransmogItems[itemAppearanceID]
 	end,
 	GetAppearanceSourceInfo = function(sourceID)
-		return nil,nil,nil,nil,true
+		return nil, nil, nil, nil, true
 	end,
 	PlayerCanCollectSource = function(sourceID)
-		return true,true
+		return true, true
 	end,
 }
 ----------------------------------------------------------------
@@ -77,7 +83,8 @@ _G.Items = {
 		itemName = "Seal of the Regal Loa",
 		bindType = 1,
 		itemSellPrice = 18955,
-		itemLink = "|cffa335ee|Hitem:159458:5939:154127:::::::::23:4:4779:4802:1512:4786::::::|h[Seal of the Regal Loa]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:159458:5939:154127:::::::::23:4:4779:4802:1512:4786::::::|h[Seal of the Regal Loa]|h|r",
 		itemIcon = 2000808,
 		itemLevel = 99,
 		isCraftingReagent = false,
@@ -97,7 +104,8 @@ _G.Items = {
 		itemName = "Admiralty's Ceremonial Epaulets",
 		bindType = 1,
 		itemSellPrice = 33339,
-		itemLink = "|cffa335ee|Hitem:165824:::::::::::5:4:4823:1522:4786:5418::::::|h[Admiralty's Ceremonial Epaulets]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:165824:::::::::::5:4:4823:1522:4786:5418::::::|h[Admiralty's Ceremonial Epaulets]|h|r",
 		itemIcon = 2353080,
 		itemLevel = 110,
 		isCraftingReagent = false,
@@ -217,7 +225,8 @@ _G.Items = {
 		itemName = "Footbomb Championship Ring",
 		bindType = 1,
 		itemSellPrice = 190848,
-		itemLink = "|cffa335ee|Hitem:159462:5943:154127:::::::::16:4:5010:4802:1572:4786::::::|h[Footbomb Championship Ring]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:159462:5943:154127:::::::::16:4:5010:4802:1572:4786::::::|h[Footbomb Championship Ring]|h|r",
 		itemIcon = 2000829,
 		itemLevel = 159,
 		isCraftingReagent = false,
@@ -257,7 +266,8 @@ _G.Items = {
 		itemName = "Mchimba's Ritual Bandages",
 		bindType = 1,
 		itemSellPrice = 282035,
-		itemLink = "|cffa335ee|Hitem:159618::154128:::::::::16:4:5010:4802:1577:4783::::::|h[Mchimba's Ritual Bandages]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:159618::154128:::::::::16:4:5010:4802:1577:4783::::::|h[Mchimba's Ritual Bandages]|h|r",
 		itemIcon = 463527,
 		itemLevel = 164,
 		isCraftingReagent = false,
@@ -277,7 +287,8 @@ _G.Items = {
 		itemName = "Zanj'ir Scaleguard Faceguard",
 		bindType = 1,
 		itemSellPrice = 37675,
-		itemLink = "|cffa335ee|Hitem:167778::::::::::::6:6300:6299:1517:4786:6267:4775::::::|h[Zanj'ir Scaleguard Faceguard]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:167778::::::::::::6:6300:6299:1517:4786:6267:4775::::::|h[Zanj'ir Scaleguard Faceguard]|h|r",
 		itemIcon = 2966769,
 		itemLevel = 116,
 		isCraftingReagent = false,
@@ -417,7 +428,8 @@ _G.Items = {
 		itemName = "Loa Betrayer's Vestments",
 		bindType = 1,
 		itemSellPrice = 396483,
-		itemLink = "|cffa335ee|Hitem:159233:::::::::::35:5:5448:1587:4786:5419:4775::::::|h[Loa Betrayer's Vestments]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:159233:::::::::::35:5:5448:1587:4786:5419:4775::::::|h[Loa Betrayer's Vestments]|h|r",
 		itemIcon = 1875081,
 		itemLevel = 179,
 		isCraftingReagent = false,
@@ -477,7 +489,8 @@ _G.Items = {
 		itemName = "Leaxa's Thought-Piercer",
 		bindType = 1,
 		itemSellPrice = 440339,
-		itemLink = "|cffa335ee|Hitem:159652:5964:154127:::::::::16:4:5010:4802:1572:4786::::::|h[Leaxa's Thought-Piercer]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:159652:5964:154127:::::::::16:4:5010:4802:1572:4786::::::|h[Leaxa's Thought-Piercer]|h|r",
 		itemIcon = 1966623,
 		itemLevel = 159,
 		isCraftingReagent = false,
@@ -537,7 +550,8 @@ _G.Items = {
 		itemName = "Besieger's Deckstalkers",
 		bindType = 1,
 		itemSellPrice = 58736,
-		itemLink = "|cffa335ee|Hitem:159320::153711:::::::::35:4:5008:4802:1542:4783::::::|h[Besieger's Deckstalkers]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:159320::153711:::::::::35:4:5008:4802:1542:4783::::::|h[Besieger's Deckstalkers]|h|r",
 		itemIcon = 1941308,
 		itemLevel = 129,
 		isCraftingReagent = false,
@@ -597,7 +611,8 @@ _G.Items = {
 		itemName = "Desecrated Blade of the Disciples",
 		bindType = 1,
 		itemSellPrice = 115721,
-		itemLink = "|cffa335ee|Hitem:165919:5949::::::::::6:3:4800:1542:4783::::::|h[Desecrated Blade of the Disciples]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:165919:5949::::::::::6:3:4800:1542:4783::::::|h[Desecrated Blade of the Disciples]|h|r",
 		itemIcon = 2466937,
 		itemLevel = 130,
 		isCraftingReagent = false,
@@ -637,7 +652,8 @@ _G.Items = {
 		itemName = "Variable Intensity Gigavolt Oscillating Reactor",
 		bindType = 1,
 		itemSellPrice = 36358,
-		itemLink = "|cffa335ee|Hitem:165572:::::::::::5:4:4799:1808:1522:4786::::::|h[Variable Intensity Gigavolt Oscillating Reactor]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:165572:::::::::::5:4:4799:1808:1522:4786::::::|h[Variable Intensity Gigavolt Oscillating Reactor]|h|r",
 		itemIcon = 133870,
 		itemLevel = 110,
 		isCraftingReagent = false,
@@ -737,7 +753,8 @@ _G.Items = {
 		itemName = "Akana's Reefstrider Boots",
 		bindType = 1,
 		itemSellPrice = 28558,
-		itemLink = "|cffa335ee|Hitem:170143::168639::::::::::5:6300:4802:6294:1512:4786::::::|h[Akana's Reefstrider Boots]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:170143::168639::::::::::5:6300:4802:6294:1512:4786::::::|h[Akana's Reefstrider Boots]|h|r",
 		itemIcon = 2966766,
 		itemLevel = 106,
 		isCraftingReagent = false,
@@ -977,7 +994,8 @@ _G.Items = {
 		itemName = "Gilded Serpent's Tooth",
 		bindType = 1,
 		itemSellPrice = 643486,
-		itemLink = "|cffa335ee|Hitem:159137:5965:168642:::::::::16:4:5010:4802:1602:4786::::::|h[Gilded Serpent's Tooth]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:159137:5965:168642:::::::::16:4:5010:4802:1602:4786::::::|h[Gilded Serpent's Tooth]|h|r",
 		itemIcon = 1851453,
 		itemLevel = 189,
 		isCraftingReagent = false,
@@ -1017,7 +1035,8 @@ _G.Items = {
 		itemName = "Trench Tyrant's Shoulderplates",
 		bindType = 1,
 		itemSellPrice = 26492,
-		itemLink = "|cffa335ee|Hitem:168362:::::::::::5:4:4823:1502:4786:6268::::::|h[Trench Tyrant's Shoulderplates]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:168362:::::::::::5:4:4823:1502:4786:6268::::::|h[Trench Tyrant's Shoulderplates]|h|r",
 		itemIcon = 2901585,
 		itemLevel = 102,
 		isCraftingReagent = false,
@@ -1157,7 +1176,8 @@ _G.Items = {
 		itemName = "Zanj'ir Scaleguard Greatcloak",
 		bindType = 1,
 		itemSellPrice = 25104,
-		itemLink = "|cffa335ee|Hitem:169488::168639::::::::::5:6300:4802:6293:1507:4786::::::|h[Zanj'ir Scaleguard Greatcloak]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:169488::168639::::::::::5:6300:4802:6293:1507:4786::::::|h[Zanj'ir Scaleguard Greatcloak]|h|r",
 		itemIcon = 2967512,
 		itemLevel = 101,
 		isCraftingReagent = false,
@@ -1197,7 +1217,8 @@ _G.Items = {
 		itemName = "Variable Intensity Gigavolt Oscillating Reactor",
 		bindType = 1,
 		itemSellPrice = 36358,
-		itemLink = "|cffa335ee|Hitem:165572::154127:::::::::5:4:4799:1808:1522:4786::::::|h[Variable Intensity Gigavolt Oscillating Reactor]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:165572::154127:::::::::5:4:4799:1808:1522:4786::::::|h[Variable Intensity Gigavolt Oscillating Reactor]|h|r",
 		itemIcon = 133870,
 		itemLevel = 110,
 		isCraftingReagent = false,
@@ -1217,7 +1238,8 @@ _G.Items = {
 		itemName = "Venture Co. Plenipotentiary Vest",
 		bindType = 1,
 		itemSellPrice = 313928,
-		itemLink = "|cffa335ee|Hitem:159298:::::::::::35:4:5445:1572:4786:5416::::::|h[Venture Co. Plenipotentiary Vest]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:159298:::::::::::35:4:5445:1572:4786:5416::::::|h[Venture Co. Plenipotentiary Vest]|h|r",
 		itemIcon = 1892756,
 		itemLevel = 159,
 		isCraftingReagent = false,
@@ -1237,7 +1259,8 @@ _G.Items = {
 		itemName = "Amice of the Returned",
 		bindType = 1,
 		itemSellPrice = 66236,
-		itemLink = "|cffa335ee|Hitem:159273:5440::::::::::23:5:4819:1542:4786:5412:4775::::::|h[Amice of the Returned]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:159273:5440::::::::::23:5:4819:1542:4786:5412:4775::::::|h[Amice of the Returned]|h|r",
 		itemIcon = 1981729,
 		itemLevel = 134,
 		isCraftingReagent = false,
@@ -1277,7 +1300,8 @@ _G.Items = {
 		itemName = "Chestguard of the Deep Denizen",
 		bindType = 1,
 		itemSellPrice = 372511,
-		itemLink = "|cffa335ee|Hitem:159408:::::::::::35:4:5448:1587:4786:5419::::::|h[Chestguard of the Deep Denizen]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:159408:::::::::::35:4:5448:1587:4786:5419::::::|h[Chestguard of the Deep Denizen]|h|r",
 		itemIcon = 1780202,
 		itemLevel = 174,
 		isCraftingReagent = false,
@@ -1378,7 +1402,8 @@ _G.Items = {
 		itemName = "Cowl of Fluid Machinations",
 		bindType = 1,
 		itemSellPrice = 387797,
-		itemLink = "|cffa335ee|Hitem:159302:::::::::::35:5:5445:1602:4786:6267:4775::::::|h[Cowl of Fluid Machinations]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:159302:::::::::::35:5:5445:1602:4786:6267:4775::::::|h[Cowl of Fluid Machinations]|h|r",
 		itemIcon = 1941312,
 		itemLevel = 194,
 		isCraftingReagent = false,
@@ -1518,7 +1543,8 @@ _G.Items = {
 		itemName = "Helm of Abyssal Malevolence",
 		bindType = 1,
 		itemSellPrice = 309174,
-		itemLink = "|cffa335ee|Hitem:159430:::::::::::35:5:5448:1587:4786:5420:4775::::::|h[Helm of Abyssal Malevolence]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:159430:::::::::::35:5:5448:1587:4786:5420:4775::::::|h[Helm of Abyssal Malevolence]|h|r",
 		itemIcon = 1780204,
 		itemLevel = 179,
 		isCraftingReagent = false,
@@ -1658,7 +1684,8 @@ _G.Items = {
 		itemName = "7th Legionnaire's Spellhammer",
 		bindType = 1,
 		itemSellPrice = 245405,
-		itemLink = "|cffa335ee|Hitem:163894:5963:154127:::::::::6:4:5126:4802:1562:4786::::::|h[7th Legionnaire's Spellhammer]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:163894:5963:154127:::::::::6:4:5126:4802:1562:4786::::::|h[7th Legionnaire's Spellhammer]|h|r",
 		itemIcon = 1797637,
 		itemLevel = 148,
 		isCraftingReagent = false,
@@ -2200,7 +2227,8 @@ _G.Items = {
 		itemName = "7th Legionnaire's Chestguard",
 		bindType = 1,
 		itemSellPrice = 662940,
-		itemLink = "|cffa335ee|Hitem:163418:::::::::::23:5:5845:1622:4786:6266:4775::::::|h[7th Legionnaire's Chestguard]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:163418:::::::::::23:5:5845:1622:4786:6266:4775::::::|h[7th Legionnaire's Chestguard]|h|r",
 		itemIcon = 2001888,
 		itemLevel = 213,
 		isCraftingReagent = false,
@@ -2300,7 +2328,8 @@ _G.Items = {
 		itemName = "Cloak of Rippling Whispers",
 		bindType = 1,
 		itemSellPrice = 9748,
-		itemLink = "|cffa335ee|Hitem:160642::154126:::::::::5:4:4799:1808:1492:4786::::::|h[Cloak of Rippling Whispers]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:160642::154126:::::::::5:4:4799:1808:1492:4786::::::|h[Cloak of Rippling Whispers]|h|r",
 		itemIcon = 2059687,
 		itemLevel = 80,
 		isCraftingReagent = false,
@@ -2380,7 +2409,8 @@ _G.Items = {
 		itemName = "Seal of Questionable Loyalties",
 		bindType = 1,
 		itemSellPrice = 22960,
-		itemLink = "|cffa335ee|Hitem:158314:5939::::::::::23:3:4779:1517:4783::::::|h[Seal of Questionable Loyalties]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:158314:5939::::::::::23:3:4779:1517:4783::::::|h[Seal of Questionable Loyalties]|h|r",
 		itemIcon = 2000826,
 		itemLevel = 104,
 		isCraftingReagent = false,
@@ -2440,7 +2470,8 @@ _G.Items = {
 		itemName = "Band of Certain Annihilation",
 		bindType = 1,
 		itemSellPrice = 3137,
-		itemLink = "|cffa335ee|Hitem:160646:5939:153711:::::::::3:4:4798:1808:1477:4786::::::|h[Band of Certain Annihilation]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:160646:5939:153711:::::::::3:4:4798:1808:1477:4786::::::|h[Band of Certain Annihilation]|h|r",
 		itemIcon = 2000818,
 		itemLevel = 65,
 		isCraftingReagent = false,
@@ -2500,7 +2531,8 @@ _G.Items = {
 		itemName = "Fluid-Resistant Specimen Handlers",
 		bindType = 2,
 		itemSellPrice = 5993,
-		itemLink = "|cffa335ee|Hitem:161077:5932::::::::::5:3:4799:1492:4786::::::|h[Fluid-Resistant Specimen Handlers]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:161077:5932::::::::::5:3:4799:1492:4786::::::|h[Fluid-Resistant Specimen Handlers]|h|r",
 		itemIcon = 2054628,
 		itemLevel = 80,
 		isCraftingReagent = false,
@@ -2520,7 +2552,8 @@ _G.Items = {
 		itemName = "Grasping Crown of the Deep",
 		bindType = 1,
 		itemSellPrice = 295640,
-		itemLink = "|cffa335ee|Hitem:159252:::::::::::35:5:5448:1587:4786:5420:4775::::::|h[Grasping Crown of the Deep]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:159252:::::::::::35:5:5448:1587:4786:5420:4775::::::|h[Grasping Crown of the Deep]|h|r",
 		itemIcon = 1981727,
 		itemLevel = 179,
 		isCraftingReagent = false,
@@ -2800,7 +2833,8 @@ _G.Items = {
 		itemName = "Gloves of Involuntary Amputation",
 		bindType = 1,
 		itemSellPrice = 12861,
-		itemLink = "|cffa335ee|Hitem:160626:::::::::::6:4:4800:41:1507:4786::::::|h[Gloves of Involuntary Amputation]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:160626:::::::::::6:4:4800:41:1507:4786::::::|h[Gloves of Involuntary Amputation]|h|r",
 		itemIcon = 1991845,
 		itemLevel = 95,
 		isCraftingReagent = false,
@@ -2820,7 +2854,8 @@ _G.Items = {
 		itemName = "Band of the Ancient Dredger",
 		bindType = 1,
 		itemSellPrice = 29859,
-		itemLink = "|cffa335ee|Hitem:159461:5938:153708:::::::::16:4:5005:4802:1527:4786::::::|h[Band of the Ancient Dredger]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:159461:5938:153708:::::::::16:4:5005:4802:1527:4786::::::|h[Band of the Ancient Dredger]|h|r",
 		itemIcon = 2000820,
 		itemLevel = 114,
 		isCraftingReagent = false,
@@ -2880,7 +2915,8 @@ _G.Items = {
 		itemName = "Sinister Gladiator's Insignia",
 		bindType = 1,
 		itemSellPrice = 34221,
-		itemLink = "|cffa335ee|Hitem:165057:::::::::::56:4:5188:5141:1517:4786::::::|h[Sinister Gladiator's Insignia]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:165057:::::::::::56:4:5188:5141:1517:4786::::::|h[Sinister Gladiator's Insignia]|h|r",
 		itemIcon = 134501,
 		itemLevel = 105,
 		isCraftingReagent = false,
@@ -2980,7 +3016,8 @@ _G.Items = {
 		itemName = "Notorious Gladiator's Ring",
 		bindType = 1,
 		itemSellPrice = 32594,
-		itemLink = "|cffa335ee|Hitem:167374:6108::::::::::56:4:6324:6348:1527:4786::::::|h[Notorious Gladiator's Ring]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:167374:6108::::::::::56:4:6324:6348:1527:4786::::::|h[Notorious Gladiator's Ring]|h|r",
 		itemIcon = 2000807,
 		itemLevel = 115,
 		isCraftingReagent = false,
@@ -3000,7 +3037,8 @@ _G.Items = {
 		itemName = "Heptavium, Staff of Torturous Knowledge",
 		bindType = 1,
 		itemSellPrice = 22268,
-		itemLink = "|cffa335ee|Hitem:160690:::::::::::5:4:4799:43:1492:4786::::::|h[Heptavium, Staff of Torturous Knowledge]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:160690:::::::::::5:4:4799:43:1492:4786::::::|h[Heptavium, Staff of Torturous Knowledge]|h|r",
 		itemIcon = 1958553,
 		itemLevel = 80,
 		isCraftingReagent = false,
@@ -3161,7 +3199,8 @@ _G.Items = {
 		itemName = "Pauldrons of the Great Unifier",
 		bindType = 1,
 		itemSellPrice = 445091,
-		itemLink = "|cffa335ee|Hitem:159423:::::::::::35:5:5448:1617:4786:6271:4775::::::|h[Pauldrons of the Great Unifier]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:159423:::::::::::35:5:5448:1617:4786:6271:4775::::::|h[Pauldrons of the Great Unifier]|h|r",
 		itemIcon = 2001440,
 		itemLevel = 209,
 		isCraftingReagent = false,
@@ -3181,7 +3220,8 @@ _G.Items = {
 		itemName = "Sinister Gladiator's Leather Pants",
 		bindType = 1,
 		itemSellPrice = 54299,
-		itemLink = "|cffa335ee|Hitem:164894:::::::::::40:5:5369:41:5141:1532:4784::::::|h[Sinister Gladiator's Leather Pants]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:164894:::::::::::40:5:5369:41:5141:1532:4784::::::|h[Sinister Gladiator's Leather Pants]|h|r",
 		itemIcon = 2351533,
 		itemLevel = 120,
 		isCraftingReagent = false,
@@ -3402,7 +3442,8 @@ _G.Items = {
 		itemName = "Staff of the Lightning Serpent",
 		bindType = 1,
 		itemSellPrice = 688074,
-		itemLink = "|cffa335ee|Hitem:159636:5965::::::::::35:4:5010:43:1587:4784::::::|h[Staff of the Lightning Serpent]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:159636:5965::::::::::35:4:5010:43:1587:4784::::::|h[Staff of the Lightning Serpent]|h|r",
 		itemIcon = 1881363,
 		itemLevel = 174,
 		isCraftingReagent = false,
@@ -3442,7 +3483,8 @@ _G.Items = {
 		itemName = "Embalmer's Steadying Bracers",
 		bindType = 1,
 		itemSellPrice = 231601,
-		itemLink = "|cffa335ee|Hitem:159409::168642:::::::::16:4:5010:4802:1602:4786::::::|h[Embalmer's Steadying Bracers]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:159409::168642:::::::::16:4:5010:4802:1602:4786::::::|h[Embalmer's Steadying Bracers]|h|r",
 		itemIcon = 2001432,
 		itemLevel = 189,
 		isCraftingReagent = false,
@@ -3522,7 +3564,8 @@ _G.Items = {
 		itemName = "Reinforced Dredged Leggings of the Quickblade",
 		bindType = 1,
 		itemSellPrice = 14493,
-		itemLink = "|cffa335ee|Hitem:168708::168642:::::::::13:1:1682::::::|h[Reinforced Dredged Leggings of the Quickblade]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:168708::168642:::::::::13:1:1682::::::|h[Reinforced Dredged Leggings of the Quickblade]|h|r",
 		itemIcon = 2913000,
 		itemLevel = 82,
 		isCraftingReagent = false,
@@ -3562,7 +3605,8 @@ _G.Items = {
 		itemName = "Gloves of Incomparable Beauty",
 		bindType = 1,
 		itemSellPrice = 17335,
-		itemLink = "|cffa335ee|Hitem:168887:5932::::::::::5:4:4799:43:1502:4786::::::|h[Gloves of Incomparable Beauty]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:168887:5932::::::::::5:4:4799:43:1502:4786::::::|h[Gloves of Incomparable Beauty]|h|r",
 		itemIcon = 2912998,
 		itemLevel = 102,
 		isCraftingReagent = false,
@@ -3642,7 +3686,8 @@ _G.Items = {
 		itemName = "Lever Stabilizing Wristwraps",
 		bindType = 1,
 		itemSellPrice = 22635,
-		itemLink = "|cffa335ee|Hitem:165508:::::::::::5:5:4799:1808:41:1522:4786::::::|h[Lever Stabilizing Wristwraps]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:165508:::::::::::5:5:4799:1808:41:1522:4786::::::|h[Lever Stabilizing Wristwraps]|h|r",
 		itemIcon = 2280673,
 		itemLevel = 110,
 		isCraftingReagent = false,
@@ -3822,7 +3867,8 @@ _G.Items = {
 		itemName = "Regurgitated Purifier's Flamestaff",
 		bindType = 1,
 		itemSellPrice = 22186,
-		itemLink = "|cffa335ee|Hitem:160689:::::::::::5:4:4799:1808:1492:4786::::::|h[Regurgitated Purifier's Flamestaff]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:160689:::::::::::5:4:4799:1808:1492:4786::::::|h[Regurgitated Purifier's Flamestaff]|h|r",
 		itemIcon = 1952883,
 		itemLevel = 80,
 		isCraftingReagent = false,
@@ -3862,7 +3908,8 @@ _G.Items = {
 		itemName = "Chestplate of Apocalyptic Machinations",
 		bindType = 1,
 		itemSellPrice = 5049,
-		itemLink = "|cffa335ee|Hitem:160722:::::::::::3:4:4822:1477:4786:5395::::::|h[Chestplate of Apocalyptic Machinations]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:160722:::::::::::3:4:4822:1477:4786:5395::::::|h[Chestplate of Apocalyptic Machinations]|h|r",
 		itemIcon = 2054627,
 		itemLevel = 65,
 		isCraftingReagent = false,
@@ -3942,7 +3989,8 @@ _G.Items = {
 		itemName = "7th Legionnaire's Spellhammer",
 		bindType = 1,
 		itemSellPrice = 245405,
-		itemLink = "|cffa335ee|Hitem:163894:5963::::::::::6:4:5126:40:1562:4786::::::|h[7th Legionnaire's Spellhammer]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:163894:5963::::::::::6:4:5126:40:1562:4786::::::|h[7th Legionnaire's Spellhammer]|h|r",
 		itemIcon = 1797637,
 		itemLevel = 148,
 		isCraftingReagent = false,
@@ -4002,7 +4050,8 @@ _G.Items = {
 		itemName = "Bracers of Regal Devotion",
 		bindType = 1,
 		itemSellPrice = 19216,
-		itemLink = "|cffa335ee|Hitem:165517::154126:::::::::3:4:4798:1808:1517:4783::::::|h[Bracers of Regal Devotion]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:165517::154126:::::::::3:4:4798:1808:1517:4783::::::|h[Bracers of Regal Devotion]|h|r",
 		itemIcon = 2353070,
 		itemLevel = 105,
 		isCraftingReagent = false,
@@ -4062,7 +4111,8 @@ _G.Items = {
 		itemName = "Gloves of Involuntary Amputation",
 		bindType = 1,
 		itemSellPrice = 6016,
-		itemLink = "|cffa335ee|Hitem:160626:::::::::::5:4:4799:1808:1492:4786::::::|h[Gloves of Involuntary Amputation]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:160626:::::::::::5:4:4799:1808:1492:4786::::::|h[Gloves of Involuntary Amputation]|h|r",
 		itemIcon = 1991835,
 		itemLevel = 80,
 		isCraftingReagent = false,
@@ -4082,7 +4132,8 @@ _G.Items = {
 		itemName = "Ironhull's Reinforced Legplates",
 		bindType = 1,
 		itemSellPrice = 563230,
-		itemLink = "|cffa335ee|Hitem:159419:::::::::::35:4:5010:43:1612:4783::::::|h[Ironhull's Reinforced Legplates]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:159419:::::::::::35:4:5010:43:1612:4783::::::|h[Ironhull's Reinforced Legplates]|h|r",
 		itemIcon = 1780205,
 		itemLevel = 199,
 		isCraftingReagent = false,
@@ -4182,7 +4233,8 @@ _G.Items = {
 		itemName = "Loop of Pulsing Veins",
 		bindType = 1,
 		itemSellPrice = 26587,
-		itemLink = "|cffa335ee|Hitem:159463:5939:154127:::::::::23:4:4779:4802:1522:4783::::::|h[Loop of Pulsing Veins]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:159463:5939:154127:::::::::23:4:4779:4802:1522:4783::::::|h[Loop of Pulsing Veins]|h|r",
 		itemIcon = 2000819,
 		itemLevel = 109,
 		isCraftingReagent = false,
@@ -4242,7 +4294,8 @@ _G.Items = {
 		itemName = "Eternal Kraken's Eye Loop of the Peerless",
 		bindType = 1,
 		itemSellPrice = 7110,
-		itemLink = "|cffa335ee|Hitem:166524:5942:153709::::::::::1:1750::::::|h[Eternal Kraken's Eye Loop of the Peerless]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:166524:5942:153709::::::::::1:1750::::::|h[Eternal Kraken's Eye Loop of the Peerless]|h|r",
 		itemIcon = 1391765,
 		itemLevel = 78,
 		isCraftingReagent = false,
@@ -4522,7 +4575,8 @@ _G.Items = {
 		itemName = "Plasma-Spattered Greatcloak",
 		bindType = 1,
 		itemSellPrice = 8886,
-		itemLink = "|cffa335ee|Hitem:160644::154129:::::::::5:4:4799:1808:1492:4786::::::|h[Plasma-Spattered Greatcloak]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:160644::154129:::::::::5:4:4799:1808:1492:4786::::::|h[Plasma-Spattered Greatcloak]|h|r",
 		itemIcon = 1991833,
 		itemLevel = 80,
 		isCraftingReagent = false,
@@ -4722,7 +4776,8 @@ _G.Items = {
 		itemName = "Sturdy Quarterstaff of the Fireflash",
 		bindType = 2,
 		itemSellPrice = 21408,
-		itemLink = "|cff1eff00|Hitem:4566::::::::::::2:6655:1695:2:9:37:28:1774:::::|h[Sturdy Quarterstaff of the Fireflash]|h|r",
+		itemLink =
+		"|cff1eff00|Hitem:4566::::::::::::2:6655:1695:2:9:37:28:1774:::::|h[Sturdy Quarterstaff of the Fireflash]|h|r",
 		itemIcon = 135145,
 		itemLevel = 6,
 		isCraftingReagent = false,
@@ -4762,7 +4817,8 @@ _G.Items = {
 		itemName = "Band of Multi-Sided Strikes",
 		bindType = 1,
 		itemSellPrice = 27978,
-		itemLink = "|cffa335ee|Hitem:165565:5943:154127:::::::::5:4:4799:1808:1522:4786::::::|h[Band of Multi-Sided Strikes]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:165565:5943:154127:::::::::5:4:4799:1808:1522:4786::::::|h[Band of Multi-Sided Strikes]|h|r",
 		itemIcon = 133386,
 		itemLevel = 110,
 		isCraftingReagent = false,
@@ -4842,7 +4898,8 @@ _G.Items = {
 		itemName = "Staff of the Lightning Serpent",
 		bindType = 1,
 		itemSellPrice = 558555,
-		itemLink = "|cffa335ee|Hitem:159636:5963::::::::::16:3:5010:1572:4786::::::|h[Staff of the Lightning Serpent]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:159636:5963::::::::::16:3:5010:1572:4786::::::|h[Staff of the Lightning Serpent]|h|r",
 		itemIcon = 1881363,
 		itemLevel = 159,
 		isCraftingReagent = false,
@@ -4962,7 +5019,8 @@ _G.Items = {
 		itemName = "Regurgitated Purifier's Flamestaff",
 		bindType = 1,
 		itemSellPrice = 9257,
-		itemLink = "|cffa335ee|Hitem:160689:::::::::::3:4:4798:41:1477:4786::::::|h[Regurgitated Purifier's Flamestaff]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:160689:::::::::::3:4:4798:41:1477:4786::::::|h[Regurgitated Purifier's Flamestaff]|h|r",
 		itemIcon = 1952883,
 		itemLevel = 65,
 		isCraftingReagent = false,
@@ -5022,7 +5080,8 @@ _G.Items = {
 		itemName = "Cloak of Questionable Intent",
 		bindType = 1,
 		itemSellPrice = 252344,
-		itemLink = "|cffa335ee|Hitem:159287::154126:::::::::35:4:5010:4802:1582:4783::::::|h[Cloak of Questionable Intent]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:159287::154126:::::::::35:4:5010:4802:1582:4783::::::|h[Cloak of Questionable Intent]|h|r",
 		itemIcon = 2021378,
 		itemLevel = 169,
 		isCraftingReagent = false,
@@ -5082,7 +5141,8 @@ _G.Items = {
 		itemName = "Pocket-Sized Computation Device",
 		bindType = 1,
 		itemSellPrice = 0,
-		itemLink = "|cffa335ee|Hitem:167555::167556:168741:167693:::::::11:1:1476::2:1461:4786::::|h[Pocket-Sized Computation Device]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:167555::167556:168741:167693:::::::11:1:1476::2:1461:4786::::|h[Pocket-Sized Computation Device]|h|r",
 		itemIcon = 2115322,
 		itemLevel = 76,
 		isCraftingReagent = false,
@@ -5222,7 +5282,8 @@ _G.Items = {
 		itemName = "Footbomb Championship Ring",
 		bindType = 1,
 		itemSellPrice = 29968,
-		itemLink = "|cffa335ee|Hitem:159462:5943:154127:::::::::16:4:5006:4802:1527:4786::::::|h[Footbomb Championship Ring]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:159462:5943:154127:::::::::16:4:5006:4802:1527:4786::::::|h[Footbomb Championship Ring]|h|r",
 		itemIcon = 2000829,
 		itemLevel = 114,
 		isCraftingReagent = false,
@@ -5242,7 +5303,8 @@ _G.Items = {
 		itemName = "Mekkatorque's Bomber Jacket",
 		bindType = 1,
 		itemSellPrice = 33537,
-		itemLink = "|cffa335ee|Hitem:165830:::::::::::3:5:4822:1507:4786:5413:4775::::::|h[Mekkatorque's Bomber Jacket]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:165830:::::::::::3:5:4822:1507:4786:5413:4775::::::|h[Mekkatorque's Bomber Jacket]|h|r",
 		itemIcon = 2353072,
 		itemLevel = 100,
 		isCraftingReagent = false,
@@ -5302,7 +5364,8 @@ _G.Items = {
 		itemName = "Howlis' Crystal Shiv",
 		bindType = 1,
 		itemSellPrice = 778939,
-		itemLink = "|cffa335ee|Hitem:159131:5965:168637:::::::::35:4:5010:4802:1612:4783::::::|h[Howlis' Crystal Shiv]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:159131:5965:168637:::::::::35:4:5010:4802:1612:4783::::::|h[Howlis' Crystal Shiv]|h|r",
 		itemIcon = 1892905,
 		itemLevel = 199,
 		isCraftingReagent = false,
@@ -5502,7 +5565,8 @@ _G.Items = {
 		itemName = "Seal of Questionable Loyalties",
 		bindType = 1,
 		itemSellPrice = 29391,
-		itemLink = "|cffa335ee|Hitem:158314:5939::::::::::16:3:5006:1527:4786::::::|h[Seal of Questionable Loyalties]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:158314:5939::::::::::16:3:5006:1527:4786::::::|h[Seal of Questionable Loyalties]|h|r",
 		itemIcon = 2000826,
 		itemLevel = 114,
 		isCraftingReagent = false,
@@ -5602,7 +5666,8 @@ _G.Items = {
 		itemName = "Cord of Zandalari Resolve",
 		bindType = 2,
 		itemSellPrice = 24778,
-		itemLink = "|cffa335ee|Hitem:165765::154127:::::::::5:4:4799:1808:1527:4783::::::|h[Cord of Zandalari Resolve]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:165765::154127:::::::::5:4:4799:1808:1527:4783::::::|h[Cord of Zandalari Resolve]|h|r",
 		itemIcon = 2280668,
 		itemLevel = 115,
 		isCraftingReagent = false,
@@ -5622,7 +5687,8 @@ _G.Items = {
 		itemName = "Cowl of Righteous Resolve",
 		bindType = 1,
 		itemSellPrice = 36893,
-		itemLink = "|cffa335ee|Hitem:165519:::::::::::5:5:4823:1522:4786:5417:4775::::::|h[Cowl of Righteous Resolve]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:165519:::::::::::5:5:4823:1522:4786:5417:4775::::::|h[Cowl of Righteous Resolve]|h|r",
 		itemIcon = 2353076,
 		itemLevel = 115,
 		isCraftingReagent = false,
@@ -5702,7 +5768,8 @@ _G.Items = {
 		itemName = "Lord Admiral's Signet",
 		bindType = 1,
 		itemSellPrice = 28809,
-		itemLink = "|cffa335ee|Hitem:165566:6109:153709:::::::::5:4:4799:1808:1522:4786::::::|h[Lord Admiral's Signet]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:165566:6109:153709:::::::::5:4:4799:1808:1522:4786::::::|h[Lord Admiral's Signet]|h|r",
 		itemIcon = 1068935,
 		itemLevel = 110,
 		isCraftingReagent = false,
@@ -5743,7 +5810,8 @@ _G.Items = {
 		itemName = "Grips of the Everlasting Guardian",
 		bindType = 1,
 		itemSellPrice = 251193,
-		itemLink = "|cffa335ee|Hitem:159445:5937:168642:::::::::16:5:5010:4802:1602:5850:4783::::::|h[Grips of the Everlasting Guardian]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:159445:5937:168642:::::::::16:5:5010:4802:1602:5850:4783::::::|h[Grips of the Everlasting Guardian]|h|r",
 		itemIcon = 2019431,
 		itemLevel = 194,
 		isCraftingReagent = false,
@@ -5843,7 +5911,8 @@ _G.Items = {
 		itemName = "Ashvane's Razor Coral",
 		bindType = 1,
 		itemSellPrice = 19371,
-		itemLink = "|cffa335ee|Hitem:169311::168642:::::::::3:5:4798:1808:1487:5850:4783::::::|h[Ashvane's Razor Coral]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:169311::168642:::::::::3:5:4798:1808:1487:5850:4783::::::|h[Ashvane's Razor Coral]|h|r",
 		itemIcon = 1526612,
 		itemLevel = 92,
 		isCraftingReagent = false,
@@ -5863,7 +5932,8 @@ _G.Items = {
 		itemName = "Helm of Hideous Transformation",
 		bindType = 1,
 		itemSellPrice = 14418,
-		itemLink = "|cffa335ee|Hitem:168347:::::::::::3:4:4822:1487:4786:6264::::::|h[Helm of Hideous Transformation]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:168347:::::::::::3:4:4822:1487:4786:6264::::::|h[Helm of Hideous Transformation]|h|r",
 		itemIcon = 2912999,
 		itemLevel = 87,
 		isCraftingReagent = false,
@@ -5963,7 +6033,8 @@ _G.Items = {
 		itemName = "Overlord's Greaves of the Aurora",
 		bindType = 2,
 		itemSellPrice = 13060,
-		itemLink = "|cff1eff00|Hitem:10201::::::::::::2:6654:1709:2:9:39:28:1774:::::|h[Overlord's Greaves of the Aurora]|h|r",
+		itemLink =
+		"|cff1eff00|Hitem:10201::::::::::::2:6654:1709:2:9:39:28:1774:::::|h[Overlord's Greaves of the Aurora]|h|r",
 		itemIcon = 132535,
 		itemLevel = 25,
 		isCraftingReagent = false,
@@ -6043,7 +6114,8 @@ _G.Items = {
 		itemName = "Dread Gladiator's Leather Boots",
 		bindType = 1,
 		itemSellPrice = 131974,
-		itemLink = "|cffa335ee|Hitem:161608:::::::::::26:4:4983:5128:1562:4786::::::|h[Dread Gladiator's Leather Boots]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:161608:::::::::::26:4:4983:5128:1562:4786::::::|h[Dread Gladiator's Leather Boots]|h|r",
 		itemIcon = 1805918,
 		itemLevel = 148,
 		isCraftingReagent = false,
@@ -6523,7 +6595,8 @@ _G.Items = {
 		itemName = "Lustrous Golden Plumage",
 		bindType = 1,
 		itemSellPrice = 457108,
-		itemLink = "|cffa335ee|Hitem:159617::168642:::::::::35:4:5010:4802:1612:4783::::::|h[Lustrous Golden Plumage]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:159617::168642:::::::::35:4:5010:4802:1612:4783::::::|h[Lustrous Golden Plumage]|h|r",
 		itemIcon = 2103819,
 		itemLevel = 199,
 		isCraftingReagent = false,
@@ -6704,7 +6777,8 @@ _G.Items = {
 		itemName = "Gauntlets of Total Subservience",
 		bindType = 1,
 		itemSellPrice = 148053,
-		itemLink = "|cffa335ee|Hitem:159421:5933:153711:::::::::16:4:5010:4802:1572:4786::::::|h[Gauntlets of Total Subservience]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:159421:5933:153711:::::::::16:4:5010:4802:1572:4786::::::|h[Gauntlets of Total Subservience]|h|r",
 		itemIcon = 1780203,
 		itemLevel = 159,
 		isCraftingReagent = false,
@@ -6724,7 +6798,8 @@ _G.Items = {
 		itemName = "Pocket-Sized Computation Device",
 		bindType = 1,
 		itemSellPrice = 0,
-		itemLink = "|cffa335ee|Hitem:167555::167672:168752:168632:::::::11:1:1500::3:1483:5870:4784::::|h[Pocket-Sized Computation Device]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:167555::167672:168752:168632:::::::11:1:1500::3:1483:5870:4784::::|h[Pocket-Sized Computation Device]|h|r",
 		itemIcon = 2115322,
 		itemLevel = 100,
 		isCraftingReagent = false,
@@ -6744,7 +6819,8 @@ _G.Items = {
 		itemName = "Pocket-Sized Computation Device",
 		bindType = 1,
 		itemSellPrice = 0,
-		itemLink = "|cffa335ee|Hitem:167555::167672:168742:168435:::::::11:1:1487::2:1472:4786::::|h[Pocket-Sized Computation Device]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:167555::167672:168742:168435:::::::11:1:1487::2:1472:4786::::|h[Pocket-Sized Computation Device]|h|r",
 		itemIcon = 2115322,
 		itemLevel = 87,
 		isCraftingReagent = false,
@@ -6844,7 +6920,8 @@ _G.Items = {
 		itemName = "Hood of the Slithering Loa",
 		bindType = 1,
 		itemSellPrice = 382252,
-		itemLink = "|cffa335ee|Hitem:159318:::::::::::35:5:5445:1602:4786:6267:4775::::::|h[Hood of the Slithering Loa]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:159318:::::::::::35:5:5445:1602:4786:6267:4775::::::|h[Hood of the Slithering Loa]|h|r",
 		itemIcon = 1892758,
 		itemLevel = 194,
 		isCraftingReagent = false,
@@ -6944,7 +7021,8 @@ _G.Items = {
 		itemName = "Fetid Horror's Tanglecloak",
 		bindType = 1,
 		itemSellPrice = 8853,
-		itemLink = "|cffa335ee|Hitem:160643::154126:::::::::5:4:4799:1808:1492:4786::::::|h[Fetid Horror's Tanglecloak]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:160643::154126:::::::::5:4:4799:1808:1492:4786::::::|h[Fetid Horror's Tanglecloak]|h|r",
 		itemIcon = 2021682,
 		itemLevel = 80,
 		isCraftingReagent = false,
@@ -7044,7 +7122,8 @@ _G.Items = {
 		itemName = "Embellished Ritual Sabatons",
 		bindType = 1,
 		itemSellPrice = 364202,
-		itemLink = "|cffa335ee|Hitem:155861::168642:::::::::16:4:5010:4802:1602:4786::::::|h[Embellished Ritual Sabatons]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:155861::168642:::::::::16:4:5010:4802:1602:4786::::::|h[Embellished Ritual Sabatons]|h|r",
 		itemIcon = 2001429,
 		itemLevel = 189,
 		isCraftingReagent = false,
@@ -7124,7 +7203,8 @@ _G.Items = {
 		itemName = "Stonemason's Guild Band",
 		bindType = 1,
 		itemSellPrice = 117615,
-		itemLink = "|cffa335ee|Hitem:165678:5942:154126:::::::::28:4:4803:4802:1562:4786::::::|h[Stonemason's Guild Band]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:165678:5942:154126:::::::::28:4:4803:4802:1562:4786::::::|h[Stonemason's Guild Band]|h|r",
 		itemIcon = 133345,
 		itemLevel = 148,
 		isCraftingReagent = false,
@@ -7364,7 +7444,8 @@ _G.Items = {
 		itemName = "Lancet of the Deft Hand",
 		bindType = 1,
 		itemSellPrice = 18009,
-		itemLink = "|cffa335ee|Hitem:160693:5950:153708:::::::::5:4:4799:1808:1492:4786::::::|h[Lancet of the Deft Hand]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:160693:5950:153708:::::::::5:4:4799:1808:1492:4786::::::|h[Lancet of the Deft Hand]|h|r",
 		itemIcon = 2004599,
 		itemLevel = 80,
 		isCraftingReagent = false,
@@ -7404,7 +7485,8 @@ _G.Items = {
 		itemName = "Legplates of Profane Sacrifice",
 		bindType = 1,
 		itemSellPrice = 350253,
-		itemLink = "|cffa335ee|Hitem:159443::154127:::::::::35:4:5010:4802:1582:4783::::::|h[Legplates of Profane Sacrifice]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:159443::154127:::::::::35:4:5010:4802:1582:4783::::::|h[Legplates of Profane Sacrifice]|h|r",
 		itemIcon = 2019433,
 		itemLevel = 169,
 		isCraftingReagent = false,
@@ -7524,7 +7606,8 @@ _G.Items = {
 		itemName = "Sporecaller's Shroud",
 		bindType = 1,
 		itemSellPrice = 480793,
-		itemLink = "|cffa335ee|Hitem:159292::168636:::::::::35:5:5010:4802:1612:5860:4784::::::|h[Sporecaller's Shroud]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:159292::168636:::::::::35:5:5010:4802:1612:5860:4784::::::|h[Sporecaller's Shroud]|h|r",
 		itemIcon = 2058006,
 		itemLevel = 214,
 		isCraftingReagent = false,
@@ -7544,7 +7627,8 @@ _G.Items = {
 		itemName = "Seal of Questionable Loyalties",
 		bindType = 1,
 		itemSellPrice = 18871,
-		itemLink = "|cffa335ee|Hitem:158314:5939::::::::::23:3:4779:1512:4786::::::|h[Seal of Questionable Loyalties]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:158314:5939::::::::::23:3:4779:1512:4786::::::|h[Seal of Questionable Loyalties]|h|r",
 		itemIcon = 2000826,
 		itemLevel = 99,
 		isCraftingReagent = false,
@@ -7564,7 +7648,8 @@ _G.Items = {
 		itemName = "Dread Gladiator's Leather Armwraps",
 		bindType = 1,
 		itemSellPrice = 90701,
-		itemLink = "|cffa335ee|Hitem:161740:5971::::::::::8:3:5287:1562:5128::::::|h[Dread Gladiator's Leather Armwraps]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:161740:5971::::::::::8:3:5287:1562:5128::::::|h[Dread Gladiator's Leather Armwraps]|h|r",
 		itemIcon = 1805919,
 		itemLevel = 148,
 		isCraftingReagent = false,
@@ -7624,7 +7709,8 @@ _G.Items = {
 		itemName = "Legplates of Profane Sacrifice",
 		bindType = 1,
 		itemSellPrice = 531522,
-		itemLink = "|cffa335ee|Hitem:159443::168642:::::::::35:4:5010:4802:1612:4783::::::|h[Legplates of Profane Sacrifice]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:159443::168642:::::::::35:4:5010:4802:1612:4783::::::|h[Legplates of Profane Sacrifice]|h|r",
 		itemIcon = 2019433,
 		itemLevel = 199,
 		isCraftingReagent = false,
@@ -7704,7 +7790,8 @@ _G.Items = {
 		itemName = "Bladefang Legguards of the Decimator",
 		bindType = 1,
 		itemSellPrice = 297,
-		itemLink = "|cff0070dd|Hitem:124584:::::::::::4:3:486:647:653:1:28:1943:::::|h[Bladefang Legguards of the Decimator]|h|r",
+		itemLink =
+		"|cff0070dd|Hitem:124584:::::::::::4:3:486:647:653:1:28:1943:::::|h[Bladefang Legguards of the Decimator]|h|r",
 		itemIcon = 973930,
 		itemLevel = 44,
 		isCraftingReagent = false,
@@ -7724,7 +7811,8 @@ _G.Items = {
 		itemName = "Dread Gladiator's Plate Pauldrons",
 		bindType = 1,
 		itemSellPrice = 128511,
-		itemLink = "|cffa335ee|Hitem:161621:::::::::::56:4:5104:5128:1562:4786::::::|h[Dread Gladiator's Plate Pauldrons]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:161621:::::::::::56:4:5104:5128:1562:4786::::::|h[Dread Gladiator's Plate Pauldrons]|h|r",
 		itemIcon = 2001829,
 		itemLevel = 148,
 		isCraftingReagent = false,
@@ -7844,7 +7932,8 @@ _G.Items = {
 		itemName = "Fetid Horror's Tanglecloak",
 		bindType = 1,
 		itemSellPrice = 8853,
-		itemLink = "|cffa335ee|Hitem:160643::153707:::::::::3:5:4798:1808:40:1492:4784::::::|h[Fetid Horror's Tanglecloak]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:160643::153707:::::::::3:5:4798:1808:40:1492:4784::::::|h[Fetid Horror's Tanglecloak]|h|r",
 		itemIcon = 2021682,
 		itemLevel = 80,
 		isCraftingReagent = false,
@@ -7984,7 +8073,8 @@ _G.Items = {
 		itemName = "Crest of the Undying Visionary",
 		bindType = 1,
 		itemSellPrice = 3793,
-		itemLink = "|cffa335ee|Hitem:160630:::::::::::3:4:4822:1477:4786:5396::::::|h[Crest of the Undying Visionary]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:160630:::::::::::3:4:4822:1477:4786:5396::::::|h[Crest of the Undying Visionary]|h|r",
 		itemIcon = 1991836,
 		itemLevel = 65,
 		isCraftingReagent = false,
@@ -8164,7 +8254,8 @@ _G.Items = {
 		itemName = "Gloves of Staunched Wounds",
 		bindType = 1,
 		itemSellPrice = 324305,
-		itemLink = "|cffa335ee|Hitem:159253::168638:::::::::35:5:5010:4802:1612:5860:4784::::::|h[Gloves of Staunched Wounds]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:159253::168638:::::::::35:5:5010:4802:1612:5860:4784::::::|h[Gloves of Staunched Wounds]|h|r",
 		itemIcon = 1875082,
 		itemLevel = 214,
 		isCraftingReagent = false,
@@ -8324,7 +8415,8 @@ _G.Items = {
 		itemName = "Dread Gladiator's Leather Footguards",
 		bindType = 1,
 		itemSellPrice = 130001,
-		itemLink = "|cffa335ee|Hitem:161717:::::::::::56:4:5068:5129:1562:4783::::::|h[Dread Gladiator's Leather Footguards]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:161717:::::::::::56:4:5068:5129:1562:4783::::::|h[Dread Gladiator's Leather Footguards]|h|r",
 		itemIcon = 1805918,
 		itemLevel = 148,
 		isCraftingReagent = false,
@@ -8586,7 +8678,8 @@ _G.Items = {
 		itemName = "Heptavium, Staff of Torturous Knowledge",
 		bindType = 1,
 		itemSellPrice = 9291,
-		itemLink = "|cffa335ee|Hitem:160690:::::::::::3:4:4798:1808:1477:4786::::::|h[Heptavium, Staff of Torturous Knowledge]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:160690:::::::::::3:4:4798:1808:1477:4786::::::|h[Heptavium, Staff of Torturous Knowledge]|h|r",
 		itemIcon = 1958553,
 		itemLevel = 65,
 		isCraftingReagent = false,
@@ -8808,7 +8901,8 @@ _G.Items = {
 		itemName = "Legplates of the Irontide Raider",
 		bindType = 1,
 		itemSellPrice = 503285,
-		itemLink = "|cffa335ee|Hitem:159427::168641:::::::::16:6:5010:4802:40:1602:5850:4783::::::|h[Legplates of the Irontide Raider]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:159427::168641:::::::::16:6:5010:4802:40:1602:5850:4783::::::|h[Legplates of the Irontide Raider]|h|r",
 		itemIcon = 1780205,
 		itemLevel = 194,
 		isCraftingReagent = false,
@@ -8848,7 +8942,8 @@ _G.Items = {
 		itemName = "Bladefang Hood of the Fireflash",
 		bindType = 1,
 		itemSellPrice = 389,
-		itemLink = "|cffa335ee|Hitem:124580:::::::::::4:3:38:762:652:1:28:1943:::::|h[Bladefang Hood of the Fireflash]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:124580:::::::::::4:3:38:762:652:1:28:1943:::::|h[Bladefang Hood of the Fireflash]|h|r",
 		itemIcon = 973898,
 		itemLevel = 47,
 		isCraftingReagent = false,
@@ -8908,7 +9003,8 @@ _G.Items = {
 		itemName = "Silent Pillager's Footpads",
 		bindType = 2,
 		itemSellPrice = 32726,
-		itemLink = "|cffa335ee|Hitem:165520::154129:::::::::5:4:4799:1808:1522:4786::::::|h[Silent Pillager's Footpads]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:165520::154129:::::::::5:4:4799:1808:1522:4786::::::|h[Silent Pillager's Footpads]|h|r",
 		itemIcon = 2353068,
 		itemLevel = 110,
 		isCraftingReagent = false,
@@ -8928,7 +9024,8 @@ _G.Items = {
 		itemName = "Jerkin of the Aberrant Chimera",
 		bindType = 1,
 		itemSellPrice = 12887,
-		itemLink = "|cffa335ee|Hitem:160619:::::::::::5:4:4823:1492:4786:5398::::::|h[Jerkin of the Aberrant Chimera]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:160619:::::::::::5:4:4823:1492:4786:5398::::::|h[Jerkin of the Aberrant Chimera]|h|r",
 		itemIcon = 2021683,
 		itemLevel = 80,
 		isCraftingReagent = false,
@@ -9048,7 +9145,8 @@ _G.Items = {
 		itemName = "Pauldrons of the Horned Horror",
 		bindType = 1,
 		itemSellPrice = 293575,
-		itemLink = "|cffa335ee|Hitem:159455:::::::::::35:4:5448:1587:4786:5421::::::|h[Pauldrons of the Horned Horror]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:159455:::::::::::35:4:5448:1587:4786:5421::::::|h[Pauldrons of the Horned Horror]|h|r",
 		itemIcon = 1780206,
 		itemLevel = 174,
 		isCraftingReagent = false,
@@ -9128,7 +9226,8 @@ _G.Items = {
 		itemName = "Pauldrons of Ancestral Vengeance",
 		bindType = 1,
 		itemSellPrice = 51423,
-		itemLink = "|cffa335ee|Hitem:165921:::::::::::6:4:4824:1537:4786:5421::::::|h[Pauldrons of Ancestral Vengeance]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:165921:::::::::::6:4:4824:1537:4786:5421::::::|h[Pauldrons of Ancestral Vengeance]|h|r",
 		itemIcon = 2324588,
 		itemLevel = 125,
 		isCraftingReagent = false,
@@ -9569,7 +9668,8 @@ _G.Items = {
 		itemName = "Corrosive Handler's Gloves",
 		bindType = 1,
 		itemSellPrice = 324322,
-		itemLink = "|cffa335ee|Hitem:159305:::::::::::35:5:5010:40:1612:5855:4784::::::|h[Corrosive Handler's Gloves]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:159305:::::::::::35:5:5010:40:1612:5855:4784::::::|h[Corrosive Handler's Gloves]|h|r",
 		itemIcon = 1892757,
 		itemLevel = 209,
 		isCraftingReagent = false,
@@ -9689,7 +9789,8 @@ _G.Items = {
 		itemName = "Dread Gladiator's Plate Chestpiece",
 		bindType = 1,
 		itemSellPrice = 101864,
-		itemLink = "|cffa335ee|Hitem:161602:::::::::::25:6:5450:5129:1547:4786:5395:4775::::::|h[Dread Gladiator's Plate Chestpiece]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:161602:::::::::::25:6:5450:5129:1547:4786:5395:4775::::::|h[Dread Gladiator's Plate Chestpiece]|h|r",
 		itemIcon = 2001825,
 		itemLevel = 138,
 		isCraftingReagent = false,
@@ -9789,7 +9890,8 @@ _G.Items = {
 		itemName = "Phial of the Arcane Tempest",
 		bindType = 1,
 		itemSellPrice = 19519,
-		itemLink = "|cffa335ee|Hitem:169313:::::::::::3:5:4798:42:1487:5850:4783::::::|h[Phial of the Arcane Tempest]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:169313:::::::::::3:5:4798:42:1487:5850:4783::::::|h[Phial of the Arcane Tempest]|h|r",
 		itemIcon = 967535,
 		itemLevel = 92,
 		isCraftingReagent = false,
@@ -10029,7 +10131,8 @@ _G.Items = {
 		itemName = "Seal of the Regal Loa",
 		bindType = 1,
 		itemSellPrice = 188005,
-		itemLink = "|cffa335ee|Hitem:159458:5943:153708:::::::::16:4:5010:4802:1572:4786::::::|h[Seal of the Regal Loa]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:159458:5943:153708:::::::::16:4:5010:4802:1572:4786::::::|h[Seal of the Regal Loa]|h|r",
 		itemIcon = 2000808,
 		itemLevel = 159,
 		isCraftingReagent = false,
@@ -10249,7 +10352,8 @@ _G.Items = {
 		itemName = "Drape of Valiant Defense",
 		bindType = 2,
 		itemSellPrice = 34305,
-		itemLink = "|cffa335ee|Hitem:165925::154127:::::::::5:4:4799:1808:1522:4786::::::|h[Drape of Valiant Defense]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:165925::154127:::::::::5:4:4799:1808:1522:4786::::::|h[Drape of Valiant Defense]|h|r",
 		itemIcon = 2280674,
 		itemLevel = 110,
 		isCraftingReagent = false,
@@ -10329,7 +10433,8 @@ _G.Items = {
 		itemName = "Cudgel of Correctional Oversight",
 		bindType = 1,
 		itemSellPrice = 111687,
-		itemLink = "|cffa335ee|Hitem:159658:3368::::::::::16:3:5010:1542:4786::::::|h[Cudgel of Correctional Oversight]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:159658:3368::::::::::16:3:5010:1542:4786::::::|h[Cudgel of Correctional Oversight]|h|r",
 		itemIcon = 1934753,
 		itemLevel = 129,
 		isCraftingReagent = false,
@@ -10509,7 +10614,8 @@ _G.Items = {
 		itemName = "Sinister Gladiator's Signet",
 		bindType = 1,
 		itemSellPrice = 24828,
-		itemLink = "|cffa335ee|Hitem:165054:5943::::::::::40:4:5369:5141:1517:4783::::::|h[Sinister Gladiator's Signet]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:165054:5943::::::::::40:4:5369:5141:1517:4783::::::|h[Sinister Gladiator's Signet]|h|r",
 		itemIcon = 2000805,
 		itemLevel = 105,
 		isCraftingReagent = false,
@@ -10690,7 +10796,8 @@ _G.Items = {
 		itemName = "Staff of the Lightning Serpent",
 		bindType = 1,
 		itemSellPrice = 974057,
-		itemLink = "|cffa335ee|Hitem:159636:6112::::::::::35:4:5010:41:1612:4783::::::|h[Staff of the Lightning Serpent]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:159636:6112::::::::::35:4:5010:41:1612:4783::::::|h[Staff of the Lightning Serpent]|h|r",
 		itemIcon = 1881363,
 		itemLevel = 199,
 		isCraftingReagent = false,
@@ -10810,7 +10917,8 @@ _G.Items = {
 		itemName = "Seal of Questionable Loyalties",
 		bindType = 1,
 		itemSellPrice = 215092,
-		itemLink = "|cffa335ee|Hitem:158314:5943::::::::::35:3:5010:1582:4783::::::|h[Seal of Questionable Loyalties]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:158314:5943::::::::::35:3:5010:1582:4783::::::|h[Seal of Questionable Loyalties]|h|r",
 		itemIcon = 2000826,
 		itemLevel = 169,
 		isCraftingReagent = false,
@@ -10890,7 +10998,8 @@ _G.Items = {
 		itemName = "Tiny Electromental in a Jar",
 		bindType = 1,
 		itemSellPrice = 123792,
-		itemLink = "|cffa335ee|Hitem:158374::154128:::::::::16:4:5006:4802:1557:4786::::::|h[Tiny Electromental in a Jar]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:158374::154128:::::::::16:4:5006:4802:1557:4786::::::|h[Tiny Electromental in a Jar]|h|r",
 		itemIcon = 1528676,
 		itemLevel = 144,
 		isCraftingReagent = false,
@@ -11130,7 +11239,8 @@ _G.Items = {
 		itemName = "Grips of the Everlasting Guardian",
 		bindType = 1,
 		itemSellPrice = 251193,
-		itemLink = "|cffa335ee|Hitem:159445::168642:::::::::16:5:5010:4802:1602:5850:4783::::::|h[Grips of the Everlasting Guardian]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:159445::168642:::::::::16:5:5010:4802:1602:5850:4783::::::|h[Grips of the Everlasting Guardian]|h|r",
 		itemIcon = 2019431,
 		itemLevel = 194,
 		isCraftingReagent = false,
@@ -11170,7 +11280,8 @@ _G.Items = {
 		itemName = "Desiccator's Blessed Gloves",
 		bindType = 1,
 		itemSellPrice = 262153,
-		itemLink = "|cffa335ee|Hitem:159312:5937:168642:::::::::35:4:5010:4802:1612:4783::::::|h[Desiccator's Blessed Gloves]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:159312:5937:168642:::::::::35:4:5010:4802:1612:4783::::::|h[Desiccator's Blessed Gloves]|h|r",
 		itemIcon = 1892757,
 		itemLevel = 199,
 		isCraftingReagent = false,
@@ -11230,7 +11341,8 @@ _G.Items = {
 		itemName = "Cloak of the Restless Tribes",
 		bindType = 1,
 		itemSellPrice = 220443,
-		itemLink = "|cffa335ee|Hitem:159288::154129:::::::::16:4:5010:4802:1572:4786::::::|h[Cloak of the Restless Tribes]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:159288::154129:::::::::16:4:5010:4802:1572:4786::::::|h[Cloak of the Restless Tribes]|h|r",
 		itemIcon = 2054952,
 		itemLevel = 159,
 		isCraftingReagent = false,
@@ -11290,7 +11402,8 @@ _G.Items = {
 		itemName = "Waistguard of Sanguine Fervor",
 		bindType = 1,
 		itemSellPrice = 319320,
-		itemLink = "|cffa335ee|Hitem:159402::154126:::::::::35:5:5010:4802:1612:5860:4784::::::|h[Waistguard of Sanguine Fervor]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:159402::154126:::::::::35:5:5010:4802:1612:5860:4784::::::|h[Waistguard of Sanguine Fervor]|h|r",
 		itemIcon = 2054853,
 		itemLevel = 214,
 		isCraftingReagent = false,
@@ -11750,7 +11863,8 @@ _G.Items = {
 		itemName = "7th Legionnaire's Handguards",
 		bindType = 1,
 		itemSellPrice = 165760,
-		itemLink = "|cffa335ee|Hitem:163397::154126:::::::::28:4:5125:4802:1577:4786::::::|h[7th Legionnaire's Handguards]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:163397::154126:::::::::28:4:5125:4802:1577:4786::::::|h[7th Legionnaire's Handguards]|h|r",
 		itemIcon = 1889976,
 		itemLevel = 163,
 		isCraftingReagent = false,
@@ -11810,7 +11924,8 @@ _G.Items = {
 		itemName = "Seal of Questionable Loyalties",
 		bindType = 1,
 		itemSellPrice = 55173,
-		itemLink = "|cffa335ee|Hitem:158314:5939::::::::::16:3:4780:1547:4786::::::|h[Seal of Questionable Loyalties]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:158314:5939::::::::::16:3:4780:1547:4786::::::|h[Seal of Questionable Loyalties]|h|r",
 		itemIcon = 2000826,
 		itemLevel = 134,
 		isCraftingReagent = false,
@@ -11850,7 +11965,8 @@ _G.Items = {
 		itemName = "Sinister Gladiator's Insignia",
 		bindType = 1,
 		itemSellPrice = 43806,
-		itemLink = "|cffa335ee|Hitem:165057:::::::::::40:4:5369:5142:1527:4784::::::|h[Sinister Gladiator's Insignia]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:165057:::::::::::40:4:5369:5142:1527:4784::::::|h[Sinister Gladiator's Insignia]|h|r",
 		itemIcon = 134501,
 		itemLevel = 115,
 		isCraftingReagent = false,
@@ -12070,7 +12186,8 @@ _G.Items = {
 		itemName = "Gloves of Spiritual Grace",
 		bindType = 1,
 		itemSellPrice = 31800,
-		itemLink = "|cffa335ee|Hitem:165514:5932:154129:::::::::6:4:4800:1808:1537:4786::::::|h[Gloves of Spiritual Grace]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:165514:5932:154129:::::::::6:4:4800:1808:1537:4786::::::|h[Gloves of Spiritual Grace]|h|r",
 		itemIcon = 2353075,
 		itemLevel = 125,
 		isCraftingReagent = false,
@@ -12231,7 +12348,8 @@ _G.Items = {
 		itemName = "Scalemail of Unnatural Selection",
 		bindType = 1,
 		itemSellPrice = 33182,
-		itemLink = "|cffa335ee|Hitem:168352:::::::::::5:4:4823:1502:4786:6266::::::|h[Scalemail of Unnatural Selection]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:168352:::::::::::5:4:4823:1502:4786:6266::::::|h[Scalemail of Unnatural Selection]|h|r",
 		itemIcon = 2909753,
 		itemLevel = 102,
 		isCraftingReagent = false,
@@ -12311,7 +12429,8 @@ _G.Items = {
 		itemName = "Wavecaller Greatmace",
 		bindType = 1,
 		itemSellPrice = 637426,
-		itemLink = "|cffa335ee|Hitem:158096:5965:154126:::::::::28:4:4803:4802:1582:4786::::::|h[Wavecaller Greatmace]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:158096:5965:154126:::::::::28:4:4803:4802:1582:4786::::::|h[Wavecaller Greatmace]|h|r",
 		itemIcon = 1720432,
 		itemLevel = 168,
 		isCraftingReagent = false,
@@ -12431,7 +12550,8 @@ _G.Items = {
 		itemName = "Kul Tiran Cannonball Runner",
 		bindType = 1,
 		itemSellPrice = 384490,
-		itemLink = "|cffa335ee|Hitem:159628::168639:::::::::16:5:5010:4802:40:1602:4786::::::|h[Kul Tiran Cannonball Runner]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:159628::168639:::::::::16:5:5010:4802:40:1602:4786::::::|h[Kul Tiran Cannonball Runner]|h|r",
 		itemIcon = 512903,
 		itemLevel = 189,
 		isCraftingReagent = false,
@@ -12471,7 +12591,8 @@ _G.Items = {
 		itemName = "Staff of the Lightning Serpent",
 		bindType = 1,
 		itemSellPrice = 598764,
-		itemLink = "|cffa335ee|Hitem:159636:5963::::::::::35:3:5008:1577:4783::::::|h[Staff of the Lightning Serpent]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:159636:5963::::::::::35:3:5008:1577:4783::::::|h[Staff of the Lightning Serpent]|h|r",
 		itemIcon = 1881363,
 		itemLevel = 164,
 		isCraftingReagent = false,
@@ -12672,7 +12793,8 @@ _G.Items = {
 		itemName = "Notorious Gladiator's Signet",
 		bindType = 1,
 		itemSellPrice = 39922,
-		itemLink = "|cffa335ee|Hitem:167376:6108:168639:::::::::56:5:4802:6349:6328:1537:4786::::::|h[Notorious Gladiator's Signet]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:167376:6108:168639:::::::::56:5:4802:6349:6328:1537:4786::::::|h[Notorious Gladiator's Signet]|h|r",
 		itemIcon = 2000805,
 		itemLevel = 125,
 		isCraftingReagent = false,
@@ -12852,7 +12974,8 @@ _G.Items = {
 		itemName = "Darkwood Sentinel's Tunic",
 		bindType = 1,
 		itemSellPrice = 42585,
-		itemLink = "|cffa335ee|Hitem:165440:::::::::::6:5:5126:1517:4786:5416:4775::::::|h[Darkwood Sentinel's Tunic]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:165440:::::::::::6:5:5126:1517:4786:5416:4775::::::|h[Darkwood Sentinel's Tunic]|h|r",
 		itemIcon = 2351545,
 		itemLevel = 110,
 		isCraftingReagent = false,
@@ -12892,7 +13015,8 @@ _G.Items = {
 		itemName = "Lord Waycrest's Signet",
 		bindType = 1,
 		itemSellPrice = 24279,
-		itemLink = "|cffa335ee|Hitem:158362:5942:154126:::::::::23:5:4779:4802:40:1517:4783::::::|h[Lord Waycrest's Signet]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:158362:5942:154126:::::::::23:5:4779:4802:40:1517:4783::::::|h[Lord Waycrest's Signet]|h|r",
 		itemIcon = 2000801,
 		itemLevel = 104,
 		isCraftingReagent = false,
@@ -12993,7 +13117,8 @@ _G.Items = {
 		itemName = "Vestments of the Afterlife",
 		bindType = 1,
 		itemSellPrice = 31137,
-		itemLink = "|cffa335ee|Hitem:165498:::::::::::3:5:4822:1507:4786:5413:4775::::::|h[Vestments of the Afterlife]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:165498:::::::::::3:5:4822:1507:4786:5413:4775::::::|h[Vestments of the Afterlife]|h|r",
 		itemIcon = 2280684,
 		itemLevel = 100,
 		isCraftingReagent = false,
@@ -13093,7 +13218,8 @@ _G.Items = {
 		itemName = "Seal of Questionable Loyalties",
 		bindType = 1,
 		itemSellPrice = 215092,
-		itemLink = "|cffa335ee|Hitem:158314:5939::::::::::35:3:5010:1582:4783::::::|h[Seal of Questionable Loyalties]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:158314:5939::::::::::35:3:5010:1582:4783::::::|h[Seal of Questionable Loyalties]|h|r",
 		itemIcon = 2000826,
 		itemLevel = 169,
 		isCraftingReagent = false,
@@ -13113,7 +13239,8 @@ _G.Items = {
 		itemName = "Ring of the Infinite Void",
 		bindType = 1,
 		itemSellPrice = 4330,
-		itemLink = "|cffa335ee|Hitem:160647:5945:154126:::::::::3:4:4798:1808:1482:4783::::::|h[Ring of the Infinite Void]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:160647:5945:154126:::::::::3:4:4798:1808:1482:4783::::::|h[Ring of the Infinite Void]|h|r",
 		itemIcon = 2000824,
 		itemLevel = 70,
 		isCraftingReagent = false,
@@ -13193,7 +13320,8 @@ _G.Items = {
 		itemName = "Usurper's Bloodcaked Spaulders",
 		bindType = 1,
 		itemSellPrice = 4039,
-		itemLink = "|cffa335ee|Hitem:160620:::::::::::3:4:4822:1477:4786:5397::::::|h[Usurper's Bloodcaked Spaulders]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:160620:::::::::::3:4:4822:1477:4786:5397::::::|h[Usurper's Bloodcaked Spaulders]|h|r",
 		itemIcon = 2021687,
 		itemLevel = 65,
 		isCraftingReagent = false,
@@ -13233,7 +13361,8 @@ _G.Items = {
 		itemName = "Dismembered Submersible Claw",
 		bindType = 1,
 		itemSellPrice = 111130,
-		itemLink = "|cffa335ee|Hitem:159650:5964:154127:::::::::16:4:5008:4802:1537:4786::::::|h[Dismembered Submersible Claw]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:159650:5964:154127:::::::::16:4:5008:4802:1537:4786::::::|h[Dismembered Submersible Claw]|h|r",
 		itemIcon = 1887733,
 		itemLevel = 124,
 		isCraftingReagent = false,
@@ -13333,7 +13462,8 @@ _G.Items = {
 		itemName = "Pocket-Sized Computation Device",
 		bindType = 1,
 		itemSellPrice = 0,
-		itemLink = "|cffa335ee|Hitem:167555::167672:168751:168632:::::::11:1:1494::3:1461:5869:6320::::|h[Pocket-Sized Computation Device]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:167555::167672:168751:168632:::::::11:1:1494::3:1461:5869:6320::::|h[Pocket-Sized Computation Device]|h|r",
 		itemIcon = 2115322,
 		itemLevel = 94,
 		isCraftingReagent = false,
@@ -13593,7 +13723,8 @@ _G.Items = {
 		itemName = "7th Legionnaire's Sabatons",
 		bindType = 1,
 		itemSellPrice = 466300,
-		itemLink = "|cffa335ee|Hitem:163400::168639:::::::::23:4:5845:4802:1622:4786::::::|h[7th Legionnaire's Sabatons]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:163400::168639:::::::::23:4:5845:4802:1622:4786::::::|h[7th Legionnaire's Sabatons]|h|r",
 		itemIcon = 1889991,
 		itemLevel = 208,
 		isCraftingReagent = false,
@@ -13613,7 +13744,8 @@ _G.Items = {
 		itemName = "Forest Protector's Shoulderguards",
 		bindType = 1,
 		itemSellPrice = 29791,
-		itemLink = "|cffa335ee|Hitem:166691:::::::::::3:4:5478:1517:4786:5418::::::|h[Forest Protector's Shoulderguards]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:166691:::::::::::3:4:5478:1517:4786:5418::::::|h[Forest Protector's Shoulderguards]|h|r",
 		itemIcon = 2373975,
 		itemLevel = 105,
 		isCraftingReagent = false,
@@ -13773,7 +13905,8 @@ _G.Items = {
 		itemName = "Harbinger's Inscrutable Will",
 		bindType = 1,
 		itemSellPrice = 46917,
-		itemLink = "|cffa335ee|Hitem:167867::168641:::::::::5:4:4799:1808:1532:4786::::::|h[Harbinger's Inscrutable Will]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:167867::168641:::::::::5:4:4799:1808:1532:4786::::::|h[Harbinger's Inscrutable Will]|h|r",
 		itemIcon = 1028999,
 		itemLevel = 120,
 		isCraftingReagent = false,
@@ -13813,7 +13946,8 @@ _G.Items = {
 		itemName = "Seal of Questionable Loyalties",
 		bindType = 1,
 		itemSellPrice = 39113,
-		itemLink = "|cffa335ee|Hitem:158314:5939::::::::::16:3:5008:1537:4786::::::|h[Seal of Questionable Loyalties]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:158314:5939::::::::::16:3:5008:1537:4786::::::|h[Seal of Questionable Loyalties]|h|r",
 		itemIcon = 2000826,
 		itemLevel = 124,
 		isCraftingReagent = false,
@@ -13833,7 +13967,8 @@ _G.Items = {
 		itemName = "Desecrated Blade of the Disciples",
 		bindType = 1,
 		itemSellPrice = 64087,
-		itemLink = "|cffa335ee|Hitem:165919:::::::::::5:4:4799:40:1522:4786::::::|h[Desecrated Blade of the Disciples]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:165919:::::::::::5:4:4799:40:1522:4786::::::|h[Desecrated Blade of the Disciples]|h|r",
 		itemIcon = 2466937,
 		itemLevel = 110,
 		isCraftingReagent = false,
@@ -14053,7 +14188,8 @@ _G.Items = {
 		itemName = "Jerkin of the Aberrant Chimera",
 		bindType = 1,
 		itemSellPrice = 5376,
-		itemLink = "|cffa335ee|Hitem:160619:::::::::::3:4:4822:1477:4786:5395::::::|h[Jerkin of the Aberrant Chimera]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:160619:::::::::::3:4:4822:1477:4786:5395::::::|h[Jerkin of the Aberrant Chimera]|h|r",
 		itemIcon = 2021683,
 		itemLevel = 65,
 		isCraftingReagent = false,
@@ -14173,7 +14309,8 @@ _G.Items = {
 		itemName = "Zancha's Venerated Greatbelt",
 		bindType = 1,
 		itemSellPrice = 21830,
-		itemLink = "|cffa335ee|Hitem:159410::154127:::::::::16:4:4780:4802:1522:4783::::::|h[Zancha's Venerated Greatbelt]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:159410::154127:::::::::16:4:4780:4802:1522:4783::::::|h[Zancha's Venerated Greatbelt]|h|r",
 		itemIcon = 2001428,
 		itemLevel = 109,
 		isCraftingReagent = false,
@@ -14313,7 +14450,8 @@ _G.Items = {
 		itemName = "Seal of the Regal Loa",
 		bindType = 1,
 		itemSellPrice = 188005,
-		itemLink = "|cffa335ee|Hitem:159458:5941:154128:::::::::16:4:5010:4802:1572:4786::::::|h[Seal of the Regal Loa]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:159458:5941:154128:::::::::16:4:5010:4802:1572:4786::::::|h[Seal of the Regal Loa]|h|r",
 		itemIcon = 2000808,
 		itemLevel = 159,
 		isCraftingReagent = false,
@@ -14413,7 +14551,8 @@ _G.Items = {
 		itemName = "Desecrated Blade of the Disciples",
 		bindType = 1,
 		itemSellPrice = 97434,
-		itemLink = "|cffa335ee|Hitem:165919:5964:154129:::::::::6:4:4800:1808:1537:4786::::::|h[Desecrated Blade of the Disciples]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:165919:5964:154129:::::::::6:4:4800:1808:1537:4786::::::|h[Desecrated Blade of the Disciples]|h|r",
 		itemIcon = 2466937,
 		itemLevel = 125,
 		isCraftingReagent = false,
@@ -14473,7 +14612,8 @@ _G.Items = {
 		itemName = "Usurper's Bloodcaked Spaulders",
 		bindType = 1,
 		itemSellPrice = 12955,
-		itemLink = "|cffa335ee|Hitem:160620:::::::::::5:4:4823:1492:4786:4775::::::|h[Usurper's Bloodcaked Spaulders]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:160620:::::::::::5:4:4823:1492:4786:4775::::::|h[Usurper's Bloodcaked Spaulders]|h|r",
 		itemIcon = 2021687,
 		itemLevel = 85,
 		isCraftingReagent = false,
@@ -14553,7 +14693,8 @@ _G.Items = {
 		itemName = "Boralus Noble's Seal",
 		bindType = 1,
 		itemSellPrice = 11668,
-		itemLink = "|cffa335ee|Hitem:168889:6108:168639:::::::::3:4:4798:1808:1487:4786::::::|h[Boralus Noble's Seal]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:168889:6108:168639:::::::::3:4:4798:1808:1487:4786::::::|h[Boralus Noble's Seal]|h|r",
 		itemIcon = 1717149,
 		itemLevel = 87,
 		isCraftingReagent = false,
@@ -14753,7 +14894,8 @@ _G.Items = {
 		itemName = "Dark Passenger's Breastplate",
 		bindType = 1,
 		itemSellPrice = 41368,
-		itemLink = "|cffa335ee|Hitem:168363:::::::::::5:5:4823:1502:4786:6266:4775::::::|h[Dark Passenger's Breastplate]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:168363:::::::::::5:5:4823:1502:4786:6266:4775::::::|h[Dark Passenger's Breastplate]|h|r",
 		itemIcon = 2901581,
 		itemLevel = 107,
 		isCraftingReagent = false,
@@ -14973,7 +15115,8 @@ _G.Items = {
 		itemName = "Regurgitated Purifier's Flamestaff",
 		bindType = 1,
 		itemSellPrice = 9257,
-		itemLink = "|cffa335ee|Hitem:160689:::::::::::3:4:4798:40:1477:4786::::::|h[Regurgitated Purifier's Flamestaff]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:160689:::::::::::3:4:4798:40:1477:4786::::::|h[Regurgitated Purifier's Flamestaff]|h|r",
 		itemIcon = 1952883,
 		itemLevel = 65,
 		isCraftingReagent = false,
@@ -15013,7 +15156,8 @@ _G.Items = {
 		itemName = "Lord Waycrest's Signet",
 		bindType = 1,
 		itemSellPrice = 197926,
-		itemLink = "|cffa335ee|Hitem:158362:6108:168639:::::::::16:4:5010:4802:1572:4786::::::|h[Lord Waycrest's Signet]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:158362:6108:168639:::::::::16:4:5010:4802:1572:4786::::::|h[Lord Waycrest's Signet]|h|r",
 		itemIcon = 2000801,
 		itemLevel = 159,
 		isCraftingReagent = false,
@@ -15134,7 +15278,8 @@ _G.Items = {
 		itemName = "Seal of Questionable Loyalties",
 		bindType = 1,
 		itemSellPrice = 284043,
-		itemLink = "|cffa335ee|Hitem:158314:6111::::::::::16:3:5010:1602:4786::::::|h[Seal of Questionable Loyalties]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:158314:6111::::::::::16:3:5010:1602:4786::::::|h[Seal of Questionable Loyalties]|h|r",
 		itemIcon = 2000826,
 		itemLevel = 189,
 		isCraftingReagent = false,
@@ -15194,7 +15339,8 @@ _G.Items = {
 		itemName = "Desert Guardian's Breastplate",
 		bindType = 1,
 		itemSellPrice = 366864,
-		itemLink = "|cffa335ee|Hitem:159424:::::::::::35:4:5448:1587:4786:5419::::::|h[Desert Guardian's Breastplate]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:159424:::::::::::35:4:5448:1587:4786:5419::::::|h[Desert Guardian's Breastplate]|h|r",
 		itemIcon = 2001435,
 		itemLevel = 174,
 		isCraftingReagent = false,
@@ -15234,7 +15380,8 @@ _G.Items = {
 		itemName = "Drape of Valiant Defense",
 		bindType = 2,
 		itemSellPrice = 25286,
-		itemLink = "|cffa335ee|Hitem:165925::154127:::::::::3:4:4798:1808:1512:4783::::::|h[Drape of Valiant Defense]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:165925::154127:::::::::3:4:4798:1808:1512:4783::::::|h[Drape of Valiant Defense]|h|r",
 		itemIcon = 2280674,
 		itemLevel = 100,
 		isCraftingReagent = false,
@@ -15394,7 +15541,8 @@ _G.Items = {
 		itemName = "Notorious Gladiator's Silk Shoulderguards",
 		bindType = 1,
 		itemSellPrice = 68632,
-		itemLink = "|cffa335ee|Hitem:167455:::::::::::56:6:6325:6348:1542:4786:6268:4775::::::|h[Notorious Gladiator's Silk Shoulderguards]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:167455:::::::::::56:6:6325:6348:1542:4786:6268:4775::::::|h[Notorious Gladiator's Silk Shoulderguards]|h|r",
 		itemIcon = 2906601,
 		itemLevel = 135,
 		isCraftingReagent = false,
@@ -15535,7 +15683,8 @@ _G.Items = {
 		itemName = "Sinister Gladiator's Leather Armwraps",
 		bindType = 1,
 		itemSellPrice = 19710,
-		itemLink = "|cffa335ee|Hitem:164906:::::::::::56:4:5188:5141:1517:4786::::::|h[Sinister Gladiator's Leather Armwraps]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:164906:::::::::::56:4:5188:5141:1517:4786::::::|h[Sinister Gladiator's Leather Armwraps]|h|r",
 		itemIcon = 2351528,
 		itemLevel = 105,
 		isCraftingReagent = false,
@@ -15575,7 +15724,8 @@ _G.Items = {
 		itemName = "7th Legionnaire's Bindings",
 		bindType = 1,
 		itemSellPrice = 25777,
-		itemLink = "|cffa335ee|Hitem:163277::154127:::::::::3:4:5124:4802:1532:4786::::::|h[7th Legionnaire's Bindings]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:163277::154127:::::::::3:4:5124:4802:1532:4786::::::|h[7th Legionnaire's Bindings]|h|r",
 		itemIcon = 1889974,
 		itemLevel = 118,
 		isCraftingReagent = false,
@@ -15595,7 +15745,8 @@ _G.Items = {
 		itemName = "7th Legionnaire's Handwraps",
 		bindType = 1,
 		itemSellPrice = 26871,
-		itemLink = "|cffa335ee|Hitem:163341::154127:::::::::5:4:5125:4802:1532:4786::::::|h[7th Legionnaire's Handwraps]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:163341::154127:::::::::5:4:5125:4802:1532:4786::::::|h[7th Legionnaire's Handwraps]|h|r",
 		itemIcon = 1866970,
 		itemLevel = 118,
 		isCraftingReagent = false,
@@ -15615,7 +15766,8 @@ _G.Items = {
 		itemName = "Exquisitely Aerodynamic Shoulderpads",
 		bindType = 1,
 		itemSellPrice = 59776,
-		itemLink = "|cffa335ee|Hitem:159232:::::::::::35:3:5064:1542:4786::::::|h[Exquisitely Aerodynamic Shoulderpads]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:159232:::::::::::35:3:5064:1542:4786::::::|h[Exquisitely Aerodynamic Shoulderpads]|h|r",
 		itemIcon = 1875085,
 		itemLevel = 129,
 		isCraftingReagent = false,
@@ -15675,7 +15827,8 @@ _G.Items = {
 		itemName = "Legguards of Coalescing Plasma",
 		bindType = 1,
 		itemSellPrice = 5224,
-		itemLink = "|cffa335ee|Hitem:160631:::::::::::3:4:4798:1808:1477:4786::::::|h[Legguards of Coalescing Plasma]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:160631:::::::::::3:4:4798:1808:1477:4786::::::|h[Legguards of Coalescing Plasma]|h|r",
 		itemIcon = 1991837,
 		itemLevel = 65,
 		isCraftingReagent = false,
@@ -16377,7 +16530,8 @@ _G.Items = {
 		itemName = "Dread Gladiator's Plate Gloves",
 		bindType = 1,
 		itemSellPrice = 52006,
-		itemLink = "|cffa335ee|Hitem:161719:5932::::::::::39:4:4986:5129:1552:4786::::::|h[Dread Gladiator's Plate Gloves]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:161719:5932::::::::::39:4:4986:5129:1552:4786::::::|h[Dread Gladiator's Plate Gloves]|h|r",
 		itemIcon = 2001826,
 		itemLevel = 138,
 		isCraftingReagent = false,
@@ -16397,7 +16551,8 @@ _G.Items = {
 		itemName = "Gloves of Descending Madness",
 		bindType = 1,
 		itemSellPrice = 16794,
-		itemLink = "|cffa335ee|Hitem:160618:5937:153709:::::::::6:4:4800:1808:1512:4783::::::|h[Gloves of Descending Madness]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:160618:5937:153709:::::::::6:4:4800:1808:1512:4783::::::|h[Gloves of Descending Madness]|h|r",
 		itemIcon = 2021694,
 		itemLevel = 100,
 		isCraftingReagent = false,
@@ -16457,7 +16612,8 @@ _G.Items = {
 		itemName = "Handmaiden's Cowl of Sacrifice",
 		bindType = 1,
 		itemSellPrice = 25228,
-		itemLink = "|cffa335ee|Hitem:168336:::::::::::5:4:4823:1502:4786:6267::::::|h[Handmaiden's Cowl of Sacrifice]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:168336:::::::::::5:4:4823:1502:4786:6267::::::|h[Handmaiden's Cowl of Sacrifice]|h|r",
 		itemIcon = 2906599,
 		itemLevel = 102,
 		isCraftingReagent = false,
@@ -16617,7 +16773,8 @@ _G.Items = {
 		itemName = "Variable Intensity Gigavolt Oscillating Reactor",
 		bindType = 1,
 		itemSellPrice = 36358,
-		itemLink = "|cffa335ee|Hitem:165572:::::::::::5:4:4799:42:1522:4786::::::|h[Variable Intensity Gigavolt Oscillating Reactor]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:165572:::::::::::5:4:4799:42:1522:4786::::::|h[Variable Intensity Gigavolt Oscillating Reactor]|h|r",
 		itemIcon = 133870,
 		itemLevel = 110,
 		isCraftingReagent = false,
@@ -16737,7 +16894,8 @@ _G.Items = {
 		itemName = "Gardbrace of Fractured Reality",
 		bindType = 1,
 		itemSellPrice = 26782,
-		itemLink = "|cffa335ee|Hitem:169588:::::::::::5:4:4823:1502:4786:6268::::::|h[Gardbrace of Fractured Reality]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:169588:::::::::::5:4:4823:1502:4786:6268::::::|h[Gardbrace of Fractured Reality]|h|r",
 		itemIcon = 2909763,
 		itemLevel = 102,
 		isCraftingReagent = false,
@@ -16877,7 +17035,8 @@ _G.Items = {
 		itemName = "Pauldrons of Ancestral Vengeance",
 		bindType = 1,
 		itemSellPrice = 20491,
-		itemLink = "|cffa335ee|Hitem:165921:::::::::::3:4:4822:1507:4786:5415::::::|h[Pauldrons of Ancestral Vengeance]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:165921:::::::::::3:4:4822:1507:4786:5415::::::|h[Pauldrons of Ancestral Vengeance]|h|r",
 		itemIcon = 2324587,
 		itemLevel = 95,
 		isCraftingReagent = false,
@@ -16897,7 +17056,8 @@ _G.Items = {
 		itemName = "Harbinger's Inscrutable Will",
 		bindType = 1,
 		itemSellPrice = 46917,
-		itemLink = "|cffa335ee|Hitem:167867::154126:::::::::5:4:4799:1808:1532:4786::::::|h[Harbinger's Inscrutable Will]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:167867::154126:::::::::5:4:4799:1808:1532:4786::::::|h[Harbinger's Inscrutable Will]|h|r",
 		itemIcon = 1028999,
 		itemLevel = 120,
 		isCraftingReagent = false,
@@ -17018,7 +17178,8 @@ _G.Items = {
 		itemName = "Void-Drenched Cape",
 		bindType = 1,
 		itemSellPrice = 413652,
-		itemLink = "|cffa335ee|Hitem:159289::168641:::::::::35:5:5010:4802:1612:5850:4784::::::|h[Void-Drenched Cape]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:159289::168641:::::::::35:5:5010:4802:1612:5850:4784::::::|h[Void-Drenched Cape]|h|r",
 		itemIcon = 2032235,
 		itemLevel = 204,
 		isCraftingReagent = false,
@@ -17058,7 +17219,8 @@ _G.Items = {
 		itemName = "Shoulders of the Sanguine Monstrosity",
 		bindType = 1,
 		itemSellPrice = 29341,
-		itemLink = "|cffa335ee|Hitem:159323:::::::::::23:4:4819:1512:4786:4775::::::|h[Shoulders of the Sanguine Monstrosity]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:159323:::::::::::23:4:4819:1512:4786:4775::::::|h[Shoulders of the Sanguine Monstrosity]|h|r",
 		itemIcon = 1892760,
 		itemLevel = 104,
 		isCraftingReagent = false,
@@ -17219,7 +17381,8 @@ _G.Items = {
 		itemName = "Drape of Valiant Defense",
 		bindType = 2,
 		itemSellPrice = 38813,
-		itemLink = "|cffa335ee|Hitem:165925::153708:::::::::3:4:4798:1808:1527:4784::::::|h[Drape of Valiant Defense]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:165925::153708:::::::::3:4:4798:1808:1527:4784::::::|h[Drape of Valiant Defense]|h|r",
 		itemIcon = 2280674,
 		itemLevel = 115,
 		isCraftingReagent = false,
@@ -17479,7 +17642,8 @@ _G.Items = {
 		itemName = "Darkwood Sentinel's Jerkin",
 		bindType = 1,
 		itemSellPrice = 27475,
-		itemLink = "|cffa335ee|Hitem:166580:::::::::::6:5:5126:1502:4786:5401:4775::::::|h[Darkwood Sentinel's Jerkin]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:166580:::::::::::6:5:5126:1502:4786:5401:4775::::::|h[Darkwood Sentinel's Jerkin]|h|r",
 		itemIcon = 2351545,
 		itemLevel = 95,
 		isCraftingReagent = false,
@@ -17721,7 +17885,8 @@ _G.Items = {
 		itemName = "Chestplate of Apocalyptic Machinations",
 		bindType = 1,
 		itemSellPrice = 12103,
-		itemLink = "|cffa335ee|Hitem:160722:::::::::::5:4:4823:1492:4786:5398::::::|h[Chestplate of Apocalyptic Machinations]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:160722:::::::::::5:4:4823:1492:4786:5398::::::|h[Chestplate of Apocalyptic Machinations]|h|r",
 		itemIcon = 2054627,
 		itemLevel = 80,
 		isCraftingReagent = false,
@@ -17741,7 +17906,8 @@ _G.Items = {
 		itemName = "Amalgamated Abomination Spaulders",
 		bindType = 1,
 		itemSellPrice = 223851,
-		itemLink = "|cffa335ee|Hitem:159385:::::::::::35:4:5445:1572:4786:5418::::::|h[Amalgamated Abomination Spaulders]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:159385:::::::::::35:4:5445:1572:4786:5418::::::|h[Amalgamated Abomination Spaulders]|h|r",
 		itemIcon = 2054806,
 		itemLevel = 159,
 		isCraftingReagent = false,
@@ -17781,7 +17947,8 @@ _G.Items = {
 		itemName = "Regurgitated Purifier's Flamestaff",
 		bindType = 1,
 		itemSellPrice = 22186,
-		itemLink = "|cffa335ee|Hitem:160689:5946::::::::::5:3:4799:1492:4786::::::|h[Regurgitated Purifier's Flamestaff]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:160689:5946::::::::::5:3:4799:1492:4786::::::|h[Regurgitated Purifier's Flamestaff]|h|r",
 		itemIcon = 1952883,
 		itemLevel = 80,
 		isCraftingReagent = false,
@@ -17801,7 +17968,8 @@ _G.Items = {
 		itemName = "Power-Assisted Vicegrips",
 		bindType = 1,
 		itemSellPrice = 26193,
-		itemLink = "|cffa335ee|Hitem:155864::154129:::::::::16:4:5007:4802:1532:4786::::::|h[Power-Assisted Vicegrips]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:155864::154129:::::::::16:4:5007:4802:1532:4786::::::|h[Power-Assisted Vicegrips]|h|r",
 		itemIcon = 2019431,
 		itemLevel = 119,
 		isCraftingReagent = false,
@@ -17821,7 +17989,8 @@ _G.Items = {
 		itemName = "Shorting Bit Band",
 		bindType = 1,
 		itemSellPrice = 27232,
-		itemLink = "|cffa335ee|Hitem:169160:6109:168641:::::::::23:5:4779:4802:1472:5875:4784::::::|h[Shorting Bit Band]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:169160:6109:168641:::::::::23:5:4779:4802:1472:5875:4784::::::|h[Shorting Bit Band]|h|r",
 		itemIcon = 2958712,
 		itemLevel = 108,
 		isCraftingReagent = false,
@@ -18063,7 +18232,8 @@ _G.Items = {
 		itemName = "Ring of the Infinite Void",
 		bindType = 1,
 		itemSellPrice = 3235,
-		itemLink = "|cffa335ee|Hitem:160647:5939:154126:::::::::3:4:4798:1808:1477:4786::::::|h[Ring of the Infinite Void]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:160647:5939:154126:::::::::3:4:4798:1808:1477:4786::::::|h[Ring of the Infinite Void]|h|r",
 		itemIcon = 2000824,
 		itemLevel = 65,
 		isCraftingReagent = false,
@@ -18223,7 +18393,8 @@ _G.Items = {
 		itemName = "Cannoneer's Toolbelt",
 		bindType = 1,
 		itemSellPrice = 242119,
-		itemLink = "|cffa335ee|Hitem:159434::168642:::::::::16:5:5010:4802:42:1602:4786::::::|h[Cannoneer's Toolbelt]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:159434::168642:::::::::16:5:5010:4802:42:1602:4786::::::|h[Cannoneer's Toolbelt]|h|r",
 		itemIcon = 1780198,
 		itemLevel = 189,
 		isCraftingReagent = false,
@@ -18263,7 +18434,8 @@ _G.Items = {
 		itemName = "Breastplate of Divine Purification",
 		bindType = 1,
 		itemSellPrice = 76018,
-		itemLink = "|cffa335ee|Hitem:165550:::::::::::6:5:4824:1537:4786:5419:4775::::::|h[Breastplate of Divine Purification]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:165550:::::::::::6:5:4824:1537:4786:5419:4775::::::|h[Breastplate of Divine Purification]|h|r",
 		itemIcon = 2467786,
 		itemLevel = 130,
 		isCraftingReagent = false,
@@ -18904,7 +19076,8 @@ _G.Items = {
 		itemName = "Spaulders of the Gorilla King",
 		bindType = 1,
 		itemSellPrice = 36337,
-		itemLink = "|cffa335ee|Hitem:165555:::::::::::5:5:4823:1522:4786:5418:4775::::::|h[Spaulders of the Gorilla King]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:165555:::::::::::5:5:4823:1522:4786:5418:4775::::::|h[Spaulders of the Gorilla King]|h|r",
 		itemIcon = 2467790,
 		itemLevel = 115,
 		isCraftingReagent = false,
@@ -18964,7 +19137,8 @@ _G.Items = {
 		itemName = "Visage of the Ascended Prophet",
 		bindType = 1,
 		itemSellPrice = 8957,
-		itemLink = "|cffa335ee|Hitem:160719:::::::::::5:4:4823:1492:4786:5399::::::|h[Visage of the Ascended Prophet]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:160719:::::::::::5:4:4823:1492:4786:5399::::::|h[Visage of the Ascended Prophet]|h|r",
 		itemIcon = 2059677,
 		itemLevel = 80,
 		isCraftingReagent = false,
@@ -18984,7 +19158,8 @@ _G.Items = {
 		itemName = "Dread Gladiator's Insignia",
 		bindType = 1,
 		itemSellPrice = 148334,
-		itemLink = "|cffa335ee|Hitem:161676::153709:::::::::40:5:4987:4802:5128:1562:4783::::::|h[Dread Gladiator's Insignia]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:161676::153709:::::::::40:5:4987:4802:5128:1562:4783::::::|h[Dread Gladiator's Insignia]|h|r",
 		itemIcon = 134501,
 		itemLevel = 148,
 		isCraftingReagent = false,
@@ -19164,7 +19339,8 @@ _G.Items = {
 		itemName = "Heptavium, Staff of Torturous Knowledge",
 		bindType = 1,
 		itemSellPrice = 22268,
-		itemLink = "|cffa335ee|Hitem:160690:::::::::::5:3:4799:1492:4786::::::|h[Heptavium, Staff of Torturous Knowledge]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:160690:::::::::::5:3:4799:1492:4786::::::|h[Heptavium, Staff of Torturous Knowledge]|h|r",
 		itemIcon = 1958553,
 		itemLevel = 80,
 		isCraftingReagent = false,
@@ -19444,7 +19620,8 @@ _G.Items = {
 		itemName = "Bracers of Zealous Calling",
 		bindType = 1,
 		itemSellPrice = 33550,
-		itemLink = "|cffa335ee|Hitem:165501::154126:::::::::6:4:4800:1808:1537:4786::::::|h[Bracers of Zealous Calling]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:165501::154126:::::::::6:4:4800:1808:1537:4786::::::|h[Bracers of Zealous Calling]|h|r",
 		itemIcon = 2280673,
 		itemLevel = 125,
 		isCraftingReagent = false,
@@ -19564,7 +19741,8 @@ _G.Items = {
 		itemName = "Shrapnel-Dampening Chestguard",
 		bindType = 1,
 		itemSellPrice = 642616,
-		itemLink = "|cffa335ee|Hitem:158307:::::::::::35:5:5448:1617:4786:6269:4775::::::|h[Shrapnel-Dampening Chestguard]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:158307:::::::::::35:5:5448:1617:4786:6269:4775::::::|h[Shrapnel-Dampening Chestguard]|h|r",
 		itemIcon = 2054953,
 		itemLevel = 209,
 		isCraftingReagent = false,
@@ -19824,7 +20002,8 @@ _G.Items = {
 		itemName = "Band of the Ancient Dredger",
 		bindType = 1,
 		itemSellPrice = 218514,
-		itemLink = "|cffa335ee|Hitem:159461:5939::::::::::35:4:5010:40:1582:4783::::::|h[Band of the Ancient Dredger]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:159461:5939::::::::::35:4:5010:40:1582:4783::::::|h[Band of the Ancient Dredger]|h|r",
 		itemIcon = 2000820,
 		itemLevel = 169,
 		isCraftingReagent = false,
@@ -19924,7 +20103,8 @@ _G.Items = {
 		itemName = "Cloak of Questionable Intent",
 		bindType = 1,
 		itemSellPrice = 252344,
-		itemLink = "|cffa335ee|Hitem:159287:6087:154126:::::::::35:4:5010:4802:1582:4783::::::|h[Cloak of Questionable Intent]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:159287:6087:154126:::::::::35:4:5010:4802:1582:4783::::::|h[Cloak of Questionable Intent]|h|r",
 		itemIcon = 2021378,
 		itemLevel = 169,
 		isCraftingReagent = false,
@@ -19944,7 +20124,8 @@ _G.Items = {
 		itemName = "Seal of Questionable Loyalties",
 		bindType = 1,
 		itemSellPrice = 215092,
-		itemLink = "|cffa335ee|Hitem:158314:5940::::::::::35:3:5010:1582:4783::::::|h[Seal of Questionable Loyalties]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:158314:5940::::::::::35:3:5010:1582:4783::::::|h[Seal of Questionable Loyalties]|h|r",
 		itemIcon = 2000826,
 		itemLevel = 169,
 		isCraftingReagent = false,
@@ -20045,7 +20226,8 @@ _G.Items = {
 		itemName = "Mantle of Contained Corruption",
 		bindType = 1,
 		itemSellPrice = 9196,
-		itemLink = "|cffa335ee|Hitem:160613:::::::::::5:4:4823:1492:4786:5400::::::|h[Mantle of Contained Corruption]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:160613:::::::::::5:4:4823:1492:4786:5400::::::|h[Mantle of Contained Corruption]|h|r",
 		itemIcon = 2059680,
 		itemLevel = 80,
 		isCraftingReagent = false,
@@ -20145,7 +20327,8 @@ _G.Items = {
 		itemName = "Pauldrons of Ancestral Vengeance",
 		bindType = 1,
 		itemSellPrice = 61075,
-		itemLink = "|cffa335ee|Hitem:165921:::::::::::6:5:4824:1537:4786:5421:4775::::::|h[Pauldrons of Ancestral Vengeance]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:165921:::::::::::6:5:4824:1537:4786:5421:4775::::::|h[Pauldrons of Ancestral Vengeance]|h|r",
 		itemIcon = 2324588,
 		itemLevel = 130,
 		isCraftingReagent = false,
@@ -20225,7 +20408,8 @@ _G.Items = {
 		itemName = "Bindings of the Slithering Current",
 		bindType = 1,
 		itemSellPrice = 125169,
-		itemLink = "|cffa335ee|Hitem:159263::154129:::::::::16:4:5008:4802:1567:4786::::::|h[Bindings of the Slithering Current]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:159263::154129:::::::::16:4:5008:4802:1567:4786::::::|h[Bindings of the Slithering Current]|h|r",
 		itemIcon = 1875080,
 		itemLevel = 154,
 		isCraftingReagent = false,
@@ -20425,7 +20609,8 @@ _G.Items = {
 		itemName = "Helm of the Inexorable Tide",
 		bindType = 1,
 		itemSellPrice = 30389,
-		itemLink = "|cffa335ee|Hitem:168345:::::::::::5:5:4823:1502:4786:6267:4775::::::|h[Helm of the Inexorable Tide]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:168345:::::::::::5:5:4823:1502:4786:6267:4775::::::|h[Helm of the Inexorable Tide]|h|r",
 		itemIcon = 2912999,
 		itemLevel = 107,
 		isCraftingReagent = false,
@@ -20585,7 +20770,8 @@ _G.Items = {
 		itemName = "Direforge Helm of the Fireflash",
 		bindType = 2,
 		itemSellPrice = 12945,
-		itemLink = "|cff1eff00|Hitem:55527:::::::::::1:2:6654:1691:2:9:40:28:1840:::::|h[Direforge Helm of the Fireflash]|h|r",
+		itemLink =
+		"|cff1eff00|Hitem:55527:::::::::::1:2:6654:1691:2:9:40:28:1840:::::|h[Direforge Helm of the Fireflash]|h|r",
 		itemIcon = 412513,
 		itemLevel = 35,
 		isCraftingReagent = false,
@@ -21305,7 +21491,8 @@ _G.Items = {
 		itemName = "Lord Waycrest's Signet",
 		bindType = 1,
 		itemSellPrice = 197926,
-		itemLink = "|cffa335ee|Hitem:158362:5942:168639:::::::::16:4:5010:4802:1572:4786::::::|h[Lord Waycrest's Signet]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:158362:5942:168639:::::::::16:4:5010:4802:1572:4786::::::|h[Lord Waycrest's Signet]|h|r",
 		itemIcon = 2000801,
 		itemLevel = 159,
 		isCraftingReagent = false,
@@ -21386,7 +21573,8 @@ _G.Items = {
 		itemName = "Crown of Bloody Succession",
 		bindType = 1,
 		itemSellPrice = 23668,
-		itemLink = "|cffa335ee|Hitem:165821:::::::::::3:5:4822:1507:4786:5414:4775::::::|h[Crown of Bloody Succession]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:165821:::::::::::3:5:4822:1507:4786:5414:4775::::::|h[Crown of Bloody Succession]|h|r",
 		itemIcon = 1670849,
 		itemLevel = 100,
 		isCraftingReagent = false,
@@ -21567,7 +21755,8 @@ _G.Items = {
 		itemName = "Gloves of Descending Madness",
 		bindType = 1,
 		itemSellPrice = 13804,
-		itemLink = "|cffa335ee|Hitem:160618:::::::::::6:5:4800:1808:43:1507:4786::::::|h[Gloves of Descending Madness]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:160618:::::::::::6:5:4800:1808:43:1507:4786::::::|h[Gloves of Descending Madness]|h|r",
 		itemIcon = 2021694,
 		itemLevel = 95,
 		isCraftingReagent = false,
@@ -21747,7 +21936,8 @@ _G.Items = {
 		itemName = "Band of Certain Annihilation",
 		bindType = 1,
 		itemSellPrice = 3137,
-		itemLink = "|cffa335ee|Hitem:160646:5943:154127:::::::::3:4:4798:1808:1477:4786::::::|h[Band of Certain Annihilation]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:160646:5943:154127:::::::::3:4:4798:1808:1477:4786::::::|h[Band of Certain Annihilation]|h|r",
 		itemIcon = 2000818,
 		itemLevel = 65,
 		isCraftingReagent = false,
@@ -21767,7 +21957,8 @@ _G.Items = {
 		itemName = "Raiment of the Blighted Tribe",
 		bindType = 1,
 		itemSellPrice = 409972,
-		itemLink = "|cffa335ee|Hitem:159335:::::::::::35:5:5448:1587:4786:5419:4775::::::|h[Raiment of the Blighted Tribe]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:159335:::::::::::35:5:5448:1587:4786:5419:4775::::::|h[Raiment of the Blighted Tribe]|h|r",
 		itemIcon = 1941310,
 		itemLevel = 179,
 		isCraftingReagent = false,
@@ -21987,7 +22178,8 @@ _G.Items = {
 		itemName = "Desecrated Blade of the Disciples",
 		bindType = 1,
 		itemSellPrice = 115721,
-		itemLink = "|cffa335ee|Hitem:165919:5963::::::::::6:3:4800:1542:4783::::::|h[Desecrated Blade of the Disciples]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:165919:5963::::::::::6:3:4800:1542:4783::::::|h[Desecrated Blade of the Disciples]|h|r",
 		itemIcon = 2466937,
 		itemLevel = 130,
 		isCraftingReagent = false,
@@ -22107,7 +22299,8 @@ _G.Items = {
 		itemName = "Bladefang Legguards of the Peerless",
 		bindType = 1,
 		itemSellPrice = 527,
-		itemLink = "|cffa335ee|Hitem:124584:::::::::::4:3:45:651:653:1:28:1943:::::|h[Bladefang Legguards of the Peerless]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:124584:::::::::::4:3:45:651:653:1:28:1943:::::|h[Bladefang Legguards of the Peerless]|h|r",
 		itemIcon = 973930,
 		itemLevel = 47,
 		isCraftingReagent = false,
@@ -22127,7 +22320,8 @@ _G.Items = {
 		itemName = "Seal of Questionable Loyalties",
 		bindType = 1,
 		itemSellPrice = 187174,
-		itemLink = "|cffa335ee|Hitem:158314:5943::::::::::16:3:5010:1572:4786::::::|h[Seal of Questionable Loyalties]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:158314:5943::::::::::16:3:5010:1572:4786::::::|h[Seal of Questionable Loyalties]|h|r",
 		itemIcon = 2000826,
 		itemLevel = 159,
 		isCraftingReagent = false,
@@ -22147,7 +22341,8 @@ _G.Items = {
 		itemName = "Bracers of Zealous Calling",
 		bindType = 1,
 		itemSellPrice = 33550,
-		itemLink = "|cffa335ee|Hitem:165501:5936:154127:::::::::6:4:4800:1808:1537:4786::::::|h[Bracers of Zealous Calling]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:165501:5936:154127:::::::::6:4:4800:1808:1537:4786::::::|h[Bracers of Zealous Calling]|h|r",
 		itemIcon = 2280673,
 		itemLevel = 125,
 		isCraftingReagent = false,
@@ -22247,7 +22442,8 @@ _G.Items = {
 		itemName = "Helm of Hideous Transformation",
 		bindType = 1,
 		itemSellPrice = 26976,
-		itemLink = "|cffa335ee|Hitem:168347:::::::::::5:4:4823:1502:4786:6267::::::|h[Helm of Hideous Transformation]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:168347:::::::::::5:4:4823:1502:4786:6267::::::|h[Helm of Hideous Transformation]|h|r",
 		itemIcon = 2912999,
 		itemLevel = 102,
 		isCraftingReagent = false,
@@ -22368,7 +22564,8 @@ _G.Items = {
 		itemName = "Ravaged Leather Boots of the Feverflare",
 		bindType = 1,
 		itemSellPrice = 41611,
-		itemLink = "|cff0070dd|Hitem:113769:::::::::::1:2:4244:118:2:9:42:28:1696:::::|h[Ravaged Leather Boots of the Feverflare]|h|r",
+		itemLink =
+		"|cff0070dd|Hitem:113769:::::::::::1:2:4244:118:2:9:42:28:1696:::::|h[Ravaged Leather Boots of the Feverflare]|h|r",
 		itemIcon = 436836,
 		itemLevel = 36,
 		isCraftingReagent = false,
@@ -22388,7 +22585,8 @@ _G.Items = {
 		itemName = "Dread Gladiator's Leather Armwraps",
 		bindType = 1,
 		itemSellPrice = 69729,
-		itemLink = "|cffa335ee|Hitem:161740:::::::::::38:3:5283:1557:5129::::::|h[Dread Gladiator's Leather Armwraps]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:161740:::::::::::38:3:5283:1557:5129::::::|h[Dread Gladiator's Leather Armwraps]|h|r",
 		itemIcon = 1805919,
 		itemLevel = 143,
 		isCraftingReagent = false,
@@ -22548,7 +22746,8 @@ _G.Items = {
 		itemName = "Greathelm of the Putrid Path",
 		bindType = 1,
 		itemSellPrice = 304673,
-		itemLink = "|cffa335ee|Hitem:159446:::::::::::35:5:5448:1587:4786:5420:4775::::::|h[Greathelm of the Putrid Path]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:159446:::::::::::35:5:5448:1587:4786:5420:4775::::::|h[Greathelm of the Putrid Path]|h|r",
 		itemIcon = 2019432,
 		itemLevel = 179,
 		isCraftingReagent = false,
@@ -22769,7 +22968,8 @@ _G.Items = {
 		itemName = "Heptavium, Staff of Torturous Knowledge",
 		bindType = 1,
 		itemSellPrice = 9291,
-		itemLink = "|cffa335ee|Hitem:160690:::::::::::3:3:4798:1477:4786::::::|h[Heptavium, Staff of Torturous Knowledge]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:160690:::::::::::3:3:4798:1477:4786::::::|h[Heptavium, Staff of Torturous Knowledge]|h|r",
 		itemIcon = 1958553,
 		itemLevel = 65,
 		isCraftingReagent = false,
@@ -22849,7 +23049,8 @@ _G.Items = {
 		itemName = "Sinister Combatant's Satin Cloak of the Fireflash",
 		bindType = 2,
 		itemSellPrice = 2977,
-		itemLink = "|cffa335ee|Hitem:164717:::::::::::13:1:1690::::::|h[Sinister Combatant's Satin Cloak of the Fireflash]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:164717:::::::::::13:1:1690::::::|h[Sinister Combatant's Satin Cloak of the Fireflash]|h|r",
 		itemIcon = 1866958,
 		itemLevel = 60,
 		isCraftingReagent = false,
@@ -22869,7 +23070,8 @@ _G.Items = {
 		itemName = "Naga Centaur's Shellplate",
 		bindType = 1,
 		itemSellPrice = 39995,
-		itemLink = "|cffa335ee|Hitem:168361:::::::::::5:5:4823:1502:4786:6266:4775::::::|h[Naga Centaur's Shellplate]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:168361:::::::::::5:5:4823:1502:4786:6266:4775::::::|h[Naga Centaur's Shellplate]|h|r",
 		itemIcon = 2901581,
 		itemLevel = 107,
 		isCraftingReagent = false,
@@ -22889,7 +23091,8 @@ _G.Items = {
 		itemName = "Sinister Gladiator's Leather Cap",
 		bindType = 1,
 		itemSellPrice = 16722,
-		itemLink = "|cffa335ee|Hitem:166597:::::::::::25:6:5253:5142:1497:4786:5414:4775::::::|h[Sinister Gladiator's Leather Cap]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:166597:::::::::::25:6:5253:5142:1497:4786:5414:4775::::::|h[Sinister Gladiator's Leather Cap]|h|r",
 		itemIcon = 2351532,
 		itemLevel = 90,
 		isCraftingReagent = false,
@@ -23109,7 +23312,8 @@ _G.Items = {
 		itemName = "Ritual Binder's Ring",
 		bindType = 1,
 		itemSellPrice = 286391,
-		itemLink = "|cffa335ee|Hitem:159459:6109:168641:::::::::16:4:5010:4802:1602:4786::::::|h[Ritual Binder's Ring]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:159459:6109:168641:::::::::16:4:5010:4802:1602:4786::::::|h[Ritual Binder's Ring]|h|r",
 		itemIcon = 2000813,
 		itemLevel = 189,
 		isCraftingReagent = false,
@@ -23289,7 +23493,8 @@ _G.Items = {
 		itemName = "Sinister Gladiator's Signet",
 		bindType = 1,
 		itemSellPrice = 10653,
-		itemLink = "|cffa335ee|Hitem:165054:5939::::::::::56:4:5173:5141:1497:4786::::::|h[Sinister Gladiator's Signet]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:165054:5939::::::::::56:4:5173:5141:1497:4786::::::|h[Sinister Gladiator's Signet]|h|r",
 		itemIcon = 2000805,
 		itemLevel = 85,
 		isCraftingReagent = false,
@@ -23329,7 +23534,8 @@ _G.Items = {
 		itemName = "Pauldrons of Ancestral Vengeance",
 		bindType = 1,
 		itemSellPrice = 33824,
-		itemLink = "|cffa335ee|Hitem:165921:::::::::::5:4:4823:1522:4786:5418::::::|h[Pauldrons of Ancestral Vengeance]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:165921:::::::::::5:4:4823:1522:4786:5418::::::|h[Pauldrons of Ancestral Vengeance]|h|r",
 		itemIcon = 2324587,
 		itemLevel = 110,
 		isCraftingReagent = false,
@@ -23489,7 +23695,8 @@ _G.Items = {
 		itemName = "Wristguards of the Sandswimmer",
 		bindType = 1,
 		itemSellPrice = 177442,
-		itemLink = "|cffa335ee|Hitem:159332:5971:154127:::::::::35:4:5010:4802:1582:4783::::::|h[Wristguards of the Sandswimmer]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:159332:5971:154127:::::::::35:4:5010:4802:1582:4783::::::|h[Wristguards of the Sandswimmer]|h|r",
 		itemIcon = 1941309,
 		itemLevel = 169,
 		isCraftingReagent = false,
@@ -23889,7 +24096,8 @@ _G.Items = {
 		itemName = "Ring of the Infinite Void",
 		bindType = 1,
 		itemSellPrice = 3235,
-		itemLink = "|cffa335ee|Hitem:160647:5938:154126:::::::::3:4:4798:1808:1477:4786::::::|h[Ring of the Infinite Void]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:160647:5938:154126:::::::::3:4:4798:1808:1477:4786::::::|h[Ring of the Infinite Void]|h|r",
 		itemIcon = 2000824,
 		itemLevel = 65,
 		isCraftingReagent = false,
@@ -24029,7 +24237,8 @@ _G.Items = {
 		itemName = "Seal of Questionable Loyalties",
 		bindType = 1,
 		itemSellPrice = 187174,
-		itemLink = "|cffa335ee|Hitem:158314:5943::::::::::16:4:5010:41:1572:4786::::::|h[Seal of Questionable Loyalties]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:158314:5943::::::::::16:4:5010:41:1572:4786::::::|h[Seal of Questionable Loyalties]|h|r",
 		itemIcon = 2000826,
 		itemLevel = 159,
 		isCraftingReagent = false,
@@ -24109,7 +24318,8 @@ _G.Items = {
 		itemName = "Shroud of Unmooring Whispers",
 		bindType = 1,
 		itemSellPrice = 18352,
-		itemLink = "|cffa335ee|Hitem:168349:::::::::::3:5:4822:1487:4786:6264:4775::::::|h[Shroud of Unmooring Whispers]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:168349:::::::::::3:5:4822:1487:4786:6264:4775::::::|h[Shroud of Unmooring Whispers]|h|r",
 		itemIcon = 2912999,
 		itemLevel = 92,
 		isCraftingReagent = false,
@@ -24149,7 +24359,8 @@ _G.Items = {
 		itemName = "Vestments of Indomitable Will",
 		bindType = 1,
 		itemSellPrice = 47066,
-		itemLink = "|cffa335ee|Hitem:165833:::::::::::5:5:4823:1522:4786:5416:4775::::::|h[Vestments of Indomitable Will]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:165833:::::::::::5:5:4823:1522:4786:5416:4775::::::|h[Vestments of Indomitable Will]|h|r",
 		itemIcon = 2353072,
 		itemLevel = 115,
 		isCraftingReagent = false,
@@ -24189,7 +24400,8 @@ _G.Items = {
 		itemName = "Darkwood Sentinel's Guise",
 		bindType = 1,
 		itemSellPrice = 31995,
-		itemLink = "|cffa335ee|Hitem:166571:::::::::::6:5:5126:1517:4786:5417:4775::::::|h[Darkwood Sentinel's Guise]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:166571:::::::::::6:5:5126:1517:4786:5417:4775::::::|h[Darkwood Sentinel's Guise]|h|r",
 		itemIcon = 2351547,
 		itemLevel = 110,
 		isCraftingReagent = false,
@@ -24690,7 +24902,8 @@ _G.Items = {
 		itemName = "Desecrated Blade of the Disciples",
 		bindType = 1,
 		itemSellPrice = 137440,
-		itemLink = "|cffa335ee|Hitem:165919:5963::::::::::6:3:4800:1547:4783::::::|h[Desecrated Blade of the Disciples]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:165919:5963::::::::::6:3:4800:1547:4783::::::|h[Desecrated Blade of the Disciples]|h|r",
 		itemIcon = 2466937,
 		itemLevel = 135,
 		isCraftingReagent = false,
@@ -25090,7 +25303,8 @@ _G.Items = {
 		itemName = "Arcing Thunderlizard Legplates",
 		bindType = 1,
 		itemSellPrice = 43709,
-		itemLink = "|cffa335ee|Hitem:165560:::::::::::5:4:4799:1808:1522:4786::::::|h[Arcing Thunderlizard Legplates]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:165560:::::::::::5:4:4799:1808:1522:4786::::::|h[Arcing Thunderlizard Legplates]|h|r",
 		itemIcon = 2467789,
 		itemLevel = 110,
 		isCraftingReagent = false,
@@ -25150,7 +25364,8 @@ _G.Items = {
 		itemName = "Cloak of Rippling Whispers",
 		bindType = 1,
 		itemSellPrice = 5443,
-		itemLink = "|cffa335ee|Hitem:160642::154128:::::::::3:4:4798:1808:1482:4783::::::|h[Cloak of Rippling Whispers]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:160642::154128:::::::::3:4:4798:1808:1482:4783::::::|h[Cloak of Rippling Whispers]|h|r",
 		itemIcon = 2059687,
 		itemLevel = 70,
 		isCraftingReagent = false,
@@ -25290,7 +25505,8 @@ _G.Items = {
 		itemName = "Cloak of Questionable Intent",
 		bindType = 1,
 		itemSellPrice = 22140,
-		itemLink = "|cffa335ee|Hitem:159287::154127:::::::::23:4:4779:4802:1512:4786::::::|h[Cloak of Questionable Intent]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:159287::154127:::::::::23:4:4779:4802:1512:4786::::::|h[Cloak of Questionable Intent]|h|r",
 		itemIcon = 2021378,
 		itemLevel = 99,
 		isCraftingReagent = false,
@@ -25370,7 +25586,8 @@ _G.Items = {
 		itemName = "Grips of Electrified Defense",
 		bindType = 1,
 		itemSellPrice = 57095,
-		itemLink = "|cffa335ee|Hitem:159337::154128:::::::::35:4:5010:4802:1552:4783::::::|h[Grips of Electrified Defense]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:159337::154128:::::::::35:4:5010:4802:1552:4783::::::|h[Grips of Electrified Defense]|h|r",
 		itemIcon = 1892757,
 		itemLevel = 139,
 		isCraftingReagent = false,
@@ -25551,7 +25768,8 @@ _G.Items = {
 		itemName = "Mr. Terrible",
 		bindType = 1,
 		itemSellPrice = 0,
-		itemLink = "|cffa335ee|Hitem:167555::168785:168752:168632:::::::11:1:1495:1:192:4786:5860:4784::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::",
+		itemLink =
+		"|cffa335ee|Hitem:167555::168785:168752:168632:::::::11:1:1495:1:192:4786:5860:4784::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::",
 		itemIcon = 646148,
 		itemLevel = 95,
 		isCraftingReagent = false,
@@ -25591,7 +25809,8 @@ _G.Items = {
 		itemName = "Venture Co. Plenipotentiary Vest",
 		bindType = 1,
 		itemSellPrice = 510693,
-		itemLink = "|cffa335ee|Hitem:159298:::::::::::35:5:5445:1602:4786:6266:4775::::::|h[Venture Co. Plenipotentiary Vest]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:159298:::::::::::35:5:5445:1602:4786:6266:4775::::::|h[Venture Co. Plenipotentiary Vest]|h|r",
 		itemIcon = 1892756,
 		itemLevel = 194,
 		isCraftingReagent = false,
@@ -25751,7 +25970,8 @@ _G.Items = {
 		itemName = "Exquisitely Aerodynamic Shoulderpads",
 		bindType = 1,
 		itemSellPrice = 318054,
-		itemLink = "|cffa335ee|Hitem:159232:::::::::::35:5:5448:1587:4786:5421:4775::::::|h[Exquisitely Aerodynamic Shoulderpads]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:159232:::::::::::35:5:5448:1587:4786:5421:4775::::::|h[Exquisitely Aerodynamic Shoulderpads]|h|r",
 		itemIcon = 1875085,
 		itemLevel = 179,
 		isCraftingReagent = false,
@@ -25771,7 +25991,8 @@ _G.Items = {
 		itemName = "Fathomstalker Headcover",
 		bindType = 1,
 		itemSellPrice = 25275,
-		itemLink = "|cffa335ee|Hitem:167762::::::::::::6:6300:6298:1502:4786:6264:4775::::::|h[Fathomstalker Headcover]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:167762::::::::::::6:6300:6298:1502:4786:6264:4775::::::|h[Fathomstalker Headcover]|h|r",
 		itemIcon = 2902643,
 		itemLevel = 101,
 		isCraftingReagent = false,
@@ -25851,7 +26072,8 @@ _G.Items = {
 		itemName = "Notorious Gladiator's Emblem",
 		bindType = 1,
 		itemSellPrice = 65151,
-		itemLink = "|cffa335ee|Hitem:167378::168641:::::::::56:6:6328:4802:6349:1537:5850:4783::::::|h[Notorious Gladiator's Emblem]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:167378::168641:::::::::56:6:6328:4802:6349:1537:5850:4783::::::|h[Notorious Gladiator's Emblem]|h|r",
 		itemIcon = 132344,
 		itemLevel = 130,
 		isCraftingReagent = false,
@@ -25951,7 +26173,8 @@ _G.Items = {
 		itemName = "7th Legionnaire's Armguards",
 		bindType = 1,
 		itemSellPrice = 93379,
-		itemLink = "|cffa335ee|Hitem:163403::154126:::::::::6:4:5126:4802:1562:4786::::::|h[7th Legionnaire's Armguards]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:163403::154126:::::::::6:4:5126:4802:1562:4786::::::|h[7th Legionnaire's Armguards]|h|r",
 		itemIcon = 2001823,
 		itemLevel = 148,
 		isCraftingReagent = false,
@@ -25971,7 +26194,8 @@ _G.Items = {
 		itemName = "Boralus Noble's Seal",
 		bindType = 1,
 		itemSellPrice = 21831,
-		itemLink = "|cffa335ee|Hitem:168889:6109:168641:::::::::5:4:4799:1808:1502:4786::::::|h[Boralus Noble's Seal]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:168889:6109:168641:::::::::5:4:4799:1808:1502:4786::::::|h[Boralus Noble's Seal]|h|r",
 		itemIcon = 1717149,
 		itemLevel = 102,
 		isCraftingReagent = false,
@@ -26131,7 +26355,8 @@ _G.Items = {
 		itemName = "Crimson Colossus Armguards",
 		bindType = 1,
 		itemSellPrice = 13753,
-		itemLink = "|cffa335ee|Hitem:160637:5936:154127:::::::::6:4:4800:1808:1507:4786::::::|h[Crimson Colossus Armguards]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:160637:5936:154127:::::::::6:4:4800:1808:1507:4786::::::|h[Crimson Colossus Armguards]|h|r",
 		itemIcon = 2054634,
 		itemLevel = 95,
 		isCraftingReagent = false,
@@ -26151,7 +26376,8 @@ _G.Items = {
 		itemName = "Exquisitely Aerodynamic Shoulderpads",
 		bindType = 1,
 		itemSellPrice = 482659,
-		itemLink = "|cffa335ee|Hitem:159232:::::::::::35:5:5448:1617:4786:6271:4775::::::|h[Exquisitely Aerodynamic Shoulderpads]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:159232:::::::::::35:5:5448:1617:4786:6271:4775::::::|h[Exquisitely Aerodynamic Shoulderpads]|h|r",
 		itemIcon = 1875085,
 		itemLevel = 209,
 		isCraftingReagent = false,
@@ -26311,7 +26537,8 @@ _G.Items = {
 		itemName = "Vestments of the Afterlife",
 		bindType = 1,
 		itemSellPrice = 47794,
-		itemLink = "|cffa335ee|Hitem:165498:::::::::::5:5:4823:1522:4786:5416:4775::::::|h[Vestments of the Afterlife]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:165498:::::::::::5:5:4823:1522:4786:5416:4775::::::|h[Vestments of the Afterlife]|h|r",
 		itemIcon = 2280684,
 		itemLevel = 115,
 		isCraftingReagent = false,
@@ -26652,7 +26879,8 @@ _G.Items = {
 		itemName = "Regurgitated Purifier's Flamestaff",
 		bindType = 1,
 		itemSellPrice = 38983,
-		itemLink = "|cffa335ee|Hitem:160689:5949::::::::::5:3:4799:1502:4783::::::|h[Regurgitated Purifier's Flamestaff]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:160689:5949::::::::::5:3:4799:1502:4783::::::|h[Regurgitated Purifier's Flamestaff]|h|r",
 		itemIcon = 1952883,
 		itemLevel = 90,
 		isCraftingReagent = false,
@@ -26752,7 +26980,8 @@ _G.Items = {
 		itemName = "Desecrated Blade of the Disciples",
 		bindType = 1,
 		itemSellPrice = 115721,
-		itemLink = "|cffa335ee|Hitem:165919:5949::::::::::6:4:4800:43:1542:4783::::::|h[Desecrated Blade of the Disciples]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:165919:5949::::::::::6:4:4800:43:1542:4783::::::|h[Desecrated Blade of the Disciples]|h|r",
 		itemIcon = 2466937,
 		itemLevel = 130,
 		isCraftingReagent = false,
@@ -26792,7 +27021,8 @@ _G.Items = {
 		itemName = "Seal of Questionable Loyalties",
 		bindType = 1,
 		itemSellPrice = 22960,
-		itemLink = "|cffa335ee|Hitem:158314:5943::::::::::16:3:4946:1517:4786::::::|h[Seal of Questionable Loyalties]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:158314:5943::::::::::16:3:4946:1517:4786::::::|h[Seal of Questionable Loyalties]|h|r",
 		itemIcon = 2000826,
 		itemLevel = 104,
 		isCraftingReagent = false,
@@ -26832,7 +27062,8 @@ _G.Items = {
 		itemName = "Ring of the Highborne Courtier",
 		bindType = 1,
 		itemSellPrice = 21910,
-		itemLink = "|cffa335ee|Hitem:168890:::::::::::5:4:4799:1808:1502:4786::::::|h[Ring of the Highborne Courtier]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:168890:::::::::::5:4:4799:1808:1502:4786::::::|h[Ring of the Highborne Courtier]|h|r",
 		itemIcon = 2000827,
 		itemLevel = 102,
 		isCraftingReagent = false,
@@ -27033,7 +27264,8 @@ _G.Items = {
 		itemName = "Ring of the Highborne Courtier",
 		bindType = 1,
 		itemSellPrice = 14801,
-		itemLink = "|cffa335ee|Hitem:168890:6108::::::::::3:4:4798:1487:5850:4783::::::|h[Ring of the Highborne Courtier]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:168890:6108::::::::::3:4:4798:1487:5850:4783::::::|h[Ring of the Highborne Courtier]|h|r",
 		itemIcon = 2000827,
 		itemLevel = 92,
 		isCraftingReagent = false,
@@ -27334,7 +27566,8 @@ _G.Items = {
 		itemName = "Trench Tyrant's Shoulderplates",
 		bindType = 1,
 		itemSellPrice = 30857,
-		itemLink = "|cffa335ee|Hitem:168362:::::::::::5:5:4823:1502:4786:6268:4775::::::|h[Trench Tyrant's Shoulderplates]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:168362:::::::::::5:5:4823:1502:4786:6268:4775::::::|h[Trench Tyrant's Shoulderplates]|h|r",
 		itemIcon = 2901585,
 		itemLevel = 107,
 		isCraftingReagent = false,
@@ -27454,7 +27687,8 @@ _G.Items = {
 		itemName = "Sinister Wicker Talons",
 		bindType = 1,
 		itemSellPrice = 45536,
-		itemLink = "|cffa335ee|Hitem:159659:5964:153708:::::::::23:4:4779:4802:1512:4786::::::|h[Sinister Wicker Talons]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:159659:5964:153708:::::::::23:4:4779:4802:1512:4786::::::|h[Sinister Wicker Talons]|h|r",
 		itemIcon = 1998655,
 		itemLevel = 99,
 		isCraftingReagent = false,
@@ -27494,7 +27728,8 @@ _G.Items = {
 		itemName = "Boralus Noble's Seal",
 		bindType = 1,
 		itemSellPrice = 44598,
-		itemLink = "|cffa335ee|Hitem:168889:6108:168639:::::::::5:5:4799:1808:1502:5870:4784::::::|h[Boralus Noble's Seal]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:168889:6108:168639:::::::::5:5:4799:1808:1502:5870:4784::::::|h[Boralus Noble's Seal]|h|r",
 		itemIcon = 1717149,
 		itemLevel = 127,
 		isCraftingReagent = false,
@@ -27514,7 +27749,8 @@ _G.Items = {
 		itemName = "Raiment of the Blighted Tribe",
 		bindType = 1,
 		itemSellPrice = 382441,
-		itemLink = "|cffa335ee|Hitem:159335:::::::::::35:4:5448:1587:4786:5419::::::|h[Raiment of the Blighted Tribe]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:159335:::::::::::35:4:5448:1587:4786:5419::::::|h[Raiment of the Blighted Tribe]|h|r",
 		itemIcon = 1941310,
 		itemLevel = 174,
 		isCraftingReagent = false,
@@ -27654,7 +27890,8 @@ _G.Items = {
 		itemName = "Grips of the Everlasting Guardian",
 		bindType = 1,
 		itemSellPrice = 269276,
-		itemLink = "|cffa335ee|Hitem:159445:5932::::::::::35:3:5010:1612:4783::::::|h[Grips of the Everlasting Guardian]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:159445:5932::::::::::35:3:5010:1612:4783::::::|h[Grips of the Everlasting Guardian]|h|r",
 		itemIcon = 2019431,
 		itemLevel = 199,
 		isCraftingReagent = false,
@@ -27894,7 +28131,8 @@ _G.Items = {
 		itemName = "Giga-Charged Shoulderpads",
 		bindType = 1,
 		itemSellPrice = 35644,
-		itemLink = "|cffa335ee|Hitem:165497:::::::::::5:5:4823:1522:4786:5418:4775::::::|h[Giga-Charged Shoulderpads]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:165497:::::::::::5:5:4823:1522:4786:5418:4775::::::|h[Giga-Charged Shoulderpads]|h|r",
 		itemIcon = 2280686,
 		itemLevel = 115,
 		isCraftingReagent = false,
@@ -28074,7 +28312,8 @@ _G.Items = {
 		itemName = "Chestplate of Apocalyptic Machinations",
 		bindType = 1,
 		itemSellPrice = 5049,
-		itemLink = "|cffa335ee|Hitem:160722:::::::::::3:3:4822:1477:4786::::::|h[Chestplate of Apocalyptic Machinations]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:160722:::::::::::3:3:4822:1477:4786::::::|h[Chestplate of Apocalyptic Machinations]|h|r",
 		itemIcon = 2054627,
 		itemLevel = 65,
 		isCraftingReagent = false,
@@ -28114,7 +28353,8 @@ _G.Items = {
 		itemName = "Fetid Horror's Tanglecloak",
 		bindType = 1,
 		itemSellPrice = 8853,
-		itemLink = "|cffa335ee|Hitem:160643::154127:::::::::5:4:4799:1808:1492:4786::::::|h[Fetid Horror's Tanglecloak]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:160643::154127:::::::::5:4:4799:1808:1492:4786::::::|h[Fetid Horror's Tanglecloak]|h|r",
 		itemIcon = 2021682,
 		itemLevel = 80,
 		isCraftingReagent = false,
@@ -28254,7 +28494,8 @@ _G.Items = {
 		itemName = "Bracers of Zealous Calling",
 		bindType = 1,
 		itemSellPrice = 33550,
-		itemLink = "|cffa335ee|Hitem:165501::168638:::::::::6:4:4800:1808:1537:4786::::::|h[Bracers of Zealous Calling]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:165501::168638:::::::::6:4:4800:1808:1537:4786::::::|h[Bracers of Zealous Calling]|h|r",
 		itemIcon = 2280673,
 		itemLevel = 125,
 		isCraftingReagent = false,
@@ -28354,7 +28595,8 @@ _G.Items = {
 		itemName = "Boralus Noble's Seal",
 		bindType = 1,
 		itemSellPrice = 25428,
-		itemLink = "|cffa335ee|Hitem:168889:6109:168641:::::::::5:5:4799:1808:1502:5850:4783::::::|h[Boralus Noble's Seal]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:168889:6109:168641:::::::::5:5:4799:1808:1502:5850:4783::::::|h[Boralus Noble's Seal]|h|r",
 		itemIcon = 1717149,
 		itemLevel = 107,
 		isCraftingReagent = false,
@@ -28455,7 +28697,8 @@ _G.Items = {
 		itemName = "Cowl of Righteous Resolve",
 		bindType = 1,
 		itemSellPrice = 58881,
-		itemLink = "|cffa335ee|Hitem:165519:::::::::::6:5:4824:1537:4786:5420:4775::::::|h[Cowl of Righteous Resolve]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:165519:::::::::::6:5:4824:1537:4786:5420:4775::::::|h[Cowl of Righteous Resolve]|h|r",
 		itemIcon = 2353077,
 		itemLevel = 130,
 		isCraftingReagent = false,
@@ -28635,7 +28878,8 @@ _G.Items = {
 		itemName = "Desecrated Blade of the Disciples",
 		bindType = 1,
 		itemSellPrice = 97434,
-		itemLink = "|cffa335ee|Hitem:165919::153709:::::::::6:4:4800:1808:1537:4786::::::|h[Desecrated Blade of the Disciples]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:165919::153709:::::::::6:4:4800:1808:1537:4786::::::|h[Desecrated Blade of the Disciples]|h|r",
 		itemIcon = 2466937,
 		itemLevel = 125,
 		isCraftingReagent = false,
@@ -28655,7 +28899,8 @@ _G.Items = {
 		itemName = "Gardbrace of Fractured Reality",
 		bindType = 1,
 		itemSellPrice = 31195,
-		itemLink = "|cffa335ee|Hitem:169588:::::::::::5:5:4823:1502:4786:6268:4775::::::|h[Gardbrace of Fractured Reality]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:169588:::::::::::5:5:4823:1502:4786:6268:4775::::::|h[Gardbrace of Fractured Reality]|h|r",
 		itemIcon = 2909763,
 		itemLevel = 107,
 		isCraftingReagent = false,
@@ -28855,7 +29100,8 @@ _G.Items = {
 		itemName = "Dread Gladiator's Greatcloak",
 		bindType = 1,
 		itemSellPrice = 38520,
-		itemLink = "|cffa335ee|Hitem:163730::154127:::::::::8:5:4982:4802:5129:1532:4786::::::|h[Dread Gladiator's Greatcloak]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:163730::154127:::::::::8:5:4982:4802:5129:1532:4786::::::|h[Dread Gladiator's Greatcloak]|h|r",
 		itemIcon = 1805916,
 		itemLevel = 118,
 		isCraftingReagent = false,
@@ -29215,7 +29461,8 @@ _G.Items = {
 		itemName = "Drape of the Loyal Vassal",
 		bindType = 1,
 		itemSellPrice = 229770,
-		itemLink = "|cffa335ee|Hitem:158375::154127:::::::::16:4:5010:4802:1572:4786::::::|h[Drape of the Loyal Vassal]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:158375::154127:::::::::16:4:5010:4802:1572:4786::::::|h[Drape of the Loyal Vassal]|h|r",
 		itemIcon = 1957069,
 		itemLevel = 159,
 		isCraftingReagent = false,
@@ -29235,7 +29482,8 @@ _G.Items = {
 		itemName = "Seal of Questionable Loyalties",
 		bindType = 1,
 		itemSellPrice = 284043,
-		itemLink = "|cffa335ee|Hitem:158314:6108:168639:::::::::16:4:5010:4802:1602:4786::::::|h[Seal of Questionable Loyalties]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:158314:6108:168639:::::::::16:4:5010:4802:1602:4786::::::|h[Seal of Questionable Loyalties]|h|r",
 		itemIcon = 2000826,
 		itemLevel = 189,
 		isCraftingReagent = false,
@@ -29375,7 +29623,8 @@ _G.Items = {
 		itemName = "Legplates of Charged Duality",
 		bindType = 1,
 		itemSellPrice = 483168,
-		itemLink = "|cffa335ee|Hitem:159435::168641:::::::::16:4:5010:4802:1602:4786::::::|h[Legplates of Charged Duality]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:159435::168641:::::::::16:4:5010:4802:1602:4786::::::|h[Legplates of Charged Duality]|h|r",
 		itemIcon = 2019433,
 		itemLevel = 189,
 		isCraftingReagent = false,
@@ -29415,7 +29664,8 @@ _G.Items = {
 		itemName = "Azsh'ari Stormsurger Vest",
 		bindType = 1,
 		itemSellPrice = 31913,
-		itemLink = "|cffa335ee|Hitem:167767::::::::::::6:6300:6298:1502:4786:6263:4775::::::|h[Azsh'ari Stormsurger Vest]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:167767::::::::::::6:6300:6298:1502:4786:6263:4775::::::|h[Azsh'ari Stormsurger Vest]|h|r",
 		itemIcon = 2915286,
 		itemLevel = 101,
 		isCraftingReagent = false,
@@ -29435,7 +29685,8 @@ _G.Items = {
 		itemName = "Plasma-Spattered Greatcloak",
 		bindType = 1,
 		itemSellPrice = 8886,
-		itemLink = "|cffa335ee|Hitem:160644::154127:::::::::5:4:4799:1808:1492:4786::::::|h[Plasma-Spattered Greatcloak]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:160644::154127:::::::::5:4:4799:1808:1492:4786::::::|h[Plasma-Spattered Greatcloak]|h|r",
 		itemIcon = 1991833,
 		itemLevel = 80,
 		isCraftingReagent = false,
@@ -29615,7 +29866,8 @@ _G.Items = {
 		itemName = "Girdle of Burgeoning Apathy",
 		bindType = 1,
 		itemSellPrice = 274240,
-		itemLink = "|cffa335ee|Hitem:159450::168639:::::::::35:4:5010:4802:1612:4783::::::|h[Girdle of Burgeoning Apathy]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:159450::168639:::::::::35:4:5010:4802:1612:4783::::::|h[Girdle of Burgeoning Apathy]|h|r",
 		itemIcon = 1780198,
 		itemLevel = 199,
 		isCraftingReagent = false,
@@ -29735,7 +29987,8 @@ _G.Items = {
 		itemName = "Pauldrons of Ancestral Vengeance",
 		bindType = 1,
 		itemSellPrice = 38268,
-		itemLink = "|cffa335ee|Hitem:165921:::::::::::5:5:4823:1522:4786:5418:4775::::::|h[Pauldrons of Ancestral Vengeance]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:165921:::::::::::5:5:4823:1522:4786:5418:4775::::::|h[Pauldrons of Ancestral Vengeance]|h|r",
 		itemIcon = 2324587,
 		itemLevel = 115,
 		isCraftingReagent = false,
@@ -29875,7 +30128,8 @@ _G.Items = {
 		itemName = "Seal of Questionable Loyalties",
 		bindType = 1,
 		itemSellPrice = 187174,
-		itemLink = "|cffa335ee|Hitem:158314:5938::::::::::16:3:5010:1572:4786::::::|h[Seal of Questionable Loyalties]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:158314:5938::::::::::16:3:5010:1572:4786::::::|h[Seal of Questionable Loyalties]|h|r",
 		itemIcon = 2000826,
 		itemLevel = 159,
 		isCraftingReagent = false,
@@ -29915,7 +30169,8 @@ _G.Items = {
 		itemName = "Ritual Binder's Ring",
 		bindType = 1,
 		itemSellPrice = 286391,
-		itemLink = "|cffa335ee|Hitem:159459:6110:168640:::::::::16:4:5010:4802:1602:4786::::::|h[Ritual Binder's Ring]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:159459:6110:168640:::::::::16:4:5010:4802:1602:4786::::::|h[Ritual Binder's Ring]|h|r",
 		itemIcon = 2000813,
 		itemLevel = 189,
 		isCraftingReagent = false,
@@ -30076,7 +30331,8 @@ _G.Items = {
 		itemName = "Venerated Raptorhide Bindings",
 		bindType = 1,
 		itemSellPrice = 232634,
-		itemLink = "|cffa335ee|Hitem:160214::168642:::::::::16:5:5010:4802:41:1602:4786::::::|h[Venerated Raptorhide Bindings]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:160214::168642:::::::::16:5:5010:4802:41:1602:4786::::::|h[Venerated Raptorhide Bindings]|h|r",
 		itemIcon = 1892755,
 		itemLevel = 189,
 		isCraftingReagent = false,
@@ -30116,7 +30372,8 @@ _G.Items = {
 		itemName = "7th Legionnaire's Britches",
 		bindType = 1,
 		itemSellPrice = 231966,
-		itemLink = "|cffa335ee|Hitem:163266::154128:::::::::28:4:5125:4802:1567:4786::::::|h[7th Legionnaire's Britches]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:163266::154128:::::::::28:4:5125:4802:1567:4786::::::|h[7th Legionnaire's Britches]|h|r",
 		itemIcon = 1805923,
 		itemLevel = 153,
 		isCraftingReagent = false,
@@ -30256,7 +30513,8 @@ _G.Items = {
 		itemName = "Gloves of Descending Madness",
 		bindType = 1,
 		itemSellPrice = 6457,
-		itemLink = "|cffa335ee|Hitem:160618:5932:154127:::::::::5:4:4799:1808:1492:4786::::::|h[Gloves of Descending Madness]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:160618:5932:154127:::::::::5:4:4799:1808:1492:4786::::::|h[Gloves of Descending Madness]|h|r",
 		itemIcon = 2021684,
 		itemLevel = 80,
 		isCraftingReagent = false,
@@ -30437,7 +30695,8 @@ _G.Items = {
 		itemName = "Murky Cerulean Signet",
 		bindType = 1,
 		itemSellPrice = 224248,
-		itemLink = "|cffa335ee|Hitem:158318:5943:154127:::::::::35:4:5010:4802:1582:4783::::::|h[Murky Cerulean Signet]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:158318:5943:154127:::::::::35:4:5010:4802:1582:4783::::::|h[Murky Cerulean Signet]|h|r",
 		itemIcon = 1716830,
 		itemLevel = 169,
 		isCraftingReagent = false,
@@ -30497,7 +30756,8 @@ _G.Items = {
 		itemName = "Wristwraps of Coursing Miasma",
 		bindType = 1,
 		itemSellPrice = 8733,
-		itemLink = "|cffa335ee|Hitem:160621:5971:154128:::::::::5:4:4799:1808:1497:4783::::::|h[Wristwraps of Coursing Miasma]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:160621:5971:154128:::::::::5:4:4799:1808:1497:4783::::::|h[Wristwraps of Coursing Miasma]|h|r",
 		itemIcon = 2021680,
 		itemLevel = 85,
 		isCraftingReagent = false,
@@ -30537,7 +30797,8 @@ _G.Items = {
 		itemName = "Handmaiden's Cowl of Sacrifice",
 		bindType = 1,
 		itemSellPrice = 29385,
-		itemLink = "|cffa335ee|Hitem:168336:::::::::::5:5:4823:1502:4786:6267:4775::::::|h[Handmaiden's Cowl of Sacrifice]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:168336:::::::::::5:5:4823:1502:4786:6267:4775::::::|h[Handmaiden's Cowl of Sacrifice]|h|r",
 		itemIcon = 2906599,
 		itemLevel = 107,
 		isCraftingReagent = false,
@@ -30757,7 +31018,8 @@ _G.Items = {
 		itemName = "Ring of the Infinite Void",
 		bindType = 1,
 		itemSellPrice = 1350,
-		itemLink = "|cffa335ee|Hitem:160647:5938:154126:::::::::4:4:4801:1808:1462:4786::::::|h[Ring of the Infinite Void]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:160647:5938:154126:::::::::4:4:4801:1808:1462:4786::::::|h[Ring of the Infinite Void]|h|r",
 		itemIcon = 2000824,
 		itemLevel = 50,
 		isCraftingReagent = false,
@@ -30777,7 +31039,8 @@ _G.Items = {
 		itemName = "Ring of the Highborne Courtier",
 		bindType = 1,
 		itemSellPrice = 32668,
-		itemLink = "|cffa335ee|Hitem:168890:::::::::::5:4:4799:1502:5860:4784::::::|h[Ring of the Highborne Courtier]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:168890:::::::::::5:4:4799:1502:5860:4784::::::|h[Ring of the Highborne Courtier]|h|r",
 		itemIcon = 2000827,
 		itemLevel = 117,
 		isCraftingReagent = false,
@@ -31018,7 +31281,8 @@ _G.Items = {
 		itemName = "Seal of Questionable Loyalties",
 		bindType = 1,
 		itemSellPrice = 29391,
-		itemLink = "|cffa335ee|Hitem:158314:5943:154127:::::::::16:4:5006:4802:1527:4786::::::|h[Seal of Questionable Loyalties]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:158314:5943:154127:::::::::16:4:5006:4802:1527:4786::::::|h[Seal of Questionable Loyalties]|h|r",
 		itemIcon = 2000826,
 		itemLevel = 114,
 		isCraftingReagent = false,
@@ -31118,7 +31382,8 @@ _G.Items = {
 		itemName = "Ori's Tidal Wristwraps",
 		bindType = 1,
 		itemSellPrice = 17233,
-		itemLink = "|cffa335ee|Hitem:170305::168640::::::::::5:6300:4802:6293:1507:4786::::::|h[Ori's Tidal Wristwraps]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:170305::168640::::::::::5:6300:4802:6293:1507:4786::::::|h[Ori's Tidal Wristwraps]|h|r",
 		itemIcon = 2902639,
 		itemLevel = 101,
 		isCraftingReagent = false,
@@ -31138,7 +31403,8 @@ _G.Items = {
 		itemName = "Regurgitated Purifier's Flamestaff",
 		bindType = 1,
 		itemSellPrice = 22186,
-		itemLink = "|cffa335ee|Hitem:160689:5946:154128:::::::::5:4:4799:1808:1492:4786::::::|h[Regurgitated Purifier's Flamestaff]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:160689:5946:154128:::::::::5:4:4799:1808:1492:4786::::::|h[Regurgitated Purifier's Flamestaff]|h|r",
 		itemIcon = 1952883,
 		itemLevel = 80,
 		isCraftingReagent = false,
@@ -31459,7 +31725,8 @@ _G.Items = {
 		itemName = "Tunic of the Sanguine Deity",
 		bindType = 1,
 		itemSellPrice = 17001,
-		itemLink = "|cffa335ee|Hitem:160728:::::::::::5:5:4823:1492:4786:5398:4775::::::|h[Tunic of the Sanguine Deity]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:160728:::::::::::5:5:4823:1492:4786:5398:4775::::::|h[Tunic of the Sanguine Deity]|h|r",
 		itemIcon = 2021683,
 		itemLevel = 85,
 		isCraftingReagent = false,
@@ -31519,7 +31786,8 @@ _G.Items = {
 		itemName = "Visage of the Ascended Prophet",
 		bindType = 1,
 		itemSellPrice = 3737,
-		itemLink = "|cffa335ee|Hitem:160719:::::::::::3:4:4822:1477:4786:5396::::::|h[Visage of the Ascended Prophet]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:160719:::::::::::3:4:4822:1477:4786:5396::::::|h[Visage of the Ascended Prophet]|h|r",
 		itemIcon = 2059677,
 		itemLevel = 65,
 		isCraftingReagent = false,
@@ -31599,7 +31867,8 @@ _G.Items = {
 		itemName = "Sinister Gladiator's Longbow",
 		bindType = 1,
 		itemSellPrice = 15792,
-		itemLink = "|cffa335ee|Hitem:165043:5957::::::::::25:4:5252:5141:1487:4786::::::|h[Sinister Gladiator's Longbow]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:165043:5957::::::::::25:4:5252:5141:1487:4786::::::|h[Sinister Gladiator's Longbow]|h|r",
 		itemIcon = 2263236,
 		itemLevel = 75,
 		isCraftingReagent = false,
@@ -31919,7 +32188,8 @@ _G.Items = {
 		itemName = "Leggings of Lingering Infestation",
 		bindType = 1,
 		itemSellPrice = 5300,
-		itemLink = "|cffa335ee|Hitem:160615:::::::::::3:4:4798:41:1477:4786::::::|h[Leggings of Lingering Infestation]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:160615:::::::::::3:4:4798:41:1477:4786::::::|h[Leggings of Lingering Infestation]|h|r",
 		itemIcon = 2059678,
 		itemLevel = 65,
 		isCraftingReagent = false,
@@ -32059,7 +32329,8 @@ _G.Items = {
 		itemName = "Shoulderpads of Frothing Rage",
 		bindType = 1,
 		itemSellPrice = 31530,
-		itemLink = "|cffa335ee|Hitem:168348:::::::::::5:5:4823:1502:4786:6268:4775::::::|h[Shoulderpads of Frothing Rage]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:168348:::::::::::5:5:4823:1502:4786:6268:4775::::::|h[Shoulderpads of Frothing Rage]|h|r",
 		itemIcon = 2913001,
 		itemLevel = 107,
 		isCraftingReagent = false,
@@ -32079,7 +32350,8 @@ _G.Items = {
 		itemName = "Breastplate of the Deathbound",
 		bindType = 1,
 		itemSellPrice = 51845,
-		itemLink = "|cffa335ee|Hitem:165832:::::::::::5:5:4823:1522:4786:5416:4775::::::|h[Breastplate of the Deathbound]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:165832:::::::::::5:5:4823:1522:4786:5416:4775::::::|h[Breastplate of the Deathbound]|h|r",
 		itemIcon = 2467786,
 		itemLevel = 115,
 		isCraftingReagent = false,
@@ -32199,7 +32471,8 @@ _G.Items = {
 		itemName = "Notorious Gladiator's Claw",
 		bindType = 1,
 		itemSellPrice = 61817,
-		itemLink = "|cffa335ee|Hitem:171160:5962::::::::::25:5:40:6348:1522:4786:5843::::::|h[Notorious Gladiator's Claw]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:171160:5962::::::::::25:5:40:6348:1522:4786:5843::::::|h[Notorious Gladiator's Claw]|h|r",
 		itemIcon = 2835178,
 		itemLevel = 110,
 		isCraftingReagent = false,
@@ -32279,7 +32552,8 @@ _G.Items = {
 		itemName = "Leggings of the Aberrant Tidesage",
 		bindType = 1,
 		itemSellPrice = 50394,
-		itemLink = "|cffa335ee|Hitem:167838:::::::::::5:4:4799:1808:1527:4786::::::|h[Leggings of the Aberrant Tidesage]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:167838:::::::::::5:4:4799:1808:1527:4786::::::|h[Leggings of the Aberrant Tidesage]|h|r",
 		itemIcon = 2353078,
 		itemLevel = 115,
 		isCraftingReagent = false,
@@ -32319,7 +32593,8 @@ _G.Items = {
 		itemName = "Seal of Questionable Loyalties",
 		bindType = 1,
 		itemSellPrice = 215092,
-		itemLink = "|cffa335ee|Hitem:158314:5938::::::::::35:3:5010:1582:4783::::::|h[Seal of Questionable Loyalties]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:158314:5938::::::::::35:3:5010:1582:4783::::::|h[Seal of Questionable Loyalties]|h|r",
 		itemIcon = 2000826,
 		itemLevel = 169,
 		isCraftingReagent = false,
@@ -32339,7 +32614,8 @@ _G.Items = {
 		itemName = "7th Legionnaire's Gauntlets",
 		bindType = 1,
 		itemSellPrice = 352197,
-		itemLink = "|cffa335ee|Hitem:163414:5932::::::::::23:4:5845:1622:5855:4783::::::|h[7th Legionnaire's Gauntlets]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:163414:5932::::::::::23:4:5845:1622:5855:4783::::::|h[7th Legionnaire's Gauntlets]|h|r",
 		itemIcon = 2001826,
 		itemLevel = 218,
 		isCraftingReagent = false,
@@ -33061,7 +33337,8 @@ _G.Items = {
 		itemName = "C'thraxxi Binders Pauldrons",
 		bindType = 1,
 		itemSellPrice = 319210,
-		itemLink = "|cffa335ee|Hitem:159439:::::::::::35:5:5448:1587:4786:5421:4775::::::|h[C'thraxxi Binders Pauldrons]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:159439:::::::::::35:5:5448:1587:4786:5421:4775::::::|h[C'thraxxi Binders Pauldrons]|h|r",
 		itemIcon = 2001440,
 		itemLevel = 179,
 		isCraftingReagent = false,
@@ -33621,7 +33898,8 @@ _G.Items = {
 		itemName = "Sinister Gladiator's Chain Helm",
 		bindType = 1,
 		itemSellPrice = 16046,
-		itemLink = "|cffa335ee|Hitem:164825:::::::::::25:6:5253:5142:1497:4786:5414:4775::::::|h[Sinister Gladiator's Chain Helm]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:164825:::::::::::25:6:5253:5142:1497:4786:5414:4775::::::|h[Sinister Gladiator's Chain Helm]|h|r",
 		itemIcon = 2373965,
 		itemLevel = 90,
 		isCraftingReagent = false,
@@ -33641,7 +33919,8 @@ _G.Items = {
 		itemName = "Cudgel of Correctional Oversight",
 		bindType = 1,
 		itemSellPrice = 70664,
-		itemLink = "|cffa335ee|Hitem:159658:3370::::::::::16:3:5005:1527:4786::::::|h[Cudgel of Correctional Oversight]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:159658:3370::::::::::16:3:5005:1527:4786::::::|h[Cudgel of Correctional Oversight]|h|r",
 		itemIcon = 1934753,
 		itemLevel = 114,
 		isCraftingReagent = false,
@@ -33921,7 +34200,8 @@ _G.Items = {
 		itemName = "Seal of Questionable Loyalties",
 		bindType = 1,
 		itemSellPrice = 187174,
-		itemLink = "|cffa335ee|Hitem:158314:5942::::::::::16:3:5010:1572:4786::::::|h[Seal of Questionable Loyalties]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:158314:5942::::::::::16:3:5010:1572:4786::::::|h[Seal of Questionable Loyalties]|h|r",
 		itemIcon = 2000826,
 		itemLevel = 159,
 		isCraftingReagent = false,
@@ -34221,7 +34501,8 @@ _G.Items = {
 		itemName = "Helm of Hideous Transformation",
 		bindType = 1,
 		itemSellPrice = 31420,
-		itemLink = "|cffa335ee|Hitem:168347:::::::::::5:5:4823:1502:4786:6267:4775::::::|h[Helm of Hideous Transformation]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:168347:::::::::::5:5:4823:1502:4786:6267:4775::::::|h[Helm of Hideous Transformation]|h|r",
 		itemIcon = 2912999,
 		itemLevel = 107,
 		isCraftingReagent = false,
@@ -34362,7 +34643,8 @@ _G.Items = {
 		itemName = "Phantom Stalker Shoulders",
 		bindType = 1,
 		itemSellPrice = 37438,
-		itemLink = "|cffa335ee|Hitem:165523:::::::::::5:5:4823:1522:4786:5418:4775::::::|h[Phantom Stalker Shoulders]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:165523:::::::::::5:5:4823:1522:4786:5418:4775::::::|h[Phantom Stalker Shoulders]|h|r",
 		itemIcon = 2353080,
 		itemLevel = 115,
 		isCraftingReagent = false,
@@ -34462,7 +34744,8 @@ _G.Items = {
 		itemName = "Corrupted Hexxer's Vestments",
 		bindType = 1,
 		itemSellPrice = 610679,
-		itemLink = "|cffa335ee|Hitem:159370:::::::::::35:5:5448:1617:4786:6269:4775::::::|h[Corrupted Hexxer's Vestments]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:159370:::::::::::35:5:5448:1617:4786:6269:4775::::::|h[Corrupted Hexxer's Vestments]|h|r",
 		itemIcon = 2054953,
 		itemLevel = 209,
 		isCraftingReagent = false,
@@ -34482,7 +34765,8 @@ _G.Items = {
 		itemName = "Sinister Gladiator's Chainmail",
 		bindType = 1,
 		itemSellPrice = 21612,
-		itemLink = "|cffa335ee|Hitem:166628:::::::::::56:6:5243:5142:1497:4786:5413:4775::::::|h[Sinister Gladiator's Chainmail]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:166628:::::::::::56:6:5243:5142:1497:4786:5413:4775::::::|h[Sinister Gladiator's Chainmail]|h|r",
 		itemIcon = 2373963,
 		itemLevel = 90,
 		isCraftingReagent = false,
@@ -34642,7 +34926,8 @@ _G.Items = {
 		itemName = "Seal of Questionable Loyalties",
 		bindType = 1,
 		itemSellPrice = 187174,
-		itemLink = "|cffa335ee|Hitem:158314:5939:153711:::::::::16:5:5010:4802:40:1572:4786::::::|h[Seal of Questionable Loyalties]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:158314:5939:153711:::::::::16:5:5010:4802:40:1572:4786::::::|h[Seal of Questionable Loyalties]|h|r",
 		itemIcon = 2000826,
 		itemLevel = 159,
 		isCraftingReagent = false,
@@ -34722,7 +35007,8 @@ _G.Items = {
 		itemName = "Desiccator's Blessed Gloves",
 		bindType = 1,
 		itemSellPrice = 262153,
-		itemLink = "|cffa335ee|Hitem:159312::168642:::::::::35:4:5010:4802:1612:4783::::::|h[Desiccator's Blessed Gloves]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:159312::168642:::::::::35:4:5010:4802:1612:4783::::::|h[Desiccator's Blessed Gloves]|h|r",
 		itemIcon = 1892757,
 		itemLevel = 199,
 		isCraftingReagent = false,
@@ -34762,7 +35048,8 @@ _G.Items = {
 		itemName = "Chestplate of Apocalyptic Machinations",
 		bindType = 1,
 		itemSellPrice = 12103,
-		itemLink = "|cffa335ee|Hitem:160722:::::::::::5:3:4823:1492:4786::::::|h[Chestplate of Apocalyptic Machinations]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:160722:::::::::::5:3:4823:1492:4786::::::|h[Chestplate of Apocalyptic Machinations]|h|r",
 		itemIcon = 2054627,
 		itemLevel = 80,
 		isCraftingReagent = false,
@@ -34922,7 +35209,8 @@ _G.Items = {
 		itemName = "Abyssal Commander's Mantle",
 		bindType = 1,
 		itemSellPrice = 29714,
-		itemLink = "|cffa335ee|Hitem:168359:::::::::::5:5:4823:1502:4786:6268:4775::::::|h[Abyssal Commander's Mantle]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:168359:::::::::::5:5:4823:1502:4786:6268:4775::::::|h[Abyssal Commander's Mantle]|h|r",
 		itemIcon = 2909763,
 		itemLevel = 107,
 		isCraftingReagent = false,
@@ -34982,7 +35270,8 @@ _G.Items = {
 		itemName = "Desecrated Blade of the Disciples",
 		bindType = 1,
 		itemSellPrice = 64087,
-		itemLink = "|cffa335ee|Hitem:165919:5963::::::::::5:3:4799:1522:4786::::::|h[Desecrated Blade of the Disciples]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:165919:5963::::::::::5:3:4799:1522:4786::::::|h[Desecrated Blade of the Disciples]|h|r",
 		itemIcon = 2466937,
 		itemLevel = 110,
 		isCraftingReagent = false,
@@ -35422,7 +35711,8 @@ _G.Items = {
 		itemName = "Jerkin of the Aberrant Chimera",
 		bindType = 1,
 		itemSellPrice = 17245,
-		itemLink = "|cffa335ee|Hitem:160619:::::::::::5:4:4823:1492:4786:4775::::::|h[Jerkin of the Aberrant Chimera]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:160619:::::::::::5:4:4823:1492:4786:4775::::::|h[Jerkin of the Aberrant Chimera]|h|r",
 		itemIcon = 2021683,
 		itemLevel = 85,
 		isCraftingReagent = false,
@@ -35542,7 +35832,8 @@ _G.Items = {
 		itemName = "Pursax, the Backborer",
 		bindType = 1,
 		itemSellPrice = 23318,
-		itemLink = "|cffa335ee|Hitem:160684:5963:154127:::::::::5:4:4799:1808:1497:4783::::::|h[Pursax, the Backborer]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:160684:5963:154127:::::::::5:4:4799:1808:1497:4783::::::|h[Pursax, the Backborer]|h|r",
 		itemIcon = 1966587,
 		itemLevel = 85,
 		isCraftingReagent = false,
@@ -35942,7 +36233,8 @@ _G.Items = {
 		itemName = "Flamecaster Botefeux",
 		bindType = 1,
 		itemSellPrice = 76935,
-		itemLink = "|cffa335ee|Hitem:159129:5949:154129:::::::::16:4:5002:4802:1522:4786::::::|h[Flamecaster Botefeux]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:159129:5949:154129:::::::::16:4:5002:4802:1522:4786::::::|h[Flamecaster Botefeux]|h|r",
 		itemIcon = 1926371,
 		itemLevel = 109,
 		isCraftingReagent = false,
@@ -36063,7 +36355,8 @@ _G.Items = {
 		itemName = "Shoulderguards of Crushing Depths",
 		bindType = 1,
 		itemSellPrice = 29157,
-		itemLink = "|cffa335ee|Hitem:168354:::::::::::5:5:4823:1502:4786:6268:4775::::::|h[Shoulderguards of Crushing Depths]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:168354:::::::::::5:5:4823:1502:4786:6268:4775::::::|h[Shoulderguards of Crushing Depths]|h|r",
 		itemIcon = 2909763,
 		itemLevel = 107,
 		isCraftingReagent = false,
@@ -36224,7 +36517,8 @@ _G.Items = {
 		itemName = "Spaulders of Coagulated Viscera",
 		bindType = 1,
 		itemSellPrice = 9612,
-		itemLink = "|cffa335ee|Hitem:160731:::::::::::5:4:4823:1492:4786:5400::::::|h[Spaulders of Coagulated Viscera]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:160731:::::::::::5:4:4823:1492:4786:5400::::::|h[Spaulders of Coagulated Viscera]|h|r",
 		itemIcon = 1991839,
 		itemLevel = 80,
 		isCraftingReagent = false,
@@ -36644,7 +36938,8 @@ _G.Items = {
 		itemName = "Shrapnel-Dampening Chestguard",
 		bindType = 1,
 		itemSellPrice = 196992,
-		itemLink = "|cffa335ee|Hitem:158307:::::::::::35:4:5061:1557:4786:4775::::::|h[Shrapnel-Dampening Chestguard]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:158307:::::::::::35:4:5061:1557:4786:4775::::::|h[Shrapnel-Dampening Chestguard]|h|r",
 		itemIcon = 2054953,
 		itemLevel = 149,
 		isCraftingReagent = false,
@@ -36804,7 +37099,8 @@ _G.Items = {
 		itemName = "Seal of the Zandalari Empire",
 		bindType = 1,
 		itemSellPrice = 26157,
-		itemLink = "|cffa335ee|Hitem:165567:5943::::::::::5:4:4799:42:1522:4786::::::|h[Seal of the Zandalari Empire]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:165567:5943::::::::::5:4:4799:42:1522:4786::::::|h[Seal of the Zandalari Empire]|h|r",
 		itemIcon = 2000814,
 		itemLevel = 110,
 		isCraftingReagent = false,
@@ -37105,7 +37401,8 @@ _G.Items = {
 		itemName = "Shroud of Unmooring Whispers",
 		bindType = 1,
 		itemSellPrice = 31642,
-		itemLink = "|cffa335ee|Hitem:168349:::::::::::5:5:4823:1502:4786:6267:4775::::::|h[Shroud of Unmooring Whispers]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:168349:::::::::::5:5:4823:1502:4786:6267:4775::::::|h[Shroud of Unmooring Whispers]|h|r",
 		itemIcon = 2912999,
 		itemLevel = 107,
 		isCraftingReagent = false,
@@ -37205,7 +37502,8 @@ _G.Items = {
 		itemName = "Mantle of Contained Corruption",
 		bindType = 1,
 		itemSellPrice = 12307,
-		itemLink = "|cffa335ee|Hitem:160613:::::::::::5:4:4823:1492:4786:4775::::::|h[Mantle of Contained Corruption]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:160613:::::::::::5:4:4823:1492:4786:4775::::::|h[Mantle of Contained Corruption]|h|r",
 		itemIcon = 2059680,
 		itemLevel = 85,
 		isCraftingReagent = false,
@@ -37325,7 +37623,8 @@ _G.Items = {
 		itemName = "Electrified Crown of Rahu'ai",
 		bindType = 1,
 		itemSellPrice = 36192,
-		itemLink = "|cffa335ee|Hitem:165820:::::::::::5:5:4823:1522:4786:5417:4775::::::|h[Electrified Crown of Rahu'ai]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:165820:::::::::::5:5:4823:1522:4786:5417:4775::::::|h[Electrified Crown of Rahu'ai]|h|r",
 		itemIcon = 1670850,
 		itemLevel = 115,
 		isCraftingReagent = false,
@@ -37526,7 +37825,8 @@ _G.Items = {
 		itemName = "Legguards of Coalescing Plasma",
 		bindType = 1,
 		itemSellPrice = 5224,
-		itemLink = "|cffa335ee|Hitem:160631::153709:::::::::3:4:4798:1808:1477:4786::::::|h[Legguards of Coalescing Plasma]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:160631::153709:::::::::3:4:4798:1808:1477:4786::::::|h[Legguards of Coalescing Plasma]|h|r",
 		itemIcon = 1991837,
 		itemLevel = 65,
 		isCraftingReagent = false,
@@ -37646,7 +37946,8 @@ _G.Items = {
 		itemName = "Breastplate of Divine Purification",
 		bindType = 1,
 		itemSellPrice = 42099,
-		itemLink = "|cffa335ee|Hitem:165550:::::::::::5:4:4823:1522:4786:5416::::::|h[Breastplate of Divine Purification]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:165550:::::::::::5:4:4823:1522:4786:5416::::::|h[Breastplate of Divine Purification]|h|r",
 		itemIcon = 2467786,
 		itemLevel = 110,
 		isCraftingReagent = false,
@@ -37746,7 +38047,8 @@ _G.Items = {
 		itemName = "Heptavium, Staff of Torturous Knowledge",
 		bindType = 1,
 		itemSellPrice = 29800,
-		itemLink = "|cffa335ee|Hitem:160690:::::::::::5:3:4799:1497:4783::::::|h[Heptavium, Staff of Torturous Knowledge]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:160690:::::::::::5:3:4799:1497:4783::::::|h[Heptavium, Staff of Torturous Knowledge]|h|r",
 		itemIcon = 1958553,
 		itemLevel = 85,
 		isCraftingReagent = false,
@@ -37786,7 +38088,8 @@ _G.Items = {
 		itemName = "Notorious Gladiator's Signet",
 		bindType = 1,
 		itemSellPrice = 33613,
-		itemLink = "|cffa335ee|Hitem:167376:6109::::::::::56:5:6324:6348:1527:5850:4783::::::|h[Notorious Gladiator's Signet]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:167376:6109::::::::::56:5:6324:6348:1527:5850:4783::::::|h[Notorious Gladiator's Signet]|h|r",
 		itemIcon = 2000805,
 		itemLevel = 120,
 		isCraftingReagent = false,
@@ -37866,7 +38169,8 @@ _G.Items = {
 		itemName = "Mantle of the Soulbinder's Caress",
 		bindType = 1,
 		itemSellPrice = 32362,
-		itemLink = "|cffa335ee|Hitem:165537:::::::::::5:4:4823:1522:4786:5418::::::|h[Mantle of the Soulbinder's Caress]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:165537:::::::::::5:4:4823:1522:4786:5418::::::|h[Mantle of the Soulbinder's Caress]|h|r",
 		itemIcon = 2324587,
 		itemLevel = 110,
 		isCraftingReagent = false,
@@ -37966,7 +38270,8 @@ _G.Items = {
 		itemName = "Band of the Ancient Dredger",
 		bindType = 1,
 		itemSellPrice = 19172,
-		itemLink = "|cffa335ee|Hitem:159461:5939:154127:::::::::23:4:4779:4802:1512:4786::::::|h[Band of the Ancient Dredger]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:159461:5939:154127:::::::::23:4:4779:4802:1512:4786::::::|h[Band of the Ancient Dredger]|h|r",
 		itemIcon = 2000820,
 		itemLevel = 99,
 		isCraftingReagent = false,
@@ -37986,7 +38291,8 @@ _G.Items = {
 		itemName = "Risen Lord's Oversized Gauntlets",
 		bindType = 1,
 		itemSellPrice = 25318,
-		itemLink = "|cffa335ee|Hitem:159457:5932::::::::::35:4:4946:4802:1527:4783::::::|h[Risen Lord's Oversized Gauntlets]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:159457:5932::::::::::35:4:4946:4802:1527:4783::::::|h[Risen Lord's Oversized Gauntlets]|h|r",
 		itemIcon = 1780203,
 		itemLevel = 114,
 		isCraftingReagent = false,
@@ -38306,7 +38612,8 @@ _G.Items = {
 		itemName = "7th Legionnaire's Chain Drape",
 		bindType = 1,
 		itemSellPrice = 251914,
-		itemLink = "|cffa335ee|Hitem:163351::168637:::::::::28:4:5125:4802:1582:4786::::::|h[7th Legionnaire's Chain Drape]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:163351::168637:::::::::28:4:5125:4802:1582:4786::::::|h[7th Legionnaire's Chain Drape]|h|r",
 		itemIcon = 1889999,
 		itemLevel = 168,
 		isCraftingReagent = false,
@@ -38426,7 +38733,8 @@ _G.Items = {
 		itemName = "Voror, Gleaming Blade of the Stalwart",
 		bindType = 1,
 		itemSellPrice = 21943,
-		itemLink = "|cffa335ee|Hitem:160686:::::::::::5:3:4799:1492:4786::::::|h[Voror, Gleaming Blade of the Stalwart]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:160686:::::::::::5:3:4799:1492:4786::::::|h[Voror, Gleaming Blade of the Stalwart]|h|r",
 		itemIcon = 2011768,
 		itemLevel = 80,
 		isCraftingReagent = false,
@@ -38726,7 +39034,8 @@ _G.Items = {
 		itemName = "Blackwater Shimmerscale Vest",
 		bindType = 1,
 		itemSellPrice = 40299,
-		itemLink = "|cffa335ee|Hitem:168343:::::::::::5:5:4823:1502:4786:6266:4775::::::|h[Blackwater Shimmerscale Vest]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:168343:::::::::::5:5:4823:1502:4786:6266:4775::::::|h[Blackwater Shimmerscale Vest]|h|r",
 		itemIcon = 2912997,
 		itemLevel = 107,
 		isCraftingReagent = false,
@@ -38786,7 +39095,8 @@ _G.Items = {
 		itemName = "Blackwater Shimmerscale Vest",
 		bindType = 1,
 		itemSellPrice = 23373,
-		itemLink = "|cffa335ee|Hitem:168343:::::::::::3:5:4822:1487:4786:6263:4775::::::|h[Blackwater Shimmerscale Vest]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:168343:::::::::::3:5:4822:1487:4786:6263:4775::::::|h[Blackwater Shimmerscale Vest]|h|r",
 		itemIcon = 2912997,
 		itemLevel = 92,
 		isCraftingReagent = false,
@@ -39187,7 +39497,8 @@ _G.Items = {
 		itemName = "Boralus Noble's Seal",
 		bindType = 1,
 		itemSellPrice = 21831,
-		itemLink = "|cffa335ee|Hitem:168889:5938:168639:::::::::5:4:4799:1808:1502:4786::::::|h[Boralus Noble's Seal]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:168889:5938:168639:::::::::5:4:4799:1808:1502:4786::::::|h[Boralus Noble's Seal]|h|r",
 		itemIcon = 1717149,
 		itemLevel = 102,
 		isCraftingReagent = false,
@@ -39207,7 +39518,8 @@ _G.Items = {
 		itemName = "Amalgamated Abomination Spaulders",
 		bindType = 1,
 		itemSellPrice = 295610,
-		itemLink = "|cffa335ee|Hitem:159385:::::::::::35:5:5442:1587:4786:6265:4775::::::|h[Amalgamated Abomination Spaulders]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:159385:::::::::::35:5:5442:1587:4786:6265:4775::::::|h[Amalgamated Abomination Spaulders]|h|r",
 		itemIcon = 2054806,
 		itemLevel = 179,
 		isCraftingReagent = false,
@@ -39227,7 +39539,8 @@ _G.Items = {
 		itemName = "Vestments of Creeping Terror",
 		bindType = 1,
 		itemSellPrice = 39401,
-		itemLink = "|cffa335ee|Hitem:168337:::::::::::5:5:4823:1502:4786:6266:4775::::::|h[Vestments of Creeping Terror]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:168337:::::::::::5:5:4823:1502:4786:6266:4775::::::|h[Vestments of Creeping Terror]|h|r",
 		itemIcon = 2906597,
 		itemLevel = 107,
 		isCraftingReagent = false,
@@ -39387,7 +39700,8 @@ _G.Items = {
 		itemName = "Ashvane Warden's Cuirass",
 		bindType = 1,
 		itemSellPrice = 587682,
-		itemLink = "|cffa335ee|Hitem:159440:::::::::::35:5:5448:1617:4786:6269:4775::::::|h[Ashvane Warden's Cuirass]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:159440:::::::::::35:5:5448:1617:4786:6269:4775::::::|h[Ashvane Warden's Cuirass]|h|r",
 		itemIcon = 1780202,
 		itemLevel = 209,
 		isCraftingReagent = false,
@@ -39547,7 +39861,8 @@ _G.Items = {
 		itemName = "Mantle of Contained Corruption",
 		bindType = 1,
 		itemSellPrice = 3837,
-		itemLink = "|cffa335ee|Hitem:160613:::::::::::3:4:4822:1477:4786:5397::::::|h[Mantle of Contained Corruption]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:160613:::::::::::3:4:4822:1477:4786:5397::::::|h[Mantle of Contained Corruption]|h|r",
 		itemIcon = 2059680,
 		itemLevel = 65,
 		isCraftingReagent = false,
@@ -39567,7 +39882,8 @@ _G.Items = {
 		itemName = "Gloves of Descending Madness",
 		bindType = 1,
 		itemSellPrice = 13804,
-		itemLink = "|cffa335ee|Hitem:160618:5932:154127:::::::::6:4:4800:1808:1507:4786::::::|h[Gloves of Descending Madness]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:160618:5932:154127:::::::::6:4:4800:1808:1507:4786::::::|h[Gloves of Descending Madness]|h|r",
 		itemIcon = 2021694,
 		itemLevel = 95,
 		isCraftingReagent = false,
@@ -39727,7 +40043,8 @@ _G.Items = {
 		itemName = "Breastplate of Divine Purification",
 		bindType = 1,
 		itemSellPrice = 64004,
-		itemLink = "|cffa335ee|Hitem:165550:::::::::::6:4:4824:1537:4786:5419::::::|h[Breastplate of Divine Purification]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:165550:::::::::::6:4:4824:1537:4786:5419::::::|h[Breastplate of Divine Purification]|h|r",
 		itemIcon = 2467786,
 		itemLevel = 125,
 		isCraftingReagent = false,
@@ -40307,7 +40624,8 @@ _G.Items = {
 		itemName = "Gore-Crusted Butcher's Block",
 		bindType = 1,
 		itemSellPrice = 396296,
-		itemLink = "|cffa335ee|Hitem:159616::168642:::::::::16:4:5010:4802:1602:4786::::::|h[Gore-Crusted Butcher's Block]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:159616::168642:::::::::16:4:5010:4802:1602:4786::::::|h[Gore-Crusted Butcher's Block]|h|r",
 		itemIcon = 134455,
 		itemLevel = 189,
 		isCraftingReagent = false,
@@ -40507,7 +40825,8 @@ _G.Items = {
 		itemName = "Leggings of the Galeforce Viper",
 		bindType = 1,
 		itemSellPrice = 567714,
-		itemLink = "|cffa335ee|Hitem:159329:::::::::::35:4:5010:1612:5850:4784::::::|h[Leggings of the Galeforce Viper]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:159329:::::::::::35:4:5010:1612:5850:4784::::::|h[Leggings of the Galeforce Viper]|h|r",
 		itemIcon = 1892759,
 		itemLevel = 204,
 		isCraftingReagent = false,
@@ -40587,7 +40906,8 @@ _G.Items = {
 		itemName = "Sabatons of Rampaging Elements",
 		bindType = 1,
 		itemSellPrice = 412662,
-		itemLink = "|cffa335ee|Hitem:159679::168641:::::::::35:4:5010:4802:1612:4783::::::|h[Sabatons of Rampaging Elements]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:159679::168641:::::::::35:4:5010:4802:1612:4783::::::|h[Sabatons of Rampaging Elements]|h|r",
 		itemIcon = 2001429,
 		itemLevel = 199,
 		isCraftingReagent = false,
@@ -40907,7 +41227,8 @@ _G.Items = {
 		itemName = "Charged Sandstone Band",
 		bindType = 1,
 		itemSellPrice = 46296,
-		itemLink = "|cffa335ee|Hitem:158366:5943:154127:::::::::35:5:5008:4802:41:1542:4783::::::|h[Charged Sandstone Band]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:158366:5943:154127:::::::::35:5:5008:4802:41:1542:4783::::::|h[Charged Sandstone Band]|h|r",
 		itemIcon = 2000812,
 		itemLevel = 129,
 		isCraftingReagent = false,
@@ -41167,7 +41488,8 @@ _G.Items = {
 		itemName = "Variable Intensity Gigavolt Oscillating Reactor",
 		bindType = 1,
 		itemSellPrice = 36358,
-		itemLink = "|cffa335ee|Hitem:165572:::::::::::5:3:4799:1522:4786::::::|h[Variable Intensity Gigavolt Oscillating Reactor]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:165572:::::::::::5:3:4799:1522:4786::::::|h[Variable Intensity Gigavolt Oscillating Reactor]|h|r",
 		itemIcon = 133870,
 		itemLevel = 110,
 		isCraftingReagent = false,
@@ -41307,7 +41629,8 @@ _G.Items = {
 		itemName = "Charged Sandstone Band",
 		bindType = 1,
 		itemSellPrice = 303453,
-		itemLink = "|cffa335ee|Hitem:158366:6108::::::::::16:5:5010:42:1602:5850:4783::::::|h[Charged Sandstone Band]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:158366:6108::::::::::16:5:5010:42:1602:5850:4783::::::|h[Charged Sandstone Band]|h|r",
 		itemIcon = 2000812,
 		itemLevel = 194,
 		isCraftingReagent = false,
@@ -41687,7 +42010,8 @@ _G.Items = {
 		itemName = "Band of the Ancient Dredger",
 		bindType = 1,
 		itemSellPrice = 218514,
-		itemLink = "|cffa335ee|Hitem:159461:5943:154127:::::::::16:4:5010:4802:1582:4783::::::|h[Band of the Ancient Dredger]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:159461:5943:154127:::::::::16:4:5010:4802:1582:4783::::::|h[Band of the Ancient Dredger]|h|r",
 		itemIcon = 2000820,
 		itemLevel = 169,
 		isCraftingReagent = false,
@@ -41967,7 +42291,8 @@ _G.Items = {
 		itemName = "Shoulderguards of Crushing Depths",
 		bindType = 1,
 		itemSellPrice = 25032,
-		itemLink = "|cffa335ee|Hitem:168354:::::::::::5:4:4823:1502:4786:6268::::::|h[Shoulderguards of Crushing Depths]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:168354:::::::::::5:4:4823:1502:4786:6268::::::|h[Shoulderguards of Crushing Depths]|h|r",
 		itemIcon = 2909763,
 		itemLevel = 102,
 		isCraftingReagent = false,
@@ -42027,7 +42352,8 @@ _G.Items = {
 		itemName = "Crimson Colossus Armguards",
 		bindType = 1,
 		itemSellPrice = 2684,
-		itemLink = "|cffa335ee|Hitem:160637::154129:::::::::3:4:4798:1808:1477:4786::::::|h[Crimson Colossus Armguards]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:160637::154129:::::::::3:4:4798:1808:1477:4786::::::|h[Crimson Colossus Armguards]|h|r",
 		itemIcon = 2054626,
 		itemLevel = 65,
 		isCraftingReagent = false,
@@ -42067,7 +42393,8 @@ _G.Items = {
 		itemName = "Raiment of the Blighted Tribe",
 		bindType = 1,
 		itemSellPrice = 409972,
-		itemLink = "|cffa335ee|Hitem:159335:::::::::::35:5:5442:1587:4786:6263:4775::::::|h[Raiment of the Blighted Tribe]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:159335:::::::::::35:5:5442:1587:4786:6263:4775::::::|h[Raiment of the Blighted Tribe]|h|r",
 		itemIcon = 1941310,
 		itemLevel = 179,
 		isCraftingReagent = false,
@@ -42107,7 +42434,8 @@ _G.Items = {
 		itemName = "Targe of the Ancient Warder",
 		bindType = 1,
 		itemSellPrice = 448028,
-		itemLink = "|cffa335ee|Hitem:159665::168639:::::::::16:4:5010:4802:1602:4786::::::|h[Targe of the Ancient Warder]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:159665::168639:::::::::16:4:5010:4802:1602:4786::::::|h[Targe of the Ancient Warder]|h|r",
 		itemIcon = 1778307,
 		itemLevel = 189,
 		isCraftingReagent = false,
@@ -42127,7 +42455,8 @@ _G.Items = {
 		itemName = "Footpads of the Serene Wake",
 		bindType = 1,
 		itemSellPrice = 260125,
-		itemLink = "|cffa335ee|Hitem:159295::154127:::::::::35:5:5010:4802:40:1582:4783::::::|h[Footpads of the Serene Wake]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:159295::154127:::::::::35:5:5010:4802:40:1582:4783::::::|h[Footpads of the Serene Wake]|h|r",
 		itemIcon = 1941308,
 		itemLevel = 169,
 		isCraftingReagent = false,
@@ -42307,7 +42636,8 @@ _G.Items = {
 		itemName = "Helm of Abyssal Malevolence",
 		bindType = 1,
 		itemSellPrice = 250977,
-		itemLink = "|cffa335ee|Hitem:159430:::::::::::35:5:5445:1572:4786:5417:4775::::::|h[Helm of Abyssal Malevolence]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:159430:::::::::::35:5:5445:1572:4786:5417:4775::::::|h[Helm of Abyssal Malevolence]|h|r",
 		itemIcon = 1780204,
 		itemLevel = 164,
 		isCraftingReagent = false,
@@ -42888,7 +43218,8 @@ _G.Items = {
 		itemName = "Wristwraps of Coursing Miasma",
 		bindType = 1,
 		itemSellPrice = 2723,
-		itemLink = "|cffa335ee|Hitem:160621::154126:::::::::3:4:4798:1808:1477:4786::::::|h[Wristwraps of Coursing Miasma]|h|r",
+		itemLink =
+		"|cffa335ee|Hitem:160621::154126:::::::::3:4:4798:1808:1477:4786::::::|h[Wristwraps of Coursing Miasma]|h|r",
 		itemIcon = 2021680,
 		itemLevel = 65,
 		isCraftingReagent = false,
@@ -43130,73 +43461,73 @@ _G.Items_Array = {}
 
 -- Create itemID indexes:
 do
-   local add = {}
-   local add2 = {}
-   local add3 = {}
-   for itemstring, item in pairs(_G.Items) do
-      add[item.itemID] = item
-      add2[item.itemLink] = item
-      add3[item.itemName] = item
-      tinsert(_G.Items_Array, itemstring)
-   end
-   for a,b in pairs(add) do
-      _G.Items[a] = b
-   end
-   for a,b in pairs(add2) do
-      _G.Items[a] = b
-   end
-   for a,b in pairs(add3) do
-      _G.Items[a] = b
-   end
+	local add = {}
+	local add2 = {}
+	local add3 = {}
+	for itemstring, item in pairs(_G.Items) do
+		add[item.itemID] = item
+		add2[item.itemLink] = item
+		add3[item.itemName] = item
+		tinsert(_G.Items_Array, itemstring)
+	end
+	for a, b in pairs(add) do
+		_G.Items[a] = b
+	end
+	for a, b in pairs(add2) do
+		_G.Items[a] = b
+	end
+	for a, b in pairs(add3) do
+		_G.Items[a] = b
+	end
 end
 
 ----------------------------------------------------------------
 -- List of items stats exported from the game
 ----------------------------------------------------------------
 _G.ItemStats = {
- 	[207781] = {
-		ITEM_MOD_HASTE_RATING_SHORT=147,
-		ITEM_MOD_CRIT_RATING_SHORT=320,
-		ITEM_MOD_STAMINA_SHORT=1452,
-		ITEM_MOD_DAMAGE_PER_SECOND_SHORT=418.61111450195,
-		ITEM_MOD_AGILITY_SHORT=368
+	[207781] = {
+		ITEM_MOD_HASTE_RATING_SHORT = 147,
+		ITEM_MOD_CRIT_RATING_SHORT = 320,
+		ITEM_MOD_STAMINA_SHORT = 1452,
+		ITEM_MOD_DAMAGE_PER_SECOND_SHORT = 418.61111450195,
+		ITEM_MOD_AGILITY_SHORT = 368,
 	},
 	[207786] = {
-	  	ITEM_MOD_STRENGTH_SHORT=368,
-	  	ITEM_MOD_CRIT_RATING_SHORT=319,
-	  	ITEM_MOD_STAMINA_SHORT=1452,
-	  	ITEM_MOD_DAMAGE_PER_SECOND_SHORT=418.46154785156,
-	  	ITEM_MOD_MASTERY_RATING_SHORT=148
+		ITEM_MOD_STRENGTH_SHORT = 368,
+		ITEM_MOD_CRIT_RATING_SHORT = 319,
+		ITEM_MOD_STAMINA_SHORT = 1452,
+		ITEM_MOD_DAMAGE_PER_SECOND_SHORT = 418.46154785156,
+		ITEM_MOD_MASTERY_RATING_SHORT = 148,
 	},
 	[207788] = {
-	  	ITEM_MOD_INTELLECT_SHORT=2145,
-	  	ITEM_MOD_HASTE_RATING_SHORT=141,
-	  	ITEM_MOD_MASTERY_RATING_SHORT=326,
-	  	ITEM_MOD_STAMINA_SHORT=1452,
-	  	ITEM_MOD_DAMAGE_PER_SECOND_SHORT=209.23077392578
+		ITEM_MOD_INTELLECT_SHORT = 2145,
+		ITEM_MOD_HASTE_RATING_SHORT = 141,
+		ITEM_MOD_MASTERY_RATING_SHORT = 326,
+		ITEM_MOD_STAMINA_SHORT = 1452,
+		ITEM_MOD_DAMAGE_PER_SECOND_SHORT = 209.23077392578,
 	},
 	[210214] = {
-	  	ITEM_MOD_VERSATILITY=1256,
-	  	ITEM_MOD_CRIT_RATING_SHORT=314,
-	  	ITEM_MOD_STAMINA_SHORT=1634
+		ITEM_MOD_VERSATILITY = 1256,
+		ITEM_MOD_CRIT_RATING_SHORT = 314,
+		ITEM_MOD_STAMINA_SHORT = 1634,
 	},
 }
 
 _G.TransmogItems = {
 	[207781] = {
 		82185,
-		188883
+		188883,
 	},
 	[207786] = {
 		82319,
-		188888
+		188888,
 	},
 	[207788] = {
 		82215,
-		188890
+		188890,
 	},
 	[165597] = {
 		39240,
-		102041
-	}
+		102041,
+	},
 }

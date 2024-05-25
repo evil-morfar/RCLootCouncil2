@@ -833,7 +833,7 @@ function RCLootCouncil:UpdatePlayersGears(startSlot, endSlot)
 	for i = startSlot, endSlot do
 		local iLink = GetInventoryItemLink("player", i)
 		if iLink then
-			local iName = GetItemInfo(iLink)
+			local iName = C_Item.GetItemInfo(iLink)
 			if iName then
 				playersData.gears[i] = iLink
 			else -- Blizzard bug that GetInventoryItemLink returns incomplete link. Retry
@@ -968,7 +968,7 @@ function RCLootCouncil:GetIlvlDifference(item, g1, g2)
 		self.Log:E("GetIlvlDifference: no gear for item:", item)
 		return 0 -- Fallback value incase no gear is provided
 	end
-	local _, link, _, ilvl, _, _, _, _, equipLoc = GetItemInfo(item)
+	local _, link, _, ilvl, _, _, _, _, equipLoc = C_Item.GetItemInfo(item)
 
 	if not ilvl then
 		self.Log:E(format("GetIlvlDifference: item: %s had ilvl %s", tostring(item), tostring(ilvl)))
@@ -979,17 +979,17 @@ function RCLootCouncil:GetIlvlDifference(item, g1, g2)
 	if equipLoc == "INVTYPE_TRINKET" or equipLoc == "INVTYPE_FINGER" then
 		local id = ItemUtils:GetItemIDFromLink(link)
 		if id == ItemUtils:GetItemIDFromLink(g1) then -- compare with it
-			local ilvl2 = select(4, GetItemInfo(g1))
+			local ilvl2 = select(4, C_Item.GetItemInfo(g1))
 			return ilvl - ilvl2
 
 		elseif g2 and id == ItemUtils:GetItemIDFromLink(g2) then
-			local ilvl2 = select(4, GetItemInfo(g2))
+			local ilvl2 = select(4, C_Item.GetItemInfo(g2))
 			return ilvl - ilvl2
 		end
 		-- We haven't equipped this item, do it normally
 	end
 	local diff = 0
-	local g1diff, g2diff = g1 and select(4, GetItemInfo(g1)), g2 and select(4, GetItemInfo(g2))
+	local g1diff, g2diff = g1 and select(4, C_Item.GetItemInfo(g1)), g2 and select(4, C_Item.GetItemInfo(g2))
 	if g1diff and g2diff then
 		diff = g1diff >= g2diff and ilvl - g2diff or ilvl - g1diff
 	elseif g1diff then
@@ -1058,7 +1058,7 @@ end
 function RCLootCouncil:PrepareLootTable(lootTable)
 	for ses, v in pairs(lootTable) do
 		local _, link, rarity, ilvl, _, _, subType, _, equipLoc, texture, _, typeID, subTypeID, bindType, _, _, _ =
-						GetItemInfo(ItemUtils:UncleanItemString(v.string))
+						C_Item.GetItemInfo(ItemUtils:UncleanItemString(v.string))
 		local itemID = C_Item.GetItemInfoInstant(link)
 		v.link = link
 		v.itemID = itemID
@@ -1363,13 +1363,13 @@ end
 function RCLootCouncil:IsItemBoE(item)
 	if not item then return false end
 	-- Item binding type: 0 - none; 1 - on pickup; 2 - on equip; 3 - on use; 4 - quest.
-	return select(14, GetItemInfo(item)) == LE_ITEM_BIND_ON_EQUIP
+	return select(14, C_Item.GetItemInfo(item)) == LE_ITEM_BIND_ON_EQUIP
 end
 
 function RCLootCouncil:IsItemBoP(item)
 	if not item then return false end
 	-- Item binding type: 0 - none; 1 - on pickup; 2 - on equip; 3 - on use; 4 - quest.
-	return select(14, GetItemInfo(item)) == LE_ITEM_BIND_ON_ACQUIRE
+	return select(14, C_Item.GetItemInfo(item)) == LE_ITEM_BIND_ON_ACQUIRE
 end
 
 function RCLootCouncil:GetPlayersGuildRank()
@@ -2576,7 +2576,7 @@ end
 
 local function CheckCachedLootTable(lootTable)
 	local cached = true
-	for _, v in pairs(lootTable) do if not GetItemInfo("item:" .. v.string) then cached = false end end
+	for _, v in pairs(lootTable) do if not C_Item.GetItemInfo("item:" .. v.string) then cached = false end end
 	return cached
 end
 

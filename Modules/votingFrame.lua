@@ -882,7 +882,7 @@ function RCVotingFrame:UpdateMoreInfo(row, data)
 			end
 			for _, wname in ipairs(sortedAwardHistory) do
 				for _, entry in ipairs(awardHistory[wname]) do
-					local ilvl = select(4, GetItemInfo(entry.lootWon))
+					local ilvl = select(4, C_Item.GetItemInfo(entry.lootWon))
 					local player = Player:Get(wname)
 					local class = player and player:GetClass()
 					local c = addon:GetClassColor(class)

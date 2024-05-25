@@ -134,8 +134,8 @@ end
 
 function RCLootCouncil:ExportTokenDataSingle(id)
 	local lines = self:GetTooltipLines(id)
-	if (GetItemInfo(id)) and lines and #lines > 0 then
-		local name, link, quality, ilvl, _, _, _, maxStack = GetItemInfo(id)
+	if (C_Item.GetItemInfo(id)) and lines and #lines > 0 then
+		local name, link, quality, ilvl, _, _, _, maxStack = C_Item.GetItemInfo(id)
 		if self:GetItemClassesAllowedFlag(link) ~= 0xffffffff and maxStack == 1 and quality == 4 then
 			DEFAULT_CHAT_FRAME:AddMessage(id .. " " .. name)
 			tokenNames[id] = name
@@ -1010,7 +1010,7 @@ _G.RCTokenIlvl = {
 	[67429] = 372, -- Gauntlets of the Forlorn Conqueror,
 	[67430] = 372, -- Gauntlets of the Forlorn Protector,
 	[67431] = 372, -- Gauntlets of the Forlorn Vanquisher,
-	--[[ Comment out because the 4th return of GetItemInfo() matches the real ilvl
+	--[[ Comment out because the 4th return of C_Item.GetItemInfo() matches the real ilvl
 	-- Tier 12 - 16
 	[71668] = 378,	-- Helm of the Fiery Vanquisher,
 	[71669] = 391,	-- Gauntlets of the Fiery Vanquisher,

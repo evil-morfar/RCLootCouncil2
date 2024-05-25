@@ -1145,7 +1145,7 @@ function addon:OptionsTable()
 											local t = {}
 											for id, val in pairs(self.db.profile.ignoredItems) do
 												if val then
-													local link = select(2, GetItemInfo(id))
+													local link = select(2, C_Item.GetItemInfo(id))
 													if link then
 														t[id] = link.."  (id: "..id..")"
 													else

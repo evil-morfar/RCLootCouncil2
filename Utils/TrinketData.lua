@@ -168,7 +168,7 @@ function RCLootCouncil:ExportTrinketDataSingleInstance(instanceID, diffID, timeL
 				trinketData[trinketIdToIndex[info.itemID]][2] = ZERO
 			end
          trinketNames[info.itemID] = ItemUtils:GetItemNameFromLink(info.link)
-         GetItemInfo(info.itemID)
+         C_Item.GetItemInfo(info.itemID)
          count = count + 1
          tinsert(trinketlinksInThisInstances, info.link)
       else

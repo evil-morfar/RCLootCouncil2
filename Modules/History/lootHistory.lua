@@ -465,7 +465,7 @@ end
 function LootHistory.SetCellGear(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
 	local gear = data[realrow].cols[column].args[1] -- gear1 or gear2
 	if gear then
-		--local texture = select(10, GetItemInfo(gear))
+		--local texture = select(10, C_Item.GetItemInfo(gear))
 		local texture = select(5, C_Item.GetItemInfoInstant(gear))
 		frame:SetNormalTexture(texture)
 		frame:SetScript("OnEnter", function() addon:CreateHypertip(gear) end)
