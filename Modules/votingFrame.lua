@@ -856,7 +856,7 @@ function RCVotingFrame:UpdateMoreInfo(row, data)
 		local r,g,b
 		tip:AddLine(L["Latest item(s) won"])
 		for _, v in ipairs(moreInfoData[name]) do -- extract latest awarded items
-			local _, itemType, _, location, _, classID = GetItemInfoInstant(v[1])
+			local _, itemType, _, location, _, classID = C_Item.GetItemInfoInstant(v[1])
 			local locationText = getglobal(location) or classID == Enum.ItemClass.Miscellaneous and L["Armor Token"] or itemType
 			if v[3] then r,g,b = unpack(v[3],1,3) end
 			tip:AddDoubleLine(locationText .." ".. v[1], v[2], 1,1,1, r or 1, g or 1, b or 1)
@@ -1228,7 +1228,7 @@ end
 
 function RCVotingFrame:AddNonTradeable(owner, reason, link)
 	self.numNonTradeables = self.numNonTradeables + 1
-	local texture = select(5, GetItemInfoInstant(link))
+	local texture = select(5, C_Item.GetItemInfoInstant(link))
 	local b = addon.UI:New("IconBordered", self.frame.content, texture)
 	b:Desaturate()
 	if self.numNonTradeables == 1 then
@@ -1357,7 +1357,7 @@ function RCVotingFrame.SetCellGear(rowFrame, frame, data, cols, row, realrow, co
 	local name = data[realrow].name
 	gear = lootTable[session].candidates[name][gear] -- Get the actual gear
 	if gear then
-		local texture = select(5, GetItemInfoInstant(gear))
+		local texture = select(5, C_Item.GetItemInfoInstant(gear))
 		frame:SetNormalTexture(texture)
 		frame:SetScript("OnEnter", function() addon:CreateHypertip(gear) end)
 		frame:SetScript("OnLeave", function() addon:HideTooltip() end)

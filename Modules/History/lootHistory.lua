@@ -137,7 +137,7 @@ end
 function LootHistory:OnHistoryReceived (name, history)
 	if not addon:Getdb().enableHistory then return end
 	-- v2.15 Add itemClass and itemSubClass locally:
-	local _, _, _, _, _, itemClassID, itemSubClassID = GetItemInfoInstant(history.lootWon)
+	local _, _, _, _, _, itemClassID, itemSubClassID = C_Item.GetItemInfoInstant(history.lootWon)
 	history.iClass = itemClassID
 	history.iSubClass = itemSubClassID
 	if addon.lootDB.factionrealm[name] then
@@ -466,7 +466,7 @@ function LootHistory.SetCellGear(rowFrame, frame, data, cols, row, realrow, colu
 	local gear = data[realrow].cols[column].args[1] -- gear1 or gear2
 	if gear then
 		--local texture = select(10, GetItemInfo(gear))
-		local texture = select(5, GetItemInfoInstant(gear))
+		local texture = select(5, C_Item.GetItemInfoInstant(gear))
 		frame:SetNormalTexture(texture)
 		frame:SetScript("OnEnter", function() addon:CreateHypertip(gear) end)
 		frame:SetScript("OnLeave", function() addon:HideTooltip() end)
@@ -1588,7 +1588,7 @@ do
 		tinsert(ret, "player,date,time,id,item,itemID,itemString,response,votes,class,instance,boss,difficultyID,mapID,groupSize,gear1,gear2,responseID,isAwardReason,subType,equipLoc,note,owner\r\n")
 		for player, v in pairs(self:GetFilteredDB()) do
 			for _, d in pairs(v) do
-				_,_,subType, equipLoc = GetItemInfoInstant(d.lootWon)
+				_,_,subType, equipLoc = C_Item.GetItemInfoInstant(d.lootWon)
 				if d.tierToken then subType = L["Armor Token"] end
 				-- We might have commas in various things here :/
 				tinsert(export, tostring(player))
@@ -1632,7 +1632,7 @@ do
 		tinsert(ret, "player\tdate\ttime\titem\titemID\titemString\tresponse\tvotes\tclass\tinstance\tboss\tgear1\tgear2\tresponseID\tisAwardReason\trollType\tsubType\tequipLoc\tnote\towner\r\n")
 		for player, v in pairs(self:GetFilteredDB()) do
 			for _, d in pairs(v) do
-				_,_,subType, equipLoc = GetItemInfoInstant(d.lootWon)
+				_,_,subType, equipLoc = C_Item.GetItemInfoInstant(d.lootWon)
 				if d.tierToken then subType = L["Armor Token"] end
 				rollType = (d.tokenRoll and "token") or (d.relicRoll and "relic") or "normal"
 				tinsert(export, tostring(player))
@@ -1679,7 +1679,7 @@ do
 
 		for player, v in pairs(self:GetFilteredDB()) do
 			for _, d in pairs(v) do
-				_,_,subType, equipLoc = GetItemInfoInstant(d.lootWon)
+				_,_,subType, equipLoc = C_Item.GetItemInfoInstant(d.lootWon)
 				if d.tierToken then subType = L["Armor Token"] end
 				rollType = (d.tokenRoll and "token") or (d.relicRoll and "relic") or "normal"
 				tinsert(export, string.format("\"%s\":\"%s\"", "player", tostring(player)))

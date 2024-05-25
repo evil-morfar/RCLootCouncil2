@@ -235,7 +235,7 @@ function private:RebuildResponseID(data,t, line)
       end
    end
    if not t.lootWon or t.lootWon == "" then return end -- Return silently - lootWon handler will have created error
-   local type = select(4, GetItemInfoInstant(t.lootWon))
+   local type = select(4, C_Item.GetItemInfoInstant(t.lootWon))
    if not type then return self:AddError(line, type, "Unknown type") end
    -- Check for special buttons
    if addon.BTN_SLOTS[type] then
@@ -373,7 +373,7 @@ function private:RebuildLootWon(data ,t, line)
    if item then
       success = self:LoadItem(item, function()
          t.lootWon = select(2,GetItemInfo(item:GetItemLink()))
-         local _, _, _, _, _, itemClassID, itemSubClassID = GetItemInfoInstant(t.lootWon)
+         local _, _, _, _, _, itemClassID, itemSubClassID = C_Item.GetItemInfoInstant(t.lootWon)
          t.iClass = itemClassID
          t.iSubClass = itemSubClassID
       end)

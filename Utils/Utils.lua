@@ -113,11 +113,11 @@ end
 
 --- Checks if the item is in our blacklist
 -- TODO Should be moved to it's own class in the future
---- @param item string Any valid input for *GetItemInfoInstant()*
+--- @param item string Any valid input for *C_Item.GetItemInfoInstant()*
 --- @return boolean #True if the item is blacklisted
 function Utils:IsItemBlacklisted(item)
 	if not item then return false end
-	local itemId, _, _, _, _, itemClassID, itemsubClassID = GetItemInfoInstant(item)
+	local itemId, _, _, _, _, itemClassID, itemsubClassID = C_Item.GetItemInfoInstant(item)
 	if not (itemClassID and itemsubClassID) then return false end
 	if addon.blacklistedItemClasses[itemClassID] then
 		if addon.blacklistedItemClasses[itemClassID].all or addon.blacklistedItemClasses[itemClassID][itemsubClassID] then

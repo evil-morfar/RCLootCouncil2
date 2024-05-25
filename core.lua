@@ -884,7 +884,7 @@ function RCLootCouncil:GetPlayersGear(link, equipLoc, gearsTable)
 		slot = self.INVTYPE_Slots[self:GetTypeCodeForItem(link)]
 
 		-- TODO Dirty hack for context tokens. Could do with a better system for both determining typecode and equiploc overrides
-		local _, _, _, _, _, itemClassID, itemSubClassID = GetItemInfoInstant(link)
+		local _, _, _, _, _, itemClassID, itemSubClassID = C_Item.GetItemInfoInstant(link)
 		if itemClassID == 5 and itemSubClassID == 2 then slot = self.INVTYPE_Slots.CONTEXT_TOKEN end
 	end
 	if not slot then return nil, nil end
@@ -897,10 +897,10 @@ end
 --- Generates a "type code" used to determine which set of buttons to use for the item.
 --- The returned code can be used directly in `mldb.responses[code]` and `mldb.buttons[code]`.
 --- @see Constants.lua#RESPONSE_CODE_GENERATORS.
---- @param item Item @Any valid input for GetItemInfoInstant
+--- @param item Item @Any valid input for C_Item.GetItemInfoInstant
 --- @return typecode
 function RCLootCouncil:GetTypeCodeForItem(item)
-	local itemID, _, _, itemEquipLoc, _, itemClassID, itemSubClassID = GetItemInfoInstant(item)
+	local itemID, _, _, itemEquipLoc, _, itemClassID, itemSubClassID = C_Item.GetItemInfoInstant(item)
 	if not itemID then return "default" end -- We can't handle uncached items!
 
 	for _, func in ipairs(self.RESPONSE_CODE_GENERATORS) do
@@ -1059,7 +1059,7 @@ function RCLootCouncil:PrepareLootTable(lootTable)
 	for ses, v in pairs(lootTable) do
 		local _, link, rarity, ilvl, _, _, subType, _, equipLoc, texture, _, typeID, subTypeID, bindType, _, _, _ =
 						GetItemInfo(ItemUtils:UncleanItemString(v.string))
-		local itemID = GetItemInfoInstant(link)
+		local itemID = C_Item.GetItemInfoInstant(link)
 		v.link = link
 		v.itemID = itemID
 		v.quality = rarity

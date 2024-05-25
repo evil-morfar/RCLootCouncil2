@@ -21,6 +21,8 @@ Item = {
    end
 }
 
+C_Item = {}
+
 function GetItemInfo (item)
    if string.match(item,"^%d+$") then item = tonumber(item) end -- Support for itemID
    local Item = _G.Items[item] or _G.Items[tonumber(strmatch(item or "", "item:(%d+):"))]
@@ -29,13 +31,13 @@ function GetItemInfo (item)
 i.isCraftingReagent
 end
 
-function GetItemInfoInstant (item)
+function C_Item.GetItemInfoInstant (item)
    if string.match(item,"^%d+$") then item = tonumber(item) end -- Support for itemID
-   local i = assert(_G.Items[item], "item "..tostring(item) .." isn't registered for GetItemInfoInstant")
+   local i = assert(_G.Items[item], "item "..tostring(item) .." isn't registered for C_Item.GetItemInfoInstant")
    return i.itemID, i.itemType, i.itemSubType, i.itemEquipLoc, i.icon, i.itemClassID, i.itemSubClassID
 end
 
-local function GetItemStats(item, stattable)
+function C_Item.GetItemStats(item, stattable)
 	assert(item, "Usage: local statTable = C_Item.GetItemStats(itemLink)")
 	if string.match(item,"^%d+$") then item = tonumber(item) end -- Support for itemID
 	if not _G.ItemStats[item] then return end
@@ -46,7 +48,7 @@ local function GetItemStats(item, stattable)
 	return ret
 end
 
-C_Item = {GetItemStats = GetItemStats}
+
 
 -- These are very roughly recreated
 C_TransmogCollection = {

@@ -26,9 +26,6 @@ local addon = select(2, ...)
 _G.RCLootCouncilML = addon:NewModule("RCLootCouncilML", "AceEvent-3.0", "AceBucket-3.0", "AceTimer-3.0", "AceHook-3.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 
--- WoW API
-local GetItemInfo, GetItemInfoInstant
-	 = GetItemInfo, GetItemInfoInstant
 -- Lua
 local time, date, tonumber, unpack, select, wipe, pairs, ipairs, format, table, tinsert, tremove, bit, tostring, type
 	 = time, date, tonumber, unpack, select, wipe, pairs, ipairs, format, table, tinsert, tremove, bit, tostring, type
@@ -598,7 +595,7 @@ end
 function RCLootCouncilML:HaveFreeSpaceForItem(item)
 	local itemFamily = GetItemFamily(item)
 	-- If the item is a container, then the itemFamily should be 0
-	local equipSlot = select(4, GetItemInfoInstant(item))
+	local equipSlot = select(4, C_Item.GetItemInfoInstant(item))
 	if equipSlot == "INVTYPE_BAG" then
 		itemFamily = 0
 	end
@@ -1097,7 +1094,7 @@ end
 --		winner string: The candidate that should receive the auto award.
 function RCLootCouncilML:ShouldAutoAward(item, quality)
 	if not item then return false end
-	local _, _, _, _, _, itemClassID = GetItemInfoInstant(item)
+	local _, _, _, _, _, itemClassID = C_Item.GetItemInfoInstant(item)
 	if itemClassID == 1 then return false end -- Ignore containers
 
 	if not next(addon.candidatesInGroup) then addon:UpdateCandidatesInGroup() end

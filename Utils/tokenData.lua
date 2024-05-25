@@ -44,7 +44,7 @@ function RCLootCouncil:ExportTokenData(nextID)
 	end
 	local LAST_ID = 250000
 	for i = nextID, LAST_ID do
-		local _, _, _, _, _, typeID, subTypeID = GetItemInfoInstant(i)
+		local _, _, _, _, _, typeID, subTypeID = C_Item.GetItemInfoInstant(i)
 		if typeID == 15 and subTypeID == 0 then -- Miscellaneous, Junk
 			self:ExportTokenDataSingle(i)
 			return C_Timer.After(0, function() self:ExportTokenData(i + 1) end)
