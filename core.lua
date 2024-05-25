@@ -41,7 +41,7 @@
 			bonus_roll 			P - Sent whenever we do a bonus roll.
 			getCov 				P - Anyone request or covenant ID.
 ]]
--- GLOBALS: GetLootMethod, GetAddOnMetadata, UnitClass
+-- GLOBALS: GetLootMethod, C_AddOns.GetAddOnMetadata, UnitClass
 local addonname, addontable = ...
 --- @class RCLootCouncil : AceAddon-3.0, AceConsole-3.0, AceEvent-3.0, AceHook-3.0, AceTimer-3.0, AceBucket-3.0
 _G.RCLootCouncil = LibStub("AceAddon-3.0"):NewAddon(addontable, addonname, "AceConsole-3.0", "AceEvent-3.0",
@@ -111,7 +111,7 @@ local playersData = { -- Update on login/encounter starts. it stores the informa
 function RCLootCouncil:OnInitialize()
 	self.Log = self.Require "Utils.Log":New()
 	-- IDEA Consider if we want everything on self, or just whatever modules could need.
-	self.version = GetAddOnMetadata("RCLootCouncil", "Version")
+	self.version = C_AddOns.GetAddOnMetadata("RCLootCouncil", "Version")
 	self.nnp = false
 	self.debug = false
 	self.tVersion = nil -- String or nil. Indicates test version, which alters stuff like version check. Is appended to 'version', i.e. "version-tVersion" (max 10 letters for stupid security)
@@ -376,7 +376,7 @@ function RCLootCouncil:ChatCommand(msg)
 				elseif v.module.version then
 					print(v.module.baseName, "|cFFFFA500", v.module.version)
 				else
-					print(v.module.baseName, "|cFFFFA500", GetAddOnMetadata(v.module.baseName, "Version"))
+					print(v.module.baseName, "|cFFFFA500", C_AddOns.GetAddOnMetadata(v.module.baseName, "Version"))
 				end
 			end
 			if v.cmd then
@@ -764,7 +764,7 @@ function RCLootCouncil:Test(num, fullTest, trinketTest)
 
 	if fullTest then -- Add items from encounter journal which includes items from different difficulties.
 		testItems = {}
-		LoadAddOn("Blizzard_EncounterJournal")
+		C_AddOns.LoadAddOn("Blizzard_EncounterJournal")
 		local cached = true
 		local difficulties = {14, 15, 16} -- Normal, Heroic, Mythic
 
@@ -1803,7 +1803,7 @@ function RCLootCouncil:GetInstalledModulesFormattedData()
 			modules[num] = self:GetModule(name).baseName .. " - " .. self:GetModule(name).version
 			if self:GetModule(name).tVersion then modules[num] = modules[num] .. "-" .. self:GetModule(name).tVersion end
 		else
-			local ver = GetAddOnMetadata(self:GetModule(name).baseName, "Version")
+			local ver = C_AddOns.GetAddOnMetadata(self:GetModule(name).baseName, "Version")
 			modules[num] = self:GetModule(name).baseName .. " - " .. (ver or _G.UNKNOWN)
 		end
 	end
@@ -2254,7 +2254,6 @@ local itemStatsRet = {}
 -- Item needs to be cached.
 function RCLootCouncil:GetItemBonusText(link, delimiter)
 	if not delimiter then delimiter = "/" end
-	wipe(itemStatsRet)
 	C_Item.GetItemStats(link, itemStatsRet)
 	local text = ""
 	for k, _ in pairs(itemStatsRet) do

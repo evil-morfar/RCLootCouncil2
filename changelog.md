@@ -1,3 +1,9 @@
+## Changes
+
+## Bugfixes
+
+- *Fixed tertiary stats not being shown in loot/voting frame.*
+
 # 3.12.0
 
 ## Changes

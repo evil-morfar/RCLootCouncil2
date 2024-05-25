@@ -38,11 +38,11 @@ C_Item = {
 		return i.itemID, i.itemType, i.itemSubType, i.itemEquipLoc, i.icon, i.itemClassID, i.itemSubClassID
 	end,
 
-	GetItemStats = function(item, stattable)
+	GetItemStats = function(item)
 		assert(item, "Usage: local statTable = C_Item.GetItemStats(itemLink)")
 		if string.match(item, "^%d+$") then item = tonumber(item) end -- Support for itemID
 		if not _G.ItemStats[item] then return end
-		local ret = stattable or {}
+		local ret = {}
 		for k, v in pairs(_G.ItemStats[item]) do
 			ret[k] = v
 		end
