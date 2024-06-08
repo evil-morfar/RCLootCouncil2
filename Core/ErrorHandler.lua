@@ -12,7 +12,7 @@ local private = {
 local MAX_ERROR_TIME = 60 * 60 * 24 * 7 -- 1 week
 
 function ErrorHandler:OnInitialize ()
-   self:RegisterEvent("ADDON_ACTION_BLOCKED", "OnEvent")
+   -- self:RegisterEvent("ADDON_ACTION_BLOCKED", "OnEvent")
    self:RegisterEvent("ADDON_ACTION_FORBIDDEN", "OnEvent")
    self:RegisterEvent("LUA_WARNING", "OnEvent")
    private.log = addon.db.global.errors
