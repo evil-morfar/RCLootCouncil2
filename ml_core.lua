@@ -610,22 +610,8 @@ function RCLootCouncilML:OnCommReceived(prefix, serializedMsg, distri, sender)
 				v2.2.3: 	Got a ticket where candidates wasn't received. Bumped to 2 sec and added extra checks for candidates.]]
 
 				addon:ScheduleTimer("SendCommand", 2, sender, "candidates", self.candidates)
-				if self.running then -- Resend lootTable
-					addon:ScheduleTimer("SendCommand", 4, sender, "lootTable", self:GetLootTableForTransmit())
-					-- v2.2.6 REVIEW For backwards compability we're just sending votingFrame's lootTable
-					-- This is quite redundant and should be removed in the future
-					if db.observe or addon:CouncilContains(sender) then -- Only send all data to councilmen
-						local table = addon:GetActiveModule("votingframe"):GetLootTable()
-						-- Remove our own voting data if any
-						for _, v in ipairs(table) do
-							v.haveVoted = false
-							for _, d in pairs(v.candidates) do
-								d.haveVoted = false
-							end
-						end
-						addon:ScheduleTimer("SendCommand", 5, sender, "reconnectData", table)
-					end
-				end
+				addon:ScheduleTimer("SendCommand", 4, sender, "lootTable", self:GetLootTableForTransmit())
+				-- There's no way we can fit the entire session data within the new comms throttle limit.
 				addon:Debug("Responded to reconnect from", sender)
 			elseif command == "lootTable" and addon:UnitIsUnit(sender, addon.playerName) then
 				-- Start a timer to set response as offline/not installed unless we receive an ack
