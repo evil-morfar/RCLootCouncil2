@@ -1491,7 +1491,6 @@ function RCVotingFrame.filterFunc(table, row)
 		ErrorHandler:ThrowSilentError(string.format("Couldn't get rank at session %d for candidate %s", session, tostring(name)))
 		return true
 	end
-	local rank = lootTable[session].candidates[name].rank
 	local rank = lootTable[session].candidates[name] and lootTable[session].candidates[name].rank
 
 	if db.modules["RCVotingFrame"].filters.alwaysShowOwner then
