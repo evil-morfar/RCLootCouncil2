@@ -1506,10 +1506,10 @@ function RCLootCouncil:OnEvent(event, ...)
 			self.Log("Player relog...")
 
 			-- Restore masterlooter from cache, but only if not already set.
-			if not self.masterLooter and self.db.global.cache.masterlooter then
-				self.masterLooter = Player:Get(self.db.global.cache.masterlooter)
+			if not self.masterLooter and self.db.global.cache.masterLooter then
+				self.masterLooter = Player:Get(self.db.global.cache.masterLooter)
 			end
-			self.Log:d("ML:", self.masterLooter)
+			self.Log:d("ML, Cached:", self.masterLooter, self.db.global.cache.masterLooter)
 
 			-- Restore mldb and council
 			if self.db.global.cache.mldb then
