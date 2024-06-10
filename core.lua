@@ -78,7 +78,6 @@ local userModules = {
 
 local frames = {} -- Contains all frames created by RCLootCouncil:CreateFrame()
 local unregisterGuildEvent = false
-local player_relogged = true -- Determines if we potentially need data from the ML due to /rl
 local lootTable = {}
 
 -- Lua
@@ -1890,21 +1889,56 @@ function RCLootCouncil:OnEvent(event, ...)
 
 	elseif event == "PLAYER_ENTERING_WORLD" then
 		self:Debug("Event:", event, ...)
+		self:UpdatePlayersData()
 		self:NewMLCheck()
 		self:ScheduleTimer(function() -- This needs some time to be ready
 			local instanceName, _, _, difficultyName = GetInstanceInfo()
 			self.currentInstanceName = instanceName..(difficultyName ~= "" and "-"..difficultyName or "")
 		end, 5)
-		if player_relogged then
-			-- Ask for data when we have done a /rl and have a ML
-			if not self.isMasterLooter and self.masterLooter and self.masterLooter ~= "" and player_relogged then
-				self:Debug("Player relog...")
-				self:ScheduleTimer("SendCommand", 2, self.masterLooter, "reconnect")
-				self:SendCommand(self.masterLooter, "playerInfo", self:GetPlayerInfo()) -- Also send out info, just in case
+
+		-- Check if we reloaded
+		if select(2, ...) then
+			self:Debug("Player relog...")
+
+			-- Restore masterlooter from cache, but only if not already set.
+			if not self.masterLooter and self.db.global.cache.masterLooter then
+				self.masterLooter = self.db.global.cache.masterLooter
 			end
-			self:UpdatePlayersData()
-			player_relogged = false
+			self:Debug("ML and cache:", self.masterLooter, self.db.global.cache.masterLooter)
+
+			-- Restore mldb and council
+			if self.db.global.cache.mldb then
+				self:OnMLDBReceived(self.db.global.cache.mldb)
+			end
+			if self.masterLooter and self.db.global.cache.council then
+				self.council = self.db.global.cache.council
+				self.isCouncil = self:CouncilContains(self.playerName)
+
+				-- prepare the voting frame for the right people
+				if self.isCouncil or self.mldb.observe then
+					self:CallModule("votingframe")
+				else
+					self:GetActiveModule("votingframe"):Disable()
+				end
+			end
+
+			-- If we still haven't set masterLooter, try delaying a bit.
+			-- but we don't have to wait if we got it from cache.
+			self:ScheduleTimer(function()
+				if not self.isMasterLooter and self.masterLooter and self.masterLooter ~= "" then
+					self:ScheduleTimer("SendCommand", 2, self.masterLooter, "reconnect")
+					self:SendCommand(self.masterLooter, "playerInfo", self:GetPlayerInfo()) -- Also send out info, just in case
+					self:Debug("Sent Reconnect Request")
+				end
+			end, self.masterLooter and 0 or 2.1)
 		end
+	elseif event == "PLAYER_LOGOUT" then
+		self:Debug("Event:", event, ...)
+		if not self.db.global.cache then self.db.global.cache = {} end
+		self.db.global.cache.mldb = next(self.mldb) and self.mldb or nil
+		self.db.global.cache.council = #self.council > 0 and self.council or nil
+		self.db.global.cache.masterLooter = self.masterLooter
+
 	elseif event == "ENCOUNTER_START" then
 			self:DebugLog("Event:", event, ...)
 			wipe(self.lootStatus)
