@@ -498,7 +498,7 @@ L["ML_ADD_INVALID_ITEM"] = "Invalid itemLink or itemID: %s"
 L["ML_ADD_ITEM_MAX_ATTEMPTS"] = "Couldn't fetch item info for %s - probably not a real item."
 
 L["error_test_as_non_leader"] = "You cannot initiate a test while in a group without being the group leader."
-L["lootFrame_error_note_required"] = "You must add a note before submitting your repsonse - %s"
+L["lootFrame_error_note_required"] = "You must add a note before submitting your response - %s"
 L["lootHistory_moreInfo_winnersOfItem"] = "Winners of %s:"
 L["trade_complete_message"] = "%s traded %s to %s."
 L["trade_wrongwinner_message"] = "WARNING: %s traded %s to %s instead of %s!"
