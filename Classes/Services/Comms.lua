@@ -27,7 +27,7 @@ local private = {
 LibStub("AceComm-3.0"):Embed(private.AceComm)
 LibStub("AceSerializer-3.0"):Embed(private)
 
---- Subscribe to a comm  
+--- Subscribe to a comm
 -- TODO Handle order
 --- @param prefix Prefixes The prefix to subscribe to.
 --- @param command string The command to subscribe to.
@@ -45,7 +45,7 @@ end
 
 --- Register multiple Comms at once
 --- @param prefix string @The prefix to register
---- @param data table<string,function> @A table of structure ["command"] = function, 
+--- @param data table<string,function> @A table of structure ["command"] = function
 --- @see Comms#Subscribe
 --- @return table<number,Subscription> @An array of the created subscriptions
 function Comms:BulkSubscribe (prefix, data)

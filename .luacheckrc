@@ -3,7 +3,9 @@ max_line_length = false
 allow_defined_top = true
 exclude_files = {
    ".luacheckrc",
-   "Libs/**"
+   "Libs/**",
+   ".vscode/extensions/**",
+   "changelog.md"
 }
 
 files[".specs/**/*.spec.lua"].std = "+busted"
@@ -103,6 +105,7 @@ globals = {
 	"GameTooltip_AddColoredDoubleLine",
 	"GameTooltip_AddColoredLine",
 	"GameTooltip_SetBackdropStyle",
+	"FindValueInTableIf",
 
 	-- Enums 
 	"Enum.FollowerAbilityCastResult",

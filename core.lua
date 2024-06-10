@@ -19,7 +19,7 @@
 	lootHistory:
 		RCHistory_ResponseEdit - fires when the user edits the response of a history entry. args: data (see LootHistory:BuildData())
 		RCHistory_NameEdit	-	fires when the user edits the receiver of a history entry. args: data.
-]] 
+]]
 --[[ Notable Comm messages: (See Classes/Services/Comms.lua for subscribing to comms)
 	Comms:
 	P: Permanent, T: Temporary
@@ -1554,7 +1554,6 @@ function RCLootCouncil:OnEvent(event, ...)
 	elseif event == "LOOT_CLOSED" then
 		if not IsInInstance() then return end -- Don't do anything out of instances
 		self.Log:d("Event:", event, ...)
-		local i = 0
 		for k, info in pairs(self.lootSlotInfo) do
 			if not info.isLooted and info.guid and info.link then
 				if tContains(itemsBeingGroupLooted, info.link) then
@@ -1567,7 +1566,6 @@ function RCLootCouncil:OnEvent(event, ...)
 
 				return
 			end
-			i = k -- Only update if we have items
 		end
 		self.lootOpen = false
 

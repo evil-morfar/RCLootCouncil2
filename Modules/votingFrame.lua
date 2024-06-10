@@ -324,7 +324,7 @@ function RCVotingFrame:SetupSession(session, t)
 	for name in addon:GroupIterator() do
 		local player = Player:Get(name)
 		-- REVIEW Seems like we occasionally get wrong/invalid names here.
-		-- but we still need to create the candidate, so use the name provided by 
+		-- but we still need to create the candidate, so use the name provided by
 		-- GroupIterator, which should be the same as the one from `Player`.
 		name = player and player.name or name
 		t.candidates[name] = {
@@ -1285,8 +1285,8 @@ function RCVotingFrame.SetCellClass(rowFrame, frame, data, cols, row, realrow, c
 		if not doOnceChecker then
 			doOnceChecker = true
 			addon.Log:E("lootTable[1].candidates:")
-			for name in pairs(lootTable[1].candidates) do
-				addon.Log:E(name)
+			for candName in pairs(lootTable[1].candidates) do
+				addon.Log:E(candName)
 			end
 		end
 		return

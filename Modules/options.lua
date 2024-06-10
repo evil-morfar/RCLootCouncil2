@@ -58,7 +58,7 @@ local function createNewButtonSet(path, name, order)
 				max = addon.db.profile.maxButtons,
 				step = 1,
 				get = function() return addon.db.profile.buttons[name].numButtons or 3 end,
-				set = function(_,v) 
+				set = function(_,v)
 					addon.db.profile.buttons[name].numButtons = v
 					addon:ConfigTableChanged("responses")
 				end,
