@@ -3,6 +3,7 @@
 ## Bugfixes
 
 - *Fixed tertiary stats not being shown in loot/voting frame.*
+- *Miscellaneous items is now listed as their subtype instead of "armor token" (unless their subtype is junk) in voting frame more info.*
 
 # 3.12.0
 

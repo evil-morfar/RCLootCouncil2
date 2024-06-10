@@ -825,6 +825,8 @@ function RCVotingFrame:BuildST()
 	self.frame.st:SetData(rows)
 end
 
+local invertedEnumMiscellaneousSubclass = tInvert(Enum.ItemMiscellaneousSubclass)
+
 function RCVotingFrame:UpdateMoreInfo(row, data)
 	local name
 	if data and row then
@@ -856,8 +858,11 @@ function RCVotingFrame:UpdateMoreInfo(row, data)
 		local r,g,b
 		tip:AddLine(L["Latest item(s) won"])
 		for _, v in ipairs(moreInfoData[name]) do -- extract latest awarded items
-			local _, itemType, _, location, _, classID = C_Item.GetItemInfoInstant(v[1])
-			local locationText = getglobal(location) or classID == Enum.ItemClass.Miscellaneous and L["Armor Token"] or itemType
+			local _, itemType, _, location, _, classID, subClassID = C_Item.GetItemInfoInstant(v[1])
+			local locationText = getglobal(location) or (classID == Enum.ItemClass.Miscellaneous and
+					Enum.ItemMiscellaneousSubclass.Junk == subClassID and L["Armor Token"]) or
+				classID == Enum.ItemClass.Miscellaneous and invertedEnumMiscellaneousSubclass[subClassID]
+				or itemType
 			if v[3] then r,g,b = unpack(v[3],1,3) end
 			tip:AddDoubleLine(locationText .." ".. v[1], v[2], 1,1,1, r or 1, g or 1, b or 1)
 		end
