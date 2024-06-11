@@ -889,14 +889,13 @@ function RCLootCouncil:OnLootTableReceived (lt)
 	if not self.mldb then -- Really shouldn't happen, but I'm tired of people somehow not receiving it...
 		self:Debug("Received loot table without having mldb :(", self.masterLooter)
 		self:SendCommand(self.masterLooter, "MLdb_request")
-		return self:ScheduleTimer("OnLootTableReceived", 0, lt)
+		return self:ScheduleTimer("OnLootTableReceived", 1, lt)
 	end
 
 	-- Check if council is received
 	if not FindInTableIf(self.council, function(v) return self:UnitIsUnit(self.masterLooter, v) end) then
 		self:Debug("Received loot table without ML in the council", self.masterLooter)
 		self:SendCommand(self.masterLooter, "council_request")
-		return self:ScheduleTimer("OnLootTableReceived", 0, lt)
 	end
 
 	-- Hand the lootTable to the votingFrame
