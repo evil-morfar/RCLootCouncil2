@@ -64,6 +64,7 @@ local ItemUtils = RCLootCouncil.Require "Utils.Item"
 -- Init shorthands
 local db, debugLog; -- = self.db.profile, self.db.global.log
 -- init modules
+---@enum (key) DefaultModules
 local defaultModules = {
 	masterlooter = "RCLootCouncilML",
 	lootframe = "RCLootFrame",
@@ -74,6 +75,7 @@ local defaultModules = {
 	tradeui = "TradeUI",
 	sync = "Sync",
 }
+---@enum (key) UserModules
 local userModules = {
 	masterlooter = nil,
 	lootframe = nil,
@@ -2070,11 +2072,10 @@ function RCLootCouncil:CallModule(module)
 	self:EnableModule(userModules[module] or defaultModules[module])
 end
 
---- Returns the active module.
---	Always use this when calling functions in another module.
--- @paramsig module
--- @param module String, must correspond to a index in self.defaultModules.
--- @return The module object of the active module or nil if not found. Prioritises userModules if set.
+--- Returns the active module if found or fails silently.
+---	Always use this when calling functions in another module.
+--- @param module DefaultModules|UserModules Index in self.defaultModules.
+--- @return AceAddon? #The module object of the active module or nil if not found. Prioritises userModules if set.
 function RCLootCouncil:GetActiveModule(module)
 	return self:GetModule(userModules[module] or defaultModules[module], false)
 end
