@@ -1464,6 +1464,7 @@ function RCVotingFrame.SetCellNote(rowFrame, frame, data, cols, row, realrow, co
 	local f = frame.noteBtn or CreateFrame("Button", nil, frame)
 	f:SetSize(ROW_HEIGHT, ROW_HEIGHT)
 	f:SetPoint("CENTER", frame, "CENTER")
+	f:SetHighlightTexture("Interface\\Minimap\\UI-Minimap-ZoomButton-Highlight")
 	if note then
 		f:SetNormalTexture("Interface/BUTTONS/UI-GuildButton-PublicNote-Up.png")
 		f:SetScript("OnEnter", function() addon:CreateTooltip(_G.LABEL_NOTE, note)	end) -- _G.LABEL_NOTE == "Note" in English

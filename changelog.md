@@ -1,8 +1,10 @@
 ## Changes
 
-### Class colors
+### Look and Feel
 
-Reviewed all addon prints of player names and added class icon/colors where appropiate.
+Reviewed all addon prints/displays of player names and added class icon/colors where appropiate.
+
+Added highlight and push textures to several buttons that didn't have them.
 
 ## Bugfixes
 

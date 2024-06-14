@@ -162,6 +162,8 @@ end
 
 function RCSessionFrame.SetCellDeleteBtn(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
 	frame:SetNormalTexture("Interface/BUTTONS/UI-GroupLoot-Pass-Up.png")
+	frame:SetHighlightTexture("Interface/Buttons/UI-GROUPLOOT-PASS-HIGHLIGHT")
+	frame:SetPushedTexture("Interface/Buttons/UI-GROUPLOOT-PASS-DOWN")
 	frame:SetScript("OnClick", function() RCSessionFrame:DeleteItem(data[realrow].session, realrow) end)
 	frame:SetSize(20,20)
 end

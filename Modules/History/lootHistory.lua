@@ -517,6 +517,8 @@ end
 function LootHistory.SetCellDelete(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
 	if not frame.created then
 		frame:SetNormalTexture("Interface\\Buttons\\UI-GroupLoot-Pass-Up")
+		frame:SetHighlightTexture("Interface/Buttons/UI-GROUPLOOT-PASS-HIGHLIGHT")
+		frame:SetPushedTexture("Interface/Buttons/UI-GROUPLOOT-PASS-DOWN")
 		frame:SetScript("OnEnter", function()
 			addon:CreateTooltip(L["Double click to delete this entry."])
 		end)
