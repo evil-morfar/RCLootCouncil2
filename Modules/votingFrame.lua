@@ -1686,7 +1686,7 @@ do
 
 		local text = ""
 		if category == "CANDIDATE" or MSA_DROPDOWNMENU_MENU_VALUE:find("_CANDIDATE$") then
-			text = addon:GetUnitClassColoredName(candidateName)
+			text = addon:GetClassIconAndColoredName(candidateName)
 		elseif category == "GROUP" or MSA_DROPDOWNMENU_MENU_VALUE:find("_GROUP$") then
 			text = _G.FRIENDS_FRIENDS_CHOICE_EVERYONE
 		elseif category == "ROLL" or MSA_DROPDOWNMENU_MENU_VALUE:find("_ROLL$") then
@@ -1749,9 +1749,9 @@ do
 	function RCVotingFrame.reannounceOrRequestRollPrint(target, isThisItem, isRoll)
 		local itemText = isThisItem and L["This item"] or L["All unawarded items"]
 		if isRoll then
-			addon:Print(format(L["Requested rolls for 'item' from 'target'"], itemText, target))
+			addon:Print(format(L["Requested rolls for 'item' from 'target'"], itemText, addon:GetClassIconAndColoredName(target)))
 		else
-			addon:Print(format(L["Reannounced 'item' to 'target'"], itemText, target))
+			addon:Print(format(L["Reannounced 'item' to 'target'"], itemText, addon:GetClassIconAndColoredName(target)))
 		end
 	end
 	--- The entries placed in the rightclick menu.

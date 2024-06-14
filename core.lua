@@ -2704,7 +2704,7 @@ function RCLootCouncil:OnMLDBReceived(input)
 end
 
 function RCLootCouncil:OnReRollReceived(sender, lt)
-	self:Print(format(L["'player' has asked you to reroll"], self.Ambiguate(sender)))
+	self:Print(format(L["'player' has asked you to reroll"], self:GetClassIconAndColoredName(sender)))
 	self:PrepareLootTable(lt)
 	self:DoAutoPasses(lt)
 	-- REVIEW Are these needed?

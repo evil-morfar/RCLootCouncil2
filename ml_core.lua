@@ -1128,7 +1128,7 @@ end
 function RCLootCouncilML:PrintAutoAwardErrorWithPlayer(name)
 	name = name or "Missing Candidate"
 	addon:Print(L["Cannot autoaward:"])
-	addon:Print(format(L["Could not find 'player' in the group."], name))
+	addon:Print(format(L["Could not find 'player' in the group."], addon:GetClassIconAndColoredName(name)))
 end
 
 --- Auto award an item to a player.
@@ -1390,7 +1390,7 @@ function RCLootCouncilML:GetItemsFromMessage(msg, sender, retryCount)
 	local typeCode = self.lootTable[ses].typeCode or self.lootTable[ses].equipLoc
 
 	-- Let people know we've done stuff
-	addon:Print(format(L["Item received and added from 'player'"], addon.Ambiguate(sender)))
+	addon:Print(format(L["Item received and added from 'player'"], addon:GetClassIconAndColoredName(sender)))
 	SendChatMessage("[RCLootCouncil]: "..format(L["Response to 'item' acknowledged as 'response'"],
 		addon:GetItemTextWithCount(link, count), addon:GetResponse(typeCode, response).text), "WHISPER", nil, sender)
 end
@@ -1412,7 +1412,7 @@ function RCLootCouncilML:SendWhisperHelp(target)
 		SendChatMessage(msg, "WHISPER", nil, target)
 	end
 	SendChatMessage(L["whisper_guide2"], "WHISPER", nil, target)
-	addon:Print(format(L["Sent whisper help to 'player'"], addon.Ambiguate(target)))
+	addon:Print(format(L["Sent whisper help to 'player'"], addon:GetClassIconAndColoredName(target)))
 end
 
 --- Award popup control functions

@@ -1,5 +1,10 @@
 ## Changes
 
+### Class colors
+
+Reviewed all addon prints of player names and added class icon/colors where appropiate.
+
+
 ## Bugfixes
 
 - *Fixed tertiary stats not being shown in loot/voting frame.*

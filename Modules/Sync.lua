@@ -152,14 +152,14 @@ function sync:SyncAckReceived(sender, type)
     end
     -- We're ready to send
     SendSyncData(sender, type)
-    addon:Print(format(L["Sending 'type' to 'player'..."], type, sender:GetName()))
+    addon:Print(format(L["Sending 'type' to 'player'..."], type, addon:GetClassIconAndColoredName(sender)))
 end
 
 function sync:SyncNackReceived(sender, type, msg)
     addon.Log:D("SyncNackReceived", sender, type, msg)
     -- Delete them from table
     sync_table[sender:GetName()] = nil
-    addon:Print(format(self.declineReasons[msg], sender:GetName(), type))
+    addon:Print(format(self.declineReasons[msg], sender:GetClassColoredName(), type))
 end
 
 -- We've received a request to sync with another player
@@ -207,7 +207,7 @@ function sync:SyncDataReceived(sender, type, data)
     else -- Should never happen
         return addon.Log:D("Unsupported SyncDataReceived", type, "from", sender)
     end
-    addon:Print(format(L["Successfully received 'type' from 'player'"], type, sender:GetName()))
+	addon:Print(format(L["Successfully received 'type' from 'player'"], type, sender:GetClassColoredName()))
 end
 
 local function addNameToList(list, name, class)
