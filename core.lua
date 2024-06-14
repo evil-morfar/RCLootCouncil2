@@ -2170,9 +2170,9 @@ end
 function RCLootCouncil:GetClassIconAndColoredName(nameOrPlayer, size)
 	local player = type(nameOrPlayer) == "string" and Player:Get(nameOrPlayer) or nameOrPlayer
 	size = size or 12
-	if not player:GetClass() then
+	if not (player and player:GetClass()) then
 		self.Log:W("GetClassIconAndColoredName: No class found for ", nameOrPlayer)
-		return player:GetName() or ""
+		return nameOrPlayer or ""
 	end
 	return format("|W%s %s|w", CreateAtlasMarkup(self.CLASS_TO_ATLAS[player:GetClass()], size, size), player:GetClassColoredName())
 end

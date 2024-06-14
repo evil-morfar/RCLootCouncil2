@@ -84,7 +84,7 @@ function Player:Get(input)
 				if not guid then
 					-- Not much we can do at this point, so log an error
 					ErrorHandler:ThrowSilentError("Couldn't produce GUID for " .. tostring(input))
-					return private:GetNilPlayer()
+					return private:GetNilPlayer(input)
 				end
 			end
 		end
@@ -190,7 +190,7 @@ function private:GetGUIDFromPlayerNameByGuild(name)
 end
 
 --- @return Player # A special `nil` player
-function private:GetNilPlayer() return setmetatable({name = "Unknown"}, PLAYER_MT) end
+function private:GetNilPlayer(name) return setmetatable({name = name or "Unknown"}, PLAYER_MT) end
 
 function private:CreateClassColoredName(player)
 	local name = player.name
