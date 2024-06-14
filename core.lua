@@ -2348,7 +2348,7 @@ function RCLootCouncil:GetItemTypeText(link, subType, equipLoc, typeID, subTypeI
 		else
 			return tokenText
 		end
-	elseif equipLoc ~= "" and getglobal(equipLoc) then
+	elseif equipLoc ~= "" and equipLoc ~= "INVTYPE_NON_EQUIP_IGNORE" and getglobal(equipLoc) then
 		if classesFlag and classesFlag ~= 0xffffffff then
 			return getglobal(equipLoc) .. ", " .. self:GetClassNamesFromFlag(classesFlag)
 		elseif equipLoc == "INVTYPE_TRINKET" then
