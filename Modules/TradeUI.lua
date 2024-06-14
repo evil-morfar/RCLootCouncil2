@@ -107,7 +107,7 @@ function TradeUI:Update(forceShow)
             {DoCellUpdate = self.SetCellItemIcon},
             {value = v.link},
             {value = "-->"},
-            {value = v.args.recipient and addon.Ambiguate(v.args.recipient) or "Unknown", color = addon:GetClassColor(v.args.recipient.class or "nothing")},
+            {value = v.args.recipient and addon:GetClassIconAndColoredName(v.args.recipient, 16) or "Unknown"},
             {value = _G.TRADE, color = self.GetTradeLabelColor, colorargs = {self, v.args.recipient},},
             {DoCellUpdate = self.SetCellDelete },
          }

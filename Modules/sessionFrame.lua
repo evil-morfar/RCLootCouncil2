@@ -156,7 +156,7 @@ function RCSessionFrame.SetCellText(rowFrame, frame, data, cols, row, realrow, c
 			RCSessionFrame:ScheduleTimer("Show", 0, ml.lootTable) -- Try again next frame
 		end
 	else
-		frame.text:SetText(data[realrow].link..(data[realrow].owner and "\n"..addon:GetUnitClassColoredName(data[realrow].owner) or ""))
+		frame.text:SetText(data[realrow].link..(data[realrow].owner and "\n"..addon:GetClassIconAndColoredName(data[realrow].owner) or ""))
 	end
 end
 

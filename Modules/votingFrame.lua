@@ -849,11 +849,10 @@ function RCVotingFrame:UpdateMoreInfo(row, data)
 	end
 	table.sort(sortedAwardHistory)
 
-	local color = addon:GetClassColor(self:GetCandidateData(session, name, "class"))
 	local tip = self.frame.moreInfo -- shortening
 	tip:SetOwner(self.frame, "ANCHOR_RIGHT")
 
-	tip:AddLine(addon.Ambiguate(name), color.r, color.g, color.b)
+	tip:AddLine(addon:GetClassIconAndColoredName(name, 16))
 	if moreInfoData and moreInfoData[name] then
 		local r,g,b
 		tip:AddLine(L["Latest item(s) won"])
@@ -1749,9 +1748,9 @@ do
 	function RCVotingFrame.reannounceOrRequestRollPrint(target, isThisItem, isRoll)
 		local itemText = isThisItem and L["This item"] or L["All unawarded items"]
 		if isRoll then
-			addon:Print(format(L["Requested rolls for 'item' from 'target'"], itemText, addon:GetClassIconAndColoredName(target)))
+			addon:Print(format(L["Requested rolls for 'item' from 'target'"], itemText, target))
 		else
-			addon:Print(format(L["Reannounced 'item' to 'target'"], itemText, addon:GetClassIconAndColoredName(target)))
+			addon:Print(format(L["Reannounced 'item' to 'target'"], itemText, target))
 		end
 	end
 	--- The entries placed in the rightclick menu.
@@ -1771,7 +1770,7 @@ do
 	RCVotingFrame.rightClickEntries = {
 		{ -- Level 1
 			{ -- 1 Title, player name
-				text = function(name) return addon.Ambiguate(name) end,
+				text = function(name) return addon:GetClassIconAndColoredName(name, 14) end,
 				isTitle = true,
 				notCheckable = true,
 				disabled = true,

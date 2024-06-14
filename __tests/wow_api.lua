@@ -1028,6 +1028,7 @@ function _G.FauxScrollFrame_OnVerticalScroll() end
 
 
 function GetClassColoredTextForUnit(unit, text) return text end
+function CreateAtlasMarkup(text) return "" end
 ceil = math.ceil
 C_Container = {
 	GetContainerItemInfo = function(c, s)
@@ -1058,6 +1059,9 @@ _G.GameTooltip = CreateFrame("GameTooltip", "GameTooltip", UIParent)
 NUM_BAG_SLOTS = 10
 
 RAID_CLASS_COLORS = {}
+function GetClassColorObj(classFilename)
+	return RAID_CLASS_COLORS[classFilename];
+end
 MAX_TRADE_ITEMS = 6 -- don't remember
 
 TOOLTIP_DEFAULT_COLOR = { r = 1, g = 1, b = 1, };

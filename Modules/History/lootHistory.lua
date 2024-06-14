@@ -1116,9 +1116,8 @@ function LootHistory:UpdateMoreInfo(rowFrame, cellFrame, dat, cols, row, realrow
 	local tip = self.moreInfo -- shortening
 	tip:SetOwner(self.frame, "ANCHOR_RIGHT")
 	local row = dat[realrow]
-	local color = addon:GetClassColor(row.class)
 	local data = lootDB[row.name][row.num]
-	tip:AddLine(addon.Ambiguate(row.name), color.r, color.g, color.b)
+	tip:AddLine(addon:GetClassIconAndColoredName(row.name, 16))
 	tip:AddLine("")
 	tip:AddDoubleLine(L["Time"]..":", (data.time or _G.UNKNOWN) .." ".. row.date or _G.UNKNOWN, 1,1,1, 1,1,1)
 	tip:AddDoubleLine(L["Loot won:"], data.lootWon or _G.UNKNOWN, 1,1,1, 1,1,1)
@@ -1130,7 +1129,7 @@ function LootHistory:UpdateMoreInfo(rowFrame, cellFrame, dat, cols, row, realrow
 	end
 	tip:AddDoubleLine(L["Dropped by:"], data.boss or _G.UNKNOWN, 1,1,1, 0.862745, 0.0784314, 0.235294)
 	tip:AddDoubleLine(_G.FROM, data.instance or _G.UNKNOWN, 1,1,1, 0.823529, 0.411765, 0.117647)
-	tip:AddDoubleLine(L["Original Owner"], data.owner, 1,1,1, 1,1,1)
+	tip:AddDoubleLine(L["Original Owner"], addon:GetClassIconAndColoredName(data.owner), 1,1,1, 1,1,1)
 	tip:AddDoubleLine(L["Votes"]..":", data.votes or _G.UNKNOWN, 1,1,1, 1,1,1)
 	if data.note then
 		tip:AddLine(" ")
@@ -1164,7 +1163,7 @@ function LootHistory:UpdateMoreInfo(rowFrame, cellFrame, dat, cols, row, realrow
 	tip:AddLine(format(L["lootHistory_moreInfo_winnersOfItem"], data.lootWon))
 	for _, data in ipairs(winners) do
 		local c = addon:GetClassColor(data[3])
-		tip:AddDoubleLine(addon.Ambiguate(data[2]), data[1], c.r,c.g,c.b, 1,1,1)
+		tip:AddDoubleLine(addon:GetClassIconAndColoredName(data[2]), data[1], c.r,c.g,c.b, 1,1,1)
 	end
 
 	-- Debug stuff
