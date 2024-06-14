@@ -1171,12 +1171,12 @@ function RCVotingFrame:UpdatePeopleToVote()
 		GameTooltip:SetOwner(UIParent, "ANCHOR_CURSOR")
 		GameTooltip:AddLine(L["The following council members have voted"])
 		for _,name in ipairs(hasVoted) do
-			GameTooltip:AddLine(addon:GetUnitClassColoredName(name))
+			GameTooltip:AddLine(addon:GetClassIconAndColoredName(name))
 		end
 		if #shouldVote > 0 then
 			GameTooltip:AddLine(L["Missing votes from:"])
 			for _,name in ipairs(shouldVote) do
-				GameTooltip:AddLine(addon:GetUnitClassColoredName(name))
+				GameTooltip:AddLine(addon:GetClassIconAndColoredName(name))
 			end
 		end
 		GameTooltip:Show()

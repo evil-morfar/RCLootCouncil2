@@ -37,8 +37,7 @@ function playerClass:GetGUID() return self.guid end
 function playerClass:GetForTransmit() return (gsub(self.guid, "Player%-", "")) end
 function playerClass:GetInfo() return GetPlayerInfoByGUID(self.guid) end
 function playerClass:GetClassColoredName()
-	if self.classColoredName then return self.classColoredName end
-	return private:CreateClassColoredName(self)
+	return self.classColoredName or private:CreateClassColoredName(self)
 end
 --- Update fields in the Player object
 --- @param data table<string,any>

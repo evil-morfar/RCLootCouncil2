@@ -2164,6 +2164,34 @@ function RCLootCouncil:GetUnitClassColoredName(name)
 	end
 end
 
+--- Creates a string with class icon in front of a class colored name of the player.
+---@param nameOrPlayer string|Player
+---@param size number? Size of the icon, defaults to 12.
+function RCLootCouncil:GetClassIconAndColoredName(nameOrPlayer, size)
+	local player = type(nameOrPlayer) == "string" and Player:Get(nameOrPlayer) or nameOrPlayer
+	size = size or 12
+	if not player:GetClass() then
+		self.Log:W("GetClassIconAndColoredName: No class found for ", nameOrPlayer)
+		return player:GetName() or ""
+	end
+	return format("%s %s", CreateAtlasMarkup(self.CLASS_TO_ATLAS[player:GetClass()], size, size), player:GetClassColoredName())
+end
+
+--- Creates a string with spec icon in front of a class colored name of the player.
+--- Uses class icon if specID is not available.
+---@param nameOrPlayer string|Player
+---@param size number? Size of the icon, defaults to 12.
+function RCLootCouncil:GetSpecIconAndColoredName(nameOrPlayer, size)
+	local player = type(nameOrPlayer) == "string" and Player:Get(nameOrPlayer) or nameOrPlayer
+	size = size or 12
+	if not (player and player.specID and type(player.specID) == "number") then
+		-- No spec ID, fallback to class
+		return self:GetClassIconAndColoredName(player or nameOrPlayer, size)
+	end
+	local specIcon = select(4, GetSpecializationInfoByID(player.specID))
+	return format("%s %s", CreateSimpleTextureMarkup(specIcon, size), player:GetClassColoredName())
+end
+
 -- cName is name of the module
 function RCLootCouncil:CreateGameTooltip(cName, parent)
 	local itemTooltip = CreateFrame("GameTooltip", cName .. "_ItemTooltip", parent, "GameTooltipTemplate")
