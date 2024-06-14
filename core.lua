@@ -2174,7 +2174,7 @@ function RCLootCouncil:GetClassIconAndColoredName(nameOrPlayer, size)
 		self.Log:W("GetClassIconAndColoredName: No class found for ", nameOrPlayer)
 		return player:GetName() or ""
 	end
-	return format("%s %s", CreateAtlasMarkup(self.CLASS_TO_ATLAS[player:GetClass()], size, size), player:GetClassColoredName())
+	return format("|W%s %s|w", CreateAtlasMarkup(self.CLASS_TO_ATLAS[player:GetClass()], size, size), player:GetClassColoredName())
 end
 
 --- Creates a string with spec icon in front of a class colored name of the player.
@@ -2189,7 +2189,7 @@ function RCLootCouncil:GetSpecIconAndColoredName(nameOrPlayer, size)
 		return self:GetClassIconAndColoredName(player or nameOrPlayer, size)
 	end
 	local specIcon = select(4, GetSpecializationInfoByID(player.specID))
-	return format("%s %s", CreateSimpleTextureMarkup(specIcon, size), player:GetClassColoredName())
+	return format("|W%s %s|w", CreateSimpleTextureMarkup(specIcon, size), player:GetClassColoredName())
 end
 
 -- cName is name of the module
