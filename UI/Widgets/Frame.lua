@@ -2,6 +2,7 @@
 --- @type RCLootCouncil
 local addon = select(2, ...)
 local lwin = LibStub("LibWindow-1.1")
+local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 
 local name = "RCFrame"
 --- @class RCFrame : Object.Minimize_Prototype, Frame, UI.embeds
@@ -9,7 +10,7 @@ local name = "RCFrame"
 --- @field title BackdropTemplate | Frame
 local Object = {}
 local db = {}
-local scrollHandler = function(f, delta) if IsControlKeyDown() then lwin.OnMouseWheel(f, delta) end end
+local scrollHandler = function(f, delta) if IsControlKeyDown() then lwin.SetScale(f, delta < 0 and f:GetScale() + .03 or f:GetScale() - .03) end end
 
 --- Creates a standard frame for addon with title, minimizing, positioning and scaling supported.
 --		Adds Minimize(), Maximize() and IsMinimized() functions on the frame, and registers it for hide on combat.
@@ -120,6 +121,7 @@ function Object:CreateTitleFrame(parent, name, title, width)
 	tf:SetMovable(true)
 	tf:SetWidth(width or 250)
 	tf:SetPoint("CENTER", parent, "TOP", 0, -1)
+	tf:SetScript("OnMouseWheel", function(self, delta) parent:GetScript("OnMouseWheel")(parent,delta) end)
 	tf:SetScript("OnMouseDown", function(self)
 		self:GetParent():StartMoving()
 		self:GetParent():SetToplevel(true)
@@ -140,6 +142,26 @@ function Object:CreateTitleFrame(parent, name, title, width)
 		else
 			self.lastClick = GetTime()
 		end
+	end)
+	local tempScale = db.UI[name].scale
+	local hoverTimer = nil
+	local showHelpTooltip = function ()
+		GameTooltip:SetOwner(UIParent, "ANCHOR_CURSOR_RIGHT")
+		GameTooltip:AddLine(title, 1, 1, 1)
+		GameTooltip:AddLine()
+		GameTooltip:AddLine(L.rcframe_help, 1, 1, 1)
+
+		GameTooltip:Show()
+	end
+	tf:SetScript("OnEnter", function(self)
+		tempScale = self:GetScale()
+		self:SetScale(self:GetScale() * 1.07)
+		hoverTimer = addon:ScheduleTimer(showHelpTooltip, 1.2)
+	end)
+	tf:SetScript("OnLeave", function (self)
+		self:SetScale(tempScale)
+		addon:HideTooltip()
+		addon:CancelTimer(hoverTimer)
 	end)
 
 	local text = tf:CreateFontString(nil, "OVERLAY", "GameFontNormal")

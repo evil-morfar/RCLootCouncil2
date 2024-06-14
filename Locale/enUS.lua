@@ -504,11 +504,16 @@ L["trade_complete_message"] = "%s traded %s to %s."
 L["trade_wrongwinner_message"] = "WARNING: %s traded %s to %s instead of %s!"
 L["trade_item_to_trade_not_found"] = "WARNING: Item to trade: %s couldn't be found in your inventory!"
 
+
 L["options_autoAwardBoE_desc"] = "Enable to automatically award all epic BoE (Bind on Equip) items to a specific person for the selected reason."
 L["options_autoAwardBoE_name"] = "Auto Award BoE's"
 L["options_ml_outOfRaid_desc"] = "When enabled, while in a group of 8 or more members, anyone that isn't in an instance when a session starts will automatically send an 'Out of Raid' response."
 L["options_ml_outOfRaid_name"] = "Out of Raid Support"
 L["options_requireNotes_desc"] = "If enabled, candidates cannot submit their response without having entered a note."
+
+L.rcframe_help = [[Double click here to minimize
+Click and drag to move
+Ctrl+scroll to change scale]]
 
 L.autoGroupLoot_warning = "Note: Group Leader's settings will cause RCLootCouncil to automatically control group loot."
 L["opt_addButton_desc"] = "Add a new button group for the selected slot."

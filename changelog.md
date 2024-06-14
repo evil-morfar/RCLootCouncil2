@@ -6,6 +6,10 @@ Reviewed all addon prints/displays of player names and added class icon/colors w
 
 Added highlight and push textures to several buttons that didn't have them.
 
+Added help tooltip and hover effect when hovering frame titles.
+
+Made frame scaling more granular.
+
 ## Bugfixes
 
 - *Fixed tertiary stats not being shown in loot/voting frame.*
