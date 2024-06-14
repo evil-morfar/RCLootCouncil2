@@ -435,18 +435,7 @@ function RCLootCouncil:ChatCommand(msg)
 
 	elseif input == "history" or input == string.lower(_G.HISTORY) or input == "h" or input == "his" or input == "hist" then
 		self:CallModule("history")
-		-- @debug@
-	elseif input == "nnp" then
-		self.nnp = not self.nnp
-		self:Print("nnp = " .. tostring(self.nnp))
-	elseif input == "exporttrinketdata" then
-		self:ExportTrinketData(tonumber(args[1]), 0, tonumber(args[2]), 1)
-	elseif input == 'trinkettest' or input == 'ttest' then
-		self.playerClass = string.upper(args[1])
-		self:Test(1, false, true)
-	elseif input == "exporttokendata" then
-		self:ExportTokenData(tonumber(args[1]))
-		-- @end-debug@
+
 	elseif input == "whisper" or input == string.lower(_G.WHISPER) then
 		self:Print(L["whisper_help"])
 
@@ -528,10 +517,24 @@ function RCLootCouncil:ChatCommand(msg)
 	elseif input == "safemode" then
 		db.safemode = not db.safemode
 		self:Print("SafeMode " .. (db.safemode and "On" or "Off"))
-		-- @debug@
 
 	elseif input == "export" then
-		self:ExportCurrentSession()
+			self:ExportCurrentSession()
+
+	--@debug@
+	elseif input == "nnp" then
+		self.nnp = not self.nnp
+		self:Print("nnp = " .. tostring(self.nnp))
+
+	elseif input == "exporttrinketdata" then
+		self:ExportTrinketData(tonumber(args[1]), 0, tonumber(args[2]), 1)
+
+	elseif input == "trinkettest" or input == "ttest" then
+		self.playerClass = string.upper(args[1])
+		self:Test(1, false, true)
+
+	elseif input == "exporttokendata" then
+		self:ExportTokenData(tonumber(args[1]))
 
 	elseif input == 't' then -- Tester cmd
 		-- Test items with several modifiers. Should probably be added to the regular test func
@@ -543,7 +546,7 @@ function RCLootCouncil:ChatCommand(msg)
 				print(Player:Get(guid), "in guild = ", inGuild)
 			end
 		end
-		-- @end-debug@
+	--@end-debug@
 	else
 		-- Check if the input matches anything
 		for k, v in pairs(self.customChatCmd) do if k == input then return v.module[v.func](v.module, unpack(args)) end end
@@ -2433,8 +2436,8 @@ end
 function RCLootCouncil:GetResponseColor(type, name) return unpack(self:GetResponse(type, name).color) end
 
 -- #end UI Functions -----------------------------------------------------
--- @debug@
 -- debug func
+--@debug@
 _G.printtable = function(data, level)
 	if not data then return end
 	level = level or 0
@@ -2453,7 +2456,7 @@ _G.printtable = function(data, level)
 		until true
 	end
 end
--- @end-debug@
+--@end-debug@
 
 function RCLootCouncil:ExportCurrentSession()
 	if not lootTable or #lootTable == 0 then return self:Print(L["No session running"]) end

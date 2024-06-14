@@ -146,8 +146,6 @@ function RCLootCouncil:ExportTokenDataSingle(id)
 	end
 end
 
---@end-debug@
-
 -- Equip locations
 _G.RCTokenTable = {
 	[22349] = "ChestSlot",  -- Desecrated Breastplate,
