@@ -2163,8 +2163,16 @@ function RCLootCouncil:GetUnitClassColoredName(name)
 		return player:GetClassColoredName()
 	else
 		local englishClass = select(2, UnitClass(Ambiguate(name, "short")))
-		return _G.GetClassColoredTextForUnit(englishClass, self.Ambiguate(name))
+		return self:WrapTextInClassColor(englishClass, self.Ambiguate(name))
 	end
+end
+
+--- 2/3s of `GetClassColoredTextForUnit` - useful when you have class but not a valid unit.
+---@param class ClassFile Class to use color from.
+---@param text string Text to wrap.
+function RCLootCouncil:WrapTextInClassColor(class, text)
+	local color = GetClassColorObj(class)
+	return color and color:WrapTextInColorCode(text) or text
 end
 
 --- Creates a string with class icon in front of a class colored name of the player.

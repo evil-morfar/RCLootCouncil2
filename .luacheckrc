@@ -81,6 +81,7 @@ globals = {
 	"GameTooltip_Hide",
 	"GameTooltip_SetDefaultAnchor",
 	"GameTooltip_UnitColor",
+	"GetClassColorObj",
 	"Lerp",
 	"Mixin",
 	"Round",

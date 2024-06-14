@@ -192,8 +192,10 @@ end
 --- @return Player # A special `nil` player
 function private:GetNilPlayer(name) return setmetatable({name = name or "Unknown"}, PLAYER_MT) end
 
+---@param player Player
 function private:CreateClassColoredName(player)
 	local name = player.name
-	player.classColoredName = _G.GetClassColoredTextForUnit(Ambiguate(name, "None"), addon.Ambiguate(name))
+	player.classColoredName = RCLootCouncil:WrapTextInClassColor(player.class, addon.Ambiguate(name))
+	private:CachePlayer(player)
 	return player.classColoredName
 end
