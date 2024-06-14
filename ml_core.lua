@@ -1420,7 +1420,7 @@ end
 --	data contains: session, winner, responseID, reason, votes, gear1, gear2, isTierRoll, isRelicRoll, link, isToken
 function RCLootCouncilML.AwardPopupOnShow(frame, data)
 	frame:SetFrameStrata("FULLSCREEN")
-	frame.text:SetText(format(L["Are you sure you want to give #item to #player?"], data.link, addon.Ambiguate(data.winner)))
+	frame.text:SetText(format(L["Are you sure you want to give #item to #player?"], data.link, addon:GetClassIconAndColoredName(data.winner)))
 	frame.icon:SetTexture(data.texture)
 end
 
