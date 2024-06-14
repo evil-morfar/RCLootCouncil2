@@ -2157,7 +2157,7 @@ end
 function RCLootCouncil:GetUnitClassColoredName(name)
 	local player = Player:Get(name)
 	if player then
-		return _G.GetClassColoredTextForUnit(Ambiguate(player:GetName(), "None"), self.Ambiguate(name))
+		return player:GetClassColoredName()
 	else
 		local englishClass = select(2, UnitClass(Ambiguate(name, "short")))
 		return _G.GetClassColoredTextForUnit(englishClass, self.Ambiguate(name))

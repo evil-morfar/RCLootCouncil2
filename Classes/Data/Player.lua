@@ -36,6 +36,10 @@ function playerClass:GetShortName() return Ambiguate(self.name, "short") end
 function playerClass:GetGUID() return self.guid end
 function playerClass:GetForTransmit() return (gsub(self.guid, "Player%-", "")) end
 function playerClass:GetInfo() return GetPlayerInfoByGUID(self.guid) end
+function playerClass:GetClassColoredName()
+	if self.classColoredName then return self.classColoredName end
+	return private:CreateClassColoredName(self)
+end
 --- Update fields in the Player object
 --- @param data table<string,any>
 function playerClass:UpdateFields(data)
@@ -188,3 +192,9 @@ end
 
 --- @return Player # A special `nil` player
 function private:GetNilPlayer() return setmetatable({name = "Unknown"}, PLAYER_MT) end
+
+function private:CreateClassColoredName(player)
+	local name = player.name
+	player.classColoredName = _G.GetClassColoredTextForUnit(Ambiguate(name, "None"), addon.Ambiguate(name))
+	return player.classColoredName
+end
