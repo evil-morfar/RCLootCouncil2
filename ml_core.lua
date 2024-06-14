@@ -456,7 +456,7 @@ end
 
 function RCLootCouncilML:OnTradeComplete(link, recipient, trader)
 	if db.printCompletedTrades then
-		addon:Print(format(L["trade_complete_message"], addon.Ambiguate(trader), link, addon.Ambiguate(recipient)))
+		addon:Print(format(L["trade_complete_message"], addon:GetClassIconAndColoredName(trader), link, addon:GetClassIconAndColoredName(recipient)))
 	end
 end
 
