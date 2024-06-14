@@ -238,6 +238,22 @@ local function autoAwardFieldProcessor(list)
 	end
 end
 
+--- Sorts by linking indicies to GUIDs in `keyToGUID`
+---@param names Player[] Array of `Player`s sorted _in-place_.
+---@param keyToGUID string[] Should be empty. Will be populated with keys from `names` to GUIDs.
+---@param textColorOnly? bool Won't prefix class icon if `true`.
+---@return string[] #`names` routed through `GetClassIconAndColoredName` or `GetClassColoredName`.
+local function processAndSortPlayerTable(names,keyToGUID, textColorOnly)
+	table.sort(names, function(v1, v2)
+		return v1 and v2 and (v1.name or "") < (v2.name or "")
+	end)
+	for k, player in ipairs(names) do
+		keyToGUID[k] = player:GetGUID()
+		names[k] = textColorOnly == nil and addon:GetClassIconAndColoredName(player, 18) or player:GetClassColoredName()
+	end
+	return names
+end
+
 local selections = {}
 function addon:OptionsTable()
 	local db = self:Getdb()
@@ -517,6 +533,7 @@ function addon:OptionsTable()
 										name = L["Open the Loot History"],
 										desc = L["open_the_loot_history_desc"],
 										type = "execute",
+										width = 1.2,
 										func = function() self:CallModule("history");	HideUIPanel(SettingsPanel);end,
 									},
 									clearLootDB = {
@@ -1683,23 +1700,28 @@ function addon:OptionsTable()
 										name = L["current_council_desc"],
 										type = "description",
 									},
-									councilList = {
-										order = 2,
-										type = "multiselect",
-										name = "",
-										values = function()
-											local t = {}
-											for _,v in ipairs(self.db.profile.council) do t[v] = addon.Ambiguate(Player:Get(v):GetName()) end
-											table.sort(t)
-											return t;
-										end,
-										width = "full",
-										get = function() return true end,
-										set = function(m,key)
-											tDeleteItem(self.db.profile.council, key)
-											addon:CouncilChanged()
-										end,
-									},
+									councilList = (function ()
+										---@type table<number,Player>
+										local names = {}
+										local keyToGUID = {}
+										return {
+											order = 2,
+											type = "multiselect",
+											name = "",
+											values = function()
+												wipe(names)
+												wipe(keyToGUID)
+												for k,v in ipairs(self.db.profile.council) do names[k] = Player:Get(v) end
+												return processAndSortPlayerTable(names, keyToGUID)
+											end,
+											width = "full",
+											get = function() return true end,
+											set = function(m,key)
+												tDeleteItem(self.db.profile.council, keyToGUID[key])
+												addon:CouncilChanged()
+											end,
+										}
+									end)(),
 									removeAll = {
 										order = 3,
 										name = L["Remove All"],
@@ -1784,36 +1806,36 @@ function addon:OptionsTable()
 										name = L["group_council_members_desc"],
 										type = "description",
 									},
-									list = {
-										order = 3,
-										type = "multiselect",
-										name = "",
-										width = "full",
-										values = function()
-											local t = {}
-											for i = 1, GetNumGroupMembers() do
-												local name = select(1,GetRaidRosterInfo(i))
-												local guid = UnitGUID(name)
-												t[guid] = self.Ambiguate(name)
-											end
-											if #t == 0 then t[self.player:GetGUID()] = self.player:GetShortName() end -- Insert ourself
-											table.sort(t, function(v1, v2)
-												return v1 and v1 < v2
-											end)
-											return t
-										end,
-										set = function(info,key,tag)
-											if tag then -- add
-												tinsert(self.db.profile.council, key)
-											else -- remove
-												tDeleteItem(self.db.profile.council, key)
-											end
-											addon:CouncilChanged()
-										end,
-										get = function(info, key)
-											return tContains(self.db.profile.council, key)
-										end,
-									},
+									list = (function()
+										local names = {}
+										local keyToGUID = {}
+										return {
+											order = 3,
+											type = "multiselect",
+											name = "",
+											width = "full",
+											values = function()
+												wipe(names)
+												wipe(keyToGUID)
+												for i = 1, GetNumGroupMembers() do
+													names[#names + 1] = Player:Get(select(1,GetRaidRosterInfo(i)))
+												end
+												if #names == 0 then names[1] = self.player end -- Insert ourself
+												return processAndSortPlayerTable(names, keyToGUID)
+											end,
+											set = function(info,key,tag)
+												if tag then -- add
+													tinsert(self.db.profile.council, keyToGUID[key])
+												else -- remove
+													tDeleteItem(self.db.profile.council, keyToGUID[key])
+												end
+												addon:CouncilChanged()
+											end,
+											get = function(info, key)
+												return tContains(self.db.profile.council, keyToGUID[key])
+											end,
+										}
+									end)(),
 								},
 							},
 						},
@@ -2059,10 +2081,11 @@ function addon:OptionsTable()
 end
 
 function addon:GetGuildOptions()
+	---@type table<number,Player>
+	local names = {}
+	local keyToGUID = {}
 	for i = 1, GuildControlGetNumRanks() do
 		local rank = GuildControlGetRankName(i)
-		local names = {}
-
 		-- Define the individual council option:
 		local option = {
 			order = i + 2,
@@ -2076,28 +2099,27 @@ function addon:GetGuildOptions()
 					width = "full",
 					values = function()
 						wipe(names)
+						wipe(keyToGUID)
 						for ci = 1, GetNumGuildMembers() do
-							local name, _, rankIndex,_, _, _, _, _, _, _, _, _, _, _, _, _, guid = GetGuildRosterInfo(ci); -- NOTE I assume the realm part of name is without spaces.
-							if (rankIndex + 1) == i then names[guid] = addon.Ambiguate(name) end -- Ambiguate to show realmname for players from another realm
+							local _, _, rankIndex,_, _, _, _, _, _, _, _, _, _, _, _, _, guid = GetGuildRosterInfo(ci)
+							if (rankIndex + 1) == i then names[#names+1] = Player:Get(guid) end
 						end
-						table.sort(names, function(v1, v2)
-							return v1 and v1 < v2
-						end)
-						return names
+						-- REVIEW: For whatever reason using class icons here causes major lag when rebuilding options window.
+						return processAndSortPlayerTable(names, keyToGUID, true)
 					end,
 					get = function(info, key)
-						return tContains(self.db.profile.council, key)
+						return tContains(self.db.profile.council, keyToGUID[key])
 					end,
 					set = function(info, key, tag)
 						if tag then
-							tinsert(self.db.profile.council, key)
+							tinsert(self.db.profile.council, keyToGUID[key])
 						else
-							tDeleteItem(self.db.profile.council, key)
+							tDeleteItem(self.db.profile.council, keyToGUID[key])
 						end
 						addon:CouncilChanged()
 					end,
-				},
-			},
+				}
+			}
 		}
 
 		-- Add it to the guildMembersGroup arguments:
