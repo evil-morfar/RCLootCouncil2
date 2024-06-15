@@ -6,6 +6,17 @@ local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 local name = "RCHugeExportFrame"
 --- @class RCHugeExportFrame: AceGUIFrame, UI.embeds
 --- @field edit AceGUIMultiLineEditBox
+--[[ @usage ```lua
+	local exportFrame = addon.UI:New("RCHugeExportFrame")
+	exportFrame:Show()
+	exportFrame.edit:SetCallback("OnTextChanged", function(self)
+		self:SetText(export)
+	end)
+	exportFrame.edit:SetText(export)
+	exportFrame.edit:SetFocus()
+	exportFrame.edit:HighlightText()
+	```
+]]
 local Object = {}
 
 -- There should only ever be one of these, as it can be reused

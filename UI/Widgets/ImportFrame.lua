@@ -12,6 +12,18 @@ local name = "RCImportFrame"
 --- @class RCImportFrame: AceGUIFrame, UI.embeds
 --- @field edit AceGUIMultiLineEditBox | DataField
 --- @field label AceGUILabel
+--[[ @usage ```lua
+	local importFrame = addon.UI:New("RCImportFrame")
+	importFrame.label:SetText(L["Accepted imports: 'Player Export' and 'CSV'"])
+	importFrame.edit:SetCallback("OnEnterPressed", function()
+		addon.Log:D("Import data:", string.sub(importFrame.edit.data, 0, 50))
+		self:ImportHistory(importFrame.edit.data)
+		importFrame:Hide()
+	end)
+	importFrame:Show()
+	importFrame.edit:SetFocus()
+	```
+]]
 local Object = {}
 
 -- There should only ever be one of these, as it can be reused

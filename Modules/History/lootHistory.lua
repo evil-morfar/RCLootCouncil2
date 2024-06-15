@@ -701,7 +701,7 @@ function LootHistory:ExportHistory(format)
 	if export and export ~= "" then -- do something
 		--debugprofilestart()
 		if export:len() < 40000 then
-		local exportFrame = addon.UI:New("RCExportFrame")
+			local exportFrame = addon.UI:New("RCExportFrame")
 			exportFrame:Show()
 			exportFrame.edit:SetCallback("OnTextChanged", function(self)
 				self:SetText(export)
