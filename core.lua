@@ -2501,9 +2501,9 @@ function RCLootCouncil:ExportCurrentSession()
 		exportData[session + 1] = table.concat({session, data.link:gsub("|", "||"), data.itemID, data.ilvl}, ",")
 	end
 	local csv = table.concat(exportData, "\n")
-	local frame = RCLootCouncil:GetActiveModule("history"):GetFrame()
-	frame.exportFrame.edit:SetText(csv)
-	frame.exportFrame:Show()
+	local exportFrame = self.UI:New("RCExportFrame")
+	exportFrame.edit:SetText(csv)
+	exportFrame:Show()
 end
 
 --- These comms should live all the time

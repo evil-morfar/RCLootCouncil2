@@ -4,4 +4,7 @@
   <Script file = "IconBordered.lua" />
   <Script file = "Text.lua" />
   <Script file = "Frame.lua" />
+  <Script file = "ExportFrame.lua" />
+  <Script file = "HugeExportFrame.lua" />
+  <Script file = "ImportFrame.lua" />
 </Ui>

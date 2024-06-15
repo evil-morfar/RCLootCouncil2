@@ -98,9 +98,8 @@ function RCLootCouncil:ExportTrinketData(nextTier, nextIsRaid, nextIndex, nextDi
    self:Print("Copy paste the data to Utils/TrinketData.lua")
    self:Print("Suggest to verify the data for the trinket in the recent raid")
 
-   -- Hack that should only happen in developer mode.
-   local frame = RCLootCouncil:GetActiveModule("history"):GetFrame()
-   frame.exportFrame:Show()
+	local exportFrame = RCLootCouncil.UI:New("RCExportFrame")
+	exportFrame:Show()
 
    local exports = "_G.RCTrinketSpecs = {\n"
    local longestNameLen = 0
@@ -124,7 +123,7 @@ function RCLootCouncil:ExportTrinketData(nextTier, nextIsRaid, nextIndex, nextDi
 		end
    end
    exports = exports.."}\n"
-   frame.exportFrame.edit:SetText(exports)
+   exportFrame.edit:SetText(exports)
 end
 
 function RCLootCouncil:ClassesFlagToStr(flag)

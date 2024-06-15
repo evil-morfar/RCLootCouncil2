@@ -84,6 +84,7 @@ globals = {
 	"GetClassColorObj",
 	"Lerp",
 	"Mixin",
+	"MergeTable",
 	"Round",
 	"Saturate",
 	"SecureButton_GetModifiedUnit",

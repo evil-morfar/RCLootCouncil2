@@ -62,9 +62,8 @@ function RCLootCouncil:ExportTokenData(nextID)
 	self:Print("Copy and paste data to Util/tokenData.lua")
 	self:Print("This is semi-automatic. Data must be verified and modified manually.")
 
-	-- Hack that should only happen in developer mode.
-	local frame = RCLootCouncil:GetActiveModule("history"):GetFrame()
-	frame.exportFrame:Show()
+	local exportFrame = RCLootCouncil.UI:New("RCExportFrame")
+	exportFrame:Show()
 
 	local exports = "_G.RCTokenTable = {\n"
 	--- @type {[integer]:string}[]
@@ -109,7 +108,7 @@ function RCLootCouncil:ExportTokenData(nextID)
 			"] = " .. format("%03d", tokenIlvls[id]) .. ",\t-- " .. format("%s", name .. ",") .. "\n"
 	end
 	exports = exports .. "}\n"
-	frame.exportFrame.edit:SetText(exports)
+	exportFrame.edit:SetText(exports)
 end
 
 --- Fetches the slot of a token from its tooltip by
