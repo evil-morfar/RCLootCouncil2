@@ -2075,9 +2075,38 @@ function addon:OptionsTable()
 	end
 
 	options.args.settings.args.profiles = LibStub("AceDBOptions-3.0"):GetOptionsTable(self.db) -- Add profile tab
+	-- Build export options
+	MergeTable(options.args.settings.args.profiles.args, {
+		export = {
+			name = L["Export"],
+			type = "execute",
+			order = 11.1,
+			func = function ()
+				local export = addon:GetProfileForExport()
+				local exportFrame = addon.UI:New("RCExportFrame")
+				exportFrame:Show()
+				exportFrame.edit:SetCallback("OnTextChanged", function(self)
+					self:SetText(export)
+				end)
+				exportFrame.edit:SetText(export)
+				exportFrame.edit:SetFocus()
+				exportFrame.edit:HighlightText()
+			end
+		}
+	})
 	addon.options = options
 	self:GetGuildOptions()
 	return options
+end
+
+function addon:GetProfileForExport()
+	local data = LibStub("AceSerializer-3.0"):Serialize(addon.db.profile)
+	local t = {
+		"RCLootCouncilProfile",
+		self.db:GetCurrentProfile(), -- profile name
+		data
+	}
+	return table.concat(t, "\n")
 end
 
 function addon:GetGuildOptions()
