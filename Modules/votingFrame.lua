@@ -803,6 +803,7 @@ function RCVotingFrame:SwitchSession(s)
 	FauxScrollFrame_OnVerticalScroll(self.frame.st.scrollframe, 0, self.frame.st.rowHeight, function() self.frame.st:Refresh() end) -- Reset scrolling to 0
 	self:Update(true)
 	self:UpdatePeopleToVote()
+	self:UpdateMoreInfo()
 	addon:SendMessage("RCSessionChangedPost", s)
 end
 

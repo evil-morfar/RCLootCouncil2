@@ -17,6 +17,7 @@ Made frame scaling more granular.
 - *Player names in voting frame vote status tooltip is again shown with class colors.*
 - *Setting "Require Note" on a button that has default text now actually makes said note required.*
 - *Loot- and Voting frame item type text now only shows subtype for most iscellaneous items.*
+- *Voting Frame More info now correctly updates when changing sessions while shown.*
 
 # 3.12.0
 
