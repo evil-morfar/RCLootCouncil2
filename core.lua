@@ -479,15 +479,14 @@ function RCLootCouncil:ChatCommand(msg)
 		self.Require "Utils.GroupLoot":HideGroupLootFrames()
 
 	elseif input == "reset" or input == string.lower(_G.RESET) then
-		for k, v in pairs(db.UI) do -- We can't easily reset due to the wildcard in defaults
-			if k == "lootframe" then -- Loot Frame is special
-				v.y = -200
-			else
-				v.y = 0
+		for name, data in pairs(db.UI) do -- We can't easily reset due to the wildcard in defaults
+			for k in pairs(data) do
+				if self.defaults.profile.UI[name] and self.defaults.profile.UI[name][k] then
+					db.UI[name][k] = self.defaults.profile.UI[name][k]
+				else
+					db.UI[name][k] = self.defaults.profile.UI["**"][k]
+				end
 			end
-			v.point = "CENTER"
-			v.x = 0
-			v.scale = 0.8
 		end
 		for _, frame in ipairs(self.UI.minimizeableFrames) do frame:RestorePosition() end
 		db.chatFrameName = self.defaults.profile.chatFrameName
