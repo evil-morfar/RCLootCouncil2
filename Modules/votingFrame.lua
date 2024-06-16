@@ -1052,9 +1052,10 @@ function RCVotingFrame:GetFrame()
 	b2:SetScript("OnLeave", function() addon:HideTooltip() end)
 	f.moreInfoBtn = b2
 
-	f.moreInfo = CreateFrame( "GameTooltip", "RCVotingFrameMoreInfo", nil, "GameTooltipTemplate" )
+	f.moreInfo = CreateFrame( "GameTooltip", "RCVotingFrameMoreInfo", f.content, "GameTooltipTemplate" )
+	f.moreInfo:SetIgnoreParentScale(true)
 	f.content:SetScript("OnSizeChanged", function()
-		f.moreInfo:SetScale(f:GetScale() * 0.6)
+		f.moreInfo:SetScale(Clamp(f:GetScale() * 0.6, .4, .9))
 	end)
 
 	-- Filter

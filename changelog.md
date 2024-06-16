@@ -10,6 +10,8 @@ Added help tooltip and hover effect when hovering frame titles.
 
 Made frame scaling more granular.
 
+Prevented more info frames from getting too small/large.
+
 ## Bugfixes
 
 - *Fixed tertiary stats not being shown in loot/voting frame.*
@@ -18,6 +20,7 @@ Made frame scaling more granular.
 - *Setting "Require Note" on a button that has default text now actually makes said note required.*
 - *Loot- and Voting frame item type text now only shows subtype for most iscellaneous items.*
 - *Voting Frame More info now correctly updates when changing sessions while shown.*
+- *More info frames now minimizes with their parent frame.*
 
 # 3.12.0
 

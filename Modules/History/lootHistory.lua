@@ -68,8 +68,7 @@ function LootHistory:OnInitialize()
 	rightClickMenu = _G.MSA_DropDownMenu_Create("RCLootCouncil_LootHistory_RightclickMenu", UIParent)
 	_G.MSA_DropDownMenu_Initialize(filterMenu, self.FilterMenu, "MENU")
 	_G.MSA_DropDownMenu_Initialize(rightClickMenu, self.RightClickMenu, "MENU")
-	--MoreInfo
-	self.moreInfo = CreateFrame( "GameTooltip", "RCLootHistoryMoreInfo", nil, "GameTooltipTemplate" )
+	
 
 	self:SubscribeToPermanentComms()
 end
@@ -938,8 +937,10 @@ function LootHistory:GetFrame()
 	b2:SetScript("OnLeave", function() addon:HideTooltip() end)
 	f.moreInfoBtn = b2
 
+	self.moreInfo = CreateFrame("GameTooltip", "RCLootHistoryMoreInfo", f.content, "GameTooltipTemplate")
+	self.moreInfo:SetIgnoreParentScale(true)
 	f.content:SetScript("OnSizeChanged", function()
-		self.moreInfo:SetScale(f:GetScale() * 0.6)
+		self.moreInfo:SetScale(Clamp(f:GetScale() * 0.6, .4, .9))
 	end)
 
 	-- Export
@@ -1112,7 +1113,6 @@ function LootHistory:UpdateMoreInfo(rowFrame, cellFrame, dat, cols, row, realrow
 		tip:AddLine(" ")
 		tip:AddDoubleLine("Total LootDB entries:", #self.frame.rows, 1,1,1, 0,0,1)
 	end
-	tip:SetScale(self.frame:GetScale() * 0.65)
 	if moreInfo then
 		tip:Show()
 	else
