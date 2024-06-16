@@ -10,7 +10,7 @@ local name = "RCFrame"
 --- @field title BackdropTemplate | Frame
 local Object = {}
 local db = {}
-local scrollHandler = function(f, delta) if IsControlKeyDown() then lwin.SetScale(f, delta < 0 and f:GetScale() + .03 or f:GetScale() - .03) end end
+local scrollHandler = function(f, delta) if IsControlKeyDown() then lwin.SetScale(f, delta > 0 and f:GetScale() + .03 or f:GetScale() - .03) end end
 
 --- Creates a standard frame for addon with title, minimizing, positioning and scaling supported.
 --		Adds Minimize(), Maximize() and IsMinimized() functions on the frame, and registers it for hide on combat.
