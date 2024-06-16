@@ -890,7 +890,7 @@ function RCVotingFrame:UpdateMoreInfo(row, data)
 					local player = Player:Get(wname)
 					local class = player and player:GetClass()
 					local c = addon:GetClassColor(class)
-					tip:AddDoubleLine(player:GetColoredName(), entry.response .." |cffffffffilvl: "..ilvl, c.r, c.g,c.b,unpack(entry.color, 1,3))
+					tip:AddDoubleLine(player:GetClassColoredName(), entry.response .." |cffffffffilvl: "..ilvl, c.r, c.g,c.b,unpack(entry.color, 1,3))
 				end
 			end
 		end
