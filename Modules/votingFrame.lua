@@ -1362,9 +1362,9 @@ function RCVotingFrame.SetCellGear(rowFrame, frame, data, cols, row, realrow, co
 	gear = lootTable[session].candidates[name][gear] -- Get the actual gear
 	if gear then
 		local texture = select(5, C_Item.GetItemInfoInstant(gear))
-		-- if texture then
+		if texture then
 			frame:SetNormalTexture(texture)
-		-- end
+		end
 		frame:SetScript("OnEnter", function() addon:CreateHypertip(gear) end)
 		frame:SetScript("OnLeave", function() addon:HideTooltip() end)
 		frame:SetScript("OnClick", function()
