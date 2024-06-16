@@ -38,6 +38,7 @@ addon.defaults = {
       log = {}, -- debug log
       verTestCandidates = {}, -- Stores received verTests
       errors = {},
+      cache = {},
    },
    profile = {
       skipCombatLockdown = false,
