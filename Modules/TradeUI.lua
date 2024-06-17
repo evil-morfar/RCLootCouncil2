@@ -389,7 +389,7 @@ function TradeUI:GetFrame()
    f.st.frame:SetPoint("TOPLEFT",f,"TOPLEFT",10,-20)
    f.st:RegisterEvents({
       ["OnClick"] = function(rowFrame, cellFrame, data, cols, row, realrow, column, table, button, ...)
-         if CheckInteractDistance(Ambiguate(data[realrow].winner, "short"), 2) then -- 2 for trade distance
+         if addon.inCombat or CheckInteractDistance(Ambiguate(data[realrow].winner, "short"), 2) then -- 2 for trade distance
             InitiateTrade(Ambiguate(data[realrow].winner, "short"))
          else
             addon:Debug("TradeUI row OnClick - unit not in trade distance")
@@ -411,7 +411,16 @@ function TradeUI:GetFrame()
    return f
 end
 
+local colors = {
+   red = { r = 1, g = 0, b = 0, a = 1, },
+   yellow = { r = 1, g = 1, b = 0, a = 1, },
+   green = { r = 0, g = 1, b = 0, a = 1 },
+}
+
 function TradeUI:GetTradeLabelColor(target)
+   if addon.inCombat then
+      return colors.yellow
+   end
    return CheckInteractDistance(Ambiguate(target, "short"), 2) and {r=0,g=1,b=0,a=1} or {r=1,g=0,b=0,a=1}
 end
 
