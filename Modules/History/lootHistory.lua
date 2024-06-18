@@ -425,6 +425,12 @@ function LootHistory.SetCellResponse(rowFrame, frame, data, cols, row, realrow, 
 	frame.text:SetText(args.response)
 
 	if args.color and type(args.color) == "table" then -- Never version saves the color with the entry
+		-- There's a miniscule chance color doesn't have at least 3 elements, required for SetTextColor.
+		if #args.color < 3 then
+			for i = #args.color + 1, 3 do
+				args.color[i] = 1
+			end
+		end
 		frame.text:SetTextColor(unpack(args.color))
 	elseif args.responseID and args.responseID > 0 then -- try to recreate color from ID
 		frame.text:SetTextColor(unpack(addon:GetResponse("default", args.responseID).color))
