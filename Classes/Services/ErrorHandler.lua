@@ -19,13 +19,38 @@ function ErrorHandler:OnInitialize ()
    self:RegisterEvent("ADDON_ACTION_BLOCKED", "OnEvent")
    self:RegisterEvent("ADDON_ACTION_FORBIDDEN", "OnEvent")
    self:RegisterEvent("LUA_WARNING", "OnEvent")
+	self:RegisterEvent("PLAYER_LOGOUT", "OnLogout")
    private.log = addon.db.global.errors or {}
    private:ClearOldErrors()
 end
 
--- Temporaryly just print it to log
-function ErrorHandler:OnEvent (...)
-   -- addon.Log:d(...)
+local eventsToSupress = {
+	["ADDON_ACTION_BLOCKED"] = true,
+	["ADDON_ACTION_FORBIDDEN"] = true,
+	["LUA_WARNING"] = true,
+}
+
+local supressedEvents = {}
+
+function ErrorHandler:OnEvent(...)
+	local args = { ..., }
+	if eventsToSupress[args[1]] then
+		local msg = strjoin(", ", ...)
+		if not supressedEvents[msg] then
+			supressedEvents[msg] = 1
+		else
+			supressedEvents[msg] = supressedEvents[msg] + 1
+			return
+		end
+	end
+	addon.Log:W(...)
+end
+
+function ErrorHandler:OnLogout()
+	addon.Log:D("Supressed events count:")
+	for k, v in pairs(supressedEvents) do
+		addon.Log:W(k, v)
+	end
 end
 
 function ErrorHandler:LogError (msg)
