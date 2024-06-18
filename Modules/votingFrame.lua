@@ -1490,6 +1490,9 @@ function ResponseSort(table, rowa, rowb, sortbycol)
 	local a, b = table:GetRow(rowa), table:GetRow(rowb);
 	a, b = addon:GetResponse(lootTable[session].typeCode or lootTable[session].equipLoc, lootTable[session].candidates[a.name].response).sort,
 			 addon:GetResponse(lootTable[session].typeCode or lootTable[session].equipLoc, lootTable[session].candidates[b.name].response).sort
+	if not (a and b) then
+		return false
+	end
 	if a == b then
 		if column.sortnext then
 			local nextcol = table.cols[column.sortnext];
