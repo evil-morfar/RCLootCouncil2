@@ -12,6 +12,8 @@ Made frame scaling more granular.
 
 Prevented more info frames from getting too small/large.
 
+All import/export frames are now closeable with "Esc".
+
 ### Profile sharing
 
 It's now possible to export and import profile settings. This new feature is located at the "Profiles" tab in the options menu (`/rc config`).

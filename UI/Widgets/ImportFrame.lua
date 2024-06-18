@@ -73,6 +73,10 @@ function Object:New()
 	edit.editBox:SetMaxBytes(2500)
 	edit.editBox:SetScript("OnMouseUp", nil);
 
+	edit.editBox:SetScript("OnEscapePressed", function(self)
+		singleton:Hide()
+	end)
+
 	local label = AG:Create("Label")
 	label:SetFullWidth(true)
 

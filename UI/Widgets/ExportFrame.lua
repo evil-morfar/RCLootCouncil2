@@ -43,6 +43,10 @@ function Object:New()
 	exp:AddChild(edit)
 	exp.edit = edit
 
+	edit.editBox:SetScript("OnEscapePressed", function(self)
+		singleton:Hide()
+	end)
+
 	singleton = exp
 	return singleton
 end

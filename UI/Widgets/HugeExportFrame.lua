@@ -43,6 +43,10 @@ function Object:New()
 	hugeExp:Hide()
 	hugeExp.edit = edit
 
+	edit.editbox:SetScript("OnEscapePressed", function(self)
+		singleton:Hide()
+	end)
+
 	singleton = hugeExp
 	return singleton
 end
