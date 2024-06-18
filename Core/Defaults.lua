@@ -178,13 +178,12 @@ addon.defaults = {
 				border      = "Blizzard Tooltip",
 				background  = "Blizzard Tooltip",
 			},
-			lootframe = { -- We want the Loot Frame to get a little lower
+			DefaultRCLootFrame = { -- We want the Loot Frame to get a little lower
 				y = -200,
 			},
-			tradeui = {
+			RCDefaultTradeUIFrame = {
 				x = -300,
 			},
-			default = {}, -- base line
 		},
 
 		skins = {
