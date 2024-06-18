@@ -7,7 +7,7 @@
 
 --- @class RCLootCouncil
 local addon = select(2, ...)
-local private = { elements = {}, num = {}, embeds = {}, }
+local private = { elements = {}, createdFrames = {}, embeds = {}, }
 --- @class RCLootCouncilUI
 addon.UI = {CreateFrame = _G.CreateFrame, private = private, minimizeableFrames = {}} -- Embed CreateFrame into UI as it's used by all elements
 
@@ -80,24 +80,34 @@ function addon.UI:RegisterForEscapeClose(frame, OnHide)
    frame:SetScript("OnHide", OnHide)
 end
 
+--- Returns all created frames of type
+--- @generic T
+--- @param type `T`
+--- @return T[]?
+function addon.UI:GetCreatedFramesOfType(type)
+	return private.createdFrames[type] or {}
+end
+
 ---------------------------------------------
 -- Internal functions
 ---------------------------------------------
 function private:New(type, parent, name, ...)
-   if self.elements[type] then
-      parent = parent or _G.UIParent
-      if name then
-         return self:Embed(self.elements[type]:New(parent, name, ...))
-      else
-         -- Create a name
-         if not self.num[type] then self.num[type] = 0 end
-         self.num[type] = self.num[type] + 1
-         return self:Embed(self.elements[type]:New(parent, "RC_UI_"..type..self.num[type], ...))
-      end
-   else
-      addon.Log:e("UI Error in :New(): No such element", type, name)
-      error(format("UI Error in :New(): No such element: %s %s", type, name))
-   end
+	if self.elements[type] then
+		parent = parent or _G.UIParent
+		if not self.createdFrames[type] then self.createdFrames[type] = {} end
+		local frame
+		if name then
+			frame = self:Embed(self.elements[type]:New(parent, name, ...))
+		else
+			-- Create a name
+			frame = self:Embed(self.elements[type]:New(parent, "RC_UI_"..type..#self.createdFrames[type], ...))
+		end
+		tinsert(self.createdFrames[type], frame)
+		return frame
+	else
+		addon.Log:e("UI Error in :New(): No such element", type, name)
+		error(format("UI Error in :New(): No such element: %s %s", type, name))
+	end
 end
 
 --- @generic T

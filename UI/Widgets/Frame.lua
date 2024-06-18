@@ -8,6 +8,7 @@ local name = "RCFrame"
 --- @class RCFrame : Object.Minimize_Prototype, Frame, UI.embeds
 --- @field content BackdropTemplate | Frame
 --- @field title BackdropTemplate | Frame
+--- @field Update fun(self:RCFrame)
 local Object = {}
 local db = {}
 local scrollHandler = function(f, delta) if IsControlKeyDown() then lwin.SetScale(f, delta > 0 and f:GetScale() + .03 or math.min(f:GetScale() - .03), .03) end end
@@ -88,6 +89,7 @@ function Object:CreateContentFrame(parent, name, height)
 	end)
 
 	c.Update = function()
+		db = addon:Getdb()
 		c:SetBackdrop({
 			bgFile = AceGUIWidgetLSMlists.background[db.UI[name].background],
 			edgeFile = AceGUIWidgetLSMlists.border[db.UI[name].border],

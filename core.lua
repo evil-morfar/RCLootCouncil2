@@ -213,9 +213,9 @@ function RCLootCouncil:OnInitialize()
 				 "color", "class", "isAwardReason", "difficultyID", "mapID", "groupSize", "tierToken"}
 	},
 	]]
-	self.db.RegisterCallback(self, "OnProfileChanged", ReloadUI)
-	self.db.RegisterCallback(self, "OnProfileCopied", ReloadUI)
-	self.db.RegisterCallback(self, "OnProfileReset", ReloadUI)
+	self.db.RegisterCallback(self, "OnProfileChanged", "UpdateDB")
+	self.db.RegisterCallback(self, "OnProfileCopied", "UpdateDB")
+	self.db.RegisterCallback(self, "OnProfileReset", "UpdateDB")
 
 	self:ClearOldVerTestCandidates()
 	self:InitClassIDs()
@@ -1927,8 +1927,10 @@ function RCLootCouncil:Getdb() return db end
 function RCLootCouncil:GetHistoryDB() return self.lootDB.factionrealm end
 
 function RCLootCouncil:UpdateDB()
-	db = self.db.profile
+	self.Log:D("UpdateDB")
 	self.db:RegisterDefaults(self.defaults)
+	db = self.db.profile
+	self:ActivateSkin(self.db.profile.currentSkin)
 	self:SendMessage("RCUpdateDB")
 end
 
@@ -2220,7 +2222,7 @@ end
 
 --- Update all frames registered with RCLootCouncil:CreateFrame().
 -- Updates all the frame's colors as set in the db.
-function RCLootCouncil:UpdateFrames() for _, frame in pairs(self.UI.minimizeableFrames) do frame:Update() end end
+function RCLootCouncil:UpdateFrames() for _, frame in pairs(self.UI:GetCreatedFramesOfType("RCFrame")) do frame:Update() end end
 
 --- Applies a skin to all frames
 -- Skins must be added to the db.skins table first.
