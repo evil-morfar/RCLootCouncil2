@@ -424,7 +424,7 @@ function LootHistory.SetCellResponse(rowFrame, frame, data, cols, row, realrow, 
 	local args = data[realrow].cols[column].args
 	frame.text:SetText(args.response)
 
-	if args.color and type(args.color) == "table" then -- Never version saves the color with the entry
+	if args.color and type(args.color) == "table" and type(args.color[1]) == "number" then -- Never version saves the color with the entry
 		-- There's a miniscule chance color doesn't have at least 3 elements, required for SetTextColor.
 		if #args.color < 3 then
 			for i = #args.color + 1, 3 do
