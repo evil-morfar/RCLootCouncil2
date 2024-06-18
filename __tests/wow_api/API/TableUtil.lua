@@ -112,6 +112,13 @@ function tUnorderedRemove(tbl, index)
 	end
 	table.remove(tbl);
 end
+function tInsertUnique(tbl, item)
+	if not tContains(tbl, item) then
+		table.insert(tbl, item);
+		return #tbl;
+	end
+	return nil;
+end
 function CopyTable(settings, shallow)
 	local copy = {};
 	for k, v in pairs(settings) do

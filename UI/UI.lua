@@ -102,7 +102,7 @@ function private:New(type, parent, name, ...)
 			-- Create a name
 			frame = self:Embed(self.elements[type]:New(parent, "RC_UI_"..type..#self.createdFrames[type], ...))
 		end
-		tinsert(self.createdFrames[type], frame)
+		tInsertUnique(self.createdFrames[type], frame)
 		return frame
 	else
 		addon.Log:e("UI Error in :New(): No such element", type, name)

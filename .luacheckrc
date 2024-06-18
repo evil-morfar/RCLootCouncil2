@@ -102,6 +102,7 @@ globals = {
 	"tFilter",
 	"tIndexOf",
 	"tInvert",
+	"tInsertUnique",
 	"UIDropDownMenu_AddButton",
 	"UIDropDownMenu_Initialize",
 	"UISpecialFrames",
