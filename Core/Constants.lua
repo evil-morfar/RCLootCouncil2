@@ -12,6 +12,8 @@ addon.PREFIXES = { MAIN = "RCLC", VERSION = "RCLCv", SYNC = "RCLCs", }
 
 addon.MIN_LOOT_THRESHOLD = 3 -- Only loot rares or better
 
+addon.PROFILE_EXPORT_IDENTIFIER = "RCLootCouncilProfile"
+
 addon.BTN_SLOTS = {
 	INVTYPE_HEAD = "AZERITE",
 	INVTYPE_CHEST = "AZERITE",

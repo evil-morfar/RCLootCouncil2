@@ -222,6 +222,7 @@ L["ignore_input_desc"] = "Enter an itemID to add to the ignore list causing RCLo
 L["ignore_input_usage"] = "This function only accepts itemIDs (number), itemName or itemLink."
 L["ignore_list_desc"] = "Items RCLootCouncil is ignoring. Click on a item to remove it."
 L["ignore_options_desc"] = "Control which items RCLootCouncil should ignore. If you add an item that isn't cached, you need switch to another tab and back before you'll see it in the list."
+L.Import = true
 L["Import aborted"] = true
 L["import_desc"] = "Paste data here. Only show first 2500 characters to avoid freezing the game."
 L["import_malformed"] = "The import was malformed (not a string)"
@@ -546,6 +547,8 @@ L["opt_deleteRaid_confirm"] = "Are you sure you want to delete all entries from 
 L["opt_deleteRaid_desc"] = "Delete all entries from a specific instance."
 L["opt_printCompletedTrade_Name"] = "Trade Messages"
 L["opt_printCompletedTrade_Desc"] = "Check to enable a message every time a candidate trades an awarded item to the winner."
+L.opt_profileSharing_fail_noProfileData =
+"Data is not profile data. Ensure imported data originates from profile export."
 L["opt_rejectTrade_Name"] = "Allow Keeping"
 L["opt_rejectTrade_Desc"] = "Check to enable candidates to choose whether they want to 'give' the item to the council or not. If unchecked, all tradeable PL items are added automatically."
 L["opt_skipSessionFrame_name"] = "Skip Session Frame"

@@ -271,6 +271,27 @@ function Utils:IsWhisperTarget(target)
 	return C_PlayerInfo.UnitIsSameServer(_G.PlayerLocation:CreateFromGUID(target:GetGUID()))
 end
 
+--- Creates a table containing everything in 't' that is different from 'base'.
+--- Empty table values are not included.
+---@param base table
+---@param t table
+function Utils:GetTableDifference(base, t)
+	local ret = {}
+	for k, v in pairs(t) do
+		if base[k] == nil or base[k] ~= v then
+			if type(v) == "table" then
+				ret[k] = Utils:GetTableDifference(base[k] or {}, v)
+				if not next(ret[k]) then
+					ret[k] = nil
+				end
+			else
+				ret[k] = v
+			end
+		end
+	end
+	return ret
+end
+
 ---@deprecated
 ---@see Utils.Item.GetTransmittableItemString
 function Utils:GetTransmittableItemString(link)
