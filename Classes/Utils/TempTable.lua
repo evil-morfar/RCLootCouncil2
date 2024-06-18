@@ -58,6 +58,7 @@ end
 function TempTable:DumpAvailableTablesCount()
    local count = private:CountAvailableTables()
    addon.Log:F("<TempTable>", "Available tables:", count)
+   return count
 end
 -----------------------------------------------------------
 -- Private Functions
@@ -66,6 +67,7 @@ end
 function private:GetTable ()
    assert(head > 0, "No TempTables available!")
    local t = self.availableTables[head]
+   self.availableTables[head] = nil
    setmetatable(t, nil)
    self.unavailableTables[t] = true
    head = head - 1
