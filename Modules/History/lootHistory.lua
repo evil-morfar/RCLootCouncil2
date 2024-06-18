@@ -169,7 +169,7 @@ function LootHistory:BuildData()
 							{value = self:GetLocalizedDate(date).. "-".. i.time or "", args = {time = i.time, date = date},},
 							{DoCellUpdate = self.SetCellGear, args={i.lootWon}},
 							{value = i.lootWon},
-							{DoCellUpdate = self.SetCellResponse, args = {color = i.color, response = i.response, responseID = i.responseID or 0, isAwardReason = i.isAwardReason}},
+							{DoCellUpdate = self.SetCellResponse, args = {color = i.color or {1,1,1,1}, response = i.response, responseID = i.responseID or 0, isAwardReason = i.isAwardReason}},
 							{DoCellUpdate = self.SetCellDelete},
 						}
 					}
