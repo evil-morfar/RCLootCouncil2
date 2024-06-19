@@ -165,7 +165,9 @@ function private:CachePlayer(player)
 	if not player.guid then
 		return Log:f("<Data.Player>", "CachePlayer", "No guid for", player)
 	end
-	self.cache[player.guid] = CopyTable(player)
+	self.cache[player.guid] = self.cache[player.guid]
+		and MergeTable(self.cache[player.guid], CopyTable(player))
+		or CopyTable(player)
 	self.cache[player.guid].cache_time = GetServerTime()
 end
 
