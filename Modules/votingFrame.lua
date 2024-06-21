@@ -308,11 +308,15 @@ function RCVotingFrame:GetCurrentSession()
 	return session
 end
 
---- Find an unawarded session.
--- @return number|nil Number of the first session with an un-awarded item, or nil if everything is awarded.
+--- Find the next unawarded session.
+--- @return number|nil #Index of the next session with an un-awarded item, or nil if everything is awarded.
 function RCVotingFrame:FetchUnawardedSession ()
-	for k,v in ipairs(lootTable) do
-		if not v.awarded then return k end
+	for i = session + 1, #lootTable do
+		if not lootTable[i].awarded then return i end
+	end
+	-- Reaching here means the latter part of the lootTable is awarded. Start over
+	for i = 1, session do
+		if not lootTable[i].awarded then return i end
 	end
 	return nil
 end
