@@ -1,4 +1,4 @@
-# 3.12.1
+# 3.13.0
 
 ## Changes
 
@@ -22,13 +22,18 @@ It's now possible to export and import profile settings. This new feature is loc
 
 ## Bugfixes
 
-- *Fixed tertiary stats not being shown in loot/voting frame.*
-- *Miscellaneous items is now listed as their subtype instead of "armor token" (unless their subtype is junk) in voting frame more info.*
 - *Player names in voting frame vote status tooltip is again shown with class colors.*
-- *Setting "Require Note" on a button that has default text now actually makes said note required.*
 - *Loot- and Voting frame item type text now only shows subtype for most iscellaneous items.*
 - *Voting Frame More info now correctly updates when changing sessions while shown.*
 - *More info frames now minimizes with their parent frame.*
+
+# 3.12.1
+
+## Bugfixes
+
+- *Fixed tertiary stats not being shown in loot/voting frame.*
+- *Miscellaneous items is now listed as their subtype instead of "armor token" (unless their subtype is junk) in voting frame more info.*
+- *Setting "Require Note" on a button that has default text now actually makes said note required.*
 - *Fixed players guild ranks occasionally dissappearing.*
 
 # 3.12.0
