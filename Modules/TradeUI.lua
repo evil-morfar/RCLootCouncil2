@@ -63,7 +63,7 @@ function TradeUI:OnEnable()
 	self:CheckTimeRemaining()
 	self:ScheduleRepeatingTimer("CheckTimeRemaining", TIME_REMAINING_INTERVAL)
 	-- Calling show will only show the frame if we have items to trade
-	self:RegisterMessage("RCItemStorageInitialized", "Show")
+	self:RegisterMessage("RCItemStorageInitialized", "Show", nil)
 end
 
 function TradeUI:OnDisable() -- Shouldn't really happen
@@ -467,6 +467,9 @@ function TradeUI.SetCellDelete(rowFrame, frame, data, cols, row, realrow, column
 
          local Item = addon.ItemStorage:GetItem(link, "to_trade")
          addon.ItemStorage:RemoveItem(Item)
+		 if #addon.ItemStorage:GetAllItemsOfType("to_trade") == 0 then
+			TradeUI:Hide()
+		 end
 		else
 			frame.lastClick = GetTime()
 		end

@@ -16,13 +16,17 @@ Prevented more info frames from getting too small/large.
 
 All import/export frames are now closeable with "Esc".
 
-TradeUI will now popup automatically after reloads/relogs if there's items to trade.
-
 When awarding an item, voting frame now switches to the *next* unawarded item instead of the *first*.
 
 ### Profile sharing
 
 It's now possible to export and import profile settings. This new feature is located at the "Profiles" tab in the options menu (`/rc config`).
+
+### TradeUI
+
+TradeUI will now popup automatically after reloads/relogs if there's items to trade.
+
+Removing the last item in the list will now close the window.
 
 ## Bugfixes
 
