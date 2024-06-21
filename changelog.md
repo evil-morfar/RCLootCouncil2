@@ -1,3 +1,5 @@
+# 3.12.1
+
 ## Changes
 
 ### Look and Feel
@@ -27,6 +29,7 @@ It's now possible to export and import profile settings. This new feature is loc
 - *Loot- and Voting frame item type text now only shows subtype for most iscellaneous items.*
 - *Voting Frame More info now correctly updates when changing sessions while shown.*
 - *More info frames now minimizes with their parent frame.*
+- *Fixed players guild ranks occasionally dissappearing.*
 
 # 3.12.0
 
