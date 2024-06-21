@@ -133,6 +133,7 @@ function addon:InitItemStorage() -- Extract items from our SV. Could be more ele
 		tremove(db.itemStorage, toBeRemoved[i])
 	end
 	TT:Release(toBeRemoved)
+	self:SendMessage("RCItemStorageInitialized", #db.itemStorage)
 end
 
 --- Initiates a new item of item_class
