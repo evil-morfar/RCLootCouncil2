@@ -156,7 +156,7 @@ LibDialog:Register("RCLOOTCOUNCIL_KEEP_ITEM", {
    text = "something_went_wrong",
    on_show = function(self, link)
       self.text:SetText(format(L["Do you want to keep %s for yourself or trade?"], link))
-      local tex = select(5, GetItemInfoInstant(link))
+      local tex = select(5, C_Item.GetItemInfoInstant(link))
       self.icon:SetTexture(tex)
       local icon = addon.UI:New("Icon", self, tex)
       icon:SetSize(self.icon:GetSize())

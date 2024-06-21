@@ -71,6 +71,7 @@ function RCVersionCheck:OnEnable()
                     if senderPlayer ~= addon.player then return end
                 end
                 self:AddEntry(sender, data[1], data[2], data[3], data[4], data[5])
+				Player:Get(sender):UpdateFields{rank = data[2]}
             end
         )
     )

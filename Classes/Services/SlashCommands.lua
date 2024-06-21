@@ -55,7 +55,7 @@ function SlashCommands:ShowHelp ()
       elseif v.module.version then
          print(v.module.baseName, "|cFFFFA500", v.module.version)
       else
-         print(v.module.baseName, "|cFFFFA500", GetAddOnMetadata(v.module.baseName, "Version"))
+			print(v.module.baseName, "|cFFFFA500", C_AddOns.GetAddOnMetadata(v.module.baseName, "Version"))
       end
       if v.cmd then
          print("|cff20a200", v.cmd, "|r:", v.desc)

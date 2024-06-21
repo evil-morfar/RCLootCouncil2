@@ -44,7 +44,7 @@ function RCLootCouncil:ExportTokenData(nextID)
 	end
 	local LAST_ID = 250000
 	for i = nextID, LAST_ID do
-		local _, _, _, _, _, typeID, subTypeID = GetItemInfoInstant(i)
+		local _, _, _, _, _, typeID, subTypeID = C_Item.GetItemInfoInstant(i)
 		if typeID == 15 and subTypeID == 0 then -- Miscellaneous, Junk
 			self:ExportTokenDataSingle(i)
 			return C_Timer.After(0, function() self:ExportTokenData(i + 1) end)
@@ -134,8 +134,8 @@ end
 
 function RCLootCouncil:ExportTokenDataSingle(id)
 	local lines = self:GetTooltipLines(id)
-	if (GetItemInfo(id)) and lines and #lines > 0 then
-		local name, link, quality, ilvl, _, _, _, maxStack = GetItemInfo(id)
+	if (C_Item.GetItemInfo(id)) and lines and #lines > 0 then
+		local name, link, quality, ilvl, _, _, _, maxStack = C_Item.GetItemInfo(id)
 		if self:GetItemClassesAllowedFlag(link) ~= 0xffffffff and maxStack == 1 and quality == 4 then
 			DEFAULT_CHAT_FRAME:AddMessage(id .. " " .. name)
 			tokenNames[id] = name
@@ -145,8 +145,6 @@ function RCLootCouncil:ExportTokenDataSingle(id)
 		return C_Timer.After(0, function() self:ExportTokenDataSingle(id) end)
 	end
 end
-
---@end-debug@
 
 -- Equip locations
 _G.RCTokenTable = {
@@ -1010,7 +1008,7 @@ _G.RCTokenIlvl = {
 	[67429] = 372, -- Gauntlets of the Forlorn Conqueror,
 	[67430] = 372, -- Gauntlets of the Forlorn Protector,
 	[67431] = 372, -- Gauntlets of the Forlorn Vanquisher,
-	--[[ Comment out because the 4th return of GetItemInfo() matches the real ilvl
+	--[[ Comment out because the 4th return of C_Item.GetItemInfo() matches the real ilvl
 	-- Tier 12 - 16
 	[71668] = 378,	-- Helm of the Fiery Vanquisher,
 	[71669] = 391,	-- Gauntlets of the Fiery Vanquisher,

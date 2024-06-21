@@ -10,7 +10,7 @@ describe("#Utils #Autopass", function()
 
 	describe("transmog", function()
 		it("should not autopass items if 'disabled' and player can transmog into it", function()
-			local t = { GetItemInfo(165597), }
+			local t = { C_Item.GetItemInfo(165597), }
 			addon:Getdb().autoPassTransmog = true
 			assert.True(addon:AutoPassCheck(t[2], t[9], t[12], t[13], 0xffffffff, nil, nil, "DEATHKNIGHT"))
 			addon:Getdb().autoPassTransmog = false
@@ -62,7 +62,7 @@ describe("#Utils #Autopass", function()
 
 	describe("trinkets", function()
 		it("when enabled, should only auto pass trinkets our class can't use", function()
-			local t = { GetItemInfo(155881), } -- "0365002007700", -- Harlan's Loaded Dice
+			local t = { C_Item.GetItemInfo(155881), } -- "0365002007700", -- Harlan's Loaded Dice
 			local id = addon.classIDToFileName
 			local all = 0xffffffff
 			assert.True(addon:AutoPassCheck(t[2], t[9], t[12], t[13], all, nil, nil, id[1]))
@@ -79,7 +79,7 @@ describe("#Utils #Autopass", function()
 			assert.False(addon:AutoPassCheck(t[2], t[9], t[12], t[13], all, nil, nil, id[12]))
 			assert.True(addon:AutoPassCheck(t[2], t[9], t[12], t[13], all, nil, nil, id[13]))
 
-			t = { GetItemInfo(158712), } -- "0000000700067", -- Rezan's Gleaming Eye
+			t = { C_Item.GetItemInfo(158712), } -- "0000000700067", -- Rezan's Gleaming Eye
 			assert.False(addon:AutoPassCheck(t[2], t[9], t[12], t[13], all, nil, nil, id[1]))
 			assert.False(addon:AutoPassCheck(t[2], t[9], t[12], t[13], all, nil, nil, id[2]))
 			assert.True(addon:AutoPassCheck(t[2], t[9], t[12], t[13], all, nil, nil, id[3]))
@@ -97,7 +97,7 @@ describe("#Utils #Autopass", function()
 
 		it("should never autopass trinkets when disabled", function()
 			addon:Getdb().autoPassTrinket = false
-			local t = { GetItemInfo(155881), } -- "0365002007700", -- Harlan's Loaded Dice
+			local t = { C_Item.GetItemInfo(155881), } -- "0365002007700", -- Harlan's Loaded Dice
 			local id = addon.classIDToFileName
 			local all = 0xffffffff
 			assert.False(addon:AutoPassCheck(t[2], t[9], t[12], t[13], all, nil, nil, id[1]))
@@ -114,7 +114,7 @@ describe("#Utils #Autopass", function()
 			assert.False(addon:AutoPassCheck(t[2], t[9], t[12], t[13], all, nil, nil, id[12]))
 			assert.False(addon:AutoPassCheck(t[2], t[9], t[12], t[13], all, nil, nil, id[13]))
 
-			t = { GetItemInfo(158712), } -- "0000000700067", -- Rezan's Gleaming Eye
+			t = { C_Item.GetItemInfo(158712), } -- "0000000700067", -- Rezan's Gleaming Eye
 			assert.False(addon:AutoPassCheck(t[2], t[9], t[12], t[13], all, nil, nil, id[1]))
 			assert.False(addon:AutoPassCheck(t[2], t[9], t[12], t[13], all, nil, nil, id[2]))
 			assert.False(addon:AutoPassCheck(t[2], t[9], t[12], t[13], all, nil, nil, id[3]))

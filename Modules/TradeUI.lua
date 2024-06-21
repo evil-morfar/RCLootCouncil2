@@ -30,8 +30,8 @@ local UPDATE_TIME_INTERVAL = 1 -- 1 sec
 local TRADE_ADD_DELAY = 0.100 -- sec
 
 -- lua
-local select, GetItemInfoInstant, pairs, ipairs,  unpack, tinsert, wipe, format, GetTime, InitiateTrade
-    = select, GetItemInfoInstant, pairs, ipairs,  unpack, tinsert, wipe, format, GetTime, InitiateTrade
+local GetTime, InitiateTrade
+    = GetTime, InitiateTrade
 -- GLOBALS: ClickTradeButton, PickupContainerItem, ClearCursor, GetTradePlayerItemInfo,
 -- GLOBALS: IsModifiedClick, HandleModifiedItemClick, GetTradePlayerItemLink, Ambiguate
 
@@ -387,7 +387,7 @@ end
 --------------------------------------------------------
 function TradeUI.SetCellItemIcon(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
    local link = data[realrow].link
-   local texture = select(5, GetItemInfoInstant(link)) or "Interface/ICONS/INV_Sigil_Thorim.png"
+   local texture = select(5, C_Item.GetItemInfoInstant(link)) or "Interface/ICONS/INV_Sigil_Thorim.png"
 	frame:SetNormalTexture(texture)
 	frame:SetScript("OnEnter", function() addon:CreateHypertip(link) end)
 	frame:SetScript("OnLeave", function() addon:HideTooltip() end)

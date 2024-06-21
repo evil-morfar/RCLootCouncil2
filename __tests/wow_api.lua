@@ -64,9 +64,6 @@ function ChatFrame_AddMessageEventFilter()
 	-- body...
 end
 
-function LoadAddOn(args)
-	return "Not implemented!"
-end
 
 function UnitName(unit)
 	return unit
@@ -146,7 +143,6 @@ function _G.StaticPopup_OnHide(args)
 	-- body...
 end
 
-function IsAddOnLoaded() return nil end
 
 SlashCmdList = {}
 hash_SlashCmdList = {}
@@ -188,9 +184,19 @@ DEFAULT_CHAT_FRAME = ChatFrame1
 debugstack = debug.traceback
 date = os.date
 
-function GetAddOnMetadata(arg)
-	return "NOT_IMPLEMENTED"
-end
+C_AddOns = {
+	GetAddOnMetadata = function(arg)
+		return "NOT_IMPLEMENTED"
+	end,
+
+	LoadAddOn = function (args)
+		return "Not implemented!"
+	end,
+
+	IsAddOnLoaded = function () return nil end,
+	GetAddOnInfo = function () return end,
+	GetNumAddOns = function() return 0 end,
+}
 
 function GetLocale()
 	return "enUS"
@@ -198,14 +204,6 @@ end
 
 function GetCurrentRegion()
 	return 3 -- EU
-end
-
-function GetAddOnInfo()
-	return
-end
-
-function GetNumAddOns()
-	return 0
 end
 
 function _G.GetProfessions() end

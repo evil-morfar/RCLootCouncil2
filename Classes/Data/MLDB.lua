@@ -120,10 +120,10 @@ function private:BuildMLDB()
             if i > db.buttons[type].numButtons then
                 break
             end
-            if
-                not addon.defaults.profile.buttons[type] or
-                    db.buttons[type][i].text ~= addon.defaults.profile.buttons[type][i].text
-             then
+            if not addon.defaults.profile.buttons[type] or
+				db.buttons[type][i].text ~= addon.defaults.profile.buttons[type][i].text or
+				db.buttons[type][i].requireNotes ~= addon.defaults.profile.buttons[type][i].requireNotes
+            then
                 if not changedButtons[type] then
                     changedButtons[type] = {}
                 end

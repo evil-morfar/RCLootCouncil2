@@ -324,7 +324,7 @@ function RCVotingFrame:SetupSession(session, t)
 	for name in addon:GroupIterator() do
 		local player = Player:Get(name)
 		-- REVIEW Seems like we occasionally get wrong/invalid names here.
-		-- but we still need to create the candidate, so use the name provided by 
+		-- but we still need to create the candidate, so use the name provided by
 		-- GroupIterator, which should be the same as the one from `Player`.
 		name = player and player.name or name
 		t.candidates[name] = {
@@ -825,6 +825,8 @@ function RCVotingFrame:BuildST()
 	self.frame.st:SetData(rows)
 end
 
+local invertedEnumMiscellaneousSubclass = tInvert(Enum.ItemMiscellaneousSubclass)
+
 function RCVotingFrame:UpdateMoreInfo(row, data)
 	local name
 	if data and row then
@@ -856,8 +858,11 @@ function RCVotingFrame:UpdateMoreInfo(row, data)
 		local r,g,b
 		tip:AddLine(L["Latest item(s) won"])
 		for _, v in ipairs(moreInfoData[name]) do -- extract latest awarded items
-			local _, itemType, _, location, _, classID = GetItemInfoInstant(v[1])
-			local locationText = getglobal(location) or classID == Enum.ItemClass.Miscellaneous and L["Armor Token"] or itemType
+			local _, itemType, _, location, _, classID, subClassID = C_Item.GetItemInfoInstant(v[1])
+			local locationText = getglobal(location) or (classID == Enum.ItemClass.Miscellaneous and
+					Enum.ItemMiscellaneousSubclass.Junk == subClassID and L["Armor Token"]) or
+				classID == Enum.ItemClass.Miscellaneous and invertedEnumMiscellaneousSubclass[subClassID]
+				or itemType
 			if v[3] then r,g,b = unpack(v[3],1,3) end
 			tip:AddDoubleLine(locationText .." ".. v[1], v[2], 1,1,1, r or 1, g or 1, b or 1)
 		end
@@ -882,7 +887,7 @@ function RCVotingFrame:UpdateMoreInfo(row, data)
 			end
 			for _, wname in ipairs(sortedAwardHistory) do
 				for _, entry in ipairs(awardHistory[wname]) do
-					local ilvl = select(4, GetItemInfo(entry.lootWon))
+					local ilvl = select(4, C_Item.GetItemInfo(entry.lootWon))
 					local player = Player:Get(wname)
 					local class = player and player:GetClass()
 					local c = addon:GetClassColor(class)
@@ -1228,7 +1233,7 @@ end
 
 function RCVotingFrame:AddNonTradeable(owner, reason, link)
 	self.numNonTradeables = self.numNonTradeables + 1
-	local texture = select(5, GetItemInfoInstant(link))
+	local texture = select(5, C_Item.GetItemInfoInstant(link))
 	local b = addon.UI:New("IconBordered", self.frame.content, texture)
 	b:Desaturate()
 	if self.numNonTradeables == 1 then
@@ -1280,8 +1285,8 @@ function RCVotingFrame.SetCellClass(rowFrame, frame, data, cols, row, realrow, c
 		if not doOnceChecker then
 			doOnceChecker = true
 			addon.Log:E("lootTable[1].candidates:")
-			for name in pairs(lootTable[1].candidates) do
-				addon.Log:E(name)
+			for candName in pairs(lootTable[1].candidates) do
+				addon.Log:E(candName)
 			end
 		end
 		return
@@ -1357,7 +1362,7 @@ function RCVotingFrame.SetCellGear(rowFrame, frame, data, cols, row, realrow, co
 	local name = data[realrow].name
 	gear = lootTable[session].candidates[name][gear] -- Get the actual gear
 	if gear then
-		local texture = select(5, GetItemInfoInstant(gear))
+		local texture = select(5, C_Item.GetItemInfoInstant(gear))
 		frame:SetNormalTexture(texture)
 		frame:SetScript("OnEnter", function() addon:CreateHypertip(gear) end)
 		frame:SetScript("OnLeave", function() addon:HideTooltip() end)
@@ -1486,7 +1491,6 @@ function RCVotingFrame.filterFunc(table, row)
 		ErrorHandler:ThrowSilentError(string.format("Couldn't get rank at session %d for candidate %s", session, tostring(name)))
 		return true
 	end
-	local rank = lootTable[session].candidates[name].rank
 	local rank = lootTable[session].candidates[name] and lootTable[session].candidates[name].rank
 
 	if db.modules["RCVotingFrame"].filters.alwaysShowOwner then

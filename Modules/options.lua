@@ -58,7 +58,7 @@ local function createNewButtonSet(path, name, order)
 				max = addon.db.profile.maxButtons,
 				step = 1,
 				get = function() return addon.db.profile.buttons[name].numButtons or 3 end,
-				set = function(_,v) 
+				set = function(_,v)
 					addon.db.profile.buttons[name].numButtons = v
 					addon:ConfigTableChanged("responses")
 				end,
@@ -1123,11 +1123,11 @@ function addon:OptionsTable()
 										name = L["Add Item"],
 										desc = L["ignore_input_desc"],
 										type = "input",
-										validate = function(_, val) return GetItemInfoInstant(val) end,
+										validate = function(_, val) return C_Item.GetItemInfoInstant(val) end,
 										usage = L["ignore_input_usage"],
 										get = function() return "\"item ID, Name or Link\"" end,
 										set = function(info, val)
-											local id = GetItemInfoInstant(val)
+											local id = C_Item.GetItemInfoInstant(val)
 											if id then
 												self.db.profile.ignoredItems[id] = true
 												LibStub("AceConfigRegistry-3.0"):NotifyChange("RCLootCouncil")
@@ -1145,7 +1145,7 @@ function addon:OptionsTable()
 											local t = {}
 											for id, val in pairs(self.db.profile.ignoredItems) do
 												if val then
-													local link = select(2, GetItemInfo(id))
+													local link = select(2, C_Item.GetItemInfo(id))
 													if link then
 														t[id] = link.."  (id: "..id..")"
 													else
@@ -1196,7 +1196,7 @@ function addon:OptionsTable()
 										values = function()
 											local t = {}
 											for i = 0, 5 do
-												local _,_,_,hex = GetItemQualityColor(i)
+												local _,_,_,hex = C_Item.GetItemQualityColor(i)
 												t[i] = "|c"..hex.." "..getglobal("ITEM_QUALITY"..i.."_DESC")
 											end
 											return t;

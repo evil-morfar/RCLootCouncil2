@@ -43,7 +43,7 @@ local instanceNames = {}
 -- Inside dungeon/raid, scan by its index in the journal (nextIndex)
 -- Inside each instance, scan by difficulty id order(nextDiffID)
 function RCLootCouncil:ExportTrinketData(nextTier, nextIsRaid, nextIndex, nextDiffID, maxTier)
-   LoadAddOn("BLizzard_EncounterJournal")
+   C_AddOns.LoadAddOn("BLizzard_EncounterJournal")
    local TIME_FOR_EACH_INSTANCE_DIFF = 3
 
    if not nextTier then
@@ -168,7 +168,7 @@ function RCLootCouncil:ExportTrinketDataSingleInstance(instanceID, diffID, timeL
 				trinketData[trinketIdToIndex[info.itemID]][2] = ZERO
 			end
          trinketNames[info.itemID] = ItemUtils:GetItemNameFromLink(info.link)
-         GetItemInfo(info.itemID)
+         C_Item.GetItemInfo(info.itemID)
          count = count + 1
          tinsert(trinketlinksInThisInstances, info.link)
       else

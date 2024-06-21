@@ -235,7 +235,7 @@ function private:RebuildResponseID(data,t, line)
       end
    end
    if not t.lootWon or t.lootWon == "" then return end -- Return silently - lootWon handler will have created error
-   local type = select(4, GetItemInfoInstant(t.lootWon))
+   local type = select(4, C_Item.GetItemInfoInstant(t.lootWon))
    if not type then return self:AddError(line, type, "Unknown type") end
    -- Check for special buttons
    if addon.BTN_SLOTS[type] then
@@ -345,7 +345,7 @@ function private:RebuildReplacedGear(data, t,line)
       local item = self:SetItemInfo(nil, gear1, line)
       if item then
          success = self:LoadItem(item, function ()
-            t.itemReplaced1 = select(2,GetItemInfo(gear1))
+            t.itemReplaced1 = select(2,C_Item.GetItemInfo(gear1))
          end)
       end
       if not (item and success) then return self:AddError(line, gear1, "Error rebuilding gear1") end
@@ -354,7 +354,7 @@ function private:RebuildReplacedGear(data, t,line)
       local item = self:SetItemInfo(nil, gear2, line)
       if item then
          success = self:LoadItem(item, function ()
-            t.itemReplaced2 = select(2,GetItemInfo(gear2))
+            t.itemReplaced2 = select(2,C_Item.GetItemInfo(gear2))
          end)
       end
       if not (item and success) then return self:AddError(line, gear2, "Error rebuilding gear2") end
@@ -372,8 +372,8 @@ function private:RebuildLootWon(data ,t, line)
    local item = self:SetItemInfo(itemID, itemString, line)
    if item then
       success = self:LoadItem(item, function()
-         t.lootWon = select(2,GetItemInfo(item:GetItemLink()))
-         local _, _, _, _, _, itemClassID, itemSubClassID = GetItemInfoInstant(t.lootWon)
+         t.lootWon = select(2,C_Item.GetItemInfo(item:GetItemLink()))
+         local _, _, _, _, _, itemClassID, itemSubClassID = C_Item.GetItemInfoInstant(t.lootWon)
          t.iClass = itemClassID
          t.iSubClass = itemSubClassID
       end)
