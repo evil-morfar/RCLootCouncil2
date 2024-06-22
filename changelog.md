@@ -39,10 +39,11 @@ Removing the last item in the list will now close the window.
 ## Bugfixes
 
 - *Player names in voting frame vote status tooltip is again shown with class colors.*
-- *Loot- and Voting frame item type text now only shows subtype for most iscellaneous items.*
+- *Loot- and Voting frame item type text now only shows subtype for most miscellaneous items.*
 - *Voting Frame More info now correctly updates when changing sessions while shown.*
 - *More info frames now minimizes with their parent frame.*
 - *Item owner information is again sent when reannouncing loot.*
+- *In loot history filter: deselecting a single selected class now resets the filter.*
 
 # 3.12.1
 

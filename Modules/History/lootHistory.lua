@@ -1207,12 +1207,14 @@ function LootHistory.FilterMenu(menu, level)
 				info.func = function()
 					addon.Log:D("Update class filter")
 					db.modules["RCLootHistory"].filters.class[id] = not db.modules["RCLootHistory"].filters.class[id]
+					local classFilters = false
 					for _,v in pairs(db.modules["RCLootHistory"].filters.class) do
 						if v then
-							useClassFilters = true
+							classFilters = true
 							break
 						end
 					end
+					useClassFilters = classFilters
 					LootHistory:Update()
 				end
 				info.checked = db.modules["RCLootHistory"].filters.class[id]
