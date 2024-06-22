@@ -2295,7 +2295,7 @@ local itemStatsRet = {}
 -- Item needs to be cached.
 function RCLootCouncil:GetItemBonusText(link, delimiter)
 	if not delimiter then delimiter = "/" end
-	C_Item.GetItemStats(link, itemStatsRet)
+	itemStatsRet = C_Item.GetItemStats(link)
 	local text = ""
 	for k, _ in pairs(itemStatsRet) do
 		if k:find("SOCKET") then

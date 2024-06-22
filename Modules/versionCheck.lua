@@ -458,7 +458,7 @@ function RCVersionCheck:GetFrame()
     f.guildBtn = b1
 
     local b2 = addon:CreateButton(_G.GROUP, f.content)
-    b2:SetPoint("LEFT", b1, "RIGHT", 15, 0)
+    b2:SetPoint("LEFT", b1, "RIGHT", 10, 0)
     b2:SetScript(
         "OnClick",
         function()
@@ -480,8 +480,8 @@ function RCVersionCheck:GetFrame()
     local totals = addon.UI:New("Text", f.content, "Unknown")
     totals:SetHeight(25)
     totals:SetTextColor(1,1,1,1)
-    totals:SetPoint("LEFT", b2, "RIGHT", 15, 0)
-    totals:SetPoint("RIGHT", b3, "LEFT", -15, 0)
+    totals:SetPoint("LEFT", b2, "RIGHT", 10, 0)
+    totals:SetPoint("RIGHT", b3, "LEFT", -10, 0)
     local temp = TT:Acquire(
         colors.yellow:WrapTextInColorCode("Test Versions"),
         colors.red:WrapTextInColorCode("Outdated"),
@@ -499,9 +499,10 @@ function RCVersionCheck:GetFrame()
     f.totals = totals
 
     local st = ST:CreateST(self.scrollCols, 12, 20, nil, f.content)
-    st.frame:SetPoint("TOPLEFT", f, "TOPLEFT", 10, -35)
+    st.frame:SetPoint("TOPLEFT", f, "TOPLEFT", 10, -30)
     --content.frame:SetBackdropColor(1,0,0,1)
     f:SetWidth(st.frame:GetWidth() + 20)
+	f:SetHeight(320)
     f.rows = {} -- the row data
     f.st = st
     return f

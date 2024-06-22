@@ -308,13 +308,13 @@ function sync:Spawn()
         "DefaultRCLootCouncilSyncFrame",
         L["RCLootCouncil - Synchronizer"],
         nil,
-        140
+        130
     )
     addon.UI:RegisterForEscapeClose(f, function() if self:IsEnabled() then self:Disable() end end)
     f:SetWidth(350)
     local sel = AG:Create("Dropdown")
     sel:SetWidth(f.content:GetWidth() * 0.4 - 20)
-    sel:SetPoint("TOPLEFT", f.content, "TOPLEFT", 10, -50)
+    sel:SetPoint("TOPLEFT", f.content, "TOPLEFT", 10, -40)
     local syncSelections = {}
     for k, v in pairs(self.syncHandlers) do
         syncSelections[k] = v.text
@@ -333,7 +333,7 @@ function sync:Spawn()
     f.syncSelector = sel
 
     local txt = f.content:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-    txt:SetPoint("BOTTOMLEFT", sel.frame, "TOPLEFT", 0, 5)
+    txt:SetPoint("BOTTOMLEFT", sel.frame, "TOPLEFT", 5, 5)
     txt:SetTextColor(1, 1, 1) -- Turqouise
     txt:SetText(L["Sync"] .. ":")
     f.typeText = txt
@@ -361,13 +361,13 @@ function sync:Spawn()
     f.syncTargetSelector = sel
 
     txt = f.content:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-    txt:SetPoint("BOTTOMLEFT", sel.frame, "TOPLEFT", 0, 5)
+    txt:SetPoint("BOTTOMLEFT", sel.frame, "TOPLEFT", 5, 5)
     txt:SetTextColor(1, 1, 1) -- Turqouise
     txt:SetText(L["To target"] .. ":")
     f.targetText = txt
 
     f.syncButton = addon:CreateButton("Sync", f.content)
-    f.syncButton:SetPoint("BOTTOMRIGHT", f, "CENTER", -10, -f:GetHeight() / 2 + 10)
+    f.syncButton:SetPoint("BOTTOMRIGHT", f, "CENTER", -5, -f:GetHeight() / 2 + 10)
     f.syncButton:SetScript(
         "OnClick",
         function()
@@ -378,7 +378,7 @@ function sync:Spawn()
         end
     )
     f.exitButton = addon:CreateButton(_G.CLOSE, f.content)
-    f.exitButton:SetPoint("LEFT", f.syncButton, "RIGHT", 20, 0)
+    f.exitButton:SetPoint("LEFT", f.syncButton, "RIGHT", 10, 0)
     f.exitButton:SetScript(
         "OnClick",
         function()

@@ -18,6 +18,14 @@ All import/export frames are now closeable with "Esc".
 
 When awarding an item, voting frame now switches to the *next* unawarded item instead of the *first*.
 
+Reviewed all UI layouts and margins. Updated all inconsistencies for a more unified look.
+
+### Loot Frame
+
+Loot Frame will now always "shrink" upwards when rolling on items, no matter where it's positioned.
+
+Integrated timeout bar with background and refreshed layout.
+
 ### Profile sharing
 
 It's now possible to export and import profile settings. This new feature is located at the "Profiles" tab in the options menu (`/rc config`).

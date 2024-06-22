@@ -911,7 +911,7 @@ function RCVotingFrame:GetFrame()
 	if self.frame then return self.frame end
 
 	-- Container and title
-	local f = addon.UI:NewNamed("RCFrame", UIParent, "DefaultRCLootCouncilFrame", L["RCLootCouncil Voting Frame"], 250, 420)
+	local f = addon.UI:NewNamed("RCFrame", UIParent, "DefaultRCLootCouncilFrame", L["RCLootCouncil Voting Frame"], 250, 410)
 	-- Scrolling table
 	function f.UpdateSt()
 		if f.st then -- It might already be created, so just update the cols
@@ -984,19 +984,19 @@ function RCVotingFrame:GetFrame()
 			 end
 		 end
 	 })
-	item:SetPoint("TOPLEFT", f, "TOPLEFT", 10, -20)
+	item:SetPoint("TOPLEFT", f, "TOPLEFT", 10, -15)
 	item:SetSize(50,50)
 	f.itemIcon = item
 
 	f.itemTooltip = addon:CreateGameTooltip("votingframe", f.content)
 
 	local iTxt = f.content:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
-	iTxt:SetPoint("TOPLEFT", item, "TOPRIGHT", 10, 0)
+	iTxt:SetPoint("TOPLEFT", item, "TOPRIGHT", 8, 0)
 	iTxt:SetText(L["Something went wrong :'("]) -- Set text for reasons
 	f.itemText = iTxt
 
 	local ilvl = f.content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-	ilvl:SetPoint("TOPLEFT", iTxt, "BOTTOMLEFT", 0, -4)
+	ilvl:SetPoint("TOPLEFT", iTxt, "BOTTOMLEFT", 0, -5)
 	ilvl:SetTextColor(1, 1, 1) -- White
 	ilvl:SetText("")
 	f.itemLvl = ilvl
@@ -1009,7 +1009,7 @@ function RCVotingFrame:GetFrame()
 	f.iState = iState
 
 	local iType = f.content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-	iType:SetPoint("TOPLEFT", ilvl, "BOTTOMLEFT", 0, -4)
+	iType:SetPoint("TOPLEFT", ilvl, "BOTTOMLEFT", 0, -5)
 	iType:SetTextColor(0.5, 1, 1) -- Turqouise
 	iType:SetText("")
 	f.itemType = iType
@@ -1017,11 +1017,12 @@ function RCVotingFrame:GetFrame()
 	f.bonuses = f.content:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
 	f.bonuses:SetPoint("LEFT", f.itemType, "RIGHT", 1, 0)
 	f.bonuses:SetTextColor(0.2,1,0.2) -- Green
+	f.bonuses:SetJustifyV("BOTTOM")
 	--#end----------------------------
 
 	-- Abort button
 	local b1 = addon:CreateButton(_G.CLOSE, f.content)
-	b1:SetPoint("TOPRIGHT", f, "TOPRIGHT", -10, -50)
+	b1:SetPoint("TOPRIGHT", f, "TOPRIGHT", -10, -40)
 	b1:SetScript("OnClick", function()
 		-- This needs to be dynamic if the ML has changed since this was first created
 		if addon.isMasterLooter and active then LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_ABORT")
@@ -1032,7 +1033,7 @@ function RCVotingFrame:GetFrame()
 	-- More info button
 	local b2 = CreateFrame("Button", nil, f.content, "UIPanelButtonTemplate")
 	b2:SetSize(25,25)
-	b2:SetPoint("TOPRIGHT", f, "TOPRIGHT", -10, -20)
+	b2:SetPoint("TOPRIGHT", f, "TOPRIGHT", -10, -10)
 	if moreInfo then
 		b2:SetNormalTexture("Interface\\Buttons\\UI-SpellbookIcon-PrevPage-Up");
 		b2:SetPushedTexture("Interface\\Buttons\\UI-SpellbookIcon-PrevPage-Down");
@@ -1113,7 +1114,7 @@ function RCVotingFrame:GetFrame()
 	awdstr:Hide()
 	f.awardString = awdstr
 	awdstr = f.content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-	awdstr:SetPoint("TOP", f.awardString, "BOTTOM", 7.5, -3)
+	awdstr:SetPoint("TOP", f.awardString, "BOTTOM", 8.5, -3)
 	awdstr:SetText("PlayerName")
 	awdstr:SetTextColor(1, 1, 1, 1) -- White
 	awdstr:Hide()
@@ -1122,7 +1123,7 @@ function RCVotingFrame:GetFrame()
 	awdtx:SetTexture("Interface/ICONS/INV_Sigil_Thorim.png")
 	function awdtx:SetNormalTexture(tex) self:SetTexture(tex) end
 	function awdtx:GetNormalTexture() return self end
-	awdtx:SetPoint("RIGHT", awdstr, "LEFT")
+	awdtx:SetPoint("RIGHT", awdstr, "LEFT", -2,0)
 	awdtx:SetSize(15,15)
 	awdtx:Hide()
 	f.awardStringPlayer.classIcon = awdtx
