@@ -1619,7 +1619,8 @@ function RCVotingFrame:GetRerollData(session, isRoll, noAutopass)
 		string 		= ItemUtils:GetTransmittableItemString(v.link),
 		noAutopass = noAutopass,
 		typeCode 	= lootTable[session].typeCode,
-		isRoll 		= isRoll
+		isRoll 		= isRoll,
+		owner 		= v.owner
 	}
 end
 

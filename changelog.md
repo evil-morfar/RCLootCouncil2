@@ -42,6 +42,7 @@ Removing the last item in the list will now close the window.
 - *Loot- and Voting frame item type text now only shows subtype for most iscellaneous items.*
 - *Voting Frame More info now correctly updates when changing sessions while shown.*
 - *More info frames now minimizes with their parent frame.*
+- *Item owner information is again sent when reannouncing loot.*
 
 # 3.12.1
 
