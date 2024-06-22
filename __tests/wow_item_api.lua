@@ -41,7 +41,7 @@ C_Item = {
 	GetItemStats = function(item)
 		assert(item, "Usage: local statTable = C_Item.GetItemStats(itemLink)")
 		if string.match(item, "^%d+$") then item = tonumber(item) end -- Support for itemID
-		if not _G.ItemStats[item] then return end
+		if not _G.ItemStats[item] then return {} end
 		local ret = {}
 		for k, v in pairs(_G.ItemStats[item]) do
 			ret[k] = v
