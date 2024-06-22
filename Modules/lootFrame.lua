@@ -343,8 +343,8 @@ do
 				local b = entry.buttons -- shortening
 				local numButtons = addon:GetNumButtons(entry.type)
 				local buttons = addon:GetButtons(entry.type)
-				-- (IconWidth (63) + indent(9)) + pass button (5) + (noteButton(24)  + indent(5+7)) + numButton * space(5)
-				local width = 105 + numButtons * 5
+				-- (IconWidth (60) + indent(10)) + pass button (5) + (noteButton(24)  + indent(10)) + numButton * space(5)
+				local width = 109 + numButtons * 5
 				for i = 1, numButtons + 1 do
 					if i > numButtons then -- Pass button:
 						b[i] = b[i] or addon:CreateButton(_G.PASS, entry.frame)
@@ -376,11 +376,11 @@ do
 				-- Adjust the width to match item text and item level, in case we have few buttons.
 				entry.width = math.max(entry.width, 150 + entry.itemText:GetStringWidth())
 				entry.width = math.max(entry.width, 149 + entry.itemLvl:GetStringWidth())
-				entry.noteButton:SetPoint("LEFT", entry.buttons[#entry.buttons], "RIGHT", 5)
 			end
 			-------- Note button ---------
 			entry.noteButton = CreateFrame("Button", nil, entry.frame)
 			entry.noteButton:SetSize(24,24)
+			entry.noteButton:SetPoint("BOTTOMRIGHT", entry.frame, "BOTTOMRIGHT", -10, 10)
 			entry.noteButton:SetHighlightTexture("Interface\\Minimap\\UI-Minimap-ZoomButton-Highlight")
 			entry.noteButton:SetNormalTexture("Interface\\Buttons\\UI-GuildButton-PublicNote-Disabled")
 			entry.noteButton:SetScript("OnEnter", function()
