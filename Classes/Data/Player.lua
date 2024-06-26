@@ -128,7 +128,7 @@ end
 --- @param player Player
 --- @return nil
 function private:UpdateCachedPlayer(player)
-	if not player and player.guid then
+	if not (player and player.guid) then
 		return Log:f("<Data.Player>", "UpdateCachedPlayer - no player or player guid", player.name, player.guid)
 	end
 
