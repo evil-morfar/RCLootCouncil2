@@ -3002,7 +3002,8 @@ function RCLootCouncil:GetResponse(type, name)
 			self:Debug("No db or mldb for GetReponse", type, name)
 		end
 	end
-	return {} -- Fallback
+	self:Debug("Error: no response for", type, name)
+	return {color = {1,1,1,1}} -- Fallback
 end
 
 --- Returns the number of buttons of a specific type
