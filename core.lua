@@ -956,22 +956,22 @@ end
 function RCLootCouncil:OnMLDBReceived(mldb)
 	self:Debug("OnMLDBReceived")
 	-- mldb inheritance from db
+	local mldb_responses_meta = { __index = self.defaults.profile.responses.default }
+	local mldb_response_meta = { __index = self.defaults.profile.responses["*"]["*"] }
 	self.mldb = mldb
 	for type, responses in pairs(mldb.responses) do
-	   for _ in pairs(responses) do
-	      if not self.defaults.profile.responses[type] then
-				--if not self.mldb.responses[type] then self.mldb.responses[type] = {} end
-				--if not self.mldb.responses[type][response] then self.mldb.responses[type][response] = {} end
-	         setmetatable(self.mldb.responses[type], {__index = self.defaults.profile.responses.default})
-	      end
+	   for name in pairs(responses) do
+			if not self.defaults.profile.responses[type] then
+				setmetatable(self.mldb.responses[type], mldb_responses_meta)
+			elseif self.defaults.profile.responses.default[name] then
+				self.mldb.responses[type][name] = setmetatable(self.mldb.responses[type][name], mldb_response_meta)
+			end
 	   end
 	end
 	if not self.mldb.responses.default then self.mldb.responses.default = {} end
-	setmetatable(self.mldb.responses.default, {__index = self.defaults.profile.responses.default})
-	--setmetatable(self.mldb.buttons, {__index = function() return self.defaults.profile.buttons.default end})
+	setmetatable(self.mldb.responses.default, mldb_responses_meta)
 	if not self.mldb.buttons.default then self.mldb.buttons.default = {} end
 	setmetatable(self.mldb.buttons.default, { __index = self.defaults.profile.buttons.default,})
-	-- self.mldb = mldb
 end
 
 function RCLootCouncil:ChatCmdAdd(args)
@@ -1913,8 +1913,12 @@ function RCLootCouncil:OnEvent(event, ...)
 			self:Debug("ML and cache:", self.masterLooter, self.db.global.cache.masterLooter)
 
 			-- Restore mldb and council
-			if self.db.global.cache.mldb then
-				self:OnMLDBReceived(self.db.global.cache.mldb)
+			if self.masterLooter and self.db.global.cache.mldb then
+				-- Overwriting mldb now as the ML will remove the defaults set with ML:BuildMLdb(),
+				-- however non-MLs can safely set it, as they already have the mldb from the ML.
+				if not self.isMasterLooter then
+					self:OnMLDBReceived(self.db.global.cache.mldb)
+				end
 			end
 			if self.masterLooter and self.db.global.cache.council then
 				self.council = self.db.global.cache.council
@@ -3043,7 +3047,7 @@ end
 -- @return Returned in an unpacked format for use in SetTextColor functions.
 function RCLootCouncil:GetResponseColor(type, name)
 	local response = self:GetResponse(type, name)
-	if not response then
+	if not response or not response.color then
 		self:Debug("GetResponseColor: No response for", type, name)
 		return 1,1,1,1
 	end
