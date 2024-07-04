@@ -3042,7 +3042,12 @@ end
 --- Shorthand for :GetResponse(type, name).color
 -- @return Returned in an unpacked format for use in SetTextColor functions.
 function RCLootCouncil:GetResponseColor(type, name)
-	return unpack(self:GetResponse(type, name).color)
+	local response = self:GetResponse(type, name)
+	if not response then
+		self:Debug("GetResponseColor: No response for", type, name)
+		return 1,1,1,1
+	end
+	return unpack(response.color)
 end
 
 --#end UI Functions -----------------------------------------------------
