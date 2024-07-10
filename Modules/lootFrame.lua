@@ -110,6 +110,7 @@ function LootFrame:ReRoll(table)
 end
 
 function LootFrame:OnEnable()
+	---@type RCItemEntry[]
 	self.items = {} -- item.i = {name, link, lvl, texture} (i == session)
 	self.frame = self:GetFrame()
 	self:RegisterEvent("CHAT_MSG_SYSTEM")
@@ -152,7 +153,7 @@ function LootFrame:Update()
 	local oldHeight = self.frame:GetHeight()
 
 	self.EntryManager:Update()
-	self.frame:SetHeight(numEntries * ENTRY_HEIGHT + 5)
+	self.frame:SetHeight(numEntries * ENTRY_HEIGHT)
 
 	-- We want the frame to "shrink upwards"
 	if point[3] == "CENTER" or point[3] == "RIGHT" or point[3] == "LEFT" then
@@ -232,8 +233,13 @@ function LootFrame:GetFrame()
 end
 
 do
+	---@class RCLootFrameEntry
+	---@field type "normal" | "roll"
 	local entryPrototype = {
 		type = "normal",
+
+		---@param entry RCLootFrameEntry
+		---@param item RCItemEntry
 		Update = function(entry, item)
 			if not item then
 				return addon.Log:E("Entry update error @ item:", item)
@@ -277,10 +283,10 @@ do
 			if addon:UnitIsUnit(item.owner, "player") then -- Special coloring
 				entry.frame:SetBackdrop({
 					edgeFile = "Interface/Tooltips/UI-Tooltip-Border",
-				   edgeSize = 14,
-					insets = { left = 4, right = 4, top = 0, bottom = 0 }
+					edgeSize = 8,
 				})
 				entry.frame:SetBackdropBorderColor(0,1,1,1)
+				-- Update layout to ensure the correct frame level order
 				LootFrame.frame:SetFrameLevel(1)
 				entry.frame:SetFrameLevel(1)
 				entry.timeoutBar:SetFrameLevel(1)
@@ -293,8 +299,10 @@ do
 		Show = function(entry) entry.frame:Show() end,
 		Hide = function(entry) entry.frame:Hide() end,
 
-		-- Constructor for the prototype.
-		-- Expects caller to setup buttons and position.
+		--- Constructor for the prototype.
+		--- Expects caller to setup buttons and position.
+		---@param entry RCLootFrameEntry
+		---@param parent Frame
 		Create = function(entry, parent)
 			entry.width = parent:GetWidth()
 			entry.frame = CreateFrame("Frame", "DefaultRCLootFrameEntry("..LootFrame.EntryManager.numEntries..")", parent, "BackdropTemplate")
@@ -481,11 +489,13 @@ do
 
 	LootFrame.EntryManager = {  -- namespace
 		numEntries = 0,
+		---@type RCLootFrameEntry[]
 		entries = {},
 		trashPool = {},
 	}
 
-	-- Hides and stores entries for reuse later
+	--- Hides and stores entries for reuse later
+	---@param entry RCLootFrameEntry
 	function LootFrame.EntryManager:Trash(entry)
 		addon.Log:D("Trashing entry:", entry.position or 0, entry.item.link)
 		entry:Hide()
@@ -497,6 +507,9 @@ do
 		self.numEntries = self.numEntries - 1
 	end
 
+	---Fetches an Entry from the trashPool
+	---@param type string
+	---@return RCLootFrameEntry? entry 
 	function LootFrame.EntryManager:Get(type)
 		if not self.trashPool[type] then return nil end
 		local t = next(self.trashPool[type])
