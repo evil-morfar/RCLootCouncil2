@@ -101,7 +101,7 @@ addon.defaults = {
       useSlashRC = true, -- Register "/rc" slash command.
       saveBonusRolls = true,
 
-      chatFrameName = "DEFAULT_CHAT_FRAME", -- The chat frame to use for :Print()s
+      chatFrameName = "ChatFrame1", -- The chat frame to use for :Print()s
 
       UI = { -- stores all ui information
          ['**'] = { -- Defaults
