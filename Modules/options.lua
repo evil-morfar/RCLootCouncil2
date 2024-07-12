@@ -1589,7 +1589,7 @@ function addon:OptionsTable()
 													for i = 1, GetNumGuildMembers() do
 														local name, _, rankIndex = GetGuildRosterInfo(i) -- get info from all guild members
 														if rankIndex + 1 <= val then -- if the member is the required rank, or above
-															tinsert(self.db.profile.council, name) -- then insert them to the council
+															tinsert(self.db.profile.council, self:UnitName(name)) -- then insert them to the council
 														end
 													end
 													addon:CouncilChanged()
@@ -1911,7 +1911,7 @@ function addon:GetGuildOptions()
 						wipe(names)
 						for ci = 1, GetNumGuildMembers() do
 							local name, _, rankIndex = GetGuildRosterInfo(ci); -- NOTE I assume the realm part of name is without spaces.
-							if (rankIndex + 1) == i then names[name] = Ambiguate(name, "short") end -- Ambiguate to show realmname for players from another realm
+							if (rankIndex + 1) == i then names[self:UnitName(name)] = Ambiguate(name, "short") end -- Ambiguate to show realmname for players from another realm
 						end
 						table.sort(names, function(v1, v2)
 							return v1 and v1 < v2

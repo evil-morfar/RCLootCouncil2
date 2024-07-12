@@ -1466,7 +1466,7 @@ function RCLootCouncilML:GetCouncilInGroup()
 		-- self.candidates suffers from the problem mentioned in :UnitName, so safely (slowly) compare them
 		for cand in pairs(self.candidates) do
 			if addon:UnitIsUnit(name, cand ) then
-				tinsert(council, name)
+				tinsert(council, addon:UnitName(name))
 				break
 			end
 		end
