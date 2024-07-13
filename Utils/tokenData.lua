@@ -823,6 +823,28 @@ _G.RCTokenTable = {
 	[217333] = "ShoulderSlot", -- Mystic Synchronous Timestrand,
 	[217334] = "ShoulderSlot", -- Venerated Synchronous Timestrand,
 	[217335] = "ShoulderSlot", -- Zenith Synchronous Timestrand,
+
+	-- The War Within
+	[225614] = "ChestSlot",  -- Dreadful Blasphemer's Effigy,
+	[225615] = "ChestSlot",  -- Mystic Blasphemer's Effigy,
+	[225616] = "ChestSlot",  -- Venerated Blasphemer's Effigy,
+	[225617] = "ChestSlot",  -- Zenith Blasphemer's Effigy,
+	[225618] = "HandsSlot",  -- Dreadful Stalwart's Emblem,
+	[225619] = "HandsSlot",  -- Mystic Stalwart's Emblem,
+	[225620] = "HandsSlot",  -- Venerated Stalwart's Emblem,
+	[225621] = "HandsSlot",  -- Zenith Stalwart's Emblem,
+	[225622] = "Trinket",    -- Dreadful Conniver's Badge,
+	[225623] = "Trinket",    -- Mystic Conniver's Badge,
+	[225624] = "Trinket",    -- Venerated Conniver's Badge,
+	[225625] = "Trinket",    -- Zenith Conniver's Badge,
+	[225626] = "LegsSlot",   -- Dreadful Slayer's Icon,
+	[225627] = "LegsSlot",   -- Mystic Slayer's Icon,
+	[225628] = "LegsSlot",   -- Venerated Slayer's Icon,
+	[225629] = "LegsSlot",   -- Zenith Slayer's Icon,
+	[225630] = "ShoulderSlot", -- Dreadful Obscenity's Idol,
+	[225631] = "ShoulderSlot", -- Mystic Obscenity's Idol,
+	[225632] = "ShoulderSlot", -- Venerated Obscenity's Idol,
+	[225633] = "ShoulderSlot", -- Zenith Obscenity's Idol,
 }
 
 -- The base item level for the token on normal difficulty
