@@ -509,7 +509,7 @@ do
 
 	---Fetches an Entry from the trashPool
 	---@param type string
-	---@return RCLootFrameEntry? entry 
+	---@return RCLootFrameEntry? entry
 	function LootFrame.EntryManager:Get(type)
 		if not self.trashPool[type] then return nil end
 		local t = next(self.trashPool[type])

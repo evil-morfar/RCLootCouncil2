@@ -68,7 +68,6 @@ function LootHistory:OnInitialize()
 	rightClickMenu = _G.MSA_DropDownMenu_Create("RCLootCouncil_LootHistory_RightclickMenu", UIParent)
 	_G.MSA_DropDownMenu_Initialize(filterMenu, self.FilterMenu, "MENU")
 	_G.MSA_DropDownMenu_Initialize(rightClickMenu, self.RightClickMenu, "MENU")
-	
 
 	self:SubscribeToPermanentComms()
 end

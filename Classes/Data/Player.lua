@@ -52,7 +52,7 @@ local PLAYER_MT = {
 	__tostring = function(self) return self.name end,
 	--- @param a Player|string
 	--- @param b Player|string
-	__eq = function(a, b) 
+	__eq = function(a, b)
 		if a.guid and b.guid then return a.guid == b.guid end
 		if a.guid then return addon:UnitIsUnit(a.name, b) end
 		if b.guid then return addon:UnitIsUnit(b.name, a) end

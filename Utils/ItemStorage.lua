@@ -103,9 +103,9 @@ local item_class = {
 }
 
 -- lua
-local error, table, tostring, tinsert, tremove, type, select, FindInTableIf, time, tFilter, setmetatable, CopyTable,
+local error, table, tostring, tinsert, tremove, type, select, FindInTableIf, time, tFilter, setmetatable,
 ipairs = error, table, tostring, tinsert, tremove, type, select, FindInTableIf, time, tFilter, setmetatable,
-	CopyTable, ipairs
+	ipairs
 
 function addon:InitItemStorage() -- Extract items from our SV. Could be more elegant
 	db = self:Getdb()

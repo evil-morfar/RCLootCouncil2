@@ -262,11 +262,7 @@ function sync:GetSyncTargetOptions()
         ret[addon.playerName] = nil
     end
     -- Check if it's empty
-    local isEmpty = true
-    for k in pairs(ret) do
-        isEmpty = false
-        break
-    end --luacheck: ignore
+    local isEmpty = next(ret) ~= nil
     ret[1] = isEmpty and "--" .. L["No recipients available"] .. "--" or nil
     table.sort(
         ret,

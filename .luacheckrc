@@ -12,18 +12,18 @@ files[".specs/**/*.spec.lua"].std = "+busted"
 -- Don't report everything for our test files
 files["__tests/**/*.lua"].ignore = {
    "211", --   Unused local variable.
-   "213", -- 	Unused loop variable.
    "241", -- 	Local variable is mutated but never accessed.
    "423", -- 	Shadowing a loop variable.
 }
 
 ignore = {
-   "111/_",       -- Setting an undefined (_) global variable.
-   "113/LE_.*",   -- Accessing an undefined (Lua ENUM type) global variable
-   "113/NUM_LE_.*",-- Accessing an undefined (Lua ENUM type) global variable
-   "131",         -- Unused implicitly defined global variable.
-   "143/string",  -- Accessing an undefined field of a global variable.
-   "212",         -- Unused argument.
+	"111/_",       -- Setting an undefined (_) global variable.
+	"113/LE_.*",   -- Accessing an undefined (Lua ENUM type) global variable
+	"113/NUM_LE_.*",-- Accessing an undefined (Lua ENUM type) global variable
+	"131",         -- Unused implicitly defined global variable.
+	"143/string",  -- Accessing an undefined field of a global variable.
+	"212",         -- Unused argument.
+	"213", -- 	Unused loop variable.
    "412",         -- Redefining an argument.
    "421/data",    --	Shadowing a local variable (data).
    "431",         -- Shadowing an upvalue.
@@ -34,6 +34,7 @@ ignore = {
 globals = {
 	"_G",
 	"bit",
+	"lfs",
 
 	-- misc custom
 	"AceGUIWeakAurasMultiLineEditBoxInsertLink",
@@ -44,23 +45,25 @@ globals = {
    "RCLootCouncilML",
    "RCTokenTable",
    "RCTokenClasses",
-
-	-- Third Party Addons/Libs
-	"BigWigs",
-	"BigWigsLoader",
-	"BugGrabber",
-	"DBM",
-	"ElvUIPlayerNamePlateAnchor",
-	"GTFO",
-	"IndentationLib",
-	"KuiNameplatesCore",
-	"KuiNameplatesPlayerAnchor",
+   
+   -- Third Party Addons/Libs
+   "BigWigs",
+   "BigWigsLoader",
+   "BugGrabber",
+   "DBM",
+   "ElvUIPlayerNamePlateAnchor",
+   "GTFO",
+   "IndentationLib",
+   "KuiNameplatesCore",
+   "KuiNameplatesPlayerAnchor",
    "MSA_DropDownMenu_AddButton",
    "MSA_DropDownMenu_CreateInfo",
    "MSA_DropDownMenu_Initialize",
    "MSA_DROPDOWNMENU_MENU_VALUE",
    "MSA_DropDownMenu_SetSelectedName",
    "MSA_ToggleDropDownMenu",
+   "DevTool",
+	"CanIMogIt",
 
 	-- FrameXML misc
 	"AccumulateOp",
@@ -163,6 +166,8 @@ globals = {
 	"NUM_TALENT_COLUMNS",
 	"RED_FONT_COLOR_CODE",
 	"STANDARD_TEXT_FONT",
+	"ChatFrame1",
+	"UIDROPDOWNMENU_OPEN_MENU",
 
 	-- ENUMS
 	"LOWER_LEFT_VERTEX",
@@ -171,19 +176,21 @@ globals = {
 	"UPPER_RIGHT_VERTEX",
 
    -- Namespaces
-   "C_EncounterJournal",
-   "C_DateAndTime",
-   "C_Container",
-   "C_CurrencyInfo",
-   "C_Item",
-   "C_Map",
-   "C_PartyInfo",
-   "C_PlayerInfo",
-   "C_System",
-   "C_Unit",
+	"C_AccountInfo",
+	"C_Club",
 	"C_Covenants",
-	"Settings",
 	"C_TooltipInfo",
+	"Settings",
+	"C_Container",
+	"C_CurrencyInfo",
+	"C_DateAndTime",
+	"C_EncounterJournal",
+	"C_Item",
+	"C_Map",
+	"C_PartyInfo",
+	"C_PlayerInfo",
+	"C_System",
+	"C_Unit",
 
 	-- API functions
 	"AbandonSkill",
@@ -3703,6 +3710,7 @@ globals = {
 	"math.log10",
 	"math.max",
 	"math.min",
+	"math.mod",
 	"math.modf",
 	"math.pow",
 	"math.rad",

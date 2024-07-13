@@ -12,8 +12,7 @@ local ItemUtils = addon.Require "Utils.Item"
 local Utils = {}
 addon.Utils = Utils
 
-local string, gsub, strmatch, tonumber, format, date, time, strsplit = string, gsub, strmatch, tonumber, format, date,
-	time, strsplit
+local string, gsub, format, date, time, strsplit = string, gsub, format, date, time, strsplit
 -- GLOBALS: IsInRaid, UnitGroupRolesAssigned
 
 --- Extracts the creature id from a guid
