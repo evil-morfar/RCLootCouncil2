@@ -265,7 +265,7 @@ do
 			local typeText = addon:GetItemTypeText(item.link, item.subType, item.equipLoc, item.typeID, item.subTypeID, item.classes, item.isTier, item.isRelic)
 			local bonusText = addon:GetItemBonusText(item.link, "/")
 			if bonusText ~= "" then bonusText = "+ "..bonusText end
-			entry.itemLvl:SetText(addon.Utils:GetItemLevelText(entry.item.ilvl, entry.item.isTier).." |cff7fffff"..typeText.."|r")
+			entry.itemLvl:SetText((entry.item.ilvl or "").." |cff7fffff"..typeText.."|r")
 			entry.bonuses:SetText(bonusText)
 			if entry.item.note then
 				entry.noteButton:SetNormalTexture("Interface\\Buttons\\UI-GuildButton-PublicNote-Up")

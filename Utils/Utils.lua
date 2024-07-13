@@ -39,15 +39,6 @@ function Utils:GetAnnounceChannel(channel)
 	return channel == "group" and (IsInRaid() and "RAID" or "PARTY") or channel
 end
 
-function Utils:GetItemLevelText(ilvl, token)
-	if not ilvl then return "" end
-	if token and ilvl > 600 then -- Armor token warforged is introduced since WoD
-		return ilvl .. "+"
-	else
-		return ilvl
-	end
-end
-
 function Utils:GetPlayerRole()
 	return UnitGroupRolesAssigned("player")
 end
@@ -341,4 +332,10 @@ end
 ---@see Utils.Item.NeutralizeItem
 function Utils:NeutralizeItem(item)
 	return ItemUtils:NeutralizeItem(item)
+end
+
+---@deprecated v3.13.0: No longer does anything
+function Utils:GetItemLevelText(ilvl)
+	if not ilvl then return "" end
+	return ilvl
 end

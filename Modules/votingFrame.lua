@@ -771,7 +771,7 @@ function RCVotingFrame:SwitchSession(s)
 	self.frame.iState:SetText(self:GetItemStatus(t.link))
 	local bonusText = addon:GetItemBonusText(t.link, "/")
 	if bonusText ~= "" then bonusText = "+ "..bonusText end
-	self.frame.itemLvl:SetText(_G.ITEM_LEVEL_ABBR..": "..addon.Utils:GetItemLevelText(t.ilvl, t.token))
+	self.frame.itemLvl:SetText(_G.ITEM_LEVEL_ABBR..": "..(t.ilvl or ""))
 	-- Set a proper item type text
 	self.frame.itemType:SetText(addon:GetItemTypeText(t.link, t.subType, t.equipLoc, t.typeID, t.subTypeID, t.classes, t.token, t.relic))
 	self.frame.bonuses:SetText(bonusText)
