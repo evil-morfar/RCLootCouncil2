@@ -46,11 +46,11 @@ function RCLootCouncil:ExportTrinketData(nextTier, nextIsRaid, nextIndex, nextDi
    C_AddOns.LoadAddOn("BLizzard_EncounterJournal")
    local TIME_FOR_EACH_INSTANCE_DIFF = 3
 
+   nextIsRaid = nextIsRaid or 0
+   nextIndex = nextIndex or 1
+   nextDiffID = nextDiffID or 1
    if not nextTier then
       nextTier = 10 -- Dragonflight
-      nextIsRaid = 0
-      nextIndex = 1
-      nextDiffID = 1
       self:Print("Exporting the loot specs of all trinkets in the dungeon journal\n"
          .."This command is intended to be run by the developer.\n"
          .."After exporting is done and copy and paste the data into Utils/TrinketData.lua.\n"
@@ -244,6 +244,8 @@ _G.RCTrinketCategories = {
 	["5010771040000"] = DAMAGER .. ", " .. ITEM_MOD_INTELLECT_SHORT, -- Damage, Intellect (no discipline)
 	["1134773647743"] = DAMAGER, -- Damage
 	["0325002007700"] = ITEM_MOD_AGILITY_SHORT, -- Agility (DPS + vengance and brewmaster)??
+	["73F7777077710"] = ITEM_MOD_AGILITY_SHORT .. "/" .. ITEM_MOD_INTELLECT_SHORT, -- Agility/Intellect
+	["0000000700077"] = ITEM_MOD_STRENGTH_SHORT, -- Strength
 
 	-- The following categories does not make sense. Most likely a Blizzard error in the Encounter Journal for several old trinkets.
 	-- Add "?" as a suffix to the description as the result
@@ -1863,4 +1865,107 @@ _G.RCTrinketSpecs = {
 	[133246] = "0241000100024", -- Heart of Thunder,               	Tank
 	[133252] = "2082004030010", -- Rainsong,                       	Healer
 	-- The Vortex Pinnacle Timewalking (id: 68).
+
+	-- The War Within
+	-- Ara-Kara, City of Echoes Normal (id: 1271).
+	[219314] = "73F7777777777", -- Ara-Kara Sacbrood,               	All Classes
+	[219316] = "0241000100024", -- Ceaseless Swarmgland,            	Tank
+	[219317] = "73F7777077710", -- Harvester's Edict,               	Agility/Intellect
+	-- Ara-Kara, City of Echoes Heroic (id: 1271).
+	-- Ara-Kara, City of Echoes Mythic Keystone (id: 1271).
+	-- Ara-Kara, City of Echoes Mythic (id: 1271).
+	-- Cinderbrew Meadery Normal (id: 1272).
+	[219297] = "0241000100024", -- Cinderbrew Stein,                	Tank
+	[219298] = "0124002607743", -- Ravenous Honey Buzzer,           	Damage, Strength/Agility
+	[219299] = "7092775070010", -- Synergistic Brewterializer,      	Intellect
+	-- Cinderbrew Meadery Heroic (id: 1272).
+	-- Cinderbrew Meadery Mythic (id: 1272).
+	-- City of Threads Normal (id: 1274).
+	[219321] = "7092775070010", -- Cirral Concoctory,               	Intellect
+	[219318] = "0000000700077", -- Oppressive Orator's Larynx,      	Strength
+	[219319] = "0124002007700", -- Twin Fang Instruments,           	Damage, Agility
+	[219320] = "2082004030010", -- Viscous Coaglam,                 	Healer
+	-- City of Threads Heroic (id: 1274).
+	-- City of Threads Mythic Keystone (id: 1274).
+	-- City of Threads Mythic (id: 1274).
+	-- Darkflame Cleft Normal (id: 1210).
+	[219305] = "7092775070010", -- Carved Blazikon Wax,             	Intellect
+	[219304] = "0124002007700", -- Conductor's Wax Whistle,         	Damage, Agility
+	[219307] = "73F7777777777", -- Remnant of Darkness,             	All Classes
+	[219306] = "2082004030010", -- Burin of the Candle King,        	Healer
+	-- Darkflame Cleft Heroic (id: 1210).
+	-- Darkflame Cleft Mythic (id: 1210).
+	-- Priory of the Sacred Flame Normal (id: 1267).
+	[219308] = "73F7777777777", -- Signet of the Priory,            	All Classes
+	[219309] = "0241000100024", -- Tome of Light's Devotion,        	Tank
+	[219310] = "2082004030010", -- Bursting Lightshard,             	Healer
+	-- Priory of the Sacred Flame Heroic (id: 1267).
+	-- Priory of the Sacred Flame Mythic (id: 1267).
+	-- The Dawnbreaker Normal (id: 1270).
+	[219312] = "73F7777077710", -- Empowering Crystal of Anub'ikkaj,	Agility/Intellect
+	[219313] = "7092775070010", -- Mereldar's Toll,                 	Intellect
+	[219311] = "0000000700067", -- Void Pactstone,                  	Strength
+	-- The Dawnbreaker Heroic (id: 1270).
+	-- The Dawnbreaker Mythic Keystone (id: 1270).
+	-- The Dawnbreaker Mythic (id: 1270).
+	-- The Rookery Normal (id: 1268).
+	[219294] = "0124002007700", -- Charged Stormrook Plume,         	Damage, Agility
+	[219296] = "7092775070010", -- Entropic Skardyn Core,           	Intellect
+	[219295] = "73F7777777777", -- Sigil of Algari Concordance,     	All Classes
+	-- The Rookery Heroic (id: 1268).
+	-- The Rookery Mythic (id: 1268).
+	-- The Stonevault Normal (id: 1269).
+	[219303] = "7092775070010", -- High Speaker's Accretion,        	Intellect
+	[219301] = "0124002607443", -- Overclocked Gear-A-Rang Launcher,	Damage, Melee
+	[219315] = "0241000100024", -- Refracting Aggression Module,    	Tank
+	[219302] = "2082004030010", -- Scrapsinger's Symphony,          	Healer
+	[219300] = "0000000700067", -- Skarmorak Shard,                 	Strength
+	-- The Stonevault Heroic (id: 1269).
+	-- The Stonevault Mythic Keystone (id: 1269).
+	-- The Stonevault Mythic (id: 1269).
+	-- Khaz Algar Normal (id: 1278).
+	-- Nerub-ar Palace Normal (id: 1273).
+	[212451] = "5010771040000", -- Aberrant Spellforge,             	Damage, Intellect
+	[219915] = "0241000100024", -- Foul Behemoth's Chelicera,       	Tank
+	[212454] = "73F7777777777", -- Mad Queen's Mandate,             	All Classes
+	[212449] = "0124002607443", -- Sikran's Endless Arsenal,        	Damage, Melee
+	[212453] = "0000000700067", -- Skyterror's Corrosive Organ,     	Strength
+	[212450] = "0241000100024", -- Swarmlord's Authority,           	Tank
+	[221023] = "73F7777777777", -- Treacherous Transmitter,         	All Classes
+	[212456] = "0365002007700", -- Void Reaper's Contract,          	Agility
+	[219917] = "2082004030010", -- Creeping Coagulum,               	Healer
+	[212452] = "2082004030010", -- Gruesome Syringe,                	Healer
+	[220305] = "73F7777777777", -- Ovinax's Mercurial Egg,          	All Classes
+	[220202] = "5010771040000", -- Spymaster's Web,                 	Damage, Intellect
+	-- Nerub-ar Palace Heroic (id: 1273).
+	-- Nerub-ar Palace Mythic (id: 1273).
+	-- Nerub-ar Palace Looking For Raid (id: 1273).
+	-- Mists of Tirna Scithe Normal (id: 1184).
+	[178715] = "0365002007700", -- Mistcaller Ocarina,              	Agility
+	[178708] = "7092775070010", -- Unbound Changeling,              	Intellect
+	-- Mists of Tirna Scithe Heroic (id: 1184).
+	-- Mists of Tirna Scithe Mythic Keystone (id: 1184).
+	-- Mists of Tirna Scithe Mythic (id: 1184).
+	-- The Necrotic Wake Normal (id: 1182).
+	[178742] = "0365002007700", -- Bottled Flayedwing Toxin,        	Agility
+	[178772] = "5010771040000", -- Satchel of Misbegotten Minions,  	Damage, Intellect
+	[178783] = "2082004030010", -- Siphoning Phylactery Shard,      	Healer
+	[178751] = "0000000700067", -- Spare Meat Hook,                 	Strength
+	-- The Necrotic Wake Heroic (id: 1182).
+	-- The Necrotic Wake Mythic Keystone (id: 1182).
+	-- The Necrotic Wake Mythic (id: 1182).
+	-- Siege of Boralus Heroic (id: 1023).
+	[159623] = "0365002007700", -- Dead-Eye Spyglass,               	Agility
+	[159622] = "5010771040000", -- Hadal's Nautilus,                	Damage, Intellect
+	-- Siege of Boralus Mythic Keystone (id: 1023).
+	-- Siege of Boralus Mythic (id: 1023).
+	-- Grim Batol Normal (id: 71).
+	[56463] = "2082004030010", -- Corrupted Egg Shell,             	Healer
+	[56462] = "7092775070010", -- Gale of Shadows,                 	Intellect
+	[56458] = "0000000700067", -- Mark of Khardros,                	Strength
+	[56440] = "0365002007700", -- Skardyn's Grace,                 	Agility
+	[56449] = "0201000100024", -- Throngus's Finger,               	Tank, Parry
+	-- Grim Batol Heroic (id: 71).
+	-- Grim Batol Mythic Keystone (id: 71).
+	-- Grim Batol Mythic (id: 71).
 }
