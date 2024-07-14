@@ -11,6 +11,7 @@ exclude_files = {
 files[".specs/**/*.spec.lua"].std = "+busted"
 -- Don't report everything for our test files
 files["__tests/**/*.lua"].ignore = {
+	"113/_", -- Accessing an undefined variable
    "211", --   Unused local variable.
    "241", -- 	Local variable is mutated but never accessed.
    "423", -- 	Shadowing a loop variable.
@@ -45,6 +46,8 @@ globals = {
    "RCLootCouncilML",
    "RCTokenTable",
    "RCTokenClasses",
+   "WoWAPI_FireUpdate",
+   "WoWAPI_FireEvent",
    
    -- Third Party Addons/Libs
    "BigWigs",

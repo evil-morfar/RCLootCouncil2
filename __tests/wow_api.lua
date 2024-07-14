@@ -502,10 +502,10 @@ function Ambiguate(name, method)
 	return name
 end
 
-function string.split(sep, s, pieces)
+function string.split(sep, p, pieces)
 	sep = sep or "%s"
 	local t = {}
-	for field, s in string.gmatch(s, "([^" .. sep .. "]*)(" .. sep .. "?)") do
+	for field, s in string.gmatch(p, "([^" .. sep .. "]*)(" .. sep .. "?)") do
 		table.insert(t, field)
 		if (pieces and #t >= pieces) or s == "" then
 			return unpack(t)
