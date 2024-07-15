@@ -225,4 +225,23 @@ Compat.list = {
 			addon.db.global.errors = {}
 		end,
 	},
+
+	{
+		-- Response generator removed long ago, but option was still present
+		name = "Reset CONTEXT_TOKEN buttons/response options",
+		version = "3.13.0",
+		func = function ()
+			for _, db in pairs(addon.db.profiles) do
+				if db.buttons then
+					db.buttons.CONTEXT_TOKEN = nil
+				end
+				if db.enabledButtons then
+					db.enabledButtons.CONTEXT_TOKEN = nil
+				end
+				if db.responses then
+					db.responses.CONTEXT_TOKEN = nil
+				end
+			end
+		end
+	}
 }
