@@ -142,6 +142,23 @@ function Utils:CheckOutdatedVersion(baseVersion, newVersion, basetVersion, newtV
 	end
 end
 
+--- Checks if everyone in our group has `version` or never installed.
+--- Assumes we are on the requested version or newer.
+---@param version string Version string, e.g. "3.0.1"
+function Utils:GroupHasVersion(version)
+	if not IsInGroup() then return true end
+	local i = 0
+	local tChk = time() - 86400 -- Must be newer than 1 day
+	for name, data in pairs(addon.db.global.verTestCandidates) do
+		if addon.candidatesInGroup[name] then
+			if not data[2] and addon:VersionCompare(data[1], version) and data[3] > tChk then
+				i = i + 1
+			end
+		end
+	end
+	return i == 0
+end
+
 function Utils:GuildRoster()
 	if _G.GuildRoster then
 		return _G.GuildRoster()
