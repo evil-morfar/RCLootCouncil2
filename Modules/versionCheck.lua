@@ -6,7 +6,7 @@
 	VERSION:
 		v		P - Version Check.
 		r 		P - Version Check Reply.
-		fr 	P - Full version checkc request.
+		fr 		P - Full version check request.
 		f 		T - Full version check reply. Only when open.
 ]]
 
@@ -65,11 +65,14 @@ function RCVersionCheck:OnEnable()
             addon.PREFIXES.VERSION,
             "f",
             function(data, sender)
+				-- Don't handle our own reply
+				if addon:UnitIsUnit(sender, "player") then return end
                 -- Check for recipient (x-realm support)
                 if data[6] then
                     local senderPlayer = Player:Get(data[6])
                     if senderPlayer ~= addon.player then return end
                 end
+				self:LogVersion(addon:UnitName(sender), data[3], data[4])
                 self:AddEntry(sender, data[1], data[2], data[3], data[4], data[5])
 				Player:Get(sender):UpdateFields{rank = data[2]}
             end
