@@ -11,7 +11,8 @@ local name = "RCFrame"
 --- @field Update fun(self:RCFrame)
 local Object = {}
 local db = {}
-local scrollHandler = function(f, delta) if IsControlKeyDown() then lwin.SetScale(f, delta > 0 and f:GetScale() + .03 or math.min(f:GetScale() - .03), .03) end end
+local scrollHandler = function(f, delta) if IsControlKeyDown() then lwin.SetScale(f,
+			delta > 0 and f:GetScale() + .03 or math.min(f:GetScale() - .03), .03) end end
 
 --- Creates a standard frame for addon with title, minimizing, positioning and scaling supported.
 --		Adds Minimize(), Maximize() and IsMinimized() functions on the frame, and registers it for hide on combat.
@@ -59,19 +60,10 @@ end
 function Object:CreateContentFrame(parent, name, height)
 	local c = CreateFrame("Frame", "RC_UI_" .. name .. "_Content", parent, BackdropTemplateMixin and "BackdropTemplate") -- frame that contains the actual content
 	c:SetFrameLevel(1)
-	c:SetBackdrop({
-		bgFile = AceGUIWidgetLSMlists.background[db.skins[db.currentSkin].background],
-		edgeFile = AceGUIWidgetLSMlists.border[db.skins[db.currentSkin].border],
-		tile = true,
-		tileSize = 255,
-		edgeSize = 16,
-		insets = {left = 2, right = 2, top = 2, bottom = 2},
-	})
+	self:SetupBackdrop(c, true, 256)
 	c:EnableMouse(true)
 	c:SetWidth(450)
 	c:SetHeight(height or 325)
-	c:SetBackdropColor(unpack(db.skins[db.currentSkin].bgColor))
-	c:SetBackdropBorderColor(unpack(db.skins[db.currentSkin].borderColor))
 	c:SetPoint("TOPLEFT")
 	c:SetScript("OnMouseDown", function(self) self:GetParent():StartMoving() end)
 	c:SetScript("OnMouseUp", function(self)
@@ -90,16 +82,7 @@ function Object:CreateContentFrame(parent, name, height)
 
 	c.Update = function()
 		db = addon:Getdb()
-		c:SetBackdrop({
-			bgFile = AceGUIWidgetLSMlists.background[db.UI[name].background],
-			edgeFile = AceGUIWidgetLSMlists.border[db.UI[name].border],
-			tile = false,
-			tileSize = 64,
-			edgeSize = 12,
-			insets = {left = 2, right = 2, top = 2, bottom = 2},
-		})
-		c:SetBackdropColor(unpack(db.UI[name].bgColor))
-		c:SetBackdropBorderColor(unpack(db.UI[name].borderColor))
+		self:SetupBackdrop(c, true, 256)
 	end
 
 	parent.content = c
@@ -108,22 +91,13 @@ end
 function Object:CreateTitleFrame(parent, name, title, width)
 	local tf = CreateFrame("Frame", "RC_UI_" .. name .. "_Title", parent, BackdropTemplateMixin and "BackdropTemplate")
 	tf:SetFrameLevel(2)
-	tf:SetBackdrop({
-		bgFile = AceGUIWidgetLSMlists.background[db.skins[db.currentSkin].background],
-		edgeFile = AceGUIWidgetLSMlists.border[db.skins[db.currentSkin].border],
-		tile = true,
-		tileSize = 16,
-		edgeSize = 12,
-		insets = {left = 2, right = 2, top = 2, bottom = 2},
-	})
-	tf:SetBackdropColor(unpack(db.skins[db.currentSkin].bgColor))
-	tf:SetBackdropBorderColor(unpack(db.skins[db.currentSkin].borderColor))
+	self:SetupBackdrop(tf, true, 128)
 	tf:SetHeight(22)
 	tf:EnableMouse()
 	tf:SetMovable(true)
 	tf:SetWidth(width or 250)
 	tf:SetPoint("CENTER", parent, "TOP", 0, -1)
-	tf:SetScript("OnMouseWheel", function(self, delta) parent:GetScript("OnMouseWheel")(parent,delta) end)
+	tf:SetScript("OnMouseWheel", function(self, delta) parent:GetScript("OnMouseWheel")(parent, delta) end)
 	tf:SetScript("OnMouseDown", function(self)
 		self:GetParent():StartMoving()
 		self:GetParent():SetToplevel(true)
@@ -147,7 +121,7 @@ function Object:CreateTitleFrame(parent, name, title, width)
 	end)
 	local tempScale = db.UI[name].scale
 	local hoverTimer = nil
-	local showHelpTooltip = function ()
+	local showHelpTooltip = function()
 		GameTooltip:SetOwner(UIParent, "ANCHOR_CURSOR_RIGHT")
 		GameTooltip:AddLine(title, 1, 1, 1)
 		GameTooltip:AddLine()
@@ -160,7 +134,7 @@ function Object:CreateTitleFrame(parent, name, title, width)
 		self:SetScale(self:GetScale() * 1.07)
 		hoverTimer = addon:ScheduleTimer(showHelpTooltip, 1.2)
 	end)
-	tf:SetScript("OnLeave", function (self)
+	tf:SetScript("OnLeave", function(self)
 		self:SetScale(tempScale)
 		addon:HideTooltip()
 		addon:CancelTimer(hoverTimer)
@@ -172,19 +146,32 @@ function Object:CreateTitleFrame(parent, name, title, width)
 	text:SetText(title)
 	tf.text = text
 
-	tf.Update = function(self)
-		self:SetBackdrop({
-			bgFile = AceGUIWidgetLSMlists.background[db.UI[name].background],
-			edgeFile = AceGUIWidgetLSMlists.border[db.UI[name].border],
-			tile = false,
-			tileSize = 64,
-			edgeSize = 12,
-			insets = {left = 2, right = 2, top = 2, bottom = 2},
-		})
-		self:SetBackdropColor(unpack(db.UI[name].bgColor))
-		self:SetBackdropBorderColor(unpack(db.UI[name].borderColor))
+	tf.Update = function()
+		self:SetupBackdrop(tf, true, 128)
 	end
 	parent.title = tf
+end
+
+--- Insets will be 0 if there's no border
+---@param frame Frame | BackdropTemplate
+---@param tile boolean Wheter or not the frame should be tiled
+---@param tileSize integer Defaults to 64
+function Object:SetupBackdrop(frame, tile, tileSize)
+	tileSize = tileSize or 64
+	local insets = 2
+	if db.UI[name].border == "None" or db.UI[name].border == "" then
+		insets = 0
+	end
+	frame:SetBackdrop({
+		bgFile = AceGUIWidgetLSMlists.background[db.UI[name].background],
+		edgeFile = AceGUIWidgetLSMlists.border[db.UI[name].border],
+		tile = tile,
+		tileSize = tileSize,
+		edgeSize = 12,
+		insets = { left = insets, right = insets, top = insets, bottom = insets, },
+	})
+	frame:SetBackdropColor(unpack(db.UI[name].bgColor))
+	frame:SetBackdropBorderColor(unpack(db.UI[name].borderColor))
 end
 
 Object.Minimize_Prototype = {
