@@ -60,6 +60,9 @@ function InterfaceOptions_AddCategory()
 	-- body...
 end
 
+function InCinematic()
+	return false
+end
 function ChatFrame_AddMessageEventFilter()
 	-- body...
 end
@@ -101,6 +104,10 @@ function UnitIsGroupLeader(unit)
 	return false
 end
 
+function UnitIsDeadOrGhost()
+	return false
+end
+
 function GetNumRaidMembers()
 	return 1
 end
@@ -122,6 +129,8 @@ function GetRaidRosterInfo(i) return "Unit"..i end
 function issecurevariable(obj, method)
 	return false
 end
+
+function PlaySound() end
 
 FACTION_HORDE = "Horde"
 FACTION_ALLIANCE = "Alliance"

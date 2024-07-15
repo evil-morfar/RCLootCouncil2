@@ -547,8 +547,13 @@ L["opt_deleteRaid_confirm"] = "Are you sure you want to delete all entries from 
 L["opt_deleteRaid_desc"] = "Delete all entries from a specific instance."
 L["opt_printCompletedTrade_Name"] = "Trade Messages"
 L["opt_printCompletedTrade_Desc"] = "Check to enable a message every time a candidate trades an awarded item to the winner."
+L.opt_profileSharing_export_desc = "Export your current profile."
 L.opt_profileSharing_fail_noProfileData =
 "Data is not profile data. Ensure imported data originates from profile export."
+L.opt_profileSharing_import_desc =
+"Import a new RCLootCouncil profile. Imports are non-destructive, unless you're overwriting an existing profile."
+L.opt_profileSharing_profileExistsWarning = "A profile named \"%s\" already exists - do you want to overwrite it?"
+L.opt_sharingProfile_success = "Succesfully imported profile: \"%s\""
 L["opt_rejectTrade_Name"] = "Allow Keeping"
 L["opt_rejectTrade_Desc"] = "Check to enable candidates to choose whether they want to 'give' the item to the council or not. If unchecked, all tradeable PL items are added automatically."
 L["opt_skipSessionFrame_name"] = "Skip Session Frame"

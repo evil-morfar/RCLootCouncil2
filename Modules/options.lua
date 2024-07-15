@@ -778,7 +778,6 @@ function addon:OptionsTable()
 										type = "select",
 										width = "double",
 										values = function()
-											DevTool:AddData(self.db.profile, "db")
 											local t = {}
 											for k,v in pairs(self.db.profile.skins) do
 												t[k] = v.name
@@ -2086,6 +2085,7 @@ function addon:OptionsTable()
 	MergeTable(options.args.settings.args.profiles.args, {
 		export = {
 			name = L["Export"],
+			desc = L.opt_profileSharing_export_desc,
 			type = "execute",
 			order = 46,
 			width = "half",
@@ -2103,6 +2103,7 @@ function addon:OptionsTable()
 		},
 		import = {
 			name = L["Import"],
+			desc = L.opt_profileSharing_import_desc,
 			type = "execute",
 			order = 45,
 			width = "half",
@@ -2125,18 +2126,20 @@ function addon:OptionsTable()
 end
 
 function addon:ApplyProfile(name, data)
-	if DevTool then DevTool:AddData(data, "Import data") end
 	self.db:SetProfile(name)
 	-- We want any value not mentioned to reset, so nil them out and have defaults pick them up later
 	for k in pairs(self.db.profile) do
-		self.db.profile[k] = data[k]
+		-- except for these specifc ones:
+		if k ~= "UI" and k ~= "itemStorage" and k ~= "baggedItems" then
+			self.db.profile[k] = data[k]
+		end
 	end
 	-- Yes, :SetProfile would also have triggered callbacks calling this, but it's
 	-- now, after the profile is changed, that we need to merge our changes, and then
 	-- ensure we still have defaults available, which UpdateDB() handles.
 	self:UpdateDB()
-	if DevTool then DevTool:AddData(self.db.profile, "self.db.profile") end
 	LibStub("AceConfigRegistry-3.0"):NotifyChange("RCLootCouncil")
+	self:Print(format(L.opt_sharingProfile_success, name))
 end
 
 --- String format: PROFILE_EXPORT_IDENTIFIER\nname\nencoded
@@ -2145,14 +2148,14 @@ end
 function addon:ImportProfile(data)
 	local isProfileData = data:sub(1, self.PROFILE_EXPORT_IDENTIFIER:len()) == self.PROFILE_EXPORT_IDENTIFIER
 	if not isProfileData then
-		addon.Log:D("Non profile data on import", data:sub(1, 50))
-		addon:Print(L.opt_profileSharing_fail_noProfileData)
+		self.Log:D("Non profile data on import", data:sub(1, 50))
+		self:Print(L.opt_profileSharing_fail_noProfileData)
 		return
 	end
 	local name, encoded = data:match(".-\n(.-)\n(.+)")
 	if not (name and encoded) then
-		addon.Log:E("Error importing profile:", name, encoded)
-		addon:Print(L.import_not_supported)
+		self.Log:E("Error importing profile:", name, encoded)
+		self:Print(L.import_not_supported)
 		return
 	end
 	local ld = LibStub("LibDeflate")
@@ -2160,17 +2163,23 @@ function addon:ImportProfile(data)
 	local decompressed = ld:DecompressDeflate(decoded or "")
 	local test, profile = LibStub("AceSerializer-3.0"):Deserialize(decompressed or "")
 	if not test then
-		addon.Log:E("ImportProfile deserialization failed with:", decompressed)
-		addon:Print(L.import_not_supported)
+		self.Log:E("ImportProfile deserialization failed with:", decompressed)
+		self:Print(L.import_not_supported)
 		return
 	end
-	self:ApplyProfile(name, profile)
+	if self.db.profiles[name] then
+		LibStub("LibDialog-1.1"):Spawn("RCLOOTCOUNCIL_OVERWRITE_PROFILE", {
+			name = name,
+			profile = profile,
+		})
+	else
+		self:ApplyProfile(name, profile)
+	end
 end
 
 function addon:GetProfileForExport()
 	local ld = LibStub("LibDeflate")
 	local profile = self.Utils:GetTableDifference(self.db.defaults.profile, self.db.profile)
-	if DevTool then DevTool:AddData(profile, "Export data") end
 	local tt = TempTable:Acquire(profile)
 	local db = tt[1]
 	db.UI = nil -- Remove UI as it's not helpful for other players
@@ -2185,7 +2194,7 @@ function addon:GetProfileForExport()
 		encoded
 	}
 	local res = table.concat(t, "\n")
-	addon.Log:D("Profile export size:", #res / 1000, "kb")
+	self.Log:D("Profile export size:", #res / 1000, "kb")
 	return res
 end
 

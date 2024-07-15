@@ -81,7 +81,6 @@ function Object:CreateContentFrame(parent, name, height)
 	end)
 
 	c.Update = function()
-		db = addon:Getdb()
 		self:SetupBackdrop(c, true, 256)
 	end
 
@@ -157,21 +156,23 @@ end
 ---@param tile boolean Wheter or not the frame should be tiled
 ---@param tileSize integer Defaults to 64
 function Object:SetupBackdrop(frame, tile, tileSize)
+	db = addon:Getdb()
 	tileSize = tileSize or 64
 	local insets = 2
 	if db.UI[name].border == "None" or db.UI[name].border == "" then
 		insets = 0
 	end
+	local skin = db.skins[db.currentSkin]
 	frame:SetBackdrop({
-		bgFile = AceGUIWidgetLSMlists.background[db.UI[name].background],
-		edgeFile = AceGUIWidgetLSMlists.border[db.UI[name].border],
+		bgFile = AceGUIWidgetLSMlists.background[skin.background],
+		edgeFile = AceGUIWidgetLSMlists.border[skin.border],
 		tile = tile,
 		tileSize = tileSize,
 		edgeSize = 12,
 		insets = { left = insets, right = insets, top = insets, bottom = insets, },
 	})
-	frame:SetBackdropColor(unpack(db.UI[name].bgColor))
-	frame:SetBackdropBorderColor(unpack(db.UI[name].borderColor))
+	frame:SetBackdropColor(unpack(skin.bgColor))
+	frame:SetBackdropBorderColor(unpack(skin.borderColor))
 end
 
 Object.Minimize_Prototype = {
