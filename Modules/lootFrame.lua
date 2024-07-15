@@ -18,7 +18,7 @@ local MIN_BUTTON_WIDTH = 40
 local sessionsWaitingRollResultQueue = {}
 local ROLL_TIMEOUT = 1.5
 local ROLL_SHOW_RESULT_TIME = 1
-local TIMEOUT_FLASH_THRESHOLD = 50
+local TIMEOUT_FLASH_THRESHOLD = 5
 
 -- Lua
 local type, pairs, tinsert, ipairs, string, GetTime, math, ceil, tDeleteItem, next, error, tostring, setmetatable, tremove, format, tonumber =
