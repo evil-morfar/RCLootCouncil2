@@ -11,8 +11,12 @@ local name = "RCFrame"
 --- @field Update fun(self:RCFrame)
 local Object = {}
 local db = {}
-local scrollHandler = function(f, delta) if IsControlKeyDown() then lwin.SetScale(f,
-			delta > 0 and f:GetScale() + .03 or math.min(f:GetScale() - .03), .03) end end
+local scrollHandler = function(f, delta)
+	if IsControlKeyDown() then
+		lwin.SetScale(f,
+			delta > 0 and f:GetScale() + .03 or math.min(f:GetScale() - .03), .03)
+	end
+end
 
 --- Creates a standard frame for addon with title, minimizing, positioning and scaling supported.
 --		Adds Minimize(), Maximize() and IsMinimized() functions on the frame, and registers it for hide on combat.
@@ -47,6 +51,7 @@ function Object:New(parent, name, title, width, height)
 
 	f.Update = function(self)
 		addon.Log:D("UpdateFrame", self:GetName())
+		db = addon:Getdb()
 		self.content:Update()
 		self.title:Update()
 	end
@@ -60,7 +65,7 @@ end
 function Object:CreateContentFrame(parent, name, height)
 	local c = CreateFrame("Frame", "RC_UI_" .. name .. "_Content", parent, BackdropTemplateMixin and "BackdropTemplate") -- frame that contains the actual content
 	c:SetFrameLevel(1)
-	self:SetupBackdrop(c, true, 256)
+	self:SetupBackdrop(c, db.skins[db.currentSkin], true, 256)
 	c:EnableMouse(true)
 	c:SetWidth(450)
 	c:SetHeight(height or 325)
@@ -81,7 +86,7 @@ function Object:CreateContentFrame(parent, name, height)
 	end)
 
 	c.Update = function()
-		self:SetupBackdrop(c, true, 256)
+		self:SetupBackdrop(c, db.UI[name], true, 256)
 	end
 
 	parent.content = c
@@ -90,7 +95,7 @@ end
 function Object:CreateTitleFrame(parent, name, title, width)
 	local tf = CreateFrame("Frame", "RC_UI_" .. name .. "_Title", parent, BackdropTemplateMixin and "BackdropTemplate")
 	tf:SetFrameLevel(2)
-	self:SetupBackdrop(tf, true, 128)
+	self:SetupBackdrop(tf, db.skins[db.currentSkin], true, 128)
 	tf:SetHeight(22)
 	tf:EnableMouse()
 	tf:SetMovable(true)
@@ -146,33 +151,32 @@ function Object:CreateTitleFrame(parent, name, title, width)
 	tf.text = text
 
 	tf.Update = function()
-		self:SetupBackdrop(tf, true, 128)
+		self:SetupBackdrop(tf, db.UI[name], true, 128)
 	end
 	parent.title = tf
 end
 
 --- Insets will be 0 if there's no border
 ---@param frame Frame | BackdropTemplate
+---@param skinSelector table Table containing skin info. Should either be db.skins[db.currentSkin] or db.UI[name].
 ---@param tile boolean Wheter or not the frame should be tiled
 ---@param tileSize integer Defaults to 64
-function Object:SetupBackdrop(frame, tile, tileSize)
-	db = addon:Getdb()
+function Object:SetupBackdrop(frame, skinSelector, tile, tileSize)
 	tileSize = tileSize or 64
 	local insets = 2
-	if db.UI[name].border == "None" or db.UI[name].border == "" then
+	if skinSelector.border == "None" or skinSelector.border == "" then
 		insets = 0
 	end
-	local skin = db.skins[db.currentSkin]
 	frame:SetBackdrop({
-		bgFile = AceGUIWidgetLSMlists.background[skin.background],
-		edgeFile = AceGUIWidgetLSMlists.border[skin.border],
+		bgFile = AceGUIWidgetLSMlists.background[skinSelector.background],
+		edgeFile = AceGUIWidgetLSMlists.border[skinSelector.border],
 		tile = tile,
 		tileSize = tileSize,
 		edgeSize = 12,
 		insets = { left = insets, right = insets, top = insets, bottom = insets, },
 	})
-	frame:SetBackdropColor(unpack(skin.bgColor))
-	frame:SetBackdropBorderColor(unpack(skin.borderColor))
+	frame:SetBackdropColor(unpack(skinSelector.bgColor))
+	frame:SetBackdropBorderColor(unpack(skinSelector.borderColor))
 end
 
 Object.Minimize_Prototype = {
