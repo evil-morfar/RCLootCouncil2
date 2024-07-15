@@ -18,6 +18,7 @@ local MIN_BUTTON_WIDTH = 40
 local sessionsWaitingRollResultQueue = {}
 local ROLL_TIMEOUT = 1.5
 local ROLL_SHOW_RESULT_TIME = 1
+local TIMEOUT_FLASH_THRESHOLD = 50
 
 -- Lua
 local type, pairs, tinsert, ipairs, string, GetTime, math, ceil, tDeleteItem, next, error, tostring, setmetatable, tremove, format, tonumber =
@@ -233,10 +234,14 @@ function LootFrame:GetFrame()
 end
 
 do
+	local timeoutBarXOffset = 3
+	local timeoutBarYOffset = 2
+
 	---@class RCLootFrameEntry
 	---@field type "normal" | "roll"
 	local entryPrototype = {
 		type = "normal",
+		position = 0,
 
 		---@param entry RCLootFrameEntry
 		---@param item RCItemEntry
@@ -293,11 +298,37 @@ do
 			else
 				entry.frame:SetBackdrop(nil) -- Remove it again
 			end
+
+			if entry.blinkAnim:IsPlaying() then
+				entry.blinkAnim:Stop()
+			end
+
 			entry:UpdateButtons()
 			entry:Show()
 		end,
 		Show = function(entry) entry.frame:Show() end,
 		Hide = function(entry) entry.frame:Hide() end,
+
+		---@param entry RCLootFrameEntry
+		---@param numEntries integer
+		UpdatePosition = function (entry, numEntries)
+			local point, relativeTo, relativePoint, x = entry.timeoutBar:GetPoint()
+			if entry.position == numEntries and entry.position ~= 1 then
+				-- Last entry's timeout frame needs to move up by one, except when it's the first
+				entry.timeoutBar:SetPoint(point, relativeTo, relativePoint, x, 1)
+				entry.timeoutBar:SetSize(entry.frame:GetWidth() - timeoutBarXOffset * 2, ENTRY_HEIGHT - timeoutBarYOffset)
+
+			elseif entry.position ~= 1 then
+				-- Other entry's timeout frame needs to be one heigher
+				entry.timeoutBar:SetSize(entry.frame:GetWidth() - timeoutBarXOffset * 2, ENTRY_HEIGHT - timeoutBarYOffset + 1)
+				entry.timeoutBar:SetPoint("BOTTOMLEFT", entry.frame, "BOTTOMLEFT", timeoutBarXOffset, 0)
+
+			else
+				-- Restore original position/size
+				entry.timeoutBar:SetSize(entry.frame:GetWidth() - timeoutBarXOffset * 2, ENTRY_HEIGHT - timeoutBarYOffset)
+				entry.timeoutBar:SetPoint("BOTTOMLEFT", entry.frame, "BOTTOMLEFT", timeoutBarXOffset, 0)
+			end
+		end,
 
 		--- Constructor for the prototype.
 		--- Expects caller to setup buttons and position.
@@ -451,19 +482,26 @@ do
 
 			------------ Timeout -------------
 			entry.timeoutBar = CreateFrame("StatusBar", nil, entry.frame, "TextStatusBar")
-			entry.timeoutBar:SetSize(entry.frame:GetWidth() - 10, ENTRY_HEIGHT)
-			entry.timeoutBar:SetPoint("BOTTOMLEFT", entry.frame, "BOTTOMLEFT", 5)
+			entry.timeoutBar:SetSize(entry.frame:GetWidth() - timeoutBarXOffset * 2, ENTRY_HEIGHT - timeoutBarYOffset)
+			entry.timeoutBar:SetPoint("BOTTOMLEFT", entry.frame, "BOTTOMLEFT", timeoutBarXOffset, 0)
 			entry.timeoutBar:SetFrameLevel(1)
 			entry.timeoutBar:SetStatusBarTexture("Interface\\TargetingFrame\\UI-StatusBar")
-			entry.timeoutBar:SetAlpha(.3)
-			entry.timeoutBar:GetStatusBarTexture():SetBlendMode("BLEND")
 			entry.timeoutBar:SetStatusBarColor(0.5, 0.5, 0.5, 1) -- grey
+			-- entry.timeoutBar:SetColorFill(0.5, 0.5, 0.5, 1) -- grey
+			entry.timeoutBar:SetAlpha(.3)
+			entry.timeoutBar:GetStatusBarTexture():SetBlendMode("ADD")
 			entry.timeoutBar:SetMinMaxValues(0, addon.mldb.timeout or addon:Getdb().timeout or 30)
 			entry.timeoutBar:SetScript("OnUpdate", function(this, elapsed)
 				if entry.item.timeLeft <= 0 then --Timeout!
 					entry.timeoutBarText:SetText(L["Timeout"])
 					this:SetValue(0)
+					entry.blinkAnim:Stop()
 					return LootFrame:OnRoll(entry, "TIMEOUT")
+				end
+				if entry.item.timeLeft <= TIMEOUT_FLASH_THRESHOLD and not entry.blinkAnim:IsPlaying() then
+					if addon.db.profile.timeoutFlash then
+						entry.blinkAnim:Play()
+					end
 				end
 				entry.item.timeLeft = entry.item.timeLeft - elapsed
 				entry.timeoutBarText:SetText(_G.CLOSES_IN .. ": " .. ceil(entry.item.timeLeft)) -- _G.CLOSES_IN == "Time Left" for English
@@ -473,7 +511,7 @@ do
 			-- We want to update the width of the timeout bar everytime the width of the whole frame changes:
 			local main_width = entry.frame.SetWidth
 			function entry:SetWidth(width)
-				self.timeoutBar:SetWidth(width - 10) -- 5 indent on each side
+				self.timeoutBar:SetWidth(width - (timeoutBarXOffset * 2)) -- 5 indent on each side
 				main_width(self.frame, width)
 				self.width = width
 			end
@@ -482,6 +520,21 @@ do
 			entry.timeoutBarText:SetPoint("TOPRIGHT", entry.frame, "TOPRIGHT", -10, -10)
 			entry.timeoutBarText:SetTextColor(.8, .8, .8, 1)
 			entry.timeoutBarText:SetText("Timeout")
+
+			-- Timeout animation
+			local animBackground = entry.frame:CreateTexture()
+			animBackground:SetAllPoints(entry.timeoutBar)
+			animBackground:SetColorTexture(.5, .5, .5, 1)
+			animBackground:SetBlendMode("ADD")
+			animBackground:SetAlpha(0)
+			entry.animBackground = animBackground
+			local anim = animBackground:CreateAnimationGroup()
+			anim:SetLooping("BOUNCE")
+			local a1 = anim:CreateAnimation("Alpha")
+			a1:SetFromAlpha(0)
+			a1:SetToAlpha(.3)
+			a1:SetDuration(.3)
+			entry.blinkAnim = anim
 		end,
 	}
 
@@ -501,8 +554,7 @@ do
 		entry:Hide()
 		if not self.trashPool[entry.type] then self.trashPool[entry.type] = {} end
 		self.trashPool[entry.type][entry] = true
-		tDeleteItem(self.entries, entry) -- To make tremove(self.entries, entry.position) works, :Update() must be run after every trash.
-										 -- entry.position is only used for debugging purpose. Dangerous to rely on a changing index for deletion.
+		tDeleteItem(self.entries, entry)
 		self.entries[entry.item] = nil
 		self.numEntries = self.numEntries - 1
 	end
@@ -531,6 +583,7 @@ do
 				entry.frame:SetPoint("TOPLEFT", self.entries[i-1].frame, "BOTTOMLEFT")
 			end
 			entry.position = i
+			entry:UpdatePosition(self.numEntries)
 		end
 	--	addon.Log:D("EntryManager:Update(), width = ", max)
 		LootFrame.frame:SetWidth(max)

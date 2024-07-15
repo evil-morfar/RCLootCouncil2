@@ -473,8 +473,14 @@ function addon:OptionsTable()
 										desc = L.opt_closeWithEscape_desc,
 										type = "toggle"
 									},
-									chatFrameName = {
+									timeoutFlash = {
 										order = 7,
+										name = L.opt_timeoutFlash_name,
+										desc = L.opt_timeoutFlash_desc,
+										type = "toggle"
+									},
+									chatFrameName = {
+										order = 8,
 										name = L["opt_chatFrameName_name"],
 										desc = L["opt_chatFrameName_desc"],
 										type = "select",
