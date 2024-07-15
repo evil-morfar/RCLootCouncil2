@@ -26,6 +26,10 @@ Loot Frame will now always "shrink" upwards when rolling on items, no matter whe
 
 Integrated timeout bar with background and refreshed layout.
 
+### Random rolls
+
+Has been optimized from 1 message per session to approximately 1 message per 10 sessions. You can once again safely use the `"Add Rolls"` option.
+
 ### Profile sharing
 
 It's now possible to export and import profile settings. This new feature is located at the "Profiles" tab in the options menu (`/rc config`).

@@ -318,7 +318,7 @@ function EJ_GetNumTiers() return 11 end
 function EJ_SelectInstance(journalInstanceID) end
 function EJ_ResetLootFilter() end
 function EJ_SetDifficulty(difficultyID) end
-function EJ_GetNumLoot() return 1 end
+function EJ_GetNumLoot() return 10 end
 
 _G.C_EncounterJournal = {
 	GetLootInfoByIndex = function(index)

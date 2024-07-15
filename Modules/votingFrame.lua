@@ -14,7 +14,8 @@
 		offline_timer 		T - ML sends offline timer.
 		response 			T - Candidate sends a response.
 		rolls 				T - **DEPRECATED** - replaced with 'rroll'.
-		rrolls 				T - ML sends random rolls info.
+		rrolls 				T - ML sends random rolls info for a single session.
+		arrolls				T - ML sends random rolls info for multiple sessions.
 		roll 				T - Candidate sends roll info (interactive random roll).
 		reconnectData 		T - ML sends reconnectData.
 		n_t					T - Candidate received "non-tradeable" loot.
@@ -171,7 +172,14 @@ function RCVotingFrame:RegisterComms ()
 			if addon:IsMasterLooter(sender) then
 				self:OnRRollsReceived(unpack(data))
 			else
-				addon.Log:W("Non-ML", sender, "sent rolls!")
+				addon.Log:W("Non-ML", sender, "sent rrolls!")
+			end
+		end,
+		arrolls = function (data, sender)
+			if addon:IsMasterLooter(sender) then
+				self:OnARRollsReceived(unpack(data))
+			else
+				addon.Log:W("Non-ML", sender, "sent arrolls!")
 			end
 		end,
 		roll = function (data, sender)
@@ -325,6 +333,7 @@ function RCVotingFrame:SetupSession(session, t)
 	t.added = true -- This entry has been initiated
 	t.haveVoted = false -- Have we voted for ANY candidate in this session?
 	t.candidates = {}
+	t.hasRolls = false -- Has random rolls been added to this session?
 	for name in addon:GroupIterator() do
 		local player = Player:Get(name)
 		-- REVIEW Seems like we occasionally get wrong/invalid names here.
@@ -421,9 +430,32 @@ end
 
 function RCVotingFrame:DoAllRandomRolls()
 	local sessionsDone = {}
+	-- From v3.13 we send a single message with all rolls
+	if addon.Utils:GroupHasVersion("3.13.0") then
+		local temp = TempTable:Acquire()
+		for ses, t in ipairs(lootTable) do
+			if not sessionsDone[ses] and not t.hasRolls then -- Don't use auto rolls on session that requesting rolls from raid members.
+				local rolls = self:GenerateNoRepeatRollTable(addon:GetNumGroupMembers())
+				for k, v in ipairs(lootTable) do
+					if addon:ItemIsItem(t.link, v.link) then
+						sessionsDone[k] = true
+						tinsert(temp, k)
+						tinsert(temp, ",")
+						tinsert(temp, rolls)
+						tinsert(temp, "|")
+					end
+				end
+			end
+		end
+		local result = table.concat(temp, "")
+		TempTable:Release(temp)
+		addon:Send("group", "arrolls", result)
+		return
+	end
 
+	-- Old way of sending 1 message per session.
 	for ses, t in ipairs(lootTable) do
-		if not sessionsDone[ses] and not t.isRoll then -- Don't use auto rolls on session that requesting rolls from raid members.
+		if not sessionsDone[ses] and not t.hasRolls then -- Don't use auto rolls on session that requesting rolls from raid members.
 			local rolls = self:GenerateNoRepeatRollTable(addon:GetNumGroupMembers())
 			for k, v in ipairs(lootTable) do
 				if addon:ItemIsItem(t.link, v.link) then
@@ -523,7 +555,7 @@ function RCVotingFrame:OnOfflineTimerReceived ()
 	for i = 1, #lootTable do
 		for name in pairs(lootTable[i].candidates) do
 			if self:GetCandidateData(i, name, "response") == "ANNOUNCED" then
-				addon.Log:D("No response from:", name)
+				addon.Log:D("No response from:", i, name)
 				self:SetCandidateData(i, name, "response", "NOTHING")
 			end
 		end
@@ -551,6 +583,9 @@ local function reversedSort(a,b) return a > b end
 ---@param session integer The Session the rolls belongs to.
 ---@param rolls string Comma seperated list of rolls.
 function RCVotingFrame:OnRRollsReceived(session, rolls)
+	if not lootTable[session] then
+		return addon.Log:E("Trying to add rolls to non-existent session:", session)
+	end
 	-- Create and sort candidates
 	local candidates = TempTable:Acquire()
 	for name in pairs(lootTable[session].candidates) do
@@ -563,6 +598,36 @@ function RCVotingFrame:OnRRollsReceived(session, rolls)
 	for roll in rolls:gmatch("%d+") do
 		local candidate = tremove(candidates)
 		self:SetCandidateData(session, candidate, "roll", tonumber(roll))
+	end
+	lootTable[session].hasRolls = true
+	self:Update()
+end
+
+---@param rolls string Rolls in the following format: `"session,roll...|session..."`
+--- e.g.: `"1,29,3|3,59,57|"` for session 1 & 3 with two rolls.
+function RCVotingFrame:OnARRollsReceived(rolls)
+	-- Create and sort candidates
+	local candidates = TempTable:Acquire()
+	for name in pairs(lootTable[session].candidates) do
+		tinsert(candidates, name)
+	end
+	table.sort(candidates) -- No reverse sort here, as we need them multiple times.
+	local data = { string.split("|", rolls), }
+	for _,sessionRolls in ipairs (data) do
+		if sessionRolls == "" then break end
+		local _, sEnd, session = string.find(sessionRolls, "(%d+),")
+		session = tonumber(session)
+		sessionRolls = string.sub(sessionRolls, sEnd + 1)
+		if lootTable[session] then
+			local count = 1
+			for roll in sessionRolls:gmatch("%d+") do
+				self:SetCandidateData(session, candidates[count], "roll", tonumber(roll))
+				count = count + 1
+			end
+			lootTable[session].hasRolls = true
+		else
+			addon.Log:E("Trying to add rolls to non-existent session:", session)
+		end
 	end
 	self:Update()
 end
