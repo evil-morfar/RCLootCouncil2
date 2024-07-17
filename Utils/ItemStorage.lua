@@ -57,14 +57,14 @@ local item_class = {
 	--- Stores Item in persistant db.
 	--- @param self Item
 	Store = function(self)
-		tinsert(db.itemStorage, self)
+		tinsert(addon.db.profile.itemStorage, self)
 		return self
 	end,
 
 	--- Removes Item from persistant db.
 	--- @param self Item
 	Unstore = function(self)
-		tDeleteItem(db.itemStorage, self)
+		tDeleteItem(addon.db.profile.itemStorage, self)
 		return self
 	end,
 
@@ -167,9 +167,9 @@ function Storage:RemoveItem(itemOrItemLink)
 		return error("Unknown item")
 	end
 	-- Find and delete the item
-	local key1 = private:FindItemInTable(db.itemStorage, itemOrItemLink)
+	local key1 = private:FindItemInTable(addon.db.profile.itemStorage, itemOrItemLink)
 	local key2 = private:FindItemInTable(StoredItems, itemOrItemLink)
-	if key1 then addon.Log:D("Removed1:", tremove(db.itemStorage, key1).link) end
+	if key1 then addon.Log:D("Removed1:", tremove(addon.db.profile.itemStorage, key1).link) end
 	if key2 then addon.Log:D("Removed2:", tremove(StoredItems, key2)) end
 
 	-- key1 might not be there if we haven't stored it
@@ -182,7 +182,7 @@ function Storage:RemoveItem(itemOrItemLink)
 end
 
 function Storage:RemoveAllItems()
-	db.itemStorage = {}
+	addon.db.profile.itemStorage = {}
 	StoredItems = {}
 end
 
