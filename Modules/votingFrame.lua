@@ -14,6 +14,7 @@
 		bagged 				T - ML has bagged an item (award later).
 		offline_timer 		T - ML sends offline timer.
 		response 			T - Candidate sends a response.
+		reset_rolls			T - ML resets rolls.
 		rolls 				T - **DEPRECATED** - replaced with 'rroll'.
 		rrolls 				T - ML sends random rolls info for a single session.
 		arrolls				T - ML sends random rolls info for multiple sessions.
@@ -165,6 +166,13 @@ function RCVotingFrame:RegisterComms ()
 		end,
 		response = function (data, sender)
 			self:OnResponseReceived(sender, unpack(data))
+		end,
+		reset_rolls = function (data, sender)
+			if addon:IsMasterLooter(sender) then
+				self:OnResetRollsReceived(unpack(data))
+			else
+				addon.Log:W("Non-ML", sender, "sent reset_rolls!")
+			end
 		end,
 		-- Deprecated, replaced with 'rrolls'. Kept for backwards compatibility.
 		rolls = function (data, sender)
@@ -584,6 +592,17 @@ end
 function RCVotingFrame:OnResponseReceived (name, session, data)
 	for k,v in pairs(data) do
 		self:SetCandidateData(session, name, k, v)
+	end
+	self:Update()
+end
+
+---@param data integer[] Array of session to reset all rolls on.
+function RCVotingFrame:OnResetRollsReceived(data)
+	for _,session in ipairs(data) do
+		lootTable[session].hasRolls = false
+		for name in pairs(lootTable[session].candidates) do
+			self:SetCandidateData(session, name, "roll", nil)
+		end
 	end
 	self:Update()
 end
@@ -1720,6 +1739,7 @@ function RCVotingFrame:ReannounceOrRequestRoll(namePred, sesPred, isRoll, noAuto
 	addon.Log:D("ReannounceOrRequestRoll", namePred, sesPred, isRoll, noAutopass, announceInChat)
 	local rerollTable = TempTable:Acquire()
 	local changeResponseData = TempTable:Acquire()
+	local rollsData = TempTable:Acquire()
 	local councilInGroup = Council:GetCouncilInGroup()
 	local hasVersion3_13_0 = addon.Utils:PlayersHasVersion(councilInGroup, "3.13.0")
 	TempTable:Release(councilInGroup)
@@ -1744,7 +1764,10 @@ function RCVotingFrame:ReannounceOrRequestRoll(namePred, sesPred, isRoll, noAuto
 				end
 			end
 			if isRoll then
-				addon:Send("group", "rolls", k, rolls)
+				if not hasVersion3_13_0 then
+					addon:Send("group", "rolls", k, rolls)
+				end
+				tinsert(rollsData, k)
 			end
 		end
 	end
@@ -1756,8 +1779,11 @@ function RCVotingFrame:ReannounceOrRequestRoll(namePred, sesPred, isRoll, noAuto
 		end
 		addon:Send("group", "ResponseWait", changeResponseDataForTransmit)
 		TempTable:Release(changeResponseDataForTransmit)
+	elseif isRoll and hasVersion3_13_0 then
+		addon:Send("group", "reset_rolls", rollsData)
 	end
 	TempTable:Release(changeResponseData)
+	TempTable:Release(rollsData)
 
 	if #rerollTable > 0 then
 		if announceInChat then
