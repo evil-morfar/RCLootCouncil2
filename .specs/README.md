@@ -3,6 +3,7 @@
 Tests are made using [busted](https://github.com/Olivine-Labs/busted).
 Each test can be run individually from it's file (assuming path is pointing at the project root), or globally.
 
+Tests are run automatically on the repo, and should be run before commits aswell (see [below](#git-pre-commit) for instructions).
 
 ## Structure
 
@@ -14,26 +15,35 @@ I hate the standard busted `*_spec.lua` convention and have opted for `*.spec.lu
 
 ## Running tests
 
-When using the tools below, running the tests is as easy as running the `atom-build` target `Busted`.
+When using the tools below, running the tests is as easy as running any of the  `Busted` tasks.
 Alternatively one can invoke `busted` in the root folder, assuming `busted.bat` is in the current PATH.
-
-For VS Code I've setup a debugger for running a single file with busted ("Run Busted") as well as several tasks for running both single and all files.
 
 ## Tools
 
 Below is my collection of useful tools for the testing environment and development.
 
-### Atom
-
-*Not up-to-date as I switched to VS Code awhile back.*
-
-- [linter](https://github.com/steelbrain/linter) - general linting.
-- [linter-lua](https://github.com/AtomLinter/linter-lua) - lua linting.
-- [atom-build](https://github.com/noseglid/atom-build) - used for building the project (configured with `.scrips/deploy.sh`).
-- [atom-build-busted](https://github.com/xpol/atom-build-busted) - parses `.busted` config for `atom-build`.
-- [atom-script](https://github.com/rgbkrk/atom-script) - for running lua scripts within atom.
-- [language-lua](https://github.com/FireZenk/language-lua) - lua language support and snippets.
-
 ### VS Code
 
 See [extensions.json](../.vscode/extensions.json)
+
+## Git pre-commit
+
+To automatically run the tests before committing, simply add this following to `.git/hooks/pre-commit`:
+
+``` sh
+#!/bin/sh
+
+branch="$(git rev-parse --abbrev-ref HEAD)"
+
+if [ "$branch" = "master" ]; then
+  echo "You can't commit directly to master branch"
+  exit 1
+else
+  echo "Running tests"
+  # Add wow_api's to path to complete tests
+  LUA_PATH=".\\__tests\\?.lua;$LUA_PATH"
+  exec busted.bat -o=TAP --no-coverage
+fi
+```
+
+That's a file named `pre-commit`.
