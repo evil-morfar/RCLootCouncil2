@@ -617,6 +617,7 @@ function RCVotingFrame:OnRRollsReceived(session, rolls)
 		local candidate = tremove(candidates)
 		self:SetCandidateData(session, candidate, "roll", tonumber(roll))
 	end
+	TempTable:Release(candidates)
 	lootTable[session].hasRolls = true
 	self:Update()
 end
@@ -647,6 +648,7 @@ function RCVotingFrame:OnARRollsReceived(rolls)
 			addon.Log:E("Trying to add rolls to non-existent session:", session)
 		end
 	end
+	TempTable:Release(candidates)
 	self:Update()
 end
 
