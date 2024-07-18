@@ -30,13 +30,6 @@ function CreateFrame(kind, name, parent)
 	return frame
 end
 
--- Extra hack as I didn't want to implement logic for all the UI functions
-MSA_DropDownList1Button1NormalText = {
-	GetFont = function(args)
-		-- body...
-	end,
-}
-
 -- It seems Wow doesn't follow the 5.1 spec for xpcall (no additional arguments),
 -- but instead the one from 5.2 where that's allowed.
 -- Try to recreate that here.
@@ -387,6 +380,7 @@ if not wipe then
 		for k in pairs(tbl) do
 			tbl[k] = nil
 		end
+		return tbl
 	end
 end
 
@@ -1039,6 +1033,8 @@ function _G.FauxScrollFrame_OnVerticalScroll() end
 function GetClassColoredTextForUnit(unit, text) return text end
 function CreateAtlasMarkup(text) return "" end
 ceil = math.ceil
+max = math.max
+mod = math.fmod
 C_Container = {
 	GetContainerItemInfo = function(c, s)
 		return {
@@ -1061,6 +1057,7 @@ C_PlayerInfo = {
 }
 
 UISpecialFrames = {}
+_G.UIParent = CreateFrame("Frame", "UIParent")
 _G.GameTooltip = CreateFrame("GameTooltip", "GameTooltip", UIParent)
 ------------------------------------------
 -- Constants from various places

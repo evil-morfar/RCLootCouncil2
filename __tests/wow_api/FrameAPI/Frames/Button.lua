@@ -83,6 +83,7 @@ Button = {
 		})
 		-- Button also has a text child, which is also put in the global table
 		_G[name .. "Text"] = text
+		_G[name .. "NormalText"] = text
 		return button
 	end,
 }

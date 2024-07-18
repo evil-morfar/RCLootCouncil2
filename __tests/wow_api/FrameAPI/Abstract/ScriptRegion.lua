@@ -5,7 +5,12 @@ local function noop() end
 local objectMethods = {
 	SetScript = function(self, script, handler) self.scripts[script] = handler end,
 	GetScript = function(self, script) return self.scripts[script] end,
-	Show = function(self) self.isShown = true end,
+	Show = function(self)
+		self.isShown = true
+		if self.OnShow then
+			self:OnShow()
+		end
+	end,
 	Hide = function(self) self.isShown = false end,
 	IsShown = function(self) return self.isShown end,
 	SetHeight = function(self, val) self.height = val end,
@@ -74,10 +79,15 @@ for _, v in ipairs(noopMethods) do if not objectMethods[v] then objectMethods[v]
 ScriptRegion = {
 	New = function(name)
 		local parent = _G.FrameScriptObject.New(name)
-		local object = {scripts = {}, isShown = false, timer = GetTime(), height = 0, width = 0, scale = 1}
+		local object = { scripts = {}, isShown = false, timer = GetTime(), height = 0, width = 0, scale = 1, }
 		return setmetatable(object, {
 			__index = function(self, v)
 				local k = objectMethods[v] or parent[v]
+				if not k then
+					if self.scripts[v] then
+						k = self.scripts[v]
+					end
+				end
 				self[v] = k -- Store for easy future lookup
 				return k
 			end,
