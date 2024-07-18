@@ -48,16 +48,6 @@ describe("#VotingFrame #RandomRolls", function()
 		-- Setting a verTestCandidate to be below 3.13.0 will force old method
 		addon.db.global.verTestCandidates[(GetRaidRosterInfo(2))] = { "3.12.0", nil, time(), }
 
-		local origWowApi = WoWAPI_FireEvent
-		-- Override msg events to add the player name
-		function _G.WoWAPI_FireEvent(event, ...)
-			if event == "CHAT_MSG_ADDON" then
-				local prefix, message, distribution = ...
-				return origWowApi(event, prefix, message, distribution, addon.player:GetName())
-			end
-			return origWowApi(event, ...)
-		end
-
 		addon:Test(1, true)
 		WoWAPI_FireUpdate(GetTime() + 1)
 		RCLootCouncilML:StartSession()
@@ -97,16 +87,6 @@ describe("#VotingFrame #RandomRolls", function()
 	it("should use 'arrolls' when version is above 3.13.0", function()
 		dofile(".specs/Helpers/SetupRaid.lua")(20)
 		addon.player = addon.Require "Data.Player":Get("player")
-		local origWowApi = WoWAPI_FireEvent
-
-		-- Override msg events to add the player name
-		function _G.WoWAPI_FireEvent(event, ...)
-			if event == "CHAT_MSG_ADDON" then
-				local prefix, message, distribution = ...
-				return origWowApi(event, prefix, message, distribution, addon.player:GetName())
-			end
-			return origWowApi(event, ...)
-		end
 
 		addon:Test(2, true)
 		WoWAPI_FireUpdate(GetTime() + 1)
@@ -163,16 +143,6 @@ describe("#VotingFrame #RandomRolls", function()
 	it("should not override rolls for sessions that already has rolls", function()
 		dofile(".specs/Helpers/SetupRaid.lua")(20)
 		addon.player = addon.Require "Data.Player":Get("player")
-		local origWowApi = WoWAPI_FireEvent
-
-		-- Override msg events to add the player name
-		function _G.WoWAPI_FireEvent(event, ...)
-			if event == "CHAT_MSG_ADDON" then
-				local prefix, message, distribution = ...
-				return origWowApi(event, prefix, message, distribution, addon.player:GetName())
-			end
-			return origWowApi(event, ...)
-		end
 
 		math.randomseed(1) -- For some reason, using default seed will create a session with 2 duplicate items
 		addon:Test(3, true)
