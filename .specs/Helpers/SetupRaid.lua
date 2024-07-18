@@ -68,6 +68,10 @@ local function HookGlobals(players, size)
 	function IsInGroup()
 		return #players > 1
 	end
+
+	function IsInRaid()
+		return #players > 5
+	end
 end
 
 --- Setup a raid with a number of players.

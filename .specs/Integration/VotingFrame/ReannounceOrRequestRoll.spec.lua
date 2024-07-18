@@ -35,12 +35,16 @@ describe("#VotingFrame #ReannounceOrRequestRoll", function()
 		it("ReannounceOrRequestRoll should set responses to 'WAIT' when called as non-roll", function()
 			local receivedSpy = spy.new()
 			addon.Require "Services.Comms":Subscribe(addon.PREFIXES.MAIN, "ResponseWait", receivedSpy)
+			local rerollSpy = spy.new()
+			addon.Require "Services.Comms":Subscribe(addon.PREFIXES.MAIN, "reroll", rerollSpy)
 
 			WoWAPI_FireUpdate(GetTime() + 20)
 			VotingFrame:ReannounceOrRequestRoll(true, 1, false, false, false)
 			WoWAPI_FireUpdate(GetTime() + 30)
 
 			assert.spy(receivedSpy).was.called(1)
+			assert.spy(rerollSpy).was.called(1)
+			assert.spy(rerollSpy).was.called_with(match.table(), addon.player.name, "reroll", "RAID")
 			local lootTable = VotingFrame:GetLootTable()
 			for name, v in pairs(lootTable[1].candidates) do
 				if name ~= addon.player.name then -- We might already have autopassed
@@ -51,6 +55,10 @@ describe("#VotingFrame #ReannounceOrRequestRoll", function()
 			for name, v in pairs(lootTable[2].candidates) do
 				assert.Equal("NOTHING", v.response)
 			end
+		end)
+
+		it("should send rerolls depending on namepred", function()
+			
 		end)
 
 		it("ReannounceOrRequestRoll should not touch responses when 'isRoll' is true", function()
@@ -146,8 +154,8 @@ describe("#VotingFrame #ReannounceOrRequestRoll", function()
 					end
 				end
 			end
-
-			VotingFrame:ReannounceOrRequestRoll(true, 1, true, false, false)
+			-- announceInChat just to have that called once
+			VotingFrame:ReannounceOrRequestRoll(true, 1, true, false, true)
 			WoWAPI_FireUpdate()
 
 			assert.spy(receivedSpy).was.called(0)
