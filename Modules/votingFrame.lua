@@ -8,6 +8,7 @@
 	MAIN:
 		vote				T - Councilmember sends vote.
 		change_response 	T - ML changes a response.
+		ResponseWait	 	T - ML sets multiple responses to "WAIT".
 		lootAck 			T - Candidate sends lootAck.
 		awarded 			T - ML has awarded an item.
 		bagged 				T - ML has bagged an item (award later).
@@ -137,6 +138,11 @@ function RCVotingFrame:RegisterComms ()
 		change_response = function (data, sender)
 			if addon:IsMasterLooter(sender) then
 				self:OnChangeResponseReceived(unpack(data))
+			end
+		end,
+		ResponseWait = function(data, sender)
+			if addon:IsMasterLooter(sender) then
+				self:OnChangeToWaitReceived(unpack(data))
 			end
 		end,
 		lootAck = function (data, sender)
@@ -472,6 +478,18 @@ end
 -----------------------------------------------------------------
 function RCVotingFrame:OnChangeResponseReceived(ses, name, response)
 	self:SetCandidateData(ses, name, "response", response)
+	self:Update()
+end
+
+---@param data table<guid,string> List of players and sessions to set their response to "WAIT".
+function RCVotingFrame:OnChangeToWaitReceived(data)
+	local name
+	for guid, v in pairs(data) do
+		name = Player:Get(guid).name
+		for session in v:gmatch("%d+") do
+			self:SetCandidateData(tonumber(session), name, "response", "WAIT")
+		end
+	end
 	self:Update()
 end
 
@@ -1698,7 +1716,11 @@ end
 --@param announceInChat: true or false or nil. Determine if the reannounce sessions should be announced in chat.
 function RCVotingFrame:ReannounceOrRequestRoll(namePred, sesPred, isRoll, noAutopass, announceInChat)
 	addon.Log:D("ReannounceOrRequestRoll", namePred, sesPred, isRoll, noAutopass, announceInChat)
-	local rerollTable = {}
+	local rerollTable = TempTable:Acquire()
+	local changeResponseData = TempTable:Acquire()
+	local councilInGroup = Council:GetCouncilInGroup()
+	local hasVersion3_13_0 = addon.Utils:PlayersHasVersion(councilInGroup, "3.13.0")
+	TempTable:Release(councilInGroup)
 
 	for k,v in ipairs(lootTable) do
 		local rolls = {}
@@ -1708,7 +1730,13 @@ function RCVotingFrame:ReannounceOrRequestRoll(namePred, sesPred, isRoll, noAuto
 			for name, _ in pairs(v.candidates) do
 				if namePred == true or (type(namePred)=="string" and name == namePred) or (type(namePred)=="function" and namePred(name)) then
 					if not isRoll then
-						addon:Send("group", "change_response", k, name, "WAIT")
+						if not hasVersion3_13_0 then
+							addon:Send("group", "change_response", k, name, "WAIT")
+						end
+						if not changeResponseData[name] then
+							changeResponseData[name] = {}
+						end
+						tinsert(changeResponseData[name], k)
 					end
 					rolls[name] = ""
 				end
@@ -1718,6 +1746,16 @@ function RCVotingFrame:ReannounceOrRequestRoll(namePred, sesPred, isRoll, noAuto
 			end
 		end
 	end
+
+	if not isRoll and hasVersion3_13_0 then
+		local changeResponseDataForTransmit = TempTable:Acquire()
+		for name,v in pairs(changeResponseData) do
+			changeResponseDataForTransmit[Player:Get(name):GetForTransmit()] = table.concat(v, ",")
+		end
+		addon:Send("group", "ResponseWait", changeResponseDataForTransmit)
+		TempTable:Release(changeResponseDataForTransmit)
+	end
+	TempTable:Release(changeResponseData)
 
 	if #rerollTable > 0 then
 		if announceInChat then
@@ -1735,6 +1773,8 @@ function RCVotingFrame:ReannounceOrRequestRoll(namePred, sesPred, isRoll, noAuto
 			end
 		end
 	end
+
+	TempTable:Release(rerollTable)
 end
 
 ----------------------------------------------------

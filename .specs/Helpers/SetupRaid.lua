@@ -82,6 +82,7 @@ local function SetupRaid(size)
 		players[i] = CreatePlayer(i)
 	end
 	HookGlobals(players, size)
+	WoWAPI_FireEvent("GROUP_ROSTER_UPDATE")
 end
 
 return SetupRaid
