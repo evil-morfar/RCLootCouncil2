@@ -53,7 +53,9 @@ describe("#VotingFrame #ReannounceOrRequestRoll", function()
 			end
 			-- Session 2 should remain untouched.
 			for name, v in pairs(lootTable[2].candidates) do
-				assert.Equal("NOTHING", v.response)
+				if name ~= addon.player.name then -- We might already have autopassed
+					assert.Equal("NOTHING", v.response)
+				end
 			end
 		end)
 
@@ -76,8 +78,10 @@ describe("#VotingFrame #ReannounceOrRequestRoll", function()
 
 			assert.spy(receivedSpy).was.called(0)
 			for _, data in ipairs(VotingFrame:GetLootTable()) do
-				for _, v in pairs(data.candidates) do
-					assert.Equal("NOTHING", v.response)
+				for name, v in pairs(data.candidates) do
+					if name ~= addon.player.name then -- We might already have autopassed
+						assert.Equal("NOTHING", v.response)
+					end
 				end
 			end
 		end)
