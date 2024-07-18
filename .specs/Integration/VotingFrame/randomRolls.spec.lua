@@ -2,11 +2,11 @@ require "busted.runner" ()
 
 --- @type RCLootCouncil
 local addon = dofile(".specs/AddonLoader.lua").LoadToc("RCLootCouncil.toc")
-local VotingFrame = addon.modules.RCVotingFrame
 
 dofile(".specs/EmulatePlayerLogin.lua")
 
 describe("#VotingFrame #RandomRolls", function()
+	local VotingFrame = addon.modules.RCVotingFrame
 	local snapshot
 	-- Supress prints
 	addon.Print = addon.noop
