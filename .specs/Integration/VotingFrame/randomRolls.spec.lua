@@ -113,7 +113,7 @@ describe("#VotingFrame #RandomRolls", function()
 		addon.Require "Services.Comms":Subscribe(addon.PREFIXES.MAIN, "arrolls", recieverFunc)
 
 		VotingFrame:DoAllRandomRolls()
-		WoWAPI_FireUpdate(GetTime() + 10)
+		WoWAPI_FireUpdate(GetTime() + 20)
 
 		assert.spy(generateNoRepeatRollTable).was.called_with(match.is_ref(VotingFrame), 20)
 		assert.spy(doAllRandomRolls).was.called(1)
