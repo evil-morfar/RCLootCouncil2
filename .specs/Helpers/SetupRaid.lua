@@ -72,6 +72,19 @@ local function HookGlobals(players, size)
 	function IsInRaid()
 		return #players > 5
 	end
+	local getPlayerFromGUID = function(guid)
+		for _, v in ipairs(players) do
+			if v.guid == guid then
+				return v
+			end
+		end
+	end
+
+	function C_PlayerInfo.UnitIsSameServer(target)
+		if not target.guid then return false end
+		local targetInfo = getPlayerFromGUID(target.guid)
+		return targetInfo and targetInfo.realm == players[1].realm
+	end
 end
 
 --- Setup a raid with a number of players.

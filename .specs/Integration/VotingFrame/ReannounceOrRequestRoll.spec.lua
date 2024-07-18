@@ -57,8 +57,13 @@ describe("#VotingFrame #ReannounceOrRequestRoll", function()
 			end
 		end)
 
-		it("should send rerolls depending on namepred", function()
-			
+		it("should send rerolls to specific players depending on namepred", function()
+			local rerollSpy = spy.new()
+			addon.Require "Services.Comms":Subscribe(addon.PREFIXES.MAIN, "reroll", rerollSpy)
+			VotingFrame:ReannounceOrRequestRoll(addon.player.name, 1, false, false, false)
+			WoWAPI_FireUpdate(GetTime() + 10)
+			assert.spy(rerollSpy).was.called(1)
+			assert.spy(rerollSpy).was.called_with(match.table(), addon.player.name, "reroll", "WHISPER")
 		end)
 
 		it("ReannounceOrRequestRoll should not touch responses when 'isRoll' is true", function()
