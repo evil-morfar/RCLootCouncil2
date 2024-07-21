@@ -433,7 +433,27 @@ function RCVotingFrame:GenerateNoRepeatRollTable(numberToGenerate)
 	return result
 end
 
+local function insertRandomRollsSession(temp, k, rolls)
+	tinsert(temp, k)
+	tinsert(temp, ",")
+	tinsert(temp, rolls)
+	tinsert(temp, "|")
+end
+
 function RCVotingFrame:DoRandomRolls(session)
+	if addon.Utils:GroupHasVersion("3.13.0") then
+		local result = TempTable:Acquire()
+		local rolls = self:GenerateNoRepeatRollTable(addon:GetNumGroupMembers())
+		for k, v in ipairs(lootTable) do
+			if addon:ItemIsItem(lootTable[session].link, v.link) then
+				insertRandomRollsSession(result, k, rolls)
+			end
+		end
+		addon:Send("group", "arrolls", table.concat(result, ""))
+		TempTable:Release(result)
+		return
+	end
+
 	local rolls = self:GenerateNoRepeatRollTable(addon:GetNumGroupMembers())
 	for k, v in ipairs(lootTable) do
 		if addon:ItemIsItem(lootTable[session].link, v.link) then
@@ -453,10 +473,7 @@ function RCVotingFrame:DoAllRandomRolls()
 				for k, v in ipairs(lootTable) do
 					if addon:ItemIsItem(t.link, v.link) then
 						sessionsDone[k] = true
-						tinsert(temp, k)
-						tinsert(temp, ",")
-						tinsert(temp, rolls)
-						tinsert(temp, "|")
+						insertRandomRollsSession(temp, k, rolls)
 					end
 				end
 			end

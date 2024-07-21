@@ -178,10 +178,28 @@ describe("#VotingFrame #RandomRolls", function()
 		assert.spy(generateNoRepeatRollTable).was.called_with(match.is_ref(VotingFrame), 20)
 		assert.spy(generateNoRepeatRollTable).was.called(3) -- First 1 for session 2, then once for 1 & 3
 		assert.spy(doAllRandomRolls).was.called(1)
-		assert.spy(OnARRollsReceivedSpy).was.called(1)
-		-- We should only have data for session 1 & 3 in receivedRolls
+		assert.spy(OnARRollsReceivedSpy).was.called(2) -- Once for DoRandomRolls and once for DoAllRandomRolls
 		assert.is_table(receivedRolls[1])
-		assert.is_nil(receivedRolls[2])
+		assert.is_table(receivedRolls[2])
 		assert.is_table(receivedRolls[3])
+	end)
+	it("should", function()
+		dofile(".specs/Helpers/SetupRaid.lua")(20)
+		addon.player = addon.Require "Data.Player":Get("player")
+
+		math.randomseed(5) -- For some reason, using default seed will create a session with 2 duplicate items
+		addon:Test(1, true)
+		WoWAPI_FireUpdate(GetTime() + 1)
+		RCLootCouncilML:StartSession()
+		WoWAPI_FireUpdate(GetTime() + 10)
+
+		VotingFrame:DoRandomRolls(1)
+		WoWAPI_FireUpdate(GetTime() + 10)
+		for _,v in ipairs(VotingFrame:GetLootTable()) do
+			v.hasRolls = false
+		end
+		-- Then the rest:
+		VotingFrame:DoAllRandomRolls()
+		WoWAPI_FireUpdate(GetTime() + 10)
 	end)
 end)
