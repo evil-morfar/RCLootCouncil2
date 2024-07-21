@@ -47,7 +47,6 @@ end
 
 function securecallfunction(method,...)
 	return method(...)
-	--return pcall(...)
 end
 
 function InterfaceOptions_AddCategory()

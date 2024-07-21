@@ -186,6 +186,12 @@ function Utils:PlayersHasVersion(players, version, strict)
 	return i == 0
 end
 
+---@param player string|Player Name or player object
+---@param version string Version string, e.g. "3.0.1"
+function Utils:PlayerHasVersion(player, version)
+	return checkVersion(type(player) == "string" and player or player.name, version) == 0
+end
+
 function Utils:GuildRoster()
 	if _G.GuildRoster then
 		return _G.GuildRoster()

@@ -1794,11 +1794,21 @@ function RCVotingFrame:ReannounceOrRequestRoll(namePred, sesPred, isRoll, noAuto
 		if namePred == true then
 			addon:Send("group", "reroll", rerollTable)
 		else
-			for name, _ in pairs(lootTable[session].candidates) do
+			local candidates = TempTable:Acquire()
+			for name in pairs(lootTable[session].candidates) do
 				if (type(namePred)=="string" and name == namePred) or (type(namePred)=="function" and namePred(name)) then
-					addon:Send(Player:Get(name), "reroll", rerollTable)
+					tinsert(candidates, Player:Get(name):GetForTransmit())
+					if not addon.Utils:PlayerHasVersion(name, "3.13.0") then
+						addon:Send(Player:Get(name), "reroll", rerollTable)
+					end
 				end
 			end
+			if #candidates > 0 then
+				addon:Send("group", "re_roll", candidates, rerollTable)
+			else
+				addon.Log:W("Lenght of candidates for reroll was 0!")
+			end
+			TempTable:Release(candidates)
 		end
 	end
 

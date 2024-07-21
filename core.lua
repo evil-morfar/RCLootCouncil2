@@ -38,6 +38,7 @@
 			lt_add 				P - Partial lootTable (additions) sent from ML.
 			mldb 				P - MLDB sent from ML.
 			reroll 				P - (Partial) lootTable with items we should reroll on.
+			re_roll				P - (Partial) lootTable and list of candidates that should reroll.
 			lootAck 			P - LootAck received from another player. Used for checking if have received the required data.
 			Rgear				P - Anyone requests our currently equipped gear.
 			bonus_roll 			P - Sent whenever we do a bonus roll.
@@ -2557,6 +2558,13 @@ function RCLootCouncil:SubscribeToPermanentComms()
 			end
 		end,
 
+		---@param data [string[], LootTable] 1: List of transmittable player GUIDs of candidates that should reroll. 2: LootTable.
+		re_roll = function (data, sender)
+			if self.Utils:UnitIsUnit(sender, self.masterLooter) and self.enabled then
+				self:OnNewReRollReceived(sender, unpack(data))
+			end
+		end,
+
 		lootAck = function() if self.enabled then self:OnLootAckReceived() end end,
 
 		Rgear = function(_, sender) self:OnGearRequestReceived(sender) end,
@@ -2718,8 +2726,7 @@ function RCLootCouncil:OnMLDBReceived(input)
 	setmetatable(self.mldb.buttons.default, {__index = self.defaults.profile.buttons.default})
 end
 
-function RCLootCouncil:OnReRollReceived(sender, lt)
-	self:Print(format(L["'player' has asked you to reroll"], self:GetClassIconAndColoredName(sender)))
+function RCLootCouncil:DoReroll(lt)
 	self:PrepareLootTable(lt)
 	self:DoAutoPasses(lt)
 	-- REVIEW Are these needed?
@@ -2732,6 +2739,22 @@ function RCLootCouncil:OnReRollReceived(sender, lt)
 	if self.inCombat then
 		self.UI:DelayedMinimize()
 	end
+end
+
+function RCLootCouncil:OnReRollReceived(sender, lt)
+	self:Print(format(L["'player' has asked you to reroll"], self:GetClassIconAndColoredName(sender)))
+	self:DoReroll(lt)
+end
+
+---@param candidates string[] List of transmittable player GUIDs of candidates that should reroll.
+---@param lt LootTable
+function RCLootCouncil:OnNewReRollReceived(sender, candidates, lt)
+	self:Print(format(L["'player' has asked you to reroll"], self:GetClassIconAndColoredName(sender)))
+	if not tContains(candidates, self.player:GetForTransmit()) then
+		self.Log:D("We are not in the reRoll candidate list")
+		return
+	end
+	self:DoReroll(lt)
 end
 
 function RCLootCouncil:OnLootAckReceived()
