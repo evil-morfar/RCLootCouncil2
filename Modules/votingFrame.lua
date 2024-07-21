@@ -15,9 +15,8 @@
 		offline_timer 		T - ML sends offline timer.
 		response 			T - Candidate sends a response.
 		reset_rolls			T - ML resets rolls.
-		rolls 				T - **DEPRECATED** - replaced with 'rroll'.
-		rrolls 				T - ML sends random rolls info for a single session.
-		arrolls				T - ML sends random rolls info for multiple sessions.
+		rrolls 				T - **DEPRECATED** Replaced with 'srolls'. ML sends random rolls info for a single session.
+		srolls				T - ML sends random rolls info for one or more sessions.
 		roll 				T - Candidate sends roll info (interactive random roll).
 		reconnectData 		T - ML sends reconnectData.
 		n_t					T - Candidate received "non-tradeable" loot.
@@ -189,11 +188,11 @@ function RCVotingFrame:RegisterComms ()
 				addon.Log:W("Non-ML", sender, "sent rrolls!")
 			end
 		end,
-		arrolls = function (data, sender)
+		srolls = function (data, sender)
 			if addon:IsMasterLooter(sender) then
-				self:OnARRollsReceived(unpack(data))
+				self:OnSessionRollsReceived(unpack(data))
 			else
-				addon.Log:W("Non-ML", sender, "sent arrolls!")
+				addon.Log:W("Non-ML", sender, "sent srolls!")
 			end
 		end,
 		roll = function (data, sender)
@@ -442,14 +441,19 @@ end
 
 function RCVotingFrame:DoRandomRolls(session)
 	if addon.Utils:GroupHasVersion("3.13.0") then
+		---@type TempTable<string>
 		local result = TempTable:Acquire()
 		local rolls = self:GenerateNoRepeatRollTable(addon:GetNumGroupMembers())
 		for k, v in ipairs(lootTable) do
 			if addon:ItemIsItem(lootTable[session].link, v.link) then
-				insertRandomRollsSession(result, k, rolls)
+				if #result == 0 then
+					insertRandomRollsSession(result, k, rolls)
+				else -- Handle duplicates
+					tinsert(result, k.."dupl"..result[1].."|")
+				end
 			end
 		end
-		addon:Send("group", "arrolls", table.concat(result, ""))
+		addon:Send("group", "srolls", table.concat(result, ""))
 		TempTable:Release(result)
 		return
 	end
@@ -473,14 +477,18 @@ function RCVotingFrame:DoAllRandomRolls()
 				for k, v in ipairs(lootTable) do
 					if addon:ItemIsItem(t.link, v.link) then
 						sessionsDone[k] = true
-						insertRandomRollsSession(temp, k, rolls)
+						if ses == k then
+							insertRandomRollsSession(temp, k, rolls)
+						else
+							tinsert(temp, k .. "dupl" .. ses .. "|")
+						end
 					end
 				end
 			end
 		end
 		local result = table.concat(temp, "")
 		TempTable:Release(temp)
-		addon:Send("group", "arrolls", result)
+		addon:Send("group", "srolls", result)
 		return
 	end
 
@@ -658,28 +666,38 @@ function RCVotingFrame:OnRRollsReceived(session, rolls)
 	self:Update()
 end
 
----@param rolls string Rolls in the following format: `"session,roll...|session..."`
+---@param rolls string Rolls in the following format: `"session,roll...|session..."` OR `"session,roll...|session.."dupl"..duplicateOf"`
 --- e.g.: `"1,29,3|3,59,57|"` for session 1 & 3 with two rolls.
-function RCVotingFrame:OnARRollsReceived(rolls)
+--- or: `"1,29,3|2dupl1|3,59,57|4dupl3|"` where session 1 & 3 are specified, and session 2 & 4 are duplicates of session 1 & 3 respectively.
+function RCVotingFrame:OnSessionRollsReceived(rolls)
 	-- Create and sort candidates
 	local candidates = TempTable:Acquire()
 	for name in pairs(lootTable[session].candidates) do
 		tinsert(candidates, name)
 	end
 	table.sort(candidates) -- No reverse sort here, as we need them multiple times.
-	for sessionRolls in rolls:gmatch("([%d,]+)|") do
-		local _, sEnd, session = string.find(sessionRolls, "(%d+),")
-		session = tonumber(session)
-		sessionRolls = string.sub(sessionRolls, sEnd + 1)
-		if lootTable[session] then
-			local count = 1
-			for roll in sessionRolls:gmatch("%d+") do
-				self:SetCandidateData(session, candidates[count], "roll", tonumber(roll))
-				count = count + 1
+	for sessionRolls in rolls:gmatch("(.-)|") do
+		if sessionRolls:find("dupl") then
+			local session, duplicateOf = sessionRolls:match("(%d+)dupl(%d+)")
+			session = tonumber(session)
+			duplicateOf = tonumber(duplicateOf)
+			for _, name in ipairs(candidates) do
+				self:SetCandidateData(session, name, "roll", self:GetCandidateData(duplicateOf, name, "roll"))
 			end
-			lootTable[session].hasRolls = true
 		else
-			addon.Log:E("Trying to add rolls to non-existent session:", session)
+			local _, sEnd, session = string.find(sessionRolls, "(%d+),")
+			session = tonumber(session)
+			sessionRolls = string.sub(sessionRolls, sEnd + 1)
+			if lootTable[session] then
+				local count = 1
+				for roll in sessionRolls:gmatch("%d+") do
+					self:SetCandidateData(session, candidates[count], "roll", tonumber(roll))
+					count = count + 1
+				end
+				lootTable[session].hasRolls = true
+			else
+				addon.Log:E("Trying to add rolls to non-existent session:", session)
+			end
 		end
 	end
 	TempTable:Release(candidates)

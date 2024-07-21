@@ -6,7 +6,9 @@ local addon = dofile(".specs/AddonLoader.lua").LoadToc("RCLootCouncil.toc")
 dofile(".specs/EmulatePlayerLogin.lua")
 
 describe("#VotingFrame #RandomRolls", function()
+	---@type RCVotingFrame
 	local VotingFrame = addon.modules.RCVotingFrame
+	local Comms = addon.Require "Services.Comms"
 	local snapshot
 	-- Supress prints
 	addon.Print = addon.noop
@@ -60,7 +62,7 @@ describe("#VotingFrame #RandomRolls", function()
 
 		-- Subscribe to the comms to store the rolls
 		local receivedRolls
-		addon.Require "Services.Comms":Subscribe(addon.PREFIXES.MAIN, "rrolls", function(data)
+		local sub = Comms:Subscribe(addon.PREFIXES.MAIN, "rrolls", function(data)
 			local _, rolls = unpack(data)
 			receivedRolls = { string.split(",", rolls), }
 		end)
@@ -81,10 +83,10 @@ describe("#VotingFrame #RandomRolls", function()
 		assert.spy(SetCandidateData).was.called_with(match.is_ref(VotingFrame), 1, "Player9-Realm1", "roll",
 			tonumber(receivedRolls[20]))
 
-		-- RCLootCouncilML:EndSession()
+		sub:unsubscribe()
 	end)
 
-	it("should use 'arrolls' when version is above 3.13.0", function()
+	it("should use 'srolls' when version is above 3.13.0", function()
 		dofile(".specs/Helpers/SetupRaid.lua")(20)
 		addon.player = addon.Require "Data.Player":Get("player")
 
@@ -97,7 +99,7 @@ describe("#VotingFrame #RandomRolls", function()
 		local generateNoRepeatRollTable = spy.on(VotingFrame, "GenerateNoRepeatRollTable")
 		local doAllRandomRolls = spy.on(VotingFrame, "DoAllRandomRolls")
 		local SetCandidateData = spy.on(VotingFrame, "SetCandidateData")
-		local OnARRollsReceivedSpy = spy.on(VotingFrame, "OnARRollsReceived")
+		local OnSessionRollsReceivedSpy = spy.on(VotingFrame, "OnSessionRollsReceived")
 
 		-- Subscribe to the comms to store the rolls
 		local receivedRolls = {}
@@ -110,14 +112,14 @@ describe("#VotingFrame #RandomRolls", function()
 				receivedRolls[tonumber(session)] = { string.split(",", sessionRolls), }
 			end
 		end
-		addon.Require "Services.Comms":Subscribe(addon.PREFIXES.MAIN, "arrolls", recieverFunc)
+		local sub = Comms:Subscribe(addon.PREFIXES.MAIN, "srolls", recieverFunc)
 
 		VotingFrame:DoAllRandomRolls()
 		WoWAPI_FireUpdate(GetTime() + 20)
 
 		assert.spy(generateNoRepeatRollTable).was.called_with(match.is_ref(VotingFrame), 20)
 		assert.spy(doAllRandomRolls).was.called(1)
-		assert.spy(OnARRollsReceivedSpy).was.called(1)
+		assert.spy(OnSessionRollsReceivedSpy).was.called(1)
 		-- Note the sort is weird due to the 'PlayerX' structure of names
 		assert.spy(SetCandidateData).was.called_with(match.is_ref(VotingFrame), 1, "Player1-Realm1", "roll",
 			tonumber(receivedRolls[1][1]))
@@ -138,6 +140,8 @@ describe("#VotingFrame #RandomRolls", function()
 		-- and so on
 		assert.spy(SetCandidateData).was.called_with(match.is_ref(VotingFrame), 2, "Player9-Realm1", "roll",
 			tonumber(receivedRolls[2][20]))
+
+		sub:unsubscribe()
 	end)
 
 	it("should not override rolls for sessions that already has rolls", function()
@@ -153,20 +157,24 @@ describe("#VotingFrame #RandomRolls", function()
 		-- Setup spies before doing rolls
 		local generateNoRepeatRollTable = spy.on(VotingFrame, "GenerateNoRepeatRollTable")
 		local doAllRandomRolls = spy.on(VotingFrame, "DoAllRandomRolls")
-		local OnARRollsReceivedSpy = spy.on(VotingFrame, "OnARRollsReceived")
+		local OnSessionRollsReceivedSpy = spy.on(VotingFrame, "OnSessionRollsReceived")
 
 		-- Subscribe to the comms to store the rolls
 		local receivedRolls = {}
 		local recieverFunc = function(data)
 			local rolls = unpack(data)
-			for _, sessionRolls in ipairs { string.split("|", rolls), } do
-				if sessionRolls == "" then break end
-				local _, e, session = string.find(sessionRolls, "(%d+),")
-				sessionRolls = string.sub(sessionRolls, e + 1)
-				receivedRolls[tonumber(session)] = { string.split(",", sessionRolls), }
+			for sessionRolls in rolls:gmatch("(.-)|") do
+				if sessionRolls:find("dupl") then
+					local session, duplicateOf = sessionRolls:match("(%d+)dupl(%d+)")
+					receivedRolls[tonumber(session)] = receivedRolls[tonumber(duplicateOf)]
+				else
+					local _, e, session = string.find(sessionRolls, "(%d+),")
+					sessionRolls = string.sub(sessionRolls, e + 1)
+					receivedRolls[tonumber(session)] = { string.split(",", sessionRolls), }
+				end
 			end
 		end
-		addon.Require "Services.Comms":Subscribe(addon.PREFIXES.MAIN, "arrolls", recieverFunc)
+		local sub = Comms:Subscribe(addon.PREFIXES.MAIN, "srolls", recieverFunc)
 
 		-- First random roll session 2:
 		VotingFrame:DoRandomRolls(2)
@@ -178,28 +186,37 @@ describe("#VotingFrame #RandomRolls", function()
 		assert.spy(generateNoRepeatRollTable).was.called_with(match.is_ref(VotingFrame), 20)
 		assert.spy(generateNoRepeatRollTable).was.called(3) -- First 1 for session 2, then once for 1 & 3
 		assert.spy(doAllRandomRolls).was.called(1)
-		assert.spy(OnARRollsReceivedSpy).was.called(2) -- Once for DoRandomRolls and once for DoAllRandomRolls
+		assert.spy(OnSessionRollsReceivedSpy).was.called(2) -- Once for DoRandomRolls and once for DoAllRandomRolls
 		assert.is_table(receivedRolls[1])
 		assert.is_table(receivedRolls[2])
 		assert.is_table(receivedRolls[3])
+
+		sub:unsubscribe()
 	end)
-	it("should", function()
+	it("should handle duplicates", function()
 		dofile(".specs/Helpers/SetupRaid.lua")(20)
 		addon.player = addon.Require "Data.Player":Get("player")
+		addon.db.profile.sortItems = false
 
-		math.randomseed(5) -- For some reason, using default seed will create a session with 2 duplicate items
-		addon:Test(1, true)
-		WoWAPI_FireUpdate(GetTime() + 1)
+		addon:CallModule("masterlooter")
+		addon:GetActiveModule("masterlooter"):NewML(addon.player)
+		addon:GetActiveModule("masterlooter"):Test { 159366, 165584, 159366, }
+		WoWAPI_FireUpdate(GetTime() + 10)
 		RCLootCouncilML:StartSession()
 		WoWAPI_FireUpdate(GetTime() + 10)
 
+		local generateNoRepeatRollTable = spy.on(VotingFrame, "GenerateNoRepeatRollTable")
+		local OnSessionRollsReceivedSpy = spy.on(VotingFrame, "OnSessionRollsReceived")
+		WoWAPI_FireUpdate(GetTime() + 20)
 		VotingFrame:DoRandomRolls(1)
-		WoWAPI_FireUpdate(GetTime() + 10)
-		for _,v in ipairs(VotingFrame:GetLootTable()) do
-			v.hasRolls = false
+		WoWAPI_FireUpdate(GetTime() + 30)
+		assert.spy(generateNoRepeatRollTable).was.called(1)
+		assert.spy(OnSessionRollsReceivedSpy).was.called(1)
+		-- All rolls in session 1 & 3 should be the same
+		for name in addon:GroupIterator() do
+			assert.is_number(VotingFrame:GetCandidateData(1, name, "roll"))
+			assert.equal(VotingFrame:GetCandidateData(1, name, "roll"),
+				VotingFrame:GetCandidateData(3, name, "roll"))
 		end
-		-- Then the rest:
-		VotingFrame:DoAllRandomRolls()
-		WoWAPI_FireUpdate(GetTime() + 10)
 	end)
 end)
