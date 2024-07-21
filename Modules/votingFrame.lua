@@ -1631,6 +1631,7 @@ function RCVotingFrame.SetCellRoll(rowFrame, frame, data, cols, row, realrow, co
 end
 
 function RCVotingFrame.filterFunc(table, row)
+	db = addon:Getdb()
 	if not db.modules["RCVotingFrame"].filters then return true end -- db hasn't been initialized, so just show it
 	local name = row.name
 	if not (lootTable[session] and lootTable[session].candidates[name]) then
