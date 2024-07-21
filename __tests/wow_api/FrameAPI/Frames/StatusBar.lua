@@ -1,8 +1,10 @@
 require "/wow_api/FrameAPI/Frames/Frame"
+require "wow_api/FrameAPI/Textures/Texture"
 
 local function noop() end
 
 local objectMethods = {
+	GetStatusBarTexture = function (self) return self.texture end,
 }
 
 local noopMethods = {
@@ -13,7 +15,6 @@ local noopMethods = {
 	"GetRotatesTexture",
 	"GetStatusBarColor",
 	"GetStatusBarDesaturation",
-	"GetStatusBarTexture",
 	"GetValue",
 	"IsStatusBarDesaturated",
 	"SetColorFill",
@@ -34,7 +35,7 @@ for _, v in ipairs(noopMethods) do if not objectMethods[v] then objectMethods[v]
 StatusBar = {
 	New = function(name, parent)
 		local super = _G.Frame.New(name or "", parent)
-		local object = {}
+		local object = {texture = _G.Texture.New(name .. "Texture", parent)}
 		local statusbar = setmetatable(object, {
 			__index = function(self, v)
 				local k = objectMethods[v] or super[v]

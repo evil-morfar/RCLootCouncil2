@@ -45,8 +45,9 @@ function xpcall(f, err, ...)
 	end
 end
 
-function securecallfunction(...)
-	return pcall(...)
+function securecallfunction(method,...)
+	return method(...)
+	--return pcall(...)
 end
 
 function InterfaceOptions_AddCategory()
@@ -1153,6 +1154,7 @@ ITEM_MOD_STRENGTH_OR_INTELLECT_SHORT = "Strength or Intellect";
 ITEM_MOD_STRENGTH_SHORT = "Strength";
 ITEM_MOD_VERSATILITY = "Versatility";
 ITEM_SOULBOUND = "Soulbound";
+ROLL = "Roll"
 
 BLOCK = "Block"
 PARRY = "Parry"

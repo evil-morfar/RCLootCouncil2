@@ -1,4 +1,5 @@
 require "/wow_api/FrameAPI/Abstract/FrameScriptObject"
+require "wow_api/FrameAPI/Animations/AnimationGroup"
 
 local function noop() end
 
@@ -17,6 +18,9 @@ local objectMethods = {
 	GetHeight = function(self) return self.height end,
 	SetWidth = function(self, val) self.width = val end,
 	GetWidth = function(self) return self.width end,
+	CreateAnimationGroup = function (self)
+		return _G.AnimationGroup.New(self)
+	end
 
 }
 
@@ -69,7 +73,6 @@ local noopMethods = {
 	"SetPoint",
 	"SetSize",
 	"SetWidth",
-	"CreateAnimationGroup",
 	"GetAnimationGroups",
 	"StopAnimating",
 }
@@ -86,6 +89,7 @@ ScriptRegion = {
 				if not k then
 					if self.scripts[v] then
 						k = self.scripts[v]
+					
 					end
 				end
 				self[v] = k -- Store for easy future lookup
