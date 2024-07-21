@@ -1915,7 +1915,7 @@ do
 
 	-- Print sth when the button or confirmation dialog is clicked.
 	function RCVotingFrame.reannounceOrRequestRollPrint(target, isThisItem, isRoll)
-		local itemText = isThisItem and L["This item"] or L["All unawarded items"]
+		local itemText = isThisItem and lootTable[session].link or L["All unawarded items"]
 		if isRoll then
 			addon:Print(format(L["Requested rolls for 'item' from 'target'"], itemText, target))
 		else
