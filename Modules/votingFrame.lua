@@ -667,9 +667,7 @@ function RCVotingFrame:OnARRollsReceived(rolls)
 		tinsert(candidates, name)
 	end
 	table.sort(candidates) -- No reverse sort here, as we need them multiple times.
-	local data = { string.split("|", rolls), }
-	for _,sessionRolls in ipairs (data) do
-		if sessionRolls == "" then break end
+	for sessionRolls in rolls:gmatch("([%d,]+)|") do
 		local _, sEnd, session = string.find(sessionRolls, "(%d+),")
 		session = tonumber(session)
 		sessionRolls = string.sub(sessionRolls, sEnd + 1)
