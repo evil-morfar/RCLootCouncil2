@@ -38,7 +38,7 @@ The new timeout bar will flash when there's 5 seconds to timeout - can be disabl
 
 ### Profile sharing
 
-It's now possible to export and import profile settings. This new feature is located at the "Profiles" tab in the options menu (`/rc config`).
+It's now possible to export and import profile settings. This new feature is located at the "Profiles" tab in the options menu (`/rc profile`).
 
 ### TradeUI
 

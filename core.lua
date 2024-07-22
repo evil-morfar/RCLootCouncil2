@@ -157,6 +157,7 @@ function RCLootCouncil:OnInitialize()
 		{cmd = "add [item]", desc = L["chat_commands_add"]},
 		{cmd = "award", desc = L["chat_commands_award"]},
 		{cmd = "sync", desc = L["chat_commands_sync"]},
+		{cmd = "profile", desc = L.chat_commands_profile, },
 	}
 
 	self.lootGUIDToIgnore = { -- List of GUIDs we shouldn't register loot from
@@ -423,6 +424,10 @@ function RCLootCouncil:ChatCommand(msg)
 		Settings.OpenToCategory(self.optionsFrame.name)
 		SettingsPanel:SelectCategory(category)
 		LibStub("AceConfigDialog-3.0"):SelectGroup("RCLootCouncil", "mlSettings", "councilTab")
+
+	elseif input == "profile" or input == "profiles" then
+		Settings.OpenToCategory(self.optionsFrame.name)
+		LibStub("AceConfigDialog-3.0"):SelectGroup("RCLootCouncil", "settings", "profiles")
 
 	elseif input == 'test' or input == L["test"] then
 		self:Test(tonumber(args[1]) or 1)
