@@ -407,6 +407,8 @@ This window needs to be open to initiate a sync,
 but closing it won't stop a sync in progress.
 
 Targets include online guild- and groupmembers, friends and your current friendly target.]]
+L.sync_warning1 = "Note: Syncing large amounts of data in game can be very slow (especially the loot history)."
+L.sync_warning2 = "Settings and loot history can both be exported/imported as an alternative - see '/rc profile' and/or '/rc history' respectively."
 L["test"] = true
 L["Test"] = true
 L["test_desc"] = "Click to emulate master looting items for yourself and anyone in your raid."

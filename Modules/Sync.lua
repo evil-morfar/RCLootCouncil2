@@ -56,6 +56,8 @@ function sync:OnInitialize()
 end
 
 function sync:OnEnable()
+	addon:Print(L.sync_warning1)
+	addon:Print(L.sync_warning2)
     -- Temporary comms only available with the window open
     subscriptions =
         Comms:BulkSubscribe(
