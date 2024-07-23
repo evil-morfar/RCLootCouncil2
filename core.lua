@@ -487,17 +487,7 @@ function RCLootCouncil:ChatCommand(msg)
 		self.Require "Utils.GroupLoot":HideGroupLootFrames()
 
 	elseif input == "reset" or input == string.lower(_G.RESET) then
-		for name, data in pairs(db.UI) do -- We can't easily reset due to the wildcard in defaults
-			for k in pairs(data) do
-				if self.defaults.profile.UI[name] and self.defaults.profile.UI[name][k] then
-					db.UI[name][k] = self.defaults.profile.UI[name][k]
-				else
-					db.UI[name][k] = self.defaults.profile.UI["**"][k]
-				end
-			end
-		end
-		for _, frame in ipairs(self.UI.minimizeableFrames) do frame:RestorePosition() end
-		db.chatFrameName = self.defaults.profile.chatFrameName
+		self:ResetUI()
 		self:Print(L["Windows reset"])
 
 	elseif input == "start" or input == string.lower(_G.START) then
@@ -2296,6 +2286,21 @@ end
 function RCLootCouncil:HideTooltip()
 	if self.tooltip then self.tooltip.showing = false end
 	GameTooltip:Hide()
+end
+
+function RCLootCouncil:ResetUI()
+	db = self:Getdb()
+	for name, data in pairs(db.UI) do -- We can't easily reset due to the wildcard in defaults
+		for k in pairs(data) do
+			if self.defaults.profile.UI[name] and self.defaults.profile.UI[name][k] then
+				db.UI[name][k] = self.defaults.profile.UI[name][k]
+			else
+				db.UI[name][k] = self.defaults.profile.UI["**"][k]
+			end
+		end
+	end
+	for _, frame in ipairs(self.UI.minimizeableFrames) do frame:RestorePosition() end
+	db.chatFrameName = self.defaults.profile.chatFrameName
 end
 
 local itemStatsRet = {}
