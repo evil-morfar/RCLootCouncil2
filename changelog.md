@@ -2,6 +2,8 @@
 
 ## Changes
 
+Updated for the War Within prepatch (11.0.0).
+
 ### Comms optimization
 
 Optimized random rolls from 1 message per session to approximately 1 message per 10 sessions. You can once again safely use the `"Add Rolls"` option.
