@@ -28,6 +28,8 @@ When awarding an item, voting frame now switches to the *next* unawarded item in
 
 Reviewed all UI layouts and margins. Updated all inconsistencies for a more unified look.
 
+Frame position and size settings has been reset due to these changes.
+
 ### Loot Frame
 
 Loot Frame will now always "shrink" upwards when rolling on items, no matter where it's positioned.

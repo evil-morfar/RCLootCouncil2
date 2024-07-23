@@ -243,5 +243,12 @@ Compat.list = {
 				end
 			end
 		end
+	},
+	{
+		name = "Reset UI",
+		version = "3.13.0",
+		func = function ()
+			addon:ResetUI()
+		end
 	}
 }
