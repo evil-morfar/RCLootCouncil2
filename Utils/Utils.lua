@@ -127,8 +127,7 @@ end
 ---@return VersionCodes
 function Utils:CheckOutdatedVersion(baseVersion, newVersion, basetVersion, newtVersion)
 	baseVersion = baseVersion or addon.version
-
-	if strfind(newVersion, "%a+") then return self:Debug("Someone's tampering with version?", newVersion) end
+	if strfind(newVersion, "%a+") then return addon.Log:E("Someone's tampering with version?", newVersion) end
 
 	if newtVersion and not basetVersion then
 		return addon.VER_CHECK_CODES[1] -- Don't treat test versions as the latest
