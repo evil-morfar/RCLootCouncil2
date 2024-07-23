@@ -253,15 +253,7 @@ function LootHistory:BuildData()
 		end
 		tinsert(dateData, {date})
 	end
-	-- Insert players in the group who isn't registered in the lootDB
-	for name,v in pairs(addon.candidates or {}) do
-		if not insertedNames[name] then
-			tinsert(nameData, {
-				{DoCellUpdate = addon.SetCellClassIcon, args = {v.class}},
-				{value = addon.Ambiguate(name), color = addon:GetClassColor(v.class), name = name}
-			})
-		end
-	end
+
 	self.frame.st:SetData(self.frame.rows)
 	self.frame.date:SetData(dateData, true) -- True for minimal data	format
 	self.frame.name:SetData(nameData, true)
@@ -942,6 +934,12 @@ function LootHistory:GetFrame()
 		self.moreInfo:SetScale(Clamp(f:GetScale() * 0.6, .4, .9))
 	end)
 
+	-- local count = f:CreateFontString(nil,"OVERLAY", "GameFontNormal")
+	-- count:SetPoint("BOTTOMRIGHT", b2, "TOPRIGHT", 0, 10)
+	-- count:SetText(format("There's %d items in the database", self:CountItems()))
+	-- count:SetTextColor(1, 1, 1, 1)
+	-- self.itemCount = count
+
 	-- Export
 	local b3 = addon:CreateButton(L["Export"], f.content)
 	b3:SetPoint("RIGHT", b1, "LEFT", -10, 0)
@@ -1011,6 +1009,18 @@ function LootHistory:GetFrame()
 	-- Set a proper width
 	f:SetWidth(st.frame:GetWidth() + 20)
 	return f;
+end
+
+--- Counts the number of items in a RCLootCouncil.HistoryDB database.
+---@param db RCLootCouncil.HistoryDB
+function LootHistory:CountItems(db)
+	local count = 0
+	for name, items in pairs(db or lootDB) do
+		for _ in pairs(items) do
+			count = count + 1
+		end
+	end
+	return count
 end
 
 --- Returns a table of all the winners of an item.

@@ -1933,6 +1933,7 @@ end
 
 function RCLootCouncil:Getdb() return db end
 
+---@return RCLootCouncil.HistoryDB
 function RCLootCouncil:GetHistoryDB() return self.lootDB.factionrealm end
 
 function RCLootCouncil:UpdateDB()
