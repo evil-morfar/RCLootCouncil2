@@ -56,6 +56,8 @@ function sync:OnInitialize()
 end
 
 function sync:OnEnable()
+	addon:Print(L.sync_warning1)
+	addon:Print(L.sync_warning2)
     -- Temporary comms only available with the window open
     subscriptions =
         Comms:BulkSubscribe(
@@ -152,14 +154,14 @@ function sync:SyncAckReceived(sender, type)
     end
     -- We're ready to send
     SendSyncData(sender, type)
-    addon:Print(format(L["Sending 'type' to 'player'..."], type, sender:GetName()))
+    addon:Print(format(L["Sending 'type' to 'player'..."], type, addon:GetClassIconAndColoredName(sender)))
 end
 
 function sync:SyncNackReceived(sender, type, msg)
     addon.Log:D("SyncNackReceived", sender, type, msg)
     -- Delete them from table
     sync_table[sender:GetName()] = nil
-    addon:Print(format(self.declineReasons[msg], sender:GetName(), type))
+    addon:Print(format(self.declineReasons[msg], sender:GetClassColoredName(), type))
 end
 
 -- We've received a request to sync with another player
@@ -207,7 +209,7 @@ function sync:SyncDataReceived(sender, type, data)
     else -- Should never happen
         return addon.Log:D("Unsupported SyncDataReceived", type, "from", sender)
     end
-    addon:Print(format(L["Successfully received 'type' from 'player'"], type, sender:GetName()))
+	addon:Print(format(L["Successfully received 'type' from 'player'"], type, sender:GetClassColoredName()))
 end
 
 local function addNameToList(list, name, class)
@@ -262,11 +264,7 @@ function sync:GetSyncTargetOptions()
         ret[addon.playerName] = nil
     end
     -- Check if it's empty
-    local isEmpty = true
-    for k in pairs(ret) do
-        isEmpty = false
-        break
-    end --luacheck: ignore
+    local isEmpty = next(ret) ~= nil
     ret[1] = isEmpty and "--" .. L["No recipients available"] .. "--" or nil
     table.sort(
         ret,
@@ -308,13 +306,13 @@ function sync:Spawn()
         "DefaultRCLootCouncilSyncFrame",
         L["RCLootCouncil - Synchronizer"],
         nil,
-        140
+        130
     )
     addon.UI:RegisterForEscapeClose(f, function() if self:IsEnabled() then self:Disable() end end)
     f:SetWidth(350)
     local sel = AG:Create("Dropdown")
     sel:SetWidth(f.content:GetWidth() * 0.4 - 20)
-    sel:SetPoint("TOPLEFT", f.content, "TOPLEFT", 10, -50)
+    sel:SetPoint("TOPLEFT", f.content, "TOPLEFT", 10, -40)
     local syncSelections = {}
     for k, v in pairs(self.syncHandlers) do
         syncSelections[k] = v.text
@@ -333,7 +331,7 @@ function sync:Spawn()
     f.syncSelector = sel
 
     local txt = f.content:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-    txt:SetPoint("BOTTOMLEFT", sel.frame, "TOPLEFT", 0, 5)
+    txt:SetPoint("BOTTOMLEFT", sel.frame, "TOPLEFT", 5, 5)
     txt:SetTextColor(1, 1, 1) -- Turqouise
     txt:SetText(L["Sync"] .. ":")
     f.typeText = txt
@@ -361,13 +359,13 @@ function sync:Spawn()
     f.syncTargetSelector = sel
 
     txt = f.content:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-    txt:SetPoint("BOTTOMLEFT", sel.frame, "TOPLEFT", 0, 5)
+    txt:SetPoint("BOTTOMLEFT", sel.frame, "TOPLEFT", 5, 5)
     txt:SetTextColor(1, 1, 1) -- Turqouise
     txt:SetText(L["To target"] .. ":")
     f.targetText = txt
 
     f.syncButton = addon:CreateButton("Sync", f.content)
-    f.syncButton:SetPoint("BOTTOMRIGHT", f, "CENTER", -10, -f:GetHeight() / 2 + 10)
+    f.syncButton:SetPoint("BOTTOMRIGHT", f, "CENTER", -5, -f:GetHeight() / 2 + 10)
     f.syncButton:SetScript(
         "OnClick",
         function()
@@ -378,7 +376,7 @@ function sync:Spawn()
         end
     )
     f.exitButton = addon:CreateButton(_G.CLOSE, f.content)
-    f.exitButton:SetPoint("LEFT", f.syncButton, "RIGHT", 20, 0)
+    f.exitButton:SetPoint("LEFT", f.syncButton, "RIGHT", 10, 0)
     f.exitButton:SetScript(
         "OnClick",
         function()

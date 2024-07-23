@@ -6,8 +6,8 @@
 	"recommendations": [
 		"tomblind.local-lua-debugger-vscode",
 		"sumneko.lua",
-		"gruntfuggly.todo-tree",
 		"dwenegar.vscode-luacheck",
+		"Koihik.vscode-lua-format",
 		"ketho.wow-api",
 		"stanzilla.vscode-wow-toc"
 	],

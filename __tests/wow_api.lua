@@ -30,13 +30,6 @@ function CreateFrame(kind, name, parent)
 	return frame
 end
 
--- Extra hack as I didn't want to implement logic for all the UI functions
-MSA_DropDownList1Button1NormalText = {
-	GetFont = function(args)
-		-- body...
-	end,
-}
-
 -- It seems Wow doesn't follow the 5.1 spec for xpcall (no additional arguments),
 -- but instead the one from 5.2 where that's allowed.
 -- Try to recreate that here.
@@ -52,14 +45,17 @@ function xpcall(f, err, ...)
 	end
 end
 
-function securecallfunction(...)
-	return pcall(...)
+function securecallfunction(method,...)
+	return method(...)
 end
 
 function InterfaceOptions_AddCategory()
 	-- body...
 end
 
+function InCinematic()
+	return false
+end
 function ChatFrame_AddMessageEventFilter()
 	-- body...
 end
@@ -101,6 +97,10 @@ function UnitIsGroupLeader(unit)
 	return false
 end
 
+function UnitIsDeadOrGhost()
+	return false
+end
+
 function GetNumRaidMembers()
 	return 1
 end
@@ -122,6 +122,8 @@ function GetRaidRosterInfo(i) return "Unit"..i end
 function issecurevariable(obj, method)
 	return false
 end
+
+function PlaySound() end
 
 FACTION_HORDE = "Horde"
 FACTION_ALLIANCE = "Alliance"
@@ -318,7 +320,7 @@ function EJ_GetNumTiers() return 11 end
 function EJ_SelectInstance(journalInstanceID) end
 function EJ_ResetLootFilter() end
 function EJ_SetDifficulty(difficultyID) end
-function EJ_GetNumLoot() return 1 end
+function EJ_GetNumLoot() return 10 end
 
 _G.C_EncounterJournal = {
 	GetLootInfoByIndex = function(index)
@@ -378,6 +380,7 @@ if not wipe then
 		for k in pairs(tbl) do
 			tbl[k] = nil
 		end
+		return tbl
 	end
 end
 
@@ -502,10 +505,10 @@ function Ambiguate(name, method)
 	return name
 end
 
-function string.split(sep, s, pieces)
+function string.split(sep, p, pieces)
 	sep = sep or "%s"
 	local t = {}
-	for field, s in string.gmatch(s, "([^" .. sep .. "]*)(" .. sep .. "?)") do
+	for field, s in string.gmatch(p, "([^" .. sep .. "]*)(" .. sep .. "?)") do
 		table.insert(t, field)
 		if (pieces and #t >= pieces) or s == "" then
 			return unpack(t)
@@ -1028,7 +1031,10 @@ function _G.FauxScrollFrame_OnVerticalScroll() end
 
 
 function GetClassColoredTextForUnit(unit, text) return text end
+function CreateAtlasMarkup(text) return "" end
 ceil = math.ceil
+max = math.max
+mod = math.fmod
 C_Container = {
 	GetContainerItemInfo = function(c, s)
 		return {
@@ -1051,6 +1057,7 @@ C_PlayerInfo = {
 }
 
 UISpecialFrames = {}
+_G.UIParent = CreateFrame("Frame", "UIParent")
 _G.GameTooltip = CreateFrame("GameTooltip", "GameTooltip", UIParent)
 ------------------------------------------
 -- Constants from various places
@@ -1058,6 +1065,9 @@ _G.GameTooltip = CreateFrame("GameTooltip", "GameTooltip", UIParent)
 NUM_BAG_SLOTS = 10
 
 RAID_CLASS_COLORS = {}
+function GetClassColorObj(classFilename)
+	return RAID_CLASS_COLORS[classFilename];
+end
 MAX_TRADE_ITEMS = 6 -- don't remember
 
 TOOLTIP_DEFAULT_COLOR = { r = 1, g = 1, b = 1, };
@@ -1143,6 +1153,7 @@ ITEM_MOD_STRENGTH_OR_INTELLECT_SHORT = "Strength or Intellect";
 ITEM_MOD_STRENGTH_SHORT = "Strength";
 ITEM_MOD_VERSATILITY = "Versatility";
 ITEM_SOULBOUND = "Soulbound";
+ROLL = "Roll"
 
 BLOCK = "Block"
 PARRY = "Parry"

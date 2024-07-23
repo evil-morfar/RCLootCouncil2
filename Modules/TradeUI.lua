@@ -48,20 +48,22 @@ function TradeUI:OnInitialize()
 end
 
 function TradeUI:OnEnable()
-   addon:Log("TradeUI enabled")
-   db = addon.Getdb()
-   self.isTrading = false  -- Are we currently trading
-   self.tradeItems = {}    -- Items we are currently trading
-   self.tradeTarget = nil  -- Name of our last trade target
-   self.itemsInTradeWindow = {} --- @type SkipInventoryItem[]
+	addon:Log("TradeUI enabled")
+	db = addon.Getdb()
+	self.isTrading = false  -- Are we currently trading
+	self.tradeItems = {}    -- Items we are currently trading
+	self.tradeTarget = nil  -- Name of our last trade target
+	self.itemsInTradeWindow = {} --- @type SkipInventoryItem[]
 
-   self:RegisterComms()
-   self:RegisterEvent("TRADE_SHOW", "OnEvent_TRADE_SHOW")
-   self:RegisterEvent("TRADE_CLOSED", "OnEvent_TRADE_CLOSED")
-   self:RegisterEvent("TRADE_ACCEPT_UPDATE", "OnEvent_TRADE_ACCEPT_UPDATE")
-   self:RegisterEvent("UI_INFO_MESSAGE", "OnEvent_UI_INFO_MESSAGE")
-   self:CheckTimeRemaining()
-   self:ScheduleRepeatingTimer("CheckTimeRemaining", TIME_REMAINING_INTERVAL)
+	self:RegisterComms()
+	self:RegisterEvent("TRADE_SHOW", "OnEvent_TRADE_SHOW")
+	self:RegisterEvent("TRADE_CLOSED", "OnEvent_TRADE_CLOSED")
+	self:RegisterEvent("TRADE_ACCEPT_UPDATE", "OnEvent_TRADE_ACCEPT_UPDATE")
+	self:RegisterEvent("UI_INFO_MESSAGE", "OnEvent_UI_INFO_MESSAGE")
+	self:CheckTimeRemaining()
+	self:ScheduleRepeatingTimer("CheckTimeRemaining", TIME_REMAINING_INTERVAL)
+	-- Calling show will only show the frame if we have items to trade
+	self:RegisterMessage("RCItemStorageInitialized", "Show", nil)
 end
 
 function TradeUI:OnDisable() -- Shouldn't really happen
@@ -107,7 +109,7 @@ function TradeUI:Update(forceShow)
             {DoCellUpdate = self.SetCellItemIcon},
             {value = v.link},
             {value = "-->"},
-            {value = v.args.recipient and addon.Ambiguate(v.args.recipient) or "Unknown", color = addon:GetClassColor(v.args.recipient.class or "nothing")},
+            {value = v.args.recipient and addon:GetClassIconAndColoredName(v.args.recipient, 16) or "Unknown"},
             {value = _G.TRADE, color = self.GetTradeLabelColor, colorargs = {self, v.args.recipient},},
             {DoCellUpdate = self.SetCellDelete },
          }
@@ -447,6 +449,8 @@ function TradeUI.SetCellDelete(rowFrame, frame, data, cols, row, realrow, column
 	if not frame.created then
       frame:SetHeight(ROW_HEIGHT / 2)
 		frame:SetNormalTexture("Interface\\Buttons\\UI-GroupLoot-Pass-Up")
+		frame:SetHighlightTexture("Interface/Buttons/UI-GROUPLOOT-PASS-HIGHLIGHT")
+		frame:SetPushedTexture("Interface/Buttons/UI-GROUPLOOT-PASS-DOWN")
 		frame:SetScript("OnEnter", function()
 			addon:CreateTooltip(L["Double click to delete this entry."])
 		end)
@@ -463,6 +467,9 @@ function TradeUI.SetCellDelete(rowFrame, frame, data, cols, row, realrow, column
 
          local Item = addon.ItemStorage:GetItem(link, "to_trade")
          addon.ItemStorage:RemoveItem(Item)
+		 if #addon.ItemStorage:GetAllItemsOfType("to_trade") == 0 then
+			TradeUI:Hide()
+		 end
 		else
 			frame.lastClick = GetTime()
 		end

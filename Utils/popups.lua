@@ -216,3 +216,20 @@ LibDialog:Register("RCLOOTCOUNCIL_IMPORT_OVERWRITE", {
    hide_on_escape = true,
    show_while_dead = true,
 })
+
+-- Profile overwrite
+LibDialog:Register("RCLOOTCOUNCIL_OVERWRITE_PROFILE", {
+	text = "init",
+	on_show  = function (self, data)
+		self.text:SetText(format(L.opt_profileSharing_profileExistsWarning, data.name))
+	end,
+	buttons = {
+		{
+			text = _G.YES,
+			on_click = function (self, data)
+				addon:ApplyProfile(data.name, data.profile)
+			end
+		},
+		{ text = _G.NO }
+	}
+})

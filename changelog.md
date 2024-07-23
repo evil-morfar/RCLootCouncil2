@@ -1,6 +1,65 @@
-# 3.12.1
+# 3.13.0
 
 ## Changes
+
+Updated for the War Within prepatch (11.0.0).
+
+### Comms optimization
+
+Optimized random rolls from 1 message per session to approximately 1 message per 10 sessions. You can once again safely use the `"Add Rolls"` option.
+
+Optimized Rerolls and Request Rolls from 1-2 message(s) per candidate per session to 1-2 messages per request.
+
+Both are fully backwards compatible (uses old system for those that haven't updated).
+
+### Look and Feel
+
+Reviewed all addon prints/displays of player names and added class icon/colors where appropiate.
+
+Added highlight and push textures to several buttons that didn't have them.
+
+Added help tooltip and hover effect when hovering frame titles.
+
+Made frame scaling more granular.
+
+Prevented more info frames from getting too small/large.
+
+All import/export frames are now closeable with "Esc".
+
+When awarding an item, voting frame now switches to the *next* unawarded item instead of the *first*.
+
+Reviewed all UI layouts and margins. Updated all inconsistencies for a more unified look.
+
+Frame position and size settings has been reset due to these changes.
+
+### Loot Frame
+
+Loot Frame will now always "shrink" upwards when rolling on items, no matter where it's positioned.
+
+Integrated timeout bar with background and refreshed layout.
+
+The new timeout bar will flash when there's 5 seconds to timeout - can be disabled in the options menu (`Timeout Flash`).
+
+### Profile sharing
+
+It's now possible to export and import profile settings. This new feature is located at the "Profiles" tab in the options menu (`/rc profile`).
+
+### TradeUI
+
+TradeUI will now popup automatically after reloads/relogs if there's items to trade.
+
+Removing the last item in the list will now close the window.
+
+## Bugfixes
+
+- *Player names in voting frame vote status tooltip is again shown with class colors.*
+- *Loot- and Voting frame item type text now only shows subtype for most miscellaneous items.*
+- *Voting Frame More info now correctly updates when changing sessions while shown.*
+- *More info frames now minimizes with their parent frame.*
+- *Item owner information is again sent when reannouncing loot.*
+- *In loot history filter: deselecting a single selected class now resets the filter.*
+
+# 3.12.1
 
 ## Bugfixes
 

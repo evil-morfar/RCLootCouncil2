@@ -2,14 +2,21 @@
 --- @type RCLootCouncil
 local addon = select(2, ...)
 local lwin = LibStub("LibWindow-1.1")
+local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 
 local name = "RCFrame"
 --- @class RCFrame : Object.Minimize_Prototype, Frame, UI.embeds
 --- @field content BackdropTemplate | Frame
 --- @field title BackdropTemplate | Frame
+--- @field Update fun(self:RCFrame)
 local Object = {}
 local db = {}
-local scrollHandler = function(f, delta) if IsControlKeyDown() then lwin.OnMouseWheel(f, delta) end end
+local scrollHandler = function(f, delta)
+	if IsControlKeyDown() then
+		lwin.SetScale(f,
+			delta > 0 and f:GetScale() + .03 or math.min(f:GetScale() - .03), .03)
+	end
+end
 
 --- Creates a standard frame for addon with title, minimizing, positioning and scaling supported.
 --		Adds Minimize(), Maximize() and IsMinimized() functions on the frame, and registers it for hide on combat.
@@ -44,6 +51,7 @@ function Object:New(parent, name, title, width, height)
 
 	f.Update = function(self)
 		addon.Log:D("UpdateFrame", self:GetName())
+		db = addon:Getdb()
 		self.content:Update()
 		self.title:Update()
 	end
@@ -57,19 +65,10 @@ end
 function Object:CreateContentFrame(parent, name, height)
 	local c = CreateFrame("Frame", "RC_UI_" .. name .. "_Content", parent, BackdropTemplateMixin and "BackdropTemplate") -- frame that contains the actual content
 	c:SetFrameLevel(1)
-	c:SetBackdrop({
-		bgFile = AceGUIWidgetLSMlists.background[db.skins[db.currentSkin].background],
-		edgeFile = AceGUIWidgetLSMlists.border[db.skins[db.currentSkin].border],
-		tile = true,
-		tileSize = 255,
-		edgeSize = 16,
-		insets = {left = 2, right = 2, top = 2, bottom = 2},
-	})
+	self:SetupBackdrop(c, db.skins[db.currentSkin], true, 256)
 	c:EnableMouse(true)
 	c:SetWidth(450)
 	c:SetHeight(height or 325)
-	c:SetBackdropColor(unpack(db.skins[db.currentSkin].bgColor))
-	c:SetBackdropBorderColor(unpack(db.skins[db.currentSkin].borderColor))
 	c:SetPoint("TOPLEFT")
 	c:SetScript("OnMouseDown", function(self) self:GetParent():StartMoving() end)
 	c:SetScript("OnMouseUp", function(self)
@@ -87,16 +86,7 @@ function Object:CreateContentFrame(parent, name, height)
 	end)
 
 	c.Update = function()
-		c:SetBackdrop({
-			bgFile = AceGUIWidgetLSMlists.background[db.UI[name].background],
-			edgeFile = AceGUIWidgetLSMlists.border[db.UI[name].border],
-			tile = false,
-			tileSize = 64,
-			edgeSize = 12,
-			insets = {left = 2, right = 2, top = 2, bottom = 2},
-		})
-		c:SetBackdropColor(unpack(db.UI[name].bgColor))
-		c:SetBackdropBorderColor(unpack(db.UI[name].borderColor))
+		self:SetupBackdrop(c, db.UI[name], true, 256)
 	end
 
 	parent.content = c
@@ -105,21 +95,13 @@ end
 function Object:CreateTitleFrame(parent, name, title, width)
 	local tf = CreateFrame("Frame", "RC_UI_" .. name .. "_Title", parent, BackdropTemplateMixin and "BackdropTemplate")
 	tf:SetFrameLevel(2)
-	tf:SetBackdrop({
-		bgFile = AceGUIWidgetLSMlists.background[db.skins[db.currentSkin].background],
-		edgeFile = AceGUIWidgetLSMlists.border[db.skins[db.currentSkin].border],
-		tile = true,
-		tileSize = 16,
-		edgeSize = 12,
-		insets = {left = 2, right = 2, top = 2, bottom = 2},
-	})
-	tf:SetBackdropColor(unpack(db.skins[db.currentSkin].bgColor))
-	tf:SetBackdropBorderColor(unpack(db.skins[db.currentSkin].borderColor))
+	self:SetupBackdrop(tf, db.skins[db.currentSkin], true, 128)
 	tf:SetHeight(22)
 	tf:EnableMouse()
 	tf:SetMovable(true)
 	tf:SetWidth(width or 250)
 	tf:SetPoint("CENTER", parent, "TOP", 0, -1)
+	tf:SetScript("OnMouseWheel", function(self, delta) parent:GetScript("OnMouseWheel")(parent, delta) end)
 	tf:SetScript("OnMouseDown", function(self)
 		self:GetParent():StartMoving()
 		self:GetParent():SetToplevel(true)
@@ -141,6 +123,26 @@ function Object:CreateTitleFrame(parent, name, title, width)
 			self.lastClick = GetTime()
 		end
 	end)
+	local tempScale = db.UI[name].scale
+	local hoverTimer = nil
+	local showHelpTooltip = function()
+		GameTooltip:SetOwner(UIParent, "ANCHOR_CURSOR_RIGHT")
+		GameTooltip:AddLine(title, 1, 1, 1)
+		GameTooltip:AddLine()
+		GameTooltip:AddLine(L.rcframe_help, 1, 1, 1)
+
+		GameTooltip:Show()
+	end
+	tf:SetScript("OnEnter", function(self)
+		tempScale = self:GetScale()
+		self:SetScale(self:GetScale() * 1.07)
+		hoverTimer = addon:ScheduleTimer(showHelpTooltip, 1.2)
+	end)
+	tf:SetScript("OnLeave", function(self)
+		self:SetScale(tempScale)
+		addon:HideTooltip()
+		addon:CancelTimer(hoverTimer)
+	end)
 
 	local text = tf:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 	text:SetPoint("CENTER", tf, "CENTER")
@@ -148,19 +150,33 @@ function Object:CreateTitleFrame(parent, name, title, width)
 	text:SetText(title)
 	tf.text = text
 
-	tf.Update = function(self)
-		self:SetBackdrop({
-			bgFile = AceGUIWidgetLSMlists.background[db.UI[name].background],
-			edgeFile = AceGUIWidgetLSMlists.border[db.UI[name].border],
-			tile = false,
-			tileSize = 64,
-			edgeSize = 12,
-			insets = {left = 2, right = 2, top = 2, bottom = 2},
-		})
-		self:SetBackdropColor(unpack(db.UI[name].bgColor))
-		self:SetBackdropBorderColor(unpack(db.UI[name].borderColor))
+	tf.Update = function()
+		self:SetupBackdrop(tf, db.UI[name], true, 128)
 	end
 	parent.title = tf
+end
+
+--- Insets will be 0 if there's no border
+---@param frame Frame | BackdropTemplate
+---@param skinSelector table Table containing skin info. Should either be db.skins[db.currentSkin] or db.UI[name].
+---@param tile boolean Wheter or not the frame should be tiled
+---@param tileSize integer Defaults to 64
+function Object:SetupBackdrop(frame, skinSelector, tile, tileSize)
+	tileSize = tileSize or 64
+	local insets = 2
+	if skinSelector.border == "None" or skinSelector.border == "" then
+		insets = 0
+	end
+	frame:SetBackdrop({
+		bgFile = AceGUIWidgetLSMlists.background[skinSelector.background],
+		edgeFile = AceGUIWidgetLSMlists.border[skinSelector.border],
+		tile = tile,
+		tileSize = tileSize,
+		edgeSize = 12,
+		insets = { left = insets, right = insets, top = insets, bottom = insets, },
+	})
+	frame:SetBackdropColor(unpack(skinSelector.bgColor))
+	frame:SetBackdropBorderColor(unpack(skinSelector.borderColor))
 end
 
 Object.Minimize_Prototype = {

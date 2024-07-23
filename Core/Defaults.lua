@@ -70,6 +70,7 @@ addon.defaults = {
 		autoTrade = false,
 		showSpecIcon = false,
 		closeWithEscape = true,
+		timeoutFlash = true,
 		chatFrameName = "DEFAULT_CHAT_FRAME", -- The chat frame to use for :Print()s
 		-- General - History
 		enableHistory = true,
@@ -172,19 +173,18 @@ addon.defaults = {
 				y           = 0,
 				x           = 0,
 				point       = "CENTER",
-				scale       = 1.1, --0.8,
+				scale       = 1,
 				bgColor     = { 0, 0, 0.2, 1, },
 				borderColor = { 0.3, 0.3, 0.5, 1, },
 				border      = "Blizzard Tooltip",
 				background  = "Blizzard Tooltip",
 			},
-			lootframe = { -- We want the Loot Frame to get a little lower
+			DefaultRCLootFrame = { -- We want the Loot Frame to get a little lower
 				y = -200,
 			},
-			tradeui = {
+			RCDefaultTradeUIFrame = {
 				x = -300,
 			},
-			default = {}, -- base line
 		},
 
 		skins = {

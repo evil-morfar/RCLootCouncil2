@@ -36,6 +36,9 @@ function playerClass:GetShortName() return Ambiguate(self.name, "short") end
 function playerClass:GetGUID() return self.guid end
 function playerClass:GetForTransmit() return (gsub(self.guid, "Player%-", "")) end
 function playerClass:GetInfo() return GetPlayerInfoByGUID(self.guid) end
+function playerClass:GetClassColoredName()
+	return self.classColoredName or private:CreateClassColoredName(self)
+end
 --- Update fields in the Player object
 --- @param data table<string,any>
 function playerClass:UpdateFields(data)
@@ -49,7 +52,7 @@ local PLAYER_MT = {
 	__tostring = function(self) return self.name end,
 	--- @param a Player|string
 	--- @param b Player|string
-	__eq = function(a, b) 
+	__eq = function(a, b)
 		if a.guid and b.guid then return a.guid == b.guid end
 		if a.guid then return addon:UnitIsUnit(a.name, b) end
 		if b.guid then return addon:UnitIsUnit(b.name, a) end
@@ -81,7 +84,7 @@ function Player:Get(input)
 				if not guid then
 					-- Not much we can do at this point, so log an error
 					ErrorHandler:ThrowSilentError("Couldn't produce GUID for " .. tostring(input))
-					return private:GetNilPlayer()
+					return private:GetNilPlayer(input)
 				end
 			end
 		end
@@ -125,7 +128,7 @@ end
 --- @param player Player
 --- @return nil
 function private:UpdateCachedPlayer(player)
-	if not player and player.guid then
+	if not (player and player.guid) then
 		return Log:f("<Data.Player>", "UpdateCachedPlayer - no player or player guid", player.name, player.guid)
 	end
 
@@ -189,4 +192,12 @@ function private:GetGUIDFromPlayerNameByGuild(name)
 end
 
 --- @return Player # A special `nil` player
-function private:GetNilPlayer() return setmetatable({name = "Unknown"}, PLAYER_MT) end
+function private:GetNilPlayer(name) return setmetatable({name = name or "Unknown"}, PLAYER_MT) end
+
+---@param player Player
+function private:CreateClassColoredName(player)
+	local name = player.name
+	player.classColoredName = RCLootCouncil:WrapTextInClassColor(player.class, addon.Ambiguate(name))
+	private:CachePlayer(player)
+	return player.classColoredName
+end

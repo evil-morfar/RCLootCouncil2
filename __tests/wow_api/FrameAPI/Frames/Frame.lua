@@ -22,6 +22,14 @@ local objectMethods = {
 	GetFrameLevel = function(self) return self.values.frameLevel or 0 end,
 	GetScale = function(self) return self.scale end,
 	SetScale = function(self, scale) self.scale = scale end,
+	GetID = function(self) return self.id end,
+	SetAttribute = function (self, name, value)
+		self.attributes[name] = value
+		if self:GetScript("OnAttributeChanged") then
+			self:GetScript("OnAttributeChanged")(self,name,value)
+		end
+	end,
+	GetAttribute = function (self, name) return self.attributes[name] end,
 }
 
 local noopMethods = {
@@ -37,7 +45,6 @@ local noopMethods = {
 	"EnableKeyboard",
 	"ExecuteAttribute",
 	"GetAlpha",
-	"GetAttribute",
 	"GetBoundsRect",
 	"GetChildren",
 	"GetClampRectInsets",
@@ -49,7 +56,6 @@ local noopMethods = {
 	"GetFrameStrata",
 	"GetHitRectInsets",
 	"GetHyperlinksEnabled",
-	"GetID",
 	"GetNumChildren",
 	"GetNumRegions",
 	"GetPropagateKeyboardInput",
@@ -78,8 +84,6 @@ local noopMethods = {
 	"RegisterUnitEvent",
 	"RotateTextures",
 	"SetAlpha",
-	"SetAttribute",
-	"SetAttributeNoHandler",
 	"SetClampRectInsets",
 	"SetClampedToScreen",
 	"SetClipsChildren",
@@ -116,11 +120,12 @@ local noopMethods = {
 }
 
 for _, v in ipairs(noopMethods) do if not objectMethods[v] then objectMethods[v] = noop end end
-
+local count = 0
 Frame = {
 	New = function(name, parent)
 		local super = _G.ScriptRegion.New(name)
-		local object = { parent = parent, events = {}, values = {}, }
+		count = count + 1
+		local object = { parent = parent, events = {}, values = {}, attributes = {}, id = count }
 		return setmetatable(object, {
 			__index = function(self, v)
 				local k = objectMethods[v] or super[v]

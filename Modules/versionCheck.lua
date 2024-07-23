@@ -6,7 +6,7 @@
 	VERSION:
 		v		P - Version Check.
 		r 		P - Version Check Reply.
-		fr 	P - Full version checkc request.
+		fr 		P - Full version check request.
 		f 		T - Full version check reply. Only when open.
 ]]
 
@@ -65,11 +65,14 @@ function RCVersionCheck:OnEnable()
             addon.PREFIXES.VERSION,
             "f",
             function(data, sender)
+				-- Don't handle our own reply
+				if addon:UnitIsUnit(sender, "player") then return end
                 -- Check for recipient (x-realm support)
                 if data[6] then
                     local senderPlayer = Player:Get(data[6])
                     if senderPlayer ~= addon.player then return end
                 end
+				self:LogVersion(addon:UnitName(sender), data[3], data[4])
                 self:AddEntry(sender, data[1], data[2], data[3], data[4], data[5])
 				Player:Get(sender):UpdateFields{rank = data[2]}
             end
@@ -175,7 +178,7 @@ function RCVersionCheck:PrintOutDatedClients()
         if isgrouped and addon.candidatesInGroup[name] or not isgrouped then -- Only check people in our group if we're grouped.
             if not data[2] and addon:VersionCompare(data[1], addon.version) and data[3] > tChk then -- No tversion, and older than ours, and fresh
                 i = i + 1
-                outdated[i] = addon:GetUnitClassColoredName(name) .. ": " .. data[1]
+				outdated[i] = addon:GetClassIconAndColoredName(name) .. ": " .. data[1]
             end
         end
     end
@@ -458,7 +461,7 @@ function RCVersionCheck:GetFrame()
     f.guildBtn = b1
 
     local b2 = addon:CreateButton(_G.GROUP, f.content)
-    b2:SetPoint("LEFT", b1, "RIGHT", 15, 0)
+    b2:SetPoint("LEFT", b1, "RIGHT", 10, 0)
     b2:SetScript(
         "OnClick",
         function()
@@ -480,8 +483,8 @@ function RCVersionCheck:GetFrame()
     local totals = addon.UI:New("Text", f.content, "Unknown")
     totals:SetHeight(25)
     totals:SetTextColor(1,1,1,1)
-    totals:SetPoint("LEFT", b2, "RIGHT", 15, 0)
-    totals:SetPoint("RIGHT", b3, "LEFT", -15, 0)
+    totals:SetPoint("LEFT", b2, "RIGHT", 10, 0)
+    totals:SetPoint("RIGHT", b3, "LEFT", -10, 0)
     local temp = TT:Acquire(
         colors.yellow:WrapTextInColorCode("Test Versions"),
         colors.red:WrapTextInColorCode("Outdated"),
@@ -499,9 +502,10 @@ function RCVersionCheck:GetFrame()
     f.totals = totals
 
     local st = ST:CreateST(self.scrollCols, 12, 20, nil, f.content)
-    st.frame:SetPoint("TOPLEFT", f, "TOPLEFT", 10, -35)
+    st.frame:SetPoint("TOPLEFT", f, "TOPLEFT", 10, -30)
     --content.frame:SetBackdropColor(1,0,0,1)
     f:SetWidth(st.frame:GetWidth() + 20)
+	f:SetHeight(320)
     f.rows = {} -- the row data
     f.st = st
     return f

@@ -18,6 +18,7 @@ local MIN_BUTTON_WIDTH = 40
 local sessionsWaitingRollResultQueue = {}
 local ROLL_TIMEOUT = 1.5
 local ROLL_SHOW_RESULT_TIME = 1
+local TIMEOUT_FLASH_THRESHOLD = 5
 
 -- Lua
 local type, pairs, tinsert, ipairs, string, GetTime, math, ceil, tDeleteItem, next, error, tostring, setmetatable, tremove, format, tonumber =
@@ -110,6 +111,7 @@ function LootFrame:ReRoll(table)
 end
 
 function LootFrame:OnEnable()
+	---@type RCItemEntry[]
 	self.items = {} -- item.i = {name, link, lvl, texture} (i == session)
 	self.frame = self:GetFrame()
 	self:RegisterEvent("CHAT_MSG_SYSTEM")
@@ -148,8 +150,19 @@ function LootFrame:Update()
 	if numEntries == 0 then
 		return self:Disable()
 	end
+	local point = {self.frame:GetPoint()}
+	local oldHeight = self.frame:GetHeight()
+
 	self.EntryManager:Update()
-	self.frame:SetHeight(numEntries * ENTRY_HEIGHT + 7)
+	self.frame:SetHeight(numEntries * ENTRY_HEIGHT)
+
+	-- We want the frame to "shrink upwards"
+	if point[3] == "CENTER" or point[3] == "RIGHT" or point[3] == "LEFT" then
+		point[5] = point[5] + (oldHeight - self.frame:GetHeight()) / 2
+	elseif point[3] == "BOTTOM" or point[3] == "BOTTOMRIGHT" or point[3] == "BOTTOMLEFT" then
+		point[5] = point[5] + (oldHeight - self.frame:GetHeight())
+	end
+	self.frame:SetPoint(unpack(point))
 
 	local firstEntry = self.EntryManager.entries[1]
 	if firstEntry and addon:Getdb().modules["RCLootFrame"].alwaysShowTooltip then
@@ -167,7 +180,7 @@ function LootFrame:OnRoll(entry, button)
 	if not item.isRoll then
 		if button ~= "PASS" and button ~= "TIMEOUT" and entry.buttons[button].requireNotes then
 			if not item.note or #item.note == 0 then
-				addon:Print(format(L["lootFrame_error_note_required"], addon.Ambiguate(addon.masterLooter:GetName())))
+				addon:Print(format(L["lootFrame_error_note_required"], addon:GetClassIconAndColoredName(addon.masterLooter)))
 				return
 			end
 		end
@@ -215,15 +228,23 @@ end
 function LootFrame:GetFrame()
 	if self.frame then return self.frame end
 	addon.Log:D("LootFrame","GetFrame()")
-	self.frame = addon.UI:NewNamed("RCFrame", UIParent, "DefaultRCLootFrame", L["RCLootCouncil Loot Frame"], 250, 375)
-	self.frame.title:SetPoint("BOTTOM", self.frame, "TOP", 0 ,-5)
+	self.frame = addon.UI:NewNamed("RCFrame", UIParent, "DefaultRCLootFrame", L["RCLootCouncil Loot Frame"], 250, 380)
 	self.frame.itemTooltip = addon:CreateGameTooltip("lootframe", self.frame.content)
 	return self.frame
 end
 
 do
+	local timeoutBarXOffset = 3
+	local timeoutBarYOffset = 2
+
+	---@class RCLootFrameEntry
+	---@field type "normal" | "roll"
 	local entryPrototype = {
 		type = "normal",
+		position = 0,
+
+		---@param entry RCLootFrameEntry
+		---@param item RCItemEntry
 		Update = function(entry, item)
 			if not item then
 				return addon.Log:E("Entry update error @ item:", item)
@@ -249,7 +270,7 @@ do
 			local typeText = addon:GetItemTypeText(item.link, item.subType, item.equipLoc, item.typeID, item.subTypeID, item.classes, item.isTier, item.isRelic)
 			local bonusText = addon:GetItemBonusText(item.link, "/")
 			if bonusText ~= "" then bonusText = "+ "..bonusText end
-			entry.itemLvl:SetText(addon.Utils:GetItemLevelText(entry.item.ilvl, entry.item.isTier).." |cff7fffff"..typeText.."|r")
+			entry.itemLvl:SetText((entry.item.ilvl or "").." |cff7fffff"..typeText.."|r")
 			entry.bonuses:SetText(bonusText)
 			if entry.item.note then
 				entry.noteButton:SetNormalTexture("Interface\\Buttons\\UI-GuildButton-PublicNote-Up")
@@ -259,27 +280,60 @@ do
 			if addon.mldb.timeout then
 				entry.timeoutBar:SetMinMaxValues(0, addon.mldb.timeout or addon.db.profile.timeout)
 				entry.timeoutBar:Show()
+				entry.timeoutBarText:Show()
 			else
 				entry.timeoutBar:Hide()
+				entry.timeoutBarText:Hide()
 			end
 			if addon:UnitIsUnit(item.owner, "player") then -- Special coloring
 				entry.frame:SetBackdrop({
 					edgeFile = "Interface/Tooltips/UI-Tooltip-Border",
-				   edgeSize = 20,
-					insets = { left = 2, right = 2, top = -2, bottom = -14 }
+					edgeSize = 8,
 				})
 				entry.frame:SetBackdropBorderColor(0,1,1,1)
+				-- Update layout to ensure the correct frame level order
+				LootFrame.frame:SetFrameLevel(1)
+				entry.frame:SetFrameLevel(1)
+				entry.timeoutBar:SetFrameLevel(1)
 			else
 				entry.frame:SetBackdrop(nil) -- Remove it again
 			end
+
+			if entry.blinkAnim:IsPlaying() then
+				entry.blinkAnim:Stop()
+			end
+
 			entry:UpdateButtons()
 			entry:Show()
 		end,
 		Show = function(entry) entry.frame:Show() end,
 		Hide = function(entry) entry.frame:Hide() end,
 
-		-- Constructor for the prototype.
-		-- Expects caller to setup buttons and position.
+		---@param entry RCLootFrameEntry
+		---@param numEntries integer
+		UpdatePosition = function (entry, numEntries)
+			local point, relativeTo, relativePoint, x = entry.timeoutBar:GetPoint()
+			if entry.position == numEntries and entry.position ~= 1 then
+				-- Last entry's timeout frame needs to move up by one, except when it's the first
+				entry.timeoutBar:SetPoint(point, relativeTo, relativePoint, x, 1)
+				entry.timeoutBar:SetSize(entry.frame:GetWidth() - timeoutBarXOffset * 2, ENTRY_HEIGHT - timeoutBarYOffset)
+
+			elseif entry.position ~= 1 then
+				-- Other entry's timeout frame needs to be one heigher
+				entry.timeoutBar:SetSize(entry.frame:GetWidth() - timeoutBarXOffset * 2, ENTRY_HEIGHT - timeoutBarYOffset + 1)
+				entry.timeoutBar:SetPoint("BOTTOMLEFT", entry.frame, "BOTTOMLEFT", timeoutBarXOffset, 0)
+
+			else
+				-- Restore original position/size
+				entry.timeoutBar:SetSize(entry.frame:GetWidth() - timeoutBarXOffset * 2, ENTRY_HEIGHT - timeoutBarYOffset)
+				entry.timeoutBar:SetPoint("BOTTOMLEFT", entry.frame, "BOTTOMLEFT", timeoutBarXOffset, 0)
+			end
+		end,
+
+		--- Constructor for the prototype.
+		--- Expects caller to setup buttons and position.
+		---@param entry RCLootFrameEntry
+		---@param parent Frame
 		Create = function(entry, parent)
 			entry.width = parent:GetWidth()
 			entry.frame = CreateFrame("Frame", "DefaultRCLootFrameEntry("..LootFrame.EntryManager.numEntries..")", parent, "BackdropTemplate")
@@ -291,8 +345,9 @@ do
 			-------- Item Icon -------------
 			entry.icon = addon.UI:New("IconBordered", entry.frame)
 			entry.icon:SetBorderColor("grey") -- white
-			entry.icon:SetSize(ENTRY_HEIGHT*0.78, ENTRY_HEIGHT*0.78)
-			entry.icon:SetPoint("TOPLEFT", entry.frame, "TOPLEFT", 9, -5)
+			local iconScalar = 0.75
+			entry.icon:SetSize(ENTRY_HEIGHT * iconScalar, ENTRY_HEIGHT * iconScalar)
+			entry.icon:SetPoint("TOPLEFT", entry.frame, "TOPLEFT", 10, -10)
 			entry.icon:SetMultipleScripts({
 				OnEnter = function()
 					if not entry.item.link then return end
@@ -327,8 +382,8 @@ do
 				local b = entry.buttons -- shortening
 				local numButtons = addon:GetNumButtons(entry.type)
 				local buttons = addon:GetButtons(entry.type)
-				-- (IconWidth (63) + indent(9)) + pass button (5) + (noteButton(24)  + indent(5+7)) + numButton * space(5)
-				local width = 113 + numButtons * 5
+				-- (IconWidth (60) + indent(10)) + pass button (5) + (noteButton(24)  + indent(10)) + numButton * space(5)
+				local width = 109 + numButtons * 5
 				for i = 1, numButtons + 1 do
 					if i > numButtons then -- Pass button:
 						b[i] = b[i] or addon:CreateButton(_G.PASS, entry.frame)
@@ -358,15 +413,15 @@ do
 				entry.width = width
 
 				-- Adjust the width to match item text and item level, in case we have few buttons.
-				entry.width = math.max(entry.width, 90 + entry.itemText:GetStringWidth())
-				entry.width = math.max(entry.width, 89 + entry.itemLvl:GetStringWidth())
+				entry.width = math.max(entry.width, 150 + entry.itemText:GetStringWidth())
+				entry.width = math.max(entry.width, 149 + entry.itemLvl:GetStringWidth())
 			end
 			-------- Note button ---------
 			entry.noteButton = CreateFrame("Button", nil, entry.frame)
 			entry.noteButton:SetSize(24,24)
+			entry.noteButton:SetPoint("BOTTOMRIGHT", entry.frame, "BOTTOMRIGHT", -10, 10)
 			entry.noteButton:SetHighlightTexture("Interface\\Minimap\\UI-Minimap-ZoomButton-Highlight")
 			entry.noteButton:SetNormalTexture("Interface\\Buttons\\UI-GuildButton-PublicNote-Disabled")
-			entry.noteButton:SetPoint("BOTTOMRIGHT", entry.frame, "TOPRIGHT", -9, -entry.icon:GetHeight()-5)
 			entry.noteButton:SetScript("OnEnter", function()
 				if entry.item.note then -- If they already entered a note:
 					addon:CreateTooltip(L["Your note:"], entry.item.note, "\n"..L["Click to change your note."])
@@ -394,7 +449,7 @@ do
 			entry.noteEditbox:SetJustifyV("BOTTOM")
 			entry.noteEditbox:SetWidth(100)
 			entry.noteEditbox:SetHeight(24)
-			entry.noteEditbox:SetPoint("BOTTOMLEFT", entry.frame, "TOPRIGHT", 0, -entry.icon:GetHeight()-5)
+			entry.noteEditbox:SetPoint("LEFT", entry.noteButton, "RIGHT", 10, 0)
 			entry.noteEditbox:SetTextInsets(5, 5, 0, 0)
 			entry.noteEditbox:SetScript("OnEnterPressed", function(self)
 				self:Hide()
@@ -413,11 +468,11 @@ do
 
 			----- item text/lvl ---------------
 			entry.itemText = entry.frame:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
-			entry.itemText:SetPoint("TOPLEFT", entry.icon, "TOPRIGHT", 6, -1)
+			entry.itemText:SetPoint("TOPLEFT", entry.icon, "TOPRIGHT", 5, 0)
 			entry.itemText:SetText("Fatal error!!!!") -- Set text for reasons
 
 			entry.itemLvl = entry.frame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-			entry.itemLvl:SetPoint("TOPLEFT", entry.itemText, "BOTTOMLEFT", 1, -4)
+			entry.itemLvl:SetPoint("LEFT", entry.icon, "RIGHT", 6, 3)
 			entry.itemLvl:SetTextColor(1, 1, 1) -- White
 			entry.itemLvl:SetText("error")
 
@@ -427,35 +482,59 @@ do
 
 			------------ Timeout -------------
 			entry.timeoutBar = CreateFrame("StatusBar", nil, entry.frame, "TextStatusBar")
-			entry.timeoutBar:SetSize(entry.frame:GetWidth(), 6)
-			entry.timeoutBar:SetPoint("BOTTOMLEFT", 9,3)
+			entry.timeoutBar:SetSize(entry.frame:GetWidth() - timeoutBarXOffset * 2, ENTRY_HEIGHT - timeoutBarYOffset)
+			entry.timeoutBar:SetPoint("BOTTOMLEFT", entry.frame, "BOTTOMLEFT", timeoutBarXOffset, 0)
+			entry.timeoutBar:SetFrameLevel(1)
 			entry.timeoutBar:SetStatusBarTexture("Interface\\TargetingFrame\\UI-StatusBar")
-			--entry.timeoutBar:SetStatusBarColor(0.1, 0, 0.6, 0.8) -- blue
 			entry.timeoutBar:SetStatusBarColor(0.5, 0.5, 0.5, 1) -- grey
+			-- entry.timeoutBar:SetColorFill(0.5, 0.5, 0.5, 1) -- grey
+			entry.timeoutBar:SetAlpha(.3)
+			entry.timeoutBar:GetStatusBarTexture():SetBlendMode("ADD")
 			entry.timeoutBar:SetMinMaxValues(0, addon.mldb.timeout or addon:Getdb().timeout or 30)
 			entry.timeoutBar:SetScript("OnUpdate", function(this, elapsed)
 				if entry.item.timeLeft <= 0 then --Timeout!
-					this.text:SetText(L["Timeout"])
+					entry.timeoutBarText:SetText(L["Timeout"])
 					this:SetValue(0)
+					entry.blinkAnim:Stop()
 					return LootFrame:OnRoll(entry, "TIMEOUT")
 				end
+				if entry.item.timeLeft <= TIMEOUT_FLASH_THRESHOLD and not entry.blinkAnim:IsPlaying() then
+					if addon.db.profile.timeoutFlash then
+						entry.blinkAnim:Play()
+					end
+				end
 				entry.item.timeLeft = entry.item.timeLeft - elapsed
-				this.text:SetText(_G.CLOSES_IN..": "..ceil(entry.item.timeLeft)) -- _G.CLOSES_IN == "Time Left" for English
+				entry.timeoutBarText:SetText(_G.CLOSES_IN .. ": " .. ceil(entry.item.timeLeft)) -- _G.CLOSES_IN == "Time Left" for English
 				this:SetValue(entry.item.timeLeft)
 			end)
 
 			-- We want to update the width of the timeout bar everytime the width of the whole frame changes:
 			local main_width = entry.frame.SetWidth
 			function entry:SetWidth(width)
-				self.timeoutBar:SetWidth(width - 18) -- 9 indent on each side
+				self.timeoutBar:SetWidth(width - (timeoutBarXOffset * 2)) -- 5 indent on each side
 				main_width(self.frame, width)
 				self.width = width
 			end
 
-			entry.timeoutBar.text = entry.timeoutBar:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-			entry.timeoutBar.text:SetPoint("CENTER", entry.timeoutBar)
-			entry.timeoutBar.text:SetTextColor(1,1,1)
-			entry.timeoutBar.text:SetText("Timeout")
+			entry.timeoutBarText = entry.frame:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+			entry.timeoutBarText:SetPoint("TOPRIGHT", entry.frame, "TOPRIGHT", -10, -10)
+			entry.timeoutBarText:SetTextColor(.8, .8, .8, 1)
+			entry.timeoutBarText:SetText("Timeout")
+
+			-- Timeout animation
+			local animBackground = entry.frame:CreateTexture()
+			animBackground:SetAllPoints(entry.timeoutBar)
+			animBackground:SetColorTexture(.5, .5, .5, 1)
+			animBackground:SetBlendMode("ADD")
+			animBackground:SetAlpha(0)
+			entry.animBackground = animBackground
+			local anim = animBackground:CreateAnimationGroup()
+			anim:SetLooping("BOUNCE")
+			local a1 = anim:CreateAnimation("Alpha")
+			a1:SetFromAlpha(0)
+			a1:SetToAlpha(.3)
+			a1:SetDuration(.3)
+			entry.blinkAnim = anim
 		end,
 	}
 
@@ -463,22 +542,26 @@ do
 
 	LootFrame.EntryManager = {  -- namespace
 		numEntries = 0,
+		---@type RCLootFrameEntry[]
 		entries = {},
 		trashPool = {},
 	}
 
-	-- Hides and stores entries for reuse later
+	--- Hides and stores entries for reuse later
+	---@param entry RCLootFrameEntry
 	function LootFrame.EntryManager:Trash(entry)
 		addon.Log:D("Trashing entry:", entry.position or 0, entry.item.link)
 		entry:Hide()
 		if not self.trashPool[entry.type] then self.trashPool[entry.type] = {} end
 		self.trashPool[entry.type][entry] = true
-		tDeleteItem(self.entries, entry) -- To make tremove(self.entries, entry.position) works, :Update() must be run after every trash.
-										 -- entry.position is only used for debugging purpose. Dangerous to rely on a changing index for deletion.
+		tDeleteItem(self.entries, entry)
 		self.entries[entry.item] = nil
 		self.numEntries = self.numEntries - 1
 	end
 
+	---Fetches an Entry from the trashPool
+	---@param type string
+	---@return RCLootFrameEntry? entry
 	function LootFrame.EntryManager:Get(type)
 		if not self.trashPool[type] then return nil end
 		local t = next(self.trashPool[type])
@@ -495,11 +578,12 @@ do
 		for i, entry in ipairs(self.entries) do
 			if entry.width > max then max = entry.width end
 			if i == 1 then
-				entry.frame:SetPoint("TOPLEFT", LootFrame.frame.content, "TOPLEFT",0,-5)
+				entry.frame:SetPoint("TOPLEFT", LootFrame.frame.content, "TOPLEFT",0,0)
 			else
 				entry.frame:SetPoint("TOPLEFT", self.entries[i-1].frame, "BOTTOMLEFT")
 			end
 			entry.position = i
+			entry:UpdatePosition(self.numEntries)
 		end
 	--	addon.Log:D("EntryManager:Update(), width = ", max)
 		LootFrame.frame:SetWidth(max)
@@ -553,7 +637,6 @@ do
 		Entry.type = "roll"
 		Entry:Create(LootFrame.frame.content)
 
-		-- Relic entry uses different buttons, so change the function:
 		function Entry.UpdateButtons(entry)
 			local b = entry.buttons -- shortening
 			b[1] = b[1] or CreateFrame("Button", nil, entry.frame) -- ROLL
@@ -564,8 +647,8 @@ do
 			roll:SetHighlightTexture("Interface\\Buttons\\UI-GroupLoot-Dice-Highlight")
 			roll:SetPushedTexture("Interface\\Buttons\\UI-GroupLoot-Dice-Down")
 			roll:SetScript("OnClick", function() LootFrame:OnRoll(entry, "ROLL") end)
-			roll:SetSize(32, 32)
-			roll:SetPoint("BOTTOMLEFT", entry.icon, "BOTTOMRIGHT", 5, -7)
+			roll:SetSize(30, 30)
+			roll:SetPoint("BOTTOMLEFT", entry.icon, "BOTTOMRIGHT", 5, -6)
 			roll:Enable()
 			roll:Show()
 
@@ -573,7 +656,7 @@ do
 			pass:SetHighlightTexture("Interface\\Buttons\\UI-GroupLoot-Pass-Highlight")
 			pass:SetPushedTexture("Interface\\Buttons\\UI-GroupLoot-Pass-Down")
 			pass:SetScript("OnClick", function() LootFrame:OnRoll(entry, "PASS") end)
-			pass:SetSize(32, 32)
+			pass:SetSize(30, 30)
 			pass:SetPoint("LEFT", roll, "RIGHT", 5, 3)
 			pass:Show()
 
@@ -587,8 +670,8 @@ do
 			entry.width = width
 
 			-- Adjust the width to match item text and item level, in case we have few buttons.
-			entry.width = math.max(entry.width, 90 + entry.itemText:GetStringWidth())
-			entry.width = math.max(entry.width, 89 + entry.itemLvl:GetStringWidth())
+			entry.width = math.max(entry.width, 150 + entry.itemText:GetStringWidth())
+			entry.width = math.max(entry.width, 149 + entry.itemLvl:GetStringWidth())
 		end
 		Entry:Update(item)
 

@@ -1,8 +1,9 @@
 require "busted.runner" ()
 
-dofile(".specs/AddonLoader.lua").LoadToc("RCLootCouncil.toc")
+local addon = dofile(".specs/AddonLoader.lua").LoadToc("RCLootCouncil.toc")
 
-local Utils
+---@type RCLootCouncil.Utils
+local Utils = addon.Utils
 
 describe("#Utils :CheckOutdatedVersion", function()
 	before_each(function()
@@ -148,9 +149,98 @@ describe("#Utils functions", function()
 		end)
 
 		it("can handle missing param", function()
-			assert.has_no.errors(function ()
+			assert.has_no.errors(function()
 				Utils:UnitName()
 			end)
+		end)
+	end)
+end)
+
+describe("#Utils *HasVersion", function()
+	describe("#GroupHasVersion", function()
+		before_each(function()
+			_G.IsInGroupVal = true
+			addon.candidatesInGroup = {
+				a = true,
+				b = true,
+				c = true,
+				d = true,
+			}
+			addon.db = {
+				global = {
+					verTestCandidates = {
+						a = { "3.0.0", false, time() - math.random(1, 100), },
+						b = { "3.0.1", false, time() - math.random(1, 100), },
+						c = { "3.0.2", false, time() - math.random(1, 100), },
+						d = { "3.0.3", false, time() - math.random(1, 100), },
+					},
+				},
+			}
+		end)
+		it("should return true when we're not in a group", function()
+			_G.IsInGroupVal = false
+			assert.True(Utils:GroupHasVersion())
+		end)
+
+		it("should return true when everyone has a newer version", function()
+			assert.True(Utils:GroupHasVersion("3.0.0"))
+		end)
+
+		it("should return false if someone is outdated", function()
+			assert.False(Utils:GroupHasVersion("3.0.1"))
+		end)
+
+		it("should return true if someone doesn't have a version recorded", function()
+			addon.candidatesInGroup["e"] = true
+			assert.True(Utils:GroupHasVersion("3.0.0"))
+		end)
+
+		it("should return false if someone doesn't have a version recorded and using strict", function()
+			addon.candidatesInGroup["e"] = true
+			assert.False(Utils:GroupHasVersion("3.0.0", true))
+		end)
+
+		it("should return true if their record is outdated", function()
+			addon.db.global.verTestCandidates.d[3] = -1
+			addon.db.global.verTestCandidates.d[1] = "2.9.0"
+
+			assert.True(Utils:GroupHasVersion("3.0.0"))
+		end)
+
+		it("should return false if their record is outdated in strict", function()
+			addon.db.global.verTestCandidates.d[3] = -1
+			addon.db.global.verTestCandidates.d[1] = "2.9.0"
+			assert.False(Utils:GroupHasVersion("3.0.0", true))
+		end)
+	end)
+
+	describe("#PlayersHasVersion", function()
+		before_each(function()
+			addon.candidatesInGroup = {
+				a = true,
+				b = true,
+				c = true,
+				d = true,
+			}
+			addon.db = {
+				global = {
+					verTestCandidates = {
+						a = { "3.0.0", false, time() - math.random(1, 100), },
+						b = { "3.0.1", false, time() - math.random(1, 100), },
+						c = { "3.0.2", false, time() - math.random(1, 100), },
+						d = { "3.0.3", false, time() - math.random(1, 100), },
+					},
+				},
+			}
+		end)
+
+		local createPlayer = function(name) return { name = name, } end
+
+		it("should return true if everyone has version or newer", function()
+			assert.True(Utils:PlayersHasVersion({ createPlayer("a"), createPlayer("b"), }, "3.0.0"))
+		end)
+		it("should return false if someone doesn't have a version", function()
+			assert.False(Utils:PlayersHasVersion({ createPlayer("a"), createPlayer("b"), }, "3.0.1"))
 		end)
 	end)
 end)

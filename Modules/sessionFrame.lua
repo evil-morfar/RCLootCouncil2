@@ -31,7 +31,7 @@ function RCSessionFrame:OnInitialize()
 	self.scrollCols = {
 		{ name = "", width = 30}, 				-- remove item, sort by session number.
 		{ name = "", width = ROW_HEIGHT},	-- item icon
-		{ name = "", width = 50,}, 	-- item lvl
+		{ name = "", width = 60,}, 	-- item lvl
 		{ name = "", width = 160}, 			-- item link
 	}
 end
@@ -121,7 +121,7 @@ function RCSessionFrame:ExtractData(data)
 				cols = {
 					{ DoCellUpdate = self.SetCellDeleteBtn, },
 					{ DoCellUpdate = self.SetCellItemIcon},
-					{ value = " "..(addon.Utils:GetItemLevelText(v.ilvl, v.token) or "")..bonusText},
+					{ value = " "..(v.ilvl or "")..bonusText},
 					{ DoCellUpdate = self.SetCellText },
 				},
 			})
@@ -156,12 +156,14 @@ function RCSessionFrame.SetCellText(rowFrame, frame, data, cols, row, realrow, c
 			RCSessionFrame:ScheduleTimer("Show", 0, ml.lootTable) -- Try again next frame
 		end
 	else
-		frame.text:SetText(data[realrow].link..(data[realrow].owner and "\n"..addon:GetUnitClassColoredName(data[realrow].owner) or ""))
+		frame.text:SetText(data[realrow].link..(data[realrow].owner and "\n"..addon:GetClassIconAndColoredName(data[realrow].owner) or ""))
 	end
 end
 
 function RCSessionFrame.SetCellDeleteBtn(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
 	frame:SetNormalTexture("Interface/BUTTONS/UI-GroupLoot-Pass-Up.png")
+	frame:SetHighlightTexture("Interface/Buttons/UI-GROUPLOOT-PASS-HIGHLIGHT")
+	frame:SetPushedTexture("Interface/Buttons/UI-GROUPLOOT-PASS-DOWN")
 	frame:SetScript("OnClick", function() RCSessionFrame:DeleteItem(data[realrow].session, realrow) end)
 	frame:SetSize(20,20)
 end
@@ -169,6 +171,7 @@ end
 function RCSessionFrame.SetCellItemIcon(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
 	local texture = data[realrow].texture or "Interface/ICONS/INV_Sigil_Thorim.png"
 	local link = data[realrow].link
+	frame:SetSize(ROW_HEIGHT-5, ROW_HEIGHT-5)
 	frame:SetNormalTexture(texture)
 	frame:SetScript("OnEnter", function() addon:CreateHypertip(link) end)
 	frame:SetScript("OnLeave", function() addon:HideTooltip() end)
@@ -182,15 +185,8 @@ end
 function RCSessionFrame:GetFrame()
 	if self.frame then return self.frame end
 
-	local f = addon.UI:NewNamed("RCFrame", UIParent, "DefaultRCSessionSetupFrame", L["RCLootCouncil Session Setup"], 260)
+	local f = addon.UI:NewNamed("RCFrame", UIParent, "DefaultRCSessionSetupFrame", L["RCLootCouncil Session Setup"], 270)
 	addon.UI:RegisterForEscapeClose(f, function() if self:IsEnabled() then self:Disable() end end)
-	local tgl = CreateFrame("CheckButton", f:GetName().."Toggle", f.content, "ChatConfigCheckButtonTemplate")
-	getglobal(tgl:GetName().."Text"):SetText(L["Award later?"])
-	tgl:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", 10, 40)
-	tgl.tooltip = L["Check this to loot the items and distribute them later."]
-	tgl:SetChecked(awardLater)
-	tgl:SetScript("OnClick", function() awardLater = not awardLater; end )
-	f.toggle = tgl
 
 	-- Start button
 	local b1 = addon:CreateButton(_G.START, f.content)
@@ -199,7 +195,7 @@ function RCSessionFrame:GetFrame()
 		if loadingItems then
 			return addon:Print(L["You can't start a session before all items are loaded!"])
 		end
-		if not ml.lootTable or #ml.lootTable == 0 then
+			if not ml.lootTable or #ml.lootTable == 0 then
 			addon:Print(L["You cannot start an empty session."])
 			addon.Log:D("Player tried to start empty session.")
 			return
@@ -234,7 +230,7 @@ function RCSessionFrame:GetFrame()
 
 	-- Cancel button
 	local b2 = addon:CreateButton(_G.CANCEL, f.content)
-	b2:SetPoint("LEFT", b1, "RIGHT", 15, 0)
+	b2:SetPoint("LEFT", b1, "RIGHT", 10, 0)
 	b2:SetScript("OnClick", function()
 		if not ml.running then -- Don't clear lootTable on a running session.
 			ml.lootTable = {}
@@ -243,9 +239,18 @@ function RCSessionFrame:GetFrame()
 	end)
 	f.closeBtn = b2
 
+	local tgl = CreateFrame("CheckButton", f:GetName() .. "Toggle", f.content, "ChatConfigCheckButtonTemplate")
+	tgl:SetPoint("BOTTOMLEFT", b1, "TOPLEFT", 0, 10)
+	tgl.tooltip = L["Check this to loot the items and distribute them later."]
+	tgl:SetChecked(awardLater)
+	tgl:SetScript("OnClick", function() awardLater = not awardLater; end)
+	tgl.Text:SetText(L["Award later?"])
+	tgl.Text:SetPoint("LEFT", tgl, "RIGHT", 5, 0)
+	f.toggle = tgl
+
 	local st = ST:CreateST(self.scrollCols, 5, ROW_HEIGHT, nil, f.content)
 	st.head:SetHeight(0)
-	st.frame:SetPoint("TOPLEFT",f,"TOPLEFT",10,-20)
+	st.frame:SetPoint("TOPLEFT",f,"TOPLEFT",10,-15)
 	st:RegisterEvents({
 		["OnClick"] = function(_, _, _, _, row, realrow)
 			if not (row or realrow) then
@@ -254,7 +259,7 @@ function RCSessionFrame:GetFrame()
 		end
 	})
 	f:SetWidth(st.frame:GetWidth()+20)
-	f:SetHeight(305)
+	f:SetHeight(st.frame:GetHeight() + 94)
 	f.rows = {} -- the row data
 	f.st = st
 	return f

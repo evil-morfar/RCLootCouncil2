@@ -9,7 +9,7 @@ local Player = addon.Require "Data.Player"
 local TT = addon.Require "Utils.TempTable"
 
 local private = {
-	---@class Council
+	---@class Council : { [string] : Player}
 	--- Format is
 	--- ```
 	--- {
@@ -65,10 +65,14 @@ function Council:Contains(player)
 end
 
 --- Gets the council table optimized for comms.
---- @return TempTable @A "TempTable" with the council data.
+--- @return TempTable<Council> @A "TempTable" with the council data.
 function Council:GetForTransmit()
 	local tt = TT:Acquire()
-	for _, player in pairs(private.council) do tt[player:GetForTransmit()] = true end
+	local council = self:GetCouncilInGroup()
+	for _, player in pairs(council) do
+		tt[player:GetForTransmit()] = true
+	end
+	TT:Release(council)
 	return tt
 end
 
@@ -83,6 +87,7 @@ function Council:RestoreFromTransmit(council)
 	return private:GetCouncilSize()
 end
 
+---@return integer #Number of council members.
 function private:GetCouncilSize()
 	local size = 0
 	for _ in pairs(self.council) do size = size + 1 end
@@ -97,4 +102,16 @@ function Council:GetForPrint()
 	local ret = table.concat(temp, ", ")
 	TT:Release(temp)
 	return ret
+end
+
+--- Fetches all council members currently in our group
+---@return TempTable<Player>
+function Council:GetCouncilInGroup()
+	local ret = TT:Acquire()
+	for _, player in pairs(private.council) do
+		if addon.candidatesInGroup[player.name] then
+			tinsert(ret, player)
+		end
+	end
+	return ret;
 end

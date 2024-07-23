@@ -68,8 +68,6 @@ function LootHistory:OnInitialize()
 	rightClickMenu = _G.MSA_DropDownMenu_Create("RCLootCouncil_LootHistory_RightclickMenu", UIParent)
 	_G.MSA_DropDownMenu_Initialize(filterMenu, self.FilterMenu, "MENU")
 	_G.MSA_DropDownMenu_Initialize(rightClickMenu, self.RightClickMenu, "MENU")
-	--MoreInfo
-	self.moreInfo = CreateFrame( "GameTooltip", "RCLootHistoryMoreInfo", nil, "GameTooltipTemplate" )
 
 	self:SubscribeToPermanentComms()
 end
@@ -255,15 +253,7 @@ function LootHistory:BuildData()
 		end
 		tinsert(dateData, {date})
 	end
-	-- Insert players in the group who isn't registered in the lootDB
-	for name,v in pairs(addon.candidates or {}) do
-		if not insertedNames[name] then
-			tinsert(nameData, {
-				{DoCellUpdate = addon.SetCellClassIcon, args = {v.class}},
-				{value = addon.Ambiguate(name), color = addon:GetClassColor(v.class), name = name}
-			})
-		end
-	end
+
 	self.frame.st:SetData(self.frame.rows)
 	self.frame.date:SetData(dateData, true) -- True for minimal data	format
 	self.frame.name:SetData(nameData, true)
@@ -517,6 +507,8 @@ end
 function LootHistory.SetCellDelete(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
 	if not frame.created then
 		frame:SetNormalTexture("Interface\\Buttons\\UI-GroupLoot-Pass-Up")
+		frame:SetHighlightTexture("Interface/Buttons/UI-GROUPLOOT-PASS-HIGHLIGHT")
+		frame:SetPushedTexture("Interface/Buttons/UI-GROUPLOOT-PASS-DOWN")
 		frame:SetScript("OnEnter", function()
 			addon:CreateTooltip(L["Double click to delete this entry."])
 		end)
@@ -691,28 +683,31 @@ function LootHistory:EscapeItemLink(link)
 	return gsub(link, "\124", "\124\124")
 end
 
-function LootHistory:ExportHistory()
+function LootHistory:ExportHistory(format)
+	assert(self.exports[format or self.exportSelection], "Invalid format for exporting history")
 	--debugprofilestart()
-	local export = self.exports[self.exportSelection].func(self)
+	local export = self.exports[format or self.exportSelection].func(self)
 	--addon.Log:D("Export time:", debugprofilestop(), "ms")
 	if export and export ~= "" then -- do something
 		--debugprofilestart()
 		if export:len() < 40000 then
-			self.frame.exportFrame:Show()
-			self.frame.exportFrame.edit:SetCallback("OnTextChanged", function(self)
+			local exportFrame = addon.UI:New("RCExportFrame")
+			exportFrame:Show()
+			exportFrame.edit:SetCallback("OnTextChanged", function(self)
 				self:SetText(export)
 			end)
-			self.frame.exportFrame.edit:SetText(export)
-			self.frame.exportFrame.edit:SetFocus()
-			self.frame.exportFrame.edit:HighlightText()
+			exportFrame.edit:SetText(export)
+			exportFrame.edit:SetFocus()
+			exportFrame.edit:HighlightText()
 		else -- Use hugeExportFrame(Single line editBox) for large export to avoid freezing the game.
-			self.frame.hugeExportFrame:Show()
-			self.frame.hugeExportFrame.edit:SetCallback("OnTextChanged", function(self)
+			local exportFrame = addon.UI:New("RCHugeExportFrame")
+			exportFrame:Show()
+			exportFrame.edit:SetCallback("OnTextChanged", function(self)
 				self:SetText(export)
 			end)
-			self.frame.hugeExportFrame.edit:SetText(export)
-			self.frame.hugeExportFrame.edit:SetFocus()
-			self.frame.hugeExportFrame.edit:HighlightText()
+			exportFrame.edit:SetText(export)
+			exportFrame.edit:SetFocus()
+			exportFrame.edit:HighlightText()
 		end
 		--addonLog:D("Display time:", debugprofilestop(), "ms")
 	end
@@ -853,7 +848,7 @@ end
 
 function LootHistory:GetFrame()
 	if self.frame then return self.frame end
-	local f = addon.UI:NewNamed("RCFrame", UIParent, "DefaultRCLootHistoryFrame", L["RCLootCouncil Loot History"], 250, 480)
+	local f = addon.UI:NewNamed("RCFrame", UIParent, "DefaultRCLootHistoryFrame", L["RCLootCouncil Loot History"], 250, 485)
 	addon.UI:RegisterForEscapeClose(f, function() if self:IsEnabled() then self:Disable() end end)
 	local st = LibStub("ScrollingTable"):CreateST(self.scrollCols, NUM_ROWS, ROW_HEIGHT, { ["r"] = 1.0, ["g"] = 0.9, ["b"] = 0.0, ["a"] = 0.5 }, f.content)
 	st.frame:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", 10, 10)
@@ -876,7 +871,7 @@ function LootHistory:GetFrame()
 
 	--Date selection
 	f.date = LibStub("ScrollingTable"):CreateST({{name = L["Date"], width = 70, comparesort = self.DateSort, sort = 2, DoCellUpdate = self.SetCellDate}}, 5, ROW_HEIGHT, { ["r"] = 1.0, ["g"] = 0.9, ["b"] = 0.0, ["a"] = 0.5 }, f.content)
-	f.date.frame:SetPoint("TOPLEFT", f, "TOPLEFT", 10, -20)
+	f.date.frame:SetPoint("TOPLEFT", f, "TOPLEFT", 10, -30)
 	f.date:EnableSelection(true)
 	f.date:RegisterEvents({
 		["OnClick"] = function(rowFrame, cellFrame, data, cols, row, realrow, column, table, button, ...)
@@ -890,7 +885,7 @@ function LootHistory:GetFrame()
 
 	--Name selection
 	f.name = LibStub("ScrollingTable"):CreateST({{name = "", width = ROW_HEIGHT},{name = _G.NAME, width = 100, sort = 1}}, 5, ROW_HEIGHT, { ["r"] = 1.0, ["g"] = 0.9, ["b"] = 0.0, ["a"] = 0.5 }, f.content)
-	f.name.frame:SetPoint("TOPLEFT", f.date.frame, "TOPRIGHT", 20, 0)
+	f.name.frame:SetPoint("TOPLEFT", f.date.frame, "TOPRIGHT", 10, 0)
 	f.name:EnableSelection(true)
 	f.name:RegisterEvents({
 		["OnClick"] = function(rowFrame, cellFrame, data, cols, row, realrow, column, table, button, ...)
@@ -904,7 +899,7 @@ function LootHistory:GetFrame()
 
 	-- Abort button
 	local b1 = addon:CreateButton(_G.CLOSE, f.content)
-	b1:SetPoint("TOPRIGHT", f, "TOPRIGHT", -10, -100)
+	b1:SetPoint("TOPRIGHT", f, "TOPRIGHT", -10, -110)
 	b1:SetScript("OnClick", function() self:Disable() end)
 	f.closeBtn = b1
 
@@ -933,9 +928,17 @@ function LootHistory:GetFrame()
 	b2:SetScript("OnLeave", function() addon:HideTooltip() end)
 	f.moreInfoBtn = b2
 
+	self.moreInfo = CreateFrame("GameTooltip", "RCLootHistoryMoreInfo", f.content, "GameTooltipTemplate")
+	self.moreInfo:SetIgnoreParentScale(true)
 	f.content:SetScript("OnSizeChanged", function()
-		self.moreInfo:SetScale(f:GetScale() * 0.6)
+		self.moreInfo:SetScale(Clamp(f:GetScale() * 0.6, .4, .9))
 	end)
+
+	-- local count = f:CreateFontString(nil,"OVERLAY", "GameFontNormal")
+	-- count:SetPoint("BOTTOMRIGHT", b2, "TOPRIGHT", 0, 10)
+	-- count:SetText(format("There's %d items in the database", self:CountItems()))
+	-- count:SetTextColor(1, 1, 1, 1)
+	-- self.itemCount = count
 
 	-- Export
 	local b3 = addon:CreateButton(L["Export"], f.content)
@@ -947,8 +950,15 @@ function LootHistory:GetFrame()
 	local b5 = addon:CreateButton("Import", f.content)
 	b5:SetPoint("RIGHT", b3, "LEFT", -10, 0)
 	b5:SetScript("OnClick", function()
-		self.frame.importFrame:Show()
-		self.frame.importFrame.edit:SetFocus()
+		local importFrame = addon.UI:New("RCImportFrame")
+		importFrame.label:SetText(L["Accepted imports: 'Player Export' and 'CSV'"])
+		importFrame.edit:SetCallback("OnEnterPressed", function()
+			addon.Log:D("Import data:", string.sub(importFrame.edit.data, 0, 50))
+			self:ImportHistory(importFrame.edit.data)
+			importFrame:Hide()
+		end)
+		importFrame:Show()
+		importFrame.edit:SetFocus()
 	end)
 	f.importBtn = b5
 
@@ -996,95 +1006,21 @@ function LootHistory:GetFrame()
 	b6:SetWidth(125)
 	f.clearSelectionBtn = b6
 
-	-- Export frame
-	local exp = AG:Create("Window")
-	exp:SetLayout("Flow")
-	exp:SetTitle("RCLootCouncil "..L["Export"])
-	exp:SetWidth(700)
-	exp:SetHeight(360)
-
-	local edit = AG:Create("MultiLineEditBox")
-	edit:SetNumLines(20)
-	edit:SetFullWidth(true)
-	edit:SetLabel(L["Export"])
-	edit:SetFullHeight(true)
-	exp:AddChild(edit)
-	exp:Hide()
-	f.exportFrame = exp
-	f.exportFrame.edit = edit
-
-	-- Frame for huge export. Use single line editbox to avoid freezing.
-	local hugeExp = AG:Create("Window")
-	hugeExp:SetLayout("Flow")
-	hugeExp:SetTitle("RCLootCouncil "..L["Export"])
-	hugeExp:SetWidth(700)
-	hugeExp:SetHeight(100)
-
-	edit = AG:Create("EditBox")
-	edit:SetFullWidth(true)
-	edit:SetLabel(L["huge_export_desc"])
-	edit:SetMaxLetters(0)
-	hugeExp:AddChild(edit)
-	hugeExp:Hide()
-	f.hugeExportFrame = hugeExp
-	f.hugeExportFrame.edit = edit
-
-	-- Import frame
-	local imp = AG:Create("Window")
-	imp:SetLayout("Flow")
-	imp:SetTitle("RCLootCouncil Import")
-	imp:SetWidth(700)
-	imp:SetHeight(360)
-
-	edit = AG:Create("MultiLineEditBox")
-	edit:SetNumLines(20)
-	edit:SetFullWidth(true)
-	edit:SetLabel(L["import_desc"])
-	edit:SetFullHeight(true)
-
-	-- Credit to WeakAura2
-	-- Import editbox only shows first 2500 bytes to avoid freezing the game.
-	-- Use 'OnChar' event to store other characters in a text buffer
-	local textBuffer, i, lastPaste = {}, 0, 0
-	local pasted = ""
-	edit.editBox:SetScript("OnShow", function(self)
-		self:SetText("")
-		pasted = ""
-	end)
-	local function clearBuffer(self)
-		self:SetScript('OnUpdate', nil)
-		pasted = strtrim(table.concat(textBuffer))
-		edit.editBox:ClearFocus()
-	end
-	edit.editBox:SetScript('OnChar', function(self, c)
-		if lastPaste ~= GetTime() then
-			textBuffer, i, lastPaste = {}, 0, GetTime()
-			self:SetScript('OnUpdate', clearBuffer)
-		end
-		i = i + 1
-		textBuffer[i] = c
-	end)
-	edit.editBox:SetMaxBytes(2500)
-	edit.editBox:SetScript("OnMouseUp", nil);
-
-	edit:SetCallback("OnEnterPressed", function()
-		self:ImportHistory(pasted)
-		imp:Hide()
-	end)
-
-	local label = AG:Create("Label")
-	label:SetFullWidth(true)
-	label:SetText(L["Accepted imports: 'Player Export' and 'CSV'"])
-	imp:AddChild(label)
-	imp:AddChild(edit)
-
-	imp:Hide()
-	f.importFrame = imp
-	f.importFrame.edit = edit
-
 	-- Set a proper width
 	f:SetWidth(st.frame:GetWidth() + 20)
 	return f;
+end
+
+--- Counts the number of items in a RCLootCouncil.HistoryDB database.
+---@param db RCLootCouncil.HistoryDB
+function LootHistory:CountItems(db)
+	local count = 0
+	for name, items in pairs(db or lootDB) do
+		for _ in pairs(items) do
+			count = count + 1
+		end
+	end
+	return count
 end
 
 --- Returns a table of all the winners of an item.
@@ -1116,9 +1052,8 @@ function LootHistory:UpdateMoreInfo(rowFrame, cellFrame, dat, cols, row, realrow
 	local tip = self.moreInfo -- shortening
 	tip:SetOwner(self.frame, "ANCHOR_RIGHT")
 	local row = dat[realrow]
-	local color = addon:GetClassColor(row.class)
 	local data = lootDB[row.name][row.num]
-	tip:AddLine(addon.Ambiguate(row.name), color.r, color.g, color.b)
+	tip:AddLine(addon:GetClassIconAndColoredName(row.name, 16))
 	tip:AddLine("")
 	tip:AddDoubleLine(L["Time"]..":", (data.time or _G.UNKNOWN) .." ".. row.date or _G.UNKNOWN, 1,1,1, 1,1,1)
 	tip:AddDoubleLine(L["Loot won:"], data.lootWon or _G.UNKNOWN, 1,1,1, 1,1,1)
@@ -1130,7 +1065,7 @@ function LootHistory:UpdateMoreInfo(rowFrame, cellFrame, dat, cols, row, realrow
 	end
 	tip:AddDoubleLine(L["Dropped by:"], data.boss or _G.UNKNOWN, 1,1,1, 0.862745, 0.0784314, 0.235294)
 	tip:AddDoubleLine(_G.FROM, data.instance or _G.UNKNOWN, 1,1,1, 0.823529, 0.411765, 0.117647)
-	tip:AddDoubleLine(L["Original Owner"], data.owner, 1,1,1, 1,1,1)
+	tip:AddDoubleLine(L["Original Owner"], addon:GetClassIconAndColoredName(data.owner), 1,1,1, 1,1,1)
 	tip:AddDoubleLine(L["Votes"]..":", data.votes or _G.UNKNOWN, 1,1,1, 1,1,1)
 	if data.note then
 		tip:AddLine(" ")
@@ -1164,7 +1099,7 @@ function LootHistory:UpdateMoreInfo(rowFrame, cellFrame, dat, cols, row, realrow
 	tip:AddLine(format(L["lootHistory_moreInfo_winnersOfItem"], data.lootWon))
 	for _, data in ipairs(winners) do
 		local c = addon:GetClassColor(data[3])
-		tip:AddDoubleLine(addon.Ambiguate(data[2]), data[1], c.r,c.g,c.b, 1,1,1)
+		tip:AddDoubleLine(addon:GetClassIconAndColoredName(data[2]), data[1], c.r,c.g,c.b, 1,1,1)
 	end
 
 	-- Debug stuff
@@ -1187,7 +1122,6 @@ function LootHistory:UpdateMoreInfo(rowFrame, cellFrame, dat, cols, row, realrow
 		tip:AddLine(" ")
 		tip:AddDoubleLine("Total LootDB entries:", #self.frame.rows, 1,1,1, 0,0,1)
 	end
-	tip:SetScale(self.frame:GetScale() * 0.65)
 	if moreInfo then
 		tip:Show()
 	else
@@ -1282,12 +1216,14 @@ function LootHistory.FilterMenu(menu, level)
 				info.func = function()
 					addon.Log:D("Update class filter")
 					db.modules["RCLootHistory"].filters.class[id] = not db.modules["RCLootHistory"].filters.class[id]
+					local classFilters = false
 					for _,v in pairs(db.modules["RCLootHistory"].filters.class) do
 						if v then
-							useClassFilters = true
+							classFilters = true
 							break
 						end
 					end
+					useClassFilters = classFilters
 					LootHistory:Update()
 				end
 				info.checked = db.modules["RCLootHistory"].filters.class[id]

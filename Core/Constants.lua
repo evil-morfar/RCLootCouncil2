@@ -12,6 +12,8 @@ addon.PREFIXES = { MAIN = "RCLC", VERSION = "RCLCv", SYNC = "RCLCs", }
 
 addon.MIN_LOOT_THRESHOLD = 3 -- Only loot rares or better
 
+addon.PROFILE_EXPORT_IDENTIFIER = "RCLootCouncilProfile"
+
 addon.BTN_SLOTS = {
 	INVTYPE_HEAD = "AZERITE",
 	INVTYPE_CHEST = "AZERITE",
@@ -44,7 +46,7 @@ addon.OPT_MORE_BUTTONS_VALUES = {
 	AZERITE = "Azerite Armor",
 	TOKEN = L["Armor Token"],
 	-- CORRUPTED = _G.CORRUPTION_TOOLTIP_TITLE,
-	CONTEXT_TOKEN = "Beads and Spherules",
+	-- CONTEXT_TOKEN = "Beads and Spherules",
 	PETS = _G.PETS,
 	MOUNTS = _G.MOUNTS,
 	BAGSLOT = _G.BAGSLOT,
@@ -84,6 +86,23 @@ addon.INVTYPE_Slots = {
 	CONTEXT_TOKEN = { "HeadSlot", "ChestSlot", },
 }
 
+--- For use with `CreateAtlasMarkup`
+addon.CLASS_TO_ATLAS = {
+	DEATHKNIGHT = "classicon-deathknight",
+	DEMONHUNTER = "classicon-demonhunter",
+	DRUID = "classicon-druid",
+	EVOKER = "classicon-evoker",
+	HUNTER = "classicon-hunter",
+	MAGE = "classicon-mage",
+	MONK = "classicon-monk",
+	PALADIN = "classicon-paladin",
+	PRIEST = "classicon-priest",
+	ROGUE = "classicon-rogue",
+	SHAMAN = "classicon-shaman",
+	WARLOCK = "classicon-warlock",
+	WARRIOR = "classicon-warrior",
+}
+
 --- Functions used for generating response codes
 -- Functions are run numerically, and the first to return non-nil is used, i.e. order matters!
 -- To add a new a button group, simply add it to the options menu (easily done by adding an entry to OPT_MORE_BUTTONS_VALUES), and add a function here to determine if that group should be used for the item.
@@ -95,7 +114,7 @@ addon.RESPONSE_CODE_GENERATORS = {
 	function(_, db, _, equipLoc)
 		return db.enabledButtons.INVTYPE_CHEST and
 			(addon.INVTYPE_Slots[equipLoc] == addon.INVTYPE_Slots.INVTYPE_CHEST)
-		and "INVTYPE_CHEST" or nil
+			and "INVTYPE_CHEST" or nil
 	end,
 	-- Pets
 	function(_, db, _, _, itemClassID, itemSubClassID)

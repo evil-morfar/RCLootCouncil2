@@ -456,7 +456,7 @@ end
 
 function RCLootCouncilML:OnTradeComplete(link, recipient, trader)
 	if db.printCompletedTrades then
-		addon:Print(format(L["trade_complete_message"], addon.Ambiguate(trader), link, addon.Ambiguate(recipient)))
+		addon:Print(format(L["trade_complete_message"], addon:GetClassIconAndColoredName(trader), link, addon:GetClassIconAndColoredName(recipient)))
 	end
 end
 
@@ -987,7 +987,7 @@ RCLootCouncilML.announceItemStrings = {
 	["&i"] = function(...) return select(2,...) end,
 	["&l"] = function(_, item)
 		local t = RCLootCouncilML:GetItemInfo(item)
-		return t and addon.Utils:GetItemLevelText(t.ilvl, t.token) or "" end,
+		return t and t.ilvl or "" end,
 	["&t"] = function(_, item)
 		local t = RCLootCouncilML:GetItemInfo(item)
 		return t and addon:GetItemTypeText(t.link, t.subType, t.equipLoc, t.typeID, t.subtypeID, t.classes, t.token, t.relic) or "" end,
@@ -1033,7 +1033,7 @@ RCLootCouncilML.awardStrings = {
 	["&n"] = function(...) return select(4, ...) or "" end,
 	["&l"] = function(_, item)
 		local t = RCLootCouncilML:GetItemInfo(item)
-		return t and addon.Utils:GetItemLevelText(t.ilvl, t.token) or "" end,
+		return t and t.ilvl or "" end,
 	["&t"] = function(_, item)
 		local t = RCLootCouncilML:GetItemInfo(item)
 		return t and addon:GetItemTypeText(t.link, t.subType, t.equipLoc, t.typeID, t.subTypeID, t.classes, t.token, t.relic) or "" end,
@@ -1128,7 +1128,7 @@ end
 function RCLootCouncilML:PrintAutoAwardErrorWithPlayer(name)
 	name = name or "Missing Candidate"
 	addon:Print(L["Cannot autoaward:"])
-	addon:Print(format(L["Could not find 'player' in the group."], name))
+	addon:Print(format(L["Could not find 'player' in the group."], addon:GetClassIconAndColoredName(name)))
 end
 
 --- Auto award an item to a player.
@@ -1390,7 +1390,7 @@ function RCLootCouncilML:GetItemsFromMessage(msg, sender, retryCount)
 	local typeCode = self.lootTable[ses].typeCode or self.lootTable[ses].equipLoc
 
 	-- Let people know we've done stuff
-	addon:Print(format(L["Item received and added from 'player'"], addon.Ambiguate(sender)))
+	addon:Print(format(L["Item received and added from 'player'"], addon:GetClassIconAndColoredName(sender)))
 	SendChatMessage("[RCLootCouncil]: "..format(L["Response to 'item' acknowledged as 'response'"],
 		addon:GetItemTextWithCount(link, count), addon:GetResponse(typeCode, response).text), "WHISPER", nil, sender)
 end
@@ -1412,7 +1412,7 @@ function RCLootCouncilML:SendWhisperHelp(target)
 		SendChatMessage(msg, "WHISPER", nil, target)
 	end
 	SendChatMessage(L["whisper_guide2"], "WHISPER", nil, target)
-	addon:Print(format(L["Sent whisper help to 'player'"], addon.Ambiguate(target)))
+	addon:Print(format(L["Sent whisper help to 'player'"], addon:GetClassIconAndColoredName(target)))
 end
 
 --- Award popup control functions
@@ -1420,7 +1420,7 @@ end
 --	data contains: session, winner, responseID, reason, votes, gear1, gear2, isTierRoll, isRelicRoll, link, isToken
 function RCLootCouncilML.AwardPopupOnShow(frame, data)
 	frame:SetFrameStrata("FULLSCREEN")
-	frame.text:SetText(format(L["Are you sure you want to give #item to #player?"], data.link, addon.Ambiguate(data.winner)))
+	frame.text:SetText(format(L["Are you sure you want to give #item to #player?"], data.link, addon:GetClassIconAndColoredName(data.winner)))
 	frame.icon:SetTexture(data.texture)
 end
 

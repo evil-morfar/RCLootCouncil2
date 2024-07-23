@@ -24,7 +24,7 @@ Item = {
 C_Item = {
 	GetItemInfo = function(item)
 		if string.match(item, "^%d+$") then item = tonumber(item) end -- Support for itemID
-		local Item = _G.Items[item] or _G.Items[tonumber(strmatch(item or "", "item:(%d+):"))]
+		local Item = _G.Items[item] or _G.Items[tonumber(strmatch(item or "", "item:(%d+):?"))]
 		local i = assert(Item, "item " .. tostring(item) .. " isn't registered for GetItemInfo")
 		return i.itemName, i.itemLink, i.itemRarity, i.itemLevel, i.itemMinLevel, i.itemType, i.itemSubType,
 			i.itemStackCount, i.itemEquipLoc, i.itemIcon, i.itemSellPrice, i.itemClassID, i.itemSubClassID, i.bindType,
@@ -41,7 +41,7 @@ C_Item = {
 	GetItemStats = function(item)
 		assert(item, "Usage: local statTable = C_Item.GetItemStats(itemLink)")
 		if string.match(item, "^%d+$") then item = tonumber(item) end -- Support for itemID
-		if not _G.ItemStats[item] then return end
+		if not _G.ItemStats[item] then return {} end
 		local ret = {}
 		for k, v in pairs(_G.ItemStats[item]) do
 			ret[k] = v

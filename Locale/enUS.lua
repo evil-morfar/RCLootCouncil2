@@ -144,6 +144,7 @@ L["chat_commands_whisper"] = "Displays help to whisper commands"
 L["chat_commands_add"]     = "Add an item to the session frame"
 L["chat_commands_award"]   = "Start a session with items looted to your inventory"
 L["chat_commands_sync"]    = "Open the synchronizer view"
+L.chat_commands_profile    = "Open the profile manager"
 L["Chat print"] = true
 L["Check this to loot the items and distribute them later."] = true
 L["Check to append the realmname of a player from another realm"] = true
@@ -222,6 +223,7 @@ L["ignore_input_desc"] = "Enter an itemID to add to the ignore list causing RCLo
 L["ignore_input_usage"] = "This function only accepts itemIDs (number), itemName or itemLink."
 L["ignore_list_desc"] = "Items RCLootCouncil is ignoring. Click on a item to remove it."
 L["ignore_options_desc"] = "Control which items RCLootCouncil should ignore. If you add an item that isn't cached, you need switch to another tab and back before you'll see it in the list."
+L.Import = true
 L["Import aborted"] = true
 L["import_desc"] = "Paste data here. Only show first 2500 characters to avoid freezing the game."
 L["import_malformed"] = "The import was malformed (not a string)"
@@ -405,6 +407,8 @@ This window needs to be open to initiate a sync,
 but closing it won't stop a sync in progress.
 
 Targets include online guild- and groupmembers, friends and your current friendly target.]]
+L.sync_warning1 = "Note: Syncing large amounts of data in game can be very slow (especially the loot history)."
+L.sync_warning2 = "Settings and loot history can both be exported/imported as an alternative - see '/rc profile' and/or '/rc history' respectively."
 L["test"] = true
 L["Test"] = true
 L["test_desc"] = "Click to emulate master looting items for yourself and anyone in your raid."
@@ -504,11 +508,16 @@ L["trade_complete_message"] = "%s traded %s to %s."
 L["trade_wrongwinner_message"] = "WARNING: %s traded %s to %s instead of %s!"
 L["trade_item_to_trade_not_found"] = "WARNING: Item to trade: %s couldn't be found in your inventory!"
 
+
 L["options_autoAwardBoE_desc"] = "Enable to automatically award all epic BoE (Bind on Equip) items to a specific person for the selected reason."
 L["options_autoAwardBoE_name"] = "Auto Award BoE's"
 L["options_ml_outOfRaid_desc"] = "When enabled, while in a group of 8 or more members, anyone that isn't in an instance when a session starts will automatically send an 'Out of Raid' response."
 L["options_ml_outOfRaid_name"] = "Out of Raid Support"
 L["options_requireNotes_desc"] = "If enabled, candidates cannot submit their response without having entered a note."
+
+L.rcframe_help = [[Double click here to minimize
+Click and drag to move
+Ctrl+scroll to change scale]]
 
 L.autoGroupLoot_warning = "Note: Group Leader's settings will cause RCLootCouncil to automatically control group loot."
 L["opt_addButton_desc"] = "Add a new button group for the selected slot."
@@ -541,10 +550,19 @@ L["opt_deleteRaid_confirm"] = "Are you sure you want to delete all entries from 
 L["opt_deleteRaid_desc"] = "Delete all entries from a specific instance."
 L["opt_printCompletedTrade_Name"] = "Trade Messages"
 L["opt_printCompletedTrade_Desc"] = "Check to enable a message every time a candidate trades an awarded item to the winner."
+L.opt_profileSharing_export_desc = "Export your current profile."
+L.opt_profileSharing_fail_noProfileData =
+"Data is not profile data. Ensure imported data originates from profile export."
+L.opt_profileSharing_import_desc =
+"Import a new RCLootCouncil profile. Imports are non-destructive, unless you're overwriting an existing profile."
+L.opt_profileSharing_profileExistsWarning = "A profile named \"%s\" already exists - do you want to overwrite it?"
+L.opt_sharingProfile_success = "Succesfully imported profile: \"%s\""
 L["opt_rejectTrade_Name"] = "Allow Keeping"
 L["opt_rejectTrade_Desc"] = "Check to enable candidates to choose whether they want to 'give' the item to the council or not. If unchecked, all tradeable PL items are added automatically."
 L["opt_skipSessionFrame_name"] = "Skip Session Frame"
 L["opt_skipSessionFrame_desc"] = "Skips the Session Frame. NOTE: This causes the addon to start a session with all eligble items without you having a chance to edit the list!"
+L.opt_timeoutFlash_name = "Timeout Flash"
+L.opt_timeoutFlash_desc = "When enabled, the loot frame will flash when there's 5 seconds left to the item timeouts."
 L["non_tradeable_reason_not_tradeable"] = "Not Tradeable"
 L["non_tradeable_reason_rejected_trade"] = "Wanted to keep item"
 L["non_tradeable_reason_nil"] = "Unknown"
