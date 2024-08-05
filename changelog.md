@@ -1,3 +1,12 @@
+# 3.13.1
+
+## Changes
+
+### Winners of item in Voting Frame
+
+The more info tooltip in the votingframe nows shows previous winners of the selected item.
+Their response and the item level of the version of the item they received is also shown there.
+
 # 3.13.0
 
 ## Changes
