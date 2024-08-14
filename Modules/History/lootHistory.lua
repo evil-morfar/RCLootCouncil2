@@ -41,7 +41,7 @@ LootHistory.wowheadBaseUrl = "https://www.wowhead.com/item="
 local tinsert, tostring, getglobal, pairs, ipairs, tremove, strsplit = tinsert, tostring, getglobal, pairs, ipairs, tremove, strsplit
 
 function LootHistory:OnInitialize()
-	self.exportSelection = "player"
+	self.exportSelection = addon.db.profile.defaultHistoryExport or "player"
 	-- Pointer to export functions. Expected to return a string containing the export
 	self.exports = {
 		csv = 		{func = self.ExportCSV,			name = "CSV",				tip = L["Standard .csv output."]},
