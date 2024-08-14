@@ -981,16 +981,6 @@ function RCVotingFrame:UpdateMoreInfo(row, data)
 		return self.frame.moreInfo:Hide()
 	end
 
-	local awardHistory = self:GetItemAwardHistory(lootTable[session].link)
-	-- The names needs sorting
-	local sortedAwardHistory = TempTable:Acquire()
-	local i = 1
-	for cName in pairs(awardHistory) do
-		sortedAwardHistory[i] = cName
-		i = i + 1
-	end
-	table.sort(sortedAwardHistory)
-
 	local tip = self.frame.moreInfo -- shortening
 	tip:SetOwner(self.frame, "ANCHOR_RIGHT")
 
@@ -1020,26 +1010,33 @@ function RCVotingFrame:UpdateMoreInfo(row, data)
 		tip:AddDoubleLine(L["Number of raids received loot from:"], moreInfoData[name].totals.raids.num, 1,1,1, 1,1,1)
 		tip:AddDoubleLine(L["Total items received:"], moreInfoData[name].totals.total, 0,1,1, 0,1,1)
 
-		if addon.nnp then
-			tip:AddLine(" ")
-			tip:AddDoubleLine("Winners of:", lootTable[session].link)
-			if #sortedAwardHistory == 0 then
-				tip:AddLine(_G.NONE)
-			end
-			for _, wname in ipairs(sortedAwardHistory) do
-				for _, entry in ipairs(awardHistory[wname]) do
-					local ilvl = select(4, C_Item.GetItemInfo(entry.lootWon))
-					local player = Player:Get(wname)
-					local class = player and player:GetClass()
-					local c = addon:GetClassColor(class)
-					tip:AddDoubleLine(player:GetClassColoredName(), entry.response .." |cffffffffilvl: "..ilvl, c.r, c.g,c.b,unpack(entry.color, 1,3))
-				end
+		-- Winners of the item
+		local awardHistory = self:GetItemAwardHistory(lootTable[session].link)
+		-- The names needs sorting
+		local sortedAwardHistory = TempTable:Acquire()
+		local i = 1
+		for cName in pairs(awardHistory) do
+			sortedAwardHistory[i] = cName
+			i = i + 1
+		end
+		table.sort(sortedAwardHistory)
+
+		tip:AddLine(" ")
+		tip:AddDoubleLine(format(L["lootHistory_moreInfo_winnersOfItem"], lootTable[session].link))
+		if #sortedAwardHistory == 0 then
+			tip:AddLine(_G.NONE)
+		end
+		for _, wname in ipairs(sortedAwardHistory) do
+			for _, entry in ipairs(awardHistory[wname]) do
+				local ilvl = select(4, C_Item.GetItemInfo(entry.lootWon))
+				local player = Player:Get(wname)
+				tip:AddDoubleLine(addon:GetClassIconAndColoredName(player), entry.response .." |cffffffffilvl: "..ilvl, 1,1,1,unpack(entry.color, 1,3))
 			end
 		end
+		TempTable:Release(sortedAwardHistory)
 	else
 		tip:AddLine(L["No entries in the Loot History"])
 	end
-	TempTable:Release(sortedAwardHistory)
 	tip:Show()
 	tip:SetAnchorType("ANCHOR_RIGHT", 0, -tip:GetHeight())
 end
@@ -1336,6 +1333,7 @@ end
 function RCVotingFrame:UpdateSessionButton(i, texture, link, awarded)
 	local btn = sessionButtons[i]
 	if not btn then -- create the button
+		if not self.frame then self.frame = self:GetFrame() end
 		btn = addon.UI:NewNamed("IconBordered", self.frame.sessionToggleFrame, "RCSessionButton"..i, texture)
 		if i == 1 then
 			btn:SetPoint("TOPRIGHT", self.frame.sessionToggleFrame)

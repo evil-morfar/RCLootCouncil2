@@ -13,7 +13,6 @@ if not L then return end
 
 L["A new session has begun, type '/rc open' to open the voting frame."] = true
 L["A format to copy/paste to another player."] = true
-L["A tab delimited output for Excel. Might work with other spreadsheets."] = true
 L["Accepted imports: 'Player Export' and 'CSV'"] = true
 L["add_candidate"] = "Add Candidate"
 L["Add Rolls"] = true
@@ -520,6 +519,8 @@ Click and drag to move
 Ctrl+scroll to change scale]]
 
 L.autoGroupLoot_warning = "Note: Group Leader's settings will cause RCLootCouncil to automatically control group loot."
+L.history_export_sheets_tip = "Tab delimited export for Google Sheets and English version of Excel that uses ';' as formula delimiter."
+L.history_export_excel_international_tip = "Tab delimited export for international version of Excel that uses ',' as formula delimiter."
 L["opt_addButton_desc"] = "Add a new button group for the selected slot."
 L["opt_autoAddBoEs_name"] = "Auto Add BoEs"
 L["opt_autoAddBoEs_desc"] = "Automatically add all BoE (Bind on Equip) items to a session."

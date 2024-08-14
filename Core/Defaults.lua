@@ -167,6 +167,7 @@ addon.defaults = {
 		-- Other
 		iLvlDecimal = false,
 		showAutoGroupLootWarning = true, -- Show warning OnMLDBReceived if autoGroupLoot is on.
+		defaultHistoryExport = "player",
 
 		UI = { -- stores all ui information
 			["**"] = { -- Defaults

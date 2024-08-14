@@ -2735,6 +2735,12 @@ function RCLootCouncil:OnMLDBReceived(input)
 
 	if not self.mldb.buttons.default then self.mldb.buttons.default = {} end
 	setmetatable(self.mldb.buttons.default, {__index = self.defaults.profile.buttons.default})
+
+	if self.mldb.observe then
+		if not self:GetActiveModule("votingframe"):IsEnabled() then
+			self:CallModule("votingframe")
+		end
+	end
 end
 
 function RCLootCouncil:DoReroll(lt)

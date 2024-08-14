@@ -492,6 +492,10 @@ do
 			entry.timeoutBar:GetStatusBarTexture():SetBlendMode("ADD")
 			entry.timeoutBar:SetMinMaxValues(0, addon.mldb.timeout or addon:Getdb().timeout or 30)
 			entry.timeoutBar:SetScript("OnUpdate", function(this, elapsed)
+				-- Had error report of this being nil, no idea how/why, as this shouldn't even run in that case.
+				if not entry.item.timeLeft then
+					return
+				end
 				if entry.item.timeLeft <= 0 then --Timeout!
 					entry.timeoutBarText:SetText(L["Timeout"])
 					this:SetValue(0)
