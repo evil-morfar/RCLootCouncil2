@@ -375,6 +375,10 @@ C_ChatInfo = {
 }
 C_ChatInfo.SendAddonMessageLogged = C_ChatInfo.SendAddonMessage
 
+function BNSendGameData()
+
+end
+
 if not wipe then
 	function wipe(tbl)
 		for k in pairs(tbl) do
