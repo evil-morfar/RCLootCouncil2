@@ -41,17 +41,18 @@ LootHistory.wowheadBaseUrl = "https://www.wowhead.com/item="
 local tinsert, tostring, getglobal, pairs, ipairs, tremove, strsplit = tinsert, tostring, getglobal, pairs, ipairs, tremove, strsplit
 
 function LootHistory:OnInitialize()
-	self.exportSelection = "tsv"
+	self.exportSelection = "player"
 	-- Pointer to export functions. Expected to return a string containing the export
 	self.exports = {
-		csv = 		{func = self.ExportCSV,			name = "CSV",					tip = L["Standard .csv output."]},
-		tsv = 		{func = self.ExportTSV,			name = "TSV (Excel)",		tip = L["A tab delimited output for Excel. Might work with other spreadsheets."]},
-		bbcode = 	{func = self.ExportBBCode,		name = "BBCode", 				tip = L["Simple BBCode output."]},
-		bbcodeSmf = {func = self.ExportBBCodeSMF, name = "BBCode SMF",			tip = L["BBCode export, tailored for SMF."],},
-		eqxml = 		{func = self.ExportEQXML,		name = "EQdkp-Plus XML",	tip = L["EQdkp-Plus XML output, tailored for Enjin import."]},
+		csv = 		{func = self.ExportCSV,			name = "CSV",				tip = L["Standard .csv output."]},
+		tsv = 		{func = self.ExportTSV,			name = "TSV (International Excel)",		tip = L.history_export_excel_international_tip},
+		sheets = 	{func = self.ExportGoogleSheets,	name = "TSV (Google Sheets & English Excel)", tip = L.history_export_sheets_tip},
+		bbcode = 	{func = self.ExportBBCode,		name = "BBCode", 			tip = L["Simple BBCode output."]},
+		bbcodeSmf = {func = self.ExportBBCodeSMF, 	name = "BBCode SMF",		tip = L["BBCode export, tailored for SMF."],},
+		eqxml = 	{func = self.ExportEQXML,			name = "EQdkp-Plus XML",	tip = L["EQdkp-Plus XML output, tailored for Enjin import."]},
 		player = 	{func = self.PlayerExport,		name = "Player Export",		tip = L["A format to copy/paste to another player."]},
-		discord = 	{func = self.ExportDiscord, 	name = "Discord", 			tip = L["Discord friendly output."]},
-		json = 		{func = self.ExportJSON,		name = "JSON",					tip = L["Standard JSON output."]},
+		discord = 	{func = self.ExportDiscord, 		name = "Discord", 			tip = L["Discord friendly output."]},
+		json = 		{func = self.ExportJSON,			name = "JSON",				tip = L["Standard JSON output."]},
 		--html = self.ExportHTML
 	}
 	self.scrollCols = {
@@ -1558,9 +1559,16 @@ do
 		return table.concat(ret)
 	end
 
+	--- TSV for Google Sheets and English Excel versions.
+	function LootHistory:ExportGoogleSheets()
+		return self:ExportTSV(";")
+	end
+
 	--- TSV (Tab Seperated Values) for Excel
-	-- Made specificly with excel in mind, but might work with other spreadsheets
-	function LootHistory:ExportTSV()
+	--- Made specificly with excel in mind, but might work with other spreadsheets
+	---@param formulaDelimiter ","|";" Delimiter to use in hyperlink formula. Defaults to ",".
+	function LootHistory:ExportTSV(formulaDelimiter)
+		formulaDelimiter = formulaDelimiter or ","
 		-- Add headers
 		wipe(export)
 		wipe(ret)
@@ -1574,7 +1582,7 @@ do
 				tinsert(export, tostring(player))
 				tinsert(export, tostring(self:GetLocalizedDate(d.date)))
 				tinsert(export, tostring(d.time))
-				tinsert(export, "=HYPERLINK(\""..self:GetWowheadLinkFromItemLink(d.lootWon).."\",\""..tostring(d.lootWon).."\")")
+				tinsert(export, table.concat {"=HYPERLINK(\"", self:GetWowheadLinkFromItemLink(d.lootWon), "\"", formulaDelimiter, "\"", tostring(d.lootWon), "\")"} or "")
 				tinsert(export, ItemUtils:GetItemIDFromLink(d.lootWon))
 				tinsert(export, ItemUtils:GetItemStringFromLink(d.lootWon))
 				tinsert(export, tostring(d.response))
@@ -1582,8 +1590,8 @@ do
 				tinsert(export, tostring(d.class))
 				tinsert(export, tostring(d.instance))
 				tinsert(export, tostring(d.boss))
-				tinsert(export, d.itemReplaced1 and "=HYPERLINK(\""..self:GetWowheadLinkFromItemLink(tostring(d.itemReplaced1)).."\",\""..tostring(d.itemReplaced1).."\")" or "")
-				tinsert(export, d.itemReplaced2 and "=HYPERLINK(\""..self:GetWowheadLinkFromItemLink(tostring(d.itemReplaced2)).."\",\""..tostring(d.itemReplaced2).."\")" or "")
+				tinsert(export, d.itemReplaced1 and table.concat {"=HYPERLINK(\"", self:GetWowheadLinkFromItemLink(tostring(d.itemReplaced1)), "\"", formulaDelimiter, "\"", tostring(d.itemReplaced1), "\")"} or "")
+				tinsert(export, d.itemReplaced2 and table.concat {"=HYPERLINK(\"", self:GetWowheadLinkFromItemLink(tostring(d.itemReplaced2)), "\"", formulaDelimiter, "\"", tostring(d.itemReplaced2), "\")"} or "")
 				tinsert(export, tostring(d.responseID))
 				tinsert(export, tostring(d.isAwardReason or false))
 				tinsert(export, rollType)
