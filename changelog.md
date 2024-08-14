@@ -2,6 +2,8 @@
 
 ## Changes
 
+Updated for patch 11.0.2.
+
 ### Winners of item in Voting Frame
 
 The more info tooltip in the votingframe nows shows previous winners of the selected item.
