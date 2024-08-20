@@ -136,7 +136,8 @@ end
 function LootHistory:OnHistoryReceived (name, history)
 	if not addon:Getdb().enableHistory then return end
 	-- v2.15 Add itemClass and itemSubClass locally:
-	local _, _, _, _, _, itemClassID, itemSubClassID = C_Item.GetItemInfoInstant(history.lootWon)
+	local itemID, _, _, _, _, itemClassID, itemSubClassID = C_Item.GetItemInfoInstant(history.lootWon)
+	history.tierToken = RCTokenTable[itemID] and true
 	history.iClass = itemClassID
 	history.iSubClass = itemSubClassID
 	if addon.lootDB.factionrealm[name] then
