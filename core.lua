@@ -734,7 +734,8 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 			elseif command == "history" and db.enableHistory then
 				local name, history = unpack(data)
 				-- v2.15 Add itemClass and itemSubClass locally:
-				local _, _, _, _, _, itemClassID, itemSubClassID = GetItemInfoInstant(history.lootWon)
+				local itemID, _, _, _, _, itemClassID, itemSubClassID = GetItemInfoInstant(history.lootWon)
+				history.tierToken = RCTokenTable[itemID] and true
 				history.iClass = itemClassID
 				history.iSubClass = itemSubClassID
 				if historyDB[name] then
