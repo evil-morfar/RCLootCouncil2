@@ -1005,7 +1005,7 @@ function RCVotingFrame:UpdateMoreInfo(row, data)
 		end
 		if moreInfoData[name].totals.tokens[addon.currentInstanceName] then
 			tip:AddLine(" ")
-			tip:AddDoubleLine(L["Tier tokens received from here:"], moreInfoData[name].totals.tokens[addon.currentInstanceName].num, 1,1,1, 1,1,1)
+			tip:AddDoubleLine(L["Tier tokens received from here:"], moreInfoData[name].totals.tokens[addon.currentInstanceName], 1,1,1, 1,1,1)
 		end
 		tip:AddDoubleLine(L["Number of raids received loot from:"], moreInfoData[name].totals.raids.num, 1,1,1, 1,1,1)
 		tip:AddDoubleLine(L["Total items received:"], moreInfoData[name].totals.total, 0,1,1, 0,1,1)
