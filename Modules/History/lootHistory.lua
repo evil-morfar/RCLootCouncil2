@@ -1051,9 +1051,15 @@ function LootHistory:UpdateMoreInfo(rowFrame, cellFrame, dat, cols, row, realrow
 	end
 	tip:AddLine(" ")
 	tip:AddLine(L["Tokens received"])
+	local tokensSorted = {}
+	for n in pairs(moreInfoData[row.name].totals.tokens) do tinsert(tokensSorted, n) end
+	table.sort(tokensSorted)
 	-- Add tier tokens
-	for instance, v in pairs(moreInfoData[row.name].totals.tokens) do
-		tip:AddDoubleLine(instance..":", v.num, 1,1,1, 1,1,1)
+	for _, instance in pairs(tokensSorted) do
+		local num = moreInfoData[row.name].totals.tokens[instance]
+		if num > 0 then
+			tip:AddDoubleLine(instance .. ":", num, 1, 1, 1, 1, 1, 1)
+		end
 	end
 	tip:AddLine(" ")
 	tip:AddLine(L["Total awards"])
@@ -1092,7 +1098,7 @@ function LootHistory:UpdateMoreInfo(rowFrame, cellFrame, dat, cols, row, realrow
 		tip:AddDoubleLine("difficultyID:", data.difficultyID, 1,1,1, 1,1,1)
 		tip:AddDoubleLine("mapID", data.mapID, 1,1,1, 1,1,1)
 		tip:AddDoubleLine("groupSize", data.groupSize, 1,1,1, 1,1,1)
-		tip:AddDoubleLine("tierToken", data.tierToken, 1,1,1, 1,1,1)
+		tip:AddDoubleLine("tierToken", tostring(data.tierToken), 1,1,1, 1,1,1)
 		tip:AddDoubleLine("tokenRoll", tostring(data.tokenRoll), 1,1,1, 1,1,1)
 		tip:AddDoubleLine("relicRoll", tostring(data.relicRoll), 1,1,1, 1,1,1)
 		tip:AddLine(" ")
