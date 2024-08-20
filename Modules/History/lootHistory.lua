@@ -73,18 +73,6 @@ function LootHistory:OnInitialize()
 	self:SubscribeToPermanentComms()
 end
 
-local tierLookUpTable = { -- instanceMapID to Tier text
-	[1530] = L["Tier 19"],
-	[1676] = L["Tier 20"],
-	[1712] = L["Tier 21"],
-}
-
-local difficultyLookupTable = {
-	[14] = L["tier_token_normal"],
-	[15] = L["tier_token_heroic"],
-	[16] = L["tier_token_mythic"],
-}
-
 function LootHistory:OnEnable()
 	addon.Log("LootHistory:OnEnable()")
 	moreInfo = true
@@ -1076,9 +1064,9 @@ function LootHistory:UpdateMoreInfo(rowFrame, cellFrame, dat, cols, row, realrow
 	tip:AddLine(" ")
 	tip:AddLine(L["Tokens received"])
 	-- Add tier tokens
-	for _, v in pairs(moreInfoData[row.name].totals.tokens) do
-		if v.mapID and v.difficultyID and tierLookUpTable[v.mapID] then
-			tip:AddDoubleLine(tierLookUpTable[v.mapID].." "..difficultyLookupTable[v.difficultyID]..":", v.num, 1,1,1, 1,1,1)
+	for instance, v in pairs(moreInfoData[row.name].totals.tokens) do
+		if v.mapID and v.difficultyID then
+			tip:AddDoubleLine(instance..":", v.num, 1,1,1, 1,1,1)
 		end
 	end
 	tip:AddLine(" ")
