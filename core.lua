@@ -1863,7 +1863,7 @@ function RCLootCouncil:GetLootDBStatistics()
 					if entry.isAwardReason then id = id + 100 end -- Bump to distingush from normal awards
 					if entry.tierToken then id = id + 200 end
 				end
-				-- We assume the mapID and difficultyID is available on any item if at all.
+				-- Tier Tokens
 				if not numTokens[entry.instance] then
 					numTokens[entry.instance] = 0
 				end
