@@ -1068,9 +1068,9 @@ function LootHistory:UpdateMoreInfo(rowFrame, cellFrame, dat, cols, row, realrow
 	table.sort(tokensSorted)
 	-- Add tier tokens
 	for _, instance in pairs(tokensSorted) do
-		local v = moreInfoData[row.name].totals.tokens[instance]
-		if v.mapID and v.difficultyID and v.num > 0 then
-			tip:AddDoubleLine(instance..":", v.num, 1,1,1, 1,1,1)
+		local num = moreInfoData[row.name].totals.tokens[instance]
+		if num > 0 then
+			tip:AddDoubleLine(instance..":", num, 1,1,1, 1,1,1)
 		end
 	end
 	tip:AddLine(" ")

@@ -1865,10 +1865,10 @@ function RCLootCouncil:GetLootDBStatistics()
 				end
 				-- We assume the mapID and difficultyID is available on any item if at all.
 				if not numTokens[entry.instance] then
-					numTokens[entry.instance] = {num = 0, mapID = entry.mapID, difficultyID = entry.difficultyID}
+					numTokens[entry.instance] = 0
 				end
 				if entry.tierToken and not entry.isAwardReason then -- If it's a tierToken, increase the count
-					numTokens[entry.instance].num = numTokens[entry.instance].num + 1
+					numTokens[entry.instance] = numTokens[entry.instance] + 1
 				end
 				count[id] = count[id] and count[id] + 1 or 1
 				responseText[id] = responseText[id] and responseText[id] or entry.response
