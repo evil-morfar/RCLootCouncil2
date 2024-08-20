@@ -1861,14 +1861,13 @@ function RCLootCouncil:GetLootDBStatistics()
 				id = entry.responseID
 				if type(id) == "number" then -- ID may be string, e.g. "PASS"
 					if entry.isAwardReason then id = id + 100 end -- Bump to distingush from normal awards
-					if entry.tokenRoll then id = id + 200 end
-					if entry.relicRoll then id = id + 300 end
+					if entry.tierToken then id = id + 200 end
 				end
 				-- We assume the mapID and difficultyID is available on any item if at all.
 				if not numTokens[entry.instance] then
 					numTokens[entry.instance] = {num = 0, mapID = entry.mapID, difficultyID = entry.difficultyID}
 				end
-				if entry.tierToken then -- If it's a tierToken, increase the count
+				if entry.tierToken and not entry.isAwardReason then -- If it's a tierToken, increase the count
 					numTokens[entry.instance].num = numTokens[entry.instance].num + 1
 				end
 				count[id] = count[id] and count[id] + 1 or 1
@@ -1877,8 +1876,7 @@ function RCLootCouncil:GetLootDBStatistics()
 					color[id] = #entry.color ~= 0 and #entry.color == 4 and entry.color or {1, 1, 1}
 				end
 				if lastestAwardFound < 5 and type(id) == "number" and not entry.isAwardReason
-								and (id <= db.numMoreInfoButtons or (entry.tokenRoll and id - 200 <= db.numMoreInfoButtons)
-												or (entry.relicRoll and id - 300 <= db.numMoreInfoButtons)) then
+								and (id <= db.numMoreInfoButtons or (entry.tierToken and id - 200 <= db.numMoreInfoButtons)) then
 					tinsert(lootDBStatistics[name], {
 						entry.lootWon, --[[entry.response .. ", "..]]
 						format(L["'n days' ago"], self:ConvertDateToString(self:GetNumberOfDaysFromNow(entry.date))),
