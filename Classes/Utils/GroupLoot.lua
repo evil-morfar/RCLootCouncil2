@@ -135,7 +135,7 @@ function GroupLoot:GetStatus()
 	result = result +
 		bit.lshift(((not addon.db.profile.autoGroupLootGuildGroupOnly or addon.isInGuildGroup) and 1 or 0), 7)
 	result = result + bit.lshift((addon.enabled and 1 or 0), 8)
-	return result
+	return result --[[@as StatusInt]]
 end
 
 ---Generates the binary version of [GroupLoot:GetStatus()](lua://Utils.GroupLoot.GetStatus)

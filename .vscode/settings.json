@@ -8,12 +8,7 @@
         "~/AppData/Roaming/Code/User/globalStorage/sumneko.lua/addonManager/addons/luassert/module/library",
         "~/AppData/Roaming/Code/User/globalStorage/sumneko.lua/addonManager/addons/busted/module/library",
         "${3rd}/lfs/library",
-        "~\\.vscode\\extensions\\sumneko.lua-3.10.5-win32-x64\\server\\meta\\Lua 5.1 en-us utf8",
-        "~\\.vscode\\extensions\\ketho.wow-api-0.17.5\\Annotations\\Data",
-        "~\\.vscode\\extensions\\ketho.wow-api-0.17.5\\Annotations\\Interface",
-        "~\\.vscode\\extensions\\ketho.wow-api-0.17.5\\Annotations\\Libraries",
-        "~\\.vscode\\extensions\\ketho.wow-api-0.17.5\\Annotations\\Type",
-        "~\\.vscode\\extensions\\ketho.wow-api-0.17.5\\Annotations\\Widget"
+        "~\\.vscode\\extensions\\ketho.wow-api-0.17.6\\Annotations"
     ],
     "Lua.diagnostics.globals": [
         "lfs",
@@ -50,7 +45,11 @@
         "DAMAGER",
         "BLOCK",
         "PARRY",
-        "RANGED"
+        "RANGED",
+        "AccumulateOp",
+        "FauxScrollFrame_OnVerticalScroll",
+        "HandleModifiedItemClick",
+        "REQUEST_ROLL"
     ],
     "Lua.diagnostics.disable": [
         "undefined-doc-name",
@@ -60,5 +59,17 @@
     "Lua.workspace.ignoreDir": [
         ".vscode",
         "__tests"
-    ]
+    ],
+    "Lua.runtime.version": "Lua 5.1",
+    "Lua.runtime.builtin": {
+        "basic": "disable",
+        "debug": "disable",
+        "io": "disable",
+        "math": "disable",
+        "os": "disable",
+        "package": "disable",
+        "string": "disable",
+        "table": "disable",
+        "utf8": "disable"
+    }
 }

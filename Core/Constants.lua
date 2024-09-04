@@ -7,7 +7,7 @@ local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 
 addon.LOGO_LOCATION = "Interface\\AddOns\\RCLootCouncil\\Media\\rc_banner"
 
---- @class Prefixes
+--- @enum Prefixes
 addon.PREFIXES = { MAIN = "RCLC", VERSION = "RCLCv", SYNC = "RCLCs", }
 
 addon.MIN_LOOT_THRESHOLD = 3 -- Only loot rares or better

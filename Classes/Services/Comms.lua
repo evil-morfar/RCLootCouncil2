@@ -61,7 +61,7 @@ function Comms:BulkSubscribe (prefix, data)
    return subs
 end
 
----@alias CommTarget '"group"' |'"guild"' | "Player"
+---@alias CommTarget '"group"' |'"guild"' | Player
 
 --- Get a Sender function to send commands on the prefix.
 --- The returned function can handle implied selfs.
