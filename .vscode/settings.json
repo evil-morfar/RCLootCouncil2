@@ -49,7 +49,12 @@
         "AccumulateOp",
         "FauxScrollFrame_OnVerticalScroll",
         "HandleModifiedItemClick",
-        "REQUEST_ROLL"
+        "REQUEST_ROLL",
+        "NAME",
+        "require",
+        "tInsertUnique",
+        "CLOSE",
+        "LOOT_ITEM"
     ],
     "Lua.diagnostics.disable": [
         "undefined-doc-name",

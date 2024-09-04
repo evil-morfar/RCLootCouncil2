@@ -7,6 +7,7 @@ local name = "Text"
 local Object = {}
 
 function Object:New(parent, name, text)
+	---@class Text : BackdropTemplate, Frame, UI.embeds
    local f = addon.UI.CreateFrame("Frame", name, parent)
    local t = f:CreateFontString(parent:GetName().."_Text", "OVERLAY", "GameFontNormal")
    f.text = t

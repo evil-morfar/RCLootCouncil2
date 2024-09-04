@@ -17,8 +17,8 @@ local error, format, type, pairs = error, format, type, pairs
 --- Exposed function for creating new UI elements
 --- @generic T
 --- @param type `T` The type of the element.
---- @param parent UIObject The element's UI parant. Defaults to UIParent
---- @return T UIObject The newly created UI element
+--- @param parent Object The element's UI parant. Defaults to UIParent
+--- @return T Object  The newly created UI element
 function addon.UI:New(type, parent, ...)
    return private:New(type, parent, nil, ...)
 end
@@ -26,7 +26,7 @@ end
 --- Exposed function for creating new named UI elements
 --- @generic T
 --- @param type `T` The type of the element.
---- @param parent UIObject The element's UI parant. Defaults to UIParent
+--- @param parent Object The element's UI parant. Defaults to UIParent
 --- @param name string  The global name of the element.
 --- @return T UIObject The newly created UI element
 function addon.UI:NewNamed(type, parent, name, ...)
@@ -123,11 +123,12 @@ end
 
 --- @class UI.embeds
 private.embeds = {
-   ---@param object T self
-   ---@param scripts table<string,fun(self: T): void>
-   SetMultipleScripts = function(object, scripts)
-      for k,v in pairs(scripts) do
-         object:SetScript(k,v)
-      end
-   end
+	---@generic T : Frame
+	---@param object T self
+	---@param scripts table<string,fun(self: T): void>
+	SetMultipleScripts = function(object, scripts)
+		for k,v in pairs(scripts) do
+			object:SetScript(k,v)
+		end
+	end
 }

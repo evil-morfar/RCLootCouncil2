@@ -27,7 +27,7 @@ local private = {
 LibStub("AceComm-3.0"):Embed(private.AceComm)
 LibStub("AceSerializer-3.0"):Embed(private)
 
----@alias RecieverFunction fun(data: table, sender: string, command: string, distri: string): void
+---@alias RecieverFunction fun(data: table, sender: string, command: string, distri: string): void|nil
 
 --- Subscribe to a comm
 -- TODO Handle order
@@ -49,7 +49,7 @@ end
 --- @param prefix string @The prefix to register
 --- @param data table<string,RecieverFunction> @A table of structure ["command"] = function
 --- @see Comms#Subscribe
---- @return table<number,Subscription> @An array of the created subscriptions
+--- @return table<number,Subscription>? @An array of the created subscriptions
 function Comms:BulkSubscribe (prefix, data)
    if type(data) ~= "table" then return error("Error - wrong data supplied.",2) end
    local subs = {}
