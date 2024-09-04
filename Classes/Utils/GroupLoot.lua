@@ -91,14 +91,15 @@ function GroupLoot:ShouldPassOnLoot()
 	return addon.mldb and addon.mldb.autoGroupLoot and addon.handleLoot and
 		addon.masterLooter and not addon.isMasterLooter and GetNumGroupMembers() > 1
 		and (db.autoGroupLootGuildGroupOnly and addon.isInGuildGroup or not db.autoGroupLootGuildGroupOnly)
-
-	-- return self:GetStatus() == 0x1ef -- 111101111
+	-- local status = self:GetStatus()
+	-- Bit 7 can be whatever, bit 5 must be 0, rest must be 1
+	-- return bit.band(status, 0x1af) == 0x1af and bit.band(status, 0x10) == 0-- 1.1010.1111 & 0.0001.0000
 end
 
 function GroupLoot:ShouldRollOnLoot()
 	return addon.mldb and addon.mldb.autoGroupLoot and addon.handleLoot and
 		addon.masterLooter and addon.isMasterLooter and GetNumGroupMembers() > 1
-	-- return bit.band(self:GetStatus(), 0x13f) == 0x13f -- 100111111
+	-- return bit.band(self:GetStatus(), 0x1bf) == 0x1bf -- 1.1011.1111
 	-- TODO Consider if we do care about the guild group thing as ML.
 end
 

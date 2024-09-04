@@ -50,7 +50,7 @@ function RCVersionCheck:OnInitialize()
             sort = ST.SORT_DSC,
             sortnext = 2
         },
-		{ name = "", width = 60} -- GroupLoot Status
+		{ name = "", width = 20} -- GroupLoot Status
     }
 	self:InitCoreVersionComms()
     self.subscriptions = {}
@@ -556,8 +556,8 @@ function RCVersionCheck.SetCellGroupLootStatus(rowFrame, frame, data, cols, row,
 	local status = data[realrow].cols[column].args[1]
 	local binary = addon.Utils:Int2Bin(status)
 	data[realrow].cols[column].value = status and binary or ""
-	frame.text:SetText(status)
-	frame:SetScript("OnEnter", function() 
+	frame.text:SetText(status or "?")
+	frame:SetScript("OnEnter", function()
 		if status then
 			local description = GroupLoot:StatusToDescription(status)
 			addon:CreateTooltip("Status", binary, status, string.format("%x", status), unpack(description))

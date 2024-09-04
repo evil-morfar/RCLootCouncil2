@@ -185,16 +185,17 @@ describe("#GroupLoot", function()
 			assert.equal(expected, GroupLoot:GetStatus())
 		end)
 
-		it("should return '111101111' when we should pass", function()
+		it("should return '11?101111' when we should pass", function()
 			addon.mldb = { autoGroupLoot = true, }
 			addon.handleLoot = true
 			addon.masterLooter = addon.player
 			addon.isInGuildGroup = true
 			assert.is.True(GroupLoot:ShouldPassOnLoot())
 			assert.is.False(GroupLoot:ShouldRollOnLoot())
-			assert.is.Equal(0x1ef, GroupLoot:GetStatus())
+			assert.is.Equal(0x1af, bit.band(GroupLoot:GetStatus(), 0x1af))
+			assert.is.Equal(0, bit.band(GroupLoot:GetStatus(), 0x10))
 		end)
-		it("should return '111111111' when we should roll", function()
+		it("should return '11?111111' when we should roll", function()
 			addon.mldb = { autoGroupLoot = true, }
 			addon.handleLoot = true
 			addon.masterLooter = addon.player
@@ -202,7 +203,7 @@ describe("#GroupLoot", function()
 			addon.isInGuildGroup = true
 			assert.is.False(GroupLoot:ShouldPassOnLoot())
 			assert.is.True(GroupLoot:ShouldRollOnLoot())
-			assert.is.Equal(0x1ff, GroupLoot:GetStatus())
+			assert.is.Equal(0x1bf, bit.band(GroupLoot:GetStatus(), 0x1bf))
 		end)
 	end)
 
