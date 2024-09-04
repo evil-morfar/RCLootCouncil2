@@ -2139,7 +2139,13 @@ end
 -- @section UI.
 ---------------------------------------------------------------------------
 
+---@class TextButton : Button
+---@field text FontString
+
+--- @alias DoCellUpdateFunction fun(rowFrame:Frame, frame: TextButton, cols:table, row: number, realrow: number, column: number, fShow: boolean, table: table, ...: any): any
+
 --- Used as a "DoCellUpdate" function for lib-st
+--- @type DoCellUpdateFunction
 function RCLootCouncil.SetCellClassIcon(rowFrame, frame, data, cols, row, realrow, column, fShow, table, class)
 	local celldata = data and (data[realrow].cols and data[realrow].cols[column] or data[realrow][column])
 	local class = celldata and celldata.args and celldata.args[1] or class
