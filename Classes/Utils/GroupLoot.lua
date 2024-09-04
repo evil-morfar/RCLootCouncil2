@@ -48,8 +48,9 @@ function GroupLoot:OnStartLootRoll(_, rollID)
 		self.Log:d(link, "is ignored, bailing.")
 		return
 	end
+	local binStatus = self:GetStatusBinary()
 	if self:ShouldPassOnLoot() then
-		self.Log:d("Passing on loot", link)
+		self.Log:d("Passing on loot", link, binStatus)
 		self:RollOnLoot(rollID, 0)
 		self.OnLootRoll(link, rollID, 0)
 	elseif self:ShouldRollOnLoot() then
@@ -62,7 +63,7 @@ function GroupLoot:OnStartLootRoll(_, rollID)
 		else
 			roll = 2
 		end
-		self.Log:d("Rolling on loot", link, roll)
+		self.Log:d("Rolling on loot", link, roll, binStatus)
 		self:RollOnLoot(rollID, roll)
 		self.OnLootRoll(link, rollID, roll)
 	end
@@ -105,6 +106,8 @@ end
 
 --- @enum Status
 --- Table which keys is the binary representation of whether the value is true.
+--- autoGroupLootGuildGroupOnly doesn't matter for rolling, but is included for options clarity.
+--- "guildGroup" is the combined result of both - true if rolling is allowed.
 --- If everything but 'isMasterLooter' is true, then we pass on loot.
 --- If 'isMasterLooter' is also true, then we roll on loot.
 local status = {
@@ -121,10 +124,8 @@ local status = {
 
 local statusInverted = tInvert(status)
 
----@class StatusInt : integer
-
 --- Generates the status for the current GroupLoot setting.
----@return StatusInt #The integer representation of the binary status value.
+---@return integer #The integer representation of the binary status value.
 function GroupLoot:GetStatus()
 	local result = (addon.mldb and next(addon.mldb) and 1 or 0)
 	result = result + bit.lshift((addon.mldb and addon.mldb.autoGroupLoot and 1 or 0), 1)
@@ -136,7 +137,7 @@ function GroupLoot:GetStatus()
 	result = result +
 		bit.lshift(((not addon.db.profile.autoGroupLootGuildGroupOnly or addon.isInGuildGroup) and 1 or 0), 7)
 	result = result + bit.lshift((addon.enabled and 1 or 0), 8)
-	return result --[[@as StatusInt]]
+	return result
 end
 
 ---Generates the binary version of [GroupLoot:GetStatus()](lua://Utils.GroupLoot.GetStatus)
@@ -155,7 +156,7 @@ function GroupLoot:GetInvertedStatusTable() return statusInverted end
 --- Calculates the status with one or more fields set.
 --- Invalid fields will be ignored.
 ---@param ...Status The fields to set. Must be a valid value in [Status](lua://Status).
----@return StatusInt #The integer representation of the binary status value.
+---@return integer #The integer representation of the binary status value.
 function GroupLoot:CalculateStatus(...)
 	local result = 0
 	for i = 1, select("#", ...) do
@@ -164,7 +165,7 @@ function GroupLoot:CalculateStatus(...)
 			result = result + statusInverted[s]
 		end
 	end
-	return tonumber(result, 2) --[[@as StatusInt]]
+	return tonumber(result, 2)
 end
 
 local description = {
@@ -175,19 +176,24 @@ local description = {
 	"player is master looter",
 	"numGroupMembers > 1",
 	"autoGroupLootGuildGroupOnly enabled",
-	"player in guild group",
+	"Guild group settings",
 	"addon enabled",
 }
 ---comment
----@param status StatusInt
-function GroupLoot:StatusToDescription(status)
+---@param status integer
+---@param target integer
+function GroupLoot:StatusToDescription(status, target)
 	local binary = addon.Utils:Int2Bin(status)
 	local res = {}
 	for i = 1, #binary do
-		if bit.band(status, bit.lshift(1, i - 1)) > 0 then
-			res[#res + 1] = WrapTextInColorCode(description[i], "FF00FF00")
+		if i == 7 then -- autoGroupLootGuildGroupOnly doesn't matter
+			res[#res + 1] = description[i]
 		else
-			res[#res + 1] = WrapTextInColorCode(description[i], "FFFF0000")
+			if bit.band(status, bit.lshift(1, i - 1)) > 0 and bit.band(status, bit.lshift(1, i - 1)) > 0 then
+				res[#res + 1] = WrapTextInColorCode(description[i], "FF00FF00")
+			else
+				res[#res + 1] = WrapTextInColorCode(description[i], "FFFF0000")
+			end
 		end
 	end
 	return res

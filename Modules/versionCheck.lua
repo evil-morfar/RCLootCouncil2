@@ -50,7 +50,7 @@ function RCVersionCheck:OnInitialize()
             sort = ST.SORT_DSC,
             sortnext = 2
         },
-		{ name = "", width = 20} -- GroupLoot Status
+		{ name = "", width = 20, align = "CENTER"} -- GroupLoot Status
     }
 	self:InitCoreVersionComms()
     self.subscriptions = {}
@@ -551,15 +551,21 @@ function RCVersionCheck.SetCellModules(rowFrame, f, data, cols, row, realrow, co
     table.DoCellUpdate(rowFrame, f, data, cols, row, realrow, column, fShow, table)
 end
 
+local targetML = tonumber("110111111", 2)
+local target 	= tonumber("110101111", 2)
+
 --- @type DoCellUpdateFunction
 function RCVersionCheck.SetCellGroupLootStatus(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
 	local status = data[realrow].cols[column].args[1]
 	local binary = addon.Utils:Int2Bin(status)
 	data[realrow].cols[column].value = status and binary or ""
-	frame.text:SetText(status or "?")
+	frame.text:SetText(status and
+		((addon.isMasterLooter and bit.band(status, targetML) == targetML)
+			or bit.band(status, target) == target and "Good" or "Bad") or "?")
 	frame:SetScript("OnEnter", function()
 		if status then
-			local description = GroupLoot:StatusToDescription(status)
+			local targetStatus = addon.isMasterLooter and targetML or target
+			local description = GroupLoot:StatusToDescription(status, targetStatus)
 			addon:CreateTooltip("Status", binary, status, string.format("%x", status), unpack(description))
 		end
 	end)
