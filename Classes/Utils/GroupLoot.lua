@@ -166,6 +166,32 @@ function GroupLoot:CalculateStatus(...)
 	return tonumber(result, 2) --[[@as StatusInt]]
 end
 
+local description = {
+	"Received data from ML",
+	"ML has enabled autoGroupLoot",
+	"addon handles loot",
+	"group has master looter",
+	"player is master looter",
+	"numGroupMembers > 1",
+	"autoGroupLootGuildGroupOnly enabled",
+	"player in guild group",
+	"addon enabled",
+}
+---comment
+---@param status StatusInt
+function GroupLoot:StatusToDescription(status)
+	local binary = addon.Utils:Int2Bin(status)
+	local res = {}
+	for i = 1, #binary do
+		if bit.band(status, bit.lshift(1, i - 1)) > 0 then
+			res[#res + 1] = WrapTextInColorCode(description[i], "FF00FF00")
+		else
+			res[#res + 1] = WrapTextInColorCode(description[i], "FFFF0000")
+		end
+	end
+	return res
+end
+
 function GroupLoot:OnLootHistoryRollChanged(event, itemId, playerId)
 	self.Log:d(event)
 	self.Log:d("GetItem:", C_LootHistory.GetItem(itemId))
