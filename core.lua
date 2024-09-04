@@ -1666,6 +1666,17 @@ function RCLootCouncil:IsInGuildGroup()
 	end
 end
 
+function RCLootCouncil:HasValidMasterLooter()
+	if not self.masterLooter then return false end
+	if type(self.masterLooter) == "string" then
+		return not (self.masterLooter == "Unknown" or Ambiguate(self.masterLooter, "short"):lower() == _G.UNKNOWNOBJECT:lower())
+	elseif type(self.masterLooter) == "table" then
+		return self.masterLooter:GetName() ~= ""
+	end
+	-- Should never reach this
+	self.Log:E("Invalid masterlooter:", self.masterLooter)
+end
+
 function RCLootCouncil:NewMLCheck()
 	local old_ml = self.masterLooter
 	local old_lm = self.lootMethod

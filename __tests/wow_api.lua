@@ -185,6 +185,7 @@ DEFAULT_CHAT_FRAME = ChatFrame1
 
 debugstack = debug.traceback
 date = os.date
+debugprofilestop = os.clock
 
 C_AddOns = {
 	GetAddOnMetadata = function(arg)
@@ -1158,6 +1159,7 @@ ITEM_MOD_STRENGTH_SHORT = "Strength";
 ITEM_MOD_VERSATILITY = "Versatility";
 ITEM_SOULBOUND = "Soulbound";
 ROLL = "Roll"
+UNKNOWNOBJECT = "Unknown"
 
 BLOCK = "Block"
 PARRY = "Parry"
