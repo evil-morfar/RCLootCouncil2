@@ -194,7 +194,7 @@ end
 ---@param version string
 ---@param tVersion string?
 ---@param modules table<integer, string>
----@param groupLootStatus StatusInt
+---@param groupLootStatus integer
 function RCVersionCheck:AddEntry(name, class, guildRank, version, tVersion, modules, groupLootStatus)
     -- We need to be careful with naming conventions just as in RCLootCouncil:UnitName()
     --name = name:lower():gsub("^%l", string.upper)
