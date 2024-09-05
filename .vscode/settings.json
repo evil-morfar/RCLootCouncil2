@@ -54,7 +54,13 @@
         "require",
         "tInsertUnique",
         "CLOSE",
-        "LOOT_ITEM"
+        "LOOT_ITEM",
+        "ToggleDropDownMenu",
+        "UIDropDownMenu_HandleGlobalMouseEvent",
+        "CloseMenus",
+        "ColorPickerFrame",
+        "VIDEO_QUALITY_LABEL6",
+        "DEFAULT_CHAT_FRAME"
     ],
     "Lua.diagnostics.disable": [
         "undefined-doc-name",

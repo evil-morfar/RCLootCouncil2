@@ -2088,7 +2088,7 @@ end
 --- Returns the active module if found or fails silently.
 ---	Always use this when calling functions in another module.
 --- @param module DefaultModules|UserModules Index in self.defaultModules.
---- @return AceAddon? #The module object of the active module or nil if not found. Prioritises userModules if set.
+--- @return AceModule? #The module object of the active module or nil if not found. Prioritises userModules if set.
 function RCLootCouncil:GetActiveModule(module)
 	return self:GetModule(userModules[module] or defaultModules[module], false)
 end

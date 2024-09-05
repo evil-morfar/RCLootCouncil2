@@ -12,7 +12,7 @@ local ItemUtils = addon.Require "Utils.Item"
 --- @class OnLootRoll
 --- Called everytime we're auto rolling for loot.
 --- Subscriber functions are called with args: `itemLink` ,`rollID`, `rollType`
---- @field subscribe fun(onNext: fun(link:ItemLink, rollID:integer, rollType:RollType), onError:fun(message:string), onComplete:fun()): rx.Subscription
+--- @field subscribe fun(self:OnLootRoll, onNext: fun(link:ItemLink, rollID:integer, rollType:RollType), onError:fun(message:string), onComplete:fun()): rx.Subscription
 GroupLoot.OnLootRoll = Subject.create()
 
 --- @type table<integer, boolean>
@@ -48,9 +48,9 @@ function GroupLoot:OnStartLootRoll(_, rollID)
 		self.Log:d(link, "is ignored, bailing.")
 		return
 	end
-	local binStatus = self:GetStatusBinary()
+	self.Log:D("Status:", self:GetStatusBinary())
 	if self:ShouldPassOnLoot() then
-		self.Log:d("Passing on loot", link, binStatus)
+		self.Log:d("Passing on loot", link)
 		self:RollOnLoot(rollID, 0)
 		self.OnLootRoll(link, rollID, 0)
 	elseif self:ShouldRollOnLoot() then
@@ -63,7 +63,7 @@ function GroupLoot:OnStartLootRoll(_, rollID)
 		else
 			roll = 2
 		end
-		self.Log:d("Rolling on loot", link, roll, binStatus)
+		self.Log:d("Rolling on loot", link, roll)
 		self:RollOnLoot(rollID, roll)
 		self.OnLootRoll(link, rollID, roll)
 	end
