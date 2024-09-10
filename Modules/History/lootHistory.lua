@@ -57,6 +57,7 @@ function LootHistory:OnInitialize()
 	_G.MSA_DropDownMenu_Initialize(rightClickMenu, self.RightClickMenu, "MENU")
 	--MoreInfo
 	self.moreInfo = CreateFrame( "GameTooltip", "RCLootHistoryMoreInfo", nil, "GameTooltipTemplate" )
+	self.moreInfo:SetClampedToScreen(false)
 end
 
 function LootHistory:OnEnable()

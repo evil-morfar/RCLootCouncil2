@@ -928,6 +928,7 @@ function RCVotingFrame:GetFrame()
 	f.moreInfoBtn = b2
 
 	f.moreInfo = CreateFrame( "GameTooltip", "RCVotingFrameMoreInfo", nil, "GameTooltipTemplate" )
+	f.moreInfo:SetClampedToScreen(false)
 	f.content:SetScript("OnSizeChanged", function()
 		f.moreInfo:SetScale(f:GetScale() * 0.6)
 	end)
