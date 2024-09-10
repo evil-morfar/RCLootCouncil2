@@ -1,3 +1,7 @@
+## Changes
+
+More info frames is no longer clamped to screen.
+
 # 3.13.1
 
 ## Changes
