@@ -1310,7 +1310,7 @@ function RCLootCouncil:GetContainerItemTradeTimeRemaining(container, slot)
 		local line = getglobal(tooltipForParsing:GetName() .. 'TextLeft' .. i)
 		if line and line.GetText then
 			local text = line:GetText() or ""
-			if text == ITEM_SOULBOUND or text == ITEM_ACCOUNTBOUND or text == ITEM_BNETACCOUNTBOUND then bounded = true end
+			if text == ITEM_SOULBOUND or text == ITEM_ACCOUNTBOUND or text == ITEM_BNETACCOUNTBOUND or text == ITEM_ACCOUNTBOUND_UNTIL_EQUIP then bounded = true end
 
 			local timeText = text:match(bindTradeTimeRemainingPattern)
 			if timeText then -- Within 2h trade window, parse the time text

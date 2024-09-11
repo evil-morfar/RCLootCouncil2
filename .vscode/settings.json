@@ -65,6 +65,7 @@
         "FindInTableIf",
         "tFilter",
         "tCompare",
-        "ContainsIf"
+        "ContainsIf",
+        "ITEM_ACCOUNTBOUND_UNTIL_EQUIP"
     ]
 }
