@@ -842,8 +842,10 @@ local function registerAndAnnounceBagged(session)
 	self.lootTable[session].lootSlot = nil  -- Now the item is bagged and no longer in the loot window.
 	self.lootTable[session].bagged = Item
 	if self.running then -- Award later can be done when actually loot session hasn't been started yet.
-		self.lootTable[session].baggedInSession = true -- REVIEW This variable is never used?
+		self.lootTable[session].baggedInSession = true -- Used in VotingFrame
+		self.lootTable[session].awarded = true
 		self:Send("group", "bagged", session, addon.playerName)
+		if self:HasAllItemsBeenAwarded() then self:ScheduleTimer("EndSession", 1) end
 	end
 	return false
 end

@@ -60,7 +60,16 @@
         "CloseMenus",
         "ColorPickerFrame",
         "VIDEO_QUALITY_LABEL6",
-        "DEFAULT_CHAT_FRAME"
+        "DEFAULT_CHAT_FRAME",
+        "BACKPACK_CONTAINER",
+        "NUM_BAG_SLOTS",
+        "GUILD_BANK_LOG_TIME",
+        "SecondsToTime",
+        "RANDOM_ROLL_RESULT",
+        "FindInTableIf",
+        "tFilter",
+        "tCompare",
+        "ContainsIf"
     ],
     "Lua.diagnostics.disable": [
         "undefined-doc-name",

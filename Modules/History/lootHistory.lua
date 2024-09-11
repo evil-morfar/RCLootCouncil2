@@ -467,7 +467,7 @@ function LootHistory.SetCellResponse(rowFrame, frame, data, cols, row, realrow, 
 
 	if args.color and type(args.color) == "table" and type(args.color[1]) == "number" then -- Never version saves the color with the entry
 		frame.text:SetTextColor(unpack(args.color))
-	elseif args.responseID and args.responseID > 0 then -- try to recreate color from ID
+	elseif args.responseID and (type(args.responseID) == "string" or args.responseID > 0) then -- try to recreate color from ID
 		frame.text:SetTextColor(unpack(addon:GetResponse("default", args.responseID).color))
 	else -- default to white
 		frame.text:SetTextColor(1,1,1,1)
@@ -1114,6 +1114,7 @@ function LootHistory:UpdateMoreInfo(rowFrame, cellFrame, dat, cols, row, realrow
 		tip:AddDoubleLine("tierToken", tostring(data.tierToken), 1,1,1, 1,1,1)
 		tip:AddDoubleLine("tokenRoll", tostring(data.tokenRoll), 1,1,1, 1,1,1)
 		tip:AddDoubleLine("relicRoll", tostring(data.relicRoll), 1,1,1, 1,1,1)
+		tip:AddDoubleLine("typeCode", tostring(data.typeCode))
 		tip:AddLine(" ")
 		tip:AddDoubleLine("Total LootDB entries:", #self.frame.rows, 1,1,1, 0,0,1)
 	end
