@@ -568,6 +568,7 @@ function RCLootCouncil:UpdateAndSendRecentTradableItem(info, count)
 	end
 	local Item = self.ItemStorage:New(info.link, "temp")
 	self.ItemStorage:WatchForItemInBags(Item, function() -- onFound
+		self:LogItemGUID(Item)
 		if Item.time_remaining > 0 then
 			Item:Store()
 			if self.mldb.rejectTrade and IsInRaid() then
@@ -2849,4 +2850,8 @@ function RCLootCouncil:GetEJLatestInstanceID()
 
 	if not instanceId then instanceId = 1190 end -- default to Castle Nathria if no ID is found
 	return instanceId
+end
+
+function RCLootCouncil:LogItemGUID(item)
+	self.Log:D("Item GUID: " .. tostring(self.ItemStorage:GetItemGUID(item) or nil))
 end

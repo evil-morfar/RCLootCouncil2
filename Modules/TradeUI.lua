@@ -376,6 +376,7 @@ function TradeUI:AddAwardedInBagsToTradeWindow()
 		end
       if self.isTrading then
          addon.Log:d("<TradeUI> Scheduling trade add timer for #", k)
+		 addon:LogItemGUID(Item)
          -- Delay the adding of items, as we can't add them all at once
          self:ScheduleTimer(addItemToTradeWindow, TRADE_ADD_DELAY * k, k, Item)
       end

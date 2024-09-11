@@ -1047,6 +1047,8 @@ C_Container = {
 		}
 	end,
 	PickupContainerItem = donothing,
+	GetContainerNumSlots = function(c) return 10 end,
+	GetContainerItemLink = donothing
 }
 
 C_CreatureInfo = {
