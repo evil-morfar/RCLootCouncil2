@@ -1071,7 +1071,7 @@ function RCLootCouncil:PrepareLootTable(lootTable)
 		v.subType = subType -- Subtype should be in our locale
 		v.texture = texture
 		v.token = itemID and RCTokenTable[itemID]
-		v.boe = bindType == _G.LE_ITEM_BIND_ON_EQUIP
+		v.boe = bindType == Enum.ItemBind.OnEquip
 		v.typeID = typeID
 		v.subTypeID = subTypeID
 		v.session = v.session or ses
@@ -1365,14 +1365,13 @@ end
 
 function RCLootCouncil:IsItemBoE(item)
 	if not item then return false end
-	-- Item binding type: 0 - none; 1 - on pickup; 2 - on equip; 3 - on use; 4 - quest.
-	return select(14, C_Item.GetItemInfo(item)) == LE_ITEM_BIND_ON_EQUIP
+	return select(14, C_Item.GetItemInfo(item)) == Enum.ItemBind.OnEquip
 end
 
 function RCLootCouncil:IsItemBoP(item)
 	if not item then return false end
 	-- Item binding type: 0 - none; 1 - on pickup; 2 - on equip; 3 - on use; 4 - quest.
-	return select(14, C_Item.GetItemInfo(item)) == LE_ITEM_BIND_ON_ACQUIRE
+	return select(14, C_Item.GetItemInfo(item)) == Enum.ItemBind.OnAcquire
 end
 
 function RCLootCouncil:GetPlayersGuildRank()

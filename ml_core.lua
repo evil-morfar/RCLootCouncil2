@@ -673,7 +673,7 @@ function RCLootCouncilML:CanGiveLoot(slot, item, winner)
 		local bindType = select(14, C_Item.GetItemInfo(item))
 
 		if not found then
-			if bindType ~= LE_ITEM_BIND_ON_ACQUIRE then
+			if bindType ~= Enum.ItemBind.OnAcquire then
 				return false, "not_bop"
 			else
 				return false, "not_ml_candidate"

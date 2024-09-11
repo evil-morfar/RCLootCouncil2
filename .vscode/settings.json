@@ -66,6 +66,7 @@
         "tFilter",
         "tCompare",
         "ContainsIf",
-        "ITEM_ACCOUNTBOUND_UNTIL_EQUIP"
+        "ITEM_ACCOUNTBOUND_UNTIL_EQUIP",
+        "ChatFrame1"
     ]
 }
