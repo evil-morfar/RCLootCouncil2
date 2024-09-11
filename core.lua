@@ -518,6 +518,12 @@ function RCLootCouncil:ChatCommand(msg)
 	elseif input == "export" then
 			self:ExportCurrentSession()
 
+	elseif input == "unlock" then
+		if not args[1]then
+			return self:Print("Must have 'item' as second argument.")
+		end
+		self:UnlockItem(args[1])
+
 	--@debug@
 	elseif input == "nnp" then
 		self.nnp = not self.nnp
@@ -2854,4 +2860,32 @@ end
 
 function RCLootCouncil:LogItemGUID(item)
 	self.Log:D("Item GUID: " .. tostring(self.ItemStorage:GetItemGUID(item) or nil))
+end
+
+--- Unlocks an item. See [`C_Item.UnlockItem`](lua://C_Item.UnlockItem).
+---@param item ItemLink|ItemString Item to unlock
+function RCLootCouncil:UnlockItem(item)
+	local guid = self.ItemStorage:GetItemGUID(item)
+	if not guid then return self:Print(format("Couldn't find %s in your inventory.", item)) end
+	local Item = Item:CreateFromItemGUID(guid)
+	if Item:IsItemLocked() then
+		Item:UnlockItem()
+		self:Print("Item unlocked")
+	else
+		self:Print("Item is already unlocked")
+	end
+end
+
+---Locks an item - mainly for testing
+---@param item ItemLink|ItemString
+function RCLootCouncil:LockItem(item)
+	local guid = self.ItemStorage:GetItemGUID(item)
+	if not guid then return self:Print(format("Couldn't find %s in your inventory.", item)) end
+	local Item = Item:CreateFromItemGUID(guid)
+	if not Item:IsItemLocked() then
+		Item:LockItem()
+		self:Print("Item locked")
+	else
+		self:Print("Item is already locked")
+	end
 end
