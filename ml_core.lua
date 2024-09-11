@@ -70,6 +70,7 @@ function RCLootCouncilML:OnEnable()
 	self.combatQueue = {}	-- The functions that will be executed when combat ends. format: [num] = {func, arg1, arg2, ...}
 	self.timers = {}			-- Table to hold timer references. Each value is the name of a timer, whose value is the timer id.
 	self.groupSize = 0
+	self.printSessionHelp = false -- Print help message when session starts
 
 	self:RegisterEvent("CHAT_MSG_WHISPER",	"OnEvent")
 	self:RegisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
@@ -250,7 +251,7 @@ function RCLootCouncilML:StartSession()
 	self:AnnounceItems(self.lootTable)
 
 	-- Print some help messages for not direct mode.
-	if not addon.testMode then
+	if not addon.testMode and self.printSessionHelp then
 		-- Use the first entry in lootTable to determinte mode
 		if not self.lootTable[1].lootSlot then
 			addon:ScheduleTimer("Print", 1, L["session_help_not_direct"]) -- Delay a bit, so annouceItems are printed first.
