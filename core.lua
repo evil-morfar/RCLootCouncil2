@@ -1690,7 +1690,7 @@ function RCLootCouncil:NewMLCheck()
 	self.isMasterLooter, self.masterLooter = self:GetML()
 	self.lootMethod = GetLootMethod()
 	local instance_type = select(2, IsInInstance())
-	if instance_type == "pvp" or instance_type == "arena" then return end -- Don't do anything here
+	if instance_type == "pvp" or instance_type == "arena" or instance_type == "scenario" then return end -- Don't do anything here
 	if self.masterLooter and type(self.masterLooter) == "string"
 					and (self.masterLooter == "Unknown" or Ambiguate(self.masterLooter, "short"):lower() == _G.UNKNOWNOBJECT:lower()) then
 		-- ML might be unknown for some reason
