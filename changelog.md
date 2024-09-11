@@ -5,6 +5,7 @@ More info frames is no longer clamped to screen.
 ## Bugfixes
 
 - *Selecting an item for "Award Later" during a session will now properly count the item as awarded.*
+- *Tier token items are now properly registered as such for usage in more info tooltips.*
 
 # 3.13.1
 
