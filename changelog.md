@@ -2,6 +2,10 @@
 
 More info frames is no longer clamped to screen.
 
+## Bugfixes
+
+- *Selecting an item for "Award Later" during a session will now properly count the item as awarded.*
+
 # 3.13.1
 
 ## Changes

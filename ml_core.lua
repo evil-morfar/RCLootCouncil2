@@ -22,7 +22,7 @@
 ]]
 --- @type RCLootCouncil
 local addon = select(2, ...)
---- @class RCLootCouncilML
+--- @class RCLootCouncilML : AceModule, AceEvent-3.0, AceBucket-3.0, AceTimer-3.0, AceHook-3.0
 _G.RCLootCouncilML = addon:NewModule("RCLootCouncilML", "AceEvent-3.0", "AceBucket-3.0", "AceTimer-3.0", "AceHook-3.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 
@@ -842,8 +842,10 @@ local function registerAndAnnounceBagged(session)
 	self.lootTable[session].lootSlot = nil  -- Now the item is bagged and no longer in the loot window.
 	self.lootTable[session].bagged = Item
 	if self.running then -- Award later can be done when actually loot session hasn't been started yet.
-		self.lootTable[session].baggedInSession = true -- REVIEW This variable is never used?
+		self.lootTable[session].baggedInSession = true -- Used in VotingFrame
+		self.lootTable[session].awarded = true
 		self:Send("group", "bagged", session, addon.playerName)
+		if self:HasAllItemsBeenAwarded() then self:ScheduleTimer("EndSession", 1) end
 	end
 	return false
 end

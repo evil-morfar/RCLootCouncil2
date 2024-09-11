@@ -593,9 +593,10 @@ function RCVotingFrame:OnBaggedReceived (s)
 		self:UpdateItemAwardHistory()
 	end, 1) -- Make sure we've received the history data before updating
 	if not lootTable[s] then return end -- We might not have lootTable - e.g. if we just reloaded
-	lootTable[s].bagged = true
 	lootTable[s].baggedInSession = true
-	if addon.isMasterLooter and session ~= #lootTable then -- ML should move to the next item on award
+	lootTable[s].awarded = true
+	local nextSession = self:FetchUnawardedSession()
+	if addon.isMasterLooter and nextSession then -- ML should move to the next item on award
 		self:SwitchSession(session + 1)
 	else
 		self:SwitchSession(session) -- Use switch session to update awardstring
@@ -836,7 +837,12 @@ function RCVotingFrame:Update(forceUpdate)
 	self.frame.st:SortData()
 	self.frame.st:SortData() -- It appears that there is a bug in lib-st that only one SortData() does not use the "sortnext" to correct sort the rows.
 	-- update awardString
-	if lootTable[session] and lootTable[session].awarded then
+	if lootTable[session] and lootTable[session].baggedInSession then
+		self.frame.awardString:SetText(L["The item will be awarded later"])
+		self.frame.awardString:Show()
+		self.frame.awardStringPlayer:Hide()
+		self.frame.awardStringPlayer.classIcon:Hide()
+	elseif lootTable[session] and lootTable[session].awarded then
 		self.frame.awardString:SetText(L["Item was awarded to"])
 		self.frame.awardString:Show()
 		local name = lootTable[session].awarded
@@ -847,11 +853,6 @@ function RCVotingFrame:Update(forceUpdate)
 		-- Hack-reuse the SetCellClassIcon function
 		addon.SetCellClassIcon(nil,self.frame.awardStringPlayer.classIcon,nil,nil,nil,nil,nil,nil,nil, lootTable[session].candidates[name].class)
 		self.frame.awardStringPlayer.classIcon:Show()
-	elseif lootTable[session] and lootTable[session].baggedInSession then
-		self.frame.awardString:SetText(L["The item will be awarded later"])
-		self.frame.awardString:Show()
-		self.frame.awardStringPlayer:Hide()
-		self.frame.awardStringPlayer.classIcon:Hide()
 	else
 		self.frame.awardString:Hide()
 		self.frame.awardStringPlayer:Hide()
@@ -1984,7 +1985,7 @@ do
 				text = L["Award later"],
 				notCheckable = true,
 				disabled = function()
-					return not lootTable[session] or lootTable[session].bagged or lootTable[session].awarded
+					return not lootTable[session] or lootTable[session].baggedInSession or lootTable[session].awarded
 				end,
 				func = function()
 					LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_AWARD_LATER", {session=session, link=lootTable[session].link})
