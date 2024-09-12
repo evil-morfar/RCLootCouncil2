@@ -355,6 +355,9 @@ local function addItemToTradeWindow (tradeBtn, Item)
 	local containerInfo = addon.C_Container.GetContainerItemInfo(c, s)
 
 	if containerInfo and addon:ItemIsItem(containerInfo.hyperlink, Item.link) then -- Extra check, probably also redundant
+		if containerInfo.isLocked then
+			addon:Print("Item is locked")
+		end
 		addon.Log:d("Trading", Item.link, c,s)
 		ClearCursor()
 		addon.C_Container.PickupContainerItem(c, s)
