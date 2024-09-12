@@ -1078,7 +1078,7 @@ function RCLootCouncil:PrepareLootTable(lootTable)
 		v.subType = subType -- Subtype should be in our locale
 		v.texture = texture
 		v.token = itemID and RCTokenTable[itemID]
-		v.boe = bindType == _G.LE_ITEM_BIND_ON_EQUIP
+		v.boe = bindType == Enum.ItemBind.OnEquip
 		v.typeID = typeID
 		v.subTypeID = subTypeID
 		v.session = v.session or ses
@@ -1317,7 +1317,7 @@ function RCLootCouncil:GetContainerItemTradeTimeRemaining(container, slot)
 		local line = getglobal(tooltipForParsing:GetName() .. 'TextLeft' .. i)
 		if line and line.GetText then
 			local text = line:GetText() or ""
-			if text == ITEM_SOULBOUND or text == ITEM_ACCOUNTBOUND or text == ITEM_BNETACCOUNTBOUND then bounded = true end
+			if text == ITEM_SOULBOUND or text == ITEM_ACCOUNTBOUND or text == ITEM_BNETACCOUNTBOUND or text == ITEM_ACCOUNTBOUND_UNTIL_EQUIP then bounded = true end
 
 			local timeText = text:match(bindTradeTimeRemainingPattern)
 			if timeText then -- Within 2h trade window, parse the time text
@@ -1372,14 +1372,13 @@ end
 
 function RCLootCouncil:IsItemBoE(item)
 	if not item then return false end
-	-- Item binding type: 0 - none; 1 - on pickup; 2 - on equip; 3 - on use; 4 - quest.
-	return select(14, C_Item.GetItemInfo(item)) == LE_ITEM_BIND_ON_EQUIP
+	return select(14, C_Item.GetItemInfo(item)) == Enum.ItemBind.OnEquip
 end
 
 function RCLootCouncil:IsItemBoP(item)
 	if not item then return false end
 	-- Item binding type: 0 - none; 1 - on pickup; 2 - on equip; 3 - on use; 4 - quest.
-	return select(14, C_Item.GetItemInfo(item)) == LE_ITEM_BIND_ON_ACQUIRE
+	return select(14, C_Item.GetItemInfo(item)) == Enum.ItemBind.OnAcquire
 end
 
 function RCLootCouncil:GetPlayersGuildRank()
