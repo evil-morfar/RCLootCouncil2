@@ -1510,6 +1510,7 @@ function RCLootCouncil:OnEvent(event, ...)
 			-- Restore masterlooter from cache, but only if not already set.
 			if not self.masterLooter and self.db.global.cache.masterLooter then
 				self.masterLooter = Player:Get(self.db.global.cache.masterLooter)
+				self.isMasterLooter = self.masterLooter == self.player
 			end
 			self.Log:d("ML, Cached:", self.masterLooter, self.db.global.cache.masterLooter)
 
@@ -1519,6 +1520,12 @@ function RCLootCouncil:OnEvent(event, ...)
 			end
 			if self.masterLooter and self.db.global.cache.council then
 				self:OnCouncilReceived(self.masterLooter, self.db.global.cache.council)
+			end
+
+			-- Restore ML priveliges
+			if self.db.global.cache.handleLoot and self.isMasterLooter then
+				self.Log:D("Cached handleLoot:", self.db.global.cache.handleLoot)
+				self:StartHandleLoot()
 			end
 
 			-- If we still haven't set masterLooter, try delaying a bit.
@@ -1537,6 +1544,7 @@ function RCLootCouncil:OnEvent(event, ...)
 		self.db.global.cache.mldb = next(self.mldb) and MLDB:GetForTransmit(self.mldb) or nil
 		self.db.global.cache.council = Council:GetNum() > 0 and Council:GetForTransmit() or nil
 		self.db.global.cache.masterLooter = self.masterLooter and self.masterLooter:GetGUID()
+		self.db.global.cache.handleLoot = self.handleLoot
 
 	elseif event == "ENCOUNTER_START" then
 		self.Log:d("Event:", event, ...)
