@@ -9,10 +9,10 @@ local GroupLoot = addon.Init "Utils.GroupLoot"
 local Subject = addon.Require("rx.Subject")
 local ItemUtils = addon.Require "Utils.Item"
 
---- @class OnLootRoll
+--- @class OnLootRoll : rx.Subject
 --- Called everytime we're auto rolling for loot.
 --- Subscriber functions are called with args: `itemLink` ,`rollID`, `rollType`
---- @field subscribe fun(onNext: fun(link:ItemLink, rollID:integer, rollType:RollType), onError:fun(message:string), onComplete:fun()): rx.Subscription
+--- @field subscribe fun(self, onNext: fun(link:ItemLink, rollID:integer, rollType:RollType), onError?:fun(message:string), onComplete?:fun()): rx.Subscription
 GroupLoot.OnLootRoll = Subject.create()
 
 --- @type table<integer, boolean>
@@ -26,7 +26,7 @@ function GroupLoot:OnInitialize()
 	addon:RegisterEvent("START_LOOT_ROLL", self.OnStartLootRoll, self)
 	self.OnLootRoll:subscribe(function(_, rollID)
 		pcall(self.HideGroupLootFrameWithRollID, self, rollID) -- REVIEW: pcall because I haven't actually tested it in game.
-	end)
+	end, nil)
 	-- addon:RegisterEvent("LOOT_HISTORY_ROLL_CHANGED", self.OnLootHistoryRollChanged, self)
 end
 
