@@ -247,7 +247,8 @@ do
 		---@param item RCItemEntry
 		Update = function(entry, item)
 			if not item then
-				return addon.Log:E("Entry update error @ item:", item)
+				addon.Require "Services.ErrorHandler":ThrowSilentError("Entry update error @ item: ".. tostring(item))
+				return
 			end
 			if item ~= entry.item then
 				entry.noteEditbox:Hide()
