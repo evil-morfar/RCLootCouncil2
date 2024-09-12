@@ -2868,11 +2868,11 @@ function RCLootCouncil:UnlockItem(item)
 	local guid = self.ItemStorage:GetItemGUID(item)
 	if not guid then return self:Print(format("Couldn't find %s in your inventory.", item)) end
 	local Item = Item:CreateFromItemGUID(guid)
+	Item:UnlockItem()
 	if Item:IsItemLocked() then
-		Item:UnlockItem()
-		self:Print("Item unlocked")
+		self:Print("Couldn't unlock item")
 	else
-		self:Print("Item is already unlocked")
+		self:Print("Item unlocked")
 	end
 end
 
@@ -2882,10 +2882,10 @@ function RCLootCouncil:LockItem(item)
 	local guid = self.ItemStorage:GetItemGUID(item)
 	if not guid then return self:Print(format("Couldn't find %s in your inventory.", item)) end
 	local Item = Item:CreateFromItemGUID(guid)
-	if not Item:IsItemLocked() then
-		Item:LockItem()
+	Item:LockItem()
+	if Item:IsItemLocked() then
 		self:Print("Item locked")
 	else
-		self:Print("Item is already locked")
+		self:Print("Couldn't lock item")
 	end
 end
