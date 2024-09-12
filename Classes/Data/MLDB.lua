@@ -39,7 +39,7 @@ local replacements = {
 local replacements_inv = tInvert(replacements)
 
 --- Gets a transmittable version of the MLDB
---- @param input MLDB @MLDB to convert. Defaults to addon MLDB.
+--- @param input MLDB? @MLDB to convert. Defaults to addon MLDB.
 ---@return table @MLDB that's ready for transmit.
 function MLDB:GetForTransmit(input)
     local mldb = input or (private.isBuilt and private.mldb or private:BuildMLDB())
@@ -55,7 +55,7 @@ function MLDB:RestoreFromTransmit(input)
 end
 
 --- Sends the mldb to the target
---- @param target Player @The target to send to - defaults to "group"
+--- @param target Player|"group" @The target to send to - defaults to "group"
 function MLDB:Send(target)
     Comms:Send {
         target = target,

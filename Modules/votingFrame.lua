@@ -25,7 +25,7 @@
 
 --- @type RCLootCouncil
 local addon = select(2, ...)
---- @class RCVotingFrame : AceTimer-3.0, AceEvent-3.0, AceBucket-3.0
+--- @class RCVotingFrame : AceModule, AceTimer-3.0, AceEvent-3.0, AceBucket-3.0
 local RCVotingFrame = addon:NewModule("RCVotingFrame", "AceTimer-3.0", "AceEvent-3.0", "AceBucket-3.0")
 local LibDialog = LibStub("LibDialog-1.1")
 --- @type RCLootCouncilLocale

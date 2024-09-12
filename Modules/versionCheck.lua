@@ -12,7 +12,7 @@
 
 --- @type RCLootCouncil
 local addon = select(2, ...)
---- @class VersionCheck : AceTimer-3.0, AceHook-3.0, AceEvent-3.0, AceBucket-3.0
+--- @class VersionCheck : AceModule, AceTimer-3.0, AceHook-3.0, AceEvent-3.0, AceBucket-3.0
 local RCVersionCheck = addon:NewModule("VersionCheck", "AceTimer-3.0", "AceHook-3.0", "AceEvent-3.0", "AceBucket-3.0")
 local ST = LibStub("ScrollingTable")
 --- @type RCLootCouncilLocale
@@ -446,6 +446,7 @@ function RCVersionCheck:GetFrame()
     if self.frame then
         return self.frame
     end
+	---@class VersionCheckFrame : RCFrame
     local f =
         addon.UI:NewNamed("RCFrame", UIParent, "DefaultRCVersionCheckFrame", L["RCLootCouncil Version Checker"], 250)
 

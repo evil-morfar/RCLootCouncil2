@@ -4,7 +4,7 @@
 -- Create Date : 12/16/2014 8:24:04 PM
 ---@type RCLootCouncil
 local addon = select(2, ...)
---- @class RCLootFrame : AceTimer-3.0, AceEvent-3.0
+--- @class RCLootFrame : AceModule, AceTimer-3.0, AceEvent-3.0
 local LootFrame = addon:NewModule("RCLootFrame", "AceTimer-3.0", "AceEvent-3.0")
 --- @type RCLootCouncilLocale
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")

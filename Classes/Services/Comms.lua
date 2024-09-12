@@ -27,7 +27,7 @@ local private = {
 LibStub("AceComm-3.0"):Embed(private.AceComm)
 LibStub("AceSerializer-3.0"):Embed(private)
 
----@alias RecieverFunction fun(data: table, sender: string, command: string, distri: string): void
+---@alias RecieverFunction fun(data: table, sender: string, command: string, distri: string): nil
 
 --- Subscribe to a comm
 -- TODO Handle order
