@@ -1,3 +1,9 @@
+## Changes
+
+## Bugfixes
+
+- *Addon should now always properly initialize when reloading as the ML.*
+
 # 3.13.2
 
 ## Changes

@@ -1511,6 +1511,9 @@ function RCLootCouncil:OnEvent(event, ...)
 			if not self.masterLooter and self.db.global.cache.masterLooter then
 				self.masterLooter = Player:Get(self.db.global.cache.masterLooter)
 				self.isMasterLooter = self.masterLooter == self.player
+				if self.isMasterLooter then
+					self:CallModule("masterlooter")
+				end
 			end
 			self.Log:d("ML, Cached:", self.masterLooter, self.db.global.cache.masterLooter)
 
@@ -1522,7 +1525,7 @@ function RCLootCouncil:OnEvent(event, ...)
 				self:OnCouncilReceived(self.masterLooter, self.db.global.cache.council)
 			end
 
-			-- Restore ML priveliges
+			-- Restore handleLoot
 			if self.db.global.cache.handleLoot and self.isMasterLooter then
 				self.Log:D("Cached handleLoot:", self.db.global.cache.handleLoot)
 				self:StartHandleLoot()
@@ -1530,6 +1533,7 @@ function RCLootCouncil:OnEvent(event, ...)
 
 			-- If we still haven't set masterLooter, try delaying a bit.
 			-- but we don't have to wait if we got it from cache.
+			-- ? REVIEW: This might not be needed anymore.
 			self:ScheduleTimer(function()
 				if not self.isMasterLooter and self.masterLooter and self.masterLooter ~= "" then
 					self:Send("group", "pI", self:GetPlayerInfo()) -- Also send out info, just in case
