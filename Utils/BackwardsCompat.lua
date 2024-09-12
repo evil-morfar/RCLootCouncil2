@@ -254,7 +254,7 @@ Compat.list = {
 
 	{
 		name = "Update 'tierToken' in history",
-		version = "3.14.0",
+		version = "3.13.2",
 		func = function ()
 			local Item = addon.Require "Utils.Item"
 			for _, factionrealm in pairs(addon.lootDB.sv.factionrealm) do

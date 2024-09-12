@@ -1,3 +1,5 @@
+# 3.13.2
+
 ## Changes
 
 More info frames is no longer clamped to screen.
