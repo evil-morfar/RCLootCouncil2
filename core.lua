@@ -46,7 +46,7 @@
 ]]
 -- GLOBALS: GetLootMethod, C_AddOns.GetAddOnMetadata, UnitClass
 local addonname, addontable = ...
---- @class RCLootCouncil : AceAddon-3.0, AceConsole-3.0, AceEvent-3.0, AceHook-3.0, AceTimer-3.0, AceBucket-3.0
+--- @class RCLootCouncil : AceAddon, AceConsole-3.0, AceEvent-3.0, AceHook-3.0, AceTimer-3.0, AceBucket-3.0
 _G.RCLootCouncil = LibStub("AceAddon-3.0"):NewAddon(addontable, addonname, "AceConsole-3.0", "AceEvent-3.0",
                                                     "AceHook-3.0", "AceTimer-3.0", "AceBucket-3.0");
 local LibDialog = LibStub("LibDialog-1.1")
@@ -1071,7 +1071,7 @@ function RCLootCouncil:PrepareLootTable(lootTable)
 		v.subType = subType -- Subtype should be in our locale
 		v.texture = texture
 		v.token = itemID and RCTokenTable[itemID]
-		v.boe = bindType == _G.LE_ITEM_BIND_ON_EQUIP
+		v.boe = bindType == Enum.ItemBind.OnEquip
 		v.typeID = typeID
 		v.subTypeID = subTypeID
 		v.session = v.session or ses
@@ -1310,7 +1310,7 @@ function RCLootCouncil:GetContainerItemTradeTimeRemaining(container, slot)
 		local line = getglobal(tooltipForParsing:GetName() .. 'TextLeft' .. i)
 		if line and line.GetText then
 			local text = line:GetText() or ""
-			if text == ITEM_SOULBOUND or text == ITEM_ACCOUNTBOUND or text == ITEM_BNETACCOUNTBOUND then bounded = true end
+			if text == ITEM_SOULBOUND or text == ITEM_ACCOUNTBOUND or text == ITEM_BNETACCOUNTBOUND or text == ITEM_ACCOUNTBOUND_UNTIL_EQUIP then bounded = true end
 
 			local timeText = text:match(bindTradeTimeRemainingPattern)
 			if timeText then -- Within 2h trade window, parse the time text
@@ -1365,14 +1365,13 @@ end
 
 function RCLootCouncil:IsItemBoE(item)
 	if not item then return false end
-	-- Item binding type: 0 - none; 1 - on pickup; 2 - on equip; 3 - on use; 4 - quest.
-	return select(14, C_Item.GetItemInfo(item)) == LE_ITEM_BIND_ON_EQUIP
+	return select(14, C_Item.GetItemInfo(item)) == Enum.ItemBind.OnEquip
 end
 
 function RCLootCouncil:IsItemBoP(item)
 	if not item then return false end
 	-- Item binding type: 0 - none; 1 - on pickup; 2 - on equip; 3 - on use; 4 - quest.
-	return select(14, C_Item.GetItemInfo(item)) == LE_ITEM_BIND_ON_ACQUIRE
+	return select(14, C_Item.GetItemInfo(item)) == Enum.ItemBind.OnAcquire
 end
 
 function RCLootCouncil:GetPlayersGuildRank()
@@ -1861,15 +1860,14 @@ function RCLootCouncil:GetLootDBStatistics()
 				id = entry.responseID
 				if type(id) == "number" then -- ID may be string, e.g. "PASS"
 					if entry.isAwardReason then id = id + 100 end -- Bump to distingush from normal awards
-					if entry.tokenRoll then id = id + 200 end
-					if entry.relicRoll then id = id + 300 end
+					if entry.tierToken then id = id + 200 end
 				end
-				-- We assume the mapID and difficultyID is available on any item if at all.
+				-- Tier Tokens
 				if not numTokens[entry.instance] then
-					numTokens[entry.instance] = {num = 0, mapID = entry.mapID, difficultyID = entry.difficultyID}
+					numTokens[entry.instance] = 0
 				end
-				if entry.tierToken then -- If it's a tierToken, increase the count
-					numTokens[entry.instance].num = numTokens[entry.instance].num + 1
+				if entry.tierToken and not entry.isAwardReason then -- If it's a tierToken, increase the count
+					numTokens[entry.instance] = numTokens[entry.instance] + 1
 				end
 				count[id] = count[id] and count[id] + 1 or 1
 				responseText[id] = responseText[id] and responseText[id] or entry.response
@@ -1877,8 +1875,7 @@ function RCLootCouncil:GetLootDBStatistics()
 					color[id] = #entry.color ~= 0 and #entry.color == 4 and entry.color or {1, 1, 1}
 				end
 				if lastestAwardFound < 5 and type(id) == "number" and not entry.isAwardReason
-								and (id <= db.numMoreInfoButtons or (entry.tokenRoll and id - 200 <= db.numMoreInfoButtons)
-												or (entry.relicRoll and id - 300 <= db.numMoreInfoButtons)) then
+								and (id <= db.numMoreInfoButtons or (entry.tierToken and id - 200 <= db.numMoreInfoButtons)) then
 					tinsert(lootDBStatistics[name], {
 						entry.lootWon, --[[entry.response .. ", "..]]
 						format(L["'n days' ago"], self:ConvertDateToString(self:GetNumberOfDaysFromNow(entry.date))),

@@ -73,18 +73,6 @@ function LootHistory:OnInitialize()
 	self:SubscribeToPermanentComms()
 end
 
-local tierLookUpTable = { -- instanceMapID to Tier text
-	[1530] = L["Tier 19"],
-	[1676] = L["Tier 20"],
-	[1712] = L["Tier 21"],
-}
-
-local difficultyLookupTable = {
-	[14] = L["tier_token_normal"],
-	[15] = L["tier_token_heroic"],
-	[16] = L["tier_token_mythic"],
-}
-
 function LootHistory:OnEnable()
 	addon.Log("LootHistory:OnEnable()")
 	moreInfo = true
@@ -136,7 +124,8 @@ end
 function LootHistory:OnHistoryReceived (name, history)
 	if not addon:Getdb().enableHistory then return end
 	-- v2.15 Add itemClass and itemSubClass locally:
-	local _, _, _, _, _, itemClassID, itemSubClassID = C_Item.GetItemInfoInstant(history.lootWon)
+	local itemID, _, _, _, _, itemClassID, itemSubClassID = C_Item.GetItemInfoInstant(history.lootWon)
+	history.tierToken = RCTokenTable[itemID] and true
 	history.iClass = itemClassID
 	history.iSubClass = itemSubClassID
 	if addon.lootDB.factionrealm[name] then
@@ -478,7 +467,7 @@ function LootHistory.SetCellResponse(rowFrame, frame, data, cols, row, realrow, 
 
 	if args.color and type(args.color) == "table" and type(args.color[1]) == "number" then -- Never version saves the color with the entry
 		frame.text:SetTextColor(unpack(args.color))
-	elseif args.responseID and args.responseID > 0 then -- try to recreate color from ID
+	elseif args.responseID and (type(args.responseID) == "string" or args.responseID > 0) then -- try to recreate color from ID
 		frame.text:SetTextColor(unpack(addon:GetResponse("default", args.responseID).color))
 	else -- default to white
 		frame.text:SetTextColor(1,1,1,1)
@@ -931,6 +920,7 @@ function LootHistory:GetFrame()
 
 	self.moreInfo = CreateFrame("GameTooltip", "RCLootHistoryMoreInfo", f.content, "GameTooltipTemplate")
 	self.moreInfo:SetIgnoreParentScale(true)
+	self.moreInfo:SetClampedToScreen(false)
 	f.content:SetScript("OnSizeChanged", function()
 		self.moreInfo:SetScale(Clamp(f:GetScale() * 0.6, .4, .9))
 	end)
@@ -1074,10 +1064,14 @@ function LootHistory:UpdateMoreInfo(rowFrame, cellFrame, dat, cols, row, realrow
 	end
 	tip:AddLine(" ")
 	tip:AddLine(L["Tokens received"])
+	local tokensSorted = {}
+	for n in pairs(moreInfoData[row.name].totals.tokens) do tinsert(tokensSorted, n) end
+	table.sort(tokensSorted)
 	-- Add tier tokens
-	for _, v in pairs(moreInfoData[row.name].totals.tokens) do
-		if v.mapID and v.difficultyID and tierLookUpTable[v.mapID] then
-			tip:AddDoubleLine(tierLookUpTable[v.mapID].." "..difficultyLookupTable[v.difficultyID]..":", v.num, 1,1,1, 1,1,1)
+	for _, instance in pairs(tokensSorted) do
+		local num = moreInfoData[row.name].totals.tokens[instance]
+		if num > 0 then
+			tip:AddDoubleLine(instance..":", num, 1,1,1, 1,1,1)
 		end
 	end
 	tip:AddLine(" ")
@@ -1117,9 +1111,10 @@ function LootHistory:UpdateMoreInfo(rowFrame, cellFrame, dat, cols, row, realrow
 		tip:AddDoubleLine("difficultyID:", data.difficultyID, 1,1,1, 1,1,1)
 		tip:AddDoubleLine("mapID", data.mapID, 1,1,1, 1,1,1)
 		tip:AddDoubleLine("groupSize", data.groupSize, 1,1,1, 1,1,1)
-		tip:AddDoubleLine("tierToken", data.tierToken, 1,1,1, 1,1,1)
+		tip:AddDoubleLine("tierToken", tostring(data.tierToken), 1,1,1, 1,1,1)
 		tip:AddDoubleLine("tokenRoll", tostring(data.tokenRoll), 1,1,1, 1,1,1)
 		tip:AddDoubleLine("relicRoll", tostring(data.relicRoll), 1,1,1, 1,1,1)
+		tip:AddDoubleLine("typeCode", tostring(data.typeCode))
 		tip:AddLine(" ")
 		tip:AddDoubleLine("Total LootDB entries:", #self.frame.rows, 1,1,1, 0,0,1)
 	end

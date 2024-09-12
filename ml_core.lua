@@ -22,7 +22,7 @@
 ]]
 --- @type RCLootCouncil
 local addon = select(2, ...)
---- @class RCLootCouncilML
+--- @class RCLootCouncilML : AceModule, AceEvent-3.0, AceBucket-3.0, AceTimer-3.0, AceHook-3.0
 _G.RCLootCouncilML = addon:NewModule("RCLootCouncilML", "AceEvent-3.0", "AceBucket-3.0", "AceTimer-3.0", "AceHook-3.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 
@@ -70,6 +70,7 @@ function RCLootCouncilML:OnEnable()
 	self.combatQueue = {}	-- The functions that will be executed when combat ends. format: [num] = {func, arg1, arg2, ...}
 	self.timers = {}			-- Table to hold timer references. Each value is the name of a timer, whose value is the timer id.
 	self.groupSize = 0
+	self.printSessionHelp = false -- Print help message when session starts
 
 	self:RegisterEvent("CHAT_MSG_WHISPER",	"OnEvent")
 	self:RegisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
@@ -250,7 +251,7 @@ function RCLootCouncilML:StartSession()
 	self:AnnounceItems(self.lootTable)
 
 	-- Print some help messages for not direct mode.
-	if not addon.testMode then
+	if not addon.testMode and self.printSessionHelp then
 		-- Use the first entry in lootTable to determinte mode
 		if not self.lootTable[1].lootSlot then
 			addon:ScheduleTimer("Print", 1, L["session_help_not_direct"]) -- Delay a bit, so annouceItems are printed first.
@@ -672,7 +673,7 @@ function RCLootCouncilML:CanGiveLoot(slot, item, winner)
 		local bindType = select(14, C_Item.GetItemInfo(item))
 
 		if not found then
-			if bindType ~= LE_ITEM_BIND_ON_ACQUIRE then
+			if bindType ~= Enum.ItemBind.OnAcquire then
 				return false, "not_bop"
 			else
 				return false, "not_ml_candidate"
@@ -842,8 +843,10 @@ local function registerAndAnnounceBagged(session)
 	self.lootTable[session].lootSlot = nil  -- Now the item is bagged and no longer in the loot window.
 	self.lootTable[session].bagged = Item
 	if self.running then -- Award later can be done when actually loot session hasn't been started yet.
-		self.lootTable[session].baggedInSession = true -- REVIEW This variable is never used?
+		self.lootTable[session].baggedInSession = true -- Used in VotingFrame
+		self.lootTable[session].awarded = true
 		self:Send("group", "bagged", session, addon.playerName)
+		if self:HasAllItemsBeenAwarded() then self:ScheduleTimer("EndSession", 1) end
 	end
 	return false
 end

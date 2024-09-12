@@ -250,5 +250,20 @@ Compat.list = {
 		func = function ()
 			addon:ResetUI()
 		end
+	},
+
+	{
+		name = "Update 'tierToken' in history",
+		version = "3.13.2",
+		func = function ()
+			local Item = addon.Require "Utils.Item"
+			for _, factionrealm in pairs(addon.lootDB.sv.factionrealm) do
+				for _, data in pairs(factionrealm) do
+					for _, v in ipairs(data) do
+						v.tierToken = RCTokenTable[Item:GetItemIDFromLink(v.lootWon)] and true
+					end
+				end
+			end
+		end
 	}
 }

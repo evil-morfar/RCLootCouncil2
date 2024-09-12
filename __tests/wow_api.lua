@@ -1079,17 +1079,6 @@ TOOLTIP_DEFAULT_BACKGROUND_COLOR = { r = 0.09, g = 0.09, b = 0.19, };
 _G.INVSLOT_FIRST_EQUIPPED = 1
 _G.INVSLOT_LAST_EQUIPPED = 18
 NORMAL_FONT_COLOR = CreateColor(255, 209, 0, 255) --ffd100
-NUM_LE_ITEM_QUALITYS = 9
-LE_ITEM_QUALITY_POOR = 0
-LE_ITEM_QUALITY_COMMON = 1
-LE_ITEM_QUALITY_UNCOMMON = 2
-LE_ITEM_QUALITY_RARE = 3
-LE_ITEM_QUALITY_EPIC = 4
-LE_ITEM_QUALITY_LEGENDARY = 5
-LE_ITEM_QUALITY_ARTIFACT = 6
-LE_ITEM_QUALITY_HEIRLOOM = 7
-LE_ITEM_QUALITY_WOW_TOKEN = 8
-
 
 ------------------------------------------
 -- Global Strings
@@ -1242,4 +1231,16 @@ Enum = {
 		Keystone = 1,
 		ContextToken = 2,
 	},
+	ItemBind = {
+		None = 0,
+		OnAcquire = 1,
+		OnEquip = 2,
+		OnUse = 3,
+		Quest = 4,
+		Unused1 = 5,
+		Unused2 = 6,
+		ToWoWAccount = 7,
+		ToBnetAccount = 8,
+		ToBnetAccountUntilEquipped = 9,
+	}
 }
