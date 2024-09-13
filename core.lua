@@ -603,7 +603,7 @@ function RCLootCouncil:SendAnnouncement(msg, channel)
 									== "INSTANCE_CHAT")) or channel == "chat" or (not IsInGuild() and (channel == "GUILD" or channel == "OFFICER")) then
 		self:Print(msg)
 	elseif (not IsInRaid() and (channel == "RAID" or channel == "RAID_WARNING")) then
-		SendChatMessage(msg, "party")
+		SendChatMessage(msg, "PARTY")
 	else
 		SendChatMessage(msg, self.Utils:GetAnnounceChannel(channel))
 	end
@@ -1517,6 +1517,10 @@ function RCLootCouncil:OnEvent(event, ...)
 			-- Restore masterlooter from cache, but only if not already set.
 			if not self.masterLooter and self.db.global.cache.masterLooter then
 				self.masterLooter = Player:Get(self.db.global.cache.masterLooter)
+				self.isMasterLooter = self.masterLooter == self.player
+				if self.isMasterLooter then
+					self:CallModule("masterlooter")
+				end
 			end
 			self.Log:d("ML, Cached:", self.masterLooter, self.db.global.cache.masterLooter)
 
@@ -1528,8 +1532,15 @@ function RCLootCouncil:OnEvent(event, ...)
 				self:OnCouncilReceived(self.masterLooter, self.db.global.cache.council)
 			end
 
+			-- Restore handleLoot
+			if self.db.global.cache.handleLoot and self.isMasterLooter then
+				self.Log:D("Cached handleLoot:", self.db.global.cache.handleLoot)
+				self:StartHandleLoot()
+			end
+
 			-- If we still haven't set masterLooter, try delaying a bit.
 			-- but we don't have to wait if we got it from cache.
+			-- ? REVIEW: This might not be needed anymore.
 			self:ScheduleTimer(function()
 				if not self.isMasterLooter and self.masterLooter and self.masterLooter ~= "" then
 					self:Send("group", "pI", self:GetPlayerInfo()) -- Also send out info, just in case
@@ -1544,6 +1555,7 @@ function RCLootCouncil:OnEvent(event, ...)
 		self.db.global.cache.mldb = next(self.mldb) and MLDB:GetForTransmit(self.mldb) or nil
 		self.db.global.cache.council = Council:GetNum() > 0 and Council:GetForTransmit() or nil
 		self.db.global.cache.masterLooter = self.masterLooter and self.masterLooter:GetGUID()
+		self.db.global.cache.handleLoot = self.handleLoot
 
 	elseif event == "ENCOUNTER_START" then
 		self.Log:d("Event:", event, ...)
@@ -2787,11 +2799,11 @@ end
 ---@param candidates string[] List of transmittable player GUIDs of candidates that should reroll.
 ---@param lt LootTable
 function RCLootCouncil:OnNewReRollReceived(sender, candidates, lt)
-	self:Print(format(L["'player' has asked you to reroll"], self:GetClassIconAndColoredName(sender)))
 	if not tContains(candidates, self.player:GetForTransmit()) then
 		self.Log:D("We are not in the reRoll candidate list")
 		return
 	end
+	self:Print(format(L["'player' has asked you to reroll"], self:GetClassIconAndColoredName(sender)))
 	self:DoReroll(lt)
 end
 

@@ -68,14 +68,15 @@ local LOG_MT = {
 -----------------------------------------------------------
 
 --- Create a new Log class
---- @param prefix string An optional prefix to all messages
+--- @param prefix? string An optional prefix to all messages
 function Log:New(prefix)
+	--- \<INFO> Logging
 	---@class Log
-	---@overload fun(...)
-   local object = {
-      prefix = prefix and "["..prefix.."]" or ""
-   }
-   return setmetatable(object, LOG_MT)
+	---@overload fun(...) 
+	local object = {
+		prefix = prefix and "["..prefix.."]" or ""
+	}
+	return setmetatable(object, LOG_MT)
 end
 
 --- Clear all stored logs

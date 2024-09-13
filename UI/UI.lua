@@ -28,7 +28,7 @@ end
 --- @param type `T` The type of the element.
 --- @param parent Object The element's UI parant. Defaults to UIParent
 --- @param name string  The global name of the element.
---- @return T UIObject The newly created UI element
+--- @return T Object The newly created UI element
 function addon.UI:NewNamed(type, parent, name, ...)
    return private:New(type, parent, name, ...)
 end
@@ -46,7 +46,6 @@ end
 
 function addon.UI:MinimizeFrames()
 	if not addon:Getdb().minimizeInCombat then return end
-	addon.Log("Minimizing frames")
 	for _, frame in ipairs(self.minimizeableFrames) do
 		if frame:IsVisible() and not frame:IsMinimized() then -- only minimize for combat if it isn't already minimized
 			frame:Minimize(true)
@@ -56,7 +55,6 @@ end
 
 function addon.UI:MaximizeFrames()
 	if not addon:Getdb().minimizeInCombat then return end
-	addon.Log("Maximizing frames")
 	for _, frame in ipairs(self.minimizeableFrames) do
 		if frame:IsMinimized() and frame.autoMinimized then -- Reshow it
 			frame:Maximize()
@@ -123,12 +121,11 @@ end
 
 --- @class UI.embeds
 private.embeds = {
-	---@generic T : Frame
-	---@param object T self
-	---@param scripts table<string,fun(self: T): void>
-	SetMultipleScripts = function(object, scripts)
-		for k,v in pairs(scripts) do
-			object:SetScript(k,v)
-		end
-	end
+   ---@param object Frame self
+   ---@param scripts table<string,fun(self: Frame)>
+   SetMultipleScripts = function(object, scripts)
+      for k,v in pairs(scripts) do
+         object:SetScript(k,v)
+      end
+   end
 }

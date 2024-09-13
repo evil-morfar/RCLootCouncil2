@@ -10,7 +10,7 @@
 
 --- @class RCLootCouncil
 local addon = select(2, ...)
---- @class TradeUI : AceEvent-3.0, AceTimer-3.0
+--- @class TradeUI : AceModule, AceEvent-3.0, AceTimer-3.0
 local TradeUI = addon:NewModule("TradeUI", "AceEvent-3.0", "AceTimer-3.0")
 addon.TradeUI = TradeUI -- Shorthand for easier access
 local ST = LibStub("ScrollingTable")

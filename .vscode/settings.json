@@ -83,6 +83,8 @@
         "tCompare",
         "ContainsIf",
         "ITEM_ACCOUNTBOUND_UNTIL_EQUIP",
-        "ChatFrame1"
+        "ChatFrame1",
+        "UISpecialFrames",
+        "tInsertUnique"
     ]
 }
