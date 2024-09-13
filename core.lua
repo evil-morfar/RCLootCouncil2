@@ -2775,11 +2775,11 @@ end
 ---@param candidates string[] List of transmittable player GUIDs of candidates that should reroll.
 ---@param lt LootTable
 function RCLootCouncil:OnNewReRollReceived(sender, candidates, lt)
-	self:Print(format(L["'player' has asked you to reroll"], self:GetClassIconAndColoredName(sender)))
 	if not tContains(candidates, self.player:GetForTransmit()) then
 		self.Log:D("We are not in the reRoll candidate list")
 		return
 	end
+	self:Print(format(L["'player' has asked you to reroll"], self:GetClassIconAndColoredName(sender)))
 	self:DoReroll(lt)
 end
 
