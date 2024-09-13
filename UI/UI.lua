@@ -46,7 +46,6 @@ end
 
 function addon.UI:MinimizeFrames()
 	if not addon:Getdb().minimizeInCombat then return end
-	addon.Log("Minimizing frames")
 	for _, frame in ipairs(self.minimizeableFrames) do
 		if frame:IsVisible() and not frame:IsMinimized() then -- only minimize for combat if it isn't already minimized
 			frame:Minimize(true)
@@ -56,7 +55,6 @@ end
 
 function addon.UI:MaximizeFrames()
 	if not addon:Getdb().minimizeInCombat then return end
-	addon.Log("Maximizing frames")
 	for _, frame in ipairs(self.minimizeableFrames) do
 		if frame:IsMinimized() and frame.autoMinimized then -- Reshow it
 			frame:Maximize()
