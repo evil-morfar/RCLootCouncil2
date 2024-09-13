@@ -596,7 +596,7 @@ function RCLootCouncil:SendAnnouncement(msg, channel)
 									== "INSTANCE_CHAT")) or channel == "chat" or (not IsInGuild() and (channel == "GUILD" or channel == "OFFICER")) then
 		self:Print(msg)
 	elseif (not IsInRaid() and (channel == "RAID" or channel == "RAID_WARNING")) then
-		SendChatMessage(msg, "party")
+		SendChatMessage(msg, "PARTY")
 	else
 		SendChatMessage(msg, self.Utils:GetAnnounceChannel(channel))
 	end
