@@ -10,7 +10,7 @@
 
 --- @class RCLootCouncil
 local addon = select(2, ...)
---- @class TradeUI : AceEvent-3.0, AceTimer-3.0
+--- @class TradeUI : AceModule, AceEvent-3.0, AceTimer-3.0
 local TradeUI = addon:NewModule("TradeUI", "AceEvent-3.0", "AceTimer-3.0")
 addon.TradeUI = TradeUI -- Shorthand for easier access
 local ST = LibStub("ScrollingTable")
@@ -355,6 +355,9 @@ local function addItemToTradeWindow (tradeBtn, Item)
 	local containerInfo = addon.C_Container.GetContainerItemInfo(c, s)
 
 	if containerInfo and addon:ItemIsItem(containerInfo.hyperlink, Item.link) then -- Extra check, probably also redundant
+		if containerInfo.isLocked then
+			addon:Print("Item is locked")
+		end
 		addon.Log:d("Trading", Item.link, c,s)
 		ClearCursor()
 		addon.C_Container.PickupContainerItem(c, s)
@@ -376,6 +379,7 @@ function TradeUI:AddAwardedInBagsToTradeWindow()
 		end
       if self.isTrading then
          addon.Log:d("<TradeUI> Scheduling trade add timer for #", k)
+		 addon:LogItemGUID(Item)
          -- Delay the adding of items, as we can't add them all at once
          self:ScheduleTimer(addItemToTradeWindow, TRADE_ADD_DELAY * k, k, Item)
       end

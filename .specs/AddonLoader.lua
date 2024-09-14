@@ -184,7 +184,9 @@ function Loader.LoadFiles(files)
 		if file:match("^Libs") then
 			dofile(FixAceGUIPaths(file))
 		else
-			loadfile(file)(ADDON_NAME, ADDON_OBJECT)
+			local fileFunc = loadfile(file)
+			if not fileFunc then error("File not found: " .. file) end
+			fileFunc(ADDON_NAME, ADDON_OBJECT)
 		end
 	end
 end

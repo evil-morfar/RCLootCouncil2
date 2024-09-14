@@ -116,8 +116,16 @@ end
 --- @param boss? string Set to override boss name. Defaults to `RCLootCouncil.bossName`.
 function RCLootCouncilML:AddItem(item, bagged, slotIndex, owner, entry, boss)
 	self.Log:d("AddItem", item, bagged, slotIndex, owner, entry, boss)
+	addon:LogItemGUID(item)
 	if type(item) == "string" and item:find("|Hcurrency") then return end -- Ignore "Currency" item links
 
+	-- Not having the lootTable is a sure sign that the module isn't enabled.
+	if not self.lootTable then
+		if not self:IsEnabled() and addon.isMasterLooter then
+			ErrorHandler:ThrowSilentError("ML module not enabled @AddItem")
+			addon:StartHandleLoot()
+		end
+	end
 	if not entry then
 		entry = {}
 		self.lootTable[#self.lootTable + 1] = entry

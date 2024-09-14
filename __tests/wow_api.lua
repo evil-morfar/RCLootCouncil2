@@ -185,6 +185,7 @@ DEFAULT_CHAT_FRAME = ChatFrame1
 
 debugstack = debug.traceback
 date = os.date
+debugprofilestop = os.clock
 
 C_AddOns = {
 	GetAddOnMetadata = function(arg)
@@ -1046,6 +1047,8 @@ C_Container = {
 		}
 	end,
 	PickupContainerItem = donothing,
+	GetContainerNumSlots = function(c) return 10 end,
+	GetContainerItemLink = donothing
 }
 
 C_CreatureInfo = {
@@ -1085,7 +1088,10 @@ NORMAL_FONT_COLOR = CreateColor(255, 209, 0, 255) --ffd100
 ------------------------------------------
 BIND_TRADE_TIME_REMAINING =
 "You may trade this item with players that were also eligible to loot this item for the next %s."
+CLOSE = "Close"
 CLOSES_IN = "Time Left";
+GROUP = "Group"
+GUILD = "Guild"
 LOOT_ITEM = "%s receives loot: %s."
 RANDOM_ROLL_RESULT = "%s rolls %d (%d-%d)"
 REQUEST_ROLL = "Request Roll"
@@ -1146,7 +1152,11 @@ ITEM_MOD_STRENGTH_OR_INTELLECT_SHORT = "Strength or Intellect";
 ITEM_MOD_STRENGTH_SHORT = "Strength";
 ITEM_MOD_VERSATILITY = "Versatility";
 ITEM_SOULBOUND = "Soulbound";
+NAME = "Name"
+RANK = "Rank"
 ROLL = "Roll"
+UNKNOWNOBJECT = "Unknown"
+UNKNOWN = "Unknown"
 
 BLOCK = "Block"
 PARRY = "Parry"

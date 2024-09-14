@@ -227,8 +227,8 @@ function Storage:GetAllItemsLessTimeRemaining(time)
 end
 
 --- Returns all stored Items based on multiple predicates
--- @param ... Predicate functions.
--- @return The filtered list of times.
+--- @param ... fun(item:Item):boolean Predicate functions.
+--- @return Item[] #The filtered list of times.
 function Storage:GetAllItemsMultiPred(...)
 	local args = { ... }
 	return tFilter(StoredItems, function(v)
@@ -295,6 +295,15 @@ function Storage:ItemLocationInArray(list, container, slot)
 	return list and #list > 0 and ContainsIf(list, function(v)
 		return v.container == container and v.slot == slot
 	end)
+end
+
+--- Returns item GUID if it can be found.
+--- Must be in the player's bags.
+---@param item Item|ItemLink
+function Storage:GetItemGUID(item)
+	local c,s = self:GetItemContainerSlot(item)
+	if not (c or s) then return end
+	return Item.CreateFromBagAndSlot and Item:CreateFromBagAndSlot(c, s):GetItemGUID()
 end
 
 

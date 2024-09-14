@@ -5,7 +5,7 @@
 
 --- @type RCLootCouncil
 local addon = select(2, ...)
---- @class RCSessionFrame : AceTimer-3.0, AceEvent-3.0
+--- @class RCSessionFrame : AceModule, AceTimer-3.0, AceEvent-3.0
 local RCSessionFrame = addon:NewModule("RCSessionFrame", "AceTimer-3.0", "AceEvent-3.0")
 local ST = LibStub("ScrollingTable")
 --- @type RCLootCouncilLocale

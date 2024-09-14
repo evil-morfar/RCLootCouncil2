@@ -1,4 +1,3 @@
--- TODO: Support combat autohide
 --- @type RCLootCouncil
 local addon = select(2, ...)
 local lwin = LibStub("LibWindow-1.1")
@@ -6,8 +5,8 @@ local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 
 local name = "RCFrame"
 --- @class RCFrame : Object.Minimize_Prototype, Frame, UI.embeds
---- @field content BackdropTemplate | Frame
---- @field title BackdropTemplate | Frame
+--- @field content RCFrame.Content
+--- @field title RCFrame.Title
 --- @field Update fun(self:RCFrame)
 local Object = {}
 local db = {}
@@ -31,7 +30,7 @@ end
 --- @return RCFrame frame @The frame object.
 function Object:New(parent, name, title, width, height)
 	db = addon:Getdb()
-	--- @type Frame
+	--- @type RCFrame
 	local f = CreateFrame("Frame", name, parent) -- LibWindow seems to work better with nil parent
 	f:Hide()
 	f:SetFrameStrata("DIALOG")
@@ -63,6 +62,7 @@ end
 ---@param name string
 ---@param height integer
 function Object:CreateContentFrame(parent, name, height)
+	---@class RCFrame.Content : Frame, BackdropTemplate
 	local c = CreateFrame("Frame", "RC_UI_" .. name .. "_Content", parent, BackdropTemplateMixin and "BackdropTemplate") -- frame that contains the actual content
 	c:SetFrameLevel(1)
 	self:SetupBackdrop(c, db.skins[db.currentSkin], true, 256)
@@ -93,6 +93,7 @@ function Object:CreateContentFrame(parent, name, height)
 end
 
 function Object:CreateTitleFrame(parent, name, title, width)
+	---@class RCFrame.Title : Frame, BackdropTemplate
 	local tf = CreateFrame("Frame", "RC_UI_" .. name .. "_Title", parent, BackdropTemplateMixin and "BackdropTemplate")
 	tf:SetFrameLevel(2)
 	self:SetupBackdrop(tf, db.skins[db.currentSkin], true, 128)
@@ -124,7 +125,7 @@ function Object:CreateTitleFrame(parent, name, title, width)
 		end
 	end)
 	local tempScale = db.UI[name].scale
-	local hoverTimer = nil
+	local hoverTimer
 	local showHelpTooltip = function()
 		GameTooltip:SetOwner(UIParent, "ANCHOR_CURSOR_RIGHT")
 		GameTooltip:AddLine(title, 1, 1, 1)
@@ -179,6 +180,7 @@ function Object:SetupBackdrop(frame, skinSelector, tile, tileSize)
 	frame:SetBackdropBorderColor(unpack(skinSelector.borderColor))
 end
 
+---@class Object.Minimize_Prototype
 Object.Minimize_Prototype = {
 	minimized = false,
 	autoMinimized = false,

@@ -25,7 +25,7 @@
 
 --- @type RCLootCouncil
 local addon = select(2, ...)
---- @class RCVotingFrame : AceTimer-3.0, AceEvent-3.0, AceBucket-3.0
+--- @class RCVotingFrame : AceModule, AceTimer-3.0, AceEvent-3.0, AceBucket-3.0
 local RCVotingFrame = addon:NewModule("RCVotingFrame", "AceTimer-3.0", "AceEvent-3.0", "AceBucket-3.0")
 local LibDialog = LibStub("LibDialog-1.1")
 --- @type RCLootCouncilLocale
@@ -1770,7 +1770,8 @@ end
 --@param noAutopass: true or false or nil. Determine whether we force no autopass.
 --@param announceInChat: true or false or nil. Determine if the reannounce sessions should be announced in chat.
 function RCVotingFrame:ReannounceOrRequestRoll(namePred, sesPred, isRoll, noAutopass, announceInChat)
-	addon.Log:D("ReannounceOrRequestRoll", namePred, sesPred, isRoll, noAutopass, announceInChat)
+	addon.Log:D("ReannounceOrRequestRoll", namePred, sesPred, isRoll, noAutopass, announceInChat,
+	MSA_DROPDOWNMENU_MENU_VALUE)
 	local rerollTable = TempTable:Acquire()
 	local changeResponseData = TempTable:Acquire()
 	local rollsData = TempTable:Acquire()

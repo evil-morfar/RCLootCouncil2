@@ -518,6 +518,12 @@ function RCLootCouncil:ChatCommand(msg)
 	elseif input == "export" then
 			self:ExportCurrentSession()
 
+	elseif input == "unlock" then
+		if not args[1]then
+			return self:Print("Must have 'item' as second argument.")
+		end
+		self:UnlockItem(args[1])
+
 	--@debug@
 	elseif input == "nnp" then
 		self.nnp = not self.nnp
@@ -568,6 +574,7 @@ function RCLootCouncil:UpdateAndSendRecentTradableItem(info, count)
 	end
 	local Item = self.ItemStorage:New(info.link, "temp")
 	self.ItemStorage:WatchForItemInBags(Item, function() -- onFound
+		self:LogItemGUID(Item)
 		if Item.time_remaining > 0 then
 			Item:Store()
 			if self.mldb.rejectTrade and IsInRaid() then
@@ -596,7 +603,7 @@ function RCLootCouncil:SendAnnouncement(msg, channel)
 									== "INSTANCE_CHAT")) or channel == "chat" or (not IsInGuild() and (channel == "GUILD" or channel == "OFFICER")) then
 		self:Print(msg)
 	elseif (not IsInRaid() and (channel == "RAID" or channel == "RAID_WARNING")) then
-		SendChatMessage(msg, "party")
+		SendChatMessage(msg, "PARTY")
 	else
 		SendChatMessage(msg, self.Utils:GetAnnounceChannel(channel))
 	end
@@ -1510,6 +1517,10 @@ function RCLootCouncil:OnEvent(event, ...)
 			-- Restore masterlooter from cache, but only if not already set.
 			if not self.masterLooter and self.db.global.cache.masterLooter then
 				self.masterLooter = Player:Get(self.db.global.cache.masterLooter)
+				self.isMasterLooter = self.masterLooter == self.player
+				if self.isMasterLooter then
+					self:CallModule("masterlooter")
+				end
 			end
 			self.Log:d("ML, Cached:", self.masterLooter, self.db.global.cache.masterLooter)
 
@@ -1521,8 +1532,15 @@ function RCLootCouncil:OnEvent(event, ...)
 				self:OnCouncilReceived(self.masterLooter, self.db.global.cache.council)
 			end
 
+			-- Restore handleLoot
+			if self.db.global.cache.handleLoot and self.isMasterLooter then
+				self.Log:D("Cached handleLoot:", self.db.global.cache.handleLoot)
+				self:StartHandleLoot()
+			end
+
 			-- If we still haven't set masterLooter, try delaying a bit.
 			-- but we don't have to wait if we got it from cache.
+			-- ? REVIEW: This might not be needed anymore.
 			self:ScheduleTimer(function()
 				if not self.isMasterLooter and self.masterLooter and self.masterLooter ~= "" then
 					self:Send("group", "pI", self:GetPlayerInfo()) -- Also send out info, just in case
@@ -1537,6 +1555,7 @@ function RCLootCouncil:OnEvent(event, ...)
 		self.db.global.cache.mldb = next(self.mldb) and MLDB:GetForTransmit(self.mldb) or nil
 		self.db.global.cache.council = Council:GetNum() > 0 and Council:GetForTransmit() or nil
 		self.db.global.cache.masterLooter = self.masterLooter and self.masterLooter:GetGUID()
+		self.db.global.cache.handleLoot = self.handleLoot
 
 	elseif event == "ENCOUNTER_START" then
 		self.Log:d("Event:", event, ...)
@@ -1665,13 +1684,24 @@ function RCLootCouncil:IsInGuildGroup()
 	end
 end
 
+function RCLootCouncil:HasValidMasterLooter()
+	if not self.masterLooter then return false end
+	if type(self.masterLooter) == "string" then
+		return not (self.masterLooter == "Unknown" or Ambiguate(self.masterLooter, "short"):lower() == _G.UNKNOWNOBJECT:lower())
+	elseif type(self.masterLooter) == "table" then
+		return self.masterLooter:GetName() ~= ""
+	end
+	-- Should never reach this
+	self.Log:E("Invalid masterlooter:", self.masterLooter)
+end
+
 function RCLootCouncil:NewMLCheck()
 	local old_ml = self.masterLooter
 	local old_lm = self.lootMethod
 	self.isMasterLooter, self.masterLooter = self:GetML()
 	self.lootMethod = GetLootMethod()
 	local instance_type = select(2, IsInInstance())
-	if instance_type == "pvp" or instance_type == "arena" then return end -- Don't do anything here
+	if instance_type == "pvp" or instance_type == "arena" or instance_type == "scenario" then return end -- Don't do anything here
 	if self.masterLooter and type(self.masterLooter) == "string"
 					and (self.masterLooter == "Unknown" or Ambiguate(self.masterLooter, "short"):lower() == _G.UNKNOWNOBJECT:lower()) then
 		-- ML might be unknown for some reason
@@ -2076,7 +2106,7 @@ end
 --- Returns the active module if found or fails silently.
 ---	Always use this when calling functions in another module.
 --- @param module DefaultModules|UserModules Index in self.defaultModules.
---- @return AceAddon? #The module object of the active module or nil if not found. Prioritises userModules if set.
+--- @return AceModule? #The module object of the active module or nil if not found. Prioritises userModules if set.
 function RCLootCouncil:GetActiveModule(module)
 	return self:GetModule(userModules[module] or defaultModules[module], false)
 end
@@ -2127,7 +2157,13 @@ end
 -- @section UI.
 ---------------------------------------------------------------------------
 
+---@class TextButton : Button
+---@field text FontString
+
+--- @alias DoCellUpdateFunction fun(rowFrame:Frame, frame: TextButton, cols:table, row: number, realrow: number, column: number, fShow: boolean, table: table, ...: any): any
+
 --- Used as a "DoCellUpdate" function for lib-st
+--- @type DoCellUpdateFunction
 function RCLootCouncil.SetCellClassIcon(rowFrame, frame, data, cols, row, realrow, column, fShow, table, class)
 	local celldata = data and (data[realrow].cols and data[realrow].cols[column] or data[realrow][column])
 	local class = celldata and celldata.args and celldata.args[1] or class
@@ -2763,11 +2799,11 @@ end
 ---@param candidates string[] List of transmittable player GUIDs of candidates that should reroll.
 ---@param lt LootTable
 function RCLootCouncil:OnNewReRollReceived(sender, candidates, lt)
-	self:Print(format(L["'player' has asked you to reroll"], self:GetClassIconAndColoredName(sender)))
 	if not tContains(candidates, self.player:GetForTransmit()) then
 		self.Log:D("We are not in the reRoll candidate list")
 		return
 	end
+	self:Print(format(L["'player' has asked you to reroll"], self:GetClassIconAndColoredName(sender)))
 	self:DoReroll(lt)
 end
 
@@ -2831,4 +2867,36 @@ function RCLootCouncil:GetEJLatestInstanceID()
 
 	if not instanceId then instanceId = 1190 end -- default to Castle Nathria if no ID is found
 	return instanceId
+end
+
+function RCLootCouncil:LogItemGUID(item)
+	self.Log:D("Item GUID: " .. tostring(self.ItemStorage:GetItemGUID(item) or nil))
+end
+
+--- Unlocks an item. See [`C_Item.UnlockItem`](lua://C_Item.UnlockItem).
+---@param item ItemLink|ItemString Item to unlock
+function RCLootCouncil:UnlockItem(item)
+	local guid = self.ItemStorage:GetItemGUID(item)
+	if not guid then return self:Print(format("Couldn't find %s in your inventory.", item)) end
+	local Item = Item:CreateFromItemGUID(guid)
+	Item:UnlockItem()
+	if Item:IsItemLocked() then
+		self:Print("Couldn't unlock item")
+	else
+		self:Print("Item unlocked")
+	end
+end
+
+---Locks an item - mainly for testing
+---@param item ItemLink|ItemString
+function RCLootCouncil:LockItem(item)
+	local guid = self.ItemStorage:GetItemGUID(item)
+	if not guid then return self:Print(format("Couldn't find %s in your inventory.", item)) end
+	local Item = Item:CreateFromItemGUID(guid)
+	Item:LockItem()
+	if Item:IsItemLocked() then
+		self:Print("Item locked")
+	else
+		self:Print("Couldn't lock item")
+	end
 end

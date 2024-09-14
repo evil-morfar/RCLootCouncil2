@@ -16,6 +16,8 @@ local private = {
 -- Class Definitions
 -----------------------------------------------------------
 -- Log Class Methods
+
+--- @class Log
 local LOG_METHODS = {
    --- Message
    --- @param self Log
@@ -66,14 +68,15 @@ local LOG_MT = {
 -----------------------------------------------------------
 
 --- Create a new Log class
---- @param prefix string An optional prefix to all messages
+--- @param prefix? string An optional prefix to all messages
 function Log:New(prefix)
-   ---@class Log: LOG_METHODS
-   ---@overload fun(self:Log, ...)
-   local object = {
-      prefix = prefix and "["..prefix.."]" or ""
-   }
-   return setmetatable(object, LOG_MT)
+	--- \<INFO> Logging
+	---@class Log
+	---@overload fun(...) 
+	local object = {
+		prefix = prefix and "["..prefix.."]" or ""
+	}
+	return setmetatable(object, LOG_MT)
 end
 
 --- Clear all stored logs

@@ -10,7 +10,7 @@
 
 --- @type RCLootCouncil
 local addon = select(2, ...)
----@class RCLootHistory : AceSerializer-3.0
+---@class RCLootHistory : AceModule, AceSerializer-3.0
 local LootHistory = addon:NewModule("RCLootHistory", "AceSerializer-3.0")
 --- @type RCLootCouncilLocale
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")

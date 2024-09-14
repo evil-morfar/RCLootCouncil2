@@ -1,5 +1,6 @@
 --- @type RCLootCouncil
 local addon = select(2, ...)
+---@class rx.Util
 local util = addon.Init("rx.Util")
 
 util.pack = table.pack or function(...) return { n = select('#', ...), ... } end

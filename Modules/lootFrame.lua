@@ -4,7 +4,7 @@
 -- Create Date : 12/16/2014 8:24:04 PM
 ---@type RCLootCouncil
 local addon = select(2, ...)
---- @class RCLootFrame : AceTimer-3.0, AceEvent-3.0
+--- @class RCLootFrame : AceModule, AceTimer-3.0, AceEvent-3.0
 local LootFrame = addon:NewModule("RCLootFrame", "AceTimer-3.0", "AceEvent-3.0")
 --- @type RCLootCouncilLocale
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
@@ -16,7 +16,7 @@ local MAX_ENTRIES = 5
 local MIN_BUTTON_WIDTH = 40
 
 local sessionsWaitingRollResultQueue = {}
-local ROLL_TIMEOUT = 1.5
+local ROLL_TIMEOUT = 3
 local ROLL_SHOW_RESULT_TIME = 1
 local TIMEOUT_FLASH_THRESHOLD = 5
 
@@ -247,7 +247,8 @@ do
 		---@param item RCItemEntry
 		Update = function(entry, item)
 			if not item then
-				return addon.Log:E("Entry update error @ item:", item)
+				addon.Require "Services.ErrorHandler":ThrowSilentError("Entry update error @ item: ".. tostring(item))
+				return
 			end
 			if item ~= entry.item then
 				entry.noteEditbox:Hide()

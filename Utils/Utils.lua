@@ -331,6 +331,21 @@ function Utils:GetTableDifference(base, t)
 	return ret
 end
 
+--- Converts an integer into a binary string
+---@param n integer Number to convert
+function Utils:Int2Bin(n)
+	local result = ""
+	while n ~= 0 and n do
+		if n % 2 == 0 then
+			result = "0" .. result
+		else
+			result = "1" .. result
+		end
+		n = math.floor(n / 2)
+	end
+	return string.format("%04s", result)
+end
+
 ---@deprecated
 ---@see Utils.Item.GetTransmittableItemString
 function Utils:GetTransmittableItemString(link)

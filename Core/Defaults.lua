@@ -257,6 +257,8 @@ addon.defaults = {
 			[162461] = true, -- Sanguicell (BfA crafting)
 			[213089] = true, -- Antique Bronze Bullion (DF S4 Weapon/Trinket currency)
 		},
+
+		groupLootStatus = false,
 	},
 } -- defaults end
 
