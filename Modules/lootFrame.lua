@@ -16,7 +16,7 @@ local MAX_ENTRIES = 5
 local MIN_BUTTON_WIDTH = 40
 
 local sessionsWaitingRollResultQueue = {}
-local ROLL_TIMEOUT = 1.5
+local ROLL_TIMEOUT = 3
 local ROLL_SHOW_RESULT_TIME = 1
 local TIMEOUT_FLASH_THRESHOLD = 5
 
