@@ -345,6 +345,10 @@ function TradeUI:GetStoredItemBySession (session)
 end
 
 local function addItemToTradeWindow (tradeBtn, Item)
+	if not TradeUI.isTrading then
+		addon.Log:W("addItemToTradeWindow: No longer trading", TradeUI.tradeTarget, Item.link)
+		return
+	end
 	local c,s = addon.ItemStorage:GetItemContainerSlot(Item, TradeUI.itemsInTradeWindow)
 
 	if not c or not s then -- Item is gone?!
@@ -357,6 +361,7 @@ local function addItemToTradeWindow (tradeBtn, Item)
 	if containerInfo and addon:ItemIsItem(containerInfo.hyperlink, Item.link) then -- Extra check, probably also redundant
 		if containerInfo.isLocked then
 			addon:Print("Item is locked")
+			addon.Log:E("<TradeUI>", "Item locked when attempting to trade", Item.link, TradeUI.tradeTarget)
 		end
 		addon.Log:d("Trading", Item.link, c,s)
 		ClearCursor()
@@ -372,7 +377,7 @@ function TradeUI:AddAwardedInBagsToTradeWindow()
    local items = addon.ItemStorage:GetAllItemsMultiPred(
       funcTradeTargetIsRecipient, funcItemHasMoreTimeLeft, funcStorageTypeIsToTrade
    )
-   addon.Log:d("Number of items to trade:", #items)
+   addon.Log:d("Number of items to trade:", #items, self.tradeTarget)
    for k, Item in ipairs(items) do
       if k > _G.MAX_TRADE_ITEMS - 1 then -- All available slots used (The last trade slot is "Will not be traded" slot).
 			break
