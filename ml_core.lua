@@ -61,6 +61,7 @@ function RCLootCouncilML:OnDisable()
 end
 
 function RCLootCouncilML:OnEnable()
+	self.Log "Enabled"
 	db = addon:Getdb()
 	self.lootTable = {} 		-- The MLs operating lootTable, see ML:AddItem()
 	self.oldLootTable = {}
@@ -139,7 +140,7 @@ function RCLootCouncilML:AddItem(item, bagged, slotIndex, owner, entry, boss)
 	entry.bagged = bagged
 	entry.lootSlot = slotIndex
 	entry.awarded = false
-	entry.owner = owner or addon.bossName
+	entry.owner = owner
 	entry.boss = boss or addon.bossName
 	entry.isSent = false
 	entry.typeCode = addon:GetTypeCodeForItem(item)
@@ -182,10 +183,10 @@ function RCLootCouncilML:GetLootTableForTransmit(overrideIsSent)
 			copy[k] = nil
 		else
 			v.bagged = nil
+			v.lootSlot = nil
 			v.awarded = nil
 			v.classes = nil
 			v.isSent = nil
-			v.lootSlot = nil
 			v.link = nil
 			v.ilvl = nil
 			v.texture = nil
