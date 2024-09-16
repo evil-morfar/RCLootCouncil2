@@ -1,3 +1,9 @@
+## Changes
+
+### Profile Export
+
+Module specific options (show more info, show tooltip, filters, etc) are no longer included in exported profiles.
+
 # 3.13.3
 
 ## Changes

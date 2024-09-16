@@ -2185,6 +2185,7 @@ function addon:GetProfileForExport()
 	db.UI = nil -- Remove UI as it's not helpful for other players
 	db.itemStorage = nil
 	db.baggedItems = nil
+	db.modules = nil -- Personal stuff, don't export
 	local data = LibStub("AceSerializer-3.0"):Serialize(db)
 	TempTable:Release(tt)
 	local encoded = ld:EncodeForPrint(ld:CompressDeflate(data))
