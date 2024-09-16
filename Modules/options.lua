@@ -7,7 +7,6 @@ local addon = select(2, ...)
 --- @type RCLootCouncilLocale
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 local Player = addon.Require "Data.Player"
-local TempTable = addon.Require "Utils.TempTable"
 ------ Options ------
 local function DBGet(info)
 	return addon.db.profile[info[#info]]
@@ -2179,16 +2178,13 @@ end
 
 function addon:GetProfileForExport()
 	local ld = LibStub("LibDeflate")
-	local profile = self.Utils:GetTableDifference(self.db.defaults.profile, self.db.profile)
-	local tt = TempTable:Acquire(profile)
-	local db = tt[1]
+	local db = self.Utils:GetTableDifference(self.db.defaults.profile, self.db.profile)
 	-- TODO: unify exclusions with Sync.syncHandlers.settings
 	db.UI = nil -- Remove UI as it's not helpful for other players
 	db.itemStorage = nil
 	db.baggedItems = nil
 	db.modules = nil -- Personal stuff, don't export
 	local data = LibStub("AceSerializer-3.0"):Serialize(db)
-	TempTable:Release(tt)
 	local encoded = ld:EncodeForPrint(ld:CompressDeflate(data))
 	local t = {
 		self.PROFILE_EXPORT_IDENTIFIER,
