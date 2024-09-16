@@ -74,6 +74,15 @@ function Analysis:PerformStatistics(comms)
 		return num / #t
 	end
 
+	---@param t number[]
+	local function sum(t)
+		local num = 0
+		for _, v in ipairs(t) do
+			num = num + v
+		end
+		return num
+	end
+
 	for i, v in pairs(comms) do
 		tinsert(ret, {
 			name = i,
@@ -81,6 +90,7 @@ function Analysis:PerformStatistics(comms)
 			max = minMax(v, true),
 			average = average(v),
 			count = #v,
+			sum = sum(v),
 		})
 	end
 	table.sort(ret, function(a, b)
@@ -89,31 +99,38 @@ function Analysis:PerformStatistics(comms)
 	return ret
 end
 
+local function numWithThousandSeperator(n)
+	return tostring(math.floor(n)):reverse():gsub("(%d%d%d)", "%1.")
+		:gsub("%.(%-?)$", "%1"):reverse()
+end
+
 ---@param analysis AnalysisResult
 function Analysis:PrintResults(analysis)
-	print(string.format("%-17s count  min \t max \t average msg \t p.msg", "name"))
+	print(string.format("%-17s count  min \t max \t average msg \t p.msg \t sum", "name"))
 	print "---------------------------------------------------------------"
-	local totals = { count = 0, min = 0, max = 0, average = 0, msg = 0, pmsg = 0, }
+	local totals = { count = 0, min = 0, max = 0, average = 0, msg = 0, pmsg = 0, sum = 0, }
 	for _, v in ipairs(analysis) do
 		local msg = v.average / 255
 		local pmsg = 1 / msg
-		print(string.format("%-17s %d \t %d \t %d \t %d \t %.2f \t %.2f", v.name, v.count, v.min, v.max, v.average,
-			msg, pmsg))
+		print(string.format("%-17s %d \t %d \t %d \t %d \t %.2f \t %.2f \t %s", v.name, v.count, v.min, v.max, v.average,
+			msg, pmsg, numWithThousandSeperator(v.sum)))
 		totals.count = totals.count + v.count
 		totals.min = totals.min + v.min * v.count
 		totals.max = totals.max + v.max * v.count
 		totals.average = totals.average + v.average * v.count
 		totals.msg = totals.msg + msg * v.count
 		totals.pmsg = totals.pmsg + pmsg * v.count
+		totals.sum = totals.sum + v.sum
 	end
 	print "---------------------------------------------------------------"
-	print(string.format("Total: \t\t%d \t%.2f \t%.2f \t%.2f \t%.2f \t%.2f",
+	print(string.format("Total: \t\t%d \t%.2f \t%.2f \t%.2f \t%.2f \t%.2f \t%s",
 		totals.count,
-		totals.min/totals.count,
+		totals.min / totals.count,
 		totals.max / totals.count,
-		totals.average/totals.count,
+		totals.average / totals.count,
 		totals.msg / totals.count,
-		totals.pmsg / totals.count))
+		totals.pmsg / totals.count,
+		numWithThousandSeperator(totals.sum)))
 end
 
 RunAnalysis()
