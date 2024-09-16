@@ -1515,14 +1515,14 @@ function RCLootCouncil:OnEvent(event, ...)
 			self.Log("Player relog...")
 
 			-- Restore masterlooter from cache, but only if not already set.
-			if not self.masterLooter and self.db.global.cache.masterLooter then
+			if not self:HasValidMasterLooter() and self.db.global.cache.masterLooter then
 				self.masterLooter = Player:Get(self.db.global.cache.masterLooter)
 				self.isMasterLooter = self.masterLooter == self.player
 				if self.isMasterLooter then
 					self:CallModule("masterlooter")
 				end
 			end
-			self.Log:d("ML, Cached:", self.masterLooter, self.db.global.cache.masterLooter)
+			self.Log:d("ML, Cached:", self.masterLooter, self.isMasterLooter, self.db.global.cache.masterLooter)
 
 			-- Restore mldb and council
 			if self.db.global.cache.mldb then
@@ -1783,7 +1783,7 @@ function RCLootCouncil:StopHandleLoot()
 	self:Send("group", "StopHandleLoot")
 end
 
-function RCLootCouncil:OnRaidEnter(arg)
+function RCLootCouncil:	OnRaidEnter(arg)
 	-- NOTE: We shouldn't need to call GetML() as it's most likely called on "LOOT_METHOD_CHANGED"
 	if self.Utils.IsPartyLFG() or db.usage.never then return end -- We can't use in lfg/lfd so don't bother
 	-- Check if we can use in party
