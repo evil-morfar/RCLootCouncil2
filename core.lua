@@ -353,7 +353,7 @@ function RCLootCouncil:DoChatHook()
 		db.chatFrameName = self.defaults.profile.chatFrameName
 	end
 	-- Pass our channel to the original function and magic appears.
-	self:RawHook(self, "Print", function(_, ...) self.hooks[self].Print(self, getglobal(db.chatFrameName), ...) end)
+	self:RawHook(self, "Print", function(_, ...) self.hooks[self].Print(self, getglobal(db.chatFrameName), ...) end, true)
 end
 
 function RCLootCouncil:ChatCommand(msg)
