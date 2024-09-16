@@ -2182,6 +2182,7 @@ function addon:GetProfileForExport()
 	local profile = self.Utils:GetTableDifference(self.db.defaults.profile, self.db.profile)
 	local tt = TempTable:Acquire(profile)
 	local db = tt[1]
+	-- TODO: unify exclusions with Sync.syncHandlers.settings
 	db.UI = nil -- Remove UI as it's not helpful for other players
 	db.itemStorage = nil
 	db.baggedItems = nil

@@ -95,7 +95,12 @@ sync.syncHandlers = {
             addon:ActivateSkin(addon.db.profile.currentSkin)
         end,
         send = function()
-            return addon.db.profile
+			local db = CopyTable(addon.db.profile)
+			db.UI = nil
+			db.itemStorage = nil
+			db.baggedItems = nil
+			db.modules = nil
+            return db
         end
     },
     history = {

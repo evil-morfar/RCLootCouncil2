@@ -1,8 +1,8 @@
 ## Changes
 
-### Profile Export
+### Profile Export & Sync
 
-Module specific options (show more info, show tooltip, filters, etc) are no longer included in exported profiles.
+Module specific options (show more info, show tooltip, filters, etc) are no longer included in exported/synced profiles.
 
 # 3.13.3
 
