@@ -560,9 +560,9 @@ function RCVersionCheck.SetCellGroupLootStatus(rowFrame, frame, data, cols, row,
 	local binary = addon.Utils:Int2Bin(status)
 	data[realrow].cols[column].value = status and binary or ""
 	local label = status and
-		((addon.isMasterLooter and bit.band(status, targetML) == targetML)
-			or bit.band(status, target) == target and "Good" or "Bad") or "?"
-	frame.text:SetText(label or "x")
+		(((addon.isMasterLooter and bit.band(status, targetML) == targetML)
+			or bit.band(status, target) == target) and "Good" or "Bad") or "?"
+	frame.text:SetText(tostring(label) or "x")
 	frame:SetScript("OnEnter", function()
 		if status then
 			local targetStatus = addon.isMasterLooter and targetML or target
