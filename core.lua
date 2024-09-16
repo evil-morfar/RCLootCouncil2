@@ -1783,7 +1783,7 @@ function RCLootCouncil:StopHandleLoot()
 	self:Send("group", "StopHandleLoot")
 end
 
-function RCLootCouncil:	OnRaidEnter(arg)
+function RCLootCouncil:OnRaidEnter()
 	-- NOTE: We shouldn't need to call GetML() as it's most likely called on "LOOT_METHOD_CHANGED"
 	if self.Utils.IsPartyLFG() or db.usage.never then return end -- We can't use in lfg/lfd so don't bother
 	-- Check if we can use in party
