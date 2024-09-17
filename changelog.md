@@ -1,8 +1,11 @@
-# 3.13.3
-
 ## Changes
 
 Added option to not store personal loot in the history.
+
+## Bugfixes
+# 3.13.3
+
+## Changes
 
 ## Bugfixes
 
