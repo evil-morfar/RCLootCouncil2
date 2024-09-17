@@ -1,8 +1,12 @@
 ## Changes
 
+Added option to not store personal loot in the history.
+
 ### Profile Export & Sync
 
 Module specific options (show more info, show tooltip, filters, etc) are no longer included in exported/synced profiles.
+
+## Bugfixes
 
 # 3.13.3
 

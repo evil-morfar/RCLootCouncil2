@@ -528,6 +528,12 @@ function addon:OptionsTable()
 										type = "toggle",
 										disabled = function() return not self.db.profile.sendHistory end,
 									},
+									savePersonalLoot = {
+										order = 3.2,
+										name = L.opt_savePersonalLoot_name,
+										desc = L.opt_savePersonalLoot_desc,
+										type = "toggle",
+									},
 									header = {
 										order = 4,
 										type = "header",
