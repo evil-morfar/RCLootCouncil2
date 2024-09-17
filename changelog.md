@@ -2,6 +2,8 @@
 
 ## Changes
 
+Added option to not store personal loot in the history.
+
 ## Bugfixes
 
 - *Addon should now always properly initialize when reloading as the ML.*

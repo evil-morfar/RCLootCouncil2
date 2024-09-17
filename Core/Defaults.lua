@@ -76,6 +76,7 @@ addon.defaults = {
 		enableHistory = true,
 		sendHistory = true,
 		sendHistoryToGuildChannel = false,
+		savePersonalLoot = true,
 
 		-- ML - General - Usage
 		usage = { -- State of enabledness

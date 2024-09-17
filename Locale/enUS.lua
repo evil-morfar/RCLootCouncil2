@@ -557,6 +557,8 @@ L.opt_profileSharing_fail_noProfileData =
 L.opt_profileSharing_import_desc =
 "Import a new RCLootCouncil profile. Imports are non-destructive, unless you're overwriting an existing profile."
 L.opt_profileSharing_profileExistsWarning = "A profile named \"%s\" already exists - do you want to overwrite it?"
+L.opt_savePersonalLoot_name = "Record Personal Loot"
+L.opt_savePersonalLoot_desc = "If disabled, personal loot will not be added to the history."
 L.opt_sharingProfile_success = "Succesfully imported profile: \"%s\""
 L["opt_rejectTrade_Name"] = "Allow Keeping"
 L["opt_rejectTrade_Desc"] = "Check to enable candidates to choose whether they want to 'give' the item to the council or not. If unchecked, all tradeable PL items are added automatically."
