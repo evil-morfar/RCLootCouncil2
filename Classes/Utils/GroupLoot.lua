@@ -49,12 +49,13 @@ function GroupLoot:OnStartLootRoll(_, rollID)
 		self.Log:d(link, "is ignored, bailing.")
 		return
 	end
-	self.Log:D("Status:", self:GetStatusBinary())
-	if self:ShouldPassOnLoot() then
+	local status = self:GetStatus()
+	self.Log:D("Status:", status)
+	if self:ShouldPassOnLoot(status) then
 		self.Log:d("Passing on loot", link)
 		self:RollOnLoot(rollID, 0)
 		self.OnLootRoll(link, rollID, 0)
-	elseif self:ShouldRollOnLoot() then
+	elseif self:ShouldRollOnLoot(status) then
 		local roll
 		if canNeed then
 			roll = 1
@@ -64,7 +65,7 @@ function GroupLoot:OnStartLootRoll(_, rollID)
 		else
 			roll = 2
 		end
-		self.Log:d("Rolling on loot", link, roll)
+		self.Log:d("Rolling on loot", roll, link)
 		self:RollOnLoot(rollID, roll)
 		self.OnLootRoll(link, rollID, roll)
 	end
@@ -85,41 +86,39 @@ function GroupLoot:RollOnLoot(rollID, rollType)
 	-- Delay execution in case other addons have modified the loot frame
 	-- and haven't had a change to fully load.
 	addon:ScheduleTimer(RollOnLoot, 0.05, rollID, rollType)
-	--ConfirmLootRoll(rollID, rollType)
 end
 
-function GroupLoot:ShouldPassOnLoot()
-	local db = addon:Getdb()
-	return addon.mldb and addon.mldb.autoGroupLoot and addon.handleLoot and
-		addon.masterLooter and not addon.isMasterLooter and GetNumGroupMembers() > 1
-		and (db.autoGroupLootGuildGroupOnly and addon.isInGuildGroup or not db.autoGroupLootGuildGroupOnly)
-	-- local status = self:GetStatus()
+--- True if we should currently pass on group loot.
+---@param status? integer|string Integer or binary status. Defaults to [`GroupLoot:GetStatus()`](lua://Utils.GroupLoot.GetStatus).
+function GroupLoot:ShouldPassOnLoot(status)
+	status = status and (type(status) == "string" and tonumber(status, 2) or status) or self:GetStatus()
 	-- Bit 7 can be whatever, bit 5 must be 0, rest must be 1
-	-- return bit.band(status, 0x1af) == 0x1af and bit.band(status, 0x10) == 0-- 1.1010.1111 & 0.0001.0000
+	return bit.band(status, 0x1af) == 0x1af and bit.band(status, 0x10) == 0 -- 1.1010.1111 & 0.0001.0000
 end
 
-function GroupLoot:ShouldRollOnLoot()
-	return addon.mldb and addon.mldb.autoGroupLoot and addon.handleLoot and
-		addon.masterLooter and addon.isMasterLooter and GetNumGroupMembers() > 1
-	-- return bit.band(self:GetStatus(), 0x1bf) == 0x1bf -- 1.1011.1111
-	-- TODO Consider if we do care about the guild group thing as ML.
+--- True if we should currently need/greed on group loot.
+---@param status? integer|string Integer or binary status. Defaults to [`GroupLoot:GetStatus()`](lua://Utils.GroupLoot.GetStatus).
+function GroupLoot:ShouldRollOnLoot(status)
+	status = status and (type(status) == "string" and tonumber(status, 2) or status) or self:GetStatus()
+	-- Bit 7 & 8 can be whatever
+	return bit.band(status, 0x13f) == 0x13f -- 1.0011.1111
 end
 
 --- @enum Status
 --- Table which keys is the binary representation of whether the value is true.
 --- autoGroupLootGuildGroupOnly doesn't matter for rolling, but is included for options clarity.
---- "guildGroup" is the combined result of both - true if rolling is allowed.
---- If everything but 'isMasterLooter' is true, then we pass on loot.
---- If 'isMasterLooter' is also true, then we roll on loot.
+--- "guildGroup" indicates whether rolling is allowed according to guild group options.
+--- Unless indicated all must be 1 for rolls to occur.
+--- See [StatusDescription](lua://StatusDescription) for detailed description.
 local status = {
 	[000000001] = "mldb",
 	[000000010] = "mldb.autoGroupLoot",
 	[000000100] = "handleLoot",
 	[000001000] = "masterLooter",
-	[000010000] = "isMasterLooter",
+	[000010000] = "isMasterLooter",           -- 0 for passing; 1 for rolling.
 	[000100000] = "numGroupMembers",
-	[001000000] = "autoGroupLootGuildGroupOnly",
-	[010000000] = "guildGroup",
+	[001000000] = "autoGroupLootGuildGroupOnly", -- indicator only
+	[010000000] = "guildGroup",               -- 1 for passing; 1 or 0 for rolling.
 	[100000000] = "enabled",
 }
 
@@ -168,6 +167,8 @@ function GroupLoot:CalculateStatus(...)
 	return tonumber(result, 2)
 end
 
+--- @enum StatusDescription
+--- Descriptions for [Status](lua://Status).
 local description = {
 	"Received data from ML",
 	"ML has enabled autoGroupLoot",
