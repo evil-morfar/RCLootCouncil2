@@ -493,8 +493,27 @@ C_Timer = {
 		end)
 	end,
 }
-function RunNextFrame(fun)
-	C_Timer.After(0, fun)
+
+local closureGeneration = {
+	function(f) return function(...) return f(...); end end,
+	function(f, a) return function(...) return f(a, ...); end end,
+	function(f, a, b) return function(...) return f(a, b, ...); end end,
+	function(f, a, b, c) return function(...) return f(a, b, c, ...); end end,
+	function(f, a, b, c, d) return function(...) return f(a, b, c, d, ...); end end,
+	function(f, a, b, c, d, e) return function(...) return f(a, b, c, d, e, ...); end end,
+};
+
+function GenerateClosure(f, ...)
+	local count = select("#", ...);
+	local generator = closureGeneration[count + 1];
+	if generator then
+		return generator(f, ...);
+	end
+	error("Closure generation does not support more than " .. (#closureGeneration - 1) .. " parameters");
+end
+
+function RunNextFrame(callback)
+	C_Timer.After(0, callback);
 end
 
 function GetServerTime()
