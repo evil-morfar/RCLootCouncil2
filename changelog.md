@@ -8,6 +8,8 @@ Module specific options (show more info, show tooltip, filters, etc) are no long
 
 ## Bugfixes
 
+- *WuE items will no longer register as BoEs (despite GetItemInfo saying so).
+
 # 3.13.3
 
 ## Changes

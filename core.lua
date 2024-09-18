@@ -1372,7 +1372,7 @@ end
 
 function RCLootCouncil:IsItemBoE(item)
 	if not item then return false end
-	return select(14, C_Item.GetItemInfo(item)) == Enum.ItemBind.OnEquip
+	return select(14, C_Item.GetItemInfo(item)) == Enum.ItemBind.OnEquip and not C_Item.IsItemBindToAccountUntilEquip(item)
 end
 
 function RCLootCouncil:IsItemBoP(item)
