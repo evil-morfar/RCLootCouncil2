@@ -1520,6 +1520,7 @@ function RCLootCouncil:OnEvent(event, ...)
 				self.isMasterLooter = self.masterLooter == self.player
 				if self.isMasterLooter then
 					self:CallModule("masterlooter")
+					self:GetActiveModule("masterlooter"):NewML(self.masterLooter)
 				end
 			end
 			self.Log:d("ML, Cached:", self.masterLooter, self.isMasterLooter, self.db.global.cache.masterLooter)
