@@ -25,9 +25,10 @@ function GroupLoot:OnInitialize()
 	self.Log = addon.Require "Utils.Log":New "GroupLoot"
 	addon:RegisterEvent("START_LOOT_ROLL", self.OnStartLootRoll, self)
 	self.OnLootRoll:subscribe(function(_, rollID)
-		pcall(self.HideGroupLootFrameWithRollID, self, rollID) -- REVIEW: pcall because I haven't actually tested it in game.
-	end, nil)
-	-- addon:RegisterEvent("LOOT_HISTORY_ROLL_CHANGED", self.OnLootHistoryRollChanged, self)
+		RunNextFrame(function()
+			self:HideGroupLootFrameWithRollID(rollID)
+		end)
+	end)
 end
 
 function GroupLoot:OnStartLootRoll(_, rollID)
@@ -152,7 +153,6 @@ function GroupLoot:GetStatusTable() return status end
 ---@return table<string, integer> StatusInverted The inverted status table as-is.
 function GroupLoot:GetInvertedStatusTable() return statusInverted end
 
-
 --- Calculates the status with one or more fields set.
 --- Invalid fields will be ignored.
 ---@param ...Status The fields to set. Must be a valid value in [Status](lua://Status).
@@ -197,12 +197,6 @@ function GroupLoot:StatusToDescription(status, target)
 		end
 	end
 	return res
-end
-
-function GroupLoot:OnLootHistoryRollChanged(event, itemId, playerId)
-	self.Log:d(event)
-	self.Log:d("GetItem:", C_LootHistory.GetItem(itemId))
-	self.Log:d("GetPlayerInfo:", C_LootHistory.GetPlayerInfo(itemId, playerId))
 end
 
 local NUM_LOOT_FRAMES = 4
