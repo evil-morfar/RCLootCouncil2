@@ -446,6 +446,17 @@ function WoWAPI_FireEvent(event, ...)
 	end
 end
 
+--- ! NOT A WOW FUNCTION
+--- Emulating advancing time by firing WoWAPI_FireUpdate every 0.1 seconds.
+---@param seconds integer
+function _ADVANCE_TIME(seconds)
+	for i = 1, seconds do
+		for m = 0.1, 0.9, 0.1 do
+			WoWAPI_FireUpdate(_time + i + m)
+		end
+	end
+end
+
 function WoWAPI_FireUpdate(forceNow)
 	if forceNow then
 		_time = forceNow
@@ -482,6 +493,9 @@ C_Timer = {
 		end)
 	end,
 }
+function RunNextFrame(fun)
+	C_Timer.After(0, fun)
+end
 
 function GetServerTime()
 	return os.time()
@@ -596,6 +610,9 @@ strcmputf8i = function(a, b)
 	return a == b -- ~= nil
 end
 
+local function keyValueForTable(input)
+	return type(input) == "string" and "\"" .. input .. "\"" or tostring(input)
+end
 -- Not part of the WoWAPI, but added to emulate the ingame /dump cmd
 printtable = function(data, level)
 	if not data then return end
@@ -607,12 +624,15 @@ printtable = function(data, level)
 	for index, value in pairs(data) do
 		repeat
 			if type(value) ~= "table" then
-				print(ident .. "[" .. tostring(index) .. "] = " .. tostring(value) .. " (" .. type(value) .. ")");
+				print(ident ..
+				"[" ..
+				keyValueForTable(index) ..
+				"] = " .. keyValueForTable(value) .. ", -- (" .. type(value) .. ")");
 				break;
 			end
-			print(ident .. "[" .. tostring(index) .. "] = {")
+			print(ident .. "[" .. keyValueForTable(index) .. "] = {")
 			printtable(value, level + 1)
-			print(ident .. "}");
+			print(ident .. "},");
 		until true
 	end
 end
