@@ -16,7 +16,7 @@ Module specific options (show more info, show tooltip, filters, etc) are no long
 
 - *WuE items will no longer register as BoEs (despite GetItemInfo saying so).*
 - *Fixed Conniver's Badges being incorrectly shown as trinket slot.*
-
+- *Changing roles should now properly update the column in the voting frame.*
 
 # 3.13.3
 

@@ -1435,6 +1435,13 @@ function RCLootCouncil:GetPlayerInfo()
 	return self.Utils:GetPlayerRole(), self.guildRank, enchant, lvl, ilvl, playersData.specID
 end
 
+--- Send player info to the target/group
+---@param target string Player name or "group". Defaults to "group".
+function RCLootCouncil:SendPlayerInfo(target)
+	local commsTarget = target and Player:Get(target) or "group"
+	Comms:Send { target = commsTarget, command = "pI", data = { self:GetPlayerInfo(), }, }
+end
+
 --- Returns a lookup table containing GuildRankNames and their index.
 -- @return table ["GuildRankName"] = rankIndex
 function RCLootCouncil:GetGuildRanks()
@@ -1677,6 +1684,14 @@ function RCLootCouncil:OnBonusRoll(_, type, link, ...)
 		/run RCLootCouncil:OnBonusRoll("", "item", "|cffa335ee|Hitem:140851::::::::110:256::3:3:3443:1467:1813:::|h[Nighthold Custodian's Hood]|h|r")
 
 	]]
+end
+
+--- Called on event `ACTIVE_PLAYER_SPECIALIZATION_CHANGED`
+function RCLootCouncil:OnSpecChanged()
+	-- If our role changed, send playerinfo
+	if self.player.role ~= self.Utils:GetPlayerRole() then
+		self:SendPlayerInfo()
+	end
 end
 
 ---@return boolean #True if the player is in a guild group or alone.
@@ -2581,7 +2596,7 @@ function RCLootCouncil:SubscribeToPermanentComms()
 		council = function(data, sender) self:OnCouncilReceived(sender, unpack(data)) end,
 		--
 		playerInfoRequest = function(_, sender)
-			Comms:Send{target = Player:Get(sender), command = "pI", data = {self:GetPlayerInfo()}}
+			self:SendPlayerInfo(sender)
 		end,
 
 		pI = function(data, sender) self:OnPlayerInfoReceived(sender, unpack(data)) end,
