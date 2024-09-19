@@ -206,54 +206,38 @@ function RCVersionCheck:AddEntry(name, class, guildRank, version, tVersion, modu
     if tVersion then
         vVal = tostring(version) .. "-" .. tVersion
     end
+
+	-- Adds entry to the provided table
+	local function addEntry(t)
+		t.cols = {
+			{ value = "", DoCellUpdate = addon.SetCellClassIcon, args = { class, }, },
+			{ value = addon.Ambiguate(name), color = addon:GetClassColor(class), },
+			{ value = guildRank,             color = self.GetVersionColor, colorargs = { self, version, tVersion, }, },
+			{
+				value = vVal or L["Waiting for response"],
+				color = self.GetVersionColor,
+				colorargs = { self, version, tVersion, },
+				DoCellUpdate = self.SetCellModules,
+				args = modules,
+			},
+		}
+		if addon.db.profile.groupLootStatus then
+			tinsert(t.cols, { DoCellUpdate = self.SetCellGroupLootStatus, args = { groupLootStatus, }, })
+		end
+		t.name = name
+		t.rank = guildRank
+		t.version = version
+		t.tVersion = tVersion
+		return t
+	end
     for _, v in ipairs(self.frame.rows) do
         if addon:UnitIsUnit(v.name, name) then -- they're already added, so update them
-            v.cols = {
-                {value = "", DoCellUpdate = addon.SetCellClassIcon, args = {class}},
-                {value = addon.Ambiguate(name), color = addon:GetClassColor(class)},
-                {value = guildRank, color = self.GetVersionColor, colorargs = {self, version, tVersion}},
-                {
-                    value = vVal or L["Waiting for response"],
-                    color = self.GetVersionColor,
-                    colorargs = {self, version, tVersion},
-                    DoCellUpdate = self.SetCellModules,
-                    args = modules
-                }
-            }
-			if addon.db.profile.groupLootStatus then
-				tinsert(v.cols, {DoCellUpdate = self.SetCellGroupLootStatus, args = {groupLootStatus}})
-			end
-            v.rank = guildRank
-            v.version = version
-            v.tVersion = tVersion
+			addEntry(v)
             return self:Update()
         end
     end
     -- They haven't been added yet, so do it
-    tinsert(
-        self.frame.rows,
-        {
-            name = name,
-            rank = guildRank,
-            version = version,
-            tVersion = tVersion,
-            cols = {
-                {value = "", DoCellUpdate = addon.SetCellClassIcon, args = {class}},
-                {value = addon.Ambiguate(name), color = addon:GetClassColor(class)},
-                {value = guildRank, color = self.GetVersionColor, colorargs = {self, version, tVersion}},
-                {
-                    value = vVal or L["Waiting for response"],
-                    color = self.GetVersionColor,
-                    colorargs = {self, version, tVersion},
-                    DoCellUpdate = self.SetCellModules,
-                    args = modules
-                }
-            }
-        }
-    )
-	if addon.db.profile.groupLootStatus then
-		tinsert(self.frame.rows[#self.frame.rows].cols, { DoCellUpdate = self.SetCellGroupLootStatus, args = { groupLootStatus, }, })
-	end
+    tinsert(self.frame.rows, addEntry({}))
     listOfNames[name] = true
     self:Update()
 end
