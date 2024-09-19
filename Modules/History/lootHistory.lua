@@ -926,7 +926,7 @@ function LootHistory:GetFrame()
 
 	self.moreInfo = CreateFrame("GameTooltip", "RCLootHistoryMoreInfo", f.content, "GameTooltipTemplate")
 	self.moreInfo:SetIgnoreParentScale(true)
-	self.moreInfo:SetClampedToScreen(false)
+	self.moreInfo:SetClampedToScreen(addon:Getdb().moreInfoClampToScreen)
 	f.content:SetScript("OnSizeChanged", function()
 		self.moreInfo:SetScale(Clamp(f:GetScale() * 0.6, .4, .9))
 	end)

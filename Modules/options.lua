@@ -2190,6 +2190,7 @@ function addon:GetProfileForExport()
 	db.itemStorage = nil
 	db.baggedItems = nil
 	db.modules = nil -- Personal stuff, don't export
+	db.moreInfoClampToScreen = nil
 	local data = LibStub("AceSerializer-3.0"):Serialize(db)
 	local encoded = ld:EncodeForPrint(ld:CompressDeflate(data))
 	local t = {

@@ -260,6 +260,7 @@ addon.defaults = {
 		},
 
 		groupLootStatus = false,
+		moreInfoClampToScreen = true,
 	},
 } -- defaults end
 

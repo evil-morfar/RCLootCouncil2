@@ -100,6 +100,7 @@ sync.syncHandlers = {
 			db.itemStorage = nil
 			db.baggedItems = nil
 			db.modules = nil
+			db.moreInfoClampToScreen = nil
             return db
         end
     },

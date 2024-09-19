@@ -1194,7 +1194,7 @@ function RCVotingFrame:GetFrame()
 
 	f.moreInfo = CreateFrame( "GameTooltip", "RCVotingFrameMoreInfo", f.content, "GameTooltipTemplate" )
 	f.moreInfo:SetIgnoreParentScale(true)
-	f.moreInfo:SetClampedToScreen(false)
+	f.moreInfo:SetClampedToScreen(addon:Getdb().moreInfoClampToScreen)
 	f.content:SetScript("OnSizeChanged", function()
 		f.moreInfo:SetScale(Clamp(f:GetScale() * 0.6, .4, .9))
 	end)
