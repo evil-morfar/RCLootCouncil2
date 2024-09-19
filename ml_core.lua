@@ -162,7 +162,7 @@ function RCLootCouncilML:AddItem(item, bagged, slotIndex, owner, entry, boss)
 			wipe(entry)
 			self.Log:D("Couldn't find item info for ", item)
 			addon:Print(format(L["ML_ADD_ITEM_MAX_ATTEMPTS"], tostring(item)))
-			addon:GetActiveModule("sessionframe"):Show(self.lootTable)
+			self:ShowSessionFrame(self.lootTable)
 			return
 		end
 		self:ScheduleTimer("Timer", 0.05, "AddItem", item, bagged, slotIndex, owner, entry, boss)
@@ -171,6 +171,14 @@ function RCLootCouncilML:AddItem(item, bagged, slotIndex, owner, entry, boss)
 		entry.attempts = nil
 		addon:SendMessage("RCMLAddItem", item, entry)
 	end
+end
+
+---Show the session frame with the given lootTable or `self.lootTable`.
+---@param lootTable table Defaults to `self.lootTable`.
+---@param disableAwardLater boolean Defaults to `false`. See [SessionFrame:Show()](lua://RCSessionFrame.Show)
+function RCLootCouncilML:ShowSessionFrame(lootTable, disableAwardLater)
+	addon:CallModule("sessionframe")
+	addon:GetActiveModule("sessionframe"):Show(lootTable or self.lootTable, disableAwardLater)
 end
 
 --- Removes everything that doesn't need to be sent in the lootTable
@@ -274,8 +282,7 @@ end
 function RCLootCouncilML:AddUserItem(item, username)
 	if type(tonumber(item)) == "number" or string.find(item, "item:") then -- Ensure we can handle it
 		self:AddItem(item, false, nil, username) -- The item is neither bagged nor in the loot slot.
-		addon:CallModule("sessionframe")
-		addon:GetActiveModule("sessionframe"):Show(self.lootTable)
+		self:ShowSessionFrame()
 	else
 		addon:Print(format(L["ML_ADD_INVALID_ITEM"], tostring(item)))
 	end
@@ -291,8 +298,7 @@ function RCLootCouncilML:SessionFromBags()
 	if db.autoStart then
 		self:StartSession()
 	else
-		addon:CallModule("sessionframe")
-		addon:GetActiveModule("sessionframe"):Show(self.lootTable, true)  -- Disable award later checkbox in the sessionframe
+		self:ShowSessionFrame(self.lootTable, true)
 	end
 end
 
@@ -1290,8 +1296,7 @@ function RCLootCouncilML:Test(items)
 	if db.autoStart then
 		addon:Print(L["Autostart isn't supported when testing"])
 	end
-	addon:CallModule("sessionframe")
-	addon:GetActiveModule("sessionframe"):Show(self.lootTable)
+	self:ShowSessionFrame()
 end
 
 -- Returns true if we are ignoring the item
