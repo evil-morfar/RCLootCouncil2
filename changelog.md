@@ -10,6 +10,12 @@ Added new command `/rc stop` - inverse of start, stops handling loot.
 
 Reworked the chat command help section (`/rc` or `/rc help`) - now shows commands useable at the moment. Group leader has a seperate section for group leader only commands. Also added description for the commands that missed them.
 
+### Group Loot Status
+
+The version checker now includes group loot status for each player. Use this to check if RCLootCouncil will do group loot for everyone. Won't work for players using versions older than 3.13.3.
+
+The tooltip includes specific information as to why it won't do group loot, such as being in a non-guild group without disabling "Guild Groups Only".
+
 ### Profile Export & Sync
 
 Module specific options (show more info, show tooltip, filters, etc) are no longer included in exported/synced profiles.

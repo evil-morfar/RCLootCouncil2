@@ -110,7 +110,7 @@ end
 --- "guildGroup" indicates whether rolling is allowed according to guild group options.
 --- Unless indicated all must be 1 for rolls to occur.
 --- See [StatusDescription](lua://StatusDescription) for detailed description.
-local status = {
+local statusBinaryTable = {
 	[000000001] = "mldb",
 	[000000010] = "mldb.autoGroupLoot",
 	[000000100] = "handleLoot",
@@ -122,7 +122,7 @@ local status = {
 	[100000000] = "enabled",
 }
 
-local statusInverted = tInvert(status)
+local statusInverted = tInvert(statusBinaryTable)
 
 --- Generates the status for the current GroupLoot setting.
 ---@return integer #The integer representation of the binary status value.
@@ -147,7 +147,7 @@ function GroupLoot:GetStatusBinary()
 end
 
 ---@return enum Status The status table as-is.
-function GroupLoot:GetStatusTable() return status end
+function GroupLoot:GetStatusTable() return statusBinaryTable end
 
 ---@return table<string, integer> StatusInverted The inverted status table as-is.
 function GroupLoot:GetInvertedStatusTable() return statusInverted end
@@ -169,34 +169,39 @@ end
 
 --- @enum StatusDescription
 --- Descriptions for [Status](lua://Status).
+--- Index 0 is negative description and 1 is positive.
 local description = {
-	"Received data from ML",
-	"ML has enabled autoGroupLoot",
-	"RCLootCouncil handles loot",
-	"Group has master looter",
-	"Player is master looter",
-	"Group size > 1",
-	"Guild Groups Only setting",
-	"Guild group settings",
-	"RCLootCouncil enabled",
+	{ [0] = "Hasn't received data from ML",      [1] = "Received data from ML", },
+	{ [0] = "ML has disabled autoGroupLoot",     [1] = "ML has enabled autoGroupLoot", },
+	{ [0] = "RCLootCouncil doesn't handle loot", [1] = "RCLootCouncil handles loot", },
+	{ [0] = "Group has no master looter",        [1] = "Group has master looter", },
+	{ [0] = "Player is not master looter",       [1] = "Player is master looter", },
+	{ [0] = "Not in a group",                    [1] = "In a group", },
+	{ [0] = "Guild Groups Only setting",         [1] = "Guild Groups Only setting", },
+	{ [0] = "Guild group settings",              [1] = "Guild group settings", },
+	{ [0] = "RCLootCouncil disabled",            [1] = "RCLootCouncil enabled", },
 }
 
 --- Creates a table of descriptions for the provided status.
 --- These are colored green if set in the target status, otherwise red.
----@param status integer Integer representation of [Status](lua://Status). See [GroupLoot:GetStatus()](lua://Utils.GroupLoot.GetStatus)
----@param target integer Integer representation of the target status. 
+---@param status integer|string Integer or binary representation of [Status](lua://Status). See [GroupLoot:GetStatus()](lua://Utils.GroupLoot.GetStatus)
+---@param target integer|string Integer or binary representation of the target status.
 function GroupLoot:StatusToDescription(status, target)
-	local binary = addon.Utils:Int2Bin(status)
+	local binary = addon.Utils:Int2Bin(type(status) == "string" and tonumber(status, 2) or status)
 	local res = {}
+	local reversedBinary = binary:reverse()
 	for i = 1, #binary do
-		if bit.band(status, bit.lshift(1, i - 1)) == bit.band(target, bit.lshift(1, i - 1)) then
-			res[#res + 1] = WrapTextInColorCode(description[i], "FF00FF00")
-		else
-			if i == 7 then -- autoGroupLootGuildGroupOnly doesn't matter; don't color
-				res[#res + 1] = description[i]
+		local statusBit = tonumber(reversedBinary:sub(i, i))
+		if i == 7 then -- autoGroupLootGuildGroupOnly doesn't matter; but color green if enabled
+			if bit.band(status, bit.lshift(1, i - 1)) > 0 then
+				res[#res + 1] = WrapTextInColorCode(description[i][statusBit], "FF00FF00")
 			else
-				res[#res + 1] = WrapTextInColorCode(description[i], "FFFF0000")
+				res[#res + 1] = description[i][statusBit]
 			end
+		elseif bit.band(status, bit.lshift(1, i - 1)) == bit.band(target, bit.lshift(1, i - 1)) then
+			res[#res + 1] = WrapTextInColorCode(description[i][statusBit], "FF00FF00")
+		else
+			res[#res + 1] = WrapTextInColorCode(description[i][statusBit], "FFFF0000")
 		end
 	end
 	return res

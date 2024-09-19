@@ -137,6 +137,15 @@ describe("#GroupLoot", function()
 			addon.isInGuildGroup = false
 			addon.db.profile.autoGroupLootGuildGroupOnly = true
 		end)
+		it("statusToDescription should return a table", function()
+			assert.has_no.errors(function() GroupLoot:StatusToDescription(1,1) end)
+			assert.is_table(GroupLoot:StatusToDescription(1,1))
+			assert.equal(4, #GroupLoot:StatusToDescription(1, 1)) -- 1 -> 0001 after conversion
+			local status, target = "101100000", "011011011"
+			assert.has_no.errors(function() GroupLoot:StatusToDescription(status, target) end)
+			assert.is_table(GroupLoot:StatusToDescription(status, target))
+			assert.equal(9, #GroupLoot:StatusToDescription(status, target))
+		end)
 		it("should return '101100000' by default", function()
 			local status = GroupLoot:GetInvertedStatusTable()
 			-- By default only GetNumGroupMembers, autoGroupLootGuildGroupOnly, and enabled are set
