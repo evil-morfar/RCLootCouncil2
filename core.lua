@@ -2901,3 +2901,15 @@ function RCLootCouncil:LockItem(item)
 		self:Print("Couldn't lock item")
 	end
 end
+
+---Fetches the differences between the current profile and the default profile
+---with non-exported fields removed.
+function RCLootCouncil:GetDBForExport()
+	local db = self.Utils:GetTableDifference(self.db.defaults.profile, self.db.profile)
+	db.UI = nil -- Remove UI as it's not helpful for other players
+	db.itemStorage = nil
+	db.baggedItems = nil
+	db.modules = nil -- Personal stuff, don't export
+	db.moreInfoClampToScreen = nil
+	return db
+end
