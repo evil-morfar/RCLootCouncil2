@@ -564,7 +564,13 @@ function RCVersionCheck.SetCellGroupLootStatus(rowFrame, frame, data, cols, row,
 		if status then
 			local targetStatus = addon.isMasterLooter and targetML or target
 			local description = GroupLoot:StatusToDescription(status, targetStatus)
-			addon:CreateTooltip("Status", binary, status, string.format("%x", status), unpack(description))
+			addon:CreateTooltip("Status", unpack(description))
+			if addon.debug or addon.nnp then
+				GameTooltip:AddLine("Bin: " .. binary)
+				GameTooltip:AddLine("Dec: " .. status)
+				GameTooltip:AddLine("Hex: " .. string.format("%x", status))
+				GameTooltip:Show()
+			end
 		end
 	end)
 	frame:SetScript("OnLeave", addon.UI.HideTooltip)
