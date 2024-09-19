@@ -149,15 +149,27 @@ function RCLootCouncil:OnInitialize()
 		{cmd = "config", desc = L["chat_commands_config"]},
 		{cmd = "council", desc = L["chat_commands_council"]},
 		{cmd = "history", desc = L["chat_commands_history"]},
-		{cmd = "version", desc = L["chat_commands_version"]},
 		{cmd = "open", desc = L["chat_commands_open"]},
-		{cmd = "reset", desc = L["chat_commands_reset"]},
-		{cmd = "test (#)", desc = L["chat_commands_test"]},
-		{cmd = "whisper", desc = L["chat_commands_whisper"]},
-		{cmd = "add [item]", desc = L["chat_commands_add"]},
-		{cmd = "award", desc = L["chat_commands_award"]},
-		{cmd = "sync", desc = L["chat_commands_sync"]},
 		{cmd = "profile", desc = L.chat_commands_profile, },
+		{cmd = "reset", desc = L["chat_commands_reset"]},
+		{cmd = "sync", desc = L["chat_commands_sync"]},
+		{cmd = "version", desc = L["chat_commands_version"]},
+	}
+	self.mlChatCmdHelp = {
+		{cmd = "add [item]", desc = L["chat_commands_add"]},
+		{cmd = "add all", desc = L["chat_commands_add_all"]},
+		{cmd = "award", desc = L["chat_commands_award"]},
+		{cmd = "clear", desc = L.chat_commands_clear},
+		{cmd = "export", desc = L.chat_commands_export},
+		{cmd = "list", desc = L.chat_commands_list},
+		{cmd = "remove [index]", desc = L.chat_commands_remove},
+		{cmd = "session", desc = L.chat_commands_session},
+		{cmd = "start", desc = L.chat_commands_start},
+		{cmd = "stop", desc = L.chat_commands_stop},
+		{cmd = "test (#)", desc = L["chat_commands_test"]},
+		{cmd = "trade)", desc = L.chat_commands_trade},
+		{cmd = "whisper", desc = L["chat_commands_whisper"]},
+		
 	}
 
 	self.lootGUIDToIgnore = { -- List of GUIDs we shouldn't register loot from
@@ -373,8 +385,18 @@ function RCLootCouncil:ChatCommand(msg)
 		else
 			print(format(L["chat version String"], self.version))
 		end
-		local module
+		local module, shownMLCommands
 		for _, v in ipairs(self.chatCmdHelp) do
+			-- Show ML commands beneath regular commands, but above module commands
+			if v.module and not shownMLCommands then
+				print ""
+				local mlCommandsString = self:IsCorrectVersion() and L.chat_commands_groupLeader_only or L.chat_commands_ML_only
+				print("|cFFFFA500".. mlCommandsString .. "|r")	
+				for _, y in ipairs(self.mlChatCmdHelp) do
+					print("|cff20a200", y.cmd, "|r:", y.desc)
+				end
+				shownMLCommands = true
+			end
 			if v.module ~= module then -- Print module name and version
 				print "" -- spacer
 				if v.module.version and v.module.tVersion then

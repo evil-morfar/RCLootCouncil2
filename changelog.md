@@ -8,6 +8,8 @@ Added new command `/rc session` - opens the session frame if you're the group le
 
 Added new command `/rc stop` - inverse of start, stops handling loot.
 
+Reworked the chat command help section (`/rc` or `/rc help`) - now shows commands useable at the moment. Group leader has a seperate section for group leader only commands. Also added description for the commands that missed them.
+
 ### Profile Export & Sync
 
 Module specific options (show more info, show tooltip, filters, etc) are no longer included in exported/synced profiles.
