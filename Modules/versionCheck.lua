@@ -541,12 +541,13 @@ local target 	= tonumber("110101111", 2)
 --- @type DoCellUpdateFunction
 function RCVersionCheck.SetCellGroupLootStatus(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
 	local status = data[realrow].cols[column].args[1]
+	local name = data[realrow].name
 	local binary = addon.Utils:Int2Bin(status)
 	data[realrow].cols[column].value = status and binary or ""
 
 	frame:SetScript("OnEnter", function()
 		if status then
-			local targetStatus = addon.isMasterLooter and targetML or target
+			local targetStatus = addon.masterLooter == Player:Get(name) and targetML or target
 			local description = GroupLoot:StatusToDescription(status, targetStatus)
 			addon:CreateTooltip("Status", unpack(description))
 			if addon.debug or addon.nnp then

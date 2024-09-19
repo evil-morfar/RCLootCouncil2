@@ -172,26 +172,28 @@ end
 local description = {
 	"Received data from ML",
 	"ML has enabled autoGroupLoot",
-	"addon handles loot",
-	"group has master looter",
-	"player is master looter",
-	"numGroupMembers > 1",
-	"autoGroupLootGuildGroupOnly enabled",
+	"RCLootCouncil handles loot",
+	"Group has master looter",
+	"Player is master looter",
+	"Group size > 1",
+	"Guild Groups Only setting",
 	"Guild group settings",
-	"addon enabled",
+	"RCLootCouncil enabled",
 }
----comment
----@param status integer
----@param target integer
+
+--- Creates a table of descriptions for the provided status.
+--- These are colored green if set in the target status, otherwise red.
+---@param status integer Integer representation of [Status](lua://Status). See [GroupLoot:GetStatus()](lua://Utils.GroupLoot.GetStatus)
+---@param target integer Integer representation of the target status. 
 function GroupLoot:StatusToDescription(status, target)
 	local binary = addon.Utils:Int2Bin(status)
 	local res = {}
 	for i = 1, #binary do
-		if i == 7 then -- autoGroupLootGuildGroupOnly doesn't matter
-			res[#res + 1] = description[i]
+		if bit.band(status, bit.lshift(1, i - 1)) == bit.band(target, bit.lshift(1, i - 1)) then
+			res[#res + 1] = WrapTextInColorCode(description[i], "FF00FF00")
 		else
-			if bit.band(status, bit.lshift(1, i - 1)) > 0 and bit.band(status, bit.lshift(1, i - 1)) > 0 then
-				res[#res + 1] = WrapTextInColorCode(description[i], "FF00FF00")
+			if i == 7 then -- autoGroupLootGuildGroupOnly doesn't matter; don't color
+				res[#res + 1] = description[i]
 			else
 				res[#res + 1] = WrapTextInColorCode(description[i], "FFFF0000")
 			end
