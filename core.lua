@@ -513,6 +513,15 @@ function RCLootCouncil:ChatCommand(msg)
 		self:Print(L["Windows reset"])
 
 	elseif input == "start" or input == string.lower(_G.START) then
+		if self.Utils.IsPartyLFG() then
+			return self:Print(L.chat_command_start_error_start_PartyIsLFG)
+		elseif db.usage.never then
+			return self:Print(L.chat_command_start_error_usageNever)
+		elseif not IsInRaid() and db.onlyUseInRaids then
+			return self:Print(L.chat_command_start_error_onlyUseInRaids)
+		elseif not self.isMasterLooter then
+			return self:Print(L["You cannot use this command without being the Master Looter"])
+		end
 		-- Simply emulate player entering raid.
 		self:OnRaidEnter()
 

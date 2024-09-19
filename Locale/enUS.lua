@@ -532,6 +532,9 @@ Ctrl+scroll to change scale]]
 
 L.autoGroupLoot_warning = "Note: Group Leader's settings will cause RCLootCouncil to automatically control group loot."
 L.chatCommand_stop_error_notHandlingLoot = "Cannot stop: not currently handling loot."
+L.chat_command_start_error_start_PartyIsLFG = "Cannot start: you are in a LFG party."
+L.chat_command_start_error_usageNever = "Cannot start: your 'usage' option is set to 'never'."
+L.chat_command_start_error_onlyUseInRaids = "Cannot start: you're in a party and have the 'only use in raids' option enabled."
 L.history_export_sheets_tip = "Tab delimited export for Google Sheets and English version of Excel that uses ';' as formula delimiter."
 L.history_export_excel_international_tip = "Tab delimited export for international version of Excel that uses ',' as formula delimiter."
 L["opt_addButton_desc"] = "Add a new button group for the selected slot."
