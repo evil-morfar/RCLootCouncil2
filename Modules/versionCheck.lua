@@ -559,18 +559,24 @@ function RCVersionCheck.SetCellGroupLootStatus(rowFrame, frame, data, cols, row,
 	local status = data[realrow].cols[column].args[1]
 	local binary = addon.Utils:Int2Bin(status)
 	data[realrow].cols[column].value = status and binary or ""
-	local label = status and
-		(((addon.isMasterLooter and bit.band(status, targetML) == targetML)
-			or bit.band(status, target) == target) and "Good" or "Bad") or "?"
-	frame.text:SetText(tostring(label) or "x")
+
 	frame:SetScript("OnEnter", function()
 		if status then
 			local targetStatus = addon.isMasterLooter and targetML or target
 			local description = GroupLoot:StatusToDescription(status, targetStatus)
-			addon:CreateTooltip("Status", label, binary, status, string.format("%x", status), unpack(description))
+			addon:CreateTooltip("Status", binary, status, string.format("%x", status), unpack(description))
 		end
 	end)
 	frame:SetScript("OnLeave", addon.UI.HideTooltip)
+	if status then
+		local texture =
+			((addon.isMasterLooter and bit.band(status, targetML) == targetML)
+			or bit.band(status, target) == target) and "interface/raidframe/readycheck-ready"
+			or "interface/raidframe/readycheck-notready"
+		frame:SetNormalTexture(texture)
+	else
+		frame:SetNormalTexture("interface/raidframe/readycheck-waiting")
+	end
 end
 
 function GuildRankSort(table, rowa, rowb, sortbycol)
