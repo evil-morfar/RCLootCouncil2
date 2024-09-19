@@ -11,7 +11,8 @@ local ST = LibStub("ScrollingTable")
 --- @type RCLootCouncilLocale
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 
-local ml;
+--- @type RCLootCouncilML
+local ml
 local ROW_HEIGHT = 40
 local awardLater = false
 local loadingItems = false

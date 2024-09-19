@@ -508,6 +508,12 @@ function RCLootCouncil:ChatCommand(msg)
 	elseif input == "sync" then
 		self.Sync:Enable()
 
+	elseif input == "session" or input == "ses" or input == "s" then
+		if self.isMasterLooter then
+			self:GetActiveModule("masterlooter"):ShowSessionFrame()
+		else
+			self:Print(L["You cannot use this command without being the Master Looter"])
+		end
 	elseif input == "trade" then
 		self.TradeUI:Show(true)
 
@@ -2107,8 +2113,9 @@ end
 --- Returns the active module if found or fails silently.
 ---	Always use this when calling functions in another module.
 --- @param module DefaultModules|UserModules Index in self.defaultModules.
---- @return AceModule? #The module object of the active module or nil if not found. Prioritises userModules if set.
+--- @return RCLootCouncilML|RCLootFrame|RCLootHistory|VersionCheck|RCSessionFrame|RCVotingFrame|TradeUI|Sync #The module object of the active module or nil if not found. Prioritises userModules if set.
 function RCLootCouncil:GetActiveModule(module)
+---@diagnostic disable-next-line: return-type-mismatch
 	return self:GetModule(userModules[module] or defaultModules[module], false)
 end
 

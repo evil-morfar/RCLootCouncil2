@@ -1,6 +1,10 @@
 ## Changes
 
+### Options and Commands
+
 Added option to not store personal loot in the history.
+
+Added new command `/rc session` - opens the session frame if you're the group leader.
 
 ### Profile Export & Sync
 
