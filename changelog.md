@@ -6,6 +6,8 @@ Added option to not store personal loot in the history.
 
 Added new command `/rc session` - opens the session frame if you're the group leader.
 
+Added new command `/rc stop` - inverse of start, stops handling loot.
+
 ### Profile Export & Sync
 
 Module specific options (show more info, show tooltip, filters, etc) are no longer included in exported/synced profiles.

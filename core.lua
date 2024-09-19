@@ -494,6 +494,17 @@ function RCLootCouncil:ChatCommand(msg)
 		-- Simply emulate player entering raid.
 		self:OnRaidEnter()
 
+	elseif input == "stop" or input == string.lower(_G.STOP) then
+		if self.isMasterLooter then
+			if self.handleLoot then
+				self:StopHandleLoot()
+			else
+				self:Print(L.chatCommand_stop_error_notHandlingLoot)
+			end
+		else
+			self:Print(L["You cannot use this command without being the Master Looter"])
+		end
+
 	elseif input == "debuglog" or input == "log" then
 		for k, v in ipairs(debugLog) do print(k, v); end
 

@@ -519,6 +519,7 @@ Click and drag to move
 Ctrl+scroll to change scale]]
 
 L.autoGroupLoot_warning = "Note: Group Leader's settings will cause RCLootCouncil to automatically control group loot."
+L.chatCommand_stop_error_notHandlingLoot = "Cannot stop: not currently handling loot."
 L.history_export_sheets_tip = "Tab delimited export for Google Sheets and English version of Excel that uses ';' as formula delimiter."
 L.history_export_excel_international_tip = "Tab delimited export for international version of Excel that uses ',' as formula delimiter."
 L["opt_addButton_desc"] = "Add a new button group for the selected slot."
