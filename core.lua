@@ -494,7 +494,7 @@ function RCLootCouncil:ChatCommand(msg)
 		-- Simply emulate player entering raid.
 		self:OnRaidEnter()
 
-	elseif input == "stop" or input == string.lower(_G.STOP) then
+	elseif input == "stop" or input == string.lower(L.Stop) then
 		if self.isMasterLooter then
 			if self.handleLoot then
 				self:StopHandleLoot()
