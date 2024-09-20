@@ -50,7 +50,7 @@ function RCVersionCheck:OnInitialize()
             sort = ST.SORT_DSC,
             sortnext = 2
         },
-		{ name = "", width = 20, align = "CENTER"} -- GroupLoot Status
+		{ name = "", width = 20, align = "CENTER", sortnext = 4} -- GroupLoot Status
     }
 	self:InitCoreVersionComms()
     self.subscriptions = {}
