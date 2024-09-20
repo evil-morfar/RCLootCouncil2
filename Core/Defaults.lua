@@ -259,7 +259,6 @@ addon.defaults = {
 			[213089] = true, -- Antique Bronze Bullion (DF S4 Weapon/Trinket currency)
 		},
 
-		groupLootStatus = false,
 		moreInfoClampToScreen = true,
 	},
 } -- defaults end

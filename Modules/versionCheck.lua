@@ -221,9 +221,7 @@ function RCVersionCheck:AddEntry(name, class, guildRank, version, tVersion, modu
 				args = modules,
 			},
 		}
-		if addon.db.profile.groupLootStatus then
-			tinsert(t.cols, { DoCellUpdate = self.SetCellGroupLootStatus, args = { groupLootStatus, }, })
-		end
+		tinsert(t.cols, { DoCellUpdate = self.SetCellGroupLootStatus, args = { groupLootStatus, }, })
 		t.name = name
 		t.rank = guildRank
 		t.version = version
