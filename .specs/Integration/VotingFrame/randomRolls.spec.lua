@@ -115,7 +115,7 @@ describe("#VotingFrame #RandomRolls", function()
 		local sub = Comms:Subscribe(addon.PREFIXES.MAIN, "srolls", recieverFunc)
 
 		VotingFrame:DoAllRandomRolls()
-		WoWAPI_FireUpdate(GetTime() + 20)
+		_ADVANCE_TIME(2)
 
 		assert.spy(generateNoRepeatRollTable).was.called_with(match.is_ref(VotingFrame), 20)
 		assert.spy(doAllRandomRolls).was.called(1)

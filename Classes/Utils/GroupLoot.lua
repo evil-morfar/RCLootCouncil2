@@ -194,14 +194,14 @@ function GroupLoot:StatusToDescription(status, target)
 		local statusBit = tonumber(reversedBinary:sub(i, i))
 		if i == 7 then -- autoGroupLootGuildGroupOnly doesn't matter; but color green if enabled
 			if bit.band(status, bit.lshift(1, i - 1)) > 0 then
-				res[#res + 1] = WrapTextInColorCode(description[i][statusBit], "FF00FF00")
+				res[#res + 1] = WrapTextInColorCode(description[i][statusBit] or "", "FF00FF00")
 			else
 				res[#res + 1] = description[i][statusBit]
 			end
 		elseif bit.band(status, bit.lshift(1, i - 1)) == bit.band(target, bit.lshift(1, i - 1)) then
-			res[#res + 1] = WrapTextInColorCode(description[i][statusBit], "FF00FF00")
+			res[#res + 1] = WrapTextInColorCode(description[i][statusBit] or "", "FF00FF00")
 		else
-			res[#res + 1] = WrapTextInColorCode(description[i][statusBit], "FFFF0000")
+			res[#res + 1] = WrapTextInColorCode(description[i][statusBit] or "", "FFFF0000")
 		end
 	end
 	return res
