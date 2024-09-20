@@ -5,7 +5,8 @@ return {
    },
    default = {
       ["ROOT"] = { ".specs"},
-      ["output"] = "utfTerminal"
+      ["output"] = "utfTerminal",
+      Xoutput = "--color",
    },
 
    Classes = {
