@@ -20,6 +20,10 @@ The tooltip includes specific information as to why it won't do group loot, such
 
 Module specific options (show more info, show tooltip, filters, etc) are no longer included in exported/synced profiles.
 
+### Voting Frame
+
+Hovering a candidate's class/spec icon will now show the name of their current class and spec.
+
 ## Bugfixes
 
 - *WuE items will no longer register as BoEs (despite GetItemInfo saying so).*

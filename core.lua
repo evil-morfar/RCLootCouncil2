@@ -1199,12 +1199,14 @@ function RCLootCouncil:InitClassIDs()
 	self.classDisplayNameToID = {} -- Key: localized class display name. value: class id(number)
 	self.classTagNameToID = {} -- key: class name in capital english letters without space. value: class id(number)
 	self.classIDToDisplayName = {} -- key: class id. Value: localized name
+	self.classTagNameToDisplayName = {} --- @type table<string,string> Class File name to display name
 	self.classIDToFileName = {} -- key: class id. Value: File name
 	for i = 1, self.Utils.GetNumClasses() do
 		local info = C_CreatureInfo.GetClassInfo(i)
 		if info then -- Just in case class doesn't exists #Classic
 			self.classDisplayNameToID[info.className] = i
 			self.classTagNameToID[info.classFile] = i
+			self.classTagNameToDisplayName[info.classFile] = info.className
 		end
 	end
 	self.classIDToDisplayName = tInvert(self.classDisplayNameToID)
@@ -2282,9 +2284,24 @@ function RCLootCouncil:GetClassIconAndColoredName(nameOrPlayer, size)
 	size = size or 12
 	if not (player and player:GetClass()) then
 		self.Log:E("GetClassIconAndColoredName: No class found for ", nameOrPlayer)
-		return nameOrPlayer or ""
+		return nameOrPlayer --[[@as string]] or ""
 	end
-	return format("|W%s %s|w", CreateAtlasMarkup(self.CLASS_TO_ATLAS[player:GetClass()], size, size), player:GetClassColoredName())
+	return format("|W%s|w", self:AddClassIconToText(player:GetClass(), player:GetClassColoredName()))
+end
+
+local classAtlasCache = {}
+
+--- Adds class icon in front of text.
+---@param class ClassFile Class name to add
+---@param text string Text
+---@param size number? Size of the icon
+function RCLootCouncil:AddClassIconToText(class, text, size)
+	size = size or 12
+	local id = class..size
+	if not classAtlasCache[id] then
+		classAtlasCache[id] = CreateAtlasMarkup(self.CLASS_TO_ATLAS[class], size, size)
+	end
+	return format("%s %s", classAtlasCache[id], text)
 end
 
 --- Creates a string with spec icon in front of a class colored name of the player.
@@ -2298,8 +2315,23 @@ function RCLootCouncil:GetSpecIconAndColoredName(nameOrPlayer, size)
 		-- No spec ID, fallback to class
 		return self:GetClassIconAndColoredName(player or nameOrPlayer, size)
 	end
-	local specIcon = select(4, GetSpecializationInfoByID(player.specID))
-	return format("|W%s %s|w", CreateSimpleTextureMarkup(specIcon, size), player:GetClassColoredName())
+	return format("|W%s|w", self:AddSpecIconToText(player.specID, player:GetClassColoredName(), size))
+end
+
+local specIconCache = {}
+
+---Adds spec icon in front of text.
+---@param specID integer SpecID
+---@param text string Text
+---@param size number? Size of the icon, defaults to 12.
+function RCLootCouncil:AddSpecIconToText(specID, text, size)
+	size = size or 12
+	local specIcon = select(4, GetSpecializationInfoByID(specID))
+	local id = specIcon .. "-" .. size
+	if not specIconCache[id] then
+		specIconCache[id] = CreateSimpleTextureMarkup(specIcon, size)
+	end
+	return format("%s %s", specIconCache[id], text)
 end
 
 -- cName is name of the module
