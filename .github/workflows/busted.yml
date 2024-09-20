@@ -25,4 +25,4 @@ jobs:
           luarocks install busted
 
       - name: Run Busted
-        run: busted -f .busted --lpath="__tests/?.lua" -Xoutput --color
+        run: busted -f .busted --lpath="__tests/?.lua" -Xoutput --color --no-coverage
