@@ -19,7 +19,6 @@ jobs:
 
       - name: Setup dependencies
         run: |
-          luarocks install luacov
           luarocks install rxlua
           luarocks install luabitop
           luarocks install busted
