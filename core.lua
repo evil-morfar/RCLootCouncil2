@@ -953,9 +953,9 @@ end
 
 --- Generates a "type code" used to determine which set of buttons to use for the item.
 --- The returned code can be used directly in `mldb.responses[code]` and `mldb.buttons[code]`.
---- @see Constants.lua#RESPONSE_CODE_GENERATORS.
---- @param item Item @Any valid input for C_Item.GetItemInfoInstant
---- @return typecode
+--- <br>See [Constants.lua](lua://RCLootCouncil.RESPONSE_CODE_GENERATORS)
+--- @param item string|integer Any valid input for [`C_Item.GetItemInfoInstant`](lua://C_Item.GetItemInfoInstant).
+--- @return string #The typecode for the item.
 function RCLootCouncil:GetTypeCodeForItem(item)
 	local itemID, _, _, itemEquipLoc, _, itemClassID, itemSubClassID = C_Item.GetItemInfoInstant(item)
 	if not itemID then return "default" end -- We can't handle uncached items!

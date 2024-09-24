@@ -51,6 +51,17 @@ addon.OPT_MORE_BUTTONS_VALUES = {
 	MOUNTS = _G.MOUNTS,
 	BAGSLOT = _G.BAGSLOT,
 	RECIPE = _G.AUCTION_CATEGORY_RECIPES,
+	CATALYST = L.Catalyst_Items, -- items that can be converted to tier through catalyst
+}
+
+--- Inventory types that can be converted to tier
+addon.CATALYST_ITEMS = {
+	INVTYPE_HEAD = true,
+	INVTYPE_SHOULDER = true,
+	INVTYPE_CHEST = true,
+	INVTYPE_ROBE = true, -- same as chest
+	INVTYPE_HAND = true,
+	INVTYPE_LEGS = true,
 }
 
 --[[
@@ -104,11 +115,9 @@ addon.CLASS_TO_ATLAS = {
 }
 
 --- Functions used for generating response codes
--- Functions are run numerically, and the first to return non-nil is used, i.e. order matters!
--- To add a new a button group, simply add it to the options menu (easily done by adding an entry to OPT_MORE_BUTTONS_VALUES), and add a function here to determine if that group should be used for the item.
--- Each function receives the following parameters:
--- item, db (addon:Getdb()), itemID, itemEquipLoc,itemClassID, itemSubClassID
----@type (fun(item: Item, db: RCLootCouncil.db, itemID: integer, itemEquipLoc: string, itemClassID: Enum.ItemClass): string|nil) []
+--- Functions are run numerically, and the first to return non-nil is used, i.e. order matters!
+--- To add a new a button group, simply add it to the options menu (easily done by adding an entry to OPT_MORE_BUTTONS_VALUES), and add a function here to determine if that group should be used for the item.
+---@type (fun(item: string|integer, db: RCLootCouncil.db, itemID: integer, itemEquipLoc: string, itemClassID: Enum.ItemClass, itemSubClassID: Enum.ItemMiscellaneousSubclass): string?) []
 addon.RESPONSE_CODE_GENERATORS = {
 	-- Chest/Robe
 	function(_, db, _, equipLoc)
@@ -170,6 +179,10 @@ addon.RESPONSE_CODE_GENERATORS = {
 		if db.enabledButtons.RECIPE and classID == Enum.ItemClass.Recipe then
 			return "RECIPE"
 		end
+	end,
+	-- Catalyst
+	function(_, db, _, itemEquipLoc)
+		return db.enabledButtons.CATALYST and addon.CATALYST_ITEMS[itemEquipLoc] and "CATALYST" or nil
 	end,
 }
 

@@ -124,6 +124,7 @@ L["Candidate removed"] = true
 L["Candidates that can't use the item"] = true
 L["Cannot autoaward:"] = true
 L["Cannot give 'item' to 'player' due to Blizzard limitations. Gave it to you for distribution."] = "Cannot give %s to %s due to Blizzard limitations. Gave it to you for distribution."
+L.Catalyst_Items = "Catalyst Items"
 L["Change Award"] = true
 L["Change Response"] = true
 L["Changing loot threshold to enable Auto Awarding"] = true

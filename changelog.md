@@ -2,6 +2,10 @@
 
 ## Changes
 
+### Buttons and Responses
+
+Added button group for Catalyst items. (#257)
+
 ### Options and Commands
 
 Added option to not store personal loot in the history.
