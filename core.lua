@@ -1591,9 +1591,11 @@ function RCLootCouncil:OnEvent(event, ...)
 			end
 
 			-- Restore handleLoot
+			self.Log:D("Cached handleLoot:", self.db.global.cache.handleLoot)
 			if self.db.global.cache.handleLoot and self.isMasterLooter then
-				self.Log:D("Cached handleLoot:", self.db.global.cache.handleLoot)
 				self:StartHandleLoot()
+			elseif self.db.global.cache.handleLoot then
+				self:OnStartHandleLoot()
 			end
 
 			-- If we still haven't set masterLooter, try delaying a bit.
