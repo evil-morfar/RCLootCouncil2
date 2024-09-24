@@ -81,6 +81,10 @@ function RCVersionCheck:OnEnable()
         )
     )
     self:RegisterBucketMessage("RCVersionCheckUpdate", 0.5, "UpdateTotals")
+	if addon.isMasterLooter and addon.handleLoot then
+		-- Send out `handleLoot` so that future "group loot status" can be up to date.
+		addon:Send("group", "StartHandleLoot")
+	end
 end
 
 function RCVersionCheck:OnDisable()
