@@ -44,7 +44,7 @@ addon.defaults = {
 		cache = {},
 	},
 	profile = {
-		skipCombatLockdown = false,
+		skipCombatLockdown = true,
 
 		baggedItems = {}, -- Items that are stored in MLs inventory for award later.
 		-- i = { {link=link, winner=winner, addedTime=sec between UTC epoch to when the item is added to lootInBags, }, bop=Item is BOP?}
