@@ -5,8 +5,8 @@ local addon = select(2, ...)
 --- @class Utils.Item
 local Item = addon.Init "Utils.Item"
 
----@class ItemString : string
----@class ItemLink : ItemString
+---@alias ItemString string
+---@alias ItemLink string
 
 local gsub, strmatch = string.gsub, string.match
 
@@ -63,7 +63,7 @@ local NEUTRALIZE_ITEM_REPLACEMENT = "item:%1:%2:%3:%4:%5:%6:%7::::"
 --- @param item string|ItemLink|ItemString Any itemlink, itemstring etc.
 --- @return string #The same item with level, specID, uniqueID removed
 function Item:NeutralizeItem(item)
-	return item:gsub(NEUTRALIZE_ITEM_PATTERN, NEUTRALIZE_ITEM_REPLACEMENT)
+	return (item:gsub(NEUTRALIZE_ITEM_PATTERN, NEUTRALIZE_ITEM_REPLACEMENT))
 end
 
 return Item
