@@ -1795,6 +1795,7 @@ function RCLootCouncil:NewMLCheck()
 		self.Log("MasterLooter", self.masterLooter, "LootMethod", self.lootMethod)
 		-- Check to see if we have recieved mldb within 15 secs, otherwise request it
 		self:ScheduleTimer("Timer", 15, "MLdb_check")
+		self.handleLoot = false -- Whatever we had from old ML is no longer valid
 	end
 
 	if not self.isMasterLooter then -- Someone else has become ML

@@ -31,6 +31,7 @@ Hovering a candidate's class/spec icon will now show the name of their current c
 - *WuE items will no longer register as BoEs (despite GetItemInfo saying so).*
 - *Fixed Conniver's Badges being incorrectly shown as trinket slot.*
 - *Changing roles should now properly update the column in the voting frame.*
+- *Changing leader would not always activate RCLootCouncil properly.*
 
 # 3.13.3
 
