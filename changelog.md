@@ -6,6 +6,8 @@
 
 Added button group for Catalyst items. (#257)
 
+Removed "Azerite" button group.
+
 ### Options and Commands
 
 Added option to not store personal loot in the history.

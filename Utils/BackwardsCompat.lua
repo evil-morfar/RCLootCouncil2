@@ -265,5 +265,22 @@ Compat.list = {
 				end
 			end
 		end
+	},
+	{
+		name = "Removed Azerite button group",
+		version = "3.14.0",
+		func = function ()
+			for _, db in pairs(addon.db.profiles) do
+				if db.buttons then
+					db.buttons.AZERITE = nil
+				end
+				if db.enabledButtons then
+					db.enabledButtons.AZERITE = nil
+				end
+				if db.responses then
+					db.responses.AZERITE = nil
+				end
+			end
+		end
 	}
 }

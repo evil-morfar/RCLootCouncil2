@@ -14,11 +14,8 @@ addon.MIN_LOOT_THRESHOLD = 3 -- Only loot rares or better
 
 addon.PROFILE_EXPORT_IDENTIFIER = "RCLootCouncilProfile"
 
+--- Translation of a inventory slot to another ( custom) one
 addon.BTN_SLOTS = {
-	INVTYPE_HEAD = "AZERITE",
-	INVTYPE_CHEST = "AZERITE",
-	INVTYPE_ROBE = "AZERITE",
-	INVTYPE_SHOULDER = "AZERITE",
 	INVTYPE_2HWEAPON = "WEAPON",
 	INVTYPE_WEAPONMAINHAND = "WEAPON",
 	INVTYPE_WEAPONOFFHAND = "WEAPON",
@@ -42,11 +39,9 @@ addon.OPT_MORE_BUTTONS_VALUES = {
 	INVTYPE_FEET = _G.INVTYPE_FEET,
 	INVTYPE_FINGER = _G.INVTYPE_FINGER,
 	INVTYPE_TRINKET = _G.INVTYPE_TRINKET,
+
 	WEAPON = _G.WEAPON,
-	AZERITE = "Azerite Armor",
 	TOKEN = L["Armor Token"],
-	-- CORRUPTED = _G.CORRUPTION_TOOLTIP_TITLE,
-	-- CONTEXT_TOKEN = "Beads and Spherules",
 	PETS = _G.PETS,
 	MOUNTS = _G.MOUNTS,
 	BAGSLOT = _G.BAGSLOT,
@@ -132,11 +127,6 @@ addon.RESPONSE_CODE_GENERATORS = {
 			== Enum.ItemMiscellaneousSubclass.CompanionPet and "PETS" or nil
 	end,
 
-	-- Beads and Spherules
-	-- function(_, db, _, _, itemClassID, itemSubClassID)
-	-- 	return db.enabledButtons.CONTEXT_TOKEN and itemClassID == 5 and itemSubClassID == 2 and "CONTEXT_TOKEN" or nil
-	-- end,
-
 	-- Armor tokens
 	function(_, db, itemID, _, itemClassID, itemSubClassID)
 		if db.enabledButtons["TOKEN"] and (RCTokenTable[itemID] or
@@ -150,14 +140,6 @@ addon.RESPONSE_CODE_GENERATORS = {
 	-- Check for Weapon
 	function(_, db, _, itemEquipLoc)
 		if db.enabledButtons.WEAPON and addon.BTN_SLOTS[itemEquipLoc] == "WEAPON" then return "WEAPON" end
-	end,
-
-	-- Check for Azerite Gear
-	function(_, db, _, itemEquipLoc)
-		-- To use Azerite Buttons, the item must be one of the 3 azerite items, and no other button group must be set for those equipLocs
-		if db.enabledButtons.AZERITE and not db.enabledButtons[itemEquipLoc] then
-			if addon.BTN_SLOTS[itemEquipLoc] == "AZERITE" then return "AZERITE" end
-		end
 	end,
 
 	-- Mounts
@@ -174,7 +156,7 @@ addon.RESPONSE_CODE_GENERATORS = {
 		end
 	end,
 
-	-- Recipies
+	-- Recipes
 	function(_, db, _, _, classID)
 		if db.enabledButtons.RECIPE and classID == Enum.ItemClass.Recipe then
 			return "RECIPE"
