@@ -2,6 +2,7 @@ require "busted.runner"()
 -- Just load everything
 local addon = dofile(".specs/AddonLoader.lua").LoadToc("RCLootCouncil.toc")
 dofile ".specs/EmulatePlayerLogin.lua"
+addon.Print = function() end --noop
 function _G.GetNumGroupMembers() return 3 end
 function _G.GetRaidRosterInfo(raidIndex)
     local info = {
