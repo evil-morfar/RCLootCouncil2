@@ -1833,8 +1833,8 @@ function RCLootCouncil:StartHandleLoot()
 	-- We might call StartHandleLoot() without ML being initialized, e.g. with `/rc start`.
 	if not self:GetActiveModule("masterlooter"):IsEnabled() then
 		self:CallModule("masterlooter")
-		self:GetActiveModule("masterlooter"):NewML(self.masterLooter)
 	end
+	self:GetActiveModule("masterlooter"):NewML(self.masterLooter)
 	self:Print(L["Now handles looting"])
 	self.Log("Start handling loot")
 	self.handleLoot = true
