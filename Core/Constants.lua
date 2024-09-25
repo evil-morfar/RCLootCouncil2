@@ -14,11 +14,8 @@ addon.MIN_LOOT_THRESHOLD = 3 -- Only loot rares or better
 
 addon.PROFILE_EXPORT_IDENTIFIER = "RCLootCouncilProfile"
 
+--- Translation of a inventory slot to another ( custom) one
 addon.BTN_SLOTS = {
-	INVTYPE_HEAD = "AZERITE",
-	INVTYPE_CHEST = "AZERITE",
-	INVTYPE_ROBE = "AZERITE",
-	INVTYPE_SHOULDER = "AZERITE",
 	INVTYPE_2HWEAPON = "WEAPON",
 	INVTYPE_WEAPONMAINHAND = "WEAPON",
 	INVTYPE_WEAPONOFFHAND = "WEAPON",
@@ -42,15 +39,24 @@ addon.OPT_MORE_BUTTONS_VALUES = {
 	INVTYPE_FEET = _G.INVTYPE_FEET,
 	INVTYPE_FINGER = _G.INVTYPE_FINGER,
 	INVTYPE_TRINKET = _G.INVTYPE_TRINKET,
+
 	WEAPON = _G.WEAPON,
-	AZERITE = "Azerite Armor",
 	TOKEN = L["Armor Token"],
-	-- CORRUPTED = _G.CORRUPTION_TOOLTIP_TITLE,
-	-- CONTEXT_TOKEN = "Beads and Spherules",
 	PETS = _G.PETS,
 	MOUNTS = _G.MOUNTS,
 	BAGSLOT = _G.BAGSLOT,
 	RECIPE = _G.AUCTION_CATEGORY_RECIPES,
+	CATALYST = L.Catalyst_Items, -- items that can be converted to tier through catalyst
+}
+
+--- Inventory types that can be converted to tier
+addon.CATALYST_ITEMS = {
+	INVTYPE_HEAD = true,
+	INVTYPE_SHOULDER = true,
+	INVTYPE_CHEST = true,
+	INVTYPE_ROBE = true, -- same as chest
+	INVTYPE_HAND = true,
+	INVTYPE_LEGS = true,
 }
 
 --[[
@@ -104,11 +110,9 @@ addon.CLASS_TO_ATLAS = {
 }
 
 --- Functions used for generating response codes
--- Functions are run numerically, and the first to return non-nil is used, i.e. order matters!
--- To add a new a button group, simply add it to the options menu (easily done by adding an entry to OPT_MORE_BUTTONS_VALUES), and add a function here to determine if that group should be used for the item.
--- Each function receives the following parameters:
--- item, db (addon:Getdb()), itemID, itemEquipLoc,itemClassID, itemSubClassID
----@type (fun(item: Item, db: RCLootCouncil.db, itemID: integer, itemEquipLoc: string, itemClassID: Enum.ItemClass): string|nil) []
+--- Functions are run numerically, and the first to return non-nil is used, i.e. order matters!
+--- To add a new a button group, simply add it to the options menu (easily done by adding an entry to OPT_MORE_BUTTONS_VALUES), and add a function here to determine if that group should be used for the item.
+---@type (fun(item: string|integer, db: RCLootCouncil.db, itemID: integer, itemEquipLoc: string, itemClassID: Enum.ItemClass, itemSubClassID: Enum.ItemMiscellaneousSubclass): string?) []
 addon.RESPONSE_CODE_GENERATORS = {
 	-- Chest/Robe
 	function(_, db, _, equipLoc)
@@ -122,11 +126,6 @@ addon.RESPONSE_CODE_GENERATORS = {
 
 			== Enum.ItemMiscellaneousSubclass.CompanionPet and "PETS" or nil
 	end,
-
-	-- Beads and Spherules
-	-- function(_, db, _, _, itemClassID, itemSubClassID)
-	-- 	return db.enabledButtons.CONTEXT_TOKEN and itemClassID == 5 and itemSubClassID == 2 and "CONTEXT_TOKEN" or nil
-	-- end,
 
 	-- Armor tokens
 	function(_, db, itemID, _, itemClassID, itemSubClassID)
@@ -143,14 +142,6 @@ addon.RESPONSE_CODE_GENERATORS = {
 		if db.enabledButtons.WEAPON and addon.BTN_SLOTS[itemEquipLoc] == "WEAPON" then return "WEAPON" end
 	end,
 
-	-- Check for Azerite Gear
-	function(_, db, _, itemEquipLoc)
-		-- To use Azerite Buttons, the item must be one of the 3 azerite items, and no other button group must be set for those equipLocs
-		if db.enabledButtons.AZERITE and not db.enabledButtons[itemEquipLoc] then
-			if addon.BTN_SLOTS[itemEquipLoc] == "AZERITE" then return "AZERITE" end
-		end
-	end,
-
 	-- Mounts
 	function(_, db, _, _, classID, subClassID)
 		if db.enabledButtons.MOUNTS and classID == Enum.ItemClass.Miscellaneous and subClassID == Enum.ItemMiscellaneousSubclass.Mount then
@@ -165,11 +156,15 @@ addon.RESPONSE_CODE_GENERATORS = {
 		end
 	end,
 
-	-- Recipies
+	-- Recipes
 	function(_, db, _, _, classID)
 		if db.enabledButtons.RECIPE and classID == Enum.ItemClass.Recipe then
 			return "RECIPE"
 		end
+	end,
+	-- Catalyst
+	function(_, db, _, itemEquipLoc)
+		return db.enabledButtons.CATALYST and addon.CATALYST_ITEMS[itemEquipLoc] and "CATALYST" or nil
 	end,
 }
 

@@ -42,13 +42,17 @@
                 "kind": "test",
                 "isDefault": true
             },
-            "windows": {
-                "args": [
-                    "--lpath=${workspaceFolder}\\__tests\\?.lua",
-                ]
+        },
+        {
+            "label": "Busted All w/coverage",
+            "type": "shell",
+            "command": "busted",
+            "group": {
+                "kind": "test",
+                "isDefault": true
             },
             "args": [
-                "--lpath=${workspaceFolder}/__tests/?.lua",
+                "-c"
             ]
         },
         {

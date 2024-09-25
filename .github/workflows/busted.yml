@@ -19,10 +19,9 @@ jobs:
 
       - name: Setup dependencies
         run: |
-          luarocks install luacov
           luarocks install rxlua
           luarocks install luabitop
           luarocks install busted
 
       - name: Run Busted
-        run: busted -f .busted --lpath="__tests/?.lua" -Xoutput --color
+        run: busted -f .busted --lpath="__tests/?.lua" -Xoutput --color --no-coverage

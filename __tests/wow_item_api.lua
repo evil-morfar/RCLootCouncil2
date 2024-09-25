@@ -48,12 +48,13 @@ C_Item = {
 		end
 		return ret
 	end,
+	IsItemBindToAccountUntilEquip = function(item)
+		assert(item, "Usage: locl isBindToAccountUntilEquip = C_Item.IsItemBindToAccountUntilEquip(itemLink)")
+		if string.match(item, "^%d+$") then item = tonumber(item) end -- Support for itemID
+		local i = assert(_G.Items[item], "item " .. tostring(item) .. " isn't registered for C_Item.IsItemBindToAccountUntilEquip")
+		return i.bindType == 9
+	end,
 }
-
-
-
-
-
 
 -- These are very roughly recreated
 C_TransmogCollection = {

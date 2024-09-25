@@ -1194,7 +1194,7 @@ function RCVotingFrame:GetFrame()
 
 	f.moreInfo = CreateFrame( "GameTooltip", "RCVotingFrameMoreInfo", f.content, "GameTooltipTemplate" )
 	f.moreInfo:SetIgnoreParentScale(true)
-	f.moreInfo:SetClampedToScreen(false)
+	f.moreInfo:SetClampedToScreen(addon:Getdb().moreInfoClampToScreen)
 	f.content:SetScript("OnSizeChanged", function()
 		f.moreInfo:SetScale(Clamp(f:GetScale() * 0.6, .4, .9))
 	end)
@@ -1435,7 +1435,7 @@ function RCVotingFrame.SetCellClass(rowFrame, frame, data, cols, row, realrow, c
 		return
 	end
 	local specID = lootTable[session].candidates[name].specID
-	local specIcon = specID and select(4, GetSpecializationInfoByID(specID))
+	local _, specName, _, specIcon = GetSpecializationInfoByID(specID or 0)
 	if specIcon and db.showSpecIcon then
 		frame:SetNormalTexture(specIcon);
 		frame:GetNormalTexture():SetTexCoord(0, 1, 0, 1);
@@ -1443,6 +1443,17 @@ function RCVotingFrame.SetCellClass(rowFrame, frame, data, cols, row, realrow, c
 		addon.SetCellClassIcon(rowFrame, frame, data, cols, row, realrow, column, fShow, table, lootTable[session].candidates[name].class)
 	end
 	data[realrow].cols[column].value = lootTable[session].candidates[name].class or ""
+
+	frame:SetScript("OnLeave", addon.UI.HideTooltip)
+	frame:SetScript("OnEnter", function()
+		local class = lootTable[session].candidates[name].class
+		local classText = addon:WrapTextInClassColor(class, addon.classTagNameToDisplayName[class])
+		if specName then
+			addon:CreateTooltip(addon:AddClassIconToText(class, classText, 16), addon:AddSpecIconToText(specID, specName, 14))
+		else
+			addon:CreateTooltip(addon:AddClassIconToText(class, classText, 16))
+		end
+	end)
 end
 
 function RCVotingFrame.SetCellName(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)

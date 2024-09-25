@@ -4,8 +4,8 @@
 
 function _G.IsLoggedIn() return true end
 WoWAPI_FireEvent("ADDON_LOADED", "RCLootCouncil")
-WoWAPI_FireEvent("PLAYER_LOGIN", "RCLootCouncil")
-WoWAPI_FireEvent("PLAYER_ENTERING_WORLD", "RCLootCouncil")
+WoWAPI_FireEvent("PLAYER_LOGIN")
+WoWAPI_FireEvent("PLAYER_ENTERING_WORLD", true)
 local origWowApi = WoWAPI_FireEvent
 -- Override msg events to add the player name
 function _G.WoWAPI_FireEvent(event, ...)

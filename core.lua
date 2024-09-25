@@ -149,15 +149,27 @@ function RCLootCouncil:OnInitialize()
 		{cmd = "config", desc = L["chat_commands_config"]},
 		{cmd = "council", desc = L["chat_commands_council"]},
 		{cmd = "history", desc = L["chat_commands_history"]},
-		{cmd = "version", desc = L["chat_commands_version"]},
 		{cmd = "open", desc = L["chat_commands_open"]},
-		{cmd = "reset", desc = L["chat_commands_reset"]},
-		{cmd = "test (#)", desc = L["chat_commands_test"]},
-		{cmd = "whisper", desc = L["chat_commands_whisper"]},
-		{cmd = "add [item]", desc = L["chat_commands_add"]},
-		{cmd = "award", desc = L["chat_commands_award"]},
-		{cmd = "sync", desc = L["chat_commands_sync"]},
 		{cmd = "profile", desc = L.chat_commands_profile, },
+		{cmd = "reset", desc = L["chat_commands_reset"]},
+		{cmd = "sync", desc = L["chat_commands_sync"]},
+		{cmd = "version", desc = L["chat_commands_version"]},
+	}
+	self.mlChatCmdHelp = {
+		{cmd = "add [item]", desc = L["chat_commands_add"]},
+		{cmd = "add all", desc = L["chat_commands_add_all"]},
+		{cmd = "award", desc = L["chat_commands_award"]},
+		{cmd = "clear", desc = L.chat_commands_clear},
+		{cmd = "export", desc = L.chat_commands_export},
+		{cmd = "list", desc = L.chat_commands_list},
+		{cmd = "remove [index]", desc = L.chat_commands_remove},
+		{cmd = "session", desc = L.chat_commands_session},
+		{cmd = "start", desc = L.chat_commands_start},
+		{cmd = "stop", desc = L.chat_commands_stop},
+		{cmd = "test (#)", desc = L["chat_commands_test"]},
+		{cmd = "trade)", desc = L.chat_commands_trade},
+		{cmd = "whisper", desc = L["chat_commands_whisper"]},
+		
 	}
 
 	self.lootGUIDToIgnore = { -- List of GUIDs we shouldn't register loot from
@@ -353,7 +365,7 @@ function RCLootCouncil:DoChatHook()
 		db.chatFrameName = self.defaults.profile.chatFrameName
 	end
 	-- Pass our channel to the original function and magic appears.
-	self:RawHook(self, "Print", function(_, ...) self.hooks[self].Print(self, getglobal(db.chatFrameName), ...) end)
+	self:RawHook(self, "Print", function(_, ...) self.hooks[self].Print(self, getglobal(db.chatFrameName), ...) end, true)
 end
 
 function RCLootCouncil:ChatCommand(msg)
@@ -373,8 +385,18 @@ function RCLootCouncil:ChatCommand(msg)
 		else
 			print(format(L["chat version String"], self.version))
 		end
-		local module
+		local module, shownMLCommands
 		for _, v in ipairs(self.chatCmdHelp) do
+			-- Show ML commands beneath regular commands, but above module commands
+			if v.module and not shownMLCommands then
+				print ""
+				local mlCommandsString = self:IsCorrectVersion() and L.chat_commands_groupLeader_only or L.chat_commands_ML_only
+				print("|cFFFFA500".. mlCommandsString .. "|r")	
+				for _, y in ipairs(self.mlChatCmdHelp) do
+					print("|cff20a200", y.cmd, "|r:", y.desc)
+				end
+				shownMLCommands = true
+			end
 			if v.module ~= module then -- Print module name and version
 				print "" -- spacer
 				if v.module.version and v.module.tVersion then
@@ -491,8 +513,28 @@ function RCLootCouncil:ChatCommand(msg)
 		self:Print(L["Windows reset"])
 
 	elseif input == "start" or input == string.lower(_G.START) then
+		if self.Utils.IsPartyLFG() then
+			return self:Print(L.chat_command_start_error_start_PartyIsLFG)
+		elseif db.usage.never then
+			return self:Print(L.chat_command_start_error_usageNever)
+		elseif not IsInRaid() and db.onlyUseInRaids then
+			return self:Print(L.chat_command_start_error_onlyUseInRaids)
+		elseif not self.isMasterLooter then
+			return self:Print(L["You cannot use this command without being the Master Looter"])
+		end
 		-- Simply emulate player entering raid.
 		self:OnRaidEnter()
+
+	elseif input == "stop" or input == string.lower(L.Stop) then
+		if self.isMasterLooter then
+			if self.handleLoot then
+				self:StopHandleLoot()
+			else
+				self:Print(L.chatCommand_stop_error_notHandlingLoot)
+			end
+		else
+			self:Print(L["You cannot use this command without being the Master Looter"])
+		end
 
 	elseif input == "debuglog" or input == "log" then
 		for k, v in ipairs(debugLog) do print(k, v); end
@@ -508,6 +550,12 @@ function RCLootCouncil:ChatCommand(msg)
 	elseif input == "sync" then
 		self.Sync:Enable()
 
+	elseif input == "session" or input == "ses" or input == "s" then
+		if self.isMasterLooter then
+			self:GetActiveModule("masterlooter"):ShowSessionFrame()
+		else
+			self:Print(L["You cannot use this command without being the Master Looter"])
+		end
 	elseif input == "trade" then
 		self.TradeUI:Show(true)
 
@@ -905,9 +953,9 @@ end
 
 --- Generates a "type code" used to determine which set of buttons to use for the item.
 --- The returned code can be used directly in `mldb.responses[code]` and `mldb.buttons[code]`.
---- @see Constants.lua#RESPONSE_CODE_GENERATORS.
---- @param item Item @Any valid input for C_Item.GetItemInfoInstant
---- @return typecode
+--- <br>See [Constants.lua](lua://RCLootCouncil.RESPONSE_CODE_GENERATORS)
+--- @param item string|integer Any valid input for [`C_Item.GetItemInfoInstant`](lua://C_Item.GetItemInfoInstant).
+--- @return string #The typecode for the item.
 function RCLootCouncil:GetTypeCodeForItem(item)
 	local itemID, _, _, itemEquipLoc, _, itemClassID, itemSubClassID = C_Item.GetItemInfoInstant(item)
 	if not itemID then return "default" end -- We can't handle uncached items!
@@ -1151,12 +1199,14 @@ function RCLootCouncil:InitClassIDs()
 	self.classDisplayNameToID = {} -- Key: localized class display name. value: class id(number)
 	self.classTagNameToID = {} -- key: class name in capital english letters without space. value: class id(number)
 	self.classIDToDisplayName = {} -- key: class id. Value: localized name
+	self.classTagNameToDisplayName = {} --- @type table<string,string> Class File name to display name
 	self.classIDToFileName = {} -- key: class id. Value: File name
 	for i = 1, self.Utils.GetNumClasses() do
 		local info = C_CreatureInfo.GetClassInfo(i)
 		if info then -- Just in case class doesn't exists #Classic
 			self.classDisplayNameToID[info.className] = i
 			self.classTagNameToID[info.classFile] = i
+			self.classTagNameToDisplayName[info.classFile] = info.className
 		end
 	end
 	self.classIDToDisplayName = tInvert(self.classDisplayNameToID)
@@ -1372,7 +1422,7 @@ end
 
 function RCLootCouncil:IsItemBoE(item)
 	if not item then return false end
-	return select(14, C_Item.GetItemInfo(item)) == Enum.ItemBind.OnEquip
+	return select(14, C_Item.GetItemInfo(item)) == Enum.ItemBind.OnEquip and not C_Item.IsItemBindToAccountUntilEquip(item)
 end
 
 function RCLootCouncil:IsItemBoP(item)
@@ -1416,6 +1466,13 @@ function RCLootCouncil:GetPlayerInfo()
 	end
 	local ilvl = select(2, GetAverageItemLevel())
 	return self.Utils:GetPlayerRole(), self.guildRank, enchant, lvl, ilvl, playersData.specID
+end
+
+--- Send player info to the target/group
+---@param target string Player name or "group". Defaults to "group".
+function RCLootCouncil:SendPlayerInfo(target)
+	local commsTarget = target and Player:Get(target) or "group"
+	Comms:Send { target = commsTarget, command = "pI", data = { self:GetPlayerInfo(), }, }
 end
 
 --- Returns a lookup table containing GuildRankNames and their index.
@@ -1515,14 +1572,15 @@ function RCLootCouncil:OnEvent(event, ...)
 			self.Log("Player relog...")
 
 			-- Restore masterlooter from cache, but only if not already set.
-			if not self.masterLooter and self.db.global.cache.masterLooter then
+			if not self:HasValidMasterLooter() and self.db.global.cache.masterLooter then
 				self.masterLooter = Player:Get(self.db.global.cache.masterLooter)
 				self.isMasterLooter = self.masterLooter == self.player
 				if self.isMasterLooter then
 					self:CallModule("masterlooter")
+					self:GetActiveModule("masterlooter"):NewML(self.masterLooter)
 				end
 			end
-			self.Log:d("ML, Cached:", self.masterLooter, self.db.global.cache.masterLooter)
+			self.Log:d("ML, Cached:", self.masterLooter, self.isMasterLooter, self.db.global.cache.masterLooter)
 
 			-- Restore mldb and council
 			if self.db.global.cache.mldb then
@@ -1533,9 +1591,11 @@ function RCLootCouncil:OnEvent(event, ...)
 			end
 
 			-- Restore handleLoot
+			self.Log:D("Cached handleLoot:", self.db.global.cache.handleLoot)
 			if self.db.global.cache.handleLoot and self.isMasterLooter then
-				self.Log:D("Cached handleLoot:", self.db.global.cache.handleLoot)
 				self:StartHandleLoot()
+			elseif self.db.global.cache.handleLoot then
+				self:OnStartHandleLoot()
 			end
 
 			-- If we still haven't set masterLooter, try delaying a bit.
@@ -1661,6 +1721,14 @@ function RCLootCouncil:OnBonusRoll(_, type, link, ...)
 	]]
 end
 
+--- Called on event `ACTIVE_PLAYER_SPECIALIZATION_CHANGED`
+function RCLootCouncil:OnSpecChanged()
+	-- If our role changed, send playerinfo
+	if self.player.role ~= self.Utils:GetPlayerRole() then
+		self:SendPlayerInfo()
+	end
+end
+
 ---@return boolean #True if the player is in a guild group or alone.
 function RCLootCouncil:IsInGuildGroup()
 	local numGroupMembers = GetNumGroupMembers()
@@ -1729,6 +1797,7 @@ function RCLootCouncil:NewMLCheck()
 		self.Log("MasterLooter", self.masterLooter, "LootMethod", self.lootMethod)
 		-- Check to see if we have recieved mldb within 15 secs, otherwise request it
 		self:ScheduleTimer("Timer", 15, "MLdb_check")
+		self.handleLoot = false -- Whatever we had from old ML is no longer valid
 	end
 
 	if not self.isMasterLooter then -- Someone else has become ML
@@ -1764,8 +1833,8 @@ function RCLootCouncil:StartHandleLoot()
 	-- We might call StartHandleLoot() without ML being initialized, e.g. with `/rc start`.
 	if not self:GetActiveModule("masterlooter"):IsEnabled() then
 		self:CallModule("masterlooter")
-		self:GetActiveModule("masterlooter"):NewML(self.masterLooter)
 	end
+	self:GetActiveModule("masterlooter"):NewML(self.masterLooter)
 	self:Print(L["Now handles looting"])
 	self.Log("Start handling loot")
 	self.handleLoot = true
@@ -1783,7 +1852,7 @@ function RCLootCouncil:StopHandleLoot()
 	self:Send("group", "StopHandleLoot")
 end
 
-function RCLootCouncil:OnRaidEnter(arg)
+function RCLootCouncil:OnRaidEnter()
 	-- NOTE: We shouldn't need to call GetML() as it's most likely called on "LOOT_METHOD_CHANGED"
 	if self.Utils.IsPartyLFG() or db.usage.never then return end -- We can't use in lfg/lfd so don't bother
 	-- Check if we can use in party
@@ -2106,8 +2175,9 @@ end
 --- Returns the active module if found or fails silently.
 ---	Always use this when calling functions in another module.
 --- @param module DefaultModules|UserModules Index in self.defaultModules.
---- @return AceModule? #The module object of the active module or nil if not found. Prioritises userModules if set.
+--- @return RCLootCouncilML|RCLootFrame|RCLootHistory|VersionCheck|RCSessionFrame|RCVotingFrame|TradeUI|Sync #The module object of the active module or nil if not found. Prioritises userModules if set.
 function RCLootCouncil:GetActiveModule(module)
+---@diagnostic disable-next-line: return-type-mismatch
 	return self:GetModule(userModules[module] or defaultModules[module], false)
 end
 
@@ -2217,9 +2287,24 @@ function RCLootCouncil:GetClassIconAndColoredName(nameOrPlayer, size)
 	size = size or 12
 	if not (player and player:GetClass()) then
 		self.Log:E("GetClassIconAndColoredName: No class found for ", nameOrPlayer)
-		return nameOrPlayer or ""
+		return nameOrPlayer --[[@as string]] or ""
 	end
-	return format("|W%s %s|w", CreateAtlasMarkup(self.CLASS_TO_ATLAS[player:GetClass()], size, size), player:GetClassColoredName())
+	return format("|W%s|w", self:AddClassIconToText(player:GetClass(), player:GetClassColoredName()))
+end
+
+local classAtlasCache = {}
+
+--- Adds class icon in front of text.
+---@param class ClassFile Class name to add
+---@param text string Text
+---@param size number? Size of the icon
+function RCLootCouncil:AddClassIconToText(class, text, size)
+	size = size or 12
+	local id = class..size
+	if not classAtlasCache[id] then
+		classAtlasCache[id] = CreateAtlasMarkup(self.CLASS_TO_ATLAS[class], size, size)
+	end
+	return format("%s %s", classAtlasCache[id], text)
 end
 
 --- Creates a string with spec icon in front of a class colored name of the player.
@@ -2233,8 +2318,23 @@ function RCLootCouncil:GetSpecIconAndColoredName(nameOrPlayer, size)
 		-- No spec ID, fallback to class
 		return self:GetClassIconAndColoredName(player or nameOrPlayer, size)
 	end
-	local specIcon = select(4, GetSpecializationInfoByID(player.specID))
-	return format("|W%s %s|w", CreateSimpleTextureMarkup(specIcon, size), player:GetClassColoredName())
+	return format("|W%s|w", self:AddSpecIconToText(player.specID, player:GetClassColoredName(), size))
+end
+
+local specIconCache = {}
+
+---Adds spec icon in front of text.
+---@param specID integer SpecID
+---@param text string Text
+---@param size number? Size of the icon, defaults to 12.
+function RCLootCouncil:AddSpecIconToText(specID, text, size)
+	size = size or 12
+	local specIcon = select(4, GetSpecializationInfoByID(specID))
+	local id = specIcon .. "-" .. size
+	if not specIconCache[id] then
+		specIconCache[id] = CreateSimpleTextureMarkup(specIcon, size)
+	end
+	return format("%s %s", specIconCache[id], text)
 end
 
 -- cName is name of the module
@@ -2562,7 +2662,7 @@ function RCLootCouncil:SubscribeToPermanentComms()
 		council = function(data, sender) self:OnCouncilReceived(sender, unpack(data)) end,
 		--
 		playerInfoRequest = function(_, sender)
-			Comms:Send{target = Player:Get(sender), command = "pI", data = {self:GetPlayerInfo()}}
+			self:SendPlayerInfo(sender)
 		end,
 
 		pI = function(data, sender) self:OnPlayerInfoReceived(sender, unpack(data)) end,
@@ -2899,4 +2999,16 @@ function RCLootCouncil:LockItem(item)
 	else
 		self:Print("Couldn't lock item")
 	end
+end
+
+---Fetches the differences between the current profile and the default profile
+---with non-exported fields removed.
+function RCLootCouncil:GetDBForExport()
+	local db = self.Utils:GetTableDifference(self.db.defaults.profile, self.db.profile)
+	db.UI = nil -- Remove UI as it's not helpful for other players
+	db.itemStorage = nil
+	db.baggedItems = nil
+	db.modules = nil -- Personal stuff, don't export
+	db.moreInfoClampToScreen = nil
+	return db
 end

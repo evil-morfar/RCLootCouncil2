@@ -44,7 +44,7 @@ addon.defaults = {
 		cache = {},
 	},
 	profile = {
-		skipCombatLockdown = false,
+		skipCombatLockdown = true,
 
 		baggedItems = {}, -- Items that are stored in MLs inventory for award later.
 		-- i = { {link=link, winner=winner, addedTime=sec between UTC epoch to when the item is added to lootInBags, }, bop=Item is BOP?}
@@ -76,6 +76,7 @@ addon.defaults = {
 		enableHistory = true,
 		sendHistory = true,
 		sendHistoryToGuildChannel = false,
+		savePersonalLoot = true,
 
 		-- ML - General - Usage
 		usage = { -- State of enabledness
@@ -258,7 +259,7 @@ addon.defaults = {
 			[213089] = true, -- Antique Bronze Bullion (DF S4 Weapon/Trinket currency)
 		},
 
-		groupLootStatus = false,
+		moreInfoClampToScreen = false,
 	},
 } -- defaults end
 

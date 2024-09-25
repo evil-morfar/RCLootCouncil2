@@ -25,9 +25,10 @@ function GroupLoot:OnInitialize()
 	self.Log = addon.Require "Utils.Log":New "GroupLoot"
 	addon:RegisterEvent("START_LOOT_ROLL", self.OnStartLootRoll, self)
 	self.OnLootRoll:subscribe(function(_, rollID)
-		pcall(self.HideGroupLootFrameWithRollID, self, rollID) -- REVIEW: pcall because I haven't actually tested it in game.
-	end, nil)
-	-- addon:RegisterEvent("LOOT_HISTORY_ROLL_CHANGED", self.OnLootHistoryRollChanged, self)
+		RunNextFrame(function()
+			self:HideGroupLootFrameWithRollID(rollID)
+		end)
+	end)
 end
 
 function GroupLoot:OnStartLootRoll(_, rollID)
@@ -48,12 +49,13 @@ function GroupLoot:OnStartLootRoll(_, rollID)
 		self.Log:d(link, "is ignored, bailing.")
 		return
 	end
-	self.Log:D("Status:", self:GetStatusBinary())
-	if self:ShouldPassOnLoot() then
+	local status = self:GetStatus()
+	self.Log:D("Status:", status)
+	if self:ShouldPassOnLoot(status) then
 		self.Log:d("Passing on loot", link)
 		self:RollOnLoot(rollID, 0)
 		self.OnLootRoll(link, rollID, 0)
-	elseif self:ShouldRollOnLoot() then
+	elseif self:ShouldRollOnLoot(status) then
 		local roll
 		if canNeed then
 			roll = 1
@@ -63,7 +65,7 @@ function GroupLoot:OnStartLootRoll(_, rollID)
 		else
 			roll = 2
 		end
-		self.Log:d("Rolling on loot", link, roll)
+		self.Log:d("Rolling on loot", roll, link)
 		self:RollOnLoot(rollID, roll)
 		self.OnLootRoll(link, rollID, roll)
 	end
@@ -84,45 +86,43 @@ function GroupLoot:RollOnLoot(rollID, rollType)
 	-- Delay execution in case other addons have modified the loot frame
 	-- and haven't had a change to fully load.
 	addon:ScheduleTimer(RollOnLoot, 0.05, rollID, rollType)
-	--ConfirmLootRoll(rollID, rollType)
 end
 
-function GroupLoot:ShouldPassOnLoot()
-	local db = addon:Getdb()
-	return addon.mldb and addon.mldb.autoGroupLoot and addon.handleLoot and
-		addon.masterLooter and not addon.isMasterLooter and GetNumGroupMembers() > 1
-		and (db.autoGroupLootGuildGroupOnly and addon.isInGuildGroup or not db.autoGroupLootGuildGroupOnly)
-	-- local status = self:GetStatus()
+--- True if we should currently pass on group loot.
+---@param status? integer|string Integer or binary status. Defaults to [`GroupLoot:GetStatus()`](lua://Utils.GroupLoot.GetStatus).
+function GroupLoot:ShouldPassOnLoot(status)
+	status = status and (type(status) == "string" and tonumber(status, 2) or status) or self:GetStatus()
 	-- Bit 7 can be whatever, bit 5 must be 0, rest must be 1
-	-- return bit.band(status, 0x1af) == 0x1af and bit.band(status, 0x10) == 0-- 1.1010.1111 & 0.0001.0000
+	return bit.band(status, 0x1af) == 0x1af and bit.band(status, 0x10) == 0 -- 1.1010.1111 & 0.0001.0000
 end
 
-function GroupLoot:ShouldRollOnLoot()
-	return addon.mldb and addon.mldb.autoGroupLoot and addon.handleLoot and
-		addon.masterLooter and addon.isMasterLooter and GetNumGroupMembers() > 1
-	-- return bit.band(self:GetStatus(), 0x1bf) == 0x1bf -- 1.1011.1111
-	-- TODO Consider if we do care about the guild group thing as ML.
+--- True if we should currently need/greed on group loot.
+---@param status? integer|string Integer or binary status. Defaults to [`GroupLoot:GetStatus()`](lua://Utils.GroupLoot.GetStatus).
+function GroupLoot:ShouldRollOnLoot(status)
+	status = status and (type(status) == "string" and tonumber(status, 2) or status) or self:GetStatus()
+	-- Bit 7 & 8 can be whatever
+	return bit.band(status, 0x13f) == 0x13f -- 1.0011.1111
 end
 
 --- @enum Status
 --- Table which keys is the binary representation of whether the value is true.
 --- autoGroupLootGuildGroupOnly doesn't matter for rolling, but is included for options clarity.
---- "guildGroup" is the combined result of both - true if rolling is allowed.
---- If everything but 'isMasterLooter' is true, then we pass on loot.
---- If 'isMasterLooter' is also true, then we roll on loot.
-local status = {
+--- "guildGroup" indicates whether rolling is allowed according to guild group options.
+--- Unless indicated all must be 1 for rolls to occur.
+--- See [StatusDescription](lua://StatusDescription) for detailed description.
+local statusBinaryTable = {
 	[000000001] = "mldb",
 	[000000010] = "mldb.autoGroupLoot",
 	[000000100] = "handleLoot",
 	[000001000] = "masterLooter",
-	[000010000] = "isMasterLooter",
+	[000010000] = "isMasterLooter",           -- 0 for passing; 1 for rolling.
 	[000100000] = "numGroupMembers",
-	[001000000] = "autoGroupLootGuildGroupOnly",
-	[010000000] = "guildGroup",
+	[001000000] = "autoGroupLootGuildGroupOnly", -- indicator only
+	[010000000] = "guildGroup",               -- 1 for passing; 1 or 0 for rolling.
 	[100000000] = "enabled",
 }
 
-local statusInverted = tInvert(status)
+local statusInverted = tInvert(statusBinaryTable)
 
 --- Generates the status for the current GroupLoot setting.
 ---@return integer #The integer representation of the binary status value.
@@ -147,11 +147,10 @@ function GroupLoot:GetStatusBinary()
 end
 
 ---@return enum Status The status table as-is.
-function GroupLoot:GetStatusTable() return status end
+function GroupLoot:GetStatusTable() return statusBinaryTable end
 
 ---@return table<string, integer> StatusInverted The inverted status table as-is.
 function GroupLoot:GetInvertedStatusTable() return statusInverted end
-
 
 --- Calculates the status with one or more fields set.
 --- Invalid fields will be ignored.
@@ -168,41 +167,44 @@ function GroupLoot:CalculateStatus(...)
 	return tonumber(result, 2)
 end
 
+--- @enum StatusDescription
+--- Descriptions for [Status](lua://Status).
+--- Index 0 is negative description and 1 is positive.
 local description = {
-	"Received data from ML",
-	"ML has enabled autoGroupLoot",
-	"addon handles loot",
-	"group has master looter",
-	"player is master looter",
-	"numGroupMembers > 1",
-	"autoGroupLootGuildGroupOnly enabled",
-	"Guild group settings",
-	"addon enabled",
+	{ [0] = "Hasn't received data from ML",      [1] = "Received data from ML", },
+	{ [0] = "ML has disabled autoGroupLoot",     [1] = "ML has enabled autoGroupLoot", },
+	{ [0] = "RCLootCouncil doesn't handle loot", [1] = "RCLootCouncil handles loot", },
+	{ [0] = "Group has no master looter",        [1] = "Group has master looter", },
+	{ [0] = "Player is not master looter",       [1] = "Player is master looter", },
+	{ [0] = "Not in a group",                    [1] = "In a group", },
+	{ [0] = "Guild Groups Only setting",         [1] = "Guild Groups Only setting", },
+	{ [0] = "Guild group settings",              [1] = "Guild group settings", },
+	{ [0] = "RCLootCouncil disabled",            [1] = "RCLootCouncil enabled", },
 }
----comment
----@param status integer
----@param target integer
+
+--- Creates a table of descriptions for the provided status.
+--- These are colored green if set in the target status, otherwise red.
+---@param status integer|string Integer or binary representation of [Status](lua://Status). See [GroupLoot:GetStatus()](lua://Utils.GroupLoot.GetStatus)
+---@param target integer|string Integer or binary representation of the target status.
 function GroupLoot:StatusToDescription(status, target)
-	local binary = addon.Utils:Int2Bin(status)
+	local binary = addon.Utils:Int2Bin(type(status) == "string" and tonumber(status, 2) or status)
 	local res = {}
+	local reversedBinary = binary:reverse()
 	for i = 1, #binary do
-		if i == 7 then -- autoGroupLootGuildGroupOnly doesn't matter
-			res[#res + 1] = description[i]
-		else
-			if bit.band(status, bit.lshift(1, i - 1)) > 0 and bit.band(status, bit.lshift(1, i - 1)) > 0 then
-				res[#res + 1] = WrapTextInColorCode(description[i], "FF00FF00")
+		local statusBit = tonumber(reversedBinary:sub(i, i))
+		if i == 7 then -- autoGroupLootGuildGroupOnly doesn't matter; but color green if enabled
+			if bit.band(status, bit.lshift(1, i - 1)) > 0 then
+				res[#res + 1] = WrapTextInColorCode(description[i][statusBit] or "", "FF00FF00")
 			else
-				res[#res + 1] = WrapTextInColorCode(description[i], "FFFF0000")
+				res[#res + 1] = description[i][statusBit]
 			end
+		elseif bit.band(status, bit.lshift(1, i - 1)) == bit.band(target, bit.lshift(1, i - 1)) then
+			res[#res + 1] = WrapTextInColorCode(description[i][statusBit] or "", "FF00FF00")
+		else
+			res[#res + 1] = WrapTextInColorCode(description[i][statusBit] or "", "FFFF0000")
 		end
 	end
 	return res
-end
-
-function GroupLoot:OnLootHistoryRollChanged(event, itemId, playerId)
-	self.Log:d(event)
-	self.Log:d("GetItem:", C_LootHistory.GetItem(itemId))
-	self.Log:d("GetPlayerInfo:", C_LootHistory.GetPlayerInfo(itemId, playerId))
 end
 
 local NUM_LOOT_FRAMES = 4

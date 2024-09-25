@@ -85,14 +85,14 @@ local function checkSV()
          if v:find("(ENCOUNTER_END)") then
             local enc = {}
 			local usefull = v:match("END\t(.*)")
-            for s in usefull:gmatch("[- %w]+") do table.insert(enc, s) end
+            for s in usefull:gmatch("[-, %w]+") do table.insert(enc, s) end
             if not encounters[enc[1]] then
                encounters[enc[1]] = {}
             end
             if not encounters[enc[1]][enc[2]] then
                encounters[enc[1]][enc[2]] = {trys = 0, kills = 0}
             end
-            if enc[4] == "0" then
+            if enc[5] == "0" then
                encounters[enc[1]][enc[2]].trys = encounters[enc[1]][enc[2]].trys + 1
             else
                encounters[enc[1]][enc[2]].kills = encounters[enc[1]][enc[2]].kills + 1
@@ -155,9 +155,16 @@ local function checkSV()
       --       players[entry:match("%(from:%) %((.-)%)")] = v
       --    end
       -- end
+	  local count = {}
       for player, v in spairs(players) do
+		if not count[v] then count[v] = 0 end
+		count[v] = count[v] + 1
          print(string.format("%s: %s",v,player))
       end
+	  print "\nTotals:"
+	  for k,v in spairs(count) do
+		 print(string.format("%s: %s",k,v))
+	  end
       print "----------"
    end
 

@@ -1,12 +1,12 @@
 return {
    _all = {
       ["pattern"] = ".spec",
-      ["coverage"] = true,
       ["lpath"] = "./__tests/?.lua"
    },
    default = {
       ["ROOT"] = { ".specs"},
-      ["output"] = "utfTerminal"
+      ["output"] = "utfTerminal",
+      Xoutput = "--color",
    },
 
    Classes = {

@@ -123,6 +123,12 @@ end
 
 function LootHistory:OnHistoryReceived (name, history)
 	if not addon:Getdb().enableHistory then return end
+	if not addon:Getdb().savePersonalLoot then
+		if history.responseID == "PL" or history.responseID == "PL_REJECT" then
+			addon.Log:D("Not storing personal loot", history.lootWon)
+			return
+		end
+	end
 	-- v2.15 Add itemClass and itemSubClass locally:
 	local itemID, _, _, _, _, itemClassID, itemSubClassID = C_Item.GetItemInfoInstant(history.lootWon)
 	history.tierToken = RCTokenTable[itemID] and true
@@ -920,7 +926,7 @@ function LootHistory:GetFrame()
 
 	self.moreInfo = CreateFrame("GameTooltip", "RCLootHistoryMoreInfo", f.content, "GameTooltipTemplate")
 	self.moreInfo:SetIgnoreParentScale(true)
-	self.moreInfo:SetClampedToScreen(false)
+	self.moreInfo:SetClampedToScreen(addon:Getdb().moreInfoClampToScreen)
 	f.content:SetScript("OnSizeChanged", function()
 		self.moreInfo:SetScale(Clamp(f:GetScale() * 0.6, .4, .9))
 	end)

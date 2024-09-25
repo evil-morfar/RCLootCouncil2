@@ -50,7 +50,7 @@ function RCVersionCheck:OnInitialize()
             sort = ST.SORT_DSC,
             sortnext = 2
         },
-		{ name = "", width = 20, align = "CENTER"} -- GroupLoot Status
+		{ name = "", width = 20, align = "CENTER", sortnext = 4} -- GroupLoot Status
     }
 	self:InitCoreVersionComms()
     self.subscriptions = {}
@@ -81,6 +81,10 @@ function RCVersionCheck:OnEnable()
         )
     )
     self:RegisterBucketMessage("RCVersionCheckUpdate", 0.5, "UpdateTotals")
+	if addon.isMasterLooter and addon.handleLoot then
+		-- Send out `handleLoot` so that future "group loot status" can be up to date.
+		addon:Send("group", "StartHandleLoot")
+	end
 end
 
 function RCVersionCheck:OnDisable()
@@ -206,54 +210,36 @@ function RCVersionCheck:AddEntry(name, class, guildRank, version, tVersion, modu
     if tVersion then
         vVal = tostring(version) .. "-" .. tVersion
     end
+
+	-- Adds entry to the provided table
+	local function addEntry(t)
+		t.cols = {
+			{ value = "", DoCellUpdate = addon.SetCellClassIcon, args = { class, }, },
+			{ value = addon.Ambiguate(name), color = addon:GetClassColor(class), },
+			{ value = guildRank,             color = self.GetVersionColor, colorargs = { self, version, tVersion, }, },
+			{
+				value = vVal or L["Waiting for response"],
+				color = self.GetVersionColor,
+				colorargs = { self, version, tVersion, },
+				DoCellUpdate = self.SetCellModules,
+				args = modules,
+			},
+		}
+		tinsert(t.cols, { DoCellUpdate = self.SetCellGroupLootStatus, args = { groupLootStatus, }, })
+		t.name = name
+		t.rank = guildRank
+		t.version = version
+		t.tVersion = tVersion
+		return t
+	end
     for _, v in ipairs(self.frame.rows) do
         if addon:UnitIsUnit(v.name, name) then -- they're already added, so update them
-            v.cols = {
-                {value = "", DoCellUpdate = addon.SetCellClassIcon, args = {class}},
-                {value = addon.Ambiguate(name), color = addon:GetClassColor(class)},
-                {value = guildRank, color = self.GetVersionColor, colorargs = {self, version, tVersion}},
-                {
-                    value = vVal or L["Waiting for response"],
-                    color = self.GetVersionColor,
-                    colorargs = {self, version, tVersion},
-                    DoCellUpdate = self.SetCellModules,
-                    args = modules
-                }
-            }
-			if addon.db.profile.groupLootStatus then
-				tinsert(v.cols, {DoCellUpdate = self.SetCellGroupLootStatus, args = {groupLootStatus}})
-			end
-            v.rank = guildRank
-            v.version = version
-            v.tVersion = tVersion
+			addEntry(v)
             return self:Update()
         end
     end
     -- They haven't been added yet, so do it
-    tinsert(
-        self.frame.rows,
-        {
-            name = name,
-            rank = guildRank,
-            version = version,
-            tVersion = tVersion,
-            cols = {
-                {value = "", DoCellUpdate = addon.SetCellClassIcon, args = {class}},
-                {value = addon.Ambiguate(name), color = addon:GetClassColor(class)},
-                {value = guildRank, color = self.GetVersionColor, colorargs = {self, version, tVersion}},
-                {
-                    value = vVal or L["Waiting for response"],
-                    color = self.GetVersionColor,
-                    colorargs = {self, version, tVersion},
-                    DoCellUpdate = self.SetCellModules,
-                    args = modules
-                }
-            }
-        }
-    )
-	if addon.db.profile.groupLootStatus then
-		tinsert(self.frame.rows[#self.frame.rows].cols, { DoCellUpdate = self.SetCellGroupLootStatus, args = { groupLootStatus, }, })
-	end
+    tinsert(self.frame.rows, addEntry({}))
     listOfNames[name] = true
     self:Update()
 end
@@ -557,20 +543,33 @@ local target 	= tonumber("110101111", 2)
 --- @type DoCellUpdateFunction
 function RCVersionCheck.SetCellGroupLootStatus(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
 	local status = data[realrow].cols[column].args[1]
+	local name = data[realrow].name
 	local binary = addon.Utils:Int2Bin(status)
 	data[realrow].cols[column].value = status and binary or ""
-	local label = status and
-		((addon.isMasterLooter and bit.band(status, targetML) == targetML)
-			or bit.band(status, target) == target and "Good" or "Bad") or "?"
-	frame.text:SetText(label or "x")
+
 	frame:SetScript("OnEnter", function()
 		if status then
-			local targetStatus = addon.isMasterLooter and targetML or target
+			local targetStatus = addon.masterLooter == Player:Get(name) and targetML or target
 			local description = GroupLoot:StatusToDescription(status, targetStatus)
-			addon:CreateTooltip("Status", label, binary, status, string.format("%x", status), unpack(description))
+			addon:CreateTooltip("Status", unpack(description))
+			if addon.debug or addon.nnp then
+				GameTooltip:AddLine("Bin: " .. binary)
+				GameTooltip:AddLine("Dec: " .. status)
+				GameTooltip:AddLine("Hex: " .. string.format("%x", status))
+				GameTooltip:Show()
+			end
 		end
 	end)
 	frame:SetScript("OnLeave", addon.UI.HideTooltip)
+	if status then
+		local texture =
+			((addon.isMasterLooter and bit.band(status, targetML) == targetML)
+			or bit.band(status, target) == target) and "interface/raidframe/readycheck-ready"
+			or "interface/raidframe/readycheck-notready"
+		frame:SetNormalTexture(texture)
+	else
+		frame:SetNormalTexture("interface/raidframe/readycheck-waiting")
+	end
 end
 
 function GuildRankSort(table, rowa, rowb, sortbycol)

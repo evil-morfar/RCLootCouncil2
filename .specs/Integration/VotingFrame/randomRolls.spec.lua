@@ -16,10 +16,13 @@ describe("#VotingFrame #RandomRolls", function()
 		addon.Require "Utils.Log":Clear()
 		snapshot = assert:snapshot()
 		addon.db.global.verTestCandidates = {}
+		addon.Require "Data.Council":Set{}
 	end)
 
 	after_each(function()
 		snapshot:revert()
+		-- Occasionally items were left by previouss tests
+		_ADVANCE_TIME(5)
 		RCLootCouncilML:EndSession()
 	end)
 
@@ -89,11 +92,13 @@ describe("#VotingFrame #RandomRolls", function()
 	it("should use 'srolls' when version is above 3.13.0", function()
 		dofile(".specs/Helpers/SetupRaid.lua")(20)
 		addon.player = addon.Require "Data.Player":Get("player")
-
-		addon:Test(2, true)
-		WoWAPI_FireUpdate(GetTime() + 1)
+		-- Test might pick the same item twice which screws with our intended result
+		addon:Test(0, true)
+		_ADVANCE_TIME(1)
+		RCLootCouncilML:AddItem(159668)
+		RCLootCouncilML:AddItem(155860)
 		RCLootCouncilML:StartSession()
-		WoWAPI_FireUpdate(GetTime() + 10)
+		_ADVANCE_TIME(2)
 
 		-- Setup spies before doing rolls
 		local generateNoRepeatRollTable = spy.on(VotingFrame, "GenerateNoRepeatRollTable")
@@ -109,13 +114,12 @@ describe("#VotingFrame #RandomRolls", function()
 				if sessionRolls == "" then break end
 				local _, e, session = string.find(sessionRolls, "(%d+),")
 				sessionRolls = string.sub(sessionRolls, e + 1)
-				receivedRolls[tonumber(session)] = { string.split(",", sessionRolls), }
-			end
+				receivedRolls[tonumber(session)] = { string.split(",", sessionRolls), } end
 		end
 		local sub = Comms:Subscribe(addon.PREFIXES.MAIN, "srolls", recieverFunc)
 
 		VotingFrame:DoAllRandomRolls()
-		WoWAPI_FireUpdate(GetTime() + 20)
+		_ADVANCE_TIME(2)
 
 		assert.spy(generateNoRepeatRollTable).was.called_with(match.is_ref(VotingFrame), 20)
 		assert.spy(doAllRandomRolls).was.called(1)
@@ -201,15 +205,15 @@ describe("#VotingFrame #RandomRolls", function()
 		addon:CallModule("masterlooter")
 		addon:GetActiveModule("masterlooter"):NewML(addon.player)
 		addon:GetActiveModule("masterlooter"):Test { 159366, 165584, 159366, }
-		WoWAPI_FireUpdate(GetTime() + 10)
+		_ADVANCE_TIME(1)
 		RCLootCouncilML:StartSession()
-		WoWAPI_FireUpdate(GetTime() + 10)
+		_ADVANCE_TIME(1)
 
 		local generateNoRepeatRollTable = spy.on(VotingFrame, "GenerateNoRepeatRollTable")
 		local OnSessionRollsReceivedSpy = spy.on(VotingFrame, "OnSessionRollsReceived")
-		WoWAPI_FireUpdate(GetTime() + 20)
+		_ADVANCE_TIME(.1)
 		VotingFrame:DoRandomRolls(1)
-		WoWAPI_FireUpdate(GetTime() + 30)
+		_ADVANCE_TIME(1)
 		assert.spy(generateNoRepeatRollTable).was.called(1)
 		assert.spy(OnSessionRollsReceivedSpy).was.called(1)
 		-- All rolls in session 1 & 3 should be the same

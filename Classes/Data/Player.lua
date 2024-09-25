@@ -28,6 +28,12 @@ local private = {
 ---@field name string
 ---@field class string
 ---@field realm string
+---@field role "DAMAGER"|"TANK"|"HEALER"|"NONE"? 
+---@field rank string? Guild rank
+---@field enchanter boolean? Is the player an enchanter
+---@field ilvl number?
+---@field specID integer? 
+---@field classColoredName string? Name colored by class
 local playerClass = {}
 function playerClass:GetName() return self.name end
 function playerClass:GetRealm() return self.realm end

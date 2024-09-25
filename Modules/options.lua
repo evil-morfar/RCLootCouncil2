@@ -7,7 +7,6 @@ local addon = select(2, ...)
 --- @type RCLootCouncilLocale
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 local Player = addon.Require "Data.Player"
-local TempTable = addon.Require "Utils.TempTable"
 ------ Options ------
 local function DBGet(info)
 	return addon.db.profile[info[#info]]
@@ -528,6 +527,12 @@ function addon:OptionsTable()
 										desc = L["send_to_guild_desc"],
 										type = "toggle",
 										disabled = function() return not self.db.profile.sendHistory end,
+									},
+									savePersonalLoot = {
+										order = 3.2,
+										name = L.opt_savePersonalLoot_name,
+										desc = L.opt_savePersonalLoot_desc,
+										type = "toggle",
 									},
 									header = {
 										order = 4,
@@ -2179,14 +2184,8 @@ end
 
 function addon:GetProfileForExport()
 	local ld = LibStub("LibDeflate")
-	local profile = self.Utils:GetTableDifference(self.db.defaults.profile, self.db.profile)
-	local tt = TempTable:Acquire(profile)
-	local db = tt[1]
-	db.UI = nil -- Remove UI as it's not helpful for other players
-	db.itemStorage = nil
-	db.baggedItems = nil
+	local db = self:GetDBForExport()
 	local data = LibStub("AceSerializer-3.0"):Serialize(db)
-	TempTable:Release(tt)
 	local encoded = ld:EncodeForPrint(ld:CompressDeflate(data))
 	local t = {
 		self.PROFILE_EXPORT_IDENTIFIER,

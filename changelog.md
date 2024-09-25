@@ -1,3 +1,44 @@
+# 3.14.0
+
+## Changes
+
+### Buttons and Responses
+
+Added button group for Catalyst items. (#257)
+
+Removed "Azerite" button group.
+
+### Group Loot Status
+
+The version checker now includes group loot status for each player. Use this to check if RCLootCouncil will do group loot for everyone. Won't work for players using versions older than 3.13.3.
+
+The tooltip includes specific information as to why it won't do group loot, such as being in a non-guild group without disabling "Guild Groups Only".
+
+### Options and Commands
+
+Added option to not store personal loot in the history.
+
+Added new command `/rc session` - opens the session frame if you're the group leader.
+
+Added new command `/rc stop` - inverse of start, stops handling loot.
+
+Reworked the chat command help section (`/rc` or `/rc help`) - now shows commands useable at the moment. Group leader has a seperate section for group leader only commands. Also added description for the commands that missed them.
+
+### Profile Export & Sync
+
+Module specific options (show more info, show tooltip, filters, etc) are no longer included in exported/synced profiles.
+
+### Voting Frame
+
+Hovering a candidate's class/spec icon will now show the name of their current class and spec.
+
+## Bugfixes
+
+- *WuE items will no longer register as BoEs (despite GetItemInfo saying so).*
+- *Fixed Conniver's Badges being incorrectly shown as trinket slot.*
+- *Changing roles should now properly update the column in the voting frame.*
+- *Changing leader would not always activate RCLootCouncil properly.*
+
 # 3.13.3
 
 ## Changes

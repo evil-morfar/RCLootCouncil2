@@ -74,16 +74,17 @@ function RCLootCouncil:ExportTokenData(nextID)
 	table.sort(sorted, function(a, b) return a[1] < b[1] end)
 	for _, entry in ipairs(sorted) do
 		local slot = ""
-		local name = entry[2]
-		local l = name:lower()
-		for invSlot, keywords in pairs(keyWords) do
-			for _, keyword in pairs(keywords) do
-				if l:find(keyword) then
-					slot = invSlot
-					break
-				end
-			end
-		end
+		-- We should just use the tooltips as it's way more reliable
+		-- local name = entry[2]
+		-- local l = name:lower()
+		-- for invSlot, keywords in pairs(keyWords) do
+		-- 	for _, keyword in pairs(keywords) do
+		-- 		if l:find(keyword) then
+		-- 			slot = invSlot
+		-- 			break
+		-- 		end
+		-- 	end
+		-- end
 		if slot == "" then
 			-- Can't extract slot from the item name, scan tooltip for it
 			slot = self:GetTokenSlotFromTooltip(entry[1])
@@ -833,10 +834,10 @@ _G.RCTokenTable = {
 	[225619] = "HandsSlot",  -- Mystic Stalwart's Emblem,
 	[225620] = "HandsSlot",  -- Venerated Stalwart's Emblem,
 	[225621] = "HandsSlot",  -- Zenith Stalwart's Emblem,
-	[225622] = "Trinket",    -- Dreadful Conniver's Badge,
-	[225623] = "Trinket",    -- Mystic Conniver's Badge,
-	[225624] = "Trinket",    -- Venerated Conniver's Badge,
-	[225625] = "Trinket",    -- Zenith Conniver's Badge,
+	[225622] = "HeadSlot",  -- Dreadful Conniver's Badge,
+	[225623] = "HeadSlot",  -- Mystic Conniver's Badge,
+	[225624] = "HeadSlot",  -- Venerated Conniver's Badge,
+	[225625] = "HeadSlot",  -- Zenith Conniver's Badge,
 	[225626] = "LegsSlot",   -- Dreadful Slayer's Icon,
 	[225627] = "LegsSlot",   -- Mystic Slayer's Icon,
 	[225628] = "LegsSlot",   -- Venerated Slayer's Icon,
