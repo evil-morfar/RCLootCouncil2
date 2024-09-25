@@ -1411,7 +1411,6 @@ function LootHistory.RightClickMenu(menu, level)
 
 			info = MSA_DropDownMenu_CreateInfo()
 			for k,responses in pairs(db.responses) do
-				addon.Log:D("db.responses:", k)
 				if k ~= "default" and k ~= "*" then
 					info.text = addon.OPT_MORE_BUTTONS_VALUES[k] or _G.UNKNOWN
 					info.isTitle = true
@@ -1419,7 +1418,6 @@ function LootHistory.RightClickMenu(menu, level)
 					info.notCheckable = true
 					MSA_DropDownMenu_AddButton(info, level)
 					for i, v in ipairs(responses) do --luacheck: ignore
-						addon.Log:D("responses:", i)
 						info.text = v.text
 						info.colorCode = "|cff"..addon.Utils:RGBToHex(unpack(v.color))
 						info.isTitle = false
