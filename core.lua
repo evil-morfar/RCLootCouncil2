@@ -374,9 +374,7 @@ function RCLootCouncil:ChatCommand(msg)
 		self:Debug("- clearLog - clear the debug log")
 
 	elseif input == 'config' or input == L["config"] or input == "c" or input == "opt" or input == "options" then
-		-- Call it twice, because reasons..
-		InterfaceOptionsFrame_OpenToCategory(self.optionsFrame)
-		InterfaceOptionsFrame_OpenToCategory(self.optionsFrame)
+		Settings.OpenToCategory(self.optionsFrame.name)
 		--LibStub("AceConfigDialog-3.0"):Open("RCLootCouncil")
 
 	elseif input == 'debug' or input == 'd' then
