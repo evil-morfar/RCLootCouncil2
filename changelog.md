@@ -1,3 +1,9 @@
+## Changes
+
+Requesting rolls now only resets the roll for the people requested.
+
+## Bugfixes
+
 # 3.14.0
 
 ## Changes
