@@ -199,6 +199,7 @@ function LootFrame:OnRoll(entry, button)
 		self.EntryManager:Trash(entry)
 		self:Update()
 	else
+		addon.Log:D("LootFrame:OnRoll", button)
 		if button == "ROLL" then
 			-- Need to do system roll and wait for its result.
 			local entryInQueue = {sessions=item.sessions, entry=entry}
