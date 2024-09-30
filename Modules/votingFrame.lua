@@ -1787,45 +1787,36 @@ function RCVotingFrame:ReannounceOrRequestRoll(namePred, sesPred, isRoll, noAuto
 	local changeResponseData = TempTable:Acquire()
 	local rollsData = TempTable:Acquire()
 	local councilInGroup = Council:GetCouncilInGroup()
-	local hasVersion3_13_0 = addon.Utils:PlayersHasVersion(councilInGroup, "3.13.0")
 	TempTable:Release(councilInGroup)
 
 	for k,v in ipairs(lootTable) do
-		local rolls = {}
 		if sesPred == true or (type(sesPred)=="number" and addon:ItemIsItem(lootTable[k].link, lootTable[sesPred].link)) or (type(sesPred)=="function" and sesPred(k)) then
 			tinsert(rerollTable, RCVotingFrame:GetRerollData(k, isRoll, noAutopass))
 
 			for name, _ in pairs(v.candidates) do
 				if namePred == true or (type(namePred)=="string" and name == namePred) or (type(namePred)=="function" and namePred(name)) then
 					if not isRoll then
-						if not hasVersion3_13_0 then
-							addon:Send("group", "change_response", k, name, "WAIT")
-						end
 						if not changeResponseData[name] then
 							changeResponseData[name] = {}
 						end
 						tinsert(changeResponseData[name], k)
 					end
-					rolls[name] = ""
 				end
 			end
 			if isRoll then
-				if not hasVersion3_13_0 then
-					addon:Send("group", "rolls", k, rolls)
-				end
 				tinsert(rollsData, k)
 			end
 		end
 	end
 
-	if not isRoll and hasVersion3_13_0 then
+	if not isRoll then
 		local changeResponseDataForTransmit = TempTable:Acquire()
 		for name,v in pairs(changeResponseData) do
 			changeResponseDataForTransmit[Player:Get(name):GetForTransmit()] = table.concat(v, ",")
 		end
 		addon:Send("group", "ResponseWait", changeResponseDataForTransmit)
 		TempTable:Release(changeResponseDataForTransmit)
-	elseif isRoll and hasVersion3_13_0 then
+	elseif isRoll then
 		addon:Send("group", "reset_rolls", rollsData)
 	end
 	TempTable:Release(changeResponseData)
@@ -1844,9 +1835,6 @@ function RCVotingFrame:ReannounceOrRequestRoll(namePred, sesPred, isRoll, noAuto
 			for name in pairs(lootTable[session].candidates) do
 				if (type(namePred)=="string" and name == namePred) or (type(namePred)=="function" and namePred(name)) then
 					tinsert(candidates, Player:Get(name):GetForTransmit())
-					if not addon.Utils:PlayerHasVersion(name, "3.13.0") then
-						addon:Send(Player:Get(name), "reroll", rerollTable)
-					end
 				end
 			end
 			if #candidates > 0 then
