@@ -159,8 +159,13 @@ describe("#VotingFrame #ReannounceOrRequestRoll", function()
 			assert.spy(receivedSpy).was.called(1)
 			-- Now rolls should be reset:
 			for ses, data in ipairs(VotingFrame:GetLootTable()) do
-				for _, v in pairs(data.candidates) do
-					assert.Nil(v.roll)
+				for name, v in pairs(data.candidates) do
+					-- We might have autopassed
+					if name == addon.player.name and v.roll == "-" then
+						assert.equal("-", v.roll)
+					else
+						assert.Nil(v.roll)
+					end
 				end
 			end
 		end)
