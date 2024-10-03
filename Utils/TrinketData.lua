@@ -1930,14 +1930,14 @@ _G.RCTrinketSpecs = {
 	[219915] = "0241000100024", -- Foul Behemoth's Chelicera,       	Tank
 	[212454] = "5134773647743", -- Mad Queen's Mandate,             	Damage
 	[212449] = "0124002607443", -- Sikran's Endless Arsenal,        	Damage, Melee
-	[212453] = "0000000700067", -- Skyterror's Corrosive Organ,     	Strength
+	[212453] = "0000000600043", -- Skyterror's Corrosive Organ,     	Damage, Strength
 	[212450] = "0241000100024", -- Swarmlord's Authority,           	Tank
 	[221023] = "73F7777777777", -- Treacherous Transmitter,         	All Classes
-	[212456] = "0365002007700", -- Void Reaper's Contract,          	Agility
+	[212456] = "0124002007700", -- Void Reaper's Contract,          	Damage, Agility
 	[219917] = "2082004030010", -- Creeping Coagulum,               	Healer
 	[212452] = "2082004030010", -- Gruesome Syringe,                	Healer
-	[220305] = "73F7777777777", -- Ovinax's Mercurial Egg,          	All Classes
-	[220202] = "5010771040000", -- Spymaster's Web,                 	Damage, Intellect
+	[220305] = "73F7777777777", -- Ovi'nax's Mercurial Egg,         	All Classes
+	[220202] = "7092775070010", -- Spymaster's Web,                 	Intellect
 	-- Nerub-ar Palace Heroic (id: 1273).
 	-- Nerub-ar Palace Mythic (id: 1273).
 	-- Nerub-ar Palace Looking For Raid (id: 1273).
@@ -1961,11 +1961,11 @@ _G.RCTrinketSpecs = {
 	-- Siege of Boralus Mythic Keystone (id: 1023).
 	-- Siege of Boralus Mythic (id: 1023).
 	-- Grim Batol Normal (id: 71).
-	[56463] = "2082004030010", -- Corrupted Egg Shell,             	Healer
-	[56462] = "7092775070010", -- Gale of Shadows,                 	Intellect
-	[56458] = "0000000700067", -- Mark of Khardros,                	Strength
-	[56440] = "0365002007700", -- Skardyn's Grace,                 	Agility
-	[56449] = "0201000100024", -- Throngus's Finger,               	Tank, Parry
+	[133305] = "2082004030010", -- Corrupted Egg Shell,             	Healer
+	[133304] = "7092775070010", -- Gale of Shadows,                 	Intellect
+	[133300] = "0000000600043", -- Mark of Khardros,                	Damage, Strength
+	[133282] = "0124002007700", -- Skardyn's Grace,                 	Damage, Agility
+	[133291] = "0201000100024", -- Throngus's Finger,               	Tank, Parry
 	-- Grim Batol Heroic (id: 71).
 	-- Grim Batol Mythic Keystone (id: 71).
 	-- Grim Batol Mythic (id: 71).

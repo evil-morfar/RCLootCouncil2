@@ -8,6 +8,8 @@ Auto passing when requesting rolls will now show a '-' in the roll column, like 
 
 ## Bugfixes
 
+- *Fixed wrong specs autopassing a few trinkets.*
+
 # 3.14.0
 
 ## Changes
