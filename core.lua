@@ -311,11 +311,6 @@ function RCLootCouncil:OnEnable()
 	if self:VersionCompare(self.db.global.version, self.version) then self.db.global.oldVersion = self.db.global.version end
 	self.db.global.version = self.version
 
-	self.db.global.logMaxEntries = self.defaults.global.logMaxEntries -- reset it now for zzz
-
-	if self.tVersion then
-		self.db.global.logMaxEntries = 4000 -- bump it for test version
-	end
 	if self.db.global.tVersion and self.debug then -- recently ran a test version, so reset debugLog
 		self.db.global.log = {}
 	end
