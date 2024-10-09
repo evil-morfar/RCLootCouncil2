@@ -37,7 +37,7 @@ addon.responses = {
 -- Option table defaults
 addon.defaults = {
 	global = {
-		logMaxEntries = 2000,
+		logMaxEntries = 4000,
 		log = {}, -- debug log
 		verTestCandidates = {}, -- Stores received verTests
 		errors = {},

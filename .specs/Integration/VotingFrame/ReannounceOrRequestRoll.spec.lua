@@ -106,24 +106,6 @@ describe("#VotingFrame #ReannounceOrRequestRoll", function()
 			end
 		end)
 
-		it("ReannounceOrRequestRoll should use old system if council has pre v3.13.0", function()
-			addon.db.global.verTestCandidates = {
-				[(GetRaidRosterInfo(2))] = { "3.12.0", nil, time(), },
-			}
-			Council:Add(Player:Get((GetRaidRosterInfo(2))))
-			local responseWaitSpy = spy.new()
-			addon.Require "Services.Comms":Subscribe(addon.PREFIXES.MAIN, "ResponseWait", responseWaitSpy)
-			local changeResponseSpy = spy.new()
-			addon.Require "Services.Comms":Subscribe(addon.PREFIXES.MAIN, "change_response", changeResponseSpy)
-
-			WoWAPI_FireUpdate(GetTime() + 20)
-			VotingFrame:ReannounceOrRequestRoll(true, 1, false, false, false)
-			WoWAPI_FireUpdate(GetTime() + 30)
-
-			assert.spy(responseWaitSpy).was.called(0)
-			assert.spy(changeResponseSpy).was.called(GetNumGroupMembers())
-		end)
-
 		it("should change for everyone when both name- and sessionpred is true", function()
 			local receivedSpy = spy.new()
 			addon.Require "Services.Comms":Subscribe(addon.PREFIXES.MAIN, "ResponseWait", receivedSpy)
@@ -177,50 +159,10 @@ describe("#VotingFrame #ReannounceOrRequestRoll", function()
 			assert.spy(receivedSpy).was.called(1)
 			-- Now rolls should be reset:
 			for ses, data in ipairs(VotingFrame:GetLootTable()) do
-				for _, v in pairs(data.candidates) do
-					assert.Nil(v.roll)
-				end
-			end
-		end)
-
-		it("should use old system if council has pre v3.13.0", function()
-			addon.db.global.verTestCandidates = {
-				[(GetRaidRosterInfo(2))] = { "3.12.0", nil, time(), },
-			}
-			Council:Add(Player:Get((GetRaidRosterInfo(2))))
-			local receivedSpy = spy.new()
-			addon.Require "Services.Comms":Subscribe(addon.PREFIXES.MAIN, "reset_rolls", receivedSpy)
-			local rollsSpy = spy.new()
-			addon.Require "Services.Comms":Subscribe(addon.PREFIXES.MAIN, "rolls", rollsSpy)
-
-			WoWAPI_FireUpdate(GetTime())
-			VotingFrame:DoRandomRolls(1)
-			WoWAPI_FireUpdate()
-
-			-- Everyone should have a roll in session 1:
-			for ses, data in ipairs(VotingFrame:GetLootTable()) do
 				for name, v in pairs(data.candidates) do
-					if ses == 1 then
-						if name ~= addon.player.name then -- We might have timedout our roll
-							assert.are_not.equal("", v.roll)
-							assert.is.Number(v.roll)
-						end
-					else
-						assert.Nil(v.roll)
-					end
-				end
-			end
-			-- announceInChat just to have that called once
-			VotingFrame:ReannounceOrRequestRoll(true, 1, true, false, true)
-			WoWAPI_FireUpdate()
-
-			assert.spy(receivedSpy).was.called(0)
-			assert.spy(rollsSpy).was.called(1)
-			-- Now rolls should be reset:
-			for ses, data in ipairs(VotingFrame:GetLootTable()) do
-				for _, v in pairs(data.candidates) do
-					if ses == 1 then
-						assert.are.equal("", v.roll)
+					-- We might have autopassed
+					if name == addon.player.name and v.roll == "-" then
+						assert.equal("-", v.roll)
 					else
 						assert.Nil(v.roll)
 					end

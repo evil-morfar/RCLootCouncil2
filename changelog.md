@@ -1,3 +1,17 @@
+# 3.14.1
+
+## Changes
+
+### Rolls
+
+Requesting rolls now only resets the roll for the people requested.
+
+Auto passing when requesting rolls will now show a '-' in the roll column, like when passing the roll.
+
+## Bugfixes
+
+- *Fixed wrong specs autopassing a few trinkets.*
+
 # 3.14.0
 
 ## Changes

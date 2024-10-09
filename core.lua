@@ -311,11 +311,6 @@ function RCLootCouncil:OnEnable()
 	if self:VersionCompare(self.db.global.version, self.version) then self.db.global.oldVersion = self.db.global.version end
 	self.db.global.version = self.version
 
-	self.db.global.logMaxEntries = self.defaults.global.logMaxEntries -- reset it now for zzz
-
-	if self.tVersion then
-		self.db.global.logMaxEntries = 4000 -- bump it for test version
-	end
 	if self.db.global.tVersion and self.debug then -- recently ran a test version, so reset debugLog
 		self.db.global.log = {}
 	end
@@ -1140,7 +1135,7 @@ end
 -- Autopass response is sent if the session has been autopassed. No other response is sent.
 -- @param skip Only sends lootAcks on sessions > skip or 0
 function RCLootCouncil:SendLootAck(table, skip)
-	local toSend = {gear1 = {}, gear2 = {}, diff = {}, response = {}}
+	local toSend = {gear1 = {}, gear2 = {}, diff = {}, response = {}, roll = {}}
 	local hasData = false
 	for k, v in pairs(table) do
 		local session = v.session or k
@@ -1152,8 +1147,10 @@ function RCLootCouncil:SendLootAck(table, skip)
 			toSend.gear2[session] = g2 and ItemUtils:GetItemStringClean(g2) or nil
 			toSend.diff[session] = diff
 			toSend.response[session] = v.autopass
+			toSend.roll[session] = v.isRoll and "-" or nil
 		end
 	end
+	if not next(toSend.roll) then toSend.roll = nil end
 	if hasData then self:Send("group", "lootAck", playersData.specID, playersData.ilvl, toSend) end
 end
 

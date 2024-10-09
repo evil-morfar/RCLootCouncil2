@@ -15,6 +15,7 @@
 		offline_timer 		T - ML sends offline timer.
 		response 			T - Candidate sends a response.
 		reset_rolls			T - ML resets rolls.
+		re_roll 			T - Candidate sends reroll info. Only used here to reset rolls.
 		rrolls 				T - **DEPRECATED** Replaced with 'srolls'. ML sends random rolls info for a single session.
 		srolls				T - ML sends random rolls info for one or more sessions.
 		roll 				T - Candidate sends roll info (interactive random roll).
@@ -171,6 +172,13 @@ function RCVotingFrame:RegisterComms ()
 				self:OnResetRollsReceived(unpack(data))
 			else
 				addon.Log:W("Non-ML", sender, "sent reset_rolls!")
+			end
+		end,
+		re_roll = function (data, sender)
+			if addon:IsMasterLooter(sender) then
+				self:OnReRollReceived(unpack(data))
+			else
+				addon.Log:W("Non-ML", sender, "sent re_roll!")
 			end
 		end,
 		-- Deprecated, replaced with 'rrolls'. Kept for backwards compatibility.
@@ -624,13 +632,26 @@ end
 
 ---@param data integer[] Array of session to reset all rolls on.
 function RCVotingFrame:OnResetRollsReceived(data)
-	for _,session in ipairs(data) do
+	for _, session in ipairs(data) do
 		lootTable[session].hasRolls = false
 		for name in pairs(lootTable[session].candidates) do
 			self:SetCandidateData(session, name, "roll", nil)
 		end
 	end
 	self:Update()
+end
+
+---@param candidates string[] List of transmittable player GUIDs of candidates that should reroll.
+---@param lt LootTable
+function RCVotingFrame:OnReRollReceived(candidates, lt)
+	for _, data in pairs(lt) do
+		if data.isRoll then
+			for _, guid in ipairs(candidates) do
+				local name = Player:Get(guid).name
+				self:SetCandidateData(data.session, name, "roll", nil)
+			end
+		end
+	end
 end
 
 --- @deprecated
@@ -1787,66 +1808,53 @@ function RCVotingFrame:ReannounceOrRequestRoll(namePred, sesPred, isRoll, noAuto
 	local changeResponseData = TempTable:Acquire()
 	local rollsData = TempTable:Acquire()
 	local councilInGroup = Council:GetCouncilInGroup()
-	local hasVersion3_13_0 = addon.Utils:PlayersHasVersion(councilInGroup, "3.13.0")
 	TempTable:Release(councilInGroup)
 
 	for k,v in ipairs(lootTable) do
-		local rolls = {}
 		if sesPred == true or (type(sesPred)=="number" and addon:ItemIsItem(lootTable[k].link, lootTable[sesPred].link)) or (type(sesPred)=="function" and sesPred(k)) then
 			tinsert(rerollTable, RCVotingFrame:GetRerollData(k, isRoll, noAutopass))
 
 			for name, _ in pairs(v.candidates) do
 				if namePred == true or (type(namePred)=="string" and name == namePred) or (type(namePred)=="function" and namePred(name)) then
 					if not isRoll then
-						if not hasVersion3_13_0 then
-							addon:Send("group", "change_response", k, name, "WAIT")
-						end
 						if not changeResponseData[name] then
 							changeResponseData[name] = {}
 						end
 						tinsert(changeResponseData[name], k)
 					end
-					rolls[name] = ""
 				end
 			end
 			if isRoll then
-				if not hasVersion3_13_0 then
-					addon:Send("group", "rolls", k, rolls)
-				end
 				tinsert(rollsData, k)
 			end
 		end
 	end
 
-	if not isRoll and hasVersion3_13_0 then
+	if not isRoll then
 		local changeResponseDataForTransmit = TempTable:Acquire()
 		for name,v in pairs(changeResponseData) do
 			changeResponseDataForTransmit[Player:Get(name):GetForTransmit()] = table.concat(v, ",")
 		end
 		addon:Send("group", "ResponseWait", changeResponseDataForTransmit)
 		TempTable:Release(changeResponseDataForTransmit)
-	elseif isRoll and hasVersion3_13_0 then
-		addon:Send("group", "reset_rolls", rollsData)
 	end
 	TempTable:Release(changeResponseData)
-	TempTable:Release(rollsData)
 
 	if #rerollTable > 0 then
 		if announceInChat then
-			addon:GetActiveModule("masterlooter"):AnnounceItems(rerollTable, isRoll)
+			addon:GetActiveModule("masterlooter"):AnnounceItems(rerollTable)
 		end
 
-
 		if namePred == true then
+			if isRoll then
+				addon:Send("group", "reset_rolls", rollsData)
+			end
 			addon:Send("group", "reroll", rerollTable)
 		else
 			local candidates = TempTable:Acquire()
 			for name in pairs(lootTable[session].candidates) do
 				if (type(namePred)=="string" and name == namePred) or (type(namePred)=="function" and namePred(name)) then
 					tinsert(candidates, Player:Get(name):GetForTransmit())
-					if not addon.Utils:PlayerHasVersion(name, "3.13.0") then
-						addon:Send(Player:Get(name), "reroll", rerollTable)
-					end
 				end
 			end
 			if #candidates > 0 then
@@ -1859,6 +1867,7 @@ function RCVotingFrame:ReannounceOrRequestRoll(namePred, sesPred, isRoll, noAuto
 	end
 
 	TempTable:Release(rerollTable)
+	TempTable:Release(rollsData)
 end
 
 ----------------------------------------------------
