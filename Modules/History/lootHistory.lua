@@ -4,6 +4,7 @@
 -- Create Date : 8/6/2015
 
 local _,addon = ...
+---@class RCLootHistory : AceModule
 local LootHistory = addon:NewModule("RCLootHistory")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 local AG = LibStub("AceGUI-3.0")
