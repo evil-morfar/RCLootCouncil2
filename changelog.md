@@ -2,6 +2,8 @@
 
 ## Changes
 
+Updated for patch 11.0.5.
+
 Added trinkets from Blackrock Depths.
 
 ## Bugfixes
