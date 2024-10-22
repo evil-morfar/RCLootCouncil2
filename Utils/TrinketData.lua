@@ -1969,4 +1969,15 @@ _G.RCTrinketSpecs = {
 	-- Grim Batol Heroic (id: 71).
 	-- Grim Batol Mythic Keystone (id: 71).
 	-- Grim Batol Mythic (id: 71).
+
+	-- Blackrock Depths (id: 1301).
+	[231457] = "2082004030010", -- Bottled Magma,                	Healer
+	[231424] = "2082004030010", -- Burst of Knowledge,           	Healer
+	[231476] = "2082004030010", -- Dope'rel's Calling Rune,      	Healer
+	[231414] = "0241000100024", -- Force of Will,                	Tank
+	[231471] = "0365002707767", -- Golem Gearbox,                	Strength/Agility
+	[231417] = "0365002707767", -- Hand of Justice,              	Strength/Agility
+	[231456] = "0000000700067", -- Heart of Roccor,              	Strength
+	[231462] = "0241000100024", -- Molten Furnace,               	Tank
+	[231420] = "2082004030010", -- Second Wind,                  	Healer
 }

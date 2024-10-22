@@ -2,6 +2,8 @@
 
 ## Changes
 
+Added trinkets from Blackrock Depths.
+
 ## Bugfixes
 
 - *Fixed Voting Frame sometimes breaking when extending a session while there's changes in group composition.*
