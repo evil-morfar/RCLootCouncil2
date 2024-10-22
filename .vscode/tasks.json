@@ -26,6 +26,15 @@
             "group": "build"
         },
         {
+            "label": "Deploy-Local-XPTR",
+            "type": "shell",
+            "command": "sh .scripts/deploy.sh",
+            "args": [
+                "-x"
+            ],
+            "group": "build"
+        },
+        {
             "label": "Deploy-Local-Beta",
             "type": "shell",
             "command": "sh .scripts/deploy.sh",
