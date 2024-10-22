@@ -537,6 +537,7 @@ L.chat_command_start_error_usageNever = "Cannot start: your 'usage' option is se
 L.chat_command_start_error_onlyUseInRaids = "Cannot start: you're in a party and have the 'only use in raids' option enabled."
 L.history_export_sheets_tip = "Tab delimited export for Google Sheets and English version of Excel that uses ';' as formula delimiter."
 L.history_export_excel_international_tip = "Tab delimited export for international version of Excel that uses ',' as formula delimiter."
+L.response_NOTELIGIBLE = "Not eligible for this item"
 L["opt_addButton_desc"] = "Add a new button group for the selected slot."
 L["opt_autoAddBoEs_name"] = "Auto Add BoEs"
 L["opt_autoAddBoEs_desc"] = "Automatically add all BoE (Bind on Equip) items to a session."

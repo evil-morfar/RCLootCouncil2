@@ -15,6 +15,7 @@ usage() {
 	echo "  -b               Pack to _beta_ WoW edition." >&2
 	echo "  -c               Pack to _classic_ WoW edition." >&2
 	echo "  -p               Pack to _ptr_ WoW edition." >&2
+	echo "  -x               Pack to _xptr_ WoW edition." >&2
 }
 
 ADDON_LOC="$(pwd)"
@@ -22,14 +23,16 @@ ADDON="$(basename $ADDON_LOC)"
 WOWEDITION="_retail_"
 
 # Commandline inputs
-while getopts ":bcp" opt; do
+while getopts ":bcpx" opt; do
 	case $opt in
       b)
          WOWEDITION="_beta_";;
       c)
          WOWEDITION="_classic_";;
       p)
-         WOWEDITION="_ptr_";;
+         WOWEDITION="_ptr_";; 
+      x)
+         WOWEDITION="_xptr_";;
       /?)
          usage ;;
    esac

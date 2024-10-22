@@ -1,3 +1,15 @@
+# 3.14.2
+
+## Changes
+
+Updated for patch 11.0.5.
+
+Added trinkets from Blackrock Depths.
+
+## Bugfixes
+
+- *Fixed Voting Frame sometimes breaking when extending a session while there's changes in group composition.*
+
 # 3.14.1
 
 ## Changes

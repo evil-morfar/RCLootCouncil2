@@ -350,33 +350,35 @@ function RCVotingFrame:FetchUnawardedSession ()
 	return nil
 end
 
+function RCVotingFrame:SetupCandidate(t, name,response)
+	local player = Player:Get(name)
+	name = player and player.name or name
+	t.candidates[name] = {
+		class = player.class or "Unknown",
+		rank = player.rank or "Unknown",
+		role = player.role or "NONE",
+		response = response,
+		ilvl = "",
+		diff = "",
+		gear1 = nil,
+		gear2 = nil,
+		votes = 0,
+		note = nil,
+		roll = nil,
+		voters = {},
+		haveVoted = false, -- Have we voted for this particular candidate in this session?
+	}
+end
+
 function RCVotingFrame:SetupSession(session, t)
 	t.added = true -- This entry has been initiated
 	t.haveVoted = false -- Have we voted for ANY candidate in this session?
 	t.candidates = {}
 	t.hasRolls = false -- Has random rolls been added to this session?
 	for name in addon:GroupIterator() do
-		local player = Player:Get(name)
-		-- REVIEW Seems like we occasionally get wrong/invalid names here.
-		-- but we still need to create the candidate, so use the name provided by
-		-- GroupIterator, which should be the same as the one from `Player`.
-		name = player and player.name or name
-		t.candidates[name] = {
-			class = player.class or "Unknown",
-			rank = player.rank or "Unknown",
-			role = player.role or "NONE",
-			response = "ANNOUNCED",
-			ilvl = "",
-			diff = "",
-			gear1 = nil,
-			gear2 = nil,
-			votes = 0,
-			note = nil,
-			roll = nil,
-			voters = {},
-			haveVoted = false, -- Have we voted for this particular candidate in this session?
-		}
+		self:SetupCandidate(t, name, "ANNOUNCED")
 	end
+
 	-- Init session toggle
 	sessionButtons[session] = self:UpdateSessionButton(session, t.texture, t.link, t.awarded)
 	sessionButtons[session]:Show()
@@ -394,7 +396,7 @@ function RCVotingFrame:Setup(table)
 		sessionButtons[i]:Hide()
 	end
 	session = 1
-	self:BuildST()
+	self.frame.st:SetData(self:BuildSTRows())
 	self:SwitchSession(session)
 	if addon.isMasterLooter and db.autoAddRolls then
 		self:DoAllRandomRolls()
@@ -761,7 +763,59 @@ function RCVotingFrame:OnLootTableAdditionsReceived (_, lt)
 			self:DoRandomRolls(i)
 		end
 	end
+	self:CheckAndHandleCandidateChanges(oldLenght)
 	self:SwitchSession(session)
+end
+
+--- Ensures all sessions has the exact same candidates.
+---@param oldLastSession integer Last session before adding new sessions
+function RCVotingFrame:CheckAndHandleCandidateChanges(oldLastSession)
+	if oldLastSession == #lootTable then return end
+	-- Build a list of all candidates registered
+	-- We only need to check the old last session and the first new session
+	local candidates = TempTable:Acquire()
+	for i = oldLastSession, oldLastSession + 1 do
+		for name in pairs(lootTable[i].candidates) do
+			candidates[name] = true
+		end
+	end
+	-- Find changed candidates
+	local hasMissing = false
+	local addedCandidates = TempTable:Acquire()
+	for name in pairs(candidates) do
+		for i = oldLastSession, oldLastSession + 1 do
+			if not lootTable[i].candidates[name] then
+				hasMissing = true
+				addedCandidates[name] = true
+			end
+		end
+	end
+	-- Setup any added candidates
+	if hasMissing then
+		local candidatesInData = TempTable:Acquire()
+		for _, data in ipairs(self.frame.st.data) do
+			candidatesInData[data.name] = true
+		end
+		local cols = self:BuildSTCols()
+		for name in pairs(addedCandidates) do
+			for i in ipairs(lootTable) do
+				if not lootTable[i].candidates[name] then
+					self:SetupCandidate(lootTable[i], name, "NOTELIGIBLE")
+				end
+			end
+			-- Any new candidates also needs to be added to row data
+			if not candidatesInData[name] then
+				tinsert(self.frame.st.data, {name = name, cols = cols})
+			end
+		end
+		addon.Log:D("Candidates changed:", #addedCandidates)
+		TempTable:Release(candidatesInData)
+		self.frame.st:SortData()
+	else
+		addon.Log:D("No changes to candidates")
+	end
+	TempTable:Release(candidates)
+	TempTable:Release(addedCandidates)
 end
 
 local itemAwardHistoryCache = {}
@@ -970,23 +1024,26 @@ function RCVotingFrame:SwitchSession(s)
 	addon:SendMessage("RCSessionChangedPost", s)
 end
 
-function RCVotingFrame:BuildST()
+function RCVotingFrame:BuildSTCols()
+	local data = {}
+	for num, col in ipairs(self.scrollCols) do
+		data[num] = { value = "", colName = col.colName, }
+	end
+	return data
+end
+
+function RCVotingFrame:BuildSTRows()
 	local rows = {}
 	local i = 1
-	-- We need to build the columns from the data in self.scrollCols
-	-- We only really need the colName and value to get added
+	local data = self:BuildSTCols()
 	for name in addon:GroupIterator() do
-		local data = {}
-		for num, col in ipairs(self.scrollCols) do
-			data[num] = {value = "", colName = col.colName}
-		end
 		rows[i] = {
 			name = name,
 			cols = data,
 		}
 		i = i + 1
 	end
-	self.frame.st:SetData(rows)
+	return rows
 end
 
 local invertedEnumMiscellaneousSubclass = tInvert(Enum.ItemMiscellaneousSubclass)
@@ -1665,6 +1722,7 @@ end
 function RCVotingFrame.filterFunc(table, row)
 	db = addon:Getdb()
 	if not db.modules["RCVotingFrame"].filters then return true end -- db hasn't been initialized, so just show it
+	if not row then return true end
 	local name = row.name
 	if not (lootTable[session] and lootTable[session].candidates[name]) then
 		ErrorHandler:ThrowSilentError(string.format("Couldn't get rank at session %d for candidate %s", session, tostring(name)))
@@ -1704,6 +1762,7 @@ end
 function ResponseSort(table, rowa, rowb, sortbycol)
 	local column = table.cols[sortbycol]
 	local a, b = table:GetRow(rowa), table:GetRow(rowb);
+	if not (a and b) then return false end
 	if not (lootTable[session].candidates[a.name] and lootTable[session].candidates[a.name].response) or not (lootTable[session].candidates[b.name] and lootTable[session].candidates[b.name].response) then
 		return true
 	end
@@ -1735,8 +1794,8 @@ function GuildRankSort(table, rowa, rowb, sortbycol)
 	local column = table.cols[sortbycol]
 	local a, b = table:GetRow(rowa), table:GetRow(rowb);
 	-- Extract the rank index from the name, fallback to 100 if not found
-	a = guildRanks[lootTable[session].candidates[a.name].rank] or 100
-	b = guildRanks[lootTable[session].candidates[b.name].rank] or 100
+	a = a and guildRanks[lootTable[session].candidates[a.name].rank] or 100
+	b = b and guildRanks[lootTable[session].candidates[b.name].rank] or 100
 	if a == b then
 		if column.sortnext then
 			local nextcol = table.cols[column.sortnext];

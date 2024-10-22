@@ -76,4 +76,18 @@ describe("#Integration #MLLogic", function ()
 		assert.True(addon.handleLoot)
 		assert.spy(addon.OnStartHandleLoot).was.called(1)
 	end)
+
+	it("should send mldb on reconnects", function()
+		assert.True(addon.isMasterLooter)
+		addon.isCouncil = false
+		addon.mldb = {}
+		-- We won't receive mldb if we're the ML
+		addon.isMasterLooter = false
+		addon.Log:D("Sent reconnect")
+		RCLootCouncilML:OnReconnectReceived(addon.player:GetName())
+		_ADVANCE_TIME(1)
+		addon.isMasterLooter = true
+		assert.True(addon.isCouncil)
+		assert.is_table(addon.mldb.buttons)
+	end)
 end)
