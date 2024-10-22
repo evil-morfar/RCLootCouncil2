@@ -1,3 +1,11 @@
+# 3.14.2
+
+## Changes
+
+## Bugfixes
+
+- *Fixed Voting Frame sometimes breaking when extending a session while there's changes in group composition.*
+
 # 3.14.1
 
 ## Changes
