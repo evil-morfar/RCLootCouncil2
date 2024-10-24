@@ -4,7 +4,9 @@
 -- @author	Potdisc
 -- Create Date : 12/15/2014 8:54:35 PM
 
-local _,addon = ...
+---@type RCLootCouncil
+local addon = select(2, ...)
+---@class RCVotingFrame : AceModule, AceComm-3.0, AceTimer-3.0, AceEvent-3.0, AceBucket-3.0
 local RCVotingFrame = addon:NewModule("RCVotingFrame", "AceComm-3.0", "AceTimer-3.0", "AceEvent-3.0", "AceBucket-3.0")
 local LibDialog = LibStub("LibDialog-1.1")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
@@ -365,7 +367,6 @@ function RCVotingFrame:OnCommReceived(prefix, serializedMsg, distri, sender)
 end
 
 function RCVotingFrame:OnLootTableAdditionsReceived (_, lt)
-	addon:Print("lt_additions")
 	local oldLenght = #lootTable
 	for k,v in pairs(lt) do
 		lootTable[k] = v
@@ -377,7 +378,56 @@ function RCVotingFrame:OnLootTableAdditionsReceived (_, lt)
 			self:DoRandomRolls(i)
 		end
 	end
+	self:CheckAndHandleCandidateChanges(oldLenght)
 	self:SwitchSession(session)
+end
+
+--- Ensures all sessions has the exact same candidates.
+---@param oldLastSession integer Last session before adding new sessions
+function RCVotingFrame:CheckAndHandleCandidateChanges(oldLastSession)
+	if oldLastSession == #lootTable then return end
+	-- Build a list of all candidates registered
+	-- We only need to check the old last session and the first new session
+	local candidates = {}
+	for i = oldLastSession, oldLastSession + 1 do
+		for name in pairs(lootTable[i].candidates) do
+			candidates[name] = true
+		end
+	end
+	-- Find changed candidates
+	local hasMissing = false
+	local addedCandidates = {}
+	for name in pairs(candidates) do
+		for i = oldLastSession, oldLastSession + 1 do
+			if not lootTable[i].candidates[name] then
+				hasMissing = true
+				addedCandidates[name] = true
+			end
+		end
+	end
+	-- Setup any added candidates
+	if hasMissing then
+		local candidatesInData = {}
+		for _, data in ipairs(self.frame.st.data) do
+			candidatesInData[data.name] = true
+		end
+		local cols = self:BuildSTCols()
+		for name in pairs(addedCandidates) do
+			for i in ipairs(lootTable) do
+				if not lootTable[i].candidates[name] then
+					self:SetupCandidate(lootTable[i], name, "NOTELIGIBLE")
+				end
+			end
+			-- Any new candidates also needs to be added to row data
+			if not candidatesInData[name] then
+				tinsert(self.frame.st.data, { name = name, cols = cols })
+			end
+		end
+		addon:Debug("Candidates changed:", #addedCandidates)
+		self.frame.st:SortData()
+	else
+		addon:Debug("No changes to candidates")
+	end
 end
 
 -- Getter/Setter for candidate data
@@ -423,26 +473,30 @@ function RCVotingFrame:FetchUnawardedSession ()
 	return nil
 end
 
+function RCVotingFrame:SetupCandidate(t, name, response)
+	t.candidates[name] = {
+		class = addon.candidates[name] and addon.candidates[name].class or "Unknown",
+		rank = addon.candidates[name] and addon.candidates[name].rank or "Unknown",
+		role = addon.candidates[name] and addon.candidates[name].role or "NONE",
+		response = response,
+		ilvl = "",
+		diff = "",
+		gear1 = nil,
+		gear2 = nil,
+		votes = 0,
+		note = nil,
+		roll = nil,
+		voters = {},
+		haveVoted = false, -- Have we voted for this particular candidate in this session?
+	}
+end
+
 function RCVotingFrame:SetupSession(session, t)
 	t.added = true -- This entry has been initiated
 	t.haveVoted = false -- Have we voted for ANY candidate in this session?
 	t.candidates = {}
-	for name, v in pairs(addon.candidates) do
-		t.candidates[name] = {
-			class = v.class,
-			rank = v.rank,
-			role = v.role,
-			response = "ANNOUNCED",
-			ilvl = "",
-			diff = "",
-			gear1 = nil,
-			gear2 = nil,
-			votes = 0,
-			note = nil,
-			roll = nil,
-			voters = {},
-			haveVoted = false, -- Have we voted for this particular candidate in this session?
-		}
+	for name in pairs(addon.candidates) do
+		self:SetupCandidate(t, name, "ANNOUNCED")
 	end
 	-- Init session toggle
 	sessionButtons[session] = self:UpdateSessionButton(session, t.texture, t.link, t.awarded)
@@ -461,7 +515,7 @@ function RCVotingFrame:Setup(table)
 		sessionButtons[i]:Hide()
 	end
 	session = 1
-	self:BuildST()
+	self.frame.st:SetData(self:BuildSTRows())
 	self:SwitchSession(session)
 	if addon.isMasterLooter and db.autoAddRolls then
 		self:DoAllRandomRolls()
@@ -701,23 +755,28 @@ function RCVotingFrame:SwitchSession(s)
 	addon:SendMessage("RCSessionChangedPost", s)
 end
 
-function RCVotingFrame:BuildST()
+function RCVotingFrame:BuildSTCols()
+	local data = {}
+	for num, col in ipairs(self.scrollCols) do
+		data[num] = { value = "", colName = col.colName, }
+	end
+	return data
+end
+
+function RCVotingFrame:BuildSTRows()
 	local rows = {}
 	local i = 1
 	-- We need to build the columns from the data in self.scrollCols
 	-- We only really need the colName and value to get added
 	for name in pairs(addon.candidates) do
-		local data = {}
-		for num, col in ipairs(self.scrollCols) do
-			data[num] = {value = "", colName = col.colName}
-		end
+		local data = self:BuildSTCols()
 		rows[i] = {
 			name = name,
 			cols = data,
 		}
 		i = i + 1
 	end
-	self.frame.st:SetData(rows)
+	return rows
 end
 
 local invertedEnumMiscellaneousSubclass = tInvert(Enum.ItemMiscellaneousSubclass)
