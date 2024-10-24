@@ -1082,7 +1082,7 @@ function LootHistory:UpdateMoreInfo(rowFrame, cellFrame, dat, cols, row, realrow
 	end
 	tip:AddLine(" ")
 	tip:AddLine(L["Total awards"])
-	table.sort(moreInfoData[row.name].totals.responses, function(a,b) return type(a[4]) == "number" and type(b[4]) == "number" and a[4] < b[4] or false end)
+	table.sort(moreInfoData[row.name].totals.responses, function(a,b) return type(a[2]) == "number" and type(b[2]) == "number" and a[2] > b[2] or false end)
 	for _, v in pairs(moreInfoData[row.name].totals.responses) do
 		local r,g,b
 		if v[3] then r,g,b = unpack(v[3],1,3) end
@@ -1402,6 +1402,7 @@ function LootHistory.RightClickMenu(menu, level)
 					entry.tokenRoll = nil
 					entry.relicRoll = nil
 					data.response = i
+					entry.typeCode = "default"
 					data.cols[6].args = {color = entry.color, response = entry.response, responseID = i}
 					LootHistory.frame.st:SortData()
 					addon:SendMessage("RCHistory_ResponseEdit", data)
@@ -1430,9 +1431,8 @@ function LootHistory.RightClickMenu(menu, level)
 							entry.response = addon:GetResponse(k,i).text
 							entry.color = {addon:GetResponseColor(k, i)}
 							entry.isAwardReason = nil
-							entry.tokenRoll = nil
-							entry.relicRoll = nil
 							data.response = i
+							entry.typeCode = k
 							data.cols[6].args = {color = entry.color, response = entry.response, responseID = i}
 							LootHistory.frame.st:SortData()
 							addon:SendMessage("RCHistory_ResponseEdit", data)
@@ -1455,6 +1455,7 @@ function LootHistory.RightClickMenu(menu, level)
 							entry.response = addon:GetResponse("default",k).text
 							entry.color = {addon:GetResponseColor("default", k)}
 							entry.isAwardReason = nil
+							entry.typeCode = "default"
 							data.response = k
 							data.cols[6].args = {color = entry.color, response = entry.response, responseID = k}
 							LootHistory.frame.st:SortData()

@@ -1078,6 +1078,8 @@ function RCVotingFrame:UpdateMoreInfo(row, data)
 		end
 		tip:AddLine(" ") -- spacer
 		tip:AddLine(_G.TOTAL)
+		table.sort(moreInfoData[name].totals.responses,
+			function(a, b) return type(a[2]) == "number" and type(b[2]) == "number" and a[2] > b[2] or false end)
 		for _, v in pairs(moreInfoData[name].totals.responses) do
 			if v[3] then r,g,b = unpack(v[3],1,3) end
 			tip:AddDoubleLine(v[1], v[2], r or 1,g or 1,b or 1, r or 1,g or 1,b or 1)
