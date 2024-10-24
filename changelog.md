@@ -1,3 +1,17 @@
+# 3.14.3
+
+## Changes
+
+### More info tooltips
+
+Now properly tracks responses from item groups other than default and tier token.
+
+Responses are now sorted by number of awards.
+
+## Bugfixes
+
+- *Fixed broken sorting in Voting Frame.*
+
 # 3.14.2
 
 ## Changes
