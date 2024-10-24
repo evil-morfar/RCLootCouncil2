@@ -1,3 +1,9 @@
+# 3.14.3
+
+## Bugfixes
+
+- *Fixed broken sorting in Voting Frame.*
+
 # 3.14.2
 
 ## Changes

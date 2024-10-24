@@ -1035,8 +1035,8 @@ end
 function RCVotingFrame:BuildSTRows()
 	local rows = {}
 	local i = 1
-	local data = self:BuildSTCols()
 	for name in addon:GroupIterator() do
+		local data = self:BuildSTCols()
 		rows[i] = {
 			name = name,
 			cols = data,
