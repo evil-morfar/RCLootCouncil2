@@ -1953,11 +1953,8 @@ function RCLootCouncil:GetLootDBStatistics()
 			lootDBStatistics[name] = {}
 			for i = #data, 1, -1 do -- Start from the end
 				entry = data[i]
-				id = entry.responseID
-				if type(id) == "number" then -- ID may be string, e.g. "PASS"
-					if entry.isAwardReason then id = id + 100 end -- Bump to distingush from normal awards
-					if entry.tierToken then id = id + 200 end
-				end
+				id = (entry.isAwardReason and "a" or entry.typeCode or "default") .. entry.responseID
+
 				-- Tier Tokens
 				if not numTokens[entry.instance] then
 					numTokens[entry.instance] = 0
@@ -1970,8 +1967,8 @@ function RCLootCouncil:GetLootDBStatistics()
 				if (not color[id] or unpack(color[id], 1, 3) == unpack {1, 1, 1}) and (entry.color and #entry.color ~= 0) then -- If it's not already added
 					color[id] = #entry.color ~= 0 and #entry.color == 4 and entry.color or {1, 1, 1}
 				end
-				if lastestAwardFound < 5 and type(id) == "number" and not entry.isAwardReason
-								and (id <= db.numMoreInfoButtons or (entry.tierToken and id - 200 <= db.numMoreInfoButtons)) then
+				if lastestAwardFound < 5 and type(entry.responseID) == "number" and not entry.isAwardReason
+								and (entry.responseID <= db.numMoreInfoButtons) then
 					tinsert(lootDBStatistics[name], {
 						entry.lootWon, --[[entry.response .. ", "..]]
 						format(L["'n days' ago"], self:ConvertDateToString(self:GetNumberOfDaysFromNow(entry.date))),

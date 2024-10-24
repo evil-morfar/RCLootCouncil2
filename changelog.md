@@ -1,5 +1,12 @@
 # 3.14.3
 
+## Changes
+
+### More info tooltips
+
+Now properly tracks responses from item groups other than default and tier token.
+
+
 ## Bugfixes
 
 - *Fixed broken sorting in Voting Frame.*
