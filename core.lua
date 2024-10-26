@@ -167,7 +167,7 @@ function RCLootCouncil:OnInitialize()
 		{cmd = "start", desc = L.chat_commands_start},
 		{cmd = "stop", desc = L.chat_commands_stop},
 		{cmd = "test (#)", desc = L["chat_commands_test"]},
-		{cmd = "trade)", desc = L.chat_commands_trade},
+		{cmd = "trade", desc = L.chat_commands_trade},
 		{cmd = "whisper", desc = L["chat_commands_whisper"]},
 		
 	}
