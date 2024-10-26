@@ -363,6 +363,15 @@ function RCLootCouncil:DoChatHook()
 	self:RawHook(self, "Print", function(_, ...) self.hooks[self].Print(self, getglobal(db.chatFrameName), ...) end, true)
 end
 
+function RCLootCouncil:PrintMLChatHelp()
+	print ""
+	local mlCommandsString = self:IsCorrectVersion() and L.chat_commands_groupLeader_only or L.chat_commands_ML_only
+	print("|cFFFFA500" .. mlCommandsString .. "|r")
+	for _, y in ipairs(self.mlChatCmdHelp) do
+		print("|cff20a200", y.cmd, "|r:", y.desc)
+	end
+end
+
 function RCLootCouncil:ChatCommand(msg)
 	local input = self:GetArgs(msg, 1)
 	local args = {}
@@ -383,13 +392,8 @@ function RCLootCouncil:ChatCommand(msg)
 		local module, shownMLCommands
 		for _, v in ipairs(self.chatCmdHelp) do
 			-- Show ML commands beneath regular commands, but above module commands
-			if v.module and not shownMLCommands then
-				print ""
-				local mlCommandsString = self:IsCorrectVersion() and L.chat_commands_groupLeader_only or L.chat_commands_ML_only
-				print("|cFFFFA500".. mlCommandsString .. "|r")	
-				for _, y in ipairs(self.mlChatCmdHelp) do
-					print("|cff20a200", y.cmd, "|r:", y.desc)
-				end
+			if v.module and not shownMLCommands then -- this won't trigger if there's no module(s)
+				self:PrintMLChatHelp()
 				shownMLCommands = true
 			end
 			if v.module ~= module then -- Print module name and version
@@ -409,6 +413,8 @@ function RCLootCouncil:ChatCommand(msg)
 			end
 			module = v.module
 		end
+		-- If there's no modules, just print the ML commands now
+		if not shownMLCommands then self:PrintMLChatHelp() end
 		self.Log:d("- debug or d - Toggle debugging")
 		self.Log:d("- log - display the debug log")
 		self.Log:d("- clearLog - clear the debug log")

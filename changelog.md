@@ -1,3 +1,11 @@
+# 3.14.4
+
+## Changes
+
+## Bugfixes
+
+- *Fixed Group Leader chat command help not being printed without having other modules enabled (Curse#546).*
+
 # 3.14.3
 
 ## Changes
