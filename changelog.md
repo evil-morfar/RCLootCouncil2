@@ -5,6 +5,7 @@
 ## Bugfixes
 
 - *Fixed Group Leader chat command help not being printed without having other modules enabled (Curse#546).*
+- *Moving a frame the exact moment it's minimized will no longer make it stuck to the mouse.*
 
 # 3.14.3
 
