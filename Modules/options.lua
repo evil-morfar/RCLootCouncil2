@@ -237,7 +237,7 @@ function addon:OptionsTable()
 										desc = L["test_desc"],
 										type = "execute",
 										func = function()
-											InterfaceOptionsFrame:Hide(); -- close all option frames before testing
+											HideUIPanel(SettingsPanel)
 											self:Test(3)
 										end,
 									},
@@ -247,7 +247,7 @@ function addon:OptionsTable()
 										type = "execute",
 										order = 9,
 										func = function()
-											InterfaceOptionsFrame:Hide()
+											HideUIPanel(SettingsPanel)
 											LibStub("AceConfigDialog-3.0"):CloseAll()
 											addon:CallModule("version")
 										end,
@@ -258,7 +258,7 @@ function addon:OptionsTable()
 										desc = L["Opens the synchronizer"],
 										type = "execute",
 										func = function()
-											InterfaceOptionsFrame:Hide()
+											HideUIPanel(SettingsPanel)
 											LibStub("AceConfigDialog-3.0"):CloseAll()
 											self.Sync:Spawn()
 										end,
@@ -381,7 +381,10 @@ function addon:OptionsTable()
 										name = L["Open the Loot History"],
 										desc = L["open_the_loot_history_desc"],
 										type = "execute",
-										func = function() self:CallModule("history");	_G.InterfaceOptionsFrame:Hide();end,
+										func = function() 
+											HideUIPanel(SettingsPanel)
+											self:CallModule("history")
+										end,
 									},
 									clearLootDB = {
 										order = 6,
