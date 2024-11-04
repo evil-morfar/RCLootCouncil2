@@ -2719,6 +2719,10 @@ function RCLootCouncil:CreateFrame(name, cName, title, width, height)
 			frame:SavePosition() -- LibWindow SavePosition has nil error rarely and randomly and I cant really find the root cause. Let's just do a nil check.
 		end
 	end)
+	c:SetScript("OnLeave", function(this)
+		-- Used if minimized while dragging the panel
+		this:GetParent():StopMovingOrSizing()
+	end)
 	f.content = c
 	f.minimized = false
 	f.IsMinimized = function(frame) return frame.minimized end
