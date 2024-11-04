@@ -78,6 +78,10 @@ function Object:CreateContentFrame(parent, name, height)
 			frame:SavePosition() -- LibWindow SavePosition has nil error rarely and randomly and I cant really find the root cause. Let's just do a nil check.
 		end
 	end)
+	c:SetScript("OnLeave", function(this)
+		-- Used if minimized while dragging the panel
+		this:GetParent():StopMovingOrSizing()
+	end)
 
 	-- Hook updates to parent :SetWidth, :SetHeight
 	parent:HookScript("OnSizeChanged", function(self, w, h)

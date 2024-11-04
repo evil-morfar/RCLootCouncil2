@@ -796,7 +796,6 @@ function RCVotingFrame:CheckAndHandleCandidateChanges(oldLastSession)
 		for _, data in ipairs(self.frame.st.data) do
 			candidatesInData[data.name] = true
 		end
-		local cols = self:BuildSTCols()
 		for name in pairs(addedCandidates) do
 			for i in ipairs(lootTable) do
 				if not lootTable[i].candidates[name] then
@@ -805,7 +804,7 @@ function RCVotingFrame:CheckAndHandleCandidateChanges(oldLastSession)
 			end
 			-- Any new candidates also needs to be added to row data
 			if not candidatesInData[name] then
-				tinsert(self.frame.st.data, {name = name, cols = cols})
+				tinsert(self.frame.st.data, {name = name, cols = self:BuildSTCols()})
 			end
 		end
 		addon.Log:D("Candidates changed:", #addedCandidates)
@@ -2367,7 +2366,8 @@ do
 					info.text = "|cff"..addon.Utils:RGBToHex(c.r, c.g, c.b)..addon.Ambiguate(name).."|r "..tostring(player.enchantingLvl)
 					info.notCheckable = true
 					info.func = function()
-						for _,v1 in ipairs(db.awardReasons) do
+						for k,v1 in ipairs(db.awardReasons) do
+							if k > db.numAwardReasons then break end
 							if v1.disenchant then
 								local data = lootTable[session].candidates[name] -- Shorthand
 								LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_AWARD", RCVotingFrame:GetAwardPopupData(session, name, data, v1))
