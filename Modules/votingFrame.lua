@@ -2128,7 +2128,8 @@ do
 					info.text = "|cff"..addon:RGBToHex(c.r, c.g, c.b)..addon.Ambiguate(name).."|r "..tostring(v.enchant_lvl)
 					info.notCheckable = true
 					info.func = function()
-						for _,v1 in ipairs(db.awardReasons) do
+						for k,v1 in ipairs(db.awardReasons) do
+							if k > db.numAwardReasons then break end
 							if v1.disenchant then
 								local data = lootTable[session].candidates[name] -- Shorthand
 								LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_AWARD", RCVotingFrame:GetAwardPopupData(session, name, data, v1))
