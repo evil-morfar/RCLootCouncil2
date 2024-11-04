@@ -1396,6 +1396,18 @@ function addon:OptionsTable()
 										min = 1,
 										max = self.db.profile.maxAwardReasons,
 										step = 1,
+										set = function (info, val)
+											addon.db.profile[info[#info]] = val
+											-- Update disenchant - especially if we just hid the only disenachant reason
+											addon.db.profile.disenchant = false
+											for  i = 1, self.db.profile.numAwardReasons do
+												if self.db.profile.awardReasons[i].disenchant then
+													addon.db.profile.disenchant = true
+													break
+												end
+											end
+											addon:ConfigTableChanged(info[#info])
+										end
 									},
 									-- Award reasons made further down
 									reset = {
