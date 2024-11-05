@@ -161,8 +161,8 @@ describe("#VotingFrame #ReannounceOrRequestRoll", function()
 			for ses, data in ipairs(VotingFrame:GetLootTable()) do
 				for name, v in pairs(data.candidates) do
 					-- We might have autopassed
-					if name == addon.player.name and v.roll == "-" then
-						assert.equal("-", v.roll)
+					if name == addon.player.name and v.roll == "?" then
+						assert.equal("?", v.roll)
 					else
 						assert.Nil(v.roll)
 					end

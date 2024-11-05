@@ -1,3 +1,9 @@
+## Changes
+
+### Request rolls
+
+Asking a candidate to roll will now change their roll to "?" when they have received the request.
+
 # 3.14.4
 
 ## Changes
