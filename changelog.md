@@ -1,3 +1,13 @@
+# 3.14.5
+
+## Changes
+
+Updated for patch 11.0.7.
+
+### Request rolls
+
+Asking a candidate to roll will now change their roll to "?" when they have received the request.
+
 # 3.14.4
 
 ## Changes

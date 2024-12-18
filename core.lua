@@ -1153,7 +1153,7 @@ function RCLootCouncil:SendLootAck(table, skip)
 			toSend.gear2[session] = g2 and ItemUtils:GetItemStringClean(g2) or nil
 			toSend.diff[session] = diff
 			toSend.response[session] = v.autopass
-			toSend.roll[session] = v.isRoll and "-" or nil
+			toSend.roll[session] = (v.isRoll and v.autopass and "-") or v.isRoll and "?" or nil
 		end
 	end
 	if not next(toSend.roll) then toSend.roll = nil end
