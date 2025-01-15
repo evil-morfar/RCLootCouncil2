@@ -1647,6 +1647,7 @@ do
 				tinsert(export, string.format("\"%s\":\"%s\"", "note", QuotesEscape(d.note)))
 				tinsert(export, string.format("\"%s\":\"%s\"", "owner", tostring(d.owner or "Unknown")))
 				tinsert(export, string.format("\"%s\":\"%s\"", "itemName", ItemUtils:GetItemNameFromLink(d.lootWon)))
+				tinsert(export, string.format("\"%s\":%s", "serverTime", tostring(d.serverTime or 0)))
 
 				processedEntries = processedEntries + 1;
 

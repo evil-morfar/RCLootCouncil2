@@ -1237,6 +1237,7 @@ function RCLootCouncilML:TrackAndLogLoot(winner, link, responseID, boss, reason,
 	history_table["id"]				= time(date("!*t")).."-"..historyCounter												-- New in v2.7+. A unique id for the history entry.
 	history_table["owner"]			= owner or self.lootTable[session] and self.lootTable[session].owner or winner		-- New in v2.9+.
 	history_table["typeCode"]			= self.lootTable[session] and self.lootTable[session].typeCode		-- New in v2.15+.
+	history_table["serverTime"]		= GetServerTime()
 
 	historyCounter = historyCounter + 1
 
