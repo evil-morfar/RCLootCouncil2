@@ -1,3 +1,10 @@
+## Changes
+
+
+### Bugfixes
+
+- *Council wouldn't always be registered properly.*
+
 # 3.14.5
 
 ## Changes
