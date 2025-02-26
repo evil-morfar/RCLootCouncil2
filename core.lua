@@ -1823,14 +1823,6 @@ function RCLootCouncil:GetNumGroupMembers()
 	return num > 0 and num or 1
 end
 
-function RCLootCouncil:GetNumberOfDaysFromNow(oldDate)
-	return self.Utils:GetNumberOfDaysFromNow(oldDate)
-end
-
-function RCLootCouncil:ConvertDateToString(day, month, year)
-	return self.Utils:ConvertDateToString(day, month, year)
-end
-
 --- Checks the current loot status data and returns it in a formatted data
 -- @return Overview, List. Overview string for display, and a list of names/items and their status (for use in tooltips)
 function RCLootCouncil:GetLootStatusData ()
@@ -2289,7 +2281,7 @@ function RCLootCouncil:GetLootDBStatistics()
 				end
 				if lastestAwardFound < 5 and type(id) == "number" and not entry.isAwardReason
 					and (id <= db.numMoreInfoButtons or (entry.tierToken and id - 200 <= db.numMoreInfoButtons)) then
-					tinsert(lootDBStatistics[name], {entry.lootWon, --[[entry.response .. ", "..]] format(L["'n days' ago"], self:ConvertDateToString(self:GetNumberOfDaysFromNow(entry.date))), color[id], i})
+					tinsert(lootDBStatistics[name], {entry.lootWon, --[[entry.response .. ", "..]] format(L["'n days' ago"], self.Utils:GetNumberOfDaysFromNow(entry.date)), color[id], i})
 					lastestAwardFound = lastestAwardFound + 1
 				end
 				-- Raids:

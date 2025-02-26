@@ -46,7 +46,7 @@ function LootHistory:OnInitialize()
 	self.scrollCols = {
 		{name = "",				width = ROW_HEIGHT, sortnext = 2},																-- Class icon, should be same row as player
 		{name = _G.NAME,		width = 100, sortnext = 3, defaultsort = 1,},												-- Name of the player
-		{name = L["Time"],	width = 125, comparesort = self.DateTimeSort, sort = 2,defaultsort = 2,},			-- Time of awarding
+		{name = L["Time"],	width = 130, comparesort = self.DateTimeSort, sort = 2,defaultsort = 2,},			-- Time of awarding
 		{name = "",				width = ROW_HEIGHT, },																				-- Item icon
 		{name = L["Item"],	width = 250, comparesort = self.ItemSort, defaultsort = 1, sortnext = 2},			-- Item string
 		{name = L["Reason"],	width = 220, comparesort = self.ResponseSort,  defaultsort = 1, sortnext = 2},	-- Response aka the text supplied to lootDB...response
@@ -95,14 +95,6 @@ function LootHistory:Hide()
 	self.moreInfo:Hide()
 	moreInfo = false
 end
-
-function LootHistory:GetLocalizedDate(date) -- date is "DD/MM/YY"
-	local d, m, y = strsplit("/", date, 3)
-	-- FormatShortDate is defined in SharedXML/Util.lua
-	-- "(D)D/(M)M/YY" for EU, "(M)M/DD/YY" otherwise
-	return _G.FormatShortDate(d, m, y)
-end
-
 function LootHistory:BuildData()
 	addon:Debug("LootHistory:BuildData()")
 	data = {}
@@ -156,7 +148,7 @@ function LootHistory:BuildData()
 						cols = { -- NOTE Don't forget the rightClickMenu dropdown, if the order of these changes
 							{DoCellUpdate = addon.SetCellClassIcon, args = {x.class}, value = x.class},
 							{value = addon.Ambiguate(name), color = addon:GetClassColor(x.class)},
-							{value = self:GetLocalizedDate(date).. "-".. i.time or "", args = {time = i.time, date = date},},
+							{value = date.. "-".. i.time or "", args = {time = i.time, date = date},},
 							{DoCellUpdate = self.SetCellGear, args={i.lootWon}},
 							{value = i.lootWon},
 							{DoCellUpdate = self.SetCellResponse, args = {color = i.color or {1,1,1,1}, response = i.response, responseID = i.responseID or 0, isAwardReason = i.isAwardReason}},
@@ -381,7 +373,7 @@ end
 
 -- for date scrolling table
 function LootHistory.SetCellDate(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
-	frame.text:SetText(LootHistory:GetLocalizedDate(data[realrow][column]))
+	frame.text:SetText(data[realrow][column])
 	if table.fSelect then
 		if table.selected == realrow then
 			table:SetHighLightColor(rowFrame, table:GetDefaultHighlight());
@@ -467,13 +459,14 @@ function LootHistory.SetCellDelete(rowFrame, frame, data, cols, row, realrow, co
 end
 
 function LootHistory:AddEpochDate(date, tim)
-	local d, m, y = strsplit("/", date, 3)
+	local y, m, d = strsplit("/", date, 3)
 	local h, min, s = strsplit(":", tim, 3)
 	epochDates[date..tim] = self:DateTimeToSeconds(d,m,y,h,min,s)
 end
 
 function LootHistory:DateTimeToSeconds (d,m,y,h,min,s)
-	return time({year = "20"..y or 10, month = m or 1, day = d or 1, hour = h or 0, min = min or 0, sec = s or 0})
+	return time({ year = #tostring(y) == 4 and y or "20" .. y or 10, month = m or 1, day = d or 1, hour = h or 0, min =
+	min or 0, sec = s or 0 })
 end
 
 function LootHistory.DateTimeSort(table, rowa, rowb, sortbycol)
@@ -683,6 +676,17 @@ function LootHistory:ImportHistory(import)
 		error("Unknown import type")
 	end
 end
+---@param data table|string Either complete history entry, or just the date
+local function checkDateFormatting(data)
+	local d, m, y = strsplit("/", data.date and data.date or data)
+	if #d == 4 then return data end -- is in new format
+	if data.date then
+		data.date = "20" .. y .. "/" .. m .. "/" .. d
+	else
+		data = "20" .. y .. "/" .. m .. "/" .. d
+	end
+	return data
+end
 
 -- REVIEW: Needs updating
 function LootHistory:ImportPlayerExport (import)
@@ -706,12 +710,16 @@ function LootHistory:ImportPlayerExport (import)
 					if d.time == v.time then found = true; break end
 				end
 				if not found then -- add it
-					tinsert(lootDB[name], v)
+					tinsert(lootDB[name], checkDateFormatting(v))
 					number = number + 1
 				end
 			end
 		else -- It's a new name, so add everything and move on to the next
-			lootDB[name] = data
+			lootDB[name] = {}
+			for _, v in pairs(data) do
+				v = checkDateFormatting(v)
+				tinsert(lootDB[name], v)
+			end
 			number = number + #data
 		end
 	end
@@ -768,7 +776,7 @@ end
 
 function LootHistory:GetFrame()
 	if self.frame then return self.frame end
-	local f = addon:CreateFrame("DefaultRCLootHistoryFrame", "history", L["RCLootCouncil Loot History"], 250, 480)
+	local f = addon:CreateFrame("DefaultRCLootHistoryFrame", "history", L["RCLootCouncil Loot History"], 250, 485)
 	addon.UI:RegisterForEscapeClose(f, function() if self:IsEnabled() then self:Disable() end end)
 	local st = LibStub("ScrollingTable"):CreateST(self.scrollCols, NUM_ROWS, ROW_HEIGHT, { ["r"] = 1.0, ["g"] = 0.9, ["b"] = 0.0, ["a"] = 0.5 }, f.content)
 	st.frame:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", 10, 10)
@@ -790,7 +798,7 @@ function LootHistory:GetFrame()
 	f.st = st
 
 	--Date selection
-	f.date = LibStub("ScrollingTable"):CreateST({{name = L["Date"], width = 70, comparesort = self.DateSort, sort = 2, DoCellUpdate = self.SetCellDate}}, 5, ROW_HEIGHT, { ["r"] = 1.0, ["g"] = 0.9, ["b"] = 0.0, ["a"] = 0.5 }, f.content)
+	f.date = LibStub("ScrollingTable"):CreateST({{name = L["Date"], width = 74, comparesort = self.DateSort, sort = 2, DoCellUpdate = self.SetCellDate}}, 5, ROW_HEIGHT, { ["r"] = 1.0, ["g"] = 0.9, ["b"] = 0.0, ["a"] = 0.5 }, f.content)
 	f.date.frame:SetPoint("TOPLEFT", f, "TOPLEFT", 10, -20)
 	f.date:EnableSelection(true)
 	f.date:RegisterEvents({
@@ -1511,7 +1519,7 @@ do
 				if d.tierToken then subType = L["Armor Token"] end
 				-- We might have commas in various things here :/
 				tinsert(export, tostring(player))
-				tinsert(export, tostring(self:GetLocalizedDate(d.date)))
+				tinsert(export, tostring(d.date))
 				tinsert(export, tostring(d.time))
 				tinsert(export, tostring(d.id))
 				tinsert(export, CSVEscape(d.lootWon))
@@ -1555,7 +1563,7 @@ do
 				if d.tierToken then subType = L["Armor Token"] end
 				rollType = (d.tokenRoll and "token") or (d.relicRoll and "relic") or "normal"
 				tinsert(export, tostring(player))
-				tinsert(export, tostring(self:GetLocalizedDate(d.date)))
+				tinsert(export, tostring(d.date))
 				tinsert(export, tostring(d.time))
 				tinsert(export, "=HYPERLINK(\""..self:GetWowheadLinkFromItemLink(d.lootWon).."\";\""..tostring(d.lootWon).."\")")
 				tinsert(export, addon:GetItemIDFromLink(d.lootWon))
@@ -1602,7 +1610,7 @@ do
 				if d.tierToken then subType = L["Armor Token"] end
 				rollType = (d.tokenRoll and "token") or (d.relicRoll and "relic") or "normal"
 				tinsert(export, string.format("\"%s\":\"%s\"", "player", tostring(player)))
-				tinsert(export, string.format("\"%s\":\"%s\"", "date", tostring(self:GetLocalizedDate(d.date))))
+				tinsert(export, string.format("\"%s\":\"%s\"", "date", tostring(d.date)))
 				tinsert(export, string.format("\"%s\":\"%s\"", "time", tostring(d.time)))
 				tinsert(export, string.format("\"%s\":\"%s\"", "id", tostring(d.id)))
 				tinsert(export, string.format("\"%s\":%s", "itemID", addon:GetItemIDFromLink(d.lootWon)))
@@ -1622,6 +1630,7 @@ do
 				tinsert(export, string.format("\"%s\":\"%s\"", "note", QuotesEscape(d.note)))
 				tinsert(export, string.format("\"%s\":\"%s\"", "owner", tostring(d.owner or "Unknown")))
 				tinsert(export, string.format("\"%s\":\"%s\"", "itemName", addon.Utils:GetItemNameFromLink(d.lootWon)))
+				tinsert(export, string.format("\"%s\":\"%s\"", "servertime", (strsplit("-", d.id, 2))))
 
 				processedEntries = processedEntries + 1;
 

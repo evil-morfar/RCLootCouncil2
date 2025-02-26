@@ -4,9 +4,6 @@
 	@author Potdisc
 ]]
 
---[[TODOs/NOTES:
-]]
-
 local _,addon = ...
 _G.RCLootCouncilML = addon:NewModule("RCLootCouncilML", "AceEvent-3.0", "AceBucket-3.0", "AceComm-3.0", "AceTimer-3.0", "AceHook-3.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
@@ -127,10 +124,10 @@ function RCLootCouncilML:AddItem(item, bagged, slotIndex, owner, entry, boss)
 	end
 end
 
-function RCLootCouncilML:GetLootTableForTransmit()
+function RCLootCouncilML:GetLootTableForTransmit(resend)
 	local copy = CopyTable(self.lootTable)
 	for k, v in pairs(copy) do
-		if v.isSent then -- Don't retransmit already sent items
+		if v.isSent and not resend then -- Don't retransmit already sent items
 			copy[k] = nil
 		else
 			v["equipLoc"] = select(4, GetItemInfoInstant(v.link))
@@ -610,7 +607,7 @@ function RCLootCouncilML:OnCommReceived(prefix, serializedMsg, distri, sender)
 				v2.2.3: 	Got a ticket where candidates wasn't received. Bumped to 2 sec and added extra checks for candidates.]]
 
 				addon:ScheduleTimer("SendCommand", 2, sender, "candidates", self.candidates)
-				addon:ScheduleTimer("SendCommand", 4, sender, "lootTable", self:GetLootTableForTransmit())
+				addon:ScheduleTimer("SendCommand", 4, sender, "lootTable", self:GetLootTableForTransmit(true))
 				-- There's no way we can fit the entire session data within the new comms throttle limit.
 				addon:Debug("Responded to reconnect from", sender)
 			elseif command == "lootTable" and addon:UnitIsUnit(sender, addon.playerName) then
@@ -1357,9 +1354,10 @@ function RCLootCouncilML:TrackAndLogLoot(winner, link, responseID, boss, reason,
 		boss = self.lootTable[session].boss
 	end
 	addon:Debug("ML:TrackAndLogLoot()", winner, link, responseID, boss, reason, session, candData)
+	local serverTime               = C_DateAndTime.GetServerTimeLocal()
 	history_table["lootWon"] 		= link
-	history_table["date"] 			= date("%d/%m/%y")
-	history_table["time"] 			= date("%H:%M:%S")
+	history_table["date"] 			= date("!%Y/%m/%d", serverTime)
+	history_table["time"] 			= date("!%H:%M:%S", serverTime)
 	history_table["instance"] 		= instanceName.."-"..difficultyName
 	history_table["boss"] 			= boss or _G.UNKNOWN
 	history_table["votes"] 			= candData and candData.votes
@@ -1374,10 +1372,10 @@ function RCLootCouncilML:TrackAndLogLoot(winner, link, responseID, boss, reason,
 	history_table["mapID"]			= mapID																							-- New in v2.3+
 	history_table["groupSize"]		= groupSize																						-- New in v2.3+
 --	history_table["tierToken"]		= isToken																						-- New in v2.3+ - Removed v2.9
---	history_table["tokenRoll"]		= tokenRoll																						-- New in v2.4+ - Removed v2.9
+--	history_table["tokenRoll"]		= tokenRoll					d																	-- New in v2.4+ - Removed v2.9
 --	history_table["relicRoll"]		= relicRoll																						-- New in v2.5+ - Removed v2.9
 	history_table["note"]			= candData and candData.note																-- New in v2.7+
-	history_table["id"]				= time(date("!*t")).."-"..historyCounter												-- New in v2.7+. A unique id for the history entry.
+	history_table["id"]				= GetServerTime().."-"..historyCounter												-- New in v2.7+. A unique id for the history entry.
 	history_table["owner"]			= owner or self.lootTable[session] and self.lootTable[session].owner or winner		-- New in v2.9+.
 	history_table["typeCode"]		= self.lootTable[session] and self.lootTable[session].typeCode		-- New in v2.15+.
 
