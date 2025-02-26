@@ -292,23 +292,23 @@ function private:RebuildTime (data, t, line)
       local y,m,d = strsplit("/", dato or "", 3)
       local h,mm,s = strsplit(":",time,3)
       local secs = His:DateTimeToSeconds(d,m,y,h,mm,s)
-      t.date = date("!%Y/%m/%d", secs)
-      t.time = date("!%H:%M:%S", secs)
+      t.date = date("%Y/%m/%d", secs)
+      t.time = date("%H:%M:%S", secs)
       t.id = secs .. "-"..private.idCount
       private.idCount = private.idCount + 1
    elseif dato then
       local d, m, y = strsplit("/", dato or "", 3)
       local secs = His:DateTimeToSeconds(d,m,y) -- Will provide 0:0:0
-		t.date = date("!%Y/%m/%d", secs)
-		t.time = date("!%H:%M:%S", secs)
+		t.date = date("%Y/%m/%d", secs)
+		t.time = date("%H:%M:%S", secs)
       t.id = secs .. "-"..private.idCount
       private.idCount = private.idCount + 1
    elseif time then
       local y, m, d = strsplit("/", date("%Y/%m/%d"), 3) -- Use today
       local h, min, s = strsplit(":", time, 3) -- but keep the time
       local secs = His:DateTimeToSeconds(d,m,y,h,min,s)
-		t.date = date("!%Y/%m/%d", secs)
-		t.time = date("!%H:%M:%S", secs)
+		t.date = date("%Y/%m/%d", secs)
+		t.time = date("%H:%M:%S", secs)
       t.id = secs .. "-"..private.idCount
       private.idCount = private.idCount + 1
    else
