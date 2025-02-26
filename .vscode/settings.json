@@ -85,6 +85,8 @@
         "ITEM_ACCOUNTBOUND_UNTIL_EQUIP",
         "ChatFrame1",
         "UISpecialFrames",
-        "tInsertUnique"
+        "tInsertUnique",
+        "MergeTable",
+        "Item"
     ]
 }

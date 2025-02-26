@@ -1215,9 +1215,10 @@ function RCLootCouncilML:TrackAndLogLoot(winner, link, responseID, boss, reason,
 		boss = self.lootTable[session].boss
 	end
 	self.Log:d("ML:TrackAndLogLoot()", winner, link, responseID, boss, reason, session, candData)
+	local serverTime               = C_DateAndTime.GetServerTimeLocal()
 	history_table["lootWon"] 		= link
-	history_table["date"] 			= date("%d/%m/%y")
-	history_table["time"] 			= date("%H:%M:%S")
+	history_table["date"] 			= date("!%Y/%m/%d", serverTime)
+	history_table["time"] 			= date("!%H:%M:%S", serverTime)
 	history_table["instance"] 		= instanceName.."-"..difficultyName
 	history_table["boss"] 			= boss or _G.UNKNOWN
 	history_table["votes"] 			= candData and candData.votes
@@ -1235,7 +1236,7 @@ function RCLootCouncilML:TrackAndLogLoot(winner, link, responseID, boss, reason,
 --	history_table["tokenRoll"]		= tokenRoll																						-- New in v2.4+ - Removed v2.9
 --	history_table["relicRoll"]		= relicRoll																						-- New in v2.5+ - Removed v2.9
 	history_table["note"]			= candData and candData.note																-- New in v2.7+
-	history_table["id"]				= time(date("!*t")).."-"..historyCounter												-- New in v2.7+. A unique id for the history entry.
+	history_table["id"]				= GetServerTime().."-"..historyCounter												-- New in v2.7+. A unique id for the history entry.
 	history_table["owner"]			= owner or self.lootTable[session] and self.lootTable[session].owner or winner		-- New in v2.9+.
 	history_table["typeCode"]			= self.lootTable[session] and self.lootTable[session].typeCode		-- New in v2.15+.
 
