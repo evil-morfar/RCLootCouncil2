@@ -75,7 +75,7 @@ function RCLootCouncil:ExportTokenData(nextID)
 	for _, entry in ipairs(sorted) do
 		local slot = ""
 		-- We should just use the tooltips as it's way more reliable
-		-- local name = entry[2]
+		local name = entry[2]
 		-- local l = name:lower()
 		-- for invSlot, keywords in pairs(keyWords) do
 		-- 	for _, keyword in pairs(keywords) do
@@ -846,6 +846,27 @@ _G.RCTokenTable = {
 	[225631] = "ShoulderSlot", -- Mystic Obscenity's Idol,
 	[225632] = "ShoulderSlot", -- Venerated Obscenity's Idol,
 	[225633] = "ShoulderSlot", -- Zenith Obscenity's Idol,
+
+	[228799] = "ChestSlot",	-- Dreadful Greased Gallybux,
+	[228800] = "ChestSlot",	-- Mystic Greased Gallybux,
+	[228801] = "ChestSlot",	-- Venerated Greased Gallybux,
+	[228802] = "ChestSlot", -- Zenith Greased Gallybux,
+	[228803] = "HandsSlot",	-- Dreadful Bloody Gallybux,
+	[228804] = "HandsSlot",	-- Mystic Bloody Gallybux,
+	[228805] = "HandsSlot",	-- Venerated Bloody Gallybux,
+	[228806] = "HandsSlot",	-- Zenith Bloody Gallybux,
+	[228807] = "HeadSlot",	-- Dreadful Gilded Gallybux,
+	[228808] = "HeadSlot",	-- Mystic Gilded Gallybux,
+	[228809] = "HeadSlot",	-- Venerated Gilded Gallybux,
+	[228810] = "HeadSlot",	-- Zenith Gilded Gallybux,
+	[228811] = "LegsSlot",	-- Dreadful Rusty Gallybux,
+	[228812] = "LegsSlot",	-- Mystic Rusty Gallybux,
+	[228813] = "LegsSlot",	-- Venerated Rusty Gallybux,
+	[228814] = "LegsSlot",	-- Zenith Rusty Gallybux,
+	[228815] = "ShoulderSlot",	-- Dreadful Polished Gallybux,
+	[228816] = "ShoulderSlot",	-- Mystic Polished Gallybux,
+	[228817] = "ShoulderSlot",	-- Venerated Polished Gallybux,
+	[228818] = "ShoulderSlot",	-- Zenith Polished Gallybux,
 }
 
 -- The base item level for the token on normal difficulty

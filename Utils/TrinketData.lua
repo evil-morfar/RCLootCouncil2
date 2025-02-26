@@ -50,7 +50,7 @@ function RCLootCouncil:ExportTrinketData(nextTier, nextIsRaid, nextIndex, nextDi
    nextIndex = nextIndex or 1
    nextDiffID = nextDiffID or 1
    if not nextTier then
-      nextTier = 10 -- Dragonflight
+      nextTier = 11 -- TWW
       self:Print("Exporting the loot specs of all trinkets in the dungeon journal\n"
          .."This command is intended to be run by the developer.\n"
          .."After exporting is done and copy and paste the data into Utils/TrinketData.lua.\n"
@@ -1980,4 +1980,32 @@ _G.RCTrinketSpecs = {
 	[231456] = "0000000700067", -- Heart of Roccor,              	Strength
 	[231462] = "0241000100024", -- Molten Furnace,               	Tank
 	[231420] = "2082004030010", -- Second Wind,                  	Healer
+
+	-- Operation: Floodgate Normal (id: 1298).
+	[232542] = "6082004030010", -- Darkfuse Medichopper,            	Healer
+	[232545] = "5010771040000", -- Gigazap's Zap-Cap,               	Damage, Intellect
+	[232541] = "0365002707767", -- Improvised Seaforium Pacemaker,  	Strength/Agility
+	[232543] = "0241000100024", -- Ringing Ritual Mud,              	Tank
+	-- Operation: Floodgate Heroic (id: 1298).
+	-- Operation: Floodgate Mythic (id: 1298).
+
+	-- Liberation of Undermine Normal (id: 1296).
+	[230029] = "0241000100024", -- Chromebustible Bomb Suit,        	Tank
+	[230198] = "73F7777777777", -- Eye of Kezan,                    	All Classes
+	[230191] = "5010771040000", -- Flarendo's Pilot Light,          	Damage, Intellect
+	[230188] = "2082004030010", -- Gallagio Bottle Service,         	Healer
+	[230197] = "5134773647743", -- Geargrinder's Spare Keys,        	Damage
+	[230027] = "73F7777777777", -- House of Cards,                  	All Classes
+	[230189] = "0124002007700", -- Junkmaestro's Mega Magnet,       	Damage, Agility
+	[230193] = "5134773647743", -- Mister Lock-N-Stalk,             	Damage
+	[230186] = "2082004030010", -- Mister Pick-Me-Up,               	Healer
+	[230192] = "7092775070010", -- Mug's Moxie Jug,                 	Intellect
+	[230194] = "73F7777777777", -- Reverb Radio,                    	All Classes
+	[230026] = "0241000100024", -- Scrapfield 9001,                 	Tank
+	[230190] = "0000000600043", -- Torq's Big Red Button,           	Damage, Strength
+	[230019] = "0241000100024", -- Vexie's Pit Whistle,             	Tank
+	[230199] = "0124002607443", -- Zee's Thug Hotline,              	Damage, Melee
+	-- Liberation of Undermine Heroic (id: 1296).
+	-- Liberation of Undermine Mythic (id: 1296).
+	-- Liberation of Undermine Looking For Raid (id: 1296).
 }

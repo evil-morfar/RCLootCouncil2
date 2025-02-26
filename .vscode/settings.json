@@ -8,7 +8,7 @@
         "~/AppData/Roaming/Code/User/globalStorage/sumneko.lua/addonManager/addons/luassert/module/library",
         "~/AppData/Roaming/Code/User/globalStorage/sumneko.lua/addonManager/addons/busted/module/library",
         "${3rd}/lfs/library",
-        "~\\.vscode\\extensions\\ketho.wow-api-0.17.6\\Annotations"
+        "~\\.vscode\\extensions\\ketho.wow-api-0.18.2\\Annotations"
     ],
 
     "Lua.diagnostics.disable": [
@@ -89,6 +89,19 @@
         "MergeTable",
         "Item",
         "ConvertSecondsToUnits",
-        "CLASS_SORT_ORDER"
+        "CLASS_SORT_ORDER",
+        "DEFAULT_CHAT_FRAME",
+        "ReloadUI",
+        "ALL_CLASSES",
+        "ITEM_MOD_STRENGTH_SHORT",
+        "MELEE",
+        "ITEM_MOD_AGILITY_SHORT",
+        "ITEM_MOD_INTELLECT_SHORT",
+        "TANK",
+        "HEALER",
+        "DAMAGER",
+        "BLOCK",
+        "PARRY",
+        "RANGED"
     ]
 }
