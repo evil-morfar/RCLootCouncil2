@@ -87,6 +87,7 @@
         "UISpecialFrames",
         "tInsertUnique",
         "MergeTable",
-        "Item"
+        "Item",
+        "ConvertSecondsToUnits"
     ]
 }
