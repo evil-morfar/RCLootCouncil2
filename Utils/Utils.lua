@@ -47,16 +47,13 @@ function Utils:TranslateRole(role)
 	return (role and role ~= "") and _G[role] or ""
 end
 
--- REVIEW FrameXML/Utils have something like this
 --- Calculates how long ago a given date was.
--- Assumes the date is of year 2000+.
---- @param oldDate string A string specifying the date, formatted as "dd/mm/yy".
+--- @param oldDate string A string specifying the date, formatted as "yyyy/mm/dd".
 function Utils:GetNumberOfDaysFromNow(oldDate)
-	local d, m, y = strsplit("/", oldDate, 3)
-	local sinceEpoch = time({ year = "20" .. y, month = m, day = d, hour = 0, }) -- convert from string to seconds since epoch
-	local diff = date("*t", math.abs(time() - sinceEpoch)) -- get the difference as a table
-	-- Convert to number of d/m/y
-	return diff.day - 1, diff.month - 1, diff.year - 1970
+	local y, m, d = strsplit("/", oldDate, 3)
+	local sinceEpoch = time({ year = y, month = m, day = d, hour = 0, }) -- convert from string to seconds since epoch
+
+	return ConvertSecondsToUnits(GetServerTime() - sinceEpoch).days
 end
 
 --- Takes the return value from :GetNumberOfDaysFromNow() and converts it to text.

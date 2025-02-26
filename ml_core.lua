@@ -416,6 +416,7 @@ function RCLootCouncilML:OnGroupRosterUpdate()
 	if newGroupSize > self.groupSize then
 		self.Log:d("Group size changed to "..newGroupSize)
 		MLDB:Send("group")
+		self:UpdateGroupCouncil()
 		self:SendCouncil()
 	end
 	self.groupSize = newGroupSize
@@ -1214,9 +1215,10 @@ function RCLootCouncilML:TrackAndLogLoot(winner, link, responseID, boss, reason,
 		boss = self.lootTable[session].boss
 	end
 	self.Log:d("ML:TrackAndLogLoot()", winner, link, responseID, boss, reason, session, candData)
+	local serverTime               = C_DateAndTime.GetServerTimeLocal()
 	history_table["lootWon"] 		= link
-	history_table["date"] 			= date("%d/%m/%y")
-	history_table["time"] 			= date("%H:%M:%S")
+	history_table["date"] 			= date("!%Y/%m/%d", serverTime)
+	history_table["time"] 			= date("!%H:%M:%S", serverTime)
 	history_table["instance"] 		= instanceName.."-"..difficultyName
 	history_table["boss"] 			= boss or _G.UNKNOWN
 	history_table["votes"] 			= candData and candData.votes
@@ -1234,7 +1236,7 @@ function RCLootCouncilML:TrackAndLogLoot(winner, link, responseID, boss, reason,
 --	history_table["tokenRoll"]		= tokenRoll																						-- New in v2.4+ - Removed v2.9
 --	history_table["relicRoll"]		= relicRoll																						-- New in v2.5+ - Removed v2.9
 	history_table["note"]			= candData and candData.note																-- New in v2.7+
-	history_table["id"]				= time(date("!*t")).."-"..historyCounter												-- New in v2.7+. A unique id for the history entry.
+	history_table["id"]				= GetServerTime().."-"..historyCounter												-- New in v2.7+. A unique id for the history entry.
 	history_table["owner"]			= owner or self.lootTable[session] and self.lootTable[session].owner or winner		-- New in v2.9+.
 	history_table["typeCode"]			= self.lootTable[session] and self.lootTable[session].typeCode		-- New in v2.15+.
 
@@ -1309,15 +1311,12 @@ end
 -- Used by the ML to only send out a council consisting of actual group members.
 function RCLootCouncilML:UpdateGroupCouncil()
 	Council:Set{} -- Set empty
+	local candidates = addon:UpdateCandidatesInGroup()
 	for _, guid in ipairs(addon.db.profile.council) do
 		-- REVIEW: Is all this Player:Get() really efficient?
-		local player1 = Player:Get(guid)
-		for cand in addon:GroupIterator() do
-			local player2 = Player:Get(cand)
-			if player1 == player2 then
-				Council:Add(player1)
-				break
-			end
+		local player = Player:Get(guid)
+		if candidates[player.name] then
+			Council:Add(player)
 		end
 	end
 	 -- Ensure ML (us) are included

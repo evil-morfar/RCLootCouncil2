@@ -45,7 +45,7 @@ end
 
 ---@param link ItemLink|ItemString
 function Item:GetItemIDFromLink(link)
-	return tonumber(strmatch(link or "", "item:(%d+):"))
+	return tonumber(strmatch(link or "", "item:(%d+):?"))
 end
 
 ---Appends the item link with `" x ``count``"`, but only if count is defined, and greater than 1.

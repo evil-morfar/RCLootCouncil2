@@ -1534,10 +1534,6 @@ function RCLootCouncil:GetNumGroupMembers()
 	return num > 0 and num or 1
 end
 
-function RCLootCouncil:GetNumberOfDaysFromNow(oldDate) return self.Utils:GetNumberOfDaysFromNow(oldDate) end
-
-function RCLootCouncil:ConvertDateToString(day, month, year) return self.Utils:ConvertDateToString(day, month, year) end
-
 local function CandidateAndNewMLCheck()
 	RCLootCouncil:UpdateCandidatesInGroup()
 	RCLootCouncil:NewMLCheck()
@@ -1977,7 +1973,7 @@ function RCLootCouncil:GetLootDBStatistics()
 								and (entry.responseID <= db.numMoreInfoButtons) then
 					tinsert(lootDBStatistics[name], {
 						entry.lootWon, --[[entry.response .. ", "..]]
-						format(L["'n days' ago"], self:ConvertDateToString(self:GetNumberOfDaysFromNow(entry.date))),
+						format(L["'n days' ago"], self.Utils:GetNumberOfDaysFromNow(entry.date)),
 						color[id],
 						i,
 					})

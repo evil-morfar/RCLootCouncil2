@@ -1,13 +1,24 @@
 ## Author: Potdisc
-## Interface: 110007
-## Notes: Interface for running a Loot Council v3.14.5
+## Interface: 110100
+## Notes: Interface for running a Loot Council v3.15.0
 ## Title: RCLootCouncil
-## Version: 3.14.5
+## Version: 3.15.0
 ## SavedVariables: RCLootCouncilDB, RCLootCouncilLootDB
 ## OptionalDeps: LibStub, CallbackHandler-1.0, Ace3, lib-st, LibWindow-1.1, LibDialog-1.0
 ## X-Curse-Project-ID: 39928
 ## X-Wago-ID: 4N2m8ZGL
 ## IconTexture: Interface\AddOns\RCLootCouncil\Media\logo
+## Category-enUS: Loot
+## Category-deDE: Beute
+## Category-esES: Botín
+## Category-esMX: Botín
+## Category-frFR: Butin 
+## Category-itIT: Bottino
+## Category-koKR: 전리품
+## Category-ptBR: Saque
+## Category-ruRU: Добыча
+## Category-zhCN: 战利品
+## Category-zhTW: 戰利品
 
 Patches\UiDropDownMenuTaintCommunities.lua
 
