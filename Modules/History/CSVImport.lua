@@ -270,7 +270,7 @@ function private:RebuildTime (data, t, line)
    local dato, time, id = data[2], data[3], data[4]
    if not dato and not time and not id then
       -- Not provided, just use current time
-      t.date = date("%d/%m/%y")
+      t.date = date("%Y/%m/%d")
       t.time = date("%H:%M:%S")
       t.id = GetServerTime() .."-"..private.idCount
       private.idCount = private.idCount + 1
@@ -286,29 +286,29 @@ function private:RebuildTime (data, t, line)
          t.id = id .. "-"..private.idCount
          private.idCount = private.idCount + 1
       end
-      t.date = date("%d/%m/%y", secs)
-      t.time = date("%H:%M:%S", secs)
+      t.date = date("!%Y/%m/%d", secs)
+      t.time = date("!%H:%M:%S", secs)
    elseif dato and time then
-      local d, m, y = strsplit("/", dato or "", 3)
+      local y,m,d = strsplit("/", dato or "", 3)
       local h,mm,s = strsplit(":",time,3)
       local secs = His:DateTimeToSeconds(d,m,y,h,mm,s)
-      t.date = date("%d/%m/%y", secs)
-      t.time = date("%H:%M:%S", secs)
+      t.date = date("!%Y/%m/%d", secs)
+      t.time = date("!%H:%M:%S", secs)
       t.id = secs .. "-"..private.idCount
       private.idCount = private.idCount + 1
    elseif dato then
       local d, m, y = strsplit("/", dato or "", 3)
       local secs = His:DateTimeToSeconds(d,m,y) -- Will provide 0:0:0
-      t.date = date("%d/%m/%y", secs)
-      t.time = date("%H:%M:%S", secs)
+		t.date = date("!%Y/%m/%d", secs)
+		t.time = date("!%H:%M:%S", secs)
       t.id = secs .. "-"..private.idCount
       private.idCount = private.idCount + 1
    elseif time then
-      local d, m, y = strsplit("/", date("%d/%m/%y"), 3) -- Use today
+      local y, m, d = strsplit("/", date("%Y/%m/%d"), 3) -- Use today
       local h, min, s = strsplit(":", time, 3) -- but keep the time
       local secs = His:DateTimeToSeconds(d,m,y,h,min,s)
-      t.date = date("%d/%m/%y", secs)
-      t.time = date("%H:%M:%S", secs)
+		t.date = date("!%Y/%m/%d", secs)
+		t.time = date("!%H:%M:%S", secs)
       t.id = secs .. "-"..private.idCount
       private.idCount = private.idCount + 1
    else

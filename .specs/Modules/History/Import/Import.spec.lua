@@ -41,7 +41,7 @@ describe("#Import", function()
 			local entry = addon:GetHistoryDB()["Cindermuff-Ravencrest"][1]
 			assert.is_not.Nil(entry)
 
-			assert.is.equal("22/05/19", entry.date)
+			assert.is.equal("2019/05/22", entry.date)
 			-- assert.is.equal("21:08:07", entry.time)
 			assert.is.equal("1558552087-9", entry.id)
 			assert.is.equal(
@@ -112,13 +112,13 @@ describe("#Import", function()
 			History:ImportTSV_CSV(private.testData[9])
 			local entry = addon:GetHistoryDB()["Potdisc-Ravencrest"][1]
 			-- Missing all time data, i.e. date/time should be set to now
-			assert.are.equal(date("%d/%m/%y"), entry.date)
+			assert.are.equal(date("%Y/%m/%d"), entry.date)
 			assert.are.equal(date("%H:%M:%S"), entry.time)
 
 			History:ImportTSV_CSV(private.testData[10])
 			entry = addon:GetHistoryDB()["Potdisc-Ravencrest"][2]
 			-- Missing id, should be rebuilt form date/time
-			assert.are.equal("12/05/19", entry.date)
+			assert.are.equal("2019/05/12", entry.date)
 			assert.are.equal("22:01:51", entry.time)
 			-- assert.are.equal("1557691311-1", entry.id)
 		end)
@@ -239,5 +239,5 @@ Potdisc-Ravencrest	12/6/19	21:34:34	1560371674-43	[Giga-Charged Shoulderpads]	16
    Potdisc-Ravencrest				[Deathspeaker Spire]	165597	item:165597::::::::120:258::5:3:4799:1522:4786	Personal Loot - Non tradeable	nil	PRIEST	Battle of Dazar'alor-Heroic	King Rastakhan	15	2070	14			PL	false	Staves	Two-Hand		Potdisc-Ravencrest]], -- Missing all time vars
 
 	[10] = [[player	date	time	id	item	itemID	itemString	response	votes	class	instance	boss	difficultyID	mapID	groupSize	gear1	gear2	responseID	isAwardReason	subType	equipLoc	note	owner
-   Potdisc-Ravencrest	12/5/19	22:01:51		[Deathspeaker Spire]	165597	item:165597::::::::120:258::5:3:4799:1522:4786	Personal Loot - Non tradeable	nil	PRIEST	Battle of Dazar'alor-Heroic	King Rastakhan	15	2070	14			PL	false	Staves	Two-Hand		Potdisc-Ravencrest]], -- Missing id
+   Potdisc-Ravencrest	19/5/12	22:01:51		[Deathspeaker Spire]	165597	item:165597::::::::120:258::5:3:4799:1522:4786	Personal Loot - Non tradeable	nil	PRIEST	Battle of Dazar'alor-Heroic	King Rastakhan	15	2070	14			PL	false	Staves	Two-Hand		Potdisc-Ravencrest]], -- Missing id
 }

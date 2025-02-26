@@ -533,13 +533,13 @@ function LootHistory.SetCellDelete(rowFrame, frame, data, cols, row, realrow, co
 end
 
 function LootHistory:AddEpochDate(date, tim)
-	local d, m, y = strsplit("/", date, 3)
+	local y, m, d = strsplit("/", date, 3)
 	local h, min, s = strsplit(":", tim, 3)
 	epochDates[date..tim] = self:DateTimeToSeconds(d,m,y,h,min,s)
 end
 
 function LootHistory:DateTimeToSeconds (d,m,y,h,min,s)
-	return time({year = "20"..y or 10, month = m or 1, day = d or 1, hour = h or 0, min = min or 0, sec = s or 0})
+	return time({year = #tostring(y) == 4 and y or "20"..y or 10, month = m or 1, day = d or 1, hour = h or 0, min = min or 0, sec = s or 0})
 end
 
 function LootHistory.DateTimeSort(table, rowa, rowb, sortbycol)

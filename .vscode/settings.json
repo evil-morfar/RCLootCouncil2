@@ -88,6 +88,7 @@
         "tInsertUnique",
         "MergeTable",
         "Item",
-        "ConvertSecondsToUnits"
+        "ConvertSecondsToUnits",
+        "CLASS_SORT_ORDER"
     ]
 }
