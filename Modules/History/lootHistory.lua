@@ -753,6 +753,18 @@ function LootHistory:ImportHistory(import)
 	end
 end
 
+---@param data table|string Either complete history entry, or just the date
+local function checkDateFormatting(data)
+	local d, m, y = strsplit("/", data.date and data.date or data)
+	if #d == 4 then return data end -- is in new format
+	if data.date then
+		data.date = "20" ..y .. "/" .. m .. "/" .. d
+	else
+		data = "20" ..y .. "/" .. m .. "/" .. d
+	end
+	return data
+end
+
 -- REVIEW: Needs updating
 function LootHistory:ImportPlayerExport (import)
 	lootDB = addon:GetHistoryDB()
@@ -775,12 +787,16 @@ function LootHistory:ImportPlayerExport (import)
 					if d.time == v.time then found = true; break end
 				end
 				if not found then -- add it
-					tinsert(lootDB[name], v)
+					tinsert(lootDB[name], checkDateFormatting(v))
 					number = number + 1
 				end
 			end
 		else -- It's a new name, so add everything and move on to the next
-			lootDB[name] = data
+			lootDB[name] = {}
+			for _, v in pairs(data) do
+				v = checkDateFormatting(v)
+				tinsert(lootDB[name], v)
+			end
 			number = number + #data
 		end
 	end
