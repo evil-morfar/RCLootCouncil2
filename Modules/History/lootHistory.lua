@@ -58,7 +58,7 @@ function LootHistory:OnInitialize()
 	self.scrollCols = {
 		{name = "",				width = ROW_HEIGHT, sortnext = 2},																-- Class icon, should be same row as player
 		{name = _G.NAME,		width = 100, sortnext = 3, defaultsort = 1,},												-- Name of the player
-		{name = L["Time"],	width = 125, comparesort = self.DateTimeSort, sort = 2,defaultsort = 2,},			-- Time of awarding
+		{name = L["Time"],	width = 130, comparesort = self.DateTimeSort, sort = 2,defaultsort = 2,},			-- Time of awarding
 		{name = "",				width = ROW_HEIGHT, },																				-- Item icon
 		{name = L["Item"],	width = 250, comparesort = self.ItemSort, defaultsort = 1, sortnext = 2},			-- Item string
 		{name = L["Reason"],	width = 220, comparesort = self.ResponseSort,  defaultsort = 1, sortnext = 2},	-- Response aka the text supplied to lootDB...response
@@ -837,7 +837,7 @@ end
 
 function LootHistory:GetFrame()
 	if self.frame then return self.frame end
-	local f = addon.UI:NewNamed("RCFrame", UIParent, "DefaultRCLootHistoryFrame", L["RCLootCouncil Loot History"], 250, 485)
+	local f = addon.UI:NewNamed("RCFrame", UIParent, "DefaultRCLootHistoryFrame", L["RCLootCouncil Loot History"], 250, 490)
 	addon.UI:RegisterForEscapeClose(f, function() if self:IsEnabled() then self:Disable() end end)
 	local st = LibStub("ScrollingTable"):CreateST(self.scrollCols, NUM_ROWS, ROW_HEIGHT, { ["r"] = 1.0, ["g"] = 0.9, ["b"] = 0.0, ["a"] = 0.5 }, f.content)
 	st.frame:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", 10, 10)
@@ -859,7 +859,7 @@ function LootHistory:GetFrame()
 	f.st = st
 
 	--Date selection
-	f.date = LibStub("ScrollingTable"):CreateST({{name = L["Date"], width = 70, comparesort = self.DateSort, sort = 2, DoCellUpdate = self.SetCellDate}}, 5, ROW_HEIGHT, { ["r"] = 1.0, ["g"] = 0.9, ["b"] = 0.0, ["a"] = 0.5 }, f.content)
+	f.date = LibStub("ScrollingTable"):CreateST({{name = L["Date"], width = 74, comparesort = self.DateSort, sort = 2, DoCellUpdate = self.SetCellDate}}, 5, ROW_HEIGHT, { ["r"] = 1.0, ["g"] = 0.9, ["b"] = 0.0, ["a"] = 0.5 }, f.content)
 	f.date.frame:SetPoint("TOPLEFT", f, "TOPLEFT", 10, -30)
 	f.date:EnableSelection(true)
 	f.date:RegisterEvents({
