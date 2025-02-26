@@ -160,13 +160,6 @@ function LootHistory:OnHistoryDeleteReceived (id)
 	end
 end
 
-function LootHistory:GetLocalizedDate(date) -- date is "DD/MM/YY"
-	local d, m, y = strsplit("/", date, 3)
-	-- FormatShortDate is defined in SharedXML/Util.lua
-	-- "(D)D/(M)M/YY" for EU, "(M)M/DD/YY" otherwise
-	return _G.FormatShortDate(d, m, y)
-end
-
 function LootHistory:BuildData()
 	addon.Log:D("LootHistory:BuildData()")
 	data = {}
@@ -220,7 +213,7 @@ function LootHistory:BuildData()
 						cols = { -- NOTE Don't forget the rightClickMenu dropdown, if the order of these changes
 							{DoCellUpdate = addon.SetCellClassIcon, args = {x.class}, value = x.class},
 							{value = addon.Ambiguate(name), color = addon:GetClassColor(x.class)},
-							{value = self:GetLocalizedDate(date).. "-".. i.time or "", args = {time = i.time, date = date},},
+							{value = date.. "-".. i.time or "", args = {time = i.time, date = date},},
 							{DoCellUpdate = self.SetCellGear, args={i.lootWon}},
 							{value = i.lootWon},
 							{DoCellUpdate = self.SetCellResponse, args = {color = i.color, response = i.response, responseID = i.responseID or 0, isAwardReason = i.isAwardReason}},
@@ -438,7 +431,7 @@ end
 
 -- for date scrolling table
 function LootHistory.SetCellDate(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
-	frame.text:SetText(LootHistory:GetLocalizedDate(data[realrow][column]))
+	frame.text:SetText(data[realrow][column])
 	if table.fSelect then
 		if table.selected == realrow then
 			table:SetHighLightColor(rowFrame, table:GetDefaultHighlight());
@@ -1529,7 +1522,7 @@ do
 				if d.tierToken then subType = L["Armor Token"] end
 				-- We might have commas in various things here :/
 				tinsert(export, tostring(player))
-				tinsert(export, tostring(self:GetLocalizedDate(d.date)))
+				tinsert(export, tostring(d.date))
 				tinsert(export, tostring(d.time))
 				tinsert(export, tostring(d.id))
 				tinsert(export, CSVEscape(d.lootWon))
@@ -1580,7 +1573,7 @@ do
 				if d.tierToken then subType = L["Armor Token"] end
 				rollType = (d.tokenRoll and "token") or (d.relicRoll and "relic") or "normal"
 				tinsert(export, tostring(player))
-				tinsert(export, tostring(self:GetLocalizedDate(d.date)))
+				tinsert(export, tostring(d.date))
 				tinsert(export, tostring(d.time))
 				tinsert(export, table.concat {"=HYPERLINK(\"", self:GetWowheadLinkFromItemLink(d.lootWon), "\"", formulaDelimiter, "\"", tostring(d.lootWon), "\")"} or "")
 				tinsert(export, ItemUtils:GetItemIDFromLink(d.lootWon))
@@ -1627,7 +1620,7 @@ do
 				if d.tierToken then subType = L["Armor Token"] end
 				rollType = (d.tokenRoll and "token") or (d.relicRoll and "relic") or "normal"
 				tinsert(export, string.format("\"%s\":\"%s\"", "player", tostring(player)))
-				tinsert(export, string.format("\"%s\":\"%s\"", "date", tostring(self:GetLocalizedDate(d.date))))
+				tinsert(export, string.format("\"%s\":\"%s\"", "date", tostring(d.date)))
 				tinsert(export, string.format("\"%s\":\"%s\"", "time", tostring(d.time)))
 				tinsert(export, string.format("\"%s\":\"%s\"", "id", tostring(d.id)))
 				tinsert(export, string.format("\"%s\":%s", "itemID", ItemUtils:GetItemIDFromLink(d.lootWon)))
