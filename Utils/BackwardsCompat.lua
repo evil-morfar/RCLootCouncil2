@@ -292,7 +292,7 @@ Compat.list = {
 					for _, v in ipairs(data) do
 						-- We can't really guesstimate the time difference from who ML'd the item and realm time, so just update the date 
 						local d,m,y = strsplit("/", v.date, 3)
-						v.date = string.format("%02d/%02d/%02d", y, m, d)
+						v.date = string.format("%04d/%02d/%02d", "20"..y, m, d)
 					end
 				end
 			end
