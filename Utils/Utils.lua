@@ -53,7 +53,7 @@ function Utils:GetNumberOfDaysFromNow(oldDate)
 	local y, m, d = self:DateSplit(oldDate)
 	local sinceEpoch = time({ year = y, month = m, day = d, hour = 0, }) -- convert from string to seconds since epoch
 
-	return ConvertSecondsToUnits(GetServerTime() - sinceEpoch).days
+	return ConvertSecondsToUnits(GetServerTime() - (sinceEpoch or 0)).days
 end
 
 --- Takes the return value from :GetNumberOfDaysFromNow() and converts it to text.

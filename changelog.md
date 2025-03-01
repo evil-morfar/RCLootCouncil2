@@ -4,6 +4,7 @@
 
 - *Fixed history date selector not sorting properly.*
 - *Fixed date/time issue with certain history exports.*
+- *Fixed issue with updating during a session breaking the loot history.*
 
 # 3.15.0
 
