@@ -513,6 +513,10 @@ function RCLootCouncil:ChatCommand(msg)
 	elseif input == "export" then
 		self:ExportCurrentSession()
 
+	elseif input == "clearcache" then
+		self.db.global.cache = {}
+		self:Print("Cache cleared")
+
 --@debug@
 	elseif input == 't' then -- Tester cmd
 		-- Test items with several modifiers. Should probably be added to the regular test func
