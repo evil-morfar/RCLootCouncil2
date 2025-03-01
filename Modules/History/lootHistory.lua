@@ -783,8 +783,8 @@ function LootHistory:ImportPlayerExport (import)
 			for _, v in pairs(data) do
 				local found = false
 				for _, d in pairs(lootDB[name]) do -- REVIEW This is currently ~O(#lootDB[name]^2). Could probably be improved.
-					-- Check if the time matches. If it does, we already have the data and can skip to the next
-					if d.time == v.time then found = true; break end
+					-- Check if the id matches. If it does, we already have the data and can skip to the next
+					if d.id == v.id then found = true; break end
 				end
 				if not found then -- add it
 					tinsert(lootDB[name], checkDateFormatting(v))
