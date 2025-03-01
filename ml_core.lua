@@ -607,7 +607,9 @@ function RCLootCouncilML:OnCommReceived(prefix, serializedMsg, distri, sender)
 				v2.2.3: 	Got a ticket where candidates wasn't received. Bumped to 2 sec and added extra checks for candidates.]]
 
 				addon:ScheduleTimer("SendCommand", 2, sender, "candidates", self.candidates)
-				addon:ScheduleTimer("SendCommand", 4, sender, "lootTable", self:GetLootTableForTransmit(true))
+				if self.running then 
+					addon:ScheduleTimer("SendCommand", 4, sender, "lootTable", self:GetLootTableForTransmit(true))
+				end
 				-- There's no way we can fit the entire session data within the new comms throttle limit.
 				addon:Debug("Responded to reconnect from", sender)
 			elseif command == "lootTable" and addon:UnitIsUnit(sender, addon.playerName) then
