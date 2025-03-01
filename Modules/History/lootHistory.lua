@@ -578,10 +578,10 @@ function LootHistory.DateSort(table, rowa, rowb, sortbycol)
 	rowa, rowb = table:GetRow(rowa), table:GetRow(rowb);
 	local a, b = rowa[1], rowb[1]
 	if not (a and b) then return false end
-	local d, m, y = strsplit("/", a, 3)
-	local aTime = time({year = "20"..y, month = m, day = d})
-	d, m, y = strsplit("/", b, 3)
-	local bTime = time({year = "20"..y, month = m, day = d})
+	local y, m, d = addon.Utils:DateSplit(a)
+	local aTime = time({year = y, month = m, day = d})
+	y, m, d= addon.Utils:DateSplit(b)
+	local bTime = time({year = y, month = m, day = d})
 	local direction = column.sort or column.defaultsort or 1;
 	if direction == 1 then
 		return aTime < bTime;
@@ -1354,17 +1354,17 @@ function LootHistory.RightClickMenu(menu, level)
 					if next(lootDB[namea]) then
 						local datea = lootDB[namea][#lootDB[namea]].date
 						local timea = lootDB[namea][#lootDB[namea]].time
-						local d, m, y = strsplit("/", datea, 3)
+						local y, m, d = addon.Utils:DateSplit(datea)
 						local h, min, s = strsplit(":", timea, 3)
-						epocha = time({year = "20"..y, month = m, day = d, hour = h, min = min, sec = s})
+						epocha = time({year = y, month = m, day = d, hour = h, min = min, sec = s})
 					end
 
 					if next(lootDB[nameb]) then
 						local dateb = lootDB[nameb][#lootDB[nameb]].date
 						local timeb = lootDB[nameb][#lootDB[nameb]].time
-						local d, m, y = strsplit("/", dateb, 3)
+						local y, m, d = addon.Utils:DateSplit(dateb)
 						local h, min, s = strsplit(":", timeb, 3)
-						epochb = time({year = "20"..y, month = m, day = d, hour = h, min = min, sec = s})
+						epochb = time({year = y, month = m, day = d, hour = h, min = min, sec = s})
 					end
 					return epocha < epochb
 				end
@@ -1725,9 +1725,9 @@ do
 		local latest = 0
 		for player, v in pairs(self:GetFilteredDB()) do
 			for _, d in pairs(v) do
-				local day, month, year = strsplit("/", d.date, 3)
+				local year, month, day = addon.Utils:DateSplit(d.date)
 				local hour,minute,second = strsplit(":",d.time,3)
-				local sinceEpoch = time({year = "20"..year, month = month, day = day,hour = hour,min = minute,sec=second})
+				local sinceEpoch = time({year = year, month = month, day = day,hour = hour,min = minute,sec=second})
 				itemsData = itemsData.."\t\t<item>\r\n"
 				.."\t\t\t<itemid>" .. ItemUtils:GetItemStringClean(d.lootWon) .. "</itemid>\r\n"
 				.."\t\t\t<name>" .. ItemUtils:GetItemNameFromLink(d.lootWon) .. "</name>\r\n"
@@ -1743,7 +1743,7 @@ do
 
 				if d.instance then
 					itemsData = itemsData .. "\t\t\t<zone>" .. gsub(tostring(d.instance),",","") .. "</zone>\r\n"
-					raidData[time({year="20"..year,month=month,day=day})] = gsub(tostring(d.instance),",","")
+					raidData[time({year=year, month=month,day=day})] = gsub(tostring(d.instance),",","")
 				else
 					itemsData = itemsData .. "\t\t\t<zone />\r\n"
 				end

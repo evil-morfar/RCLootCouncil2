@@ -102,6 +102,7 @@
         "DAMAGER",
         "BLOCK",
         "PARRY",
-        "RANGED"
+        "RANGED",
+        "ITEM_QUALITY_COLORS"
     ]
 }

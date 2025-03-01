@@ -239,5 +239,5 @@ Potdisc-Ravencrest	12/6/19	21:34:34	1560371674-43	[Giga-Charged Shoulderpads]	16
    Potdisc-Ravencrest				[Deathspeaker Spire]	165597	item:165597::::::::120:258::5:3:4799:1522:4786	Personal Loot - Non tradeable	nil	PRIEST	Battle of Dazar'alor-Heroic	King Rastakhan	15	2070	14			PL	false	Staves	Two-Hand		Potdisc-Ravencrest]], -- Missing all time vars
 
 	[10] = [[player	date	time	id	item	itemID	itemString	response	votes	class	instance	boss	difficultyID	mapID	groupSize	gear1	gear2	responseID	isAwardReason	subType	equipLoc	note	owner
-   Potdisc-Ravencrest	19/5/12	22:01:51		[Deathspeaker Spire]	165597	item:165597::::::::120:258::5:3:4799:1522:4786	Personal Loot - Non tradeable	nil	PRIEST	Battle of Dazar'alor-Heroic	King Rastakhan	15	2070	14			PL	false	Staves	Two-Hand		Potdisc-Ravencrest]], -- Missing id
+   Potdisc-Ravencrest	2019/5/12	22:01:51		[Deathspeaker Spire]	165597	item:165597::::::::120:258::5:3:4799:1522:4786	Personal Loot - Non tradeable	nil	PRIEST	Battle of Dazar'alor-Heroic	King Rastakhan	15	2070	14			PL	false	Staves	Two-Hand		Potdisc-Ravencrest]], -- Missing id
 }

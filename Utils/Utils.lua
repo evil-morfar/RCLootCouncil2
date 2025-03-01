@@ -50,7 +50,7 @@ end
 --- Calculates how long ago a given date was.
 --- @param oldDate string A string specifying the date, formatted as "yyyy/mm/dd".
 function Utils:GetNumberOfDaysFromNow(oldDate)
-	local y, m, d = strsplit("/", oldDate, 3)
+	local y, m, d = self:DateSplit(oldDate)
 	local sinceEpoch = time({ year = y, month = m, day = d, hour = 0, }) -- convert from string to seconds since epoch
 
 	return ConvertSecondsToUnits(GetServerTime() - sinceEpoch).days
@@ -70,6 +70,14 @@ function Utils:ConvertDateToString(day, month, year)
 		text = format(L["days and x months"], text, month)
 	end
 	return text;
+end
+
+--- Breaks an ISO date into it's components
+---@param date string Date in the format "yyyy/mm/dd"
+---@return number year, number month, number day
+function Utils:DateSplit(date)
+	local y, m, d = strsplit("/", date, 3)
+	return tonumber(y or 1), tonumber(m or 1), tonumber(d or 1)
 end
 
 --- Returns the number of available spaces in the players bags
