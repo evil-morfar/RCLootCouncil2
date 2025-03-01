@@ -1,3 +1,11 @@
+# v3.15.1
+
+## Bugfixes
+
+- *Fixed history date selector not sorting properly.*
+- *Fixed date/time issue with certain history exports.*
+- *Fixed issue with updating during a session breaking the loot history.*
+
 # 3.15.0
 
 Updated for patch 11.1.0.
