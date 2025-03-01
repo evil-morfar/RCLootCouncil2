@@ -446,7 +446,7 @@ function LootHistory.SetCellGear(rowFrame, frame, data, cols, row, realrow, colu
 	if gear then
 		--local texture = select(10, C_Item.GetItemInfo(gear))
 		local texture = select(5, C_Item.GetItemInfoInstant(gear))
-		frame:SetNormalTexture(texture)
+		frame:SetNormalTexture(texture or "Interface/ICONS/INV_Sigil_Thorim.png")
 		frame:SetScript("OnEnter", function() addon:CreateHypertip(gear) end)
 		frame:SetScript("OnLeave", function() addon:HideTooltip() end)
 		frame:SetScript("OnClick", function()
