@@ -1,4 +1,6 @@
+---@type nil, RCLootCouncil
 local _, addon = ...
+---@class RCLootHistory
 local His = addon:GetModule("RCLootHistory")
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 local LibDialog = LibStub("LibDialog-1.1")
@@ -285,7 +287,7 @@ function private:RebuildTime (data, t, line)
       t.date = date("!%Y/%m/%d", secs)
       t.time = date("!%H:%M:%S", secs)
    elseif dato and time then
-      local d, m, y = strsplit("/", dato or "", 3)
+      local y, m, d = addon.Utils:DateSplit(dato or "")
       local h,mm,s = strsplit(":",time,3)
       local secs = His:DateTimeToSeconds(d,m,y,h,mm,s)
       t.date = date("%Y/%m/%d", secs)
@@ -293,14 +295,14 @@ function private:RebuildTime (data, t, line)
       t.id = secs .. "-"..private.idCount
       private.idCount = private.idCount + 1
    elseif dato then
-      local d, m, y = strsplit("/", dato or "", 3)
+      local y, m, d = addon.Utils:DateSplit(dato or "")
       local secs = His:DateTimeToSeconds(d,m,y) -- Will provide 0:0:0
       t.date = date("%Y/%m/%d", secs)
       t.time = date("%H:%M:%S", secs)
       t.id = secs .. "-"..private.idCount
       private.idCount = private.idCount + 1
    elseif time then
-      local d, m, y = strsplit("/", date("%Y/%m/%d"), 3) -- Use today
+      local y, m, d = addon.Utils:DateSplit(date("%Y/%m/%d")) -- Use today
       local h, min, s = strsplit(":", time, 3) -- but keep the time
       local secs = His:DateTimeToSeconds(d,m,y,h,min,s)
       t.date = date("%Y/%m/%d", secs)

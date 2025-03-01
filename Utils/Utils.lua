@@ -2,7 +2,8 @@
 -- Creates RCLootCouncil.Utils namespace for utility functions
 -- @Author Potdisc
 -- Create Date : 27/7/2018 20:49:10
-local _,addon = ...
+---@class RCLootCouncil
+local addon = select(2,...)
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 local Utils = {}
 addon.Utils = Utils
@@ -100,6 +101,14 @@ function Utils:ConvertDateToString(day, month, year)
 		text = format(L["days and x months"], text, month)
 	end
 	return text;
+end
+
+--- Breaks an ISO date into it's components
+---@param date string Date in the format "yyyy/mm/dd"
+---@return number year, number month, number day
+function Utils:DateSplit(date)
+   local y,m,d = strsplit(date, "/", 3)
+   return tonumber(y or 0), tonumber(m or 0), tonumber(d or 0)
 end
 
 --- Returns the number of available spaces in the players bags
