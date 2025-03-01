@@ -107,7 +107,7 @@ end
 ---@param date string Date in the format "yyyy/mm/dd"
 ---@return number year, number month, number day
 function Utils:DateSplit(date)
-   local y,m,d = strsplit(date, "/", 3)
+   local y,m,d = strsplit("/", date, 3)
    return tonumber(y or 0), tonumber(m or 0), tonumber(d or 0)
 end
 
