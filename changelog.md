@@ -1,3 +1,7 @@
+## Bugfixed
+
+- *Prevented "Explosive Hearthstone" from being automatically looted, as it cannot be traded.*
+
 # v3.15.1
 
 ## Bugfixes

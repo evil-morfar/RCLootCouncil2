@@ -19,6 +19,7 @@ GroupLoot.OnLootRoll = Subject.create()
 --- These item ids will not be processed by this code due to them not being tradeable.
 GroupLoot.IgnoreList = {
 	[209035] = true, -- Hearthstone of the Flame, Larodar, Amirdrassil
+	[236687] = true, -- Explosive Hearthstone, Liberation of Undermine
 }
 
 function GroupLoot:OnInitialize()
