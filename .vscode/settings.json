@@ -103,6 +103,7 @@
         "BLOCK",
         "PARRY",
         "RANGED",
-        "ITEM_QUALITY_COLORS"
+        "ITEM_QUALITY_COLORS",
+        "RunNextFrame"
     ]
 }
