@@ -1,6 +1,7 @@
 ## Bugfixes
 
 - *"Best-In-Slots" will no longer be auto passed by classes that can use the intellect version.*
+- *Evokers are no longer auto passing Two-Handed Maces.*
 
 # v3.15.2
 
