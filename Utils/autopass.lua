@@ -185,7 +185,7 @@ local function ShouldAutoPassWeapon(itemLink, class, id)
 	-- Check for special items with stat additions
 	if weaponStatAdditions[id] then
 		for _, stat in ipairs(weaponStatAdditions[id]) do
-			if stats[stat] then return false end
+			if tContains(requiredWeaponStatsForClass[class], stat) then return false end
 		end
 	end
 
