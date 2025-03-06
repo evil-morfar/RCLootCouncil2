@@ -1,3 +1,7 @@
+## Bugfixes
+
+- *"Best-In-Slots" will no longer be auto passed by classes that can use the intellect version.*
+
 # v3.15.2
 
 ## Bugfixes
