@@ -42,7 +42,18 @@ local replacements_inv = tInvert(replacements)
 --- @param input MLDB? @MLDB to convert. Defaults to addon MLDB.
 ---@return table @MLDB that's ready for transmit.
 function MLDB:GetForTransmit(input)
-    local mldb = input or (private.isBuilt and private.mldb or private:BuildMLDB())
+    local mldb
+    if input then
+        mldb = input
+    else
+        mldb = private.isBuilt and private.mldb or private:BuildMLDB()
+    end
+    
+    if type(mldb) ~= "table" then
+        addon.Log:D("MLDB:GetForTransmit received non-table input")
+        return {}  -- Return empty table to avoid errors
+    end
+    
     return private:ReplaceMLDB(mldb, replacements_inv)
 end
 
@@ -50,6 +61,11 @@ end
 ---@param input table @Table as returned fr["m
 ---@see Data.MLDB#GetForTransmit
 function MLDB:RestoreFromTransmit(input)
+    if type(input) ~= "table" then
+        addon.Log:D("MLDB:RestoreFromTransmit received non-table input")
+        return {}  -- Return empty table to avoid errors
+    end
+    
     private.mldb = private:ReplaceMLDB(input, replacements)
     return private.mldb
 end
@@ -57,10 +73,19 @@ end
 --- Sends the mldb to the target
 --- @param target Player|"group" @The target to send to - defaults to "group"
 function MLDB:Send(target)
+    local success, data = pcall(function() 
+        return {self:GetForTransmit()}
+    end)
+    
+    if not success then
+        addon.Log:D("Error preparing MLDB data for transmission: " .. (data or "unknown error"))
+        return
+    end
+    
     Comms:Send {
         target = target,
         command = "mldb",
-        data = {self:GetForTransmit()}
+        data = data
     }
 end
 
@@ -79,11 +104,26 @@ function MLDB:IsKey(val)
 end
 
 function private:ReplaceMLDB(mldb, replacement_table)
+    if type(mldb) ~= "table" or type(replacement_table) ~= "table" then
+        return {}
+    end
+    
     local ret = {}
     for k, v in pairs(mldb) do
-        if (type(v) == "table") then
-            v = self:ReplaceMLDB(v, replacement_table)
+        -- Handle recursive table replacement safely
+        if type(v) == "table" then
+            local success, result = pcall(function()
+                return self:ReplaceMLDB(v, replacement_table)
+            end)
+            
+            if success then
+                v = result
+            else
+                addon.Log:D("Error in ReplaceMLDB recursion: " .. (result or "unknown error"))
+                v = {} -- Fallback to empty table on error
+            end
         end
+        
         if replacement_table[k] then
             ret[replacement_table[k]] = v
         else
@@ -93,60 +133,100 @@ function private:ReplaceMLDB(mldb, replacement_table)
     return ret
 end
 
+-- Helper function to check if a response has changed from defaults
+function private:HasResponseChanged(respType, index, db)
+    -- No defaults to compare against
+    if not addon.defaults.profile.responses[respType] then
+        return true
+    end
+    
+    local response = db.responses[respType][index]
+    local default = addon.defaults.profile.responses[respType][index]
+    
+    -- Check if text changed
+    if response.text ~= default.text then
+        return true
+    end
+    
+    -- Check if color changed
+    if unpack(response.color) ~= unpack(default.color) then
+        return true
+    end
+    
+    return false
+end
+
+-- Helper function to check if a button has changed from defaults
+function private:HasButtonChanged(btnType, index, db)
+    -- No defaults to compare against
+    if not addon.defaults.profile.buttons[btnType] then
+        return true
+    end
+    
+    local button = db.buttons[btnType][index]
+    local default = addon.defaults.profile.buttons[btnType][index]
+    
+    -- Check if text or requireNotes changed
+    return button.text ~= default.text or button.requireNotes ~= default.requireNotes
+end
+
 function private:BuildMLDB()
     local db = addon:Getdb()
     -- Extract changes to responses/buttons
     local changedResponses = {}
-    for type, responses in pairs(db.responses) do
-        for i in ipairs(responses) do
-            if i > db.buttons[type].numButtons then
-                break
-            end
-            if
-                not addon.defaults.profile.responses[type] or
-                    db.responses[type][i].text ~= addon.defaults.profile.responses[type][i].text or
-                    unpack(db.responses[type][i].color) ~= unpack(addon.defaults.profile.responses[type][i].color)
-             then
-                if not changedResponses[type] then
-                    changedResponses[type] = {}
+    for respType, responses in pairs(db.responses) do
+        if type(responses) == "table" then
+            for i in ipairs(responses) do
+                if i > db.buttons[respType].numButtons then
+                    break
                 end
-                changedResponses[type][i] = db.responses[type][i]
+                
+                if self:HasResponseChanged(respType, i, db) then
+                    if not changedResponses[respType] then
+                        changedResponses[respType] = {}
+                    end
+                    changedResponses[respType][i] = db.responses[respType][i]
+                end
             end
         end
     end
+    
     local changedButtons = {default = {}}
-    for type, buttons in pairs(db.buttons) do
-        for i in ipairs(buttons) do
-            if i > db.buttons[type].numButtons then
-                break
-            end
-            if not addon.defaults.profile.buttons[type] or
-				db.buttons[type][i].text ~= addon.defaults.profile.buttons[type][i].text or
-				db.buttons[type][i].requireNotes ~= addon.defaults.profile.buttons[type][i].requireNotes
-            then
-                if not changedButtons[type] then
-                    changedButtons[type] = {}
+    for btnType, buttons in pairs(db.buttons) do
+        if type(buttons) == "table" then
+            for i in ipairs(buttons) do
+                if i > db.buttons[btnType].numButtons then
+                    break
                 end
-				changedButtons[type][i] = { text = db.buttons[type][i].text, requireNotes = db.buttons[type][i].requireNotes, }
+                
+                if self:HasButtonChanged(btnType, i, db) then
+                    if not changedButtons[btnType] then
+                        changedButtons[btnType] = {}
+                    end
+                    changedButtons[btnType][i] = { 
+                        text = db.buttons[btnType][i].text, 
+                        requireNotes = db.buttons[btnType][i].requireNotes 
+                    }
+                end
             end
         end
     end
     changedButtons.default.numButtons = db.buttons.default.numButtons -- Always include this
 
     self.mldb = {
-        selfVote = db.selfVote or nil,
-        multiVote = db.multiVote or nil,
-        anonymousVoting = db.anonymousVoting or nil,
+        selfVote = db.selfVote,
+        multiVote = db.multiVote,
+        anonymousVoting = db.anonymousVoting,
         numButtons = db.buttons.default.numButtons, -- v2.9: Kept as to not break backwards compability on mldb comms. Not used any more
-        hideVotes = db.hideVotes or nil,
-        observe = db.observe or nil,
-        buttons = changedButtons, -- REVIEW I'm not sure if it's feasible to nil out empty tables
+        hideVotes = db.hideVotes,
+        observe = db.observe,
+        buttons = changedButtons,
         responses = changedResponses,
         timeout = db.timeout,
-        rejectTrade = db.rejectTrade or nil,
-        requireNotes = db.requireNotes or nil,
-        outOfRaid = db.outOfRaid or nil,
-        autoGroupLoot = db.autoGroupLoot or nil
+        rejectTrade = db.rejectTrade,
+        requireNotes = db.requireNotes,
+        outOfRaid = db.outOfRaid,
+        autoGroupLoot = db.autoGroupLoot
     }
     self.isBuilt = true
     return self.mldb
