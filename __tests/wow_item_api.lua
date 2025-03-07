@@ -43456,6 +43456,20 @@ _G.Items = {
 		itemType = "Weapon",
 		itemString = "item:159652:6112::::::::::35:4:5010:1612:5850:4784",
 	},
+	["item:236960::::::::80:253::3::1:28:872"] = {
+		itemName = "",
+		bindType = 1,
+		itemSellPrice = 0,
+		itemLink = "|cffa335ee|Hitem:236960::::::::80:253::3::1:28:872:::::|h[Prototype~`A.S.M.R.]|h|r",
+		itemEquipLoc = "INVTYPE_NON_EQUIP_IGNORE",
+		itemRarity = 4,
+		itemID = 236960,
+		itemClassId = 15,
+		itemSubClassId = 5,
+		itemSubType = "Mount",
+		itemType = "Miscellaneous",
+		itemString = "item:236960::::::::80:253::3::1:28:872"
+	},
 }
 
 _G.Items_Array = {}
