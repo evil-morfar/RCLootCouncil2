@@ -1,3 +1,9 @@
+## Bugfixes
+
+- *"Best-In-Slots" will no longer be auto passed by classes that can use the intellect version.*
+- *Evokers are no longer auto passing Two-Handed Maces.*
+- *Untradable mounts should no longer be added to the session frame (hopefully).*
+
 # v3.15.2
 
 ## Bugfixes

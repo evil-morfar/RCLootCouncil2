@@ -636,6 +636,7 @@ function RCLootCouncil:UpdateAndSendRecentTradableItem(info, count)
 		-- We've searched every single bag space, and found at least 1 item that wasn't tradeable,
 		-- and none that was. We can now safely assume the item can't be traded.
 		self:Send("group", "n_t", info.link, info.guid)
+		self.ItemStorage:RemoveItem(Item)
 	end, function() -- onFail
 		-- We haven't found it, maybe we just haven't received it yet, so try again in one second
 		Item:Unstore()

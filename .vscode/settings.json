@@ -104,6 +104,9 @@
         "PARRY",
         "RANGED",
         "ITEM_QUALITY_COLORS",
-        "RunNextFrame"
+        "RunNextFrame",
+        "Rare",
+        "Legendary",
+        "IsInGlobalEnvironment"
     ]
 }

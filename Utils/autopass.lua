@@ -12,6 +12,12 @@ local autopassOverride = {
 	"INVTYPE_CLOAK",
 }
 
+--- Add a particular stat to a weapon
+local weaponStatAdditions = {
+	[232526] = { "ITEM_MOD_INTELLECT_SHORT", }, -- Best-In-Slots: Agi/Str version can be turned into the int version
+	[232805] = { "ITEM_MOD_INTELLECT_SHORT", }, -- Best-In-Slots: Int version can be turned into the Agi/Str version
+}
+
 --- Classes that should autopass a subtype.
 -- @table autopassTable
 local autopassTable = {
@@ -66,7 +72,7 @@ local autopassTable = {
 
 		[Enum.ItemWeaponSubclass.Mace1H] = { "HUNTER", "MAGE", "WARLOCK", "DEMONHUNTER", },
 
-		[Enum.ItemWeaponSubclass.Mace2H] = { "MONK", "ROGUE", "HUNTER", "PRIEST", "MAGE", "WARLOCK", "DEMONHUNTER", "EVOKER", },
+		[Enum.ItemWeaponSubclass.Mace2H] = { "MONK", "ROGUE", "HUNTER", "PRIEST", "MAGE", "WARLOCK", "DEMONHUNTER" },
 
 
 		[Enum.ItemWeaponSubclass.Polearm] = { "ROGUE", "SHAMAN", "PRIEST", "MAGE", "WARLOCK", "DEMONHUNTER", "EVOKER", },
@@ -148,13 +154,14 @@ local requiredWeaponStatsForClass = {
 --- as determined by the `requiredWeaponStatsForClass` list OR the item doesn't have any main stat.
 ---@param itemLink ItemLink item to check
 ---@param class ClassInfo.classFile Class to check against.
-local function ShouldAutoPassWeapon(itemLink, class)
+---@param id number itemID
+local function ShouldAutoPassWeapon(itemLink, class, id)
 	-- Ensure class is valid
 	if not requiredWeaponStatsForClass[class] then
 		addon.Log:e("Invalid class in 'ShouldAutoPassWeapon'", class)
 		return false
 	end
-	
+
 	local stats = C_Item.GetItemStats(itemLink or "")
 
 	-- Ensure item is loaded
@@ -173,6 +180,13 @@ local function ShouldAutoPassWeapon(itemLink, class)
 	-- Check each class stat against the item's stats
 	for _, stat in ipairs(requiredWeaponStatsForClass[class]) do
 		if stats[stat] then return false end
+	end
+
+	-- Check for special items with stat additions
+	if weaponStatAdditions[id] then
+		for _, stat in ipairs(weaponStatAdditions[id]) do
+			if tContains(requiredWeaponStatsForClass[class], stat) then return false end
+		end
 	end
 
 	-- If all checks fails, then we must autopass the item
@@ -198,7 +212,7 @@ end
 --- -- Check if the item in session 1 should be auto passed:
 --- local dat = lootTable[1] -- Shortening
 --- local shouldAutoPass = RCLootCouncil:AutoPassCheck(dat.link, dat.equipLoc, dat.typeID, dat.subTypeID, dat.classesFlag, dat.isToken, dat.isRelic)
---- ``` 
+--- ```
 function RCLootCouncil:AutoPassCheck(link, equipLoc, typeID, subTypeID, classesFlag, isToken, isRelic, class)
 	link = link or "" -- Just to avoid errors in case someone passes a nil value
 	if (not self:Getdb().autoPassTransmog and self:IsTransmoggable(link)) then
@@ -236,7 +250,7 @@ function RCLootCouncil:AutoPassCheck(link, equipLoc, typeID, subTypeID, classesF
 	end
 
 	if typeID == Enum.ItemClass.Weapon then
-		if self:Getdb().autoPassWeapons and ShouldAutoPassWeapon(link, class) then
+		if self:Getdb().autoPassWeapons and ShouldAutoPassWeapon(link, class, id) then
 			self.Log:D("Weapon auto pass on ", link)
 			return true
 		end
