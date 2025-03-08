@@ -500,7 +500,7 @@ do
 				end
 				if entry.item.timeLeft <= 0 then --Timeout!
 					entry.timeoutBarText:SetText(L["Timeout"])
-					this:SetValue(0)
+					entry.timeoutBar:SetValue(0)
 					entry.blinkAnim:Stop()
 					return LootFrame:OnRoll(entry, "TIMEOUT")
 				end
@@ -511,7 +511,7 @@ do
 				end
 				entry.item.timeLeft = entry.item.timeLeft - elapsed
 				entry.timeoutBarText:SetText(_G.CLOSES_IN .. ": " .. ceil(entry.item.timeLeft)) -- _G.CLOSES_IN == "Time Left" for English
-				this:SetValue(entry.item.timeLeft)
+				entry.timeoutBar:SetValue(entry.item.timeLeft)
 			end)
 
 			-- We want to update the width of the timeout bar everytime the width of the whole frame changes:

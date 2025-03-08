@@ -73,7 +73,8 @@ Button = {
 	New = function(name, parent)
 		local super = _G.Frame.New(name or "", parent)
 		local text = super:CreateFontString(name .. "Text")
-		local object = {normalTexture = nil, highlightTexture = nil, Text = text}
+		local object = {parent = super, normalTexture = nil, highlightTexture = nil, Text = text, _type = "Button", }
+		
 		local button = setmetatable(object, {
 			__index = function(self, v)
 				local k = objectMethods[v] or super[v]

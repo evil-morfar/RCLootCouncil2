@@ -125,10 +125,12 @@ Frame = {
 	New = function(name, parent)
 		local super = _G.ScriptRegion.New(name)
 		count = count + 1
-		local object = { parent = parent, events = {}, values = {}, attributes = {}, id = count }
+		local object = { parent = parent, events = {}, values = {}, attributes = {}, id = count, _type = "Frame" }
 		return setmetatable(object, {
 			__index = function(self, v)
 				local k = objectMethods[v] or super[v]
+				if v == "parent" then k = parent or super end
+				if k == nil and self.parent then k = self.parent[v] end
 				self[v] = k -- Store for easy future lookup
 				return k
 			end,

@@ -152,7 +152,7 @@ describe("#VotingFrame #RandomRolls", function()
 		dofile(".specs/Helpers/SetupRaid.lua")(20)
 		addon.player = addon.Require "Data.Player":Get("player")
 
-		math.randomseed(1) -- For some reason, using default seed will create a session with 2 duplicate items
+		math.randomseed(2) -- For some reason, using default seed will create a session with 2 duplicate items
 		addon:Test(3, true)
 		WoWAPI_FireUpdate(GetTime() + 1)
 		RCLootCouncilML:StartSession()
@@ -185,7 +185,7 @@ describe("#VotingFrame #RandomRolls", function()
 		WoWAPI_FireUpdate(GetTime() + 10)
 		-- Then the rest:
 		VotingFrame:DoAllRandomRolls()
-		WoWAPI_FireUpdate(GetTime() + 10)
+		_ADVANCE_TIME(.5)
 
 		assert.spy(generateNoRepeatRollTable).was.called_with(match.is_ref(VotingFrame), 20)
 		assert.spy(generateNoRepeatRollTable).was.called(3) -- First 1 for session 2, then once for 1 & 3

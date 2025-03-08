@@ -417,6 +417,7 @@ function LootHistory:FilterForLootDB (winner, entry)
 end
 
 function LootHistory:GetFilteredDB ()
+	lootDB = addon:GetHistoryDB()
 	local filtered = {}
 	for name, items in pairs(lootDB) do
 		for _, entry in pairs(items) do
@@ -1622,7 +1623,8 @@ do
 		local subType, equipLoc, rollType
 		local eligibleEntries = 0;
 
-		for _, v in pairs(self:GetFilteredDB()) do
+		local filteredDb = self:GetFilteredDB() 
+		for _, v in pairs(filteredDb) do
 			for _ in pairs(v) do
 					eligibleEntries = eligibleEntries + 1;
 			end
@@ -1630,7 +1632,7 @@ do
 
 		local processedEntries = 0;
 
-		for player, v in pairs(self:GetFilteredDB()) do
+		for player, v in pairs(filteredDb) do
 			for _, d in pairs(v) do
 				_,_,subType, equipLoc = C_Item.GetItemInfoInstant(d.lootWon)
 				if d.tierToken then subType = L["Armor Token"] end
@@ -1648,14 +1650,15 @@ do
 				tinsert(export, string.format("\"%s\":\"%s\"", "boss", QuotesEscape(d.boss)))
 				tinsert(export, string.format("\"%s\":\"%s\"", "gear1", QuotesEscape(d.itemReplaced1)))
 				tinsert(export, string.format("\"%s\":\"%s\"", "gear2", QuotesEscape(d.itemReplaced2)))
-				tinsert(export, string.format("\"%s\":\"%s\"", "responseID", tostring(d.responseID)))
+				tinsert(export, string.format("\"%s\":\"%s\"", "responseID", d.responseID))
 				tinsert(export, string.format("\"%s\":\"%s\"", "isAwardReason", tostring(d.isAwardReason or false)))
 				tinsert(export, string.format("\"%s\":\"%s\"", "rollType", rollType))
 				tinsert(export, string.format("\"%s\":\"%s\"", "subType", tostring(subType)))
 				tinsert(export, string.format("\"%s\":\"%s\"", "equipLoc", tostring(getglobal(equipLoc) or "")))
 				tinsert(export, string.format("\"%s\":\"%s\"", "note", QuotesEscape(d.note)))
 				tinsert(export, string.format("\"%s\":\"%s\"", "owner", tostring(d.owner or "Unknown")))
-				tinsert(export, string.format("\"%s\":\"%s\"", "itemName", ItemUtils:GetItemNameFromLink(d.lootWon)))
+				tinsert(export,
+				string.format("\"%s\":\"%s\"", "itemName", QuotesEscape(ItemUtils:GetItemNameFromLink(d.lootWon))))
 				tinsert(export, string.format("\"%s\":\"%s\"", "servertime", (strsplit("-", d.id, 2))))
 
 				processedEntries = processedEntries + 1;

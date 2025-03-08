@@ -2546,7 +2546,7 @@ function RCLootCouncil:GetResponse(type, name)
 					and self.mldb.responses[self.BTN_SLOTS[type]] then type = self.BTN_SLOTS[type] end
 
 	if type == "default" or (self.mldb and self.mldb.responses and not self.mldb.responses[type]) then -- We have a value if mldb is blank
-		if db.responses.default[name] or self.mldb.responses.default[name] then
+		if db.responses.default[name] or (self.mldb and self.mldb.responses and self.mldb.responses.default[name]) then
 			return (self.mldb.responses and self.mldb.responses.default and self.mldb.responses.default[name])
 							       or db.responses.default[name]
 		else
