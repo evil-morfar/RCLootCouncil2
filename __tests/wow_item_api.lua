@@ -43470,6 +43470,20 @@ _G.Items = {
 		itemType = "Miscellaneous",
 		itemString = "item:236960::::::::80:253::3::1:28:872"
 	},
+	["item:228864::::::::80:262::3:6:6652:11966:10354:11980:1494:10255:1:28:2462"] = {
+		itemName = "\"Streamlined\" Cartel Uniform",
+		bindType = 1,
+		itemSellPrice = 0,
+		itemLink = "|cffa335ee|Hitem:228864::::::::80:262::3:6:6652:11966:10354:11980:1494:10255:1:28:2462|h[\"Streamlined\" Cartel Uniform]|h|r",
+		itemEquipLoc = "INVTYPE_CHEST",
+		itemRarity = 4,
+		itemID = 228864,
+		itemClassId = 4,
+		itemSubClassId = 4,
+		itemSubType = "Leather",
+		itemType = "Armor",
+		itemString = "item:228864::::::::80:262::3:6:6652:11966:10354:11980:1494:10255:1:28:2462"
+	}
 }
 
 _G.Items_Array = {}
