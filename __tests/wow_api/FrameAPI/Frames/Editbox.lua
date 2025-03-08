@@ -85,11 +85,11 @@ for _, v in ipairs(noopMethods) do if not objectMethods[v] then objectMethods[v]
 
 EditBox = {
 	New = function(name, parent)
-		local super = _G.Frame.New(name or "", parent)
-		local object = {}
+		local super = parent or _G.Frame.New(name or "")
+		local object = { parent = super, _type = "EditBox", }
 		local editbox = setmetatable(object, {
 			__index = function(self, v)
-				local k = objectMethods[v] or super[v]
+				local k = objectMethods[v] or self.parent[v]
 				self[v] = k -- Store for easy future lookup
 				return k
 			end,

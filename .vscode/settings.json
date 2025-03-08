@@ -107,6 +107,11 @@
         "RunNextFrame",
         "Rare",
         "Legendary",
-        "IsInGlobalEnvironment"
+        "IsInGlobalEnvironment",
+        "ToggleDropDownMenu",
+        "UIDropDownMenu_HandleGlobalMouseEvent",
+        "CloseMenus",
+        "ColorPickerFrame",
+        "VIDEO_QUALITY_LABEL6"
     ]
 }

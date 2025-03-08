@@ -57,10 +57,10 @@ for _, v in ipairs(noopMethods) do if not objectMethods[v] then objectMethods[v]
 FontString = {
 	New = function(name, parent, drawLayer, templateName)
 		local super = _G.Region.New(name)
-		local object = {text = "", parent = parent, values = {drawLayer = drawLayer, templateName = templateName}}
+		local object = {text = "", parent = parent, values = {drawLayer = drawLayer, templateName = templateName }, name = name, _type = "FontString"}
 		return setmetatable(object, {
 			__index = function(self, v)
-				local k = objectMethods[v] or super[v]
+				local k = objectMethods[v] or self.parent[v] or super[v]
 				self[v] = k -- Store for easy future lookup
 				return k
 			end,

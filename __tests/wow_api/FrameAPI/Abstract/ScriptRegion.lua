@@ -4,7 +4,11 @@ require "wow_api/FrameAPI/Animations/AnimationGroup"
 local function noop() end
 
 local objectMethods = {
-	SetScript = function(self, script, handler) self.scripts[script] = handler end,
+	SetScript = function(self, script, handler)
+		-- REVIEW: there's still some inheritance issues, verified by checking first arg in `entry.timeoutBar:SetScript("OnUpdate")` in `Modules/lootFrame.lua`
+		if not self.scripts then self.scripts = {} end
+		self.scripts[script] = handler
+	end,
 	GetScript = function(self, script) return self.scripts[script] end,
 	Show = function(self)
 		self.isShown = true
@@ -18,8 +22,15 @@ local objectMethods = {
 	GetHeight = function(self) return self.height end,
 	SetWidth = function(self, val) self.width = val end,
 	GetWidth = function(self) return self.width end,
-	CreateAnimationGroup = function (self)
+	CreateAnimationGroup = function(self)
 		return _G.AnimationGroup.New(self)
+	end,
+
+	GetTopParent = function (self) -- Not a WoW API function
+		while self.parent do
+			self = self.parent
+		end
+		return self.parent or self
 	end
 
 }
@@ -81,15 +92,14 @@ for _, v in ipairs(noopMethods) do if not objectMethods[v] then objectMethods[v]
 
 ScriptRegion = {
 	New = function(name)
-		local parent = _G.FrameScriptObject.New(name)
-		local object = { scripts = {}, isShown = false, timer = GetTime(), height = 0, width = 0, scale = 1, }
+		local parent = _G.Object.New(name)
+		local object = {name = name, parent = parent, scripts = {}, isShown = false, timer = GetTime(), height = 0, width = 0, scale = 1, _type = "ScriptRegion" }
 		return setmetatable(object, {
 			__index = function(self, v)
 				local k = objectMethods[v] or parent[v]
 				if not k then
 					if self.scripts[v] then
 						k = self.scripts[v]
-					
 					end
 				end
 				self[v] = k -- Store for easy future lookup

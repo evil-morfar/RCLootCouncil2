@@ -21,9 +21,9 @@ local function uuid()
 	end)
 end
 
-function CreateFrame(kind, name, parent)
+function _G.CreateFrame(kind, name, parent, templates, ...)
 	name = name or kind .. uuid()
-	local frame = _G.FrameConstructor(kind, name, parent)
+	local frame = _G.FrameConstructor(kind, name, parent, templates, ...)
 	frame.name = name
 	_G[name] = true
 	frames[frame] = name
@@ -472,11 +472,13 @@ end
 --- Emulating advancing time by firing WoWAPI_FireUpdate every 0.1 seconds.
 ---@param seconds integer
 function _ADVANCE_TIME(seconds)
+	local now = GetTime()
 	for i = 1, seconds do
-		for m = 0.1, 0.9, 0.1 do
+		for m = 0, 0.9, 0.5 do
 			WoWAPI_FireUpdate(_time + i + m)
 		end
 	end
+	-- print("_ADVANCE_TIME time taken", seconds, GetTime() - now)
 end
 
 function WoWAPI_FireUpdate(forceNow)

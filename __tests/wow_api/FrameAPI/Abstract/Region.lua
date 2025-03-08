@@ -31,7 +31,7 @@ for _, v in ipairs(noopMethods) do objectMethods[v] = noop end
 Region = {
 	New = function(name)
 		local super = _G.ScriptRegion.New(name)
-		return setmetatable({}, {
+		return setmetatable({_type = "Region"}, {
 			__index = function(self, v)
 				local k = objectMethods[v] or super[v]
 				self[v] = k -- Store for easy future lookup

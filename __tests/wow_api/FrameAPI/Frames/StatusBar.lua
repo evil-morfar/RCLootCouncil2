@@ -5,6 +5,7 @@ local function noop() end
 
 local objectMethods = {
 	GetStatusBarTexture = function (self) return self.texture end,
+	SetValue = function(self, value) self.value = value end,
 }
 
 local noopMethods = {
@@ -27,18 +28,17 @@ local noopMethods = {
 	"SetStatusBarDesaturated",
 	"SetStatusBarDesaturation",
 	"SetStatusBarTexture",
-	"SetValue",
 }
 
 for _, v in ipairs(noopMethods) do if not objectMethods[v] then objectMethods[v] = noop end end
 
 StatusBar = {
 	New = function(name, parent)
-		local super = _G.Frame.New(name or "", parent)
-		local object = {texture = _G.Texture.New(name .. "Texture", parent)}
+		local super = parent or _G.Frame.New(name or "")
+		local object = {parent = super, texture = _G.Texture.New(name .. "Texture", parent), _type ="StatusBar"}
 		local statusbar = setmetatable(object, {
 			__index = function(self, v)
-				local k = objectMethods[v] or super[v]
+				local k = objectMethods[v] or self.parent[v]
 				self[v] = k -- Store for easy future lookup
 				return k
 			end,
