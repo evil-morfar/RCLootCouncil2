@@ -4,6 +4,7 @@
 - *Evokers are no longer auto passing Two-Handed Maces.*
 - *Untradable mounts should no longer be added to the session frame (hopefully).*
 - *Fixed json export error when item name contained `"`s (#263).*
+- *Fixed issue with certain imports after a reload or login.*
 
 # v3.15.2
 

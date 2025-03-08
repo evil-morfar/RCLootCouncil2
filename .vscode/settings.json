@@ -112,6 +112,7 @@
         "UIDropDownMenu_HandleGlobalMouseEvent",
         "CloseMenus",
         "ColorPickerFrame",
-        "VIDEO_QUALITY_LABEL6"
+        "VIDEO_QUALITY_LABEL6",
+        "class"
     ]
 }
