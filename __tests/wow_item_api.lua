@@ -43456,6 +43456,34 @@ _G.Items = {
 		itemType = "Weapon",
 		itemString = "item:159652:6112::::::::::35:4:5010:1612:5850:4784",
 	},
+	["item:236960::::::::80:253::3::1:28:872"] = {
+		itemName = "",
+		bindType = 1,
+		itemSellPrice = 0,
+		itemLink = "|cffa335ee|Hitem:236960::::::::80:253::3::1:28:872:::::|h[Prototype~`A.S.M.R.]|h|r",
+		itemEquipLoc = "INVTYPE_NON_EQUIP_IGNORE",
+		itemRarity = 4,
+		itemID = 236960,
+		itemClassId = 15,
+		itemSubClassId = 5,
+		itemSubType = "Mount",
+		itemType = "Miscellaneous",
+		itemString = "item:236960::::::::80:253::3::1:28:872"
+	},
+	["item:228864::::::::80:262::3:6:6652:11966:10354:11980:1494:10255:1:28:2462"] = {
+		itemName = "\"Streamlined\" Cartel Uniform",
+		bindType = 1,
+		itemSellPrice = 0,
+		itemLink = "|cffa335ee|Hitem:228864::::::::80:262::3:6:6652:11966:10354:11980:1494:10255:1:28:2462|h[\"Streamlined\" Cartel Uniform]|h|r",
+		itemEquipLoc = "INVTYPE_CHEST",
+		itemRarity = 4,
+		itemID = 228864,
+		itemClassId = 4,
+		itemSubClassId = 4,
+		itemSubType = "Leather",
+		itemType = "Armor",
+		itemString = "item:228864::::::::80:262::3:6:6652:11966:10354:11980:1494:10255:1:28:2462"
+	}
 }
 
 _G.Items_Array = {}

@@ -3,6 +3,7 @@ require "/wow_api/API/Mixin"
 require "/wow_api/API/Color"
 require "/wow_api/API/TableUtil"
 require "wow_api/API/PlayerLocation"
+require "wow_api/API/Dump"
 require "wow_api/FrameAPI/Constructor"
 local strbyte, strchar, gsub, gmatch, format, tinsert = string.byte, string.char, string.gsub, string.gmatch,
 	string.format, table.insert
@@ -20,9 +21,9 @@ local function uuid()
 	end)
 end
 
-function CreateFrame(kind, name, parent)
+function _G.CreateFrame(kind, name, parent, templates, ...)
 	name = name or kind .. uuid()
-	local frame = _G.FrameConstructor(kind, name, parent)
+	local frame = _G.FrameConstructor(kind, name, parent, templates, ...)
 	frame.name = name
 	_G[name] = true
 	frames[frame] = name
@@ -45,8 +46,26 @@ function xpcall(f, err, ...)
 	end
 end
 
-function securecallfunction(method,...)
+function securecallfunction(method, ...)
 	return method(...)
+end
+
+
+local function secureexecutenext(tbl, prev, func, ...)
+	local key, value = next(tbl, prev)
+
+	if key ~= nil then
+		pcall(func, key, value, ...) -- Errors are silently discarded!
+	end
+
+	return key
+end
+function secureexecuterange(tbl, func, ...)
+	local key = nil
+
+	repeat
+		key = securecallfunction(secureexecutenext, tbl, key, func, ...)
+	until key == nil
 end
 
 function InterfaceOptions_AddCategory()
@@ -56,10 +75,10 @@ end
 function InCinematic()
 	return false
 end
+
 function ChatFrame_AddMessageEventFilter()
 	-- body...
 end
-
 
 function UnitName(unit)
 	return unit
@@ -117,7 +136,7 @@ function GetNumGuildMembers()
 	return 1
 end
 
-function GetRaidRosterInfo(i) return "Unit"..i end
+function GetRaidRosterInfo(i) return "Unit" .. i end
 
 function issecurevariable(obj, method)
 	return false
@@ -144,7 +163,6 @@ end
 function _G.StaticPopup_OnHide(args)
 	-- body...
 end
-
 
 SlashCmdList = {}
 hash_SlashCmdList = {}
@@ -192,12 +210,12 @@ C_AddOns = {
 		return "NOT_IMPLEMENTED"
 	end,
 
-	LoadAddOn = function (args)
+	LoadAddOn = function(args)
 		return "Not implemented!"
 	end,
 
-	IsAddOnLoaded = function () return nil end,
-	GetAddOnInfo = function () return end,
+	IsAddOnLoaded = function() return nil end,
+	GetAddOnInfo = function() return end,
 	GetNumAddOns = function() return 0 end,
 }
 
@@ -210,9 +228,10 @@ function GetCurrentRegion()
 end
 
 function _G.GetProfessions() end
+
 function _G.GetProfessionInfo() end
 
-function _G.GetAverageItemLevel() return 100,100 end
+function _G.GetAverageItemLevel() return 100, 100 end
 
 function IsPartyLFG()
 	return _G.IsPartyLFGVal
@@ -236,7 +255,7 @@ function _G.UnitGroupRolesAssigned(unit) return "DAMAGER" end
 
 _G.CLASS_ICON_TCOORDS = setmetatable({}, {
 	__index = function(self, key)
-		return {0, 1, 0, 1}
+		return { 0, 1, 0, 1, }
 	end,
 })
 function IsInGroup()
@@ -319,8 +338,11 @@ end
 function EJ_GetNumTiers() return 11 end
 
 function EJ_SelectInstance(journalInstanceID) end
+
 function EJ_ResetLootFilter() end
+
 function EJ_SetDifficulty(difficultyID) end
+
 function EJ_GetNumLoot() return 10 end
 
 _G.C_EncounterJournal = {
@@ -335,7 +357,7 @@ _G.C_EncounterJournal = {
 			armorType = Item.itemType,
 			link = Item.itemLink,
 		}
-	end
+	end,
 }
 
 function ReloadUI()
@@ -353,12 +375,12 @@ end
 local registeredPrefixes = {}
 
 C_ChatInfo = {
-	RegisterAddonMessagePrefix = function (prefix)
+	RegisterAddonMessagePrefix = function(prefix)
 		assert(#prefix <= 16) -- tested, 16 works /mikk, 20110327
 		registeredPrefixes[prefix] = true
 	end,
 
-	SendAddonMessage = function (prefix, message, distribution, target)
+	SendAddonMessage = function(prefix, message, distribution, target)
 		if C_ChatInfo.RegisterAddonMessagePrefix then --4.1+
 			assert(#message <= 255,
 				string.format("SendAddonMessage: message too long (%d bytes > 255)",
@@ -411,7 +433,7 @@ function UIDropDownMenu_InitializeHelper(args)
 	-- body...
 end
 
-function hooksecurefunc(tbl,func_name, post_hook_func)
+function hooksecurefunc(tbl, func_name, post_hook_func)
 	if type(tbl) == "string" then
 		post_hook_func = func_name
 		func_name = tbl
@@ -450,11 +472,13 @@ end
 --- Emulating advancing time by firing WoWAPI_FireUpdate every 0.1 seconds.
 ---@param seconds integer
 function _ADVANCE_TIME(seconds)
+	local now = GetTime()
 	for i = 1, seconds do
-		for m = 0.1, 0.9, 0.1 do
+		for m = 0, 0.9, 0.5 do
 			WoWAPI_FireUpdate(_time + i + m)
 		end
 	end
+	-- print("_ADVANCE_TIME time taken", seconds, GetTime() - now)
 end
 
 function WoWAPI_FireUpdate(forceNow)
@@ -563,19 +587,19 @@ local playerNameToGUID = {
 		guid = "Player-1-00000001",
 		name = "Player1-Realm1",
 		realm = "Realm1",
-		class = "WARRIOR"
+		class = "WARRIOR",
 	},
 	Player2 = {
 		guid = "Player-1-00000002",
 		name = "Player2-Realm1",
 		realm = "Realm1",
-		class = "WARRIOR"
+		class = "WARRIOR",
 	},
 	Player3 = {
 		guid = "Player-1122-00000003",
 		name = "Player3-Realm2",
 		realm = "Realm2",
-		class = "WARRIOR"
+		class = "WARRIOR",
 	},
 }
 
@@ -638,15 +662,17 @@ printtable = function(data, level)
 	level = level or 0
 	local ident = strrep("     ", level)
 	if level > 6 then return end
-	if type(data) ~= "table" then print(tostring(data)) end
+	if type(data) ~= "table" then
+		print(tostring(data))
+	end
 	;
 	for index, value in pairs(data) do
 		repeat
 			if type(value) ~= "table" then
 				print(ident ..
-				"[" ..
-				keyValueForTable(index) ..
-				"] = " .. keyValueForTable(value) .. ", -- (" .. type(value) .. ")");
+					"[" ..
+					keyValueForTable(index) ..
+					"] = " .. keyValueForTable(value) .. ", -- (" .. type(value) .. ")");
 				break;
 			end
 			print(ident .. "[" .. keyValueForTable(index) .. "] = {")
@@ -670,7 +696,7 @@ CLASS_SORT_ORDER = {
 	"WARLOCK",
 	"HUNTER",
 	"DEMONHUNTER",
-	"EVOKER"
+	"EVOKER",
 };
 MAX_CLASSES = #CLASS_SORT_ORDER;
 
@@ -997,7 +1023,7 @@ local CLASS_INFO = {
 				name = "Augmentation",
 				iconID = 5198700,
 				role = "DAMAGER",
-			}
+			},
 		},
 	},
 }
@@ -1047,16 +1073,20 @@ function GetSpecializationInfoForClassID(classID, specNum)
 	local spec = CLASS_INFO[classID].specs[specNum]
 	return spec.specID, spec.name, "NOT_IMPLEMENTED", spec.iconID, spec.role, "NOT_IMPLEMENTED", "NOT_IMPLEMENTED"
 end
+
 function GetSpecialization() return 71 end
-function GetSpecializationInfo() return GetSpecializationInfoForClassID(1,1) end
+
+function GetSpecializationInfo() return GetSpecializationInfoForClassID(1, 1) end
+
 function GetSpecializationInfoByID() return GetSpecializationInfoForClassID(1, 1) end
 
 function _G.GetInventorySlotInfo(slot) end
+
 -- Mocked with random item
 function GetInventoryItemLink(unit, slot) return _G.Items_Array[math.random(#_G.Items_Array)] end
 
-local symbols = { "%%", "%*", "%+", "%-", "%?", "%(", "%)", "%[", "%]", "%$", "%^" } --% has to be escaped first or everything is ruined
-local replacements = { "%%%%", "%%%*", "%%%+", "%%%-", "%%%?", "%%%(", "%%%)", "%%%[", "%%%]", "%%%$", "%%%^" }
+local symbols = { "%%", "%*", "%+", "%-", "%?", "%(", "%)", "%[", "%]", "%$", "%^", } --% has to be escaped first or everything is ruined
+local replacements = { "%%%%", "%%%*", "%%%+", "%%%-", "%%%?", "%%%(", "%%%)", "%%%[", "%%%]", "%%%$", "%%%^", }
 -- Defined in FrameXML/ChatFrame.lua
 function escapePatternSymbols(text)
 	for i = 1, #symbols do
@@ -1072,10 +1102,10 @@ function FauxScrollFrame_GetOffset() return 0 end
 
 function _G.FauxScrollFrame_OnVerticalScroll() end
 
-
-
 function GetClassColoredTextForUnit(unit, text) return text end
+
 function CreateAtlasMarkup(text) return "" end
+
 ceil = math.ceil
 max = math.max
 mod = math.fmod
@@ -1087,7 +1117,7 @@ C_Container = {
 	end,
 	PickupContainerItem = donothing,
 	GetContainerNumSlots = function(c) return 10 end,
-	GetContainerItemLink = donothing
+	GetContainerItemLink = donothing,
 }
 
 C_CreatureInfo = {
@@ -1097,9 +1127,9 @@ C_CreatureInfo = {
 }
 
 C_PlayerInfo = {
-	UnitIsSameServer = function (target)
+	UnitIsSameServer = function(target)
 		return false
-	end
+	end,
 }
 
 UISpecialFrames = {}
@@ -1114,6 +1144,7 @@ RAID_CLASS_COLORS = {}
 function GetClassColorObj(classFilename)
 	return RAID_CLASS_COLORS[classFilename];
 end
+
 MAX_TRADE_ITEMS = 6 -- don't remember
 
 TOOLTIP_DEFAULT_COLOR = { r = 1, g = 1, b = 1, };
@@ -1291,5 +1322,16 @@ Enum = {
 		ToWoWAccount = 7,
 		ToBnetAccount = 8,
 		ToBnetAccountUntilEquipped = 9,
-	}
+	},
+	ItemQuality = {
+		Poor = 0,
+		Common = 1,
+		Uncommon = 2,
+		Rare = 3,
+		Epic = 4,
+		Legendary = 5,
+		Artifact = 6,
+		Heirloom = 7,
+		WoWToken = 8,
+	},
 }

@@ -94,7 +94,9 @@ local item_class = {
 	--- @param timeRemaining? integer Remaining time
 	--- @param fallbackTime? integer Used as `timeRemaining` if that's nil. Defaults to 0.
 	SetUpdateTime = function(self, timeRemaining, fallbackTime)
-		timeRemaining = timeRemaining or fallbackTime or 0
+		if timeRemaining ~= 0 then
+			timeRemaining = fallbackTime or 0
+		end
 		-- Store BoEs (math.huge) as 24 hrs so we don't run into issues when displaying time.
 		self.time_remaining = timeRemaining == math.huge and 86400 or timeRemaining
 		self.time_updated = time()

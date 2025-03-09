@@ -33,7 +33,7 @@ local replacements = {
     [magicKey .. "15"] = "text",
     [magicKey .. "16"] = "color",
     [magicKey .. "17"] = "autoGroupLoot",
-    [magicKey .. "18"] = "requireNotes",
+    [magicKey .. "18"] = "requireNotes", -- TODO: Duplicate entry, needs removal on patch (not backwards compatible)
 }
 
 local replacements_inv = tInvert(replacements)
@@ -105,7 +105,8 @@ function private:BuildMLDB()
             if
                 not addon.defaults.profile.responses[type] or
                     db.responses[type][i].text ~= addon.defaults.profile.responses[type][i].text or
-                    unpack(db.responses[type][i].color) ~= unpack(addon.defaults.profile.responses[type][i].color)
+					not tCompare(db.responses[type][i].color, addon.defaults.profile.responses[type][i].color, 2)
+                    
              then
                 if not changedResponses[type] then
                     changedResponses[type] = {}

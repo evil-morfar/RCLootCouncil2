@@ -41,7 +41,7 @@ for _, v in ipairs(noopMethods) do if not objectMethods[v] then objectMethods[v]
 GameTooltipFrame = {
 	New = function(name, parent)
 		local super = _G.Frame.New(name, parent)
-		local object = { lines = {}, owner = nil, anchor = nil, }
+		local object = {parent = super, lines = {}, owner = nil, anchor = nil, _type = "GameTooltip", }
 		return setmetatable(object, {
 			__index = function(self, v)
 				local k = objectMethods[v] or super[v]

@@ -636,6 +636,7 @@ function RCLootCouncil:UpdateAndSendRecentTradableItem(info, count)
 		-- We've searched every single bag space, and found at least 1 item that wasn't tradeable,
 		-- and none that was. We can now safely assume the item can't be traded.
 		self:Send("group", "n_t", info.link, info.guid)
+		self.ItemStorage:RemoveItem(Item)
 	end, function() -- onFail
 		-- We haven't found it, maybe we just haven't received it yet, so try again in one second
 		Item:Unstore()
@@ -1966,8 +1967,8 @@ function RCLootCouncil:GetLootDBStatistics()
 				end
 				count[id] = count[id] and count[id] + 1 or 1
 				responseText[id] = responseText[id] and responseText[id] or entry.response
-				if (not color[id] or unpack(color[id], 1, 3) == unpack {1, 1, 1}) and (entry.color and #entry.color ~= 0) then -- If it's not already added
-					color[id] = #entry.color ~= 0 and #entry.color == 4 and entry.color or {1, 1, 1}
+				if (not color[id] or tCompare(color[id], {1, 1, 1, 1})) and (entry.color and #entry.color ~= 0) then -- If it's not already added
+					color[id] = #entry.color ~= 0 and #entry.color == 4 and entry.color or {1, 1, 1, 1}
 				end
 				if lastestAwardFound < 5 and type(entry.responseID) == "number" and not entry.isAwardReason
 								and (entry.responseID <= db.numMoreInfoButtons) then
@@ -2439,7 +2440,7 @@ function RCLootCouncil:GetItemBonusText(link, delimiter)
 	if not delimiter then delimiter = "/" end
 	itemStatsRet = C_Item.GetItemStats(link)
 	local text = ""
-	for k, _ in pairs(itemStatsRet) do
+	for k, _ in pairs(itemStatsRet or {}) do
 		if k:find("SOCKET") then
 			text = L["Socket"]
 			break
@@ -2545,7 +2546,7 @@ function RCLootCouncil:GetResponse(type, name)
 					and self.mldb.responses[self.BTN_SLOTS[type]] then type = self.BTN_SLOTS[type] end
 
 	if type == "default" or (self.mldb and self.mldb.responses and not self.mldb.responses[type]) then -- We have a value if mldb is blank
-		if db.responses.default[name] or self.mldb.responses.default[name] then
+		if db.responses.default[name] or (self.mldb and self.mldb.responses and self.mldb.responses.default[name]) then
 			return (self.mldb.responses and self.mldb.responses.default and self.mldb.responses.default[name])
 							       or db.responses.default[name]
 		else

@@ -104,6 +104,19 @@
         "PARRY",
         "RANGED",
         "ITEM_QUALITY_COLORS",
-        "RunNextFrame"
+        "RunNextFrame",
+        "Rare",
+        "Legendary",
+        "IsInGlobalEnvironment",
+        "ToggleDropDownMenu",
+        "UIDropDownMenu_HandleGlobalMouseEvent",
+        "CloseMenus",
+        "ColorPickerFrame",
+        "VIDEO_QUALITY_LABEL6",
+        "class",
+        "LootFrame",
+        "SlashCmdList",
+        "FauxScrollFrame_Update",
+        "FauxScrollFrame_GetOffset"
     ]
 }

@@ -122,6 +122,13 @@ describe("#Import", function()
 			assert.are.equal("22:01:51", entry.time)
 			-- assert.are.equal("1557691311-1", entry.id)
 		end)
+
+		it("should gracefully handle invalid responseIDs", function()
+			History:ImportHistory(private.testData[12])
+			local name = next(addon:GetHistoryDB())
+			local entry = addon:GetHistoryDB()[name][1]
+			assert.is_not.Nil(entry)
+		end)
 	end)
 
 	describe("Imports large data sets", function()
@@ -240,4 +247,19 @@ Potdisc-Ravencrest	12/6/19	21:34:34	1560371674-43	[Giga-Charged Shoulderpads]	16
 
 	[10] = [[player	date	time	id	item	itemID	itemString	response	votes	class	instance	boss	difficultyID	mapID	groupSize	gear1	gear2	responseID	isAwardReason	subType	equipLoc	note	owner
    Potdisc-Ravencrest	2019/5/12	22:01:51		[Deathspeaker Spire]	165597	item:165597::::::::120:258::5:3:4799:1522:4786	Personal Loot - Non tradeable	nil	PRIEST	Battle of Dazar'alor-Heroic	King Rastakhan	15	2070	14			PL	false	Staves	Two-Hand		Potdisc-Ravencrest]], -- Missing id
+	[11] =
+	[[player	date	time	id	item	itemID	itemString	response	votes	class	instance	boss	difficultyID	mapID	groupSize	gear1	gear2	responseID	isAwardReason	subType	equipLoc	note	owner
+   Potdisc-Ravencrest	2019/5/12	22:01:51	1560371674-43	[Deathspeaker Spire]	165597	item:165597::::::::120:258::5:3:4799:1522:4786	Personal Loot - Non tradeable	nil	PRIEST	Battle of Dazar'alor-Heroic	King Rastakhan	15	2070	14			8	false	Staves	Two-Hand		Potdisc-Ravencrest]],
+	[12] =
+	[[player	date	time	id	item	itemID	itemString	response	votes	class	instance	boss	difficultyID	mapID	groupSize	gear1	gear2	responseID	isAwardReason	subType	equipLoc	note	owner
+Løthár-KhazModan	2025/03/06	22:37:00	1741297055-9	[Bijou béni de Gobleone]	228842	item:165597::::::::120:258::5:3:4799:1522:4786	BIS	1	PALADIN	Libération de Terremine-Normal	Verr’Minh, chefs de la sécurité	14	2769	19	item:165597::::::::120:258::5:3:4799:1522:4786		1	FALSE	Divers	Cou	BIs tank	Meliscendre-KhazModan
+Altaras-KhazModan	2025/03/06	22:34:00	1741296859-5	[Coup de poing en fusion de Capo]	232804	item:165597::::::::120:258::5:3:4799:1522:4786	Butin personnel - non-échangeable	nil	HUNTER	Libération de Terremine-Normal	Verr’Minh, chefs de la sécurité	14	2769	19			PL	FALSE	Armes de pugilat	À une main		Altaras-KhazModan
+Zaarooc-Hyjal	2025/03/06	21:40:00	1741293692-3	[As-des-Machines]	232526	item:165597::::::::120:258::5:3:4799:1522:4786	BIS	1	PALADIN	Libération de Terremine-Normal	Bandit manchot	14	2769	18	item:165597::::::::120:258::5:3:4799:1522:4786		1	FALSE	Masses à deux mains	Deux mains	bis all for one	Meliscendre-KhazModan
+Zaarooc-Hyjal	2025/03/06	22:34:00	1741296836-4	[Offre refusée d’affranchi]	228902	item:165597::::::::120:258::5:3:4799:1522:4786	Butin personnel - non-échangeable	nil	PALADIN	Libération de Terremine-Normal	Verr’Minh, chefs de la sécurité	14	2769	19			PL	FALSE	Masses à une main	À une main		Zaarooc-Hyjal
+Ninperméable-KhazModan	2025/03/06	21:38:00	1741293548-1	[Roulette miniature]	228843	item:165597::::::::120:258::5:3:4799:1522:4786	BIS	0	SHAMAN	Libération de Terremine-Normal	Bandit manchot	14	2769	18	item:165597::::::::120:258::5:3:4799:1522:4786	item:165597::::::::120:258::5:3:4799:1522:4786	1	FALSE	Divers	Doigt	Bis d'apres ice veins :p	Meliscendre-KhazModan
+Chlðé-KhazModan	2025/03/06	21:38:00	1741293538-0	[Détecteur de fraude d’opérateur]	228906	item:165597::::::::120:258::5:3:4799:1522:4786	BIS	1	MAGE	Libération de Terremine-Normal	Bandit manchot	14	2769	18	item:165597::::::::120:258::5:3:4799:1522:4786		1	FALSE	Divers	Tenu(e) en main gauche	C'est mon BIS raid, mais c'est pas ma meilleure option	Meliscendre-KhazModan
+Chlðé-KhazModan	2025/03/06	22:35:00	1741296952-6	[Mantelet sur mesure de sous-chef]	228870	item:165597::::::::120:258::5:3:4799:1522:4786	Meilleurs Ilvl (NM->HM)	1	MAGE	Libération de Terremine-Normal	Verr’Minh, chefs de la sécurité	14	2769	19	item:165597::::::::120:258::5:3:4799:1522:4786		3	FALSE	Tissu	Épaule	ça peut faire une pièce de set avec le catalyseur	Meliscendre-KhazModan
+Chlðé-KhazModan	2025/03/06	22:36:00	1741296961-7	[Palmes de Murloc en ciment]	228879	item:165597::::::::120:258::5:3:4799:1522:4786	BIS	0	MAGE	Libération de Terremine-Normal	Verr’Minh, chefs de la sécurité	14	2769	19	item:165597::::::::120:258::5:3:4799:1522:4786		1	FALSE	Tissu	Pieds	Exactement mes stats, c'est mon BIS	Meliscendre-KhazModan
+Chitarolc-KhazModan	2025/03/06	22:36:00	1741296999-8	[Numéro d’urgence des brutes de Minh]	230199	item:165597::::::::120:258::5:3:4799:1522:4786	BIS	1	DEMONHUNTER	Libération de Terremine-Normal	Verr’Minh, chefs de la sécurité	14	2769	19	item:165597::::::::120:258::5:3:4799:1522:4786	item:165597::::::::120:258::5:3:4799:1522:4786	1	FALSE	Divers	Bijou	3 iéme meuilleur bijou bis	Meliscendre-KhazModan
+Spagueflex-KhazModan	2025/03/06	21:38:00	1741293573-2	[Gallybrouzouf doré du zénith]	228810	item:165597::::::::120:258::5:3:4799:1522:4786	Set Token	2	WARRIOR	Libération de Terremine-Normal	Bandit manchot	14	2769	18	item:165597::::::::120:258::5:3:4799:1522:4786		8	FALSE	Jeton d'armure			Meliscendre-KhazModan]],
 }

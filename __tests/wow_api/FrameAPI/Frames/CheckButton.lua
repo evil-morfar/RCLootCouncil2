@@ -21,7 +21,7 @@ for _, v in ipairs(noopMethods) do if not objectMethods[v] then objectMethods[v]
 CheckButton = {
 	New = function(name, parent)
 		local super = _G.Button.New(name or "", parent)
-		local object = { checked = false }
+		local object = { checked = false , _type = "CheckButton" }
 		local button = setmetatable(object, {
 			__index = function(self, v)
 				local k = objectMethods[v] or super[v]
