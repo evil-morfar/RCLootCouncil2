@@ -105,7 +105,8 @@ function private:BuildMLDB()
             if
                 not addon.defaults.profile.responses[type] or
                     db.responses[type][i].text ~= addon.defaults.profile.responses[type][i].text or
-                    unpack(db.responses[type][i].color) ~= unpack(addon.defaults.profile.responses[type][i].color)
+					not tCompare(db.responses[type][i].color, addon.defaults.profile.responses[type][i].color, 2)
+                    
              then
                 if not changedResponses[type] then
                     changedResponses[type] = {}

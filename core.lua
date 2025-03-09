@@ -1967,8 +1967,8 @@ function RCLootCouncil:GetLootDBStatistics()
 				end
 				count[id] = count[id] and count[id] + 1 or 1
 				responseText[id] = responseText[id] and responseText[id] or entry.response
-				if (not color[id] or unpack(color[id], 1, 3) == unpack {1, 1, 1}) and (entry.color and #entry.color ~= 0) then -- If it's not already added
-					color[id] = #entry.color ~= 0 and #entry.color == 4 and entry.color or {1, 1, 1}
+				if (not color[id] or tCompare(color[id], {1, 1, 1, 1})) and (entry.color and #entry.color ~= 0) then -- If it's not already added
+					color[id] = #entry.color ~= 0 and #entry.color == 4 and entry.color or {1, 1, 1, 1}
 				end
 				if lastestAwardFound < 5 and type(entry.responseID) == "number" and not entry.isAwardReason
 								and (entry.responseID <= db.numMoreInfoButtons) then

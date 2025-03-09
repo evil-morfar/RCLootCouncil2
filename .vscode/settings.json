@@ -113,6 +113,10 @@
         "CloseMenus",
         "ColorPickerFrame",
         "VIDEO_QUALITY_LABEL6",
-        "class"
+        "class",
+        "LootFrame",
+        "SlashCmdList",
+        "FauxScrollFrame_Update",
+        "FauxScrollFrame_GetOffset"
     ]
 }
