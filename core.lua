@@ -2440,7 +2440,7 @@ function RCLootCouncil:GetItemBonusText(link, delimiter)
 	if not delimiter then delimiter = "/" end
 	itemStatsRet = C_Item.GetItemStats(link)
 	local text = ""
-	for k, _ in pairs(itemStatsRet) do
+	for k, _ in pairs(itemStatsRet or {}) do
 		if k:find("SOCKET") then
 			text = L["Socket"]
 			break
