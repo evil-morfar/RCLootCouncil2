@@ -1865,6 +1865,8 @@ function RCLootCouncil:OnRaidEnter()
 		elseif db.usage.ask_gl then
 			return LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_USAGE")
 		end
+	else
+		self:ScheduleTimer(CandidateAndNewMLCheck, 1)
 	end
 end
 

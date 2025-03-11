@@ -1,3 +1,9 @@
+# v3.15.4
+
+## Bugfixes
+
+- *Improved transmission of settings for people join raid late.*
+
 # v3.15.3
 
 ## Bugfixes
