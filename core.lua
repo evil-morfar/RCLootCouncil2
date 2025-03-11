@@ -1133,6 +1133,7 @@ function RCLootCouncil:PrepareLootTable(lootTable)
 		v.subTypeID = subTypeID
 		v.session = v.session or ses
 		v.classes = self:GetItemClassesAllowedFlag(link)
+		v.typeCode = v.typeCode or "default"
 	end
 end
 

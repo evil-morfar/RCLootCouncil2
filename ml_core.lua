@@ -185,23 +185,26 @@ end
 ---@param overrideIsSent boolean @Ignores .isSent status and adds the item anyway.
 ---@return table LootTable
 function RCLootCouncilML:GetLootTableForTransmit(overrideIsSent)
-	local copy = CopyTable(self.lootTable)
-	for k, v in pairs(copy) do
+	local skipDefaultTypeCode = addon.Utils:GroupHasVersion("3.15.4")
+	local ret = {}
+	for k, v in pairs(self.lootTable) do
+		ret[k] = {}
 		if not overrideIsSent and v.isSent then -- Don't retransmit already sent items
-			copy[k] = nil
+			ret[k] = nil
 		else
-			v.bagged = nil
-			v.lootSlot = nil
-			v.awarded = nil
-			v.classes = nil
-			v.isSent = nil
-			v.link = nil
-			v.ilvl = nil
-			v.texture = nil
-			v.token = nil
+			-- Don't send "default", we recreate it when receiving
+			if skipDefaultTypeCode and v.typeCode == "default" then
+				-- Don't add typecode
+			else
+				ret[k].typeCode = v.typeCode
+			end
+			ret[k].string = v.string
+			ret[k].session = v.session
+			ret[k].boss = v.boss
+			ret[k].owner = v.owner
 		end
 	end
-	return copy
+	return ret
 end
 
 --- Removes a session from the lootTable
