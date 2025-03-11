@@ -141,6 +141,8 @@ function RCLootCouncil:OnInitialize()
 	self.lastEncounterID = nil
 	self.autoGroupLootWarningShown = false
 	self.isInGuildGroup = false -- Is the group leader a member of our guild?
+	---@type InstanceDataSnapshot
+	self.instanceDataSnapshot = nil -- Instance data from last encounter
 
 	---@type table<string,boolean>
 	self.candidatesInGroup = {}
@@ -869,6 +871,7 @@ function RCLootCouncil:Test(num, fullTest, trinketTest)
 		self.testMode = false
 		return
 	end
+	self:SnapshotInstanceData()
 	-- Call ML module and let it handle the rest
 	self:CallModule("masterlooter")
 	self:GetActiveModule("masterlooter"):NewML(self.masterLooter)
@@ -1561,15 +1564,16 @@ function RCLootCouncil:OnEvent(event, ...)
 
 	elseif event == "PLAYER_ENTERING_WORLD" then
 		self.Log:d("Event:", event, ...)
+		local isReload = select(2, ...)
 		self:UpdatePlayersData()
 		self:ScheduleTimer(CandidateAndNewMLCheck, 2)
 		self:ScheduleTimer(function() -- This needs some time to be ready
 			local instanceName, _, _, difficultyName = GetInstanceInfo()
 			self.currentInstanceName = instanceName .. (difficultyName ~= "" and "-" .. difficultyName or "")
+			if not isReload then self:SnapshotInstanceData() end -- Will be restored from cache
 		end, 5)
 
-		-- Check if we reloaded
-		if select(2, ...) then
+		if isReload then
 			self.Log("Player relog...")
 
 			-- Restore masterlooter from cache, but only if not already set.
@@ -1599,6 +1603,9 @@ function RCLootCouncil:OnEvent(event, ...)
 				self:OnStartHandleLoot()
 			end
 
+			self.instanceDataSnapshot = self.db.global.cache.lastEncounterInstanceData
+			wipe(self.db.global.cache) -- No reason to store data forever
+
 			-- If we still haven't set masterLooter, try delaying a bit.
 			-- but we don't have to wait if we got it from cache.
 			-- ? REVIEW: This might not be needed anymore.
@@ -1617,6 +1624,7 @@ function RCLootCouncil:OnEvent(event, ...)
 		self.db.global.cache.council = Council:GetNum() > 0 and Council:GetForTransmit() or nil
 		self.db.global.cache.masterLooter = self.masterLooter and self.masterLooter:GetGUID()
 		self.db.global.cache.handleLoot = self.handleLoot
+		self.db.global.cache.instanceData = self.instanceDataSnapshot
 
 	elseif event == "ENCOUNTER_START" then
 		self.Log:d("Event:", event, ...)
@@ -1631,6 +1639,7 @@ function RCLootCouncil:OnEvent(event, ...)
 	elseif event == "ENCOUNTER_END" then
 		self.Log:d("Event:", event, ...)
 		self.lastEncounterID, self.bossName = ... -- Extract encounter name and ID
+		self:SnapshotInstanceData()
 		wipe(self.nonTradeables)
 
 	elseif event == "LOOT_CLOSED" then
@@ -1728,6 +1737,33 @@ function RCLootCouncil:OnSpecChanged()
 	if self.player.role ~= self.Utils:GetPlayerRole() then
 		self:SendPlayerInfo()
 	end
+end
+
+---@return InstanceDataSnapshot
+function RCLootCouncil:GetInstanceData()
+	local instanceName, _, difficultyID, difficultyName, _, _, _, mapID, groupSize = GetInstanceInfo()
+	return {
+		instanceName = instanceName,
+		difficultyID = difficultyID,
+		difficultyName = difficultyName,
+		mapID = mapID,
+		groupSize = groupSize,
+		timestamp = GetServerTime(),
+	}
+end
+
+--- Snapshots and returns the current instance data.
+--- Data is cached in `self.instanceDataSnapshot`
+function RCLootCouncil:SnapshotInstanceData()
+	self.instanceDataSnapshot = self:GetInstanceData()
+	return self.instanceDataSnapshot
+end
+
+---@param override InstanceDataSnapshot? Defaults to `self.instanceDataSnapshot`
+---@return boolean
+function RCLootCouncil:IsInstanceDataSnapshotValid(override)
+	local data = override or self.instanceDataSnapshot or self:SnapshotInstanceData()
+	return data and data.timestamp and data.timestamp > GetServerTime() - self.INSTANCE_DATA_TTL
 end
 
 ---@return boolean #True if the player is in a guild group or alone.

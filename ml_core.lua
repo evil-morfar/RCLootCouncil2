@@ -144,6 +144,9 @@ function RCLootCouncilML:AddItem(item, bagged, slotIndex, owner, entry, boss)
 	entry.boss = boss or addon.bossName
 	entry.isSent = false
 	entry.typeCode = addon:GetTypeCodeForItem(item)
+	if addon:IsInstanceDataSnapshotValid() then
+		entry.instanceData = addon.instanceDataSnapshot
+	end
 
 	local itemInfo = self:GetItemInfo(item)
 
@@ -1210,7 +1213,12 @@ function RCLootCouncilML:TrackAndLogLoot(winner, link, responseID, boss, reason,
 	local equipLoc = self.lootTable[session] and self.lootTable[session].equipLoc or "default"
 	local typeCode = self.lootTable[session] and self.lootTable[session].typeCode
 	local response = addon:GetResponse(typeCode or equipLoc, responseID)
-	local instanceName, _, difficultyID, difficultyName, _,_,_,mapID, groupSize = GetInstanceInfo()
+	local instanceData
+	if addon:IsInstanceDataSnapshotValid(self.lootTable[session].instanceData) then
+		instanceData = self.lootTable[session].instanceData
+	else
+		instanceData = addon:GetInstanceData()
+	end
 	-- Check if the item has a specific boss associated
 	if self.lootTable[session] and self.lootTable[session].bagged and self.lootTable[session].bagged.args.boss then
 		boss = self.lootTable[session].bagged.args.boss
@@ -1218,11 +1226,11 @@ function RCLootCouncilML:TrackAndLogLoot(winner, link, responseID, boss, reason,
 		boss = self.lootTable[session].boss
 	end
 	self.Log:d("ML:TrackAndLogLoot()", winner, link, responseID, boss, reason, session, candData)
-	local serverTime               = C_DateAndTime.GetServerTimeLocal()
+	local serverTime = C_DateAndTime.GetServerTimeLocal()
 	history_table["lootWon"] 		= link
 	history_table["date"] 			= date("!%Y/%m/%d", serverTime)
 	history_table["time"] 			= date("!%H:%M:%S", serverTime)
-	history_table["instance"] 		= instanceName.."-"..difficultyName
+	history_table["instance"]     = instanceData.instanceName .. "-" .. instanceData.difficultyName
 	history_table["boss"] 			= boss or _G.UNKNOWN
 	history_table["votes"] 			= candData and candData.votes
 	history_table["itemReplaced1"]= (candData and candData.gear1) and select(2,C_Item.GetItemInfo(candData.gear1))
@@ -1230,18 +1238,18 @@ function RCLootCouncilML:TrackAndLogLoot(winner, link, responseID, boss, reason,
 	history_table["response"] 		= reason and reason.text or response.text
 	history_table["responseID"] 	= reason and reason.sort - 400 or responseID 										-- Changed in v2.0 (reason responseID was 0 pre v2.0)
 	history_table["color"]			= reason and reason.color or response.color											-- New in v2.0
-	history_table["class"]			= Player:Get(winner):GetClass()															-- New in v2.0
-	history_table["isAwardReason"]= reason and true or false																	-- New in v2.0
-	history_table["difficultyID"]	= difficultyID																					-- New in v2.3+
-	history_table["mapID"]			= mapID																							-- New in v2.3+
-	history_table["groupSize"]		= groupSize																						-- New in v2.3+
---	history_table["tierToken"]		= isToken																						-- New in v2.3+ - Removed v2.9
---	history_table["tokenRoll"]		= tokenRoll																						-- New in v2.4+ - Removed v2.9
---	history_table["relicRoll"]		= relicRoll																						-- New in v2.5+ - Removed v2.9
-	history_table["note"]			= candData and candData.note																-- New in v2.7+
-	history_table["id"]				= GetServerTime().."-"..historyCounter												-- New in v2.7+. A unique id for the history entry.
+	history_table["class"]	= Player:Get(winner):GetClass()														-- New in v2.0
+	history_table["isAwardReason"]= reason and true or false													-- New in v2.0
+	history_table["difficultyID"] = instanceData.difficultyID													-- New in v2.3+
+	history_table["mapID"]  = instanceData.mapID                    											-- New in v2.3+
+	history_table["groupSize"]     = instanceData.groupSize                										-- New in v2.3+
+--	history_table["tierToken"]		= isToken																			-- New in v2.3+ - Removed v2.9
+--	history_table["tokenRoll"]		= tokenRoll																			-- New in v2.4+ - Removed v2.9
+--	history_table["relicRoll"]		= relicRoll																			-- New in v2.5+ - Removed v2.9
+	history_table["note"]			= candData and candData.note														-- New in v2.7+
+	history_table["id"]		= GetServerTime().."-"..historyCounter										-- New in v2.7+. A unique id for the history entry.
 	history_table["owner"]			= owner or self.lootTable[session] and self.lootTable[session].owner or winner		-- New in v2.9+.
-	history_table["typeCode"]			= self.lootTable[session] and self.lootTable[session].typeCode		-- New in v2.15+.
+	history_table["typeCode"]		= self.lootTable[session] and self.lootTable[session].typeCode					-- New in v2.15+.
 
 	historyCounter = historyCounter + 1
 
