@@ -1214,7 +1214,7 @@ function RCLootCouncilML:TrackAndLogLoot(winner, link, responseID, boss, reason,
 	local typeCode = self.lootTable[session] and self.lootTable[session].typeCode
 	local response = addon:GetResponse(typeCode or equipLoc, responseID)
 	local instanceData
-	if addon:IsInstanceDataSnapshotValid(self.lootTable[session].instanceData) then
+	if (self.lootTable[session] and self.lootTable[session].instanceData) and addon:IsInstanceDataSnapshotValid(self.lootTable[session].instanceData) then
 		instanceData = self.lootTable[session].instanceData
 	else
 		instanceData = addon:GetInstanceData()
