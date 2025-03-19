@@ -117,7 +117,7 @@ end
 --- @param boss? string Set to override boss name. Defaults to `RCLootCouncil.bossName`.
 function RCLootCouncilML:AddItem(item, bagged, slotIndex, owner, entry, boss)
 	self.Log:d("AddItem", item, bagged, slotIndex, owner, entry, boss)
-	addon:LogItemGUID(item)
+	self:ScheduleTimer(addon.LogItemGUID, 1, addon, item)
 	if type(item) == "string" and item:find("|Hcurrency") then return end -- Ignore "Currency" item links
 
 	-- Not having the lootTable is a sure sign that the module isn't enabled.
