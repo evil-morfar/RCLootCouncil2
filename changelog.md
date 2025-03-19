@@ -9,6 +9,7 @@ It persists through reloads and is also reset when testing.
 ## Bugfixes
 
 - *Improved transmission of settings for people joining the raid late.*
+- *Fixed issue with importing csv data with quotes in notes.*
 
 # v3.15.3
 

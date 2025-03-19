@@ -189,6 +189,9 @@ function His:DoErrorCheck ()
    return false
 end
 
+---@param input string
+---@param delimiter string
+---@param notFirst boolean?
 function His:ExtractLine (input, delimiter, notFirst)
    local ret = {}
    -- Check for any escaped commas:
@@ -198,8 +201,22 @@ function His:ExtractLine (input, delimiter, notFirst)
       local first, last = input:find("\".-\"")
       -- do the first and second half, and put this in the middle.
       ret = self:ExtractLine(strsub(input, 1, math.max(first - 2,0)), delimiter, true)
-      tinsert(ret, strsub(input, first + 1, last - 1))
-      local t2 = self:ExtractLine(strsub(input, last + 2), delimiter, true)
+	  -- if the quote is directly before or after the delimiter, it should be split
+	  if first > 1 and input:sub(first - 1, first - 1) ~= delimiter and
+		 last < #input and input:sub(last + 1, last + 1) ~= delimiter then
+			-- Find next delimiter
+			local next = input:find(delimiter, last + 2)
+			-- Last entry should now be set to this entry
+			if next then
+				ret[#ret] = ret[#ret] ..strsub(input, first -1, next - 1)
+				last = next - 1 -- -1 to account for the delimiter
+			else
+				addon.Log:E("Could not find next delimiter")
+			end
+		 else
+			tinsert(ret, strsub(input, first + 1, last - 1))
+		 end
+	local t2 = self:ExtractLine(strsub(input, last + 2), delimiter, true)
       local len = #ret
       for k, v in ipairs(t2) do
          ret[len + k] = v

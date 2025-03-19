@@ -91,6 +91,15 @@ describe("#Import", function()
 			assert.spy(s).was_called_with(match.is_ref(addon),
 				string.format(L["Successfully imported 'number' entries."], 1))
 		end)
+
+		it("should import data with quotes in note", function()
+			local s = spy.on(addon, "Print")
+			History:ImportCSV(private.testData[13])
+			assert.spy(s).was_called_with(match.is_ref(addon),
+				string.format(L["Successfully imported 'number' entries."], 1))
+			assert.equals("Cindermuff-Ravencrest", addon.lootDB.factionrealm["Cindermuff-Ravencrest"][1].owner)
+			assert.equals('note with "quotes" in the middle', addon.lootDB.factionrealm["Cindermuff-Ravencrest"][1].note)
+		end)
 	end)
 
 
@@ -262,4 +271,6 @@ Chlðé-KhazModan	2025/03/06	22:35:00	1741296952-6	[Mantelet sur mesure de sous-
 Chlðé-KhazModan	2025/03/06	22:36:00	1741296961-7	[Palmes de Murloc en ciment]	228879	item:165597::::::::120:258::5:3:4799:1522:4786	BIS	0	MAGE	Libération de Terremine-Normal	Verr’Minh, chefs de la sécurité	14	2769	19	item:165597::::::::120:258::5:3:4799:1522:4786		1	FALSE	Tissu	Pieds	Exactement mes stats, c'est mon BIS	Meliscendre-KhazModan
 Chitarolc-KhazModan	2025/03/06	22:36:00	1741296999-8	[Numéro d’urgence des brutes de Minh]	230199	item:165597::::::::120:258::5:3:4799:1522:4786	BIS	1	DEMONHUNTER	Libération de Terremine-Normal	Verr’Minh, chefs de la sécurité	14	2769	19	item:165597::::::::120:258::5:3:4799:1522:4786	item:165597::::::::120:258::5:3:4799:1522:4786	1	FALSE	Divers	Bijou	3 iéme meuilleur bijou bis	Meliscendre-KhazModan
 Spagueflex-KhazModan	2025/03/06	21:38:00	1741293573-2	[Gallybrouzouf doré du zénith]	228810	item:165597::::::::120:258::5:3:4799:1522:4786	Set Token	2	WARRIOR	Libération de Terremine-Normal	Bandit manchot	14	2769	18	item:165597::::::::120:258::5:3:4799:1522:4786		8	FALSE	Jeton d'armure			Meliscendre-KhazModan]],
+	[13] =[[player,date,time,id,item,itemID,itemString,response,votes,class,instance,boss,difficultyID,mapID,groupSize,gear1,gear2,responseID,isAwardReason,subType,equipLoc,note,owner
+Cindermuff-Ravencrest,22/5/19,20:08:07,1558552087-9,[Gloves of Spiritual Grace],165514,item:165514::::::::120:104::5:4:4799:43:1522:4786,Stat & iLvl upgrade,0,ROGUE,Battle of Dazar'alor-Heroic,Champion of the Light,15,2070,13,162544,,1,false,Leather,Hands,note with "quotes" in the middle,Cindermuff-Ravencrest]], -- ""'s in note
 }
