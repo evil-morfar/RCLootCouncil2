@@ -109,6 +109,9 @@ addon.CLASS_TO_ATLAS = {
 	WARRIOR = "classicon-warrior",
 }
 
+--- How long is instance data valid after `ENCOUNTER_END`
+addon.INSTANCE_DATA_TTL = 1800 -- 30 min
+
 --- Functions used for generating response codes
 --- Functions are run numerically, and the first to return non-nil is used, i.e. order matters!
 --- To add a new a button group, simply add it to the options menu (easily done by adding an entry to OPT_MORE_BUTTONS_VALUES), and add a function here to determine if that group should be used for the item.

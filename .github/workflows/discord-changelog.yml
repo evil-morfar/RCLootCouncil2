@@ -1,0 +1,20 @@
+name: Discord Changelog
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  github-releases-to-discord:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Github Releases To Discord
+        uses: SethCohen/github-releases-to-discord@master
+        with:
+          webhook_url: ${{ secrets.DISCORD_CHANGELOG_WEBHOOK_URL }}
+          username: "Github"
+          avatar_url: "https://cdn.discordapp.com/avatars/81462313160278016/b8ec433df852d5d8b7deceae1c9fac62.png"
+          footer_timestamp: true

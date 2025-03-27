@@ -7,3 +7,7 @@ trailing_table_separator = always
 quote_style = double
 max_line_length = 120
 allow_non_indented_comments = true
+
+[*yml]
+indent_style = space
+tab_width = 2

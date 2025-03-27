@@ -10,5 +10,6 @@ ignore:
     - __tests
     - .luacov
     - .scripts
+    - *.meta.lua # TODO Check if this actually works.
 
 enable-nolib-creation: no

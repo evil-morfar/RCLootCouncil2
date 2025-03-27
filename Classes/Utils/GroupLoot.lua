@@ -25,6 +25,9 @@ GroupLoot.IgnoreList = {
 function GroupLoot:OnInitialize()
 	self.Log = addon.Require "Utils.Log":New "GroupLoot"
 	addon:RegisterEvent("START_LOOT_ROLL", self.OnStartLootRoll, self)
+	addon:RegisterEvent("LOOT_ITEM_ROLL_WON", function(...)
+		self.Log:d("LOOT_ITEM_ROLL_WON", ...)
+	end)
 	self.OnLootRoll:subscribe(function(_, rollID)
 		RunNextFrame(function()
 			self:HideGroupLootFrameWithRollID(rollID)

@@ -285,7 +285,7 @@ Compat.list = {
 	},
 	{
 		name = "Update history times to ISO",
-		version = "3.15.1",
+		version = "3.15.4", -- Originially v3.15.0
 		func = function ()
 			for _, factionrealm in pairs(addon.lootDB.sv.factionrealm) do
 				for _, data in pairs(factionrealm) do

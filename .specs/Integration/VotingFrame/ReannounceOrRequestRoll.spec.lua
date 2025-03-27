@@ -112,9 +112,7 @@ describe("#VotingFrame #ReannounceOrRequestRoll", function()
 			local rerollSpy = spy.new()
 			addon.Require "Services.Comms":Subscribe(addon.PREFIXES.MAIN, "reroll", rerollSpy)
 
-			WoWAPI_FireUpdate(GetTime() + 20)
-			WoWAPI_FireUpdate(GetTime() + 30)
-			WoWAPI_FireUpdate(GetTime() + 40)
+			_ADVANCE_TIME(1)
 			VotingFrame:ReannounceOrRequestRoll(true, true, false, false, false)
 			WoWAPI_FireUpdate(GetTime() + 50)
 
@@ -143,7 +141,11 @@ describe("#VotingFrame #ReannounceOrRequestRoll", function()
 			for ses, data in ipairs(VotingFrame:GetLootTable()) do
 				for name, v in pairs(data.candidates) do
 					if ses == 1 then
-						if name ~= addon.player.name then -- We might have timedout our roll
+						if name == addon.player.name then -- We might have timedout our roll
+							if v.response == "TIMEOUT" then
+								assert.equal("-", v.roll)
+							end
+						else
 							assert.are_not.equal("", v.roll)
 							assert.is.Number(v.roll)
 						end
@@ -153,16 +155,17 @@ describe("#VotingFrame #ReannounceOrRequestRoll", function()
 				end
 			end
 
-			VotingFrame:ReannounceOrRequestRoll(true, 1, true, false, false)
-			WoWAPI_FireUpdate()
+			VotingFrame:ReannounceOrRequestRoll(true, 1, true, true, false)
+			_ADVANCE_TIME(1)
 
 			assert.spy(receivedSpy).was.called(1)
 			-- Now rolls should be reset:
 			for ses, data in ipairs(VotingFrame:GetLootTable()) do
 				for name, v in pairs(data.candidates) do
-					-- We might have autopassed
-					if name == addon.player.name and v.roll == "?" then
-						assert.equal("?", v.roll)
+					if name == addon.player.name then -- We might have timedout our roll
+						if v.response == "TIMEOUT" then
+							assert.equal("-", v.roll)
+						end
 					else
 						assert.Nil(v.roll)
 					end

@@ -32,7 +32,6 @@ local selectedDate, selectedName, filterMenu, moreInfo, moreInfoData
 local rightClickMenu;
 local ROW_HEIGHT = 20;
 local NUM_ROWS = 15;
-local epochDates = {} -- [DateTime] = epoch
 local useClassFilters = false
 
 LootHistory.wowheadBaseUrl = "https://www.wowhead.com/item="
@@ -129,6 +128,11 @@ function LootHistory:OnHistoryReceived (name, history)
 			return
 		end
 	end
+	-- v3.15.4 check for old date formats 
+	local d, m, y = strsplit("/", history.date, 3)
+	if #tostring(d) < 4 then
+		history.date = string.format("%04d/%02d/%02d", "20" .. y, m, d)
+	end
 	-- v2.15 Add itemClass and itemSubClass locally:
 	local itemID, _, _, _, _, itemClassID, itemSubClassID = C_Item.GetItemInfoInstant(history.lootWon)
 	history.tierToken = RCTokenTable[itemID] and true
@@ -213,7 +217,7 @@ function LootHistory:BuildData()
 						cols = { -- NOTE Don't forget the rightClickMenu dropdown, if the order of these changes
 							{DoCellUpdate = addon.SetCellClassIcon, args = {x.class}, value = x.class},
 							{value = addon.Ambiguate(name), color = addon:GetClassColor(x.class)},
-							{value = date.. "-".. i.time or "", args = {time = i.time, date = date},},
+							{value = (date.. "-".. i.time) or "", args = {id = i.id},},
 							{DoCellUpdate = self.SetCellGear, args={i.lootWon}},
 							{value = i.lootWon},
 							{DoCellUpdate = self.SetCellResponse, args = {color = i.color, response = i.response, responseID = i.responseID or 0, isAwardReason = i.isAwardReason}},
@@ -318,24 +322,8 @@ function LootHistory:DeleteEntriesOlderThanEpoch(epoch)
 		removal[name] = {}
 		local num = 1
 		for i,v in ipairs(a) do
-			local index = v.date..v.time
-			if not epochDates[index] then
-				local added = false
-				-- Prefer using the epoch timestamp from the id
-				if v.id then
-					local id = strsplit(v.id, "-")
-					if id and id ~= "" then
-						id = tonumber(id)
-						epochDates[index] = id
-						added = true
-					end
-				end
-				-- Fallback to recreating the time string from date/time.
-				if not added then
-					self:AddEpochDate(v.date, v.time)
-				end
-			end
-			if epochDates[index] < epoch then
+			local time, counter= string.split("-", v.id or "")
+			if tonumber(time) < epoch then
 				removal[name][num] = i
 				num = num + 1
 			end
@@ -533,43 +521,26 @@ function LootHistory.SetCellDelete(rowFrame, frame, data, cols, row, realrow, co
 	end)
 end
 
-function LootHistory:AddEpochDate(date, tim)
-	local y, m, d = strsplit("/", date, 3)
-	local h, min, s = strsplit(":", tim, 3)
-	epochDates[date..tim] = self:DateTimeToSeconds(d,m,y,h,min,s)
-end
-
 function LootHistory:DateTimeToSeconds (d,m,y,h,min,s)
 	return time({year = #tostring(y) == 4 and y or "20"..y or 10, month = m or 1, day = d or 1, hour = h or 0, min = min or 0, sec = s or 0})
 end
 
 function LootHistory.DateTimeSort(table, rowa, rowb, sortbycol)
 	local cella, cellb = table:GetCell(rowa, sortbycol), table:GetCell(rowb, sortbycol);
-	local indexa, indexb = cella.args.date..cella.args.time, cellb.args.date..cellb.args.time
-	if not (epochDates[indexa] and epochDates[indexb]) then
-		LootHistory:AddEpochDate(cella.args.date, cella.args.time)
-		LootHistory:AddEpochDate(cellb.args.date, cellb.args.time)
-	end
-	local column = table.cols[sortbycol]
-	local a, b = epochDates[indexa], epochDates[indexb]
-	if a == b then
-		if column.sortnext then
-			local nextcol = table.cols[column.sortnext];
-			if nextcol and not(nextcol.sort) then
-				if nextcol.comparesort then
-					return nextcol.comparesort(table, rowa, rowb, column.sortnext);
-				else
-					return table:CompareSort(rowa, rowb, column.sortnext);
-				end
-			end
-		end
-		return false
+	local idA, idB = cella.args.id, cellb.args.id
+	local timeA, counterA = string.split("-", idA or "")
+	local timeB, counterB = string.split("-", idB or "")
+	if not timeA or not timeB then return false end
+
+	timeA, timeB = tonumber(timeA), tonumber(timeB)
+	if timeA == timeB and counterA ~= "" and counterB ~= "" then
+		return tonumber(counterA) < tonumber(counterB)
 	else
 		local direction = table.cols[sortbycol].sort or table.cols[sortbycol].defaultsort or 1
 		if direction == 1 then
-			return a < b
+			return timeA < timeB
 		else
-			return a > b
+			return timeA > timeB
 		end
 	end
 end
