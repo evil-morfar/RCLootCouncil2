@@ -29,3 +29,7 @@ jobs:
         uses: BigWigsMods/packager@v2
         with:
           args: -o
+  
+  discord-changelog:
+    needs: release
+    uses: ./.github/workflows/discord-changelog.yml
