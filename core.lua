@@ -734,6 +734,11 @@ function RCLootCouncil:OnCommReceived(prefix, serializedMsg, distri, sender)
 
 			elseif command == "history" and db.enableHistory then
 				local name, history = unpack(data)
+				-- v3.15.4 check for old date formats
+				local d, m, y = strsplit("/", history.date, 3)
+				if #tostring(d) < 4 then
+					history.date = string.format("%04d/%02d/%02d", "20" .. y, m, d)
+				end
 				-- v2.15 Add itemClass and itemSubClass locally:
 				local itemID, _, _, _, _, itemClassID, itemSubClassID = GetItemInfoInstant(history.lootWon)
 				history.tierToken = RCTokenTable[itemID] and true
