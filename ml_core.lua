@@ -1226,10 +1226,10 @@ function RCLootCouncilML:TrackAndLogLoot(winner, link, responseID, boss, reason,
 		boss = self.lootTable[session].boss
 	end
 	self.Log:d("ML:TrackAndLogLoot()", winner, link, responseID, boss, reason, session, candData)
-	local serverTime = C_DateAndTime.GetServerTimeLocal()
+	local serverTimeLocal = C_DateAndTime.GetServerTimeLocal()
 	history_table["lootWon"] 		= link
-	history_table["date"] 			= date("!%Y/%m/%d", serverTime)
-	history_table["time"] 			= date("!%H:%M:%S", serverTime)
+	history_table["date"] 			= date("!%Y/%m/%d", serverTimeLocal)
+	history_table["time"] 			= date("!%H:%M:%S", serverTimeLocal)
 	history_table["instance"]     = instanceData.instanceName .. "-" .. instanceData.difficultyName
 	history_table["boss"] 			= boss or _G.UNKNOWN
 	history_table["votes"] 			= candData and candData.votes
