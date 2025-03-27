@@ -148,7 +148,7 @@ function LootHistory:BuildData()
 						cols = { -- NOTE Don't forget the rightClickMenu dropdown, if the order of these changes
 							{DoCellUpdate = addon.SetCellClassIcon, args = {x.class}, value = x.class},
 							{value = addon.Ambiguate(name), color = addon:GetClassColor(x.class)},
-							{value = date.. "-".. i.time or "", args = {time = i.time, date = date},},
+							{value = (date.. "-".. i.time) or "", args = {id = i.id},},
 							{DoCellUpdate = self.SetCellGear, args={i.lootWon}},
 							{value = i.lootWon},
 							{DoCellUpdate = self.SetCellResponse, args = {color = i.color or {1,1,1,1}, response = i.response, responseID = i.responseID or 0, isAwardReason = i.isAwardReason}},
@@ -472,12 +472,14 @@ end
 function LootHistory.DateTimeSort(table, rowa, rowb, sortbycol)
 	local cella, cellb = table:GetCell(rowa, sortbycol), table:GetCell(rowb, sortbycol);
 	local idA, idB = cella.args.id, cellb.args.id
+	if not idA or not idB then return false end
 	local timeA, counterA = string.split("-", idA or "")
 	local timeB, counterB = string.split("-", idB or "")
 	if not timeA or not timeB then return false end
 
-	if timeA == timeB then
-		return counterA < counterB
+	timeA, timeB = tonumber(timeA), tonumber(timeB)
+	if timeA == timeB and counterA ~= "" and counterB ~= "" then
+		return tonumber(counterA) < tonumber(counterB)
 	else
 		local direction = table.cols[sortbycol].sort or table.cols[sortbycol].defaultsort or 1
 		if direction == 1 then
