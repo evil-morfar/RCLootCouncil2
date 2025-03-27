@@ -532,8 +532,9 @@ function LootHistory.DateTimeSort(table, rowa, rowb, sortbycol)
 	local timeB, counterB = string.split("-", idB or "")
 	if not timeA or not timeB then return false end
 
-	if timeA == timeB then
-		return counterA < counterB
+	timeA, timeB = tonumber(timeA), tonumber(timeB)
+	if timeA == timeB and counterA ~= "" and counterB ~= "" then
+		return tonumber(counterA) < tonumber(counterB)
 	else
 		local direction = table.cols[sortbycol].sort or table.cols[sortbycol].defaultsort or 1
 		if direction == 1 then
