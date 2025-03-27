@@ -471,31 +471,19 @@ end
 
 function LootHistory.DateTimeSort(table, rowa, rowb, sortbycol)
 	local cella, cellb = table:GetCell(rowa, sortbycol), table:GetCell(rowb, sortbycol);
-	local indexa, indexb = cella.args.date..cella.args.time, cellb.args.date..cellb.args.time
-	if not (epochDates[indexa] and epochDates[indexb]) then
-		LootHistory:AddEpochDate(cella.args.date, cella.args.time)
-		LootHistory:AddEpochDate(cellb.args.date, cellb.args.time)
-	end
-	local column = table.cols[sortbycol]
-	local a, b = epochDates[indexa], epochDates[indexb]
-	if a == b then
-		if column.sortnext then
-			local nextcol = table.cols[column.sortnext];
-			if nextcol and not(nextcol.sort) then
-				if nextcol.comparesort then
-					return nextcol.comparesort(table, rowa, rowb, column.sortnext);
-				else
-					return table:CompareSort(rowa, rowb, column.sortnext);
-				end
-			end
-		end
-		return false
+	local idA, idB = cella.args.id, cellb.args.id
+	local timeA, counterA = string.split("-", idA or "")
+	local timeB, counterB = string.split("-", idB or "")
+	if not timeA or not timeB then return false end
+
+	if timeA == timeB then
+		return counterA < counterB
 	else
 		local direction = table.cols[sortbycol].sort or table.cols[sortbycol].defaultsort or 1
 		if direction == 1 then
-			return a < b
+			return timeA < timeB
 		else
-			return a > b
+			return timeA > timeB
 		end
 	end
 end
