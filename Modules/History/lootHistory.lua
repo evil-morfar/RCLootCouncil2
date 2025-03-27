@@ -128,6 +128,11 @@ function LootHistory:OnHistoryReceived (name, history)
 			return
 		end
 	end
+	-- v3.15.4 check for old date formats 
+	local d, m, y = strsplit("/", history.date, 3)
+	if #tostring(d) < 4 then
+		history.date = string.format("%04d/%02d/%02d", "20" .. y, m, d)
+	end
 	-- v2.15 Add itemClass and itemSubClass locally:
 	local itemID, _, _, _, _, itemClassID, itemSubClassID = C_Item.GetItemInfoInstant(history.lootWon)
 	history.tierToken = RCTokenTable[itemID] and true
