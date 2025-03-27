@@ -11,6 +11,7 @@ It persists through reloads and is also reset when testing.
 - *Improved transmission of settings for people joining the raid late.*
 - *Fixed issue with importing csv data with quotes in notes.*
 - *Loot history data is now again sorted properly by award time.*
+- *Clearing the loot history now only deletes entries from the current characters' faction-realm storage instead of everything recorded.*
 
 # v3.15.3
 

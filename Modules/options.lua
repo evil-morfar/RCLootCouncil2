@@ -552,7 +552,7 @@ function addon:OptionsTable()
 										name = L["Clear Loot History"],
 										desc = L["clear_loot_history_desc"],
 										type = "execute",
-										func = function() self.lootDB:ResetDB() end,
+										func = function() wipe(self.lootDB.factionrealm) end,
 										confirm = true,
 									},
 									spacer = {
