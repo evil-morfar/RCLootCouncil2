@@ -1,3 +1,7 @@
+## Bugfixes
+
+- *Fixed issue with trade timers being reset.*
+
 # v3.15.4
 
 ## Changes
