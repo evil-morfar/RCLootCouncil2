@@ -1,3 +1,7 @@
+# v3.15.5
+
+Updated for patch 11.1.5.
+
 ## Bugfixes
 
 - *Fixed issue with trade timers being reset.*
