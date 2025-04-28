@@ -2147,11 +2147,15 @@ function RCLootCouncil:DecodeItemLink(itemLink)
 	local bonusIDs = {}
 
 	local linkType, itemID, enchantID, gemID1, gemID2, gemID3, gemID4, suffixID, uniqueID, linkLevel, specializationID,
-	      upgradeTypeID, instanceDifficultyID, numBonuses, affixes = string.split(":", itemLink, 15)
+	      upgradeTypeID, instanceDifficultyID, numBonuses, affixes = string.split(":", ItemUtils:GetItemStringFromLink(itemLink), 15)
 
 	-- clean it up
-	local color = string.match(linkType, "|?c?f?f?(%x*)")
-	linkType = string.gsub(linkType, "|?c?f?f?(%x*)|?H?", "")
+	local color = string.match(itemLink, "|?c?f?f?(%x*)")
+	if not color or color == "" then -- probably new custom color link type
+		local quality = string.match(itemLink, "|cnIQ(.)")
+		color = ColorManager.GetColorDataForItemQuality(quality and tonumber(quality) or 0).color:GenerateHexColor()
+	end
+	-- local linkType = string.match(itemLink, "|H(.*):")
 	itemID = tonumber(itemID) or 0
 	enchantID = tonumber(enchantID) or 0
 	gemID1 = tonumber(gemID1) or 0
