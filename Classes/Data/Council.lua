@@ -82,7 +82,11 @@ function Council:RestoreFromTransmit(council)
 	wipe(private.council)
 	for guid in pairs(council) do
 		local player = Player:Get(guid)
-		private.council[player.guid] = player
+		-- We may not be able to find the player, in which case just ignore
+		-- and hope we find them later if they're indeed valid.
+		if player.guid then
+			private.council[player.guid] = player
+		end
 	end
 	return private:GetCouncilSize()
 end

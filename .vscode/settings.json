@@ -3,14 +3,6 @@
         "${workspace}/__tests/?.lua"
     ],
 
-    "Lua.workspace.library": [
-        "${3rd}/luassert/library",
-        "~/AppData/Roaming/Code/User/globalStorage/sumneko.lua/addonManager/addons/luassert/module/library",
-        "~/AppData/Roaming/Code/User/globalStorage/sumneko.lua/addonManager/addons/busted/module/library",
-        "${3rd}/lfs/library",
-        "~\\.vscode\\extensions\\ketho.wow-api-0.18.2\\Annotations"
-    ],
-
     "Lua.diagnostics.disable": [
         "undefined-doc-name",
         "missing-parameter"
@@ -20,18 +12,6 @@
         ".vscode",
         "__tests"
     ],
-    "Lua.runtime.version": "Lua 5.1",
-    "Lua.runtime.builtin": {
-        "basic": "disable",
-        "debug": "disable",
-        "io": "disable",
-        "math": "disable",
-        "os": "disable",
-        "package": "disable",
-        "string": "disable",
-        "table": "disable",
-        "utf8": "disable"
-    },
 
     "Lua.diagnostics.globals": [
         "lfs",
@@ -163,6 +143,7 @@
         "EXPANSION_SEASON_NAME",
         "STRING_ENVIRONMENTAL_DAMAGE_FIRE",
         "STRING_ENVIRONMENTAL_DAMAGE_LAVA",
-        "STRING_ENVIRONMENTAL_DAMAGE_SLIME"
+        "STRING_ENVIRONMENTAL_DAMAGE_SLIME",
+        "SOUNDKIT"
     ]
 }

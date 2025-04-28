@@ -4,6 +4,8 @@ on:
   release:
     types: [published]
 
+  workflow_call:
+
 jobs:
   github-releases-to-discord:
     runs-on: ubuntu-latest

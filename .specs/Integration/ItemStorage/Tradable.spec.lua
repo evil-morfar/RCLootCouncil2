@@ -6,6 +6,9 @@ local ItemUtils = addon.Require "Utils.Item"
 local Comms = addon.Require "Services.Comms"
 local player1 = "Player1-Realm1"
 describe("#Integration #ItemStorage #Tradable", function()
+	before_each(function()
+		addon.ItemStorage:RemoveAllItems()
+	end)
 	local function CreateSpy()
 		local s = spy.new(function(...) return ... end)
 		Comms:Subscribe(addon.PREFIXES.MAIN, "tradable", s)
@@ -41,6 +44,13 @@ describe("#Integration #ItemStorage #Tradable", function()
 		DoLootDrop(3)
 		_ADVANCE_TIME(6)
 		assert.spy(s).was_called(0)
+	end)
+
+	it("should properly update time remaining when calling Item:UpdateTime()", function()
+		DoLootDrop(2)
+		local Item = addon.ItemStorage:GetAllItemsOfType("temp")[1]
+		Item:UpdateTime()
+		assert.not_equals(0, Item.time_remaining)
 	end)
 end)
 
