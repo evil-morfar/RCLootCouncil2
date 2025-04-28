@@ -1,6 +1,7 @@
 ## Bugfixes
 
 - *Fixed issue with trade timers being reset.*
+- *Fixed issue with non-cached council members causing errors.*
 
 # v3.15.4
 

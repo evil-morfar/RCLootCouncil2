@@ -120,9 +120,18 @@ describe("#Player", function()
 					return "Pláÿer-Realm", _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, "Player-5555-00000001"
 				end
 			end)
+
+			local orig_GetPlayerInfoByGUID = _G.GetPlayerInfoByGUID
+			_G.GetPlayerInfoByGUID = spy.new(function(guid)
+				if guid == "Player-5555-00000001" then
+					return true, "WARRIOR", nil, nil, nil, "Pláÿer", "Realm"
+				else
+					return orig_GetPlayerInfoByGUID(guid)
+				end
+			end)
 		end)
 
-		it("asdasd", function()
+		it("should handle non-ascii names", function()
 			local p1 = Player:Get("Pláÿer-Realm")
 			assert.are.equal("Player-5555-00000001", p1:GetGUID())
 		end)

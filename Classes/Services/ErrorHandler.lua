@@ -101,7 +101,9 @@ function private:NewError (err)
       count = 1,
       time = GetServerTime()
    }
-   addon:DumpDebugVariables() -- REVIEW: Consider make new errors subscribable to avoid this binding.
+	if addon.DumpDebugVariables then
+		addon:DumpDebugVariables() -- REVIEW: Consider make new errors subscribable to avoid this binding.
+	end
 end
 
 function private:IncrementErrorCount (errObj)

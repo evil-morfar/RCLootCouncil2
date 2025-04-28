@@ -21,6 +21,7 @@ loadfile(".specs/AddonLoader.lua")(nil, addonName, addon).LoadArray {
 }
 
 addon:InitLogging()
+addon:ModulesOnInitialize()
 describe("#Council", function()
 	addon.candidatesInGroup = setmetatable({}, {
 		__index = function()
@@ -111,6 +112,15 @@ describe("#Council", function()
 			assert.has.errors(function()
 				Council:Remove {}
 			end, "Not a valid 'Player' object")
+		end)
+
+		it("should handle 'nil' player objects", function()
+			local council = {
+				["3676-0E8DCB8F"] = true,
+			}
+			assert.has.no.errors(function()
+				Council:RestoreFromTransmit(council)
+			end)
 		end)
 	end)
 end)
