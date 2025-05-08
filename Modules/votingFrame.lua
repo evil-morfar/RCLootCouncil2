@@ -22,6 +22,7 @@
 		reconnectData 		T - ML sends reconnectData.
 		n_t					T - Candidate received "non-tradeable" loot.
 		r_t					T - Candidate "rejected_trade" of loot.
+		request_votes		T - ML requests votes from council members.
 ]]
 
 --- @type RCLootCouncil
@@ -217,6 +218,11 @@ function RCVotingFrame:RegisterComms ()
 		r_t = function (data, sender)
 			self:AddNonTradeable(sender, "rejected_trade", unpack(data))
 		end,
+		request_votes = function (data, sender)
+			if addon:IsMasterLooter(sender) then
+				self:OnRequestVotesReceived(unpack(data))
+			end
+		end
 	})
 end
 
@@ -765,6 +771,19 @@ function RCVotingFrame:OnLootTableAdditionsReceived (_, lt)
 	end
 	self:CheckAndHandleCandidateChanges(oldLenght)
 	self:SwitchSession(session)
+end
+
+function RCVotingFrame:OnRequestVotesReceived(ses)
+	if not lootTable[ses] then return end -- We might not have lootTable - e.g. if we just reloaded
+	if not addon.isCouncil then return end -- Only council should be able to request votes
+	if self:HasVotedInSession(ses) then return end -- Don't request votes if we've already voted
+	addon:Print(string.format(L["ML_REQUEST_VOTES"], addon:GetClassIconAndColoredName(addon.masterLooter), ses, addon:GetItemTextWithIcon(lootTable[ses].link)))
+end
+
+---@param ses integer
+function RCVotingFrame:HasVotedInSession(ses)
+	if not lootTable[ses] then return false end -- We might not have lootTable - e.g. if we just reloaded
+	return lootTable[ses].haveVoted or false
 end
 
 --- Ensures all sessions has the exact same candidates.
@@ -1666,6 +1685,10 @@ function RCVotingFrame.SetCellVote(rowFrame, frame, data, cols, row, realrow, co
 		end
 		frame.voteBtn:SetScript("OnClick", function(btn)
 			addon.Log:D("Vote button pressed")
+			if IsAltKeyDown() then
+				RCVotingFrame:RequestVotes(session)
+				return
+			end
 			if lootTable[session].candidates[name].haveVoted then -- unvote
 				addon:Send("group", "vote", session, name, -1)
 				lootTable[session].candidates[name].haveVoted = false
@@ -1939,6 +1962,13 @@ function RCVotingFrame:ReannounceOrRequestRoll(namePred, sesPred, isRoll, noAuto
 	TempTable:Release(rollsData)
 end
 
+--- Request votes from the council.
+---@param ses integer? Defaults to current session.
+function RCVotingFrame:RequestVotes(ses)
+	addon:Send("group", "request_votes", ses or session)
+	addon:Print(L.VF_REQUEST_VOTES_SENT)
+end
+
 ----------------------------------------------------
 --	Dropdowns.
 -- @section Dropdowns.
@@ -2099,7 +2129,14 @@ do
 				value = "REQUESTROLL",
 				hasArrow = true,
 				notCheckable = true,
-			},{ -- 11 Remove from consideration
+			}, { -- 11 Request Votes
+				text = L.VF_REQUEST_VOTES,
+				notCheckable = true,
+				func = function()
+					RCVotingFrame:RequestVotes(session)
+				end,
+			}
+			,{ -- 12 Remove from consideration
 				text = L["Remove from consideration"],
 				notCheckable = true,
 				func = function(name)
