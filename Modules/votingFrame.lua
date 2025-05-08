@@ -1573,6 +1573,15 @@ function RCVotingFrame.SetCellResponse(rowFrame, frame, data, cols, row, realrow
 		-- This function returns nil if the raider is in any instance.
 		text = text.." ("..L["Out of instance"]..")"
 	end
+	frame:SetScript("OnEnter", function()
+		local realResponseID = RCVotingFrame:GetCandidateData(session, name, "real_response")
+		if RCVotingFrame:GetCandidateData(session, name, "response") == "AWARDED" and realResponseID then
+			local realResponse = addon:GetResponse(lootTable[session].typeCode or lootTable[session].equipLoc, realResponseID)
+			addon:CreatedColoredTooltip(realResponse.color[1], realResponse.color[2], realResponse.color[3],
+			realResponse.text)
+		end
+	end)
+	frame:SetScript("OnLeave", addon.UI.HideTooltip)
 	frame.text:SetText(text)
 	frame.text:SetTextColor(unpack(response.color))
 end

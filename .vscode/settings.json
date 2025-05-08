@@ -150,6 +150,16 @@
         "LOOT_BORDER_BY_QUALITY",
         "LOOTUPGRADEFRAME_QUALITY_TEXTURES",
         "GARRISON_FOLLOWER_QUALITY_TEXTURE_SUFFIXES",
-        "Event"
+        "Event",
+        "GameFontDisableSmallLeft",
+        "GameFontHighlightSmallLeft",
+        "TOOLTIP_DEFAULT_BACKGROUND_COLOR",
+        "TOOLTIP_DEFAULT_COLOR",
+        "GRAY_FONT_COLOR",
+        "HIGHLIGHT_FONT_COLOR",
+        "ShowUIPanel",
+        "GameFontNormalSmallLeft",
+        "NORMAL_FONT_COLOR",
+        "GetCVar"
     ]
 }

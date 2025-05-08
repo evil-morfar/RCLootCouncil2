@@ -2423,12 +2423,20 @@ function RCLootCouncil:CreateButton(text, parent)
 	return b
 end
 
---- Displays a tooltip anchored to the mouse.
--- @paramsig ...
--- @param ... string(s) Lines to be added.
+--- Displays a tooltip anchored to the mouse with white text.
+---@vararg string
 function RCLootCouncil:CreateTooltip(...)
+	self:CreatedColoredTooltip(1, 1,1, ...)
+end
+
+--- Displays a tooltip anchored to the mouse with colored text.
+---@param r number Red
+---@param g number Green
+---@param b number Blue
+---@vararg string
+function RCLootCouncil:CreatedColoredTooltip(r,g,b, ...)
 	GameTooltip:SetOwner(UIParent, "ANCHOR_CURSOR")
-	for i = 1, select("#", ...) do GameTooltip:AddLine(select(i, ...), 1, 1, 1) end
+	for i = 1, select("#", ...) do GameTooltip:AddLine(select(i, ...), r, g, b) end
 	GameTooltip:Show()
 end
 

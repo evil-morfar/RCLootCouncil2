@@ -1,3 +1,8 @@
+
+### Awarded response
+
+Added a tooltip to any response changed to "Awarded" showing the original response.
+
 # v3.15.5
 
 Updated for patch 11.1.5.
