@@ -125,7 +125,7 @@ function TradeUI:OnDoTrade (trader, item, winner)
       local Item = addon.ItemStorage:GetItem(item, "temp")
       if not Item then
          addon.Log:E("TradeUI", "Couldn't find item for 'DoTrade'", item, winner)
-         return addon:Print(format("Couldn't find %s to trade to %s",tostring(item), tostring(winner)))
+         return addon:Print(format("Couldn't find %s to trade to %s", addon:GetItemTextWithIcon(tostring(item)), addon:GetClassIconAndColoredName(tostring(winner))))
       end
       Item.type = "to_trade"
       Item.args.recipient = winner
@@ -234,7 +234,7 @@ function TradeUI:CheckTimeRemaining()
    if #Items > 0 then
       addon:Print(format(L["time_remaining_warning"], TIME_REMAINING_WARNING/60))
       for i, Item in pairs(Items) do
-         addon:Print(i, Item)
+         addon:Print(i, addon:GetItemTextWithIcon(Item))
       end
       for _, Item in pairs(Items) do
          if Item.time_remaining <= 0 and Item:SafeToRemove() then

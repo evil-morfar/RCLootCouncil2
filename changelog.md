@@ -9,6 +9,10 @@ The Master Looter can now request votes from council members on any individual i
 
 This can be done either through the right-click menu, or by alt-clicking any vote/unvote button.
 
+### Misc
+
+Added icons to items, and colors to responses, when printed to chat - does not include announcements (can't be done).
+
 # v3.15.5
 
 Updated for patch 11.1.5.

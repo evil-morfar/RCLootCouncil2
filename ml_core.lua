@@ -335,7 +335,7 @@ function RCLootCouncilML:PrintItemsInBags()
 	addon:Print(L["Following items were registered in the award later list:"])
 	for i, Item in ipairs(Items) do
 		Item:UpdateTime()
-		addon:Print(i..". "..Item.link, format(GUILD_BANK_LOG_TIME, SecondsToTime(time() - Item.time_added, true)) )
+		addon:Print(i..". "..addon:GetItemTextWithIcon(Item.link), format(GUILD_BANK_LOG_TIME, SecondsToTime(time() - Item.time_added, true)) )
 		-- GUILD_BANK_LOG_TIME == "( %s ago )", although the constant name does not make sense here, this constant expresses we intend to do.
 		-- SecondsToTime is defined in SharedXML/util.lua
 	end
@@ -366,7 +366,7 @@ function RCLootCouncilML:RemoveItemsInBags(...)
 	else
 		addon:Print(L["The following entries are removed from the award later list:"])
 		for k, v in ipairs(removedEntries) do
-			addon:Print(k..". "..v.link, "-->", v.args.recipient and addon:GetUnitClassColoredName(v.args.recipient) or L["Unawarded"],
+			addon:Print(k..". ".. addon:GetItemTextWithIcon(v.link), "-->", v.args.recipient and addon:GetClassIconAndColoredName(v.args.recipient) or L["Unawarded"],
 				format(GUILD_BANK_LOG_TIME, SecondsToTime(time()-v.time_added)) )
 		end
 	end
@@ -393,7 +393,7 @@ function RCLootCouncilML:ItemsInBagsLowTradeTimeRemainingReminder()
 	if #entriesToRemind > 0 then
 		addon:Print(format(L["item_in_bags_low_trade_time_remaining_reminder"], "|cffff0000"..SecondsToTime(remindThreshold).."|r"))
 		for _, v in ipairs(entriesToRemind) do
-			addon:Print(v.index..". "..v.Item.link, "-->", v.args.recipient and addon:GetUnitClassColoredName(v.args.recipient) or L["Unawarded"],
+			addon:Print(v.index..". "..addon:GetItemTextWithIcon(v.Item.link), "-->", v.args.recipient and addon:GetClassIconAndColoredName(v.args.recipient) or L["Unawarded"],
 				"(", _G.CLOSES_IN..":", SecondsToTime(v.remainingTime), ")")
 		end
 	end
@@ -1187,7 +1187,7 @@ function RCLootCouncilML:AutoAward(lootIndex, item, quality, name, mode, boss, o
 	else
 		self:GiveLoot(lootIndex, name, function(awarded, cause)
 			if awarded then
-				addon:Print(format(L["Auto awarded 'item'"], item))
+				addon:Print(format(L["Auto awarded 'item'"], addon:GetItemTextWithIcon(item)))
 				self:AnnounceAward(name, item, db.awardReasons[reason].text)
 				self:TrackAndLogLoot(name, item, reason, boss, db.awardReasons[reason])
 				return true

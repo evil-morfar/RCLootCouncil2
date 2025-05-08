@@ -192,8 +192,8 @@ function LootFrame:OnRoll(entry, button)
 			addon:SendResponse("group", session, button, nil, nil, item.note)
 		end
 		if addon:Getdb().printResponse then
-			addon:Print(string.format(L["Response to 'item'"], ItemUtils:GetItemTextWithCount(item.link, #item.sessions))..
-				": "..addon:GetResponse(item.typeCode or item.equipLoc, button).text)
+			addon:Print(string.format(L["Response to 'item'"], ItemUtils:GetItemTextWithCount(addon:GetItemTextWithIcon(item.link), #item.sessions))..
+				": "..addon:GetColoredResponseText(item.typeCode or item.equipLoc, button))
 		end
 		item.rolled = true
 		self.EntryManager:Trash(entry)

@@ -1595,9 +1595,7 @@ function RCVotingFrame.SetCellResponse(rowFrame, frame, data, cols, row, realrow
 	frame:SetScript("OnEnter", function()
 		local realResponseID = RCVotingFrame:GetCandidateData(session, name, "real_response")
 		if RCVotingFrame:GetCandidateData(session, name, "response") == "AWARDED" and realResponseID then
-			local realResponse = addon:GetResponse(lootTable[session].typeCode or lootTable[session].equipLoc, realResponseID)
-			addon:CreatedColoredTooltip(realResponse.color[1], realResponse.color[2], realResponse.color[3],
-			realResponse.text)
+			addon:CreateTooltip(addon:GetColoredResponseText(lootTable[session].typeCode or lootTable[session].equipLoc, realResponseID))
 		end
 	end)
 	frame:SetScript("OnLeave", addon.UI.HideTooltip)
@@ -1631,7 +1629,7 @@ function RCVotingFrame.SetCellGear(rowFrame, frame, data, cols, row, realrow, co
 		frame:SetScript("OnLeave", function() addon:HideTooltip() end)
 		frame:SetScript("OnClick", function()
 			if IsModifiedClick() then
-			   HandleModifiedItemClick(gear);
+			   HandleModifiedItemClick(select(2, C_Item.GetItemInfo(gear)));
 	      end
 		end)
 		frame:Show()
@@ -1999,8 +1997,7 @@ do
 		elseif category == "ROLL" or MSA_DROPDOWNMENU_MENU_VALUE:find("_ROLL$") then
 			text = _G.ROLL..": "..(lootTable[session].candidates[candidateName].roll or "")
 		elseif category == "RESPONSE" or MSA_DROPDOWNMENU_MENU_VALUE:find("_RESPONSE$") then
-			text = L["Response"]..": ".."|cff"..(addon.Utils:RGBToHex(unpack(addon:GetResponse(lootTable[session].typeCode or lootTable[session].equipLoc, lootTable[session].candidates[candidateName].response).color))
-			or "ffffff")..(addon:GetResponse(lootTable[session].typeCode or lootTable[session].equipLoc, lootTable[session].candidates[candidateName].response).text or "").."|r"
+			text = L["Response"]..": " .. addon:GetColoredResponseText(lootTable[session].typeCode or lootTable[session].equipLoc, lootTable[session].candidates[candidateName].response)
 		else
 			addon.Log:D("Unexpected category or dropdown menu value: "..tostring(category).." ,"..tostring(MSA_DROPDOWNMENU_MENU_VALUE))
 		end
@@ -2054,7 +2051,7 @@ do
 
 	-- Print sth when the button or confirmation dialog is clicked.
 	function RCVotingFrame.reannounceOrRequestRollPrint(target, isThisItem, isRoll)
-		local itemText = isThisItem and lootTable[session].link or L["All unawarded items"]
+		local itemText = isThisItem and addon:GetItemTextWithIcon(lootTable[session].link) or L["All unawarded items"]
 		if isRoll then
 			addon:Print(format(L["Requested rolls for 'item' from 'target'"], itemText, target))
 		else

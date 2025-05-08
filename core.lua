@@ -1175,7 +1175,7 @@ function RCLootCouncil:DoAutoPasses(table, skip)
 				if (v.boe and db.autoPassBoE) or not v.boe then
 					if self:AutoPassCheck(v.link, v.equipLoc, v.typeID, v.subTypeID, v.classes, v.token, v.relic) then
 						self.Log("Autopassed on: ", v.link)
-						if not db.silentAutoPass then self:Print(format(L["Autopassed on 'item'"], v.link)) end
+						if not db.silentAutoPass then self:Print(format(L["Autopassed on 'item'"], self:GetItemTextWithIcon(v.link))) end
 						v.autopass = true
 					end
 				else
@@ -2381,6 +2381,7 @@ end
 ---@param item string|ItemID|ItemLink|ItemString
 ---@return string
 function RCLootCouncil:GetItemTextWithIcon(item)
+	--TODO: Move to item utils
 	local _, itemLink, _, _, _, _, _, _, _, texture = C_Item.GetItemInfo(item)
 	if not texture then return item end -- No icon found, return the item link
 	return format("|T%s:0|t%s", texture, itemLink)
@@ -2594,10 +2595,10 @@ end
 function RCLootCouncil.Ambiguate(name) return db.ambiguate and Ambiguate(name, "none") or Ambiguate(name, "short") end
 
 --- Fetches a response of a given type, based on the group leader's settings if possible
---- @param type string @The type of response. Defaults to "default".
---- @param name string @The name of the response.
+--- @param type string The type of response. Defaults to "default".
+--- @param name string|integer The name or index of the response.
 --- @see RCLootCouncil.db.responses
---- @return table @A table from db.responses containing the response info
+--- @return table #A table from db.responses containing the response info
 function RCLootCouncil:GetResponse(type, name)
 	-- REVIEW With proper inheritance, most of this should be redundant
 	-- Check if the type should be translated to something else
@@ -2676,6 +2677,17 @@ end
 --- Shorthand for :GetResponse(type, name).color
 -- @return Returned in an unpacked format for use in SetTextColor functions.
 function RCLootCouncil:GetResponseColor(type, name) return unpack(self:GetResponse(type, name).color) end
+
+--- Returns a colored response text.
+--- @param type string The type of response. Defaults to "default".
+--- @param name string|integer The name or index of the response.
+--- @see RCLootCouncil.db.responses
+--- @return string #The color wrapped response text.
+function RCLootCouncil:GetColoredResponseText(type, name)
+	local response = self:GetResponse(type, name)
+	if not response then return "" end
+	return CreateColor(unpack(response.color)):WrapTextInColorCode(response.text) or response.text
+end
 
 -- #end UI Functions -----------------------------------------------------
 -- debug func
@@ -2813,7 +2825,7 @@ end
 function RCLootCouncil:OnSessionEndReceived(sender)
 	if not self.enabled then return end
 	if self:UnitIsUnit(sender, self.masterLooter) then
-		self:Print(format(L["'player' has ended the session"], self.Ambiguate(self.masterLooter:GetName())))
+		self:Print(format(L["'player' has ended the session"], self:GetClassIconAndColoredName(self.masterLooter)))
 		self:GetActiveModule("lootframe"):Disable()
 		lootTable = {}
 		if self.isCouncil or self.mldb.observe then -- Don't call the voting frame if it wasn't used
