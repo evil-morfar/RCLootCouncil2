@@ -777,7 +777,8 @@ function RCVotingFrame:OnRequestVotesReceived(ses)
 	if not lootTable[ses] then return end -- We might not have lootTable - e.g. if we just reloaded
 	if not addon.isCouncil then return end -- Only council should be able to request votes
 	if self:HasVotedInSession(ses) then return end -- Don't request votes if we've already voted
-	addon:Print(string.format(L["ML_REQUEST_VOTES"], addon:GetClassIconAndColoredName(addon.masterLooter), ses, addon:GetItemTextWithIcon(lootTable[ses].link)))
+	addon:Print(string.format(L["ML_REQUEST_VOTES"], addon:GetClassIconAndColoredName(addon.masterLooter), ses,
+	ItemUtils:GetItemTextWithIcon(lootTable[ses].link)))
 end
 
 ---@param ses integer
@@ -2051,7 +2052,8 @@ do
 
 	-- Print sth when the button or confirmation dialog is clicked.
 	function RCVotingFrame.reannounceOrRequestRollPrint(target, isThisItem, isRoll)
-		local itemText = isThisItem and addon:GetItemTextWithIcon(lootTable[session].link) or L["All unawarded items"]
+		local itemText = isThisItem and ItemUtils:GetItemTextWithIcon(lootTable[session].link) or
+		L["All unawarded items"]
 		if isRoll then
 			addon:Print(format(L["Requested rolls for 'item' from 'target'"], itemText, target))
 		else

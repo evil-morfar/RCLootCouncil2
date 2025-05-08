@@ -1175,7 +1175,7 @@ function RCLootCouncil:DoAutoPasses(table, skip)
 				if (v.boe and db.autoPassBoE) or not v.boe then
 					if self:AutoPassCheck(v.link, v.equipLoc, v.typeID, v.subTypeID, v.classes, v.token, v.relic) then
 						self.Log("Autopassed on: ", v.link)
-						if not db.silentAutoPass then self:Print(format(L["Autopassed on 'item'"], self:GetItemTextWithIcon(v.link))) end
+						if not db.silentAutoPass then self:Print(format(L["Autopassed on 'item'"], ItemUtils:GetItemTextWithIcon(v.link))) end
 						v.autopass = true
 					end
 				else
@@ -2375,16 +2375,6 @@ function RCLootCouncil:AddSpecIconToText(specID, text, size)
 		specIconCache[id] = CreateSimpleTextureMarkup(specIcon, size)
 	end
 	return format("%s %s", specIconCache[id], text)
-end
-
---- Creates a string with item icon in front of the item link.
----@param item string|ItemID|ItemLink|ItemString
----@return string
-function RCLootCouncil:GetItemTextWithIcon(item)
-	--TODO: Move to item utils
-	local _, itemLink, _, _, _, _, _, _, _, texture = C_Item.GetItemInfo(item)
-	if not texture then return item end -- No icon found, return the item link
-	return format("|T%s:0|t%s", texture, itemLink)
 end
 
 -- cName is name of the module
