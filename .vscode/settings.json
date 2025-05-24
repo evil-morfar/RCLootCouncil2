@@ -162,6 +162,8 @@
         "NORMAL_FONT_COLOR",
         "GetCVar",
         "WHISPER",
-        "HideUIPanel"
+        "HideUIPanel",
+        "CANCEL",
+        "SELECTED_CHAT_FRAME"
     ]
 }

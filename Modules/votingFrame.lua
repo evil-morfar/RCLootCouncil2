@@ -102,6 +102,12 @@ function RCVotingFrame:OnEnable()
 	--active = true
 	moreInfo = db.modules["RCVotingFrame"].moreInfo
 	moreInfoData = addon:GetLootDBStatistics()
+	self:RegisterMessage("RCConfigTableChanged", function (_, value)
+		if value == "moreInfoRaids" then
+			moreInfoData = addon:GetLootDBStatistics()
+			if moreInfo then self:UpdateMoreInfo() end
+		end
+	end)
 	self:UpdateItemAwardHistory()
 	self.frame = self:GetFrame()
 	guildRanks = addon:GetGuildRanks()
@@ -844,17 +850,21 @@ local function cacheItemAwardHistory(item)
 
 	local his = addon:GetHistoryDB()
 	local ret = TempTable:Acquire()
-	for name, data in pairs(his) do
-		for _, loot in ipairs(data) do
-			if itemID == ItemUtils:GetItemIDFromLink(loot.lootWon) then
-				addon.Log:D("Found single winner of ", loot.lootWon, name)
-				if not ret[name] then ret[name] = {} end
-				tinsert(ret[name], loot)
+	for name in addon:GroupIterator() do
+		if his[name] then -- might not have a history
+			for _, loot in ipairs(his[name]) do
+				if itemID == ItemUtils:GetItemIDFromLink(loot.lootWon) then
+					addon.Log:D("Found single winner of ", loot.lootWon, name)
+					if not ret[name] then ret[name] = {} end
+					tinsert(ret[name], loot)
+				end
 			end
 		end
 	end
 
-	itemAwardHistoryCache[item] = {}
+	if not itemAwardHistoryCache[item] then
+		itemAwardHistoryCache[item] = {}
+	end
 	for wname, data in pairs(ret) do
 		itemAwardHistoryCache[item][wname] = data
 	end

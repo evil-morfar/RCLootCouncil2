@@ -43,6 +43,7 @@
 			Rgear				P - Anyone requests our currently equipped gear.
 			bonus_roll 			P - Sent whenever we do a bonus roll.
 			getCov 				P - Anyone request or covenant ID.
+			history 			P - Sent when an item is awarded to a player.
 ]]
 -- GLOBALS: GetLootMethod, C_AddOns.GetAddOnMetadata, UnitClass
 local addonname, addontable = ...
@@ -1948,6 +1949,13 @@ function RCLootCouncil:GetInstalledModulesFormattedData()
 	return modules
 end
 
+--- Checks if the history entry is available with more info settings.
+--- @param entry HistoryEntry
+--- @return boolean #True if the entry is not filtered, false if it is.
+function RCLootCouncil:IsHistoryEntryAvailableWithMoreInfoSettings(entry)
+	return not next(db.moreInfoRaids) or db.moreInfoRaids[entry.mapID .. "-" .. entry.difficultyID]
+end
+
 --- Returns statistics for use in various detailed views.
 -- @return A table formatted as:
 --[[ @usage lootDBStatistics[candidate_name] = {
@@ -1995,33 +2003,35 @@ function RCLootCouncil:GetLootDBStatistics()
 			lootDBStatistics[name] = {}
 			for i = #data, 1, -1 do -- Start from the end
 				entry = data[i]
-				id = (entry.isAwardReason and "a" or entry.typeCode or "default") .. entry.responseID
+				if self:IsHistoryEntryAvailableWithMoreInfoSettings(entry) then
+					id = (entry.isAwardReason and "a" or entry.typeCode or "default") .. entry.responseID
 
-				-- Tier Tokens
-				if not numTokens[entry.instance] then
-					numTokens[entry.instance] = 0
-				end
-				if entry.tierToken and not entry.isAwardReason then -- If it's a tierToken, increase the count
-					numTokens[entry.instance] = numTokens[entry.instance] + 1
-				end
-				count[id] = count[id] and count[id] + 1 or 1
-				responseText[id] = responseText[id] and responseText[id] or entry.response
-				if (not color[id] or tCompare(color[id], {1, 1, 1, 1})) and (entry.color and #entry.color ~= 0) then -- If it's not already added
-					color[id] = #entry.color ~= 0 and #entry.color == 4 and entry.color or {1, 1, 1, 1}
-				end
-				if lastestAwardFound < 5 and type(entry.responseID) == "number" and not entry.isAwardReason
-								and (entry.responseID <= db.numMoreInfoButtons) then
-					tinsert(lootDBStatistics[name], {
+					-- Tier Tokens
+					if not numTokens[entry.instance] then
+						numTokens[entry.instance] = 0
+					end
+					if entry.tierToken and not entry.isAwardReason then -- If it's a tierToken, increase the count
+						numTokens[entry.instance] = numTokens[entry.instance] + 1
+					end
+					count[id] = count[id] and count[id] + 1 or 1
+					responseText[id] = responseText[id] and responseText[id] or entry.response
+					if (not color[id] or tCompare(color[id], {1, 1, 1, 1})) and (entry.color and #entry.color ~= 0) then -- If it's not already added
+						color[id] = #entry.color ~= 0 and #entry.color == 4 and entry.color or {1, 1, 1, 1}
+					end
+					if lastestAwardFound < 5 and type(entry.responseID) == "number" and not entry.isAwardReason
+					and (entry.responseID <= db.numMoreInfoButtons) then
+						tinsert(lootDBStatistics[name], {
 						entry.lootWon, --[[entry.response .. ", "..]]
 						format(L["'n days' ago"], self.Utils:GetNumberOfDaysFromNow(entry.date)),
 						color[id],
 						i,
 					})
 					lastestAwardFound = lastestAwardFound + 1
+					end
+					-- Raids:
+					raids[entry.date .. entry.instance] =
+					raids[entry.date .. entry.instance] and raids[entry.date .. entry.instance] + 1 or 0
 				end
-				-- Raids:
-				raids[entry.date .. entry.instance] =
-								raids[entry.date .. entry.instance] and raids[entry.date .. entry.instance] + 1 or 0
 			end
 			-- Totals:
 			local totalNum = 0
@@ -2777,6 +2787,12 @@ function RCLootCouncil:SubscribeToPermanentComms()
 		StartHandleLoot = function() self:OnStartHandleLoot() end,
 
 		StopHandleLoot = function() self.handleLoot = false end,
+		history = function (data, sender)
+			if not self.Utils:UnitIsUnit(sender, self.masterLooter) then
+				return self.Log:E(tostring(sender), "sent 'history' but was not ML!")
+			end
+			self:OnHistoryReceived(unpack(data))
+		end,
 	})
 end
 
@@ -3007,6 +3023,17 @@ function RCLootCouncil:OnStartHandleLoot()
 		self.autoGroupLootWarningShown = true
 		self:Print(L.autoGroupLoot_warning)
 	end
+end
+
+---@param historyEntry HistoryEntry
+function RCLootCouncil:OnHistoryReceived(winner, historyEntry)
+	if not next(self.db.profile.moreInfoRaids) then return end -- Nothing selected, no need to do anything
+	local id = historyEntry.mapID.."-"..historyEntry.difficultyID
+	if self.db.profile.registeredInstances[id] then return end -- Already registered, no need to do anything
+	-- We're filtering for instances and this instance is not registered, so register it and enable the filter:
+	self.db.profile.registeredInstances[id] = historyEntry.instance
+	self.db.profile.moreInfoRaids[id] = true
+	self.Log:D("Registered instance", historyEntry.instance, "with ID", id)
 end
 
 function RCLootCouncil:GetEJLatestInstanceID()
