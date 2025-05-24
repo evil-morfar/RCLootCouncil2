@@ -1081,7 +1081,6 @@ function RCVotingFrame:UpdateMoreInfo(row, data)
 	end
 
 	if not moreInfo or not name then -- Hide the frame
-		ErrorHandler:ThrowSilentError(format("UpdateMoreInfo called without name or moreInfo: %s, %s %d", tostring(name), tostring(moreInfo), row or -1))
 		return self.frame.moreInfo:Hide()
 	end
 
@@ -1604,8 +1603,13 @@ function RCVotingFrame.SetCellResponse(rowFrame, frame, data, cols, row, realrow
 		if RCVotingFrame:GetCandidateData(session, name, "response") == "AWARDED" and realResponseID then
 			addon:CreateTooltip(addon:GetColoredResponseText(lootTable[session].typeCode or lootTable[session].equipLoc, realResponseID))
 		end
+		-- Using the user events seems more reliable and performant
+		table:FireUserEvent(frame, "OnEnter", addon.noop, rowFrame, frame, data, cols, row, realrow, column, table)
 	end)
-	frame:SetScript("OnLeave", addon.UI.HideTooltip)
+	frame:SetScript("OnLeave", function()
+		addon.UI.HideTooltip()
+		table:FireUserEvent(frame, "OnLeave", addon.noop, rowFrame, frame, data, cols, row, realrow, column, table)
+	end)
 	frame.text:SetText(text)
 	frame.text:SetTextColor(unpack(response.color))
 end
