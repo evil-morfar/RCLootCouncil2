@@ -161,6 +161,7 @@
         "GameFontNormalSmallLeft",
         "NORMAL_FONT_COLOR",
         "GetCVar",
-        "WHISPER"
+        "WHISPER",
+        "HideUIPanel"
     ]
 }

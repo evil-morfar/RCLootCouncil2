@@ -1072,10 +1072,16 @@ function RCVotingFrame:UpdateMoreInfo(row, data)
 	if data and row then
 		name  = data[row].name
 	else -- Try to extract the name from the selected row
-		name = self.frame.st:GetSelection() and self.frame.st:GetRow(self.frame.st:GetSelection()).name or nil
+	-- 3.15.4: Had an error with this
+		local selection = self.frame.st:GetSelection()
+		if selection and self.frame.st:GetRow(selection) then
+			local srow = self.frame.st:GetRow(selection)
+			name = srow and srow.name or nil
+		end
 	end
 
 	if not moreInfo or not name then -- Hide the frame
+		ErrorHandler:ThrowSilentError(format("UpdateMoreInfo called without name or moreInfo: %s, %s %d", tostring(name), tostring(moreInfo), row or -1))
 		return self.frame.moreInfo:Hide()
 	end
 
