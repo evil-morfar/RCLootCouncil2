@@ -1615,10 +1615,12 @@ function RCVotingFrame.SetCellResponse(rowFrame, frame, data, cols, row, realrow
 		end
 		-- Using the user events seems more reliable and performant
 		table:FireUserEvent(frame, "OnEnter", addon.noop, rowFrame, frame, data, cols, row, realrow, column, table)
+		RCVotingFrame:UpdateMoreInfo(realrow, data)
 	end)
 	frame:SetScript("OnLeave", function()
 		addon.UI.HideTooltip()
 		table:FireUserEvent(frame, "OnLeave", addon.noop, rowFrame, frame, data, cols, row, realrow, column, table)
+		RCVotingFrame:UpdateMoreInfo()
 	end)
 	frame.text:SetText(text)
 	frame.text:SetTextColor(unpack(response.color))
