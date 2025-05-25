@@ -1,8 +1,8 @@
 ## Author: Potdisc
-## Interface: 110105
-## Notes: Interface for running a Loot Council v3.15.5
+## Interface: 110105, 110107
+## Notes: Interface for running a Loot Council v3.16.0
 ## Title: RCLootCouncil
-## Version: 3.15.5
+## Version: 3.16.0
 ## SavedVariables: RCLootCouncilDB, RCLootCouncilLootDB
 ## OptionalDeps: LibStub, CallbackHandler-1.0, Ace3, lib-st, LibWindow-1.1, LibDialog-1.0
 ## X-Curse-Project-ID: 39928

@@ -164,6 +164,7 @@
         "WHISPER",
         "HideUIPanel",
         "CANCEL",
-        "SELECTED_CHAT_FRAME"
+        "SELECTED_CHAT_FRAME",
+        "CreateFromMixins"
     ]
 }
