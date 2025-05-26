@@ -1149,6 +1149,15 @@ C_Glue = {
 	end,
 }
 
+C_Spell = {
+	GetSpellInfo = function(spellID)
+		if spellID == 12345 then
+			return "Test Spell", nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil
+		end
+		return "Unknown Spell", nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil
+	end,
+}
+
 UISpecialFrames = {}
 _G.UIParent = CreateFrame("Frame", "UIParent")
 _G.GameTooltip = CreateFrame("GameTooltip", "GameTooltip", UIParent)
@@ -1253,6 +1262,13 @@ HEALER = "Healer"
 MELEE = "Melee"
 RANGED = "Ranged"
 
+
+-- Classic only functions
+if WOW_PROJECT_ID == WOW_PROJECT_CLASSIC then
+	GetNumSkillLines = function()
+		return 0
+	end
+end
 
 -- Run last
 ColorManager.UpdateColorData();

@@ -11,6 +11,7 @@ local debug = select(1, ...) or false
 local ADDON_NAME = select(2, ...) or "RCLootCouncil"
 --- @class AddonObject User provided table or empty table
 local ADDON_OBJECT = select(3, ...) or {}
+WOW_PROJECT_ID = select(4, ...) or WOW_PROJECT_MAINLINE
 
 local Loader = {}
 
