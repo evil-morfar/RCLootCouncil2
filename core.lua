@@ -2499,7 +2499,7 @@ local itemStatsRet = {}
 -- Item needs to be cached.
 function RCLootCouncil:GetItemBonusText(link, delimiter)
 	if not delimiter then delimiter = "/" end
-	itemStatsRet = C_Item.GetItemStats(link)
+	itemStatsRet = self.C_Item.GetItemStats(link)
 	local text = ""
 	for k, _ in pairs(itemStatsRet or {}) do
 		if k:find("SOCKET") then
@@ -3037,7 +3037,9 @@ function RCLootCouncil:OnHistoryReceived(winner, historyEntry)
 end
 
 function RCLootCouncil:GetEJLatestInstanceID()
-	EJ_SelectTier(EJ_GetNumTiers() - 1) -- Last tier is Mythic+
+	local numTiers = EJ_GetNumTiers()
+	if numTiers == 0 then return end
+	EJ_SelectTier(numTiers - 1) -- Last tier is Mythic+
 	local index = 1
 	local instanceId = EJ_GetInstanceByIndex(index, true)
 

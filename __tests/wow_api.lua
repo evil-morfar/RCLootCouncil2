@@ -337,7 +337,7 @@ end
 function EJ_GetInstanceByIndex()
 end
 
-function EJ_GetNumTiers() return 11 end
+function EJ_GetNumTiers() return WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC and 11 or 0 end
 
 function EJ_SelectInstance(journalInstanceID) end
 
