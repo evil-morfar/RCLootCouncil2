@@ -1268,6 +1268,10 @@ if WOW_PROJECT_ID == WOW_PROJECT_CLASSIC then
 	GetNumSkillLines = function()
 		return 0
 	end
+
+	C_Seasons = {
+		GetActiveSeason = function() return 0 end,
+	}
 end
 
 -- Run last
