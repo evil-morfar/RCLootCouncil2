@@ -3039,7 +3039,7 @@ end
 function RCLootCouncil:GetEJLatestInstanceID()
 	local numTiers = EJ_GetNumTiers()
 	if numTiers == 0 then return end
-	EJ_SelectTier(numTiers - 1) -- Last tier is Mythic+
+	EJ_SelectTier(numTiers - (WOW_PROJECT_ID == WOW_PROJECT_MAINLINE and 1 or 0)) -- Last tier is Mythic+
 	local index = 1
 	local instanceId = EJ_GetInstanceByIndex(index, true)
 
