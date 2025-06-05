@@ -19,6 +19,7 @@ local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 local LibDialog = LibStub("LibDialog-1.1")
 local _G = _G
 local Comms = addon.Require "Services.Comms"
+local ItemUtils = addon.Require "Utils.Item"
 local PREFIX = addon.PREFIXES.MAIN
 
 local ROW_HEIGHT = 30
@@ -125,7 +126,8 @@ function TradeUI:OnDoTrade (trader, item, winner)
       local Item = addon.ItemStorage:GetItem(item, "temp")
       if not Item then
          addon.Log:E("TradeUI", "Couldn't find item for 'DoTrade'", item, winner)
-         return addon:Print(format("Couldn't find %s to trade to %s",tostring(item), tostring(winner)))
+			return addon:Print(format("Couldn't find %s to trade to %s", ItemUtils:GetItemTextWithIcon(tostring(item)),
+			addon:GetClassIconAndColoredName(tostring(winner))))
       end
       Item.type = "to_trade"
       Item.args.recipient = winner
@@ -234,7 +236,7 @@ function TradeUI:CheckTimeRemaining()
    if #Items > 0 then
       addon:Print(format(L["time_remaining_warning"], TIME_REMAINING_WARNING/60))
       for i, Item in pairs(Items) do
-         addon:Print(i, Item)
+			addon:Print(i, ItemUtils:GetItemTextWithIcon(Item))
       end
       for _, Item in pairs(Items) do
          if Item.time_remaining <= 0 and Item:SafeToRemove() then

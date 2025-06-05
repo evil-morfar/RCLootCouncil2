@@ -163,6 +163,8 @@ addon.defaults = {
 
 		-- ML - Buttons and responses - Timeout/Moreinfo/chat
 		numMoreInfoButtons = 1,
+		moreInfoRaids = {}, -- Specific raids to show in more info, none = all raids
+		registeredInstances = {}, -- Instances that are registered for more info
 		timeout = 60,
 		acceptWhispers = true,
 

@@ -1663,7 +1663,47 @@ function addon:OptionsTable()
 										min = 0,
 										max = self.db.profile.maxButtons,
 										step = 1,
-									}
+									},
+									moreInfoRaidDesc = {
+										order = 3,
+										type = "description",
+										name = L.opt_moreInfo_onlyShowRaids_desc,
+										disabled = function() return self.db.profile.numMoreInfoButtons == 0 end,
+									},
+									moreInfoRaids = {
+										order = 3.1,
+										name = L.opt_moreInfo_onlyShowRaids_name,
+										type = "multiselect",
+										control = "Dropdown",
+										width = "full",
+										values = function()
+											local registeredInstances = addon:GetActiveModule "history":GetAllRegisteredInstances()
+											-- Check for new registered instances that should be enabled if we're already filtering by raids
+											if next(self.db.profile.registeredInstances) then
+												for k in pairs(registeredInstances) do
+													if not self.db.profile.registeredInstances[k] then
+														-- A new instance was logged! Enable it by default
+														self.db.profile.moreInfoRaids[k] = true
+													end
+												end
+											end
+											-- Also remove instances that no longer exist in history
+											for k in pairs(self.db.profile.moreInfoRaids) do
+												if not registeredInstances[k] then
+													self.db.profile.moreInfoRaids[k] = nil
+												end
+											end
+											self.db.profile.registeredInstances = registeredInstances
+
+											return registeredInstances
+										end,
+										get = function(info, val) return self.db.profile.moreInfoRaids[val] end,
+										set = function(info, key, val)
+											self.db.profile.moreInfoRaids[key] = val or nil
+											self:ConfigTableChanged(info[#info])
+										end,
+										disabled = function() return self.db.profile.numMoreInfoButtons == 0 end,
+									},
 								},
 							},
 							responseFromChat = {

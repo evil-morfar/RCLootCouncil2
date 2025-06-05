@@ -509,6 +509,7 @@ L["chat_cmd_add_invalid_owner"] = "The player %s was either invalid or not a can
 
 L["ML_ADD_INVALID_ITEM"] = "Invalid itemLink or itemID: %s"
 L["ML_ADD_ITEM_MAX_ATTEMPTS"] = "Couldn't fetch item info for %s - probably not a real item."
+L.ML_REQUEST_VOTES = "%s has requested you to vote for item #%d: %s"
 
 L["error_test_as_non_leader"] = "You cannot initiate a test while in a group without being the group leader."
 L["lootFrame_error_note_required"] = "You must add a note before submitting your response - %s"
@@ -564,6 +565,8 @@ L["opt_deletePatch_confirm"] = "Are you sure you want to delete everything older
 L["opt_deletePatch_desc"] = "Delete all entries added before the selected patch."
 L["opt_deleteRaid_confirm"] = "Are you sure you want to delete all entries from the selected instance?\nThis cannot be undone."
 L["opt_deleteRaid_desc"] = "Delete all entries from a specific instance."
+L.opt_moreInfo_onlyShowRaids_name = "Only specific raids"
+L.opt_moreInfo_onlyShowRaids_desc = "If any raids are selected, the 'More Info' window will only show awards from those raids. If nothing's selected, all raids will be shown.\nNote: This does not apply to the 'Winners of [item]' section."
 L["opt_printCompletedTrade_Name"] = "Trade Messages"
 L["opt_printCompletedTrade_Desc"] = "Check to enable a message every time a candidate trades an awarded item to the winner."
 L.opt_profileSharing_export_desc = "Export your current profile."
@@ -592,3 +595,5 @@ L.opt_useSlashRC_desc = "Disable this if you want to restore '/rc' to ready chec
 L.opt_autoGroupLoot_name = "Auto Group Loot"
 L.opt_autoGroupLoot_desc = "When enabled, RCLootCouncil will automatically click the pass and greed buttons so that all items lands in your inventory."
 
+L.VF_REQUEST_VOTES = "Request Votes"
+L.VF_REQUEST_VOTES_SENT = "Vote request sent"

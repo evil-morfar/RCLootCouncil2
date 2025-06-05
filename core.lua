@@ -43,6 +43,7 @@
 			Rgear				P - Anyone requests our currently equipped gear.
 			bonus_roll 			P - Sent whenever we do a bonus roll.
 			getCov 				P - Anyone request or covenant ID.
+			history 			P - Sent when an item is awarded to a player.
 ]]
 -- GLOBALS: GetLootMethod, C_AddOns.GetAddOnMetadata, UnitClass
 local addonname, addontable = ...
@@ -1175,7 +1176,7 @@ function RCLootCouncil:DoAutoPasses(table, skip)
 				if (v.boe and db.autoPassBoE) or not v.boe then
 					if self:AutoPassCheck(v.link, v.equipLoc, v.typeID, v.subTypeID, v.classes, v.token, v.relic) then
 						self.Log("Autopassed on: ", v.link)
-						if not db.silentAutoPass then self:Print(format(L["Autopassed on 'item'"], v.link)) end
+						if not db.silentAutoPass then self:Print(format(L["Autopassed on 'item'"], ItemUtils:GetItemTextWithIcon(v.link))) end
 						v.autopass = true
 					end
 				else
@@ -1948,6 +1949,13 @@ function RCLootCouncil:GetInstalledModulesFormattedData()
 	return modules
 end
 
+--- Checks if the history entry is available with more info settings.
+--- @param entry HistoryEntry
+--- @return boolean #True if the entry is not filtered, false if it is.
+function RCLootCouncil:IsHistoryEntryAvailableWithMoreInfoSettings(entry)
+	return not next(db.moreInfoRaids) or db.moreInfoRaids[entry.mapID .. "-" .. entry.difficultyID]
+end
+
 --- Returns statistics for use in various detailed views.
 -- @return A table formatted as:
 --[[ @usage lootDBStatistics[candidate_name] = {
@@ -1995,33 +2003,35 @@ function RCLootCouncil:GetLootDBStatistics()
 			lootDBStatistics[name] = {}
 			for i = #data, 1, -1 do -- Start from the end
 				entry = data[i]
-				id = (entry.isAwardReason and "a" or entry.typeCode or "default") .. entry.responseID
+				if self:IsHistoryEntryAvailableWithMoreInfoSettings(entry) then
+					id = (entry.isAwardReason and "a" or entry.typeCode or "default") .. entry.responseID
 
-				-- Tier Tokens
-				if not numTokens[entry.instance] then
-					numTokens[entry.instance] = 0
-				end
-				if entry.tierToken and not entry.isAwardReason then -- If it's a tierToken, increase the count
-					numTokens[entry.instance] = numTokens[entry.instance] + 1
-				end
-				count[id] = count[id] and count[id] + 1 or 1
-				responseText[id] = responseText[id] and responseText[id] or entry.response
-				if (not color[id] or tCompare(color[id], {1, 1, 1, 1})) and (entry.color and #entry.color ~= 0) then -- If it's not already added
-					color[id] = #entry.color ~= 0 and #entry.color == 4 and entry.color or {1, 1, 1, 1}
-				end
-				if lastestAwardFound < 5 and type(entry.responseID) == "number" and not entry.isAwardReason
-								and (entry.responseID <= db.numMoreInfoButtons) then
-					tinsert(lootDBStatistics[name], {
+					-- Tier Tokens
+					if not numTokens[entry.instance] then
+						numTokens[entry.instance] = 0
+					end
+					if entry.tierToken and not entry.isAwardReason then -- If it's a tierToken, increase the count
+						numTokens[entry.instance] = numTokens[entry.instance] + 1
+					end
+					count[id] = count[id] and count[id] + 1 or 1
+					responseText[id] = responseText[id] and responseText[id] or entry.response
+					if (not color[id] or tCompare(color[id], {1, 1, 1, 1})) and (entry.color and #entry.color ~= 0) then -- If it's not already added
+						color[id] = #entry.color ~= 0 and #entry.color == 4 and entry.color or {1, 1, 1, 1}
+					end
+					if lastestAwardFound < 5 and type(entry.responseID) == "number" and not entry.isAwardReason
+					and (entry.responseID <= db.numMoreInfoButtons) then
+						tinsert(lootDBStatistics[name], {
 						entry.lootWon, --[[entry.response .. ", "..]]
 						format(L["'n days' ago"], self.Utils:GetNumberOfDaysFromNow(entry.date)),
 						color[id],
 						i,
 					})
 					lastestAwardFound = lastestAwardFound + 1
+					end
+					-- Raids:
+					raids[entry.date .. entry.instance] =
+					raids[entry.date .. entry.instance] and raids[entry.date .. entry.instance] + 1 or 0
 				end
-				-- Raids:
-				raids[entry.date .. entry.instance] =
-								raids[entry.date .. entry.instance] and raids[entry.date .. entry.instance] + 1 or 0
 			end
 			-- Totals:
 			local totalNum = 0
@@ -2147,11 +2157,15 @@ function RCLootCouncil:DecodeItemLink(itemLink)
 	local bonusIDs = {}
 
 	local linkType, itemID, enchantID, gemID1, gemID2, gemID3, gemID4, suffixID, uniqueID, linkLevel, specializationID,
-	      upgradeTypeID, instanceDifficultyID, numBonuses, affixes = string.split(":", itemLink, 15)
+	      upgradeTypeID, instanceDifficultyID, numBonuses, affixes = string.split(":", ItemUtils:GetItemStringFromLink(itemLink), 15)
 
 	-- clean it up
-	local color = string.match(linkType, "|?c?f?f?(%x*)")
-	linkType = string.gsub(linkType, "|?c?f?f?(%x*)|?H?", "")
+	local color = string.match(itemLink, "|?c?f?f?(%x*)")
+	if not color or color == "" then -- probably new custom color link type
+		local quality = string.match(itemLink, "|cnIQ(.)")
+		color = ColorManager.GetColorDataForItemQuality(quality and tonumber(quality) or 0).color:GenerateHexColor()
+	end
+	-- local linkType = string.match(itemLink, "|H(.*):")
 	itemID = tonumber(itemID) or 0
 	enchantID = tonumber(enchantID) or 0
 	gemID1 = tonumber(gemID1) or 0
@@ -2419,12 +2433,20 @@ function RCLootCouncil:CreateButton(text, parent)
 	return b
 end
 
---- Displays a tooltip anchored to the mouse.
--- @paramsig ...
--- @param ... string(s) Lines to be added.
+--- Displays a tooltip anchored to the mouse with white text.
+---@vararg string
 function RCLootCouncil:CreateTooltip(...)
+	self:CreatedColoredTooltip(1, 1,1, ...)
+end
+
+--- Displays a tooltip anchored to the mouse with colored text.
+---@param r number Red
+---@param g number Green
+---@param b number Blue
+---@vararg string
+function RCLootCouncil:CreatedColoredTooltip(r,g,b, ...)
 	GameTooltip:SetOwner(UIParent, "ANCHOR_CURSOR")
-	for i = 1, select("#", ...) do GameTooltip:AddLine(select(i, ...), 1, 1, 1) end
+	for i = 1, select("#", ...) do GameTooltip:AddLine(select(i, ...), r, g, b) end
 	GameTooltip:Show()
 end
 
@@ -2477,7 +2499,7 @@ local itemStatsRet = {}
 -- Item needs to be cached.
 function RCLootCouncil:GetItemBonusText(link, delimiter)
 	if not delimiter then delimiter = "/" end
-	itemStatsRet = C_Item.GetItemStats(link)
+	itemStatsRet = self.C_Item.GetItemStats(link)
 	local text = ""
 	for k, _ in pairs(itemStatsRet or {}) do
 		if k:find("SOCKET") then
@@ -2573,10 +2595,10 @@ end
 function RCLootCouncil.Ambiguate(name) return db.ambiguate and Ambiguate(name, "none") or Ambiguate(name, "short") end
 
 --- Fetches a response of a given type, based on the group leader's settings if possible
---- @param type string @The type of response. Defaults to "default".
---- @param name string @The name of the response.
+--- @param type string The type of response. Defaults to "default".
+--- @param name string|integer The name or index of the response.
 --- @see RCLootCouncil.db.responses
---- @return table @A table from db.responses containing the response info
+--- @return table #A table from db.responses containing the response info
 function RCLootCouncil:GetResponse(type, name)
 	-- REVIEW With proper inheritance, most of this should be redundant
 	-- Check if the type should be translated to something else
@@ -2655,6 +2677,17 @@ end
 --- Shorthand for :GetResponse(type, name).color
 -- @return Returned in an unpacked format for use in SetTextColor functions.
 function RCLootCouncil:GetResponseColor(type, name) return unpack(self:GetResponse(type, name).color) end
+
+--- Returns a colored response text.
+--- @param type string The type of response. Defaults to "default".
+--- @param name string|integer The name or index of the response.
+--- @see RCLootCouncil.db.responses
+--- @return string #The color wrapped response text.
+function RCLootCouncil:GetColoredResponseText(type, name)
+	local response = self:GetResponse(type, name)
+	if not response then return "" end
+	return CreateColor(unpack(response.color)):WrapTextInColorCode(response.text) or response.text
+end
 
 -- #end UI Functions -----------------------------------------------------
 -- debug func
@@ -2754,6 +2787,12 @@ function RCLootCouncil:SubscribeToPermanentComms()
 		StartHandleLoot = function() self:OnStartHandleLoot() end,
 
 		StopHandleLoot = function() self.handleLoot = false end,
+		history = function (data, sender)
+			if not self.Utils:UnitIsUnit(sender, self.masterLooter) then
+				return self.Log:E(tostring(sender), "sent 'history' but was not ML!")
+			end
+			self:OnHistoryReceived(unpack(data))
+		end,
 	})
 end
 
@@ -2792,7 +2831,7 @@ end
 function RCLootCouncil:OnSessionEndReceived(sender)
 	if not self.enabled then return end
 	if self:UnitIsUnit(sender, self.masterLooter) then
-		self:Print(format(L["'player' has ended the session"], self.Ambiguate(self.masterLooter:GetName())))
+		self:Print(format(L["'player' has ended the session"], self:GetClassIconAndColoredName(self.masterLooter)))
 		self:GetActiveModule("lootframe"):Disable()
 		lootTable = {}
 		if self.isCouncil or self.mldb.observe then -- Don't call the voting frame if it wasn't used
@@ -2986,8 +3025,21 @@ function RCLootCouncil:OnStartHandleLoot()
 	end
 end
 
+---@param historyEntry HistoryEntry
+function RCLootCouncil:OnHistoryReceived(winner, historyEntry)
+	if not next(self.db.profile.moreInfoRaids) then return end -- Nothing selected, no need to do anything
+	local id = historyEntry.mapID.."-"..historyEntry.difficultyID
+	if self.db.profile.registeredInstances[id] then return end -- Already registered, no need to do anything
+	-- We're filtering for instances and this instance is not registered, so register it and enable the filter:
+	self.db.profile.registeredInstances[id] = historyEntry.instance
+	self.db.profile.moreInfoRaids[id] = true
+	self.Log:D("Registered instance", historyEntry.instance, "with ID", id)
+end
+
 function RCLootCouncil:GetEJLatestInstanceID()
-	EJ_SelectTier(EJ_GetNumTiers() - 1) -- Last tier is Mythic+
+	local numTiers = EJ_GetNumTiers()
+	if numTiers == 0 then return end
+	EJ_SelectTier(numTiers - (WOW_PROJECT_ID == WOW_PROJECT_MAINLINE and 1 or 0)) -- Last tier is Mythic+
 	local index = 1
 	local instanceId = EJ_GetInstanceByIndex(index, true)
 

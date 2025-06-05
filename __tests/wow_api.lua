@@ -1,6 +1,8 @@
 local _G = getfenv(0)
+require "/wow_api/API/Enums"
 require "/wow_api/API/Mixin"
 require "/wow_api/API/Color"
+require "/wow_api/API/ColorManager"
 require "/wow_api/API/TableUtil"
 require "wow_api/API/PlayerLocation"
 require "wow_api/API/Dump"
@@ -335,7 +337,7 @@ end
 function EJ_GetInstanceByIndex()
 end
 
-function EJ_GetNumTiers() return 11 end
+function EJ_GetNumTiers() return WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC and 11 or 0 end
 
 function EJ_SelectInstance(journalInstanceID) end
 
@@ -467,6 +469,9 @@ function WoWAPI_FireEvent(event, ...)
 		end
 	end
 end
+
+EventRegistry = {}
+function EventRegistry:TriggerEvent(event, ...) end
 
 --- ! NOT A WOW FUNCTION
 --- Emulating advancing time by firing WoWAPI_FireUpdate every 0.1 seconds.
@@ -1132,6 +1137,27 @@ C_PlayerInfo = {
 	end,
 }
 
+C_ColorOverrides = {
+	GetColorForQuality = function (itemQuality)
+		return CreateColor(1, 1, 1, 1)
+	end
+}
+
+C_Glue = {
+	IsOnGlueScreen = function()
+		return true
+	end,
+}
+
+C_Spell = {
+	GetSpellInfo = function(spellID)
+		if spellID == 12345 then
+			return "Test Spell", nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil
+		end
+		return "Unknown Spell", nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil
+	end,
+}
+
 UISpecialFrames = {}
 _G.UIParent = CreateFrame("Frame", "UIParent")
 _G.GameTooltip = CreateFrame("GameTooltip", "GameTooltip", UIParent)
@@ -1236,102 +1262,17 @@ HEALER = "Healer"
 MELEE = "Melee"
 RANGED = "Ranged"
 
--- Enums
 
-Enum = {
-	ItemWeaponSubclass = {
-		Axe1H = 0,
-		Axe2H = 1,
-		Bows = 2,
-		Guns = 3,
-		Mace1H = 4,
-		Mace2H = 5,
-		Polearm = 6,
-		Sword1H = 7,
-		Sword2H = 8,
-		Warglaive = 9,
-		Staff = 10,
-		Bearclaw = 11,
-		Catclaw = 12,
-		Unarmed = 13,
-		Generic = 14,
-		Dagger = 15,
-		Thrown = 16,
-		Obsolete3 = 17,
-		Crossbow = 18,
-		Wand = 19,
-		Fishingpole = 20,
-	},
-	ItemMiscellaneousSubclass = {
-		Junk = 0,
-		Reagent = 1,
-		CompanionPet = 2,
-		Holiday = 3,
-		Other = 4,
-		Mount = 5,
-		MountEquipment = 6,
-	},
-	ItemClass = {
-		Consumable = 0,
-		Container = 1,
-		Weapon = 2,
-		Gem = 3,
-		Armor = 4,
-		Reagent = 5,
-		Projectile = 6,
-		Tradegoods = 7,
-		ItemEnhancement = 8,
-		Recipe = 9,
-		CurrencyTokenObsolete = 10,
-		Quiver = 11,
-		Questitem = 12,
-		Key = 13,
-		PermanentObsolete = 14,
-		Miscellaneous = 15,
-		Glyph = 16,
-		Battlepet = 17,
-		WoWToken = 18,
-	},
-	ItemArmorSubclass = {
-		Generic = 0,
-		Cloth = 1,
-		Leather = 2,
-		Mail = 3,
-		Plate = 4,
-		Cosmetic = 5,
-		Shield = 6,
-		Libram = 7,
-		Idol = 8,
-		Totem = 9,
-		Sigil = 10,
-		Relic = 11,
-	},
-	ItemReagentSubclass = {
-		Reagent = 0,
-		Keystone = 1,
-		ContextToken = 2,
-	},
-	ItemBind = {
-		None = 0,
-		OnAcquire = 1,
-		OnEquip = 2,
-		OnUse = 3,
-		Quest = 4,
-		Unused1 = 5,
-		Unused2 = 6,
-		ToWoWAccount = 7,
-		ToBnetAccount = 8,
-		ToBnetAccountUntilEquipped = 9,
-	},
-	ItemQuality = {
-		Poor = 0,
-		Common = 1,
-		Uncommon = 2,
-		Rare = 3,
-		Epic = 4,
-		Legendary = 5,
-		Artifact = 6,
-		Heirloom = 7,
-		WoWToken = 8,
-	},
-}
+-- Classic only functions
+if WOW_PROJECT_ID == WOW_PROJECT_CLASSIC then
+	GetNumSkillLines = function()
+		return 0
+	end
+
+	C_Seasons = {
+		GetActiveSeason = function() return 0 end,
+	}
+end
+
+-- Run last
+ColorManager.UpdateColorData();

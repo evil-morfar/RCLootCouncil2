@@ -66,4 +66,13 @@ function Item:NeutralizeItem(item)
 	return (item:gsub(NEUTRALIZE_ITEM_PATTERN, NEUTRALIZE_ITEM_REPLACEMENT))
 end
 
+--- Creates a string with item icon in front of the item link.
+---@param item string|ItemID|ItemLink|ItemString
+---@return string
+function Item:GetItemTextWithIcon(item)
+	local _, itemLink, _, _, _, _, _, _, _, texture = C_Item.GetItemInfo(item)
+	if not texture then return item end -- No icon found, return the item link
+	return format("|T%s:0|t%s", texture, itemLink)
+end
+
 return Item

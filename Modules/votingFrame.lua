@@ -22,6 +22,7 @@
 		reconnectData 		T - ML sends reconnectData.
 		n_t					T - Candidate received "non-tradeable" loot.
 		r_t					T - Candidate "rejected_trade" of loot.
+		request_votes		T - ML requests votes from council members.
 ]]
 
 --- @type RCLootCouncil
@@ -101,6 +102,12 @@ function RCVotingFrame:OnEnable()
 	--active = true
 	moreInfo = db.modules["RCVotingFrame"].moreInfo
 	moreInfoData = addon:GetLootDBStatistics()
+	self:RegisterMessage("RCConfigTableChanged", function (_, value)
+		if value == "moreInfoRaids" then
+			moreInfoData = addon:GetLootDBStatistics()
+			if moreInfo then self:UpdateMoreInfo() end
+		end
+	end)
 	self:UpdateItemAwardHistory()
 	self.frame = self:GetFrame()
 	guildRanks = addon:GetGuildRanks()
@@ -217,6 +224,11 @@ function RCVotingFrame:RegisterComms ()
 		r_t = function (data, sender)
 			self:AddNonTradeable(sender, "rejected_trade", unpack(data))
 		end,
+		request_votes = function (data, sender)
+			if addon:IsMasterLooter(sender) then
+				self:OnRequestVotesReceived(unpack(data))
+			end
+		end
 	})
 end
 
@@ -767,6 +779,20 @@ function RCVotingFrame:OnLootTableAdditionsReceived (_, lt)
 	self:SwitchSession(session)
 end
 
+function RCVotingFrame:OnRequestVotesReceived(ses)
+	if not lootTable[ses] then return end -- We might not have lootTable - e.g. if we just reloaded
+	if not addon.isCouncil then return end -- Only council should be able to request votes
+	if self:HasVotedInSession(ses) then return end -- Don't request votes if we've already voted
+	addon:Print(string.format(L["ML_REQUEST_VOTES"], addon:GetClassIconAndColoredName(addon.masterLooter), ses,
+	ItemUtils:GetItemTextWithIcon(lootTable[ses].link)))
+end
+
+---@param ses integer
+function RCVotingFrame:HasVotedInSession(ses)
+	if not lootTable[ses] then return false end -- We might not have lootTable - e.g. if we just reloaded
+	return lootTable[ses].haveVoted or false
+end
+
 --- Ensures all sessions has the exact same candidates.
 ---@param oldLastSession integer Last session before adding new sessions
 function RCVotingFrame:CheckAndHandleCandidateChanges(oldLastSession)
@@ -824,17 +850,21 @@ local function cacheItemAwardHistory(item)
 
 	local his = addon:GetHistoryDB()
 	local ret = TempTable:Acquire()
-	for name, data in pairs(his) do
-		for _, loot in ipairs(data) do
-			if itemID == ItemUtils:GetItemIDFromLink(loot.lootWon) then
-				addon.Log:D("Found single winner of ", loot.lootWon, name)
-				if not ret[name] then ret[name] = {} end
-				tinsert(ret[name], loot)
+	for name in addon:GroupIterator() do
+		if his[name] then -- might not have a history
+			for _, loot in ipairs(his[name]) do
+				if itemID == ItemUtils:GetItemIDFromLink(loot.lootWon) then
+					addon.Log:D("Found single winner of ", loot.lootWon, name)
+					if not ret[name] then ret[name] = {} end
+					tinsert(ret[name], loot)
+				end
 			end
 		end
 	end
 
-	itemAwardHistoryCache[item] = {}
+	if not itemAwardHistoryCache[item] then
+		itemAwardHistoryCache[item] = {}
+	end
 	for wname, data in pairs(ret) do
 		itemAwardHistoryCache[item][wname] = data
 	end
@@ -1052,7 +1082,12 @@ function RCVotingFrame:UpdateMoreInfo(row, data)
 	if data and row then
 		name  = data[row].name
 	else -- Try to extract the name from the selected row
-		name = self.frame.st:GetSelection() and self.frame.st:GetRow(self.frame.st:GetSelection()).name or nil
+	-- 3.15.4: Had an error with this
+		local selection = self.frame.st:GetSelection()
+		if selection and self.frame.st:GetRow(selection) then
+			local srow = self.frame.st:GetRow(selection)
+			name = srow and srow.name or nil
+		end
 	end
 
 	if not moreInfo or not name then -- Hide the frame
@@ -1573,6 +1608,20 @@ function RCVotingFrame.SetCellResponse(rowFrame, frame, data, cols, row, realrow
 		-- This function returns nil if the raider is in any instance.
 		text = text.." ("..L["Out of instance"]..")"
 	end
+	frame:SetScript("OnEnter", function()
+		local realResponseID = RCVotingFrame:GetCandidateData(session, name, "real_response")
+		if RCVotingFrame:GetCandidateData(session, name, "response") == "AWARDED" and realResponseID then
+			addon:CreateTooltip(addon:GetColoredResponseText(lootTable[session].typeCode or lootTable[session].equipLoc, realResponseID))
+		end
+		-- Using the user events seems more reliable and performant
+		table:FireUserEvent(frame, "OnEnter", addon.noop, rowFrame, frame, data, cols, row, realrow, column, table)
+		RCVotingFrame:UpdateMoreInfo(realrow, data)
+	end)
+	frame:SetScript("OnLeave", function()
+		addon.UI.HideTooltip()
+		table:FireUserEvent(frame, "OnLeave", addon.noop, rowFrame, frame, data, cols, row, realrow, column, table)
+		RCVotingFrame:UpdateMoreInfo()
+	end)
 	frame.text:SetText(text)
 	frame.text:SetTextColor(unpack(response.color))
 end
@@ -1603,7 +1652,7 @@ function RCVotingFrame.SetCellGear(rowFrame, frame, data, cols, row, realrow, co
 		frame:SetScript("OnLeave", function() addon:HideTooltip() end)
 		frame:SetScript("OnClick", function()
 			if IsModifiedClick() then
-			   HandleModifiedItemClick(gear);
+			   HandleModifiedItemClick(select(2, C_Item.GetItemInfo(gear)));
 	      end
 		end)
 		frame:Show()
@@ -1657,6 +1706,10 @@ function RCVotingFrame.SetCellVote(rowFrame, frame, data, cols, row, realrow, co
 		end
 		frame.voteBtn:SetScript("OnClick", function(btn)
 			addon.Log:D("Vote button pressed")
+			if IsAltKeyDown() then
+				RCVotingFrame:RequestVotes(session)
+				return
+			end
 			if lootTable[session].candidates[name].haveVoted then -- unvote
 				addon:Send("group", "vote", session, name, -1)
 				lootTable[session].candidates[name].haveVoted = false
@@ -1930,6 +1983,13 @@ function RCVotingFrame:ReannounceOrRequestRoll(namePred, sesPred, isRoll, noAuto
 	TempTable:Release(rollsData)
 end
 
+--- Request votes from the council.
+---@param ses integer? Defaults to current session.
+function RCVotingFrame:RequestVotes(ses)
+	addon:Send("group", "request_votes", ses or session)
+	addon:Print(L.VF_REQUEST_VOTES_SENT)
+end
+
 ----------------------------------------------------
 --	Dropdowns.
 -- @section Dropdowns.
@@ -1960,8 +2020,7 @@ do
 		elseif category == "ROLL" or MSA_DROPDOWNMENU_MENU_VALUE:find("_ROLL$") then
 			text = _G.ROLL..": "..(lootTable[session].candidates[candidateName].roll or "")
 		elseif category == "RESPONSE" or MSA_DROPDOWNMENU_MENU_VALUE:find("_RESPONSE$") then
-			text = L["Response"]..": ".."|cff"..(addon.Utils:RGBToHex(unpack(addon:GetResponse(lootTable[session].typeCode or lootTable[session].equipLoc, lootTable[session].candidates[candidateName].response).color))
-			or "ffffff")..(addon:GetResponse(lootTable[session].typeCode or lootTable[session].equipLoc, lootTable[session].candidates[candidateName].response).text or "").."|r"
+			text = L["Response"]..": " .. addon:GetColoredResponseText(lootTable[session].typeCode or lootTable[session].equipLoc, lootTable[session].candidates[candidateName].response)
 		else
 			addon.Log:D("Unexpected category or dropdown menu value: "..tostring(category).." ,"..tostring(MSA_DROPDOWNMENU_MENU_VALUE))
 		end
@@ -2015,7 +2074,8 @@ do
 
 	-- Print sth when the button or confirmation dialog is clicked.
 	function RCVotingFrame.reannounceOrRequestRollPrint(target, isThisItem, isRoll)
-		local itemText = isThisItem and lootTable[session].link or L["All unawarded items"]
+		local itemText = isThisItem and ItemUtils:GetItemTextWithIcon(lootTable[session].link) or
+		L["All unawarded items"]
 		if isRoll then
 			addon:Print(format(L["Requested rolls for 'item' from 'target'"], itemText, target))
 		else
@@ -2090,7 +2150,14 @@ do
 				value = "REQUESTROLL",
 				hasArrow = true,
 				notCheckable = true,
-			},{ -- 11 Remove from consideration
+			}, { -- 11 Request Votes
+				text = L.VF_REQUEST_VOTES,
+				notCheckable = true,
+				func = function()
+					RCVotingFrame:RequestVotes(session)
+				end,
+			}
+			,{ -- 12 Remove from consideration
 				text = L["Remove from consideration"],
 				notCheckable = true,
 				func = function(name)

@@ -272,9 +272,9 @@ _G.RCTrinketCategories = {
 
 function RCLootCouncil:InitTrinketData ()
    -- Class specific trinket
-   for classID in pairs(RCLootCouncil.classIDToDisplayName) do
+   for classID in pairs(self.classIDToDisplayName) do
       local digit = 0
-      for specIndex = 1, RCLootCouncil.Utils:GetNumSpecializationsForClassID(classID) do
+      for specIndex = 1, self.Utils:GetNumSpecializationsForClassID(classID) do
          digit = digit + 2^(specIndex - 1)
       end
       local flag = ZERO:sub(1, numClasses - classID)..format("%X", digit)..ZERO:sub(numClasses - classID + 2, numClasses)

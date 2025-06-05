@@ -1,3 +1,29 @@
+# v3.16.0
+
+## Changes
+
+### Awarded response
+
+Added a tooltip to any response changed to "Awarded" showing the original response.
+
+### More info raids
+
+It's now possible to select specific raids to be included in the VotingFrame More Info tooltip. By default no raids are chosen, which is equivelent to showing all raids.
+
+For your convenience, if you're filtering the raids, any time an award from a new raid is registered, this raid is also added to the filter.
+
+*Note: The filter does not apply to the **Winners of [item]** section*
+
+### Misc
+
+Added icons to items, and colors to responses, when printed to chat - does not include announcements (can't be done).
+
+### Request Votes
+
+The Master Looter can now request votes from council members on any individual item in session. Doing so will print a message for any council members that have yet to vote for the item.
+
+This can be done either through the right-click menu, or by alt-clicking any vote/unvote button.
+
 # v3.15.5
 
 Updated for patch 11.1.5.

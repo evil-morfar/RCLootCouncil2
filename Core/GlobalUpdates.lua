@@ -10,3 +10,8 @@ addon.C_Container = C_Container or {
     GetContainerItemInfo = GetContainerItemInfo,
     PickupContainerItem = PickupContainerItem,
 }
+
+addon.C_Item = C_Item or {}
+if not addon.C_Item.GetItemStats then
+	addon.C_Item.GetItemStats = GetItemStats
+end
