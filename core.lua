@@ -451,6 +451,17 @@ function RCLootCouncil:ChatCommand(msg)
 		SettingsPanel:SelectCategory(category)
 		LibStub("AceConfigDialog-3.0"):SelectGroup("RCLootCouncil", "mlSettings", "councilTab")
 
+	elseif input == "ml" or input == "cm" or input == "masterlooter" then
+		local category = FindValueInTableIf(
+			SettingsPanel:GetCategory(self.optionsFrame.name):GetSubcategories(),
+			function(v)
+				return v and v:GetID() == self.optionsFrame.ml.name
+			end)
+
+		if not category then return self.Log:e("Couldn't find category in '/rc ml'", category) end
+		Settings.OpenToCategory(self.optionsFrame.name)
+		SettingsPanel:SelectCategory(category)
+
 	elseif input == "profile" or input == "profiles" then
 		Settings.OpenToCategory(self.optionsFrame.name)
 		LibStub("AceConfigDialog-3.0"):SelectGroup("RCLootCouncil", "settings", "profiles")
