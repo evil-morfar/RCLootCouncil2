@@ -1,5 +1,7 @@
 # v3.16.0
 
+## Changes
+
 ### Awarded response
 
 Added a tooltip to any response changed to "Awarded" showing the original response.
@@ -18,7 +20,7 @@ Added icons to items, and colors to responses, when printed to chat - does not i
 
 ### Request Votes
 
-The Master Looter can now request votes from council members on any individual item in session. Doing show will print a message for any council members that have yet to vote for the item.
+The Master Looter can now request votes from council members on any individual item in session. Doing so will print a message for any council members that have yet to vote for the item.
 
 This can be done either through the right-click menu, or by alt-clicking any vote/unvote button.
 
