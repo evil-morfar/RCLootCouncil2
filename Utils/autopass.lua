@@ -100,39 +100,6 @@ local autopassTable = {
 	},
 }
 
---- Types of relics. Thanks to xmyno for the list.
--- NOTE I'm not sure if the return from C_ArtifactUI.GetRelicInfoByItemID() is localized
--- @table relicTypes
-local relicTypes = {
-	BLOOD  = "Blood",
-	SHADOW = "Shadow",
-	IRON   = "Iron",
-	FROST  = "Frost",
-	FIRE   = "Fire",
-	FEL    = "Fel",
-	ARCANE = "Arcane",
-	LIFE   = "Life",
-	STORM  = "Wind", -- Great job Blizzard -.-
-	HOLY   = "Holy",
-}
-
---- The type of relic each class can use
--- @table relics
-local relics = {
-	DEATHKNIGHT = { relicTypes.BLOOD, relicTypes.SHADOW, relicTypes.IRON, relicTypes.FROST, relicTypes.FIRE, },
-	DEMONHUNTER = { relicTypes.FEL, relicTypes.SHADOW, relicTypes.IRON, relicTypes.ARCANE, },
-	DRUID       = { relicTypes.ARCANE, relicTypes.LIFE, relicTypes.FIRE, relicTypes.BLOOD, relicTypes.FROST, },
-	HUNTER      = { relicTypes.STORM, relicTypes.ARCANE, relicTypes.IRON, relicTypes.BLOOD, relicTypes.LIFE, },
-	MAGE        = { relicTypes.ARCANE, relicTypes.FROST, relicTypes.FIRE, },
-	MONK        = { relicTypes.LIFE, relicTypes.STORM, relicTypes.IRON, relicTypes.FROST, },
-	PALADIN     = { relicTypes.HOLY, relicTypes.LIFE, relicTypes.FIRE, relicTypes.IRON, relicTypes.ARCANE, },
-	PRIEST      = { relicTypes.HOLY, relicTypes.SHADOW, relicTypes.LIFE, relicTypes.BLOOD, },
-	ROGUE       = { relicTypes.SHADOW, relicTypes.IRON, relicTypes.BLOOD, relicTypes.STORM, relicTypes.FEL, },
-	SHAMAN      = { relicTypes.STORM, relicTypes.FROST, relicTypes.FIRE, relicTypes.IRON, relicTypes.LIFE, },
-	WARLOCK     = { relicTypes.SHADOW, relicTypes.BLOOD, relicTypes.FIRE, relicTypes.FEL, },
-	WARRIOR     = { relicTypes.IRON, relicTypes.BLOOD, relicTypes.SHADOW, relicTypes.FIRE, relicTypes.STORM, },
-}
-
 --- The stat(s) a weapon must have one of to be usable by a class.
 local requiredWeaponStatsForClass = {
 	WARRIOR = { "ITEM_MOD_STRENGTH_SHORT", },
