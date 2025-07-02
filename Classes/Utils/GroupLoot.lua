@@ -20,6 +20,7 @@ GroupLoot.OnLootRoll = Subject.create()
 GroupLoot.IgnoreList = {
 	[209035] = true, -- Hearthstone of the Flame, Larodar, Amirdrassil
 	[236687] = true, -- Explosive Hearthstone, Liberation of Undermine
+	[246565] = true, -- Cosmic Hearthstone, Manaforge Omega
 }
 
 function GroupLoot:OnInitialize()
