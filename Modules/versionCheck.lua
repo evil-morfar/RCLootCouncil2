@@ -34,6 +34,8 @@ local colors = {
     grey = CreateColor(0.75,0.75,0.75,1)
 }
 
+RCVersionCheck.statusString = getglobal "STATUS"
+
 function RCVersionCheck:OnInitialize()
     self.verCheckDisplayed = false -- Have we shown a "out-of-date"?
     self.moduleVerCheckDisplayed = {} -- Have we shown a "out-of-date" for a module? The key of the table is the baseName of the module.
@@ -551,7 +553,7 @@ function RCVersionCheck.SetCellGroupLootStatus(rowFrame, frame, data, cols, row,
 		if status then
 			local targetStatus = addon.masterLooter == Player:Get(name) and targetML or target
 			local description = GroupLoot:StatusToDescription(status, targetStatus)
-			addon:CreateTooltip("Status", unpack(description))
+			addon:CreateTooltip(RCVersionCheck.statusString, unpack(description))
 			if addon.debug or addon.nnp then
 				GameTooltip:AddLine("Bin: " .. binary)
 				GameTooltip:AddLine("Dec: " .. status)
