@@ -2174,7 +2174,11 @@ function RCLootCouncil:DecodeItemLink(itemLink)
 	local color = string.match(itemLink, "|?c?f?f?(%x*)")
 	if not color or color == "" then -- probably new custom color link type
 		local quality = string.match(itemLink, "|cnIQ(.)")
-		color = ColorManager.GetColorDataForItemQuality(quality and tonumber(quality) or 0).color:GenerateHexColor()
+		if not quality or quality == "" then -- no quality, use default
+			color = ITEM_QUALITY_COLORS[0].color:GenerateHexColor()
+		else
+			color = ColorManager.GetColorDataForItemQuality(quality and tonumber(quality) or 0).color:GenerateHexColor()
+		end
 	end
 	-- local linkType = string.match(itemLink, "|H(.*):")
 	itemID = tonumber(itemID) or 0
