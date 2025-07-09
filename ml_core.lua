@@ -405,6 +405,7 @@ end
 function RCLootCouncilML:ConfigTableChanged(value)
 	-- The db was changed, so check if we should make a new mldb
 	-- We can do this by checking if the changed value is a key in mldb
+	db = addon:Getdb() -- Update db reference
 	if not addon.mldb then return self:UpdateMLdb() end -- mldb isn't made, so just make it
 	for val in pairs(value) do
 		if MLDB:IsKey(val) then return self:UpdateMLdb() end
