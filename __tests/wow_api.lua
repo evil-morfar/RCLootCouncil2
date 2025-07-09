@@ -1251,6 +1251,7 @@ ITEM_SOULBOUND = "Soulbound";
 NAME = "Name"
 RANK = "Rank"
 ROLL = "Roll"
+STATUS = "Status"
 UNKNOWNOBJECT = "Unknown"
 UNKNOWN = "Unknown"
 

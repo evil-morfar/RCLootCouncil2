@@ -1,3 +1,11 @@
+## Changes
+
+### Chat commands
+
+Added chat command to directly open the Master Looter options menu:
+
+`/rc ml`
+
 # v3.16.0
 
 ## Changes

@@ -67,10 +67,10 @@ function Item:NeutralizeItem(item)
 end
 
 --- Creates a string with item icon in front of the item link.
----@param item string|ItemID|ItemLink|ItemString
+---@param item string|ItemID|ItemLink|ItemString|Item
 ---@return string
 function Item:GetItemTextWithIcon(item)
-	local _, itemLink, _, _, _, _, _, _, _, texture = C_Item.GetItemInfo(item)
+	local _, itemLink, _, _, _, _, _, _, _, texture = C_Item.GetItemInfo(type(item) == "string" and item or item.link)
 	if not texture then return item end -- No icon found, return the item link
 	return format("|T%s:0|t%s", texture, itemLink)
 end
