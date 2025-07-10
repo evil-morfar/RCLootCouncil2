@@ -528,7 +528,7 @@ function RCLootCouncil:ChatCommand(msg)
 		self:Print(L["Windows reset"])
 
 	elseif input == "start" or input == string.lower(_G.START) then
-		if self.Utils.IsPartyLFG() then
+		if self.Utils:IsPartyLFG() then
 			return self:Print(L.chat_command_start_error_start_PartyIsLFG)
 		elseif db.usage.never then
 			return self:Print(L.chat_command_start_error_usageNever)
@@ -1829,7 +1829,7 @@ function RCLootCouncil:NewMLCheck()
 	if not self.isMasterLooter and self:GetActiveModule("masterlooter"):IsEnabled() then -- we're not ML, so make sure it's disabled
 		self:StopHandleLoot()
 	end
-	if self.Utils.IsPartyLFG() then return end -- We can't use in lfg/lfd so don't bother
+	if self.Utils:IsPartyLFG() then return end -- We can't use in lfg/lfd so don't bother
 	if not self.masterLooter then return end -- Didn't find a leader or ML.
 	self.isInGuildGroup = self:IsInGuildGroup()
 	if self:UnitIsUnit(old_ml, self.masterLooter) then
@@ -1903,7 +1903,7 @@ end
 
 function RCLootCouncil:OnRaidEnter()
 	-- NOTE: We shouldn't need to call GetML() as it's most likely called on "LOOT_METHOD_CHANGED"
-	if self.Utils.IsPartyLFG() or db.usage.never then return end -- We can't use in lfg/lfd so don't bother
+	if self.Utils:IsPartyLFG() or db.usage.never then return end -- We can't use in lfg/lfd so don't bother
 	-- Check if we can use in party
 	if not IsInRaid() and db.onlyUseInRaids then return end
 	if UnitIsGroupLeader("player") then
@@ -1922,7 +1922,7 @@ end
 -- @return boolean, "ML_Name". (true if the player is ML), (nil if there's no ML).
 function RCLootCouncil:GetML()
 	self.Log:d("GetML()")
-	if self.Utils.IsPartyLFG() then return false, nil end -- Never use in LFG
+	if self.Utils:IsPartyLFG() then return false, nil end -- Never use in LFG
 	if GetNumGroupMembers() == 0 and (self.testMode or self.nnp) then -- always the player when testing alone
 		return true, self.player
 	end

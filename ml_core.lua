@@ -628,7 +628,7 @@ function RCLootCouncilML:HaveFreeSpaceForItem(item)
 	for bag = BACKPACK_CONTAINER, NUM_BAG_SLOTS do
 		local freeSlots, bagFamily = addon.C_Container.GetContainerNumFreeSlots(bag)
 
-		if freeSlots and freeSlots > 0 and (bagFamily == 0 or bit.band(itemFamily, bagFamily) > 0) then
+		if freeSlots and freeSlots > 0 and (bagFamily == 0 or bit.band(itemFamily or 0, bagFamily) > 0) then
 			return true
 		end
 	end
@@ -1110,6 +1110,18 @@ function RCLootCouncilML:AnnounceAward(name, link, response, roll, session, chan
 	end
 end
 
+--- Gets the first candidate on the auto award list that is present in the group
+--- @param list string[] The list of candidates to check, db.autoAwardTo or db.autoAwardBoETo.
+--- @return string? playerName The name of the candidate that should receive the auto award or nil.
+function RCLootCouncilML:GetAutoAwardCandidate(list)
+	for _, name in ipairs(list) do
+		local n = addon:UnitName(name)
+		if addon.candidatesInGroup[n] then
+			return addon:UnitName(n)
+		end
+	end
+end
+
 --- Determines if a given item should be auto awarded.
 -- Assumes item is loaded.
 -- Will fail if the selected auto award candidate is not present in group.
@@ -1128,10 +1140,9 @@ function RCLootCouncilML:ShouldAutoAward(item, quality)
 
 	local boe = addon:IsItemBoE(item)
 	if boe and db.autoAwardBoE and quality == 4 and C_Item.IsEquippableItem(item) then -- Epic Equippable BoE
-		for _,name in ipairs(db.autoAwardBoETo) do
-			if addon.candidatesInGroup[addon:UnitName(name)] then
-				return true, "boe", addon:UnitName(name)
-			end
+		local name = self:GetAutoAwardCandidate(db.autoAwardBoETo)
+		if name then
+			return true, "boe", addon:UnitName(name)
 		end
 		self:PrintAutoAwardErrorWithPlayer(db.autoAwardBoETo[1])
 		return false
@@ -1139,10 +1150,9 @@ function RCLootCouncilML:ShouldAutoAward(item, quality)
 	if db.autoAward and quality >= db.autoAwardLowerThreshold and quality <= db.autoAwardUpperThreshold
 		and C_Item.IsEquippableItem(item) then
 		if db.autoAwardLowerThreshold >= GetLootThreshold() or db.autoAwardLowerThreshold < 2 then
-			for _, name in ipairs(db.autoAwardTo) do
-				if addon.candidatesInGroup[addon:UnitName(name)] then
-					return true, "normal", addon:UnitName(name)
-				end
+			local name = self:GetAutoAwardCandidate(db.autoAwardTo)
+			if name then
+				return true, "normal", addon:UnitName(name)
 			end
 			self:PrintAutoAwardErrorWithPlayer(db.autoAwardTo[1])
 		else
@@ -1163,7 +1173,7 @@ end
 -- @param mode: The mode as returned by `:ShouldAutoAward`. Defaults to "normal".
 function RCLootCouncilML:AutoAward(lootIndex, item, quality, name, mode, boss, owner)
 	name = addon:UnitName(name)
-	self.Log("ML:AutoAward", lootIndex, item, quality, name, mode, boss, owner)
+	self.Log:D("ML:AutoAward", lootIndex, item, quality, name, mode, boss, owner)
 	local reason = mode == "boe" and db.autoAwardBoEReason or db.autoAwardReason
 
 	if addon.lootMethod == "personalloot" then -- Normal restrictions doesn't apply here

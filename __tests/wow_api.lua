@@ -82,6 +82,15 @@ function ChatFrame_AddMessageEventFilter()
 	-- body...
 end
 
+function GetUnitName(unit)
+	if unit == "player" then
+		return "Player1-Realm Name"
+	elseif unit == "target" then
+		return "Target1-Realm Name"
+	end
+	return unit .. "-Realm Name"	
+end
+
 function UnitName(unit)
 	return unit
 end
@@ -234,6 +243,8 @@ function _G.GetProfessions() end
 function _G.GetProfessionInfo() end
 
 function _G.GetAverageItemLevel() return 100, 100 end
+
+_G.MAX_RAID_MEMBERS = 40
 
 function IsPartyLFG()
 	return _G.IsPartyLFGVal
@@ -502,7 +513,7 @@ function WoWAPI_FireUpdate(forceNow)
 		end
 	end
 end
-
+local timerFrames = {}
 C_Timer = {
 	After = function(delay, callback)
 		-- print("Creating timer with delay: ", delay)
@@ -520,8 +531,17 @@ C_Timer = {
 				frame.scripts.OnUpdate = nil
 			end
 		end)
+		tinsert(timerFrames, frame)
 	end,
 }
+-- Not WoWAPI
+_CancelAllTimers = function()
+	for i = #timerFrames, 1, -1 do
+		timerFrames[i]:Hide()
+		timerFrames[i]:SetScript("OnUpdate", nil)
+		timerFrames[i] = nil
+	end
+end
 
 local closureGeneration = {
 	function(f) return function(...) return f(...); end end,
@@ -611,6 +631,10 @@ local playerNameToGUID = {
 local playerGUIDInfo = {}
 for _, info in pairs(playerNameToGUID) do
 	playerGUIDInfo[info.guid] = info
+end
+
+function CheckInteractDistance()
+	return false
 end
 
 -- Not WoW lua
@@ -1122,6 +1146,7 @@ C_Container = {
 	end,
 	PickupContainerItem = donothing,
 	GetContainerNumSlots = function(c) return 10 end,
+	GetContainerNumFreeSlots = function(c) return 10, 0 end,
 	GetContainerItemLink = donothing,
 }
 
@@ -1186,6 +1211,7 @@ BIND_TRADE_TIME_REMAINING =
 "You may trade this item with players that were also eligible to loot this item for the next %s."
 CLOSE = "Close"
 CLOSES_IN = "Time Left";
+ENABLE = "Enable"
 GROUP = "Group"
 GUILD = "Guild"
 LOOT_ITEM = "%s receives loot: %s."
@@ -1249,6 +1275,7 @@ ITEM_MOD_STRENGTH_SHORT = "Strength";
 ITEM_MOD_VERSATILITY = "Versatility";
 ITEM_SOULBOUND = "Soulbound";
 NAME = "Name"
+MODE = "Mode"
 RANK = "Rank"
 ROLL = "Roll"
 STATUS = "Status"
