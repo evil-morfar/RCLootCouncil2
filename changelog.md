@@ -6,6 +6,10 @@ Added chat command to directly open the Master Looter options menu:
 
 `/rc ml`
 
+## Bugfixes
+
+- *Reduced voting frame row jumping.*
+
 # v3.16.0
 
 ## Changes
