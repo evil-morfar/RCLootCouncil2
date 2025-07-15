@@ -91,7 +91,7 @@ end
 
 function Utils:IsInNonInstance()
 	local instance_type = select(2, IsInInstance())
-	if self.IsPartyLFG() or instance_type == "pvp" or instance_type == "arena" then
+	if self:IsPartyLFG() or instance_type == "pvp" or instance_type == "arena" then
 		return true
 	else
 		return false

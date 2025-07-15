@@ -2,25 +2,27 @@
 -- @author	Potdisc
 -- Create Date : 23/9/2016
 
----@type RCLootCouncil
+---@class RCLootCouncil
 local addon = select(2, ...)
+---@class RCLootCouncil.AutoPass
+local AutoPass = {}
+addon.AutoPass = AutoPass
 local ItemUtils = addon.Require "Utils.Item"
 
 --- Never autopass these armor types.
--- @table autopassOverride
-local autopassOverride = {
+AutoPass.autopassOverride = {
 	"INVTYPE_CLOAK",
 }
 
 --- Add a particular stat to a weapon
-local weaponStatAdditions = {
+AutoPass.weaponStatAdditions = {
 	[232526] = { "ITEM_MOD_INTELLECT_SHORT", }, -- Best-In-Slots: Agi/Str version can be turned into the int version
 	[232805] = { "ITEM_MOD_INTELLECT_SHORT", }, -- Best-In-Slots: Int version can be turned into the Agi/Str version
 }
 
 --- Classes that should autopass a subtype.
--- @table autopassTable
-local autopassTable = {
+---@type table<Enum.ItemClass, table<Enum.ItemArmorSubclass | Enum.ItemWeaponSubclass, string[]>>
+AutoPass.autopassTable = {
 	[Enum.ItemClass.Armor] = {
 
 		[Enum.ItemArmorSubclass.Cloth] = { "WARRIOR", "DEATHKNIGHT", "PALADIN", "DRUID", "MONK", "ROGUE", "HUNTER",
@@ -100,41 +102,9 @@ local autopassTable = {
 	},
 }
 
---- Types of relics. Thanks to xmyno for the list.
--- NOTE I'm not sure if the return from C_ArtifactUI.GetRelicInfoByItemID() is localized
--- @table relicTypes
-local relicTypes = {
-	BLOOD  = "Blood",
-	SHADOW = "Shadow",
-	IRON   = "Iron",
-	FROST  = "Frost",
-	FIRE   = "Fire",
-	FEL    = "Fel",
-	ARCANE = "Arcane",
-	LIFE   = "Life",
-	STORM  = "Wind", -- Great job Blizzard -.-
-	HOLY   = "Holy",
-}
-
---- The type of relic each class can use
--- @table relics
-local relics = {
-	DEATHKNIGHT = { relicTypes.BLOOD, relicTypes.SHADOW, relicTypes.IRON, relicTypes.FROST, relicTypes.FIRE, },
-	DEMONHUNTER = { relicTypes.FEL, relicTypes.SHADOW, relicTypes.IRON, relicTypes.ARCANE, },
-	DRUID       = { relicTypes.ARCANE, relicTypes.LIFE, relicTypes.FIRE, relicTypes.BLOOD, relicTypes.FROST, },
-	HUNTER      = { relicTypes.STORM, relicTypes.ARCANE, relicTypes.IRON, relicTypes.BLOOD, relicTypes.LIFE, },
-	MAGE        = { relicTypes.ARCANE, relicTypes.FROST, relicTypes.FIRE, },
-	MONK        = { relicTypes.LIFE, relicTypes.STORM, relicTypes.IRON, relicTypes.FROST, },
-	PALADIN     = { relicTypes.HOLY, relicTypes.LIFE, relicTypes.FIRE, relicTypes.IRON, relicTypes.ARCANE, },
-	PRIEST      = { relicTypes.HOLY, relicTypes.SHADOW, relicTypes.LIFE, relicTypes.BLOOD, },
-	ROGUE       = { relicTypes.SHADOW, relicTypes.IRON, relicTypes.BLOOD, relicTypes.STORM, relicTypes.FEL, },
-	SHAMAN      = { relicTypes.STORM, relicTypes.FROST, relicTypes.FIRE, relicTypes.IRON, relicTypes.LIFE, },
-	WARLOCK     = { relicTypes.SHADOW, relicTypes.BLOOD, relicTypes.FIRE, relicTypes.FEL, },
-	WARRIOR     = { relicTypes.IRON, relicTypes.BLOOD, relicTypes.SHADOW, relicTypes.FIRE, relicTypes.STORM, },
-}
-
 --- The stat(s) a weapon must have one of to be usable by a class.
-local requiredWeaponStatsForClass = {
+--- @type table<Class, string[]>
+AutoPass.requiredWeaponStatsForClass = {
 	WARRIOR = { "ITEM_MOD_STRENGTH_SHORT", },
 	PALADIN = { "ITEM_MOD_STRENGTH_SHORT", "ITEM_MOD_INTELLECT_SHORT", },
 	HUNTER = { "ITEM_MOD_AGILITY_SHORT", },
@@ -155,9 +125,9 @@ local requiredWeaponStatsForClass = {
 ---@param itemLink ItemLink item to check
 ---@param class ClassInfo.classFile Class to check against.
 ---@param id number itemID
-local function ShouldAutoPassWeapon(itemLink, class, id)
+function AutoPass:ShouldAutoPassWeapon(itemLink, class, id)
 	-- Ensure class is valid
-	if not requiredWeaponStatsForClass[class] then
+	if not self.requiredWeaponStatsForClass[class] then
 		addon.Log:e("Invalid class in 'ShouldAutoPassWeapon'", class)
 		return false
 	end
@@ -178,14 +148,14 @@ local function ShouldAutoPassWeapon(itemLink, class, id)
 	end
 
 	-- Check each class stat against the item's stats
-	for _, stat in ipairs(requiredWeaponStatsForClass[class]) do
+	for _, stat in ipairs(self.requiredWeaponStatsForClass[class]) do
 		if stats[stat] then return false end
 	end
 
 	-- Check for special items with stat additions
-	if weaponStatAdditions[id] then
-		for _, stat in ipairs(weaponStatAdditions[id]) do
-			if tContains(requiredWeaponStatsForClass[class], stat) then return false end
+	if self.weaponStatAdditions[id] then
+		for _, stat in ipairs(self.weaponStatAdditions[id]) do
+			if tContains(self.requiredWeaponStatsForClass[class], stat) then return false end
 		end
 	end
 
@@ -204,8 +174,6 @@ end
 ---@param typeID Enum.ItemClass ItemTypeID
 ---@param subTypeID Enum.ItemWeaponSubclass | Enum.ItemArmorSubclass ItemSubTypeID
 ---@param classesFlag string As returned by `RCLootCouncil:GetItemClassesAllowedFlag()`.
----@param isToken? string Non-nil if item is a token.
----@param isRelic? any @deprecated
 ---@param class? string Class file, e.g. 'WARRIOR'. Used as the base class if provided, defaults to player's class.
 ---@return boolean #True if the player should autopass.
 --- ```
@@ -213,48 +181,55 @@ end
 --- local dat = lootTable[1] -- Shortening
 --- local shouldAutoPass = RCLootCouncil:AutoPassCheck(dat.link, dat.equipLoc, dat.typeID, dat.subTypeID, dat.classesFlag, dat.isToken, dat.isRelic)
 --- ```
-function RCLootCouncil:AutoPassCheck(link, equipLoc, typeID, subTypeID, classesFlag, isToken, isRelic, class)
+function AutoPass:AutoPassCheck(link, equipLoc, typeID, subTypeID, classesFlag, class)
 	link = link or "" -- Just to avoid errors in case someone passes a nil value
-	if (not self:Getdb().autoPassTransmog and self:IsTransmoggable(link)) then
+	local db = addon:Getdb()
+	if (not db.autoPassTransmog and addon:IsTransmoggable(link)) then
 		local playerKnowsTransmog
 
-		if self:Getdb().autoPassTransmogSource then
-			playerKnowsTransmog = self:PlayerKnowsTransmog(link)
+		if db.autoPassTransmogSource then
+			playerKnowsTransmog = addon:PlayerKnowsTransmog(link)
 		else
-			playerKnowsTransmog = self:PlayerKnowsTransmogFromItem(link)
+			playerKnowsTransmog = addon:PlayerKnowsTransmogFromItem(link)
 		end
 
-		if not playerKnowsTransmog and (self:CharacterCanLearnTransmog(link) or self:IsItemBoE(link)) then return false end
+		if not playerKnowsTransmog and (addon:CharacterCanLearnTransmog(link) or addon:IsItemBoE(link)) then return false end
 	end
 
 
-	local class = class or self.playerClass
-	local classID = self.classTagNameToID[class] or 0
+	class = class or addon.playerClass
+	local classID = addon.classTagNameToID[class] or 0
 	if bit.band(classesFlag, bit.lshift(1, classID - 1)) == 0 then -- The item tooltip writes the allowed clases, but our class is not in it.
 		return true
 	end
 	local id = type(link) == "number" and link or ItemUtils:GetItemIDFromLink(link) -- Convert to id if needed
 	if equipLoc == "INVTYPE_TRINKET" then
-		if self:Getdb().autoPassTrinket then
+		if addon:Getdb().autoPassTrinket then
 			if _G.RCTrinketSpecs and _G.RCTrinketSpecs[id] and _G.RCTrinketSpecs[id]:sub(-classID, -classID) == "0" then
 				return true
 			end
 		end
 	end
-	if not tContains(autopassOverride, equipLoc) then
-		if autopassTable[typeID] and autopassTable[typeID][subTypeID] then
-			if tContains(autopassTable[typeID][subTypeID], class) then
+	if not tContains(self.autopassOverride, equipLoc) then
+		if self.autopassTable[typeID] and self.autopassTable[typeID][subTypeID] then
+			if tContains(self.autopassTable[typeID][subTypeID], class) then
 				return true
 			end
 		end
 	end
 
 	if typeID == Enum.ItemClass.Weapon then
-		if self:Getdb().autoPassWeapons and ShouldAutoPassWeapon(link, class, id) then
-			self.Log:D("Weapon auto pass on ", link)
+		if db.autoPassWeapons and self:ShouldAutoPassWeapon(link, class, id) then
+			addon.Log:D("Weapon auto pass on ", link)
 			return true
 		end
 	end
 
 	return false
+end
+
+---@deprecated
+---Use [`RCLootCouncil.AutoPass:AutoPassCheck`](lua://RCLootCouncil.AutoPass.AutoPassCheck) instead.
+function RCLootCouncil:AutoPassCheck(link, equipLoc, typeID, subTypeID, classesFlag, isToken, isRelic, class)
+	return AutoPass:AutoPassCheck(link, equipLoc, typeID, subTypeID, classesFlag, class)
 end

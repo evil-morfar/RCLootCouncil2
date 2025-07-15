@@ -54,6 +54,17 @@ C_Item = {
 		local i = assert(_G.Items[item], "item " .. tostring(item) .. " isn't registered for C_Item.IsItemBindToAccountUntilEquip")
 		return i.bindType == 9
 	end,
+
+	IsEquippableItem = function(item)
+		assert(item, "Usage: local isEquippable = C_Item.IsEquippableItem(itemLink)")
+		if string.match(item, "^%d+$") then item = tonumber(item) end -- Support for itemID
+		local i = assert(_G.Items[item], "item " .. tostring(item) .. " isn't registered for C_Item.IsEquippableItem")
+		return i.itemEquipLoc and i.itemEquipLoc ~= ""
+	end,
+
+	GetItemFamily = function()
+		return 0
+	end,
 }
 
 -- These are very roughly recreated

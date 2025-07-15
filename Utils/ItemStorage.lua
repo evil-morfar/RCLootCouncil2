@@ -271,7 +271,7 @@ function Storage:WatchForItemInBags(input, onFound, onFail, max_attempts)
 	if type(input) == "table" then
 		Item = input
 	elseif type(input) == "string" then
-		Item = private:newItem(input, "temp") -- Item is not saved in storage
+		Item = private:newItem(nil, input, "temp") -- Item is not saved in storage
 	else
 		error(format("%s is not a valid input.", input))
 	end

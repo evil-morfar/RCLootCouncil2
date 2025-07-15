@@ -533,7 +533,9 @@ end
 -----------------------------------------------------------------
 function RCVotingFrame:OnChangeResponseReceived(ses, name, response)
 	self:SetCandidateData(ses, name, "response", response)
-	self:Update()
+	if session == ses then -- Only update if we're viewing the session
+		self:Update()
+	end
 end
 
 ---@param data table<guid,string> List of players and sessions to set their response to "WAIT".
@@ -541,11 +543,13 @@ function RCVotingFrame:OnChangeToWaitReceived(data)
 	local name
 	for guid, v in pairs(data) do
 		name = Player:Get(guid).name
-		for session in v:gmatch("%d+") do
-			self:SetCandidateData(tonumber(session), name, "response", "WAIT")
+		for ses in v:gmatch("%d+") do
+			self:SetCandidateData(tonumber(ses), name, "response", "WAIT")
+			if session == ses then -- Only update if we're viewing the session
+				self:Update()
+			end
 		end
 	end
-	self:Update()
 end
 
 function RCVotingFrame:OnLootAckReceived (name, specID, ilvl, sessionData)
@@ -570,8 +574,10 @@ function RCVotingFrame:OnLootAckReceived (name, specID, ilvl, sessionData)
 		elseif sessionData.response[i] == true then
 			self:SetCandidateData(i, name, "response", "AUTOPASS")
 		end
+		if session == i then -- Only update if we're viewing the session
+			self:Update()
+		end
 	end
-	self:Update()
 end
 
 function RCVotingFrame:OnAwardedReceived (s, winner)
@@ -633,60 +639,71 @@ function RCVotingFrame:OnOfflineTimerReceived ()
 				self:SetCandidateData(i, name, "response", "NOTHING")
 			end
 		end
+		if session == i then -- Only update if we're viewing the session
+			self:Update()
+		end
 	end
-	self:Update()
 end
 
-function RCVotingFrame:OnResponseReceived (name, session, data)
+function RCVotingFrame:OnResponseReceived (name, ses, data)
 	for k,v in pairs(data) do
-		self:SetCandidateData(session, name, k, v)
+		self:SetCandidateData(ses, name, k, v)
 	end
-	self:Update()
+	if session == ses then -- Only update if we're viewing the session
+		self:Update()
+	end
 end
 
 ---@param data integer[] Array of session to reset all rolls on.
 function RCVotingFrame:OnResetRollsReceived(data)
-	for _, session in ipairs(data) do
-		lootTable[session].hasRolls = false
-		for name in pairs(lootTable[session].candidates) do
-			self:SetCandidateData(session, name, "roll", nil)
+	for _, ses in ipairs(data) do
+		lootTable[ses].hasRolls = false
+		for name in pairs(lootTable[ses].candidates) do
+			self:SetCandidateData(ses, name, "roll", nil)
+		end
+		if session == ses then -- Only update if we're viewing the session
+			self:Update()
 		end
 	end
-	self:Update()
 end
 
 ---@param candidates string[] List of transmittable player GUIDs of candidates that should reroll.
 ---@param lt LootTable
 function RCVotingFrame:OnReRollReceived(candidates, lt)
-	for _, data in pairs(lt) do
+	for ses, data in pairs(lt) do
 		if data.isRoll then
 			for _, guid in ipairs(candidates) do
 				local name = Player:Get(guid).name
 				self:SetCandidateData(data.session, name, "roll", nil)
 			end
 		end
+		if session == ses then -- Only update if we're viewing the session
+			self:Update()
+		end
 	end
 end
 
 --- @deprecated
-function RCVotingFrame:OnRollsReceived (session, table)
+function RCVotingFrame:OnRollsReceived (ses, table)
 	for name, roll in pairs(table) do
-		self:SetCandidateData(session, name, "roll", roll)
+		self:SetCandidateData(ses, name, "roll", roll)
 	end
-	self:Update()
+	if session == ses then -- Only update if we're viewing the session
+		self:Update()
+	end
 end
 
 local function reversedSort(a,b) return a > b end
 
----@param session integer The Session the rolls belongs to.
+---@param ses integer The Session the rolls belongs to.
 ---@param rolls string Comma seperated list of rolls.
-function RCVotingFrame:OnRRollsReceived(session, rolls)
-	if not lootTable[session] then
-		return addon.Log:E("Trying to add rolls to non-existent session:", session)
+function RCVotingFrame:OnRRollsReceived(ses, rolls)
+	if not lootTable[ses] then
+		return addon.Log:E("Trying to add rolls to non-existent session:", ses)
 	end
 	-- Create and sort candidates
 	local candidates = TempTable:Acquire()
-	for name in pairs(lootTable[session].candidates) do
+	for name in pairs(lootTable[ses].candidates) do
 		tinsert(candidates, name)
 	end
 
@@ -695,11 +712,13 @@ function RCVotingFrame:OnRRollsReceived(session, rolls)
 	table.sort(candidates, reversedSort)
 	for roll in rolls:gmatch("%d+") do
 		local candidate = tremove(candidates)
-		self:SetCandidateData(session, candidate, "roll", tonumber(roll))
+		self:SetCandidateData(ses, candidate, "roll", tonumber(roll))
 	end
 	TempTable:Release(candidates)
-	lootTable[session].hasRolls = true
-	self:Update()
+	lootTable[ses].hasRolls = true
+	if session == ses then -- Only update if we're viewing the session
+		self:Update()
+	end
 end
 
 ---@param rolls string Rolls in the following format: `"session,roll...|session..."` OR `"session,roll...|session.."dupl"..duplicateOf"`
@@ -743,8 +762,10 @@ end
 function RCVotingFrame:OnRollReceived (name, roll, sessions)
 	for _,ses in ipairs(sessions) do
 		self:SetCandidateData(ses, name, "roll", roll)
+		if session == ses then -- Only update if we're viewing the session
+			self:Update()
+		end
 	end
-	self:Update()
 end
 
 function RCVotingFrame:OnReconnectReceived (rlootTable)
@@ -889,7 +910,7 @@ local function cacheMultipleItemAwardHistory(items)
 			for _, loot in ipairs(his[name]) do
 				local id = ItemUtils:GetItemIDFromLink(loot.lootWon)
 				if itemIDs[id] then
-					addon.Log:D("Found winner of ", loot.lootWon, name)
+					-- addon.Log:D("Found winner of ", loot.lootWon, name)
 					if not ret[itemIDs[id]][name] then ret[itemIDs[id]][name] = {} end
 					tinsert(ret[itemIDs[id]][name], loot)
 				end

@@ -451,6 +451,17 @@ function RCLootCouncil:ChatCommand(msg)
 		SettingsPanel:SelectCategory(category)
 		LibStub("AceConfigDialog-3.0"):SelectGroup("RCLootCouncil", "mlSettings", "councilTab")
 
+	elseif input == "ml" or input == "cm" or input == "masterlooter" then
+		local category = FindValueInTableIf(
+			SettingsPanel:GetCategory(self.optionsFrame.name):GetSubcategories(),
+			function(v)
+				return v and v:GetID() == self.optionsFrame.ml.name
+			end)
+
+		if not category then return self.Log:e("Couldn't find category in '/rc ml'", category) end
+		Settings.OpenToCategory(self.optionsFrame.name)
+		SettingsPanel:SelectCategory(category)
+
 	elseif input == "profile" or input == "profiles" then
 		Settings.OpenToCategory(self.optionsFrame.name)
 		LibStub("AceConfigDialog-3.0"):SelectGroup("RCLootCouncil", "settings", "profiles")
@@ -517,7 +528,7 @@ function RCLootCouncil:ChatCommand(msg)
 		self:Print(L["Windows reset"])
 
 	elseif input == "start" or input == string.lower(_G.START) then
-		if self.Utils.IsPartyLFG() then
+		if self.Utils:IsPartyLFG() then
 			return self:Print(L.chat_command_start_error_start_PartyIsLFG)
 		elseif db.usage.never then
 			return self:Print(L.chat_command_start_error_usageNever)
@@ -1478,7 +1489,7 @@ function RCLootCouncil:GetPlayerInfo()
 end
 
 --- Send player info to the target/group
----@param target string Player name or "group". Defaults to "group".
+---@param target string? Player name or "group". Defaults to "group".
 function RCLootCouncil:SendPlayerInfo(target)
 	local commsTarget = target and Player:Get(target) or "group"
 	Comms:Send { target = commsTarget, command = "pI", data = { self:GetPlayerInfo(), }, }
@@ -1577,34 +1588,37 @@ function RCLootCouncil:OnEvent(event, ...)
 		if isReload then
 			self.Log("Player relog...")
 
-			-- Restore masterlooter from cache, but only if not already set.
-			if not self:HasValidMasterLooter() and self.db.global.cache.masterLooter then
-				self.masterLooter = Player:Get(self.db.global.cache.masterLooter)
-				self.isMasterLooter = self.masterLooter == self.player
-				if self.isMasterLooter then
-					self:CallModule("masterlooter")
-					self:GetActiveModule("masterlooter"):NewML(self.masterLooter)
+			-- Don't restore if we're switching to a different character.
+			if self.db.global.cache.cachePlayer == self.player:GetName() then
+				-- Restore masterlooter from cache, but only if not already set.
+				if not self:HasValidMasterLooter() and self.db.global.cache.masterLooter then
+					self.masterLooter = Player:Get(self.db.global.cache.masterLooter)
+					self.isMasterLooter = self.masterLooter == self.player
+					if self.isMasterLooter then
+						self:CallModule("masterlooter")
+						self:GetActiveModule("masterlooter"):NewML(self.masterLooter)
+					end
 				end
-			end
-			self.Log:d("ML, Cached:", self.masterLooter, self.isMasterLooter, self.db.global.cache.masterLooter)
+				self.Log:d("ML, Cached:", self.masterLooter, self.isMasterLooter, self.db.global.cache.masterLooter)
 
-			-- Restore mldb and council
-			if self.db.global.cache.mldb then
-				self:OnMLDBReceived(self.db.global.cache.mldb)
-			end
-			if self.masterLooter and self.db.global.cache.council then
-				self:OnCouncilReceived(self.masterLooter, self.db.global.cache.council)
-			end
+				-- Restore mldb and council
+				if self.db.global.cache.mldb then
+					self:OnMLDBReceived(self.db.global.cache.mldb)
+				end
+				if self.masterLooter and self.db.global.cache.council then
+					self:OnCouncilReceived(self.masterLooter, self.db.global.cache.council)
+				end
 
-			-- Restore handleLoot
-			self.Log:D("Cached handleLoot:", self.db.global.cache.handleLoot)
-			if self.db.global.cache.handleLoot and self.isMasterLooter then
-				self:StartHandleLoot()
-			elseif self.db.global.cache.handleLoot then
-				self:OnStartHandleLoot()
-			end
+				-- Restore handleLoot
+				self.Log:D("Cached handleLoot:", self.db.global.cache.handleLoot)
+				if self.db.global.cache.handleLoot and self.isMasterLooter then
+					self:StartHandleLoot()
+				elseif self.db.global.cache.handleLoot then
+					self:OnStartHandleLoot()
+				end
 
-			self.instanceDataSnapshot = self.db.global.cache.lastEncounterInstanceData
+				self.instanceDataSnapshot = self.db.global.cache.lastEncounterInstanceData
+			end
 			wipe(self.db.global.cache) -- No reason to store data forever
 
 			-- If we still haven't set masterLooter, try delaying a bit.
@@ -1612,7 +1626,7 @@ function RCLootCouncil:OnEvent(event, ...)
 			-- ? REVIEW: This might not be needed anymore.
 			self:ScheduleTimer(function()
 				if not self.isMasterLooter and self.masterLooter and self.masterLooter ~= "" then
-					self:Send("group", "pI", self:GetPlayerInfo()) -- Also send out info, just in case
+					self:SendPlayerInfo("group") -- Also send out info, just in case
 					self:Send(self.masterLooter, "reconnect")
 					self.Log:d("Sent Reconnect Request")
 				end
@@ -1626,6 +1640,7 @@ function RCLootCouncil:OnEvent(event, ...)
 		self.db.global.cache.masterLooter = self.masterLooter and self.masterLooter:GetGUID()
 		self.db.global.cache.handleLoot = self.handleLoot
 		self.db.global.cache.instanceData = self.instanceDataSnapshot
+		self.db.global.cache.cachePlayer = self.player:GetName()
 
 	elseif event == "ENCOUNTER_START" then
 		self.Log:d("Event:", event, ...)
@@ -1818,7 +1833,7 @@ function RCLootCouncil:NewMLCheck()
 	if not self.isMasterLooter and self:GetActiveModule("masterlooter"):IsEnabled() then -- we're not ML, so make sure it's disabled
 		self:StopHandleLoot()
 	end
-	if self.Utils.IsPartyLFG() then return end -- We can't use in lfg/lfd so don't bother
+	if self.Utils:IsPartyLFG() then return end -- We can't use in lfg/lfd so don't bother
 	if not self.masterLooter then return end -- Didn't find a leader or ML.
 	self.isInGuildGroup = self:IsInGuildGroup()
 	if self:UnitIsUnit(old_ml, self.masterLooter) then
@@ -1892,7 +1907,7 @@ end
 
 function RCLootCouncil:OnRaidEnter()
 	-- NOTE: We shouldn't need to call GetML() as it's most likely called on "LOOT_METHOD_CHANGED"
-	if self.Utils.IsPartyLFG() or db.usage.never then return end -- We can't use in lfg/lfd so don't bother
+	if self.Utils:IsPartyLFG() or db.usage.never then return end -- We can't use in lfg/lfd so don't bother
 	-- Check if we can use in party
 	if not IsInRaid() and db.onlyUseInRaids then return end
 	if UnitIsGroupLeader("player") then
@@ -1911,7 +1926,7 @@ end
 -- @return boolean, "ML_Name". (true if the player is ML), (nil if there's no ML).
 function RCLootCouncil:GetML()
 	self.Log:d("GetML()")
-	if self.Utils.IsPartyLFG() then return false, nil end -- Never use in LFG
+	if self.Utils:IsPartyLFG() then return false, nil end -- Never use in LFG
 	if GetNumGroupMembers() == 0 and (self.testMode or self.nnp) then -- always the player when testing alone
 		return true, self.player
 	end
@@ -2163,7 +2178,11 @@ function RCLootCouncil:DecodeItemLink(itemLink)
 	local color = string.match(itemLink, "|?c?f?f?(%x*)")
 	if not color or color == "" then -- probably new custom color link type
 		local quality = string.match(itemLink, "|cnIQ(.)")
-		color = ColorManager.GetColorDataForItemQuality(quality and tonumber(quality) or 0).color:GenerateHexColor()
+		if not quality or quality == "" then -- no quality, use default
+			color = ITEM_QUALITY_COLORS[0].color:GenerateHexColor()
+		else
+			color = ColorManager.GetColorDataForItemQuality(quality and tonumber(quality) or 0).color:GenerateHexColor()
+		end
 	end
 	-- local linkType = string.match(itemLink, "|H(.*):")
 	itemID = tonumber(itemID) or 0

@@ -648,47 +648,47 @@ function addon:OptionsTable()
 											selections.deleteDate = "" -- Barrow: Needs to be reset.
 										end,
 									},
-									deletePatch = {
-										order = 16,
-										name = L["Patch"],
-										desc = L["opt_deletePatch_desc"],
-										type = "select",
-										width = "double",
-										values = {
-											[1607385600] = "Castle Nathria Release",
-											[1606176000] = "Shadowlands Launch",
-											[1602547200] = "Patch 9.0.1 (Shadowlands)",
-											[1579593600] = "Ny'alotha the Waking City raid",
-											[1578988800] = "Patch 8.3.0 (Visions of N'Zoth)",
-											-- [1562644800] = "Azshara's Eternal Palace raid",
-											-- [1561521600] = "Patch 8.2.0 (Rise of Azshara)",
-											-- [1544515200] = "Patch 8.1.0",
-											-- [1534154400] = "Patch 8.0.1 (Battle for Azeroth)",
-											-- [1510225200] = "Patch 7.3.2 (Tier 21)",
-											-- [1497348000] = "Patch 7.2.5 (Tier 20)",
-											-- [1484650800] = "Patch 7.1.5 (Tier 19)",
-										},
-										get = function(info)
-											return selections[info[#info]] or ""
-										end,
-										set = function(info, val)
-											selections[info[#info]] = val
-										end,
-									},
-									deletePatchBtn = {
-										order = 17,
-										name = _G.DELETE,
-										type = "execute",
-										confirm = function() return L["opt_deletePatch_confirm"] end,
-										func = function(info)
-											if not selections.deletePatch then
-												addon:Print(L["Invalid selection"])
-												return
-											end
-											self:GetActiveModule("history"):DeleteEntriesOlderThanEpoch(selections.deletePatch)
-											selections.deletePatch = "" -- Barrow: Needs to be reset.
-										end,
-									},
+									-- deletePatch = {
+									-- 	order = 16,
+									-- 	name = L["Patch"],
+									-- 	desc = L["opt_deletePatch_desc"],
+									-- 	type = "select",
+									-- 	width = "double",
+									-- 	values = {
+									-- 		[1607385600] = "Castle Nathria Release",
+									-- 		[1606176000] = "Shadowlands Launch",
+									-- 		[1602547200] = "Patch 9.0.1 (Shadowlands)",
+									-- 		[1579593600] = "Ny'alotha the Waking City raid",
+									-- 		[1578988800] = "Patch 8.3.0 (Visions of N'Zoth)",
+									-- 		-- [1562644800] = "Azshara's Eternal Palace raid",
+									-- 		-- [1561521600] = "Patch 8.2.0 (Rise of Azshara)",
+									-- 		-- [1544515200] = "Patch 8.1.0",
+									-- 		-- [1534154400] = "Patch 8.0.1 (Battle for Azeroth)",
+									-- 		-- [1510225200] = "Patch 7.3.2 (Tier 21)",
+									-- 		-- [1497348000] = "Patch 7.2.5 (Tier 20)",
+									-- 		-- [1484650800] = "Patch 7.1.5 (Tier 19)",
+									-- 	},
+									-- 	get = function(info)
+									-- 		return selections[info[#info]] or ""
+									-- 	end,
+									-- 	set = function(info, val)
+									-- 		selections[info[#info]] = val
+									-- 	end,
+									-- },
+									-- deletePatchBtn = {
+									-- 	order = 17,
+									-- 	name = _G.DELETE,
+									-- 	type = "execute",
+									-- 	confirm = function() return L["opt_deletePatch_confirm"] end,
+									-- 	func = function(info)
+									-- 		if not selections.deletePatch then
+									-- 			addon:Print(L["Invalid selection"])
+									-- 			return
+									-- 		end
+									-- 		self:GetActiveModule("history"):DeleteEntriesOlderThanEpoch(selections.deletePatch)
+									-- 		selections.deletePatch = "" -- Barrow: Needs to be reset.
+									-- 	end,
+									-- },
 									deleteRaid = {
 										order = 20,
 										name = _G.INSTANCE,
