@@ -234,7 +234,13 @@ function RCSessionFrame:GetFrame()
 	b2:SetPoint("LEFT", b1, "RIGHT", 10, 0)
 	b2:SetScript("OnClick", function()
 		if not ml.running then -- Don't clear lootTable on a running session.
-			ml.lootTable = {}
+			wipe(ml.lootTable)
+		else
+			for i = #ml.lootTable, 1, -1 do
+				if not ml.lootTable[i].isSent then
+					ml:RemoveItem(i) -- remove the item from MLs lootTable
+				end
+			end
 		end
 		self:Disable()
 	end)
