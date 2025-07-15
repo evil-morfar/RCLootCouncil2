@@ -1489,7 +1489,7 @@ function RCLootCouncil:GetPlayerInfo()
 end
 
 --- Send player info to the target/group
----@param target string Player name or "group". Defaults to "group".
+---@param target string? Player name or "group". Defaults to "group".
 function RCLootCouncil:SendPlayerInfo(target)
 	local commsTarget = target and Player:Get(target) or "group"
 	Comms:Send { target = commsTarget, command = "pI", data = { self:GetPlayerInfo(), }, }
@@ -1588,34 +1588,37 @@ function RCLootCouncil:OnEvent(event, ...)
 		if isReload then
 			self.Log("Player relog...")
 
-			-- Restore masterlooter from cache, but only if not already set.
-			if not self:HasValidMasterLooter() and self.db.global.cache.masterLooter then
-				self.masterLooter = Player:Get(self.db.global.cache.masterLooter)
-				self.isMasterLooter = self.masterLooter == self.player
-				if self.isMasterLooter then
-					self:CallModule("masterlooter")
-					self:GetActiveModule("masterlooter"):NewML(self.masterLooter)
+			-- Don't restore if we're switching to a different character.
+			if self.db.global.cache.cachePlayer == self.player:GetName() then
+				-- Restore masterlooter from cache, but only if not already set.
+				if not self:HasValidMasterLooter() and self.db.global.cache.masterLooter then
+					self.masterLooter = Player:Get(self.db.global.cache.masterLooter)
+					self.isMasterLooter = self.masterLooter == self.player
+					if self.isMasterLooter then
+						self:CallModule("masterlooter")
+						self:GetActiveModule("masterlooter"):NewML(self.masterLooter)
+					end
 				end
-			end
-			self.Log:d("ML, Cached:", self.masterLooter, self.isMasterLooter, self.db.global.cache.masterLooter)
+				self.Log:d("ML, Cached:", self.masterLooter, self.isMasterLooter, self.db.global.cache.masterLooter)
 
-			-- Restore mldb and council
-			if self.db.global.cache.mldb then
-				self:OnMLDBReceived(self.db.global.cache.mldb)
-			end
-			if self.masterLooter and self.db.global.cache.council then
-				self:OnCouncilReceived(self.masterLooter, self.db.global.cache.council)
-			end
+				-- Restore mldb and council
+				if self.db.global.cache.mldb then
+					self:OnMLDBReceived(self.db.global.cache.mldb)
+				end
+				if self.masterLooter and self.db.global.cache.council then
+					self:OnCouncilReceived(self.masterLooter, self.db.global.cache.council)
+				end
 
-			-- Restore handleLoot
-			self.Log:D("Cached handleLoot:", self.db.global.cache.handleLoot)
-			if self.db.global.cache.handleLoot and self.isMasterLooter then
-				self:StartHandleLoot()
-			elseif self.db.global.cache.handleLoot then
-				self:OnStartHandleLoot()
-			end
+				-- Restore handleLoot
+				self.Log:D("Cached handleLoot:", self.db.global.cache.handleLoot)
+				if self.db.global.cache.handleLoot and self.isMasterLooter then
+					self:StartHandleLoot()
+				elseif self.db.global.cache.handleLoot then
+					self:OnStartHandleLoot()
+				end
 
-			self.instanceDataSnapshot = self.db.global.cache.lastEncounterInstanceData
+				self.instanceDataSnapshot = self.db.global.cache.lastEncounterInstanceData
+			end
 			wipe(self.db.global.cache) -- No reason to store data forever
 
 			-- If we still haven't set masterLooter, try delaying a bit.
@@ -1623,7 +1626,7 @@ function RCLootCouncil:OnEvent(event, ...)
 			-- ? REVIEW: This might not be needed anymore.
 			self:ScheduleTimer(function()
 				if not self.isMasterLooter and self.masterLooter and self.masterLooter ~= "" then
-					self:Send("group", "pI", self:GetPlayerInfo()) -- Also send out info, just in case
+					self:SendPlayerInfo("group") -- Also send out info, just in case
 					self:Send(self.masterLooter, "reconnect")
 					self.Log:d("Sent Reconnect Request")
 				end
@@ -1637,6 +1640,7 @@ function RCLootCouncil:OnEvent(event, ...)
 		self.db.global.cache.masterLooter = self.masterLooter and self.masterLooter:GetGUID()
 		self.db.global.cache.handleLoot = self.handleLoot
 		self.db.global.cache.instanceData = self.instanceDataSnapshot
+		self.db.global.cache.cachePlayer = self.player:GetName()
 
 	elseif event == "ENCOUNTER_START" then
 		self.Log:d("Event:", event, ...)

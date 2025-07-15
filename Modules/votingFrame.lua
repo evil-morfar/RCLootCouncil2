@@ -910,7 +910,7 @@ local function cacheMultipleItemAwardHistory(items)
 			for _, loot in ipairs(his[name]) do
 				local id = ItemUtils:GetItemIDFromLink(loot.lootWon)
 				if itemIDs[id] then
-					addon.Log:D("Found winner of ", loot.lootWon, name)
+					-- addon.Log:D("Found winner of ", loot.lootWon, name)
 					if not ret[itemIDs[id]][name] then ret[itemIDs[id]][name] = {} end
 					tinsert(ret[itemIDs[id]][name], loot)
 				end

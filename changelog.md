@@ -11,6 +11,7 @@ Added chat command to directly open the Master Looter options menu:
 ## Bugfixes
 
 - *Reduced voting frame row jumping.*
+- *Switching characters will no longer apply cached state.*
 
 # v3.16.0
 
