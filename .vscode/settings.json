@@ -5,12 +5,12 @@
 
     "Lua.diagnostics.disable": [
         "undefined-doc-name",
-        "missing-parameter"
+        "missing-parameter",
+        "assign-type-mismatch"
     ],
 
     "Lua.workspace.ignoreDir": [
         ".vscode",
-        "__tests"
     ],
 
     "Lua.diagnostics.globals": [
@@ -165,6 +165,28 @@
         "HideUIPanel",
         "CANCEL",
         "SELECTED_CHAT_FRAME",
-        "CreateFromMixins"
+        "CreateFromMixins",
+        "NORMAL_FONT_COLOR_CODE",
+        "NOT_BOUND",
+        "SECOND_ONELETTER_ABBR",
+        "LOCALE_enGB",
+        "SECONDS_ABBR"
+    ],
+    "Lua.workspace.checkThirdParty": false,
+    "Lua.runtime.version": "Lua 5.1",
+    "Lua.runtime.builtin": {
+        "basic": "enable",
+        "debug": "enable",
+        "io": "enable",
+        "math": "enable",
+        "os": "enable",
+        "package": "enable",
+        "string": "enable",
+        "table": "enable",
+        "utf8": "enable"
+    },
+    "Lua.workspace.library": [
+        "~\\.vscode\\extensions\\ketho.wow-api-0.20.8\\Annotations\\Core",
+        "~\\.vscode\\extensions\\ketho.wow-api-0.20.8\\Annotations\\FrameXML"
     ]
 }
