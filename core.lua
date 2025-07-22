@@ -977,9 +977,11 @@ function RCLootCouncil:GetTypeCodeForItem(item)
 	local itemID, _, _, itemEquipLoc, _, itemClassID, itemSubClassID = C_Item.GetItemInfoInstant(item)
 	if not itemID then return "default" end -- We can't handle uncached items!
 
-	for _, func in ipairs(self.RESPONSE_CODE_GENERATORS) do
-		local val = func(item, db, itemID, itemEquipLoc, itemClassID, itemSubClassID)
-		if val then return val end
+	if not db.enabledButtons[itemEquipLoc] then
+		for _, func in ipairs(self.RESPONSE_CODE_GENERATORS) do
+			local val = func(item, db, itemID, itemEquipLoc, itemClassID, itemSubClassID)
+			if val then return val end
+		end
 	end
 	-- Remaining is simply their equipLoc, if set
 	return db.enabledButtons[itemEquipLoc] and itemEquipLoc or "default"

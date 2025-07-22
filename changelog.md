@@ -1,3 +1,9 @@
+## Changes
+
+### Bugfixes
+
+- *Most specific button group is now again chosen.*
+
 # v3.16.1
 
 ## Changes
