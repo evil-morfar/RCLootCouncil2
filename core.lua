@@ -1493,7 +1493,7 @@ end
 --- Send player info to the target/group
 ---@param target string? Player name or "group". Defaults to "group".
 function RCLootCouncil:SendPlayerInfo(target)
-	local commsTarget = target and Player:Get(target) or "group"
+	local commsTarget = target and target ~= "group" and Player:Get(target) or "group"
 	Comms:Send { target = commsTarget, command = "pI", data = { self:GetPlayerInfo(), }, }
 end
 
