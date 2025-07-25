@@ -121,19 +121,21 @@ function RCLootCouncil:GetTokenSlotFromTooltip(id)
 	local line = self.Utils:FindInTooltip(info.lines, "Use:")
 	if line then
 		for invSlot, keywords in pairs(keyWords) do
-			for _, keyword in pairs(keywords) do
+			for _, keyword in ipairs(keywords) do
 				if line:lower():find(keyword) then
 					return invSlot
 				end
 			end
 		end
+	else
+		self.Log:W("No line found in tooltip for item", id, info.hyperlink)
 	end
 	return ""
 end
 
 function RCLootCouncil:ExportTokenDataSingle(id)
-	local lines = self:GetTooltipLines(id)
-	if (C_Item.GetItemInfo(id)) and lines and #lines > 0 then
+	local lines = C_TooltipInfo.GetItemByID(id).lines
+	if (C_Item.GetItemInfo(id)) and lines and #lines > 2 then
 		local name, link, quality, ilvl, _, _, _, maxStack = C_Item.GetItemInfo(id)
 		if self:GetItemClassesAllowedFlag(link) ~= 0xffffffff and maxStack == 1 and quality == 4 then
 			DEFAULT_CHAT_FRAME:AddMessage(id .. " " .. name)
@@ -141,7 +143,8 @@ function RCLootCouncil:ExportTokenDataSingle(id)
 			tokenIlvls[id] = ilvl
 		end
 	else
-		return C_Timer.After(0, function() self:ExportTokenDataSingle(id) end)
+		print("Delay tooltip scan for item", id)
+		return C_Timer.After(1, function() self:ExportTokenDataSingle(id) end)
 	end
 end
 
@@ -866,6 +869,27 @@ _G.RCTokenTable = {
 	[228816] = "ShoulderSlot", -- Mystic Polished Gallybux,
 	[228817] = "ShoulderSlot", -- Venerated Polished Gallybux,
 	[228818] = "ShoulderSlot", -- Zenith Polished Gallybux,
+
+	[237581] = "ChestSlot", -- Dreadful Voidglass Contaminant,
+	[237582] = "ChestSlot", -- Mystic Voidglass Contaminant,
+	[237583] = "ChestSlot", -- Venerated Voidglass Contaminant,
+	[237584] = "ChestSlot", -- Zenith Voidglass Contaminant,
+	[237585] = "HandsSlot", -- Dreadful Binding Agent,
+	[237586] = "HandsSlot", -- Mystic Binding Agent,
+	[237587] = "HandsSlot", -- Venerated Binding Agent,
+	[237588] = "HandsSlot", -- Zenith Binding Agent,
+	[237589] = "HeadSlot",  -- Dreadful Foreboding Beaker,
+	[237590] = "HeadSlot",  -- Mystic Foreboding Beaker,
+	[237591] = "HeadSlot",  -- Venerated Foreboding Beaker,
+	[237592] = "HeadSlot",  -- Zenith Foreboding Beaker,
+	[237593] = "LegsSlot",  -- Dreadful Silken Offering,
+	[237594] = "LegsSlot",  -- Mystic Silken Offering,
+	[237595] = "LegsSlot",  -- Venerated Silken Offering,
+	[237596] = "LegsSlot",  -- Zenith Silken Offering,
+	[237597] = "ShoulderSlot", -- Dreadful Yearning Cursemark,
+	[237598] = "ShoulderSlot", -- Mystic Yearning Cursemark,
+	[237599] = "ShoulderSlot", -- Venerated Yearning Cursemark,
+	[237600] = "ShoulderSlot", -- Zenith Yearning Cursemark,
 }
 
 -- The base item level for the token on normal difficulty

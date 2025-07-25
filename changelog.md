@@ -1,5 +1,9 @@
 ## Changes
 
+### Patch 11.2
+
+Added tokens, trinkets and rare items from new raid and dungeons.
+
 ### New button groups
 
 #### Items /w special effects
