@@ -39,7 +39,7 @@ end
 ---@return string? #The first line that matches the search text, or nil if not found.
 function Utils:FindInTooltip(tooltipLines, ...)
 	---@type string[]
-	local searchStrings = type(select(1, ...) == "table") and select(1, ...) or { ... }
+	local searchStrings = type(select(1, ...)) == "table" and select(1, ...) or { ..., }
 	for _, line in ipairs(tooltipLines) do
 		if line.type == Enum.TooltipDataLineType.None then
 			for _, searchString in ipairs(searchStrings) do
