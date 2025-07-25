@@ -1,5 +1,14 @@
 ## Changes
 
+### New button groups
+
+#### Items /w special effects
+
+This group will match all equippable items that has special effects listed in their tooltip, such as "Use:", "Equip:", "Chance on hit:" etc.
+
+This group is considered more specific than "Catalyst" items, and less specific than weapons and individual equip location item groups.
+
+
 ### Bugfixes
 
 - *Most specific button group is now again chosen.*
