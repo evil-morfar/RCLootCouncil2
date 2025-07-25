@@ -81,7 +81,7 @@ end
 --- Returns all created frames of type
 --- @generic T
 --- @param type `T`
---- @return T[]?
+--- @return T[]|{}
 function addon.UI:GetCreatedFramesOfType(type)
 	return private.createdFrames[type] or {}
 end

@@ -37,6 +37,7 @@ addon.responses = {
 
 -- Option table defaults
 addon.defaults = {
+	---@class RCLootCouncilGlobalDB
 	global = {
 		logMaxEntries = 4000,
 		log = {}, -- debug log
@@ -44,6 +45,7 @@ addon.defaults = {
 		errors = {},
 		cache = {},
 	},
+	---@class RCLootCouncilDB
 	profile = {
 		skipCombatLockdown = true,
 

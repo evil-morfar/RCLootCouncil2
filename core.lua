@@ -66,6 +66,7 @@ local TT = RCLootCouncil.Require "Utils.TempTable"
 local ItemUtils = RCLootCouncil.Require "Utils.Item"
 
 -- Init shorthands
+--- @type RCLootCouncilDB
 local db, debugLog; -- = self.db.profile, self.db.global.log
 -- init modules
 ---@enum (key) DefaultModules
@@ -241,6 +242,7 @@ function RCLootCouncil:OnInitialize()
 	self:InitTrinketData()
 
 	-- add shortcuts
+	---@type RCLootCouncilDB
 	db = self.db.profile
 	debugLog = self.db.global.log
 
@@ -2080,6 +2082,7 @@ function RCLootCouncil:SessionError(...)
 	self.Log:E(...)
 end
 
+---@return RCLootCouncilDB
 function RCLootCouncil:Getdb() return db end
 
 ---@return RCLootCouncil.HistoryDB
@@ -2088,6 +2091,7 @@ function RCLootCouncil:GetHistoryDB() return self.lootDB.factionrealm end
 function RCLootCouncil:UpdateDB()
 	self.Log:D("UpdateDB")
 	self.db:RegisterDefaults(self.defaults)
+	---@type RCLootCouncilDB
 	db = self.db.profile
 	self:ActivateSkin(self.db.profile.currentSkin)
 	self:SendMessage("RCUpdateDB")
