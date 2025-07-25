@@ -8,7 +8,7 @@ Added tokens, trinkets and rare items from new raid and dungeons.
 
 #### Items /w special effects
 
-This group will match all equippable items that has special effects listed in their tooltip, such as "Use:", "Equip:", "Chance on hit:" etc.
+This group will match all equippable items that have special effects listed in their tooltip, such as "Use:", "Equip:", "Chance on hit:" etc.
 
 This group is considered more specific than "Catalyst" items, and less specific than weapons and individual equip location item groups.
 
