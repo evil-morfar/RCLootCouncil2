@@ -333,6 +333,7 @@ L["Please wait before trying to sync again."] = true
 L["Print Responses"] = true
 L["print_response_desc"] = "Print your response in the chat window"
 L["Protector Token"] = true
+L.Rare_Items = "Rare items"
 L["Raw lua output. Doesn't work well with date selection."] = true
 L["rclootcouncil_trade_add_item_confirm"] = "RCLootCouncil detects %d tradable items in your bags are awarded to %s. Do you want to add the items to the trade window?"
 L["RCLootCouncil Loot Frame"] = true

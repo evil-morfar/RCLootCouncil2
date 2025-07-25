@@ -8,6 +8,12 @@ This group will match all equippable items that has special effects listed in th
 
 This group is considered more specific than "Catalyst" items, and less specific than weapons and individual equip location item groups.
 
+#### Rare Items
+
+This group matches all items marked as "Very Rare" or higher in the Encounter Journal (only The War Within items are recorded).
+
+This group is considered *most* specific, and is always used for those items when enabled.
+
 
 ### Bugfixes
 

@@ -56,6 +56,7 @@ addon.OPT_MORE_BUTTONS_VALUES = {
 	RECIPE = _G.AUCTION_CATEGORY_RECIPES,
 	CATALYST = L.Catalyst_Items, -- items that can be converted to tier through catalyst
 	SPECIAL = L.Special_Effects_Items,
+	RARE = L.Rare_Items,
 }
 
 --- Inventory types that can be converted to tier
@@ -126,6 +127,10 @@ addon.INSTANCE_DATA_TTL = 1800 -- 30 min
 --- To add a new a button group, simply add it to the options menu (easily done by adding an entry to OPT_MORE_BUTTONS_VALUES), and add a function here to determine if that group should be used for the item.
 ---@type (fun(item: string|integer, db: RCLootCouncilDB, itemID: integer, itemEquipLoc: string, itemClassID: Enum.ItemClass, itemSubClassID: Enum.ItemMiscellaneousSubclass): string?) []
 addon.RESPONSE_CODE_GENERATORS = {
+	-- Rare items
+	function (_, db, itemID)
+		return db.enabledButtons.RARE and _G.RCRareItems[itemID] and "RARE" or nil
+	end,
 	-- Chest/Robe
 	function(_, db, _, equipLoc)
 		return db.enabledButtons.INVTYPE_CHEST and
