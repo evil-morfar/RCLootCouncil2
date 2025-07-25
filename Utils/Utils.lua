@@ -36,6 +36,7 @@ end
 --- Searching is done with pattern matching.
 ---@param tooltipLines TooltipDataLine[]
 ---@vararg string|string[]
+---@return string? #The first line that matches the search text, or nil if not found.
 function Utils:FindInTooltip(tooltipLines, ...)
 	---@type string[]
 	local searchStrings = type(select(1, ...) == "table") and select(1, ...) or { ... }
@@ -43,12 +44,11 @@ function Utils:FindInTooltip(tooltipLines, ...)
 		if line.type == Enum.TooltipDataLineType.None then
 			for _, searchString in ipairs(searchStrings) do
 				if line.leftText:find(searchString) then
-					return true
+					return line.leftText
 				end
 			end
 		end
 	end
-	return false
 end
 
 function Utils:RGBToHex(r, g, b)
