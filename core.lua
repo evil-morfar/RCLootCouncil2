@@ -129,7 +129,7 @@ function RCLootCouncil:OnInitialize()
 	self.isMasterLooter = false -- Are we the ML?
 	---@type Player
 	self.masterLooter = nil -- Masterlooter
-	self.lootMethod = GetLootMethod() or "personalloot"
+	self.lootMethod = self.GetLootMethod() or "personalloot"
 	self.handleLoot = false -- Does RC handle loot(Start session from loot window)?
 	self.isCouncil = false -- Are we in the Council?
 	self.enabled = true -- turn addon on/off
@@ -1829,7 +1829,7 @@ function RCLootCouncil:NewMLCheck()
 	local old_ml = self.masterLooter
 	local old_lm = self.lootMethod
 	self.isMasterLooter, self.masterLooter = self:GetML()
-	self.lootMethod = GetLootMethod()
+	self.lootMethod = self.GetLootMethod()
 	local instance_type = select(2, IsInInstance())
 	if instance_type == "pvp" or instance_type == "arena" or instance_type == "scenario" then return end -- Don't do anything here
 	if self.masterLooter and type(self.masterLooter) == "string"
@@ -1888,7 +1888,7 @@ end
 
 --- Enables the addon to automatically handle looting
 function RCLootCouncil:StartHandleLoot()
-	-- local lootMethod = GetLootMethod()
+	-- local lootMethod = self.GetLootMethod()
 	-- if lootMethod ~= "group" and self.lootMethod ~= "personalloot" then -- Set it
 	-- 	SetLootMethod("group")
 	-- end

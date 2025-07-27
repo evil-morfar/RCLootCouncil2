@@ -17,3 +17,5 @@ if not addon.C_Item.GetItemStats then
 end
 
 addon.SendChatMessage = C_ChatInfo and C_ChatInfo.SendChatMessage or SendChatMessage
+
+addon.GetLootMethod = C_PartyInfo and C_PartyInfo.GetLootMethod or GetLootMethod
