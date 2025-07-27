@@ -5,6 +5,9 @@ on:
     types: [published]
 
   workflow_call:
+    secrets:
+      webhook_url:
+        required: true
 
 jobs:
   github-releases-to-discord:
@@ -16,7 +19,7 @@ jobs:
       - name: Github Releases To Discord
         uses: SethCohen/github-releases-to-discord@master
         with:
-          webhook_url: ${{ secrets.DISCORD_CHANGELOG_WEBHOOK_URL }}
+          webhook_url: ${{ secrets.webhook_url }}
           username: "Github"
           avatar_url: "https://cdn.discordapp.com/avatars/81462313160278016/b8ec433df852d5d8b7deceae1c9fac62.png"
           footer_timestamp: true
