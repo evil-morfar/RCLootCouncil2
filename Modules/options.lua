@@ -25,14 +25,14 @@ local function createNewButtonSet(path, name, order)
 	-- Create the group
 	path[name] = {
 		order = order,
-		name = addon.OPT_MORE_BUTTONS_VALUES[name],
+		name = addon.OPT_MORE_BUTTONS_VALUES[name] or name,
 		desc = "",
 		type = "group",
 		inline = true,
 		args = {
 			optionsDesc = {
 				order = 0,
-				name = format(L["opt_buttonsGroup_desc"], addon.OPT_MORE_BUTTONS_VALUES[name]),
+				name = format(L["opt_buttonsGroup_desc"], addon.OPT_MORE_BUTTONS_VALUES[name] or "error"),
 				type = "description",
 				width = "double",
 			},
