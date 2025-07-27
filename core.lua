@@ -660,8 +660,11 @@ function RCLootCouncil:UpdateAndSendRecentTradableItem(info, count)
 	end)
 end
 
--- Send the msg to the channel if it is valid. Otherwise just print the messsage.
-function RCLootCouncil:SendAnnouncement(msg, channel)
+--- Send the msg to the channel if it is valid. Otherwise just print the messsage.
+--- @param msg string - The message to send.
+--- @param channel string - The channel to send the message to.
+--- @param whisperTarget string? - The target to whisper the message to, if channel is "WHISPER".
+function RCLootCouncil:SendAnnouncement(msg, channel, whisperTarget)
 	if channel == "NONE" then return end
 	if self.testMode then msg = "(" .. L["Test"] .. ") " .. msg end
 	if (not IsInGroup()
@@ -669,9 +672,11 @@ function RCLootCouncil:SendAnnouncement(msg, channel)
 									== "INSTANCE_CHAT")) or channel == "chat" or (not IsInGuild() and (channel == "GUILD" or channel == "OFFICER")) then
 		self:Print(msg)
 	elseif (not IsInRaid() and (channel == "RAID" or channel == "RAID_WARNING")) then
-		SendChatMessage(msg, "PARTY")
+		self.SendChatMessage(msg, "PARTY")
+	elseif channel == "WHISPER" then
+		self.SendChatMessage(msg, "WHISPER", nil, whisperTarget)
 	else
-		SendChatMessage(msg, self.Utils:GetAnnounceChannel(channel))
+		self.SendChatMessage(msg, self.Utils:GetAnnounceChannel(channel))
 	end
 end
 

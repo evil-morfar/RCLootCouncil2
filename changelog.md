@@ -1,5 +1,9 @@
 ## Changes
 
+### Announce awards
+
+Added option to whisper the winner when announcing awards.
+
 ### Bugfixes
 
 - *Most specific button group is now again chosen.*

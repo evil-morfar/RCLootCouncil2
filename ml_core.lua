@@ -1105,7 +1105,11 @@ function RCLootCouncilML:AnnounceAward(name, link, response, roll, session, chan
 			if changeAward then
 				message = "("..L["Change Award"]..") "..message
 			end
-			addon:SendAnnouncement(message, v.channel)
+			if v.channel == "WHISPER" then
+				addon:SendAnnouncement(message, "WHISPER", name)
+			else
+				addon:SendAnnouncement(message, v.channel)
+			end
 		end
 	end
 end
@@ -1430,7 +1434,7 @@ function RCLootCouncilML:GetItemsFromMessage(msg, sender, retryCount)
 
 	-- Let people know we've done stuff
 	addon:Print(format(L["Item received and added from 'player'"], addon:GetClassIconAndColoredName(sender)))
-	SendChatMessage("[RCLootCouncil]: "..format(L["Response to 'item' acknowledged as 'response'"],
+	addon.SendChatMessage("[RCLootCouncil]: "..format(L["Response to 'item' acknowledged as 'response'"],
 		ItemUtils:GetItemTextWithCount(link, count), addon:GetResponse(typeCode, response).text), "WHISPER", nil, sender)
 end
 
@@ -1439,18 +1443,18 @@ function RCLootCouncilML:SendWhisperHelp(target)
 	local msg
 	local guide1 = L["whisper_guide"]
 	if #guide1 > 254 then -- French locale reported too long
-		SendChatMessage(strsub(guide1, 0, 254), "WHISPER", nil, target)
-		SendChatMessage(strsub(guide1, 255), "WHISPER", nil, target)
+		addon.SendChatMessage(strsub(guide1, 0, 254), "WHISPER", nil, target)
+		addon.SendChatMessage(strsub(guide1, 255), "WHISPER", nil, target)
 	else
-		SendChatMessage(guide1, "WHISPER", nil, target)
+		addon.SendChatMessage(guide1, "WHISPER", nil, target)
 	end
 
 	for i = 1, db.buttons.default.numButtons do
 		msg = "[RCLootCouncil]: "..db.buttons.default[i]["text"]..":  " -- i.e. MainSpec/Need:
 		msg = msg..""..db.buttons.default[i]["whisperKey"].."." -- need, mainspec, etc
-		SendChatMessage(msg, "WHISPER", nil, target)
+		addon.SendChatMessage(msg, "WHISPER", nil, target)
 	end
-	SendChatMessage(L["whisper_guide2"], "WHISPER", nil, target)
+	addon.SendChatMessage(L["whisper_guide2"], "WHISPER", nil, target)
 	addon:Print(format(L["Sent whisper help to 'player'"], addon:GetClassIconAndColoredName(target)))
 end
 

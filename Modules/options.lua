@@ -2114,6 +2114,7 @@ function addon:OptionsTable()
 				RAID_WARNING = _G.CHAT_MSG_RAID_WARNING,
 				group = _G.GROUP,
 				chat = L["Chat print"],
+				WHISPER = L.opt_announceAward_WHISPER_WINNER,
 			},
 			set = function(j,v) self.db.profile.awardText[i].channel = v	end,
 			get = function() return self.db.profile.awardText[i].channel end,

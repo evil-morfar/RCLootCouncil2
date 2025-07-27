@@ -538,6 +538,7 @@ L.history_export_sheets_tip = "Tab delimited export for Google Sheets and Englis
 L.history_export_excel_international_tip = "Tab delimited export for international version of Excel that uses ',' as formula delimiter."
 L.response_NOTELIGIBLE = "Not eligible for this item"
 L["opt_addButton_desc"] = "Add a new button group for the selected slot."
+L.opt_announceAward_WHISPER_WINNER = "/w winner"
 L["opt_autoAddBoEs_name"] = "Auto Add BoEs"
 L["opt_autoAddBoEs_desc"] = "Automatically add all BoE (Bind on Equip) items to a session."
 L["opt_autoAddItems_name"] = "Auto Add Items"
