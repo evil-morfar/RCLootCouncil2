@@ -8,12 +8,12 @@ local addon = select(2, ...)
 ---@class Utils.TempTable
 local TempTable = addon.Init("Utils.TempTable")
 
+local NUM_TEMP_TABLES = 100
 local private = {
-   availableTables = {},
-   unavailableTables = {}
+   availableTables = table.create and table.create(NUM_TEMP_TABLES) or {},
+	unavailableTables = table.create and table.create(NUM_TEMP_TABLES) or {},
 }
 local head = 0
-local NUM_TEMP_TABLES = 100
 local RELEASED_TEMP_TABLE_MT = {
    __index = function()
       error("Attempt to read temp table after release", 2)

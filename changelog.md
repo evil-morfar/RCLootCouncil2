@@ -4,6 +4,14 @@
 
 Added option to whisper the winner when announcing awards.
 
+### Chat Commands
+
+Added `/rc sv` for exporting the addons raw saved variables ingame.
+
+- `sv` can be replaced with `saved`/`savedvariables`.
+- `/rc sv history` (or `his`) to also add the loot history to the export.
+- `/rc sv history only` to only export the history. *Note: this format cannot be reimported!* .
+
 ### Bugfixes
 
 - *Most specific button group is now again chosen.*
