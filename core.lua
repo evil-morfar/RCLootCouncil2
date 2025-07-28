@@ -616,21 +616,21 @@ function RCLootCouncil:ChatCommand(msg)
 		end
 	--@end-debug@
 	elseif input == "sv" or input == "saved" or input == "savedvariables" then
-		local exportFrame = self.UI:New("RCExportFrame")
-		local temp = TT:Acquire("RCLootCouncilDB = {\n",
-			self:DevToolsDumpValueAsString(_G.RCLootCouncilDB or {}), "\n}\n\n")
+		local exportFrame = self.UI:New("RCHugeExportFrame")
+		local temp = TT:Acquire("-- ", addonname, " Saved Variables\n",
+			table.concat(select(2, self.Utils:DumpLuaFormat(_G.RCLootCouncilDB or {}, "RCLootCouncilDB")), "\n"),
+			"\n\n"
+		)
 		local export = table.concat(temp)
 		TT:Release(temp)
 
 		if args[1] and (args[1] == "his" or args[1] == "history") then
 			if args[2] and args[2] == "only" then
-				export = "RCLootCouncilLootDB = {\n"
-			else
-				export = export .. "RCLootCouncilLootDB = {\n"
+				export = "-- " .. addonname .. " History\n"
 			end
 			temp = TT:Acquire(export,
-				self:DevToolsDumpValueAsString(_G.RCLootCouncilLootDB or {}),
-				"\n}\n\n")
+				table.concat(select(2, self.Utils:DumpLuaFormat(_G.RCLootCouncilLootDB or {}, "RCLootCouncilLootDB")), "\n")
+			)
 			export = table.concat(temp)
 			TT:Release(temp)
 		end
@@ -2764,34 +2764,6 @@ _G.printtable = function(data, level)
 	end
 end
 --@end-debug@
-
---- Returns a string representation of the value, using DevTools_Dump.
-function RCLootCouncil:DevToolsDumpValueAsString(value)
-	-- We need to modify the some constants to be able to export large tables.
-	local backup = {
-		DEVTOOLS_MAX_ENTRY_CUTOFF = DEVTOOLS_MAX_ENTRY_CUTOFF,
-		DEVTOOLS_LONG_STRING_CUTOFF = DEVTOOLS_LONG_STRING_CUTOFF,
-	}
-	DEVTOOLS_MAX_ENTRY_CUTOFF = 100000
-	DEVTOOLS_LONG_STRING_CUTOFF = 100000
-	local export = ""
-	local temp;
-	local context = {
-		depth = 0,
-		Write = function(_, text)
-			temp = TT:Acquire(export, text, "\n")
-			export = table.concat(temp)
-			TT:Release(temp)
-		end,
-		Result = function(_) return export end,
-		GetTableName = self.noop,
-	}
-	local result = DevTools_RunDump(value, context)
-	-- Restore the original values
-	DEVTOOLS_MAX_ENTRY_CUTOFF = backup.DEVTOOLS_MAX_ENTRY_CUTOFF
-	DEVTOOLS_LONG_STRING_CUTOFF = backup.DEVTOOLS_LONG_STRING_CUTOFF
-	return result
-end
 
 function RCLootCouncil:ExportCurrentSession()
 	if not lootTable or #lootTable == 0 then return self:Print(L["No session running"]) end
