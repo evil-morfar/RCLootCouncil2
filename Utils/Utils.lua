@@ -31,6 +31,26 @@ function Utils.HideTooltip()
 	addon:HideTooltip()
 end
 
+--- Searches for a string in a tooltip lines.
+--- Search text can be either a multiple string or a table of strings.
+--- Searching is done with pattern matching.
+---@param tooltipLines TooltipDataLine[]
+---@vararg string|string[]
+---@return string? #The first line that matches the search text, or nil if not found.
+function Utils:FindInTooltip(tooltipLines, ...)
+	---@type string[]
+	local searchStrings = type(select(1, ...)) == "table" and select(1, ...) or { ..., }
+	for _, line in ipairs(tooltipLines) do
+		if line.type == Enum.TooltipDataLineType.None then
+			for _, searchString in ipairs(searchStrings) do
+				if line.leftText:find(searchString) then
+					return line.leftText
+				end
+			end
+		end
+	end
+end
+
 function Utils:RGBToHex(r, g, b)
 	return string.format("%02x%02x%02x", 255 * r, 255 * g, 255 * b)
 end

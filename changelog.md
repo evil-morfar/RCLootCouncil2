@@ -1,3 +1,41 @@
+# 3.17.0
+
+## Changes
+
+### Patch 11.2
+
+Added tokens, trinkets and rare items from new raid and dungeons.
+
+### Announce awards
+
+Added option to whisper the winner when announcing awards.
+
+### Chat Commands
+
+Added `/rc sv` for exporting the addons raw saved variables ingame.
+
+- `sv` can be replaced with `saved`/`savedvariables`.
+- `/rc sv history` (or `his`) to also add the loot history to the export.
+- `/rc sv history only` to only export the history. *Note: this format cannot be reimported!* .
+
+### New button groups
+
+#### Items /w special effects
+
+This group will match all equippable items that have special effects listed in their tooltip, such as "Use:", "Equip:", "Chance on hit:" etc.
+
+This group is considered more specific than "Catalyst" items, and less specific than weapons and individual equip location item groups.
+
+#### Rare Items
+
+This group matches all items marked as "Very Rare" or higher in the Encounter Journal (only The War Within items are recorded).
+
+This group is considered *most* specific, and is always used for those items when enabled.
+
+## Bugfixes
+
+- *Most specific button group is now again chosen.*
+
 # v3.16.1
 
 ## Changes

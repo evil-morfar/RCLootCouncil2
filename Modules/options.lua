@@ -25,14 +25,14 @@ local function createNewButtonSet(path, name, order)
 	-- Create the group
 	path[name] = {
 		order = order,
-		name = addon.OPT_MORE_BUTTONS_VALUES[name],
+		name = addon.OPT_MORE_BUTTONS_VALUES[name] or name,
 		desc = "",
 		type = "group",
 		inline = true,
 		args = {
 			optionsDesc = {
 				order = 0,
-				name = format(L["opt_buttonsGroup_desc"], addon.OPT_MORE_BUTTONS_VALUES[name]),
+				name = format(L["opt_buttonsGroup_desc"], addon.OPT_MORE_BUTTONS_VALUES[name] or "error"),
 				type = "description",
 				width = "double",
 			},
@@ -2114,6 +2114,7 @@ function addon:OptionsTable()
 				RAID_WARNING = _G.CHAT_MSG_RAID_WARNING,
 				group = _G.GROUP,
 				chat = L["Chat print"],
+				WHISPER = L.opt_announceAward_WHISPER_WINNER,
 			},
 			set = function(j,v) self.db.profile.awardText[i].channel = v	end,
 			get = function() return self.db.profile.awardText[i].channel end,

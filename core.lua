@@ -66,6 +66,7 @@ local TT = RCLootCouncil.Require "Utils.TempTable"
 local ItemUtils = RCLootCouncil.Require "Utils.Item"
 
 -- Init shorthands
+--- @type RCLootCouncilDB
 local db, debugLog; -- = self.db.profile, self.db.global.log
 -- init modules
 ---@enum (key) DefaultModules
@@ -128,7 +129,7 @@ function RCLootCouncil:OnInitialize()
 	self.isMasterLooter = false -- Are we the ML?
 	---@type Player
 	self.masterLooter = nil -- Masterlooter
-	self.lootMethod = GetLootMethod() or "personalloot"
+	self.lootMethod = GetLootMethod and GetLootMethod() or C_PartyInfo.GetLootMethod and C_PartyInfo.GetLootMethod() or "personalloot"
 	self.handleLoot = false -- Does RC handle loot(Start session from loot window)?
 	self.isCouncil = false -- Are we in the Council?
 	self.enabled = true -- turn addon on/off
@@ -241,6 +242,7 @@ function RCLootCouncil:OnInitialize()
 	self:InitTrinketData()
 
 	-- add shortcuts
+	---@type RCLootCouncilDB
 	db = self.db.profile
 	debugLog = self.db.global.log
 
@@ -592,8 +594,8 @@ function RCLootCouncil:ChatCommand(msg)
 		self.nnp = not self.nnp
 		self:Print("nnp = " .. tostring(self.nnp))
 
-	elseif input == "exporttrinketdata" then
-		self:ExportTrinketData(tonumber(args[1]), 0, tonumber(args[2]), 1)
+	elseif input == "exportitemdata" then
+		self:ExportEJData(tonumber(args[1]), 0, tonumber(args[2]) or self.EJLatestInstanceID, 1)
 
 	elseif input == "trinkettest" or input == "ttest" then
 		self.playerClass = string.upper(args[1])
@@ -613,6 +615,29 @@ function RCLootCouncil:ChatCommand(msg)
 			end
 		end
 	--@end-debug@
+	elseif input == "sv" or input == "saved" or input == "savedvariables" then
+		local exportFrame = self.UI:New("RCHugeExportFrame")
+		local temp = TT:Acquire("-- ", addonname, " Saved Variables\n",
+			table.concat(select(2, self.Utils:DumpLuaFormat(_G.RCLootCouncilDB or {}, "RCLootCouncilDB")), "\n"),
+			"\n\n"
+		)
+		local export = table.concat(temp)
+		TT:Release(temp)
+
+		if args[1] and (args[1] == "his" or args[1] == "history") then
+			if args[2] and args[2] == "only" then
+				export = "-- " .. addonname .. " History\n"
+			end
+			temp = TT:Acquire(export,
+				table.concat(select(2, self.Utils:DumpLuaFormat(_G.RCLootCouncilLootDB or {}, "RCLootCouncilLootDB")), "\n")
+			)
+			export = table.concat(temp)
+			TT:Release(temp)
+		end
+		exportFrame.edit:SetText(export)
+		exportFrame:Show()
+		exportFrame.edit:SetFocus()
+		exportFrame.edit:HighlightText()
 	else
 		-- Check if the input matches anything
 		for k, v in pairs(self.customChatCmd) do if k == input then return v.module[v.func](v.module, unpack(args)) end end
@@ -658,8 +683,11 @@ function RCLootCouncil:UpdateAndSendRecentTradableItem(info, count)
 	end)
 end
 
--- Send the msg to the channel if it is valid. Otherwise just print the messsage.
-function RCLootCouncil:SendAnnouncement(msg, channel)
+--- Send the msg to the channel if it is valid. Otherwise just print the messsage.
+--- @param msg string - The message to send.
+--- @param channel string - The channel to send the message to.
+--- @param whisperTarget string? - The target to whisper the message to, if channel is "WHISPER".
+function RCLootCouncil:SendAnnouncement(msg, channel, whisperTarget)
 	if channel == "NONE" then return end
 	if self.testMode then msg = "(" .. L["Test"] .. ") " .. msg end
 	if (not IsInGroup()
@@ -667,9 +695,11 @@ function RCLootCouncil:SendAnnouncement(msg, channel)
 									== "INSTANCE_CHAT")) or channel == "chat" or (not IsInGuild() and (channel == "GUILD" or channel == "OFFICER")) then
 		self:Print(msg)
 	elseif (not IsInRaid() and (channel == "RAID" or channel == "RAID_WARNING")) then
-		SendChatMessage(msg, "PARTY")
+		self.SendChatMessage(msg, "PARTY")
+	elseif channel == "WHISPER" then
+		self.SendChatMessage(msg, "WHISPER", nil, whisperTarget)
 	else
-		SendChatMessage(msg, self.Utils:GetAnnounceChannel(channel))
+		self.SendChatMessage(msg, self.Utils:GetAnnounceChannel(channel))
 	end
 end
 
@@ -979,7 +1009,12 @@ function RCLootCouncil:GetTypeCodeForItem(item)
 
 	for _, func in ipairs(self.RESPONSE_CODE_GENERATORS) do
 		local val = func(item, db, itemID, itemEquipLoc, itemClassID, itemSubClassID)
-		if val then return val end
+		if val then
+			-- Rare items are the only ones bypassing normal specificity checks.
+			if not db.enabledButtons[itemEquipLoc] or val == "RARE" then
+				return val
+			end
+		end
 	end
 	-- Remaining is simply their equipLoc, if set
 	return db.enabledButtons[itemEquipLoc] and itemEquipLoc or "default"
@@ -1491,7 +1526,7 @@ end
 --- Send player info to the target/group
 ---@param target string? Player name or "group". Defaults to "group".
 function RCLootCouncil:SendPlayerInfo(target)
-	local commsTarget = target and Player:Get(target) or "group"
+	local commsTarget = target and target ~= "group" and Player:Get(target) or "group"
 	Comms:Send { target = commsTarget, command = "pI", data = { self:GetPlayerInfo(), }, }
 end
 
@@ -1820,7 +1855,7 @@ function RCLootCouncil:NewMLCheck()
 	local old_ml = self.masterLooter
 	local old_lm = self.lootMethod
 	self.isMasterLooter, self.masterLooter = self:GetML()
-	self.lootMethod = GetLootMethod()
+	self.lootMethod = GetLootMethod and GetLootMethod() or C_PartyInfo.GetLootMethod and C_PartyInfo.GetLootMethod()
 	local instance_type = select(2, IsInInstance())
 	if instance_type == "pvp" or instance_type == "arena" or instance_type == "scenario" then return end -- Don't do anything here
 	if self.masterLooter and type(self.masterLooter) == "string"
@@ -1879,7 +1914,7 @@ end
 
 --- Enables the addon to automatically handle looting
 function RCLootCouncil:StartHandleLoot()
-	-- local lootMethod = GetLootMethod()
+	-- local lootMethod = self.GetLootMethod()
 	-- if lootMethod ~= "group" and self.lootMethod ~= "personalloot" then -- Set it
 	-- 	SetLootMethod("group")
 	-- end
@@ -2078,6 +2113,7 @@ function RCLootCouncil:SessionError(...)
 	self.Log:E(...)
 end
 
+---@return RCLootCouncilDB
 function RCLootCouncil:Getdb() return db end
 
 ---@return RCLootCouncil.HistoryDB
@@ -2086,6 +2122,7 @@ function RCLootCouncil:GetHistoryDB() return self.lootDB.factionrealm end
 function RCLootCouncil:UpdateDB()
 	self.Log:D("UpdateDB")
 	self.db:RegisterDefaults(self.defaults)
+	---@type RCLootCouncilDB
 	db = self.db.profile
 	self:ActivateSkin(self.db.profile.currentSkin)
 	self:SendMessage("RCUpdateDB")

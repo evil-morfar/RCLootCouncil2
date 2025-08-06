@@ -5,7 +5,7 @@ on:
     tags:
       - '**'
 
-jobs:
+jobs:   
 
   busted:
     uses: ./.github/workflows/busted.yml
@@ -33,3 +33,5 @@ jobs:
   discord-changelog:
     needs: release
     uses: ./.github/workflows/discord-changelog.yml
+    secrets:
+      webhook_url: ${{ secrets.DISCORD_CHANGELOG_WEBHOOK_URL }}

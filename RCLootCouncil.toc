@@ -1,8 +1,8 @@
 ## Author: Potdisc
-## Interface: 110107
-## Notes: Interface for running a Loot Council v3.16.1
+## Interface: 110200
+## Notes: Interface for running a Loot Council v3.17.0
 ## Title: RCLootCouncil
-## Version: 3.16.1
+## Version: 3.17.0
 ## SavedVariables: RCLootCouncilDB, RCLootCouncilLootDB
 ## AllowLoadGameType: standard
 ## OptionalDeps: LibStub, CallbackHandler-1.0, Ace3, lib-st, LibWindow-1.1, LibDialog-1.0
@@ -56,7 +56,8 @@ Modules\Modules.xml
 
 Utils\BackwardsCompat.lua
 Utils\Utils.lua
-Utils\TrinketData.lua
+Utils\Dump.lua
+Utils\EncounterJournalData.lua
 Utils\tokenData.lua
 Utils\ItemStorage.lua
 Utils\transmog.lua
