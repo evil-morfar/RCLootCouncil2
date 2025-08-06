@@ -29,9 +29,3 @@ jobs:
         uses: BigWigsMods/packager@v2
         with:
           args: -o
-  
-  discord-changelog:
-    needs: release
-    uses: ./.github/workflows/discord-changelog.yml
-    secrets:
-      webhook_url: ${{ secrets.DISCORD_CHANGELOG_WEBHOOK_URL }}
