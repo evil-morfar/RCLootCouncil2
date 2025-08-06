@@ -1,3 +1,10 @@
+## Changes
+
+## Bugfixes
+
+- *Fixed issues with certain items not being registered as special.*
+
+
 # 3.17.0
 
 ## Changes
