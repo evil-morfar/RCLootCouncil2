@@ -30,11 +30,11 @@ Holy Paladin is the 1st spec of Paladin (class ID 2) because GetSpecializationIn
 Overall, 365002707767 shows the trinket is lootable by all specs using Strength or Agility as Primary Stats.
 
 --]]
-local trinketData = {
-}
-local trinketNames = {
-}
+local trinketData = {}
+local rareItemsData = {}
+local trinketNames = {}
 local trinketIdToIndex = {}
+local rateIdToIndex = {}
 local instanceNames = {}
 -- The params are used internally inside this function
 -- Process in the following order:
@@ -42,244 +42,289 @@ local instanceNames = {}
 -- Inside each expansion, scan dungeon first then raid (nextIsRaid)
 -- Inside dungeon/raid, scan by its index in the journal (nextIndex)
 -- Inside each instance, scan by difficulty id order(nextDiffID)
-function RCLootCouncil:ExportTrinketData(nextTier, nextIsRaid, nextIndex, nextDiffID, maxTier)
-   C_AddOns.LoadAddOn("BLizzard_EncounterJournal")
-   local TIME_FOR_EACH_INSTANCE_DIFF = 3
+function RCLootCouncil:ExportEJData(nextTier, nextIsRaid, nextIndex, nextDiffID, maxTier)
+	C_AddOns.LoadAddOn("BLizzard_EncounterJournal")
+	local TIME_FOR_EACH_INSTANCE_DIFF = 3
 
-   nextIsRaid = nextIsRaid or 0
-   nextIndex = nextIndex or 1
-   nextDiffID = nextDiffID or 1
-   if not nextTier then
-      nextTier = 11 -- TWW
-      self:Print("Exporting the loot specs of all trinkets in the dungeon journal\n"
-         .."This command is intended to be run by the developer.\n"
-         .."After exporting is done and copy and paste the data into Utils/TrinketData.lua.\n"
-         .."Dont open EncounterJournal during export.\n"
-      .."Dont run any extra /rc exporttrinketdata when it is running.")
-      self:Print(format("To ensure the data is correct, process one difficulty of one instance every %d s", TIME_FOR_EACH_INSTANCE_DIFF))
-   end
+	nextIsRaid = nextIsRaid or 0
+	nextIndex = nextIndex or 1
+	nextDiffID = nextDiffID or 1
+	if not nextTier then
+		nextTier = 11 -- TWW
+		self:Print("Exporting the loot specs of all trinkets in the dungeon journal\n"
+			.. "This command is intended to be run by the developer.\n"
+			.. "After exporting is done and copy and paste the data into Utils/TrinketData.lua.\n"
+			.. "Dont open EncounterJournal during export.\n"
+			.. "Dont run any extra /rc exporttrinketdata when it is running.")
+		self:Print(format("To ensure the data is correct, process one difficulty of one instance every %d s",
+			TIME_FOR_EACH_INSTANCE_DIFF))
+	end
 
-   if _G.EncounterJournal then
-      _G.EncounterJournal:UnregisterAllEvents() -- To help to ensure EncounterJournal does not affect exporting.
-   end
+	if _G.EncounterJournal then
+		_G.EncounterJournal:UnregisterAllEvents() -- To help to ensure EncounterJournal does not affect exporting.
+	end
 
-   maxTier = maxTier or EJ_GetNumTiers()
+	maxTier = maxTier or EJ_GetNumTiers()
 
-   local instanceIndex = nextIndex
-   for h = nextTier, maxTier do
-      EJ_SelectTier(h)
-      for i = nextIsRaid, 1 do
-         while EJ_GetInstanceByIndex(instanceIndex, (i == 1)) do
-            local instanceID = EJ_GetInstanceByIndex(instanceIndex, (i == 1))
-            EJ_SelectInstance(instanceID)
-            for diffID = nextDiffID, 99 do -- Should be enough to include all difficulties
-               	if EJ_IsValidInstanceDifficulty(diffID) then
-                  self:ExportTrinketDataSingleInstance(instanceID, diffID, TIME_FOR_EACH_INSTANCE_DIFF)
-                  return self:ScheduleTimer("ExportTrinketData", TIME_FOR_EACH_INSTANCE_DIFF, h, i, instanceIndex, diffID + 1, maxTier)
-				elseif nextTier == 1 and i == 1 and diffID == 9 then
-					-- Classic raids has EJ_GetDifficulty() == 9, but EJ_IsValidInstanceDifficulty(9) == false
-					-- and EJ_SetDifficulty(9) works as intended...
-					-- Except for Ruins of Ahn'Qiraj (10-player) which correctly registers diffID 3.
-					-- #GoodJobBlizzard
-					self:ExportTrinketDataSingleInstance(instanceID, 9, TIME_FOR_EACH_INSTANCE_DIFF)
-                	return self:ScheduleTimer("ExportTrinketData", TIME_FOR_EACH_INSTANCE_DIFF, h, i, instanceIndex + 1, 1, maxTier)
+	-- Scan instances
+	local instanceIndex = nextIndex
+	for h = nextTier, maxTier do
+		EJ_SelectTier(h)
+		for i = nextIsRaid, 1 do
+			while EJ_GetInstanceByIndex(instanceIndex, (i == 1)) do
+				local instanceID = EJ_GetInstanceByIndex(instanceIndex, (i == 1))
+				EJ_SelectInstance(instanceID)
+				for diffID = nextDiffID, 99 do -- Should be enough to include all difficulties
+					if EJ_IsValidInstanceDifficulty(diffID) then
+						self:ExportItemDataSingleInstance(instanceID, diffID, TIME_FOR_EACH_INSTANCE_DIFF)
+						return self:ScheduleTimer("ExportEJData", TIME_FOR_EACH_INSTANCE_DIFF, h, i, instanceIndex,
+							diffID + 1, maxTier)
+					elseif nextTier == 1 and i == 1 and diffID == 9 then
+						-- Classic raids has EJ_GetDifficulty() == 9, but EJ_IsValidInstanceDifficulty(9) == false
+						-- and EJ_SetDifficulty(9) works as intended...
+						-- Except for Ruins of Ahn'Qiraj (10-player) which correctly registers diffID 3.
+						-- #GoodJobBlizzard
+						self:ExportItemDataSingleInstance(instanceID, 9, TIME_FOR_EACH_INSTANCE_DIFF)
+						return self:ScheduleTimer("ExportRJData", TIME_FOR_EACH_INSTANCE_DIFF, h, i, instanceIndex + 1, 1,
+							maxTier)
+					end
 				end
-            end
-            nextDiffID = 1
-            instanceIndex = instanceIndex + 1
-         end
-         instanceIndex = 1
-      end
-      nextIsRaid = 0
-   end
+				nextDiffID = 1
+				instanceIndex = instanceIndex + 1
+			end
+			instanceIndex = 1
+		end
+		nextIsRaid = 0
+	end
 	local numinstanceNames = 0
 	for _ in pairs(instanceNames) do numinstanceNames = numinstanceNames + 1 end
-   self:Print(format("DONE. %d trinkets total", #trinketData - numinstanceNames))
-   self:Print("Copy paste the data to Utils/TrinketData.lua")
-   self:Print("Suggest to verify the data for the trinket in the recent raid")
+	self:Print(format("DONE. %d trinkets total", #trinketData - numinstanceNames))
+	self:Print("Copy paste the data to Utils/TrinketData.lua")
+	self:Print("Suggest to verify the data for the trinket in the recent raid")
 
+	-- Use exportFrame to show the export data
 	local exportFrame = RCLootCouncil.UI:New("RCExportFrame")
 	exportFrame:Show()
 
-   local exports = "_G.RCTrinketSpecs = {\n"
-   local longestNameLen = 0
-   for _, name in pairs(trinketNames) do
-      if #name > longestNameLen then
-         longestNameLen = #name
-      end
-   end
-   local exp = "%-"..format("%d", longestNameLen + 1).."s"
-   for _, entry in ipairs(trinketData) do
+	-- Export trinkets
+	local exports = "_G.RCTrinketSpecs = {\n"
+	local longestNameLen = 0
+	for _, name in pairs(trinketNames) do
+		if #name > longestNameLen then
+			longestNameLen = #name
+		end
+	end
+	local exp = "%-" .. format("%d", longestNameLen + 1) .. "s"
+	for _, entry in ipairs(trinketData) do
 		if entry[1] == "name" then
-			exports = exports.."-- "..entry[2].."\n"
-
+			exports = exports .. "-- " .. entry[2] .. "\n"
 		elseif entry[3] ~= 0xffffffff then
 			exports = exports .. "\t-- [" .. entry[1] .. "] = " .. format("%q", entry[2])
 				.. ",\t-- " ..
 				format(exp, trinketNames[entry[1]] .. ",") .. "\t" .. (self:ClassesFlagToStr(entry[3]) or "") .. "\n"
 		else
-	      exports = exports.."\t["..entry[1].."] = "..format("%q", entry[2])
-	      ..",\t-- "..format(exp, trinketNames[entry[1]]..",").."\t"..(_G.RCTrinketCategories[entry[2]] or "").."\n"
+			exports = exports .. "\t[" .. entry[1] .. "] = " .. format("%q", entry[2])
+				.. ",\t-- " ..
+				format(exp, trinketNames[entry[1]] .. ",") .. "\t" .. (_G.RCTrinketCategories[entry[2]] or "") .. "\n"
 		end
-   end
-   exports = exports.."}\n"
-   exportFrame.edit:SetText(exports)
+	end
+	exports = exports .. "}\n"
+
+	-- Export rare items
+	exports = exports .. "\n--- Items listed as rare or above in the encounter journal.\n"
+	exports = exports .. "_G.RCRareItems = {\n"
+	for _, data in ipairs(rareItemsData) do
+		if data[1] == "name" then
+			exports = exports .. "-- " .. data[2] .. "\n"
+		else
+			exports = exports .. "\t[" .. data[1] .. "] = true, -- " .. format("%s", data[2]) .. "\n"
+		end
+	end
+	exports = exports .. "}\n"
+
+	exportFrame.edit:SetText(exports)
 end
 
 function RCLootCouncil:ClassesFlagToStr(flag)
-   local text = ""
-   for i = 1, numClasses do
-      if bit.band(flag, bit.lshift(1, i - 1)) > 0 then
-         if text ~= "" then
-            text = text..", "
-         end
-         text = text..C_CreatureInfo.GetClassInfo(i).className or ""
-      end
-   end
-   return text
+	local text = ""
+	for i = 1, numClasses do
+		if bit.band(flag, bit.lshift(1, i - 1)) > 0 then
+			if text ~= "" then
+				text = text .. ", "
+			end
+			text = text .. (C_CreatureInfo.GetClassInfo(i).className or "")
+		end
+	end
+	return text
 end
 
-function RCLootCouncil:ExportTrinketDataSingleInstance(instanceID, diffID, timeLeft)
-   if _G.EncounterJournal then
-      _G.EncounterJournal:UnregisterAllEvents() -- To help to ensure EncounterJournal does not affect exporting.
-   end
-   local count = 0
-   local trinketlinksInThisInstances = {}
-   EJ_SelectInstance(instanceID)
-   EJ_SetDifficulty(diffID)
-   C_EncounterJournal.SetSlotFilter(Enum.ItemSlotFilterType.Trinket)
+function RCLootCouncil:ExportItemDataSingleInstance(instanceID, diffID, timeLeft)
+	if _G.EncounterJournal then
+		_G.EncounterJournal:UnregisterAllEvents() -- To help to ensure EncounterJournal does not affect exporting.
+	end
+	local count, countRare = 0, 0
+	local trinketlinksInThisInstances, rareItemsThisInstance = {}, {}
+	EJ_SelectInstance(instanceID)
+	EJ_SetDifficulty(diffID)
+	C_EncounterJournal.SetSlotFilter(Enum.ItemSlotFilterType.NoFilter)
 
 	local diffText = GetDifficultyInfo(diffID) or "Unknown difficulty"
-	local instanceText = format("%s %s (id: %d).", EJ_GetInstanceInfo(instanceID), diffText,instanceID)
+	local instanceText = format("%s %s (id: %d).", EJ_GetInstanceInfo(instanceID), diffText, instanceID)
 	if not instanceNames[instanceText] then
 		instanceNames[instanceText] = true
-		tinsert(trinketData, {"name", instanceText})
+		tinsert(trinketData, { "name", instanceText, })
+		tinsert(rareItemsData, { "name", instanceText, })
 	end
 
-   EJ_SetLootFilter(0, 0)
-   for j = 1, EJ_GetNumLoot() do -- EJ_GetNumLoot() can be 0 if EJ items are not cached.
-      local info = C_EncounterJournal.GetLootInfoByIndex(j)
-      if info.link then
-			if not trinketIdToIndex[info.itemID] then
-				tinsert(trinketData, { info.itemID, ZERO, self:GetItemClassesAllowedFlag(info.link) })
-				trinketIdToIndex[info.itemID] = #trinketData
-			else
-				trinketData[trinketIdToIndex[info.itemID]][2] = ZERO
+	EJ_SetLootFilter(0, 0)
+	for j = 1, EJ_GetNumLoot() do -- EJ_GetNumLoot() can be 0 if EJ items are not cached.
+		local info = C_EncounterJournal.GetLootInfoByIndex(j)
+		if info.link then
+			-- Trinkets
+			if info.slot == _G.INVTYPE_TRINKET then
+				if not trinketIdToIndex[info.itemID] then
+					tinsert(trinketData, { info.itemID, ZERO, self:GetItemClassesAllowedFlag(info.link), })
+					trinketIdToIndex[info.itemID] = #trinketData
+				else
+					trinketData[trinketIdToIndex[info.itemID]][2] = ZERO
+				end
+				trinketNames[info.itemID] = ItemUtils:GetItemNameFromLink(info.link)
+				C_Item.GetItemInfo(info.itemID)
+				count = count + 1
+				tinsert(trinketlinksInThisInstances, info.link)
 			end
-         trinketNames[info.itemID] = ItemUtils:GetItemNameFromLink(info.link)
-         C_Item.GetItemInfo(info.itemID)
-         count = count + 1
-         tinsert(trinketlinksInThisInstances, info.link)
-      else
-         self.Log:D("Uncached item @", instanceID, diffID, j, info.itemID)
-      end
-   end
 
-   for classID = 1, numClasses do
-      for specIndex = 1, GetNumSpecializationsForClassID(classID) do
-         EJ_SetLootFilter(classID, GetSpecializationInfoForClassID(classID, specIndex))
-         for j = 1, EJ_GetNumLoot() do -- EJ_GetNumLoot() can be 0 if EJ items are not cached.
-            local info = C_EncounterJournal.GetLootInfoByIndex(j)
-            if info.link then
-				local index = trinketIdToIndex[info.itemID]
-				local specCode = trinketData[index][2]
-				local digit = tonumber(specCode:sub(-classID, - classID), 16)
-				digit = digit + 2^(specIndex - 1)
-				trinketData[index][2] = specCode:sub(1, numClasses - classID)..format("%X", digit)..specCode:sub(numClasses - classID + 2, numClasses)
-            end
-         end
-      end
-   end
-   local interval = 1
-   if timeLeft > interval then -- Rerun many times for correctless
-      return self:ScheduleTimer("ExportTrinketDataSingleInstance", interval, instanceID, diffID, timeLeft - interval)
-   else
-      self:Print("--------------------")
-      self:Print(format("Instance %d. %s %s. Processed %d trinkets", instanceID, EJ_GetInstanceInfo(instanceID), diffText, count))
-      for _, link in ipairs(trinketlinksInThisInstances) do
-         local id = ItemUtils:GetItemIDFromLink(link)
-		 local data = trinketData[trinketIdToIndex[id]]
-         self:Print(format("%s(%d): %s (%s)", link, id, data[2], data[3]))
+			-- Rare items
+			if info.displayAsExtremelyRare or info.displayAsVeryRare then
+				if not rateIdToIndex[info.itemID] then
+					rareItemsData[#rareItemsData+1] = { info.itemID, info.name, }
+					rateIdToIndex[info.itemID] = #rareItemsData
+				end
+				tinsert(rareItemsThisInstance, info.link)
+				countRare = countRare + 1
+			end
+		else
+			self.Log:D("Uncached item @", instanceID, diffID, j, info.itemID)
+		end
+	end
+
+	-- Check if trinket is in the EJ for each class and specialization
+	C_EncounterJournal.SetSlotFilter(Enum.ItemSlotFilterType.Trinket)
+	for classID = 1, numClasses do
+		for specIndex = 1, GetNumSpecializationsForClassID(classID) do
+			EJ_SetLootFilter(classID, GetSpecializationInfoForClassID(classID, specIndex))
+			for j = 1, EJ_GetNumLoot() do -- EJ_GetNumLoot() can be 0 if EJ items are not cached.
+				local info = C_EncounterJournal.GetLootInfoByIndex(j)
+				if info.link then
+					local index = trinketIdToIndex[info.itemID]
+					local specCode = trinketData[index][2]
+					local digit = tonumber(specCode:sub(-classID, -classID), 16)
+					digit = digit + 2 ^ (specIndex - 1)
+					trinketData[index][2] = specCode:sub(1, numClasses - classID) ..
+						format("%X", digit) .. specCode:sub(numClasses - classID + 2, numClasses)
+				end
+			end
+		end
+	end
+	local interval = 1
+	if timeLeft > interval then -- Rerun many times for correctless
+		return self:ScheduleTimer("ExportItemDataSingleInstance", interval, instanceID, diffID, timeLeft - interval)
+	else
+		self:Print("--------------------")
+		self:Print(format("Instance %d. %s %s. Processed %d trinkets", instanceID, EJ_GetInstanceInfo(instanceID),
+			diffText, count))
+		for _, link in ipairs(trinketlinksInThisInstances) do
+			local id = ItemUtils:GetItemIDFromLink(link)
+			local data = trinketData[trinketIdToIndex[id]]
+			self:Print(format("%s(%d): %s (%s)", link, id, data[2], data[3]))
 			if not RCTrinketCategories[data[2]] and data[3] ~= 0xffffffff then
-			print ("Missing category for " .. data[2] .. " " .. data[3])
-		 end
-      end
-      self:Print("--------------------")
-   end
+				print("Missing category for " .. data[2] .. " " .. data[3])
+			end
+		end
+		self:Print(format("\nFound %d rare items:", countRare))
+		for _, link in ipairs(rareItemsThisInstance) do
+			self:Print(link)
+		end
+
+		self:Print("--------------------")
+	end
 end
+
 --@end-debug@
 
 -- Trinket categories description according to specs that can loot the trinket.
 -- These categories should cover all trinkets in the Encounter Journal. Add more if any trinket is missing category.
 _G.RCTrinketCategories = {
-	["73F7777777777"] = ALL_CLASSES, -- All Classes
-	["0365002707767"] = ITEM_MOD_STRENGTH_SHORT .. "/" .. ITEM_MOD_AGILITY_SHORT, -- Strength/Agility
-	["0000000700067"] = ITEM_MOD_STRENGTH_SHORT, -- Strength
-	["0365002707467"] = MELEE, -- Melee
-	["33F7777077710"] = ITEM_MOD_AGILITY_SHORT .. "/" .. ITEM_MOD_INTELLECT_SHORT, -- Agility/Intellect
+	["73F7777777777"] = ALL_CLASSES,                                                               -- All Classes
+	["0365002707767"] = ITEM_MOD_STRENGTH_SHORT .. "/" .. ITEM_MOD_AGILITY_SHORT,                  -- Strength/Agility
+	["0000000700067"] = ITEM_MOD_STRENGTH_SHORT,                                                   -- Strength
+	["0365002707467"] = MELEE,                                                                     -- Melee
+	["33F7777077710"] = ITEM_MOD_AGILITY_SHORT .. "/" .. ITEM_MOD_INTELLECT_SHORT,                 -- Agility/Intellect
 	["1375773047700"] = DAMAGER .. ", " .. ITEM_MOD_AGILITY_SHORT .. "/" .. ITEM_MOD_INTELLECT_SHORT, -- Damage, Agility/Intellect
-	["0365002007700"] = ITEM_MOD_AGILITY_SHORT, -- Agility
-	["7092775070010"] = ITEM_MOD_INTELLECT_SHORT, -- Intellect
-	["0241000100024"] = TANK, -- Tank
-	["0041000100024"] = TANK, -- Tanks except DEMONHUNTER (Too old) - FORMER: All Classes?
-	["0000000000024"] = TANK .. ", " .. BLOCK, -- Tank, Block (Warrior, Paladin)
-	["0201000100024"] = TANK .. ", " .. PARRY, -- Tank, Parry (Non-Druid)
-	["2082004030010"] = HEALER, -- Healer
-	["6082004030010"] = HEALER, -- Healer + Augmentation
-	["0092005070010"] = HEALER, -- Healer (EJ includes some DPS specs) FORMER: Intellect? (Missing Mage, Warlock)
-	["0082004030010"] = HEALER, -- Healer, - Evoker
-	["22C3004130034"] = TANK .. ", ".. HEALER, -- Tank & Healer
+	["0365002007700"] = ITEM_MOD_AGILITY_SHORT,                                                    -- Agility
+	["7092775070010"] = ITEM_MOD_INTELLECT_SHORT,                                                  -- Intellect
+	["0241000100024"] = TANK,                                                                      -- Tank
+	["0041000100024"] = TANK,                                                                      -- Tanks except DEMONHUNTER (Too old) - FORMER: All Classes?
+	["0000000000024"] = TANK .. ", " .. BLOCK,                                                     -- Tank, Block (Warrior, Paladin)
+	["0201000100024"] = TANK .. ", " .. PARRY,                                                     -- Tank, Parry (Non-Druid)
+	["2082004030010"] = HEALER,                                                                    -- Healer
+	["6082004030010"] = HEALER,                                                                    -- Healer + Augmentation
+	["0092005070010"] = HEALER,                                                                    -- Healer (EJ includes some DPS specs) FORMER: Intellect? (Missing Mage, Warlock)
+	["0082004030010"] = HEALER,                                                                    -- Healer, - Evoker
+	["22C3004130034"] = TANK .. ", " .. HEALER,                                                    -- Tank & Healer
 	["0124002607743"] = DAMAGER .. ", " .. ITEM_MOD_STRENGTH_SHORT .. "/" .. ITEM_MOD_AGILITY_SHORT, -- Damage, Strength/Agility
-	["0000000600043"] = DAMAGER .. ", " .. ITEM_MOD_STRENGTH_SHORT, -- Damage, Strength
-	["0124002007700"] = DAMAGER .. ", " .. ITEM_MOD_AGILITY_SHORT, -- Damage, Agility
-	["0124002607443"] = DAMAGER .. ", " .. MELEE, -- Damage, Melee
-	["0124002007400"] = DAMAGER .. ", " .. MELEE .. ", " .. ITEM_MOD_AGILITY_SHORT, -- Damage, Melee, Agility
-	["0010771050300"] = DAMAGER .. ", " .. RANGED, -- Damage, Ranged (+ discipline)
-	["5010771050300"] = DAMAGER .. ", " .. RANGED, -- Damage, Ranged (+ discipline & augmentation)
-	["0010771040300"] = DAMAGER .. ", " .. RANGED, -- Damage, Ranged
-	["1010771040300"] = DAMAGER .. ", " .. RANGED, -- Damage, Ranged (+ Devastation)
-	["1010771050000"] = DAMAGER .. ", " .. ITEM_MOD_INTELLECT_SHORT, -- Damage, Intellect
-	["3092776070010"] = DAMAGER .. ", " .. ITEM_MOD_INTELLECT_SHORT, -- Damage + Healers, Intellect
-	["1010671040000"] = DAMAGER .. ", " .. ITEM_MOD_INTELLECT_SHORT, -- Damage, Intellect (direct damage, no affliction warlock and shadow priest)
-	["5010771040000"] = DAMAGER .. ", " .. ITEM_MOD_INTELLECT_SHORT, -- Damage, Intellect (no discipline)
-	["1134773647743"] = DAMAGER, -- Damage (Pre augmentation evoker)
-	["5134773647743"] = DAMAGER, -- Damage
-	["0325002007700"] = ITEM_MOD_AGILITY_SHORT, -- Agility (DPS + vengance and brewmaster)??
-	["73F7777077710"] = ITEM_MOD_AGILITY_SHORT .. "/" .. ITEM_MOD_INTELLECT_SHORT, -- Agility/Intellect
-	["0000000700077"] = ITEM_MOD_STRENGTH_SHORT, -- Strength
+	["0000000600043"] = DAMAGER .. ", " .. ITEM_MOD_STRENGTH_SHORT,                                -- Damage, Strength
+	["0124002007700"] = DAMAGER .. ", " .. ITEM_MOD_AGILITY_SHORT,                                 -- Damage, Agility
+	["0124002607443"] = DAMAGER .. ", " .. MELEE,                                                  -- Damage, Melee
+	["0124002007400"] = DAMAGER .. ", " .. MELEE .. ", " .. ITEM_MOD_AGILITY_SHORT,                -- Damage, Melee, Agility
+	["0010771050300"] = DAMAGER .. ", " .. RANGED,                                                 -- Damage, Ranged (+ discipline)
+	["5010771050300"] = DAMAGER .. ", " .. RANGED,                                                 -- Damage, Ranged (+ discipline & augmentation)
+	["0010771040300"] = DAMAGER .. ", " .. RANGED, -- Pre Evoker
+	["5010771040300"] = DAMAGER .. ", " .. RANGED, -- /w Evoker
+	["1010771040300"] = DAMAGER .. ", " .. RANGED,                                                 -- Damage, Ranged (+ Devastation)
+	["1010771050000"] = DAMAGER .. ", " .. ITEM_MOD_INTELLECT_SHORT,                               -- Damage, Intellect
+	["3092776070010"] = DAMAGER .. ", " .. ITEM_MOD_INTELLECT_SHORT,                               -- Damage + Healers, Intellect
+	["1010671040000"] = DAMAGER .. ", " .. ITEM_MOD_INTELLECT_SHORT,                               -- Damage, Intellect (direct damage, no affliction warlock and shadow priest)
+	["5010771040000"] = DAMAGER .. ", " .. ITEM_MOD_INTELLECT_SHORT,                               -- Damage, Intellect (no discipline)
+	["1134773647743"] = DAMAGER,                                                                   -- Damage (Pre augmentation evoker)
+	["5134773647743"] = DAMAGER,                                                                   -- Damage
+	["0325002007700"] = ITEM_MOD_AGILITY_SHORT,                                                    -- Agility (DPS + vengance and brewmaster)??
+	["73F7777077710"] = ITEM_MOD_AGILITY_SHORT .. "/" .. ITEM_MOD_INTELLECT_SHORT,                 -- Agility/Intellect
+	["0000000700077"] = ITEM_MOD_STRENGTH_SHORT,                                                   -- Strength
 
 	-- The following categories does not make sense. Most likely a Blizzard error in the Encounter Journal for several old trinkets.
 	-- Add "?" as a suffix to the description as the result
-	["0365002107467"] = MELEE .. "?", -- Melee? （Missing Frost and Unholy DK)
-	["0241000100044"] = TANK .. "?", -- Tank? (Ret instead of Pro?)
+	["0365002107467"] = MELEE .. "?",                                                  -- Melee? （Missing Frost and Unholy DK)
+	["0241000100044"] = TANK .. "?",                                                   -- Tank? (Ret instead of Pro?)
 	["0124002607703"] = ITEM_MOD_STRENGTH_SHORT .. "/" .. ITEM_MOD_AGILITY_SHORT .. "?", -- Strength/Agility?
 	["0367002707767"] = ITEM_MOD_STRENGTH_SHORT .. "/" .. ITEM_MOD_AGILITY_SHORT .. "?", -- Strength/Agility?
 	["0324001607743"] = ITEM_MOD_STRENGTH_SHORT .. "/" .. ITEM_MOD_AGILITY_SHORT .. "?", -- Strength/Agility?
-	["0324002007700"] = ITEM_MOD_AGILITY_SHORT .. "?", -- Agility? (Missing Brewmaster)
+	["0324002007700"] = ITEM_MOD_AGILITY_SHORT .. "?",                                 -- Agility? (Missing Brewmaster)
 	["3092775070310"] = ITEM_MOD_AGILITY_SHORT .. "/" .. ITEM_MOD_INTELLECT_SHORT .. "?", -- Agility/Intellect?
-	["3092075070010"] = ITEM_MOD_INTELLECT_SHORT .. "?", -- Intellect? (Missing Warlock)
-	["1010773050000"] = DAMAGER .. ", " .. ITEM_MOD_INTELLECT_SHORT .. "?", -- Damage, Intellect? (+Enhancement Shaman)
-	["0124002607447"] = MELEE, -- All melee + protection warrior?
-	["0092775070010"] = ITEM_MOD_INTELLECT_SHORT, -- Intellect (No evoker)
-	["03F7777777777"] = ALL_CLASSES, -- All Classes except Evoker
-	["0010771040000"] = DAMAGER .. ", " .. ITEM_MOD_INTELLECT_SHORT, -- Damage, Intellect (no discipline or evoker)
-	["0010771050000"] = DAMAGER .. ", " .. ITEM_MOD_INTELLECT_SHORT, -- Damage, Intellect (no Evoker)
-	["7300070000077"] = "", -- Class specific (Evoker, Demonhunter, Mage, Paladin, Warrior)
-	["0007707000700"] = "", -- Class specific (Monk, Warlock, Shaman, Hunter)
-	["00F0000777000"] = "", -- Class specific (Druid, Death Knight, Priest, Rogue)
+	["3092075070010"] = ITEM_MOD_INTELLECT_SHORT .. "?",                               -- Intellect? (Missing Warlock)
+	["1010773050000"] = DAMAGER .. ", " .. ITEM_MOD_INTELLECT_SHORT .. "?",            -- Damage, Intellect? (+Enhancement Shaman)
+	["0124002607447"] = MELEE,                                                         -- All melee + protection warrior?
+	["0092775070010"] = ITEM_MOD_INTELLECT_SHORT,                                      -- Intellect (No evoker)
+	["03F7777777777"] = ALL_CLASSES,                                                   -- All Classes except Evoker
+	["0010771040000"] = DAMAGER .. ", " .. ITEM_MOD_INTELLECT_SHORT,                   -- Damage, Intellect (no discipline or evoker)
+	["0010771050000"] = DAMAGER .. ", " .. ITEM_MOD_INTELLECT_SHORT,                   -- Damage, Intellect (no Evoker)
+	["7300070000077"] = "",                                                            -- Class specific (Evoker, Demonhunter, Mage, Paladin, Warrior)
+	["0007707000700"] = "",                                                            -- Class specific (Monk, Warlock, Shaman, Hunter)
+	["00F0000777000"] = "",                                                            -- Class specific (Druid, Death Knight, Priest, Rogue)
 }
 
 
-function RCLootCouncil:InitTrinketData ()
-   -- Class specific trinket
-   for classID in pairs(self.classIDToDisplayName) do
-      local digit = 0
-      for specIndex = 1, self.Utils:GetNumSpecializationsForClassID(classID) do
-         digit = digit + 2^(specIndex - 1)
-      end
-      local flag = ZERO:sub(1, numClasses - classID)..format("%X", digit)..ZERO:sub(numClasses - classID + 2, numClasses)
-      _G.RCTrinketCategories[flag] = C_CreatureInfo.GetClassInfo(classID).className
-   end
+function RCLootCouncil:InitTrinketData()
+	-- Class specific trinket
+	for classID in pairs(self.classIDToDisplayName) do
+		local digit = 0
+		for specIndex = 1, self.Utils:GetNumSpecializationsForClassID(classID) do
+			digit = digit + 2 ^ (specIndex - 1)
+		end
+		local flag = ZERO:sub(1, numClasses - classID) ..
+			format("%X", digit) .. ZERO:sub(numClasses - classID + 2, numClasses)
+		_G.RCTrinketCategories[flag] = C_CreatureInfo.GetClassInfo(classID).className
+	end
 end
 
 -- Automatically generated by command "/rc exporttrinketdata"
@@ -729,11 +774,11 @@ _G.RCTrinketSpecs = {
 	[133227] = "0082004030010", -- Tear of Blood,                                  	Healer
 	[133216] = "0092775070010", -- Tendrils of Burrowing Dark,                     	Intellect
 	-- The Vortex Pinnacle Normal (id: 68).
-	[56370] = "0241000100024", -- Heart of Thunder,                               	Tank
+	-- [56370] = "0241000100024", -- Heart of Thunder,                               	Tank
 	-- The Vortex Pinnacle Heroic (id: 68).
 	-- The Vortex Pinnacle Timewalking (id: 68).
-	[133246] = "0241000100024", -- Heart of Thunder,                               	Tank
-	[133252] = "0082004030010", -- Rainsong,                                       	Healer
+	-- [133246] = "0241000100024", -- Heart of Thunder,                               	Tank
+	-- [133252] = "0082004030010", -- Rainsong,                                       	Healer
 	-- Throne of the Tides Normal (id: 65).
 	[56285] = "0000000600043", -- Might of the Ocean,                             	Damage, Strength
 	[56280] = "0241000100024", -- Porcelain Crab,                                 	Tank
@@ -1279,10 +1324,10 @@ _G.RCTrinketSpecs = {
 	-- Maw of Souls Heroic (id: 727).
 	-- Maw of Souls Mythic (id: 727).
 	-- Neltharion's Lair Normal (id: 767).
-	[137357] = "0124002607443", -- Mark of Dargrul,                                	Damage, Melee
-	[137349] = "0010771050300", -- Naraxas' Spiked Tongue,                         	Damage, Ranged
-	[137338] = "0241000100024", -- Shard of Rokmora,                               	Tank
-	[137344] = "0241000100024", -- Talisman of the Cragshaper,                     	Tank
+	-- [137357] = "0124002607443", -- Mark of Dargrul,                                	Damage, Melee
+	-- [137349] = "0010771050300", -- Naraxas' Spiked Tongue,                         	Damage, Ranged
+	-- [137338] = "0241000100024", -- Shard of Rokmora,                               	Tank
+	-- [137344] = "0241000100024", -- Talisman of the Cragshaper,                     	Tank
 	-- Neltharion's Lair Heroic (id: 767).
 	-- Neltharion's Lair Mythic (id: 767).
 	-- Neltharion's Lair Timewalking (id: 767).
@@ -1450,7 +1495,7 @@ _G.RCTrinketSpecs = {
 	-- Atal'Dazar Heroic (id: 968).
 	-- Atal'Dazar Mythic (id: 968).
 	-- Freehold Normal (id: 1001).
-	[155881] = "0365002007700", -- Harlan's Loaded Dice,                           	Agility
+	-- [155881] = "0365002007700", -- Harlan's Loaded Dice,                           	Agility
 	-- Freehold Heroic (id: 1001).
 	-- Freehold Mythic (id: 1001).
 	-- Kings' Rest Heroic (id: 1041).
@@ -1469,8 +1514,8 @@ _G.RCTrinketSpecs = {
 	-- Shrine of the Storm Heroic (id: 1036).
 	-- Shrine of the Storm Mythic (id: 1036).
 	-- Siege of Boralus Heroic (id: 1023).
-	[159623] = "0365002007700", -- Dead-Eye Spyglass,                              	Agility
-	[159622] = "0010771040000", -- Hadal's Nautilus,                               	Damage, Intellect
+	-- [159623] = "0365002007700", -- Dead-Eye Spyglass,                              	Agility
+	--[159622] = "0010771040000", -- Hadal's Nautilus,                               	Damage, Intellect
 	-- Siege of Boralus Mythic (id: 1023).
 	-- Temple of Sethraliss Normal (id: 1030).
 	[158368] = "0082004030010", -- Fangs of Intertwined Essence,                   	Healer
@@ -1484,9 +1529,9 @@ _G.RCTrinketSpecs = {
 	-- The MOTHERLODE!! Heroic (id: 1012).
 	-- The MOTHERLODE!! Mythic (id: 1012).
 	-- The Underrot Normal (id: 1022).
-	[159626] = "0241000100024", -- Lingering Sporepods,                            	Tank
-	[159624] = "0010771040000", -- Rotcrusted Voodoo Doll,                         	Damage, Intellect
-	[159625] = "0000000700067", -- Vial of Animated Blood,                         	Strength
+	-- [159626] = "0241000100024", -- Lingering Sporepods,                            	Tank
+	-- [159624] = "0010771040000", -- Rotcrusted Voodoo Doll,                         	Damage, Intellect
+	-- [159625] = "0000000700067", -- Vial of Animated Blood,                         	Strength
 	-- The Underrot Heroic (id: 1022).
 	-- The Underrot Mythic (id: 1022).
 	-- Tol Dagor Normal (id: 1002).
@@ -1607,8 +1652,8 @@ _G.RCTrinketSpecs = {
 	-- Halls of Atonement Heroic (id: 1185).
 	-- Halls of Atonement Mythic (id: 1185).
 	-- Mists of Tirna Scithe Normal (id: 1184).
-	[178715] = "0365002007700", -- Mistcaller Ocarina,                             	Agility
-	[178708] = "3092775070010", -- Unbound Changeling,                             	Intellect
+	-- [178715] = "0365002007700", -- Mistcaller Ocarina,                             	Agility
+	-- [178708] = "3092775070010", -- Unbound Changeling,                             	Intellect
 	-- Mists of Tirna Scithe Heroic (id: 1184).
 	-- Mists of Tirna Scithe Mythic (id: 1184).
 	-- Plaguefall Normal (id: 1183).
@@ -1634,15 +1679,15 @@ _G.RCTrinketSpecs = {
 	-- Tazavesh, the Veiled Market Heroic (id: 1194).
 	[185836] = "0241000100024", -- Codex of the First Technique,                   	Tank
 	[185845] = "2082004030010", -- First Class Healing Distributor,                	Healer
-	[185846] = "0010771040300", -- Miniscule Mailemental in an Envelope,           	Damage, Ranged
+	[185846] = "5010771040300", -- Miniscule Mailemental in an Envelope,           	Damage, Ranged
 	[190958] = "33F7777777777", -- So'leah's Secret Technique,                     	All Classes
 	[190652] = "0124002607443", -- Ticking Sack of Terror,                         	Damage, Melee
 	-- Tazavesh, the Veiled Market Mythic (id: 1194).
 	-- The Necrotic Wake Normal (id: 1182).
-	[178742] = "0365002007700", -- Bottled Flayedwing Toxin,                       	Agility
-	[178772] = "1010771040000", -- Satchel of Misbegotten Minions,                 	Damage, Intellect
-	[178783] = "2082004030010", -- Siphoning Phylactery Shard,                     	Healer
-	[178751] = "0000000700067", -- Spare Meat Hook,                                	Strength
+	-- [178742] = "0365002007700", -- Bottled Flayedwing Toxin,                       	Agility
+	-- [178772] = "1010771040000", -- Satchel of Misbegotten Minions,                 	Damage, Intellect
+	-- [178783] = "2082004030010", -- Siphoning Phylactery Shard,                     	Healer
+	-- [178751] = "0000000700067", -- Spare Meat Hook,                                	Strength
 	-- The Necrotic Wake Heroic (id: 1182).
 	-- The Necrotic Wake Mythic (id: 1182).
 	-- Theater of Pain Normal (id: 1187).
@@ -1808,7 +1853,7 @@ _G.RCTrinketSpecs = {
 	[202610] = "0365002007700", -- Dragonfire Bomb Dispenser,      	Agility
 	[202617] = "0124002607443", -- Elementium Pocket Anvil,        	Damage, Melee
 	[202616] = "0241000100024", -- Enduring Dreadplate,            	Tank
-	[203996] = "5010771040300", -- Igneous Flowstone,              	
+	[203996] = "5010771040300", -- Igneous Flowstone,              	Damage, Ranged
 	-- [204201] = "7300070000077",	-- Neltharion's Call to Chaos,     	Warrior, Paladin, Mage, Demon Hunter, Evoker
 	-- [204202] = "0007707000700",	-- Neltharion's Call to Dominance, 	Hunter, Shaman, Warlock, Monk
 	-- [204211] = "00F0000777000",	-- Neltharion's Call to Suffering, 	Rogue, Priest, Death Knight, Druid
@@ -2008,4 +2053,59 @@ _G.RCTrinketSpecs = {
 	-- Liberation of Undermine Heroic (id: 1296).
 	-- Liberation of Undermine Mythic (id: 1296).
 	-- Liberation of Undermine Looking For Raid (id: 1296).
+
+	-- Manaforge Omega Normal (id: 1302).
+	[242404] = "0241000100024", -- All-Devouring Nucleus,               	Tank
+	[242402] = "73F7777777777", -- Araz's Ritual Forge,                 	All Classes
+	[242395] = "73F7777777777", -- Astral Antenna,                      	All Classes
+	[242401] = "0241000100024", -- Brand of Ceaseless Ire,              	Tank
+	[242392] = "7092775070010", -- Diamantine Voidcore,                 	Intellect
+	[242394] = "0000000600043", -- Eradicating Arcanocore,              	Damage, Strength
+	[242393] = "2082004030010", -- Loom'ithar's Living Silk,            	Healer
+	[242398] = "5010771040000", -- Naazindhri's Mystic Lash,            	Damage, Intellect
+	[242400] = "2082004030010", -- Nexus-King's Command,                	Healer
+	[242403] = "5134773647743", -- Perfidious Projector,                	Damage
+	[242399] = "5134773647743", -- Screams of a Forgotten Sky,          	Damage
+	[242397] = "0124002007700", -- Sigil of the Cosmic Hunt,            	Damage, Agility
+	[242391] = "0241000100024", -- Soulbinder's Embrace,                	Tank
+	[242396] = "0124002607743", -- Unyielding Netherprism,              	Damage, Strength/Agility
+	-- Manaforge Omega Heroic (id: 1302).
+	-- Manaforge Omega Mythic (id: 1302).
+	-- Manaforge Omega Looking For Raid (id: 1302).
+
+	-- Eco-Dome Al'dani Normal (id: 1303).
+	[242497] = "7092775070010", -- Azhiccaran Parapodia,                	Intellect
+	[242495] = "0365002707767", -- Incorporeal Warpclaw,                	Strength/Agility
+	[242494] = "73F7777077710", -- Lily of the Eternal Weave,           	Agility/Intellect
+	-- Eco-Dome Al'dani Heroic (id: 1303).
+	-- Eco-Dome Al'dani Mythic (id: 1303).
+	-- Halls of Atonement Heroic (id: 1185).
+	[246344] = "0124002607443", -- Cursed Stone Idol,                   	Damage, Melee
+}
+
+--- Items listed as rare or above in the encounter journal.
+_G.RCRareItems = {
+	-- Nerub-ar Palace Normal (id: 1273).
+	[223144] = true, -- Formula: Enchant Weapon - Authority of the Depths
+	[223097] = true, -- Pattern: Adrenal Surge Clasp
+	[224435] = true, -- Pattern: Duskthread Lining
+	[223048] = true, -- Plans: Siphoning Stiletto
+	[226190] = true, -- Recipe: Sticky Sweet Treat
+	[224147] = true, -- Reins of the Sureki Skyrazor
+	[219877] = true, -- Void Reaper's Warp Blade
+	[225577] = true, -- Sureki Zealot's Insignia
+	[225574] = true, -- Wings of Shattered Sorrow
+	[225578] = true, -- Seal of the Poisoned Pact
+	-- Liberation of Undermine Normal (id: 1296).
+	[236960] = true, -- Prototype A.S.M.R.
+	[232526] = true, -- Best-in-Slots
+	[232804] = true, -- Capo's Molten Knuckles
+	[228844] = true, -- Test Pilot's Go-Pack
+	[231265] = true, -- The Jastor Diamond
+	-- Manaforge Omega Normal (id: 1302).
+	[243365] = true, -- Maw of the Void
+	[243308] = true, -- Interloper's Chain Boots
+	[243307] = true, -- Interloper's Plated Sabatons
+	[243306] = true, -- Interloper's Reinforced Sandals
+	[243305] = true, -- Interloper's Silken Striders
 }

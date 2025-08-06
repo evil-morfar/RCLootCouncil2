@@ -14,6 +14,14 @@ addon.MIN_LOOT_THRESHOLD = 3 -- Only loot rares or better
 
 addon.PROFILE_EXPORT_IDENTIFIER = "RCLootCouncilProfile"
 
+-- Strings of which one must be in the item tooltip for it to be considered a special effect item
+addon.SPECIAL_EFFECT_SEARCH_STRINGS = {
+	_G.ITEM_SPELL_TRIGGER_ONUSE,
+	_G.ITEM_SPELL_TRIGGER_ONPROC,
+	_G.ITEM_SPELL_TRIGGER_ONEQUIP,
+	_G.ITEM_SPELL_EFFECT,
+}
+
 --- Translation of a inventory slot to another ( custom) one
 addon.BTN_SLOTS = {
 	INVTYPE_2HWEAPON = "WEAPON",
@@ -47,6 +55,8 @@ addon.OPT_MORE_BUTTONS_VALUES = {
 	BAGSLOT = _G.BAGSLOT,
 	RECIPE = _G.AUCTION_CATEGORY_RECIPES,
 	CATALYST = L.Catalyst_Items, -- items that can be converted to tier through catalyst
+	SPECIAL = L.Special_Effects_Items,
+	RARE = L.Rare_Items,
 }
 
 --- Inventory types that can be converted to tier
@@ -115,8 +125,12 @@ addon.INSTANCE_DATA_TTL = 1800 -- 30 min
 --- Functions used for generating response codes
 --- Functions are run numerically, and the first to return non-nil is used, i.e. order matters!
 --- To add a new a button group, simply add it to the options menu (easily done by adding an entry to OPT_MORE_BUTTONS_VALUES), and add a function here to determine if that group should be used for the item.
----@type (fun(item: string|integer, db: RCLootCouncil.db, itemID: integer, itemEquipLoc: string, itemClassID: Enum.ItemClass, itemSubClassID: Enum.ItemMiscellaneousSubclass): string?) []
+---@type (fun(item: string|integer, db: RCLootCouncilDB, itemID: integer, itemEquipLoc: string, itemClassID: Enum.ItemClass, itemSubClassID: Enum.ItemMiscellaneousSubclass): string?) []
 addon.RESPONSE_CODE_GENERATORS = {
+	-- Rare items
+	function (_, db, itemID)
+		return db.enabledButtons.RARE and _G.RCRareItems[itemID] and "RARE" or nil
+	end,
 	-- Chest/Robe
 	function(_, db, _, equipLoc)
 		return db.enabledButtons.INVTYPE_CHEST and
@@ -165,6 +179,21 @@ addon.RESPONSE_CODE_GENERATORS = {
 			return "RECIPE"
 		end
 	end,
+	-- Special effects
+	function(item, db, itemID, itemEquipLoc, itemClassID, itemSubClassID)
+		if db.enabledButtons.SPECIAL and C_Item.IsEquippableItem(item) then
+			-- Scan tooltip
+			local info = C_TooltipInfo.GetItemByID(itemID)
+			if not info.type == Enum.TooltipDataType.Item then
+				addon.Log:W("ItemTooltip was not of type item", itemID, info.type)
+				return
+			end
+			if addon.Utils:FindInTooltip(info.lines, addon.SPECIAL_EFFECT_SEARCH_STRINGS) then
+				return "SPECIAL"
+			end
+		end
+	end,
+
 	-- Catalyst
 	function(_, db, _, itemEquipLoc)
 		return db.enabledButtons.CATALYST and addon.CATALYST_ITEMS[itemEquipLoc] and "CATALYST" or nil

@@ -129,7 +129,7 @@ function RCLootCouncil:OnInitialize()
 	self.isMasterLooter = false -- Are we the ML?
 	---@type Player
 	self.masterLooter = nil -- Masterlooter
-	self.lootMethod = self.GetLootMethod() or "personalloot"
+	self.lootMethod = GetLootMethod and GetLootMethod() or C_PartyInfo.GetLootMethod and C_PartyInfo.GetLootMethod() or "personalloot"
 	self.handleLoot = false -- Does RC handle loot(Start session from loot window)?
 	self.isCouncil = false -- Are we in the Council?
 	self.enabled = true -- turn addon on/off
@@ -594,8 +594,8 @@ function RCLootCouncil:ChatCommand(msg)
 		self.nnp = not self.nnp
 		self:Print("nnp = " .. tostring(self.nnp))
 
-	elseif input == "exporttrinketdata" then
-		self:ExportTrinketData(tonumber(args[1]), 0, tonumber(args[2]), 1)
+	elseif input == "exportitemdata" then
+		self:ExportEJData(tonumber(args[1]), 0, tonumber(args[2]) or self.EJLatestInstanceID, 1)
 
 	elseif input == "trinkettest" or input == "ttest" then
 		self.playerClass = string.upper(args[1])
@@ -1007,10 +1007,13 @@ function RCLootCouncil:GetTypeCodeForItem(item)
 	local itemID, _, _, itemEquipLoc, _, itemClassID, itemSubClassID = C_Item.GetItemInfoInstant(item)
 	if not itemID then return "default" end -- We can't handle uncached items!
 
-	if not db.enabledButtons[itemEquipLoc] then
-		for _, func in ipairs(self.RESPONSE_CODE_GENERATORS) do
-			local val = func(item, db, itemID, itemEquipLoc, itemClassID, itemSubClassID)
-			if val then return val end
+	for _, func in ipairs(self.RESPONSE_CODE_GENERATORS) do
+		local val = func(item, db, itemID, itemEquipLoc, itemClassID, itemSubClassID)
+		if val then
+			-- Rare items are the only ones bypassing normal specificity checks.
+			if not db.enabledButtons[itemEquipLoc] or val == "RARE" then
+				return val
+			end
 		end
 	end
 	-- Remaining is simply their equipLoc, if set
@@ -1852,7 +1855,7 @@ function RCLootCouncil:NewMLCheck()
 	local old_ml = self.masterLooter
 	local old_lm = self.lootMethod
 	self.isMasterLooter, self.masterLooter = self:GetML()
-	self.lootMethod = self.GetLootMethod()
+	self.lootMethod = GetLootMethod and GetLootMethod() or C_PartyInfo.GetLootMethod and C_PartyInfo.GetLootMethod()
 	local instance_type = select(2, IsInInstance())
 	if instance_type == "pvp" or instance_type == "arena" or instance_type == "scenario" then return end -- Don't do anything here
 	if self.masterLooter and type(self.masterLooter) == "string"
