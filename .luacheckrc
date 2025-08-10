@@ -3183,8 +3183,6 @@ globals = {
 	"GetSocketTypes",
 	"GetSortBagsRightToLeft",
 	"GetSpecChangeCost",
-	"GetSpecialization",
-	"GetSpecializationInfo",
 	"GetSpecializationInfoByID",
 	"GetSpecializationInfoForClassID",
 	"GetSpecializationInfoForSpecID",
