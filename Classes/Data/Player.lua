@@ -25,7 +25,7 @@ local private = {
 
 ---@class Player
 ---@field guid string
----@field name string
+---@field name string Full name, "Name-Realm"
 ---@field class string
 ---@field realm string
 ---@field role "DAMAGER"|"TANK"|"HEALER"|"NONE"? 
