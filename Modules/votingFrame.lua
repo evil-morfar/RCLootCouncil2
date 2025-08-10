@@ -1124,7 +1124,7 @@ function RCVotingFrame:UpdateMoreInfo(row, data)
 	end
 
 	local tip = self.frame.moreInfo -- shortening
-	tip:SetOwner(self.frame, "ANCHOR_RIGHT")
+	tip:SetOwner(self.frame.content, "ANCHOR_TOPRIGHT")
 
 	tip:AddLine(addon:GetClassIconAndColoredName(name, 16))
 	if moreInfoData and moreInfoData[name] then
