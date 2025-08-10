@@ -74,7 +74,7 @@ function Log:New(prefix)
 	---@class Log
 	---@overload fun(...) 
 	local object = {
-		prefix = prefix and "["..prefix.."]" or ""
+		prefix = prefix and "["..prefix.."]" or "\t"
 	}
 	return setmetatable(object, LOG_MT)
 end
@@ -110,10 +110,9 @@ function private:Log(Log,prefix, ...)
    t[3] = "> "
    t[4] = prefix
    t[5] = (Log.prefix or "")
-   t[6] = "\t"
    for i = 1, select("#", ...) do
-      t[(i - 1) * 2 + 7] = "\t"
-      t[(i - 1) * 2 + 8] = tostring(select(i, ...))
+      t[(i - 1) * 2 + 6] = "\t"
+      t[(i - 1) * 2 + 7] = tostring(select(i, ...))
    end
    local msg = table.concat(t, "")
    TempTable:Release(t)
