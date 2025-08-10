@@ -1771,7 +1771,7 @@ function RCLootCouncil:RestoreCachedData()
 	self.Log:d("ML, Cached:", self.masterLooter, self.isMasterLooter, self.db.global.cache.masterLooter)
 
 	-- Restore mldb and council
-	if self.db.global.cache.mldb then
+	if self.masterLooter and self.db.global.cache.mldb then
 		self:OnMLDBReceived(self.db.global.cache.mldb)
 	end
 	if self.masterLooter and self.db.global.cache.council then
