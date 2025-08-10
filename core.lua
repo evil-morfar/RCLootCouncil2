@@ -1600,6 +1600,11 @@ function RCLootCouncil:OnEvent(event, ...)
 		self:ScheduleTimer(CandidateAndNewMLCheck, 2)
 	elseif event == "GROUP_LEFT" then
 		self.Log:d("Event:", event, ...)
+		-- Clear cache, and undo any mldb changes
+		wipe(self.db.global.cache)
+		wipe(self.mldb)
+		self.handleLoot = false
+
 		self:UpdateCandidatesInGroup()
 		self:NewMLCheck()
 
