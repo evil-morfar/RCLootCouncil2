@@ -1148,7 +1148,11 @@ function RCLootCouncilML:ShouldAutoAward(item, quality)
 		if name then
 			return true, "boe", addon:UnitName(name)
 		end
-		self:PrintAutoAwardErrorWithPlayer(db.autoAwardBoETo[1])
+		if #db.autoAwardBoETo == 0 then
+			addon:Print(L.error_no_autoAwardBoE_candidates)
+		else
+			self:PrintAutoAwardErrorWithPlayer(db.autoAwardBoETo[1])
+		end
 		return false
 	end
 	if db.autoAward and quality >= db.autoAwardLowerThreshold and quality <= db.autoAwardUpperThreshold
@@ -1158,7 +1162,11 @@ function RCLootCouncilML:ShouldAutoAward(item, quality)
 			if name then
 				return true, "normal", addon:UnitName(name)
 			end
-			self:PrintAutoAwardErrorWithPlayer(db.autoAwardTo[1])
+			if #db.autoAwardTo == 0 then
+				addon:Print(L.error_no_autoAward_candidates)
+			else
+				self:PrintAutoAwardErrorWithPlayer(db.autoAwardTo[1])
+			end
 		else
 			addon:Print(format(L["Could not Auto Award i because the Loot Threshold is too high!"], item))
 		end

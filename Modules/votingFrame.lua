@@ -284,7 +284,7 @@ end
 
 --- Removes a specific entry from the voting frame's columns
 -- Takes either index or colName as the identifier, and returns the removed rows
--- if succesful, or nil if not. Should be called before any session begins.
+-- if successfull, or nil if not. Should be called before any session begins.
 function RCVotingFrame:RemoveColumn(id)
 	addon.Log:D("Removing Column", id)
 	local removedCol, removedIndex
@@ -301,6 +301,14 @@ function RCVotingFrame:RemoveColumn(id)
 		for _,col in ipairs(self.scrollCols) do
 			if col.sortnext and col.sortnext > removedIndex then
 				col.sortnext = col.sortnext - 1
+			end
+		end
+		-- If the frame has already been created, we need to update it
+		if self:IsEnabled() and self.frame then
+			if self.frame:IsShown() then
+				addon.Log:E("Tried to remove column while voting frame is shown")
+			else
+				self.frame.UpdateSt()
 			end
 		end
 		return removedCol
@@ -1116,7 +1124,7 @@ function RCVotingFrame:UpdateMoreInfo(row, data)
 	end
 
 	local tip = self.frame.moreInfo -- shortening
-	tip:SetOwner(self.frame, "ANCHOR_RIGHT")
+	tip:SetOwner(self.frame.content, "ANCHOR_TOPRIGHT")
 
 	tip:AddLine(addon:GetClassIconAndColoredName(name, 16))
 	if moreInfoData and moreInfoData[name] then
@@ -1179,8 +1187,8 @@ end
 
 function RCVotingFrame:GetFrame()
 	if self.frame then return self.frame end
-
 	-- Container and title
+	---@class DefaultRCLootCouncilFrame : RCFrame
 	local f = addon.UI:NewNamed("RCFrame", UIParent, "DefaultRCLootCouncilFrame", L["RCLootCouncil Voting Frame"], 250, 410)
 	-- Scrolling table
 	function f.UpdateSt()

@@ -513,6 +513,8 @@ L["ML_ADD_INVALID_ITEM"] = "Invalid itemLink or itemID: %s"
 L["ML_ADD_ITEM_MAX_ATTEMPTS"] = "Couldn't fetch item info for %s - probably not a real item."
 L.ML_REQUEST_VOTES = "%s has requested you to vote for item #%d: %s"
 
+L.error_no_autoAward_candidates = "You've enabled auto awarding of items, but haven't set any candidate(s) to auto award to."
+L.error_no_autoAwardBoE_candidates = "You've enabled auto awarding of BoE items, but haven't set any candidate(s) to auto award to."
 L["error_test_as_non_leader"] = "You cannot initiate a test while in a group without being the group leader."
 L["lootFrame_error_note_required"] = "You must add a note before submitting your response - %s"
 L["lootHistory_moreInfo_winnersOfItem"] = "Winners of %s:"

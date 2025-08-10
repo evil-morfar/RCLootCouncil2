@@ -1,3 +1,11 @@
+# 3.17.1
+
+## Bugfixes
+
+- *Added warning when enabling AutoLoot without setting recipients.*
+- *Fixed issues with certain items not being registered as special.*
+- *Fixed issue with the addon not always disabling properly when leaving a group.*
+
 # 3.17.0
 
 ## Changes
