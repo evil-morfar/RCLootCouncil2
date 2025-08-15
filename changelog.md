@@ -1,3 +1,7 @@
+## Bugfixes
+
+- *Soulbinder's Nethermantle is no longer group looted.*
+
 # 3.17.1
 
 ## Bugfixes
