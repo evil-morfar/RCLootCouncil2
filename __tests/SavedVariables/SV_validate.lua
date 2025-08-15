@@ -106,28 +106,42 @@ local function checkSV()
       end
       print "----------"
    end
+
    local function lootdb()
       print("Checking LootDB")
       print ""
+	  local fieldsToCheck= {
+		date = "string",
+		boss = "string",
+		response = "string",
+		votes = "number",
+		difficultyID = "number",
+		lootWon = "string",
+		time = "string",
+		instance = "string",
+		-- responseID = {"number", "string"},
+		color = "table",
+		class = "string",
+		id = "string",
+		iClass = "number",
+		iSubClass = "number",
+		groupSize = "number",
+		mapID = "number",
+	  }
       -- Check loot db
       local pcount, icount = 0, 0
-      for _, data in pairs(RCLootCouncilLootDB.factionrealm or {}) do
+      for profile, data in pairs(RCLootCouncilLootDB.factionrealm or {}) do
          for player, items in pairs(data) do
             pcount = pcount + 1
-            for i, id in ipairs(items) do
+            for i, entry in ipairs(items) do
                icount = icount + 1
-            --   if type(id.itemReplaced1) ~= "string" then print("error", player, i) end
-               if not type(id.date) == "string" then print("error", player, i) end
-               if not type(id.boss) == "string" then print(player, i) end
-               if not type(id.response) == "string" then print(player, i) end
-               if not type(id.votes) == "number" then print(player, i) end
-               if not type(id.difficultyID) == "string" then print(player, i) end
-               if not type(id.lootWon) == "string" then print(player, i) end
-               if not type(id.time) == "string" then print(player, i) end
-               if not type(id.instance) == "string" then print(player, i) end
-               if not type(id.responseID) == "number" then print(player, i) end
-               if type(id.color) ~= "table" then print(player, i) end
-               if not type(id.class) == "string" then print(player, i) end
+			   for field, fieldType in pairs(fieldsToCheck) do
+				  if not entry[field] then
+					 print(string.format("%s.%s[%d].%s is nil", profile, player, i, field))
+				  elseif type(entry[field]) ~= fieldType then
+					 print(string.format("%s.%s[%d].%s is %s instead of %s", profile, player, i, field, type(entry[field]), fieldType))
+				  end
+				end
             end
          end
       end
