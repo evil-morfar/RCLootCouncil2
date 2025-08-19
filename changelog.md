@@ -1,6 +1,7 @@
 ## Bugfixes
 
 - *Soulbinder's Nethermantle is no longer group looted.*
+- *Loombeast Silk and Ethereal Essence Silver (MFO transmog currency) are now ignored, and existing history entries removed.*
 
 # 3.17.1
 

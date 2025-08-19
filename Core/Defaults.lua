@@ -262,6 +262,7 @@ addon.defaults = {
 			[152908] = true, [152909] = true, [152910] = true, -- Sigil of the Dark Titan (Another Antorus shortcut item)
 			[162461] = true, -- Sanguicell (BfA crafting)
 			[213089] = true, -- Antique Bronze Bullion (DF S4 Weapon/Trinket currency)
+			[245510] = true, [246727] = true, -- Loombeast Silk + Ethereal Essence Silver (TWW S3 Transmog currency)
 		},
 
 		moreInfoClampToScreen = false,
