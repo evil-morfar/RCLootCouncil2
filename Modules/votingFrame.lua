@@ -122,6 +122,9 @@ function RCVotingFrame:OnDisable() -- We never really call this
 	self:Hide()
 	self.frame:SetParent(nil)
 	self.frame = nil
+	self:UnregisterAllBuckets()
+	self:UnregisterAllMessages()
+	self:UnregisterAllEvents()
 	wipe(lootTable)
 	active = false
 	session = 1
@@ -1851,6 +1854,9 @@ function ResponseSort(table, rowa, rowb, sortbycol)
 	end
 	a, b = addon:GetResponse(lootTable[session].typeCode or lootTable[session].equipLoc, lootTable[session].candidates[a.name].response).sort,
 			 addon:GetResponse(lootTable[session].typeCode or lootTable[session].equipLoc, lootTable[session].candidates[b.name].response).sort
+	if not a or not b then
+		return a or b or 0
+	end
 	if a == b then
 		if column.sortnext then
 			local nextcol = table.cols[column.sortnext];

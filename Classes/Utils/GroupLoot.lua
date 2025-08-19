@@ -21,6 +21,7 @@ GroupLoot.IgnoreList = {
 	[209035] = true, -- Hearthstone of the Flame, Larodar, Amirdrassil
 	[236687] = true, -- Explosive Hearthstone, Liberation of Undermine
 	[246565] = true, -- Cosmic Hearthstone, Manaforge Omega
+	[250104] = true, -- Soulbinder's Nethermantle
 }
 
 function GroupLoot:OnInitialize()
