@@ -1605,6 +1605,7 @@ function RCLootCouncil:OnEvent(event, ...)
 		-- Clear cache, and undo any mldb changes
 		wipe(self.db.global.cache)
 		wipe(self.mldb)
+		self.isCouncil = false
 		self.handleLoot = false
 
 		self:UpdateCandidatesInGroup()
