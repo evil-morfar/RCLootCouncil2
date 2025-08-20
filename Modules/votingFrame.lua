@@ -1830,7 +1830,7 @@ function RCVotingFrame.filterFunc(table, row)
 	local response = lootTable[session].candidates[row.name].response
 	if not db.modules["RCVotingFrame"].filters.showPlayersCantUseTheItem then
 		local v = lootTable[session]
-		if addon:AutoPassCheck(v.link, v.equipLoc, v.typeID, v.subTypeID, v.classes, v.token, v.relic, lootTable[session].candidates[row.name].class) then
+		if addon.AutoPass:AutoPassCheck(v.link, v.equipLoc, v.typeID, v.subTypeID, v.classes, lootTable[session].candidates[row.name].class) then
 			return false
 		end
 	end

@@ -179,7 +179,7 @@ end
 --- ```
 --- -- Check if the item in session 1 should be auto passed:
 --- local dat = lootTable[1] -- Shortening
---- local shouldAutoPass = RCLootCouncil:AutoPassCheck(dat.link, dat.equipLoc, dat.typeID, dat.subTypeID, dat.classesFlag, dat.isToken, dat.isRelic)
+--- local shouldAutoPass = RCLootCouncil.AutoPass:AutoPassCheck(dat.link, dat.equipLoc, dat.typeID, dat.subTypeID, dat.classesFlag, dat.isToken, dat.isRelic)
 --- ```
 function AutoPass:AutoPassCheck(link, equipLoc, typeID, subTypeID, classesFlag, class)
 	link = link or "" -- Just to avoid errors in case someone passes a nil value
@@ -220,7 +220,6 @@ function AutoPass:AutoPassCheck(link, equipLoc, typeID, subTypeID, classesFlag, 
 
 	if typeID == Enum.ItemClass.Weapon then
 		if db.autoPassWeapons and self:ShouldAutoPassWeapon(link, class, id) then
-			addon.Log:D("Weapon auto pass on ", link)
 			return true
 		end
 	end
