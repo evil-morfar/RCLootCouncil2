@@ -107,8 +107,9 @@ function GetRealmName()
 	return "Realm Name"
 end
 
+---@return Enum.LootMethod, integer, integer
 function GetLootMethod()
-	return "personalloot"
+	return Enum.LootMethod.Personal
 end
 
 function UnitClass(unit)

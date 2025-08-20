@@ -495,7 +495,7 @@ function RCLootCouncilML:HandleReceivedTradeable (sender, item)
 	self.Log:d("ML:HandleReceivedTradeable", item, sender)
 
 	-- For ML loot method, ourselve must be excluded because it should be handled in self:LootOpen()
-	if not addon:UnitIsUnit(sender, "player") or addon.lootMethod ~= "master" then
+	if not addon:UnitIsUnit(sender, "player") or addon.lootMethod ~= Enum.LootMethod.Masterlooter then
 		local quality = select(3, C_Item.GetItemInfo(item))
 		local autoAward, mode, winner = self:ShouldAutoAward(item, quality)
 		if autoAward then
@@ -1188,7 +1188,7 @@ function RCLootCouncilML:AutoAward(lootIndex, item, quality, name, mode, boss, o
 	self.Log:D("ML:AutoAward", lootIndex, item, quality, name, mode, boss, owner)
 	local reason = mode == "boe" and db.autoAwardBoEReason or db.autoAwardReason
 
-	if addon.lootMethod == "personalloot" then -- Normal restrictions doesn't apply here
+	if addon.lootMethod == Enum.LootMethod.Personal then -- Normal restrictions doesn't apply here
 		addon:Print(format(L["Auto awarded 'item'"], item))
 		self:Send("group", "do_trade", owner, item, name)
 		self:AnnounceAward(name, item, db.awardReasons[reason].text, nil, nil, nil, owner)

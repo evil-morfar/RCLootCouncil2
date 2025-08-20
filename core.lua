@@ -129,7 +129,7 @@ function RCLootCouncil:OnInitialize()
 	self.isMasterLooter = false -- Are we the ML?
 	---@type Player
 	self.masterLooter = nil -- Masterlooter
-	self.lootMethod = GetLootMethod and GetLootMethod() or C_PartyInfo.GetLootMethod and C_PartyInfo.GetLootMethod() or "personalloot"
+	self.lootMethod = self:GetLootMethod() or Enum.LootMethod.Personal
 	self.handleLoot = false -- Does RC handle loot(Start session from loot window)?
 	self.isCouncil = false -- Are we in the Council?
 	self.enabled = true -- turn addon on/off
@@ -1877,7 +1877,7 @@ function RCLootCouncil:NewMLCheck()
 	local old_ml = self.masterLooter
 	local old_lm = self.lootMethod
 	self.isMasterLooter, self.masterLooter = self:GetML()
-	self.lootMethod = GetLootMethod and GetLootMethod() or C_PartyInfo.GetLootMethod and C_PartyInfo.GetLootMethod()
+	self.lootMethod = self:GetLootMethod()
 	local instance_type = select(2, IsInInstance())
 	if instance_type == "pvp" or instance_type == "arena" or instance_type == "scenario" then return end -- Don't do anything here
 	if self.masterLooter and type(self.masterLooter) == "string"
@@ -1927,19 +1927,15 @@ function RCLootCouncil:NewMLCheck()
 	if type == "arena" or type == "pvp" then return end
 
 	-- New group loot is reported as "personalloot" -.-
-	if (self.lootMethod == "group" and db.usage.gl) or (self.lootMethod == "personalloot" and db.usage.gl) then -- auto start
+	if (self.lootMethod == Enum.LootMethod.Group and db.usage.gl) or (self.lootMethod == Enum.LootMethod.Personal and db.usage.gl) then -- auto start
 		self:StartHandleLoot()
-	elseif (self.lootMethod == "group" and db.usage.ask_gl) or (self.lootMethod == "personalloot" and db.usage.ask_gl) then
+	elseif (self.lootMethod == Enum.LootMethod.Group and db.usage.ask_gl) or (self.lootMethod == Enum.LootMethod.Personal and db.usage.ask_gl) then
 		return LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_USAGE")
 	end
 end
 
 --- Enables the addon to automatically handle looting
 function RCLootCouncil:StartHandleLoot()
-	-- local lootMethod = self.GetLootMethod()
-	-- if lootMethod ~= "group" and self.lootMethod ~= "personalloot" then -- Set it
-	-- 	SetLootMethod("group")
-	-- end
 	-- We might call StartHandleLoot() without ML being initialized, e.g. with `/rc start`.
 	if not self:GetActiveModule("masterlooter"):IsEnabled() then
 		self:CallModule("masterlooter")
