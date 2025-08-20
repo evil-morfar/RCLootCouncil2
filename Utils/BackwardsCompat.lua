@@ -300,5 +300,25 @@ Compat.list = {
 				end
 			end
 		end,
+	},
+	{
+		name = "Remove S3 raid transmog currencies",
+		version = "3.17.2",
+		func = function ()
+			local count = 0
+			for _, factionrealm in pairs(addon.lootDB.sv.factionrealm) do
+				for _, data in pairs(factionrealm) do
+					for i = #data, 1, -1 do
+						if string.find(data[i].lootWon, "245510") or
+						string.find(data[i].lootWon, "246727") then
+							tremove(data, i)
+						end
+					end
+				end
+			end
+			if count > 0 then
+				addon.Log:D(format("Cleaned %d occurrences of S3 raid transmog currencies in your history", count))
+			end
+		end
 	}
 }
