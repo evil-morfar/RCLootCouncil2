@@ -129,7 +129,7 @@ function RCLootCouncil:OnInitialize()
 	self.isMasterLooter = false -- Are we the ML?
 	---@type Player
 	self.masterLooter = nil -- Masterlooter
-	self.lootMethod = GetLootMethod and GetLootMethod() or C_PartyInfo.GetLootMethod and C_PartyInfo.GetLootMethod() or "personalloot"
+	self.lootMethod = self:GetLootMethod() or Enum.LootMethod.Personal
 	self.handleLoot = false -- Does RC handle loot(Start session from loot window)?
 	self.isCouncil = false -- Are we in the Council?
 	self.enabled = true -- turn addon on/off
@@ -1201,7 +1201,7 @@ function RCLootCouncil:SendLootAck(table, skip)
 		local session = v.session or k
 		if session > (skip or 0) then
 			hasData = true
-			local g1, g2 = self:GetGear(v.link, v.equipLoc, v.relic)
+			local g1, g2 = self:GetGear(v.link, v.equipLoc)
 			local diff = self:GetIlvlDifference(v.link, g1, g2)
 			toSend.gear1[session] = g1 and ItemUtils:GetItemStringClean(g1) or nil
 			toSend.gear2[session] = g2 and ItemUtils:GetItemStringClean(g2) or nil
@@ -1222,7 +1222,7 @@ function RCLootCouncil:DoAutoPasses(table, skip)
 		if session > (skip or 0) then
 			if db.autoPass and not v.noAutopass then
 				if (v.boe and db.autoPassBoE) or not v.boe then
-					if self:AutoPassCheck(v.link, v.equipLoc, v.typeID, v.subTypeID, v.classes, v.token, v.relic) then
+					if self.AutoPass:AutoPassCheck(v.link, v.equipLoc, v.typeID, v.subTypeID, v.classes) then
 						self.Log("Autopassed on: ", v.link)
 						if not db.silentAutoPass then self:Print(format(L["Autopassed on 'item'"], ItemUtils:GetItemTextWithIcon(v.link))) end
 						v.autopass = true
@@ -1877,7 +1877,7 @@ function RCLootCouncil:NewMLCheck()
 	local old_ml = self.masterLooter
 	local old_lm = self.lootMethod
 	self.isMasterLooter, self.masterLooter = self:GetML()
-	self.lootMethod = GetLootMethod and GetLootMethod() or C_PartyInfo.GetLootMethod and C_PartyInfo.GetLootMethod()
+	self.lootMethod = self:GetLootMethod()
 	local instance_type = select(2, IsInInstance())
 	if instance_type == "pvp" or instance_type == "arena" or instance_type == "scenario" then return end -- Don't do anything here
 	if self.masterLooter and type(self.masterLooter) == "string"
@@ -1927,19 +1927,15 @@ function RCLootCouncil:NewMLCheck()
 	if type == "arena" or type == "pvp" then return end
 
 	-- New group loot is reported as "personalloot" -.-
-	if (self.lootMethod == "group" and db.usage.gl) or (self.lootMethod == "personalloot" and db.usage.gl) then -- auto start
+	if (self.lootMethod == Enum.LootMethod.Group and db.usage.gl) or (self.lootMethod == Enum.LootMethod.Personal and db.usage.gl) then -- auto start
 		self:StartHandleLoot()
-	elseif (self.lootMethod == "group" and db.usage.ask_gl) or (self.lootMethod == "personalloot" and db.usage.ask_gl) then
+	elseif (self.lootMethod == Enum.LootMethod.Group and db.usage.ask_gl) or (self.lootMethod == Enum.LootMethod.Personal and db.usage.ask_gl) then
 		return LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_USAGE")
 	end
 end
 
 --- Enables the addon to automatically handle looting
 function RCLootCouncil:StartHandleLoot()
-	-- local lootMethod = self.GetLootMethod()
-	-- if lootMethod ~= "group" and self.lootMethod ~= "personalloot" then -- Set it
-	-- 	SetLootMethod("group")
-	-- end
 	-- We might call StartHandleLoot() without ML being initialized, e.g. with `/rc start`.
 	if not self:GetActiveModule("masterlooter"):IsEnabled() then
 		self:CallModule("masterlooter")

@@ -18,4 +18,25 @@ end
 
 addon.SendChatMessage = C_ChatInfo and C_ChatInfo.SendChatMessage or SendChatMessage
 
-addon.GetLootMethod = C_PartyInfo and C_PartyInfo.GetLootMethod or GetLootMethod
+addon.GetLootMethod = C_PartyInfo and C_PartyInfo.GetLootMethod or 
+--- Shim between retail and classic and always return the Enum.
+--- @return Enum.LootMethod method, integer? partyID, integer? raidId 
+function()
+	local method, partyID, raidId = GetLootMethod()
+	if not method then
+		method = Enum.LootMethod.Personal
+	elseif method == "freeforall" then
+		method = Enum.LootMethod.Freeforall
+	elseif method == "roundrobin" then
+		method = Enum.LootMethod.Roundrobin
+	elseif method == "master" then
+		method = Enum.LootMethod.Masterlooter
+	elseif method == "group" then
+		method = Enum.LootMethod.Group
+	elseif method == "needbeforegreed" then
+		method = Enum.LootMethod.Needbeforegreed
+	elseif method == "personalloot" then
+		method = Enum.LootMethod.Personal
+	end
+	return method, partyID, raidId
+end

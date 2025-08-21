@@ -1,3 +1,12 @@
+# 3.17.3
+
+## Bugfixes
+
+- *Fixed broken Auto Award.*
+- *Fixed issue with the usage pop-up not working when changing group leaders.*
+
+# 3.17.2
+
 ## Bugfixes
 
 - *Soulbinder's Nethermantle is no longer group looted.*
