@@ -1605,6 +1605,7 @@ function RCLootCouncil:OnEvent(event, ...)
 		-- Clear cache, and undo any mldb changes
 		wipe(self.db.global.cache)
 		wipe(self.mldb)
+		MLDB:Clear()
 		self.isCouncil = false
 		self.handleLoot = false
 
@@ -1959,6 +1960,7 @@ function RCLootCouncil:StopHandleLoot()
 	self.Log("Stop handling loot")
 	self.handleLoot = false
 	self:GetActiveModule("masterlooter"):Disable()
+	MLDB:Clear()
 	self:Send("group", "StopHandleLoot")
 end
 
