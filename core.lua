@@ -3005,7 +3005,12 @@ function RCLootCouncil:OnMLDBReceived(input)
 	self.Log("OnMLDBReceived")
 	-- mldb inheritance from db
 	self.mldb = MLDB:RestoreFromTransmit(input)
-	for type, responses in pairs(self.mldb.responses) do
+	-- 22/8-25: Have seen "blank" mldb being transmitted, so correct for that.
+	if not self.mldb.responses then
+		self.Log:E("Received mldb without responses, using defaults")
+		self.mldb.responses = CopyTable(self.defaults.profile.responses)
+	end
+	for type, responses in pairs(self.mldb.responses or {}) do
 		for _ in pairs(responses) do
 			if not self.defaults.profile.responses[type] then
 				setmetatable(self.mldb.responses[type], {__index = self.defaults.profile.responses.default})
