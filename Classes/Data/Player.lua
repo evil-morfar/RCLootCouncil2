@@ -14,11 +14,11 @@ local private = {
 	--- @type table<string, Player>
 	cache = setmetatable({}, {
 		__index = function(_, id)
-			if not addon.db.global.cache.player then addon.db.global.cache.player = {} end
-			if id and id ~= "player" then return addon.db.global.cache.player[id] end
-			return addon.db.global.cache.player
+			if not addon.db.global.playerCache then addon.db.global.playerCache = {} end
+			if id and id ~= "player" then return addon.db.global.playerCache[id] end
+			return addon.db.global.playerCache
 		end,
-		__newindex = function(_, k, v) addon.db.global.cache.player[k] = v end,
+		__newindex = function(_, k, v) addon.db.global.playerCache[k] = v end,
 	}),
 	realmName = nil, -- Not ready here, will be initialized later
 }
@@ -34,6 +34,7 @@ local private = {
 ---@field ilvl number?
 ---@field specID integer? 
 ---@field classColoredName string? Name colored by class
+---@field cache_time number? Time when the player was cached
 local playerClass = {}
 function playerClass:GetName() return self.name end
 function playerClass:GetRealm() return self.realm end
@@ -125,7 +126,7 @@ function private:CreatePlayer(guid)
 	return player
 end
 
---- @return Player
+--- @return Player?
 function private:GetFromCache(guid)
 	if self.cache[guid] then return setmetatable(CopyTable(self.cache[guid]), PLAYER_MT) end
 end
@@ -183,7 +184,7 @@ end
 --- @param name string
 --- @return string|nil guid #GUID of Player if found otherwise nil
 function private:GetGUIDFromPlayerName(name)
-	for guid, player in pairs(self.cache.player) do
+	for guid, player in pairs(self.cache) do
 		if Ambiguate(player.name, "none") == name then return guid end
 	end
 end
