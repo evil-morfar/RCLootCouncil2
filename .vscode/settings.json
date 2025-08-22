@@ -169,7 +169,8 @@
         "SECOND_ONELETTER_ABBR",
         "LOCALE_enGB",
         "SECONDS_ABBR",
-        "SPECIAL"
+        "SPECIAL",
+        "RELIC_TOOLTIP_TYPE"
     ],
     "Lua.workspace.checkThirdParty": false,
     "Lua.runtime.version": "Lua 5.1",
