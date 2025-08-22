@@ -35,6 +35,7 @@ local private = {
 ---@field specID integer? 
 ---@field classColoredName string? Name colored by class
 ---@field cache_time number? Time when the player was cached
+---@field isInGuild boolean? Is the player in our guild
 local playerClass = {}
 function playerClass:GetName() return self.name end
 function playerClass:GetRealm() return self.realm end
@@ -50,7 +51,15 @@ end
 --- @param data table<string,any>
 function playerClass:UpdateFields(data)
 	for k, v in pairs(data) do self[k] = v end
-	private:CachePlayer(self)
+	self:Cache()
+end
+
+function playerClass:Cache()
+	if not private:IsCached(self.guid) then
+		private:CachePlayer(self)
+	else
+		private:UpdateCachedPlayer(self)
+	end
 end
 
 local PLAYER_MT = {
@@ -121,6 +130,7 @@ function private:CreatePlayer(guid)
 		guid = guid,
 		class = class,
 		realm = realm,
+		isInGuild = IsGuildMember(guid),
 	}, PLAYER_MT)
 	self:CachePlayer(player)
 	return player
@@ -138,15 +148,17 @@ function private:UpdateCachedPlayer(player)
 	if not (player and player.guid) then
 		return Log:f("<Data.Player>", "UpdateCachedPlayer - no player or player guid", player.name, player.guid)
 	end
+	-- 23/8-25: Not entirely sure why this was created, but at check if it is needed
+	if not (player.name and player.realm and player.class) then
+		local name, realm, class = self:GetPlayerInfoByGUID(player.guid)
+		if not name then
+			return Log:f("<Data.Player>", "UpdateCachedPlayer - couldn't get PlayerInfoByGUID", player.name, player.guid)
+		end -- Might not be available
 
-	local name, realm, class = self:GetPlayerInfoByGUID(player.guid)
-	if not name then
-		return Log:f("<Data.Player>", "UpdateCachedPlayer - couldn't get PlayerInfoByGUID", player.name, player.guid)
-	end -- Might not be available
-
-	player.name = addon.Utils:UnitNameFromNameRealm(name, realm)
-	player.class = class
-	player.realm = realm
+		player.name = addon.Utils:UnitNameFromNameRealm(name, realm)
+		player.class = class
+		player.realm = realm
+	end
 	self:CachePlayer(player)
 end
 
@@ -168,7 +180,16 @@ function private:GetPlayerInfoByGUID(guid)
 	return name, realm, class
 end
 
-function private:IsCached(guid) return self.cache[guid] ~= nil end
+function private:IsCached(guid)
+	if not guid then return false end
+	if not self.cache[guid] then return false end
+	if not self.cache[guid].cache_time or self.cache[guid].cache_time + MAX_CACHE_TIME < GetServerTime() then
+		Log:f("<Data.Player>", "removing old cache for", self.cache[guid].name)
+		self.cache[guid] = nil
+		return false
+	end
+	return true
+end
 
 --- @param player Player
 function private:CachePlayer(player)
