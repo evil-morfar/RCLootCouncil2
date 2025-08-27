@@ -1578,7 +1578,14 @@ function RCVotingFrame.SetCellClass(rowFrame, frame, data, cols, row, realrow, c
 				addon.Log:E(candName)
 			end
 		end
-		return
+		-- 28/8-25: It appears people can be in the list without being added to the loot table.
+		-- If the name is there, we should have all the info to create them, so just add them.
+		-- This should also fix any issues arrising in other handlers.
+		if name and name ~= "" then
+			RCVotingFrame:SetupCandidate(lootTable[session], name, "ANNOUNCED")
+		else
+			return
+		end
 	end
 	local specID = lootTable[session].candidates[name].specID
 	local _, specName, _, specIcon = GetSpecializationInfoByID(specID or 0)
@@ -1609,9 +1616,10 @@ function RCVotingFrame.SetCellName(rowFrame, frame, data, cols, row, realrow, co
 	else
 		frame.text:SetText(addon.Ambiguate(name))
 	end
+	data[realrow].cols[column].value = name or ""
+	if not lootTable[session].candidates[name] then return end
 	local c = addon:GetClassColor(lootTable[session].candidates[name].class)
 	frame.text:SetTextColor(c.r, c.g, c.b, c.a)
-	data[realrow].cols[column].value = name or ""
 end
 
 function RCVotingFrame.SetCellRank(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
