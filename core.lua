@@ -1549,14 +1549,16 @@ end
 function RCLootCouncil:UpdateCandidatesInGroup()
 	wipe(self.candidatesInGroup)
 	local name;
-	for i = 1, GetNumGroupMembers() do
+	local count = 0
+	for i = 1, MAX_RAID_MEMBERS do
 		name = GetRaidRosterInfo(i)
-		if not name then -- Not ready yet, delay a bit
-			self.Log:D("GetRaidRosterInfo returned nil in UpdateCandidatesInGroup")
-			self:ScheduleTimer("UpdateCandidatesInGroup", 1)
-			return {}
-		end
-		self.candidatesInGroup[self:UnitName(name)] = true
+		self.candidatesInGroup[self.Utils:UnitName(name)] = true
+		count = count + 1
+	end
+	if count ~= GetNumGroupMembers() then
+		self.Log:d("Inconsistencies in UpdateCandidatesInGroup, retrying")
+		self:ScheduleTimer("UpdateCandidatesInGroup",1)
+		return {}
 	end
 	-- Ensure we're there
 	self.candidatesInGroup[self.player.name] = true
