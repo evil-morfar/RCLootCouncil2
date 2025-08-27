@@ -72,6 +72,11 @@ function MLDB:Update()
     return private:BuildMLDB()
 end
 
+function MLDB:Clear()
+	wipe(private.mldb)
+	private.isBuilt = false
+end
+
 --- Checks if a given value is part of the mldb
 ---@param val string Value to check
 function MLDB:IsKey(val)
@@ -145,7 +150,6 @@ function private:BuildMLDB()
         responses = changedResponses,
         timeout = db.timeout,
         rejectTrade = db.rejectTrade or nil,
-        requireNotes = db.requireNotes or nil,
         outOfRaid = db.outOfRaid or nil,
         autoGroupLoot = db.autoGroupLoot or nil
     }

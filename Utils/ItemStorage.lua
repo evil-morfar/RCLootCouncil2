@@ -82,10 +82,10 @@ local item_class = {
 	end,
 
 	--- Actual time remaining.
-	--- `self.time_remaining` is only acurate immediately after calling `self:UpdateTime()`.
 	--- This always represents the accurate remaining time.
 	--- @param self Item
 	TimeRemaining = function(self)
+		self:UpdateTime()
 		return self.time_remaining + self.time_updated - time()
 	end,
 

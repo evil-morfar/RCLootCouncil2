@@ -14,11 +14,11 @@ local private = {
 	--- @type table<string, Player>
 	cache = setmetatable({}, {
 		__index = function(_, id)
-			if not addon.db.global.cache.player then addon.db.global.cache.player = {} end
-			if id and id ~= "player" then return addon.db.global.cache.player[id] end
-			return addon.db.global.cache.player
+			if not addon.db.global.playerCache then addon.db.global.playerCache = {} end
+			if id and id ~= "player" then return addon.db.global.playerCache[id] end
+			return addon.db.global.playerCache
 		end,
-		__newindex = function(_, k, v) addon.db.global.cache.player[k] = v end,
+		__newindex = function(_, k, v) addon.db.global.playerCache[k] = v end,
 	}),
 	realmName = nil, -- Not ready here, will be initialized later
 }
@@ -34,6 +34,8 @@ local private = {
 ---@field ilvl number?
 ---@field specID integer? 
 ---@field classColoredName string? Name colored by class
+---@field cache_time number? Time when the player was cached
+---@field isInGuild boolean? Is the player in our guild
 local playerClass = {}
 function playerClass:GetName() return self.name end
 function playerClass:GetRealm() return self.realm end
@@ -49,7 +51,15 @@ end
 --- @param data table<string,any>
 function playerClass:UpdateFields(data)
 	for k, v in pairs(data) do self[k] = v end
-	private:CachePlayer(self)
+	self:Cache()
+end
+
+function playerClass:Cache()
+	if not private:IsCached(self.guid) then
+		private:CachePlayer(self)
+	else
+		private:UpdateCachedPlayer(self)
+	end
 end
 
 local PLAYER_MT = {
@@ -120,12 +130,13 @@ function private:CreatePlayer(guid)
 		guid = guid,
 		class = class,
 		realm = realm,
+		isInGuild = IsGuildMember(guid),
 	}, PLAYER_MT)
 	self:CachePlayer(player)
 	return player
 end
 
---- @return Player
+--- @return Player?
 function private:GetFromCache(guid)
 	if self.cache[guid] then return setmetatable(CopyTable(self.cache[guid]), PLAYER_MT) end
 end
@@ -137,15 +148,17 @@ function private:UpdateCachedPlayer(player)
 	if not (player and player.guid) then
 		return Log:f("<Data.Player>", "UpdateCachedPlayer - no player or player guid", player.name, player.guid)
 	end
+	-- 23/8-25: Not entirely sure why this was created, but at check if it is needed
+	if not (player.name and player.realm and player.class) then
+		local name, realm, class = self:GetPlayerInfoByGUID(player.guid)
+		if not name then
+			return Log:f("<Data.Player>", "UpdateCachedPlayer - couldn't get PlayerInfoByGUID", player.name, player.guid)
+		end -- Might not be available
 
-	local name, realm, class = self:GetPlayerInfoByGUID(player.guid)
-	if not name then
-		return Log:f("<Data.Player>", "UpdateCachedPlayer - couldn't get PlayerInfoByGUID", player.name, player.guid)
-	end -- Might not be available
-
-	player.name = addon.Utils:UnitNameFromNameRealm(name, realm)
-	player.class = class
-	player.realm = realm
+		player.name = addon.Utils:UnitNameFromNameRealm(name, realm)
+		player.class = class
+		player.realm = realm
+	end
 	self:CachePlayer(player)
 end
 
@@ -167,7 +180,16 @@ function private:GetPlayerInfoByGUID(guid)
 	return name, realm, class
 end
 
-function private:IsCached(guid) return self.cache[guid] ~= nil end
+function private:IsCached(guid)
+	if not guid then return false end
+	if not self.cache[guid] then return false end
+	if not self.cache[guid].cache_time or self.cache[guid].cache_time + MAX_CACHE_TIME < GetServerTime() then
+		Log:f("<Data.Player>", "removing old cache for", self.cache[guid].name)
+		self.cache[guid] = nil
+		return false
+	end
+	return true
+end
 
 --- @param player Player
 function private:CachePlayer(player)
@@ -183,7 +205,7 @@ end
 --- @param name string
 --- @return string|nil guid #GUID of Player if found otherwise nil
 function private:GetGUIDFromPlayerName(name)
-	for guid, player in pairs(self.cache.player) do
+	for guid, player in pairs(self.cache) do
 		if Ambiguate(player.name, "none") == name then return guid end
 	end
 end

@@ -1605,6 +1605,7 @@ function RCLootCouncil:OnEvent(event, ...)
 		-- Clear cache, and undo any mldb changes
 		wipe(self.db.global.cache)
 		wipe(self.mldb)
+		MLDB:Clear()
 		self.isCouncil = false
 		self.handleLoot = false
 
@@ -1658,6 +1659,9 @@ function RCLootCouncil:OnEvent(event, ...)
 		self.db.global.cache.instanceData = self.instanceDataSnapshot
 		self.db.global.cache.cachePlayer = self.player:GetName()
 		self.db.global.cache.cacheTime = time()
+		if self.isCouncil then
+			self.db.global.cache.lootTable = self:GetActiveModule("votingframe"):GetLootTable()
+		end
 
 	elseif event == "ENCOUNTER_START" then
 		self.Log:d("Event:", event, ...)
@@ -1844,12 +1848,16 @@ function RCLootCouncil:IsInGuildGroup()
 	local numGroupMembers = GetNumGroupMembers()
 	if numGroupMembers == 1 then return true end -- Always when alone
 	local guildMembers = 0
-	local isInGuild
-	local guid
+	local player, guid, isInGuild
 	for name in self:GroupIterator() do
-		guid = Player:Get(name):GetGUID()
+		player = Player:Get(name)
+		guid = player:GetGUID()
 		if guid and guid ~= "" then
 			isInGuild = IsGuildMember(guid)
+			if player.isInGuild ~= isInGuild then
+				player.isInGuild = isInGuild
+				player:Cache()
+			end
 			guildMembers = guildMembers + (isInGuild and 1 or 0)
 		else
 			self.Log:e("IsInGuildGroup: No GUID for player", name)
@@ -1955,6 +1963,7 @@ function RCLootCouncil:StopHandleLoot()
 	self.Log("Stop handling loot")
 	self.handleLoot = false
 	self:GetActiveModule("masterlooter"):Disable()
+	MLDB:Clear()
 	self:Send("group", "StopHandleLoot")
 end
 
@@ -3005,7 +3014,12 @@ function RCLootCouncil:OnMLDBReceived(input)
 	self.Log("OnMLDBReceived")
 	-- mldb inheritance from db
 	self.mldb = MLDB:RestoreFromTransmit(input)
-	for type, responses in pairs(self.mldb.responses) do
+	-- 22/8-25: Have seen "blank" mldb being transmitted, so correct for that.
+	if not self.mldb.responses then
+		self.Log:E("Received mldb without responses, using defaults")
+		self.mldb.responses = CopyTable(self.defaults.profile.responses)
+	end
+	for type, responses in pairs(self.mldb.responses or {}) do
 		for _ in pairs(responses) do
 			if not self.defaults.profile.responses[type] then
 				setmetatable(self.mldb.responses[type], {__index = self.defaults.profile.responses.default})
