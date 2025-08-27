@@ -1,3 +1,11 @@
+# 3.17.4
+
+## Bugfixes
+
+- *Fixed potential error when joining a group (#269).*
+- *Fixed caching issue that deleted things such as guild ranks causing them to show up inconsistently.*
+- *Trade time remaining show now be more accurate.*
+
 # 3.17.3
 
 ## Bugfixes
