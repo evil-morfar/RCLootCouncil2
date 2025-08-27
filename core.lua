@@ -1659,6 +1659,9 @@ function RCLootCouncil:OnEvent(event, ...)
 		self.db.global.cache.instanceData = self.instanceDataSnapshot
 		self.db.global.cache.cachePlayer = self.player:GetName()
 		self.db.global.cache.cacheTime = time()
+		if self.isCouncil then
+			self.db.global.cache.lootTable = self:GetActiveModule("votingframe"):GetLootTable()
+		end
 
 	elseif event == "ENCOUNTER_START" then
 		self.Log:d("Event:", event, ...)
