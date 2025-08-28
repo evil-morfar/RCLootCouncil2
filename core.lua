@@ -2816,7 +2816,7 @@ function RCLootCouncil:SubscribeToPermanentComms()
 		council = function(data, sender) self:OnCouncilReceived(sender, unpack(data)) end,
 		--
 		playerInfoRequest = function(_, sender)
-			self:SendPlayerInfo(sender)
+			self:SendPlayerInfo(IsInGroup() and "group" or sender)
 		end,
 
 		pI = function(data, sender) self:OnPlayerInfoReceived(sender, unpack(data)) end,
