@@ -170,7 +170,16 @@
         "LOCALE_enGB",
         "SECONDS_ABBR",
         "SPECIAL",
-        "RELIC_TOOLTIP_TYPE"
+        "RELIC_TOOLTIP_TYPE",
+        "CALENDAR_STATUS_CONFIRMED",
+        "CALENDAR_STATUS_ACCEPTED",
+        "CALENDAR_STATUS_DECLINED",
+        "CALENDAR_STATUS_OUT",
+        "CALENDAR_STATUS_STANDBY",
+        "CALENDAR_STATUS_INVITED",
+        "CALENDAR_STATUS_SIGNEDUP",
+        "CALENDAR_STATUS_NOT_SIGNEDUP",
+        "CALENDAR_STATUS_TENTATIVE"
     ],
     "Lua.workspace.checkThirdParty": false,
     "Lua.runtime.version": "Lua 5.1",

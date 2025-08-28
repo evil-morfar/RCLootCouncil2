@@ -57,6 +57,6 @@ DEST="$WOW_LOCATION$WOWEDITION/Interface/AddOns/$ADDON"
 
 # Deploy:
 # cp "$ADDON_LOC" "$DEST" -ruv
-robocopy "$ADDON_LOC" "$DEST" //s //purge //xo //XD .* __*  //XF ?.* __* *.report.out
+robocopy "$ADDON_LOC" "$DEST" //s //purge //xo //XD .* __*  //XF ?.* __* *.report.out //NFL //NDL //NJH
 
 echo "Finished deploying $ADDON"
