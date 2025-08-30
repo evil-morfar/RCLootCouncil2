@@ -56,7 +56,7 @@ function GroupLoot:OnStartLootRoll(_, rollID)
 		return
 	end
 	local status = self:GetStatus()
-	self.Log:D("Status:", status)
+	self.Log:D("Status:", status, self:GetStatusHex(status), self:GetStatusBinary(status))
 	if self:ShouldPassOnLoot(status) then
 		self.Log:d("Passing on loot", link)
 		self:RollOnLoot(rollID, 0)
@@ -146,10 +146,18 @@ function GroupLoot:GetStatus()
 	return result
 end
 
----Generates the binary version of [GroupLoot:GetStatus()](lua://Utils.GroupLoot.GetStatus)
+---Generates the binary version of the status.
+---@param status? integer|string Integer status. Defaults to [`GroupLoot:GetStatus()`](lua://Utils.GroupLoot.GetStatus).
 ---@return string #The binary representation of the status.
-function GroupLoot:GetStatusBinary()
-	return addon.Utils:Int2Bin(self:GetStatus())
+function GroupLoot:GetStatusBinary(status)
+	return addon.Utils:Int2Bin(status or self:GetStatus())
+end
+
+--- Converts the status to a hexadecimal string.
+---@param status? integer|string Integer status. Defaults to [`GroupLoot:GetStatus()`](lua://Utils.GroupLoot.GetStatus).
+---@return string #The hexadecimal representation of the status.
+function GroupLoot:GetStatusHex(status)
+	return string.format("%x", status or self:GetStatus())
 end
 
 ---@return enum Status The status table as-is.

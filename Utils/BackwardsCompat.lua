@@ -320,5 +320,13 @@ Compat.list = {
 				addon.Log:D(format("Cleaned %d occurrences of S3 raid transmog currencies in your history", count))
 			end
 		end
+	},
+	{
+		name = "Clear cache",
+		version = "3.17.5",
+		func = function ()
+			addon.db.global.cache = {}
+			addon.db.global.playerCache = {}
+		end
 	}
 }

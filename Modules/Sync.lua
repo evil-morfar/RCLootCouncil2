@@ -372,6 +372,7 @@ function sync:Spawn()
             if not self.syncTarget then
                 return addon:Print(L["You must select a target"])
             end
+			addon.Log:D("Syncing", self.syncType, "to", self.syncTarget)
             self:SendSyncRequest(Player:Get(self.syncTarget), self.syncType, self.syncHandlers[self.syncType].send())
         end
     )

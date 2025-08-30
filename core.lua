@@ -562,6 +562,7 @@ function RCLootCouncil:ChatCommand(msg)
 
 	elseif input == "clearcache" then
 		self.db.global.cache = {}
+		self.db.global.playerCache = {}
 		self:Print("Cache cleared")
 
 	elseif input == "sync" then
@@ -2814,7 +2815,7 @@ function RCLootCouncil:SubscribeToPermanentComms()
 		council = function(data, sender) self:OnCouncilReceived(sender, unpack(data)) end,
 		--
 		playerInfoRequest = function(_, sender)
-			self:SendPlayerInfo(sender)
+			self:SendPlayerInfo(IsInGroup() and "group" or sender)
 		end,
 
 		pI = function(data, sender) self:OnPlayerInfoReceived(sender, unpack(data)) end,
@@ -3106,7 +3107,7 @@ end
 
 function RCLootCouncil:OnStartHandleLoot()
 	self.handleLoot = true
-
+	self:ScheduleTimer("Timer", 5, "MLdb_check")
 	if not self.autoGroupLootWarningShown and db.showAutoGroupLootWarning and self.Require "Utils.GroupLoot":ShouldPassOnLoot() then
 		self.autoGroupLootWarningShown = true
 		self:Print(L.autoGroupLoot_warning)

@@ -28,7 +28,11 @@ end
 --- Sets the current council.
 ---@param council Council
 function Council:Set(council)
+	Player:ClearCouncilStatus()
 	private.council = council
+	for _, player in pairs(private.council) do
+		player:SetIsCouncil()
+	end
 end
 
 --- Returns the number of council members
@@ -42,6 +46,7 @@ end
 function Council:Add(player)
 	if type(player) ~= "table" or not (player.name and player.guid) then error("Not a valid 'Player' object", 2) end
 	private.council[player.guid] = player
+	player:SetIsCouncil()
 	return private:GetCouncilSize()
 end
 

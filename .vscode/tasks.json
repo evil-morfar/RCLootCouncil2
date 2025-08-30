@@ -19,28 +19,19 @@
         {
             "label": "Deploy-Local-PTR",
             "type": "shell",
-            "command": "sh .scripts/deploy.sh",
-            "args": [
-                "-p"
-            ],
+            "command": "sh .scripts/deploy.sh -p",
             "group": "build"
         },
         {
             "label": "Deploy-Local-XPTR",
             "type": "shell",
-            "command": "sh .scripts/deploy.sh",
-            "args": [
-                "-x"
-            ],
+            "command": "sh .scripts/deploy.sh -x",
             "group": "build"
         },
         {
             "label": "Deploy-Local-Beta",
             "type": "shell",
-            "command": "sh .scripts/deploy.sh",
-            "args": [
-                "-b"
-            ],
+            "command": "sh .scripts/deploy.sh -b",
             "group": "build"
         },
         {
