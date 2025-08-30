@@ -3107,7 +3107,7 @@ end
 
 function RCLootCouncil:OnStartHandleLoot()
 	self.handleLoot = true
-
+	self:ScheduleTimer("Timer", 5, "MLdb_check")
 	if not self.autoGroupLootWarningShown and db.showAutoGroupLootWarning and self.Require "Utils.GroupLoot":ShouldPassOnLoot() then
 		self.autoGroupLootWarningShown = true
 		self:Print(L.autoGroupLoot_warning)
