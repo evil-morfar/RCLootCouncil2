@@ -1,3 +1,12 @@
+# 3.17.5
+
+## Bugfixes
+
+- *(Hopefully) fixed various issues regarding missing player info.*
+- *Fixed issue with reloads at specific moments causing missing data (#271).*
+- *Send player info to everyone in the group all the time instead of at specific intervals to prevent missing guild ranks etc (#270).*
+- *Prevent cached player info on council members from expiring, which could cause errors if said player info isn't readily available, such as a council member not being in the guild or from a different realm.*
+
 # 3.17.4
 
 ## Bugfixes
