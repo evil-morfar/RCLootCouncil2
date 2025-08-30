@@ -562,6 +562,7 @@ function RCLootCouncil:ChatCommand(msg)
 
 	elseif input == "clearcache" then
 		self.db.global.cache = {}
+		self.db.global.playerCache = {}
 		self:Print("Cache cleared")
 
 	elseif input == "sync" then
