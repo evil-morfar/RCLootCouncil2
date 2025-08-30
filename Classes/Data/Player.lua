@@ -36,6 +36,7 @@ local private = {
 ---@field classColoredName string? Name colored by class
 ---@field cache_time number? Time when the player was cached
 ---@field isInGuild boolean? Is the player in our guild
+---@field isCouncil boolean? Player is a council member
 local playerClass = {}
 function playerClass:GetName() return self.name end
 function playerClass:GetRealm() return self.realm end
@@ -55,11 +56,12 @@ function playerClass:UpdateFields(data)
 end
 
 function playerClass:Cache()
-	if not private:IsCached(self.guid) then
-		private:CachePlayer(self)
-	else
-		private:UpdateCachedPlayer(self)
-	end
+	private:CachePlayer(self)
+end
+
+function playerClass:SetIsCouncil()
+	self.isCouncil = true
+	self:Cache()
 end
 
 local PLAYER_MT = {
@@ -114,6 +116,15 @@ function Player:Get(input)
 		return player
 	else
 		return private:CreatePlayer(guid)
+	end
+end
+
+--- Clears the council status of all cached players
+function Player:ClearCouncilStatus()
+	for _, player in pairs(private.cache) do
+		if player.isCouncil then
+			player.isCouncil = nil
+		end
 	end
 end
 
@@ -183,6 +194,7 @@ end
 function private:IsCached(guid)
 	if not guid then return false end
 	if not self.cache[guid] then return false end
+	if self.cache[guid].isCouncil then return true end -- Never expire council members
 	if not self.cache[guid].cache_time or self.cache[guid].cache_time + MAX_CACHE_TIME < GetServerTime() then
 		Log:f("<Data.Player>", "removing old cache for", self.cache[guid].name)
 		self.cache[guid] = nil
