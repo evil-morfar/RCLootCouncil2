@@ -1585,6 +1585,7 @@ function RCVotingFrame.SetCellClass(rowFrame, frame, data, cols, row, realrow, c
 		Player:Get(name)
 		if name and name ~= "" then
 			RCVotingFrame:SetupCandidate(lootTable[session], name, "ANNOUNCED")
+			addon.Log:D("Added missing player", name, "lootTable")
 		else
 			return
 		end
