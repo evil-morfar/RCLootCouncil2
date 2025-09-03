@@ -1526,6 +1526,10 @@ function RCLootCouncil:GetPlayerInfo()
 	return self.Utils:GetPlayerRole(), self.guildRank, enchant, lvl, ilvl, playersData.specID
 end
 
+function RCLootCouncil:OnGroupJoined()
+	self:SendPlayerInfo("group")
+end
+
 --- Send player info to the target/group
 ---@param target string? Player name or "group". Defaults to "group".
 function RCLootCouncil:SendPlayerInfo(target)
