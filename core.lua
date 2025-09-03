@@ -3193,3 +3193,27 @@ function RCLootCouncil:GetDBForExport()
 	db.moreInfoClampToScreen = nil
 	return db
 end
+
+do -- fix player chache
+	local function checkPlayerName(name)
+		local player = Player:Get(name)
+		if player and player.name ~= name then
+			RCLootCouncil.Require "Services.ErrorHandler":ThrowSilentError(("Invalid cached player: %s ~= %s"):format( player.name, name))
+			player.name = name
+			player:Cache()
+		end
+	end
+	Comms:BulkSubscribe(RCLootCouncil.PREFIXES.MAIN, {
+		pI = function(_, sender) 
+			checkPlayerName(sender)
+	end,
+	})
+	Comms:BulkSubscribe(RCLootCouncil.PREFIXES.VERSION, {
+		r = function(_, sender)
+			checkPlayerName(sender)
+		end,
+		f = function(_, sender)
+			checkPlayerName(sender)
+	end,
+	})
+end
