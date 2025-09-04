@@ -323,7 +323,7 @@ Compat.list = {
 	},
 	{
 		name = "Clear cache",
-		version = "3.17.5",
+		version = "3.17.6",
 		func = function ()
 			addon.db.global.cache = {}
 			addon.db.global.playerCache = {}
