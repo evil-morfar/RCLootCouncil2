@@ -1526,6 +1526,10 @@ function RCLootCouncil:GetPlayerInfo()
 	return self.Utils:GetPlayerRole(), self.guildRank, enchant, lvl, ilvl, playersData.specID
 end
 
+function RCLootCouncil:OnGroupJoined()
+	self:SendPlayerInfo("group")
+end
+
 --- Send player info to the target/group
 ---@param target string? Player name or "group". Defaults to "group".
 function RCLootCouncil:SendPlayerInfo(target)
@@ -3188,4 +3192,28 @@ function RCLootCouncil:GetDBForExport()
 	db.modules = nil -- Personal stuff, don't export
 	db.moreInfoClampToScreen = nil
 	return db
+end
+
+do -- fix player chache
+	local function checkPlayerName(name)
+		local player = Player:Get(name)
+		if player and player.name ~= name then
+			RCLootCouncil.Require "Services.ErrorHandler":ThrowSilentError(("Invalid cached player: %s ~= %s"):format( player.name, name))
+			player.name = name
+			player:Cache()
+		end
+	end
+	Comms:BulkSubscribe(RCLootCouncil.PREFIXES.MAIN, {
+		pI = function(_, sender) 
+			checkPlayerName(sender)
+	end,
+	})
+	Comms:BulkSubscribe(RCLootCouncil.PREFIXES.VERSION, {
+		r = function(_, sender)
+			checkPlayerName(sender)
+		end,
+		f = function(_, sender)
+			checkPlayerName(sender)
+	end,
+	})
 end

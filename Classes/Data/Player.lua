@@ -159,13 +159,9 @@ function private:UpdateCachedPlayer(player)
 	if not (player and player.guid) then
 		return Log:f("<Data.Player>", "UpdateCachedPlayer - no player or player guid", player.name, player.guid)
 	end
-	-- 23/8-25: Not entirely sure why this was created, but at check if it is needed
-	if not (player.name and player.realm and player.class) then
-		local name, realm, class = self:GetPlayerInfoByGUID(player.guid)
-		if not name then
-			return Log:f("<Data.Player>", "UpdateCachedPlayer - couldn't get PlayerInfoByGUID", player.name, player.guid)
-		end -- Might not be available
-
+	local name, realm, class = self:GetPlayerInfoByGUID(player.guid)
+	-- People may change their name or realms, so just update if we have the data
+	if name and realm and class then
 		player.name = addon.Utils:UnitNameFromNameRealm(name, realm)
 		player.class = class
 		player.realm = realm

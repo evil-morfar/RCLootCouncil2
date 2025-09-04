@@ -1,3 +1,10 @@
+# 3.17.6
+
+## Bugfixes
+
+- *Changing realms, name, or class should now properly be reflected.*
+- *Final fix for various issues of late.*
+
 # 3.17.5
 
 ## Bugfixes
