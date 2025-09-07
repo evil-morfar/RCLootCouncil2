@@ -1,3 +1,8 @@
+## Bugfixes
+
+- *Fixed issue with running `/rc add` commands after having declined usage could lead to errors.*
+
+
 # 3.17.6
 
 ## Bugfixes

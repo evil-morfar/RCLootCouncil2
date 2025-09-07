@@ -711,7 +711,10 @@ end
 
 function RCLootCouncil:ChatCmdAdd(args)
 	if not args[1] or args[1] == "" then return end -- We need at least 1 arg
-
+	-- If usage has been declined, MLDB is cleared, meaning potentially not received by some
+	if not self.handleLoot then
+		MLDB:Send("group")
+	end
 	-- Add all items in bags with trade timers
 	if args[1] == "bags" or args[1] == "all" then
 		local items = self:GetAllItemsInBagsWithTradeTimer()
@@ -2754,6 +2757,10 @@ end
 function RCLootCouncil:GetButtons(type)
 	type = type and type or "default"
 	self.Log:d("GetButtons", type)
+	if not self.mldb and self.mldb.buttons then
+		self.Log:E("Missing mldb.buttons", MLDB:GetForTransmit(self.mldb))
+		return self.defaults.profile.buttons[type]
+	end
 	-- Check if the type should be translated to something else
 	if self.mldb and not self.mldb.buttons[type] and self.BTN_SLOTS[type] and self.mldb.buttons[self.BTN_SLOTS[type]] then
 		type = self.BTN_SLOTS[type]
