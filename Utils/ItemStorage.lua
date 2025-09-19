@@ -78,6 +78,10 @@ local item_class = {
 	UpdateTime = function(self)
 		if not self.inBags then return self end -- Don't do anything if we know we haven't stored it.
 		local _, _, t = private:findItemInBags(self.link)
+		if not t then
+			addon.Log:W("Couldn't update time for:", self.link)
+			return self
+		end
 		return self:SetUpdateTime(t)
 	end,
 
@@ -94,6 +98,9 @@ local item_class = {
 	--- @param timeRemaining? integer Remaining time
 	--- @param fallbackTime? integer Used as `timeRemaining` if that's nil. Defaults to 0.
 	SetUpdateTime = function(self, timeRemaining, fallbackTime)
+		if not timeRemaining then
+			return self
+		end
 		self.time_updated = time()
 		-- Mounts will have 0 trade time
 		if timeRemaining == 0 then
