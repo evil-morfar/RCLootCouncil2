@@ -379,6 +379,9 @@ function RCLootCouncilML:ItemsInBagsLowTradeTimeRemainingReminder()
 	if GetTime() - lastCheckItemsInBagsLowTradeTimeRemainingReminder < 120 then -- Dont spam
 		return
 	end
+	if addon.inCombat then
+		return self:ScheduleTimer("ItemsInBagsLowTradeTimeRemainingReminder", 30, self)
+	end
 	local entriesToRemind = TempTable:Acquire()
 	local remindThreshold = 1200 -- 20min
 	local Items = addon.ItemStorage:GetAllItemsOfType("award_later")

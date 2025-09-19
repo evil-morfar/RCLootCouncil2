@@ -1,3 +1,7 @@
+## Changes
+
+- Trade time remaining checks are no longer performed in combat as they would be easy to overlook.
+
 ## Bugfixes
 
 - *Fixed issue with running `/rc add` commands after having declined usage could lead to errors.*

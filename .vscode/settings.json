@@ -179,7 +179,12 @@
         "CALENDAR_STATUS_INVITED",
         "CALENDAR_STATUS_SIGNEDUP",
         "CALENDAR_STATUS_NOT_SIGNEDUP",
-        "CALENDAR_STATUS_TENTATIVE"
+        "CALENDAR_STATUS_TENTATIVE",
+        "REAGENTBANK_DEPOSIT",
+        "REAGENT_BANK",
+        "BANKSLOTPURCHASE",
+        "REAGENTBANK_PURCHASE_TEXT",
+        "COSTS_LABEL"
     ],
     "Lua.workspace.checkThirdParty": false,
     "Lua.runtime.version": "Lua 5.1",
