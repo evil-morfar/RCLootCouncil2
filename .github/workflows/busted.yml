@@ -24,4 +24,4 @@ jobs:
           luarocks install busted
 
       - name: Run Busted
-        run: busted -f .busted --lpath="__tests/?.lua" -Xoutput --color --no-coverage
+        run: busted -f .busted --lpath="__tests/?.lua;__tests/wow_api/?.lua" -Xoutput --color --no-coverage
