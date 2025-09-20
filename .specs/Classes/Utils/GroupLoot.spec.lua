@@ -10,7 +10,6 @@ dofile(".specs/EmulatePlayerLogin.lua")
 local addon = RCLootCouncil
 local GroupLoot = addon.Require "Utils.GroupLoot"
 
-addon:InitLogging()
 addon.Print = function() end --noop
 describe("#GroupLoot", function()
 	describe("#Basic", function()

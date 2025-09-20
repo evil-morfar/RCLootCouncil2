@@ -116,7 +116,6 @@ local playersData = { -- Update on login/encounter starts. it stores the informa
 } -- player's data that can be changed by the player (spec, equipped ilvl, gaers, relics etc)
 
 function RCLootCouncil:OnInitialize()
-	self.Log = self.Require "Utils.Log":New()
 	-- IDEA Consider if we want everything on self, or just whatever modules could need.
 	self.version = C_AddOns.GetAddOnMetadata("RCLootCouncil", "Version")
 	self.nnp = false
@@ -225,7 +224,10 @@ function RCLootCouncil:OnInitialize()
 
 	-- init db
 	self.db = LibStub("AceDB-3.0"):New("RCLootCouncilDB", self.defaults, true)
-	self:InitLogging()
+	local numLogs = self.tVersion and 2 * self.db.global.logMaxEntries or self.db.global.logMaxEntries
+	local UtilsLog = self.Require "Utils.Log"
+	UtilsLog:InitLogging(self.db.global.log, numLogs)
+	self.Log = UtilsLog:New(numLogs)
 	self.lootDB = LibStub("AceDB-3.0"):New("RCLootCouncilLootDB")
 	--[[ Format:
 	"playerName" = {

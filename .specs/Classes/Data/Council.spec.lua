@@ -20,7 +20,6 @@ loadfile(".specs/AddonLoader.lua")(nil, addonName, addon).LoadArray {
 	[[Classes/Data/Council.lua]],
 }
 
-addon:InitLogging()
 addon:ModulesOnInitialize()
 describe("#Council", function()
 	addon.candidatesInGroup = setmetatable({}, {
