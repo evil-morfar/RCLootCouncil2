@@ -82,7 +82,7 @@ function Log:New(prefix, maxEntries)
 	---@class Log
 	---@overload fun(...)
 	local object = {
-		prefix = prefix and "[" .. prefix .. "]" or "\t",
+		prefix = prefix and prefix ~= "" and "[" .. prefix .. "]" or "\t",
 		maxEntries = maxEntries,
 	}
 	return setmetatable(object, LOG_MT)

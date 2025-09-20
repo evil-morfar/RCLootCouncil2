@@ -227,7 +227,7 @@ function RCLootCouncil:OnInitialize()
 	local numLogs = self.tVersion and 2 * self.db.global.logMaxEntries or self.db.global.logMaxEntries
 	local UtilsLog = self.Require "Utils.Log"
 	UtilsLog:InitLogging(self.db.global.log, numLogs)
-	self.Log = UtilsLog:New(numLogs)
+	self.Log = UtilsLog:New(nil, numLogs)
 	self.lootDB = LibStub("AceDB-3.0"):New("RCLootCouncilLootDB")
 	--[[ Format:
 	"playerName" = {
