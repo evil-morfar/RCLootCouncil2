@@ -1,5 +1,5 @@
-require "/wow_api/FrameAPI/Abstract/FrameScriptObject"
-require "wow_api/FrameAPI/Animations/AnimationGroup"
+require "/FrameAPI/Abstract/FrameScriptObject"
+require "FrameAPI/Animations/AnimationGroup"
 
 local function noop() end
 

@@ -1,6 +1,6 @@
-require "/wow_api/FrameAPI/Abstract/ScriptRegion"
-require "/wow_api/FrameAPI/Textures/Texture"
-require "/wow_api/FrameAPI/Fonts/FontString"
+require "/FrameAPI/Abstract/ScriptRegion"
+require "/FrameAPI/Textures/Texture"
+require "/FrameAPI/Fonts/FontString"
 
 local function noop() end
 

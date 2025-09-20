@@ -1,4 +1,4 @@
-require "/wow_api/FrameAPI/Frames/Button"
+require "/FrameAPI/Frames/Button"
 
 local function noop() end
 

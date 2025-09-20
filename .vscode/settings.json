@@ -1,6 +1,7 @@
 {
     "Lua.runtime.path": [
-        "${workspace}/__tests/?.lua"
+        "${workspace}/__tests/?.lua",
+        "${workspace}/__tests/wow_api/?.lua",
     ],
 
     "Lua.diagnostics.disable": [
@@ -184,7 +185,8 @@
         "REAGENT_BANK",
         "BANKSLOTPURCHASE",
         "REAGENTBANK_PURCHASE_TEXT",
-        "COSTS_LABEL"
+        "COSTS_LABEL",
+        "ADDONS"
     ],
     "Lua.workspace.checkThirdParty": false,
     "Lua.runtime.version": "Lua 5.1",

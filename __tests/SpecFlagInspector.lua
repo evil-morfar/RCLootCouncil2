@@ -1,4 +1,4 @@
-dofile("__tests/wow_api.lua")
+require "wow_api"
 require "bit"
 
 local SpecFlag = {} -- This class

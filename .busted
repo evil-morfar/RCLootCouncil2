@@ -1,7 +1,7 @@
 return {
    _all = {
       ["pattern"] = ".spec",
-      ["lpath"] = "./__tests/?.lua"
+      ["lpath"] = "__tests/wow_api/?.lua",
    },
    default = {
       ["ROOT"] = { ".specs"},

@@ -1,5 +1,5 @@
 local Analysis = {}
-dofile "__tests/wow_api.lua"
+require "wow_api"
 
 local function RunAnalysis()
 	dofile "__tests/SavedVariables/sv_to_process.lua"

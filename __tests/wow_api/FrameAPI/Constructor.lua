@@ -1,11 +1,11 @@
-require "/wow_api/FrameAPI/Frames/Frame"
-require "/wow_api/FrameAPI/Frames/Button"
-require "/wow_api/FrameAPI/Frames/CheckButton"
-require "/wow_api/FrameAPI/Frames/GameTooltip"
-require "/wow_api/FrameAPI/Frames/Editbox"
-require "/wow_api/FrameAPI/Frames/StatusBar"
-require "/wow_api/FrameAPI/Frames/Slider"
-require "/wow_api/FrameAPI/Frames/ScrollFrame"
+require "FrameAPI/Frames/Frame"
+require "FrameAPI/Frames/Button"
+require "FrameAPI/Frames/CheckButton"
+require "FrameAPI/Frames/GameTooltip"
+require "FrameAPI/Frames/Editbox"
+require "FrameAPI/Frames/StatusBar"
+require "FrameAPI/Frames/Slider"
+require "FrameAPI/Frames/ScrollFrame"
 
 local Templates = {}
 
@@ -37,7 +37,7 @@ function FrameConstructor(kind, name, parent, templates, ...)
 	-- Setup Templates
 	for _, template in ipairs(multipleTemplates or { templates, }) do
 		if not Templates[template] then
-			error("No template found for", template)
+			error("No template found for: ".. template)
 			print(debugstack(-5))
 			return frame
 		end

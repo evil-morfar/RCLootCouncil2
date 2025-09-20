@@ -1,4 +1,5 @@
 --- Core.lua Setups module system.
+--- Think Dependency Injection similar to AceModules, but simpler, and probably more lightweight.
 -- Heavily inspired by TSM!
 
 ---@class RCLootCouncil

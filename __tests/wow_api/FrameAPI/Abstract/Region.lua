@@ -1,4 +1,4 @@
-require "/wow_api/FrameAPI/Abstract/ScriptRegion"
+require "/FrameAPI/Abstract/ScriptRegion"
 
 local function noop() end
 

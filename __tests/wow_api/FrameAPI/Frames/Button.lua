@@ -1,5 +1,5 @@
-require "/wow_api/FrameAPI/Frames/Frame"
-require "/wow_api/FrameAPI/Textures/Texture"
+require "/FrameAPI/Frames/Frame"
+require "/FrameAPI/Textures/Texture"
 
 local function noop() end
 

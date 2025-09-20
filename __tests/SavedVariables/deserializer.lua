@@ -1,4 +1,4 @@
-dofile("__tests/wow_api.lua")
+require "wow_api"
 dofile("Libs/LibStub/LibStub.lua")
 dofile("Libs/AceSerializer-3.0/AceSerializer-3.0.lua")
 local AceSer = LibStub("AceSerializer-3.0")
