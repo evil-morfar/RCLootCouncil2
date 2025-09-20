@@ -330,6 +330,7 @@ function RCLootCouncil:OnEnable()
 	local filterFunc = function(_, event, msg, player, ...) return strfind(msg, "[[RCLootCouncil]]:") end
 	ChatFrame_AddMessageEventFilter("CHAT_MSG_WHISPER_INFORM", filterFunc)
 	self:CouncilChanged() -- Call to initialize council
+	self:ModulesOnEnable()
 end
 
 function RCLootCouncil:OnDisable()
