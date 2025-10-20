@@ -186,19 +186,31 @@
         "BANKSLOTPURCHASE",
         "REAGENTBANK_PURCHASE_TEXT",
         "COSTS_LABEL",
-        "ADDONS"
+        "ADDONS",
+        "UNKNOWN"
     ],
     "Lua.workspace.checkThirdParty": false,
     "Lua.runtime.version": "Lua 5.1",
 
     "Lua.workspace.library": [
-        "~\\.vscode\\extensions\\ketho.wow-api-0.21.0\\Annotations\\Core",
-        "~\\.vscode\\extensions\\ketho.wow-api-0.21.0\\Annotations\\FrameXML",
         "${addons}/busted/module/library",
         "${3rd}/luassert/library",
         "${addons}/lldebugger/module/library",
         "${addons}/luafilesystem/module/library",
-        "${addons}/luassert/module/library"
+        "${addons}/luassert/module/library",
+        "~\\.vscode\\extensions\\ketho.wow-api-0.21.0\\Annotations\\Core",
+        "~\\.vscode\\extensions\\ketho.wow-api-0.21.0\\Annotations\\FrameXML"
     ],
-    "Lua.type.weakUnionCheck": true
+    "Lua.type.weakUnionCheck": true,
+    "Lua.runtime.builtin": {
+        "basic": "disable",
+        "debug": "disable",
+        "io": "disable",
+        "math": "disable",
+        "os": "disable",
+        "package": "disable",
+        "string": "disable",
+        "table": "disable",
+        "utf8": "disable"
+    }
 }

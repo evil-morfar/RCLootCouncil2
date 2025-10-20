@@ -1617,6 +1617,9 @@ function RCLootCouncil:OnEvent(event, ...)
 		-- Clear cache, and undo any mldb changes
 		wipe(self.db.global.cache)
 		wipe(self.mldb)
+		if self:GetActiveModule("votingframe"):IsEnabled() then
+			self:GetActiveModule("votingframe"):Disable()
+		end
 		MLDB:Clear()
 		self.isCouncil = false
 		self.handleLoot = false
