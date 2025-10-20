@@ -1,4 +1,4 @@
-require "/wow_api/FrameAPI/Animations/Alpha"
+require "/FrameAPI/Animations/Alpha"
 
 local function noop() end
 

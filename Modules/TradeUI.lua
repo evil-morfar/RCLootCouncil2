@@ -228,6 +228,7 @@ function TradeUI:OnAwardReceived (session, winner, trader)
 end
 
 function TradeUI:CheckTimeRemaining()
+	if addon.inCombat then return end
    local Items = addon.ItemStorage:GetAllItemsLessTimeRemaining(TIME_REMAINING_WARNING)
    -- Filter for items with "to_trade" and "award_later"
    Items = tFilter(Items, function(item)

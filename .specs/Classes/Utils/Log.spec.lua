@@ -15,8 +15,8 @@ loadfile(".specs/AddonLoader.lua")(nil, addon_name, addon).LoadArray {
 	"Classes/Utils/TempTable.lua",
 	"Classes/Utils/Log.lua",
 }
-
-addon:InitLogging()
+local Log = addon.Require "Utils.Log"
+Log:InitLogging(addon.db.global.log, addon.defaults.global.logMaxEntries)
 
 describe("#Utils #Log initilizing", function()
 	it("should create Log module", function()
@@ -29,6 +29,11 @@ describe("#Utils #Log initilizing", function()
 		assert.is.Function(log.New)
 		assert.is.Function(log.Clear)
 		assert.is.Function(log.Get)
+		assert.is.Function(log.InitLogging)
+	end)
+	it("should require a log table when initilizing", function()
+		local log = addon.Require("Utils.Log")
+		assert.has.errors(function() log:InitLogging() end, "No log table provided")
 	end)
 end)
 
@@ -85,6 +90,8 @@ describe("#Utils #Log", function()
 		end)
 
 		it("all log functions should work", function()
+			-- addon:Print not setup at this point, mock
+			addon.Print = function(...) end
 			local s = mock(logTable)
 			local log = addon.Require("Utils.Log"):New("Test")
 			log("All functions test")
@@ -125,18 +132,6 @@ describe("#Utils #Log", function()
 		it("should be truly static", function()
 			local log2 = addon.Require("Utils.Log"):Get()
 			assert.are.same(log, log2)
-		end)
-	end)
-
-	insulate("with tVersion", function()
-		addon.tVersion = "Alpha.1"
-		it("should bump logMaxEntries", function()
-			-- Reload files
-			loadfile("Classes/Core.lua")(addon_name, addon)
-			loadfile("Classes/Utils/TempTable.lua")(addon_name, addon)
-			loadfile("Classes/Utils/Log.lua")(addon_name, addon)
-			addon:InitLogging()
-			assert.is.equal(4000, addon.db.global.logMaxEntries)
 		end)
 	end)
 end)

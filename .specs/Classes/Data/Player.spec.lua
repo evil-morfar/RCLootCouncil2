@@ -17,7 +17,6 @@ loadfile(".specs/AddonLoader.lua")(nil, addonName, addon).LoadArray {
 	"Classes/Utils/Item.lua",
 	[[Utils\Utils.lua]],
 }
-addon:InitLogging()
 
 describe("#Player", function()
 	local Player

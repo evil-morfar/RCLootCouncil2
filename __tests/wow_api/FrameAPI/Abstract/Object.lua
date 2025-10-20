@@ -1,4 +1,4 @@
-require "/wow_api/FrameAPI/Abstract/FrameScriptObject"
+require "FrameAPI/Abstract/FrameScriptObject"
 local function noop() end
 
 Object = {}

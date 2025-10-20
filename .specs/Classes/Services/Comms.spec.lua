@@ -26,7 +26,6 @@ loadfile(".specs/AddonLoader.lua")(nil, nil, addon).LoadArray {
 	[[Classes\Data\Player.lua]],
 	[[Classes\Services\Comms.lua]],
 }
-addon:InitLogging()
 local Player = addon.Require "Data.Player"
 addon.Require "Services.ErrorHandler":OnInitialize()
 

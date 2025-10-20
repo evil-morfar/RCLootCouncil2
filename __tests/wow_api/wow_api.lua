@@ -1,12 +1,14 @@
 local _G = getfenv(0)
-require "/wow_api/API/Enums"
-require "/wow_api/API/Mixin"
-require "/wow_api/API/Color"
-require "/wow_api/API/ColorManager"
-require "/wow_api/API/TableUtil"
-require "wow_api/API/PlayerLocation"
-require "wow_api/API/Dump"
-require "wow_api/FrameAPI/Constructor"
+require "API/Enums"
+require "API/Mixin"
+require "API/Color"
+require "API/ColorManager"
+require "API/TableUtil"
+require "API/PlayerLocation"
+require "API/Dump"
+require "API/MathUtil"
+require "API/EnumUtil"
+require "FrameAPI/Constructor"
 local strbyte, strchar, gsub, gmatch, format, tinsert = string.byte, string.char, string.gsub, string.gmatch,
 	string.format, table.insert
 
@@ -32,6 +34,17 @@ function _G.CreateFrame(kind, name, parent, templates, ...)
 	if name then _G[name] = frame end
 	return frame
 end
+
+_time = 0
+function GetTime()
+	return _time
+end
+
+-- Requires `CreateFrame` & `GetTime`
+require "API/CallbackRegistryMixin"
+-- Depends on CallbackRegistryMixin
+require "API/DropdownButton"
+require "API/AddonCompartment"
 
 -- It seems Wow doesn't follow the 5.1 spec for xpcall (no additional arguments),
 -- but instead the one from 5.2 where that's allowed.
@@ -166,12 +179,6 @@ end
 function UnitRace(unit)
 	return "Undead", "Scourge"
 end
-
-_time = 0
-function GetTime()
-	return _time
-end
-
 function _G.StaticPopup_OnHide(args)
 	-- body...
 end
@@ -471,12 +478,13 @@ StaticPopupDialogs = {}
 function WoWAPI_FireEvent(event, ...)
 	for frame in pairs(frames) do
 		if frame.events[event] then
-			if frame.scripts["OnEvent"] then
+			local handler = frame.scripts["OnEvent"] or frame.OnEvent
+			if handler then
 				for i = 1, select("#", ...) do
 					_G["arg" .. i] = select(i, ...)
 				end
 				_G.event = event
-				frame.scripts["OnEvent"](frame, event, ...)
+				handler(frame, event, ...)
 			end
 		end
 	end

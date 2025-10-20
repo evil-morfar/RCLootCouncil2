@@ -116,7 +116,6 @@ local playersData = { -- Update on login/encounter starts. it stores the informa
 } -- player's data that can be changed by the player (spec, equipped ilvl, gaers, relics etc)
 
 function RCLootCouncil:OnInitialize()
-	self.Log = self.Require "Utils.Log":New()
 	-- IDEA Consider if we want everything on self, or just whatever modules could need.
 	self.version = C_AddOns.GetAddOnMetadata("RCLootCouncil", "Version")
 	self.nnp = false
@@ -225,7 +224,10 @@ function RCLootCouncil:OnInitialize()
 
 	-- init db
 	self.db = LibStub("AceDB-3.0"):New("RCLootCouncilDB", self.defaults, true)
-	self:InitLogging()
+	local numLogs = self.tVersion and 2 * self.db.global.logMaxEntries or self.db.global.logMaxEntries
+	local UtilsLog = self.Require "Utils.Log"
+	UtilsLog:InitLogging(self.db.global.log, numLogs)
+	self.Log = UtilsLog:New(nil, numLogs)
 	self.lootDB = LibStub("AceDB-3.0"):New("RCLootCouncilLootDB")
 	--[[ Format:
 	"playerName" = {
@@ -328,6 +330,7 @@ function RCLootCouncil:OnEnable()
 	local filterFunc = function(_, event, msg, player, ...) return strfind(msg, "[[RCLootCouncil]]:") end
 	ChatFrame_AddMessageEventFilter("CHAT_MSG_WHISPER_INFORM", filterFunc)
 	self:CouncilChanged() -- Call to initialize council
+	self:ModulesOnEnable()
 end
 
 function RCLootCouncil:OnDisable()
@@ -711,7 +714,11 @@ end
 
 function RCLootCouncil:ChatCmdAdd(args)
 	if not args[1] or args[1] == "" then return end -- We need at least 1 arg
-
+	-- If usage has been declined, MLDB is cleared, meaning potentially not received by some
+	if not self.handleLoot then
+		MLDB:Send("group")
+		self:OnMLDBReceived(MLDB:Get())
+	end
 	-- Add all items in bags with trade timers
 	if args[1] == "bags" or args[1] == "all" then
 		local items = self:GetAllItemsInBagsWithTradeTimer()
@@ -1610,6 +1617,9 @@ function RCLootCouncil:OnEvent(event, ...)
 		-- Clear cache, and undo any mldb changes
 		wipe(self.db.global.cache)
 		wipe(self.mldb)
+		if self:GetActiveModule("votingframe"):IsEnabled() then
+			self:GetActiveModule("votingframe"):Disable()
+		end
 		MLDB:Clear()
 		self.isCouncil = false
 		self.handleLoot = false
@@ -2754,6 +2764,10 @@ end
 function RCLootCouncil:GetButtons(type)
 	type = type and type or "default"
 	self.Log:d("GetButtons", type)
+	if self.mldb and not self.mldb.buttons then
+		self.Log:E("Missing mldb.buttons", next(self.mldb))
+		return self.defaults.profile.buttons[type]
+	end
 	-- Check if the type should be translated to something else
 	if self.mldb and not self.mldb.buttons[type] and self.BTN_SLOTS[type] and self.mldb.buttons[self.BTN_SLOTS[type]] then
 		type = self.BTN_SLOTS[type]

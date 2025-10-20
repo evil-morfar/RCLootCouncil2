@@ -1,4 +1,4 @@
-require "/wow_api/FrameAPI/Frames/Frame"
+require "/FrameAPI/Frames/Frame"
 
 local function noop() end
 
@@ -34,6 +34,7 @@ local noopMethods = {
 	-- Too many functions, didn't bother
 	"SetBagItem",
 	"SetHyperlink",
+	"IsOwned"
 }
 
 for _, v in ipairs(noopMethods) do if not objectMethods[v] then objectMethods[v] = noop end end

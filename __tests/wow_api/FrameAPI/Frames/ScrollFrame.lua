@@ -1,4 +1,4 @@
-require "/wow_api/FrameAPI/Frames/Frame"
+require "/FrameAPI/Frames/Frame"
 local function noop() end
 local objectMethods = {}
 local noopMethods = {

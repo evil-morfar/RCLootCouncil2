@@ -1,4 +1,4 @@
-require "/wow_api/FrameAPI/Abstract/TextureBase"
+require "/FrameAPI/Abstract/TextureBase"
 
 local function noop() end
 

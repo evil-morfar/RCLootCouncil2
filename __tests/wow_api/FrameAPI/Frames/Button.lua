@@ -1,5 +1,5 @@
-require "/wow_api/FrameAPI/Frames/Frame"
-require "/wow_api/FrameAPI/Textures/Texture"
+require "/FrameAPI/Frames/Frame"
+require "/FrameAPI/Textures/Texture"
 
 local function noop() end
 
@@ -17,6 +17,7 @@ local objectMethods = {
 
 	GetPushedTexture = function(self) return self.pushedTexture end,
 	GetTextWidth = function(self) return self.Text:GetWidth() end,
+	GetFontString = function(self) return self.Text end,
 
 }
 
@@ -31,7 +32,6 @@ local noopMethods = {
 	"GetButtonState",
 	"GetDisabledFontObject",
 	"GetDisabledTexture",
-	"GetFontString",
 	"GetHighlightFontObject",
 	"GetHighlightTexture",
 	"GetMotionScriptsWhileDisabled",

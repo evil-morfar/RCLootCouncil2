@@ -1,6 +1,6 @@
 -- Really derives from "AnimatableObject" and "ScriptObject", but those are condensed into ScriptRegion
-require "/wow_api/FrameAPI/Abstract/Object"
-require "/wow_api/FrameAPI/Animations/Animation"
+require "/FrameAPI/Abstract/Object"
+require "/FrameAPI/Animations/Animation"
 
 
 local function noop() end
