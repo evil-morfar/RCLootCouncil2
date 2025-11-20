@@ -478,6 +478,12 @@ function addon:OptionsTable()
 										desc = L.opt_timeoutFlash_desc,
 										type = "toggle"
 									},
+									blockTradesInVoting = {
+										order = 7.5,
+										name = L.opt_blockTradesInVoting_name,
+										desc = L.opt_blockTradesInVoting_desc,
+										type = "toggle",
+									},
 									chatFrameName = {
 										order = 8,
 										name = L["opt_chatFrameName_name"],
