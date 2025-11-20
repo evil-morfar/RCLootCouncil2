@@ -37,7 +37,7 @@
         {
             "label": "Busted All",
             "type": "shell",
-            "command": "busted",
+            "command": "busted.bat",
             "group": {
                 "kind": "test",
                 "isDefault": true
@@ -46,7 +46,7 @@
         {
             "label": "Busted All w/coverage",
             "type": "shell",
-            "command": "busted",
+            "command": "busted.bat",
             "group": {
                 "kind": "test",
                 "isDefault": true
@@ -58,18 +58,21 @@
         {
             "label": "Busted this file",
             "type": "shell",
-            "command": "busted",
+            "command": "busted.bat",
             "args": [
                 "--lpath=__tests/?.lua;__tests/wow_api/?.lua",
                 "-v",
                 "${file}",
             ],
             "windows": {
-                "args": [
-                    "--lpath=${workspaceFolder}\\__tests\\?.lua;__tests\\wow_api\\?.lua",
-                    "-v",
-                    "${file}",
-                ],
+                "options": {
+                    "shell": {
+                        "executable": "cmd.exe",
+                        "args": [
+                            "/c"
+                        ]
+                    }
+                },
             },
             "group": "test"
         },
