@@ -34,7 +34,6 @@
         "CreateSimpleTextureMarkup",
         "tContains",
         "FindValueInTableIf",
-        "escapePatternSymbols",
         "ITEM_BNETACCOUNTBOUND",
         "PLAYER_LIST_DELIMITER",
         "BIND_TRADE_TIME_REMAINING",
