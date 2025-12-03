@@ -74,6 +74,7 @@ addon.defaults = {
 		showSpecIcon = false,
 		closeWithEscape = true,
 		timeoutFlash = true,
+		blockTradesInVoting = false,
 		chatFrameName = "DEFAULT_CHAT_FRAME", -- The chat frame to use for :Print()s
 		-- General - History
 		enableHistory = true,

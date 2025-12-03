@@ -52,6 +52,8 @@ Enum = {
 		Glyph = 16,
 		Battlepet = 17,
 		WoWToken = 18,
+		Profession = 19,
+		Housing = 20,
 	},
 	ItemArmorSubclass = {
 		Generic = 0,
@@ -97,6 +99,15 @@ Enum = {
 	},
 	ItemQualityMeta = {
 		NumValues = 9,
+	},
+
+	ItemHousingSubclass = {
+		Decor = 0,
+		Dye = 1,
+		Room = 2,
+		RoomCustomization = 3,
+		ExteriorCustomization = 4,
+		ServiceItem = 5,
 	},
 
 	SeasonID = {

@@ -253,21 +253,27 @@ end
 --------------------------------------------------------------
 
 function TradeUI:OnEvent_TRADE_SHOW (event, ...)
-   self.isTrading = true
    wipe(self.tradeItems)
-
+   
    -- Try to grab the trader from Blizzard UI
    local target = _G.TradeFrameRecipientNameText:GetText()
    if not target or target == "" then
-      target = "NPC" -- Otherwise fallback to `UnitName("NPC")`
-   end
+	target = "NPC" -- Otherwise fallback to `UnitName("NPC")`
+	end
 
-   -- If target is from another realm, the name in the trade frame will be "Name(*)"
-   if target:find("(*)") then
+	-- If target is from another realm, the name in the trade frame will be "Name(*)"
+	if target:find("(*)") then
 		-- Remove the "(*)" so `UnitName` can attach realm.
 		target = string.sub(target, 1, -4)
-   end
-   self.tradeTarget = addon:UnitName(target)
+	end
+	if db.blockTradesInVoting and addon:GetActiveModule("votingframe"):IsActive() then
+		CloseTrade()
+		addon:Print(string.format(L["opt_blockTradesInVoting_message"], addon:GetClassIconAndColoredName(target)))
+		return
+	end
+
+	self.tradeTarget = addon:UnitName(target)
+	self.isTrading = true
 
    local count = self:GetNumAwardedInBagsToTradeWindow()
 

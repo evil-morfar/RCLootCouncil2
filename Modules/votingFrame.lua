@@ -251,6 +251,10 @@ function RCVotingFrame:Show()
 	end
 end
 
+function RCVotingFrame:IsActive()
+	return active
+end
+
 function RCVotingFrame:HasUnawardedItems ()
 	for _,v in pairs(lootTable) do
 		if not v.awarded then return true end
