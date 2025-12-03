@@ -1043,7 +1043,7 @@ function RCLootCouncilML:AnnounceItems(table)
 		local msg = db.announceItemString
 		for text, func in pairs(self.announceItemStrings) do
 			-- escapePatternSymbols is defined in FrameXML/ChatFrame.lua that escapes special characters.
-			msg = gsub(msg, text, escapePatternSymbols(tostring(func(v.session or k, link, v))))
+			msg = gsub(msg, text, addon.Utils:escapePatternSymbols(tostring(func(v.session or k, link, v))))
 		end
 		if v.isRoll then
 			msg = _G.ROLL..": "..msg
@@ -1103,7 +1103,8 @@ function RCLootCouncilML:AnnounceAward(name, link, response, roll, session, chan
 			local message = v.text
 			for text, func in pairs(self.awardStrings) do
 				-- escapePatternSymbols is defined in FrameXML/ChatFrame.lua that escapes special characters.
-				message = gsub(message, text, escapePatternSymbols(tostring(func(name, link, response, roll, session, owner))))
+				message = gsub(message, text,
+				addon.Utils:escapePatternSymbols(tostring(func(name, link, response, roll, session, owner))))
 			end
 			if changeAward then
 				message = "("..L["Change Award"]..") "..message

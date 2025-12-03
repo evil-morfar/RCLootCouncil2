@@ -1123,16 +1123,6 @@ function _G.GetInventorySlotInfo(slot) end
 -- Mocked with random item
 function GetInventoryItemLink(unit, slot) return _G.Items_Array[math.random(#_G.Items_Array)] end
 
-local symbols = { "%%", "%*", "%+", "%-", "%?", "%(", "%)", "%[", "%]", "%$", "%^", } --% has to be escaped first or everything is ruined
-local replacements = { "%%%%", "%%%*", "%%%+", "%%%-", "%%%?", "%%%(", "%%%)", "%%%[", "%%%]", "%%%$", "%%%^", }
--- Defined in FrameXML/ChatFrame.lua
-function escapePatternSymbols(text)
-	for i = 1, #symbols do
-		text = text:gsub(symbols[i], replacements[i])
-	end
-	return text
-end
-
 function FauxScrollFrame_Update()
 end
 

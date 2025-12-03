@@ -371,6 +371,16 @@ function Utils:Int2Bin(n)
 	return string.format("%04s", result)
 end
 
+local symbols = { "%%", "%*", "%+", "%-", "%?", "%(", "%)", "%[", "%]", "%$", "%^", } --% has to be escaped first or everything is ruined
+local replacements = { "%%%%", "%%%*", "%%%+", "%%%-", "%%%?", "%%%(", "%%%)", "%%%[", "%%%]", "%%%$", "%%%^", }
+--- Reimplementation of Blizzard function (make local in 11.2.7)
+function Utils:escapePatternSymbols(text)
+	for i = 1, #symbols do
+		text = text:gsub(symbols[i], replacements[i])
+	end
+	return text
+end
+
 ---@deprecated
 ---@see Utils.Item.GetTransmittableItemString
 function Utils:GetTransmittableItemString(link)

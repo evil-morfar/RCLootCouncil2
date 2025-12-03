@@ -1423,7 +1423,7 @@ function RCLootCouncil:GetContainerItemTradeTimeRemaining(container, slot)
 	tooltipForParsing:SetBagItem(container, slot) -- Set the tooltip content and show it, should hide the tooltip before function ends
 	if not tooltipForParsing:NumLines() or tooltipForParsing:NumLines() == 0 then return 0 end
 
-	local bindTradeTimeRemainingPattern = escapePatternSymbols(BIND_TRADE_TIME_REMAINING) -- Escape special characters in translations
+	local bindTradeTimeRemainingPattern = self.Utils:escapePatternSymbols(BIND_TRADE_TIME_REMAINING) -- Escape special characters in translations
 		:gsub("1%%%$", "") -- Remove weird insertion in RU '%1$s'
 		:gsub("%%%%s", "%(%.%+%)") -- Create capture group for the time string
 	local bounded = false

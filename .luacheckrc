@@ -4921,7 +4921,6 @@ globals = {
 	"VoiceChatShineFadeIn",
 	"VoiceChatShineFadeOut",
 	"WrapTextInColorCode",
-	"escapePatternSymbols",
 	"getglobal",
 	"getprinthandler",
 	"isRaidFinderDungeonDisplayable",
