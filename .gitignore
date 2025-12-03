@@ -3,3 +3,5 @@ luacov.report.out
 .env
 .VSCodeCounter
 .debug
+GEMINI.md
+copilot-instructions.md
