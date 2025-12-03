@@ -57,6 +57,8 @@ addon.OPT_MORE_BUTTONS_VALUES = {
 	CATALYST = L.Catalyst_Items, -- items that can be converted to tier through catalyst
 	SPECIAL = L.Special_Effects_Items,
 	RARE = L.Rare_Items,
+
+	DECOR = _G.HOUSING_ITEM_TOAST_TYPE_DECOR,
 }
 
 --- Inventory types that can be converted to tier
@@ -198,6 +200,11 @@ addon.RESPONSE_CODE_GENERATORS = {
 	function(_, db, _, itemEquipLoc)
 		return db.enabledButtons.CATALYST and addon.CATALYST_ITEMS[itemEquipLoc] and "CATALYST" or nil
 	end,
+
+	-- Housing Decor 
+	function(_, db, _, _, classID)
+		return db.enabledButtons.DECOR and classID == Enum.ItemClass.Housing and "DECOR" or nil
+	end
 }
 
 --- @alias VersionCodes
