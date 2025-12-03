@@ -1,3 +1,7 @@
+# 3.18.1
+
+Updated for patch 11.2.7.
+
 ## Changes
 
 ### Trade Blocker
