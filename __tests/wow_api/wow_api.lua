@@ -419,6 +419,17 @@ C_ChatInfo = {
 }
 C_ChatInfo.SendAddonMessageLogged = C_ChatInfo.SendAddonMessage
 
+Settings = {
+	RegisterCanvasLayoutCategory = function()
+		return {
+			ID = "MOCK_CATEGORY",
+		}
+	end,
+	RegisterCanvasLayoutSubcategory = function() return "MOCK_CATEGORY" end,
+	RegisterAddOnCategory = function()end,
+	GetCategory = function() return "MOCK_CATEGORY" end,
+}
+
 function BNSendGameData()
 
 end
