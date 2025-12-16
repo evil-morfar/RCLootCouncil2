@@ -144,6 +144,7 @@ function RCLootCouncil:OnInitialize()
 	self.isInGuildGroup = false -- Is the group leader a member of our guild?
 	---@type InstanceDataSnapshot
 	self.instanceDataSnapshot = nil -- Instance data from last encounter
+	self.restrictionsEnabled = false -- Restrictions preventing chat/addon messages
 
 	---@type table<string,boolean>
 	self.candidatesInGroup = {}
@@ -1535,6 +1536,16 @@ end
 
 function RCLootCouncil:OnGroupJoined()
 	self:SendPlayerInfo("group")
+end
+
+local AddOnRestrictionTypeReverse = tInvert(Enum.AddOnRestrictionType)
+local AddOnRestrictionStateReverse = tInvert(Enum.AddOnRestrictionState)
+function RCLootCouncil:OnAddonRestrictionChanged(_, type, state)
+	-- TODO: Currently checked: Combat, Encounter, ChallengeMode
+	self.restrictionsEnabled = 
+	(type == Enum.AddOnRestrictionType.Encounter and state == Enum.AddOnRestrictionState.Activating) or
+	(type == Enum.AddOnRestrictionType.ChallengeMode and state == Enum.AddOnRestrictionState.Activating)
+	self.Log:d("Restriction:", AddOnRestrictionTypeReverse[type], AddOnRestrictionStateReverse[state], type, state, self.restrictionsEnabled)
 end
 
 --- Send player info to the target/group

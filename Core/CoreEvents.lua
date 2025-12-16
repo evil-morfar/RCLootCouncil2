@@ -23,4 +23,5 @@ addon.coreEvents = {
    ["PLAYER_LOGOUT"] = "OnEvent",
    ["ACTIVE_PLAYER_SPECIALIZATION_CHANGED"] = "OnSpecChanged",
    ["GROUP_JOINED"] = "OnGroupJoined",
+   ["ADDON_RESTRICTION_STATE_CHANGED"] = "OnAddonRestrictionChanged",
 }
