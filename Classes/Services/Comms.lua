@@ -128,6 +128,9 @@ end
 
 function private:SendComm(prefix, target, prio, callback, callbackarg, command, ...)
    if addon.IsEnabled and not addon:IsEnabled() then return end
+   if addon:IsRestricted() then
+	  return Log:w("<Comm>","Comms are restricted, not sending:", prefix, target, command, ...)
+   end
    local data = TempTable:Acquire(...)
    local serialized = self:Serialize(command, data)
    local compressed = ld:CompressDeflate(serialized, self.compresslevel)

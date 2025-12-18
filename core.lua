@@ -695,10 +695,12 @@ end
 function RCLootCouncil:SendAnnouncement(msg, channel, whisperTarget)
 	if channel == "NONE" then return end
 	if self.testMode then msg = "(" .. L["Test"] .. ") " .. msg end
-	if (not IsInGroup()
-					and (channel == "group" or channel == "RAID" or channel == "RAID_WARNING" or channel == "PARTY" or channel
-									== "INSTANCE_CHAT")) or channel == "chat" or (not IsInGuild() and (channel == "GUILD" or channel == "OFFICER")) then
+	local onlyPrint = (not IsInGroup() and (channel == "group" or channel == "RAID" or channel == "RAID_WARNING" or channel == "PARTY" or channel == "INSTANCE_CHAT"))
+		or channel == "chat" or (not IsInGuild() and (channel == "GUILD" or channel == "OFFICER"))
+	if onlyPrint then
 		self:Print(msg)
+	elseif not onlyPrint and self:IsRestricted() then
+		return self.Log:w("Announcements are restricted, cannot send message to channel:", channel)
 	elseif (not IsInRaid() and (channel == "RAID" or channel == "RAID_WARNING")) then
 		self.SendChatMessage(msg, "PARTY")
 	elseif channel == "WHISPER" then
@@ -1542,10 +1544,15 @@ local AddOnRestrictionTypeReverse = tInvert(Enum.AddOnRestrictionType)
 local AddOnRestrictionStateReverse = tInvert(Enum.AddOnRestrictionState)
 function RCLootCouncil:OnAddonRestrictionChanged(_, type, state)
 	-- TODO: Currently checked: Combat, Encounter, ChallengeMode
+	-- Combat seems to be the exception
 	self.restrictionsEnabled = 
-	(type == Enum.AddOnRestrictionType.Encounter and state == Enum.AddOnRestrictionState.Activating) or
-	(type == Enum.AddOnRestrictionType.ChallengeMode and state == Enum.AddOnRestrictionState.Activating)
+	(state == Enum.AddOnRestrictionState.Active or state == Enum.AddOnRestrictionState.Activating) and
+	(type ~= Enum.AddOnRestrictionType.Combat)
 	self.Log:d("Restriction:", AddOnRestrictionTypeReverse[type], AddOnRestrictionStateReverse[state], type, state, self.restrictionsEnabled)
+end
+
+function RCLootCouncil:IsRestricted()
+	return self.restrictionsEnabled
 end
 
 --- Send player info to the target/group

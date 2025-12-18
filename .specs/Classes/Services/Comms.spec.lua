@@ -4,7 +4,9 @@ local addon = {
 	Getdb = function(self) return self.db end,
 	realmName = "Realm1",
 	db = { global = { log = {}, cache = {}, }, },
-	defaults = { global = { logMaxEntries = 2000, }, },
+	defaults = { global = { logMaxEntries = 2000, },
+	},
+	IsRestricted = function () return false end,
 }
 loadfile(".specs/AddonLoader.lua")(nil, nil, addon).LoadArray {
 	[[Libs\LibStub\LibStub.lua]],
