@@ -239,7 +239,7 @@ do
 	local timeoutBarXOffset = 3
 	local timeoutBarYOffset = 2
 
-	---@class RCLootFrameEntry
+	---@class RCLootFrameEntry : Frame
 	---@field type "normal" | "roll"
 	local entryPrototype = {
 		type = "normal",
@@ -499,6 +499,17 @@ do
 				if not entry.item.timeLeft then
 					return
 				end
+				if addon:IsRestricted() then -- Pause when restricted
+					entry.timeoutBarText:SetText(L.PAUSED)
+					for _, button in pairs(entry.buttons) do
+						button:Disable()
+					end
+					return
+				else
+					for _, button in pairs(entry.buttons) do
+						button:Enable()
+					end
+				end
 				if entry.item.timeLeft <= 0 then --Timeout!
 					entry.timeoutBarText:SetText(L["Timeout"])
 					entry.timeoutBar:SetValue(0)
@@ -640,6 +651,7 @@ do
 	end
 
 	function LootFrame.EntryManager:GetRollEntry(item)
+		---@class RCLootFrameEntry
 		local Entry = setmetatable({}, mt)
 		Entry.type = "roll"
 		Entry:Create(LootFrame.frame.content)
@@ -688,6 +700,7 @@ end
 
 -- Process roll message, to send roll with the response.
 function LootFrame:CHAT_MSG_SYSTEM(event, msg)
+	if addon:IsRestricted() then return end
 	local name, roll, low, high = string.match(msg, RANDOM_ROLL_PATTERN)
 	roll, low, high = tonumber(roll), tonumber(low), tonumber(high)
 

@@ -193,10 +193,14 @@ function RCSessionFrame:GetFrame()
 	local b1 = addon:CreateButton(_G.START, f.content)
 	b1:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", 10, 10)
 	b1:SetScript("OnClick", function()
+		if addon:IsRestricted() then
+			addon.Log:w("SessionFrame", "Cannot start session, addon is restricted.")
+			return addon:Print(L.chat_restrictions_enabled)
+		end
 		if loadingItems then
 			return addon:Print(L["You can't start a session before all items are loaded!"])
 		end
-			if not ml.lootTable or #ml.lootTable == 0 then
+		if not ml.lootTable or #ml.lootTable == 0 then
 			addon:Print(L["You cannot start an empty session."])
 			addon.Log:D("Player tried to start empty session.")
 			return

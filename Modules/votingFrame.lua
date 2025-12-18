@@ -1310,7 +1310,11 @@ function RCVotingFrame:GetFrame()
 	b1:SetPoint("TOPRIGHT", f, "TOPRIGHT", -10, -40)
 	b1:SetScript("OnClick", function()
 		-- This needs to be dynamic if the ML has changed since this was first created
-		if addon.isMasterLooter and active then LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_ABORT")
+		if addon.isMasterLooter and active then
+			if addon:IsRestricted() then
+				return addon:Print(L.chat_restrictions_enabled)
+			end
+			LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_ABORT")
 		else self:Hide() end
 	end)
 	f.abortBtn = b1
@@ -1753,6 +1757,9 @@ function RCVotingFrame.SetCellVote(rowFrame, frame, data, cols, row, realrow, co
 		end
 		frame.voteBtn:SetScript("OnClick", function(btn)
 			addon.Log:D("Vote button pressed")
+			if addon:IsRestricted() then
+				return addon:Print(L.chat_restrictions_enabled)
+			end
 			if IsAltKeyDown() then
 				RCVotingFrame:RequestVotes(session)
 				return
@@ -2289,7 +2296,12 @@ do
 					if (entry.hidden and type(entry.hidden) == "function" and not entry.hidden(candidateName, data)) or not entry.hidden then
 						for name, val in pairs(entry) do
 							if name == "func" then
-								info[name] = function() return val(candidateName, data) end -- This needs to be set as a func, but fed with our params
+								info[name] = function()  -- This needs to be set as a func, but fed with our params
+									if addon:IsRestricted() then
+										return addon:Print(L.chat_restrictions_enabled)
+									end
+									 return val(candidateName, data)
+								end
 							elseif type(val) == "function" then
 								info[name] = val(candidateName, data) -- This needs to be evaluated
 							else
@@ -2305,6 +2317,9 @@ do
 					info.text = v.text
 					info.notCheckable = true
 					info.func = function()
+						if addon:IsRestricted() then
+							return addon:Print(L.chat_restrictions_enabled)
+						end
 						LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_AWARD", RCVotingFrame:GetAwardPopupData(session, candidateName, data, v))
 					end
 					MSA_DropDownMenu_AddButton(info, level)
@@ -2317,7 +2332,10 @@ do
 					info.colorCode = "|cff"..addon.Utils:RGBToHex(unpack(v.color))
 					info.notCheckable = true
 					info.func = function()
-							addon:Send("group", "change_response", session, candidateName, i)
+						if addon:IsRestricted() then
+							return addon:Print(L.chat_restrictions_enabled)
+						end
+						addon:Send("group", "change_response", session, candidateName, i)
 					end
 					MSA_DropDownMenu_AddButton(info, level)
 				end
@@ -2326,7 +2344,10 @@ do
 				info.colorCode = "|cff"..addon.Utils:RGBToHex(unpack(db.responses.default.PASS.color))
 				info.notCheckable = true
 				info.func = function()
-						addon:Send("group", "change_response", session, candidateName, "PASS")
+					if addon:IsRestricted() then
+						return addon:Print(L.chat_restrictions_enabled)
+					end
+					addon:Send("group", "change_response", session, candidateName, "PASS")
 				end
 				MSA_DropDownMenu_AddButton(info, level)
 				info = MSA_DropDownMenu_CreateInfo()
@@ -2337,7 +2358,10 @@ do
 							info.colorCode = "|cff"..addon.Utils:RGBToHex(unpack(val.color))
 							info.notCheckable = true
 							info.func = function()
-									addon:Send("group", "change_response", session, candidateName, k)
+								if addon:IsRestricted() then
+									return addon:Print(L.chat_restrictions_enabled)
+								end
+								addon:Send("group", "change_response", session, candidateName, k)
 							end
 							MSA_DropDownMenu_AddButton(info, level)
 						end
