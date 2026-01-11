@@ -961,6 +961,7 @@ function LootHistory:GetFrame()
 	sel:SetText(self.exports[self.exportSelection].name)
 	sel:SetCallback("OnValueChanged", function(_,_, key)
 		self.exportSelection = key
+		db.defaultHistoryExport = key
 	end)
 	sel:SetCallback("OnEnter", function()
 		addon:CreateTooltip(self.exports[self.exportSelection].tip)
