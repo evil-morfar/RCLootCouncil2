@@ -1,3 +1,9 @@
+## Changes
+
+### Loot History Export
+
+The selected export option now defaults to the last selected option.
+
 # 3.18.2
 
 Updated for patch 11.2.7.
