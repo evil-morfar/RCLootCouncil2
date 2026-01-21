@@ -1312,9 +1312,6 @@ function RCVotingFrame:GetFrame()
 	b1:SetScript("OnClick", function()
 		-- This needs to be dynamic if the ML has changed since this was first created
 		if addon.isMasterLooter and active then
-			if CommsRestrictions:IsRestricted() then
-				return addon:Print(L.chat_restrictions_enabled)
-			end
 			LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_ABORT")
 		else self:Hide() end
 	end)
