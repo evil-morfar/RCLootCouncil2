@@ -21,6 +21,7 @@ local waitingToEndSessions = false  -- need some time to confirm the result of a
 local scheduledToShowAgain = false       -- Have we scheduled to reshow the frame, due to a uncached item?
 
 local Council = addon.Require "Data.Council"
+local CommsRestrictions = addon.Require "Services.CommsRestrictions"
 
 --- Lua
 local getglobal, ipairs, tinsert =
@@ -193,7 +194,7 @@ function RCSessionFrame:GetFrame()
 	local b1 = addon:CreateButton(_G.START, f.content)
 	b1:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", 10, 10)
 	b1:SetScript("OnClick", function()
-		if addon:IsRestricted() then
+		if CommsRestrictions:IsRestricted() then
 			addon.Log:w("SessionFrame", "Cannot start session, addon is restricted.")
 			return addon:Print(L.chat_restrictions_enabled)
 		end

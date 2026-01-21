@@ -39,6 +39,7 @@ local Player = addon.Require "Data.Player"
 local TempTable = addon.Require "Utils.TempTable"
 local ErrorHandler = addon.Require "Services.ErrorHandler"
 local ItemUtils = addon.Require "Utils.Item"
+local CommsRestrictions = addon.Require "Services.CommsRestrictions"
 
 local ROW_HEIGHT = 20;
 local NUM_ROWS = 15;
@@ -1311,7 +1312,7 @@ function RCVotingFrame:GetFrame()
 	b1:SetScript("OnClick", function()
 		-- This needs to be dynamic if the ML has changed since this was first created
 		if addon.isMasterLooter and active then
-			if addon:IsRestricted() then
+			if CommsRestrictions:IsRestricted() then
 				return addon:Print(L.chat_restrictions_enabled)
 			end
 			LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_ABORT")
@@ -1757,7 +1758,7 @@ function RCVotingFrame.SetCellVote(rowFrame, frame, data, cols, row, realrow, co
 		end
 		frame.voteBtn:SetScript("OnClick", function(btn)
 			addon.Log:D("Vote button pressed")
-			if addon:IsRestricted() then
+			if CommsRestrictions:IsRestricted() then
 				return addon:Print(L.chat_restrictions_enabled)
 			end
 			if IsAltKeyDown() then
@@ -2297,7 +2298,7 @@ do
 						for name, val in pairs(entry) do
 							if name == "func" then
 								info[name] = function()  -- This needs to be set as a func, but fed with our params
-									if addon:IsRestricted() then
+									if CommsRestrictions:IsRestricted() then
 										return addon:Print(L.chat_restrictions_enabled)
 									end
 									 return val(candidateName, data)
@@ -2317,7 +2318,7 @@ do
 					info.text = v.text
 					info.notCheckable = true
 					info.func = function()
-						if addon:IsRestricted() then
+						if CommsRestrictions:IsRestricted() then
 							return addon:Print(L.chat_restrictions_enabled)
 						end
 						LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_AWARD", RCVotingFrame:GetAwardPopupData(session, candidateName, data, v))
@@ -2332,7 +2333,7 @@ do
 					info.colorCode = "|cff"..addon.Utils:RGBToHex(unpack(v.color))
 					info.notCheckable = true
 					info.func = function()
-						if addon:IsRestricted() then
+						if CommsRestrictions:IsRestricted() then
 							return addon:Print(L.chat_restrictions_enabled)
 						end
 						addon:Send("group", "change_response", session, candidateName, i)
@@ -2344,7 +2345,7 @@ do
 				info.colorCode = "|cff"..addon.Utils:RGBToHex(unpack(db.responses.default.PASS.color))
 				info.notCheckable = true
 				info.func = function()
-					if addon:IsRestricted() then
+					if CommsRestrictions:IsRestricted() then
 						return addon:Print(L.chat_restrictions_enabled)
 					end
 					addon:Send("group", "change_response", session, candidateName, "PASS")
@@ -2358,7 +2359,7 @@ do
 							info.colorCode = "|cff"..addon.Utils:RGBToHex(unpack(val.color))
 							info.notCheckable = true
 							info.func = function()
-								if addon:IsRestricted() then
+								if CommsRestrictions:IsRestricted() then
 									return addon:Print(L.chat_restrictions_enabled)
 								end
 								addon:Send("group", "change_response", session, candidateName, k)

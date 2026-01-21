@@ -64,6 +64,7 @@ local Player = RCLootCouncil.Require "Data.Player"
 local MLDB = RCLootCouncil.Require "Data.MLDB"
 local TT = RCLootCouncil.Require "Utils.TempTable"
 local ItemUtils = RCLootCouncil.Require "Utils.Item"
+local CommsRestrictions = RCLootCouncil.Require "Services.CommsRestrictions"
 
 -- Init shorthands
 --- @type RCLootCouncilDB
@@ -699,7 +700,7 @@ function RCLootCouncil:SendAnnouncement(msg, channel, whisperTarget)
 		or channel == "chat" or (not IsInGuild() and (channel == "GUILD" or channel == "OFFICER"))
 	if onlyPrint then
 		self:Print(msg)
-	elseif not onlyPrint and self:IsRestricted() then
+	elseif not onlyPrint and CommsRestrictions:IsRestricted() then
 		return self.Log:w("Announcements are restricted, cannot send message to channel:", channel)
 	elseif (not IsInRaid() and (channel == "RAID" or channel == "RAID_WARNING")) then
 		self.SendChatMessage(msg, "PARTY")
