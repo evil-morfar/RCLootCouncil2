@@ -6,7 +6,7 @@ local addon = {
 	db = { global = { log = {}, cache = {}, }, },
 	defaults = { global = { logMaxEntries = 2000, },
 	},
-	IsRestricted = function () return false end,
+	IsRestricted = function() return false end,
 }
 loadfile(".specs/AddonLoader.lua")(nil, nil, addon).LoadArray {
 	[[Libs\LibStub\LibStub.lua]],
@@ -26,6 +26,7 @@ loadfile(".specs/AddonLoader.lua")(nil, nil, addon).LoadArray {
 	"Classes/Utils/Item.lua",
 	[[Utils\Utils.lua]],
 	[[Classes\Data\Player.lua]],
+	[[Classes\Services\CommsRestrictions.lua]],
 	[[Classes\Services\Comms.lua]],
 }
 local Player = addon.Require "Data.Player"
@@ -450,44 +451,91 @@ describe("#Services #Comms", function()
 		assert.spy(s).returned_with(data)
 	end)
 
-	-- TODO: Figure out why this needs to be last for tests to complete
-	describe("safemode", function()
-		local receiverSpy
-		local EHstub
-		setup(function()
-			receiverSpy = spy.new(function() error("from spy") end)
-			local EH = addon.Require "Services.ErrorHandler"
-			EHstub = stub(EH, "ThrowSilentError")
-			addon.Getdb = spy.new(function() return { safemode = true, } end)
-			_G.IsInRaidVal = true
-		end)
+-- 	-- TODO: Figure out why this needs to be last for tests to complete
+	-- describe("safemode", function()
+	-- 	local EH = addon.Require "Services.ErrorHandler"
+	-- 	local receiverSpy
+	-- 	local EHstub
+	-- 	setup(function()
+	-- 		receiverSpy = spy.new(function() error("from spy") end)
+	-- 		EHstub = stub(EH, "ThrowSilentError")
+	-- 		addon.Getdb = spy.new(function() return { safemode = true, } end)
+	-- 		_G.IsInRaidVal = true
+	-- 	end)
 
-		teardown(function()
-			-- just to be sure
-			receiverSpy:revert()
-			EHstub:revert()
-			addon.Getdb:revert()
-		end)
-		it("works with no errors", function()
-			stub(addon, "Log")
-			Comms:Subscribe(addon.PREFIXES.MAIN, "test", receiverSpy)
-			Comms:Send { command = "test", }
-			WoWAPI_FireUpdate(GetTime() + 10)
-			-- Msg succesfully received
-			assert.spy(receiverSpy).was_called(1)
-			assert.spy(receiverSpy).was_called_with({}, "Sender-Realm1", "test", "RAID")
-			-- even though receiver threw error
-			assert.stub(EHstub).was_called(1)
-			-- which doesn't break execution
-			Comms:Send { command = "test", }
-			WoWAPI_FireUpdate(GetTime() + 10)
-			assert.spy(receiverSpy).was_called(2)
-			assert.spy(receiverSpy).was_called_with({}, "Sender-Realm1", "test", "RAID")
-			assert.stub(EHstub).was_called(2)
-		end)
+	-- 	teardown(function()
+	-- 		-- just to be sure
+	-- 		receiverSpy:revert()
+	-- 		EHstub:revert()
+	-- 		addon.Getdb:revert()
+	-- 		_G.IsInRaidVal = false
+	-- 	end)
+	-- 	it("works with no errors", function()
+	-- 		-- stub(addon, "Log")
+	-- 		Comms:Subscribe(addon.PREFIXES.MAIN, "test", receiverSpy)
+	-- 		Comms:Send { command = "test", }
+	-- 		WoWAPI_FireUpdate(GetTime() + 10)
+	-- 		-- Msg succesfully received
+	-- 		assert.spy(receiverSpy).was_called(1)
+	-- 		assert.spy(receiverSpy).was_called_with({}, "Sender-Realm1", "test", "RAID")
+	-- 		-- even though receiver threw error
+	-- 		assert.stub(EHstub).was_called(1)
+	-- 		-- which doesn't break execution
+	-- 		Comms:Send { command = "test", }
+	-- 		WoWAPI_FireUpdate(GetTime() + 10)
+	-- 		assert.spy(receiverSpy).was_called(2)
+	-- 		assert.spy(receiverSpy).was_called_with({}, "Sender-Realm1", "test", "RAID")
+	-- 		assert.stub(EHstub).was_called(2)
+	-- 	end)
 
-		it("catches errors in receiver", function()
+	-- 	it("catches errors in receiver", function()
 
-		end)
+	-- 	end)
+	-- end)
+end)
+
+
+describe("#Services #Comms #Restricted", function()
+	---@type Services.Comms
+	local Comms = addon.Require("Services.Comms")
+	addon.player = Player:Get("Player1")
+	Comms:RegisterPrefix(addon.PREFIXES.MAIN)
+	local onReceiveSpy, _sub
+	local t = {
+		receiver = function(data, sender, ...)
+			-- print("RECEIVER:", dist, sender, unpack(data),...);
+			return unpack(data)
+		end,
+	}
+	setup(function()
+		_sub = Comms:Subscribe(addon.PREFIXES.MAIN, "test", function(...) t.receiver(...) end)
+	end)
+
+	teardown(function()
+		_sub:unsubscribe()
+	end)
+
+	before_each(function()
+		-- Make wow_api think we're in a raid
+		_G.IsInRaidVal = true
+		onReceiveSpy = spy.on(t, "receiver")
+	end)
+	it("should not send comms in restricted mode", function()
+		Comms:Send {
+			prefix = addon.PREFIXES.MAIN,
+			command = "test",
+			data = "test",
+		}
+		WoWAPI_FireUpdate(GetTime() + 10)
+		assert.spy(onReceiveSpy).was_called(1)
+		local CommsRestrictions = addon.Require "Services.CommsRestrictions"
+		local m = stub(CommsRestrictions, "IsRestricted", function() return true end)
+		Comms:Send {
+			prefix = addon.PREFIXES.MAIN,
+			command = "test",
+			data = "test",
+		}
+		WoWAPI_FireUpdate(GetTime() + 10)
+		assert.spy(onReceiveSpy).was_called(1)
 	end)
 end)

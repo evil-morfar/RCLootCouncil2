@@ -9,6 +9,7 @@ local LootFrame = addon:NewModule("RCLootFrame", "AceTimer-3.0", "AceEvent-3.0")
 --- @type RCLootCouncilLocale
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 local ItemUtils = addon.Require "Utils.Item"
+local CommsRestrictions = addon.Require "Services.CommsRestrictions"
 
 local entries = {}
 local ENTRY_HEIGHT = 80
@@ -499,7 +500,7 @@ do
 				if not entry.item.timeLeft then
 					return
 				end
-				if addon:IsRestricted() then -- Pause when restricted
+				if CommsRestrictions:IsRestricted() then -- Pause when restricted
 					entry.timeoutBarText:SetText(L.PAUSED)
 					for _, button in pairs(entry.buttons) do
 						button:Disable()
@@ -700,7 +701,7 @@ end
 
 -- Process roll message, to send roll with the response.
 function LootFrame:CHAT_MSG_SYSTEM(event, msg)
-	if addon:IsRestricted() then return end
+	if CommsRestrictions:IsRestricted() then return end
 	local name, roll, low, high = string.match(msg, RANDOM_ROLL_PATTERN)
 	roll, low, high = tonumber(roll), tonumber(low), tonumber(high)
 

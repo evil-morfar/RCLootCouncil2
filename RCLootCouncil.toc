@@ -42,6 +42,7 @@ Classes\Utils\GroupLoot.lua
 Classes\Data\Player.lua
 Classes\Data\Council.lua
 
+Classes\Services\CommsRestrictions.lua
 Classes\Services\Comms.lua
 # Classes\Services\SlashCommands.lua # NYI
 Classes\Data\MLDB.lua

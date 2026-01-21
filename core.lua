@@ -1540,20 +1540,6 @@ function RCLootCouncil:OnGroupJoined()
 	self:SendPlayerInfo("group")
 end
 
-local AddOnRestrictionTypeReverse = tInvert(Enum.AddOnRestrictionType)
-local AddOnRestrictionStateReverse = tInvert(Enum.AddOnRestrictionState)
-function RCLootCouncil:OnAddonRestrictionChanged(_, type, state)
-	-- TODO: Currently checked: Combat, Encounter, ChallengeMode
-	-- Combat seems to be the exception
-	self.restrictionsEnabled = 
-	(state == Enum.AddOnRestrictionState.Active or state == Enum.AddOnRestrictionState.Activating) and
-	(type ~= Enum.AddOnRestrictionType.Combat)
-	self.Log:d("Restriction:", AddOnRestrictionTypeReverse[type], AddOnRestrictionStateReverse[state], type, state, self.restrictionsEnabled)
-end
-
-function RCLootCouncil:IsRestricted()
-	return self.restrictionsEnabled
-end
 
 --- Send player info to the target/group
 ---@param target string? Player name or "group". Defaults to "group".
