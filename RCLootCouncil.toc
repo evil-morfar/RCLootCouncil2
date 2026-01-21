@@ -1,8 +1,8 @@
 ## Author: Potdisc
-## Interface: 110207
-## Notes: Interface for running a Loot Council v3.18.2
+## Interface: 120000
+## Notes: Interface for running a Loot Council v3.19.0 
 ## Title: RCLootCouncil
-## Version: 3.18.2
+## Version: 3.19.0
 ## SavedVariables: RCLootCouncilDB, RCLootCouncilLootDB
 ## AllowLoadGameType: standard
 ## OptionalDeps: LibStub, CallbackHandler-1.0, Ace3, lib-st, LibWindow-1.1, LibDialog-1.0
@@ -42,6 +42,7 @@ Classes\Utils\GroupLoot.lua
 Classes\Data\Player.lua
 Classes\Data\Council.lua
 
+Classes\Services\CommsRestrictions.lua
 Classes\Services\Comms.lua
 # Classes\Services\SlashCommands.lua # NYI
 Classes\Data\MLDB.lua

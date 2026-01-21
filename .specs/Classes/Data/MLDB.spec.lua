@@ -24,6 +24,7 @@ loadfile(".specs/AddonLoader.lua")(nil, nil, addon).LoadArray {
 	"Classes/Utils/Item.lua",
 	[[Utils\Utils.lua]],
 	[[Classes\Data\Player.lua]],
+	[[Classes\Services\CommsRestrictions.lua]],
 	[[Classes\Services\Comms.lua]],
 	[[Classes\Data\MLDB.lua]]
 }

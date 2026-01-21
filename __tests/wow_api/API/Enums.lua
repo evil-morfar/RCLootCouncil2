@@ -1,5 +1,17 @@
 -- Not really a WoW API, but Enums are gathered here as they're a depency of other APIs
 Enum = {
+	AddOnRestrictionType = {
+		Combat = 0,
+		Encounter = 1,
+		ChallengeMode = 2,
+		PvPMatch = 3,
+		Map = 4,
+	},
+	AddOnRestrictionState = {
+		Inactive = 0,
+		Activating = 1,
+		Active = 2,
+	},
 	ItemWeaponSubclass = {
 		Axe1H = 0,
 		Axe2H = 1,

@@ -64,6 +64,7 @@ local Player = RCLootCouncil.Require "Data.Player"
 local MLDB = RCLootCouncil.Require "Data.MLDB"
 local TT = RCLootCouncil.Require "Utils.TempTable"
 local ItemUtils = RCLootCouncil.Require "Utils.Item"
+local CommsRestrictions = RCLootCouncil.Require "Services.CommsRestrictions"
 
 -- Init shorthands
 --- @type RCLootCouncilDB
@@ -144,6 +145,7 @@ function RCLootCouncil:OnInitialize()
 	self.isInGuildGroup = false -- Is the group leader a member of our guild?
 	---@type InstanceDataSnapshot
 	self.instanceDataSnapshot = nil -- Instance data from last encounter
+	self.restrictionsEnabled = false -- Restrictions preventing chat/addon messages
 
 	---@type table<string,boolean>
 	self.candidatesInGroup = {}
@@ -694,10 +696,12 @@ end
 function RCLootCouncil:SendAnnouncement(msg, channel, whisperTarget)
 	if channel == "NONE" then return end
 	if self.testMode then msg = "(" .. L["Test"] .. ") " .. msg end
-	if (not IsInGroup()
-					and (channel == "group" or channel == "RAID" or channel == "RAID_WARNING" or channel == "PARTY" or channel
-									== "INSTANCE_CHAT")) or channel == "chat" or (not IsInGuild() and (channel == "GUILD" or channel == "OFFICER")) then
+	local onlyPrint = (not IsInGroup() and (channel == "group" or channel == "RAID" or channel == "RAID_WARNING" or channel == "PARTY" or channel == "INSTANCE_CHAT"))
+		or channel == "chat" or (not IsInGuild() and (channel == "GUILD" or channel == "OFFICER"))
+	if onlyPrint then
 		self:Print(msg)
+	elseif not onlyPrint and CommsRestrictions:IsRestricted() then
+		return self.Log:w("Announcements are restricted, cannot send message to channel:", channel)
 	elseif (not IsInRaid() and (channel == "RAID" or channel == "RAID_WARNING")) then
 		self.SendChatMessage(msg, "PARTY")
 	elseif channel == "WHISPER" then
@@ -1536,6 +1540,7 @@ end
 function RCLootCouncil:OnGroupJoined()
 	self:SendPlayerInfo("group")
 end
+
 
 --- Send player info to the target/group
 ---@param target string? Player name or "group". Defaults to "group".

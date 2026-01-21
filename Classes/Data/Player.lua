@@ -221,9 +221,10 @@ end
 --- @param name string
 --- @return string|nil guid #GUID of Player if found otherwise nil
 function private:GetGUIDFromPlayerNameByGuild(name)
+	if not IsInGuild() then return end
 	for i = 1, GetNumGuildMembers() do
 		local name2, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, guid = GetGuildRosterInfo(i)
-		if Ambiguate(name2, "none") == name then return guid end
+		if name2 and Ambiguate(name2, "none") == name then return guid end
 	end
 end
 

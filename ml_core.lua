@@ -1318,7 +1318,7 @@ function RCLootCouncilML:EndSession()
 	self.Log:d("ML:EndSession()")
 	self.oldLootTable = self.lootTable
 	self.lootTable = {}
-	self:Send("group", "session_end")
+	Comms:SendGuaranteed({target = "group", command = "session_end"})
 	self.running = false
 	self:CancelAllTimers()
 	if addon.testMode then -- We need to undo our ML status

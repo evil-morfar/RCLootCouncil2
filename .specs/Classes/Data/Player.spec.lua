@@ -128,6 +128,7 @@ describe("#Player", function()
 					return orig_GetPlayerInfoByGUID(guid)
 				end
 			end)
+			_G.IsInGuild = spy.new(function() return true end)
 		end)
 
 		it("should handle non-ascii names", function()
