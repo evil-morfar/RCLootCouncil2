@@ -29,7 +29,9 @@ local private = {
 LibStub("AceComm-3.0"):Embed(private.AceComm)
 LibStub("AceSerializer-3.0"):Embed(private)
 
-CommsRestrictions.OnAddonRestrictionChanged:subscribe(private.OnRestrictionsChanged)
+CommsRestrictions.OnAddonRestrictionChanged:subscribe(function(...)
+	private:OnRestrictionsChanged(...)
+end)
 
 ---@alias ReceiverFunction fun(data: table, sender: string, command: string, distri: string): nil
 
@@ -158,11 +160,11 @@ function private:SendComm(prefix, target, prio, callback, callbackarg, command, 
 	if addon.IsEnabled and not addon:IsEnabled() then return end
 	if CommsRestrictions:IsRestricted() then
 		if guaranteed then
-			Log:w("<Comm>", "Comms are restricted, but sending guaranteed comm:", prefix, target, command, ...)
+			Log:w("<Comm>", "Comms are restricted, but storing guaranteed comm:", prefix, target, command, ...)
 			local encoded = self:EncodeData(command, ...)
 			local key = string.format("%s|%s|%s|%s", prefix, target, command, encoded)
 			if tContains(self.queuedComms, key) then
-				return Log:w("<Comm>", "Comms already queued, not queueing again:", prefix, target, command, ...)
+				return Log:D("<Comm>", "Comms already queued, not queueing again:", prefix, target, command, ...)
 			end
 			tinsert(self.queuedComms, key)
 		else

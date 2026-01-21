@@ -6,7 +6,7 @@ local Subject = addon.Require("rx.Subject")
 local CommsRestrictions = addon.Init "Services.CommsRestrictions"
 
 --- @class OnAddonRestrictionChanged : rx.Subject
--- --- @field subscribe fun(self, onNext: fun(active: boolean),)
+--- @field subscribe fun(self, onNext: fun(active: boolean)) : rx.Subscription
 CommsRestrictions.OnAddonRestrictionChanged = Subject.create()
 
 function CommsRestrictions:OnEnable()
@@ -15,7 +15,6 @@ end
 
 local AddOnRestrictionTypeReverse = tInvert(Enum.AddOnRestrictionType)
 local AddOnRestrictionStateReverse = tInvert(Enum.AddOnRestrictionState)
-
 function CommsRestrictions:ChangeEvent(_, type, state)
 	-- TODO: Currently checked: Combat, Encounter, ChallengeMode
 	-- Combat seems to be the exception
@@ -23,7 +22,8 @@ function CommsRestrictions:ChangeEvent(_, type, state)
 		(state == Enum.AddOnRestrictionState.Active or state == Enum.AddOnRestrictionState.Activating) and
 		(type ~= Enum.AddOnRestrictionType.Combat)
 	addon.Log:d("Restriction:", AddOnRestrictionTypeReverse[type], AddOnRestrictionStateReverse[state], type, state,
-	self.restrictionsEnabled)
+		self.restrictionsEnabled)
+	self.OnAddonRestrictionChanged(self.restrictionsEnabled)
 end
 
 function CommsRestrictions:IsRestricted()

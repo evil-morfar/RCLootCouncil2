@@ -1,6 +1,6 @@
 ## Author: Potdisc
-## Interface: 120000
-## Notes: Interface for running a Loot Council v3.18.2
+## Interface: 120001, 120000
+## Notes: Interface for running a Loot Council v3.18.2 
 ## Title: RCLootCouncil
 ## Version: 3.18.2
 ## SavedVariables: RCLootCouncilDB, RCLootCouncilLootDB
