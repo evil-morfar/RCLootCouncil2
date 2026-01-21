@@ -1,4 +1,12 @@
+# 3.19.0
+
+Updated for Midnight pre-patch.
+
 ## Changes
+
+### Restrictions
+
+Due to the restrictions added with Midnight, you can no longer do anything that results in sending addon messages during boss encounters. Everything *should* work as normal though.
 
 ### Loot History Export
 
