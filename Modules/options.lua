@@ -375,7 +375,7 @@ function addon:OptionsTable()
 								args = {
 									autoPass = {
 										order = 1,
-										name = L["Auto Pass"],
+										name = L.opt_autoPass_name,
 										desc = L["auto_pass_desc"],
 										type = "toggle",
 									},
