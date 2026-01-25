@@ -233,6 +233,7 @@ end
 function private:OnRestrictionsChanged(active)
 	if active then return end
 	local len = #self.queuedComms
+	if len == 0 then return end
 	for _, encoded in ipairs(self.queuedComms) do
 		local prefix, target, command, data = strsplit("|", encoded, 4)
 		self:SendComm(prefix, target, nil, nil, nil, command, true, data)
