@@ -29,3 +29,12 @@ end
 function CommsRestrictions:IsRestricted()
 	return self.restrictionsEnabled
 end
+
+function CommsRestrictions:DumpRestrictions()
+	addon.Log:D("Current Addon Restrictions:")
+	for type = 0, #AddOnRestrictionTypeReverse do
+		local state = C_RestrictedActions.IsAddOnRestrictionActive(type)
+		addon.Log:D(" - ", AddOnRestrictionTypeReverse[type], state)
+	end
+	addon.Log:D("Secrets:", C_Secrets.HasSecretRestrictions())
+end

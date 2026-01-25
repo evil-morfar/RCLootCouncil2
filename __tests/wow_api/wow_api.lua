@@ -1193,6 +1193,20 @@ C_Spell = {
 	end,
 }
 
+C_RestrictedActions = {
+	IsActionRestricted = function (actionType, actionID)
+		return false
+	end,
+}
+
+C_Secrets = {
+	HasSecretRestrictions = function ()
+		return false
+	end,
+}
+
+_G.issecretvalue = function(value) return false end
+
 UISpecialFrames = {}
 _G.UIParent = CreateFrame("Frame", "UIParent")
 _G.GameTooltip = CreateFrame("GameTooltip", "GameTooltip", UIParent)

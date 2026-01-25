@@ -201,15 +201,5 @@
         "~\\.vscode\\extensions\\ketho.wow-api-0.21.0\\Annotations\\FrameXML"
     ],
     "Lua.type.weakUnionCheck": true,
-    "Lua.runtime.builtin": {
-        "basic": "disable",
-        "debug": "disable",
-        "io": "disable",
-        "math": "disable",
-        "os": "disable",
-        "package": "disable",
-        "string": "disable",
-        "table": "disable",
-        "utf8": "disable"
-    },
+
 }
