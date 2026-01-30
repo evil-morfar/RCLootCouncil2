@@ -6,6 +6,10 @@ Clarified Auto Pass options and descriptions.
 
 Disabling auto passing now disables the related options.
 
+## Bugfixes
+
+- *Fixed Session Frame item sorting being broken for 5 years.*
+
 # 3.19.0
 
 Updated for Midnight pre-patch.
