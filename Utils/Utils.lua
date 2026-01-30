@@ -301,8 +301,8 @@ end
 ---@param unit1 string | Player
 ---@param unit2 string | Player
 function Utils:UnitIsUnit(unit1, unit2)
-	if issecretvalue(unit1) or issecretvalue(unit2) then return false end
 	if not unit1 or not unit2 then return false end
+	if issecretvalue and (issecretvalue(unit1) or issecretvalue(unit2)) then return false end
 	if unit1.name then unit1 = unit1.name end
 	if unit2.name then unit2 = unit2.name end
 	-- Remove realm names, if any
