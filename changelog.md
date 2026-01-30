@@ -1,3 +1,11 @@
+## Changes
+
+### Auto pass
+
+Clarified Auto Pass options and descriptions.
+
+Disabling auto passing now disables the related options.
+
 # 3.19.0
 
 Updated for Midnight pre-patch.
