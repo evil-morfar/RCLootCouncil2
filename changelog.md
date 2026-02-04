@@ -1,4 +1,6 @@
-# 3.19.1
+# 3.19.2
+
+Fixed toc issue making v3.19.1 incompatible.
 
 ## Changes
 
