@@ -1,3 +1,5 @@
+# 3.19.1
+
 ## Changes
 
 Added Midnight trinkets and tokens data.
