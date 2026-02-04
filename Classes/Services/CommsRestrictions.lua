@@ -16,11 +16,10 @@ end
 local AddOnRestrictionTypeReverse = tInvert(Enum.AddOnRestrictionType)
 local AddOnRestrictionStateReverse = tInvert(Enum.AddOnRestrictionState)
 function CommsRestrictions:ChangeEvent(_, type, state)
-	-- TODO: Currently checked: Combat, Encounter, ChallengeMode
-	-- Combat seems to be the exception
+	-- Combat seems to be the exception. Not sure about map - comms still work when it's enabled in instances.
 	self.restrictionsEnabled =
 		(state == Enum.AddOnRestrictionState.Active or state == Enum.AddOnRestrictionState.Activating) and
-		(type ~= Enum.AddOnRestrictionType.Combat)
+		(type ~= Enum.AddOnRestrictionType.Combat and type ~= Enum.AddOnRestrictionType.Map)
 	addon.Log:d("Restriction:", AddOnRestrictionTypeReverse[type], AddOnRestrictionStateReverse[state], type, state,
 		self.restrictionsEnabled)
 	self.OnAddonRestrictionChanged(self.restrictionsEnabled)
