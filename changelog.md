@@ -1,5 +1,7 @@
 ## Changes
 
+Added Midnight trinkets and tokens data.
+
 ### Auto pass
 
 Clarified Auto Pass options and descriptions.

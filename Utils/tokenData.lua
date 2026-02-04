@@ -890,6 +890,28 @@ _G.RCTokenTable = {
 	[237598] = "ShoulderSlot", -- Mystic Yearning Cursemark,
 	[237599] = "ShoulderSlot", -- Venerated Yearning Cursemark,
 	[237600] = "ShoulderSlot", -- Zenith Yearning Cursemark,
+
+	-- Midnight
+	[249347] = "ChestSlot", -- Alnwoven Riftbloom,
+	[249348] = "ChestSlot", -- Alncured Riftbloom,
+	[249349] = "ChestSlot", -- Alncast Riftbloom,
+	[249350] = "ChestSlot", -- Alnforged Riftbloom,
+	[249351] = "HandsSlot", -- Voidwoven Hungering Nullcore,
+	[249352] = "HandsSlot", -- Voidcured Hungering Nullcore,
+	[249353] = "HandsSlot", -- Voidcast Hungering Nullcore,
+	[249354] = "HandsSlot", -- Voidforged Hungering Nullcore,
+	[249355] = "HeadSlot",  -- Voidwoven Fanatical Nullcore,
+	[249356] = "HeadSlot",  -- Voidcured Fanatical Nullcore,
+	[249357] = "HeadSlot",  -- Voidcast Fanatical Nullcore,
+	[249358] = "HeadSlot",  -- Voidforged Fanatical Nullcore,
+	[249359] = "LegsSlot",  -- Voidwoven Corrupted Nullcore,
+	[249360] = "LegsSlot",  -- Voidcured Corrupted Nullcore,
+	[249361] = "LegsSlot",  -- Voidcast Corrupted Nullcore,
+	[249362] = "LegsSlot",  -- Voidforged Corrupted Nullcore,
+	[249363] = "ShoulderSlot", -- Voidwoven Unraveled Nullcore,
+	[249364] = "ShoulderSlot", -- Voidcured Unraveled Nullcore,
+	[249365] = "ShoulderSlot", -- Voidcast Unraveled Nullcore,
+	[249366] = "ShoulderSlot", -- Voidforged Unraveled Nullcore,
 }
 
 -- The base item level for the token on normal difficulty

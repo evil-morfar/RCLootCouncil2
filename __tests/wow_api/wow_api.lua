@@ -1048,7 +1048,13 @@ local CLASS_INFO = {
 				iconID = 1247265,
 				role = "TANK",
 			},
-		},
+			[3] = {
+				spedID = 1480,
+				name = "Devourer",
+				iconID = 7455385,
+				role = "DAMAGER",
+			}
+		}
 	},
 	[13] = {
 		className = "Evoker",
