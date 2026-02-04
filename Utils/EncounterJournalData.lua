@@ -50,7 +50,7 @@ function RCLootCouncil:ExportEJData(nextTier, nextIsRaid, nextIndex, nextDiffID,
 	nextIndex = nextIndex or 1
 	nextDiffID = nextDiffID or 1
 	if not nextTier then
-		nextTier = 11 -- TWW
+		nextTier = 12 -- TWW
 		self:Print("Exporting the loot specs of all trinkets in the dungeon journal\n"
 			.. "This command is intended to be run by the developer.\n"
 			.. "After exporting is done and copy and paste the data into Utils/TrinketData.lua.\n"
@@ -255,14 +255,14 @@ end
 -- Trinket categories description according to specs that can loot the trinket.
 -- These categories should cover all trinkets in the Encounter Journal. Add more if any trinket is missing category.
 _G.RCTrinketCategories = {
-	["73F7777777777"] = ALL_CLASSES,                                                               -- All Classes
+	["77F7777777777"] = ALL_CLASSES,                                                               -- All Classes
 	["0365002707767"] = ITEM_MOD_STRENGTH_SHORT .. "/" .. ITEM_MOD_AGILITY_SHORT,                  -- Strength/Agility
 	["0000000700067"] = ITEM_MOD_STRENGTH_SHORT,                                                   -- Strength
 	["0365002707467"] = MELEE,                                                                     -- Melee
 	["33F7777077710"] = ITEM_MOD_AGILITY_SHORT .. "/" .. ITEM_MOD_INTELLECT_SHORT,                 -- Agility/Intellect
 	["1375773047700"] = DAMAGER .. ", " .. ITEM_MOD_AGILITY_SHORT .. "/" .. ITEM_MOD_INTELLECT_SHORT, -- Damage, Agility/Intellect
 	["0365002007700"] = ITEM_MOD_AGILITY_SHORT,                                                    -- Agility
-	["7092775070010"] = ITEM_MOD_INTELLECT_SHORT,                                                  -- Intellect
+	["7492775070010"] = ITEM_MOD_INTELLECT_SHORT,                                                  -- Intellect
 	["0241000100024"] = TANK,                                                                      -- Tank
 	["0041000100024"] = TANK,                                                                      -- Tanks except DEMONHUNTER (Too old) - FORMER: All Classes?
 	["0000000000024"] = TANK .. ", " .. BLOCK,                                                     -- Tank, Block (Warrior, Paladin)
@@ -285,9 +285,10 @@ _G.RCTrinketCategories = {
 	["1010771050000"] = DAMAGER .. ", " .. ITEM_MOD_INTELLECT_SHORT,                               -- Damage, Intellect
 	["3092776070010"] = DAMAGER .. ", " .. ITEM_MOD_INTELLECT_SHORT,                               -- Damage + Healers, Intellect
 	["1010671040000"] = DAMAGER .. ", " .. ITEM_MOD_INTELLECT_SHORT,                               -- Damage, Intellect (direct damage, no affliction warlock and shadow priest)
-	["5010771040000"] = DAMAGER .. ", " .. ITEM_MOD_INTELLECT_SHORT,                               -- Damage, Intellect (no discipline)
+	["5410771040000"] = DAMAGER .. ", " .. ITEM_MOD_INTELLECT_SHORT,                               -- Damage, Intellect (no discipline)
 	["1134773647743"] = DAMAGER,                                                                   -- Damage (Pre augmentation evoker)
 	["5134773647743"] = DAMAGER,                                                                   -- Damage
+	["5534773047700"] = DAMAGER .. ", " .. ITEM_MOD_INTELLECT_SHORT .. "/" .. ITEM_MOD_AGILITY_SHORT, -- Damage Agi/Int
 	["0325002007700"] = ITEM_MOD_AGILITY_SHORT,                                                    -- Agility (DPS + vengance and brewmaster)??
 	["73F7777077710"] = ITEM_MOD_AGILITY_SHORT .. "/" .. ITEM_MOD_INTELLECT_SHORT,                 -- Agility/Intellect
 	["0000000700077"] = ITEM_MOD_STRENGTH_SHORT,                                                   -- Strength
@@ -306,7 +307,7 @@ _G.RCTrinketCategories = {
 	["0124002607447"] = MELEE,                                                         -- All melee + protection warrior?
 	["0092775070010"] = ITEM_MOD_INTELLECT_SHORT,                                      -- Intellect (No evoker)
 	["03F7777777777"] = ALL_CLASSES,                                                   -- All Classes except Evoker
-	["0010771040000"] = DAMAGER .. ", " .. ITEM_MOD_INTELLECT_SHORT,                   -- Damage, Intellect (no discipline or evoker)
+	["0410771040000"] = DAMAGER .. ", " .. ITEM_MOD_INTELLECT_SHORT,                   -- Damage, Intellect (no discipline or evoker)
 	["0010771050000"] = DAMAGER .. ", " .. ITEM_MOD_INTELLECT_SHORT,                   -- Damage, Intellect (no Evoker)
 	["7300070000077"] = "",                                                            -- Class specific (Evoker, Demonhunter, Mage, Paladin, Warrior)
 	["0007707000700"] = "",                                                            -- Class specific (Monk, Warlock, Shaman, Hunter)
@@ -552,8 +553,8 @@ _G.RCTrinketSpecs = {
 	[37657] = "0092775070010", -- Spark of Life,                                  	Intellect
 	-- Halls of Stone Heroic (id: 277).
 	-- Pit of Saron Normal (id: 278).
-	[50235] = "0241000100024", -- Ick's Rotting Thumb,                            	Tank
-	[50259] = "3092775070010", -- Nevermelting Ice Crystal,                       	Intellect
+	-- [50235] = "0241000100024", -- Ick's Rotting Thumb,                            	Tank
+	-- [50259] = "3092775070010", -- Nevermelting Ice Crystal,                       	Intellect
 	-- Pit of Saron Heroic (id: 278).
 	-- The Culling of Stratholme Normal (id: 279).
 	[37111] = "0082004030010", -- Soul Preserver,                                 	Healer
@@ -1345,10 +1346,10 @@ _G.RCTrinketSpecs = {
 	[142164] = "0124002607443", -- Toe Knee's Promise,                             	Damage, Melee
 	-- Return to Karazhan Mythic (id: 860).
 	-- Seat of the Triumvirate Heroic (id: 945).
-	[151312] = "0241000100024", -- Ampoule of Pure Void,                           	Tank
-	[151340] = "0082004030010", -- Echo of L'ura,                                  	Healer
-	[151310] = "0010771050000", -- Reality Breacher,
-	[151307] = "0124002607743", -- Void Stalker's Contract,                        	Damage, Strength/Agility
+	-- [151312] = "0241000100024", -- Ampoule of Pure Void,                           	Tank
+	-- [151340] = "0082004030010", -- Echo of L'ura,                                  	Healer
+	-- [151310] = "0010771050000", -- Reality Breacher,
+	-- [151307] = "0124002607743", -- Void Stalker's Contract,                        	Damage, Strength/Agility
 	-- Seat of the Triumvirate Mythic (id: 945).
 	-- The Arcway Heroic (id: 726).
 	[137419] = "33F7777777777", -- Chrono Shard,                                   	All Classes
@@ -2081,6 +2082,90 @@ _G.RCTrinketSpecs = {
 	-- Eco-Dome Al'dani Mythic (id: 1303).
 	-- Halls of Atonement Heroic (id: 1185).
 	[246344] = "0124002607443", -- Cursed Stone Idol,                   	Damage, Melee
+
+
+	-- Midnight Normal (id: 1312).
+	[250462] = "77F7777777777", -- Forgotten Farstrider's Insignia,     	All
+	-- The Dreamrift Normal (id: 1314).
+	[249343] = "77F7777777777", -- Gaze of the Alnseer,                 	All
+	[249805] = "0124002607743", -- Undreamt God's Oozing Vestige,       	Damage, Strength/Agility
+	-- The Dreamrift Heroic (id: 1314).
+	-- The Dreamrift Mythic (id: 1314).
+	-- The Dreamrift Looking For Raid (id: 1314).
+	-- The Voidspire Normal (id: 1307).
+	[249339] = "0241000100024", -- Gloom-Spattered Dreadscale,          	Tank
+	[249342] = "0000000700067", -- Heart of Ancient Hunger,             	Strength
+	[249344] = "0124002607743", -- Light Company Guidon,                	Damage, Strength/Agility
+	[249808] = "2082004030010", -- Litany of Lightblind Wrath,          	Healer
+	[249809] = "7492775070010", -- Locus-Walker's Ribbon,               	Intellect
+	[249345] = "0124002007700", -- Ranger-Captain's Iridescent Insignia,	Damage, Agility
+	[249346] = "7492775070010", -- Vaelgor's Final Stare,               	Intellect
+	[249341] = "2082004030010", -- Volatile Void Suffuser,              	Healer
+	[249340] = "5410771040000", -- Wraps of Cosmic Madness,             	Damage, int
+	-- The Voidspire Heroic (id: 1307).
+	-- The Voidspire Mythic (id: 1307).
+	-- The Voidspire Looking For Raid (id: 1307).
+	-- March on Quel'Danas Normal (id: 1308).
+	[249811] = "2082004030010", -- Light of the Cosmic Crescendo,       	Healer
+	[249806] = "0365002707767", -- Radiant Plume,                       	Strength/Agility
+	[249810] = "5410771040000", -- Shadow of the Empyrean Requiem,      	Damage, int
+	[249807] = "0241000100024", -- The Eternal Egg,                     	Tank
+	[260235] = "0365002707767", -- Umbral Plume,                        	Strength/Agility
+	-- March on Quel'Danas Heroic (id: 1308).
+	-- March on Quel'Danas Mythic (id: 1308).
+	-- March on Quel'Danas Looking For Raid (id: 1308).
+	-- Magisters' Terrace Normal (id: 1300).
+	[250257] = "5534773047700", -- Eye of the Drowning Void,            	DPS, Agility/Intellect
+	[250242] = "0241000100024", -- Jelly Replicator,                    	Tank
+	[250246] = "2082004030010", -- Refueling Orb,                       	Healer
+	-- Magisters' Terrace Heroic (id: 1300).
+	-- Magisters' Terrace Mythic (id: 1300).
+	-- Maisara Caverns Normal (id: 1315).
+	[250223] = "0410771040000", -- Soulcatcher's Charm,                 	Damage, int
+	[250258] = "77F7777777777", -- Vessel of Tortured Souls,            	All
+	-- Maisara Caverns Heroic (id: 1315).
+	-- Maisara Caverns Mythic (id: 1315).
+	-- Nexus-Point Xenas Normal (id: 1316).
+	[250241] = "0000000700067", -- Mark of Light,                       	Strength
+	[250253] = "2082004030010", -- Whisper of the Duskwraith,           	Healer
+	-- Nexus-Point Xenas Heroic (id: 1316).
+	-- Nexus-Point Xenas Mythic (id: 1316).
+	-- Windrunner Spire Normal (id: 1299).
+	[250144] = "77F7777077710", -- Emberwing Feather,                   	All
+	[250256] = "77F7777777777", -- Heart of Wind,        	               	All
+	[250227] = "0124002607443", -- Kroluk's Warbanner,                  	Damage, Melee
+	[250226] = "0124002607443", -- Latch's Crooked Hook,                	Damage, Melee
+	-- Windrunner Spire Heroic (id: 1299).
+	-- Windrunner Spire Mythic (id: 1299).
+	-- Algeth'ar Academy Normal (id: 1201).
+	[193701] = "0365002707767", -- Algeth'ar Puzzle Box,                	Strength/Agility
+	[193719] = "0000000700067", -- Dragon Games Equipment,              	Strength
+	[193718] = "6082004030010", -- Emerald Coach's Whistle,             	Healer
+	-- Algeth'ar Academy Heroic (id: 1201).
+	-- Algeth'ar Academy Mythic (id: 1201).
+	-- Pit of Saron Normal (id: 278).
+	[50235] = "0241000100024", -- Ick's Rotting Thumb,                 	Tank
+	[50259] = "7492775070010", -- Nevermelting Ice Crystal,            	Intellect
+	-- Pit of Saron Heroic (id: 278).
+	[252421] = "0241000100024", -- Rotting Globule,                     	Tank
+	-- Pit of Saron Mythic (id: 278).
+	-- Seat of the Triumvirate Heroic (id: 945).
+	[151312] = "0241000100024", -- Ampoule of Pure Void,                	Tank
+	[151340] = "2082004030010", -- Echo of L'ura,                       	Healer
+	[151310] = "5410771050000", -- Reality Breacher,                    	
+	[151307] = "0124002607743", -- Void Stalker's Contract,             	Damage, Strength/Agility
+	-- Seat of the Triumvirate Mythic (id: 945).
+	-- Skyreach Normal (id: 476).
+	[110011] = "0000000600043", -- Fires of the Sun,                    	Damage, Strength
+	[110006] = "2082004030010", -- Rukhran's Quill,                     	Healer
+	[110016] = "0241000100024", -- Solar Containment Unit,              	Tank
+	-- Skyreach Heroic (id: 476).
+	[252411] = "2082004030010", -- Radiant Sunstone,                    	Healer
+	[252418] = "0241000100024", -- Solar Core Igniter,                  	Tank
+	[252420] = "0365002707767", -- Solarflare Prism,                    	Strength/Agility
+	-- Skyreach Mythic (id: 476).
+	-- Skyreach Timewalking (id: 476).
+	-- Keystone Dungeons Mythic (id: 1319).
 }
 
 --- Items listed as rare or above in the encounter journal.
@@ -2108,4 +2193,10 @@ _G.RCRareItems = {
 	[243307] = true, -- Interloper's Plated Sabatons
 	[243306] = true, -- Interloper's Reinforced Sandals
 	[243305] = true, -- Interloper's Silken Striders
+
+	-- Midnight Normal (id: 1312).
+	-- The Voidspire Normal (id: 1307).
+	[249368] = true, -- Eternal Voidsong Chain
+	-- March on Quel'Danas Normal (id: 1308).
+	[249920] = true, -- Eye of Midnight
 }

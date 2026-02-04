@@ -189,6 +189,7 @@ end
 
 function private:IsCached(guid)
 	if not guid then return false end
+	if addon.Utils:IsSecretValue(guid) then return false end
 	if not self.cache[guid] then return false end
 	if self.cache[guid].isCouncil then return true end -- Never expire council members
 	if not self.cache[guid].cache_time or self.cache[guid].cache_time + MAX_CACHE_TIME < GetServerTime() then

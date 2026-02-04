@@ -95,11 +95,16 @@ function RCLootCouncilML:GetItemInfo(item)
 		-- Most of these are kept for use in SessionFrame
 		return {
 			string 			= ItemUtils:GetTransmittableItemString(link),
-			["link"]		= link,
-			["ilvl"]		= addon:GetTokenIlvl(link) or ilvl, -- if the item is a token, ilvl is the min ilvl of the item it creates.
-			["texture"]		= texture,
-			["token"]		= itemID and RCTokenTable[itemID],
-			["classes"]		= addon:GetItemClassesAllowedFlag(link)
+			link		= link,
+			ilvl		= addon:GetTokenIlvl(link) or ilvl, -- if the item is a token, ilvl is the min ilvl of the item it creates.
+			texture		= texture,
+			token		= itemID and RCTokenTable[itemID],
+			classes		= addon:GetItemClassesAllowedFlag(link),
+			equipLoc	= equipLoc,
+			type 		= type,
+			subType 	= subType,
+			typeID 		= typeID,
+			subTypeID 	= subTypeID
 		}
 	else
 		return nil

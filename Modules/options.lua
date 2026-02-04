@@ -254,6 +254,8 @@ local function processAndSortPlayerTable(names,keyToGUID, textColorOnly)
 	return names
 end
 
+local function autopassDisabled() return not addon.db.profile.autoPass end
+
 local selections = {}
 function addon:OptionsTable()
 	---@type AceConfigOptionsTable
@@ -375,7 +377,7 @@ function addon:OptionsTable()
 								args = {
 									autoPass = {
 										order = 1,
-										name = L["Auto Pass"],
+										name = L.opt_autoPass_name,
 										desc = L["auto_pass_desc"],
 										type = "toggle",
 									},
@@ -384,37 +386,42 @@ function addon:OptionsTable()
 										name = L["Auto Pass Trinkets"],
 										desc = L["auto_pass_trinket_desc"],
 										type = "toggle",
+										disabled = autopassDisabled,
 									},
 									silentAutoPass = {
 										order = 3,
 										name = L["Silent Auto Pass"],
 										desc = L["silent_auto_pass_desc"],
 										type = "toggle",
+										disabled = autopassDisabled,
 									},
 									autoPassBoE = {
 										order = 4,
 										name = L["Auto pass BoE"],
 										desc = L["auto_pass_boe_desc"],
 										type = "toggle",
+										disabled = autopassDisabled,
 									},
 									autoPassTransmog = {
 										order = 5,
 										name = L["Auto Pass Transmog"],
 										desc = L["auto_pass_transmog_desc"],
 										type = "toggle",
+										disabled = autopassDisabled,
 									},
 									autoPassTransmogSource = {
 										order = 6,
 										name = L["Auto Pass Transmog Source"],
 										desc = L["auto_pass_transmog_source_desc"],
 										type = "toggle",
-										disabled = function() return self.db.profile.autoPassTransmog end
+										disabled = function() return autopassDisabled() or self.db.profile.autoPassTransmog end
 									},
 									autoPassWeapons = {
 										order = 7,
 										name = L.opt_autoPassWeapons_name,
 										desc = L.opt_autoPassWeapons_desc,
 										type = "toggle",
+										disabled = autopassDisabled,
 									},
 									printResponse = {
 										order = 8,

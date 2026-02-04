@@ -1048,7 +1048,13 @@ local CLASS_INFO = {
 				iconID = 1247265,
 				role = "TANK",
 			},
-		},
+			[3] = {
+				spedID = 1480,
+				name = "Devourer",
+				iconID = 7455385,
+				role = "DAMAGER",
+			}
+		}
 	},
 	[13] = {
 		className = "Evoker",
@@ -1192,6 +1198,20 @@ C_Spell = {
 		return "Unknown Spell", nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil
 	end,
 }
+
+C_RestrictedActions = {
+	IsActionRestricted = function (actionType, actionID)
+		return false
+	end,
+}
+
+C_Secrets = {
+	HasSecretRestrictions = function ()
+		return false
+	end,
+}
+
+_G.issecretvalue = function(value) return false end
 
 UISpecialFrames = {}
 _G.UIParent = CreateFrame("Frame", "UIParent")

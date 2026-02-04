@@ -1214,6 +1214,9 @@ function RCVotingFrame:GetFrame()
 				elseif button == "LeftButton" and row then -- Update more info
 					self:UpdateMoreInfo(realrow, data)
 					if IsAltKeyDown() then
+						if CommsRestrictions:IsRestricted() then
+							return addon:Print(L.chat_restrictions_enabled)
+						end
 						local name = data[realrow].name
 						LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_AWARD", self:GetAwardPopupData(session, name, lootTable[session].candidates[name]))
 					end

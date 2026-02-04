@@ -186,6 +186,11 @@ addon.RESPONSE_CODE_GENERATORS = {
 		if db.enabledButtons.SPECIAL and C_Item.IsEquippableItem(item) then
 			-- Scan tooltip
 			local info = C_TooltipInfo.GetHyperlink(item)
+			if not info then
+				-- TODO: Find a solution for this
+				addon.Log:E("No tooltip info found for item", itemID)
+				return
+			end
 			if not info.type == Enum.TooltipDataType.Item then
 				addon.Log:W("ItemTooltip was not of type item", itemID, info.type)
 				return

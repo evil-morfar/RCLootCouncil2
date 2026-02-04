@@ -160,15 +160,13 @@ describe("#VotingFrame #ReannounceOrRequestRoll", function()
 
 			assert.spy(receivedSpy).was.called(1)
 			-- Now rolls should be reset:
-			for ses, data in ipairs(VotingFrame:GetLootTable()) do
-				for name, v in pairs(data.candidates) do
-					if name == addon.player.name then -- We might have timedout our roll
-						if v.response == "TIMEOUT" then
-							assert.equal("-", v.roll)
-						end
-					else
-						assert.Nil(v.roll)
+			for name, v in pairs(VotingFrame:GetLootTable()[1].candidates) do
+				if name == addon.player.name then -- We might have timedout our roll
+					if v.response == "TIMEOUT" then
+						assert.equal("?", v.roll)
 					end
+				else
+					assert.Nil(v.roll)
 				end
 			end
 		end)
