@@ -1,3 +1,5 @@
+# 3.19.3
+
 ## Bugfixes
 
 - *Another secret variable fix.*
