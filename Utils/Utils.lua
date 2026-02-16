@@ -302,7 +302,7 @@ end
 ---@param unit2 string | Player
 function Utils:UnitIsUnit(unit1, unit2)
 	if self:IsSecretValue(unit1, unit2) then
-		addon.Log:W("Trying to compare secret values in Utils:UnitIsUnit()", tostring(unit1), tostring(unit2))
+		addon.Require "Services.ErrorHandler":ThrowSilentError(string.format("Trying to compare secret values in Utils:UnitIsUnit(%s, %s)", self:SecretForPrint(unit1), self:SecretForPrint(unit2)))
 		return false
 	end
 	if not unit1 or not unit2 then return false end
@@ -394,6 +394,12 @@ function Utils:IsSecretValue(...)
 		if issecretvalue(select(i, ...)) then return true end
 	end
 	return false
+end
+
+--- Returns the given value if it's not a secret value, otherwise returns `"<secret>"`.
+---@param s any
+function Utils:SecretForPrint(s)
+	return self:IsSecretValue(s) and "<secret>" or (s and tostring(s))
 end
 
 ---@deprecated
