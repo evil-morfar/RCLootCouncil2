@@ -1919,7 +1919,7 @@ function RCLootCouncil:NewMLCheck()
 		self:StopHandleLoot()
 	end
 	if self.Utils:IsPartyLFG() then return end -- We can't use in lfg/lfd so don't bother
-	if not self.masterLooter then return end -- Didn't find a leader or ML.
+	if self.Utils:IsSecretValue(self.masterLooter) or not self.masterLooter then return end -- Didn't find a leader or ML.
 	self.isInGuildGroup = self:IsInGuildGroup()
 	if self:UnitIsUnit(old_ml, self.masterLooter) then
 		if old_lm == self.lootMethod then
