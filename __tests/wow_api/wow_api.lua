@@ -1049,7 +1049,7 @@ local CLASS_INFO = {
 				role = "TANK",
 			},
 			[3] = {
-				spedID = 1480,
+				specID = 1480,
 				name = "Devourer",
 				iconID = 7455385,
 				role = "DAMAGER",
