@@ -1891,6 +1891,7 @@ function RCLootCouncil:IsInGuildGroup()
 end
 
 function RCLootCouncil:HasValidMasterLooter()
+	if self.Utils:IsSecretValue(self.masterLooter) then return false end
 	if not self.masterLooter then return false end
 	if type(self.masterLooter) == "string" then
 		return not (self.masterLooter == "Unknown" or Ambiguate(self.masterLooter, "short"):lower() == _G.UNKNOWNOBJECT:lower())
@@ -1905,6 +1906,10 @@ function RCLootCouncil:NewMLCheck()
 	local old_ml = self.masterLooter
 	local old_lm = self.lootMethod
 	self.isMasterLooter, self.masterLooter = self:GetML()
+	if self.Utils:IsSecretValue(self.masterLooter) then
+		self.Log:W("ML is secret value")
+		return
+	end
 	self.lootMethod = self:GetLootMethod()
 	local instance_type = select(2, IsInInstance())
 	if instance_type == "pvp" or instance_type == "arena" or instance_type == "scenario" then return end -- Don't do anything here
