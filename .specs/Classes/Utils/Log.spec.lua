@@ -13,6 +13,8 @@ local addon_name, addon = "RCLootCouncil", {
 loadfile(".specs/AddonLoader.lua")(nil, addon_name, addon).LoadArray {
 	"Classes/Core.lua",
 	"Classes/Utils/TempTable.lua",
+	"Classes/Utils/Item.lua",
+	"Utils/Utils.lua",
 	"Classes/Utils/Log.lua",
 }
 local Log = addon.Require "Utils.Log"
