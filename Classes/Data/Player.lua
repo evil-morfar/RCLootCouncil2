@@ -23,7 +23,7 @@ local private = {
 	realmName = nil, -- Not ready here, will be initialized later
 }
 
----@class Player
+---@class Player : PlayerMT
 ---@field guid string
 ---@field name string Full name, "Name-Realm"
 ---@field class string
@@ -64,6 +64,7 @@ function playerClass:SetIsCouncil()
 	self:Cache()
 end
 
+---@class PlayerMT
 local PLAYER_MT = {
 	__index = playerClass,
 	--- @param self Player
@@ -76,11 +77,15 @@ local PLAYER_MT = {
 		if b.guid then return addon:UnitIsUnit(b.name, a) end
 		Log:w("Attempt to compare 'Player' to non-'Player'", a, b)
 		return a == b end,
+	__type = "Player",
 }
 
 --- Fetches a player
 --- @param input string A player name or GUID
 function Player:Get(input)
+	if addon.Utils:IsSecretValue(input) then
+		return private:GetNilPlayer(input)
+	end
 	-- Decide if input is a name or guid
 	local guid
 	if input and not strmatch(input, "Player%-") and strmatch(input, "%d?%d?%d?%d%-%x%x%x%x%x%x%x%x") then
@@ -126,6 +131,23 @@ function Player:ClearCouncilStatus()
 			player.isCouncil = nil
 		end
 	end
+end
+
+function Player:CheckSecrets()
+	local RunCheck = function(t)
+		local count = 0
+		for guid, player in pairs(t) do
+			if addon.Utils:IsSecretValue(guid, player.name, player.class, player.realm) then
+				DevTools_Dump(player)
+			end
+			count = count + 1
+		end
+		Log:D("Checked", count, "players in cache")
+	end
+	Log:D("Global Cache:")
+	RunCheck(addon.db.global.playerCache)
+	Log:D("Private Cache:")
+	RunCheck(private.cache)
 end
 
 --- @param guid string

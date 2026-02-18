@@ -1211,7 +1211,7 @@ C_Secrets = {
 	end,
 }
 
-_G.issecretvalue = function(value) return false end
+_G.issecretvalue = function(value) return value == "SECRET" end
 
 UISpecialFrames = {}
 _G.UIParent = CreateFrame("Frame", "UIParent")

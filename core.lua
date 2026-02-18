@@ -1674,7 +1674,7 @@ function RCLootCouncil:OnEvent(event, ...)
 		if not self.db.global.cache then self.db.global.cache = {} end
 		self.db.global.cache.mldb = next(self.mldb) and MLDB:GetForTransmit(self.mldb) or nil
 		self.db.global.cache.council = Council:GetNum() > 0 and Council:GetForTransmit() or nil
-		self.db.global.cache.masterLooter = self.masterLooter and self.masterLooter:GetGUID()
+		self.db.global.cache.masterLooter = not self.Utils:IsSecretValue(self.masterLooter) and self.masterLooter and self.masterLooter.__type == "Player" and self.masterLooter:GetGUID()
 		self.db.global.cache.handleLoot = self.handleLoot
 		self.db.global.cache.instanceData = self.instanceDataSnapshot
 		self.db.global.cache.cachePlayer = self.player:GetName()
@@ -2018,17 +2018,19 @@ function RCLootCouncil:GetML()
 		return true, self.player
 	end
 	-- Set the Group leader as the ML
+	---@type string?
 	local name
 	for i = 1, GetNumGroupMembers() or 0 do
 		local name2, rank = GetRaidRosterInfo(i)
 		if not name2 then -- Group info is not completely ready
-			return false, "Unknown"
+			return false, name
 		end
 		if rank == 2 then -- Group leader. Btw, name2 can be nil when rank is 2.
 			name = self:UnitName(name2)
 			break
 		end
 	end
+	if self.Utils:IsSecretValue(name) then return UnitIsGroupLeader("player"), name end
 	if name then return UnitIsGroupLeader("player"), Player:Get(name) end
 	return false, nil;
 end
@@ -2373,7 +2375,7 @@ end
 -- #end Module support -----------------------------------------------------
 
 function RCLootCouncil:DumpDebugVariables()
-	self.Log:D("MasterLooter", self.masterLooter)
+	self.Log:D("MasterLooter", self.Utils:SecretsForPrint(self.masterLooter))
 	self.Log:D("LootMethod", self.lootMethod)
 	self.Log:D("HandleLoot", self.handleLoot)
 	self.Log:D("IsCouncil", self.isCouncil)

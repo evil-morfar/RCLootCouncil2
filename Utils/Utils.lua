@@ -6,7 +6,6 @@
 ---@class RCLootCouncil
 local addon = select(2, ...)
 --- @type RCLootCouncilLocale
-local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 local ItemUtils = addon.Require "Utils.Item"
 
 ---@class RCLootCouncil.Utils
@@ -83,6 +82,7 @@ end
 --- @param year number
 --- @return string #A formatted string.
 function Utils:ConvertDateToString(day, month, year)
+	local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 	local text = format(L["x days"], day)
 	if year > 0 then
 		text = format(L["days, x months, y years"], text, month, year)
@@ -254,6 +254,7 @@ end
 --- @param input_unit string @Any unit, except those that include '-' like "name-target".
 --- @return string @Titlecased "unitName-realmName"
 function Utils:UnitName(input_unit)
+	if self:IsSecretValue(input_unit) then return input_unit end
 	if self.unitNameLookup[input_unit] then return self.unitNameLookup[input_unit] end
 	if not input_unit or input_unit == "" then return "" end
 	-- First strip any spaces
@@ -301,13 +302,13 @@ end
 ---@param unit1 string | Player
 ---@param unit2 string | Player
 function Utils:UnitIsUnit(unit1, unit2)
+	if type(unit1) ~= "nil" and type(unit1) ~= "string" then unit1 = unit1.name end
+	if type(unit2) ~= "nil" and type(unit2) ~= "string" then unit2 = unit2.name end
 	if self:IsSecretValue(unit1, unit2) then
-		addon.Require "Services.ErrorHandler":ThrowSilentError(string.format("Trying to compare secret values in Utils:UnitIsUnit(%s, %s)", self:SecretForPrint(unit1), self:SecretForPrint(unit2)))
+		addon.Require "Services.ErrorHandler":ThrowSilentError(string.format("Trying to compare secret values in Utils:UnitIsUnit(%s, %s)", self:SecretsForPrint(unit1, unit2)))
 		return false
 	end
 	if not unit1 or not unit2 then return false end
-	if unit1.name then unit1 = unit1.name end
-	if unit2.name then unit2 = unit2.name end
 	-- Remove realm names, if any
 	if strfind(unit1, "-", nil, true) ~= nil then
 		unit1 = Ambiguate(unit1, "short")
@@ -396,10 +397,15 @@ function Utils:IsSecretValue(...)
 	return false
 end
 
---- Returns the given value if it's not a secret value, otherwise returns `"<secret>"`.
----@param s any
-function Utils:SecretForPrint(s)
-	return self:IsSecretValue(s) and "<secret>" or (s and tostring(s))
+--- Stringifies value(s) if it's not a secret value, otherwise returns `"<secret>"`.
+---@param ... any
+function Utils:SecretsForPrint(...)
+	local ret = {}
+	for i = 1, select("#", ...) do
+		local v = select(i, ...)
+		ret[i] = self:IsSecretValue(v) and "<secret>" or tostring(v)
+	end
+	return unpack(ret)
 end
 
 ---@deprecated
