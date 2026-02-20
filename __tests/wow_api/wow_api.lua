@@ -1049,7 +1049,7 @@ local CLASS_INFO = {
 				role = "TANK",
 			},
 			[3] = {
-				spedID = 1480,
+				specID = 1480,
 				name = "Devourer",
 				iconID = 7455385,
 				role = "DAMAGER",
@@ -1211,7 +1211,7 @@ C_Secrets = {
 	end,
 }
 
-_G.issecretvalue = function(value) return false end
+_G.issecretvalue = function(value) return value == "SECRET" end
 
 UISpecialFrames = {}
 _G.UIParent = CreateFrame("Frame", "UIParent")

@@ -1,3 +1,9 @@
+# 3.19.5
+
+## Bugfixes
+
+- *More secret variable fixes - hopefully the last one.*
+
 # 3.19.4
 
 ## Bugfixes

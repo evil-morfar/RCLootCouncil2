@@ -122,7 +122,7 @@ function private:Log(Log, prefix, ...)
 	t[5] = (Log.prefix or "")
 	for i = 1, select("#", ...) do
 		t[(i - 1) * 2 + 6] = "\t"
-		t[(i - 1) * 2 + 7] = tostring(select(i, ...))
+		t[(i - 1) * 2 + 7] = addon.Utils:SecretsForPrint((select(i, ...)))
 	end
 	local msg = table.concat(t, "")
 	TempTable:Release(t)
