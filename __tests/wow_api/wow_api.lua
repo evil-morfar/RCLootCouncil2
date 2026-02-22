@@ -112,6 +112,10 @@ function UnitFullName(unit)
 	return UnitName(unit), GetRealmName()
 end
 
+function UnitExists(unit)
+	return unit ~= nil
+end
+
 function GetBuildInfo()
 	return "mock", "mock", "mock", 0
 end

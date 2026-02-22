@@ -37,7 +37,10 @@ local private = {
 ---@field cache_time number? Time when the player was cached
 ---@field isInGuild boolean? Is the player in our guild
 ---@field isCouncil boolean? Player is a council member
-local playerClass = {}
+local playerClass = {
+	__type = "Player",
+	guid = "", -- Cannot be nil
+}
 function playerClass:GetName() return self.name end
 function playerClass:GetRealm() return self.realm end
 function playerClass:GetClass() return self.class end
@@ -77,7 +80,6 @@ local PLAYER_MT = {
 		if b.guid then return addon:UnitIsUnit(b.name, a) end
 		Log:w("Attempt to compare 'Player' to non-'Player'", a, b)
 		return a == b end,
-	__type = "Player",
 }
 
 --- Fetches a player
@@ -97,7 +99,8 @@ function Player:Get(input)
 	elseif type(input) == "string" then
 		-- Assume UnitName
 		local name = Ambiguate(input, "none")
-		guid = UnitGUID(name)
+		-- 20/2-26: Some guid's cannot be retrived - so far they've all been from guild, so should be found below
+		guid = name and UnitExists(name) and UnitGUID(name)
 		-- We can only extract GUID's from people we're grouped with.
 		if not guid then
 			guid = private:GetGUIDFromPlayerName(name)
@@ -236,7 +239,7 @@ end
 --- @param name string
 --- @return string|nil guid #GUID of Player if found otherwise nil
 function private:GetGUIDFromPlayerName(name)
-	for guid, player in pairs(self.cache) do
+	for guid, player in pairs(self.cache.player) do
 		if Ambiguate(player.name, "none") == name then return guid end
 	end
 end
