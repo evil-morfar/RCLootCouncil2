@@ -5,7 +5,7 @@
 local addon = select(2, ...)
 --- @class Data.Player
 local Player = addon.Init("Data.Player")
-local Log = addon.Require("Utils.Log"):Get()
+local Log = addon.Require "Utils.Log":New "Data.Player"
 local ErrorHandler = addon.Require "Services.ErrorHandler"
 
 local MAX_CACHE_TIME = 60 * 60 * 24 * 2 -- 2 days
@@ -152,7 +152,7 @@ end
 
 --- @param guid string
 function private:CreatePlayer(guid)
-	Log:f("<Data.Player>", "CreatePlayer", guid)
+	Log:D("CreatePlayer", guid)
 	if not guid then return private:GetNilPlayer() end -- TODO Ensure code can handle nil player objects
 
 	local name, realm, class = private:GetPlayerInfoByGUID(guid)
@@ -179,7 +179,7 @@ end
 --- @return nil
 function private:UpdateCachedPlayer(player)
 	if not (player and player.guid) then
-		return Log:f("<Data.Player>", "UpdateCachedPlayer - no player or player guid", player.name, player.guid)
+		return Log:W("UpdateCachedPlayer - no player or player guid", player.name, player.guid)
 	end
 	local name, realm, class = self:GetPlayerInfoByGUID(player.guid)
 	-- People may change their name or realms, so just update if we have the data
@@ -215,7 +215,7 @@ function private:IsCached(guid)
 	if not self.cache[guid] then return false end
 	if self.cache[guid].isCouncil then return true end -- Never expire council members
 	if not self.cache[guid].cache_time or self.cache[guid].cache_time + MAX_CACHE_TIME < GetServerTime() then
-		Log:f("<Data.Player>", "removing old cache for", self.cache[guid].name)
+		Log:D("removing old cache for", self.cache[guid].name)
 		self.cache[guid] = nil
 		return false
 	end
@@ -225,7 +225,7 @@ end
 --- @param player Player
 function private:CachePlayer(player)
 	if not player.guid then
-		return Log:f("<Data.Player>", "CachePlayer", "No guid for", player)
+		return Log:W("CachePlayer", "No guid for", player)
 	end
 	self.cache[player.guid] = self.cache[player.guid]
 		and MergeTable(self.cache[player.guid], CopyTable(player))
