@@ -224,7 +224,15 @@ for i = 1, 7 do
 end
 DEFAULT_CHAT_FRAME = ChatFrame1
 
-debugstack = debug.traceback
+-- Not faithful recreation - will only return first real line of the stack, and won't include additional args passed to debugstack
+debugstack = function(i)
+	local lines = {}
+	local trace = debug.traceback("", i)
+	for line in gmatch(trace, "([^\r\n]+)") do
+		table.insert(lines, line)
+	end
+	return lines[2]
+end
 date = os.date
 debugprofilestop = os.clock
 
@@ -672,6 +680,7 @@ function UnitIsUnit(u1, u2)
 	elseif u2 == "player" then
 		return u1 == "player1"
 	end
+	if u1:lower() == "secret" or u2:lower() == "secret" then return "SECRET" end
 	return u1 == u2
 end
 

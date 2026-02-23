@@ -302,8 +302,14 @@ end
 ---@param unit1 string | Player
 ---@param unit2 string | Player
 function Utils:UnitIsUnit(unit1, unit2)
-	if type(unit1) ~= "nil" and type(unit1) ~= "string" then unit1 = unit1.name end
-	if type(unit2) ~= "nil" and type(unit2) ~= "string" then unit2 = unit2.name end
+	-- Rule out nils
+	if type(unit1) == "nil" or type(unit2) == "nil" then return false end
+	-- If both are Player objects, use it's comparison
+	if type(unit1) ~= "string" and type(unit2) ~= "string" then return unit1 == unit2 end
+	-- Otherwise extract names and compare those
+	if type(unit1) ~= "string" then unit1 = unit1.name end
+	if type(unit2) ~= "string" then unit2 = unit2.name end
+	-- Now check for secret values before we start real processing
 	if self:IsSecretValue(unit1, unit2) then
 		addon.Require "Services.ErrorHandler":ThrowSilentError(string.format("Trying to compare secret values in Utils:UnitIsUnit(%s, %s)", self:SecretsForPrint(unit1, unit2)))
 		return false
@@ -319,7 +325,13 @@ function Utils:UnitIsUnit(unit1, unit2)
 	-- v2.3.3 There's problems comparing non-ascii characters of different cases using UnitIsUnit()
 	-- I.e. UnitIsUnit("Potdisc", "potdisc") works, but UnitIsUnit("Æver", "æver") doesn't.
 	-- Since I can't find a way to ensure consistant returns from UnitName(), just lowercase units here before passing them.
-	return UnitIsUnit(unit1:lower(), unit2:lower())
+	local res = UnitIsUnit(unit1:lower(), unit2:lower())
+	-- v3.19.6: Calling UnitIsUnit() under `SecretWhenUnitComparisonRestricted` with a "non-available unit" will result in `<secret> false`
+	if self:IsSecretValue(res) then
+		addon.Log:W(format("UnitIsUnit(%s, %s) is secret", unit1, unit2))
+		return false
+	end
+	return res
 end
 
 --- Returns the current loot threshold.

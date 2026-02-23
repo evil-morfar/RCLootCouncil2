@@ -1,7 +1,7 @@
 require "busted.runner" ()
 
 local addon = dofile(".specs/AddonLoader.lua").LoadToc("RCLootCouncil.toc")
-
+dofile ".specs/EmulatePlayerLogin.lua"
 ---@type RCLootCouncil.Utils
 local Utils = addon.Utils
 
@@ -241,6 +241,14 @@ describe("#Utils *HasVersion", function()
 		end)
 		it("should return false if someone doesn't have a version", function()
 			assert.False(Utils:PlayersHasVersion({ createPlayer("a"), createPlayer("b"), }, "3.0.1"))
+		end)
+	end)
+
+	describe("UnitIsUnit secrets", function()
+		_G.RCLootCouncil.db.global.errors = {}
+		it("should return false with secrets", function()
+			assert.False(addon:UnitIsUnit("Player2", "SECRET"))
+			assert.False(addon:UnitIsUnit("Player2-Realm", "SECRET-Realm"))
 		end)
 	end)
 end)

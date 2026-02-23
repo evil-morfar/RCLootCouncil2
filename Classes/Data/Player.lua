@@ -75,7 +75,13 @@ local PLAYER_MT = {
 	--- @param a Player|string
 	--- @param b Player|string
 	__eq = function(a, b)
-		if a.guid and b.guid then return a.guid == b.guid end
+		if a.guid and b.guid then
+			if addon.Utils:IsSecretValue(a.guid, b.guid) then
+				Log:W("Attempt to compare secret values in Player __eq", addon.Utils:SecretsForPrint(a.name, b.name))
+				return false
+			end
+			return a.guid == b.guid
+		end
 		if a.guid then return addon:UnitIsUnit(a.name, b) end
 		if b.guid then return addon:UnitIsUnit(b.name, a) end
 		Log:w("Attempt to compare 'Player' to non-'Player'", a, b)
