@@ -1631,13 +1631,13 @@ function RCLootCouncilML:RegisterComms ()
 		end,
 
 		reconnect = function (_, sender)
-			if not addon:UnitIsUnit(sender, addon.player) then
+			if not addon:UnitIsUnit(sender, "player") then
 				self:OnReconnectReceived(sender)
 			end
 		end,
 
 		lootTable = function (_, sender)
-			if addon:UnitIsUnit(sender, addon.player) then
+			if addon:UnitIsUnit(sender, "player") then
 				self:ScheduleTimer("Timer", 11 + 0.5*#self.lootTable, "LootSend")
 			end
 		end,
