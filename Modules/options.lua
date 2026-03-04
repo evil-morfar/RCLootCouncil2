@@ -1159,6 +1159,7 @@ function addon:OptionsTable()
 								name = L["Ignore Options"],
 								type = "group",
 								inline = true,
+								hidden = function() return WOW_PROJECT_ID == WOW_PROJECT_MAINLINE end,
 								args = {
 									desc = {
 										order = 1,
