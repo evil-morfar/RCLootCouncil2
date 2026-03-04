@@ -24,6 +24,26 @@ GroupLoot.IgnoreList = {
 	[250104] = true, -- Soulbinder's Nethermantle
 }
 
+---@alias GroupLootPredicate fun(rollID: integer, itemID: integer, status: integer, quality: Enum.ItemQuality): boolean
+
+--- Each of these should return true for an item to be group looted
+--- @type table<string, GroupLootPredicate>
+GroupLoot.Predicates = {
+	--- Items must not be on the ignore list.
+	ignored = function(_, itemID) return itemID and not GroupLoot.IgnoreList[itemID] end,
+	--- Not legendary quality or above.
+	qualityUpperBound = function (_, _, _, quality)
+		return not quality or quality < Enum.ItemQuality.Legendary
+	end,
+	--- Decor items are toggleable
+	decor = function(rollID, itemID, status)
+		local itemClass = select(6, C_Item.GetItemInfoInstant(itemID))
+		return itemClass ~= Enum.ItemClass.Housing or
+			itemClass == Enum.ItemClass.Housing and addon.mldb and
+			addon.mldb.lootDecor
+	end,
+}
+
 function GroupLoot:OnInitialize()
 	self.Log = addon.Require "Utils.Log":New "GroupLoot"
 	addon:RegisterEvent("START_LOOT_ROLL", self.OnStartLootRoll, self)
@@ -46,17 +66,16 @@ function GroupLoot:OnStartLootRoll(_, rollID)
 		self.Log:d("No link!", rollID)
 		return
 	end
-	if quality and quality >= Enum.ItemQuality.Legendary then
-		self.Log:d("Ignoring legendary quality:", quality)
-		return
-	end
-	local id = ItemUtils:GetItemIDFromLink(link)
-	if self.IgnoreList[id] then
-		self.Log:d(link, "is ignored, bailing.")
-		return
-	end
+	local itemId = ItemUtils:GetItemIDFromLink(link)
 	local status = self:GetStatus()
 	self.Log:D("Status:", status, self:GetStatusHex(status), self:GetStatusBinary(status))
+	-- Predicate check
+	for name, predicate in pairs(GroupLoot.Predicates) do
+		if not predicate(rollID, itemId, status, quality) then
+			self.Log:d("Predicate failed:", name, rollID, itemId, status, quality)
+			return
+		end
+	end
 	if self:ShouldPassOnLoot(status) then
 		self.Log:d("Passing on loot", link)
 		self:RollOnLoot(rollID, 0)

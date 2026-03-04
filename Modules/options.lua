@@ -1094,6 +1094,12 @@ function addon:OptionsTable()
 										name = L.opt_autoGroupLoot_name,
 										desc = L.opt_autoGroupLoot_desc,
 										type = "toggle"
+									},
+									autoGroupLootDecor = {
+										order = 11,
+										name = L.opt_autoGroupLootDecor_name,
+										desc = L.opt_autoGroupLootDecor_desc,
+										type = "toggle"
 									}
 								},
 							},

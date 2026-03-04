@@ -151,7 +151,8 @@ function private:BuildMLDB()
         timeout = db.timeout,
         rejectTrade = db.rejectTrade or nil,
         outOfRaid = db.outOfRaid or nil,
-        autoGroupLoot = db.autoGroupLoot or nil
+        autoGroupLoot = db.autoGroupLoot or nil,
+		lootDecor = db.autoGroupLootDecor or nil,
     }
     self.isBuilt = true
     return self.mldb

@@ -103,6 +103,7 @@ addon.defaults = {
 		rejectTrade = false, -- Can candidates choose not to give loot to the council
 		awardLater = false, -- Auto check award later
 		autoGroupLoot = true,
+		autoGroupLootDecor = false,
 		-- ML - General - Voting
 		selfVote = true,
 		multiVote = true,

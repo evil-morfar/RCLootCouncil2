@@ -1,3 +1,13 @@
+# 3.20.0
+
+## Changes
+
+### Decor/Housing items
+
+Decor items are now ignored until confirmed tradeable.
+
+Added an option to enable group looting them - disabled by default.
+
 # 3.19.6
 
 ## Bugfixes

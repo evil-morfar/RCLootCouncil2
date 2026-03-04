@@ -15,7 +15,7 @@ describe("#GroupLoot", function()
 	describe("#Basic", function()
 		it("should need on items when we're ML and item can be needed", function()
 			stub(_G, "GetLootRollItemInfo", function()
-				return nil,nil,nil,nil,nil,1 -- canNeed = true
+				return nil, nil, nil, nil, nil, 1 -- canNeed = true
 			end)
 			local s = spy.on(GroupLoot, "RollOnLoot")
 			SetupML()
@@ -91,7 +91,7 @@ describe("#GroupLoot", function()
 				assert.spy(s).was_called(2)
 				assert.spy(s).was_called_with(GroupLoot, 1, 0)
 				assert.spy(s).was_called_with(GroupLoot, 2, 0)
-		   end)
+			end)
 
 			it("should pass on loot if not in guild group", function()
 				addon.isInGuildGroup = false
@@ -100,9 +100,8 @@ describe("#GroupLoot", function()
 				assert.spy(s).was_called(2)
 				assert.spy(s).was_called_with(GroupLoot, 1, 0)
 				assert.spy(s).was_called_with(GroupLoot, 2, 0)
-		   end)
+			end)
 		end)
-
 	end)
 
 	describe("#ignored items", function()
@@ -115,8 +114,30 @@ describe("#GroupLoot", function()
 		end)
 
 		it("should ignore items on the ignore list", function()
+			-- Can be bothered to add every single ignored item, so just ignore the error thrown by GetItemInfoInstant for this test
+			local ItemInfoStub = stub(C_Item, "GetItemInfoInstant", function(...)
+				local res = { pcall(C_Item.GetItemInfoInstant, ...), }
+				if res[1] then return unpack(res, 2) end
+				return nil
+			end)
 			GroupLoot:OnStartLootRoll(nil, (next(GroupLoot.IgnoreList)))
 			assert.spy(s).was_not_called()
+			ItemInfoStub:revert()
+		end)
+
+		it("should not group loot decor items when not enabled", function()
+			local stubLootRoll = stub.new(_G, "GetLootRollItemLink", function() return "item:264333" end)
+			GroupLoot:OnStartLootRoll(nil, 1)
+			assert.spy(s).was_not_called()
+			stubLootRoll:revert()
+		end)
+
+		it("should group loot decor items when enabled", function()
+			addon.mldb.lootDecor = true
+			local stubLootRoll = stub.new(_G, "GetLootRollItemLink", function() return "item:264333" end)
+			GroupLoot:OnStartLootRoll(nil, 1)
+			assert.spy(s).was_called(1)
+			stubLootRoll:revert()
 		end)
 	end)
 
@@ -137,8 +158,8 @@ describe("#GroupLoot", function()
 			addon.db.profile.autoGroupLootGuildGroupOnly = true
 		end)
 		it("statusToDescription should return a table", function()
-			assert.has_no.errors(function() GroupLoot:StatusToDescription(1,1) end)
-			assert.is_table(GroupLoot:StatusToDescription(1,1))
+			assert.has_no.errors(function() GroupLoot:StatusToDescription(1, 1) end)
+			assert.is_table(GroupLoot:StatusToDescription(1, 1))
 			assert.equal(4, #GroupLoot:StatusToDescription(1, 1)) -- 1 -> 0001 after conversion
 			local status, target = "101100000", "011011011"
 			assert.has_no.errors(function() GroupLoot:StatusToDescription(status, target) end)

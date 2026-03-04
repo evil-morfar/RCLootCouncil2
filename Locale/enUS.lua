@@ -604,6 +604,8 @@ L.opt_useSlashRC_desc = "Disable this if you want to restore '/rc' to ready chec
 
 L.opt_autoGroupLoot_name = "Auto Group Loot"
 L.opt_autoGroupLoot_desc = "When enabled, RCLootCouncil will automatically click the pass and greed buttons so that all items lands in your inventory."
+L.opt_autoGroupLootDecor_name = "Loot Decor"
+L.opt_autoGroupLootDecor_desc = "Caution: Only enable this if you're certain decor items are tradeable."
 
 L.VF_REQUEST_VOTES = "Request Votes"
 L.VF_REQUEST_VOTES_SENT = "Vote request sent"

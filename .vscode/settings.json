@@ -197,9 +197,9 @@
         "${addons}/lldebugger/module/library",
         "${addons}/luafilesystem/module/library",
         "${addons}/luassert/module/library",
-        "~\\.vscode\\extensions\\ketho.wow-api-0.22.2\\Annotations\\Core",
-        "~\\.vscode\\extensions\\ketho.wow-api-0.22.2\\Annotations\\FrameXML"
+        "~\\.vscode\\extensions\\ketho.wow-api-0.22.3\\Annotations\\Core",
+        "~\\.vscode\\extensions\\ketho.wow-api-0.22.3\\Annotations\\FrameXML"
     ],
     "Lua.type.weakUnionCheck": true,
-
+    
 }
