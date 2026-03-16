@@ -145,7 +145,7 @@ function RCLootCouncilML:AddItem(item, bagged, slotIndex, owner, entry, boss)
 	entry.bagged = bagged
 	entry.lootSlot = slotIndex
 	entry.awarded = false
-	entry.owner = owner
+	entry.owner = owner or nil
 	entry.boss = boss or addon.bossName
 	entry.isSent = false
 	entry.typeCode = addon:GetTypeCodeForItem(item)
