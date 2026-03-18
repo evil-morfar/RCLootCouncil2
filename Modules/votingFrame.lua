@@ -1195,6 +1195,7 @@ end
 
 function RCVotingFrame:GetFrame()
 	if self.frame then return self.frame end
+	addon.Log:D("Creating RCVotingFrame")
 	-- Container and title
 	---@class DefaultRCLootCouncilFrame : RCFrame
 	local f = addon.UI:NewNamed("RCFrame", UIParent, "DefaultRCLootCouncilFrame", L["RCLootCouncil Voting Frame"], 250, 410)
@@ -1429,6 +1430,7 @@ function RCVotingFrame:GetFrame()
 
 	-- Set a proper width
 	f:SetWidth(f.st.frame:GetWidth() + 20)
+	self.frame = f
 	return f;
 end
 
