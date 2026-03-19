@@ -563,6 +563,8 @@ L["opt_chatFrameName_name"] = "Chat Frame"
 L["opt_chatFrameName_desc"] = "Select which chat frame you want RCLootCouncil to output information to."
 L.opt_closeWithEscape_name = "Escape Close"
 L.opt_closeWithEscape_desc = "When enabled, all non-critical RCLootCouncil frames can be closed by pressing 'Escape'. (Requires reload to take effect on already created frames)"
+L.opt_ignoreDecor_name = "Ignore Decor"
+L.opt_ignoreDecor_desc = "When enabled, no tradeable decor items will be handled by RCLootCouncil."
 L["opt_moreButtons_desc"] = "Add a new set of buttons for a specific gear slot. The most specific type is used, i.e. adding buttons for 'Head' and 'Catalyst Items' will make head type armor use the head buttons instead of catalyst."
 L["opt_deleteDate_confirm"] = "Are you sure you want to delete everything older than the selected?\nThis cannot be undone."
 L["opt_deleteDate_desc"] = "Delete anything older than the selected number of days."
@@ -604,8 +606,6 @@ L.opt_useSlashRC_desc = "Disable this if you want to restore '/rc' to ready chec
 
 L.opt_autoGroupLoot_name = "Auto Group Loot"
 L.opt_autoGroupLoot_desc = "When enabled, RCLootCouncil will automatically click the pass and greed buttons so that all items lands in your inventory."
-L.opt_autoGroupLootDecor_name = "Loot Decor"
-L.opt_autoGroupLootDecor_desc = "Caution: Only enable this if you're certain decor items are tradeable."
 
 L.VF_REQUEST_VOTES = "Request Votes"
 L.VF_REQUEST_VOTES_SENT = "Vote request sent"

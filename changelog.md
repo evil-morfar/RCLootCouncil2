@@ -1,3 +1,13 @@
+# 3.20.1
+
+## Changes
+
+#### Decor/Housing items
+
+Decor items have been confirmed tradeable personal loot, so removed the option for group loot to ignore them.
+
+By default decor items are now ignored, but added an option to revert that if you so desire.
+
 # 3.20.0
 
 ## Changes

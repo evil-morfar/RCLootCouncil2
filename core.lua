@@ -182,6 +182,7 @@ function RCLootCouncil:OnInitialize()
 	}
 
 	-- List of item classes all auto looting should ignore
+	--! Note: OLD system, does not affect Group Loot!
 	-- see https://wow.gamepedia.com/ItemType
 	self.blacklistedItemClasses = {
 		[0] = { -- Consumables
@@ -201,6 +202,9 @@ function RCLootCouncil:OnInitialize()
 			[1] = true, -- Reagent
 			[4] = true, -- Other (Anima)
 		},
+		[20] = { -- Decor
+			all = true,
+		}
 	}
 
 	-- List of itemIds that should not be blacklisted

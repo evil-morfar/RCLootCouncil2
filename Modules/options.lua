@@ -1059,16 +1059,10 @@ function addon:OptionsTable()
 										desc = L["opt_autoAddPets_desc"],
 										type = "toggle",
 										get = function()
-											return not
-												addon.blacklistedItemClasses[Enum.ItemClass.Miscellaneous][Enum.ItemMiscellaneousSubclass.CompanionPet]
-
-
+											return not addon.blacklistedItemClasses[Enum.ItemClass.Miscellaneous][Enum.ItemMiscellaneousSubclass.CompanionPet]
 										end,
 										set = function(_, val)
-											addon.blacklistedItemClasses[Enum.ItemClass.Miscellaneous][Enum.ItemMiscellaneousSubclass.CompanionPet] = not
-
-												val
-
+											addon.blacklistedItemClasses[Enum.ItemClass.Miscellaneous][Enum.ItemMiscellaneousSubclass.CompanionPet] = not val
 										end
 									},
 									printCompletedTrades = {
@@ -1095,12 +1089,20 @@ function addon:OptionsTable()
 										desc = L.opt_autoGroupLoot_desc,
 										type = "toggle"
 									},
-									autoGroupLootDecor = {
+									ignoreDecor = {
 										order = 11,
-										name = L.opt_autoGroupLootDecor_name,
-										desc = L.opt_autoGroupLootDecor_desc,
-										type = "toggle"
-									}
+										name = L.opt_ignoreDecor_name,
+										desc = L.opt_ignoreDecor_desc,
+										type = "toggle",
+										get = function()
+											return not addon.blacklistedItemClasses[Enum.ItemClass.Miscellaneous]
+											[Enum.ItemMiscellaneousSubclass.CompanionPet]
+										end,
+										set = function(_, val)
+											addon.blacklistedItemClasses[Enum.ItemClass.Miscellaneous][Enum.ItemMiscellaneousSubclass.CompanionPet] = not
+											val
+										end,
+									},
 								},
 							},
 							voteOptions = {

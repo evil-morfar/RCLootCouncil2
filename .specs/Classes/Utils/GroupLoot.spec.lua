@@ -124,21 +124,6 @@ describe("#GroupLoot", function()
 			assert.spy(s).was_not_called()
 			ItemInfoStub:revert()
 		end)
-
-		it("should not group loot decor items when not enabled", function()
-			local stubLootRoll = stub.new(_G, "GetLootRollItemLink", function() return "item:264333" end)
-			GroupLoot:OnStartLootRoll(nil, 1)
-			assert.spy(s).was_not_called()
-			stubLootRoll:revert()
-		end)
-
-		it("should group loot decor items when enabled", function()
-			addon.mldb.lootDecor = true
-			local stubLootRoll = stub.new(_G, "GetLootRollItemLink", function() return "item:264333" end)
-			GroupLoot:OnStartLootRoll(nil, 1)
-			assert.spy(s).was_called(1)
-			stubLootRoll:revert()
-		end)
 	end)
 
 	describe("#Status", function()
