@@ -1662,6 +1662,11 @@ function RCLootCouncil:OnEvent(event, ...)
 			end
 			wipe(self.db.global.cache) -- No reason to store data forever
 
+			-- Send a version reply to the leader so they can check our status
+			if self.masterLooter then
+				self:GetActiveModule("version"):SendFullVersionReply(self.masterLooter, "RAID")
+			end
+
 			-- If we still haven't set masterLooter, try delaying a bit.
 			-- but we don't have to wait if we got it from cache.
 			-- ? REVIEW: This might not be needed anymore.

@@ -81,11 +81,7 @@ function RCLootCouncilML:OnEnable()
 	self:RegisterMessage("RCCouncilChanged", "CouncilChanged")
 	self:RegisterComms()
 
-	-- Subscribe after comms, as that will override the table
-	tinsert(subscriptions, addon.Require "Utils.GroupLoot".OnLootRoll:subscribe(
-		function (...)
-		self:OnGroupLootRoll(...)
-	end))
+	self:SetupGroupLootIntegration()
 end
 
 function RCLootCouncilML:GetItemInfo(item)
@@ -568,11 +564,10 @@ function RCLootCouncilML:OnEvent(event, ...)
 		wipe(self.combatQueue)
 
 	elseif event == "ENCOUNTER_START" then
-		-- FIXME: People joining after "StartHandleLoot" is sent naturally won't have it,
-		-- but they still need it for group loot auto pass to work. For now just send it everytime
-		-- we start an encounter.
+		-- People joining after "StartHandleLoot" is sent naturally won't have it,
+		-- This should be redundant with the status monitoring
 		if addon.handleLoot then
-			self:Send("group", "StartHandleLoot")
+			Comms:SendGuaranteed {target = "group", command = "StartHandleLoot"}
 		end
 	end
 end
@@ -1614,6 +1609,35 @@ function RCLootCouncilML.LootTableCompare(a, b)
 		return statsA > statsB
 	end
 	return ItemUtils:GetItemNameFromLink(a.link) < ItemUtils:GetItemNameFromLink(b.link)
+end
+
+function RCLootCouncilML:SetupGroupLootIntegration()
+	local GroupLoot = addon.Require "Utils.GroupLoot"
+	-- Subscribe after comms, as that will override the table
+	tinsert(subscriptions, GroupLoot.OnLootRoll:subscribe(
+		function(...)
+			self:OnGroupLootRoll(...)
+		end))
+
+	-- Monitor GroupLoot status to send "StartHandleLoot" at the right time.
+	-- Needed as we can no longer rely on just sending "StartHandleLoot" at ENCOUNTER_START
+	tinsert(subscriptions, Comms:Subscribe(addon.PREFIXES.VERSION, "f", function(data, sender, command, distri)
+		if addon.Utils:UnitIsUnit(sender, "player") then return end
+		local status = data[7]
+		local targetStatus = GroupLoot:GetTargetedStatus()
+		if bit.band(status, targetStatus) == targetStatus then
+			return -- Everythings fine
+		end
+		if addon.handleLoot then
+			self.Log:d("GroupLoot Status mismatch for:", sender, status, targetStatus)
+			if bit.band(status, 1) == 0 then -- 0000 0001 Missing mldb
+				MLDB:Send "group"
+			end
+			if bit.band(status, 4) == 0 then -- 0000 0100 Missing HandleLoot
+				Comms:SendGuaranteed { target = "group", command = "StartHandleLoot", }
+			end
+		end
+	end))
 end
 
 -------------------------------------------------------------

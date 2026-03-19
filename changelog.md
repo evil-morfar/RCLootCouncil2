@@ -8,6 +8,10 @@ Decor items have been confirmed tradeable personal loot, so removed the option f
 
 By default decor items are now ignored, but added an option to revert that if you so desire.
 
+### Data sync
+
+Added additional code that should help with data syncing after player reloads or joins after RCLootCouncil is enabled for the raid.
+
 # 3.20.0
 
 ## Changes

@@ -233,6 +233,11 @@ function GroupLoot:StatusToDescription(status, target)
 	return res
 end
 
+local targetStatusML = tonumber("110111111", 2)
+local targetStatus   = tonumber("110101111", 2)
+function GroupLoot:GetTargetedStatus() return targetStatus end
+function GroupLoot:GetTargetedMLStatus() return targetStatusML end
+
 local NUM_LOOT_FRAMES = 4
 --- Hides any visible default group loot frames
 function GroupLoot:HideGroupLootFrames()

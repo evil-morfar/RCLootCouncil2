@@ -272,6 +272,34 @@ function RCVersionCheck:UpdateTotals()
     TT:Release(text)
 end
 
+--- Comms receiver
+local function SendFullVersionReply(data, sender, _, dist)
+	local senderPlayer = Player:Get(sender)
+	local target
+	if dist == "RAID" or dist == "PARTY" then
+		target = "group"
+	elseif dist == "GUILD" then
+		target = "guild"
+	else
+		target = senderPlayer
+	end
+
+	Comms:Send {
+		prefix = addon.PREFIXES.VERSION,
+		target = target,
+		command = "f",
+		data = {
+			addon.playerClass,
+			addon.guildRank,
+			addon.version,
+			addon.tVersion,
+			addon:GetInstalledModulesFormattedData(),
+			senderPlayer:GetForTransmit(),
+			GroupLoot:GetStatus()
+		}
+	}
+end
+
 -- Permanent comms
 function RCVersionCheck:InitCoreVersionComms()
     -- "verTest"
@@ -320,33 +348,15 @@ function RCVersionCheck:InitCoreVersionComms()
     Comms:Subscribe(
         addon.PREFIXES.VERSION,
         "fr",
-        function(data, sender, _, dist)
-            local senderPlayer = Player:Get(sender)
-            local target
-            if dist == "RAID" or dist == "PARTY" then
-                target = "group"
-            elseif dist == "GUILD" then
-                target = "guild"
-            else
-                target = senderPlayer
-            end
-
-            Comms:Send {
-                prefix = addon.PREFIXES.VERSION,
-                target = target,
-                command = "f",
-                data = {
-                    addon.playerClass,
-                    addon.guildRank,
-                    addon.version,
-                    addon.tVersion,
-                    addon:GetInstalledModulesFormattedData(),
-                    senderPlayer:GetForTransmit(),
-					GroupLoot:GetStatus()
-                }
-            }
-        end
+        SendFullVersionReply
     )
+end
+
+
+---@param target Player|string Target to send to
+---@param dist "RAID"|"PARTY"|"GUILD" or nil, used to determine target type
+function RCVersionCheck:SendFullVersionReply(target, dist)
+	SendFullVersionReply(nil, type(target) == "table" and target.name or target, nil, dist)
 end
 
 --- Displays version status message, but only once per session.
@@ -539,8 +549,8 @@ function RCVersionCheck.SetCellModules(rowFrame, f, data, cols, row, realrow, co
     table.DoCellUpdate(rowFrame, f, data, cols, row, realrow, column, fShow, table)
 end
 
-local targetML = tonumber("110111111", 2)
-local target 	= tonumber("110101111", 2)
+local targetML = GroupLoot:GetTargetedMLStatus()
+local target = GroupLoot:GetTargetedStatus()
 
 --- @type DoCellUpdateFunction
 function RCVersionCheck.SetCellGroupLootStatus(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
