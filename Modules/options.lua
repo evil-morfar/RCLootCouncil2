@@ -1076,6 +1076,7 @@ function addon:OptionsTable()
 										set = function(_, val)
 											addon.blacklistedItemClasses[Enum.ItemClass.Housing].all = not val
 										end,
+										hidden = function() return WOW_PROJECT_ID ~= WOW_PROJECT_MAINLINE end,
 									},
 									printCompletedTrades = {
 										order = 7,
