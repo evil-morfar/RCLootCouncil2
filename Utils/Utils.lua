@@ -328,8 +328,7 @@ function Utils:UnitIsUnit(unit1, unit2)
 	local res = UnitIsUnit(unit1:lower(), unit2:lower())
 	-- v3.19.6: Calling UnitIsUnit() under `SecretWhenUnitComparisonRestricted` with a "non-available unit" will result in `<secret> false`
 	if self:IsSecretValue(res) then
-		addon.Log:W(format("UnitIsUnit(%s, %s) is secret", unit1, unit2))
-		return false
+		return unit1 == unit2
 	end
 	return res
 end
