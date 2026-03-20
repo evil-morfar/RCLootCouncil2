@@ -1,3 +1,9 @@
+# 3.20.2
+
+## Bugfixes
+
+- *Demon Hunters no longer auto passes on intellect weapons they can equip (Devourer).*
+
 # 3.20.1
 
 ## Changes
