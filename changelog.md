@@ -1,3 +1,7 @@
+## Bugfixes
+
+- *Fixed issue with transmog autopass (#273) - thanks to peti446 for PR.*
+
 # 3.20.2
 
 ## Bugfixes
