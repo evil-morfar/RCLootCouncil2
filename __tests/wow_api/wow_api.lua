@@ -1212,6 +1212,12 @@ C_Spell = {
 	end,
 }
 
+C_TooltipInfo = {
+	GetHyperlink = function(tooltip)
+		return tooltip and tooltip.itemLink or nil
+	end,
+}
+
 C_RestrictedActions = {
 	IsActionRestricted = function (actionType, actionID)
 		return false
