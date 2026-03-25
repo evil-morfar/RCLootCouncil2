@@ -2542,6 +2542,7 @@ function RCVotingFrame:GetItemStatus(item)
 	if GameTooltip:NumLines() > 1 then -- check that there is something here
 		local line = getglobal('GameTooltipTextLeft2') -- Should always be line 2
 		local t =  line:GetText()
+		if addon.Utils:IsSecretValue(t) then return text end
 		-- The following color string should be there if we have a green status text
 		if t then
 			if strfind(t, "cFF 0FF 0") then
