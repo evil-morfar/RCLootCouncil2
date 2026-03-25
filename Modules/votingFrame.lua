@@ -238,6 +238,7 @@ end
 
 function RCVotingFrame:Hide()
 	addon.Log("Hide VotingFrame")
+	needUpdate = false
 	self.frame.moreInfo:Hide()
 	self.frame:Hide()
 end
