@@ -18,9 +18,13 @@ jobs:
         # Grabs everything under the top level # header and outputs to a new file
         run: sed -n "3,/^# / {/^# /d; p}" changelog.md > changes.md
 
+      - name: Extract version from changelog
+        id: version
+        run: echo "VERSION=$(grep -m 1 '^# ' changelog.md | sed 's/^# //')" >> $GITHUB_OUTPUT
+
       - name: Send Discord notification
         run: |
-          VERSION=${{ github.ref_name }} \
+          VERSION=${{ steps.version.outputs.VERSION }} \
           REPO=${{ github.repository }} \
           DISCORD_WEBHOOK=${{ secrets.DISCORD_CHANGELOG_WEBHOOK_URL }} \
           bash ./.scripts/send_discord_release.sh changes.md
