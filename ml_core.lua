@@ -1645,8 +1645,8 @@ end
 -------------------------------------------------------------
 function RCLootCouncilML:RegisterComms ()
 	subscriptions = Comms:BulkSubscribe(addon.PREFIXES.MAIN, {
-		MLdb_request = function(data)
-			MLDB:Send("group")
+		MLdb_request = function(_, sender)
+			self:OnMLDBRequestReceived(sender)
 		end,
 
 		council_request = function ()
@@ -1723,4 +1723,11 @@ function RCLootCouncilML:OnReconnectReceived (sender)
 		-- end
 	end
 	self.Log("Responded to reconnect from", sender)
+end
+
+function RCLootCouncilML:OnMLDBRequestReceived (sender)
+	MLDB:Send "group"
+	if addon.handleLoot then
+		self:Send("group", "StartHandleLoot")
+	end
 end
