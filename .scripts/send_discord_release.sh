@@ -14,8 +14,9 @@ fi
 
 # --- Construct changelog with issue links ---
 CHANGELOG=$(sed -n "3,/^# / {/^# /d; p}" "$CHANGELOG_FILE" |
+  tr -d '\r' |
   awk -v repo="$REPO" '
-  {
+  NF > 0 {
     while (match($0, /\(#([0-9]+)\)/, m)) {
       issue = m[1]
       link = "([#" issue "](https://github.com/" repo "/pull/" issue "))"
