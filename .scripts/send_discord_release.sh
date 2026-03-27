@@ -2,17 +2,19 @@
 set -e
 
 CHANGELOG_FILE=${1:-changelog.md}
-VERSION=${VERSION:-"dev"}
 REPO=${REPO:-"evil-morfar/RCLootCouncil2"}
 WEBHOOK=${DISCORD_WEBHOOK:-""}
+
+VERSION=$(awk '/^# / { gsub(/^# /,""); print; exit }' $CHANGELOG_FILE)
 
 if [[ -z "$WEBHOOK" ]]; then
   echo "Error: DISCORD_WEBHOOK must be set"
   exit 1
 fi
 
-# --- Transform issue links ---
-CHANGELOG=$(awk -v repo="$REPO" '
+# --- Construct changelog with issue links ---
+CHANGELOG=$(sed -n "3,/^# / {/^# /d; p}" "$CHANGELOG_FILE" |
+  awk -v repo="$REPO" '
   {
     while (match($0, /\(#([0-9]+)\)/, m)) {
       issue = m[1]
@@ -21,7 +23,7 @@ CHANGELOG=$(awk -v repo="$REPO" '
     }
     print
   }
-' "$CHANGELOG_FILE")
+')
 
 # --- Truncate to 4000 chars to be safe (Discord limit 4096) ---
 CHANGELOG=$(echo "$CHANGELOG" | head -c 4000)
