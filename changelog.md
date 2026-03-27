@@ -1,3 +1,11 @@
+# 3.20.4
+
+## Changes
+
+### Cosmic Ritual Stone
+
+When the group leader acquires this toy it becomes unwinable for them, which causes it to be destroyed when everyone else passes, thus it will now be completely ignored.
+
 # 3.20.3
 
 ## Bugfixes

@@ -22,6 +22,7 @@ GroupLoot.IgnoreList = {
 	[236687] = true, -- Explosive Hearthstone, Liberation of Undermine
 	[246565] = true, -- Cosmic Hearthstone, Manaforge Omega
 	[250104] = true, -- Soulbinder's Nethermantle
+	[264672] = true, -- Cosmic Ritual Stone, Voidspire (toy, becomes unwinnable for ML when learned)
 }
 
 ---@alias GroupLootPredicate fun(rollID: integer, itemID: integer, status: integer, quality: Enum.ItemQuality): boolean
