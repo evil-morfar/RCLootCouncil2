@@ -430,6 +430,9 @@ function RCLootCouncilML:OnGroupRosterUpdate()
 		MLDB:Send("group")
 		self:UpdateGroupCouncil()
 		self:SendCouncil()
+		if addon.handleLoot then
+			Comms:SendGuaranteed { target = "group", command = "StartHandleLoot", }
+		end
 	end
 	self.groupSize = newGroupSize
 end
