@@ -1,3 +1,9 @@
+# 3.20.5
+
+## Bugfixes
+
+- *Fixed occasional issue when trading caused by secrets.*
+
 # 3.20.4
 
 ## Changes
