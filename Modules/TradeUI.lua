@@ -257,7 +257,7 @@ function TradeUI:OnEvent_TRADE_SHOW (event, ...)
    
    -- Try to grab the trader from Blizzard UI
    local target = _G.TradeFrameRecipientNameText:GetText()
-   if not target or target == "" then
+   if addon.Utils:IsSecretValue(target) or (not target or target == "") then
 	target = "NPC" -- Otherwise fallback to `UnitName("NPC")`
 	end
 
@@ -273,6 +273,16 @@ function TradeUI:OnEvent_TRADE_SHOW (event, ...)
 	end
 
 	self.tradeTarget = addon:UnitName(target)
+	if addon.Utils:IsSecretValue(self.tradeTarget) or self.tradeTarget == nil then
+		if self.lastAttemptedTradeTarget then
+			self.tradeTarget = self.lastAttemptedTradeTarget
+			addon:Print("TradeUI: Could not get trade target from TradeFrame, using last attempted trade target:", addon:GetClassIconAndColoredName(self.tradeTarget))
+		else
+			self.tradeTarget = nil
+			addon:Print("TradeUI: Failed to fetch trade target due to Blizzard restrictions - please try again.")
+			return
+		end
+	end
 	self.isTrading = true
 
    local count = self:GetNumAwardedInBagsToTradeWindow()
@@ -429,6 +439,7 @@ function TradeUI:GetFrame()
    f.st:RegisterEvents({
       ["OnClick"] = function(rowFrame, cellFrame, data, cols, row, realrow, column, table, button, ...)
          if addon.inCombat or CheckInteractDistance(Ambiguate(data[realrow].winner, "short"), 2) then -- 2 for trade distance
+			self.lastAttemptedTradeTarget = data[realrow].winner
             InitiateTrade(Ambiguate(data[realrow].winner, "short"))
          else
             addon.Log:d("TradeUI row OnClick - unit not in trade distance")
