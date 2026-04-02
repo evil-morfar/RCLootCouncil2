@@ -325,7 +325,9 @@ function Utils:UnitIsUnit(unit1, unit2)
 	-- v2.3.3 There's problems comparing non-ascii characters of different cases using UnitIsUnit()
 	-- I.e. UnitIsUnit("Potdisc", "potdisc") works, but UnitIsUnit("Æver", "æver") doesn't.
 	-- Since I can't find a way to ensure consistant returns from UnitName(), just lowercase units here before passing them.
-	local res = UnitIsUnit(unit1:lower(), unit2:lower())
+	-- v3.20.5: Revert to direct comparison, as UnitIsUnit() no longer works with all characters
+	local u1, u2 = unit1:lower(), unit2:lower()
+	local res = u1 == u2 or UnitIsUnit(u1, u2)
 	-- v3.19.6: Calling UnitIsUnit() under `SecretWhenUnitComparisonRestricted` with a "non-available unit" will result in `<secret> false`
 	if self:IsSecretValue(res) then
 		return unit1 == unit2

@@ -3,6 +3,7 @@
 ## Bugfixes
 
 - *Fixed occasional issue when trading caused by secrets.*
+- *Fixed issue in version checker causing guild members to show up multiple times.*
 
 # 3.20.4
 
