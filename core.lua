@@ -1820,7 +1820,7 @@ function RCLootCouncil:RestoreCachedData()
 		self:OnStartHandleLoot()
 	end
 
-	self.instanceDataSnapshot = self.db.global.cache.lastEncounterInstanceData
+	self.instanceDataSnapshot = self.db.global.cache.instanceData
 end
 
 function RCLootCouncil:OnBonusRoll(_, type, link, ...)
