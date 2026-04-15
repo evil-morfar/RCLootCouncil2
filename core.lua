@@ -1648,9 +1648,11 @@ function RCLootCouncil:OnEvent(event, ...)
 		self:UpdatePlayersData()
 		self:ScheduleTimer(CandidateAndNewMLCheck, 2)
 		self:ScheduleTimer(function() -- This needs some time to be ready
-			local instanceName, _, _, difficultyName = GetInstanceInfo()
+			local instanceName, instanceType, _, difficultyName = GetInstanceInfo()
 			self.currentInstanceName = instanceName .. (difficultyName ~= "" and "-" .. difficultyName or "")
-			if not isReload then self:SnapshotInstanceData() end -- Will be restored from cache
+			if instanceType ~= "none" and not isReload then
+				self:SnapshotInstanceData()
+			end
 		end, 5)
 
 		if isReload then

@@ -147,7 +147,7 @@ function RCLootCouncilML:AddItem(item, bagged, slotIndex, owner, entry, boss)
 	entry.typeCode = addon:GetTypeCodeForItem(item)
 	if addon:IsInstanceDataSnapshotValid() then
 		entry.instanceData = addon.instanceDataSnapshot
-	else 
+	else
 		entry.instanceData = addon:SnapshotInstanceData()
 	end
 
