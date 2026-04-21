@@ -380,7 +380,7 @@ function private:newItem(base, link, type)
 	-- If item isn't in our bags, lets store it for 6 hours (21600 seconds)
 	Item:SetUpdateTime(time_remaining, 21600)
 	Item.time_added = time()
-	Item.inBags = c and s
+	Item.inBags = c and s and true or false
 	tinsert(StoredItems, Item)
 	addon.Log:D("NewItem:", Item.link, Item.type, Item.time_remaining / 3600)
 	return Item
