@@ -1,8 +1,8 @@
 ## Author: Potdisc
-## Interface: 120001
-## Notes: Interface for running a Loot Council v3.20.5
+## Interface: 120005
+## Notes: Interface for running a Loot Council v3.21.0
 ## Title: RCLootCouncil
-## Version: 3.20.5
+## Version: 3.21.0
 ## SavedVariables: RCLootCouncilDB, RCLootCouncilLootDB
 ## AllowLoadGameType: standard
 ## OptionalDeps: LibStub, CallbackHandler-1.0, Ace3, lib-st, LibWindow-1.1, LibDialog-1.0
