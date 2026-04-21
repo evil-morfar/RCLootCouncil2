@@ -1,3 +1,7 @@
+## Bugfixes
+
+- *Awards sent to guild wouldn't be properly recorded for non-raid members.*
+
 # 3.21.0
 
 Updated for patch 12.0.5

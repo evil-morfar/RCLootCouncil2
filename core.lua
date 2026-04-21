@@ -2912,8 +2912,8 @@ function RCLootCouncil:SubscribeToPermanentComms()
 		StartHandleLoot = function() self:OnStartHandleLoot() end,
 
 		StopHandleLoot = function() self.handleLoot = false end,
-		history = function (data, sender)
-			if not self.Utils:UnitIsUnit(sender, self.masterLooter) then
+		history = function (data, sender, _, distri)
+			if distri == "GUILD" or not self.Utils:UnitIsUnit(sender, self.masterLooter) then
 				return self.Log:E(tostring(sender), "sent 'history' but was not ML!")
 			end
 			self:OnHistoryReceived(unpack(data))
