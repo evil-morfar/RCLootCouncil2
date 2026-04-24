@@ -1101,7 +1101,13 @@ function addon:OptionsTable()
 										name = L.opt_autoGroupLoot_name,
 										desc = L.opt_autoGroupLoot_desc,
 										type = "toggle"
-									},									
+									},
+									saveBonusRolls = {
+										order = 11,
+										name = L.opt_saveBonusRolls_Name,
+										desc = L.opt_saveBonusRolls_Desc,
+										type = "toggle",
+									}
 								},
 							},
 							voteOptions = {
