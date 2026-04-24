@@ -22,6 +22,7 @@
 		reconnectData 		T - ML sends reconnectData.
 		n_t					T - Candidate received "non-tradeable" loot.
 		r_t					T - Candidate "rejected_trade" of loot.
+		bonus_roll			T - Candidate sends bonus roll info.
 		request_votes		T - ML requests votes from council members.
 ]]
 
@@ -227,6 +228,9 @@ function RCVotingFrame:RegisterComms ()
 		end,
 		r_t = function (data, sender)
 			self:AddNonTradeable(sender, "rejected_trade", unpack(data))
+		end,
+		bonus_roll = function (data, sender)
+			self:AddNonTradeable(sender, "bonus_roll", unpack(data))
 		end,
 		request_votes = function (data, sender)
 			if addon:IsMasterLooter(sender) then
@@ -1541,7 +1545,7 @@ function RCVotingFrame:AddNonTradeable(owner, reason, link)
 		b:SetPoint("TOPLEFT", self.frame.content, "BOTTOMLEFT", 0, -2)
 	else
 		b:SetPoint("LEFT", self.nonTradeablesButtons[self.numNonTradeables - 1], "RIGHT", 5)
-	end
+	end 
 	b:SetScript("OnEnter", function()
 		addon:CreateHypertip(link)
 		GameTooltip:AddLine(" ")
@@ -1551,6 +1555,8 @@ function RCVotingFrame:AddNonTradeable(owner, reason, link)
 	end)
 	if reason == "rejected_trade" then
 		b:SetBorderColor("purple")
+	elseif reason == "bonus_roll" then
+		b:SetBorderColor("yellow")
 	else
 		b:SetBorderColor("grey")
 	end

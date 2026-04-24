@@ -598,6 +598,7 @@ L.opt_blockTradesInVoting_desc = "When enabled, any trade attempts will be cance
 L.opt_blockTradesInVoting_message = "Trade from %s blocked"
 L["non_tradeable_reason_not_tradeable"] = "Not Tradeable"
 L["non_tradeable_reason_rejected_trade"] = "Wanted to keep item"
+L.non_tradeable_reason_bonus_roll = "Bonus Roll"
 L["non_tradeable_reason_nil"] = "Unknown"
 L.opt_usage_GroupLoot = "Always use RCLootCouncil with Group Loot"
 L.opt_usage_AskGroupLoot = "Ask me every time Group Loot is enabled"
