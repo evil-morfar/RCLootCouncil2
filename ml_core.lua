@@ -485,7 +485,6 @@ end
 
 
 function RCLootCouncilML:OnBonusRoll (winner, type, link)
-	if not db.saveBonusRolls then return end
 	self:TrackAndLogLoot(winner, link, "BONUSROLL", addon.bossName)
 end
 

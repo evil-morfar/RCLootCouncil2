@@ -547,6 +547,12 @@ function addon:OptionsTable()
 										desc = L.opt_savePersonalLoot_desc,
 										type = "toggle",
 									},
+									saveBonusRolls = {
+										order = 3.3,
+										name = L.opt_saveBonusRolls_Name,
+										desc = L.opt_saveBonusRolls_Desc,
+										type = "toggle",
+									},
 									header = {
 										order = 4,
 										type = "header",
@@ -1102,12 +1108,6 @@ function addon:OptionsTable()
 										desc = L.opt_autoGroupLoot_desc,
 										type = "toggle"
 									},
-									saveBonusRolls = {
-										order = 11,
-										name = L.opt_saveBonusRolls_Name,
-										desc = L.opt_saveBonusRolls_Desc,
-										type = "toggle",
-									}
 								},
 							},
 							voteOptions = {

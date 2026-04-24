@@ -121,12 +121,16 @@ function LootHistory:SubscribeToPermanentComms ()
 end
 
 function LootHistory:OnHistoryReceived (name, history)
-	if not addon:Getdb().enableHistory then return end
-	if not addon:Getdb().savePersonalLoot then
+	db = addon:Getdb()
+	if not db.enableHistory then return end
+	if not db.savePersonalLoot then
 		if history.responseID == "PL" or history.responseID == "PL_REJECT" then
 			addon.Log:D("Not storing personal loot", history.lootWon)
 			return
 		end
+	end
+	if not db.saveBonusRolls and history.responseID == "BONUS_ROLL" then
+		return addon.Log:D("Not storing bonus rolls", history.lootWon)
 	end
 	-- v3.15.4 check for old date formats 
 	local d, m, y = strsplit("/", history.date, 3)
