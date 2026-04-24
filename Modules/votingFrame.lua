@@ -230,7 +230,8 @@ function RCVotingFrame:RegisterComms ()
 			self:AddNonTradeable(sender, "rejected_trade", unpack(data))
 		end,
 		bonus_roll = function (data, sender)
-			self:AddNonTradeable(sender, "bonus_roll", unpack(data))
+			local _, item = unpack(data)
+			self:AddNonTradeable(sender, "bonus_roll", item)
 		end,
 		request_votes = function (data, sender)
 			if addon:IsMasterLooter(sender) then
