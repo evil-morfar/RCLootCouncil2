@@ -26,6 +26,9 @@ local function PlayerKnowsTransmogInternal(link, checkSource)
     if sourceIDs then
         for _, sourceID in ipairs(sourceIDs) do
             local appearanceSourceInfo = C_TransmogCollection.GetAppearanceSourceInfo(sourceID)
+			if type(appearanceSourceInfo) ~= "table" then
+				appearanceSourceInfo = { isCollected = select(5, C_TransmogCollection.GetAppearanceSourceInfo(sourceID)) }
+			end
             if appearanceSourceInfo and appearanceSourceInfo.isCollected and (not checkSource or itemModifiedAppearanceID == sourceID) then
                 return true
             end
