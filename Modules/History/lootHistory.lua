@@ -1191,6 +1191,21 @@ function LootHistory.FilterMenu(menu, level)
 				MSA_DropDownMenu_AddButton(info, level)
 			end
 		end
+		-- Clear filters
+		info.text = L.select_all
+		info.func = function()
+			addon.Log:D("Clear filters")
+			for k,v in pairs(db.modules["RCLootHistory"].filters) do
+				if type(v) ~= "table" then
+					db.modules["RCLootHistory"].filters[k] = true
+				end
+			end
+			LootHistory:Update()
+		end
+		info.notCheckable = true
+		info.colorCode = "|cffffffff"
+		MSA_DropDownMenu_AddButton(info, level)
+
 	elseif level == 2 then
 		if value == "CLASS" then
 			for id, name in pairs(addon.classIDToDisplayName) do
