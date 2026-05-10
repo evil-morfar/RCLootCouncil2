@@ -50,6 +50,10 @@ function Utils:FindInTooltip(tooltipLines, ...)
 	end
 end
 
+--- Converts a decimal number to a hex string.
+--- @param r number
+--- @param g number
+--- @param b number
 function Utils:RGBToHex(r, g, b)
 	return string.format("%02x%02x%02x", 255 * r, 255 * g, 255 * b)
 end
