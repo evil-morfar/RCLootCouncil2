@@ -214,7 +214,9 @@ local description = {
 ---@param status integer|string Integer or binary representation of [Status](lua://Status). See [GroupLoot:GetStatus()](lua://Utils.GroupLoot.GetStatus)
 ---@param target integer|string Integer or binary representation of the target status.
 function GroupLoot:StatusToDescription(status, target)
-	local binary = addon.Utils:Int2Bin(type(status) == "string" and tonumber(status, 2) or status)
+	status = type(status) == "string" and tonumber(status, 2) or status
+	target = type(target) == "string" and tonumber(target, 2) or target
+	local binary = addon.Utils:Int2Bin(status)
 	-- Pad the binary with leading zeros if necessary
 	if #binary < #description then
 		binary = string.rep("0", #description - #binary) .. binary
