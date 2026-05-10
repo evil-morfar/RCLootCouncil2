@@ -215,6 +215,10 @@ local description = {
 ---@param target integer|string Integer or binary representation of the target status.
 function GroupLoot:StatusToDescription(status, target)
 	local binary = addon.Utils:Int2Bin(type(status) == "string" and tonumber(status, 2) or status)
+	-- Pad the binary with leading zeros if necessary
+	if #binary < #description then
+		binary = string.rep("0", #description - #binary) .. binary
+	end
 	local res = {}
 	local reversedBinary = binary:reverse()
 	for i = 1, #binary do

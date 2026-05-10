@@ -400,7 +400,7 @@ function RCLootCouncilML:ItemsInBagsLowTradeTimeRemainingReminder()
 		addon:Print(format(L["item_in_bags_low_trade_time_remaining_reminder"], "|cffff0000"..SecondsToTime(remindThreshold).."|r"))
 		for _, v in ipairs(entriesToRemind) do
 			addon:Print(v.index .. ". " .. ItemUtils:GetItemTextWithIcon(v.Item.link), "-->",
-			v.args.recipient and addon:GetClassIconAndColoredName(v.args.recipient) or L["Unawarded"],
+			v.Item.args.recipient and addon:GetClassIconAndColoredName(v.Item.args.recipient) or L["Unawarded"],
 				"(", _G.CLOSES_IN..":", SecondsToTime(v.remainingTime), ")")
 		end
 	end

@@ -9,6 +9,8 @@ LibStub("AceEvent-3.0"):Embed(ErrorHandler)
 
 local Log = addon.Require("Utils.Log"):Get()
 
+local issecretvalue = issecretvalue or function() return false end -- Classic protection
+
 local private = {
    MAX_STACK_DEPTH = 10,
 }

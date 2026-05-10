@@ -549,11 +549,11 @@ function RCVersionCheck.SetCellModules(rowFrame, f, data, cols, row, realrow, co
     table.DoCellUpdate(rowFrame, f, data, cols, row, realrow, column, fShow, table)
 end
 
-local targetML = GroupLoot:GetTargetedMLStatus()
-local target = GroupLoot:GetTargetedStatus()
 
 --- @type DoCellUpdateFunction
 function RCVersionCheck.SetCellGroupLootStatus(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
+	local targetML = GroupLoot:GetTargetedMLStatus()
+	local target = GroupLoot:GetTargetedStatus()
 	local status = data[realrow].cols[column].args[1]
 	local name = data[realrow].name
 	local binary = addon.Utils:Int2Bin(status)

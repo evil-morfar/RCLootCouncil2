@@ -1,6 +1,8 @@
 ## Bugfixes
 
 - *Awards sent to guild wouldn't be properly recorded for non-raid members.*
+- *Fixed issue with award later trade timer warning.*
+- *"Disabled" status wouldn't show up in the Version Frame status.*
 
 # 3.21.0
 
