@@ -174,7 +174,7 @@ function RCLootCouncil:OnInitialize()
 		{cmd = "session", desc = L.chat_commands_session},
 		{cmd = "start", desc = L.chat_commands_start},
 		{cmd = "stop", desc = L.chat_commands_stop},
-		{cmd = "test (#)", desc = L["chat_commands_test"]},
+		{cmd = "test (# | itemID ...)", desc = L["chat_commands_test"]},
 		{cmd = "whisper", desc = L["chat_commands_whisper"]},
 		
 	}
@@ -494,7 +494,17 @@ function RCLootCouncil:ChatCommand(msg)
 		LibStub("AceConfigDialog-3.0"):SelectGroup("RCLootCouncil", "settings", "profiles")
 
 	elseif input == 'test' or input == L["test"] then
-		self:Test(tonumber(args[1]) or 1)
+		local itemIDs = {}
+		for _, arg in ipairs(args) do
+			local id = tonumber(arg)
+			if id then tinsert(itemIDs, id) end
+		end
+		-- First arg > 1000 means the arguments are item IDs; otherwise it's the item count.
+		if itemIDs[1] and itemIDs[1] > 1000 then
+			self:Test(#itemIDs, false, false, itemIDs)
+		else
+			self:Test(itemIDs[1] or 1)
+		end
 	elseif input == 'fulltest' or input == 'ftest' then
 		self:Test(tonumber(args[1]) or 1, true)
 
@@ -775,8 +785,8 @@ function RCLootCouncil:ChatCmdAdd(args)
 end
 
 -- if fullTest, add items in the encounterJournal to the test items.
-function RCLootCouncil:Test(num, fullTest, trinketTest)
-	self.Log:d("Test", num)
+function RCLootCouncil:Test(num, fullTest, trinketTest, itemIDs)
+	self.Log:d("Test", num, itemIDs)
 	local testItems = {
 		-- Tier21 Tokens (Head, Shoulder, Cloak, Chest, Hands, Legs)
 		152524,
@@ -931,13 +941,17 @@ function RCLootCouncil:Test(num, fullTest, trinketTest)
 	end
 
 	local items = {};
-	-- pick "num" random items
-	for i = 1, num do -- luacheck: ignore
-		local j = math.random(1, #testItems)
-		tinsert(items, testItems[j])
-	end
-	if trinketTest then -- Always test all trinkets.
-		items = trinkets
+	if itemIDs and #itemIDs > 0 then
+		items = itemIDs
+	else
+		-- pick "num" random items
+		for i = 1, num do -- luacheck: ignore
+			local j = math.random(1, #testItems)
+			tinsert(items, testItems[j])
+		end
+		if trinketTest then -- Always test all trinkets.
+			items = trinkets
+		end
 	end
 	self.testMode = true;
 	self.isMasterLooter, self.masterLooter = self:GetML()
