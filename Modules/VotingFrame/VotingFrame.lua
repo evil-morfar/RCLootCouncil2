@@ -596,7 +596,7 @@ function RCVotingFrame:OnBaggedReceived(s)
 	lootTable[s].awarded = true
 	local nextSession = self:FetchUnawardedSession()
 	if addon.isMasterLooter and nextSession then -- ML should move to the next item on award
-		self:SwitchSession(session + 1)
+		self:SwitchSession(nextSession)
 	else
 		self:SwitchSession(session) -- Use switch session to update awardstring
 	end
