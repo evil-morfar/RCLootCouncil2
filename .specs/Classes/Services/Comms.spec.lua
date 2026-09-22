@@ -2,6 +2,7 @@ require "busted.runner" {}
 dofile ".specs/.matchers/isa.lua"
 local addon = {
 	Getdb = function(self) return self.db end,
+	IsForever = function() return false end,
 	realmName = "Realm1",
 	db = { global = { log = {}, cache = {}, }, },
 	defaults = { global = { logMaxEntries = 2000, },

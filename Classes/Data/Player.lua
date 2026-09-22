@@ -41,7 +41,7 @@ local playerClass = {
 	__type = "Player",
 	guid = "", -- Cannot be nil
 }
-function playerClass:GetName() return self.name end
+function playerClass:GetName() return addon:IsForever() and self:GetShortName() or self.name end
 function playerClass:GetRealm() return self.realm end
 function playerClass:GetClass() return self.class end
 function playerClass:GetShortName() return Ambiguate(self.name, "short") end
@@ -202,13 +202,8 @@ end
 
 --- @param guid string
 function private:GetPlayerInfoByGUID(guid)
-	local _, class, _, _, _, name, realm = GetPlayerInfoByGUID(guid)
-	if name then
-		-- Check for "\000" padding produced by GetPlayerInfoByGUID
-		local found = name:find("\000")
-		if found then name = name:sub(0, found - 1) end
-	end
-
+	local _, class, _, _, _, _, realm = GetPlayerInfoByGUID(guid)
+	local name = UnitNameFromGUID(guid)
 	if realm == "" then
 		if not self.realmName then
 			self.realmName = select(2, UnitFullName("player"))

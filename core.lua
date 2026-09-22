@@ -360,6 +360,10 @@ function RCLootCouncil:OnDisable()
 	Comms:OnDisable()
 end
 
+function RCLootCouncil:IsForever()
+	return Enum.ExpansionLevel.None == GetExpansionLevel()
+end
+
 function RCLootCouncil:ConfigTableChanged(val)
 	--[[ NOTE By default only ml_core needs to know about changes to the config table,
 		  but we'll use AceEvent incase future modules also wants to know ]]

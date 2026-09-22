@@ -506,7 +506,7 @@ end
 function RCVotingFrame:OnChangeToWaitReceived(data)
 	local name
 	for guid, v in pairs(data) do
-		name = Player:Get(guid).name
+		name = Player:Get(guid):GetName()
 		for ses in v:gmatch("%d+") do
 			self:SetCandidateData(tonumber(ses), name, "response", "WAIT")
 			if session == ses then -- Only update if we're viewing the session

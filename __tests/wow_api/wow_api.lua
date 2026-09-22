@@ -360,7 +360,8 @@ function GetCVar(var)
 	return "test"
 end
 
-function GetServerExpansionLevel() return 8 end
+function GetServerExpansionLevel() return Enum.ExpansionLevel.Midnight end
+function GetExpansionLevel() return GetServerExpansionLevel() end
 
 function EJ_SelectTier(num)
 end
@@ -697,6 +698,10 @@ function GetPlayerInfoByGUID(guid)
 	else
 		return nil
 	end
+end
+
+function UnitNameFromGUID(guid)
+	return select(6, GetPlayerInfoByGUID(guid))
 end
 
 -- Enable some globals

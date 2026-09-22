@@ -35,6 +35,12 @@
             "group": "build"
         },
         {
+            "label" : "Deploy Forever",
+            "type": "shell",
+            "command": "sh .scripts/deploy.sh -f",
+            "group": "build"
+        },
+        {
             "label": "Busted All",
             "type": "shell",
             "command": "busted.bat",

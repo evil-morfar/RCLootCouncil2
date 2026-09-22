@@ -1,10 +1,10 @@
 ## Author: Potdisc
-## Interface: 120100
+## Interface: 120100, 16001
 ## Notes: Interface for running a Loot Council v3.23.3
 ## Title: RCLootCouncil
 ## Version: 3.23.3
 ## SavedVariables: RCLootCouncilDB, RCLootCouncilLootDB
-## AllowLoadGameType: standard
+## AllowLoadGameType: standard, camelot
 ## OptionalDeps: LibStub, CallbackHandler-1.0, Ace3, lib-st, LibWindow-1.1, LibDialog-1.0, Simulationcraft
 ## X-Curse-Project-ID: 39928
 ## X-Wago-ID: 4N2m8ZGL
@@ -65,3 +65,6 @@ Utils\ItemStorage.lua
 Utils\transmog.lua
 Utils\autopass.lua
 Utils\popups.lua
+
+# Forever
+Forever\CoreUpdates.lua [AllowLoadGameType: camelot]

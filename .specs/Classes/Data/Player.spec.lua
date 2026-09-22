@@ -19,6 +19,10 @@ loadfile(".specs/AddonLoader.lua")(nil, addonName, addon).LoadArray {
 	[[Utils\Utils.lua]],
 }
 
+function addon:IsForever()
+	return false
+end
+
 describe("#Player", function()
 	local Player
 	before_each(function()
