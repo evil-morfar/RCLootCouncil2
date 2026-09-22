@@ -18,16 +18,16 @@ local tokenIlvls = {}
 --- List of keywords matching each slot
 local keyWords = {
 	["HeadSlot"] = { "helm", "head", "crown", "circlet", "topaz", "melting", "blazing", },
-	["ShoulderSlot"] = { "shoulder", "pauldron", "mantle", "spaulder", "lapis", "corrupting", "smoldering", },
+	["ShoulderSlot"] = { "shoulder", "pauldrons", "pauldron", "mantle", "spaulder", "lapis", "corrupting", "smoldering", },
 	["BackSlot"] = { "cloak", },
-	["ChestSlot"] = { "breastplate", "tunic", "robe", "chest", "amethyst", "ventilation", "verdurous", },
-	["HandsSlot"] = { "hand", "glove", "gauntlets", "garnet", "mixing", "tormented", },
-	["LegsSlot"] = { "leg", "legs", "jade", "cooling", "ashen", },
+	["ChestSlot"] = { "breastplate", "tunic", "robe", "chest", "amethyst", "ventilation", "verdurous", "chestguard", },
+	["HandsSlot"] = { "hand", "gloves", "glove", "gauntlets", "garnet", "mixing", "tormented", },
+	["LegsSlot"] = { "leg", "legs", "jade", "cooling", "ashen", "leggings", },
 	["Trinket"] = { "badge", },
 	["MultiSlots"] = { "essence", "regalia", "sanctification", },
 	["WristSlot"] = { "wrist", "bracer", "bindings", },
 	["WaistSlot"] = { "waist", "girdle", "belt", },
-	["FeetSlot"] = { "feet", "sandal", "boot", "sabaton", },
+	["FeetSlot"] = { "feet", "sandal", "boot", "boots", "sabaton", },
 }
 ---@type AceTimerObj
 local ScanReportTimer = {}
@@ -48,12 +48,12 @@ function RCLootCouncil:ExportTokenData(nextID)
 	end
 	if not ScanReportTimer.looping then
 		wipe(delayedScans)
-		ScanReportTimer = self:ScheduleRepeatingTimer(function ()
+		ScanReportTimer = self:ScheduleRepeatingTimer(function()
 			local c = 0
 			for _ in pairs(delayedScans) do
 				c = c + 1
 			end
-			if c == 0 then 
+			if c == 0 then
 				self:CancelTimer(ScanReportTimer)
 			end
 			print("Delayed scans: " .. c)
@@ -135,8 +135,7 @@ end
 --- @return string #The slot name, or "" if not found.
 function RCLootCouncil:GetTokenSlotFromTooltip(id)
 	local info = C_TooltipInfo.GetItemByID(id)
-	local line = self.Utils:FindInTooltip(info.lines, "Use:")
-	if line then
+	local function FindInvSlot(line)
 		for invSlot, keywords in pairs(keyWords) do
 			for _, keyword in ipairs(keywords) do
 				if line:lower():find(keyword) then
@@ -144,7 +143,18 @@ function RCLootCouncil:GetTokenSlotFromTooltip(id)
 				end
 			end
 		end
-	else
+	end
+	local line = self.Utils:FindInTooltip(info.lines, "Use:")
+	if line then
+		return FindInvSlot(line)
+	else -- In Forever tokens must be traded, so check the "Classes:" line instead, and return matches
+		line = self.Utils:FindInTooltip(info.lines, "Classes:")
+		if line then
+			local found = FindInvSlot(info.lines[1].leftText) -- First line is item name
+			if found then
+				return found
+			end
+		end
 		self.Log:W("No line found in tooltip for item", id, info.hyperlink)
 	end
 	return ""
@@ -938,26 +948,46 @@ _G.RCTokenTable = {
 	[249365] = "ShoulderSlot", -- Voidcast Unraveled Nullcore,
 	[249366] = "ShoulderSlot", -- Voidforged Unraveled Nullcore,
 
-	[270910] = "HandsSlot",  -- Venomwoven Idol,
-	[270911] = "HandsSlot",  -- Venomcured Idol,
-	[270912] = "HandsSlot",  -- Venomcast Idol,
-	[270913] = "HandsSlot",  -- Venomforged Idol,
-	[270914] = "HeadSlot",   -- Venomwoven Effigy,
-	[270915] = "HeadSlot",   -- Venomcured Effigy,
-	[270916] = "HeadSlot",   -- Venomcast Effigy,
-	[270917] = "HeadSlot",   -- Venomforged Effigy,
-	[270918] = "LegsSlot",   -- Venomwoven Relic,
-	[270919] = "LegsSlot",   -- Venomcured Relic,
-	[270920] = "LegsSlot",   -- Venomcast Relic,
-	[270921] = "LegsSlot",   -- Venomforged Relic,
+	[270910] = "HandsSlot", -- Venomwoven Idol,
+	[270911] = "HandsSlot", -- Venomcured Idol,
+	[270912] = "HandsSlot", -- Venomcast Idol,
+	[270913] = "HandsSlot", -- Venomforged Idol,
+	[270914] = "HeadSlot",  -- Venomwoven Effigy,
+	[270915] = "HeadSlot",  -- Venomcured Effigy,
+	[270916] = "HeadSlot",  -- Venomcast Effigy,
+	[270917] = "HeadSlot",  -- Venomforged Effigy,
+	[270918] = "LegsSlot",  -- Venomwoven Relic,
+	[270919] = "LegsSlot",  -- Venomcured Relic,
+	[270920] = "LegsSlot",  -- Venomcast Relic,
+	[270921] = "LegsSlot",  -- Venomforged Relic,
 	[270922] = "ShoulderSlot", -- Venomwoven Remnant,
 	[270923] = "ShoulderSlot", -- Venomcured Remnant,
 	[270924] = "ShoulderSlot", -- Venomcast Remnant,
 	[270925] = "ShoulderSlot", -- Venomforged Remnant,
-	[270926] = "ChestSlot",  -- Venomwoven Icon,
-	[270927] = "ChestSlot",  -- Venomcured Icon,
-	[270928] = "ChestSlot",  -- Venomcast Icon,
-	[270929] = "ChestSlot",  -- Venomforged Icon,
+	[270926] = "ChestSlot", -- Venomwoven Icon,
+	[270927] = "ChestSlot", -- Venomcured Icon,
+	[270928] = "ChestSlot", -- Venomcast Icon,
+	[270929] = "ChestSlot", -- Venomforged Icon,
+
+	-- Forever
+	[279024] = "ChestSlot",  -- Corrupted Chestguard of the Warden,
+	[279025] = "ChestSlot",  -- Corrupted Chestguard of the Sentinel,
+	[279026] = "ChestSlot",  -- Corrupted Chestguard of the Harbinger,
+	[279028] = "ShoulderSlot", -- Corrupted Pauldrons of the Warden,
+	[279029] = "ShoulderSlot", -- Corrupted Pauldrons of the Sentinel,
+	[279030] = "ShoulderSlot", -- Corrupted Pauldrons of the Harbinger,
+	[279031] = "HeadSlot",   -- Corrupted Helm of the Warden,
+	[279032] = "HeadSlot",   -- Corrupted Helm of the Sentinel,
+	[279033] = "HeadSlot",   -- Corrupted Helm of the Harbinger,
+	[279034] = "HandsSlot",  -- Corrupted Gloves of the Warden,
+	[279035] = "HandsSlot",  -- Corrupted Gloves of the Sentinel,
+	[279036] = "HandsSlot",  -- Corrupted Gloves of the Harbinger,
+	[279037] = "LegsSlot",   -- Corrupted Leggings of the Warden,
+	[279038] = "LegsSlot",   -- Corrupted Leggings of the Sentinel,
+	[279039] = "LegsSlot",   -- Corrupted Leggings of the Harbinger,
+	[279040] = "FeetSlot",   -- Corrupted Boots of the Warden,
+	[279041] = "FeetSlot",   -- Corrupted Boots of the Sentinel,
+	[279042] = "FeetSlot",   -- Corrupted Boots of the Harbinger,
 }
 
 -- The base item level for the token on normal difficulty

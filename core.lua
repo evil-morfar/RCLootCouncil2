@@ -1303,6 +1303,12 @@ function RCLootCouncil:InitClassIDs()
 			self.classTagNameToDisplayName[info.classFile] = info.className
 		end
 	end
+	if self:IsForever() then
+		-- Class tags needs updated as druids are number 11 and we have 9 classes
+		local info = C_CreatureInfo.GetClassInfo(11)
+		self.classDisplayNameToID[info.className] = 11
+		self.classTagNameToID[info.classFile] = 11
+	end
 	self.classIDToDisplayName = tInvert(self.classDisplayNameToID)
 	self.classIDToFileName = tInvert(self.classTagNameToID)
 end
@@ -1393,7 +1399,8 @@ function RCLootCouncil:GetClassNamesFromFlag(classesFlag)
 	if classNamesFromFlagCache[classesFlag] then return classNamesFromFlagCache[classesFlag] end
 	local result = TT.Acquire("")
 	local j = 1
-	for i = 1, self.Utils.GetNumClasses() do
+	local classesBinary = self.Utils:Int2Bin(classesFlag)
+	for i = 1, #classesBinary do
 		if bit.band(classesFlag, bit.lshift(1, i - 1)) > 0 then
 			local class = self.classIDToFileName[i]
 			local classText = self.classIDToDisplayName[i]

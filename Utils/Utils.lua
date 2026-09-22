@@ -40,11 +40,9 @@ function Utils:FindInTooltip(tooltipLines, ...)
 	---@type string[]
 	local searchStrings = type(select(1, ...)) == "table" and select(1, ...) or { ..., }
 	for _, line in ipairs(tooltipLines) do
-		if line.type == Enum.TooltipDataLineType.None or line.type == Enum.TooltipDataLineType.ItemSpellTriggerOnUse then
-			for _, searchString in ipairs(searchStrings) do
-				if line.leftText:find(searchString) then
-					return line.leftText
-				end
+		for _, searchString in ipairs(searchStrings) do
+			if line.leftText:find(searchString) then
+				return line.leftText
 			end
 		end
 	end
