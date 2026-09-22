@@ -2547,7 +2547,7 @@ function RCVotingFrame:GetItemStatus(item)
 	-- Retail has C_TooltipInfo
 	if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
 		local tip = C_TooltipInfo.GetHyperlink(item)
-		return tip and tip.lines and tip.lines[2] and tip.lines[2].leftText or ""
+		return tip and tip.lines and tip.lines[2] and tip.lines[2].type == Enum.TooltipDataLineType.None and tip.lines[2].leftText or ""
 	end
 
 	GameTooltip:SetOwner(UIParent, "ANCHOR_NONE")
