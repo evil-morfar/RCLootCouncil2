@@ -34,7 +34,7 @@ local colors = {
     grey = CreateColor(0.75,0.75,0.75,1)
 }
 
-RCVersionCheck.statusString = getglobal "STATUS"
+RCVersionCheck.statusString = _G.STATUS
 
 function RCVersionCheck:OnInitialize()
     self.verCheckDisplayed = false -- Have we shown a "out-of-date"?

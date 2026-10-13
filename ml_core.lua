@@ -1670,20 +1670,19 @@ function RCLootCouncilML:SetupGroupLootIntegration()
 	-- Monitor GroupLoot status to send "StartHandleLoot" at the right time.
 	-- Needed as we can no longer rely on just sending "StartHandleLoot" at ENCOUNTER_START
 	tinsert(subscriptions, Comms:Subscribe(addon.PREFIXES.VERSION, "f", function(data, sender, command, distri)
+		if not addon.handleLoot then return end
 		if addon.Utils:UnitIsUnit(sender, "player") then return end
 		local status = data[7]
 		local targetStatus = GroupLoot:GetTargetedStatus()
 		if bit.band(status, targetStatus) == targetStatus then
 			return -- Everythings fine
 		end
-		if addon.handleLoot then
-			self.Log:d("GroupLoot Status mismatch for:", sender, status, targetStatus)
-			if bit.band(status, 1) == 0 then -- 0000 0001 Missing mldb
-				MLDB:Send "group"
-			end
-			if bit.band(status, 4) == 0 then -- 0000 0100 Missing HandleLoot
-				Comms:SendGuaranteed { target = "group", command = "StartHandleLoot", }
-			end
+		self.Log:d("GroupLoot Status mismatch for:", sender, status, targetStatus)
+		if bit.band(status, 1) == 0 then -- 0000 0001 Missing mldb
+			MLDB:Send "group"
+		end
+		if bit.band(status, 4) == 0 then -- 0000 0100 Missing HandleLoot
+			Comms:SendGuaranteed { target = "group", command = "StartHandleLoot", }
 		end
 	end))
 end
