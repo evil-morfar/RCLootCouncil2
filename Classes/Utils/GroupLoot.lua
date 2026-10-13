@@ -26,6 +26,8 @@ GroupLoot.IgnoreList = {
 	[264313] = true, -- Madcap Redcap (Sporefall toy)
 	[264367] = true, -- Mycomancer's Hearthspore (Sporefall HS)
 	[268280] = true, -- Sporelord's Shroom Cap (Sporefall cosmetic - unsure)
+	[281615] = true, -- Shadeweaver's Hearthstone (Kith'ix HS)
+	[284159] = true, -- Libram of the Matriarch (Kith'ix toy)
 }
 
 ---@alias GroupLootPredicate fun(rollID: integer, itemID: integer, status: integer, quality: Enum.ItemQuality): boolean
