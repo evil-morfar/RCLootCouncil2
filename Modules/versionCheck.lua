@@ -187,8 +187,7 @@ function RCVersionCheck:GetOutdatedClients()
 	local outdated = {}
 	local isgrouped = IsInGroup()
 	local i = 0
-	local tChk = time() -
-	86400                                                                                  -- Must be newer than 1 day
+	local tChk = time() - 86400                                                                                  -- Must be newer than 1 day
 	for name, data in pairs(addon.db.global.verTestCandidates) do
 		if isgrouped and addon.candidatesInGroup[name] or not isgrouped then               -- Only check people in our group if we're grouped.
 			if not data[2] and addon:VersionCompare(data[1], addon.version) and data[3] > tChk then -- No tversion, and older than ours, and fresh
