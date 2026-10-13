@@ -615,6 +615,10 @@ function RCLootCouncil:ChatCommand(msg)
 		end
 		self:UnlockItem(args[1])
 
+	elseif input == "guildgrouponly" or input == "guildgroupsonly" or input == "ggo" then
+		db.autoGroupLootGuildGroupOnly = not db.autoGroupLootGuildGroupOnly
+		self:Print(L.opt_autoGroupLootGuildGroupOnly_name .. (db.autoGroupLootGuildGroupOnly and " On" or " Off"))
+
 	--@debug@
 	elseif input == "nnp" then
 		self.nnp = not self.nnp
