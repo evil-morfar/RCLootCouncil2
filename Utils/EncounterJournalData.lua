@@ -2251,7 +2251,13 @@ _G.RCTrinketSpecs = {
 	-- The Venomous Abyss Heroic (id: 1320).
 	-- The Venomous Abyss Mythic (id: 1320).
 	-- The Venomous Abyss Looking For Raid (id: 1320).
-	
+	-- The Unbinding of Kith'ix Normal (id: 1324).
+	[280617] = "0241000100024", -- Lightbearer's Shield Fragment, 	Tank
+	[280835] = "2082004030010", -- Sigil of the Impending Eclipse,	Healer
+	[281215] = "5534773647743", -- Twisted Horror's Tendril,      	Damage
+	-- The Unbinding of Kith'ix Heroic (id: 1324).
+	-- The Unbinding of Kith'ix Mythic (id: 1324).
+	-- The Unbinding of Kith'ix Looking For Raid (id: 1324).
 }
 
 --- Items listed as rare or above in the encounter journal.
