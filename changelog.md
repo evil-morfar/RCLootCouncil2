@@ -1,3 +1,15 @@
+# 3.24.0
+
+Updated for patch 12.1.5.
+
+## Changes
+
+### Test command
+
+`/rc test` now picks items from the latest raid in the encounter journal (similar to `/rc ftest`). Default test items is now 3.
+
+`/rc ftest` scheduled to be removed.
+
 # 3.23.3
 
 ## Changes
