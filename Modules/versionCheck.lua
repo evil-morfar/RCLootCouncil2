@@ -294,9 +294,15 @@ local function SendFullVersionReply(data, sender, _, dist)
 			addon.tVersion,
 			addon:GetInstalledModulesFormattedData(),
 			senderPlayer:GetForTransmit(),
-			GroupLoot:GetStatus()
-		}
+			GroupLoot:GetStatus(),
+		},
 	}
+end
+
+---@param target Player|string Target to send to
+---@param dist "RAID"|"PARTY"|"GUILD" or nil, used to determine target type
+function RCVersionCheck:SendFullVersionReply(target, dist)
+	SendFullVersionReply(nil, type(target) == "table" and target.name or target, nil, dist)
 end
 
 -- Permanent comms
@@ -349,13 +355,6 @@ function RCVersionCheck:InitCoreVersionComms()
         "fr",
         SendFullVersionReply
     )
-end
-
-
----@param target Player|string Target to send to
----@param dist "RAID"|"PARTY"|"GUILD" or nil, used to determine target type
-function RCVersionCheck:SendFullVersionReply(target, dist)
-	SendFullVersionReply(nil, type(target) == "table" and target.name or target, nil, dist)
 end
 
 --- Displays version status message, but only once per session.

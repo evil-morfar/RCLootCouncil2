@@ -80,7 +80,7 @@ function RCLootCouncilML:OnEnable()
 	self:RegisterBucketMessage("RCConfigTableChanged", 5, "ConfigTableChanged") -- The messages can burst
 	self:RegisterMessage("RCCouncilChanged", "CouncilChanged")
 	self:RegisterComms()
-
+	-- Setup after comms, as that will override the table
 	self:SetupGroupLootIntegration()
 end
 
@@ -1662,7 +1662,6 @@ end
 
 function RCLootCouncilML:SetupGroupLootIntegration()
 	local GroupLoot = addon.Require "Utils.GroupLoot"
-	-- Subscribe after comms, as that will override the table
 	tinsert(subscriptions, GroupLoot.OnLootRoll:subscribe(
 		function(...)
 			self:OnGroupLootRoll(...)
