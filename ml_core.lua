@@ -560,6 +560,7 @@ function RCLootCouncilML:OnEvent(event, ...)
 	self.Log:d("ML event", event, ...)
 	if event == "CHAT_MSG_WHISPER" and addon.isMasterLooter and db.acceptWhispers then
 		local msg, sender = ...
+		if addon.Utils:IsSecretValue(msg, sender) then return end
 		if msg == "rchelp" then
 			self:SendWhisperHelp(sender)
 		elseif self.running then
