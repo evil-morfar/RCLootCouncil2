@@ -498,9 +498,9 @@ function RCLootCouncil:ChatCommand(msg)
 		LibStub("AceConfigDialog-3.0"):SelectGroup("RCLootCouncil", "settings", "profiles")
 
 	elseif input == 'test' or input == L["test"] then
-		self:Test(tonumber(args[1]) or 1)
+		self:Test(tonumber(args[1]) or 3, true)
 	elseif input == 'fulltest' or input == 'ftest' then
-		self:Test(tonumber(args[1]) or 1, true)
+		self:Test(tonumber(args[1]) or 3, true)
 
 	elseif input == 'version' or input == L["version"] or input == "v" or input == "ver" then
 		if args[1] then -- Print outdated versions
@@ -618,6 +618,10 @@ function RCLootCouncil:ChatCommand(msg)
 			return self:Print("Must have 'item' as second argument.")
 		end
 		self:UnlockItem(args[1])
+
+	elseif input == "guildgrouponly" or input == "guildgroupsonly" or input == "ggo" then
+		db.autoGroupLootGuildGroupOnly = not db.autoGroupLootGuildGroupOnly
+		self:Print(L.opt_autoGroupLootGuildGroupOnly_name .. (db.autoGroupLootGuildGroupOnly and " On" or " Off"))
 
 	--@debug@
 	elseif input == "nnp" then

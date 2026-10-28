@@ -80,7 +80,7 @@ function RCLootCouncilML:OnEnable()
 	self:RegisterBucketMessage("RCConfigTableChanged", 5, "ConfigTableChanged") -- The messages can burst
 	self:RegisterMessage("RCCouncilChanged", "CouncilChanged")
 	self:RegisterComms()
-
+	-- Setup after comms, as that will override the table
 	self:SetupGroupLootIntegration()
 end
 
@@ -560,6 +560,7 @@ function RCLootCouncilML:OnEvent(event, ...)
 	self.Log:d("ML event", event, ...)
 	if event == "CHAT_MSG_WHISPER" and addon.isMasterLooter and db.acceptWhispers then
 		local msg, sender = ...
+		if addon.Utils:IsSecretValue(msg, sender) then return end
 		if msg == "rchelp" then
 			self:SendWhisperHelp(sender)
 		elseif self.running then
@@ -1662,7 +1663,6 @@ end
 
 function RCLootCouncilML:SetupGroupLootIntegration()
 	local GroupLoot = addon.Require "Utils.GroupLoot"
-	-- Subscribe after comms, as that will override the table
 	tinsert(subscriptions, GroupLoot.OnLootRoll:subscribe(
 		function(...)
 			self:OnGroupLootRoll(...)
@@ -1671,20 +1671,19 @@ function RCLootCouncilML:SetupGroupLootIntegration()
 	-- Monitor GroupLoot status to send "StartHandleLoot" at the right time.
 	-- Needed as we can no longer rely on just sending "StartHandleLoot" at ENCOUNTER_START
 	tinsert(subscriptions, Comms:Subscribe(addon.PREFIXES.VERSION, "f", function(data, sender, command, distri)
+		if not addon.handleLoot then return end
 		if addon.Utils:UnitIsUnit(sender, "player") then return end
 		local status = data[7]
 		local targetStatus = GroupLoot:GetTargetedStatus()
 		if bit.band(status, targetStatus) == targetStatus then
 			return -- Everythings fine
 		end
-		if addon.handleLoot then
-			self.Log:d("GroupLoot Status mismatch for:", sender, status, targetStatus)
-			if bit.band(status, 1) == 0 then -- 0000 0001 Missing mldb
-				MLDB:Send "group"
-			end
-			if bit.band(status, 4) == 0 then -- 0000 0100 Missing HandleLoot
-				Comms:SendGuaranteed { target = "group", command = "StartHandleLoot", }
-			end
+		self.Log:d("GroupLoot Status mismatch for:", sender, status, targetStatus)
+		if bit.band(status, 1) == 0 then -- 0000 0001 Missing mldb
+			MLDB:Send "group"
+		end
+		if bit.band(status, 4) == 0 then -- 0000 0100 Missing HandleLoot
+			Comms:SendGuaranteed { target = "group", command = "StartHandleLoot", }
 		end
 	end))
 end
