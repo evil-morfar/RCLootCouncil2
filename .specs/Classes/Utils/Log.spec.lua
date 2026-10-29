@@ -22,6 +22,7 @@ loadfile(".specs/AddonLoader.lua")(false, addon_name, addon).LoadArray {
 	"Classes/Utils/Item.lua",
 	"Classes/Lib/RxLua/embeds.xml",
 	"Utils/Utils.lua",
+	"Classes/Utils/Pool.lua",
 	"Classes/Utils/TempTable.lua",
 	"Classes/Utils/Log.lua",
 }

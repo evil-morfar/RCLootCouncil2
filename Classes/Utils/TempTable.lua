@@ -7,13 +7,10 @@
 local addon = select(2, ...)
 ---@class Utils.TempTable
 local TempTable = addon.Init("Utils.TempTable")
+local Pool = addon.Require "Utils.Pool"
+
 
 local NUM_TEMP_TABLES = 100
-local private = {
-   availableTables = table.create and table.create(NUM_TEMP_TABLES) or {},
-	unavailableTables = table.create and table.create(NUM_TEMP_TABLES) or {},
-}
-local head = 0
 local RELEASED_TEMP_TABLE_MT = {
    __index = function()
       error("Attempt to read temp table after release", 2)
@@ -21,6 +18,17 @@ local RELEASED_TEMP_TABLE_MT = {
    __newindex = function()
       error("Attempt to index temp table after release", 2)
    end
+}
+local createdTables = 0
+local private = {
+   availableTables = Pool:New(function()
+      if createdTables >= NUM_TEMP_TABLES then
+         error("No TempTables available!", 2)
+      end
+      createdTables = createdTables + 1
+      return setmetatable({}, RELEASED_TEMP_TABLE_MT)
+   end),
+   unavailableTables = table.create and table.create(NUM_TEMP_TABLES) or {},
 }
 
 -----------------------------------------------------------
@@ -74,31 +82,23 @@ end
 -----------------------------------------------------------
 
 function private:GetTable ()
-   assert(head > 0, "No TempTables available!")
-   local t = self.availableTables[head]
-   self.availableTables[head] = nil
+   local t = self.availableTables:Acquire()
    setmetatable(t, nil)
    self.unavailableTables[t] = true
-   head = head - 1
    return t
 end
 
 function private:Release (tbl, ...)
    assert(self.unavailableTables[tbl], "Table already released!")
    self.unavailableTables[tbl] = nil
-   head = head + 1
    wipe(tbl)
    setmetatable(tbl, RELEASED_TEMP_TABLE_MT)
-   self.availableTables[head] = tbl
+   self.availableTables:Release(tbl)
    return ...
 end
 
 function private:CountAvailableTables()
-   local count = 0
-   for _ in pairs(self.availableTables) do
-      count = count + 1
-   end
-   return count
+   return self.availableTables.head
 end
 
 
@@ -106,8 +106,5 @@ end
 -- Init TempTables
 -----------------------------------------------------------
 do
-   for i = 1, NUM_TEMP_TABLES do
-      private.availableTables[i] = setmetatable({}, RELEASED_TEMP_TABLE_MT)
-   end
-   head = NUM_TEMP_TABLES
+   private.availableTables:Initialize(NUM_TEMP_TABLES)
 end

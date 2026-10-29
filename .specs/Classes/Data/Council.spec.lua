@@ -10,6 +10,7 @@ loadfile(".specs/AddonLoader.lua")(false, addonName, addon).LoadArray {
 	[[Libs\AceEvent-3.0\AceEvent-3.0.xml]],
 	[[Libs\AceLocale-3.0\AceLocale-3.0.xml]],
 	[[Classes/Core.lua]],
+	[[Classes/Utils/Pool.lua]],
 	[[Classes/Utils/TempTable.lua]],
 	[[Locale/enUS.lua]],
 	"Classes/Utils/Item.lua",
