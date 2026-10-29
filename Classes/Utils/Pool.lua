@@ -6,22 +6,23 @@
 local addon = select(2, ...)
 ---@class Utils.Pool
 local UtilsPool = addon.Init "Utils.Pool"
----@class Pool
-local Pool = {
-	creator = function(self) return {} end,
-	---@type Pool[]
-	pool = {},
-	head = 0,
-}
+
+---@class Pool<T>
+---@field creator fun(self:Pool<T>):T
+---@field pool T[]
+---@field head integer
+local Pool = {}
 local mt = { __index = Pool }
 
 
 ---Creates a new Pool object.
----@param creator? fun(self:Pool):any #Function to create a new object. Defaults a new table.
----@return Pool
+---@generic T
+---@param creator? fun(self:Pool<T>):T #Function to create a new object. Defaults a new table.
+---@return Pool<T>
 function UtilsPool:New(creator)
 	local o = {
 		head = 0,
+		---@type T[]
 		pool = {},
 		creator = creator or function() return {} end
 	}
@@ -30,6 +31,7 @@ function UtilsPool:New(creator)
 end
 
 ---Acquires an object from the pool.
+---@return T
 function Pool:Acquire()
 	if self.head == 0 then
 		return self.creator(self)
@@ -41,6 +43,7 @@ function Pool:Acquire()
 end
 
 ---Release any object back to the pool.
+---@param obj T
 function Pool:Release(obj)
 	self.head = self.head + 1
 	self.pool[self.head] = obj
