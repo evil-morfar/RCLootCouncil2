@@ -138,6 +138,7 @@ function RCLootCouncil:OnInitialize()
 	self.currentInstanceName = ""
 	self.bossName = nil -- Updates after each encounter
 	self.lootOpen = false -- is the ML lootWindow open or closed?
+	---@type table<number, LootSlotInfo>
 	self.lootSlotInfo = {} -- Items' data currently in the loot slot. Need this because inside LOOT_SLOT_CLEARED handler, GetLootSlotLink() returns invalid link.
 	self.nonTradeables = {} -- List of non tradeable items received since the last ENCOUNTER_END
 	self.lastEncounterID = nil
@@ -146,6 +147,7 @@ function RCLootCouncil:OnInitialize()
 	---@type InstanceDataSnapshot
 	self.instanceDataSnapshot = nil -- Instance data from last encounter
 	self.restrictionsEnabled = false -- Restrictions preventing chat/addon messages
+	self.lootTableMissingTimer = nil
 
 	---@type table<string,boolean>
 	self.candidatesInGroup = {}
@@ -233,7 +235,7 @@ function RCLootCouncil:OnInitialize()
 	local numLogs = self.tVersion and 2 * self.db.global.logMaxEntries or self.db.global.logMaxEntries
 	local UtilsLog = self.Require "Utils.Log"
 	UtilsLog:InitLogging(self.db.global.log, numLogs)
-	self.Log = UtilsLog:New(nil, numLogs)
+	self.Log = UtilsLog:New()
 	self.lootDB = LibStub("AceDB-3.0"):New("RCLootCouncilLootDB")
 	--[[ Format:
 	"playerName" = {
@@ -270,7 +272,7 @@ function RCLootCouncil:OnInitialize()
 
 	-- Add logged in message in the log
 	self.Log("Logged In")
-	self:ModulesOnInitialize()
+	self:InitializeModules()
 end
 
 function RCLootCouncil:OnEnable()
@@ -288,7 +290,9 @@ function RCLootCouncil:OnEnable()
 	end
 	self.player = Player:Get("player")
 	self.playerName = self.player:GetName() -- TODO Remove
-	self.Log(self.playerName, self.version, self.tVersion)
+	-- Fetch version again, as Classic will need to override it with its own version to handle its version checks.
+	local version = C_AddOns.GetAddOnMetadata("RCLootCouncil", "Version")
+	self.Log(self.playerName, version, self.tVersion)
 
 	self.EJLatestInstanceID = self:GetEJLatestInstanceID()
 	self:DoChatHook()
@@ -318,11 +322,11 @@ function RCLootCouncil:OnEnable()
 	self:ActivateSkin(db.currentSkin)
 
 	if self.db.global.version then -- Intentionally run before updating global.version
-		self.Compat:Run() -- Do compatibility changes
+		self.Compat:Run(version) -- Do compatibility changes
 	end
 
-	if self:VersionCompare(self.db.global.version, self.version) then self.db.global.oldVersion = self.db.global.version end
-	self.db.global.version = self.version
+	if self:VersionCompare(self.db.global.version, version) then self.db.global.oldVersion = self.db.global.version end
+	self.db.global.version = version
 
 	if self.db.global.tVersion and self.debug then -- recently ran a test version, so reset debugLog
 		self.db.global.log = {}
@@ -336,7 +340,16 @@ function RCLootCouncil:OnEnable()
 	local filterFunc = function(_, event, msg, player, ...) return strfind(msg, "[[RCLootCouncil]]:") end
 	ChatFrame_AddMessageEventFilter("CHAT_MSG_WHISPER_INFORM", filterFunc)
 	self:CouncilChanged() -- Call to initialize council
-	self:ModulesOnEnable()
+	self:EnableModules()
+	-- Print unknown module versions
+	self:ScheduleTimer(function()
+		for name, module in self:IterateModules() do
+			if not tContains(defaultModules, name) then
+				local isAddon = C_AddOns.IsAddOnLoaded(module.baseName)
+				self.Log:D(name, isAddon and C_AddOns.GetAddOnMetadata(module.baseName, "Version") or module.version or "unknown version")
+			end
+		end
+	end, 1)
 end
 
 function RCLootCouncil:OnDisable()
@@ -371,10 +384,13 @@ function RCLootCouncil:DoChatHook()
 	if not validateChatFrame() then
 		self:Print("Warning: Your chat frame", db.chatFrameName, "doesn't exist. ChatFrame has been reset.")
 		self.Log:e("ChatFrameName validation failed, resetting...")
-		db.chatFrameName = self.defaults.profile.chatFrameName
+		db.chatFrameName = getglobal(self.defaults.profile.chatFrameName).name
 	end
 	-- Pass our channel to the original function and magic appears.
-	self:RawHook(self, "Print", function(_, ...) self.hooks[self].Print(self, getglobal(db.chatFrameName), ...) end, true)
+	self:RawHook(self, "Print", function(_, ...)
+		self.hooks[self].Print(self, getglobal(db.chatFrameName), ...)
+		self.Log:f("<PRINT>", ...)
+	end, true)
 end
 
 function RCLootCouncil:PrintMLChatHelp()
@@ -478,9 +494,9 @@ function RCLootCouncil:ChatCommand(msg)
 		LibStub("AceConfigDialog-3.0"):SelectGroup("RCLootCouncil", "settings", "profiles")
 
 	elseif input == 'test' or input == L["test"] then
-		self:Test(tonumber(args[1]) or 1)
+		self:Test(tonumber(args[1]) or 3, true)
 	elseif input == 'fulltest' or input == 'ftest' then
-		self:Test(tonumber(args[1]) or 1, true)
+		self:Test(tonumber(args[1]) or 3, true)
 
 	elseif input == 'version' or input == L["version"] or input == "v" or input == "ver" then
 		if args[1] then -- Print outdated versions
@@ -599,6 +615,10 @@ function RCLootCouncil:ChatCommand(msg)
 		end
 		self:UnlockItem(args[1])
 
+	elseif input == "guildgrouponly" or input == "guildgroupsonly" or input == "ggo" then
+		db.autoGroupLootGuildGroupOnly = not db.autoGroupLootGuildGroupOnly
+		self:Print(L.opt_autoGroupLootGuildGroupOnly_name .. (db.autoGroupLootGuildGroupOnly and " On" or " Off"))
+
 	--@debug@
 	elseif input == "nnp" then
 		self.nnp = not self.nnp
@@ -628,11 +648,10 @@ function RCLootCouncil:ChatCommand(msg)
 	elseif input == "sv" or input == "saved" or input == "savedvariables" then
 		local exportFrame = self.UI:New("RCHugeExportFrame")
 		local temp = TT:Acquire("-- ", addonname, " Saved Variables\n",
-			table.concat(select(2, self.Utils:DumpLuaFormat(_G.RCLootCouncilDB or {}, "RCLootCouncilDB")), "\n"),
+			table.concat(select(2, self.Utils:DumpConfig(_G.RCLootCouncilDB or {}, "RCLootCouncilDB")), "\n"),
 			"\n\n"
 		)
-		local export = table.concat(temp)
-		TT:Release(temp)
+		local export = TT:ConcatAndRelease(temp)
 
 		if args[1] and (args[1] == "his" or args[1] == "history") then
 			if args[2] and args[2] == "only" then
@@ -641,8 +660,7 @@ function RCLootCouncil:ChatCommand(msg)
 			temp = TT:Acquire(export,
 				table.concat(select(2, self.Utils:DumpLuaFormat(_G.RCLootCouncilLootDB or {}, "RCLootCouncilLootDB")), "\n")
 			)
-			export = table.concat(temp)
-			TT:Release(temp)
+			export = TT:ConcatAndRelease(temp)
 		end
 		exportFrame.edit:SetText(export)
 		exportFrame:Show()
@@ -670,6 +688,13 @@ function RCLootCouncil:UpdateAndSendRecentTradableItem(info, count)
 		tremove(itemsBeingGroupLooted, index)
 		return
 	end
+	if not info.link or info.link == "" then
+		if self.Utils:IsSecretValue(info.link) then
+			return self.Log:W("UpdateAndSendRecentTradableItem: info.link is secret value", info.link, info.guid, info.name)
+		end
+		self.Require "Services.ErrorHandler":ThrowSilentError("UpdateAndSendRecentTradableItem: info.link is nil")
+		return
+	end
 	local Item = self.ItemStorage:New(info.link, "temp")
 	self.ItemStorage:WatchForItemInBags(Item, function() -- onFound
 		self:LogItemGUID(Item)
@@ -679,12 +704,12 @@ function RCLootCouncil:UpdateAndSendRecentTradableItem(info, count)
 				LibDialog:Spawn("RCLOOTCOUNCIL_KEEP_ITEM", info.link)
 				return
 			end
-			self:Send("group", "tradable", info.link, info.guid)
+			Comms:SendGuaranteed {target = "group", command = "tradable", info.link, info.guid}
 			return
 		end
 		-- We've searched every single bag space, and found at least 1 item that wasn't tradeable,
 		-- and none that was. We can now safely assume the item can't be traded.
-		self:Send("group", "n_t", info.link, info.guid)
+		Comms:SendGuaranteed {target = "group", command = "n_t", info.link, info.guid}
 		self.ItemStorage:RemoveItem(Item)
 	end, function() -- onFail
 		-- We haven't found it, maybe we just haven't received it yet, so try again in one second
@@ -713,11 +738,6 @@ function RCLootCouncil:SendAnnouncement(msg, channel, whisperTarget)
 	else
 		self.SendChatMessage(msg, self.Utils:GetAnnounceChannel(channel))
 	end
-end
-
-function RCLootCouncil:ResetReconnectRequest()
-	self.recentReconnectRequest = false
-	self.Log:d("ResetReconnectRequest")
 end
 
 function RCLootCouncil:ChatCmdAdd(args)
@@ -1185,8 +1205,9 @@ end
 -- v2.15 The current implementation ensures this only gets called when all items are cached - this function relies on that!
 function RCLootCouncil:PrepareLootTable(lootTable)
 	for ses, v in pairs(lootTable) do
+		v.string = ItemUtils:UncleanItemString(v.string)
 		local _, link, rarity, ilvl, _, _, subType, _, equipLoc, texture, _, typeID, subTypeID, bindType, _, _, _ =
-						C_Item.GetItemInfo(ItemUtils:UncleanItemString(v.string))
+						C_Item.GetItemInfo(v.string)
 		local itemID = C_Item.GetItemInfoInstant(link)
 		v.link = link
 		v.itemID = itemID
@@ -1382,8 +1403,7 @@ function RCLootCouncil:GetClassNamesFromFlag(classesFlag)
 		end
 	end
 	result[#result] = nil -- Remove last ", "
-	local text = table.concat(result, "")
-	TT:Release(result)
+	local text = TT:ConcatAndRelease(result)
 	classNamesFromFlagCache[classesFlag] = text
 	return text
 end
@@ -1542,6 +1562,7 @@ function RCLootCouncil:GetPlayerInfo()
 end
 
 function RCLootCouncil:OnGroupJoined()
+	if C_PartyInfo.IsDelveInProgress and C_PartyInfo.IsDelveInProgress() then return end
 	self:SendPlayerInfo("group")
 end
 
@@ -1654,7 +1675,7 @@ function RCLootCouncil:OnEvent(event, ...)
 				self:SnapshotInstanceData()
 			end
 		end, 5)
-
+		if C_PartyInfo.IsDelveInProgress and C_PartyInfo.IsDelveInProgress() then return end -- Don't do anything in delves
 		if isReload then
 			self.Log("Player relog...")
 
@@ -2330,6 +2351,12 @@ function RCLootCouncil:noop()
 	-- Intentionally left empty
 end
 
+function RCLootCouncil:CancelLootTableMissingTimer()
+	if self.lootTableMissingTimer then
+		self:CancelTimer(self.lootTableMissingTimer)
+		self.lootTableMissingTimer = nil
+	end
+end
 ---------------------------------------------------------------------------
 -- Custom module support funcs.
 -- @section Modules.
@@ -2447,7 +2474,7 @@ end
 ---@param text string Text to wrap.
 function RCLootCouncil:WrapTextInClassColor(class, text)
 	local color = GetClassColorObj(class)
-	return color and color:WrapTextInColorCode(text) or text
+	return color and color:WrapTextInColorCode(text or "") or text or ""
 end
 
 --- Creates a string with class icon in front of a class colored name of the player.
@@ -2863,6 +2890,7 @@ function RCLootCouncil:SubscribeToPermanentComms()
 
 		n_t = function(data, sender, command) self:OnTradeableStatusReceived(sender, "not_tradeable", unpack(data)) end,
 		r_t = function(data, sender, command) self:OnTradeableStatusReceived(sender, "rejected_trade", unpack(data)) end,
+		bonus_roll = function(data, sender, command) self:OnTradeableStatusReceived(sender, "bonus_roll", data[2]) end,
 
 		session_end = function(_, sender) self:OnSessionEndReceived(sender) end,
 
@@ -2913,7 +2941,7 @@ function RCLootCouncil:SubscribeToPermanentComms()
 
 		StopHandleLoot = function() self.handleLoot = false end,
 		history = function (data, sender, _, distri)
-			if distri == "GUILD" or not self.Utils:UnitIsUnit(sender, self.masterLooter) then
+			if distri ~= "GUILD" and not self.Utils:UnitIsUnit(sender, self.masterLooter) then
 				return self.Log:E(tostring(sender), "sent 'history' but was not ML!")
 			end
 			self:OnHistoryReceived(unpack(data))
@@ -2954,6 +2982,7 @@ function RCLootCouncil:OnTradeableStatusReceived(sender, reason, link)
 end
 
 function RCLootCouncil:OnSessionEndReceived(sender)
+	self:CancelLootTableMissingTimer()
 	if not self.enabled then return end
 	if self:UnitIsUnit(sender, self.masterLooter) then
 		self:Print(format(L["'player' has ended the session"], self:GetClassIconAndColoredName(self.masterLooter)))
@@ -2973,15 +3002,24 @@ local function CheckCachedLootTable(lootTable)
 	return cached
 end
 
-function RCLootCouncil:OnLootTableReceived(lt)
-	-- Send "DISABLED" response when not enabled
+local AddonDisabledCheck = function(self, lt)
 	if not self.enabled then
 		for i = 1, #lt do
 			-- target, session, response, isTier, isRelic, note, roll, link, ilvl, equipLoc, relicType, sendAvgIlvl, sendSpecID
 			self:SendResponse("group", i, "DISABLED")
 		end
-		return self.Log("Sent 'DISABLED' response to", self.masterLooter)
+		self.Log("Sent 'DISABLED' response to", self.masterLooter)
+		return true
 	end
+end
+
+function RCLootCouncil:OnLootTableReceived(lt)
+	self:CancelLootTableMissingTimer()
+	self.recentReconnectRequest = false
+	-- Send "DISABLED" response when not enabled
+	if AddonDisabledCheck(self, lt) then return	end
+
+	self.parsingLootTable = true
 
 	-- Cache items
 	if not CheckCachedLootTable(lt) then
@@ -3016,6 +3054,7 @@ function RCLootCouncil:OnLootTableReceived(lt)
 			-- target, session, response, isTier, isRelic, note, roll, link, ilvl, equipLoc, relicType, sendAvgIlvl, sendSpecID
 			self:SendResponse("group", ses, "NOTINRAID", nil, nil, nil, nil, v.link, v.ilvl, v.equipLoc, v.relic, true, true)
 		end
+		self.parsingLootTable = false
 		return
 	end
 
@@ -3030,9 +3069,14 @@ function RCLootCouncil:OnLootTableReceived(lt)
 	if self.inCombat then
 		self.UI:DelayedMinimize()
 	end
+	self.parsingLootTable = false
 end
 
 function RCLootCouncil:OnLootTableAdditionsReceived(lt)
+	self:CancelLootTableMissingTimer()
+	self.recentReconnectRequest = false
+	if AddonDisabledCheck(self, lt) then return end
+	self.parsingLootTable = true
 	-- Ensure items are cached
 	if not CheckCachedLootTable(lt) then return self:ScheduleTimer("OnLootTableAdditionsReceived", 0, lt) end
 	-- Setup the additions
@@ -3050,6 +3094,7 @@ function RCLootCouncil:OnLootTableAdditionsReceived(lt)
 	if self.inCombat then
 		self.UI:DelayedMinimize()
 	end
+	self.parsingLootTable = false
 end
 
 function RCLootCouncil:OnMLDBReceived(input)
@@ -3097,6 +3142,7 @@ function RCLootCouncil:DoReroll(lt)
 end
 
 function RCLootCouncil:OnReRollReceived(sender, lt)
+	if AddonDisabledCheck(self, lt) then return end
 	self:Print(format(L["'player' has asked you to reroll"], self:GetClassIconAndColoredName(sender)))
 	self:DoReroll(lt)
 end
@@ -3104,6 +3150,7 @@ end
 ---@param candidates string[] List of transmittable player GUIDs of candidates that should reroll.
 ---@param lt LootTable
 function RCLootCouncil:OnNewReRollReceived(sender, candidates, lt)
+	if AddonDisabledCheck(self, lt) then return end
 	if not tContains(candidates, self.player:GetForTransmit()) then
 		self.Log:D("We are not in the reRoll candidate list")
 		return
@@ -3114,18 +3161,20 @@ end
 
 function RCLootCouncil:OnLootAckReceived()
 	-- If we receive a lootAck, but we don't have lootTable, then something's wrong!
-	-- REVIEW Is this still needed?
-	if not lootTable or #lootTable == 0 then
+	if not self.parsingLootTable and (not lootTable or #lootTable == 0) then
 		self.Log:d("!!!! We got an lootAck without having lootTable!!!!")
 		if not self.masterLooter then -- Extra sanity check
 			return self.Log:d("We don't have a ML?!")
 		end
-		if not self.recentReconnectRequest then -- we don't want to do it too often!
+		if self.lootTableMissingTimer or self.recentReconnectRequest then return end -- Timer already started
+		if self.isMasterLooter then return self.Log:E "ML missing lootTable?!" end
+
+		self.Log:D("Starting reconnect timer")
+		self.lootTableMissingTimer = self:ScheduleTimer(function()
 			self:Send(self.masterLooter, "reconnect")
 			self.recentReconnectRequest = true
-			self:ScheduleTimer("ResetReconnectRequest", 5) -- 5 sec break between each try
 			self.Log:d("Sent Reconnect Request")
-		end
+		end, 10)
 	end
 end
 
@@ -3169,6 +3218,10 @@ end
 function RCLootCouncil:GetEJLatestInstanceID()
 	local numTiers = EJ_GetNumTiers()
 	if numTiers == 0 then return end
+	-- EJ_SelectTier() overwrites the "EJSelectedTier" cvar, which is how the Adventure Guide
+	-- remembers the player's selected season/expansion across login and reload. Save it here
+	-- and restore it once we're done, so we don't clobber the player's own selection.
+	local previousTier = EJ_GetCurrentTier()
 	EJ_SelectTier(numTiers - (WOW_PROJECT_ID == WOW_PROJECT_MAINLINE and 1 or 0)) -- Last tier is Mythic+
 	local index = 1
 	local instanceId = EJ_GetInstanceByIndex(index, true)
@@ -3181,6 +3234,10 @@ function RCLootCouncil:GetEJLatestInstanceID()
 		else
 			index = nil
 		end
+	end
+
+	if previousTier and previousTier > 0 then
+		EJ_SelectTier(previousTier)
 	end
 
 	if not instanceId then instanceId = 1190 end -- default to Castle Nathria if no ID is found
@@ -3254,3 +3311,6 @@ do -- fix player chache
 	end,
 	})
 end
+
+---@deprecated 6/7/2026
+function RCLootCouncil:ResetReconnectRequest() end

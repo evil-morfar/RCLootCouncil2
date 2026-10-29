@@ -5,16 +5,25 @@ local logTable = {a = function(self, key, value) rawset(self, key, value) end}
 
 local addon_name, addon = "RCLootCouncil", {
 	-- Mock db object
-	db = {global = {log = setmetatable({}, {__newindex = function(self, k, v) logTable.a(self, k, v) end})}},
+	db = {
+		global = {
+			log = setmetatable({}, {
+				__newindex = function(self, k, v)
+					if v == "END" then return end -- ignore this
+					logTable.a(self, k, v)
+				end,
+		})}},
 	-- Mock defaults
 	defaults = {global = {logMaxEntries = 2000}},
 }
 
-loadfile(".specs/AddonLoader.lua")(nil, addon_name, addon).LoadArray {
+loadfile(".specs/AddonLoader.lua")(false, addon_name, addon).LoadArray {
 	"Classes/Core.lua",
-	"Classes/Utils/TempTable.lua",
 	"Classes/Utils/Item.lua",
+	"Classes/Lib/RxLua/embeds.xml",
 	"Utils/Utils.lua",
+	"Classes/Utils/Pool.lua",
+	"Classes/Utils/TempTable.lua",
 	"Classes/Utils/Log.lua",
 }
 local Log = addon.Require "Utils.Log"

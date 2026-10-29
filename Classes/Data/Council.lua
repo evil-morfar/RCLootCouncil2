@@ -108,9 +108,7 @@ end
 function Council:GetForPrint()
 	local temp = TT:Acquire()
 	for _, v in pairs(private.council) do tinsert(temp, v.name) end
-	local ret = table.concat(temp, ", ")
-	TT:Release(temp)
-	return ret
+	return TT:ConcatAndRelease(temp, ", ")
 end
 
 --- Fetches all council members currently in our group

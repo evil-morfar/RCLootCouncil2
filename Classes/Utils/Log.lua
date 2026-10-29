@@ -6,99 +6,110 @@
 --- @class RCLootCouncil
 local addon = select(2, ...)
 --- @class Utils.Log
-local Log = addon.Init("Utils.Log")
+local UtilsLog = addon.Init("Utils.Log")
 local TempTable = addon.Require("Utils.TempTable")
 local private = {
 	debugLog = {},
 	length = 0,
+	head = 1,
+	maxEntries = 4000, -- Default fallback
 }
+
+local Subject = addon.Require("rx.Subject")
+---@class OnLog : rx.Subject
+---@field subscribe fun(self, onNext: fun(message:string)): rx.Subscription
+UtilsLog.OnLog = Subject.create()
+
+local select, tostring, date, time, wipe, tinsert, tremove = select, tostring, date, time, wipe, table.insert,
+table.remove
 -----------------------------------------------------------
 -- Class Definitions
 -----------------------------------------------------------
 -- Log Class Methods
 
---- @class Log
-local LOG_METHODS = {
-	--- Message
-	--- @param self Log
-	m = function(self, ...) self(...) end,
-
-	--- Debug logging
-	--- @param self Log
-	d = function(self, ...) private:Log(self, "<DEBUG>", ...) end,
-
-	--- Error Logging
-	--- @param self Log
-	e = function(self, ...) private:Log(self, "<ERROR>", ...) end,
-
-	--- Warnings
-	--- @param self Log
-	w = function(self, ...) private:Log(self, "<WARNING>", ...) end,
-
-	--- Print
-	--- @param self Log
-	p = function(self, ...) private:Print(self.prefix or "", ...) end,
-
-	--- Custom prefix
-	--- @param self Log
-	--- @param prefix string
-	f = function(self, prefix, ...) private:Log(self, prefix, ...) end,
-	maxEntries = 4000,
+---@class Log
+local Log = {
+	prefix = "\t",
+	headers = {
+		info    = "<INFO>\t",
+		debug   = "<DEBUG>\t",
+		error   = "<ERROR>\t",
+		warning = "<WARNING>\t",
+	},
 }
+--- Message
+function Log:Message(...) private:Log(self.headers.info, ...) end
+
+--- Debug logging
+function Log:Debug(...) private:Log(self.headers.debug, ...) end
+
+--- Error Logging
+function Log:Error(...) private:Log(self.headers.error, ...) end
+
+--- Warnings
+function Log:Warning(...) private:Log(self.headers.warning, ...) end
+
+--- Print
+function Log:Print(...) private:Print(self.prefix or "", ...) end
+
+--- Custom prefix
+--- @param prefix string
+function Log:Format(prefix, ...) private:Log(prefix .. self.prefix, ...) end
+
 -- Uppercase variants
 -- Manually defined for EmmyLua
-LOG_METHODS.M = LOG_METHODS.m
-LOG_METHODS.Message = LOG_METHODS.m
-LOG_METHODS.D = LOG_METHODS.d
-LOG_METHODS.Debug = LOG_METHODS.d
-LOG_METHODS.E = LOG_METHODS.e
-LOG_METHODS.Error = LOG_METHODS.e
-LOG_METHODS.W = LOG_METHODS.w
-LOG_METHODS.Warning = LOG_METHODS.w
-LOG_METHODS.P = LOG_METHODS.p
-LOG_METHODS.Print = LOG_METHODS.p
-LOG_METHODS.F = LOG_METHODS.f
-LOG_METHODS.Format = LOG_METHODS.f
-
+Log.M = Log.Message
+Log.m = Log.Message
+Log.D = Log.Debug
+Log.d = Log.Debug
+Log.E = Log.Error
+Log.e = Log.Error
+Log.W = Log.Warning
+Log.w = Log.Warning
+Log.P = Log.Print
+Log.p = Log.Print
+Log.F = Log.Format
+Log.f = Log.Format
 
 local LOG_MT = {
-	__index = LOG_METHODS,
+	__index = Log,
 	__newindex = function() error("Log cannot be modified", 2) end,
 	__call = function(self, ...)
-		private:Log(self, "<INFO>", ...)
+		private:Log(self.headers.info, ...)
 	end,
 }
-
-
 -----------------------------------------------------------
 -- Module Functions
 -----------------------------------------------------------
 
 --- Create a new Log class
---- @param prefix? string An optional prefix to all messages
---- @param maxEntries? number The maximum number of entries to store
-function Log:New(prefix, maxEntries)
-	--- \<INFO> Logging
-	---@class Log
-	---@overload fun(...)
+--- @param prefix? string An optional [module] prefix to all messages produced
+function UtilsLog:New(prefix)
 	local object = {
-		prefix = prefix and prefix ~= "" and "[" .. prefix .. "]" or "\t",
-		maxEntries = maxEntries,
+		prefix = prefix and "[" .. prefix .. "]" or nil,
 	}
+	if prefix then
+		-- Precompute level headers for this instance:
+		object.headers = {}
+		for k, v in pairs(Log.headers) do
+			object.headers[k] = v:gsub("\t", object.prefix)
+		end
+	end
 	return setmetatable(object, LOG_MT)
 end
 
 --- Clear all stored logs
-function Log:Clear()
+function UtilsLog:Clear()
 	wipe(private.debugLog)
 	private.length = 0
+	private.head = 1
 end
 
 --- Get static Log
 --- This will return a static Log object that can be shared with multiple modules.
 --- Useful for not creating too many Log Classes.
 --- @return Log Log
-function Log:Get()
+function UtilsLog:Get()
 	if not private.staticLog then private.staticLog = self:New() end
 	return private.staticLog
 end
@@ -108,30 +119,50 @@ end
 -----------------------------------------------------------
 
 --- Private functions that does the real work
---- @param Log Log
---- @param prefix string
-function private:Log(Log, prefix, ...)
+---@param header string? Header that goes between time and message. Usually the precomputed header from `LogClass.headers`
+---@param ... any? Message arguments, will be added seperated by tabs
+function private:Log(header, ...)
 	if addon.debug then
-		self:Print((Log.prefix or "") .. prefix, ...)
+		self:Print(header or "", ...)
 	end
+	if addon.db.profile and addon.db.profile.disableLogging then return end
+
+	local msg = self:EncodeMessage(header, ...)
+
+	self.debugLog[self.head] = msg
+	self.head = self.head + 1
+	if self.head > self.maxEntries then self.head = 1 end -- Supposedly faster than using modulo
+	self.debugLog[self.head] = "END"
+
+	UtilsLog.OnLog(msg)
+end
+
+local lastTime, cachedHeader = 0, "<00:00:00>"
+local function GetLogHeader()
+	local now = time()
+	if now ~= lastTime then
+		lastTime = now
+		cachedHeader = date("<%X> ", now)
+	end
+	return cachedHeader
+end
+
+--- Produces the actual log messages
+---@param header string? Precompiled header from Log
+---@param ... string?
+function private:EncodeMessage(header, ...)
 	local t = TempTable:Acquire()
-	t[1] = "<"
-	t[2] = date("%X", time())
-	t[3] = "> "
-	t[4] = prefix
-	t[5] = (Log.prefix or "")
-	for i = 1, select("#", ...) do
-		t[(i - 1) * 2 + 6] = "\t"
-		t[(i - 1) * 2 + 7] = addon.Utils:SecretsForPrint((select(i, ...)))
+	t[1] = GetLogHeader()
+	t[2] = header or ""
+	local numArgs = select("#", ...)
+	local n = 2
+	for i = 1, numArgs do
+		n = n + 1
+		t[n] = "\t"
+		n = n + 1
+		t[n] = addon.Utils:SecretsForPrint((select(i, ...)))
 	end
-	local msg = table.concat(t, "")
-	TempTable:Release(t)
-	if self.length >= Log.maxEntries then
-		tremove(self.debugLog, 1) -- We really want to preserve indicies
-		self.length = self.length - 1
-	end
-	self.length = self.length + 1
-	self.debugLog[self.length] = msg
+	return TempTable:ConcatAndRelease(t)
 end
 
 function private:Print(msg, ...)
@@ -148,23 +179,28 @@ end
 --- and removing old entries.
 --- @param logTable table The SV table to store logs in.
 --- @param maxEntries? number The maximum number of entries to store (defaults to 2000)
-function Log:InitLogging(logTable, maxEntries)
+function UtilsLog:InitLogging(logTable, maxEntries)
 	assert(logTable, "No log table provided")
-	maxEntries = maxEntries or 2000
+	private.maxEntries = maxEntries or private.maxEntries
 	private.debugLog = logTable
-	tinsert(private.debugLog, date("%x"))
 	private.length = #private.debugLog
-	if private.length > maxEntries then
-		local tmp = CopyTable(private.debugLog)
-		local j = private.length - maxEntries
-		j = j > 0 and j or 0
-		-- Replace and delete
-		for i = 1, private.length do --
-			if i > maxEntries then
-				private.debugLog[i] = nil
-			end
-			private.debugLog[i] = tmp[i + j]
+	if private.length > private.maxEntries then
+		for i = maxEntries + 1, private.length do
+			private.debugLog[i] = nil
 		end
-		private.length = #private.debugLog
 	end
+	private:UpdateHead()
+	private.debugLog[private.head] = date("%x")
+	private.head = private.head + 1
+end
+
+function private:UpdateHead()
+	-- find head for circular storage
+	for i = 1, #private.debugLog do
+		if private.debugLog[i] == "END" then
+			self.head = i
+			return
+		end
+	end
+	self.head = #private.debugLog + 1
 end

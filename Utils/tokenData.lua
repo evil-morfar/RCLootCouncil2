@@ -29,6 +29,10 @@ local keyWords = {
 	["WaistSlot"] = { "waist", "girdle", "belt", },
 	["FeetSlot"] = { "feet", "sandal", "boot", "sabaton", },
 }
+---@type AceTimerObj
+local ScanReportTimer = {}
+local MAX_TOOLTIP_SCAN_TRIES = 10
+local delayedScans = {}
 
 -- The params are used internally inside this function
 function RCLootCouncil:ExportTokenData(nextID)
@@ -42,7 +46,20 @@ function RCLootCouncil:ExportTokenData(nextID)
 			.. "Dont run any extra /rc exporttokendata when it is running."
 			.. "Commented lines in exports mean not sure and need to manually determine it.")
 	end
-	local LAST_ID = 250000
+	if not ScanReportTimer.looping then
+		wipe(delayedScans)
+		ScanReportTimer = self:ScheduleRepeatingTimer(function ()
+			local c = 0
+			for _ in pairs(delayedScans) do
+				c = c + 1
+			end
+			if c == 0 then 
+				self:CancelTimer(ScanReportTimer)
+			end
+			print("Delayed scans: " .. c)
+		end, 1)
+	end
+	local LAST_ID = 400000
 	for i = nextID, LAST_ID do
 		local _, _, _, _, _, typeID, subTypeID = C_Item.GetItemInfoInstant(i)
 		if typeID == 15 and subTypeID == 0 then -- Miscellaneous, Junk
@@ -133,18 +150,26 @@ function RCLootCouncil:GetTokenSlotFromTooltip(id)
 	return ""
 end
 
-function RCLootCouncil:ExportTokenDataSingle(id)
+function RCLootCouncil:ExportTokenDataSingle(id, count)
+	count = count or 1
+	delayedScans[id] = nil
+	if count > MAX_TOOLTIP_SCAN_TRIES then
+		print("Failed to scan tooltip for item:", id, select(2, C_Item.GetItemInfo(id)))
+		return
+	end
 	local lines = C_TooltipInfo.GetItemByID(id).lines
-	if (C_Item.GetItemInfo(id)) and lines and #lines > 2 then
-		local name, link, quality, ilvl, _, _, _, maxStack = C_Item.GetItemInfo(id)
-		if self:GetItemClassesAllowedFlag(link) ~= 0xffffffff and maxStack == 1 and quality == 4 then
+	local name, link, quality, ilvl, _, _, _, maxStack = C_Item.GetItemInfo(id)
+	if name and lines and #lines > 2 and quality == 4 then
+		if self:GetItemClassesAllowedFlag(link) ~= 0xffffffff and maxStack == 1 then
 			DEFAULT_CHAT_FRAME:AddMessage(id .. " " .. name)
 			tokenNames[id] = name
 			tokenIlvls[id] = ilvl
 		end
+	elseif name and quality < 4 then -- not an epic item, ignore
+		return
 	else
-		print("Delay tooltip scan for item", id)
-		return C_Timer.After(1, function() self:ExportTokenDataSingle(id) end)
+		delayedScans[id] = true
+		return C_Timer.After(1, function() self:ExportTokenDataSingle(id, count + 1) end)
 	end
 end
 
@@ -912,6 +937,27 @@ _G.RCTokenTable = {
 	[249364] = "ShoulderSlot", -- Voidcured Unraveled Nullcore,
 	[249365] = "ShoulderSlot", -- Voidcast Unraveled Nullcore,
 	[249366] = "ShoulderSlot", -- Voidforged Unraveled Nullcore,
+
+	[270910] = "HandsSlot",  -- Venomwoven Idol,
+	[270911] = "HandsSlot",  -- Venomcured Idol,
+	[270912] = "HandsSlot",  -- Venomcast Idol,
+	[270913] = "HandsSlot",  -- Venomforged Idol,
+	[270914] = "HeadSlot",   -- Venomwoven Effigy,
+	[270915] = "HeadSlot",   -- Venomcured Effigy,
+	[270916] = "HeadSlot",   -- Venomcast Effigy,
+	[270917] = "HeadSlot",   -- Venomforged Effigy,
+	[270918] = "LegsSlot",   -- Venomwoven Relic,
+	[270919] = "LegsSlot",   -- Venomcured Relic,
+	[270920] = "LegsSlot",   -- Venomcast Relic,
+	[270921] = "LegsSlot",   -- Venomforged Relic,
+	[270922] = "ShoulderSlot", -- Venomwoven Remnant,
+	[270923] = "ShoulderSlot", -- Venomcured Remnant,
+	[270924] = "ShoulderSlot", -- Venomcast Remnant,
+	[270925] = "ShoulderSlot", -- Venomforged Remnant,
+	[270926] = "ChestSlot",  -- Venomwoven Icon,
+	[270927] = "ChestSlot",  -- Venomcured Icon,
+	[270928] = "ChestSlot",  -- Venomcast Icon,
+	[270929] = "ChestSlot",  -- Venomforged Icon,
 }
 
 -- The base item level for the token on normal difficulty

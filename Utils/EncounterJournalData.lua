@@ -50,7 +50,7 @@ function RCLootCouncil:ExportEJData(nextTier, nextIsRaid, nextIndex, nextDiffID,
 	nextIndex = nextIndex or 1
 	nextDiffID = nextDiffID or 1
 	if not nextTier then
-		nextTier = 12 -- TWW
+		nextTier = 13 -- Midnight
 		self:Print("Exporting the loot specs of all trinkets in the dungeon journal\n"
 			.. "This command is intended to be run by the developer.\n"
 			.. "After exporting is done and copy and paste the data into Utils/TrinketData.lua.\n"
@@ -259,7 +259,8 @@ _G.RCTrinketCategories = {
 	["0365002707767"] = ITEM_MOD_STRENGTH_SHORT .. "/" .. ITEM_MOD_AGILITY_SHORT,                  -- Strength/Agility
 	["0000000700067"] = ITEM_MOD_STRENGTH_SHORT,                                                   -- Strength
 	["0365002707467"] = MELEE,                                                                     -- Melee
-	["33F7777077710"] = ITEM_MOD_AGILITY_SHORT .. "/" .. ITEM_MOD_INTELLECT_SHORT,                 -- Agility/Intellect
+	["33F7777077710"] = ITEM_MOD_AGILITY_SHORT .. "/" .. ITEM_MOD_INTELLECT_SHORT,                 -- Agility/Intellect (pre Augmentation/Devourer)
+	["77F7777077710"] = ITEM_MOD_AGILITY_SHORT .. "/" .. ITEM_MOD_INTELLECT_SHORT,                 -- Agility/Intellect 
 	["1375773047700"] = DAMAGER .. ", " .. ITEM_MOD_AGILITY_SHORT .. "/" .. ITEM_MOD_INTELLECT_SHORT, -- Damage, Agility/Intellect
 	["0365002007700"] = ITEM_MOD_AGILITY_SHORT,                                                    -- Agility
 	["7492775070010"] = ITEM_MOD_INTELLECT_SHORT,                                                  -- Intellect
@@ -288,6 +289,7 @@ _G.RCTrinketCategories = {
 	["5410771040000"] = DAMAGER .. ", " .. ITEM_MOD_INTELLECT_SHORT,                               -- Damage, Intellect (no discipline)
 	["1134773647743"] = DAMAGER,                                                                   -- Damage (Pre augmentation evoker)
 	["5134773647743"] = DAMAGER,                                                                   -- Damage
+	["5534773647743"] = DAMAGER,                                                                   -- Damage (above + devourer)
 	["5534773047700"] = DAMAGER .. ", " .. ITEM_MOD_INTELLECT_SHORT .. "/" .. ITEM_MOD_AGILITY_SHORT, -- Damage Agi/Int
 	["0325002007700"] = ITEM_MOD_AGILITY_SHORT,                                                    -- Agility (DPS + vengance and brewmaster)??
 	["73F7777077710"] = ITEM_MOD_AGILITY_SHORT .. "/" .. ITEM_MOD_INTELLECT_SHORT,                 -- Agility/Intellect
@@ -1139,9 +1141,9 @@ _G.RCTrinketSpecs = {
 	-- Shadowmoon Burial Grounds Mythic (id: 537).
 	-- Shadowmoon Burial Grounds Timewalking (id: 537).
 	-- Skyreach Normal (id: 476).
-	[110011] = "0000000600043", -- Fires of the Sun,                               	Damage, Strength
-	[110006] = "0082004030010", -- Rukhran's Quill,                                	Healer
-	[110016] = "0241000100024", -- Solar Containment Unit,                         	Tank
+	-- [110011] = "0000000600043", -- Fires of the Sun,                               	Damage, Strength
+	-- [110006] = "0082004030010", -- Rukhran's Quill,                                	Healer
+	-- [110016] = "0241000100024", -- Solar Containment Unit,                         	Tank
 	-- Skyreach Heroic (id: 476).
 	-- Skyreach Mythic (id: 476).
 	-- Skyreach Timewalking (id: 476).
@@ -1500,8 +1502,8 @@ _G.RCTrinketSpecs = {
 	-- Freehold Heroic (id: 1001).
 	-- Freehold Mythic (id: 1001).
 	-- Kings' Rest Heroic (id: 1041).
-	[159617] = "0365002007700", -- Lustrous Golden Plumage,                        	Agility
-	[159618] = "0241000100024", -- Mchimba's Ritual Bandages,                      	Tank
+	-- [159617] = "0365002007700", -- Lustrous Golden Plumage,                        	Agility
+	-- [159618] = "0241000100024", -- Mchimba's Ritual Bandages,                      	Tank
 	-- Kings' Rest Mythic (id: 1041).
 	-- Operation: Mechagon Heroic (id: 1178).
 	[169344] = "0082014030010", -- Ingenious Mana Battery,
@@ -1519,9 +1521,9 @@ _G.RCTrinketSpecs = {
 	--[159622] = "0010771040000", -- Hadal's Nautilus,                               	Damage, Intellect
 	-- Siege of Boralus Mythic (id: 1023).
 	-- Temple of Sethraliss Normal (id: 1030).
-	[158368] = "0082004030010", -- Fangs of Intertwined Essence,                   	Healer
-	[158367] = "0000000700067", -- Merektha's Fang,                                	Strength
-	[158374] = "0365002007700", -- Tiny Electromental in a Jar,                    	Agility
+	-- [158368] = "0082004030010", -- Fangs of Intertwined Essence,                   	Healer
+	-- [158367] = "0000000700067", -- Merektha's Fang,                                	Strength
+	-- [158374] = "0365002007700", -- Tiny Electromental in a Jar,                    	Agility
 	-- Temple of Sethraliss Heroic (id: 1030).
 	-- Temple of Sethraliss Mythic (id: 1030).
 	-- The MOTHERLODE!! Normal (id: 1012).
@@ -1768,9 +1770,9 @@ _G.RCTrinketSpecs = {
 
 	-- Dragonflight
 	-- Algeth'ar Academy Normal (id: 1201).
-	[193701] = "0365002707767", -- Algeth'ar Puzzle Box,           	Strength/Agility
-	[193719] = "0000000700067", -- Dragon Games Equipment,         	Strength
-	[193718] = "6082004030010", -- Emerald Coach's Whistle,        	Healer
+	-- [193701] = "0365002707767", -- Algeth'ar Puzzle Box,           	Strength/Agility
+	-- [193719] = "0000000700067", -- Dragon Games Equipment,         	Strength
+	-- [193718] = "6082004030010", -- Emerald Coach's Whistle,        	Healer
 	-- Algeth'ar Academy Heroic (id: 1201).
 	-- Algeth'ar Academy Mythic (id: 1201).
 	-- Brackenhide Hollow Normal (id: 1196).
@@ -1795,9 +1797,9 @@ _G.RCTrinketSpecs = {
 	-- Neltharus Mythic Keystone (id: 1199).
 	-- Neltharus Mythic (id: 1199).
 	-- Ruby Life Pools Normal (id: 1202).
-	[193762] = "0000000700067", -- Blazebinder's Hoof,             	Strength
-	[193748] = "2082004030010", -- Kyrakka's Searing Embers,       	Healer
-	[193757] = "73F7777777777", -- Ruby Whelp Shell,               	All Classes
+	-- [193762] = "0000000700067", -- Blazebinder's Hoof,             	Strength
+	-- [193748] = "2082004030010", -- Kyrakka's Searing Embers,       	Healer
+	-- [193757] = "73F7777777777", -- Ruby Whelp Shell,               	All Classes
 	-- Ruby Life Pools Heroic (id: 1202).
 	-- Ruby Life Pools Mythic (id: 1202).
 	-- The Azure Vault Normal (id: 1203).
@@ -2166,6 +2168,96 @@ _G.RCTrinketSpecs = {
 	-- Skyreach Mythic (id: 476).
 	-- Skyreach Timewalking (id: 476).
 	-- Keystone Dungeons Mythic (id: 1319).
+	-- Sporefall Normal (id: 1305).
+	[268292] = "77F7777777777", -- Sporelord's Mycelial Insignia,       	All Classes
+	-- Sporefall Heroic (id: 1305).
+	-- Sporefall Mythic (id: 1305).
+	-- Sporefall Looking For Raid (id: 1305).
+
+	-- Midnight S2
+	-- Altar of Fangs Normal (id: 1322).
+	[273795] = "0000000700067", -- Coiled Fangstone,              	Strength
+	[273794] = "7492775070010", -- Knot of Writhing Serpents,     	Intellect
+	[273797] = "0124002607743", -- Tattered Amani War Banner,     	Damage, Strength/Agility
+	[273796] = "77F7777777777", -- Vile Vial of Volatile Venom,   	All Classes
+	-- Altar of Fangs Heroic (id: 1322).
+	-- Altar of Fangs Mythic (id: 1322).
+	-- Den of Nalorakk Normal (id: 1311).
+	[250229] = "0000000700067", -- Idol of the War Loa,           	Strength
+	[250248] = "2082004030010", -- Mycolic Medicine,              	Healer
+	[250244] = "0241000100024", -- Permafrost Essence,            	Tank
+	-- Den of Nalorakk Heroic (id: 1311).
+	-- Den of Nalorakk Mythic (id: 1311).
+	-- Murder Row Normal (id: 1304).
+	[250215] = "77F7777077710", -- Freightrunner's Flask,         	Agility/Intellect
+	[250243] = "0241000100024", -- Manaheart's Binding Flame,     	Tank
+	[250228] = "0365002707767", -- Resonant Bellowstone,          	Strength/Agility
+	[250255] = "2082004030010", -- Unstable Felheart Crystal,     	Healer
+	-- Murder Row Heroic (id: 1304).
+	-- Murder Row Mythic (id: 1304).
+	-- The Blinding Vale Normal (id: 1309).
+	[250214] = "77F7777077710", -- Lightspire Core,               	Agility/Intellect
+	[250259] = "77F7777777777", -- Sapling of the Dawnroot,       	All Classes
+	[250254] = "2082004030010", -- Seed of Radiant Hope,          	Healer
+	[250238] = "0000000700067", -- Seed of the Devouring Wild,    	Strength
+	-- The Blinding Vale Heroic (id: 1309).
+	-- The Blinding Vale Mythic (id: 1309).
+	-- Voidscar Arena Normal (id: 1313).
+	[250224] = "7492775070010", -- Mindpiercer's Sigil,           	Intellect
+	[250245] = "0241000100024", -- Tumor of the Swarm,            	Tank
+	[250225] = "0365002007700", -- Void Execution Mandate,        	Agility
+	-- Voidscar Arena Heroic (id: 1313).
+	-- Voidscar Arena Mythic (id: 1313).
+	-- Kings' Rest Heroic (id: 1041).
+	[159617] = "0365002007700", -- Lustrous Golden Plumage,       	Agility
+	[159618] = "0241000100024", -- Mchimba's Ritual Bandages,     	Tank
+	[273649] = "7492775070010", -- Stormbound Emblem of Dazar,    	Intellect
+	-- Kings' Rest Mythic (id: 1041).
+	-- Kings' Rest Timewalking (id: 1041).
+	-- Ruby Life Pools Normal (id: 1202).
+	[193762] = "0000000700067", -- Blazebinder's Hoof,            	Strength
+	[193748] = "2082004030010", -- Kyrakka's Searing Embers,      	Healer
+	[193757] = "77F7777777777", -- Ruby Whelp Shell,              	All Classes
+	-- Ruby Life Pools Heroic (id: 1202).
+	-- Ruby Life Pools Mythic (id: 1202).
+	-- Ruby Life Pools Timewalking (id: 1202).
+	-- Temple of Sethraliss Normal (id: 1030).
+	[158367] = "0000000700067", -- Merektha's Fang,               	Strength
+	[158368] = "5410771040000", -- Sethraliss' Defiled Relic,     	Damage, Intellect
+	[158374] = "0124002007700", -- Tiny Electromental in a Jar,   	Damage, Agility
+	-- Temple of Sethraliss Heroic (id: 1030).
+	-- Temple of Sethraliss Mythic (id: 1030).
+	-- Temple of Sethraliss Timewalking (id: 1030).
+	-- The Tidebound Grotto Normal (id: 1317).
+	[270167] = "7492775070010", -- Wavecaller's Seastone,          	Intellect
+	-- The Tidebound Grotto Heroic (id: 1317).
+	-- The Tidebound Grotto Mythic (id: 1317).
+	-- The Tidebound Grotto Looking For Raid (id: 1317).
+	-- The Venomous Abyss Normal (id: 1320).
+	[270161] = "5410771040000", -- Fang of Umbral Malignance,      	Damage, Intellect
+	[270160] = "0241000100024", -- First Mate's Shellward,         	Tank
+	[270168] = "5534773647743", -- Font of Venomous Rage,          	Damage
+	[270164] = "77F7777777777", -- Gebbo's Bottomless Bag,         	All Classes
+	[270169] = "7492775070010", -- Hex Lord's Dooming Idol,        	Intellect
+	[270174] = "0241000100024", -- Idol of the Howling Nexus,      	Tank
+	[270165] = "0365002707767", -- Keeper's Seething Core,         	Strength/Agility
+	[270171] = "2082004030010", -- Preternatural Antivenom,        	Healer
+	[270162] = "2082004030010", -- Soulcoiler Ritual Vessel,       	Healer
+	[270163] = "0000000700067", -- Sszorak's Ferocity,             	Strength
+	[270166] = "0124002007700", -- Vashnik's Sanguine Rancor,      	Damage, Agility
+	[270170] = "5410771040000", -- Vexhul's Everflowing Gland,     	Damage, Intellect
+	[270175] = "0365002707767", -- Voracious Heart of Ula'tek,     	Strength/Agility
+	[270173] = "0365002707767", -- Zul'jin's Guillotine Technique, 	Strength/Agility
+	-- The Venomous Abyss Heroic (id: 1320).
+	-- The Venomous Abyss Mythic (id: 1320).
+	-- The Venomous Abyss Looking For Raid (id: 1320).
+	-- The Unbinding of Kith'ix Normal (id: 1324).
+	[280617] = "0241000100024", -- Lightbearer's Shield Fragment, 	Tank
+	[280835] = "2082004030010", -- Sigil of the Impending Eclipse,	Healer
+	[281215] = "5534773647743", -- Twisted Horror's Tendril,      	Damage
+	-- The Unbinding of Kith'ix Heroic (id: 1324).
+	-- The Unbinding of Kith'ix Mythic (id: 1324).
+	-- The Unbinding of Kith'ix Looking For Raid (id: 1324).
 }
 
 --- Items listed as rare or above in the encounter journal.
@@ -2199,4 +2291,10 @@ _G.RCRareItems = {
 	[249368] = true, -- Eternal Voidsong Chain
 	-- March on Quel'Danas Normal (id: 1308).
 	[249920] = true, -- Eye of Midnight
+
+	-- The Venomous Abyss Normal (id: 1320).
+	[268213] = true, -- Maze-roa, Warlord's Fury
+	[268209] = true, -- Aman'muso, Warlord's Vengeance
+	[271093] = true, -- Zatha'tek, Breath of Corruption
+	[271092] = true, -- Jan'thrazet, the Soul Fang
 }

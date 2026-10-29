@@ -1,11 +1,13 @@
 <Ui xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.blizzard.com/wow/ui/">
   <Script file = "lootFrame.lua" />
   <Script file = "versionCheck.lua" />
-  <Script file = "votingFrame.lua" />
+  <Script file = "VotingFrame/VotingFrame.lua" />
+  <Script file = "VotingFrame/ColumnAPI.lua" />
   <Script file = "sessionFrame.lua" />
   <Script file = "options.lua" />
   <Script file = "History/lootHistory.lua" />
   <Script file = "History/CSVImport.lua" />
+  <Script file = "History/SessionData.lua" />
   <Script file = "TradeUI.lua" />
   <Script file = "Sync.lua" />
 </Ui>

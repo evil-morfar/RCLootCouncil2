@@ -39,3 +39,13 @@
 ---@field typeCode string Item typeCode, e.g. "Default". @see `RCLootCouncil:GetItemTypeCodeForItem()`
 ---@field iClass integer Item class, numberic value of `Enum.ItemClass`
 ---@field iSubClass integer Item sub-class, numeric value of `Enum.ItemSubclass`
+
+---@class LootSlotInfo
+---@field name string Item name
+---@field link ItemLink	Item link
+---@field quantity number Quantity of the item
+---@field quality number Quality of the item
+---@field guid string Boss GUID
+---@field boss string Boss name
+---@field autoloot boolean Whether the item was autolooted
+---@field isLooted? boolean Whether the item has been looted

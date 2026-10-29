@@ -65,7 +65,7 @@ AutoPass.autopassTable = {
 
 			"DEMONHUNTER", "WARRIOR", "EVOKER", },
 
-		[Enum.ItemWeaponSubclass.Dagger] = { "DEATHKNIGHT", "PALADIN", "MONK", "DEMONHUNTER", },
+		[Enum.ItemWeaponSubclass.Dagger] = { "DEATHKNIGHT", "PALADIN", "MONK", },
 
 		[Enum.ItemWeaponSubclass.Guns] = { "DEATHKNIGHT", "PALADIN", "DRUID", "MONK", "SHAMAN", "PRIEST", "MAGE",
 			"WARLOCK",

@@ -247,6 +247,7 @@ function RCSessionFrame:GetFrame()
 				end
 			end
 		end
+		addon.testMode = false -- In case they were testing, reset the testMode flag
 		self:Disable()
 	end)
 	f.closeBtn = b2

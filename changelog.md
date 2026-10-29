@@ -1,3 +1,136 @@
+## Changes
+
+### Bonus Rolls Display
+
+Bonus rolls are now divided from non-tradeables and aligned to the bottom right side of the Voting Frame.
+
+Both groups now dynamically scales up to half the width of the frame, and adds additional rows when required (looking at you Ula'tek bonus roll mayham!).
+
+
+# 3.24.1
+
+## Bugfixes
+
+- *Fixed secret value error related to whispers.*
+
+# 3.24.0
+
+Updated for patch 12.1.5.
+
+## Changes
+
+### Chat commands
+
+#### Guild Groups Only command
+
+Added a new chat command for toggling "Guild Groups Only" setting:
+
+`/rc guildgroupsonly` or `/rc ggo`
+
+#### Test command
+
+`/rc test` now picks items from the latest raid in the encounter journal (similar to `/rc ftest`). Default test items is now 3.
+
+`/rc ftest` scheduled to be removed.
+
+# 3.23.3
+
+## Changes
+
+### Refactored Logging
+
+Roughly a 15 times throughput increase.
+
+## Bugfixes
+
+- *Fixed using party comms in Delves before a party is made (#278).*
+- *Trading should be more stable (#281).*
+- *Fixed error involving Session Data frame and auto hiding in combat.*
+- *Starting a test and cancelling the session frame now properly clears the test flag.*
+
+# 3.23.2
+
+## Changes
+
+Demon Hunters no longer auto passes daggers.
+
+## Bugfixes
+
+- *Fixed issue causing BoE items not to be sent.*
+
+# 3.23.1
+
+## Changes
+
+Updated auto passing with latest Blizzard changes.
+
+# 3.23.0
+
+## Changes
+
+Updated for patch 12.2.
+
+### Column API
+
+*For developers.*  
+The voting frame now has an official API for adding, updating, moving, and removing columns.
+This should make it a lot easier for you guys developing 3rd party RCLootCouncil modules.
+
+The ways of adding columns are preserved for backwards compatibility, but it will probably be removed in the feature to streamline control of columns - you will have plenty of time to update to using the new API.
+
+### Session Data storage
+
+The history can now store relevant session data such as responses, rolls and more. Session data is viewable per award (session) through a new column in the history (`/rc h`). 
+
+This does consume a rather large amount of both comms bandwidth and storage in the history - for this reason the system is opt-in through two new settings in the history section of the options menu (`/rc c`):
+- Send Session Data **Off by default**  
+The Master Looter/Group Leader will need to enable this to send out the data when awarding items.
+- Save Session Data **On by default**  
+Causes any sent session data to be saved in the history - turn off if increased storage worries you.
+
+Note: Only responses you click on the Loot Frame (except pass) is saved, i.e. (auto)passes and various status texts are not.
+
+*Huge shoutout to [groeterud](https://github.com/groeterud) for his work on this (#277)*
+
+
+### Simulationcraft integration
+
+If you have Simulationcraft installed and run the `/simc` command during a RCLootCouncil session, all items in the session are now included in the Simulationcraft output!
+
+# 3.22.1
+
+## Bugfixes
+
+- *Improved data syncing error recovery.*
+- *History sent to guild channel wouldn't be received properly.*
+- *Fixed nil tradeables being sent leading to lua errors for recipients.*
+
+# 3.22.0
+
+## Changes
+
+Updated for patch 12.0.7.
+
+### BoEs
+
+BoEs looted during a boss fight will now be sent to the group leader after the fight ends.
+
+## Bugfixes
+
+- *Award later now works with group loot*
+
+# 3.21.1
+
+## Changes
+
+### Bonus rolls
+
+Bonus rolls now shows up beneath the Voting Frame.
+
+### History
+
+Added option for toggling the recording of bonus rolls.
+
 ## Bugfixes
 
 - *Awards sent to guild wouldn't be properly recorded for non-raid members.*

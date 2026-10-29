@@ -47,48 +47,6 @@ describe("#VotingFrame #RandomRolls", function()
 		end, "Can't generate more than 100 rolls at a time.")
 	end)
 
-	it("it should use old 'rrolls' when version is below 3.13.0", function()
-		dofile(".specs/Helpers/SetupRaid.lua")(20)
-		addon.player = addon.Require "Data.Player":Get("player")
-		-- Setting a verTestCandidate to be below 3.13.0 will force old method
-		addon.db.global.verTestCandidates[(GetRaidRosterInfo(2))] = { "3.12.0", nil, time(), }
-
-		addon:Test(1, true)
-		WoWAPI_FireUpdate(GetTime() + 1)
-		RCLootCouncilML:StartSession()
-		WoWAPI_FireUpdate(GetTime() + 10)
-
-		-- Setup spies before doing rolls
-		local generateNoRepeatRollTable = spy.on(VotingFrame, "GenerateNoRepeatRollTable")
-		local doAllRandomRolls = spy.on(VotingFrame, "DoAllRandomRolls")
-		local SetCandidateData = spy.on(VotingFrame, "SetCandidateData")
-
-		-- Subscribe to the comms to store the rolls
-		local receivedRolls
-		local sub = Comms:Subscribe(addon.PREFIXES.MAIN, "rrolls", function(data)
-			local _, rolls = unpack(data)
-			receivedRolls = { string.split(",", rolls), }
-		end)
-
-		VotingFrame:DoAllRandomRolls()
-		WoWAPI_FireUpdate(GetTime() + 10)
-
-		assert.spy(generateNoRepeatRollTable).was.called_with(match.is_ref(VotingFrame), 20)
-		assert.spy(doAllRandomRolls).was.called(1)
-		-- Note the sort is weird due to the 'PlayerX' structure of names
-		assert.spy(SetCandidateData).was.called_with(match.is_ref(VotingFrame), 1, "Player1-Realm1", "roll",
-			tonumber(receivedRolls[1]))
-		assert.spy(SetCandidateData).was.called_with(match.is_ref(VotingFrame), 1, "Player10-Realm1", "roll",
-			tonumber(receivedRolls[2]))
-		assert.spy(SetCandidateData).was.called_with(match.is_ref(VotingFrame), 1, "Player11-Realm1", "roll",
-			tonumber(receivedRolls[3]))
-		-- and so on
-		assert.spy(SetCandidateData).was.called_with(match.is_ref(VotingFrame), 1, "Player9-Realm1", "roll",
-			tonumber(receivedRolls[20]))
-
-		sub:unsubscribe()
-	end)
-
 	it("should use 'srolls' when version is above 3.13.0", function()
 		dofile(".specs/Helpers/SetupRaid.lua")(20)
 		addon.player = addon.Require "Data.Player":Get("player")

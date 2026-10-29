@@ -113,7 +113,11 @@ Comms.Register = Comms.RegisterPrefix
 local function AssertCommsArgs(args)
 	assert(type(args) == "table", "Must supply a table")
 	assert(args.command, "Command must be set")
-	args.data = type(args.data) == "table" and args.data or { args.data, }
+	if args[1] ~= nil and not args.data then
+		args.data = { unpack(args) }
+	else
+		args.data = type(args.data) == "table" and args.data or { args.data, }
+	end
 	return args
 end
 

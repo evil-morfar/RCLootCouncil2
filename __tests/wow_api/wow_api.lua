@@ -1230,6 +1230,10 @@ C_Secrets = {
 	end,
 }
 
+C_PartyInfo = {
+	
+}
+
 _G.issecretvalue = function(value) return value == "SECRET" end
 
 UISpecialFrames = {}

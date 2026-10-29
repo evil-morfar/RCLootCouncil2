@@ -4,23 +4,25 @@ local addonName, addon = "RCLootCouncil_Test", {
 	defaults = { global = { logMaxEntries = 2000, }, },
 }
 
-loadfile(".specs/AddonLoader.lua")(nil, addonName, addon).LoadArray {
+loadfile(".specs/AddonLoader.lua")(false, addonName, addon).LoadArray {
 	[[Libs\LibStub\LibStub.lua]],
 	[[Libs\CallbackHandler-1.0\CallbackHandler-1.0.xml]],
 	[[Libs\AceEvent-3.0\AceEvent-3.0.xml]],
 	[[Libs\AceLocale-3.0\AceLocale-3.0.xml]],
 	[[Classes/Core.lua]],
+	[[Classes/Utils/Pool.lua]],
 	[[Classes/Utils/TempTable.lua]],
-	[[Classes/Utils/Log.lua]],
-	[[Locale\enUS.lua]],
+	[[Locale/enUS.lua]],
 	"Classes/Utils/Item.lua",
+	"Classes/Lib/RxLua/embeds.xml",
+	[[Classes/Utils/Log.lua]],
 	[[Utils\Utils.lua]],
 	[[Classes/Services/ErrorHandler.lua]],
 	[[Classes/Data/Player.lua]],
 	[[Classes/Data/Council.lua]],
 }
 
-addon:ModulesOnInitialize()
+addon:InitializeModules()
 describe("#Council", function()
 	addon.candidatesInGroup = setmetatable({}, {
 		__index = function()

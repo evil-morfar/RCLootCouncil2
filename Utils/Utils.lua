@@ -40,7 +40,7 @@ function Utils:FindInTooltip(tooltipLines, ...)
 	---@type string[]
 	local searchStrings = type(select(1, ...)) == "table" and select(1, ...) or { ..., }
 	for _, line in ipairs(tooltipLines) do
-		if line.type == Enum.TooltipDataLineType.None then
+		if line.type == Enum.TooltipDataLineType.None or line.type == Enum.TooltipDataLineType.ItemSpellTriggerOnUse then
 			for _, searchString in ipairs(searchStrings) do
 				if line.leftText:find(searchString) then
 					return line.leftText
@@ -241,10 +241,12 @@ function Utils:GetNumSpecializationsForClassID(classID)
 	return _G.GetNumSpecializationsForClassID and _G.GetNumSpecializationsForClassID(classID) or 3
 end
 
+local noCache = { "player", "npc", "target"}
 Utils.unitNameLookup = {}
 ---@param key string
 ---@param name string
 local function cacheUnitName(key, name)
+	if noCache[key:lower()] then return name end
 	local find = strfind(name, "-", nil, true)
 	if find and find < #name then
 		Utils.unitNameLookup[key] = name
@@ -417,6 +419,10 @@ end
 --- Stringifies value(s) if it's not a secret value, otherwise returns `"<secret>"`.
 ---@param ... any
 function Utils:SecretsForPrint(...)
+	local len = select("#", ...)
+	-- Fast path for 0 or 1 arguments (no tables, no pool overhead, no unpack)
+	if len == 0 then return "" end
+	if len == 1 then return self:IsSecretValue(...) and "<secret>" or tostring(...) end
 	local ret = {}
 	for i = 1, select("#", ...) do
 		local v = select(i, ...)

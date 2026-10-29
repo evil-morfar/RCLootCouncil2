@@ -9,7 +9,7 @@
 local addon = select(2, ...)
 local private = { elements = {}, createdFrames = {}, embeds = {}, }
 --- @class RCLootCouncilUI
-addon.UI = {CreateFrame = _G.CreateFrame, private = private, minimizeableFrames = {}} -- Embed CreateFrame into UI as it's used by all elements
+addon.UI = { CreateFrame = _G.CreateFrame, private = private, minimizeableFrames = {}, } -- Embed CreateFrame into UI as it's used by all elements
 
 -- GLOBALS: _G
 local error, format, type, pairs = error, format, type, pairs
@@ -20,7 +20,7 @@ local error, format, type, pairs = error, format, type, pairs
 --- @param parent Object The element's UI parant. Defaults to UIParent
 --- @return T Object  The newly created UI element
 function addon.UI:New(type, parent, ...)
-   return private:New(type, parent, nil, ...)
+	return private:New(type, parent, nil, ...)
 end
 
 --- Exposed function for creating new named UI elements
@@ -30,25 +30,29 @@ end
 --- @param name string  The global name of the element.
 --- @return T Object The newly created UI element
 function addon.UI:NewNamed(type, parent, name, ...)
-   return private:New(type, parent, name, ...)
+	return private:New(type, parent, name, ...)
 end
 
 function addon.UI.HideTooltip()
-   addon:HideTooltip()
+	addon:HideTooltip()
 end
 
 -- Registers a new element
 function addon.UI:RegisterElement(object, etype)
-   if type(object) ~= "table" then error("RCLootCouncil.UI:RegisterElement() - 'object' isn't a table.") end
-   if type(etype) ~= "string" then error("RCLootCouncil.UI:RegisterElement() - 'type' isn't a string.") end
-   private.elements[etype] = object
+	if type(object) ~= "table" then error("RCLootCouncil.UI:RegisterElement() - 'object' isn't a table.") end
+	if type(etype) ~= "string" then error("RCLootCouncil.UI:RegisterElement() - 'type' isn't a string.") end
+	private.elements[etype] = object
 end
 
 function addon.UI:MinimizeFrames()
 	if not addon:Getdb().minimizeInCombat then return end
 	for _, frame in ipairs(self.minimizeableFrames) do
-		if frame:IsVisible() and not frame:IsMinimized() then -- only minimize for combat if it isn't already minimized
-			frame:Minimize(true)
+		if frame:IsVisible() then
+			if not frame.IsMinimized then -- Doesn't support our minimize, just hide
+				frame:Hide()
+			elseif not frame:IsMinimized() then -- only minimize for combat if it isn't already minimized
+				frame:Minimize(true)
+			end
 		end
 	end
 end
@@ -56,7 +60,7 @@ end
 function addon.UI:MaximizeFrames()
 	if not addon:Getdb().minimizeInCombat then return end
 	for _, frame in ipairs(self.minimizeableFrames) do
-		if frame:IsMinimized() and frame.autoMinimized then -- Reshow it
+		if frame.IsMinimized and frame:IsMinimized() and frame.autoMinimized then -- Reshow it
 			frame:Maximize()
 		end
 	end
@@ -67,15 +71,14 @@ function addon.UI:DelayedMinimize()
 	addon:ScheduleTimer(self.MinimizeFrames, 0.1, self)
 end
 
-function addon.UI:RegisterForCombatMinimize (frame)
-   tinsert(self.minimizeableFrames, frame)
+function addon.UI:RegisterForCombatMinimize(frame)
+	tinsert(self.minimizeableFrames, frame)
 end
-
 
 function addon.UI:RegisterForEscapeClose(frame, OnHide)
 	if not addon:Getdb().closeWithEscape then return end
-   tinsert(UISpecialFrames, frame:GetName())
-   frame:SetScript("OnHide", OnHide)
+	tinsert(UISpecialFrames, frame:GetName())
+	frame:SetScript("OnHide", OnHide)
 end
 
 --- Returns all created frames of type
@@ -98,7 +101,7 @@ function private:New(type, parent, name, ...)
 			frame = self:Embed(self.elements[type]:New(parent, name, ...))
 		else
 			-- Create a name
-			frame = self:Embed(self.elements[type]:New(parent, "RC_UI_"..type..#self.createdFrames[type], ...))
+			frame = self:Embed(self.elements[type]:New(parent, "RC_UI_" .. type .. #self.createdFrames[type], ...))
 		end
 		tInsertUnique(self.createdFrames[type], frame)
 		return frame
@@ -112,20 +115,19 @@ end
 --- @param object `T`
 --- @return T
 function private:Embed(object)
-   for k,v in pairs(self.embeds) do
-      object[k] = v
-   end
-   return object
+	for k, v in pairs(self.embeds) do
+		object[k] = v
+	end
+	return object
 end
-
 
 --- @class UI.embeds
 private.embeds = {
-   ---@param object Frame self
-   ---@param scripts table<string,fun(self: Frame)>
-   SetMultipleScripts = function(object, scripts)
-      for k,v in pairs(scripts) do
-         object:SetScript(k,v)
-      end
-   end
+	---@param object Frame self
+	---@param scripts table<string,fun(self: Frame)>
+	SetMultipleScripts = function(object, scripts)
+		for k, v in pairs(scripts) do
+			object:SetScript(k, v)
+		end
+	end,
 }

@@ -1,11 +1,11 @@
 ## Author: Potdisc
-## Interface: 120005
-## Notes: Interface for running a Loot Council v3.21.0
+## Interface: 120105
+## Notes: Interface for running a Loot Council v3.24.1
 ## Title: RCLootCouncil
-## Version: 3.21.0
+## Version: 3.24.1
 ## SavedVariables: RCLootCouncilDB, RCLootCouncilLootDB
 ## AllowLoadGameType: standard
-## OptionalDeps: LibStub, CallbackHandler-1.0, Ace3, lib-st, LibWindow-1.1, LibDialog-1.0
+## OptionalDeps: LibStub, CallbackHandler-1.0, Ace3, lib-st, LibWindow-1.1, LibDialog-1.0, Simulationcraft
 ## X-Curse-Project-ID: 39928
 ## X-Wago-ID: 4N2m8ZGL
 ## IconTexture: Interface\AddOns\RCLootCouncil\Media\logo
@@ -34,6 +34,7 @@ Core\CoreEvents.lua
 Classes\Core.lua
 Classes\Utils\Item.lua
 Classes\Lib\RxLua\embeds.xml
+Classes\Utils\Pool.lua
 Classes\Utils\TempTable.lua
 Classes\Utils\Log.lua
 Classes\Services\ErrorHandler.lua
@@ -46,6 +47,7 @@ Classes\Services\CommsRestrictions.lua
 Classes\Services\Comms.lua
 # Classes\Services\SlashCommands.lua # NYI
 Classes\Data\MLDB.lua
+Classes\Services\SimCIntegration.lua
 
 core.lua
 ml_core.lua

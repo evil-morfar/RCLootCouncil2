@@ -87,3 +87,92 @@ function Utils:DumpLuaFormat(value, variableName, res, nres, indent)
 	end
 	return nres, res
 end
+
+
+local function GetDefaultValue(default, k, parentDefault)
+	if not default and not parentDefault then return nil end
+	if default and default[k] ~= nil then
+		return default[k]
+	end
+	if default and default["*"] ~= nil then
+		return default["*"]
+	end
+	if default and default["**"] ~= nil then
+		return default["**"]
+	end
+	if parentDefault and parentDefault["**"] and type(parentDefault["**"]) == "table" then
+		if parentDefault["**"][k] ~= nil then
+			return parentDefault["**"][k]
+		end
+		if parentDefault["**"]["*"] ~= nil then
+			return parentDefault["**"]["*"]
+		end
+		if parentDefault["**"]["**"] ~= nil then
+			return parentDefault["**"]["**"]
+		end
+	end
+	return nil
+end
+
+local function DeepCompareAndDiff(source, default, parentDefault)
+	local diff = {}
+	local hasChanges = false
+
+	for k, v in pairs(source) do
+		local defV = GetDefaultValue(default, k, parentDefault)
+
+		if type(v) == "table" then
+			if type(defV) == "table" then
+				local childDiff, childChanged = DeepCompareAndDiff(v, defV, default)
+				if childChanged then
+					diff[k] = childDiff
+					hasChanges = true
+				end
+			else
+				diff[k] = v
+				hasChanges = true
+			end
+		else
+			if v ~= defV then
+				diff[k] = v
+				hasChanges = true
+			end
+		end
+	end
+
+	return diff, hasChanges
+end
+
+--- Dumps RCLootCouncilDB.
+--- Similar to DumpLuaFormat, but does not include any profile values that's equal to the default.
+---@param db table
+---@param varName string?
+---@param res string[]?
+---@param nres integer?
+---@param indent string?
+---@return integer, string[]
+function Utils:DumpConfig(db, varName, res, nres, indent)
+	if type(db) ~= "table" then
+		return self:DumpLuaFormat(db, varName, res, nres, indent)
+	end
+
+	local filteredDB = {}
+	for k, v in pairs(db) do
+		if k == "profiles" and type(v) == "table" then
+			local defaultProfile = addon.defaults and addon.defaults.profile or {}
+			local profiles = {}
+			for profileName, profileData in pairs(v) do
+				if type(profileData) == "table" then
+					profiles[profileName] = DeepCompareAndDiff(profileData, defaultProfile)
+				else
+					profiles[profileName] = profileData
+				end
+			end
+			filteredDB[k] = profiles
+		else
+			filteredDB[k] = v
+		end
+	end
+
+	return self:DumpLuaFormat(filteredDB, varName, res, nres, indent)
+end

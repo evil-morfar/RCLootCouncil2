@@ -7,6 +7,8 @@ local addon = {
 	defaults = { global = { logMaxEntries = 2000, },
 	},
 	IsRestricted = function() return false end,
+	RegisterEvent = function() end,
+	Log = { d = function(self, ...) end, },
 }
 loadfile(".specs/AddonLoader.lua")(nil, nil, addon).LoadArray {
 	[[Libs\LibStub\LibStub.lua]],
@@ -20,6 +22,7 @@ loadfile(".specs/AddonLoader.lua")(nil, nil, addon).LoadArray {
 	[[Classes\Core.lua]],
 	[[Classes\Lib\RxLua\embeds.xml]],
 	[[Libs\LibDeflate\LibDeflate.lua]],
+	[[Classes\Utils\Pool.lua]],
 	[[Classes\Utils\TempTable.lua]],
 	[[Classes\Utils\Log.lua]],
 	[[Classes\Services\ErrorHandler.lua]],
@@ -131,10 +134,12 @@ describe("#Services #Comms", function()
 	describe("sends", function()
 		local _ = match._
 		local onReceiveSpy, _sub
-		local t = { receiver = function(data, sender, ...)
-			-- print("RECEIVER:", dist, sender, unpack(data),...);
-			return unpack(data)
-		end, }
+		local t = {
+			receiver = function(data, sender, ...)
+				-- print("RECEIVER:", dist, sender, unpack(data),...);
+				return unpack(data)
+			end,
+		}
 		setup(function()
 			_sub = Comms:Subscribe(addon.PREFIXES.MAIN, "test", function(...) t.receiver(...) end)
 		end)
@@ -351,9 +356,7 @@ describe("#Services #Comms", function()
 				assert.spy(s).was_called(1)
 				assert.spy(s).was_called_with(arg, match.is_number(), match.is_number(), false)
 			end)
-
 		end)
-
 	end)
 
 	describe("receives", function()
@@ -492,6 +495,41 @@ describe("#Services #Comms", function()
 
 	-- 	end)
 	-- end)
+	describe("#Guaranteed", function()
+		it("should validate guaranteed comms args", function()
+			assert.has_error(function()
+				Comms:SendGuaranteed()
+			end, "Must supply a table")
+			assert.has_error(function()
+				Comms:SendGuaranteed {
+					prefix = addon.PREFIXES.MAIN
+				}
+			end, "Command must be set")
+		end)
+		it("should send quaranteed comms", function()
+			local s = spy.new(function(data, sender, command, dist) return unpack(data) end)
+			Comms:Subscribe(addon.PREFIXES.MAIN, "test", s)
+			Comms:SendGuaranteed {
+				command = "test",
+				target = Player:Get("Player1"),
+			}
+			WoWAPI_FireUpdate(GetTime() + 10)
+			assert.spy(s).was_called(1)
+		end)
+
+		it("should send data with guaranteed", function()
+			local s = spy.new(function(data, sender, command, dist) return unpack(data) end)
+			Comms:Subscribe(addon.PREFIXES.MAIN, "test", s)
+			local data = { command = "test", target = "group", "First data", 2 }
+			Comms:SendGuaranteed(data)
+			WoWAPI_FireUpdate(GetTime() + 10)
+			assert.spy(s).returned_with("First data", 2)
+			data = { command = "test", target = "group", data = {"Second data", 3,} }
+			Comms:SendGuaranteed(data)
+			WoWAPI_FireUpdate(GetTime() + 10)
+			assert.spy(s).returned_with("Second data", 3)
+		end)
+	end)
 end)
 
 
@@ -537,5 +575,28 @@ describe("#Services #Comms #Restricted", function()
 		}
 		WoWAPI_FireUpdate(GetTime() + 10)
 		assert.spy(onReceiveSpy).was_called(1)
+		m:revert()
+	end)
+	it("should send guaranteed comms after restrictions end", function()
+		Comms:Send {
+			prefix = addon.PREFIXES.MAIN,
+			command = "test",
+			data = "test",
+		}
+		WoWAPI_FireUpdate(GetTime() + 10)
+		assert.spy(onReceiveSpy).was_called(1)
+		local CommsRestrictions = addon.Require "Services.CommsRestrictions"
+		CommsRestrictions:OnEnable()
+		CommsRestrictions:ChangeEvent(nil, Enum.AddOnRestrictionType.Encounter, Enum.AddOnRestrictionState.Active)
+		Comms:SendGuaranteed {
+			prefix = addon.PREFIXES.MAIN,
+			command = "test",
+			data = "test",
+		}
+		WoWAPI_FireUpdate(GetTime() + 10)
+		assert.spy(onReceiveSpy).was_called(1)
+		CommsRestrictions:ChangeEvent(nil, Enum.AddOnRestrictionType.Encounter, Enum.AddOnRestrictionState.Inactive)
+		WoWAPI_FireUpdate(GetTime() + 10)
+		assert.spy(onReceiveSpy).was_called(2)
 	end)
 end)

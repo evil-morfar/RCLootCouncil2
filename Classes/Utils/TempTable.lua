@@ -7,13 +7,10 @@
 local addon = select(2, ...)
 ---@class Utils.TempTable
 local TempTable = addon.Init("Utils.TempTable")
+local Pool = addon.Require "Utils.Pool"
+
 
 local NUM_TEMP_TABLES = 100
-local private = {
-   availableTables = table.create and table.create(NUM_TEMP_TABLES) or {},
-	unavailableTables = table.create and table.create(NUM_TEMP_TABLES) or {},
-}
-local head = 0
 local RELEASED_TEMP_TABLE_MT = {
    __index = function()
       error("Attempt to read temp table after release", 2)
@@ -21,6 +18,17 @@ local RELEASED_TEMP_TABLE_MT = {
    __newindex = function()
       error("Attempt to index temp table after release", 2)
    end
+}
+local createdTables = 0
+local private = {
+   availableTables = Pool:New(function()
+      if createdTables >= NUM_TEMP_TABLES then
+         error("No TempTables available!", 2)
+      end
+      createdTables = createdTables + 1
+      return setmetatable({}, RELEASED_TEMP_TABLE_MT)
+   end),
+   unavailableTables = table.create and table.create(NUM_TEMP_TABLES) or {},
 }
 
 -----------------------------------------------------------
@@ -44,7 +52,7 @@ end
 
 --- Releases a temporary table for recycling.
 --- Don't access the table after calling this.
---- @param tbl TempTable The temorary table to release.
+--- @param tbl TempTable The temporary table to release.
 function TempTable:Release (tbl)
    private:Release(tbl)
 end
@@ -52,8 +60,16 @@ end
 --- Releases a TempTable and returns it's content.
 --- @param tbl TempTable @The temporary table.
 --- @return List<any> @The tables' contents.
-function TempTable:UnpackAndRelease (tbl)
-   return private:Release(tbl, unpack(tbl))
+function TempTable:UnpackAndRelease(tbl)
+	return private:Release(tbl, unpack(tbl))
+end
+
+--- Releases a TempTable and returns it's concatenation
+---@param tbl TempTable
+---@param seperator string?
+---@return string @The tables' concatenation
+function TempTable:ConcatAndRelease(tbl, seperator)
+	return private:Release(tbl, table.concat(tbl, seperator))
 end
 
 function TempTable:DumpAvailableTablesCount()
@@ -66,31 +82,23 @@ end
 -----------------------------------------------------------
 
 function private:GetTable ()
-   assert(head > 0, "No TempTables available!")
-   local t = self.availableTables[head]
-   self.availableTables[head] = nil
+   local t = self.availableTables:Acquire()
    setmetatable(t, nil)
    self.unavailableTables[t] = true
-   head = head - 1
    return t
 end
 
 function private:Release (tbl, ...)
    assert(self.unavailableTables[tbl], "Table already released!")
    self.unavailableTables[tbl] = nil
-   head = head + 1
    wipe(tbl)
    setmetatable(tbl, RELEASED_TEMP_TABLE_MT)
-   self.availableTables[head] = tbl
+   self.availableTables:Release(tbl)
    return ...
 end
 
 function private:CountAvailableTables()
-   local count = 0
-   for _ in pairs(self.availableTables) do
-      count = count + 1
-   end
-   return count
+   return self.availableTables.head
 end
 
 
@@ -98,8 +106,5 @@ end
 -- Init TempTables
 -----------------------------------------------------------
 do
-   for i = 1, NUM_TEMP_TABLES do
-      private.availableTables[i] = setmetatable({}, RELEASED_TEMP_TABLE_MT)
-   end
-   head = NUM_TEMP_TABLES
+   private.availableTables:Initialize(NUM_TEMP_TABLES)
 end

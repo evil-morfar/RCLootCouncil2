@@ -24,10 +24,10 @@ function Subject.create()
 end
 
 --- Creates a new Observer and attaches it to the Subject.
---- @param onNext function|rx.Observer A function called when the Subject produces a value or
+--- @param onNext? function|rx.Observer A function called when the Subject produces a value or
 --- an existing Observer to attach to the Subject.
---- @param onError function Called when the Subject terminates due to an error.
---- @param onCompleted function Called when the Subject completes normally.
+--- @param onError? function Called when the Subject terminates due to an error.
+--- @param onCompleted? function Called when the Subject completes normally.
 function Subject:subscribe(onNext, onError, onCompleted)
 	local observer
 

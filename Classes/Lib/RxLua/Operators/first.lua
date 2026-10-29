@@ -1,5 +1,6 @@
 --- @type RCLootCouncil
 local addon = select(2, ...)
+---@class rx.Observable
 local Observable = addon.Require("rx.Observable")
 
 --- Returns a new Observable that only produces the first result of the original.

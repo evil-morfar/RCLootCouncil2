@@ -87,6 +87,9 @@ addon.defaults = {
 		sendHistory = true,
 		sendHistoryToGuildChannel = false,
 		savePersonalLoot = true,
+		saveBonusRolls = true,
+		saveSessionResponses = true,
+		sendSessionResponses = false,
 
 		-- ML - General - Usage
 		usage = { -- State of enabledness
@@ -182,6 +185,8 @@ addon.defaults = {
 		iLvlDecimal = false,
 		showAutoGroupLootWarning = true, -- Show warning OnMLDBReceived if autoGroupLoot is on.
 		defaultHistoryExport = "player",
+
+		disableLogging = nil,
 
 		UI = { -- stores all ui information
 			["**"] = { -- Defaults

@@ -80,7 +80,7 @@ function RCLootCouncilML:OnEnable()
 	self:RegisterBucketMessage("RCConfigTableChanged", 5, "ConfigTableChanged") -- The messages can burst
 	self:RegisterMessage("RCCouncilChanged", "CouncilChanged")
 	self:RegisterComms()
-
+	-- Setup after comms, as that will override the table
 	self:SetupGroupLootIntegration()
 end
 
@@ -191,7 +191,6 @@ end
 ---@param overrideIsSent boolean @Ignores .isSent status and adds the item anyway.
 ---@return table LootTable
 function RCLootCouncilML:GetLootTableForTransmit(overrideIsSent)
-	local skipDefaultTypeCode = addon.Utils:GroupHasVersion("3.15.4")
 	local ret = {}
 	for k, v in pairs(self.lootTable) do
 		ret[k] = {}
@@ -199,9 +198,7 @@ function RCLootCouncilML:GetLootTableForTransmit(overrideIsSent)
 			ret[k] = nil
 		else
 			-- Don't send "default", we recreate it when receiving
-			if skipDefaultTypeCode and v.typeCode == "default" then
-				-- Don't add typecode
-			else
+			if v.typeCode ~= "default" then
 				ret[k].typeCode = v.typeCode
 			end
 			ret[k].string = v.string
@@ -291,7 +288,15 @@ end
 function RCLootCouncilML:AddUserItem(item, username)
 	if type(tonumber(item)) == "number" or string.find(item, "item:") then -- Ensure we can handle it
 		self:AddItem(item, false, nil, username) -- The item is neither bagged nor in the loot slot.
-		self:ShowSessionFrame()
+		if db.autoStart and addon.candidatesInGroup[addon.playerName] and Council:GetNum() > 0 then -- Auto start only if data is ready
+			if db.awardLater then
+				self:DoAwardLater(self.lootTable)
+			else
+				self:StartSession()
+			end
+		else
+			self:ShowSessionFrame(self.lootTable)
+		end
 	else
 		addon:Print(format(L["ML_ADD_INVALID_ITEM"], tostring(item)))
 	end
@@ -555,6 +560,7 @@ function RCLootCouncilML:OnEvent(event, ...)
 	self.Log:d("ML event", event, ...)
 	if event == "CHAT_MSG_WHISPER" and addon.isMasterLooter and db.acceptWhispers then
 		local msg, sender = ...
+		if addon.Utils:IsSecretValue(msg, sender) then return end
 		if msg == "rchelp" then
 			self:SendWhisperHelp(sender)
 		elseif self.running then
@@ -755,6 +761,7 @@ end
 
 function RCLootCouncilML:UpdateLootSlots()
 	if not addon.lootOpen then return self.Log:d("ML:UpdateLootSlots() without loot window open!!") end
+	if addon.lootMethod ~= Enum.LootMethod.Masterlooter then return end
 	local updatedLootSlot = {}
 	for i = 1, GetNumLootItems() do
 		local item = GetLootSlotLink(i)
@@ -1236,6 +1243,43 @@ end
 
 local history_table = {}
 local historyCounter = 0 -- Used to generate history table entry unique id
+
+--- Collects everyone's response to a session for storage in the loot history.
+--- Only candidates with an actual (numeric) response are included - passes and status texts are not.
+--- The winner's response, note and votes are already on the history entry, so only their ilvl and roll is stored.
+---@param session integer The session to collect responses from.
+---@param winner string The winner of the session.
+---@return table<string, string>? #Candidate name -> response data, or nil if there's none.
+function RCLootCouncilML:GetSessionResponses(session, winner)
+	if not db.sendSessionResponses then return end -- Opt-in due to comms increase
+	if not session then return end
+	local lootTable = addon:GetActiveModule("votingframe"):GetLootTable()
+	local sessionData = lootTable and lootTable[session]
+	if not (sessionData and sessionData.candidates) then return end
+	local sessionResponses = {}
+	local temp = {}
+	for name, data in pairs(sessionData.candidates) do
+		wipe(temp)
+		-- On re-awards the winner's response has been replaced with "AWARDED"; their real response is kept seperately.
+		local response = data.response == "AWARDED" and data.real_response or data.response
+		if addon:UnitIsUnit(name, winner) then
+			temp[1] = data.ilvl or ""
+			temp[2] = data.roll
+		elseif type(response) == "number" then -- An actual response, i.e. not a pass or status text
+			temp[1] = data.ilvl or ""
+			temp[2] = addon.classTagNameToID[data.class] or ""
+			temp[3] = response or ""
+			temp[4] = data.roll or ""
+			temp[5] = data.votes ~= 0 and data.votes or ""
+			temp[6] = data.note or nil -- Submitting an empty note stores it as `false`
+		end
+		if #temp > 0 and temp[1] ~= "" then
+			local player = Player:Get(name)
+			sessionResponses[player:GetForTransmit()] = table.concat(temp, "@")
+		end
+	end
+	return next(sessionResponses) and sessionResponses or nil
+end
 -- REVIEW Updated with recent changes in v2.9+.
 -- This should be refactored in v3.0 as several of the sources are no longer viable, and were ment to be used with ML.
 -- v2.19.0: Boss is included in lootTable, but kept as arg for backwards compatibility.
@@ -1283,6 +1327,7 @@ function RCLootCouncilML:TrackAndLogLoot(winner, link, responseID, boss, reason,
 	history_table["id"]		= GetServerTime().."-"..historyCounter										-- New in v2.7+. A unique id for the history entry.
 	history_table["owner"]			= owner or self.lootTable[session] and self.lootTable[session].owner or winner		-- New in v2.9+.
 	history_table["typeCode"]		= self.lootTable[session] and self.lootTable[session].typeCode					-- New in v2.15+.
+	history_table["SR"] 			= self:GetSessionResponses(session, winner)												-- New in v3.23+.
 
 	historyCounter = historyCounter + 1
 
@@ -1618,7 +1663,6 @@ end
 
 function RCLootCouncilML:SetupGroupLootIntegration()
 	local GroupLoot = addon.Require "Utils.GroupLoot"
-	-- Subscribe after comms, as that will override the table
 	tinsert(subscriptions, GroupLoot.OnLootRoll:subscribe(
 		function(...)
 			self:OnGroupLootRoll(...)
@@ -1627,20 +1671,19 @@ function RCLootCouncilML:SetupGroupLootIntegration()
 	-- Monitor GroupLoot status to send "StartHandleLoot" at the right time.
 	-- Needed as we can no longer rely on just sending "StartHandleLoot" at ENCOUNTER_START
 	tinsert(subscriptions, Comms:Subscribe(addon.PREFIXES.VERSION, "f", function(data, sender, command, distri)
+		if not addon.handleLoot then return end
 		if addon.Utils:UnitIsUnit(sender, "player") then return end
 		local status = data[7]
 		local targetStatus = GroupLoot:GetTargetedStatus()
 		if bit.band(status, targetStatus) == targetStatus then
 			return -- Everythings fine
 		end
-		if addon.handleLoot then
-			self.Log:d("GroupLoot Status mismatch for:", sender, status, targetStatus)
-			if bit.band(status, 1) == 0 then -- 0000 0001 Missing mldb
-				MLDB:Send "group"
-			end
-			if bit.band(status, 4) == 0 then -- 0000 0100 Missing HandleLoot
-				Comms:SendGuaranteed { target = "group", command = "StartHandleLoot", }
-			end
+		self.Log:d("GroupLoot Status mismatch for:", sender, status, targetStatus)
+		if bit.band(status, 1) == 0 then -- 0000 0001 Missing mldb
+			MLDB:Send "group"
+		end
+		if bit.band(status, 4) == 0 then -- 0000 0100 Missing HandleLoot
+			Comms:SendGuaranteed { target = "group", command = "StartHandleLoot", }
 		end
 	end))
 end
@@ -1701,6 +1744,7 @@ end
 
 function RCLootCouncilML:OnReconnectReceived (sender)
 	-- Someone asks for mldb and council
+	self.Log("Responding to reconnect from", sender)
 	local requestPlayer = Player:Get(sender)
 	MLDB:Send(requestPlayer)
 	local council = Council:GetForTransmit()
@@ -1709,9 +1753,13 @@ function RCLootCouncilML:OnReconnectReceived (sender)
 	if addon.handleLoot then
 		self:Send(requestPlayer, "StartHandleLoot")
 	end
-
+	self.Log:D("State:", addon.handleLoot, self.running)
 	if self.running then -- Resend lootTable
-		self:ScheduleTimer("Send", 4, requestPlayer, "lootTable", self:GetLootTableForTransmit(true))
+		local lt = self:GetLootTableForTransmit(true)
+		local count = 0
+		for _ in pairs(lt) do count = count + 1 end
+		self.Log:d("Sending lootTable size:", count)
+		self:ScheduleTimer("Send", 4, requestPlayer, "lootTable", lt)
 		-- REVIEW v2.2.6 For backwards compability we're just sending avotingFrame's lootTable
 		-- This is quite redundant and should be removed in the future
 		-- if db.observe or Council:Contains(requestPlayer) then -- Only send all data to councilmen
@@ -1727,7 +1775,6 @@ function RCLootCouncilML:OnReconnectReceived (sender)
 		-- 	self:ScheduleTimer("Send", 5, requestPlayer, "reconnectData", table)
 		-- end
 	end
-	self.Log("Responded to reconnect from", sender)
 end
 
 function RCLootCouncilML:OnMLDBRequestReceived (sender)

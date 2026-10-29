@@ -17,6 +17,8 @@ local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 local AG = LibStub("AceGUI-3.0")
 local Comms = addon.Require "Services.Comms"
 local ItemUtils = addon.Require "Utils.Item"
+local Player = addon.Require "Data.Player"
+local TempTable = addon.Require "Utils.TempTable"
 
 local COMMS_PREFIX = addon.PREFIXES.MAIN
 local lootDB, data, db
@@ -44,15 +46,16 @@ function LootHistory:OnInitialize()
 	self.exportSelection = addon.db.profile.defaultHistoryExport or "player"
 	-- Pointer to export functions. Expected to return a string containing the export
 	self.exports = {
-		csv = { func = self.ExportCSV, name = "CSV", tip = L["Standard .csv output."], },
-		tsv = { func = self.ExportTSV, name = "TSV (International Excel)", tip = L.history_export_excel_international_tip, },
-		sheets = { func = self.ExportGoogleSheets, name = "TSV (Google Sheets & English Excel)", tip = L.history_export_sheets_tip, },
-		bbcode = { func = self.ExportBBCode, name = "BBCode", tip = L["Simple BBCode output."], },
-		bbcodeSmf = { func = self.ExportBBCodeSMF, name = "BBCode SMF", tip = L["BBCode export, tailored for SMF."], },
-		eqxml = { func = self.ExportEQXML, name = "EQdkp-Plus XML", tip = L["EQdkp-Plus XML output, tailored for Enjin import."], },
-		player = { func = self.PlayerExport, name = "Player Export", tip = L["A format to copy/paste to another player."], },
-		discord = { func = self.ExportDiscord, name = "Discord", tip = L["Discord friendly output."], },
-		json = { func = self.ExportJSON, name = "JSON", tip = L["Standard JSON output."], },
+		csv = 		{func = self.ExportCSV,			name = "CSV",				tip = L["Standard .csv output."]},
+		tsv = 		{func = self.ExportTSV,			name = "TSV (International Excel)",		tip = L.history_export_excel_international_tip},
+		sheets = 	{func = self.ExportGoogleSheets,name = "TSV (Google Sheets & English Excel)", tip = L.history_export_sheets_tip},
+		bbcode = 	{func = self.ExportBBCode,		name = "BBCode", 			tip = L["Simple BBCode output."]},
+		bbcodeSmf = {func = self.ExportBBCodeSMF, 	name = "BBCode SMF",		tip = L["BBCode export, tailored for SMF."],},
+		eqxml = 	{func = self.ExportEQXML,		name = "EQdkp-Plus XML",	tip = L["EQdkp-Plus XML output, tailored for Enjin import."]},
+		player = 	{func = self.PlayerExport,		name = "Player Export",		tip = L["A format to copy/paste to another player."]},
+		playerNew = {func = self.PlayerExportNew,	name = "Player Export (new)",	tip = L["A format to copy/paste to another player."]},
+		discord = 	{func = self.ExportDiscord, 	name = "Discord", 			tip = L["Discord friendly output."]},
+		json = 		{func = self.ExportJSON,		name = "JSON",				tip = L["Standard JSON output."]},
 		--html = self.ExportHTML
 	}
 	self.scrollCols = {
@@ -63,6 +66,7 @@ function LootHistory:OnInitialize()
 		{ name = L["Item"],   width = 250,        comparesort = self.ItemSort,     defaultsort = 1, sortnext = 2, }, -- Item string
 		{ name = L["Reason"], width = 220,        comparesort = self.ResponseSort, defaultsort = 1, sortnext = 2, }, -- Response aka the text supplied to lootDB...response
 		{ name = L["Notes"],  width = 40, },
+		{ name = "",	    	 width = ROW_HEIGHT},																					-- Session responses button
 		{ name = "",          width = ROW_HEIGHT, },                                                              -- Delete button
 	}
 	filterMenu = _G.MSA_DropDownMenu_Create("RCLootCouncil_LootHistory_FilterMenu", UIParent)
@@ -105,6 +109,7 @@ end
 
 --- Hide the LootHistory frame.
 function LootHistory:Hide()
+	self.SessionData:Hide()
 	self.frame:Hide()
 	self.moreInfo:Hide()
 	moreInfo = false
@@ -121,15 +126,54 @@ function LootHistory:SubscribeToPermanentComms()
 	})
 end
 
-function LootHistory:OnHistoryReceived(name, history)
-	if not addon:Getdb().enableHistory then return end
-	if not addon:Getdb().savePersonalLoot then
+--- Decodes raw SR history string into a useable table
+--- @param his table As received from "history" comm.
+function LootHistory:DecodeSessionResponses(his)
+	his.sessionResponses = {}
+	for guid, encoded in pairs(his.SR) do
+		local name = Player:Get(guid):GetName()
+		local splitted = TempTable:Acquire(string.split("@", encoded))
+		if #splitted <= 2 and splitted[1] ~= "" then
+			his.sessionResponses[name] = {
+				ilvl = splitted[1] and tonumber(splitted[1]) or nil,
+				roll = splitted[2] and tonumber(splitted[2]) or nil,
+			}
+		elseif #splitted > 2 then
+			local class = splitted[2] and addon.classIDToFileName[tonumber(splitted[2])] or nil
+			-- The note is transmitted last and may itself contain the delimiter
+			local note = #splitted > 6 and table.concat(splitted, "@", 6) or splitted[6]
+			his.sessionResponses[name] = {
+				ilvl = splitted[1] and tonumber(splitted[1]) or nil,
+				class = class,
+				response = splitted[3] and tonumber(splitted[3]) or nil,
+				roll = splitted[4] and tonumber(splitted[4]) or nil,
+				votes = splitted[5] and tonumber(splitted[5]) or nil,
+				note = note
+			}
+		else
+			addon.Log:E("Error decoding session responses", name, encoded)
+		end
+		TempTable:Release(splitted)
+	end
+end
+
+function LootHistory:OnHistoryReceived (name, history)
+	db = addon:Getdb()
+	if not db.enableHistory then return end
+	if not db.savePersonalLoot then
 		if history.responseID == "PL" or history.responseID == "PL_REJECT" then
 			addon.Log:D("Not storing personal loot", history.lootWon)
 			return
 		end
 	end
-	-- v3.15.4 check for old date formats
+	if not db.saveBonusRolls and history.responseID == "BONUS_ROLL" then
+		return addon.Log:D("Not storing bonus rolls", history.lootWon)
+	end
+	if db.saveSessionResponses and history.SR then -- Both the ML (collection) and each receiver (storage) must opt in
+		self:DecodeSessionResponses(history)
+	end
+	history.SR = nil
+	-- v3.15.4 check for old date formats 
 	local d, m, y = strsplit("/", history.date, 3)
 	if #tostring(d) < 4 then
 		history.date = string.format("%04d/%02d/%02d", "20" .. y, m, d)
@@ -223,6 +267,7 @@ function LootHistory:BuildData()
 							{ value = i.lootWon, },
 							{ DoCellUpdate = self.SetCellResponse,   args = { color = i.color, response = i.response, responseID = i.responseID or 0, isAwardReason = i.isAwardReason, }, },
 							{ DoCellUpdate = self.SetCellNote, },
+							{DoCellUpdate = self.SetCellSessionResponses},
 							{ DoCellUpdate = self.SetCellDelete, },
 						},
 					}
@@ -483,6 +528,29 @@ function LootHistory.SetCellNote(rowFrame, frame, data, cols, row, realrow, colu
 	frame.noteBtn = f
 end
 
+function LootHistory.SetCellSessionResponses(rowFrame, frame, data, cols, rowNum, realrow, column, fShow, table, ...)
+	if not data then return end
+	local row = data[realrow]
+	local entry = lootDB[row.name] and lootDB[row.name][row.num]
+	local f = frame.sessionBtn or CreateFrame("Button", nil, frame)
+	f:SetSize(ROW_HEIGHT, ROW_HEIGHT)
+	f:SetPoint("CENTER", frame, "CENTER")
+	if entry and entry.sessionResponses then
+		f:SetNormalTexture("Interface/Buttons/UI-GroupLoot-Dice-Up")
+		f:SetHighlightTexture("Interface/Buttons/UI-GroupLoot-Dice-Highlight")
+		f:SetScript("OnEnter", function() 
+			LootHistory.SessionData:SessionDetailButtonOnClick(row.name, entry, f)
+			addon:CreateTooltip(L["Responses"], L["history_sessionResponses_tip"]) end)
+		f:SetScript("OnLeave", function() addon:HideTooltip() end)
+		f:SetScript("OnClick",
+		function() LootHistory.SessionData:SessionDetailButtonOnClick(row.name, entry, f) end)
+		f:Show()
+	else
+		f:Hide()
+	end
+	frame.sessionBtn = f
+end
+
 function LootHistory.SetCellDelete(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
 	if not frame.created then
 		frame:SetNormalTexture("Interface\\Buttons\\UI-GroupLoot-Pass-Up")
@@ -500,6 +568,7 @@ function LootHistory.SetCellDelete(rowFrame, frame, data, cols, row, realrow, co
 			frame.lastClick = nil
 			-- Do deleting
 			addon.Log:D("Deleting:", name, lootDB[name][num].lootWon)
+			LootHistory.SessionData:Hide()
 			tremove(lootDB[name], num)
 			tremove(data, realrow)
 
@@ -765,6 +834,7 @@ function LootHistory:ImportPlayerExport(import)
 	for name, data in pairs(import) do
 		if lootDB[name] then -- We've registered the name, so check all the awards
 			for _, v in pairs(data) do
+				v.SR = nil -- Just in case anyone has this saved in their history
 				local found = false
 				for _, d in pairs(lootDB[name]) do -- REVIEW This is currently ~O(#lootDB[name]^2). Could probably be improved.
 					-- Check if the id matches. If it does, we already have the data and can skip to the next
@@ -845,8 +915,8 @@ function LootHistory:GetFrame()
 	local f = addon.UI:NewNamed("RCFrame", UIParent, "DefaultRCLootHistoryFrame", L["RCLootCouncil Loot History"], 250,
 		490)
 	addon.UI:RegisterForEscapeClose(f, function() if self:IsEnabled() then self:Disable() end end)
-	local st = LibStub("ScrollingTable"):CreateST(self.scrollCols, NUM_ROWS, ROW_HEIGHT,
-		{ ["r"] = 1.0, ["g"] = 0.9, ["b"] = 0.0, ["a"] = 0.5, }, f.content)
+	f:SetScript("OnMouseDown", function() self.SessionData:Hide() end)
+	local st = LibStub("ScrollingTable"):CreateST(self.scrollCols, NUM_ROWS, ROW_HEIGHT, { ["r"] = 1.0, ["g"] = 0.9, ["b"] = 0.0, ["a"] = 0.5 }, f.content)
 	st.frame:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", 10, 10)
 	st:SetFilter(self.FilterFunc)
 	st:EnableSelection(true)
@@ -860,6 +930,7 @@ function LootHistory:GetFrame()
 					MSA_ToggleDropDownMenu(1, nil, rightClickMenu, cellFrame, 0, 0)
 				end
 			end
+			self.SessionData:Hide()
 			return false
 		end,
 	})
@@ -1931,9 +2002,21 @@ do
 		-- local export = "html test"
 	end
 
-	--- Generates a serialized string containing the entire DB.
-	-- For now it needs to be copied and pasted in another player's import field.
+--- Old player export without the new sessionData field.
 	function LootHistory:PlayerExport()
+		local his = CopyTable(lootDB)
+		for _, v in pairs(his) do
+			for _, d in pairs(v) do
+				d.sessionData = nil
+			end
+		end
+		return self:EscapeItemLink(self:Serialize(his))
+	end
+
+	--- Generates a serialized string containing the entire DB.
+	--- For now it needs to be copied and pasted in another player's import field.
+	--- Note: v3.23: Will become the default in the future
+	function LootHistory:PlayerExportNew()
 		return self:EscapeItemLink(self:Serialize(lootDB))
 	end
 end

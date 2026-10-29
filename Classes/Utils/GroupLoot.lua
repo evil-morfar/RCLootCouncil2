@@ -23,6 +23,11 @@ GroupLoot.IgnoreList = {
 	[246565] = true, -- Cosmic Hearthstone, Manaforge Omega
 	[250104] = true, -- Soulbinder's Nethermantle
 	[264672] = true, -- Cosmic Ritual Stone, Voidspire (toy, becomes unwinnable for ML when learned)
+	[264313] = true, -- Madcap Redcap (Sporefall toy)
+	[264367] = true, -- Mycomancer's Hearthspore (Sporefall HS)
+	[268280] = true, -- Sporelord's Shroom Cap (Sporefall cosmetic - unsure)
+	[281615] = true, -- Shadeweaver's Hearthstone (Kith'ix HS)
+	[284159] = true, -- Libram of the Matriarch (Kith'ix toy)
 }
 
 ---@alias GroupLootPredicate fun(rollID: integer, itemID: integer, status: integer, quality: Enum.ItemQuality): boolean
@@ -216,25 +221,21 @@ local description = {
 function GroupLoot:StatusToDescription(status, target)
 	status = type(status) == "string" and tonumber(status, 2) or status
 	target = type(target) == "string" and tonumber(target, 2) or target
-	local binary = addon.Utils:Int2Bin(status)
-	-- Pad the binary with leading zeros if necessary
-	if #binary < #description then
-		binary = string.rep("0", #description - #binary) .. binary
-	end
 	local res = {}
-	local reversedBinary = binary:reverse()
-	for i = 1, #binary do
-		local statusBit = tonumber(reversedBinary:sub(i, i))
+	for i = 1, #description do
+		local lookAtBit = bit.lshift(1, i - 1)
+		local statusAtBit = bit.band(status, lookAtBit)
+		local bitState = statusAtBit > 0 and 1 or 0
 		if i == 7 then -- autoGroupLootGuildGroupOnly doesn't matter; but color green if enabled
-			if bit.band(status, bit.lshift(1, i - 1)) > 0 then
-				res[#res + 1] = WrapTextInColorCode(description[i][statusBit] or "", "FF00FF00")
+			if bitState == 1 then
+				res[#res + 1] = WrapTextInColorCode(description[i][bitState] or "", "FF00FF00")
 			else
-				res[#res + 1] = description[i][statusBit]
+				res[#res + 1] = description[i][bitState]
 			end
-		elseif bit.band(status, bit.lshift(1, i - 1)) == bit.band(target, bit.lshift(1, i - 1)) then
-			res[#res + 1] = WrapTextInColorCode(description[i][statusBit] or "", "FF00FF00")
+		elseif statusAtBit == bit.band(target, lookAtBit) then
+			res[#res + 1] = WrapTextInColorCode(description[i][bitState] or "", "FF00FF00")
 		else
-			res[#res + 1] = WrapTextInColorCode(description[i][statusBit] or "", "FFFF0000")
+			res[#res + 1] = WrapTextInColorCode(description[i][bitState] or "", "FFFF0000")
 		end
 	end
 	return res

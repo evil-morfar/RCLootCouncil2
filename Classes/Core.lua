@@ -8,11 +8,29 @@ local addon = select(2, ...)
 local private = { modules = {}, initOrder = {}, }
 addon.ModuleData = {}
 local noop = function() end
+
 local MODULE_MT = {
+	--- @class Module
 	__index = {
 		_name = "Unknown",
+		_enabled = false,
 		OnInitialize = noop,
 		OnEnable = noop,
+		Initialize = function(self)
+			self:OnInitialize()
+		end,
+		Enable = function(self)
+			if not self._enabled then
+				self._enabled = true
+				self:OnEnable()
+			end
+		end,
+		Disable = function(self)
+			if self._enabled then
+				self._enabled = false
+				self:OnDisable()
+			end
+		end,
 	},
 	__tostring = function(self) return self._name end,
 }
@@ -44,14 +62,14 @@ function addon.Require(path)
 	return Module
 end
 
-function addon:ModulesOnInitialize()
+function addon:InitializeModules()
 	for _, Module in pairs(private.modules) do
-		Module:OnInitialize()
+		Module:Initialize()
 	end
 end
 
-function addon:ModulesOnEnable()
+function addon:EnableModules()
 	for _, Module in pairs(private.modules) do
-		Module:OnEnable()
+		Module:Enable()
 	end
 end
