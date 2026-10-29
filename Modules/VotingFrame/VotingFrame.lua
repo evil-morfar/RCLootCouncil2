@@ -37,6 +37,7 @@ local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 local Comms = addon.Require "Services.Comms"
 local Council = addon.Require "Data.Council"
 local Player = addon.Require "Data.Player"
+local Pool = addon.Require "Utils.Pool"
 local TempTable = addon.Require "Utils.TempTable"
 local ErrorHandler = addon.Require "Services.ErrorHandler"
 local ItemUtils = addon.Require "Utils.Item"
@@ -63,6 +64,9 @@ local updateFrame = CreateFrame("FRAME") -- to ensure the update operations that
 local needUpdate = false                 -- Does voting frame needs an update after MIN_UPDATE_INTERVAL after the last update?
 local PREFIX = addon.PREFIXES.MAIN
 local subscriptions = {}
+local nontradeableButtonPool = Pool:New(function()
+	return addon.UI:New("IconBordered", UIParent, "Interface\\ICONS\\INV_Misc_QuestionMark")
+end)
 
 function RCVotingFrame:OnInitialize()
 	-- Contains all the default data needed for the scroll table
@@ -138,6 +142,7 @@ function RCVotingFrame:OnDisable() -- We never really call this
 	noUpdateTimeRemaining = 0
 	self.numNonTradeables = 0
 	self.numBonusRolls = 0
+	self:HideNonTradeables()
 	for _, sub in ipairs(subscriptions) do
 		sub:unsubscribe()
 	end
@@ -1515,7 +1520,10 @@ end
 ---@param reason string
 local function CreateNontradeableButton(parent, link, owner, reason)
 	local texture = select(5, C_Item.GetItemInfoInstant(link))
-	local b = addon.UI:New("IconBordered", parent, texture)
+	local b = nontradeableButtonPool:Acquire()
+	b:SetParent(parent)
+	b:ClearAllPoints()
+	b:Init(texture or "Interface\\ICONS\\INV_Misc_QuestionMark")
 	b:Desaturate()
 	b:SetScript("OnEnter", function()
 		addon:CreateHypertip(link)
@@ -1572,7 +1580,15 @@ function RCVotingFrame:AddNonTradeable(owner, reason, link)
 end
 
 function RCVotingFrame:HideNonTradeables()
-	for _, v in ipairs(self.nonTradeablesButtons) do v:Hide() end
+	for _, button in pairs(self.nonTradeablesButtons) do
+		button:Hide()
+		button:SetScript("OnEnter", nil)
+		button:ClearAllPoints()
+		nontradeableButtonPool:Release(button)
+	end
+	self.numBonusRolls = 0
+	self.numNonTradeables = 0
+	wipe(self.nonTradeablesButtons)
 end
 
 ----------------------------------------------------------
