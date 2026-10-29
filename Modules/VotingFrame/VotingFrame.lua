@@ -102,7 +102,8 @@ function RCVotingFrame:OnInitialize()
 end
 
 function RCVotingFrame:OnEnable()
-	self:RegisterComms()
+    self:RegisterComms()
+	self:RegisterEvent("ENCOUNTER_END", "ResetNonTradeables")
 	self:RegisterBucketEvent({ "UNIT_PHASE", "ZONE_CHANGED_NEW_AREA", }, 1, "Update") -- Update "Out of instance" text when any raid members change zone
 	self:RegisterMessage("RCLootTableAdditionsReceived", "OnLootTableAdditionsReceived")
 	db = addon:Getdb()
@@ -142,7 +143,7 @@ function RCVotingFrame:OnDisable() -- We never really call this
 	noUpdateTimeRemaining = 0
 	self.numNonTradeables = 0
 	self.numBonusRolls = 0
-	self:HideNonTradeables()
+	self:ResetNonTradeables()
 	for _, sub in ipairs(subscriptions) do
 		sub:unsubscribe()
 	end
@@ -279,7 +280,7 @@ function RCVotingFrame:HasUnawardedItems()
 end
 
 function RCVotingFrame:ReceiveLootTable(lt)
-	self:HideNonTradeables()
+	self:ResetNonTradeables()
     self.numNonTradeables = 0
 	self.numBonusRolls = 0
 	for _, v in ipairs(addon.nonTradeables) do -- We might have received some before getting the lootTable
@@ -1579,11 +1580,10 @@ function RCVotingFrame:AddNonTradeable(owner, reason, link)
 	self.nonTradeablesButtons[self.numNonTradeables] = b
 end
 
-function RCVotingFrame:HideNonTradeables()
+function RCVotingFrame:ResetNonTradeables()
 	for _, button in pairs(self.nonTradeablesButtons) do
 		button:Hide()
 		button:SetScript("OnEnter", nil)
-		button:ClearAllPoints()
 		nontradeableButtonPool:Release(button)
 	end
 	self.numBonusRolls = 0
