@@ -1,3 +1,12 @@
+## Changes
+
+### Bonus Rolls Display
+
+Bonus rolls are now divided from non-tradeables and aligned to the bottom right side of the Voting Frame.
+
+Both groups now dynamically scales up to half the width of the frame, and adds additional rows when required (looking at you Ula'tek bonus roll mayham!).
+
+
 # 3.24.1
 
 ## Bugfixes

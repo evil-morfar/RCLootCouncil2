@@ -120,6 +120,7 @@ function RCVotingFrame:OnEnable()
 	needUpdate = false
 	noUpdateTimeRemaining = 0
 	self.numNonTradeables = 0
+	self.numBonusRolls = 0
 end
 
 function RCVotingFrame:OnDisable() -- We never really call this
@@ -136,6 +137,7 @@ function RCVotingFrame:OnDisable() -- We never really call this
 	needUpdate = false
 	noUpdateTimeRemaining = 0
 	self.numNonTradeables = 0
+	self.numBonusRolls = 0
 	for _, sub in ipairs(subscriptions) do
 		sub:unsubscribe()
 	end
@@ -233,7 +235,7 @@ function RCVotingFrame:RegisterComms()
 		end,
 		bonus_roll = function(data, sender)
 			local _, item = unpack(data)
-			self:AddNonTradeable(sender, "bonus_roll", item)
+			self:AddBonusRoll(sender, item)
 		end,
 		request_votes = function(data, sender)
 			if addon:IsMasterLooter(sender) then
@@ -273,9 +275,14 @@ end
 
 function RCVotingFrame:ReceiveLootTable(lt)
 	self:HideNonTradeables()
-	self.numNonTradeables = 0
+    self.numNonTradeables = 0
+	self.numBonusRolls = 0
 	for _, v in ipairs(addon.nonTradeables) do -- We might have received some before getting the lootTable
-		self:AddNonTradeable(v.owner, v.reason, v.link)
+		if v.reason == "bonus_roll" then
+			self:AddBonusRoll(v.owner, v.link)
+		else
+			self:AddNonTradeable(v.owner, v.reason, v.link)
+		end
 	end
 	active = true
 	lootTable = CopyTable(lt)
@@ -1502,17 +1509,14 @@ function RCVotingFrame:UpdateSessionButton(i, texture, link, awarded)
 	return btn
 end
 
-function RCVotingFrame:AddNonTradeable(owner, reason, link)
-	if not link or link == "" then return end
-	self.numNonTradeables = self.numNonTradeables + 1
+---@param parent Frame
+---@param link ItemLink|ItemString
+---@param owner string
+---@param reason string
+local function CreateNontradeableButton(parent, link, owner, reason)
 	local texture = select(5, C_Item.GetItemInfoInstant(link))
-	local b = addon.UI:New("IconBordered", self.frame.content, texture)
+	local b = addon.UI:New("IconBordered", parent, texture)
 	b:Desaturate()
-	if self.numNonTradeables == 1 then
-		b:SetPoint("TOPLEFT", self.frame.content, "BOTTOMLEFT", 0, -2)
-	else
-		b:SetPoint("LEFT", self.nonTradeablesButtons[self.numNonTradeables - 1], "RIGHT", 5)
-	end
 	b:SetScript("OnEnter", function()
 		addon:CreateHypertip(link)
 		GameTooltip:AddLine(" ")
@@ -1521,15 +1525,49 @@ function RCVotingFrame:AddNonTradeable(owner, reason, link)
 			nil, 1, 1, 1)
 		GameTooltip:Show()
 	end)
+	b:SetAlpha(0.7)
+	b:Show()
+	return b
+end
+
+local TRADEABLES_OFFSET_X = 5
+local TRADEABLES_OFFSET_Y = -2
+local BONUS_ROLL_OFFSET = 1000
+function RCVotingFrame:AddBonusRoll(owner, link)
+	if not link or link == "" then return end
+    self.numBonusRolls = self.numBonusRolls + 1
+	local b = CreateNontradeableButton(self.frame.content, link, owner, "bonus_roll")
+	local maxCols = math.ceil(self.frame:GetWidth() / 2 / (b:GetWidth() + TRADEABLES_OFFSET_X))
+	if self.numBonusRolls == 1 then
+		b:SetPoint("TOPRIGHT", self.frame.content, "BOTTOMRIGHT", 0, TRADEABLES_OFFSET_Y)
+	elseif self.numBonusRolls % maxCols == 1 then
+		b:SetPoint("TOPRIGHT", self.nonTradeablesButtons[BONUS_ROLL_OFFSET + self.numBonusRolls - maxCols], "BOTTOMRIGHT", 0, TRADEABLES_OFFSET_Y)
+	else
+		b:SetPoint("RIGHT", self.nonTradeablesButtons[BONUS_ROLL_OFFSET + self.numBonusRolls - 1], "LEFT", -TRADEABLES_OFFSET_X)
+	end
+    b:SetBorderColor("yellow")
+	self.nonTradeablesButtons[BONUS_ROLL_OFFSET + self.numBonusRolls] = b
+end
+
+function RCVotingFrame:AddNonTradeable(owner, reason, link)
+    if not link or link == "" then return end
+	self.numNonTradeables = self.numNonTradeables + 1
+	local b = CreateNontradeableButton(self.frame.content, link, owner, reason)
+    local maxCols = math.ceil(self.frame:GetWidth() / 2 / (b:GetWidth() + TRADEABLES_OFFSET_X))
+	addon.Log:D("maxCols", maxCols)
+	if self.numNonTradeables == 1 then
+        b:SetPoint("TOPLEFT", self.frame.content, "BOTTOMLEFT", 0, TRADEABLES_OFFSET_Y)
+	elseif self.numNonTradeables % maxCols == 1 then
+		b:SetPoint("TOPLEFT", self.nonTradeablesButtons[self.numNonTradeables - maxCols], "BOTTOMLEFT",
+			0, TRADEABLES_OFFSET_Y)
+	else
+		b:SetPoint("LEFT", self.nonTradeablesButtons[self.numNonTradeables - 1], "RIGHT", TRADEABLES_OFFSET_X)
+	end
 	if reason == "rejected_trade" then
 		b:SetBorderColor("purple")
-	elseif reason == "bonus_roll" then
-		b:SetBorderColor("yellow")
 	else
 		b:SetBorderColor("grey")
 	end
-	b:SetAlpha(0.7)
-	b:Show()
 	self.nonTradeablesButtons[self.numNonTradeables] = b
 end
 
