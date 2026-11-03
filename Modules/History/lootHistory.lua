@@ -31,7 +31,6 @@ data[date][playerName] = {
 }
 ]]
 local selectedDate, selectedName, moreInfo, moreInfoData
-local rightClickMenu;
 local ROW_HEIGHT = 20;
 local NUM_ROWS = 15;
 local useClassFilters = false
@@ -69,9 +68,6 @@ function LootHistory:OnInitialize()
 		{ name = "",	    	 width = ROW_HEIGHT},																					-- Session responses button
 		{ name = "",          width = ROW_HEIGHT, },                                                              -- Delete button
 	}
-	rightClickMenu = _G.MSA_DropDownMenu_Create("RCLootCouncil_LootHistory_RightclickMenu", UIParent)
-	_G.MSA_DropDownMenu_Initialize(rightClickMenu, self.RightClickMenu, "MENU")
-
 	self:SubscribeToPermanentComms()
 end
 
@@ -933,8 +929,8 @@ function LootHistory:GetFrame()
 				if button == "LeftButton" then
 					self:UpdateMoreInfo(rowFrame, cellFrame, data, cols, row, realrow, column, table, button, ...)
 				elseif button == "RightButton" then
-					rightClickMenu.datatable = data[realrow]
-					MSA_ToggleDropDownMenu(1, nil, rightClickMenu, cellFrame, 0, 0)
+					rowFrame.data = data[realrow]
+					MenuUtil.CreateContextMenu(rowFrame, self.CreateRightClickMenu)
 				end
 			end
 			self.SessionData:Hide()
@@ -1265,18 +1261,12 @@ end
 ---@param owner DropdownButtonMixin
 ---@param menu RootMenuDescriptionProxy|SharedMenuDescriptionProxy This is techincally root
 function LootHistory.CreateFilterMenu(owner, menu)
-	DevTool:AddData(owner, "owner")
-	DevTool:AddData(menu, "menu")
 --#region class filter
 	menu:CreateTitle(_G.FILTER)
 	local classMenu = menu:CreateButton(_G.CLASS)
 
 	local IsSelected = function(id) return db.modules["RCLootHistory"].filters.class[id] end
 	local SetSelected = function(id, value, a, b)
-		DevTool:AddData(value, "value")
-		DevTool:AddData(a, "a")
-		DevTool:AddData(b, "b")
-
 		addon.Log:D("Update class filter", id, value)
 		db.modules["RCLootHistory"].filters.class[id] = not db.modules["RCLootHistory"].filters.class[id]
 		local classFilters = false
@@ -1300,7 +1290,6 @@ function LootHistory.CreateFilterMenu(owner, menu)
 		end
 		useClassFilters = false
 		LootHistory:Update()
-		-- newFilterBtn:GenerateMenu()
 		owner:Update()
 	end)
 	--#endregion
@@ -1311,13 +1300,11 @@ function LootHistory.CreateFilterMenu(owner, menu)
 	-- Select the typeCode with the most responses
 	local recordedResponses = LootHistory:GetRecordedResponses()
 	local maxResponses = 0
-	local maxTypeCode = "default"
 	for typeCode, _ in pairs(recordedResponses) do
 		if #recordedResponses[typeCode] > maxResponses then
 			maxResponses = #recordedResponses[typeCode]
 		end
 	end
-
 
 	local sortedTypeCodes = {}
 	for typeCode in pairs(recordedResponses) do
@@ -1387,243 +1374,129 @@ function LootHistory.CreateFilterMenu(owner, menu)
 	--#endregion response filter
 end
 
-do
---- Entries placed in the rightclick menu.
--- See the example in votingFrame.lua for a detailed explaination.
--- Functions gets the row data as a parameter.
--- See LootHistory:BuildData() for the contents of a row (self.frame.rows[row])
-	LootHistory.rightClickEntries = {
-		{ -- Level 1
-			{ -- 1 Title
-				text = L["Edit Entry"],
-				isTitle = true,
-				notCheckable = true,
-				disabled = true,
-			},
-			{ -- 2 Name
-				text = _G.NAME,
-				value = "EDIT_NAME",
-				notCheckable = true,
-				hasArrow = true,
-			},
-			{ -- 3 Response
-				text = L["Response"],
-				value = "EDIT_RESPONSE",
-				notCheckable = true,
-				hasArrow = true,
-			},
-		},
-		{ -- Level 2
-			{ -- 1 EDIT_NAME
-				special = "EDIT_NAME",
-			},
-			{ -- 2 EDIT_RESPONSE
-				special = "EDIT_RESPONSE",
-			},
-			{ -- 3 Award Reasons ...
-				text = L["Award Reasons"] .. " ...",
-				onValue = "EDIT_RESPONSE",
-				value = "AWARD_REASON",
-				hasArrow = true,
-				notCheckable = true,
-			},
-		},
-		{ -- Level 3
-			{ -- 1 AWARD_REASON
-				special = "AWARD_REASON",
-			},
-		},
-	}
+--- Creates right click menu
+---@param rowFrame Frame
+---@param root RootMenuDescriptionProxy|SharedMenuDescriptionProxy This is techincally root
+function LootHistory.CreateRightClickMenu(rowFrame, root)
+	---@type HistoryDataRow
+	local rowData = rowFrame.data
 
+	root:CreateTitle(L["Edit Entry"])
+	local nameMenu = root:CreateButton(_G.NAME)
+	nameMenu:SetScrollMode(400)
+	local responseMenu = root:CreateButton(L["Response"])
 
--- NOTE Changing e.g. a tier token item's response to a non-tier token response is possible display wise,
--- but it will retain it's tier token tag, and vice versa. Can't decide whether it's a feature or bug.
-	function LootHistory.RightClickMenu(menu, level)
-		local info
-		local data = menu.datatable
+	--#region Name menu
+	--- @param data {to:string,class:ClassInfo.classFile, row:HistoryDataRow}
+	local ChangeRecipient = function(data, menuInput, proxy)
+		local row, fromName, fromNum = data.row, data.row.name, data.row.num
+		if fromName == data.to then return end
 
-		local value = _G.MSA_DROPDOWNMENU_MENU_VALUE
-		if not LootHistory.rightClickEntries[level] then return end
-		for i, entry in ipairs(LootHistory.rightClickEntries[level]) do
-			info = MSA_DropDownMenu_CreateInfo()
-			if not entry.special then
-				if not entry.onValue or entry.onValue == value then
-					if not (entry.hidden and type(entry.hidden) == "function" and entry.hidden(data.name, data)) or not entry.hidden then
-						for name, val in pairs(entry) do
-							if name == "func" then
-								info[name] = function() return val(data.name, data) end -- This needs to be set as a func, but fed with our params
-							elseif type(val) == "function" then
-								info[name] = val(data.name, data) -- This needs to be evaluated
-							else
-								info[name] = val
-							end
-						end
-						MSA_DropDownMenu_AddButton(info, level)
-					end
-				end
-			elseif value == "EDIT_NAME" and entry.special == value then
-				if not LootHistory.frame then return end            -- This could be nil if LootHistory frame closes before the rightclick menu.
-				local sorttable = { unpack(LootHistory.frame.name.sorttable), } -- Copy the name table
-				-- 1. If both in the raid , sort by alphabet, ascending
-				-- 2. If neither in the raid, sort by time of last loot received, ascending
-				-- 3. People in the raid are sorted after people not in the raid.
-				table.sort(sorttable, function(a, b)
-					local namea, nameb = LootHistory.frame.name.data[a][2].name, LootHistory.frame.name.data[b][2].name
-					local isInRaida, isInRaidb = UnitInRaid(Ambiguate(namea, "short")),
-						UnitInRaid(Ambiguate(nameb, "short"))
-					if isInRaida ~= isInRaidb then
-						return isInRaidb
-					elseif isInRaidb then -- Both in the raid
-						return namea < nameb
-					else   -- Neither in the raid
-						local epocha, epochb = 0, 0
-						if next(lootDB[namea]) then
-							local datea = lootDB[namea][#lootDB[namea]].date
-							local timea = lootDB[namea][#lootDB[namea]].time
-							local y, m, d = addon.Utils:DateSplit(datea)
-							local h, min, s = strsplit(":", timea, 3)
-							epocha = time({ year = y, month = m, day = d, hour = h, min = min, sec = s, })
-						end
+		addon.Log:D("Moving award from", fromName, "to", data.to)
+		local sourceItems = lootDB[fromName]
+		local entry = sourceItems and tremove(sourceItems, fromNum)
+		if not entry then return addon.Log:E("Unable to find history entry", fromName, fromNum) end
+		if #sourceItems == 0 then lootDB[fromName] = nil end
 
-						if next(lootDB[nameb]) then
-							local dateb = lootDB[nameb][#lootDB[nameb]].date
-							local timeb = lootDB[nameb][#lootDB[nameb]].time
-							local y, m, d = addon.Utils:DateSplit(dateb)
-							local h, min, s = strsplit(":", timeb, 3)
-							epochb = time({ year = y, month = m, day = d, hour = h, min = min, sec = s, })
-						end
-						return epocha < epochb
-					end
-				end)
+		if not lootDB[data.to] then lootDB[data.to] = {} end
+		tinsert(lootDB[data.to], entry)
+		entry.class = data.class
 
-				for _, i in ipairs(sorttable) do --luacheck: ignore
-					local v = LootHistory.frame.name.data[i]
-					info.text = v[2].value
-					local c = addon:GetClassColor(v[1].args[1])
-					info.colorCode = "|cff" .. addon.Utils:RGBToHex(c.r, c.g, c.b)
-					info.notCheckable = true
-					info.hasArrow = false
-					info.func = function()
-						addon.Log:D("Moving award from", data.name, "to", v[2].name)
-						-- Since we store data as lootDB[name] = ..., we need to move the entire table to the new recipient
-						tinsert(lootDB[v[2].name], tremove(lootDB[data.name], data.num))
-						-- Now update the data in our display st, which coincidentally is data
-						data.num = #lootDB[v[2].name]
-						data.name = v[2].name
-						data.class = v[1].args[1]
-						-- We also need to update the class saved with the loot:
-						lootDB[data.name][data.num].class = data.class
-						data.cols[1].args[1] = v[1].args[1]
-						data.cols[2] = { value = v[2].value, color = addon:GetClassColor(data.class), }
-						LootHistory.frame.st:SortData()
-						addon:SendMessage("RCHistory_NameEdit", data)
-					end
-					MSA_DropDownMenu_AddButton(info, level)
-				end
-			elseif value == "EDIT_RESPONSE" and entry.special == value then
-				local v;
-				for i = 1, db.buttons.default.numButtons do --luacheck: ignore
-					v = db.responses.default[i]
-					info.text = v.text
-					info.colorCode = "|cff" .. addon.Utils:RGBToHex(unpack(v.color))
-					info.notCheckable = true
-					info.func = function()
-						addon.Log:D("Changing response id @", data.name, "from", data.response, "to", i)
-						local entry = lootDB[data.name][data.num] --luacheck: ignore
-						entry.responseID = i
-						entry.response = addon:GetResponse("default", i).text
-						entry.color = { addon:GetResponseColor("default", i), }
-						entry.isAwardReason = nil
-						entry.tokenRoll = nil
-						entry.relicRoll = nil
-						data.response = i
-						entry.typeCode = "default"
-						data.cols[6].args = { color = entry.color, response = entry.response, responseID = i, }
-						LootHistory.frame.st:SortData()
-						addon:SendMessage("RCHistory_ResponseEdit", data)
-					end
-					MSA_DropDownMenu_AddButton(info, level)
-				end
+		-- Removing the entry shifts all later source indices, so keep the remaining rows in sync.
+		for _, displayedRow in ipairs(LootHistory.frame.st.data) do
+			if displayedRow ~= row and displayedRow.name == fromName and displayedRow.num > fromNum then
+				displayedRow.num = displayedRow.num - 1
+			end
+		end
 
-				info = MSA_DropDownMenu_CreateInfo()
-				for k, responses in pairs(db.responses) do
-					if k ~= "default" and k ~= "*" then
-						info.text = addon.OPT_MORE_BUTTONS_VALUES[k] or _G.UNKNOWN
-						info.isTitle = true
-						info.disabled = true
-						info.notCheckable = true
-						MSA_DropDownMenu_AddButton(info, level)
-						for i, v in ipairs(responses) do --luacheck: ignore
-							info.text = v.text
-							info.colorCode = "|cff" .. addon.Utils:RGBToHex(unpack(v.color))
-							info.isTitle = false
-							info.disabled = false
-							info.notCheckable = true
-							info.func = function()
-								addon.Log:D("Changing response id @", data.name, "from", data.response, "to", i)
-								local entry = lootDB[data.name][data.num] --luacheck: ignore
-								entry.responseID = i
-								entry.response = addon:GetResponse(k, i).text
-								entry.color = { addon:GetResponseColor(k, i), }
-								entry.isAwardReason = nil
-								data.response = i
-								entry.typeCode = k
-								data.cols[6].args = { color = entry.color, response = entry.response, responseID = i, }
-								LootHistory.frame.st:SortData()
-								addon:SendMessage("RCHistory_ResponseEdit", data)
-							end
-							MSA_DropDownMenu_AddButton(info, level)
-						end
-					end
-				end
+		row.name = data.to
+		row.num = #lootDB[data.to]
+		row.class = data.class
+		row.cols[1].args[1] = data.class
+		row.cols[2] = { value = addon.Ambiguate(data.to), color = addon:GetClassColor(data.class), }
+		LootHistory.frame.st:SortData()
+		moreInfoData = addon:GetLootDBStatistics()
+		addon:SendMessage("RCHistory_NameEdit", data.row)
+	end
 
-				if addon.debug then
-					for k, v in pairs(db.responses.default) do --luacheck: ignore
-						if type(k) ~= "number" and k ~= "tier" and k ~= "relic" then
-							info.text = v.text
-							info.colorCode = "|cff" .. addon.Utils:RGBToHex(unpack(v.color))
-							info.notCheckable = true
-							info.func = function()
-								addon.Log:D("Changing response id @", data.name, "from", data.response, "to", i)
-								local entry = lootDB[data.name][data.num] --luacheck: ignore
-								entry.responseID = k
-								entry.response = addon:GetResponse("default", k).text
-								entry.color = { addon:GetResponseColor("default", k), }
-								entry.isAwardReason = nil
-								entry.typeCode = "default"
-								data.response = k
-								data.cols[6].args = { color = entry.color, response = entry.response, responseID = k, }
-								LootHistory.frame.st:SortData()
-							end
-							MSA_DropDownMenu_AddButton(info, level)
-						end
-					end
-				end
-			elseif value == "AWARD_REASON" and entry.special == value then
-				for k, v in ipairs(db.awardReasons) do
-					if k > db.numAwardReasons then break end
-					info.text = v.text
-					info.colorCode = "|cff" .. addon.Utils:RGBToHex(unpack(v.color))
-					info.notCheckable = true
-					info.func = function()
-						addon.Log:D("Changing award reason id @", data.name, "from", data.response, "to", k)
-						local entry = lootDB[data.name][data.num] --luacheck: ignore
-						entry.responseID = k
-						entry.response = v.text
-						entry.color = { unpack(v.color), } -- For some reason it won't just accept v.color (!)
-						entry.isAwardReason = true
-						entry.tokenRoll = nil
-						entry.relicRoll = nil
-						data.response = i
-						data.cols[6].args = { color = entry.color, response = entry.response, responseID = k, }
-						LootHistory.frame.st:SortData()
-						addon:SendMessage("RCHistory_ResponseEdit", data)
-					end
-					MSA_DropDownMenu_AddButton(info, level)
-				end
+	local name, color, text
+	local names = CopyTable(LootHistory.frame.name.data)
+	table.sort(names, function (a, b)
+		return a[2].value < b[2].value
+	end)
+	for _, v in ipairs(names) do
+		name = v[2].value
+		color = v[2].color
+		text = color:WrapTextInColorCode(name)
+		nameMenu:CreateButton(text, ChangeRecipient, { to = v[2].name, class = v[1].args[1], row = rowData, })
+	end
+	--#endregion Name menu
+	--#region Response menu
+	--- @param data {to:number, row:HistoryDataRow, typeCode:string, isAwardReason:boolean?}
+	local ChangeResponse = function(data, menuInput, proxy)
+		addon.Log:D("Changing response id @", data.row.name, "from", data.row.response, "to", data.to)
+		local entry = lootDB[data.row.name][data.row.num]
+		if not data.isAwardReason then
+			entry.response = addon:GetResponse(data.typeCode, data.to).text
+			entry.color = { addon:GetResponseColor(data.typeCode, data.to), }
+		else
+			entry.response = db.awardReasons[data.to].text
+			entry.color = { unpack(db.awardReasons[data.to].color), }
+		end
+		entry.responseID = data.to
+		entry.isAwardReason = data.isAwardReason or false
+		entry.tokenRoll = nil
+		entry.relicRoll = nil
+		entry.typeCode = data.typeCode
+		data.row.response = data.to
+		data.row.isAwardReason = data.isAwardReason or false
+		data.row.cols[6].args = { color = entry.color, response = entry.response, responseID = data.to, }
+		LootHistory.frame.st:SortData()
+		moreInfoData = addon:GetLootDBStatistics()
+		addon:SendMessage("RCHistory_ResponseEdit", data.row)
+	end
+
+	-- Defaults first, as they don't get a submenu, and are the most common responses.
+	do
+		responseMenu:CreateTitle(_G.DEFAULT)
+		local v
+		for i = 1, db.buttons.default.numButtons do
+			v = db.responses.default[i]
+			responseMenu:CreateButton(i .. ": " .. addon.Utils:ColorTableToColor(v.color):WrapTextInColorCode(v.text), ChangeResponse,
+				{ to = i, row = rowData, typeCode = "default", })
+		end
+		responseMenu:CreateDivider()
+	end
+	-- Then the rest, based on which buttons are enabled
+	for k, v in pairs(db.responses) do
+		if k ~= "default" and k ~= "*" and #v > 0 then
+			local menu = responseMenu:CreateButton(addon.OPT_MORE_BUTTONS_VALUES[k] or _G.UNKNOWN)
+			for i = 1, #v do
+				menu:CreateButton(i .. ": " .. addon.Utils:ColorTableToColor(v[i].color):WrapTextInColorCode(v[i].text),
+					ChangeResponse, { to = i, row = rowData, typeCode = k, })
 			end
 		end
 	end
+	-- Next award reasons
+	if db.numAwardReasons > 0 then
+		local menu = responseMenu:CreateButton(L["Award Reasons"])
+		for k, v in ipairs(db.awardReasons) do
+			if k > db.numAwardReasons then break end
+			menu:CreateButton(k .. ": " .. addon.Utils:ColorTableToColor(v.color):WrapTextInColorCode(v.text),
+				ChangeResponse, { to = k, row = rowData, typeCode = nil, isAwardReason = true})
+		end
+	end
+	-- Finally show all "special" responses in debug mode
+	if addon.debug then
+		responseMenu:CreateDivider()
+		local menu = responseMenu:CreateButton("Debug")
+		for k, v in pairs(db.responses.default) do
+			if type(k) ~= "number" then
+				menu:CreateButton(addon.Utils:ColorTableToColor(v.color):WrapTextInColorCode(v.text), ChangeResponse, { to = k, row = rowData, typeCode = "default" })
+			end
+		end
+	end
+	--#endregion Response menu
 end
 
 ---------------------------------------------------------------

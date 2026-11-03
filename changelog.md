@@ -10,6 +10,9 @@ Both groups now dynamically scales up to half the width of the frame, and adds a
 
 Added number of items displayed to the Loot History frame, as well as in the Loot History options.
 
+Updated filter and right-click menus to use BlizzardMenu. These are way newer and supports scrolling, finally fixing the old problem of not being able to select candidates when changing winners.  
+*Implementing this also fixed a number of bugs with the old system.*
+
 
 # 3.24.1
 
