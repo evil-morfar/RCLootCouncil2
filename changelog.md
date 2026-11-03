@@ -6,6 +6,10 @@ Bonus rolls are now divided from non-tradeables and aligned to the bottom right 
 
 Both groups now dynamically scales up to half the width of the frame, and adds additional rows when required (looking at you Ula'tek bonus roll mayham!).
 
+### Loot History
+
+Added number of items display.
+
 
 # 3.24.1
 

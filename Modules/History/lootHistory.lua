@@ -292,6 +292,7 @@ function LootHistory:BuildData()
 	end
 
 	self.frame.st:SetData(self.frame.rows)
+	self.frame.itemCount:Update()
 	self.frame.date:SetData(dateData, true) -- True for minimal data	format
 	self.frame.name:SetData(nameData, true)
 end
@@ -912,6 +913,7 @@ function LootHistory:Update()
 	else
 		self.frame.filter.Text:SetTextColor(_G.NORMAL_FONT_COLOR:GetRGB()) --#ffd100
 	end
+	self.frame.itemCount:Update()
 end
 
 function LootHistory:GetFrame()
@@ -1011,11 +1013,14 @@ function LootHistory:GetFrame()
 		self.moreInfo:SetScale(Clamp(f:GetScale() * 0.6, .4, .9))
 	end)
 
-	-- local count = f:CreateFontString(nil,"OVERLAY", "GameFontNormal")
-	-- count:SetPoint("BOTTOMRIGHT", b2, "TOPRIGHT", 0, 10)
-	-- count:SetText(format("There's %d items in the database", self:CountItems()))
-	-- count:SetTextColor(1, 1, 1, 1)
-	-- self.itemCount = count
+	local count = f:CreateFontString(nil,"OVERLAY", "GameFontDarkGraySmall")
+	count:SetPoint("BOTTOMRIGHT", b2, "TOPRIGHT", 0, 10)
+	count:SetTextColor(1, 1, 1, .9)
+	f.itemCount = count
+	f.itemCount.Update = function(self)
+		addon.Log:D("Updating item count")
+		self:SetText(format(L.history_frame_numItems, #f.st.filtered, #f.st.data))
+	end
 
 	-- Export
 	local b3 = addon:CreateButton(L["Export"], f.content)
@@ -1092,14 +1097,15 @@ end
 
 --- Counts the number of items in a RCLootCouncil.HistoryDB database.
 ---@param db RCLootCouncil.HistoryDB
+---@return number #The number of items in the db.
 function LootHistory:CountItems(db)
-	local count = 0
-	for name, items in pairs(db or lootDB) do
+	local total = 0
+	for _, items in pairs(db or lootDB) do
 		for _ in pairs(items) do
-			count = count + 1
+			total = total + 1
 		end
 	end
-	return count
+	return total
 end
 
 --- Returns a table of all the winners of an item.
