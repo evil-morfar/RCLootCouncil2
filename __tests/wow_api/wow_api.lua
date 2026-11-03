@@ -43,7 +43,7 @@ end
 -- Requires `CreateFrame` & `GetTime`
 require "API/CallbackRegistryMixin"
 -- Depends on CallbackRegistryMixin
-require "API/DropdownButton"
+require "API/DropdownButtonMixin"
 require "API/AddonCompartment"
 
 -- It seems Wow doesn't follow the 5.1 spec for xpcall (no additional arguments),
