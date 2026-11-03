@@ -1019,7 +1019,7 @@ function LootHistory:GetFrame()
 	f.itemCount = count
 	f.itemCount.Update = function(self)
 		addon.Log:D("Updating item count")
-		self:SetText(format(L.history_frame_numItems, #f.st.filtered, #f.st.data))
+		self:SetText(format(L.history_frame_numItemsOfItems, #f.st.filtered, #f.st.data))
 	end
 
 	-- Export

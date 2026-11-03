@@ -8,7 +8,7 @@ Both groups now dynamically scales up to half the width of the frame, and adds a
 
 ### Loot History
 
-Added number of items display.
+Added number of items displayed to the Loot History frame, as well as in the Loot History options.
 
 
 # 3.24.1
