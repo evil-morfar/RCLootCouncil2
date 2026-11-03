@@ -30,7 +30,7 @@ data[date][playerName] = {
 	}
 }
 ]]
-local selectedDate, selectedName, filterMenu, moreInfo, moreInfoData
+local selectedDate, selectedName, moreInfo, moreInfoData
 local rightClickMenu;
 local ROW_HEIGHT = 20;
 local NUM_ROWS = 15;
@@ -69,9 +69,7 @@ function LootHistory:OnInitialize()
 		{ name = "",	    	 width = ROW_HEIGHT},																					-- Session responses button
 		{ name = "",          width = ROW_HEIGHT, },                                                              -- Delete button
 	}
-	filterMenu = _G.MSA_DropDownMenu_Create("RCLootCouncil_LootHistory_FilterMenu", UIParent)
 	rightClickMenu = _G.MSA_DropDownMenu_Create("RCLootCouncil_LootHistory_RightclickMenu", UIParent)
-	_G.MSA_DropDownMenu_Initialize(filterMenu, self.FilterMenu, "MENU")
 	_G.MSA_DropDownMenu_Initialize(rightClickMenu, self.RightClickMenu, "MENU")
 
 	self:SubscribeToPermanentComms()
@@ -910,7 +908,7 @@ end
 function LootHistory:Update()
 	self.frame.st:SortData()
 	if IsFiltering() then
-		self.frame.filter.Text:SetTextColor(0.86, 0.5, 0.22)         -- #db8238
+		self.frame.filter.Text:SetTextColor(0.86, 0.5, 0.22) -- #db8238
 	else
 		self.frame.filter.Text:SetTextColor(_G.NORMAL_FONT_COLOR:GetRGB()) --#ffd100
 	end
@@ -918,6 +916,7 @@ end
 
 function LootHistory:GetFrame()
 	if self.frame then return self.frame end
+	---@class RCLootHistoryFrame : RCFrame
 	local f = addon.UI:NewNamed("RCFrame", UIParent, "DefaultRCLootHistoryFrame", L["RCLootCouncil Loot History"], 250,
 		490)
 	addon.UI:RegisterForEscapeClose(f, function() if self:IsEnabled() then self:Disable() end end)
@@ -1041,12 +1040,13 @@ function LootHistory:GetFrame()
 	f.importBtn = b5
 
 	-- Filter
-	local b4 = addon:CreateButton(_G.FILTER, f.content)
-	b4:SetPoint("RIGHT", f.importBtn, "LEFT", -10, 0)
-	b4:SetScript("OnClick", function(self) MSA_ToggleDropDownMenu(1, nil, filterMenu, self, 0, 0) end)
+	local b4 = CreateFrame("DropdownButton", nil, f.content, "WowStyle1FilterDropdownTemplate")
+	b4:SetPoint("TOPRIGHT", f.importBtn, "TOPLEFT", -10, 0)
+	b4:SetPoint("BOTTOMLEFT", f.importBtn, "BOTTOMLEFT", -135, 0)
+	b4:SetupMenu(self.CreateFilterMenu)
+	b4.Text:SetHeight(25)
+	-- b4:SetSize(125, 25) -- Needs extra convincing to stay at 25px height
 	f.filter = b4
-	MSA_DropDownMenu_Initialize(b4, self.FilterMenu)
-	f.filter:SetSize(125, 25) -- Needs extra convincing to stay at 25px height
 
 	-- Export selection (AceGUI-3.0)
 	local sel = AG:Create("Dropdown")
@@ -1254,194 +1254,131 @@ end
 -- Dropdowns.
 -- @section Dropdowns.
 ---------------------------------------------------
-function LootHistory.FilterMenu(menu, level)
-	local info = MSA_DropDownMenu_CreateInfo()
-	local value = _G.MSA_DROPDOWNMENU_MENU_VALUE
 
-	if level == 1 then
-		-- Create the db entry
-		-- Legacy, our defaults should ensure creation. Left here just in case, and to avoid errors if the defaults gets changed.
-		if not db.modules["RCLootHistory"].filters then
-			addon.Log:D("Created LootHistory filters")
-			db.modules["RCLootHistory"].filters = {
-				class = {},
-			}
-		end
+--- Creates the filter menu for the loot history frame.
+---@param owner DropdownButtonMixin
+---@param menu RootMenuDescriptionProxy|SharedMenuDescriptionProxy This is techincally root
+function LootHistory.CreateFilterMenu(owner, menu)
+	DevTool:AddData(owner, "owner")
+	DevTool:AddData(menu, "menu")
+--#region class filter
+	menu:CreateTitle(_G.FILTER)
+	local classMenu = menu:CreateButton(_G.CLASS)
 
-		-- Build the data table:
-		local data = { ["STATUS"] = true, ["PASS"] = true, ["AUTOPASS"] = true, }
-		-- Select the typeCode with the most responses
-		local recordedResponses = LootHistory:GetRecordedResponses()
-		local maxResponses = 0
-		local maxTypeCode = "default"
-		for typeCode, _ in pairs(recordedResponses) do
-			if #recordedResponses[typeCode] > maxResponses then
-				maxResponses = #recordedResponses[typeCode]
+	local IsSelected = function(id) return db.modules["RCLootHistory"].filters.class[id] end
+	local SetSelected = function(id, value, a, b)
+		DevTool:AddData(value, "value")
+		DevTool:AddData(a, "a")
+		DevTool:AddData(b, "b")
+
+		addon.Log:D("Update class filter", id, value)
+		db.modules["RCLootHistory"].filters.class[id] = not db.modules["RCLootHistory"].filters.class[id]
+		local classFilters = false
+		for _, v in pairs(db.modules["RCLootHistory"].filters.class) do
+			if v then
+				classFilters = true
+				break
 			end
 		end
+		useClassFilters = classFilters
+		LootHistory:Update()
+	end
 
-
-		local sortedTypeCodes = {}
-		for typeCode in pairs(recordedResponses) do
-			tinsert(sortedTypeCodes, typeCode)
+	for id, name in pairs(addon.classIDToDisplayName) do
+		classMenu:CreateCheckbox(addon:WrapTextInClassColor(addon.classIDToFileName[id], name), IsSelected,
+			SetSelected, id)
+	end
+	classMenu:CreateButton(_G.RESET, function()
+		for k in pairs(db.modules["RCLootHistory"].filters.class) do
+			db.modules["RCLootHistory"].filters.class[k] = false
 		end
-		table.sort(sortedTypeCodes, function(a, b)
-			if a == "default" then return true end
-			if b == "default" then return false end
-			return a < b
-		end)
-
-		-- Also check our db just to ensure we have all responses covered, even if they haven't been used since the addon was installed (or if the user has cleaned up their loot history)
-		for typeCode in pairs(db.responses) do
-			local num = addon:GetNumButtons(typeCode)
-			if num > maxResponses then
-				maxResponses = num
-			end
-		end
-
-		info.text = _G.FILTER
-		info.isTitle = true
-		info.notCheckable = true
-		info.disabled = true
-		MSA_DropDownMenu_AddButton(info, level)
-		info = MSA_DropDownMenu_CreateInfo()
-
-		info.text = _G.CLASS
-		info.isTitle = false
-		info.hasArrow = true
-		info.notCheckable = true
-		info.disabled = false
-		info.value = "CLASS"
-		MSA_DropDownMenu_AddButton(info, level)
-		info = MSA_DropDownMenu_CreateInfo()
-
-		info.text = L["Responses"]
-		info.isTitle = true
-		info.notCheckable = true
-		info.disabled = true
-		MSA_DropDownMenu_AddButton(info, level)
-		info = MSA_DropDownMenu_CreateInfo()
-
-		local f = LootHistory.frame:CreateFontString(nil, "OVERLAY", "GameTooltipText")
-		-- First pass: Calculate maximum pixel widths for each typeCode
-		local textWidth = {}
-		f:SetText(" ")
-		local spaceWidth = f:GetStringWidth()
-		for i = 1, maxResponses do
-			for _, typeCode in ipairs(sortedTypeCodes) do
-				if not textWidth[typeCode] then textWidth[typeCode] = 0 end
-				local response = LootHistory:GetResponseInfo(recordedResponses, typeCode, i)
-				if response then
-					f:SetText(response.text)
-					local width = f:GetStringWidth() + 3*spaceWidth
-					if width > textWidth[typeCode] then
-						textWidth[typeCode] = width
-					end
-				end
-			end
-		end
-
-		-- Second pass: Build formatted dropdown entries
-		for i = 1, maxResponses do
-			info.text = i .. ": "
-			local response
-			local color
-
-			for _, typeCode in ipairs(sortedTypeCodes) do
-				response = LootHistory:GetResponseInfo(recordedResponses, typeCode, i)
-				if response then
-					color = "|cff" .. addon.Utils:RGBToHex(unpack(response.color))
-					local text = color .. response.text
-					f:SetText(text)
-					local currentWidth = f:GetStringWidth()
-					local padding = (textWidth[typeCode] - currentWidth) / spaceWidth
-					info.text = info.text .. text .. string.rep(" ", padding)
-					addon.Log:D(typeCode, i, response.text, "width:", currentWidth, padding*spaceWidth)
-				else
-					local padding = (textWidth[typeCode]) / spaceWidth
-					info.text = info.text .. string.rep(" ", padding)
-					addon.Log:D(typeCode, i, "blank", "width:", padding*spaceWidth)
-				end
-			end
-			info.func = function()
-				addon.Log:D("Update Filter")
-				db.modules["RCLootHistory"].filters[i] = not db.modules["RCLootHistory"].filters[i]
-				LootHistory:Update()
-			end
-			info.checked = db.modules["RCLootHistory"].filters[i]
-			MSA_DropDownMenu_AddButton(info, level)
-		end
-		for k in pairs(data) do -- A bit redundency, but it makes sure these "specials" comes last
-			if type(k) == "string" then
-				if k == "STATUS" then
-					info.text = L["Status texts"]
-					info.colorCode = "|cffde34e2" -- purpleish
-				else
-					info.text = addon:GetResponse("default", k).text
-					info.colorCode = "|cff" .. addon.Utils:RGBToHex(addon:GetResponseColor(nil, k))
-				end
-				info.func = function()
-					addon.Log:D("Update Filter")
-					db.modules["RCLootHistory"].filters[k] = not db.modules["RCLootHistory"].filters[k]
-					LootHistory:Update()
-				end
-				info.checked = db.modules["RCLootHistory"].filters[k]
-				MSA_DropDownMenu_AddButton(info, level)
-			end
-		end
-		-- Clear filters
-		info.text = L.select_all
-		info.func = function()
-			addon.Log:D("Clear filters")
-			for k, v in pairs(db.modules["RCLootHistory"].filters) do
-				if type(v) ~= "table" then
-					db.modules["RCLootHistory"].filters[k] = true
-				end
-			end
-			LootHistory:Update()
-		end
-		info.notCheckable = true
-		info.colorCode = "|cffffffff"
-		MSA_DropDownMenu_AddButton(info, level)
-	elseif level == 2 then
-		if value == "CLASS" then
-			for id, name in pairs(addon.classIDToDisplayName) do
-				local col = addon:GetClassColor(addon.classIDToFileName[id])
-				info.text = name
-				info.colorCode = "|cff" .. addon.Utils:RGBToHex(col.r, col.g, col.b)
-				info.func = function()
-					addon.Log:D("Update class filter")
-					db.modules["RCLootHistory"].filters.class[id] = not db.modules["RCLootHistory"].filters.class[id]
-					local classFilters = false
-					for _, v in pairs(db.modules["RCLootHistory"].filters.class) do
-						if v then
-							classFilters = true
-							break
-						end
-					end
-					useClassFilters = classFilters
-					LootHistory:Update()
-				end
-				info.checked = db.modules["RCLootHistory"].filters.class[id]
-				MSA_DropDownMenu_AddButton(info, level)
-				info = MSA_DropDownMenu_CreateInfo()
-			end
-
-			-- Create constants
-			info.text = "Deselect All"
-			info.notCheckable = true
-			info.keepShownOnClick = true
-			info.func = function()
-				for k in pairs(db.modules["RCLootHistory"].filters.class) do
-					db.modules["RCLootHistory"].filters.class[k] = false
-					MSA_DropDownMenu_SetSelectedName(filterMenu, addon.classIDToDisplayName[k], false)
-					useClassFilters = false
-					LootHistory:Update()
-				end
-			end
-			MSA_DropDownMenu_AddButton(info, level)
+		useClassFilters = false
+		LootHistory:Update()
+		-- newFilterBtn:GenerateMenu()
+		owner:Update()
+	end)
+	--#endregion
+	--#region response filter
+	--#region setup
+	-- Build the data table:
+	local data = { ["STATUS"] = true, ["PASS"] = true, ["AUTOPASS"] = true, }
+	-- Select the typeCode with the most responses
+	local recordedResponses = LootHistory:GetRecordedResponses()
+	local maxResponses = 0
+	local maxTypeCode = "default"
+	for typeCode, _ in pairs(recordedResponses) do
+		if #recordedResponses[typeCode] > maxResponses then
+			maxResponses = #recordedResponses[typeCode]
 		end
 	end
+
+
+	local sortedTypeCodes = {}
+	for typeCode in pairs(recordedResponses) do
+		tinsert(sortedTypeCodes, typeCode)
+	end
+	table.sort(sortedTypeCodes, function(a, b)
+		if a == "default" then return true end
+		if b == "default" then return false end
+		return a < b
+	end)
+
+	-- Also check our db just to ensure we have all responses covered, even if they haven't been used since the addon was installed (or if the user has cleaned up their loot history)
+	for typeCode in pairs(db.responses) do
+		local num = addon:GetNumButtons(typeCode)
+		if num > maxResponses then
+			maxResponses = num
+		end
+	end
+	--#endregion setup
+	local IsSelected = function(index) return db.modules["RCLootHistory"].filters[index] end
+	local SetSelected = function(index, ctx, proxy)
+		db.modules["RCLootHistory"].filters[index] = not db.modules["RCLootHistory"].filters[index]
+		LootHistory:Update()
+		owner:Update()
+	end
+	for _, typeCode in ipairs(sortedTypeCodes) do
+		local subMenu = menu
+		if typeCode == "default" then
+			menu:CreateTitle(_G.DEFAULT)
+		else
+			subMenu = menu:CreateButton(addon.OPT_MORE_BUTTONS_VALUES[typeCode] or _G.UNKNOWN)
+		end
+		for i = 1, maxResponses do
+			local response = LootHistory:GetResponseInfo(recordedResponses, typeCode, i)
+			if response then
+				local color = "|cff" .. addon.Utils:RGBToHex(unpack(response.color))
+				local text = i .. ": " .. color .. response.text
+				subMenu:CreateCheckbox(text, IsSelected, SetSelected, i)
+			end
+		end
+		if typeCode == "default" then
+			local text, color
+			-- add the status codes
+			for k in pairs(data) do
+				if k == "STATUS" then
+					text = L["Status texts"]
+					color = "|cffde34e2" -- purpleish
+				else
+					text = addon:GetResponse("default", k).text
+					color = "|cff" .. addon.Utils:RGBToHex(addon:GetResponseColor(nil, k))
+				end
+				subMenu:CreateCheckbox(color .. text, IsSelected, SetSelected, k)
+			end
+		end
+	end
+	menu:CreateDivider()
+	-- Clear filter
+	menu:CreateButton(_G.RESET, function()
+		for k, v in pairs(db.modules["RCLootHistory"].filters) do
+			if type(v) ~= "table" then
+				db.modules["RCLootHistory"].filters[k] = true
+			end
+		end
+		LootHistory:Update()
+		owner:Update()
+	end)
+	--#endregion response filter
 end
 
 do
