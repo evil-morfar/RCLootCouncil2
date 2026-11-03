@@ -167,10 +167,12 @@ end
 
 function private:Print(msg, ...)
 	-- luacov: disable
+	-- If the addon has a hook for Print, use that instead of the default Print function, as it could cause recursion.
+	local printFun = addon.hooks and addon.hooks[addon] and addon.hooks[addon].Print or addon.Print
 	if select("#", ...) > 0 then
-		addon:Print("|cffcb6700debug:|r " .. tostring(msg) .. "|cffff6767", ...)
+		printFun(addon, "|cffcb6700debug:|r " .. tostring(msg) .. "|cffff6767", ...)
 	else
-		addon:Print("|cffcb6700debug:|r " .. tostring(msg) .. "|r")
+		printFun(addon, "|cffcb6700debug:|r " .. tostring(msg) .. "|r")
 	end
 	-- luacov: enable
 end
