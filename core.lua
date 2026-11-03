@@ -2089,7 +2089,7 @@ end
 --- @param entry HistoryEntry
 --- @return boolean #True if the entry is not filtered, false if it is.
 function RCLootCouncil:IsHistoryEntryAvailableWithMoreInfoSettings(entry)
-	return not next(db.moreInfoRaids) or db.moreInfoRaids[entry.mapID .. "-" .. (entry.difficultyID == 0 and "" or entry.difficultyID)]
+	return not next(db.moreInfoRaids) or entry.mapID and db.moreInfoRaids[entry.mapID .. "-" .. (entry.difficultyID == 0 and "" or entry.difficultyID)]
 end
 
 --- Returns statistics for use in various detailed views.
