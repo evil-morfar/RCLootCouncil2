@@ -312,8 +312,8 @@ function LootHistory:GetAllRegisteredCandidates()
 	return names
 end
 
----
--- @return table [mapID-difficultyID] = "instance_name"
+--- Returns a list of all registered instances
+--- @return table<string, string> ["mapID-difficultyID"] = "instance_name"
 function LootHistory:GetAllRegisteredInstances()
 	local raids = {}
 	lootDB = addon:GetHistoryDB()
@@ -326,6 +326,11 @@ function LootHistory:GetAllRegisteredInstances()
 	end
 	table.sort(raids)
 	return raids
+end
+
+--- Reads our history for all registered instances and updates the db with them
+function LootHistory:UpdateRegisteredInstances()
+	addon.db.profile.registeredInstances = self:GetAllRegisteredInstances()
 end
 
 function LootHistory:DeleteAllEntriesByName(name)
@@ -857,6 +862,7 @@ function LootHistory:ImportPlayerExport(import)
 		end
 	end
 	addon.lootDB.factionrealm = lootDB -- save it
+	self:UpdateRegisteredInstances()
 	addon:Print(format(L["Successfully imported 'number' entries."], number))
 	addon.Log:D("Import successful")
 	if self.frame and self.frame:IsVisible() then

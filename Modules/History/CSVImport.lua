@@ -75,13 +75,14 @@ function His:ImportNew (import, delimiter)
 end
 
 function His:ExecuteImport (data)
-   local count = self:InsertIntoHistory(data)
-   addon:Print(string.format(L["Successfully imported 'number' entries."], count))
-   if self.frame and self.frame:IsVisible() then -- Update if open
-      self:BuildData()
-      self.frame.st:SortData()
-      self:Show() -- Use Show() to update moreInfo
-   end
+	local count = self:InsertIntoHistory(data)
+	self:UpdateRegisteredInstances()
+	addon:Print(string.format(L["Successfully imported 'number' entries."], count))
+	if self.frame and self.frame:IsVisible() then -- Update if open
+		self:BuildData()
+		self.frame.st:SortData()
+		self:Show() -- Use Show() to update moreInfo
+	end
 end
 
 function His:InsertIntoHistory (data)

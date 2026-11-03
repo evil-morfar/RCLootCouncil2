@@ -2272,6 +2272,7 @@ function addon:ImportProfile(data)
 	else
 		self:ApplyProfile(name, profile)
 	end
+	self:GetActiveModule"history":UpdateRegisteredInstances()
 end
 
 function addon:GetProfileForExport()
