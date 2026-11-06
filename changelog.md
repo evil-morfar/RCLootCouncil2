@@ -1,3 +1,5 @@
+# 3.25.0
+
 ## Changes
 
 ### Bonus Rolls Display
@@ -18,6 +20,8 @@ Updated filter and right-click menus to use BlizzardMenu. These are way newer an
 - Each button group can now be filtered seperately.
 
 *Note: when you have a mix of responses from the same button group and button (e.g. default, button 1) that are different (can be caused by two different leaders with different settings), the button name and visuals are resolved in this order: Your settings, your leaders settings (if present), the loot db.*
+
+Because of these changes, saved filters have been reset.
 
 
 # 3.24.1

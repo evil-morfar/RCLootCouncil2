@@ -99,6 +99,7 @@ function LootHistory:Show()
 	addon.Log("LootHistory:Show()")
 	moreInfoData = addon:GetLootDBStatistics()
 	self.frame:Show()
+	self:Update()
 end
 
 --- Hide the LootHistory frame.
@@ -907,11 +908,11 @@ end
 -- Visuals.
 -- @section Visuals.
 ---------------------------------------------------
-local function IsFiltering()
-	for _, v in pairs(db.modules["RCLootHistory"].filters) do
+function IsFiltering()
+	for k, v in pairs(db.modules["RCLootHistory"].filters) do
 		if type(v) == "table" then
 			for _, x in pairs(v) do
-				if x then return true end
+				if not x then return true end
 			end
 		end
 	end
@@ -1286,13 +1287,13 @@ function LootHistory.CreateFilterMenu(owner, menu)
 	menu:CreateTitle(_G.FILTER)
 	local classMenu = menu:CreateButton(_G.CLASS)
 
-	local IsSelected = function(id) return db.modules["RCLootHistory"].filters.class[id] end
+	local IsSelected = function(id) return not db.modules["RCLootHistory"].filters.class[id] end
 	local SetSelected = function(id, value, a, b)
 		addon.Log:D("Update class filter", id, value)
 		db.modules["RCLootHistory"].filters.class[id] = not db.modules["RCLootHistory"].filters.class[id]
 		local classFilters = false
 		for _, v in pairs(db.modules["RCLootHistory"].filters.class) do
-			if v then
+			if not v then
 				classFilters = true
 				break
 			end

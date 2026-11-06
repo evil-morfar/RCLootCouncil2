@@ -252,9 +252,6 @@ addon.defaults = {
 					["*"] = {
 						["*"] = true,
 					},
-					class = {
-						["*"] = false,
-					},
 				},
 				alwaysShowTooltip = false,
 			},
