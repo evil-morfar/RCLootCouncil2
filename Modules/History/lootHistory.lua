@@ -77,7 +77,7 @@ function LootHistory:OnEnable()
 	db = addon:Getdb()
 	lootDB = addon:GetHistoryDB()
 	for _, v in pairs(db.modules["RCLootHistory"].filters.class) do
-		if v then
+		if not v then
 			useClassFilters = true
 			break
 		end
@@ -425,7 +425,7 @@ local function classFilter(class)
 	local classFilter = true -- Don't filter classes if none are selected
 	if useClassFilters then
 		local classID = addon.classTagNameToID[class]
-		classFilter = db.modules["RCLootHistory"].filters.class[classID]
+		classFilter = not db.modules["RCLootHistory"].filters.class[classID]
 	end
 	return classFilter
 end
@@ -1308,7 +1308,7 @@ function LootHistory.CreateFilterMenu(owner, menu)
 	end
 	classMenu:CreateButton(_G.RESET, function()
 		for k in pairs(db.modules["RCLootHistory"].filters.class) do
-			db.modules["RCLootHistory"].filters.class[k] = false
+			db.modules["RCLootHistory"].filters.class[k] = true
 		end
 		useClassFilters = false
 		LootHistory:Update()
