@@ -45,16 +45,16 @@ function LootHistory:OnInitialize()
 	self.exportSelection = addon.db.profile.defaultHistoryExport or "player"
 	-- Pointer to export functions. Expected to return a string containing the export
 	self.exports = {
-		csv = 		{func = self.ExportCSV,			name = "CSV",				tip = L["Standard .csv output."]},
-		tsv = 		{func = self.ExportTSV,			name = "TSV (International Excel)",		tip = L.history_export_excel_international_tip},
-		sheets = 	{func = self.ExportGoogleSheets,name = "TSV (Google Sheets & English Excel)", tip = L.history_export_sheets_tip},
-		bbcode = 	{func = self.ExportBBCode,		name = "BBCode", 			tip = L["Simple BBCode output."]},
-		bbcodeSmf = {func = self.ExportBBCodeSMF, 	name = "BBCode SMF",		tip = L["BBCode export, tailored for SMF."],},
-		eqxml = 	{func = self.ExportEQXML,		name = "EQdkp-Plus XML",	tip = L["EQdkp-Plus XML output, tailored for Enjin import."]},
-		player = 	{func = self.PlayerExport,		name = "Player Export",		tip = L["A format to copy/paste to another player."]},
-		playerNew = {func = self.PlayerExportNew,	name = "Player Export (new)",	tip = L["A format to copy/paste to another player."]},
-		discord = 	{func = self.ExportDiscord, 	name = "Discord", 			tip = L["Discord friendly output."]},
-		json = 		{func = self.ExportJSON,		name = "JSON",				tip = L["Standard JSON output."]},
+		csv = { func = self.ExportCSV, name = "CSV", tip = L["Standard .csv output."], },
+		tsv = { func = self.ExportTSV, name = "TSV (International Excel)", tip = L.history_export_excel_international_tip, },
+		sheets = { func = self.ExportGoogleSheets, name = "TSV (Google Sheets & English Excel)", tip = L.history_export_sheets_tip, },
+		bbcode = { func = self.ExportBBCode, name = "BBCode", tip = L["Simple BBCode output."], },
+		bbcodeSmf = { func = self.ExportBBCodeSMF, name = "BBCode SMF", tip = L["BBCode export, tailored for SMF."], },
+		eqxml = { func = self.ExportEQXML, name = "EQdkp-Plus XML", tip = L["EQdkp-Plus XML output, tailored for Enjin import."], },
+		player = { func = self.PlayerExport, name = "Player Export", tip = L["A format to copy/paste to another player."], },
+		playerNew = { func = self.PlayerExportNew, name = "Player Export (new)", tip = L["A format to copy/paste to another player."], },
+		discord = { func = self.ExportDiscord, name = "Discord", tip = L["Discord friendly output."], },
+		json = { func = self.ExportJSON, name = "JSON", tip = L["Standard JSON output."], },
 		--html = self.ExportHTML
 	}
 	self.scrollCols = {
@@ -65,7 +65,7 @@ function LootHistory:OnInitialize()
 		{ name = L["Item"],   width = 250,        comparesort = self.ItemSort,     defaultsort = 1, sortnext = 2, }, -- Item string
 		{ name = L["Reason"], width = 220,        comparesort = self.ResponseSort, defaultsort = 1, sortnext = 2, }, -- Response aka the text supplied to lootDB...response
 		{ name = L["Notes"],  width = 40, },
-		{ name = "",	    	 width = ROW_HEIGHT},																					-- Session responses button
+		{ name = "",          width = ROW_HEIGHT, },                                                              -- Session responses button
 		{ name = "",          width = ROW_HEIGHT, },                                                              -- Delete button
 	}
 	self:SubscribeToPermanentComms()
@@ -142,7 +142,7 @@ function LootHistory:DecodeSessionResponses(his)
 				response = splitted[3] and tonumber(splitted[3]) or nil,
 				roll = splitted[4] and tonumber(splitted[4]) or nil,
 				votes = splitted[5] and tonumber(splitted[5]) or nil,
-				note = note
+				note = note,
 			}
 		else
 			addon.Log:E("Error decoding session responses", name, encoded)
@@ -151,7 +151,7 @@ function LootHistory:DecodeSessionResponses(his)
 	end
 end
 
-function LootHistory:OnHistoryReceived (name, history)
+function LootHistory:OnHistoryReceived(name, history)
 	db = addon:Getdb()
 	if not db.enableHistory then return end
 	if not db.savePersonalLoot then
@@ -167,7 +167,7 @@ function LootHistory:OnHistoryReceived (name, history)
 		self:DecodeSessionResponses(history)
 	end
 	history.SR = nil
-	-- v3.15.4 check for old date formats 
+	-- v3.15.4 check for old date formats
 	local d, m, y = strsplit("/", history.date, 3)
 	if #tostring(d) < 4 then
 		history.date = string.format("%04d/%02d/%02d", "20" .. y, m, d)
@@ -254,14 +254,14 @@ function LootHistory:BuildData()
 						response = i.responseID,
 						isAwardReason = i.isAwardReason,
 						cols = { -- NOTE Don't forget the rightClickMenu dropdown, if the order of these changes
-							{ DoCellUpdate = addon.SetCellClassIcon, args = { x.class, },                                                                                                 value = x.class, },
-							{ value = addon.Ambiguate(name),         color = addon:GetClassColor(x.class), },
-							{ value = (date .. "-" .. i.time) or "", args = { id = i.id, }, },
-							{ DoCellUpdate = self.SetCellGear,       args = { i.lootWon, }, },
+							{ DoCellUpdate = addon.SetCellClassIcon,      args = { x.class, },                                                                                                 value = x.class, },
+							{ value = addon.Ambiguate(name),              color = addon:GetClassColor(x.class), },
+							{ value = (date .. "-" .. i.time) or "",      args = { id = i.id, }, },
+							{ DoCellUpdate = self.SetCellGear,            args = { i.lootWon, }, },
 							{ value = i.lootWon, },
-							{ DoCellUpdate = self.SetCellResponse,   args = { color = i.color, response = i.response, responseID = i.responseID or 0, isAwardReason = i.isAwardReason, }, },
+							{ DoCellUpdate = self.SetCellResponse,        args = { color = i.color, response = i.response, responseID = i.responseID or 0, isAwardReason = i.isAwardReason, }, },
 							{ DoCellUpdate = self.SetCellNote, },
-							{DoCellUpdate = self.SetCellSessionResponses},
+							{ DoCellUpdate = self.SetCellSessionResponses, },
 							{ DoCellUpdate = self.SetCellDelete, },
 						},
 					}
@@ -402,12 +402,20 @@ local function filterNameData(name, date)
 	return nameAndDate
 end
 
-local function filterResponse(response, isAwardReason)
+---@param response string|integer
+---@param isAwardReason boolean?
+---@param typeCode string?
+---@return boolean responseFilter
+local function filterResponse(response, isAwardReason, typeCode)
+	if not typeCode then typeCode = "default" end
+	local filters = db.modules["RCLootHistory"].filters
 	local responseFilter
-	if response == "AUTOPASS" or response == "PASS" or type(response) == "number" and not isAwardReason then
-		responseFilter = db.modules["RCLootHistory"].filters[response]
-	else -- Filter out the status texts
-		responseFilter = db.modules["RCLootHistory"].filters["STATUS"]
+	if isAwardReason then
+		responseFilter = filters.awardReasons and filters.awardReasons[response]
+	elseif type(response) == "number" or response == "AUTOPASS" or response == "PASS" or response == "BONUSROLL" then
+		responseFilter = filters[typeCode] and filters[typeCode][response]
+	else
+		responseFilter = filters.default.STATUS
 	end
 	return responseFilter
 end
@@ -428,7 +436,8 @@ function LootHistory.FilterFunc(table, row)
 
 	-- Response filters:
 	if not db.modules["RCLootHistory"].filters then return nameAndDate end -- db hasn't been initialized
-	local responseFilter = filterResponse(row.response, row.isAwardReason)
+	local responseFilter = filterResponse(row.response, row.isAwardReason,
+		lootDB[row.name][row.num].typeCode or "default")
 
 	-- Class Filters:
 	local classFilter = classFilter(row.class)
@@ -436,13 +445,17 @@ function LootHistory.FilterFunc(table, row)
 	return nameAndDate and responseFilter and classFilter -- Either one can filter the entry
 end
 
+--- Filter for the shown history
+---@param winner string Name of the winner
+---@param entry HistoryEntry
+---@return boolean
 function LootHistory:FilterForLootDB(winner, entry)
 	-- Name and Date filters:
 	local nameAndDate = filterNameData(winner, entry.date)
 
 	-- Response filters:
 	if not db.modules["RCLootHistory"].filters then return nameAndDate end -- db hasn't been initialized
-	local responseFilter = filterResponse(entry.responseID, entry.isAwardReason)
+	local responseFilter = filterResponse(entry.responseID, entry.isAwardReason, entry.typeCode or "default")
 
 	-- Class Filters:
 	local classFilter = classFilter(entry.class)
@@ -538,12 +551,13 @@ function LootHistory.SetCellSessionResponses(rowFrame, frame, data, cols, rowNum
 	if entry and entry.sessionResponses then
 		f:SetNormalTexture("Interface/Buttons/UI-GroupLoot-Dice-Up")
 		f:SetHighlightTexture("Interface/Buttons/UI-GroupLoot-Dice-Highlight")
-		f:SetScript("OnEnter", function() 
+		f:SetScript("OnEnter", function()
 			LootHistory.SessionData:SessionDetailButtonOnClick(row.name, entry, f)
-			addon:CreateTooltip(L["Responses"], L["history_sessionResponses_tip"]) end)
+			addon:CreateTooltip(L["Responses"], L["history_sessionResponses_tip"])
+		end)
 		f:SetScript("OnLeave", function() addon:HideTooltip() end)
 		f:SetScript("OnClick",
-		function() LootHistory.SessionData:SessionDetailButtonOnClick(row.name, entry, f) end)
+			function() LootHistory.SessionData:SessionDetailButtonOnClick(row.name, entry, f) end)
 		f:Show()
 	else
 		f:Hide()
@@ -832,9 +846,9 @@ function LootHistory:ImportPlayerExport(import)
 	--if #lootDB == 0 then lootDB = import; return end
 	local number = 0
 	for name, data in pairs(import) do
-		if lootDB[name] then -- We've registered the name, so check all the awards
+		if lootDB[name] then           -- We've registered the name, so check all the awards
 			for _, v in pairs(data) do
-				v.SR = nil -- Just in case anyone has this saved in their history
+				v.SR = nil             -- Just in case anyone has this saved in their history
 				local found = false
 				for _, d in pairs(lootDB[name]) do -- REVIEW This is currently ~O(#lootDB[name]^2). Could probably be improved.
 					-- Check if the id matches. If it does, we already have the data and can skip to the next
@@ -895,17 +909,18 @@ end
 ---------------------------------------------------
 local function IsFiltering()
 	for _, v in pairs(db.modules["RCLootHistory"].filters) do
-		if not v then return true end
-	end
-	for _, v in pairs(db.modules["RCLootHistory"].filters.class) do
-		if v then return true end
+		if type(v) == "table" then
+			for _, x in pairs(v) do
+				if x then return true end
+			end
+		end
 	end
 end
 
 function LootHistory:Update()
 	self.frame.st:SortData()
 	if IsFiltering() then
-		self.frame.filter.Text:SetTextColor(0.86, 0.5, 0.22) -- #db8238
+		self.frame.filter.Text:SetTextColor(0.86, 0.5, 0.22)         -- #db8238
 	else
 		self.frame.filter.Text:SetTextColor(_G.NORMAL_FONT_COLOR:GetRGB()) --#ffd100
 	end
@@ -919,7 +934,8 @@ function LootHistory:GetFrame()
 		490)
 	addon.UI:RegisterForEscapeClose(f, function() if self:IsEnabled() then self:Disable() end end)
 	f:SetScript("OnMouseDown", function() self.SessionData:Hide() end)
-	local st = LibStub("ScrollingTable"):CreateST(self.scrollCols, NUM_ROWS, ROW_HEIGHT, { ["r"] = 1.0, ["g"] = 0.9, ["b"] = 0.0, ["a"] = 0.5 }, f.content)
+	local st = LibStub("ScrollingTable"):CreateST(self.scrollCols, NUM_ROWS, ROW_HEIGHT,
+		{ ["r"] = 1.0, ["g"] = 0.9, ["b"] = 0.0, ["a"] = 0.5, }, f.content)
 	st.frame:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", 10, 10)
 	st:SetFilter(self.FilterFunc)
 	st:EnableSelection(true)
@@ -1009,7 +1025,7 @@ function LootHistory:GetFrame()
 		self.moreInfo:SetScale(Clamp(f:GetScale() * 0.6, .4, .9))
 	end)
 
-	local count = f:CreateFontString(nil,"OVERLAY", "GameFontDarkGraySmall")
+	local count = f:CreateFontString(nil, "OVERLAY", "GameFontDarkGraySmall")
 	count:SetPoint("BOTTOMRIGHT", b2, "TOPRIGHT", 0, 10)
 	count:SetTextColor(1, 1, 1, .9)
 	f.itemCount = count
@@ -1219,29 +1235,34 @@ end
 
 ---@class RecordedResponseInfo
 ---@field text string
----@field isAwardReason boolean
 ---@field color table|nil
 
 --- Fetches all recorded Responses
---- @return table<typeCode, table<responseID, RecordedResponseInfo>> : { [typeCode] = { [responseID] = {isAwardReason = boolean, color = {r,g,b} or nil} } }
+--- @return table<typeCode, table<responseID, RecordedResponseInfo>> recordedResponses, table<responseID, RecordedResponseInfo> awardReasons
 function LootHistory:GetRecordedResponses()
-	local ret = {}
+	local ret, awardReasons = {}, {}
 	for _, items in pairs(lootDB) do
 		for _, entry in pairs(items) do
-			local typeCode = entry.typeCode or "default"
-			if not ret[typeCode] then
-				ret[typeCode] = {}
-			end
-			if not ret[typeCode][entry.responseID] then
-				ret[typeCode][entry.responseID] = {
+			if entry.isAwardReason then
+				awardReasons[entry.responseID] = {
 					text = entry.response,
-					isAwardReason = entry.isAwardReason,
 					color = entry.color,
 				}
+			else
+				local typeCode = entry.typeCode or "default"
+				if not ret[typeCode] then
+					ret[typeCode] = {}
+				end
+				if not ret[typeCode][entry.responseID] then
+					ret[typeCode][entry.responseID] = {
+						text = entry.response,
+						color = entry.color,
+					}
+				end
 			end
 		end
 	end
-	return ret
+	return ret, awardReasons
 end
 
 --- Fetches response info from either db, mldb, or recorded responses. In that order.
@@ -1296,13 +1317,14 @@ function LootHistory.CreateFilterMenu(owner, menu)
 	--#region response filter
 	--#region setup
 	-- Build the data table:
-	local data = { ["STATUS"] = true, ["PASS"] = true, ["AUTOPASS"] = true, }
+	local data = { STATUS = true, BONUSROLL = true, AUTOPASS = true, PASS = true, }
 	-- Select the typeCode with the most responses
-	local recordedResponses = LootHistory:GetRecordedResponses()
+	local recordedResponses, awardReasons = LootHistory:GetRecordedResponses()
 	local maxResponses = 0
 	for typeCode, _ in pairs(recordedResponses) do
-		if #recordedResponses[typeCode] > maxResponses then
-			maxResponses = #recordedResponses[typeCode]
+		local c = TableUtil.SafeCountTable(recordedResponses[typeCode], true)
+		if c > maxResponses then
+			maxResponses = c
 		end
 	end
 
@@ -1324,13 +1346,29 @@ function LootHistory.CreateFilterMenu(owner, menu)
 		end
 	end
 	--#endregion setup
-	local IsSelected = function(index) return db.modules["RCLootHistory"].filters[index] end
-	local SetSelected = function(index, ctx, proxy)
-		db.modules["RCLootHistory"].filters[index] = not db.modules["RCLootHistory"].filters[index]
+	local IsSelected = function(data)
+		local filters = db.modules["RCLootHistory"].filters
+		if data.isAwardReason then
+			return filters.awardReasons[data.index]
+		else
+			return filters[data.typeCode][data.index]
+		end
+	end		
+	---@param data {index:number, typeCode:string, isAwardReason:boolean}
+	---@param ctx MenuInputData
+	---@param proxy MenuProxy
+	local SetSelected = function(data, ctx, proxy)
+		local filters = db.modules["RCLootHistory"].filters
+		if data.isAwardReason then
+			filters.awardReasons[data.index] = not filters.awardReasons[data.index]
+		else
+			filters[data.typeCode][data.index] = not filters[data.typeCode][data.index]
+		end
 		LootHistory:Update()
 		owner:Update()
 	end
 	for _, typeCode in ipairs(sortedTypeCodes) do
+		-- data[typeCode] = true
 		local subMenu = menu
 		if typeCode == "default" then
 			menu:CreateTitle(_G.DEFAULT)
@@ -1342,7 +1380,8 @@ function LootHistory.CreateFilterMenu(owner, menu)
 			if response then
 				local color = "|cff" .. addon.Utils:RGBToHex(unpack(response.color))
 				local text = i .. ": " .. color .. response.text
-				subMenu:CreateCheckbox(text, IsSelected, SetSelected, i)
+				subMenu:CreateCheckbox(text, IsSelected, SetSelected,
+					{ index = i, typeCode = typeCode, isAwardReason = false, })
 			end
 		end
 		if typeCode == "default" then
@@ -1356,16 +1395,24 @@ function LootHistory.CreateFilterMenu(owner, menu)
 					text = addon:GetResponse("default", k).text
 					color = "|cff" .. addon.Utils:RGBToHex(addon:GetResponseColor(nil, k))
 				end
-				subMenu:CreateCheckbox(color .. text, IsSelected, SetSelected, k)
+				subMenu:CreateCheckbox(color .. text, IsSelected, SetSelected,
+					{ index = k, typeCode = "default", isAwardReason = false, })
 			end
 		end
+	end
+	local ar = menu:CreateButton("|cffffff00"..L["Award Reasons"])
+	-- Create award reasons
+	for i, v in pairs(awardReasons) do
+		local color = "|cff" .. addon.Utils:RGBToHex(unpack(v.color))
+		local text = i .. ": " .. color .. v.text
+		ar:CreateCheckbox(text, IsSelected, SetSelected, { index = i, typeCode = nil, isAwardReason = true, })
 	end
 	menu:CreateDivider()
 	-- Clear filter
 	menu:CreateButton(_G.RESET, function()
 		for k, v in pairs(db.modules["RCLootHistory"].filters) do
-			if type(v) ~= "table" then
-				db.modules["RCLootHistory"].filters[k] = true
+			if k ~= "class" then
+				db.modules["RCLootHistory"].filters[k] = nil
 			end
 		end
 		LootHistory:Update()
@@ -1421,7 +1468,7 @@ function LootHistory.CreateRightClickMenu(rowFrame, root)
 
 	local name, color, text
 	local names = CopyTable(LootHistory.frame.name.data)
-	table.sort(names, function (a, b)
+	table.sort(names, function(a, b)
 		return a[2].value < b[2].value
 	end)
 	for _, v in ipairs(names) do
@@ -1462,7 +1509,8 @@ function LootHistory.CreateRightClickMenu(rowFrame, root)
 		local v
 		for i = 1, db.buttons.default.numButtons do
 			v = db.responses.default[i]
-			responseMenu:CreateButton(i .. ": " .. addon.Utils:ColorTableToColor(v.color):WrapTextInColorCode(v.text), ChangeResponse,
+			responseMenu:CreateButton(i .. ": " .. addon.Utils:ColorTableToColor(v.color):WrapTextInColorCode(v.text),
+				ChangeResponse,
 				{ to = i, row = rowData, typeCode = "default", })
 		end
 		responseMenu:CreateDivider()
@@ -1483,7 +1531,7 @@ function LootHistory.CreateRightClickMenu(rowFrame, root)
 		for k, v in ipairs(db.awardReasons) do
 			if k > db.numAwardReasons then break end
 			menu:CreateButton(k .. ": " .. addon.Utils:ColorTableToColor(v.color):WrapTextInColorCode(v.text),
-				ChangeResponse, { to = k, row = rowData, typeCode = nil, isAwardReason = true})
+				ChangeResponse, { to = k, row = rowData, typeCode = nil, isAwardReason = true, })
 		end
 	end
 	-- Finally show all "special" responses in debug mode
@@ -1492,7 +1540,8 @@ function LootHistory.CreateRightClickMenu(rowFrame, root)
 		local menu = responseMenu:CreateButton("Debug")
 		for k, v in pairs(db.responses.default) do
 			if type(k) ~= "number" then
-				menu:CreateButton(addon.Utils:ColorTableToColor(v.color):WrapTextInColorCode(v.text), ChangeResponse, { to = k, row = rowData, typeCode = "default" })
+				menu:CreateButton(addon.Utils:ColorTableToColor(v.color):WrapTextInColorCode(v.text), ChangeResponse,
+					{ to = k, row = rowData, typeCode = "default", })
 			end
 		end
 	end
