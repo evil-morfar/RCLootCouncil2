@@ -7,24 +7,29 @@ local Object = {}
 
 -- varargs: texture
 function Object:New(parent, name, texture)
-   local b = addon.UI.CreateFrame("Button", name, parent, "BackdropTemplate")
-   b:SetSize(40,40)
-   b:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square")
-   b:GetHighlightTexture():SetBlendMode("ADD")
-   b:SetNormalTexture(texture or "Interface\\InventoryItems\\WoWUnknownItem01")
-   b:GetNormalTexture():SetDrawLayer("BACKGROUND")
-   b:GetNormalTexture():SetVertexColor(1,1,1)
-   b:SetBackdrop({
-      bgFile = "",
-      edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
-      edgeSize = 18,
-   })
-   b:SetScript("OnLeave", addon.UI.HideTooltip)
-   b:EnableMouse(true)
-   b:RegisterForClicks("AnyUp")
-   b.SetBorderColor = self.SetBorderColor
-   b.Desaturate = self.Desaturate
+	local b = addon.UI.CreateFrame("Button", name, parent, "BackdropTemplate")
+	b.SetBorderColor = self.SetBorderColor
+	b.Desaturate = self.Desaturate
+	b.Init = self.Init
+	b:Init(texture)
 	return b
+end
+
+function Object:Init(texture)
+	self:SetSize(40, 40)
+	self:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square")
+	self:GetHighlightTexture():SetBlendMode("ADD")
+	self:SetNormalTexture(texture or "Interface\\InventoryItems\\WoWUnknownItem01")
+	self:GetNormalTexture():SetDrawLayer("BACKGROUND")
+	self:GetNormalTexture():SetVertexColor(1, 1, 1)
+	self:SetBackdrop({
+		bgFile = "",
+		edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+		edgeSize = 18,
+	})
+	self:SetScript("OnLeave", addon.UI.HideTooltip)
+	self:EnableMouse(true)
+	self:RegisterForClicks("AnyUp")
 end
 
 function Object:SetBorderColor(color)

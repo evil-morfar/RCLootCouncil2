@@ -26,7 +26,7 @@
 ---@field itemReplaced1 ItemLink? Item that was replaced by the item won, if any
 ---@field itemReplaced2 ItemLink? Item that was replaced by the item won, if any
 ---@field response string Text of the winning response or reason
----@field responseID integer ID of the winning response or reason
+---@field responseID integer|string ID of the winning response or reason
 ---@field color number[] Color of the winning response or reason (r,g,b,a)
 ---@field class ClassInfo.classFile Class of the winner
 ---@field isAwardReason boolean Whether the response is an award reason
@@ -49,3 +49,12 @@
 ---@field boss string Boss name
 ---@field autoloot boolean Whether the item was autolooted
 ---@field isLooted? boolean Whether the item has been looted
+
+---@class HistoryDataRow
+---@field data string YYYY/MM/DD
+---@field class ClassInfo.classFile Class of the winner
+---@field name string Name of the winner
+---@field num integer Index in lootDB[name]
+---@field response integer|string ID of the winning response
+---@field isAwardReason boolean Whether the response is an award reason
+---@field cols table[table] Columns. Not defined here.

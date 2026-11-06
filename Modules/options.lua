@@ -591,10 +591,21 @@ function addon:OptionsTable()
 										type = "header",
 										name = "",
 									},
+									
 									desc = {
 										order = 11,
 										type = "description",
+										fontSize = "large",
 										name = L["Mass deletion of history entries."],
+									},
+									numItems = {
+										order = 11.5,
+										name = function()
+											local count = addon:GetActiveModule("history"):CountItems()
+											return format(L.history_frame_totalNumItems, count)
+										end,
+										type = "description",
+										width = "double",
 									},
 									deleteName = {
 										order = 12,
@@ -2272,6 +2283,7 @@ function addon:ImportProfile(data)
 	else
 		self:ApplyProfile(name, profile)
 	end
+	self:GetActiveModule"history":UpdateRegisteredInstances()
 end
 
 function addon:GetProfileForExport()

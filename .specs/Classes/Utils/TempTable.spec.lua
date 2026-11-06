@@ -5,6 +5,7 @@ require "busted.runner" ()
 local addon_name, addon = "RCLootCouncil", {}
 loadfile(".specs/AddonLoader.lua")(nil, addon_name, addon).LoadArray {
 	"Classes/Core.lua",
+	"Classes/Utils/Pool.lua",
 	"Classes/Utils/TempTable.lua",
 }
 

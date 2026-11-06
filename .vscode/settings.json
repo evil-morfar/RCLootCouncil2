@@ -203,7 +203,8 @@
         "MenuInputContext",
         "AnchorUtil",
         "MenuVariants",
-        "WOW_PROJECT_CLASSIC"
+        "WOW_PROJECT_CLASSIC",
+        "DevTool"
     ],
     "Lua.workspace.checkThirdParty": false,
     "Lua.runtime.version": "Lua 5.1",

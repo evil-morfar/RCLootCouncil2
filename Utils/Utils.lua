@@ -48,8 +48,19 @@ function Utils:FindInTooltip(tooltipLines, ...)
 	end
 end
 
+--- Converts a decimal number to a hex string.
+--- @param r number
+--- @param g number
+--- @param b number
 function Utils:RGBToHex(r, g, b)
 	return string.format("%02x%02x%02x", 255 * r, 255 * g, 255 * b)
+end
+
+--- Converts a color table {r, g, b, a} to a ColorMixin
+---@param colorTable number[] Array of color values {r, g, b, a}
+---@return ColorMixin
+function Utils:ColorTableToColor(colorTable)
+	return CreateColor(unpack(colorTable))
 end
 
 function Utils:GetAnnounceChannel(channel)

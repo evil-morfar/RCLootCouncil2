@@ -539,6 +539,9 @@ L.chat_command_start_error_start_PartyIsLFG = "Cannot start: you are in a LFG pa
 L.chat_command_start_error_usageNever = "Cannot start: your 'usage' option is set to 'never'."
 L.chat_command_start_error_onlyUseInRaids = "Cannot start: you're in a party and have the 'only use in raids' option enabled."
 L.chat_restrictions_enabled = "Not currently possible due to Addon Restrictions."
+
+L.history_frame_numItemsOfItems = "Showing %d of %d items"
+L.history_frame_totalNumItems = "You have %d items in your history."
 L.history_export_sheets_tip = "Tab delimited export for Google Sheets and English version of Excel that uses ';' as formula delimiter."
 L.history_export_excel_international_tip = "Tab delimited export for international version of Excel that uses ',' as formula delimiter."
 L.history_sessionResponses_tip = "Click to show everyone's response to this item."

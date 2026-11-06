@@ -151,6 +151,13 @@ function Comms:OnDisable()
 	private.AceComm:UnregisterAllComm()
 end
 
+function Comms:DumpQueue()
+	Log:D("<Comm>", "Queued comms:")
+	for i, comm in ipairs(private.queuedComms) do
+		Log:D(i, comm)
+	end
+end
+
 --- Function to actually send the comms
 ---@param prefix Prefixes The command prefix (usually `addon.PREFIXES.MAIN`)
 ---@param target "group" | "guild" | Player The target to send to. Can be "group", "guild" or a Player object.

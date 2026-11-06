@@ -3,8 +3,14 @@ local addon = select(2, ...)
 --- @type RCLootCouncilLocale
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 
+---@class ResponseInfo
+---@field text string?
+---@field color table
+---@field sort number
+
 -- Default responses
 addon.responses = {
+	---@type table<string, ResponseInfo>
 	default = {
 		AWARDED      = { color = { 1, 1, 1, 1, }, sort = 0.1, text = L["Awarded"], },
 		PL           = { color = { 1, 0.6, 0, 1, }, sort = 498, text = L["Personal Loot - Non tradeable"], },
@@ -243,12 +249,8 @@ addon.defaults = {
 		modules = { -- For storing module specific data
 			["*"] = {
 				filters = { -- Default filtering is showed
-					["*"] = true,
-					ranks = {
+					["*"] = {
 						["*"] = true,
-					},
-					class = {
-						["*"] = false,
 					},
 				},
 				alwaysShowTooltip = false,

@@ -1,5 +1,6 @@
 require "FrameAPI/Frames/Frame"
 require "FrameAPI/Frames/Button"
+require "FrameAPI/Frames/DropdownButton"
 require "FrameAPI/Frames/CheckButton"
 require "FrameAPI/Frames/GameTooltip"
 require "FrameAPI/Frames/Editbox"
@@ -7,11 +8,12 @@ require "FrameAPI/Frames/StatusBar"
 require "FrameAPI/Frames/Slider"
 require "FrameAPI/Frames/ScrollFrame"
 
-local Templates = {}
+local Templates = {} -- Implemented below
 
 local frameConstructors = {
 	Frame = _G.Frame.New,
 	Button = _G.Button.New,
+	DropdownButton = _G.DropdownButton.New,
 	CheckButton = _G.CheckButton.New,
 	GameTooltip = _G.GameTooltipFrame.New,
 	EditBox = _G.EditBox.New,
@@ -92,3 +94,7 @@ Templates.ChatConfigCheckButtonTemplate = function(object, name) return object e
 
 Templates.TextStatusBar = function(object, name) return object end
 Templates.AutoCompleteEditBoxTemplate = function(object, name) return object end
+Templates.WowStyle1FilterDropdownTemplate = function(object, name)
+	-- We can get away with a minimum
+	return object
+end

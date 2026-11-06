@@ -351,5 +351,16 @@ Compat.list = {
 				addon.Log:D(format("Cleaned %d occurrences of SR in history", count))
 			end
 		end
+	},
+	{
+		name = "Filter update",
+		version = "3.25.0",
+		func = function ()
+			for _, db in pairs(addon.db.profiles) do
+				if db.modules and db.modules.RCLootHistory then
+					db.modules.RCLootHistory.filters = addon.defaults.profile.modules.RCLootHistory.filters
+				end
+			end
+		end
 	}
 }
