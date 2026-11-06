@@ -1368,45 +1368,47 @@ function LootHistory.CreateFilterMenu(owner, menu)
 		LootHistory:Update()
 		owner:Update()
 	end
-	for _, typeCode in ipairs(sortedTypeCodes) do
-		-- data[typeCode] = true
-		local subMenu = menu
-		if typeCode == "default" then
-			menu:CreateTitle(_G.DEFAULT)
-		else
-			subMenu = menu:CreateButton(addon.OPT_MORE_BUTTONS_VALUES[typeCode] or _G.UNKNOWN)
+    for _, typeCode in ipairs(sortedTypeCodes) do
+        -- data[typeCode] = true
+        local subMenu = menu
+        if typeCode == "default" then
+            menu:CreateTitle(_G.DEFAULT)
+        else
+            subMenu = menu:CreateButton(addon.OPT_MORE_BUTTONS_VALUES[typeCode] or _G.UNKNOWN)
+        end
+        for i = 1, maxResponses do
+            local response = LootHistory:GetResponseInfo(recordedResponses, typeCode, i)
+            if response then
+                local color = "|cff" .. addon.Utils:RGBToHex(unpack(response.color))
+                local text = i .. ": " .. color .. response.text
+                subMenu:CreateCheckbox(text, IsSelected, SetSelected,
+                    { index = i, typeCode = typeCode, isAwardReason = false, })
+            end
+        end
+        if typeCode == "default" then
+            local text, color
+            -- add the status codes
+            for k in pairs(data) do
+                if k == "STATUS" then
+                    text = L["Status texts"]
+                    color = "|cffde34e2" -- purpleish
+                else
+                    text = addon:GetResponse("default", k).text
+                    color = "|cff" .. addon.Utils:RGBToHex(addon:GetResponseColor(nil, k))
+                end
+                subMenu:CreateCheckbox(color .. text, IsSelected, SetSelected,
+                    { index = k, typeCode = "default", isAwardReason = false, })
+            end
+        end
+    end
+	if #awardReasons > 0 then
+		local ar = menu:CreateButton("|cffffff00"..L["Award Reasons"])
+		-- Create award reasons
+		for i, v in pairs(awardReasons) do
+			local color = "|cff" .. addon.Utils:RGBToHex(unpack(v.color))
+			local text = i .. ": " .. color .. v.text
+			ar:CreateCheckbox(text, IsSelected, SetSelected, { index = i, typeCode = nil, isAwardReason = true, })
 		end
-		for i = 1, maxResponses do
-			local response = LootHistory:GetResponseInfo(recordedResponses, typeCode, i)
-			if response then
-				local color = "|cff" .. addon.Utils:RGBToHex(unpack(response.color))
-				local text = i .. ": " .. color .. response.text
-				subMenu:CreateCheckbox(text, IsSelected, SetSelected,
-					{ index = i, typeCode = typeCode, isAwardReason = false, })
-			end
-		end
-		if typeCode == "default" then
-			local text, color
-			-- add the status codes
-			for k in pairs(data) do
-				if k == "STATUS" then
-					text = L["Status texts"]
-					color = "|cffde34e2" -- purpleish
-				else
-					text = addon:GetResponse("default", k).text
-					color = "|cff" .. addon.Utils:RGBToHex(addon:GetResponseColor(nil, k))
-				end
-				subMenu:CreateCheckbox(color .. text, IsSelected, SetSelected,
-					{ index = k, typeCode = "default", isAwardReason = false, })
-			end
-		end
-	end
-	local ar = menu:CreateButton("|cffffff00"..L["Award Reasons"])
-	-- Create award reasons
-	for i, v in pairs(awardReasons) do
-		local color = "|cff" .. addon.Utils:RGBToHex(unpack(v.color))
-		local text = i .. ": " .. color .. v.text
-		ar:CreateCheckbox(text, IsSelected, SetSelected, { index = i, typeCode = nil, isAwardReason = true, })
 	end
 	menu:CreateDivider()
 	-- Clear filter
