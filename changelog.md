@@ -23,7 +23,6 @@ Updated filter and right-click menus to use BlizzardMenu. These are way newer an
 
 Because of these changes, saved filters have been reset.
 
-
 # 3.24.1
 
 ## Bugfixes
