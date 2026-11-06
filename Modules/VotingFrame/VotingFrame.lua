@@ -2439,7 +2439,7 @@ do
 			end
 
 			-- Build the data table:
-			local data = { ["STATUS"] = true, ["PASS"] = true, ["AUTOPASS"] = true, default = {}, }
+			local data = { ["STATUS"] = true, ["PASS"] = true, ["AUTOPASS"] = true }
 
 			for i = 1, addon:GetNumButtons() do
 				data[i] = i
