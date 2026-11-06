@@ -29,6 +29,7 @@ function Loader.LoadToc(file)
 		v = Loader.stripspaces(v)
 		-- Ignore comments
 		if not v:match("^##") and #v > 0 then
+			v = Loader.handleDirectives(v)
 			local ext = Loader.GetFileExtension(v)
 			if ext == ".xml" then
 				local res = Loader.XmlHandler(v)
@@ -90,6 +91,54 @@ end
 
 function Loader.stripspaces(str)
 	return string.gsub(str, "%s+", "")
+end
+
+local stringToProjectID = {
+	standard = WOW_PROJECT_MAINLINE,
+	classic = WOW_PROJECT_CLASSIC,
+	bcc = WOW_PROJECT_BURNING_CRUSADE_CLASSIC,
+	wotlk = WOW_PROJECT_WRATH_CLASSIC,
+	tbc = WOW_PROJECT_BURNING_CRUSADE_CLASSIC,
+	forever = 18, -- WOW_PROJECT_CAMELOT
+}
+local projectIDToString = {}
+for k, v in pairs(stringToProjectID) do
+	projectIDToString[v] = k
+end
+
+---@param str string
+function Loader.handleDirectives(str)
+	local dirStart = str:find("%[")
+	if dirStart == nil then return str end
+
+	local directivesAllow = str:match("AllowLoadGameType([%s%a,]+)")
+	local directivesExclude = str:match("ExcludeLoadGameType([%s%a,]+)")
+	if not (directivesAllow or directivesExclude) then return str end
+
+	if directivesAllow then
+		directivesAllow = { directivesAllow:match("([^,]+)") }
+		local found = false
+		for _, v in pairs(directivesAllow) do
+			if v == projectIDToString[WOW_PROJECT_ID] then
+				found = true
+				break
+			end
+		end
+		if found then return str end
+	end
+
+	if directivesExclude then
+		local found = false
+		for _, v in directivesExclude:gmatch("([^,]+)") do
+			if v == projectIDToString[WOW_PROJECT_ID] then
+				found = true
+				break
+			end
+		end
+		if found then return "" end
+	end
+
+	return str
 end
 
 function Loader.ExtractXMLLine(line)
