@@ -1,5 +1,5 @@
 ## Author: Potdisc
-## Interface: 120105
+## Interface: 120105, 16001
 ## Notes: Interface for running a Loot Council v3.24.1
 ## Title: RCLootCouncil
 ## Version: 3.24.1
@@ -68,4 +68,4 @@ Utils\autopass.lua
 Utils\popups.lua
 
 # Forever
-Forever\CoreUpdates.lua [AllowLoadGameType camelot, forever][ExcludeLoadGameType standard, classic]
+Forever\CoreUpdates.lua [AllowLoadGameType forever][ExcludeLoadGameType standard, classic]

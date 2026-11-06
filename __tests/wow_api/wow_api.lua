@@ -108,6 +108,10 @@ function UnitName(unit)
 	return unit
 end
 
+function GetNormalizedRealmName()
+	return "RealmName"
+end
+
 function UnitFullName(unit)
 	return UnitName(unit), GetRealmName()
 end

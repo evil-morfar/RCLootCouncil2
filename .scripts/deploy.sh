@@ -35,7 +35,7 @@ while getopts ":bcpxf" opt; do
       x)
          WOWEDITION="_xptr_";;
       f)
-         WOWEDITION="_classic_beta_";;
+         WOWEDITION="_forever_";;
       /?)
          usage ;;
    esac

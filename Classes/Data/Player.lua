@@ -202,8 +202,13 @@ end
 
 --- @param guid string
 function private:GetPlayerInfoByGUID(guid)
-	local _, class, _, _, _, _, realm = GetPlayerInfoByGUID(guid)
-	local name = UnitNameFromGUID(guid)
+	local _, class, _, _, _, name, realm = GetPlayerInfoByGUID(guid)
+	if name then
+		-- Check for "\000" padding produced by GetPlayerInfoByGUID
+		local found = name:find("\000")
+		if found then name = name:sub(0, found - 1) end
+	end
+
 	if realm == "" then
 		if not self.realmName then
 			self.realmName = select(2, UnitFullName("player"))

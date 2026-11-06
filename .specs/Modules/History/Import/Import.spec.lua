@@ -166,7 +166,7 @@ Gemenim					165524												1					]]
 			History:ImportHistory(data)
 			assert.stub(s).was_called_with(match.is_ref(addon),
 				string.format(L["Successfully imported 'number' entries."], 1))
-			local entry = addon:GetHistoryDB()["Gemenim-Realm Name"][1]
+			local entry = addon:GetHistoryDB()["Gemenim-RealmName"][1]
 			assert.are.equal(
 				"|cffa335ee|Hitem:165524:::::::::::5:3:4799:1522:4786::::::|h[Amethyst-Studded Bindings]|h|r",
 				entry.lootWon)
