@@ -2079,18 +2079,21 @@ function RCLootCouncil:GetML()
 end
 
 function RCLootCouncil:GetInstalledModulesFormattedData()
-	local modules = {}
+	local modulesToCheck, modules = {}, {}
 	-- We're interested in everything that isn't a default module
 	local test = function(name) for _, k in pairs(defaultModules) do if k == name then return true end end end
-	for k in pairs(self.modules) do if not test(k) then tinsert(modules, k) end end
+	for k in pairs(self.modules) do if not test(k) then tinsert(modulesToCheck, k) end end
+	local version = ""
 	-- Now for the formatting
-	for num, name in pairs(modules) do
+	for _, name in pairs(modulesToCheck) do
 		if self:GetModule(name).version then -- People might not have added version
-			modules[num] = self:GetModule(name).baseName .. " - " .. self:GetModule(name).version
-			if self:GetModule(name).tVersion then modules[num] = modules[num] .. "-" .. self:GetModule(name).tVersion end
+			version = self:GetModule(name).baseName .. " - " .. self:GetModule(name).version
+			if self:GetModule(name).tVersion then version = version .. "-" .. self:GetModule(name).tVersion end
+			if not tContains(modules, version) then tinsert(modules, version) end
 		else
 			local ver = C_AddOns.GetAddOnMetadata(self:GetModule(name).baseName, "Version")
-			modules[num] = self:GetModule(name).baseName .. " - " .. (ver or _G.UNKNOWN)
+			version = self:GetModule(name).baseName .. " - " .. (ver or _G.UNKNOWN)
+			if not tContains(modules, version) then tinsert(modules, version) end
 		end
 	end
 	return modules
