@@ -569,6 +569,9 @@ L["opt_award_later_desc"] = "Check to automatically check the 'Award Later' opti
 L["opt_buttonsGroup_desc"] = "Options group for %s buttons and responses.\nSee above for a detailed explanation."
 L["opt_chatFrameName_name"] = "Chat Frame"
 L["opt_chatFrameName_desc"] = "Select which chat frame you want RCLootCouncil to output information to."
+L.opt_classicAutoPass_name = "Classic Auto Pass"
+L.opt_classicAutoPass_desc =
+"Check to enable autopassing of items your class cannot use, as opposed to *should not* use."
 L.opt_closeWithEscape_name = "Escape Close"
 L.opt_closeWithEscape_desc = "When enabled, all non-critical RCLootCouncil frames can be closed by pressing 'Escape'. (Requires reload to take effect on already created frames)"
 L.opt_lootDecor_name = "Add Decor"

@@ -20,7 +20,6 @@ local private = {
 		end,
 		__newindex = function(_, k, v) addon.db.global.playerCache[k] = v end,
 	}),
-	realmName = nil, -- Not ready here, will be initialized later
 }
 
 ---@class Player : PlayerMT
@@ -210,10 +209,7 @@ function private:GetPlayerInfoByGUID(guid)
 	end
 
 	if realm == "" then
-		if not self.realmName then
-			self.realmName = select(2, UnitFullName("player"))
-		end
-		realm = self.realmName
+		realm = addon.realmName
 	end
 	return name, realm, class
 end

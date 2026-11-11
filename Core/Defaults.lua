@@ -243,6 +243,13 @@ addon.defaults = {
 				border = "Blizzard Dialog",
 				background = "Blizzard Garrison Background 3",
 			},
+			forever = {
+				name = "Forever",
+				bgColor = { 0.5, 0.9, 1, 0.97, },
+				borderColor = { 0.15, 0.9, 1, 0.85, },
+				background = "Blizzard Collections Background",
+				border = "Blizzard Tooltip",
+			}
 		},
 		currentSkin = "bfa",
 
