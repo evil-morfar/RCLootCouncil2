@@ -73,3 +73,7 @@ function addon:EnableModules()
 		Module:Enable()
 	end
 end
+
+function addon:IterateClasses()
+	return pairs(private.modules)
+end
