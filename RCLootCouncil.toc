@@ -72,3 +72,4 @@ Forever\Constants.lua [AllowLoadGameType forever][ExcludeLoadGameType standard, 
 Forever\Defaults.lua [AllowLoadGameType forever][ExcludeLoadGameType standard, classic]
 Forever\CoreUpdates.lua [AllowLoadGameType forever][ExcludeLoadGameType standard, classic]
 Forever\Options.lua [AllowLoadGameType forever][ExcludeLoadGameType standard, classic]
+Forever\MasterLoot.lua [AllowLoadGameType forever][ExcludeLoadGameType standard, classic]

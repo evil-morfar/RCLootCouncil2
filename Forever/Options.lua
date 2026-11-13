@@ -41,7 +41,18 @@ function addon:OptionsTable()
 	-- No pets or decor to loot
 	options.args.mlSettings.args.generalTab.args.lootingOptions.args.lootPets = nil
 	options.args.mlSettings.args.generalTab.args.lootingOptions.args.lootDecor = nil
-	-- Object:NewAwardOptions(options)
+    -- Object:NewAwardOptions(options)
+	
+	-- ML loot to player
+	options.args.mlSettings.args.generalTab.args.lootingOptions.args.mlLootToPlayer = {
+		order = 3,
+		name = "Loot Master Loot items to me",
+		desc =
+		"Loot items to your bags before starting a session for manual trading. Disable this to leave items on the boss and award them directly to players.",
+		type = "toggle",
+		get = function() return addon.db.profile.mlLootToPlayer end,
+		set = function(_, value) addon.db.profile.mlLootToPlayer = value end,
+	}
 	return options
 end
 
