@@ -117,6 +117,15 @@ local playersData = { -- Update on login/encounter starts. it stores the informa
 } -- player's data that can be changed by the player (spec, equipped ilvl, gaers, relics etc)
 
 function RCLootCouncil:OnInitialize()
+	-- if NumyFunctionProfiler then
+	-- 	NumyFunctionProfiler:WrapModules("RCLootCouncil", "", self, 2)
+	-- 	for name, module in self:IterateModules() do
+	-- 		NumyFunctionProfiler:WrapModules("RCLootCouncil", name, module, 2)
+	-- 	end
+	-- 	for name, class in self:IterateClasses() do
+	-- 		NumyFunctionProfiler:WrapModules("RCLootCouncil", name, class)
+	-- 	end
+	-- end
 	-- IDEA Consider if we want everything on self, or just whatever modules could need.
 	self.version = C_AddOns.GetAddOnMetadata("RCLootCouncil", "Version")
 	self.nnp = false
