@@ -7,9 +7,9 @@ local addon = select(2, ...)
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 local Object = {}
 
-local old_options_func = addon.OptionsTable
+local OriginalOptionsFunc = addon.OptionsTable
 function addon:OptionsTable()
-	local options = old_options_func(addon)
+	local options = OriginalOptionsFunc(addon)
 
 	-- No need for ambiguate
 	options.args.settings.args.generalSettingsTab.args.ambiguate = nil
@@ -28,7 +28,6 @@ function addon:OptionsTable()
 	options.args.settings.args.generalSettingsTab.args.lootHistoryOptions.args.savePersonalLoot = nil
 	options.args.settings.args.generalSettingsTab.args.lootHistoryOptions.args.saveBonusRolls = nil
 
-	-- TODO: implement
 	-- "Classic" auto pass options for auto passing items your class cannot use only (Vanilla/TBC)
 	options.args.settings.args.generalSettingsTab.args.responseOptions.args.classicAutoPass = {
 		order = 1.5,
@@ -41,18 +40,33 @@ function addon:OptionsTable()
 	-- No pets or decor to loot
 	options.args.mlSettings.args.generalTab.args.lootingOptions.args.lootPets = nil
 	options.args.mlSettings.args.generalTab.args.lootingOptions.args.lootDecor = nil
-    -- Object:NewAwardOptions(options)
-	
-	-- ML loot to player
-	options.args.mlSettings.args.generalTab.args.lootingOptions.args.mlLootToPlayer = {
-		order = 3,
-		name = "Loot Master Loot items to me",
-		desc =
-		"Loot items to your bags before starting a session for manual trading. Disable this to leave items on the boss and award them directly to players.",
-		type = "toggle",
-		get = function() return addon.db.profile.mlLootToPlayer end,
-		set = function(_, value) addon.db.profile.mlLootToPlayer = value end,
+
+	-- Section for master loot stuff
+	options.args.mlSettings.args.generalTab.args.lootingOptions.args.masterLootText = {
+		order = 9.6,
+		type = "group",
+		name = _G.MASTER_LOOTER,
+		args = {
+			mlLootToPlayer = {
+				order = 1,
+				name = L.opt_forever_mlLootToPlayer_name,
+				desc = L.opt_forever_mlLootToPlayer_desc,
+				type = "toggle",
+				get = function() return addon.db.profile.mlLootToPlayer end,
+				set = function(_, value) addon.db.profile.mlLootToPlayer = value end,
+			},
+		}
 	}
+	-- Section for group loot stuff
+	options.args.mlSettings.args.generalTab.args.lootingOptions.args.groupLootText = {
+		order = 10.6,
+		type = "group",
+		name = L.GROUP_LOOT,
+		args = {
+			autoGroupLoot = options.args.mlSettings.args.generalTab.args.lootingOptions.args.autoGroupLoot
+		}
+	}
+	options.args.mlSettings.args.generalTab.args.lootingOptions.args.autoGroupLoot = nil
 	return options
 end
 
