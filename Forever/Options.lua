@@ -12,7 +12,7 @@ function addon:OptionsTable()
 	local options = OriginalOptionsFunc(addon)
 
 	-- No need for ambiguate
-	options.args.settings.args.generalSettingsTab.args.ambiguate = nil
+	options.args.settings.args.generalSettingsTab.args.generalOptions.args.ambiguate = nil
 
 	-- No Encounter Journal, so no trinkets autopass
 	options.args.settings.args.generalSettingsTab.args.responseOptions.args.autoPassTrinket = nil

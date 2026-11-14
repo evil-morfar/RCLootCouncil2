@@ -218,17 +218,6 @@ local function addNameToList(list, name, class)
     list[name] = "|cff" .. addon.Utils:RGBToHex(c.r, c.g, c.b) .. tostring(name) .. "|r"
 end
 
-local function titleCaseName(name)
-    if not name then
-        return ""
-    end -- Just in case
-    local realm
-    if (strfind(name, "-", nil, true)) then
-        name, realm = strsplit("-", name, 2)
-    end
-    name = name:lower():gsub("^%l", string.upper)
-    return name .. "-" .. (realm or addon.realmName)
-end
 -- Builds a list of targets we can sync to.
 -- Used in the options menu for an AceGUI dropdown.
 function sync:GetSyncTargetOptions()
@@ -249,14 +238,14 @@ function sync:GetSyncTargetOptions()
     for i = 1, C_FriendList.GetNumOnlineFriends() do
         name, _, class, _, isOnline = C_FriendList.GetFriendInfoByIndex(i)
         if isOnline then
-            addNameToList(ret, titleCaseName(name), class)
+            addNameToList(ret, addon.Ambiguate(name), class)
         end
     end
     -- guildmembers
     for i = 1, GetNumGuildMembers() do
         name, _, _, _, _, _, _, _, isOnline, _, class = GetGuildRosterInfo(i)
         if isOnline then
-            addNameToList(ret, titleCaseName(name), class)
+            addNameToList(ret, addon.Ambiguate(name), class)
         end
     end
     -- Remove ourselves
