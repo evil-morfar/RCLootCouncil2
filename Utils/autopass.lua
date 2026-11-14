@@ -20,85 +20,38 @@ AutoPass.weaponStatAdditions = {
 	[232805] = { "ITEM_MOD_INTELLECT_SHORT", }, -- Best-In-Slots: Int version can be turned into the Agi/Str version
 }
 
---- Classes that should autopass a subtype.
+--- Classes that can use a subtype.
 ---@type table<Enum.ItemClass, table<Enum.ItemArmorSubclass | Enum.ItemWeaponSubclass, string[]>>
 AutoPass.autopassTable = {
 	[Enum.ItemClass.Armor] = {
-
-		[Enum.ItemArmorSubclass.Cloth] = { "WARRIOR", "DEATHKNIGHT", "PALADIN", "DRUID", "MONK", "ROGUE", "HUNTER",
-			"SHAMAN",
-
-			"DEMONHUNTER", "EVOKER", },
-		[Enum.ItemArmorSubclass.Leather] = { "WARRIOR", "DEATHKNIGHT", "PALADIN", "HUNTER", "SHAMAN", "PRIEST", "MAGE",
-			"WARLOCK",
-
-			"EVOKER", },
-
-		[Enum.ItemArmorSubclass.Mail] = { "WARRIOR", "DEATHKNIGHT", "PALADIN", "DRUID", "MONK", "ROGUE", "PRIEST",
-			"MAGE", "WARLOCK",
-
-			"DEMONHUNTER", },
-
-		[Enum.ItemArmorSubclass.Plate] = { "DRUID", "MONK", "ROGUE", "HUNTER", "SHAMAN", "PRIEST", "MAGE", "WARLOCK",
-			"DEMONHUNTER",
-
-			"EVOKER", },
-
-		[Enum.ItemArmorSubclass.Shield] = { "DEATHKNIGHT", "DRUID", "MONK", "ROGUE", "HUNTER", "PRIEST", "MAGE",
-			"WARLOCK",
-
-			"DEMONHUNTER", "EVOKER", },
-
+		[Enum.ItemArmorSubclass.Cloth] = { "PRIEST", "MAGE", "WARLOCK", },
+		[Enum.ItemArmorSubclass.Leather] = { "ROGUE", "MONK", "DRUID", "DEMONHUNTER", },
+		[Enum.ItemArmorSubclass.Mail] = { "HUNTER", "SHAMAN", "EVOKER", },
+		[Enum.ItemArmorSubclass.Plate] = { "WARRIOR", "PALADIN", "DEATHKNIGHT", },
+		[Enum.ItemArmorSubclass.Shield] = { "WARRIOR", "PALADIN", "SHAMAN", },
 	},
 	[Enum.ItemClass.Weapon] = {
-		[Enum.ItemWeaponSubclass.Axe1H] = { "DRUID", "PRIEST", "MAGE", "WARLOCK", },
-
-		[Enum.ItemWeaponSubclass.Axe2H] = { "DRUID", "ROGUE", "MONK", "PRIEST", "MAGE", "WARLOCK", "DEMONHUNTER", "EVOKER", },
-
-
-		[Enum.ItemWeaponSubclass.Bows] = { "DEATHKNIGHT", "PALADIN", "DRUID", "MONK", "SHAMAN", "PRIEST", "MAGE",
-			"WARLOCK",
-			"DEMONHUNTER", "WARRIOR", "EVOKER", },
-
-		[Enum.ItemWeaponSubclass.Crossbow] = { "DEATHKNIGHT", "PALADIN", "DRUID", "MONK", "SHAMAN", "PRIEST", "MAGE",
-			"WARLOCK",
-
-			"DEMONHUNTER", "WARRIOR", "EVOKER", },
-
-		[Enum.ItemWeaponSubclass.Dagger] = { "DEATHKNIGHT", "PALADIN", "MONK", },
-
-		[Enum.ItemWeaponSubclass.Guns] = { "DEATHKNIGHT", "PALADIN", "DRUID", "MONK", "SHAMAN", "PRIEST", "MAGE",
-			"WARLOCK",
-
-			"DEMONHUNTER", "WARRIOR", "EVOKER", },
-
-		[Enum.ItemWeaponSubclass.Mace1H] = { "HUNTER", "MAGE", "WARLOCK", "DEMONHUNTER", },
-
-		[Enum.ItemWeaponSubclass.Mace2H] = { "MONK", "ROGUE", "HUNTER", "PRIEST", "MAGE", "WARLOCK", "DEMONHUNTER" },
-
-
-		[Enum.ItemWeaponSubclass.Polearm] = { "ROGUE", "SHAMAN", "PRIEST", "MAGE", "WARLOCK", "DEMONHUNTER", "EVOKER", },
-
-
-		[Enum.ItemWeaponSubclass.Sword1H] = { "DRUID", "SHAMAN", "PRIEST", },
-
-		[Enum.ItemWeaponSubclass.Sword2H] = { "DRUID", "MONK", "ROGUE", "SHAMAN", "PRIEST", "MAGE", "WARLOCK", "DEMONHUNTER", "EVOKER", },
-
-
-		[Enum.ItemWeaponSubclass.Staff] = { "DEATHKNIGHT", "PALADIN", "ROGUE", "DEMONHUNTER", },
-
-		[Enum.ItemWeaponSubclass.Wand] = { "WARRIOR", "DEATHKNIGHT", "PALADIN", "DRUID", "MONK", "ROGUE", "HUNTER",
-			"SHAMAN",
-
+		[Enum.ItemWeaponSubclass.Axe1H] = { "WARRIOR", "PALADIN", "HUNTER", "ROGUE", "DEATHKNIGHT", "SHAMAN", "MONK",
 			"DEMONHUNTER", "EVOKER", },
-
-		[Enum.ItemWeaponSubclass.Warglaive] = { "WARRIOR", "DEATHKNIGHT", "PALADIN", "DRUID", "MONK", "ROGUE", "PRIEST",
-			"MAGE",
-
-			"WARLOCK", "HUNTER", "SHAMAN", "EVOKER", },
-
-		[Enum.ItemWeaponSubclass.Unarmed] = { "DEATHKNIGHT", "PALADIN", "PRIEST", "MAGE", "WARLOCK", }, -- Fist weapons
-
+		[Enum.ItemWeaponSubclass.Axe2H] = { "WARRIOR", "PALADIN", "HUNTER", "DEATHKNIGHT", "SHAMAN", },
+		[Enum.ItemWeaponSubclass.Bows] = { "HUNTER", "ROGUE", },
+		[Enum.ItemWeaponSubclass.Crossbow] = { "HUNTER", "ROGUE", },
+		[Enum.ItemWeaponSubclass.Dagger] = { "WARRIOR", "HUNTER", "ROGUE", "PRIEST", "SHAMAN", "MAGE", "WARLOCK",
+			"DEMONHUNTER", "DRUID", "EVOKER", },
+		[Enum.ItemWeaponSubclass.Guns] = { "HUNTER", "ROGUE", },
+		[Enum.ItemWeaponSubclass.Mace1H] = { "WARRIOR", "PALADIN", "ROGUE", "PRIEST", "DEATHKNIGHT", "SHAMAN", "MONK",
+			"DRUID", "EVOKER", },
+		[Enum.ItemWeaponSubclass.Mace2H] = { "WARRIOR", "PALADIN", "DEATHKNIGHT", "SHAMAN", "DRUID", "EVOKER", },
+		[Enum.ItemWeaponSubclass.Polearm] = { "WARRIOR", "PALADIN", "HUNTER", "DEATHKNIGHT", "MONK", "DRUID", },
+		[Enum.ItemWeaponSubclass.Sword1H] = { "WARRIOR", "PALADIN", "HUNTER", "ROGUE", "DEATHKNIGHT", "MAGE", "WARLOCK",
+			"MONK", "DEMONHUNTER", "EVOKER", },
+		[Enum.ItemWeaponSubclass.Sword2H] = { "WARRIOR", "PALADIN", "HUNTER", "DEATHKNIGHT", },
+		[Enum.ItemWeaponSubclass.Staff] = { "WARRIOR", "HUNTER", "PRIEST", "SHAMAN", "MAGE", "WARLOCK", "MONK", "DRUID",
+			"EVOKER", },
+		[Enum.ItemWeaponSubclass.Wand] = { "PRIEST", "MAGE", "WARLOCK", },
+		[Enum.ItemWeaponSubclass.Warglaive] = { "DEMONHUNTER", },
+		[Enum.ItemWeaponSubclass.Unarmed] = { "WARRIOR", "HUNTER", "ROGUE", "SHAMAN", "MONK", "DRUID", "DEMONHUNTER",
+			"EVOKER", },
 	},
 }
 
@@ -163,7 +116,6 @@ function AutoPass:ShouldAutoPassWeapon(itemLink, class, id)
 	return true
 end
 
-
 --- Checks if the player should autopass on a given item.
 --- All params are supplied by the lootTable from the ML.
 --- Checks for a specific class if `class` arg is provided, otherwise the player's class.
@@ -212,7 +164,7 @@ function AutoPass:AutoPassCheck(link, equipLoc, typeID, subTypeID, classesFlag, 
 	end
 	if not tContains(self.autopassOverride, equipLoc) then
 		if self.autopassTable[typeID] and self.autopassTable[typeID][subTypeID] then
-			if tContains(self.autopassTable[typeID][subTypeID], class) then
+			if not tContains(self.autopassTable[typeID][subTypeID], class) then
 				return true
 			end
 		end

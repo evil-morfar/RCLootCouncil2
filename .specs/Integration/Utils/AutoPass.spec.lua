@@ -139,6 +139,33 @@ describe("#Utils #Autopass", function()
 			assert.True(addon.AutoPass:AutoPassCheck(nil, "INVTYPE_CLOAK", nil, nil, 0))
 		end)
 
+		it("should autopass each mocked armor and weapon subtype for classes that can't use them", function()
+			local function findMockItem(typeID, subTypeID)
+				for _, itemKey in ipairs(_G.Items_Array) do
+					local item = _G.Items[itemKey]
+					if item.itemClassID == typeID and item.itemSubClassID == subTypeID then
+						return item
+					end
+				end
+			end
+
+			addon:Getdb().autoPassWeapons = false
+			for typeID, subtypes in pairs(addon.AutoPass.autopassTable) do
+				for subTypeID, usableClasses in pairs(subtypes) do
+					local item = findMockItem(typeID, subTypeID)
+					assert.is_truthy(item, string.format("No mocked item for type %d subtype %d", typeID, subTypeID))
+
+					for _, class in ipairs(addon.classIDToFileName) do
+						local shouldAutoPass = not tContains(usableClasses, class)
+						assert.are_equal(shouldAutoPass,
+							addon.AutoPass:AutoPassCheck(item.itemLink, nil, item.itemClassID, item.itemSubClassID, 0xffffffff, class),
+							string.format("Unexpected autopass result for type %d subtype %d class %s",
+								typeID, subTypeID, class))
+					end
+				end
+			end
+		end)
+
 		it("should autopass if the type/subtype is listed for our class in the autopass table", function()
 			local armor = Enum.ItemClass.Armor
 			local cloth = Enum.ItemArmorSubclass.Cloth
