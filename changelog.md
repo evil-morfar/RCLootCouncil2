@@ -1,3 +1,25 @@
+# 3.26.0
+
+## Changes
+
+Additional Buttons list is now sorted.
+
+3rd Party addons no longer show up twice in the version checker.
+
+## Forever
+
+Updated to work with Forever.
+
+Merged all relevant changes from the Classic addon into this to work with Forever.
+
+### Master Loot & Group Loot options
+
+Seperated options for these to clearly indicate which options works with the specific loot method.
+
+### Manual Trade
+
+When using Master Loot, there's a new toggle in the session frame that allows for looting the items and immediately starting a session. This toggle also has an "auto check" option in the Master Looter options (enabled by default).
+
 # 3.25.0
 
 ## Changes
