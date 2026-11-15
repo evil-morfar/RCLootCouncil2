@@ -935,8 +935,8 @@ function LootHistory:GetFrame()
 		490)
 	addon.UI:RegisterForEscapeClose(f, function() if self:IsEnabled() then self:Disable() end end)
 	f:SetScript("OnMouseDown", function() self.SessionData:Hide() end)
-	local st = LibStub("ScrollingTable"):CreateST(self.scrollCols, NUM_ROWS, ROW_HEIGHT,
-		{ ["r"] = 1.0, ["g"] = 0.9, ["b"] = 0.0, ["a"] = 0.5, }, f.content)
+	local st = addon.UI:New("LibST", f.content, self.scrollCols, NUM_ROWS, ROW_HEIGHT,
+		{ ["r"] = 1.0, ["g"] = 0.9, ["b"] = 0.0, ["a"] = 0.5, })
 	st.frame:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", 10, 10)
 	st:SetFilter(self.FilterFunc)
 	st:EnableSelection(true)

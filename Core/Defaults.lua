@@ -198,6 +198,15 @@ addon.defaults = {
 				borderColor = { 0.3, 0.3, 0.5, 1, },
 				border      = "Blizzard Tooltip",
 				background  = "Blizzard Tooltip",
+				scrollTable = {
+					background = "ChatFrameBackground",
+					border = "Blizzard Tooltip",
+					tileSize = 16,
+					edgeSize = 16,
+					insets = { left = 3, right = 3, top = 5, bottom = 3, },
+					bgColor = { 0.1, 0.1, 0.1, 1, },
+					borderColor = { 1, 1, 1, 1, },
+				},
 			},
 			DefaultRCLootFrame = { -- We want the Loot Frame to get a little lower
 				y = -200,
@@ -208,6 +217,17 @@ addon.defaults = {
 		},
 
 		skins = {
+			["**"] = {
+				scrollTable = {
+					background = "ChatFrameBackground",
+					border = "Blizzard Tooltip",
+					tileSize = 16,
+					edgeSize = 16,
+					insets = { left = 3, right = 3, top = 5, bottom = 3, },
+					bgColor = { 0.1, 0.1, 0.1, 1, },
+					borderColor = { 1, 1, 1, 1, },
+				},
+			},
 			new_blue = {
 				name = "Midnight blue",
 				bgColor = { 0, 0, 0.2, 1, }, -- Blue-ish
@@ -279,3 +299,7 @@ addon.defaults = {
 } -- defaults end
 
 -- addon.db = setmetatable({}, {__index = addon.defaults})
+
+-- Register Libst default background
+local lsm = LibStub("LibSharedMedia-3.0")
+lsm:Register(lsm.MediaType.BACKGROUND, "ChatFrameBackground", "Interface\\ChatFrame\\ChatFrameBackground")

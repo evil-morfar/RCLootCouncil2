@@ -2553,7 +2553,10 @@ end
 
 --- Update all frames registered with RCLootCouncil:CreateFrame().
 -- Updates all the frame's colors as set in the db.
-function RCLootCouncil:UpdateFrames() for _, frame in pairs(self.UI:GetCreatedFramesOfType("RCFrame")) do frame:Update() end end
+function RCLootCouncil:UpdateFrames()
+	for _, frame in pairs(self.UI:GetCreatedFramesOfType("RCFrame")) do frame:Update() end
+	for _, frame in pairs(self.UI:GetCreatedFramesOfType("LibST")) do frame:SetBackdrop() end
+end
 
 --- Applies a skin to all frames
 -- Skins must be added to the db.skins table first.
@@ -2566,6 +2569,7 @@ function RCLootCouncil:ActivateSkin(key)
 		v.borderColor = {unpack(db.skins[key].borderColor)}
 		v.background = db.skins[key].background
 		v.border = db.skins[key].border
+		v.scrollTable = CopyTable(db.skins[key].scrollTable)
 	end
 	db.currentSkin = key
 	self:UpdateFrames()

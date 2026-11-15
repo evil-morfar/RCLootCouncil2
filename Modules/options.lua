@@ -838,7 +838,7 @@ function addon:OptionsTable()
 									},
 									saveSkin = {
 										order = 2,
-										name = L["Save Skin"],
+										name = L.opt_saveSkin_name,
 										desc = L["save_skin_desc"],
 										type = "input",
 										set = function(info, text)
@@ -848,9 +848,26 @@ function addon:OptionsTable()
 												borderColor = {unpack(self.db.profile.UI.default.borderColor)},
 												background = self.db.profile.UI.default.background,
 												border = self.db.profile.UI.default.border,
+												scrollTable = CopyTable(self.db.profile.UI.default.scrollTable)
 											}
 											self.db.profile.currentSkin = text
 										end,
+									},
+									saveBtn = {
+										order = 2.5,
+										name = L["Save Skin"],
+										desc = L.opt_saveSkinBtn_desc,
+										type = "execute",
+										func = function()
+											self.db.profile.skins[self.db.profile.currentSkin] = {
+												name = self.db.profile.currentSkin,
+												bgColor = { unpack(self.db.profile.UI.default.bgColor), },
+												borderColor = { unpack(self.db.profile.UI.default.borderColor), },
+												background = self.db.profile.UI.default.background,
+												border = self.db.profile.UI.default.border,
+												scrollTable = CopyTable(self.db.profile.UI.default.scrollTable),
+											}
+										end
 									},
 									deleteSkin = {
 										order = 3,
@@ -889,61 +906,164 @@ function addon:OptionsTable()
 										type = "description",
 										name = L["customize_appearance_desc"],
 									},
-									background = {
-										order = 3,
-										name = L["Background"],
-										width = "double",
-										type = "select",
-										dialogControl = "LSM30_Background",
-										values = AceGUIWidgetLSMlists.background,
-										get = function() return self.db.profile.UI.default.background end,
-										set = function(info, key)
-											for _,v in pairs(self.db.profile.UI) do
-												v.background = key
-											end
-											self:UpdateFrames()
-										end
+									-- TODO: Using profile.UI is dumb - we should create a temp for it.
+									frames = {
+										order = 2,
+										type = "group",
+										name = "Frames",
+										args = {
+											background = {
+												order = 3,
+												name = L["Background"],
+												width = "double",
+												type = "select",
+												dialogControl = "LSM30_Background",
+												values = AceGUIWidgetLSMlists.background,
+												get = function() return self.db.profile.UI.default.background end,
+												set = function(info, key)
+													for _, v in pairs(self.db.profile.UI) do
+														v.background = key
+													end
+													self:UpdateFrames()
+												end,
+											},
+											backgroundColor = {
+												order = 4,
+												name = L["Background Color"],
+												type = "color",
+												hasAlpha = true,
+												get = function() return unpack(self.db.profile.UI.default.bgColor) end,
+												set = function(info, r, g, b, a)
+													for _, v in pairs(self.db.profile.UI) do
+														v.bgColor = { r, g, b, a, }
+													end
+													self:UpdateFrames()
+												end,
+											},
+											border = {
+												order = 5,
+												name = L["Border"],
+												type = "select",
+												width = "double",
+												dialogControl = "LSM30_Border",
+												values = _G.AceGUIWidgetLSMlists.border,
+												get = function() return self.db.profile.UI.default.border end,
+												set = function(info, key)
+													for _, v in pairs(self.db.profile.UI) do
+														v.border = key
+													end
+													self:UpdateFrames()
+												end,
+											},
+											borderColor = {
+												order = 6,
+												name = L["Border Color"],
+												type = "color",
+												hasAlpha = true,
+												get = function() return unpack(self.db.profile.UI.default.borderColor) end,
+												set = function(info, r, g, b, a)
+													for _, v in pairs(self.db.profile.UI) do
+														v.borderColor = { r, g, b, a, }
+													end
+													self:UpdateFrames()
+												end,
+											},
+										},
 									},
-									backgroundColor = {
-										order = 4,
-										name = L["Background Color"],
-										type = "color",
-										hasAlpha = true,
-										get = function() return unpack(self.db.profile.UI.default.bgColor) end,
-										set = function(info, r,g,b,a)
-											for _,v in pairs(self.db.profile.UI) do
-												v.bgColor = {r,g,b,a}
-											end
-											self:UpdateFrames()
-										end
-									},
-									border = {
-										order = 5,
-										name = L["Border"],
-										type = "select",
-										width = "double",
-										dialogControl = "LSM30_Border",
-										values = _G.AceGUIWidgetLSMlists.border,
-										get = function() return self.db.profile.UI.default.border end,
-										set = function(info, key)
-											for _,v in pairs(self.db.profile.UI) do
-												v.border = key
-											end
-											self:UpdateFrames()
-										end,
-									},
-									borderColor = {
-										order = 6,
-										name = L["Border Color"],
-										type = "color",
-										hasAlpha = true,
-										get = function() return unpack(self.db.profile.UI.default.borderColor) end,
-										set = function(info, r,g,b,a)
-											for _,v in pairs(self.db.profile.UI) do
-												v.borderColor = {r,g,b,a}
-											end
-											self:UpdateFrames()
-										end
+									
+									scrollTable = {
+										order = 7,
+										type = "group",
+										name = "ScrollTables",
+										args = {
+											background = {
+												order = 1,
+												name = L["Background"],
+												width = "double",
+												type = "select",
+												dialogControl = "LSM30_Background",
+												values = AceGUIWidgetLSMlists.background,
+												get = function() return self.db.profile.UI.default.scrollTable.background end,
+												set = function(info, key)
+													for _, v in pairs(self.db.profile.UI) do
+														v.scrollTable.background = key
+													end
+													self:UpdateFrames()
+												end,
+											},
+											backgroundColor = {
+												order = 2,
+												name = L["Background Color"],
+												type = "color",
+												hasAlpha = true,
+												get = function() return unpack(self.db.profile.UI.default.scrollTable.bgColor) end,
+												set = function(info, r, g, b, a)
+													for _, v in pairs(self.db.profile.UI) do
+														v.scrollTable.bgColor = { r, g, b, a, }
+													end
+													self:UpdateFrames()
+												end,
+											},
+											border = {
+												order = 3,
+												name = L["Border"],
+												type = "select",
+												width = "double",
+												dialogControl = "LSM30_Border",
+												values = _G.AceGUIWidgetLSMlists.border,
+												get = function() return self.db.profile.UI.default.scrollTable.border end,
+												set = function(info, key)
+													for _, v in pairs(self.db.profile.UI) do
+														v.scrollTable.border = key
+													end
+													self:UpdateFrames()
+												end,
+											},
+											borderColor = {
+												order = 4,
+												name = L["Border Color"],
+												type = "color",
+												hasAlpha = true,
+												get = function() return unpack(self.db.profile.UI.default
+														.scrollTable.borderColor)
+												end,
+												set = function(info, r, g, b, a)
+													for _, v in pairs(self.db.profile.UI) do
+														v.scrollTable.borderColor = { r, g, b, a, }
+													end
+													self:UpdateFrames()
+												end,
+											},
+											tileSize = {
+												order = 5,
+												name = "Tile Size",
+												type = "input",
+												width = "half",
+												get = function() return tostring(self.db.profile.UI.default.scrollTable.tileSize) end,
+												set = function(_, num)
+													local n = tonumber(num)
+													for _, v in pairs(self.db.profile.UI) do
+														v.scrollTable.tileSize = n
+													end
+													self:UpdateFrames()
+												end
+											},
+											edgeSize = {
+												order = 6,
+												name = "Edge Size",
+												type = "input",
+												width = "half",
+												pattern = "%d",
+												get = function() return tostring(self.db.profile.UI.default.scrollTable.edgeSize) end,
+												set = function(_, num)
+													local n = tonumber(num)
+													for _, v in pairs(self.db.profile.UI) do
+														v.scrollTable.edgeSize = n
+													end
+													self:UpdateFrames()
+												end,
+											},
+										}
 									},
 									reset = {
 										order = -1,
