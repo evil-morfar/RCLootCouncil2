@@ -267,12 +267,12 @@ function Storage:GetItemContainerSlot(item, skip)
 end
 
 --- Attempt to find the item in the players bags every 1 second.
--- Optional callback functions can be attached for once the item is found.
--- If the item is found, Item.time_remaining and Item.time_added are updated before callbacks.
--- @param input The item to find; either 'itemLink' or 'Item' object.
--- @param onFound (Optional) Function - called when the item is found. Params: Item, containerID, slotID, time_remaining
--- @param onFail (Optional) Function - called when the item isn't found after max_attempts. Params: Item.
--- @param max_attempts (Optional) number - maximum number of attempts to find the item. Defaults to 3.
+--- Optional callback functions can be attached for once the item is found.
+--- If the item is found, Item.time_remaining and Item.time_added are updated before callbacks.
+--- @param input ItemLink | Item The item to find; either 'itemLink' or 'Item' object.
+--- @param onFound? fun(item : Item, containerID?: integer, slotID?: integer, time_remaining: integer) called when the item is found
+--- @param onFail? fun(item: Item) called when the item isn't found after max_attempts
+--- @param max_attempts? integer - maximum number of attempts to find the item. Defaults to 3.
 function Storage:WatchForItemInBags(input, onFound, onFail, max_attempts)
 	local Item
 	if type(input) == "table" then

@@ -74,3 +74,4 @@ Forever\CoreUpdates.lua [AllowLoadGameType forever][ExcludeLoadGameType standard
 Forever\Options.lua [AllowLoadGameType forever][ExcludeLoadGameType standard, classic]
 Forever\MasterLoot.lua [AllowLoadGameType forever][ExcludeLoadGameType standard, classic]
 Forever\Autopass.lua [AllowLoadGameType forever][ExcludeLoadGameType standard, classic]
+Forever\SessionFrame.lua [AllowLoadGameType forever][ExcludeLoadGameType standard, classic]

@@ -3,12 +3,11 @@
 
 ---@class RCLootCouncil
 local addon = select(2, ...)
----@class RCLootCouncilDB
+---@class RCLootCouncilForeverDB : RCLootCouncilDB
 local defaults = addon.defaults.profile
 
 -- New in Forever
 defaults.classicAutoPass = true
-defaults.mlLootToPlayer = true -- ML items directly to the player before starting the session
 
 -- Changes from default
 defaults.currentSkin = "forever"
@@ -18,3 +17,4 @@ defaults.ambiguate = false
 defaults.ignoredItems = {}
 defaults.autoPassWeapons = false
 defaults.autoPassTrinkets = false
+defaults.mlLootToPlayer = true

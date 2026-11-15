@@ -58,6 +58,7 @@ function RCSessionFrame:Show(data, disableAwardLater)
 	if waitingToEndSessions then
 		return		-- Silently fails
 	end
+	self.mlLootToPlayer = addon:Getdb().mlLootToPlayer
 
 	self.frame = self:GetFrame()
 	self.frame:Show()
@@ -72,6 +73,7 @@ function RCSessionFrame:Show(data, disableAwardLater)
 		self.frame.toggle:Enable()
 		getglobal(self.frame.toggle:GetName().."Text"):SetTextColor(1, 1, 1)
 	end
+
 
 	if data then
 		loadingItems = false
@@ -186,7 +188,7 @@ end
 
 function RCSessionFrame:GetFrame()
 	if self.frame then return self.frame end
-
+	---@class HistoryFrame : RCFrame
 	local f = addon.UI:NewNamed("RCFrame", UIParent, "DefaultRCSessionSetupFrame", L["RCLootCouncil Session Setup"], 270)
 	addon.UI:RegisterForEscapeClose(f, function() if self:IsEnabled() then self:Disable() end end)
 
@@ -206,6 +208,13 @@ function RCSessionFrame:GetFrame()
 			addon.Log:D("Player tried to start empty session.")
 			return
 		end
+		if not addon.hasReceivedCouncil then
+			addon:Print(L["Please wait a few seconds until all data has been synchronized."])
+			return addon.Log:D("Data wasn't ready", Council:GetNum())
+		elseif InCombatLockdown() and not addon.db.profile.skipCombatLockdown then
+			return addon:Print(L["You can't start a loot session while in combat."])
+		end
+
 		if awardLater then
 			local sessionAwardDoneCount = 0
 			waitingToEndSessions = true
@@ -218,17 +227,27 @@ function RCSessionFrame:GetFrame()
 					end
 				end)
 			end
-		else
-			if not addon.hasReceivedCouncil then
-				addon:Print(L["Please wait a few seconds until all data has been synchronized."])
-				return addon.Log:D("Data wasn't ready", Council:GetNum())
-			elseif InCombatLockdown() and not addon.db.profile.skipCombatLockdown then
-				return addon:Print(L["You can't start a loot session while in combat."])
-			--elseif ml.running then
-				--return addon:Print(L["You're already running a session."])
-			else
-				ml:StartSession()
+		elseif self.mlLootToPlayer and addon.GetLootMethod() == Enum.LootMethod.Masterlooter then
+			-- Loot all items and store them as "temp"
+			for _, lt in ipairs(ml.lootTable) do
+				ml:GiveLoot(lt.lootSlot, addon.player:GetName(), function(awarded, cause)
+					if not awarded then return ml:PrintLootErrorMsg(cause, lt.lootSlot, lt.link, addon.player:GetName()) or
+						false end
+					addon.ItemStorage:WatchForItemInBags(lt.link, function(item)
+						item.type = "temp"
+						lt.lootSlot = nil
+						lt.bagged = item
+						lt.owner = addon.player
+						if item.link == ml.lootTable[#ml.lootTable].link then
+							ml:StartSession()
+							self:Disable()
+						end
+					end, nil, 5)
+				end)
 			end
+			return
+		else
+			ml:StartSession()
 		end
 		self:Disable()
 	end)
@@ -256,8 +275,9 @@ function RCSessionFrame:GetFrame()
 	tgl:SetPoint("BOTTOMLEFT", b1, "TOPLEFT", 0, 10)
 	tgl.tooltip = L["Check this to loot the items and distribute them later."]
 	tgl:SetChecked(awardLater)
+	tgl:SetHitRectInsets(0, -100, 0, 0)
 	tgl:SetScript("OnClick", function() awardLater = not awardLater; end)
-	tgl.Text:SetText(L["Award later?"])
+	tgl.Text:SetTextToFit(L["Award later?"])
 	tgl.Text:SetPoint("LEFT", tgl, "RIGHT", 5, 0)
 	f.toggle = tgl
 

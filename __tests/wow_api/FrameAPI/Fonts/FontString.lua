@@ -49,6 +49,7 @@ local noopMethods = {
 	"SetTextColor",
 	"SetTextHeight",
 	"SetTextScale",
+	"SetTextToFit",
 	"SetWordWrap",
 }
 

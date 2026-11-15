@@ -113,6 +113,7 @@ addon.defaults = {
 		awardLater = false, -- Auto check award later
 		autoGroupLoot = true,
 		autoGroupLootDecor = false,
+		mlLootToPlayer = false, -- ML items directly to the player before starting the session - not used in retail
 		-- ML - General - Voting
 		selfVote = true,
 		multiVote = true,

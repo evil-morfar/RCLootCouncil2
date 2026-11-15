@@ -743,18 +743,19 @@ end
 --@param ... The additional arguments provided to the callback.
 --@return nil
 function RCLootCouncilML:GiveLoot(slot, winner, callback, ...)
-	if addon.lootOpen then
+	if not addon.lootOpen then
+		return callback(false, "loot_not_open", ...)
+	end
 
-		local entryInQueue = {slot = slot, callback = callback, args = {...}, }
-		entryInQueue.timer = self:ScheduleTimer(OnGiveLootTimeout, LOOT_TIMEOUT, entryInQueue)
-		tinsert(self.lootQueue, entryInQueue)
+	local entryInQueue = {slot = slot, callback = callback, args = {...}, }
+	entryInQueue.timer = self:ScheduleTimer(OnGiveLootTimeout, LOOT_TIMEOUT, entryInQueue)
+	tinsert(self.lootQueue, entryInQueue)
 
-		for i = 1, _G.MAX_RAID_MEMBERS do
-			if addon:UnitIsUnit(GetMasterLootCandidate(slot, i), winner) then
-				self.Log("GiveMasterLoot", slot, i)
-				GiveMasterLoot(slot, i)
-				break
-			end
+	for i = 1, _G.MAX_RAID_MEMBERS do
+		if addon:UnitIsUnit(GetMasterLootCandidate(slot, i), winner) then
+			self.Log("GiveMasterLoot", slot, i)
+			GiveMasterLoot(slot, i)
+			break
 		end
 	end
 end
