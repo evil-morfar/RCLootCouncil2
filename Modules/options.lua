@@ -1639,7 +1639,19 @@ function addon:OptionsTable()
 										type = "select",
 										values = self.OPT_MORE_BUTTONS_VALUES,
 										get = function () return selections.AddMoreButtons or "INVTYPE_HEAD" end,
-										set = function(i,v) selections.AddMoreButtons = v end,
+										set = function(i, v) selections.AddMoreButtons = v end,
+										sorting = function()
+											local sorted = {}
+											for _, v in pairs(self.OPT_MORE_BUTTONS_VALUES) do
+												tinsert(sorted, v)
+											end
+											table.sort(sorted)
+											local temp = tInvert(self.OPT_MORE_BUTTONS_VALUES)
+											for k, v in ipairs(sorted) do
+												sorted[k] = temp[v]
+											end
+											return sorted
+										end
 									},
 									addBtn = {
 										order = 2,
