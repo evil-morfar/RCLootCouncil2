@@ -1,9 +1,10 @@
 ---@type RCLootCouncil
 local addon                                                                     = select(2, ...)
 local AutoPass                                                                  = addon.AutoPass
-local allClasses                                                                = addon.classIDToFileName
 
-AutoPass.autopassTable[Enum.ItemClass.Armor][Enum.ItemArmorSubclass.Cloth]      = allClasses
+AutoPass.autopassTable[Enum.ItemClass.Armor][Enum.ItemArmorSubclass.Cloth]      = {
+	"WARRIOR","PALADIN","HUNTER","ROGUE","PRIEST","SHAMAN",
+	"MAGE","WARLOCK","DRUID",}
 AutoPass.autopassTable[Enum.ItemClass.Armor][Enum.ItemArmorSubclass.Leather]    = {
 	"WARRIOR", "PALADIN", "HUNTER", "ROGUE", "SHAMAN", "DRUID", }
 AutoPass.autopassTable[Enum.ItemClass.Armor][Enum.ItemArmorSubclass.Mail]       = {

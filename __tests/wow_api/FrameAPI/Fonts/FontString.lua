@@ -4,6 +4,7 @@ local function noop() end
 
 local objectMethods = {
 	SetText = function(self, text) self.text = text end,
+	SetTextToFit = function(self, text) self.text = text end,
 	GetText = function(self) return self.text end,
 	GetStringWidth = function (self) return self.text:len() * 10 end,
 }
@@ -49,7 +50,6 @@ local noopMethods = {
 	"SetTextColor",
 	"SetTextHeight",
 	"SetTextScale",
-	"SetTextToFit",
 	"SetWordWrap",
 }
 

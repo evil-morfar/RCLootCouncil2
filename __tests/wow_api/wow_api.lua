@@ -40,6 +40,14 @@ function GetTime()
 	return _time
 end
 
+function GuildControlGetNumRanks()
+	return 0
+end
+
+function GuildControlGetRankName(index)
+	return "Rank " .. tostring(index)
+end
+
 -- Requires `CreateFrame` & `GetTime`
 require "API/CallbackRegistryMixin"
 -- Depends on CallbackRegistryMixin
@@ -368,6 +376,10 @@ function GetServerExpansionLevel() return Enum.ExpansionLevel.Midnight end
 function GetExpansionLevel() return GetServerExpansionLevel() end
 
 function EJ_SelectTier(num)
+end
+
+function EJ_GetCurrentTier()
+	return 1
 end
 
 function EJ_GetInstanceByIndex()
@@ -1269,19 +1281,48 @@ NORMAL_FONT_COLOR = CreateColor(255, 209, 0, 255) --ffd100
 ------------------------------------------
 -- Global Strings
 ------------------------------------------
+ADD = "Add"
+APPEARANCE_LABEL = "Appearance"
 BIND_TRADE_TIME_REMAINING =
 "You may trade this item with players that were also eligible to loot this item for the next %s."
+CHANNEL = "Channel"
+CHAT_MSG_GUILD = "Guild"
+CHAT_MSG_OFFICER = "Officer"
+CHAT_MSG_PARTY = "Party"
+CHAT_MSG_RAID = "Raid"
+CHAT_MSG_RAID_WARNING = "Raid Warning"
+CHAT_MSG_SAY = "Say"
+CHAT_MSG_YELL = "Yell"
 CLOSE = "Close"
 CLOSES_IN = "Time Left";
+COLOR = "Color"
+DAYS = "%d |4day:days;";
+DELETE = "Delete"
 ENABLE = "Enable"
 ERR_PARTY_CONVERTED_TO_RAID = "Party converted to Raid."
 ERR_RAID_CONVERTED_TO_PARTY = "Raid converted to Party."
+GENERAL = "General"
 GROUP = "Group"
 GUILD = "Guild"
+INSTANCE = "Instance"
 LOOT_ITEM = "%s receives loot: %s."
+MASTER_LOOTER = "Master Looter"
+NONE = "None"
 RANDOM_ROLL_RESULT = "%s rolls %d (%d-%d)"
+REMOVE = "Remove"
 REQUEST_ROLL = "Request Roll"
+RESET_TO_DEFAULT = "Reset to Default"
+ROLL_DISENCHANT = "Disenchant"
 INVTYPE_CHEST = "Chest"
+ITEM_QUALITY0_DESC = "Poor"
+ITEM_QUALITY1_DESC = "Common"
+ITEM_QUALITY2_DESC = "Uncommon"
+ITEM_QUALITY3_DESC = "Rare"
+ITEM_QUALITY4_DESC = "Epic"
+ITEM_QUALITY5_DESC = "Legendary"
+ITEM_QUALITY6_DESC = "Artifact"
+ITEM_QUALITY7_DESC = "Heirloom"
+ITEM_QUALITY8_DESC = "WoW Token"
 ITEM_CLASSES_ALLOWED = "Classes: %s"
 ITEM_LEVEL_ABBR = "ilvl"
 ITEM_MOD_AGILITY = "%c%s Agility";

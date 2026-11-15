@@ -3,6 +3,7 @@
 
 ---@class RCLootCouncil
 local addon = select(2, ...)
+local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 
 function addon:IsCorrectVersion() return WOW_PROJECT_ID == WOW_PROJECT_CAMELOT end
 

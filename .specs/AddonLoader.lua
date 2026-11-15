@@ -11,8 +11,12 @@ local debug = select(1, ...) or false
 local ADDON_NAME = select(2, ...) or "RCLootCouncil"
 --- @class AddonObject User provided table or empty table
 local ADDON_OBJECT = select(3, ...) or {}
-WOW_PROJECT_ID = select(4, ...) or WOW_PROJECT_MAINLINE
-
+_G.WOW_PROJECT_MAINLINE = WOW_PROJECT_MAINLINE or 1
+_G.WOW_PROJECT_CLASSIC = WOW_PROJECT_CLASSIC or 2
+_G.WOW_PROJECT_BURNING_CRUSADE_CLASSIC = WOW_PROJECT_BURNING_CRUSADE_CLASSIC or 5
+_G.WOW_PROJECT_WRATH_CLASSIC = WOW_PROJECT_WRATH_CLASSIC or 11
+_G.WOW_PROJECT_CAMELOT = WOW_PROJECT_CAMELOT or 18
+_G.WOW_PROJECT_ID = select(4, ...) or WOW_PROJECT_MAINLINE
 local Loader = {}
 
 if os.getenv("LOCAL_LUA_DEBUGGER_VSCODE") == "1" then
@@ -28,7 +32,7 @@ function Loader.LoadToc(file)
 	for _, v in pairs(lines) do
 		v = Loader.stripspaces(v)
 		-- Ignore comments
-		if not v:match("^##") and #v > 0 then
+		if not v:match("^#") and #v > 0 then
 			v = Loader.handleDirectives(v)
 			local ext = Loader.GetFileExtension(v)
 			if ext == ".xml" then
@@ -113,32 +117,28 @@ function Loader.handleDirectives(str)
 
 	local directivesAllow = str:match("AllowLoadGameType([%s%a,]+)")
 	local directivesExclude = str:match("ExcludeLoadGameType([%s%a,]+)")
-	if not (directivesAllow or directivesExclude) then return str end
+	if not (directivesAllow or directivesExclude) then return str:sub(1, dirStart - 1) end
 
 	if directivesAllow then
-		directivesAllow = { directivesAllow:match("([^,]+)") }
 		local found = false
-		for _, v in pairs(directivesAllow) do
+		for v in directivesAllow:gmatch("([^,%s]+)") do
 			if v == projectIDToString[WOW_PROJECT_ID] then
 				found = true
 				break
 			end
 		end
-		if found then return str end
+		if not found then return "" end
 	end
 
 	if directivesExclude then
-		local found = false
-		for _, v in directivesExclude:gmatch("([^,]+)") do
+		for v in directivesExclude:gmatch("([^,%s]+)") do
 			if v == projectIDToString[WOW_PROJECT_ID] then
-				found = true
-				break
+				return ""
 			end
 		end
-		if found then return "" end
 	end
 
-	return str
+	return str:sub(1, dirStart - 1)
 end
 
 function Loader.ExtractXMLLine(line)
@@ -247,7 +247,7 @@ function Loader.TocParser(file)
 	for _, v in pairs(lines) do
 		v = Loader.stripspaces(v)
 		-- Ignore comments
-		if not v:match("^##") and #v > 0 then
+		if not v:match("^#") and #v > 0 then
 			local ext = Loader.GetFileExtension(v)
 			if ext == ".xml" then
 				local res = Loader.XmlHandler(v)

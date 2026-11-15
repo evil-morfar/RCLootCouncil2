@@ -139,6 +139,7 @@ globals = {
 	"Enum.ItemArmorSubclass",
 	"Enum.ItemWeaponSubclass",
 	"Enum.ItemMiscellaneousSubclass",
+	"Enum.LootMethod",
 
 
 	-- FrameXML frames
