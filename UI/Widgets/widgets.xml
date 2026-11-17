@@ -7,4 +7,5 @@
   <Script file = "ExportFrame.lua" />
   <Script file = "HugeExportFrame.lua" />
   <Script file = "ImportFrame.lua" />
+  <Script file = "LibST.lua" />
 </Ui>

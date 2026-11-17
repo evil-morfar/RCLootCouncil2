@@ -1,3 +1,5 @@
+
+
 # 3.26.0
 
 ## Changes
@@ -5,6 +7,15 @@
 Additional Buttons list is now sorted.
 
 3rd Party addons no longer show up twice in the version checker.
+
+### Appearance Options Overhaul
+
+Refactored the entire appearance system
+
+- Added Edge and Tile size controls
+- Added scroll tables appearance options
+- Added warning when there's unsaved changes
+- Added Forever skin
 
 ## Forever
 

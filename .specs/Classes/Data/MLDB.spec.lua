@@ -11,6 +11,7 @@ loadfile(".specs/AddonLoader.lua")(nil, nil, addon).LoadArray {
 	[[Libs\AceLocale-3.0\AceLocale-3.0.xml]],
 	[[Libs\AceSerializer-3.0\AceSerializer-3.0.xml]],
 	[[Libs\AceEvent-3.0\AceEvent-3.0.xml]],
+	[[Libs\LibSharedMedia-3.0\LibSharedMedia-3.0.lua]],
 	[[Locale\enUS.lua]],
 	[[Core\Constants.lua]],
 	[[Core\Defaults.lua]],

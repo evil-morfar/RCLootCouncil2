@@ -524,7 +524,7 @@ function RCVersionCheck:GetFrame()
 	}
 	f.totals = totals
 
-	local st = ST:CreateST(self.scrollCols, 12, 20, nil, f.content)
+	local st = addon.UI:New("LibST", f.content, self.scrollCols, 12, 20, nil)
 	st.frame:SetPoint("TOPLEFT", f, "TOPLEFT", 10, -30)
 	--content.frame:SetBackdropColor(1,0,0,1)
 	f:SetWidth(st.frame:GetWidth() + 20)

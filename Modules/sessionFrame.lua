@@ -281,7 +281,7 @@ function RCSessionFrame:GetFrame()
 	tgl.Text:SetPoint("LEFT", tgl, "RIGHT", 5, 0)
 	f.toggle = tgl
 
-	local st = ST:CreateST(self.scrollCols, 5, ROW_HEIGHT, nil, f.content)
+	local st = addon.UI:New("LibST",f.content, self.scrollCols, 5, ROW_HEIGHT, nil)
 	st.head:SetHeight(0)
 	st.frame:SetPoint("TOPLEFT",f,"TOPLEFT",10,-15)
 	st:RegisterEvents({

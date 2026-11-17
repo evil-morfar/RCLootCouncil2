@@ -362,5 +362,27 @@ Compat.list = {
 				end
 			end
 		end
+	},
+	{
+		name = "Remove skin data from UI settings",
+		version = "3.26.0",
+		func = function ()
+			local skinFields = {
+				bgColor = true,
+				borderColor = true,
+				background = true,
+				border = true,
+				scrollTable = true,
+			}
+			for _, db in pairs(addon.db.profiles) do
+				for _, frameData in pairs(db.UI or {}) do
+					if type(frameData) == "table" then
+						for field in pairs(skinFields) do
+							frameData[field] = nil
+						end
+					end
+				end
+			end
+		end
 	}
 }

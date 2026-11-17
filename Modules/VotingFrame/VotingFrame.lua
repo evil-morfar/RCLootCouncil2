@@ -1182,8 +1182,8 @@ function RCVotingFrame:GetFrame()
 			f.st:Hide()
 			f.st = nil
 		end
-		local st = LibStub("ScrollingTable"):CreateST(self.scrollCols, NUM_ROWS, ROW_HEIGHT,
-			{ ["r"] = 1.0, ["g"] = 0.9, ["b"] = 0.0, ["a"] = 0.5, }, f.content)
+		local st = addon.UI:New("LibST", f.content, self.scrollCols, NUM_ROWS, ROW_HEIGHT,
+			{ ["r"] = 1.0, ["g"] = 0.9, ["b"] = 0.0, ["a"] = 0.5, })
 		st.frame:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", 10, 10)
 		st:RegisterEvents({
 			["OnClick"] = function(rowFrame, cellFrame, data, cols, row, realrow, column, table, button, ...)
