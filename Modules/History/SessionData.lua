@@ -16,6 +16,7 @@ function SessionData:GetSessionResponsesFrame()
 	local f = CreateFrame("Frame", "RCLootHistorySessionResponsesFrame", LootHistory.frame, "TooltipBackdropTemplate")
 	f:SetFrameStrata("TOOLTIP")
 	f:SetToplevel(true)
+	f:SetBackdropBorderColor(unpack(addon.activeSkin.borderColor))
 	addon.UI:RegisterForCombatMinimize(f)
 	f:SetScript("OnLeave", function()
 		C_Timer.After(FRAME_AUTO_HIDE_TIME, function()
@@ -24,7 +25,7 @@ function SessionData:GetSessionResponsesFrame()
 			end
 		end)
 	end)
-	local st = LibStub("ScrollingTable"):CreateST({
+	local st = addon.UI:New("LibST", f, {
 		{ name = "",                 width = ROW_HEIGHT, }, -- Class icon
 		{ name = "",                 width = ROW_HEIGHT, }, -- Winner indicator
 		{ name = _G.NAME,            width = 100,        sort = 1, },
@@ -33,7 +34,7 @@ function SessionData:GetSessionResponsesFrame()
 		{ name = L["Votes"],         width = 45, },
 		{ name = _G.ROLL,            width = 40, },
 		{ name = L["Notes"],         width = 40, },
-	}, 10, ROW_HEIGHT, nil, f)
+	}, 10, ROW_HEIGHT, nil)
 	st.frame:SetPoint("TOPLEFT", f, "TOPLEFT", 10, -25)
 	f:SetWidth(st.frame:GetWidth() + 20)
 	f:SetHeight(st.frame:GetHeight() + 35)

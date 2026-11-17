@@ -1,3 +1,13 @@
+## Changes
+
+### Appearance Options Overhaul
+
+Refactored the entire appearance system
+
+- Added Edge and Tile size controls
+- Added scroll tables appearance options
+- Added warning when there's unsaved changes
+
 # 3.25.0
 
 ## Changes

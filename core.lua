@@ -2581,8 +2581,8 @@ function RCLootCouncil:UpdateFrames()
 end
 
 --- Applies a skin to all frames
--- Skins must be added to the db.skins table first.
--- @param key Index in db.skins.
+--- Skins must be added to the db.skins table first.
+--- @param key string|integer Index in db.skins.
 function RCLootCouncil:ActivateSkin(key)
     self.Log:d("ActivateSkin", key)
 	---@type RCLootCouncilDB

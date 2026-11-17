@@ -957,9 +957,9 @@ function LootHistory:GetFrame()
 	f.st = st
 
 	--Date selection
-	f.date = LibStub("ScrollingTable"):CreateST(
+	f.date = addon.UI:New("LibST", f.content,
 		{ { name = L["Date"], width = 74, comparesort = self.DateSort, sort = 2, DoCellUpdate = self.SetCellDate, }, }, 5,
-		ROW_HEIGHT, { ["r"] = 1.0, ["g"] = 0.9, ["b"] = 0.0, ["a"] = 0.5, }, f.content)
+		ROW_HEIGHT, { ["r"] = 1.0, ["g"] = 0.9, ["b"] = 0.0, ["a"] = 0.5, })
 	f.date.frame:SetPoint("TOPLEFT", f, "TOPLEFT", 10, -30)
 	f.date:EnableSelection(true)
 	f.date:RegisterEvents({
@@ -973,9 +973,9 @@ function LootHistory:GetFrame()
 	})
 
 	--Name selection
-	f.name = LibStub("ScrollingTable"):CreateST(
+	f.name = addon.UI:New("LibST", f.content,
 		{ { name = "", width = ROW_HEIGHT, }, { name = _G.NAME, width = 100, sort = 1, }, }, 5, ROW_HEIGHT,
-		{ ["r"] = 1.0, ["g"] = 0.9, ["b"] = 0.0, ["a"] = 0.5, }, f.content)
+		{ ["r"] = 1.0, ["g"] = 0.9, ["b"] = 0.0, ["a"] = 0.5, })
 	f.name.frame:SetPoint("TOPLEFT", f.date.frame, "TOPRIGHT", 10, 0)
 	f.name:EnableSelection(true)
 	f.name:RegisterEvents({
