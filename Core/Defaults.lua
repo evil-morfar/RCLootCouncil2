@@ -252,12 +252,19 @@ addon.defaults = {
 				background = "Blizzard Garrison Background 3",
 			},
 			forever = {
-				name = "Forever",
-				bgColor = { 0.5, 0.9, 1, 0.97, },
-				borderColor = { 0.15, 0.9, 1, 0.85, },
-				background = "Blizzard Collections Background",
+				bgColor = { 0.33,0.85,1,1,},
+				edgeSize = 16,
+				name = "Forever2",
+				borderColor = {1,0.86,0.68,0.91,},
+				background = "Blizzard Rock",
 				border = "Blizzard Tooltip",
-			}
+				scrollTable = {
+					bgColor = {0.93,	1,0.91,0.39,},
+					tileSize = 128,
+					borderColor = {	1,0.86,	0.68,1},
+					background = "Blizzard Dialog Background",
+				},
+			},
 		},
 		currentSkin = "bfa",
 
