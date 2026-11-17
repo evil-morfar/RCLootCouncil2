@@ -54,7 +54,7 @@ function RCSessionFrame:OnDisable()
 	addon.Log("RCSessionFrame disabled")
 end
 
-function RCSessionFrame:Show(data, disableAwardLater)
+function RCSessionFrame:Show(data, isAwardLater)
 	if waitingToEndSessions then
 		return		-- Silently fails
 	end
@@ -64,7 +64,7 @@ function RCSessionFrame:Show(data, disableAwardLater)
 	self.frame:Show()
 	scheduledToShowAgain = false
 
-	if disableAwardLater then
+	if isAwardLater then
 		self.frame.toggle:Disable()
 		getglobal(self.frame.toggle:GetName().."Text"):SetTextColor(0.7, 0.7, 0.7)
 		awardLater = false

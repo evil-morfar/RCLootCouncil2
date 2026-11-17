@@ -58,7 +58,7 @@ describe("#Forever #SessionFrame", function()
 		-- Change loot method to Masterlooter
 		addon.GetLootMethod = function() return Enum.LootMethod.Masterlooter end
 		addon:Getdb().mlLootToPlayer = true
-		SF:GetFrame()
+		SF:Show({})
 
 		assert.spy(sShow).was.called()
 		assert.is_true(frame.manualTradeToggle:IsShown())
@@ -78,7 +78,7 @@ describe("#Forever #SessionFrame", function()
 
 		-- Change loot method to Group
 		addon.GetLootMethod = function() return Enum.LootMethod.Group end
-		SF:GetFrame()
+		SF:Show({})
 
 		assert.spy(sHide).was.called()
 		assert.is_false(frame.manualTradeToggle:IsShown())

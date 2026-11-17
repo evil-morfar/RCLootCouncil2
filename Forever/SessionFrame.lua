@@ -13,16 +13,6 @@ end
 
 local OriginalGetFrame = SF.GetFrame
 function SF:GetFrame()
-	local lootMethod = addon.GetLootMethod()
-	-- Manual Trade toggle is only shown when using ML
-	if self.lastLootMethod and self.lastLootMethod ~= lootMethod then
-		if lootMethod == Enum.LootMethod.Masterlooter then
-			self.frame.manualTradeToggle:Show()
-			self.mlLootToPlayer = addon:Getdb().mlLootToPlayer
-		else
-			HideManualTrade(self.frame)
-		end
-	end
 	if self.frame then return self.frame end
 
 	---@class HistoryFrame
@@ -39,10 +29,28 @@ function SF:GetFrame()
 		HideManualTrade(f)
 	end
 
-	self.lastLootMethod = lootMethod
 	return f
 end
 
 addon:Hook(SF, "Update", function(self)
 	self.frame.manualTradeToggle:SetChecked(self.mlLootToPlayer)
+end)
+
+addon:SecureHook(SF, "Show", function(self, data, isAwardLater)
+	local lootMethod = addon.GetLootMethod()
+	-- Manual Trade toggle is only shown when using ML
+	if lootMethod == Enum.LootMethod.Masterlooter then
+		self.frame.manualTradeToggle:Show()
+		self.mlLootToPlayer = addon:Getdb().mlLootToPlayer
+	else
+		HideManualTrade(self.frame)
+	end
+	if isAwardLater then
+		self.frame.manualTradeToggle:Disable()
+		_G[self.frame.manualTradeToggle:GetName() .. "Text"]:SetTextColor(.7, .7, .7)
+		self.mlLootToPlayer = false
+	else
+		self.frame.manualTradeToggle:Enable()
+		_G[self.frame.manualTradeToggle:GetName() .. "Text"]:SetTextColor(1, 1, 1)
+	end
 end)
