@@ -67,6 +67,29 @@ describe("#Forever #SessionFrame", function()
 		sShow:revert()
 	end)
 
+	it("disables manualTradeToggle and clears mlLootToPlayer when awarding later", function()
+		addon.GetLootMethod = function() return Enum.LootMethod.Masterlooter end
+		addon:Getdb().mlLootToPlayer = true
+		local frame = SF:GetFrame()
+		SF.frame = frame
+
+		local sDisable = spy.on(frame.manualTradeToggle, "Disable")
+		local sEnable = spy.on(frame.manualTradeToggle, "Enable")
+
+		SF:Show({}, true)
+
+		assert.spy(sDisable).was.called()
+		assert.is_false(SF.mlLootToPlayer)
+
+		SF:Show({})
+
+		assert.spy(sEnable).was.called()
+		assert.is_true(SF.mlLootToPlayer)
+
+		sDisable:revert()
+		sEnable:revert()
+	end)
+
 	it("hides manualTradeToggle and sets mlLootToPlayer to false when loot method changes away from Masterlooter", function()
 		addon.GetLootMethod = function() return Enum.LootMethod.Masterlooter end
 		local frame = SF:GetFrame()
