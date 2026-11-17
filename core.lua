@@ -2220,6 +2220,17 @@ function RCLootCouncil:SaveSkin(name)
 	self.db.profile.skins[name] = skin
 	self.activeSkin.name = name
 	self.db.profile.currentSkin = name
+	LibStub("AceConfigRegistry-3.0"):NotifyChange("RCLootCouncil")
+end
+
+function RCLootCouncil:IsSkinDirty()
+	local savedSkin = self.db.profile.skins[self.db.profile.currentSkin]
+	if not savedSkin or not self.activeSkin then return false end
+	if not savedSkin.scrollTable then
+		savedSkin.scrollTable = CopyTable(self.defaults.profile.skins["**"].scrollTable)
+	end
+	return next(self.Utils:GetTableDifference(savedSkin, self.activeSkin)) ~= nil
+		or next(self.Utils:GetTableDifference(self.activeSkin, savedSkin)) ~= nil
 end
 
 function RCLootCouncil:IsCorrectVersion() return WOW_PROJECT_MAINLINE == WOW_PROJECT_ID end
@@ -2566,16 +2577,21 @@ function RCLootCouncil:UpdateFrames()
 		frame:Update(self.activeSkin)
 	end
 	for _, frame in pairs(self.UI:GetCreatedFramesOfType("LibST")) do frame:SetBackdrop(self.activeSkin) end
+	LibStub("AceConfigRegistry-3.0"):NotifyChange("RCLootCouncil")
 end
 
 --- Applies a skin to all frames
 -- Skins must be added to the db.skins table first.
 -- @param key Index in db.skins.
 function RCLootCouncil:ActivateSkin(key)
-	self.Log:d("ActivateSkin", key)
+    self.Log:d("ActivateSkin", key)
+	---@type RCLootCouncilDB
 	local profile = self.db.profile
 	if not profile.skins[key] then return end
 	self.activeSkin = CopyTable(profile.skins[key])
+	if not self.activeSkin.scrollTable then
+		self.activeSkin.scrollTable = CopyTable(self.defaults.profile.skins["**"].scrollTable)
+	end
 	profile.currentSkin = key
 	self:UpdateFrames()
 end

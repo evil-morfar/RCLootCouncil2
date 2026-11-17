@@ -815,12 +815,12 @@ function addon:OptionsTable()
 								type = "group",
 								args = {
 									desc = {
-										order = 0,
+										order = 1,
 										type = "description",
 										name = L["skins_description"],
 									},
 									skinSelect = {
-										order = 1,
+										order = 2,
 										name = L["Skins"],
 										type = "select",
 										width = "double",
@@ -837,16 +837,25 @@ function addon:OptionsTable()
 										end,
 									},
 									saveSkin = {
-										order = 2,
+										order = 3,
 										name = L.opt_saveSkin_name,
 										desc = L["save_skin_desc"],
-										type = "input",
+                                        type = "input",
 										set = function(info, text)
 											self:SaveSkin(text)
 										end,
 									},
+									skinStatus = {
+										order = 4,
+										type = "description",
+										fontSize = "medium",
+										name = function()
+											if self:IsSkinDirty() then return L.unsaved_skin_changes end
+											return ""
+										end,
+									},
 									saveBtn = {
-										order = 2.5,
+										order = 5,
 										name = L["Save Skin"],
 										desc = L.opt_saveSkinBtn_desc,
 										type = "execute",
@@ -855,7 +864,7 @@ function addon:OptionsTable()
 										end
 									},
 									deleteSkin = {
-										order = 3,
+										order = 6,
 										name = L["Delete Skin"],
 										desc = L["delete_skin_desc"],
 										type = "execute",
@@ -867,7 +876,7 @@ function addon:OptionsTable()
 										end,
 									},
 									resetSkins = {
-										order = 4,
+										order = 7,
 										name = L["Reset skins"],
 										desc = L["reset_skins_desc"],
 										type = "execute",

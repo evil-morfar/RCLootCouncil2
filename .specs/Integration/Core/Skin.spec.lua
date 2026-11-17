@@ -72,10 +72,22 @@ describe("#Skin", function()
 		assert.is_nil(addon.db.profile.UI.LegacyFrame.scrollTable)
 	end)
 
+	it("fills default scroll table settings when resetting built-in skins", function()
+		addon.db.profile.skins.bfa = CopyTable(addon.defaults.profile.skins.bfa)
+
+		addon:ActivateSkin("bfa")
+
+		assert.are.same(addon.defaults.profile.skins["**"].scrollTable, addon.activeSkin.scrollTable)
+		assert.is_false(addon:IsSkinDirty())
+	end)
+
 	it("saves a deep copy of the active skin", function()
-		addon.activeSkin = CopyTable(addon.db.profile.skins.new_blue)
+		addon:ActivateSkin("new_blue")
+		assert.is_false(addon:IsSkinDirty())
 		addon.activeSkin.bgColor[1] = 0.25
+		assert.is_true(addon:IsSkinDirty())
 		addon:SaveSkin("custom")
+		assert.is_false(addon:IsSkinDirty())
 		addon.activeSkin.bgColor[1] = 0.75
 
 		assert.are.equal("custom", addon.db.profile.currentSkin)
