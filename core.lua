@@ -2214,6 +2214,14 @@ function RCLootCouncil:UpdateDB()
 	self:SendMessage("RCUpdateDB")
 end
 
+function RCLootCouncil:SaveSkin(name)
+	local skin = CopyTable(self.activeSkin)
+	skin.name = name
+	self.db.profile.skins[name] = skin
+	self.activeSkin.name = name
+	self.db.profile.currentSkin = name
+end
+
 function RCLootCouncil:IsCorrectVersion() return WOW_PROJECT_MAINLINE == WOW_PROJECT_ID end
 
 -- The link of same item generated from different players, or if two links are generated between player spec switch, are NOT the same
@@ -2552,10 +2560,12 @@ function RCLootCouncil:CreateGameTooltip(cName, parent)
 end
 
 --- Update all frames registered with RCLootCouncil:CreateFrame().
--- Updates all the frame's colors as set in the db.
+-- Updates all the frame's appearance from the active skin.
 function RCLootCouncil:UpdateFrames()
-	for _, frame in pairs(self.UI:GetCreatedFramesOfType("RCFrame")) do frame:Update() end
-	for _, frame in pairs(self.UI:GetCreatedFramesOfType("LibST")) do frame:SetBackdrop() end
+	for _, frame in pairs(self.UI:GetCreatedFramesOfType("RCFrame")) do
+		frame:Update(self.activeSkin)
+	end
+	for _, frame in pairs(self.UI:GetCreatedFramesOfType("LibST")) do frame:SetBackdrop(self.activeSkin) end
 end
 
 --- Applies a skin to all frames
@@ -2563,15 +2573,10 @@ end
 -- @param key Index in db.skins.
 function RCLootCouncil:ActivateSkin(key)
 	self.Log:d("ActivateSkin", key)
-	if not db.skins[key] then return end
-	for _, v in pairs(db.UI) do
-		v.bgColor = {unpack(db.skins[key].bgColor)}
-		v.borderColor = {unpack(db.skins[key].borderColor)}
-		v.background = db.skins[key].background
-		v.border = db.skins[key].border
-		v.scrollTable = CopyTable(db.skins[key].scrollTable)
-	end
-	db.currentSkin = key
+	local profile = self.db.profile
+	if not profile.skins[key] then return end
+	self.activeSkin = CopyTable(profile.skins[key])
+	profile.currentSkin = key
 	self:UpdateFrames()
 end
 
@@ -2633,13 +2638,10 @@ end
 
 function RCLootCouncil:ResetUI()
 	db = self:Getdb()
-	for name, data in pairs(db.UI) do -- We can't easily reset due to the wildcard in defaults
-		for k in pairs(data) do
-			if self.defaults.profile.UI[name] and self.defaults.profile.UI[name][k] then
-				db.UI[name][k] = self.defaults.profile.UI[name][k]
-			else
-				db.UI[name][k] = self.defaults.profile.UI["**"][k]
-			end
+	for name, data in pairs(db.UI) do
+		local frameDefaults = self.defaults.profile.UI[name] or {}
+		for _, field in ipairs({"x", "y", "point", "scale"}) do
+			data[field] = frameDefaults[field] or self.defaults.profile.UI["**"][field]
 		end
 	end
 	for _, frame in ipairs(self.UI.minimizeableFrames) do frame:RestorePosition() end

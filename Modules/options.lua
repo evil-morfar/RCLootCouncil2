@@ -842,15 +842,7 @@ function addon:OptionsTable()
 										desc = L["save_skin_desc"],
 										type = "input",
 										set = function(info, text)
-											self.db.profile.skins[text] = {
-												name = text,
-												bgColor = {unpack(self.db.profile.UI.default.bgColor)},
-												borderColor = {unpack(self.db.profile.UI.default.borderColor)},
-												background = self.db.profile.UI.default.background,
-												border = self.db.profile.UI.default.border,
-												scrollTable = CopyTable(self.db.profile.UI.default.scrollTable)
-											}
-											self.db.profile.currentSkin = text
+											self:SaveSkin(text)
 										end,
 									},
 									saveBtn = {
@@ -859,14 +851,7 @@ function addon:OptionsTable()
 										desc = L.opt_saveSkinBtn_desc,
 										type = "execute",
 										func = function()
-											self.db.profile.skins[self.db.profile.currentSkin] = {
-												name = self.db.profile.currentSkin,
-												bgColor = { unpack(self.db.profile.UI.default.bgColor), },
-												borderColor = { unpack(self.db.profile.UI.default.borderColor), },
-												background = self.db.profile.UI.default.background,
-												border = self.db.profile.UI.default.border,
-												scrollTable = CopyTable(self.db.profile.UI.default.scrollTable),
-											}
+											self:SaveSkin(self.db.profile.currentSkin)
 										end
 									},
 									deleteSkin = {
@@ -878,6 +863,7 @@ function addon:OptionsTable()
 										func = function()
 											self.db.profile.skins[self.db.profile.currentSkin] = nil
 											for k in pairs(self.db.profile.skins) do self.db.profile.currentSkin = k break end --luacheck: ignore
+											self:ActivateSkin(self.db.profile.currentSkin)
 										end,
 									},
 									resetSkins = {
@@ -891,6 +877,7 @@ function addon:OptionsTable()
 												self.db.profile.skins[k] = v
 											end
 											self.db.profile.currentSkin = self.defaults.profile.currentSkin
+											self:ActivateSkin(self.db.profile.currentSkin)
 										end,
 									},
 								},
@@ -906,7 +893,6 @@ function addon:OptionsTable()
 										type = "description",
 										name = L["customize_appearance_desc"],
 									},
-									-- TODO: Using profile.UI is dumb - we should create a temp for it.
 									frames = {
 										order = 2,
 										type = "group",
@@ -919,11 +905,9 @@ function addon:OptionsTable()
 												type = "select",
 												dialogControl = "LSM30_Background",
 												values = AceGUIWidgetLSMlists.background,
-												get = function() return self.db.profile.UI.default.background end,
+												get = function() return self.activeSkin.background end,
 												set = function(info, key)
-													for _, v in pairs(self.db.profile.UI) do
-														v.background = key
-													end
+													self.activeSkin.background = key
 													self:UpdateFrames()
 												end,
 											},
@@ -932,11 +916,9 @@ function addon:OptionsTable()
 												name = L["Background Color"],
 												type = "color",
 												hasAlpha = true,
-												get = function() return unpack(self.db.profile.UI.default.bgColor) end,
+												get = function() return unpack(self.activeSkin.bgColor) end,
 												set = function(info, r, g, b, a)
-													for _, v in pairs(self.db.profile.UI) do
-														v.bgColor = { r, g, b, a, }
-													end
+													self.activeSkin.bgColor = { r, g, b, a, }
 													self:UpdateFrames()
 												end,
 											},
@@ -947,11 +929,9 @@ function addon:OptionsTable()
 												width = "double",
 												dialogControl = "LSM30_Border",
 												values = _G.AceGUIWidgetLSMlists.border,
-												get = function() return self.db.profile.UI.default.border end,
+												get = function() return self.activeSkin.border end,
 												set = function(info, key)
-													for _, v in pairs(self.db.profile.UI) do
-														v.border = key
-													end
+													self.activeSkin.border = key
 													self:UpdateFrames()
 												end,
 											},
@@ -960,11 +940,9 @@ function addon:OptionsTable()
 												name = L["Border Color"],
 												type = "color",
 												hasAlpha = true,
-												get = function() return unpack(self.db.profile.UI.default.borderColor) end,
+												get = function() return unpack(self.activeSkin.borderColor) end,
 												set = function(info, r, g, b, a)
-													for _, v in pairs(self.db.profile.UI) do
-														v.borderColor = { r, g, b, a, }
-													end
+													self.activeSkin.borderColor = { r, g, b, a, }
 													self:UpdateFrames()
 												end,
 											},
@@ -983,11 +961,9 @@ function addon:OptionsTable()
 												type = "select",
 												dialogControl = "LSM30_Background",
 												values = AceGUIWidgetLSMlists.background,
-												get = function() return self.db.profile.UI.default.scrollTable.background end,
+												get = function() return self.activeSkin.scrollTable.background end,
 												set = function(info, key)
-													for _, v in pairs(self.db.profile.UI) do
-														v.scrollTable.background = key
-													end
+													self.activeSkin.scrollTable.background = key
 													self:UpdateFrames()
 												end,
 											},
@@ -996,11 +972,9 @@ function addon:OptionsTable()
 												name = L["Background Color"],
 												type = "color",
 												hasAlpha = true,
-												get = function() return unpack(self.db.profile.UI.default.scrollTable.bgColor) end,
+												get = function() return unpack(self.activeSkin.scrollTable.bgColor) end,
 												set = function(info, r, g, b, a)
-													for _, v in pairs(self.db.profile.UI) do
-														v.scrollTable.bgColor = { r, g, b, a, }
-													end
+													self.activeSkin.scrollTable.bgColor = { r, g, b, a, }
 													self:UpdateFrames()
 												end,
 											},
@@ -1011,11 +985,9 @@ function addon:OptionsTable()
 												width = "double",
 												dialogControl = "LSM30_Border",
 												values = _G.AceGUIWidgetLSMlists.border,
-												get = function() return self.db.profile.UI.default.scrollTable.border end,
+												get = function() return self.activeSkin.scrollTable.border end,
 												set = function(info, key)
-													for _, v in pairs(self.db.profile.UI) do
-														v.scrollTable.border = key
-													end
+													self.activeSkin.scrollTable.border = key
 													self:UpdateFrames()
 												end,
 											},
@@ -1024,13 +996,10 @@ function addon:OptionsTable()
 												name = L["Border Color"],
 												type = "color",
 												hasAlpha = true,
-												get = function() return unpack(self.db.profile.UI.default
-														.scrollTable.borderColor)
+												get = function() return unpack(self.activeSkin.scrollTable.borderColor)
 												end,
 												set = function(info, r, g, b, a)
-													for _, v in pairs(self.db.profile.UI) do
-														v.scrollTable.borderColor = { r, g, b, a, }
-													end
+													self.activeSkin.scrollTable.borderColor = { r, g, b, a, }
 													self:UpdateFrames()
 												end,
 											},
@@ -1039,12 +1008,10 @@ function addon:OptionsTable()
 												name = "Tile Size",
 												type = "input",
 												width = "half",
-												get = function() return tostring(self.db.profile.UI.default.scrollTable.tileSize) end,
+												get = function() return tostring(self.activeSkin.scrollTable.tileSize) end,
 												set = function(_, num)
 													local n = tonumber(num)
-													for _, v in pairs(self.db.profile.UI) do
-														v.scrollTable.tileSize = n
-													end
+													self.activeSkin.scrollTable.tileSize = n
 													self:UpdateFrames()
 												end
 											},
@@ -1054,12 +1021,10 @@ function addon:OptionsTable()
 												type = "input",
 												width = "half",
 												pattern = "%d",
-												get = function() return tostring(self.db.profile.UI.default.scrollTable.edgeSize) end,
+												get = function() return tostring(self.activeSkin.scrollTable.edgeSize) end,
 												set = function(_, num)
 													local n = tonumber(num)
-													for _, v in pairs(self.db.profile.UI) do
-														v.scrollTable.edgeSize = n
-													end
+													self.activeSkin.scrollTable.edgeSize = n
 													self:UpdateFrames()
 												end,
 											},
@@ -1072,13 +1037,7 @@ function addon:OptionsTable()
 										type = "execute",
 										confirm = true,
 										func = function()
-											for _,v in pairs(self.db.profile.UI) do
-												v.bgColor = self.db.profile.skins[self.db.profile.currentSkin].bgColor
-												v.borderColor = self.db.profile.skins[self.db.profile.currentSkin].borderColor
-												v.background = self.db.profile.skins[self.db.profile.currentSkin].background
-												v.border = self.db.profile.skins[self.db.profile.currentSkin].border
-											end
-											self:UpdateFrames()
+											self:ActivateSkin(self.db.profile.currentSkin)
 										end,
 									},
 								},

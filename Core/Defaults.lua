@@ -188,25 +188,12 @@ addon.defaults = {
 
 		disableLogging = nil,
 
-		UI = { -- stores all ui information
+		UI = { -- stores window positions and scale
 			["**"] = { -- Defaults
 				y           = 0,
 				x           = 0,
 				point       = "CENTER",
 				scale       = 1,
-				bgColor     = { 0, 0, 0.2, 1, },
-				borderColor = { 0.3, 0.3, 0.5, 1, },
-				border      = "Blizzard Tooltip",
-				background  = "Blizzard Tooltip",
-				scrollTable = {
-					background = "ChatFrameBackground",
-					border = "Blizzard Tooltip",
-					tileSize = 16,
-					edgeSize = 16,
-					insets = { left = 3, right = 3, top = 5, bottom = 3, },
-					bgColor = { 0.1, 0.1, 0.1, 1, },
-					borderColor = { 1, 1, 1, 1, },
-				},
 			},
 			DefaultRCLootFrame = { -- We want the Loot Frame to get a little lower
 				y = -200,

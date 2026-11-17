@@ -31,14 +31,14 @@ local Object = {}
 ---@return LibST
 function Object:New(parent, name, scrollCols, numRows, rowHeight, colors)
 	local f = LibStub("ScrollingTable"):CreateST(scrollCols, numRows, rowHeight, colors, parent)
+	local db = addon:Getdb()
 	f.SetBackdrop = self.SetBackdrop
-	f:SetBackdrop()
+	f:SetBackdrop(addon.activeSkin or db.skins[db.currentSkin])
 	return f
 end
 
-function Object:SetBackdrop()
-	local name = self.frame:GetParent():GetParent():GetName()
-	local options = addon:Getdb().UI[name].scrollTable
+function Object:SetBackdrop(skin)
+	local options = skin.scrollTable
 	self.frame:SetBackdrop({
 		bgFile = AceGUIWidgetLSMlists.background[options.background],
 		edgeFile = AceGUIWidgetLSMlists.border[options.border],

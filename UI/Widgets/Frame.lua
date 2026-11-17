@@ -48,12 +48,13 @@ function Object:New(parent, name, title, width, height)
 	self:CreateContentFrame(f, name, height)
 	for field, obj in pairs(self.Minimize_Prototype) do f[field] = obj end
 
-	f.Update = function(self)
+	f.Update = function(self, activeSkin)
 		addon.Log:D("UpdateFrame", self:GetName())
 		db = addon:Getdb()
-		self.content:Update()
-		self.title:Update()
+		self.content:Update(activeSkin)
+		self.title:Update(activeSkin)
 	end
+	f:Update(addon.activeSkin or db.skins[db.currentSkin])
 	addon.UI:RegisterForCombatMinimize(f)
 	return f
 end
@@ -65,7 +66,6 @@ function Object:CreateContentFrame(parent, name, height)
 	---@class RCFrame.Content : Frame, BackdropTemplate
 	local c = CreateFrame("Frame", "RC_UI_" .. name .. "_Content", parent, BackdropTemplateMixin and "BackdropTemplate") -- frame that contains the actual content
 	c:SetFrameLevel(1)
-	self:SetupBackdrop(c, db.skins[db.currentSkin], true, 256)
 	c:EnableMouse(true)
 	c:SetWidth(450)
 	c:SetHeight(height or 325)
@@ -89,8 +89,8 @@ function Object:CreateContentFrame(parent, name, height)
 		self.content:SetHeight(h)
 	end)
 
-	c.Update = function()
-		self:SetupBackdrop(c, db.UI[name], true, 256)
+	c.Update = function(_, activeSkin)
+		self:SetupBackdrop(c, activeSkin, true, 256)
 	end
 
 	parent.content = c
@@ -100,7 +100,6 @@ function Object:CreateTitleFrame(parent, name, title, width)
 	---@class RCFrame.Title : Frame, BackdropTemplate
 	local tf = CreateFrame("Frame", "RC_UI_" .. name .. "_Title", parent, BackdropTemplateMixin and "BackdropTemplate")
 	tf:SetFrameLevel(2)
-	self:SetupBackdrop(tf, db.skins[db.currentSkin], true, 128)
 	tf:SetHeight(22)
 	tf:EnableMouse()
 	tf:SetMovable(true)
@@ -155,33 +154,33 @@ function Object:CreateTitleFrame(parent, name, title, width)
 	text:SetText(title)
 	tf.text = text
 
-	tf.Update = function()
-		self:SetupBackdrop(tf, db.UI[name], true, 128)
+	tf.Update = function(_, activeSkin)
+		self:SetupBackdrop(tf, activeSkin, true, 128)
 	end
 	parent.title = tf
 end
 
 --- Insets will be 0 if there's no border
 ---@param frame Frame | BackdropTemplate
----@param skinSelector table Table containing skin info. Should either be db.skins[db.currentSkin] or db.UI[name].
+---@param skin table Table containing skin info.
 ---@param tile boolean Wheter or not the frame should be tiled
 ---@param tileSize integer Defaults to 64
-function Object:SetupBackdrop(frame, skinSelector, tile, tileSize)
+function Object:SetupBackdrop(frame, skin, tile, tileSize)
 	tileSize = tileSize or 64
 	local insets = 2
-	if skinSelector.border == "None" or skinSelector.border == "" then
+	if skin.border == "None" or skin.border == "" then
 		insets = 0
 	end
 	frame:SetBackdrop({
-		bgFile = AceGUIWidgetLSMlists.background[skinSelector.background],
-		edgeFile = AceGUIWidgetLSMlists.border[skinSelector.border],
+		bgFile = AceGUIWidgetLSMlists.background[skin.background],
+		edgeFile = AceGUIWidgetLSMlists.border[skin.border],
 		tile = tile,
 		tileSize = tileSize,
 		edgeSize = 12,
 		insets = { left = insets, right = insets, top = insets, bottom = insets, },
 	})
-	frame:SetBackdropColor(unpack(skinSelector.bgColor))
-	frame:SetBackdropBorderColor(unpack(skinSelector.borderColor))
+	frame:SetBackdropColor(unpack(skin.bgColor))
+	frame:SetBackdropBorderColor(unpack(skin.borderColor))
 end
 
 ---@class Object.Minimize_Prototype
