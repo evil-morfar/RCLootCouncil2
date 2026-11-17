@@ -81,6 +81,24 @@ describe("#Skin", function()
 		assert.is_false(addon:IsSkinDirty())
 	end)
 
+	it("uses active frame tile and edge sizes for backdrops", function()
+		local backdrop
+		local fakeFrame = {
+			SetBackdrop = function(_, value) backdrop = value end,
+			SetBackdropColor = function() end,
+			SetBackdropBorderColor = function() end,
+		}
+		local frameWidget = originalUI.private.elements.RCFrame
+		local skin = CopyTable(addon.db.profile.skins.bfa)
+		skin.tileSize = 72
+		skin.edgeSize = 8
+
+		frameWidget:SetupBackdrop(fakeFrame, skin, true, 256)
+
+		assert.are.equal(72, backdrop.tileSize)
+		assert.are.equal(8, backdrop.edgeSize)
+	end)
+
 	it("saves a deep copy of the active skin", function()
 		addon:ActivateSkin("new_blue")
 		assert.is_false(addon:IsSkinDirty())

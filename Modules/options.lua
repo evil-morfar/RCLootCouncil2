@@ -955,6 +955,31 @@ function addon:OptionsTable()
 													self:UpdateFrames()
 												end,
 											},
+											tileSize = {
+												order = 7,
+												name = L.tile_size,
+												type = "input",
+												width = "half",
+												get = function() return tostring(self.activeSkin.tileSize or 256) end,
+												set = function(_, num)
+													local n = tonumber(num)
+													self.activeSkin.tileSize = n
+													self:UpdateFrames()
+												end,
+											},
+											edgeSize = {
+												order = 8,
+												name = L.edge_size,
+												type = "input",
+												width = "half",
+												pattern = "%d",
+												get = function() return tostring(self.activeSkin.edgeSize or 12) end,
+												set = function(_, num)
+													local n = tonumber(num)
+													self.activeSkin.edgeSize = n
+													self:UpdateFrames()
+												end,
+											},
 										},
 									},
 									
@@ -1014,7 +1039,7 @@ function addon:OptionsTable()
 											},
 											tileSize = {
 												order = 5,
-												name = "Tile Size",
+												name = L.tile_size,
 												type = "input",
 												width = "half",
 												get = function() return tostring(self.activeSkin.scrollTable.tileSize) end,
@@ -1026,7 +1051,7 @@ function addon:OptionsTable()
 											},
 											edgeSize = {
 												order = 6,
-												name = "Edge Size",
+												name = L.edge_size,
 												type = "input",
 												width = "half",
 												pattern = "%d",

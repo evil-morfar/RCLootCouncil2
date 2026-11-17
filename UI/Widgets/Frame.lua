@@ -166,7 +166,8 @@ end
 ---@param tile boolean Wheter or not the frame should be tiled
 ---@param tileSize integer Defaults to 64
 function Object:SetupBackdrop(frame, skin, tile, tileSize)
-	tileSize = tileSize or 64
+	tileSize = skin.tileSize or tileSize or 64
+	local edgeSize = skin.edgeSize or 12
 	local insets = 2
 	if skin.border == "None" or skin.border == "" then
 		insets = 0
@@ -176,7 +177,7 @@ function Object:SetupBackdrop(frame, skin, tile, tileSize)
 		edgeFile = AceGUIWidgetLSMlists.border[skin.border],
 		tile = tile,
 		tileSize = tileSize,
-		edgeSize = 12,
+		edgeSize = edgeSize,
 		insets = { left = insets, right = insets, top = insets, bottom = insets, },
 	})
 	frame:SetBackdropColor(unpack(skin.bgColor))
