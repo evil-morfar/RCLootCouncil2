@@ -1,9 +1,9 @@
 ## Author: Potdisc
 ## Interface: 120105, 16001
 ## Interface-Forever: 16001
-## Notes: Interface for running a Loot Council v3.25.0
+## Notes: Interface for running a Loot Council v3.26.0-beta.1
 ## Title: RCLootCouncil
-## Version: 3.25.0
+## Version: 3.26.0
 ## SavedVariables: RCLootCouncilDB, RCLootCouncilLootDB
 ## AllowLoadGameType: mainline
 ## OptionalDeps: LibStub, CallbackHandler-1.0, Ace3, lib-st, LibWindow-1.1, LibDialog-1.0, Simulationcraft

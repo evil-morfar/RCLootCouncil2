@@ -127,10 +127,10 @@ function RCLootCouncil:OnInitialize()
 	-- 	end
 	-- end
 	-- IDEA Consider if we want everything on self, or just whatever modules could need.
-	self.version = C_AddOns.GetAddOnMetadata("RCLootCouncil", "Version")
+    self.version = C_AddOns.GetAddOnMetadata("RCLootCouncil", "Version")
 	self.nnp = false
 	self.debug = false
-	self.tVersion = nil -- String or nil. Indicates test version, which alters stuff like version check. Is appended to 'version', i.e. "version-tVersion" (max 10 letters for stupid security)
+	self.tVersion = "beta.1" -- String or nil. Indicates test version, which alters stuff like version check. Is appended to 'version', i.e. "version-tVersion" (max 10 letters for stupid security)
 
 	self.playerClass = select(2, UnitClass("player")) -- TODO: Remove - contained in self.player
 	self.guildRank = L["Unguilded"]
