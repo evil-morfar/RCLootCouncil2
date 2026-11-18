@@ -1277,6 +1277,7 @@ TOOLTIP_DEFAULT_BACKGROUND_COLOR = { r = 0.09, g = 0.09, b = 0.19, };
 _G.INVSLOT_FIRST_EQUIPPED = 1
 _G.INVSLOT_LAST_EQUIPPED = 18
 NORMAL_FONT_COLOR = CreateColor(255, 209, 0, 255) --ffd100
+SOUNDKIT = {}
 
 ------------------------------------------
 -- Global Strings

@@ -35,7 +35,7 @@ describe("#ProfileSharing", function()
 
 		local export = addon:GetProfileForExport()
 		addon:ImportProfile(export)
-		local dialog = LibStub("LibDialog-1.1"):ActiveDialog("RCLOOTCOUNCIL_OVERWRITE_PROFILE")
+		local dialog = LibStub("LibDialog-1.0"):ActiveDialog("RCLOOTCOUNCIL_OVERWRITE_PROFILE")
 		dialog.delegate.buttons[1]:on_click(dialog.data)
 
 		assert.stub(s).was_called_with(match.is_ref(addon), profileName, match.Same(preDB))

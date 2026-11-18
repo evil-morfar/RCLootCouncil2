@@ -2401,7 +2401,7 @@ function addon:ImportProfile(data)
 		return
 	end
 	if self.db.profiles[name] then
-		LibStub("LibDialog-1.1"):Spawn("RCLOOTCOUNCIL_OVERWRITE_PROFILE", {
+		LibStub("LibDialog-1.0"):Spawn("RCLOOTCOUNCIL_OVERWRITE_PROFILE", {
 			name = name,
 			profile = profile,
 		})
