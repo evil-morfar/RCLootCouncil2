@@ -9,10 +9,11 @@
     "tasks": [
         {
             "label": "Deploy Retail & Forever",
-            "dependsOn":[
+            "dependsOn": [
                 "Deploy Retail",
                 "Deploy Forever"
-            ]
+            ],
+            "problemMatcher": []
         },
         {
             "label": "Deploy All PTR",
@@ -21,7 +22,6 @@
                 "Deploy-Retail-XPTR",
                 "Deploy-Retail-Beta"
             ]
-
         },
         {
             "label": "Deploy Retail",
@@ -30,7 +30,7 @@
             "group": {
                 "kind": "build",
                 "isDefault": true
-            },
+            }
         },
         {
             "label": "Deploy Forever",
@@ -55,7 +55,7 @@
             "type": "shell",
             "command": "sh .scripts/deploy.sh -b",
             "group": "build"
-        },        
+        },
         {
             "label": "Busted All",
             "type": "shell",
@@ -63,7 +63,7 @@
             "group": {
                 "kind": "test",
                 "isDefault": true
-            },
+            }
         },
         {
             "label": "Busted All w/coverage",
@@ -84,7 +84,7 @@
             "args": [
                 "--lpath=__tests/?.lua;__tests/wow_api/?.lua",
                 "-v",
-                "${file}",
+                "${file}"
             ],
             "windows": {
                 "options": {
@@ -94,7 +94,7 @@
                             "/c"
                         ]
                     }
-                },
+                }
             },
             "group": "test"
         },
