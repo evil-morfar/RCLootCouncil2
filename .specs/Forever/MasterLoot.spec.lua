@@ -2,10 +2,12 @@ require "busted.runner"()
 
 local addon = loadfile(".specs/AddonLoader.lua")(false, "RCLootCouncil", nil, 18).LoadToc("RCLootCouncil.toc")
 dofile(".specs/EmulatePlayerLogin.lua")
+local SetupRaid = dofile(".specs/Helpers/SetupRaid.lua")
 
 describe("#Forever #MasterLoot", function()
 	local MasterLoot = addon.Require "Services.MasterLoot"
 	local Council = addon.Require "Data.Council"
+	local Player = addon.Require "Data.Player"
 	local ML = _G.RCLootCouncilML
 
 	local originalGetLootMethod
@@ -58,6 +60,176 @@ describe("#Forever #MasterLoot", function()
 			MasterLoot:OnLootReady()
 			assert.spy(sSchedule).was.called_with(MasterLoot, "ProcessLoot", 0)
 			sSchedule:revert()
+		end)
+	end)
+
+	describe("GetML", function()
+		local originalTestMode
+		local originalNnp
+		local originalGetNumGroupMembers
+		local originalGetPlayerInfoByGUID
+		local originalGetRaidRosterInfo
+		local originalIsMasterLooter
+		local originalUnitIsGroupLeader
+		local originalUnitGUID
+		local originalIsInGroup
+		local originalIsInRaid
+		local originalUnitIsSameServer
+		local originalGetLootMethod
+		local originalIsPartyLFG
+		local originalUnitIsUnit
+
+		before_each(function()
+			originalTestMode = addon.testMode
+			originalNnp = addon.nnp
+			originalGetNumGroupMembers = _G.GetNumGroupMembers
+			originalGetPlayerInfoByGUID = _G.GetPlayerInfoByGUID
+			originalGetRaidRosterInfo = _G.GetRaidRosterInfo
+			originalIsMasterLooter = _G.IsMasterLooter
+			originalUnitIsGroupLeader = _G.UnitIsGroupLeader
+			originalUnitGUID = _G.UnitGUID
+			originalIsInGroup = _G.IsInGroup
+			originalIsInRaid = _G.IsInRaid
+			originalUnitIsSameServer = _G.C_PlayerInfo.UnitIsSameServer
+			originalGetLootMethod = addon.GetLootMethod
+			originalIsPartyLFG = addon.Utils.IsPartyLFG
+			originalUnitIsUnit = addon.UnitIsUnit
+			addon.testMode = false
+			addon.nnp = false
+			wipe(addon.Utils.unitNameLookup)
+		end)
+
+		after_each(function()
+			addon.testMode = originalTestMode
+			addon.nnp = originalNnp
+			_G.GetNumGroupMembers = originalGetNumGroupMembers
+			_G.GetPlayerInfoByGUID = originalGetPlayerInfoByGUID
+			_G.GetRaidRosterInfo = originalGetRaidRosterInfo
+			_G.IsMasterLooter = originalIsMasterLooter
+			_G.UnitIsGroupLeader = originalUnitIsGroupLeader
+			_G.UnitGUID = originalUnitGUID
+			_G.IsInGroup = originalIsInGroup
+			_G.IsInRaid = originalIsInRaid
+			_G.C_PlayerInfo.UnitIsSameServer = originalUnitIsSameServer
+			addon.GetLootMethod = originalGetLootMethod
+			addon.Utils.IsPartyLFG = originalIsPartyLFG
+			addon.UnitIsUnit = originalUnitIsUnit
+			wipe(addon.Utils.unitNameLookup)
+		end)
+
+		it("returns no ML while in LFG", function()
+			addon.Utils.IsPartyLFG = function() return true end
+
+			local isML, ml = addon:GetML()
+
+			assert.is_false(isML)
+			assert.is_nil(ml)
+		end)
+
+		it("returns the player when testing alone", function()
+			addon.Utils.IsPartyLFG = function() return false end
+			_G.GetNumGroupMembers = function() return 0 end
+			addon.testMode = true
+
+			local isML, ml = addon:GetML()
+
+			assert.is_true(isML)
+			assert.are.equal(addon.player, ml)
+		end)
+
+		it("returns the raid member selected as master looter", function()
+			addon.Utils.IsPartyLFG = function() return false end
+			SetupRaid(3)
+			addon.player = Player:Get("player")
+			_G.IsMasterLooter = function() return false end
+			addon.GetLootMethod = function() return Enum.LootMethod.Masterlooter, nil, 2 end
+			addon.Utils.unitNameLookup.raid2 = "Player2"
+			local player = Player:Get("Player2")
+
+			local isML, ml = addon:GetML()
+
+			assert.is_false(isML)
+			assert.are.equal(player, ml)
+		end)
+
+		it("returns the player for master-looter party ID zero", function()
+			addon.Utils.IsPartyLFG = function() return false end
+			SetupRaid(3)
+			addon.player = Player:Get("player")
+			_G.IsMasterLooter = function() return true end
+			addon.GetLootMethod = function() return Enum.LootMethod.Masterlooter, 0, nil end
+			addon.UnitIsUnit = function() return true end
+
+			local isML, ml = addon:GetML()
+
+			assert.is_true(isML)
+			assert.are.equal(addon.player, ml)
+		end)
+
+		it("returns the party member selected as master looter", function()
+			addon.Utils.IsPartyLFG = function() return false end
+			SetupRaid(3)
+			addon.player = Player:Get("player")
+			_G.IsMasterLooter = function() return false end
+			addon.GetLootMethod = function() return Enum.LootMethod.Masterlooter, 2, nil end
+			addon.Utils.unitNameLookup.party2 = "Player2"
+			local player = Player:Get("Player2")
+
+			local isML, ml = addon:GetML()
+
+			assert.is_false(isML)
+			assert.are.equal(player, ml)
+		end)
+
+		it("uses the player when IsMasterLooter conflicts with the resolved name", function()
+			addon.Utils.IsPartyLFG = function() return false end
+			SetupRaid(3)
+			addon.player = Player:Get("player")
+			_G.IsMasterLooter = function() return true end
+			addon.GetLootMethod = function() return Enum.LootMethod.Masterlooter, nil, 2 end
+			addon.Utils.unitNameLookup.raid2 = "Player2"
+			addon.UnitIsUnit = function() return false end
+
+			local isML, ml = addon:GetML()
+
+			assert.is_true(isML)
+			assert.are.equal(addon.player, ml)
+		end)
+
+		it("returns a secret master-looter name without converting it to Player", function()
+			addon.Utils.IsPartyLFG = function() return false end
+			SetupRaid(3)
+			addon.player = Player:Get("player")
+			_G.IsMasterLooter = function() return true end
+			addon.GetLootMethod = function() return Enum.LootMethod.Masterlooter, nil, 2 end
+			addon.Utils.unitNameLookup.raid2 = "SECRET"
+			addon.UnitIsUnit = function() return true end
+			local playerGetCalls = 0
+			local originalPlayerGet = Player.Get
+			Player.Get = function(...)
+				playerGetCalls = playerGetCalls + 1
+				return originalPlayerGet(...)
+			end
+
+			local isML, ml = addon:GetML()
+
+			assert.is_true(isML)
+			assert.are.equal("SECRET", ml)
+			assert.are.equal(0, playerGetCalls)
+			Player.Get = originalPlayerGet
+		end)
+
+		it("returns the group leader for non-master-looter methods", function()
+			addon.Utils.IsPartyLFG = function() return false end
+			SetupRaid(3)
+			addon.player = Player:Get("player")
+			addon.GetLootMethod = function() return Enum.LootMethod.Group, nil, nil end
+			local player = Player:Get("Player1")
+
+			local isML, ml = addon:GetML()
+
+			assert.is_true(isML)
+			assert.are.equal(player, ml)
 		end)
 	end)
 

@@ -2066,24 +2066,44 @@ end
 function RCLootCouncil:GetML()
 	self.Log:d("GetML()")
 	if self.Utils:IsPartyLFG() then return false, nil end -- Never use in LFG
-	if GetNumGroupMembers() == 0 and (self.testMode or self.nnp) then -- always the player when testing alone
-		return true, self.player
-	end
-	-- Set the Group leader as the ML
+    if GetNumGroupMembers() == 0 and (self.testMode or self.nnp) then -- always the player when testing alone
+        return true, self.player
+    end
+	local lootMethod, mlPartyId, mlRaidId = self:GetLootMethod()
+	self.lootMethod = lootMethod
 	---@type string?
 	local name
-	for i = 1, GetNumGroupMembers() or 0 do
-		local name2, rank = GetRaidRosterInfo(i)
-		if not name2 then -- Group info is not completely ready
-			return false, name
+	if self.lootMethod == Enum.LootMethod.Masterlooter then
+		if mlRaidId then
+			name = self:UnitName("raid" .. mlRaidId)
+		elseif mlPartyId == 0 then
+			name = self.player:GetName()
+		elseif mlPartyId then
+			name = self:UnitName("party" .. mlPartyId)
 		end
-		if rank == 2 then -- Group leader. Btw, name2 can be nil when rank is 2.
-			name = self:UnitName(name2)
-			break
+		self.Log:D("MasterLooter = ", name)
+		local isML = IsMasterLooter()
+		if isML and not self:UnitIsUnit("player", name) then
+			self.Log:W("GetML: isMasterLooter but not masterLooter, ML = ", name)
+			name = self.player.name
 		end
+		if issecretvalue(name) then return isML, name end
+		return isML, Player:Get(name)
+    else
+		-- Set the Group leader as the ML
+        for i = 1, GetNumGroupMembers() or 0 do
+            local name2, rank = GetRaidRosterInfo(i)
+            if not name2 then -- Group info is not completely ready
+                return false, name
+            end
+            if rank == 2 then -- Group leader. Btw, name2 can be nil when rank is 2.
+                name = self:UnitName(name2)
+                break
+            end
+        end
+		if self.Utils:IsSecretValue(name) then return UnitIsGroupLeader("player"), name end
+		if name then return UnitIsGroupLeader("player"), Player:Get(name) end
 	end
-	if self.Utils:IsSecretValue(name) then return UnitIsGroupLeader("player"), name end
-	if name then return UnitIsGroupLeader("player"), Player:Get(name) end
 	return false, nil;
 end
 
