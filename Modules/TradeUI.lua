@@ -13,7 +13,6 @@ local addon = select(2, ...)
 --- @class TradeUI : AceModule, AceEvent-3.0, AceTimer-3.0
 local TradeUI = addon:NewModule("TradeUI", "AceEvent-3.0", "AceTimer-3.0")
 addon.TradeUI = TradeUI -- Shorthand for easier access
-local ST = LibStub("ScrollingTable")
 --- @type RCLootCouncilLocale
 local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 local LibDialog = LibStub("LibDialog-1.1")
@@ -39,9 +38,9 @@ local GetTime, InitiateTrade
 function TradeUI:OnInitialize()
    self.scrollCols = {
       { name = "", width = ROW_HEIGHT,},   -- Item icon
-      { name = "", width = 120,},          -- Item Link
-      { name = "", width = ROW_HEIGHT - 5},-- Arrow
-      { name = "", width = 100,},          -- Recipient
+      { name = "", width = 110,},          -- Item Link
+      { name = "", width = ROW_HEIGHT - 8},-- Arrow
+      { name = "", width = 130,},          -- Recipient
       { name = "", width = 40,},           -- Trade
       { name = "", width = ROW_HEIGHT/2},            -- Delete
    }

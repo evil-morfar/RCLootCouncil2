@@ -25,6 +25,8 @@ Updated to work with Forever.
 
 Merged all relevant changes from the Classic addon into this to work with Forever.
 
+Slightly changed various frames to make room for longer names.
+
 ### Master Loot & Group Loot options
 
 Seperated options for these to clearly indicate which options works with the specific loot method.

@@ -11,6 +11,9 @@ addon:SecureHook(History, "OnInitialize", function(self)
 	self.exports.biscouncil = {
 		func = self.ExportBisCouncil, name = "BisCouncil", tip = "BisCouncil formatted export.",
 	}
+	self.scrollCols[2].width = self.scrollCols[2].width + 20
+	self.scrollCols[5].width = self.scrollCols[5].width - 20
+	self.NAME_SELECTION_NAME_WIDTH = self.NAME_SELECTION_NAME_WIDTH + 20
 end)
 
 ---Formats unix time as "YYYY-MM-DD"

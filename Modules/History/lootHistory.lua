@@ -43,6 +43,7 @@ local tinsert, tostring, getglobal, pairs, ipairs, tremove, strsplit = tinsert, 
 
 function LootHistory:OnInitialize()
 	self.exportSelection = addon.db.profile.defaultHistoryExport or "player"
+	self.NAME_SELECTION_NAME_WIDTH = 100
 	-- Pointer to export functions. Expected to return a string containing the export
 	self.exports = {
 		csv = { func = self.ExportCSV, name = "CSV", tip = L["Standard .csv output."], },
@@ -974,7 +975,7 @@ function LootHistory:GetFrame()
 
 	--Name selection
 	f.name = addon.UI:New("LibST", f.content,
-		{ { name = "", width = ROW_HEIGHT, }, { name = _G.NAME, width = 100, sort = 1, }, }, 5, ROW_HEIGHT,
+		{ { name = "", width = ROW_HEIGHT, }, { name = _G.NAME, width = self.NAME_SELECTION_NAME_WIDTH, sort = 1, }, }, 5, ROW_HEIGHT,
 		{ ["r"] = 1.0, ["g"] = 0.9, ["b"] = 0.0, ["a"] = 0.5, })
 	f.name.frame:SetPoint("TOPLEFT", f.date.frame, "TOPRIGHT", 10, 0)
 	f.name:EnableSelection(true)
