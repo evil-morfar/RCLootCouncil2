@@ -1,5 +1,5 @@
 ## Author: Potdisc
-## Interface: 120105 
+## Interface: 120105, 16001
 ## Interface-Forever: 16001
 ## Notes: Interface for running a Loot Council v3.25.0
 ## Title: RCLootCouncil
