@@ -1,3 +1,4 @@
+---@diagnostic disable: missing-fields
 --- Contains all LibDialog popups used by RCLootCouncil
 -- @author: Potdisc
 -- 14/07/2017
@@ -19,7 +20,7 @@ LibDialog:Register("RCLOOTCOUNCIL_CONFIRM_USAGE", {
          text = _G.YES,
          on_click = function()
             addon.Log("Player confirmed usage")
-            addon:StartHandleLoot("personalloot")
+            addon:StartHandleLoot()
          end,
       },
       {	text = _G.NO,

@@ -8,6 +8,7 @@ local defaults = addon.defaults.profile
 
 -- New in Forever
 defaults.classicAutoPass = true
+defaults.lastUsagePopupSelection = "group_loot" -- The last selection from new usage popup
 
 -- Changes from default
 defaults.currentSkin = "forever"

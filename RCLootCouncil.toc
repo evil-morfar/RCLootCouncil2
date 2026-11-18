@@ -77,3 +77,4 @@ Forever\MasterLoot.lua [AllowLoadGameType forever][ExcludeLoadGameType standard,
 Forever\Autopass.lua [AllowLoadGameType forever][ExcludeLoadGameType standard, classic]
 Forever\SessionFrame.lua [AllowLoadGameType forever][ExcludeLoadGameType standard, classic]
 Forever\LootHistory.lua [AllowLoadGameType forever][ExcludeLoadGameType standard, classic]
+Forever\UsagePopup.lua [AllowLoadGameType forever][ExcludeLoadGameType standard, classic]

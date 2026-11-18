@@ -7,6 +7,10 @@ local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 
 function addon:IsCorrectVersion() return WOW_PROJECT_ID == WOW_PROJECT_CAMELOT end
 
+-- Basically only here to project ForeverDB changes
+---@return RCLootCouncilForeverDB
+function addon:Getdb() return addon.db.profile end
+
 -- Retail version uses EJ_ stuff which isn't available in Forever.
 function addon:Test(num, fullTest, trinketTest)
 	self.Log:d("Test", num)
