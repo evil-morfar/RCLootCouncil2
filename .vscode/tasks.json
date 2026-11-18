@@ -8,7 +8,23 @@
     },
     "tasks": [
         {
-            "label": "Deploy-Local",
+            "label": "Deploy Retail & Forever",
+            "dependsOn":[
+                "Deploy Retail",
+                "Deploy Forever"
+            ]
+        },
+        {
+            "label": "Deploy All PTR",
+            "dependsOn": [
+                "Deploy-Retail-PTR",
+                "Deploy-Retail-XPTR",
+                "Deploy-Retail-Beta"
+            ]
+
+        },
+        {
+            "label": "Deploy Retail",
             "type": "shell",
             "command": "sh .scripts/deploy.sh",
             "group": {
@@ -17,29 +33,29 @@
             },
         },
         {
-            "label": "Deploy-Local-PTR",
+            "label": "Deploy Forever",
+            "type": "shell",
+            "command": "sh .scripts/deploy.sh -f",
+            "group": "build"
+        },
+        {
+            "label": "Deploy-Retail-PTR",
             "type": "shell",
             "command": "sh .scripts/deploy.sh -p",
             "group": "build"
         },
         {
-            "label": "Deploy-Local-XPTR",
+            "label": "Deploy-Retail-XPTR",
             "type": "shell",
             "command": "sh .scripts/deploy.sh -x",
             "group": "build"
         },
         {
-            "label": "Deploy-Local-Beta",
+            "label": "Deploy-Retail-Beta",
             "type": "shell",
             "command": "sh .scripts/deploy.sh -b",
             "group": "build"
-        },
-        {
-            "label" : "Deploy Forever",
-            "type": "shell",
-            "command": "sh .scripts/deploy.sh -f",
-            "group": "build"
-        },
+        },        
         {
             "label": "Busted All",
             "type": "shell",
