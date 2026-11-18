@@ -27,9 +27,13 @@ Merged all relevant changes from the Classic addon into this to work with Foreve
 
 Slightly changed various frames to make room for longer names.
 
+Usage default set to "Ask when leader".
+
 ### Master Loot & Group Loot options
 
 Seperated options for these to clearly indicate which options works with the specific loot method.
+
+For the group leader, the usage popup now allows you to choose between Group Loot and a raid member to set as the Master Looter. Loot method is updated accordingly, if required.
 
 ### Manual Trade
 
