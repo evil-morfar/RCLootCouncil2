@@ -8,6 +8,8 @@ Additional Buttons list is now sorted.
 
 3rd Party addons no longer show up twice in the version checker.
 
+Due to Forever names having a space in them, all auto award string inputs are no longer split on spaces (comma only).
+
 ### Appearance Options Overhaul
 
 Refactored the entire appearance system

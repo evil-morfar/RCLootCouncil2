@@ -227,10 +227,10 @@ local function createAutoAwardPrioList(list)
 end
 
 --- Creates a function used as the `set` value in auto award candidate input fields.
---- Takes input text (split by commas and spaces) and adds them to the provided list.
+--- Takes input text (split by commas) and adds them to the provided list.
 local function autoAwardFieldProcessor(list)
 	return function(_, v)
-		for name in string.gmatch(v, "[^, ]+") do
+		for name in string.gmatch(v, "[^,]+") do
 			if not tContains(list, name) then
 				tinsert(list, name)
 			end
