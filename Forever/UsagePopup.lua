@@ -29,9 +29,10 @@ local function DropdownGenerator(owner, menu)
 	end
 	table.sort(names)
 
-	for _, name in ipairs(names) do
-		menu:CreateButton(addon:GetClassIconAndColoredName(name), ButtonCallback, name)
-	end
+    for _, name in ipairs(names) do
+        menu:CreateButton(addon:GetClassIconAndColoredName(name), ButtonCallback, name)
+    end
+	menu:SetScrollMode(300)
 end
 
 local dropdown
@@ -43,7 +44,7 @@ local function CreateOrGenerateMenu(parent)
 		if selected == "group_loot" then return L.GROUP_LOOT end
 		return addon:GetClassIconAndColoredName(selected)
 	end)
-	dropdown:SetWidth(200)
+    dropdown:SetWidth(200)
 	dropdown:SetupMenu(DropdownGenerator)
 end
 
@@ -52,12 +53,12 @@ LibDialog:Register("RCLOOTCOUNCIL_CONFIRM_USAGE", {
 	on_show = function(self)
 		self:SetFrameStrata("FULLSCREEN")
 		selected = addon:Getdb().lastUsagePopupSelection or "group_loot"
-		if UnitIsGroupLeader("player") then
+		-- if UnitIsGroupLeader("player") then
 			CreateOrGenerateMenu(self)
-			self.delegate.height = 150
-		else
-			self.delegate.height = 120
-		end
+		-- 	self.delegate.height = 150
+		-- else
+		-- 	self.delegate.height = 120
+		-- end
 	end,
 	buttons = {
 		{
