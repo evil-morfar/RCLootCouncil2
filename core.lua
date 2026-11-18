@@ -2012,9 +2012,13 @@ function RCLootCouncil:NewMLCheck()
 	if type == "arena" or type == "pvp" then return end
 
 	-- New group loot is reported as "personalloot" -.-
-	if (self.lootMethod == Enum.LootMethod.Group and db.usage.gl) or (self.lootMethod == Enum.LootMethod.Personal and db.usage.gl) then -- auto start
+	if (self.lootMethod == Enum.LootMethod.Group and db.usage.gl)
+		or (self.lootMethod == Enum.LootMethod.Personal and db.usage.gl)
+	 	or (self.lootMethod == Enum.LootMethod.Masterlooter and db.usage.ml) then -- auto start
 		self:StartHandleLoot()
-	elseif (self.lootMethod == Enum.LootMethod.Group and db.usage.ask_gl) or (self.lootMethod == Enum.LootMethod.Personal and db.usage.ask_gl) then
+	elseif (self.lootMethod == Enum.LootMethod.Group and db.usage.ask_gl)
+		or (self.lootMethod == Enum.LootMethod.Personal and db.usage.ask_gl)
+		or (self.lootMethod == Enum.LootMethod.Masterlooter and db.usage.ask_ml) then
 		return LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_USAGE")
 	end
 end
@@ -2049,11 +2053,18 @@ function RCLootCouncil:OnRaidEnter()
 	if self.Utils:IsPartyLFG() or db.usage.never then return end -- We can't use in lfg/lfd so don't bother
 	-- Check if we can use in party
 	if not IsInRaid() and db.onlyUseInRaids then return end
+	if self.handleLoot then return end -- Already handling
 	if UnitIsGroupLeader("player") then
-		if db.usage.gl then
+		if db.usage.gl or db.usage.leader then
 			self:StartHandleLoot()
 			-- We must ask the player for usage
-		elseif db.usage.ask_gl then
+		elseif db.usage.ask_gl or db.usage.ask_leader then
+			return LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_USAGE")
+		end
+	elseif self:GetLootMethod() == Enum.LootMethod.Masterlooter and self.isMasterLooter then
+		if db.usage.ml then
+			self:StartHandleLoot()
+		elseif db.usage.ask_ml then
 			return LibDialog:Spawn("RCLOOTCOUNCIL_CONFIRM_USAGE")
 		end
 	else

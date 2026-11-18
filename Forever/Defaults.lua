@@ -18,3 +18,11 @@ defaults.ignoredItems = {}
 defaults.autoPassWeapons = false
 defaults.autoPassTrinkets = false
 defaults.mlLootToPlayer = true
+
+MergeTable(defaults.usage, {
+	ml = false,
+	ask_ml = false,
+	leader = false,
+	ask_leader = true,
+	state = "ask_leader"
+})

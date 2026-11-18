@@ -67,6 +67,13 @@ function addon:OptionsTable()
 		}
 	}
 	options.args.mlSettings.args.generalTab.args.lootingOptions.args.autoGroupLoot = nil
+
+	MergeTable(options.args.mlSettings.args.generalTab.args.usageOptions.args.usage.values, {
+		ml = L.opt_usage_ml,
+		ask_ml = L.opt_usage_ask_ml,
+		leader = L.opt_usage_leader_always,
+		ask_leader = L.opt_usage_leader_ask
+	})
 	return options
 end
 
