@@ -45,7 +45,7 @@ local function CreateOrGenerateMenu(parent)
 		return addon:GetClassIconAndColoredName(selected)
 	end)
     dropdown:SetWidth(200)
-	dropdown:SetupMenu(DropdownGenerator)
+    dropdown:SetupMenu(DropdownGenerator)
 end
 
 LibDialog:Register("RCLOOTCOUNCIL_CONFIRM_USAGE", {
@@ -53,12 +53,16 @@ LibDialog:Register("RCLOOTCOUNCIL_CONFIRM_USAGE", {
 	on_show = function(self)
 		self:SetFrameStrata("FULLSCREEN")
 		selected = addon:Getdb().lastUsagePopupSelection or "group_loot"
-		-- if UnitIsGroupLeader("player") then
-			CreateOrGenerateMenu(self)
-		-- 	self.delegate.height = 150
-		-- else
-		-- 	self.delegate.height = 120
-		-- end
+		if UnitIsGroupLeader("player") then
+        	CreateOrGenerateMenu(self)
+			dropdown:Show()
+			self.delegate.height = 150
+		else
+			self.delegate.height = 120
+		end
+    end,
+	on_hide = function(self)
+		dropdown:Hide()
 	end,
 	buttons = {
 		{
