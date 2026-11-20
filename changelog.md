@@ -1,6 +1,4 @@
-
-
-# 3.26.0
+# 3.26.0-beta.2
 
 ## Changes
 
@@ -38,6 +36,10 @@ For the group leader, the usage popup now allows you to choose between Group Loo
 ### Manual Trade
 
 When using Master Loot, there's a new toggle in the session frame that allows for looting the items and immediately starting a session. This toggle also has an "auto check" option in the Master Looter options (enabled by default).
+
+## Beta.2
+
+- *Fixed popup issues.*
 
 # 3.25.0
 
