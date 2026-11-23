@@ -1,3 +1,4 @@
+local isRetail = WOW_PROJECT_ID == WOW_PROJECT_MAINLINE
 --- Returns a random guid
 local function GetRandomGUID(size)
 	size = size or 8
@@ -22,6 +23,8 @@ local function CreatePlayer(i)
 		name = "Player" .. i .. "-Realm1",
 		class = class,
 		realm = "Realm1",
+		raidId = "raid" .. i,
+		partyId = "party"..i
 	}
 end
 
@@ -58,9 +61,30 @@ local function HookGlobals(players, size)
 		if unit == "player" then
 			return players[1].guid
 		end
+		if not isRetail then unit = unit:gsub(" ", "-") end
 		for _, v in ipairs(players) do
 			if v.name == unit then
 				return v.guid
+			end
+		end
+	end
+
+	function _G.UnitExists(unit)
+		if unit == "player" then return true end
+		if not isRetail then unit = unit:gsub(" ", "-") end
+		for _, v in ipairs(players) do
+			if v.name == unit then
+				return true
+			end
+		end
+		return false
+	end
+
+	function _G.UnitName(unit)
+		if unit == "player" then return strsplit("-", players[1].name, 2) end
+		for k, v in ipairs(players) do
+			if v.raidId == unit or v.partyId == unit then
+				return strsplit("-", v.name, 2)
 			end
 		end
 	end
@@ -72,6 +96,7 @@ local function HookGlobals(players, size)
 	function IsInRaid()
 		return #players > 5
 	end
+
 	local getPlayerFromGUID = function(guid)
 		for _, v in ipairs(players) do
 			if v.guid == guid then

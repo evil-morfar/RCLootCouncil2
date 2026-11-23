@@ -144,8 +144,7 @@ describe("#Forever #MasterLoot", function()
 			addon.player = Player:Get("player")
 			_G.IsMasterLooter = function() return false end
 			addon.GetLootMethod = function() return Enum.LootMethod.Masterlooter, nil, 2 end
-			addon.Utils.unitNameLookup.raid2 = "Player2"
-			local player = Player:Get("Player2")
+			local player = Player:Get("Player2-Realm1")
 
 			local isML, ml = addon:GetML()
 
@@ -173,8 +172,7 @@ describe("#Forever #MasterLoot", function()
 			addon.player = Player:Get("player")
 			_G.IsMasterLooter = function() return false end
 			addon.GetLootMethod = function() return Enum.LootMethod.Masterlooter, 2, nil end
-			addon.Utils.unitNameLookup.party2 = "Player2"
-			local player = Player:Get("Player2")
+			local player = Player:Get("Player2-Realm1")
 
 			local isML, ml = addon:GetML()
 
@@ -506,8 +504,8 @@ describe("#Forever #MasterLoot", function()
 
 		it("returns the status with each Master Loot setting represented", function()
 			addon.mldb = { value = true }
-			-- 111111
-			assert.equal(63, MasterLoot:GetStatus())
+			-- 10111101
+			assert.equal(189, MasterLoot:GetStatus())
 		end)
 
 		it("returns the status with only active fields set", function()
@@ -522,24 +520,45 @@ describe("#Forever #MasterLoot", function()
 		end)
 
 		it("provides separate target statuses for raiders and the ML", function()
-			-- 101111
-			assert.equal(47, MasterLoot:GetTargetedStatus())
-			-- 111111
-			assert.equal(63, MasterLoot:GetTargetedMLStatus())
+			-- 10011101
+			assert.equal(173, MasterLoot:GetTargetedStatus())
+			-- 10111101
+			assert.equal(189, MasterLoot:GetTargetedMLStatus())
 		end)
 
 		it("formats Master Loot descriptions through the Status service", function()
 			addon.mldb = { value = true }
-			local descriptions = Status:StatusToDescription(MasterLoot:GetStatus(), MasterLoot:GetTargetedStatus())
+			local status = MasterLoot:GetStatus()
+			local target = MasterLoot:GetTargetedMLStatus()
+			local descriptions = Status:StatusToDescription(status, target)
 
 			assert.equal("Master Loot", Status:GetName())
 			assert.same({
 				WrapTextInColorCode("Received data from ML", "FF00FF00"),
-				WrapTextInColorCode("RCLootCouncil enabled", "FF00FF00"),
+				"|cFF00FF00|r",
 				WrapTextInColorCode("RCLootCouncil handles loot", "FF00FF00"),
 				WrapTextInColorCode("Group has master looter", "FF00FF00"),
-				WrapTextInColorCode("Player is master looter", "FFFF0000"),
+				WrapTextInColorCode("Player is master looter", "FF00FF00"),
 				WrapTextInColorCode("In a group", "FF00FF00"),
+				"",
+				WrapTextInColorCode("RCLootCouncil enabled", "FF00FF00"),
+			}, descriptions)
+
+			addon.isMasterLooter = false
+			status = MasterLoot:GetStatus()
+			target = MasterLoot:GetTargetedStatus()
+			descriptions = Status:StatusToDescription(status, target)
+
+			assert.equal("Master Loot", Status:GetName())
+			assert.same({
+				WrapTextInColorCode("Received data from ML", "FF00FF00"),
+				"|cFF00FF00|r",
+				WrapTextInColorCode("RCLootCouncil handles loot", "FF00FF00"),
+				WrapTextInColorCode("Group has master looter", "FF00FF00"),
+				WrapTextInColorCode("Player is not master looter", "FF00FF00"),
+				WrapTextInColorCode("In a group", "FF00FF00"),
+				"",
+				WrapTextInColorCode("RCLootCouncil enabled", "FF00FF00"),
 			}, descriptions)
 		end)
 	end)

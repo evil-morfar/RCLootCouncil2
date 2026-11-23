@@ -77,11 +77,13 @@ end
 --- See [GroupLoot Status](lua://GroupLootStatus) for more details
 local statusBinaryTable = {
 	[000000001] = "mldb",
-	[000000010] = "enabled",			-- Only one different from group loot
+	[000000010] = "",					-- Not used in ML
 	[000000100] = "handleLoot",
 	[000001000] = "masterLooter",
-	[000010000] = "isMasterLooter", 	-- 0 for passing; 1 for rolling.
+	[000010000] = "isMasterLooter",
 	[000100000] = "numGroupMembers",
+	[010000000] = "",					-- Not used in ML
+	[100000000] = "enabled"
 }
 local statusInverted = tInvert(statusBinaryTable)
 
@@ -89,12 +91,14 @@ local statusInverted = tInvert(statusBinaryTable)
 --- Descriptions for [Status](lua://Status).
 --- Index 0 is negative description and 1 is positive.
 local description = {
-	{ [0] = "Hasn't received data from ML",      [1] = "Received data from ML", },
-	{ [0] = "RCLootCouncil disabled",            [1] = "RCLootCouncil enabled", },
+	{ [0] = "Hasn't received data from ML",      [1] = "Received data from ML" },
+	{},
 	{ [0] = "RCLootCouncil doesn't handle loot", [1] = "RCLootCouncil handles loot", },
 	{ [0] = "Group has no master looter",        [1] = "Group has master looter", },
 	{ [0] = "Player is not master looter",       [1] = "Player is master looter", },
-	{ [0] = "Not in a group",                    [1] = "In a group", },
+	{ [0] = "Not in a group",                    [1] = "In a group" },
+	{ [0]= "", ""},
+	{ [0] = "RCLootCouncil disabled",            [1] = "RCLootCouncil enabled", },
 }
 function MasterLoot:GetDescription() return description end
 
@@ -102,17 +106,17 @@ function MasterLoot:GetDescription() return description end
 ---@return integer #The integer representation of the binary status value.
 function MasterLoot:GetStatus()
 	local result = (addon.mldb and next(addon.mldb) and 1 or 0)
-	result = result + bit.lshift((addon.enabled and 1 or 0), 1)
 	result = result + bit.lshift((addon.handleLoot and 1 or 0), 2)
 	result = result + bit.lshift((addon:HasValidMasterLooter() and 1 or 0), 3)
 	result = result + bit.lshift((addon.isMasterLooter and 1 or 0), 4)
 	result = result + bit.lshift((GetNumGroupMembers() > 1 and 1 or 0), 5)
+	result = result + bit.lshift((addon.enabled and 1 or 0), 7)
 	return result
 end
 
 
-local targetStatusML = tonumber("111111", 2)
-local targetStatus   = tonumber("101111", 2)
+local targetStatusML = tonumber("10111101", 2) -- 189
+local targetStatus   = tonumber("10101101", 2) -- 173
 
 function MasterLoot:GetTargetedStatus() return targetStatus end
 function MasterLoot:GetTargetedMLStatus() return targetStatusML end

@@ -42,7 +42,7 @@ local noCache = { "player", "npc", "target", }
 ---@param key string
 ---@param name string
 local function cacheUnitName(key, name)
-	if noCache[key:lower()] then return name end
+	if noCache[key:lower()] or key:sub(1, 4 ) == "raid" or key:sub(1,5) == "party" then return name end
 	local find = strfind(name, "-", nil, true)
 	if find and find < #name then
 		addon.Utils.unitNameLookup[key] = name
@@ -62,5 +62,6 @@ function addon.Utils:UnitName(unit)
 	elseif find and find == #unit then -- trailing '-'
 		return cacheUnitName(unit, string.sub(unit, 1, -2))
 	end
-	return cacheUnitName(unit, unit)
+	local first,last = UnitName(unit)
+	return cacheUnitName(unit, last and (first.." "..last) or unit)
 end
