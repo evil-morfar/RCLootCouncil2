@@ -295,7 +295,7 @@ function RCLootCouncil:OnEnable()
 	-- Register the player's name
 	self.realmName = GetNormalizedRealmName()
 	if self.realmName == "" then -- Noticed this happening with starter accounts. Not sure if it's a real problem.
-		self:ScheduleTimer(function() self.realmName = select(2, UnitFullName("player")) end, 2)
+		self:ScheduleTimer(function() self.realmName = GetNormalizedRealmName() end, 2)
 	end
 	self.player = Player:Get("player")
 	self.playerName = self.player:GetName() -- TODO Remove
