@@ -82,6 +82,7 @@ function RCLootCouncilML:OnEnable()
 	self:RegisterComms()
 	-- Setup after comms, as that will override the table
 	self:SetupGroupLootIntegration()
+	self:SetupStatusMonitor()
 end
 
 function RCLootCouncilML:GetItemInfo(item)
@@ -1668,18 +1669,20 @@ function RCLootCouncilML:SetupGroupLootIntegration()
 		function(...)
 			self:OnGroupLootRoll(...)
 		end))
+end
 
-	-- Monitor GroupLoot status to send "StartHandleLoot" at the right time.
+function RCLootCouncilML:SetupStatusMonitor()
+	-- Monitor status to send "StartHandleLoot" at the right time.
 	-- Needed as we can no longer rely on just sending "StartHandleLoot" at ENCOUNTER_START
 	tinsert(subscriptions, Comms:Subscribe(addon.PREFIXES.VERSION, "f", function(data, sender, command, distri)
 		if not addon.handleLoot then return end
 		if addon.Utils:UnitIsUnit(sender, "player") then return end
 		local status = data[7]
-		local targetStatus = GroupLoot:GetTargetedStatus()
+		local targetStatus = addon.Require"Services.Status":GetTargetedStatus()
 		if bit.band(status, targetStatus) == targetStatus then
 			return -- Everythings fine
 		end
-		self.Log:d("GroupLoot Status mismatch for:", sender, status, targetStatus)
+		self.Log:d("Status mismatch for:", sender, status, targetStatus)
 		if bit.band(status, 1) == 0 then -- 0000 0001 Missing mldb
 			MLDB:Send "group"
 		end

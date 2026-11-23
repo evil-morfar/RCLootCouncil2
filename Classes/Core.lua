@@ -11,6 +11,8 @@ local noop = function() end
 
 local MODULE_MT = {
 	--- @class Module
+	--- @field private _name string
+	--- @field private _enabled boolean
 	__index = {
 		_name = "Unknown",
 		_enabled = false,

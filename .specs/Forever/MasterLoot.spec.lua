@@ -8,6 +8,7 @@ describe("#Forever #MasterLoot", function()
 	local MasterLoot = addon.Require "Services.MasterLoot"
 	local Council = addon.Require "Data.Council"
 	local Player = addon.Require "Data.Player"
+	local Status = addon.Require "Services.Status"
 	local ML = _G.RCLootCouncilML
 
 	local originalGetLootMethod
@@ -463,6 +464,83 @@ describe("#Forever #MasterLoot", function()
 
 			assert.stub(ML.ShowSessionFrame).was.called_with(ML, ML.lootTable)
 			assert.stub(ML.StartSession).was_not.called()
+		end)
+	end)
+
+	describe("status", function()
+		local originalMldb
+		local originalEnabled
+		local originalHandleLoot
+		local originalIsMasterLooter
+		local originalGetLootMethod
+		local hasValidMasterLooter
+		local numGroupMembers
+
+		before_each(function()
+			originalMldb = addon.mldb
+			originalEnabled = addon.enabled
+			originalHandleLoot = addon.handleLoot
+			originalIsMasterLooter = addon.isMasterLooter
+			originalGetLootMethod = addon.GetLootMethod
+
+			addon.mldb = {}
+			addon.enabled = true
+			addon.handleLoot = true
+			addon.isMasterLooter = true
+			addon.GetLootMethod = function() return Enum.LootMethod.Masterlooter end
+			Status:OnLootMethodChanged()
+			hasValidMasterLooter = stub(addon, "HasValidMasterLooter").returns(true)
+			numGroupMembers = stub(_G, "GetNumGroupMembers").returns(5)
+		end)
+
+		after_each(function()
+			hasValidMasterLooter:revert()
+			numGroupMembers:revert()
+			addon.mldb = originalMldb
+			addon.enabled = originalEnabled
+			addon.handleLoot = originalHandleLoot
+			addon.isMasterLooter = originalIsMasterLooter
+			addon.GetLootMethod = originalGetLootMethod
+			Status:OnLootMethodChanged()
+		end)
+
+		it("returns the status with each Master Loot setting represented", function()
+			addon.mldb = { value = true }
+			-- 111111
+			assert.equal(63, MasterLoot:GetStatus())
+		end)
+
+		it("returns the status with only active fields set", function()
+			addon.enabled = false
+			addon.handleLoot = true
+			addon.isMasterLooter = true
+			hasValidMasterLooter.returns(false)
+			numGroupMembers.returns(1)
+
+			-- 10100
+			assert.equal(20, MasterLoot:GetStatus())
+		end)
+
+		it("provides separate target statuses for raiders and the ML", function()
+			-- 101111
+			assert.equal(47, MasterLoot:GetTargetedStatus())
+			-- 111111
+			assert.equal(63, MasterLoot:GetTargetedMLStatus())
+		end)
+
+		it("formats Master Loot descriptions through the Status service", function()
+			addon.mldb = { value = true }
+			local descriptions = Status:StatusToDescription(MasterLoot:GetStatus(), MasterLoot:GetTargetedStatus())
+
+			assert.equal("Master Loot", Status:GetName())
+			assert.same({
+				WrapTextInColorCode("Received data from ML", "FF00FF00"),
+				WrapTextInColorCode("RCLootCouncil enabled", "FF00FF00"),
+				WrapTextInColorCode("RCLootCouncil handles loot", "FF00FF00"),
+				WrapTextInColorCode("Group has master looter", "FF00FF00"),
+				WrapTextInColorCode("Player is master looter", "FFFF0000"),
+				WrapTextInColorCode("In a group", "FF00FF00"),
+			}, descriptions)
 		end)
 	end)
 end)

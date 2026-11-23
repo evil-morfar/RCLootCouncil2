@@ -21,7 +21,7 @@ local L = LibStub("AceLocale-3.0"):GetLocale("RCLootCouncil")
 local Comms = addon.Require "Services.Comms"
 local Player = addon.Require "Data.Player"
 local TT = addon.Require "Utils.TempTable"
-local GroupLoot = addon.Require "Utils.GroupLoot"
+local StatusService = addon.Require "Services.Status"
 
 local GuildRankSort
 local guildRanks = {}
@@ -34,7 +34,7 @@ local colors = {
 	grey = CreateColor(0.75, 0.75, 0.75, 1),
 }
 
-RCVersionCheck.statusString = _G.STATUS
+RCVersionCheck.statusString = _G.STATUS.." (%s)"
 
 function RCVersionCheck:OnInitialize()
 	self.verCheckDisplayed = false    -- Have we shown a "out-of-date"?
@@ -52,7 +52,7 @@ function RCVersionCheck:OnInitialize()
 			sort = ST.SORT_DSC,
 			sortnext = 2,
 		},
-		{ name = "", width = 20, align = "CENTER", sortnext = 4, }, -- GroupLoot Status
+		{ name = "", width = 20, align = "CENTER", sortnext = 4, }, -- Status
 	}
 	self:InitCoreVersionComms()
 	self.subscriptions = {}
@@ -119,7 +119,7 @@ function RCVersionCheck:AddPlayer()
 		addon.version,
 		addon.tVersion,
 		addon:GetInstalledModulesFormattedData(),
-		GroupLoot:GetStatus()
+		StatusService:GetStatus()
 	)
 end
 
@@ -171,7 +171,7 @@ end
 --- @param name string Name of the player
 --- @param version string Version of the player
 --- @param tversion string? Test version of the player
---- @param latestStatus string? [`GroupLoot Status`](lua://Utils.GroupLoot.GetStatus) of the player or nil.
+--- @param latestStatus string? [`Status`](lua://Services.Status.GetStatus) of the player or nil.
 function RCVersionCheck:LogVersion(name, version, tversion, latestStatus)
 	if not name then
 		return addon.Log:D("LogVersion", "No name", name, version, tversion, latestStatus)
@@ -217,8 +217,8 @@ end
 ---@param version string
 ---@param tVersion string?
 ---@param modules table<integer, string>
----@param groupLootStatus integer
-function RCVersionCheck:AddEntry(name, class, guildRank, version, tVersion, modules, groupLootStatus)
+---@param status integer
+function RCVersionCheck:AddEntry(name, class, guildRank, version, tVersion, modules, status)
 	-- We need to be careful with naming conventions just as in RCLootCouncil:UnitName()
 	--name = name:lower():gsub("^%l", string.upper)
 	name = addon:UnitName(name)
@@ -244,7 +244,7 @@ function RCVersionCheck:AddEntry(name, class, guildRank, version, tVersion, modu
 				args = modules,
 			},
 		}
-		tinsert(t.cols, { DoCellUpdate = self.SetCellGroupLootStatus, args = { groupLootStatus, }, })
+		tinsert(t.cols, { DoCellUpdate = self.SetCellStatus, args = { status, }, })
 		t.name = name
 		t.rank = guildRank
 		t.version = version
@@ -311,7 +311,7 @@ local function SendFullVersionReply(data, sender, _, dist)
 			addon.tVersion,
 			addon:GetInstalledModulesFormattedData(),
 			senderPlayer:GetForTransmit(),
-			GroupLoot:GetStatus(),
+			StatusService:GetStatus(),
 		},
 	}
 end
@@ -564,9 +564,9 @@ function RCVersionCheck.SetCellModules(rowFrame, f, data, cols, row, realrow, co
 end
 
 --- @type DoCellUpdateFunction
-function RCVersionCheck.SetCellGroupLootStatus(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
-	local targetML = GroupLoot:GetTargetedMLStatus()
-	local target = GroupLoot:GetTargetedStatus()
+function RCVersionCheck.SetCellStatus(rowFrame, frame, data, cols, row, realrow, column, fShow, table, ...)
+	local targetML = StatusService:GetTargetedMLStatus()
+	local target = StatusService:GetTargetedStatus()
 	local status = data[realrow].cols[column].args[1]
 	local name = data[realrow].name
 	local binary = addon.Utils:Int2Bin(status)
@@ -575,8 +575,8 @@ function RCVersionCheck.SetCellGroupLootStatus(rowFrame, frame, data, cols, row,
 	frame:SetScript("OnEnter", function()
 		if status then
 			local targetStatus = addon.masterLooter == Player:Get(name) and targetML or target
-			local description = GroupLoot:StatusToDescription(status, targetStatus)
-			addon:CreateTooltip(RCVersionCheck.statusString, unpack(description))
+			local description = StatusService:StatusToDescription(status, targetStatus)
+			addon:CreateTooltip(RCVersionCheck.statusString:format(StatusService:GetName()), unpack(description))
 			if addon.debug or addon.nnp then
 				GameTooltip:AddLine("Bin: " .. binary)
 				GameTooltip:AddLine("Dec: " .. status)

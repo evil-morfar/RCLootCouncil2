@@ -37,6 +37,10 @@ For the group leader, the usage popup now allows you to choose between Group Loo
 
 When using Master Loot, there's a new toggle in the session frame that allows for looting the items and immediately starting a session. This toggle also has an "auto check" option in the Master Looter options (enabled by default).
 
+### Version Check Status
+
+Added a separate status when using Master Loot.
+
 ## Beta.2
 
 - *Fixed popup issues.*

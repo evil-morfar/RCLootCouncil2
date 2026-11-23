@@ -4,10 +4,13 @@
 
 --- @type RCLootCouncil
 local addon = select(2, ...)
---- @class Utils.GroupLoot
+--- @class Utils.GroupLoot : StatusHandler
 local GroupLoot = addon.Init "Utils.GroupLoot"
 local Subject = addon.Require("rx.Subject")
 local ItemUtils = addon.Require "Utils.Item"
+local StatusService = addon.Require "Services.Status"
+
+GroupLoot.name = "Group Loot"
 
 --- @class OnLootRoll : rx.Subject
 --- Called everytime we're auto rolling for loot.
@@ -67,7 +70,7 @@ function GroupLoot:OnStartLootRoll(_, rollID)
 	end
 	local itemId = ItemUtils:GetItemIDFromLink(link)
 	local status = self:GetStatus()
-	self.Log:D("Status:", status, self:GetStatusHex(status), self:GetStatusBinary(status))
+	self.Log:D("Status:", status, StatusService:GetStatusHex(status), StatusService:GetStatusBinary(status))
 	-- Predicate check
 	for name, predicate in pairs(GroupLoot.Predicates) do
 		if not predicate(rollID, itemId, status, quality) then
@@ -128,7 +131,7 @@ function GroupLoot:ShouldRollOnLoot(status)
 	return bit.band(status, 0x13f) == 0x13f -- 1.0011.1111
 end
 
---- @enum Status
+--- @enum GroupLootStatus
 --- Table which keys is the binary representation of whether the value is true.
 --- autoGroupLootGuildGroupOnly doesn't matter for rolling, but is included for options clarity.
 --- "guildGroup" indicates whether rolling is allowed according to guild group options.
@@ -164,20 +167,6 @@ function GroupLoot:GetStatus()
 	return result
 end
 
----Generates the binary version of the status.
----@param status? integer|string Integer status. Defaults to [`GroupLoot:GetStatus()`](lua://Utils.GroupLoot.GetStatus).
----@return string #The binary representation of the status.
-function GroupLoot:GetStatusBinary(status)
-	return addon.Utils:Int2Bin(status or self:GetStatus())
-end
-
---- Converts the status to a hexadecimal string.
----@param status? integer|string Integer status. Defaults to [`GroupLoot:GetStatus()`](lua://Utils.GroupLoot.GetStatus).
----@return string #The hexadecimal representation of the status.
-function GroupLoot:GetStatusHex(status)
-	return string.format("%x", status or self:GetStatus())
-end
-
 ---@return enum Status The status table as-is.
 function GroupLoot:GetStatusTable() return statusBinaryTable end
 
@@ -186,7 +175,7 @@ function GroupLoot:GetInvertedStatusTable() return statusInverted end
 
 --- Calculates the status with one or more fields set.
 --- Invalid fields will be ignored.
----@param ...Status The fields to set. Must be a valid value in [Status](lua://Status).
+---@param ...GroupLootStatus The fields to set. Must be a valid value in [Status](lua://Status).
 ---@return integer #The integer representation of the binary status value.
 function GroupLoot:CalculateStatus(...)
 	local result = 0
@@ -199,7 +188,7 @@ function GroupLoot:CalculateStatus(...)
 	return tonumber(result, 2)
 end
 
---- @enum StatusDescription
+--- @enum GroupLootStatusDescription
 --- Descriptions for [Status](lua://Status).
 --- Index 0 is negative description and 1 is positive.
 local description = {
@@ -214,32 +203,7 @@ local description = {
 	{ [0] = "RCLootCouncil disabled",            [1] = "RCLootCouncil enabled", },
 }
 
---- Creates a table of descriptions for the provided status.
---- These are colored green if set in the target status, otherwise red.
----@param status integer|string Integer or binary representation of [Status](lua://Status). See [GroupLoot:GetStatus()](lua://Utils.GroupLoot.GetStatus)
----@param target integer|string Integer or binary representation of the target status.
-function GroupLoot:StatusToDescription(status, target)
-	status = type(status) == "string" and tonumber(status, 2) or status
-	target = type(target) == "string" and tonumber(target, 2) or target
-	local res = {}
-	for i = 1, #description do
-		local lookAtBit = bit.lshift(1, i - 1)
-		local statusAtBit = bit.band(status, lookAtBit)
-		local bitState = statusAtBit > 0 and 1 or 0
-		if i == 7 then -- autoGroupLootGuildGroupOnly doesn't matter; but color green if enabled
-			if bitState == 1 then
-				res[#res + 1] = WrapTextInColorCode(description[i][bitState] or "", "FF00FF00")
-			else
-				res[#res + 1] = description[i][bitState]
-			end
-		elseif statusAtBit == bit.band(target, lookAtBit) then
-			res[#res + 1] = WrapTextInColorCode(description[i][bitState] or "", "FF00FF00")
-		else
-			res[#res + 1] = WrapTextInColorCode(description[i][bitState] or "", "FFFF0000")
-		end
-	end
-	return res
-end
+function GroupLoot:GetDescription() return description end
 
 local targetStatusML = tonumber("110111111", 2)
 local targetStatus   = tonumber("110101111", 2)
