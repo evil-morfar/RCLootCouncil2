@@ -62,7 +62,9 @@ LibDialog:Register("RCLOOTCOUNCIL_CONFIRM_USAGE", {
 		end
     end,
 	on_hide = function(self)
-		dropdown:Hide()
+		if dropdown then
+			dropdown:Hide()
+		end
 	end,
 	buttons = {
 		{
