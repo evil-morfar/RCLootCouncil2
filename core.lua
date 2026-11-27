@@ -138,7 +138,6 @@ function RCLootCouncil:OnInitialize()
 	end
 	self.nnp = false
 	self.debug = false
-	
 
 	self.playerClass = select(2, UnitClass("player")) -- TODO: Remove - contained in self.player
 	self.guildRank = L["Unguilded"]
