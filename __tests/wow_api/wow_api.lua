@@ -578,7 +578,7 @@ C_Timer = {
 		-- print("Creating timer with delay: ", delay)
 		local frame = CreateFrame("Frame")
 		frame:Show()
-		frame.timer = 0
+		frame.timer = GetTime()
 		frame.delay = delay
 		frame.elapsed = 0
 		frame:SetScript("OnUpdate", function(self, time)

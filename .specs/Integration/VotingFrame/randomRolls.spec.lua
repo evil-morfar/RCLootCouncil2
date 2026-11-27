@@ -17,13 +17,20 @@ describe("#VotingFrame #RandomRolls", function()
 		snapshot = assert:snapshot()
 		addon.db.global.verTestCandidates = {}
 		addon.Require "Data.Council":Set{}
+		addon.isCouncil = false
+		addon.isMasterLooter = false
+		addon.masterLooter = nil
+		wipe(VotingFrame:GetLootTable())
 	end)
 
 	after_each(function()
 		snapshot:revert()
-		-- Occasionally items were left by previouss tests
-		_ADVANCE_TIME(5)
 		RCLootCouncilML:EndSession()
+		-- Advance time after EndSession so session_end and EndSession's NewMLCheck timer flush before the next test
+		_ADVANCE_TIME(5)
+		addon:CancelAllTimers()
+		RCLootCouncilML:CancelAllTimers()
+		VotingFrame:CancelAllTimers()
 	end)
 
 	it("should execute without errors", function()
@@ -143,7 +150,7 @@ describe("#VotingFrame #RandomRolls", function()
 		WoWAPI_FireUpdate(GetTime() + 10)
 		-- Then the rest:
 		VotingFrame:DoAllRandomRolls()
-		_ADVANCE_TIME(.5)
+		_ADVANCE_TIME(1)
 
 		assert.spy(generateNoRepeatRollTable).was.called_with(match.is_ref(VotingFrame), 20)
 		assert.spy(generateNoRepeatRollTable).was.called(3) -- First 1 for session 2, then once for 1 & 3
@@ -160,16 +167,16 @@ describe("#VotingFrame #RandomRolls", function()
 		addon.player = addon.Require "Data.Player":Get("player")
 		addon.db.profile.sortItems = false
 
+		addon.isMasterLooter, addon.masterLooter = addon:GetML()
 		addon:CallModule("masterlooter")
 		addon:GetActiveModule("masterlooter"):NewML(addon.player)
 		addon:GetActiveModule("masterlooter"):Test { 159366, 165584, 159366, }
-		_ADVANCE_TIME(1)
+		_ADVANCE_TIME(2)
 		RCLootCouncilML:StartSession()
 		_ADVANCE_TIME(1)
 
 		local generateNoRepeatRollTable = spy.on(VotingFrame, "GenerateNoRepeatRollTable")
 		local OnSessionRollsReceivedSpy = spy.on(VotingFrame, "OnSessionRollsReceived")
-		_ADVANCE_TIME(.1)
 		VotingFrame:DoRandomRolls(1)
 		_ADVANCE_TIME(1)
 		assert.spy(generateNoRepeatRollTable).was.called(1)
