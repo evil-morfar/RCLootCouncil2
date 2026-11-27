@@ -114,5 +114,28 @@
             "problemMatcher": [],
             "group": "none"
         },
+
+        {
+            "label": "New Release",
+            "type": "shell",
+            "command": "bash .scripts/release.sh",
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "always",
+                "focus": true
+            }
+        },
+        {
+            "label": "New Release (Dry Run)",
+            "type": "shell",
+            "command": "bash .scripts/release.sh --dry-run",
+            "args": [
+            ],
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "always",
+                "focus": true
+            }
+        }
     ]
 }
