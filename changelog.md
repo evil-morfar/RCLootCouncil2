@@ -1,4 +1,4 @@
-# 3.26.0-beta.3
+# 3.26.0
 
 ## Changes
 
@@ -40,10 +40,6 @@ When using Master Loot, there's a new toggle in the session frame that allows fo
 ### Version Check Status
 
 Added a separate status when using Master Loot.
-
-## Beta.2
-
-- *Fixed popup issues.*
 
 # 3.25.0
 
