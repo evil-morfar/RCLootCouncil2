@@ -125,12 +125,20 @@ function RCLootCouncil:OnInitialize()
 	-- 	for name, class in self:IterateClasses() do
 	-- 		NumyFunctionProfiler:WrapModules("RCLootCouncil", name, class)
 	-- 	end
-	-- end
-	-- IDEA Consider if we want everything on self, or just whatever modules could need.
-    self.version = C_AddOns.GetAddOnMetadata("RCLootCouncil", "Version")
+    -- end
+
+	local version = C_AddOns.GetAddOnMetadata("RCLootCouncil", "Version")
+	-- Version is always a string, e.g. 3.2.1
+	if strfind(version, "%-") then
+		-- tVersion is either a string or nil. If set, e.g. "beta.1" indicates a test version, which alters stuff like version check.
+		-- It's appended to 'version', i.e. "version-tVersion". Max length is 10.
+		self.version, self.tVersion = strsplit("%-", version, 2)
+	else
+		self.version = version
+	end
 	self.nnp = false
 	self.debug = false
-	self.tVersion = nil -- String or nil. Indicates test version, which alters stuff like version check. Is appended to 'version', i.e. "version-tVersion" (max 10 letters for stupid security)
+	
 
 	self.playerClass = select(2, UnitClass("player")) -- TODO: Remove - contained in self.player
 	self.guildRank = L["Unguilded"]

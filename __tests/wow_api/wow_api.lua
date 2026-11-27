@@ -249,8 +249,18 @@ date = os.date
 debugprofilestop = os.clock
 
 C_AddOns = {
-	GetAddOnMetadata = function(arg)
-		return "NOT_IMPLEMENTED"
+	GetAddOnMetadata = function(_, var)
+		local toc = assert(io.open("RCLootCouncil.toc", "r"))
+		local value
+		for line in toc:lines() do
+			local key, metadata = line:match("^##%s*([^:]+):%s*(.-)%s*$")
+			if key == var then
+				value = metadata
+				break
+			end
+		end
+		toc:close()
+		return value
 	end,
 
 	LoadAddOn = function(args)
